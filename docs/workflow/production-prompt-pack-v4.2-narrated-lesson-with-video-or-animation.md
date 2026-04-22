@@ -332,7 +332,7 @@ Stop if any dimension or G0 fails.
 
 ---
 
-## 04A) Lesson Plan Coauthoring + Scope Lock
+## 04A) Lesson Plan Coauthoring + Scope Lock (Marcus <-> HIL)
 [M→O]
 
 
@@ -403,7 +403,7 @@ When this lock succeeds, the HUD confirms the run constants are frozen for the a
 
 [M→self] Keep the lock boundary strict: no emission side effects should be recorded as complete until this lock transitions to success.
 
-## 4.75) Creative Directive Resolution
+## 4.75) Creative Directive Resolution (CD)
 [M→O]
 
 
@@ -545,7 +545,7 @@ Stop if any artifact fails contract rules.
 
 ---
 
-## 6.2) Cluster Prompt Engineering
+## 6.2) Cluster Prompt Engineering (Conditional)
 [M→O]
 
 
@@ -564,7 +564,7 @@ Gate rule:
 
 ---
 
-## 6.3) Cluster Dispatch Sequencing
+## 6.3) Cluster Dispatch Sequencing (Conditional)
 [M→O]
 
 
@@ -646,7 +646,7 @@ Stop on any validator or G3 failure.
 
 ---
 
-## 7.5) Cluster Coherence G2.5 Gate
+## 7.5) Cluster Coherence G2.5 Gate (Conditional)
 [M→O]
 
 
@@ -698,7 +698,7 @@ Fallback:
 
 ---
 
-## 07C) Storyboard A + Gate 2 Approval
+## 07C) Storyboard A + Gate 2 Approval + Winner Authorization
 [M→O]
 
 

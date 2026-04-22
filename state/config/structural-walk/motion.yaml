@@ -63,7 +63,7 @@ anti_drift:
   - name: Lesson-plan coauthoring 04A step in motion prompt pack
     path: docs/workflow/production-prompt-pack-v4.2-narrated-lesson-with-video-or-animation.md
     needles:
-      - "## 4) Ingestion Quality Gate + Irene Packet"
+      - "## 04) Ingestion Quality Gate + Irene Packet"
       - "## 04A) Lesson Plan Coauthoring + Scope Lock (Marcus <-> HIL)"
       - "## 4.75) Creative Directive Resolution (CD)"
     ordered: true
@@ -109,9 +109,9 @@ anti_drift:
   - name: Motion prompt-pack workflow sequence
     path: docs/workflow/production-prompt-pack-v4.2-narrated-lesson-with-video-or-animation.md
     needles:
-      - "## 7C) Storyboard A + Gate 2 Approval + Winner Authorization"
-      - "## 7D) Gate 2M Motion Designation"
-      - "## 7F) Motion Gate"
+      - "## 07C) Storyboard A + Gate 2 Approval + Winner Authorization"
+      - "## 07D) Gate 2M Motion Designation"
+      - "## 07F) Motion Gate"
       - "Regenerate Storyboard B with script context before downstream audio finalization."
     ordered: true
   - name: Motion prompt-pack winner-deck binding
@@ -153,10 +153,10 @@ sequence_doc_parity:
     needle: "## 7.5) Cluster Coherence G2.5 Gate (Conditional)"
   - stage: storyboard
     path: docs/workflow/production-prompt-pack-v4.2-narrated-lesson-with-video-or-animation.md
-    needle: "## 7C) Storyboard A + Gate 2 Approval + Winner Authorization"
+    needle: "## 07C) Storyboard A + Gate 2 Approval + Winner Authorization"
   - stage: gate-2m
     path: docs/workflow/production-prompt-pack-v4.2-narrated-lesson-with-video-or-animation.md
-    needle: "## 7D) Gate 2M Motion Designation"
+    needle: "## 07D) Gate 2M Motion Designation"
   - stage: gate-2m
     path: docs/workflow/production-operator-card-v4.md
     needle: "### 7D. Prompt 7D: Gate 2M Motion Designation"

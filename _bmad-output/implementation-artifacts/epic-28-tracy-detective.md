@@ -1,7 +1,8 @@
 # Epic 28: Tracy the Detective (Research Specialist)
 
-**Status:** ratified-draft
+**Status:** in-progress (reshape complete — all 4 reshape stories 28-1/28-2/28-3/28-4 BMAD-CLOSED 2026-04-19; original 28-1/28-2 roster retired via supersession)
 **Created:** 2026-04-17
+**Reshaped:** 2026-04-19 (Round-3 Shape 3-Disciplined + post-pilot consensus: original 9+3pt roster retired; new 4-story 13pt reshape roster landed + closed same-day)
 **Driver:** Introduce a new production-tier specialist — **Tracy** — who partners with Texas to source high-value supplementary research for lessons under development, dispatched by Irene (via Marcus) when the lesson plan reveals enrichment gaps. Tracy's output lands in Pass 2, informing script finalization and downstream asset creation.
 
 ## Why This Is Its Own Epic
@@ -42,12 +43,25 @@ Tracy does not fetch. Tracy **detects, scopes, and scores**. When the operator a
 
 ## Story Roster
 
+### Active roster (post-reshape, 2026-04-19)
+
 | Story | Title | Points | Status |
 |-------|-------|--------|--------|
-| **28-1** | Tracy pilot end-to-end (scite.ai) | 9 | ratified-stub |
-| **28-2** | Gate family + regression hardening | 3 | ratified-stub |
+| **28-1-tracy-reshape-charter** | Retire original pilot spec + codify three postures (embellish / corroborate / gap-fill) under John's four-part contract | 2 | **done** (BMAD-closed 2026-04-19) |
+| **28-2-tracy-three-modes** | Implement tracy.embellish() / tracy.corroborate() / tracy.gap_fill() dispatching to provider_directory via IdentifiedGap or dial logic | 5 | **done** (BMAD-closed 2026-04-19) |
+| **28-3-irene-tracy-bridge** | IreneTracyBridge for in-scope gap dispatching + dial operator endorsements | 3 | **done** (BMAD-closed 2026-04-19) |
+| **28-4-tracy-smoke-fixtures** | Tracy-owned read-only loader seam + 4 canonical brief/result fixtures under tests/fixtures/retrieval/tracy_smoke/ (unblocks 32-3 trial-run smoke harness reuse) | 3 | **done** (BMAD-closed 2026-04-19) |
 
-**Total: 12 points.** Compressed from Amelia's Round 2 14-point split by moving asset-intent-map generator into 28-1 and reducing 28-3's vocabulary-doc generation to an AC line in 28-1.
+**Total: 13 points. Epic 28 implementation-layer COMPLETE.** Original roster (below) retired via supersession.
+
+### Retired roster (original, pre-reshape)
+
+| Story | Title | Points | Status |
+|-------|-------|--------|--------|
+| ~~28-1-tracy-pilot-scite-ai~~ | ~~Tracy pilot end-to-end (scite.ai)~~ | ~~9~~ | **retired** (superseded by 28-1-tracy-reshape-charter + 28-2-tracy-three-modes; pre-reshape spec preserved at `28-1-tracy-pilot-scite-ai.md` for archival reference) |
+| ~~28-2-tracy-gate-hardening~~ | ~~Gate family + regression hardening~~ | ~~3~~ | **retired** (superseded by 28-1-tracy-reshape-charter + 28-2-tracy-three-modes; fail-closed / refuse-on-ambiguous tests absorbed into reshape roster) |
+
+**Reshape rationale (2026-04-19):** Round-3 Shape 3-Disciplined made the original pilot framing obsolete — Tracy should wrap `retrieval.dispatcher` rather than own scite-specific DSL knowledge (which moved to 27-2 scite adapter). Three-posture architecture (embellish / corroborate / gap-fill) cleanly separates editorial judgment (Tracy) from mechanical fetch (Texas). Gate-hardening absorbed into each posture's fail-closed + refuse-on-ambiguous tests. 13pt total is 1pt over the original 12pt estimate — added 28-3 bridge + 28-4 smoke fixtures proved worth the scope cost.
 
 ## Dependency Graph
 

@@ -111,7 +111,7 @@ key_decisions:
 next_workflow_step: "Lesson Planner MVP active lane: 30-3a-4a-skeleton-and-lock is now the mainline. 28-4-tracy-smoke-fixtures is BMAD-closed, so no clean support-lane story remains until the Epic 30 spine advances again. Epic 29 is fully closed in the worktree; Epic 31 is fully closed; 32-2 is closed."
 
 epic_27_texas_intake_surface_expansion:
-  status: "ready-for-dev"
+  status: "in-progress"
   file: "_bmad-output/implementation-artifacts/epic-27-texas-intake-expansion.md"
   note: "Technician-capability upgrade epic RESHAPED 2026-04-17 via three-round party-mode convergence on Shape 3-Disciplined retrieval architecture (Dr. Quinn partitioning: editorial with Tracy, provider-DSL with per-provider adapters, dispatch+iteration with thin Texas shell). 9 stories, ~31 pts. Critical path: 27-1 (done) â†’ 27-0 (foundation) â†’ 27-2 (scite adapter) â†’ 27-2.5 (Consensus adapter) â†’ unblocks Epic 28. Shape classification: retrieval-shape (27-2 scite / 27-2.5 Consensus / 27-3 image / 27-4 YouTube) vs locator-shape (27-1 DOCX done / 27-5 Notion / 27-6 Box / 27-7 Playwright). Iteration Model A (adapter-internal loop with deterministic sequence fixtures). Three Dr. Quinn guardrails baked in: provider_hints required, mechanical-only AC in v1, convergence signal for abort-on-non-improvement."
   stories:
@@ -127,15 +127,18 @@ epic_27_texas_intake_surface_expansion:
       tier: "Drift fix â€” contract-vs-code (LOCATOR-SHAPE â€” no 27-0 dependency)"
       note: "python-docx 1.2.0 wired via wrangle_local_docx + .docx dispatch branch + AC-S6 pilot lockstep contract test. +9 collecting tests (5 unit + 1 integration + 3 contract). Tejal manual validation 100% key-term coverage / 69 of 69 sections. Full suite 1036/2/0. BMAD-closed after party-mode green-light + implementation review + bmad-code-review layered (0 MUST-FIX, 8 patches applied, 4 deferred). Unblocks APC C1-M1 Tejal trial restart."
     "27-2-scite-ai-provider":
-      status: "ratified-stub"
-      unblocked: "2026-04-18"
-      tier: "Retrieval-shape adapter â€” first consumer of 27-0 contract"
-      note: "UNBLOCKED 2026-04-18 by 27-0 closure. First consumer of RetrievalAdapter ABC. Scope: implement formulate_query + execute + apply_mechanical + apply_provider_scored + normalize + refine + identity_key + declare_honored_criteria against 27-0 contract. Re-expand via bmad-create-story. DEFERRED FROM 27-0 into 27-2 scope: AC-B.7 degenerate-case dispatcher wiring into legacy directive path (per anti-pattern #3 no-refactor-of-locator-shape); dev-guide.md 'how to add a provider' section; AC-T.7 log-stream parity + malformed-DOCX exception parity tests; dual-emit schema_version writer; parametrized test_extraction_report_schema_compliance. Prior 382-line expansion preserved with supersession banner. Re-scoped ~4-5 pts + deferral absorption. BLOCKS Epic 28 Tracy pilot."
-    "27-2.5-consensus-adapter":
-      status: "ratified-stub"
+      status: "done"
       opened: "2026-04-17"
-      unblocked: "2026-04-18 (soft-blocked on 27-2 for cross-val demo)"
-      tier: "Retrieval-shape adapter â€” cross-validation partner to scite"
+      unblocked: "2026-04-18"
+      closed: "2026-04-18"
+      tier: "Retrieval-shape adapter â€” first consumer of 27-0 contract"
+      note: "BMAD-CLOSED 2026-04-18 (commit 883f742 on trial/2026-04-19). Dev-story T1-T19 + party-mode implementation review round 2 unanimous GREEN (Winston/Amelia/Murat/Paige after MH-1 golden-regeneration env-gate + MH-2 M-SF-2 promoted to 27-2.5 PDG + 3 polish nits applied) + bmad-code-review layered pass (82 findings: 15 PATCH applied including 2 HIGH-confidence correctness bugs fixed — refinement key-order skip + _derive_overall_status_retrieval primaries-only filter; 19 DEFER to deferred-work.md; 48 DISMISS). SciteProvider(RetrievalAdapter) shipped at skills/bmad-agent-texas/scripts/retrieval/scite_provider.py (620 LOC) + run_wrangler.py AC-B.6 dispatcher-wiring cascade + AC-C.11 writer code_path discriminant + AC-T.6 legacy-DOCX golden-file regression with gated REGENERATE_GOLDENS env + AC-T.10 module-prefix exception contract + AC-T.11 no-stateful-mock guard + parametrized ABC-contract tests over ADAPTER_FACTORIES (fake + scite) + Recipe-6 sharded how-to-add-a-retrieval-provider.md + retrieval-contract.md scite signals + extraction-report-schema.md Provider Metadata Sub-objects. Regression 1149 passed / 2 skipped / 0 failed / 2 xfailed (baseline 1106 → +43; above ≥1137 Murat floor). Ruff clean. UNBLOCKS 28-1 Tracy pilot + 27-2.5 Consensus (with PDG MUST-HAVE: CI 3x-run flake-detection gate wired BEFORE 27-2.5 dev-story start)."
+    "27-2.5-consensus-adapter":
+      status: "ready-for-dev"
+      opened: "2026-04-17"
+      unblocked: "2026-04-18 by 27-0 closure; 27-2 landed 2026-04-18 providing cross-val counterparty"
+      authored: "2026-04-22"
+      tier: "Retrieval-shape adapter â€” cross-validation partner to scite (Sprint #1 lead)"
       note: "UNBLOCKED 2026-04-18 by 27-0 closure; soft-blocked on 27-2 for first cross_validate: true demonstration. Opened per operator directive: 'Consensus is already available and authorized in Cursor. Once we get scite.ai working, we'll duplicate that with Consensus so we can extend Texas's toolset and use one service's findings to confirm or supplement another's.' Second retrieval-shape adapter against 27-0 contract; first real cross_validate: true exercise (scite + Consensus fan-out + merge with convergence_signal). ~3 pts. Re-expand via bmad-create-story after 27-2 lands."
     "27-3-image-provider":
       status: "ratified-stub"
@@ -159,28 +162,55 @@ epic_27_texas_intake_surface_expansion:
       note: "Playwright MCP dynamic-rendering sibling to existing playwright_html. 3 pts."
 
 epic_28_tracy_detective:
-  status: "ready-for-dev"
+  status: "in-progress"
   file: "_bmad-output/implementation-artifacts/epic-28-tracy-detective.md"
   shared_spine: "_bmad-output/implementation-artifacts/epic-28/_shared/"
   sanctum_bundle: "skills/bmad-agent-tracy/"
-  note: "New production-tier specialist â€” the Detective partners with Texas (the Technician). Pilot provider scite.ai. 2 stories + 2 v2 backlog stubs, 12 pts. Shared AC spine, 14-step dispatch runbook, per-story worksheet template. Tracy sanctum breadcrumb (README + vocabulary.yaml v0.1 SSOT) landed at ratification time per Paige's doc-contract discipline. Governing architecture principle ratified: specialists never dispatch specialists at runtime; artifact handoff via filesystem is not a rule violation; Marcus owns every dispatch edge."
+  note: "RESHAPED 2026-04-19 per Round-3 Shape 3-Disciplined + post-pilot consensus: original 28-1/28-2 retired in favor of 4-story reshape roster (28-1-reshape-charter + 28-2-three-modes + 28-3-irene-tracy-bridge + 28-4-smoke-fixtures). All 4 reshape stories BMAD-CLOSED. Three postures (embellish / corroborate / gap-fill) under John's four-part contract shipped; IreneTracyBridge for in-scope gap dispatching + dial operator endorsements landed; Tracy-owned smoke fixtures under tests/fixtures/retrieval/tracy_smoke/ seed future trial-run harness reuse (32-3). Governing architecture principle ratified: specialists never dispatch specialists at runtime; artifact handoff via filesystem is not a rule violation; Marcus owns every dispatch edge."
   stories:
+    "28-1-tracy-reshape-charter":
+      status: "done"
+      opened: "2026-04-18"
+      closed: "2026-04-19"
+      tier: "Charter — retire original pilot spec + codify three postures"
+      points: 2
+      note: "BMAD-CLOSED. Retired original 28-1-tracy-pilot-scite-ai + 28-2-tracy-gate-hardening via supersession. Codified embellish/corroborate/gap-fill as Tracy's core postures under John's four-part contract (input shape / output shape / success signal / failure mode). Schemas + tests landed; layered code review (Blind/Edge/Auditor) with 10 MUST-FIX patches applied."
+    "28-2-tracy-three-modes":
+      status: "done"
+      opened: "2026-04-18"
+      closed: "2026-04-19"
+      tier: "Three postures implementation"
+      points: 5
+      note: "BMAD-CLOSED. tracy.embellish() / tracy.corroborate() / tracy.gap_fill() dispatching to provider_directory via IdentifiedGap or dial logic. Posture discrimination matrix (gap_type, dial) + fail-closed out-of-scope test + refuse-on-ambiguous-intent test. 17 test nodes (K floor 10; parametrized matrix). Layered bmad-code-review completed. Depends: 28-1 (done), 31-1 (done)."
+    "28-3-irene-tracy-bridge":
+      status: "done"
+      opened: "2026-04-18"
+      closed: "2026-04-19"
+      tier: "Irene-to-Tracy dispatch bridge"
+      points: 3
+      note: "BMAD-CLOSED. IreneTracyBridge implemented for in-scope gap dispatching and dial operator endorsements. K=6 tests (8 passing, matching target range). Layered code review handled. Depends: 28-2 (done), 29-2 (done)."
+    "28-4-tracy-smoke-fixtures":
+      status: "done"
+      opened: "2026-04-18"
+      closed: "2026-04-19"
+      tier: "Tracy-owned canned smoke fixtures"
+      points: 3
+      note: "BMAD-CLOSED 2026-04-19 (single-gate). skills/bmad_agent_tracy/scripts/smoke_fixtures.py as Tracy-owned read-only loader seam; four committed fixtures under tests/fixtures/retrieval/tracy_smoke/ cover embellish / corroborate-supporting / corroborate-contrasting / gap-fill canonical brief/result pairs. Governance validator PASS, 9 passed, ruff clean, targeted pre-commit clean. K≥6 floor met with 9 collecting tests. UNBLOCKS 32-3 trial-run smoke harness reuse. Depends: 28-2 (done)."
     "28-1-tracy-pilot-scite-ai":
-      status: "blocked"
-      blocked_on: ["27-0-retrieval-foundation", "27-2-scite-ai-provider"]
-      tier: "Pilot end-to-end (RESHAPE PENDING per Round-3 consensus)"
-      note: "RESHAPE PENDING: under Round-3 Shape 3-Disciplined, Tracy emits provider-agnostic intent+AC+provider_hints contract (not scite-specific queries). Scite-DSL knowledge relocates to 27-2 scite adapter against 27-0 foundation. Scope drops 9 â†’ ~7 pts. Pre-reshape spec preserved with reshape-notice banner at top; full re-expansion via bmad-create-story after 27-0 + 27-2 close. Hard dependencies: 27-0 + 27-2. Soft dependency on 27-2.5 (Consensus) if pilot exercises cross_validate: true."
+      status: "retired"
+      superseded_by: "28-1-tracy-reshape-charter + 28-2-tracy-three-modes"
+      note: "RETIRED 2026-04-19 via 28-1-tracy-reshape-charter supersession. Original pilot framing (9 pts, scite.ai-specific dispatch) replaced by minimal research agent wrapping retrieval.dispatcher with three postures. Spec preserved at _bmad-output/implementation-artifacts/28-1-tracy-pilot-scite-ai.md for archival reference."
     "28-2-tracy-gate-hardening":
-      status: "ratified-stub"
-      tier: "Regression hardening"
-      note: "Gate family (absent/stale/tampered receipt) + cross-agent asset-intent registry orphan detector + e2e gate-refusal. 3 pts."
+      status: "retired"
+      superseded_by: "28-1-tracy-reshape-charter + 28-2-tracy-three-modes"
+      note: "RETIRED 2026-04-19 via 28-1-tracy-reshape-charter supersession. Original gate-hardening framing replaced by three-posture implementation with fail-closed / refuse-on-ambiguous tests built in. Spec preserved at _bmad-output/implementation-artifacts/28-2-tracy-gate-hardening.md for archival reference."
     "28-v2-a-coherence-gate":
       status: "backlog"
-      tier: "v2 â€” correctness concern"
+      tier: "v2 — correctness concern"
       note: "Dr. Quinn Round 2 adversarial scenario. Coherence check between Tracy-added material and primary-source register before Pass 2 ingestion. Promote post-pilot if evidence confirms drift."
     "28-v2-b-dispatch-budget":
       status: "backlog"
-      tier: "v2 â€” Loop B mitigation"
+      tier: "v2 — Loop B mitigation"
       note: "Dr. Quinn Round 2. Soft cap on Tracy-dispatches-per-run + approval-queue throttling. Promote if pilot evidence shows Irene flagging more gaps reflexively once Tracy is reliable."
 
 epic_26_bmb_sanctum_migration:

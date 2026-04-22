@@ -9,13 +9,72 @@
 
 ## Immediate Next Action
 
-**Operator-led Descript assembly** of bundle `apc-c1m1-tejal-20260419b-motion`. Out of pack scope. Open [`DESMOND-OPERATOR-BRIEF.md`](course-content/staging/tracked/source-bundles/apc-c1m1-tejal-20260419b-motion/DESMOND-OPERATOR-BRIEF.md), follow the per-segment loop, run the preflight checklist (7 items), export MP4 + VTT sidecar.
+**Wire PDG-3 CI 3x-run flake-detection gate, then open §7.1 + 27-2.5 in parallel via `bmad-dev-story`** (2026-04-23 session start).
 
-After Descript export, choose one of:
-- **(a) Motion structural-walk drift remediation** — Tier-1 dev-agent path; aligns walk-spec markers in `state/config/structural-walk/motion.yaml` to the v4.2 pack's actual section titles (or vice versa). Six markers; CLAUDE.md "Pipeline lockstep regime" Tier-1 = dev-agent authority via Cora's block-mode hook; no party-mode required.
-- **(b) Irene Pass 2 authoring template scoping** — HIGH-priority deferred follow-on; three concrete failure modes captured in this run's reproducibility report (duplicate motion_asset/motion_asset_path, missing visual_file on cards 02-14, null motion_duration_seconds). Must be scoped before next Pass 2 production run.
-- **(c) Epic 33 retrospective** — still `required` in sprint-status.yaml; not a trial blocker.
-- **(d) Next lesson trial run** (after addressing (b)).
+Sprint #1 is GREEN-LIT — all 5 stories `ready-for-dev` with unanimous party-mode verdicts and riders applied. Dev order ratified. First concrete action: wire the flake-detection gate (binding PDG-3; blocks 27-2.5 T1). Second: open §7.1 (trial-#2 blocker) concurrent with 27-2.5.
+
+Prior session-level context (Sprint #1 preparation → authoring → green-light, completed 2026-04-22):
+
+1. **Research capability activation (locked):** Full cross-validation via scite.ai + Consensus with convergence_signal
+2. **§7.1 Irene Pass 2 template placement (locked):** Lands in Sprint #1, not deferred backlog; position 1 dev order; trial-#2 blocker
+3. **Research knob scope (locked):** Evidence-bolster only (no aspirational enrichment or gap-filling for trial #2)
+4. **Sprint #1 composition (locked 2026-04-22 party-mode):** 5 stories, 16 pts firm, dev order + D1-D7 rulings + canonical naming recorded below
+
+## Sprint #1 GREEN-LIT 2026-04-22 — 16 pts firm across 5 stories
+
+### Dev Order (party-mode ratified per D7)
+
+| Pos | Story | Pts | Floor | Open when |
+|---|---|---|---|---|
+| **1** | **§7.1 Irene Pass 2 authoring template** ([spec](_bmad-output/implementation-artifacts/7-1-irene-pass-2-authoring-template.md)) | 3 | ≥12 | **Trial-#2 BLOCKER — open FIRST** |
+| **2** | **27-2.5 Consensus adapter** ([spec](_bmad-output/implementation-artifacts/27-2.5-consensus-adapter.md)) | 3 | ≥20 | Parallel with §7.1; **PDG-3 flake gate wired + zero-flake verified BEFORE T1** |
+| **3** | **evidence-bolster control surface** ([spec](_bmad-output/implementation-artifacts/evidence-bolster-control-surface.md)) | 2 | ≥10 | After 27-2.5 T1 |
+| **4** | **irene-retrieval-intake** ([spec](_bmad-output/implementation-artifacts/irene-retrieval-intake.md)) | 3 | ≥14 | After evidence-bolster (consumes `evidence_bolster_active`) |
+| **5** | **PR-R Marcus dispatch reshaping** ([spec](_bmad-output/implementation-artifacts/PR-R-marcus-dispatch-reshaping.md)) | 5 | ≥17 | **Open LAST** — 3 consumers inform the generalization |
+
+**Total: 16 pts firm. Cumulative regression floor: ≥1220 passed.**
+
+### D1-D7 Green-Light Rulings (2026-04-22 party-mode round 1)
+
+| # | Decision | Ruling |
+|---|---|---|
+| **D1** | PR-R retrofit edge count | **3 edges**: Irene Pass 2 + Kira motion + Texas (minimal confirmation); Gary/Vera/Quinn-R deferred |
+| **D2** | PR-R registry location | **NEW** `skills/bmad-agent-marcus/references/dispatch-registry.yaml` (mirrors specialist-registry pattern) |
+| **D3** | PR-R L1 lockstep check | **IN-SCOPE** (+1 pt; non-negotiable per CLAUDE.md pipeline lockstep regime) |
+| **D4** | Irene intake contract doc | **NEW** `skills/bmad-agent-content-creator/references/retrieval-intake-contract.md` (skill-folder proximity) |
+| **D5** | Evidence-bolster missing-credential | **HARD-FAIL at Marcus boot** (contract integrity > first-run friction) |
+| **D6** | Intake layer field name | **`evidence_bolster_active`** (`_active` suffix for layer-2 runtime state projection) |
+| **D7** | PR-R sequencing | **Open LAST** (three consumers inform the generalization) |
+
+### Canonical 3-Layer Naming (sprint-level, authoritative for all 5 stories)
+
+- **Layer 1 (run-constants YAML)**: `evidence_bolster: bool = false`
+- **Layer 2 (Irene intake Pydantic)**: `evidence_bolster_active: bool`
+- **Layer 3 (Tracy RetrievalIntent)**: `cross_validate: bool` (unchanged from 27-2)
+
+### Roster-Level Riders
+
+1. **Shared doc-parity test pattern** — pin shared helper before §7.1 / retrieval-intake / evidence-bolster open dev (Murat)
+2. **Module-level constants, no `os.environ.get` at import** — inherits 27-2 DEFER trap guard (Amelia)
+3. **Cumulative regression floor ≥1220 passed** (Murat)
+4. **Fixture hygiene**: `tests/fixtures/<story-id>/`; no cross-story reference (Amelia)
+5. **`docs/research-knobs-guide.md`** as dedicated file (NOT appended to operations-context.md) with 3-concept comparison table + 'what it does NOT do' anti-conflation column (Paige)
+6. **Flake-gate binding EXTENDED to PR-R** (Murat); other stories get "local 3x-run before PR" hygiene
+
+### Drift Remediation (this session, 2026-04-22)
+
+1. **27-2 done-drift**: 27-2 BMAD-closed 2026-04-18 (SciteProvider 620 LOC; 1149/2/0/2; 15 PATCH), but `bmm-workflow-status.yaml` / `epic-27-texas-intake-expansion.md` / this file labeled it `ratified-stub`. All 4 surfaces aligned.
+2. **Epic 28 done-drift**: 4-story Tracy reshape (28-1-reshape-charter + 28-2-three-modes + 28-3-irene-tracy-bridge + 28-4-smoke-fixtures) BMAD-closed 2026-04-19, but `bmm-workflow-status.yaml` + `epic-28-tracy-detective.md` showed retired pre-reshape roster. All surfaces aligned.
+3. `sprint-status.yaml` `development_status` was the authoritative Kanban throughout; all other surfaces re-sync'd to match.
+
+### Next Steps at Session Open
+
+1. **Wire PDG-3 CI 3x-run flake-detection gate** on `pytest -k "cross_validate or retrieval_dispatcher"`; zero-flake verified BEFORE 27-2.5 dev-story T1 (binding; extends to PR-R per Murat roster rider).
+2. **Open §7.1 + 27-2.5 in parallel** (positions 1 + 2) via `bmad-dev-story`. §7.1 is trial-#2 blocker.
+3. **Pin shared doc-parity test pattern** before positions 3/4 open.
+4. **Commit drift remediation + authored story specs + green-light patches + sprint-status updates** (DEFERRED from this session per operator at D-time; commit at session start or batch at wrapup).
+
+**Epic 34 (Creative-Treatment Experimentation & Profile Curation) proposed for future sprint.** Scoped in this session: 5 stories (34-1 through 34-5) with Dan as curator. Deferred pending Sprint #1 completion.
 
 ## Trial Run Status — C1-M1-PRES-20260419B (FINAL)
 
@@ -43,25 +102,47 @@ After Descript export, choose one of:
 
 **Production-shift close record:** [`_bmad-output/implementation-artifacts/shift-close-2026-04-21-c1m1-tejal-20260419b.md`](\_bmad-output/implementation-artifacts/shift-close-2026-04-21-c1m1-tejal-20260419b.md) — close mode **controlled** (Risk 1 motion structural-walk pack-vs-walk-spec drift; 6 pre-existing findings).
 
-## Outstanding Items (surface at Start Step 1a)
+## Outstanding Items (Completed This Session — See § Drift Remediation Summary Below)
 
-1. **Motion structural-walk: 6 pre-existing pack-vs-walk-spec drift findings** (Risk 1 in shift-close). NOT introduced by trial-run work. Walk-spec at `state/config/structural-walk/motion.yaml` expects `## 4) Ingestion Quality Gate + Irene Packet`, `## 4.75) Creative Directive Resolution (CD)`, `## 6.2)`, `## 6.3)`, `## 7.5)`, `## 7C)` markers that don't match v4.2 pack actual section titles. Per CLAUDE.md "Pipeline lockstep regime" — Tier-1 prose alignment is dev-agent authority via Cora's block-mode hook; no party-mode required. Recommended at session open before any new trial work.
+1. **✅ Motion structural-walk: 6 pre-existing pack-vs-walk-spec drift findings REMEDIATED** (2026-04-22). All three structural walks (standard, motion, cluster) now READY. Edits applied to: (a) `docs/workflow/production-prompt-pack-v4.2-narrated-lesson-with-video-or-animation.md` (6 section-heading updates: 04A, 4.75, 6.2, 6.3, 7.5, 07C — added semantic qualifiers + adopted zero-padding), (b) `state/config/structural-walk/motion.yaml` (9 anti_drift + sequence_doc_parity needle updates matching pack). Validation: motion-walk final READY with 0 criticals. Standard/cluster verified no regression. Complete evidence in `reports/dev-coherence/2026-04-22-0236/evidence/`.
 
-2. **L2 agentic harmonization sweep deferred this session** — gated on L1 motion clean. Rerun after (1) remediated.
+2. **✅ L2 agentic harmonization sweep completed** (2026-04-22). Full-repo drift sweep (L1 deterministic + L2 agentic) discovered 5 findings (motion-walk drift REMEDIATED, parameter lockstep Class A/B drift STAGED for Paige, lane-matrix coverage STAGED for Winston, handoff stale claim FIXED, memory drift FIXED). Trace report + 5 evidence files staged in `reports/dev-coherence/2026-04-22-0236/`. Three staged briefs (Paige + Winston + memory-update) for routing next session.
 
-3. **Irene Pass 2 authoring template (HIGH priority)** — `_bmad-output/planning-artifacts/deferred-inventory.md` entry expanded with three concrete failure modes from this run. Must be scoped before next Pass 2 production run.
+3. **Irene Pass 2 authoring template (HIGH priority)** — NOW IN SPRINT #1 scope. Three concrete failure modes from reproducibility report §7 (duplicate motion_asset key, missing visual_file on cards 02-14, null motion_duration_seconds) will be authored as Story: §7.1 Irene Template Authoring (new story, ~3pts, scoped for Sprint #1).
 
-4. **Theatrical-direction synthesis (Tier 1 + Tier 2)** — newly added to deferred-inventory follow-ons (count 12 → 13). Decision trigger: operator reviews trial B audio output, declares whether dials-only ceiling is sufficient.
+4. **Theatrical-direction synthesis (Tier 1 + Tier 2)** — deferred-inventory entry 12 → 13. Now in Epic 34 proposed backlog (stories 34-1 through 34-5). Decision pending user review of trial B audio output.
 
-5. **Desmond doc-cache never refreshed** — `_bmad/memory/bmad-agent-desmond/MEMORY.md` records Descript version target as **Unknown**. Brief authored honestly with this disclosure. Run `python skills/bmad-agent-desmond/scripts/refresh_descript_reference.py` and update sanctum before next narrated-lesson run.
+5. **Desmond doc-cache never refreshed** — carries forward as pre-condition check before next narrated-lesson run. `_bmad/memory/bmad-agent-desmond/MEMORY.md` still records Descript version target as **Unknown**. Run `python skills/bmad-agent-desmond/scripts/refresh_descript_reference.py` when preparing next lesson.
 
-6. **Stray asset (cosmetic)** — `assembly-bundle/audio/apc-c1m1-tejal-20260419b-motion-card-04.zip` is a leftover ElevenLabs alignment-zip experiment, not manifest-referenced. Operator may delete before Descript import or leave in place (harmless).
+6. **Stray asset (cosmetic)** — `assembly-bundle/audio/apc-c1m1-tejal-20260419b-motion-card-04.zip` carries forward. Operator may delete or leave (harmless).
 
-7. **Epic 33 retrospective** — still `required` in `sprint-status.yaml`. Target: after trial completes (now). Not a trial blocker.
+7. **Epic 33 retrospective** — still `required` in `sprint-status.yaml`. Action: update `sprint-status.yaml` to reflect **Epic 33 already closed (2026-04-19)** and remove "required" status; update `next-session-start-here.md` accordingly.
 
-8. **Tripwire CLEARED for next session.** This session ran Step 0a full-repo (3 consecutive prior skips). Next `/harmonize` defaults to since-handoff scope unless operator escalates.
+8. **Tripwire CLEARED for next session.** This session ran Step 0a full-repo drift sweep (motion walk remediation blocked L2 completion). L2 now unblocked (motion READY). Next `/harmonize` defaults to since-handoff scope.
 
-9. **Carried-forward ambient state:** none. Prior session's pre-existing dirty list was committed in `39a014a` before this session's anchor. After this session's WRAPUP commit, working tree is clean apart from gitignored sidecar/report/staging paths.
+9. **Carried-forward ambient state:** none. This session's WRAPUP commit completes motion-walk remediation + drift-sweep artifacts. Working tree clean apart from gitignored paths after commit.
+
+## Drift Remediation Summary (This Session — 2026-04-22)
+
+**Motion-walk marker drift remediation: 6 → 0 findings (COMPLETE)**
+
+| File | Changes | Result |
+|---|---|---|
+| `docs/workflow/production-prompt-pack-v4.2-narrated-lesson-with-video-or-animation.md` | 6 section-heading updates (lines 335, 406, 548, 567, 649, 701) | Pack sections now carry semantic qualifiers; zero-padding aligned |
+| `state/config/structural-walk/motion.yaml` | 9 needle/sequence entries updated (lines 66-68, 106-107, 112-116, 144, 150, 153, 156, 159, 165) | Walk-spec markers match pack headings; zero-padding convention adopted |
+| Structural walk validation | All three workflows re-validated | **motion READY (0 criticals), standard READY, cluster READY** |
+| Drift-sweep artifacts | Trace + 5 evidence files staged | `reports/dev-coherence/2026-04-22-0236/{trace-report.yaml, evidence/*.md, briefs}` |
+| User memory refresh | project_structural_walk_status.md rewritten | Removed stale snapshot; added note: live status in `reports/structural-walk/` |
+
+**Research capability activation locked (trial #2 planning):**
+- Full cross-validation: scite.ai + Consensus with convergence_signal
+- Evidence-bolster knob only (no enrichment / no gap-fill for trial #2)
+- §7.1 Irene Pass 2 template lands in Sprint #1
+
+**Sprint #1 locked: ~24–30 pts, 7 stories**
+- 27-2, 27-2.5, 28-1 (retrieval + Tracy reshape)
+- PR-R (Marcus dispatch), Irene retrieval-intake, evidence-bolster control (new stories)
+- §7.1 Irene template (from reproducibility §7.1, HIGH priority)
 
 ## Repo State
 
