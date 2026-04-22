@@ -246,12 +246,33 @@ Default end-of-session flow is:
 1. Finalize `next-session-start-here.md` branch metadata for expected post-closeout state (baseline + next working branch + startup commands)
 2. Stage all intended changes (`git add ...`)
 3. Commit session work on the working branch with a clear summary message
-4. Checkout and update `master` from `origin/master`
-5. Merge the working branch into `master`
-6. Push `master` to `origin`
-7. Create the **next working branch** from updated `master` (for the next session), and push with upstream
-8. Re-run `git worktree list` and verify only intended worktrees remain registered
-9. Re-verify `next-session-start-here.md` branch metadata matches reality. If it does not, make a small docs-only follow-up commit and push.
+4. Resolve remotes by role before updating `master`:
+   - **Source remote** (read-only upstream feed): prefer `upstream`; fallback `origin` only when `upstream` does not exist
+   - **Publish remote** (where this repo pushes): prefer `origin`
+   - Recommended check:
+     - `git remote -v`
+     - Confirm source remote is fetch-capable
+     - Confirm publish remote is the intended writable destination for this repo
+5. Checkout and update `master` from the **source remote** (`<source-remote>/master`)
+6. Merge the working branch into `master`
+7. Push `master` to the **publish remote** (`<publish-remote>`)
+8. Create the **next working branch** from updated `master` (for the next session), and push with upstream
+9. Re-run `git worktree list` and verify only intended worktrees remain registered
+10. Re-verify `next-session-start-here.md` branch metadata matches reality. If it does not, make a small docs-only follow-up commit and push.
+
+Example (hybrid clone topology):
+- Source remote: `upstream`
+- Publish remote: `origin`
+- Commands:
+  - `git fetch upstream`
+  - `git switch master`
+  - `git merge --ff-only upstream/master`
+  - `git merge <working-branch>`
+  - `git push origin master`
+
+Maintenance note for one-way clones:
+- After each pull from the primary project, quickly re-check this section still maps source=`upstream` and publish=`origin`.
+- If upstream edits this protocol block, keep the remote-role model above when resolving merge conflicts.
 
 If your team intentionally skips merge-to-master for a session, explicitly record that exception and the exact resume branch in both `next-session-start-here.md` and `SESSION-HANDOFF.md`.
 
