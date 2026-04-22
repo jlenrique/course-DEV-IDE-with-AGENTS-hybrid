@@ -4,7 +4,7 @@
     {
       "label": "APP: Session Readiness + Preflight",
       "type": "shell",
-      "command": "c:/Users/juanl/Documents/GitHub/course-DEV-IDE-with-AGENTS/.venv/Scripts/python.exe",
+      "command": "${workspaceFolder}/.venv/Scripts/python.exe",
       "args": [
         "-m",
         "scripts.utilities.app_session_readiness",
@@ -18,7 +18,7 @@
     {
       "label": "APP: Session Readiness + Preflight (JSON)",
       "type": "shell",
-      "command": "c:/Users/juanl/Documents/GitHub/course-DEV-IDE-with-AGENTS/.venv/Scripts/python.exe",
+      "command": "${workspaceFolder}/.venv/Scripts/python.exe",
       "args": [
         "-m",
         "scripts.utilities.app_session_readiness",
@@ -33,7 +33,7 @@
     {
       "label": "APP: Preflight Only",
       "type": "shell",
-      "command": "c:/Users/juanl/Documents/GitHub/course-DEV-IDE-with-AGENTS/.venv/Scripts/python.exe",
+      "command": "${workspaceFolder}/.venv/Scripts/python.exe",
       "args": [
         "-m",
         "skills.pre-flight-check.scripts.preflight_runner"
@@ -58,7 +58,7 @@
     {
       "label": "APP: Progress Map",
       "type": "shell",
-      "command": "c:/Users/juanl/Documents/GitHub/course-DEV-IDE-with-AGENTS/.venv/Scripts/python.exe",
+      "command": "${workspaceFolder}/.venv/Scripts/python.exe",
       "args": [
         "-m",
         "scripts.utilities.progress_map"
@@ -71,7 +71,7 @@
     {
       "label": "APP: Progress Map (JSON)",
       "type": "shell",
-      "command": "c:/Users/juanl/Documents/GitHub/course-DEV-IDE-with-AGENTS/.venv/Scripts/python.exe",
+      "command": "${workspaceFolder}/.venv/Scripts/python.exe",
       "args": [
         "-m",
         "scripts.utilities.progress_map",
