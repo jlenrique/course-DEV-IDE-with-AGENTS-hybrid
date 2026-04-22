@@ -89,3 +89,8 @@ skills/reports/**/quality-scan/**
 # OS / editor
 .DS_Store
 Thumbs.db
+
+# Hybrid-local session guidance (NOT synced with primary — each repo keeps its own)
+# See commit message for context; primary repo must mirror this rule + `git rm --cached`
+# for the protection to become bidirectional and eliminate delete/modify merge hazards.
+next-session-start-here.md
