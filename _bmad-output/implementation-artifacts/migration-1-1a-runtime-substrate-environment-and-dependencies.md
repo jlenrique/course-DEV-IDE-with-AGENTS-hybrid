@@ -1,6 +1,6 @@
 # Migration Story 1.1a: Runtime Substrate Environment + Dependencies
 
-Status: ready-for-dev
+Status: review
 
 **Track:** LangChain + LangGraph migration (hybrid clone only — `dev/langchain-langgraph-foundation` on remote `course-DEV-IDE-with-AGENTS-hybrid`).
 **Epic:** Slab 1 Substrate — Runtime + Models + Manifest + Bridges + Docs (migration Epic 1).
@@ -180,16 +180,46 @@ The commit message should explicitly name FR60 activation so the policy change i
 
 ### Agent Model Used
 
-{{agent_model_name_version}}
+gpt-5.4
 
 ### Debug Log References
+
+- T1 reading set completed: architecture-langchain-langgraph-migration.md; prd-langchain-langgraph-migration.md; docs/dev-guide/pydantic-v2-schema-checklist.md; docs/dev-guide/story-cycle-efficiency.md.
+- Existing repo-root `.venv` inspected as Python 3.13.6 via `.venv/pyvenv.cfg`, then renamed to `.venv-py310-legacy` before Story 1.1a created the required Python 3.12 environment.
+- `python -m uv` used instead of bare `uv` because the user-scope `uv` install was not on PowerShell `PATH`.
+- AC-2/AC-3 commands executed with `UV_CACHE_DIR=.uv-cache` and `uv run --no-project` to avoid sandbox cache-permission issues and setuptools editable-build discovery on this non-packaged repo.
 
 *(populated at dev-story time)*
 
 ### Completion Notes List
 
+- Created `.venv` with Python 3.12.13. Installed the nine core packages in AC-1 with zero resolver conflicts; `requirements.lock` emitted at repo root with 49 pinned lines covering the nine direct packages plus transitive dependencies.
+- AC-2 import smoke passed with `STDOUT=ok` and empty stderr using `python -m uv run --no-project --python .\.venv\Scripts\python.exe python -c "import langgraph, langchain_openai, pydantic, fastapi, langsmith; print('ok')"`.
+- `requires-python` was intentionally left at `>=3.11`. Story 1.1a enforces Python 3.12 at the migration venv boundary while legacy primary-repo code remains 3.11-compatible.
+- `ruff check .` still reports the known 1338 pre-existing legacy findings outside migration scope. Scoped validation `ruff check app` exits 0, which is the relevant Story 1.1a migration-tree gate.
+- Import-linter did not silently skip a missing root package: it fatally required an `app` package to exist, and its forbidden external modules also required `include_external_packages = true`. Minimal stub packages `app/`, `app/marcus/`, `app/cora/`, and `app/gates/` were added so the two Slab-1 contract stubs could execute and pass. This is the smallest practical boundary-creep into 1.1b; reviewer should confirm whether 1.1b now treats these as pre-seeded scaffolds.
+- Callable-level `asyncio.sleep` enforcement remains deferred to Slab 3 as documented in the TOML TODO, because import-linter operates at module-import granularity, not attribute-call granularity.
+- `.env.example` is trackable (`git check-ignore .env.example` exit 1; `git status --short -- .env.example` shows `?? .env.example`). `.env` remains ignored via `.gitignore:2:.env`.
+- K-floor framing note: this substrate-bootstrap story creates zero pytest nodes, so the 1.3× K target was treated as command-verification coverage rather than test-node count.
+- FR60 activation commit SHA: recorded in the commit created for this story and echoed in the final dev-story handoff.
+
 *(populated at dev-story time — include: final ruff/lint-imports exit codes, lockfile package count, import-smoke stdout capture, K-floor framing decision, `requires-python` decision, any linter-contract tightening deferred to Slab 3, FR60-activation commit SHA)*
 
 ### File List
+
+- `.gitignore`
+- `.env.example`
+- `app/__init__.py`
+- `app/cora/__init__.py`
+- `app/gates/__init__.py`
+- `app/marcus/__init__.py`
+- `pyproject.toml`
+- `requirements.lock`
+- `_bmad-output/implementation-artifacts/migration-1-1a-runtime-substrate-environment-and-dependencies.md`
+- `_bmad-output/implementation-artifacts/sprint-status.yaml`
+
+### Change Log
+
+- 2026-04-22: Completed Story 1.1a runtime substrate bootstrap. Added Python 3.12 migration venv lockfile, pyproject import-linter contract stubs, minimal `app/` package stubs required for import-linter execution, and `.env.example` gitignore exception. Scoped migration-tree validation passed (`ruff check app`, `lint-imports`, import smoke).
 
 *(populated at dev-story time — expected: `requirements.lock` new, `pyproject.toml` modified, `.env.example` new, `.gitignore` modified)*

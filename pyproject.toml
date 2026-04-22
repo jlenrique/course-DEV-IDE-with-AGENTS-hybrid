@@ -28,6 +28,7 @@ dev = [
     "pytest-timeout>=2.3,<3",
     "responses>=0.25,<1",
     "ruff>=0.4,<1",
+    "import-linter>=2.0,<3",
     "pre-commit>=3.7,<5",
     "jsonschema>=4.0,<5",
 ]
@@ -63,6 +64,22 @@ markers = [
     "live_api_e2e: slower/flakier live end-to-end API tests; excluded by default unless --run-live-e2e is provided",
     "trial_critical: dev-side tests guarding the pre-Prompt-1 trial path (run_constants validator, preflight receipt, pack-doc schema lockstep). Run before firing any trial production run via `pytest -m trial_critical`. Not a runtime gate — a dev confidence check.",
 ]
+
+[tool.importlinter]
+root_packages = ["app"]
+include_external_packages = true
+
+[[tool.importlinter.contracts]]
+name = "app.marcus and app.cora are lane-isolated siblings (D3 + D4 lane separation)"
+type = "independence"
+modules = ["app.marcus", "app.cora"]
+
+[[tool.importlinter.contracts]]
+name = "app.gates.** may not import schedulers (D3 HIL tamper-evidence)"
+type = "forbidden"
+source_modules = ["app.gates"]
+forbidden_modules = ["threading", "apscheduler", "schedule"]
+# TODO Slab 3: callable-level asyncio.sleep ban via ruff custom rule or import-time assertion in app/gates/resume_api.py
 
 [build-system]
 requires = ["setuptools>=68"]
