@@ -15,7 +15,7 @@ styles:
 
     '
   negative_prompt: ''
-  video_path: C:\Users\juanl\Documents\GitHub\course-DEV-IDE-with-AGENTS\reports\kling-validation\20260407-gamma-static-to-life-a\g03-system-breakout-std-silent__kling-v2-6_std_5s.mp4
+  video_path: reports\kling-validation\20260407-gamma-static-to-life-a\g03-system-breakout-std-silent__kling-v2-6_std_5s.mp4
   receipt_path: reports\kling-validation\20260407-gamma-static-to-life-a\receipts\g03-system-breakout-std-silent.json
   tags:
   - general
@@ -32,7 +32,7 @@ styles:
 
     '
   negative_prompt: ''
-  video_path: C:\Users\juanl\Documents\GitHub\course-DEV-IDE-with-AGENTS\reports\kling-validation\20260407-gamma-static-to-life-a\g04-paperwork-vs-digital-fork-std-silent__kling-v2-6_std_5s.mp4
+  video_path: reports\kling-validation\20260407-gamma-static-to-life-a\g04-paperwork-vs-digital-fork-std-silent__kling-v2-6_std_5s.mp4
   receipt_path: reports\kling-validation\20260407-gamma-static-to-life-a\receipts\g04-paperwork-vs-digital-fork-std-silent.json
   tags:
   - general
@@ -48,7 +48,7 @@ styles:
 
     '
   negative_prompt: ''
-  video_path: C:\Users\juanl\Documents\GitHub\course-DEV-IDE-with-AGENTS\reports\kling-validation\20260407-gamma-static-to-life-a-retry1\g01-roadmap-pathway-std-silent__kling-v2-6_std_5s.mp4
+  video_path: reports\kling-validation\20260407-gamma-static-to-life-a-retry1\g01-roadmap-pathway-std-silent__kling-v2-6_std_5s.mp4
   receipt_path: reports\kling-validation\20260407-gamma-static-to-life-a-retry1\receipts\g01-roadmap-pathway-std-silent.json
   tags:
   - instructional
@@ -64,7 +64,7 @@ styles:
 
     '
   negative_prompt: ''
-  video_path: C:\Users\juanl\Documents\GitHub\course-DEV-IDE-with-AGENTS\reports\kling-validation\20260407-gamma-static-to-life-a-retry1\g02-hospital-crossroads-std-silent__kling-v2-6_std_5s.mp4
+  video_path: reports\kling-validation\20260407-gamma-static-to-life-a-retry1\g02-hospital-crossroads-std-silent__kling-v2-6_std_5s.mp4
   receipt_path: reports\kling-validation\20260407-gamma-static-to-life-a-retry1\receipts\g02-hospital-crossroads-std-silent.json
   tags:
   - healthcare
@@ -80,7 +80,7 @@ styles:
 
     '
   negative_prompt: ''
-  video_path: C:\Users\juanl\Documents\GitHub\course-DEV-IDE-with-AGENTS\reports\kling-validation\20260407-kling-matrix-a\i1-image2video-std-silent__kling-v2-6_std_5s.mp4
+  video_path: reports\kling-validation\20260407-kling-matrix-a\i1-image2video-std-silent__kling-v2-6_std_5s.mp4
   receipt_path: reports\kling-validation\20260407-kling-matrix-a\receipts\i1-image2video-std-silent.json
   tags:
   - instructional
@@ -96,7 +96,7 @@ styles:
 
     '
   negative_prompt: ''
-  video_path: C:\Users\juanl\Documents\GitHub\course-DEV-IDE-with-AGENTS\reports\kling-validation\20260407-kling-matrix-a\i2-image2video-pro-silent__kling-v2-6_pro_5s.mp4
+  video_path: reports\kling-validation\20260407-kling-matrix-a\i2-image2video-pro-silent__kling-v2-6_pro_5s.mp4
   receipt_path: reports\kling-validation\20260407-kling-matrix-a\receipts\i2-image2video-pro-silent.json
   tags:
   - instructional
@@ -112,7 +112,7 @@ styles:
 
     '
   negative_prompt: ''
-  video_path: C:\Users\juanl\Documents\GitHub\course-DEV-IDE-with-AGENTS\reports\kling-validation\20260407-kling-matrix-a\t1-text2video-std-silent__kling-v2-6_std_5s.mp4
+  video_path: reports\kling-validation\20260407-kling-matrix-a\t1-text2video-std-silent__kling-v2-6_std_5s.mp4
   receipt_path: reports\kling-validation\20260407-kling-matrix-a\receipts\t1-text2video-std-silent.json
   tags:
   - healthcare
@@ -129,7 +129,7 @@ styles:
 
     '
   negative_prompt: ''
-  video_path: C:\Users\juanl\Documents\GitHub\course-DEV-IDE-with-AGENTS\reports\kling-validation\20260407-kling-phase1-fourpack-a\k01-beauty-glam-closeup-std-silent__kling-v2-6_std_5s.mp4
+  video_path: reports\kling-validation\20260407-kling-phase1-fourpack-a\k01-beauty-glam-closeup-std-silent__kling-v2-6_std_5s.mp4
   receipt_path: reports\kling-validation\20260407-kling-phase1-fourpack-a\receipts\k01-beauty-glam-closeup-std-silent.json
   tags:
   - beauty
@@ -146,7 +146,7 @@ styles:
 
     '
   negative_prompt: ''
-  video_path: C:\Users\juanl\Documents\GitHub\course-DEV-IDE-with-AGENTS\reports\kling-validation\20260407-kling-phase1-fourpack-a\k03-luxury-product-macro-std-silent__kling-v2-6_std_5s.mp4
+  video_path: reports\kling-validation\20260407-kling-phase1-fourpack-a\k03-luxury-product-macro-std-silent__kling-v2-6_std_5s.mp4
   receipt_path: reports\kling-validation\20260407-kling-phase1-fourpack-a\receipts\k03-luxury-product-macro-std-silent.json
   tags:
   - product
@@ -162,7 +162,7 @@ styles:
 
     '
   negative_prompt: ''
-  video_path: C:\Users\juanl\Documents\GitHub\course-DEV-IDE-with-AGENTS\reports\kling-validation\20260407-kling-phase1-fourpack-a\k05-slide-preserving-motion-card-std-silent__kling-v2-6_std_5s.mp4
+  video_path: reports\kling-validation\20260407-kling-phase1-fourpack-a\k05-slide-preserving-motion-card-std-silent__kling-v2-6_std_5s.mp4
   receipt_path: reports\kling-validation\20260407-kling-phase1-fourpack-a\receipts\k05-slide-preserving-motion-card-std-silent.json
   tags:
   - instructional
@@ -178,7 +178,7 @@ styles:
 
     '
   negative_prompt: ''
-  video_path: C:\Users\juanl\Documents\GitHub\course-DEV-IDE-with-AGENTS\reports\kling-validation\20260407-kling-phase1-fourpack-a\k06-infographic-roadmap-reveal-std-silent__kling-v2-6_std_5s.mp4
+  video_path: reports\kling-validation\20260407-kling-phase1-fourpack-a\k06-infographic-roadmap-reveal-std-silent__kling-v2-6_std_5s.mp4
   receipt_path: reports\kling-validation\20260407-kling-phase1-fourpack-a\receipts\k06-infographic-roadmap-reveal-std-silent.json
   tags:
   - general
@@ -195,7 +195,7 @@ styles:
 
     '
   negative_prompt: ''
-  video_path: C:\Users\juanl\Documents\GitHub\course-DEV-IDE-with-AGENTS\reports\kling-validation\20260407-kling-phase2-fourpack-a\k02-clean-fashion-portrait-std-silent__kling-v2-6_std_5s.mp4
+  video_path: reports\kling-validation\20260407-kling-phase2-fourpack-a\k02-clean-fashion-portrait-std-silent__kling-v2-6_std_5s.mp4
   receipt_path: reports\kling-validation\20260407-kling-phase2-fourpack-a\receipts\k02-clean-fashion-portrait-std-silent.json
   tags:
   - portrait
@@ -211,7 +211,7 @@ styles:
 
     '
   negative_prompt: ''
-  video_path: C:\Users\juanl\Documents\GitHub\course-DEV-IDE-with-AGENTS\reports\kling-validation\20260407-kling-phase2-fourpack-a\k07-clinical-hallway-atmosphere-std-silent__kling-v2-6_std_5s.mp4
+  video_path: reports\kling-validation\20260407-kling-phase2-fourpack-a\k07-clinical-hallway-atmosphere-std-silent__kling-v2-6_std_5s.mp4
   receipt_path: reports\kling-validation\20260407-kling-phase2-fourpack-a\receipts\k07-clinical-hallway-atmosphere-std-silent.json
   tags:
   - healthcare
@@ -227,7 +227,7 @@ styles:
 
     '
   negative_prompt: ''
-  video_path: C:\Users\juanl\Documents\GitHub\course-DEV-IDE-with-AGENTS\reports\kling-validation\20260407-kling-phase2-fourpack-a\k08-neon-cityscape-std-silent__kling-v2-6_std_5s.mp4
+  video_path: reports\kling-validation\20260407-kling-phase2-fourpack-a\k08-neon-cityscape-std-silent__kling-v2-6_std_5s.mp4
   receipt_path: reports\kling-validation\20260407-kling-phase2-fourpack-a\receipts\k08-neon-cityscape-std-silent.json
   tags:
   - urban
@@ -243,7 +243,7 @@ styles:
 
     '
   negative_prompt: ''
-  video_path: C:\Users\juanl\Documents\GitHub\course-DEV-IDE-with-AGENTS\reports\kling-validation\20260407-kling-phase2-fourpack-a\k09-stylized-3d-mascot-idle-std-silent__kling-v2-6_std_5s.mp4
+  video_path: reports\kling-validation\20260407-kling-phase2-fourpack-a\k09-stylized-3d-mascot-idle-std-silent__kling-v2-6_std_5s.mp4
   receipt_path: reports\kling-validation\20260407-kling-phase2-fourpack-a\receipts\k09-stylized-3d-mascot-idle-std-silent.json
   tags:
   - 3d
@@ -260,7 +260,7 @@ styles:
 
     '
   negative_prompt: ''
-  video_path: C:\Users\juanl\Documents\GitHub\course-DEV-IDE-with-AGENTS\reports\kling-validation\20260407-kling-remaining-safe-two-a\k04-macro-surreal-detail-std-silent__kling-v2-6_std_5s.mp4
+  video_path: reports\kling-validation\20260407-kling-remaining-safe-two-a\k04-macro-surreal-detail-std-silent__kling-v2-6_std_5s.mp4
   receipt_path: reports\kling-validation\20260407-kling-remaining-safe-two-a\receipts\k04-macro-surreal-detail-std-silent.json
   tags:
   - product
@@ -277,7 +277,7 @@ styles:
 
     '
   negative_prompt: ''
-  video_path: C:\Users\juanl\Documents\GitHub\course-DEV-IDE-with-AGENTS\reports\kling-validation\20260407-kling-remaining-safe-two-a\k10-anthropomorphic-animal-comedy-std-silent__kling-v2-6_std_5s.mp4
+  video_path: reports\kling-validation\20260407-kling-remaining-safe-two-a\k10-anthropomorphic-animal-comedy-std-silent__kling-v2-6_std_5s.mp4
   receipt_path: reports\kling-validation\20260407-kling-remaining-safe-two-a\receipts\k10-anthropomorphic-animal-comedy-std-silent.json
   tags:
   - character
@@ -293,7 +293,7 @@ styles:
 
     '
   negative_prompt: ''
-  video_path: C:\Users\juanl\Documents\GitHub\course-DEV-IDE-with-AGENTS\reports\kling-validation\20260407-kling-v3-singapore-b\v3-public-surface-probe__kling-v3_pro_10s.mp4
+  video_path: reports\kling-validation\20260407-kling-v3-singapore-b\v3-public-surface-probe__kling-v3_pro_10s.mp4
   receipt_path: reports\kling-validation\20260407-kling-v3-singapore-b\receipts\v3-public-surface-probe.json
   tags:
   - general
@@ -310,7 +310,7 @@ styles:
 
     '
   negative_prompt: ''
-  video_path: C:\Users\juanl\Documents\GitHub\course-DEV-IDE-with-AGENTS\reports\kling-validation\20260407-kling-whimsical-healthcare-a\e01-whimsical-handpainted-healthcare-std-silent__kling-v2-6_std_5s.mp4
+  video_path: reports\kling-validation\20260407-kling-whimsical-healthcare-a\e01-whimsical-handpainted-healthcare-std-silent__kling-v2-6_std_5s.mp4
   receipt_path: reports\kling-validation\20260407-kling-whimsical-healthcare-a\receipts\e01-whimsical-handpainted-healthcare-std-silent.json
   tags:
   - illustration

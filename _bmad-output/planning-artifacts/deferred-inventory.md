@@ -97,6 +97,14 @@ Reactivation trigger: Irene output stabilizes (Wave 3 close).
 
 ---
 
+## Hygiene / Documentation Deferred (non-story)
+
+| Item | Scope | Reason deferred | Trigger to pick up |
+|---|---|---|---|
+| **Closed-epic absolute-path rewrite (old repo name)** | ~30 closed-story specs under [_bmad-output/implementation-artifacts/](../implementation-artifacts/) for Epics 19–25 + 33, plus older `_bmad-output/planning-artifacts/` docs, plus some planning research artifacts. Content cross-links other artifacts via absolute `C:\Users\juanl\Documents\GitHub\course-DEV-IDE-with-AGENTS\...` URLs. After the 2026-04-22 local folder rename to `course-DEV-IDE-with-AGENTS-hybrid`, those prefixes no longer resolve on disk, though filename segments are still navigable. | Bulk-rewriting closed/frozen story specs for path cosmetics would pollute git history with a large no-behavior commit across epics that are already green. Operational paths were already handled in commit `fe0c314` (.vscode/tasks.json made `${workspaceFolder}`-relative, .pre-commit-config.yaml header renamed). Remaining are documentation-identity only. | (a) Any time a closed story is reopened for a material edit — sweep its stale absolute links in the same patch. (b) At an Epic retrospective where Audra flags unresolved-reference drift on a closed-artifact doc. (c) Operator-priority call during a session with idle capacity. Recommended approach when triggered: a single scripted sweep of `_bmad-output/implementation-artifacts/` replacing `C:/Users/juanl/Documents/GitHub/course-DEV-IDE-with-AGENTS/` → repo-relative, on a dedicated hygiene branch, with before/after diff review. |
+
+---
+
 ## Inventory Summary
 
 | Category | Count | Reactivation posture |

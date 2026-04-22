@@ -37,9 +37,9 @@
 ### First-Time Setup
 
 ```bash
-# 1. Clone the repository
+# 1. Clone the repository (primary = course-DEV-IDE-with-AGENTS; hybrid clone = course-DEV-IDE-with-AGENTS-hybrid)
 git clone <repo-url>
-cd course-DEV-IDE-with-AGENTS
+cd <cloned-folder-name>
 
 # 2. Create `.env` at the project root (gitignored — never committed)
 # Add API keys using the tables in "API Keys and Credentials" below

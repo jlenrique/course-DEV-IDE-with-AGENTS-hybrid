@@ -44,10 +44,10 @@ Expected files:
 
 Canonical operational references:
 
-- [receipt-contract.md](C:/Users/juanl/Documents/GitHub/course-DEV-IDE-with-AGENTS/skills/kling-video/references/receipt-contract.md)
-- [production-decision-tree.md](C:/Users/juanl/Documents/GitHub/course-DEV-IDE-with-AGENTS/skills/kling-video/references/production-decision-tree.md)
-- [model-feature-matrix.md](C:/Users/juanl/Documents/GitHub/course-DEV-IDE-with-AGENTS/skills/kling-video/references/model-feature-matrix.md)
-- [live-validation-findings-2026-04-07.md](C:/Users/juanl/Documents/GitHub/course-DEV-IDE-with-AGENTS/skills/kling-video/references/live-validation-findings-2026-04-07.md)
+- [receipt-contract.md](../../skills/kling-video/references/receipt-contract.md)
+- [production-decision-tree.md](../../skills/kling-video/references/production-decision-tree.md)
+- [model-feature-matrix.md](../../skills/kling-video/references/model-feature-matrix.md)
+- [live-validation-findings-2026-04-07.md](../../skills/kling-video/references/live-validation-findings-2026-04-07.md)
 
 ### Silent production
 
@@ -126,5 +126,5 @@ python skills/kling-video/scripts/kling_validation_runner.py run `
 ## Current Planned Suites
 
 - baseline provider capability probes in `skills/kling-video/references/validation-cases.yaml`
-- the broader slate in [kling-mini-production-roadmap.md](C:/Users/juanl/Documents/GitHub/course-DEV-IDE-with-AGENTS/skills/kling-video/references/kling-mini-production-roadmap.md)
-- dedicated static-to-life Gamma sub-suite using selected visuals from [labels.md](C:/Users/juanl/Documents/GitHub/course-DEV-IDE-with-AGENTS/resources/Gamma-visuals/labels.md)
+- the broader slate in [kling-mini-production-roadmap.md](../../skills/kling-video/references/kling-mini-production-roadmap.md)
+- dedicated static-to-life Gamma sub-suite using selected visuals from [labels.md](../../resources/Gamma-visuals/labels.md)
