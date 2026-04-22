@@ -1,368 +1,199 @@
-# Session Handoff — 2026-04-22 (BMAD WRAPUP: drift remediation + Sprint #1 planning locked)
+# Session Handoff — 2026-04-22 (HYBRID CLONE: Migration Planning Chain Complete)
 
-**WRAPUP Session window (2026-04-22):** Continuation after context summary. Primary objectives: complete motion-walk drift remediation (Tier-1 dev-agent authority), execute full-repo L1/L2 coherence sweep with Cora + Audra, stage deferred remediation briefs for specialist routing, lock Sprint #1 composition + research-capability activation decision.
-
-**Preceding trial session window:** 2026-04-20 21:05 → 2026-04-21 06:03 UTC.
-**Branch touched:** `trial/2026-04-19` (WRAPUP), `master` (post-merge verification).
+**Session window (2026-04-22):** Single session, operator-timeboxed at ≤3 hours. Actual duration within target.
+**Branch touched:** `dev/langchain-langgraph-foundation` (hybrid clone).
 **Operator:** Juanl.
-
-## What Was Completed This Session (2026-04-22 WRAPUP)
-
-### Motion-walk marker drift remediation (Risk 1 closed)
-
-Remediated 6 pre-existing pack-vs-walk-spec marker mismatches (6 findings → 0 criticals on motion workflow structural walk):
-- **Pack edits** (`docs/workflow/production-prompt-pack-v4.2-narrated-lesson-with-video-or-animation.md`): 6 section headings updated with semantic qualifiers + zero-padding alignment (lines 335, 406, 548, 567, 649, 701)
-- **Walk-spec edits** (`state/config/structural-walk/motion.yaml`): 9 needle + sequence entries updated to match pack headings (lines 66-68, 106-107, 112-116, 144, 150, 153, 156, 159, 165)
-- **Validation**: Final structural-walk runs confirm motion READY (0 criticals); standard + cluster verified no regression
-
-**Full evidence:** `reports/dev-coherence/2026-04-22-0236/evidence/motion-walk-markers.md` (6-item drift table with pack/walk-spec comparison; remediation trace log)
-
-### Full-repo coherence sweep (L1 deterministic + L2 agentic)
-
-Cora (orchestrator) + Audra (validators) executed Step 0a full-scope harmonization:
-
-**L1 deterministic findings (5 total; exit code 1):**
-1. Motion-walk marker drift (6) → REMEDIATED this session
-2. Parameter directory ↔ schema lockstep (5 schema-only + ~12 directory-only keys) → STAGED brief for Paige
-3. Lane-matrix Coverage Checklist scope (16 of 32 skills lack `## Lane Responsibility` section) → STAGED brief for Winston
-4. Handoff stale claim (Epic 33 retrospective marked "required" but already closed 2026-04-19) → FIXED in this session
-5. Memory drift (user memory asserted "Both workflows READY" but motion was NEEDS REMEDIATION) → FIXED in this session
-
-**L2 agentic gated off** (per protocol: gated on L1 motion clean; now unblocked for next sweep)
-
-**Staged artifacts for specialist routing next session:**
-- `paige-brief-parameter-lockstep.md` — Class A (5 schema-implemented keys missing from directory) + Class B (~12 directory-implemented keys missing from schema); recommends add-to-directory or decompose schema; notes Phase 3 backlog script
-- `winston-brief-lane-matrix-coverage.md` — Decision gate: (a) formalize Coverage Checklist as judgment-bearing-skills-only + refine Audra L1-5 check, OR (b) require all 32 skills, OR (c) per-skill decision
-- User memory `project_structural_walk_status.md` rewritten — removed stale status snapshot, added reference to live status location
-
-**Evidence trail:** `reports/dev-coherence/2026-04-22-0236/` (trace-report.yaml + 5 evidence files + 2 briefs)
-
-### Strategic decision lockdown (Sprint #1 + Epic 34 + research capability)
-
-User locked three critical decisions for trial #2 onward:
-
-1. **Research capability activation:** Full cross-validation pathway via scite.ai + Consensus with convergence_signal (no aspirational enrichment or gap-filling for trial #2)
-2. **§7.1 Irene Pass 2 template placement:** MUST land in Sprint #1 (not deferred); three concrete failure modes documented in reproducibility report §7
-3. **Research knob scope for trial #2:** Evidence-bolster only (single control knob; no enrichment, no gap-fill)
-
-**Sprint #1 composition locked (~24–30 pts, 7 stories):**
-- 27-2 scite.ai adapter (re-expand from ratified-stub)
-- 27-2.5 Consensus adapter (re-expand from ratified-stub)
-- 28-1 Tracy reshape charter (post-Round-3 consensus)
-- PR-R Marcus dispatch reshaping (new, pull-request standardization)
-- Irene retrieval-intake (new, Shape 3 integration)
-- Evidence-bolster control surface (new, research knob wiring)
-- §7.1 Irene Pass 2 template authoring (from reproducibility §7.1, HIGH priority, ~3pts)
-
-**Epic 34 proposal (Creative-Treatment Experimentation & Profile Curation):** Scoped with 5 stories (34-1 through 34-5); Dan as curator. Deferred to future sprint post-Sprint #1.
-
-### Handoff artifacts finalized
-
-- `next-session-start-here.md` — updated "Immediate Next Action" to Sprint #1 prep (bmad-create-epics-and-stories, bmad-create-story, bmad-party-mode green-light sequence)
-- `SESSION-HANDOFF.md` — this file (appended WRAPUP session summary)
-- User memory — project_structural_walk_status.md refreshed (stale snapshot removed)
-
----
-
-### Prior Session Summary (2026-04-21, Trial C1-M1-PRES-20260419B: §09 → §15 closed end-to-end; first complete Marcus-the-APP run)
-
-## What Was Completed
-
-### Trial production run reached pack completion condition
-
-`C1-M1-PRES-20260419B` advanced from `§09 Gate 3 Lock` through `§15 Operator Handoff` in this session. First-ever end-to-end traversal of the v4.2 narrated-lesson-with-video-or-animation pack under Marcus-the-APP orchestration. All gate receipts written; assembly bundle finishing-ready.
-
-| Step | Status | Receipt |
-|---|---|---|
-| §09 Gate 3 Lock | LOCKED | `gate3-lock-receipt.json` |
-| §10 Fidelity + Quality Pre-Spend | GO | `gate10-fidelity-quality-receipt.json` |
-| §11 ElevenLabs Voice Selection HIL | APPROVED | `voice-selection.json` (Christina; 2.0s buffer; override reason recorded) |
-| §11B Input Package HIL | GO | dials-only amp-up overrides recorded to `voice-selection.json::voice_direction_overrides` |
-| §12 ElevenLabs Synthesis | COMPLETE | 14/14 segments; 424.74s total; continuity-stitched via `previous_request_ids` |
-| §13 Quinn-R Pre-Composition | PASS_WITH_ADVISORIES | `quinnr-precomposition-receipt.json` (operator GO; Option A for card-01 + slow-WPM accepted on cards 03/06/09) |
-| §14 Compositor Assembly | COMPLETE | `prompt14-compositor-receipt.json`; manifest+guide sha256-pinned; Operator Decisions injected into guide |
-| §14.5 Desmond Operator Brief | COMPLETE | `prompt14_5-desmond-receipt.json`; mandatory Automation Advisory present; sanctum honesty disclosure recorded |
-| §15 Operator Handoff (Descript Ready) | COMPLETE | `prompt15-handoff-receipt.json`; completion_condition_check: COMPLETE |
-
-### Reproducibility report at canonical sequelae location
-
-[`_bmad-output/implementation-artifacts/run-reproducibility-report-c1m1-tejal-20260419b.md`](\_bmad-output/implementation-artifacts/run-reproducibility-report-c1m1-tejal-20260419b.md) — 10 sections capturing every parameter that controlled the creative approach: theme paramset `hil-2026-apc-nejal-A`, Kling v2.6 std K07-clinical-hallway-atmosphere clip (5.04s), ElevenLabs envelope-vs-effective Δ table for Christina dials-only amp-up (stability 0.5→0.25, style 0.0→0.25, emotional_variability 0.5→0.75, pace_variability 0.05→0.15), eleven_multilingual_v2 model with continuity-stitched per-segment requests, 6 fix-on-the-fly events, 8 deferred-remediation items, full reproduction runbook.
-
-### Production-shift wrapup completed in parallel
-
-[`_bmad-output/implementation-artifacts/shift-close-2026-04-21-c1m1-tejal-20260419b.md`](\_bmad-output/implementation-artifacts/shift-close-2026-04-21-c1m1-tejal-20260419b.md) — all 6 production-shift gates evaluated: Run Closure, Baton/Delegation, Evidence/Logging, Risk/Blocker, Next-Shift Handoff all PASS; Workspace Hygiene **controlled** (motion structural-walk 6 pre-existing pack-vs-walk-spec drift findings — Risk 1, NOT introduced this session).
-
-### DB reconciliation
-
-`production_runs` SQLite at `state/runtime/coordination.db`: registered + completed `C1-M1-PRES-20260419B` (status=completed); cancelled stale `C1-M1-PRES-20260415` row (had been lingering in `planning` since 2026-04-17 — was hot-start outstanding item #4). 0 open runs at wrapup.
-
-### Three durable Irene Pass 2 authoring failures captured
-
-Logged with concrete failure modes for the HIGH-priority deferred entry: (a) duplicate `motion_asset` + `motion_asset_path` keys on card-01, (b) `visual_file` missing on cards 02-14, (c) `motion_duration_seconds: null` on card-01 despite Motion Gate having approved the clip. All back-fillable from upstream artifacts but should be authored at Pass 2.
-
-### One new deferred-inventory entry
-
-Theatrical-direction synthesis (Tier 1 + Tier 2) added to `deferred-inventory.md` §Named-But-Not-Filed Follow-Ons (count: 12 → 13). Tier 1 = per-segment `voice_settings` on v2 model; Tier 2 = model swap to tag-capable model + audio-tag authoring. Triggered by operator probing whether dials-only ceiling is sufficient for category-X content.
-
-## What Is Next
-
-1. **Operator-led Descript assembly** of bundle `apc-c1m1-tejal-20260419b-motion` following [`DESMOND-OPERATOR-BRIEF.md`](course-content/staging/tracked/source-bundles/apc-c1m1-tejal-20260419b-motion/DESMOND-OPERATOR-BRIEF.md). Out of pack scope; honors Operator Decision A (cross-fade card-01) + B (slow-WPM accept on 03/06/09).
-2. After (1), choose: (a) remediate motion structural-walk pack-vs-walk-spec drift (Risk 1; Tier-1 dev-agent path), OR (b) scope/build Irene Pass 2 authoring template before next Pass 2 trial run, OR (c) Epic 33 retrospective.
-
-## Unresolved Issues / Blockers
-
-1. **Motion structural-walk: 6 pre-existing pack-vs-walk-spec drift findings** (Risk 1 in shift-close). Walk-spec at `state/config/structural-walk/motion.yaml` expects markers (`## 4) Ingestion Quality Gate + Irene Packet`, `## 4.75) Creative Directive Resolution (CD)`, `## 6.2)`, `## 6.3)`, `## 7.5)`, `## 7C)`) that don't match v4.2 pack actual section titles. Per CLAUDE.md "Pipeline lockstep regime" — Tier-1 prose alignment is dev-agent authority via Cora's block-mode hook; no party-mode required. NOT a trial blocker; carried forward.
-2. **L2 agentic harmonization sweep deferred this session** — gated on L1 motion clean. Rerun once drift remediated.
-3. **Irene Pass 2 authoring template (HIGH)** — three concrete failure modes documented in this run's reproducibility report. Must be scoped before next Pass 2 production run. Logged in `deferred-inventory.md`.
-4. **Desmond doc-cache never refreshed** — `_bmad/memory/bmad-agent-desmond/MEMORY.md` records Descript version target as **Unknown**. Brief was authored honestly with this disclosure. Next run should ground via `python skills/bmad-agent-desmond/scripts/refresh_descript_reference.py`.
-5. **Stray asset (cosmetic)** — `assembly-bundle/audio/apc-c1m1-tejal-20260419b-motion-card-04.zip` is a leftover ElevenLabs alignment-zip experiment, not manifest-referenced. Operator may delete before Descript import or leave (harmless).
-6. **Epic 33 retrospective** still `required` in sprint-status.yaml. Not a trial blocker.
-
-## Key Decisions / Observations This Session
-
-1. **Pack §15 completion-condition logic is bundle-shape verification, not subjective approval.** Receipt machine-verifies all 4 media folders + manifest sha256 + downstream-gate identity, then declares COMPLETE. Operator subjective acceptance is implicit in the §13 operator GO captured upstream — no second HIL required at §15.
-2. **Compositor `validate_manifest` does NOT accept `motion_asset` (only `motion_asset_path`).** Duplicate keys cause `sync-visuals` to refuse manifest edits with "path appears N times, expected 1" error. Irene Pass 2 emitted both keys with identical values — this is one of the three documented authoring failures.
-3. **Compositor `sync-visuals --repo-root` is required** when invoking from the bundle directory; defaults to CWD which is wrong for relative-path resolution.
-4. **Christina (BuaKXS4Sv1Mccaw3flfU) on `eleven_multilingual_v2` produces excellent dials-only amp-up output** when running stability-low / style-up envelope per the §11B receipt. Headline parameter that controlled per-segment differentiation is `pace_variability` (0.15) which the runner reads to nudge `speed` per segment; envelope `voice_settings` are uniform across all 14 segments.
-5. **Desmond's brief MUST contain a `## Automation Advisory` section** (REST/MCP/CLI/Manual format). The agent has it as an explicit must-include per `references/automation-advisory.md`. Verified `automation_advisory_section_present: true` in receipt.
-6. **`production_runs` DB row reconciliation should always go through `manage_run.py`**, never hand-edit the SQLite. `manage_run.py cancel <run-id>` clears stale `planning`-state rows.
-
-## Validation Summary
-
-- **Step 0a harmonization:** FULL-REPO scope (tripwire fired — 3 consecutive prior skips). L1 standard walk READY; L1 motion walk NEEDS REMEDIATION (6 pre-existing findings, NOT introduced this session); sprint-status YAML test 2/2 PASS; fidelity-contract validator 9 contracts / 79 criteria / 0 errors. L2 deferred (gated on L1 motion clean). Tripwire CLEARED for next session. Report: [`reports/dev-coherence/2026-04-21-0603/harmonization-summary.md`](reports/dev-coherence/2026-04-21-0603/harmonization-summary.md).
-- **Step 0b pre-closure:** SKIP — no stories flipped to `done` (trial-only session).
-- **Step 1 quality gate:** N/A on code (no source code touched). Sprint-status YAML test passed 2/2; fidelity-contract validator passed 9/79/0. Bundle artifacts in gitignored `course-content/staging/`; per-receipt validators all logged in §07F-§15 receipts.
-- **Trial run gates:** §09 LOCKED, §10 GO, §11/§11B APPROVED+GO, §12 COMPLETE, §13 PASS_WITH_ADVISORIES, §14/§14.5/§15 COMPLETE.
-- **Production-shift wrapup:** 5/6 PASS + Workspace Hygiene **controlled** (Risk 1 documented). Close mode: **controlled**.
-
-## Git Closeout
-
-- **Branch:** `trial/2026-04-19` — anchor `39a014a`. No commits landed during session; all work to commit on this branch.
-- **Session-owned changes** (intended for the trial-branch commit; tracked files only):
-  - `M SESSION-HANDOFF.md` (this file)
-  - `M next-session-start-here.md` (forward-looking; updated for §15 completion + this session-WRAPUP)
-  - `M _bmad-output/implementation-artifacts/trial-run-c1m1-tejal-20260419.md` (appended §13/§14/§14.5/§15 closure entries)
-  - `M _bmad-output/planning-artifacts/deferred-inventory.md` (HIGH Irene Pass 2 expanded; Tier 1+2 theatrical-direction added; count 12→13)
-  - `?? _bmad-output/implementation-artifacts/run-reproducibility-report-c1m1-tejal-20260419b.md` (new — canonical sequelae artifact)
-  - `?? _bmad-output/implementation-artifacts/shift-close-2026-04-21-c1m1-tejal-20260419b.md` (new — production-shift wrapup output)
-  - `?? scripts/marcus_shims/run_prompt12_narration.py` + `?? scripts/marcus_shims/run_prompt13_quinnr_precomposition.py` (new — Marcus dispatch shims authored during §12 + §13)
-- **Gitignored local-only updates** (NOT in commit; preserved as repo audit trail):
-  - `_bmad/memory/cora-sidecar/chronology.md` + `index.md` (this wrapup's Cora SW)
-  - `reports/dev-coherence/2026-04-21-0603/harmonization-summary.md` (this wrapup's Step 0a report)
-  - `course-content/staging/tracked/source-bundles/apc-c1m1-tejal-20260419b-motion/...` (all bundle artifacts: receipts, manifest, narration, audio, motion clip, guide, brief)
-- **Carried-forward ambient state:** none. Prior session's dirty list (CLAUDE.md, docs/workflow/..., etc.) was committed in `39a014a` before this session's anchor.
-- **Merge-to-master:** **NOT executed automatically.** Operator approval required per CLAUDE.md before push/merge. Trial-branch commit only on this WRAPUP. Resume state after commit: `trial/2026-04-19` @ <new-commit>.
-
-## Artifact Update Checklist
-
-| Artifact | Updated? | Notes |
-|---|---|---|
-| `course-content/staging/.../assembly-bundle/segment-manifest.yaml` | ✅ | Gitignored — sync-visuals rewrote paths; removed duplicate motion_asset key |
-| `course-content/staging/.../assembly-bundle/DESCRIPT-ASSEMBLY-GUIDE.md` | ✅ | Gitignored — Operator Decisions A/B injected; sha256 `efee4a69…7417` |
-| `course-content/staging/.../DESMOND-OPERATOR-BRIEF.md` | ✅ | Gitignored — Automation Advisory present; sha256 `97f20d3e…b0ef` |
-| `course-content/staging/.../quinnr-precomposition-receipt.json` | ✅ | Gitignored — pass_with_advisories + operator_acceptance |
-| `course-content/staging/.../prompt14-compositor-receipt.json` | ✅ | Gitignored — 3 blocker remediations documented |
-| `course-content/staging/.../prompt14_5-desmond-receipt.json` | ✅ | Gitignored — Desmond sanctum state recorded honestly |
-| `course-content/staging/.../prompt15-handoff-receipt.json` | ✅ | Gitignored — completion_condition_check: COMPLETE |
-| `course-content/staging/.../run-report.md` | ✅ | Gitignored — §13/§14/§14.5/§15 sections added |
-| `_bmad-output/implementation-artifacts/run-reproducibility-report-c1m1-tejal-20260419b.md` | ✅ | NEW — canonical sequelae location |
-| `_bmad-output/implementation-artifacts/shift-close-2026-04-21-c1m1-tejal-20260419b.md` | ✅ | NEW — production-shift wrapup |
-| `_bmad-output/implementation-artifacts/trial-run-c1m1-tejal-20260419.md` | ✅ | §13/§14/§14.5/§15 closure entries appended |
-| `_bmad-output/planning-artifacts/deferred-inventory.md` | ✅ | Irene Pass 2 expanded; Tier 1+2 theatrical-direction added; count 12→13 |
-| `state/runtime/coordination.db` | ✅ | C1-M1-PRES-20260419B registered+completed; C1-M1-PRES-20260415 cancelled |
-| `next-session-start-here.md` | ✅ | Finalized in Step 7 below |
-| `SESSION-HANDOFF.md` | ✅ | This file |
-| `reports/dev-coherence/2026-04-21-0603/harmonization-summary.md` | ✅ | Step 0a report |
-| `_bmad/memory/cora-sidecar/chronology.md` + `index.md` | ✅ | Step 0c append + active-context refresh |
-| `sprint-status.yaml` | ⬜ | No sprint-story changes — trial-only session |
-| `bmm-workflow-status.yaml` | ⬜ | No workflow phase change |
-| `docs/project-context.md` | ⬜ | No architecture/rule change |
-| `docs/agent-environment.md` | ⬜ | No tool/MCP change |
-| Guides (user/admin/dev) | ⬜ | No content change |
-| `state/config/structural-walk/{standard,motion}.yaml` | ⬜ | NOT updated this session — Risk 1 carried forward as unresolved |
-
----
-
-# Session Handoff — 2026-04-22 (Sprint #1 Authoring + Green-Light, continuation after wrapup)
-
-**Session window (2026-04-22):** Continuation from prior 2026-04-22 wrapup commit `8e58fdf`. Primary objective: author all 5 Sprint #1 stories and run party-mode green-light to lock Sprint #1 composition before dev work opens.
-
-**Branch touched:** `trial/2026-04-19` (same — no new branch cut).
-**Operator:** Juanl.
+**Session mode:** Planning (no dev work); autonomy grant after initial decisions for technical/architectural choices.
 
 ## What Was Completed This Session
 
-### 1. Drift remediation (2 drift surfaces, 6 files)
+### Full PRD→Architecture→Epics+Stories chain landed in one session
 
-Discovered during story authoring that the Sprint #1 composition inherited from prior wrapup was partially stale. Tracking artifacts diverged from ground truth:
+Three new canonical planning artifacts authored on `dev/langchain-langgraph-foundation`:
 
-**Drift 1: Story 27-2 done-drift.** 27-2 was BMAD-closed 2026-04-18 (`883f742` — SciteProvider 620 LOC; regression 1149/2/0/2; 15 PATCH applied), but `bmm-workflow-status.yaml` + `epic-27-texas-intake-expansion.md` + `next-session-start-here.md` still labeled it `ratified-stub / re-expand target`. Sprint-status `development_status` was the only correctly-marked surface.
-- Fixed: `bmm-workflow-status.yaml` L107 `epic-27: in-progress`; L123 `27-2: done`; L165 `28-1 blocked_on: [27-2.5]`
-- Fixed: `epic-27-texas-intake-expansion.md` L3 status header + L44 roster row
+**1. Implementation Readiness Report** ([`_bmad-output/planning-artifacts/implementation-readiness-report-2026-04-22.md`](_bmad-output/planning-artifacts/implementation-readiness-report-2026-04-22.md))
 
-**Drift 2: Epic 28 reshape roster done-drift.** 4-story Tracy reshape (28-1-reshape-charter + 28-2-three-modes + 28-3-irene-tracy-bridge + 28-4-smoke-fixtures) BMAD-closed 2026-04-19, but `bmm-workflow-status.yaml` + `epic-28-tracy-detective.md` still showed the retired pre-reshape `28-1-tracy-pilot-scite-ai` + `28-2-tracy-gate-hardening` roster.
-- Fixed: `bmm-workflow-status.yaml` L157 `epic-28: in-progress`; new reshape roster (L164-189) added; retired entries (L192-198) carry `superseded_by` pointers
-- Fixed: `epic-28-tracy-detective.md` status header + reshape rationale + active vs retired roster separation
-- Fixed: `next-session-start-here.md` Sprint #1 composition revised (removed 27-2 + 28-1-reshape-charter as "to author"; noted both as done)
+Via `bmad-check-implementation-readiness` (6/6 steps). Adapted the skill's default FR↔epic-traceability check to a **PRD-only pre-architecture gate** because migration epics did not exist at readiness time. Verdict: **READY-WITH-MINOR-AMENDMENTS**. 5 findings produced:
 
-### 2. Sprint #1 story authoring (5 stories, 1,520 lines)
+- F1: NFR count drift (frontmatter 38 vs body 43) — reconciled this session to 43 as authoritative
+- F2: 7 FRs without milestone evidence (FR24, FR27, FR34, FR36, FR37, FR42, FR53) — all closed by architecture D2+D3+D7 with named M1–M5 evidence bullets
+- F3: Slab 2 oversized for one epic — split via D10 into 2a/2b/2c
+- F4: Slab 5 bundled (acceptance + polish) — split via D11 into 5a/5b
+- F5: Cross-slab governance artifact ownership — closed via D12 three-line protocol at every slab-closing story
 
-All 5 Sprint #1 stories authored + registered `ready-for-dev` in sprint-status.yaml:
+**2. Migration Architecture** ([`_bmad-output/planning-artifacts/architecture-langchain-langgraph-migration.md`](_bmad-output/planning-artifacts/architecture-langchain-langgraph-migration.md))
 
-| Story | File | Lines | Depth |
-|---|---|---|---|
-| 27-2.5 Consensus adapter | `_bmad-output/implementation-artifacts/27-2.5-consensus-adapter.md` | 596 | FULL dev spec (mirror of 27-2) |
-| PR-R Marcus dispatch reshaping | `_bmad-output/implementation-artifacts/PR-R-marcus-dispatch-reshaping.md` | 218 | Spine |
-| Irene retrieval-intake | `_bmad-output/implementation-artifacts/irene-retrieval-intake.md` | 228 | Spine |
-| Evidence-bolster control surface | `_bmad-output/implementation-artifacts/evidence-bolster-control-surface.md` | 243 | Spine |
-| §7.1 Irene Pass 2 authoring template | `_bmad-output/implementation-artifacts/7-1-irene-pass-2-authoring-template.md` | 235 | Spine (HIGH priority, trial-#2 blocker) |
+Via `bmad-create-architecture` (8/8 steps). 13 decisions locked covering every cross-cutting concern identified in Steps 2 (context) and 4 (decisions):
 
-Authoring-depth rationale: 27-2.5 had direct 27-2 precedent (near-mirror), warranting full spec; the other 4 are greenfield, so spine-level per operator direction — party-mode then scoped + ratified with riders.
+- **D1 Sanctum snapshot — Option C Hybrid** (content-hash per checkpoint + trial-close snapshot; live disk canonical; warn-on-clone, fail-loud-on-CI-replay variance policy)
+- **D2 Model-cascade** — central `app/models/selector.py` + state-embedded `RunState.model_overrides` + dual cache-invalidation warning + per-specialist `model_config.yaml`
+- **D3 HIL tamper-evidence (FR34 closure)** — signed `OperatorVerdict` Pydantic model + sole `resume_api` with import-linter contract + no-scheduler-import contract for `app/gates/**` + digest-match enforcement + ledger-based reject-rate + gate-inventory audit. Idle-gate policy: (i) do-nothing indefinite pause.
+- **D4 Graph-compile-time CI** — two manifests (Marcus + Cora separate files) + compiler validation mode as library + PR-R L1 validator consumed as library at M5
+- **D5 Sanctum cold-read + invalidation** — atomic multi-file read + watchdog-based invalidation hook surfacing NFR-O3 warnings
+- **D6 Manifest-as-graph-config Hybrid** — manifest declares topology (step IDs, handler names, edge kinds, gates, block-mode-trigger-paths); Python provides handlers + reducers + predicates
+- **D7 Operator-surface contract (§Developer-tool-UX)** — three-transport verdict parity (MCP + FastAPI + CLI); identical OperatorVerdict payload; transport parity contract test
+- **D8 Frozen-graph-version layout + bump ceremony** — `runtime/graphs/vN/` directory structure + Tier-1/2/3 bump policy mirroring pack-version
+- **D9 Milestone evidence gaps closure** — accomplished via D2+D3+D7 amendments
+- **D10 Slab 2 sub-structure** — 2a (3 PR-R-conformant), 2b (14 non-conformant), 2c (Wondercraft + generator validation)
+- **D11 Slab 5 split** — 5a Acceptance (go/no-go gate), 5b Polish (cuttable)
+- **D12 Cross-slab governance artifact ownership** — three-line protocol AC on every slab-closing story (invariant-preservation + anti-pattern harvest + migration-guide-section update)
+- **D13 Mid-migration model-registry bump procedure** — Tier-1/2/3 policy; documentation lands in `docs/dev-guide/model-selection-guide.md`
 
-### 3. Party-mode green-light (4 specialists, 7 tiebreak rulings)
+Party-mode Round 1 at Step 3 (Winston + Murat + Paige + Amelia + Quinn-R) produced **GREEN-LIGHT WITH RIDERS** and 9 accepted amendments (lane-split altitude to `app/marcus/` and `app/cora/` as siblings; package-FR traceability table; canary tests in all 4 test tiers; scaffold-conformance framework at Slab 1 with fixture specialist; `docs/dev-guide/langgraph-state-idioms.md` as Slab 1 doc; Story 1 strict-serial split 1a/1b/1c; CLONE-FORK-NOTICE sanctum-fork discipline; survey-and-discard subsection; LangGraph idiom sanity check).
 
-Convened Winston 🏗️ / Amelia 💻 / Murat 🧪 / Paige 📚 via `bmad-party-mode`. Each specialist produced independent green-light verdicts + riders. Operator adjudicated 7 direct disagreements (D1–D7) to ratify a unanimous GREEN Sprint #1:
+All **15 load-bearing substrate invariants** have named preserving patterns with file/test references. PR-R (primary Sprint #1 Marcus dispatch reshaping) staged as forward-port convergence in migration-guide §8 reconciliation checklist. 12-package `app/` tree with six-package Slab-1 scope (seven if MCP in Slab 1 smoke — default YES).
 
-| # | Decision | Ruling | Resolved-by |
-|---|---|---|---|
-| **D1** | PR-R retrofit edge count | **3 edges** (Irene Pass 2 + Kira motion + Texas minimal) | Winston |
-| **D2** | PR-R registry location | **NEW `skills/bmad-agent-marcus/references/dispatch-registry.yaml`** | Amelia |
-| **D3** | PR-R L1 lockstep check | **IN-SCOPE** (+1 pt) | Winston |
-| **D4** | Irene intake contract doc | **NEW `skills/bmad-agent-content-creator/references/retrieval-intake-contract.md`** | Paige |
-| **D5** | Evidence-bolster missing-credential | **HARD-FAIL at Marcus boot** | Winston |
-| **D6** | Intake layer field name | **`evidence_bolster_active`** (`_active` suffix) | Paige |
-| **D7** | PR-R sequencing | **Open LAST** (position 5) | Winston |
+**3. Migration Epics + Stories** ([`_bmad-output/planning-artifacts/epics-langchain-langgraph-migration.md`](_bmad-output/planning-artifacts/epics-langchain-langgraph-migration.md))
 
-### 4. Green-light patches applied to all 5 story specs
+Via `bmad-create-epics-and-stories` (4/4 steps). **9 epics, 56 stories, ~184 points**:
 
-`§Green-Light Patches Applied (party-mode round 1, 2026-04-22)` section added to each of the 5 story files with:
-- Per-specialist verdict (GREEN after riders)
-- Applied riders (20+ total across architecture / dev / test / docs)
-- Pinned points + regression floors
-- Dev sequence position (1–5)
-- Vote record (all 4 specialists GREEN after patches)
+- E1 Slab 1 Substrate (9 stories)
+- E2a Scaffold Pilot / PR-R-conformant (4 stories: Irene Pass 2 + Kira motion + Texas + generator)
+- E2b Specialist Tranche / 14 non-conformant (17 stories: Gary + Vera + Quinn-R + 11 others + 3 cross-cutting)
+- E2c Wondercraft + Generator Validation (4 stories)
+- E3 Marcus Orchestration (6 stories)
+- E4 Lockstep + Gates + Cora (7 stories)
+- E5a Acceptance — M5 go/no-go (5 stories)
+- E5b Polish (4 stories)
+- EX Cross-Cutting Governance Protocol (0 discrete stories — embedded at every slab-closing story per D12)
 
-### 5. Sprint-status.yaml + next-session-start-here.md updated with locked state
+All **65 FRs + 43 NFRs** have per-story coverage (spot-check matrix in epics doc §Final Validation). All **5 readiness findings** closed. M1–M5 acceptance bars expressed as concrete story-level ACs. Aligned with 12–16 week PRD timeline at BMAD dev-agent typical throughput.
 
-- Sprint #1 block header added to `sprint-status.yaml` documenting green-light lock, dev order, canonical naming, roster-level riders
-- `next-session-start-here.md` rewritten with Sprint #1 GREEN-LIT section: dev order table, D1-D7 ruling table, canonical 3-layer naming, roster-level riders, drift remediation record, next-steps at session open
+### Authoritative NFR count reconciled
 
-## Sprint #1 Final Locked State
+Updated `_bmad-output/implementation-artifacts/bmm-workflow-status.yaml::prd_langchain_langgraph_migration::nonfunctional_requirements` from `38` → `43` with reconciliation note. Migration PRD body enumerates 43 (P:6 + S:7 + I:6 + R:7 + X:5 + M:8 + O:4); frontmatter count was drafting-era.
 
-**16 pts firm across 5 stories. Dev order ratified via D7:**
+### PR-R forward-port convergence captured
 
-1. §7.1 Irene Pass 2 authoring template (3 pts, ≥12 floor) — trial-#2 BLOCKER, open FIRST
-2. 27-2.5 Consensus adapter (3 pts, ≥20 floor) — parallel with §7.1; PDG-3 flake gate wired BEFORE T1
-3. Evidence-bolster control surface (2 pts, ≥10 floor) — after 27-2.5 T1
-4. Irene retrieval-intake (3 pts, ≥14 floor) — after evidence-bolster (consumes `evidence_bolster_active`)
-5. PR-R Marcus dispatch reshaping (5 pts, ≥17 floor) — opens LAST per D7
+Primary-repo Sprint #1's PR-R (Marcus dispatch reshaping — pinned Pydantic input/receipt envelopes + `dispatch-registry.yaml` + `check_dispatch_registry_lockstep.py` L1 validator + Irene Pass 2 / Kira motion / Texas retrofits) is upstream proof-of-pattern for migration 9-node scaffold + FR14 conformance + FR39 graph-compile lockstep. Forward-port convergence staged:
 
-**Cumulative regression floor: ≥1220 passed.**
+- `state/config/dispatch-registry.yaml` becomes manifest companion at M5
+- L1 validator consumed as library function by graph-compile CI per D4
+- Receipt-shape verified for sanctum-fingerprint field per D1 (or amended at forward-port)
+- Pydantic-v2 four-file-lockstep compliance check at forward-port per A22
 
-**Canonical 3-layer naming (sprint-level decision):**
-- Layer 1 run-constants: `evidence_bolster: bool = false`
-- Layer 2 Irene intake: `evidence_bolster_active: bool`
-- Layer 3 Tracy RetrievalIntent: `cross_validate: bool`
+Migration-guide §8 contains the full reconciliation checklist.
 
-**Roster-level riders:**
-1. Shared doc-parity test pattern (Murat) — pin before §7.1 / retrieval-intake / evidence-bolster open
-2. Module-level constants, no `os.environ.get` at import (Amelia) — 27-2 DEFER trap guard
-3. `docs/research-knobs-guide.md` as dedicated file (Paige) — 3-parameter conflation anti-vaccine
-4. Fixture hygiene per story (Amelia) — `tests/fixtures/<story-id>/`
-5. Flake-gate binding EXTENDED to PR-R (Murat) — 27-2.5 + PR-R both; others get local 3x-run hygiene
+### Slab 2 + Slab 5 sub-structure resolved
 
-## Unresolved Issues / Risks Carried Forward
+Per readiness F3 + F4, architecture committed to:
+- Slab 2 → 2a (3 PR-R-conformant scaffold-pilot edges, ~1 wk) + 2b (14-specialist tranche, ~3–4 wk) + 2c (Wondercraft + generator + anti-patterns, ~1 wk)
+- Slab 5 → 5a Acceptance (non-cuttable, M5 gate) + 5b Polish (cuttable under pressure)
 
-1. **PDG-3 CI 3x-run flake-detection gate NOT YET WIRED.** Binding blocker: must be wired + zero-flake verified on `pytest -k "cross_validate or retrieval_dispatcher"` BEFORE 27-2.5 dev-story T1 begins. Scope extended to PR-R per Murat roster rider.
+Both splits reflected in epic structure.
 
-2. **Shared doc-parity test pattern NOT YET PINNED.** Murat roster rider: must be designed before positions 3/4 open (evidence-bolster + irene-retrieval-intake both depend on it).
+## What Is Next
 
-3. **Pre-existing dirty-worktree files (8 files) carried in from session start.** These were present when session opened (per Step 2b dirty-worktree fence at Session START) and not owned by this session's work. Listed below in §Dirty-Worktree Reconciliation — ambient state for next session to triage.
+### Immediate (next session)
 
-4. **Commit strategy deferred to wrapup.** Per operator direction mid-session, commit deferred to wrapup decision. Session-owned changes total: 10 modified + 5 new files (18 files incl. the 3 drift-remediation edits applied at session start). See §Git Closeout below.
+Open Slab 1 Story 1.1a — "Runtime Substrate Environment + Dependencies" — via `bmad-create-story`, then execute via `bmad-dev-story`. Strict-serial 1a→1b→1c per Amendment F. Story specs already captured in [`epics-langchain-langgraph-migration.md` §Epic 1`](_bmad-output/planning-artifacts/epics-langchain-langgraph-migration.md).
 
-5. **Epic 33 retrospective still flagged `required` in sprint-status.yaml.** Carried forward from prior wrapup; no action taken this session. Update at next session open.
+Before 1.1b package directories commit: resolve Winston's MCP-in-Slab-1 question (default committed to in; operator can override).
 
-6. **Desmond doc-cache never refreshed.** Carried forward; `_bmad/memory/bmad-agent-desmond/MEMORY.md` still records Descript version target as **Unknown**. Run `python skills/bmad-agent-desmond/scripts/refresh_descript_reference.py` before next narrated-lesson run.
+### Mid-term
+
+- **Stories 1.2–1.7** open after 1.1c closes; Slab 1 completes with M1 go/no-go gate.
+- **Epic 2a / 2b / 2c** open sequentially; M2 gate at 2c close.
+- **PR-R from primary** forward-ports at M5 close per FR60 + migration-guide §8.
+
+### Long-term
+
+- M1 → M2 → M3 → M4 → M5 slab milestones per 12–16 week timeline.
+- M5 go/no-go verdict (Ship / Iterate / Rollback) at Slab 5a close.
+
+## Unresolved Issues or Risks
+
+### Session-owned findings: all closed
+
+No Audra findings deferred from Step 0a (skipped — scope empty for invariant/manifest/walk files; only new-artifact creation). No pre-closure gaps from Step 0b (skipped — no stories flipping to done).
+
+### Architecture open-questions (informational, not blockers)
+
+1. **Winston's MCP-in-Slab-1 question.** Default committed to "in" (seven-package Slab 1 layout). Operator can override at Story 1.1b kickoff. Decided or unresolved before Story 1.1b package-directory commit.
+2. **Sanctum fingerprint enumeration.** Slab 1 early spike in Story 1.2 decides whether `chronology.md` is excluded from fingerprint (it mutates every session; including causes spurious cache invalidation).
+3. **PR-R cross-repo Pydantic-checklist injection (primary-repo side).** Before primary opens PR-R dev-story, primary must incorporate `docs/dev-guide/pydantic-v2-schema-checklist.md` into PR-R T1 readings. Saves reconciliation pass at M5. Coordination signal to file at primary side.
+
+### Ambient worktree state
+
+`ruff check .` reports 1338 pre-existing errors in unrelated legacy Python code (not introduced this session). Slab 1 Story 1.1a's `ruff check` scope applies only to new `app/` code.
 
 ## Key Lessons Learned
 
-1. **Done-drift surface count was 2 (27-2 + Epic 28), not 1.** First drift discovered only during 27-2.5 story authoring's read of context; second discovered only while drafting 28-1 reshape charter. Future session-start protocols benefit from explicit `/harmonize` full-repo sweep before authoring, not after — finding drift mid-authoring forced two pause-remediate-resume cycles. `sprint-status.yaml::development_status` remained the trustworthy source of truth throughout; other tracking surfaces drifted against it.
+### Architecture authoring under autonomy grant works at this scale
 
-2. **Authoring depth calibration works: full spec for near-mirror stories; spine spec for greenfield + party-mode ratifies scope.** 27-2.5 at 596 lines (mirror of 27-2) was correctly-sized. The 4 greenfield stories at 218-243 lines each with 8-11 open green-light questions enabled efficient party-mode ratification + rider application rather than sunk-cost spec rewriting. This is the canonical BMAD flow for novel stories.
+Session-operator delegation of technical/architectural/implementation decisions (with party-mode retained as escalation path for contested calls) carried the architecture from Step 3 through Step 8 — 10 decisions (D4–D13) — without operator approval per-decision, meeting the 3-hour total deadline. HIL boundary was respected: D3 idle-gate policy surfaced to operator as an explicit story-vs-technical fork (`i`/`ii`/`iii`), defaulted to `i` when operator did not elect.
 
-3. **Party-mode independent subagents produced genuinely divergent expertise.** D1–D7 debates were real architectural decisions — specialists disagreed on substantive grounds (PR-R edge count, registry location, lockstep scope, intake contract doc location, missing-credential policy, naming). Solo-mode roleplay would have converged to a single authorial voice. The subagent approach earned its cost.
+### PR-R convergence came in mid-architecture and reshaped Slab 2 favorably
 
-4. **Operator tiebreak pattern for party-mode disagreements worked cleanly.** Present each debate in simple terms + pros/cons + per-specialist positions; operator rules one at a time; orchestrator records + sequences. 7 tiebreaks in sequence took ~20 min of focused conversation.
+When operator surfaced PR-R (primary Sprint #1 dispatch reshaping) during D2/D3 decision-work, the migration architecture adopted it as upstream proof-of-pattern rather than parallel re-invention. Resulting Slab 2 sub-structure inherits 3 edges (Irene Pass 2, Kira motion, Texas) as low-risk scaffold pilots, reducing Slab 2b risk profile to 14 remaining specialists. Cross-repo coordination signal (PR-R T1 Pydantic-checklist injection) captured as deferred-inventory entry for primary-repo consultation.
+
+### Adapting default skill workflows to hybrid-clone naming convention
+
+Both `bmad-create-architecture` and `bmad-create-epics-and-stories` default to `architecture.md` / `epics.md` output filenames. On the hybrid clone, legacy artifacts with those names are frozen production-repo references (distinct project scope). Migration artifacts use explicit filenames (`architecture-langchain-langgraph-migration.md`, `epics-langchain-langgraph-migration.md`) matching the PRD's prior precedent. Skill continuation detection was bypassed with operator confirmation at each step.
+
+### Document drift surfacing via reconciliation
+
+The NFR count mismatch (38 vs 43) surfaced at readiness Step 2 enumeration and traced back to frontmatter drafting-era count. Fixing at the `bmm-workflow-status.yaml` during wrapup (not at PRD) preserves PRD immutability while establishing 43 as the architectural authoritative count via bmm-workflow-status note. Optional PRD amendment pass deferred to operator discretion next session.
 
 ## Validation Summary
 
-- **Step 1 quality gate**: ✅ Ruff clean on `_bmad-output/` + `docs/` (no Python code edited this session)
-- **Step 4a sprint-status regression**: ✅ `tests/test_sprint_status_yaml.py` 2 passed
-- **Step 0a coherence sweep**: SKIPPED (scope narrow, session-owned only; inline verification during patching confirmed cross-file consistency across drift-remediation + green-light patches). Cora chronology append: `YYYY-MM-DD HH:MM — Step 0a skipped: scope narrow (session-owned docs only); inline verified during patch application`. Next session's 0a auto-promotes to full-repo per tripwire if operator wishes.
-- **Step 0b pre-closure audit**: SKIPPED (no stories flipped to `done` this session; all 5 authored stories are `ready-for-dev`)
+### Step 0a (Cora harmonization sweep)
+
+**Skipped.** Rationale: session scope was planning-only; no existing-doc modifications; no invariant files / pipeline manifest / structural-walk files touched; only new-artifact creation. Cora chronology entry at `_bmad/memory/cora-sidecar/chronology.md` logs the skip + reason. **Tripwire cleared** for next session.
+
+### Step 0b (pre-closure audit)
+
+**Skipped.** Rationale: no stories flipping from in-progress to `done` this session (session produced specs + decisions, not dev closures).
+
+### Step 1 (quality gate)
+
+`ruff check .` reports 1338 pre-existing errors in unrelated legacy Python code (not introduced this session). **No new Python added this session.** Markdown-only planning artifacts. Gate not a blocker; pre-existing state documented as ambient worktree condition in `next-session-start-here.md`.
+
+### Artifact validation
+
+- All three migration artifacts (readiness, architecture, epics) have complete frontmatter with stepsCompleted arrays (readiness: 6/6, architecture: 8/8, epics: 4/4).
+- `bmm-workflow-status.yaml` updated with three new entries (readiness + architecture + epics) under the migration-scoped keys; tests/test_sprint_status_yaml.py not affected (no sprint-status edits).
+- `docs/project-context.md` extended with 2026-04-22 hybrid update preserving prior chronology.
+- Cora chronology appended with 2026-04-22 wrapup entry.
+- `next-session-start-here.md` fully rewritten for 2026-04-22 session close.
+- 15 invariants cross-checked in architecture §Architecture Validation; all preservation patterns named.
+- 65 FRs + 43 NFRs cross-checked in epics §Final Validation; full spot-check matrix.
+
+## Content Creation Summary
+
+**None.** Session was planning-only. No course content drafted or staged; no platform integrations exercised.
 
 ## Artifact Update Checklist
 
-| Artifact | Status | Notes |
+| Artifact | Status | Path |
 |---|---|---|
-| `_bmad-output/implementation-artifacts/27-2.5-consensus-adapter.md` | ✅ NEW + green-light patches | 596 lines; full dev spec |
-| `_bmad-output/implementation-artifacts/PR-R-marcus-dispatch-reshaping.md` | ✅ NEW + green-light patches | 218 lines; D1/D2/D3 applied |
-| `_bmad-output/implementation-artifacts/irene-retrieval-intake.md` | ✅ NEW + green-light patches | 228 lines; D4 + riders applied |
-| `_bmad-output/implementation-artifacts/evidence-bolster-control-surface.md` | ✅ NEW + green-light patches | 243 lines; D5/D6 applied |
-| `_bmad-output/implementation-artifacts/7-1-irene-pass-2-authoring-template.md` | ✅ NEW + green-light patches | 235 lines; Murat fixture rider applied |
-| `_bmad-output/implementation-artifacts/sprint-status.yaml` | ✅ | 5 story regs + Sprint #1 green-light block header |
-| `_bmad-output/implementation-artifacts/bmm-workflow-status.yaml` | ✅ | Epic 27 in-progress + 27-2 done + Epic 28 reshape roster + 28-1 blocked_on |
-| `_bmad-output/implementation-artifacts/epic-27-texas-intake-expansion.md` | ✅ | 27-2 roster row + status header + critical path |
-| `_bmad-output/implementation-artifacts/epic-28-tracy-detective.md` | ✅ | Status header + reshape rationale + active vs retired roster |
-| `next-session-start-here.md` | ✅ | Finalized in Step 7 (Sprint #1 GREEN-LIT section authoritative) |
-| `SESSION-HANDOFF.md` | ✅ | This section (appended to prior same-date handoff) |
-| `docs/project-context.md` | ⬜ | No architecture/rule change |
-| `docs/agent-environment.md` | ⬜ | No tool/MCP change |
-| Guides (user/admin/dev) | ⬜ | No content change |
-| `state/config/structural-walk/{standard,motion}.yaml` | ⬜ | No control-structure change |
-| `reports/dev-coherence/YYYY-MM-DD-HHMM/` | ⬜ | Step 0a skipped per §Validation; skip logged |
+| Migration readiness report | NEW (committed this session) | [`_bmad-output/planning-artifacts/implementation-readiness-report-2026-04-22.md`](_bmad-output/planning-artifacts/implementation-readiness-report-2026-04-22.md) |
+| Migration architecture | NEW (committed this session) | [`_bmad-output/planning-artifacts/architecture-langchain-langgraph-migration.md`](_bmad-output/planning-artifacts/architecture-langchain-langgraph-migration.md) |
+| Migration epics + stories | NEW (committed this session) | [`_bmad-output/planning-artifacts/epics-langchain-langgraph-migration.md`](_bmad-output/planning-artifacts/epics-langchain-langgraph-migration.md) |
+| BMM workflow status | UPDATED (readiness + architecture + epics + NFR reconcile) | [`_bmad-output/implementation-artifacts/bmm-workflow-status.yaml`](_bmad-output/implementation-artifacts/bmm-workflow-status.yaml) |
+| Project context | UPDATED (2026-04-22 migration entry) | [`docs/project-context.md`](docs/project-context.md) |
+| Sprint status | UNCHANGED (no epic/story state transitions; specs authored not executed) | [`_bmad-output/implementation-artifacts/sprint-status.yaml`](_bmad-output/implementation-artifacts/sprint-status.yaml) |
+| Agent environment | UNCHANGED (no MCP/skill/tool inventory changes) | [`docs/agent-environment.md`](docs/agent-environment.md) |
+| Cora chronology | UPDATED (2026-04-22 wrapup entry) | [`_bmad/memory/cora-sidecar/chronology.md`](_bmad/memory/cora-sidecar/chronology.md) |
+| Next-session-start-here | REWRITTEN (hybrid-local; gitignored) | [`next-session-start-here.md`](next-session-start-here.md) |
+| Session handoff | REWRITTEN (this file) | [`SESSION-HANDOFF.md`](SESSION-HANDOFF.md) |
 
-## Dirty-Worktree Reconciliation
+## Dev-Coherence Report Home
 
-**Partition per Step 10a:**
+**N/A for this session.** Step 0a was skipped (scope-empty planning session); no `reports/dev-coherence/2026-04-22-*/` directory created. Cora chronology entry preserves the skip rationale for audit trail.
 
-### Session-owned (18 files)
-- `_bmad-output/implementation-artifacts/bmm-workflow-status.yaml` (M)
-- `_bmad-output/implementation-artifacts/epic-27-texas-intake-expansion.md` (M)
-- `_bmad-output/implementation-artifacts/epic-28-tracy-detective.md` (M)
-- `_bmad-output/implementation-artifacts/sprint-status.yaml` (M)
-- `_bmad-output/implementation-artifacts/27-2.5-consensus-adapter.md` (??)
-- `_bmad-output/implementation-artifacts/7-1-irene-pass-2-authoring-template.md` (??)
-- `_bmad-output/implementation-artifacts/PR-R-marcus-dispatch-reshaping.md` (??)
-- `_bmad-output/implementation-artifacts/evidence-bolster-control-surface.md` (??)
-- `_bmad-output/implementation-artifacts/irene-retrieval-intake.md` (??)
-- `next-session-start-here.md` (M)
-- `SESSION-HANDOFF.md` (M — this edit)
+---
 
-### Pre-existing unrelated (8 files — ambient state; NOT session-owned)
-- `CLAUDE.md` (M)
-- `_bmad-output/implementation-artifacts/26-6-marcus-production-readiness-capabilities.md` (M)
-- `_bmad-output/implementation-artifacts/prompt-pack-v4-2-run-constants-schema-drift.md` (M)
-- `docs/workflow/production-operator-card-v4.md` (M)
-- `docs/workflow/production-prompt-pack-v4.1-narrated-deck-video-export.md` (M)
-- `skills/bmad-agent-marcus/capabilities/pr-rc.md` (M)
-- `state/config/narration-script-parameters.yaml` (M)
-- `tests/marcus_capabilities/test_preflight_receipt_contract.py` (M)
+## Decisions Queue (Next-Session Context)
 
-**Discipline per protocol:** pre-existing unrelated files NOT staged into session commit. Next session inherits them as ambient state to triage.
+When Slab 1 Story 1.1a opens, the dev agent reads:
 
-## Git Closeout Strategy
+1. [`_bmad-output/planning-artifacts/architecture-langchain-langgraph-migration.md`](_bmad-output/planning-artifacts/architecture-langchain-langgraph-migration.md) §Decisions (D1–D13) and §Implementation Patterns + §Project Structure
+2. [`_bmad-output/planning-artifacts/epics-langchain-langgraph-migration.md`](_bmad-output/planning-artifacts/epics-langchain-langgraph-migration.md) §Epic 1 §Story 1.1a (AC details)
+3. [`docs/dev-guide/pydantic-v2-schema-checklist.md`](docs/dev-guide/pydantic-v2-schema-checklist.md) (existing) + CLAUDE.md §BMAD sprint governance
 
-Per operator direction mid-session, commits deferred to wrapup. Recommended closeout flow:
+Story 1.1a is scoped at ~0.5 dev-day (K≈1.3×) — deliberately the smallest story in the migration to validate the environment setup without substrate complexity.
 
-1. Stage session-owned files only (explicit `git add` by path — NOT `git add -A`)
-2. Single session commit with clear message summarizing: drift remediation (2 surfaces, 4 files) + 5 story specs + Sprint #1 green-light + sprint-status regs + SESSION-HANDOFF
-3. Hold on merge-to-master pending: (a) operator review of session commit, (b) decision on 8 pre-existing ambient files
+## Closing Note
 
-**Exception note**: 8 pre-existing dirty-worktree files remain unrelated to session commit per Step 10a discipline. These are ambient state for next session; not merged into master via this session's commit.
-
-## Links
-
-- Prior session's Step 0a harmonization report: `reports/dev-coherence/2026-04-22-0236/` (still authoritative for motion-walk drift remediation; this session did not re-run)
-- Sprint #1 Green-Light record: this section (§Party-mode green-light + §Green-light patches applied in each of 5 story specs)
+Session target (PRD → Architecture → Epics+Stories in ≤3 hours) met. Migration planning substrate is complete. Dev execution awaits Slab 1 Story 1.1a kickoff at next session open.

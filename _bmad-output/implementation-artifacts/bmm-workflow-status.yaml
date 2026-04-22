@@ -22,8 +22,31 @@ workflow_artifacts:
     file: "_bmad-output/planning-artifacts/prd-langchain-langgraph-migration.md"
     completed: "2026-04-22"
     functional_requirements: 65
-    nonfunctional_requirements: 38
+    nonfunctional_requirements: 43   # reconciled 2026-04-22 during architecture authoring; body enumerates 43 (P:6+S:7+I:6+R:7+X:5+M:8+O:4). Prior entry of 38 was a drafting-count; architecture locks 43 as authoritative.
     note: "PRD for LangChain + LangGraph re-platform migration of the APP orchestration pipeline. Locks the five foundational decisions from the research doc (Stage-2 runtime independence, bounded big-bang in clone, reject-the-LangChain-cage, HIL+SPOT preserved, specialist scaffold + sanctum pattern). Formalizes the five-slab structure (Substrate → Specialists → Marcus → Lockstep+Gates → Trial-Run+Polish). Defines five operator-approvable milestones (M1–M5) with explicit evidence requirements and Go/Revise/Halt verdicts. Produces cost projections (≥50% token-cost reduction per trial via OpenAI automatic caching + three-level model-tier routing) and timeline projections (12–16 weeks with deviation triggers). OpenAI API locked as provider (Anthropic out of scope). Primary input: _bmad-output/planning-artifacts/research/technical-langchain-langgraph-migration-research-2026-04-21.md. Distinct artifact from legacy prd.md (Wave 2B APP summary)."
+  implementation_readiness_langchain_langgraph_migration:
+    status: "completed"
+    file: "_bmad-output/planning-artifacts/implementation-readiness-report-2026-04-22.md"
+    completed: "2026-04-22"
+    verdict: "READY-WITH-MINOR-AMENDMENTS"
+    findings: 5
+    note: "Pre-architecture PRD validation pass. 5 findings staged as architecture T1 inputs: NFR count drift (38→43, now reconciled here); 7 FRs without milestone evidence (FR24/FR27/FR34/FR36/FR37/FR42/FR53) — all closed by architecture D2+D3+D7 amendments; Slab 2 oversized → split into 2a/2b/2c (architecture D10); Slab 5 bundled → split into 5a/5b (architecture D11); cross-slab governance artifact ownership → D12 protocol at every slab-closing story."
+  architecture_langchain_langgraph_migration:
+    status: "completed"
+    file: "_bmad-output/planning-artifacts/architecture-langchain-langgraph-migration.md"
+    completed: "2026-04-22"
+    decisions_locked: 13
+    party_mode_rounds: 1
+    amendments_accepted: 9
+    note: "Migration architecture authored via bmad-create-architecture (8/8 steps). 13 decisions locked (D1 sanctum hybrid; D2 three-level model cascade; D3 HIL tamper-evidence; D4 graph-compile CI; D5 sanctum cold-read + invalidation; D6 manifest-as-graph-config; D7 operator-surface contract; D8 frozen-graph ceremony; D9 evidence-gap closure; D10 Slab 2 sub-structure 2a/2b/2c; D11 Slab 5 split 5a/5b; D12 cross-slab protocol; D13 registry-bump procedure). Party-mode Round 1 (Step 3) green-lit with 9 amendments (lane-split altitude, FR traceability, canary tests in 4 tiers, scaffold-conformance framework at Slab 1, langgraph-state-idioms doc, Story 1 split 1a/1b/1c, CLONE-FORK-NOTICE, survey-and-discard, idiom sanity check). All 15 load-bearing substrate invariants have preserving patterns with file/test references. PR-R (primary Sprint #1) forward-port convergence staged as migration-guide §8 reconciliation plan. 12-package app/ layout with 6-package Slab-1 scope (7 if MCP in Slab 1 smoke — default YES). Distinct artifact from legacy architecture.md (pre-migration APP)."
+  epics_langchain_langgraph_migration:
+    status: "completed"
+    file: "_bmad-output/planning-artifacts/epics-langchain-langgraph-migration.md"
+    completed: "2026-04-22"
+    epics_count: 9
+    stories_count: 56
+    estimated_points: 184
+    note: "Migration epic+story decomposition via bmad-create-epics-and-stories (4/4 steps). 9 epics: E1 Slab 1 Substrate (9 stories), E2a Scaffold Pilot PR-R-conformant (4), E2b Specialist Tranche 14 (17), E2c Wondercraft+Generator (4), E3 Marcus Orchestration (6), E4 Lockstep+Gates+Cora (7), E5a Acceptance (5), E5b Polish (4), plus EX Cross-Cutting Governance Protocol (0 discrete stories; embedded at every slab-closing story per D12). All 65 FRs + 43 NFRs covered with spot-check matrix. All 5 readiness findings closed. Aligned with 12-16 week PRD timeline at ~12-15 pts/week BMAD dev-agent throughput. Ready for Slab 1 Story 1.1a kickoff. Distinct artifact from legacy epics.md (22-epic pre-migration APP roster)."
   architecture:
     status: "completed"
     file: "_bmad-output/planning-artifacts/architecture.md"
