@@ -46,3 +46,13 @@ repos:
           Commits touching skills/**/*.py or scripts/**/*.py must also touch
           at least one test file. Behavior changes ship with their test update
           or not at all.
+
+      - id: mojibake-check
+        name: mojibake guard (UTF-8 text hygiene)
+        entry: python scripts/dev/check_mojibake.py
+        language: system
+        pass_filenames: true
+        types_or: [text]
+        description: >
+          Reject common mojibake signatures such as — or § so UTF-8 text
+          artifacts do not drift into mixed-encoding corruption.
