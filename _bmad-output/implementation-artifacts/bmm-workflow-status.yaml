@@ -17,6 +17,13 @@ workflow_artifacts:
     file: "_bmad-output/planning-artifacts/prd.md"
     functional_requirements: 90
     nonfunctional_requirements: 25
+  prd_langchain_langgraph_migration:
+    status: "completed"
+    file: "_bmad-output/planning-artifacts/prd-langchain-langgraph-migration.md"
+    completed: "2026-04-22"
+    functional_requirements: 65
+    nonfunctional_requirements: 38
+    note: "PRD for LangChain + LangGraph re-platform migration of the APP orchestration pipeline. Locks the five foundational decisions from the research doc (Stage-2 runtime independence, bounded big-bang in clone, reject-the-LangChain-cage, HIL+SPOT preserved, specialist scaffold + sanctum pattern). Formalizes the five-slab structure (Substrate → Specialists → Marcus → Lockstep+Gates → Trial-Run+Polish). Defines five operator-approvable milestones (M1–M5) with explicit evidence requirements and Go/Revise/Halt verdicts. Produces cost projections (≥50% token-cost reduction per trial via OpenAI automatic caching + three-level model-tier routing) and timeline projections (12–16 weeks with deviation triggers). OpenAI API locked as provider (Anthropic out of scope). Primary input: _bmad-output/planning-artifacts/research/technical-langchain-langgraph-migration-research-2026-04-21.md. Distinct artifact from legacy prd.md (Wave 2B APP summary)."
   architecture:
     status: "completed"
     file: "_bmad-output/planning-artifacts/architecture.md"
