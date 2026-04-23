@@ -164,8 +164,8 @@ So that **every subsequent Slab 1 story starts from an identical, reproducible b
 **Then** the import succeeds with `ok` on stdout; no import errors or version conflicts.
 
 **Given** `pyproject.toml` is extended
-**When** the dev agent runs `ruff check .` and `import-linter --config pyproject.toml`
-**Then** both tools report clean on the (currently-empty) `app/` tree; the import-linter contract stubs for `app.marcus ⊥ app.cora` and `app.gates.**` scheduler-forbidden are declared but produce no violations yet.
+**When** the dev agent runs `ruff check .` and `lint-imports --config pyproject.toml`
+**Then** both tools report clean on the minimal contract-stub `app/` tree required by import-linter; the contract stubs for `app.marcus ⊥ app.cora` and `app.gates.**` scheduler-forbidden are declared and pass without violations.
 
 **Given** no `.env` exists yet
 **When** the dev agent creates `.env.example` with placeholder `OPENAI_API_KEY=<placeholder>`, `LANGSMITH_API_KEY=<placeholder>`, `LANGSMITH_PROJECT=course-dev-ide-migration`, `DATABASE_URL=postgresql://...`
@@ -183,7 +183,7 @@ So that **the substrate shape is in place before any handler code is written, cl
 
 **Acceptance Criteria:**
 
-**Given** `app/` is empty
+**Given** `app/` contains only the empty contract-stub packages seeded in Story 1.1a (`app/`, `app/marcus/`, `app/cora/`, `app/gates/`)
 **When** the dev agent creates the seven Slab-1 packages (`app/runtime/`, `app/models/`, `app/models/state/`, `app/models/decision_cards/`, `app/manifest/`, `app/http/`, `app/mcp_server/`)
 **Then** each package has `__init__.py` + `README.md` stub naming the justifying FR(s) per architecture §Project Structure §Requirements-to-Component Matrix; `python -c "import app.runtime, app.models, app.manifest, app.http, app.mcp_server"` succeeds.
 
@@ -204,8 +204,8 @@ So that **the substrate shape is in place before any handler code is written, cl
 **Then** every sanctum directory in `_bmad/memory/` has the notice; a test in `tests/integration/sanctum/test_clone_fork_notice_present.py` asserts all are present.
 
 **Given** the import-linter contracts are declared
-**When** CI runs `import-linter --config pyproject.toml`
-**Then** the contracts validate: `app.marcus ⊥ app.cora` (both empty at this slab; trivially passes), `app.gates.**` forbids scheduler imports (empty; trivially passes), `app.mcp_server.tools.gate_decide`-only access to `app.gates.resume_api` (both empty; trivially passes).
+**When** CI runs `lint-imports --config pyproject.toml`
+**Then** the contracts validate: `app.marcus ⊥ app.cora` (both remain empty at this slab; trivially passes), `app.gates.**` forbids scheduler imports (still empty; trivially passes), `app.mcp_server.tools.gate_decide`-only access to `app.gates.resume_api` (both empty; trivially passes once Story 1.1b adds that third contract).
 
 ---
 
@@ -384,7 +384,7 @@ So that **M1 acceptance evidence (empty-manifest-loaded graph §01→§15) is bu
 **Then** LangSmith reports prompt-cache hit rate ≥ 60% on the second run (M1 Required Evidence bar).
 
 **Given** the pipeline manifest declares block-mode-trigger-paths per step
-**When** `import-linter --config pyproject.toml` runs
+**When** `lint-imports --config pyproject.toml` runs
 **Then** no violations; block-mode-trigger-paths are declared (Slab-4 CI hook consumes them later).
 
 ---
@@ -1535,5 +1535,3 @@ These land in `_bmad-output/planning-artifacts/deferred-inventory.md` at Slab 1 
 - M1–M5 acceptance bars expressed as concrete story-level ACs.
 
 **Ready for Slab 1 kickoff** — Stories 1.1a, 1.1b, 1.1c queue first per Amelia's strict-serial pattern. Remaining Slab 1 stories (1.2–1.7) open in parallel-allowed order once 1.1c closes.
-
-

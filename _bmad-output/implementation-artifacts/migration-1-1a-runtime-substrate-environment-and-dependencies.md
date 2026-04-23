@@ -1,6 +1,6 @@
 # Migration Story 1.1a: Runtime Substrate Environment + Dependencies
 
-Status: review
+Status: done
 
 **Track:** LangChain + LangGraph migration (hybrid clone only — `dev/langchain-langgraph-foundation` on remote `course-DEV-IDE-with-AGENTS-hybrid`).
 **Epic:** Slab 1 Substrate — Runtime + Models + Manifest + Bridges + Docs (migration Epic 1).
@@ -58,42 +58,42 @@ Preserved verbatim from [epics-langchain-langgraph-migration.md §Epic 1 Story 1
 
 ## Tasks / Subtasks
 
-- [ ] **T1 — Read required context before any code.** (AC: pre-work)
+- [x] **T1 — Read required context before any code.** (AC: pre-work)
   - [ ] Read [architecture-langchain-langgraph-migration.md §Decisions D1–D13 + §First Implementation Stories Amendment F + §Architectural Decisions Baked Into the Scaffold + §Implementation Patterns §1–§3](../planning-artifacts/architecture-langchain-langgraph-migration.md).
   - [ ] Read [prd-langchain-langgraph-migration.md §Functional Requirements FR1–FR8 + FR17–FR25 + FR58–FR60 + §Non-Functional Requirements NFR-S1 / NFR-M2–M7 / NFR-X1–X5 / NFR-O4](../planning-artifacts/prd-langchain-langgraph-migration.md).
   - [ ] Skim [docs/dev-guide/pydantic-v2-schema-checklist.md](../../docs/dev-guide/pydantic-v2-schema-checklist.md) — not consumed by 1.1a code (substrate bootstrap, not a schema-shape story) but Story 1.2 lands Pydantic state models that inherit this checklist; register the 14 idioms now so 1.1b/1.1c reviewers anchor on them.
   - [ ] Skim [docs/dev-guide/story-cycle-efficiency.md §K-floor discipline](../../docs/dev-guide/story-cycle-efficiency.md) — K-target for this story is **1.3×** (Pts = 1).
 
-- [ ] **T2 — Create venv and install the nine core dependencies.** (AC-1)
+- [x] **T2 — Create venv and install the nine core dependencies.** (AC-1)
   - [ ] `uv venv .venv --python 3.12` at repo root. Confirm `python -V` inside venv reports Python 3.12.x.
   - [ ] `uv pip install` the exact nine packages named in AC-1 (no more, no less for this story). Order as listed.
   - [ ] Confirm zero resolver conflicts in stderr. Any conflict = stop, triage, escalate; do not silently add version pins.
   - [ ] `uv pip freeze > requirements.lock`. Inspect the lockfile — must contain the nine packages + their transitive dependencies, one per line.
 
-- [ ] **T3 — Verify import smoke.** (AC-2)
+- [x] **T3 — Verify import smoke.** (AC-2)
   - [ ] Run the one-line `uv run python -c "..."` import check verbatim from AC-2.
   - [ ] Capture stdout; assert exactly `ok`. Capture stderr; assert empty.
   - [ ] If any `ImportError` or `RuntimeError` surfaces, stop and triage before proceeding. Do not mask by reinstalling.
 
-- [ ] **T4 — Extend `pyproject.toml` with linter contracts and dev-tooling dependency.** (AC-3)
+- [x] **T4 — Extend `pyproject.toml` with linter contracts and dev-tooling dependency.** (AC-3)
   - [ ] Add `import-linter>=2.0,<3` to `[project.optional-dependencies].dev` (currently line 24–33 of `pyproject.toml`).
   - [ ] Add top-level `[tool.importlinter]` section with `root_packages = ["app"]`.
   - [ ] Add `[[tool.importlinter.contracts]]` block **C1** with `type = "independence"`, `name = "app.marcus and app.cora are lane-isolated siblings (D3 + D4 lane separation)"`, `modules = ["app.marcus", "app.cora"]`. The `independence` contract type is the correct one for a mutual import-ban (architecture D3 + D6 state "no imports either direction"); `forbidden` is one-directional and would require two blocks. **Open boundary question to document in Completion Notes:** does import-linter treat non-existent `source_modules`/`modules` (empty Slab-1 `app.marcus` + `app.cora`) as a fatal error, a warning, or silently skip? If fatal, the dev agent has two options: (a) create empty `app/marcus/__init__.py` + `app/cora/__init__.py` stubs this story (boundary-creep into 1.1b), or (b) add `ignore_imports = []` with an explanatory comment and accept the warning until 1.1b creates the packages. Prefer (b); flag for reviewer.
   - [ ] Add `[[tool.importlinter.contracts]]` block **C2** with `type = "forbidden"`, `name = "app.gates.** may not import schedulers (D3 HIL tamper-evidence)"`, `source_modules = ["app.gates"]`, `forbidden_modules = ["threading", "apscheduler", "schedule"]`. **Important callable-level gap:** architecture D3 lists `asyncio.sleep` in the forbidden set, but import-linter matches at module level — `asyncio.sleep` is an attribute of `asyncio`, not an importable module. A full `asyncio` ban is too broad (breaks FastAPI and LangGraph internals). The correct long-term enforcement is a ruff custom rule or a runtime assertion in `app/gates/resume_api.py`. For Slab 1 stub, C2 captures the import-level bans (`threading.Timer`, `apscheduler.*`, `schedule.*`) and a `# TODO Slab 3: callable-level asyncio.sleep ban via ruff custom rule or import-time assertion in app/gates/resume_api.py` comment is added to the contract block. Same non-existent-module question as C1 applies — document resolution in Completion Notes.
   - [ ] Decide whether to bump `requires-python` in `pyproject.toml` from `">=3.11"` → `">=3.12"` (architecture §Architectural Decisions Baked Into the Scaffold says Python 3.12+). **Recommended:** leave `requires-python = ">=3.11"` unchanged for this story (primary-repo legacy code under `skills/`, `scripts/` still targets 3.11; the migration venv enforces 3.12 via `uv venv --python 3.12`). Document the divergence in the Completion Notes. If operator prefers the bump, flag at dev-story review.
 
-- [ ] **T5 — Run `ruff check` and `lint-imports`; confirm both clean.** (AC-3)
+- [x] **T5 — Run `ruff check` and `lint-imports`; confirm both clean.** (AC-3)
   - [ ] `uv run ruff check .` — must exit 0 against the (still-empty) `app/` tree and the two newly-added contract blocks.
   - [ ] `uv run lint-imports --config pyproject.toml` — must exit 0. Both contracts trivially pass because source modules (`app.marcus`, `app.gates`) do not exist yet.
   - [ ] **Known pre-existing condition:** the repo's legacy Python code under `skills/`, `scripts/`, and `tests/` already reports 1338 ruff errors per [next-session-start-here.md §Ambient worktree state](../../next-session-start-here.md). This story does NOT remediate legacy errors. `ruff check app/` (scoped to the migration tree) is what must be green. If running unscoped `ruff check .` still surfaces only the pre-existing 1338, document that in Completion Notes. No new errors introduced by this story.
 
-- [ ] **T6 — Author `.env.example` and amend `.gitignore` for tracking exception.** (AC-4)
+- [x] **T6 — Author `.env.example` and amend `.gitignore` for tracking exception.** (AC-4)
   - [ ] Create `.env.example` at repo root containing exactly the four placeholder lines listed in AC-4. No real secrets. No additional keys this story.
   - [ ] Verify current `.gitignore` lines 2–3 are `.env` + `.env.*`. Add a new line `!.env.example` below them to negate the `.env.*` pattern for the template file. Placement matters (gitignore patterns are order-sensitive; the negation must come AFTER the ignore).
   - [ ] Confirm via `git check-ignore -v .env.example` that the negation works: it should report "not ignored" (exit 1 means not ignored — correct outcome).
   - [ ] `git add .env.example` and commit. Confirm `.env` itself is still ignored (`git check-ignore -v .env` returns the `.gitignore:2:.env` line).
 
-- [ ] **T7 — Commit all six deliverables as a single logical commit.** (closure)
+- [x] **T7 — Commit all six deliverables as a single logical commit.** (closure)
   - [ ] Files modified/added this story: `requirements.lock` (new), `pyproject.toml` (extended), `.env.example` (new), `.gitignore` (amended).
   - [ ] Commit message: `feat(migration): Slab 1 Story 1.1a — runtime substrate environment + dependencies`. Body references Architecture D1–D13 + Amendment F per D12 protocol.
   - [ ] Do not push without operator's sign-off. Single-gate story; review is code-review-only, no party-mode.
@@ -151,12 +151,12 @@ Rationale per package:
 
 - **New files created by this story:** `requirements.lock` (repo root), `.env.example` (repo root).
 - **Modified files:** `pyproject.toml` (extend `[project.optional-dependencies].dev` + add `[tool.importlinter]` + contracts), `.gitignore` (append `!.env.example` line).
-- **No new directories.** `app/` tree creation is Story 1.1b scope. `tests/` scaffolding is Story 1.1b scope. `docker-compose.yml` is Story 1.1b scope.
+- **No new directories beyond import-linter contract stubs.** `lint-imports` requires `app.marcus`, `app.cora`, and `app.gates` to exist, so Story 1.1a seeds only those minimal stub packages. `tests/` scaffolding is Story 1.1b scope. `docker-compose.yml` is Story 1.1b scope.
 - **No sanctum edits.** `CLONE-FORK-NOTICE.md` per specialist is Story 1.1b scope (Amendment G).
 
 ### Forward-port freeze (FR60) semantics — what lands NOW
 
-> Per [next-session-start-here.md §Branch Baseline](../../next-session-start-here.md): **FR60 activates when Slab 1 opens.** This story *is* Slab 1 opening. After this commit lands on `dev/langchain-langgraph-foundation`, the convention `git merge upstream/master` for primary-repo catchup **stops being on-policy**. Cross-repo convergence from this point on goes through the migration-guide §8 forward-port playbook, not raw merges.
+> Per [next-session-start-here.md §Branch Baseline](../../next-session-start-here.md) and sprint governance, **FR60 becomes active when Story 1.1a is accepted as `done` on the migration branch.** This story opens Slab 1, but the branch-management policy change is treated as active only once the bootstrap commit has cleared review. After that point, `git merge upstream/master` for primary-repo catchup stops being on-policy and convergence goes through the migration-guide §8 forward-port playbook.
 
 The commit message should explicitly name FR60 activation so the policy change is grep-able later.
 
@@ -189,21 +189,17 @@ gpt-5.4
 - `python -m uv` used instead of bare `uv` because the user-scope `uv` install was not on PowerShell `PATH`.
 - AC-2/AC-3 commands executed with `UV_CACHE_DIR=.uv-cache` and `uv run --no-project` to avoid sandbox cache-permission issues and setuptools editable-build discovery on this non-packaged repo.
 
-*(populated at dev-story time)*
-
 ### Completion Notes List
 
-- Created `.venv` with Python 3.12.13. Installed the nine core packages in AC-1 with zero resolver conflicts; `requirements.lock` emitted at repo root with 49 pinned lines covering the nine direct packages plus transitive dependencies.
+- Created `.venv` with Python 3.12.13. Installed the nine core packages in AC-1 with zero resolver conflicts; `requirements.lock` was re-emitted during review remediation as plain UTF-8 text with 49 pinned lines covering the nine direct packages plus transitive dependencies.
 - AC-2 import smoke passed with `STDOUT=ok` and empty stderr using `python -m uv run --no-project --python .\.venv\Scripts\python.exe python -c "import langgraph, langchain_openai, pydantic, fastapi, langsmith; print('ok')"`.
 - `requires-python` was intentionally left at `>=3.11`. Story 1.1a enforces Python 3.12 at the migration venv boundary while legacy primary-repo code remains 3.11-compatible.
 - `ruff check .` still reports the known 1338 pre-existing legacy findings outside migration scope. Scoped validation `ruff check app` exits 0, which is the relevant Story 1.1a migration-tree gate.
-- Import-linter did not silently skip a missing root package: it fatally required an `app` package to exist, and its forbidden external modules also required `include_external_packages = true`. Minimal stub packages `app/`, `app/marcus/`, `app/cora/`, and `app/gates/` were added so the two Slab-1 contract stubs could execute and pass. This is the smallest practical boundary-creep into 1.1b; reviewer should confirm whether 1.1b now treats these as pre-seeded scaffolds.
+- Import-linter did not silently skip a missing root package: review confirmed that `lint-imports --config pyproject.toml` fails with `Module 'app.marcus' does not exist.` when lane/gate stubs are absent. Minimal stub packages `app/`, `app/marcus/`, `app/cora/`, and `app/gates/` remain the smallest practical substrate, and Story 1.1b now treats them as pre-seeded scaffolds.
 - Callable-level `asyncio.sleep` enforcement remains deferred to Slab 3 as documented in the TOML TODO, because import-linter operates at module-import granularity, not attribute-call granularity.
-- `.env.example` is trackable (`git check-ignore .env.example` exit 1; `git status --short -- .env.example` shows `?? .env.example`). `.env` remains ignored via `.gitignore:2:.env`.
+- `.env.example` is trackable (`git check-ignore .env.example` exit 1 after negation) and `.env` remains ignored via `.gitignore:2:.env`.
 - K-floor framing note: this substrate-bootstrap story creates zero pytest nodes, so the 1.3× K target was treated as command-verification coverage rather than test-node count.
-- FR60 activation commit SHA: recorded in the commit created for this story and echoed in the final dev-story handoff.
-
-*(populated at dev-story time — include: final ruff/lint-imports exit codes, lockfile package count, import-smoke stdout capture, K-floor framing decision, `requires-python` decision, any linter-contract tightening deferred to Slab 3, FR60-activation commit SHA)*
+- FR60 activation baseline commit SHA remains `a905de0`; review remediation aligned story text with sprint governance so freeze activation is keyed to Story 1.1a status `done`.
 
 ### File List
 
@@ -221,5 +217,11 @@ gpt-5.4
 ### Change Log
 
 - 2026-04-22: Completed Story 1.1a runtime substrate bootstrap. Added Python 3.12 migration venv lockfile, pyproject import-linter contract stubs, minimal `app/` package stubs required for import-linter execution, and `.env.example` gitignore exception. Scoped migration-tree validation passed (`ruff check app`, `lint-imports`, import smoke).
+- 2026-04-22: Code-review remediation re-emitted `requirements.lock` as UTF-8 text, aligned Story 1.1b handoff assumptions with import-linter stub-package requirements, and repaired Story 1.1a closeout integrity.
 
-*(populated at dev-story time — expected: `requirements.lock` new, `pyproject.toml` modified, `.env.example` new, `.gitignore` modified)*
+### Review Findings
+
+- [x] [Review][Patch] Regenerate requirements.lock as plain UTF-8 text [requirements.lock:1]
+- [x] [Review][Patch] Align Story 1.1a/1.1b serial handoff with import-linter stub-package requirement [_bmad-output/planning-artifacts/epics-langchain-langgraph-migration.md:186]
+- [x] [Review][Patch] Repair Story 1.1a closeout record and FR60 timing note [_bmad-output/implementation-artifacts/migration-1-1a-runtime-substrate-environment-and-dependencies.md:3]
+- [x] [Review][Defer] Broader hybrid bootstrap docs still install from requirements.txt without migration-only import-linter tooling [requirements.txt:26] - deferred, pre-existing
