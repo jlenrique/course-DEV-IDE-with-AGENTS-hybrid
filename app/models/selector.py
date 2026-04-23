@@ -24,6 +24,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import re
 from datetime import UTC, datetime
 from pathlib import Path
 from typing import NamedTuple
@@ -38,6 +39,9 @@ from app.models.state.model_resolution_entry import ModelResolutionEntry, Resolu
 REGISTRY_PATH: Path = Path(__file__).resolve().parent / "registry.yaml"
 SELECTION_POLICY_PATH: Path = Path(__file__).resolve().parent / "selection_policy.yaml"
 SPECIALISTS_DIR: Path = Path(__file__).resolve().parent.parent / "specialists"
+
+_SPECIALIST_ID_PATTERN: re.Pattern[str] = re.compile(r"^[a-zA-Z0-9_-]+$")
+"""Allowed characters for `specialist_id` (path-traversal prevention)."""
 
 
 class ResolveResult(NamedTuple):
@@ -101,7 +105,19 @@ def _load_specialist_config(specialist_id: str) -> SpecialistModelConfig | None:
     specialist migrations populate per-specialist subdirectories. Returning
     None here means "no per_specialist level applies" — cascade falls
     through. Reads `SPECIALISTS_DIR` at call time so test monkey-patches apply.
+
+    `specialist_id` is sanitized against `_SPECIALIST_ID_PATTERN` to prevent
+    path-traversal attacks (e.g., ``"../etc/passwd"``) escaping
+    `SPECIALISTS_DIR`. Invalid IDs raise `ModelResolutionError` rather than
+    silently returning None — silent rejection would mask configuration errors
+    upstream.
     """
+    if not _SPECIALIST_ID_PATTERN.fullmatch(specialist_id):
+        raise ModelResolutionError(
+            f"specialist_id={specialist_id!r} contains characters outside the "
+            f"allowed pattern {_SPECIALIST_ID_PATTERN.pattern!r}; cannot resolve "
+            "model_config.yaml without risking path traversal."
+        )
     config_path = SPECIALISTS_DIR / specialist_id / "model_config.yaml"
     if not config_path.exists():
         return None

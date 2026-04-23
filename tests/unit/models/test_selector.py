@@ -405,6 +405,35 @@ def test_cascade_exhausted_raises_named_error(
 # ---------------------------------------------------------------------------
 
 
+@pytest.mark.parametrize(
+    "bad_id",
+    [
+        "../etc/passwd",
+        "../../app",
+        "irene/../gary",
+        "irene/sub",
+        "irene with space",
+        "irene$",
+        "..",
+        "",
+    ],
+)
+def test_specialist_id_path_traversal_rejected(
+    bad_id: str,
+    isolated_registry: Path,
+    isolated_policy: Path,
+    isolated_specialists: Path,
+) -> None:
+    """G6-EDGE security: specialist_id outside [a-zA-Z0-9_-]+ raises ModelResolutionError."""
+    _write_canonical_registry(isolated_registry / "registry.yaml")
+    _write_minimal_policy(isolated_policy / "selection_policy.yaml")
+    with pytest.raises(ModelResolutionError) as exc_info:
+        resolve(bad_id)
+    assert "path traversal" in str(exc_info.value).lower() or "allowed pattern" in str(
+        exc_info.value
+    )
+
+
 def test_cache_prefix_hash_is_deterministic_within_test() -> None:
     """Same args → same hash, on the spot."""
     from app.models.selector import _compute_cache_prefix_hash

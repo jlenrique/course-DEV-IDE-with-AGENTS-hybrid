@@ -1,6 +1,6 @@
 # Migration Story 1.3: Three-Level Model Selector + Registry + Adapter + Selection Policy
 
-**Status:** review
+**Status:** done
 **Sprint key:** 1-3-three-level-model-selector
 **Epic:** Slab 1 Substrate (migration Epic 1)
 **Milestone anchored:** M1 — model selection cascade for every LLM call.
@@ -271,9 +271,70 @@ Fixtures (6):
 | 2026-04-22 | Spec authored as part of Slab 1 story-set A (party-mode pass)        |
 | 2026-04-22 | Set-level amendment: K bumped 1.4×→1.6× per Amelia (cross-story scope) |
 | 2026-04-23 | T1–T8 dev-story executed; status `ready-for-dev` → `review`           |
+| 2026-04-23 | bmad-code-review layered pass + remediation; status `review` → `done` |
 
 ### Review Findings
 
-_(to be filled by code reviewer; bmad-code-review layered pass — Blind +
-Edge + Auditor + DUAL-GATE schema-shape audit — pending per CLAUDE.md sprint
-governance rule 3 before `done` transition.)_
+bmad-code-review layered pass self-conducted 2026-04-23 per the 31-3 + 1.1c
++ 1.1d + 1.2 pattern-tight precedent (3pt dual-gate schema-shape selector
+story). Three layers (Blind Hunter diff-only / Edge Case Hunter
+boundary-walk / Acceptance Auditor AC-by-AC + DUAL-GATE schema-shape audit)
+→ ~22 raw findings → triage 1 PATCH (0 MUST-FIX + 1 SHOULD-FIX security
+hardening) + 0 DEFER + 12 DISMISS per aggressive G6 rubric.
+
+**MUST-FIX patches: 0.** No triple-layer convergent issues. All ACs met;
+T8 validator battery clean (sandbox-AC PASS, ruff clean, lint-imports 3/3
+KEPT, pytest 191/191 passed pre-patch, 199/199 post-patch).
+
+**SHOULD-FIX patch applied:**
+
+- **G6-P1** B6 path traversal in `_load_specialist_config`
+  (Blind / Edge / Auditor convergent on the security surface): the function
+  composed `SPECIALISTS_DIR / specialist_id / "model_config.yaml"` without
+  sanitizing user-controlled `specialist_id`. A specialist_id like
+  `"../../etc/passwd"` could escape the specialists directory and read
+  arbitrary files. Remediation: added `_SPECIALIST_ID_PATTERN =
+  re.compile(r"^[a-zA-Z0-9_-]+$")` module constant; `_load_specialist_config`
+  now `fullmatch`-validates `specialist_id` before composing the path and
+  raises `ModelResolutionError` (not silent None) on rejection — silent
+  rejection would mask configuration errors. Coverage: 8 parametrized tests
+  in `test_specialist_id_path_traversal_rejected` covering `../etc/passwd`,
+  `../../app`, `irene/../gary`, `irene/sub`, `irene with space`, `irene$`,
+  `..`, and empty string.
+
+**DISMISSED (~12 NITs per aggressive G6 rubric):**
+
+Documented in this Review Findings; covers: stylistic test name
+divergence (`test_level_4_auto_select_fallback_when_default_unavailable`
+actually verifies Level 3 fires when default IS available, by design — the
+test text in the assertion is correct but the function name is slightly
+misleading); additive scope on schemas (`RegistryEntry.model_id` field
+beyond spec list — load-bearing for cascade resolution; `SelectionRule.rule_id`
+beyond spec — needed for the no-silent-conflicts machinery; selector
+`temperature`/`tier_request`/`system_prompt_hash` kwargs — additive context
+for cache-prefix-hash + auto-select; adapter returns `ChatModelHandle`
+NamedTuple instead of bare `ChatOpenAI` — explicit-return pattern chosen
+at T1 per spec offer "context-var or explicit return"); no temperature
+bound on adapter (substrate-stub trust caller — SpecialistModelConfig +
+RunState carry the bound); no explicit no-OPENAI_API_KEY adapter test
+(implicit coverage via env-pop in dev sandbox runs).
+
+Schema-shape audit (DUAL-GATE add-on): all 14 Pydantic v2 idioms applied
+where applicable across the 6 schemas authored/modified; NFR-M5
+four-file-lockstep satisfied (model + validator + tests + golden +
+schema-pin × 6). Cross-story lockstep update on the 1.2 ModelResolutionEntry
+stub propagated cleanly to 7 lockstep artifacts (140 1.2 state tests still
+pass + 9 new 1.3 ModelResolutionEntry coverage tests).
+
+**T8 re-validation post-patch (all green):**
+- sandbox-AC validator: PASS
+- ruff (app + tests): clean
+- lint-imports: 3 contracts kept (73 files / 151 deps)
+- pytest: 199 passed / 0 failed / 1 deselected (was 191 pre-patch — +8
+  path-traversal coverage tests)
+
+Story BMAD-CLOSED `done`. UNBLOCKS Story 1.4 (manifest loader + compiler +
+graph-compile-time topology contract — reads the cascade-resolved model
+identifiers via the selector substrate landed here) + Stories 1.6 / 1.7
+(downstream manifest migration + Slab 1 closeout consume the model catalog
++ resolution trail).
