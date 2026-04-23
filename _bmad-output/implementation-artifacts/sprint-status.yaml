@@ -734,7 +734,7 @@ development_status:
   # the migration-guide §8 forward-port playbook.
   # =============================================================================
   migration-epic-1-slab-1-substrate: in-progress  # Opened 2026-04-22 by migration-1-1a-runtime-substrate-environment-and-dependencies.
-  migration-1-1a-runtime-substrate-environment-and-dependencies: done  # Authored 2026-04-22 via bmad-create-story. Pts=1, single-gate, K-target 1.3×. Reviewed and remediated 2026-04-22; Story 1.1b now treats the import-linter stub packages as pre-seeded scaffolds.
+  migration-1-1a-runtime-substrate-environment-and-dependencies: done  # Authored 2026-04-22 via bmad-create-story. Pts=1, single-gate, K-target 1.3×. Reviewed and remediated 2026-04-22; Story 1.1b now treats the import-linter stub packages as pre-seeded scaffolds. Re-opened + re-closed 2026-04-22 for `mcp` SDK micro-fix per Set-A green-light review BLOCKER-2 (operator: "1.1a microfix"); tenth dep `mcp==1.27.0` added to lockfile + AC-MF1 through AC-MF4 verified green; back to `done`.
 
   # =============================================================================
   # LESSON PLANNER MVP SPRINT-STATUS APPEND (2026-04-18, late session)

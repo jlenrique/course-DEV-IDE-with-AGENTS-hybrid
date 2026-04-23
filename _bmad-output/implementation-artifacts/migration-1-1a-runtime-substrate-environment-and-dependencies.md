@@ -1,6 +1,6 @@
 # Migration Story 1.1a: Runtime Substrate Environment + Dependencies
 
-Status: done
+Status: done (re-opened 2026-04-22 for `mcp` SDK micro-fix per Set-A green-light review BLOCKER-2 — see §Re-Opening 2026-04-22 below; closes back to `done` after lockfile relock + import-smoke green)
 
 **Track:** LangChain + LangGraph migration (hybrid clone only — `dev/langchain-langgraph-foundation` on remote `course-DEV-IDE-with-AGENTS-hybrid`).
 **Epic:** Slab 1 Substrate — Runtime + Models + Manifest + Bridges + Docs (migration Epic 1).
@@ -14,6 +14,20 @@ Status: done
 As a **dev agent onboarding the hybrid clone**,
 I want **a locked Python 3.12+ venv with the migration's nine core dependencies installed and pinned, plus pyproject linter contracts and a `.env.example` template in place**,
 So that **every subsequent Slab 1 story (1.1b, 1.1c, 1.2–1.7) starts from an identical, reproducible baseline, FR60 backport-freeze discipline is wired Day 1, and NFR-S1 secret-management posture is codified before any migration code lands**.
+
+## Re-Opening 2026-04-22 — `mcp` SDK Micro-Fix
+
+The Set-A party-mode green-light review (2026-04-22) surfaced that the `mcp` PyPI SDK is **absent from `requirements.lock`** even though Set-A Stories 1.1c (MCP code substrate) and 1.1d (MCP transport smoke + parity) require `mcp.server.Server` + `mcp.server.stdio.stdio_server` + `mcp.client.stdio.stdio_client` + `ClientSession`. Operator decision (2026-04-22): re-open 1.1a as a micro-fix to extend the install list and relock, rather than ride the dep change into 1.1c's commit (which would couple a substrate-bootstrap concern to an application story).
+
+**Micro-fix scope:**
+- **AC-MF1 — Dep installed.** `uv pip install mcp` (or `uv add mcp` if pyproject is the source of truth) succeeds against the existing 1.1a venv; `uv pip freeze > requirements.lock` re-emitted with `mcp` plus its transitive deps pinned.
+- **AC-MF2 — SDK exposes the required primitives.** `uv run python -c "from mcp.server import Server; from mcp.server.stdio import stdio_server; from mcp.client.stdio import stdio_client; from mcp import ClientSession; print('ok')"` prints `ok` with exit 0. If the locked version of `mcp` does NOT expose any of these four import paths, ESCALATE before relocking — that's a 1.1d redesign trigger, not a silent dep-version downgrade.
+- **AC-MF3 — Existing 1.1a ACs still green.** AC-1, AC-2, AC-3, AC-4 from the original 1.1a re-run green: import smoke still works (now extended to import `mcp` too); `ruff check app` still clean; `lint-imports` still clean; `.env.example` unchanged.
+- **AC-MF4 — Re-close commit.** New commit on `dev/langchain-langgraph-foundation`: `chore(migration): Slab 1 Story 1.1a micro-fix — add mcp SDK to lockfile (Set-A BLOCKER-2 closure)`. Body cites the 2026-04-22 set-level party-mode review finding + the operator's "1.1a microfix" disposition. Story status returns to `done`.
+
+The total dep count rises 9 → 10 (`langgraph, langchain, langchain-openai, openai, langgraph-checkpoint-postgres, pydantic>=2, fastapi, langsmith, psycopg[binary], mcp`). The architecture's "nine-package locked starting palette" line is amended in this commit's body to "ten-package locked starting palette as of 2026-04-22 micro-fix; mcp added per Set-A consensus on MCP-in-Slab-1 (5/5 MIDDLE PATH)."
+
+---
 
 ## Acceptance Criteria
 
@@ -151,7 +165,7 @@ Rationale per package:
 
 - **New files created by this story:** `requirements.lock` (repo root), `.env.example` (repo root).
 - **Modified files:** `pyproject.toml` (extend `[project.optional-dependencies].dev` + add `[tool.importlinter]` + contracts), `.gitignore` (append `!.env.example` line).
-- **No new directories beyond import-linter contract stubs.** `lint-imports` requires `app.marcus`, `app.cora`, and `app.gates` to exist, so Story 1.1a seeds only those minimal stub packages. `tests/` scaffolding is Story 1.1b scope. `docker-compose.yml` is Story 1.1b scope.
+- **No new directories beyond import-linter contract stubs.** `lint-imports` requires `app.marcus`, `app.cora`, and `app.gates` to exist, so Story 1.1a seeds only those minimal stub packages. `tests/` scaffolding is Story 1.1b scope. Native-Postgres bootstrap (`scripts/dev/init_postgres.sql` + `docs/dev-guide/local-postgres-setup.md`) is Story 1.1b scope. **No Docker / no docker-compose.yml — operator runs Postgres 15+ natively on the dev machine per the 2026-04-22 no-container decision; this line previously said "`docker-compose.yml` is Story 1.1b scope" and was revised after Story 1.1a closed.**
 - **No sanctum edits.** `CLONE-FORK-NOTICE.md` per specialist is Story 1.1b scope (Amendment G).
 
 ### Forward-port freeze (FR60) semantics — what lands NOW
