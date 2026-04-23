@@ -98,14 +98,18 @@ def test_nfr_x4_model_resolution_trail_default_empty_list() -> None:
 
 
 def test_nfr_x4_model_resolution_trail_holds_entries() -> None:
+    """Updated 2026-04-23 per Story 1.3 AC-1.3-C: full ModelResolutionEntry shape."""
     entry = ModelResolutionEntry(
-        level="registry-default",
+        level="registry_default",
+        requested=None,
         resolved="gpt-5.4",
+        reason="default fallthrough (NFR-X4 carrier test)",
         timestamp=datetime.now(UTC),
     )
     rs = RunState(graph_version="v0.1-stub", model_resolution_trail=[entry])
     assert len(rs.model_resolution_trail) == 1
     assert rs.model_resolution_trail[0].resolved == "gpt-5.4"
+    assert rs.model_resolution_trail[0].reason  # full shape carries reason field
 
 
 # ---------------------------------------------------------------------------

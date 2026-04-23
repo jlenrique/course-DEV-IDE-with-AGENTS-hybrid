@@ -1,0 +1,37 @@
+# Slab 1 Story 1.3 model-selection auto-select policy. The selector consults
+# this YAML when the cascade reaches the auto_select_fallback level (see
+# app/models/selector.py + architecture §D2).
+#
+# Rule semantics: first matching rule wins. A rule "matches" when every
+# key/value in its `when` predicate equals the corresponding key in the
+# selector's resolution context. Empty `when: {}` matches universally.
+#
+# Per AC-1.3-B, conflicting rules (same `when` + different `prefer_tier`)
+# surface as named ValidationError at YAML load time, NOT silent overrides.
+rules:
+  - rule_id: "tier-request-reasoning"
+    when:
+      tier_request: "reasoning"
+    prefer_tier: "reasoning"
+    fallback_chain:
+      - "gpt-5.4"
+      - "gpt-5-codex"
+  - rule_id: "tier-request-fast"
+    when:
+      tier_request: "fast"
+    prefer_tier: "fast"
+    fallback_chain:
+      - "gpt-5-haiku"
+  - rule_id: "tier-request-code"
+    when:
+      tier_request: "code"
+    prefer_tier: "code"
+    fallback_chain:
+      - "gpt-5-codex"
+      - "gpt-5.4"
+  - rule_id: "default-fallback"
+    when: {}
+    prefer_tier: "fast"
+    fallback_chain:
+      - "gpt-5-haiku"
+      - "gpt-5.4"

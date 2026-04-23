@@ -1,8 +1,8 @@
-# SCHEDULED FOR REPLACEMENT IN STORY 1.3 — pairs with
-# app/models/state/model_resolution_entry.py.
-"""Cross-field validators for `ModelResolutionEntry` (NFR-M5 four-file-lockstep).
+"""Cross-field validators for `ModelResolutionEntry` (Story 1.3 full schema).
 
-`ModelResolutionEntry` is a 1.3-replacement stub; its 1.2 invariants are
-field-level only. This file ships no module-level functions and will be
-deleted + re-authored in Story 1.3 alongside the model.
+The 1.3 full schema's invariants are field-level only (closed-enum `level`,
+non-empty `resolved` + `reason`, tz-aware `timestamp`, sha256-hex
+`cache_prefix_hash`). This file ships no module-level functions; the
+four-file-lockstep slot is reserved for any future cross-field check that
+1.4+ stories may introduce as the cascade semantics deepen.
 """

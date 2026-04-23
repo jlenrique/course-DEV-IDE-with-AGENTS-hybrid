@@ -1,34 +1,141 @@
-"""Stub `PipelineRegistry` model for Slab 1 Story 1.1c.
+"""`PipelineRegistry` — model catalog (Story 1.3 full schema, replaces 1.1c stub).
 
-This is intentionally minimal. Story 1.3 lands the full three-level model-cascade
-schema (`PipelineRegistry` + `ModelSelectionPolicy`); this stub only provides the
-shape needed by `app.models.registry_check` to validate `app/models/registry.yaml`
-at AC-1.1c-A acceptance time.
+Per architecture §D2 + §D13 the registry is the source of truth for the
+LLM model catalog the runtime can resolve to. Each entry carries identity,
+provider, capacity (context window), tier (reasoning/code/fast), pricing,
+and an availability flag the operator can flip without removing the entry.
 
-Anti-pattern guard (story-cycle-efficiency §K-floor): keep this stub minimal.
-Adding 1.3-scope fields here is scope creep into the next story.
+Per D13 registry-bump policy:
+- Tier-1 (additive): adding a new model is dev-agent authority.
+- Tier-2 (subtractive / version-pin change): party-mode round required.
+- Tier-3 (provider family change): party-mode + version bump in this module.
 """
 
 from __future__ import annotations
 
-from pydantic import BaseModel, ConfigDict, Field
+from decimal import Decimal
+from typing import Literal
+from uuid import UUID, uuid4
+
+from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
+
+from app.models.state._base import enforce_uuid4_version
+
+ProviderId = Literal["openai"]
+"""Closed enum: providers the migration runtime supports in Slab 1."""
+
+ModelTier = Literal["reasoning", "code", "fast"]
+"""Closed enum: capability tier classification for cascade auto-select policy."""
 
 
-class PipelineRegistryEntry(BaseModel):
-    """Single registry entry. 1.3 will tighten this with cascade rules + provider fields."""
+class RegistryEntry(BaseModel):
+    """One model entry in the catalog."""
 
-    model_config = ConfigDict(extra="forbid", validate_assignment=True)
+    model_config = ConfigDict(extra="forbid", validate_assignment=True, frozen=True)
 
-    id: str = Field(min_length=1, description="Stable model identifier referenced by specialists.")
-    default_model: str | None = Field(
-        default=None,
-        description="Optional default model alias; full cascade resolution lands in 1.3.",
+    id: UUID = Field(
+        default_factory=uuid4,
+        description="UUID4 stable identity for this catalog entry.",
     )
+    model_id: str = Field(
+        ...,
+        min_length=1,
+        description=(
+            "Provider-side model identifier (e.g. 'gpt-5.4', 'gpt-5-haiku'); "
+            "the string the runtime passes to the provider's chat-completions API."
+        ),
+    )
+    display_name: str = Field(
+        ...,
+        min_length=1,
+        description="Operator-facing human label.",
+    )
+    provider: ProviderId = Field(
+        ...,
+        description="Closed enum: openai (extended in later slabs as new providers land).",
+    )
+    context_window: int = Field(
+        ...,
+        gt=0,
+        description="Maximum prompt+completion tokens this model accepts.",
+    )
+    cost_per_million_input_tokens: Decimal = Field(
+        ...,
+        ge=Decimal("0"),
+        description="USD per 1,000,000 input tokens (pricing snapshot, refresh per D13).",
+    )
+    cost_per_million_output_tokens: Decimal = Field(
+        ...,
+        ge=Decimal("0"),
+        description="USD per 1,000,000 output tokens (pricing snapshot, refresh per D13).",
+    )
+    tier: ModelTier = Field(
+        ...,
+        description="Closed enum: reasoning | code | fast (drives auto-select policy).",
+    )
+    available: bool = Field(
+        default=True,
+        description=(
+            "Operator availability flag; toggling False removes the entry from "
+            "selector resolution without deleting the catalog row (D13 Tier-1)."
+        ),
+    )
+
+    @field_validator("id")
+    @classmethod
+    def _enforce_uuid4(cls, value: UUID) -> UUID:
+        return enforce_uuid4_version(value)
 
 
 class PipelineRegistry(BaseModel):
-    """Stub registry container. 1.3 will replace with the full three-level cascade schema."""
+    """Catalog container with cascade-default + auto-select-enable flag."""
 
     model_config = ConfigDict(extra="forbid", validate_assignment=True)
 
-    entries: list[PipelineRegistryEntry] = Field(default_factory=list)
+    id: UUID = Field(
+        default_factory=uuid4,
+        description="UUID4 identity for this registry instance (snapshot of catalog state).",
+    )
+    entries: list[RegistryEntry] = Field(
+        default_factory=list,
+        description="Model catalog entries.",
+    )
+    default_model_id: str = Field(
+        ...,
+        min_length=1,
+        description=(
+            "model_id of the entry the registry falls back to as `registry_default` "
+            "in the cascade. Cross-field-validated to match an existing entry."
+        ),
+    )
+    auto_select_enabled: bool = Field(
+        default=True,
+        description=(
+            "When True, cascade falls through to ModelSelectionPolicy auto-select "
+            "rules after registry default is exhausted. False disables auto-select "
+            "(per-call + per-specialist + registry default only)."
+        ),
+    )
+
+    @field_validator("id")
+    @classmethod
+    def _enforce_uuid4(cls, value: UUID) -> UUID:
+        return enforce_uuid4_version(value)
+
+    @model_validator(mode="after")
+    def _check_default_model_id_in_entries(self) -> PipelineRegistry:
+        if not self.entries:
+            # Empty registry is a deployment error but does not violate the model;
+            # selector raises when asked to resolve. This validator only gates the
+            # default-model invariant when entries exist.
+            return self
+        known = {e.model_id for e in self.entries if e.available}
+        if self.default_model_id not in known:
+            raise ValueError(
+                f"default_model_id={self.default_model_id!r} not in registry's available "
+                f"entries (got {sorted(known)})"
+            )
+        return self
+
+
+__all__ = ["ModelTier", "PipelineRegistry", "ProviderId", "RegistryEntry"]

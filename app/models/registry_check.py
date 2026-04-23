@@ -1,11 +1,14 @@
 """`uv run python -m app.models.registry_check` entry point.
 
-Loads `app/models/registry.yaml`, validates it against the stub `PipelineRegistry`
-model, and exits 0 on success or 1 with a named violation written to stderr.
+Loads `app/models/registry.yaml`, validates it against the full
+`PipelineRegistry` model (Story 1.3), and exits 0 on success or 1 with a
+named violation written to stderr. Validation now exercises:
 
-Story 1.1c scope only creates the entry-point + minimal validation shape. The
-full three-level cascade validation (provider keys, capability tiers, fallback
-chains) lands in Story 1.3.
+- Per-entry shape (provider closed enum, tier closed enum, UUID4 identity,
+  Decimal pricing fields, context_window > 0)
+- Registry-level invariant (default_model_id must match an available entry)
+
+Story 1.3 replaces the 1.1c stub validation path with the full schema.
 """
 
 from __future__ import annotations

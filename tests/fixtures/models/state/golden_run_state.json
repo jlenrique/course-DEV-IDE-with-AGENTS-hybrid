@@ -7,9 +7,12 @@
   "temperature": 0.0,
   "model_resolution_trail": [
     {
-      "level": "registry-default",
+      "level": "registry_default",
+      "requested": null,
       "resolved": "gpt-5.4",
-      "timestamp": "2026-04-23T12:00:00Z"
+      "reason": "PipelineRegistry.default_model_id='gpt-5.4' available; per_call + per_specialist did not fire",
+      "timestamp": "2026-04-23T12:00:00Z",
+      "cache_prefix_hash": "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef"
     }
   ],
   "sanctum_fingerprint": {

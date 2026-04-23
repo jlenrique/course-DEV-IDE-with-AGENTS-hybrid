@@ -1,0 +1,71 @@
+{
+  "$defs": {
+    "SelectionRule": {
+      "additionalProperties": false,
+      "description": "One auto-select rule.",
+      "properties": {
+        "fallback_chain": {
+          "description": "Ordered model_id fallback chain; selector tries each in order if preferred-tier resolution fails.",
+          "items": {
+            "type": "string"
+          },
+          "minItems": 1,
+          "title": "Fallback Chain",
+          "type": "array"
+        },
+        "prefer_tier": {
+          "description": "Preferred tier to resolve from when this rule matches.",
+          "enum": [
+            "reasoning",
+            "code",
+            "fast"
+          ],
+          "title": "Prefer Tier",
+          "type": "string"
+        },
+        "rule_id": {
+          "description": "Stable rule identifier; surfaced in named-conflict errors.",
+          "minLength": 1,
+          "title": "Rule Id",
+          "type": "string"
+        },
+        "when": {
+          "additionalProperties": {
+            "type": "string"
+          },
+          "description": "Predicate map (key \u2192 required value). All keys must match for the rule to fire; empty dict matches universally.",
+          "propertyNames": {
+            "enum": [
+              "specialist_id",
+              "tier_request"
+            ]
+          },
+          "title": "When",
+          "type": "object"
+        }
+      },
+      "required": [
+        "rule_id",
+        "when",
+        "prefer_tier",
+        "fallback_chain"
+      ],
+      "title": "SelectionRule",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "description": "Auto-select policy = ordered list of rules.\n\nCross-field invariant: rules are uniquely identified by `rule_id`; two\nrules with identical `when` predicates but different `prefer_tier`\nsurface as a named conflict at construction time.",
+  "properties": {
+    "rules": {
+      "description": "Ordered selection rules; first matching rule wins.",
+      "items": {
+        "$ref": "#/$defs/SelectionRule"
+      },
+      "title": "Rules",
+      "type": "array"
+    }
+  },
+  "title": "ModelSelectionPolicy",
+  "type": "object"
+}

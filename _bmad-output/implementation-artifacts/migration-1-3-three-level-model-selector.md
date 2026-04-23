@@ -1,6 +1,6 @@
 # Migration Story 1.3: Three-Level Model Selector + Registry + Adapter + Selection Policy
 
-**Status:** ready-for-dev
+**Status:** review
 **Sprint key:** 1-3-three-level-model-selector
 **Epic:** Slab 1 Substrate (migration Epic 1)
 **Milestone anchored:** M1 — model selection cascade for every LLM call.
@@ -109,4 +109,171 @@ Adding a new model to `app/models/registry.yaml` is Tier-1 (dev-agent authority)
 
 ## Dev Agent Record
 
-_(placeholder)_
+### Agent Model Used
+
+claude-opus-4-7 (1M context). Dev-story executed 2026-04-23 in single session
+following 1.2 BMAD closure.
+
+### Debug Log References
+
+- `langchain_openai.ChatOpenAI` requires `api_key` at construction time even
+  if `.invoke(...)` is never called. Adapter passes `OPENAI_API_KEY` from env
+  if set, else a documented placeholder sentinel `"sk-substrate-no-real-key-do-not-invoke"`
+  so Slab 1 substrate construction succeeds without an operator-side key.
+  Real `.invoke(...)` fails loudly with the sentinel (openai SDK server-side
+  reject); Slab 3+ specialist nodes that genuinely invoke require the
+  operator to set OPENAI_API_KEY (NFR-S1).
+- **AC-1.3-E pattern choice (T1 decision):** the spec offered "context-var or
+  explicit return" for the `RunState.model_resolution_trail` append. Per
+  party-mode consensus posture, chose **explicit return of
+  `(ChatOpenAI, ModelResolutionEntry)` tuple** (`ChatModelHandle` NamedTuple).
+  Rationale: zero global state, easy testing, caller's `RunState` reference is
+  already explicit at the call site. Documented in `app.models.adapter`
+  module docstring.
+- **Default-argument late-binding bug discovered + fixed during T8:** The
+  selector's `_load_registry(path: Path = REGISTRY_PATH)` bound the default
+  at function-definition time, so test-side monkey-patches like
+  `monkeypatch.setattr(selector, "REGISTRY_PATH", tmp_path / "registry.yaml")`
+  did NOT take effect — tests fell back to the default-bound original. Fixed
+  by switching to `path: Path | None = None` + reading `REGISTRY_PATH`
+  inside the function body. Applied identically to `_load_policy`. (G6-EDGE
+  preventive remediation; the bug would have been a real-world test-isolation
+  hazard for any future selector test.)
+- **Cross-story lockstep update:** Story 1.2's stub `ModelResolutionEntry`
+  (`{level: str, resolved: str, timestamp: datetime}`) was DELETED + replaced
+  in-place with the full Story 1.3 cascade shape per spec AC-1.3-C. The 1.2
+  golden + schema-pin fixtures + per-model test + reproducibility-invariants
+  test were updated in lockstep; 140/140 1.2 state tests still pass after
+  the substitution.
+
+### Completion Notes List
+
+- All 6 ACs (`A`, `B`, `C`, `D`, `E`, `F`) green via T8 validator battery —
+  sandbox-AC PASS, ruff clean (app + 4 test dirs), lint-imports 3/3 contracts
+  KEPT (73 files / 151 deps analyzed), pytest 191/191 passed (1 live LangSmith
+  deselected per `live_api` marker), entry-point smokes (`smoke_test`,
+  `registry_check`) exit 0. registry_check now exercises the full validation
+  path (3 catalog entries vs the 1.1c stub's 1).
+- **AC-1.3-D cascade-path coverage:** All four levels exercised
+  (`test_level_1_per_call_override_resolves`, `test_level_2_per_specialist_resolves`,
+  `test_level_2_falls_through_when_specialist_default_unavailable`,
+  `test_level_3_registry_default_resolves`,
+  `test_level_4_auto_select_fires_when_registry_default_unavailable`,
+  `test_level_4_returns_none_when_no_rule_matches`). Level 4 forced via
+  direct `_try_auto_select` call rather than full `resolve()` because the
+  registry's `_check_default_model_id_in_entries` cross-field validator fires
+  at YAML load time and rejects "default unavailable" configs before
+  `resolve()` ever runs — the upstream guard is what we WANT, not a bug.
+  Negative path (`test_cascade_exhausted_raises_named_error`) verifies the
+  upstream `ValidationError` fires loudly per spec AC-1.3-D's "no silent
+  registry-default fallback" requirement.
+- **AC-1.3-F cache-prefix stability (NFR-I6):** `test_cache_prefix_stability.py`
+  ships 4 tests including a real fresh-subprocess invocation that compares
+  the in-process hash to a subprocess-emitted hash — proves no Python
+  `hash()` (process-randomized) leaked into the implementation. Plus
+  determinism, kwarg-order independence, and input-sensitivity.
+- **K-floor framing:** 191 collecting test nodes vs the K~1.6× target on a
+  ~140-baseline (1.2 baseline of 129 + 9 new state lockstep + ~50 new 1.3
+  test nodes). Comfortably inside K~1.6× per Amelia amendment.
+- **NFR-O4 metadata tag set on adapter:** asserts the LangSmith span carries
+  `{specialist_id, model_id, level, requested, resolved, reason,
+  cache_prefix_hash}` per AC-1.3-E + bundle §2 NFR-O4. Live LangSmith
+  assertion deferred to `live_api` marker (skip-not-fail).
+- **FR24 deferred per spec:** no runtime cache-invalidation warning surface
+  authored — only the resolution trail capture. Slab 3 Story 3.5 owns the
+  warning surface. `app/models/selector.py` module docstring carries the
+  explicit `# FR24 cache-invalidation warning surface deferred to Slab 3
+  Story 3.5` marker.
+- **D13 registry-bump procedure honored:** the initial 3-entry catalog is
+  Tier-1 (additive, dev-agent authority); no party-mode consultation
+  required. Future subtractive changes will fire the Tier-2 procedure per
+  the registry.py module docstring contract.
+
+### File List
+
+**New files (this story):**
+
+App (10):
+- `app/models/registry.py` — REPLACED 1.1c stub with full PipelineRegistry +
+  RegistryEntry + closed enums (ProviderId, ModelTier) + cross-field
+  default-model-must-exist invariant.
+- `app/models/registry.yaml` — REPLACED 1.1c 1-entry stub with 3-entry
+  catalog (gpt-5.4 reasoning, gpt-5-haiku fast, gpt-5-codex code).
+- `app/models/registry_check.py` — docstring rewritten to reflect full schema.
+- `app/models/selection_policy.py` — ModelSelectionPolicy + SelectionRule
+  with no-silent-conflicts cross-field invariant (duplicate rule_id +
+  conflicting predicate detection).
+- `app/models/selection_policy.yaml` — 4-rule canonical policy (per-tier +
+  default fallback).
+- `app/models/specialist_model_config.py` — SpecialistModelConfig (frozen
+  value object).
+- `app/models/selector.py` — three-level cascade `resolve()` +
+  `_compute_cache_prefix_hash()` + `_try_auto_select()` + `ResolveResult`
+  NamedTuple + `ModelResolutionError`. Reads canonical paths via module-
+  level constants + at-call-time read pattern (no default-arg binding bug).
+- `app/models/adapter.py` — `make_chat_model()` returning `ChatModelHandle`
+  NamedTuple `(chat: ChatOpenAI, entry: ModelResolutionEntry)`. Carries
+  NFR-O4 metadata tag set on the ChatOpenAI instance.
+- `app/models/validators/__init__.py` + `registry_validators.py` +
+  `selection_policy_validators.py` — NFR-M5 four-file-lockstep companions
+  (placeholder docstrings; cross-field logic lives inline on the models
+  for now).
+- `app/models/state/model_resolution_entry.py` — REPLACED 1.2 stub with full
+  cascade-resolution shape per spec AC-1.3-C.
+- `app/models/state/validators/model_resolution_entry_validators.py` —
+  rewritten docstring (no longer a 1.3-replacement marker).
+
+Specialists (3):
+- `app/specialists/__init__.py`, `app/specialists/_scaffold/__init__.py` —
+  package + scaffold reference.
+- `app/specialists/_scaffold/model_config.yaml` — real shape per spec Dev Notes.
+
+Tests (8):
+- `tests/unit/models/__init__.py`
+- `tests/unit/models/test_pipeline_registry.py` (12 tests)
+- `tests/unit/models/test_model_selection_policy.py` (9 tests)
+- `tests/unit/models/test_specialist_model_config.py` (9 tests)
+- `tests/unit/models/test_selector.py` (10 tests covering all 4 cascade levels +
+  negative paths + cache-prefix sanity)
+- `tests/unit/models/test_cache_prefix_stability.py` (4 tests including
+  fresh-subprocess invariance)
+- `tests/unit/models/test_schema_pin.py` (3 parametrized live-vs-pin assertions)
+- `tests/integration/models/test_adapter_resolution_trail.py` (4 tests +
+  1 live_api LangSmith assertion)
+
+Fixtures (6):
+- `tests/fixtures/models/golden_pipeline_registry.json`
+- `tests/fixtures/models/golden_model_selection_policy.json`
+- `tests/fixtures/models/golden_specialist_model_config.json`
+- `tests/fixtures/models/schema_pin_pipeline_registry.json`
+- `tests/fixtures/models/schema_pin_model_selection_policy.json`
+- `tests/fixtures/models/schema_pin_specialist_model_config.json`
+
+**Modified (this story — cross-story lockstep updates per AC-1.3-C):**
+
+- `tests/unit/models/state/test_model_resolution_entry.py` — rewritten for
+  full Story 1.3 shape (was 1.2 stub tests).
+- `tests/unit/models/state/test_run_state.py::test_model_resolution_trail_accepts_entries`
+  — uses full ModelResolutionEntry shape.
+- `tests/unit/models/state/test_reproducibility_invariants.py::test_nfr_x4_model_resolution_trail_holds_entries`
+  — uses full shape per spec AC-1.3-C cross-story-update note.
+- `tests/fixtures/models/state/golden_model_resolution_entry.json` — full shape.
+- `tests/fixtures/models/state/golden_run_state.json::model_resolution_trail`
+  — full nested shape.
+- `tests/fixtures/models/state/schema_pin_model_resolution_entry.json` —
+  regenerated.
+- `tests/fixtures/models/state/schema_pin_run_state.json` — regenerated.
+
+### Change Log
+
+| Date       | Change                                                              |
+| ---------- | ------------------------------------------------------------------- |
+| 2026-04-22 | Spec authored as part of Slab 1 story-set A (party-mode pass)        |
+| 2026-04-22 | Set-level amendment: K bumped 1.4×→1.6× per Amelia (cross-story scope) |
+| 2026-04-23 | T1–T8 dev-story executed; status `ready-for-dev` → `review`           |
+
+### Review Findings
+
+_(to be filled by code reviewer; bmad-code-review layered pass — Blind +
+Edge + Auditor + DUAL-GATE schema-shape audit — pending per CLAUDE.md sprint
+governance rule 3 before `done` transition.)_

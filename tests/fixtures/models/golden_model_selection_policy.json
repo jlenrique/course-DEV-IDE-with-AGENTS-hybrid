@@ -1,0 +1,16 @@
+{
+  "rules": [
+    {
+      "rule_id": "tier-fast",
+      "when": {"tier_request": "fast"},
+      "prefer_tier": "fast",
+      "fallback_chain": ["gpt-5-haiku"]
+    },
+    {
+      "rule_id": "default-fallback",
+      "when": {},
+      "prefer_tier": "fast",
+      "fallback_chain": ["gpt-5-haiku", "gpt-5.4"]
+    }
+  ]
+}

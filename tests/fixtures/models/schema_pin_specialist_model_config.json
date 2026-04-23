@@ -1,0 +1,40 @@
+{
+  "additionalProperties": false,
+  "description": "Per-specialist model preferences. Read by the selector cascade.",
+  "properties": {
+    "default_model": {
+      "description": "model_id the specialist prefers when no per-call override is provided.",
+      "minLength": 1,
+      "title": "Default Model",
+      "type": "string"
+    },
+    "per_node_overrides": {
+      "additionalProperties": {
+        "type": "string"
+      },
+      "description": "Optional per-node-name model_id overrides; node names are specialist-internal. Empty by default.",
+      "title": "Per Node Overrides",
+      "type": "object"
+    },
+    "specialist_id": {
+      "description": "Stable specialist identifier (matches the directory name).",
+      "minLength": 1,
+      "title": "Specialist Id",
+      "type": "string"
+    },
+    "temperature_default": {
+      "default": 0.0,
+      "description": "Default temperature for this specialist; bounded [0.0, 2.0].",
+      "maximum": 2.0,
+      "minimum": 0.0,
+      "title": "Temperature Default",
+      "type": "number"
+    }
+  },
+  "required": [
+    "specialist_id",
+    "default_model"
+  ],
+  "title": "SpecialistModelConfig",
+  "type": "object"
+}
