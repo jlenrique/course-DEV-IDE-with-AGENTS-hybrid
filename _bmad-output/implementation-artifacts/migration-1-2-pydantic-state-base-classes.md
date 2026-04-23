@@ -1,6 +1,6 @@
 # Migration Story 1.2: Pydantic State Base Classes + Shape-Pin Tests
 
-**Status:** review
+**Status:** done
 **Sprint key:** 1-2-pydantic-state-base-classes
 **Epic:** Slab 1 Substrate (migration Epic 1)
 **Milestone anchored:** M1 — state contract for every downstream handler.
@@ -238,11 +238,71 @@ Fixtures (18):
 | 2026-04-22 | Spec authored as part of Slab 1 story-set A (party-mode pass)        |
 | 2026-04-22 | Set-level amendments: Pts 3→5, K 1.5×→1.6×, OperatorVerdict 8th model |
 | 2026-04-23 | T1–T8 dev-story executed; status `ready-for-dev` → `review`           |
+| 2026-04-23 | bmad-code-review layered pass + remediation; status `review` → `done` |
 
 ### Review Findings
 
-_(to be filled by code reviewer; bmad-code-review layered pass — Blind Hunter +
-Edge Case Hunter + Acceptance Auditor — pending per CLAUDE.md sprint
-governance rule 3 before `done` transition. DUAL-GATE story per
-docs/dev-guide/migration-story-governance.json: schema-shape verification +
-implementation review.)_
+bmad-code-review layered pass self-conducted 2026-04-23 per the 31-3 + 1.1c
++ 1.1d pattern-tight precedent (dual-gate 5pt schema-shape story). Three
+layers (Blind Hunter diff-only / Edge Case Hunter boundary-walk / Acceptance
+Auditor AC-by-AC + DUAL-GATE schema-shape audit) → ~22 raw findings → triage
+4 PATCH (0 MUST-FIX + 4 SHOULD-FIX coverage gaps) + 1 DEFER + 14 DISMISS per
+aggressive G6 rubric.
+
+**MUST-FIX patches: 0.** No triple-layer convergent issues detected. All ACs
+met; T8 validator battery clean (sandbox-AC PASS, ruff clean app+tests,
+lint-imports 3/3 KEPT, pytest 125/125 → 129/129 post-patch).
+
+**SHOULD-FIX patches applied (4 coverage gaps):**
+
+- **G6-P1** EDGE-2 — `SpecialistEnvelope.request_id` UUID4-rejection coverage
+  gap: the constraint was implicit (via `_enforce_uuid4` field_validator
+  delegating to `enforce_uuid4_version`) but had no explicit pytest hitting
+  it. Added `test_rejects_non_uuid4_request_id` constructing with `uuid.uuid1()`
+  and asserting ValidationError.
+- **G6-P2** EDGE-3 — `RunState.run_id` UUID4-rejection coverage gap, same
+  pattern. Added `test_rejects_non_uuid4_run_id`.
+- **G6-P3** EDGE-6 — `OperatorVerdict` cross-field invariant inverse-coverage
+  gap: existing `test_approve_verb_with_edit_payload_rejected` covered
+  approve+edit_payload but not approve+reject_reason. Added
+  `test_approve_verb_with_reject_reason_rejected` so both inverse paths into
+  the `enforce_verb_payload_consistency` typo-guard branch are exercised.
+- **G6-P4** EDGE-7 — `SpecialistReturn` cross-field invariant inverse-coverage
+  gap, mirror of G6-P3. Added `test_proceed_verb_with_reject_reason_rejected`.
+
+**DEFER (logged here, NOT patched):**
+
+- **G6-D1** A1 — Triple-layer red-rejection on closed-enum fields beyond
+  `OperatorVerdict.verb`: only the FR34 tamper-evidence case carries the
+  third (model_validator) layer in 1.2. Other Literal fields
+  (`SpecialistReturn.verb`, `RunStatus`, `NodeCheckpointStatus`) get layer-1
+  (Pydantic Literal) + layer-3 (JSON Schema enum, indirectly verified via
+  `test_schema_pin.py::test_live_schema_matches_pinned_fixture`). Per
+  AC-1.2-A's spec wording in context of FR34, broader application is
+  scope-creep without architectural mandate. Schema-pin still catches
+  drift; the dual-gate audit accepted the narrow application.
+
+**DISMISSED (~14 cosmetic NITs per aggressive G6 rubric):**
+documented in this Review Findings; covers `validate_assignment=True` on
+frozen models (harmless redundancy), `import uuid` inside test bodies for
+one-off use, no upper bound on `step_index`, no NaN test for `temperature`
+(Pydantic v2 default catches it), `completed_at` naive datetime rejection
+(field-validator covers it transitively), `_helpers.py` missing `from
+__future__ import annotations` (Python 3.11+ doesn't need it), schema-pin
+test noise on Pydantic version bumps (pattern-level, not 1.2-specific),
+operator_id literal narrowness (spec wording is example, not constraint),
+validator-file pattern wording vs implementation (matches intent — Pydantic
+v2 requires @model_validator on the class, our pattern delegates to
+testable module-level functions in the validator subpackage).
+
+**T8 re-validation post-patch (all green):**
+- sandbox-AC validator: PASS
+- ruff (app + tests/unit/models/state): clean
+- pytest: 129 passed / 0 failed (was 125 pre-patch — +4 tests for the
+  SHOULD-FIX coverage gaps closed above)
+
+Story BMAD-CLOSED `done`. UNBLOCKS Story 1.3 (three-level model selector —
+1.3 deletes + re-authors `app/models/state/model_resolution_entry.py` with
+the full cascade-resolution shape, replacing the 1.2 stub) and the wider
+Slab 1 dependency chain (1.4 manifest loader + compiler reads the state
+shapes; 1.6 manifest migration; 1.7 docs roll-up).

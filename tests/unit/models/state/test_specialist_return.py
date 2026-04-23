@@ -63,6 +63,13 @@ def test_proceed_verb_with_edit_payload_rejected(valid_kwargs: dict[str, object]
         SpecialistReturn(**valid_kwargs)
 
 
+def test_proceed_verb_with_reject_reason_rejected(valid_kwargs: dict[str, object]) -> None:
+    """G6-EDGE inverse-coverage: proceed must NOT carry reject_reason either."""
+    valid_kwargs["reject_reason"] = "should not appear on proceed"
+    with pytest.raises(ValidationError):
+        SpecialistReturn(**valid_kwargs)
+
+
 def test_rejects_naive_timestamp(valid_kwargs: dict[str, object]) -> None:
     valid_kwargs["timestamp"] = datetime(2026, 4, 23)  # naive
     with pytest.raises(ValidationError):

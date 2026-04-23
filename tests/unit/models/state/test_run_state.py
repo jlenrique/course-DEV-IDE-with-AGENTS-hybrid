@@ -37,6 +37,15 @@ def test_default_run_id_is_uuid4(valid_kwargs: dict[str, object]) -> None:
     assert rs.run_id.version == 4
 
 
+def test_rejects_non_uuid4_run_id(valid_kwargs: dict[str, object]) -> None:
+    """G6-EDGE coverage: explicit UUID-version rejection (was implicit)."""
+    import uuid
+
+    valid_kwargs["run_id"] = uuid.uuid1()
+    with pytest.raises(ValidationError):
+        RunState(**valid_kwargs)
+
+
 def test_default_status_is_pending(valid_kwargs: dict[str, object]) -> None:
     rs = RunState(**valid_kwargs)
     assert rs.status == "pending"

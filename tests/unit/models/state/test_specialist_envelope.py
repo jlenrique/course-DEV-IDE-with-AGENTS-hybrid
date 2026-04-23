@@ -28,6 +28,14 @@ def test_default_request_id_is_uuid4() -> None:
     assert se.request_id.version == 4
 
 
+def test_rejects_non_uuid4_request_id() -> None:
+    """G6-EDGE coverage: explicit UUID-version rejection (was implicit)."""
+    import uuid
+
+    with pytest.raises(ValidationError):
+        SpecialistEnvelope(specialist_id="irene", request_id=uuid.uuid1())
+
+
 def test_default_payload_in_is_empty_dict() -> None:
     se = SpecialistEnvelope(specialist_id="irene")
     assert se.payload_in == {}

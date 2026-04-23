@@ -103,6 +103,13 @@ def test_approve_verb_with_edit_payload_rejected(valid_kwargs: dict[str, object]
         OperatorVerdict(**valid_kwargs)
 
 
+def test_approve_verb_with_reject_reason_rejected(valid_kwargs: dict[str, object]) -> None:
+    """G6-EDGE inverse-coverage: approve must NOT carry reject_reason either."""
+    valid_kwargs["reject_reason"] = "should not appear on approve"
+    with pytest.raises(ValidationError):
+        OperatorVerdict(**valid_kwargs)
+
+
 def test_rejects_naive_datetime(valid_kwargs: dict[str, object]) -> None:
     valid_kwargs["timestamp"] = datetime(2026, 4, 23, 12, 0, 0)  # naive
     with pytest.raises(ValidationError):
