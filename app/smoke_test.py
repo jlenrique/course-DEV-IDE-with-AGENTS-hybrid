@@ -83,7 +83,6 @@ def _compile_graph(manifest: _StubManifest) -> Any:
     replace this with the manifest-driven handler resolver.
     """
     builder = StateGraph(_SmokeState)
-    seen_handlers: set[str] = set()
     for node in manifest.graph.nodes:
         if node.id != MINIMAL_NODE_NAME:
             raise RuntimeError(
@@ -91,7 +90,6 @@ def _compile_graph(manifest: _StubManifest) -> Any:
                 f"got node id '{node.id}'. Story 1.4 lands the full handler resolver."
             )
         builder.add_node(node.id, minimal_node)
-        seen_handlers.add(node.handler)
 
     for edge in manifest.graph.edges:
         src = START if edge.from_ == "__start__" else edge.from_

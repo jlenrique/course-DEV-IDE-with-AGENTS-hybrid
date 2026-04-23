@@ -43,7 +43,9 @@ def _postgres_status() -> str:
 
     Mirrors the skip-not-fail policy from `tests/integration/postgres/test_server_version.py`:
     sandbox-AC discipline says the runtime substrate proves liveness without
-    requiring an operator-side service to be up.
+    requiring an operator-side service to be up. Catches the full `psycopg.Error`
+    family so a malformed `DATABASE_URL` (raises `ProgrammingError`) is treated
+    the same as an unreachable service rather than a 500 from `/health`.
     """
     database_url = os.getenv("DATABASE_URL")
     if not database_url:
@@ -52,7 +54,7 @@ def _postgres_status() -> str:
         with psycopg.connect(database_url, connect_timeout=2) as conn:
             _ = conn.info.server_version
         return "connected"
-    except psycopg.OperationalError:
+    except psycopg.Error:
         return "skipped"
 
 

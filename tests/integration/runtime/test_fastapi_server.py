@@ -66,10 +66,15 @@ def runtime_server_subprocess() -> Iterator[tuple[subprocess.Popen[bytes], int]]
         if proc.poll() is None:
             proc.terminate()
             try:
-                proc.wait(timeout=SHUTDOWN_BUDGET_S * 2)
+                # communicate() drains stdout/stderr pipes — without this on
+                # Windows, a full pipe buffer (~4-64KB) can block the child's
+                # write() and prevent shutdown within budget.
+                proc.communicate(timeout=SHUTDOWN_BUDGET_S * 2)
             except subprocess.TimeoutExpired:
                 proc.kill()
-                proc.wait()
+                proc.communicate()
+        else:
+            proc.communicate()
 
 
 def test_app_state_pins_loopback_bind_host() -> None:
@@ -111,13 +116,16 @@ def test_runtime_server_health_invoke_and_clean_shutdown(
     # uvicorn shut down without orphaning the process.
     proc.terminate()
     try:
-        proc.wait(timeout=SHUTDOWN_BUDGET_S)
+        # communicate() drains pipes while waiting — protects against a Windows
+        # pipe-buffer-full deadlock where the child blocks on stdout/stderr
+        # write and never exits.
+        proc.communicate(timeout=SHUTDOWN_BUDGET_S)
     except subprocess.TimeoutExpired:
         pytest.fail(
             f"runtime server did not exit within {SHUTDOWN_BUDGET_S}s of terminate(); "
             "this indicates an orphaned thread or signal handler regression."
         )
-    assert proc.returncode is not None, "subprocess returncode unset after wait()"
+    assert proc.returncode is not None, "subprocess returncode unset after communicate()"
 
 
 def test_runtime_server_refuses_non_loopback_connection(
@@ -147,19 +155,18 @@ def test_runtime_server_refuses_non_loopback_connection(
     if not candidate_ips:
         pytest.skip("host has no non-loopback IPv4 address; non-loopback assertion N/A")
 
-    refused = False
-    last_error: Exception | None = None
+    accepted: list[str] = []
+    refusal_errors: dict[str, str] = {}
     for lan_ip in sorted(candidate_ips):
         try:
             with socket.create_connection((lan_ip, port), timeout=1.0) as sock:
                 sock.close()
+            accepted.append(lan_ip)
         except (TimeoutError, ConnectionRefusedError, OSError) as exc:
-            refused = True
-            last_error = exc
-            break
+            refusal_errors[lan_ip] = repr(exc)
 
-    assert refused, (
-        f"runtime server accepted a connection on a non-loopback IP ({sorted(candidate_ips)}); "
-        "NFR-S2 requires 127.0.0.1-only bind. Last attempt error: "
-        f"{last_error!r}"
+    assert not accepted, (
+        f"runtime server accepted connections on non-loopback IPs {accepted}; "
+        f"NFR-S2 requires 127.0.0.1-only bind. Per-IP refusal errors for the "
+        f"IPs that did refuse: {refusal_errors}"
     )

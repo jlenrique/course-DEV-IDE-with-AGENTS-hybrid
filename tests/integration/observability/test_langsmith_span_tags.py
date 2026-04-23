@@ -15,6 +15,7 @@ from __future__ import annotations
 
 import os
 import time
+from datetime import UTC, datetime
 
 import pytest
 
@@ -37,13 +38,14 @@ def test_smoke_emits_spans_with_contract_tags() -> None:
     except ImportError:
         pytest.skip("langsmith SDK not importable; skipping live trace assertion")
 
-    started_at = time.time()
+    started_at = datetime.now(UTC)
     result = run_smoke(input_value="span-tag-pin")
     assert result.get("smoke") == "ok"
 
     client = Client(api_key=api_key)
     deadline = time.monotonic() + 30.0
     runs: list = []
+    last_error: Exception | None = None
     while time.monotonic() < deadline:
         try:
             runs = list(
