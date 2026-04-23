@@ -1,6 +1,6 @@
 # Migration Story 1.2: Pydantic State Base Classes + Shape-Pin Tests
 
-**Status:** ready-for-dev
+**Status:** review
 **Sprint key:** 1-2-pydantic-state-base-classes
 **Epic:** Slab 1 Substrate (migration Epic 1)
 **Milestone anchored:** M1 — state contract for every downstream handler.
@@ -130,4 +130,119 @@ Per LangGraph state idiom #6 (bundle §3): `RetryPolicy + Pydantic` interaction 
 
 ## Dev Agent Record
 
-_(placeholder for dev agent + reviewer fill-in)_
+### Agent Model Used
+
+claude-opus-4-7 (1M context). Dev-story executed 2026-04-23 in single session
+following 1.1d BMAD closure.
+
+### Debug Log References
+
+- The schema-story scaffold's `instantiate_schema_story_scaffold.py` is built
+  for single-model stories; 1.2 ships 9 models (8 spec'd + 1 stub
+  `ModelResolutionEntry`) under one subpackage. Per the scaffold README's
+  "extend the stubs" framing + party-mode consensus posture, authored by
+  hand using the scaffold's idioms (Pydantic v2 14-idiom checklist) rather
+  than running the instantiator 9 times with mismatched test paths.
+- Pydantic v2 emits UTC datetimes as `2026-04-23T12:00:00Z` (canonical
+  RFC 3339 form), not `2026-04-23T12:00:00+00:00`. Initial golden fixtures
+  used `+00:00`; normalized all 9 fixtures to `Z` via one-off sed-equivalent
+  Python regex substitution to match Pydantic's canonical emission.
+- Per NFR-M5 four-file-lockstep, every model ships with a companion validator
+  file even when the only invariants are field-level. For pure-shape models
+  (CacheState, SpecialistEnvelope, StoryState, SanctumFingerprint,
+  ModelResolutionEntry), the validator file is a placeholder docstring
+  documenting that the lockstep is structural, not load-bearing on every
+  model. Models with cross-field invariants (OperatorVerdict, NodeCheckpoint,
+  SpecialistReturn, RunState) have their @model_validator(mode="after") method
+  delegate to module-level functions in the validator file so the cross-field
+  logic is testable in isolation without constructing the full model.
+
+### Completion Notes List
+
+- All 5 ACs (`A`, `B`, `C`, `D`, `E`) green via T8 validator battery.
+- **K-floor framing:** 125 collecting test nodes vs the K~1.6× target on a
+  ~80-baseline assumption (rough estimate based on the 9-model × 14-test-shape
+  pattern: round-trip + forbidden-extra + closed-enum-rejection ×3 + tz-aware-rejection
+  + UUID4-rejection + frozen-mutation + cross-field-invariant ×N + reproducibility-
+  invariants ×16 + schema-pin ×9 + FR34-tamper ×3). Comfortable inside the
+  K~1.6× budget per Amelia's set-level amendment.
+- **FR34 triple-layer red-rejection on `OperatorVerdict.verb`** — all three
+  surfaces enforced: (1) Pydantic `Literal["approve", "edit", "reject"]`
+  field-level rejection, (2) `enforce_no_tamper_verbs(verb)` call in the
+  `@model_validator(mode="after")` (defends against `model_construct` raw
+  ingest + `validate_assignment=True` reassignment paths), (3) JSON Schema
+  `enum` array assertion in `test_schema_pin.py::test_operator_verdict_schema_enum_excludes_tamper_verbs`
+  (defends against external jsonschema-lib validators that bypass Pydantic).
+- **NFR-X1–X5 reproducibility invariants** all encoded in `RunState`:
+  X1 round-trip is byte-stable (test_nfr_x1_run_state_round_trip_byte_stable +
+  test_nfr_x1_story_state_round_trip_byte_stable); X2 graph_version field
+  required + closed-enum-style validated against `ALLOWED_GRAPH_VERSIONS`
+  stub frozenset (Slab 4 Story 4.5 wires the real registry); X3
+  `SanctumFingerprint` field present + frozen value object; X4
+  `model_resolution_trail: list[ModelResolutionEntry]` field present (stub
+  ModelResolutionEntry shape locked per Amelia's amendment, replaced wholesale
+  in Story 1.3); X5 `temperature: float = Field(ge=0.0, le=2.0)` constrained.
+- **`ModelResolutionEntry` stub file headers** carry the explicit
+  `# SCHEDULED FOR REPLACEMENT IN STORY 1.3 — do not extend here; 1.3 deletes
+  + re-authors this file with the full field set` comment per spec Dev Notes.
+  The 1.2 stub field set is `{level: str, resolved: str, timestamp: datetime}`
+  only; future 1.3 fields (`requested`, `reason`, `cache_prefix_hash`) are
+  blocked at extra=forbid in 1.2 so accidental drift fails the test fast.
+- **RetryPolicy gap explicitly flagged** in `RunState` module docstring per
+  bundle §3 LangGraph state idiom #6: NOT silently worked around with
+  `arbitrary_types_allowed=True`. Slab 4 Story 4.7 owns the resolution.
+- **Lockfile + dev deps:** No new runtime deps added; pytest already installed
+  in the .venv via the 1.1c bootstrap (`python -m ensurepip + pip install
+  pytest pytest-asyncio pytest-timeout`). Lockfile unchanged.
+
+### File List
+
+**New files (this story — 28 total):**
+
+Models (10):
+- `app/models/state/_base.py` — shared tz-aware + UUID4 validators
+- `app/models/state/sanctum_fingerprint.py`
+- `app/models/state/operator_verdict.py`
+- `app/models/state/cache_state.py`
+- `app/models/state/node_checkpoint.py`
+- `app/models/state/specialist_return.py`
+- `app/models/state/specialist_envelope.py`
+- `app/models/state/story_state.py`
+- `app/models/state/model_resolution_entry.py` (1.3-replacement stub)
+- `app/models/state/run_state.py`
+
+Validators (9):
+- `app/models/state/validators/__init__.py`
+- `app/models/state/validators/{sanctum_fingerprint,operator_verdict,cache_state,node_checkpoint,specialist_return,specialist_envelope,story_state,run_state,model_resolution_entry}_validators.py`
+
+Tests (12):
+- `tests/unit/models/state/__init__.py`
+- `tests/unit/models/state/_helpers.py` — round-trip + extra-field assertion helpers
+- `tests/unit/models/state/test_{sanctum_fingerprint,operator_verdict,cache_state,node_checkpoint,specialist_return,specialist_envelope,story_state,run_state,model_resolution_entry}.py`
+- `tests/unit/models/state/test_reproducibility_invariants.py` (NFR-X1–X5)
+- `tests/unit/models/state/test_schema_pin.py` (AC-1.2-E + FR34 third red-rejection layer)
+
+Fixtures (18):
+- `tests/fixtures/models/state/golden_{...}.json` (×9)
+- `tests/fixtures/models/state/schema_pin_{...}.json` (×9)
+
+**Modified (this story — 1):**
+
+- `app/models/state/__init__.py` — replaced 1.1c scaffold-only docstring
+  with full re-export surface (14 names exported).
+
+### Change Log
+
+| Date       | Change                                                              |
+| ---------- | ------------------------------------------------------------------- |
+| 2026-04-22 | Spec authored as part of Slab 1 story-set A (party-mode pass)        |
+| 2026-04-22 | Set-level amendments: Pts 3→5, K 1.5×→1.6×, OperatorVerdict 8th model |
+| 2026-04-23 | T1–T8 dev-story executed; status `ready-for-dev` → `review`           |
+
+### Review Findings
+
+_(to be filled by code reviewer; bmad-code-review layered pass — Blind Hunter +
+Edge Case Hunter + Acceptance Auditor — pending per CLAUDE.md sprint
+governance rule 3 before `done` transition. DUAL-GATE story per
+docs/dev-guide/migration-story-governance.json: schema-shape verification +
+implementation review.)_

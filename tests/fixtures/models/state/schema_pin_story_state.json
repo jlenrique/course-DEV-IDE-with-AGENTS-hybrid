@@ -1,0 +1,133 @@
+{
+  "$defs": {
+    "NodeCheckpoint": {
+      "additionalProperties": false,
+      "description": "Single-node checkpoint record. Cross-field invariant: complete \u21d2 completed_at.",
+      "properties": {
+        "checkpoint_at": {
+          "description": "Timezone-aware timestamp of this checkpoint write.",
+          "format": "date-time",
+          "title": "Checkpoint At",
+          "type": "string"
+        },
+        "completed_at": {
+          "anyOf": [
+            {
+              "format": "date-time",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "REQUIRED iff status == 'complete'; timezone-aware.",
+          "title": "Completed At"
+        },
+        "node_id": {
+          "description": "Stable node identifier.",
+          "minLength": 1,
+          "title": "Node Id",
+          "type": "string"
+        },
+        "sanctum_fingerprint": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/SanctumFingerprint"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Content-addressable sanctum identity at this checkpoint. Optional in 1.2 substrate; downstream stories tighten when applicable."
+        },
+        "status": {
+          "description": "Closed enum: pending | running | complete | failed.",
+          "enum": [
+            "pending",
+            "running",
+            "complete",
+            "failed"
+          ],
+          "title": "Status",
+          "type": "string"
+        },
+        "step_index": {
+          "description": "0-based position in the graph topology.",
+          "minimum": 0,
+          "title": "Step Index",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "node_id",
+        "step_index",
+        "status",
+        "checkpoint_at"
+      ],
+      "title": "NodeCheckpoint",
+      "type": "object"
+    },
+    "SanctumFingerprint": {
+      "additionalProperties": false,
+      "description": "Content-addressable snapshot identity. Frozen by architecture invariant.",
+      "properties": {
+        "captured_at": {
+          "description": "Timezone-aware capture timestamp.",
+          "format": "date-time",
+          "title": "Captured At",
+          "type": "string"
+        },
+        "content_sha256": {
+          "description": "Lowercase-hex SHA-256 of the snapshot's canonical bytes.",
+          "maxLength": 64,
+          "minLength": 64,
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Content Sha256",
+          "type": "string"
+        },
+        "snapshot_id": {
+          "description": "UUID4 identity for this fingerprint instance.",
+          "format": "uuid",
+          "title": "Snapshot Id",
+          "type": "string"
+        }
+      },
+      "required": [
+        "content_sha256"
+      ],
+      "title": "SanctumFingerprint",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "description": "One story's execution slice: identity + ordered checkpoint history.",
+  "properties": {
+    "node_checkpoints": {
+      "description": "Ordered history of node checkpoints for this story (append-only by convention).",
+      "items": {
+        "$ref": "#/$defs/NodeCheckpoint"
+      },
+      "title": "Node Checkpoints",
+      "type": "array"
+    },
+    "story_id": {
+      "description": "Stable story identifier.",
+      "minLength": 1,
+      "title": "Story Id",
+      "type": "string"
+    },
+    "updated_at": {
+      "description": "Timezone-aware timestamp of the most recent state mutation.",
+      "format": "date-time",
+      "title": "Updated At",
+      "type": "string"
+    }
+  },
+  "required": [
+    "story_id"
+  ],
+  "title": "StoryState",
+  "type": "object"
+}

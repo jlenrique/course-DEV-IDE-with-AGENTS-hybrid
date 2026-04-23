@@ -1,0 +1,9 @@
+{
+  "verb": "approve",
+  "gate_id": "G2C",
+  "decision_card_id": "22222222-2222-4222-8222-222222222222",
+  "operator_id": "juanl",
+  "timestamp": "2026-04-23T12:00:00Z",
+  "edit_payload": null,
+  "reject_reason": null
+}

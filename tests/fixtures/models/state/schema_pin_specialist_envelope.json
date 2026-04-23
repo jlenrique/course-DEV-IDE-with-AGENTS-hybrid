@@ -1,0 +1,116 @@
+{
+  "$defs": {
+    "SpecialistReturn": {
+      "additionalProperties": false,
+      "description": "Specialist-side return payload. Cross-field invariants on verb/payload pairing.",
+      "properties": {
+        "edit_payload": {
+          "anyOf": [
+            {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "REQUIRED iff verb == 'edit'; cross-field-validated.",
+          "title": "Edit Payload"
+        },
+        "payload": {
+          "additionalProperties": true,
+          "description": "Specialist's primary output payload (shape varies per specialist).",
+          "title": "Payload",
+          "type": "object"
+        },
+        "reject_reason": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "REQUIRED iff verb == 'reject'; cross-field-validated.",
+          "title": "Reject Reason"
+        },
+        "specialist_id": {
+          "description": "Stable specialist identifier.",
+          "minLength": 1,
+          "title": "Specialist Id",
+          "type": "string"
+        },
+        "timestamp": {
+          "description": "Timezone-aware return timestamp.",
+          "format": "date-time",
+          "title": "Timestamp",
+          "type": "string"
+        },
+        "verb": {
+          "description": "Closed enum: proceed | edit | reject.",
+          "enum": [
+            "proceed",
+            "edit",
+            "reject"
+          ],
+          "title": "Verb",
+          "type": "string"
+        }
+      },
+      "required": [
+        "specialist_id",
+        "verb"
+      ],
+      "title": "SpecialistReturn",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "description": "Request/response envelope wrapping a SpecialistReturn with correlation identity.",
+  "properties": {
+    "created_at": {
+      "description": "Timezone-aware envelope-creation timestamp (request-side).",
+      "format": "date-time",
+      "title": "Created At",
+      "type": "string"
+    },
+    "payload_in": {
+      "additionalProperties": true,
+      "description": "Inbound payload to the specialist; shape per-specialist (Slab 2 tightens).",
+      "title": "Payload In",
+      "type": "object"
+    },
+    "payload_out": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/SpecialistReturn"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "description": "Specialist's return; None until the specialist responds."
+    },
+    "request_id": {
+      "description": "UUID4 correlation ID; pairs request to response across async boundaries.",
+      "format": "uuid",
+      "title": "Request Id",
+      "type": "string"
+    },
+    "specialist_id": {
+      "description": "Stable specialist identifier.",
+      "minLength": 1,
+      "title": "Specialist Id",
+      "type": "string"
+    }
+  },
+  "required": [
+    "specialist_id"
+  ],
+  "title": "SpecialistEnvelope",
+  "type": "object"
+}

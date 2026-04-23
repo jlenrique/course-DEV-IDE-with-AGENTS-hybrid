@@ -1,0 +1,75 @@
+{
+  "additionalProperties": false,
+  "description": "Frozen tamper-evident receipt of one HIL gate decision.\n\nThe triple-layer red-rejection on `verb` is the FR34 safeguard:\n``\"timeout\"`` and ``\"auto_approve\"`` are explicitly NOT in the\n`Literal` set, the model_validator re-checks it, and the schema-pin\ntest asserts the JSON Schema enum array contains exactly the three\nlegitimate verbs.",
+  "properties": {
+    "decision_card_id": {
+      "description": "UUID4 of the DecisionCard the operator was reviewing.",
+      "format": "uuid",
+      "title": "Decision Card Id",
+      "type": "string"
+    },
+    "edit_payload": {
+      "anyOf": [
+        {
+          "additionalProperties": true,
+          "type": "object"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "description": "REQUIRED iff verb == 'edit'; cross-field-validated.",
+      "title": "Edit Payload"
+    },
+    "gate_id": {
+      "description": "Gate identifier (e.g. 'G2C', 'G3', 'G4-15').",
+      "minLength": 1,
+      "title": "Gate Id",
+      "type": "string"
+    },
+    "operator_id": {
+      "description": "Operator identifier; single-operator scope in Slab 1 (e.g. 'juanl').",
+      "minLength": 1,
+      "title": "Operator Id",
+      "type": "string"
+    },
+    "reject_reason": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "description": "REQUIRED iff verb == 'reject'; cross-field-validated.",
+      "title": "Reject Reason"
+    },
+    "timestamp": {
+      "description": "Timezone-aware verdict timestamp.",
+      "format": "date-time",
+      "title": "Timestamp",
+      "type": "string"
+    },
+    "verb": {
+      "description": "Closed enum: approve | edit | reject. 'timeout' and 'auto_approve' are explicitly forbidden per FR34.",
+      "enum": [
+        "approve",
+        "edit",
+        "reject"
+      ],
+      "title": "Verb",
+      "type": "string"
+    }
+  },
+  "required": [
+    "verb",
+    "gate_id",
+    "decision_card_id",
+    "operator_id"
+  ],
+  "title": "OperatorVerdict",
+  "type": "object"
+}

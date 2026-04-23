@@ -1,0 +1,8 @@
+{
+  "specialist_id": "irene",
+  "verb": "proceed",
+  "payload": {"answer": "ok"},
+  "edit_payload": null,
+  "reject_reason": null,
+  "timestamp": "2026-04-23T12:00:00Z"
+}
