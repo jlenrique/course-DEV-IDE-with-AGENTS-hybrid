@@ -81,6 +81,13 @@ source_modules = ["app.gates"]
 forbidden_modules = ["threading", "apscheduler", "schedule"]
 # TODO Slab 3: callable-level asyncio.sleep ban via ruff custom rule or import-time assertion in app/gates/resume_api.py
 
+[[tool.importlinter.contracts]]
+name = "only app.mcp_server.tools.gate_decide may import app.gates.resume_api"
+type = "forbidden"
+source_modules = ["app.mcp_server"]
+forbidden_modules = ["app.gates.resume_api"]
+ignore_imports = ["app.mcp_server.tools.gate_decide -> app.gates.resume_api"]
+
 [build-system]
 requires = ["setuptools>=68"]
 build-backend = "setuptools.build_meta"

@@ -1,0 +1,1 @@
+"""Gate resume API scaffold."""
