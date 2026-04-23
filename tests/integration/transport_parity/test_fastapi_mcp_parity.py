@@ -18,44 +18,28 @@ from __future__ import annotations
 
 import json
 import os
-import socket
 import subprocess
 import sys
-import time
+import types
 from collections.abc import Iterator
 
 import httpx
 import pytest
 
-from app.runtime.minimal_node import MINIMAL_NODE_NAME
+from tests._helpers.runtime_subprocess import (
+    DEFAULT_BOOT_BUDGET_S as SERVER_BOOT_BUDGET_S,
+)
+from tests._helpers.runtime_subprocess import (
+    pick_free_port as _pick_free_port,
+)
+from tests._helpers.runtime_subprocess import (
+    wait_for_health,
+)
 
 pytestmark = pytest.mark.transport_parity
 
 PARITY_INPUT: str = "parity"
-SERVER_BOOT_BUDGET_S: float = 8.0
 SHUTDOWN_BUDGET_S: float = 3.0
-
-
-def _pick_free_port() -> int:
-    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
-        s.bind(("127.0.0.1", 0))
-        return s.getsockname()[1]
-
-
-def _wait_for_health(client: httpx.Client, deadline: float) -> None:
-    last_exc: Exception | None = None
-    while time.monotonic() < deadline:
-        try:
-            response = client.get("/health", timeout=1.0)
-            if response.status_code == 200:
-                return
-        except httpx.HTTPError as exc:
-            last_exc = exc
-        time.sleep(0.1)
-    raise AssertionError(
-        f"FastAPI runtime did not become healthy within {SERVER_BOOT_BUDGET_S}s "
-        f"(last error: {last_exc!r})"
-    )
 
 
 @pytest.fixture
@@ -86,9 +70,8 @@ def fastapi_subprocess() -> Iterator[tuple[subprocess.Popen[bytes], int]]:
 def _capture_fastapi_payload(port: int) -> dict[str, object]:
     """Lane A — drive FastAPI /invoke; return the parsed JSON body."""
     base_url = f"http://127.0.0.1:{port}"
-    deadline = time.monotonic() + SERVER_BOOT_BUDGET_S
     with httpx.Client(base_url=base_url) as client:
-        _wait_for_health(client, deadline)
+        wait_for_health(client, boot_budget_s=SERVER_BOOT_BUDGET_S)
         response = client.post("/invoke", json={"input": PARITY_INPUT}, timeout=2.0)
         assert response.status_code == 200, (
             f"FastAPI /invoke returned status {response.status_code}: {response.text!r}"
@@ -125,19 +108,25 @@ async def _capture_mcp_payload() -> dict[str, object]:
 @pytest.mark.asyncio
 async def test_fastapi_mcp_parity_residual_byte_equivalent(
     fastapi_subprocess: tuple[subprocess.Popen[bytes], int],
+    minimal_node_fixture: types.ModuleType,
 ) -> None:
+    """Drive both transports; assert residuals match the canonical no-op payload.
+
+    Consumes ``minimal_node_fixture`` per AC-1.1d-A: the import-boundary
+    contract is exercised by reading the canonical name + payload from the
+    same module both transports route through, so any future drift on the
+    SoT side will surface at this assertion site.
+    """
     _proc, port = fastapi_subprocess
+    canonical_name = minimal_node_fixture.MINIMAL_NODE_NAME
+    canonical_payload = minimal_node_fixture.minimal_node({"input": PARITY_INPUT})
 
     fastapi_payload = _capture_fastapi_payload(port)
     mcp_payload = await _capture_mcp_payload()
 
     expected_residual: dict[str, object] = {
-        "node": MINIMAL_NODE_NAME,
-        "result": {
-            "smoke": "ok",
-            "node": MINIMAL_NODE_NAME,
-            "echo": PARITY_INPUT,
-        },
+        "node": canonical_name,
+        "result": canonical_payload,
     }
 
     assert fastapi_payload == expected_residual, (

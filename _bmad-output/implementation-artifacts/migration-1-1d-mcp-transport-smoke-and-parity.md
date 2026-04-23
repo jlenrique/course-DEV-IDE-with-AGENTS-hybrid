@@ -1,6 +1,6 @@
 # Migration Story 1.1d: MCP Transport Smoke + Two-Transport Parity
 
-**Status:** review
+**Status:** done
 **Sprint key:** 1-1d-mcp-transport-smoke-and-parity
 **Epic:** Slab 1 Substrate (migration Epic 1)
 **Milestone anchored:** M1 — gates the FR2 compound-contract claim at M1 acceptance.
@@ -237,9 +237,78 @@ immediately following 1.1c BMAD closure.
 | ---------- | ------------------------------------------------------------------- |
 | 2026-04-22 | Spec authored as part of Slab 1 story-set A (party-mode middle-path) |
 | 2026-04-23 | T1–T6 dev-story executed; status `ready-for-dev` → `review`           |
+| 2026-04-23 | bmad-code-review layered pass + remediation; status `review` → `done` |
 
 ### Review Findings
 
-_(to be filled by code reviewer; bmad-code-review layered pass — Blind Hunter +
-Edge Case Hunter + Acceptance Auditor — pending per CLAUDE.md sprint
-governance rule 3 before `done` transition)_
+bmad-code-review layered pass self-conducted 2026-04-23 per the 31-3 + 1.1c
+2pt/3pt-pattern-tight precedent (this is a 3pt single-gate substrate-bootstrap
+story). Three layers (Blind Hunter diff-only / Edge Case Hunter boundary-walk /
+Acceptance Auditor AC-by-AC) → ~14 raw findings → triage 3 PATCH (1 MUST-FIX
++ 2 SHOULD-FIX) + 1 DEFER + 10 DISMISS per aggressive G6 rubric.
+
+**MUST-FIX patch applied (triple-layer convergent):**
+
+- **G6-P1** Subprocess returncode + shutdown-budget assertion missing
+  (Blind B3/B7 / Edge EDGE-1 / Auditor A2): AC-1.1d-B step 5 explicit
+  *"asserts subprocess `returncode` is set, no orphaned pipes; gracefully
+  shut down within 3 seconds (hard-fail at 10 seconds)."* The MCP SDK's
+  `stdio_client` hides the subprocess.Popen handle inside its context
+  manager so the SDK-roundtrip test cannot directly assert returncode.
+  Remediated by adding a decoupled `test_mcp_server_subprocess_hygiene`
+  test that spawns `python -m app.mcp_server` via raw `subprocess.Popen`,
+  sends `terminate()`, asserts returncode-set within 3s graceful budget
+  (10s hard-fail), drains pipes via `communicate()`. AC-1.1d-B step 5
+  now literal-text-satisfied.
+
+**SHOULD-FIX patches applied:**
+
+- **G6-P2** `minimal_node_fixture` dead code (Auditor A1): the spec
+  AC-1.1d-A explicitly required the fixture as the load-bearing import-
+  boundary contract, but neither test injected it — both imported
+  `MINIMAL_NODE_NAME` directly. Remediated by wiring the fixture into
+  `test_fastapi_mcp_parity_residual_byte_equivalent` so the canonical
+  name + payload come from the SoT module reference. Future drift on
+  the SoT side now surfaces at the parity assertion site.
+- **G6-P3** DRY violation: `_pick_free_port` + `_wait_for_health` were
+  duplicated between `tests/integration/runtime/test_fastapi_server.py`
+  (1.1c) and `tests/integration/transport_parity/test_fastapi_mcp_parity.py`
+  (Blind B4). Extracted to `tests/_helpers/runtime_subprocess.py`
+  exporting `pick_free_port`, `wait_for_health`, `DEFAULT_BOOT_BUDGET_S`.
+  Both call sites now import from the helper; runtime test pass-rate
+  unchanged (3/3 pre + 3/3 post).
+
+**DEFER (logged here, NOT patched):**
+
+- **G6-D1** Per-call asyncio timeout on `initialize` / `list_tools` /
+  `call_tool` (Edge EDGE-1): if the MCP server crashes mid-handshake,
+  the test could hang. The SDK's anyio context handles cancellation;
+  pytest-timeout (project-level) catches infinite hangs at session level.
+  Per-call `asyncio.wait_for` adds noise without proportional value.
+  Pairs with G6-P1 above (subprocess hygiene test catches process
+  liveness directly).
+
+**DISMISSED (~10 cosmetic NITs per aggressive G6 rubric):**
+local `import json` inside test function for clarity (B1); SDK cleanup
+caveat — superseded by G6-P1 (B2); sync `_capture_fastapi_payload` vs
+async `_capture_mcp_payload` — sequential by design (B5); no cross-
+transport concurrency — by design (B6); hardcoded `expected_residual`
+— pin by intent (B8); flake-script `single_session: bool` parameter
+adequate semantic (B9); flake-script stderr truncation (B10); spec-vs-
+impl wording divergences for AC-1.1d-C matrix-flip wording (A3) and
+`pytestmark` vs `@pytest.mark` decorator placement (A4) — both match
+intent.
+
+**T6 re-validation post-patch (all green):**
+- sandbox-AC validator: PASS
+- ruff (app + all tests): clean
+- pytest scoped (transport_parity + runtime): 6 passed (was 5 pre-patch
+  — added the subprocess-hygiene test for AC-1.1d-B step 5)
+- 20-run hot+cold flake measurement re-run: **20/20 PASS, 0.0% flake
+  rate** (matches pre-patch result; the new hygiene test does not
+  introduce variance)
+
+Story BMAD-CLOSED `done`. UNBLOCKS Slab 3 Story 3.4 three-transport
+verdict parity (inherits the two-transport baseline + envelope-exceptions
+extension protocol) and closes the FR2 compound-contract substrate
+claim at Slab 1.

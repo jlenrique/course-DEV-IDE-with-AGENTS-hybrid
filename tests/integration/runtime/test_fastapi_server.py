@@ -22,31 +22,23 @@ import pytest
 
 from app.runtime.minimal_node import MINIMAL_NODE_NAME
 from app.runtime.server import DEFAULT_BIND_HOST, app
+from tests._helpers.runtime_subprocess import (
+    DEFAULT_BOOT_BUDGET_S as SERVER_BOOT_BUDGET_S,
+)
+from tests._helpers.runtime_subprocess import (
+    pick_free_port as _pick_free_port,
+)
+from tests._helpers.runtime_subprocess import (
+    wait_for_health as _wait_for_health_helper,
+)
 
-SERVER_BOOT_BUDGET_S: float = 8.0
 SHUTDOWN_BUDGET_S: float = 2.0
 
 
-def _pick_free_port() -> int:
-    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
-        s.bind(("127.0.0.1", 0))
-        return s.getsockname()[1]
-
-
 def _wait_for_health(client: httpx.Client, deadline: float) -> httpx.Response:
-    last_exc: Exception | None = None
-    while time.monotonic() < deadline:
-        try:
-            response = client.get("/health", timeout=1.0)
-            if response.status_code == 200:
-                return response
-        except httpx.HTTPError as exc:
-            last_exc = exc
-        time.sleep(0.1)
-    raise AssertionError(
-        f"runtime server did not become healthy within {SERVER_BOOT_BUDGET_S}s "
-        f"(last error: {last_exc!r})"
-    )
+    """Adapter preserving the test's deadline-based call signature."""
+    remaining = max(0.0, deadline - time.monotonic())
+    return _wait_for_health_helper(client, boot_budget_s=remaining)
 
 
 @pytest.fixture
