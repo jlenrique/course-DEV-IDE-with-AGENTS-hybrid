@@ -1,28 +1,36 @@
-# Slab 1 Story 1.1c migration substrate stub.
+# Slab 1 Story 1.4 migration substrate stub.
 #
 # This file is the LangChain/LangGraph migration's pipeline manifest, NOT the
 # legacy primary-repo v4.2 prompt-pack manifest. The hybrid clone fork
 # (`dev/langchain-langgraph-foundation`) deliberately overwrites the primary
 # v4.2 file on this branch per FR60 forward-port freeze (active since
 # Story 1.1a closed) and per the Story 1.6 plan — Story 1.6 will rewrite this
-# file again to the migration's v4.2-equivalent shape conforming to the
-# `PipelineManifest` schema introduced in Story 1.4.
+# file again to the migration's v4.2-equivalent shape, which is this same
+# `PipelineManifest` schema with ~20 nodes (one per v4.2 step) plus synthesized
+# edges from per-step `insertion_after` plus the v4.2 top-level metadata fields.
 #
 # To recover the primary repo's v4.2 manifest on this branch, fetch from
 # upstream: `git show upstream/master:state/config/pipeline-manifest.yaml`.
 #
-# Story 1.1c contract (this stub): one no-op step that loads via
-# `app.smoke_test` and exercises `app.runtime.minimal_node` to produce the
-# `{"smoke": "ok", "node": "noop"}` payload. Story 1.4 introduces the real
-# loader + compiler; until then `app.smoke_test` uses a minimal yaml.safe_load
-# + Pydantic-validate path.
+# Story 1.4 contract (this stub): flat `PipelineManifest` shape with one no-op
+# node (`noop`) that loads via `app.smoke_test` and exercises
+# `app.runtime.minimal_node` to produce the `{"smoke": "ok", "node": "noop"}`
+# payload. 1.1c smoke behavior is preserved byte-equivalently.
+
 schema_version: "0.1-stub"
-graph:
-  nodes:
-    - id: noop
-      handler: app.runtime.minimal_node:minimal_node
-  edges:
-    - from: __start__
-      to: noop
-    - from: noop
-      to: __end__
+pack_version: "substrate-stub"
+lane: "run_graph"
+entrypoint: "noop"
+frozen_graph_version: "v0.1-stub"
+block_mode_trigger_paths:
+  - state/config/pipeline-manifest.yaml
+nodes:
+  - id: noop
+    specialist_id: smoke
+    label: "Slab 1 substrate smoke node"
+    rationale: "Single-node manifest exercising loader + compiler round-trip."
+edges:
+  - from: __start__
+    to: noop
+  - from: noop
+    to: __end__

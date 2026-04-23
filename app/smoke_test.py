@@ -1,13 +1,18 @@
 """`uv run python -m app.smoke_test` — Slab 1 substrate smoke harness.
 
-Loads the stub pipeline manifest, compiles a one-node `StateGraph`, runs the
-shared `minimal_node`, and prints `smoke ok` plus the node count. Exposes
-`run_smoke()` as an importable function so Story 1.1d's parity test can call
-it directly without spawning a subprocess.
+Loads the stub pipeline manifest via `app.manifest.loader.load()`, compiles a
+one-node `StateGraph`, runs the shared `minimal_node`, and prints `smoke ok`
+plus the node count. Exposes `run_smoke()` as an importable function so
+Story 1.1d's parity test can call it directly without spawning a subprocess.
 
-The minimal `yaml.safe_load` + Pydantic shape used here is Story 1.1c scope.
-Story 1.4 lands the full `app.manifest.loader` + compiler that this stub
-foreshadows; do NOT inflate this module to anticipate that work.
+Story 1.4 upgrade: replaced the local ``_StubManifest`` Pydantic shape with
+the production ``app.manifest.loader.load()`` entrypoint (now that 1.4 has
+landed it). The smoke graph still uses ``_SmokeState`` TypedDict + direct
+wiring of ``minimal_node`` so the ``{"smoke": "ok", "node": "noop"}`` payload
+contract is preserved byte-equivalently. The production compiler
+(``app.manifest.compiler.compile``) is not used here because it targets
+``RunState`` + passthrough specialist stubs, which is correct for the
+production path but would change this stub smoke's payload shape.
 """
 
 from __future__ import annotations
@@ -16,45 +21,14 @@ import sys
 from pathlib import Path
 from typing import Any, TypedDict
 
-import yaml
 from langgraph.graph import END, START, StateGraph
-from pydantic import BaseModel, ConfigDict, Field
 
+from app.manifest import PipelineManifest, load
 from app.runtime.minimal_node import MINIMAL_NODE_NAME, minimal_node
 
 MANIFEST_PATH: Path = (
     Path(__file__).resolve().parent.parent / "state" / "config" / "pipeline-manifest.yaml"
 )
-
-
-class _StubManifestNode(BaseModel):
-    model_config = ConfigDict(extra="forbid")
-
-    id: str = Field(min_length=1)
-    handler: str = Field(min_length=1)
-
-
-class _StubManifestEdge(BaseModel):
-    model_config = ConfigDict(extra="forbid")
-
-    from_: str = Field(alias="from", min_length=1)
-    to: str = Field(min_length=1)
-
-
-class _StubManifestGraph(BaseModel):
-    model_config = ConfigDict(extra="forbid")
-
-    nodes: list[_StubManifestNode]
-    edges: list[_StubManifestEdge]
-
-
-class _StubManifest(BaseModel):
-    """Slab 1 stub manifest shape. Story 1.4 introduces the production schema."""
-
-    model_config = ConfigDict(extra="allow")  # tolerate unknown top-level keys (e.g. comments)
-
-    schema_version: str
-    graph: _StubManifestGraph
 
 
 class _SmokeState(TypedDict, total=False):
@@ -71,28 +45,32 @@ class _SmokeState(TypedDict, total=False):
     echo: Any
 
 
-def _load_manifest(path: Path = MANIFEST_PATH) -> _StubManifest:
-    raw = yaml.safe_load(path.read_text(encoding="utf-8"))
-    return _StubManifest.model_validate(raw)
+def _load_manifest(path: Path | None = None) -> PipelineManifest:
+    target = path if path is not None else MANIFEST_PATH
+    return load(target)
 
 
-def _compile_graph(manifest: _StubManifest) -> Any:
+def _compile_graph(manifest: PipelineManifest) -> Any:
     """Compile the one-node stub manifest into a runnable LangGraph.
 
-    Slab 1 hard-wires the `noop -> minimal_node` resolution; Story 1.4 will
-    replace this with the manifest-driven handler resolver.
+    Slab 1 hard-wires the ``noop -> minimal_node`` resolution. The production
+    compiler (``app.manifest.compiler.compile``) lands in Slab 2+ with real
+    specialist resolution — this harness intentionally bypasses that path so
+    the smoke payload contract (``{"smoke": "ok", "node": "noop"}``) is
+    preserved byte-equivalently.
     """
     builder = StateGraph(_SmokeState)
-    for node in manifest.graph.nodes:
+    for node in manifest.nodes:
         if node.id != MINIMAL_NODE_NAME:
             raise RuntimeError(
                 f"smoke: only the shared '{MINIMAL_NODE_NAME}' node is wired in Slab 1; "
-                f"got node id '{node.id}'. Story 1.4 lands the full handler resolver."
+                f"got node id '{node.id}'. Production compiler (app.manifest.compiler) "
+                f"handles the general case."
             )
         builder.add_node(node.id, minimal_node)
 
-    for edge in manifest.graph.edges:
-        src = START if edge.from_ == "__start__" else edge.from_
+    for edge in manifest.edges:
+        src = START if edge.from_node == "__start__" else edge.from_node
         dst = END if edge.to == "__end__" else edge.to
         builder.add_edge(src, dst)
 

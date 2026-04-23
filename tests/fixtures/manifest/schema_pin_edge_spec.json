@@ -1,0 +1,51 @@
+{
+  "additionalProperties": false,
+  "description": "One edge in the compiled `StateGraph`.\n\n`condition` (optional) names a callable in the condition-function registry\n(`app.manifest.conditions`). Slab 1 stub registry exposes only\n`\"always_true\"` and `\"always_false\"`; full dispatch registry is Slab 3.\n\n`dispatch_envelope` is the Slab 3 dispatch-shape pointer (trailing `...` from\nAC-1.4-A). Slab 1 accepts any dict payload; Slab 3 narrows to `SpecialistEnvelope`.\n\n`from_node` is aliased to the YAML/JSON key `\"from\"` because `from` is a\nPython reserved word and cannot be a field name directly.",
+  "properties": {
+    "condition": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "description": "Optional condition-function name. Presence triggers `add_conditional_edges`; absence triggers `add_edge`. Resolved at compile time against the condition registry.",
+      "title": "Condition"
+    },
+    "dispatch_envelope": {
+      "anyOf": [
+        {
+          "additionalProperties": true,
+          "type": "object"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "description": "Slab 3 dispatch envelope payload. Slab 1 accepts arbitrary dicts; Slab 3 narrows the shape to `SpecialistEnvelope`.",
+      "title": "Dispatch Envelope"
+    },
+    "from": {
+      "description": "Source node id (LangGraph convention: `__start__` marks graph entry).",
+      "minLength": 1,
+      "title": "From",
+      "type": "string"
+    },
+    "to": {
+      "description": "Target node id (LangGraph convention: `__end__` marks graph exit).",
+      "minLength": 1,
+      "title": "To",
+      "type": "string"
+    }
+  },
+  "required": [
+    "from",
+    "to"
+  ],
+  "title": "EdgeSpec",
+  "type": "object"
+}

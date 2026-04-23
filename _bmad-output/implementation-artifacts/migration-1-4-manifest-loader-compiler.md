@@ -1,6 +1,6 @@
 # Migration Story 1.4: Manifest-as-Graph-Config Loader + Compiler
 
-**Status:** ready-for-dev
+**Status:** done
 **Sprint key:** 1-4-manifest-loader-compiler
 **Epic:** Slab 1 Substrate (migration Epic 1)
 **Milestone anchored:** M1 — manifest is the source of truth for graph topology.
@@ -71,16 +71,16 @@ All ACs dev-agent-executable. Schema-shape + compile-time-contract story; uses [
 
 ## Tasks / Subtasks
 
-- [ ] **T1 — Read T1 Bundle** §1 (D3 HIL tamper-evidence + Slab-1 substrate distribution; D4, D6, D8), §2 (FR8, FR25, FR31 verdict, FR34 no auto-approve, NFR-M2), §3 (Pydantic + LangGraph state idioms #2 reducer fields, #3 Command goto/update). T1 also includes verifying that 1.2 closed with `OperatorVerdict` model present (1.4 imports it for the `resume_from_verdict` signature stub per AC-1.4-E1).
-- [ ] **T2 — Use schema-story scaffold** for `PipelineManifest` + `NodeSpec` + `EdgeSpec`.
-- [ ] **T3 — Author schemas** per AC-1.4-A.
-- [ ] **T4 — Author loader** per AC-1.4-B.
-- [ ] **T4.5 — Author `app/gates/resume_api.py` stub + C3 contract + stub test** per AC-1.4-E1. Land BEFORE compiler implementation so C3 is in `pyproject.toml` when `lint-imports` runs at T8.
-- [ ] **T5 — Author compiler** per AC-1.4-C, AC-1.4-D, AC-1.4-E2 (single module, three responsibilities).
-- [ ] **T6 — Update 1.1c stub manifest** to satisfy the new schema (no behavioral change; just adds `version`, `lane`, etc.).
-- [ ] **T7 — End-to-end test** per AC-1.4-F.
-- [ ] **T8 — Run validators + tests.** Sandbox-AC validator + ruff + lint-imports + pytest.
-- [ ] **T9 — Commit.** `feat(migration): Slab 1 Story 1.4 — manifest-as-graph-config loader + compiler`
+- [x] **T1 — Read T1 Bundle** §1 (D3 HIL tamper-evidence + Slab-1 substrate distribution; D4, D6, D8), §2 (FR8, FR25, FR31 verdict, FR34 no auto-approve, NFR-M2), §3 (Pydantic + LangGraph state idioms #2 reducer fields, #3 Command goto/update). T1 also includes verifying that 1.2 closed with `OperatorVerdict` model present (1.4 imports it for the `resume_from_verdict` signature stub per AC-1.4-E1).
+- [x] **T2 — Use schema-story scaffold** for `PipelineManifest` + `NodeSpec` + `EdgeSpec`.
+- [x] **T3 — Author schemas** per AC-1.4-A.
+- [x] **T4 — Author loader** per AC-1.4-B.
+- [x] **T4.5 — Author `app/gates/resume_api.py` stub + C3 contract + stub test** per AC-1.4-E1. Land BEFORE compiler implementation so C3 is in `pyproject.toml` when `lint-imports` runs at T8.
+- [x] **T5 — Author compiler** per AC-1.4-C, AC-1.4-D, AC-1.4-E2 (single module, three responsibilities).
+- [x] **T6 — Update 1.1c stub manifest** to satisfy the new schema (no behavioral change; just adds `version`, `lane`, etc.).
+- [x] **T7 — End-to-end test** per AC-1.4-F.
+- [x] **T8 — Run validators + tests.** Sandbox-AC validator + ruff + lint-imports + pytest.
+- [x] **T9 — Commit.** `feat(migration): Slab 1 Story 1.4 — manifest-as-graph-config loader + compiler`
 
 ## Dev Notes
 
@@ -127,4 +127,93 @@ LangGraph `StateGraph(state_schema=RunState)`. `RunState` from 1.2. If 1.2 + 1.3
 
 ## Dev Agent Record
 
-_(placeholder)_
+### Model used
+
+claude-opus-4-7 (1M context) — bmad-dev-story on 2026-04-23.
+
+### T1 — v4.2 inventory (Winston/Amelia amendment 2026-04-22)
+
+Primary-repo v4.2 manifest (`git show upstream/master:state/config/pipeline-manifest.yaml`, 379 lines) inventoried before any schema code. Field deltas vs architecture-canonical AC-1.4-A set:
+
+**Top-level v4.2 fields that ride `PipelineManifest` as first-class:**
+- `schema_version: str` (equivalent to architecture-canonical `version`; rename accepted)
+- `pack_version: str` — new; prompt-pack identifier (`"v4.2"`, etc.), distinct from `frozen_graph_version` (LangGraph compiled-graph identity)
+- `generator_ref: str | None` — new; generator script path (pipeline-manifest regime)
+- `learning_events: LearningEventsConfig | None` — new; top-level `schema_ref` for learning-event substrate (Epic 33)
+- `block_mode_trigger_paths: list[str]` — new; Epic 33 pipeline-manifest regime block-mode surface
+
+**Per-step v4.2 fields that ride `NodeSpec` under AC-1.4-A's trailing `...` extensibility clause:**
+- `label`, `gate`, `gate_code`, `sub_phase_of`, `insertion_after`, `hud_tracked`, `pack_section_anchor`, `pack_version`, `rationale`, nested `learning_events`
+
+**Gaps flagged for 1.6 migration (NOT schema gaps — migration-time synthesis responsibilities):**
+- v4.2 has no explicit `edges` list; topology is linear via per-step `insertion_after`. 1.6 will synthesize `EdgeSpec` list from `insertion_after` during manifest migration.
+- v4.2 carries no `lane` / `entrypoint` / `frozen_graph_version` top-level; 1.6 will inject `lane: "run_graph"`, `entrypoint: "01"`, `frozen_graph_version: "v42"` at migration.
+- v4.2 NodeSpec carries no `specialist_id` / `scaffold_node` / `model_config_ref`; 1.6 will add these per-step when mapping to specialists (Slab 2 wires the real callables).
+
+**Inventory VERDICT: CLEAN.** All v4.2 fields fit within AC-1.4-A's explicit union formula. Party-mode amendment NOT required. Proceeding to T2-T5 schema authoring.
+
+### T1 — `OperatorVerdict` verification
+
+1.2's `app.models.state.operator_verdict.OperatorVerdict` confirmed present with the full FR34 triple-layer red-rejection shape (verb `Literal["approve", "edit", "reject"]` + `_check_invariants` model_validator + schema-pin emission). 1.4's `resume_api.resume_from_verdict` signature imports this type directly.
+
+### Debug log
+
+- **T6 refactor detail:** `app/smoke_test.py` updated to route manifest loading through `app.manifest.loader.load()` (the production entrypoint this story introduces). Local `_StubManifest` / `_StubManifestGraph` / `_StubManifestNode` / `_StubManifestEdge` Pydantic classes removed. `_SmokeState` TypedDict + direct `minimal_node` wiring preserved so the 1.1c payload contract (`{"smoke": "ok", "node": "noop"}`) lands byte-equivalent — the production compiler targets `RunState` + passthrough stubs which would change the stub smoke's payload shape if used here.
+- **Contract C3 scope decision:** pyproject.toml's pre-existing C3 block scoped to `app.mcp_server` only; rewritten to list every non-bridge Slab-1 source package (`app.runtime/specialists/cora/models/manifest/mcp_server`) as forbidden-importers of `app.gates.resume_api` with a single ignore for `app.mcp_server.tools.gate_decide`. The two future bridge modules (`app.http.gate_endpoint`, `app.marcus.cli.gate_cli`) are documented in the contract comment; Slab 3 Story 3.3 adds their `ignore_imports` entries when the modules materialize (import-linter rejects unused ignores, so pre-seeding fails).
+- **Stub-manifest schema migration:** `state/config/pipeline-manifest.yaml` rewritten from the 1.1c nested `graph.{nodes,edges}` shape to the flat `PipelineManifest` shape (top-level `nodes`/`edges` + `lane` + `entrypoint` + `frozen_graph_version`). Added `runtime/graphs/v0.1-stub/README.md` to anchor the compiler's frozen-graph-version directory-existence check.
+- **G6-P1 patch:** compiler was adding an implicit `START → entrypoint` edge even when the manifest's edges list already declared an explicit `__start__ → entrypoint` edge. Fixed via `has_explicit_start_edge` guard. LangGraph's current version accepts the double-add, but semantic uniqueness is the contract. Two new regression tests: `test_compile_does_not_duplicate_start_edge_when_explicit` + `test_compile_adds_implicit_start_edge_when_absent`.
+
+### Completion notes
+
+**T8 validator sweep (post-G6-P1):**
+- Sandbox-AC validator: **PASS** — zero violations in Story 1.4 spec.
+- Ruff (app/ + 1.4 test files + pyproject.toml): **All checks passed!**
+- Import-linter: **3/3 KEPT** — C1 (lane-isolation) + C2 (scheduler-forbidden on gates) + C3 (only bridge modules may import resume_api). 80 files / 180 dependencies analyzed.
+- Pytest (1.4-scoped): **52/52 passing** in `tests/unit/manifest/` + `tests/unit/gates/` + `tests/integration/manifest/`.
+- Pytest (migration-suite regression): **260 passed / 1 deselected** across `tests/unit/` + `tests/integration/manifest/runtime/models/sanctum/transport_parity/`. +52 new nodes from 1.4, zero regressions on 1.1a/1.1b/1.1c/1.1d/1.2/1.3 scope.
+- 1.1c smoke contract preserved: `python -m app.smoke_test` prints `smoke ok (nodes=1, payload={'input': 'ping', 'smoke': 'ok', 'node': 'noop', 'echo': 'ping'})` byte-equivalent to 1.1c baseline.
+
+**G6 layered code-review triage (self-conducted, 1.2/1.3 precedent):**
+- **Blind Hunter** — 0 MUST-FIX + 1 SHOULD-FIX + minor style NITs. Applied: G6-P1 double-edge guard.
+- **Edge Case Hunter** — 0 MUST-FIX + 0 SHOULD-FIX + 1 DEFER (G6-D1: NodeSpec.id accepts `__start__` / `__end__` sentinel strings — low practical risk, Slab 2 tightens when specialist_id resolution lands).
+- **Acceptance Auditor** — all 7 ACs (A, B, C, D, E1, E2, F) covered by at least one test with assertions tight to the AC's Then-clause.
+- **DUAL-GATE audit (ci_or_compile_shape):** compile-time topology contract + schema-shape parity both green. Schema-pin fixtures exist for all three schemas with bidirectional round-trip + `additionalProperties: false` + `extra="forbid"` propagation assertions.
+
+Net: **1 PATCH applied (G6-P1), 1 DEFER (G6-D1), ~8 DISMISS** per aggressive G6 rubric (verbose error messages, pragma-on-OSError, `__name__` assignment on stub handlers).
+
+**Unblocks:** Story 1.5 (checkpoint retention — single-gate, parallel-eligible), Story 1.6 (pipeline-manifest migration stub + smoke — consumes this schema directly), Story 2a.1 (Slab 2 specialist scaffold pilot — compiler's passthrough stub is the extension point for real specialist resolution), Story 3.3 (Slab 3 resume_api body + bridge modules honoring C3 signature).
+
+### File list
+
+**New files:**
+- `app/manifest/schema.py` — PipelineManifest + NodeSpec + EdgeSpec + LearningEventsConfig + StepLearningEventsConfig
+- `app/manifest/exceptions.py` — ManifestValidationError + CompileError
+- `app/manifest/loader.py` — `load(path) -> PipelineManifest`
+- `app/manifest/compiler.py` — `compile(manifest) -> StateGraph`
+- `app/manifest/conditions.py` — Slab 1 stub condition registry (`always_true` / `always_false`)
+- `runtime/graphs/v0.1-stub/README.md` — anchors `frozen_graph_version: "v0.1-stub"` directory-existence check
+- `tests/unit/manifest/test_schema.py` — 20 shape + round-trip + cross-field + rejection tests
+- `tests/unit/manifest/test_schema_pin.py` — 6 schema-pin parity tests (3 models × parametrize + 3 `additionalProperties: false` assertions)
+- `tests/unit/manifest/test_loader.py` — 7 loader tests (happy path + 5 error paths + string-path acceptance)
+- `tests/unit/manifest/test_compiler.py` — 10 compiler tests (compile + invoke + model_config_ref lint + conditions + frozen-graph-dir + G6-P1 double-edge guard)
+- `tests/unit/manifest/test_lane_separation.py` — 3 lane-separation tests (AC-1.4-D)
+- `tests/unit/gates/test_resume_api_stub.py` — 3 stub tests (NotImplementedError + echo + signature-stability)
+- `tests/integration/manifest/test_loader_compile_invoke.py` — 3 e2e tests (compile+invoke + 1.1c smoke contract + CompileError surface)
+- `tests/fixtures/manifest/schema_pin_pipeline_manifest.json` + `schema_pin_node_spec.json` + `schema_pin_edge_spec.json`
+- `tests/fixtures/manifest/golden_pipeline_manifest_3node.json` + `golden_pipeline_manifest_v42_subset.json`
+
+**Modified:**
+- `app/manifest/__init__.py` — extended exports for the new schema + loader + compiler + exceptions
+- `app/gates/__init__.py` — extended to re-export `resume_api`
+- `app/gates/resume_api.py` — replaced scaffold docstring with signature-stable `resume_from_verdict(verdict: OperatorVerdict) -> NoReturn` raising named NotImplementedError
+- `app/smoke_test.py` — routed manifest loading through `app.manifest.loader.load()`; removed local `_StubManifest` / `_StubManifestGraph` / `_StubManifestNode` / `_StubManifestEdge` classes; payload contract byte-equivalent
+- `pyproject.toml` — rewrote Contract C3 block to list non-bridge source_modules explicitly with a single ignore for `gate_decide` (the only currently-extant bridge module)
+- `state/config/pipeline-manifest.yaml` — flat `PipelineManifest` shape with `lane: run_graph` + `entrypoint: noop` + `frozen_graph_version: v0.1-stub` + `block_mode_trigger_paths` + v4.2 inventory deltas where relevant
+- `_bmad-output/implementation-artifacts/migration-1-4-manifest-loader-compiler.md` — this file (Dev Agent Record populated)
+- `_bmad-output/implementation-artifacts/sprint-status.yaml` — `migration-1-4-manifest-loader-compiler: ready-for-dev → in-progress → done`
+
+### Change log
+
+| Date | Change | Commit |
+|---|---|---|
+| 2026-04-23 | Story 1.4 — `PipelineManifest` schema family + loader + compiler (with two-lane support, compile-time `model_config_ref` + `frozen_graph_version` lint, stub condition registry) + `app/gates/resume_api.py` signature-stable stub + Contract C3 restructure + 1.1c stub manifest + smoke_test migrated to production loader. 52 new test nodes. G6 layered-review triage: 1 PATCH (G6-P1 double-START-edge guard), 1 DEFER, ~8 DISMISS. | _(pending)_ |
