@@ -1,6 +1,6 @@
 # Migration Story 1.1d: MCP Transport Smoke + Two-Transport Parity
 
-**Status:** ready-for-dev
+**Status:** review
 **Sprint key:** 1-1d-mcp-transport-smoke-and-parity
 **Epic:** Slab 1 Substrate (migration Epic 1)
 **Milestone anchored:** M1 — gates the FR2 compound-contract claim at M1 acceptance.
@@ -144,24 +144,102 @@ The >2%/20-runs reopen trigger isn't a soft target — it's a contingency built 
 
 ### Agent Model Used
 
-_(to be filled by dev agent)_
+claude-opus-4-7 (1M context). Dev-story executed 2026-04-23 in single session
+immediately following 1.1c BMAD closure.
 
 ### Debug Log References
 
-_(to be filled by dev agent)_
+- MCP SDK 1.27.0 client surface verified at T1: `mcp.client.stdio.stdio_client`
+  + `mcp.ClientSession` + `mcp.client.stdio.StdioServerParameters` all available.
+  Live probe round-trip (initialize → list_tools → call_tool ping) green in
+  ~1s against the 1.1c MCP server substrate.
+- MCP server negotiates `protocolVersion = "2025-11-25"` (LATEST) when client
+  declares LATEST; the 1.1c `MCP_PROTOCOL_VERSION` pin (= `DEFAULT_NEGOTIATED_VERSION`
+  = `"2025-03-26"`) is the SDK-upgrade-detection guard, NOT the per-handshake
+  enforcement. Smoke test asserts `init.protocolVersion` non-empty rather than
+  pinning a literal date.
+- Initial parity test triggered SIM117 (nested async-with) — refactored both
+  test files to use the parenthesized multi-context async-with form
+  (`async with (stdio_client(...) as ..., ClientSession(...) as ...)`).
 
 ### Completion Notes List
 
-_(to be filled by dev agent — must include the 20-run flake-rate measurement per AC-1.1d-D)_
+- All 5 ACs (`A`, `B`, `C`, `D`, `E`-implicit) green via T6 validator battery —
+  sandbox-AC PASS, ruff clean, lint-imports 3/3 KEPT, 20-run flake measurement
+  20/20 PASS at 0.0% flake (well under the 2% reopen-trigger budget).
+- **AC-1.1d-D 20-run flake measurement results (per Murat amendment 2026-04-22
+  hot+cold protocol):** 17 hot runs (~3.5–4.3s each, warm OS cache, no inter-run
+  pause) + 3 cold runs (~3.5s each, 1s pause + fresh subprocess) = **20/20 PASS,
+  0.0% flake rate**. Reopen trigger NOT breached. Measurement script committed
+  at `scripts/dev/flake_measure_1_1d.py` — re-runnable for CI authoring (Slab 4
+  Story 4.1) and for the M1 acceptance evidence pack.
+- **AC-1.1d-E M1 acceptance evidence:** transport-parity test run is now part
+  of the M1 evidence pack. Story 1.7 closeout will fold the 20-run flake report
+  + the per-run Completion Notes here into the M1 acceptance bundle.
+- **Reopen-trigger in effect:** the docstrings of `test_mcp_stdio_smoke.py` +
+  `test_fastapi_mcp_parity.py` carry the explicit "if flake >2% across first 20
+  runs, reopen MCP-in-Slab-1 deferral conversation" callout per the 2026-04-22
+  middle-path consensus contingency. CI lane skeleton at `ci/transport_parity_lane.md`
+  documents the trigger for the future Slab 4 Story 4.1 CI author.
+- **Substrate-bootstrap K framing per bundle §6 anti-pattern #3:** verification
+  signals counted as command-equivalence checks (`pytest -m transport_parity` +
+  20-run flake measurement script) in addition to the 2 pytest collecting nodes.
+  Total story-scoped verification surface: 2 pytest + 1 measurement-script
+  invocation (20 runs) + 4 validator gates (sandbox-AC, ruff, lint-imports,
+  marker-registration). At Pts=3 / K-target ~1.5×, the substrate-bootstrap
+  framing fits cleanly.
+- **Live LangSmith path NOT exercised in this story** (it's 1.1c AC-D's domain
+  and remains DEFER per 1.1c's G6-D1). The parity test deliberately scopes to
+  the residual payload — span-tag emission is not yet wired; that lands when
+  actual specialist nodes emit spans (Slab 2+).
 
 ### File List
 
-_(to be filled by dev agent — see Project Structure Notes)_
+**New files (this story):**
+
+- `tests/integration/transport_parity/__init__.py` — package marker.
+- `tests/integration/transport_parity/conftest.py` — `minimal_node_fixture`
+  + transport-parity marker registration (lane-level mark via `pytestmark`
+  declared at each test module).
+- `tests/integration/transport_parity/test_mcp_stdio_smoke.py` — AC-1.1d-B
+  asyncio test: spawns `python -m app.mcp_server` via `stdio_client`,
+  initializes `ClientSession`, asserts `ping` in `list_tools` + canonical
+  payload from `call_tool('ping', {input:'smoke'})` + clean stream-context
+  shutdown.
+- `tests/integration/transport_parity/test_fastapi_mcp_parity.py` — AC-1.1d-C
+  asyncio test: drives `{"input": "parity"}` through both transports
+  (FastAPI subprocess via httpx + MCP subprocess via stdio_client), parses
+  the MCP `content[0].text` to unwrap envelope, asserts `payload_a ==
+  payload_b == expected_residual` byte-for-byte.
+- `docs/dev-guide/transport-parity-envelope-exceptions.md` — authoritative
+  reference for what's allowed to differ between transports + extension
+  protocol for future transport additions (CLI 3.4, SSE later).
+- `ci/transport_parity_lane.md` — placeholder lane documentation
+  (intent + cadence + reopen-trigger + Slab 4 Story 4.1 wire-up checklist
+  for the future CI author).
+- `scripts/dev/flake_measure_1_1d.py` — 20-run hot+cold flake measurement
+  harness; emits per-run pass/fail + aggregate flake-rate vs the 2% budget.
+
+**Modified (this story):**
+
+- `pyproject.toml` — registered `transport_parity` pytest marker with
+  description noting nightly/on-merge cadence + reopen-trigger.
+- `docs/dev-guide/langgraph-runtime-setup.md` — flipped MCP-parity matrix
+  cell from forward-pointer ("✅ 1.1d (gates M1)") to actual ("✅ 1.1d
+  (M1 gate green)") + added a "Smoke test (nightly / on-merge)" row
+  capturing the 1.1d cadence; rewrote the "MCP transport — substrate vs
+  production-ready" callout to reflect that 1.1c+1.1d together close the
+  Slab 1 substrate claim for the FR2 compound contract.
 
 ### Change Log
 
-_(to be filled by dev agent)_
+| Date       | Change                                                              |
+| ---------- | ------------------------------------------------------------------- |
+| 2026-04-22 | Spec authored as part of Slab 1 story-set A (party-mode middle-path) |
+| 2026-04-23 | T1–T6 dev-story executed; status `ready-for-dev` → `review`           |
 
 ### Review Findings
 
-_(to be filled by code reviewer)_
+_(to be filled by code reviewer; bmad-code-review layered pass — Blind Hunter +
+Edge Case Hunter + Acceptance Auditor — pending per CLAUDE.md sprint
+governance rule 3 before `done` transition)_

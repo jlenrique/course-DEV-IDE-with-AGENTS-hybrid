@@ -17,7 +17,8 @@ and **FR2** (compound MCP + FastAPI + CLI substrate). Each cell answers one ques
 | ------------------------ | ---------------------- | -------------------------------- | ------------------ |
 | **Code present**         | ✅ 1.1c                | ✅ 1.1c                          | ⏳ Slab 3          |
 | **Smoke test (per-PR)**  | ✅ 1.1c                | — (not per-PR by design)         | ⏳ Slab 3          |
-| **Parity acceptance**    | — (parity is two-transport at M1) | ✅ 1.1d (gates M1)    | ⏳ Slab 3 (3.4)    |
+| **Smoke test (nightly / on-merge)** | — (covered per-PR) | ✅ 1.1d                          | ⏳ Slab 3          |
+| **Parity acceptance**    | — (parity is two-transport at M1) | ✅ 1.1d (M1 gate green) | ⏳ Slab 3 (3.4) |
 
 **Reading the matrix:** rows are artifact kinds; columns are transports. A `✅` means the
 artifact is on disk and exercised at the cited story. A `—` means *N/A by design* (with
@@ -25,9 +26,12 @@ the design rationale in the cell). A `⏳` means deliberately deferred to a down
 
 ## MCP transport — Slab 1 substrate vs production-ready
 
-> **MCP code substrate is present from 1.1c, but per-PR smoke and FastAPI↔MCP parity
-> acceptance are gated on Story 1.1d. Do not treat the MCP transport as production-ready
-> until 1.1d closes.**
+> **MCP code substrate landed in 1.1c; nightly / on-merge stdio smoke + FastAPI↔MCP
+> byte-equivalent parity assertion landed in 1.1d. Both transports are now M1-substrate
+> for the FR2 compound contract; CLI completes the three-transport claim in Slab 3
+> Story 3.4. The "production-ready" qualifier still depends on Slab 2 specialist
+> migrations exercising real workloads through these transports — Slab 1 closure is
+> substrate, not feature-complete.**
 
 What landed in 1.1c (this story):
 
