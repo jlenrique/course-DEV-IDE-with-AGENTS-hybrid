@@ -1,0 +1,165 @@
+"""Integration test for `app.runtime_server` (Slab 1 Story 1.1c, AC-1.1c-C).
+
+Spawns the FastAPI runtime as a subprocess, probes ``/health`` + ``/invoke``
+via ``httpx``, asserts NFR-S2 loopback-only bind, and verifies clean shutdown
+within 2 seconds.
+
+Sandbox-AC discipline: skip-not-fail on Postgres unreachable; no operator-side
+CLIs (``curl``, ``psql``, etc.) — uses shipped Python deps only.
+"""
+
+from __future__ import annotations
+
+import os
+import socket
+import subprocess
+import sys
+import time
+from collections.abc import Iterator
+
+import httpx
+import pytest
+
+from app.runtime.minimal_node import MINIMAL_NODE_NAME
+from app.runtime.server import DEFAULT_BIND_HOST, app
+
+SERVER_BOOT_BUDGET_S: float = 8.0
+SHUTDOWN_BUDGET_S: float = 2.0
+
+
+def _pick_free_port() -> int:
+    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+        s.bind(("127.0.0.1", 0))
+        return s.getsockname()[1]
+
+
+def _wait_for_health(client: httpx.Client, deadline: float) -> httpx.Response:
+    last_exc: Exception | None = None
+    while time.monotonic() < deadline:
+        try:
+            response = client.get("/health", timeout=1.0)
+            if response.status_code == 200:
+                return response
+        except httpx.HTTPError as exc:
+            last_exc = exc
+        time.sleep(0.1)
+    raise AssertionError(
+        f"runtime server did not become healthy within {SERVER_BOOT_BUDGET_S}s "
+        f"(last error: {last_exc!r})"
+    )
+
+
+@pytest.fixture
+def runtime_server_subprocess() -> Iterator[tuple[subprocess.Popen[bytes], int]]:
+    port = _pick_free_port()
+    env = os.environ.copy()
+    env["RUNTIME_PORT"] = str(port)
+    proc = subprocess.Popen(
+        [sys.executable, "-m", "app.runtime_server"],
+        env=env,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+    )
+    try:
+        yield proc, port
+    finally:
+        if proc.poll() is None:
+            proc.terminate()
+            try:
+                proc.wait(timeout=SHUTDOWN_BUDGET_S * 2)
+            except subprocess.TimeoutExpired:
+                proc.kill()
+                proc.wait()
+
+
+def test_app_state_pins_loopback_bind_host() -> None:
+    """In-process introspection guard for NFR-S2 (defense-in-depth alongside subprocess check)."""
+    assert app.state.bound_host == "127.0.0.1", (
+        f"NFR-S2 violation: app.state.bound_host is {app.state.bound_host!r}, "
+        "expected '127.0.0.1'. The runtime server must NOT silently bind to a "
+        "non-loopback address (e.g. 0.0.0.0 for Windows-firewall debugging)."
+    )
+    assert DEFAULT_BIND_HOST == "127.0.0.1"
+
+
+def test_runtime_server_health_invoke_and_clean_shutdown(
+    runtime_server_subprocess: tuple[subprocess.Popen[bytes], int],
+) -> None:
+    proc, port = runtime_server_subprocess
+    base_url = f"http://127.0.0.1:{port}"
+    deadline = time.monotonic() + SERVER_BOOT_BUDGET_S
+
+    with httpx.Client(base_url=base_url) as client:
+        health = _wait_for_health(client, deadline)
+        body = health.json()
+        assert body["status"] == "ok"
+        assert body["postgres"] in {"connected", "skipped"}, body
+
+        invoke = client.post("/invoke", json={"input": "ping"}, timeout=2.0)
+        assert invoke.status_code == 200
+        invoke_body = invoke.json()
+        assert invoke_body["node"] == MINIMAL_NODE_NAME
+        assert invoke_body["result"] == {
+            "smoke": "ok",
+            "node": MINIMAL_NODE_NAME,
+            "echo": "ping",
+        }
+
+    # Clean shutdown: terminate() (cross-platform) and assert returncode is set
+    # within budget. SIGTERM on POSIX maps to terminate(); on Windows it sends
+    # CTRL_BREAK_EVENT / TerminateProcess. Either way returncode != None proves
+    # uvicorn shut down without orphaning the process.
+    proc.terminate()
+    try:
+        proc.wait(timeout=SHUTDOWN_BUDGET_S)
+    except subprocess.TimeoutExpired:
+        pytest.fail(
+            f"runtime server did not exit within {SHUTDOWN_BUDGET_S}s of terminate(); "
+            "this indicates an orphaned thread or signal handler regression."
+        )
+    assert proc.returncode is not None, "subprocess returncode unset after wait()"
+
+
+def test_runtime_server_refuses_non_loopback_connection(
+    runtime_server_subprocess: tuple[subprocess.Popen[bytes], int],
+) -> None:
+    """NFR-S2 negative test: a connection to a non-loopback address must fail.
+
+    Strategy: discover the host's primary LAN IP via socket.gethostbyname; if
+    unresolvable or it resolves to loopback, skip with a documented reason
+    (the test is meaningless on a host with no real LAN IP). Otherwise attempt
+    a TCP connect to that LAN IP on the runtime port with a 1s timeout and
+    assert it is refused / times out.
+    """
+    proc, port = runtime_server_subprocess
+    deadline = time.monotonic() + SERVER_BOOT_BUDGET_S
+    with httpx.Client(base_url=f"http://127.0.0.1:{port}") as client:
+        _wait_for_health(client, deadline)
+
+    try:
+        candidate_ips = {
+            ip
+            for ip in socket.gethostbyname_ex(socket.gethostname())[2]
+            if not ip.startswith("127.")
+        }
+    except OSError as exc:
+        pytest.skip(f"cannot resolve host LAN IPs ({exc}); non-loopback assertion N/A")
+    if not candidate_ips:
+        pytest.skip("host has no non-loopback IPv4 address; non-loopback assertion N/A")
+
+    refused = False
+    last_error: Exception | None = None
+    for lan_ip in sorted(candidate_ips):
+        try:
+            with socket.create_connection((lan_ip, port), timeout=1.0) as sock:
+                sock.close()
+        except (TimeoutError, ConnectionRefusedError, OSError) as exc:
+            refused = True
+            last_error = exc
+            break
+
+    assert refused, (
+        f"runtime server accepted a connection on a non-loopback IP ({sorted(candidate_ips)}); "
+        "NFR-S2 requires 127.0.0.1-only bind. Last attempt error: "
+        f"{last_error!r}"
+    )

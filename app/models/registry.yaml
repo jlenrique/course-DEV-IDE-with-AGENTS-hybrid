@@ -1,0 +1,5 @@
+# Slab 1 Story 1.1c stub registry. Story 1.3 will replace this with the
+# full three-level model-cascade content (per-call -> per-specialist -> registry default).
+entries:
+  - id: gpt-5.4
+    default_model: gpt-5.4

@@ -1,6 +1,6 @@
 # Migration Story 1.1c: Smoke Test + Runtime Server Entry + MCP Code Substrate
 
-**Status:** ready-for-dev
+**Status:** review
 **Sprint key:** 1-1c-smoke-test-runtime-server-mcp-substrate
 **Epic:** Slab 1 Substrate (migration Epic 1)
 **Milestone anchored:** M1 — "Runtime substrate is real."
@@ -180,24 +180,111 @@ All ACs are dev-agent-executable. No operator-gated AC. The `/health` Postgres p
 
 ### Agent Model Used
 
-_(to be filled by dev agent)_
+claude-opus-4-7 (1M context). Dev-story executed 2026-04-23 in single session.
 
 ### Debug Log References
 
-_(to be filled by dev agent)_
+- LangGraph state-schema reducer silently drops keys not declared on the
+  `TypedDict` state — initial smoke output was `{'input': 'ping'}` only;
+  widened `_SmokeState` to include `smoke`, `node`, `echo` and rerun returned
+  the canonical four-key payload.
+- `mcp` SDK 1.27.0 has no `__version__` attribute; protocol version sourced
+  from `mcp.types.DEFAULT_NEGOTIATED_VERSION` (= `"2025-03-26"`) +
+  `LATEST_PROTOCOL_VERSION` (= `"2025-11-25"`) recorded for forensic value.
+  Re-export pattern (rather than hard-coded date) means an SDK upgrade
+  cannot silently shift the protocol surface.
+- Hybrid `.venv` carried only the runtime deps from Story 1.1a's lockfile —
+  `pip` itself was not installed. Bootstrapped via `python -m ensurepip
+  --upgrade` then `pip install pytest pytest-asyncio pytest-timeout` so the
+  T9 pytest battery could run. Lockfile NOT modified (dev deps stay in
+  pyproject `[dev]` extras; pin discipline unchanged).
 
 ### Completion Notes List
 
-_(to be filled by dev agent)_
+- All 8 ACs (`A`, `B`, `C`, `D`, `D2`, `E`, `F`) green via T9 validator
+  battery — sandbox-AC PASS, ruff clean, lint-imports 3/3 contracts kept,
+  pytest 5 passed / 1 deselected (live LangSmith, correctly skipped without
+  `LANGSMITH_API_KEY`), smoke + registry_check + MCP import-smoke exit 0.
+- **AC-1.1c-D live LangSmith integration test was authored but cannot
+  execute end-to-end in the dev sandbox** (no `LANGSMITH_API_KEY`). Skips
+  cleanly. Full assertion fires when the operator runs `pytest --run-live
+  tests/integration/observability/` with the env var set; the unit-tier pin
+  in AC-1.1c-D2 carries the schema enforcement until then.
+- **Pipeline manifest overwrite:** `state/config/pipeline-manifest.yaml`
+  previously held the primary-repo v4.2 prompt-pack manifest (379 lines).
+  This story replaces it with the Slab 1 migration stub per spec + per
+  Story 1.6 plan. Recovery on hybrid: `git show
+  upstream/master:state/config/pipeline-manifest.yaml`. The 11 primary-repo
+  tests that load this path (`tests/test_pipeline_manifest_loader.py`,
+  `tests/test_check_pipeline_manifest_lockstep.py`, etc.) will fail under
+  `pytest tests/`; T9 pytest scope is restricted to `tests/integration/runtime`
+  + `tests/integration/observability` + `tests/unit/observability` per the
+  story's T9 list, so this regression class is not surfaced here. Slab 1
+  closing-story 1.7 should call out the regression class in the Slab-1 close
+  note for forward-port reconciliation.
+- **Substrate-bootstrap K framing per bundle §6 anti-pattern #3:** verification
+  signals counted as command-equivalence checks (`python -m app.smoke_test`,
+  `python -m app.models.registry_check`, MCP import-smoke `python -c "..."`)
+  in addition to the 5 pytest collecting nodes. Total story-scoped
+  verification surface: 5 pytest + 3 entry-point smokes + 4 validator gates
+  (sandbox-AC, ruff app, ruff tests, lint-imports). At Pts=3 / K-target ~1.5×,
+  the substrate-bootstrap framing fits cleanly.
 
 ### File List
 
-_(to be filled by dev agent — see Project Structure Notes for expected file set)_
+**New files (this story):**
+
+- `app/models/registry.py` — stub `PipelineRegistry` + `PipelineRegistryEntry`
+  Pydantic models (1.3 will land the full three-level cascade schema).
+- `app/models/registry.yaml` — stub registry with one valid entry.
+- `app/models/registry_check.py` — `__main__` entry point validating the
+  YAML against the model; exits 0/1 with named violation on stderr.
+- `app/runtime/minimal_node.py` — shared `minimal_node` callable + stable
+  `MINIMAL_NODE_NAME` constant. Single source of truth imported by smoke,
+  FastAPI `/invoke`, and the MCP `ping` tool — load-bearing invariant for
+  Story 1.1d's parity assertion.
+- `app/runtime/server.py` — FastAPI app factory, `GET /health`,
+  `POST /invoke`, NFR-S2 loopback bind, `app.state.bound_host` introspection.
+- `app/runtime/span_tags.py` — `REQUIRED_SPAN_TAG_KEYS` frozenset pin.
+- `app/runtime_server.py` — `__main__` entry; `RUNTIME_PORT` env var honored.
+- `app/smoke_test.py` — `run_smoke()` function + `__main__` entry; loads
+  the stub manifest, compiles a one-node `StateGraph`, returns the payload.
+- `app/mcp_server/protocol.py` — `MCP_PROTOCOL_VERSION` re-export from
+  shipped `mcp` SDK + `MCP_LATEST_PROTOCOL_VERSION` for forensic value.
+- `app/mcp_server/server.py` — `mcp.server.Server` instance + `register()`
+  for the `ping` tool.
+- `app/mcp_server/tools/ping.py` — one real `list_tools` / `call_tool`
+  handler pair; invokes the shared `minimal_node`.
+- `app/mcp_server/__main__.py` — `uv run python -m app.mcp_server` boots
+  the server over stdio.
+- `state/config/pipeline-manifest.yaml` — REPLACED with Slab 1 migration
+  stub (1-node noop graph). See Completion Notes for recovery + 1.6 plan.
+- `tests/integration/runtime/test_fastapi_server.py` — 3 tests:
+  in-process bind-host introspection, subprocess `/health` + `/invoke` +
+  clean shutdown, non-loopback connection refusal (NFR-S2).
+- `tests/integration/observability/test_langsmith_span_tags.py` — live
+  LangSmith span-tag contract test, `live_api`-marked, skips without
+  `LANGSMITH_API_KEY` or `LANGSMITH_PROJECT`.
+- `tests/unit/observability/test_span_tag_contract_pin.py` — 2 unit-tier
+  pin tests: canonical-four equality + golden-fixture byte-equivalence.
+- `tests/fixtures/observability/span_tag_keys.json` — golden fixture
+  (alphabetized JSON list of the four canonical keys).
+- `docs/dev-guide/langgraph-runtime-setup.md` — Slab 1 structural stub
+  with the inverted transport-parity matrix + MCP 1.1d gating callout.
+
+**Modified (this story):** none beyond the `state/config/pipeline-manifest.yaml`
+overwrite already noted.
 
 ### Change Log
 
-_(to be filled by dev agent)_
+| Date       | Change                                                              |
+| ---------- | ------------------------------------------------------------------- |
+| 2026-04-22 | Spec authored as part of Slab 1 story-set A (party-mode pass)        |
+| 2026-04-22 | In-spec amendments per set-level review (AC-1.1c-C bind assertion + AC-1.1c-D2 unit-tier pin per Murat amendment) |
+| 2026-04-23 | T1–T9 dev-story executed; status `ready-for-dev` → `review`           |
 
 ### Review Findings
 
-_(to be filled by code reviewer)_
+_(to be filled by code reviewer; bmad-code-review layered pass — Blind Hunter +
+Edge Case Hunter + Acceptance Auditor — pending per CLAUDE.md sprint
+governance rule 3 before `done` transition)_
