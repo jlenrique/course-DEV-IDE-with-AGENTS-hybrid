@@ -565,7 +565,7 @@ The clone is a fully working repo. Dev ramp on the clone:
 1. **Clone + branch.** `git clone <repo>; git checkout dev/langchain-langgraph-foundation`
 2. **Python env.** `uv venv .venv --python 3.12; source .venv/bin/activate` (or `python -m venv`)
 3. **Dependencies.** `uv pip install -r requirements.lock` (or `pip install -r`). Slab 1 ships the lockfile.
-4. **Postgres (local).** `docker compose up -d postgres` (docker-compose included in clone; Postgres 15+ image). Slab 1 ships the compose file + init SQL.
+4. **Postgres (local).** Operator installs Postgres 15+ natively on the dev machine (Windows: EDB installer; macOS: Homebrew `brew install postgresql@15`; Linux: distro package). Then `psql "$DATABASE_URL" -f scripts/dev/init_postgres.sql` to create the migration database + role. **No Docker, no docker-compose, no container runtime is required or assumed.** Slab 1 ships `scripts/dev/init_postgres.sql` (idempotent) + `docs/dev-guide/local-postgres-setup.md` (one-time bootstrap doc).
 5. **LangSmith (optional but recommended).** `export LANGSMITH_API_KEY=…; export LANGSMITH_PROJECT=course-dev-ide-migration`
 6. **OpenAI API key.** `export OPENAI_API_KEY=…`
 7. **Model registry check.** `uv run python -m app.models.registry_check` — verifies all models in `app/models/registry.yaml` are reachable; fails loudly if a model ID has been deprecated.
@@ -641,7 +641,7 @@ Per the `developer_tool` CSV guidance (and confirmed against the APP's true shap
 
 **MVP Approach: Platform MVP (not experience MVP).** The operator-facing experience of running a trial already exists and works in the primary repo. What doesn't exist is the *platform* — the persistent runtime that makes runs pausable, forkable, replayable, and reproducible. The MVP therefore delivers a working **platform substrate** that achieves parity-or-better with the current experience, not a new experience.
 
-**Resource Requirements:** Single operator (Juanl) + BMAD dev agents (Amelia, Diego) + specialist subagents invoked per-story. No additional humans required. External dependencies: OpenAI API account (billing visible to operator), Postgres 15+ (local Docker), LangSmith account (free tier sufficient at single-operator scale).
+**Resource Requirements:** Single operator (Juanl) + BMAD dev agents (Amelia, Diego) + specialist subagents invoked per-story. No additional humans required. External dependencies: OpenAI API account (billing visible to operator), Postgres 15+ (natively installed on operator's machine — no Docker/container runtime), LangSmith account (free tier sufficient at single-operator scale).
 
 **Philosophical commitment:** MVP ≠ "minimal viable product" here. MVP = **minimum viable platform for parity-or-better**. Cutting below parity is not an option — it invalidates the migration's core premise (preserve invariants while changing the substrate). Cutting *scope beyond parity* (e.g., fork UX polish, economics dashboard richness) is on the table under pressure; cutting *invariants* is not.
 
@@ -778,7 +778,7 @@ Five inter-slab gates, each requires **explicit operator approval** before the n
 - Stretch target: ≥60% if cache hit rate exceeds 80% and tier routing is aggressive.
 
 **Non-token costs:**
-- Postgres local: $0 (Docker on operator's machine).
+- Postgres local: $0 (native install on operator's machine; no Docker).
 - LangSmith: $0–$39/month at single-operator volume (free tier or Plus tier).
 - LangGraph OSS: $0.
 - **Dev labor:** the full cost. 12–16 weeks × (operator orchestration + BMAD dev agent invocations + party-mode + code-review). Dominant cost; outside token economics.

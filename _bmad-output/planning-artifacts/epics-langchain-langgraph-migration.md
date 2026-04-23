@@ -141,7 +141,7 @@ Legend: **Pts** = rough story-point estimate; **Gate** = single/dual-gate per `d
 
 **FR coverage:** FR1, FR2, FR3, FR4, FR5, FR6, FR7, FR8, FR17, FR18, FR19, FR20, FR21, FR22, FR23, FR24 (pre-submission portion), FR25, FR54 (baseline measurement), FR58, FR59 (stub), FR60 (backport policy commit).
 
-**Stories:** 1.1a, 1.1b, 1.1c, 1.2, 1.3, 1.4, 1.5, 1.6, 1.7 (9 stories).
+**Stories:** 1.1a, 1.1b, 1.1c, 1.1d, 1.2, 1.3, 1.4, 1.5, 1.6, 1.7 (10 stories — Story 1.1d added 2026-04-22 via party-mode middle-path consensus on MCP-in-Slab-1 scope).
 
 ---
 
@@ -176,7 +176,7 @@ So that **every subsequent Slab 1 story starts from an identical, reproducible b
 ### Story 1.1b: Package Layout + Postgres + Sanctum Fork Notice (Story 1b per Amendment F)
 
 As a **dev agent completing Slab 1 substrate scaffolding**,
-I want **the seven Slab-1 packages created with READMEs citing justifying FRs, a Postgres container running, four test tiers with canaries, and CLONE-FORK-NOTICE in every sanctum directory**,
+I want **the seven Slab-1 packages created with READMEs citing justifying FRs, a locally-installed Postgres 15+ reachable via `DATABASE_URL`, four test tiers with canaries, and CLONE-FORK-NOTICE in every sanctum directory**,
 So that **the substrate shape is in place before any handler code is written, clone-fork discipline is codified Day 1, and the test harness is real from the first story**.
 
 **Pts:** 3 | **Gate:** dual (substrate-shape story) | **K:** ~1.4×
@@ -187,9 +187,17 @@ So that **the substrate shape is in place before any handler code is written, cl
 **When** the dev agent creates the seven Slab-1 packages (`app/runtime/`, `app/models/`, `app/models/state/`, `app/models/decision_cards/`, `app/manifest/`, `app/http/`, `app/mcp_server/`)
 **Then** each package has `__init__.py` + `README.md` stub naming the justifying FR(s) per architecture §Project Structure §Requirements-to-Component Matrix; `python -c "import app.runtime, app.models, app.manifest, app.http, app.mcp_server"` succeeds.
 
-**Given** `docker-compose.yml` does not exist
-**When** the dev agent authors `docker-compose.yml` with a Postgres 15+ service + init SQL + retention-friendly volume + `DATABASE_URL` wired from `.env`
-**Then** `docker compose up -d postgres` returns a healthy container; `psql $DATABASE_URL -c "SELECT version();"` reports Postgres ≥ 15.
+**AC-Postgres-A (dev-agent-executable — code + artifact correctness, verified via shipped deps):**
+
+**Given** no Postgres bootstrap artifacts exist yet and the dev agent cannot assume operator-side CLIs (`psql`, `docker`, etc.) are on the session `PATH`
+**When** the dev agent authors (a) `scripts/dev/init_postgres.sql` creating the migration database + role + initial schema grants consumed later by the checkpointer (the init script must be idempotent — re-running is a no-op); (b) `docs/dev-guide/local-postgres-setup.md` documenting the one-time operator install (Windows: EDB installer; macOS: Homebrew; Linux: distro package — **no Docker / no container runtime**) + the `psql -f scripts/dev/init_postgres.sql` bootstrap; (c) a SQL parse-only syntax check that the dev agent runs against `init_postgres.sql` using a pure-Python parser already resolvable via `uv` (e.g., `sqlparse`) — no live DB required; (d) `tests/integration/postgres/test_server_version.py` that connects via **`psycopg`** (already in the 1.1a lockfile — NOT `psql`) to `DATABASE_URL`, asserts `server_version >= 150000`, and **calls `pytest.skip(...)` with a clear reason when `DATABASE_URL` is unset or the connection is refused** so the dev agent's sandbox never blocks on operator-side Postgres availability
+**Then** the three artifacts exist; the SQL parse-only check exits 0; `pytest tests/integration/postgres/test_server_version.py` either passes (if a local Postgres is reachable) or skips with the documented reason (never errors/fails due to missing CLI tooling); `DATABASE_URL` is sourced from `.env` per NFR-S1; the test relies only on `psycopg` + `pytest` — no external CLI is invoked.
+
+**AC-Postgres-B (operator-gated — one-time runtime smoke on operator's machine, recorded as Completion-Notes evidence):**
+
+**Given** AC-Postgres-A artifacts have landed and the operator has completed the one-time native Postgres 15+ install per `docs/dev-guide/local-postgres-setup.md`
+**When** the **operator** (not the dev agent) runs `psql "$DATABASE_URL" -f scripts/dev/init_postgres.sql` once, then `psql "$DATABASE_URL" -c "SELECT version();"`
+**Then** the version output reports Postgres ≥ 15; the operator pastes that output into the story's Completion Notes / Dev Agent Record as evidence; this AC is recorded once at story closure and is **never** rerun per-session — it is not a dev-agent AC and must not block the dev agent if `psql` is absent from the session `PATH`.
 
 **Given** `tests/` is empty
 **When** the dev agent creates `tests/{unit,integration/scaffold_conformance,end_to_end,trial_replay,fixtures/specialists}/`
@@ -209,31 +217,99 @@ So that **the substrate shape is in place before any handler code is written, cl
 
 ---
 
-### Story 1.1c: Smoke Test + Runtime Server Entry (Story 1c per Amendment F)
+### Story 1.1c: Smoke Test + Runtime Server Entry + MCP Code Substrate (Story 1c per Amendment F, middle-path-revised 2026-04-22)
 
 As a **dev agent bringing the runtime substrate online**,
-I want **working `app.smoke_test` + `app.runtime_server` entry points + `app.models.registry_check` that collectively prove the substrate boots end-to-end**,
-So that **M1 acceptance evidence can begin accruing and the empty-manifest-loaded graph exercise is demonstrable**.
+I want **working `app.smoke_test` + `app.runtime_server` entry points + `app.models.registry_check` that prove the FastAPI transport boots end-to-end, PLUS the MCP code substrate (protocol-version pin + one real tool handler + stdio wire-up in `app/mcp_server/`) landed but NOT yet exercised by the per-PR smoke gate**,
+So that **M1 acceptance evidence can begin accruing, the empty-manifest-loaded graph exercise is demonstrable via FastAPI, and FR2's compound MCP+FastAPI+CLI contract has the MCP code present in Slab 1 substrate (smoke + parity-test cadence lives in Story 1.1d)**.
 
-**Pts:** 2 | **Gate:** single | **K:** ~1.5×
+**Pts:** 3 | **Gate:** single | **K:** ~1.5×
+
+> **Authoring note (party-mode consensus 2026-04-22):** This story was re-scoped via a two-round party-mode consensus (5/5 MIDDLE PATH) from the pre-split architecture version. The MCP smoke test + FastAPI↔MCP parity assertions that originally lived here were moved to new Story 1.1d to keep MCP transport off the per-PR critical path (Murat's flake-vector concern) while preserving FR2 substrate presence in Slab 1 (Mary's compound-contract concern) and D7 three-transport architecture commitment (Winston). 1.1c code scope grew (+1 Pt for MCP code substrate); smoke scope stayed narrow (FastAPI-only per-PR).
 
 **Acceptance Criteria:**
+
+**AC-1.1c-A — Registry check (dev-agent-executable)**
 
 **Given** `app/models/registry.yaml` and `app/specialists/_scaffold/model_config.yaml` exist (stub content)
 **When** the dev agent runs `uv run python -m app.models.registry_check`
 **Then** the script loads the registry, validates every referenced model ID against the Pydantic `PipelineRegistry` model, and exits 0; invalid refs exit 1 with named violation.
 
+**AC-1.1c-B — Smoke test via stub manifest (dev-agent-executable)**
+
 **Given** a minimal stub manifest at `state/config/pipeline-manifest.yaml` (1-step no-op graph)
 **When** the dev agent runs `uv run python -m app.smoke_test`
 **Then** the manifest loads, the compiler produces a compiled StateGraph, one node executes, the graph returns, and stdout shows "smoke ok" + node count.
 
-**Given** the smoke test passes
-**When** the dev agent runs `uv run python -m app.runtime_server` in one terminal
-**Then** a FastAPI server binds to `127.0.0.1:<port>` per NFR-S2; a curl `GET /health` returns `200` + body `{"status": "ok", "postgres": "connected"}`; Ctrl-C terminates cleanly within 2 seconds.
+**AC-1.1c-C — FastAPI runtime server + /health + /invoke (dev-agent-executable)**
 
-**Given** `LANGSMITH_API_KEY` is set
-**When** the smoke test runs
+**Given** the smoke test passes and `app.runtime_server` is importable
+**When** the dev agent runs `uv run python -m app.runtime_server` in a subprocess and probes it via `httpx` from a pytest (NOT `curl`, per sandbox-AC rule "verify via shipped deps not operator CLIs")
+**Then** a FastAPI server binds to `127.0.0.1:<port>` per NFR-S2; `GET /health` returns `200` with body `{"status": "ok", "postgres": "connected"}` (when Postgres reachable) or `{"status": "ok", "postgres": "skipped"}` (when Postgres unreachable — same skip-not-fail discipline as AC-Postgres-A); `POST /invoke` with the minimal-graph input invokes the shared minimal LangGraph node and returns its output; `SIGTERM` (or equivalent clean-shutdown signal) terminates the server within 2 seconds with no orphaned threads.
+
+**AC-1.1c-D — LangSmith span-tag contract (dev-agent-executable)**
+
+**Given** `LANGSMITH_API_KEY` is set (skip if unset per sandbox-AC discipline)
+**When** the smoke test or `/invoke` runs
 **Then** a LangSmith trace is created and visible in the configured project; the trace has ≥1 span per node with the contract tag set `{trial_id, node_id, agent, lane}` (per architecture §8 span-tag contract).
+
+**AC-1.1c-E — MCP code substrate present (dev-agent-executable; NO smoke yet — smoke is 1.1d scope)**
+
+**Given** `app/mcp_server/` is an empty-stub package (README-only from 1.1b)
+**When** the dev agent authors (a) `app/mcp_server/protocol.py` with `MCP_PROTOCOL_VERSION: str = "<pinned version>"` (FR2 protocol-version pin, exact value per architecture §MCP Protocol Pin — Slab 1 decides); (b) `app/mcp_server/server.py` with a stdio transport wire-up using `mcp.server.stdio` (shipped SDK per 2026 maturity confirmed by team); (c) `app/mcp_server/tools/ping.py` (or `trial_run_start.py` if architecture prefers) — one real `@server.tool()` handler that invokes the SAME minimal LangGraph node used by FastAPI `/invoke` so parity can be asserted in 1.1d; (d) `app/mcp_server/__main__.py` entry point (`uv run python -m app.mcp_server`) so the server can be spawned as a subprocess in 1.1d
+**Then** `uv run python -c "from app.mcp_server import server; from app.mcp_server.protocol import MCP_PROTOCOL_VERSION; print(MCP_PROTOCOL_VERSION)"` prints the pinned version; the import-linter contracts continue to pass (`lint-imports --config pyproject.toml` exits 0); **no subprocess MCP round-trip is exercised in this story** — per-PR smoke stays FastAPI-only.
+
+**AC-1.1c-F — Forward-pointer to 1.1d in docs stub (dev-agent-executable)**
+
+**Given** `docs/dev-guide/langgraph-runtime-setup.md` stub exists (Slab 1 deliverable; final polish in 1.7)
+**When** the dev agent authors the stub with the inverted **transport-parity matrix** (3 columns FastAPI / MCP / CLI × 3 rows code-present / smoke-test / parity-test) showing 1.1c lights the FastAPI column rows code+smoke, the MCP column row code-only, and 1.1d pointer callouts on the MCP smoke/parity cells; PLUS an explicit "MCP acceptance gated on Story 1.1d — handler present but not production-ready until 1.1d closes" callout in the MCP section per Paige's Round 2 doc-shape recommendation
+**Then** the stub exists, the matrix is present (Mermaid table or markdown table acceptable; Paige to finalize shape in 1.7), and the 1.1d reference is grep-able.
+
+---
+
+### Story 1.1d: MCP Transport Smoke + Two-Transport Parity (NEW — party-mode consensus 2026-04-22)
+
+As a **dev agent closing the FR2 compound-contract evidence at M1 acceptance**,
+I want **a dedicated MCP stdio smoke test + FastAPI↔MCP byte-equivalent parity assertion that runs nightly / on-merge (NOT per-PR) against the same minimal LangGraph node 1.1c wires to both transports**,
+So that **the MCP transport is proven substrate at M1 without putting subprocess stdio flake vectors on every Slab 1 PR's critical path (Murat's concern), the D7 three-transport parity claim is falsifiable not aspirational (Winston/Mary's concern), and Slab 3 Story 3.4 three-transport verdict inherits a pre-proven two-transport baseline**.
+
+**Pts:** 3 | **Gate:** single | **K:** ~1.5× (floor 1.2, ceiling 1.8; subprocess fixture is the K risk — budget absorbs it per Amelia's Round 2 math)
+
+**Origin:** Middle-path consensus from party-mode round on MCP-in-Slab-1 (transcript in session memory; 5/5 MIDDLE PATH vote). Pulls the MCP smoke + parity matrix out of 1.1c's per-PR critical path while keeping MCP code substrate in Slab 1 per FR2 and D7.
+
+**Dependencies:** 1.1c (provides MCP code + shared minimal LangGraph node), 1.1b (provides test-tier scaffold at `tests/integration/`), 1.1a (provides `mcp` SDK via lockfile — verify in story T1).
+
+**Acceptance Criteria:**
+
+**AC-1.1d-A — Shared-fixture contract (dev-agent-executable)**
+
+**Given** 1.1c shipped the MCP code substrate + the same minimal LangGraph node wired to both FastAPI `/invoke` and the MCP `ping` (or `trial_run_start`) tool
+**When** 1.1d authors `tests/integration/transport_parity/conftest.py` with a fixture that imports the literal same minimal-node module (not a re-implementation) and parametrizes it across both transports
+**Then** the fixture is the single source of truth for the node-under-test; any drift between transports is caught by import-site changes, not test-site duplication.
+
+**AC-1.1d-B — MCP stdio subprocess smoke (dev-agent-executable)**
+
+**Given** the shipped `mcp` PyPI SDK provides `mcp.client.stdio.stdio_client` + `ClientSession` primitives (verified at T1 against the locked version in `requirements.lock`)
+**When** 1.1d authors `tests/integration/transport_parity/test_mcp_stdio_smoke.py` that spawns `uv run python -m app.mcp_server` as a real subprocess, connects via `stdio_client`, runs `await session.initialize()` → `await session.list_tools()` → `await session.call_tool("ping", {...})` → graceful shutdown via `SIGTERM` (or equivalent on Windows) within N seconds (target ≤3s; hard-fail ≥10s)
+**Then** `list_tools` returns the one registered tool (plus protocol-version metadata); `call_tool` returns the minimal node's output; subprocess exits cleanly; no orphaned pipes or threads; pytest passes with `pytest.skip(...)` when `mcp` SDK import fails (sandbox-AC discipline).
+
+**AC-1.1d-C — FastAPI↔MCP byte-equivalent parity (dev-agent-executable)**
+
+**Given** AC-1.1d-A + AC-1.1d-B are green
+**When** 1.1d authors `tests/integration/transport_parity/test_fastapi_mcp_parity.py` that drives the SAME input through both transports and compares response payloads
+**Then** response payloads are **byte-equivalent modulo a documented transport-envelope exceptions table** (request-id, timestamps, transport-name, per-transport framing — full list authored in `docs/dev-guide/transport-parity-envelope-exceptions.md`); any drift outside the exceptions table = test failure; CLI/SSE parity legs explicitly **deferred** with visible-roadmap pointer to Slab 3 Story 3.4.
+
+**AC-1.1d-D — Cadence + flakiness budget (dev-agent-executable)**
+
+**Given** AC-1.1d-B + AC-1.1d-C are the high-flake-risk tests per Round 2 test-architect analysis
+**When** 1.1d authors CI lane configuration placing these tests in a nightly / on-merge-to-main lane, NOT the per-PR Slab 1 smoke lane; plus a reopen-trigger note: "if subprocess smoke or parity test flakes >2% across its first 20 runs, reopen the MCP-in-Slab-1 deferral conversation"
+**Then** the CI configuration exists (skeleton — full CI wiring lands in Slab 4 Story 4.1 graph-compile-time hook); per-PR Slab 1 smoke remains the FastAPI-only gate from 1.1c; the flakiness budget is grep-able in the story spec and the transport-parity test module docstring.
+
+**AC-1.1d-E — M1 acceptance gate (dev-agent-executable)**
+
+**Given** all above ACs are green
+**When** the M1 acceptance evidence is compiled (Slab 1 close)
+**Then** 1.1d's transport-parity test run is part of the M1 evidence pack; if it is red, M1 is not met; the FR2 compound-contract claim is satisfied by this story's closure, not by 1.1c's closure.
 
 ---
 
@@ -1398,8 +1474,8 @@ All 65 FRs map to at least one story's AC:
 | FR | Covered by |
 |---|---|
 | FR1 | 1.1c (runtime_server), 1.6 (manifest-loaded graph) |
-| FR2 | 1.1c (FastAPI), 3.4 (MCP + FastAPI + CLI), 1.1b (mcp_server stub) |
-| FR3 | 1.1b (docker postgres), 1.5 (checkpointer retention) |
+| FR2 | 1.1c (FastAPI runtime + MCP code substrate per middle-path consensus), 1.1d (MCP stdio smoke + FastAPI↔MCP byte-equivalent parity, M1 acceptance gate), 3.4 (3-transport verdict parity inheriting 1.1d baseline), 1.1b (mcp_server stub) |
+| FR3 | 1.1b (native local postgres + init SQL), 1.5 (checkpointer retention) |
 | FR4 | 1.6 (empty-graph + resume implicit), 3.6 (trial with resume) |
 | FR5 | 1.5 |
 | FR6 | 1.1c (LangSmith wiring), 1.3 (resolution trail spans) |

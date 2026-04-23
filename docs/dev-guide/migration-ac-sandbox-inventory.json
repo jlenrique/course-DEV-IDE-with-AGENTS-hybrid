@@ -1,0 +1,49 @@
+{
+  "_comment": "Dev-agent sandbox inventory for migration-story ACs. Authoritative list of CLIs the dev agent MAY assume on session PATH (dev_agent_available) vs. CLIs that MUST NOT appear in dev-agent ACs (dev_agent_forbidden). Forbidden CLIs belong in operator-gated ACs whose evidence is a one-time Completion-Notes paste. See feedback memory 'Verify via shipped deps, not operator CLIs' and project memory 'no Docker'. Updated when a new CLI class is adopted or rejected; requires party-mode for additions to dev_agent_available.",
+  "version": "2026-04-22",
+  "dev_agent_available": [
+    "python",
+    "uv",
+    "pip",
+    "pytest",
+    "ruff",
+    "lint-imports",
+    "git",
+    "mkdir",
+    "ls",
+    "cat",
+    "echo",
+    "cd",
+    "pwd",
+    "cp",
+    "mv",
+    "rm",
+    "test",
+    "true",
+    "false"
+  ],
+  "dev_agent_forbidden": {
+    "docker": "Container runtime removed from the LangChain/LangGraph migration architecture on 2026-04-22. Postgres runs natively on operator's machine. docker/docker-compose must not appear in any dev-agent AC.",
+    "docker-compose": "See 'docker'.",
+    "psql": "Postgres CLI is not assumed on the dev-agent session PATH. For dev-agent ACs, use psycopg (shipped in 1.1a lockfile) with a pytest that calls pytest.skip(...) when DATABASE_URL is unreachable. psql smoke belongs in an operator-gated AC whose evidence is pasted into Completion Notes once.",
+    "pg_dump": "Postgres CLI; same rule as psql.",
+    "pg_restore": "Postgres CLI; same rule as psql.",
+    "pg_ctl": "Postgres CLI; same rule as psql.",
+    "pgbench": "Postgres CLI; same rule as psql.",
+    "aws": "Cloud CLI; not in dev-agent sandbox. Use boto3 (or equivalent Python SDK) for dev-agent ACs.",
+    "gcloud": "Cloud CLI; not in dev-agent sandbox. Use google-cloud-* Python SDKs for dev-agent ACs.",
+    "az": "Cloud CLI; not in dev-agent sandbox. Use azure-* Python SDKs for dev-agent ACs.",
+    "gh": "GitHub CLI; not in dev-agent sandbox. Use PyGithub or plain git (which is available) for dev-agent ACs.",
+    "kubectl": "Kubernetes CLI; not in dev-agent sandbox and not in architecture scope (no multi-tenant / no remote deploy).",
+    "helm": "Kubernetes CLI; same as kubectl.",
+    "redis-cli": "Redis CLI; not in dev-agent sandbox. Use redis-py for dev-agent ACs if Redis is ever adopted.",
+    "mongo": "Mongo CLI; not in dev-agent sandbox. Use pymongo if Mongo is ever adopted.",
+    "mongosh": "See 'mongo'.",
+    "mysql": "MySQL CLI; Postgres is the architecture choice, but listed for completeness.",
+    "curl": "Network-side CLI with environment-dependent availability on Windows bash. For HTTP smoke in dev-agent ACs, use httpx/requests from Python (both resolvable via uv).",
+    "wget": "See 'curl'."
+  },
+  "flag_with_warning": {
+    "ffmpeg": "Primary repo uses ffmpeg via Python wrappers; availability on dev-agent PATH is not guaranteed. If a migration story invokes ffmpeg as a shell CLI in a dev-agent AC, flag for review — the AC probably belongs in operator-gated form or should invoke ffmpeg through a Python wrapper."
+  }
+}

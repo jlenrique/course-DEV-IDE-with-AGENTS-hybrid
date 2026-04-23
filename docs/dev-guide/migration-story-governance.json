@@ -1,0 +1,85 @@
+{
+  "_comment": "Codified gate-mode designations for LangChain/LangGraph migration stories. Authored 2026-04-22 from the triage pass across the 56-story plan in _bmad-output/planning-artifacts/epics-langchain-langgraph-migration.md. The triage RE-AFFIRMED the existing per-story designations — dual-gate is applied only where a story introduces a schema-shape, CI/compile-time contract, lane/package boundary, load-bearing invariant preservation, or operator-acceptance gate. Every other story is single-gate. Stories 2b.2-2b.14 are explicitly pinned to single-gate here (they follow the 2b.1 TEMPLATE scaffold and should not relitigate gate mode at authoring time). Freezing these designations here means bmad-create-story on a migration story does not need to rederive the gate-mode decision — it reads this file. Additions or demotions require party-mode consensus and a version bump below.",
+  "version": "2026-04-22",
+  "dual_gate_rationale_legend": {
+    "schema_shape": "Story introduces a new Pydantic v2 model family with four-file-lockstep (schema + validator + tests + golden fixture).",
+    "ci_or_compile_shape": "Story adds or changes a CI/graph-compile-time contract that affects every downstream story.",
+    "lane_or_package_boundary": "Story establishes or changes a lane-separation / package-boundary import-linter contract.",
+    "invariant_preservation": "Story preserves a load-bearing PRD invariant (FR34 HIL, FR40 lane separation, FR43 frozen-graph, etc.).",
+    "operator_acceptance_gate": "Story is a slab-closing or milestone go/no-go story with operator sign-off.",
+    "substrate_shape": "Story lays down substrate inherited by many downstream stories; mis-wiring has cascading cost."
+  },
+  "stories": {
+    "1-1a": { "expected_gate_mode": "single-gate", "rationale": null },
+    "1-1b": { "expected_gate_mode": "dual-gate", "rationale": "substrate_shape" },
+    "1-1c": { "expected_gate_mode": "single-gate", "rationale": "Reshaped 2026-04-22 via middle-path party-mode consensus: FastAPI smoke + MCP code substrate (protocol pin + handler + stdio wire-up) but NO MCP smoke (which moved to 1-1d). Pts grew 2→3; gate stays single." },
+    "1-1d": { "expected_gate_mode": "single-gate", "rationale": "NEW story added 2026-04-22 via middle-path party-mode consensus on MCP-in-Slab-1. MCP stdio subprocess smoke + FastAPI↔MCP byte-equivalent parity assertion, runs nightly/on-merge (not per-PR), gates M1 acceptance for FR2 compound contract. Single-gate justified: not schema-shape, not lane-boundary, not invariant-preservation — just transport-parity test scaffold." },
+    "1-2":  { "expected_gate_mode": "dual-gate", "rationale": "schema_shape", "expected_pts": 5, "expected_k_target": 1.6, "amendment_note": "Bumped 2026-04-22 from Pts=3/K=1.5× per Amelia set-level review: 8 models (incl. OperatorVerdict per BLOCKER-1) × four-file-lockstep × triple-layer red-rejection × reproducibility-invariants × schema-pin emission = ~32 files; 31-1 precedent (1 model at K=1.5× → MUST-FIX) is the warning." },
+    "1-3":  { "expected_gate_mode": "dual-gate", "rationale": "schema_shape", "expected_k_target": 1.6, "amendment_note": "K bumped 2026-04-22 from 1.4× per Amelia: cross-story schema migration (replace 1.2 stub) + 3 new schemas + selector + adapter + cache-prefix stability is 1.6× minimum." },
+    "1-4":  { "expected_gate_mode": "dual-gate", "rationale": "ci_or_compile_shape", "amendment_note": "Scope expanded 2026-04-22 to include `app/gates/resume_api.py` stub + import-linter Contract C3 + ledger verdict-event shape stub per BLOCKER-1 honoring architecture §D3 Slab-1 distribution. Pts unchanged (5) — additions are signature stubs + one contract block, not load-bearing on K." },
+    "1-5":  { "expected_gate_mode": "single-gate", "rationale": null },
+    "1-6":  { "expected_gate_mode": "dual-gate", "rationale": "schema_shape" },
+    "1-7":  { "expected_gate_mode": "single-gate", "rationale": null, "expected_k_target": 1.4, "amendment_note": "K bumped 2026-04-22 from 1.3× per Amelia: 3 polished docs + scaffold-conformance framework + anti-patterns catalog + 11-section migration guide + M1 evidence pack + retrospective convening + sprint-status hygiene is 1.4× realistic. Closing-story-drift risk." },
+
+    "2a-1": { "expected_gate_mode": "dual-gate", "rationale": "schema_shape" },
+    "2a-2": { "expected_gate_mode": "single-gate", "rationale": null },
+    "2a-3": { "expected_gate_mode": "single-gate", "rationale": null },
+    "2a-4": { "expected_gate_mode": "single-gate", "rationale": null },
+
+    "2b-1":  { "expected_gate_mode": "single-gate", "rationale": "TEMPLATE: establishes the per-specialist migration scaffold pattern for 2b.2-2b.14." },
+    "2b-2":  { "expected_gate_mode": "single-gate", "rationale": "Follows 2b.1 TEMPLATE; scaffold-conformant specialist migration." },
+    "2b-3":  { "expected_gate_mode": "single-gate", "rationale": "Follows 2b.1 TEMPLATE." },
+    "2b-4":  { "expected_gate_mode": "single-gate", "rationale": "Follows 2b.1 TEMPLATE." },
+    "2b-5":  { "expected_gate_mode": "single-gate", "rationale": "Follows 2b.1 TEMPLATE." },
+    "2b-6":  { "expected_gate_mode": "single-gate", "rationale": "Follows 2b.1 TEMPLATE." },
+    "2b-7":  { "expected_gate_mode": "single-gate", "rationale": "Follows 2b.1 TEMPLATE." },
+    "2b-8":  { "expected_gate_mode": "single-gate", "rationale": "Follows 2b.1 TEMPLATE." },
+    "2b-9":  { "expected_gate_mode": "single-gate", "rationale": "Follows 2b.1 TEMPLATE." },
+    "2b-10": { "expected_gate_mode": "single-gate", "rationale": "Follows 2b.1 TEMPLATE." },
+    "2b-11": { "expected_gate_mode": "single-gate", "rationale": "Follows 2b.1 TEMPLATE." },
+    "2b-12": { "expected_gate_mode": "single-gate", "rationale": "Follows 2b.1 TEMPLATE." },
+    "2b-13": { "expected_gate_mode": "single-gate", "rationale": "Follows 2b.1 TEMPLATE." },
+    "2b-14": { "expected_gate_mode": "single-gate", "rationale": "Follows 2b.1 TEMPLATE." },
+    "2b-15": { "expected_gate_mode": "dual-gate", "rationale": "schema_shape" },
+    "2b-16": { "expected_gate_mode": "single-gate", "rationale": null },
+    "2b-17": { "expected_gate_mode": "single-gate", "rationale": null },
+
+    "2c-1": { "expected_gate_mode": "single-gate", "rationale": null },
+    "2c-2": { "expected_gate_mode": "single-gate", "rationale": null },
+    "2c-3": { "expected_gate_mode": "single-gate", "rationale": null },
+    "2c-4": { "expected_gate_mode": "single-gate", "rationale": null },
+
+    "3-1": { "expected_gate_mode": "dual-gate", "rationale": "lane_or_package_boundary" },
+    "3-2": { "expected_gate_mode": "dual-gate", "rationale": "schema_shape" },
+    "3-3": { "expected_gate_mode": "dual-gate", "rationale": "invariant_preservation" },
+    "3-4": { "expected_gate_mode": "single-gate", "rationale": null },
+    "3-5": { "expected_gate_mode": "single-gate", "rationale": null },
+    "3-6": { "expected_gate_mode": "dual-gate", "rationale": "operator_acceptance_gate" },
+
+    "4-1": { "expected_gate_mode": "dual-gate", "rationale": "ci_or_compile_shape" },
+    "4-2": { "expected_gate_mode": "dual-gate", "rationale": "lane_or_package_boundary" },
+    "4-3": { "expected_gate_mode": "single-gate", "rationale": null },
+    "4-4": { "expected_gate_mode": "dual-gate", "rationale": "schema_shape" },
+    "4-5": { "expected_gate_mode": "single-gate", "rationale": null },
+    "4-6": { "expected_gate_mode": "single-gate", "rationale": null },
+    "4-7": { "expected_gate_mode": "single-gate", "rationale": null },
+
+    "5a-1": { "expected_gate_mode": "dual-gate", "rationale": "operator_acceptance_gate" },
+    "5a-2": { "expected_gate_mode": "dual-gate", "rationale": "operator_acceptance_gate" },
+    "5a-3": { "expected_gate_mode": "single-gate", "rationale": null },
+    "5a-4": { "expected_gate_mode": "single-gate", "rationale": null },
+    "5a-5": { "expected_gate_mode": "dual-gate", "rationale": "operator_acceptance_gate" },
+
+    "5b-1": { "expected_gate_mode": "single-gate", "rationale": null },
+    "5b-2": { "expected_gate_mode": "single-gate", "rationale": null },
+    "5b-3": { "expected_gate_mode": "single-gate", "rationale": null },
+    "5b-4": { "expected_gate_mode": "single-gate", "rationale": null }
+  },
+  "triage_summary": {
+    "total_stories": 57,
+    "single_gate": 42,
+    "dual_gate": 15,
+    "dual_gate_pct": 26,
+    "note": "26% dual-gate is the projected workload. Dual-gate stories cluster in Slab 1 substrate (4/10 = 40%) and Slab 3 orchestration (3/6 = 50%) — these are expected hot spots. Slab 2b's 17 specialist migrations are 2/17 = 12% dual — reflecting that most specialist work follows the 2b.1 TEMPLATE and is scaffold-conformant. Total grew 56→57 on 2026-04-22 with the addition of Story 1-1d (MCP transport smoke + parity) via party-mode middle-path consensus on MCP-in-Slab-1."
+  }
+}

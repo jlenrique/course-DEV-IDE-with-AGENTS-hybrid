@@ -734,7 +734,24 @@ development_status:
   # the migration-guide §8 forward-port playbook.
   # =============================================================================
   migration-epic-1-slab-1-substrate: in-progress  # Opened 2026-04-22 by migration-1-1a-runtime-substrate-environment-and-dependencies.
-  migration-1-1a-runtime-substrate-environment-and-dependencies: done  # Authored 2026-04-22 via bmad-create-story. Pts=1, single-gate, K-target 1.3×. Reviewed and remediated 2026-04-22; Story 1.1b now treats the import-linter stub packages as pre-seeded scaffolds. Re-opened + re-closed 2026-04-22 for `mcp` SDK micro-fix per Set-A green-light review BLOCKER-2 (operator: "1.1a microfix"); tenth dep `mcp==1.27.0` added to lockfile + AC-MF1 through AC-MF4 verified green; back to `done`.
+  migration-1-1a-runtime-substrate-environment-and-dependencies: done  # Authored 2026-04-22 via bmad-create-story. Pts=1, single-gate, K-target 1.3×. Reviewed and remediated 2026-04-22; Story 1.1b now treats the import-linter stub packages as pre-seeded scaffolds. Re-opened + re-closed 2026-04-22 for `mcp` SDK micro-fix per Set-A green-light review BLOCKER-2 (operator: "1.1a microfix"); tenth dep `mcp==1.27.0` added to lockfile + AC-MF1 through AC-MF4 verified green; back to `done` (commit 29b3133).
+  migration-1-1b-package-layout-postgres-sanctum-fork-notice: done  # BMAD-CLOSED 2026-04-22. Artifacts verified: scripts/dev/init_postgres.sql + docs/dev-guide/local-postgres-setup.md + tests/integration/postgres/test_server_version.py (psycopg skip-on-unreachable). Validation: SQL parse-only check pass (sqlparse), postgres test expected sandbox skip, sanctum canary pass, end_to_end/trial_replay harness canaries pass, import smoke pass. Layered bmad-code-review triage: 0 PATCH / 0 DEFER / 0 DISMISS requiring action. AC-Postgres-B: pending operator evidence at story closure.
+
+  # ---------------------------------------------------------------------------
+  # Slab 1 story-set A (8 stories) opened 2026-04-22 via party-mode standing-team authoring pass.
+  # MCP-in-Slab-1 settled to MIDDLE PATH (5/5 consensus): MCP code in 1.1c, MCP smoke + parity in new 1.1d.
+  # Authoring order is parallel; dev-execution serial per Architecture Amendment F dependency:
+  #   1.1c → 1.2 → 1.3 → 1.4 → 1.6 → 1.7   (1.1d after 1.1c; 1.5 parallel after 1.1b)
+  # Per-story gate mode + rationale frozen in docs/dev-guide/migration-story-governance.json.
+  # ---------------------------------------------------------------------------
+  migration-1-1c-smoke-test-runtime-server-mcp-substrate: ready-for-dev  # 2026-04-22 set-A authoring pass. Reshaped via middle-path consensus. Pts=3 (was 2), single-gate, K~1.5×. Adds MCP code substrate (protocol pin + handler + stdio wire-up) but smoke stays FastAPI-only per-PR; MCP smoke + parity moved to new 1.1d.
+  migration-1-1d-mcp-transport-smoke-and-parity: ready-for-dev  # 2026-04-22 set-A authoring pass. Pts=3, single-gate, K~1.5×. MCP stdio subprocess smoke + FastAPI↔MCP byte-equivalent parity assertion. Runs nightly/on-merge (not per-PR), gates M1 acceptance for FR2 compound contract. Flakiness budget: >2% across first 20 runs triggers reopen. UNBLOCKED by 1.1c review-status (MCP code substrate landed).
+  migration-1-2-pydantic-state-base-classes: ready-for-dev  # 2026-04-22 set-A authoring pass. Pts=3, dual-gate (schema-shape), K~1.5×.
+  migration-1-3-three-level-model-selector: ready-for-dev  # 2026-04-22 set-A authoring pass. Pts=3, dual-gate (schema-shape in PipelineRegistry), K~1.4×.
+  migration-1-4-manifest-loader-compiler: ready-for-dev  # 2026-04-22 set-A authoring pass. Pts=5, dual-gate (schema-shape + compile-time topology), K~1.5×.
+  migration-1-5-checkpoint-retention-cleanup: ready-for-dev  # 2026-04-22 set-A authoring pass. Pts=2, single-gate, K~1.3×. Parallel-eligible after 1.1b.
+  migration-1-6-pipeline-manifest-migration-stub-smoke: ready-for-dev  # 2026-04-22 set-A authoring pass. Pts=3, dual-gate (manifest schema change), K~1.4×.
+  migration-1-7-slab-1-docs-scaffold-conformance-anti-patterns-stub: ready-for-dev  # 2026-04-22 set-A authoring pass. Pts=3, single-gate, K~1.3×.
 
   # =============================================================================
   # LESSON PLANNER MVP SPRINT-STATUS APPEND (2026-04-18, late session)

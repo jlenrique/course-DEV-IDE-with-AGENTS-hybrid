@@ -103,3 +103,23 @@ Closeout hygiene remains mandatory:
 - update `sprint-status.yaml` first
 - update `next-session-start-here.md` second
 - update any top-level plan or status line that would otherwise drift
+
+## LangChain/LangGraph migration — sandbox-AC + gate-mode governance
+
+For migration stories (Slab 1–5 under `_bmad-output/planning-artifacts/epics-langchain-langgraph-migration.md`), two additional validators run at workflow gates to prevent the two failure modes seen in Slab 1 kickoff (unexpected CLI-on-PATH assumptions, relitigated gate-mode decisions).
+
+### Sandbox-AC validator — "verify via shipped deps, not operator CLIs"
+
+- **Before a migration story is finalized as `ready-for-dev`**, run:
+  `python scripts/utilities/validate_migration_story_sandbox_acs.py <story-file>`
+- **Before `bmad-dev-story` begins on a migration story**, run the same validator again.
+- The validator scans `## Acceptance Criteria` sections for shell invocations in **dev-agent** AC blocks (as opposed to `(operator-gated)` / `AC-*-B` blocks, which are allowed to invoke any CLI) and fails if any forbidden CLI appears. Inventory at [`docs/dev-guide/migration-ac-sandbox-inventory.json`](docs/dev-guide/migration-ac-sandbox-inventory.json). Forbidden set currently includes `docker`, `docker-compose`, `psql`, `pg_dump`, `aws`, `gcloud`, `az`, `gh`, `kubectl`, `helm`, `redis-cli`, `mongo`, `mysql`, `curl`, `wget`. `ffmpeg` warns.
+- **Remediation is structural, not cosmetic:** either (a) split the AC into dev-agent (verified via shipped Python dep — `psycopg` / `boto3` / `PyGithub` / `httpx` — with `pytest.skip(...)` when service unreachable) + operator-gated (evidence pasted into Completion Notes once), or (b) replace the CLI invocation with the shipped dep. Do **not** suppress the warning.
+- Inventory additions to `dev_agent_available` require party-mode consensus; additions to `dev_agent_forbidden` can be dev-agent authority (strictly expanding the forbidden set is safe).
+
+### Gate-mode governance
+
+- Authoritative gate-mode designation per migration story lives in [`docs/dev-guide/migration-story-governance.json`](docs/dev-guide/migration-story-governance.json) (freeze date 2026-04-22).
+- `bmad-create-story` on a migration story **reads that file for the gate mode** — do not relitigate at story-authoring time.
+- Changing a story's gate mode requires party-mode consensus and a version bump in the governance JSON.
+- Slab 2b stories 2b.2–2b.14 are pre-designated single-gate (they follow the 2b.1 TEMPLATE scaffold pattern) — do not escalate to dual without a scaffold-breaking reason.
