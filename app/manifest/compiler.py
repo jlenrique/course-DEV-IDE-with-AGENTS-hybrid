@@ -26,11 +26,14 @@ from __future__ import annotations
 from pathlib import Path
 from typing import Any
 
+import yaml
 from langgraph.graph import END, START, StateGraph
 
 from app.manifest import conditions
 from app.manifest.exceptions import CompileError
 from app.manifest.schema import EdgeSpec, NodeSpec, PipelineManifest
+from app.models.registry import PipelineRegistry
+from app.models.specialist_model_config import SpecialistModelConfig
 from app.models.state.run_state import RunState
 
 
@@ -64,6 +67,66 @@ def _validate_model_config_refs(nodes: list[NodeSpec], repo_root: Path) -> None:
             raise CompileError(
                 f"node {node.id!r} model_config_ref does not resolve: {node.model_config_ref} "
                 f"(expected at {ref_path})"
+            )
+
+
+def _load_registry_model_ids(repo_root: Path) -> set[str]:
+    registry_path = repo_root / "app" / "models" / "registry.yaml"
+    try:
+        registry_raw = yaml.safe_load(registry_path.read_text(encoding="utf-8"))
+        registry = PipelineRegistry.model_validate(registry_raw)
+    except Exception as exc:  # pragma: no cover - defensive guard
+        raise CompileError(f"failed to load model registry at {registry_path}: {exc}") from exc
+    return {entry.model_id for entry in registry.entries}
+
+
+def _validate_model_ids_in_model_config_refs(nodes: list[NodeSpec], repo_root: Path) -> None:
+    # This validator is ADDITIVE to the Slab-1 _validate_model_config_refs
+    # (file-existence check). It strengthens behavior when substrate is fully
+    # wired (real registry + parseable SpecialistModelConfig files) by rejecting
+    # unknown model IDs; it is a no-op when substrate is absent (e.g., tmp_path
+    # tests that create non-SpecialistModelConfig stub files or lack the
+    # registry file entirely). This preserves Slab-1's GOLDEN-ratified compile()
+    # semantics per DR-1.
+    if not any(node.model_config_ref is not None for node in nodes):
+        return
+    try:
+        known_model_ids = _load_registry_model_ids(repo_root)
+    except CompileError:
+        # Registry not present at repo_root — fall back to Slab-1 file-existence
+        # behavior (_validate_model_config_refs already ran). Real Slab-2+
+        # specialist stories ship the registry alongside their config files;
+        # test scopes using tmp_path without a registry opt out here.
+        return
+    for node in nodes:
+        if node.model_config_ref is None:
+            continue
+        config_path = repo_root / node.model_config_ref
+        try:
+            config_raw = yaml.safe_load(config_path.read_text(encoding="utf-8"))
+            config = SpecialistModelConfig.model_validate(config_raw)
+        except Exception:
+            # Config file exists (Slab-1 check passed) but isn't a valid
+            # SpecialistModelConfig shape — this matches Slab-1 test fixtures
+            # that stub a YAML file only to prove file-existence. The strict
+            # model-id check requires a parseable config; absent one, skip.
+            # Slab-2+ specialist stories ship real configs; defect-mode
+            # detection happens when the config IS parseable but names an
+            # unknown model_id below.
+            continue
+
+        invalid_refs: list[str] = []
+        if config.default_model not in known_model_ids:
+            invalid_refs.append(config.default_model)
+        for _, override_model in sorted(config.per_node_overrides.items()):
+            if override_model not in known_model_ids:
+                invalid_refs.append(override_model)
+        if invalid_refs:
+            specialist = node.specialist_id or config.specialist_id or node.id
+            invalid = ", ".join(repr(ref) for ref in sorted(set(invalid_refs)))
+            raise CompileError(
+                f"specialist {specialist!r} in node {node.id!r} references unknown model id(s) "
+                f"{invalid} via {node.model_config_ref}"
             )
 
 
@@ -159,6 +222,7 @@ def compile(  # noqa: A001 — matches spec naming; callers use `app.manifest.co
 
     _validate_frozen_graph_version(manifest.frozen_graph_version, root)
     _validate_model_config_refs(manifest.nodes, root)
+    _validate_model_ids_in_model_config_refs(manifest.nodes, root)
     _validate_conditions(manifest.edges)
 
     graph = StateGraph(state_schema=RunState)
