@@ -35,7 +35,7 @@ SOFT riders deferred per operator Option-3 directive: R12 (deferred-inventory fo
 1. **Governance lookup** — [`docs/dev-guide/migration-story-governance.json`](../../docs/dev-guide/migration-story-governance.json) — confirms Story 2a-1 is frozen at `expected_gate_mode: "dual-gate"` with `rationale: "schema_shape"`. Do not relitigate.
 2. **Canonical 9-node contract** — [`tests/integration/scaffold_conformance/scaffold_contract.py`](../../tests/integration/scaffold_conformance/scaffold_contract.py) → `SCAFFOLD_NODE_IDS` frozenset. **This is the authoritative source of truth for node names** — `receive, plan, act, verify, reflect, emit_spans, gate_decision, finalize, handoff`.
 3. **Framework doc** — [`docs/dev-guide/scaffold-conformance-framework.md`](../../docs/dev-guide/scaffold-conformance-framework.md) — 9-node role table + how-to-register pattern.
-4. **State contracts** — [`app/state/`](../../app/state/) (from Story 1.2) — `RunState`, `SpecialistEnvelope`, `SpecialistReturn`, `OperatorVerdict`, `SanctumFingerprint`. Generator-emitted specialists subclass these per 1.2's four-file-lockstep discipline.
+4. **State contracts** — [`app/models/state/`](../../app/models/state/) (from Story 1.2) — `RunState`, `SpecialistEnvelope`, `SpecialistReturn`, `OperatorVerdict`, `SanctumFingerprint`. Generator-emitted specialists subclass these per 1.2's four-file-lockstep discipline.
 5. **Model cascade** — [`docs/dev-guide/model-selection-guide.md`](../../docs/dev-guide/model-selection-guide.md) (from Story 1.7) — three-level resolution D2 + `model_config.yaml` shape.
 6. **Passthrough precedent** — [`app/specialists/_stub/passthrough_specialist.py`](../../app/specialists/_stub/passthrough_specialist.py) (from Story 1.6) — returns `{}`, reducer-safe. Generator's `act` node starts as a passthrough by default; real LLM invocation wires in at 2a.2 (Irene), 2a.3 (Kira), 2a.4 (Texas).
 7. **Severance posture** — [`docs/dev-guide/langgraph-migration-guide.md §8.1`](../../docs/dev-guide/langgraph-migration-guide.md#81-upstream-severance-slab-2). No `git show upstream/master:…`; no `git fetch upstream` during migration work. Hybrid's working tree is the input surface.
@@ -43,7 +43,15 @@ SOFT riders deferred per operator Option-3 directive: R12 (deferred-inventory fo
 9. **Sandbox-AC rule** — [`CLAUDE.md §LangChain/LangGraph migration`](../../CLAUDE.md) + [`docs/dev-guide/migration-ac-sandbox-inventory.json`](../../docs/dev-guide/migration-ac-sandbox-inventory.json). Dev-agent ACs MUST NOT assume operator-side CLIs (docker, psql, gh, etc.) are on PATH. This story's ACs are all dev-agent-executable (no operator-gated block needed; no live API calls).
 10. **⚠️ Epic-vs-reality drift flag** — Epic 2a spec line 555 uses node names `plan → enter_sanctum → load_expertise → reason → act → validate → emit → return → exit_sanctum` (9 nodes but different labels). **That text is stale drift from pre-Slab-1 architecture sketches.** Slab 1 Story 1.7 hardened the framework with the `receive/plan/act/verify/reflect/emit_spans/gate_decision/finalize/handoff` names per the scaffold-conformance-framework.md + scaffold_contract.py deliverables. **Dev agent follows scaffold_contract.py, not the epic-doc text.** This drift is itself an instance of anti-pattern #3 (architecture-vs-epics drift) seeded in 1.7 — catch is good; resolution is to use the framework's names.
 11. **Severance reinforcement (R8):** Input surface is hybrid working tree at commit `835e650` (upstream severance, 2026-04-24); `upstream/master` is historical reference only. No `git show upstream/master:…`, no `git fetch upstream`. Any AC-referenced specialist skill directory is read from hybrid's own `skills/bmad-agent-*/` tree.
-12. **Compiler error-class verification (R10):** Before writing any code at T2, confirm [`app/manifest/compiler.py`](../../app/manifest/compiler.py) from Story 1.4 raises a named exception (search for `class *Error(*Exception)` definitions + the exception type raised on invalid `model_config_ref`). If the compiler raises `ValueError` or a generic exception rather than a named subclass, AC-D's "InvalidModelConfigError" contract must be aligned to what 1.4 actually raises (either (a) use the existing name, or (b) surface the scope-slip to party-mode before authoring). Record the verified error-class name in T1 Readiness block of Dev Agent Record.
+12. **Compiler error-class verification (R10 BROADENED to full artifact-existence sweep per round-2 Murat caveat):** At T1 Readiness, confirm the following 5 Slab-1-shipped artifacts exist at stated paths with stated shape (round-2 code-vs-plan alignment caught several drifts; T1 sweep prevents T2 detonations):
+    - **A** `app/manifest/compiler.py::compile()` raises `CompileError` (from `app.manifest.exceptions`) on invalid `model_config_ref` — verified 2026-04-24 per round-2 Winston/Amelia finding
+    - **B** `app/models/state/` hosts the 9 Pydantic models + separate `validators/<model>_validators.py` modules — NOT `app/state/`
+    - **C** `app/specialists/_stub/passthrough_specialist.py::passthrough_node` returns `{}` — Slab 1 generator-emitted `act` default
+    - **D** `app/gates/resume_api.py::resume_from_verdict` raises `NotImplementedError` — C3 binding symbol; generator references for import-stability but node body uses `interrupt()` per [`gate-decision-binding-semantics.md`](../../docs/dev-guide/gate-decision-binding-semantics.md) (landed via round-3 Commit B SP3)
+    - **E** `_SPECIALIST_ID_PATTERN` regex for name sanitization lives under `app.models.*` per 1.3 commit `0762911`. **T1 step for 2a.1 specifically:** grep + confirm (a) its path, (b) whether it accepts or rejects `_`-prefix sentinel IDs (e.g., `_passthrough`, `_scaffold`), and (c) whether the generator should reject sentinel-name inputs. Document in Dev Agent Record T1.
+
+    Record all 5 verifications in Dev Agent Record T1 Readiness block BEFORE writing any code at T2. Any drift between spec and code at this step halts T2 until resolved (spec yields to code per DR-1 [GOLDEN foundation ratification 2026-04-24](../planning-artifacts/decision-records/DR-SLAB-1-CLOSE-2026-04-24.md)).
+13. **Epic 2a line 555 drift physically present at T1 (round-2 Mary caveat):** open [`_bmad-output/planning-artifacts/epics-langchain-langgraph-migration.md`](../planning-artifacts/epics-langchain-langgraph-migration.md) line ~555, confirm the stale node-name list (`plan/enter_sanctum/load_expertise/reason/act/validate/emit/return/exit_sanctum`) is STILL present as KNOWN-DRIFT exhibit (per the 2026-04-24 KNOWN-DRIFT HTML comment above the line; Commit A of this session preserved it intentionally for anti-pattern #3 live-training). If drift absent (accidentally fixed), escalate — FR64 exercise opportunity lost and anti-pattern harvest at AC-I loses its primary example. Document presence in Dev Agent Record T1.
 
 **Governance pre-flight (single run before T2):**
 ```bash
@@ -96,7 +104,7 @@ All ACs are dev-agent-executable (sandbox-AC compliant). No operator-gated block
 
 - **Given** a specialist is generated with a `model_config.yaml` that references a model id NOT in `app/models/registry.py::MODEL_REGISTRY` (e.g., operator hand-edits `default_model: "gpt-4.9-imaginary"` after generation)
 - **When** the compiler (from Story 1.4) is invoked on that specialist's graph
-- **Then** graph compile raises `InvalidModelConfigError` (or equivalent named exception from 1.3) whose message surfaces **both** the specialist name AND the invalid model ref; ruff-clean; test covers this explicitly at `tests/specialists/generator/test_generator_invalid_model_config.py` per K-target.
+- **Then** graph compile raises `CompileError` (from `app.manifest.exceptions`; verified 2026-04-24 in party-mode round 2 code-vs-plan alignment — 1.4 compiler raises `CompileError`, NOT the fictional `InvalidModelConfigError` the original spec named) whose message surfaces **both** the specialist name AND the invalid model ref; ruff-clean; test covers this explicitly at `tests/specialists/generator/test_generator_invalid_model_config.py` per K-target. Test imports: `from app.manifest.exceptions import CompileError`.
 
 ### AC-2a.1-E — Generator CLI arguments + error surface
 
@@ -114,9 +122,9 @@ All ACs are dev-agent-executable (sandbox-AC compliant). No operator-gated block
 - **Given** dual-gate schema_shape policy + 1.2 four-file-lockstep precedent — the generator's emission logic produces all four lockstep files in lockstep for **any** specialist it creates (both the `_scaffold/` reference at AC-2a.1-A AND every end-to-end output at AC-2a.1-C/C2). "Every generated specialist" means the rule applies per invocation, with no omissions. If the generator cannot emit all four, it exits 1 with a named error and writes zero files.
 - **When** the dev agent inspects the generator's emission pattern
 - **Then** every generated specialist ships all four lockstep files at the **pinned target paths below** in the same generator invocation (atomic — all four or none):
-  1. **MODEL** — `app/specialists/{name}/state.py` with `{ClassName}Envelope(SpecialistEnvelope)` + `{ClassName}Return(SpecialistReturn)` subclasses (1.2 precedent at `app/state/specialist_envelope.py` + `app/state/specialist_return.py`)
+  1. **MODEL** — `app/specialists/{name}/state.py` with `{ClassName}Envelope(SpecialistEnvelope)` + `{ClassName}Return(SpecialistReturn)` subclasses (1.2 precedent at `app/models/state/specialist_envelope.py` + `app/models/state/specialist_return.py`)
   2. **VALIDATOR** — any `@model_validator(mode="after")` bodies inherited from parents verify correctly; no silent validator omission; generator does NOT emit a separate validator module unless the specialist introduces custom cross-field validation (then `app/specialists/{name}/validators.py` per 1.2 precedent)
-  3. **TESTS** — `tests/specialists/{name}/test_{name}_state_shape.py` with shape-pin assertions (field names + types + required/optional flags) matching 1.2's precedent pattern at `tests/state/test_specialist_envelope_shape.py`
+  3. **TESTS** — `tests/specialists/{name}/test_{name}_state_shape.py` with shape-pin assertions (field names + types + required/optional flags) matching 1.2's precedent pattern at `tests/unit/models/state/test_specialist_envelope.py` (round-2 Winston+Amelia path correction: actual 1.2 test path is `tests/unit/models/state/`, NOT `tests/state/`; actual 1.2 filename is `test_<model>.py` without `_shape` suffix — generated specialists adopt `_shape` suffix going forward as a Slab-2-established convention per Murat round-2 caveat C)
   4. **GOLDEN FIXTURE** — `tests/fixtures/specialists/{name}/golden_envelope.json` + `tests/fixtures/specialists/{name}/golden_return.json` with representative valid payloads; round-trip test (`model_validate_json(golden.dumps())`) verifies determinism per NFR-X1
 - **Three verification hooks (all three must pass):**
   1. The `_scaffold/` reference tree contains all four file classes (scaffold-local equivalents: `app/specialists/_scaffold/state.py` + inherited validators + `tests/specialists/_scaffold/test_scaffold_state_shape.py` + `tests/fixtures/specialists/_scaffold/golden_envelope.json`/`golden_return.json`).
@@ -191,7 +199,7 @@ All ACs are dev-agent-executable (sandbox-AC compliant). No operator-gated block
 - **When** this story closes
 - **Then** the Slab 2+ T1 Readiness template (shared across 2a.2 / 2a.3 / 2a.4 / 2b.1–2b.17 / 2c.1–2c.4 / Slab 3+ as applicable) gains a standing line item:
 
-  > **Epic-doc-vs-framework cross-check:** identify the authoritative framework source for any contract referenced in the story's ACs (e.g., `scaffold_contract.py` for node names, `app/state/` for state shapes, `model_config.yaml` for cascade). Compare against the epic-doc AC text. If drifts exist, flag in T1 Readiness, use the framework, and harvest the drift as a `specialist-anti-patterns.md` entry at close.
+  > **Epic-doc-vs-framework cross-check:** identify the authoritative framework source for any contract referenced in the story's ACs (e.g., `scaffold_contract.py` for node names, `app/models/state/` for state shapes, `model_config.yaml` for cascade). Compare against the epic-doc AC text. If drifts exist, flag in T1 Readiness, use the framework, and harvest the drift as a `specialist-anti-patterns.md` entry at close.
 
 - **Landing point:** add this line to [`docs/dev-guide/scaffold-conformance-framework.md`](../../docs/dev-guide/scaffold-conformance-framework.md) §How specialists register as a T1-readiness pre-flight checklist section; future migration story specs reference that section from their T1 readiness blocks (one-line `See scaffold-conformance-framework.md §T1 Readiness Pre-Flight` reference). Story 2a.1 writes the checklist section itself AND the cross-reference pointer from its own T1 block.
 - **Verification:** at close, `docs/dev-guide/scaffold-conformance-framework.md` has a §T1 Readiness Pre-Flight section with the cross-check line item AND a worked example showing Story 2a.1's own Epic 2a line 555 catch.
@@ -211,6 +219,42 @@ All ACs are dev-agent-executable (sandbox-AC compliant). No operator-gated block
   2. **Anti-pattern harvest:** at least one entry added per AC-2a.1-I
   3. **Migration-guide update:** §Specialist Walkthrough populated per AC-2a.1-H
 
+### AC-2a.1-L — Gate-decision node binding semantics [round-2 Winston+Amelia]
+
+- **Given** every generator-emitted `gate_decision` node uses [`gate-decision-binding-semantics.md`](../../docs/dev-guide/gate-decision-binding-semantics.md) (landed in Commit B SP3, 2026-04-24)
+- **When** the generator emits `app/specialists/<name>/graph.py`
+- **Then** the generated file (a) **imports `resume_from_verdict` from `app.gates.resume_api` at module level** for Contract C3 binding stability (the import IS the C3 binding point, not a runtime call), (b) **the `gate_decision` node body uses `interrupt()` pattern** per [`langgraph-state-idioms.md §5`](../../docs/dev-guide/langgraph-state-idioms.md) — NOT a direct call to `resume_from_verdict` which would explode at runtime with `NotImplementedError` (Slab 1 stub body), (c) the emitted template includes the full reference body + one-line comment `# resume_from_verdict body lands at Slab 3 Story 3.3`.
+- **Why this AC exists:** round-2 Winston+Amelia caught a runtime-detonation risk: naively binding `gate_decision` node to `resume_from_verdict` would blow up every Slab 2 smoke test routing through a gate. Generator template MUST emit the `interrupt()` pattern.
+
+### AC-2a.1-M — Template-var `specialist_id` = ClassVar, NOT field redefinition [round-2 Amelia]
+
+- **Given** `SpecialistEnvelope` (from `app.models.state.specialist_envelope`) already defines `specialist_id: str` as a field (inherited by every generated `<Name>Envelope` subclass)
+- **When** the generator substitutes `{{specialist_id}}` into emitted `state.py`
+- **Then** the substitution writes a **`ClassVar[str]` constant** (e.g., `_SPECIALIST_ID: ClassVar[str] = "{{specialist_id}}"`) on the subclass used by validators for specialist-ID pattern-match pinning, **NOT a field redefinition** (e.g., `specialist_id: str = "{{specialist_id}}"`) which would shadow the inherited field and break `ConfigDict(extra="forbid")` validation on parent.
+- **Why this AC exists:** round-2 Amelia caught a silent shadowing hazard — a dev agent reading AC-F could plausibly write `specialist_id: str = "{{specialist_id}}"` which passes Pydantic construction (inherited field type-matches) but breaks `extra="forbid"` at runtime when parent validates assignment. ClassVar-not-field is the correct shape.
+
+### AC-2a.1-N — Category D dissolution generator denylist [round-2 Mary]
+
+- **Given** `skills/bmad-agent-audra/` and `skills/bmad-agent-cora/` are DISSOLVED per [DR-2](../planning-artifacts/decision-records/DR-SLAB-1-CLOSE-2026-04-24.md) (Category D, ratified 2026-04-24); neither migrates as a LangGraph runtime node
+- **When** the generator's `--from-skill` path is invoked with a denylisted skill directory
+- **Then** the generator EXITS 1 with a named `GeneratorInputError: skill directory {skill_dir} is DISSOLVED per DR-2 (Category D). If the dissolution decision should be reversed, raise at party-mode consensus per DR-2 §Reversal protocol — do NOT bypass the denylist by renaming the target directory. See _bmad-output/planning-artifacts/decision-records/DR-SLAB-1-CLOSE-2026-04-24.md.` No files are created or modified.
+- **Implementation pin:** `GENERATOR_DENYLIST: frozenset[str] = frozenset({"bmad-agent-audra", "bmad-agent-cora"})` at module-level in `skills/bmad-create-specialist/scripts/generate.py`. Denylist checked in the `--from-skill` path's input validation (AC-2a.1-E negative paths).
+- **Test pin:** `tests/specialists/generator/test_generator_rejects_category_d.py` — parametrized test with both denylisted paths + asserts `GeneratorInputError` + asserts zero writes to `app/specialists/`. Adds +2 collecting nodes to Murat R9 test count.
+- **Why this AC exists:** round-2 Mary governance-preservation argument — without the denylist, a future operator (or confused dev agent) running `python -m skills.bmad_create_specialist.scripts.generate --from-skill skills/bmad-agent-audra/` would emit a conformant `app/specialists/audra/` with a full 4-file scaffold. Category-D-specialist sitting unwired in `app/specialists/` is a future erosion invitation. Denylist is cheap governance-preserving insurance.
+
+### AC-2a.1-O — Template-var substitution is real (not file-copy) [round-2 Murat]
+
+- **Given** R9 test `test_generator_template_var_literal_survival.py` asserts that unknown template vars survive verbatim as literals in emitted files
+- **When** the generator is authored
+- **Then** the template engine MUST perform **real substitution** (at minimum one `{{var}}` → value replacement per emitted file) rather than raw file-copy with post-process rename. If the generator in 2a.1 is pure file-copy (no template substitution path), the R9 literal-survival test is a no-op and the K-target's 4-file atomicity + literal-survival subset needs to defer to 2a.2.
+- **Verification:** T1 Readiness block confirms at least one template var is substituted in the emitted `state.py` and `model_config.yaml` (most plausibly `class_name` into `<Name>Envelope` / `<Name>Return` and `specialist_id` into `_SPECIALIST_ID` ClassVar per AC-M).
+
+### AC-2a.1-Z — Collision-prevention meta-test [round-2 Murat]
+
+- **Given** 2a.1 creates a new `tests/specialists/` subtree (did not exist at Slab 1 close); Slab 1's state model tests live at `tests/unit/models/state/`
+- **When** 2a.1 closes
+- **Then** a one-line assertion confirms no accidental collision: `pytest --collect-only tests/specialists/` returns ≥18 items + `pytest --collect-only tests/state/` returns 0 items (confirms no accidental parallel subtree was created at the drift-path `tests/state/` from the original stale-path assumption). Verification lands in T8 regression block of Dev Agent Record.
+
 ---
 
 ## Architecture Compliance
@@ -221,7 +265,7 @@ All ACs are dev-agent-executable (sandbox-AC compliant). No operator-gated block
 |---|---|
 | **D1 — Sanctum hybrid** | Generator emits `expertise/README.md` that references the specialist's sanctum tree at `_bmad/memory/bmad-agent-<name>/` (hybrid BMB pattern per Epic 26). Sanctum content is NOT generator-authored; operator populates during first-breath. |
 | **D2 — Three-level model cascade** | `model_config.yaml` template emits all three levels **with inline comments explaining cascade order** (R7): `# Level 1: per-call override (set via RunState.model_overrides at runtime)` / `# Level 2: per-specialist default (this field)` / `# Level 3: registry default (app/models/registry.py)`. Inline comments protect against downstream editors stripping levels thinking they're unused. 2a.1 tests the shape; 2a.2–2a.4 exercise the resolution. |
-| **D3 — HIL invariant tamper-evidence** | Generator's `graph.py` template wires `gate_decision` node to `app.gates.resume_api` (stub from 1.4); no scheduler imports inside `app.gates.**` per Contract C3. |
+| **D3 — HIL invariant tamper-evidence** | Generator's `graph.py` template **imports `resume_from_verdict` for Contract C3 binding stability** + **implements `gate_decision` node body via `interrupt()`** per AC-2a.1-L + [`gate-decision-binding-semantics.md`](../../docs/dev-guide/gate-decision-binding-semantics.md) (round-3 Commit B SP3). No scheduler imports inside `app.gates.**` per Contract C2. |
 | **D4 — Lane separation** | Generator targets `app/specialists/<name>/`; import-linter Contract C1 enforces no cross-lane imports. |
 | **D8 — Frozen-graph ceremony** | `app/specialists/_scaffold/graph.py` is the frozen reference (Slab 4 Story 4.5 freezes per-specialist graphs; 2a.1 establishes the unfrozen template). |
 | **D12 — Cross-slab governance** | Close protocol per AC-2a.1-K; anti-pattern harvest per AC-2a.1-I. |
@@ -231,7 +275,7 @@ All ACs are dev-agent-executable (sandbox-AC compliant). No operator-gated block
 
 - **Canonical 9 nodes** per [`tests/integration/scaffold_conformance/scaffold_contract.py`](../../tests/integration/scaffold_conformance/scaffold_contract.py#L22). **Do not add/remove/rename nodes in this story** — any amendment requires party-mode + re-bump scaffold_contract.py version.
 - **LangGraph API:** `StateGraph` construction with `.add_node(name, fn)` for each of the 9; `.set_entry_point("receive")`; internal edges `receive → plan → act → verify → reflect → emit_spans → (gate_decision branch) → finalize → handoff`; `gate_decision` uses `Command(goto=...)` for branch logic per langgraph-state-idioms.md §Command patterns.
-- **RunState + SpecialistEnvelope + SpecialistReturn** per [`app/state/`](../../app/state/) (Story 1.2). Generator template emits subclasses, not wholesale redefinitions.
+- **RunState + SpecialistEnvelope + SpecialistReturn** per [`app/models/state/`](../../app/models/state/) (Story 1.2). Generator template emits subclasses, not wholesale redefinitions.
 
 ---
 
