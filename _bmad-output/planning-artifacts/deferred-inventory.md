@@ -6,7 +6,7 @@
 2. **Every session hot-start** — `next-session-start-here.md` surfaces the inventory counts so the operator sees "don't overlook" context every session open.
 3. **Story authoring** — when a new story spec names a follow-on (e.g., "15-1-lite-irene is a fast-follow after this story"), the author adds the follow-on to §Named-But-Not-Filed Follow-Ons below.
 
-**Maintenance:** update at (a) each Epic retrospective close, (b) each story closure that names a new follow-on, (c) any session-wrapup where the operator flags a new deferred item. Last refreshed: **2026-04-19** (Epic 33 mid-sprint).
+**Maintenance:** update at (a) each Epic retrospective close, (b) each story closure that names a new follow-on, (c) any session-wrapup where the operator flags a new deferred item, (d) each forward-port pass on the hybrid migration branch (see §Forward-Port Deferred below). Last refreshed: **2026-04-23** (hybrid Phase-1 forward-port, commit `6364f14`).
 
 ---
 
@@ -94,6 +94,48 @@ Reactivation trigger: Irene output stabilizes (Wave 3 close).
 ### Wave 5 — Capstone (epic 24)
 
 - **24-4 Regression Suite** — full end-to-end validation. Depends on all prior waves.
+
+---
+
+## Forward-Port Deferred (hybrid-only, migration branch)
+
+**Context:** the hybrid clone's `dev/langchain-langgraph-foundation` branch runs under FR60 forward-port freeze (ACTIVE since 2026-04-22). Wholesale `git merge upstream/master` is off-policy; per-capability forward-port through the [migration-guide §8 reconciliation checklist](../../docs/dev-guide/langgraph-migration-guide.md) is the convergence path. The inventory below tracks upstream capabilities that SHIPPED on primary after the hybrid branched but are NOT being forward-ported wholesale because the migration's LangChain/LangGraph re-platform IS the replacement.
+
+Last refreshed: **2026-04-23** after Phase 1 forward-port (commit `6364f14`) on the hybrid branch.
+
+### CLASS A — Pre-migration orchestrator work (not forward-ported; migration replaces)
+
+| Upstream file / capability | Migration replacement | Reactivation trigger |
+|---|---|---|
+| `marcus/orchestrator/workflow_runner.py` | `app.manifest.compiler.compile()` + LangGraph `StateGraph` | Never — migration replaces this runtime path entirely. Closed. |
+| `marcus/orchestrator/fanout.py` + `trial_smoke_harness.py` | Slab 3 Marcus orchestration + dispatch graph | Closed by Slab 3 completion. |
+| `marcus/facade.py` upstream mutations | `app.marcus.*` (Slab 3) | Closed by Slab 3 completion. |
+| `skills/bmad-agent-marcus/scripts/*` | `app.marcus.*` + `app.specialists.marcus.*` (Slab 3) | Closed by Slab 3 completion. |
+| `scripts/generators/v42/templates/*.j2` | Migration's prompt-pack shape authored into `app.manifest` (no separate generator in migration) | Closed — pack-version bumps on primary do not cross the forward-port freeze. |
+| `docs/workflow/production-prompt-pack-v4.2-*.md` upstream mutations | Migrated manifest at `state/config/pipeline-manifest.yaml` owns v4.2 topology; primary pack docs are pre-migration reference | Closed. |
+| `state/config/pipeline-manifest.yaml` upstream content | Migration shape from Slab 1 Story 1.6 owns this file on this branch | Closed — upstream content edits do not cross the freeze. |
+
+### CLASS B — New capabilities deferred to their slab-opening stories
+
+| Upstream capability | Files | Target slab | Reconciliation checklist |
+|---|---|---|---|
+| **PR-R Marcus dispatch contract + boundary retrofits** | `marcus/dispatch/{__init__,contract}.py`, `scripts/marcus_capabilities/pr_rc.py`, `scripts/validators/check_dispatch_registry_lockstep.py`, `skills/bmad-agent-marcus/references/dispatch-registry.yaml`, `tests/marcus_dispatch/*`, `docs/dev-guide/how-to-add-a-dispatch-edge.md` | **Slab 3 Story 3.x** | Apply full migration-guide §8 reconciliation: Pydantic-v2 four-file-lockstep + dispatch-registry-as-manifest-companion + L1-validator-as-library-function + receipt-shape sanctum-fingerprint |
+| **Consensus retrieval adapter (Story 27-2.5)** | `skills/bmad-agent-texas/scripts/retrieval/consensus_provider.py`, `tests/test_retrieval_consensus_provider.py`, `tests/test_retrieval_cross_validation.py`, `tests/test_retrieval_dispatcher.py`, `docs/dev-guide/how-to-add-a-retrieval-provider.md` updates | **Slab 2 Epic 2b (Texas)** | Port into `app.specialists.texas` per scaffold-conformance framework (tests/integration/scaffold_conformance/) |
+| **Irene retrieval intake + Pass 2 authoring template (Story 7-1-irene-pass-2)** | `marcus/irene/{__init__,intake}.py`, `skills/bmad-agent-content-creator/references/{pass-2-authoring-template,retrieval-intake-contract}.md`, `state/config/schemas/{irene-retrieval-intake,segment-manifest}.schema.json`, `scripts/validators/pass_2_emission_lint.py`, `tests/irene/test_segment_manifest_schema.py` | **Slab 2 Epic 2b (Irene)** | Port into `app.specialists.irene` with scaffold-conformance check |
+| **Evidence-bolster control surface** | `_bmad-output/implementation-artifacts/evidence-bolster-control-surface.md` + schemas/tests | **Slab 2 Epic 2b** | Port within Texas + Irene specialist scope |
+| **PDG-3 flake-detection gate (CI infra)** | `scripts/ci/run_flake_gate.py`, `.github/workflows/pdg-flake-gate.yml` | **Slab 2 open (revisit)** | Orthogonal to orchestrator choice; decide at Slab 2 open whether the gate's assumptions still match the migration's test surface |
+
+### CLASS D — Upstream deletions NOT adopted (hybrid keeps)
+
+| Upstream deletion | Hybrid posture | Reason |
+|---|---|---|
+| `bmad-session-protocol-session-START.md` + `session-WRAPUP.md` | Hybrid keeps | Still canonical for hybrid session protocol; upstream relocated to Cora references. |
+| `SESSION-HANDOFF.md` | Hybrid keeps | Hybrid lifecycle still uses it. |
+| `next-session-start-here.md` | Hybrid keeps (intentionally gitignored line 96) | Hybrid identity — session guidance is per-clone, not synced with primary. |
+
+### Refresh cadence
+
+This section is refreshed at each forward-port pass (phases named in the session wrap-up notes). Entries marked "Closed" above do not need revisiting unless architecture amendment changes the migration's replacement strategy.
 
 ---
 
