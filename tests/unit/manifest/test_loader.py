@@ -15,7 +15,15 @@ import pytest
 from app.manifest import ManifestValidationError, load
 from app.manifest.schema import PipelineManifest
 
-_STUB_MANIFEST = Path(__file__).resolve().parents[3] / "state" / "config" / "pipeline-manifest.yaml"
+# Points at the substrate stub (single-node canonical stub used by 1.1c/1.1d
+# smoke); Story 1.6 migrated `state/config/pipeline-manifest.yaml` to the full
+# 33-node v4.2 manifest, which has its own test suite under `tests/end_to_end/`.
+_STUB_MANIFEST = (
+    Path(__file__).resolve().parents[3]
+    / "state"
+    / "config"
+    / "pipeline-manifest-substrate-stub.yaml"
+)
 
 
 def test_load_stub_manifest_happy_path() -> None:

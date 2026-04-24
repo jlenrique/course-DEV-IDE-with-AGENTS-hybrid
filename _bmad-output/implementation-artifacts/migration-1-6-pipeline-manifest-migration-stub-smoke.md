@@ -1,6 +1,6 @@
 # Migration Story 1.6: Pipeline Manifest Migration from Primary + Stub Empty-Graph Smoke
 
-**Status:** ready-for-dev
+**Status:** done
 **Sprint key:** 1-6-pipeline-manifest-migration-stub-smoke
 **Epic:** Slab 1 Substrate (migration Epic 1)
 **Milestone anchored:** M1 — empty-manifest-loaded graph runs end-to-end §01→§15 via CLI per architecture M1 acceptance bar.
@@ -57,15 +57,15 @@ All ACs dev-agent-executable. Schema-shape-touching story (the migrated manifest
 
 ## Tasks / Subtasks
 
-- [ ] **T1 — Read T1 Bundle** §1 (D6 manifest, D8 frozen-graph), §2 (FR4, FR8, FR54), §6.
-- [ ] **T2 — Read primary repo's v4.2 pipeline manifest** at `state/config/pipeline-manifest.yaml` (current primary version) to understand the 15-step topology + naming conventions. Inventory the 15 specialist names that need stub registration.
-- [ ] **T3 — Author migrated manifest** per AC-1.6-A, conforming to 1.4 schema; coordinate schema extensions back to 1.4 if needed.
-- [ ] **T4 — Author passthrough specialist + registration** per AC-1.6-B.
-- [ ] **T5 — Extend `app/smoke_test.py`** with `run_full_smoke()` + CLI flag per AC-1.6-C.
-- [ ] **T6 — End-to-end test** per AC-1.6-D.
-- [ ] **T7 — Cache hit rate scaffold** per AC-1.6-E (skipped assertion).
-- [ ] **T8 — Run validators + tests.**
-- [ ] **T9 — Commit.** `feat(migration): Slab 1 Story 1.6 — pipeline manifest migration from primary + stub empty-graph smoke`
+- [x] **T1 — Read T1 Bundle** §1 (D6 manifest, D8 frozen-graph), §2 (FR4, FR8, FR54), §6.
+- [x] **T2 — Read primary repo's v4.2 pipeline manifest** at `state/config/pipeline-manifest.yaml` (current primary version) to understand the 15-step topology + naming conventions. Inventory the 15 specialist names that need stub registration.
+- [x] **T3 — Author migrated manifest** per AC-1.6-A, conforming to 1.4 schema; coordinate schema extensions back to 1.4 if needed.
+- [x] **T4 — Author passthrough specialist + registration** per AC-1.6-B.
+- [x] **T5 — Extend `app/smoke_test.py`** with `run_full_smoke()` + CLI flag per AC-1.6-C.
+- [x] **T6 — End-to-end test** per AC-1.6-D.
+- [x] **T7 — Cache hit rate scaffold** per AC-1.6-E (skipped assertion).
+- [x] **T8 — Run validators + tests.**
+- [x] **T9 — Commit.** `feat(migration): Slab 1 Story 1.6 — pipeline manifest migration from primary + stub empty-graph smoke`
 
 ## Dev Notes
 
@@ -111,4 +111,57 @@ AC-1.6-E lands the measurement fixture but defers the actual assertion until rea
 
 ## Dev Agent Record
 
-_(placeholder)_
+### Model used
+
+claude-opus-4-7 (1M context) — bmad-dev-story on 2026-04-23.
+
+### File list
+
+**New:**
+- `app/specialists/_stub/__init__.py` + `app/specialists/_stub/passthrough_specialist.py` — `passthrough_node` + `make_passthrough` factory + `PASSTHROUGH_SPECIALIST_ID` sentinel. Slab 2 Story 2a.1 replaces the factory body with per-specialist resolution.
+- `state/config/pipeline-manifest-substrate-stub.yaml` — single-node substrate stub preserving the 1.1c / 1.1d smoke contract (`{"smoke": "ok", "node": "noop", "echo": "ping"}`). Loaded by `run_smoke()`; distinct from the migrated v4.2 manifest.
+- `tests/end_to_end/test_full_pipeline_smoke.py` — 4 tests covering 33-node count + v4.2 step id coverage + end-to-end invocation + strict-linear-chain invariant.
+- `tests/end_to_end/test_cache_hit_rate_baseline.py` — scaffold with documented `pytest.skip` + re-enablement trigger (when first Slab 2 specialist lands a real LLM call, parse LangSmith span metadata for cache-hit status and assert ≥60% on second run).
+
+**Modified:**
+- `state/config/pipeline-manifest.yaml` — rewritten from 1.4's single-node `PipelineManifest` stub to the migrated v4.2 33-node manifest (preserving every v4.2 step id byte-equivalent: `01`, `02`, `02A`, `03`, `04`, `04A`, `04.5`, `04.55`, `4.75`, `05`, `05B`, `06`, `6.2`, `6.3`, `06B`, `07`, `7.5`, `07B`, `07C`, `07D`, `07E`, `07F`, `08`, `08B`, `09`, `10`, `11`, `11B`, `12`, `13`, `14`, `14.5`, `15`). Per-node labels, gates, sub_phases, insertion_after, hud_tracked, pack_section_anchor, pack_version, rationale, learning_events all preserved from upstream HEAD. Specialist_id assigned per canonical APP role. `model_config_ref: null` on every node (Slab 2 populates when per-specialist `app/specialists/{name}/model_config.yaml` files land).
+- `app/smoke_test.py` — added `run_full_smoke()` invoking the 33-node manifest via `app.manifest.compiler.compile()`; added `--full` CLI flag; preserved `run_smoke()` behavior via the new substrate stub path (`MANIFEST_PATH` alias kept for backward compat with 1.1d transport-parity + 1.1c CLI smoke tests).
+- `tests/unit/manifest/test_loader.py` — `_STUB_MANIFEST` re-pointed at the substrate stub path so the 1.4 loader tests continue to assert against a known single-node shape.
+- `tests/unit/manifest/test_compiler.py` — added `test_compile_real_repo_root_with_migrated_v42_manifest` asserting the 33-node manifest compiles against the production repo root (complements the substrate-stub smoke).
+- `_bmad-output/implementation-artifacts/migration-1-6-pipeline-manifest-migration-stub-smoke.md` — this file.
+- `_bmad-output/implementation-artifacts/sprint-status.yaml` — `migration-1-6 ready-for-dev → in-progress → done`.
+
+### Completion notes
+
+**T8 validator sweep:**
+- Sandbox-AC validator: **PASS** — zero violations in spec.
+- Ruff (app/ + 1.6 tests): **All checks passed!**
+- Import-linter: **3/3 KEPT** (C1 + C2 + C3 unchanged by 1.6).
+- Pytest (1.4 + 1.6 manifest / gates / end-to-end scope): **57 passed + 1 skipped** (cache-baseline scaffold `pytest.skip`).
+- Pytest (migration-suite regression): **280 passed / 5 skipped / 1 deselected / 0 failed** (was 275 pre-1.6, +5 new pass + 1 new skip).
+- Both smoke modes verified: `python -m app.smoke_test` prints `smoke ok (nodes=1, payload=...)` byte-equivalent to 1.1c; `python -m app.smoke_test --full` prints `smoke ok (full, nodes=33, payload=...)` with RunState-shaped output.
+
+**G6 layered code-review triage (self-conducted, 3pt dual-gate schema_shape):**
+- **Blind Hunter** — 0 MUST-FIX + 0 SHOULD-FIX + 1 DEFER (G6-D1: `make_passthrough` factory ignores `_specialist_id` in Slab 1; Slab 2 extends to a real per-id resolver. Current signature is forward-compatible).
+- **Edge Case Hunter** — 0 MUST-FIX + 0 SHOULD-FIX. Boundary cases covered: manifest load, missing frozen-graph dir (re-tested from 1.4 suite), model_config_ref=null skip-lint pass, 33-node compile, e2e invocation.
+- **Acceptance Auditor** — all 5 ACs (A, B, C, D, E) covered by at least one asserting test.
+- **DUAL-GATE schema-shape audit** — no schema surgery required in 1.6 (1.4's T1 inventory absorbed all v4.2 deltas per Winston/Amelia amendment). Schema-pin fixtures unchanged; round-trip still green.
+
+Net: **0 PATCH, 1 DEFER (G6-D1), ~5 DISMISS** per aggressive G6 rubric (cosmetic: factory arg naming, manifest comment length).
+
+**Unblocks:** Story 1.7 (Slab 1 close — M1 evidence pack assembly consumes this end-to-end smoke). Slab 2 Story 2a.1 (specialist scaffold pilot — drops into a known-good 33-step skeleton).
+
+### Debug log
+
+- **Substrate stub separation:** 1.1c/1.1d smoke tests + 1.1c FastAPI test depend on the single-node manifest shape. Solved by splitting the stub into a dedicated file (`pipeline-manifest-substrate-stub.yaml`) so `run_smoke()` keeps its contract while `run_full_smoke()` uses the migrated 33-node production manifest.
+- **model_config_ref nullification:** The spec's "stub paths in 1.6" language is flexible. Chose `null` on every node (rather than pre-fabricating `app/specialists/{name}/model_config.yaml` for 11 specialists) because:
+  - The compiler's `_validate_model_config_refs` explicitly skips `None` refs
+  - Pre-creating specialist directories would conflict with Slab 2 scaffold-conformance governance
+  - Slab 2 coordinates both the manifest ref + the config file in a lockstep commit per Winston's scaffold discipline
+- **Schema-pin fixtures preserved:** No 1.4 golden-fixture updates required — the migrated manifest shape is a pure instance of the existing schema. Schema-pin tests unchanged.
+
+### Change log
+
+| Date | Change | Commit |
+|---|---|---|
+| 2026-04-23 | Story 1.6 — migrated v4.2 33-node manifest + passthrough specialist stub + `run_full_smoke()` + `--full` CLI flag + M1 evidence test + cache-hit-rate scaffold. +5 new test nodes + 1 skip scaffold. G6 triage: 0 PATCH, 1 DEFER (Slab 2 resolver), ~5 DISMISS. Dual-gate clean (no schema surgery — 1.4 absorbed the inventory at T1). | _(pending)_ |
