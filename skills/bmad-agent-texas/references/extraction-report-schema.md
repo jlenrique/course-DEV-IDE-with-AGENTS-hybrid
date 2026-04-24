@@ -57,7 +57,7 @@ Each element of `sources[]`:
 | Field | Type | Required | Description |
 |---|---|---|---|
 | `ref_id` | string | yes | From the directive (`src-001`, etc.); unique across `sources[]` |
-| `provider` | string | yes | `local_file` \| `pdf` \| `url` \| `notion` \| `playwright_html`. The runner rejects any other value at directive-load time. |
+| `provider` | string | yes | Provider ID from `provider_directory.list_providers()`. Common locator-shape IDs: `local_file` \| `pdf` \| `url` \| `notion` \| `playwright_html`; retrieval-shape rows may emit adapter IDs such as `scite` and `consensus`. |
 | `locator` | string | yes | Provider-specific address (path, URL, page ID) |
 | `role` | string | yes | `primary` \| `validation` \| `supplementary` (directive must declare ≥1 primary; supplementary sources are recorded in provenance but do not contribute to `extracted.md`) |
 | `tier` | string | yes | Enum name from `QualityTier`: `FULL_FIDELITY` \| `ADEQUATE_WITH_GAPS` \| `DEGRADED` \| `FAILED` |
@@ -156,7 +156,73 @@ sources:
     structural_fidelity: null
 ```
 
-When new retrieval-shape providers (Consensus in 27-2.5, YouTube in 27-4, image in 27-3) ship, each adds one subsection here naming its `provider_metadata.<id>` shape. The `retrieval-contract.md` "For Tracy" section points at this H2; do not duplicate field tables there.
+### `provider_metadata.consensus` (Story 27-2.5)
+
+Populated by `ConsensusProvider.normalize`. One sub-object per row returned via the Consensus adapter.
+
+| Field | Type | Nullable | Description |
+|---|---|---|---|
+| `doi` | string | yes | DOI when surfaced by Consensus; `null` for records without DOI |
+| `consensus_paper_id` | string | yes | Consensus internal paper identifier (fallback identity when DOI is absent) |
+| `title` | string | no | Paper title as reported by Consensus |
+| `authors` | list[string] | no | Author names after adapter coercion |
+| `year` | integer | yes | Publication year inferred from payload (or publication date) |
+| `venue` | string | yes | Journal / venue label from Consensus |
+| `abstract` | string | no | Abstract text surfaced by the provider |
+| `consensus_score` | float | yes | Provider-native agreement-strength score |
+| `study_design_tag` | string | yes | Study-design classification (e.g., `meta-analysis`, `rct`, `cohort`) |
+| `sample_size` | integer | yes | Study/sample-size aggregate when available |
+| `evidence_strength` | string | yes | Qualitative evidence-strength label when available |
+| `consensus_url` | string | yes | Human-viewable Consensus paper/report URL |
+| `known_losses` | list[string] | no | Sentinel list for explicit degradations/unknowns (`abstract_only`, `study_design_unknown`, `sample_size_unknown`, `evidence_strength_unknown`) |
+
+**Identity-key fallback chain** (Story 27-2.5 AC-C.7): `ConsensusProvider.identity_key(row)` returns `provider_metadata.consensus.doi` → `provider_metadata.consensus.consensus_paper_id` → `row.source_id`, raising `NotImplementedError` only if all three are empty. The dispatcher checks this at `cross_validate: true` preflight.
+
+**Worked example** (retrieval-shape v1.1 source entry carrying a consensus row):
+
+```yaml
+sources:
+  - ref_id: src-retrieval-2-row-1
+    role: primary
+    retrieval_intent: "sleep hygiene studies since 2020"
+    provider_hints:
+      - {provider: "consensus", params: {mode: "search"}}
+    cross_validate: true
+    convergence_signal:
+      providers_agreeing: ["consensus", "scite"]
+      providers_disagreeing: []
+      single_source_only: []
+    source_origin: operator-named
+    tracy_row_ref: null
+    acceptance_met: true
+    iterations_used: 1
+    fetched_at: "2026-04-22T15:30:00Z"
+    source_id: "10.1000/consensus-a"
+    provider: consensus
+    title: "Melatonin and Sleep Outcomes"
+    body: "Melatonin improves sleep onset latency in adults."
+    authors: ["Alice Smith", "Bob Lee"]
+    date: "2024-01-15"
+    provider_metadata:
+      consensus:
+        doi: "10.1000/consensus-a"
+        consensus_paper_id: "cp-a"
+        title: "Melatonin and Sleep Outcomes"
+        authors: ["Alice Smith", "Bob Lee"]
+        year: 2024
+        venue: "Sleep Medicine"
+        abstract: "Melatonin improves sleep onset latency in adults."
+        consensus_score: 0.88
+        study_design_tag: "meta-analysis"
+        sample_size: 520
+        evidence_strength: "strong"
+        consensus_url: "https://consensus.app/papers/cp-a"
+        known_losses: ["abstract_only"]
+    completeness_ratio: null
+    structural_fidelity: null
+```
+
+When new retrieval-shape providers (YouTube in 27-4, image in 27-3, and follow-ons) ship, each adds one subsection here naming its `provider_metadata.<id>` shape. The `retrieval-contract.md` "For Tracy" section points at this H2; do not duplicate field tables there.
 
 ## Cross-Validation Entry
 
@@ -282,8 +348,9 @@ recommendations: []
 ## Versioning
 
 - `schema_version: "1.0"` is the initial version.
-- Additive field changes (e.g., adding a new optional field to a Source entry) do NOT bump the version.
-- Breaking changes (removing a field, changing a field's type, changing `status` enum values) bump the version and require updating `run_wrangler.py`, the tests, and any downstream consumer.
+- Additive field changes (e.g., adding a new optional field to a Source entry) bump the **minor** version.
+- Breaking changes (removing a field, changing a field's type, changing enum values) bump the **major** version and require updating `run_wrangler.py`, the tests, and downstream consumers.
+- Documentation-only clarifications bump the **patch** version.
 
 ## Consumers
 

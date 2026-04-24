@@ -13,12 +13,13 @@ paths:
    `tests/contracts/test_transform_registry_lockstep.py` and are kept in
    lockstep by `test_provider_directory_locator_lockstep.py` (AC-T.10).
 
-**Forward-looking placeholders** (backlog status) reserve directory IDs for
-providers the team has explicitly ratified but not yet built (scite/Consensus
-under Epic 27 roster; `openai-chatgpt` per operator directive, 2026-04-18).
-As each story lands and an adapter is authored, the registered adapter's
-`PROVIDER_INFO` supersedes the placeholder; `test_provider_directory_roster
-_placeholders.py` (AC-T.11) prevents silent-drop of placeholders.
+**Forward-looking placeholders** (backlog/ratified status) reserve directory
+IDs for providers the team has explicitly ratified but not yet built
+(`openai-chatgpt` per operator directive, 2026-04-18, plus future retrieval
+surfaces). As each story lands and an adapter is authored (for example,
+scite/Consensus in Epic 27), the registered adapter's `PROVIDER_INFO`
+supersedes the placeholder; `test_provider_directory_roster_placeholders.py`
+(AC-T.11) prevents silent-drop of placeholders.
 """
 
 from typing import TYPE_CHECKING
@@ -167,7 +168,11 @@ _RETRIEVAL_SHAPE_PLACEHOLDERS: tuple[ProviderInfo, ...] = (
         shape="retrieval",
         status="ratified",
         capabilities=["evidence-synthesis", "meta-analysis", "cross-validation-partner-to-scite"],
-        auth_env_vars=["CONSENSUS_API_KEY"],
+        auth_env_vars=[
+            "CONSENSUS_API_KEY",
+            "CONSENSUS_USER_NAME",
+            "CONSENSUS_PASSWORD",
+        ],
         spec_ref="_bmad-output/implementation-artifacts/epic-27-texas-intake-expansion.md",
         notes=(
             "Epic 27 Story 27-2.5 ratified-stub, 3 pts. Operator-directed "
@@ -263,9 +268,9 @@ def list_providers(
     out: list[ProviderInfo] = []
 
     # Merge order matters: a live registered adapter SUPERSEDES a backlog or
-    # ratified placeholder that claims the same id. When 27-2 ships the real
-    # scite adapter, its registered PROVIDER_INFO wins over the placeholder
-    # entry in _RETRIEVAL_SHAPE_PLACEHOLDERS — no directory drift.
+    # ratified placeholder that claims the same id. When 27-2/27-2.5 ship live
+    # scite/consensus adapters, registered PROVIDER_INFO wins over placeholder
+    # entries in _RETRIEVAL_SHAPE_PLACEHOLDERS — no directory drift.
     for _cls, info in _RETRIEVAL_ADAPTER_REGISTRY.values():
         if info.id in seen:
             continue

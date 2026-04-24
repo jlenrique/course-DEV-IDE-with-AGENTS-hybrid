@@ -55,6 +55,13 @@ _REPO_ROOT = _THIS_DIR.parents[2]
 if str(_REPO_ROOT) not in sys.path:
     sys.path.insert(0, str(_REPO_ROOT))
 
+from marcus.dispatch.contract import (  # noqa: E402
+    DispatchKind,
+    DispatchOutcome,
+    build_dispatch_envelope,
+    build_dispatch_receipt,
+)
+
 # Load Texas library modules by path (the hyphenated parent path blocks import).
 from scripts.utilities.skill_module_loader import load_module_from_path  # noqa: E402
 
@@ -109,6 +116,14 @@ _STATUS_TO_EXIT = {
     "blocked": EXIT_BLOCKED,
 }
 
+
+def _to_dispatch_outcome(overall_status: str) -> DispatchOutcome:
+    if overall_status == "complete":
+        return DispatchOutcome.COMPLETE
+    if overall_status == "complete_with_warnings":
+        return DispatchOutcome.PARTIAL
+    return DispatchOutcome.FAILED
+
 # extractor_used string per provider, for provenance clarity in the report.
 # Used as the fallback when the SourceRecord.kind from _fetch_source does not
 # match _EXTRACTOR_LABELS_BY_KIND (below).
@@ -119,6 +134,7 @@ _EXTRACTOR_LABELS: dict[str, str] = {
     "url": "requests+html_to_text",
     "notion": "notion_client",
     "playwright_html": "playwright_file",
+    "image": "sensory_bridges_image",
 }
 
 # extractor_used string per SourceRecord.kind — preferred lookup because it
@@ -131,6 +147,7 @@ _EXTRACTOR_LABELS_BY_KIND: dict[str, str] = {
     "local_md": "markdown_unescape",
     "notion_page": "notion_client",
     "playwright_saved_html": "playwright_file",
+    "image_source": "sensory_bridges_image",
 }
 
 # Provider -> default source_type passed into the validator's expected-words heuristic.
@@ -142,6 +159,7 @@ _PROVIDER_SOURCE_TYPE: dict[str, str] = {
     "url": "html",
     "notion": "notion",
     "playwright_html": "html",
+    "image": "image",
 }
 
 
@@ -208,7 +226,18 @@ class DirectiveError(Exception):
 
 
 _SUPPORTED_PROVIDERS: frozenset[str] = frozenset(
-    {"local_file", "pdf", "docx", "md", "url", "notion", "playwright_html"}
+    {
+        "local_file",
+        "pdf",
+        "docx",
+        "md",
+        "url",
+        "notion",  # legacy direct REST API path (deprecated; prefer notion_mcp)
+        "notion_mcp",  # Story 27-5: MCP-mediated fetch, project-scope stdio
+        "playwright_html",
+        "box",
+        "image",  # Story 27-3: image intake via sensory-bridges image_to_agent
+    }
 )
 
 
@@ -292,10 +321,20 @@ def _load_directive(path: Path) -> dict[str, Any]:
                 raise DirectiveError(
                     f"sources[{i}] missing required field: {required}"
                 )
-        if src["role"] not in ("primary", "validation", "supplementary"):
+        # Story 27-3: visual-primary / visual-supplementary accepted for image
+        # sources so operator can flag an image as the source of truth for a
+        # learning-objective chain (visual-primary) vs. illustrative
+        # (visual-supplementary). Text-source roles unchanged.
+        if src["role"] not in (
+            "primary",
+            "validation",
+            "supplementary",
+            "visual-primary",
+            "visual-supplementary",
+        ):
             raise DirectiveError(
-                f"sources[{i}].role must be primary|validation|supplementary, "
-                f"got {src['role']!r}"
+                f"sources[{i}].role must be primary|validation|supplementary"
+                f"|visual-primary|visual-supplementary, got {src['role']!r}"
             )
         ref_id = src["ref_id"]
         if not isinstance(ref_id, str) or not ref_id.strip():
@@ -343,11 +382,15 @@ def _load_directive(path: Path) -> dict[str, Any]:
                     )
 
     # Require at least one primary so downstream consumers always receive content.
+    # Story 27-3: `visual-primary` also satisfies the primary-presence check —
+    # an operator can anchor a learning-objective chain entirely on a visual
+    # source (e.g., a roadmap image) without a text-role companion.
     roles = [s["role"] for s in sources]
-    if "primary" not in roles:
+    if not any(r in ("primary", "visual-primary") for r in roles):
         raise DirectiveError(
-            "Directive has no role: primary source; extraction cannot produce "
-            "extracted.md without at least one primary"
+            "Directive has no role: primary (or visual-primary) source; "
+            "extraction cannot produce extracted.md without at least one "
+            "primary-class role"
         )
 
     # Annotate directive with its shape for the run() dispatch branch.
@@ -605,11 +648,34 @@ def _fetch_source(src: dict[str, Any]) -> tuple[str, str, Any]:
 
     if provider == "notion":
         # wrangle_notion_page returns (title, markdown_body, page_id).
+        # LEGACY direct-REST path — kept for backwards compatibility. Prefer
+        # provider='notion_mcp' (Story 27-5) for new directives.
         title, body, page_id = _source_ops.wrangle_notion_page(locator)
         rec = _source_ops.SourceRecord(
             kind="notion_page",
             ref=locator,
             note=f"notion page_id={page_id}",
+        )
+        return title, body, rec
+
+    if provider == "notion_mcp":
+        # Story 27-5: MCP-mediated Notion fetch. The harness must supply a
+        # NotionMCPFetcher via src['_mcp_fetcher'] (out-of-band injection
+        # keyed with a leading underscore so directive schemas don't see it).
+        # In live runs, Marcus resolves the page via the project-scope stdio
+        # Notion MCP server and passes the pre-fetched result via the
+        # fetcher. In tests, a fake fetcher is injected.
+        mcp_fetcher = src.get("_mcp_fetcher")
+        if mcp_fetcher is None:
+            raise ValueError(
+                "provider 'notion_mcp' requires a NotionMCPFetcher injected "
+                "via src['_mcp_fetcher']. The runtime harness (Marcus) is "
+                "responsible for pre-fetching via the project-scope stdio "
+                "Notion MCP and providing the fetcher. See Story 27-5."
+            )
+        expected_scope = src.get("_mcp_expected_scope", "project")
+        title, body, rec = _source_ops.wrangle_notion_mcp_page(
+            locator, fetcher=mcp_fetcher, expected_scope=expected_scope
         )
         return title, body, rec
 
@@ -620,7 +686,82 @@ def _fetch_source(src: dict[str, Any]) -> tuple[str, str, Any]:
         )
         return title, body, rec
 
+    # Story 27-6: Box fetch layer. Resolves a Box file ID or shared link to a
+    # local file and dispatches to the suffix-appropriate extractor within
+    # wrangle_box_file. Box is not itself a format — the local file that comes
+    # out still routes through wrangle_local_pdf / wrangle_local_docx /
+    # wrangle_local_md / read_text_file. See source_wrangler_operations.py
+    # for the provider implementation.
+    if provider == "box":
+        title, body, rec = _source_ops.wrangle_box_file(locator)
+        return title, body, rec
+
+    # Story 27-3: Image intake via sensory-bridges. The wrangle_local_image
+    # helper lives in skills/sensory-bridges/scripts/image_to_agent.py (loaded
+    # lazily below to keep the runner import graph shallow). An analyzer can
+    # be injected via src['_image_analyzer'] for trials / harness scenarios;
+    # in production, the v1 VisionLLMAnalyzer stub surfaces remediation
+    # pointing at the live-vision follow-on story. The SourceRecord returned
+    # here carries kind='image_source' — the SourceRecord type is the
+    # source_wrangler_operations.SourceRecord dataclass, adapted below.
+    if provider == "image":
+        title, body, rec = _wrangle_image_via_bridge(
+            locator, analyzer=src.get("_image_analyzer")
+        )
+        return title, body, rec
+
     raise ValueError(f"Unsupported provider: {provider!r}")
+
+
+def _wrangle_image_via_bridge(
+    locator: str,
+    *,
+    analyzer: Any | None = None,
+) -> tuple[str, str, Any]:
+    """Dispatch image intake to the sensory-bridges helper.
+
+    Isolated in its own function so the import of the hyphenated
+    sensory-bridges path happens lazily — consistent with how
+    `_fetch_source` keeps other heavy extractors out of the top-level
+    import graph. Adapts the helper's local SourceRecord dataclass to the
+    canonical `source_wrangler_operations.SourceRecord` the runner carries.
+    """
+    import importlib.util
+    import sys as _sys
+    from pathlib import Path as _Path
+
+    # Resolve the image bridge by file path — the sensory-bridges dir is
+    # hyphenated so `from skills.sensory_bridges...` is unreliable across
+    # execution contexts (script vs. pytest vs. module). This mirrors the
+    # load_module_from_path pattern used at the top of this file. Cache the
+    # loaded module in sys.modules so dataclass introspection (which walks
+    # sys.modules for the defining-class module) resolves correctly on
+    # subsequent calls within the same process.
+    module_name = "texas_image_bridge"
+    cached = _sys.modules.get(module_name)
+    if cached is not None:
+        bridge = cached
+    else:
+        here = _Path(__file__).resolve()
+        bridge_path = (
+            here.parents[2]
+            / "sensory-bridges"
+            / "scripts"
+            / "image_to_agent.py"
+        )
+        spec = importlib.util.spec_from_file_location(module_name, bridge_path)
+        assert spec is not None and spec.loader is not None
+        bridge = importlib.util.module_from_spec(spec)
+        _sys.modules[module_name] = bridge
+        spec.loader.exec_module(bridge)
+
+    title, body, local_rec = bridge.wrangle_local_image(locator, analyzer=analyzer)
+    rec = _source_ops.SourceRecord(
+        kind=local_rec.kind,
+        ref=local_rec.ref,
+        note=local_rec.note,
+    )
+    return title, body, rec
 
 
 # ---------------------------------------------------------------------------
@@ -774,6 +915,20 @@ def _classify_fetch_error(exc: BaseException) -> str:
         and type(exc).__module__.startswith("docx.")
     ):
         return "docx_extraction_failed"
+    # Story 27-3: image-intake typed errors. Identified by class-name prefix
+    # to avoid importing the image bridge into the runner module-load path
+    # (the bridge is loaded lazily in _wrangle_image_via_bridge). The four
+    # subclasses each map to a dedicated error_kind so downstream consumers
+    # can act on fetch-vs-decode-vs-OCR-vs-vision distinctions.
+    class_name = type(exc).__name__
+    if class_name == "ImageFetchError":
+        return "image_fetch_failed"
+    if class_name == "ImageDecodeError":
+        return "image_decode_failed"
+    if class_name == "ImageOCRFailureError":
+        return "image_ocr_failed"
+    if class_name == "ImageVisionAPIError":
+        return "image_vision_unavailable"
     # Missing file is a common shape — surface cleanly.
     if isinstance(exc, FileNotFoundError):
         return "fetch_failed"
@@ -789,6 +944,14 @@ def _classify_fetch_error(exc: BaseException) -> str:
 # there but unreadable as DOCX" apart from "generic fetch failed."
 _ERROR_KIND_TO_KNOWN_LOSSES: dict[str, list[str]] = {
     "docx_extraction_failed": ["docx_open_failed"],
+    # Story 27-3: image-intake failure tokens. Each is distinct so the
+    # retrospective / operator triage paths can partition image failures by
+    # root cause (bad path vs corrupt header vs blank-image vs no-vision-API)
+    # without parsing error messages.
+    "image_fetch_failed": ["image_fetch_failed"],
+    "image_decode_failed": ["image_decode_failed"],
+    "image_ocr_failed": ["image_ocr_failed"],
+    "image_vision_unavailable": ["image_vision_unavailable"],
 }
 
 
@@ -1540,6 +1703,33 @@ def _write_result_envelope(
         "artifacts": [p.relative_to(bundle_dir).as_posix() for p in artifact_paths],
         "bundle_manifest_path": "manifest.json",
     }
+    dispatch_artifacts = [p.relative_to(bundle_dir).as_posix() for p in artifact_paths]
+    dispatch_envelope = build_dispatch_envelope(
+        run_id=run_id,
+        dispatch_kind=DispatchKind.TEXAS_RETRIEVAL,
+        input_packet={
+            "directive_shape": "locator",
+            "materials_count": len(materials),
+        },
+        context_refs=dispatch_artifacts,
+        correlation_id=f"{run_id}-texas-retrieval",
+    )
+    dispatch_receipt = build_dispatch_receipt(
+        correlation_id=dispatch_envelope.correlation_id,
+        specialist_id=dispatch_envelope.specialist_id,
+        outcome=_to_dispatch_outcome(overall_status),
+        output_artifacts=dispatch_artifacts,
+        diagnostics={
+            "status": overall_status,
+            "materials_count": len(materials),
+            "blocking_issues_count": len(blocking_issues),
+        },
+        duration_ms=0,
+    )
+    envelope["dispatch_contract"] = {
+        "envelope": dispatch_envelope.model_dump(mode="json"),
+        "receipt": dispatch_receipt.model_dump(mode="json"),
+    }
     path = bundle_dir / "result.yaml"
     path.write_text(
         yaml.safe_dump(envelope, sort_keys=False, default_flow_style=False),
@@ -1826,6 +2016,34 @@ def _write_retrieval_result_envelope(
         ),
         "errors_count": sum(1 for o in outcomes if o.error_kind is not None),
         "artifacts": [p.relative_to(bundle_dir).as_posix() for p in artifact_paths],
+    }
+    dispatch_artifacts = [p.relative_to(bundle_dir).as_posix() for p in artifact_paths]
+    dispatch_envelope = build_dispatch_envelope(
+        run_id=run_id,
+        dispatch_kind=DispatchKind.TEXAS_RETRIEVAL,
+        input_packet={
+            "directive_shape": "retrieval",
+            "dispatches_count": len(outcomes),
+        },
+        context_refs=dispatch_artifacts,
+        correlation_id=f"{run_id}-texas-retrieval",
+    )
+    dispatch_receipt = build_dispatch_receipt(
+        correlation_id=dispatch_envelope.correlation_id,
+        specialist_id=dispatch_envelope.specialist_id,
+        outcome=_to_dispatch_outcome(overall_status),
+        output_artifacts=dispatch_artifacts,
+        diagnostics={
+            "status": overall_status,
+            "dispatches_count": len(outcomes),
+            "rows_total": envelope["rows_total"],
+            "errors_count": envelope["errors_count"],
+        },
+        duration_ms=0,
+    )
+    envelope["dispatch_contract"] = {
+        "envelope": dispatch_envelope.model_dump(mode="json"),
+        "receipt": dispatch_receipt.model_dump(mode="json"),
     }
     if blocking_issues:
         envelope["blocking_issues"] = blocking_issues

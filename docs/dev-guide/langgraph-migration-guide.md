@@ -216,6 +216,59 @@ orchestration, the hybrid re-converges on the reshaped dispatch semantics.
 FR60 forward-port freeze (ACTIVE since Slab 1 Story 1.1a closed). `git merge
 upstream/master` is off-policy; convergence goes through this checklist.
 
+### 8.1 Upstream Severance (Slab 2+)
+
+**Adopted:** 2026-04-24 session, per operator directive. **Scope:** all Slab
+2+ work.
+
+**Rule:** the hybrid clone is **severed** from `upstream/master` as a live
+input source. All Slab 2 specialist migrations read skill directories from
+**hybrid's own working tree** (the dev branch), not from any upstream SHA.
+The `upstream` remote is retained as a historical-reference-only endpoint
+(`git log upstream/master` lookups are allowed; fetch + read into code is
+not).
+
+**Why severance rather than a pin protocol:** an earlier draft of this
+section proposed a pinned-SHA protocol with per-story escape hatches and an
+M5 reconciliation pass. That was sized for a world where upstream keeps
+evolving during migration. Per 2026-04-24 operator directive, upstream is
+effectively deprecated for APP development starting now — trial-run
+refinements and feature enhancements all happen on hybrid post-M5. A
+severance posture is strictly simpler and has identical functional
+outcomes once the operator commits to "sprint to hybrid operational."
+
+**Mechanics:**
+
+1. **Final absorption (one-time, 2026-04-24).** The 4 upstream commits that
+   landed between the FR60 freeze (`a905de0`, 2026-04-22) and severance
+   (`3ed7c56`, 2026-04-24) contained net-new specialist capability (Wondercraft
+   first-breath scaffold, Texas Notion/Box/Consensus providers, Irene
+   Pass-2 templates, Marcus dispatch-registry) and were absorbed via
+   scoped `git checkout` of specialist directories onto hybrid. Audit
+   trail at
+   [`_bmad-output/implementation-artifacts/upstream-severance-log.md`](../../_bmad-output/implementation-artifacts/upstream-severance-log.md).
+2. **Severance cutoff (2026-04-24).** After absorption, no further `git
+   show upstream/master:…`, no further `git fetch upstream` driven by
+   migration work. Slab 2 2b.N T1 reads go against hybrid's working-tree
+   skill directories directly.
+3. **No M5 reconciliation pass.** There is nothing to reconcile — upstream
+   is no longer an input surface.
+
+**FR60 posture supersession.** FR60 "forward-port freeze" is retired and
+replaced by this severance clause. The freeze permitted convergence via
+§8 checklist; severance does not. If a post-severance incident surfaces
+that genuinely requires re-opening the upstream channel (e.g.,
+operator-initiated emergency absorption), treat it as a party-mode
+governance exception with full documentation, not as a standing escape
+hatch.
+
+**See also:**
+- [`upstream-severance-log.md`](../../_bmad-output/implementation-artifacts/upstream-severance-log.md)
+  — absorption-and-severance audit trail
+- [`slab-2-roster-reconciliation.md`](../../_bmad-output/planning-artifacts/slab-2-roster-reconciliation.md)
+  — reconciled Slab 2 migratable roster (actual skill dirs vs. named-only
+  roadmap entries, updated to reflect absorbed Wondercraft specialist)
+
 ---
 
 ## 9. Reproducibility Invariants (NFR-X1–X5)

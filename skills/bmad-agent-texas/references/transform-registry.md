@@ -40,6 +40,8 @@ Extraction method hierarchy per source type. For each format, methods are listed
 | 2 | Playwright page save | When API access fails | Requires browser automation |
 | 3 | Exported PDF/HTML | When operator provides a manual export | May lose database/embedded content |
 
+> **Implementation cross-reference** (Story 27-5): Two concrete provider forms exist for Notion: (a) **legacy direct-REST** via `provider: notion` — wired through `wrangle_notion_page()` using `scripts/api_clients/notion_client.py`; kept for backwards compatibility; (b) **MCP-mediated** via `provider: notion_mcp` — wired through `wrangle_notion_mcp_page()` using a harness-injected `NotionMCPFetcher`. New directives SHOULD prefer `notion_mcp`. **Scope binding (Amelia rider + user memory `project_notion_mcp_dual_config`):** Texas-headless runs MUST use the **project-scope stdio** Notion MCP (not the user-scope hosted one). The `notion_mcp` provider enforces this via `expected_scope="project"` with a `NotionMCPAuthError` on scope mismatch. **Permission-denied case (Sally UX rider — the Tejal-trial 2026-04-17 blocker):** when the MCP integration is not granted access to a page, `NotionMCPPermissionError` surfaces operator-facing remediation text that walks through the Notion UI step-by-step (open page → `•••` → Connections → Add connections → select project-scope integration → re-run). The remediation template lives in `_notion_mcp_permission_remediation()` and is asserted literally by `tests/test_notion_mcp_provider.py`. Legacy `notion` path and `notion_mcp` path are disjoint: `_SUPPORTED_PROVIDERS` lists both; the dispatch branches in `run_wrangler._fetch_source` are independent.
+
 ## HTML / URL
 
 | Priority | Method | When to Use | Known Limitations |
@@ -47,6 +49,22 @@ Extraction method hierarchy per source type. For each format, methods are listed
 | 1 | `requests` + HTML-to-text | Simple static pages | Fails on JS-rendered SPAs |
 | 2 | Playwright MCP | Dynamic/JS-heavy pages | Slower; requires browser context |
 | 3 | Playwright save + offline extract | Auth-walled pages | Operator must authenticate first |
+
+## Box (fetch layer)
+
+| Priority | Method | When to Use | Known Limitations |
+|----------|--------|-------------|-------------------|
+| 1 | `boxsdk` developer-token fetch → local file → format extractor | Default for Box-hosted content | Requires `BOX_DEVELOPER_TOKEN` env var; developer tokens expire after 60 minutes; folder-level fetch is deferred to a follow-on story (file-level only in v1); OAuth2 refresh / JWT auth are future work |
+
+> **Implementation cross-reference** (Story 27-6): Box is a **fetch-layer** provider, not a format handler — it resolves a Box file ID or shared-link URL to a local file via `wrangle_box_file()` in `skills/bmad-agent-texas/scripts/source_wrangler_operations.py`, then dispatches the downloaded file through the existing suffix-based extractors (`wrangle_local_pdf` for `.pdf`, `wrangle_local_docx` for `.docx`, `wrangle_local_md` for `.md`, `read_text_file` for plain text). The `box` provider branch in `run_wrangler._fetch_source` calls `wrangle_box_file(locator)` and returns its `(title, body, SourceRecord)` tuple. Auth failures (missing or expired `BOX_DEVELOPER_TOKEN`, 401/403 from Box) raise `BoxAuthError` with operator-facing remediation text that names the env var, the Box developer-console URL, and the re-run step. Rate-limit (429), not-found (404), and permission (403-class resolvable-but-unauthorized) failures surface as typed `BoxRateLimitError` / `BoxNotFoundError` / `BoxPermissionError` — each distinct so downstream error classification can act on the auth-vs-availability axis. Since Box itself does not produce extraction output (the underlying PDF/DOCX/MD does), the transform-registry lockstep test exempts Box via `LOCKSTEP_EXEMPTIONS`; end-to-end routing is proved separately by `tests/test_box_provider.py`.
+
+## Image (intake via sensory-bridges)
+
+| Priority | Method | When to Use | Known Limitations |
+|----------|--------|-------------|-------------------|
+| 1 | `image_to_agent.wrangle_local_image` (ImageAnalyzer-backed perception → synthetic markdown body) | Default for `.jpg`, `.jpeg`, `.png`, `.webp` sources | OCR partial on stylized fonts; hand-drawn / whiteboard content requires a vision-model pass (analyzer dependent); transparent-background PNGs may mis-crop; EXIF rotation is NOT auto-applied — rotated images must be pre-oriented; vision-API latency + cost are v1 follow-on concerns; the default `VisionLLMAnalyzer` is a stub in v1 and requires operator-supplied perception via the runner's `_image_analyzer` DI seam (live vision lands in Story 27-3b) |
+
+> **Implementation cross-reference** (Story 27-3): Image is a **fetch-layer plus perception** provider — it routes `provider: image` directive rows through `wrangle_local_image()` in [`skills/sensory-bridges/scripts/image_to_agent.py`](../../../skills/sensory-bridges/scripts/image_to_agent.py), which delegates vision/OCR to an injected `ImageAnalyzer` Protocol and returns a synthetic markdown body (H1 title + Caption + Detected text + Visual elements + Layout + Tier classification footer) plus a `SourceRecord` with `kind="image_source"` and `ref="image://<sha256-prefix>"`. The provenance `note` carries sha256, suffix, size, dimensions (best-effort), fidelity, perceived_words, bridge_version, and analyzer confidence. Failures surface as typed `ImageFetchError` / `ImageDecodeError` / `ImageOCRFailureError` / `ImageVisionAPIError` — each maps to a dedicated `error_kind` string in `_classify_fetch_error` and a dedicated `known_losses` sentinel in `_ERROR_KIND_TO_KNOWN_LOSSES` (`image_fetch_failed`, `image_decode_failed`, `image_ocr_failed`, `image_vision_unavailable`). New `role` values accepted in the directive schema: `visual-primary` (the image IS the source of truth for a learning-objective chain) and `visual-supplementary` (the image is illustrative of a text-role primary). `extraction_validator._WORDS_PER_PAGE["image"] = 60` sets the expected-words floor for the completeness-ratio calculation. The lockstep contract test exempts Image under `LOCKSTEP_EXEMPTIONS` because the perception path is analyzer-specific rather than a fixed text extractor — end-to-end routing is proved by [`tests/test_image_provider.py`](../../../tests/test_image_provider.py). SCHEMA_CHANGELOG entry: Sprint 2 Image Intake v1.0 - 2026-04-24.
 
 ## Future (Placeholder)
 
@@ -56,4 +74,4 @@ These formats are not yet supported but are anticipated:
 - **XLSX/CSV**: Tabular data → structured markdown tables
 - **Video transcripts (SRT/VTT)**: Timestamp-aware text extraction
 - **Scanned PDFs**: OCR pipeline (Tesseract or cloud vision API)
-- **Images**: Vision API → structured description
+- **Image live-vision** (Story 27-3b): wire a production vision backend into `ImageAnalyzer` so `VisionLLMAnalyzer` stops being a stub

@@ -501,6 +501,30 @@ So that **M1 acceptance closes with all documentation deliverables landed, Amend
 
 ---
 
+## Epic 2 Reconciliation Banner (2026-04-24)
+
+> **Slab 2 roster reconciled 2026-04-24** against actual skill directories on
+> hybrid post-severance absorption. The named 14-specialist Epic 2b roster
+> (*Gary, Vera, Quinn-R, Desmond, Tracy, Paige, Mike, Dan, Eli, Enrique,
+> Mira, Sally, Kim, CD*) resolved to **9 migratable (Category A+B, including
+> absorbed Wondercraft) + 5 Tier-4 thin nodes (Category C) + 2 dissolved
+> (Audra, Cora — replaced by LangGraph CI + BMAD session protocols) + 7
+> roadmap-only names with no skill directory (Category E — deferred to
+> post-M5 greenfield mini-epic).** Full reconciliation at
+> [`slab-2-roster-reconciliation.md`](slab-2-roster-reconciliation.md).
+>
+> **Upstream severance** per [`langgraph-migration-guide.md §8.1`](../../docs/dev-guide/langgraph-migration-guide.md#81-upstream-severance-slab-2)
+> replaces FR60 forward-port freeze. 2b.N T1 reads go against hybrid's
+> working-tree skill directories directly; no more `upstream/master` reads.
+> Absorption + severance audit trail at [`upstream-severance-log.md`](../implementation-artifacts/upstream-severance-log.md).
+>
+> **Wondercraft decision** flagged for Slab 2 kickoff party-mode: absorbed
+> as a real skill directory, Wondercraft can migrate as 2b.N (Path A) or
+> remain as 2c.1 generator-validation target (Path B). See reconciliation
+> doc §Wondercraft Decision. Default pending kickoff: Path A.
+
+---
+
 ## Epic 2a: Slab 2a Scaffold Pilot — PR-R-Conformant Specialists
 
 **Milestone:** Intermediate (feeds M2).

@@ -17,7 +17,6 @@ from __future__ import annotations
 import re
 from dataclasses import dataclass, field
 from enum import Enum
-from pathlib import Path
 from typing import Any
 
 
@@ -75,6 +74,12 @@ _WORDS_PER_PAGE: dict[str, int] = {
     "pptx": 50,         # slides have less text
     "html": 150,
     "notion": 200,
+    # Story 27-3: images produce a synthetic markdown body (caption + OCR +
+    # visual elements + layout + tier footer). Floor of 60 words matches the
+    # typical rendered body size for a non-trivial visual source; anything
+    # below that is likely a blank/abstract image and classifies as
+    # DEGRADED/FAILED via the existing completeness-ratio threshold.
+    "image": 60,
     "default": 150,
 }
 

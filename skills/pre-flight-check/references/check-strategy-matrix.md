@@ -27,7 +27,7 @@ Is MCP configured and verified in Cursor?
 | Qualtrics | 1 | Deferred (npm build) | Smoke script | `smoke_qualtrics.mjs` |
 | Canva | 1 | Deferred (OAuth redirect) | Report blocker | Static |
 | Botpress | 2 | N/A | Heartbeat | `heartbeat_check.mjs` |
-| Wondercraft | 2 | N/A | Heartbeat | `heartbeat_check.mjs` |
+| Wondercraft | 2 | N/A | Heartbeat (env: `WONDERCRAFT_API_KEY`; Wanda specialist — Sprint 2 Story `wondercraft-specialist-agent`) | `heartbeat_check.mjs` |
 | Kling | 2 | N/A | Config presence | `heartbeat_check.mjs` |
 | Panopto | 2 | N/A | Config presence | `heartbeat_check.mjs` |
 | Descript | 3 | N/A | Config presence | `heartbeat_check.mjs` |

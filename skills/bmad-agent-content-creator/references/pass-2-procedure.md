@@ -5,11 +5,35 @@ description: Irene's Pass 2 procedure — perception enforcement, narration with
 
 # Pass 2 Procedure
 
+> **Structural contract for segment-manifest emission** lives at [`./pass-2-authoring-template.md`](./pass-2-authoring-template.md). Read it before writing the manifest. Covers the three §7.1 failure modes (§6.3 no `motion_asset` legacy key; §6.4 `visual_file` on every non-null-visual-mode segment; §6.5 `motion_duration_seconds` carried forward from Motion Gate receipt). Pass 2 output is linted at end of Pack v4.2 §08 via [`scripts/validators/pass_2_emission_lint.py`](../../../scripts/validators/pass_2_emission_lint.py); failing lint blocks §08B Storyboard B.
+
 Pass 2 begins after Gary generates slides and the operator approves them at HIL Gate 2. The context envelope includes approved `gary_slide_output`, may include prior `perception_artifacts` or `literal_visual_publish` staging receipts, and for motion-enabled runs includes `context_paths.motion_plan` / `motion_plan.yaml`.
 
 ## Intake
 
 Pass 2 intake also consumes `narration_profile_controls` (11 keys from the Creative Director's creative directive, resolved into `state/config/narration-script-parameters.yaml` by the CD→resolver pipeline). These controls shape narration density, bridging weight, rhetorical register, and arc awareness. Read them from the active narration-script-parameters and apply them alongside bridge cadence and cluster word budgets.
+
+## Retrieval intake (corroborate-only v1)
+
+When retrieval artifacts are present, consume the Irene intake envelope before writing cluster narration. Required intake keys are `run_id`, `pass_2_cluster_id`, `suggested_resources_ref`, `intake_mode`, and `evidence_bolster_active`; `extraction_report_ref` is optional but expected in retrieval-enabled runs.
+
+Scope lock for this version:
+
+- Intake mode support is bounded to corroboration behavior (`intake_mode: corroborate`, or corroboration branch within `mixed`).
+- The additive output field on a segment is `retrieval_provenance`.
+- Full shape and worked examples live in [`./retrieval-intake-contract.md`](./retrieval-intake-contract.md).
+
+Convergence-to-language mapping:
+
+- Dual-source convergence (scite + consensus agreeing): `Corroborated by multiple independent sources, with support from peer-reviewed citation context and synthesis evidence.`
+- Single-source convergence (scite only): `According to scite.ai citation-context analysis.`
+- Single-source convergence (consensus only): `Per Consensus research synthesis.`
+- Unknown or partial convergence: `According to available retrieval evidence.`
+
+Graceful degradation rule:
+
+- If the suggested-resources payload is empty for the cluster, or extraction rows yield no usable retrieval provenance, emit narration without intake phrasing and append `retrieval_empty_for_cluster_<cluster_id>` to `known_losses`.
+- `evidence_bolster_active` governs whether corroboration phrasing is expected to appear when valid intake exists; it does not override empty-retrieval fail-closed behavior.
 
 ## Step 0 — Mandatory Perception Contract (Story 13.1)
 

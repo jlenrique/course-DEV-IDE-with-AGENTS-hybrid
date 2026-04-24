@@ -22,6 +22,7 @@ from pathlib import Path
 
 import pytest
 import yaml
+from marcus.dispatch.contract import DispatchEnvelope, DispatchReceipt
 
 # Load the runner by path — the hyphenated directory prevents plain import.
 _THIS_DIR = Path(__file__).resolve().parent
@@ -107,6 +108,12 @@ def test_happy_path_primary_only(tmp_path: Path) -> None:
     assert envelope["materials"][0]["quality_tier"] == 1  # FULL_FIDELITY
     assert envelope["cross_validation"] == []
     assert envelope["blocking_issues"] == []
+
+    dispatch_contract = envelope["dispatch_contract"]
+    validated_envelope = DispatchEnvelope.model_validate(dispatch_contract["envelope"])
+    validated_receipt = DispatchReceipt.model_validate(dispatch_contract["receipt"])
+    assert validated_envelope.dispatch_kind.value == "texas_retrieval"
+    assert validated_receipt.outcome.value == "complete"
 
 
 # ---------------------------------------------------------------------------

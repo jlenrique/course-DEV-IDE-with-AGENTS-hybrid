@@ -6,7 +6,7 @@
 2. **Every session hot-start** — `next-session-start-here.md` surfaces the inventory counts so the operator sees "don't overlook" context every session open.
 3. **Story authoring** — when a new story spec names a follow-on (e.g., "15-1-lite-irene is a fast-follow after this story"), the author adds the follow-on to §Named-But-Not-Filed Follow-Ons below.
 
-**Maintenance:** update at (a) each Epic retrospective close, (b) each story closure that names a new follow-on, (c) any session-wrapup where the operator flags a new deferred item, (d) each forward-port pass on the hybrid migration branch (see §Forward-Port Deferred below). Last refreshed: **2026-04-23** (hybrid Phase-1 forward-port, commit `6364f14`).
+**Maintenance:** update at (a) each Epic retrospective close, (b) each story closure that names a new follow-on, (c) any session-wrapup where the operator flags a new deferred item, (d) each forward-port pass on the hybrid migration branch (see §Forward-Port Deferred below). Last refreshed: **2026-04-24** (upstream severance + Slab 2 roster reconciliation).
 
 ---
 
@@ -18,8 +18,9 @@
 | **Epic 16** | Bounded Autonomy Expansion — Marcus autonomous routing on routine decisions | 16-1, 16-2, 16-3, 16-4, 16-5 | 5 | Depends on Epic 15 evidence base for autonomous-routing calibration. |
 | **Epic 17** | Research & Reference Services — related-resources + citation injection + hypothesis research | 17-1, 17-2, 17-3, 17-4, 17-5 | 5 | No explicit trigger named; appears to be operator-priority-driven. Re-evaluate at Epic 15/16 retrospectives. |
 | **Epic 18** | Additional Assets & Workflow Families — cases, quizzes, discussions, handouts, podcasts, diagrams, workflow-family framework | 18-1, 18-2, 18-3, 18-4, 18-5, 18-6, 18-7 | 7 | **18-7 gates all others** (implementation framework must land first). Trigger for 18-7: operator-priority decision on new content type. Note: 18-5 (podcasts) + 18-6 (infographics) are "new pack types" per [Pipeline Manifest Regime §Pack Versioning Policy](../../docs/dev-guide/pipeline-manifest-regime.md#pack-versioning-policy) — NOT v5 of narrated-lesson; they ship as new families. |
+| **Post-M5 Greenfield Specialists** (hybrid migration) | Specialists named in Epic 2b roster that have no skill directory on disk and cannot be migrated (Mike, Eli, Enrique, Mira, Sally, Kim; Paige if scoped as runtime specialist). Empty sidecar stubs exist under `_bmad/memory/<name>-sidecar/` but no code, no prompts, no references. | one per specialist as need materializes (6–7 total) | 6–7 | **Hybrid migration M5 closure.** Generated directly on hybrid via `bmad-create-specialist` (the generator validated in Slab 2c.1) when the operational need for each specialist becomes concrete. No migration; pure greenfield on the migrated platform. See [`slab-2-roster-reconciliation.md §Category E`](slab-2-roster-reconciliation.md) for roster detail. |
 
-**Total deferred-epic story count: 24 stories across 4 epics.**
+**Total deferred-epic story count: 30–31 stories across 5 epic slots.**
 
 ---
 
@@ -44,6 +45,7 @@ Follow-on stories named in existing specs or retrospectives but not yet filed as
 
 | Follow-on | Parent story | Condition | Trigger |
 |---|---|---|---|
+| **Audra + Cora dissolution** (migration branch) | 2026-04-24 operator ratification during Slab 2 roster reconciliation | LangGraph CI stack (import-linter 3 contracts + scaffold-conformance framework + shape-pin tests + LangSmith tracing) covers the code-invariant functions these two agents performed on primary. Session-ritual functions covered by existing BMAD session-START/WRAPUP protocols. | **No migration work.** Leave [`skills/bmad-agent-audra/`](../../skills/bmad-agent-audra/) + [`skills/bmad-agent-cora/`](../../skills/bmad-agent-cora/) as historical-archive directories on hybrid. Cora's `/harmonize` + session-triage CLI wrapper remains scoped to Slab 4 Epic E4 (Lockstep + Gates + Cora) but as a CLI/hook, NOT as a LangGraph runtime node. Audra is fully dissolved — no post-M5 resurrection planned. See [`slab-2-roster-reconciliation.md §Category D`](slab-2-roster-reconciliation.md). |
 | **15-1-lite-irene** | 15-1-lite-marcus | Epic 33 meta-test validates the substrate catches new contracts on Marcus | File when 15-1-lite-marcus closes CLEAN-CLOSE-META-TEST-PASSED. Extends learning-event capture to Irene's Gates. |
 | **15-1-lite-gary** | 15-1-lite-marcus | Same as above | File when 15-1-lite-marcus closes CLEAN-CLOSE-META-TEST-PASSED. Extends learning-event capture to Dan/Gary's Gates. |
 | **v4.3 substrate extension** | Epic 33 retrospective | No current trigger; mechanism ready per Q1 parameterized-version-hook | File when operator identifies the first Tier-2 pack change per [Pipeline Manifest Regime §Pack Versioning Policy Tier 2](../../docs/dev-guide/pipeline-manifest-regime.md#tier-2--minor-v42--v43-new-pack-file-v42-preserved-for-audit). Ships as `scripts/generators/v43/` sibling + manifest entries with `pack_version: "v4.3"`. |
