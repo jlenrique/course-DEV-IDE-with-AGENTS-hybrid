@@ -351,15 +351,108 @@ Per-environment troubleshooting lives in `langgraph-runtime-setup.md §Troublesh
 
 ## 12. Specialist Walkthrough
 
-> **⏳ STUB — Slab 2 Story 2a.1 populates this section.** At 2a.1 close,
-> this section will carry the cold-start walkthrough (git pull → skill
-> invocation → generated files listing → conformance test run → post-edit
-> checklist + one worked Irene before/after example) per Story 2a.1 AC-H.
-> Until 2a.1 lands, dev agents writing Slab 2 specialist migrations read
-> [`scaffold-conformance-framework.md`](scaffold-conformance-framework.md)
-> + [`langgraph-state-idioms.md`](langgraph-state-idioms.md) +
-> [`gate-decision-binding-semantics.md`](gate-decision-binding-semantics.md)
-> directly.
+This section is the canonical operator/dev-agent flow for creating a new Slab-2+
+specialist through `bmad-create-specialist`.
+
+### 12.1 Five-step spine
+
+1. `git pull` (or update your local branch to latest story base).
+2. Run generator skill command.
+3. Inspect generated file tree.
+4. Run scaffold conformance + generated state-shape tests.
+5. Complete manual post-edit checklist.
+
+### 12.2 Invocation
+
+```bash
+python -m skills.bmad_create_specialist.scripts.generate \
+  --name irene \
+  --mcp none \
+  --expertise-tier L5-narration-pass-2 \
+  --from-skill skills/bmad-agent-content-creator/
+```
+
+Optional dry-run probe (no writes):
+
+```bash
+python -m skills.bmad_create_specialist.scripts.generate \
+  --name irene \
+  --mcp none \
+  --expertise-tier L5-narration-pass-2 \
+  --from-skill skills/bmad-agent-content-creator/ \
+  --dry-run
+```
+
+### 12.3 Expected generated tree
+
+```text
+app/specialists/irene/
+  __init__.py
+  graph.py
+  state.py
+  model_config.yaml
+  expertise/README.md
+tests/specialists/irene/test_irene_state_shape.py
+tests/fixtures/specialists/irene/golden_envelope.json
+tests/fixtures/specialists/irene/golden_return.json
+tests/integration/scaffold_conformance/test_scaffold_irene.py
+```
+
+### 12.4 Manual post-edit checklist (frozen)
+
+1. Set `app/specialists/<name>/model_config.yaml::default_model` to a valid
+   ID from `app/models/registry.py::MODEL_REGISTRY` contract surface
+   (`registry.yaml` entries are the practical source).
+2. Populate `app/specialists/<name>/expertise/` with domain references and
+   update `expertise/README.md` with an index.
+3. Replace default `act` passthrough body only when the story explicitly
+   requires a real LLM invocation; otherwise keep passthrough intentionally.
+4. Update graph/state reducers only if the specialist introduces custom state
+   fields beyond `SpecialistEnvelope` / `SpecialistReturn`.
+
+### 12.5 Irene worked before/after (act node)
+
+Before (generated scaffold):
+
+```python
+def _act(state: RunState) -> dict[str, Any]:
+    """Canonical act slot; replace in specialist follow-up stories."""
+    del state
+    return {}
+```
+
+After (Irene pass-2 wiring):
+
+```diff
+-def _act(state: RunState) -> dict[str, Any]:
+-    """Canonical act slot; replace in specialist follow-up stories."""
+-    del state
+-    return {}
++def _act(state: RunState) -> dict[str, Any]:
++    """Irene pass-2 act node: author narration-focused output payload."""
++    prompt = state.story_states[-1].lesson_plan if state.story_states else ""
++    return {"story_states": _write_irene_pass2_payload(prompt)}
+```
+
+### 12.6 Verification commands
+
+```bash
+python -m pytest tests/specialists/irene -q
+python -m pytest tests/integration/scaffold_conformance/test_scaffold_irene.py -q
+```
+
+### 12.7 Governance notes
+
+- Generator denylist blocks Category D dissolved skills (`audra`, `cora`).
+- If epic-doc text conflicts with scaffold framework contracts, framework wins
+  (see scaffold T1 pre-flight protocol).
+- `gate_decision` node template imports `resume_from_verdict` for C3 binding
+  stability while using `interrupt()` body until Slab 3 implements resume API.
+
+Cross-references:
+- [`scaffold-conformance-framework.md`](scaffold-conformance-framework.md)
+- [`specialist-anti-patterns.md`](specialist-anti-patterns.md)
+- [`model-selection-guide.md`](model-selection-guide.md)
 
 ---
 

@@ -1,6 +1,13 @@
-"""Scaffold reference for per-specialist `model_config.yaml` shape.
+"""Canonical scaffold specialist reference for Slab 2 generator output.
 
-Slab 2 specialists copy `model_config.yaml` from this directory and adapt
-the `specialist_id`, `default_model`, `per_node_overrides`, and
-`temperature_default` fields per the specialist's contract.
+This package is the source template for generated specialists:
+- `graph.py`: canonical 9-node graph shape
+- `state.py`: SpecialistEnvelope/SpecialistReturn subclass pins
+- `model_config.yaml`: three-level model cascade shape
+- `expertise/README.md`: expertise directory contract
 """
+
+from app.specialists._scaffold.graph import build_scaffold_graph
+from app.specialists._scaffold.state import ScaffoldEnvelope, ScaffoldReturn
+
+__all__ = ["ScaffoldEnvelope", "ScaffoldReturn", "build_scaffold_graph"]

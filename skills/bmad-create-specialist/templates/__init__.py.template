@@ -1,0 +1,6 @@
+"""Generated specialist package for {{name}}."""
+
+from app.specialists.{{name}}.graph import build_{{name}}_graph
+from app.specialists.{{name}}.state import {{class_name}}Envelope, {{class_name}}Return
+
+__all__ = ["{{class_name}}Envelope", "{{class_name}}Return", "build_{{name}}_graph"]

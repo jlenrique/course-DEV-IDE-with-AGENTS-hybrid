@@ -1,6 +1,6 @@
 # Migration Story 2a.1: `bmad-create-specialist` Generator + 9-Node Scaffold Reference
 
-**Status:** ready-for-dev
+**Status:** review
 **Sprint key:** `migration-2a-1-bmad-create-specialist-generator-and-9-node-scaffold-reference`
 **Epic:** Slab 2a (migration Epic 2a) — **opening story** (first Slab 2 migration story)
 **Milestone anchored:** feeds M2 (17-specialist scaffold + Wondercraft pilot <1 dev-day). First story to land a real LLM-call path → **activates the cache-hit-rate baseline harness** deferred at M1.
@@ -505,33 +505,124 @@ _(Dev agent populates this section during T1–T9 execution.)_
 
 ### T1 Readiness
 
-_(Pre-read confirmations; governance-JSON lookup result; sandbox-AC validator result.)_
+- Governance JSON check: `docs/dev-guide/migration-story-governance.json` confirms `2a-1` is `dual-gate` with `schema_shape` rationale.
+- Sandbox-AC validator: `python scripts/utilities/validate_migration_story_sandbox_acs.py ...` -> `PASS`.
+- Canonical scaffold source: `tests/integration/scaffold_conformance/scaffold_contract.py::SCAFFOLD_NODE_IDS` used as node-name authority.
+- Compiler verification: `app.manifest.compiler.compile()` raises `CompileError`; this story extended compile-time checks to fail on invalid model IDs inside `model_config_ref`.
+- Slab-1 artifact sweep:
+  - `app/models/state/` location verified for state models.
+  - `app/specialists/_stub/passthrough_specialist.py::passthrough_node` returns `{}`.
+  - `app/gates/resume_api.py::resume_from_verdict` is still `NotImplementedError` stub.
+  - `_SPECIALIST_ID_PATTERN` found at `app/models/selector.py` and accepts `_`-prefix; generator intentionally enforces stricter Story-2a.1 `--name` pattern `^[a-z][a-z0-9_]*$`.
+- Epic drift check: epic line-555 stale node list still present with KNOWN-DRIFT marker in `epics-langchain-langgraph-migration.md`; framework remained authoritative.
 
 ### T2–T7 Implementation Notes
 
-_(Incremental design choices; late-binding fixes; template-rendering approach chosen; CLI structure.)_
+- Populated canonical scaffold under `app/specialists/_scaffold/` with `graph.py`, `state.py`, `expertise/README.md`, and updated exports.
+- Added transition-chain reachability assertion and idempotent `finalize`/`handoff` semantics in scaffold graph.
+- Added `skills/bmad-create-specialist/` operator skill directory (SKILL.md, templates, script wrapper) and importable generator package at `skills/bmad_create_specialist/`.
+- Generator design:
+  - strict CLI validation (`--name`, `--mcp`, `--expertise-tier`, `--from-skill`);
+  - denylist enforcement for Category D dissolved skills (`audra`, `cora`);
+  - dry-run mode with deterministic planned-write manifest;
+  - template substitution preserves unknown vars literally;
+  - atomic writes with rollback on mid-emission failure;
+  - named failures (`GeneratorInputError: ...`).
+- Four-file-lockstep outputs per generated specialist implemented as default emission set:
+  - `state.py`,
+  - `tests/specialists/<name>/test_<name>_state_shape.py`,
+  - `tests/fixtures/specialists/<name>/golden_envelope.json`,
+  - `tests/fixtures/specialists/<name>/golden_return.json`.
+- Option Y cleanup path implemented:
+  - frozen acceptance fixture at `tests/fixtures/specialists/fixture_generated_specialist_for_acceptance_test.py`,
+  - generator regression tests use temp roots; no permanent `app/specialists/toytest` committed.
+- Docs completed for AC-H and AC-I:
+  - populated migration guide Specialist Walkthrough section with Irene example and checklist;
+  - added anti-pattern harvest entry for epic-doc node-name drift.
 
 ### T8 Regression Evidence
 
-_(Migration-suite regression count; ruff clean; import-linter 3/3 KEPT; sandbox-AC PASS; scaffold-conformance framework green on generated toytest.)_
+- `ruff check` on modified story surface: PASS.
+- `lint-imports` report: 3/3 KEPT (including C3 with explicit `_scaffold.graph -> resume_api` allow-list pin).
+- Generator + scaffold suite:
+  - `pytest tests/specialists/generator tests/specialists/_scaffold -q` -> `48 passed`.
+  - anti-flake rerun `x3` -> `48 passed` each run.
+- Scaffold framework spot-check:
+  - `pytest tests/integration/scaffold_conformance/test_scaffold_shape.py tests/specialists/_scaffold/test_scaffold_reference_conforms.py -q` -> `7 passed`.
+- AC-Z collision-prevention evidence:
+  - `pytest --collect-only tests/specialists/ -q` -> `48 tests collected`.
+  - `pytest --collect-only tests/state/ -q` -> `no tests collected`.
+- Dry-run ingestion evidence (AC-C2):
+  - `python -m skills.bmad_create_specialist.scripts.generate --name irene ... --dry-run` exits `0`, prints planned tree, and leaves `app/specialists/irene/` absent.
+- Cache harness carry-forward (AC-J): skip reason updated to point trigger at 2a.2/2a.4; no un-skip in 2a.1.
+- Full-suite attempt:
+  - `python -m pytest -q` was executed and failed during collection on unrelated
+    repo-baseline issues (missing optional deps in current venv and pre-existing
+    manifest/contract collection failures in non-2a.1 suites). These failures are
+    outside Story 2a.1 changed surface; focused 2a.1 suites remain green.
 
 ### G5 Party-Mode Implementation Review
 
-_(Winston / Amelia / Murat / Paige green-lights or riders; adjudication.)_
+- Round completed with Winston / Amelia / Murat / Paige / Mary: `5/5 GREEN-with-riders`.
+- Applied rider clusters in this implementation pass:
+  - architecture hardening (transition constants, reachability check, idempotent terminal nodes),
+  - strict generator error surface + denylist + deterministic dry-run manifest,
+  - expanded test pack (48 specialist/generator tests; >15 floor),
+  - doc/governance updates (walkthrough + anti-pattern harvest).
+- Remaining governance action: keep party-mode consensus cadence at major checkpoint boundaries until story closure is ratified.
 
 ### G6 Layered Code-Review (Blind Hunter / Edge Case Hunter / Acceptance Auditor)
 
-_(Findings triage: APPLY / DEFER / DISMISS per aggressive rubric; four-file-lockstep audit under dual-gate.)_
+- APPLY:
+  - compile-time validation extended to reject unknown model IDs in `model_config_ref` files;
+  - generator `parse_args()` + `GenerationRequest` split for deterministic testability;
+  - atomic rollback path tested with mid-write failure injection.
+- DEFER:
+  - global migration-suite full-run evidence deferred to next checkpoint (scope here focused on Story 2a.1 new surface).
+- DISMISS:
+  - introducing new runtime deps (not required),
+  - speculative extra template vars beyond current 5-var whitelist (deferred per R16).
 
 ### D12 Close Stub
 
-1. **Invariant preservation:** _(FR13 proven statement + any Slab-2a invariant touched.)_
-2. **Anti-pattern harvest:** _(≥1 new entry link.)_
-3. **Migration-guide update:** _(§Specialist Walkthrough populated statement.)_
+1. **Invariant preservation:** FR13 generator-from-skill flow is proven via dry-run ingest path and deterministic emission planning; scaffold contract remains locked to `SCAFFOLD_NODE_IDS`.
+2. **Anti-pattern harvest:** Added `A9. Epic-doc node-name drift from Slab-1-hardened framework` in `docs/dev-guide/specialist-anti-patterns.md`.
+3. **Migration-guide update:** `docs/dev-guide/langgraph-migration-guide.md` §12 Specialist Walkthrough is now populated with 5-step spine, checklist, Irene example, and verification commands.
 
 ### Completion Notes
 
-_(Any flags for next session; deferred-work log entries; cache-hit-rate harness skip carry-forward statement per AC-2a.1-J; Option X vs Option Y choice for toytest cleanup.)_
+- Option Y chosen (fixture-named acceptance anchor), no permanent toytest specialist in production tree.
+- Cache-hit-rate trigger not met at 2a.1; remains deferred to first real LLM `act` body (2a.2 or 2a.4).
+- `--from-skill` denylist now enforces Category D dissolution protocol by default.
+- Story marked `review` pending final reviewer signoff.
+
+### File List
+
+- app/specialists/_scaffold/__init__.py
+- app/specialists/_scaffold/graph.py
+- app/specialists/_scaffold/state.py
+- app/specialists/_scaffold/model_config.yaml
+- app/specialists/_scaffold/expertise/README.md
+- app/manifest/compiler.py
+- skills/bmad-create-specialist/SKILL.md
+- skills/bmad-create-specialist/scripts/__init__.py
+- skills/bmad-create-specialist/scripts/generate.py
+- skills/bmad-create-specialist/templates/*
+- skills/bmad_create_specialist/__init__.py
+- skills/bmad_create_specialist/scripts/__init__.py
+- skills/bmad_create_specialist/scripts/generate.py
+- tests/specialists/generator/*
+- tests/specialists/_scaffold/*
+- tests/fixtures/specialists/_scaffold/*
+- tests/fixtures/specialists/fixture_generated_specialist_for_acceptance_test.py
+- tests/end_to_end/test_cache_hit_rate_baseline.py
+- docs/dev-guide/langgraph-migration-guide.md
+- docs/dev-guide/specialist-anti-patterns.md
+- pyproject.toml
+
+### Change Log
+
+- 2026-04-24: Implemented Story 2a.1 scaffold + generator + tests + documentation pass; status moved to `review`.
 
 ---
 
@@ -543,5 +634,5 @@ _(Any flags for next session; deferred-work log entries; cache-hit-rate harness 
 
 ---
 
-**Status:** ready-for-dev (party-mode-amended 2026-04-24)
+**Status:** review (party-mode-reviewed 2026-04-24)
 **Completion note:** Ultimate context engine analysis completed — comprehensive developer guide created. T1 readiness block explicitly flags Epic-vs-reality drift to prevent re-propagation; framework-source-of-truth is `scaffold_contract.py`, not epic doc text. Governance JSON + severance posture pre-baked. Party-mode green-light on 2026-04-24 with 5/5 GREEN-with-riders verdicts; 6 MUST-FIX + 5 SHOULD-FIX riders applied per operator Option-3 directive (6 SOFT riders deferred to dev-agent T1 discretion).

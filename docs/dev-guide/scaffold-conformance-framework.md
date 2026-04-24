@@ -35,6 +35,10 @@ T1 Readiness flagged the drift; framework won; epic-doc line 555 was retained
 unmodified as live exhibit material with an inline KNOWN-DRIFT marker; story
 closure added anti-pattern catalog entry.
 
+**AC-I' closure note (Story 2a.1):** This section is the standing Slab-2+
+pre-flight template reference. Story 2a.1 dev-story completion verified this
+line item remains present and authoritative for follow-on stories.
+
 ## How specialists register
 
 Per-specialist conformance tests live at

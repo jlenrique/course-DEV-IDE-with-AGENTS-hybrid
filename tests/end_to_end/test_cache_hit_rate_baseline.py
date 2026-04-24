@@ -20,10 +20,8 @@ from app.smoke_test import run_full_smoke
 
 @pytest.mark.skip(
     reason=(
-        "FR54 cache-hit baseline deferred: Slab 1 specialists are passthroughs (no LLM "
-        "calls). Re-enable when the first Slab 2 specialist lands a real LLM call — "
-        "parse LangSmith span metadata for cache-hit status and assert ≥60% on the "
-        "second run across LLM-invoking nodes."
+        "cache-hit-rate harness activates at first real LLM call - see Slab 2 story "
+        "2a.2 (Irene Pass 2) or 2a.4 (Texas) trigger"
     )
 )
 def test_cache_hit_rate_at_least_sixty_percent_on_second_run() -> None:

@@ -87,6 +87,12 @@ even without a burn. Prevents speculative entries.
   silent extension of one story).
 - **Slab-of-discovery:** Slab 1 set-A authoring (2026-04-22 set-level review).
 
+### A9. Epic-doc node-name drift from Slab-1-hardened framework
+
+- **Example:** Epic 2a Story 2a.1 line 555 uses node names `plan/enter_sanctum/load_expertise/reason/act/validate/emit/return/exit_sanctum`; Slab-1-hardened `scaffold_contract.py::SCAFFOLD_NODE_IDS` uses `receive/plan/act/verify/reflect/emit_spans/gate_decision/finalize/handoff`. The sets do not map.
+- **Counter-pattern:** Read `tests/integration/scaffold_conformance/scaffold_contract.py::SCAFFOLD_NODE_IDS` as the authoritative node-name contract and treat epic prose as potentially stale. If drift appears, flag it in T1 readiness and harvest it as an anti-pattern before story close.
+- **Slab-of-discovery:** Slab 2a Story 2a.1.
+
 ## Inherited from primary repo's `dev-agent-anti-patterns.md`
 
 Migration-relevant subset — the full primary-repo catalog at
