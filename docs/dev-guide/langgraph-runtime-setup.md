@@ -1,10 +1,47 @@
-# LangGraph Runtime Setup — Slab 1 Substrate (structural stub)
+# LangGraph Runtime Setup
 
-> **Status:** Slab 1 structural stub. Story 1.7 lands the final prose polish (intro,
-> motivation, full operator setup steps, troubleshooting). This file's purpose at the
-> end of Story 1.1c is to make the **inverted transport-parity matrix** grep-able so
-> downstream stories (1.1d, 3.4, anyone reasoning about FR2) can see the contract at a
-> glance.
+> **Status:** Slab 1 substrate polished at Story 1.7 close. Operator cookbook for the
+> migration's cold-start ramp: clone → venv → uv install → init_postgres → smoke →
+> runtime_server. Transport-parity matrix accurate as of Slab 1 close; the MCP column
+> reflects the 1.1d parity test result (20/20 hot+cold runs at 0% flake).
+
+## Cold-start sequence
+
+Start from a fresh clone of the hybrid repo at branch
+`dev/langchain-langgraph-foundation`. Assumes Python 3.12+ on PATH, native Postgres
+15+ installed per [`local-postgres-setup.md`](local-postgres-setup.md) (no Docker —
+the migration's `project_no_docker` decision is recorded in the operator memory index).
+
+```bash
+git clone --branch dev/langchain-langgraph-foundation <hybrid-repo-url>
+cd course-DEV-IDE-with-AGENTS-hybrid
+
+# Create and populate the venv from the lockfile.
+python -m venv .venv
+.venv/Scripts/python.exe -m pip install --upgrade pip
+.venv/Scripts/python.exe -m pip install -r requirements.lock
+.venv/Scripts/python.exe -m pip install -e .[dev]
+
+# Populate .env from the template; at minimum, DATABASE_URL is required for
+# full smoke + Slab 3+ specialist work. OPENAI_API_KEY is required at Slab 3+
+# specialist invocation; Slab 1 substrate accepts the placeholder sentinel.
+cp .env.example .env
+# Edit .env with your local Postgres credentials + API keys.
+
+# Bootstrap the database (idempotent).
+psql "$DATABASE_URL" -f scripts/dev/init_postgres.sql
+
+# Substrate smoke — byte-equivalent to the 1.1c contract.
+.venv/Scripts/python.exe -m app.smoke_test
+# Expected: smoke ok (nodes=1, payload={...})
+
+# Full 33-node v4.2 manifest smoke — end-to-end §01→§15 through passthrough stubs.
+.venv/Scripts/python.exe -m app.smoke_test --full
+# Expected: smoke ok (full, nodes=33, payload={...})
+
+# Boot the FastAPI runtime server (127.0.0.1-only bind per NFR-S2).
+.venv/Scripts/python.exe -m app.runtime.server
+```
 
 ## Transport Parity Contract — at-a-glance matrix
 
@@ -15,53 +52,81 @@ and **FR2** (compound MCP + FastAPI + CLI substrate). Each cell answers one ques
 
 |                          | FastAPI                | MCP                              | CLI                |
 | ------------------------ | ---------------------- | -------------------------------- | ------------------ |
-| **Code present**         | ✅ 1.1c                | ✅ 1.1c                          | ⏳ Slab 3          |
-| **Smoke test (per-PR)**  | ✅ 1.1c                | — (not per-PR by design)         | ⏳ Slab 3          |
-| **Smoke test (nightly / on-merge)** | — (covered per-PR) | ✅ 1.1d                          | ⏳ Slab 3          |
+| **Code present**         | ✅ 1.1c                | ✅ 1.1c                          | ⏳ Slab 3 Story 3.4 |
+| **Smoke test (per-PR)**  | ✅ 1.1c                | — (not per-PR by design)         | ⏳ Slab 3           |
+| **Smoke test (nightly / on-merge)** | — (covered per-PR) | ✅ 1.1d (20/20 at 0% flake) | ⏳ Slab 3           |
 | **Parity acceptance**    | — (parity is two-transport at M1) | ✅ 1.1d (M1 gate green) | ⏳ Slab 3 (3.4) |
 
-**Reading the matrix:** rows are artifact kinds; columns are transports. A `✅` means the
-artifact is on disk and exercised at the cited story. A `—` means *N/A by design* (with
-the design rationale in the cell). A `⏳` means deliberately deferred to a downstream slab.
+**Reading the matrix:** rows are artifact kinds; columns are transports. A `✅` means
+the artifact is on disk and exercised at the cited story. A `—` means *N/A by design*
+(with the design rationale in the cell). A `⏳` means deliberately deferred to a
+downstream slab.
 
 ## MCP transport — Slab 1 substrate vs production-ready
 
-> **MCP code substrate landed in 1.1c; nightly / on-merge stdio smoke + FastAPI↔MCP
-> byte-equivalent parity assertion landed in 1.1d. Both transports are now M1-substrate
-> for the FR2 compound contract; CLI completes the three-transport claim in Slab 3
-> Story 3.4. The "production-ready" qualifier still depends on Slab 2 specialist
-> migrations exercising real workloads through these transports — Slab 1 closure is
-> substrate, not feature-complete.**
+The MCP code substrate landed in 1.1c; nightly / on-merge stdio smoke + FastAPI↔MCP
+byte-equivalent parity assertion landed in 1.1d. Both transports are M1-substrate for
+the FR2 compound contract; CLI completes the three-transport claim in Slab 3 Story
+3.4. The "production-ready" qualifier still depends on Slab 2 specialist migrations
+exercising real workloads through these transports — Slab 1 closure is substrate,
+not feature-complete.
 
-What landed in 1.1c (this story):
+Origin of the middle-path split (MCP code in Slab 1; MCP smoke in a sibling 1.1d
+story): 2026-04-22 party-mode consensus (5/5 vote). Rationale recorded at
+[`_bmad-output/planning-artifacts/slab1-story-set-A-t1-bundle.md §8`](../../_bmad-output/planning-artifacts/slab1-story-set-A-t1-bundle.md).
 
-- `app/mcp_server/protocol.py` — `MCP_PROTOCOL_VERSION` re-export from the shipped
-  `mcp` SDK (`mcp.types.DEFAULT_NEGOTIATED_VERSION`). Pin lives here so an SDK upgrade
-  cannot silently shift our protocol surface.
-- `app/mcp_server/server.py` — `mcp.server.Server` instance plus `register()` for
-  the `ping` tool.
-- `app/mcp_server/tools/ping.py` — one real `list_tools` / `call_tool` handler pair
-  that invokes the shared `app.runtime.minimal_node`.
-- `app/mcp_server/__main__.py` — `uv run python -m app.mcp_server` boots the server
-  over stdio.
+## Troubleshooting
 
-What 1.1d will add:
+### `docker: command not found`
 
-- A subprocess stdio smoke that drives an actual MCP round-trip against
-  `app.mcp_server.__main__`.
-- A FastAPI↔MCP byte-equivalent parity assertion: invoke `/invoke` and the MCP `ping`
-  tool with the same payload, then assert the response payloads are identical (both
-  go through `app.runtime.minimal_node`).
-- Flakiness budget: > 2% across the first 20 nightly runs reopens 1.1d.
+Not an error — the migration runs Postgres natively. The earlier Story 1.1b Docker
+blocker was resolved by the `project_no_docker` operator decision (see the
+`memory/project_no_docker.md` entry in the operator's Claude memory index). Install
+Postgres 15+ via the platform-native installer per
+[`local-postgres-setup.md`](local-postgres-setup.md).
 
-## Why MCP smoke runs nightly, not per-PR
+### `psql: command not found`
 
-Origin: 2026-04-22 party-mode middle-path consensus on MCP-in-Slab-1 (5/5 vote).
-Rationale and trade-offs are recorded in
-[`_bmad-output/planning-artifacts/slab1-story-set-A-t1-bundle.md` §8](../../_bmad-output/planning-artifacts/slab1-story-set-A-t1-bundle.md#§8-middle-path-consensus-origin-preserve-for-forensic-value).
+`psql` is only required for the one-time `init_postgres.sql` bootstrap step. If it's
+not on PATH, install the Postgres client tools from your distribution or the EDB
+installer. Dev-agent acceptance tests never assume `psql` on PATH — they verify via
+the shipped `psycopg` Python driver and skip-on-unreachable, per the
+`verify-via-shipped-deps` rule captured in the operator's Claude memory
+(`memory/feedback_verify_via_shipped_deps.md`).
 
-## Sections deferred to Story 1.7
+### `DATABASE_URL not set`
 
-1.7 owns the operator-facing prose: Postgres + DATABASE_URL setup, LangSmith project
-naming, recommended `.env` structure, troubleshooting, and the worked-example walkthrough
-that ties the matrix above to a real one-command boot.
+Copy `.env.example` to `.env` and fill in the Postgres credentials. The runtime server,
+checkpointer, and retention-cleanup CLI all read this env var. The substrate smoke
+(`python -m app.smoke_test`) does NOT require `DATABASE_URL` — the stub manifest's
+passthrough smoke path is in-memory only.
+
+### `OPENAI_API_KEY not set`
+
+Slab 1 substrate accepts the placeholder sentinel
+`"sk-substrate-no-real-key-do-not-invoke"`. Slab 3+ specialist work requires a real
+key; `.invoke(...)` calls against the stub will fail loudly until the key is set. See
+`app.models.adapter`.
+
+### `pytest: command not found`
+
+Re-install dev dependencies: `pip install -e .[dev]`. The Slab 1 lockfile does not
+include dev deps by design (runtime lockfile stays minimal). Candidate deferred-inventory
+follow-up: include dev deps in lockfile so `python -m pytest` works from a fresh venv
+without the extra install step.
+
+### Checkpoints not surviving restart
+
+The checkpointer persists to Postgres per FR3; restart survival is FR4. If checkpoints
+are lost across restart, verify `DATABASE_URL` points at the same Postgres instance,
+`init_postgres.sql` completed, and retention cleanup hasn't run with an aggressive
+`retain_failed: false` override (shipped defaults keep failed threads indefinitely).
+
+## Related
+
+- Database bootstrap + retention: [`local-postgres-setup.md`](local-postgres-setup.md)
+- Model cascade resolution: [`model-selection-guide.md`](model-selection-guide.md)
+- LangGraph state idioms: [`langgraph-state-idioms.md`](langgraph-state-idioms.md)
+- Migration guide (standing reference): [`langgraph-migration-guide.md`](langgraph-migration-guide.md)
+- Transport-parity envelope exceptions:
+  [`transport-parity-envelope-exceptions.md`](transport-parity-envelope-exceptions.md)
