@@ -91,13 +91,53 @@ def pytest_configure(config: pytest.Config) -> None:
         "markers",
         "live_api_e2e: marks slower/flakier live end-to-end API tests",
     )
+    config.addinivalue_line(
+        "markers",
+        "llm_live: marks tests that invoke a live LLM (OpenAI) — auto-skipped "
+        "when OPENAI_API_KEY is unset or holds the Slab-1 placeholder sentinel. "
+        "See party-mode round 3 Amelia caveat (2026-04-24).",
+    )
+
+
+# ---------------------------------------------------------------------------
+# LLM-live skip-fixture (Slab 2+ per party-mode round 3 Amelia caveat SP4)
+# ---------------------------------------------------------------------------
+
+_OPENAI_PLACEHOLDER_SENTINEL = "sk-substrate-no-real-key-do-not-invoke"
+
+
+def _openai_key_is_placeholder_or_unset() -> bool:
+    """Return True if OPENAI_API_KEY is unset or equals the Slab 1 placeholder.
+
+    The Slab 1 model-cascade adapter (Story 1.3) passes the placeholder
+    sentinel when the env var is unset so substrate construction succeeds.
+    Real `.invoke(...)` against the placeholder fails with OpenAI's "invalid
+    api key" — a cryptic failure mode that's worse than a clean skip.
+
+    Slab 2+ tests that invoke a live LLM MUST carry `@pytest.mark.llm_live`;
+    this fixture auto-skips them in environments where a real key is absent.
+    """
+    key = os.environ.get("OPENAI_API_KEY", "").strip()
+    return not key or key == _OPENAI_PLACEHOLDER_SENTINEL
+
+
+# (llm_live auto-skip was merged into the primary pytest_collection_modifyitems
+# above in pass 2; a second function definition would silently replace pass 1,
+# losing the live_api deselect behavior.)
 
 
 def pytest_collection_modifyitems(
     config: pytest.Config,
     items: list[pytest.Item],
 ) -> None:
-    """Exclude live API tests from default runs unless explicitly requested."""
+    """Two passes: (1) deselect live_api / live_api_e2e when flags absent;
+    (2) auto-skip llm_live when OPENAI_API_KEY is unset or placeholder.
+
+    Pass (2) was added 2026-04-24 per party-mode round 3 Amelia caveat SP4;
+    see module-level `_openai_key_is_placeholder_or_unset` + `llm_live` marker
+    registration above.
+    """
+    # Pass 1: deselect live_api / live_api_e2e unless explicitly requested
     selected: list[pytest.Item] = []
     deselected: list[pytest.Item] = []
 
@@ -115,6 +155,21 @@ def pytest_collection_modifyitems(
     if deselected:
         config.hook.pytest_deselected(items=deselected)
         items[:] = selected
+
+    # Pass 2: auto-skip llm_live when no real OpenAI key present
+    if _openai_key_is_placeholder_or_unset():
+        skip_marker = pytest.mark.skip(
+            reason=(
+                "OPENAI_API_KEY unset or placeholder "
+                f"({_OPENAI_PLACEHOLDER_SENTINEL!r}) — llm_live tests require "
+                "a real key. See docs/dev-guide/gate-decision-binding-semantics.md "
+                "§LLM-live (party-mode round 3 Amelia caveat, 2026-04-24)."
+            )
+        )
+        for item in items:
+            if "llm_live" in item.keywords:
+                item.add_marker(skip_marker)
+
 
 # ---------------------------------------------------------------------------
 # Register skill scripts with dashed directory names for clean imports

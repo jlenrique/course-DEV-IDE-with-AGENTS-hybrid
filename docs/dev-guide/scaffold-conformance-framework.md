@@ -5,6 +5,36 @@ with the canonical 9-node scaffold. The framework authored at Story 1.7
 validates that each specialist conforms; a non-conforming specialist fails
 the conformance test and blocks the story's close.
 
+> **You-are-here** (Slab 2+ dev-agent reading order at T1):
+> 1. **This doc** — 9-node canonical contract + T1 Readiness Pre-Flight (see §T1 Readiness Pre-Flight below)
+> 2. [`langgraph-state-idioms.md`](langgraph-state-idioms.md) — state-shape idioms (interrupt, Command, Send, reducers)
+> 3. [`model-selection-guide.md`](model-selection-guide.md) — three-level cascade
+> 4. [`specialist-anti-patterns.md`](specialist-anti-patterns.md) — known traps (read before writing ACs)
+>
+> For gate-decision node binding semantics (interrupt vs resume_from_verdict),
+> see [`gate-decision-binding-semantics.md`](gate-decision-binding-semantics.md).
+
+## T1 Readiness Pre-Flight (standing protocol, Slab 2+)
+
+Every Slab 2+ story's T1 Readiness block MUST include an **epic-doc-vs-framework
+cross-check** line item per anti-pattern #3 (architecture-vs-epics drift):
+
+> **Cross-check:** identify the authoritative framework source for any contract
+> referenced in the story's ACs (e.g., `scaffold_contract.py::SCAFFOLD_NODE_IDS`
+> for node names, `app/models/state/` for state shapes, `model_config.yaml` for
+> cascade). Compare against the epic-doc AC text. If drifts exist, flag in T1
+> Readiness, use the framework, and harvest the drift as a
+> [`specialist-anti-patterns.md`](specialist-anti-patterns.md) entry at close.
+
+**Worked example (Story 2a.1, 2026-04-24):** the 2a.1 spec identified that Epic
+2a line 555 used stale node names
+(`plan/enter_sanctum/load_expertise/reason/act/validate/emit/return/exit_sanctum`)
+that did not match `scaffold_contract.py::SCAFFOLD_NODE_IDS`
+(`receive/plan/act/verify/reflect/emit_spans/gate_decision/finalize/handoff`).
+T1 Readiness flagged the drift; framework won; epic-doc line 555 was retained
+unmodified as live exhibit material with an inline KNOWN-DRIFT marker; story
+closure added anti-pattern catalog entry.
+
 ## How specialists register
 
 Per-specialist conformance tests live at

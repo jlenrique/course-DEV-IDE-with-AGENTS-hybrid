@@ -5,6 +5,15 @@ Pydantic state base classes and the bundle §3 LangGraph-state-idioms digest.
 Architecture Amendment E designates this doc as a Slab 1 deliverable; Slab 2+
 specialists reference it at T1 before touching state-schema code.
 
+> **You-are-here** (Slab 2+ dev-agent reading order at T1):
+> 1. [`scaffold-conformance-framework.md`](scaffold-conformance-framework.md) — 9-node canonical contract + T1 pre-flight
+> 2. **This doc** — state-shape idioms (interrupt, Command, Send, reducers)
+> 3. [`model-selection-guide.md`](model-selection-guide.md) — three-level cascade
+> 4. [`specialist-anti-patterns.md`](specialist-anti-patterns.md) — known traps (read before writing ACs)
+>
+> For gate-decision node binding semantics (import-but-not-invoke discipline),
+> see [`gate-decision-binding-semantics.md`](gate-decision-binding-semantics.md).
+
 ## 1. TypedDict vs BaseModel
 
 **Rule:** graph state is **Pydantic `BaseModel`**, not `TypedDict`. PRD mandate;

@@ -195,14 +195,22 @@ at each frozen version (Slab 4 Story 4.5).
 
 ---
 
-## 8. Forward-Port Convergence (PR-R)
+## 8. Forward-Port Convergence (PR-R) — HISTORICAL (see §8.1)
+
+> **⚠️ Status note (2026-04-24):** This section documents the **pre-severance**
+> convergence posture. It is retained for historical reference and for
+> operators re-reading the migration chronology. **Current authoritative
+> policy is §8.1 Upstream Severance below.** Do not apply the convergence
+> checklist below as live governance; post-severance, there is no convergence
+> path to upstream. If a defect surfaces that MIGHT call for upstream pull,
+> see DR-5 in [`decision-records/DR-SLAB-1-CLOSE-2026-04-24.md`](../../_bmad-output/planning-artifacts/decision-records/DR-SLAB-1-CLOSE-2026-04-24.md).
 
 Primary Sprint #1's PR-R Marcus dispatch reshaping landed after the hybrid
 branched. The migration guide carries a forward-port reconciliation checklist
 (originally authored at architecture §8) so that when Slab 3 touches Marcus
 orchestration, the hybrid re-converges on the reshaped dispatch semantics.
 
-**Reconciliation checklist (per architecture §8):**
+**Reconciliation checklist (per architecture §8, historical):**
 
 - [ ] Pydantic-v2 four-file-lockstep applied to PR-R's new models (model +
       validator + tests + golden fixture in same commit)
@@ -213,8 +221,9 @@ orchestration, the hybrid re-converges on the reshaped dispatch semantics.
 - [ ] Receipt-shape sanctum-fingerprint (receipts carry
       `SanctumFingerprint` for NFR-X3 reproducibility)
 
-FR60 forward-port freeze (ACTIVE since Slab 1 Story 1.1a closed). `git merge
-upstream/master` is off-policy; convergence goes through this checklist.
+FR60 forward-port freeze **was** ACTIVE from Slab 1 Story 1.1a closure until
+2026-04-24. **FR60 is now RETIRED** and replaced by the severance clause at
+§8.1 below. Retained here as historical policy record only.
 
 ### 8.1 Upstream Severance (Slab 2+)
 
@@ -291,6 +300,14 @@ Every migration artifact preserves:
 
 ## 10. Frozen-Graph-Version Ceremony
 
+> **⏳ STUB — Slab 4 Story 4.5 completes this section.** Slab 1 shipped the
+> directory structure only (see below). The full ceremony (manifest snapshot
+> byte-capture + dispatch-registry snapshot + compiled-graph SHA-256 digest
+> + ship-time governance ritual) is authored at Slab 4.5. Do NOT implement
+> a ceremony under pre-Slab-4.5 authority; if Slab 2+ work needs to snapshot
+> a graph version, open a 4.5-forward-port story rather than extending this
+> section inline.
+
 Slab 4 Story 4.5 is the forward pointer for the full ceremony. Slab 1
 creates the directory structure only:
 
@@ -307,19 +324,42 @@ Slab 4's ceremony will populate each directory with:
 
 ## 11. Anti-Patterns + Operational Cookbook
 
+> **Section type: INTENTIONAL POINTER.** This section is deliberately
+> pointer-only (not a stub) — the actual catalog and cookbook content lives
+> in the linked standalone docs where it can grow authoritative-in-place.
+> Adding inline content here would duplicate + drift from the pointed-to
+> files. Pattern matches §7 (pointer to `model-selection-guide.md`).
+
 Pointers:
 
 - [`specialist-anti-patterns.md`](specialist-anti-patterns.md) — living catalog
   of anti-patterns (Slab 1 seeded with 3 confirmed + ~5 primary-repo
-  inherited entries)
+  inherited entries; four-field format frozen)
 - [`local-postgres-setup.md`](local-postgres-setup.md) — Postgres bootstrap
   + retention cookbook
 - [`langgraph-runtime-setup.md`](langgraph-runtime-setup.md) — troubleshooting
   section with the two Slab-1-burned blockers (`docker` / `psql` on PATH)
   resolved via the `project_no_docker` + `verify-via-shipped-deps` memory
   entries
+- [`gate-decision-binding-semantics.md`](gate-decision-binding-semantics.md) —
+  Slab 2+ gate_decision node binding convention (import-but-not-invoke
+  until Slab 3 Story 3.3 + LLM-live skip-fixture)
 
 Per-environment troubleshooting lives in `langgraph-runtime-setup.md §Troubleshooting`.
+
+---
+
+## 12. Specialist Walkthrough
+
+> **⏳ STUB — Slab 2 Story 2a.1 populates this section.** At 2a.1 close,
+> this section will carry the cold-start walkthrough (git pull → skill
+> invocation → generated files listing → conformance test run → post-edit
+> checklist + one worked Irene before/after example) per Story 2a.1 AC-H.
+> Until 2a.1 lands, dev agents writing Slab 2 specialist migrations read
+> [`scaffold-conformance-framework.md`](scaffold-conformance-framework.md)
+> + [`langgraph-state-idioms.md`](langgraph-state-idioms.md) +
+> [`gate-decision-binding-semantics.md`](gate-decision-binding-semantics.md)
+> directly.
 
 ---
 
@@ -327,4 +367,5 @@ Per-environment troubleshooting lives in `langgraph-runtime-setup.md §Troublesh
 
 | Version | Date | Changes | Slab |
 |---|---|---|---|
-| v1 | 2026-04-23 | Initial 11-section skeleton authored at Story 1.7 close. | Slab 1 close |
+| v1   | 2026-04-23 | Initial 11-section skeleton authored at Story 1.7 close. | Slab 1 close |
+| v1.1 | 2026-04-24 | Added §8.1 Upstream Severance (replaces FR60 forward-port freeze); STUB markers on §10 + new §12 Specialist Walkthrough placeholder; historical note on §8 + "intentional pointer" designation on §11 + "you-are-here" dev-guide cross-references landing on sibling docs. Party-mode round 3 Paige caveats. | Slab 1 close (rider hardening) |

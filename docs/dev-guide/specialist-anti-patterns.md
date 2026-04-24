@@ -4,9 +4,37 @@ Living catalog of anti-patterns harvested across Slab-1 closure + inherited
 from the primary repo's `docs/dev-guide/dev-agent-anti-patterns.md`. Every
 Slab 2+ story's dev-agent reads this at T1.
 
-**Four-field format** (per Paige 2026-04-22 amendment): each entry must carry
-`name`, `example`, `counter-pattern`, `slab-of-discovery`. Shape frozen —
-entries added in Slab 2+ stories preserve the four fields exactly.
+> **You-are-here** (Slab 2+ dev-agent reading order at T1):
+> 1. [`scaffold-conformance-framework.md`](scaffold-conformance-framework.md) — 9-node canonical contract + T1 pre-flight
+> 2. [`langgraph-state-idioms.md`](langgraph-state-idioms.md) — state-shape idioms (interrupt, Command, Send, reducers)
+> 3. [`model-selection-guide.md`](model-selection-guide.md) — three-level cascade
+> 4. **This catalog** — known traps (read before writing ACs)
+
+## Format (frozen — changes require party-mode consensus)
+
+**Four-field format** (frozen at Paige 2026-04-22 amendment; version-controlled below):
+each entry carries EXACTLY these four fields — `name` / `example` / `counter-pattern` /
+`slab-of-discovery`. No `severity:`, `priority:`, `frequency:`, `owner:`,
+`rationale:` or other supplementary fields. **Adding a field requires party-mode
+consensus + version bump of this format-freeze declaration; it is NOT a dev-agent
+authority change.**
+
+**Exemplar entry** (match this shape exactly when adding a new entry):
+
+```markdown
+### NN. <name>
+
+- **Example:** <concrete instance; cite commit/story/line verbatim>
+- **Counter-pattern:** <what to do instead; cite the authoritative framework/doc/test as source of truth>
+- **Slab of discovery:** <Slab N or story ID>
+```
+
+**Harvest gate** (per Mary round-3 caveat): a new entry requires either
+(a) a documented burn (story-closure note citing the actual defect/cycle
+cost/rework evidence), OR (b) party-mode consensus that the pattern is real
+even without a burn. Prevents speculative entries.
+
+**Format version:** 1 (2026-04-22 initial). Bump on any field-set change.
 
 ## Confirmed Slab-1 entries
 

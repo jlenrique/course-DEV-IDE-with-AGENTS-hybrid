@@ -5,6 +5,15 @@ Three-level model cascade + registry governance per architecture decisions **D2*
 mid-migration bump procedure). Slab 1 landed the selector + registry + adapter; this
 guide documents the resolution order + override flow for specialist authors.
 
+> **You-are-here** (Slab 2+ dev-agent reading order at T1):
+> 1. [`scaffold-conformance-framework.md`](scaffold-conformance-framework.md) — 9-node canonical contract + T1 pre-flight
+> 2. [`langgraph-state-idioms.md`](langgraph-state-idioms.md) — state-shape idioms (interrupt, Command, Send, reducers)
+> 3. **This doc** — three-level cascade
+> 4. [`specialist-anti-patterns.md`](specialist-anti-patterns.md) — known traps (read before writing ACs)
+>
+> For gate-decision node binding semantics, see
+> [`gate-decision-binding-semantics.md`](gate-decision-binding-semantics.md).
+
 ## Cascade order (Level 1 → Level 3)
 
 The `app.models.selector.resolve_model(call_context)` function walks these three
