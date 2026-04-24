@@ -1,6 +1,6 @@
 # Migration Story 2a.1: `bmad-create-specialist` Generator + 9-Node Scaffold Reference
 
-**Status:** review
+**Status:** done (BMAD-CLOSED 2026-04-24 post-review-remediation per commit `2a336df`; consolidated dev-story landing `cc79df5`; regression 303/1/0; D12 close stub recorded)
 **Sprint key:** `migration-2a-1-bmad-create-specialist-generator-and-9-node-scaffold-reference`
 **Epic:** Slab 2a (migration Epic 2a) — **opening story** (first Slab 2 migration story)
 **Milestone anchored:** feeds M2 (17-specialist scaffold + Wondercraft pilot <1 dev-day). First story to land a real LLM-call path → **activates the cache-hit-rate baseline harness** deferred at M1.
