@@ -364,18 +364,34 @@ specialist through `bmad-create-specialist`.
 
 ### 12.2 Invocation
 
+The generator can be invoked via either of two equivalent forms — pick the one that matches your environment. **Both are first-class** per the DR-1 spec-yields-to-code rule (party-mode-ratified 2026-04-24).
+
+**Form A — `uv` runner** (when `uv` is installed and on PATH):
+
 ```bash
-python -m skills.bmad_create_specialist.scripts.generate \
+uv run python -m skills.bmad_create_specialist.scripts.generate \
   --name irene \
   --mcp none \
   --expertise-tier L5-narration-pass-2 \
   --from-skill skills/bmad-agent-content-creator/
 ```
 
-Optional dry-run probe (no writes):
+**Form B — venv-direct** (when `uv` is not on PATH):
 
 ```bash
-python -m skills.bmad_create_specialist.scripts.generate \
+.venv\Scripts\python.exe -m skills.bmad_create_specialist.scripts.generate \
+  --name irene \
+  --mcp none \
+  --expertise-tier L5-narration-pass-2 \
+  --from-skill skills/bmad-agent-content-creator/
+```
+
+(Use `.venv/bin/python -m ...` on POSIX.) Flags match Form A exactly. The dev agent records which form was used in T1 Readiness for grep-able audit; no spec rewrite needed.
+
+Optional dry-run probe (no writes — append `--dry-run` to either form):
+
+```bash
+.venv\Scripts\python.exe -m skills.bmad_create_specialist.scripts.generate \
   --name irene \
   --mcp none \
   --expertise-tier L5-narration-pass-2 \
@@ -401,18 +417,50 @@ tests/integration/scaffold_conformance/test_scaffold_irene.py
 ### 12.4 Manual post-edit checklist (frozen)
 
 1. Set `app/specialists/<name>/model_config.yaml::default_model` to a valid
-   ID from `app/models/registry.py::MODEL_REGISTRY` contract surface
-   (`registry.yaml` entries are the practical source).
+   ID from `app/models/registry.yaml::entries[].model_id` (e.g., `gpt-5.4`,
+   `gpt-5-haiku`, `gpt-5-codex`). Document the tier mapping rationale in inline
+   comments — see [`specialist-anti-patterns.md` A10](./specialist-anti-patterns.md)
+   for the epic-doc-vs-registry drift trap to avoid.
 2. Populate `app/specialists/<name>/expertise/` with domain references and
-   update `expertise/README.md` with an index.
-3. Replace default `act` passthrough body only when the story explicitly
+   update `expertise/README.md` with an index per the
+   [sanctum-reference conventions](./sanctum-reference-conventions.md).
+3. **Add the per-specialist `ignore_imports` row to `pyproject.toml`** for
+   import-linter Contract C3. The generator emits `graph.py` with an import of
+   `resume_from_verdict` for C3 binding stability, but does NOT update
+   `pyproject.toml` automatically. **Required for every Slab-2+ specialist;**
+   without it, `lint-imports` breaks immediately at T2:
+
+   ```toml
+   ignore_imports = [
+       "app.mcp_server.tools.gate_decide -> app.gates.resume_api",
+       "app.specialists._scaffold.graph -> app.gates.resume_api",
+       "app.specialists.<name>.graph -> app.gates.resume_api",  # ← add
+   ]
+   ```
+
+   See [`specialist-anti-patterns.md` A12](./specialist-anti-patterns.md) for the
+   procedural-coupling rationale + the deferred-inventory follow-on that will
+   eventually teach the generator to auto-emit this row.
+4. Replace default `act` passthrough body only when the story explicitly
    requires a real LLM invocation; otherwise keep passthrough intentionally.
-4. Update graph/state reducers only if the specialist introduces custom state
+   When you do replace it, **bound the act-body** to prompt-assembly + LLM
+   dispatch + parse — NO procedural logic in Python (the LLM does the
+   procedural work per the specialist's reference set).
+5. Update graph/state reducers only if the specialist introduces custom state
    fields beyond `SpecialistEnvelope` / `SpecialistReturn`.
 
-### 12.5 Irene worked before/after (act node)
+**Sanctum-state convention** (per [sanctum-reference-conventions.md §3](./sanctum-reference-conventions.md)):
 
-Before (generated scaffold):
+- **Activation epoch** (Story 2a.2 only — empty sanctum for FR54 baseline measurement)
+- **Steady-state epoch** (Story 2a.3 onward — populated-and-locked sanctum)
+
+Operator runs first-breath ceremony BEFORE `bmad-dev-story` opens for steady-state stories; lock for the AC-D 10-invocation cache window.
+
+### 12.5 Irene worked before/after (act node) — real-Irene example, post-2a.2 close
+
+Story 2a.2 was the first **real LLM-invoking specialist migration** + the FR54 cache-hit-rate baseline activation point. The before/after below reflects what actually shipped, not a hypothetical sketch.
+
+**Before** (generator-emitted scaffold — same shape for every Slab-2+ specialist):
 
 ```python
 def _act(state: RunState) -> dict[str, Any]:
@@ -421,18 +469,78 @@ def _act(state: RunState) -> dict[str, Any]:
     return {}
 ```
 
-After (Irene pass-2 wiring):
+**After** (Irene Pass-2 act node, AC-B bounded ~150 LOC ceiling, `_act` itself is 64 LOC; full source at [`app/specialists/irene/graph.py`](../../app/specialists/irene/graph.py)):
 
-```diff
--def _act(state: RunState) -> dict[str, Any]:
--    """Canonical act slot; replace in specialist follow-up stories."""
--    del state
--    return {}
-+def _act(state: RunState) -> dict[str, Any]:
-+    """Irene pass-2 act node: author narration-focused output payload."""
-+    prompt = state.story_states[-1].lesson_plan if state.story_states else ""
-+    return {"story_states": _write_irene_pass2_payload(prompt)}
+```python
+def _act(state: RunState) -> dict[str, Any]:
+    """Pass-2 narration LLM invocation (bounded ~150 LOC across helpers — AC-B + MF4)."""
+    if not state.model_resolution_trail:
+        raise RuntimeError("act node invoked before plan; resolution trail empty")
+    last_entry = state.model_resolution_trail[-1]
+    if last_entry.cache_prefix_hash is None:
+        raise RuntimeError(
+            "act node read trail entry without cache_prefix_hash; expected "
+            "the final cascade resolution from `_plan` ..."
+        )
+    handle = make_chat_model(
+        specialist_id="irene",
+        temperature=state.temperature,
+        tier_request="reasoning",
+        system_prompt_hash=last_entry.cache_prefix_hash or "",
+    )
+    envelope_payload: dict[str, Any] = {}
+    if state.cache_state is not None and state.cache_state.cache_prefix:
+        try:
+            envelope_payload = json.loads(state.cache_state.cache_prefix)
+        except json.JSONDecodeError:
+            envelope_payload = {}
+    system_msg, user_msg = _assemble_pass_2_prompt(envelope_payload)
+    response = handle.chat.invoke(
+        [
+            {"role": "system", "content": system_msg},
+            {"role": "user", "content": user_msg},
+        ]
+    )
+    raw_content = response.content if hasattr(response, "content") else str(response)
+    raw_text = raw_content if isinstance(raw_content, str) else str(raw_content)
+    parsed = _parse_pass_2_response(raw_text)
+    output_blob = json.dumps(
+        {
+            "narration_script": parsed["narration_script"],
+            "segment_manifest_deltas": parsed["segment_manifest_deltas"],
+            "model_id": last_entry.resolved,
+            "usage": getattr(response, "usage_metadata", None),
+        },
+        sort_keys=True,
+        ensure_ascii=True,
+        separators=(",", ":"),
+        default=str,
+    )
+    return {
+        "cache_state": {
+            "cache_prefix": output_blob,
+            "entries_count": (state.cache_state.entries_count + 1)
+            if state.cache_state is not None
+            else 1,
+        },
+    }
 ```
+
+Notable design properties from the Story 2a.2 party-mode rounds (2026-04-24):
+
+- **Helpers in graph.py** — `_read_sanctum_digest`, `_read_pass_2_references`, `_assemble_pass_2_prompt`, `_parse_pass_2_response`. All deterministic; no datetime/UUID/random in prompt body. Sorted by `as_posix()` for cross-platform stability; `json.dumps(..., sort_keys=True, ensure_ascii=True, separators=(",",":"))` for byte-identical envelope payloads (Murat MF3 binding).
+- **Cache-prefix continuity** — `_act` reconstructs the chat handle with `system_prompt_hash=last_entry.cache_prefix_hash` from the `_plan` resolution trail entry. Defensive `RuntimeError` raises if `_plan` did not run, or if the last entry lacks a `cache_prefix_hash` (Winston discriminator-check binding).
+- **Envelope-carrier-hack** — `state.cache_state.cache_prefix` is overloaded as a JSON-encoded payload carrier because RunState has no first-class envelope field at Slab 1. Slab 3 retires this hack via the deferred-inventory follow-on entry "Replace cache_prefix payload-carrier hack with first-class RunState envelope field."
+
+**Where 2a.2 diverged from the hypothetical Irene plan:**
+
+| Area | Hypothetical (pre-2a.2) | Reality (post-2a.2) |
+|---|---|---|
+| Output sink | `state.story_states` append | `state.cache_state.cache_prefix` JSON blob (envelope-carrier-hack receipt) |
+| Prompt assembly | inline string concat | `_assemble_pass_2_prompt()` helper with sorted-keys JSON + sorted file listing |
+| Sanctum read | implicit (assumed populated) | `_read_sanctum_digest()` deterministic empty-or-listed pattern (D2 SYNTHESIS: empty for 2a.2) |
+| Model cascade | `gpt-4.1` per epic | `gpt-5.4` per registry (anti-pattern A10 drift) |
+| Sanctum path | `_bmad/memory/bmad-agent-irene/` per epic | `_bmad/memory/bmad-agent-content-creator/` per BMB convention (anti-pattern A11) |
 
 ### 12.6 Verification commands
 

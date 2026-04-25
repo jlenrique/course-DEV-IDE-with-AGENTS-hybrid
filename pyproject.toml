@@ -107,6 +107,7 @@ forbidden_modules = ["app.gates.resume_api"]
 ignore_imports = [
     "app.mcp_server.tools.gate_decide -> app.gates.resume_api",
     "app.specialists._scaffold.graph -> app.gates.resume_api",
+    "app.specialists.irene.graph -> app.gates.resume_api",
 ]
 
 [build-system]

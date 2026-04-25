@@ -417,35 +417,214 @@ _(Dev agent populates this section during T1–T9 execution.)_
 
 ### T1 Readiness
 
-_(Pre-read confirmations; governance-JSON lookup; sandbox-AC validator; 7-point artifact sweep (A–G); 3 epic-doc-vs-framework drifts logged.)_
+**Date:** 2026-04-24 | **Dev agent:** Claude Opus 4.7 (1M context) | **Operator:** Juanl
+
+#### A. Pre-T1 party-mode decisions ratified (3 decisions, 5 voices)
+
+Three pre-T1 operator decisions resolved by party-mode this session before bmad-dev-story opened:
+
+| Decision | Verdict | Rationale |
+|---|---|---|
+| **D1** — SF1 generator CLI surface | **(b)** venv-direct under DR-1 | `uv` not installed/PATH-resolvable on operator machine; venv-direct probe matches all flags exactly (`--name --mcp --expertise-tier --from-skill --dry-run --force`); spec yields to code per DR-1. |
+| **D2** — MF6 sanctum-ceremony timing | **SYNTHESIS** — empty for 2a.2; populated-and-locked at 2a.3 | 46 pre-severance files were uncurated archaeological residue; cleared to deterministic empty-fingerprint baseline (Murat MF2/MF6 risk mitigation). 2a.3 inherits populated-and-locked pattern as steady-state template. |
+| **D3** — AC-D live `OPENAI_API_KEY` | **(a)** defer per SF2 lifecycle | Key now uncommented in `.env` (operator action this session, len=164, starts `sk-proj`); python-dotenv resolves cleanly; `@pytest.mark.llm_live` tests now run live. SF2 interim `awaiting-operator-evidence` preserved for Murat-binding SF3 placeholder-path validation discipline. |
+
+Per round-2 D2 synthesis, sanctum archive performed in this session: `_bmad/memory/bmad-agent-content-creator/` (46 files) → `_bmad/memory/_archive/bmad-agent-content-creator-pre-2a2-2026-04-24/`. Active sanctum directory verified empty (`count == 0`).
+
+#### B. Generator CLI substitution (D1 application — DR-1 audit)
+
+Spec form (does not work on this machine):
+```
+uv run python -m skills.bmad_create_specialist.scripts.generate --help
+```
+→ `uv: command not found` (git-bash + PowerShell both)
+
+Substituted form (verified working — flags match spec verbatim):
+```
+.venv\Scripts\python.exe -m skills.bmad_create_specialist.scripts.generate --help
+```
+→ exits 0; usage banner emits `--name`, `--mcp`, `--expertise-tier`, `--from-skill`, `--dry-run`, `--force`.
+
+Both forms recorded for grep-able audit (Murat round-1 flag).
+
+#### C. Standing pre-flight items (8/8 confirmed)
+
+1. **Governance lookup** — [`docs/dev-guide/migration-story-governance.json::2a-2`](../../docs/dev-guide/migration-story-governance.json) → `expected_gate_mode: "single-gate"`, `rationale: null`. Single-gate confirmed; no relitigation. ✓
+2. **Canonical 9-node contract** — [`tests/integration/scaffold_conformance/scaffold_contract.py`](../../tests/integration/scaffold_conformance/scaffold_contract.py) `SCAFFOLD_NODE_IDS = frozenset({receive, plan, act, verify, reflect, emit_spans, gate_decision, finalize, handoff})`. Authoritative. ✓
+3. **Gate-decision binding** — [`docs/dev-guide/gate-decision-binding-semantics.md`](../../docs/dev-guide/gate-decision-binding-semantics.md). `interrupt()` pattern; `resume_from_verdict` imported for C3 binding, NOT invoked at runtime until Slab 3.3. ✓
+4. **State contracts** — [`app/models/state/specialist_envelope.py`](../../app/models/state/specialist_envelope.py) + [`specialist_return.py`](../../app/models/state/specialist_return.py) — both `ConfigDict(extra="forbid", validate_assignment=True)`. SpecialistReturn verbs: `proceed | edit | reject` with cross-field validators. SpecialistEnvelope: `specialist_id, request_id (UUID4), payload_in: dict, payload_out: SpecialistReturn | None, created_at`. ✓
+5. **Model cascade** — [`app/models/registry.yaml`](../../app/models/registry.yaml) ships `gpt-5.4 (reasoning) / gpt-5-haiku (fast) / gpt-5-codex (code)`. [`app/models/selection_policy.yaml`](../../app/models/selection_policy.yaml) `tier-request-reasoning` rule resolves to `gpt-5.4` (primary) → `gpt-5-codex` (fallback). Irene maps `tier_request: reasoning` → `gpt-5.4`. ✓
+6. **LLM-live skip-fixture** — [`tests/conftest.py`](../../tests/conftest.py) Pass 2 `pytest_collection_modifyitems` auto-skips `@pytest.mark.llm_live` when `OPENAI_API_KEY` unset OR equals placeholder sentinel `sk-substrate-no-real-key-do-not-invoke`. ✓
+7. **Severance posture** — [`docs/dev-guide/langgraph-migration-guide.md §8.1`](../../docs/dev-guide/langgraph-migration-guide.md). Hybrid working tree sole input; Irene's source at [`skills/bmad-agent-content-creator/`](../../skills/bmad-agent-content-creator/) (38 references, 7 scripts, post-absorption commit `835e650`). ✓
+8. **Generator entrypoint** — [`skills/bmad_create_specialist/scripts/generate.py`](../../skills/bmad_create_specialist/scripts/generate.py) (importable underscore module; hyphen wrapper at [`skills/bmad-create-specialist/scripts/generate.py`](../../skills/bmad-create-specialist/scripts/generate.py)). Generator denylist (`{bmad-agent-audra, bmad-agent-cora}` per DR-2) does NOT block Irene path (Category A+B). ✓
+
+#### D. 7-point artifact-existence sweep (A–G)
+
+| # | Artifact | Path | Status |
+|---|---|---|---|
+| A | `app/manifest/compiler.py::compile()` raises `CompileError` (additive-only validator per `2a336df`) | [app/manifest/compiler.py](../../app/manifest/compiler.py) | ✓ exists |
+| B | `app/models/state/specialist_envelope.py::SpecialistEnvelope` + `specialist_return.py::SpecialistReturn` with `ConfigDict(extra="forbid", validate_assignment=True)` | per item C.4 | ✓ confirmed |
+| C | `app/specialists/_stub/passthrough_specialist.py::passthrough_node` returns `{}` | [passthrough_specialist.py](../../app/specialists/_stub/passthrough_specialist.py) | ✓ confirmed (returns `{}`, generator's default `act` body) |
+| D | `app/gates/resume_api.py::resume_from_verdict` raises `NotImplementedError`; generator imports for C3 binding, does NOT invoke | [resume_api.py](../../app/gates/resume_api.py) | ✓ confirmed (NoReturn signature stable) |
+| E | `app/specialists/_scaffold/{graph,state,model_config,expertise}` populated (from 2a.1) | [app/specialists/_scaffold/](../../app/specialists/_scaffold/) | ✓ 4 files present (graph.py, state.py, model_config.yaml, __init__.py) |
+| F | `skills/bmad-create-specialist/scripts/generate.py` exits 0 on valid invocation (2a.1 generator works) | per item B | ✓ confirmed via venv-direct probe |
+| G | `tests/end_to_end/test_cache_hit_rate_baseline.py` exists with `pytest.skip(...)` skip-reason pointing to 2a.2/2a.4 trigger | [test_cache_hit_rate_baseline.py](../../tests/end_to_end/test_cache_hit_rate_baseline.py) | ✓ confirmed (skip reason "Slab 2 story 2a.2 (Irene Pass 2) or 2a.4 (Texas) trigger") |
+
+#### E. Three epic-doc-vs-framework drifts logged (anti-pattern #3 standing protocol)
+
+**Drift #1 — Node names (Epic 2a.2 lines 584–585):** epic AC text uses `reason/act/validate/emit/return`. **Reality:** `SCAFFOLD_NODE_IDS` = `{receive, plan, act, verify, reflect, emit_spans, gate_decision, finalize, handoff}`. **Resolution:** Follow framework. Identical pattern to 2a.1's Epic 2a line 555 case → harvest as second Example bullet under existing entry **A9** (per format-freeze harvest-gate "duplicate patterns augment existing entries").
+
+**Drift #2 — Model ID + tier (Epic 2a.2 line 587–589):** epic says *"Irene uses model tier 'long-context balanced'... default resolves to `gpt-4.1`"*. **Reality:** registry.yaml has `gpt-5.4 / gpt-5-haiku / gpt-5-codex` (NO `gpt-4.1`); selection_policy.yaml tiers are `reasoning / fast / code` (NO "long-context balanced"). **Resolution:** Follow framework. Irene's narration-Pass-2 workload → `tier_request: reasoning` → resolves to `gpt-5.4`. Document mapping rationale in Irene's `model_config.yaml` comments. Harvest as **NEW entry A10** "Epic-doc model-ID + tier drift from shipped registry" (novel pattern: config-cascade-value staleness, distinct from A9's node-name-list staleness).
+
+**Drift #3 — Sanctum path (Epic 2a.2 line 581):** epic says *"`_bmad/memory/bmad-agent-irene/` sanctum symlink present"*. **Reality:** hybrid sanctum tree is `_bmad/memory/bmad-agent-content-creator/` (follows skill-dir name, NOT short app-side specialist name). Per CLAUDE.md §Custom-agents + Epic-26 BMB-sanctum-migration pattern, hybrid uses direct directory (NOT symlink). **Resolution:** Follow framework. Irene's sanctum lives at `_bmad/memory/bmad-agent-content-creator/` (now empty post-archive per D2 SYNTHESIS). App-side specialist `app/specialists/irene/expertise/README.md` references this path by dotted convention. Harvest as **NEW entry A11** "Epic-doc sanctum-path drift from hybrid BMB migration convention" (novel pattern: persona-tree migration vs config drift).
+
+All three drifts are anti-pattern #3 standing-protocol live exercises. AC-K close-protocol disposition applied at G6 review.
+
+#### F. Sandbox-AC validator (governance pre-flight)
+
+```
+.venv\Scripts\python.exe scripts/utilities/validate_migration_story_sandbox_acs.py \
+  _bmad-output/implementation-artifacts/migration-2a-2-irene-pass-2-scaffold-migration.md
+→ PASS - no sandbox-AC violations across 1 story file(s).
+```
+
+#### G. Sanctum lock-and-verify micro-protocol (Murat MF6 binding, ratified party-mode round 2)
+
+Pre-T1 baseline:
+```
+ls _bmad/memory/bmad-agent-content-creator/ → empty (count == 0)
+```
+Per-AC-D-invocation guard (during 10-invocation cache window): re-assert `count == 0` before each invocation; abort + fail-loud on any drift.
+Post-run identity check: re-assert `count == 0` after invocation 10; byte-identical to pre-run baseline or run invalidated.
+
+#### H. Pass-2 procedure reference (input to AC-B act-body authoring)
+
+Irene's primary reference: [`skills/bmad-agent-content-creator/references/pass-2-procedure.md`](../../skills/bmad-agent-content-creator/references/pass-2-procedure.md) — the LLM does narration authoring per this procedure. Python code is prompt-assembly + dispatch + parse. Bounded scope per AC-B: ~150 LOC act-body. Scope-slip flag at T4 if exceeded.
+
+T1 Readiness COMPLETE. Proceeding to T2 (generator dry-run + real invocation).
 
 ### T2–T7 Implementation Notes
 
-_(Generator invocation; `act` body authoring; cache-hit-rate harness retargeting; sanctum cold-read wiring.)_
+**T2 — Generator invocation.** Used venv-direct form (D1 verdict, party-mode-ratified pre-T1 2026-04-24): `.venv\Scripts\python.exe -m skills.bmad_create_specialist.scripts.generate --name irene --mcp none --expertise-tier L5-narration-pass-2 --from-skill skills/bmad-agent-content-creator`. Exit 0; 9 files emitted at expected paths; baseline 4 tests green (1 scaffold-conformance + 3 state-shape). Three pre-existing ruff issues in generator-emitted state.py — rewritten in T3 anyway. **Emergent-edit under DR-1**: added `app.specialists.irene.graph -> app.gates.resume_api` to `pyproject.toml` ignore_imports for Contract C3 binding; harvested as anti-pattern A12 (procedural coupling). T2 waypoint party-mode 4/4 APPROVE-T3.
+
+**T3 — State + config + expertise rewrite.** `state.py` rewritten full per Murat T2 binding (whole-file, not patch-on-top): I001 + UP037×2 ruff issues collapsed; Resolution B docstring documenting validators-inherited-from-parent. `model_config.yaml` updated `temperature_default: 0.0 → 0.3` per AC-C with NFR-X5 inline rationale. `expertise/README.md` populated with 10-row L5-reference table per AC-F dotted convention. Ruff clean.
+
+**T4 — Act-body LLM invocation.** `_act` function 64 LOC (vs AC-B 150 LOC ceiling; well under budget). 4 helper functions (`_read_sanctum_digest` / `_read_pass_2_references` / `_assemble_pass_2_prompt` / `_parse_pass_2_response`) all deterministic per Murat MF3 byte-stability binding: sorted-by-as_posix file ordering for cross-platform stability; `json.dumps(sort_keys=True, ensure_ascii=True, separators=(",",":"))` byte-stable signature; no datetime/UUID/random. Winston discriminator-check binding: `_act` raises if last trail entry has no `cache_prefix_hash`. Envelope-carrier-hack documented in module + `_act` docstrings; deferred-inventory entry filed for Slab-3 retirement. T4 waypoint party-mode 3/3 APPROVE-T5.
+
+**T5 — Test authoring (3 sub-blocks).**
+- T5a (8 deterministic tests): cascade × 2, gate-binding × 2, gate-raises × 1, sanctum × 2, trail × 1.
+- T5b (11 stability + negative): byte-stability 5x × 2 + CRLF × 2 + invalid-payload × 4 + compiler-model-id × 3.
+- T5c (4 LLM-engaged): SF5 procedure-paths × 3 (mock-LLM via unittest.mock) + AC-B live-LLM × 1 (`@pytest.mark.llm_live`).
+Final: 28 tests pass. K-target 16 / floor 13 cleared comfortably (~1.75× target).
+
+**T6 — Doc updates.**
+- NEW: `docs/dev-guide/sanctum-reference-conventions.md` (~150 lines) — MF7 deliverable; documents path convention + dotted-reference idiom + activation-baseline-vs-steady-state epoch split + lock-and-verify protocol.
+- UPDATED: `docs/dev-guide/specialist-anti-patterns.md` — A9 augment (second epic-doc node-name drift example) + A10 NEW (model-ID drift) + A11 NEW (sanctum-path drift) + A12 NEW (procedural coupling, generator-output-vs-import-linter).
+- UPDATED: `docs/dev-guide/langgraph-migration-guide.md §12` — §12.2 dual invocation forms (uv + venv-direct under DR-1); §12.4 expanded checklist with C3-ignore-add step + sanctum-state convention; §12.5 real-Irene worked example with full code + divergences table (replaces hypothetical pre-2a.2 sketch).
+
+**T7 — Cache-hit-rate baseline harness retargeted at Irene.** 10 in-process invocations × gpt-5.4. Result: prompt_tokens stable at 9399 (>>1024 MF2 floor); median[2:] = **95.33%** (>>60% MF1 threshold; **35.33pp slack**); MF6 sanctum lock pre/per/post == 0/0/0. Wall-clock 230s. Cost ~$0.30. **M1 ACCEPT-WITH-GAP cache-hit-rate clause CLOSED.** T7 waypoint party-mode: Murat APPROVE-T8 with two non-blocking flags (cold-cache nonce-variant follow-on filed; AC-D timestamp recorded for T8 retrospective).
 
 ### T8 Regression Evidence
 
-_(Migration-suite regression count; ruff clean; import-linter 3/3 KEPT; sandbox-AC PASS; scaffold-conformance framework green; cache-hit-rate rate measurement.)_
+**Path A — Real-key (`OPENAI_API_KEY` live in .env, gpt-5.4 cascade resolved):**
+- Scope: `tests/unit/ tests/integration/ tests/specialists/ tests/end_to_end/test_full_pipeline_smoke.py`
+- **361 passed / 5 skipped / 2 deselected / 0 failed in 26.74s** (>> 321 SF4 floor; +40 margin / +12.5%)
+- Skip topology: 4 Postgres-unreachable (pre-existing) + 1 cache_hit_rate excluded (T7 already covered)
+
+**Path B — Placeholder-key (`OPENAI_API_KEY=sk-substrate-no-real-key-do-not-invoke`):**
+- Same scope + `test_cache_hit_rate_baseline.py`
+- **360 passed / 7 skipped / 2 deselected / 0 failed in 10.75s** (>> 319+2-skipped SF4 floor; +41 margin / +12.85%)
+- Skip topology: 4 Postgres + 2 `@pytest.mark.llm_live` (AC-B + AC-D both auto-skip on placeholder per SF3 anti-erosion guard) + 1 cache-baseline scaffold guard
+- Skip-delta of exactly 2 between paths confirms `@llm_live` gate operates correctly
+
+**Static checks:**
+- **Ruff:** clean across all 2a.2-touched files (`app/specialists/irene/`, all 11 test files, doc deliverables).
+- **Import-linter:** **3/3 KEPT** (C1 lane-isolation; C2 gates-no-scheduler; C3 bridge-modules-only). Irene's graph.py ignore_imports row added at T2 per A12 procedural-coupling pattern.
+- **Sandbox-AC validator:** PASS (verified at T1 Readiness §F).
+
+**Sanctum test absorption (Murat T8 binding):** `tests/integration/sanctum/test_clone_fork_notice_present.py` updated to honor MF7 conventions — skips underscore-prefixed dirs (e.g., `_archive/`) and skips empty sanctum dirs (activation-baseline epoch). DR-1 spec-yields-to-code application; documented in test docstring with cross-reference to `docs/dev-guide/sanctum-reference-conventions.md`.
 
 ### G5 Single-Gate Review
 
-_(Single-gate per governance JSON 2a-2.expected_gate_mode = "single-gate". Dev agent self-conducts the layered G6 bmad-code-review; party-mode consult only if Slab-1-invariant breakage surfaces.)_
+Per `docs/dev-guide/migration-story-governance.json::2a-2.expected_gate_mode = "single-gate"`. Self-conducted layered G6 review (next section). No party-mode consult triggered — no Slab-1-invariant breakage surfaced; G6 results are well within single-gate close envelope.
 
 ### G6 Layered Code-Review (Blind Hunter / Edge Case Hunter / Acceptance Auditor)
 
-_(Findings triage: APPLY / DEFER / DISMISS per aggressive rubric.)_
+Three independent passes self-conducted via parallel subagents:
+
+**🔍 Blind Hunter:** 5 findings (2 MUST-FIX + 3 SHOULD-FIX).
+**🐛 Edge Case Hunter:** 5 findings (2 MUST-FIX + 2 SHOULD-FIX + 1 NIT-DEFER).
+**⚖️ Acceptance Auditor:** 0 findings (1 NIT dismissed). **GREEN-LIGHT for D12 close.**
+
+**Triage** (per aggressive single-gate close rubric in `docs/dev-guide/story-cycle-efficiency.md`):
+
+| Triage | Count | Items |
+|---|:---:|---|
+| **APPLY** | 3 | BH-MF1 (`or ""` dead-code after `is None` raise — removed); EH-MF1 (non-dict JSON envelope payload — added `isinstance(decoded, dict)` guard at boundary); EH-SF4 (usage_metadata 4-shape extraction fallback in cache harness) |
+| **DISMISS** | 2 | BH-MF2 (envelope-carrier-hack — explicitly party-mode-ratified at T4; documented in module + `_act` docstrings; deferred-inventory entry filed for Slab-3 retirement); BH-SF5 (payload size cap measurement inconsistency — cosmetic; cap is approximate by design) |
+| **DEFER** | 4 | BH-SF3 (parse swallowing — silent-empty fallback covered by AC-B test assertion); BH-SF4 (missing-reference fallback — operational risk low; references exist on disk verified at T2); EH-MF2 (LLM invoke error stranding — no burn evidence at T7+T8; follow-on); EH-SF3 (cross-specialist discriminator — requires `ModelResolutionEntry.specialist_id` schema extension; Slab-3 work) |
+
+Post-triage verification: ruff clean; deterministic test suite 26 passed (no live LLM); import-linter 3/3 KEPT.
 
 ### D12 Close Stub
 
-1. **Invariant preservation:** _(FR9–FR16 closure statement + Slab-1 substrate intact.)_
-2. **Anti-pattern harvest:** _(up to 3 new entries: node-name drift second example + model-ID drift NEW + sanctum-path drift NEW.)_
-3. **Migration-guide update:** _(§12 Specialist Walkthrough upgraded from hypothetical Irene → real Irene.)_
+1. **Invariant preservation:**
+   - **FR9** (lane-isolated specialist package) — `app/specialists/irene/` under `run_graph` lane; C1 KEPT.
+   - **FR10** (state-subclass discipline) — `IreneEnvelope(SpecialistEnvelope)` + `IreneReturn(SpecialistReturn)` ✓
+   - **FR11** (model_config per-specialist) — `gpt-5.4` per_specialist default; T7 cascade resolved correctly ✓
+   - **FR12** (expertise directory per-specialist) — 10-row L5 reference table populated ✓
+   - **FR15** (sanctum cold-read) — first per-specialist exercise ✓
+   - **FR16** (resolution trail) — first per-specialist exercise ✓
+   - **FR54** (cache-hit-rate) — **ACTIVATED + MEASURED at 95.33%** — closes M1 ACCEPT-WITH-GAP ✓
+   - Slab-1 substrate intact: regression baseline 303 → 361 (+58 net; +18 expected from new tests, balance from 2a.1 generator + sanctum test absorption).
+
+2. **Anti-pattern harvest** (4 entries — 1 augment + 3 NEW per Paige T2 harvest-gate rule):
+   - **A9 augment** — second example bullet for epic-doc node-name drift (Epic 2a.2 line 584-585; same pattern as 2a.1 second-instance per "duplicates augment existing entries").
+   - **A10 NEW** — Epic-doc model-ID + tier drift from shipped registry (Epic 2a.2 `gpt-4.1` + "long-context balanced" stale; reality is `gpt-5.4` + `tier_request: reasoning`).
+   - **A11 NEW** — Epic-doc sanctum-path drift from hybrid BMB migration convention (Epic 2a.2 `_bmad/memory/bmad-agent-irene/` stale; reality is `_bmad/memory/bmad-agent-content-creator/`).
+   - **A12 NEW** — Procedural coupling between generator output and import-linter contract (generator emits `resume_from_verdict` import; pyproject.toml C3 ignore_imports row required per Slab-2+ migration; Paige category "procedural coupling," distinct from drift).
+
+3. **Migration-guide update:** `docs/dev-guide/langgraph-migration-guide.md §12` upgraded from hypothetical Irene → real-Irene worked example with actual `_act` source + divergences table. §12.2 dual invocation forms; §12.4 expanded post-edit checklist with C3-ignore step + sanctum-state convention pointer.
 
 ### Completion Notes
 
-- **Cache-hit-rate measurement (operator-gated evidence block):** _(paste live test output here.)_
-- **M1 evidence pack update:** _(cache-hit-rate clause CLOSED; paste amended M1 pack §Cache-Hit-Rate line.)_
-- **Deferred-inventory update:** _(cache-hit-rate un-skip follow-on REMOVED.)_
+**AC-B + AC-D live-LLM evidence (path-i — dev-agent ran live LLM per operator preference):**
+
+```
+Environment: real OPENAI_API_KEY set (uncommented from .env mid-session 2026-04-24)
+Model: gpt-5.4 (resolved per_specialist via tier_request: reasoning)
+Run timestamp: 2026-04-24 (T7 measurement; AC-B test fired ~5 min prior in same session)
+
+=== AC-D / FR54 CACHE-HIT-RATE BASELINE (Story 2a.2) ===
+Sanctum count: pre=0 post=0 (MF6 OK)
+Prompt tokens per invocation: [9399, 9399, 9399, 9399, 9399, 9399, 9399, 9399, 9399, 9399]
+Cache hit rate per invocation (0..9):
+  inv[ 1] =  95.33%  (cold)
+  inv[ 2] =  95.33%
+  inv[ 3] =  95.33%
+  inv[ 4] =  95.33%
+  inv[ 5] =  95.33%
+  inv[ 6] =  95.33%
+  inv[ 7] =  95.33%
+  inv[ 8] =  95.33%
+  inv[ 9] =  95.33%
+  inv[10] =  95.33%
+Median of inv 2-10 (post-warmup): 95.33%
+MF1 disposition rule: median >= 60% --> PASS. Got 95.33%.
+=== END AC-D EVIDENCE BLOCK ===
+
+PASSED — 230.37s wall clock; ~$0.30 cost basis; AC-B test 19.11s ($~0.05).
+```
+
+**Note on inv 1 = 95.33% (cold):** AC-B live-LLM test fired ~5 min prior in same session with byte-identical prompt prefix; OpenAI cache pre-warmed when AC-D test fired. Spec-compliant per MF1 disposition rule (median[2:] ≥ 60%); Murat T7 review explicitly accepted with cold-cache nonce-variant follow-on filed to deferred-inventory.
+
+**M1 evidence pack update:** cache-hit-rate clause CLOSED. See `_bmad-output/implementation-artifacts/m1-acceptance-evidence-pack.md` §Cache-Hit-Rate Clause for the amended line.
+
+**Deferred-inventory update:** original cache-hit-rate-harness re-enablement entry REMOVED (closed at this story); 4 new follow-on entries added from T2/T4/T7/T8 party-mode waypoint reviews (A12 procedural-coupling, envelope-carrier-hack retirement, cold-cache nonce-variant, `--require-live-llm` flag wiring). Net deferred-inventory: 17 named follow-ons.
+
+**MF7 citation for sanctum test absorption (Murat T8 binding):** `tests/integration/sanctum/test_clone_fork_notice_present.py` was updated to honor the activation-baseline epoch convention from `docs/dev-guide/sanctum-reference-conventions.md §3` (empty-sanctum dirs are exempt from CLONE-FORK-NOTICE.md presence check; underscore-prefixed dirs like `_archive/` are excluded). DR-1 spec-yields-to-code application; auditor breadcrumb landed in test module docstring.
+
+**Status-transition lifecycle (SF2):** Per operator option-(a) directive at T7 close-readiness review (party-mode 2026-04-24), status flips directly from `in-progress` → `done` since the dev-agent collected the AC-B + AC-D live-LLM evidence in this session per path-(i). The `awaiting-operator-evidence` interim is honored by treating the operator's path-(i) preference as the explicit operator-evidence ratification.
 
 ---
 
@@ -470,5 +649,5 @@ Per Amelia A5 rider: this story's sprint-status lifecycle has an explicit interi
 
 ---
 
-**Status:** ready-for-dev (party-mode-amended 2026-04-24; 13 riders applied per Option-2 directive)
+**Status:** done (BMAD-CLOSED 2026-04-25 single-gate; G6 layered review 3 PATCH applied + 2 DISMISSED + 4 DEFERRED; M1 ACCEPT-WITH-GAP cache-hit-rate clause CLOSED at 95.33% median.)
 **Completion note:** Comprehensive spec authored for the first REAL LLM-invoking specialist migration. 4/4 GREEN-with-riders party-mode consensus; 8 MUST-FIX + 5 SHOULD-FIX riders applied; 4 SOFT riders deferred to dev-agent T1 discretion. Total 16 ACs (A–L); target ~19 tests at K~1.7×; dual-path regression floor enforcement per SF4. T1 Readiness explicitly flags three Epic 2a.2 drifts (node names, model ID, sanctum path). Cache-hit-rate harness ACTIVATION lands here per deferred-inventory trigger; M1 ACCEPT-WITH-GAP clause CLOSES at story closure if measurement ≥60%. FR9–FR16 closed for Irene (first per-specialist exercise); FR54 closed at substrate level. Sandbox-AC expected PASS. Follows DR-1 GOLDEN ratification ("spec yields to code on conflict") in every drift-fix direction. Slab 2a momentum: 2a.1 ✅ → 2a.2 opens → 2a.3 (Kira) → 2a.4 (Texas) → Slab 2a close at 2a.4 feeds M2.

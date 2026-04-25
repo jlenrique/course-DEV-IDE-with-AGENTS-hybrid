@@ -90,8 +90,27 @@ even without a burn. Prevents speculative entries.
 ### A9. Epic-doc node-name drift from Slab-1-hardened framework
 
 - **Example:** Epic 2a Story 2a.1 line 555 uses node names `plan/enter_sanctum/load_expertise/reason/act/validate/emit/return/exit_sanctum`; Slab-1-hardened `scaffold_contract.py::SCAFFOLD_NODE_IDS` uses `receive/plan/act/verify/reflect/emit_spans/gate_decision/finalize/handoff`. The sets do not map.
+- **Example (Story 2a.2 second instance):** Epic 2a.2 lines 584–585 use node names `reason/act/validate/emit/return` — same drift pattern, different story. Per Paige harvest-gate rule (party-mode 2026-04-24), duplicate patterns augment existing entries rather than creating new ones.
 - **Counter-pattern:** Read `tests/integration/scaffold_conformance/scaffold_contract.py::SCAFFOLD_NODE_IDS` as the authoritative node-name contract and treat epic prose as potentially stale. If drift appears, flag it in T1 readiness and harvest it as an anti-pattern before story close.
-- **Slab-of-discovery:** Slab 2a Story 2a.1.
+- **Slab-of-discovery:** Slab 2a Story 2a.1; second example confirmed at Story 2a.2.
+
+### A10. Epic-doc model-ID + tier drift from shipped registry
+
+- **Example:** Epic 2a.2 lines 587–589 say "Irene uses model tier 'long-context balanced'... default resolves to `gpt-4.1`". The shipped registry at `app/models/registry.yaml` has entries `gpt-5.4 / gpt-5-haiku / gpt-5-codex` (NO `gpt-4.1`); `app/models/selection_policy.yaml` has tiers `reasoning / fast / code` (NO "long-context balanced"). The drift is config-cascade-value staleness (distinct from A9's node-name-list staleness).
+- **Counter-pattern:** Read `app/models/registry.yaml` + `app/models/selection_policy.yaml` as the authoritative model-cascade contract. Map specialist workloads to the live `tier_request` enum (`reasoning / fast / code`); resolution flows through the cascade. Document the mapping rationale in the specialist's `model_config.yaml` inline comments. Cross-check against `docs/dev-guide/model-selection-guide.md`.
+- **Slab-of-discovery:** Slab 2a Story 2a.2.
+
+### A11. Epic-doc sanctum-path drift from hybrid BMB migration convention
+
+- **Example:** Epic 2a.2 line 581 says "`_bmad/memory/bmad-agent-irene/` sanctum symlink present". The actual hybrid path is `_bmad/memory/bmad-agent-content-creator/` — the convention follows the operator-facing skill-dir name, not the app-side specialist short name. Per CLAUDE.md §Custom-agents and Epic-26 BMB-sanctum-migration, hybrid uses **direct directory** (NOT symlink). The drift is persona-tree-migration staleness (distinct from A9 node names + A10 model IDs).
+- **Counter-pattern:** Read `docs/dev-guide/sanctum-reference-conventions.md §1` as the authoritative path convention. Cross-reference each specialist's `app/specialists/<name>/expertise/README.md` for the dotted-reference idiom. If epic prose names a different sanctum path, follow the framework + harvest the drift.
+- **Slab-of-discovery:** Slab 2a Story 2a.2.
+
+### A12. Procedural coupling: generator output ↔ import-linter contract
+
+- **Example:** The generator at `skills/bmad_create_specialist/scripts/generate.py` validates that emitted `app/specialists/<name>/graph.py` imports `resume_from_verdict` from `app.gates.resume_api` (line 220–223 of generate.py). But the generator does NOT auto-update `pyproject.toml`'s import-linter Contract C3 `ignore_imports` list. Every Slab-2+ specialist migration must MANUALLY add `app.specialists.<name>.graph -> app.gates.resume_api` to the ignore list, or import-linter C3 breaks at T2 lint-imports run. With 13 Slab-2b inheritors queued, this is a 14-instance flakiness vector if any dev agent forgets.
+- **Counter-pattern:** This is **procedural coupling** — different category from drift. Two valid resolutions: (a) status quo with documentation (the operator-facing checklist in `langgraph-migration-guide.md §12.4` names the manual step) until (b) lands; or (b) extend the generator to atomically append the ignore_imports row with a generated-comment marker. Path (b) is filed as a 2a.1 follow-on defect in `_bmad-output/planning-artifacts/deferred-inventory.md` §Named-But-Not-Filed Follow-Ons, blocking Slab-2b.1 TEMPLATE open. Until path (b) lands, the manual step in §12.4 is the canonical countermeasure.
+- **Slab-of-discovery:** Slab 2a Story 2a.2 T2 dev-agent discovery (party-mode 2026-04-24 ratified).
 
 ## Inherited from primary repo's `dev-agent-anti-patterns.md`
 

@@ -6,13 +6,46 @@
 
 ---
 
-## ⚠️ M1 Cache-Hit-Rate Clause — Substrate-Deferred
+## ✅ M1 Cache-Hit-Rate Clause — CLOSED at Story 2a.2 (2026-04-25)
 
-> **The PRD §M1 acceptance bar requires "≥60% cache hit rate on second invocation." Slab 1 ships passthrough specialists (no LLM calls) per Story 1.6 AC-1.6-E; cache-hit-rate measurement is acknowledged-deferred to first Slab 2 specialist landing per 2026-04-22 set-level consensus. Operator decision required: accept-with-gap (open Slab 2 immediately, measure cache rate at first specialist landing) OR block-M1-until-first-Slab-2-specialist-lands.**
+> **CLOSED.** The PRD §M1 acceptance bar ("≥60% cache hit rate on second invocation") was substrate-deferred at Slab 1 close (2026-04-23) because every specialist_id resolved to `passthrough_node` with no LLM invocation. Story 2a.2 (Migrate Irene Pass 2 to 9-Node Scaffold) activated the deferred harness on the first real LLM-invoking specialist migration — **measured 95.33% median cache-hit-rate across invocations 2–10** (35.33pp slack above the 60% threshold), well above the M1 acceptance bar.
 
-Rationale: every specialist_id in the migrated v4.2 manifest (Story 1.6) resolves to `app.specialists._stub.passthrough_specialist.passthrough_node`, which is a pure no-op returning `{}`. No LLM invocation happens; there is nothing to cache. The cache-hit-rate harness is in place at `tests/end_to_end/test_cache_hit_rate_baseline.py` with a documented `pytest.skip(...)` and a re-enablement trigger keyed to the first Slab 2 specialist that lands a real LLM call.
+### Closure evidence (2026-04-25, Story 2a.2 T7)
 
-**Operator: this is the one gap in the M1 evidence pack. Everything else is green.**
+```
+Test: tests/end_to_end/test_cache_hit_rate_baseline.py::test_irene_pass_2_cache_hit_rate_meets_60_percent_median
+Model: gpt-5.4 (resolved per_specialist via tier_request: reasoning)
+Sanctum count: pre=0 post=0 (MF6 lock-and-verify OK)
+Prompt tokens per invocation: [9399, 9399, 9399, 9399, 9399, 9399, 9399, 9399, 9399, 9399]
+Cache hit rate per invocation (0..9):
+  inv[ 1] =  95.33%  (cold — pre-warmed by AC-B test ~5min prior in same session)
+  inv[ 2] =  95.33%
+  inv[ 3] =  95.33%
+  inv[ 4] =  95.33%
+  inv[ 5] =  95.33%
+  inv[ 6] =  95.33%
+  inv[ 7] =  95.33%
+  inv[ 8] =  95.33%
+  inv[ 9] =  95.33%
+  inv[10] =  95.33%
+Median of inv 2-10 (post-warmup): 95.33%
+MF1 disposition rule: median >= 60% --> PASS. Got 95.33%.
+```
+
+**Wall-clock:** 230s for 10 invocations (~23s/invocation). **Cost basis:** ~$0.30 (10 invocations × ~9399 input tokens × gpt-5.4 pricing).
+
+**Properties verified per Story 2a.2 spec:**
+- **MF1** disposition rule (median[2:] ≥ 60%): **95.33%** ✓
+- **MF2** prompt-token floor (≥1024): **9399** ✓ (9.18× headroom)
+- **MF3** byte-stability (σ=0 on prompt_tokens across N=10): ✓
+- **MF5** in-process N=10, single test session: ✓
+- **MF6** sanctum lock-and-verify (pre/per/post == 0): ✓
+
+**Path to closure:** Story 2a.2 (`_bmad-output/implementation-artifacts/migration-2a-2-irene-pass-2-scaffold-migration.md`) — first REAL LLM-invoking specialist migration on the LangChain/LangGraph stack; replaced the passthrough at Irene's `_act` node with a bounded ~150-LOC LLM-invocation body per AC-B; harness retargeted at Irene's `_plan → _act` chain per AC-D; party-mode-ratified at the T7 waypoint review (2026-04-24).
+
+**Follow-on filed for measurement-realism robustness:** cold-cache nonce-variant test (`2a.2-followon-cold-cache-nonce-variant`) — see `_bmad-output/planning-artifacts/deferred-inventory.md` §Named-But-Not-Filed Follow-Ons.
+
+**M1 ACCEPT-WITH-GAP path** is now retired. M1 is fully closed.
 
 ---
 
