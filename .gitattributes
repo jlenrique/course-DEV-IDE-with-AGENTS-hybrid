@@ -5,3 +5,5 @@
 *.{cmd,bat,ps1} text eol=crlf
 
 *.{md,mdc,yml,yaml,json,toml,txt,py,js,mjs,ts,tsx,jsx,css,html,xml} text diff
+_bmad/memory/** text=auto eol=lf
+tests/fixtures/**/*.mp4 binary

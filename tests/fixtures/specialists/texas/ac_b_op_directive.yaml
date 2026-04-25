@@ -1,0 +1,36 @@
+# AC-2a.4-B-OP live retrieval-dispatch directive (operator-gated).
+#
+# This directive is the smallest possible live exercise of Texas's retrieval
+# substrate against a real provider. Customize the `intent` + `provider_hints`
+# to match the provider key you have available (the script defaults to scite).
+#
+# Cost ceiling target: ~$0.02-$0.10 per dispatch. Adjust min_results / date_range
+# to keep API call cost bounded.
+#
+# Schema reference: skills/bmad-agent-texas/references/retrieval-contract.md
+#                   skills/bmad-agent-texas/references/extraction-report-schema.md
+
+run_id: AC-B-OP-2A4-LIVE-001
+bundle_dir: ""  # populated by the helper script via --bundle-dir flag
+course_content_dir: ""  # not used by AC-B-OP
+
+sources:
+  - ref_id: ac-b-op-src-001
+    role: primary
+    # Retrieval-shape directive (since 27-2): natural-language intent + named provider.
+    # If you do not have a SCITE_API_KEY, replace `scite` below with a provider you
+    # have a key for (consult `python skills/bmad-agent-texas/scripts/run_wrangler.py
+    # --list-providers --shape retrieval --status ready` to see what's available).
+    intent: "peer-reviewed studies on sleep hygiene published since 2023"
+    provider_hints:
+      - {provider: "scite", params: {mode: "search"}}
+    acceptance_criteria:
+      mechanical:
+        date_range: ["2023-01-01", "2026-12-31"]
+        min_results: 1
+      provider_scored:
+        authority_tier_min: "peer-reviewed"
+      semantic_deferred: "operator visual sanity check on returned rows"
+    iteration_budget: 1  # single round; AC-B-OP is shape verification, not refinement
+    convergence_required: true
+    cross_validate: false  # single-provider dispatch keeps cost minimal

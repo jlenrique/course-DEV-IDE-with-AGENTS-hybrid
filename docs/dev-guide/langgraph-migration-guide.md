@@ -456,6 +456,8 @@ tests/integration/scaffold_conformance/test_scaffold_irene.py
 
 Operator runs first-breath ceremony BEFORE `bmad-dev-story` opens for steady-state stories; lock for the AC-D 10-invocation cache window.
 
+> **§12.5–§12.7 cover three specialist-shape categories proven across Slab 2a (narration / LLM+tool-dispatch / pure-tool-dispatch). If you migrate a specialist whose act-body shape doesn't fit any of these three, add a §12.x section before proceeding — the categories are extensible, not exhaustive.**
+
 ### 12.5 Irene worked before/after (act node) — real-Irene example, post-2a.2 close
 
 Story 2a.2 was the first **real LLM-invoking specialist migration** + the FR54 cache-hit-rate baseline activation point. The before/after below reflects what actually shipped, not a hypothetical sketch.
@@ -542,14 +544,221 @@ Notable design properties from the Story 2a.2 party-mode rounds (2026-04-24):
 | Model cascade | `gpt-4.1` per epic | `gpt-5.4` per registry (anti-pattern A10 drift) |
 | Sanctum path | `_bmad/memory/bmad-agent-irene/` per epic | `_bmad/memory/bmad-agent-content-creator/` per BMB convention (anti-pattern A11) |
 
-### 12.6 Verification commands
+### 12.6 Kira worked before/after (act node) — real-Kira tool-dispatch example, post-2a.3 close
+
+Where Irene at 2a.2 proved the **pure-LLM act-body** category, Story 2a.3 proves the **tool-dispatch act-body** category — Kira composes a Kling motion-generation instruction package via a single LLM call, then dispatches to the existing `kling-video` skill via a thin mockable wrapper. The 9-node scaffold survives the divergence; the populated-and-locked sanctum epoch is exercised end-to-end; the `motion_asset_path` field on `KiraReturn` is wired so Storyboard B's motion contract continues to work.
+
+**Generator invocation (DR-1 venv-direct form):**
+
+```
+.venv\Scripts\python.exe -m skills.bmad_create_specialist.scripts.generate \
+  --name kira --mcp kling --expertise-tier L4-video-direction \
+  --from-skill skills/bmad-agent-kling
+```
+
+**Generated tree (Codex landing 2026-04-25, post-G6 patches):**
+
+```
+app/specialists/kira/
+├── __init__.py
+├── graph.py                # 9-node StateGraph; _act + 4 helpers + kling_dispatch invocation
+├── kling_dispatch.py       # Thin mockable wrapper around skills/kling-video/scripts/run_motion_generation.py
+├── state.py                # KiraEnvelope + KiraReturn (with motion_asset_path: str | None field)
+├── model_config.yaml       # default_model: gpt-5-haiku; temperature_default: 0.0
+└── expertise/
+    └── README.md           # 6-row dotted reference table
+```
+
+**Key act-body shape (`graph.py::_act`, post-G6 patches):**
+
+```python
+def _act(state: RunState) -> dict[str, Any]:
+    if not state.model_resolution_trail:
+        raise RuntimeError("kira act invoked before plan; resolution trail is empty")
+    last_entry = state.model_resolution_trail[-1]
+    if last_entry.cache_prefix_hash is None:
+        raise RuntimeError("kira act expected final plan resolution entry with cache_prefix_hash")
+    handle = make_chat_model(
+        specialist_id="kira",
+        temperature=state.temperature,
+        tier_request="fast",
+        system_prompt_hash=last_entry.cache_prefix_hash,
+    )
+    envelope_payload: dict[str, Any] = {}
+    if state.cache_state is not None and state.cache_state.cache_prefix:
+        try:
+            decoded = json.loads(state.cache_state.cache_prefix)
+        except json.JSONDecodeError:
+            decoded = None
+        if isinstance(decoded, dict):
+            envelope_payload = decoded
+    system_message, user_message = _assemble_kira_prompt(envelope_payload)
+    response = handle.chat.invoke([
+        {"role": "system", "content": system_message},
+        {"role": "user", "content": user_message},
+    ])
+    raw_text = response.content if isinstance(response.content, str) else str(response.content)
+    llm_payload = _extract_kling_response(raw_text)
+    dispatch_receipt = dispatch_to_kling(
+        kling_prompt=llm_payload["kling_prompt"],
+        model_name=llm_payload["model_name"],
+        mode=llm_payload["mode"],
+        duration=llm_payload["duration"],
+        negative_prompt=llm_payload["negative_prompt"],
+        motion_plan_path=envelope_payload.get("motion_plan_path"),
+        slide_id=envelope_payload.get("slide_id"),
+    )
+    output_blob = json.dumps({
+        "kling_prompt": llm_payload["kling_prompt"],
+        "kling_choices": dispatch_receipt["kling_choices"],
+        "motion_asset_path": dispatch_receipt["motion_asset_path"],
+        "visual_file": envelope_payload.get("visual_file"),  # AC-L: PRESERVED unmutated
+        "model_id": last_entry.resolved,
+        "usage": getattr(response, "usage_metadata", None),
+    }, sort_keys=True, ensure_ascii=True, separators=(",", ":"), default=str)
+    return {"cache_state": {"cache_prefix": output_blob, "entries_count": ...}}
+```
+
+When you migrate the next specialist, expect divergences in **these eight categories**; if your specialist has a divergence outside these categories, that's a signal to update §12 itself.
+
+**Divergences from Irene (2a.2)**
+
+| Aspect | Irene 2a.2 (narration) | Kira 2a.3 (motion-direction) |
+|---|---|---|
+| Act-body category | Pure-LLM authoring | LLM-prompt-composition + tool-dispatch |
+| External call after LLM | NONE — narration script returned directly | `dispatch_to_kling(...)` — mockable wrapper around `skills/kling-video/scripts/run_motion_generation.py` |
+| Model tier | `tier_request: reasoning` → `gpt-5.4` | `tier_request: fast` → `gpt-5-haiku` (cheapest model that meets video-direction need per Kira's cost-aware principle) |
+| Temperature | `0.3` (narration creativity) | `0.0` (structured selection JSON; cache-prefix determinism) |
+| Sanctum epoch | Empty for duration (2a.2 D2 SYNTHESIS) — activation-baseline measurement | **Populated-and-locked** (steady-state from 2a.3 onward; `sanctum_context_cost = steady_state_tokens − baseline_tokens`) |
+| Return shape addition | None (inherits parent `SpecialistReturn`) | `motion_asset_path: str \| None` field added on `KiraReturn` per AC-L Storyboard B |
+| Live dimension | LLM-only | LLM (live-LLM-marked) + Kling API (operator-gated AC-B-OP only; never invoked by dev-agent) |
+| Wrapper module | None | `kling_dispatch.py` — fixture-MP4 short-circuit when `motion_plan_path` or `slide_id` is falsy; live runner load-on-demand otherwise |
+
+**Drifts caught at T1 (anti-pattern #3 standing protocol)**
+
+| Drift | Epic 2a.3 text | Reality | Resolution | Harvest disposition |
+|---|---|---|---|---|
+| Node name "reason node" | line 620 | canonical `plan` per `SCAFFOLD_NODE_IDS` | Follow framework | A9 third example (augment) |
+| Model tier "multimodal" + default `gpt-4o` | lines 619–621 | tiers are `reasoning/fast/code`; registry has `gpt-5.4/5-haiku/5-codex`; Kira maps to `tier_request: fast` → `gpt-5-haiku` | Follow framework | A10 second example (augment) |
+| Sanctum path | NONE — epic correctly references `skills/bmad-agent-kling/` | matches hybrid skill-dir name | No drift | No harvest |
+
+**G6 review patches applied at story close**
+
+- `_act` json.loads wrapped in try/except (Irene-parity regression fix)
+- `_assemble_kira_prompt` json.dumps gained `default=str` for Path/datetime envelope payloads
+- `_read_sanctum_digest` normalizes `\r\n → \n` before hashing (cross-platform cache-prefix determinism)
+- `_extract_kling_response` narrowed `except Exception` to `except json.JSONDecodeError` + non-dict-top-level RuntimeError (production failure paths now testable)
+- `dispatch_to_kling` truthy-guard (`not motion_plan_path or not slide_id`) replaces `is None` check (closes empty-string billing-risk)
+- `expertise/README.md` populated with 6-row dotted reference table; `test_kira_expertise_readme_lists_l4_references` test pin added
+- `test_cache_hit_rate_kira_populated.py` skips on empty/absent sanctum (no vacuous populated-sanctum claim)
+
+**Verification commands:**
+
+```bash
+python -m pytest tests/specialists/kira -q
+python -m pytest tests/integration/scaffold_conformance/test_scaffold_kira.py -q
+python -m pytest tests/end_to_end/test_cache_hit_rate_kira_populated.py -q
+```
+
+### 12.7 Texas worked before/after (act node) — real-Texas pure-tool-dispatch example, post-2a.4 close
+
+Story 2a.4 adds the third and final Slab-2a act-body category: Texas `_act` never calls an LLM. It dispatches to the wrangler runner through a mockable subprocess seam, parses `result.yaml` + `extraction-report.yaml`, classifies the outcome on the `bundle.parsed.*` namespace, and returns canonical bundle metadata in `cache_state.cache_prefix`.
+
+```python
+def _act(state: RunState) -> dict[str, Any]:
+    if not state.model_resolution_trail:
+        raise RuntimeError("texas act invoked before plan; resolution trail is empty")
+    last_entry = state.model_resolution_trail[-1]
+    if last_entry.cache_prefix_hash is None:
+        raise RuntimeError(
+            "texas act expected final plan resolution entry with cache_prefix_hash"
+        )
+    # Fail-loud guard: malformed cache_state.cache_prefix must NOT silently
+    # short-circuit into the dev-mode fixture bundle. Slab-3 retires the
+    # envelope-carrier-hack via a first-class RunState envelope field.
+    envelope_payload = _decode_envelope_payload(state)
+    dispatch_receipt = dispatch_retrieval(
+        directive_path=envelope_payload.get("directive_path"),
+        bundle_dir=envelope_payload.get("bundle_dir"),
+    )
+    bundle_path = dispatch_receipt.get("bundle_dir")
+    if not bundle_path:
+        raise BundleDispatchError(
+            "texas dispatch receipt missing bundle_dir",
+            tag="bundle.parsed.missing-key",
+        )
+    bundle_dir = Path(str(bundle_path))
+    exit_code = int(dispatch_receipt.get("exit_code") or 0)
+    if exit_code == 30:
+        raise BundleDispatchError(
+            "texas wrangler reported hard error (exit 30); bundle not trusted",
+            tag="bundle.parsed.exit-30",
+        )
+    if exit_code not in (0, 10):
+        raise BundleDispatchError(
+            f"texas wrangler returned unexpected exit code {exit_code}",
+            tag="bundle.parsed.unknown-exit",
+        )
+    if exit_code == 10:
+        # Graceful degrade: wrangler ran cleanly but found no results.
+        trail_entry = _new_dispatch_trail_entry(last_entry, tag="bundle.parsed.exit-10")
+        ...  # emit no-results output_blob; append trail_entry; bump entries_count
+    try:
+        parsed = _load_bundle_outputs(bundle_dir)  # raises BundleParseError(tag=...)
+    except BundleParseError as exc:
+        # Mutate trail in-place so two-sided assertion (exception side AND
+        # state side) sees the parse-failure tag — Murat M5 binding.
+        state.model_resolution_trail.append(
+            _new_dispatch_trail_entry(last_entry, tag=exc.tag)
+        )
+        raise
+    trail_entry = _new_dispatch_trail_entry(last_entry, tag=parsed["tag"])
+    output_blob = json.dumps(
+        {
+            "bundle_reference": str(bundle_dir),
+            "status": parsed["status"],
+            "overall_status": parsed["overall_status"],
+            "artifacts": parsed["result"].get("artifacts", []),
+            "report_schema_version": parsed["report"].get("schema_version"),
+            "dispatch_exit_code": exit_code,
+            "model_id": last_entry.resolved,
+        },
+        sort_keys=True,
+        ensure_ascii=True,
+        separators=(",", ":"),
+        default=str,
+    )
+    return {
+        "model_resolution_trail": [*state.model_resolution_trail, trail_entry],
+        "cache_state": {
+            "cache_prefix": output_blob,
+            "entries_count": (
+                state.cache_state.entries_count + 1
+                if state.cache_state is not None
+                else 1
+            ),
+        },
+    }
+```
+
+Texas-specific notes:
+- Model cascade still resolves at `_plan` (`tier_request: fast` -> `gpt-5-haiku`) for FR16 trail consistency, but chat is not invoked.
+- Sanctum exercise is the first real populated-and-locked case (`_bmad/memory/bmad-agent-texas/` lock baseline; 17-file sha256 manifest pinned as a module-level constant).
+- NFR-I5 is pinned with sha256 on `skills/bmad-agent-texas/references/retrieval-contract.md`.
+- Bundle-parse outcomes flow into the resolution trail under the `bundle.parsed.*` namespace (`ok` / `missing-key` / `malformed` / `wrong-type` / `empty` / `exit-10` / `exit-30` / `unknown-exit`). Tests assert two-sidedly: the parser's shape AND the trail tag — see `tests/specialists/texas/test_texas_act_node_dispatch.py` for the parametrize. Operators reading `model_resolution_trail` after a Texas run can distinguish "tool failed" from "tool succeeded with empty result" without inspecting the bundle directly.
+
+### 12.8 Verification commands (Irene + Kira + Texas)
 
 ```bash
 python -m pytest tests/specialists/irene -q
 python -m pytest tests/integration/scaffold_conformance/test_scaffold_irene.py -q
+python -m pytest tests/specialists/kira -q
+python -m pytest tests/integration/scaffold_conformance/test_scaffold_kira.py -q
+python -m pytest tests/specialists/texas tests/agents/bmad-agent-texas tests/contracts/test_texas_row_fungibility.py -q
+python -m pytest tests/integration/scaffold_conformance/test_scaffold_texas.py -q
 ```
 
-### 12.7 Governance notes
+### 12.9 Governance notes
 
 - Generator denylist blocks Category D dissolved skills (`audra`, `cora`).
 - If epic-doc text conflicts with scaffold framework contracts, framework wins
@@ -562,6 +771,14 @@ Cross-references:
 - [`specialist-anti-patterns.md`](specialist-anti-patterns.md)
 - [`model-selection-guide.md`](model-selection-guide.md)
 
+### 12.10 Slab 2a retrospective summary
+
+Slab 2a closed with three specialist categories validated on the same 9-node scaffold: Irene (pure LLM), Kira (LLM + tool dispatch), and Texas (pure tool dispatch). This confirms scaffold survivability across divergent act-body implementations while preserving Slab-1 invariants. The strongest systemic lesson was A12 procedural coupling: three manual `pyproject.toml` C3 ignore-import edits across 2a.2/2a.3/2a.4. Sanctum protocol matured from baseline to steady state: 2a.2 measured empty-sanctum FR54 baseline, 2a.3 carried populated scaffolding with graceful degrade, and 2a.4 executed the first real populated-and-locked integrity check.
+
+**FR54 doesn't generalize to all specialist categories.** Cache-hit-rate is narration-bound — pure-tool-dispatch specialists like Texas have no LLM prefix to cache, so the FR54 measurement category is undefined at the Texas layer (the FR54 substrate is intact and the harness stays gated; it just doesn't fire on pure-tool-dispatch). The pure-tool-dispatch substitute metric per Murat M4 is **`subprocess-dispatch-latency stability`** — the wall-clock distribution from `_act` entry to bundle-parse complete. Baseline at 2a.4 close (placeholder-key path, mocked dispatch wrapper short-circuit, single-machine warm cache): typical `_act` body completes in ≪50 ms (sub-millisecond YAML/JSON parse + dispatch-wrapper fixture short-circuit; no subprocess fork in the placeholder-key path). The live-wire baseline is owed once AC-B-OP reactivates at Slab-3 via the marcus.dispatch.contract forward-port; future Texas changes that regress p95 by >20% trigger a perf-review checkpoint. This metric feeds Slab 2b TEMPLATE design directly.
+
+Section 12 is now structurally complete as a migration reference library for Slab 2b inheritance, with examples for narration, tool-composed motion, and retrieval subprocess dispatch. **For the full retrospective see [`_bmad-output/implementation-artifacts/slab-2a-retrospective.md`](../../_bmad-output/implementation-artifacts/slab-2a-retrospective.md); Slab 2b opens once the A12 generator auto-emit follow-on lands** (the one structural debt Slab 2a chose not to pay down before closing).
+
 ---
 
 ## Changelog
@@ -570,3 +787,4 @@ Cross-references:
 |---|---|---|---|
 | v1   | 2026-04-23 | Initial 11-section skeleton authored at Story 1.7 close. | Slab 1 close |
 | v1.1 | 2026-04-24 | Added §8.1 Upstream Severance (replaces FR60 forward-port freeze); STUB markers on §10 + new §12 Specialist Walkthrough placeholder; historical note on §8 + "intentional pointer" designation on §11 + "you-are-here" dev-guide cross-references landing on sibling docs. Party-mode round 3 Paige caveats. | Slab 1 close (rider hardening) |
+| v1.2 | 2026-04-25 | Added §12.7 Texas pure-tool-dispatch worked example; renumbered §12.7/§12.8 -> §12.8/§12.9; added §12.10 Slab 2a retrospective summary and cross-suite verification command set. | Slab 2a close |

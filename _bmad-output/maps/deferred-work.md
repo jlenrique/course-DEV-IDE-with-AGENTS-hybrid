@@ -2,6 +2,54 @@
 
 - ~~2026-04-02: Build function to save downloaded literal visuals from Gamma into the existing Git site destination. Status: implemented on `dev/storyboarding-feature` with preintegration publish helper, mode-aware fail-closed behavior, URL substitution wiring, and regression/live integration test coverage.~~ **Closed 2026-04-02.**
 
+## Deferred from: code review of migration-2a-4-texas-scaffold-migration (2026-04-25)
+
+Independent G6 layered code-review (`bmad-code-review` skill, three subagents in parallel: Blind Hunter, Edge Case Hunter, Acceptance Auditor) on the Codex-landed Texas implementation. Triaged per aggressive single-gate rubric in [`docs/dev-guide/story-cycle-efficiency.md`](../../docs/dev-guide/story-cycle-efficiency.md): **8 PATCH applied + 9 DEFER + ~20 DISMISS**.
+
+**PATCH applied at G6 close (in-tree):** §12.5 section-level framing sentence (Paige P2); §12.6 sub-section framing sentence in spec-required form (Paige P4); §12.7 worked example matched to real post-G6 code shape; §12.10 Murat M4 latency baseline + retro pointer + Slab 2b kickoff gate; AC-B 7-case parametrize with two-sided `bundle.parsed.*` trail-tag assertion (Murat M1 + M5); AC-B subprocess kwargs pin extended to `text` / `capture_output` / `cwd` (Amelia A1); fail-loud guards on malformed cache_state JSON + non-dict cache_state + missing `bundle_dir` in dispatch receipt + dispatch-exit-30 hard error (Blind HIGH); fixture-bundle BOM strip + `ingestion-evidence.md` PowerShell-escape rewrite; vacuous `fake_dispatch` test fixed to pin envelope thread-through; `__all__` cleaned (private helpers dropped); `slab-2a-retrospective.md` authored.
+
+### Deferred (real, non-blocking, file under existing or new follow-ons)
+
+- **Dispatch wrapper `tests/fixtures/...` runtime-path coupling** [`app/specialists/texas/retrieval_dispatch.py:12-14`] — `DEFAULT_FIXTURE_BUNDLE` references the test fixture tree from production runtime path. Same envelope-carrier-hack class as Kira `kling_dispatch.py`; Slab-3 retirement bundles with the cache_prefix payload-carrier replacement. Until then, the new `_decode_envelope_payload` fail-loud guards (PATCH applied) prevent silent fixture fallback in production.
+- **`_check_provider_key` accepts non-empty string except 3 magic placeholders** [`scripts/utilities/ac_b_op_texas_live_retrieval_evidence.py:_check_provider_key`] — operator-helper polish; AC-B-OP is DEFERRED-PENDING-SLAB-3 anyway, so the helper is uninvokable-on-hybrid-today. Slab-3 reactivation gate per Murat hard caveat is BINDING (live-wire 7-case + two-sided + sha256 re-validate + M4 latency baseline). Fix the gate at reactivation, not now.
+- **AC-B-OP helper returns exit 0 even on non-zero wrangler** [`scripts/utilities/ac_b_op_texas_live_retrieval_evidence.py`] — same Slab-3 reactivation scope as above.
+- **Sanctum lock baseline regeneration script** — 17-file sha256 baseline is hardcoded as `TEXAS_SANCTUM_LOCK_BASELINE` module-level constant (per Amelia A3); operator can regenerate via `find _bmad/memory/bmad-agent-texas -type f -exec sha256sum {} +` per Story §G. A regen script (~30 LOC) would automate this for any future Slab-2 specialist with a populated-and-locked sanctum. Operator-path; not blocking for 2a.4 close.
+- **`SanctumLockViolation` cross-specialist refactor** — 2a.4 introduced `SanctumLockViolation(RuntimeError)` for Texas with named-exception lock-and-verify protocol. Irene/Kira can be retrofitted to share the same protocol via a Slab-2-cross-cutting follow-on. Filed; non-urgent.
+- **Fixture `manifest.json` fake sha256 `"abc"`** [`tests/fixtures/specialists/texas/fixture_bundle/manifest.json`] — minimal valid shape for shape-pin tests; nothing validates artifact-integrity from the manifest yet. If a future test does, this fixture will need a real sha256.
+- **Fixture `extracted.md` declares `expected_min_words: 200` but body is 3 lines** [`tests/fixtures/specialists/texas/fixture_directive.yaml:8` vs `fixture_bundle/extracted.md`] — internal inconsistency; no runner validates min_words today. If runner ever does, fixture needs an extension.
+- **`_gate_decision` post-interrupt code is dead-on-first-pass** [`app/specialists/texas/graph.py:_gate_decision`] — precedent-inherited from Irene/Kira; Slab-3 conditional-edge fix is the architectural remedy applied uniformly across all three specialists (already filed under "Gate-decision conditional-edge fix" carry).
+- **Edge-case sanctum hashing on lone-CR-only or tab-in-filename paths** [`app/specialists/texas/graph.py:_read_sanctum_digest`] — Edge Case Hunter findings on improbable edge cases; current normalization handles `\r\n` → `\n` (the Windows case that actually matters); lone `\r` on macOS-classic and tabs-in-paths are not in the operator's environment. Defer until a real cross-platform regression appears.
+- **Local environment optional-dep hygiene** — `tests/contracts/test_33_*.py` and several `tests/test_*.py` modules error at collection with `ModuleNotFoundError: responses` and pydantic-v2 schema-validation errors during 2a.4 regression. Pre-existing (unrelated to Texas migration). File at Slab 2b open as a one-shot env-restore PR so the migration-suite regression baseline can be quoted with full coverage again.
+
+### Newly named follow-ons
+
+- **Dispatch-wrapper extraction candidate** — `kira/kling_dispatch.py` (LLM+tool category) + `texas/retrieval_dispatch.py` (pure-tool category) are two independent occurrences of the same dispatch-wrapper shape. If 2b.1 (Gary) or 2b.2 surfaces a third occurrence, extract to `_bmad/scaffolds/dispatch_wrapper_template.py`.
+- **`§12 size review** when subsection count exceeds 12** — readability check on `langgraph-migration-guide.md §12`. Currently 10 subsections post-2a.4; flag at 2b mid-slab.
+- **`implementation-artifacts/` directory README/index** — file at Slab 2b open if directory clutter starts to hinder newcomer triage.
+
+## Carries to 2a.4 T1 Readiness (party-mode ratified 2026-04-25)
+
+Three items batched at 2a.3 close to land at 2a.4 T1 (NOT 2a.3-blocking):
+
+1. **[Murat soft-blocker — Slab-2-mandatory]** Promote `_extract_kling_response` parse-branch coverage from DEFER. Add 4 parametrized tests: fenced-JSON, prose-only, double-fence, list-of-blocks. Single highest vacuous-pass risk on the board.
+2. **[Hygiene PR — one-liner]** `.gitattributes`: `* text=auto eol=lf` for `_bmad/memory/**`; `* binary` for `tests/fixtures/**/*.mp4`. Storage-side hygiene complementing P6 runtime-side normalization (defense-in-depth per Murat 2a.2 MF3 binding).
+3. **[Paige doc polish]** Migration-guide §12.6 framing sentence above divergences-from-Irene table ("When you migrate the next specialist, expect divergences in these eight categories...") + §12.7/§12.8 renumber back-reference grep across migration guide + Slab 2a specs (verify no internal refs point at pre-renumber slots).
+
+**Winston spec-vs-implementation drift reconciliation:** `_gate_decision` "routes around" spec language vs implementation-routes-through reality is identical across Irene 2a.2 + Kira 2a.3. The Slab-3 conditional-edge entry below MUST explicitly carry the spec-reconciliation language when Slab-3 stories author.
+
+## Deferred from: code review of migration-2a-3-kira-motion-scaffold-migration (2026-04-25)
+
+- **`cache_state.cache_prefix` overloaded as input + output blob** [`app/specialists/kira/graph.py:174-218`] — pre-existing inherited from 2a.2 envelope-carrier-hack. Slab-3 retirement already tracked in `_bmad-output/planning-artifacts/deferred-inventory.md` "Replace cache_prefix payload-carrier hack with first-class RunState envelope field". 2a.3 surface reinforces urgency.
+- **`_gate_decision` unconditional `interrupt()` on canonical edge chain** [`app/specialists/kira/graph.py:236-240`] — both Irene (2a.2) and Kira (2a.3) ship identical pattern; AC-E "routes-around" was structurally unfulfilled at 2a.2 already. Conditional-edge fix touches Irene + Kira + future specialists; Slab-3 cross-cutting. File a Slab-3 follow-on at next retrospective. **SPEC-RECONCILIATION REQUIRED** (Winston flag, party-mode 2026-04-25): when Slab-3 conditional-edge fix lands, the Slab-2 epic spec language ("routes around `gate_decision` on clean verify") must be reconciled — either spec amends to match implementation OR implementation moves to match spec. Do not ship Slab-3 with the ambiguity unresolved.
+- **`dispatch_to_kling` swallows runner exceptions mid-call; silent-empty `motion_asset_path` when receipt missing both keys** [`app/specialists/kira/kling_dispatch.py:61-77`] — operator-path hardening; AC-B-OP scope only. Wrap `module.run_motion_generation_for_slide(...)` in try/except returning structured-error receipt; surface `status="degraded"` when receipt missing `motion_asset_path` AND `output_path`.
+- **`_load_target_module` no caching, no `sys.modules` registration, no `exec_module` try/except** [`app/specialists/kira/kling_dispatch.py:22-28`] — operator-path hardening. Cache via `_TARGET_MODULE: ModuleType | None` module-level; `sys.modules[name] = module` before `exec_module`; wrap in try/except → `RuntimeError`.
+- **`_act` LLM response `content` shape — list-of-blocks (multimodal AIMessage) handling missing** [`app/specialists/kira/graph.py:185-186`] — LangChain message-shape hardening. Detect `isinstance(content, list)` and join `block.get("text", "")`; current behavior raises clear `RuntimeError` (loud failure OK as default).
+- **`_act` silently coerces non-dict-but-decodable cache_prefix (list, scalar, null) to empty payload — no log, no warning** [`app/specialists/kira/graph.py:174-177`] — paired with envelope-carrier-hack retirement; Slab-3 scope.
+- **`KiraEnvelope._pin_specialist_id` size-cap dump permits NaN/Inf floats** [`app/specialists/kira/state.py:26`] — Slab-2 cross-cutting validator hardening. Add `allow_nan=False` to `json.dumps`; Irene `IreneEnvelope` has identical pattern and should land in lockstep.
+- **`mock_motion.mp4` is 29-byte ASCII text — could lose CRLF stability across Windows checkouts** [`tests/fixtures/specialists/kira/mock_motion.mp4`] — file is acceptable per Auditor §6 verification (no test parses real MP4 bytes); Slab-2-cross-cutting hygiene follow-on: add `* binary` `.gitattributes` entry for `tests/fixtures/specialists/**/*.mp4`.
+- **`_extract_kling_response` parse-branch test coverage — fenced-JSON variants, prose-only, double-fence, list-of-blocks** [`tests/specialists/kira/`] — test-pack expansion; defer as defensive over-engineering for 2a.3 close.
+
+
 ## 33-1 generator discovery deferred findings (2026-04-19)
 
 - Generator creation is required before Story 33-2 can execute its current "rewire existing generator to pipeline-manifest.yaml" scope. Route: propose Story `33-1a` or re-scope `33-2` in party-mode.

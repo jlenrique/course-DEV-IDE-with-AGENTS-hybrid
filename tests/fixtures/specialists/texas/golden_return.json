@@ -1,0 +1,11 @@
+{
+  "specialist_id": "texas",
+  "verb": "proceed",
+  "payload": {
+    "status": "complete"
+  },
+  "bundle_reference": "tests/fixtures/specialists/texas/fixture_bundle",
+  "edit_payload": null,
+  "reject_reason": null,
+  "timestamp": "2026-04-24T00:00:01Z"
+}
