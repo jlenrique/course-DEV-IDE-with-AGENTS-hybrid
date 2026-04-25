@@ -4,19 +4,47 @@
 **Sprint key:** `migration-2a-2-migrate-irene-pass-2-to-9-node-scaffold`
 **Epic:** Slab 2a (migration Epic 2a) — **second Slab 2a story**; opens post-2a.1-BMAD-CLOSED (commit `e14616c`).
 **Milestone anchored:** Feeds M2 (17-specialist scaffold + Wondercraft pilot <1 dev-day). **THIS STORY IS THE CACHE-HIT-RATE HARNESS ACTIVATION POINT** per [`deferred-inventory.md` §Named-Follow-Ons](../planning-artifacts/deferred-inventory.md) trigger — Irene Pass 2 is the first real LLM-invoking specialist to land.
-**Pts:** 3 | **Gate:** single (per `docs/dev-guide/migration-story-governance.json::2a-2`, rationale: null — follows 2a.1 TEMPLATE pattern, no new schema-shape, no new CI contract) | **K-target:** ~1.4×
+**Pts:** 3 | **Gate:** single (per `docs/dev-guide/migration-story-governance.json::2a-2`, rationale: null — follows 2a.1 TEMPLATE pattern, no new schema-shape, no new CI contract) | **K-target:** ~1.7× (raised 2026-04-24 party-mode from 1.4× per Murat M6; target 16 tests / floor 13; procedure-path coverage added)
 
 ---
 
-## Party-Mode Amendment Log (authoring-time)
+## Party-Mode Amendment Log (2026-04-24)
 
-No party-mode round convened at story-author time; authoring rides [DR-1 GOLDEN ratification](../planning-artifacts/decision-records/DR-SLAB-1-CLOSE-2026-04-24.md) (Slab 1 + 2a.1 are immutable-correct substrate; spec yields to code on conflict) + round-3 caveats already landed in Commit B hardening (session 2026-04-24).
+Party-mode green-light round convened 2026-04-24 post-author; 4/4 GREEN-with-riders (Winston / Amelia / Murat / Paige). 13 riders applied below (8 MUST-FIX + 5 SHOULD-FIX; 4 SOFT deferred to dev-agent T1 discretion).
+
+- **MF1** (Winston W1) — AC-D pre-commit disposition rule: median of 2 invocations ≥60% acceptable; single sub-60% no-retry = insufficient evidence
+- **MF2** (Murat M1) — AC-D prompt-token-count ≥1024 pre-check with named `pytest.fail` on sub-threshold
+- **MF3** (Murat M2) — Add `test_irene_prompt_byte_stability_5x.py` preliminary (no-LLM, Windows-subprocess determinism guard)
+- **MF4** (Amelia A2) — AC-B bounds act-body depth: prompt assembly + single LLM call + return envelope; NO procedural narration logic in Python
+- **MF5** (Amelia A3) — AC-D pins OpenAI usage API (`response.usage.prompt_tokens_details.cached_tokens`); in-process N≥10 iterations
+- **MF6** (Murat M5 + Amelia A4) — AC-F sanctum-ceremony policy (empty for story duration; no mid-story mutation); AC-E clarifies gate_decision is structural-binding-only for Pass-2 runtime
+- **MF7** (Paige P2 + P3) — AC-K harvest disposition (node-name augments A9; model-ID + sanctum-path create A10 + A11) + AC-F adds NEW `docs/dev-guide/sanctum-reference-conventions.md`
+- **MF8** (Winston W2 + W3) — Add two negative tests: `test_irene_gate_decision_raises_on_verify_fail` + `test_compiler_rejects_unknown_model_id_when_registry_present`
+- **SF1** (Amelia A1) — T1 Readiness: verify actual generator CLI surface (hyphen vs underscore module-path resolution)
+- **SF2** (Amelia A5) — Declare `awaiting-operator-evidence` interim status before `done`
+- **SF3** (Murat M3) — Add `--require-live-llm` pytest flag to conftest (silent-skip-erosion insurance)
+- **SF4** (Murat M4) — Regression floor enforcement = BOTH ≥315 real-key path AND ≥313+2-skipped placeholder path (Completion Notes evidence + CI both required)
+- **SF5** (Murat M6) — Add parametrized `test_irene_act_node_pass2_procedures.py` (3 mock-LLM procedure paths; 13→16 tests; K 1.4×→1.7×)
+
+SOFT deferred per operator Option-2 directive (dev-agent T1 discretion): Winston W4 (mechanism-vs-voice-quality Dev Notes), Paige P1 (AC-J divergence-callout format), Paige P4 (§12 template/instance structural split), Paige P5 (labeled paste template).
 
 ---
 
 ## T1 Readiness Block
 
 **Before writing any code**, the dev agent reads in order per [`scaffold-conformance-framework.md §T1 Readiness Pre-Flight`](../../docs/dev-guide/scaffold-conformance-framework.md):
+
+### Generator CLI surface verification (SF1)
+
+**[NEW rider SF1]** Before running the generator invocation in AC-A, verify the exact CLI surface against shipped 2a.1:
+
+```bash
+# T1 verification (run both; record which works):
+uv run python -m skills.bmad_create_specialist.scripts.generate --help  # underscore-import path
+uv run python skills/bmad-create-specialist/scripts/generate.py --help  # direct-file path
+```
+
+Record in Dev Agent Record T1 Readiness which invocation form is supported + which flags exist (`--name`, `--mcp`, `--expertise-tier`, `--from-skill`, `--dry-run`, `--force`). If the spec's AC-A invocation fails, use the shipped form + flag the drift as an AC amendment (spec yields to code per DR-1).
 
 ### Standing Pre-Flight items (applies to every Slab 2+ story)
 
@@ -78,11 +106,12 @@ All ACs are dev-agent-executable (sandbox-AC compliant). Cache-hit-rate measurem
 - **When** the dev agent runs `uv run python -m skills.bmad_create_specialist.scripts.generate --name irene --mcp none --expertise-tier L5-narration-pass-2 --from-skill skills/bmad-agent-content-creator/`
 - **Then** `app/specialists/irene/` exists with `__init__.py`, `graph.py`, `state.py`, `model_config.yaml`, `expertise/README.md`; `validate_scaffold("irene", build_irene_graph()).is_conforming is True`; ruff clean; import-linter C1 (lane-isolation) PASS.
 
-### AC-2a.2-B — Irene `act` node wires real LLM (replaces passthrough)
+### AC-2a.2-B — Irene `act` node wires real LLM (replaces passthrough) [MF4 bounded scope]
 
 - **Given** 2a.1's generator emits `act` node defaulting to `passthrough_node` (returns `{}`)
-- **When** the dev agent replaces `app/specialists/irene/graph.py::act_node` body with the real Pass-2 narration-authoring logic (reads input envelope payload with `cluster_plan` + `slide_briefs` + `segment_manifest` draft; invokes LLM via `app.models.adapter.ChatOpenAIAdapter` with `tier_request: reasoning` resolving to `gpt-5.4`; produces narration script + enriched segment_manifest per [`skills/bmad-agent-content-creator/references/pass-2-procedure.md`](../../skills/bmad-agent-content-creator/references/pass-2-procedure.md) contract)
+- **When** the dev agent replaces `app/specialists/irene/graph.py::act_node` body with **a BOUNDED Pass-2 invocation**: (1) assemble prompt from sanctum cold-read + references + envelope payload via deterministic string concatenation (NO dynamic Pydantic-to-JSON serialization in the prompt-builder path — byte-stability matters for cache hit); (2) make a SINGLE LLM call via `app.models.adapter.ChatOpenAIAdapter` with `tier_request: reasoning` resolving to `gpt-5.4`; (3) parse LLM response + return `IreneReturn` with narration script + segment manifest updates. **NO procedural narration logic in Python** — the LLM does the narration authoring per [`skills/bmad-agent-content-creator/references/pass-2-procedure.md`](../../skills/bmad-agent-content-creator/references/pass-2-procedure.md); Irene's Python code is prompt-assembly + dispatch + parse.
 - **Then** invoking `build_irene_graph()` with a realistic `IreneEnvelope` (fixture + real LLM with `OPENAI_API_KEY` set) produces a non-empty `IreneReturn` with a narration script + segment manifest matching 1.2's `SpecialistReturn` shape-pin; `reflect` node self-assesses per pass-2-procedure G4 criteria; `finalize` builds `SpecialistReturn` with `verb="proceed"`; `handoff` returns `Command(goto=<next>, update=...)`. Test tagged `@pytest.mark.llm_live` (auto-skip on placeholder `OPENAI_API_KEY`).
+- **Scope-slip flag:** if act-body implementation exceeds ~150 lines of prompt-assembly + parse logic at T4, dev agent STOPS and raises party-mode re-scope decision (split-to-2a.2a vs re-scope-to-5pt). The 3pt budget holds ONLY under bounded-scope discipline.
 
 ### AC-2a.2-C — Model cascade resolves correctly at Irene's `plan` node
 
@@ -91,27 +120,34 @@ All ACs are dev-agent-executable (sandbox-AC compliant). Cache-hit-rate measurem
 - **Then** resolution trail appends a `ModelResolutionEntry` with `resolved_model_id="gpt-5.4"`, `resolution_level="per-specialist-default"`, and a cache-prefix hash per 1.3; with a runtime `RunState.model_overrides={"irene": "gpt-5-haiku"}` set, resolution returns `gpt-5-haiku` at `resolution_level="per-call-override"`.
 - **Test pin:** `tests/specialists/irene/test_irene_model_cascade.py` — 2 tests (default + override).
 
-### AC-2a.2-D — Cache-hit-rate baseline harness ACTIVATED (FR54)
+### AC-2a.2-D — Cache-hit-rate baseline harness ACTIVATED (FR54) [MF1 + MF2 + MF5 riders]
 
-- **Given** Irene's `act` node invokes LLM with deterministic cache-prefix (`temperature=0.0` for this test; real production uses 0.3)
-- **When** the dev agent un-skips [`tests/end_to_end/test_cache_hit_rate_baseline.py`](../../tests/end_to_end/test_cache_hit_rate_baseline.py) — removing the `pytest.skip(...)` guard; retargets the harness to invoke Irene's scaffold twice with identical envelope input; measures OpenAI prompt-cache hit rate on second invocation via LangSmith trace or OpenAI usage API cache-prefix metric
-- **Then** cache hit rate on second invocation is **≥60%** per PRD §M1 acceptance bar. Test tagged `@pytest.mark.llm_live`. Closes the M1 ACCEPT-WITH-GAP deferred clause ([M1 evidence pack](m1-acceptance-evidence-pack.md) §Cache-Hit-Rate Clause).
-- **If measurement comes in below 60%:** story does NOT close. Dev agent investigates (cache-prefix stability per NFR-I6; model choice; temperature; invocation-path determinism); amendment party-mode round convenes before retry.
-- **Update to M1 evidence pack:** at story close, append "M1 cache-hit-rate gap: CLOSED at Story 2a.2 closure. Measured rate: XX% on second invocation." + link to this story's Completion Notes.
+- **Given** Irene's `act` node invokes LLM with deterministic cache-prefix (`temperature=0.0` for this test; real production uses 0.3). MF3 preliminary (`test_irene_prompt_byte_stability_5x.py`) has passed — byte-identical prompts across 5 in-process iterations.
+- **When** the dev agent un-skips [`tests/end_to_end/test_cache_hit_rate_baseline.py`](../../tests/end_to_end/test_cache_hit_rate_baseline.py) — removing the `pytest.skip(...)` guard; retargets the harness with the following mechanics:
+  1. **Prompt-token floor pre-check (MF2):** before recording cache-hit-rate, assert the assembled prompt has `prompt_tokens >= 1024` per OpenAI usage-metadata; if below threshold, `pytest.fail("prefix below OpenAI cache threshold 1024 tokens; Irene envelope + sanctum cold-read + system message are too short to qualify for provider cache; cannot close M1 ACCEPT-WITH-GAP gap with current envelope size")` — explicit named failure, NOT silent 0% report.
+  2. **In-process N≥10 iterations (MF5):** invoke Irene's scaffold 10 times in-process (NOT subprocess — avoids Windows-subprocess non-determinism risk) with identical envelope input + identical `OPENAI_API_KEY` within a single test session.
+  3. **Cache-metric source (MF5):** read `response.usage.prompt_tokens_details.cached_tokens / response.usage.prompt_tokens` directly from the OpenAI API response — NOT via LangSmith trace parsing (LangSmith span metadata is AC-G's concern, not AC-D's). OpenAI's per-call accounting is the authoritative cache-hit signal.
+  4. **Disposition rule (MF1):** report `median(cache_hit_rate[2:])` — median of invocations 2 through 10 (first invocation is always 0% cache — no prefix exists yet). Story closure acceptance: **median ≥60%** → PASS. Single sub-60% reading within the 9-sample window is acceptable flake; median is the gate. If median <60% → story does NOT close; dev agent investigates (cache-prefix stability, model choice, temperature, invocation-path determinism) + party-mode convenes before retry.
+- **Then** cache hit rate meets the disposition rule. Test tagged `@pytest.mark.llm_live`. Closes the M1 ACCEPT-WITH-GAP deferred clause ([M1 evidence pack](m1-acceptance-evidence-pack.md) §Cache-Hit-Rate Clause).
+- **Update to M1 evidence pack:** at story close, append "M1 cache-hit-rate gap: CLOSED at Story 2a.2 closure. Measurement protocol: 10 in-process invocations, median of invocations 2-10 = XX% (≥60% threshold met); single-sample range: YY%-ZZ%. Authoritative source: OpenAI usage API `prompt_tokens_details.cached_tokens`." + link to this story's Completion Notes.
 
-### AC-2a.2-E — Gate-decision node uses `interrupt()` pattern (post-2a.1)
+### AC-2a.2-E — Gate-decision node binds `interrupt()` pattern (STRUCTURAL only for Pass-2 runtime) [MF6 + Winston W2]
 
-- **Given** 2a.1's generator emits `gate_decision` as interrupt-placeholder per [`gate-decision-binding-semantics.md`](../../docs/dev-guide/gate-decision-binding-semantics.md)
-- **When** the dev agent invokes Irene's graph in a test that routes through `gate_decision` (e.g., post-Pass-2 gate)
-- **Then** the graph PAUSES at `gate_decision` via `interrupt()`; does NOT call `resume_from_verdict` (which would raise `NotImplementedError`); test uses Pattern 1 (pre-populate `OperatorVerdict` in state) OR Pattern 2 (assert `InterruptException` fires) from the binding-semantics doc.
-- **Test pin:** `tests/specialists/irene/test_irene_gate_decision_interrupt.py` — 2 tests (one per pattern).
+- **Given** 2a.1's generator emits `gate_decision` as interrupt-placeholder per [`gate-decision-binding-semantics.md`](../../docs/dev-guide/gate-decision-binding-semantics.md); Irene's Pass-2 workflow is a single-pass narration-authoring task that does NOT cross a HIL gate mid-run (gates are deferred to Slab 3.3 bridge wiring)
+- **When** Irene's graph is constructed
+- **Then** `gate_decision` node is PRESENT in the 9-node scaffold (structural conformance per SCAFFOLD_NODE_IDS frozenset) AND its body binds the `interrupt()` pattern (imports `resume_from_verdict` for Contract C3 stability; does NOT invoke it at runtime); **Irene's edge graph does NOT traverse `gate_decision` during normal Pass-2 runtime** (edges route from `reflect` → `emit_spans` → `finalize` → `handoff` when `verify` passes).
+- **Test pins (3 tests total per MF6 + W2):**
+  1. `tests/specialists/irene/test_irene_gate_decision_binding.py::test_gate_decision_present_and_binds_interrupt` — asserts node-presence + import-level binding to `resume_from_verdict`; does NOT invoke at runtime.
+  2. `tests/specialists/irene/test_irene_gate_decision_binding.py::test_irene_runtime_routes_around_gate_decision_on_clean_verify` — asserts Pass-2 runtime with clean envelope routes from `verify` around `gate_decision` directly to `finalize`.
+  3. **[NEW Winston W2]** `tests/specialists/irene/test_irene_gate_decision_raises_on_verify_fail.py` — asserts that when `verify` deliberately fails (synthetic envelope that triggers G4 rejection), the edge routes through `gate_decision`, which raises `NotImplementedError` (Slab 1 stub body). Confirms wiring without committing to Slab 3.3 semantics; catches silent-fallthrough class of bugs.
 
-### AC-2a.2-F — Sanctum cold-read at `plan` node (FR15 first full exercise)
+### AC-2a.2-F — Sanctum cold-read at `plan` node (FR15 first full exercise) [MF6 + MF7 riders]
 
-- **Given** Irene's sanctum at `_bmad/memory/bmad-agent-content-creator/` (hybrid path — DIFFERENT from epic's stale `bmad-agent-irene/` per drift #3)
+- **Given** Irene's sanctum at `_bmad/memory/bmad-agent-content-creator/` (hybrid path — DIFFERENT from epic's stale `bmad-agent-irene/` per drift #3). **Sanctum-ceremony policy (MF6):** operator sanctum-ceremony for Irene happens BEFORE 2a.2 opens OR sanctum stays EMPTY for the entire story duration. **No mid-story sanctum mutation** — mutation between cache-hit-rate invocations 1 and 10 would change the prefix hash and collapse cache rate to 0%. Story closure Completion Notes records sanctum-population state at close (empty or populated-pre-story).
 - **When** Irene's `plan` node runs `load_expertise` (via `app.models.state.sanctum_fingerprint.SanctumFingerprint.compute(...)`) and D1 cold-read discipline is enforced
-- **Then** sanctum payload includes Irene's L5 references by dotted convention: `pass-2-procedure.md`, `pass-2-authoring-template.md`, `pass-2-grammar-riders-examples.md`, `retrieval-intake-contract.md`, `cluster-narrative-arc-schema.md` (+ others per Irene's `expertise/README.md`); `SanctumFingerprint` deterministic hash is computed per D1 snapshot-size heuristic.
-- **Test pin:** `tests/specialists/irene/test_irene_sanctum_cold_read.py` — 1 test: sanctum fingerprint is deterministic across two reads + L5 refs are present. (At 2a.2, sanctum content may be empty/minimal on hybrid fork point; test asserts fingerprint stability + reference-name shape, not content depth — full content populates at first-breath operator ceremony post-M5.)
+- **Then** sanctum payload includes Irene's L5 references by dotted convention (documented per MF7 — see NEW `docs/dev-guide/sanctum-reference-conventions.md`): `pass-2-procedure.md`, `pass-2-authoring-template.md`, `pass-2-grammar-riders-examples.md`, `retrieval-intake-contract.md`, `cluster-narrative-arc-schema.md` (+ others per Irene's `expertise/README.md`); `SanctumFingerprint` deterministic hash is computed per D1 snapshot-size heuristic; **empty-sanctum case produces a deterministic fingerprint** (sha256 of empty sorted-file-listing) rather than branching on emptiness.
+- **MF7 NEW doc creation:** at 2a.2 authoring, create `docs/dev-guide/sanctum-reference-conventions.md` (~30 lines) documenting: (a) dotted-reference idiom for `expertise/README.md` listing sanctum L-tier references; (b) `_bmad/memory/bmad-agent-<skill-dir-name>/` path convention (hybrid — direct dir, not symlink; follows skill-dir name, not app-side specialist short name); (c) empty-sanctum deterministic-fingerprint semantics; (d) operator sanctum-ceremony timing discipline (before story opens OR empty for duration). This doc is inherited by 2a.3 Kira + 2a.4 Texas so they don't reverse-engineer from Irene's README as folklore.
+- **Test pin:** `tests/specialists/irene/test_irene_sanctum_cold_read.py` — 2 tests: (a) fingerprint deterministic across two reads; (b) reference-name shape matches Irene's `expertise/README.md` dotted list. At 2a.2, sanctum content may be empty/minimal on hybrid fork point; test asserts fingerprint stability + reference-name shape, not content depth — full content populates at first-breath operator ceremony post-M5.
 
 ### AC-2a.2-G — Resolution trail + LangSmith spans (FR16 first full exercise)
 
@@ -142,13 +178,23 @@ All ACs are dev-agent-executable (sandbox-AC compliant). Cache-hit-rate measurem
 - **When** Irene actually migrates at 2a.2, the worked example shifts from hypothetical to real
 - **Then** §12 is updated (a) replacing the hypothetical Irene CLI invocation + file tree with the actual invocation + actual file tree + actual diff snippets from this story's commit; (b) annotating where real-world execution diverged from the 2a.1 plan (expected areas: `act` node LLM invocation body, sanctum path Drift #3, model-ID Drift #2); (c) keeping the 5-step spine + 4-item post-edit sub-checklist intact as the template for 2a.3 Kira + 2a.4 Texas.
 
-### AC-2a.2-K — Close protocol (D12)
+### AC-2a.2-L — Compiler rejects unknown model IDs when registry is present (negative-path guard) [Winston W3]
+
+- **Given** the 2a.1 remediation commit `2a336df` made `_validate_model_ids_in_model_config_refs` ADDITIVE-only — skips when registry absent, skips when config is not parseable SpecialistModelConfig. The positive path (real registry + real config + unknown model_id) should STILL raise.
+- **When** the dev agent adds a negative-path test with a synthetic manifest node referencing a `model_config.yaml` that declares `default_model: "gpt-bogus-9.9"` (not in `app/models/registry.yaml`), AND the registry file IS present at `repo_root`
+- **Then** `compile()` raises `CompileError` naming the unknown model ID + the offending `model_config_ref` path.
+- **Test pin:** `tests/unit/manifest/test_compiler_rejects_unknown_model_id.py` — 1 test. Protects the 2a.1 additive-only fix from regressing into "permissive everywhere."
+
+### AC-2a.2-K — Close protocol (D12) [MF7 harvest disposition clarified]
 
 - **Given** 2a.2 is not a slab-closing story
 - **When** the story closes
 - **Then** the three-line D12 close stub is recorded in Dev Agent Record:
   1. **Invariant preservation:** FR9–FR12 + FR15 + FR16 closed for Irene (per-specialist); FR54 closed at substrate level (first cache-hit-rate measurement on second invocation); Slab-1 substrate intact (regression ≥303 post-close baseline).
-  2. **Anti-pattern harvest:** up to 3 new entries — node-name drift (existing A9 gains second example), model-ID drift NEW, sanctum-path drift NEW. Format per [`specialist-anti-patterns.md`](../../docs/dev-guide/specialist-anti-patterns.md) format-freeze.
+  2. **Anti-pattern harvest (MF7 disposition clarified):** harvest-gate rule from format-freeze header distinguishes "same pattern, new example" from "novel pattern, new entry":
+     - **Node-name drift:** SAME pattern as existing A9 (Epic-doc-vs-Slab-1-hardened-framework for node names). At 2a.2, Epic 2a.2 line 584–585 provides a SECOND concrete example. Action: **augment A9 by appending a second Example bullet under the existing entry** (NOT create a new entry — per format-freeze harvest-gate: "duplicate patterns augment existing entries; novel patterns create new entries").
+     - **Model-ID drift:** DIFFERENT pattern (config-cascade-value staleness vs node-name-list staleness). Epic says `gpt-4.1` / tier `long-context balanced`; registry ships `gpt-5.4/5-haiku/5-codex` + tiers `reasoning/fast/code`. Action: **create new entry A10 "Epic-doc model-ID + tier drift from shipped registry"** in frozen 4-field format.
+     - **Sanctum-path drift:** DIFFERENT pattern (persona-tree migration vs config drift). Epic says `bmad-agent-irene/` + symlink; hybrid uses direct dir `bmad-agent-content-creator/` per BMB-sanctum-migration pattern. Action: **create new entry A11 "Epic-doc sanctum-path drift from hybrid BMB migration convention"**.
   3. **Migration-guide update:** §12 Specialist Walkthrough upgraded to real-Irene worked example per AC-J.
 
 ---
@@ -252,27 +298,46 @@ Dev-time: `@pytest.mark.llm_live` marker already registered in `tests/conftest.p
 
 ## Testing Requirements
 
-### K-target policy: ~1.4× (floor 8 / target 12)
+### K-target policy: ~1.7× (floor 13 / target 16) [SF5 procedure-path coverage added]
 
-Per governance JSON `2a-2` inherits header K~1.4×. Realistic breakdown:
+Per governance JSON `2a-2` header K raised to ~1.7× post-party-mode. Realistic breakdown:
 
-- Schema-shape models introduced: `IreneEnvelope`, `IreneReturn` (2 models, inherited from SpecialistEnvelope/Return); K × 2 = ~3 shape-pin tests (AC-H covers 4 per 1.2 precedent)
+- Schema-shape models introduced: `IreneEnvelope`, `IreneReturn` (2 models); AC-H → 4 shape-pin tests per 1.2 precedent
 - Scaffold conformance: 1 test (AC-I)
-- Model cascade: 2 tests (AC-C)
-- Gate-decision interrupt: 2 tests (AC-E)
-- Sanctum cold-read: 1 test (AC-F)
+- Model cascade: 2 tests (AC-C default + override)
+- Gate-decision binding: 3 tests (AC-E per MF6 — presence-binding + runtime-routes-around + W2 verify-fail-raises)
+- Sanctum cold-read: 2 tests (AC-F per MF7 — fingerprint stability + reference-name shape)
 - Resolution trail: 1 test (AC-G)
+- **MF3 preliminary (NEW):** `test_irene_prompt_byte_stability_5x.py` — no-LLM, invokes Irene's prompt-construction 5 times; asserts byte-identical output (Windows-subprocess non-determinism guard). 1 test.
 - Real LLM act-body invocation: 1 `@pytest.mark.llm_live` test (AC-B)
-- Cache-hit-rate baseline: 1 `@pytest.mark.llm_live` test (AC-D)
-- **Total: ~13 tests.** Floor 8 / target 12 cleared.
+- Cache-hit-rate baseline: 1 `@pytest.mark.llm_live` test (AC-D; per MF1+MF2+MF5 now 10-iteration in-process + token-floor pre-check + OpenAI-usage-API metric)
+- **SF5 procedure-path coverage (NEW):** `tests/specialists/irene/test_irene_act_node_pass2_procedures.py` — parametrized over 3 mock-LLM Pass-2 procedure scenarios (per [`skills/bmad-agent-content-creator/references/pass-2-procedure.md`](../../skills/bmad-agent-content-creator/references/pass-2-procedure.md) planner-mode protocol branches); asserts Irene's scaffold routes each procedure correctly. NOT `@llm_live` — uses `unittest.mock` with canned LLM responses per scenario. 3 tests.
+- **Winston W3 negative compiler test (NEW, AC-L):** `test_compiler_rejects_unknown_model_id.py`. 1 test.
+- **Total: ~19 tests at target.** Floor 13 / target 16 cleared comfortably. Winston W3 + Murat MF3 + MF8 + SF5 additions push coverage above the single-gate floor and catch the risk surfaces flagged in party-mode round.
 
-### Regression floor
+### Regression floor (SF4 dual-path enforcement)
+
+Per Murat M4 rider, story close requires **BOTH paths meet their respective floors** (operator Completion-Notes evidence + CI placeholder both pass):
+
+| Path | Floor at T8 | Enforcement |
+|---|---|---|
+| **Real-key (operator machine)** | ≥ 321 passed / 0 skipped / 0 failed | Operator Completion-Notes paste per AC-D evidence block; `pytest --run-live ...` output verbatim |
+| **Placeholder-key (CI / dev-agent sandbox)** | ≥ 319 passed / 2 skipped (AC-B + AC-D `@llm_live` auto-skipped) / 0 failed | dev-agent T8 regression |
 
 - Pre-2a.2 baseline: 303 passed / 1 skipped / 0 failed (2a.1 BMAD-CLOSE baseline; cache-hit-rate harness = the 1 skipped)
-- Target at 2a.2 T8: **≥315 passed** (303 baseline + ~13 new) / 0 skipped (cache-hit-rate harness un-skipped) / 0 failed — when `OPENAI_API_KEY` is set with a real key. With placeholder key: ≥313 passed / 2 skipped (Irene `@llm_live` + cache-hit-rate `@llm_live`) / 0 failed.
-- Import-linter: 3/3 KEPT
+- 2a.2 adds ~19 new tests (13 dev-agent + 2 `@llm_live` + 3 parametrized mock-LLM + 1 compiler negative = 19); un-skips 1 cache-hit-rate harness; net +18 over baseline.
+- Import-linter: 3/3 KEPT (unchanged — no new contracts at 2a.2 per MF8)
 - Ruff: clean
 - Sandbox-AC validator: PASS
+
+### @llm_live enforcement discipline (SF3 — anti-erosion insurance)
+
+Per Murat M3 rider: add a `--require-live-llm` pytest flag to `tests/conftest.py`. When the flag is passed:
+- Any `@pytest.mark.llm_live` test that is skipped (because `OPENAI_API_KEY` unset or placeholder) FAILS instead of skipping.
+- CI does NOT invoke `--require-live-llm` (no real key); operator-pre-merge hook OR the Completion-Notes paste workflow DOES.
+- Prevents silent-skip erosion: without this flag, by Slab 2b.7 we could have 8-12 `@llm_live` tests that haven't run in 30 days and nobody would notice.
+
+Implementation: one new CLI option + pytest_collection_modifyitems extension in conftest.py. ~20 lines. Tagged with rider-SF3 comment for audit.
 
 ### LLM-live test discipline
 
@@ -392,5 +457,18 @@ _(Findings triage: APPLY / DEFER / DISMISS per aggressive rubric.)_
 
 ---
 
-**Status:** ready-for-dev
-**Completion note:** Comprehensive spec authored for the first REAL LLM-invoking specialist migration. T1 Readiness explicitly flags three Epic 2a.2 drifts (node names, model ID, sanctum path). Cache-hit-rate harness ACTIVATION lands here per deferred-inventory trigger; M1 ACCEPT-WITH-GAP clause CLOSES at story closure if measurement ≥60%. FR9–FR16 closed for Irene (first per-specialist exercise); FR54 closed at substrate level. Sandbox-AC expected PASS. Follows DR-1 GOLDEN ratification ("spec yields to code on conflict") in every drift-fix direction. Slab 2a momentum: 2a.1 ✅ → 2a.2 opens → 2a.3 (Kira) → 2a.4 (Texas) → Slab 2a close at 2a.4 feeds M2.
+## Status-transition discipline (SF2 — interim status declared)
+
+Per Amelia A5 rider: this story's sprint-status lifecycle has an explicit interim `awaiting-operator-evidence` stage between dev-story T9 close and `done` flip:
+
+1. `ready-for-dev` → dev-story opens
+2. `in-progress` → T1–T9 execution
+3. `awaiting-operator-evidence` → dev-agent ACs green (tests pass with placeholder key; `@llm_live` auto-skipped); operator-gated AC-B + AC-D evidence block authored in Completion Notes with explicit command list
+4. `done` → operator runs live-LLM tests, pastes results into Completion Notes with cache-hit-rate ≥60% median (per MF1 disposition rule), M1 evidence pack updated, deferred-inventory cache-hit-rate entry removed
+
+**Do NOT flip to `done` until operator evidence paste lands.** This is the only story in Slab 2a with an explicit awaiting-operator-evidence stage; 2a.3/2a.4 follow the same pattern if/when they introduce new `@llm_live` tests.
+
+---
+
+**Status:** ready-for-dev (party-mode-amended 2026-04-24; 13 riders applied per Option-2 directive)
+**Completion note:** Comprehensive spec authored for the first REAL LLM-invoking specialist migration. 4/4 GREEN-with-riders party-mode consensus; 8 MUST-FIX + 5 SHOULD-FIX riders applied; 4 SOFT riders deferred to dev-agent T1 discretion. Total 16 ACs (A–L); target ~19 tests at K~1.7×; dual-path regression floor enforcement per SF4. T1 Readiness explicitly flags three Epic 2a.2 drifts (node names, model ID, sanctum path). Cache-hit-rate harness ACTIVATION lands here per deferred-inventory trigger; M1 ACCEPT-WITH-GAP clause CLOSES at story closure if measurement ≥60%. FR9–FR16 closed for Irene (first per-specialist exercise); FR54 closed at substrate level. Sandbox-AC expected PASS. Follows DR-1 GOLDEN ratification ("spec yields to code on conflict") in every drift-fix direction. Slab 2a momentum: 2a.1 ✅ → 2a.2 opens → 2a.3 (Kira) → 2a.4 (Texas) → Slab 2a close at 2a.4 feeds M2.
