@@ -1,6 +1,10 @@
 {
   "_comment": "Codified gate-mode designations for LangChain/LangGraph migration stories. Authored 2026-04-22 from the triage pass across the 56-story plan in _bmad-output/planning-artifacts/epics-langchain-langgraph-migration.md. The triage RE-AFFIRMED the existing per-story designations — dual-gate is applied only where a story introduces a schema-shape, CI/compile-time contract, lane/package boundary, load-bearing invariant preservation, or operator-acceptance gate. Every other story is single-gate. Stories 2b.2-2b.14 are explicitly pinned to single-gate here (they follow the 2b.1 TEMPLATE scaffold and should not relitigate gate mode at authoring time). Freezing these designations here means bmad-create-story on a migration story does not need to rederive the gate-mode decision — it reads this file. Additions or demotions require party-mode consensus and a version bump below.",
-  "version": "2026-04-22",
+  "version": "2026-04-25",
+  "_amendment_log": [
+    "2026-04-22 — Initial freeze of 56-story plan (1-1 through 5b-4); 1-1d added via middle-path party-mode consensus on MCP-in-Slab-1.",
+    "2026-04-25 — Story 2a-5 added (Generator auto-emit pyproject.toml C3 ignore_imports row; 2a.1 follow-on defect; ~2pt single-gate; party-mode T2 2026-04-24 ratification per Murat (b)-preferred path / Winston path-2 / Paige A12 procedural-coupling category). Filed as the Slab-2a→2b binding gate per slab-2a-retrospective.md."
+  ],
   "dual_gate_rationale_legend": {
     "schema_shape": "Story introduces a new Pydantic v2 model family with four-file-lockstep (schema + validator + tests + golden fixture).",
     "ci_or_compile_shape": "Story adds or changes a CI/graph-compile-time contract that affects every downstream story.",
@@ -25,6 +29,7 @@
     "2a-2": { "expected_gate_mode": "single-gate", "rationale": null },
     "2a-3": { "expected_gate_mode": "single-gate", "rationale": null },
     "2a-4": { "expected_gate_mode": "single-gate", "rationale": null },
+    "2a-5": { "expected_gate_mode": "single-gate", "rationale": null, "_amendment_note": "Added 2026-04-25 as 2a.1 follow-on defect (A12 procedural-coupling resolution path b). Generator auto-emits pyproject.toml C3 ignore_imports row alongside 9-file specialist tree; eliminates the 14-instance manual-edit flakiness vector across Slab 2b.1-2b.14. ~2pt, K-target ~1.4× (target 6-8 / floor 5). Single-gate justified: defect fix with no schema-shape risk surface, no lane/package boundary, no invariant preservation, no operator-acceptance gate. Party-mode T2 2026-04-24 ratification (Murat (b)-preferred path / Winston path-2 / Paige A12 procedural-coupling category). Slab-2a→2b binding gate per slab-2a-retrospective.md §Slab 2b kickoff readiness checklist hard gate 1." },
 
     "2b-1":  { "expected_gate_mode": "single-gate", "rationale": "TEMPLATE: establishes the per-specialist migration scaffold pattern for 2b.2-2b.14." },
     "2b-2":  { "expected_gate_mode": "single-gate", "rationale": "Follows 2b.1 TEMPLATE; scaffold-conformant specialist migration." },
@@ -76,10 +81,10 @@
     "5b-4": { "expected_gate_mode": "single-gate", "rationale": null }
   },
   "triage_summary": {
-    "total_stories": 57,
-    "single_gate": 42,
+    "total_stories": 58,
+    "single_gate": 43,
     "dual_gate": 15,
     "dual_gate_pct": 26,
-    "note": "26% dual-gate is the projected workload. Dual-gate stories cluster in Slab 1 substrate (4/10 = 40%) and Slab 3 orchestration (3/6 = 50%) — these are expected hot spots. Slab 2b's 17 specialist migrations are 2/17 = 12% dual — reflecting that most specialist work follows the 2b.1 TEMPLATE and is scaffold-conformant. Total grew 56→57 on 2026-04-22 with the addition of Story 1-1d (MCP transport smoke + parity) via party-mode middle-path consensus on MCP-in-Slab-1."
+    "note": "26% dual-gate is the projected workload. Dual-gate stories cluster in Slab 1 substrate (4/10 = 40%) and Slab 3 orchestration (3/6 = 50%) — these are expected hot spots. Slab 2b's 17 specialist migrations are 2/17 = 12% dual — reflecting that most specialist work follows the 2b.1 TEMPLATE and is scaffold-conformant. Total grew 56→57 on 2026-04-22 with the addition of Story 1-1d (MCP transport smoke + parity) via party-mode middle-path consensus on MCP-in-Slab-1; total grew 57→58 on 2026-04-25 with the addition of Story 2a-5 (Generator auto-emit pyproject.toml C3 ignore_imports row; 2a.1 follow-on defect; Slab-2a→2b binding gate)."
   }
 }

@@ -155,3 +155,5 @@ Slab 2a was the proof that the scaffold-conformance framework + generator + sanc
 The pure-tool-dispatch category (Texas) was the surprise: it forced an honest accounting of which Slab-2 invariants actually generalize across categories (FR54 doesn't; the discriminator-check pattern does; the byte-stable digest pattern does). That clarity feeds Slab 2b's 14-specialist tranche directly.
 
 Slab 2b opens once A12 lands.
+
+**2026-04-25 update:** A12 generator auto-emit shipped at Story 2a.5 close. Slab 2b kickoff hard gate 1 satisfied. Slab 2b.1 (Gary TEMPLATE) is now open to author.

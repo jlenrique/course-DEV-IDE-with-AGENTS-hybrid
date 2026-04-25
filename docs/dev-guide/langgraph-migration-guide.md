@@ -424,23 +424,7 @@ tests/integration/scaffold_conformance/test_scaffold_irene.py
 2. Populate `app/specialists/<name>/expertise/` with domain references and
    update `expertise/README.md` with an index per the
    [sanctum-reference conventions](./sanctum-reference-conventions.md).
-3. **Add the per-specialist `ignore_imports` row to `pyproject.toml`** for
-   import-linter Contract C3. The generator emits `graph.py` with an import of
-   `resume_from_verdict` for C3 binding stability, but does NOT update
-   `pyproject.toml` automatically. **Required for every Slab-2+ specialist;**
-   without it, `lint-imports` breaks immediately at T2:
-
-   ```toml
-   ignore_imports = [
-       "app.mcp_server.tools.gate_decide -> app.gates.resume_api",
-       "app.specialists._scaffold.graph -> app.gates.resume_api",
-       "app.specialists.<name>.graph -> app.gates.resume_api",  # ← add
-   ]
-   ```
-
-   See [`specialist-anti-patterns.md` A12](./specialist-anti-patterns.md) for the
-   procedural-coupling rationale + the deferred-inventory follow-on that will
-   eventually teach the generator to auto-emit this row.
+3. **(formerly step 3 — auto-emitted as of Story 2a.5; the generator atomically appends `app.specialists.<name>.graph -> app.gates.resume_api` to `pyproject.toml`'s C3 `ignore_imports` list with a generated comment marker. Idempotent. No manual edit needed.)**
 4. Replace default `act` passthrough body only when the story explicitly
    requires a real LLM invocation; otherwise keep passthrough intentionally.
    When you do replace it, **bound the act-body** to prompt-assembly + LLM
