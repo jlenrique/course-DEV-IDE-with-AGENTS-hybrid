@@ -1,106 +1,125 @@
-# Session Handoff — 2026-04-23 (HYBRID CLONE: Slab 1 Story-Set A Execution — 6 BMAD Closures)
+# Session Handoff — 2026-04-24 (HYBRID CLONE: Slab 1 GOLDEN Ratification + 2a.1 Close + 2a.2 Author)
 
-**Session window (2026-04-22 into 2026-04-23):** Multi-wake-up autonomous session. Operator authorized continuous serial execution ("decide issues or questions with the bmad party mode team's consensus recommendation... do not stop unless impasse"). Session ran unattended through scheduled wake-ups between stories.
+**Session window:** 2026-04-24. Single interactive session.
 **Branch touched:** `dev/langchain-langgraph-foundation` (hybrid clone).
 **Operator:** Juanl.
-**Session mode:** Sprint dev-execution. Author-execute-review-remediate-close cadence at each story per BMAD sprint governance.
+**Session mode:** Mixed — governance + dev-story review remediation + new-story authoring + three party-mode consensus rounds.
+**Commit range:** `9d4a49c` (prior session baseline) → `5dafe82` (this session end). **12 commits.**
+
+---
 
 ## What Was Completed This Session
 
-### Six BMAD closures in one session
+### 1. Upstream severance (final absorption + sever)
 
-Slab 1 substrate went from **1/8 done → 6/8 done**. Commit chain on `dev/langchain-langgraph-foundation`:
+Per Option D severance directive: one-time final absorption of 4 upstream commits that landed post-freeze (Sprint #2 close — Wondercraft new specialist + Texas Notion/Box/Consensus providers + Irene Pass-2 templates + Marcus dispatch-registry), followed by severance of the upstream→hybrid channel.
 
-| SHA | Scope | Pts | Gate |
-| --- | --- | --- | --- |
-| `71cd3a8` | Set-A authoring + governance lockdown (8 specs + governance JSONs + sandbox-AC validator + CLAUDE.md migration section + planning-doc updates) | — | — |
-| `db2ad97` + `5701409` | Story 1.1c — FastAPI runtime + smoke test + MCP code substrate | 3 | single |
-| `c263334` + `7e0122f` | Story 1.1d — MCP stdio smoke + FastAPI↔MCP parity (20/20 flake @ 0.0%) | 3 | single |
-| `7384bdd` + `fcbb42c` | Story 1.2 — 8 Pydantic state models + FR34 triple-layer + NFR-X1–X5 | 5 | dual |
-| `5ade9fc` + `0762911` | Story 1.3 — PipelineRegistry + selector + adapter + cache-prefix stability | 3 | dual |
+- **`835e650`** — 49 files absorbed (9 scoped paths: specialist skill surfaces + shared-skill assets). `upstream/master` retained as historical-reference only; FR60 forward-port freeze retired, replaced by migration-guide §8.1 Upstream Severance clause. `upstream-severance-log.md` captures audit trail.
+- Slab 2 roster reconciled: 14-name Epic 2b roster → 9 Category A+B migratable (incl. absorbed Wondercraft) + 5 Category C Tier-4 thin + 2 Category D dissolved (Audra + Cora) + 7 Category E roadmap-only deferred post-M5.
 
-**Total:** 9 commits, ~5,600 LOC across app/ + tests/ + fixtures/ + docs.
+### 2. Party-mode round 1 — Story 2a.1 green-light (5/5 GREEN-with-riders)
 
-### Key architectural substrate landed
+Winston / Amelia / Murat / Paige / Mary. 17 riders surfaced; 11 applied per operator Option-3 (6 MUST + 5 SHOULD-FIX). Commit **`46c4415`**.
 
-- **Manifest-driven runtime substrate:** FastAPI `/health` + `/invoke` on 127.0.0.1 (NFR-S2), stdio MCP server with `ping` tool, smoke test, shared `minimal_node` canonical payload across three transports (load-bearing for 1.1d parity assertion).
-- **Transport-parity contract:** FastAPI↔MCP byte-equivalent residual assertion with documented envelope-exceptions table + extension protocol for CLI (Slab 3 Story 3.4) + SSE future transports. 20-run hot+cold flake measurement infrastructure at `scripts/dev/flake_measure_1_1d.py` for M1 evidence pack.
-- **Pydantic state contract (9 models):** `RunState` + `StoryState` + `SpecialistEnvelope` + `SpecialistReturn` + `SanctumFingerprint` (frozen, D1) + `NodeCheckpoint` + `CacheState` + `OperatorVerdict` (frozen, D3) + `ModelResolutionEntry`. Triple-layer red-rejection on `OperatorVerdict.verb` closes FR34 tamper-evidence (`timeout`, `auto_approve` forbidden at field + model_validator + JSON Schema enum layers). NFR-X1–X5 reproducibility invariants fully encoded.
-- **Three-level model cascade:** `per_call → per_specialist → registry_default → auto_select_fallback` with deterministic SHA-256 cache-prefix-hash (NFR-I6, verified stable across fresh subprocesses), named `ModelResolutionError` on exhaust (no silent fallback), path-traversal-safe specialist_id sanitization. Thin ChatOpenAI adapter returns `(ChatOpenAI, ModelResolutionEntry)` NamedTuple — explicit-return pattern chosen at T1 for zero global state.
+### 3. Party-mode round 2 — Story 2a.1 code-vs-plan alignment (4 CLEAN-with-amendments + 1 NEEDS-SPEC-REVISION)
 
-### Governance substrate lockdown
+Alignment check against actual Slab 1 code. Found 11 spec drifts (state-model path `app/state/` → `app/models/state/`; test precedent path; `InvalidModelConfigError` → `CompileError`; gate_decision semantics; validator pattern Resolution B; specialist_id ClassVar vs field; sentinel-ID T1 step; broadened R10; AC-Z collision-prevention; template-var real-substitution; Category D denylist). All 11 applied. Commit **`2d5142e`**.
 
-- `docs/dev-guide/migration-story-governance.json` — frozen gate-mode + K-target per story (57 stories total, 26% dual-gate).
-- `docs/dev-guide/migration-ac-sandbox-inventory.json` + `scripts/utilities/validate_migration_story_sandbox_acs.py` — sandbox-AC discipline enforced at every story `ready-for-dev` + `bmad-dev-story` open per CLAUDE.md.
-- `CLAUDE.md` migration-governance section — codifies sandbox-AC rule + gate-mode-read-don't-relitigate pattern + anti-pattern catalog pointers.
+### 4. Party-mode round 3 — Slab 1 GOLDEN foundation ratification (5/5 GOLDEN-WITH-CAVEATS)
 
-## Unresolved Issues / Risks
+First formal slab-wide party-mode ratification. "Spec yields to code on conflict" becomes binding governance. DR-1 ratified.
 
-**No deferred findings from this session's harmonization sweep** ([report](reports/dev-coherence/2026-04-23-0301/report.md)). L1 + L2 + pre-closure audit all clean. Each story's review-remediation commit surfaced + closed its own PATCH items inline; 10 items logged as DEFER in story specs (not session-level blockers):
+- **`f78bd72`** — DR-SLAB-1-CLOSE-2026-04-24.md: DR-1 (Slab 1 GOLDEN), DR-2 (Audra+Cora dissolution), DR-3 (post-M5 greenfield deferrals for 7 names), DR-4 (forward-ratified defect-in-Slab-1 change-approval), DR-5 (forward-ratified severance-reversal protocol teeth). Also Epic 2a line 555 KNOWN-DRIFT marker preserved as live exhibit.
+- **`aff1119`** — Commit B: 9 Slab-2-prereq hardening items (SP1 regression refresh; SP2 cache-hit-rate deferred-inventory entry; SP3 NEW `gate-decision-binding-semantics.md`; SP4 conftest `@pytest.mark.llm_live` auto-skip fixture; SP5 STUB markers on migration-guide §10 + §11 INTENTIONAL-POINTER + new §12 Specialist Walkthrough; SP6 anti-patterns catalog format-freeze header + exemplar + harvest gate; SP7 "you-are-here" cross-refs on 4 core dev-guide docs; SP8 §8 HISTORICAL pointer to §8.1; SP9 CLAUDE.md path sweep 7/7 ✅).
+- **`58b7b4e`** (prior to this) — Dev-coherence generator filed as Slab 4 follow-on (hybrid-native Audra replacement).
 
-- **G6-D1/D2 from 1.1c** — full LangSmith runtime tracing wiring + child-span iteration deferred per Murat's D2 amendment intent; substrate-bootstrap framing accepted the integration test as a forward-pointer in exchange for the unit-tier `REQUIRED_SPAN_TAG_KEYS` pin. Lands when real specialist nodes emit spans (Slab 2+).
-- **G6-D3 from 1.1c** — 0-node manifest validator deferred to 1.4 (which introduces the real `PipelineManifest` schema with topology invariants).
-- **G6-D1 from 1.1d** — per-call asyncio timeout on MCP handshake; pytest-timeout covers infinite-hang at session level, per-call timeout adds noise without proportional value.
-- **G6-D1 from 1.2** — triple-layer red-rejection on non-FR34 closed-enum fields; scope-creep without architectural mandate. Schema-pin still catches drift.
+### 5. Story 2a.1 BMAD-CLOSED with review-remediation
 
-## Key Lessons Learned
+Parallel dev-story execution produced the 2a.1 implementation. Double-check surfaced **10 failing Slab-1 compiler tests** caused by 2a.1's new `_validate_model_ids_in_model_config_refs` unconditionally loading `app/models/registry.yaml`.
 
-1. **Stub→full lockstep replacement pattern works cleanly.** Story 1.3 deleted + re-authored `app/models/state/model_resolution_entry.py` with the full cascade shape in-place, and the 7 Story-1.2 lockstep artifacts (per-model test, reproducibility-invariants test, run_state test, golden fixture, nested run_state golden, schema-pin fixture × 2) were updated in the same commit. 140/140 1.2 state tests still pass post-substitution. This sets the pattern for 1.4's schema-shape replacement of the 1.1c stub manifest.
+- **`2a336df`** — Review-remediation: made the validator ADDITIVE-only (skips when registry absent; skips when config not parseable SpecialistModelConfig). Per DR-1 GOLDEN rule: Slab 2+ code must not break Slab 1 invariants.
+- **`cc79df5`** — Consolidated 2a.1 dev-story landing (46 files): `app/specialists/_scaffold/` canonical 9-node reference + `skills/bmad-create-specialist/` generator (hyphen + underscore packages) + Category-D denylist + dry-run + atomic rollback + Option-Y toytest fixture + 48 passing generator tests + migration-guide §12 populated + anti-pattern A9 harvested.
+- **`e14616c`** — Flip review → done in spec + sprint-status. Final regression: **303 passed / 1 skipped / 0 failed**.
 
-2. **Default-argument late-binding is a real-world test-isolation hazard.** Story 1.3's selector initially used `def _load_registry(path: Path = REGISTRY_PATH)`; default bound at function-def time, so `monkeypatch.setattr(selector, "REGISTRY_PATH", ...)` silently failed. Caught at T8 as a preventive G6-EDGE remediation. Apply `path: Path | None = None` + read module constant in function body for any future loader.
+### 6. Story 2a.2 authored + party-mode amended (4/4 GREEN-with-riders)
 
-3. **Triple-layer red-rejection is worth the repetition for load-bearing invariants.** FR34 tamper-evidence on `OperatorVerdict.verb` needed all three layers (Pydantic `Literal`, model_validator, JSON Schema enum assertion) because external consumers (jsonschema-lib validators, OpenAPI generators) bypass the Pydantic class. Narrow application is the right call — applying to every Literal would dilute the signal without proportional value (G6-D1 deferred).
+- **`c7d2822`** — Initial 2a.2 spec authored: 396 lines, 11 ACs (A–K), single-gate, 3pts, K~1.4×. Three Epic 2a.2 drifts flagged at T1 (node names same as 2a.1; model ID `gpt-4.1` → registry `gpt-5.4`; sanctum path `bmad-agent-irene/` → actual `bmad-agent-content-creator/`). Story is the **cache-hit-rate baseline harness ACTIVATION POINT** (FR54) — closes M1 ACCEPT-WITH-GAP when measurement ≥60%.
+- **`5dafe82`** — 13 party-mode riders applied (8 MUST + 5 SHOULD) per operator Option-2. Spec grew 396 → 474 lines; 11 → 16 ACs (added AC-L compiler negative-test); K~1.4× → ~1.7× (target 16 / floor 13 tests); dual-path regression floor enforcement (≥321 real-key AND ≥319+2-skipped placeholder). 4 SOFT riders deferred to dev-agent T1 discretion.
 
-4. **20-run hot+cold flake measurement is cheap insurance.** Murat's 2026-04-22 amendment requiring the mixed measurement protocol (17 hot + 3 cold) caught no flakes this time (0.0%) but the infrastructure stays for the M1 acceptance evidence pack + future CI wire-up.
+---
 
-5. **Operator authorization pattern works for multi-story serial runs.** "Do not stop unless impasse" + "party-mode consensus posture for judgment calls" let six stories close in one session without per-story operator handshakes. Pattern candidate for Slab 2's 17-specialist migration pass.
+## Commit chain (12 commits, 9d4a49c..5dafe82)
 
-## Validation Summary
+```
+5dafe82 docs(migration): apply 13 party-mode riders to Story 2a.2 spec
+c7d2822 docs(migration): author Story 2a.2 spec — Irene Pass 2 scaffold migration
+e14616c docs(migration): Story 2a.1 flip review -> done (BMAD-CLOSED)
+cc79df5 feat(migration): Slab 2 Story 2a.1 BMAD-CLOSED — bmad-create-specialist generator + 9-node scaffold reference
+2a336df fix(migration): Slab 2 Story 2a.1 review remediation — compiler validator additive-only
+2d5142e docs(migration): Commit C — apply 11 round-2 code-vs-plan alignment amendments to Story 2a.1
+aff1119 docs(migration): Commit B — 9 Slab-2-prereq hardening items (party-mode round 3)
+f78bd72 docs(migration): Slab-1 GOLDEN ratification + Audra/Cora dissolution DECISION-RECORD
+46c4415 docs(migration): apply 11 party-mode riders to Story 2a.1 spec
+904e457 docs(migration): author Story 2a.1 spec — bmad-create-specialist generator
+58b7b4e chore(migration): file dev-coherence generator as deferred Slab 4 follow-on
+835e650 chore(migration): absorb final upstream deltas + sever upstream/master
+```
 
-### Step 0a harmonization sweep (inline)
-- L1 deterministic: sprint-status YAML valid, story status lines consistent, governance JSONs readable, sandbox-AC validator green, ruff clean, lint-imports 3/3 KEPT, pytest 199/1 deselected on 1.3 suite, 15 schema-pin fixtures in-sync.
-- L2 agentic: no findings (convergent with inline layered reviews).
+---
 
-### Step 0b pre-closure audit
-Four-artifact check on 4 closed stories. All ✅ ([evidence files](reports/dev-coherence/2026-04-23-0301/evidence/)).
+## Quality gate (Step 1) — PASS
 
-### Step 1 quality gate
-- `ruff check app tests/unit/models tests/integration/models tests/unit/models/state tests/integration/runtime tests/integration/transport_parity tests/integration/observability tests/unit/observability` → clean
-- `lint-imports --config pyproject.toml` → 3 contracts kept (73 files / 151 deps)
-- `pytest` scoped to migration tier → 152 passed / 2 deselected (live LangSmith)
+- **Ruff:** clean across `app/` + `tests/specialists/` + migration-scope test dirs
+- **Sprint-status YAML regression:** 2/2 passed
+- **Migration suite + 2a.1 generator:** 303 passed / 1 skipped (cache-hit-rate harness at-rest) / 0 failed
+- **Sandbox-AC validator:** PASS on 2a.1 + 2a.2 specs
+- **Import-linter:** 3/3 KEPT (C1 lane-isolation + C2 gates-no-scheduler + C3 bridge-module-only)
+- **Post-review-remediation:** 2a.1's compiler validator is additive-only; Slab 1 invariants restored
 
-### Step 4a sprint-status regression
-- `pytest tests/test_sprint_status_yaml.py` → 2/2 pass
+---
 
-### Story-level validator batteries
-Each of the 6 closures ran its T8/T9 battery green pre-commit; details in per-story spec `## Dev Agent Record > Review Findings`.
+## Outstanding / Deferred Items
 
-## Artifact Update Checklist
+### Immediate (for next session)
 
-| Artifact | Current | Notes |
-| --- | --- | --- |
-| `_bmad-output/implementation-artifacts/sprint-status.yaml` | ✅ | 1.1a–1.3 = done, 1.4–1.7 = ready-for-dev, epic = in-progress |
-| `_bmad-output/implementation-artifacts/migration-1-1c..1-3-*.md` | ✅ | Dev Agent Record + Review Findings filled for 4 closed stories |
-| `docs/dev-guide/migration-story-governance.json` | ✅ | Committed at `71cd3a8` |
-| `docs/dev-guide/migration-ac-sandbox-inventory.json` | ✅ | Committed at `71cd3a8` |
-| `docs/dev-guide/langgraph-runtime-setup.md` | ✅ | Matrix updated at 1.1d to flip MCP cells from ⏳ to ✅ |
-| `docs/dev-guide/transport-parity-envelope-exceptions.md` | ✅ | New at 1.1d |
-| `CLAUDE.md` (migration governance section) | ✅ | Committed at `71cd3a8` |
-| `next-session-start-here.md` | ✅ | Rewritten for 1.4 as next action |
-| `SESSION-HANDOFF.md` | ✅ | This file |
-| `reports/dev-coherence/2026-04-23-0301/` | ✅ | Inline harmonization report + 4 per-story evidence files |
-| `bmm-workflow-status.yaml` | — | Not touched this session (phase unchanged: implementation sprint) |
-| `docs/project-context.md` | — | Not touched (architecture summary unchanged) |
-| `docs/agent-environment.md` | — | Not touched (MCP/API/skill inventory unchanged) |
+1. **Open `bmad-dev-story` on Story 2a.2** — ready-for-dev with 13 riders applied. First REAL LLM-invoking specialist; activates cache-hit-rate harness.
+2. **Operator pre-commit decisions pending at 2a.2 T1:**
+   - SF1 generator CLI surface verification (hyphen `skills/bmad-create-specialist/` vs underscore `skills/bmad_create_specialist/` — which module-path works?)
+   - MF6 sanctum-ceremony timing: decide BEFORE 2a.2 T1 whether to populate `_bmad/memory/bmad-agent-content-creator/` with Irene's L5 references, OR explicitly commit to empty-sanctum-for-story-duration
+   - AC-D cache-hit-rate gate requires live `OPENAI_API_KEY` on operator machine; Completion-Notes evidence paste is the final `done` gate per SF2 `awaiting-operator-evidence` interim status
 
-## Step 12 — Git Closeout Exception
+### Deferred work (tracked)
 
-**Default flow (merge-to-master + push) deliberately skipped.** Slab 1 is 6/8 done; `dev/langchain-langgraph-foundation` should remain the working branch until 1.7 closes and the M1 acceptance evidence pack is assembled. Merging the partial Slab-1 state to `master` mid-slab would break the "frozen-when-shipped" posture the forward-port freeze is designed to protect.
+- **Cache-hit-rate M1 gap** — still open; closes at 2a.2 `done` flip
+- **AC-Postgres-B operator paste** — still pending from 1.1b Completion Notes
+- **4 SOFT riders** on 2a.2 (Winston W4, Paige P1/P4/P5) — dev-agent T1 discretion
+- **7 round-3 caveats forward**: Slab-2-charter items (SC1 10-run flake at 2a close; SC2 fixture-convention README; SC3 2 new import-linter contracts; SC4 C3 ignore-list maintenance; SC5 OperatorVerdict tier-2 versioning note; SC6 compiler subgraph known-unknown; SC7 anti-patterns harvest-gate discipline); pre-Slab-3 (M1 defect-in-Slab-1 protocol; M2 D12 pointer-resolution CI); pre-M5 (M3 severance-reversal protocol teeth per DR-5)
+- **Dev-coherence generator** filed as Slab 4 Epic E4 follow-on
+- **CLAUDE.md scope-fenced modification** — still present in working tree (pre-session carry-forward; operator autonomy preamble, +9 lines)
 
-**Resume branch:** `dev/langchain-langgraph-foundation` (push to `origin` after each story closure; already current as of HEAD = `0762911`).
+### Party-mode rounds convened this session (3 total)
 
-Per the wrapup protocol's "intentional skip" clause, this exception is recorded here + in `next-session-start-here.md` Step 7 under Branch Baseline.
+1. **Round 1** (2a.1 green-light) — 5/5 GREEN-with-riders → 11 applied Option-3
+2. **Round 2** (2a.1 code-vs-plan alignment) — 4 CLEAN-with-amendments + 1 NEEDS-SPEC-REVISION → all 11 applied Option-1
+3. **Round 3** (Slab 1 GOLDEN foundation ratification) — 5/5 GOLDEN-WITH-CAVEATS → DR-1/DR-2/DR-3 ratified + DR-4/DR-5 forward-ratified + 9 SP hardening applied
+4. **Round 4** (2a.2 green-light) — 4/4 GREEN-with-riders → 13 applied Option-2
 
-## Link to Dev-Coherence Audit Trail
+---
 
-[`reports/dev-coherence/2026-04-23-0301/`](reports/dev-coherence/2026-04-23-0301/) — inline harmonization report + per-story closure evidence files. Permanent audit record for this session's coherence posture.
+## Decisions of Record (new this session)
+
+- **DR-1 — Slab 1 GOLDEN foundation** (immutable substrate; spec yields to code on conflict)
+- **DR-2 — Audra + Cora dissolution** (Category D; replaced by LangGraph CI + BMAD session protocols; generator denylist enforces)
+- **DR-3 — Post-M5 greenfield specialists deferral** (Mike/Eli/Enrique/Mira/Sally/Kim/Paige-if-scoped)
+- **DR-4 (FORWARD-RATIFIED)** — defect-in-Slab-1-code change-approval protocol (ratification at Slab 2 opening)
+- **DR-5 (FORWARD-RATIFIED)** — severance-reversal protocol teeth (ratification before M5)
+
+All recorded in [`_bmad-output/planning-artifacts/decision-records/DR-SLAB-1-CLOSE-2026-04-24.md`](_bmad-output/planning-artifacts/decision-records/DR-SLAB-1-CLOSE-2026-04-24.md).
+
+---
+
+## Permanent archive note
+
+This session's artifacts are the substrate for Slab 2 execution. Slab 1 GOLDEN ratification (DR-1) is the pivotal governance event: from here forward, when specs conflict with Slab 1 code, **specs lose**. Every remaining Slab 2/3/4/5 story authoring inherits this discipline.
+
+**Session-close state:** 2a.2 ready-for-dev with all riders applied + sandbox-AC PASS; operator to verify CLI + sanctum state at T1 and open `bmad-dev-story` fresh next session.
