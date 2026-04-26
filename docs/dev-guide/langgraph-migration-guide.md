@@ -440,7 +440,7 @@ tests/integration/scaffold_conformance/test_scaffold_irene.py
 
 Operator runs first-breath ceremony BEFORE `bmad-dev-story` opens for steady-state stories; lock for the AC-D 10-invocation cache window.
 
-> **§12.5–§12.7 cover three specialist-shape categories proven across Slab 2a (narration / LLM+tool-dispatch / pure-tool-dispatch). If you migrate a specialist whose act-body shape doesn't fit any of these three, add a §12.x section before proceeding — the categories are extensible, not exhaustive.**
+> **§12.5–§12.11 cover four specialist-shape categories proven across Slab 2a–2b.1 (narration / LLM+tool-dispatch / pure-tool-dispatch / REST-API tool-dispatch). Pure inheritors are catalogued at §12.12; add a new §12.x only when a specialist introduces a new act-body category.**
 
 ### 12.5 Irene worked before/after (act node) — real-Irene example, post-2a.2 close
 
@@ -731,7 +731,72 @@ Texas-specific notes:
 - NFR-I5 is pinned with sha256 on `skills/bmad-agent-texas/references/retrieval-contract.md`.
 - Bundle-parse outcomes flow into the resolution trail under the `bundle.parsed.*` namespace (`ok` / `missing-key` / `malformed` / `wrong-type` / `empty` / `exit-10` / `exit-30` / `unknown-exit`). Tests assert two-sidedly: the parser's shape AND the trail tag — see `tests/specialists/texas/test_texas_act_node_dispatch.py` for the parametrize. Operators reading `model_resolution_trail` after a Texas run can distinguish "tool failed" from "tool succeeded with empty result" without inspecting the bundle directly.
 
-### 12.8 Verification commands (Irene + Kira + Texas)
+### 12.11 Gary worked before/after (act node) — real-Gary REST-API tool-dispatch example, post-2b.1 close
+
+Story 2b.1 introduces the fourth category: Gary `_act` is **REST-API tool-dispatch with no LLM invocation** at the specialist layer. `_plan` still resolves the model to preserve FR16 trail-shape consistency.
+
+```python
+def _act(state: RunState) -> dict[str, Any]:
+    if not state.model_resolution_trail:
+        raise RuntimeError("gary act invoked before plan; resolution trail is empty")
+    last_entry = state.model_resolution_trail[-1]
+    if last_entry.cache_prefix_hash is None:
+        raise RuntimeError(
+            "gary act expected final plan resolution entry with cache_prefix_hash"
+        )
+
+    envelope_payload = _decode_envelope_payload(state)
+    try:
+        dispatch_receipt = dispatch_to_gamma(
+            directive_path=envelope_payload.get("directive_path"),
+            export_dir=envelope_payload.get("export_dir"),
+        )
+        parsed = _parse_dispatch_receipt(dispatch_receipt)
+    except (GammaDispatchError, ReceiptParseError) as exc:
+        state.model_resolution_trail.append(
+            _new_dispatch_trail_entry(last_entry, tag=exc.tag)
+        )
+        raise
+
+    trail_entry = _new_dispatch_trail_entry(last_entry, tag=parsed["tag"])
+    output_blob = json.dumps(
+        {
+            "generation_id": parsed["generation_id"],
+            "status": parsed["status"],
+            "gary_slide_output": parsed["gary_slide_output"],
+            "export_path": parsed.get("export_path"),
+            "model_id": last_entry.resolved,
+        },
+        sort_keys=True,
+        ensure_ascii=True,
+        separators=(",", ":"),
+    )
+    return {"model_resolution_trail": [..., trail_entry], "cache_state": {...}}
+```
+
+**Divergences from Texas (§12.7):**
+
+| Aspect | Texas pure-tool-dispatch | Gary REST-API tool-dispatch |
+|---|---|---|
+| Dispatch seam | subprocess wrapper (`dispatch_retrieval`) | in-process wrapper (`dispatch_to_gamma`) |
+| Loader mechanism | direct Python module import under same package tree | direct package import from `skills.gamma_api_mastery.scripts.gamma_operations` |
+| Error classification | `bundle.parsed.*` | `receipt.parsed.*` |
+| Parse matrix | 7 cases (`ok/missing-key/malformed/wrong-type/empty/exit-10/exit-30/unknown-exit`) | 8 cases (`ok/missing-key/malformed/wrong-type/empty/export-failure/timeout/api-error`) |
+| Sanctum case | populated-and-locked baseline | empty-dir/absent digest (`""`) at story close |
+| Return extension | `bundle_reference` | `gary_slide_output` |
+
+Tag namespace convention is artifact-first: `bundle.parsed.*` (Texas), `receipt.parsed.*` (Gary), future categories follow the same noun-first pattern.
+
+Inheritors of this category are catalogued at §12.12.
+
+### 12.12 Inheritor catalog matrix
+
+| Specialist | Parent §12.x | Seam divergence | Sanctum case | Harvest contributions | Story |
+|---|---|---|---|---|---|
+| Texas | §12.7 | Subprocess dispatch wrapper + bundle parser | Populated-and-locked | A9 + A12 + NFR-I5 pin | 2a.4 |
+| Gary | §12.11 | REST-API dispatch wrapper + receipt parser | Empty-dir / absent | A10 (third) + A11 (second) | 2b.1 |
+
+### 12.13 Verification commands (Irene + Kira + Texas + Gary)
 
 ```bash
 python -m pytest tests/specialists/irene -q
@@ -740,9 +805,11 @@ python -m pytest tests/specialists/kira -q
 python -m pytest tests/integration/scaffold_conformance/test_scaffold_kira.py -q
 python -m pytest tests/specialists/texas tests/agents/bmad-agent-texas tests/contracts/test_texas_row_fungibility.py -q
 python -m pytest tests/integration/scaffold_conformance/test_scaffold_texas.py -q
+python -m pytest tests/specialists/gary -q
+python -m pytest tests/integration/scaffold_conformance/test_scaffold_gary.py -q
 ```
 
-### 12.9 Governance notes
+### 12.14 Governance notes
 
 - Generator denylist blocks Category D dissolved skills (`audra`, `cora`).
 - If epic-doc text conflicts with scaffold framework contracts, framework wins
@@ -772,3 +839,4 @@ Section 12 is now structurally complete as a migration reference library for Sla
 | v1   | 2026-04-23 | Initial 11-section skeleton authored at Story 1.7 close. | Slab 1 close |
 | v1.1 | 2026-04-24 | Added §8.1 Upstream Severance (replaces FR60 forward-port freeze); STUB markers on §10 + new §12 Specialist Walkthrough placeholder; historical note on §8 + "intentional pointer" designation on §11 + "you-are-here" dev-guide cross-references landing on sibling docs. Party-mode round 3 Paige caveats. | Slab 1 close (rider hardening) |
 | v1.2 | 2026-04-25 | Added §12.7 Texas pure-tool-dispatch worked example; renumbered §12.7/§12.8 -> §12.8/§12.9; added §12.10 Slab 2a retrospective summary and cross-suite verification command set. | Slab 2a close |
+| v1.3 | 2026-04-25 | Added §12.11 Gary REST-API worked example + §12.12 inheritor matrix; tag-namespace noun convention (`receipt.parsed.*`); renumbered verification/governance to §12.13/§12.14 and added Gary verification commands. | Slab 2b.1 |
