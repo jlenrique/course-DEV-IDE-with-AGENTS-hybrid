@@ -789,6 +789,8 @@ Tag namespace convention is artifact-first: `bundle.parsed.*` (Texas), `receipt.
 
 Inheritors of this category are catalogued at §12.12.
 
+Story 2c.2 enriches Wanda's already-shipped REST-API Wondercraft path with L5/L6 podcast-production references, a populated `_bmad/memory/wanda-sidecar/` skeleton, and a deferred live-API artifact test without changing Wanda's `_act` orchestration or dispatch wrapper.
+
 ### 12.12 Inheritor catalog matrix
 
 | Specialist | Parent §12.x | Seam divergence | Sanctum case | Harvest contributions | Story |

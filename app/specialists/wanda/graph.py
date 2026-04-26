@@ -37,6 +37,9 @@ WANDA_REFERENCES: tuple[str, ...] = (
     "init.md",
     "memory-system.md",
     "save-memory.md",
+    "L5-podcast-production/storytelling-framework.md",
+    "L5-podcast-production/audio-production-patterns.md",
+    "L5-podcast-production/narration-length-vs-engagement.md",
 )
 
 WANDA_SYSTEM_MESSAGE = (
