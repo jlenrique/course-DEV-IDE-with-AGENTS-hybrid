@@ -1,0 +1,513 @@
+{
+  "schema_version": "m3-trial-envelope.v1",
+  "trial_id": "33333333-3333-4333-8333-333333333333",
+  "preset": "production",
+  "corpus_path": "tests/fixtures/trial_corpus/README.md",
+  "captured_at": "2026-04-26T17:00:00Z",
+  "steps_completed": [
+    "01",
+    "02",
+    "02A",
+    "03",
+    "04",
+    "04A",
+    "04.5",
+    "04.55",
+    "4.75",
+    "05",
+    "05B",
+    "06",
+    "6.2",
+    "6.3",
+    "06B",
+    "07",
+    "7.5",
+    "07B",
+    "07C",
+    "07D",
+    "07E",
+    "07F",
+    "08",
+    "08B",
+    "09",
+    "10",
+    "11",
+    "11B",
+    "12",
+    "13",
+    "14",
+    "14.5",
+    "15"
+  ],
+  "gate_events": [
+    {
+      "gate_id": "G1",
+      "node_id": "04",
+      "card_id": "66666666-6666-4666-8666-666666666666",
+      "decision_card_digest": "6519cfc31c139fede38e0a863fe1e071437aac3a97c79466da29fa7bc434d10e",
+      "verdict_verb": "approve",
+      "decision_card_meta": {
+        "cache_state": "healthy",
+        "affected_nodes": [],
+        "override_trail": [],
+        "reject_rate": 0.0
+      },
+      "resume_payload": {
+        "verb": "approve",
+        "trial_id": "33333333-3333-4333-8333-333333333333",
+        "gate_id": "G1",
+        "card_id": "66666666-6666-4666-8666-666666666666",
+        "operator_id": "operator_cli",
+        "verdict_id": "aaaaaaa1-aaaa-4aaa-8aaa-aaaaaaaaaaa1",
+        "timestamp": "2026-04-26T16:02:15Z"
+      }
+    },
+    {
+      "gate_id": "G2C",
+      "node_id": "07C",
+      "card_id": "77777777-7777-4777-8777-777777777777",
+      "decision_card_digest": "9936737d52fb6be4093e4253ceb018c4095db6ee0a09b7974ec8c562d909dbdc",
+      "verdict_verb": "edit",
+      "decision_card_meta": {
+        "cache_state": "healthy",
+        "affected_nodes": [],
+        "override_trail": [],
+        "reject_rate": 0.0
+      },
+      "resume_payload": {
+        "verb": "edit",
+        "trial_id": "33333333-3333-4333-8333-333333333333",
+        "gate_id": "G2C",
+        "card_id": "77777777-7777-4777-8777-777777777777",
+        "operator_id": "operator_cli",
+        "verdict_id": "aaaaaaa2-aaaa-4aaa-8aaa-aaaaaaaaaaa2",
+        "timestamp": "2026-04-26T16:03:15Z",
+        "edit_payload": {
+          "change_summary": "Tighten evidence chain before Pass 2 lock.",
+          "target_node": "09"
+        }
+      }
+    },
+    {
+      "gate_id": "G3",
+      "node_id": "09",
+      "card_id": "88888888-8888-4888-8888-888888888888",
+      "decision_card_digest": "d073951f9c22b3b15d13e8e40298c84ad708b91f18645e33be436781ee9b7c4a",
+      "verdict_verb": "approve",
+      "decision_card_meta": {
+        "cache_state": "mixed",
+        "affected_nodes": [
+          "10"
+        ],
+        "override_trail": [
+          {
+            "event_id": "93005240-e89a-4db6-a9f8-408d159e0085",
+            "applied_at": "2026-04-26T07:24:40.027959Z",
+            "node_id": "10",
+            "previous_value": {
+              "model": "gpt-5.4"
+            },
+            "new_value": {
+              "model": "gpt-5.5"
+            },
+            "operator_id": "operator_cli",
+            "confirm_token": "370787202f1bf13b045ef95e6822aed4795d81075eb9b6dc0e1f02881405cde1"
+          }
+        ],
+        "reject_rate": 0.0
+      },
+      "resume_payload": {
+        "verb": "approve",
+        "trial_id": "33333333-3333-4333-8333-333333333333",
+        "gate_id": "G3",
+        "card_id": "88888888-8888-4888-8888-888888888888",
+        "operator_id": "operator_cli",
+        "verdict_id": "aaaaaaa3-aaaa-4aaa-8aaa-aaaaaaaaaaa3",
+        "timestamp": "2026-04-26T16:04:15Z"
+      }
+    },
+    {
+      "gate_id": "G4",
+      "node_id": "10",
+      "card_id": "99999999-9999-4999-8999-999999999999",
+      "decision_card_digest": "3585987d70a13df482049b4f5dd3b9b8c4e46906ed32e24c62292c2a7bb4cb5f",
+      "verdict_verb": "approve",
+      "decision_card_meta": {
+        "cache_state": "mixed",
+        "affected_nodes": [
+          "10"
+        ],
+        "override_trail": [
+          {
+            "event_id": "93005240-e89a-4db6-a9f8-408d159e0085",
+            "applied_at": "2026-04-26T07:24:40.027959Z",
+            "node_id": "10",
+            "previous_value": {
+              "model": "gpt-5.4"
+            },
+            "new_value": {
+              "model": "gpt-5.5"
+            },
+            "operator_id": "operator_cli",
+            "confirm_token": "370787202f1bf13b045ef95e6822aed4795d81075eb9b6dc0e1f02881405cde1"
+          }
+        ],
+        "reject_rate": 0.0
+      },
+      "resume_payload": {
+        "verb": "approve",
+        "trial_id": "33333333-3333-4333-8333-333333333333",
+        "gate_id": "G4",
+        "card_id": "99999999-9999-4999-8999-999999999999",
+        "operator_id": "operator_cli",
+        "verdict_id": "aaaaaaa4-aaaa-4aaa-8aaa-aaaaaaaaaaa4",
+        "timestamp": "2026-04-26T16:05:15Z"
+      }
+    }
+  ],
+  "downstream_payloads": {
+    "01": {
+      "step_id": "01",
+      "specialist_id": "marcus",
+      "operator_edits": []
+    },
+    "02": {
+      "step_id": "02",
+      "specialist_id": "texas",
+      "operator_edits": []
+    },
+    "02A": {
+      "step_id": "02A",
+      "specialist_id": "marcus",
+      "operator_edits": []
+    },
+    "03": {
+      "step_id": "03",
+      "specialist_id": "texas",
+      "operator_edits": []
+    },
+    "04": {
+      "step_id": "04",
+      "specialist_id": "vera",
+      "operator_edits": []
+    },
+    "04A": {
+      "step_id": "04A",
+      "specialist_id": "irene",
+      "operator_edits": []
+    },
+    "04.5": {
+      "step_id": "04.5",
+      "specialist_id": "marcus",
+      "operator_edits": []
+    },
+    "04.55": {
+      "step_id": "04.55",
+      "specialist_id": "marcus",
+      "operator_edits": []
+    },
+    "4.75": {
+      "step_id": "4.75",
+      "specialist_id": "cd",
+      "operator_edits": []
+    },
+    "05": {
+      "step_id": "05",
+      "specialist_id": "irene",
+      "operator_edits": []
+    },
+    "05B": {
+      "step_id": "05B",
+      "specialist_id": "irene",
+      "operator_edits": []
+    },
+    "06": {
+      "step_id": "06",
+      "specialist_id": "marcus",
+      "operator_edits": []
+    },
+    "6.2": {
+      "step_id": "6.2",
+      "specialist_id": "marcus",
+      "operator_edits": []
+    },
+    "6.3": {
+      "step_id": "6.3",
+      "specialist_id": "marcus",
+      "operator_edits": []
+    },
+    "06B": {
+      "step_id": "06B",
+      "specialist_id": "marcus",
+      "operator_edits": []
+    },
+    "07": {
+      "step_id": "07",
+      "specialist_id": "gary",
+      "operator_edits": []
+    },
+    "7.5": {
+      "step_id": "7.5",
+      "specialist_id": "vera",
+      "operator_edits": []
+    },
+    "07B": {
+      "step_id": "07B",
+      "specialist_id": "quinn-r",
+      "operator_edits": []
+    },
+    "07C": {
+      "step_id": "07C",
+      "specialist_id": "quinn-r",
+      "operator_edits": []
+    },
+    "07D": {
+      "step_id": "07D",
+      "specialist_id": "marcus",
+      "operator_edits": [
+        {
+          "change_summary": "Tighten evidence chain before Pass 2 lock.",
+          "target_node": "09"
+        }
+      ]
+    },
+    "07E": {
+      "step_id": "07E",
+      "specialist_id": "kira",
+      "operator_edits": [
+        {
+          "change_summary": "Tighten evidence chain before Pass 2 lock.",
+          "target_node": "09"
+        }
+      ]
+    },
+    "07F": {
+      "step_id": "07F",
+      "specialist_id": "quinn-r",
+      "operator_edits": [
+        {
+          "change_summary": "Tighten evidence chain before Pass 2 lock.",
+          "target_node": "09"
+        }
+      ]
+    },
+    "08": {
+      "step_id": "08",
+      "specialist_id": "irene",
+      "operator_edits": [
+        {
+          "change_summary": "Tighten evidence chain before Pass 2 lock.",
+          "target_node": "09"
+        }
+      ]
+    },
+    "08B": {
+      "step_id": "08B",
+      "specialist_id": "quinn-r",
+      "operator_edits": [
+        {
+          "change_summary": "Tighten evidence chain before Pass 2 lock.",
+          "target_node": "09"
+        }
+      ]
+    },
+    "09": {
+      "step_id": "09",
+      "specialist_id": "marcus",
+      "operator_edits": [
+        {
+          "change_summary": "Tighten evidence chain before Pass 2 lock.",
+          "target_node": "09"
+        }
+      ]
+    },
+    "10": {
+      "step_id": "10",
+      "specialist_id": "vera",
+      "operator_edits": [
+        {
+          "change_summary": "Tighten evidence chain before Pass 2 lock.",
+          "target_node": "09"
+        }
+      ]
+    },
+    "11": {
+      "step_id": "11",
+      "specialist_id": "elevenlabs",
+      "operator_edits": [
+        {
+          "change_summary": "Tighten evidence chain before Pass 2 lock.",
+          "target_node": "09"
+        }
+      ]
+    },
+    "11B": {
+      "step_id": "11B",
+      "specialist_id": "elevenlabs",
+      "operator_edits": [
+        {
+          "change_summary": "Tighten evidence chain before Pass 2 lock.",
+          "target_node": "09"
+        }
+      ]
+    },
+    "12": {
+      "step_id": "12",
+      "specialist_id": "elevenlabs",
+      "operator_edits": [
+        {
+          "change_summary": "Tighten evidence chain before Pass 2 lock.",
+          "target_node": "09"
+        }
+      ]
+    },
+    "13": {
+      "step_id": "13",
+      "specialist_id": "quinn-r",
+      "operator_edits": [
+        {
+          "change_summary": "Tighten evidence chain before Pass 2 lock.",
+          "target_node": "09"
+        }
+      ]
+    },
+    "14": {
+      "step_id": "14",
+      "specialist_id": "compositor",
+      "operator_edits": [
+        {
+          "change_summary": "Tighten evidence chain before Pass 2 lock.",
+          "target_node": "09"
+        }
+      ]
+    },
+    "14.5": {
+      "step_id": "14.5",
+      "specialist_id": "desmond",
+      "operator_edits": [
+        {
+          "change_summary": "Tighten evidence chain before Pass 2 lock.",
+          "target_node": "09"
+        }
+      ]
+    },
+    "15": {
+      "step_id": "15",
+      "specialist_id": "marcus",
+      "operator_edits": [
+        {
+          "change_summary": "Tighten evidence chain before Pass 2 lock.",
+          "target_node": "09"
+        }
+      ]
+    }
+  },
+  "ledger_events": [
+    {
+      "kind": "verdict",
+      "trial_id": "33333333-3333-4333-8333-333333333333",
+      "gate_id": "G1",
+      "operator_id": "operator_cli",
+      "verb": "approve",
+      "transport_kind": "cli"
+    },
+    {
+      "kind": "verdict",
+      "trial_id": "33333333-3333-4333-8333-333333333333",
+      "gate_id": "G2C",
+      "operator_id": "operator_cli",
+      "verb": "edit",
+      "transport_kind": "cli"
+    },
+    {
+      "kind": "verdict",
+      "trial_id": "33333333-3333-4333-8333-333333333333",
+      "gate_id": "G3",
+      "operator_id": "operator_cli",
+      "verb": "approve",
+      "transport_kind": "cli"
+    },
+    {
+      "kind": "verdict",
+      "trial_id": "33333333-3333-4333-8333-333333333333",
+      "gate_id": "G4",
+      "operator_id": "operator_cli",
+      "verb": "approve",
+      "transport_kind": "cli"
+    },
+    {
+      "kind": "override",
+      "trial_id": "33333333-3333-4333-8333-333333333333",
+      "node_id": "10",
+      "operator_id": "operator_cli",
+      "new_model": "gpt-5.5",
+      "previous_model": "gpt-5.4",
+      "confirm_token": "370787202f1bf13b045ef95e6822aed4795d81075eb9b6dc0e1f02881405cde1"
+    }
+  ],
+  "override_warning": {
+    "warning_id": "93005240-e89a-4db6-a9f8-408d159e0085",
+    "trial_id": "33333333-3333-4333-8333-333333333333",
+    "node_id": "10",
+    "requested_model": "gpt-5.5",
+    "current_model": "gpt-5.4",
+    "estimated_cost_delta_usd": 4.0,
+    "affected_nodes": [
+      "10",
+      "11",
+      "11B",
+      "12",
+      "13",
+      "14",
+      "14.5",
+      "15"
+    ],
+    "cache_state_delta": {
+      "before": "healthy",
+      "after": "mixed"
+    },
+    "confirm_token": "370787202f1bf13b045ef95e6822aed4795d81075eb9b6dc0e1f02881405cde1",
+    "issued_at": "2026-04-26T07:23:50.027959Z",
+    "expires_at": "2026-04-26T07:28:50.027959Z"
+  },
+  "override_event": {
+    "event_id": "93005240-e89a-4db6-a9f8-408d159e0085",
+    "applied_at": "2026-04-26T07:24:40.027959Z",
+    "node_id": "10",
+    "previous_value": {
+      "model": "gpt-5.4"
+    },
+    "new_value": {
+      "model": "gpt-5.5"
+    },
+    "operator_id": "operator_cli",
+    "confirm_token": "370787202f1bf13b045ef95e6822aed4795d81075eb9b6dc0e1f02881405cde1"
+  },
+  "run_state": {
+    "run_id": "33333333-3333-4333-8333-333333333333",
+    "status": "complete",
+    "created_at": "2026-04-26T16:00:00Z",
+    "completed_at": "2026-04-26T17:00:00Z",
+    "graph_version": "v0.1-stub",
+    "temperature": 0.0,
+    "model_resolution_trail": [],
+    "model_overrides": {
+      "10": "gpt-5.5"
+    },
+    "sanctum_fingerprint": {
+      "snapshot_id": "55555555-5555-4555-8555-555555555555",
+      "content_sha256": "7adaeaf8b24c081278ecad82ca4c9dd4744dc98cb4ea49f37c0b8aeeeed6468e",
+      "captured_at": "2026-04-26T16:00:00Z"
+    },
+    "marcus_fingerprint": [
+      "7adaeaf8b24c081278ecad82ca4c9dd4744dc98cb4ea49f37c0b8aeeeed6468e",
+      "44444444-4444-4444-8444-444444444444"
+    ],
+    "story_states": [],
+    "cache_state": {
+      "cache_prefix": "sanctum-v1-gpt54-m3",
+      "entries_count": 8,
+      "last_invalidated_at": "2026-04-26T07:24:40.027959Z"
+    }
+  }
+}

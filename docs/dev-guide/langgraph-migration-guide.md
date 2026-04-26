@@ -856,6 +856,7 @@ Section 12 is now structurally complete as a migration reference library for Sla
 | v1.3 | 2026-04-25 | Added §12.11 Gary REST-API worked example + §12.12 inheritor matrix; tag-namespace noun convention (`receipt.parsed.*`); renumbered verification/governance to §12.13/§12.14 and added Gary verification commands. | Slab 2b.1 |
 | v1.4 | 2026-04-25 | Added Vera inheritor row to §12.12 under §12.6 parent; updated §12 framing sentence and §12.13 verification set for Vera. | Slab 2b.2 |
 | v1.5 | 2026-04-25 | Added Quinn-R inheritor row to §12.12 under §12.6 parent; updated §12 framing sentence and verification set for Quinn-R. | Slab 2b.3 |
+| v1.6 | 2026-04-26 | Added Slab 3 close notes for Story 3.6 covering the local M3 trial harness, frozen Marcus baseline envelope, and conditional M3 close state. | Slab 3 close |
 
 ### 12.15 Slab 2b close update
 
@@ -950,3 +951,22 @@ same runtime authority path rather than branching on transport-specific logic.
 DecisionCardMeta now surfaces the live cache posture directly from runtime:
 `healthy` when no override is active, `mixed` after an operator-approved
 override, and `cold` when no cache prefix exists for the trial.
+
+## Marcus (Slab 3 Story 3.6)
+
+Story 3.6 closed Slab 3 on the adapted substrate with a deterministic local
+trial harness at `marcus/orchestrator/m3_trial.py`. The harness drives one
+Marcus-supervised production preset run across manifest phases `01` through
+`15`, emits gate cards for `G1`, `G2C`, `G3`, and `G4`, applies one explicit
+`edit` verdict at `G2C`, and exercises the runtime override path on node `10`
+without introducing a transport-specific branch.
+
+The slab-closing artifact set now exists in
+`_bmad-output/implementation-artifacts/`: `slab-3-m3-acceptance-verdict.md`,
+`slab-3-marcus-invariant-stub.md`, and `slab-3-retrospective.md`. The frozen
+Marcus baseline lives at
+`tests/fixtures/marcus/baseline_envelope/2026-04-26/` with an accompanying
+`BASELINE_METADATA.md` carrying capture-environment hashes. Slab 3 closes as
+`CONDITIONAL-GREEN-PENDING-OPERATOR-ADDENDUM`, not full green, because the
+Texas AC-B-OP live-wire reactivation remains operator-gated and therefore
+deferred outside the dev-agent sandbox path.

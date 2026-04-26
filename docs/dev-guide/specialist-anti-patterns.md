@@ -4,9 +4,11 @@ Living catalog of anti-patterns harvested across Slab-1 closure + inherited
 from the primary repo's `docs/dev-guide/dev-agent-anti-patterns.md`. Every
 Slab 2+ story's dev-agent reads this at T1.
 
-Slab 2 (2a + 2b + 2c) harvest cycle complete; 14 entries A1-A14 under
-format-freeze v1; Slab 3+ harvest continues under the same freeze unless
-party-mode consensus + version bump.
+Slab 2 (2a + 2b + 2c) and Slab 3 harvest cycles complete; 14 entries A1-A14
+under format-freeze v1. Slab 3 closed without accepting a new catalog entry;
+the live-wire-substrate caution remains documented in deferred inventory and
+conditional milestone artifacts unless party-mode consensus later promotes it
+to a frozen catalog entry.
 
 > **You-are-here** (Slab 2+ dev-agent reading order at T1):
 > 1. [`scaffold-conformance-framework.md`](scaffold-conformance-framework.md) â€” 9-node canonical contract + T1 pre-flight
@@ -227,4 +229,3 @@ signal â€” escalate to party-mode before extending the shape.
 - **Example:** Story 2c.3 originally referenced a non-existent `15-invariant-audit-matrix.md` artifact, forcing corrective deferral to Slab 5a and a `slab-2c-wondercraft-invariant-stub.md` bridge. Story 2c.2 also made an initial strict receipt-key claim against `WandaDispatchReceipt.wanda_audio` even though the runtime type is loose `dict[str, Any] | None`.
 - **Counter-pattern:** During T1, verify every referenced runtime path, artifact path, schema field, and receipt shape against the live tree before writing executable ACs. If the substrate does not exist yet, either narrow the AC to a stub/seed artifact or file the missing substrate as a predecessor story.
 - **Slab-of-discovery:** Slab 2c Stories 2c.2 and 2c.3; accepted at Story 2c.4 harvest gate by Mary/Murat/Amelia consensus.
-
