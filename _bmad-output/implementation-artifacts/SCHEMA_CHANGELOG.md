@@ -38,6 +38,47 @@ per-gate schema and a shared D2 meta surface.
 
 **Migration:** N/A (initial family).
 
+## DecisionCard Family v1.1 - 2026-04-26 - Story 4.3 Party-Mode-as-Interrupt
+
+**Type:** Additive extension to the DecisionCard meta surface plus a new
+supporting schema.
+
+**Reason for introduction:** Story 4.3 makes party-mode a first-class graph
+primitive by consolidating multi-persona review into a checkpointed interrupt
+flow. That requires the DecisionCard family to carry structured contribution
+evidence and the consolidation timestamp, while also introducing a strict
+contribution model with its own schema pin.
+
+**Shapes and contracts pinned:**
+
+- `app/models/decision_cards/base.py`:
+  additive `DecisionCardMeta.party_mode_contributions` and
+  `DecisionCardMeta.consolidated_at`.
+- `app/models/decision_cards/schema/{decision_card_base,g1,g2c,g3,g4}.v1.schema.json`:
+  schema pins updated for the additive meta fields.
+- `app/models/gates/party_mode_contribution.py`:
+  `PartyModeContribution`, `TRACE_LINK_PATTERN`.
+- `app/models/gates/schema/party_mode_contribution.v1.schema.json`:
+  schema pin for the new contribution model.
+- `app/gates/party_mode_as_interrupt.py`:
+  `build_party_mode_decision_card(...)`,
+  `party_mode_as_interrupt(...)`,
+  `finding_record_has_trace_link(...)`.
+
+**Semantics pinned:**
+
+- `party_mode_contributions` is append-only evidence attached to the emitted
+  DecisionCard meta and typed as strict `PartyModeContribution` entries.
+- `consolidated_at` is timezone-aware and marks the exact consolidation
+  boundary for the multi-persona review.
+- `trace_link` accepts either
+  `https://smith.langchain.com/traces/<trace_id>` or a repo-relative trace
+  export path, satisfying the FR42 evidence convention.
+
+**Migration:** Additive only. Pre-4.3 DecisionCard fixtures remain parseable;
+golden files and schema pins gain the new optional meta fields at default
+values (`party_mode_contributions=[]`, `consolidated_at=null`).
+
 ## OperatorVerdict Gate Surface v2.0 - 2026-04-26 - Story 3.3 Verdict + Resume API
 
 **Type:** Breaking change to the verdict receipt shape.

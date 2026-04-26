@@ -19,7 +19,9 @@
       "09"
     ],
     "cache_state": "mixed",
+    "consolidated_at": null,
     "override_trail": [],
+    "party_mode_contributions": [],
     "reject_rate": 0.1
   },
   "operator_prompt": "Continue with the current cluster sequence?",

@@ -19,6 +19,7 @@
       "07"
     ],
     "cache_state": "mixed",
+    "consolidated_at": null,
     "override_trail": [
       {
         "applied_at": "2026-04-26T12:01:00Z",
@@ -34,6 +35,7 @@
         }
       }
     ],
+    "party_mode_contributions": [],
     "reject_rate": 0.125
   },
   "readiness_status": "ready",

@@ -1,0 +1,9 @@
+{
+  "contribution_id": "33333333-3333-4333-8333-333333333333",
+  "persona": "winston",
+  "payload": {
+    "finding": "trace-first review path is wired"
+  },
+  "submitted_at": "2026-04-26T12:00:00Z",
+  "trace_link": "https://smith.langchain.com/traces/trace-123"
+}

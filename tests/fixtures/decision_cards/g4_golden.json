@@ -22,7 +22,9 @@
       "13"
     ],
     "cache_state": "cold",
+    "consolidated_at": null,
     "override_trail": [],
+    "party_mode_contributions": [],
     "reject_rate": 0.0
   },
   "outcome_summary": "Trial completed and all expected artifacts were emitted.",

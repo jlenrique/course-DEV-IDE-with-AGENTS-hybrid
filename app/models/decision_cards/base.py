@@ -9,6 +9,7 @@ from uuid import UUID
 from pydantic import BaseModel, ConfigDict, Field, field_validator
 
 from app.models.decision_cards.override_event import OverrideEvent
+from app.models.gates.party_mode_contribution import PartyModeContribution
 from app.models.state._base import enforce_tz_aware, enforce_uuid4_version
 
 DecisionCardVerb = Literal["approve", "edit", "reject"]
@@ -38,6 +39,14 @@ class DecisionCardMeta(BaseModel):
         le=1.0,
         description="Current gate reject-rate snapshot in [0.0, 1.0].",
     )
+    party_mode_contributions: list[PartyModeContribution] = Field(
+        default_factory=list,
+        description="Optional multi-persona contributions consolidated into this card.",
+    )
+    consolidated_at: datetime | None = Field(
+        default=None,
+        description="Timezone-aware timestamp when party-mode contributions were consolidated.",
+    )
 
     @field_validator("affected_nodes")
     @classmethod
@@ -46,6 +55,11 @@ class DecisionCardMeta(BaseModel):
             if not node_id:
                 raise ValueError("affected_nodes entries must be non-empty strings")
         return value
+
+    @field_validator("consolidated_at")
+    @classmethod
+    def _enforce_consolidated_at_tz(cls, value: datetime | None) -> datetime | None:
+        return enforce_tz_aware(value) if value is not None else None
 
 
 class DecisionCard(BaseModel):

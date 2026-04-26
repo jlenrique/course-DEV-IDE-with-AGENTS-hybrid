@@ -225,6 +225,25 @@ Architectural separation is enforced in two places:
 - import-linter now carries bidirectional Cora/Marcus contracts covering both
   `app.marcus.*` and the canonical top-level `marcus.*` package.
 
+### 6.3 Party-Mode-as-Interrupt (Story 4.3)
+
+Story 4.3 lifts party-mode review into the runtime graph as a checkpointed
+primitive instead of leaving it as an external skill-only ritual.
+`app.gates.party_mode_as_interrupt.party_mode_as_interrupt(...)` now:
+
+- validates each contribution against the strict
+  `PartyModeContribution` model,
+- emits an `interrupt()` payload carrying the consolidated DecisionCard plus
+  its digest, and
+- resumes only through the existing `OperatorVerdict` and
+  `resume_from_verdict()` authority path from Story 3.3.
+
+`DecisionCardMeta` is extended additively with
+`party_mode_contributions` and `consolidated_at`, so any gate card can carry
+the multi-persona review record without inventing a parallel operator surface.
+FR42 trace-first evidence is pinned by the `trace_link` convention:
+either a LangSmith trace URL or a repo-relative trace export path.
+
 ---
 
 ## 7. Model Cascade + Registry Governance

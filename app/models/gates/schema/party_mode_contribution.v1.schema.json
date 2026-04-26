@@ -1,0 +1,48 @@
+{
+  "additionalProperties": false,
+  "description": "One persona's contribution to a consolidated party-mode review.",
+  "properties": {
+    "contribution_id": {
+      "description": "UUID4 identity for the contribution.",
+      "format": "uuid",
+      "title": "Contribution Id",
+      "type": "string"
+    },
+    "persona": {
+      "description": "Persona or reviewer identity that produced the contribution.",
+      "minLength": 1,
+      "title": "Persona",
+      "type": "string"
+    },
+    "payload": {
+      "additionalProperties": true,
+      "description": "Structured contribution payload.",
+      "title": "Payload",
+      "type": "object"
+    },
+    "submitted_at": {
+      "description": "Timezone-aware submission timestamp.",
+      "format": "date-time",
+      "title": "Submitted At",
+      "type": "string"
+    },
+    "trace_link": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "description": "LangSmith trace URL or repo-relative trace export path.",
+      "title": "Trace Link"
+    }
+  },
+  "required": [
+    "persona"
+  ],
+  "title": "PartyModeContribution",
+  "type": "object"
+}
