@@ -1,0 +1,2 @@
+"""Vera specialist tests package."""
+

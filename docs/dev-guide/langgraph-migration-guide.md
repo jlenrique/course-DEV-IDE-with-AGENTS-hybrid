@@ -440,7 +440,7 @@ tests/integration/scaffold_conformance/test_scaffold_irene.py
 
 Operator runs first-breath ceremony BEFORE `bmad-dev-story` opens for steady-state stories; lock for the AC-D 10-invocation cache window.
 
-> **§12.5–§12.11 cover four specialist-shape categories proven across Slab 2a–2b.1 (narration / LLM+tool-dispatch / pure-tool-dispatch / REST-API tool-dispatch). Pure inheritors are catalogued at §12.12; add a new §12.x only when a specialist introduces a new act-body category.**
+> **§12.5–§12.11 cover four specialist-shape categories proven across five specialists by Slab 2a–2b.2 (narration / LLM+tool-dispatch / pure-tool-dispatch / REST-API tool-dispatch). Pure inheritors are catalogued at §12.12; add a new §12.x only when a specialist introduces a new act-body category.**
 
 ### 12.5 Irene worked before/after (act node) — real-Irene example, post-2a.2 close
 
@@ -795,8 +795,9 @@ Inheritors of this category are catalogued at §12.12.
 |---|---|---|---|---|---|
 | Texas | §12.7 | Subprocess dispatch wrapper + bundle parser | Populated-and-locked | A9 + A12 + NFR-I5 pin | 2a.4 |
 | Gary | §12.11 | REST-API dispatch wrapper + receipt parser | Empty-dir / absent | A10 (third) + A11 (second) | 2b.1 |
+| Vera | §12.6 | sensory-bridges importlib loader wrapper (`perceive(...)` entrypoint) | Graceful-degrade (unpopulated BMB sanctum) | A10 (fourth) + A11 (third) | 2b.2 |
 
-### 12.13 Verification commands (Irene + Kira + Texas + Gary)
+### 12.13 Verification commands (Irene + Kira + Texas + Gary + Vera)
 
 ```bash
 python -m pytest tests/specialists/irene -q
@@ -807,6 +808,8 @@ python -m pytest tests/specialists/texas tests/agents/bmad-agent-texas tests/con
 python -m pytest tests/integration/scaffold_conformance/test_scaffold_texas.py -q
 python -m pytest tests/specialists/gary -q
 python -m pytest tests/integration/scaffold_conformance/test_scaffold_gary.py -q
+python -m pytest tests/specialists/vera -q
+python -m pytest tests/integration/scaffold_conformance/test_scaffold_vera.py -q
 ```
 
 ### 12.14 Governance notes
@@ -840,3 +843,4 @@ Section 12 is now structurally complete as a migration reference library for Sla
 | v1.1 | 2026-04-24 | Added §8.1 Upstream Severance (replaces FR60 forward-port freeze); STUB markers on §10 + new §12 Specialist Walkthrough placeholder; historical note on §8 + "intentional pointer" designation on §11 + "you-are-here" dev-guide cross-references landing on sibling docs. Party-mode round 3 Paige caveats. | Slab 1 close (rider hardening) |
 | v1.2 | 2026-04-25 | Added §12.7 Texas pure-tool-dispatch worked example; renumbered §12.7/§12.8 -> §12.8/§12.9; added §12.10 Slab 2a retrospective summary and cross-suite verification command set. | Slab 2a close |
 | v1.3 | 2026-04-25 | Added §12.11 Gary REST-API worked example + §12.12 inheritor matrix; tag-namespace noun convention (`receipt.parsed.*`); renumbered verification/governance to §12.13/§12.14 and added Gary verification commands. | Slab 2b.1 |
+| v1.4 | 2026-04-25 | Added Vera inheritor row to §12.12 under §12.6 parent; updated §12 framing sentence and §12.13 verification set for Vera. | Slab 2b.2 |
