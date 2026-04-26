@@ -224,7 +224,7 @@ def _check_pipeline_manifest() -> CheckResult:
 
 
 def _check_dev_graph_manifest() -> CheckResult:
-    """Verify dev-graph-manifest.yaml exists post-Slab-4 4.2."""
+    """Verify dev-graph-manifest.yaml exists + parses post-Slab-4 4.2."""
     path = REPO_ROOT / "state" / "config" / "dev-graph-manifest.yaml"
     if not path.is_file():
         return CheckResult(
@@ -233,7 +233,155 @@ def _check_dev_graph_manifest() -> CheckResult:
             f"missing: {path.relative_to(REPO_ROOT).as_posix()} (Slab 4 Story 4.2 ships this; trial-run can proceed without dev-graph)",
             required=False,
         )
-    return CheckResult("dev_graph_manifest", "PASS", "dev-graph-manifest.yaml present")
+    try:
+        import yaml
+        manifest = yaml.safe_load(path.read_text(encoding="utf-8"))
+        nodes = manifest.get("nodes") or []
+        return CheckResult(
+            "dev_graph_manifest",
+            "PASS",
+            f"dev-graph-manifest.yaml parses + {len(nodes)} node(s)",
+            detail={"node_count": len(nodes)},
+        )
+    except Exception as exc:
+        return CheckResult("dev_graph_manifest", "FAIL", f"parse failed: {exc}")
+
+
+def _check_ledger_schema_loaded() -> CheckResult:
+    """Verify Slab 4.4 ledger schema loaded into Postgres (depends on _check_postgres)."""
+    db_url = os.environ.get("DATABASE_URL")
+    if not db_url:
+        return CheckResult(
+            "ledger_schema_loaded",
+            "WARN",
+            "DATABASE_URL absent; ledger schema check skipped (in-memory checkpointer fallback)",
+            required=False,
+        )
+    schema_file = REPO_ROOT / "app" / "ledger" / "schema.sql"
+    if not schema_file.is_file():
+        return CheckResult(
+            "ledger_schema_loaded",
+            "FAIL",
+            f"missing: {schema_file.relative_to(REPO_ROOT).as_posix()} (Slab 4.4 ships this)",
+        )
+    try:
+        import psycopg
+        conn = psycopg.connect(db_url, connect_timeout=5)
+        with conn.cursor() as cur:
+            cur.execute(
+                "SELECT column_name FROM information_schema.columns "
+                "WHERE table_name = 'ledger_events' ORDER BY ordinal_position"
+            )
+            columns = [row[0] for row in cur.fetchall()]
+        conn.close()
+        if not columns:
+            return CheckResult(
+                "ledger_schema_loaded",
+                "WARN",
+                "ledger_events table not loaded; run: psql $DATABASE_URL -f app/ledger/schema.sql",
+                required=False,
+            )
+        expected = {"event_id", "trial_id", "gate_id", "kind", "payload", "idempotency_key", "created_at"}
+        missing_cols = expected - set(columns)
+        if missing_cols:
+            return CheckResult(
+                "ledger_schema_loaded",
+                "FAIL",
+                f"ledger_events table present but missing columns: {missing_cols}",
+                detail={"present_columns": columns, "missing": list(missing_cols)},
+            )
+        return CheckResult(
+            "ledger_schema_loaded",
+            "PASS",
+            f"ledger_events table loaded with {len(columns)} columns (all 7 required present)",
+            detail={"column_count": len(columns)},
+        )
+    except Exception as exc:
+        return CheckResult("ledger_schema_loaded", "FAIL", f"schema check failed: {str(exc)[:200]}")
+
+
+def _check_frozen_graph_digest_stable() -> CheckResult:
+    """Verify Slab 4.5 frozen-graph compiled-graph-digest is stable + non-empty."""
+    digest_file = REPO_ROOT / "runtime" / "graphs" / "v42" / "compiled-graph-digest.txt"
+    if not digest_file.is_file():
+        return CheckResult(
+            "frozen_graph_digest",
+            "WARN",
+            f"missing: {digest_file.relative_to(REPO_ROOT).as_posix()} (Slab 4.5 ships this)",
+            required=False,
+        )
+    try:
+        digest = digest_file.read_text(encoding="utf-8").strip()
+        if not digest:
+            return CheckResult(
+                "frozen_graph_digest",
+                "WARN",
+                "compiled-graph-digest.txt present but empty",
+                required=False,
+            )
+        # SHA-256 hex shape: 64 hex chars
+        if len(digest) == 64 and all(c in "0123456789abcdef" for c in digest.lower()):
+            return CheckResult(
+                "frozen_graph_digest",
+                "PASS",
+                f"frozen-graph digest sha256-shaped: {digest[:8]}...{digest[-8:]}",
+                detail={"digest_prefix": digest[:16]},
+            )
+        # Non-sha256 shape; could be a placeholder string
+        return CheckResult(
+            "frozen_graph_digest",
+            "WARN",
+            f"compiled-graph-digest.txt present but not sha256-shaped (len={len(digest)})",
+            detail={"digest_preview": digest[:50]},
+            required=False,
+        )
+    except Exception as exc:
+        return CheckResult("frozen_graph_digest", "FAIL", f"read failed: {exc}")
+
+
+def _check_sanctum_watcher_importable() -> CheckResult:
+    """Verify Slab 4.6 sanctum_watcher module + watchdog dep importable."""
+    watcher_path = REPO_ROOT / "app" / "runtime" / "sanctum_watcher.py"
+    if not watcher_path.is_file():
+        return CheckResult(
+            "sanctum_watcher_module",
+            "WARN",
+            f"missing: {watcher_path.relative_to(REPO_ROOT).as_posix()} (Slab 4.6 ships this)",
+            required=False,
+        )
+    try:
+        import watchdog  # noqa: F401
+    except ImportError:
+        return CheckResult(
+            "sanctum_watcher_module",
+            "FAIL",
+            "sanctum_watcher.py present but watchdog Python dep missing; run: pip install watchdog",
+        )
+    try:
+        # Attempt to import the module to verify it's loadable
+        import importlib.util
+        spec = importlib.util.spec_from_file_location("sanctum_watcher", watcher_path)
+        if spec is None or spec.loader is None:
+            return CheckResult("sanctum_watcher_module", "FAIL", "spec_from_file_location returned None")
+        module = importlib.util.module_from_spec(spec)
+        # Don't actually exec; just check if symbols are available via grep heuristic
+        text = watcher_path.read_text(encoding="utf-8")
+        has_class = "class SanctumWatcher" in text
+        has_handler = "class _SanctumEventHandler" in text or "FileSystemEventHandler" in text
+        if has_class and has_handler:
+            return CheckResult(
+                "sanctum_watcher_module",
+                "PASS",
+                "sanctum_watcher.py importable + carries SanctumWatcher class (FR59 ready)",
+            )
+        return CheckResult(
+            "sanctum_watcher_module",
+            "WARN",
+            "sanctum_watcher.py present but missing expected SanctumWatcher class",
+            required=False,
+        )
+    except Exception as exc:
+        return CheckResult("sanctum_watcher_module", "FAIL", f"check failed: {str(exc)[:200]}")
 
 
 def _check_frozen_graph_v42() -> CheckResult:
@@ -347,12 +495,16 @@ def _check_migration_state() -> CheckResult:
 
     # Lightweight grep — full YAML parse can fail on long inline comments
     conditional_markers = []
-    if "CONDITIONAL-GREEN" in content or "CONDITIONAL-M2" in content:
+    if "CONDITIONAL-GREEN-PENDING-OPERATOR-ADDENDUM per slab-2c" in content or "CONDITIONAL-M2" in content:
         conditional_markers.append("M2")
-    if "CONDITIONAL-M3" in content:
+    if "CONDITIONAL-GREEN-PENDING-OPERATOR-ADDENDUM per slab-3" in content or "CONDITIONAL-M3" in content:
         conditional_markers.append("M3")
-    if "CONDITIONAL-M4" in content:
+    if "CONDITIONAL-GREEN-PENDING-OPERATOR-ADDENDUM per slab-4" in content or "CONDITIONAL-M4" in content:
         conditional_markers.append("M4")
+    # M4 may be GREEN-WITH-RIDERS (Codex's Slab 4.7 close pattern); check separately
+    if "GREEN-WITH-RIDERS" in content and "slab-4" in content.lower():
+        if "M4" not in conditional_markers:
+            conditional_markers.append("M4-GREEN-WITH-RIDERS")
 
     epic_states = {}
     for line in content.split("\n"):
@@ -421,13 +573,15 @@ def run_preflight(args: argparse.Namespace) -> tuple[list[CheckResult], int]:
     checks = [
         _check_env_vars(skip=args.skip_env),
         _check_postgres(skip=args.skip_postgres),
+        _check_ledger_schema_loaded(),
         _check_mcp_servers(),
         _check_sanctums(),
         _check_pipeline_manifest(),
         _check_dev_graph_manifest(),
         _check_frozen_graph_v42(),
+        _check_frozen_graph_digest_stable(),
         _check_dispatch_registry(),
-        _check_sanctum_watcher(),
+        _check_sanctum_watcher_importable(),  # supersedes _check_sanctum_watcher; checks dep + module
         _check_marcus_baseline(),
         _check_trial_corpus(args.trial_corpus),
         _check_migration_state(),

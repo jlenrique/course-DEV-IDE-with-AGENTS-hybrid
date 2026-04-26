@@ -51,6 +51,11 @@ class HealthReport:
     ledger: dict[str, Any] = field(default_factory=dict)
     sanctum_mutations_7d: dict[str, Any] = field(default_factory=dict)
     migration_master_status: str = "in-flight"
+    # Slab-4 + Slab-5a metrics (added Tier-2-E 2026-04-26)
+    frozen_graph_v42: dict[str, Any] = field(default_factory=dict)
+    sanctum_watcher: dict[str, Any] = field(default_factory=dict)
+    storypoint_burndown: dict[str, Any] = field(default_factory=dict)
+    replay_suite: dict[str, Any] = field(default_factory=dict)
     notes: list[str] = field(default_factory=list)
 
 
@@ -252,6 +257,84 @@ def _check_sanctum_mutations_7d() -> dict[str, Any]:
         return {"error": str(exc)[:200]}
 
 
+def _check_frozen_graph_v42() -> dict[str, Any]:
+    """Verify Slab 4.5 frozen-graph artifacts + digest sha256-shape (added Tier-2-E)."""
+    v42_dir = REPO_ROOT / "runtime" / "graphs" / "v42"
+    if not v42_dir.is_dir():
+        return {"state": "Slab-4.5 not yet shipped (runtime/graphs/v42/ absent)"}
+    expected = ["manifest-snapshot.yaml", "pack-version.txt", "compiled-graph-digest.txt"]
+    present = [a for a in expected if (v42_dir / a).is_file()]
+    digest_path = v42_dir / "compiled-graph-digest.txt"
+    digest_state = "absent"
+    digest_prefix = ""
+    if digest_path.is_file():
+        digest = digest_path.read_text(encoding="utf-8").strip()
+        if len(digest) == 64 and all(c in "0123456789abcdef" for c in digest.lower()):
+            digest_state = "sha256-shaped"
+            digest_prefix = f"{digest[:8]}...{digest[-8:]}"
+        elif digest:
+            digest_state = "non-sha256"
+            digest_prefix = digest[:30]
+    pack_version = ""
+    if (v42_dir / "pack-version.txt").is_file():
+        pack_version = (v42_dir / "pack-version.txt").read_text(encoding="utf-8").strip()
+    return {
+        "artifacts_present": len(present),
+        "artifacts_expected": len(expected),
+        "digest_state": digest_state,
+        "digest_prefix": digest_prefix,
+        "pack_version": pack_version,
+    }
+
+
+def _check_sanctum_watcher() -> dict[str, Any]:
+    """Verify Slab 4.6 sanctum_watcher module + watchdog dep (added Tier-2-E)."""
+    watcher_path = REPO_ROOT / "app" / "runtime" / "sanctum_watcher.py"
+    state = {"module_present": watcher_path.is_file()}
+    try:
+        import watchdog
+        state["watchdog_dep"] = "installed"
+        state["watchdog_version"] = getattr(watchdog, "__version__", "unknown")
+    except ImportError:
+        state["watchdog_dep"] = "MISSING — pip install watchdog"
+    return state
+
+
+def _compute_storypoint_burndown() -> dict[str, Any]:
+    """Per-Slab story-point burndown roll-up (added Tier-2-E)."""
+    path = REPO_ROOT / "_bmad-output" / "implementation-artifacts" / "sprint-status.yaml"
+    if not path.is_file():
+        return {"error": "sprint-status.yaml not found"}
+    content = path.read_text(encoding="utf-8")
+    # Heuristic: count `done` rows per Slab prefix
+    slab_done = {"1": 0, "2a": 0, "2b": 0, "2c": 0, "3": 0, "4": 0, "5a": 0}
+    for line in content.split("\n"):
+        s = line.strip()
+        for prefix in slab_done:
+            if s.startswith(f"migration-{prefix}-") or s.startswith(f"migration-{prefix}.") or s.startswith(f"migration-2{prefix[1:] if prefix.startswith('2') else ''}-"):
+                if ": done" in s:
+                    slab_done[prefix] += 1
+                    break
+    return {
+        "stories_done_per_slab": slab_done,
+        "total_done": sum(slab_done.values()),
+    }
+
+
+def _check_replay_suite_status() -> dict[str, Any]:
+    """Verify Slab 5a.1 trial-replay status + GHA workflow presence (added Tier-2-E)."""
+    replay_dir = REPO_ROOT / "tests" / "trial_replay"
+    workflow = REPO_ROOT / ".github" / "workflows" / "trial-replay.yml"
+    if not replay_dir.is_dir():
+        return {"state": "Slab-5a.1 not yet shipped (tests/trial_replay/ absent)"}
+    py_files = list(replay_dir.glob("test_*.py"))
+    return {
+        "test_files": len(py_files),
+        "workflow_present": workflow.is_file(),
+        "workflow_path": str(workflow.relative_to(REPO_ROOT)) if workflow.is_file() else None,
+    }
+
+
 def _detect_master_status() -> str:
     path = REPO_ROOT / "_bmad-output" / "implementation-artifacts" / "sprint-status.yaml"
     if not path.is_file():
@@ -279,6 +362,11 @@ def collect_health() -> HealthReport:
         ledger=_check_ledger(),
         sanctum_mutations_7d=_check_sanctum_mutations_7d(),
         migration_master_status=_detect_master_status(),
+        # Tier-2-E additions (post-Slab-4 close)
+        frozen_graph_v42=_check_frozen_graph_v42(),
+        sanctum_watcher=_check_sanctum_watcher(),
+        storypoint_burndown=_compute_storypoint_burndown(),
+        replay_suite=_check_replay_suite_status(),
     )
 
 
@@ -337,6 +425,35 @@ def render_text(report: HealthReport) -> str:
     lines.append("")
     lines.append("--- Trial Replay ---")
     lines.append(f"  {report.trial_replay.get('state', 'unknown')}")
+    lines.append("")
+    lines.append("--- Frozen-Graph v42 (Slab 4.5) ---")
+    fg = report.frozen_graph_v42
+    if "artifacts_present" in fg:
+        lines.append(f"  Artifacts: {fg['artifacts_present']}/{fg['artifacts_expected']}; pack-version: {fg.get('pack_version', 'unknown')}")
+        lines.append(f"  Digest: {fg.get('digest_state', 'unknown')} ({fg.get('digest_prefix', 'n/a')})")
+    else:
+        lines.append(f"  {fg.get('state', 'unknown')}")
+    lines.append("")
+    lines.append("--- Sanctum Watcher (Slab 4.6) ---")
+    sw = report.sanctum_watcher
+    lines.append(f"  Module: {'present' if sw.get('module_present') else 'ABSENT'}; watchdog dep: {sw.get('watchdog_dep', 'unknown')}")
+    lines.append("")
+    lines.append("--- Story-Point Burndown ---")
+    bd = report.storypoint_burndown
+    if "stories_done_per_slab" in bd:
+        per_slab = ", ".join(f"Slab{k}={v}" for k, v in bd["stories_done_per_slab"].items() if v > 0)
+        lines.append(f"  Done by slab: {per_slab}")
+        lines.append(f"  Total done: {bd['total_done']}")
+    else:
+        lines.append(f"  {bd}")
+    lines.append("")
+    lines.append("--- Replay Suite (Slab 5a.1) ---")
+    rs = report.replay_suite
+    if "test_files" in rs:
+        wf = "PRESENT" if rs.get("workflow_present") else "ABSENT"
+        lines.append(f"  Test files: {rs['test_files']}; GHA workflow: {wf}")
+    else:
+        lines.append(f"  {rs.get('state', 'unknown')}")
     return "\n".join(lines)
 
 
