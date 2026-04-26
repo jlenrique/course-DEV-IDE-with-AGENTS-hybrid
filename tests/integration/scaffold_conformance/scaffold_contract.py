@@ -2,9 +2,9 @@
 
 Every Slab 2+ specialist migration ships a `graph.py` exposing a LangGraph
 subgraph with the 9 canonical nodes defined here. This module is the grep-able
-source of truth for the contract; per-specialist conformance tests (registered
-under `tests/integration/scaffold_conformance/test_scaffold_<name>.py`) import
-`SCAFFOLD_NODE_IDS` + `validate_scaffold` to assert their specialist matches.
+source of truth for the contract; auto-discovery conformance tests import
+`SCAFFOLD_NODE_IDS` + `validate_scaffold` to assert each discovered specialist
+matches.
 
 Slab 1 ships the framework with zero registered specialists — running
 `pytest tests/integration/scaffold_conformance/` is green (no-op) at Slab 1
@@ -15,6 +15,8 @@ framework.
 from __future__ import annotations
 
 from dataclasses import dataclass
+from importlib import import_module
+from pathlib import Path
 from typing import Protocol
 
 # Canonical 9-node scaffold ids per architecture §Specialist Scaffold (Slab 2
@@ -55,6 +57,25 @@ class HasNodes(Protocol):
     nodes: dict[str, object]
 
 
+def discover_specialist_ids(
+    specialists_root: Path = Path("app/specialists"),
+) -> list[str]:
+    """Auto-discover specialist package ids from app/specialists."""
+    return sorted(
+        p.name
+        for p in specialists_root.iterdir()
+        if p.is_dir() and not p.name.startswith(("_", "."))
+    )
+
+
+def build_specialist_graph(specialist_id: str) -> HasNodes:
+    """Import `<specialist>.graph` and call its canonical graph builder."""
+    module = import_module(f"app.specialists.{specialist_id}.graph")
+    builder_name = f"build_{specialist_id}_graph"
+    builder = getattr(module, builder_name)
+    return builder()
+
+
 def validate_scaffold(specialist_id: str, subgraph: HasNodes) -> ScaffoldConformanceResult:
     """Assert that `subgraph.nodes` matches `SCAFFOLD_NODE_IDS` exactly.
 
@@ -80,5 +101,7 @@ def validate_scaffold(specialist_id: str, subgraph: HasNodes) -> ScaffoldConform
 __all__ = [
     "SCAFFOLD_NODE_IDS",
     "ScaffoldConformanceResult",
+    "build_specialist_graph",
+    "discover_specialist_ids",
     "validate_scaffold",
 ]

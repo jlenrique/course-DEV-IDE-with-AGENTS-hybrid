@@ -1,0 +1,103 @@
+from __future__ import annotations
+
+import json
+from dataclasses import dataclass
+from datetime import UTC, datetime
+from types import SimpleNamespace
+from typing import Any
+
+from app.models.state.cache_state import CacheState
+from app.models.state.model_resolution_entry import ModelResolutionEntry
+from app.models.state.run_state import RunState
+from app.specialists.irene.graph import _act
+
+
+@dataclass
+class _FakeChat:
+    response_text: str
+
+    def invoke(self, messages: list[dict[str, str]]) -> SimpleNamespace:
+        del messages
+        return SimpleNamespace(content=self.response_text, usage_metadata={"input_tokens": 42})
+
+
+@dataclass
+class _FakeHandle:
+    response_text: str
+
+    @property
+    def entry(self) -> ModelResolutionEntry:
+        return ModelResolutionEntry(
+            level="registry_default",
+            requested=None,
+            resolved="gpt-5.4",
+            reason="test",
+            timestamp=datetime.now(UTC),
+            cache_prefix_hash="a" * 64,
+        )
+
+    @property
+    def chat(self) -> _FakeChat:
+        return _FakeChat(response_text=self.response_text)
+
+
+def _state(payload: dict[str, Any]) -> RunState:
+    return RunState(
+        graph_version="v0.1-stub",
+        temperature=0.0,
+        cache_state=CacheState(
+            cache_prefix=json.dumps(payload, sort_keys=True),
+            entries_count=0,
+        ),
+        model_resolution_trail=[
+            ModelResolutionEntry(
+                level="registry_default",
+                requested=None,
+                resolved="gpt-5.4",
+                reason="test",
+                timestamp=datetime.now(UTC),
+                cache_prefix_hash="a" * 64,
+            )
+        ],
+    )
+
+
+def test_irene_pass_1_dispatch_branch(monkeypatch: Any) -> None:
+    def _fake_model(*args: Any, **kwargs: Any) -> _FakeHandle:
+        del args, kwargs
+        return _FakeHandle(
+            response_text=json.dumps(
+                {
+                    "learning_objectives": ["obj-1"],
+                    "structural_outline": [{"section": "intro"}],
+                    "cluster_intent": "teach core concept",
+                }
+            )
+        )
+
+    monkeypatch.setattr("app.specialists.irene.graph.make_chat_model", _fake_model)
+    update = _act(_state({"pass_phase": "pass-1", "topic": "cells"}))
+    output = json.loads(update["cache_state"]["cache_prefix"])
+    assert "irene_lesson_design" in output
+    assert output["irene_lesson_design"]["learning_objectives"] == ["obj-1"]
+    assert output["irene_pass_2_envelope"] is None
+
+
+def test_irene_pass_2_default_branch_stays_intact(monkeypatch: Any) -> None:
+    def _fake_model(*args: Any, **kwargs: Any) -> _FakeHandle:
+        del args, kwargs
+        return _FakeHandle(
+            response_text=json.dumps(
+                {
+                    "narration_script": [{"segment_id": "s1"}],
+                    "segment_manifest_deltas": [{"op": "replace"}],
+                }
+            )
+        )
+
+    monkeypatch.setattr("app.specialists.irene.graph.make_chat_model", _fake_model)
+    update = _act(_state({"topic": "cells"}))
+    output = json.loads(update["cache_state"]["cache_prefix"])
+    assert output["narration_script"] == [{"segment_id": "s1"}]
+    assert output["segment_manifest_deltas"] == [{"op": "replace"}]
+

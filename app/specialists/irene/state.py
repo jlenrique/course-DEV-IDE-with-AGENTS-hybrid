@@ -23,7 +23,7 @@ have surfaced any cross-specialist contract requirements.
 from __future__ import annotations
 
 import json
-from typing import ClassVar, Literal
+from typing import Any, ClassVar, Literal
 
 from pydantic import Field, model_validator
 
@@ -56,6 +56,8 @@ class IreneReturn(SpecialistReturn):
     """Pass-2 narration return with specialist-id pin."""
 
     _SPECIALIST_ID: ClassVar[str] = "irene"
+    irene_lesson_design: dict[str, Any] | None = None
+    irene_pass_2_envelope: dict[str, Any] | None = None
 
     @model_validator(mode="after")
     def _pin_specialist_id(self) -> IreneReturn:

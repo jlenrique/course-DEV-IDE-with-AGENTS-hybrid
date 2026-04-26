@@ -210,3 +210,10 @@ signal â€” escalate to party-mode before extending the shape.
 - Sandbox-AC validator:
   [`../../scripts/utilities/validate_migration_story_sandbox_acs.py`](../../scripts/utilities/validate_migration_story_sandbox_acs.py)
 
+
+### A13. Loose-typing accumulation across multi-specialist migration
+
+- **Example:** Slab 2b per-specialist wave added multiple dict[str, Any] | None return-shape fields across specialist states before strict dispatch contracts were centralized.
+- **Counter-pattern:** Allow temporary loose typing only with a named hardening story and explicit close-time conversion to typed dispatch models plus registry-backed invariants.
+- **Slab-of-discovery:** Slab 2b Story 2b.15 (resolved during cross-cutting contract hardening).
+

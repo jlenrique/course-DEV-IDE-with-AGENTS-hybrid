@@ -1,9 +1,8 @@
 """Scaffold-conformance framework shape tests (AC-1.7-D).
 
-Slab 1 Story 1.7 lands the scaffold-conformance framework. Slab 2 specialist
-stories register per-specialist tests that instantiate their subgraph and
-call `validate_scaffold()`; those tests live alongside this one under
-`tests/integration/scaffold_conformance/test_scaffold_<specialist>.py`.
+Slab 1 Story 1.7 lands the scaffold-conformance framework. Slab 2b.16 upgrades
+the framework to auto-discovery, so specialist graph checks run from
+`test_framework_auto_discovery.py` without per-specialist conformance files.
 
 This file verifies the FRAMEWORK itself — the contract module's shape, the
 9-node id set, the validator's accept / reject / diagnostic behavior — so a

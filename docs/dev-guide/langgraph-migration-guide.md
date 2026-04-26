@@ -854,3 +854,14 @@ Section 12 is now structurally complete as a migration reference library for Sla
 | v1.3 | 2026-04-25 | Added §12.11 Gary REST-API worked example + §12.12 inheritor matrix; tag-namespace noun convention (`receipt.parsed.*`); renumbered verification/governance to §12.13/§12.14 and added Gary verification commands. | Slab 2b.1 |
 | v1.4 | 2026-04-25 | Added Vera inheritor row to §12.12 under §12.6 parent; updated §12 framing sentence and §12.13 verification set for Vera. | Slab 2b.2 |
 | v1.5 | 2026-04-25 | Added Quinn-R inheritor row to §12.12 under §12.6 parent; updated §12 framing sentence and verification set for Quinn-R. | Slab 2b.3 |
+
+### 12.15 Slab 2b close update
+
+Slab 2b is closed at Story 2b.17. Scaffold conformance now runs through auto-discovery instead of per-specialist conformance files.
+
+Verification command (framework):
+
+`ash
+python -m pytest tests/integration/scaffold_conformance/test_framework_auto_discovery.py -q
+` 
+

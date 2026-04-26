@@ -25,3 +25,16 @@ def test_irene_golden_return_round_trip() -> None:
     payload = json.loads((FIXTURE_ROOT / "golden_return.json").read_text(encoding="utf-8"))
     model = IreneReturn.model_validate(payload)
     assert model.specialist_id == "irene"
+
+
+def test_irene_return_includes_pass_fields() -> None:
+    model = IreneReturn(
+        specialist_id="irene",
+        verb="proceed",
+        payload={},
+        irene_lesson_design={"learning_objectives": []},
+        irene_pass_2_envelope={"narration_script": []},
+        timestamp="2026-04-24T00:00:01Z",
+    )
+    assert model.irene_lesson_design == {"learning_objectives": []}
+    assert model.irene_pass_2_envelope == {"narration_script": []}

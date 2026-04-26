@@ -211,6 +211,128 @@ def _parse_pass_2_response(response_content: str) -> dict[str, Any]:
     }
 
 
+def _parse_pass_1_response(response_content: str) -> dict[str, Any]:
+    """Parse Pass-1 response into lesson-design shape."""
+    stripped = response_content.strip()
+    if "```json" in stripped:
+        start = stripped.find("```json") + len("```json")
+        end = stripped.find("```", start)
+        if end > start:
+            stripped = stripped[start:end].strip()
+    try:
+        parsed = json.loads(stripped)
+    except json.JSONDecodeError:
+        parsed = None
+    if isinstance(parsed, dict):
+        return parsed
+    return {
+        "learning_objectives": [],
+        "structural_outline": [],
+        "cluster_intent": "",
+        "raw_response": response_content,
+    }
+
+
+def _decode_envelope_payload(state: RunState) -> dict[str, Any]:
+    """Decode envelope payload from cache carrier; malformed carrier degrades to empty."""
+    if state.cache_state is None or not state.cache_state.cache_prefix:
+        return {}
+    try:
+        decoded = json.loads(state.cache_state.cache_prefix)
+    except json.JSONDecodeError:
+        return {}
+    return decoded if isinstance(decoded, dict) else {}
+
+
+def _act_pass_1(
+    state: RunState,
+    *,
+    handle: Any,
+    envelope_payload: dict[str, Any],
+    model_id: str,
+) -> dict[str, Any]:
+    """Pass-1 lesson design branch."""
+    system_msg = (
+        "You are Irene pass-1. Produce lesson design JSON with keys "
+        "`learning_objectives`, `structural_outline`, and `cluster_intent`."
+    )
+    payload_section = json.dumps(
+        envelope_payload,
+        sort_keys=True,
+        ensure_ascii=True,
+        separators=(",", ":"),
+    )
+    response = handle.chat.invoke(
+        [
+            {"role": "system", "content": system_msg},
+            {"role": "user", "content": f"```json\n{payload_section}\n```"},
+        ]
+    )
+    raw_content = response.content if hasattr(response, "content") else str(response)
+    raw_text = raw_content if isinstance(raw_content, str) else str(raw_content)
+    lesson_design = _parse_pass_1_response(raw_text)
+    output_blob = json.dumps(
+        {
+            "irene_lesson_design": lesson_design,
+            "irene_pass_2_envelope": None,
+            "model_id": model_id,
+            "usage": getattr(response, "usage_metadata", None),
+        },
+        sort_keys=True,
+        ensure_ascii=True,
+        separators=(",", ":"),
+        default=str,
+    )
+    return {
+        "cache_state": {
+            "cache_prefix": output_blob,
+            "entries_count": (state.cache_state.entries_count + 1)
+            if state.cache_state is not None
+            else 1,
+        },
+    }
+
+
+def _act_pass_2(
+    state: RunState,
+    *,
+    handle: Any,
+    envelope_payload: dict[str, Any],
+    model_id: str,
+) -> dict[str, Any]:
+    """Pass-2 narration branch (existing 2a.2 behavior)."""
+    system_msg, user_msg = _assemble_pass_2_prompt(envelope_payload)
+    response = handle.chat.invoke(
+        [
+            {"role": "system", "content": system_msg},
+            {"role": "user", "content": user_msg},
+        ]
+    )
+    raw_content = response.content if hasattr(response, "content") else str(response)
+    raw_text = raw_content if isinstance(raw_content, str) else str(raw_content)
+    parsed = _parse_pass_2_response(raw_text)
+    output_blob = json.dumps(
+        {
+            "narration_script": parsed["narration_script"],
+            "segment_manifest_deltas": parsed["segment_manifest_deltas"],
+            "model_id": model_id,
+            "usage": getattr(response, "usage_metadata", None),
+        },
+        sort_keys=True,
+        ensure_ascii=True,
+        separators=(",", ":"),
+        default=str,
+    )
+    return {
+        "cache_state": {
+            "cache_prefix": output_blob,
+            "entries_count": (state.cache_state.entries_count + 1)
+            if state.cache_state is not None
+            else 1,
+        },
+    }
+
+
 def _receive(state: RunState) -> dict[str, Any]:
     """Accept envelope + advance to plan; cache-prefix idempotent."""
     del state
@@ -262,57 +384,21 @@ def _act(state: RunState) -> dict[str, Any]:
         tier_request="reasoning",
         system_prompt_hash=last_entry.cache_prefix_hash,
     )
-    # NB: envelope-level payload is not on RunState directly in Slab 1 substrate;
-    # tests pass it via a synthetic state.cache_state.cache_prefix-encoded path
-    # OR invoke `_act` directly with a state pre-populated via the act-test
-    # fixture. The bounded scope here is prompt-assembly + dispatch + parse.
-    envelope_payload: dict[str, Any] = {}
-    if state.cache_state is not None and state.cache_state.cache_prefix:
-        # Test fixture conventionally embeds payload as the cache_prefix value
-        # (sorted-keys canonical JSON). Bounded extraction for byte-stability.
-        try:
-            decoded = json.loads(state.cache_state.cache_prefix)
-        except json.JSONDecodeError:
-            decoded = None
-        # G6 EH-MF1 fix: only dict-typed payloads are valid envelope carriers.
-        # `json.loads` accepts lists / strings / scalars / null; downstream
-        # `_assemble_pass_2_prompt` would otherwise either crash deep on
-        # subscript or silently produce garbage prompts.
-        if isinstance(decoded, dict):
-            envelope_payload = decoded
-    system_msg, user_msg = _assemble_pass_2_prompt(envelope_payload)
-    response = handle.chat.invoke(
-        [
-            {"role": "system", "content": system_msg},
-            {"role": "user", "content": user_msg},
-        ]
+    envelope_payload = _decode_envelope_payload(state)
+    pass_phase = envelope_payload.get("pass_phase")
+    if pass_phase == "pass-1":
+        return _act_pass_1(
+            state,
+            handle=handle,
+            envelope_payload=envelope_payload,
+            model_id=last_entry.resolved,
+        )
+    return _act_pass_2(
+        state,
+        handle=handle,
+        envelope_payload=envelope_payload,
+        model_id=last_entry.resolved,
     )
-    raw_content = response.content if hasattr(response, "content") else str(response)
-    raw_text = raw_content if isinstance(raw_content, str) else str(raw_content)
-    parsed = _parse_pass_2_response(raw_text)
-    # Cache-state carries the response payload (raw + parsed) as JSON in
-    # cache_prefix for downstream nodes. Production wiring (Slab 3+) will add
-    # a dedicated specialist-output field on RunState.
-    output_blob = json.dumps(
-        {
-            "narration_script": parsed["narration_script"],
-            "segment_manifest_deltas": parsed["segment_manifest_deltas"],
-            "model_id": last_entry.resolved,
-            "usage": getattr(response, "usage_metadata", None),
-        },
-        sort_keys=True,
-        ensure_ascii=True,
-        separators=(",", ":"),
-        default=str,
-    )
-    return {
-        "cache_state": {
-            "cache_prefix": output_blob,
-            "entries_count": (state.cache_state.entries_count + 1)
-            if state.cache_state is not None
-            else 1,
-        },
-    }
 
 
 def _verify(state: RunState) -> dict[str, Any]:
@@ -393,7 +479,11 @@ __all__ = [
     "TRANSITIONS",
     "_act",
     "_assemble_pass_2_prompt",
+    "_decode_envelope_payload",
+    "_act_pass_1",
+    "_act_pass_2",
     "_parse_pass_2_response",
+    "_parse_pass_1_response",
     "_plan",
     "_read_pass_2_references",
     "_read_sanctum_digest",

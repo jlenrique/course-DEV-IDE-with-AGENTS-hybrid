@@ -8,6 +8,12 @@ This package is the source template for generated specialists:
 """
 
 from app.specialists._scaffold.graph import build_scaffold_graph
+from app.specialists._scaffold.sanctum_exceptions import SanctumLockViolation
 from app.specialists._scaffold.state import ScaffoldEnvelope, ScaffoldReturn
 
-__all__ = ["ScaffoldEnvelope", "ScaffoldReturn", "build_scaffold_graph"]
+__all__ = [
+    "SanctumLockViolation",
+    "ScaffoldEnvelope",
+    "ScaffoldReturn",
+    "build_scaffold_graph",
+]
