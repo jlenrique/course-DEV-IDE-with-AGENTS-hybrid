@@ -6,8 +6,6 @@ import importlib.util
 import sys
 from pathlib import Path
 
-import pytest
-
 # Load module from skill path
 _MOD_PATH = Path(__file__).resolve().parents[3] / "skills" / "bmad-agent-texas" / "scripts" / "extraction_validator.py"
 _spec = importlib.util.spec_from_file_location("extraction_validator", _MOD_PATH)

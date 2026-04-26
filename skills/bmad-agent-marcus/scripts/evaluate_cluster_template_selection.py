@@ -11,7 +11,7 @@ from __future__ import annotations
 
 import argparse
 import json
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
 
@@ -135,7 +135,7 @@ def compare_c1_m1_runs(
     return {
         "artifact_version": 1,
         "artifact_type": "c1-m1-comparative-evaluation",
-        "generated_at_utc": datetime.now(timezone.utc).isoformat(),
+        "generated_at_utc": datetime.now(UTC).isoformat(),
         "lesson_id": lesson_id,
         "baseline": {
             "label": baseline_label,

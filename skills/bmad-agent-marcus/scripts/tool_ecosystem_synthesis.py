@@ -18,7 +18,7 @@ import importlib.util
 import json
 import sqlite3
 from collections import Counter
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
 
@@ -53,7 +53,7 @@ THEME_KEYWORDS: dict[str, list[str]] = {
 
 
 def _now_utc() -> str:
-    return datetime.now(timezone.utc).replace(microsecond=0).isoformat()
+    return datetime.now(UTC).replace(microsecond=0).isoformat()
 
 
 def _parse_iso(value: str | None) -> datetime | None:
@@ -75,7 +75,7 @@ def _staleness_days(last_refreshed: str | None, now: datetime) -> int | None:
     if parsed is None:
         return None
     if parsed.tzinfo is None:
-        parsed = parsed.replace(tzinfo=timezone.utc)
+        parsed = parsed.replace(tzinfo=UTC)
     return max(0, int((now - parsed).total_seconds() // 86400))
 
 
@@ -87,7 +87,7 @@ def _load_yaml(path: Path) -> dict[str, Any]:
 
 
 def collect_tool_capability_changes(root: Path) -> list[dict[str, Any]]:
-    now = datetime.now(timezone.utc)
+    now = datetime.now(UTC)
     changes: list[dict[str, Any]] = []
     for path in sorted(root.glob("skills/*/references/doc-sources.yaml")):
         payload = _load_yaml(path)

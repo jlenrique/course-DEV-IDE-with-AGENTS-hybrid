@@ -1,10 +1,10 @@
 """Tests for image sensory bridge."""
 
-import pytest
-from pathlib import Path
 
-from skills.sensory_bridges.scripts.png_to_agent import analyze_image
+import pytest
+
 from skills.sensory_bridges.scripts.bridge_utils import validate_response
+from skills.sensory_bridges.scripts.png_to_agent import analyze_image
 
 
 class TestAnalyzeImage:

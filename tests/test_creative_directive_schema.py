@@ -11,7 +11,6 @@ import yaml
 
 from scripts.utilities.creative_directive_validator import validate_creative_directive
 
-
 JSON_SCHEMA_PATH = Path("state/config/schemas/creative-directive.schema.json")
 YAML_SCHEMA_PATH = Path("state/config/schemas/creative-directive.schema.yaml")
 NARRATION_PARAMS_PATH = Path("state/config/narration-script-parameters.yaml")

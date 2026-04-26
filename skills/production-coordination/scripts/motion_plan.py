@@ -11,11 +11,11 @@ hydrates those decisions into Irene's segment manifest.
 from __future__ import annotations
 
 import argparse
-from copy import deepcopy
-from datetime import datetime, timezone
 import json
-from pathlib import Path
 import sys
+from copy import deepcopy
+from datetime import UTC, datetime
+from pathlib import Path
 from typing import Any
 
 import yaml
@@ -141,7 +141,7 @@ def _build_recommendation(
             "confidence": "high",
             "motion_brief": None,
             "guidance_notes": None,
-            "generated_at": datetime.now(timezone.utc).isoformat(),
+            "generated_at": datetime.now(UTC).isoformat(),
         }
         return recommendation, consumed_video_credits
 
@@ -168,7 +168,7 @@ def _build_recommendation(
             "confidence": "high" if fidelity == "literal-visual" or len(animation_cues) >= 2 else "medium",
             "motion_brief": None,
             "guidance_notes": f"Use restrained motion to reveal or emphasize {guidance_bits}; preserve the approved slide composition and avoid changing source meaning.",
-            "generated_at": datetime.now(timezone.utc).isoformat(),
+            "generated_at": datetime.now(UTC).isoformat(),
         }
         return recommendation, consumed_video_credits
 
@@ -181,7 +181,7 @@ def _build_recommendation(
             "confidence": "high" if direct_video_cues else "medium",
             "motion_brief": f"Create a short silent clip that reinforces {cue_bits} while staying aligned to the approved slide message.",
             "guidance_notes": None,
-            "generated_at": datetime.now(timezone.utc).isoformat(),
+            "generated_at": datetime.now(UTC).isoformat(),
         }
         return recommendation, consumed_video_credits + video_credits
 
@@ -192,7 +192,7 @@ def _build_recommendation(
         "confidence": "medium" if fidelity in {"creative", "literal-visual"} else "low",
         "motion_brief": None,
         "guidance_notes": None,
-        "generated_at": datetime.now(timezone.utc).isoformat(),
+        "generated_at": datetime.now(UTC).isoformat(),
     }
     return recommendation, consumed_video_credits
 

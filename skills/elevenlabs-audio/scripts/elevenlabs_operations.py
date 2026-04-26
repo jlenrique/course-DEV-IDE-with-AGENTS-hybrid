@@ -13,18 +13,18 @@ and structured result formatting for Marcus-mediated workflows.
 from __future__ import annotations
 
 import argparse
-from datetime import datetime, timezone
 import hashlib
 import json
-from pathlib import Path
 import re
 import subprocess
 import sys
-from typing import Any
 import xml.sax.saxutils as xml_utils
+from datetime import UTC, datetime
+from pathlib import Path
+from typing import Any
 
-from dotenv import load_dotenv
 import yaml
+from dotenv import load_dotenv
 
 PROJECT_ROOT = Path(__file__).resolve().parents[3]
 if str(PROJECT_ROOT) not in sys.path:
@@ -864,7 +864,7 @@ def finalize_voice_selection(
             "operator_notes": operator_notes,
             "override_reason": override_reason,
             "voice_preview_receipt_path": str(Path(preview_receipt_path)),
-            "approved_at_utc": datetime.now(timezone.utc).isoformat(),
+            "approved_at_utc": datetime.now(UTC).isoformat(),
         }
     )
     target_path = Path(output_path) if output_path else Path(preview_receipt_path)

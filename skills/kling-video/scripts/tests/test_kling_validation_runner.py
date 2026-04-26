@@ -6,6 +6,7 @@ from pathlib import Path
 
 import pytest
 import yaml
+
 from scripts.api_clients.base_client import APIError
 
 MODULE_PATH = Path(__file__).resolve().parents[1] / "kling_validation_runner.py"

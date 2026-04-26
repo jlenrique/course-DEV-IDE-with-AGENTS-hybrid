@@ -1,4 +1,4 @@
-"""Woodshed runner for L1 and L2 exemplar faithful reproduction.
+r"""Woodshed runner for L1 and L2 exemplar faithful reproduction.
 
 Executes the study → reproduce → compare workflow for Gamma exemplars
 using the GammaEvaluator. Downloads PDF artifacts and saves full run logs.
@@ -9,9 +9,7 @@ Usage:
 
 from __future__ import annotations
 
-import json
 import logging
-import os
 import sys
 from datetime import datetime
 from pathlib import Path
@@ -23,6 +21,7 @@ sys.path.insert(0, str(_PROJECT_ROOT))
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 from dotenv import load_dotenv
+
 load_dotenv(_PROJECT_ROOT / ".env")
 
 from gamma_evaluator import GammaEvaluator

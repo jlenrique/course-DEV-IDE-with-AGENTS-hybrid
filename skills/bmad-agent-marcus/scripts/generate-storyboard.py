@@ -26,12 +26,12 @@ import re
 import shutil
 import sys
 import tempfile
+import zipfile
 from collections import Counter
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
 from urllib.parse import urlparse
-import zipfile
 
 logger = logging.getLogger("generate_storyboard")
 
@@ -1288,7 +1288,7 @@ def build_manifest(
 
     out: dict[str, Any] = {
         "storyboard_version": 3,
-        "generated_at": datetime.now(timezone.utc).isoformat(),
+        "generated_at": datetime.now(UTC).isoformat(),
         "source_payload": payload_path.resolve().as_posix(),
         "asset_base": asset_base.resolve().as_posix(),
         "storyboard_view": view,
@@ -2852,7 +2852,11 @@ def cmd_publish(args: argparse.Namespace) -> int:
     gamma_scripts = PROJECT_ROOT / "skills" / "gamma-api-mastery" / "scripts"
     if str(gamma_scripts) not in sys.path:
         sys.path.insert(0, str(gamma_scripts))
-    from gamma_operations import _git_auth_env, _github_pages_base_url, _run_git_command  # noqa: PLC0415
+    from gamma_operations import (  # noqa: PLC0415
+        _git_auth_env,
+        _github_pages_base_url,
+        _run_git_command,
+    )
 
     target_subdir = f"{_sanitize_segment(args.publish_subdir)}/{safe_leaf}"
     pages_url_base = _github_pages_base_url(site_repo_url)

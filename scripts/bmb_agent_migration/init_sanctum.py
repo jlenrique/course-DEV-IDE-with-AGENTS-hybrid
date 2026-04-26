@@ -351,7 +351,7 @@ def print_plan(plan: dict, skill_name: str) -> None:
     for cap in plan["capabilities"]:
         print(f"  [{cap['code']}] {cap['name']}")
     print()
-    print(f"Variable substitutions:")
+    print("Variable substitutions:")
     for k, v in plan["variables"].items():
         print(f"  {{{k}}} -> {v}")
 

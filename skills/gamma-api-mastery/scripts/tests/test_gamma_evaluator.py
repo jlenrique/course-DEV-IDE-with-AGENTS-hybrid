@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import sys
 from pathlib import Path
-from unittest.mock import MagicMock, patch
+from unittest.mock import patch
 
 import pytest
 
@@ -13,11 +13,9 @@ sys.path.insert(0, _PROJECT_ROOT)
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 from gamma_evaluator import (
     GammaEvaluator,
-    VISUAL_INSTRUCTIONS,
-    LEVEL_RUBRIC_WEIGHTS,
-    normalize_text,
     detect_added_tokens,
     detect_emojis,
+    normalize_text,
     text_similarity,
 )
 

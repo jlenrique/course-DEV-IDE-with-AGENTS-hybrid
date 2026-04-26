@@ -20,12 +20,12 @@ from gamma_operations import (  # noqa: E402
     generate_deck_mixed_fidelity,
     generate_from_template,
     generate_slide,
-    list_themes_and_templates,
     list_style_presets,
+    list_themes_and_templates,
     load_style_guide_gamma,
     load_style_preset,
-    merge_slide_content,
     merge_parameters,
+    merge_slide_content,
     normalize_slides_payload,
     publish_preintegration_literal_visuals,
     resolve_style_preset,
@@ -159,7 +159,7 @@ class TestNormalizeSlidesPayload:
         }
         result = normalize_slides_payload(payload, allow_placeholder_content=True)
         assert len(result) == 1
-        assert "extracted.md#Page 2; extracted.md#Page 3" == result[0]["source_ref"]
+        assert result[0]["source_ref"] == "extracted.md#Page 2; extracted.md#Page 3"
         assert "placeholder derived from pre-dispatch artifacts" in result[0]["content"]
 
     def test_invalid_payload_raises(self) -> None:
@@ -2261,9 +2261,10 @@ class TestLiteralVisualRetryOnBlank:
 
     def test_download_composite_fallback_when_no_local_png(self, tmp_path: Path) -> None:
         """Template fails, no preintegration PNG — download from URL triggers composite."""
-        from PIL import Image as _Image
-        from unittest.mock import MagicMock
         import io
+        from unittest.mock import MagicMock
+
+        from PIL import Image as _Image
 
         export_dir = tmp_path / "export"
         export_dir.mkdir()

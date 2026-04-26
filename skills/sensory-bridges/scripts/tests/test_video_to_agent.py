@@ -1,15 +1,15 @@
-from unittest.mock import patch
 from pathlib import Path
+from unittest.mock import patch
 
 import pytest
 
+from skills.sensory_bridges.scripts.bridge_utils import validate_response
 from skills.sensory_bridges.scripts.video_to_agent import (
     _check_ffmpeg,
     _extract_keyframes,
     extract_video,
     resolve_ffmpeg_binary,
 )
-from skills.sensory_bridges.scripts.bridge_utils import validate_response
 
 
 class TestFfmpegResolution:

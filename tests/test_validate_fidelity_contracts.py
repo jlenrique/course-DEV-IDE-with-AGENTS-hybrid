@@ -11,7 +11,6 @@ from __future__ import annotations
 import textwrap
 from pathlib import Path
 
-import pytest
 import yaml
 
 from scripts.validate_fidelity_contracts import validate_contract

@@ -8,7 +8,7 @@ from __future__ import annotations
 
 import logging
 import sys
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
 
 from scripts.utilities.file_helpers import project_root
@@ -56,7 +56,7 @@ def setup_logging(
             log_dir = project_root() / "logs"
         log_dir = Path(log_dir)
         log_dir.mkdir(parents=True, exist_ok=True)
-        timestamp = datetime.now(tz=timezone.utc).strftime("%Y%m%d_%H%M%S")
+        timestamp = datetime.now(tz=UTC).strftime("%Y%m%d_%H%M%S")
         file_handler = logging.FileHandler(
             log_dir / f"{name}_{timestamp}.log", encoding="utf-8"
         )

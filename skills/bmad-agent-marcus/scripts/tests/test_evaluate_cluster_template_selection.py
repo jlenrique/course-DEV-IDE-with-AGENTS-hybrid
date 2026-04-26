@@ -4,7 +4,6 @@ import json
 from importlib import util
 from pathlib import Path
 
-
 ROOT = Path(__file__).resolve().parents[4]
 SCRIPT_PATH = ROOT / "skills" / "bmad-agent-marcus" / "scripts" / "evaluate_cluster_template_selection.py"
 

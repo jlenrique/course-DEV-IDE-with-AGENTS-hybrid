@@ -15,12 +15,11 @@ import os
 import re
 import subprocess
 import sys
+import urllib.request
 from dataclasses import dataclass, field
 from enum import Enum
 from pathlib import Path
 from typing import Any
-
-import urllib.request
 
 # Add project root to path for imports
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..', '..')))

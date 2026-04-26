@@ -9,7 +9,7 @@ from __future__ import annotations
 import json
 import sqlite3
 import sys
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
 
 
@@ -54,7 +54,7 @@ def log_quality_result(
         "reviewer": reviewer,
         "findings_json": json.dumps(findings),
         "score": score,
-        "decided_at": datetime.now(timezone.utc).isoformat(),
+        "decided_at": datetime.now(UTC).isoformat(),
     }
 
     if run_mode == "ad-hoc":

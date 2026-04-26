@@ -29,7 +29,6 @@ from skills.bmad_agent_content_creator.scripts.manifest_visual_enrichment import
     validate_manifest_visual_references,
 )
 
-
 # ---------------------------------------------------------------------------
 # Fixtures
 # ---------------------------------------------------------------------------

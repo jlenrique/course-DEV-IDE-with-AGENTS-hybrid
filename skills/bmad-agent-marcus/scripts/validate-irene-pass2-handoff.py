@@ -25,10 +25,10 @@ from __future__ import annotations
 
 import argparse
 import json
+import re
 from pathlib import Path
 from typing import Any
 from urllib.parse import urlparse
-import re
 
 try:
     import yaml
@@ -100,7 +100,6 @@ _GENERIC_CONCEPT_STOPWORDS = {
     "explain",
     "explains",
     "explore",
-    "explains",
     "focus",
     "focused",
     "guidance",

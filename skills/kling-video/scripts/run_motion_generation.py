@@ -17,10 +17,10 @@ the motion-plan row remains unresolved for Motion Gate.
 from __future__ import annotations
 
 import argparse
-from datetime import datetime, timezone
 import json
-from pathlib import Path
 import sys
+from datetime import UTC, datetime
+from pathlib import Path
 from typing import Any
 
 from dotenv import load_dotenv
@@ -60,7 +60,7 @@ class MotionGenerationError(RuntimeError):
 
 
 def _now_utc() -> str:
-    return datetime.now(timezone.utc).isoformat()
+    return datetime.now(UTC).isoformat()
 
 
 def _sanitize(value: str) -> str:

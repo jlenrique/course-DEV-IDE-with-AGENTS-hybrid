@@ -9,7 +9,7 @@ from __future__ import annotations
 import argparse
 import json
 import sys
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
 
@@ -186,7 +186,7 @@ def save_allocation_decision(
     path = patterns_path or DEFAULT_PATTERNS_PATH
     path.parent.mkdir(parents=True, exist_ok=True)
 
-    timestamp = datetime.now(tz=timezone.utc).replace(microsecond=0).isoformat()
+    timestamp = datetime.now(tz=UTC).replace(microsecond=0).isoformat()
     content_type = decision.get("input_profile", {}).get("content_type", "unknown")
     recommended = decision.get("recommended_platform", "unknown")
     rationale = "; ".join(decision.get("rationale", []))

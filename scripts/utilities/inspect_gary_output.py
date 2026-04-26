@@ -13,8 +13,6 @@ import json
 from pathlib import Path
 from typing import Any
 
-from scripts.utilities.file_helpers import project_root
-
 
 def inspect_gary_output(bundle_dir: Path) -> dict[str, Any]:
     """Inspect Gary dispatch output for issues before Irene."""

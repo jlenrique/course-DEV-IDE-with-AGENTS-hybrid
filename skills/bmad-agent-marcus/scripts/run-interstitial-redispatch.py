@@ -14,10 +14,11 @@ import argparse
 import importlib
 import json
 import sys
-from datetime import datetime, timezone
+from collections.abc import Callable
+from datetime import UTC, datetime
 from pathlib import Path
 from tempfile import NamedTemporaryFile
-from typing import Any, Callable
+from typing import Any
 
 try:
     import yaml
@@ -294,7 +295,7 @@ def _persist_updates(
         events = {}
     events[interstitial_id] = {
         "status": redispatch_result.get("status"),
-        "updated_at": datetime.now(timezone.utc).isoformat(),
+        "updated_at": datetime.now(UTC).isoformat(),
         "validation": redispatch_result.get("validation"),
     }
     metadata["interstitial_events"] = events
@@ -423,7 +424,7 @@ def run_command(
         ),
     }
     log_event = {
-        "timestamp": datetime.now(timezone.utc).isoformat(),
+        "timestamp": datetime.now(UTC).isoformat(),
         **output,
     }
     _append_jsonl(bundle_dir / REDISPATCH_LOG_FILENAME, log_event)

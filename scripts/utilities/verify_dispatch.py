@@ -1,4 +1,6 @@
-import json, pathlib
+import json
+import pathlib
+
 bundle = pathlib.Path("course-content/staging/tracked/source-bundles/apc-c1m1-tejal-20260403")
 data = json.loads((bundle / "gary-dispatch-result.json").read_text(encoding="utf-8"))
 slides = data["gary_slide_output"]

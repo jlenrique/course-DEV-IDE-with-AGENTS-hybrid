@@ -101,7 +101,7 @@ def _load_target_wpm(narration_params_path: Path = NARRATION_PARAMS_PATH) -> flo
 
 def _analyze_content(extracted_md_path: str) -> dict[str, Any]:
     """Analyze extracted.md for word count and section structure."""
-    with open(extracted_md_path, "r", encoding="utf-8") as f:
+    with open(extracted_md_path, encoding="utf-8") as f:
         content = f.read()
 
     words = re.findall(r"\b\w+\b", content)

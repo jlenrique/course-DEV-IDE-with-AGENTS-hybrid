@@ -7,7 +7,8 @@ ranking. Runtime integration with Irene planning is intentionally deferred.
 
 from __future__ import annotations
 
-from typing import Any, Dict, List, Mapping, Sequence
+from collections.abc import Mapping, Sequence
+from typing import Any
 
 SIGNAL_KEYS = {
     "single_core_idea",
@@ -45,18 +46,18 @@ class ClusterTemplateSelectionError(ValueError):
         self.code = code
 
 
-def _template_index(template_library: Mapping[str, Any]) -> Dict[str, Dict[str, Any]]:
+def _template_index(template_library: Mapping[str, Any]) -> dict[str, dict[str, Any]]:
     templates = template_library.get("templates")
     if not isinstance(templates, list):
         raise ClusterTemplateSelectionError("invalid_template_library", "templates must be a list")
-    index: Dict[str, Dict[str, Any]] = {}
+    index: dict[str, dict[str, Any]] = {}
     for template in templates:
         if isinstance(template, dict) and template.get("template_id"):
             index[str(template["template_id"])] = template
     return index
 
 
-def _normalized_signal_map(content_signals: Mapping[str, float]) -> Dict[str, float]:
+def _normalized_signal_map(content_signals: Mapping[str, float]) -> dict[str, float]:
     normalized = {key: 0.0 for key in SIGNAL_KEYS}
     for key, value in content_signals.items():
         if key in SIGNAL_KEYS:
@@ -64,8 +65,8 @@ def _normalized_signal_map(content_signals: Mapping[str, float]) -> Dict[str, fl
     return normalized
 
 
-def _top_signal_reasons(weights: Mapping[str, float], signals: Mapping[str, float], limit: int = 3) -> List[str]:
-    scored: List[tuple[float, str]] = []
+def _top_signal_reasons(weights: Mapping[str, float], signals: Mapping[str, float], limit: int = 3) -> list[str]:
+    scored: list[tuple[float, str]] = []
     for key, weight in weights.items():
         signal = float(signals.get(key, 0.0))
         contribution = signal * weight
@@ -85,7 +86,7 @@ def select_cluster_template(
     force_template: str | None = None,
     exclude_templates: Sequence[str] = (),
     prefer_templates: Sequence[str] = (),
-) -> Dict[str, Any]:
+) -> dict[str, Any]:
     index = _template_index(template_library)
     excludes = {str(item) for item in exclude_templates}
     prefer = {str(item) for item in prefer_templates}
@@ -133,7 +134,7 @@ def select_cluster_template(
     last_template = str(previous_template_ids[-1]) if previous_template_ids else None
     recent_pacing = list(recent_pacing_profiles[-2:])
 
-    ranking: List[Dict[str, Any]] = []
+    ranking: list[dict[str, Any]] = []
     for tid in candidates:
         template = index[tid]
         weights = DEFAULT_SIGNAL_WEIGHTS.get(tid, {})

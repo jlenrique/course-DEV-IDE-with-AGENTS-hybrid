@@ -8,8 +8,8 @@
 from __future__ import annotations
 
 import argparse
-from datetime import datetime, timezone
 import json
+from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
 
@@ -34,7 +34,7 @@ def save_doc_sources(data: dict[str, Any], doc_sources_path: str | Path) -> Path
 
 def utc_timestamp() -> str:
     """Return an ISO-style UTC timestamp."""
-    return datetime.now(timezone.utc).replace(microsecond=0).isoformat()
+    return datetime.now(UTC).replace(microsecond=0).isoformat()
 
 
 def build_refresh_report(

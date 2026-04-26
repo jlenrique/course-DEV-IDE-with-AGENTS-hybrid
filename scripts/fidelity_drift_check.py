@@ -12,7 +12,9 @@ import re
 from pathlib import Path
 from typing import Any
 
-from scripts.resolve_source_ref import resolve_source_ref  # noqa: F401 — re-exported for Vera's gate evaluation
+from scripts.resolve_source_ref import (
+    resolve_source_ref,  # noqa: F401 — re-exported for Vera's gate evaluation
+)
 
 
 def extract_source_themes(extracted_md_path: str) -> list[dict[str, str]]:

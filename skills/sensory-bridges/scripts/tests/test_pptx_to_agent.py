@@ -1,11 +1,11 @@
 """Tests for PPTX sensory bridge."""
 
-import pytest
-from pathlib import Path
-from unittest.mock import patch, MagicMock
+from unittest.mock import MagicMock, patch
 
-from skills.sensory_bridges.scripts.pptx_to_agent import extract_pptx
+import pytest
+
 from skills.sensory_bridges.scripts.bridge_utils import validate_response
+from skills.sensory_bridges.scripts.pptx_to_agent import extract_pptx
 
 
 class TestExtractPptx:

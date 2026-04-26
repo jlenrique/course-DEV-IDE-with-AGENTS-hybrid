@@ -3,11 +3,9 @@
 from __future__ import annotations
 
 import json
-from typing import ClassVar
-from typing import Literal
+from typing import ClassVar, Literal
 
-from pydantic import Field
-from pydantic import model_validator
+from pydantic import Field, model_validator
 
 from app.models.state.specialist_envelope import SpecialistEnvelope
 from app.models.state.specialist_return import SpecialistReturn
@@ -20,7 +18,7 @@ class WandaValidationEnvelope(SpecialistEnvelope):
     schema_version: Literal["1.0"] = Field(default="1.0")
 
     @model_validator(mode="after")
-    def _pin_specialist_id(self) -> "WandaValidationEnvelope":
+    def _pin_specialist_id(self) -> WandaValidationEnvelope:
         if self.specialist_id != self._SPECIALIST_ID:
             raise ValueError(
                 f"specialist_id must equal {self._SPECIALIST_ID!r} for wanda_validation envelope"
@@ -37,7 +35,7 @@ class WandaValidationReturn(SpecialistReturn):
     _SPECIALIST_ID: ClassVar[str] = "wanda_validation"
 
     @model_validator(mode="after")
-    def _pin_specialist_id(self) -> "WandaValidationReturn":
+    def _pin_specialist_id(self) -> WandaValidationReturn:
         if self.specialist_id != self._SPECIALIST_ID:
             raise ValueError(
                 f"specialist_id must equal {self._SPECIALIST_ID!r} for wanda_validation return"

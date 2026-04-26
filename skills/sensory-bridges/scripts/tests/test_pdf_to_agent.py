@@ -1,11 +1,11 @@
 """Tests for PDF sensory bridge."""
 
-import pytest
-from pathlib import Path
-from unittest.mock import patch, MagicMock
+from unittest.mock import MagicMock, patch
 
-from skills.sensory_bridges.scripts.pdf_to_agent import extract_pdf, SCANNED_PAGE_THRESHOLD
+import pytest
+
 from skills.sensory_bridges.scripts.bridge_utils import validate_response
+from skills.sensory_bridges.scripts.pdf_to_agent import extract_pdf
 
 
 class TestExtractPdf:

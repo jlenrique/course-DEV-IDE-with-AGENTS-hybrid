@@ -4,7 +4,6 @@ from pathlib import Path
 
 import yaml
 
-
 ROOT = Path(__file__).resolve().parents[4]
 CONTRACTS_DIR = ROOT / "state" / "config" / "fidelity-contracts"
 G2_PATH = CONTRACTS_DIR / "g2-slide-brief.yaml"

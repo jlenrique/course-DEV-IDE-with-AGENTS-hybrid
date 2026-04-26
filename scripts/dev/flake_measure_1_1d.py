@@ -133,7 +133,7 @@ def main() -> int:
     print(f"Passed:     {total - len(failures)}")
     print(f"Failed:     {len(failures)}")
     print(f"Flake rate: {flake_pct:.1f}%")
-    print(f"Reopen trigger threshold: >2% across first 20 runs")
+    print("Reopen trigger threshold: >2% across first 20 runs")
     print(f"Verdict: {'BREACHED — DO NOT COMMIT, ESCALATE PARTY-MODE' if flake_pct > 2.0 else 'OK — within budget'}")
 
     if failures:

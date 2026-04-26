@@ -11,7 +11,7 @@ import argparse
 import json
 import re
 from pathlib import Path
-from typing import Any, Dict, List
+from typing import Any
 
 try:
     import yaml
@@ -44,7 +44,7 @@ class ClusterTemplateLibraryError(ValueError):
         self.code = code
 
 
-def load_cluster_template_library(path: Path = DEFAULT_TEMPLATE_PATH) -> Dict[str, Any]:
+def load_cluster_template_library(path: Path = DEFAULT_TEMPLATE_PATH) -> dict[str, Any]:
     if yaml is None:  # pragma: no cover
         raise ClusterTemplateLibraryError("config_missing", "pyyaml is required")
     if not path.is_file():
@@ -58,7 +58,7 @@ def load_cluster_template_library(path: Path = DEFAULT_TEMPLATE_PATH) -> Dict[st
     return raw
 
 
-def _validate_word_range(name: str, payload: Any, errors: List[str]) -> None:
+def _validate_word_range(name: str, payload: Any, errors: list[str]) -> None:
     if not isinstance(payload, list) or len(payload) != 2:
         errors.append(f"{name} must be [min,max]")
         return
@@ -70,7 +70,7 @@ def _validate_word_range(name: str, payload: Any, errors: List[str]) -> None:
         errors.append(f"{name} lower bound must be <= upper bound")
 
 
-def _validate_template(template: Dict[str, Any], seen_ids: set[str], errors: List[str]) -> None:
+def _validate_template(template: dict[str, Any], seen_ids: set[str], errors: list[str]) -> None:
     tid = str(template.get("template_id") or "").strip()
     if not tid:
         errors.append("template_id is required")
@@ -153,8 +153,8 @@ def _validate_template(template: Dict[str, Any], seen_ids: set[str], errors: Lis
             _validate_word_range(f"{tid}.interstitial_word_ranges.{key}", value, errors)
 
 
-def validate_cluster_template_library(data: Dict[str, Any]) -> Dict[str, Any]:
-    errors: List[str] = []
+def validate_cluster_template_library(data: dict[str, Any]) -> dict[str, Any]:
+    errors: list[str] = []
     if str(data.get("schema_version") or "") != "1.0":
         errors.append("schema_version must be '1.0'")
     templates = data.get("templates")
@@ -175,11 +175,11 @@ def validate_cluster_template_library(data: Dict[str, Any]) -> Dict[str, Any]:
     return {"passed": len(errors) == 0, "errors": errors}
 
 
-def get_template_index(data: Dict[str, Any]) -> Dict[str, Dict[str, Any]]:
+def get_template_index(data: dict[str, Any]) -> dict[str, dict[str, Any]]:
     templates = data.get("templates")
     if not isinstance(templates, list):
         raise ClusterTemplateLibraryError("invalid_format", "templates must be a list")
-    index: Dict[str, Dict[str, Any]] = {}
+    index: dict[str, dict[str, Any]] = {}
     for template in templates:
         if isinstance(template, dict) and template.get("template_id"):
             index[str(template["template_id"])] = template

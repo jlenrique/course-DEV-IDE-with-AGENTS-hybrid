@@ -12,25 +12,18 @@ Covers:
 
 import textwrap
 from pathlib import Path
-from typing import Any
 
 import pytest
 import yaml
 
 from scripts.utilities.slide_count_runtime_estimator import (
     EstimatorError,
-    MIN_AVG_SLIDE_SECONDS,
-    MIN_PARENT_SLIDE_COUNT,
-    MIN_TARGET_RUNTIME_MINUTES,
-    MAX_AVG_SLIDE_SECONDS,
-    OVERSHOOT_WARN_THRESHOLD,
     _analyze_content,
     _load_profile,
     _run_feasibility_triangle,
     analyze_content_for_slides,
     estimate_and_validate,
 )
-
 
 # ---------------------------------------------------------------------------
 # Fixtures

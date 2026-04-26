@@ -6,9 +6,9 @@ institutional production state while run mode is ad-hoc.
 
 from __future__ import annotations
 
+import importlib.util
 import json
 import os
-import importlib.util
 from pathlib import Path
 from typing import Any
 

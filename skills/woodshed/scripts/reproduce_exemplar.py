@@ -22,7 +22,6 @@ from pathlib import Path
 
 import yaml
 
-
 PROJECT_ROOT = Path(__file__).resolve().parents[3]
 EXEMPLARS_DIR = PROJECT_ROOT / "resources" / "exemplars"
 API_CLIENTS_DIR = PROJECT_ROOT / "scripts" / "api_clients"

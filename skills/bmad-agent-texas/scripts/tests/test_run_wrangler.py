@@ -22,6 +22,7 @@ from pathlib import Path
 
 import pytest
 import yaml
+
 from marcus.dispatch.contract import DispatchEnvelope, DispatchReceipt
 
 # Load the runner by path — the hyphenated directory prevents plain import.

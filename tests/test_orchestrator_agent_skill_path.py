@@ -1,5 +1,6 @@
 import pytest
 
+
 def test_orchestrator_agent_skill_path():
     """
     BMAD System-Level Acceptance Test:

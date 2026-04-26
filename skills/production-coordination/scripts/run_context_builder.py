@@ -148,7 +148,7 @@ def main(argv: list[str] | None = None) -> None:
 
     variant_strategies = None
     if args.variant_strategies_json:
-        with open(args.variant_strategies_json, 'r', encoding='utf-8') as f:
+        with open(args.variant_strategies_json, encoding='utf-8') as f:
             variant_strategies = json.load(f)
 
     paths = build_run_context(

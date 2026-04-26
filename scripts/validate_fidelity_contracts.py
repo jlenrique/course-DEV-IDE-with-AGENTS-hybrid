@@ -12,7 +12,6 @@ from pathlib import Path
 
 import yaml
 
-
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
 CONTRACTS_DIR = PROJECT_ROOT / "state" / "config" / "fidelity-contracts"
 VERA_PROTOCOL = PROJECT_ROOT / "skills" / "bmad-agent-fidelity-assessor" / "references" / "gate-evaluation-protocol.md"
@@ -240,12 +239,12 @@ def main() -> int:
 
     parity_warnings = check_protocol_parity(contract_files)
     if parity_warnings:
-        print(f"\n--- Contract-Protocol Parity Check ---")
+        print("\n--- Contract-Protocol Parity Check ---")
         for w in parity_warnings:
             print(f"  WARN  {w}")
         total_errors += len(parity_warnings)
     else:
-        print(f"\n--- Contract-Protocol Parity Check ---")
+        print("\n--- Contract-Protocol Parity Check ---")
         print("  PASS  All protocol modality references match contracts")
 
     print(f"\n{'='*50}")
