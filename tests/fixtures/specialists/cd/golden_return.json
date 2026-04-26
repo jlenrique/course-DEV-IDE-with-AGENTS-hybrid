@@ -1,0 +1,31 @@
+{
+  "specialist_id": "cd",
+  "verb": "proceed",
+  "payload": {},
+  "edit_payload": null,
+  "reject_reason": null,
+  "timestamp": "2026-04-24T00:00:01Z",
+  "cd_directive": {
+    "schema_version": "1.0",
+    "experience_profile": "visual-led",
+    "slide_mode_proportions": {
+      "literal-text": 0.15,
+      "literal-visual": 0.25,
+      "creative": 0.6
+    },
+    "narration_profile_controls": {
+      "narrator_source_authority": "source-grounded",
+      "slide_content_density": "adaptive",
+      "elaboration_budget": "medium",
+      "connective_weight": "balanced",
+      "callback_frequency": "moderate",
+      "visual_narration_coupling": "balanced",
+      "rhetorical_richness": "balanced",
+      "vocabulary_register": "professional",
+      "arc_awareness": "medium",
+      "narrative_tension": "medium",
+      "emotional_coloring": "neutral"
+    },
+    "creative_rationale": "Favor rich visual storytelling for this profile."
+  }
+}

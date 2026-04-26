@@ -1,0 +1,11 @@
+{
+  "specialist_id": "aria",
+  "verb": "proceed",
+  "payload": {},
+  "edit_payload": null,
+  "reject_reason": null,
+  "timestamp": "2026-04-24T00:00:01Z",
+  "aria_build_spec": {
+    "brief": "scaffold"
+  }
+}

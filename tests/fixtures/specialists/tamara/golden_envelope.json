@@ -1,0 +1,16 @@
+{
+  "specialist_id": "tamara",
+  "request_id": "550e8400-e29b-41d4-a716-446655440000",
+  "payload_in": {
+    "prompt": "scaffold"
+  },
+  "created_at": "2026-04-24T00:00:00Z",
+  "payload_out": {
+    "specialist_id": "tamara",
+    "verb": "proceed",
+    "payload": {},
+    "edit_payload": null,
+    "reject_reason": null,
+    "timestamp": "2026-04-24T00:00:01Z"
+  }
+}
