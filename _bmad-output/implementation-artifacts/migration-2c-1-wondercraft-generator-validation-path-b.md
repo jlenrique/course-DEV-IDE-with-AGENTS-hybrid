@@ -1,6 +1,6 @@
 # Migration Story 2c.1: Wondercraft Generator Validation — Path B (regenerate from scratch + diff against migrated Wanda)
 
-**Status:** ready-for-dev
+**Status:** done
 **Sprint key:** `migration-2c-1-wondercraft-generator-validation-path-b`
 **Epic:** Slab 2c (migration Epic 2c — Wondercraft Pilot + Generator Validation) — **OPENING story; Slab 2c kickoff per slab-2b-retrospective handoff + operator ratification 2026-04-25**.
 **Pts:** 2 | **Gate:** single (per governance JSON `2c-1.expected_gate_mode = "single-gate"`, rationale: null — generator-validation pilot, no schema-shape, no lane-boundary, no invariant-preservation). **K-target:** ~1.3× (target 8 / floor 6; documentation-heavy + diff-comparison-evidence + minimal new test surface; matches epic 2c.1 K=~1.3× framing).
@@ -266,32 +266,81 @@ _(Populated during T1–T9 execution.)_
 
 ### T1 Readiness
 
-_(Populated at T1)_
+- 2026-04-26: Loaded BMAD config, `CLAUDE.md`, project context, full 2c.1 spec, sprint status, governance JSON, TEMPLATE v2.4, scaffold conformance contract, auto-discovery framework, generator entrypoint, Wondercraft substrate, and Wanda baseline.
+- Governance confirmed: `docs/dev-guide/migration-story-governance.json` has `2c-1.expected_gate_mode = "single-gate"` with null rationale; gate mode not relitigated.
+- Operator ratification confirmed: `_bmad-output/planning-artifacts/slab-2-roster-reconciliation.md` `Wondercraft Decision` records Path A completed at 2b.8 and Path B ratified for 2c.1; `_bmad-output/implementation-artifacts/slab-2b-retrospective.md` has Slab 2c kickoff handoff.
+- Artifact sweep passed: `skills/bmad-agent-wondercraft/` exists, `app/specialists/wanda/` exists, generator whitelist includes `wondercraft`, scaffold auto-discovery is active, no pre-existing `app/specialists/wanda_validation/`, no pre-existing `tests/specialists/wanda_validation/`, and no pre-existing 2026-04-25 frozen baseline fixture.
+- Sandbox-AC validator passed: `.venv\Scripts\python.exe scripts/utilities/validate_migration_story_sandbox_acs.py _bmad-output/implementation-artifacts/migration-2c-1-wondercraft-generator-validation-path-b.md`.
+- T1 disposition: PASS; no halt condition.
 
 ### T2–T7 Implementation Notes
 
-_(Populated during implementation)_
+- AC-A: Generated `wanda_validation` with `.venv\Scripts\python.exe -m skills.bmad_create_specialist.scripts.generate --name wanda_validation --mcp wondercraft --expertise-tier L5-podcast-production --from-skill skills/bmad-agent-wondercraft`; measured `T_emit_elapsed=0.14s`.
+- AC-B: Scaffold conformance auto-discovery picked up `wanda_validation` while it was live; transient validation run passed `67 passed` across `tests/specialists/wanda_validation/` plus `tests/integration/scaffold_conformance/`.
+- AC-C: Authored persistent M2 diff anchor `_bmad-output/implementation-artifacts/2c-1-wondercraft-path-b-diff-evidence.md`; Tier 1 file-presence score `83.33%`, Tier 2 skeleton-line score `44.67%`.
+- AC-D: Filed four deferred-inventory entries: `2c-1-ac-b-op-live-wondercraft-evidence`, `2c-1-generator-wanda-audio-return-field-polish`, `2c-1-generator-skill-reference-loader-polish`, and `2c-1-generator-auto-emit-retire-removal-support`.
+- AC-F: Retired generated live tree to `tests/fixtures/generator_validation/wanda_baseline/2026-04-25/`; added `BASELINE_METADATA.md`; removed transient `wanda_validation` C3 row with explanatory pyproject comment; removed transient validation tests/fixtures that would import the retired live-tree package.
 
 ### T8 Regression Evidence + Time-to-Deploy Measurements
 
-_(Populated at T8 with T0, T_emit, T_conformance_green, T_diff_evidence, T_first_artifact, T_close timestamps per AC-E)_
+| Timestamp | Mechanism (per Amelia A-R10) | Target | Recorded value |
+|---|---|---|---|
+| T0 | `time.perf_counter()` at generator subprocess invocation | — | 2026-04-26 story implementation window |
+| T_emit | T0 + `subprocess.run` elapsed (perf_counter delta) | T0 + ≤30 sec | 0.14s |
+| T_conformance_green | `pytest tests/integration/scaffold_conformance/ -q --durations=0` aggregate elapsed | T0 + ≤5 min | 59 passed in 1.36s while validation tree was live; post-retirement 58 passed in 1.51s |
+| T_diff_evidence | `os.path.getmtime("_bmad-output/implementation-artifacts/2c-1-wondercraft-path-b-diff-evidence.md")` | (no hard target) | 2026-04-26T00:56:53.1162378-04:00 |
+| T_dev_close | story BMAD-CLOSE-AC-A-through-AC-F timestamp (independent of B-OP) | T0 + ≤8 clock hrs active | 2026-04-26T01:19:05-04:00; operator accepted proceeding with documented pre-existing repo-wide baseline blockers |
+| T_first_artifact | AC-B-OP operator-paste timestamp (Wondercraft audio file mtime) | T0 + ≤8 clock hrs active OR DEFERRED | DEFERRED-PENDING-OPERATOR-WINDOW; deferred-inventory entry filed |
+| T_close | story BMAD-CLOSE timestamp | AC-B-OP may defer per spec | 2026-04-26T01:19:05-04:00; closed with AC-B-OP deferred |
+
+Paused-at/resumed-at: no pauses ≥30 min recorded before the T8 blocker.
+
+T8 command evidence:
+- PASS: `.venv\Scripts\python.exe -m pytest tests/integration/scaffold_conformance/ -q` → 58 passed post-retirement.
+- PASS: focused post-retirement guard suite → 60 passed.
+- PASS: `.venv\Scripts\lint-imports.exe --config pyproject.toml` → 3/3 contracts KEPT.
+- PASS: focused ruff on new 2c.1 test files.
+- OPERATOR-ACCEPTED BASELINE DRIFT: `.venv\Scripts\python.exe -m pytest -q --tb=short` still fails during collection on pre-existing pipeline-manifest schema errors and missing `marcus.dispatch.contract` imports in Texas legacy tests; operator directive "proceed to remaining 2c.x story development" authorizes continuing strict 2c sequence with the blocker documented.
+- OPERATOR-ACCEPTED BASELINE DRIFT: `.venv\Scripts\python.exe -m ruff check app/ tests/ skills/ scripts/` reports a large pre-existing repository-wide lint backlog outside the 2c.1 diff; focused ruff on story-owned tests is clean.
+- TOOLING DRIFT: `.venv\Scripts\python.exe -m lint_imports --config pyproject.toml` fails because `import-linter` exposes `lint-imports.exe`, not a `lint_imports` Python module; the executable form passes.
 
 ### Operator Gate — AC-B-OP Live Wondercraft Evidence
 
-_(Operator pastes here per AC-B-OP)_
+DEFERRED-PENDING-OPERATOR-WINDOW. Dev agent did not run a live Wondercraft API call or incur cost. Deferred-inventory entry `2c-1-ac-b-op-live-wondercraft-evidence` filed.
 
 ### G6 Layered Code-Review (Blind Hunter / Edge Case Hunter / Acceptance Auditor)
 
-_(Single-gate self-conducted per CLAUDE.md; populated at T8)_
+- Blind Hunter: no 2c.1 diff-introduced runtime import from the retired fixture; `app/specialists/wanda_validation` absent post-retirement.
+- Edge Case Hunter: pyproject C3 row removal verified by guard test and import-linter executable; frozen fixture has no root-level `tests/fixtures/generator_validation/conftest.py`.
+- Acceptance Auditor: AC-A through AC-F implementation evidence exists, AC-B-OP correctly deferred, and operator accepted the documented pre-existing repo-wide baseline drift for purposes of continuing the Slab 2c batch.
+- `bmad-code-review` scoped result: no MUST-FIX findings in the 2c.1 diff after reviewing the retired fixture boundary, C3 row removal guard, diff-evidence anchor, and deferred-inventory entries. Residual risks are the explicitly documented repo-wide T8 baseline failures and deferred live Wondercraft smoke.
 
 ### D12 Close Stub
 
-_(Populated at story close per AC-2c.1-I)_
+1. **Invariant preservation:** Slab-1 + Slab-2a + Slab-2b substrate remains intact; `wanda_validation` C3 auto-emit fired then was removed at retirement; FR14 auto-discovery was exercised while the validation tree was live.
+2. **Anti-pattern harvest:** N/A for 2c.1; observed generator gaps were filed as deferred-inventory follow-ons rather than harvested as migration anti-patterns.
+3. **Migration-guide update:** Deferred to 2c.4 slab-close so the guide can describe the full Slab 2c M2 verdict instead of a mid-slab partial note.
+4. **TEMPLATE compliance:** R1-R14 v2.4 honored where applicable; numeric anchors recorded for T_emit, T_conformance_green, T_diff_evidence, T_dev_close, and AC-B-OP deferral.
 
 ### Completion Notes
 
-_(Populated at story close)_
+- BMAD-CLOSED 2026-04-26. Path B Wondercraft regeneration evidence exists at `_bmad-output/implementation-artifacts/2c-1-wondercraft-path-b-diff-evidence.md` and is preserved as the 2c.3 M2 anchor.
+- `wanda_validation` was generated with `--mcp wondercraft`, validated by scaffold conformance while live, compared against shipped Wanda, then retired to `tests/fixtures/generator_validation/wanda_baseline/2026-04-25/` with `BASELINE_METADATA.md`.
+- AC-B-OP live Wondercraft smoke was not run by the dev agent and is deferred pending an operator window; canonical deferred-inventory count is now 29 named follow-ons.
+- Repository-wide full pytest and full ruff remain blocked by pre-existing baseline drift outside the 2c.1 diff; operator directive accepted continuing with these failures documented.
 
 ### File List
 
-_(Populated at story close)_
+- `_bmad-output/implementation-artifacts/2c-1-wondercraft-path-b-diff-evidence.md`
+- `_bmad-output/implementation-artifacts/migration-2c-1-wondercraft-generator-validation-path-b.md`
+- `_bmad-output/implementation-artifacts/sprint-status.yaml`
+- `_bmad-output/planning-artifacts/deferred-inventory.md`
+- `pyproject.toml`
+- `tests/fixtures/generator_validation/wanda_baseline/2026-04-25/BASELINE_METADATA.md`
+- `tests/fixtures/generator_validation/wanda_baseline/2026-04-25/__init__.py`
+- `tests/fixtures/generator_validation/wanda_baseline/2026-04-25/expertise/README.md`
+- `tests/fixtures/generator_validation/wanda_baseline/2026-04-25/graph.py`
+- `tests/fixtures/generator_validation/wanda_baseline/2026-04-25/model_config.yaml`
+- `tests/fixtures/generator_validation/wanda_baseline/2026-04-25/state.py`
+- `tests/specialists/generator/test_generator_baseline_fixture_present.py`
+- `tests/specialists/generator/test_generator_c3_row_post_retire_absent.py`
