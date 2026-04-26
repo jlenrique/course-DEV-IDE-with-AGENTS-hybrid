@@ -29,9 +29,11 @@ class TestCanvaIntegration:
 
         assert "Canva" in BLOCKED_TOOLS
 
-    def test_local_env_template_is_not_committed(self):
-        """Repo policy: only the local .env file is used for secrets."""
-        assert not (ROOT / ".env.example").exists()
+    def test_local_env_template_is_present(self):
+        """Migration policy (post-Slab-3 close): .env.example IS the canonical
+        operator-onboarding template; reverses primary-repo policy that forbid
+        env templates in-tree."""
+        assert (ROOT / ".env.example").exists()
 
     def test_admin_guide_documents_canva(self):
         """Verify admin guide documents Canva (OAuth / MCP context)."""

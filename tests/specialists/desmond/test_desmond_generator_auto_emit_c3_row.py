@@ -29,11 +29,13 @@ def _c3_ignore_imports(pyproject_text: str) -> list[str]:
     return values
 
 
-def test_temp_pyproject_baseline_is_5_rows(temp_repo_root: Path) -> None:
+def test_temp_pyproject_baseline_matches_fixture(temp_repo_root: Path) -> None:
+    """Pre-emit baseline matches TEMP_PYPROJECT fixture (drift-tolerant; Slab 3.3
+    grew the baseline from 5 to 7 entries when gate-bridge ignore_imports landed)."""
     pyproject = _read_pyproject(temp_repo_root)
     actual = _c3_ignore_imports(pyproject)
     baseline = _c3_ignore_imports(TEMP_PYPROJECT)
-    assert len(actual) == 5
+    assert len(actual) == len(baseline)
     assert set(actual) == set(baseline)
 
 
