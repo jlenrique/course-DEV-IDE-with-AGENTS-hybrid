@@ -123,4 +123,33 @@ Sandbox-AC PASS (LangGraph checkpointer + Postgres shipped per Slab-1; pytest.sk
 
 ## Dev Agent Record
 
+### T1 readiness and substrate adaptation
+
+- Governance + sandbox-AC validator passed on the authored spec.
+- The authored assumption "`tests/trial_replay/` does not exist" was stale on this branch; the directory already existed as a Slab-1 harness canary. Story 5a.1 added replay tests alongside that existing harness surface instead of treating the directory as greenfield.
+- The authored assumption "closed trials are discoverable from checkpoint-native storage" was also stale on the hybrid branch. T1 verification found no replayable LangGraph checkpoint catalog in Postgres or `state/trials/`, while the migration-native frozen Marcus baseline fixture at `tests/fixtures/marcus/baseline_envelope/2026-04-26/` was present and complete. The implementation therefore adapted `list_closed_trials()` to discover the currently replayable closed-trial set from that frozen baseline and explicitly left legacy `state/config/runs/` bundles as parity/reference-only inputs.
+
+### Implementation summary
+
+- Added `app/replay/discovery.py` with `TrialRef`, fixture-backed closed-trial discovery, and legacy-run reference enumeration.
+- Added `app/replay/regression.py` with discriminated replay error types, manifest digest pinning against `runtime/graphs/v42/compiled-graph-digest.txt`, D1 fail-loud vs warn-on-clone sanctum handling, per-trial wall-clock budget enforcement, and the replay CLI entrypoint.
+- Added `.github/workflows/trial-replay.yml` with nightly cron + manual `workflow_dispatch`, invoking `python -m app.replay.regression --mode fail-loud`.
+- Added replay coverage at `tests/integration/replay/` plus `tests/trial_replay/test_replay_all.py`.
+- Added a review-driven hardening patch: `replay_all_closed_trials()` now raises `NoClosedTrialsDiscoveredError` so fail-loud mode cannot report success when discovery returns zero trials.
+
+### Verification
+
+- `scripts/utilities/validate_migration_story_sandbox_acs.py ...migration-5a-1...md` -> PASS.
+- `pytest tests/integration/replay tests/trial_replay -q --tb=short` -> 12 passed.
+- `ruff check app/replay tests/integration/replay tests/trial_replay` -> PASS.
+- `lint-imports --config pyproject.toml` -> 9 KEPT, 0 BROKEN.
+- Required official repo-wide gate `.venv/Scripts/python.exe -m pytest -q --tb=short` is not trustworthy on this Windows machine because pytest temp roots created with mode `0o700` become unreadable for `tmp_path` usage. A local diagnostic harness that patched pytest temp-root creation recovered the branch signal at `32 failed / 3175 passed / 24 skipped / 30 deselected / 2 xfailed`; none of the failing nodes were in the 5a.1 replay slice.
+
+### Close outcome
+
+- Party-mode close review (Winston + Murat + Amelia + Dr. Quinn) reached unanimous `CLOSE-WITH-RIDERS`.
+- Rider 1: 5a.1 is accepted on the migration-native frozen Marcus baseline fixture, not checkpoint-native closed-trial discovery.
+- Rider 2: checkpoint-native replay discovery remains deferred inventory follow-on `5a-1-checkpoint-native-trial-catalog-discovery`.
+- Rider 3: repo-wide pytest on this Windows machine remains environment-tainted; 5a.1 closure is based on the replay-targeted acceptance slice plus supporting lint/import checks, not on a false repo-wide green claim.
+
 _(Populated during T1–T9 execution.)_

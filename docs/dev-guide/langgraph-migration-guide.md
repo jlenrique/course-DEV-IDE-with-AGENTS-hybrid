@@ -1119,3 +1119,28 @@ Marcus baseline lives at
 `CONDITIONAL-GREEN-PENDING-OPERATOR-ADDENDUM`, not full green, because the
 Texas AC-B-OP live-wire reactivation remains operator-gated and therefore
 deferred outside the dev-agent sandbox path.
+
+## Trial Replay (Slab 5 Story 5a.1)
+
+Story 5a.1 ships `app/replay/{discovery,regression}.py` as the acceptance-layer
+replay surface. On the current substrate, `list_closed_trials()` discovers
+migration-native closed trials from the frozen Marcus baseline fixtures under
+`tests/fixtures/marcus/baseline_envelope/` and intentionally leaves legacy
+`state/config/runs/` bundles to parity/reference workflows instead of
+pretending they are LangGraph-native checkpoint threads.
+
+`replay_trial(..., mode="fail-loud")` first compares the live compiled-graph
+digest against `runtime/graphs/v42/compiled-graph-digest.txt`, then replays the
+local Marcus trial harness and hashes a canonical projection of the resulting
+envelope. The canonical projection keeps the behavioral replay contract strict
+while stripping the known volatile override UUID/timestamp fields and
+transport-only digest identifiers that the Slab 3 baseline never froze
+deterministically. Drift surfaces are separated into
+`ManifestSnapshotDriftError`, `SanctumFingerprintDriftError`, and
+`PackHashDriftError`.
+
+`mode="warn-on-clone"` implements architecture D1's snapshot-fallback path. If
+the live Marcus sanctum digest no longer matches the captured baseline, replay
+continues after normalizing the comparison payload back onto the captured
+sanctum digest and returns a provenance note explaining that clone-mode
+fallback was used for comparison.
