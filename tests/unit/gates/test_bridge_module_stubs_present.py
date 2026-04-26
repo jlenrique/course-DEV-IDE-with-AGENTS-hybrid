@@ -21,6 +21,8 @@ def test_gate_cli_stub_is_callable(capsys) -> None:
 def test_gate_endpoint_stub_is_callable() -> None:
     clear_resume_registry()
     verdict = sample_verdict(trial_id=UUID("bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb"))
-    response = gate_verdict_endpoint(verdict.model_dump(mode="json"))
+    payload = verdict.model_dump(mode="json")
+    payload.pop("operator_id", None)
+    response = gate_verdict_endpoint(payload, operator_id="juanl")
     assert response["status"] == "accepted"
     assert response["headers"]["X-Gate-Transport"] == "stub"

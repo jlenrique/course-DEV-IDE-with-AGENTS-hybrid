@@ -92,6 +92,10 @@ def clear_resume_registry() -> None:
     _CONSUMED_NONCES.clear()
 
 
+def get_registered_decision_card(trial_id: UUID, gate_id: str) -> StoredDecisionCard | None:
+    return _CARD_STORE.get((trial_id, gate_id))
+
+
 def _resume_payload(verdict: OperatorVerdict) -> dict[str, Any]:
     payload: dict[str, Any] = {
         "verb": verdict.verb,
@@ -107,6 +111,41 @@ def _resume_payload(verdict: OperatorVerdict) -> dict[str, Any]:
     if verdict.reject_reason is not None:
         payload["reject_reason"] = verdict.reject_reason
     return payload
+
+
+def build_transport_response(
+    *,
+    command: Command,
+    verdict: OperatorVerdict,
+    transport_kind: str,
+) -> dict[str, Any]:
+    stored = get_registered_decision_card(verdict.trial_id, verdict.gate_id)
+    meta = stored.card.meta.model_dump(mode="json") if stored is not None else None
+    ledger_event = {
+        "kind": "verdict",
+        "trial_id": str(verdict.trial_id),
+        "gate_id": verdict.gate_id,
+        "operator_id": verdict.operator_id,
+        "verb": verdict.verb,
+        "transport_kind": transport_kind,
+    }
+    trace = {
+        "span_name": "resume_from_verdict",
+        "span_attributes": {
+            "trial_id": str(verdict.trial_id),
+            "gate_id": verdict.gate_id,
+            "operator_id": verdict.operator_id,
+            "transport_kind": transport_kind,
+        },
+    }
+    return {
+        "status": "accepted",
+        "resumed_at": _isoformat_utc(datetime.now(UTC)),
+        "resume": command.resume,
+        "ledger_event": ledger_event,
+        "trace": trace,
+        "decision_card_meta": meta,
+    }
 
 
 def resume_from_verdict(verdict: OperatorVerdict) -> Command:
@@ -139,9 +178,11 @@ def resume_from_verdict(verdict: OperatorVerdict) -> Command:
 
 
 __all__ = [
+    "build_transport_response",
     "StoredDecisionCard",
     "clear_resume_registry",
     "compute_decision_card_digest",
+    "get_registered_decision_card",
     "register_decision_card",
     "resume_from_verdict",
 ]

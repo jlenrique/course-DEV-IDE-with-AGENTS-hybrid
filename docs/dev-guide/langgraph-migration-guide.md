@@ -910,3 +910,18 @@ guardrail checks, a pre-commit hook, and runtime scheduler-module guards on the
 gate surface. The two 3.3 bridge stubs are `app/http/gate_endpoint.py` and
 `app/marcus/cli/gate_cli.py`; both are explicitly marked as stub transports so
 3.4 can replace bodies without changing the authority boundary.
+
+## Marcus (Slab 3 Story 3.4)
+
+Story 3.4 filled the three transport bodies on top of the 3.3 substrate:
+`app/mcp_server/tools/gate_decide.py`, `app/http/gate_endpoint.py`, and
+`app/marcus/cli/gate_cli.py`. All three now construct the same
+`OperatorVerdict`, call the same `resume_from_verdict()` authority path, and
+emit the same transport-neutral response envelope.
+
+The parity contract in `tests/integration/transports/` compares structural
+equivalence instead of raw framing. The pinned invariants are:
+identical `resume` payloads, identical ledger-event content modulo
+`transport_kind`, identical `resume_from_verdict` trace shape modulo
+`transport_kind`, and a non-null `decision_card_meta.cache_state` surface for
+every transport.
