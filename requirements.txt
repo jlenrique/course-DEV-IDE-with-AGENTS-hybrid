@@ -1,34 +1,59 @@
 # Core dependencies for collaborative intelligence infrastructure
 # Install: pip install -r requirements.txt
+#
+# Authoritative source: pyproject.toml [project.dependencies]
+# This file mirrors pyproject for pip-only operators not using uv.
+# When pyproject.toml's dependencies block changes, regenerate this file.
+#
+# Last reconciled: 2026-04-26 post-Slab-3 close (Marcus + DecisionCard + OperatorVerdict + transports)
 
-# HTTP clients
+# --- Core ---
 requests>=2.31,<3
-aiohttp>=3.9,<4
-
-# Authentication
-pyjwt>=2.8,<3
-
-# Configuration & validation
 python-dotenv>=1.0,<2
+PyJWT>=2.8,<3
 pydantic>=2.7,<3
+aiohttp>=3.9,<4
 pyyaml>=6.0,<7
+
+# --- Source-wrangler / sensory bridges (Slab 1+ substrate) ---
 imageio-ffmpeg>=0.5,<1
-
-# Source wrangler (PDF text extraction)
 pypdf>=5.0,<6
-
-# Sensory bridges (PPTX slide extraction)
+pillow>=11.0,<12
 python-pptx>=1.0,<2
-
-# Source wrangler (DOCX text extraction) — Story 27-1
 python-docx>=1.1,<2
 
-# Development & testing
+# --- LangChain / LangGraph orchestration substrate (Slab 1+) ---
+langchain>=1.2,<2
+langchain-core>=1.3,<2
+langchain-openai>=1.1,<2
+langgraph>=1.1,<2
+langgraph-checkpoint>=4.0,<5
+langgraph-checkpoint-postgres>=3.0,<4
+langgraph-prebuilt>=1.0,<2
+langgraph-sdk>=0.3,<1
+langsmith>=0.7,<1
+
+# --- Persistence (Slab 1 substrate + Slab 4.4 ledger) ---
+psycopg[binary]>=3.3,<4
+psycopg-pool>=3.3,<4
+
+# --- HTTP transport (Slab 3.4 FastAPI gate endpoint) ---
+fastapi>=0.136,<1
+uvicorn>=0.45,<1
+httpx>=0.28,<1
+
+# --- File-watcher (Slab 4.6 sanctum_watcher; FR59 invalidation hook) ---
+watchdog>=4.0,<6
+
+# --- Development & testing (also exposed via [project.optional-dependencies] dev) ---
 pytest>=8.0,<9
 pytest-asyncio>=0.23,<1
 pytest-timeout>=2.3,<3
-responses>=0.25,<1  # HTTP mocking for retrieval/mcp_client tests — Story 27-0
+responses>=0.25,<1
 ruff>=0.4,<1
+import-linter>=2.0,<3
+pre-commit>=3.7,<5
+jsonschema>=4.0,<5
 
-# Deterministic template generator (Story 33-1a)
+# --- Deterministic template generator (Story 33-1a + Story 2a.5) ---
 jinja2>=3.1,<4
