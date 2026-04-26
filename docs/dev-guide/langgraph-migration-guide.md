@@ -867,3 +867,16 @@ Verification command (framework):
 python -m pytest tests/integration/scaffold_conformance/test_framework_auto_discovery.py -q
 ` 
 
+
+## Marcus (Slab 3 Story 3.1)
+
+Story 3.1 landed the Marcus orchestration foundation on the adapted substrate.
+The canonical runtime remains the existing root `marcus/` package, now extended
+with `marcus/dispatch/contract.py` plus manifest-driven
+`marcus/orchestrator/{supervisor,routing}.py`.
+
+`app.marcus` now mirrors that surface as an app-namespace compatibility layer
+for import-linter and later Slab 3 stories. Cold-read discipline also changed:
+every `marcus.facade.get_facade()` call re-reads the Marcus sanctum allowlist
+from `skills/bmad-agent-marcus/SKILL.md`, computes a fresh digest, and stores
+`(sha256_digest, session_uuid4)` in `RunState.marcus_fingerprint`.

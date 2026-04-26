@@ -1,1 +1,5 @@
-"""Marcus lane stub for Slab 1 import-linter contracts."""
+"""App-namespace Marcus compatibility surface."""
+
+from app.marcus.facade import get_facade
+
+__all__ = ["get_facade"]

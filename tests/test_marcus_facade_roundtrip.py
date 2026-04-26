@@ -65,13 +65,13 @@ def test_facade_roundtrip_real_log(tmp_path: Path) -> None:
         reset_facade()
 
 
-def test_get_facade_thread_safe_singleton() -> None:
-    """G6-D1 closure pin: concurrent accessor returns one singleton instance."""
+def test_get_facade_thread_safe_fresh_instances() -> None:
+    """Story 3.1 cold-read pin: concurrent accessor returns fresh instances."""
     reset_facade()
     try:
         with ThreadPoolExecutor(max_workers=16) as pool:
             instances = list(pool.map(lambda _: get_facade(), range(128)))
-        assert len({id(instance) for instance in instances}) == 1
+        assert len({id(instance) for instance in instances}) == 128
     finally:
         reset_facade()
 

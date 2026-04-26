@@ -84,6 +84,13 @@ class RunState(BaseModel):
         default=None,
         description="NFR-X3: content-addressable sanctum snapshot identity at run-start.",
     )
+    marcus_fingerprint: tuple[str, UUID] | None = Field(
+        default=None,
+        description=(
+            "Story 3.1 Marcus cold-read fingerprint: "
+            "(sanctum_sha256, session_uuid4)."
+        ),
+    )
     story_states: list[StoryState] = Field(
         default_factory=list,
         description="Per-story execution slices captured under this run.",
@@ -107,6 +114,20 @@ class RunState(BaseModel):
     @classmethod
     def _enforce_completed_tz(cls, value: datetime | None) -> datetime | None:
         return enforce_tz_aware(value) if value is not None else None
+
+    @field_validator("marcus_fingerprint")
+    @classmethod
+    def _enforce_marcus_fingerprint(
+        cls,
+        value: tuple[str, UUID] | None,
+    ) -> tuple[str, UUID] | None:
+        if value is None:
+            return None
+        digest, session_id = value
+        if len(digest) != 64 or any(ch not in "0123456789abcdef" for ch in digest):
+            raise ValueError("marcus_fingerprint digest must be lowercase hex sha256")
+        enforce_uuid4_version(session_id)
+        return value
 
     @field_validator("graph_version")
     @classmethod

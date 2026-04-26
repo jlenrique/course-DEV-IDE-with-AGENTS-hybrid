@@ -64,14 +64,23 @@ accessor :func:`get_facade` instead; pytest fixtures can call
 
 from __future__ import annotations
 
-from threading import Lock
+import hashlib
+import re
+from datetime import UTC, datetime
+from pathlib import Path
 from typing import TYPE_CHECKING, Any, Final, Literal
+from uuid import UUID, uuid4
+
+from app.manifest import load as load_manifest
+from app.models.state.run_state import RunState
+from app.models.state.sanctum_fingerprint import SanctumFingerprint
 
 if TYPE_CHECKING:
     from marcus.lesson_plan.fit_report import FitReport
     from marcus.lesson_plan.log import LessonPlanLog
     from marcus.lesson_plan.schema import LessonPlan
     from marcus.orchestrator.loop import IntakeCallable
+    from marcus.orchestrator.supervisor import SupervisorPreset
 
 MARCUS_IDENTITY: Literal["marcus"] = "marcus"
 """Programming-token identity. Stable key for routing + logging.
@@ -97,6 +106,19 @@ class Facade:
     entry. Story 30-1's transitional ``greet`` stub was replaced.
     """
 
+    def __init__(
+        self,
+        *,
+        session_id: UUID | None = None,
+        sanctum_digest: str | None = None,
+        manifest: Any | None = None,
+        state: RunState | None = None,
+    ) -> None:
+        self.session_id = session_id or uuid4()
+        self.sanctum_digest = sanctum_digest or ""
+        self._manifest = manifest
+        self.state = state
+
     @property
     def marcus_identity(self) -> Literal["marcus"]:
         """Stable programming-token identity (read-only).
@@ -108,6 +130,17 @@ class Facade:
 
     def __repr__(self) -> str:
         return MARCUS_DISPLAY_NAME
+
+    def run_step(
+        self,
+        state: Any,
+        *,
+        preset: SupervisorPreset = "production",
+    ) -> Any:
+        from marcus.orchestrator.supervisor import Supervisor
+
+        supervisor = Supervisor(preset=preset, manifest=self._manifest)
+        return supervisor.run_step(state)
 
     def run_4a(
         self,
@@ -192,36 +225,81 @@ class Facade:
         return locked_plan
 
 
-_facade: Facade | None = None
-_facade_lock: Final[Lock] = Lock()
+_REPO_ROOT: Final[Path] = Path(__file__).resolve().parents[1]
+_MARCUS_SKILL_PATH: Final[Path] = _REPO_ROOT / "skills" / "bmad-agent-marcus" / "SKILL.md"
+_MARCUS_SANCTUM_ROOT: Final[Path] = _REPO_ROOT / "_bmad" / "memory" / "bmad-agent-marcus"
+_PIPELINE_MANIFEST_PATH: Final[Path] = _REPO_ROOT / "state" / "config" / "pipeline-manifest.yaml"
+_ACTIVATION_FILE_NAME_PATTERN: Final[re.Pattern[str]] = re.compile(r"`([^`]+)`")
+
+
+def _resolve_activation_allowlist(skill_path: Path | None = None) -> tuple[str, ...]:
+    resolved_path = skill_path or _MARCUS_SKILL_PATH
+    content = resolved_path.read_text(encoding="utf-8")
+    for line in content.splitlines():
+        if "Batch-load from sanctum:" not in line:
+            continue
+        file_names = tuple(_ACTIVATION_FILE_NAME_PATTERN.findall(line))
+        if file_names:
+            return file_names
+        break
+    raise ValueError(
+        "Marcus sanctum activation allowlist resolved no files from "
+        f"{resolved_path}"
+    )
+
+
+def _read_marcus_sanctum_digest(
+    *,
+    sanctum_root: Path | None = None,
+    skill_path: Path | None = None,
+) -> str:
+    resolved_root = sanctum_root or _MARCUS_SANCTUM_ROOT
+    if not resolved_root.is_dir():
+        raise FileNotFoundError(
+            f"Marcus sanctum directory not found: {resolved_root}"
+        )
+
+    allowlist = _resolve_activation_allowlist(skill_path=skill_path)
+    digest = hashlib.sha256()
+    for file_name in allowlist:
+        file_path = resolved_root / file_name
+        if not file_path.is_file():
+            raise FileNotFoundError(
+                f"Marcus sanctum file missing from activation allowlist: {file_path}"
+            )
+        digest.update(file_name.encode("utf-8"))
+        digest.update(b"\n")
+        digest.update(file_path.read_bytes())
+        digest.update(b"\n")
+    return digest.hexdigest()
 
 
 def get_facade() -> Facade:
-    """Return the lazily-constructed :class:`Facade` singleton.
+    """Return a fresh :class:`Facade` with a fresh sanctum-read session.
 
-    Lazy accessor (W-1 rider): avoids module-load instantiation so
-    per-session state can land at 30-3a without import-order coupling.
+    Story 3.1 rebases Marcus activation onto a cold-read discipline:
+    every call re-reads the sanctum digest and issues a new session id.
     """
-    global _facade
-    current = _facade
-    if current is not None:
-        return current
-
-    with _facade_lock:
-        if _facade is None:
-            _facade = Facade()
-        return _facade
+    digest = _read_marcus_sanctum_digest()
+    session_id = uuid4()
+    manifest = load_manifest(_PIPELINE_MANIFEST_PATH)
+    state = RunState(graph_version="v0.1-stub")
+    state.marcus_fingerprint = (digest, session_id)
+    state.sanctum_fingerprint = SanctumFingerprint(
+        content_sha256=digest,
+        captured_at=datetime.now(UTC),
+    )
+    return Facade(
+        session_id=session_id,
+        sanctum_digest=digest,
+        manifest=manifest,
+        state=state,
+    )
 
 
 def reset_facade() -> None:
-    """Reset the cached :class:`Facade` singleton.
-
-    Pytest-fixture hook: tests that mutate facade state call this in
-    teardown to isolate per-test state. Production code MUST NOT call
-    this function.
-    """
-    global _facade
-    _facade = None
+    """Compatibility no-op for legacy tests that still call `reset_facade()`."""
+    return None
 
 
 __all__: Final[tuple[str, ...]] = (

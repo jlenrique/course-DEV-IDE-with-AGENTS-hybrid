@@ -76,6 +76,39 @@ type = "independence"
 modules = ["app.marcus", "app.cora"]
 
 [[tool.importlinter.contracts]]
+name = "Marcus Contract M1 - only app.marcus.orchestrator.write_api may import app.models.state.run_state"
+type = "forbidden"
+source_modules = [
+    "app.marcus.intake",
+    "app.marcus.facade",
+    "app.marcus.orchestrator.supervisor",
+    "app.marcus.orchestrator.routing",
+]
+forbidden_modules = ["app.models.state.run_state"]
+
+[[tool.importlinter.contracts]]
+name = "Marcus Contract M2 - app.marcus may not import app.cora"
+type = "forbidden"
+source_modules = ["app.marcus"]
+forbidden_modules = ["app.cora"]
+
+[[tool.importlinter.contracts]]
+name = "Marcus Contract M3 - app.specialists may not import app.marcus facade/intake/orchestrator"
+type = "forbidden"
+source_modules = ["app.specialists"]
+forbidden_modules = [
+    "app.marcus.facade",
+    "app.marcus.intake",
+    "app.marcus.orchestrator",
+]
+
+[[tool.importlinter.contracts]]
+name = "Marcus Contract M4 - app.marcus.dispatch stays dependency-light"
+type = "forbidden"
+source_modules = ["app.marcus.dispatch"]
+forbidden_modules = ["app.specialists", "app.gates.resume_api", "app.cora"]
+
+[[tool.importlinter.contracts]]
 name = "app.gates.** may not import schedulers (D3 HIL tamper-evidence)"
 type = "forbidden"
 source_modules = ["app.gates"]
