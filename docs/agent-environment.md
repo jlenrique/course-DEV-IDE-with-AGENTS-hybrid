@@ -1,5 +1,20 @@
 # Agent environment (Cursor + Claude Code)
 
+> ## ⚠️ MIGRATION STATUS BANNER (added 2026-04-26)
+>
+> **This guide reflects the PRE-MIGRATION primary-repo agent environment.** The hybrid clone on `dev/langchain-langgraph-foundation` adds the migration's Marcus orchestrator + 9-node specialist scaffold + BMAD agent persona discipline (per `CLAUDE.md`).
+>
+> **For migration-aware agent environment, see:**
+> - **[`CLAUDE.md`](../CLAUDE.md)** — project instructions: BMAD sprint governance + sandbox-AC discipline + Marcus-first activation cold-start + custom-vs-stock-persona distinction + sandbox-AC validators + deferred-inventory governance
+> - **[`docs/dev-guide/specialist-anti-patterns.md`](dev-guide/specialist-anti-patterns.md)** — A1-A14+ anti-patterns harvested from migration close cycles (FR64 catalog)
+> - **[`docs/dev-guide/specialist-migration-template.md`](dev-guide/specialist-migration-template.md)** v2.4 — R1-R14 rules for per-specialist migration stories
+> - **[`README.md`](../README.md)** — top-of-repo orientation + migration status-by-slab
+> - **[`skills/bmad-agent-marcus/SKILL.md`](../skills/bmad-agent-marcus/SKILL.md)** — Marcus persona activation sequence (cold-start binding per CLAUDE.md "Marcus-first APP production cold start")
+>
+> **Pre-M5-ship scope of this legacy content:** repository layout + agent operating mode + handoff guidance below remain authoritative for primary's Cursor + Claude Code workflow. Migration-equivalent agent-environment content authored as `CLAUDE.md` + per-skill `SKILL.md` files; this legacy guide is augmented (not superseded).
+
+---
+
 ## Repository layout
 
 | Path | Purpose |

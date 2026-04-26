@@ -1,7 +1,25 @@
 # Admin Guide — System Configuration and Operations
 
+> ## ⚠️ MIGRATION STATUS BANNER (added 2026-04-26)
+>
+> **This guide reflects the PRE-MIGRATION primary-repo workflow** (Cursor IDE + prompt-pack v4.x + per-Epic-1-24 architectural model). The hybrid clone on `dev/langchain-langgraph-foundation` is **mid-migration to a LangChain/LangGraph orchestrator** (Marcus + Cora + 9-node specialist scaffold + HIL DecisionCard gates).
+>
+> **For migration-aware admin operations, see:**
+> - **[`docs/operator/trial-run-runbook.md`](operator/trial-run-runbook.md)** — first-trial setup + transport choice + verdict workflow
+> - **[`docs/operator/conditional-gate-addendum-playbook.md`](operator/conditional-gate-addendum-playbook.md)** — operator-window addenda for M2/M3/M4 conditional gates
+> - **[`docs/operator/post-m5-runbook.md`](operator/post-m5-runbook.md)** — per-verdict-path operations
+> - **[`README.md`](../README.md)** — top-of-repo project orientation + status-by-slab + quick-start
+> - **[`.env.example`](../.env.example)** — REQUIRED/RECOMMENDED/OPTIONAL env-var categorization (post-Slab-3 close)
+> - **[`scripts/utilities/trial_run_preflight.py`](../scripts/utilities/trial_run_preflight.py)** — 12-point readiness sweep
+> - **[`scripts/setup/first_clone_bootstrap.{ps1,sh}`](../scripts/setup/)** — one-command operator setup
+> - **[Migration Admin Appendix](#migration-admin-appendix)** below — migration-specific admin ops added post-Slab-3 close
+>
+> **Pre-M5-ship scope of this legacy content:** environment setup + API-key management + MCP server config + Python env + content directory layout sections REMAIN AUTHORITATIVE for the primary-repo prompt-pack workflow. Migration-specific overhauls are deferred to post-M5-ship per Bucket-F harmonization (rewriting before M5 verdict risks re-doing work).
+
+---
+
 **Audience:** System administrators and the project owner responsible for environment setup, tool connectivity, and operational health.
-**Last Updated:** 2026-04-12 | **Project Phase:** Epics 1–14 complete; Wave 1 cluster features (Epics 19–24) complete; prompt-pack family: v4.1 / v4.2 / v4.3
+**Last Updated:** 2026-04-12 (migration banner appended 2026-04-26) | **Project Phase:** Epics 1–14 complete (primary); LangChain/LangGraph migration in flight on hybrid clone (M5 ship verdict pending).
 
 ---
 
@@ -562,3 +580,94 @@ Tests for these scripts live under `skills/production-coordination/scripts/tests
 
 Operational guardrail:
 - Run `skills/bmad-agent-marcus/scripts/validate-gary-dispatch-ready.py` before Gate 2 approval; treat literal-visual non-URL prose findings as hard-stop contract violations.
+
+---
+
+## Migration Admin Appendix
+
+> **Authored 2026-04-26 (post-Slab-3 close).** Companion to the legacy admin-guide content above. Documents migration-specific admin operations introduced by the LangChain/LangGraph re-platform.
+
+### Quick-start for migration ops
+
+```bash
+# 1. Fresh-clone bootstrap (Windows PowerShell)
+pwsh scripts/setup/first_clone_bootstrap.ps1
+# OR (Linux / macOS)
+bash scripts/setup/first_clone_bootstrap.sh
+
+# 2. Daily health audit
+.venv/Scripts/python.exe scripts/utilities/migration_health_dashboard.py
+
+# 3. Pre-trial preflight
+.venv/Scripts/python.exe scripts/utilities/trial_run_preflight.py --trial-corpus <path>
+```
+
+### Postgres setup (per CLAUDE.md `project_no_docker` operator preference)
+
+Postgres runs **natively on the host** (NOT Dockerized). Required for:
+- LangGraph checkpointer (per-trial state persistence; Slab 1 substrate)
+- Learning ledger (Slab 4.4 ledger_events table)
+
+**Setup:**
+```bash
+# 1. Install Postgres natively (e.g., via brew on macOS, apt on Linux, installer on Windows)
+# 2. Create database
+createdb course_dev_ide_migration
+
+# 3. Set DATABASE_URL in .env (.env.example carries the template)
+# 4. Load ledger schema (Slab 4.4)
+psql $DATABASE_URL -f app/ledger/schema.sql
+
+# 5. Verify via preflight
+.venv/Scripts/python.exe scripts/utilities/trial_run_preflight.py --skip-env
+```
+
+### MCP server config (.mcp.json + env-routed)
+
+The migration consumes MCP servers via `.mcp.json` at repo root. Currently configured: `gamma`, `canvas-lms`, `notion`, `scite`, `consensus`. Server credentials sourced from environment per `scripts/run_mcp_from_env.cjs`.
+
+**Adding a new MCP server:** edit `.mcp.json` + add corresponding env var to `.env.example` + document in this section.
+
+### Sanctum population (per-agent BMAD memory)
+
+Each migrated specialist + Marcus has a sanctum directory under `_bmad/memory/`:
+- `_bmad/memory/bmad-agent-marcus/` — Marcus orchestrator persona + access boundaries + chronology
+- `_bmad/memory/wanda-sidecar/` — Wanda (podcast production) sidecar
+- ... (plus per-specialist sidecars per Slab 2 close)
+
+**Cold-read discipline (FR30):** Marcus's `_init_marcus()` reads sanctum fresh on each session-open via allowlist-based `_read_marcus_sanctum_digest()`; fingerprint stored as `(sha256, session_id)` in RunState.
+
+**Operator content authoring per A-R5-2c.2:** dev-agent skeleton-only; operator populates persona/access-boundaries/chronology content via First Breath ceremony. Skeleton placeholders carry `<!-- TODO: operator-populate -->` markers.
+
+### Frozen-graph v42 ceremony (Slab 4.5)
+
+Runtime/graphs/v42/ holds reproducibility-ceremony artifacts: manifest-snapshot + dev-graph-manifest-snapshot + pack-version + dispatch-registry-snapshot + compiled-graph-digest. Tier-1/2/3 bump policy per `docs/dev-guide/frozen-graph-version-ceremony.md` (post-Slab-4.5 close).
+
+### Sanctum-watcher (Slab 4.6 FR59)
+
+`app/runtime/sanctum_watcher.py` (post-4.6 close) wraps `watchdog.observers.Observer` against `_bmad/memory/**/*.md`. File-mutation triggers ledger SanctumMutationEvent emission + DecisionCardMeta `sanctum_warnings` enrichment at next gate fire (NFR-O3 non-fatal).
+
+**Admin config:** debounce-ms via `SANCTUM_WATCHER_DEBOUNCE_MS` env var (default 500ms). Disable per-trial via runtime flag if needed for performance.
+
+### Daily admin checklist (post-Slab-4 expectations)
+
+```bash
+# Health snapshot
+.venv/Scripts/python.exe scripts/utilities/migration_health_dashboard.py
+
+# Lockstep contracts
+.venv/Scripts/lint-imports.exe --config pyproject.toml
+
+# Pre-existing test failures (should be 0 post-Codex-Slab-4 close)
+.venv/Scripts/python.exe -m pytest --collect-only -q 2>&1 | tail -3
+
+# Conditional gate watch (M2 Wondercraft / M3 Texas / M4 if conditional)
+# See docs/operator/conditional-gate-addendum-playbook.md for resolution paths
+
+# Deferred inventory consultation (refresh per CLAUDE.md §1)
+grep -c "^| \*\*" _bmad-output/planning-artifacts/deferred-inventory.md  # row count
+```
+
+### Forward-port playbook (post-M5 SHIP verdict per FR61)
+
+If M5 verdict at 5a.5 = SHIP, see `docs/operator/post-m5-runbook.md` for the FR61 forward-port playbook activating per-capability forward-port from primary repo (frozen at upstream/master @ 3ed7c56 per `MEMORY.md::project_upstream_severance`).

@@ -1,5 +1,25 @@
 # Developer Guide — Architecture, Execution Flow, and Extension Points
 
+> ## ⚠️ MIGRATION STATUS BANNER (added 2026-04-26)
+>
+> **This guide reflects the PRE-MIGRATION primary-repo architecture** (Cursor IDE + prompt-pack v4.x + Three-Layer Architecture). The hybrid clone on `dev/langchain-langgraph-foundation` is **mid-migration to a LangChain/LangGraph orchestrator** (Marcus + Cora dev-graph + 9-node specialist scaffold + HIL DecisionCard gates with anti-replay digest binding + learning ledger).
+>
+> **For migration-aware developer architecture, see:**
+> - **[`docs/dev-guide/langgraph-migration-guide.md`](dev-guide/langgraph-migration-guide.md)** — authoritative migration architecture + per-Slab walkthroughs + §6 Lockstep CI + §7 Frozen-Graph Ceremony
+> - **[`docs/dev-guide/specialist-migration-template.md`](dev-guide/specialist-migration-template.md)** v2.4 — R1-R14 rules for per-specialist migration stories
+> - **[`docs/dev-guide/specialist-anti-patterns.md`](dev-guide/specialist-anti-patterns.md)** — A1-A14+ harvested anti-patterns (FR64 catalog)
+> - **[`docs/dev-guide/pydantic-v2-schema-checklist.md`](dev-guide/pydantic-v2-schema-checklist.md)** — 14 idioms binding for schema-shape stories
+> - **[`docs/dev-guide/scaffolds/schema-story/`](dev-guide/scaffolds/schema-story/)** — four-file-lockstep recipe
+> - **[`_bmad-output/planning-artifacts/architecture-langchain-langgraph-migration.md`](../_bmad-output/planning-artifacts/architecture-langchain-langgraph-migration.md)** — D1-D13 architecture decisions of record
+> - **[`_bmad-output/planning-artifacts/epics-langchain-langgraph-migration.md`](../_bmad-output/planning-artifacts/epics-langchain-langgraph-migration.md)** — Slab 1-5 epic structure (M1-M5 milestones)
+> - **[`README.md`](../README.md)** — top-of-repo project orientation + status-by-slab + migration-master-status enum
+> - **[`CLAUDE.md`](../CLAUDE.md)** — BMAD project instructions + sprint governance + sandbox-AC discipline + Marcus-first activation
+> - **[Migration Dev Appendix](#migration-dev-appendix)** below — migration-specific extension points added post-Slab-3 close
+>
+> **Pre-M5-ship scope of this legacy content:** Three-Layer Architecture + state management + extension points for primary's prompt-pack workflow REMAIN AUTHORITATIVE for understanding the pre-migration codebase. Migration-specific overhauls deferred to post-M5-ship per Bucket-F harmonization.
+
+---
+
 **Audience:** Developers building, extending, and maintaining the collaborative intelligence platform.
 **Last Updated:** 2026-04-16 | **Project Phase:** Epics 1–14 complete; Waves 1–3 complete (Epics 19–21, 23); Wave 2B + `20c-15` estimator closed; `22-2` closed; prompt-pack family: v4.1 (standard), v4.2/v4.2f (motion + extraction guards), v4.3 (cluster + interstitial)
 
@@ -892,3 +912,133 @@ These are the authoritative sources — this guide references them rather than d
 | **Agent Environment** | `docs/agent-environment.md` | MCP setup, API guidance, BMad alignment |
 | **Marcus Coaching** | `_bmad-output/brainstorming/party-mode-coaching-marcus-orchestrator.md` | Full discovery answers for orchestrator creation |
 | **Sprint / workflow status** | `_bmad-output/implementation-artifacts/sprint-status.yaml`, `bmm-workflow-status.yaml` | Epic and story Kanban + BMM phase |
+
+---
+
+## Migration Dev Appendix
+
+> **Authored 2026-04-26 (post-Slab-3 close).** Companion to the legacy dev-guide content above. Documents migration-specific dev extension points introduced by the LangChain/LangGraph re-platform.
+
+### Migration architectural map (current state)
+
+```
+┌─ marcus/ (canonical Marcus runtime; Story 30-1 lesson-planner + Slab-3 additive)
+│  ├── intake/pre_packet.py        — pre-packet extraction (Story 30-1)
+│  ├── orchestrator/
+│  │   ├── write_api.py            — Quinn single-writer rule (Decision #3)
+│  │   ├── supervisor.py           — Plan-and-Execute / ReAct preset switch (Slab 3.1)
+│  │   ├── routing.py              — manifest-driven (Slab 3.1)
+│  │   ├── dispatch.py             — LessonPlanLog dispatch (Story 30-3a; distinct from marcus.dispatch.contract)
+│  │   ├── loop.py / fanout.py / hil_intake.py / ... (lesson-planner orchestration)
+│  │   └── m3_trial.py             — local M3 trial harness (Slab 3.6)
+│  ├── facade.py                   — get_facade() Marcus single-voice surface
+│  ├── dispatch/contract.py        — Slab 3.1 substrate: DispatchKind / DispatchOutcome enums
+│  │                                + DispatchEnvelope/Receipt BaseModels + builder fns
+│  └── lesson_plan/                — Story 31-1 lesson-planner schema family
+│
+├─ app/
+│  ├── marcus/__init__.py          — Slab-1 namespace stub (canonical home is top-level marcus/)
+│  ├── specialists/                — 14 9-node scaffold specialists (Slab 2)
+│  │   ├── _scaffold/              — canonical 9-node scaffold contract
+│  │   ├── irene / kira / texas / gary / vera / quinn_r / desmond / tracy / cd /
+│  │   │  enrique / wanda / kim / vyx / aria / mira / tamara
+│  │   └── (each carries: graph.py + state.py + dispatch wrappers per category)
+│  ├── models/
+│  │   ├── decision_cards/         — Slab 3.2: G1/G2C/G3/G4 schema family + DecisionCardMeta
+│  │   ├── state/                  — RunState + cache_state + sanctum_fingerprint +
+│  │   │                            operator_verdict (per D3) + specialist_envelope/return + story_state
+│  │   ├── dispatch/               — Slab 2b.15: per-specialist input/receipt/error families
+│  │   └── ...
+│  ├── gates/                      — Slab 3.3: resume_api + verdict + party_mode_as_interrupt (Slab 4.3)
+│  ├── ledger/                     — Slab 4.4: events + emitter + queries + schema.sql
+│  ├── cora/                       — Slab 4.2: dev-graph + handlers + block_mode_node
+│  ├── runtime/                    — cache state + override_api + retry_policy + sanctum_watcher (4.6)
+│  ├── http/                       — Slab 3.4: gate_endpoint FastAPI route
+│  ├── mcp_server/                 — Slab 1+: MCP tool surface
+│  ├── manifest/                   — Slab 1: D6 compiler (compile_run_graph + compile_dev_graph)
+│  └── replay/                     — Slab 5a.1: regression + parity_comparison
+│
+├─ state/config/
+│  ├── pipeline-manifest.yaml      — Marcus run-graph manifest (nodes[*].specialist_id + edges[*].dispatch_envelope)
+│  ├── dev-graph-manifest.yaml     — Slab 4.2: Cora dev-graph manifest (NEW)
+│  └── dispatch-registry.yaml      — Slab 2b.15: _status=interim (M5 reconciles)
+│
+├─ runtime/graphs/v42/             — Slab 4.5: frozen-graph reproducibility ceremony artifacts
+│
+└─ docs/dev-guide/                 — migration-specific dev guidance
+   ├── langgraph-migration-guide.md     — authoritative migration architecture
+   ├── specialist-migration-template.md — v2.4 R1-R14 rules
+   ├── specialist-anti-patterns.md      — A1-A14+ harvested anti-patterns (FR64)
+   ├── pydantic-v2-schema-checklist.md  — 14 schema idioms
+   ├── frozen-graph-version-ceremony.md — Tier-1/2/3 bump policy (post-4.5)
+   ├── m5-forward-port-readiness-checklist.md — operator gate sign-off
+   ├── pipeline-manifest-regime.md      — Epic 33 lockstep regime
+   ├── lesson-planner-story-governance.json — Lesson Planner gate-mode pinning
+   ├── migration-story-governance.json  — Slab 1-5 gate-mode pinning
+   ├── migration-ac-sandbox-inventory.json — sandbox-AC forbidden-CLI inventory
+   └── scaffolds/schema-story/          — four-file-lockstep recipe (BINDING for schema-shape stories)
+```
+
+### Extension points (post-migration)
+
+#### Adding a new specialist (post-M5 ship; Slab 5b.4 generator polish target)
+
+```bash
+.venv/Scripts/python.exe -m skills.bmad_create_specialist.scripts.generate \
+    --name <new_specialist> \
+    --mcp <none|gamma|elevenlabs|canvas|kling|wondercraft> \
+    --expertise-tier <L4-or-L5-tier-label> \
+    [--from-skill skills/bmad-agent-<source-skill>]
+```
+
+Auto-emits 9-file specialist tree + companion test files + pyproject.toml C3 ignore_imports row (per Story 2a.5). Subsequent migration to 9-node scaffold per `docs/dev-guide/specialist-migration-template.md` v2.4 R1-R14 rules.
+
+#### Adding a new gate (post-M5; rare)
+
+1. Define gate enum + Pydantic DecisionCard subclass in `app/models/decision_cards/`
+2. Wire into pipeline-manifest.yaml `nodes[*].gate_id` + `edges[*].decision_card_schema` dotted-reference
+3. Add gate-emission node in specialist's `gate_decision` 9-node scaffold node
+4. Schema-shape story per `docs/dev-guide/scaffolds/schema-story/` recipe
+
+#### Adding a new transport (post-M5; rare)
+
+1. Author `app/<transport-pkg>/<transport>_endpoint.py` consuming `from app.models.state.operator_verdict import OperatorVerdict` + `from app.gates.resume_api import resume_from_verdict`
+2. Add C3 import-linter ignore_imports entry in `pyproject.toml [tool.importlinter]`
+3. Add transport-parity test per Slab 3.4 contract pattern
+
+#### Adding a new ledger event kind (post-M5)
+
+1. Define new Pydantic subclass of `LedgerEvent` in `app/ledger/events.py`
+2. Extend the discriminated-union per Slab 4.4 Decision #2
+3. Add per-kind four-file-lockstep (model + JSON Schema + shape-pin test + golden fixture)
+4. Wire emission point + idempotency_key shape per Decision #3
+
+### Migration governance touchpoints (every dev story)
+
+- **Sandbox-AC validator** at story `ready-for-dev` + `bmad-dev-story` open: `.venv/Scripts/python.exe scripts/utilities/validate_migration_story_sandbox_acs.py <story-file>`
+- **Gate-mode pinned** at `docs/dev-guide/migration-story-governance.json` — do NOT relitigate
+- **Substrate-aware adaptation discipline** — if T1 readiness reveals substrate mismatches, HALT + apply substrate-aware adaptation pattern (precedent: Slab-3 3.1 T1 halt with canonical `marcus/` discovery)
+- **Deferred-inventory consultation per CLAUDE.md §1** — every Epic retrospective + every story-spec naming a follow-on
+- **Closeout hygiene per CLAUDE.md** — sprint-status.yaml first, next-session-start-here.md second
+- **Pre-commit hooks** at `.pre-commit-config.yaml` — orphan-reference detector + co-commit invariant + ruff fast-path
+
+### Dev workflow tools (introduced post-migration)
+
+- **Health dashboard:** `.venv/Scripts/python.exe scripts/utilities/migration_health_dashboard.py`
+- **Trial-run preflight:** `.venv/Scripts/python.exe scripts/utilities/trial_run_preflight.py`
+- **Schema-story scaffold:** `.venv/Scripts/python.exe -m scripts.utilities.instantiate_schema_story_scaffold`
+- **Manifest lockstep CI:** `scripts/utilities/check_manifest_lockstep.py` (Slab 4.1) + `check_pipeline_manifest_lockstep.py` (Epic 33)
+- **Texas live-wire helper:** `scripts/utilities/ac_b_op_texas_live_retrieval_evidence.py` (M3 conditional resolution)
+- **Marcus golden-trace capture:** `scripts/utilities/capture_marcus_golden_trace.py` (3.6 W-R7 baseline pattern)
+
+### Common dev pitfalls (anti-patterns A1-A14; per `docs/dev-guide/specialist-anti-patterns.md`)
+
+- A1: Operator-CLI-on-PATH assumption in dev-agent ACs (use shipped Python deps)
+- A2: Architecture-decision relitigation at story-author time (read governance JSON; do not re-derive)
+- A4: Silent mutation in Pydantic models (use `validate_assignment=True`)
+- A5: Naive datetime via `datetime.utcnow()` (use tz-aware `datetime.now(UTC)`)
+- A6: Closed enum with only one rejection surface (triple-layer red-rejection per Pydantic v2 checklist)
+- A11: Sanctum/sidecar contract drift (epic-doc vs hybrid BMB convention; cross-check at T1)
+- A14: AC drafted against unverified substrate state (verify file/import paths at story-author time)
+
+Full catalog at `docs/dev-guide/specialist-anti-patterns.md`.

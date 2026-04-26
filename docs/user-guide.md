@@ -1,7 +1,19 @@
 # User Guide — Course Content Production System
 
+> ## ⚠️ MIGRATION STATUS BANNER (added 2026-04-26)
+>
+> **This guide reflects the PRE-MIGRATION primary-repo workflow** (Cursor IDE chat + prompt-pack v4.x). The hybrid clone on `dev/langchain-langgraph-foundation` is **mid-migration to a LangChain/LangGraph orchestrator** — Marcus runs Plan-and-Execute by default, routes to specialists via manifest, produces DecisionCards at every gate (G1/G2C/G3/G4) for HIL operator verdict via CLI/MCP/FastAPI transports.
+>
+> **For migration-aware user workflow (post-M3 close), see:**
+> - **[`docs/operator/trial-run-runbook.md`](operator/trial-run-runbook.md)** — first-trial step-by-step (transport choice + corpus + DecisionCard inspection + verdict flow + override + replay)
+> - **[`README.md`](../README.md)** — top-of-repo project orientation + status-by-slab + quick-start
+>
+> **Pre-M5-ship scope of this legacy content:** the prompt-pack v4.x workflow remains AUTHORITATIVE for primary-repo content production. Migration-equivalent user-workflow content will be authored as a fresh `docs/user-guide-migration.md` post-M5 SHIP verdict.
+
+---
+
 **Audience:** Course creators and instructional designers using the system to produce educational content.
-**Last Updated:** 2026-04-12 | **Project Phase:** Epics 1–14 complete; Wave 1 cluster features live (v4.3 prompt pack); standard, motion, and cluster workflow templates available
+**Last Updated:** 2026-04-12 (migration banner appended 2026-04-26) | **Project Phase:** Epics 1–14 complete (primary); LangChain/LangGraph migration in flight on hybrid clone (M5 ship verdict pending).
 
 ---
 
