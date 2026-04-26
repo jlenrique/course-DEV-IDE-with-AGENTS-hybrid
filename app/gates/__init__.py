@@ -1,12 +1,22 @@
-"""Gate package — HIL verdict substrate (architecture §D3).
+"""Gate package exports."""
 
-Exports the `resume_api.resume_from_verdict` entry point. Import-linter
-Contract C3 constrains this module's importers to the three authorized
-verdict-bridge modules named in architecture §D3 (`app.mcp_server.tools.gate_decide`,
-`app.http.gate_endpoint`, `app.marcus.cli.gate_cli`). Slab 3 creates those
-bridges; Slab 1 ships the substrate.
-"""
+from app.gates.errors import GateError, SchedulerImportError, UnauthorizedResumeBypassError
+from app.gates.resume_api import (
+    clear_resume_registry,
+    compute_decision_card_digest,
+    register_decision_card,
+    resume_from_verdict,
+)
+from app.gates.verdict import OperatorVerdict, OperatorVerdictVerb
 
-from app.gates import resume_api
-
-__all__ = ["resume_api"]
+__all__ = [
+    "GateError",
+    "OperatorVerdict",
+    "OperatorVerdictVerb",
+    "SchedulerImportError",
+    "UnauthorizedResumeBypassError",
+    "clear_resume_registry",
+    "compute_decision_card_digest",
+    "register_decision_card",
+    "resume_from_verdict",
+]

@@ -880,3 +880,33 @@ for import-linter and later Slab 3 stories. Cold-read discipline also changed:
 every `marcus.facade.get_facade()` call re-reads the Marcus sanctum allowlist
 from `skills/bmad-agent-marcus/SKILL.md`, computes a fresh digest, and stores
 `(sha256_digest, session_uuid4)` in `RunState.marcus_fingerprint`.
+
+## Marcus (Slab 3 Story 3.2)
+
+Story 3.2 added the DecisionCard schema family at
+`app/models/decision_cards/{base,g1,g2c,g3,g4}.py` plus `OverrideEvent`.
+The manifest now carries an additive optional `edge.decision_card_schema`
+field, and `app.manifest.refs.resolve_dotted_ref()` validates
+`<module>:<ClassName>` schema refs at compile time.
+
+The pinned operator-facing contract is a discriminated union keyed by
+`gate_id`, with per-gate schema files under
+`app/models/decision_cards/schema/` and golden fixtures under
+`tests/fixtures/decision_cards/`. This is the Slab 3 precedent for schema-shape
+stories that feed Marcus gate orchestration directly.
+
+## Marcus (Slab 3 Story 3.3)
+
+Story 3.3 turned the Slab 1 gate substrate into a working tamper-evident flow.
+`app/models/state/operator_verdict.py` now carries trial-bound verdict identity
+(`verdict_id`, `trial_id`, `card_id`, `decision_card_digest`) while preserving
+legacy `decision_card_id` input compatibility. `app/gates/resume_api.py`
+maintains an in-process card registry, recomputes the bound digest over card
+content + trial + issuance timestamp + server nonce, rejects replay, and emits
+the canonical `Command(resume=...)` payload.
+
+Guardrails now exist in four layers: lint/import boundaries, AST-based
+guardrail checks, a pre-commit hook, and runtime scheduler-module guards on the
+gate surface. The two 3.3 bridge stubs are `app/http/gate_endpoint.py` and
+`app/marcus/cli/gate_cli.py`; both are explicitly marked as stub transports so
+3.4 can replace bodies without changing the authority boundary.

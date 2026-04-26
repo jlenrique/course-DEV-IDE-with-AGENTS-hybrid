@@ -1,24 +1,20 @@
-"""`OperatorVerdict` — frozen value object for HIL gate decisions (FR31, FR34).
-
-Architecture **D3** (HIL Tamper-Evidence) places this model in Slab 1
-substrate per architecture decision-of-record (overrides epics §3.3 drift).
-The verdict surface MUST never accept ``"timeout"`` or ``"auto_approve"``
-as legitimate verbs — those would silently bypass operator agency, the
-exact failure mode FR34 forbids. Triple-layer red-rejection (field +
-model_validator + schema-pin test) enforces the constraint.
-
-Frozen by invariant: once an operator verdict is recorded, the receipt is
-tamper-evident. Any "amended verdict" is a new instance with a new
-`decision_card_id` reference.
-"""
+"""`OperatorVerdict` — frozen value object for HIL gate decisions (FR31, FR34)."""
 
 from __future__ import annotations
 
+import re
 from datetime import UTC, datetime
 from typing import Any, Literal
-from uuid import UUID
+from uuid import UUID, uuid4
 
-from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
+from pydantic import (
+    AliasChoices,
+    BaseModel,
+    ConfigDict,
+    Field,
+    field_validator,
+    model_validator,
+)
 
 from app.models.state._base import enforce_tz_aware, enforce_uuid4_version
 from app.models.state.validators.operator_verdict_validators import (
@@ -27,56 +23,65 @@ from app.models.state.validators.operator_verdict_validators import (
 )
 
 OperatorVerdictVerb = Literal["approve", "edit", "reject"]
-"""Closed enum: the only three verbs the verdict surface accepts."""
 
 
 class OperatorVerdict(BaseModel):
-    """Frozen tamper-evident receipt of one HIL gate decision.
+    """Frozen tamper-evident receipt of one HIL gate decision."""
 
-    The triple-layer red-rejection on `verb` is the FR34 safeguard:
-    ``"timeout"`` and ``"auto_approve"`` are explicitly NOT in the
-    `Literal` set, the model_validator re-checks it, and the schema-pin
-    test asserts the JSON Schema enum array contains exactly the three
-    legitimate verbs.
-    """
+    model_config = ConfigDict(
+        extra="forbid",
+        validate_assignment=True,
+        frozen=True,
+        populate_by_name=True,
+    )
 
-    model_config = ConfigDict(extra="forbid", validate_assignment=True, frozen=True)
-
+    verdict_id: UUID = Field(
+        default_factory=uuid4,
+        description="UUID4 identity for this verdict receipt.",
+    )
+    trial_id: UUID = Field(
+        ...,
+        description="UUID4 identity for the enclosing trial run.",
+    )
     verb: OperatorVerdictVerb = Field(
         ...,
-        description=(
-            "Closed enum: approve | edit | reject. "
-            "'timeout' and 'auto_approve' are explicitly forbidden per FR34."
-        ),
+        description="Closed enum: approve | edit | reject.",
     )
     gate_id: str = Field(
         ...,
         min_length=1,
-        description="Gate identifier (e.g. 'G2C', 'G3', 'G4-15').",
+        description="Gate identifier (for example G2C, G3, G4).",
     )
-    decision_card_id: UUID = Field(
+    card_id: UUID = Field(
         ...,
+        validation_alias=AliasChoices("card_id", "decision_card_id"),
+        serialization_alias="card_id",
         description="UUID4 of the DecisionCard the operator was reviewing.",
     )
     operator_id: str = Field(
         ...,
         min_length=1,
-        description="Operator identifier; single-operator scope in Slab 1 (e.g. 'juanl').",
+        pattern=r"^[a-zA-Z][a-zA-Z0-9_-]+$",
+        description="Operator identifier (letter-first, alnum / underscore / dash).",
     )
     timestamp: datetime = Field(
         default_factory=lambda: datetime.now(UTC),
         description="Timezone-aware verdict timestamp.",
     )
+    decision_card_digest: str = Field(
+        ...,
+        description="Lowercase sha256 bound to card content, trial, issuance time, and nonce.",
+    )
     edit_payload: dict[str, Any] | None = Field(
         default=None,
-        description="REQUIRED iff verb == 'edit'; cross-field-validated.",
+        description="Required iff verb == 'edit'.",
     )
     reject_reason: str | None = Field(
         default=None,
-        description="REQUIRED iff verb == 'reject'; cross-field-validated.",
+        description="Required iff verb == 'reject'.",
     )
 
-    @field_validator("decision_card_id")
+    @field_validator("verdict_id", "trial_id", "card_id")
     @classmethod
     def _enforce_uuid4(cls, value: UUID) -> UUID:
         return enforce_uuid4_version(value)
@@ -85,6 +90,13 @@ class OperatorVerdict(BaseModel):
     @classmethod
     def _enforce_tz(cls, value: datetime) -> datetime:
         return enforce_tz_aware(value)
+
+    @field_validator("decision_card_digest")
+    @classmethod
+    def _enforce_sha256_digest(cls, value: str) -> str:
+        if not re.fullmatch(r"[0-9a-f]{64}", value):
+            raise ValueError("decision_card_digest must be lowercase sha256 hex")
+        return value
 
     @model_validator(mode="after")
     def _check_invariants(self) -> OperatorVerdict:
@@ -95,6 +107,11 @@ class OperatorVerdict(BaseModel):
             reject_reason=self.reject_reason,
         )
         return self
+
+    @property
+    def decision_card_id(self) -> UUID:
+        """Backward-compatible alias for older call sites."""
+        return self.card_id
 
 
 __all__ = ["OperatorVerdict", "OperatorVerdictVerb"]

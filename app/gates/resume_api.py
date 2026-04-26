@@ -1,52 +1,147 @@
-"""`app.gates.resume_api` — HIL verdict-resume substrate (architecture D3, FR34).
-
-**Slab 1 substrate stub.** The three authorized verdict-bridge modules named
-in architecture §D3 (MCP tool `gate_decide`, FastAPI endpoint `gate_endpoint`,
-CLI `gate_cli`) will call `resume_from_verdict()` to re-enter a paused graph
-with an operator verdict. The bridge modules do not exist yet — they ship in
-Slab 3 Story 3.3. This stub exists at Slab 1 so:
-
-1. Import-linter Contract C3 has a concrete symbol to constrain (the three
-   bridge modules as the ONLY permitted importers of this module).
-2. `OperatorVerdict` from 1.2 has a typed consumer surface documented at the
-   substrate layer, not deferred.
-3. The tamper-evidence chain has a named entry point the ledger can track.
-
-The function body is a named `NotImplementedError` — reaching it at runtime in
-Slab 1 is a bug (no specialist has paused a graph yet). Slab 3 Story 3.3
-replaces the body with the real resume path; the **signature is stable** so
-C3 binds to the same symbol throughout.
-
-Scheduler-import ban per Contract C2 forbids `app.gates.**` from importing
-`threading` / `apscheduler` / `schedule`. Slab 3's real implementation
-likewise must not spawn scheduler threads — verdict resume is operator-driven
-only (no auto-approve path, FR34).
-"""
+"""Gate verdict resume substrate."""
 
 from __future__ import annotations
 
-from typing import NoReturn
+import hashlib
+import json
+from dataclasses import dataclass
+from datetime import UTC, datetime
+from typing import Any
+from uuid import UUID, uuid4
 
+from langgraph.types import Command
+
+from app.gates.errors import GateError
+from app.gates.guardrails import assert_scheduler_modules_not_loaded
+from app.models.decision_cards import DecisionCard
+from app.models.state._base import enforce_tz_aware
 from app.models.state.operator_verdict import OperatorVerdict
 
+assert_scheduler_modules_not_loaded()
 
-def resume_from_verdict(verdict: OperatorVerdict) -> NoReturn:
-    """Resume a paused graph with an operator verdict (Slab 3 Story 3.3 wires the body).
 
-    Args:
-        verdict: A validated `OperatorVerdict` from the operator bridge layer.
-            The verb (`approve` / `edit` / `reject`) determines the resume path.
+@dataclass(frozen=True)
+class StoredDecisionCard:
+    card: DecisionCard
+    issued_at: datetime
+    server_nonce: str
+    digest: str
 
-    Raises:
-        NotImplementedError: Always. Slab 1 ships the substrate stub; Slab 3
-            replaces the body. The signature is stable so import-linter
-            Contract C3 binds to the same symbol throughout.
-    """
-    raise NotImplementedError(
-        "app.gates.resume_api.resume_from_verdict is a Slab 1 substrate stub. "
-        "Slab 3 Story 3.3 wires the real resume path. "
-        f"Received verdict: verb={verdict.verb!r} gate_id={verdict.gate_id!r}"
+
+_CARD_STORE: dict[tuple[UUID, str], StoredDecisionCard] = {}
+_CONSUMED_NONCES: set[str] = set()
+
+
+def _canonical_json_bytes(payload: dict[str, Any]) -> bytes:
+    return json.dumps(
+        payload,
+        sort_keys=True,
+        separators=(",", ":"),
+        ensure_ascii=True,
+    ).encode("utf-8")
+
+
+def _isoformat_utc(value: datetime) -> str:
+    value = enforce_tz_aware(value)
+    rendered = value.astimezone(UTC).isoformat()
+    return rendered.replace("+00:00", "Z")
+
+
+def compute_decision_card_digest(
+    *,
+    card: DecisionCard,
+    trial_id: UUID,
+    issuance_timestamp: datetime,
+    server_nonce: str,
+) -> str:
+    payload = {
+        "card_content_canonical_json": card.model_dump(mode="json"),
+        "trial_run_id": str(trial_id),
+        "issuance_timestamp_iso": _isoformat_utc(issuance_timestamp),
+        "server_nonce": server_nonce,
+    }
+    return hashlib.sha256(_canonical_json_bytes(payload)).hexdigest()
+
+
+def register_decision_card(
+    card: DecisionCard,
+    *,
+    issuance_timestamp: datetime | None = None,
+    server_nonce: str | None = None,
+) -> StoredDecisionCard:
+    issued_at = issuance_timestamp or datetime.now(UTC)
+    issued_at = enforce_tz_aware(issued_at)
+    nonce = server_nonce or uuid4().hex
+    stored = StoredDecisionCard(
+        card=card,
+        issued_at=issued_at,
+        server_nonce=nonce,
+        digest=compute_decision_card_digest(
+            card=card,
+            trial_id=card.trial_id,
+            issuance_timestamp=issued_at,
+            server_nonce=nonce,
+        ),
     )
+    _CARD_STORE[(card.trial_id, card.gate_id)] = stored
+    return stored
 
 
-__all__ = ["resume_from_verdict"]
+def clear_resume_registry() -> None:
+    _CARD_STORE.clear()
+    _CONSUMED_NONCES.clear()
+
+
+def _resume_payload(verdict: OperatorVerdict) -> dict[str, Any]:
+    payload: dict[str, Any] = {
+        "verb": verdict.verb,
+        "trial_id": str(verdict.trial_id),
+        "gate_id": verdict.gate_id,
+        "card_id": str(verdict.card_id),
+        "operator_id": verdict.operator_id,
+        "verdict_id": str(verdict.verdict_id),
+        "timestamp": _isoformat_utc(verdict.timestamp),
+    }
+    if verdict.edit_payload is not None:
+        payload["edit_payload"] = verdict.edit_payload
+    if verdict.reject_reason is not None:
+        payload["reject_reason"] = verdict.reject_reason
+    return payload
+
+
+def resume_from_verdict(verdict: OperatorVerdict) -> Command:
+    """Resume a paused graph with a validated operator verdict."""
+    stored = _CARD_STORE.get((verdict.trial_id, verdict.gate_id))
+    if stored is None:
+        raise GateError(
+            "card_missing",
+            f"no DecisionCard registered for trial_id={verdict.trial_id} gate_id={verdict.gate_id}",
+        )
+    if verdict.card_id != stored.card.card_id:
+        raise GateError(
+            "card_id_mismatch",
+            "verdict card_id="
+            f"{verdict.card_id} does not match stored card_id={stored.card.card_id}",
+        )
+    if verdict.decision_card_digest != stored.digest:
+        raise GateError(
+            "digest_mismatch",
+            "verdict decision_card_digest does not match the stored DecisionCard digest",
+        )
+    nonce_key = f"{verdict.trial_id}:{stored.server_nonce}"
+    if nonce_key in _CONSUMED_NONCES:
+        raise GateError(
+            "replay_detected",
+            f"server_nonce for trial_id={verdict.trial_id} has already been consumed",
+        )
+    _CONSUMED_NONCES.add(nonce_key)
+    return Command(resume=_resume_payload(verdict))
+
+
+__all__ = [
+    "StoredDecisionCard",
+    "clear_resume_registry",
+    "compute_decision_card_digest",
+    "register_decision_card",
+    "resume_from_verdict",
+]

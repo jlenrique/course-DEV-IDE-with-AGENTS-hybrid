@@ -132,6 +132,7 @@ source_modules = [
     "app.runtime",
     "app.specialists",
     "app.cora",
+    "app.marcus",
     "app.models",
     "app.manifest",
     "app.mcp_server",
@@ -139,6 +140,8 @@ source_modules = [
 forbidden_modules = ["app.gates.resume_api"]
 ignore_imports = [
     "app.mcp_server.tools.gate_decide -> app.gates.resume_api",
+    "app.http.gate_endpoint -> app.gates.resume_api",
+    "app.marcus.cli.gate_cli -> app.gates.resume_api",
     "app.specialists._scaffold.graph -> app.gates.resume_api",
     "app.specialists.irene.graph -> app.gates.resume_api",
     "app.specialists.kira.graph -> app.gates.resume_api",

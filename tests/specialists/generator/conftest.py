@@ -34,6 +34,7 @@ source_modules = [
     "app.runtime",
     "app.specialists",
     "app.cora",
+    "app.marcus",
     "app.models",
     "app.manifest",
     "app.mcp_server",
@@ -41,6 +42,8 @@ source_modules = [
 forbidden_modules = ["app.gates.resume_api"]
 ignore_imports = [
     "app.mcp_server.tools.gate_decide -> app.gates.resume_api",
+    "app.http.gate_endpoint -> app.gates.resume_api",
+    "app.marcus.cli.gate_cli -> app.gates.resume_api",
     "app.specialists._scaffold.graph -> app.gates.resume_api",
     "app.specialists.irene.graph -> app.gates.resume_api",
     "app.specialists.kira.graph -> app.gates.resume_api",
@@ -85,6 +88,11 @@ def temp_repo_root(tmp_path: Path) -> Path:
     _write_module(root / "app" / "runtime" / "__init__.py")
     _write_module(root / "app" / "cora" / "__init__.py")
     _write_module(root / "app" / "marcus" / "__init__.py")
+    _write_module(root / "app" / "marcus" / "cli" / "__init__.py")
+    _write_module(
+        root / "app" / "marcus" / "cli" / "gate_cli.py",
+        "from app.gates.resume_api import resume_from_verdict\n",
+    )
     _write_module(root / "app" / "models" / "__init__.py")
     _write_module(root / "app" / "manifest" / "__init__.py")
     _write_module(root / "app" / "gates" / "__init__.py")
@@ -93,6 +101,11 @@ def temp_repo_root(tmp_path: Path) -> Path:
         "def resume_from_verdict():\n    return None\n",
     )
     _write_module(root / "app" / "mcp_server" / "__init__.py")
+    _write_module(root / "app" / "http" / "__init__.py")
+    _write_module(
+        root / "app" / "http" / "gate_endpoint.py",
+        "from app.gates.resume_api import resume_from_verdict\n",
+    )
     _write_module(root / "app" / "mcp_server" / "tools" / "__init__.py")
     _write_module(
         root / "app" / "mcp_server" / "tools" / "gate_decide.py",

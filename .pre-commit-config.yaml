@@ -56,3 +56,13 @@ repos:
         description: >
           Reject common mojibake signatures such as — or § so UTF-8 text
           artifacts do not drift into mixed-encoding corruption.
+
+      - id: gate-guardrails
+        name: gate guardrails (scheduler + bypass)
+        entry: python scripts/dev/check_gate_guardrails.py
+        language: system
+        pass_filenames: false
+        always_run: true
+        description: >
+          Reject scheduler imports, asyncio.sleep, and direct Command(resume=...)
+          bypass patterns in app/gates/**.

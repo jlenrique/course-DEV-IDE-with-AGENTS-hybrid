@@ -279,6 +279,30 @@
       "title": "Graph Version",
       "type": "string"
     },
+    "marcus_fingerprint": {
+      "anyOf": [
+        {
+          "maxItems": 2,
+          "minItems": 2,
+          "prefixItems": [
+            {
+              "type": "string"
+            },
+            {
+              "format": "uuid",
+              "type": "string"
+            }
+          ],
+          "type": "array"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "description": "Story 3.1 Marcus cold-read fingerprint: (sanctum_sha256, session_uuid4).",
+      "title": "Marcus Fingerprint"
+    },
     "model_resolution_trail": {
       "description": "NFR-X4: append-only resolution trail. ModelResolutionEntry is a STUB shape in 1.2; Story 1.3 replaces it with the full cascade entry.",
       "items": {

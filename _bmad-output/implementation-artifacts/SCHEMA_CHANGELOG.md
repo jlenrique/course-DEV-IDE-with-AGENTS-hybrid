@@ -7,6 +7,69 @@ Per semver-for-schemas:
 - **Minor (1.X)** â€” additive only: new optional fields with v1.0-compatible defaults, new enum values that don't break old consumers.
 - **Patch (1.0.X)** â€” docs / clarifications / typo fixes; no machine-readable change.
 
+## DecisionCard Family v1.0 - 2026-04-26 - Story 3.2 DecisionCard Schema Family
+
+**Type:** Initial shape (no predecessor family).
+
+**Reason for introduction:** Story 3.2 established the Marcus gate payload
+family so every Slab 3 gate emits a typed DecisionCard with a stable,
+per-gate schema and a shared D2 meta surface.
+
+**Shapes and contracts pinned:**
+
+- `app/models/decision_cards/base.py`:
+  `DecisionCard`, `DecisionCardMeta`, `DecisionCardVerb`.
+- `app/models/decision_cards/{g1,g2c,g3,g4}.py`:
+  `G1Card`, `G2CCard`, `G3Card`, `G4Card`.
+- `app/models/decision_cards/override_event.py`:
+  `OverrideEvent`.
+- Manifest additive field:
+  `app.manifest.schema.EdgeSpec.decision_card_schema`.
+- Dotted-ref resolver:
+  `app.manifest.refs.resolve_dotted_ref(...)`.
+
+**Semantics pinned:**
+
+- Discriminated-union routing is keyed by `gate_id`.
+- `DecisionCardMeta` carries `cache_state`, `affected_nodes`,
+  `override_trail`, and `reject_rate`.
+- `decision_card_schema` uses `<module>:<ClassName>` dotted refs and is
+  compile-time validated against DecisionCard subclasses.
+
+**Migration:** N/A (initial family).
+
+## OperatorVerdict Gate Surface v2.0 - 2026-04-26 - Story 3.3 Verdict + Resume API
+
+**Type:** Breaking change to the verdict receipt shape.
+
+**Reason for introduction:** Story 3.3 upgraded the Slab 1 verdict substrate
+into a trial-bound tamper-evident receipt that can safely drive gate resume.
+
+**Shapes and contracts pinned:**
+
+- `app/models/state/operator_verdict.py`:
+  `OperatorVerdict`, `OperatorVerdictVerb`.
+- `app/gates/schema/operator_verdict.v1.schema.json`:
+  gate-surface schema pin.
+- `app/gates/resume_api.py`:
+  `register_decision_card(...)`,
+  `compute_decision_card_digest(...)`,
+  `resume_from_verdict(...)`.
+
+**Semantics pinned:**
+
+- Verdict identity now binds `verdict_id`, `trial_id`, `card_id`, and
+  `decision_card_digest`.
+- `decision_card_digest` is sha256 over DecisionCard canonical JSON plus
+  `trial_run_id`, `issuance_timestamp_iso`, and `server_nonce`.
+- Replay of a consumed nonce is rejected.
+- Legacy input name `decision_card_id` remains accepted as a compatibility alias
+  for `card_id`, but the canonical serialized field is now `card_id`.
+
+**Migration:** Existing callers must provide `trial_id` and
+`decision_card_digest`. Serialized fixtures and downstream schemas move from
+`decision_card_id` to `card_id`.
+
 ## Epic 33 Pipeline Lockstep Substrate v1.0 - 2026-04-19 - Story 33-2 Pipeline Manifest SSOT
 
 **Type:** Initial shape (no predecessor manifest contract).
