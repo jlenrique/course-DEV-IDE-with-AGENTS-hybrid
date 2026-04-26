@@ -7,6 +7,13 @@
 
 **Predecessor:** Stories 3.1 + 3.2 + 3.3 must be `done`. 3.4 builds on 3.3's `resume_from_verdict` + bridge stubs (`gate_cli` + `gate_endpoint`); fills in the FastAPI route + MCP tool + CLI body.
 
+**SUBSTRATE-AWARE ADAPTATION applied 2026-04-26 post-Codex 3.1 T1 halt cascade analysis:** 3.4 path-inversion to canonical `marcus/` package per Story 3.1 substrate truth:
+- **CLI bridge body lands at `marcus/cli/gate_cli.py`** (NOT `app/marcus/cli/gate_cli.py`) — consistent with canonical `marcus/{facade.py, intake/, orchestrator/}` layout
+- **MCP tool body at `app/mcp_server/tools/gate_decide.py`** (existing per Slab-1 substrate; canonical app-tree location for MCP transports — verify path at T1)
+- **HTTP route body at `app/http/gate_endpoint.py`** (app-tree location consistent with `app/mcp_server/` precedent for transport servers — verify at T1)
+- **Operator-id source for CLI:** `args.operator_id` (CLI required arg per 3.4 Decision #2); reads from CLI subcommand at `marcus.cli.gate_cli.main`
+- **C3 import-linter ignore_imports entries** (added at 3.3 per pyproject.toml:88-95 staged-delivery): `marcus.cli.gate_cli -> app.gates.resume_api` (NOT `app.marcus.cli.gate_cli`); 3.4 verifies entries match the canonical paths used at 3.3 bridge-stub authoring.
+
 **Lean party-mode amendments applied 2026-04-26 (Murat + Amelia):** 1 BLOCKER + 4 RIDERs integrated:
 - **A-BLOCKER-3.4-A (FastAPI dependency):** T1 sub-task — check `pyproject.toml` for `fastapi` + `httpx` (test client). If absent, add via operator-gated AC-B (split AC-B into AC-B-1 dev-agent FastAPI route + AC-B-2 operator-gated `uv add fastapi httpx` evidence-paste). Sandbox-AC discipline preserved.
 - **A-R1-3.4 (hard dep on 3.3):** Spec declares hard dep on 3.3 close (NO parallel dev with 3.3) since 3.3 ships the bridge-stub callable surface that 3.4 fills.

@@ -11,6 +11,15 @@
 - **W-R7-3.1 baseline-capture:** post-3.6 Marcus envelope captured as frozen fixture (`3-6-marcus-envelope-baseline-capture-for-future-regression-detection` deferred-inventory entry filed at 3.1; resolves at 3.6 via AC-G below).
 - **2a.4 deferred-inventory `2a.4-followon-ac-b-op-live-retrieval` (Murat hard-caveat BINDING):** Slab-3 close MUST re-execute Texas AC-B-OP on live wire with full M1-M5 test discipline per the inventory entry — this is BLOCKING for Slab 3 close.
 
+**SUBSTRATE-AWARE ADAPTATION applied 2026-04-26 post-Codex 3.1 T1 halt cascade analysis:**
+- **Manifest path:** `state/config/pipeline-manifest.yaml` (NOT `run-manifest.yaml`); A-BLOCKER-3.6-A pipeline-manifest step ID staleness check holds.
+- **Marcus runtime canonical path:** `marcus/` (NOT `app/marcus/`) per Story 3.1 substrate-aware adaptation. Marcus-envelope baseline-capture (per W-R7-3.1) captures from `marcus/orchestrator/{loop, supervisor, workflow_runner}` orchestration outputs; baseline fixture at `tests/fixtures/marcus/baseline_envelope/2026-04-XX/`.
+- **OperatorVerdict consumer:** import via `from app.models.state.operator_verdict import OperatorVerdict` (per 3.3 substrate-aware adaptation; canonical home at `app/models/state/operator_verdict.py` per architecture D3 BINDING).
+- **CLI invocation path:** `marcus.cli.gate_cli` (NOT `app.marcus.cli.gate_cli`).
+- **Trial corpus + §01-§15 step IDs:** Cross-check actual step IDs in `pipeline-manifest.yaml` (lines 45+ enumerate nodes by `specialist_id`) at T1. Reference by NAME, not ordinal.
+- **Texas AC-B-OP M1-M5 helper script + directive:** unchanged (`scripts/utilities/ac_b_op_texas_live_retrieval_evidence.py` + `tests/fixtures/specialists/texas/ac_b_op_directive.yaml` per 2a.4 deferred-inventory binding); Texas's `marcus.dispatch.contract` import path resolved at 3.1 via additive `marcus/dispatch/{__init__,contract}.py` to canonical marcus/ package.
+- **Slab 3 retrospective path conventions:** `slab-3-retrospective.md` mirrors `slab-2c-retrospective.md` 4-section format; references canonical `marcus/` paths in §"Slab 4 Handoff."
+
 **Lean party-mode amendments applied 2026-04-26 (Winston + Murat + Amelia):** 1 BLOCKER + 11 RIDERs integrated:
 - **A-BLOCKER-3.6-A (§01-§15 step ID staleness):** T1 sub-task — cross-check `state/config/pipeline-manifest.yaml` for actual step IDs; if Slab 2 work renamed/renumbered any step, the §01→§15 enumeration is stale. Spec MUST reference step IDs by name (not ordinal) at dev-time.
 - **A-R1-3.6 (2a.4 binding pin):** AC-D cites the 2a.4 binding artifact path explicitly (deferred-inventory entry id `2a.4-followon-ac-b-op-live-retrieval` at `_bmad-output/planning-artifacts/deferred-inventory.md`); operator can locate without spelunking.

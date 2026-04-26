@@ -7,6 +7,11 @@
 
 **Predecessor:** Story 3.1 must be `done` (`app.marcus.routing` consumes manifest `edge.decision_card_schema` dotted-reference per AC-3.2-B; 3.1 establishes Marcus orchestrator package that 3.2's models plug into).
 
+**SUBSTRATE-AWARE ADAPTATION applied 2026-04-26 post-Codex 3.1 T1 halt cascade analysis:** 3.2 substrate verified — `app/models/decision_cards/` has only `__init__.py` + `README.md` (Slab-1 stub; genuine substrate gap, 3.2 IS additive authoring). Three corrections applied:
+- **Manifest path correction:** `state/config/run-manifest.yaml` → `state/config/pipeline-manifest.yaml` (live filename verified 2026-04-26).
+- **Manifest field shape correction:** epic 3.2's hypothetical `edge.decision_card_schema` field does NOT exist on hybrid `pipeline-manifest.yaml`; live shape uses `nodes[*].specialist_id` + `edges[*].dispatch_envelope`. **AC-C resolver test reframed:** assert dotted-reference resolver mechanism works for any future manifest field carrying the form `<module>:<ClassName>`; T1 sub-task verifies whether `decision_card_schema` field is added at this story OR deferred (operator decision; default = add as additive optional manifest field at this story since 3.2 is the schema-family ship-target).
+- **RunState path correction:** any references to `app/state/run_state.py` rewrite to `app/models/state/run_state.py` (live location verified at app/models/state/{cache_state, model_resolution_entry, node_checkpoint, operator_verdict, run_state, sanctum_fingerprint, specialist_envelope, specialist_return, story_state}.py + validators/ subdir).
+
 **Lean party-mode amendments applied 2026-04-26 (Murat + Amelia):** 5 RIDERs integrated:
 - **A-R1-3.2 (resolver substrate verification):** T1 sub-task — verify `app/manifest/refs.py::resolve_dotted_ref(manifest, "edge.decision_card_schema")` (or equivalent) callable exists; if aspirational, dev-agent T1 scaffolds before per-gate model imports.
 - **A-R2-3.2 (gate enum cross-check):** T1 sub-task — cross-check `marcus.gates.Gate` (or wherever gate enum landed at 3.1) for exact members; if 3.1 deferred a gate, ship 3 models + DEFERRED row OR expand the enum.

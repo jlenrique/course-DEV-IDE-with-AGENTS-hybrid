@@ -19,7 +19,33 @@ The migration forward-ports the **package shape** (intake.py + orchestrator/{wri
 
 **Authoring queue position:** 3.1 spec authored first in Slab 3 sequence. Stories 3.2-3.6 depend on 3.1 architectural foundation; sequencing is hard:
 
-**Lean party-mode amendments applied 2026-04-26 (Winston + Murat + Amelia + Paige):** 3 W-BLOCKERs RESOLVED-BY-SUBSTRATE-VERIFICATION + 18 RIDERs integrated:
+**SUBSTRATE-AWARE ADAPTATION applied 2026-04-26 post-Codex T1 halt (Codex hard-caveat — 4 substrate mismatches verified concrete):** Story 3.1 SCOPE INVERTS — `marcus/` is the CANONICAL home (Epic 30/31 lesson-planner work shipped pre-migration; verified extensive substrate at `marcus/{intake/pre_packet.py, orchestrator/{dispatch,fanout,hil_intake,learning_event_wiring,loop,maya_walkthrough,stub_dials,trial_smoke_harness,workflow_runner,write_api}.py, facade.py, lesson_plan/}`). The migration's planned `app/marcus/` shim path was based on an incorrect mental model. **Story 3.1 narrows to the SUBSTRATE GAPS only:**
+
+- **Substrate truth #1 — Manifest path:** `state/config/pipeline-manifest.yaml` (NOT `run-manifest.yaml` — does not exist).
+- **Substrate truth #2 — Manifest field shape:** `nodes[*].specialist_id` + `edges[*].dispatch_envelope` (NOT `edges[*].dispatch_target`); verified at `pipeline-manifest.yaml` lines 45-265+. Decision #2 + AC-I rewritten.
+- **Substrate truth #3 — `marcus/` is canonical, NOT a shim opportunity:** package already shipped at repo root with extensive lesson-planner substrate. Migration `app/marcus/__init__.py` Slab-1 stub remains as namespace placeholder; canonical Marcus runtime IS the existing `marcus/` package. NEW work additive only.
+- **Substrate truth #4 — RunState location:** `app/models/state/run_state.py` (NOT `app/state/run_state.py`); rich substrate at `app/models/state/{_base, cache_state, model_resolution_entry, node_checkpoint, operator_verdict, run_state, sanctum_fingerprint, specialist_envelope, specialist_return, story_state, validators/}.py`.
+- **Substrate truth #5 — `marcus.dispatch.contract` is the ONE genuine substrate gap:** verified via `find . -name "contract.py" -path "*marcus*"` (zero hits) + `grep -rn "class DispatchKind\|class DispatchOutcome"` (zero hits anywhere in repo). Texas's `from marcus.dispatch.contract import (DispatchKind, DispatchOutcome, build_dispatch_envelope, build_dispatch_receipt,)` import target IS NEW; needs additive `marcus/dispatch/{__init__, contract}.py` submodule extension to existing canonical `marcus/` package.
+- **Substrate truth #6 — supervisor.py + routing.py are GENUINE gaps:** `marcus/orchestrator/` has 10 modules (dispatch, fanout, hil_intake, learning_event_wiring, loop, maya_walkthrough, stub_dials, trial_smoke_harness, workflow_runner, write_api) but NO `supervisor.py` (Plan-and-Execute + ReAct preset) and NO `routing.py` (manifest-driven). 3.1 ADDS both as additive minimal extensions.
+- **Substrate truth #7 — `marcus/orchestrator/dispatch.py` is LessonPlanLog-event dispatch (Story 30-3a):** NOT the marcus.dispatch.contract substrate. Different concerns; coexist additively.
+
+**SCOPE NARROWING — what 3.1 actually authors (post-substrate-aware adaptation):**
+
+| Original spec said | Substrate reality | 3.1 actual scope |
+|---|---|---|
+| Author `app/marcus/intake.py` | `marcus/intake/pre_packet.py` already exists | **NO-OP at app/; verify existing marcus/intake/ structure adequate** |
+| Author `app/marcus/orchestrator/{__init__,write_api,supervisor,routing}.py` | `marcus/orchestrator/{__init__,write_api,...}.py` exists; supervisor + routing missing | **ADD `marcus/orchestrator/supervisor.py` + `marcus/orchestrator/routing.py` only** |
+| Author `app/marcus/facade.py` | `marcus/facade.py` already exists per Story 30-1 done | **NO-OP at app/; verify existing facade adequate for Marcus-first activation** |
+| Author `app/marcus/dispatch/{__init__,contract}.py` + top-level `marcus/dispatch/` shim | `marcus/dispatch/` does NOT exist | **ADD `marcus/dispatch/{__init__,contract}.py` to existing canonical marcus/ package (additive minimal extension; NOT a shim — the canonical home)** |
+
+**Per Codex T1 halt findings (verified by Claude pre-amendment):**
+
+1. **`state/config/run-manifest.yaml` does NOT exist; live is `pipeline-manifest.yaml`.** Spec corrected throughout.
+2. **`edges[*].dispatch_target` does NOT exist; live shape is `nodes[*].specialist_id` + `edges[*].dispatch_envelope`.** AC-I + Decision #2 + Decision #5 (routing) rewritten against actual manifest shape.
+3. **`marcus/` is OCCUPIED** — Epic 30/31 lesson-planner package with intake + orchestrator + lesson_plan + facade ALREADY SHIPPED. Original W-R2 "top-level marcus/ shim" plan is INVERTED — `marcus/` IS the canonical home; `app/marcus/__init__.py` is the Slab-1 stub that stays as namespace placeholder OR is retired (operator decision; default = retire to remove confusion).
+4. **`app/state/run_state.py` does NOT exist; live is `app/models/state/run_state.py`** with full substrate. AC-E sanctum cold-read writes fingerprint to `app.models.state.run_state.RunState` (or its `sanctum_fingerprint.py` sibling — verify at T1 which is the authoritative field-host).
+
+**Lean party-mode amendments applied 2026-04-26 (Winston + Murat + Amelia + Paige) — RECONTEXTUALIZED post-substrate-aware-adaptation:** 3 W-BLOCKERs RESOLVED-BY-SUBSTRATE-VERIFICATION + 18 RIDERs integrated, NOW SUPERSEDED IN PART by substrate-aware adaptation above. Specifically: **W-R2 "top-level marcus/ shim" framing is RETIRED-MOOT** — `marcus/` is the canonical home, not a shim; the substance of W-R2 (Texas import resolution) STILL applies but via additive `marcus/dispatch/` submodule, NOT a re-exporting shim. Other W/M/A/P riders carry forward unchanged.
 
 - **W-R1-3.1 + Amelia BLOCKER-1 (Decision #4 substrate mismatch) RESOLVED-BY-VERIFICATION:** Verified `skills/bmad-agent-texas/scripts/run_wrangler.py:58-63` literal import: `from marcus.dispatch.contract import (DispatchKind, DispatchOutcome, build_dispatch_envelope, build_dispatch_receipt,)` — **only 4 symbols** (NOT 6; DispatchEnvelope and DispatchReceipt are RETURNED by builders, not directly imported). `DispatchOutcome` is an **Enum** with members `COMPLETE / PARTIAL / FAILED` (verified at lines 120-125 `_to_dispatch_outcome` returns `.COMPLETE / .PARTIAL / .FAILED`), **NOT** a BaseModel. Builder signatures (verified at lines 1707-1709 + 2021-2023): `build_dispatch_envelope(*, dispatch_kind=DispatchKind.TEXAS_RETRIEVAL, ...)` (keyword `dispatch_kind`, not `kind`). Decision #4 + AC-G fully rebound below.
 
@@ -194,26 +220,23 @@ So that **FR26 + FR27 + FR30 are met, Marcus is the SPOT operator-facing surface
 
 All ACs are dev-agent-executable. Sandbox-AC compliant.
 
-### AC-3.1-A — `app/marcus/` package shape authored per architecture doc tree
+### AC-3.1-A — `marcus/` package canonical-extension (substrate-aware adaptation)
 
-- **Given** `app/marcus/__init__.py` exists as Slab 1 stub (verified 2026-04-26)
-- **When** the dev agent authors:
+- **Given** `marcus/` package is OCCUPIED with Epic 30/31 lesson-planner substrate (verified 2026-04-26: `marcus/{__init__.py, facade.py, intake/pre_packet.py, orchestrator/{__init__,dispatch,fanout,hil_intake,learning_event_wiring,loop,maya_walkthrough,stub_dials,trial_smoke_harness,workflow_runner,write_api}.py, lesson_plan/...}`); **`marcus/dispatch/`, `marcus/orchestrator/supervisor.py`, `marcus/orchestrator/routing.py` do NOT exist** (genuine substrate gaps)
+- **And** `app/marcus/__init__.py` Slab-1 stub remains as namespace placeholder (operator decision at T1 whether to retire or keep — default = keep with comment annotating "Slab-1 stub; canonical Marcus runtime is at top-level marcus/ per Story 31-1 / 30-1 lesson-planner package")
+- **When** the dev agent authors **additive minimal extensions to existing canonical `marcus/` package**:
   ```
-  app/marcus/
-  ├── __init__.py                       # MODIFIED — exports get_facade only (per Decision #6 single-identity surface)
-  ├── intake.py                         # NEW — pre-packet extraction (Story 30-1 lift)
+  marcus/
   ├── orchestrator/
-  │   ├── __init__.py                   # NEW
-  │   ├── write_api.py                  # NEW — single-writer (Quinn rule per Decision #3)
-  │   ├── supervisor.py                 # NEW — Plan-and-Execute default, ReAct on explore preset
-  │   └── routing.py                    # NEW — manifest-driven specialist routing
-  ├── facade.py                         # NEW — get_facade() lazy accessor
+  │   ├── supervisor.py                 # NEW — Plan-and-Execute default, ReAct on explore preset (FR27)
+  │   └── routing.py                    # NEW — manifest-driven specialist routing (consumes pipeline-manifest.yaml::nodes[*].specialist_id + edges[*].dispatch_envelope per substrate-truth #2)
   └── dispatch/
       ├── __init__.py                   # NEW
-      └── contract.py                   # NEW per Decision #4 (Texas import target)
+      └── contract.py                   # NEW per Decision #4 (Texas import target — ONE genuine substrate gap)
   ```
-- **Then** all 9 NEW files + 1 MODIFIED `__init__.py` exist; ruff clean; `pyproject.toml` C3 `ignore_imports` extended atomically with the necessary `app.marcus.*.* -> app.gates.resume_api` rows IF any direct imports occur (Slab 1 contract pattern); test-collection green.
-- **Test pin:** `tests/unit/marcus/test_marcus_package_shape.py` — 1 test asserting all 9 NEW files exist + each parses as Python (importlib import without raising) + each declares appropriate `__all__` exports.
+- **Verification of existing substrate (T1 sub-task):** confirm `marcus/intake/pre_packet.py`, `marcus/facade.py`, `marcus/orchestrator/write_api.py` are adequate for FR26+FR30 OR file deltas as in-scope additive extensions. **DO NOT duplicate logic** at `app/marcus/`; canonical home is `marcus/`.
+- **Then** 4 NEW files exist (supervisor + routing + dispatch/__init__ + dispatch/contract); existing 12+ marcus/ modules untouched; ruff clean; `pyproject.toml` C3 `ignore_imports` extended IFF any new direct `marcus.*.* -> app.gates.resume_api` imports occur (likely none at 3.1 — supervisor + routing don't depend on resume_api).
+- **Test pin:** `tests/unit/marcus/test_marcus_package_canonical_extension.py` — 1 test asserting (a) existing 12+ marcus/ modules still importable (no regression to Epic 30/31 work); (b) NEW 4 files exist + each imports cleanly; (c) `marcus/dispatch/contract.py` exposes the 4 Texas-needed symbols + 2 BaseModels per Decision #4 substrate-rebound.
 
 ### AC-3.1-B — Import-linter package boundary contract (DUAL-GATE gate-1; staged-delivery per W-R3 + C3 precedent)
 

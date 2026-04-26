@@ -7,6 +7,19 @@
 
 **Predecessor:** Stories 3.1 + 3.2 must be `done` (3.1 establishes Marcus + dispatch substrate; 3.2 establishes DecisionCard schema family that OperatorVerdict references via `decision_card_digest`). Drafted-for-queue per operator directive.
 
+**SUBSTRATE-AWARE ADAPTATION applied 2026-04-26 post-Codex 3.1 T1 halt cascade analysis (MAJOR REWRITE on AC-A):**
+
+**Substrate truth — `OperatorVerdict` ALREADY EXISTS at `app/models/state/operator_verdict.py`** (verified 2026-04-26 — file docstring: *"Architecture D3 (HIL Tamper-Evidence) places this model in Slab 1 substrate per architecture decision-of-record (overrides epics §3.3 drift). The verdict surface MUST never accept 'timeout' or 'auto_approve' as legitimate verbs... Triple-layer red-rejection (field + model_validator + schema-pin test) enforces the constraint. Frozen by invariant."*). **AC-A REFRAMED:** 3.3 does NOT author `app/gates/verdict.py::OperatorVerdict`; canonical home is `app/models/state/operator_verdict.py` per D3 Slab-1 substrate BINDING. 3.3 enriches around the existing model:
+- **AC-A becomes AUDIT-AND-ENRICH:** verify existing `OperatorVerdict` carries all required fields per 3.3 spec (verdict_id, trial_id, gate_id, verb Literal, operator_id, timestamp tz-aware, decision_card_digest, edit_payload | None) + cross-field validator enforcing `edit_payload` required iff `verb == "edit"`. If any field missing, file as additive minimal extension (ship at 3.3 against existing model). Re-export from `app/gates/__init__.py` for 3.3-spec-cited access path.
+- **AC-B + AC-C + AC-E + AC-F unchanged in substance** but consume existing `app.models.state.operator_verdict.OperatorVerdict` (NOT new `app.gates.verdict.OperatorVerdict`).
+- **`app/gates/resume_api.py`** — Slab-1 stub exists; 3.3 IMPLEMENTS `resume_from_verdict()` body per AC-B (this remains additive minimal extension; correct in original spec).
+
+**Substrate truth — `app/marcus/cli/` and `app/http/` parent dirs do NOT exist yet** (verified 2026-04-26); A-BLOCKER-3.3-A T0 mkdir holds. **HOWEVER:** per Story 3.1 substrate-aware adaptation, the canonical Marcus home is `marcus/` (not `app/marcus/`). 3.3 bridge stubs land at:
+- **`marcus/cli/{__init__,gate_cli}.py`** (canonical home; consistent with existing `marcus/{intake,orchestrator,facade.py}` package layout)
+- **`app/http/{__init__,gate_endpoint}.py`** (HTTP transport at app/ tree per existing `app/mcp_server/` precedent — verify `app/mcp_server/` location at T1)
+
+**Substrate truth — `pyproject.toml:88-95` C3 staged-delivery comment** anticipates `app.marcus.cli.gate_cli -> app.gates.resume_api` ignore_imports entry; per substrate-adaptation, this becomes `marcus.cli.gate_cli -> app.gates.resume_api`. Spec amends C3 import paths accordingly.
+
 **Lean party-mode amendments applied 2026-04-26 (Winston + Murat + Amelia):** 1 BLOCKER + 8 RIDERs integrated:
 - **A-BLOCKER-3.3-A (bridge-stub parent dirs):** T1 sub-task — verify `app/marcus/cli/` and `app/http/` parent directories exist; if absent, T0 step `mkdir + __init__.py` for both before any AC-D work. Prevents silent unintentional package layout.
 - **W-R1-3.3-1 (runtime sys.modules guard):** Add runtime guard in `app/gates/verdict.py` module init: assert `"asyncio.tasks" / "scheduler" / "apscheduler" / "schedule"` not in `sys.modules` at operator_verdict import time; closes dynamic `importlib.import_module(...)` evasion path that ruff + import-linter + AST test all miss.

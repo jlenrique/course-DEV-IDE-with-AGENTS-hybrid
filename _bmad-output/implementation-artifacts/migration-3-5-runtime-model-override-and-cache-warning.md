@@ -7,6 +7,13 @@
 
 **Predecessor:** Stories 3.1 + 3.2 + 3.3 + 3.4 must be `done`. 3.5 builds on 3.4's transport surfaces (override submission via any of 3 transports) + 3.2's DecisionCardMeta cache_state field + 3.3's OperatorVerdict pattern (override is operator-confirmed action with `confirm_token`).
 
+**SUBSTRATE-AWARE ADAPTATION applied 2026-04-26 post-Codex 3.1 T1 halt cascade analysis:**
+- **RunState path correction:** `app/state/run_state.py` → `app/models/state/run_state.py` (live location verified 2026-04-26; rich substrate at `app/models/state/{cache_state, model_resolution_entry, node_checkpoint, operator_verdict, run_state, sanctum_fingerprint, specialist_envelope, specialist_return, story_state}.py + validators/`).
+- **A-BLOCKER-3.5-A retained:** verify `RunState` `frozen` setting at T1; `pydantic` import + `ConfigDict` present in `app/models/state/run_state.py:24` (verified). If frozen=True, schema bump requires backward-compat path; if not frozen, additive `model_overrides: dict[str, str] = Field(default_factory=dict)` field is straightforward.
+- **OperatorVerdict consumer path:** `from app.models.state.operator_verdict import OperatorVerdict` (NOT `app.gates.verdict.OperatorVerdict` per 3.3 substrate-aware adaptation; canonical home is `app/models/state/operator_verdict.py` per architecture D3 BINDING).
+- **OverrideEvent / ModelOverrideWarning location:** `app/runtime/{override_warning, override_api}.py` per original spec — verify `app/runtime/` package exists at T1; if app/runtime/ already has cache infrastructure (per Slab-1), additive minimal extension. If absent, T0 mkdir + __init__.py.
+- **3.4 transport surfaces extension** lands at canonical paths per 3.4 substrate-aware adaptation: `marcus/cli/gate_cli.py` + `app/http/gate_endpoint.py` + `app/mcp_server/tools/gate_decide.py`.
+
 **Lean party-mode amendments applied 2026-04-26 (Murat + Amelia):** 1 BLOCKER + 4 RIDERs integrated:
 - **A-BLOCKER-3.5-A (RunState extension safety):** T1 sub-task — verify current `app/state/run_state.py` shape; if RunState is `frozen=True` Pydantic, the field extension is a schema bump requiring (a) `model_overrides: dict[str, str] = Field(default_factory=dict)` field default for backward-compat, (b) backward-compat verification for resumed runs serialized pre-3.5 (test serializing pre-3.5 RunState fixture + assert post-3.5 model parses cleanly with empty `model_overrides`).
 - **A-R1-3.5 (OverrideWarning naming collision):** Rename to `ModelOverrideWarning` to avoid collision with stdlib-adjacent `Warning` subclass naming (G6-flaggable cosmetic).
