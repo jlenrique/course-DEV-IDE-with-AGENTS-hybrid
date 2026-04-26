@@ -13,6 +13,7 @@ from scripts.utilities.check_manifest_lockstep import (
 
 ROOT = Path(__file__).resolve().parents[3]
 LIVE_MANIFEST = ROOT / "state" / "config" / "pipeline-manifest.yaml"
+LIVE_DEV_MANIFEST = ROOT / "state" / "config" / "dev-graph-manifest.yaml"
 
 
 def _write_manifest(tmp_path: Path, **overrides: object) -> Path:
@@ -33,24 +34,22 @@ def test_compile_error_raises(tmp_path: Path) -> None:
         check_lockstep([], manifest_path=broken)
 
 
-def test_dev_graph_defer_tolerant(
-    tmp_path: Path,
-    caplog: pytest.LogCaptureFixture,
-) -> None:
-    dev_manifest = tmp_path / "dev-graph-manifest.yaml"
-    dev_manifest.write_text("schema_version: 'dev-stub'\n", encoding="utf-8")
-    with caplog.at_level("WARNING"):
-        exit_code = main([], dev_manifest_path=dev_manifest)
-    assert exit_code == 0
-    assert "compile_dev_graph unavailable until Story 4.2" in caplog.text
+def test_dev_graph_validation_runs_after_story_4_2() -> None:
+    assert main([], dev_manifest_path=LIVE_DEV_MANIFEST) == 0
 
 
 def test_dev_graph_skip_logged_with_reason(
-    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
     caplog: pytest.LogCaptureFixture,
 ) -> None:
-    dev_manifest = tmp_path / "dev-graph-manifest.yaml"
-    dev_manifest.write_text("schema_version: 'dev-stub'\n", encoding="utf-8")
+    def _raise_import_error():
+        raise ImportError("simulated missing app.cora.graph")
+
+    monkeypatch.setattr(
+        "scripts.utilities.check_manifest_lockstep._load_compile_dev_graph",
+        _raise_import_error,
+    )
     with caplog.at_level("WARNING"):
-        main([], dev_manifest_path=dev_manifest)
-    assert "ModuleNotFoundError" in caplog.text
+        main([], dev_manifest_path=LIVE_DEV_MANIFEST)
+    assert "compile_dev_graph unavailable until Story 4.2" in caplog.text
+    assert "ImportError" in caplog.text

@@ -199,6 +199,32 @@ Story 4.1 also introduced a compatibility bridge in
 continue to project `manifest.steps` from the live graph-shaped manifest
 without forcing a same-story consumer rewrite.
 
+### 6.2 Cora Dev Graph (Story 4.2)
+
+Story 4.2 turns the Slab-1 `app.cora` placeholder into a real dev-lane graph.
+`app.cora.graph.compile_dev_graph(...)` loads the strict
+`state/config/dev-graph-manifest.yaml` contract, compiles a sibling
+`StateGraph(state_schema=StoryState)`, and returns a `CompiledGraphHandle`
+whose checkpoint namespace template is pinned to `dev/{story_id}`.
+
+The on-disk manifest uses `dev_nodes` / `dev_edges` as its top-level keys.
+This is a deliberate substrate-aware adaptation so the dev-lane config can
+live under `state/config/` without shadowing the runtime pipeline manifest's
+top-level `nodes` / `edges` contract.
+
+The node sequence is intentionally narrow: `plan_story -> implement_story ->
+test_story -> review_story -> block_mode -> close_story`. The `block_mode`
+node is the in-graph lift of
+`skills/bmad-agent-cora/scripts/preclosure_hook.py`; a failing pre-closure
+result is surfaced as `GateError` rather than silent drift.
+
+Architectural separation is enforced in two places:
+
+- the dev manifest uses a dedicated `thread_namespace: "dev/{story_id}"`
+  surface, distinct from Marcus runtime namespaces (`run/{trial_id}`), and
+- import-linter now carries bidirectional Cora/Marcus contracts covering both
+  `app.marcus.*` and the canonical top-level `marcus.*` package.
+
 ---
 
 ## 7. Model Cascade + Registry Governance
