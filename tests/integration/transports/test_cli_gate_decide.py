@@ -14,6 +14,7 @@ def test_cli_gate_decide_happy_path(capsys) -> None:
     verdict = sample_verdict(trial_id=UUID("aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa"))
     exit_code = main(
         [
+            "decide",
             "--trial-id",
             str(verdict.trial_id),
             "--gate-id",
@@ -35,4 +36,4 @@ def test_cli_gate_decide_happy_path(capsys) -> None:
 
 def test_cli_gate_decide_invalid_args() -> None:
     with pytest.raises(SystemExit):
-        main(["--trial-id", "only-one-arg"])
+        main(["decide", "--trial-id", "only-one-arg"])

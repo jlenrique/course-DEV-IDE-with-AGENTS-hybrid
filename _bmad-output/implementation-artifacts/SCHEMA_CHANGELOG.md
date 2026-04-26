@@ -70,6 +70,42 @@ into a trial-bound tamper-evident receipt that can safely drive gate resume.
 `decision_card_digest`. Serialized fixtures and downstream schemas move from
 `decision_card_id` to `card_id`.
 
+## ModelOverrideWarning v1.0 - 2026-04-26 - Story 3.5 Runtime Override Warning
+
+**Type:** Initial shape (strict FR24 warning contract for runtime model
+override confirmation).
+
+**Reason for introduction:** Story 3.5 closes FR24 by making every runtime
+model override two-phase and operator-confirmed. Before state mutation, the
+operator must see a pinned warning that carries projected cache impact,
+affected nodes, cost delta, and a short-lived `confirm_token`.
+
+**Shapes and contracts pinned:**
+
+- `app/runtime/override_warning.py`:
+  `ModelOverrideWarning`.
+- `app/runtime/schema/override_warning.v1.schema.json`:
+  runtime warning schema pin.
+- `app/runtime/override_api.py`:
+  `submit_override(...)`, `apply_override(...)`,
+  `compute_cache_impact(...)`.
+- `app/models/state/run_state.py` additive field:
+  `model_overrides: dict[str, str]`.
+
+**Semantics pinned:**
+
+- `confirm_token` is lowercase sha256 hex.
+- `issued_at` and `expires_at` must be timezone-aware.
+- `expires_at` must be after `issued_at`.
+- `submit_override(...)` is idempotent for the same
+  `(trial_id, node_id, new_model)` tuple while the warning is still live.
+- `apply_override(...)` consumes the pending token, updates
+  `RunState.model_overrides`, appends an `OverrideEvent`, and emits
+  a proto ledger event with `kind="override"`.
+
+**Migration:** `RunState` gains an additive `model_overrides` field with a
+default-empty mapping, so pre-3.5 serialized fixtures remain parseable.
+
 ## Epic 33 Pipeline Lockstep Substrate v1.0 - 2026-04-19 - Story 33-2 Pipeline Manifest SSOT
 
 **Type:** Initial shape (no predecessor manifest contract).

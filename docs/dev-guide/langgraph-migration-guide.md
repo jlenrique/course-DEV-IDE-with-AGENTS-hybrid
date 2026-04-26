@@ -925,3 +925,28 @@ identical `resume` payloads, identical ledger-event content modulo
 `transport_kind`, identical `resume_from_verdict` trace shape modulo
 `transport_kind`, and a non-null `decision_card_meta.cache_state` surface for
 every transport.
+
+## Marcus (Slab 3 Story 3.5)
+
+Story 3.5 closed FR24 on the adapted substrate with a two-phase override
+pattern. `app/runtime/override_warning.py` now defines the strict
+`ModelOverrideWarning` contract, while `app/runtime/override_api.py` owns
+`submit_override()` and `apply_override()` as the sole authority path for
+runtime model changes.
+
+Phase 1 is intentionally read-only: `submit_override(trial_id, node_id,
+new_model)` computes downstream `affected_nodes`, estimates cost delta,
+returns a five-minute `confirm_token`, and emits a structured cache-warning
+log entry without mutating `RunState`. Phase 2 is explicit operator
+confirmation: `apply_override(verdict, confirm_token)` validates the pending
+token, populates `RunState.model_overrides`, invalidates the live
+`CacheState`, appends an `OverrideEvent`, and emits a proto ledger event with
+`kind="override"`.
+
+### Override Discipline
+
+The transport pattern mirrors Story 3.4: MCP, FastAPI, and CLI all call the
+same runtime authority path rather than branching on transport-specific logic.
+DecisionCardMeta now surfaces the live cache posture directly from runtime:
+`healthy` when no override is active, `mixed` after an operator-approved
+override, and `cold` when no cache prefix exists for the trial.

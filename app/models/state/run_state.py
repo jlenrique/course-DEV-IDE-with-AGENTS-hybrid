@@ -80,6 +80,10 @@ class RunState(BaseModel):
             "STUB shape in 1.2; Story 1.3 replaces it with the full cascade entry."
         ),
     )
+    model_overrides: dict[str, str] = Field(
+        default_factory=dict,
+        description="Runtime node_id -> model_id override map (Story 3.5).",
+    )
     sanctum_fingerprint: SanctumFingerprint | None = Field(
         default=None,
         description="NFR-X3: content-addressable sanctum snapshot identity at run-start.",

@@ -42,19 +42,6 @@
       "additionalProperties": false,
       "description": "One cascade-resolution audit entry (NFR-X4 carrier).",
       "properties": {
-        "cache_prefix_hash": {
-          "anyOf": [
-            {
-              "type": "string"
-            },
-            {
-              "type": "null"
-            }
-          ],
-          "default": null,
-          "description": "Deterministic SHA-256 hex of the cache-prefix tuple; None for non-final cascade entries that don't carry the cache identity.",
-          "title": "Cache Prefix Hash"
-        },
         "level": {
           "description": "Closed enum: per_call | per_specialist | registry_default | auto_select_fallback.",
           "enum": [
@@ -64,12 +51,6 @@
             "auto_select_fallback"
           ],
           "title": "Level",
-          "type": "string"
-        },
-        "reason": {
-          "description": "Free-text explanation of why this level resolved as it did.",
-          "minLength": 1,
-          "title": "Reason",
           "type": "string"
         },
         "requested": {
@@ -91,11 +72,30 @@
           "title": "Resolved",
           "type": "string"
         },
+        "reason": {
+          "description": "Free-text explanation of why this level resolved as it did.",
+          "minLength": 1,
+          "title": "Reason",
+          "type": "string"
+        },
         "timestamp": {
           "description": "Timezone-aware resolution timestamp.",
           "format": "date-time",
           "title": "Timestamp",
           "type": "string"
+        },
+        "cache_prefix_hash": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Deterministic SHA-256 hex of the cache-prefix tuple; None for non-final cascade entries that don't carry the cache identity.",
+          "title": "Cache Prefix Hash"
         }
       },
       "required": [
@@ -111,6 +111,29 @@
       "additionalProperties": false,
       "description": "Single-node checkpoint record. Cross-field invariant: complete \u21d2 completed_at.",
       "properties": {
+        "node_id": {
+          "description": "Stable node identifier.",
+          "minLength": 1,
+          "title": "Node Id",
+          "type": "string"
+        },
+        "step_index": {
+          "description": "0-based position in the graph topology.",
+          "minimum": 0,
+          "title": "Step Index",
+          "type": "integer"
+        },
+        "status": {
+          "description": "Closed enum: pending | running | complete | failed.",
+          "enum": [
+            "pending",
+            "running",
+            "complete",
+            "failed"
+          ],
+          "title": "Status",
+          "type": "string"
+        },
         "checkpoint_at": {
           "description": "Timezone-aware timestamp of this checkpoint write.",
           "format": "date-time",
@@ -131,12 +154,6 @@
           "description": "REQUIRED iff status == 'complete'; timezone-aware.",
           "title": "Completed At"
         },
-        "node_id": {
-          "description": "Stable node identifier.",
-          "minLength": 1,
-          "title": "Node Id",
-          "type": "string"
-        },
         "sanctum_fingerprint": {
           "anyOf": [
             {
@@ -148,23 +165,6 @@
           ],
           "default": null,
           "description": "Content-addressable sanctum identity at this checkpoint. Optional in 1.2 substrate; downstream stories tighten when applicable."
-        },
-        "status": {
-          "description": "Closed enum: pending | running | complete | failed.",
-          "enum": [
-            "pending",
-            "running",
-            "complete",
-            "failed"
-          ],
-          "title": "Status",
-          "type": "string"
-        },
-        "step_index": {
-          "description": "0-based position in the graph topology.",
-          "minimum": 0,
-          "title": "Step Index",
-          "type": "integer"
         }
       },
       "required": [
@@ -180,10 +180,10 @@
       "additionalProperties": false,
       "description": "Content-addressable snapshot identity. Frozen by architecture invariant.",
       "properties": {
-        "captured_at": {
-          "description": "Timezone-aware capture timestamp.",
-          "format": "date-time",
-          "title": "Captured At",
+        "snapshot_id": {
+          "description": "UUID4 identity for this fingerprint instance.",
+          "format": "uuid",
+          "title": "Snapshot Id",
           "type": "string"
         },
         "content_sha256": {
@@ -194,10 +194,10 @@
           "title": "Content Sha256",
           "type": "string"
         },
-        "snapshot_id": {
-          "description": "UUID4 identity for this fingerprint instance.",
-          "format": "uuid",
-          "title": "Snapshot Id",
+        "captured_at": {
+          "description": "Timezone-aware capture timestamp.",
+          "format": "date-time",
+          "title": "Captured At",
           "type": "string"
         }
       },
@@ -211,6 +211,12 @@
       "additionalProperties": false,
       "description": "One story's execution slice: identity + ordered checkpoint history.",
       "properties": {
+        "story_id": {
+          "description": "Stable story identifier.",
+          "minLength": 1,
+          "title": "Story Id",
+          "type": "string"
+        },
         "node_checkpoints": {
           "description": "Ordered history of node checkpoints for this story (append-only by convention).",
           "items": {
@@ -218,12 +224,6 @@
           },
           "title": "Node Checkpoints",
           "type": "array"
-        },
-        "story_id": {
-          "description": "Stable story identifier.",
-          "minLength": 1,
-          "title": "Story Id",
-          "type": "string"
         },
         "updated_at": {
           "description": "Timezone-aware timestamp of the most recent state mutation.",
@@ -242,17 +242,29 @@
   "additionalProperties": false,
   "description": "Top-level run state. Encodes NFR-X1\u2013X5 reproducibility invariants.",
   "properties": {
-    "cache_state": {
-      "anyOf": [
-        {
-          "$ref": "#/$defs/CacheState"
-        },
-        {
-          "type": "null"
-        }
+    "run_id": {
+      "description": "UUID4 identity for this run.",
+      "format": "uuid",
+      "title": "Run Id",
+      "type": "string"
+    },
+    "status": {
+      "default": "pending",
+      "description": "Closed enum: pending | running | complete | failed.",
+      "enum": [
+        "pending",
+        "running",
+        "complete",
+        "failed"
       ],
-      "default": null,
-      "description": "Optional cache-prefix tracking; populated by D5 cold-read flow."
+      "title": "Status",
+      "type": "string"
+    },
+    "created_at": {
+      "description": "Timezone-aware run-start timestamp.",
+      "format": "date-time",
+      "title": "Created At",
+      "type": "string"
     },
     "completed_at": {
       "anyOf": [
@@ -268,16 +280,46 @@
       "description": "REQUIRED iff status == 'complete'; timezone-aware.",
       "title": "Completed At"
     },
-    "created_at": {
-      "description": "Timezone-aware run-start timestamp.",
-      "format": "date-time",
-      "title": "Created At",
-      "type": "string"
-    },
     "graph_version": {
       "description": "Frozen graph version identifier; 1.2 stub-validated against ALLOWED_GRAPH_VERSIONS (Slab 4 Story 4.5 wires the real registry).",
       "title": "Graph Version",
       "type": "string"
+    },
+    "temperature": {
+      "default": 0.0,
+      "description": "NFR-X5: documented temperature variance bound to [0.0, 2.0].",
+      "maximum": 2.0,
+      "minimum": 0.0,
+      "title": "Temperature",
+      "type": "number"
+    },
+    "model_resolution_trail": {
+      "description": "NFR-X4: append-only resolution trail. ModelResolutionEntry is a STUB shape in 1.2; Story 1.3 replaces it with the full cascade entry.",
+      "items": {
+        "$ref": "#/$defs/ModelResolutionEntry"
+      },
+      "title": "Model Resolution Trail",
+      "type": "array"
+    },
+    "model_overrides": {
+      "additionalProperties": {
+        "type": "string"
+      },
+      "description": "Runtime node_id -> model_id override map (Story 3.5).",
+      "title": "Model Overrides",
+      "type": "object"
+    },
+    "sanctum_fingerprint": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/SanctumFingerprint"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "description": "NFR-X3: content-addressable sanctum snapshot identity at run-start."
     },
     "marcus_fingerprint": {
       "anyOf": [
@@ -303,44 +345,6 @@
       "description": "Story 3.1 Marcus cold-read fingerprint: (sanctum_sha256, session_uuid4).",
       "title": "Marcus Fingerprint"
     },
-    "model_resolution_trail": {
-      "description": "NFR-X4: append-only resolution trail. ModelResolutionEntry is a STUB shape in 1.2; Story 1.3 replaces it with the full cascade entry.",
-      "items": {
-        "$ref": "#/$defs/ModelResolutionEntry"
-      },
-      "title": "Model Resolution Trail",
-      "type": "array"
-    },
-    "run_id": {
-      "description": "UUID4 identity for this run.",
-      "format": "uuid",
-      "title": "Run Id",
-      "type": "string"
-    },
-    "sanctum_fingerprint": {
-      "anyOf": [
-        {
-          "$ref": "#/$defs/SanctumFingerprint"
-        },
-        {
-          "type": "null"
-        }
-      ],
-      "default": null,
-      "description": "NFR-X3: content-addressable sanctum snapshot identity at run-start."
-    },
-    "status": {
-      "default": "pending",
-      "description": "Closed enum: pending | running | complete | failed.",
-      "enum": [
-        "pending",
-        "running",
-        "complete",
-        "failed"
-      ],
-      "title": "Status",
-      "type": "string"
-    },
     "story_states": {
       "description": "Per-story execution slices captured under this run.",
       "items": {
@@ -349,13 +353,17 @@
       "title": "Story States",
       "type": "array"
     },
-    "temperature": {
-      "default": 0.0,
-      "description": "NFR-X5: documented temperature variance bound to [0.0, 2.0].",
-      "maximum": 2.0,
-      "minimum": 0.0,
-      "title": "Temperature",
-      "type": "number"
+    "cache_state": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/CacheState"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "description": "Optional cache-prefix tracking; populated by D5 cold-read flow."
     }
   },
   "required": [

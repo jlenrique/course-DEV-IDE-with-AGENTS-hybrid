@@ -15,7 +15,7 @@ def test_gate_cli_stub_is_callable(capsys) -> None:
     exit_code = gate_decide_cli(argparse.Namespace(verdict=verdict))
     captured = capsys.readouterr()
     assert exit_code == 0
-    assert "[transport=stub]" in captured.out
+    assert '"transport_kind": "cli"' in captured.out
 
 
 def test_gate_endpoint_stub_is_callable() -> None:
@@ -25,4 +25,4 @@ def test_gate_endpoint_stub_is_callable() -> None:
     payload.pop("operator_id", None)
     response = gate_verdict_endpoint(payload, operator_id="juanl")
     assert response["status"] == "accepted"
-    assert response["headers"]["X-Gate-Transport"] == "stub"
+    assert response["ledger_event"]["transport_kind"] == "http"
