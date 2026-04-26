@@ -4,6 +4,10 @@ Living catalog of anti-patterns harvested across Slab-1 closure + inherited
 from the primary repo's `docs/dev-guide/dev-agent-anti-patterns.md`. Every
 Slab 2+ story's dev-agent reads this at T1.
 
+Slab 2 (2a + 2b + 2c) harvest cycle complete; 14 entries A1-A14 under
+format-freeze v1; Slab 3+ harvest continues under the same freeze unless
+party-mode consensus + version bump.
+
 > **You-are-here** (Slab 2+ dev-agent reading order at T1):
 > 1. [`scaffold-conformance-framework.md`](scaffold-conformance-framework.md) â€” 9-node canonical contract + T1 pre-flight
 > 2. [`langgraph-state-idioms.md`](langgraph-state-idioms.md) â€” state-shape idioms (interrupt, Command, Send, reducers)
@@ -35,6 +39,7 @@ cost/rework evidence), OR (b) party-mode consensus that the pattern is real
 even without a burn. Prevents speculative entries.
 
 **Format version:** 1 (2026-04-22 initial). Bump on any field-set change.
+Format version: 1
 
 ## Confirmed Slab-1 entries
 
@@ -216,4 +221,10 @@ signal â€” escalate to party-mode before extending the shape.
 - **Example:** Slab 2b per-specialist wave added multiple dict[str, Any] | None return-shape fields across specialist states before strict dispatch contracts were centralized.
 - **Counter-pattern:** Allow temporary loose typing only with a named hardening story and explicit close-time conversion to typed dispatch models plus registry-backed invariants.
 - **Slab-of-discovery:** Slab 2b Story 2b.15 (resolved during cross-cutting contract hardening).
+
+### A14. Acceptance criteria drafted against unverified substrate
+
+- **Example:** Story 2c.3 originally referenced a non-existent `15-invariant-audit-matrix.md` artifact, forcing corrective deferral to Slab 5a and a `slab-2c-wondercraft-invariant-stub.md` bridge. Story 2c.2 also made an initial strict receipt-key claim against `WandaDispatchReceipt.wanda_audio` even though the runtime type is loose `dict[str, Any] | None`.
+- **Counter-pattern:** During T1, verify every referenced runtime path, artifact path, schema field, and receipt shape against the live tree before writing executable ACs. If the substrate does not exist yet, either narrow the AC to a stub/seed artifact or file the missing substrate as a predecessor story.
+- **Slab-of-discovery:** Slab 2c Stories 2c.2 and 2c.3; accepted at Story 2c.4 harvest gate by Mary/Murat/Amelia consensus.
 

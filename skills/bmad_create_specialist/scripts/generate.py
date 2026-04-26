@@ -47,6 +47,14 @@ class GenerationResult:
 
 
 @dataclass(frozen=True)
+class RetirementResult:
+    """Summary of C3 ignore row retirement."""
+
+    ignore_edge: str
+    row_removed: bool
+
+
+@dataclass(frozen=True)
 class GenerationRequest:
     """Structured generator request (CLI or programmatic)."""
 
@@ -56,6 +64,14 @@ class GenerationRequest:
     from_skill: Path | None = None
     dry_run: bool = False
     force: bool = False
+    repo_root: Path | None = None
+
+
+@dataclass(frozen=True)
+class RetirementRequest:
+    """Structured generator-retirement request."""
+
+    name: str
     repo_root: Path | None = None
 
 
@@ -367,6 +383,81 @@ def _plan_pyproject_c3_mutation(*, name: str, repo_root: Path) -> PyprojectC3Mut
     )
 
 
+def _plan_pyproject_c3_retirement(*, name: str, repo_root: Path) -> PyprojectC3Mutation:
+    pyproject_path = repo_root / "pyproject.toml"
+    if not pyproject_path.is_file():
+        raise GeneratorInputError(
+            "pyproject.toml is missing at repository root; cannot retire C3 ignore_imports row"
+        )
+
+    content = pyproject_path.read_text(encoding="utf-8")
+    lines = content.splitlines(keepends=True)
+    block_starts = [
+        index
+        for index, line in enumerate(lines)
+        if line.strip() == _IMPORT_LINTER_BLOCK
+    ]
+
+    c3_block_start: int | None = None
+    c3_block_end: int | None = None
+    for idx, start in enumerate(block_starts):
+        end = block_starts[idx + 1] if idx + 1 < len(block_starts) else len(lines)
+        block_lines = lines[start:end]
+        if any(line.strip().startswith(_C3_NAME_PREFIX) for line in block_lines):
+            c3_block_start = start
+            c3_block_end = end
+            break
+
+    if c3_block_start is None or c3_block_end is None:
+        raise GeneratorInputError(
+            "pyproject.toml does not contain a Contract C3 importlinter block; "
+            "cannot retire ignore_imports row"
+        )
+
+    ignore_open_idx: int | None = None
+    ignore_close_idx: int | None = None
+    for index in range(c3_block_start, c3_block_end):
+        if lines[index].strip() == "ignore_imports = [":
+            ignore_open_idx = index
+            break
+    if ignore_open_idx is None:
+        raise GeneratorInputError(
+            "Contract C3 block is missing ignore_imports = [; cannot retire row"
+        )
+    for index in range(ignore_open_idx + 1, c3_block_end):
+        if lines[index].strip() == "]":
+            ignore_close_idx = index
+            break
+    if ignore_close_idx is None:
+        raise GeneratorInputError(
+            "Contract C3 ignore_imports list has no closing ]; cannot retire row"
+        )
+
+    expected_edge = _c3_ignore_edge(name)
+    remove_idx: int | None = None
+    for index in range(ignore_open_idx + 1, ignore_close_idx):
+        parsed_edge = _parse_ignore_edge_from_line(lines[index].rstrip("\r\n"))
+        if parsed_edge == expected_edge:
+            remove_idx = index
+            break
+
+    if remove_idx is None:
+        return PyprojectC3Mutation(
+            path=pyproject_path,
+            original_text=content,
+            updated_text=None,
+            ignore_edge=expected_edge,
+        )
+
+    updated_lines = [*lines[:remove_idx], *lines[remove_idx + 1 :]]
+    return PyprojectC3Mutation(
+        path=pyproject_path,
+        original_text=content,
+        updated_text="".join(updated_lines),
+        ignore_edge=expected_edge,
+    )
+
+
 def _write_items_atomic(
     *,
     items: list[EmissionItem],
@@ -478,19 +569,43 @@ def generate_specialist(
     )
 
 
+def retire_specialist(name: str, *, repo_root: Path | None = None) -> RetirementResult:
+    root = (repo_root or _repo_root()).resolve()
+    _validate_name(name)
+    pyproject_mutation = _plan_pyproject_c3_retirement(name=name, repo_root=root)
+    if pyproject_mutation.needs_write and pyproject_mutation.updated_text is not None:
+        _write_text(pyproject_mutation.path, pyproject_mutation.updated_text)
+    return RetirementResult(
+        ignore_edge=pyproject_mutation.ignore_edge,
+        row_removed=pyproject_mutation.needs_write,
+    )
+
+
 def _build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(description="Generate a scaffold-conformant specialist")
-    parser.add_argument("--name", required=True, help="specialist name")
-    parser.add_argument("--mcp", required=True, help="MCP tool hint")
-    parser.add_argument("--expertise-tier", required=True, help="expertise tier label")
+    parser.add_argument("--name", help="specialist name")
+    parser.add_argument("--retire", help="remove generated C3 ignore_imports row for specialist")
+    parser.add_argument("--mcp", help="MCP tool hint")
+    parser.add_argument("--expertise-tier", help="expertise tier label")
     parser.add_argument("--from-skill", type=Path, default=None, help="optional source skill path")
     parser.add_argument("--dry-run", action="store_true", help="validate and print plan only")
     parser.add_argument("--force", action="store_true", help="overwrite existing generated files")
     return parser
 
 
-def parse_args(argv: list[str] | None = None) -> GenerationRequest:
-    args = _build_parser().parse_args(argv)
+def parse_args(argv: list[str] | None = None) -> GenerationRequest | RetirementRequest:
+    parser = _build_parser()
+    args = parser.parse_args(argv)
+    if args.name and args.retire:
+        parser.error("--name and --retire are mutually exclusive")
+    if args.retire:
+        return RetirementRequest(name=args.retire)
+    if not args.name:
+        parser.error("the following arguments are required: --name")
+    if not args.mcp:
+        parser.error("the following arguments are required: --mcp")
+    if not args.expertise_tier:
+        parser.error("the following arguments are required: --expertise-tier")
     return GenerationRequest(
         name=args.name,
         mcp_tool=args.mcp,
@@ -502,8 +617,18 @@ def parse_args(argv: list[str] | None = None) -> GenerationRequest:
 
 
 def main(argv: list[str] | None = None) -> int:
-    request = parse_args(argv)
     try:
+        request = parse_args(argv)
+    except SystemExit as exc:
+        return int(exc.code) if isinstance(exc.code, int) else 2
+    try:
+        if isinstance(request, RetirementRequest):
+            result = retire_specialist(request.name, repo_root=request.repo_root)
+            if result.row_removed:
+                print(f"removed C3 ignore_imports row: {result.ignore_edge}")
+            else:
+                print(f"row for {request.name} not present, no-op")
+            return 0
         result = generate_specialist(request)
     except GeneratorInputError as exc:
         print(f"GeneratorInputError: {exc}", file=sys.stderr)

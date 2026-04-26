@@ -1,6 +1,6 @@
 # Migration Story 2c.4: Scaffold-Generator Polish + Specialist-Anti-Patterns Catalog Final 2b+2c Harvest (SLAB CLOSING)
 
-**Status:** ready-for-dev
+**Status:** done
 **Sprint key:** `migration-2c-4-scaffold-generator-polish-and-anti-patterns-final`
 **Epic:** Slab 2c (migration Epic 2c — Wondercraft Pilot + Generator Validation) — **fourth story; SLAB CLOSING**.
 **Pts:** 2 | **Gate:** single (per governance JSON `2c-4.expected_gate_mode = "single-gate"`, rationale: null — SLAB CLOSING + generator polish + anti-patterns harvest; no schema-shape, no lane-boundary, no invariant-preservation; the slab-retrospective + D12 protocol artifact). **K-target:** ~1.3× (target 8 / floor 6; throwaway-regen regression test + final-anti-patterns assertions + D12 close protocol).
@@ -325,28 +325,64 @@ _(Populated during T1–T9 execution.)_
 
 ### T1 Readiness
 
-_(Populated at T1)_
+- PASS. Governance JSON confirms `2c-4.expected_gate_mode = "single-gate"`.
+- PASS. Sprint status showed 2c.1, 2c.2, and 2c.3 `done` before 2c.4 implementation.
+- PASS. M2 verdict parsed as `CONDITIONAL-GREEN`; close-state path is `CLOSED-WITH-CONDITIONAL-M2`.
+- PASS. `2c-1-generator-auto-emit-retire-removal-support` existed in deferred inventory and was resolved by AC-A.
+- PASS. Anti-pattern catalog had A1-A13 at open; `slab-2c-wondercraft-invariant-stub.md` existed; `slab-2c-retrospective.md` did not exist before creation.
 
 ### T2–T7 Implementation Notes
 
-_(Populated during implementation)_
+- Added `RetirementRequest` / `RetirementResult`, `retire_specialist()`, and `_plan_pyproject_c3_retirement()` in `skills/bmad_create_specialist/scripts/generate.py`.
+- `--retire <name>` uses the same string-level C3 surgery style as 2a.5 auto-emit; no TOML library imports were added.
+- CLI validation preserves existing direct `--name` dry-run behavior while returning a non-zero exit for `--name` + `--retire` conflict.
+- Throwaway generation tests use a UUID-suffixed `tmp_validate_<8hex>` name and a tmp repo root; cleanup uses `yield` plus `request.addfinalizer()` and idempotently retires the generated C3 row.
+- Harvest-gate party-mode consensus: X1 `ABSORB-INTO-A3`; X2 `ACCEPT-AS-A14`; X3 `ABSORB-INTO-A14`.
 
 ### T8 Regression Evidence + Polish + Harvest Outcomes
 
-_(Populated at T8 with throwaway round-trip duration + anti-pattern harvest verdict + retrospective notes + M2 verdict-state)_
+- Focused 2c.4 + generator checks: `67 passed`.
+- Scaffold conformance: `58 passed`.
+- Sandbox-AC validator: PASS for the 2c.4 story file.
+- Focused ruff on owned code/tests: clean.
+- Import-linter executable: 3/3 contracts KEPT.
+- Full pytest command `.venv\Scripts\python.exe -m pytest -q --tb=short` still fails during collection from pre-existing manifest-schema drift and missing `marcus.dispatch.contract`.
+- Full ruff command `.venv\Scripts\python.exe -m ruff check app/ tests/ skills/ scripts/` still fails on inherited repo-wide lint backlog.
+- Exact import-linter module command `.venv\Scripts\python.exe -m lint_imports --config pyproject.toml` still fails because `lint_imports` is not importable as a module in this venv; `lint-imports.exe --config pyproject.toml` passes.
 
 ### G6 Layered Code-Review (Blind Hunter / Edge Case Hunter / Acceptance Auditor)
 
-_(Single-gate self-conducted per CLAUDE.md; populated at T8)_
+- Blind Hunter: no MUST-FIX found in `--retire`; retirement only mutates the C3 row and does not remove specialist trees/tests.
+- Edge Case Hunter: mutation/no-op/tree-preservation/conflict paths covered by four generator tests; throwaway round-trip covers force-idempotency and cleanup.
+- Acceptance Auditor: AC-A through AC-J are covered by implementation, close artifacts, sprint-status close-state, retrospective verdicts, and migration tests.
+- `bmad-code-review` workflow was loaded; interactive step checkpoint is incompatible with autonomous batch close, so review was self-conducted against the scoped diff and all MUST-FIX items were already addressed.
 
 ### D12 Close Stub
 
-_(Populated at story close per AC-2c.4-H)_
+1. Invariant preservation: Slab 1 + Slab 2a + Slab 2b + Slab 2c.1-2c.3 substrate intact; generator polish is additive and throwaway tests run in tmp repo root.
+2. Anti-pattern harvest: A14 accepted by Mary/Murat/Amelia consensus; X1 absorbed into A3; X3 absorbed as A14 example; catalog now A1-A14 under format-freeze v1.
+3. Migration-guide update: no guide text change required for this story; `slab-2c-retrospective.md` is the slab-closing artifact.
+4. TEMPLATE compliance: R1, R6, and R8 honored; numeric anchors recorded in tests and retrospective; M2 close-state is conditional per 2c.3 verdict.
 
 ### Completion Notes
 
-_(Populated at story close)_
+- Story 2c.4 BMAD-CLOSED on 2026-04-26.
+- Slab 2c closed as `CLOSED-WITH-CONDITIONAL-M2`; sprint status carries the conditional M2 comment and deferred-inventory pointer.
+- `next-session-start-here.md` updated with Slab 2c closed handoff and the required `Deferred inventory status:` line.
+- No live Wondercraft API cost was incurred.
 
 ### File List
 
-_(Populated at story close)_
+- `_bmad-output/implementation-artifacts/migration-2c-4-scaffold-generator-polish-and-anti-patterns-final.md`
+- `_bmad-output/implementation-artifacts/slab-2c-retrospective.md`
+- `_bmad-output/implementation-artifacts/sprint-status.yaml`
+- `_bmad-output/planning-artifacts/deferred-inventory.md`
+- `docs/dev-guide/specialist-anti-patterns.md`
+- `next-session-start-here.md`
+- `skills/bmad_create_specialist/scripts/generate.py`
+- `tests/migration/test_slab_2c_anti_patterns_catalog_final.py`
+- `tests/migration/test_slab_2c_close_state_matches_m2_verdict.py`
+- `tests/migration/test_slab_2c_generator_throwaway_round_trip.py`
+- `tests/migration/test_slab_2c_next_session_start_here_updated.py`
+- `tests/migration/test_slab_2c_retrospective_present.py`
+- `tests/specialists/generator/test_generator_retire_flag.py`
