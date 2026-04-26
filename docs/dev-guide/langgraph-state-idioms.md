@@ -120,19 +120,80 @@ timestamp fields, `extra="forbid"` on any Pydantic shape inside the payload.
 Reproducibility contract (NFR-X3 sanctum snapshot): the payload carries enough
 context for an operator's async verdict to land on the exact same state bytes.
 
-## 6. RetryPolicy + Pydantic interaction — **Slab 4 Story 4.7 deferred**
+## 6. RetryPolicy + Pydantic interaction
 
-> LangGraph's `RetryPolicy` + Pydantic state interaction is an acknowledged gap per
-> bundle §3 idiom 6. Slab 1 specialists MUST NOT silently work around it — flag it
-> explicitly in the specialist's Dev Notes when a retry-worthy scenario surfaces,
-> and defer to Slab 4 Story 4.7 for the systematic fix.
+The concrete failure mode in the hybrid runtime is narrower than the original
+placeholder implied. The problem is not that LangGraph cannot run with a
+Pydantic state schema; that path is already the project baseline. The problem
+is that a node which performs its own `model_validate(...)` call against a
+flaky intermediate payload and then lets the raw `ValidationError` escape will
+not be retried by LangGraph's default `RetryPolicy`. In practice, that means
+provider or tool payload validation can fail on attempt one even when the
+second invocation would have returned a valid shape. For this project, that is
+the wrong boundary: transient payload-shape failures should be retryable,
+while terminal schema mismatches should still surface explicitly after the
+retry budget is exhausted.
 
-The gap: LangGraph's `RetryPolicy` interactions (exponential backoff + `retry_on`
-predicate + `max_retries`) can re-invoke a Pydantic-validated node with stale-ish
-state depending on the checkpointer's replay semantics. Slab 4 Story 4.7 lands the
-reconciliation pattern (likely a retry-aware reducer field + a `retry_count` probe
-on `RunState`). Until then, specialist authors either use the default `RetryPolicy`
-(no custom predicate) or raise an explicit `NotImplementedError` pointing at 4.7.
+Story 4.7 closes the gap with a wrap-and-route discipline owned by
+`app/runtime/retry_policy.py`. The rule is simple: keep Pydantic validation at
+the node boundary, but translate `ValidationError` into a runtime-owned
+exception class that the graph can intentionally retry. The helper
+`validate_for_retry(...)` performs the `model_validate(...)` call and raises
+`RetryableValidationNodeError` instead of leaking the raw Pydantic exception.
+The companion helper `pydantic_retry_policy(...)` returns a LangGraph
+`RetryPolicy` preconfigured with `retry_on=RetryableValidationNodeError`. That
+keeps the retry contract explicit and local to the node rather than relying on
+framework defaults that are aimed at generic transport failures.
+
+The discipline is deliberately boundary-scoped. Do **not** turn all schema
+errors into retryable ones, and do **not** relax the Pydantic models to make
+the retry layer happy. Validation that proves a local programming bug, a
+closed-enum violation, or a deterministic manifest mismatch should still fail
+loudly. The wrapper belongs only around payloads that are expected to be noisy
+at the edge: tool output, provider responses, or intermediate envelopes that
+become stable on replay. If the payload is locally authored and deterministic,
+retrying it is usually cargo culting.
+
+Worked example:
+
+```python
+from pydantic import BaseModel
+
+from app.runtime.retry_policy import (
+    pydantic_retry_policy,
+    validate_for_retry,
+)
+
+
+class Payload(BaseModel):
+    value: int
+
+
+def compose_return(state: dict[str, object]) -> dict[str, object]:
+    payload = validate_for_retry(
+        Payload,
+        flaky_provider_call(),
+        node_name="compose_return",
+    )
+    return {"value": payload.value}
+
+
+builder.add_node(
+    "compose_return",
+    compose_return,
+    retry_policy=pydantic_retry_policy(max_attempts=2, jitter=False),
+)
+```
+
+The paired integration test in
+`tests/integration/runtime/test_retry_policy_pydantic.py` demonstrates both
+sides of the boundary. Without the wrapper, a bad first payload raises raw
+`ValidationError` and the graph stops after a single attempt. With the wrapper
+and the retry policy helper, the first bad payload becomes a retryable
+runtime-owned exception, the node runs a second time, and the valid payload
+completes successfully. That is the architecture the migration needs: retries
+for transient edge payloads, explicit failure for deterministic schema drift,
+and no silent relaxation of the Pydantic contract.
 
 ## Related
 

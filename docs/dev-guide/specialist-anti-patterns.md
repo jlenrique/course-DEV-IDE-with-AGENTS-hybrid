@@ -4,11 +4,12 @@ Living catalog of anti-patterns harvested across Slab-1 closure + inherited
 from the primary repo's `docs/dev-guide/dev-agent-anti-patterns.md`. Every
 Slab 2+ story's dev-agent reads this at T1.
 
-Slab 2 (2a + 2b + 2c) and Slab 3 harvest cycles complete; 14 entries A1-A14
-under format-freeze v1. Slab 3 closed without accepting a new catalog entry;
-the live-wire-substrate caution remains documented in deferred inventory and
-conditional milestone artifacts unless party-mode consensus later promotes it
-to a frozen catalog entry.
+Slab 2 (2a + 2b + 2c) harvest cycle complete. Slab 3 harvest cycle complete.
+Slab 4 harvest cycle complete. The catalog remains at 14 entries A1-A14 under
+format-freeze v1. Slab 3 and Slab 4 both closed without accepting a new
+catalog entry; the live-wire-substrate caution remains documented in deferred
+inventory and conditional milestone artifacts unless party-mode consensus later
+promotes it to a frozen catalog entry.
 
 > **You-are-here** (Slab 2+ dev-agent reading order at T1):
 > 1. [`scaffold-conformance-framework.md`](scaffold-conformance-framework.md) â€” 9-node canonical contract + T1 pre-flight

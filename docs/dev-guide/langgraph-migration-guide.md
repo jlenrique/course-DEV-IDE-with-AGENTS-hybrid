@@ -286,6 +286,23 @@ The operator-facing surface is additive. `DecisionCardMeta` now carries
 reported cache warmth from `healthy` to `mixed` whenever an in-flight sanctum
 mutation is present.
 
+### 6.6 Retry-Aware Validation Boundary (Story 4.7)
+
+Story 4.7 closes the deferred RetryPolicy gap by making payload validation a
+runtime-owned boundary instead of letting raw Pydantic exceptions leak through
+LangGraph's default retry handling. `app/runtime/retry_policy.py` provides two
+small helpers:
+
+- `validate_for_retry(...)` wraps `model_validate(...)` and re-raises
+  `ValidationError` as `RetryableValidationNodeError`, and
+- `pydantic_retry_policy(...)` returns the matching `RetryPolicy` with
+  `retry_on=RetryableValidationNodeError`.
+
+Use this only where the payload can genuinely improve on replay, such as flaky
+tool or provider responses. Do not use it to mask deterministic schema drift
+in authored state or manifest surfaces. The worked example and rationale now
+live in `langgraph-state-idioms.md §6`.
+
 ---
 
 ## 7. Model Cascade + Registry Governance
@@ -318,6 +335,12 @@ rules, and the required artifact set under `runtime/graphs/v42/`:
 `app.runtime.compiled_graph_digest.compute_compiled_graph_digest(...)`
 produces the digest from canonical run-lane topology plus the dispatch
 registry snapshot, giving the frozen directory a byte-stable identity target.
+
+Story 4.7 closes the remaining runtime-side footgun by documenting the
+retry-aware validation pattern alongside the frozen-graph ceremony. Together,
+the ceremony and the retry helper set the acceptance baseline for Slab 5a:
+frozen topology on disk, explicit retry boundaries in code, and no implicit
+schema relaxation hidden inside the runtime.
 
 ---
 
