@@ -440,7 +440,7 @@ tests/integration/scaffold_conformance/test_scaffold_irene.py
 
 Operator runs first-breath ceremony BEFORE `bmad-dev-story` opens for steady-state stories; lock for the AC-D 10-invocation cache window.
 
-> **§12.5–§12.11 cover four specialist-shape categories proven across six specialists by Slab 2a–2b.3 (narration / LLM+tool-dispatch / pure-tool-dispatch / REST-API tool-dispatch). Pure inheritors are catalogued at §12.12; add a new §12.x only when a specialist introduces a new act-body category.**
+> **§12.5–§12.11 cover four specialist-shape categories proven across seven specialists by Slab 2a–2b.4 (narration / LLM+tool-dispatch / pure-tool-dispatch / REST-API tool-dispatch). Pure inheritors are catalogued at §12.12; add a new §12.x only when a specialist introduces a new act-body category. Narration now has two inhabitants (Irene + Desmond), and populated-and-locked sanctum coverage now has two real instances (Texas + Desmond).**
 
 ### 12.5 Irene worked before/after (act node) — real-Irene example, post-2a.2 close
 
@@ -797,8 +797,9 @@ Inheritors of this category are catalogued at §12.12.
 | Gary | §12.11 | REST-API dispatch wrapper + receipt parser | Empty-dir / absent | A10 (third) + A11 (second) | 2b.1 |
 | Vera | §12.6 | sensory-bridges importlib loader wrapper (`perceive(...)` entrypoint) | Graceful-degrade (unpopulated BMB sanctum) | A10 (fourth) + A11 (third) | 2b.2 |
 | Quinn-R | §12.6 | dual wrapper branchable `_act` (`gate_phase`) + quality-control importlib loader | Graceful-degrade (unpopulated BMB sanctum) | A10 (fifth) + A11 (fourth) + R2 extraction trigger | 2b.3 |
+| Desmond | §12.5 | No dispatch substrate (pure LLM narration); mandatory `## Automation Advisory` block enforced by parser | Populated-and-locked (BMB sanctum present; sha256 baseline pinned) | NONE (empty harvest; no framework drift) | 2b.4 |
 
-### 12.13 Verification commands (Irene + Kira + Texas + Gary + Vera + Quinn-R)
+### 12.13 Verification commands (Irene + Kira + Texas + Gary + Vera + Quinn-R + Desmond)
 
 ```bash
 python -m pytest tests/specialists/irene -q
@@ -813,6 +814,8 @@ python -m pytest tests/specialists/vera -q
 python -m pytest tests/integration/scaffold_conformance/test_scaffold_vera.py -q
 python -m pytest tests/specialists/quinn_r -q
 python -m pytest tests/integration/scaffold_conformance/test_scaffold_quinn_r.py -q
+python -m pytest tests/specialists/desmond -q
+python -m pytest tests/integration/scaffold_conformance/test_scaffold_desmond.py -q
 ```
 
 ### 12.14 Governance notes

@@ -1,0 +1,14 @@
+{
+  "specialist_id": "desmond",
+  "verb": "proceed",
+  "payload": {
+    "status": "ok"
+  },
+  "desmond_handoff": {
+    "handoff_text": "## Assembly Handoff\nUse the narrative pacing profile from the envelope.\n\n## Automation Advisory\nValidate timing transitions manually in Descript before export.",
+    "automation_advisory": "Validate timing transitions manually in Descript before export."
+  },
+  "edit_payload": null,
+  "reject_reason": null,
+  "timestamp": "2026-04-24T00:00:01Z"
+}
