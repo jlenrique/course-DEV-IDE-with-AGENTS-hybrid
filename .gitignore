@@ -3,6 +3,11 @@
 .env.*
 !.env.example
 
+# Operator local scratch / structure-snapshot drops — not version-controlled
+# (Permanent project orientation lives in README.md + docs/dev-guide/langgraph-migration-guide.md)
+PROJECT-STRUCTURE-MAP-TEMPORARY.md
+PROJECT-STRUCTURE-MAP-*.md
+
 # Cursor / Playwright MCP local logs
 .playwright-mcp/
 
