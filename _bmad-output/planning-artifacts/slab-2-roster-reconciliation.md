@@ -48,6 +48,10 @@ Wondercraft now exists on hybrid as a real first-breath scaffold with 6 capabili
 
 **Default pending kickoff consensus:** Path A (simplest; minimal work duplication). Revisit at Slab 2 kickoff party-mode.
 
+**RESOLUTION 2026-04-25 — BOTH paths ratified, sequenced:**
+- **Path A executed at Slab 2b Story 2b.8** (commit `b14d54c`): Wondercraft migrated as Category-A specialist into `app/specialists/wanda/` with full hand-authored runtime + 6-mode dispatch fan-out + populated dispatch-registry + strict-typed dispatch family at 2b.15.
+- **Path B ratified at Slab 2c kickoff (operator decision 2026-04-25):** Slab 2c.1 generator-validation target IS Wondercraft Path B — regenerate from scratch via `bmad-create-specialist` into sibling `app/specialists/wanda_validation/` + diff against shipped `app/specialists/wanda/` baseline + measure ≤1-dev-day time-to-deploy + ONE live Wondercraft API episode-preview at AC-B-OP. Together Path A + Path B satisfy M2 "plug-and-play specialist claim validated" with real API + real artifact + diff-against-baseline + measurable <1-dev-day. Spec: [`_bmad-output/implementation-artifacts/migration-2c-1-wondercraft-generator-validation-path-b.md`](../implementation-artifacts/migration-2c-1-wondercraft-generator-validation-path-b.md). Slab 2c kickoff handoff per [`slab-2b-retrospective.md §Slab 2c.1 Generator-Validation Target`](../implementation-artifacts/slab-2b-retrospective.md).
+
 ### Open question — Irene placement
 
 Irene lives at [`skills/bmad-agent-content-creator/`](../../skills/bmad-agent-content-creator/)

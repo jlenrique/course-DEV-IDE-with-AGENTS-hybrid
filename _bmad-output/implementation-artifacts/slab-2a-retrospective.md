@@ -157,3 +157,27 @@ The pure-tool-dispatch category (Texas) was the surprise: it forced an honest ac
 Slab 2b opens once A12 lands.
 
 **2026-04-25 update:** A12 generator auto-emit shipped at Story 2a.5 close. Slab 2b kickoff hard gate 1 satisfied. Slab 2b.1 (Gary TEMPLATE) is now open to author.
+
+---
+
+## Slab 2b kickoff handoff (T1 decisions)
+
+**Authored 2026-04-25 at Story 2b.1 spec close + party-mode amendment (Paige rider P-R6).** This subsection is a forward-looking T1→T1 bridge artifact — past slabs' retrospectives become the natural home for "what did the next slab decide at open" so future readers (Slab 2c+) don't have to reverse-engineer Slab 2b's TEMPLATE-establishing decisions from the 2b.1 spec body.
+
+**Five TEMPLATE-establishing decisions made at Slab 2b open (Story 2b.1 + party-mode green-light + amendment 2026-04-25):**
+
+1. **TEMPLATE doc home:** [`docs/dev-guide/specialist-migration-template.md`](../../docs/dev-guide/specialist-migration-template.md) v1 — seven rules R1–R7 codified there. Inheritor stories 2b.2–2b.14 cite the doc; they do NOT inline-restate the rules. Updates require party-mode consensus + version bump.
+2. **Bounded-scope rule (R1):** per-specialist 2b.x migrations cover ONLY the headless dispatch path. LLM-mediated parameter recommendation (PR), quality assessment (QA), exemplar study (ES), or any other LLM-using SKILL.md capabilities are OUT OF SCOPE unless the specialist materially needs them at the runtime layer. Filed as separate per-specialist enhancement stories only when concrete need surfaces.
+3. **§12 cascade rule (R3):** category-novel specialists add new §12.x worked example; pure inheritors get one row in §12.12 inheritor catalog matrix (NEW at 2b.1 close). Forward-pointers from each §12.x worked example point to §12.12. Only category-novel specialists (a fifth or further specialist-shape category beyond the four established) add new §12.x.
+4. **Anti-pattern harvest continuity (R6):** at every 2b.x T1, run epic-doc-vs-framework cross-check. Drifts harvest as augmented bullets under existing A9/A10/A11/A12 (per Paige harvest-gate rule). T1 Readiness section MUST split framework drifts (sub-subsection (a) — harvest as anti-pattern bullets) vs TEMPLATE scope decisions (sub-subsection (b) — codify in `specialist-migration-template.md`). At 2b.1 open: A11 retitled to "sanctum/sidecar contract drift" (parallel to A9 retitle at 2a.4); A10 third example added (Gary `gpt-4.1-mini`).
+5. **Auto-emit C3 verification (R5):** every 2b.x story includes a positive regression test asserting Story-2a.5 generator auto-emit fired (NO manual `pyproject.toml` edits anywhere). Test uses `tests/specialists/generator/conftest.py::temp_repo_root` synthetic fixture (NOT live `pyproject.toml`) for hermetic order-independence across all 13 inheritor stories.
+
+**Trail-entry-resolution-at-`_plan` discipline (R7, Winston W-R1 amendment):** for any tool-dispatch category specialist, `_plan` MUST resolve and append the `ModelResolutionEntry` even when `_act` will not invoke the chat handle. Without this rule, an inheritor dev agent may shortcut and skip resolution at `_plan` ("why resolve a model I never call?"); that breaks cache-prefix attribution per NFR-I6 + FR16 trail-entry contract uniformity + Winston W2 discriminator-check + Slab-3 middleware that walks the trail.
+
+**Tag-namespace artifact-noun convention (Murat M-R2 amendment):** specialist tag namespaces follow the artifact-noun convention — Texas `bundle.parsed.*` (artifact = bundle); Gary `receipt.parsed.*` (artifact = receipt); future categories use the artifact-noun under parsing, NOT verb+vendor like `gamma.dispatch.*`. This generalizes downstream span-aggregation across specialists.
+
+**Dispatch-wrapper extraction threshold (R2):** subprocess (Kira/Texas → 2 instances) vs REST-API (Gary → 1 instance) vs MCP-tool (Slab-3 forward-looking) — wrapper-extraction threshold is "third occurrence of the SAME seam category." Loader sub-mechanism per-specialist (importlib OK for narrow-import targets; direct package import required for heavy-side-effect targets like Gary's `gamma_operations`). Sanctum cross-cutting refactor (e.g., `SanctumLockViolation` extraction) follows the same third-occurrence rule.
+
+**State-shape extension pattern (R4):** each per-specialist `XxxReturn` adds AT MOST ONE new field, loose-typed (`list[dict[str, Any]] | None` or similar). Strict-typing is owed at Story 2b.15 dispatch-contract-hardening, NOT in per-specialist migration stories. **Risk:** if 2b.15 slips, the loose-typing accumulates; 2b.15 must be named in deferred-inventory with hard reactivation gating ("opens immediately on 2b.14 close") to convert soft-defer into hard sequencing constraint.
+
+A future Slab-2c reader hitting this section knows what 2b chose at open without having to read 2b.1's spec body. A 2b.7 dev agent at T1 reads `specialist-migration-template.md` (linked from §11 of the standing pre-flight items list) and applies R1–R7 to their story authoring.
