@@ -16,7 +16,7 @@ from scripts.utilities.pipeline_manifest import (
 
 def test_manifest_loads_and_validates() -> None:
     manifest = load_manifest()
-    assert manifest.schema_version == "1.0"
+    assert manifest.schema_version == "v4.2-migration-stub"
     assert manifest.pack_version == "v4.2"
     assert len(manifest.steps) >= 30
 

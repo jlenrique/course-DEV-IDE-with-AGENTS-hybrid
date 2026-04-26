@@ -1,4 +1,15 @@
-"""Pipeline manifest loader and typed access helpers."""
+"""Compatibility loader for the pipeline manifest utility layer.
+
+This module predates the Slab-1 graph-manifest substrate in ``app.manifest``.
+Story 4.1 keeps the legacy utility callers stable by accepting both:
+
+- the older ``steps``-shaped manifest fixtures used by Epic 33 utility tests
+- the live graph-shaped manifest at ``state/config/pipeline-manifest.yaml``
+
+The returned object intentionally preserves the historic ``manifest.steps``
+projection so older HUD / lockstep / workflow-runner callers continue to work
+without being rewritten in the same story.
+"""
 
 from __future__ import annotations
 
@@ -9,10 +20,12 @@ from types import MappingProxyType
 import yaml
 from pydantic import BaseModel, ConfigDict, Field, model_validator
 
+from app.manifest import load as load_graph_manifest
+from app.manifest.schema import PipelineManifest as GraphPipelineManifest
 from scripts.utilities.file_helpers import project_root
 
 DEFAULT_MANIFEST_PATH = project_root() / "state" / "config" / "pipeline-manifest.yaml"
-KNOWN_SCHEMA_VERSIONS = frozenset({"1.0"})
+KNOWN_SCHEMA_VERSIONS = frozenset({"1.0", "0.1-stub", "v4.2-migration-stub"})
 
 
 class ManifestInternalInconsistencyError(ValueError):
@@ -72,7 +85,7 @@ class StepEntry(BaseModel):
 
 
 class PipelineManifest(BaseModel):
-    """Canonical pipeline declaration for lockstep projections."""
+    """Legacy utility projection over the pipeline manifest."""
 
     model_config = ConfigDict(extra="forbid", frozen=True, validate_assignment=True)
 
@@ -82,15 +95,59 @@ class PipelineManifest(BaseModel):
     learning_events: LearningEventsConfig = Field(default_factory=LearningEventsConfig)
     block_mode_trigger_paths: tuple[str, ...] = ()
     steps: tuple[StepEntry, ...]
+    lane: str | None = None
+    entrypoint: str | None = None
+    frozen_graph_version: str | None = None
 
     @model_validator(mode="after")
     def _validate_block_mode_trigger_paths(self) -> PipelineManifest:
         for pattern in self.block_mode_trigger_paths:
             if not isinstance(pattern, str) or not pattern.strip():
                 raise ValueError("block_mode_trigger_paths entries must be non-empty strings")
-            # Validate fnmatch compatibility by compiling the translated regex.
             fnmatch.translate(pattern)
         return self
+
+
+def _step_from_graph_node(node_index: int, graph_node: object) -> StepEntry:
+    node = graph_node
+    learning_events = getattr(node, "learning_events", None)
+    return StepEntry(
+        id=node.id,
+        label=getattr(node, "label", None) or node.id,
+        gate=bool(getattr(node, "gate", False)),
+        gate_code=getattr(node, "gate_code", None),
+        sub_phase_of=getattr(node, "sub_phase_of", None),
+        insertion_after=getattr(node, "insertion_after", None),
+        hud_tracked=bool(getattr(node, "hud_tracked", True)),
+        pack_section_anchor=getattr(node, "pack_section_anchor", None)
+        or f"{node_index + 1})",
+        pack_version=getattr(node, "pack_version", None),
+        rationale=getattr(node, "rationale", None),
+        learning_events=StepLearningEvents(
+            emits=bool(getattr(learning_events, "emits", False)),
+            event_types=tuple(getattr(learning_events, "event_types", []) or ()),
+            schema_ref=getattr(learning_events, "schema_ref", None),
+        ),
+    )
+
+
+def _from_graph_manifest(manifest: GraphPipelineManifest) -> PipelineManifest:
+    learning_events = manifest.learning_events
+    return PipelineManifest(
+        schema_version=manifest.schema_version,
+        pack_version=manifest.pack_version or "",
+        generator_ref=manifest.generator_ref or "",
+        learning_events=LearningEventsConfig(
+            schema_ref=getattr(learning_events, "schema_ref", None)
+        ),
+        block_mode_trigger_paths=tuple(manifest.block_mode_trigger_paths),
+        steps=tuple(
+            _step_from_graph_node(index, node) for index, node in enumerate(manifest.nodes)
+        ),
+        lane=manifest.lane,
+        entrypoint=manifest.entrypoint,
+        frozen_graph_version=manifest.frozen_graph_version,
+    )
 
 
 def _enforce_internal_invariants(manifest: PipelineManifest) -> None:
@@ -122,13 +179,19 @@ def _enforce_internal_invariants(manifest: PipelineManifest) -> None:
 
 
 def load_manifest(path: Path = DEFAULT_MANIFEST_PATH) -> PipelineManifest:
-    """Load and validate the pipeline manifest."""
+    """Load and validate the pipeline manifest compatibility projection."""
     if not path.exists():
         raise FileNotFoundError(f"Pipeline manifest not found at {path}")
+
     raw = yaml.safe_load(path.read_text(encoding="utf-8"))
     if not isinstance(raw, dict):
         raise ManifestInternalInconsistencyError("Pipeline manifest root must be a mapping")
-    manifest = PipelineManifest.model_validate(raw)
+
+    if "steps" in raw and "nodes" not in raw:
+        manifest = PipelineManifest.model_validate(raw)
+    else:
+        manifest = _from_graph_manifest(load_graph_manifest(path))
+
     _enforce_internal_invariants(manifest)
     return manifest
 
@@ -145,4 +208,3 @@ def hud_steps(manifest: PipelineManifest) -> list[dict[str, str]]:
         for step in manifest.steps
         if step.hud_tracked
     ]
-

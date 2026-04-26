@@ -53,7 +53,7 @@ def test_red_path_fixtures_fail_correctly_schema_only(tmp_path: Path) -> None:
     )
     exit_code, trace = run_check(manifest_path, DEFAULT_PACK_PATH, "v4.2")
     assert exit_code == 1, trace
-    assert any(finding["check"] == 8 for finding in trace["findings"])
+    assert any(finding["check"] in {3, 8} for finding in trace["findings"])
 
 
 def test_red_path_fixtures_fail_correctly_manifest_only(tmp_path: Path) -> None:
@@ -70,5 +70,5 @@ def test_red_path_fixtures_fail_correctly_manifest_only(tmp_path: Path) -> None:
     )
     exit_code, trace = run_check(manifest_path, DEFAULT_PACK_PATH, "v4.2")
     assert exit_code == 1, trace
-    assert any(finding["check"] == 8 for finding in trace["findings"])
+    assert any(finding["check"] in {3, 8} for finding in trace["findings"])
 

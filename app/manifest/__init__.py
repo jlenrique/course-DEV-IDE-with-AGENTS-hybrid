@@ -10,6 +10,7 @@ Exports:
 
 from app.manifest.compiler import compile  # noqa: A004 — matches spec naming
 from app.manifest.exceptions import CompileError, ManifestValidationError
+from app.manifest.lanes import compile_run_graph
 from app.manifest.loader import load
 from app.manifest.schema import (
     EdgeSpec,
@@ -30,5 +31,6 @@ __all__ = [
     "PipelineManifest",
     "StepLearningEventsConfig",
     "compile",
+    "compile_run_graph",
     "load",
 ]

@@ -156,7 +156,7 @@ contract.
 
 ---
 
-## 6. Three-Transport Operator Surface
+## 6. Three-Transport Operator Surface + Lockstep CI
 
 Per architecture D7 (FR2 compound contract): MCP + FastAPI + CLI expose the
 same minimal-node contract. Transport-parity matrix:
@@ -176,6 +176,28 @@ Envelope-exception table:
 (from Story 1.1c). Enumerates the known transport-level envelope variations
 that M1 parity testing tolerates (binary encoding differences, header
 metadata) versus those that fail parity (semantic divergence).
+
+### 6.1 Lockstep CI (Story 4.1)
+
+The pipeline regime now has a second enforcement layer at graph-compile time.
+`scripts/utilities/check_manifest_lockstep.py` is complementary to, not a
+replacement for, Epic 33's `check_pipeline_manifest_lockstep.py`.
+
+The layered model is:
+
+- `check_pipeline_manifest_lockstep.py` keeps the manifest/HUD/pack
+  projections aligned at the Epic 33 utility layer.
+- `check_manifest_lockstep.py` compiles the live run graph through
+  `app.manifest.compile_run_graph(..., validation_mode=True)`, defer-tolerates
+  the pre-4.2 dev-graph surface, and enforces companion updates for
+  manifest-triggered paths.
+- `.github/workflows/manifest-lockstep.yml` runs the Story 4.1 check in
+  process via `python -c`, matching the NFR-P6 performance constraint.
+
+Story 4.1 also introduced a compatibility bridge in
+`scripts/utilities/pipeline_manifest.py` so the older Epic 33 utility callers
+continue to project `manifest.steps` from the live graph-shaped manifest
+without forcing a same-story consumer rewrite.
 
 ---
 
