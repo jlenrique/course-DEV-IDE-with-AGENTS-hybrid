@@ -38,6 +38,20 @@ from typing import Any
 REPO_ROOT = Path(__file__).resolve().parents[2]
 
 
+def _autoload_dotenv() -> None:
+    """Auto-load .env at startup so DATABASE_URL + LANGSMITH + per-API checks
+    reflect operator's real .env state without requiring shell sourcing."""
+    try:
+        sys.path.insert(0, str(REPO_ROOT))
+        from scripts.utilities.env_loader import load_env
+        load_env()
+    except (FileNotFoundError, ImportError):
+        pass
+
+
+_autoload_dotenv()
+
+
 @dataclass
 class HealthReport:
     timestamp: str

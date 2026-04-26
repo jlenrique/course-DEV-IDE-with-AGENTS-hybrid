@@ -36,6 +36,20 @@ from typing import Any, Literal
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 
+
+def _autoload_dotenv() -> None:
+    """Auto-load .env so audit findings reflect operator's real readiness state."""
+    try:
+        sys.path.insert(0, str(REPO_ROOT))
+        from scripts.utilities.env_loader import load_env
+        load_env()
+    except (FileNotFoundError, ImportError):
+        pass
+
+
+_autoload_dotenv()
+
+
 VerdictRec = Literal["SHIP-READY", "SHIP-CONDITIONAL", "ITERATE-RECOMMENDED", "ROLLBACK-CANDIDATE"]
 
 

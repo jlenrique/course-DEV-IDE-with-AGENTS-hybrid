@@ -29,6 +29,26 @@ from typing import Any, Literal
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 
+
+def _autoload_dotenv() -> None:
+    """Auto-load .env at startup so env-var checks reflect operator's real .env state.
+
+    Uses the existing scripts.utilities.env_loader pattern (load_env raises FNF
+    if .env absent — we catch + degrade silently since preflight should still
+    run on fresh clones without .env)."""
+    try:
+        sys.path.insert(0, str(REPO_ROOT))
+        from scripts.utilities.env_loader import load_env
+        load_env()
+    except (FileNotFoundError, ImportError):
+        # Fresh clone OR env_loader unavailable — degrade silently;
+        # _check_env_vars will report missing vars per its existing logic.
+        pass
+
+
+_autoload_dotenv()
+
+
 CheckStatus = Literal["PASS", "WARN", "FAIL", "SKIP"]
 
 
