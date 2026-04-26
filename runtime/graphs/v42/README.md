@@ -1,1 +1,1 @@
-frozen; do not edit; ceremony see Slab 4
+This directory is the frozen graph v42. Do not edit. See `docs/dev-guide/frozen-graph-version-ceremony.md`.

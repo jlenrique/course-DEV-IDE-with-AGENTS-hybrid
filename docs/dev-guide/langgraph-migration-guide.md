@@ -284,6 +284,23 @@ D13 version-bump procedure (patch / minor / major) governs changes. Frozen
 graph version ceremony snapshots registry + policy alongside compiled graph
 at each frozen version (Slab 4 Story 4.5).
 
+### 7.1 Frozen-Graph Ceremony (Story 4.5)
+
+The operational ceremony now lives in
+[`frozen-graph-version-ceremony.md`](frozen-graph-version-ceremony.md).
+That document codifies the D8 Tier-1 / Tier-2 / Tier-3 bump policy, rollback
+rules, and the required artifact set under `runtime/graphs/v42/`:
+
+- `manifest-snapshot.yaml`
+- `dev-graph-manifest-snapshot.yaml`
+- `dispatch-registry-snapshot.yaml`
+- `pack-version.txt`
+- `compiled-graph-digest.txt`
+
+`app.runtime.compiled_graph_digest.compute_compiled_graph_digest(...)`
+produces the digest from canonical run-lane topology plus the dispatch
+registry snapshot, giving the frozen directory a byte-stable identity target.
+
 ---
 
 ## 8. Forward-Port Convergence (PR-R) — HISTORICAL (see §8.1)
