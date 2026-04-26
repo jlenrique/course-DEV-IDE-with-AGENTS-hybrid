@@ -1,0 +1,77 @@
+{
+  "additionalProperties": false,
+  "description": "One runtime override proto-event.",
+  "properties": {
+    "confirm_token": {
+      "minLength": 1,
+      "title": "Confirm Token",
+      "type": "string"
+    },
+    "created_at": {
+      "format": "date-time",
+      "title": "Created At",
+      "type": "string"
+    },
+    "event_id": {
+      "format": "uuid",
+      "title": "Event Id",
+      "type": "string"
+    },
+    "gate_id": {
+      "minLength": 1,
+      "title": "Gate Id",
+      "type": "string"
+    },
+    "kind": {
+      "const": "override",
+      "default": "override",
+      "title": "Kind",
+      "type": "string"
+    },
+    "new_model": {
+      "minLength": 1,
+      "title": "New Model",
+      "type": "string"
+    },
+    "node_id": {
+      "minLength": 1,
+      "title": "Node Id",
+      "type": "string"
+    },
+    "operator_id": {
+      "minLength": 1,
+      "title": "Operator Id",
+      "type": "string"
+    },
+    "phase": {
+      "default": "applied",
+      "enum": [
+        "submitted",
+        "applied"
+      ],
+      "title": "Phase",
+      "type": "string"
+    },
+    "previous_model": {
+      "minLength": 1,
+      "title": "Previous Model",
+      "type": "string"
+    },
+    "trial_id": {
+      "format": "uuid",
+      "title": "Trial Id",
+      "type": "string"
+    }
+  },
+  "required": [
+    "trial_id",
+    "gate_id",
+    "node_id",
+    "operator_id",
+    "previous_model",
+    "new_model",
+    "confirm_token"
+  ],
+  "title": "OverrideLedgerEvent",
+  "type": "object"
+}

@@ -1,0 +1,72 @@
+{
+  "additionalProperties": false,
+  "description": "One operator verdict emitted at a gate boundary.",
+  "properties": {
+    "card_id": {
+      "format": "uuid",
+      "title": "Card Id",
+      "type": "string"
+    },
+    "created_at": {
+      "format": "date-time",
+      "title": "Created At",
+      "type": "string"
+    },
+    "event_id": {
+      "format": "uuid",
+      "title": "Event Id",
+      "type": "string"
+    },
+    "gate_id": {
+      "minLength": 1,
+      "title": "Gate Id",
+      "type": "string"
+    },
+    "kind": {
+      "const": "verdict",
+      "default": "verdict",
+      "title": "Kind",
+      "type": "string"
+    },
+    "operator_id": {
+      "minLength": 1,
+      "title": "Operator Id",
+      "type": "string"
+    },
+    "transport_kind": {
+      "default": "unknown",
+      "minLength": 1,
+      "title": "Transport Kind",
+      "type": "string"
+    },
+    "trial_id": {
+      "format": "uuid",
+      "title": "Trial Id",
+      "type": "string"
+    },
+    "verb": {
+      "enum": [
+        "approve",
+        "edit",
+        "reject"
+      ],
+      "title": "Verb",
+      "type": "string"
+    },
+    "verdict_id": {
+      "format": "uuid",
+      "title": "Verdict Id",
+      "type": "string"
+    }
+  },
+  "required": [
+    "trial_id",
+    "gate_id",
+    "verdict_id",
+    "card_id",
+    "operator_id",
+    "verb"
+  ],
+  "title": "VerdictLedgerEvent",
+  "type": "object"
+}

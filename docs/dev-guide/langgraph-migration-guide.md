@@ -244,6 +244,30 @@ the multi-persona review record without inventing a parallel operator surface.
 FR42 trace-first evidence is pinned by the `trace_link` convention:
 either a LangSmith trace URL or a repo-relative trace export path.
 
+### 6.4 Learning Ledger (Story 4.4)
+
+Story 4.4 introduces `app.ledger` as the typed audit substrate for
+governance events. The package is deliberately small:
+
+- `app/ledger/events.py` defines the discriminated union keyed by `kind`
+  (`verdict`, `override`, `sanctum_mutation`) plus builder helpers.
+- `app/ledger/emitter.py` persists rows to the Postgres `ledger_events`
+  table declared in `app/ledger/schema.sql`, enforcing deterministic
+  idempotency through
+  `sha256(f"{trial_id}|{gate_id}|{kind}|{event_specific_natural_key}")`.
+- `app/ledger/queries.py` closes the initial KPI/audit surface with
+  `reject_rate_per_gate(...)`, `gate_inventory(...)`, and
+  `sanctum_mutations(...)`.
+
+The emitter is architecturally non-fatal. Missing or unreachable Postgres
+does not break a gate or override path; it produces
+`EmissionResult(status="failed", ...)`, logs at warning, and increments
+`ledger_emission_failures_total`.
+
+Story 4.4 also absorbs Story 3.5's override proto-events and lifts verdict
+emission into `build_transport_response(...)`, so the learning ledger is now
+fed from the same runtime surfaces that already own operator decisions.
+
 ---
 
 ## 7. Model Cascade + Registry Governance

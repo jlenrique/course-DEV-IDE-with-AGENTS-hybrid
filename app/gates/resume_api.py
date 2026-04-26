@@ -121,6 +121,10 @@ def build_transport_response(
 ) -> dict[str, Any]:
     stored = get_registered_decision_card(verdict.trial_id, verdict.gate_id)
     meta = stored.card.meta.model_dump(mode="json") if stored is not None else None
+    from app.ledger.emitter import emit_ledger_event
+    from app.ledger.events import build_verdict_ledger_event
+
+    emit_ledger_event(build_verdict_ledger_event(verdict, transport_kind=transport_kind))
     ledger_event = {
         "kind": "verdict",
         "trial_id": str(verdict.trial_id),

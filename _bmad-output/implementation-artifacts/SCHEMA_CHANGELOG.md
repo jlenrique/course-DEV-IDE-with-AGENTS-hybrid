@@ -7,6 +7,96 @@ Per semver-for-schemas:
 - **Minor (1.X)** â€” additive only: new optional fields with v1.0-compatible defaults, new enum values that don't break old consumers.
 - **Patch (1.0.X)** â€” docs / clarifications / typo fixes; no machine-readable change.
 
+## Ledger Verdict Event v1.0 - 2026-04-26 - Story 4.4 Learning Ledger
+
+**Type:** Initial shape (no predecessor family).
+
+**Reason for introduction:** Story 4.4 creates the typed learning-ledger
+substrate for gate receipts so verdict traffic can be audited,
+de-duplicated, and queried independently of transport envelopes.
+
+**Shapes and contracts pinned:**
+
+- `app/ledger/events.py`:
+  `VerdictLedgerEvent`, `build_verdict_ledger_event(...)`.
+- `app/ledger/schema/verdict_event.v1.schema.json`:
+  schema pin for the verdict ledger shape.
+- `app/ledger/emitter.py`:
+  `EmissionResult`, `emit_ledger_event(...)`,
+  `ensure_ledger_schema(...)`.
+- `app/gates/resume_api.py`:
+  `build_transport_response(...)` now emits the typed verdict event
+  non-fatally while preserving the transport response shape.
+
+**Semantics pinned:**
+
+- `kind="verdict"` is the discriminant for gate receipts.
+- The idempotency key shape is
+  `sha256(f"{trial_id}|{gate_id}|{kind}|{event_specific_natural_key}")`.
+- Emission failure is non-fatal: the emitter returns
+  `EmissionResult(status="failed", ...)`, logs at warning, and increments
+  `ledger_emission_failures_total`.
+
+**Migration:** N/A (initial family).
+
+## Ledger Override Event v1.0 - 2026-04-26 - Story 4.4 Learning Ledger
+
+**Type:** Initial shape (no predecessor family).
+
+**Reason for introduction:** Story 4.4 absorbs the Story 3.5 override
+proto-events into the typed ledger union so submit/apply override flows can
+share the same Postgres-backed audit surface as gate receipts.
+
+**Shapes and contracts pinned:**
+
+- `app/ledger/events.py`:
+  `OverrideLedgerEvent`, `build_override_ledger_event(...)`.
+- `app/ledger/schema/override_event.v1.schema.json`:
+  schema pin for the override ledger shape.
+- `app/runtime/override_api.py`:
+  `submit_override(...)` and `apply_override(...)` now build typed override
+  ledger events, retain the in-memory trail, and attempt non-fatal emission.
+
+**Semantics pinned:**
+
+- `kind="override"` is the discriminant for runtime override ledger entries.
+- `phase` distinguishes the `submitted` and `applied` proto-events.
+- The natural key is `confirm_token|phase`, so a replay of the same
+  override step de-duplicates deterministically.
+
+**Migration:** Story 3.5's raw dict proto-events are replaced by
+`OverrideLedgerEvent.model_dump(mode="json")` payloads; existing consumers
+still read JSON-shaped ledger rows.
+
+## Ledger Sanctum Mutation Event v1.0 - 2026-04-26 - Story 4.4 Learning Ledger
+
+**Type:** Initial shape (no predecessor family).
+
+**Reason for introduction:** Story 4.4 reserves the typed ledger union slot
+that Story 4.6 will emit for sanctum mutations, allowing the learning ledger
+query surface to close FR45 without a second schema introduction later.
+
+**Shapes and contracts pinned:**
+
+- `app/ledger/events.py`:
+  `SanctumMutationLedgerEvent`,
+  `build_sanctum_mutation_ledger_event(...)`.
+- `app/ledger/schema/sanctum_mutation_event.v1.schema.json`:
+  schema pin for the sanctum-mutation shape.
+- `app/ledger/queries.py`:
+  `sanctum_mutations(...)` query helper.
+
+**Semantics pinned:**
+
+- `kind="sanctum_mutation"` is the discriminant for sanctum invalidation
+  evidence rows.
+- The payload carries `file_path`, `hash_before`, `hash_after`,
+  `mutated_at`, and optional `suggested_invalidating_commit`.
+- Query results are materialized back into strict
+  `SanctumMutationLedgerEvent` models.
+
+**Migration:** N/A (initial family).
+
 ## DecisionCard Family v1.0 - 2026-04-26 - Story 3.2 DecisionCard Schema Family
 
 **Type:** Initial shape (no predecessor family).

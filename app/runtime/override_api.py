@@ -11,6 +11,8 @@ from uuid import UUID
 
 import yaml
 
+from app.ledger.emitter import emit_ledger_event
+from app.ledger.events import build_override_ledger_event
 from app.models.decision_cards import DecisionCardMeta, OverrideEvent
 from app.models.state.cache_state import CacheState
 from app.models.state.run_state import RunState
@@ -175,6 +177,18 @@ def submit_override(trial_id: UUID | str, node_id: str, new_model: str) -> Model
         ",".join(impact["affected_nodes"]),
         impact["cache_state_delta"],
     )
+    ledger_event = build_override_ledger_event(
+        trial_id=trial_uuid,
+        node_id=node_id,
+        operator_id="system",
+        previous_model=impact["current_model"],
+        new_model=new_model,
+        confirm_token=warning.confirm_token,
+        phase="submitted",
+        created_at=issued_at,
+    )
+    _LEDGER_EVENTS.setdefault(trial_uuid, []).append(ledger_event.model_dump(mode="json"))
+    emit_ledger_event(ledger_event)
     return warning
 
 
@@ -234,17 +248,18 @@ def apply_override(
         confirm_token=confirm_token,
     )
     _OVERRIDE_TRAIL.setdefault(trial_id, []).append(event)
-    _LEDGER_EVENTS.setdefault(trial_id, []).append(
-        {
-            "kind": "override",
-            "trial_id": str(trial_id),
-            "node_id": node_id,
-            "operator_id": operator_id,
-            "new_model": new_model,
-            "previous_model": previous_model,
-            "confirm_token": confirm_token,
-        }
+    ledger_event = build_override_ledger_event(
+        trial_id=trial_id,
+        node_id=node_id,
+        operator_id=operator_id,
+        previous_model=previous_model,
+        new_model=new_model,
+        confirm_token=confirm_token,
+        phase="applied",
+        created_at=current_time,
     )
+    _LEDGER_EVENTS.setdefault(trial_id, []).append(ledger_event.model_dump(mode="json"))
+    emit_ledger_event(ledger_event)
     _CONSUMED_TOKENS.add(confirm_token)
     del _PENDING_WARNINGS[key]
     _WARNING_TO_OVERRIDE.pop(confirm_token, None)
