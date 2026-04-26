@@ -1,0 +1,49 @@
+{
+  "additionalProperties": false,
+  "description": "One operator-visible sanctum mutation warning.",
+  "properties": {
+    "file_path": {
+      "minLength": 1,
+      "title": "File Path",
+      "type": "string"
+    },
+    "hash_after": {
+      "maxLength": 64,
+      "minLength": 64,
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Hash After",
+      "type": "string"
+    },
+    "hash_before": {
+      "maxLength": 64,
+      "minLength": 64,
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Hash Before",
+      "type": "string"
+    },
+    "mutated_at": {
+      "format": "date-time",
+      "title": "Mutated At",
+      "type": "string"
+    },
+    "suggested_invalidating_commit": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Suggested Invalidating Commit"
+    }
+  },
+  "required": [
+    "file_path",
+    "hash_before",
+    "hash_after"
+  ],
+  "title": "SanctumWarning",
+  "type": "object"
+}

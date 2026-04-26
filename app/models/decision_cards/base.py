@@ -11,6 +11,7 @@ from pydantic import BaseModel, ConfigDict, Field, field_validator
 from app.models.decision_cards.override_event import OverrideEvent
 from app.models.gates.party_mode_contribution import PartyModeContribution
 from app.models.state._base import enforce_tz_aware, enforce_uuid4_version
+from app.runtime.sanctum_warning import SanctumWarning
 
 DecisionCardVerb = Literal["approve", "edit", "reject"]
 CacheWarmth = Literal["healthy", "mixed", "cold"]
@@ -46,6 +47,10 @@ class DecisionCardMeta(BaseModel):
     consolidated_at: datetime | None = Field(
         default=None,
         description="Timezone-aware timestamp when party-mode contributions were consolidated.",
+    )
+    sanctum_warnings: list[SanctumWarning] = Field(
+        default_factory=list,
+        description="In-flight sanctum mutations that may have invalidated cache prefixes.",
     )
 
     @field_validator("affected_nodes")

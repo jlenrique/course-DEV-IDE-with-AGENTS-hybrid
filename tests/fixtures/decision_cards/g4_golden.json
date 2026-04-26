@@ -25,7 +25,8 @@
     "consolidated_at": null,
     "override_trail": [],
     "party_mode_contributions": [],
-    "reject_rate": 0.0
+    "reject_rate": 0.0,
+    "sanctum_warnings": []
   },
   "outcome_summary": "Trial completed and all expected artifacts were emitted.",
   "risks": [

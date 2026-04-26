@@ -4,6 +4,14 @@
       "additionalProperties": false,
       "description": "Cross-gate context surfaced to the operator with every DecisionCard.",
       "properties": {
+        "affected_nodes": {
+          "description": "Manifest node ids affected by current overrides or cache churn.",
+          "items": {
+            "type": "string"
+          },
+          "title": "Affected Nodes",
+          "type": "array"
+        },
         "cache_state": {
           "description": "Current prompt-cache warmth estimate for the trial.",
           "enum": [
@@ -13,38 +21,6 @@
           ],
           "title": "Cache State",
           "type": "string"
-        },
-        "affected_nodes": {
-          "description": "Manifest node ids affected by current overrides or cache churn.",
-          "items": {
-            "type": "string"
-          },
-          "title": "Affected Nodes",
-          "type": "array"
-        },
-        "override_trail": {
-          "description": "Append-only override history already applied to this trial.",
-          "items": {
-            "$ref": "#/$defs/OverrideEvent"
-          },
-          "title": "Override Trail",
-          "type": "array"
-        },
-        "reject_rate": {
-          "default": 0.0,
-          "description": "Current gate reject-rate snapshot in [0.0, 1.0].",
-          "maximum": 1.0,
-          "minimum": 0.0,
-          "title": "Reject Rate",
-          "type": "number"
-        },
-        "party_mode_contributions": {
-          "description": "Optional multi-persona contributions consolidated into this card.",
-          "items": {
-            "$ref": "#/$defs/PartyModeContribution"
-          },
-          "title": "Party Mode Contributions",
-          "type": "array"
         },
         "consolidated_at": {
           "anyOf": [
@@ -59,6 +35,38 @@
           "default": null,
           "description": "Timezone-aware timestamp when party-mode contributions were consolidated.",
           "title": "Consolidated At"
+        },
+        "override_trail": {
+          "description": "Append-only override history already applied to this trial.",
+          "items": {
+            "$ref": "#/$defs/OverrideEvent"
+          },
+          "title": "Override Trail",
+          "type": "array"
+        },
+        "party_mode_contributions": {
+          "description": "Optional multi-persona contributions consolidated into this card.",
+          "items": {
+            "$ref": "#/$defs/PartyModeContribution"
+          },
+          "title": "Party Mode Contributions",
+          "type": "array"
+        },
+        "reject_rate": {
+          "default": 0.0,
+          "description": "Current gate reject-rate snapshot in [0.0, 1.0].",
+          "maximum": 1.0,
+          "minimum": 0.0,
+          "title": "Reject Rate",
+          "type": "number"
+        },
+        "sanctum_warnings": {
+          "description": "In-flight sanctum mutations that may have invalidated cache prefixes.",
+          "items": {
+            "$ref": "#/$defs/SanctumWarning"
+          },
+          "title": "Sanctum Warnings",
+          "type": "array"
         }
       },
       "required": [
@@ -71,40 +79,10 @@
       "additionalProperties": false,
       "description": "One operator-approved override that affects cache warmth and routing context.",
       "properties": {
-        "event_id": {
-          "description": "UUID4 identity for this override event.",
-          "format": "uuid",
-          "title": "Event Id",
-          "type": "string"
-        },
         "applied_at": {
           "description": "Timezone-aware timestamp for when the override applied.",
           "format": "date-time",
           "title": "Applied At",
-          "type": "string"
-        },
-        "node_id": {
-          "description": "Manifest node id that the override touches.",
-          "minLength": 1,
-          "title": "Node Id",
-          "type": "string"
-        },
-        "previous_value": {
-          "additionalProperties": true,
-          "description": "Canonical JSON-like view of the previous setting.",
-          "title": "Previous Value",
-          "type": "object"
-        },
-        "new_value": {
-          "additionalProperties": true,
-          "description": "Canonical JSON-like view of the new setting.",
-          "title": "New Value",
-          "type": "object"
-        },
-        "operator_id": {
-          "description": "Operator identity that confirmed the override.",
-          "minLength": 1,
-          "title": "Operator Id",
           "type": "string"
         },
         "confirm_token": {
@@ -112,6 +90,36 @@
           "minLength": 1,
           "title": "Confirm Token",
           "type": "string"
+        },
+        "event_id": {
+          "description": "UUID4 identity for this override event.",
+          "format": "uuid",
+          "title": "Event Id",
+          "type": "string"
+        },
+        "new_value": {
+          "additionalProperties": true,
+          "description": "Canonical JSON-like view of the new setting.",
+          "title": "New Value",
+          "type": "object"
+        },
+        "node_id": {
+          "description": "Manifest node id that the override touches.",
+          "minLength": 1,
+          "title": "Node Id",
+          "type": "string"
+        },
+        "operator_id": {
+          "description": "Operator identity that confirmed the override.",
+          "minLength": 1,
+          "title": "Operator Id",
+          "type": "string"
+        },
+        "previous_value": {
+          "additionalProperties": true,
+          "description": "Canonical JSON-like view of the previous setting.",
+          "title": "Previous Value",
+          "type": "object"
         }
       },
       "required": [
@@ -133,17 +141,17 @@
           "title": "Contribution Id",
           "type": "string"
         },
-        "persona": {
-          "description": "Persona or reviewer identity that produced the contribution.",
-          "minLength": 1,
-          "title": "Persona",
-          "type": "string"
-        },
         "payload": {
           "additionalProperties": true,
           "description": "Structured contribution payload.",
           "title": "Payload",
           "type": "object"
+        },
+        "persona": {
+          "description": "Persona or reviewer identity that produced the contribution.",
+          "minLength": 1,
+          "title": "Persona",
+          "type": "string"
         },
         "submitted_at": {
           "description": "Timezone-aware submission timestamp.",
@@ -170,28 +178,72 @@
       ],
       "title": "PartyModeContribution",
       "type": "object"
+    },
+    "SanctumWarning": {
+      "additionalProperties": false,
+      "description": "One operator-visible sanctum mutation warning.",
+      "properties": {
+        "file_path": {
+          "minLength": 1,
+          "title": "File Path",
+          "type": "string"
+        },
+        "hash_after": {
+          "maxLength": 64,
+          "minLength": 64,
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Hash After",
+          "type": "string"
+        },
+        "hash_before": {
+          "maxLength": 64,
+          "minLength": 64,
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Hash Before",
+          "type": "string"
+        },
+        "mutated_at": {
+          "format": "date-time",
+          "title": "Mutated At",
+          "type": "string"
+        },
+        "suggested_invalidating_commit": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Suggested Invalidating Commit"
+        }
+      },
+      "required": [
+        "file_path",
+        "hash_before",
+        "hash_after"
+      ],
+      "title": "SanctumWarning",
+      "type": "object"
     }
   },
   "additionalProperties": false,
   "description": "Pre-execution sanity-check DecisionCard.",
   "properties": {
+    "blocking_issues": {
+      "description": "Blocking issues that must be resolved before proceeding.",
+      "items": {
+        "type": "string"
+      },
+      "title": "Blocking Issues",
+      "type": "array"
+    },
     "card_id": {
       "description": "UUID4 identity for this DecisionCard instance.",
       "format": "uuid",
       "title": "Card Id",
-      "type": "string"
-    },
-    "trial_id": {
-      "description": "UUID4 identity for the enclosing trial run.",
-      "format": "uuid",
-      "title": "Trial Id",
-      "type": "string"
-    },
-    "gate_id": {
-      "const": "G2C",
-      "default": "G2C",
-      "description": "Discriminator for the G2C pre-execution gate.",
-      "title": "Gate Id",
       "type": "string"
     },
     "created_at": {
@@ -215,22 +267,11 @@
       "title": "Evidence",
       "type": "array"
     },
-    "risks": {
-      "description": "Plain-language risk bullets surfaced to the operator.",
-      "items": {
-        "type": "string"
-      },
-      "title": "Risks",
-      "type": "array"
-    },
-    "verb": {
-      "description": "Closed decision verb set: approve | edit | reject.",
-      "enum": [
-        "approve",
-        "edit",
-        "reject"
-      ],
-      "title": "Verb",
+    "gate_id": {
+      "const": "G2C",
+      "default": "G2C",
+      "description": "Discriminator for the G2C pre-execution gate.",
+      "title": "Gate Id",
       "type": "string"
     },
     "meta": {
@@ -246,14 +287,6 @@
       "title": "Readiness Status",
       "type": "string"
     },
-    "blocking_issues": {
-      "description": "Blocking issues that must be resolved before proceeding.",
-      "items": {
-        "type": "string"
-      },
-      "title": "Blocking Issues",
-      "type": "array"
-    },
     "ready_nodes": {
       "description": "Manifest nodes currently ready to execute.",
       "items": {
@@ -261,6 +294,30 @@
       },
       "title": "Ready Nodes",
       "type": "array"
+    },
+    "risks": {
+      "description": "Plain-language risk bullets surfaced to the operator.",
+      "items": {
+        "type": "string"
+      },
+      "title": "Risks",
+      "type": "array"
+    },
+    "trial_id": {
+      "description": "UUID4 identity for the enclosing trial run.",
+      "format": "uuid",
+      "title": "Trial Id",
+      "type": "string"
+    },
+    "verb": {
+      "description": "Closed decision verb set: approve | edit | reject.",
+      "enum": [
+        "approve",
+        "edit",
+        "reject"
+      ],
+      "title": "Verb",
+      "type": "string"
     }
   },
   "required": [

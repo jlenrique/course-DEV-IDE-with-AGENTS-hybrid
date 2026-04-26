@@ -22,7 +22,8 @@
     "consolidated_at": null,
     "override_trail": [],
     "party_mode_contributions": [],
-    "reject_rate": 0.1
+    "reject_rate": 0.1,
+    "sanctum_warnings": []
   },
   "operator_prompt": "Continue with the current cluster sequence?",
   "pending_nodes": [

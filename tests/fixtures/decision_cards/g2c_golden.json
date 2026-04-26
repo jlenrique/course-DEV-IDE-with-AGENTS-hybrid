@@ -36,7 +36,8 @@
       }
     ],
     "party_mode_contributions": [],
-    "reject_rate": 0.125
+    "reject_rate": 0.125,
+    "sanctum_warnings": []
   },
   "readiness_status": "ready",
   "ready_nodes": [

@@ -97,6 +97,61 @@ query surface to close FR45 without a second schema introduction later.
 
 **Migration:** N/A (initial family).
 
+## DecisionCard Family v1.2 - 2026-04-26 - Story 4.6 Sanctum Invalidation Hook
+
+**Type:** Additive extension to the DecisionCard meta surface.
+
+**Reason for introduction:** Story 4.6 makes in-flight sanctum mutations
+operator-visible at the next gate by extending `DecisionCardMeta` with a
+typed warning list.
+
+**Shapes and contracts pinned:**
+
+- `app/models/decision_cards/base.py`:
+  additive `DecisionCardMeta.sanctum_warnings`.
+- `app/models/decision_cards/schema/{decision_card_base,g1,g2c,g3,g4}.v1.schema.json`:
+  schema pins updated for the additive warning field.
+- `tests/fixtures/decision_cards/{g1,g2c,g3,g4}_golden.json`:
+  goldens updated with `sanctum_warnings=[]`.
+- `app/runtime/override_api.py`:
+  `decision_card_meta_for_trial(...)` now surfaces warnings and downgrades
+  `cache_state` to `mixed` when an in-flight sanctum mutation exists.
+
+**Semantics pinned:**
+
+- `sanctum_warnings` is additive and defaults to an empty list.
+- Warnings are typed `SanctumWarning` records, not loose dict payloads.
+- A sanctum mutation during an active trial is operator-visible without
+  failing the trial.
+
+**Migration:** Additive only. Pre-4.6 DecisionCard payloads remain parseable;
+goldens and schema pins gain `sanctum_warnings=[]` by default.
+
+## SanctumWarning v1.0 - 2026-04-26 - Story 4.6 Sanctum Invalidation Hook
+
+**Type:** Initial shape (no predecessor family).
+
+**Reason for introduction:** Story 4.6 needs a strict, replayable warning
+payload for sanctum mutations that can be attached to DecisionCards.
+
+**Shapes and contracts pinned:**
+
+- `app/runtime/sanctum_warning.py`:
+  `SanctumWarning`.
+- `app/runtime/schema/sanctum_warning.v1.schema.json`:
+  schema pin for the warning payload.
+- `tests/fixtures/runtime/sanctum_warning_golden.json`:
+  golden fixture.
+
+**Semantics pinned:**
+
+- The warning carries `file_path`, `hash_before`, `hash_after`,
+  `mutated_at`, and optional `suggested_invalidating_commit`.
+- `mutated_at` is timezone-aware.
+- Hash fields are lowercase 64-char sha256 hex strings.
+
+**Migration:** N/A (initial family).
+
 ## DecisionCard Family v1.0 - 2026-04-26 - Story 3.2 DecisionCard Schema Family
 
 **Type:** Initial shape (no predecessor family).

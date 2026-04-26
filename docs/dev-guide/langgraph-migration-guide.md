@@ -268,6 +268,24 @@ Story 4.4 also absorbs Story 3.5's override proto-events and lifts verdict
 emission into `build_transport_response(...)`, so the learning ledger is now
 fed from the same runtime surfaces that already own operator decisions.
 
+### 6.5 Sanctum Invalidation Hook (Story 4.6)
+
+Story 4.6 adds `app/runtime/sanctum_watcher.py`, which watches
+`_bmad/memory/**/*.md`, computes hash deltas, and emits the typed
+`sanctum_mutation` ledger event from Story 4.4. The runtime behavior is
+deliberately non-fatal:
+
+- mutations before an invocation simply become part of the next cold read,
+- mutations during an invocation are recorded and surfaced as warnings at the
+  next gate, and
+- mutations after an invocation affect the next trial rather than retroactively
+  corrupting the completed one.
+
+The operator-facing surface is additive. `DecisionCardMeta` now carries
+`sanctum_warnings`, and `decision_card_meta_for_trial(...)` downgrades the
+reported cache warmth from `healthy` to `mixed` whenever an in-flight sanctum
+mutation is present.
+
 ---
 
 ## 7. Model Cascade + Registry Governance

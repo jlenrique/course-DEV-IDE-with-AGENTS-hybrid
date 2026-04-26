@@ -17,6 +17,7 @@ from app.models.decision_cards import DecisionCardMeta, OverrideEvent
 from app.models.state.cache_state import CacheState
 from app.models.state.run_state import RunState
 from app.runtime.override_warning import ModelOverrideWarning
+from app.runtime.sanctum_watcher import get_sanctum_warnings
 
 _RUN_STATE_REGISTRY: dict[UUID, RunState] = {}
 _PENDING_WARNINGS: dict[tuple[UUID, str, str], ModelOverrideWarning] = {}
@@ -269,11 +270,16 @@ def apply_override(
 def decision_card_meta_for_trial(trial_id: UUID | str) -> DecisionCardMeta:
     trial_uuid = _as_uuid(trial_id)
     state = get_run_state(trial_uuid)
+    sanctum_warnings = get_sanctum_warnings(trial_uuid)
+    cache_state = current_cache_state_label(trial_uuid)
+    if sanctum_warnings and cache_state == "healthy":
+        cache_state = "mixed"
     return DecisionCardMeta(
-        cache_state=current_cache_state_label(trial_uuid),  # type: ignore[arg-type]
+        cache_state=cache_state,  # type: ignore[arg-type]
         affected_nodes=sorted(state.model_overrides.keys()),
         override_trail=_OVERRIDE_TRAIL.get(trial_uuid, []),
         reject_rate=0.0,
+        sanctum_warnings=sanctum_warnings,
     )
 
 
