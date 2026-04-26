@@ -186,12 +186,20 @@ def test_edge_spec_condition_and_dispatch_envelope_optional() -> None:
     e = EdgeSpec.model_validate({"from": "a", "to": "b"})
     assert e.condition is None
     assert e.dispatch_envelope is None
+    assert e.decision_card_schema is None
 
     e2 = EdgeSpec.model_validate(
-        {"from": "a", "to": "b", "condition": "always_true", "dispatch_envelope": {"k": 1}}
+        {
+            "from": "a",
+            "to": "b",
+            "condition": "always_true",
+            "dispatch_envelope": {"k": 1},
+            "decision_card_schema": "app.models.decision_cards.g2c:G2CCard",
+        }
     )
     assert e2.condition == "always_true"
     assert e2.dispatch_envelope == {"k": 1}
+    assert e2.decision_card_schema == "app.models.decision_cards.g2c:G2CCard"
 
 
 # -------------------------------------------------------------- LearningEventsConfig

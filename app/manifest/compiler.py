@@ -31,6 +31,7 @@ from langgraph.graph import END, START, StateGraph
 
 from app.manifest import conditions
 from app.manifest.exceptions import CompileError
+from app.manifest.refs import resolve_dotted_ref
 from app.manifest.schema import EdgeSpec, NodeSpec, PipelineManifest
 from app.models.registry import PipelineRegistry
 from app.models.specialist_model_config import SpecialistModelConfig
@@ -158,6 +159,22 @@ def _validate_conditions(edges: list[EdgeSpec]) -> None:
             )
 
 
+def _validate_decision_card_schemas(edges: list[EdgeSpec]) -> None:
+    """Assert every `decision_card_schema` dotted ref resolves to a DecisionCard subclass."""
+    if not any(edge.decision_card_schema for edge in edges):
+        return
+
+    from app.models.decision_cards import DecisionCard
+
+    for edge in edges:
+        if edge.decision_card_schema is None:
+            continue
+        resolve_dotted_ref(
+            edge.decision_card_schema,
+            expected_base_class=DecisionCard,
+        )
+
+
 def _edge_target(name: str) -> Any:
     """Map `__start__`/`__end__` sentinels to LangGraph's START/END constants."""
     if name == "__start__":
@@ -224,6 +241,7 @@ def compile(  # noqa: A001 — matches spec naming; callers use `app.manifest.co
     _validate_model_config_refs(manifest.nodes, root)
     _validate_model_ids_in_model_config_refs(manifest.nodes, root)
     _validate_conditions(manifest.edges)
+    _validate_decision_card_schemas(manifest.edges)
 
     graph = StateGraph(state_schema=RunState)
     _add_node_and_edges(graph, manifest)

@@ -1,0 +1,179 @@
+{
+  "$defs": {
+    "DecisionCardMeta": {
+      "additionalProperties": false,
+      "description": "Cross-gate context surfaced to the operator with every DecisionCard.",
+      "properties": {
+        "affected_nodes": {
+          "description": "Manifest node ids affected by current overrides or cache churn.",
+          "items": {
+            "type": "string"
+          },
+          "title": "Affected Nodes",
+          "type": "array"
+        },
+        "cache_state": {
+          "description": "Current prompt-cache warmth estimate for the trial.",
+          "enum": [
+            "healthy",
+            "mixed",
+            "cold"
+          ],
+          "title": "Cache State",
+          "type": "string"
+        },
+        "override_trail": {
+          "description": "Append-only override history already applied to this trial.",
+          "items": {
+            "$ref": "#/$defs/OverrideEvent"
+          },
+          "title": "Override Trail",
+          "type": "array"
+        },
+        "reject_rate": {
+          "default": 0.0,
+          "description": "Current gate reject-rate snapshot in [0.0, 1.0].",
+          "maximum": 1.0,
+          "minimum": 0.0,
+          "title": "Reject Rate",
+          "type": "number"
+        }
+      },
+      "required": [
+        "cache_state"
+      ],
+      "title": "DecisionCardMeta",
+      "type": "object"
+    },
+    "OverrideEvent": {
+      "additionalProperties": false,
+      "description": "One operator-approved override that affects cache warmth and routing context.",
+      "properties": {
+        "applied_at": {
+          "description": "Timezone-aware timestamp for when the override applied.",
+          "format": "date-time",
+          "title": "Applied At",
+          "type": "string"
+        },
+        "confirm_token": {
+          "description": "Confirmation token bound to the override submission surface.",
+          "minLength": 1,
+          "title": "Confirm Token",
+          "type": "string"
+        },
+        "event_id": {
+          "description": "UUID4 identity for this override event.",
+          "format": "uuid",
+          "title": "Event Id",
+          "type": "string"
+        },
+        "new_value": {
+          "additionalProperties": true,
+          "description": "Canonical JSON-like view of the new setting.",
+          "title": "New Value",
+          "type": "object"
+        },
+        "node_id": {
+          "description": "Manifest node id that the override touches.",
+          "minLength": 1,
+          "title": "Node Id",
+          "type": "string"
+        },
+        "operator_id": {
+          "description": "Operator identity that confirmed the override.",
+          "minLength": 1,
+          "title": "Operator Id",
+          "type": "string"
+        },
+        "previous_value": {
+          "additionalProperties": true,
+          "description": "Canonical JSON-like view of the previous setting.",
+          "title": "Previous Value",
+          "type": "object"
+        }
+      },
+      "required": [
+        "event_id",
+        "node_id",
+        "operator_id",
+        "confirm_token"
+      ],
+      "title": "OverrideEvent",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "description": "Base operator-facing gate payload.",
+  "properties": {
+    "card_id": {
+      "description": "UUID4 identity for this DecisionCard instance.",
+      "format": "uuid",
+      "title": "Card Id",
+      "type": "string"
+    },
+    "created_at": {
+      "description": "Timezone-aware creation timestamp for the emitted DecisionCard.",
+      "format": "date-time",
+      "title": "Created At",
+      "type": "string"
+    },
+    "drafted_proposal": {
+      "additionalProperties": true,
+      "description": "Marcus-authored proposed action the operator is reviewing.",
+      "title": "Drafted Proposal",
+      "type": "object"
+    },
+    "evidence": {
+      "description": "Machine-readable supporting evidence snippets for the proposal.",
+      "items": {
+        "additionalProperties": true,
+        "type": "object"
+      },
+      "title": "Evidence",
+      "type": "array"
+    },
+    "gate_id": {
+      "description": "Closed gate identifier for the subclass discriminator.",
+      "minLength": 1,
+      "title": "Gate Id",
+      "type": "string"
+    },
+    "meta": {
+      "$ref": "#/$defs/DecisionCardMeta",
+      "description": "Cross-gate cache and override context per architecture D2."
+    },
+    "risks": {
+      "description": "Plain-language risk bullets surfaced to the operator.",
+      "items": {
+        "type": "string"
+      },
+      "title": "Risks",
+      "type": "array"
+    },
+    "trial_id": {
+      "description": "UUID4 identity for the enclosing trial run.",
+      "format": "uuid",
+      "title": "Trial Id",
+      "type": "string"
+    },
+    "verb": {
+      "description": "Closed decision verb set: approve | edit | reject.",
+      "enum": [
+        "approve",
+        "edit",
+        "reject"
+      ],
+      "title": "Verb",
+      "type": "string"
+    }
+  },
+  "required": [
+    "card_id",
+    "trial_id",
+    "gate_id",
+    "verb",
+    "meta"
+  ],
+  "title": "DecisionCard",
+  "type": "object"
+}

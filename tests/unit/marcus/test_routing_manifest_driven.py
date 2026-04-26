@@ -19,8 +19,20 @@ def _manifest() -> PipelineManifest:
                 NodeSpec(id="03", specialist_id="gamma"),
             ],
             "edges": [
-                EdgeSpec.model_validate({"from": "__start__", "to": "01"}),
-                EdgeSpec.model_validate({"from": "01", "to": "02"}),
+                EdgeSpec.model_validate(
+                    {
+                        "from": "__start__",
+                        "to": "01",
+                        "decision_card_schema": "app.models.decision_cards.g1:G1Card",
+                    }
+                ),
+                EdgeSpec.model_validate(
+                    {
+                        "from": "01",
+                        "to": "02",
+                        "decision_card_schema": "app.models.decision_cards.g2c:G2CCard",
+                    }
+                ),
                 EdgeSpec.model_validate({"from": "02", "to": "03"}),
             ],
         }
@@ -35,6 +47,8 @@ def test_routing_reads_manifest_specialist_id() -> None:
 
     assert decision_start.target_specialist == "alpha"
     assert decision_mid.target_specialist == "beta"
+    assert decision_start.decision_card_schema == "app.models.decision_cards.g1:G1Card"
+    assert decision_mid.decision_card_schema == "app.models.decision_cards.g2c:G2CCard"
 
 
 def test_routing_has_no_inline_specialist_selection() -> None:

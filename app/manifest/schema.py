@@ -170,6 +170,10 @@ class EdgeSpec(BaseModel):
     `dispatch_envelope` is the Slab 3 dispatch-shape pointer (trailing `...` from
     AC-1.4-A). Slab 1 accepts any dict payload; Slab 3 narrows to `SpecialistEnvelope`.
 
+    `decision_card_schema` is an additive Slab 3 pointer to the Pydantic model
+    that an interrupting gate emits. It uses `<module>:<ClassName>` dotted-ref
+    syntax and is compile-time validated by `app.manifest.refs.resolve_dotted_ref`.
+
     `from_node` is aliased to the YAML/JSON key `"from"` because `from` is a
     Python reserved word and cannot be a field name directly.
     """
@@ -204,6 +208,13 @@ class EdgeSpec(BaseModel):
         description=(
             "Slab 3 dispatch envelope payload. Slab 1 accepts arbitrary dicts; "
             "Slab 3 narrows the shape to `SpecialistEnvelope`."
+        ),
+    )
+    decision_card_schema: str | None = Field(
+        default=None,
+        description=(
+            "Optional `<module>:<ClassName>` dotted reference naming the "
+            "DecisionCard subclass emitted at this edge's gate boundary."
         ),
     )
 

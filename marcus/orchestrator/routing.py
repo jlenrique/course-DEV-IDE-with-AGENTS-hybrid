@@ -18,6 +18,7 @@ class RoutingDecision(BaseModel):
     next_node_id: str
     target_specialist: str
     dispatch_envelope: dict[str, Any] | None = Field(default=None)
+    decision_card_schema: str | None = Field(default=None)
 
 
 def route_step(*, current_node: str | None, manifest: PipelineManifest) -> RoutingDecision:
@@ -43,6 +44,7 @@ def route_step(*, current_node: str | None, manifest: PipelineManifest) -> Routi
         next_node_id=target_node.id,
         target_specialist=target_node.specialist_id,
         dispatch_envelope=edge.dispatch_envelope,
+        decision_card_schema=edge.decision_card_schema,
     )
 
 

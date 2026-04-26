@@ -28,4 +28,14 @@ class CompileError(Exception):
     """
 
 
-__all__ = ["CompileError", "ManifestValidationError"]
+class ManifestSchemaImportError(CompileError):
+    """Raised when a manifest dotted-reference cannot be imported safely.
+
+    Story 3.2 uses this for `edge.decision_card_schema` references of the form
+    `<module>:<ClassName>`. The error subclasses `CompileError` so manifest
+    callers can continue to treat schema-import failures as compile-time
+    contract violations.
+    """
+
+
+__all__ = ["CompileError", "ManifestSchemaImportError", "ManifestValidationError"]

@@ -1,0 +1,34 @@
+{
+  "artifact_paths": [
+    "_bmad-output/runs/trial-001/final-report.md"
+  ],
+  "card_id": "14141414-1414-4414-8414-141414141414",
+  "created_at": "2026-04-26T12:15:00Z",
+  "drafted_proposal": {
+    "action": "close-trial",
+    "checkpoint": "G4"
+  },
+  "evidence": [
+    {
+      "kind": "artifact",
+      "path": "_bmad-output/runs/trial-001/final-report.md"
+    }
+  ],
+  "final_status": "completed",
+  "gate_id": "G4",
+  "meta": {
+    "affected_nodes": [
+      "12",
+      "13"
+    ],
+    "cache_state": "cold",
+    "override_trail": [],
+    "reject_rate": 0.0
+  },
+  "outcome_summary": "Trial completed and all expected artifacts were emitted.",
+  "risks": [
+    "post-close replay remains operator-gated"
+  ],
+  "trial_id": "dddddddd-dddd-4ddd-8ddd-dddddddddddd",
+  "verb": "approve"
+}
