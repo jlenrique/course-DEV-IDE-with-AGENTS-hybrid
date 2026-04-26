@@ -110,12 +110,42 @@ Sandbox-AC PASS.
 
 ## Dev Agent Record
 
-_(Populated during T1–T9 execution.)_
+### T1 Readiness + substrate adaptation
+
+- Verified strict predecessor discipline: Story 5a.1 was already `done` in `sprint-status.yaml` before opening 5a.2.
+- Verified frozen primary baseline exists locally at `course-content/staging/tracked/source-bundles/apc-c1m1-tejal-20260419b-motion/`.
+- Verified the branch substrate does **not** contain a runnable `app.marcus.cli trial start --preset production --input <corpus-path>` launcher. The live branch surfaces are `app/marcus/cli/gate_cli.py`, existing run artifacts under `state/config/runs/C1-M1-PRES-20260419B/`, and the deterministic local Marcus baseline at `tests/fixtures/marcus/baseline_envelope/2026-04-26/`.
+- Applied substrate-aware adaptation rather than force-fitting the authored launch path: 5a.2 closes on **actual-substrate control-plane parity** and keeps AC-A explicitly operator-window conditional until a real clone-trial launcher exists.
+
+### Implementation summary
+
+- Added `app/replay/parity_comparison.py` with actual-substrate parity scoring, canonicalization, markdown evidence rendering, and CLI entrypoint.
+- Extended `app/replay/__init__.py` with lazy parity exports so `python -m app.replay.parity_comparison` runs without the earlier eager-import warning.
+- Added focused coverage in `tests/integration/replay/test_parity_comparison.py`, `tests/migration/test_5a_2_parity_evidence_present.py`, and `tests/migration/test_5a_2_party_mode_5_agent_recording.py`.
+- Added migration-guide documentation at `docs/dev-guide/langgraph-migration-guide.md` under `## Head-to-Head Parity (Slab 5 Story 5a.2)`.
+- Generated adapted parity evidence at `_bmad-output/implementation-artifacts/5a-2-parity-evidence-2026-04-26.md`.
+- Recorded the formal five-agent verdict at `_bmad-output/implementation-artifacts/5a-2-parity-verdict.md`.
 
 ### Operator Trial-Run Evidence (per AC-A)
 
-_(Operator pastes here)_
+- AC-A remains **operator-window conditional** on 2026-04-26.
+- Verified-frozen reference inputs:
+  - Primary bundle root: `course-content/staging/tracked/source-bundles/apc-c1m1-tejal-20260419b-motion/`
+  - Clone reference run root: `state/config/runs/C1-M1-PRES-20260419B/`
+  - Deterministic local baseline: `tests/fixtures/marcus/baseline_envelope/2026-04-26/envelope.json`
+- No artifact in this story claims that a new production clone trial was launched, that LangSmith traces were captured from a new run, or that production-clone execution equivalence was proven on the current branch.
 
 ### 5-Agent Party-Mode Parity Verdict (per AC-C)
 
-_(Recorded verbatim under ### Winston / ### Murat / ### Paige / ### Quinn-R / ### Amelia headers in 5a-2-parity-verdict.md)_
+- Formal verdict artifact: `_bmad-output/implementation-artifacts/5a-2-parity-verdict.md`
+- Fixed roster honored: Winston + Murat + Paige + Quinn-R + Amelia
+- Consensus verdict: `CONDITIONAL-GREEN`
+- Binding rider: preserve the scope boundary everywhere this story is summarized; this close state certifies **actual-substrate control-plane parity only**, not production-clone launch equivalence.
+
+### Verification
+
+- `python -m app.replay.parity_comparison --output _bmad-output/implementation-artifacts/5a-2-parity-evidence-2026-04-26.md` -> wrote evidence artifact with `tier1=100%`, `tier2=100%`
+- `pytest tests/integration/replay/test_parity_comparison.py tests/migration/test_5a_2_parity_evidence_present.py tests/migration/test_5a_2_party_mode_5_agent_recording.py -q --tb=short` -> `10 passed`
+- `ruff check app/replay/__init__.py app/replay/parity_comparison.py tests/integration/replay/test_parity_comparison.py tests/migration/test_5a_2_parity_evidence_present.py tests/migration/test_5a_2_party_mode_5_agent_recording.py` -> clean
+- `lint-imports --config pyproject.toml` -> `9 kept, 0 broken`
+- Required repo-wide pytest rider: `.venv/Scripts/python.exe -m pytest -q --tb=short` still fails on this machine because pytest cannot reliably create/clean temp roots under `%LOCALAPPDATA%\Temp\pytest-of-juanl`; a fresh in-repo `--basetemp .tmp_pytest_5a2` rerun reproduced the same Windows ACL/cleanup defect at session finish. No failure in the 5a.2-owned parity slice was observed.

@@ -1144,3 +1144,30 @@ the live Marcus sanctum digest no longer matches the captured baseline, replay
 continues after normalizing the comparison payload back onto the captured
 sanctum digest and returns a provenance note explaining that clone-mode
 fallback was used for comparison.
+
+## Head-to-Head Parity (Slab 5 Story 5a.2)
+
+Story 5a.2 ships `app/replay/parity_comparison.py` as the parity-evidence layer.
+On the current substrate there is no runnable
+`app.marcus.cli trial start --preset production --input <corpus-path>` surface,
+so AC-A remains explicitly operator-window conditional. The story therefore
+measures only the actual-substrate control-plane parity surfaces that do exist
+on branch:
+
+- `run-constants.yaml` -> `state/config/runs/.../course_context.yaml`
+- `run-constants.yaml` -> `state/config/runs/.../module_context.yaml`
+- `gary-outbound-envelope.yaml` -> `state/config/runs/.../asset_specs.yaml`
+- `motion_plan.yaml` -> `state/config/runs/.../motion_plan.yaml`
+
+The comparator canonicalizes those artifact families, normalizes run IDs,
+timestamps, UUIDs, and repo-root path drift, and then computes:
+
+- **Tier 1**: comparable artifact-family presence
+- **Tier 2**: semantic structural match across the families present on both sides
+
+The first adapted evidence artifact is
+`_bmad-output/implementation-artifacts/5a-2-parity-evidence-2026-04-26.md`,
+which records `TIER 1 = 100%` and `TIER 2 = 100%` on the actual branch control
+plane while also stating that this is **not** production-clone launch
+equivalence. That scope boundary is authoritative for all downstream M5
+acceptance reporting.
