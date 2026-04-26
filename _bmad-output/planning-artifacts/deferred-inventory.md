@@ -204,6 +204,21 @@ The Slab-3-close + Slab-4-close pytest sweeps revealed 19 pre-existing failures 
 
 ---
 
+## Migration tech-debt follow-ons (filed 2026-04-26 post-Slab-3-close runway prep)
+
+Cross-cutting tech debt that grew during Slabs 1-4 + that should be properly tracked for post-M5-ship triage. None are trial-run-blocking; all are post-ship cleanup candidates per Bucket-F harmonization framing in the runway assessment.
+
+| Entry | Source | Description | Reactivation posture |
+|---|---|---|---|
+| **`migration-tech-debt-ruff-cleanup`** | Tier-1-A runway prep 2026-04-26 (post-Slab-3-close ruff sweep) | 1322 ruff errors at Slab-3-close baseline → 977 after `--fix` auto-cleanup (mechanical) → 998 post-Slab-4 (Codex's 4.x adds ~20 new flagged lines). Remaining errors are manual/unsafe-fix variants spanning legacy primary-repo code + migration-shipped surfaces. | **Named follow-on, post-M5-ship cleanup, ~3-5pt.** Categorize remaining 998 errors by ruff rule code; fix high-signal categories (B = bugbear; F = pyflakes); document policy-exempt categories in `pyproject.toml [tool.ruff.lint.per-file-ignores]`. NOT trial-run-blocking; CI does NOT fail on these. Operator-priority decision when to schedule. |
+| **`migration-tech-debt-utility-script-consolidation`** | Tier-1-E runway prep 2026-04-26 (`scripts/utilities/README.md` index) | 56+ utility scripts across `scripts/utilities/` with overlapping concerns: `operator_polling.py` + `operator_directives_poll.py`; `emit_preflight_receipt.py` + `emit_ingestion_quality_receipt.py`; `fix_slide_content.py` + `fix_test_file.py` + `repair_validator.py` + `restore_validator_clean.py`; `find_mojibake.py` + `normalize_mojibake.py`; three lockstep checkers (pipeline-manifest + manifest + learning-event). Argparse conventions vary; exit-code conventions vary; logging-format conventions vary. | **Named follow-on, post-M5-ship cleanup, ~5-8pt.** Consolidate per DRY-overlap candidates flagged in `scripts/utilities/README.md`; harmonize argparse + exit-code + logging conventions per consistency-target spec; produce final consolidated index. NOT trial-run-blocking. |
+| **`migration-tech-debt-requirements-mirror-stale`** | Tier-1-D runway prep 2026-04-26 (deps audit) | `requirements-mirror.txt` is from 2026-04-21 (pre-Slab-2; reflects pre-langchain/langgraph install state). Migration's actual `.venv` has 13 additional installed deps (langchain/langgraph/langsmith/fastapi/uvicorn/httpx/psycopg/watchdog) that I declared in pyproject.toml at Tier-1-D but the mirror file is unchanged. Operator running `pip freeze --exclude-editable` would now produce a much larger output. | **Named follow-on, ~0.25pt.** Re-generate `requirements-mirror.txt` post-Slab-4-close to reflect actual `.venv` state; commit as snapshot. Re-do at each Slab close OR per operator preference. NOT trial-run-blocking. |
+| **`migration-tech-debt-app-marcus-stub-disposition`** | Slab-3 substrate-aware adaptation discovery 2026-04-26 (canonical marcus/ vs app/marcus/ Slab-1 stub) | `app/marcus/__init__.py` ships as Slab-1 stub: `"""App-namespace Marcus compatibility surface."""` + `from app.marcus.facade import get_facade` + ... while canonical Marcus runtime is at top-level `marcus/`. Operator decision: (a) keep the stub as compatibility shim (current state) OR (b) retire entirely (delete app/marcus/, remove import-linter rules referencing app.marcus.*). | **Named follow-on, post-M5-ship Bucket-F harmonization, ~1pt.** Defer to 5a.5 retrospective per Bucket-F rationale; operator decides at SHIP path activation. NOT trial-run-blocking; current dual-namespace state is functional. |
+
+**Total tech-debt follow-ons: 4** (filed 2026-04-26 in this entry; complementary to the 9 pre-cleanup follow-ons above).
+
+---
+
 ## Inventory Summary
 
 | Category | Count | Reactivation posture |
