@@ -5,7 +5,7 @@
 **Epic:** Slab 6 — Post-MVP Production Capability (`migration-epic-6-post-mvp-production`); precedes Slab 6.3 + 6.4 + 6.5 per `codex-handoff-slab-6-3-through-6-5-trial-experience-bundle.md` Phase 0 prerequisite.
 **Pts:** ~1 (single-gate; manifest schema extension + runner consumes manifest-declared deps; preserves runner-layer fallback for backward-compat).
 **Gate:** single-gate (governance-JSON entry to be added at filing; rationale: minor schema extension; no new substrate; preserves backward-compat via fallback retention; no composition-shape change).
-**K-target:** ~1.4× (target ~10 / floor ~7).
+**K-target:** ~1.4× (target ~12 / floor ~9 — bumped 2026-04-27 per party-mode M-R3 to accommodate M-R1 + M-R2 fail-loud test additions).
 
 **Predecessors:**
 - Slab 6.1 (`migration-6-1-production-graph-runner.md`) CLOSED — runner ships with `_default_dependency_map_for(specialist_id)` deterministic fallback at the runner layer
@@ -23,6 +23,14 @@
 - **Substrate Inventory Checklist at `docs/dev-guide/substrate-inventory-checklist.md`** N-items applicable: N4 (isolation invariant), N5 (state-flow contract — directly improved), N7 (replay regression), N9 (operator-witnessed evidence). Trace per substantive review focus list at code-review.
 - **Anti-pattern catalog at `docs/dev-guide/specialist-anti-patterns.md`** read at T1; A12 partially mitigated by this story; A9 alignment verified.
 - **Halt-and-surface triggers** per discipline doc §6: substrate disagreement; §11 migration trigger fire; decision_needed surfaces; N-item FAIL; new anti-pattern; cross-cutting impact beyond IN-SCOPE list.
+
+**Party-mode green-light (BINDING; ratified 2026-04-27 in --solo mode):**
+- Convened: Winston (architect) + Murat (test architect) + Paige (tech writer) + Amelia (dev)
+- Verdict: unanimous GREEN-WITH-RIDERS — no architectural impasse; no §11 migration trigger fire; spec structurally sound
+- 8 BINDING riders applied to spec (W-R1, W-R2, M-R1, M-R2, M-R3 K-floor bump, P-R1, P-R2, A-R1, A-R2)
+- 3 NON-BLOCKING riders apply at close (W-R3 circular-check verification, M-R4 isolated `_resolve_dependency_map` unit test, P-R3 deferred-inventory `Last refreshed:` line update, A-R3 effort-estimate bump 4-6 → 5-7 hr)
+- **Fallback retention is PERMANENT** (W-R1 + P-R1 binding consistency): runner-layer fallback IS the resolution mechanism for any node that opts out of explicit manifest declaration; not deprecated; not transitional. Future-reader test: someone reading 12 months from now must NOT think the fallback should be ripped out.
+- **Likely halt candidates named** (A-R2): (a) `app/manifest/compiler.py` validator may not admit new optional field cleanly; (b) circular-dependency check may need new logic if existing only inspects implicit `node.upstream:` field per W-R3.
 
 ---
 
@@ -74,14 +82,14 @@ This story closes the gap before Slab 6 trial-experience bundle implementation b
 **Decision #1 — Bounded scope (per R1):** This story builds the manifest-promotion ONLY:
 - Pipeline manifest schema extends with `dependencies: dict[str, str]` field per specialist node (downstream-input-key → upstream-specialist-id)
 - Manifest validator + compiler accept + validate new field
-- Production runner reads manifest dependencies first, falls back to `_default_dependency_map_for(...)` if not declared
+- Production runner reads manifest dependencies first, falls back to `_default_dependency_map_for(...)` if not declared (**fallback retention is PERMANENT per party-mode W-R1 + P-R1 ratification — not deprecated; not transitional; the fallback IS the resolution mechanism for any node that opts out of explicit declaration**)
 - Pipeline manifest current entries get explicit dependency declarations matching current fallback behavior (Texas → CD `source_bundle`; other downstream `upstream_output` if applicable)
-- Test surface covers manifest-declared + fallback-resolved + missing-upstream cases
+- Test surface covers manifest-declared + fallback-resolved + missing-upstream cases (fail-loud, not silent fallback per Composition Spec §3.6)
 
 NOT in scope:
 - Multi-pass / repeated specialist node handling (still Path Z from Slab 6.1; Path X / Y deferred)
 - Branch/conditional traversal (still iterates manifest order; DFR-6.1-4 deferred)
-- Generator-emit of manifest dependency stub on new specialist creation (deferred as `2c-4-generator-emit-manifest-dependency-stub`; separate follow-on)
+- Generator-emit of manifest dependency stub on new specialist creation (deferred as `2c-4-generator-emit-manifest-dependency-stub`; separate follow-on; **per P-R2: when generator-emit lands, it consumes THIS story's manifest format as its emission contract — flag the coupling for that future story's authoring**)
 - Anti-pattern A12 retirement (manifest-declared dependencies don't fully retire A12; that's the generator-emit work)
 
 **Decision #2 — Schema shape:** dependencies declared at the manifest node level as `dependencies: dict[str, str]` (downstream-input-key → upstream-specialist-id). Example:
@@ -136,12 +144,18 @@ So that **adding/modifying specialists edits the manifest rather than the runner
 - **Then** per-node `dependencies: dict[str, str]` field accepted (downstream-input-key → upstream-specialist-id); empty/missing field is valid (triggers fallback); circular dependencies rejected at compile time per existing manifest invariant.
 - **Test pin:** `tests/integration/manifest/test_manifest_dependencies_field.py` — 4 tests: schema-accepts-empty / schema-accepts-declared / schema-rejects-circular / schema-rejects-non-dict-shape.
 
-### AC-Slab-6.2-B — Production runner manifest-first resolution
+### AC-Slab-6.2-B — Production runner manifest-first resolution + fail-loud on missing upstream
 
-- **Given** Decision #3 resolution rule
+- **Given** Decision #3 resolution rule + Composition Spec §3.6 fail-loud rule
 - **When** dev wires `_resolve_dependency_map(node)` into the production runner's specialist invocation loop
-- **Then** runner reads manifest-declared dependencies first; falls back to `_default_dependency_map_for(specialist_id)` for unspecified nodes; existing Slab 6.1 fallback contract preserved.
-- **Test pin:** `tests/integration/marcus/test_production_runner_dependency_resolution.py` — 3 tests: manifest-declared-precedence / fallback-on-empty / fallback-on-missing-field.
+- **Then** runner reads manifest-declared dependencies first; falls back to `_default_dependency_map_for(specialist_id)` for unspecified nodes; existing Slab 6.1 fallback contract preserved; missing-upstream fails loud with `MissingUpstreamContributionError` naming both `specialist_id` AND `downstream_input_key`.
+- **Test pin:** `tests/integration/marcus/test_production_runner_dependency_resolution.py` — 6 tests:
+  1. `test_manifest_declared_precedence` — manifest dep declared; runner reads it (not fallback)
+  2. `test_fallback_on_empty_dependencies_field` — empty `dependencies: {}`; runner falls back to `_default_dependency_map_for(...)`
+  3. `test_fallback_on_missing_dependencies_field` — manifest entry has no `dependencies:` key at all; runner falls back
+  4. `test_missing_upstream_dependency_fails_loud` (per M-R1 BINDING) — manifest declares dep on `phantom-specialist` not in run; raises `MissingUpstreamContributionError(specialist_id="phantom-specialist", downstream_input_key="...")` with both fields in message
+  5. `test_upstream_ran_but_no_contribution_fails_loud` (per M-R2 BINDING) — upstream specialist ran but its contribution absent from envelope; raises `MissingUpstreamContributionError` with explanatory message
+  6. `test_fallback_path_unchanged_for_undeclared_node` (per W-R2 BINDING) — pick ONE existing manifest node currently using runner-layer fallback (e.g., Texas → CD); do NOT add `dependencies:` declaration; verify trial-run output identical to pre-implementation baseline (regression-prevention)
 
 ### AC-Slab-6.2-C — Existing manifest entries promoted to declared dependencies
 
@@ -269,13 +283,18 @@ N1, N2, N3, N6, N8, N10, N11, N12 are N/A for this story (no new external resour
 
 ## Effort estimate
 
-**~4-6 hr Codex time** (single-gate; small surface; backward-compat preserves existing tests as proof-of-no-regression). Phasing:
-- Phase 1 (~1 hr): Read existing manifest + compiler + runner; design `_resolve_dependency_map(node)` shape; verify backward-compat path
-- Phase 2 (~2 hr): Implement schema extension + validator + runner resolution wiring
-- Phase 3 (~1-2 hr): Author 7 K-floor tests; promote existing manifest entries; verify all pre-existing tests GREEN
-- Phase 4 (~1 hr): D12 close + Composition Spec updates + sprint-status + deferred-inventory + governance JSON + migration guide
+**~5-7 hr Codex time** (per A-R3 NON-BLOCKING bump from 4-6 → 5-7 to accommodate M-R1 + M-R2 test additions + likely golden refresh + halt-and-adapt cycles). Single-gate; small surface; backward-compat preserves existing tests as proof-of-no-regression. Phasing:
 
-Halt-and-adapt budget: built in. Particularly likely surfaces: (a) existing manifest schema validator may be too rigid to extend cleanly; (b) circular-dependency rejection may need more nuance if manifest already has implicit cycles via fallback.
+- Phase 1 — Pre-flight + design (~1.5 hr; per A-R1 BINDING): Run existing manifest validator against all current `state/config/pipeline-manifest.yaml` entries; record baseline pass count (this becomes the regression baseline against post-implementation runs). Read existing manifest + compiler + runner. Design `_resolve_dependency_map(node)` shape. Verify backward-compat path. Verify circular-dep rejection happens at compile time per AC-A claim (per W-R3 NON-BLOCKING) — if not currently true, add minimal circular-check to `app/manifest/compiler.py` (~10 LOC).
+- Phase 2 — Implementation (~2 hr): Schema extension + validator + runner resolution wiring. Implement `MissingUpstreamContributionError` exception type with `specialist_id` + `downstream_input_key` fields per Composition Spec §3.6 fail-loud rule.
+- Phase 3 — Tests (~1.5-2 hr): Author 9 K-floor tests (4 in AC-A + 6 in AC-B per M-R1 + M-R2 + W-R2 additions; M-R4 NON-BLOCKING isolated `_resolve_dependency_map` unit test as time allows). Promote existing manifest entries. Verify all pre-existing tests GREEN. Refresh manifest goldens if YAML output ordering shifts.
+- Phase 4 — D12 close (~1 hr): Composition Spec §3.6 + §10 Decision Log + §12 known limitation #1 flip + sprint-status + deferred-inventory entry status flip (with `Last refreshed:` line update per P-R3 NON-BLOCKING) + governance JSON + migration guide.
+
+**Halt-and-adapt budget built in. Likely halt candidates named explicitly per A-R2 BINDING:**
+- (a) `app/manifest/compiler.py` validator may not admit new optional field cleanly — Codex pre-flights at Phase 1; if surfaced, ~30-60 min refactor of validator schema declaration (still in budget)
+- (b) Circular-dependency check may need new logic if existing manifest validator only inspects implicit `node.upstream:` field rather than performing full graph traversal — Codex verifies at Phase 1 per W-R3; if minimal addition needed, lands in Phase 2
+
+If either halt surfaces a substrate disagreement that can't be resolved in this story's budget, HALT and surface to operator per discipline doc §6.
 
 ---
 
