@@ -9,7 +9,11 @@ from pathlib import Path
 from typing import Any, Literal
 from uuid import UUID, uuid4
 
-from app.marcus.orchestrator.production_runner import run_production_trial
+from app.marcus.orchestrator.production_runner import (
+    resume_production_trial,
+    run_production_trial,
+)
+from app.models.state.operator_verdict import OperatorVerdict
 from app.runtime.economics import RUNS_ROOT
 
 
@@ -106,6 +110,56 @@ def start_trial_cli(args: argparse.Namespace) -> int:
     return 0
 
 
+def resume_trial(
+    *,
+    trial_id: UUID,
+    verdict_file: Path,
+    runs_root: Path = RUNS_ROOT,
+    max_specialist_calls: int | None = None,
+) -> dict[str, Any]:
+    _load_env_if_available()
+    verdict = OperatorVerdict.model_validate_json(
+        verdict_file.read_text(encoding="utf-8")
+    )
+    if verdict.trial_id != trial_id:
+        raise ValueError(
+            f"verdict trial_id={verdict.trial_id} does not match --trial-id={trial_id}"
+        )
+    envelope = resume_production_trial(
+        trial_id=trial_id,
+        verdict=verdict,
+        runs_root=runs_root,
+        max_specialist_calls=max_specialist_calls,
+    )
+    result = {
+        "status": envelope.status,
+        "trial_id": str(trial_id),
+        "paused_gate": envelope.paused_gate,
+        "run_registry_path": str(runs_root / str(trial_id) / "run.json"),
+        "cost_report_json": str(envelope.cost_report_path)
+        if envelope.cost_report_path is not None
+        else None,
+        "production_clone_launch_evidence": envelope.production_clone_launch_evidence,
+        "transport_kind": "cli",
+    }
+    (runs_root / str(trial_id) / "trial-resume.json").write_text(
+        json.dumps(result, indent=2, sort_keys=True) + "\n",
+        encoding="utf-8",
+    )
+    return result
+
+
+def resume_trial_cli(args: argparse.Namespace) -> int:
+    payload = resume_trial(
+        trial_id=args.trial_id,
+        verdict_file=Path(args.verdict_file),
+        runs_root=Path(args.runs_root) if args.runs_root else RUNS_ROOT,
+        max_specialist_calls=args.max_specialist_calls,
+    )
+    print(json.dumps(payload, sort_keys=True))
+    return 0
+
+
 def build_trial_parser(parser: argparse.ArgumentParser) -> None:
     subparsers = parser.add_subparsers(dest="trial_command")
     start = subparsers.add_parser("start")
@@ -122,10 +176,25 @@ def build_trial_parser(parser: argparse.ArgumentParser) -> None:
             "Does not count as production clone-launch evidence."
         ),
     )
+    resume = subparsers.add_parser("resume")
+    resume.add_argument("--trial-id", required=True, type=UUID)
+    resume.add_argument("--verdict-file", required=True)
+    resume.add_argument("--runs-root", required=False, help=argparse.SUPPRESS)
+    resume.add_argument(
+        "--max-specialist-calls",
+        required=False,
+        type=int,
+        help=(
+            "Maximum downstream specialist calls to make during this resume "
+            "continuation. Defaults to the paused runner cap."
+        ),
+    )
 
 
 __all__ = [
     "build_trial_parser",
+    "resume_trial",
+    "resume_trial_cli",
     "start_trial",
     "start_trial_cli",
 ]

@@ -12,11 +12,17 @@ from types import SimpleNamespace
 from typing import Any, Literal
 from uuid import UUID, uuid4
 
-from app.gates.resume_api import register_decision_card, resume_from_verdict
+from app.gates.errors import GateError
+from app.gates.resume_api import (
+    get_registered_decision_card,
+    register_decision_card,
+    resume_from_verdict,
+)
 from app.manifest.compiler import PRODUCTION_GATE_IDS, compile_run_graph
 from app.manifest.loader import load as load_manifest
 from app.marcus.orchestrator.dispatch_adapter import ProductionDispatchAdapter
 from app.models.decision_cards import (
+    AnyDecisionCardAdapter,
     DecisionCardMeta,
     G1Card,
     G2CCard,
@@ -300,6 +306,10 @@ def _write_checkpoint(
     node_index: int,
     gate_id: str,
     run_state: RunState,
+    envelope: ProductionTrialEnvelope,
+    manifest_path: Path,
+    allow_offline_cost_report: bool,
+    max_specialist_calls: int,
 ) -> Path:
     path = _run_dir(trial_id, runs_root) / "checkpoint.json"
     _write_json(
@@ -309,9 +319,67 @@ def _write_checkpoint(
             "next_node_index": node_index + 1,
             "gate_id": gate_id,
             "run_state": run_state.model_dump(mode="json"),
+            "runner": {
+                "corpus_path": envelope.corpus_path,
+                "preset": envelope.preset,
+                "operator_id": envelope.operator_id,
+                "manifest_path": manifest_path.as_posix(),
+                "allow_offline_cost_report": allow_offline_cost_report,
+                "max_specialist_calls": max_specialist_calls,
+            },
         },
     )
     return path
+
+
+def _ensure_decision_card_registered_from_disk(
+    *,
+    trial_id: UUID,
+    gate_id: str,
+    run_dir: Path,
+) -> None:
+    if get_registered_decision_card(trial_id, gate_id) is not None:
+        return
+    decision_path = run_dir / f"decision-card-{gate_id}.json"
+    if not decision_path.exists():
+        return
+    payload = json.loads(decision_path.read_text(encoding="utf-8"))
+    issued_at_raw = payload.get("issued_at")
+    if not issued_at_raw:
+        raise GateError(
+            "card_missing",
+            "persisted DecisionCard is missing issued_at; cannot validate "
+            "decision-card digest binding after registry loss",
+        )
+    issued_at = datetime.fromisoformat(str(issued_at_raw).replace("Z", "+00:00"))
+    card = AnyDecisionCardAdapter.validate_python(payload["card"])
+    stored = register_decision_card(
+        card,
+        issuance_timestamp=issued_at,
+        server_nonce=str(payload["server_nonce"]),
+    )
+    if stored.digest != payload["digest"]:
+        raise GateError(
+            "digest_mismatch",
+            "persisted DecisionCard digest does not match rehydrated card metadata",
+        )
+
+
+def _apply_verdict_to_run_state(
+    run_state: RunState,
+    verdict: OperatorVerdict,
+) -> RunState:
+    if verdict.verb != "edit":
+        return run_state
+    return run_state.model_copy(
+        update={
+            "cache_state": CacheState(
+                cache_prefix=json.dumps(verdict.edit_payload, sort_keys=True),
+                entries_count=1,
+                last_invalidated_at=None,
+            )
+        }
+    )
 
 
 def _record_cost(
@@ -436,6 +504,10 @@ def run_production_trial(
                     node_index=index,
                     gate_id=gate_id,
                     run_state=run_state,
+                    envelope=envelope,
+                    manifest_path=manifest_path,
+                    allow_offline_cost_report=allow_offline_cost_report,
+                    max_specialist_calls=max_specialist_calls,
                 )
                 decision_path = (
                     _run_dir(effective_trial_id, runs_root)
@@ -446,6 +518,9 @@ def run_production_trial(
                     {
                         "card": card.model_dump(mode="json"),
                         "digest": stored.digest,
+                        "issued_at": stored.issued_at.astimezone(UTC)
+                        .isoformat()
+                        .replace("+00:00", "Z"),
                         "server_nonce": stored.server_nonce,
                         "checkpoint_path": checkpoint.as_posix(),
                     },
@@ -596,27 +671,46 @@ def resume_production_trial(
     trial_id: UUID,
     verdict: OperatorVerdict,
     runs_root: Path = RUNS_ROOT,
+    max_specialist_calls: int | None = None,
 ) -> ProductionTrialEnvelope:
-    """Validate a gate verdict and transition the persisted trial."""
+    """Validate a gate verdict and continue the persisted trial past the gate."""
     run_dir = _run_dir(trial_id, runs_root)
     envelope = ProductionTrialEnvelope.model_validate_json(
         (run_dir / "run.json").read_text(encoding="utf-8")
     )
-    command = resume_from_verdict(verdict)
+    if envelope.status != "paused-at-gate":
+        raise RuntimeError(
+            f"trial {trial_id} is not paused at a gate; status={envelope.status!r}"
+        )
+    if envelope.paused_gate != verdict.gate_id:
+        raise GateError(
+            "checkpoint_gate_mismatch",
+            f"verdict gate_id={verdict.gate_id} does not match paused_gate={envelope.paused_gate}",
+        )
+    _ensure_decision_card_registered_from_disk(
+        trial_id=trial_id,
+        gate_id=verdict.gate_id,
+        run_dir=run_dir,
+    )
     checkpoint_path = run_dir / "checkpoint.json"
     checkpoint = json.loads(checkpoint_path.read_text(encoding="utf-8"))
-    run_state = checkpoint["run_state"]
-    if verdict.verb == "edit":
-        run_state["cache_state"] = {
-            "cache_prefix": json.dumps(verdict.edit_payload, sort_keys=True),
-            "entries_count": 1,
-            "last_invalidated_at": None,
-        }
+    if checkpoint.get("trial_id") != str(trial_id) or checkpoint.get("gate_id") != verdict.gate_id:
+        raise GateError(
+            "checkpoint_gate_mismatch",
+            "persisted checkpoint does not match the accepted verdict gate",
+        )
+    command = resume_from_verdict(verdict)
+    runner = checkpoint.get("runner") or {}
+    run_state = RunState.model_validate_json(json.dumps(checkpoint["run_state"]))
+    run_state = run_state.model_copy(
+        update={"production_envelope": envelope.production_envelope}
+    )
+    run_state = _apply_verdict_to_run_state(run_state, verdict)
     _write_json(
         run_dir / "resume-command.json",
         {
             "command": command.resume,
-            "run_state": run_state,
+            "run_state": run_state.model_dump(mode="json"),
         },
     )
     if verdict.verb == "reject":
@@ -627,15 +721,126 @@ def resume_production_trial(
                 "production_clone_launch_evidence_reason": "operator-rejected-at-gate",
             }
         )
-    else:
-        updated = envelope.model_copy(
-            update={
-                "status": "completed",
-                "completed_at": _now(),
-                "paused_gate": None,
-                "production_clone_launch_evidence_reason": "resumed-after-gate",
-            }
+        _persist_envelope(updated, runs_root)
+        return updated
+
+    manifest_path = Path(runner.get("manifest_path") or DEFAULT_MANIFEST_PATH)
+    manifest = load_manifest(manifest_path)
+    graph = compile_run_graph(manifest)
+    adapter = ProductionDispatchAdapter()
+    production_envelope = envelope.production_envelope
+    child_runs = [
+        _trace_run_for_contribution(trial_id=trial_id, contribution=contribution)
+        for contribution in production_envelope.contributions
+    ]
+    specialist_calls = 0
+    resumed_max_specialist_calls = (
+        max_specialist_calls
+        if max_specialist_calls is not None
+        else int(runner.get("max_specialist_calls") or 1)
+    )
+    allow_offline_cost_report = bool(runner.get("allow_offline_cost_report", False))
+    start_index = int(checkpoint["next_node_index"])
+    graph_step_completed = bool(production_envelope.contributions)
+
+    with _trial_trace_context(
+        trial_id=trial_id,
+        preset=runner.get("preset") or envelope.preset,
+        operator_id=runner.get("operator_id") or envelope.operator_id,
+    ) as trace_metadata:
+        for node in manifest.nodes[start_index:]:
+            handler = _active_node_handler(graph, node.id)
+            node_kind = getattr(handler, "__production_node_kind__", None)
+            if node_kind == "gate":
+                graph_step_completed = True
+                continue
+
+            if (
+                node_kind == "specialist"
+                and specialist_calls < resumed_max_specialist_calls
+            ):
+                specialist_id = handler.__production_specialist_id__
+                if production_envelope.get_contribution(specialist_id) is not None:
+                    LOGGER.info(
+                        "specialist %s was reached again at manifest node %s but "
+                        "the production envelope already contains its contribution; "
+                        "new contribution skipped per Slab 6.1 Path Z first-"
+                        "contribution-wins contract",
+                        specialist_id,
+                        node.id,
+                    )
+                    graph_step_completed = True
+                    continue
+                if _has_live_openai() and not allow_offline_cost_report:
+                    dependency_map = _dependency_map_for_specialist(
+                        specialist_id=specialist_id,
+                        production_envelope=production_envelope,
+                    )
+                    production_envelope = adapter.invoke_specialist(
+                        specialist_id=specialist_id,
+                        envelope=production_envelope,
+                        dependency_map=dependency_map,
+                        cost_usd=0.0,
+                        base_state=run_state,
+                    )
+                    run_state = run_state.model_copy(
+                        update={"production_envelope": production_envelope}
+                    )
+                    contribution = production_envelope.get_contribution(specialist_id)
+                    if contribution is not None:
+                        child_runs.append(
+                            _trace_run_for_contribution(
+                                trial_id=trial_id,
+                                contribution=contribution,
+                            )
+                        )
+                    specialist_calls += 1
+                graph_step_completed = True
+
+    completed_at = _now()
+    trace_root = (
+        _trace_root(
+            trial_id=trial_id,
+            metadata=trace_metadata,
+            child_runs=child_runs,
         )
+        if child_runs
+        else None
+    )
+    cost_report_path = _record_cost(
+        trial_id=trial_id,
+        runs_root=runs_root,
+        trace_root=trace_root,
+        allow_offline_cost_report=allow_offline_cost_report,
+    )
+    trace_path = None
+    if trace_root is not None:
+        trace_path = run_dir / "trace-fixture.json"
+        _write_json(trace_path, _trace_to_json(trace_root))
+    evidence = _has_production_evidence(
+        graph_step_completed=graph_step_completed,
+        specialist_calls=len(production_envelope.contributions),
+        allow_offline_cost_report=allow_offline_cost_report,
+    )
+    reason = "live-specialist-call-recorded" if evidence else "resumed-after-gate"
+    updated = envelope.model_copy(
+        update={
+            "status": "completed",
+            "completed_at": completed_at,
+            "paused_gate": None,
+            "langsmith_trace_id": str(trial_id) if child_runs else None,
+            "production_clone_launch_evidence": evidence,
+            "production_clone_launch_evidence_reason": reason,
+            "production_envelope": production_envelope,
+            "cost_report_path": cost_report_path,
+            "artifact_paths": [
+                *envelope.artifact_paths,
+                run_dir / "resume-command.json",
+                cost_report_path,
+                *([trace_path] if trace_path is not None else []),
+            ],
+        }
+    )
     _persist_envelope(updated, runs_root)
     return updated
 

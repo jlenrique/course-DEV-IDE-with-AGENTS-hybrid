@@ -281,13 +281,25 @@ replay references.
   in-flight persistence, live specialist probe dispatch, LangSmith-compatible
   trace metadata fixture, cost-report persistence, DecisionCard pause,
   checkpoint persistence, and FR34 resume validation.
+- Patched `resume_production_trial(...)` to validate the OperatorVerdict,
+  rehydrate the persisted checkpoint/DecisionCard metadata, apply edit payloads
+  into post-gate `RunState`, continue manifest traversal through downstream
+  adapter invocations, and finalize the same trial envelope after resume.
 - Rewired `app.marcus.cli trial start` to use the production runner while
   preserving offline cost-report discipline.
+- Added `app.marcus.cli trial resume --trial-id <uuid> --verdict-file <path>`
+  for operator-side gate-resume testing.
 
 ### Live-trial evidence (per AC-G + dual-gate gate-2)
 
 Codex-side live smoke passed on 2026-04-27:
 `pytest tests/live/test_production_trial_smoke.py -m live -q` -> `1 passed`.
+Codex-side gate-resume live smoke also passed on 2026-04-27:
+`pytest tests/live/test_production_trial_smoke_with_gate.py -m live` ->
+`1 passed in 291.27s`; persistent audit rerun trial
+`b38f5350-0c35-4cd5-821f-29687725bb70` completed with contributions
+`["texas", "irene"]`, `production_clone_launch_evidence=True`, and
+`total_cost_usd=0.1020115`.
 Formal dual-gate operator ratification remains pending before this story should
 be flipped from `review` to `done`.
 
@@ -298,12 +310,20 @@ Targeted verification:
 - `pytest tests/live/test_production_trial_smoke.py -m live -q` -> `1 passed`.
 - `ruff check` on touched app/test files -> pass.
 
+Checkpoint-resume patch verification:
+- `pytest tests/integration/marcus/test_production_runner_gate_pause_resume.py tests/integration/marcus/test_production_runner_resume_continues_execution.py tests/integration/marcus/test_production_runner_resume_invariants.py` -> `9 passed`.
+- `pytest tests/integration/marcus/test_production_runner_invocation.py tests/integration/marcus/test_production_runner_gate_pause_resume.py tests/integration/marcus/test_production_runner_resume_continues_execution.py tests/integration/marcus/test_production_runner_resume_invariants.py tests/integration/marcus/test_production_clone_launch_evidence_discipline.py tests/integration/runtime/test_production_runner_trace_binding.py tests/integration/gates/test_resume_from_verdict_digest_match.py tests/integration/gates/test_resume_from_verdict_card_missing.py tests/integration/gates/test_resume_api_authority.py` -> `26 passed`.
+- `pytest tests/live/test_production_trial_smoke_with_gate.py -m live` -> `1 passed in 291.27s`.
+- `python -m ruff check` on touched resume app/test files -> pass.
+- `pytest tests/integration/replay tests/trial_replay` -> `15 passed / 5 failed` on pre-existing `PackHashDriftError` for trial `33333333-3333-4333-8333-333333333333` (`expected 013b7ef7de6f6d16d5b863ded9f21781b025013adca6f1b60d2da1f3507b5561`, `got 19cde78dbf6de92a4ed70915ffe8e0efe59d79aa474adf398f0c4520a52d310a`), matching deferred item `replay-regression-pack-hash-drift-pre-slab-6.1`.
+
 ### File List
 
 - `app/manifest/__init__.py`
 - `app/manifest/compiler.py`
 - `app/manifest/lanes.py`
 - `app/marcus/cli/trial.py`
+- `app/marcus/cli/__main__.py`
 - `app/marcus/orchestrator/production_runner.py`
 - `app/models/runtime/__init__.py`
 - `app/models/runtime/production_trial_envelope.py`
@@ -315,10 +335,13 @@ Targeted verification:
 - `tests/integration/manifest/test_compiler_real_dispatch.py`
 - `tests/integration/marcus/test_production_runner_gate_pause_resume.py`
 - `tests/integration/marcus/test_production_runner_invocation.py`
+- `tests/integration/marcus/test_production_runner_resume_continues_execution.py`
+- `tests/integration/marcus/test_production_runner_resume_invariants.py`
 - `tests/integration/marcus/test_production_clone_launch_evidence_discipline.py`
 - `tests/integration/marcus/test_trial_cli.py`
 - `tests/integration/runtime/test_production_runner_trace_binding.py`
 - `tests/live/test_production_trial_smoke.py`
+- `tests/live/test_production_trial_smoke_with_gate.py`
 - `tests/unit/runtime/test_production_trial_envelope_strict.py`
 - `docs/dev-guide/langgraph-migration-guide.md`
 - `docs/dev-guide/migration-story-governance.json`
