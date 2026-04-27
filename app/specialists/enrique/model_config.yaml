@@ -2,7 +2,7 @@
 # Level 2: per-specialist default (this field)
 # Level 3: registry default (app/models/registry.py)
 specialist_id: "enrique"
-default_model: "gpt-5.4"
+default_model: "gpt-5"
 per_node_overrides:
-  act: "gpt-5.4"
+  act: "gpt-5"
 temperature_default: 0.0

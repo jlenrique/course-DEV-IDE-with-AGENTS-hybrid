@@ -41,7 +41,7 @@ class RegistryEntry(BaseModel):
         ...,
         min_length=1,
         description=(
-            "Provider-side model identifier (e.g. 'gpt-5.4', 'gpt-5-haiku'); "
+            "Provider-side model identifier (e.g. 'gpt-5', 'gpt-5-nano'); "
             "the string the runtime passes to the provider's chat-completions API."
         ),
     )

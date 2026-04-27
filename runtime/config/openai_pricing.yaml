@@ -1,12 +1,32 @@
 # runtime/config/openai_pricing.yaml
 # Manual price table for the models currently resolved by the live branch.
+# 2026-04-26 OPERATOR-SESSION PATCH: model IDs were previously fictitious
+# (propagated from scaffold templates; never matched OpenAI's real catalog).
+# Patched to real current OpenAI catalog identifiers and public pricing values
+# verified against https://platform.openai.com/docs/pricing on 2026-04-27.
+# Re-verify against the OpenAI public pricing page or operator's actual OpenAI
+# billing dashboard before the first real trial run. Update prices manually as
+# OpenAI publishes changes (~quarterly cadence).
+# See docs/dev-guide/specialist-anti-patterns.md "Plausible-Token Substrate
+# Contamination" entry for the discovery context.
 models:
-  gpt-5.4:
-    input_per_1m_tokens_usd: 5.0
-    output_per_1m_tokens_usd: 15.0
-  gpt-5-haiku:
-    input_per_1m_tokens_usd: 0.5
-    output_per_1m_tokens_usd: 1.5
-  gpt-5-codex:
+  gpt-5:
+    # Frontier tier.
+    input_per_1m_tokens_usd: 1.25
+    output_per_1m_tokens_usd: 10.0
+  gpt-5-mini:
+    # Mid-tier; not currently used in cascade but available as future optimization.
+    input_per_1m_tokens_usd: 0.25
+    output_per_1m_tokens_usd: 2.0
+  gpt-5-nano:
+    # Narrow-task tier; cheap dispatch for tool-heavy or bounded specialists.
+    input_per_1m_tokens_usd: 0.05
+    output_per_1m_tokens_usd: 0.4
+  # Fallback alternates available on operator's tier (kept for reference;
+  # not currently used in cascade unless GPT-5 family becomes unavailable):
+  gpt-4.1:
     input_per_1m_tokens_usd: 2.0
-    output_per_1m_tokens_usd: 6.0
+    output_per_1m_tokens_usd: 8.0
+  gpt-4o-mini:
+    input_per_1m_tokens_usd: 0.15
+    output_per_1m_tokens_usd: 0.6

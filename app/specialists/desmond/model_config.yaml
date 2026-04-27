@@ -2,7 +2,7 @@
 # Level 2: per-specialist default (this field)
 # Level 3: registry default (app/models/registry.py)
 specialist_id: "desmond"
-default_model: "gpt-5-haiku"
+default_model: "gpt-5-nano"
 per_node_overrides:
-  act: "gpt-5-haiku"
+  act: "gpt-5-nano"
 temperature_default: 0.0

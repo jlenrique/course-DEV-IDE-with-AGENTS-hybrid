@@ -3,13 +3,13 @@
 # Framework-over-epic drift lock:
 # - Canonical node is `plan` (not "reason").
 # - Tier request is `fast` for motion prompt composition.
-# - Current policy maps `fast` -> `gpt-5-haiku`.
+# - Current policy maps `fast` -> `gpt-5-nano`.
 #
 # Determinism:
 # - `temperature_default: 0.0` keeps prompt assembly + choice JSON stable for
 #   cache-prefix measurements in AC-D.
 specialist_id: "kira"
-default_model: "gpt-5-haiku"
+default_model: "gpt-5-nano"
 per_node_overrides:
-  act: "gpt-5-haiku"
+  act: "gpt-5-nano"
 temperature_default: 0.0

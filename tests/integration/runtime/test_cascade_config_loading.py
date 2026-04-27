@@ -11,7 +11,7 @@ from app.runtime.cascade_config import load_cascade
 def test_load_cascade_returns_validated_config() -> None:
     cascade = load_cascade()
 
-    assert cascade.marcus.model == "gpt-5.4"
+    assert cascade.marcus.model == "gpt-5"
     assert "irene" in cascade.specialists
 
 
@@ -21,11 +21,11 @@ def test_load_cascade_rejects_unknown_keys(tmp_path: Path) -> None:
         "\n".join(
             [
                 "marcus:",
-                "  model: gpt-5.4",
+                "  model: gpt-5",
                 "  rationale: test",
                 "specialists:",
                 "  irene:",
-                "    model: gpt-5.4",
+                "    model: gpt-5",
                 "    rationale: test",
                 "    surprise: nope",
             ]

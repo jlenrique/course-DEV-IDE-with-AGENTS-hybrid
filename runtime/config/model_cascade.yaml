@@ -1,43 +1,104 @@
 # runtime/config/model_cascade.yaml
 # Operator-editable economics-facing cascade for the migrated runtime.
-# This file follows the live branch substrate and therefore uses the current
-# registry-backed model ids (`gpt-5.4`, `gpt-5-haiku`) instead of the older
-# provisional `gpt-5-mini` / `gpt-5-nano` planning shorthand.
+# This file keeps the current runtime/persona ids as the canonical economics
+# labels because trial traces, persisted cost reports, and synthetic fixtures
+# already emit those names directly. Marcus specialist-registry ids resolve via
+# aliases, and registry-only specialists keep their registry ids as explicit
+# entries when no runtime persona id exists on this branch.
+#
+# 2026-04-26 OPERATOR-SESSION PATCH: model IDs were previously fictitious
+# (propagated from scaffold templates; never matched OpenAI's real catalog).
+# Patched in operator session to real current OpenAI catalog identifiers.
+# Per-specialist tier assignments preserved from prior B2 alignment work.
+# See docs/dev-guide/specialist-anti-patterns.md "Plausible-Token Substrate
+# Contamination" entry and runtime/config/openai_pricing.yaml for the
+# canonical real-catalog reference list.
 marcus:
-  model: gpt-5.4
+  model: gpt-5
   rationale: "Orchestrator control plane; multi-step synthesis and gate reasoning stay on the higher-reasoning tier."
 specialists:
   texas:
-    model: gpt-5-haiku
+    model: gpt-5-nano
     rationale: "Source-authority mapping and retrieval dispatch are narrow, tool-heavy steps."
   vera:
-    model: gpt-5.4
+    model: gpt-5
     rationale: "Fidelity and verification gates need conservative higher-reasoning review."
+    aliases:
+      - fidelity-assessor
   irene:
-    model: gpt-5.4
+    model: gpt-5
     rationale: "Lesson-plan and pass-authoring work needs longer-context editorial reasoning."
+    aliases:
+      - content-creator
   cd:
-    model: gpt-5.4
+    model: gpt-5
     rationale: "Creative-directive synthesis is a high-judgment control-plane step."
+    aliases:
+      - creative-director
   gary:
-    model: gpt-5-haiku
+    model: gpt-5-nano
     rationale: "Gamma dispatch/export is structured and tool-heavy with bounded reasoning."
+    aliases:
+      - gamma-specialist
   quinn_r:
-    model: gpt-5.4
+    model: gpt-5
     rationale: "Quality review and approval gates are evaluative and reasoning-heavy."
     aliases:
       - quinn-r
+      - quality-reviewer
   kira:
-    model: gpt-5-haiku
+    model: gpt-5-nano
     rationale: "Motion generation/import is dispatch-heavy and benefits from the fast tier."
+    aliases:
+      - kling-specialist
   enrique:
-    model: gpt-5.4
+    model: gpt-5
     rationale: "Voice-direction packaging is quality-sensitive and benefits from stronger reasoning."
     aliases:
       - elevenlabs
+      - elevenlabs-specialist
   compositor:
-    model: gpt-5-haiku
+    model: gpt-5-nano
     rationale: "Assembly-bundle coordination is structured and lower-judgment than frontier orchestration."
   desmond:
-    model: gpt-5-haiku
+    model: gpt-5-nano
     rationale: "Run-scoped operator brief authoring is structured synthesis with bounded context."
+  wanda:
+    model: gpt-5
+    rationale: "Wondercraft episode planning and audio-first packaging are creative but still quality-sensitive."
+    aliases:
+      - wondercraft-specialist
+  kim:
+    model: gpt-5
+    rationale: "CourseArc and LTI handoff checklists require conservative reasoning across deployment constraints."
+    aliases:
+      - coursearc-specialist
+  vyx:
+    model: gpt-5
+    rationale: "Storyboard sequencing is creative planning with quality-sensitive pacing and narration alignment."
+    aliases:
+      - vyond-specialist
+  aria:
+    model: gpt-5
+    rationale: "Articulate build-spec authoring is deterministic but benefits from stronger reasoning across structure and accessibility constraints."
+    aliases:
+      - articulate-specialist
+  mira:
+    model: gpt-5
+    rationale: "Prompt-pack and visual-direction work is creative synthesis that benefits from stronger reasoning."
+    aliases:
+      - midjourney-specialist
+  tamara:
+    model: gpt-5
+    rationale: "Canva design specs are high-judgment creative direction with template and brand constraints."
+    aliases:
+      - canva-specialist
+  tracy:
+    model: gpt-5
+    rationale: "Research-intent shaping is classification-heavy but still benefits from conservative reasoning across authority and retrieval posture."
+  canvas-specialist:
+    model: gpt-5-nano
+    rationale: "Canvas deployment is structured, tool-heavy, and bounded once content has already been approved."
+  qualtrics-specialist:
+    model: gpt-5-nano
+    rationale: "Qualtrics survey publishing is structured and API-heavy once assessment intent is already authored."

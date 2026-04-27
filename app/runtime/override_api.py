@@ -26,12 +26,16 @@ _OVERRIDE_TRAIL: dict[UUID, list[OverrideEvent]] = {}
 _LEDGER_EVENTS: dict[UUID, list[dict[str, object]]] = {}
 _WARNING_TO_OVERRIDE: dict[str, tuple[UUID, str, str]] = {}
 
+# 2026-04-26 OPERATOR-SESSION REMEDIATION: replaced fictitious model IDs that
+# propagated from scaffold templates with real OpenAI catalog identifiers. Cost
+# weights below are unitless relative-cost multipliers used by override-impact
+# computation; refresh from runtime/config/openai_pricing.yaml when prices move.
 _MODEL_COSTS = {
-    "gpt-5.4": 1.0,
-    "gpt-5.5": 1.5,
-    "gpt-5-haiku": 0.4,
+    "gpt-5": 1.0,
+    "gpt-5-mini": 0.3,
+    "gpt-5-nano": 0.05,
 }
-_DEFAULT_MODEL = "gpt-5.4"
+_DEFAULT_MODEL = "gpt-5"
 
 LOGGER = logging.getLogger(__name__)
 

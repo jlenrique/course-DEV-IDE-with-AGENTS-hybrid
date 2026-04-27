@@ -79,11 +79,11 @@ def _stable_uuid(name: str) -> UUID:
     return _UUIDS[name]
 
 
-def _stable_state() -> RunState:
+def _stable_state(trial_id: UUID = M3_TRIAL_ID) -> RunState:
     facade = get_facade()
     digest = facade.sanctum_digest
     return RunState(
-        run_id=M3_TRIAL_ID,
+        run_id=trial_id,
         status="running",
         created_at=BASE_TIME,
         graph_version="v0.1-stub",
@@ -125,6 +125,7 @@ def _next_nodes(node_id: str) -> list[str]:
 
 def _card_for_gate(
     *,
+    trial_id: UUID,
     gate_id: Literal["G1", "G2C", "G3", "G4"],
     node_id: str,
     step_index: int,
@@ -134,7 +135,7 @@ def _card_for_gate(
     created_at = BASE_TIME + timedelta(minutes=step_index)
     common = {
         "card_id": _stable_uuid(f"card:{gate_id}"),
-        "trial_id": M3_TRIAL_ID,
+        "trial_id": trial_id,
         "created_at": created_at,
         "drafted_proposal": {"node_id": node_id, "gate_id": gate_id},
         "evidence": [{"kind": "manifest-node", "node_id": node_id}],
@@ -179,6 +180,8 @@ def _card_for_gate(
 
 def _verdict_for_gate(
     *,
+    trial_id: UUID,
+    operator_id: str,
     gate_id: Literal["G1", "G2C", "G3", "G4"],
     card_id: UUID,
     digest: str,
@@ -187,10 +190,10 @@ def _verdict_for_gate(
     verb: Literal["approve", "edit", "reject"] = "edit" if gate_id == "G2C" else "approve"
     return OperatorVerdict(
         verdict_id=_stable_uuid(f"verdict:{gate_id}"),
-        trial_id=M3_TRIAL_ID,
+        trial_id=trial_id,
         gate_id=gate_id,
         card_id=card_id,
-        operator_id="operator_cli",
+        operator_id=operator_id,
         timestamp=issued_at + timedelta(seconds=45),
         verb=verb,
         decision_card_digest=digest,
@@ -210,13 +213,16 @@ def run_local_m3_trial(
     *,
     preset: Literal["production", "explore"] = "production",
     corpus_path: str = "tests/fixtures/trial_corpus/README.md",
+    trial_id: UUID | None = None,
+    operator_id: str = "operator_cli",
 ) -> TrialEnvelope:
     clear_resume_registry()
     clear_override_registry()
 
+    effective_trial_id = trial_id or M3_TRIAL_ID
     manifest = _manifest()
     nodes = _node_map()
-    register_run_state(trial_id=M3_TRIAL_ID, state=_stable_state())
+    register_run_state(trial_id=effective_trial_id, state=_stable_state(effective_trial_id))
     supervisor = Supervisor(preset=preset, manifest=manifest)
     state = SimpleNamespace(current_node=None, events=[])
 
@@ -240,8 +246,9 @@ def run_local_m3_trial(
 
         gate_code = getattr(node, "gate_code", None)
         if gate_code in SUPPORTED_GATES:
-            meta = decision_card_meta_for_trial(M3_TRIAL_ID)
+            meta = decision_card_meta_for_trial(effective_trial_id)
             card = _card_for_gate(
+                trial_id=effective_trial_id,
                 gate_id=gate_code,
                 node_id=node.id,
                 step_index=len(gate_events) + 1,
@@ -255,6 +262,8 @@ def run_local_m3_trial(
                 server_nonce=f"m3-{gate_code.lower()}",
             )
             verdict = _verdict_for_gate(
+                trial_id=effective_trial_id,
+                operator_id=operator_id,
                 gate_id=gate_code,
                 card_id=card.card_id,
                 digest=stored.digest,
@@ -270,14 +279,14 @@ def run_local_m3_trial(
 
             if verdict.edit_payload is not None:
                 edit_payloads.append(verdict.edit_payload)
-                warning = submit_override(M3_TRIAL_ID, "10", "gpt-5.5")
+                warning = submit_override(effective_trial_id, "10", "gpt-5-mini")
                 override_warning = warning.model_dump(mode="json")
                 event = apply_override(
                     {
-                        "trial_id": str(M3_TRIAL_ID),
+                        "trial_id": str(effective_trial_id),
                         "node_id": "10",
-                        "new_model": "gpt-5.5",
-                        "operator_id": "operator_cli",
+                        "new_model": "gpt-5-mini",
+                        "operator_id": operator_id,
                     },
                     warning.confirm_token,
                     now=warning.issued_at + timedelta(seconds=50),
@@ -299,14 +308,14 @@ def run_local_m3_trial(
         if node.id == "15":
             break
 
-    final_state = get_run_state(M3_TRIAL_ID).model_copy(
+    final_state = get_run_state(effective_trial_id).model_copy(
         update={"status": "complete", "completed_at": BASE_TIME + timedelta(hours=1)}
     )
-    register_run_state(trial_id=M3_TRIAL_ID, state=final_state)
-    ledger_events.extend(get_override_ledger(M3_TRIAL_ID))
+    register_run_state(trial_id=effective_trial_id, state=final_state)
+    ledger_events.extend(get_override_ledger(effective_trial_id))
 
     return TrialEnvelope(
-        trial_id=M3_TRIAL_ID,
+        trial_id=effective_trial_id,
         preset=preset,
         corpus_path=corpus_path,
         captured_at=BASE_TIME + timedelta(hours=1),

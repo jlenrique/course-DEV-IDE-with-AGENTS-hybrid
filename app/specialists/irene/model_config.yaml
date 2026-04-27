@@ -9,7 +9,7 @@
 #   Epic 2a.2 text says tier "long-context balanced" → `gpt-4.1`. NEITHER value
 #   exists in the shipped registry. The framework wins per DR-1 spec-yields-to-code:
 #   Irene's narration-Pass-2 workload maps to `tier_request: reasoning`, which
-#   resolves to `gpt-5.4` via app/models/selection_policy.yaml.
+#   resolves to `gpt-5` via app/models/selection_policy.yaml.
 #
 # Temperature variance (NFR-X5):
 #   `temperature_default: 0.3` — narration creativity tolerance. Pass 2 produces
@@ -22,7 +22,7 @@
 #   key during the FR54 baseline. Override happens at RunState construction, not
 #   here, so the shipped config reflects production-faithful settings.
 specialist_id: "irene"
-default_model: "gpt-5.4"
+default_model: "gpt-5"
 per_node_overrides:
-  act: "gpt-5.4"
+  act: "gpt-5"
 temperature_default: 0.3
