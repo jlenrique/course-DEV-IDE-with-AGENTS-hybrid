@@ -54,6 +54,13 @@ def _as_audio_summary_produce(
     client: WondercraftClient,
     payload: dict[str, Any],
 ) -> dict[str, Any]:
+    """AS — Audio Summary capability. Wraps a single-voice script as a one-segment
+    Wondercraft scripted-podcast. ``voice_id`` is required per Wondercraft API
+    contract (verified live 2026-04-27); the previous tolerance of missing
+    voice_id silently produced a malformed payload that the API rejected with
+    403 (filed as anti-pattern A16 instance + remediated in
+    `5a-2-wondercraft-client-payload-shape-defect`).
+    """
     title = str(payload.get("title") or "Audio Summary")
     script = payload.get("script")
     if not isinstance(script, str) or not script.strip():
@@ -62,7 +69,18 @@ def _as_audio_summary_produce(
             tag="wanda_audio.parsed.missing-key",
         )
     voice_id = payload.get("voice_id")
-    return client.create_scripted_podcast(title=title, script=script, voice_id=voice_id)
+    if not isinstance(voice_id, str) or not voice_id.strip():
+        raise WondercraftDispatchError(
+            "AS requires non-empty voice_id (Wondercraft scripted-podcast endpoint requires per-segment voice_id)",
+            tag="wanda_audio.parsed.missing-key",
+        )
+    # Use the new list-of-segments form (preferred); the legacy string form
+    # is supported for backward-compat in WondercraftClient itself but the
+    # canonical AS shape is a single-segment list.
+    return client.create_scripted_podcast(
+        title=title,
+        script_segments=[{"text": script, "voice_id": voice_id}],
+    )
 
 
 def _mb_music_bed_apply(
