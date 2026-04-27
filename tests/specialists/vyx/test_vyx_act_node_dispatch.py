@@ -21,8 +21,8 @@ def _build_state(cache_prefix: str) -> RunState:
         model_resolution_trail=[
             ModelResolutionEntry(
                 level="per_specialist",
-                requested="gpt-5.4",
-                resolved="gpt-5.4",
+                requested="gpt-5",
+                resolved="gpt-5",
                 reason="test",
                 timestamp="2026-01-01T00:00:00Z",
                 cache_prefix_hash="c" * 64,
@@ -75,8 +75,8 @@ def test_vyx_act_missing_cache_state_appends_trail_tag() -> None:
         model_resolution_trail=[
             ModelResolutionEntry(
                 level="per_specialist",
-                requested="gpt-5.4",
-                resolved="gpt-5.4",
+                requested="gpt-5",
+                resolved="gpt-5",
                 reason="test",
                 timestamp="2026-01-01T00:00:00Z",
                 cache_prefix_hash="c" * 64,
@@ -95,5 +95,5 @@ def test_vyx_act_returns_deterministic_payload() -> None:
     update = _act(state)
     output = json.loads(update["cache_state"]["cache_prefix"])
     assert "vyx_storyboard" in output
-    assert output["model_id"] == "gpt-5.4"
+    assert output["model_id"] == "gpt-5"
     assert update["model_resolution_trail"][-1].reason == "storyboard.parsed.ok"

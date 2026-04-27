@@ -10,14 +10,15 @@ def test_decision_card_cache_state_healthy_without_override() -> None:
     assert meta.cache_state == "healthy"
 
 
-def test_decision_card_cache_state_mixed_after_override() -> None:
+def test_decision_card_cache_state_mixed_after_override(monkeypatch) -> None:
+    monkeypatch.delenv("DATABASE_URL", raising=False)
     register_sample_run_state()
-    warning = submit_override(TRIAL_ID, "04", "gpt-5.5")
+    warning = submit_override(TRIAL_ID, "04", "gpt-5-mini")
     apply_override(
         {
             "trial_id": str(TRIAL_ID),
             "node_id": "04",
-            "new_model": "gpt-5.5",
+            "new_model": "gpt-5-mini",
             "operator_id": "operator_cli",
         },
         warning.confirm_token,

@@ -4,13 +4,13 @@
       "rule_id": "tier-fast",
       "when": {"tier_request": "fast"},
       "prefer_tier": "fast",
-      "fallback_chain": ["gpt-5-haiku"]
+      "fallback_chain": ["gpt-5-nano"]
     },
     {
       "rule_id": "default-fallback",
       "when": {},
       "prefer_tier": "fast",
-      "fallback_chain": ["gpt-5-haiku", "gpt-5.4"]
+      "fallback_chain": ["gpt-5-nano", "gpt-5"]
     }
   ]
 }

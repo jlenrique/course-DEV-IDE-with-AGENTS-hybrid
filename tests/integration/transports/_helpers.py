@@ -66,7 +66,7 @@ def submit_override_mcp(*, operator_id: str) -> dict[str, object]:
     register_override_state()
     session = McpSession(principal=McpPrincipal(id=operator_id))
     return override_submit_tool(
-        {"trial_id": str(TRIAL_ID), "node_id": "04", "new_model": "gpt-5.5"},
+        {"trial_id": str(TRIAL_ID), "node_id": "04", "new_model": "gpt-5-mini"},
         session=session,
     )
 
@@ -76,7 +76,7 @@ def submit_override_http(*, operator_id: str) -> dict[str, object]:
     client = TestClient(create_gate_app())
     response = client.post(
         "/gate/override/submit",
-        json={"trial_id": str(TRIAL_ID), "node_id": "04", "new_model": "gpt-5.5"},
+        json={"trial_id": str(TRIAL_ID), "node_id": "04", "new_model": "gpt-5-mini"},
         headers={"X-Operator-Id": operator_id},
     )
     return {"status_code": response.status_code, "body": response.json()}
@@ -88,7 +88,7 @@ def submit_override_cli(*, operator_id: str) -> dict[str, object]:
         {
             "trial_id": str(TRIAL_ID),
             "node_id": "04",
-            "new_model": "gpt-5.5",
+            "new_model": "gpt-5-mini",
             "operator_id": operator_id,
         }
     )
@@ -99,7 +99,7 @@ def apply_override_cli(*, operator_id: str, confirm_token: str) -> dict[str, obj
         {
             "trial_id": str(TRIAL_ID),
             "node_id": "04",
-            "new_model": "gpt-5.5",
+            "new_model": "gpt-5-mini",
             "confirm_token": confirm_token,
             "operator_id": operator_id,
         }
@@ -112,7 +112,7 @@ def apply_override_mcp(*, operator_id: str, confirm_token: str) -> dict[str, obj
         {
             "trial_id": str(TRIAL_ID),
             "node_id": "04",
-            "new_model": "gpt-5.5",
+            "new_model": "gpt-5-mini",
             "confirm_token": confirm_token,
         },
         session=session,
@@ -126,7 +126,7 @@ def apply_override_http(*, operator_id: str, confirm_token: str) -> dict[str, ob
         json={
             "trial_id": str(TRIAL_ID),
             "node_id": "04",
-            "new_model": "gpt-5.5",
+            "new_model": "gpt-5-mini",
             "confirm_token": confirm_token,
         },
         headers={"X-Operator-Id": operator_id},

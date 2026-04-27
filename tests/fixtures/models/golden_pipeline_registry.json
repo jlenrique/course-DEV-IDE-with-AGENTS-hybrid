@@ -1,27 +1,27 @@
 {
   "id": "00000000-0000-4000-8000-000000000001",
-  "default_model_id": "gpt-5.4",
+  "default_model_id": "gpt-5",
   "auto_select_enabled": true,
   "entries": [
     {
       "id": "11111111-1111-4111-8111-111111111111",
-      "model_id": "gpt-5.4",
-      "display_name": "GPT-5.4 (reasoning)",
+      "model_id": "gpt-5",
+      "display_name": "GPT-5 (reasoning)",
       "provider": "openai",
       "context_window": 400000,
-      "cost_per_million_input_tokens": "5.00",
-      "cost_per_million_output_tokens": "15.00",
+      "cost_per_million_input_tokens": "1.25",
+      "cost_per_million_output_tokens": "10.00",
       "tier": "reasoning",
       "available": true
     },
     {
       "id": "22222222-2222-4222-8222-222222222222",
-      "model_id": "gpt-5-haiku",
-      "display_name": "GPT-5 Haiku (fast)",
+      "model_id": "gpt-5-nano",
+      "display_name": "GPT-5 nano (fast)",
       "provider": "openai",
-      "context_window": 200000,
-      "cost_per_million_input_tokens": "0.50",
-      "cost_per_million_output_tokens": "1.50",
+      "context_window": 400000,
+      "cost_per_million_input_tokens": "0.05",
+      "cost_per_million_output_tokens": "0.40",
       "tier": "fast",
       "available": true
     }

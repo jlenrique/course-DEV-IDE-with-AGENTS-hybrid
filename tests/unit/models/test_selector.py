@@ -53,28 +53,28 @@ def isolated_specialists(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> Ite
 def _write_canonical_registry(target: Path) -> None:
     payload = {
         "id": "00000000-0000-4000-8000-000000000001",
-        "default_model_id": "gpt-5.4",
+        "default_model_id": "gpt-5",
         "auto_select_enabled": True,
         "entries": [
             {
                 "id": "11111111-1111-4111-8111-111111111111",
-                "model_id": "gpt-5.4",
-                "display_name": "GPT-5.4",
+                "model_id": "gpt-5",
+                "display_name": "GPT-5",
                 "provider": "openai",
                 "context_window": 400000,
-                "cost_per_million_input_tokens": "5.00",
-                "cost_per_million_output_tokens": "15.00",
+                "cost_per_million_input_tokens": "1.25",
+                "cost_per_million_output_tokens": "10.00",
                 "tier": "reasoning",
                 "available": True,
             },
             {
                 "id": "22222222-2222-4222-8222-222222222222",
-                "model_id": "gpt-5-haiku",
-                "display_name": "GPT-5 Haiku",
+                "model_id": "gpt-5-nano",
+                "display_name": "GPT-5 nano",
                 "provider": "openai",
-                "context_window": 200000,
-                "cost_per_million_input_tokens": "0.50",
-                "cost_per_million_output_tokens": "1.50",
+                "context_window": 400000,
+                "cost_per_million_input_tokens": "0.05",
+                "cost_per_million_output_tokens": "0.40",
                 "tier": "fast",
                 "available": True,
             },
@@ -91,13 +91,13 @@ def _write_minimal_policy(target: Path) -> None:
                 "rule_id": "tier-fast",
                 "when": {"tier_request": "fast"},
                 "prefer_tier": "fast",
-                "fallback_chain": ["gpt-5-haiku"],
+                "fallback_chain": ["gpt-5-nano"],
             },
             {
                 "rule_id": "default-fallback",
                 "when": {},
                 "prefer_tier": "fast",
-                "fallback_chain": ["gpt-5-haiku", "gpt-5.4"],
+                "fallback_chain": ["gpt-5-nano", "gpt-5"],
             },
         ]
     }
@@ -131,10 +131,10 @@ def test_level_1_per_call_override_resolves(
     _write_canonical_registry(isolated_registry / "registry.yaml")
     _write_minimal_policy(isolated_policy / "selection_policy.yaml")
 
-    result = resolve("any-specialist", per_call_override="gpt-5-haiku")
-    assert result.model_id == "gpt-5-haiku"
+    result = resolve("any-specialist", per_call_override="gpt-5-nano")
+    assert result.model_id == "gpt-5-nano"
     assert result.entry.level == "per_call"
-    assert result.entry.requested == "gpt-5-haiku"
+    assert result.entry.requested == "gpt-5-nano"
     assert result.entry.cache_prefix_hash is not None
     assert len(result.entry.cache_prefix_hash) == 64
 
@@ -164,10 +164,10 @@ def test_level_2_per_specialist_resolves(
 ) -> None:
     _write_canonical_registry(isolated_registry / "registry.yaml")
     _write_minimal_policy(isolated_policy / "selection_policy.yaml")
-    _write_specialist_config("irene", isolated_specialists, default_model="gpt-5-haiku")
+    _write_specialist_config("irene", isolated_specialists, default_model="gpt-5-nano")
 
     result = resolve("irene")
-    assert result.model_id == "gpt-5-haiku"
+    assert result.model_id == "gpt-5-nano"
     assert result.entry.level == "per_specialist"
     assert result.entry.cache_prefix_hash is not None
 
@@ -184,7 +184,7 @@ def test_level_2_falls_through_when_specialist_default_unavailable(
     result = resolve("irene")
     # Specialist asked for an unknown model; cascade falls through to registry_default
     assert result.entry.level == "registry_default"
-    assert result.model_id == "gpt-5.4"
+    assert result.model_id == "gpt-5"
 
 
 # ---------------------------------------------------------------------------
@@ -202,7 +202,7 @@ def test_level_3_registry_default_resolves(
 
     result = resolve("any-specialist")
     assert result.entry.level == "registry_default"
-    assert result.model_id == "gpt-5.4"
+    assert result.model_id == "gpt-5"
     assert result.entry.requested is None
 
 
@@ -219,28 +219,28 @@ def test_level_4_auto_select_fallback_when_default_unavailable(
     """Mark the registry default unavailable; cascade should fall to auto-select."""
     payload = {
         "id": "00000000-0000-4000-8000-000000000099",
-        "default_model_id": "gpt-5-haiku",
+        "default_model_id": "gpt-5-nano",
         "auto_select_enabled": True,
         "entries": [
             {
                 "id": "11111111-1111-4111-8111-111111111111",
-                "model_id": "gpt-5.4",
-                "display_name": "GPT-5.4 (unavailable)",
+                "model_id": "gpt-5",
+                "display_name": "GPT-5 (unavailable)",
                 "provider": "openai",
                 "context_window": 400000,
-                "cost_per_million_input_tokens": "5.00",
-                "cost_per_million_output_tokens": "15.00",
+                "cost_per_million_input_tokens": "1.25",
+                "cost_per_million_output_tokens": "10.00",
                 "tier": "reasoning",
                 "available": False,
             },
             {
                 "id": "22222222-2222-4222-8222-222222222222",
-                "model_id": "gpt-5-haiku",
-                "display_name": "GPT-5 Haiku",
+                "model_id": "gpt-5-nano",
+                "display_name": "GPT-5 nano",
                 "provider": "openai",
-                "context_window": 200000,
-                "cost_per_million_input_tokens": "0.50",
-                "cost_per_million_output_tokens": "1.50",
+                "context_window": 400000,
+                "cost_per_million_input_tokens": "0.05",
+                "cost_per_million_output_tokens": "0.40",
                 "tier": "fast",
                 "available": True,
             },
@@ -249,10 +249,10 @@ def test_level_4_auto_select_fallback_when_default_unavailable(
     (isolated_registry / "registry.yaml").write_text(yaml.safe_dump(payload), encoding="utf-8")
     _write_minimal_policy(isolated_policy / "selection_policy.yaml")
 
-    # default_model_id IS available (gpt-5-haiku), so cascade resolves at Level 3, not 4.
+    # default_model_id IS available (gpt-5-nano), so cascade resolves at Level 3, not 4.
     result = resolve("any-specialist")
     assert result.entry.level == "registry_default"
-    assert result.model_id == "gpt-5-haiku"
+    assert result.model_id == "gpt-5-nano"
 
 
 def test_level_4_auto_select_fires_when_registry_default_unavailable(
@@ -263,17 +263,17 @@ def test_level_4_auto_select_fires_when_registry_default_unavailable(
     """Construct a registry whose default IS unavailable; only Level 4 can resolve."""
     payload = {
         "id": "00000000-0000-4000-8000-00000000aaaa",
-        "default_model_id": "gpt-5-haiku",
+        "default_model_id": "gpt-5-nano",
         "auto_select_enabled": True,
         "entries": [
             {
                 "id": "11111111-1111-4111-8111-111111111111",
-                "model_id": "gpt-5-haiku",
-                "display_name": "GPT-5 Haiku",
+                "model_id": "gpt-5-nano",
+                "display_name": "GPT-5 nano",
                 "provider": "openai",
-                "context_window": 200000,
-                "cost_per_million_input_tokens": "0.50",
-                "cost_per_million_output_tokens": "1.50",
+                "context_window": 400000,
+                "cost_per_million_input_tokens": "0.05",
+                "cost_per_million_output_tokens": "0.40",
                 "tier": "fast",
                 "available": True,
             },
@@ -310,7 +310,7 @@ def test_level_4_auto_select_fires_when_registry_default_unavailable(
                     "rule_id": "tier-fast-only",
                     "when": {"tier_request": "fast"},
                     "prefer_tier": "fast",
-                    "fallback_chain": ["gpt-5-haiku"],
+                    "fallback_chain": ["gpt-5-nano"],
                 },
             ]
         }
@@ -321,7 +321,7 @@ def test_level_4_auto_select_fires_when_registry_default_unavailable(
         registry=registry,
         policy=policy,
     )
-    assert candidate == "gpt-5-haiku"
+    assert candidate == "gpt-5-nano"
 
 
 def test_level_4_returns_none_when_no_rule_matches(
@@ -334,17 +334,17 @@ def test_level_4_returns_none_when_no_rule_matches(
     registry = PipelineRegistry.model_validate(
         {
             "id": "00000000-0000-4000-8000-00000000bbbb",
-            "default_model_id": "gpt-5.4",
+            "default_model_id": "gpt-5",
             "auto_select_enabled": True,
             "entries": [
                 {
                     "id": "11111111-1111-4111-8111-111111111111",
-                    "model_id": "gpt-5.4",
-                    "display_name": "GPT-5.4",
+                    "model_id": "gpt-5",
+                    "display_name": "GPT-5",
                     "provider": "openai",
                     "context_window": 400000,
-                    "cost_per_million_input_tokens": "5.00",
-                    "cost_per_million_output_tokens": "15.00",
+                    "cost_per_million_input_tokens": "1.25",
+                    "cost_per_million_output_tokens": "10.00",
                     "tier": "reasoning",
                     "available": True,
                 },
@@ -371,17 +371,17 @@ def test_cascade_exhausted_raises_named_error(
     """Empty registry + empty policy + auto_select disabled = ModelResolutionError."""
     payload = {
         "id": "00000000-0000-4000-8000-00000000cccc",
-        "default_model_id": "gpt-5.4",
+        "default_model_id": "gpt-5",
         "auto_select_enabled": False,
         "entries": [
             {
                 "id": "11111111-1111-4111-8111-111111111111",
-                "model_id": "gpt-5.4",
-                "display_name": "GPT-5.4",
+                "model_id": "gpt-5",
+                "display_name": "GPT-5",
                 "provider": "openai",
                 "context_window": 400000,
-                "cost_per_million_input_tokens": "5.00",
-                "cost_per_million_output_tokens": "15.00",
+                "cost_per_million_input_tokens": "1.25",
+                "cost_per_million_output_tokens": "10.00",
                 "tier": "reasoning",
                 "available": True,
             },
@@ -439,10 +439,10 @@ def test_cache_prefix_hash_is_deterministic_within_test() -> None:
     from app.models.selector import _compute_cache_prefix_hash
 
     h1 = _compute_cache_prefix_hash(
-        specialist_id="x", model_id="gpt-5.4", temperature=0.0
+        specialist_id="x", model_id="gpt-5", temperature=0.0
     )
     h2 = _compute_cache_prefix_hash(
-        specialist_id="x", model_id="gpt-5.4", temperature=0.0
+        specialist_id="x", model_id="gpt-5", temperature=0.0
     )
     assert h1 == h2
     assert len(h1) == 64

@@ -20,10 +20,10 @@ def test_cache_prefix_hash_repeated_call_byte_identical() -> None:
     from app.models.selector import _compute_cache_prefix_hash
 
     h1 = _compute_cache_prefix_hash(
-        specialist_id="irene", model_id="gpt-5.4", temperature=0.5
+        specialist_id="irene", model_id="gpt-5", temperature=0.5
     )
     h2 = _compute_cache_prefix_hash(
-        specialist_id="irene", model_id="gpt-5.4", temperature=0.5
+        specialist_id="irene", model_id="gpt-5", temperature=0.5
     )
     assert h1 == h2, "NFR-I6 violation: same inputs produced different hashes"
 
@@ -34,7 +34,7 @@ def test_cache_prefix_hash_invariant_under_subprocess_invocations() -> None:
     from app.models.selector import _compute_cache_prefix_hash
 
     in_process = _compute_cache_prefix_hash(
-        specialist_id="irene", model_id="gpt-5.4", temperature=0.5
+        specialist_id="irene", model_id="gpt-5", temperature=0.5
     )
     proc = subprocess.run(
         [
@@ -43,7 +43,7 @@ def test_cache_prefix_hash_invariant_under_subprocess_invocations() -> None:
             (
                 "from app.models.selector import _compute_cache_prefix_hash;"
                 "print(_compute_cache_prefix_hash("
-                "specialist_id='irene', model_id='gpt-5.4', temperature=0.5))"
+                "specialist_id='irene', model_id='gpt-5', temperature=0.5))"
             ),
         ],
         capture_output=True,
@@ -63,10 +63,10 @@ def test_cache_prefix_hash_independent_of_keyword_arg_order() -> None:
     from app.models.selector import _compute_cache_prefix_hash
 
     h1 = _compute_cache_prefix_hash(
-        specialist_id="irene", model_id="gpt-5.4", temperature=0.5
+        specialist_id="irene", model_id="gpt-5", temperature=0.5
     )
     h2 = _compute_cache_prefix_hash(
-        temperature=0.5, model_id="gpt-5.4", specialist_id="irene"
+        temperature=0.5, model_id="gpt-5", specialist_id="irene"
     )
     assert h1 == h2
 
@@ -76,18 +76,18 @@ def test_cache_prefix_hash_changes_when_inputs_change() -> None:
     from app.models.selector import _compute_cache_prefix_hash
 
     base = _compute_cache_prefix_hash(
-        specialist_id="irene", model_id="gpt-5.4", temperature=0.0
+        specialist_id="irene", model_id="gpt-5", temperature=0.0
     )
     diff_specialist = _compute_cache_prefix_hash(
-        specialist_id="gary", model_id="gpt-5.4", temperature=0.0
+        specialist_id="gary", model_id="gpt-5", temperature=0.0
     )
     diff_model = _compute_cache_prefix_hash(
-        specialist_id="irene", model_id="gpt-5-haiku", temperature=0.0
+        specialist_id="irene", model_id="gpt-5-nano", temperature=0.0
     )
     diff_temp = _compute_cache_prefix_hash(
-        specialist_id="irene", model_id="gpt-5.4", temperature=0.5
+        specialist_id="irene", model_id="gpt-5", temperature=0.5
     )
     diff_prompt = _compute_cache_prefix_hash(
-        specialist_id="irene", model_id="gpt-5.4", temperature=0.0, system_prompt_hash="abc"
+        specialist_id="irene", model_id="gpt-5", temperature=0.0, system_prompt_hash="abc"
     )
     assert len({base, diff_specialist, diff_model, diff_temp, diff_prompt}) == 5

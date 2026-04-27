@@ -18,9 +18,9 @@ def test_irene_plan_appends_resolution_entry_to_trail() -> None:
     new_trail = update["model_resolution_trail"]
     assert len(new_trail) == 1
     entry = new_trail[0]
-    assert entry.resolved == "gpt-5.4"
+    assert entry.resolved == "gpt-5"
     assert entry.level == "per_specialist"
     # cache_prefix_hash is a deterministic SHA-256 over the canonical-JSON tuple.
     assert entry.cache_prefix_hash is not None
     assert len(entry.cache_prefix_hash) == 64
-    assert entry.requested == "gpt-5.4"
+    assert entry.requested == "gpt-5"

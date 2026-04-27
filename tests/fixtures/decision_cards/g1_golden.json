@@ -30,12 +30,12 @@
         "confirm_token": "confirm-001",
         "event_id": "33333333-3333-4333-8333-333333333333",
         "new_value": {
-          "model": "gpt-5.5"
+          "model": "gpt-5-mini"
         },
         "node_id": "04",
         "operator_id": "juanl",
         "previous_value": {
-          "model": "gpt-5.4"
+          "model": "gpt-5"
         }
       }
     ],

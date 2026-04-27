@@ -45,8 +45,8 @@ def test_storyboard_b_visual_file_is_preserved_and_motion_added(
             self.chat.invoke.return_value = mock_response
             self.entry = ModelResolutionEntry(
                 level="per_specialist",
-                requested="gpt-5-haiku",
-                resolved="gpt-5-haiku",
+                requested="gpt-5-nano",
+                resolved="gpt-5-nano",
                 reason="test",
                 timestamp="2026-01-01T00:00:00Z",
                 cache_prefix_hash="a" * 64,
@@ -62,8 +62,8 @@ def test_storyboard_b_visual_file_is_preserved_and_motion_added(
         model_resolution_trail=[
             ModelResolutionEntry(
                 level="per_specialist",
-                requested="gpt-5-haiku",
-                resolved="gpt-5-haiku",
+                requested="gpt-5-nano",
+                resolved="gpt-5-nano",
                 reason="test",
                 timestamp="2026-01-01T00:00:00Z",
                 cache_prefix_hash="b" * 64,

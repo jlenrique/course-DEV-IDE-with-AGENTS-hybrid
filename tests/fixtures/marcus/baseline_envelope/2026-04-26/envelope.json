@@ -105,10 +105,10 @@
             "applied_at": "2026-04-26T07:24:40.027959Z",
             "node_id": "10",
             "previous_value": {
-              "model": "gpt-5.4"
+              "model": "gpt-5"
             },
             "new_value": {
-              "model": "gpt-5.5"
+              "model": "gpt-5-mini"
             },
             "operator_id": "operator_cli",
             "confirm_token": "370787202f1bf13b045ef95e6822aed4795d81075eb9b6dc0e1f02881405cde1"
@@ -143,10 +143,10 @@
             "applied_at": "2026-04-26T07:24:40.027959Z",
             "node_id": "10",
             "previous_value": {
-              "model": "gpt-5.4"
+              "model": "gpt-5"
             },
             "new_value": {
-              "model": "gpt-5.5"
+              "model": "gpt-5-mini"
             },
             "operator_id": "operator_cli",
             "confirm_token": "370787202f1bf13b045ef95e6822aed4795d81075eb9b6dc0e1f02881405cde1"
@@ -440,8 +440,8 @@
       "trial_id": "33333333-3333-4333-8333-333333333333",
       "node_id": "10",
       "operator_id": "operator_cli",
-      "new_model": "gpt-5.5",
-      "previous_model": "gpt-5.4",
+      "new_model": "gpt-5-mini",
+      "previous_model": "gpt-5",
       "confirm_token": "370787202f1bf13b045ef95e6822aed4795d81075eb9b6dc0e1f02881405cde1"
     }
   ],
@@ -449,8 +449,8 @@
     "warning_id": "93005240-e89a-4db6-a9f8-408d159e0085",
     "trial_id": "33333333-3333-4333-8333-333333333333",
     "node_id": "10",
-    "requested_model": "gpt-5.5",
-    "current_model": "gpt-5.4",
+    "requested_model": "gpt-5-mini",
+    "current_model": "gpt-5",
     "estimated_cost_delta_usd": 4.0,
     "affected_nodes": [
       "10",
@@ -475,10 +475,10 @@
     "applied_at": "2026-04-26T07:24:40.027959Z",
     "node_id": "10",
     "previous_value": {
-      "model": "gpt-5.4"
+      "model": "gpt-5"
     },
     "new_value": {
-      "model": "gpt-5.5"
+      "model": "gpt-5-mini"
     },
     "operator_id": "operator_cli",
     "confirm_token": "370787202f1bf13b045ef95e6822aed4795d81075eb9b6dc0e1f02881405cde1"
@@ -492,7 +492,7 @@
     "temperature": 0.0,
     "model_resolution_trail": [],
     "model_overrides": {
-      "10": "gpt-5.5"
+      "10": "gpt-5-mini"
     },
     "sanctum_fingerprint": {
       "snapshot_id": "55555555-5555-4555-8555-555555555555",

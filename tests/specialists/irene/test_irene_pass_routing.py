@@ -30,7 +30,7 @@ class _FakeHandle:
         return ModelResolutionEntry(
             level="registry_default",
             requested=None,
-            resolved="gpt-5.4",
+            resolved="gpt-5",
             reason="test",
             timestamp=datetime.now(UTC),
             cache_prefix_hash="a" * 64,
@@ -53,7 +53,7 @@ def _state(payload: dict[str, Any]) -> RunState:
             ModelResolutionEntry(
                 level="registry_default",
                 requested=None,
-                resolved="gpt-5.4",
+                resolved="gpt-5",
                 reason="test",
                 timestamp=datetime.now(UTC),
                 cache_prefix_hash="a" * 64,

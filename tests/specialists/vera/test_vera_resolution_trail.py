@@ -11,7 +11,7 @@ def test_vera_plan_appends_resolution_entry_to_trail() -> None:
     trail = update["model_resolution_trail"]
     assert len(trail) == 1
     entry = trail[0]
-    assert entry.resolved == "gpt-5.4"
+    assert entry.resolved == "gpt-5"
     assert entry.level == "per_specialist"
     assert entry.cache_prefix_hash is not None
 

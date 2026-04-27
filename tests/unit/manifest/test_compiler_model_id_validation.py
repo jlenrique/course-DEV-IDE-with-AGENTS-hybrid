@@ -48,7 +48,7 @@ def _write_specialist_model_config(
 
 
 def test_known_model_id_validator_accepts_irene_default() -> None:
-    """Positive path: Irene's shipped model_config.yaml resolves to gpt-5.4 (registry-known).
+    """Positive path: Irene's shipped model_config.yaml resolves to gpt-5 (registry-known).
 
     Validator does NOT raise on the live Irene model_config.yaml that this story
     just authored — confirming the validator is functional + the file is valid.

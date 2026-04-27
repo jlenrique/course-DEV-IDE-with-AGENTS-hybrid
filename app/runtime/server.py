@@ -51,7 +51,7 @@ def _postgres_status() -> str:
     if not database_url:
         return "skipped"
     try:
-        with psycopg.connect(database_url, connect_timeout=2) as conn:
+        with psycopg.connect(database_url, connect_timeout=1) as conn:
             _ = conn.info.server_version
         return "connected"
     except psycopg.Error:

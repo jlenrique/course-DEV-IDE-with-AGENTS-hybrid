@@ -2,8 +2,10 @@
 
 from __future__ import annotations
 
+import argparse
 import hashlib
 import re
+import sys
 from pathlib import Path
 
 import yaml
@@ -152,6 +154,44 @@ def ensure_pricing_covers_cascade(cascade: CascadeConfig, pricing: PricingTable)
         raise ValueError(f"pricing table missing cascade model ids: {rendered}")
 
 
+def _build_parser() -> argparse.ArgumentParser:
+    parser = argparse.ArgumentParser(
+        description="Validate the operator-editable runtime model cascade and pricing table."
+    )
+    subparsers = parser.add_subparsers(dest="command")
+    subparsers.add_parser(
+        "validate",
+        help=(
+            "Load the cascade and pricing configs and assert pricing covers "
+            "every configured model."
+        ),
+    )
+    return parser
+
+
+def main(argv: list[str] | None = None) -> int:
+    parser = _build_parser()
+    args = parser.parse_args(argv)
+
+    if args.command != "validate":
+        parser.print_help()
+        return 2
+
+    try:
+        cascade = load_cascade()
+        pricing = load_pricing()
+        ensure_pricing_covers_cascade(cascade, pricing)
+    except Exception as exc:
+        print(f"FAIL: {exc}", file=sys.stderr)
+        return 1
+
+    print("PASS: cascade + pricing validated")
+    print(f"cascade_digest={cascade.sha256_digest}")
+    print(f"pricing_digest={pricing.sha256_digest}")
+    print(f"specialist_count={len(cascade.specialists)}")
+    return 0
+
+
 __all__ = [
     "CASCADE_PATH",
     "PRICING_PATH",
@@ -162,5 +202,10 @@ __all__ = [
     "ensure_pricing_covers_cascade",
     "load_cascade",
     "load_pricing",
+    "main",
     "normalize_agent_name",
 ]
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

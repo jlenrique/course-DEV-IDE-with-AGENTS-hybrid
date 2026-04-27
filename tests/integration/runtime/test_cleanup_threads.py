@@ -91,7 +91,12 @@ def test_cleanup_dry_run_then_apply() -> None:
         pytest.skip("DATABASE_URL not set; skipping cleanup integration.")
 
     try:
-        _ensure_checkpoints_table(psycopg.connect(database_url, autocommit=True))
+        with psycopg.connect(
+            database_url,
+            autocommit=True,
+            connect_timeout=2,
+        ) as bootstrap_conn:
+            _ensure_checkpoints_table(bootstrap_conn)
     except psycopg.OperationalError as exc:
         if _is_unreachable_error(exc):
             pytest.skip(f"Postgres unreachable: {exc}")
@@ -108,7 +113,7 @@ def test_cleanup_dry_run_then_apply() -> None:
     ]
 
     try:
-        with psycopg.connect(database_url) as conn:
+        with psycopg.connect(database_url, connect_timeout=2) as conn:
             for thread_id, status, ts in fixtures:
                 _insert_thread_row(conn, thread_id, status, ts)
 

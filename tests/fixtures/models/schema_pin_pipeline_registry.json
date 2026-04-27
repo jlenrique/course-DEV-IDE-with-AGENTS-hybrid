@@ -57,7 +57,7 @@
           "type": "string"
         },
         "model_id": {
-          "description": "Provider-side model identifier (e.g. 'gpt-5.4', 'gpt-5-haiku'); the string the runtime passes to the provider's chat-completions API.",
+          "description": "Provider-side model identifier (e.g. 'gpt-5', 'gpt-5-nano'); the string the runtime passes to the provider's chat-completions API.",
           "minLength": 1,
           "title": "Model Id",
           "type": "string"

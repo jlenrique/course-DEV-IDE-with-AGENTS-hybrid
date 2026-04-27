@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+from datetime import date, datetime
 from pathlib import Path
 from typing import Any
 
@@ -28,9 +29,23 @@ DEFAULT_DISPATCH_REGISTRY_SNAPSHOT_PATH = (
 )
 
 
+def _normalize_json_value(value: Any) -> Any:
+    if isinstance(value, dict):
+        return {str(key): _normalize_json_value(inner) for key, inner in value.items()}
+    if isinstance(value, list | tuple):
+        return [_normalize_json_value(inner) for inner in value]
+    if isinstance(value, datetime):
+        return value.isoformat()
+    if isinstance(value, date):
+        return value.isoformat()
+    if isinstance(value, Path):
+        return value.as_posix()
+    return value
+
+
 def _canonical_json_bytes(payload: dict[str, Any]) -> bytes:
     return json.dumps(
-        payload,
+        _normalize_json_value(payload),
         sort_keys=True,
         separators=(",", ":"),
         ensure_ascii=True,

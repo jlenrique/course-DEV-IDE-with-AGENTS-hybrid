@@ -173,7 +173,7 @@ def main(argv: list[str] | None = None) -> int:
         return 1
 
     try:
-        with psycopg.connect(database_url) as conn:
+        with psycopg.connect(database_url, connect_timeout=2) as conn:
             result = cleanup(conn, policy, dry_run=args.dry_run)
     except psycopg.OperationalError as exc:
         print(f"ERROR: Postgres connection failed: {exc}", file=sys.stderr)

@@ -23,14 +23,14 @@ def _history_entry(*, measured_at: datetime, marcus_cost: float) -> TrialEconomi
         per_agent_breakdown={
             "marcus": AgentCostEntry(
                 agent_name="marcus",
-                model_assigned="gpt-5.4",
+                model_assigned="gpt-5",
                 call_count=1,
                 input_tokens=2000,
                 output_tokens=200,
                 cost_usd=marcus_cost,
             )
         },
-        per_model_breakdown={"gpt-5.4": marcus_cost},
+        per_model_breakdown={"gpt-5": marcus_cost},
         cascade_config_digest="a" * 64,
         pricing_table_digest="b" * 64,
         langsmith_trace_url=None,
@@ -52,7 +52,7 @@ def test_measure_trial_cost_builds_report_from_fixture_trace() -> None:
 
     assert report.total_cost_usd > 0.0
     assert "irene" in report.per_agent_breakdown
-    assert "gpt-5.4" in report.per_model_breakdown
+    assert "gpt-5" in report.per_model_breakdown
     per_agent_total = round(
         sum(entry.cost_usd for entry in report.per_agent_breakdown.values()),
         8,
@@ -64,7 +64,7 @@ def test_measure_trial_cost_populates_drift_alert_when_agent_spend_spikes() -> N
     root = load_trace_fixture(FIXTURE)
     base = datetime(2026, 4, 26, 9, 0, tzinfo=UTC)
     history = [
-        _history_entry(measured_at=base + timedelta(minutes=index), marcus_cost=0.01)
+        _history_entry(measured_at=base + timedelta(minutes=index), marcus_cost=0.001)
         for index in range(5)
     ]
 

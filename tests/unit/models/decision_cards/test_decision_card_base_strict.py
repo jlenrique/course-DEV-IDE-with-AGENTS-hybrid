@@ -18,8 +18,8 @@ def _meta() -> DecisionCardMeta:
                 event_id=uuid4(),
                 applied_at=datetime(2026, 4, 26, 12, 0, tzinfo=UTC),
                 node_id="04",
-                previous_value={"model": "gpt-5.4"},
-                new_value={"model": "gpt-5.5"},
+                previous_value={"model": "gpt-5"},
+                new_value={"model": "gpt-5-mini"},
                 operator_id="juanl",
                 confirm_token="confirm-001",
             )

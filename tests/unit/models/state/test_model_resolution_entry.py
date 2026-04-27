@@ -25,7 +25,7 @@ def _valid_kwargs() -> dict[str, object]:
     return {
         "level": "registry_default",
         "requested": None,
-        "resolved": "gpt-5.4",
+        "resolved": "gpt-5",
         "reason": "default fallthrough",
         "timestamp": datetime.now(UTC),
     }
@@ -115,7 +115,7 @@ def test_requested_can_be_none_for_default_levels() -> None:
 def test_requested_can_be_string_for_per_call() -> None:
     kwargs = _valid_kwargs()
     kwargs["level"] = "per_call"
-    kwargs["requested"] = "gpt-5-haiku"
-    kwargs["resolved"] = "gpt-5-haiku"
+    kwargs["requested"] = "gpt-5-nano"
+    kwargs["resolved"] = "gpt-5-nano"
     entry = ModelResolutionEntry(**kwargs)
-    assert entry.requested == "gpt-5-haiku"
+    assert entry.requested == "gpt-5-nano"

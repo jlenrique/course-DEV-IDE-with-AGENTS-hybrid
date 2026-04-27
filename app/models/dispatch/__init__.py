@@ -6,8 +6,8 @@ convention from app/models/state/). Receipts strict-type the previously
 loose-typed return-shape extensions accumulated across 2b.1-2b.14 per R4.
 
 Roster authority: _bmad-output/planning-artifacts/slab-2-roster-reconciliation.md.
-Canonical specialist→graph mapping: state/config/dispatch-registry.yaml (interim;
-M5 forward-port replaces with primary's PR-R registry).
+Canonical specialist→graph mapping: state/config/dispatch-registry.yaml
+(production-promoted 2026-04-26 after live-tree import verification).
 """
 
 from app.models.dispatch.aria.error import AriaDispatchError

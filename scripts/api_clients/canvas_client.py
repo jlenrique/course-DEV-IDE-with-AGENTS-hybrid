@@ -33,7 +33,9 @@ class CanvasClient(BaseAPIClient):
         access_token: str | None = None,
     ) -> None:
         api_url = api_url or os.environ.get("CANVAS_API_URL", "")
-        base_url = f"{api_url.rstrip('/')}/api/v1"
+        base_url = api_url.rstrip("/")
+        if base_url and not base_url.endswith("/api/v1"):
+            base_url = f"{base_url}/api/v1"
         access_token = access_token or os.environ.get(
             "CANVAS_ACCESS_TOKEN", ""
         )

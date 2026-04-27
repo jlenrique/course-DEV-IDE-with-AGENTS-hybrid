@@ -16,6 +16,23 @@ from scripts.api_clients.base_client import BaseAPIClient
 logger = logging.getLogger(__name__)
 
 
+def _resolve_base_url(explicit: str | None = None) -> str:
+    """Resolve the Qualtrics API root from either a full base URL or a data center slug."""
+
+    if explicit:
+        return explicit.rstrip("/")
+
+    base_url = os.environ.get("QUALTRICS_BASE_URL", "").strip()
+    if base_url:
+        return base_url.rstrip("/")
+
+    data_center = os.environ.get("QUALTRICS_DATA_CENTER", "").strip()
+    if data_center:
+        return f"https://{data_center}.qualtrics.com"
+
+    return ""
+
+
 class QualtricsClient(BaseAPIClient):
     """Client for Qualtrics REST API v3.
 
@@ -32,9 +49,7 @@ class QualtricsClient(BaseAPIClient):
         base_url: str | None = None,
     ) -> None:
         api_token = api_token or os.environ.get("QUALTRICS_API_TOKEN", "")
-        base_url = base_url or os.environ.get(
-            "QUALTRICS_BASE_URL", ""
-        )
+        base_url = _resolve_base_url(base_url)
         super().__init__(
             base_url=f"{base_url.rstrip('/')}/API/v3",
             auth_header="X-API-TOKEN",

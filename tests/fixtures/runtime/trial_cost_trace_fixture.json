@@ -24,7 +24,7 @@
           "metadata": {
             "trial_id": "C1-M1-PRES-20260419B",
             "specialist_id": "marcus",
-            "model_id": "gpt-5.4"
+            "model_id": "gpt-5"
           }
         }
       },
@@ -40,7 +40,7 @@
           "metadata": {
             "trial_id": "C1-M1-PRES-20260419B",
             "specialist_id": "texas",
-            "model_id": "gpt-5-haiku"
+            "model_id": "gpt-5-nano"
           }
         }
       },
@@ -56,7 +56,7 @@
           "metadata": {
             "trial_id": "C1-M1-PRES-20260419B",
             "specialist_id": "vera",
-            "model_id": "gpt-5.4"
+            "model_id": "gpt-5"
           }
         }
       },
@@ -72,7 +72,7 @@
           "metadata": {
             "trial_id": "C1-M1-PRES-20260419B",
             "specialist_id": "irene",
-            "model_id": "gpt-5.4"
+            "model_id": "gpt-5"
           }
         }
       },
@@ -88,7 +88,7 @@
           "metadata": {
             "trial_id": "C1-M1-PRES-20260419B",
             "specialist_id": "cd",
-            "model_id": "gpt-5.4"
+            "model_id": "gpt-5"
           }
         }
       },
@@ -104,7 +104,7 @@
           "metadata": {
             "trial_id": "C1-M1-PRES-20260419B",
             "specialist_id": "gary",
-            "model_id": "gpt-5-haiku"
+            "model_id": "gpt-5-nano"
           }
         }
       },
@@ -120,7 +120,7 @@
           "metadata": {
             "trial_id": "C1-M1-PRES-20260419B",
             "specialist_id": "quinn_r",
-            "model_id": "gpt-5.4"
+            "model_id": "gpt-5"
           }
         }
       },
@@ -136,7 +136,7 @@
           "metadata": {
             "trial_id": "C1-M1-PRES-20260419B",
             "specialist_id": "kira",
-            "model_id": "gpt-5-haiku"
+            "model_id": "gpt-5-nano"
           }
         }
       },
@@ -152,7 +152,7 @@
           "metadata": {
             "trial_id": "C1-M1-PRES-20260419B",
             "specialist_id": "irene",
-            "model_id": "gpt-5.4"
+            "model_id": "gpt-5"
           }
         }
       },
@@ -168,7 +168,7 @@
           "metadata": {
             "trial_id": "C1-M1-PRES-20260419B",
             "specialist_id": "quinn-r",
-            "model_id": "gpt-5.4"
+            "model_id": "gpt-5"
           }
         }
       },
@@ -184,7 +184,7 @@
           "metadata": {
             "trial_id": "C1-M1-PRES-20260419B",
             "specialist_id": "enrique",
-            "model_id": "gpt-5.4"
+            "model_id": "gpt-5"
           }
         }
       },
@@ -200,7 +200,7 @@
           "metadata": {
             "trial_id": "C1-M1-PRES-20260419B",
             "specialist_id": "desmond",
-            "model_id": "gpt-5-haiku"
+            "model_id": "gpt-5-nano"
           }
         }
       }

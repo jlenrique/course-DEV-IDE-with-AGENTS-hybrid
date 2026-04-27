@@ -36,6 +36,13 @@ def resolve_database_url() -> str:
     return url
 
 
+def resolve_checkpointer_conninfo() -> str:
+    """Return Postgres conninfo with a bounded connection timeout."""
+    from psycopg.conninfo import make_conninfo
+
+    return make_conninfo(resolve_database_url(), connect_timeout="2")
+
+
 @asynccontextmanager
 async def make_checkpointer() -> AsyncIterator[AsyncPostgresSaver]:
     """Async context manager yielding a ready-to-use `AsyncPostgresSaver`.
@@ -49,10 +56,15 @@ async def make_checkpointer() -> AsyncIterator[AsyncPostgresSaver]:
     """
     from langgraph.checkpoint.postgres.aio import AsyncPostgresSaver
 
-    conn_string = resolve_database_url()
+    conn_string = resolve_checkpointer_conninfo()
     async with AsyncPostgresSaver.from_conn_string(conn_string) as saver:
         await saver.setup()
         yield saver
 
 
-__all__ = ["CheckpointerConfigError", "make_checkpointer", "resolve_database_url"]
+__all__ = [
+    "CheckpointerConfigError",
+    "make_checkpointer",
+    "resolve_checkpointer_conninfo",
+    "resolve_database_url",
+]

@@ -46,6 +46,7 @@ def runtime_server_subprocess() -> Iterator[tuple[subprocess.Popen[bytes], int]]
     port = _pick_free_port()
     env = os.environ.copy()
     env["RUNTIME_PORT"] = str(port)
+    env.pop("DATABASE_URL", None)
     proc = subprocess.Popen(
         [sys.executable, "-m", "app.runtime_server"],
         env=env,

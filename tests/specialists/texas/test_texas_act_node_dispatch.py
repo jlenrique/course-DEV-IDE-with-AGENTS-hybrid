@@ -30,8 +30,8 @@ def _build_state(
         trail = [
             ModelResolutionEntry(
                 level="per_specialist",
-                requested="gpt-5-haiku",
-                resolved="gpt-5-haiku",
+                requested="gpt-5-nano",
+                resolved="gpt-5-nano",
                 reason="test",
                 timestamp="2026-01-01T00:00:00Z",
                 cache_prefix_hash="b" * 64,
@@ -351,7 +351,7 @@ def test_texas_act_dispatches_and_emits_bundle_reference(
     assert output["status"] == "complete"
     assert output["overall_status"] == "complete"
     assert output["dispatch_exit_code"] == 0
-    assert output["model_id"] == "gpt-5-haiku"
+    assert output["model_id"] == "gpt-5-nano"
     # Two-sided: trail entry records the success tag.
     trail = update["model_resolution_trail"]
     assert trail[-1].reason == "bundle.parsed.ok"

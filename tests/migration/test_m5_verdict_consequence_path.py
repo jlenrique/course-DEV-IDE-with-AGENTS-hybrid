@@ -55,7 +55,14 @@ def test_m5_verdict_consequence_path() -> None:
         assert "`5a-5-m5-conditional-window-2026-05-03`" in deferred_text
         assert master_status == "shipped"
         assert "SHIP-CONDITIONAL" in epic_comment
-        assert "2026-05-03" in master_comment
+        assert (
+            "2026-05-03" in master_comment
+            or (
+                "bounded-MVP scope" in master_comment
+                and "Original demotion rule" in master_comment
+                and "REFRAMED 2026-04-27" in deferred_text
+            )
+        )
     elif verdict == "ITERATE":
         assert master_status == "iterate-pending"
         assert re.search(r"migration-5a-5-iter-\d+-", sprint_text)

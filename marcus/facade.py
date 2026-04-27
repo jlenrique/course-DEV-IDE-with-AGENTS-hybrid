@@ -65,15 +65,21 @@ accessor :func:`get_facade` instead; pytest fixtures can call
 from __future__ import annotations
 
 import hashlib
+import os
 import re
+from collections.abc import Iterator
+from contextlib import contextmanager
 from datetime import UTC, datetime
 from pathlib import Path
 from typing import TYPE_CHECKING, Any, Final, Literal
 from uuid import UUID, uuid4
 
 from app.manifest import load as load_manifest
+from app.models.adapter import make_chat_model
+from app.models.runtime import AdhocResponse, TokenCount
 from app.models.state.run_state import RunState
 from app.models.state.sanctum_fingerprint import SanctumFingerprint
+from app.runtime.cascade_config import load_pricing
 
 if TYPE_CHECKING:
     from marcus.lesson_plan.fit_report import FitReport
@@ -141,6 +147,85 @@ class Facade:
 
         supervisor = Supervisor(preset=preset, manifest=self._manifest)
         return supervisor.run_step(state)
+
+    def ask(
+        self,
+        prompt: str,
+        *,
+        cascade_override: str | None = None,
+        max_tokens: int | None = None,
+        trace: bool = True,
+    ) -> AdhocResponse:
+        """Ask Marcus a one-shot runtime question without registering a trial."""
+        if not prompt.strip():
+            raise ValueError("prompt must not be empty")
+        if not os.getenv("OPENAI_API_KEY"):
+            raise RuntimeError("OPENAI_API_KEY is required for Marcus ad-hoc ask")
+
+        with _adhoc_trace_env(enabled=trace):
+            handle = make_chat_model(
+                "marcus",
+                per_call_override=cascade_override,
+                temperature=self.state.temperature if self.state else 0.0,
+            )
+            chat = handle.chat
+            if max_tokens is not None:
+                chat = chat.bind(max_tokens=max_tokens)
+            response = chat.invoke(
+                [
+                    (
+                        "system",
+                        "You are Marcus, the runtime orchestrator for the course "
+                        "content production system. Answer directly and keep the "
+                        "operator oriented. Do not register a trial, trigger gates, "
+                        "or mutate runtime state.",
+                    ),
+                    ("human", prompt),
+                ]
+            )
+
+        content = response.content
+        if isinstance(content, list):
+            text = "\n".join(
+                str(part.get("text", part)) if isinstance(part, dict) else str(part)
+                for part in content
+            ).strip()
+        else:
+            text = str(content).strip()
+        if not text:
+            text = "(empty response)"
+
+        usage = getattr(response, "usage_metadata", None) or {}
+        input_tokens = int(
+            usage.get("input_tokens")
+            or usage.get("prompt_tokens")
+            or usage.get("input_token_count")
+            or 0
+        )
+        output_tokens = int(
+            usage.get("output_tokens")
+            or usage.get("completion_tokens")
+            or usage.get("output_token_count")
+            or 0
+        )
+        total_tokens = int(usage.get("total_tokens") or input_tokens + output_tokens)
+        cost_usd = load_pricing().compute_cost(
+            handle.entry.resolved,
+            input_tokens=input_tokens,
+            output_tokens=output_tokens,
+        )
+        if self.state is not None:
+            self.state.model_resolution_trail.append(handle.entry)
+        return AdhocResponse(
+            text=text,
+            model_used=handle.entry.resolved,
+            tokens=TokenCount(
+                input_tokens=input_tokens,
+                output_tokens=output_tokens,
+                total_tokens=total_tokens,
+            ),
+            cost_usd=round(cost_usd, 8),
+        )
 
     def run_4a(
         self,
@@ -230,6 +315,28 @@ _MARCUS_SKILL_PATH: Final[Path] = _REPO_ROOT / "skills" / "bmad-agent-marcus" / 
 _MARCUS_SANCTUM_ROOT: Final[Path] = _REPO_ROOT / "_bmad" / "memory" / "bmad-agent-marcus"
 _PIPELINE_MANIFEST_PATH: Final[Path] = _REPO_ROOT / "state" / "config" / "pipeline-manifest.yaml"
 _ACTIVATION_FILE_NAME_PATTERN: Final[re.Pattern[str]] = re.compile(r"`([^`]+)`")
+
+
+@contextmanager
+def _adhoc_trace_env(*, enabled: bool) -> Iterator[None]:
+    """Scope LangSmith tracing to the ad-hoc project for one invocation."""
+    keys = ("LANGCHAIN_TRACING_V2", "LANGSMITH_TRACING", "LANGSMITH_PROJECT")
+    previous = {key: os.environ.get(key) for key in keys}
+    try:
+        if enabled:
+            os.environ["LANGCHAIN_TRACING_V2"] = "true"
+            os.environ["LANGSMITH_TRACING"] = "true"
+            os.environ["LANGSMITH_PROJECT"] = "course-content-adhoc"
+        else:
+            os.environ["LANGCHAIN_TRACING_V2"] = "false"
+            os.environ["LANGSMITH_TRACING"] = "false"
+        yield
+    finally:
+        for key, value in previous.items():
+            if value is None:
+                os.environ.pop(key, None)
+            else:
+                os.environ[key] = value
 
 
 def _resolve_activation_allowlist(skill_path: Path | None = None) -> tuple[str, ...]:

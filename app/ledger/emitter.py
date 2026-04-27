@@ -85,7 +85,10 @@ def emit_ledger_event(
 
     try:
         if active_conn is None:
-            active_conn = psycopg.connect(database_url or resolve_database_url())
+            active_conn = psycopg.connect(
+                database_url or resolve_database_url(),
+                connect_timeout=2,
+            )
         ensure_ledger_schema(active_conn)
         existing_event_id = _load_existing_event_id(active_conn, key)
         if existing_event_id is not None:

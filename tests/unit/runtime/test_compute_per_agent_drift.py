@@ -14,14 +14,14 @@ def _report(*, measured_at: datetime, marcus_cost: float) -> TrialEconomicsRepor
         per_agent_breakdown={
             "marcus": AgentCostEntry(
                 agent_name="marcus",
-                model_assigned="gpt-5.4",
+                model_assigned="gpt-5",
                 call_count=1,
                 input_tokens=1000,
                 output_tokens=100,
                 cost_usd=marcus_cost,
             )
         },
-        per_model_breakdown={"gpt-5.4": marcus_cost},
+        per_model_breakdown={"gpt-5": marcus_cost},
         cascade_config_digest="a" * 64,
         pricing_table_digest="b" * 64,
         langsmith_trace_url=None,

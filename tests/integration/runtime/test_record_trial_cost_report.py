@@ -11,18 +11,18 @@ def _sample_report() -> TrialEconomicsReport:
     return TrialEconomicsReport(
         trial_id="C1-M1-PRES-20260419B",
         measured_at=datetime(2026, 4, 26, 12, 0, tzinfo=UTC),
-        total_cost_usd=0.171105,
+        total_cost_usd=0.01325,
         per_agent_breakdown={
             "marcus": AgentCostEntry(
                 agent_name="marcus",
-                model_assigned="gpt-5.4",
+                model_assigned="gpt-5",
                 call_count=1,
                 input_tokens=4200,
                 output_tokens=800,
-                cost_usd=0.033,
+                cost_usd=0.01325,
             )
         },
-        per_model_breakdown={"gpt-5.4": 0.033},
+        per_model_breakdown={"gpt-5": 0.01325},
         cascade_config_digest="a" * 64,
         pricing_table_digest="b" * 64,
         langsmith_trace_url="https://smith.langchain.com/traces/trace-123",

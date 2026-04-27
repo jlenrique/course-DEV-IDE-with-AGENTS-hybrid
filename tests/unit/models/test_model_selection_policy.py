@@ -38,7 +38,7 @@ def test_forbids_extra_fields_on_rule() -> None:
         "rule_id": "x",
         "when": {},
         "prefer_tier": "fast",
-        "fallback_chain": ["gpt-5-haiku"],
+        "fallback_chain": ["gpt-5-nano"],
         "bogus": True,
     }
     with pytest.raises(ValidationError):
@@ -52,13 +52,13 @@ def test_duplicate_rule_id_rejected() -> None:
                 "rule_id": "dup",
                 "when": {"tier_request": "fast"},
                 "prefer_tier": "fast",
-                "fallback_chain": ["gpt-5-haiku"],
+                "fallback_chain": ["gpt-5-nano"],
             },
             {
                 "rule_id": "dup",
                 "when": {"tier_request": "reasoning"},
                 "prefer_tier": "reasoning",
-                "fallback_chain": ["gpt-5.4"],
+                "fallback_chain": ["gpt-5"],
             },
         ]
     }
@@ -74,13 +74,13 @@ def test_conflicting_predicate_with_different_tier_rejected() -> None:
                 "rule_id": "rule-a",
                 "when": {"tier_request": "fast"},
                 "prefer_tier": "fast",
-                "fallback_chain": ["gpt-5-haiku"],
+                "fallback_chain": ["gpt-5-nano"],
             },
             {
                 "rule_id": "rule-b",
                 "when": {"tier_request": "fast"},
                 "prefer_tier": "reasoning",  # CONFLICT with rule-a
-                "fallback_chain": ["gpt-5.4"],
+                "fallback_chain": ["gpt-5"],
             },
         ]
     }
@@ -97,13 +97,13 @@ def test_same_predicate_same_tier_accepted() -> None:
                 "rule_id": "rule-a",
                 "when": {"tier_request": "fast"},
                 "prefer_tier": "fast",
-                "fallback_chain": ["gpt-5-haiku"],
+                "fallback_chain": ["gpt-5-nano"],
             },
             {
                 "rule_id": "rule-b",
                 "when": {"tier_request": "fast"},
                 "prefer_tier": "fast",
-                "fallback_chain": ["gpt-5-haiku"],
+                "fallback_chain": ["gpt-5-nano"],
             },
         ]
     }
@@ -132,7 +132,7 @@ def test_rule_is_frozen() -> None:
             "rule_id": "x",
             "when": {},
             "prefer_tier": "fast",
-            "fallback_chain": ["gpt-5-haiku"],
+            "fallback_chain": ["gpt-5-nano"],
         }
     )
     with pytest.raises(ValidationError):

@@ -293,6 +293,27 @@ class TestRenderHtml:
         assert "<!DOCTYPE html>" in html
         assert "No active run" in html
 
+    def test_new_runtime_panels_render_with_empty_data(self, tmp_path: Path) -> None:
+        with patch("scripts.utilities.run_hud.read_active_trial", return_value=None):
+            data = hud.collect_hud_data(
+                bundle_dir=None,
+                bundles_dir=tmp_path / "empty",
+                include_adhoc_panel=False,
+            )
+        html = hud.render_html(data)
+        assert "Active Trial" in html
+        assert "Cost Engineering" in html
+        assert "M5 Conditional Window" in html
+        assert "No migrated-runtime trial found" in html
+
+    def test_new_runtime_panels_render_with_populated_data(self, bundle: Path) -> None:
+        data = hud.collect_hud_data(bundle_dir=bundle)
+        html = hud.render_html(data)
+        assert "Cost Engineering" in html
+        assert "Cascade preview" in html
+        assert "Ad-hoc Mode" in html
+        assert "python -m app.marcus.cli ask" in html
+
     def test_escapes_html_special_chars(self, tmp_path: Path) -> None:
         b = tmp_path / "xss-bundle"
         b.mkdir()

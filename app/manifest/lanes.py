@@ -6,6 +6,7 @@ from pathlib import Path
 from typing import Any
 
 from app.manifest.compiler import compile as compile_manifest
+from app.manifest.compiler import compile_run_graph as compile_production_manifest
 from app.manifest.exceptions import CompileError
 from app.manifest.loader import load
 from app.manifest.schema import PipelineManifest
@@ -40,3 +41,13 @@ def compile_run_graph(
     if validation_mode:
         return graph
     return graph.compile()
+
+
+def compose_run_graph(
+    manifest: PipelineManifest | Path | str | None = None,
+    *,
+    repo_root: Path | None = None,
+) -> Any:
+    """Compile the production run-lane graph with real dispatch handlers."""
+    resolved = _coerce_manifest(manifest)
+    return compile_production_manifest(resolved, repo_root=repo_root)

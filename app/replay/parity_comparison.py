@@ -47,9 +47,9 @@ _LESSON_SLUG_RE = re.compile(
 _ACTUAL_SUBSTRATE_NOTE = (
     "AC-A remains operator-window conditional as of 2026-04-26 because "
     "`app.marcus.cli trial start --preset production --input <corpus-path>` "
-    "does not exist on `dev/langchain-langgraph-foundation`. The parity report "
-    "below measures only the comparable control-plane artifacts that do exist on "
-    "the current branch."
+    "must still be exercised by the operator against live OpenAI. The parity report "
+    "below measures the comparable control-plane artifacts; the live launch pass "
+    "is tracked separately in the M5 conditional window."
 )
 
 
@@ -465,18 +465,17 @@ def render_parity_evidence_markdown(report: ParityComparisonReport) -> str:
             "## Operator-Window Status",
             "",
             (
-                "- AC-A remains conditional because no runnable `app.marcus.cli trial "
-                "start --preset production --input <corpus-path>` subcommand exists on "
-                "this branch as of 2026-04-26."
+                "- AC-A remains conditional until the operator runs `app.marcus.cli trial "
+                "start --preset production --input <corpus-path>` against live OpenAI "
+                "and records the resulting trial evidence."
             ),
             (
                 "- No artifact in this report should be read as evidence that a new "
                 "production clone trial was launched end-to-end."
             ),
             (
-                "- To retire the conditional state, a future story or follow-on must "
-                "land a real clone-trial launcher and re-run the same corpus against "
-                "the same frozen primary baseline."
+                "- To retire the conditional state, run the same corpus against the "
+                "same frozen primary baseline and paste the operator-window addendum."
             ),
         ]
     )

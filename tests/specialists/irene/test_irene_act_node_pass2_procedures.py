@@ -90,7 +90,7 @@ def test_irene_act_handles_pass2_procedure_scenarios(
     output = json.loads(act_update["cache_state"]["cache_prefix"])
     assert output["narration_script"] == narration
     assert output["segment_manifest_deltas"] == deltas
-    assert output["model_id"] == "gpt-5.4"
+    assert output["model_id"] == "gpt-5"
     assert mock_chat.invoke.called
     # Verify the prompt was passed as a 2-message list (system + user).
     call_args = mock_chat.invoke.call_args[0][0]

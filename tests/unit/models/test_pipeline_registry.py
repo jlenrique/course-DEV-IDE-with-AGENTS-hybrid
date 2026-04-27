@@ -22,12 +22,12 @@ def _golden() -> dict[str, Any]:
 def _entry_kwargs() -> dict[str, Any]:
     return {
         "id": "11111111-1111-4111-8111-111111111111",
-        "model_id": "gpt-5.4",
-        "display_name": "GPT-5.4",
+        "model_id": "gpt-5",
+        "display_name": "GPT-5",
         "provider": "openai",
         "context_window": 400000,
-        "cost_per_million_input_tokens": Decimal("5.00"),
-        "cost_per_million_output_tokens": Decimal("15.00"),
+        "cost_per_million_input_tokens": Decimal("1.25"),
+        "cost_per_million_output_tokens": Decimal("10.00"),
         "tier": "reasoning",
         "available": True,
     }
@@ -67,7 +67,7 @@ def test_default_model_id_must_match_available_entry() -> None:
 def test_default_model_id_unavailable_entry_rejected() -> None:
     payload = {
         "id": "00000000-0000-4000-8000-00000000aaaa",
-        "default_model_id": "gpt-5.4",
+        "default_model_id": "gpt-5",
         "auto_select_enabled": True,
         "entries": [{**_entry_kwargs(), "available": False}],
     }
@@ -79,7 +79,7 @@ def test_empty_registry_passes_default_check() -> None:
     """Empty registry skips the default-match invariant; selector handles at runtime."""
     payload = {
         "id": "00000000-0000-4000-8000-00000000bbbb",
-        "default_model_id": "gpt-5.4",
+        "default_model_id": "gpt-5",
         "auto_select_enabled": True,
         "entries": [],
     }

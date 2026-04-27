@@ -31,7 +31,7 @@ def test_adapter_returns_chat_model_with_resolution_trail_entry() -> None:
 
 
 def test_adapter_metadata_carries_full_resolution_tag_set() -> None:
-    handle = make_chat_model("any-specialist", per_call_override="gpt-5-haiku")
+    handle = make_chat_model("any-specialist", per_call_override="gpt-5-nano")
     metadata = handle.chat.metadata or {}
     expected_keys = {
         "specialist_id",
@@ -44,15 +44,15 @@ def test_adapter_metadata_carries_full_resolution_tag_set() -> None:
     }
     missing = expected_keys - set(metadata.keys())
     assert not missing, f"NFR-O4 violation: adapter metadata missing keys {missing}"
-    assert metadata["model_id"] == "gpt-5-haiku"
+    assert metadata["model_id"] == "gpt-5-nano"
     assert metadata["level"] == "per_call"
-    assert metadata["requested"] == "gpt-5-haiku"
-    assert metadata["resolved"] == "gpt-5-haiku"
+    assert metadata["requested"] == "gpt-5-nano"
+    assert metadata["resolved"] == "gpt-5-nano"
     assert metadata["cache_prefix_hash"] is not None
 
 
 def test_adapter_tags_include_specialist_and_resolution_level() -> None:
-    handle = make_chat_model("irene", per_call_override="gpt-5.4")
+    handle = make_chat_model("irene", per_call_override="gpt-5")
     tags = handle.chat.tags or []
     assert "specialist:irene" in tags
     assert "resolution_level:per_call" in tags

@@ -10,7 +10,7 @@ smoke.
 from __future__ import annotations
 
 import importlib
-import os
+from datetime import date
 from pathlib import Path
 
 import pytest
@@ -185,14 +185,14 @@ def test_dispatch_module_exposes_all_42_classes() -> None:
     assert len(module.__all__) == 42
 
 
-def test_dispatch_registry_is_structured_interim() -> None:
-    """AC-B: dispatch-registry.yaml carries STRUCTURED `_status: interim` key per P-2b.15-R2."""
+def test_dispatch_registry_is_structured_production() -> None:
+    """Dispatch registry stays structured after the M5 production promotion."""
     payload = yaml.safe_load(
         Path("state/config/dispatch-registry.yaml").read_text(encoding="utf-8")
     )
-    assert payload["_status"] == "interim"
-    assert payload["_lifecycle"]["state"] == "interim"
-    assert payload["_lifecycle"]["reconcile_at"] == "M5"
+    assert payload["_status"] == "production"
+    assert payload["_lifecycle"]["state"] == "production"
+    assert payload["_lifecycle"]["promoted_at"] == date(2026, 4, 26)
     assert set(payload["specialists"].keys()) == {
         name for name, *_ in SPECIALIST_DISPATCH_FAMILIES
     }
@@ -215,25 +215,12 @@ def test_dispatch_registry_loaded_at_module_import() -> None:
     )
 
 
-def test_dispatch_registry_m5_swap_guard() -> None:
-    """AC-B failing-by-default test guard per Winston W-BLOCKER + P-2b.15-R2.
-
-    Pre-M5 (default): asserts `_status == "interim"` (CI green pre-swap).
-    Post-M5 (sentinel env var STORY_3_X_FORWARD_PORT_COMPLETE set): test flips
-    to assert the registry has been replaced with primary's PR-R version
-    (`_status` removed). M5 forward-port story author inherits the flip-direction
-    via deferred-inventory entry `slab-3-m5-dispatch-registry-swap`.
-    """
+def test_dispatch_registry_no_longer_carries_interim_marker() -> None:
+    """M5 condition close: the live registry must no longer advertise interim status."""
     payload = yaml.safe_load(
         Path("state/config/dispatch-registry.yaml").read_text(encoding="utf-8")
     )
-    if os.environ.get("STORY_3_X_FORWARD_PORT_COMPLETE"):
-        assert "_status" not in payload or payload["_status"] != "interim", (
-            "M5 forward-port complete but interim marker still present; "
-            "see slab-3-m5-dispatch-registry-swap follow-on."
-        )
-    else:
-        assert payload["_status"] == "interim"
+    assert payload["_status"] != "interim"
 
 
 def test_shared_dispatch_loader_loads_module(tmp_path: Path) -> None:

@@ -52,8 +52,14 @@ requires_canvas = pytest.mark.skipif(
     reason="CANVAS_ACCESS_TOKEN or CANVAS_API_URL not set",
 )
 requires_qualtrics = pytest.mark.skipif(
-    not (os.environ.get("QUALTRICS_API_TOKEN") and os.environ.get("QUALTRICS_BASE_URL")),
-    reason="QUALTRICS_API_TOKEN or QUALTRICS_BASE_URL not set",
+    not (
+        os.environ.get("QUALTRICS_API_TOKEN")
+        and (
+            os.environ.get("QUALTRICS_BASE_URL")
+            or os.environ.get("QUALTRICS_DATA_CENTER")
+        )
+    ),
+    reason="QUALTRICS_API_TOKEN and QUALTRICS_BASE_URL/QUALTRICS_DATA_CENTER not set",
 )
 requires_panopto = pytest.mark.skipif(
     not (os.environ.get("PANOPTO_BASE_URL") and os.environ.get("PANOPTO_CLIENT_ID")),

@@ -60,7 +60,7 @@ def test_irene_act_node_real_llm_invocation_with_token_floor() -> None:
     plan_update = _plan(state)
     state = state.model_copy(update=plan_update)
     assert len(state.model_resolution_trail) == 1
-    assert state.model_resolution_trail[-1].resolved == "gpt-5.4"
+    assert state.model_resolution_trail[-1].resolved == "gpt-5"
 
     act_update = _act(state)
     assert "cache_state" in act_update
@@ -68,7 +68,7 @@ def test_irene_act_node_real_llm_invocation_with_token_floor() -> None:
     assert new_cache["entries_count"] == 1
     # Output blob is sorted-keys JSON — parse + spot-check fields.
     output = json.loads(new_cache["cache_prefix"])
-    assert output["model_id"] == "gpt-5.4"
+    assert output["model_id"] == "gpt-5"
     # MF2 floor: prompt_tokens >= 1024 in usage metadata.
     usage = output.get("usage")
     if usage is None:

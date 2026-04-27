@@ -64,7 +64,7 @@ def test_default_model_min_length() -> None:
 def test_per_node_overrides_default_empty() -> None:
     payload = {
         "specialist_id": "irene",
-        "default_model": "gpt-5.4",
+        "default_model": "gpt-5",
         "temperature_default": 0.0,
     }
     config = SpecialistModelConfig.model_validate(payload)
@@ -74,7 +74,7 @@ def test_per_node_overrides_default_empty() -> None:
 def test_is_frozen() -> None:
     config = SpecialistModelConfig.model_validate(_golden())
     with pytest.raises(ValidationError):
-        config.default_model = "gpt-5-haiku"  # frozen=True forbids
+        config.default_model = "gpt-5-nano"  # frozen=True forbids
 
 
 def test_canonical_scaffold_yaml_loads() -> None:

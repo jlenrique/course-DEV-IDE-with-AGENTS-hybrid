@@ -7,6 +7,7 @@ Postgres unreachable per sandbox-AC discipline.
 
 from __future__ import annotations
 
+import asyncio
 import os
 from uuid import uuid4
 
@@ -15,6 +16,13 @@ import pytest
 from langgraph.checkpoint.base import CheckpointMetadata, empty_checkpoint
 
 from app.runtime.checkpointer import make_checkpointer
+
+
+@pytest.fixture
+def event_loop_policy() -> asyncio.AbstractEventLoopPolicy:
+    if os.name == "nt":
+        return asyncio.WindowsSelectorEventLoopPolicy()
+    return asyncio.DefaultEventLoopPolicy()
 
 
 def _is_unreachable_error(exc: psycopg.OperationalError) -> bool:

@@ -111,7 +111,7 @@ nodes:
     rationale: "Section 04 maintains manifest-driven pipeline contract."
 
   - id: "04A"
-    label: "Lesson Plan Coauthoring + Scope Lock"
+    label: "Lesson Plan Coauthoring + Scope Lock (Marcus <-> HIL)"
     specialist_id: "irene"
     scaffold_node: "act"
     model_config_ref: null
@@ -158,7 +158,7 @@ nodes:
         - plan.locked
 
   - id: "4.75"
-    label: "Creative Directive Resolution"
+    label: "Creative Directive Resolution (CD)"
     specialist_id: "cd"
     scaffold_node: "act"
     model_config_ref: null
@@ -210,7 +210,7 @@ nodes:
     rationale: "Section 06 maintains manifest-driven pipeline contract."
 
   - id: "6.2"
-    label: "Cluster Prompt Engineering"
+    label: "Cluster Prompt Engineering (Conditional)"
     specialist_id: "marcus"
     scaffold_node: "act"
     model_config_ref: null
@@ -223,7 +223,7 @@ nodes:
     rationale: "Section 6.2 maintains manifest-driven pipeline contract."
 
   - id: "6.3"
-    label: "Cluster Dispatch Sequencing"
+    label: "Cluster Dispatch Sequencing (Conditional)"
     specialist_id: "marcus"
     scaffold_node: "act"
     model_config_ref: null
@@ -261,7 +261,7 @@ nodes:
     rationale: "Section 07 maintains manifest-driven pipeline contract."
 
   - id: "7.5"
-    label: "Cluster Coherence G2.5 Gate"
+    label: "Cluster Coherence G2.5 Gate (Conditional)"
     specialist_id: "vera"
     scaffold_node: "act"
     model_config_ref: null
@@ -288,7 +288,7 @@ nodes:
     rationale: "Section 07B maintains manifest-driven pipeline contract."
 
   - id: "07C"
-    label: "Storyboard A + Gate 2 Approval"
+    label: "Storyboard A + Gate 2 Approval + Winner Authorization"
     specialist_id: "quinn-r"
     scaffold_node: "act"
     model_config_ref: null

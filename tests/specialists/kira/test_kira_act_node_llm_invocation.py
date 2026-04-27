@@ -49,7 +49,7 @@ def test_kira_act_node_real_llm_with_mocked_dispatch(monkeypatch: pytest.MonkeyP
     assert output["motion_asset_path"].endswith(".mp4")
     assert output["visual_file"] == "artifacts/segment-001.png"
     assert output["kling_prompt"]
-    assert output["model_id"] == "gpt-5-haiku"
+    assert output["model_id"] == "gpt-5-nano"
     usage = output.get("usage")
     if usage is None:
         pytest.fail("AC-B: missing usage metadata for Kira LLM invocation")

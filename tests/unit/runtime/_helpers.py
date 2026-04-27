@@ -28,7 +28,7 @@ def sample_run_state(*, cache_state: CacheState | None | object = _DEFAULT) -> R
             ModelResolutionEntry(
                 level="registry_default",
                 requested=None,
-                resolved="gpt-5.4",
+                resolved="gpt-5",
                 reason="default fallthrough",
                 cache_prefix_hash="0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef",
                 timestamp=datetime(2026, 4, 26, 12, 0, tzinfo=UTC),

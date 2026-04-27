@@ -20,8 +20,8 @@ def _build_state(cache_prefix: str) -> RunState:
         model_resolution_trail=[
             ModelResolutionEntry(
                 level="per_specialist",
-                requested="gpt-5.4",
-                resolved="gpt-5.4",
+                requested="gpt-5",
+                resolved="gpt-5",
                 reason="test",
                 timestamp="2026-01-01T00:00:00Z",
                 cache_prefix_hash="c" * 64,
