@@ -47,7 +47,7 @@ class ProductionTrialEnvelope(BaseModel):
     langsmith_trace_id: str | None = None
     production_clone_launch_evidence: bool
     production_clone_launch_evidence_reason: str | None = None
-    production_envelope: ProductionEnvelope | None = None
+    production_envelope: ProductionEnvelope
     cost_report_path: Path | None = None
     artifact_paths: list[Path] = Field(default_factory=list)
 

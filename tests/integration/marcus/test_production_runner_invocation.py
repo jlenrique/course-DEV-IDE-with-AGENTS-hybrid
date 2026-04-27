@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import logging
 from pathlib import Path
 from uuid import UUID
 
@@ -71,6 +72,8 @@ def test_trial_registers_then_transitions_to_paused_gate(tmp_path: Path, monkeyp
         return real_persist(envelope, runs_root)
 
     monkeypatch.setenv("OPENAI_API_KEY", "sk-test")
+    monkeypatch.setenv("LANGSMITH_API_KEY", "ls-test")
+    monkeypatch.setenv("LANGSMITH_PROJECT", "test-project")
     _install_fake_adapter(monkeypatch)
     monkeypatch.setattr(production_runner, "_persist_envelope", capture)
 
@@ -90,6 +93,8 @@ def test_trial_registers_then_transitions_to_paused_gate(tmp_path: Path, monkeyp
 
 def test_at_least_one_specialist_node_fires_and_writes_trace(tmp_path: Path, monkeypatch) -> None:
     monkeypatch.setenv("OPENAI_API_KEY", "sk-test")
+    monkeypatch.setenv("LANGSMITH_API_KEY", "ls-test")
+    monkeypatch.setenv("LANGSMITH_PROJECT", "test-project")
     adapter = _install_fake_adapter(monkeypatch)
 
     envelope = production_runner.run_production_trial(
@@ -116,6 +121,8 @@ def test_downstream_specialist_input_is_constructed_from_prior_contribution(
     monkeypatch,
 ) -> None:
     monkeypatch.setenv("OPENAI_API_KEY", "sk-test")
+    monkeypatch.setenv("LANGSMITH_API_KEY", "ls-test")
+    monkeypatch.setenv("LANGSMITH_PROJECT", "test-project")
     adapter = _install_fake_adapter(monkeypatch)
 
     envelope = production_runner.run_production_trial(
@@ -143,6 +150,8 @@ def test_downstream_specialist_input_is_constructed_from_prior_contribution(
 
 def test_gate_node_pauses_with_registered_decision_card(tmp_path: Path, monkeypatch) -> None:
     monkeypatch.setenv("OPENAI_API_KEY", "sk-test")
+    monkeypatch.setenv("LANGSMITH_API_KEY", "ls-test")
+    monkeypatch.setenv("LANGSMITH_PROJECT", "test-project")
     _install_fake_adapter(monkeypatch)
 
     envelope = production_runner.run_production_trial(
@@ -158,3 +167,60 @@ def test_gate_node_pauses_with_registered_decision_card(tmp_path: Path, monkeypa
     assert envelope.status == "paused-at-gate"
     assert payload["card"]["gate_id"] == "G1"
     assert len(payload["digest"]) == 64
+
+
+def test_dependency_map_fallback_isolated_contract() -> None:
+    envelope = ProductionEnvelope(trial_id=TRIAL_ID)
+    assert (
+        production_runner._default_dependency_map_for(
+            specialist_id="texas",
+            production_envelope=envelope,
+        )
+        == {}
+    )
+    envelope.add_contribution(
+        SpecialistContribution.from_output(
+            specialist_id="texas",
+            output={"source": "bundle"},
+            model_used="gpt-5-nano",
+            cost_usd=0.0,
+        )
+    )
+
+    assert production_runner._default_dependency_map_for(
+        specialist_id="cd",
+        production_envelope=envelope,
+    ) == {"source_bundle": "texas"}
+    assert production_runner._default_dependency_map_for(
+        specialist_id="irene",
+        production_envelope=envelope,
+    ) == {"upstream_output": "texas"}
+
+
+def test_repeated_specialist_node_skips_duplicate_contribution_with_log(
+    tmp_path: Path,
+    monkeypatch,
+    caplog,
+) -> None:
+    caplog.set_level(logging.INFO, logger=production_runner.__name__)
+    monkeypatch.setenv("OPENAI_API_KEY", "sk-test")
+    monkeypatch.setenv("LANGSMITH_API_KEY", "ls-test")
+    monkeypatch.setenv("LANGSMITH_PROJECT", "test-project")
+    adapter = _install_fake_adapter(monkeypatch)
+
+    envelope = production_runner.run_production_trial(
+        CORPUS,
+        "production",
+        "operator_test",
+        trial_id=TRIAL_ID,
+        runs_root=tmp_path,
+        max_specialist_calls=2,
+        pause_at_gates=False,
+    )
+
+    assert envelope.production_envelope is not None
+    assert [item.specialist_id for item in envelope.production_envelope.contributions].count(
+        "texas"
+    ) == 1
+    assert [item["specialist_id"] for item in adapter.calls].count("texas") == 1
+    assert "Path Z first-contribution-wins contract" in caplog.text

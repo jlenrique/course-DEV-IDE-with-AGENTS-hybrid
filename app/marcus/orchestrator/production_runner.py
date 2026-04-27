@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+import logging
 import os
 from contextlib import contextmanager
 from datetime import UTC, datetime
@@ -38,6 +39,7 @@ from app.runtime.economics import RUNS_ROOT, measure_trial_cost, record_trial_co
 REPO_ROOT = Path(__file__).resolve().parents[3]
 DEFAULT_MANIFEST_PATH = REPO_ROOT / "state" / "config" / "pipeline-manifest.yaml"
 DEFAULT_GRAPH_VERSION = "v42"
+LOGGER = logging.getLogger(__name__)
 
 
 def _has_live_openai() -> bool:
@@ -197,16 +199,18 @@ def _trace_to_json(root: SimpleNamespace) -> dict[str, Any]:
     return {"root": convert(root)}
 
 
-def _dependency_map_for_specialist(
+def _default_dependency_map_for(
     *,
     specialist_id: str,
     production_envelope: ProductionEnvelope,
 ) -> dict[str, str]:
-    """Derive deterministic adapter dependencies from prior contributions.
+    """Derive the Slab 6.1 deterministic dependency fallback.
 
     The v4.2 manifest currently carries ordering but not input-key names. Keep
     the known Texas -> CD contract explicit, then fall back to the immediately
-    preceding specialist output under a generic key.
+    preceding specialist output under a generic key. This is the accepted Slab
+    6.1 close shape; `tier-a-0-promote-dependency-map-into-manifest` promotes
+    this mapping into manifest/registry metadata before Tier A work.
     """
     prior_ids = [item.specialist_id for item in production_envelope.contributions]
     if not prior_ids:
@@ -214,6 +218,17 @@ def _dependency_map_for_specialist(
     if specialist_id == "cd" and "texas" in prior_ids:
         return {"source_bundle": "texas"}
     return {"upstream_output": prior_ids[-1]}
+
+
+def _dependency_map_for_specialist(
+    *,
+    specialist_id: str,
+    production_envelope: ProductionEnvelope,
+) -> dict[str, str]:
+    return _default_dependency_map_for(
+        specialist_id=specialist_id,
+        production_envelope=production_envelope,
+    )
 
 
 def _card_meta(node_id: str) -> DecisionCardMeta:
@@ -313,6 +328,21 @@ def _record_cost(
     else:
         report = _fallback_cost_report(str(trial_id))
     return record_trial_cost_report(str(trial_id), report, runs_root=runs_root)
+
+
+def _has_production_evidence(
+    *,
+    graph_step_completed: bool,
+    specialist_calls: int,
+    allow_offline_cost_report: bool,
+) -> bool:
+    return (
+        graph_step_completed
+        and specialist_calls > 0
+        and _has_live_openai()
+        and _has_langsmith_env()
+        and not allow_offline_cost_report
+    )
 
 
 def _active_node_handler(compiled_graph: Any, node_id: str) -> Any:
@@ -444,10 +474,11 @@ def run_production_trial(
                     trace_path = _run_dir(effective_trial_id, runs_root) / "trace-fixture.json"
                     _write_json(trace_path, _trace_to_json(trace_root))
                 evidence = (
-                    graph_step_completed
-                    and specialist_calls > 0
-                    and _has_live_openai()
-                    and not allow_offline_cost_report
+                    _has_production_evidence(
+                        graph_step_completed=graph_step_completed,
+                        specialist_calls=specialist_calls,
+                        allow_offline_cost_report=allow_offline_cost_report,
+                    )
                 )
                 envelope = envelope.model_copy(
                     update={
@@ -479,6 +510,14 @@ def run_production_trial(
             if node_kind == "specialist" and specialist_calls < max_specialist_calls:
                 specialist_id = handler.__production_specialist_id__
                 if production_envelope.get_contribution(specialist_id) is not None:
+                    LOGGER.info(
+                        "specialist %s was reached again at manifest node %s but "
+                        "the production envelope already contains its contribution; "
+                        "new contribution skipped per Slab 6.1 Path Z first-"
+                        "contribution-wins contract",
+                        specialist_id,
+                        node.id,
+                    )
                     graph_step_completed = True
                     continue
                 if _has_live_openai() and not allow_offline_cost_report:
@@ -524,10 +563,11 @@ def run_production_trial(
         trace_path = _run_dir(effective_trial_id, runs_root) / "trace-fixture.json"
         _write_json(trace_path, _trace_to_json(trace_root))
     evidence = (
-        graph_step_completed
-        and specialist_calls > 0
-        and _has_live_openai()
-        and not allow_offline_cost_report
+        _has_production_evidence(
+            graph_step_completed=graph_step_completed,
+            specialist_calls=specialist_calls,
+            allow_offline_cost_report=allow_offline_cost_report,
+        )
     )
     reason = "live-specialist-call-recorded" if evidence else "no-live-specialist-call-recorded"
     envelope = envelope.model_copy(

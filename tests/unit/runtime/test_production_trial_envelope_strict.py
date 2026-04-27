@@ -66,6 +66,14 @@ def test_production_clone_launch_evidence_is_explicitly_required() -> None:
         ProductionTrialEnvelope.model_validate(payload)
 
 
+def test_production_envelope_is_required_full_embed() -> None:
+    payload = _payload()
+    payload.pop("production_envelope")
+
+    with pytest.raises(ValidationError, match="Field required"):
+        ProductionTrialEnvelope.model_validate(payload)
+
+
 def test_golden_fixture_validates_from_json() -> None:
     envelope = ProductionTrialEnvelope.model_validate_json(FIXTURE.read_text(encoding="utf-8"))
 
@@ -83,4 +91,6 @@ def test_json_schema_lockstep_contains_required_evidence_field() -> None:
 
     assert schema["additionalProperties"] is False
     assert "production_clone_launch_evidence" in schema["required"]
+    assert "production_envelope" in schema["required"]
     assert "production_envelope" in schema["properties"]
+    assert schema == ProductionTrialEnvelope.model_json_schema()

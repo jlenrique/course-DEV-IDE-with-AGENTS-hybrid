@@ -11,8 +11,15 @@ from app.marcus.orchestrator.production_runner import run_production_trial
 
 @pytest.mark.live
 def test_production_trial_smoke_live(tmp_path: Path) -> None:
-    if not os.getenv("OPENAI_API_KEY") or not os.getenv("LANGSMITH_API_KEY"):
-        pytest.skip("OPENAI_API_KEY and LANGSMITH_API_KEY required for live production smoke")
+    if (
+        not os.getenv("OPENAI_API_KEY")
+        or not os.getenv("LANGSMITH_API_KEY")
+        or not os.getenv("LANGSMITH_PROJECT")
+    ):
+        pytest.skip(
+            "OPENAI_API_KEY, LANGSMITH_API_KEY, and LANGSMITH_PROJECT required "
+            "for live production smoke"
+        )
 
     envelope = run_production_trial(
         Path("tests/fixtures/trial_corpus/README.md"),

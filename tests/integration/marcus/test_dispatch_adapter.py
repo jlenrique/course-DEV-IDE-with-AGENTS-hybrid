@@ -117,6 +117,24 @@ def test_input_construction_reads_dependency_map_from_envelope() -> None:
     assert state.production_envelope is None
 
 
+def test_first_specialist_preserves_base_state_input_when_dependency_map_empty() -> None:
+    adapter = ProductionDispatchAdapter()
+    base_state = RunState(
+        run_id=TRIAL_ID,
+        graph_version="v42",
+        cache_state={"cache_prefix": json.dumps({"corpus_path": "source.md"})},
+    )
+
+    state = adapter.build_specialist_state(
+        envelope=ProductionEnvelope(trial_id=TRIAL_ID),
+        dependency_map={},
+        base_state=base_state,
+    )
+
+    assert state.cache_state is not None
+    assert json.loads(state.cache_state.cache_prefix) == {"corpus_path": "source.md"}
+
+
 def test_specialist_invocation_runs_compiled_graph_through_gate_boundary() -> None:
     calls: list[str] = []
     adapter = ProductionDispatchAdapter(

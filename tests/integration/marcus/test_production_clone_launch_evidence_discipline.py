@@ -35,6 +35,8 @@ class _FakeAdapter:
 
 def test_live_mode_mocked_openai_sets_evidence_true(tmp_path: Path, monkeypatch) -> None:
     monkeypatch.setenv("OPENAI_API_KEY", "sk-test")
+    monkeypatch.setenv("LANGSMITH_API_KEY", "ls-test")
+    monkeypatch.setenv("LANGSMITH_PROJECT", "test-project")
     monkeypatch.setattr(production_runner, "ProductionDispatchAdapter", _FakeAdapter)
 
     envelope = production_runner.run_production_trial(
@@ -71,6 +73,8 @@ def test_live_mode_with_zero_specialist_calls_keeps_evidence_false(
     monkeypatch,
 ) -> None:
     monkeypatch.setenv("OPENAI_API_KEY", "sk-test")
+    monkeypatch.setenv("LANGSMITH_API_KEY", "ls-test")
+    monkeypatch.setenv("LANGSMITH_PROJECT", "test-project")
     monkeypatch.setattr(production_runner, "ProductionDispatchAdapter", _FakeAdapter)
 
     envelope = production_runner.run_production_trial(
@@ -85,3 +89,20 @@ def test_live_mode_with_zero_specialist_calls_keeps_evidence_false(
 
     assert envelope.production_clone_launch_evidence is False
     assert envelope.production_clone_launch_evidence_reason == "no-live-specialist-call-recorded"
+
+
+def test_openai_without_langsmith_keeps_evidence_false(tmp_path: Path, monkeypatch) -> None:
+    monkeypatch.setenv("OPENAI_API_KEY", "sk-test")
+    monkeypatch.delenv("LANGSMITH_API_KEY", raising=False)
+    monkeypatch.delenv("LANGSMITH_PROJECT", raising=False)
+    monkeypatch.setattr(production_runner, "ProductionDispatchAdapter", _FakeAdapter)
+
+    envelope = production_runner.run_production_trial(
+        CORPUS,
+        "production",
+        "operator_test",
+        trial_id=TRIAL_ID,
+        runs_root=tmp_path,
+    )
+
+    assert envelope.production_clone_launch_evidence is False

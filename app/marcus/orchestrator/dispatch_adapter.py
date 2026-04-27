@@ -57,16 +57,6 @@ class ProductionDispatchAdapter:
         base_state: RunState | None = None,
     ) -> RunState:
         """Construct the specialist's isolated RunState from envelope dependencies."""
-        payload = self._payload_from_dependencies(envelope, dependency_map)
-        cache_state = CacheState(
-            cache_prefix=json.dumps(
-                payload,
-                sort_keys=True,
-                ensure_ascii=True,
-                separators=(",", ":"),
-                default=str,
-            )
-        )
         if base_state is not None and base_state.run_id != envelope.trial_id:
             raise ProductionDispatchAdapterError(
                 "base_state.run_id must match production envelope trial_id"
@@ -74,6 +64,20 @@ class ProductionDispatchAdapter:
         source = base_state or RunState(
             run_id=envelope.trial_id,
             graph_version=DEFAULT_GRAPH_VERSION,
+        )
+        payload = self._payload_from_dependencies(envelope, dependency_map)
+        cache_state = (
+            source.cache_state
+            if not dependency_map and source.cache_state is not None
+            else CacheState(
+                cache_prefix=json.dumps(
+                    payload,
+                    sort_keys=True,
+                    ensure_ascii=True,
+                    separators=(",", ":"),
+                    default=str,
+                )
+            )
         )
         state = RunState.model_validate(
             {

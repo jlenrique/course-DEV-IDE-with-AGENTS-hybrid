@@ -184,15 +184,7 @@
       "title": "Production Clone Launch Evidence Reason"
     },
     "production_envelope": {
-      "anyOf": [
-        {
-          "$ref": "#/$defs/ProductionEnvelope"
-        },
-        {
-          "type": "null"
-        }
-      ],
-      "default": null
+      "$ref": "#/$defs/ProductionEnvelope"
     },
     "cost_report_path": {
       "anyOf": [
@@ -223,7 +215,8 @@
     "operator_id",
     "started_at",
     "status",
-    "production_clone_launch_evidence"
+    "production_clone_launch_evidence",
+    "production_envelope"
   ],
   "title": "ProductionTrialEnvelope",
   "type": "object"
