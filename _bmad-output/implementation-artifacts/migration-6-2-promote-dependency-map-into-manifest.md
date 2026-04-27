@@ -1,17 +1,17 @@
-# Migration Story Tier-A-0: Promote dependency_map declaration into pipeline manifest (Tier A bundle prerequisite)
+# Migration Story 6.2: Promote dependency_map declaration into pipeline manifest (Slab 6 trial-experience bundle prerequisite)
 
 **Status:** ready-for-dev (pre-authored 2026-04-27 in operator session immediately after Slab 6.1 patch dispatch; activates at Slab 6.1 formal close)
-**Sprint key:** `tier-a-0-promote-dependency-map-into-manifest`
-**Epic:** Tier A trial-experience bundle (precedes A1 + A2 + A3 per `codex-handoff-tier-a-trial-experience-bundle.md` Phase 0 prerequisite).
+**Sprint key:** `migration-6-2-promote-dependency-map-into-manifest`
+**Epic:** Slab 6 — Post-MVP Production Capability (`migration-epic-6-post-mvp-production`); precedes Slab 6.3 + 6.4 + 6.5 per `codex-handoff-slab-6-3-through-6-5-trial-experience-bundle.md` Phase 0 prerequisite.
 **Pts:** ~1 (single-gate; manifest schema extension + runner consumes manifest-declared deps; preserves runner-layer fallback for backward-compat).
 **Gate:** single-gate (governance-JSON entry to be added at filing; rationale: minor schema extension; no new substrate; preserves backward-compat via fallback retention; no composition-shape change).
 **K-target:** ~1.4× (target ~10 / floor ~7).
 
 **Predecessors:**
 - Slab 6.1 (`migration-6-1-production-graph-runner.md`) CLOSED — runner ships with `_default_dependency_map_for(specialist_id)` deterministic fallback at the runner layer
-- Slab 6.1 bmad-code-review DFR-6.1-1 / AA-2 — operator-ratified deferral of manifest promotion to this Tier-A-0 prerequisite story
-- Composition Specification §3.6 (dependency_map sourcing) — names manifest as the post-Tier-A-0 source-of-truth
-- Composition Specification §10 Decision Log — 2026-04-27 row: "Dependency_map source: deterministic fallback at runner layer ... manifest promotion deferred as Tier-A-0 prerequisite story"
+- Slab 6.1 bmad-code-review DFR-6.1-1 / AA-2 — operator-ratified deferral of manifest promotion to this Slab-6.2 prerequisite story
+- Composition Specification §3.6 (dependency_map sourcing) — names manifest as the post-Slab-6.2 source-of-truth
+- Composition Specification §10 Decision Log — 2026-04-27 row: "Dependency_map source: deterministic fallback at runner layer ... manifest promotion deferred as Slab-6.2 prerequisite story"
 
 **Authorship provenance:** authored 2026-04-27 in operator session immediately after Slab 6.1 patch dispatch authored. Cite Codex Slab 6.1 implementation (commit `d5cfad8`) + bmad-code-review report at `_bmad-output/implementation-artifacts/6-1-code-review-2026-04-27.md` (DFR-6.1-1).
 
@@ -22,10 +22,10 @@
 Slab 6.1 shipped with a runner-layer deterministic fallback for `dependency_map` because the v4.2 pipeline manifest does not yet declare per-node dependency input keys. The fallback works for the current bounded-MVP composition (Texas → CD = `source_bundle`; other downstream = `upstream_output`), but it has three substantive limitations:
 
 1. **Implicit coupling.** The fallback table is in code (`_default_dependency_map_for(specialist_id)`), not in the manifest. Adding a new specialist with a non-default dependency shape requires editing the runner, not the manifest.
-2. **Specialist evolution friction.** When Tier A bundle introduces new specialists (Step 02A surface; HUD instrumentation surfaces) or changes existing ones (Irene Pass 2 authoring template), each may need new dependency entries. Editing the runner per specialist is the procedural-coupling pattern A12 named.
+2. **Specialist evolution friction.** When Slab 6 trial-experience bundle introduces new specialists (Step 02A surface; HUD instrumentation surfaces) or changes existing ones (Irene Pass 2 authoring template), each may need new dependency entries. Editing the runner per specialist is the procedural-coupling pattern A12 named.
 3. **Non-linear topology blind spot.** Branch/conditional manifest topologies (DFR-6.1-4 candidate) cannot declare dependencies cleanly without manifest-level dependency declarations.
 
-This story closes the gap before Tier A bundle implementation begins. After this lands:
+This story closes the gap before Slab 6 trial-experience bundle implementation begins. After this lands:
 - Manifest-declared dependency keys are the source-of-truth
 - Runner-layer fallback is preserved as the resolution mechanism for nodes that don't declare keys (fully backward-compatible)
 - Adding/modifying a specialist edits the manifest, not the runner
@@ -36,7 +36,7 @@ This story closes the gap before Tier A bundle implementation begins. After this
 
 ## T1 Readiness Block
 
-1. **Governance:** single-gate (rationale: minor schema extension; no new substrate; preserves backward-compat via fallback retention; no composition-shape change). Add to `docs/dev-guide/migration-story-governance.json` as Tier-A-0 entry; version bump.
+1. **Governance:** single-gate (rationale: minor schema extension; no new substrate; preserves backward-compat via fallback retention; no composition-shape change). Add to `docs/dev-guide/migration-story-governance.json` as Slab-6.2 entry; version bump.
 
 2. **Substrate inheritance (BINDING):**
    - `state/config/pipeline-manifest.yaml` — current manifest; extends with per-node `dependencies:` field
@@ -99,7 +99,7 @@ def _resolve_dependency_map(node: ManifestNode) -> dict[str, str]:
     """Resolve dependency_map for a manifest node.
 
     Manifest declaration is source-of-truth; falls back to deterministic
-    default if not declared. Per Composition Spec §3.6 post-Tier-A-0.
+    default if not declared. Per Composition Spec §3.6 post-Slab-6.2.
     """
     if node.dependencies:
         return node.dependencies
@@ -112,70 +112,70 @@ def _resolve_dependency_map(node: ManifestNode) -> dict[str, str]:
 
 ## Story
 
-As an **operator preparing to evolve specialist behavior during Tier A bundle implementation and subsequent trial work**,
+As an **operator preparing to evolve specialist behavior during Slab 6 trial-experience bundle implementation and subsequent trial work**,
 I want **dependency_map declarations to live in the pipeline manifest (with runner-layer fallback preserved for backward-compat)**,
-So that **adding/modifying specialists edits the manifest rather than the runner; the source-of-truth for cross-specialist coupling is in one place; and Tier A bundle implementation + future composition evolutions can declare dependencies cleanly without procedural-coupling friction**.
+So that **adding/modifying specialists edits the manifest rather than the runner; the source-of-truth for cross-specialist coupling is in one place; and Slab 6 trial-experience bundle implementation + future composition evolutions can declare dependencies cleanly without procedural-coupling friction**.
 
 ---
 
 ## Acceptance Criteria
 
-### AC-Tier-A-0-A — Pipeline manifest schema extension
+### AC-Slab-6.2-A — Pipeline manifest schema extension
 
 - **Given** Decision #2 schema shape
 - **When** dev extends `state/config/pipeline-manifest.yaml` schema validator + manifest itself
 - **Then** per-node `dependencies: dict[str, str]` field accepted (downstream-input-key → upstream-specialist-id); empty/missing field is valid (triggers fallback); circular dependencies rejected at compile time per existing manifest invariant.
 - **Test pin:** `tests/integration/manifest/test_manifest_dependencies_field.py` — 4 tests: schema-accepts-empty / schema-accepts-declared / schema-rejects-circular / schema-rejects-non-dict-shape.
 
-### AC-Tier-A-0-B — Production runner manifest-first resolution
+### AC-Slab-6.2-B — Production runner manifest-first resolution
 
 - **Given** Decision #3 resolution rule
 - **When** dev wires `_resolve_dependency_map(node)` into the production runner's specialist invocation loop
 - **Then** runner reads manifest-declared dependencies first; falls back to `_default_dependency_map_for(specialist_id)` for unspecified nodes; existing Slab 6.1 fallback contract preserved.
 - **Test pin:** `tests/integration/marcus/test_production_runner_dependency_resolution.py` — 3 tests: manifest-declared-precedence / fallback-on-empty / fallback-on-missing-field.
 
-### AC-Tier-A-0-C — Existing manifest entries promoted to declared dependencies
+### AC-Slab-6.2-C — Existing manifest entries promoted to declared dependencies
 
 - **Given** the current Slab 6.1 fallback table (Texas → CD `source_bundle`)
 - **When** dev declares dependencies in the manifest matching current fallback behavior
 - **Then** trial behavior unchanged from Slab 6.1; envelope contributions accumulate identically; replay-regression slices PASS.
 - **Test pin:** N/A (covered by AC-B + replay regression in AC-G).
 
-### AC-Tier-A-0-D — Composition Specification §3.6 update
+### AC-Slab-6.2-D — Composition Specification §3.6 update
 
 - **Given** the manifest-as-source-of-truth shift
 - **When** dev updates `docs/dev-guide/composition-specification.md` §3.6
 - **Then** §3.6 reflects manifest-declared with runner-layer fallback as the resolution mechanism; §10 Decision Log row added; §12 known limitation #1 flips from RESOLVED-WITH-DEFERRAL to RESOLVED.
 
-### AC-Tier-A-0-E — Live smoke unaffected
+### AC-Slab-6.2-E — Live smoke unaffected
 
 - **Given** the existing Slab 6.1 live smoke at `tests/live/test_production_trial_smoke.py`
-- **When** operator runs the smoke post-Tier-A-0
+- **When** operator runs the smoke post-Slab-6.2
 - **Then** test PASSES with identical contribution ordering + cost shape to Slab 6.1 baseline (same texas + irene chain works).
 - **Test pin:** existing live smoke; no new test required.
 
-### AC-Tier-A-0-F — Specialist isolation invariant preserved
+### AC-Slab-6.2-F — Specialist isolation invariant preserved
 
 - **Given** the chain-test + isolation discipline from Slab 6.0
 - **When** dev verifies post-implementation
 - **Then** `tests/composition/test_specialist_isolation_preserved.py` PASSES; all per-specialist `tests/specialists/<name>/test_*.py` PASS.
 - **Test pin:** existing isolation tests; verify post-implementation.
 
-### AC-Tier-A-0-G — Replay regression slice unchanged
+### AC-Slab-6.2-G — Replay regression slice unchanged
 
 - **Given** the existing 5a.1 replay regression suite
 - **When** dev runs the slice post-implementation
 - **Then** slice GREEN at the same coverage as Slab 6.1 close (the pre-existing pack-hash drift per `replay-regression-pack-hash-drift-pre-slab-6.1` remains deferred; this story does not introduce additional drift).
 
-### AC-Tier-A-0-H — Anti-pattern catalog unchanged
+### AC-Slab-6.2-H — Anti-pattern catalog unchanged
 
 NO new entries expected. If a NEW pattern surfaces (e.g., manifest-declared dependency on a not-yet-registered specialist), file as harvest candidate per Mary harvest-gate.
 
-### AC-Tier-A-0-I — TEMPLATE compliance
+### AC-Slab-6.2-I — TEMPLATE compliance
 
-R1, R6, R8 honored. Tier-A-0 — establishes the precedent for substrate-relocation stories that move responsibility from one layer to another while preserving backward-compat.
+R1, R6, R8 honored. Slab-6.2 — establishes the precedent for substrate-relocation stories that move responsibility from one layer to another while preserving backward-compat.
 
-### AC-Tier-A-0-J — D12 close protocol (single-gate)
+### AC-Slab-6.2-J — D12 close protocol (single-gate)
 
 1. **Invariant preservation:** all 15 invariants from 5a.4 matrix REMAIN preserved (this story relocates dependency_map source; doesn't modify any invariant). FR34 HIL machinery preserved (orthogonal). FR43 frozen-graph-version-ceremony respected.
 2. **Anti-pattern harvest:** no new entries expected; verify A12 (procedural-coupling) is partially mitigated (manifest-declared dependencies move some procedural coupling out of code, but generator-emit work is still pending per `2c-4-generator-emit-manifest-dependency-stub`).
@@ -183,13 +183,13 @@ R1, R6, R8 honored. Tier-A-0 — establishes the precedent for substrate-relocat
 4. **TEMPLATE compliance:** R1, R6, R8.
 5. **Sprint-status flip + Composition Spec §10/§12 update + deferred-inventory entry status flip** (see AC-K + AC-L).
 
-### AC-Tier-A-0-K — Sprint-status state-flips at filing AND close
+### AC-Slab-6.2-K — Sprint-status state-flips at filing AND close
 
-At filing: `tier-a-0-promote-dependency-map-into-manifest: ready-for-dev`. At close: `tier-a-0-promote-dependency-map-into-manifest: done`. Tier A bundle stories (`tier-a-1-*`, `tier-a-2-*`, `tier-a-3-*`) UNBLOCKED at this story's close.
+At filing: `migration-6-2-promote-dependency-map-into-manifest: ready-for-dev`. At close: `migration-6-2-promote-dependency-map-into-manifest: done`. Slab 6 trial-experience bundle stories (`migration-6-3-*`, `migration-6-4-*`, `migration-6-5-*`) UNBLOCKED at this story's close.
 
-### AC-Tier-A-0-L — Deferred-inventory entry status flip
+### AC-Slab-6.2-L — Deferred-inventory entry status flip
 
-The entry filed at Slab 6.1 close (`tier-a-0-promote-dependency-map-into-manifest`) flips from FILED-AS-DEFERRED to RESOLVED-AT-Tier-A-0-CLOSE. Composition Spec §12 known limitation #1 flips from RESOLVED-WITH-DEFERRAL to RESOLVED.
+The entry filed at Slab 6.1 close (`migration-6-2-promote-dependency-map-into-manifest`) flips from FILED-AS-DEFERRED to RESOLVED-AT-Slab-6.2-CLOSE. Composition Spec §12 known limitation #1 flips from RESOLVED-WITH-DEFERRAL to RESOLVED.
 
 ---
 
@@ -209,7 +209,7 @@ The entry filed at Slab 6.1 close (`tier-a-0-promote-dependency-map-into-manifes
 - `docs/dev-guide/langgraph-migration-guide.md` — §"Production Runner" augmented per AC-J item 3
 - `_bmad-output/implementation-artifacts/sprint-status.yaml` — per AC-K
 - `_bmad-output/planning-artifacts/deferred-inventory.md` — per AC-L; entry flip
-- `docs/dev-guide/migration-story-governance.json` — Tier-A-0 single-gate entry + version bump
+- `docs/dev-guide/migration-story-governance.json` — Slab-6.2 single-gate entry + version bump
 
 ### DO NOT MODIFY
 
@@ -276,7 +276,7 @@ _(Populated during T1–T9 execution.)_
 
 ### T1 Readiness + substrate verification
 
-_(Verify Slab 6.1 close state at dev start; confirm `_default_dependency_map_for(...)` still in place; confirm Composition Spec §3.6 reflects pre-Tier-A-0 state.)_
+_(Verify Slab 6.1 close state at dev start; confirm `_default_dependency_map_for(...)` still in place; confirm Composition Spec §3.6 reflects pre-Slab-6.2 state.)_
 
 ### Implementation summary
 

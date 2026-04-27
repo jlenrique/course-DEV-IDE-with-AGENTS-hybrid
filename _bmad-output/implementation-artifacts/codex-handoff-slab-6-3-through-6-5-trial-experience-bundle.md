@@ -31,7 +31,7 @@ Total: ~7-11pt; ~28-46 hr Codex time. Phased delivery; parallelizable where inde
 Phase 1 ─── bmad-create-story per story (Codex; ~4-6 hr)
             Three story specs authored against seeds below
             Each runs through full bmad-create-story workflow
-            Output: three migration-tier-a-* spec files
+            Output: three migration-6-3-* through migration-6-5-* spec files
 
 Phase 2 ─── Party-mode green-light per story (operator; ~1-2 hr per story)
             Operator convenes party-mode rounds via bmad-party-mode
@@ -52,16 +52,16 @@ Phase 4 ─── bmad-code-review per story (separate dispatch; ~6-9 hr Codex)
 Phase 5 ─── Formal close per story (operator; ~30 min total)
             sprint-status flips per story
             deferred-inventory entries flip RESOLVED per story
-            Tier A bundle complete; first tracked trial unblocked
+            Slab 6 trial-experience bundle complete; first tracked trial unblocked
 ```
 
 ## Story seeds (Phase 1 input)
 
 ### Story A1 — Step 02A prior-run directives as defaults
 
-**Story key candidate:** `tier-a-1-step-02a-prior-run-directives-as-defaults`
+**Story key candidate:** `migration-6-3-step-02a-prior-run-directives-as-defaults`
 
-**Sprint key seed:** `tier-a-1-step-02a-prior-run-directives`
+**Sprint key seed:** `migration-6-3-step-02a-prior-run-directives`
 
 **Pts:** ~1 (single-gate; minor enhancement to existing Marcus PR-* capability OR Step 02A pack procedure)
 
@@ -89,9 +89,9 @@ Phase 5 ─── Formal close per story (operator; ~30 min total)
 
 ### Story A2 — Irene Pass 2 authoring template / schema contract
 
-**Story key candidate:** `tier-a-2-irene-pass-2-authoring-template`
+**Story key candidate:** `migration-6-4-irene-pass-2-authoring-template`
 
-**Sprint key seed:** `tier-a-2-irene-pass-2-authoring-template`
+**Sprint key seed:** `migration-6-4-irene-pass-2-authoring-template`
 
 **Pts:** ~3-5 (dual-gate likely; new schema surface + Irene authoring contract)
 
@@ -133,9 +133,9 @@ Phase 5 ─── Formal close per story (operator; ~30 min total)
 
 ### Story A3 — HUD per-step expandable summaries
 
-**Story key candidate:** `tier-a-3-hud-per-step-expandable-summaries`
+**Story key candidate:** `migration-6-5-hud-per-step-expandable-summaries`
 
-**Sprint key seed:** `tier-a-3-hud-per-step-expandable-summaries`
+**Sprint key seed:** `migration-6-5-hud-per-step-expandable-summaries`
 
 **Pts:** ~3-5 (single-gate likely; new HUD surface; no schema-shape risk; pure operator-experience)
 
@@ -184,13 +184,13 @@ For each story (A1, A2, A3), Codex runs `bmad-create-story` with the seed prompt
 - D12 close protocol
 
 **Output paths:**
-- A1: `_bmad-output/implementation-artifacts/migration-tier-a-1-step-02a-prior-run-directives.md`
-- A2: `_bmad-output/implementation-artifacts/migration-tier-a-2-irene-pass-2-authoring-template.md`
-- A3: `_bmad-output/implementation-artifacts/migration-tier-a-3-hud-per-step-expandable-summaries.md`
+- A1: `_bmad-output/implementation-artifacts/migration-6-3-step-02a-prior-run-directives.md`
+- A2: `_bmad-output/implementation-artifacts/migration-6-4-irene-pass-2-authoring-template.md`
+- A3: `_bmad-output/implementation-artifacts/migration-6-5-hud-per-step-expandable-summaries.md`
 
 **Sandbox-AC validator:** run per CLAUDE.md migration-story governance after each story spec lands. PASS expected (no operator-only CLI invocations expected in dev-agent ACs; if surfaced, refactor per CLAUDE.md sandbox-AC rules).
 
-**Governance JSON update:** add three entries to `docs/dev-guide/migration-story-governance.json` per story key with the gate-mode designations above. Version bump to `2026-04-XX-tier-a` (or appropriate date when this dispatch executes).
+**Governance JSON update:** add three entries to `docs/dev-guide/migration-story-governance.json` per story key with the gate-mode designations above. Version bump to `2026-04-XX-slab-6.3-6.5` (or appropriate date when this dispatch executes).
 
 **Halt rule:** if any story spec surfaces architectural disagreement that the seed didn't anticipate, halt Phase 1 for that story and surface to operator with `decision_needed` framing. The other two stories proceed independently.
 
@@ -218,20 +218,20 @@ Codex implements per ratified story spec. Standard halt-and-surface discipline:
 - A2 likely touches A12 (procedural-coupling) territory if Irene authoring requires manual step elsewhere — verify generator-emit covers
 - A3 likely touches A9 (Epic-doc structural-name drift) if HUD step naming diverges from manifest step naming — verify alignment
 
-## Phase 4 execution rules (separate dispatch; bmad-code-review on Tier A bundle)
+## Phase 4 execution rules (separate dispatch; bmad-code-review on Slab 6 trial-experience bundle)
 
-Operator authors a separate dispatch at `_bmad-output/implementation-artifacts/codex-handoff-tier-a-code-review.md` after Phase 3 lands. The dispatch follows the same template as `codex-handoff-slab-6-0-code-review.md`:
+Operator authors a separate dispatch at `_bmad-output/implementation-artifacts/codex-handoff-slab-6-3-through-6-5-code-review.md` after Phase 3 lands. The dispatch follows the same template as `codex-handoff-slab-6-0-code-review.md`:
 - Three layers (Blind Hunter + Edge Case Hunter + Acceptance Auditor) per story
 - Per-story N-item trace section as first-class deliverable
 - Triage: patch / defer / dismiss / decision_needed
-- Required deliverable: `_bmad-output/implementation-artifacts/tier-a-code-review-2026-04-XX.md`
+- Required deliverable: `_bmad-output/implementation-artifacts/slab-6-3-through-6-5-code-review-2026-04-XX.md`
 
 May be bundled as one review pass covering all three diffs OR split into per-story reviews. Operator preference: bundle if reviews can fit in one Codex session; split if cumulative diff is too large for productive review.
 
 ## Phase 5 execution rules (operator action; formal close per story)
 
 Per story:
-1. `sprint-status.yaml` flips `tier-a-N-*: review` → `done`
+1. `sprint-status.yaml` flips `migration-6-N-*: review` → `done`
 2. Deferred-inventory entry flips RESOLVED with cite to closing story
 3. `next-session-start-here.md` updated if present (likely NOT in repo policy per Slab 6.0 close finding)
 4. Composition Spec §10 Decision Log entry per story if any composition-affecting decision was made
@@ -289,10 +289,10 @@ Standard halt-and-surface discipline:
 ## Deliverable
 
 When the bundle is complete:
-1. Three story specs at `_bmad-output/implementation-artifacts/migration-tier-a-{1,2,3}-*.md`
+1. Three story specs at `_bmad-output/implementation-artifacts/migration-6-{3,4,5}-*.md`
 2. Three party-mode-ratified specs (operator action between Phase 1 and 3)
 3. Three implementation surfaces landed via themed commits per story
-4. One bundled bmad-code-review deliverable at `_bmad-output/implementation-artifacts/tier-a-code-review-2026-04-XX.md`
+4. One bundled bmad-code-review deliverable at `_bmad-output/implementation-artifacts/slab-6-3-through-6-5-code-review-2026-04-XX.md`
 5. Three sprint-status flips + three deferred-inventory updates
 6. Final Codex report naming: per-story tests passing; per-story N-item trace summary; per-story `decision_needed` items surfaced; cumulative files changed; operator-action checklist for Phase 2 + Phase 5
 
@@ -311,7 +311,7 @@ Per Slab 6.0 governance, every Codex slab dispatch from this point forward must:
 3. Have the Acceptance Auditor (in code review) verify each applicable N-item is honored
 4. File N13+ extensions if a NEW substrate concern surfaces
 
-For this Tier A bundle: per-story N-item applicability is named in the table above; honor it.
+For this Slab 6 trial-experience bundle: per-story N-item applicability is named in the table above; honor it.
 
 ## What this dispatch does NOT do
 

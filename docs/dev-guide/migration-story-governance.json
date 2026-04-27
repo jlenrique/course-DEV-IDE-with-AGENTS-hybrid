@@ -1,12 +1,13 @@
 {
   "_comment": "Codified gate-mode designations for LangChain/LangGraph migration stories. Authored 2026-04-22 from the triage pass across the 56-story plan in _bmad-output/planning-artifacts/epics-langchain-langgraph-migration.md. The triage RE-AFFIRMED the existing per-story designations — dual-gate is applied only where a story introduces a schema-shape, CI/compile-time contract, lane/package boundary, load-bearing invariant preservation, or operator-acceptance gate. Every other story is single-gate. Stories 2b.2-2b.14 are explicitly pinned to single-gate here (they follow the 2b.1 TEMPLATE scaffold and should not relitigate gate mode at authoring time). Freezing these designations here means bmad-create-story on a migration story does not need to rederive the gate-mode decision — it reads this file. Additions or demotions require party-mode consensus and a version bump below.",
-  "version": "2026-04-27-slab6",
+  "version": "2026-04-27-slab6-trial-experience-bundle",
   "_amendment_log": [
     "2026-04-22 — Initial freeze of 56-story plan (1-1 through 5b-4); 1-1d added via middle-path party-mode consensus on MCP-in-Slab-1.",
     "2026-04-25 — Story 2a-5 added (Generator auto-emit pyproject.toml C3 ignore_imports row; 2a.1 follow-on defect; ~2pt single-gate; party-mode T2 2026-04-24 ratification per Murat (b)-preferred path / Winston path-2 / Paige A12 procedural-coupling category). Filed as the Slab-2a→2b binding gate per slab-2a-retrospective.md.",
     "2026-04-26 — Story 5a-3 substrate-aware amendment (operator-ratified this session). Original spec (≥50% cost-reduction bar vs primary-repo baseline + cited non-existent app/runtime/model_cascade.py) halted Codex T1: legacy code does not capture per-call token data; primary baseline file does not exist; cited cost source absent. Repointed to cost-engineering foundation: parameterized OpenAI cascade in runtime/config/model_cascade.yaml (Marcus=gpt-5; mid-tier specialists=gpt-5-mini; narrow=gpt-5-nano), config-file pricing in runtime/config/openai_pricing.yaml, per-trial cost reports at state/config/runs/<trial-id>/cost-report.{json,md}, soft-cap budget telemetry via MARCUS_TRIAL_BUDGET_USD, per-agent drift alerts (rolling 5-trial median ±50%), characterization baseline on migrated runtime (NOT primary comparison). Pts 3→5; K-target ~1.3×→~1.4× (target 14 / floor 10). Gate stays single. 5a-4 + 5a-5 references to ≥50% bar amended in lockstep. Operator-ratified D1-D9 are binding.",
     "2026-04-27 - Story 6-1 added as Slab 6 inaugural production-capability opener after A16 Composition-vs-Component Audit Gap. Gate is dual (`substrate_shape` + `operator_acceptance_gate`) because it introduces the production graph composition layer and requires one operator-accepted live trial through the runner.",
-    "2026-04-27 - Story 6-0 inserted before 6-1 after A17 Substrate Designed for Isolation, Composition Assumed. Gate is dual (`substrate_shape` + `invariant_preservation`) because it introduces the production envelope substrate while preserving isolated specialist scaffold contracts. Story 6-1 re-scoped to runner-consumes-substrate."
+    "2026-04-27 - Story 6-0 inserted before 6-1 after A17 Substrate Designed for Isolation, Composition Assumed. Gate is dual (`substrate_shape` + `invariant_preservation`) because it introduces the production envelope substrate while preserving isolated specialist scaffold contracts. Story 6-1 re-scoped to runner-consumes-substrate.",
+    "2026-04-27 - Stories 6-2 + 6-3 + 6-4 + 6-5 added as Slab 6 trial-experience bundle. 6-2 is the prerequisite (manifest dependency_map promotion; ~1pt single-gate; closes Composition Spec §12 known limitation #1). 6-3 + 6-4 + 6-5 are the bundle proper (Step 02A defaults; Irene Pass 2 authoring template; HUD per-step summaries). 6-3 + 6-5 single-gate; 6-4 dual-gate (`schema_shape + invariant_preservation`). All operator-flagged from 2026-04-19/20 trial-prep evidence; sequenced for first-tracked-trial readiness."
   ],
   "dual_gate_rationale_legend": {
     "schema_shape": "Story introduces a new Pydantic v2 model family with four-file-lockstep (schema + validator + tests + golden fixture).",
@@ -274,13 +275,41 @@
       "expected_pts": 5,
       "expected_k_target": 1.4,
       "amendment_note": "Re-scoped 2026-04-27 after Slab 6.0 insertion: runner consumes ProductionEnvelope + ProductionDispatchAdapter substrate; retains manifest composition, HIL pause/resume, trace binding, and live smoke/operator acceptance."
+    },
+    "6-2": {
+      "expected_gate_mode": "single-gate",
+      "rationale": null,
+      "expected_pts": 1,
+      "expected_k_target": 1.4,
+      "amendment_note": "Filed 2026-04-27 after Slab 6.1 close per bmad-code-review DFR-6.1-1. Promotes dependency_map declaration from runner-layer fallback into pipeline manifest; preserves runner-layer fallback for backward-compat. Slab 6 trial-experience bundle prerequisite (precedes 6.3 + 6.4 + 6.5)."
+    },
+    "6-3": {
+      "expected_gate_mode": "single-gate",
+      "rationale": null,
+      "expected_pts": 1,
+      "expected_k_target": 1.4,
+      "amendment_note": "Filed 2026-04-27 as Slab 6 trial-experience bundle item. Step 02A surfaces prior-run operator-directives.md as named defaults; eliminates re-entry burden on resumed/repeated runs. Operator-flagged 2026-04-19 trial. Single-gate: minor enhancement; no schema-shape risk."
+    },
+    "6-4": {
+      "expected_gate_mode": "dual-gate",
+      "rationale": "schema_shape + invariant_preservation",
+      "expected_pts": 4,
+      "expected_k_target": 1.4,
+      "amendment_note": "Filed 2026-04-27 as Slab 6 trial-experience bundle item. Encodes validate-irene-pass2-handoff.py validator contract as explicit Pydantic v2 schema + authoring template. Operator-flagged HIGHEST friction step in production pipeline (2026-04-20 trial run B-Run §08). Dual-gate: new schema surface + existing validator contract preservation."
+    },
+    "6-5": {
+      "expected_gate_mode": "single-gate",
+      "rationale": null,
+      "expected_pts": 4,
+      "expected_k_target": 1.4,
+      "amendment_note": "Filed 2026-04-27 as Slab 6 trial-experience bundle item. HUD per-step expandable summaries surface real-time content captured + locked at each pipeline step. Operator-flagged 2026-04-19 trial during Step 03 hold. Single-gate: HUD enhancement; no schema-shape risk; no substrate-touching contracts."
     }
   },
   "triage_summary": {
-    "total_stories": 60,
-    "single_gate": 43,
-    "dual_gate": 17,
+    "total_stories": 64,
+    "single_gate": 46,
+    "dual_gate": 18,
     "dual_gate_pct": 28,
-    "note": "28% dual-gate is the projected workload after Slab 6.0 insertion. Dual-gate stories cluster in Slab 1 substrate (4/10 = 40%), Slab 3 orchestration (3/6 = 50%), and Slab 6 production capability substrate/runner. Slab 2b's 17 specialist migrations are 2/17 = 12% dual, reflecting that most specialist work follows the 2b.1 TEMPLATE and is scaffold-conformant. Total grew 56->57 on 2026-04-22 with Story 1-1d; 57->58 on 2026-04-25 with Story 2a-5; 59->60 on 2026-04-27 with Story 6-0 production envelope substrate."
+    "note": "28% dual-gate is the projected workload after Slab 6 trial-experience bundle insertion. Dual-gate stories cluster in Slab 1 substrate (4/10 = 40%), Slab 3 orchestration (3/6 = 50%), and Slab 6 production capability (3/6 = 50% — 6-0 substrate + 6-1 runner + 6-4 Irene authoring template). Slab 2b's 17 specialist migrations are 2/17 = 12% dual. Total grew 56->57 on 2026-04-22 with Story 1-1d; 57->58 on 2026-04-25 with Story 2a-5; 59->60 on 2026-04-27 with Story 6-0; 60->64 on 2026-04-27 with Stories 6-2 + 6-3 + 6-4 + 6-5 (Slab 6 trial-experience bundle)."
   }
 }

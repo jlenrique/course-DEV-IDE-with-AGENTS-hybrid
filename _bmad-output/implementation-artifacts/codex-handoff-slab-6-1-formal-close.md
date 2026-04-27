@@ -9,10 +9,10 @@
 - Codex-side live gate-resume smoke: 1 passed in 291.27s; persistent live audit trial `b38f5350-0c35-4cd5-821f-29687725bb70`; contributions `[texas, irene]`; cost $0.1020115
 - **Operator-side dual-gate gate-2: PASS — `pytest tests/live/test_production_trial_smoke_with_gate.py -m live -q --tb=short` → `1 passed in 30.54s` on 2026-04-27 (operator-witnessed Juan Leon)**
 - Composition Spec §3.1 + §3.6 + §3.7 + §10 + §12 already updated by operator session pre-close
-- Tier-A-0 story spec pre-authored at `migration-tier-a-0-promote-dependency-map-into-manifest.md` (status `ready-for-dev`; activates at this story's close)
+- Slab-6.2 story spec pre-authored at `migration-6-2-promote-dependency-map-into-manifest.md` (status `ready-for-dev`; activates at this story's close)
 - Six deferred-inventory entries pre-authored at `slab-6-1-close-deferred-inventory-entries-ready-to-paste.md`
 
-**Mission:** mechanical formal close of Slab 6.1 — ~7 file edits + 1 commit. No new architecture; no decisions; no halt-and-surface expected. After this lands, migration verdict promotes from "SHIP for bounded-MVP scope" to **unqualified SHIP** + Tier-A-0 unblocks + Tier A bundle dispatch becomes operator's next hand-off.
+**Mission:** mechanical formal close of Slab 6.1 — ~7 file edits + 1 commit. No new architecture; no decisions; no halt-and-surface expected. After this lands, migration verdict promotes from "SHIP for bounded-MVP scope" to **unqualified SHIP** + Slab-6.2 unblocks + Slab 6 trial-experience bundle dispatch becomes operator's next hand-off.
 
 **Operator preference (binding, unchanged):** "do it right, no band-aids, only rational trade-offs that get named in writing." This dispatch is mechanical close work; no rational trade-offs to name.
 
@@ -42,7 +42,7 @@
 **Change A:** Locate existing `5a-2-production-graph-entrypoint-substrate-gap` entry (around line 68 per pre-close state). Flip from DEFERRED-CONTINUES to **RESOLVED-2026-04-27** with annotation: closed by Slab 6.0 substrate (`migration-6-0-production-envelope-substrate.md` per Path A-prime) + Slab 6.1 runner-consumes-substrate (`migration-6-1-production-graph-runner.md`); checkpoint resume patched 2026-04-27; operator-witnessed live gate-resume smoke 30.54s PASS.
 
 **Change B:** Append SIX new entries to §"Named-But-Not-Filed Follow-Ons" table, in this order. The full Markdown for each row is pre-authored at `_bmad-output/implementation-artifacts/slab-6-1-close-deferred-inventory-entries-ready-to-paste.md` — paste from there verbatim:
-1. `tier-a-0-promote-dependency-map-into-manifest` (DFR-6.1-1; ~1pt; Tier A prerequisite)
+1. `migration-6-2-promote-dependency-map-into-manifest` (DFR-6.1-1; ~1pt; Tier A prerequisite)
 2. `slab-6-1-multi-pass-envelope-path-x-or-y` (DFR-6.1-2; Path X / Path Y enhancement)
 3. `replay-regression-pack-hash-drift-pre-slab-6.1` (DFR-6.1-3)
 4. `slab-6-1-runner-compiled-edge-traversal` (DFR-6.1-4)
@@ -50,7 +50,7 @@
 6. `slab-6-1-langsmith-runner-trace-id-real-binding` (DN-1 deferral; ~2-3pt)
 
 **Change C:** Update the table-footer counter line (currently "Total named follow-ons: 45 filed; 3 resolved 2026-04-27. Active follow-ons: 42."). New shape:
-- Total named follow-ons: 51 filed; 4 resolved 2026-04-27 (added: 5a-2-production-graph-entrypoint-substrate-gap RESOLVED; new entries from Slab 6.1 close: tier-a-0-promote-dependency-map-into-manifest + slab-6-1-multi-pass-envelope-path-x-or-y + replay-regression-pack-hash-drift-pre-slab-6.1 + slab-6-1-runner-compiled-edge-traversal + production-trial-envelope-lifecycle-invariants + slab-6-1-langsmith-runner-trace-id-real-binding)
+- Total named follow-ons: 51 filed; 4 resolved 2026-04-27 (added: 5a-2-production-graph-entrypoint-substrate-gap RESOLVED; new entries from Slab 6.1 close: migration-6-2-promote-dependency-map-into-manifest + slab-6-1-multi-pass-envelope-path-x-or-y + replay-regression-pack-hash-drift-pre-slab-6.1 + slab-6-1-runner-compiled-edge-traversal + production-trial-envelope-lifecycle-invariants + slab-6-1-langsmith-runner-trace-id-real-binding)
 - Active follow-ons: 47 (51 filed minus 4 resolved)
 
 **Change D:** Update file header `Last refreshed:` line to `**2026-04-27**` with annotation summarizing Slab 6.1 close.
@@ -94,7 +94,7 @@
 > - Runner iterates manifest order rather than compiled edges (deferred until non-linear topology lands)
 > - ProductionTrialEnvelope lifecycle cross-field validators absent (pre-existing; deferred for tech-debt cleanup)
 >
-> **Next sprint work:** Tier-A-0 (`tier-a-0-promote-dependency-map-into-manifest`; ~1pt; pre-authored at `_bmad-output/implementation-artifacts/migration-tier-a-0-promote-dependency-map-into-manifest.md`) lands as Tier A prerequisite; Tier A bundle (A1 + A2 + A3 per `codex-handoff-tier-a-trial-experience-bundle.md`) follows; first tracked trial run unblocks at Tier A bundle close.
+> **Next sprint work:** Slab-6.2 (`migration-6-2-promote-dependency-map-into-manifest`; ~1pt; pre-authored at `_bmad-output/implementation-artifacts/migration-6-2-promote-dependency-map-into-manifest.md`) lands as Tier A prerequisite; Slab 6 trial-experience bundle (A1 + A2 + A3 per `codex-handoff-slab-6-3-through-6-5-trial-experience-bundle.md`) follows; first tracked trial run unblocks at Slab 6 trial-experience bundle close.
 
 ### Edit 5 — Slab 6.1 spec Dev Agent Record operator dual-gate evidence
 
@@ -124,7 +124,7 @@ Final sentence section: append "Slab 6.1 formally CLOSED 2026-04-27 with sprint-
 
 **File:** `next-session-start-here.md` (if present per repo policy — Codex previously noted this file may be ignored/untracked)
 
-**Change:** if file exists in working tree AND is tracked, update with one-line status: "Migration unconditionally SHIPPED 2026-04-27 (Slab 6.0 + 6.1 closed; M5 condition #3 RESOLVED; bounded-MVP qualifier dropped; Tier-A-0 pre-authored as next sprint work)". If file is untracked, skip silently per prior-session finding.
+**Change:** if file exists in working tree AND is tracked, update with one-line status: "Migration unconditionally SHIPPED 2026-04-27 (Slab 6.0 + 6.1 closed; M5 condition #3 RESOLVED; bounded-MVP qualifier dropped; Slab-6.2 pre-authored as next sprint work)". If file is untracked, skip silently per prior-session finding.
 
 ## Commit shape
 
@@ -136,8 +136,8 @@ chore(slab-6.1-close): formal close — sprint-status done flip + 6 deferred-inv
 Slab 6.1 formally CLOSED 2026-04-27 after operator-witnessed live gate-resume
 smoke (30.54s PASS). All 4 M5 conditions resolved; migration verdict promotes
 from "SHIP for bounded-MVP scope" to unqualified SHIP. Six deferred-inventory
-entries filed per ratified dispositions. Tier-A-0 pre-authored as next sprint
-work; Tier A bundle dispatch ready for hand-off after Tier-A-0 close.
+entries filed per ratified dispositions. Slab-6.2 pre-authored as next sprint
+work; Slab 6 trial-experience bundle dispatch ready for hand-off after Slab-6.2 close.
 
 Files:
 - _bmad-output/implementation-artifacts/sprint-status.yaml (review → done flip + last_updated)
@@ -159,13 +159,13 @@ Brief Codex final report after commit lands:
 2. File count touched
 3. Confirmation that all 7 edits landed (or list which skipped + why)
 4. Confirmation: migration verdict now reads "unqualified SHIP" in m5-decision.md
-5. Confirmation: Tier-A-0 unblocked + ready for next dispatch hand-off
+5. Confirmation: Slab-6.2 unblocked + ready for next dispatch hand-off
 
 ## What this dispatch does NOT do
 
 - Does NOT touch any code (no `app/`, `tests/`, `schema/`, `state/config/` edits)
 - Does NOT modify Composition Specification (already updated by operator session)
 - Does NOT modify Substrate Inventory Checklist (no changes needed at close)
-- Does NOT start Tier-A-0 implementation (separate dispatch when operator hands)
+- Does NOT start Slab-6.2 implementation (separate dispatch when operator hands)
 - Does NOT modify anti-pattern catalog (no new entries from this close)
-- Does NOT pre-author the Tier-A bmad-code-review dispatch (separate hand-off when Tier A bundle implementation lands)
+- Does NOT pre-author the Slab-6.3-through-6.5 bmad-code-review dispatch (separate hand-off when Slab 6 trial-experience bundle implementation lands)

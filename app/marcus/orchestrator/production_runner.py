@@ -215,7 +215,7 @@ def _default_dependency_map_for(
     The v4.2 manifest currently carries ordering but not input-key names. Keep
     the known Texas -> CD contract explicit, then fall back to the immediately
     preceding specialist output under a generic key. This is the accepted Slab
-    6.1 close shape; `tier-a-0-promote-dependency-map-into-manifest` promotes
+    6.1 close shape; `migration-6-2-promote-dependency-map-into-manifest` promotes
     this mapping into manifest/registry metadata before Tier A work.
     """
     prior_ids = [item.specialist_id for item in production_envelope.contributions]

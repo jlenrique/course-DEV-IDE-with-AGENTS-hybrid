@@ -162,7 +162,7 @@ After this patch lands, Slab 6.1 has only Item 1 outstanding (deferred per opera
 - Operator runs new live smoke with gate-firing corpus to confirm reproducibility (~10 min; cost ~$0.20-$0.50)
 - Operator paste evidence into Slab 6.1 spec Dev Agent Record §"Operator dual-gate gate-2 evidence"
 - File SIX deferred-inventory entries per the full bmad-code-review-6.1 triage + Item 1 deferral:
-  - `tier-a-0-promote-dependency-map-into-manifest` (DFR-6.1-1; ~1pt; Tier A prerequisite)
+  - `migration-6-2-promote-dependency-map-into-manifest` (DFR-6.1-1; ~1pt; Tier A prerequisite)
   - `slab-6-1-multi-pass-envelope-path-x-or-y` (DFR-6.1-2; Path X / Path Y enhancement when multi-pass need emerges)
   - `replay-regression-pack-hash-drift-pre-slab-6.1` (DFR-6.1-3; investigate pre-existing drift; needs golden refresh post-Slab-6.0)
   - `slab-6-1-runner-compiled-edge-traversal` (DFR-6.1-4; runner currently iterates manifest order ignoring compiled graph edges; required before non-linear branch/conditional production manifests)
@@ -173,7 +173,7 @@ After this patch lands, Slab 6.1 has only Item 1 outstanding (deferred per opera
 - `_bmad-output/planning-artifacts/deferred-inventory.md` `5a-2-production-graph-entrypoint-substrate-gap` flip to RESOLVED
 - `_bmad-output/implementation-artifacts/m5-decision.md` Slab 6.1 close annotation; M5 condition #3 RESOLVED; migration verdict promotes from "SHIP for bounded-MVP scope" to unqualified SHIP
 - `docs/dev-guide/composition-specification.md` §3 + §10 + §12 updates per bmad-code-review-6.1 closeout protocol
-- Tier A bundle dispatch handed to Codex (`codex-handoff-tier-a-trial-experience-bundle.md`)
+- Slab 6 trial-experience bundle dispatch handed to Codex (`codex-handoff-slab-6-3-through-6-5-trial-experience-bundle.md`)
 
 ## Substrate Inventory Checklist availability
 

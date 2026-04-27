@@ -8,10 +8,10 @@
 
 ---
 
-### Entry 1 — `tier-a-0-promote-dependency-map-into-manifest`
+### Entry 1 — `migration-6-2-promote-dependency-map-into-manifest`
 
 ```markdown
-| **`tier-a-0-promote-dependency-map-into-manifest`** | Slab 6.1 bmad-code-review DFR-6.1-1 (AA-2) | Slab 6.1 ships with runner-layer deterministic fallback at `_default_dependency_map_for(specialist_id)` (Texas → CD = `source_bundle`; other downstream = `upstream_output`). v4.2 pipeline manifest does not yet declare dependency input keys per specialist node; promotion to manifest is the Tier A bundle prerequisite to keep specialist evolution clean. Operator-ratified deferral 2026-04-27 to keep Slab 6.1 close tight. | **Tier A prerequisite, ~1pt single-gate.** Promote `dependency_map` declaration into `state/config/pipeline-manifest.yaml` per-node entry; preserve runner-layer fallback as the resolution mechanism for nodes that don't declare keys (backward-compatible). Update Composition Spec §3.6 to reflect manifest-as-source-of-truth post-landing. Reactivate immediately after Slab 6.1 formal close; lands BEFORE Tier A bundle implementation per `codex-handoff-tier-a-trial-experience-bundle.md` Phase 0 prerequisite. |
+| **`migration-6-2-promote-dependency-map-into-manifest`** | Slab 6.1 bmad-code-review DFR-6.1-1 (AA-2) | Slab 6.1 ships with runner-layer deterministic fallback at `_default_dependency_map_for(specialist_id)` (Texas → CD = `source_bundle`; other downstream = `upstream_output`). v4.2 pipeline manifest does not yet declare dependency input keys per specialist node; promotion to manifest is the Slab 6 trial-experience bundle prerequisite to keep specialist evolution clean. Operator-ratified deferral 2026-04-27 to keep Slab 6.1 close tight. | **Tier A prerequisite, ~1pt single-gate.** Promote `dependency_map` declaration into `state/config/pipeline-manifest.yaml` per-node entry; preserve runner-layer fallback as the resolution mechanism for nodes that don't declare keys (backward-compatible). Update Composition Spec §3.6 to reflect manifest-as-source-of-truth post-landing. Reactivate immediately after Slab 6.1 formal close; lands BEFORE Slab 6 trial-experience bundle implementation per `codex-handoff-slab-6-3-through-6-5-trial-experience-bundle.md` Phase 0 prerequisite. |
 ```
 
 ---
@@ -61,7 +61,7 @@
 1. Open `_bmad-output/planning-artifacts/deferred-inventory.md`
 2. Locate the §"Named-But-Not-Filed Follow-Ons" table (around line 42-114 per pre-Slab-6.1 state)
 3. Append the six rows above in order
-4. Update the table-footer counter line: "Total named follow-ons: 45 filed; 3 resolved 2026-04-27" → "Total named follow-ons: 51 filed; 3 resolved 2026-04-27 (+ Slab 6.1 close 2026-04-XX adds 6 entries: tier-a-0-* + slab-6-1-multi-pass-* + replay-regression-pack-hash-drift-* + slab-6-1-runner-compiled-edge-traversal + production-trial-envelope-lifecycle-invariants + slab-6-1-langsmith-runner-trace-id-real-binding)" (adjust the final counts to actual totals)
+4. Update the table-footer counter line: "Total named follow-ons: 45 filed; 3 resolved 2026-04-27" → "Total named follow-ons: 51 filed; 3 resolved 2026-04-27 (+ Slab 6.1 close 2026-04-XX adds 6 entries: migration-6-2-promote-dependency-map-into-manifest + slab-6-1-multi-pass-* + replay-regression-pack-hash-drift-* + slab-6-1-runner-compiled-edge-traversal + production-trial-envelope-lifecycle-invariants + slab-6-1-langsmith-runner-trace-id-real-binding)" (adjust the final counts to actual totals)
 5. Update the file header `Last refreshed:` line to the close date
 6. Commit as `chore(slab-6.1-close): file 6 deferred-inventory entries per bmad-code-review triage + DN-1 deferral`
 

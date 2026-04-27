@@ -12,7 +12,7 @@
 - Composition Specification standing at `docs/dev-guide/composition-specification.md` (Option B / Path A-prime; §3 + §10 + §12 will be updated post-review)
 
 **Operator dispositions ratified 2026-04-27 (BINDING; informs Acceptance Auditor):**
-1. **dependency_map source — DEFERRED.** Codex's deterministic fallback (Texas → CD maps as `source_bundle`; other downstream calls use `upstream_output`) is accepted as Slab 6.1 close shape. Manifest promotion filed as `tier-a-0-promote-dependency-map-into-manifest` (~1pt) Tier A prerequisite story. Composition Spec §3.6 + §10 + §12 will document this known fallback at close.
+1. **dependency_map source — DEFERRED.** Codex's deterministic fallback (Texas → CD maps as `source_bundle`; other downstream calls use `upstream_output`) is accepted as Slab 6.1 close shape. Manifest promotion filed as `migration-6-2-promote-dependency-map-into-manifest` (~1pt) Tier A prerequisite story. Composition Spec §3.6 + §10 + §12 will document this known fallback at close.
 2. **Multi-pass / repeated specialist nodes — RATIFIED PATH Z.** Accept "first contribution wins" semantics as Slab 6.1 contract. Codex's current behavior (skip duplicate specialist contributions after first) is the agreed close shape. Path X (node-scoped contribution identity) and Path Y (per-pass envelope) filed as deferred enhancements when actual multi-pass production need emerges. Composition Spec §3.1 + §10 + §12 will document this known limitation at close.
 3. **Replay regression pre-existing pack-hash drift — DEFERRED, NOT A SLAB-6.1 BLOCKER.** Drift (`013b7ef → 19cde78` + override confirm token / cost field diffs) is unrelated to Slab 6.1 rewire. Filed as `replay-regression-pack-hash-drift-pre-slab-6.1` deferred-inventory entry. Investigate separately (likely needs golden refresh after Slab 6.0 substrate landed but before 6.1 rewire).
 
@@ -114,7 +114,7 @@ The reviewers should pay particular attention to:
 
 9. **Operator-ratified disposition #1 traceability (dependency_map fallback)** — Codex's report says: "Manifest does not declare dependency input keys. Current runner uses deterministic fallback: Texas -> CD maps as source_bundle; other downstream calls use upstream_output." Verify:
    - The fallback mechanism is clearly named in code (a function with a self-descriptive name like `_default_dependency_map_for(specialist_id)` — not a magic dict literal buried in the runner loop)
-   - The fallback is documented inline with a comment pointing at the deferred Tier-A-0 manifest promotion follow-on
+   - The fallback is documented inline with a comment pointing at the deferred Slab-6.2 manifest promotion follow-on
    - The fallback is testable in isolation (unit test for `_default_dependency_map_for(...)` independently from the runner)
    - Behavior under "downstream specialist requests dependency for upstream that didn't run" is fail-loud, not silent fallback (per Composition Spec §3.6 resolution rule)
 
@@ -198,13 +198,13 @@ When all triage items are resolved AND operator runs live smoke with operator-wi
 3. Codex updates `_bmad-output/upstream-state.md` condition #3 — flip from REFRAMED-AS-SLAB-6.0-SUBSTRATE-+-SLAB-6.1-RUNNER to RESOLVED-2026-04-XX
 4. Codex updates `_bmad-output/planning-artifacts/deferred-inventory.md` `5a-2-production-graph-entrypoint-substrate-gap` — flip from DEFERRED-CONTINUES to RESOLVED-2026-04-XX
 5. Codex files three NEW deferred-inventory entries per operator dispositions:
-   - `tier-a-0-promote-dependency-map-into-manifest` (~1pt; Tier A prerequisite — promote dependency_map declaration into manifest or registry; closes Composition Spec §12 open question)
+   - `migration-6-2-promote-dependency-map-into-manifest` (~1pt; Tier A prerequisite — promote dependency_map declaration into manifest or registry; closes Composition Spec §12 open question)
    - `slab-6-1-multi-pass-envelope-path-x-or-y` (Path X node-scoped contribution identity OR Path Y per-pass envelope; reactivation when actual multi-pass production need emerges)
    - `replay-regression-pack-hash-drift-pre-slab-6.1` (investigate root-cause; likely needs golden refresh after Slab 6.0 substrate landed)
 6. Codex updates `_bmad-output/implementation-artifacts/m5-decision.md` — file Slab 6.1 close annotation parallel to the Slab 6.0 substrate-ratification waypoint; M5 condition #3 RESOLVED at this story's close → migration verdict promotes from "SHIP for bounded-MVP scope" to unqualified SHIP
 7. Codex updates `docs/dev-guide/composition-specification.md`:
    - §3.1 (envelope invariants) — add note about Path Z "first contribution wins" + cross-link to Path X / Path Y deferred entry
-   - §3.6 (dependency_map sourcing) — add note about current deterministic fallback + cross-link to tier-a-0 deferred entry
+   - §3.6 (dependency_map sourcing) — add note about current deterministic fallback + cross-link to migration-6-2 deferred entry
    - §10 (Decision Log) — add three rows: dependency_map fallback ratified; multi-pass Path Z ratified; persistence shape = full embed (per Codex's choice)
    - §12 (Open questions) — flip resolved items; add new known-limitation rows for Path Z + dependency_map fallback
 8. Codex updates `next-session-start-here.md` if present (per Slab 6.0 close finding, this file appears ignored/untracked by repo policy; Codex notes whether this still holds)
@@ -224,4 +224,4 @@ For this Slab 6.1 review specifically, the N-item table above is pre-populated w
 - Does NOT touch Slab 6.0 substrate (envelope + adapter; out of scope; treat any modification as substantive finding)
 - Does NOT re-litigate the three operator-ratified dispositions (do trace whether diff implements them correctly; do not re-decide them)
 - Does NOT update Composition Specification or anti-pattern catalog (operator handles at close)
-- Does NOT pre-author Tier A bundle work (separate dispatch already authored at `codex-handoff-tier-a-trial-experience-bundle.md` for hand-off after Slab 6.1 formal close)
+- Does NOT pre-author Slab 6 trial-experience bundle work (separate dispatch already authored at `codex-handoff-slab-6-3-through-6-5-trial-experience-bundle.md` for hand-off after Slab 6.1 formal close)

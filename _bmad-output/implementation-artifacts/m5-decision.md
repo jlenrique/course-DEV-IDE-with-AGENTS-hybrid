@@ -189,7 +189,7 @@ With Slab 6.1 formal close, all four M5 conditions are RESOLVED:
 - Runner iterates manifest order rather than compiled edges (deferred until non-linear topology lands)
 - ProductionTrialEnvelope lifecycle cross-field validators absent (pre-existing; deferred for tech-debt cleanup)
 
-**Next sprint work:** Tier-A-0 (`tier-a-0-promote-dependency-map-into-manifest`; ~1pt; pre-authored at `_bmad-output/implementation-artifacts/migration-tier-a-0-promote-dependency-map-into-manifest.md`) lands as Tier A prerequisite; Tier A bundle (A1 + A2 + A3 per `codex-handoff-tier-a-trial-experience-bundle.md`) follows; first tracked trial run unblocks at Tier A bundle close.
+**Next sprint work:** Slab-6.2 (`migration-6-2-promote-dependency-map-into-manifest`; ~1pt; pre-authored at `_bmad-output/implementation-artifacts/migration-6-2-promote-dependency-map-into-manifest.md`) lands as Tier A prerequisite; Slab 6 trial-experience bundle (A1 + A2 + A3 per `codex-handoff-slab-6-3-through-6-5-trial-experience-bundle.md`) follows; first tracked trial run unblocks at Slab 6 trial-experience bundle close.
 
 ## Slab 6.0 substrate-ratification waypoint (added 2026-04-27)
 
