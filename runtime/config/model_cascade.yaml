@@ -1,0 +1,43 @@
+# runtime/config/model_cascade.yaml
+# Operator-editable economics-facing cascade for the migrated runtime.
+# This file follows the live branch substrate and therefore uses the current
+# registry-backed model ids (`gpt-5.4`, `gpt-5-haiku`) instead of the older
+# provisional `gpt-5-mini` / `gpt-5-nano` planning shorthand.
+marcus:
+  model: gpt-5.4
+  rationale: "Orchestrator control plane; multi-step synthesis and gate reasoning stay on the higher-reasoning tier."
+specialists:
+  texas:
+    model: gpt-5-haiku
+    rationale: "Source-authority mapping and retrieval dispatch are narrow, tool-heavy steps."
+  vera:
+    model: gpt-5.4
+    rationale: "Fidelity and verification gates need conservative higher-reasoning review."
+  irene:
+    model: gpt-5.4
+    rationale: "Lesson-plan and pass-authoring work needs longer-context editorial reasoning."
+  cd:
+    model: gpt-5.4
+    rationale: "Creative-directive synthesis is a high-judgment control-plane step."
+  gary:
+    model: gpt-5-haiku
+    rationale: "Gamma dispatch/export is structured and tool-heavy with bounded reasoning."
+  quinn_r:
+    model: gpt-5.4
+    rationale: "Quality review and approval gates are evaluative and reasoning-heavy."
+    aliases:
+      - quinn-r
+  kira:
+    model: gpt-5-haiku
+    rationale: "Motion generation/import is dispatch-heavy and benefits from the fast tier."
+  enrique:
+    model: gpt-5.4
+    rationale: "Voice-direction packaging is quality-sensitive and benefits from stronger reasoning."
+    aliases:
+      - elevenlabs
+  compositor:
+    model: gpt-5-haiku
+    rationale: "Assembly-bundle coordination is structured and lower-judgment than frontier orchestration."
+  desmond:
+    model: gpt-5-haiku
+    rationale: "Run-scoped operator brief authoring is structured synthesis with bounded context."

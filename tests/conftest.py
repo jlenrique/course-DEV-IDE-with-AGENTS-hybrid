@@ -8,13 +8,17 @@
 import importlib
 import importlib.util
 import os
+import shutil
 import sys
 import types
+import uuid
+from collections.abc import Iterator
 from pathlib import Path
 
 import pytest
 
 ROOT = Path(__file__).resolve().parent.parent
+TEST_TMP_ROOT = ROOT / ".tmp" / "pytest-fixtures"
 
 # ---------------------------------------------------------------------------
 # Load .env so API keys are available for live integration tests
@@ -97,6 +101,25 @@ def pytest_configure(config: pytest.Config) -> None:
         "when OPENAI_API_KEY is unset or holds the Slab-1 placeholder sentinel. "
         "See party-mode round 3 Amelia caveat (2026-04-24).",
     )
+
+
+@pytest.fixture
+def tmp_path() -> Iterator[Path]:
+    """Workspace-local tmp_path override for Windows temp-root ACL stability.
+
+    The stock pytest tmp_path factory is currently unreliable on the operator's
+    Windows substrate because `%LOCALAPPDATA%\\Temp\\pytest-of-<user>` can become
+    unreadable during setup/cleanup. Using a repo-local temp root keeps the
+    fixture semantics that tests need while avoiding machine-specific ACL drift.
+    """
+
+    TEST_TMP_ROOT.mkdir(parents=True, exist_ok=True)
+    path = TEST_TMP_ROOT / f"case-{uuid.uuid4().hex}"
+    path.mkdir(parents=True, exist_ok=False)
+    try:
+        yield path
+    finally:
+        shutil.rmtree(path, ignore_errors=True)
 
 
 # ---------------------------------------------------------------------------

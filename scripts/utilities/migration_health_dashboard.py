@@ -70,6 +70,7 @@ class HealthReport:
     sanctum_watcher: dict[str, Any] = field(default_factory=dict)
     storypoint_burndown: dict[str, Any] = field(default_factory=dict)
     replay_suite: dict[str, Any] = field(default_factory=dict)
+    cost_reports: dict[str, Any] = field(default_factory=dict)
     notes: list[str] = field(default_factory=list)
 
 
@@ -349,6 +350,17 @@ def _check_replay_suite_status() -> dict[str, Any]:
     }
 
 
+def _check_cost_reports() -> dict[str, Any]:
+    """Summarize persisted per-trial economics artifacts (added Tier-2-F)."""
+
+    try:
+        sys.path.insert(0, str(REPO_ROOT))
+        from app.runtime.economics import summarize_cost_reports
+    except ImportError as exc:
+        return {"error": str(exc)}
+    return summarize_cost_reports()
+
+
 def _detect_master_status() -> str:
     path = REPO_ROOT / "_bmad-output" / "implementation-artifacts" / "sprint-status.yaml"
     if not path.is_file():
@@ -381,6 +393,7 @@ def collect_health() -> HealthReport:
         sanctum_watcher=_check_sanctum_watcher(),
         storypoint_burndown=_compute_storypoint_burndown(),
         replay_suite=_check_replay_suite_status(),
+        cost_reports=_check_cost_reports(),
     )
 
 
@@ -468,6 +481,18 @@ def render_text(report: HealthReport) -> str:
         lines.append(f"  Test files: {rs['test_files']}; GHA workflow: {wf}")
     else:
         lines.append(f"  {rs.get('state', 'unknown')}")
+    lines.append("")
+    lines.append("--- Cost Reports (Slab 5a.3) ---")
+    cr = report.cost_reports
+    if "trials_with_cost_reports" in cr:
+        lines.append(f"  Trials with cost reports: {cr['trials_with_cost_reports']}")
+        lines.append(
+            "  Median trial cost USD (last 5): "
+            f"{cr['median_trial_cost_last_5'] if cr['median_trial_cost_last_5'] is not None else 'n/a'}"
+        )
+        lines.append(f"  Drift alerts (last 24h): {cr['drift_alerts_last_24h']}")
+    else:
+        lines.append(f"  {cr.get('error', 'unknown')}")
     return "\n".join(lines)
 
 
@@ -485,6 +510,11 @@ def render_json(report: HealthReport) -> str:
             "trial_replay": report.trial_replay,
             "ledger": report.ledger,
             "sanctum_mutations_7d": report.sanctum_mutations_7d,
+            "frozen_graph_v42": report.frozen_graph_v42,
+            "sanctum_watcher": report.sanctum_watcher,
+            "storypoint_burndown": report.storypoint_burndown,
+            "replay_suite": report.replay_suite,
+            "cost_reports": report.cost_reports,
         },
         indent=2,
     )
