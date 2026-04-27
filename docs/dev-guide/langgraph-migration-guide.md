@@ -566,8 +566,8 @@ tests/integration/scaffold_conformance/test_scaffold_irene.py
 ### 12.4 Manual post-edit checklist (frozen)
 
 1. Set `app/specialists/<name>/model_config.yaml::default_model` to a valid
-   ID from `app/models/registry.yaml::entries[].model_id` (e.g., `gpt-5.4`,
-   `gpt-5-haiku`, `gpt-5-codex`). Document the tier mapping rationale in inline
+   ID from `app/models/registry.yaml::entries[].model_id` (for example,
+   `gpt-5`, `gpt-5-mini`, or `gpt-5-nano`). Document the tier mapping rationale in inline
    comments — see [`specialist-anti-patterns.md` A10](./specialist-anti-patterns.md)
    for the epic-doc-vs-registry drift trap to avoid.
 2. Populate `app/specialists/<name>/expertise/` with domain references and
@@ -674,7 +674,7 @@ Notable design properties from the Story 2a.2 party-mode rounds (2026-04-24):
 | Output sink | `state.story_states` append | `state.cache_state.cache_prefix` JSON blob (envelope-carrier-hack receipt) |
 | Prompt assembly | inline string concat | `_assemble_pass_2_prompt()` helper with sorted-keys JSON + sorted file listing |
 | Sanctum read | implicit (assumed populated) | `_read_sanctum_digest()` deterministic empty-or-listed pattern (D2 SYNTHESIS: empty for 2a.2) |
-| Model cascade | `gpt-4.1` per epic | `gpt-5.4` per registry (anti-pattern A10 drift) |
+| Model cascade | `gpt-4.1` per epic | `gpt-5` per registry (anti-pattern A10 drift) |
 | Sanctum path | `_bmad/memory/bmad-agent-irene/` per epic | `_bmad/memory/bmad-agent-content-creator/` per BMB convention (anti-pattern A11) |
 
 ### 12.6 Kira worked before/after (act node) — real-Kira tool-dispatch example, post-2a.3 close
@@ -697,7 +697,7 @@ app/specialists/kira/
 ├── graph.py                # 9-node StateGraph; _act + 4 helpers + kling_dispatch invocation
 ├── kling_dispatch.py       # Thin mockable wrapper around skills/kling-video/scripts/run_motion_generation.py
 ├── state.py                # KiraEnvelope + KiraReturn (with motion_asset_path: str | None field)
-├── model_config.yaml       # default_model: gpt-5-haiku; temperature_default: 0.0
+├── model_config.yaml       # default_model: gpt-5-nano; temperature_default: 0.0
 └── expertise/
     └── README.md           # 6-row dotted reference table
 ```
@@ -760,7 +760,7 @@ When you migrate the next specialist, expect divergences in **these eight catego
 |---|---|---|
 | Act-body category | Pure-LLM authoring | LLM-prompt-composition + tool-dispatch |
 | External call after LLM | NONE — narration script returned directly | `dispatch_to_kling(...)` — mockable wrapper around `skills/kling-video/scripts/run_motion_generation.py` |
-| Model tier | `tier_request: reasoning` → `gpt-5.4` | `tier_request: fast` → `gpt-5-haiku` (cheapest model that meets video-direction need per Kira's cost-aware principle) |
+| Model tier | `tier_request: reasoning` → `gpt-5` | `tier_request: fast` → `gpt-5-nano` (cheapest model that meets video-direction need per Kira's cost-aware principle) |
 | Temperature | `0.3` (narration creativity) | `0.0` (structured selection JSON; cache-prefix determinism) |
 | Sanctum epoch | Empty for duration (2a.2 D2 SYNTHESIS) — activation-baseline measurement | **Populated-and-locked** (steady-state from 2a.3 onward; `sanctum_context_cost = steady_state_tokens − baseline_tokens`) |
 | Return shape addition | None (inherits parent `SpecialistReturn`) | `motion_asset_path: str \| None` field added on `KiraReturn` per AC-L Storyboard B |
@@ -772,7 +772,7 @@ When you migrate the next specialist, expect divergences in **these eight catego
 | Drift | Epic 2a.3 text | Reality | Resolution | Harvest disposition |
 |---|---|---|---|---|
 | Node name "reason node" | line 620 | canonical `plan` per `SCAFFOLD_NODE_IDS` | Follow framework | A9 third example (augment) |
-| Model tier "multimodal" + default `gpt-4o` | lines 619–621 | tiers are `reasoning/fast/code`; registry has `gpt-5.4/5-haiku/5-codex`; Kira maps to `tier_request: fast` → `gpt-5-haiku` | Follow framework | A10 second example (augment) |
+| Model tier "multimodal" + default `gpt-4o` | lines 619–621 | tiers are `reasoning/fast`; registry has `gpt-5/gpt-5-mini/gpt-5-nano`; Kira maps to `tier_request: fast` → `gpt-5-nano` | Follow framework | A10 second example (augment) |
 | Sanctum path | NONE — epic correctly references `skills/bmad-agent-kling/` | matches hybrid skill-dir name | No drift | No harvest |
 
 **G6 review patches applied at story close**
@@ -875,7 +875,7 @@ def _act(state: RunState) -> dict[str, Any]:
 ```
 
 Texas-specific notes:
-- Model cascade still resolves at `_plan` (`tier_request: fast` -> `gpt-5-haiku`) for FR16 trail consistency, but chat is not invoked.
+- Model cascade still resolves at `_plan` (`tier_request: fast` -> `gpt-5-nano`) for FR16 trail consistency, but chat is not invoked.
 - Sanctum exercise is the first real populated-and-locked case (`_bmad/memory/bmad-agent-texas/` lock baseline; 17-file sha256 manifest pinned as a module-level constant).
 - NFR-I5 is pinned with sha256 on `skills/bmad-agent-texas/references/retrieval-contract.md`.
 - Bundle-parse outcomes flow into the resolution trail under the `bundle.parsed.*` namespace (`ok` / `missing-key` / `malformed` / `wrong-type` / `empty` / `exit-10` / `exit-30` / `unknown-exit`). Tests assert two-sidedly: the parser's shape AND the trail tag — see `tests/specialists/texas/test_texas_act_node_dispatch.py` for the parametrize. Operators reading `model_resolution_trail` after a Texas run can distinguish "tool failed" from "tool succeeded with empty result" without inspecting the bundle directly.
@@ -1185,7 +1185,7 @@ The model cascade is intentionally parameterized in
 `runtime/config/model_cascade.yaml`. That file is the operator-facing control
 surface for right-sizing specialists without editing agent code. The current
 substrate keeps higher-judgment orchestration, editorial, and verification roles
-on `gpt-5.4`, while dispatch-heavy specialists are assigned to `gpt-5-haiku`.
+on `gpt-5`, while dispatch-heavy specialists are assigned to `gpt-5-nano`.
 Alias handling is explicit so registry naming drift such as `quinn-r` versus
 `quinn_r` does not break attribution.
 
@@ -1200,6 +1200,32 @@ Two guardrails ship with the report surface:
 The migration health dashboard now summarizes on-disk economics artifacts with
 three rows: trial count, rolling median trial cost over the last five reports,
 and drift alerts seen in the last 24 hours.
+
+## Ad-hoc Mode
+
+Batch 3 adds a runtime single-prompt Marcus surface:
+
+```bash
+.venv/Scripts/python.exe -m app.marcus.cli ask "What would happen if this lesson used a case-study structure?"
+```
+
+This path calls `Facade.ask(...)`, resolves Marcus through the normal cascade,
+prints inline cost metadata, and keeps LangSmith traces in
+`course-content-adhoc`. It deliberately does not register a trial, write a
+cost report, trigger HIL gates, dispatch the full pipeline, or mutate sanctum.
+The operator guide is `docs/operator/adhoc-mode.md`.
+
+## HUD Modernization
+
+Batch 3 also modernizes `scripts.utilities.run_hud` without replacing the
+legacy pipeline/dev-cycle views. The HUD now composes migrated-runtime panels
+from `scripts.utilities.hud_data_sources`: active-trial state, cost engineering,
+M5 window posture, and ad-hoc-mode summary.
+
+`--watch <seconds>` rewrites `reports/run-hud.html` on a polling loop so the
+browser reload timer can show updated data during a trial. Non-watch invocation
+remains a single static snapshot. The operator guide is
+`docs/operator/hud-guide.md`.
 
 ## Invariant Audit (Slab 5 Story 5a.4)
 
@@ -1234,3 +1260,36 @@ is open, `_bmad-output/upstream-state.md` marks the primary repo as frozen
 reference only and `migration-master-status` remains `shipped`. If the window
 lapses unresolved on 2026-05-03, the migration state demotes to
 `iterate-pending` rather than silently retaining ship status.
+
+## Production Runner
+
+Story 6.1 adds the migrated runtime's production graph composition layer at
+`app/marcus/orchestrator/production_runner.py`. The runner recomposes the live
+`state/config/pipeline-manifest.yaml` and `state/config/dispatch-registry.yaml`
+on each trial start rather than loading a serialized graph from
+`runtime/graphs/v42/`. The frozen v42 artifacts remain replay references; live
+production starts read the editable manifest and registry.
+
+`app.manifest.compiler.compile_run_graph(...)` is the production compiler entry
+point. Registry-backed manifest nodes carry explicit handler metadata pointing
+to their specialist graph builder; production HIL nodes (`G1`, `G2C`, `G3`,
+`G4`) resolve to gate emitters; unmigrated orchestration nodes resolve to
+explicit orchestration handlers rather than Slab 1 passthrough placeholders.
+
+Trial lifecycle state persists under `state/config/runs/<trial-id>/` using the
+strict `ProductionTrialEnvelope` schema. The lifecycle writes `registered`,
+then `in-flight`, then either `paused-at-gate`, `completed`, or `failed`.
+When a production gate fires, the runner registers a DecisionCard through the
+existing FR34 `app.gates.resume_api` path, writes `checkpoint.json`, and resumes
+only through `resume_from_verdict(...)`. Digest mismatch and anti-replay checks
+therefore remain centralized in the FR34 substrate.
+
+Trace metadata is bound at trial scope with `trial_id`, `preset`, and
+`operator_id`. Specialist dispatch spans inherit the same `trial_id` metadata
+and feed `app.runtime.economics.measure_trial_cost(...)`, which writes
+`cost-report.json` and `cost-report.md` for the trial.
+
+`production_clone_launch_evidence` is deliberately conservative. It is `true`
+only after the production runner completes at least one graph step and records
+at least one live OpenAI specialist call. Offline cost-report mode and zero-call
+paths keep the flag `false` and record an explicit reason in the envelope.

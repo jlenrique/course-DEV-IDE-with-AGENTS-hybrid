@@ -1,8 +1,53 @@
 # Operator Post-M5 Runbook
 
-**Status:** Authored at Slab 3 close; final polish post-5a.5 M5 ship verdict.
+**Status:** Re-authored 2026-04-26 — M5 verdict is now decided. Active path is **SHIP-CONDITIONAL** (see "Active Path" section below). Other path sections remain as reference for the demotion case + future migrations.
 
-**Purpose:** Per-verdict-path operational guide. The 5a.5 6-agent party-mode produces ONE of 5 consensus-level verdicts; this runbook tells you what to do for each.
+**Purpose:** Per-verdict-path operational guide. The 5a.5 6-agent party-mode produced one of 5 consensus-level verdicts; this runbook tells you what to do for each, with the active path highlighted.
+
+---
+
+## ACTIVE PATH (as of 2026-04-26): SHIP-CONDITIONAL
+
+**Operator-accepted verdict:** SHIP-CONDITIONAL with named 7-day window through **2026-05-03**.
+**Migration-master-status:** `shipped` (with trailing comment naming window expiry).
+**Source-of-truth artifacts:**
+- `_bmad-output/implementation-artifacts/m5-decision.md` — 6-agent verbatim record + accepted window text.
+- `_bmad-output/upstream-state.md` — frozen-reference posture + 4 open conditions + demotion rule.
+- `_bmad-output/planning-artifacts/deferred-inventory.md` — `5a-5-m5-conditional-window-2026-05-03` entry.
+
+### What you do during the conditional window
+
+The 4 open conditions, each with its closure path:
+
+1. **M2 Wondercraft live-artifact** — operator-window ceremony (~10-15 min + render). Run Wanda's `create_scripted_podcast` capability live ($5 ceiling, $1-2 simple-fallback). Artifact lands at `tests/fixtures/specialists/wanda/live_artifacts/2026-04-26/<sha256>.mp3`. Paste "Operator-Window Addendum" into `_bmad-output/implementation-artifacts/slab-2c-m2-acceptance-verdict.md`. Flip `2c-3-m2-verdict-conditional-on-2c-2-live-artifact` to RESOLVED. See [`conditional-gate-addendum-playbook.md`](conditional-gate-addendum-playbook.md) for the addendum template.
+
+2. **M3 Texas live-retrieval** — operator-window ceremony (~5-10 min). Run Texas retrieval flow against a real source authority (per `skills/bmad-agent-texas/references/retrieval-contract.md` provider directory). Capture evidence; paste addendum to M3 verdict artifact. Flip `2a.4-followon-ac-b-op-live-retrieval` to RESOLVED.
+
+3. **5a.2 production clone-launch equivalence** — closes by running ONE real trial against live OpenAI through the migrated runtime using `python -m app.marcus.cli trial start --preset production --input <corpus-path>`. The run must register under `state/config/runs/<trial-id>/`, upload or expose LangSmith trace metadata when configured, and write a cost report.
+
+4. **Plausible-Token Substrate Contamination live verification** — code remediation is complete. Closes when the operator runs `pytest tests/live/test_openai_cascade_tiers_smoke.py -m live -q` with `OPENAI_API_KEY` set and all three real cascade IDs (`gpt-5`, `gpt-5-mini`, `gpt-5-nano`) return non-zero token usage.
+
+Resolved provenance: **`slab-3-m5-dispatch-registry-swap`** closed on 2026-04-26. Both `state/config/dispatch-registry.yaml` and `runtime/graphs/v42/dispatch-registry-snapshot.yaml` are `_status: production`.
+
+### Demotion rule (if window lapses)
+
+If on **2026-05-03** any of conditions 1-4 remain unresolved AND the operator does not extend the window via explicit ratification:
+- `migration-master-status` flips from `shipped` to `iterate-pending`.
+- Convene short 3-agent party-mode (Winston + Murat + Amelia) to ratify demotion + name remediation path.
+- Continue with **Path D — ITERATE** below.
+
+### Pre-trial preparation work
+
+Codex pre-trial batches maximize readiness before the operator window:
+- **Batch 1 tail / post-remediation batch** — live-API smoke scaffolds, doc actualization, ready-for-trial harness, production-clone launcher, and final code review.
+- **Batch 2** (`codex-handoff-pre-trial-defensibility-batch-dev.md`) — FR traceability + NFR assessment + test-quality audit (defensibility evidence, no code changes).
+- **Batch 3** (`codex-handoff-pre-trial-adhoc-and-hud-batch-dev.md`) — ad-hoc CLI subcommand + HUD modernization for migrated runtime.
+
+After all three batches close: operator-presence work is M2 ceremony + M3 ceremony + one real trial. That session, properly executed, closes the conditional window with verdict promotion to unconditional SHIP.
+
+---
+
+## Reference: per-verdict path documentation
 
 ---
 

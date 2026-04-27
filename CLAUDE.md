@@ -2,6 +2,15 @@
 
 This repository uses BMAD methodology. For sprint-style runs, follow the **BMAD sprint governance** checklist below (mirrors `.cursor/rules/bmad-sprint-governance.mdc` and `.github/copilot-instructions.md` for VS Code / GitHub Copilot).
 
+## Operator preference: run shell commands autonomously (minimal permission prompts)
+
+**The operator strongly prefers that you execute bash/shell/PowerShell commands without stopping to ask for approval on every invocation.** Per-command permission dialogs are disruptive during BMAD sprints, migration work, and test loops. Default to **proceeding**: run `pytest`, `ruff`, `uv`, `python`, `git` (read-only and normal workflow: status, diff, add, commit when asked), `npm`/`npx` when the task requires it, linters, formatters, and one-off diagnostics **as the story or task requires**, and **batch** related commands (`&&` or a small script) when that reduces round-trips.
+
+- **Do not** ask the human to confirm every trivial or repetitive command. Reserve explicit confirmation for **destructive or irreversible** operations you genuinely cannot do safely without them (e.g. force push to `main`, mass `rm -rf` outside obvious build artifacts, production credential use—use judgment).
+- **Cursor / Claude Code:** the operator wants **auto-approve** / **Run everything**-style behavior for this workspace when the product offers it; this section documents the **same intent** for any agent reading project instructions. (Product-level settings still may need to be enabled in the editor; this file is the project signal.)
+
+This preference does **not** override **migration sandbox-AC** rules later in this file: story specs must still avoid forbidden operator-only CLIs in *dev-agent* AC blocks. It **does** mean: when implementation is in scope, **run the allowed tooling freely** to verify and close work.
+
 ## Custom agents vs. “registered” BMAD personas (cold start)
 
 **Do not treat `_bmad/_config/agent-manifest.csv` as the full roster of invocable agents.** That file lists BMAD stock personas used by party mode (Mary, Amelia, Murat, etc.). Custom production agents for this repo — including **Marcus** — are **intentionally absent** from that manifest. If the operator says “talk to Marcus” (or another custom name), do **not** reply that they are “unregistered” based only on that CSV or on Claude Code’s native agent list.

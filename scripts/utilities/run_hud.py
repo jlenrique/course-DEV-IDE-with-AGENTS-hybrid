@@ -24,6 +24,7 @@ from __future__ import annotations
 import argparse
 import html as html_mod
 import sqlite3
+import time
 from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
@@ -31,6 +32,16 @@ from typing import Any
 import yaml
 
 from scripts.utilities.file_helpers import project_root
+from scripts.utilities.hud_data_sources import (
+    ActiveTrialView,
+    AdhocSummaryView,
+    CostEngineeringView,
+    M5WindowView,
+    read_active_trial,
+    read_adhoc_summary,
+    read_cost_engineering_state,
+    read_m5_window_state,
+)
 from scripts.utilities.pipeline_manifest import hud_steps, load_manifest
 from scripts.utilities.progress_map import build_report as build_progress_report
 
@@ -257,6 +268,8 @@ def collect_hud_data(
     bundle_dir: Path | None = None,
     bundles_dir: Path | None = None,
     db_path: Path | None = None,
+    trial_id: str | None = None,
+    include_adhoc_panel: bool = True,
 ) -> dict[str, Any]:
     """Collect all data needed for the HUD rendering."""
     bdir = bundles_dir or BUNDLES_DIR
@@ -314,6 +327,11 @@ def collect_hud_data(
                 newest = max(gate_files, key=lambda f: f.stat().st_mtime)
                 _file_ts(newest, "gate-sidecars")
 
+    active_trial = read_active_trial(trial_id)
+    cost_engineering = read_cost_engineering_state()
+    m5_window = read_m5_window_state()
+    adhoc_summary = read_adhoc_summary() if include_adhoc_panel else None
+
     return {
         "generated": now.isoformat(),
         "bundle_path": bundle_path,
@@ -330,6 +348,10 @@ def collect_hud_data(
         "artifacts": artifacts,
         "dev_report": dev_report,
         "source_freshness": source_freshness,
+        "active_trial": active_trial,
+        "cost_engineering": cost_engineering,
+        "m5_window": m5_window,
+        "adhoc_summary": adhoc_summary,
     }
 
 
@@ -584,6 +606,120 @@ def _render_health_panel(
     return f'<div class="readiness-badge">{badge}</div>' + "\n".join(sections)
 
 
+def _render_active_trial_panel(view: ActiveTrialView | None) -> str:
+    if view is None:
+        return (
+            '<section class="runtime-panel">'
+            '<h3>Active Trial</h3>'
+            '<div class="panel-empty">No migrated-runtime trial found under state/config/runs.</div>'
+            '</section>'
+        )
+    cost_rows = "".join(
+        f"<tr><td>{_esc(agent)}</td><td>${cost:.6f}</td></tr>"
+        for agent, cost in view.per_agent_cost.items()
+    )
+    trace = (
+        f'<a href="{_esc(view.langsmith_trace_url)}">{_esc(view.langsmith_trace_url)}</a>'
+        if view.langsmith_trace_url
+        else '<span class="dim">unavailable</span>'
+    )
+    alerts = "".join(f"<li>{_esc(alert)}</li>" for alert in view.drift_alerts_last_24h)
+    return f"""
+    <section class="runtime-panel">
+      <h3>Active Trial</h3>
+      <div class="runtime-grid">
+        <div><strong>Trial</strong><span>{_esc(view.trial_id)}</span></div>
+        <div><strong>Status</strong><span class="badge badge-idle">{_esc(view.status)}</span></div>
+        <div><strong>Step</strong><span>{_esc(view.current_step)}</span></div>
+        <div><strong>Agent / Model</strong><span>{_esc(view.current_agent)} / {_esc(view.current_model)}</span></div>
+      </div>
+      <details open><summary>Per-agent cost</summary>
+        <table class="kv-table"><tbody>{cost_rows or '<tr><td colspan="2">No cost report yet</td></tr>'}</tbody></table>
+      </details>
+      <div class="health-row"><strong>LangSmith:</strong> {trace}</div>
+      <details><summary>Drift alerts last 24h ({len(view.drift_alerts_last_24h)})</summary>
+        <ul>{alerts or '<li>No drift alerts</li>'}</ul>
+      </details>
+    </section>
+    """
+
+
+def _render_cost_engineering_panel(view: CostEngineeringView) -> str:
+    cascade_rows = "".join(
+        f"<tr><td>{_esc(agent)}</td><td>{_esc(model)}</td></tr>"
+        for agent, model in view.cascade_preview.items()
+    )
+    price_rows = "".join(
+        f"<tr><td>{_esc(model)}</td><td>${row['input']:.2f}</td><td>${row['output']:.2f}</td></tr>"
+        for model, row in view.pricing_preview.items()
+    )
+    median_cost = (
+        f"${view.median_trial_cost_last_5:.6f}"
+        if view.median_trial_cost_last_5 is not None
+        else "n/a"
+    )
+    budget = (
+        f"${view.soft_cap_budget_usd:.2f}"
+        if view.soft_cap_budget_usd is not None
+        else "not set"
+    )
+    return f"""
+    <section class="runtime-panel">
+      <h3>Cost Engineering</h3>
+      <div class="runtime-grid">
+        <div><strong>Median trial cost</strong><span>{median_cost}</span></div>
+        <div><strong>Soft cap</strong><span>{_esc(budget)}</span></div>
+      </div>
+      <details open><summary>Cascade preview ({len(view.cascade_preview)})</summary>
+        <table class="kv-table"><tbody>{cascade_rows}</tbody></table>
+      </details>
+      <details><summary>Pricing table</summary>
+        <table><thead><tr><th>Model</th><th>Input / 1M</th><th>Output / 1M</th></tr></thead><tbody>{price_rows}</tbody></table>
+      </details>
+    </section>
+    """
+
+
+def _render_m5_window_panel(view: M5WindowView) -> str:
+    if not view.visible:
+        return ""
+    rows = "".join(
+        f"<tr><td>{_esc(item['condition'])}</td><td>{_esc(item['status'])}</td></tr>"
+        for item in view.open_conditions
+    )
+    return f"""
+    <section class="runtime-panel">
+      <h3>M5 Conditional Window</h3>
+      <div class="runtime-grid">
+        <div><strong>Days remaining</strong><span>{view.days_remaining}</span></div>
+        <div><strong>Demotion threshold</strong><span>{_esc(view.demotion_threshold)}</span></div>
+      </div>
+      <table class="kv-table"><tbody>{rows}</tbody></table>
+    </section>
+    """
+
+
+def _render_adhoc_panel(view: AdhocSummaryView | None) -> str:
+    if view is None:
+        return ""
+    cost = (
+        f"${view.total_cost_last_24h:.6f}"
+        if view.total_cost_last_24h is not None
+        else "inline-only"
+    )
+    return f"""
+    <section class="runtime-panel">
+      <h3>Ad-hoc Mode</h3>
+      <div class="runtime-grid">
+        <div><strong>Runs last 24h</strong><span>{view.run_count_last_24h}</span></div>
+        <div><strong>Cost last 24h</strong><span>{_esc(cost)}</span></div>
+      </div>
+      <pre class="evidence">python -m app.marcus.cli ask "summarize this lesson outline" --max-tokens 500</pre>
+      <div class="dim">{_esc(view.note)}</div>
+    </section>
+    """
+
+
 def _esc(text: str) -> str:
     """Escape HTML special characters using stdlib html.escape."""
     return html_mod.escape(text, quote=True)
@@ -692,6 +828,12 @@ def render_html(
 
     # System health panel — preflight step + source health
     health_html = _render_health_panel(pipeline, data.get("dev_report"))
+    runtime_html = (
+        _render_active_trial_panel(data.get("active_trial"))
+        + _render_cost_engineering_panel(data["cost_engineering"])
+        + _render_m5_window_panel(data["m5_window"])
+        + _render_adhoc_panel(data.get("adhoc_summary"))
+    )
 
     # Freshness bar
     freshness = data.get("source_freshness", {})
@@ -752,6 +894,7 @@ def render_html(
 
     <div id="tab-health" class="tab-content active">
       {health_html}
+      {runtime_html}
     </div>
 
     <div id="tab-production" class="tab-content">
@@ -900,6 +1043,25 @@ h3 { font-size: 0.95rem; margin: 12px 0 6px; color: #94a3b8; }
 .health-section h4 { font-size: 0.85rem; margin-bottom: 4px; }
 .health-row { font-size: 0.78rem; padding: 2px 0 2px 4px; }
 .readiness-badge { margin-bottom: 8px; }
+.runtime-panel {
+  padding: 10px; margin: 10px 0; border-radius: 4px;
+  background: #111827; border: 1px solid #253244;
+}
+.runtime-panel h3 { color: #cbd5e1; margin-top: 0; }
+.runtime-grid {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 8px; margin: 6px 0 8px;
+}
+.runtime-grid > div {
+  background: #0f172a; border: 1px solid #1e293b; border-radius: 4px;
+  padding: 6px 8px; min-width: 0;
+}
+.runtime-grid strong {
+  display: block; color: #94a3b8; font-size: 0.68rem;
+  text-transform: uppercase; letter-spacing: 0;
+}
+.runtime-grid span { display: block; color: #e2e8f0; font-size: 0.78rem; overflow-wrap: anywhere; }
+.runtime-panel a { color: #7dd3fc; overflow-wrap: anywhere; }
 
 header {
   padding: 8px 0; border-bottom: 1px solid #1e293b; margin-bottom: 12px;
@@ -1105,6 +1267,29 @@ document.addEventListener('DOMContentLoaded', function() {
 # ---------------------------------------------------------------------------
 
 
+def _write_snapshot(
+    *,
+    bundle_dir: Path | None,
+    output_path: Path,
+    trial_id: str | None,
+    include_adhoc_panel: bool,
+    watching: bool,
+    watch_interval_seconds: float,
+) -> None:
+    data = collect_hud_data(
+        bundle_dir=bundle_dir,
+        trial_id=trial_id,
+        include_adhoc_panel=include_adhoc_panel,
+    )
+    html = render_html(
+        data,
+        watching=watching,
+        watch_interval_seconds=watch_interval_seconds,
+    )
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+    output_path.write_text(html, encoding="utf-8")
+
+
 def main(argv: list[str] | None = None) -> None:
     parser = argparse.ArgumentParser(
         description="Run HUD: Heads-Up Display for production runs and dev tracking."
@@ -1121,17 +1306,58 @@ def main(argv: list[str] | None = None) -> None:
         "--open", action="store_true",
         help="Open the generated HTML in the default browser.",
     )
+    parser.add_argument(
+        "--trial-id", type=str, default=None,
+        help="Read migrated-runtime trial state for a specific trial id.",
+    )
+    parser.add_argument(
+        "--watch", type=float, nargs="?", const=30.0, default=None, metavar="SECONDS",
+        help="Regenerate the HUD every N seconds (default 30).",
+    )
+    parser.add_argument(
+        "--max-iterations", type=int, default=None,
+        help=argparse.SUPPRESS,
+    )
+    parser.add_argument(
+        "--no-adhoc-panel", action="store_true",
+        help="Hide the LangSmith-backed ad-hoc summary panel.",
+    )
     args = parser.parse_args(argv)
 
     bundle_dir = Path(args.bundle_dir) if args.bundle_dir else None
     output_path = Path(args.output) if args.output else HUD_OUTPUT
+    include_adhoc_panel = not args.no_adhoc_panel
+    watch_interval = 30.0 if args.watch is None else args.watch
 
-    data = collect_hud_data(bundle_dir=bundle_dir)
-    html = render_html(data)
-
-    output_path.parent.mkdir(parents=True, exist_ok=True)
-    output_path.write_text(html, encoding="utf-8")
-    print(f"HUD written to {output_path}")
+    if args.watch is None:
+        _write_snapshot(
+            bundle_dir=bundle_dir,
+            output_path=output_path,
+            trial_id=args.trial_id,
+            include_adhoc_panel=include_adhoc_panel,
+            watching=False,
+            watch_interval_seconds=watch_interval,
+        )
+        print(f"HUD written to {output_path}")
+    else:
+        iteration = 0
+        try:
+            while True:
+                iteration += 1
+                _write_snapshot(
+                    bundle_dir=bundle_dir,
+                    output_path=output_path,
+                    trial_id=args.trial_id,
+                    include_adhoc_panel=include_adhoc_panel,
+                    watching=True,
+                    watch_interval_seconds=watch_interval,
+                )
+                print(f"HUD snapshot {iteration} written to {output_path}")
+                if args.max_iterations is not None and iteration >= args.max_iterations:
+                    break
+                time.sleep(watch_interval)
+        except KeyboardInterrupt:
+            print("HUD watch stopped")
 
     if args.open:
         import webbrowser

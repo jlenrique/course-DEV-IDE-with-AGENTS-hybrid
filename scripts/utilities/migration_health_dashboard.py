@@ -110,10 +110,14 @@ def _detect_conditional_milestones() -> list[dict[str, str]]:
             results.append({"milestone": milestone, "state": "PENDING-AUTHORING", "artifact": str(path.relative_to(REPO_ROOT))})
             continue
         content = path.read_text(encoding="utf-8")
-        if "CONDITIONAL-GREEN" in content or "CONDITIONAL-PENDING" in content:
+        verdict_match = re.search(r"Consensus verdict:\s*([A-Z-]+)", content)
+        verdict = verdict_match.group(1) if verdict_match else ""
+        if verdict == "CONDITIONAL-GREEN":
             results.append({"milestone": milestone, "state": "CONDITIONAL-GREEN-PENDING-OPERATOR-ADDENDUM", "artifact": str(path.relative_to(REPO_ROOT))})
-        elif "GREEN-LIGHT" in content:
+        elif verdict == "GREEN-LIGHT":
             results.append({"milestone": milestone, "state": "GREEN-LIGHT", "artifact": str(path.relative_to(REPO_ROOT))})
+        elif verdict == "GREEN-WITH-RIDERS":
+            results.append({"milestone": milestone, "state": "GREEN-WITH-RIDERS", "artifact": str(path.relative_to(REPO_ROOT))})
         else:
             results.append({"milestone": milestone, "state": "UNKNOWN", "artifact": str(path.relative_to(REPO_ROOT))})
     return results

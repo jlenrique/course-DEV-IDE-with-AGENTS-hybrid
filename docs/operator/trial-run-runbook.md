@@ -1,12 +1,32 @@
 # Operator Trial-Run Runbook
 
-**Status:** Authored at Slab 3 close (M3 CONDITIONAL-GREEN) for first-trial preparation. Final polish post-M5 ship verdict.
+**Status:** Actualized 2026-04-27 for the bounded-MVP ship state. The runtime trial launcher is `python -m app.marcus.cli trial start`; Marcus ad-hoc mode and the migrated-runtime HUD are now documented operator surfaces.
 
-**Purpose:** Step-by-step guide to running your first trial against the migration's LangChain/LangGraph orchestrator (Marcus + 9-node specialist scaffold + HIL DecisionCard gates). Assumes you've completed the README's quick-start (venv + deps + `.env`).
+**Purpose:** Step-by-step guide to running a trial against the migrated runtime — Marcus the LangGraph orchestrator (`app/marcus/`) + 14 specialists (`app/specialists/<name>/graph.py`) + HIL DecisionCard gates. Assumes you've completed the README's quick-start (venv + deps + `.env`).
+
+## Mental model — what runs where
+
+The shipped application is **Python + LangGraph**. Marcus the orchestrator is a Python module at `app/marcus/`; specialists are LangGraph nodes; LLM calls go to OpenAI directly via the cascade in `runtime/config/model_cascade.yaml`. **Claude Code is not in the runtime path.** Production trials are pure Python invocation.
+
+Be aware of two distinct "Marcuses":
+- **Marcus the runtime** — the Python service. You invoke it from a terminal (CLI), via HTTP, or via MCP. It runs, calls OpenAI, writes artifacts to disk, uploads traces to LangSmith. No Claude involvement.
+- **Marcus the BMAD development persona** — a roleplay used in Claude Code sessions for *development* work (planning, scoping, code review, dispatching agent batches). Same archetypal voice, entirely separate mechanism. Useful as a debugging companion *while* the runtime executes elsewhere; not part of the runtime itself.
+
+This runbook covers the runtime. If you want to chat with the BMAD persona to learn or explore, open Claude Code in the repo and say "Marcus, I want to explore." That is development assistance, not runtime execution.
 
 ---
 
-## Step 0 — Run preflight sweep
+## Step 0 — Run ready-for-trial harness
+
+```bash
+# Windows
+scripts/setup/ready_for_trial.ps1
+
+# macOS/Linux
+bash scripts/setup/ready_for_trial.sh
+```
+
+The harness runs the preflight sweep, dashboard, M5 audit, cascade validation, model-ID lint guard, catalog-membership test, cascade loading test, ruff, import-linter, and migration pytest slice. Run the raw preflight only for diagnosis:
 
 ```bash
 .venv/Scripts/python.exe scripts/utilities/trial_run_preflight.py --trial-corpus <path-to-your-corpus>
@@ -21,9 +41,7 @@
 | `2` | Blocking failures (env vars missing, manifests broken, etc.) | Resolve the FAIL items before proceeding |
 
 **Common WARN states (acceptable for first trial):**
-- `dispatch_registry _status=interim` — expected pre-M5; the registry swap happens at M5 SHIP per `slab-3-m5-dispatch-registry-swap` deferred-inventory entry
-- `frozen_graph_v42` artifacts missing — Slab 4 Story 4.5 ships these; pre-Slab-4 trials run without frozen-graph reproducibility ceremony
-- `migration_state` shows M2 / M3 conditional — operator-window addenda pending; conditional gates do NOT block trial execution, only the M5 SHIP verdict
+- `migration_state` shows M2 / M3 conditional — operator-window addenda pending; conditional gates do NOT block trial execution, only unconditional-SHIP promotion
 - `trial_corpus` not provided — you can run preflight without a corpus to inspect substrate state; provide the corpus at Step 1
 
 ---
@@ -34,7 +52,7 @@ Marcus accepts operator verdicts via THREE transport surfaces (all routed throug
 
 | Transport | When to use | Invocation |
 |---|---|---|
-| **CLI** (`marcus.cli`) | First-trial; quick experiments; scriptable batch verdicts | `.venv/Scripts/python.exe -m marcus.cli trial start --preset production --input <corpus-path> --operator-id <your-id>` |
+| **CLI** (`app.marcus.cli`) | First-trial; quick experiments; scriptable batch verdicts | `.venv/Scripts/python.exe -m app.marcus.cli trial start --preset production --input <corpus-path> --operator-id <your-id>` |
 | **MCP** (`gate.decide`) | Interactive IDE-integrated workflows (Claude Code / Cursor); per-gate manual verdict | Configure your MCP client to point at `app.mcp_server.tools.gate_decide`; then invoke `gate.decide` per gate fire |
 | **FastAPI** (`POST /gate/verdict`) | Web UI / external operator surfaces; remote verdict submission | Start the HTTP server (`uvicorn app.http.gate_endpoint:app`); POST OperatorVerdict JSON with `X-Operator-Id` header |
 
@@ -58,7 +76,7 @@ The trial corpus is the **input content bundle** Marcus orchestrates against. Fo
 ## Step 3 — Start the trial
 
 ```bash
-.venv/Scripts/python.exe -m marcus.cli trial start \
+.venv/Scripts/python.exe -m app.marcus.cli trial start \
     --preset production \
     --input <corpus-path> \
     --operator-id <your-id>
@@ -67,6 +85,8 @@ The trial corpus is the **input content bundle** Marcus orchestrates against. Fo
 **Preset choice:**
 - `--preset production` (default) → Plan-and-Execute supervisor reasoning loop (FR27); manifest-driven specialist routing
 - `--preset explore` → ReAct supervisor reasoning loop (operator-driven exploration of alternative paths)
+
+**Model catalog:** the production cascade uses real OpenAI catalog IDs only: `gpt-5`, `gpt-5-mini`, and `gpt-5-nano` for the current cascade tiers. Do not substitute historical fictitious IDs.
 
 **What happens at start:**
 1. Marcus's `get_facade()` instantiates fresh per FR30 cold-read sanctum (no in-memory continuity from prior sessions)
@@ -88,7 +108,7 @@ When the trial pauses at a gate, Marcus emits a `DecisionCard` to your operator 
 | `evidence` | What evidence Marcus collected supporting the proposal |
 | `risks` | What Marcus flagged as risks (operator should weight in verdict decision) |
 | `verb` | The proposed verb Marcus suggests (`approve` / `edit` / `reject`); operator may override |
-| `meta.cache_state` | `healthy` (all nodes on default cascade) / `mixed` (overrides in flight) / `cold` (cache prefix invalidated) |
+| `meta.cache_state` | `healthy` (all nodes on default cascade) / `mixed` (active overrides) / `cold` (cache prefix invalidated) |
 | `meta.affected_nodes` | Downstream nodes impacted by your decision |
 | `meta.override_trail` | Prior overrides applied this trial |
 | `meta.reject_rate` | Historical reject-rate for this gate (KPI tracking) |
@@ -104,7 +124,7 @@ Three verbs available:
 ### `approve`
 
 ```bash
-.venv/Scripts/python.exe -m marcus.cli gate decide \
+.venv/Scripts/python.exe -m app.marcus.cli gate decide \
     --trial-id <id> --gate-id G2C \
     --verb approve \
     --decision-card-digest <digest-from-card> \
@@ -116,7 +136,7 @@ Resumes the trial; downstream nodes consume the proposal as-is.
 ### `edit`
 
 ```bash
-.venv/Scripts/python.exe -m marcus.cli gate decide \
+.venv/Scripts/python.exe -m app.marcus.cli gate decide \
     --trial-id <id> --gate-id G2C \
     --verb edit \
     --edit-payload <path-to-edit.json> \
@@ -129,7 +149,7 @@ Resumes the trial; downstream nodes consume the proposal as-is.
 ### `reject`
 
 ```bash
-.venv/Scripts/python.exe -m marcus.cli gate decide \
+.venv/Scripts/python.exe -m app.marcus.cli gate decide \
     --trial-id <id> --gate-id G2C \
     --verb reject \
     --decision-card-digest <digest-from-card> \
@@ -148,7 +168,7 @@ If you want to override a specialist's model mid-trial (FR24):
 
 ```bash
 # Phase 1 — submit_override returns an OverrideWarning (NO state mutation yet)
-.venv/Scripts/python.exe -m marcus.cli override submit \
+.venv/Scripts/python.exe -m app.marcus.cli gate override-submit \
     --trial-id <id> --node-id <node> --new-model <model-name>
 ```
 
@@ -160,7 +180,7 @@ Marcus computes `compute_cache_impact` and returns:
 
 ```bash
 # Phase 2 — apply_override consumes the confirm_token
-.venv/Scripts/python.exe -m marcus.cli override apply \
+.venv/Scripts/python.exe -m app.marcus.cli gate override-apply \
     --trial-id <id> --confirm-token <token-from-phase-1>
 ```
 
@@ -214,6 +234,9 @@ Replays the trial from final checkpoint; verifies pack-hash + sanctum-fingerprin
 ## See also
 
 - [`docs/operator/conditional-gate-addendum-playbook.md`](conditional-gate-addendum-playbook.md) — Operator-window workflows for M2 (Wondercraft) + M3 (Texas) conditional gates
-- [`docs/operator/post-m5-runbook.md`](post-m5-runbook.md) — Post-M5 verdict-path operational guide
+- [`docs/operator/post-m5-runbook.md`](post-m5-runbook.md) — Post-M5 verdict-path operational guide (now actualized to SHIP-CONDITIONAL state)
 - [`docs/dev-guide/langgraph-migration-guide.md`](../dev-guide/langgraph-migration-guide.md) — Architectural deep-dive
 - [`README.md`](../../README.md) — Project orientation
+- [`docs/operator/hud-guide.md`](hud-guide.md) — HUD panels, watch mode, active-trial/cost interpretation
+- **Live trial monitoring today:** LangSmith UI (`https://smith.langchain.com/`, workspace `course-content-production`) gives you the live trace tree per trial; `tail -f state/config/runs/<trial-id>/cost-report.md` gives running cost.
+- [`docs/operator/adhoc-mode.md`](adhoc-mode.md) — runtime single-prompt Marcus exploration without trial registration

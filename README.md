@@ -1,6 +1,6 @@
 # course-DEV-IDE-with-AGENTS — Hybrid Migration Clone
 
-**Status:** active migration in flight on `dev/langchain-langgraph-foundation` branch (severed from upstream/master @ `3ed7c56` since 2026-04-24). M5 ship verdict pending at Slab 5a close.
+**Status:** M5 is `SHIP-CONDITIONAL` on `dev/langchain-langgraph-foundation` through **2026-05-03** (severed from upstream/master @ `3ed7c56` since 2026-04-24). The migrated foundation is ready for operator trial preparation; four carried conditions remain before unconditional SHIP: M2 Wondercraft live artifact, M3 Texas live retrieval, Story 5a.2 production clone-launch equivalence, and Plausible-Token Substrate Contamination live-OpenAI verification.
 
 **One-line elevator:** Collaborative intelligence platform for course content production — a multi-agent orchestrator (Marcus) + Cora dev-graph + per-specialist 9-node scaffold (gates G1/G2C/G3/G4 with HIL DecisionCard verdicts) + tamper-evident operator-verdict + learning ledger + frozen-graph reproducibility ceremony, built on LangChain/LangGraph.
 
@@ -10,7 +10,7 @@
 
 | You are... | Read this first |
 |---|---|
-| **An operator running your first trial run** | [`docs/operator/trial-run-runbook.md`](docs/operator/trial-run-runbook.md) (post-M3 close); run `.venv/Scripts/python.exe scripts/utilities/trial_run_preflight.py` before invoking any trial |
+| **An operator running your first trial run** | [`docs/operator/trial-run-runbook.md`](docs/operator/trial-run-runbook.md); run `scripts/setup/ready_for_trial.ps1` or `bash scripts/setup/ready_for_trial.sh` before invoking a trial |
 | **A user creating course content** | [`docs/user-guide.md`](docs/user-guide.md) (legacy; pre-migration content production workflow; post-M5 ship will be re-anchored) |
 | **A system administrator setting up the environment** | [`docs/admin-guide.md`](docs/admin-guide.md) + [`.env.example`](.env.example) |
 | **A developer extending the platform** | [`docs/dev-guide.md`](docs/dev-guide.md) + [`docs/dev-guide/langgraph-migration-guide.md`](docs/dev-guide/langgraph-migration-guide.md) |
@@ -40,19 +40,25 @@ cp .env.example .env
 # Install pre-commit hooks (recommended)
 .venv/Scripts/pre-commit install
 
-# Verify health
-.venv/Scripts/python.exe scripts/utilities/trial_run_preflight.py
+# Verify first-trial readiness
+scripts/setup/ready_for_trial.ps1
 ```
 
 **Run your first trial:**
 
-See [`docs/operator/trial-run-runbook.md`](docs/operator/trial-run-runbook.md) (authored at M3 conditional-close; full polish post-M5 ship).
+Use the runtime CLI, not a BMAD persona session:
+
+```bash
+.venv/Scripts/python.exe -m app.marcus.cli trial start --preset production --input <corpus-path>
+```
+
+See [`docs/operator/trial-run-runbook.md`](docs/operator/trial-run-runbook.md) for the operator flow.
 
 ---
 
 ## Migration status (live)
 
-The hybrid clone is mid-migration from primary's prompt-pack + Cursor-IDE workflow to a LangChain/LangGraph orchestrator architecture. **Track progress at [`_bmad-output/implementation-artifacts/sprint-status.yaml`](_bmad-output/implementation-artifacts/sprint-status.yaml).**
+The hybrid clone has passed M5 as a conditional ship from primary's prompt-pack + Cursor-IDE workflow to a LangChain/LangGraph orchestrator architecture. **Track progress at [`_bmad-output/implementation-artifacts/sprint-status.yaml`](_bmad-output/implementation-artifacts/sprint-status.yaml).**
 
 | Slab | State | Milestone | Verdict |
 |---|---|---|---|
@@ -61,12 +67,12 @@ The hybrid clone is mid-migration from primary's prompt-pack + Cursor-IDE workfl
 | 2b — Per-specialist wave (14 inheritors + dispatch hardening + scaffold-conformance framework) | done | — | GREEN |
 | 2c — Wondercraft pilot + generator validation | done | M2 | **CONDITIONAL-GREEN** (operator addendum pending) |
 | 3 — Marcus orchestration | done | M3 | **CONDITIONAL-GREEN** (Texas live-wire addendum pending) |
-| 4 — Lockstep + gates + Cora + ledger + frozen-graph | in flight (Codex) | M4 | TBD |
-| 5a — Acceptance (replay + parity + economics + invariant audit + ship verdict) | specs ready | **M5 (THE ship gate)** | TBD |
-| 5b — Polish (fork UX + economics dashboard + guide final + generator polish) | cuttable per PRD MVP | post-M5 | TBD |
+| 4 — Lockstep + gates + Cora + ledger + frozen-graph | done | M4 | GREEN-WITH-RIDERS |
+| 5a — Acceptance (replay + parity + economics + invariant audit + ship verdict) | done | **M5 (THE ship gate)** | **SHIP-CONDITIONAL** through 2026-05-03 |
+| 5b — Polish (fork UX + economics dashboard + guide final + generator polish) | bounded follow-up | post-M5 | opens after conditional window closes or is explicitly extended |
 
 **Migration-master-status enum** (set at 5a.5 SLAB CLOSING per M5 verdict):
-- `shipped` (M5 verdict = SHIP) → forward-port playbook activates per FR61
+- `shipped` (current: M5 verdict = SHIP-CONDITIONAL) → forward-port may proceed only inside the bounded claim set
 - `iterate-pending` (M5 verdict = ITERATE) → remediation stories open
 - `rolled-back` (M5 verdict = ROLLBACK) → FR62 rollback plan executes; clone archived
 
@@ -164,7 +170,7 @@ docs/
 
 scripts/utilities/       # 56+ utilities including:
                          #  - check_pipeline_manifest_lockstep.py (Epic 33)
-                         #  - check_manifest_lockstep.py (Slab 4 — Codex in flight)
+                         #  - check_manifest_lockstep.py (Slab 4 lockstep gate)
                          #  - validate_migration_story_sandbox_acs.py
                          #  - ac_b_op_texas_live_retrieval_evidence.py (operator window)
                          #  - trial_run_preflight.py (NEW; first-trial sanity check)
@@ -190,7 +196,7 @@ This project uses **BMAD methodology** for sprint-style migration work. Key non-
 
 ## Hybrid severance posture
 
-This clone is **severed from upstream/master @ `3ed7c56` since 2026-04-24** per `MEMORY.md::project_upstream_severance`. Wholesale `git merge upstream/master` is OFF-POLICY. The migration's LangChain/LangGraph re-platform IS the replacement. Per-capability forward-port post-M5 SHIP verdict per FR61 playbook.
+This clone is **severed from upstream/master @ `3ed7c56` since 2026-04-24** per `MEMORY.md::project_upstream_severance`. Wholesale `git merge upstream/master` is OFF-POLICY. The migration's LangChain/LangGraph re-platform IS the replacement. Per-capability forward-port follows the M5 SHIP-CONDITIONAL claim set and FR61 playbook.
 
 Primary repo serves as **frozen reference** for parity comparison at Slab 5a.2 head-to-head trial; primary baselines mined from `3ed7c56` snapshot.
 

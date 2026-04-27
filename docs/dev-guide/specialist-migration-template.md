@@ -107,7 +107,7 @@ Each rule below carries: **Rule**, **Why**, **How to apply**, and (where applica
 
 **How to apply.** In every 2b.x `_plan` node body: call `make_chat_model(specialist_id=..., temperature=state.temperature, tier_request=...)` and append `handle.entry` to `state.model_resolution_trail`. Document in `model_config.yaml` inline comments that the chat handle is NOT invoked at `_act` for tool-dispatch categories. Test pin: AC-C verifies the trail entry exists post-`_plan` even though no LLM call fires at `_act`.
 
-**Evidence anchor from 2b.1 Gary run + 2a.4 Texas precedent.** Gary's `_plan` calls `make_chat_model(specialist_id="gary", tier_request="fast")` â†’ resolves to `gpt-5-haiku`; appends `handle.entry` to trail. `_act` discriminator-check reads trail and rejects if last entry's `cache_prefix_hash` is None. Chat handle never invoked.
+**Evidence anchor from 2b.1 Gary run + 2a.4 Texas precedent.** Gary's `_plan` calls `make_chat_model(specialist_id="gary", tier_request="fast")` â†’ resolves to `gpt-5-nano`; appends `handle.entry` to trail. `_act` discriminator-check reads trail and rejects if last entry's `cache_prefix_hash` is None. Chat handle never invoked.
 
 ---
 

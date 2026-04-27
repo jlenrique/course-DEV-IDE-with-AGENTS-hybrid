@@ -2,7 +2,7 @@
 
 > ## ⚠️ MIGRATION STATUS BANNER (added 2026-04-26)
 >
-> **This guide reflects the PRE-MIGRATION primary-repo workflow** (Cursor IDE + prompt-pack v4.x + per-Epic-1-24 architectural model). The hybrid clone on `dev/langchain-langgraph-foundation` is **mid-migration to a LangChain/LangGraph orchestrator** (Marcus + Cora + 9-node specialist scaffold + HIL DecisionCard gates).
+> **This guide reflects the PRE-MIGRATION primary-repo workflow** (Cursor IDE + prompt-pack v4.x + per-Epic-1-24 architectural model). The hybrid clone on `dev/langchain-langgraph-foundation` is **M5 SHIP-CONDITIONAL through 2026-05-03** on the LangChain/LangGraph orchestrator path (Marcus + Cora + 9-node specialist scaffold + HIL DecisionCard gates).
 >
 > **For migration-aware admin operations, see:**
 > - **[`docs/operator/trial-run-runbook.md`](operator/trial-run-runbook.md)** — first-trial setup + transport choice + verdict workflow
@@ -14,12 +14,12 @@
 > - **[`scripts/setup/first_clone_bootstrap.{ps1,sh}`](../scripts/setup/)** — one-command operator setup
 > - **[Migration Admin Appendix](#migration-admin-appendix)** below — migration-specific admin ops added post-Slab-3 close
 >
-> **Pre-M5-ship scope of this legacy content:** environment setup + API-key management + MCP server config + Python env + content directory layout sections REMAIN AUTHORITATIVE for the primary-repo prompt-pack workflow. Migration-specific overhauls are deferred to post-M5-ship per Bucket-F harmonization (rewriting before M5 verdict risks re-doing work).
+> **M5 conditional scope of this legacy content:** environment setup + API-key management + MCP server config + Python env + content directory layout sections remain authoritative for primary-repo operations. Migration-specific admin execution is routed through the operator runbooks while the window remains open. Condition #4, Plausible-Token Substrate Contamination, is REMEDIATED-CODE / PENDING-LIVE-VERIFICATION and closes via the live OpenAI cascade-tier smoke.
 
 ---
 
 **Audience:** System administrators and the project owner responsible for environment setup, tool connectivity, and operational health.
-**Last Updated:** 2026-04-12 (migration banner appended 2026-04-26) | **Project Phase:** Epics 1–14 complete (primary); LangChain/LangGraph migration in flight on hybrid clone (M5 ship verdict pending).
+**Last Updated:** 2026-04-12 (migration banner actualized 2026-04-26) | **Project Phase:** Epics 1–14 complete (primary); hybrid clone is M5 SHIP-CONDITIONAL through 2026-05-03.
 
 ---
 

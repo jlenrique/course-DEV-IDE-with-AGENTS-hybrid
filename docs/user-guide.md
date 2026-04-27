@@ -2,18 +2,20 @@
 
 > ## ⚠️ MIGRATION STATUS BANNER (added 2026-04-26)
 >
-> **This guide reflects the PRE-MIGRATION primary-repo workflow** (Cursor IDE chat + prompt-pack v4.x). The hybrid clone on `dev/langchain-langgraph-foundation` is **mid-migration to a LangChain/LangGraph orchestrator** — Marcus runs Plan-and-Execute by default, routes to specialists via manifest, produces DecisionCards at every gate (G1/G2C/G3/G4) for HIL operator verdict via CLI/MCP/FastAPI transports.
+> **This guide reflects the PRE-MIGRATION primary-repo workflow** (Cursor IDE chat + prompt-pack v4.x). The hybrid clone on `dev/langchain-langgraph-foundation` is **M5 SHIP-CONDITIONAL through 2026-05-03** on the LangChain/LangGraph orchestrator path — Marcus runs Plan-and-Execute by default, routes to specialists via manifest, and produces DecisionCards at every gate (G1/G2C/G3/G4) for HIL operator verdict via CLI/MCP/FastAPI transports.
 >
-> **For migration-aware user workflow (post-M3 close), see:**
-> - **[`docs/operator/trial-run-runbook.md`](operator/trial-run-runbook.md)** — first-trial step-by-step (transport choice + corpus + DecisionCard inspection + verdict flow + override + replay)
-> - **[`README.md`](../README.md)** — top-of-repo project orientation + status-by-slab + quick-start
+> **For migration-aware user workflow (M5 SHIP-CONDITIONAL through 2026-05-03), see:**
+> - **[`docs/operator/production-run-swimlane.md`](operator/production-run-swimlane.md)** — at-a-glance swimlane for a typical animated-slides + video production run (operator HIL action / platform action / carry-forward / notes lanes; phase-by-phase with the 4 HIL gates G1/G2C/G3/G4 highlighted; cumulative pace + watch-for rubric). **Best entry point** if you want to understand a production run end-to-end without diving into the runbook.
+> - **[`docs/operator/trial-run-runbook.md`](operator/trial-run-runbook.md)** — first-trial step-by-step (transport choice + corpus + DecisionCard inspection + verdict flow + override + replay).
+> - **[`docs/operator/post-m5-runbook.md`](operator/post-m5-runbook.md)** — what to do during the M5 SHIP-CONDITIONAL conditional window (4 open conditions + closure paths + demotion rule).
+> - **[`README.md`](../README.md)** — top-of-repo project orientation + status-by-slab + quick-start.
 >
-> **Pre-M5-ship scope of this legacy content:** the prompt-pack v4.x workflow remains AUTHORITATIVE for primary-repo content production. Migration-equivalent user-workflow content will be authored as a fresh `docs/user-guide-migration.md` post-M5 SHIP verdict.
+> **M5 conditional scope of this legacy content:** the prompt-pack v4.x workflow remains authoritative for primary-repo content production. Runtime trial execution is covered by the operator runbook while the conditional window remains open. Condition #4, Plausible-Token Substrate Contamination, is REMEDIATED-CODE / PENDING-LIVE-VERIFICATION and closes via the live OpenAI cascade-tier smoke.
 
 ---
 
 **Audience:** Course creators and instructional designers using the system to produce educational content.
-**Last Updated:** 2026-04-12 (migration banner appended 2026-04-26) | **Project Phase:** Epics 1–14 complete (primary); LangChain/LangGraph migration in flight on hybrid clone (M5 ship verdict pending).
+**Last Updated:** 2026-04-12 (migration banner actualized 2026-04-26) | **Project Phase:** Epics 1–14 complete (primary); hybrid clone is M5 SHIP-CONDITIONAL through 2026-05-03.
 
 ---
 
@@ -236,7 +238,7 @@ Run presets are the quality-strictness axis (separate from execution mode). If n
 ```
 course-content/
 ├── staging/              ← Agent drafts awaiting your review
-│   └── m03-intro-ai/    ← One folder per module in progress
+│   └── m03-intro-ai/    ← One folder per active module
 ├── courses/              ← Approved, published content
 │   └── course-slug/
 │       └── module-01-topic/
@@ -627,7 +629,7 @@ CLOSE SHIFT. Execute docs/workflow/production-session-wrapup.md fully and output
 **Trial-run checklist (copy — same steps as # column)**  
 ☐ 0 Mode + pre-flight ☐ 1 Fidelity + URLs ready ☐ 2 Source (opt.) ☐ **3 Phase 1 files** ☐ 4 Gate 1 ☐ 5 Gary + diagram_cards ☐ 6 Gate 2 ☐ **7 Phase 2 files** ☐ 8 Gate 3 ☐ 9 Vera/Quinn-R ☐ 9A Voice preview ☐ 10 ElevenLabs ☐ 11 Motion branch only if using the motion workflow template ☐ 12 Quinn-R pre-comp ☐ 13 Compositor ☐ 14 Desmond operator brief (`DESMOND-OPERATOR-BRIEF.md`) ☐ 15 Descript assembly
 
-**Trial-run running log (in progress)**
+**Trial-run running log (active)**
 
 - 2026-03-29 | Failure | When attempting to study course material, Marcus created an ad-hoc PDF-reading script instead of routing through source wrangler and existing PDF-reading skills.
 - 2026-03-30 | Success | APC C1-M1 SME PDF ingested via **official** `source-wrangler`: `wrangle_local_pdf` + `write_source_bundle` → `course-content/staging/ad-hoc/source-bundles/apc-c1m1-tejal-2026-03-29/` (`extracted.md`, `metadata.json`, provenance `local_pdf`, pypdf 24/24).

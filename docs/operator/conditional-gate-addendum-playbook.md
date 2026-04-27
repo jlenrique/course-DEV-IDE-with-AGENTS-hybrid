@@ -1,8 +1,16 @@
 # Operator Conditional-Gate Addendum Playbook
 
-**Status:** Authored at Slab 3 close. Covers the two open conditional milestones (M2 Wondercraft + M3 Texas) and the pattern for any future conditional milestone (M4 if Slab 4 closes conditional).
+**Status:** Actualized 2026-04-26 for M5 `SHIP-CONDITIONAL` window through **2026-05-03**.
 
-**Purpose:** When a Slab close-state is `CLOSED-WITH-CONDITIONAL-M<N>` (per the inheritance pattern established at 2c.4 + 3.6), the operator window is the path to resolving the condition and unblocking the M5 SHIP verdict at 5a.5. This playbook tells you how.
+**Purpose:** Operator-window addendum templates for the M5 carried conditions. The current state has four open conditions plus one resolved condition retained for provenance:
+
+| Condition | Current state | Closure owner |
+|---|---|---|
+| M2 Wondercraft live artifact/operator addendum | OPEN | Operator |
+| M3 Texas live retrieval operator window | OPEN | Operator |
+| Story 5a.2 production clone-launch equivalence | OPEN | Operator after launcher exists |
+| `slab-3-m5-dispatch-registry-swap` | RESOLVED 2026-04-26 | Codex, no operator window |
+| Plausible-Token Substrate Contamination | REMEDIATED-CODE / PENDING-LIVE-VERIFICATION | Operator live-OpenAI smoke |
 
 ---
 
@@ -13,10 +21,7 @@ The migration's HIL discipline + sandbox-AC governance distinguishes two evidenc
 - **Behavioral evidence** (architectural/runtime correctness) — verifiable in dev-agent windows via shipped Python deps + pytest.skip on missing service
 - **Live-API evidence** (real third-party calls; cost-incurring; operator-discretion) — operator-gated; CANNOT be incurred autonomously by dev agents
 
-When a Slab close has full behavioral pass but a live-API operator-window deferred, it closes `CONDITIONAL-GREEN` per `W-R1-3.6-4` bounded-trigger rule. The condition is the operator-window completion. M5 SHIP verdict at 5a.5 reads all conditional states and either:
-- (a) resolves them to GREEN-LIGHT pre-vote (operator addendum landed)
-- (b) carries them forward as `SHIP-CONDITIONAL` (with named window for resolution)
-- (c) escalates to BLOCK if multiple conditions persist
+When a Slab close has full behavioral pass but a live-API operator-window deferred, it closes `CONDITIONAL-GREEN` per `W-R1-3.6-4` bounded-trigger rule. M5 has already carried those states forward as `SHIP-CONDITIONAL`; this playbook is now the paste-template source for closing them cleanly inside the named window.
 
 ---
 
@@ -153,28 +158,82 @@ Resolves 2a.4-followon-ac-b-op-live-retrieval per Murat hard-caveat binding."
 
 ---
 
-## M4 (if Slab 4 closes conditional) — TBD
+## 5a.2 — Production clone-launch equivalence addendum
 
-If Codex's Slab-4 close at 4.7 surfaces a conditional-M4 state per `W-R1-3.6-4` evidence-completeness gap pattern, this section will be authored during the Slab-4 review to document the specific addendum workflow.
+**Status:** OPEN until one real production-clone trial is launched through `app.marcus.cli trial start --preset production --input <corpus-path>` against live OpenAI and the cost report is written under `state/config/runs/<trial-id>/`.
 
-**Anticipated conditional triggers at Slab 4:**
-- 4.3 LangSmith trace-link in bmad-code-review finding (FR42 evidence) — may defer to operator-paste at 4.7
-- 4.4 ledger Postgres connection unavailable during 4.4 dev — may defer to operator-window
-- 4.6 sanctum_watcher live test against running trial — may defer
+### Paste the addendum
+
+Open `_bmad-output/implementation-artifacts/5a-2-parity-verdict.md` and append:
+
+```markdown
+## Operator-Window Addendum — Story 5a.2 Production Clone-Launch Equivalence
+
+**Operator:** <your-id>
+**Window opened:** 2026-04-XX
+**Window closed:** 2026-04-XX
+
+**Trial-id:** `<trial-id>`
+**Invocation:** `.venv/Scripts/python.exe -m app.marcus.cli trial start --preset production --input <corpus-path>`
+**Corpus path:** `<corpus-path>`
+**LangSmith trace:** `<trace-url-or-unavailable-with-reason>`
+**Run registry path:** `state/config/runs/<trial-id>/run.json`
+**Cost report:** `state/config/runs/<trial-id>/cost-report.md`
+**Cascade IDs observed:** `gpt-5`, `gpt-5-mini`, `gpt-5-nano` only
+**Result:** PASS
+
+**5a.2 rider transitions:** OPEN production clone-launch equivalence → RESOLVED
+```
+
+Then mark `5a-2-production-clone-launcher-and-execution-equivalence-pass` resolved in deferred inventory.
+
+## Plausible-Token Substrate Contamination live-verification addendum
+
+**Status:** REMEDIATED-CODE / PENDING-LIVE-VERIFICATION. Code now references only the real OpenAI catalog snapshot (`gpt-5`, `gpt-5-mini`, `gpt-5-nano`, `gpt-4.1`, `gpt-4.1-mini`, `gpt-4o`, `gpt-4o-mini`, `o3`, `o4-mini`). The condition closes only after the operator runs the live OpenAI cascade-tier smoke with `OPENAI_API_KEY` set.
+
+### Operator workflow
+
+```bash
+.venv/Scripts/python.exe -m pytest tests/live/test_openai_cascade_tiers_smoke.py -m live -q
+```
+
+### Paste the addendum
+
+Open `_bmad-output/implementation-artifacts/m5-decision.md` and append:
+
+```markdown
+## Operator-Window Addendum — Plausible-Token Substrate Contamination Live Verification
+
+**Operator:** <your-id>
+**Window opened:** 2026-04-XX
+**Window closed:** 2026-04-XX
+
+**Command:** `.venv/Scripts/python.exe -m pytest tests/live/test_openai_cascade_tiers_smoke.py -m live -q`
+**Observed live model IDs:** `gpt-5`, `gpt-5-mini`, `gpt-5-nano`
+**Result:** PASS — all cascade-tier model IDs resolved at OpenAI and returned non-zero token usage.
+
+**Condition transition:** REMEDIATED-CODE / PENDING-LIVE-VERIFICATION → RESOLVED
+```
+
+Then update `_bmad-output/upstream-state.md` by moving the Plausible-Token condition from `Open Conditions` to `Resolved <date>`.
+
+## Dispatch-registry resolved provenance
+
+No operator addendum is required. `slab-3-m5-dispatch-registry-swap` was resolved on 2026-04-26 by promoting both `state/config/dispatch-registry.yaml` and `runtime/graphs/v42/dispatch-registry-snapshot.yaml` to `_status: production` after registered-target import verification.
 
 ---
 
-## Pre-M5 conditional-state audit checklist
+## Conditional-state audit checklist
 
-Before convening the 5a.5 6-agent party-mode for M5 ship verdict, run this audit:
+Before promoting M5 from SHIP-CONDITIONAL to unconditional SHIP, run this audit:
 
 - [ ] M2 verdict state in `slab-2c-m2-acceptance-verdict.md`: GREEN-LIGHT or CONDITIONAL?
 - [ ] M3 verdict state in `slab-3-m3-acceptance-verdict.md`: GREEN-LIGHT or CONDITIONAL?
-- [ ] M4 verdict state in `slab-4-m4-acceptance-verdict.md` (post-Slab-4 close): GREEN-LIGHT or CONDITIONAL?
-- [ ] Each conditional state has either (a) operator-window-resolved-pre-vote OR (b) named window for SHIP-CONDITIONAL carry-forward OR (c) escalation flag for BLOCK
-- [ ] `slab-3-m5-dispatch-registry-swap` deferred-inventory entry status — pre-swap OR swapped (M5 verdict path triggers the swap if SHIP)
+- [ ] 5a.2 production clone-launch equivalence addendum: RESOLVED?
+- [ ] Plausible-Token live-OpenAI cascade smoke: RESOLVED?
+- [ ] `slab-3-m5-dispatch-registry-swap`: remains RESOLVED and registries remain `_status: production`?
 
-The party-mode prompt at 5a.5 enumerates each prior M-state explicitly per Decision #2 of `migration-5a-5-m5-ship-decision-and-slab-close.md`. Pre-vote resolution simplifies the prompt; carry-forward conditions are explicitly named in the verdict text.
+If any open condition remains after 2026-05-03 and the operator has not explicitly extended the window, follow the demotion rule in `docs/operator/post-m5-runbook.md`.
 
 ---
 

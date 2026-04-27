@@ -61,6 +61,20 @@ class CheckResult:
     required: bool = True
 
 
+def _is_unreachable_postgres_error(exc: Exception) -> bool:
+    text = str(exc).lower()
+    return any(
+        marker in text
+        for marker in (
+            "connection refused",
+            "could not connect",
+            "connection timed out",
+            "timeout expired",
+            "multiple connection attempts failed",
+        )
+    )
+
+
 def _check_env_vars(skip: bool = False) -> CheckResult:
     """Verify required + optional env vars per .env.example."""
     if skip:
@@ -144,6 +158,18 @@ def _check_postgres(skip: bool = False) -> CheckResult:
             detail={"ledger_events_present": True},
         )
     except psycopg.OperationalError as exc:
+        if _is_unreachable_postgres_error(exc):
+            return CheckResult(
+                "postgres",
+                "WARN",
+                (
+                    "Postgres unreachable; runtime can still proceed on the "
+                    "in-memory fallback checkpointer, but ledger-backed features "
+                    "will be unavailable"
+                ),
+                detail={"db_url_redacted": db_url.split("@")[-1] if "@" in db_url else "redacted"},
+                required=False,
+            )
         return CheckResult(
             "postgres",
             "FAIL",
@@ -317,6 +343,16 @@ def _check_ledger_schema_loaded() -> CheckResult:
             detail={"column_count": len(columns)},
         )
     except Exception as exc:
+        if _is_unreachable_postgres_error(exc):
+            return CheckResult(
+                "ledger_schema_loaded",
+                "WARN",
+                (
+                    "ledger schema check skipped because Postgres is unreachable; "
+                    "runtime can proceed without ledger-backed persistence"
+                ),
+                required=False,
+            )
         return CheckResult("ledger_schema_loaded", "FAIL", f"schema check failed: {str(exc)[:200]}")
 
 
@@ -374,8 +410,13 @@ def _check_sanctum_watcher_importable() -> CheckResult:
     except ImportError:
         return CheckResult(
             "sanctum_watcher_module",
-            "FAIL",
-            "sanctum_watcher.py present but watchdog Python dep missing; run: pip install watchdog",
+            "WARN",
+            (
+                "sanctum_watcher.py present but watchdog Python dep missing; "
+                "polling fallback remains available, but install watchdog for "
+                "full filesystem-observer behavior"
+            ),
+            required=False,
         )
     try:
         # Attempt to import the module to verify it's loadable
@@ -515,16 +556,17 @@ def _check_migration_state() -> CheckResult:
 
     # Lightweight grep — full YAML parse can fail on long inline comments
     conditional_markers = []
+    rider_markers = []
     if "CONDITIONAL-GREEN-PENDING-OPERATOR-ADDENDUM per slab-2c" in content or "CONDITIONAL-M2" in content:
         conditional_markers.append("M2")
     if "CONDITIONAL-GREEN-PENDING-OPERATOR-ADDENDUM per slab-3" in content or "CONDITIONAL-M3" in content:
         conditional_markers.append("M3")
     if "CONDITIONAL-GREEN-PENDING-OPERATOR-ADDENDUM per slab-4" in content or "CONDITIONAL-M4" in content:
         conditional_markers.append("M4")
-    # M4 may be GREEN-WITH-RIDERS (Codex's Slab 4.7 close pattern); check separately
+    # M4 may be GREEN-WITH-RIDERS; this is not a conditional milestone, but it is
+    # useful to surface as a bounded rider set on the operator dashboard.
     if "GREEN-WITH-RIDERS" in content and "slab-4" in content.lower():
-        if "M4" not in conditional_markers:
-            conditional_markers.append("M4-GREEN-WITH-RIDERS")
+        rider_markers.append("M4-GREEN-WITH-RIDERS")
 
     epic_states = {}
     for line in content.split("\n"):
@@ -541,7 +583,19 @@ def _check_migration_state() -> CheckResult:
             "migration_state",
             "WARN",
             f"migration in progress; conditional milestones pending: {conditional_markers}",
-            detail={"conditional": conditional_markers, "epic_states": epic_states},
+            detail={
+                "conditional": conditional_markers,
+                "riders": rider_markers,
+                "epic_states": epic_states,
+            },
+            required=False,
+        )
+    if rider_markers:
+        return CheckResult(
+            "migration_state",
+            "WARN",
+            f"migration carries bounded riders: {rider_markers}",
+            detail={"riders": rider_markers, "epic_states": epic_states},
             required=False,
         )
     return CheckResult(

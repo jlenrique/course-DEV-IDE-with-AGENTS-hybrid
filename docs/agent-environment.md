@@ -2,7 +2,7 @@
 
 > ## ⚠️ MIGRATION STATUS BANNER (added 2026-04-26)
 >
-> **This guide reflects the PRE-MIGRATION primary-repo agent environment.** The hybrid clone on `dev/langchain-langgraph-foundation` adds the migration's Marcus orchestrator + 9-node specialist scaffold + BMAD agent persona discipline (per `CLAUDE.md`).
+> **This guide reflects the PRE-MIGRATION primary-repo agent environment.** The hybrid clone on `dev/langchain-langgraph-foundation` is M5 SHIP-CONDITIONAL through 2026-05-03 and adds the migration's Marcus orchestrator + 9-node specialist scaffold + BMAD agent persona discipline (per `CLAUDE.md`).
 >
 > **For migration-aware agent environment, see:**
 > - **[`CLAUDE.md`](../CLAUDE.md)** — project instructions: BMAD sprint governance + sandbox-AC discipline + Marcus-first activation cold-start + custom-vs-stock-persona distinction + sandbox-AC validators + deferred-inventory governance
@@ -11,7 +11,7 @@
 > - **[`README.md`](../README.md)** — top-of-repo orientation + migration status-by-slab
 > - **[`skills/bmad-agent-marcus/SKILL.md`](../skills/bmad-agent-marcus/SKILL.md)** — Marcus persona activation sequence (cold-start binding per CLAUDE.md "Marcus-first APP production cold start")
 >
-> **Pre-M5-ship scope of this legacy content:** repository layout + agent operating mode + handoff guidance below remain authoritative for primary's Cursor + Claude Code workflow. Migration-equivalent agent-environment content authored as `CLAUDE.md` + per-skill `SKILL.md` files; this legacy guide is augmented (not superseded).
+> **M5 conditional scope of this legacy content:** repository layout + agent operating mode + handoff guidance below remain authoritative for primary's Cursor + Claude Code workflow. Runtime production runs invoke Marcus the Python runtime, not the BMAD Marcus persona. Condition #4, Plausible-Token Substrate Contamination, is REMEDIATED-CODE / PENDING-LIVE-VERIFICATION and closes via the live OpenAI cascade-tier smoke.
 
 ---
 
