@@ -1,6 +1,6 @@
 ﻿# Migration Story 5a.4: 15-Invariant Audit Matrix Roll-Up + FR64 Catalog Final
 
-**Status:** ready-for-dev
+**Status:** done
 **Sprint key:** `migration-5a-4-15-invariant-audit-matrix-and-fr64-catalog-final`
 **Epic:** Slab 5a — M5 acceptance gate.
 **Pts:** 3 | **Gate:** single (per governance JSON `5a-4.expected_gate_mode = "single-gate"`, rationale: null). **K-target:** ~1.2× (target 8 / floor 7).

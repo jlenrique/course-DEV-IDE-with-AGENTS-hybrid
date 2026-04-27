@@ -1,6 +1,6 @@
 ﻿# Migration Story 5a.3: Cost-Engineering Foundation (Cascade + Telemetry + Characterization Baseline)
 
-**Status:** ready-for-dev
+**Status:** done
 **Sprint key:** `migration-5a-3-economics-cost-reduction-bar`
 **Epic:** Slab 5a — M5 acceptance gate.
 **Pts:** 5 | **Gate:** single (per governance JSON `5a-3.expected_gate_mode = "single-gate"`, rationale: null). **K-target:** ~1.4× (target 14 / floor 10).
