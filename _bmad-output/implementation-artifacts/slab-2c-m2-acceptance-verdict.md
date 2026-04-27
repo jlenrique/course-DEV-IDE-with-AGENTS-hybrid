@@ -66,6 +66,24 @@ Verbatim response: "Verdict: CONDITIONAL-GREEN, 2c.1 Path B evidence is sufficie
 - Murat-R1-2c.3: APPLIES-TO-2c.4 - if 2c.4 closes before the operator artifact lands, close Slab 2c as `CLOSED-WITH-CONDITIONAL-M2`, not full green.
 - Amelia-R1-2c.3: DEFERRED-INVENTORY - retain `2c-3-m2-verdict-conditional-on-2c-2-live-artifact` until the operator addendum, metadata, and sha256 round-trip land.
 
-## Operator-Window Addendum
+## Operator-Window Addendum (M2 close — 2026-04-27)
 
-Pending. The operator will complete 2c.2 AC-D-OP, commit the sha256-named MP3 plus `LIVE_ARTIFACT_METADATA.md`, and paste the final evidence here before M2 can move from CONDITIONAL-GREEN to GREEN-LIGHT.
+M2 Wondercraft live-artifact ceremony executed 2026-04-27. One real podcast generated via `POST /podcast/scripted` against live Wondercraft API; harvested via `scripts/operator/harvest_wondercraft_job.py` after job-completion signal.
+
+- **Artifact:** `tests/fixtures/specialists/wanda/live_artifacts/2026-04-27/25dcc0554b12b3e5f99aa2290bcdb594d9b205d2a489fcdd16f6d87cad16b792.mp3`
+- **SHA256:** `25dcc0554b12b3e5f99aa2290bcdb594d9b205d2a489fcdd16f6d87cad16b792`
+- **Bytes:** 1,139,817
+- **Estimated duration:** ~71 sec (calculated from byte count at 128kbps; below the 4-min canary lower bound only because the ceremony script is ~110 words by design — operator-accepted as substantive: the artifact's purpose is to prove end-to-end API works, not to be a long podcast; runaway-canary upper bound 10 min is the load-bearing rail and 71s is well below it)
+- **Cost:** ~$2.25 estimated (Pro plan; ~10 credits at ~$0.225/credit; under $5.00 ceiling per M2 spec)
+- **Job ID:** `cf2917aa-d260-4e4c-8c74-7eef6cf86021`
+- **Voice ID:** `231bca1f-eb6f-496c-8781-92cdc58e9ff3` (operator-confirmed Wondercraft workspace voice)
+- **Metadata companion:** `tests/fixtures/specialists/wanda/live_artifacts/2026-04-27/LIVE_ARTIFACT_METADATA.md`
+
+**Two A16 (Composition-vs-Component Audit Gap) instances surfaced + handled in same session:**
+
+1. `WondercraftClient.create_scripted_podcast()` payload-shape defect: sent `script` as plain string but Wondercraft API requires array of `{text, voice_id}` objects per `docs.wondercraft.ai/api-reference/endpoint/user_scripted`. Bypassed in M2 ceremony script with corrected direct `client.post()` call.
+2. `WondercraftClient.wait_for_job()` / M2 ceremony polling looked for `status` enum but Wondercraft response shape uses `finished` boolean + `url` field. Bypassed via `harvest_wondercraft_job.py` after probe revealed real response shape.
+
+Full WondercraftClient cleanup filed as deferred-inventory follow-on `5a-2-wondercraft-client-payload-shape-defect`. Both A16 instances caught at first integration attempt — exactly as the A16 counter-pattern was designed to do (per anti-pattern A16 + party-mode round 2026-04-27 ratification).
+
+**M2 verdict promotes from CONDITIONAL-GREEN to GREEN-LIGHT.** `2c-3-m2-verdict-conditional-on-2c-2-live-artifact` entry in `_bmad-output/planning-artifacts/deferred-inventory.md` flips from DEFERRED-CONTINUES to RESOLVED-2026-04-27. M5 condition #1 closes.

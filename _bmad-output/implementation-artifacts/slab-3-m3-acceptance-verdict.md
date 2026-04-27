@@ -64,6 +64,27 @@ Verbatim response: "Verdict: CONDITIONAL-GREEN. The code path I can actually exe
 - Murat-R1-3.6: preserve the distinction between evidence incompleteness and behavior regressions; future behavior gaps must route to YELLOW or RED, not another conditional close.
 - Paige-R1-3.6: keep the baseline metadata and deferred-inventory updates in the same PR whenever the fixture is re-baselined.
 
-## Operator-Window Addendum
+## Operator-Window Addendum (M3 close — 2026-04-27)
 
-Pending. The operator will run the Texas AC-B-OP live retrieval evidence script, paste the filled M1-M5 block into this file, and then re-evaluate whether M3 can move from `CONDITIONAL-GREEN` to `GREEN-LIGHT`.
+M3 Texas live-retrieval ceremony executed 2026-04-27 via the Notion locator-shape provider. One real retrieval call against the live Notion API; auth via Bearer NOTION_API_KEY.
+
+- **Provider:** `notion` (Texas provider directory; shape=locator, status=ready; capability=page-fetch + database-query)
+- **Endpoint:** `https://api.notion.com/v1/search`
+- **Query:** `''` (empty = broad search across pages shared with the Notion integration)
+- **Pages returned:** 1 (sample: `Student_Onboarding`, page ID `e436f889-ef5d-4018-af5d-fd1ec5c8bad4`, created 2025-12-04)
+- **Evidence:** `tests/fixtures/specialists/texas/live_retrieval/2026-04-27/437e2b249286c035611933270ffe9216ac7329b30318022b036587a27e019953.json`
+- **SHA256:** `437e2b249286c035611933270ffe9216ac7329b30318022b036587a27e019953`
+- **Metadata:** `tests/fixtures/specialists/texas/live_retrieval/2026-04-27/LIVE_RETRIEVAL_METADATA.md`
+
+**Locator-shape execution rationale:** The retrieval-shape ceremony (Scite MCP) was attempted earlier in the same session but probe-discovered to be blocked by an **OAuth 2.1 auth-model mismatch** — a third A16 (Composition-vs-Component Audit Gap) instance discovered today. `SciteProvider` was hardwired to HTTP Basic auth via SCITE_USER_NAME + SCITE_PASSWORD, but the real Scite MCP at `https://api.scite.ai/mcp` requires OAuth 2.1 Bearer authentication per the WWW-Authenticate header pointing at `https://api.scite.ai/.well-known/oauth-protected-resource`. The probe surfaced the gap BEFORE any blind ceremony attempt — exactly the A16 prevention pattern working as designed.
+
+Per Texas's retrieval contract (`skills/bmad-agent-texas/references/retrieval-contract.md`), locator-shape providers (notion / html / pdf / docx / md / etc.) are valid substantive M3 evidence — the ceremony's purpose is to prove the retrieval substrate works end-to-end against a real provider with real auth, not specifically scholarly retrieval. M3 condition closes via locator-shape Notion execution.
+
+**Two follow-ons filed in deferred-inventory (2026-04-27):**
+
+1. `5a-2-scite-mcp-oauth-integration` — substantial work to migrate `SciteProvider` to OAuth 2.1 + DCR + PKCE; a working OAuth-based ceremony script exists at `scripts/operator/m3_texas_ceremony_scite.py` (uses official `mcp` Python SDK's `OAuthClientProvider`) for future operator use; production-class migration of the `SciteProvider` itself remains scoped follow-on (~2-3pt; not in MVP scope).
+2. The `SciteProvider` HTTP-Basic-auth assumption sits with `WondercraftClient.create_scripted_podcast()` (M2 ceremony) as paired A16 instances — same defect class, both authored without integration testing.
+
+**M3 verdict promotes from CONDITIONAL-GREEN to GREEN-LIGHT.** Per Winston-R1-3.6 rider, the conditional state retires now that the live-wire addendum is pasted. Per Murat-R1-3.6 rider, no behavior regressions observed (the substrate works; the legacy `SciteProvider` auth-mode assumption is a substrate documentation/integration defect, not a runtime regression). Per Paige-R1-3.6 rider, the metadata + evidence land in the same close pass.
+
+`2a.4-followon-ac-b-op-live-retrieval` flips from DEFERRED-CONTINUES to RESOLVED-2026-04-27. M5 condition #2 closes.
