@@ -1201,3 +1201,15 @@ The migration health dashboard now summarizes on-disk economics artifacts with
 three rows: trial count, rolling median trial cost over the last five reports,
 and drift alerts seen in the last 24 hours.
 
+## Invariant Audit (Slab 5 Story 5a.4)
+
+M5 acceptance now reads the consolidated invariant roll-up at
+`_bmad-output/implementation-artifacts/15-invariant-audit-matrix.md`. That
+matrix absorbs the Slab 2c Wondercraft stub, the Slab 3 Marcus stub, and the
+per-slab D12 preservation notes into one operator-facing audit surface.
+
+The anti-pattern companion surface remains
+`docs/dev-guide/specialist-anti-patterns.md`. Slab 5a.4 does not invent a new
+catalog shape; it finalizes the FR64 cycle-complete annotation and keeps the
+existing four-field format frozen.
+

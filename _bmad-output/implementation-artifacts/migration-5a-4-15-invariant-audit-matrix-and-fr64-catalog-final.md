@@ -1,4 +1,4 @@
-# Migration Story 5a.4: 15-Invariant Audit Matrix Roll-Up + FR64 Catalog Final
+﻿# Migration Story 5a.4: 15-Invariant Audit Matrix Roll-Up + FR64 Catalog Final
 
 **Status:** ready-for-dev
 **Sprint key:** `migration-5a-4-15-invariant-audit-matrix-and-fr64-catalog-final`
@@ -6,6 +6,8 @@
 **Pts:** 3 | **Gate:** single (per governance JSON `5a-4.expected_gate_mode = "single-gate"`, rationale: null). **K-target:** ~1.2× (target 8 / floor 7).
 
 **Predecessor:** 5a.1 + 5a.2 + 5a.3 done. **HARD INHERITANCE BINDING:** 2c.3 A-R1 BLOCKER B1 RESOLVED-BY-DEFERRAL filed matrix creation to Slab 5a; absorbs `slab-2c-wondercraft-invariant-stub.md` + `slab-3-marcus-invariant-stub.md` (from 3.6 AC-G) at this story.
+
+**Note (2026-04-26):** 5a.3 was substrate-amended from "≥50% cost-reduction bar vs primary-repo baseline" to "cost-engineering foundation (cascade + telemetry + characterization-on-migrated-runtime baseline)" — see 5a.3 spec SUBSTRATE-AWARE ADAPTATION header. The invariant matrix entries below reflect the amended FR55/FR56 framing (capability-shipped, not relative-reduction-vs-legacy).
 
 ---
 
@@ -115,4 +117,36 @@ Sandbox-AC PASS.
 
 ## Dev Agent Record
 
-_(Populated during T1–T9 execution.)_
+Close record completed 2026-04-26 after the invariant matrix, FR64 final
+annotation, and migration-guide cross-references landed and verified.
+
+### T1 Readiness + substrate verification
+
+Verified the canonical 15-invariant list from
+`_bmad-output/planning-artifacts/architecture-langchain-langgraph-migration.md`,
+confirmed both absorption stubs existed at
+`slab-2c-wondercraft-invariant-stub.md` and `slab-3-marcus-invariant-stub.md`,
+and confirmed 5a.3 had already closed on the amended cost-engineering
+foundation contract so FR55/FR56 references could be rolled into the matrix as
+capability-shipped evidence rather than a legacy-relative reduction claim.
+
+### Implementation summary
+
+Authored `_bmad-output/implementation-artifacts/15-invariant-audit-matrix.md`
+with all 15 canonical rows, named file/test references, explicit provenance, and
+preservation-evidence notes that carry forward the still-open M2/M3/M4
+conditional states honestly into 5a.5. Finalized the FR64 cycle-complete
+annotation in `docs/dev-guide/specialist-anti-patterns.md` and added migration-
+guide cross-references to both the invariant matrix and the anti-patterns
+catalog.
+
+### Verification
+
+- `.\.venv\Scripts\python.exe -m pytest tests/migration/test_15_invariant_audit_matrix_present.py tests/migration/test_15_invariant_stub_absorption.py tests/migration/test_anti_patterns_catalog_fr64_final.py tests/migration/test_migration_guide_invariant_audit_xref.py -q --tb=short`
+  -> `4 passed`
+- `.\.venv\Scripts\python.exe -m ruff check tests/migration/test_15_invariant_audit_matrix_present.py tests/migration/test_15_invariant_stub_absorption.py tests/migration/test_anti_patterns_catalog_fr64_final.py tests/migration/test_migration_guide_invariant_audit_xref.py`
+  -> clean
+- `.\.venv\Scripts\lint-imports.exe --config pyproject.toml`
+  -> `Contracts: 9 kept, 0 broken.`
+- `.\.venv\Scripts\python.exe scripts/utilities/validate_migration_story_sandbox_acs.py _bmad-output/implementation-artifacts/migration-5a-4-15-invariant-audit-matrix-and-fr64-catalog-final.md`
+  -> `PASS`
