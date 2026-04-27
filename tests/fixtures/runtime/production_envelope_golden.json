@@ -1,0 +1,17 @@
+{
+  "schema_version": "production-envelope.v1",
+  "trial_id": "12345678-1234-4234-8234-123456789abc",
+  "contributions": [
+    {
+      "specialist_id": "texas",
+      "contributed_at": "2026-04-27T12:00:00Z",
+      "output": {
+        "status": "complete",
+        "bundle_reference": "tests/fixtures/specialists/texas/fixture_bundle"
+      },
+      "cost_usd": 0.0,
+      "model_used": "gpt-5-nano",
+      "output_digest": "749179629b17bdbcf86cb2702ac19d50293213ba9ee153820ddb5f5a44c629cc"
+    }
+  ]
+}

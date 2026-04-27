@@ -1,0 +1,79 @@
+{
+  "$defs": {
+    "SpecialistContribution": {
+      "additionalProperties": false,
+      "description": "One immutable specialist output appended to a production envelope.",
+      "properties": {
+        "specialist_id": {
+          "minLength": 1,
+          "title": "Specialist Id",
+          "type": "string"
+        },
+        "contributed_at": {
+          "format": "date-time",
+          "title": "Contributed At",
+          "type": "string"
+        },
+        "output": {
+          "additionalProperties": true,
+          "title": "Output",
+          "type": "object"
+        },
+        "cost_usd": {
+          "minimum": 0.0,
+          "title": "Cost Usd",
+          "type": "number"
+        },
+        "model_used": {
+          "minLength": 1,
+          "title": "Model Used",
+          "type": "string"
+        },
+        "output_digest": {
+          "maxLength": 64,
+          "minLength": 64,
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Output Digest",
+          "type": "string"
+        }
+      },
+      "required": [
+        "specialist_id",
+        "contributed_at",
+        "output",
+        "cost_usd",
+        "model_used",
+        "output_digest"
+      ],
+      "title": "SpecialistContribution",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "description": "Canonical cross-specialist accumulator for production composition.\n\nThis is distinct from ``RunState.cache_state.cache_prefix``, which remains\nper-specialist scratch for isolated scaffold execution.",
+  "properties": {
+    "schema_version": {
+      "const": "production-envelope.v1",
+      "default": "production-envelope.v1",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "trial_id": {
+      "format": "uuid",
+      "title": "Trial Id",
+      "type": "string"
+    },
+    "contributions": {
+      "items": {
+        "$ref": "#/$defs/SpecialistContribution"
+      },
+      "title": "Contributions",
+      "type": "array"
+    }
+  },
+  "required": [
+    "trial_id"
+  ],
+  "title": "ProductionEnvelope",
+  "type": "object"
+}

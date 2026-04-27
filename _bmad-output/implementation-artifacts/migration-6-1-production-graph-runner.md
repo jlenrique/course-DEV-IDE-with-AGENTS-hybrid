@@ -2,14 +2,16 @@
 
 **Status:** review (implementation landed 2026-04-27; operator acceptance ratification pending)
 **Sprint key:** `migration-6-1-production-graph-runner`
-**Epic:** Slab 6 — Post-MVP Production Capability (NEW; opens with this story).
-**Pts:** 13 (3-week-shaped story; substantial new orchestration integration across 5+ surfaces).
+**Epic:** Slab 6 - Post-MVP Production Capability (follows Slab 6.0 production envelope substrate).
+**Pts:** 5 (runner consumes substrate; production envelope + dispatch adapter moved to Slab 6.0).
 **Gate:** dual-gate (rationale: `substrate_shape` + `operator_acceptance_gate` — composition layer + first-trial verification both load-bearing).
 **K-target:** ~1.4× (target ~30 / floor ~22; estimated honest K-floor will land per implementation phasing).
 
-**Predecessors:** Slab 5a closed as **bounded-MVP unconditional SHIP** (2026-04-27 ratification). M5 conditions #1 (M2 Wondercraft), #2 (M3 Texas), #4 (Plausible-Token live verification) close via operator-presence; condition #3 was reframed as this Slab 6 opener per party-mode round 2026-04-27 (Winston + Murat + Quinn-R unanimous GREEN-WITH-CONCERNS).
+**Predecessors:** Slab 5a closed as **bounded-MVP unconditional SHIP** (2026-04-27 ratification). Slab 6.0 (`migration-6-0-production-envelope-substrate.md`) now precedes this story and owns the production envelope, dispatch adapter, and Texas -> cd composition fixture per Path A-prime / A17 remediation. M5 conditions #1 (M2 Wondercraft), #2 (M3 Texas), #4 (Plausible-Token live verification) close via operator-presence; condition #3 is tracked through the Slab 6.0 substrate + Slab 6.1 runner sequence.
 
 **Authorship provenance:** authored 2026-04-27 in operator session immediately after 3-agent party-mode reframe. Cite Codex Phase A investigation as primary substrate evidence: `_bmad-output/implementation-artifacts/production-graph-investigation-2026-04-27.md`.
+
+**Rescope note (2026-04-27 Path A-prime):** Slab 6.1 no longer builds the cross-specialist production envelope substrate. It imports and consumes `ProductionEnvelope` + `ProductionDispatchAdapter` from Slab 6.0, composes the manifest into the production runner, preserves FR34 HIL gates, binds trace/cost evidence, and performs the live OpenAI operator smoke.
 
 ---
 
@@ -17,7 +19,7 @@
 
 The migration's Slab 5a M5 SHIP-CONDITIONAL verdict was reached without anyone surfacing that the migrated runtime had no callable live production-graph entry point. The 15-invariant audit matrix verified each substrate component's correctness in isolation; no audit step exercised the composition end-to-end. Codex's Phase A investigation on 2026-04-27 (Path c HALT) characterized the gap precisely: 6 missing integration points across manifest compiler, frozen graph artifacts, HIL gate pause/resume, LangSmith trace scoping, and trial lifecycle persistence.
 
-This story is the load-bearing close for the gap. Done well, the migrated runtime can produce a real production trial through a real production graph against live OpenAI, registered in `state/config/runs/<trial-id>/` with `production_clone_launch_evidence=true` and a real LangSmith trace bound to the trial. Done poorly (silently inventing the production path, fabricating evidence), it would un-do the discipline that anti-pattern A16 (Composition-vs-Component Audit Gap) was filed to address.
+This story is now the runner-consuming-substrate close for the gap. Done well, the migrated runtime can produce a real production trial through a real production graph against live OpenAI, using the Slab 6.0 production envelope adapter for specialist dispatch, registered in `state/config/runs/<trial-id>/` with `production_clone_launch_evidence=true` and a real LangSmith trace bound to the trial. Done poorly (silently inventing the production path, fabricating evidence), it would un-do the discipline that anti-pattern A16 (Composition-vs-Component Audit Gap) and A17 (Substrate Designed for Isolation, Composition Assumed) were filed to address.
 
 **Operator preference (binding):** "do it right, no band-aids, only rational trade-offs that get named in writing." Substrate-aware adaptation is the discipline; halt-and-surface is the right move when substrate disagrees with spec. Same pattern as 3.1 substrate adaptation, 5a.3 cost-engineering amendment, A15 + A16 remediation cycles.
 

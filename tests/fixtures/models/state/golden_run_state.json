@@ -9,8 +9,8 @@
     {
       "level": "registry_default",
       "requested": null,
-      "resolved": "gpt-5.4",
-      "reason": "PipelineRegistry.default_model_id='gpt-5.4' available; per_call + per_specialist did not fire",
+      "resolved": "gpt-5",
+      "reason": "PipelineRegistry.default_model_id='gpt-5' available; per_call + per_specialist did not fire",
       "timestamp": "2026-04-23T12:00:00Z",
       "cache_prefix_hash": "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef"
     }
@@ -27,5 +27,6 @@
     "cache_prefix": "sanctum-v1-gpt54-noop",
     "entries_count": 0,
     "last_invalidated_at": null
-  }
+  },
+  "production_envelope": null
 }

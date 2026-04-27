@@ -1261,6 +1261,28 @@ reference only and `migration-master-status` remains `shipped`. If the window
 lapses unresolved on 2026-05-03, the migration state demotes to
 `iterate-pending` rather than silently retaining ship status.
 
+## Production Envelope Substrate
+
+Story 6.0 adds the production composition substrate that Slab 6.1 consumes.
+`ProductionEnvelope` is the cross-specialist accumulator; it lives alongside
+`RunState.cache_state.cache_prefix`, which remains per-specialist scratch for
+isolated scaffold execution. Each appended `SpecialistContribution` is
+immutable, carries a SHA-256 digest of the specialist output, and rejects a
+second contribution from the same specialist within a trial.
+
+`ProductionDispatchAdapter` is the only layer that translates between those
+two state shapes. It reads upstream contributions from the envelope, constructs
+the downstream specialist's isolated `RunState.cache_state.cache_prefix`, invokes
+the compiled specialist graph through the scaffold boundary, records any
+per-specialist gate interrupt, and appends the resulting cache-prefix output
+back to the envelope.
+Specialist graph files remain unchanged.
+
+Composition tests now live under `tests/composition/`. The initial smoke wires
+Texas to cd through the adapter and asserts envelope propagation, not just
+output equality. This test is the Composition Smoke evidence for Slab 6.0 and
+the standing precedent for future specialists that claim composition behavior.
+
 ## Production Runner
 
 Story 6.1 adds the migrated runtime's production graph composition layer at

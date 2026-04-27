@@ -23,6 +23,7 @@ from uuid import UUID, uuid4
 
 from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
 
+from app.models.runtime.production_envelope import ProductionEnvelope
 from app.models.state._base import enforce_tz_aware, enforce_uuid4_version
 from app.models.state.cache_state import CacheState
 from app.models.state.model_resolution_entry import ModelResolutionEntry
@@ -35,7 +36,7 @@ from app.models.state.validators.run_state_validators import (
 RunStatus = Literal["pending", "running", "complete", "failed"]
 """Closed enum: top-level run status."""
 
-ALLOWED_GRAPH_VERSIONS: frozenset[str] = frozenset({"v0.1-stub"})
+ALLOWED_GRAPH_VERSIONS: frozenset[str] = frozenset({"v0.1-stub", "v42"})
 """Stub frozen-graph-version allowlist; Slab 4 Story 4.5 wires the real registry."""
 
 
@@ -102,6 +103,13 @@ class RunState(BaseModel):
     cache_state: CacheState | None = Field(
         default=None,
         description="Optional cache-prefix tracking; populated by D5 cold-read flow.",
+    )
+    production_envelope: ProductionEnvelope | None = Field(
+        default=None,
+        description=(
+            "Production composition accumulator. Distinct from cache_state, "
+            "which remains per-specialist scratch."
+        ),
     )
 
     @field_validator("run_id")

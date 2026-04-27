@@ -1,6 +1,6 @@
 # Migration Story 6.0: Production Envelope Substrate — composition contract that admits multi-specialist execution
 
-**Status:** ready-for-dev (NEW; party-mode-greenlit 2026-04-27 per 5-agent round)
+**Status:** review (implemented 2026-04-27; BMAD code review + operator dual-gate acceptance pending)
 **Sprint key:** `migration-6-0-production-envelope-substrate`
 **Epic:** Slab 6 — Post-MVP Production Capability (PRECEDES the previously-planned 6.1 production-graph runner; opens with this story).
 **Pts:** 8 (~3-5 days; substrate + adapter + envelope + composition fixture + composition-test discipline + A17/P3 governance + Composition Smoke gate operationalization).
@@ -67,6 +67,16 @@ Slab 6.1 then becomes "runner consumes substrate" — straightforward compositio
    - **Composition Smoke gate** in slab-opener template. Template currently doesn't require composition-exercise AC at vote time.
 
 5. **Severance posture:** primary repo at `upstream/master @ 3ed7c56` remains frozen reference; FR60 backport stays closed.
+
+## Anti-Pattern Mitigation Trace
+
+Slab 6.0 explicitly reads the post-M5 anti-pattern set before substrate close:
+
+- **A15 — Plausible-Token Substrate Contamination:** no new external-provider model IDs or auth/resource identifiers are introduced by this story; existing OpenAI catalog tests remain outside the Slab 6.0 substrate surface.
+- **A16 — Composition-vs-Component Audit Gap:** AC-C adds the Texas -> cd composition chain under `tests/composition/`; the test asserts envelope state-flow and contribution accumulation rather than output equality alone.
+- **A17 — Substrate Designed for Isolation, Composition Assumed:** Path A-prime adds a production envelope alongside `cache_state.cache_prefix` and keeps specialist code unchanged; AC-E preserves isolated execution.
+- **P3 — Composition-Shape Vote Without End-to-End Exercise:** AC-D amends the create-story template with a required Composition Smoke step and failing-smoke disposition rules.
+- **N1-N12 substrate checklist:** Acceptance Auditor must trace all twelve N-items in the Slab 6.0 bmad-code-review artifact before `review -> done`.
 
 ---
 
@@ -332,7 +342,12 @@ _(Verify Codex Slab 6.1 strict-AC HALT findings against live tree state at dev s
 
 ### Implementation summary
 
-_(Fill at close per phase.)_
+Implemented Path A-prime substrate:
+- `ProductionEnvelope` + `SpecialistContribution` strict Pydantic v2 model family with JSON Schema and golden fixture.
+- `RunState.production_envelope` added alongside `cache_state`.
+- `ProductionDispatchAdapter` added at runner layer; it marshals envelope contributions into per-specialist `cache_state.cache_prefix`, invokes the compiled specialist graph through the scaffold boundary, records per-specialist gate interrupts, and appends output back into the envelope.
+- `tests/composition/` added with `ComposedSpecialistChainHarness`, Texas -> cd composition smoke, and specialist isolation-preservation scaffold build test.
+- Composition Smoke step added to the create-story template; A17/P3 presence test added.
 
 ### Composition fixture evidence (AC-C)
 
@@ -340,4 +355,22 @@ _(Cite the Texas → cd chain test output. Include envelope-state-after-chain-ex
 
 ### Verification
 
-_(Cite pytest + ruff + lint-imports + sandbox-AC validator outputs.)_
+Passed:
+- `pytest tests/composition/ -q --tb=short` -> 17 passed
+- `pytest tests/unit/runtime/test_production_envelope_strict.py tests/integration/marcus/test_dispatch_adapter.py tests/composition/ tests/migration/test_composition_smoke_template_present.py tests/migration/test_a17_p3_entries_present.py -q --tb=short` -> 35 passed
+- `pytest tests/unit/models/state/test_run_state.py tests/unit/models/state/test_schema_pin.py tests/unit/models/state/test_reproducibility_invariants.py tests/unit/state/test_run_state_model_overrides_field.py -q --tb=short` -> 55 passed
+- focused isolation slice (`tests/composition/test_specialist_isolation_preserved.py` + per-specialist `test_*_state_shape.py`) -> 78 passed
+- `pytest tests/test_no_fictitious_model_ids.py tests/integration/runtime/test_cascade_ids_in_openai_published_catalog.py -q --tb=short` -> 2 passed
+- `ruff check app/models/runtime app/marcus/orchestrator tests/unit/runtime tests/integration/marcus tests/composition tests/migration` -> clean
+- `lint-imports --config pyproject.toml` -> 9 kept, 0 broken
+- `python scripts/utilities/validate_migration_story_sandbox_acs.py _bmad-output/implementation-artifacts/migration-6-0-production-envelope-substrate.md` -> PASS
+
+Not completed locally: full `pytest tests/specialists/ -q --tb=short` timed out at both 2 minutes and 5 minutes on this Windows environment; the focused isolation-preservation slice passed.
+
+### Operator dual-gate gate-2 evidence (AC-I item 5)
+
+- **Date:** 2026-04-27
+- **Command:** `.venv\Scripts\python.exe -m pytest tests/composition/ -q --tb=short`
+- **Result:** `17 passed in 1.21s`
+- **Operator witness:** Juan Leon (operator session)
+- **Disposition:** PASS — substrate-shape gate cleared; operator ratifies the Composition Smoke gate amendment is correctly operationalized and the Texas → cd chain test (the load-bearing test that mirrors the Slab 6.1 strict-AC HALT scenario) passes end-to-end through the `ProductionDispatchAdapter`. Gate-2 satisfied. Formal `review → done` flip pending bmad-code-review triage per CLAUDE.md §3.

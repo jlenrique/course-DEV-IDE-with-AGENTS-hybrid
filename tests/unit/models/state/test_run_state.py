@@ -113,7 +113,7 @@ def test_model_resolution_trail_default_empty(valid_kwargs: dict[str, object]) -
 def test_model_resolution_trail_accepts_entries(valid_kwargs: dict[str, object]) -> None:
     entry = ModelResolutionEntry(
         level="registry_default",
-        resolved="gpt-5.4",
+        resolved="gpt-5",
         reason="default fallthrough",
         timestamp=datetime.now(UTC),
     )
