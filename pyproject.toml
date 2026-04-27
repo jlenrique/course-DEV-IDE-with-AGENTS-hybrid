@@ -61,6 +61,7 @@ dev = [
     # Generator template-rendering (Story 2a.5 + 33-1a)
     "jinja2>=3.1,<4",
 ]
+live-smoke = []
 
 [tool.ruff]
 target-version = "py311"
@@ -78,6 +79,7 @@ select = ["E", "F", "W", "I", "N", "UP", "B", "SIM"]
 "skills/bmad-agent-marcus/scripts/prepare-irene-pass2-handoff.py" = ["E501"]
 
 [tool.pytest.ini_options]
+addopts = "-m 'not live'"
 testpaths = [
     "tests",
     "skills/source-wrangler/scripts/tests",
@@ -89,6 +91,7 @@ testpaths = [
 pythonpath = [".", "skills/bmad-agent-texas/scripts"]  # retrieval/ package (Story 27-0)
 asyncio_mode = "auto"
 markers = [
+    "live: opt-in live smoke tests under tests/live; excluded from default pytest runs",
     "live_api: tests that call live third-party APIs; excluded by default unless --run-live is provided",
     "live_api_e2e: slower/flakier live end-to-end API tests; excluded by default unless --run-live-e2e is provided",
     "trial_critical: dev-side tests guarding the pre-Prompt-1 trial path (run_constants validator, preflight receipt, pack-doc schema lockstep). Run before firing any trial production run via `pytest -m trial_critical`. Not a runtime gate — a dev confidence check.",
@@ -183,6 +186,7 @@ ignore_imports = [
     "app.mcp_server.tools.gate_decide -> app.gates.resume_api",
     "app.http.gate_endpoint -> app.gates.resume_api",
     "app.marcus.cli.gate_cli -> app.gates.resume_api",
+    "app.marcus.orchestrator.production_runner -> app.gates.resume_api",
     "app.specialists._scaffold.graph -> app.gates.resume_api",
     "app.specialists.irene.graph -> app.gates.resume_api",
     "app.specialists.kira.graph -> app.gates.resume_api",

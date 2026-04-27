@@ -1,15 +1,17 @@
-_status: interim
+_status: production
 _lifecycle:
-  state: interim
-  reconcile_at: M5
+  state: production
+  promoted_at: 2026-04-26
   source_of_truth: primary PR-R dispatch-registry
 specialists:
   gary: app.specialists.gary.graph:build_gary_graph
+  texas: app.specialists.texas.graph:build_texas_graph
   vera: app.specialists.vera.graph:build_vera_graph
   quinn_r: app.specialists.quinn_r.graph:build_quinn_r_graph
   desmond: app.specialists.desmond.graph:build_desmond_graph
   tracy: app.specialists.tracy.graph:build_tracy_graph
   cd: app.specialists.cd.graph:build_cd_graph
+  kira: app.specialists.kira.graph:build_kira_graph
   enrique: app.specialists.enrique.graph:build_enrique_graph
   wanda: app.specialists.wanda.graph:build_wanda_graph
   kim: app.specialists.kim.graph:build_kim_graph

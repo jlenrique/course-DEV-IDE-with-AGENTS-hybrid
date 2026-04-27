@@ -1,0 +1,230 @@
+{
+  "$defs": {
+    "ProductionEnvelope": {
+      "additionalProperties": false,
+      "description": "Canonical cross-specialist accumulator for production composition.\n\nThis is distinct from ``RunState.cache_state.cache_prefix``, which remains\nper-specialist scratch for isolated scaffold execution.",
+      "properties": {
+        "schema_version": {
+          "const": "production-envelope.v1",
+          "default": "production-envelope.v1",
+          "title": "Schema Version",
+          "type": "string"
+        },
+        "trial_id": {
+          "format": "uuid",
+          "title": "Trial Id",
+          "type": "string"
+        },
+        "contributions": {
+          "items": {
+            "$ref": "#/$defs/SpecialistContribution"
+          },
+          "title": "Contributions",
+          "type": "array"
+        }
+      },
+      "required": [
+        "trial_id"
+      ],
+      "title": "ProductionEnvelope",
+      "type": "object"
+    },
+    "SpecialistContribution": {
+      "additionalProperties": false,
+      "description": "One immutable specialist output appended to a production envelope.",
+      "properties": {
+        "specialist_id": {
+          "minLength": 1,
+          "title": "Specialist Id",
+          "type": "string"
+        },
+        "contributed_at": {
+          "format": "date-time",
+          "title": "Contributed At",
+          "type": "string"
+        },
+        "output": {
+          "additionalProperties": true,
+          "title": "Output",
+          "type": "object"
+        },
+        "cost_usd": {
+          "minimum": 0.0,
+          "title": "Cost Usd",
+          "type": "number"
+        },
+        "model_used": {
+          "minLength": 1,
+          "title": "Model Used",
+          "type": "string"
+        },
+        "output_digest": {
+          "maxLength": 64,
+          "minLength": 64,
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Output Digest",
+          "type": "string"
+        }
+      },
+      "required": [
+        "specialist_id",
+        "contributed_at",
+        "output",
+        "cost_usd",
+        "model_used",
+        "output_digest"
+      ],
+      "title": "SpecialistContribution",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "description": "Production trial registry record.\n\n`production_clone_launch_evidence` is deliberately required by callers. The\nrunner can only set it true after a real graph step and at least one live\nspecialist call have both happened.",
+  "properties": {
+    "schema_version": {
+      "const": "production-trial-envelope.v1",
+      "default": "production-trial-envelope.v1",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "trial_id": {
+      "format": "uuid",
+      "title": "Trial Id",
+      "type": "string"
+    },
+    "preset": {
+      "enum": [
+        "production",
+        "explore"
+      ],
+      "title": "Preset",
+      "type": "string"
+    },
+    "corpus_path": {
+      "title": "Corpus Path",
+      "type": "string"
+    },
+    "operator_id": {
+      "title": "Operator Id",
+      "type": "string"
+    },
+    "started_at": {
+      "format": "date-time",
+      "title": "Started At",
+      "type": "string"
+    },
+    "completed_at": {
+      "anyOf": [
+        {
+          "format": "date-time",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Completed At"
+    },
+    "status": {
+      "enum": [
+        "registered",
+        "in-flight",
+        "paused-at-gate",
+        "completed",
+        "failed"
+      ],
+      "title": "Status",
+      "type": "string"
+    },
+    "paused_gate": {
+      "anyOf": [
+        {
+          "enum": [
+            "G1",
+            "G2C",
+            "G3",
+            "G4"
+          ],
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Paused Gate"
+    },
+    "langsmith_trace_id": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Langsmith Trace Id"
+    },
+    "production_clone_launch_evidence": {
+      "title": "Production Clone Launch Evidence",
+      "type": "boolean"
+    },
+    "production_clone_launch_evidence_reason": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Production Clone Launch Evidence Reason"
+    },
+    "production_envelope": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/ProductionEnvelope"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null
+    },
+    "cost_report_path": {
+      "anyOf": [
+        {
+          "format": "path",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Cost Report Path"
+    },
+    "artifact_paths": {
+      "items": {
+        "format": "path",
+        "type": "string"
+      },
+      "title": "Artifact Paths",
+      "type": "array"
+    }
+  },
+  "required": [
+    "trial_id",
+    "preset",
+    "corpus_path",
+    "operator_id",
+    "started_at",
+    "status",
+    "production_clone_launch_evidence"
+  ],
+  "title": "ProductionTrialEnvelope",
+  "type": "object"
+}

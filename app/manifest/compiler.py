@@ -23,6 +23,8 @@ Lint failures surface as `CompileError` with the offending node / edge named.
 
 from __future__ import annotations
 
+import importlib
+from collections.abc import Callable
 from pathlib import Path
 from typing import Any
 
@@ -36,6 +38,12 @@ from app.manifest.schema import EdgeSpec, NodeSpec, PipelineManifest
 from app.models.registry import PipelineRegistry
 from app.models.specialist_model_config import SpecialistModelConfig
 from app.models.state.run_state import RunState
+
+PRODUCTION_GATE_IDS: frozenset[str] = frozenset({"G1", "G2C", "G3", "G4"})
+SPECIALIST_ALIASES: dict[str, str] = {
+    "quinn-r": "quinn_r",
+    "elevenlabs": "enrique",
+}
 
 
 def _repo_root() -> Path:
@@ -56,6 +64,111 @@ def _passthrough_node(specialist_id: str | None) -> Any:
 
     _handler.__name__ = f"passthrough_{label}"
     return _handler
+
+
+def _canonical_specialist_id(specialist_id: str | None) -> str | None:
+    if specialist_id is None:
+        return None
+    normalized = specialist_id.replace("-", "_")
+    return SPECIALIST_ALIASES.get(specialist_id, SPECIALIST_ALIASES.get(normalized, normalized))
+
+
+def _load_dispatch_registry(repo_root: Path) -> dict[str, str]:
+    registry_path = repo_root / "state" / "config" / "dispatch-registry.yaml"
+    if not registry_path.is_file():
+        raise CompileError(f"dispatch registry missing: {registry_path}")
+    raw = yaml.safe_load(registry_path.read_text(encoding="utf-8")) or {}
+    specialists = raw.get("specialists")
+    if not isinstance(specialists, dict):
+        raise CompileError(f"dispatch registry missing specialists mapping: {registry_path}")
+    return {str(key): str(value) for key, value in specialists.items()}
+
+
+def _resolve_builder_ref(builder_ref: str) -> Callable[[], StateGraph]:
+    module_name, _, attr_name = builder_ref.partition(":")
+    if not module_name or not attr_name:
+        raise CompileError(f"invalid dispatch registry builder ref: {builder_ref!r}")
+    try:
+        module = importlib.import_module(module_name)
+    except ImportError as exc:
+        raise CompileError(
+            f"failed to import specialist graph builder module {module_name!r}"
+        ) from exc
+    builder = getattr(module, attr_name, None)
+    if not callable(builder):
+        raise CompileError(f"specialist graph builder is not callable: {builder_ref!r}")
+    return builder
+
+
+def _specialist_dispatch_node(
+    *,
+    node: NodeSpec,
+    canonical_specialist_id: str,
+    builder_ref: str,
+) -> Callable[[Any], dict[str, Any]]:
+    builder = _resolve_builder_ref(builder_ref)
+
+    def _handler(state: Any) -> dict[str, Any]:  # pragma: no cover - runner integration
+        specialist_graph = builder()
+        compiled = specialist_graph.compile()
+        return compiled.invoke(state)
+
+    _handler.__name__ = f"dispatch_{node.id}_{canonical_specialist_id}_act"
+    _handler.__production_node_kind__ = "specialist"  # type: ignore[attr-defined]
+    _handler.__production_manifest_node_id__ = node.id  # type: ignore[attr-defined]
+    _handler.__production_specialist_id__ = canonical_specialist_id  # type: ignore[attr-defined]
+    _handler.__production_specialist_builder_ref__ = builder_ref  # type: ignore[attr-defined]
+    _handler.__production_scaffold_node__ = node.scaffold_node or "act"  # type: ignore[attr-defined]
+    return _handler
+
+
+def _production_gate_node(node: NodeSpec) -> Callable[[Any], dict[str, Any]]:
+    gate_id = node.gate_code
+
+    def _handler(state: Any) -> dict[str, Any]:  # pragma: no cover - runner owns pause
+        del state
+        return {}
+
+    _handler.__name__ = f"emit_gate_{gate_id}_{node.id}"
+    _handler.__production_node_kind__ = "gate"  # type: ignore[attr-defined]
+    _handler.__production_manifest_node_id__ = node.id  # type: ignore[attr-defined]
+    _handler.__production_gate_id__ = gate_id  # type: ignore[attr-defined]
+    return _handler
+
+
+def _orchestration_node(node: NodeSpec, reason: str) -> Callable[[Any], dict[str, Any]]:
+    label = _canonical_specialist_id(node.specialist_id) or node.id
+
+    def _handler(state: Any) -> dict[str, Any]:  # pragma: no cover - structural node
+        del state
+        return {}
+
+    _handler.__name__ = f"orchestrate_{node.id}_{label}"
+    _handler.__production_node_kind__ = "orchestration"  # type: ignore[attr-defined]
+    _handler.__production_manifest_node_id__ = node.id  # type: ignore[attr-defined]
+    _handler.__production_specialist_id__ = label  # type: ignore[attr-defined]
+    _handler.__production_resolution_reason__ = reason  # type: ignore[attr-defined]
+    return _handler
+
+
+def _resolve_production_handler(
+    node: NodeSpec,
+    *,
+    dispatch_registry: dict[str, str],
+) -> Callable[[Any], dict[str, Any]]:
+    if node.gate and node.gate_code in PRODUCTION_GATE_IDS:
+        return _production_gate_node(node)
+    canonical = _canonical_specialist_id(node.specialist_id)
+    if canonical is None:
+        return _orchestration_node(node, "no-specialist-id")
+    builder_ref = dispatch_registry.get(canonical)
+    if builder_ref is None:
+        return _orchestration_node(node, "specialist-not-in-dispatch-registry")
+    return _specialist_dispatch_node(
+        node=node,
+        canonical_specialist_id=canonical,
+        builder_ref=builder_ref,
+    )
 
 
 def _validate_model_config_refs(nodes: list[NodeSpec], repo_root: Path) -> None:
@@ -187,10 +300,19 @@ def _edge_target(name: str) -> Any:
 def _add_node_and_edges(
     graph: StateGraph,
     manifest: PipelineManifest,
+    *,
+    dispatch_registry: dict[str, str] | None = None,
 ) -> None:
     """Add all nodes + edges to the StateGraph (AC-1.4-C topology compile)."""
     for node in manifest.nodes:
-        graph.add_node(node.id, _passthrough_node(node.specialist_id))
+        if dispatch_registry is None:
+            handler = _passthrough_node(node.specialist_id)
+        else:
+            handler = _resolve_production_handler(
+                node,
+                dispatch_registry=dispatch_registry,
+            )
+        graph.add_node(node.id, handler)
 
     has_explicit_start_edge = any(edge.from_node == "__start__" for edge in manifest.edges)
 
@@ -248,4 +370,33 @@ def compile(  # noqa: A001 — matches spec naming; callers use `app.manifest.co
     return graph
 
 
-__all__ = ["compile"]
+def compile_run_graph(
+    manifest: PipelineManifest,
+    *,
+    repo_root: Path | None = None,
+    dispatch_registry: dict[str, str] | None = None,
+) -> StateGraph:
+    """Compile the production run lane with registry-backed node handlers."""
+    if manifest.lane != "run_graph":
+        raise CompileError(
+            f"compile_run_graph requires lane='run_graph' (got {manifest.lane!r})"
+        )
+    root = repo_root if repo_root is not None else _repo_root()
+
+    _validate_frozen_graph_version(manifest.frozen_graph_version, root)
+    _validate_model_config_refs(manifest.nodes, root)
+    _validate_model_ids_in_model_config_refs(manifest.nodes, root)
+    _validate_conditions(manifest.edges)
+    _validate_decision_card_schemas(manifest.edges)
+
+    registry = dispatch_registry if dispatch_registry is not None else _load_dispatch_registry(root)
+    graph = StateGraph(state_schema=RunState)
+    _add_node_and_edges(graph, manifest, dispatch_registry=registry)
+    return graph
+
+
+__all__ = [
+    "PRODUCTION_GATE_IDS",
+    "compile",
+    "compile_run_graph",
+]

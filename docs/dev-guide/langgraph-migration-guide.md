@@ -1311,6 +1311,15 @@ Trace metadata is bound at trial scope with `trial_id`, `preset`, and
 and feed `app.runtime.economics.measure_trial_cost(...)`, which writes
 `cost-report.json` and `cost-report.md` for the trial.
 
+Specialist invocations go through `ProductionDispatchAdapter.invoke_specialist`.
+The runner carries a `ProductionEnvelope` beside the trial lifecycle envelope,
+derives each downstream dependency map deterministically from prior specialist
+contributions, and persists the accumulated contribution chain in
+`ProductionTrialEnvelope.production_envelope` for replay inspection. The v4.2
+manifest does not yet declare input-key names, so the runner preserves the
+known Texas -> CD `source_bundle` contract and otherwise uses the immediately
+previous specialist contribution as `upstream_output`.
+
 `production_clone_launch_evidence` is deliberately conservative. It is `true`
 only after the production runner completes at least one graph step and records
 at least one live OpenAI specialist call. Offline cost-report mode and zero-call
