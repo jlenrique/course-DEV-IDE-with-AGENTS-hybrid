@@ -1,5 +1,6 @@
 ﻿# generated: 2026-03-25
 # last_updated: 2026-04-26 Story 5a.5 close (M5 fixed-roster 6-agent verdict recorded as SHIP-CONDITIONAL, operator ratified 5a.3 cascade/pricing, upstream-state frozen-reference marker written, 2026-05-03 conditional-window follow-on filed, slab-5a-retrospective authored, and migration-master-status mapped to shipped while the named window remains open.)
+# 2026-04-27 update: Slab 6.0 substrate-ratification waypoint recorded â€” operator dual-gate gate-2 cleared (`pytest tests/composition/ -q --tb=short` -> 17 passed in 1.21s); story remains `review` pending bmad-code-review triage per CLAUDE.md Â§3; dispatch at `_bmad-output/implementation-artifacts/codex-handoff-slab-6-0-code-review.md`.
 # project: course-DEV-IDE-with-AGENTS
 # project_key: NOKEY
 # tracking_system: file-system
@@ -844,7 +845,8 @@ development_status:
 
   migration-5a-5-m5-ship-decision-and-slab-close: done  # BMAD-CLOSED 2026-04-26. Fixed-roster 6-agent party-mode recorded a unanimous SHIP-CONDITIONAL verdict at `_bmad-output/implementation-artifacts/m5-decision.md`; the operator ratified the 5a.3 cascade/pricing configuration and accepted a named 7-day conditional window ending 2026-05-03. Consequence path activated: `_bmad-output/upstream-state.md` marks the primary repo as frozen reference only, `_bmad-output/implementation-artifacts/slab-5a-retrospective.md` is authored, `5a-5-m5-conditional-window-2026-05-03` is filed in deferred inventory, and `migration-master-status` is `shipped` while the window remains open. Remaining open conditions are explicit: M2 Wondercraft live artifact/addendum, M3 Texas live retrieval evidence, Story 5a.2 production clone-launch equivalence, and `slab-3-m5-dispatch-registry-swap` while the registry remains `_status: interim`.
 
-  migration-epic-6-post-mvp-production: in-progress  # Opened by Slab 6 Story 6.1 production-graph runner.
+  migration-epic-6-post-mvp-production: in-progress  # Opened by Slab 6 production-capability sequence.
+  migration-6-0-production-envelope-substrate: done  # CLOSED 2026-04-27 after bmad-code-review triage. Patch items fixed in `072724c`; review artifact `_bmad-output/implementation-artifacts/6-0-code-review-2026-04-27.md`; operator dual-gate gate-2 evidence `pytest tests/composition/ -q --tb=short` -> 17 passed in 1.21s.
   migration-6-1-production-graph-runner: review  # Implemented 2026-04-27: real production compiler entry point, production runner lifecycle, strict ProductionTrialEnvelope, HIL pause/resume via FR34, trace/cost binding, live smoke test added. Formal done flip remains pending independent code review + operator acceptance ratification.
 
   migration-batch-3-adhoc-cli: review  # Batch 3 operator-surface work. Adds `python -m app.marcus.cli ask`, strict `AdhocResponse` lockstep artifacts, docs/operator/adhoc-mode.md, and focused tests: tests/unit/marcus/test_adhoc_response_strict.py, tests/integration/marcus/test_adhoc_facade.py, tests/integration/marcus/test_adhoc_cli.py. Focused ad-hoc verification passed 2026-04-27.

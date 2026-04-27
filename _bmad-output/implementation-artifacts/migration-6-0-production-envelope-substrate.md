@@ -1,6 +1,6 @@
 # Migration Story 6.0: Production Envelope Substrate — composition contract that admits multi-specialist execution
 
-**Status:** review (implemented 2026-04-27; BMAD code review + operator dual-gate acceptance pending)
+**Status:** done (closed 2026-04-27 after operator dual-gate acceptance + bmad-code-review triage)
 **Sprint key:** `migration-6-0-production-envelope-substrate`
 **Epic:** Slab 6 — Post-MVP Production Capability (PRECEDES the previously-planned 6.1 production-graph runner; opens with this story).
 **Pts:** 8 (~3-5 days; substrate + adapter + envelope + composition fixture + composition-test discipline + A17/P3 governance + Composition Smoke gate operationalization).
@@ -366,6 +366,21 @@ Passed:
 - `python scripts/utilities/validate_migration_story_sandbox_acs.py _bmad-output/implementation-artifacts/migration-6-0-production-envelope-substrate.md` -> PASS
 
 Not completed locally: full `pytest tests/specialists/ -q --tb=short` timed out at both 2 minutes and 5 minutes on this Windows environment; the focused isolation-preservation slice passed.
+
+### Review Findings
+
+See `_bmad-output/implementation-artifacts/6-0-code-review-2026-04-27.md`.
+
+- [x] [Review][Patch] Adapter bypassed compiled graph / scaffold gate boundary — fixed in `072724c`.
+- [x] [Review][Patch] Adapter ignored dispatch registry — fixed in `072724c`.
+- [x] [Review][Patch] Missing output could be accepted as input — fixed in `072724c`.
+- [x] [Review][Patch] Duplicate contributions failed after side effects — fixed in `072724c`.
+- [x] [Review][Patch] Trial identity could split between `base_state.run_id` and envelope — fixed in `072724c`.
+- [x] [Review][Patch] Dependency-map isolation was bypassable through `state.production_envelope` — fixed in `072724c`.
+- [x] [Review][Patch] Cost/model evidence was permissive — fixed in `072724c`.
+- [x] [Review][Patch] Digest canonicalization accepted non-standard / non-JSON payloads — fixed in `072724c`.
+- [x] [Review][Patch] Envelope accumulation was directly mutable — fixed in `072724c`.
+- [x] [Review][Patch] N10 anti-pattern trace was implicit — fixed in `072724c`.
 
 ### Operator dual-gate gate-2 evidence (AC-I item 5)
 
