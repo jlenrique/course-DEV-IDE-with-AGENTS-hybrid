@@ -15,6 +15,15 @@
 
 **Authorship provenance:** authored 2026-04-27 in operator session immediately after Slab 6.1 patch dispatch authored. Cite Codex Slab 6.1 implementation (commit `d5cfad8`) + bmad-code-review report at `_bmad-output/implementation-artifacts/6-1-code-review-2026-04-27.md` (DFR-6.1-1).
 
+**Governance (BINDING per `_bmad-output/implementation-artifacts/slab-6-trial-experience-bundle-governance-discipline.md`):**
+- This spec was authored solo in operator session and has NOT yet passed bmad-party-mode green-light. Status `ready-for-party-mode-greenlight` per sprint-status.yaml.
+- **Gate 1 BEFORE Gate 2 (dev):** bmad-party-mode green-light with Winston + Murat + Paige + Amelia minimum per CLAUDE.md §2. Status flips to `ready-for-dev` only after green-light + applied riders.
+- **Gate 3 (post-implementation):** bmad-code-review with three-layer (Blind Hunter + Edge Case Hunter + Acceptance Auditor) + N-item trace deliverable section (BINDING per Slab 6.0 governance) per CLAUDE.md §3.
+- **Composition Specification at `docs/dev-guide/composition-specification.md` is normative for Option B evolution.** Honor §3 invariants throughout dev. Detect §11 migration trigger conditions; HALT and surface if any fire. File §10 Decision Log entry at close (this story IS substrate-affecting per dependency_map sourcing change).
+- **Substrate Inventory Checklist at `docs/dev-guide/substrate-inventory-checklist.md`** N-items applicable: N4 (isolation invariant), N5 (state-flow contract — directly improved), N7 (replay regression), N9 (operator-witnessed evidence). Trace per substantive review focus list at code-review.
+- **Anti-pattern catalog at `docs/dev-guide/specialist-anti-patterns.md`** read at T1; A12 partially mitigated by this story; A9 alignment verified.
+- **Halt-and-surface triggers** per discipline doc §6: substrate disagreement; §11 migration trigger fire; decision_needed surfaces; N-item FAIL; new anti-pattern; cross-cutting impact beyond IN-SCOPE list.
+
 ---
 
 ## Why this story exists

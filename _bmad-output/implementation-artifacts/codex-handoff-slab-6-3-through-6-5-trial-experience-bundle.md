@@ -11,6 +11,18 @@
 
 **Mission:** implement three trial-experience-quality stories before the first tracked production trial. The three stories together eliminate the highest-friction operator surfaces identified in trial preparation work (B-Run §08 Irene Pass 2 friction; Step 02A re-entry burden; Step 03 HUD inspection workflow). Operator decision: bundle these three stories rather than land one and trial — friction-relief at-trial is the goal.
 
+## Governance discipline (BINDING)
+
+This bundle is governed by `_bmad-output/implementation-artifacts/slab-6-trial-experience-bundle-governance-discipline.md`. **Read at T1 of every story.** Key bindings:
+
+- **Six-gate sequence per story:** Spec authoring → bmad-party-mode green-light → bmad-dev-story → bmad-code-review (3-layer + N-item trace) → triage + operator dispositions → operator-side acceptance (dual-gate stories only; 6.4 only in this bundle) → formal close.
+- **bmad-party-mode green-light required before flipping any story to ready-for-dev** (Winston + Murat + Paige + Amelia minimum; 6.4 adds Quinn-R + Mary).
+- **bmad-code-review required before flipping any story to done** per CLAUDE.md §3. Three-layer (Blind Hunter + Edge Case Hunter + Acceptance Auditor) + §Substrate Inventory Checklist Trace section as first-class deliverable per Slab 6.0 governance.
+- **Composition Specification at `docs/dev-guide/composition-specification.md` is normative for Option B evolution.** Read at T1; honor §3 invariants throughout dev; detect §11 migration trigger conditions and HALT-and-surface if any fire; file §10 Decision Log entry at close if substrate-affecting (default yes; remove if obviously not).
+- **Substrate Inventory Checklist at `docs/dev-guide/substrate-inventory-checklist.md`** N-items applicable per story listed in the "N-item trace required" section per story seed below. N-item FAIL during dev auto-promotes to in-story patch (do NOT defer N-item failures).
+- **Anti-pattern catalog at `docs/dev-guide/specialist-anti-patterns.md`** read at T1; honor counter-patterns; file harvest candidates per Mary harvest-gate if NEW patterns surface.
+- **Halt-and-surface triggers** per discipline doc §6: substrate disagreement; §11 migration trigger fire; decision_needed surfaces; N-item FAIL exceeding story budget; new anti-pattern; cross-cutting impact beyond IN-SCOPE list. Same pattern as A15 / A16 / A17 / P3 / Slab 6.1 strict-AC HALT instances.
+
 ## Why this dispatch exists
 
 Three deferred-inventory items surfaced as operator-experience HIGH friction during the 2026-04-19 to 2026-04-21 trial preparation work. Each was deferred because pre-Slab-6 substrate work took precedence; with Slab 6.0 + 6.1 closed and the migration unconditionally SHIPPED, the operator-experience work that was rate-limited by substrate is now unblocked.
@@ -39,10 +51,12 @@ Phase 2 ─── Party-mode green-light per story (operator; ~1-2 hr per story)
             HALT if any story surfaces architectural disagreement requiring re-scope
 
 Phase 3 ─── Implementation per story (Codex; ~24-40 hr total)
-            A1 (Step 02A defaults) first — smallest scope; unblocks A2 indirectly
-            A2 (Irene Pass 2 template) and A3 (HUD summaries) parallelizable
+            6.3 (Step 02A defaults) first — smallest scope; unblocks 6.4 indirectly
+            6.4 (Irene Pass 2 template) and 6.5 (HUD summaries) parallelizable
             Each story honors substrate inventory checklist N-item trace
             Each story honors anti-pattern catalog (A1-A17 + P3)
+            Each story honors Composition Spec §3 invariants (Path Z; gate precedence; manifest-declared deps post-6.2; full-embed persistence)
+            Each story HALTS-and-surfaces on §11 migration trigger detection
 
 Phase 4 ─── bmad-code-review per story (separate dispatch; ~6-9 hr Codex)
             One bundled review dispatch covering all three diffs

@@ -161,6 +161,10 @@ Brief Codex final report after commit lands:
 4. Confirmation: migration verdict now reads "unqualified SHIP" in m5-decision.md
 5. Confirmation: Slab-6.2 unblocked + ready for next dispatch hand-off
 
+## Forward governance binding
+
+After this close, all subsequent Slab 6.x stories (6.2 + 6.3 + 6.4 + 6.5) are governed by **`_bmad-output/implementation-artifacts/slab-6-trial-experience-bundle-governance-discipline.md`** — a standing reference codifying the six-gate sequence (spec → bmad-party-mode green-light → bmad-dev-story → bmad-code-review with N-item trace → triage → operator acceptance → formal close), Composition Spec adherence (§3 invariants + §11 trigger detection + §10 Decision Log entries), Substrate Inventory Checklist N-item trace requirements per Slab 6.0 governance, anti-pattern catalog adherence + harvest-gate path, and the halt-and-surface triggers. Read at T1 of every subsequent Slab 6.x dispatch.
+
 ## What this dispatch does NOT do
 
 - Does NOT touch any code (no `app/`, `tests/`, `schema/`, `state/config/` edits)
