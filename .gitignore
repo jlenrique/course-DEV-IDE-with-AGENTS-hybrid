@@ -58,12 +58,21 @@ course-content/**/*.webp
 # State runtime (SQLite + backups)
 state/runtime/*.db
 state/runtime/*.db-journal
+state/runtime/*.db-shm
+state/runtime/*.db-wal
 state/runtime/backup/*.db
 state/runtime/mode_state.json
 state/runtime/ad-hoc-observability/
 state/runtime/perception-cache/
 state/runtime/ad-hoc-runs/
 state/runtime/run_baton.*.json
+
+# Operator session evidence drops (live smoke output captured by operator; not authoritative)
+slab-*-dual-gate-evidence.txt
+slab-*-evidence.txt
+
+# Local temp scratch
+.tmp/
 
 # Generated run context (runtime artifacts; not source-of-truth docs)
 state/config/runs/
