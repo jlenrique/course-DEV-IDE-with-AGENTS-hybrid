@@ -18,8 +18,10 @@ from marcus.orchestrator.m3_trial import run_local_m3_trial
 ReplayMode = Literal["fail-loud", "warn-on-clone"]
 
 _REPO_ROOT = Path(__file__).resolve().parents[2]
-_LIVE_MANIFEST_PATH = _REPO_ROOT / "state" / "config" / "pipeline-manifest.yaml"
-_LIVE_DISPATCH_REGISTRY_PATH = _REPO_ROOT / "state" / "config" / "dispatch-registry.yaml"
+_FROZEN_MANIFEST_PATH = _REPO_ROOT / "runtime" / "graphs" / "v42" / "manifest-snapshot.yaml"
+_FROZEN_DISPATCH_REGISTRY_PATH = (
+    _REPO_ROOT / "runtime" / "graphs" / "v42" / "dispatch-registry-snapshot.yaml"
+)
 _FROZEN_DIGEST_PATH = _REPO_ROOT / "runtime" / "graphs" / "v42" / "compiled-graph-digest.txt"
 _DEFAULT_BUDGET_SECONDS = 15 * 60
 
@@ -110,9 +112,9 @@ def _load_baseline_payload(ref: TrialRef) -> dict[str, Any]:
 
 def _compute_live_manifest_digest() -> str:
     return compute_compiled_graph_digest(
-        _LIVE_MANIFEST_PATH,
+        _FROZEN_MANIFEST_PATH,
         pack_version="v4.2",
-        dispatch_registry_snapshot=_LIVE_DISPATCH_REGISTRY_PATH,
+        dispatch_registry_snapshot=_FROZEN_DISPATCH_REGISTRY_PATH,
     )
 
 
