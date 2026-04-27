@@ -4,6 +4,10 @@
 **Authority:** This document is the canonical reference for **how a Slab-2b per-specialist migration story is shaped**. It exists so that 2b.2â€“2b.14 inheritor stories do not have to re-derive the per-specialist migration pattern from the 2b.1 spec body. **Updates to the rules require party-mode consensus + a version bump in the header table** (mirrors `specialist-anti-patterns.md` format-freeze pattern).
 **Origin story:** `_bmad-output/implementation-artifacts/migration-2b-1-gary-scaffold-migration.md` (rules first written + validated against Gary's migration). The numeric anchors below are the post-execution evidence Gary's run produces; inheritor stories cite these as concrete benchmarks, not just rules.
 
+**Migration-complete note:** Slab 1-5a complete 2026-04-26 per M5
+`SHIP-CONDITIONAL` verdict; v2.4 R1-R14 carried through ship; future migration
+extensions follow this TEMPLATE per PRD Â§Future Work.
+
 > **You-are-here** (Slab 2b dev-agent reading order at T1):
 > 1. [`scaffold-conformance-framework.md`](scaffold-conformance-framework.md) â€” 9-node canonical contract + T1 pre-flight
 > 2. [`langgraph-state-idioms.md`](langgraph-state-idioms.md) â€” state-shape idioms (interrupt, Command, Send, reducers)

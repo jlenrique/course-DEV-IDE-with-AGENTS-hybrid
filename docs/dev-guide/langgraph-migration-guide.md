@@ -1,8 +1,8 @@
-﻿# LangChain + LangGraph Migration Guide
+# LangChain + LangGraph Migration Guide
 
 Standing reference for the five-slab migration from the primary repo's
 v4.2 orchestration pipeline to a LangChain + LangGraph-based runtime.
-Owned per architecture Â§D12 cross-slab governance protocol; updated at
+Owned per architecture §D12 cross-slab governance protocol; updated at
 every slab-closing story.
 
 ---
@@ -12,62 +12,62 @@ every slab-closing story.
 **Purpose:** Re-platform the Agentic Production Platform (APP) orchestration
 substrate onto LangChain + LangGraph while preserving every load-bearing
 substrate invariant from the primary repo. Big-bang-in-clone pattern per
-PRD Decision 2 â€” the hybrid clone owns the migration; the primary repo
+PRD Decision 2 — the hybrid clone owns the migration; the primary repo
 continues unchanged.
 
-**Scope:** Five slabs (Substrate â†’ Specialists â†’ Marcus â†’ Lockstep+Gates â†’
-Trial-Run+Polish) with five operator-approvable milestones (M1â€“M5).
-Timeline: 12â€“16 weeks at ~12â€“15 pts/week dev-agent throughput.
+**Scope:** Five slabs (Substrate → Specialists → Marcus → Lockstep+Gates →
+Trial-Run+Polish) with five operator-approvable milestones (M1–M5).
+Timeline: 12–16 weeks at ~12–15 pts/week dev-agent throughput.
 
 **Current status (2026-04-23):** **Slab 1 CLOSE.** Stories 1.1a / 1.1b / 1.1c /
 1.1d / 1.2 / 1.3 / 1.4 / 1.5 / 1.6 / 1.7 all **done**. M1 acceptance evidence
 pack assembled at
 [`_bmad-output/implementation-artifacts/m1-acceptance-evidence-pack.md`](../../_bmad-output/implementation-artifacts/m1-acceptance-evidence-pack.md)
-with one acknowledged-deferred gap (cache-hit-rate â€” Slab 2 first specialist
+with one acknowledged-deferred gap (cache-hit-rate — Slab 2 first specialist
 measures). Slab 2 specialist scaffold pilot (Story 2a.1) is the next story.
 
 ---
 
-## 2. Architecture Decisions of Record (D1â€“D13)
+## 2. Architecture Decisions of Record (D1–D13)
 
 Every locked-in decision from the 2026-04-22 architecture authoring. One-paragraph
 summaries; the full text lives at
 [`_bmad-output/planning-artifacts/architecture-langchain-langgraph-migration.md`](../../_bmad-output/planning-artifacts/architecture-langchain-langgraph-migration.md).
 
-- **D1 â€” Sanctum Snapshot Strategy (hybrid).** Sanctum state snapshots use
+- **D1 — Sanctum Snapshot Strategy (hybrid).** Sanctum state snapshots use
   either inline payload or content-hash pointer per snapshot-size heuristic.
-- **D2 â€” Three-Level Model-Cascade.** Per-call override â†’ per-specialist
-  `model_config.yaml` â†’ registry default. See
+- **D2 — Three-Level Model-Cascade.** Per-call override → per-specialist
+  `model_config.yaml` → registry default. See
   [`model-selection-guide.md`](model-selection-guide.md).
-- **D3 â€” HIL Invariant Tamper-Evidence.** `app/gates/**` scheduler-forbidden;
+- **D3 — HIL Invariant Tamper-Evidence.** `app/gates/**` scheduler-forbidden;
   `OperatorVerdict` triple-layer red-rejection on verb enum; `resume_api`
   import-linter Contract C3.
-- **D4 â€” Cora âŠ¥ Marcus Lane Separation.** Separate `StateGraph`
+- **D4 — Cora ⊥ Marcus Lane Separation.** Separate `StateGraph`
   instances per lane (`run_graph` vs `dev_graph`); enforced by import-linter
   Contract C1 + manifest `lane` field + per-specialist package placement.
-- **D5 â€” Sanctum Cold-Read Discipline + Cache-Prefix Stability.** Sanctum
+- **D5 — Sanctum Cold-Read Discipline + Cache-Prefix Stability.** Sanctum
   reads are cold; cache-prefix hashes are deterministic across subprocesses.
-- **D6 â€” Manifest-as-Graph-Config Loader.** `PipelineManifest` (Slab 1 Story
+- **D6 — Manifest-as-Graph-Config Loader.** `PipelineManifest` (Slab 1 Story
   1.4) is the sole source of graph topology; loader + compiler own the
-  YAMLâ†’StateGraph path.
-- **D7 â€” Operator-Surface Contract â€” Three-Transport Parity.** MCP + FastAPI
+  YAML→StateGraph path.
+- **D7 — Operator-Surface Contract — Three-Transport Parity.** MCP + FastAPI
   + CLI expose the same minimal-node contract (FR2). M1 asserts
-  two-transport parity (FastAPIâ†”MCP byte-equivalent); Slab 3 Story 3.4 adds
+  two-transport parity (FastAPI↔MCP byte-equivalent); Slab 3 Story 3.4 adds
   the CLI leg.
-- **D8 â€” Frozen-Graph-Version Ceremony.** Each graph version snapshots
+- **D8 — Frozen-Graph-Version Ceremony.** Each graph version snapshots
   manifest + dispatch registry + compiled graph digest under
   `runtime/graphs/v{version}/`. Slab 1 creates the directory; Slab 4 Story
   4.5 wires the full ceremony.
-- **D9 â€” Milestone Evidence Bullets.** Each slab-closing story assembles an
+- **D9 — Milestone Evidence Bullets.** Each slab-closing story assembles an
   evidence pack documenting milestone acceptance + acknowledged gaps.
-- **D10 â€” Slab 2 Sub-Structure (2a/2b/2c).** Specialist migrations split
+- **D10 — Slab 2 Sub-Structure (2a/2b/2c).** Specialist migrations split
   into scaffold pilot (2a), tranche 14 (2b), Wondercraft + generator (2c).
-- **D11 â€” Slab 5 Split (5a/5b).** Acceptance (5a) + polish (5b).
-- **D12 â€” Cross-Slab Governance Artifact Ownership Protocol.** Closing
+- **D11 — Slab 5 Split (5a/5b).** Acceptance (5a) + polish (5b).
+- **D12 — Cross-Slab Governance Artifact Ownership Protocol.** Closing
   stories follow a three-line commit message protocol; deferred inventory +
   anti-patterns catalog + migration guide owned cross-slab.
-- **D13 â€” Model-Registry Mid-Migration Bump Procedure.** Three-tier
-  (patch/minor/major) version bump governance. See `model-selection-guide.md Â§Version-bump`.
+- **D13 — Model-Registry Mid-Migration Bump Procedure.** Three-tier
+  (patch/minor/major) version bump governance. See `model-selection-guide.md §Version-bump`.
 
 ---
 
@@ -75,31 +75,31 @@ summaries; the full text lives at
 
 Slab 1 close state of the `app/` package tree:
 
-- **`app/manifest/`** â€” `PipelineManifest` / `NodeSpec` / `EdgeSpec` +
+- **`app/manifest/`** — `PipelineManifest` / `NodeSpec` / `EdgeSpec` +
   `load()` + `compile()` + condition registry + exceptions. Architecture D6.
-- **`app/models/`** â€” `RunState`, `StoryState`, `SpecialistEnvelope`,
+- **`app/models/`** — `RunState`, `StoryState`, `SpecialistEnvelope`,
   `SpecialistReturn`, `OperatorVerdict`, `SanctumFingerprint`, `CacheState`,
   `NodeCheckpoint`, `ModelResolutionEntry` (all under `app/models/state/`);
   `registry.py` / `selector.py` / `selection_policy.py` / `adapter.py` /
   `specialist_model_config.py`. Architecture D2, D3.
-- **`app/gates/`** â€” `resume_api.resume_from_verdict()` signature stub
+- **`app/gates/`** — `resume_api.resume_from_verdict()` signature stub
   (Slab 3 Story 3.3 fills body). Architecture D3 + Contract C3.
-- **`app/runtime/`** â€” `server.py` (FastAPI), `minimal_node.py`,
+- **`app/runtime/`** — `server.py` (FastAPI), `minimal_node.py`,
   `span_tags.py`, `checkpointer.py`, `cleanup_threads.py`, `retention_policy.py`.
-- **`app/mcp_server/`** â€” `server.py`, `protocol.py`, `tools/gate_decide.py`,
+- **`app/mcp_server/`** — `server.py`, `protocol.py`, `tools/gate_decide.py`,
   `tools/ping.py`, `__main__.py`.
-- **`app/specialists/`** â€” `_stub/passthrough_specialist.py` (Slab 1 target of
+- **`app/specialists/`** — `_stub/passthrough_specialist.py` (Slab 1 target of
   every `specialist_id`); Slab 2 populates per-specialist subdirectories.
-- **`app/marcus/`** + **`app/cora/`** â€” empty Slab-1 placeholders; Slab 3
+- **`app/marcus/`** + **`app/cora/`** — empty Slab-1 placeholders; Slab 3
   populates Marcus; Slab 4 populates Cora.
-- **`app/smoke_test.py`** â€” substrate + full-manifest smoke harness.
+- **`app/smoke_test.py`** — substrate + full-manifest smoke harness.
 
 **Frozen-graph directory:** `runtime/graphs/v0.1-stub/` (Slab 1 substrate
 stub) + `runtime/graphs/v42/` (from 1.1b, anchors the migrated v4.2 manifest
 from 1.6).
 
 **Sanctum tree:** Hybrid scope lives at
-`_bmad/memory/bmad-agent-{name}/` per CLAUDE.md Â§Custom agents; migration
+`_bmad/memory/bmad-agent-{name}/` per CLAUDE.md §Custom agents; migration
 work does not touch sanctum content (forward-port freeze FR60 active since
 Story 1.1a).
 
@@ -109,19 +109,19 @@ Story 1.1a).
 
 Eight state models + one cascade-resolution entry:
 
-- **`RunState`** â€” top-level run state (status, graph_version, temperature,
+- **`RunState`** — top-level run state (status, graph_version, temperature,
   model_resolution_trail reducer field).
-- **`StoryState`** â€” per-story content (lesson_plan, segment_manifest,
+- **`StoryState`** — per-story content (lesson_plan, segment_manifest,
   slides, etc.; Slab 2+ populates).
-- **`OperatorVerdict`** â€” frozen tamper-evident HIL verdict (FR34
+- **`OperatorVerdict`** — frozen tamper-evident HIL verdict (FR34
   triple-layer red-rejection on verb).
-- **`SpecialistEnvelope`** â€” dispatch payload to a specialist node.
-- **`SpecialistReturn`** â€” dispatch return from a specialist node (with
+- **`SpecialistEnvelope`** — dispatch payload to a specialist node.
+- **`SpecialistReturn`** — dispatch return from a specialist node (with
   optional `OperatorVerdict` attachment).
-- **`SanctumFingerprint`** â€” sanctum snapshot identity (NFR-X3).
-- **`CacheState`** â€” per-call cache-prefix state (NFR-I6).
-- **`NodeCheckpoint`** â€” per-node persistence record.
-- **`ModelResolutionEntry`** â€” one cascade-resolution trail entry
+- **`SanctumFingerprint`** — sanctum snapshot identity (NFR-X3).
+- **`CacheState`** — per-call cache-prefix state (NFR-I6).
+- **`NodeCheckpoint`** — per-node persistence record.
+- **`ModelResolutionEntry`** — one cascade-resolution trail entry
   (NFR-O4 spans; NFR-X4 reproducibility).
 
 Pydantic-v2 14-idiom checklist:
@@ -137,11 +137,11 @@ schema-pin fixture for contract parity.
 `NodeSpec` + `EdgeSpec` + `LearningEventsConfig` + `StepLearningEventsConfig`.
 Full shape in `app/manifest/schema.py`; Pydantic-v2 idioms enforced.
 
-Loader: `app.manifest.loader.load(path)` â€” YAML + Pydantic validate,
+Loader: `app.manifest.loader.load(path)` — YAML + Pydantic validate,
 re-raises every error as `ManifestValidationError` with named-violation
 message.
 
-Compiler: `app.manifest.compiler.compile(manifest, *, repo_root=None)` â€”
+Compiler: `app.manifest.compiler.compile(manifest, *, repo_root=None)` —
 LangGraph `StateGraph(state_schema=RunState)`, resolves `specialist_id`
 via `app.specialists._stub.passthrough_specialist.make_passthrough` (Slab 1)
 or per-specialist `app.specialists.{id}.graph` (Slab 2+). Validates
@@ -149,7 +149,7 @@ or per-specialist `app.specialists.{id}.graph` (Slab 2+). Validates
 condition registry membership. Enforces lane separation (D4) by producing
 distinct `StateGraph` instances per lane.
 
-Migrated manifest: `state/config/pipeline-manifest.yaml` â€” 33 v4.2 step ids
+Migrated manifest: `state/config/pipeline-manifest.yaml` — 33 v4.2 step ids
 preserved byte-equivalent; substrate stub at
 `state/config/pipeline-manifest-substrate-stub.yaml` anchors the 1.1c smoke
 contract.
@@ -160,16 +160,16 @@ contract.
 
 Per architecture D7 (FR2 compound contract): MCP + FastAPI + CLI expose the
 same minimal-node contract. Transport-parity matrix:
-[`langgraph-runtime-setup.md Â§Transport Parity Contract`](langgraph-runtime-setup.md).
+[`langgraph-runtime-setup.md §Transport Parity Contract`](langgraph-runtime-setup.md).
 
 MCP transport: `app.mcp_server` (Slab 1 Story 1.1c code substrate + 1.1d
 subprocess smoke + parity assertion). 20/20 hot+cold runs at 0% flake over
 2026-04-23 measurement.
 
-FastAPI transport: `app.runtime.server` (Slab 1 Story 1.1c + 1.1d FastAPIâ†”MCP
+FastAPI transport: `app.runtime.server` (Slab 1 Story 1.1c + 1.1d FastAPI↔MCP
 parity). 127.0.0.1-only bind per NFR-S2.
 
-CLI transport: â³ Slab 3 Story 3.4.
+CLI transport: ⏳ Slab 3 Story 3.4.
 
 Envelope-exception table:
 [`transport-parity-envelope-exceptions.md`](transport-parity-envelope-exceptions.md)
@@ -301,13 +301,13 @@ small helpers:
 Use this only where the payload can genuinely improve on replay, such as flaky
 tool or provider responses. Do not use it to mask deterministic schema drift
 in authored state or manifest surfaces. The worked example and rationale now
-live in `langgraph-state-idioms.md Â§6`.
+live in `langgraph-state-idioms.md §6`.
 
 ---
 
 ## 7. Model Cascade + Registry Governance
 
-Three-level cascade + registry bump procedure â€” full content at
+Three-level cascade + registry bump procedure — full content at
 [`model-selection-guide.md`](model-selection-guide.md).
 
 Registry + policy files: `state/config/model-registry.yaml` +
@@ -344,22 +344,22 @@ schema relaxation hidden inside the runtime.
 
 ---
 
-## 8. Forward-Port Convergence (PR-R) â€” HISTORICAL (see Â§8.1)
+## 8. Forward-Port Convergence (PR-R) — HISTORICAL (see §8.1)
 
-> **âš ï¸ Status note (2026-04-24):** This section documents the **pre-severance**
+> **⚠️ Status note (2026-04-24):** This section documents the **pre-severance**
 > convergence posture. It is retained for historical reference and for
 > operators re-reading the migration chronology. **Current authoritative
-> policy is Â§8.1 Upstream Severance below.** Do not apply the convergence
+> policy is §8.1 Upstream Severance below.** Do not apply the convergence
 > checklist below as live governance; post-severance, there is no convergence
 > path to upstream. If a defect surfaces that MIGHT call for upstream pull,
 > see DR-5 in [`decision-records/DR-SLAB-1-CLOSE-2026-04-24.md`](../../_bmad-output/planning-artifacts/decision-records/DR-SLAB-1-CLOSE-2026-04-24.md).
 
 Primary Sprint #1's PR-R Marcus dispatch reshaping landed after the hybrid
 branched. The migration guide carries a forward-port reconciliation checklist
-(originally authored at architecture Â§8) so that when Slab 3 touches Marcus
+(originally authored at architecture §8) so that when Slab 3 touches Marcus
 orchestration, the hybrid re-converges on the reshaped dispatch semantics.
 
-**Reconciliation checklist (per architecture Â§8, historical):**
+**Reconciliation checklist (per architecture §8, historical):**
 
 - [ ] Pydantic-v2 four-file-lockstep applied to PR-R's new models (model +
       validator + tests + golden fixture in same commit)
@@ -372,7 +372,7 @@ orchestration, the hybrid re-converges on the reshaped dispatch semantics.
 
 FR60 forward-port freeze **was** ACTIVE from Slab 1 Story 1.1a closure until
 2026-04-24. **FR60 is now RETIRED** and replaced by the severance clause at
-Â§8.1 below. Retained here as historical policy record only.
+§8.1 below. Retained here as historical policy record only.
 
 ### 8.1 Upstream Severance (Slab 2+)
 
@@ -390,7 +390,7 @@ not).
 section proposed a pinned-SHA protocol with per-story escape hatches and an
 M5 reconciliation pass. That was sized for a world where upstream keeps
 evolving during migration. Per 2026-04-24 operator directive, upstream is
-effectively deprecated for APP development starting now â€” trial-run
+effectively deprecated for APP development starting now — trial-run
 refinements and feature enhancements all happen on hybrid post-M5. A
 severance posture is strictly simpler and has identical functional
 outcomes once the operator commits to "sprint to hybrid operational."
@@ -406,15 +406,15 @@ outcomes once the operator commits to "sprint to hybrid operational."
    trail at
    [`_bmad-output/implementation-artifacts/upstream-severance-log.md`](../../_bmad-output/implementation-artifacts/upstream-severance-log.md).
 2. **Severance cutoff (2026-04-24).** After absorption, no further `git
-   show upstream/master:â€¦`, no further `git fetch upstream` driven by
+   show upstream/master:…`, no further `git fetch upstream` driven by
    migration work. Slab 2 2b.N T1 reads go against hybrid's working-tree
    skill directories directly.
-3. **No M5 reconciliation pass.** There is nothing to reconcile â€” upstream
+3. **No M5 reconciliation pass.** There is nothing to reconcile — upstream
    is no longer an input surface.
 
 **FR60 posture supersession.** FR60 "forward-port freeze" is retired and
 replaced by this severance clause. The freeze permitted convergence via
-Â§8 checklist; severance does not. If a post-severance incident surfaces
+§8 checklist; severance does not. If a post-severance incident surfaces
 that genuinely requires re-opening the upstream channel (e.g.,
 operator-initiated emergency absorption), treat it as a party-mode
 governance exception with full documentation, not as a standing escape
@@ -422,34 +422,34 @@ hatch.
 
 **See also:**
 - [`upstream-severance-log.md`](../../_bmad-output/implementation-artifacts/upstream-severance-log.md)
-  â€” absorption-and-severance audit trail
+  — absorption-and-severance audit trail
 - [`slab-2-roster-reconciliation.md`](../../_bmad-output/planning-artifacts/slab-2-roster-reconciliation.md)
-  â€” reconciled Slab 2 migratable roster (actual skill dirs vs. named-only
+  — reconciled Slab 2 migratable roster (actual skill dirs vs. named-only
   roadmap entries, updated to reflect absorbed Wondercraft specialist)
 
 ---
 
-## 9. Reproducibility Invariants (NFR-X1â€“X5)
+## 9. Reproducibility Invariants (NFR-X1–X5)
 
 Every migration artifact preserves:
 
-- **NFR-X1 â€” Byte-for-byte replay.** `RunState`/`StoryState` round-trip via
-  `model_dump_json` â†” `model_validate_json` preserves exact bytes.
-- **NFR-X2 â€” Frozen graph version.** `RunState.graph_version` pins to
+- **NFR-X1 — Byte-for-byte replay.** `RunState`/`StoryState` round-trip via
+  `model_dump_json` ↔ `model_validate_json` preserves exact bytes.
+- **NFR-X2 — Frozen graph version.** `RunState.graph_version` pins to
   `ALLOWED_GRAPH_VERSIONS`; compiled graph snapshot lives at
   `runtime/graphs/v{version}/`.
-- **NFR-X3 â€” Sanctum snapshot identity.** `SanctumFingerprint` carries
+- **NFR-X3 — Sanctum snapshot identity.** `SanctumFingerprint` carries
   deterministic hash of sanctum payload.
-- **NFR-X4 â€” Model selection trail.** `RunState.model_resolution_trail`
+- **NFR-X4 — Model selection trail.** `RunState.model_resolution_trail`
   reducer field captures every cascade resolution (span-emitted + persisted).
-- **NFR-X5 â€” Documented temperature variance.** `RunState.temperature`
-  (0.0â€“2.0); operator-facing span tags record the configured value.
+- **NFR-X5 — Documented temperature variance.** `RunState.temperature`
+  (0.0–2.0); operator-facing span tags record the configured value.
 
 ---
 
 ## 10. Frozen-Graph-Version Ceremony
 
-> **â³ STUB â€” Slab 4 Story 4.5 completes this section.** Slab 1 shipped the
+> **⏳ STUB — Slab 4 Story 4.5 completes this section.** Slab 1 shipped the
 > directory structure only (see below). The full ceremony (manifest snapshot
 > byte-capture + dispatch-registry snapshot + compiled-graph SHA-256 digest
 > + ship-time governance ritual) is authored at Slab 4.5. Do NOT implement
@@ -460,8 +460,8 @@ Every migration artifact preserves:
 Slab 4 Story 4.5 is the forward pointer for the full ceremony. Slab 1
 creates the directory structure only:
 
-- `runtime/graphs/v0.1-stub/README.md` â€” substrate stub anchor (Slab 1 Story 1.4)
-- `runtime/graphs/v42/README.md` â€” migrated v4.2 manifest anchor (Slab 1 Story 1.1b)
+- `runtime/graphs/v0.1-stub/README.md` — substrate stub anchor (Slab 1 Story 1.4)
+- `runtime/graphs/v42/README.md` — migrated v4.2 manifest anchor (Slab 1 Story 1.1b)
 
 Slab 4's ceremony will populate each directory with:
 
@@ -474,27 +474,27 @@ Slab 4's ceremony will populate each directory with:
 ## 11. Anti-Patterns + Operational Cookbook
 
 > **Section type: INTENTIONAL POINTER.** This section is deliberately
-> pointer-only (not a stub) â€” the actual catalog and cookbook content lives
+> pointer-only (not a stub) — the actual catalog and cookbook content lives
 > in the linked standalone docs where it can grow authoritative-in-place.
 > Adding inline content here would duplicate + drift from the pointed-to
-> files. Pattern matches Â§7 (pointer to `model-selection-guide.md`).
+> files. Pattern matches §7 (pointer to `model-selection-guide.md`).
 
 Pointers:
 
-- [`specialist-anti-patterns.md`](specialist-anti-patterns.md) â€” living catalog
+- [`specialist-anti-patterns.md`](specialist-anti-patterns.md) — living catalog
   of anti-patterns (Slab 1 seeded with 3 confirmed + ~5 primary-repo
   inherited entries; four-field format frozen)
-- [`local-postgres-setup.md`](local-postgres-setup.md) â€” Postgres bootstrap
+- [`local-postgres-setup.md`](local-postgres-setup.md) — Postgres bootstrap
   + retention cookbook
-- [`langgraph-runtime-setup.md`](langgraph-runtime-setup.md) â€” troubleshooting
+- [`langgraph-runtime-setup.md`](langgraph-runtime-setup.md) — troubleshooting
   section with the two Slab-1-burned blockers (`docker` / `psql` on PATH)
   resolved via the `project_no_docker` + `verify-via-shipped-deps` memory
   entries
-- [`gate-decision-binding-semantics.md`](gate-decision-binding-semantics.md) â€”
+- [`gate-decision-binding-semantics.md`](gate-decision-binding-semantics.md) —
   Slab 2+ gate_decision node binding convention (import-but-not-invoke
   until Slab 3 Story 3.3 + LLM-live skip-fixture)
 
-Per-environment troubleshooting lives in `langgraph-runtime-setup.md Â§Troubleshooting`.
+Per-environment troubleshooting lives in `langgraph-runtime-setup.md §Troubleshooting`.
 
 ---
 
@@ -513,9 +513,9 @@ specialist through `bmad-create-specialist`.
 
 ### 12.2 Invocation
 
-The generator can be invoked via either of two equivalent forms â€” pick the one that matches your environment. **Both are first-class** per the DR-1 spec-yields-to-code rule (party-mode-ratified 2026-04-24).
+The generator can be invoked via either of two equivalent forms — pick the one that matches your environment. **Both are first-class** per the DR-1 spec-yields-to-code rule (party-mode-ratified 2026-04-24).
 
-**Form A â€” `uv` runner** (when `uv` is installed and on PATH):
+**Form A — `uv` runner** (when `uv` is installed and on PATH):
 
 ```bash
 uv run python -m skills.bmad_create_specialist.scripts.generate \
@@ -525,7 +525,7 @@ uv run python -m skills.bmad_create_specialist.scripts.generate \
   --from-skill skills/bmad-agent-content-creator/
 ```
 
-**Form B â€” venv-direct** (when `uv` is not on PATH):
+**Form B — venv-direct** (when `uv` is not on PATH):
 
 ```bash
 .venv\Scripts\python.exe -m skills.bmad_create_specialist.scripts.generate \
@@ -537,7 +537,7 @@ uv run python -m skills.bmad_create_specialist.scripts.generate \
 
 (Use `.venv/bin/python -m ...` on POSIX.) Flags match Form A exactly. The dev agent records which form was used in T1 Readiness for grep-able audit; no spec rewrite needed.
 
-Optional dry-run probe (no writes â€” append `--dry-run` to either form):
+Optional dry-run probe (no writes — append `--dry-run` to either form):
 
 ```bash
 .venv\Scripts\python.exe -m skills.bmad_create_specialist.scripts.generate \
@@ -568,34 +568,34 @@ tests/integration/scaffold_conformance/test_scaffold_irene.py
 1. Set `app/specialists/<name>/model_config.yaml::default_model` to a valid
    ID from `app/models/registry.yaml::entries[].model_id` (e.g., `gpt-5.4`,
    `gpt-5-haiku`, `gpt-5-codex`). Document the tier mapping rationale in inline
-   comments â€” see [`specialist-anti-patterns.md` A10](./specialist-anti-patterns.md)
+   comments — see [`specialist-anti-patterns.md` A10](./specialist-anti-patterns.md)
    for the epic-doc-vs-registry drift trap to avoid.
 2. Populate `app/specialists/<name>/expertise/` with domain references and
    update `expertise/README.md` with an index per the
    [sanctum-reference conventions](./sanctum-reference-conventions.md).
-3. **(formerly step 3 â€” auto-emitted as of Story 2a.5; the generator atomically appends `app.specialists.<name>.graph -> app.gates.resume_api` to `pyproject.toml`'s C3 `ignore_imports` list with a generated comment marker. Idempotent. No manual edit needed.)**
+3. **(formerly step 3 — auto-emitted as of Story 2a.5; the generator atomically appends `app.specialists.<name>.graph -> app.gates.resume_api` to `pyproject.toml`'s C3 `ignore_imports` list with a generated comment marker. Idempotent. No manual edit needed.)**
 4. Replace default `act` passthrough body only when the story explicitly
    requires a real LLM invocation; otherwise keep passthrough intentionally.
    When you do replace it, **bound the act-body** to prompt-assembly + LLM
-   dispatch + parse â€” NO procedural logic in Python (the LLM does the
+   dispatch + parse — NO procedural logic in Python (the LLM does the
    procedural work per the specialist's reference set).
 5. Update graph/state reducers only if the specialist introduces custom state
    fields beyond `SpecialistEnvelope` / `SpecialistReturn`.
 
-**Sanctum-state convention** (per [sanctum-reference-conventions.md Â§3](./sanctum-reference-conventions.md)):
+**Sanctum-state convention** (per [sanctum-reference-conventions.md §3](./sanctum-reference-conventions.md)):
 
-- **Activation epoch** (Story 2a.2 only â€” empty sanctum for FR54 baseline measurement)
-- **Steady-state epoch** (Story 2a.3 onward â€” populated-and-locked sanctum)
+- **Activation epoch** (Story 2a.2 only — empty sanctum for FR54 baseline measurement)
+- **Steady-state epoch** (Story 2a.3 onward — populated-and-locked sanctum)
 
 Operator runs first-breath ceremony BEFORE `bmad-dev-story` opens for steady-state stories; lock for the AC-D 10-invocation cache window.
 
-> **Â§12.5â€“Â§12.11 cover four specialist-shape categories proven across eight specialists by Slab 2aâ€“2b.5 (narration / LLM+tool-dispatch / pure-tool-dispatch / REST-API tool-dispatch). Pure inheritors are catalogued at Â§12.12; add a new Â§12.x only when a specialist introduces a new act-body category. Narration has two inhabitants (Irene + Desmond), populated-and-locked sanctum coverage has two real instances (Texas + Desmond), and LLM+tool-dispatch now has four inhabitants (Kira + Vera + Quinn-R + Tracy).**
+> **§12.5–§12.11 cover four specialist-shape categories proven across eight specialists by Slab 2a–2b.5 (narration / LLM+tool-dispatch / pure-tool-dispatch / REST-API tool-dispatch). Pure inheritors are catalogued at §12.12; add a new §12.x only when a specialist introduces a new act-body category. Narration has two inhabitants (Irene + Desmond), populated-and-locked sanctum coverage has two real instances (Texas + Desmond), and LLM+tool-dispatch now has four inhabitants (Kira + Vera + Quinn-R + Tracy).**
 
-### 12.5 Irene worked before/after (act node) â€” real-Irene example, post-2a.2 close
+### 12.5 Irene worked before/after (act node) — real-Irene example, post-2a.2 close
 
 Story 2a.2 was the first **real LLM-invoking specialist migration** + the FR54 cache-hit-rate baseline activation point. The before/after below reflects what actually shipped, not a hypothetical sketch.
 
-**Before** (generator-emitted scaffold â€” same shape for every Slab-2+ specialist):
+**Before** (generator-emitted scaffold — same shape for every Slab-2+ specialist):
 
 ```python
 def _act(state: RunState) -> dict[str, Any]:
@@ -608,7 +608,7 @@ def _act(state: RunState) -> dict[str, Any]:
 
 ```python
 def _act(state: RunState) -> dict[str, Any]:
-    """Pass-2 narration LLM invocation (bounded ~150 LOC across helpers â€” AC-B + MF4)."""
+    """Pass-2 narration LLM invocation (bounded ~150 LOC across helpers — AC-B + MF4)."""
     if not state.model_resolution_trail:
         raise RuntimeError("act node invoked before plan; resolution trail empty")
     last_entry = state.model_resolution_trail[-1]
@@ -663,9 +663,9 @@ def _act(state: RunState) -> dict[str, Any]:
 
 Notable design properties from the Story 2a.2 party-mode rounds (2026-04-24):
 
-- **Helpers in graph.py** â€” `_read_sanctum_digest`, `_read_pass_2_references`, `_assemble_pass_2_prompt`, `_parse_pass_2_response`. All deterministic; no datetime/UUID/random in prompt body. Sorted by `as_posix()` for cross-platform stability; `json.dumps(..., sort_keys=True, ensure_ascii=True, separators=(",",":"))` for byte-identical envelope payloads (Murat MF3 binding).
-- **Cache-prefix continuity** â€” `_act` reconstructs the chat handle with `system_prompt_hash=last_entry.cache_prefix_hash` from the `_plan` resolution trail entry. Defensive `RuntimeError` raises if `_plan` did not run, or if the last entry lacks a `cache_prefix_hash` (Winston discriminator-check binding).
-- **Envelope-carrier-hack** â€” `state.cache_state.cache_prefix` is overloaded as a JSON-encoded payload carrier because RunState has no first-class envelope field at Slab 1. Slab 3 retires this hack via the deferred-inventory follow-on entry "Replace cache_prefix payload-carrier hack with first-class RunState envelope field."
+- **Helpers in graph.py** — `_read_sanctum_digest`, `_read_pass_2_references`, `_assemble_pass_2_prompt`, `_parse_pass_2_response`. All deterministic; no datetime/UUID/random in prompt body. Sorted by `as_posix()` for cross-platform stability; `json.dumps(..., sort_keys=True, ensure_ascii=True, separators=(",",":"))` for byte-identical envelope payloads (Murat MF3 binding).
+- **Cache-prefix continuity** — `_act` reconstructs the chat handle with `system_prompt_hash=last_entry.cache_prefix_hash` from the `_plan` resolution trail entry. Defensive `RuntimeError` raises if `_plan` did not run, or if the last entry lacks a `cache_prefix_hash` (Winston discriminator-check binding).
+- **Envelope-carrier-hack** — `state.cache_state.cache_prefix` is overloaded as a JSON-encoded payload carrier because RunState has no first-class envelope field at Slab 1. Slab 3 retires this hack via the deferred-inventory follow-on entry "Replace cache_prefix payload-carrier hack with first-class RunState envelope field."
 
 **Where 2a.2 diverged from the hypothetical Irene plan:**
 
@@ -677,9 +677,9 @@ Notable design properties from the Story 2a.2 party-mode rounds (2026-04-24):
 | Model cascade | `gpt-4.1` per epic | `gpt-5.4` per registry (anti-pattern A10 drift) |
 | Sanctum path | `_bmad/memory/bmad-agent-irene/` per epic | `_bmad/memory/bmad-agent-content-creator/` per BMB convention (anti-pattern A11) |
 
-### 12.6 Kira worked before/after (act node) â€” real-Kira tool-dispatch example, post-2a.3 close
+### 12.6 Kira worked before/after (act node) — real-Kira tool-dispatch example, post-2a.3 close
 
-Where Irene at 2a.2 proved the **pure-LLM act-body** category, Story 2a.3 proves the **tool-dispatch act-body** category â€” Kira composes a Kling motion-generation instruction package via a single LLM call, then dispatches to the existing `kling-video` skill via a thin mockable wrapper. The 9-node scaffold survives the divergence; the populated-and-locked sanctum epoch is exercised end-to-end; the `motion_asset_path` field on `KiraReturn` is wired so Storyboard B's motion contract continues to work.
+Where Irene at 2a.2 proved the **pure-LLM act-body** category, Story 2a.3 proves the **tool-dispatch act-body** category — Kira composes a Kling motion-generation instruction package via a single LLM call, then dispatches to the existing `kling-video` skill via a thin mockable wrapper. The 9-node scaffold survives the divergence; the populated-and-locked sanctum epoch is exercised end-to-end; the `motion_asset_path` field on `KiraReturn` is wired so Storyboard B's motion contract continues to work.
 
 **Generator invocation (DR-1 venv-direct form):**
 
@@ -693,13 +693,13 @@ Where Irene at 2a.2 proved the **pure-LLM act-body** category, Story 2a.3 proves
 
 ```
 app/specialists/kira/
-â”œâ”€â”€ __init__.py
-â”œâ”€â”€ graph.py                # 9-node StateGraph; _act + 4 helpers + kling_dispatch invocation
-â”œâ”€â”€ kling_dispatch.py       # Thin mockable wrapper around skills/kling-video/scripts/run_motion_generation.py
-â”œâ”€â”€ state.py                # KiraEnvelope + KiraReturn (with motion_asset_path: str | None field)
-â”œâ”€â”€ model_config.yaml       # default_model: gpt-5-haiku; temperature_default: 0.0
-â””â”€â”€ expertise/
-    â””â”€â”€ README.md           # 6-row dotted reference table
+├── __init__.py
+├── graph.py                # 9-node StateGraph; _act + 4 helpers + kling_dispatch invocation
+├── kling_dispatch.py       # Thin mockable wrapper around skills/kling-video/scripts/run_motion_generation.py
+├── state.py                # KiraEnvelope + KiraReturn (with motion_asset_path: str | None field)
+├── model_config.yaml       # default_model: gpt-5-haiku; temperature_default: 0.0
+└── expertise/
+    └── README.md           # 6-row dotted reference table
 ```
 
 **Key act-body shape (`graph.py::_act`, post-G6 patches):**
@@ -752,34 +752,34 @@ def _act(state: RunState) -> dict[str, Any]:
     return {"cache_state": {"cache_prefix": output_blob, "entries_count": ...}}
 ```
 
-When you migrate the next specialist, expect divergences in **these eight categories**; if your specialist has a divergence outside these categories, that's a signal to update Â§12 itself.
+When you migrate the next specialist, expect divergences in **these eight categories**; if your specialist has a divergence outside these categories, that's a signal to update §12 itself.
 
 **Divergences from Irene (2a.2)**
 
 | Aspect | Irene 2a.2 (narration) | Kira 2a.3 (motion-direction) |
 |---|---|---|
 | Act-body category | Pure-LLM authoring | LLM-prompt-composition + tool-dispatch |
-| External call after LLM | NONE â€” narration script returned directly | `dispatch_to_kling(...)` â€” mockable wrapper around `skills/kling-video/scripts/run_motion_generation.py` |
-| Model tier | `tier_request: reasoning` â†’ `gpt-5.4` | `tier_request: fast` â†’ `gpt-5-haiku` (cheapest model that meets video-direction need per Kira's cost-aware principle) |
+| External call after LLM | NONE — narration script returned directly | `dispatch_to_kling(...)` — mockable wrapper around `skills/kling-video/scripts/run_motion_generation.py` |
+| Model tier | `tier_request: reasoning` → `gpt-5.4` | `tier_request: fast` → `gpt-5-haiku` (cheapest model that meets video-direction need per Kira's cost-aware principle) |
 | Temperature | `0.3` (narration creativity) | `0.0` (structured selection JSON; cache-prefix determinism) |
-| Sanctum epoch | Empty for duration (2a.2 D2 SYNTHESIS) â€” activation-baseline measurement | **Populated-and-locked** (steady-state from 2a.3 onward; `sanctum_context_cost = steady_state_tokens âˆ’ baseline_tokens`) |
+| Sanctum epoch | Empty for duration (2a.2 D2 SYNTHESIS) — activation-baseline measurement | **Populated-and-locked** (steady-state from 2a.3 onward; `sanctum_context_cost = steady_state_tokens − baseline_tokens`) |
 | Return shape addition | None (inherits parent `SpecialistReturn`) | `motion_asset_path: str \| None` field added on `KiraReturn` per AC-L Storyboard B |
 | Live dimension | LLM-only | LLM (live-LLM-marked) + Kling API (operator-gated AC-B-OP only; never invoked by dev-agent) |
-| Wrapper module | None | `kling_dispatch.py` â€” fixture-MP4 short-circuit when `motion_plan_path` or `slide_id` is falsy; live runner load-on-demand otherwise |
+| Wrapper module | None | `kling_dispatch.py` — fixture-MP4 short-circuit when `motion_plan_path` or `slide_id` is falsy; live runner load-on-demand otherwise |
 
 **Drifts caught at T1 (anti-pattern #3 standing protocol)**
 
 | Drift | Epic 2a.3 text | Reality | Resolution | Harvest disposition |
 |---|---|---|---|---|
 | Node name "reason node" | line 620 | canonical `plan` per `SCAFFOLD_NODE_IDS` | Follow framework | A9 third example (augment) |
-| Model tier "multimodal" + default `gpt-4o` | lines 619â€“621 | tiers are `reasoning/fast/code`; registry has `gpt-5.4/5-haiku/5-codex`; Kira maps to `tier_request: fast` â†’ `gpt-5-haiku` | Follow framework | A10 second example (augment) |
-| Sanctum path | NONE â€” epic correctly references `skills/bmad-agent-kling/` | matches hybrid skill-dir name | No drift | No harvest |
+| Model tier "multimodal" + default `gpt-4o` | lines 619–621 | tiers are `reasoning/fast/code`; registry has `gpt-5.4/5-haiku/5-codex`; Kira maps to `tier_request: fast` → `gpt-5-haiku` | Follow framework | A10 second example (augment) |
+| Sanctum path | NONE — epic correctly references `skills/bmad-agent-kling/` | matches hybrid skill-dir name | No drift | No harvest |
 
 **G6 review patches applied at story close**
 
 - `_act` json.loads wrapped in try/except (Irene-parity regression fix)
 - `_assemble_kira_prompt` json.dumps gained `default=str` for Path/datetime envelope payloads
-- `_read_sanctum_digest` normalizes `\r\n â†’ \n` before hashing (cross-platform cache-prefix determinism)
+- `_read_sanctum_digest` normalizes `\r\n → \n` before hashing (cross-platform cache-prefix determinism)
 - `_extract_kling_response` narrowed `except Exception` to `except json.JSONDecodeError` + non-dict-top-level RuntimeError (production failure paths now testable)
 - `dispatch_to_kling` truthy-guard (`not motion_plan_path or not slide_id`) replaces `is None` check (closes empty-string billing-risk)
 - `expertise/README.md` populated with 6-row dotted reference table; `test_kira_expertise_readme_lists_l4_references` test pin added
@@ -793,7 +793,7 @@ python -m pytest tests/integration/scaffold_conformance/test_scaffold_kira.py -q
 python -m pytest tests/end_to_end/test_cache_hit_rate_kira_populated.py -q
 ```
 
-### 12.7 Texas worked before/after (act node) â€” real-Texas pure-tool-dispatch example, post-2a.4 close
+### 12.7 Texas worked before/after (act node) — real-Texas pure-tool-dispatch example, post-2a.4 close
 
 Story 2a.4 adds the third and final Slab-2a act-body category: Texas `_act` never calls an LLM. It dispatches to the wrangler runner through a mockable subprocess seam, parses `result.yaml` + `extraction-report.yaml`, classifies the outcome on the `bundle.parsed.*` namespace, and returns canonical bundle metadata in `cache_state.cache_prefix`.
 
@@ -840,7 +840,7 @@ def _act(state: RunState) -> dict[str, Any]:
         parsed = _load_bundle_outputs(bundle_dir)  # raises BundleParseError(tag=...)
     except BundleParseError as exc:
         # Mutate trail in-place so two-sided assertion (exception side AND
-        # state side) sees the parse-failure tag â€” Murat M5 binding.
+        # state side) sees the parse-failure tag — Murat M5 binding.
         state.model_resolution_trail.append(
             _new_dispatch_trail_entry(last_entry, tag=exc.tag)
         )
@@ -878,9 +878,9 @@ Texas-specific notes:
 - Model cascade still resolves at `_plan` (`tier_request: fast` -> `gpt-5-haiku`) for FR16 trail consistency, but chat is not invoked.
 - Sanctum exercise is the first real populated-and-locked case (`_bmad/memory/bmad-agent-texas/` lock baseline; 17-file sha256 manifest pinned as a module-level constant).
 - NFR-I5 is pinned with sha256 on `skills/bmad-agent-texas/references/retrieval-contract.md`.
-- Bundle-parse outcomes flow into the resolution trail under the `bundle.parsed.*` namespace (`ok` / `missing-key` / `malformed` / `wrong-type` / `empty` / `exit-10` / `exit-30` / `unknown-exit`). Tests assert two-sidedly: the parser's shape AND the trail tag â€” see `tests/specialists/texas/test_texas_act_node_dispatch.py` for the parametrize. Operators reading `model_resolution_trail` after a Texas run can distinguish "tool failed" from "tool succeeded with empty result" without inspecting the bundle directly.
+- Bundle-parse outcomes flow into the resolution trail under the `bundle.parsed.*` namespace (`ok` / `missing-key` / `malformed` / `wrong-type` / `empty` / `exit-10` / `exit-30` / `unknown-exit`). Tests assert two-sidedly: the parser's shape AND the trail tag — see `tests/specialists/texas/test_texas_act_node_dispatch.py` for the parametrize. Operators reading `model_resolution_trail` after a Texas run can distinguish "tool failed" from "tool succeeded with empty result" without inspecting the bundle directly.
 
-### 12.11 Gary worked before/after (act node) â€” real-Gary REST-API tool-dispatch example, post-2b.1 close
+### 12.11 Gary worked before/after (act node) — real-Gary REST-API tool-dispatch example, post-2b.1 close
 
 Story 2b.1 introduces the fourth category: Gary `_act` is **REST-API tool-dispatch with no LLM invocation** at the specialist layer. `_plan` still resolves the model to preserve FR16 trail-shape consistency.
 
@@ -923,7 +923,7 @@ def _act(state: RunState) -> dict[str, Any]:
     return {"model_resolution_trail": [..., trail_entry], "cache_state": {...}}
 ```
 
-**Divergences from Texas (Â§12.7):**
+**Divergences from Texas (§12.7):**
 
 | Aspect | Texas pure-tool-dispatch | Gary REST-API tool-dispatch |
 |---|---|---|
@@ -936,20 +936,20 @@ def _act(state: RunState) -> dict[str, Any]:
 
 Tag namespace convention is artifact-first: `bundle.parsed.*` (Texas), `receipt.parsed.*` (Gary), `ftr.parsed.*` (Vera), `qrr.parsed.*` (Quinn-R).
 
-Inheritors of this category are catalogued at Â§12.12.
+Inheritors of this category are catalogued at §12.12.
 
 Story 2c.2 enriches Wanda's already-shipped REST-API Wondercraft path with L5/L6 podcast-production references, a populated `_bmad/memory/wanda-sidecar/` skeleton, and a deferred live-API artifact test without changing Wanda's `_act` orchestration or dispatch wrapper.
 
 ### 12.12 Inheritor catalog matrix
 
-| Specialist | Parent Â§12.x | Seam divergence | Sanctum case | Harvest contributions | Story |
+| Specialist | Parent §12.x | Seam divergence | Sanctum case | Harvest contributions | Story |
 |---|---|---|---|---|---|
-| Texas | Â§12.7 | Subprocess dispatch wrapper + bundle parser | Populated-and-locked | A9 + A12 + NFR-I5 pin | 2a.4 |
-| Gary | Â§12.11 | REST-API dispatch wrapper + receipt parser | Empty-dir / absent | A10 (third) + A11 (second) | 2b.1 |
-| Vera | Â§12.6 | sensory-bridges importlib loader wrapper (`perceive(...)` entrypoint) | Graceful-degrade (unpopulated BMB sanctum) | A10 (fourth) + A11 (third) | 2b.2 |
-| Quinn-R | Â§12.6 | dual wrapper branchable `_act` (`gate_phase`) + quality-control importlib loader | Graceful-degrade (unpopulated BMB sanctum) | A10 (fifth) + A11 (fourth) + R2 extraction trigger | 2b.3 |
-| Desmond | Â§12.5 | No dispatch substrate (pure LLM narration); mandatory `## Automation Advisory` block enforced by parser | Populated-and-locked (BMB sanctum present; sha256 baseline pinned) | NONE (empty harvest; no framework drift) | 2b.4 |
-| Tracy | Â§12.6 | direct package import posture wrapper (`skills.bmad_agent_tracy`) + no-op posture-selection tag emitter while upstream dispatcher remains stubbed | Graceful-degrade (`_bmad/memory/bmad_agent_tracy` absent pending Epic 28-1 forward-port) | A11 (fifth, snake_case skill-dir sub-shape) + FR54 follow-on filing | 2b.5 |
+| Texas | §12.7 | Subprocess dispatch wrapper + bundle parser | Populated-and-locked | A9 + A12 + NFR-I5 pin | 2a.4 |
+| Gary | §12.11 | REST-API dispatch wrapper + receipt parser | Empty-dir / absent | A10 (third) + A11 (second) | 2b.1 |
+| Vera | §12.6 | sensory-bridges importlib loader wrapper (`perceive(...)` entrypoint) | Graceful-degrade (unpopulated BMB sanctum) | A10 (fourth) + A11 (third) | 2b.2 |
+| Quinn-R | §12.6 | dual wrapper branchable `_act` (`gate_phase`) + quality-control importlib loader | Graceful-degrade (unpopulated BMB sanctum) | A10 (fifth) + A11 (fourth) + R2 extraction trigger | 2b.3 |
+| Desmond | §12.5 | No dispatch substrate (pure LLM narration); mandatory `## Automation Advisory` block enforced by parser | Populated-and-locked (BMB sanctum present; sha256 baseline pinned) | NONE (empty harvest; no framework drift) | 2b.4 |
+| Tracy | §12.6 | direct package import posture wrapper (`skills.bmad_agent_tracy`) + no-op posture-selection tag emitter while upstream dispatcher remains stubbed | Graceful-degrade (`_bmad/memory/bmad_agent_tracy` absent pending Epic 28-1 forward-port) | A11 (fifth, snake_case skill-dir sub-shape) + FR54 follow-on filing | 2b.5 |
 
 ### 12.13 Verification commands (Irene + Kira + Texas + Gary + Vera + Quinn-R + Desmond + Tracy)
 
@@ -989,7 +989,7 @@ Cross-references:
 
 Slab 2a closed with three specialist categories validated on the same 9-node scaffold: Irene (pure LLM), Kira (LLM + tool dispatch), and Texas (pure tool dispatch). This confirms scaffold survivability across divergent act-body implementations while preserving Slab-1 invariants. The strongest systemic lesson was A12 procedural coupling: three manual `pyproject.toml` C3 ignore-import edits across 2a.2/2a.3/2a.4. Sanctum protocol matured from baseline to steady state: 2a.2 measured empty-sanctum FR54 baseline, 2a.3 carried populated scaffolding with graceful degrade, and 2a.4 executed the first real populated-and-locked integrity check.
 
-**FR54 doesn't generalize to all specialist categories.** Cache-hit-rate is narration-bound â€” pure-tool-dispatch specialists like Texas have no LLM prefix to cache, so the FR54 measurement category is undefined at the Texas layer (the FR54 substrate is intact and the harness stays gated; it just doesn't fire on pure-tool-dispatch). The pure-tool-dispatch substitute metric per Murat M4 is **`subprocess-dispatch-latency stability`** â€” the wall-clock distribution from `_act` entry to bundle-parse complete. Baseline at 2a.4 close (placeholder-key path, mocked dispatch wrapper short-circuit, single-machine warm cache): typical `_act` body completes in â‰ª50 ms (sub-millisecond YAML/JSON parse + dispatch-wrapper fixture short-circuit; no subprocess fork in the placeholder-key path). The live-wire baseline is owed once AC-B-OP reactivates at Slab-3 via the marcus.dispatch.contract forward-port; future Texas changes that regress p95 by >20% trigger a perf-review checkpoint. This metric feeds Slab 2b TEMPLATE design directly.
+**FR54 doesn't generalize to all specialist categories.** Cache-hit-rate is narration-bound — pure-tool-dispatch specialists like Texas have no LLM prefix to cache, so the FR54 measurement category is undefined at the Texas layer (the FR54 substrate is intact and the harness stays gated; it just doesn't fire on pure-tool-dispatch). The pure-tool-dispatch substitute metric per Murat M4 is **`subprocess-dispatch-latency stability`** — the wall-clock distribution from `_act` entry to bundle-parse complete. Baseline at 2a.4 close (placeholder-key path, mocked dispatch wrapper short-circuit, single-machine warm cache): typical `_act` body completes in ≪50 ms (sub-millisecond YAML/JSON parse + dispatch-wrapper fixture short-circuit; no subprocess fork in the placeholder-key path). The live-wire baseline is owed once AC-B-OP reactivates at Slab-3 via the marcus.dispatch.contract forward-port; future Texas changes that regress p95 by >20% trigger a perf-review checkpoint. This metric feeds Slab 2b TEMPLATE design directly.
 
 Section 12 is now structurally complete as a migration reference library for Slab 2b inheritance, with examples for narration, tool-composed motion, and retrieval subprocess dispatch. **For the full retrospective see [`_bmad-output/implementation-artifacts/slab-2a-retrospective.md`](../../_bmad-output/implementation-artifacts/slab-2a-retrospective.md); Slab 2b opens once the A12 generator auto-emit follow-on lands** (the one structural debt Slab 2a chose not to pay down before closing).
 
@@ -1000,11 +1000,11 @@ Section 12 is now structurally complete as a migration reference library for Sla
 | Version | Date | Changes | Slab |
 |---|---|---|---|
 | v1   | 2026-04-23 | Initial 11-section skeleton authored at Story 1.7 close. | Slab 1 close |
-| v1.1 | 2026-04-24 | Added Â§8.1 Upstream Severance (replaces FR60 forward-port freeze); STUB markers on Â§10 + new Â§12 Specialist Walkthrough placeholder; historical note on Â§8 + "intentional pointer" designation on Â§11 + "you-are-here" dev-guide cross-references landing on sibling docs. Party-mode round 3 Paige caveats. | Slab 1 close (rider hardening) |
-| v1.2 | 2026-04-25 | Added Â§12.7 Texas pure-tool-dispatch worked example; renumbered Â§12.7/Â§12.8 -> Â§12.8/Â§12.9; added Â§12.10 Slab 2a retrospective summary and cross-suite verification command set. | Slab 2a close |
-| v1.3 | 2026-04-25 | Added Â§12.11 Gary REST-API worked example + Â§12.12 inheritor matrix; tag-namespace noun convention (`receipt.parsed.*`); renumbered verification/governance to Â§12.13/Â§12.14 and added Gary verification commands. | Slab 2b.1 |
-| v1.4 | 2026-04-25 | Added Vera inheritor row to Â§12.12 under Â§12.6 parent; updated Â§12 framing sentence and Â§12.13 verification set for Vera. | Slab 2b.2 |
-| v1.5 | 2026-04-25 | Added Quinn-R inheritor row to Â§12.12 under Â§12.6 parent; updated Â§12 framing sentence and verification set for Quinn-R. | Slab 2b.3 |
+| v1.1 | 2026-04-24 | Added §8.1 Upstream Severance (replaces FR60 forward-port freeze); STUB markers on §10 + new §12 Specialist Walkthrough placeholder; historical note on §8 + "intentional pointer" designation on §11 + "you-are-here" dev-guide cross-references landing on sibling docs. Party-mode round 3 Paige caveats. | Slab 1 close (rider hardening) |
+| v1.2 | 2026-04-25 | Added §12.7 Texas pure-tool-dispatch worked example; renumbered §12.7/§12.8 -> §12.8/§12.9; added §12.10 Slab 2a retrospective summary and cross-suite verification command set. | Slab 2a close |
+| v1.3 | 2026-04-25 | Added §12.11 Gary REST-API worked example + §12.12 inheritor matrix; tag-namespace noun convention (`receipt.parsed.*`); renumbered verification/governance to §12.13/§12.14 and added Gary verification commands. | Slab 2b.1 |
+| v1.4 | 2026-04-25 | Added Vera inheritor row to §12.12 under §12.6 parent; updated §12 framing sentence and §12.13 verification set for Vera. | Slab 2b.2 |
+| v1.5 | 2026-04-25 | Added Quinn-R inheritor row to §12.12 under §12.6 parent; updated §12 framing sentence and verification set for Quinn-R. | Slab 2b.3 |
 | v1.6 | 2026-04-26 | Added Slab 3 close notes for Story 3.6 covering the local M3 trial harness, frozen Marcus baseline envelope, and conditional M3 close state. | Slab 3 close |
 
 ### 12.15 Slab 2b close update
@@ -1194,7 +1194,7 @@ Two guardrails ship with the report surface:
 - `MARCUS_TRIAL_BUDGET_USD` is an optional soft cap. When set, the report marks
   `over-budget-warning` but does not halt a live trial mid-run.
 - Drift alerts compare each agent's observed cost-per-call against the rolling
-  five-trial median and flag deviations of `Â±50%` or more as informational
+  five-trial median and flag deviations of `±50%` or more as informational
   telemetry.
 
 The migration health dashboard now summarizes on-disk economics artifacts with
@@ -1213,3 +1213,24 @@ The anti-pattern companion surface remains
 catalog shape; it finalizes the FR64 cycle-complete annotation and keeps the
 existing four-field format frozen.
 
+## M5 Ship Decision (Slab 5 Story 5a.5)
+
+Story 5a.5 closes the migration gate with a fixed-roster six-agent party-mode
+record at `_bmad-output/implementation-artifacts/m5-decision.md`. Winston,
+Murat, Paige, Quinn-R, Amelia, and Dr. Quinn were unanimous: the migrated
+runtime is ready for `SHIP-CONDITIONAL`, not unconditional `SHIP`.
+
+That verdict is intentionally bounded. The migrated branch now has replay
+regression, actual-substrate control-plane parity, a strict economics/reporting
+surface, and a 15-invariant preservation record. But the accepted ship path is
+still conditioned on four explicit follow-ons: the Wondercraft live artifact
+window (M2), the Texas live retrieval window (M3), runnable production
+clone-launch equivalence for Story 5a.2, and the deferred dispatch-registry
+swap out of `_status: interim`.
+
+The operator ratified the 5a.3 cascade/pricing configuration on 2026-04-26 and
+accepted a named 7-day conditional window ending 2026-05-03. While that window
+is open, `_bmad-output/upstream-state.md` marks the primary repo as frozen
+reference only and `migration-master-status` remains `shipped`. If the window
+lapses unresolved on 2026-05-03, the migration state demotes to
+`iterate-pending` rather than silently retaining ship status.
