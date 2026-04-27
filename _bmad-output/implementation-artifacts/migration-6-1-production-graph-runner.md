@@ -300,8 +300,16 @@ Codex-side gate-resume live smoke also passed on 2026-04-27:
 `b38f5350-0c35-4cd5-821f-29687725bb70` completed with contributions
 `["texas", "irene"]`, `production_clone_launch_evidence=True`, and
 `total_cost_usd=0.1020115`.
-Formal dual-gate operator ratification remains pending before this story should
-be flipped from `review` to `done`.
+Formal dual-gate operator ratification cleared on 2026-04-27; this story is
+eligible for `done`.
+
+### Operator dual-gate gate-2 evidence (AC-K item 5)
+
+- **Date:** 2026-04-27
+- **Command:** `.venv\Scripts\python.exe -m pytest tests/live/test_production_trial_smoke_with_gate.py -m live -q --tb=short`
+- **Result:** `1 passed in 30.54s`
+- **Operator witness:** Juan Leon (operator session)
+- **Disposition:** PASS — substrate-shape gate cleared + operator_acceptance_gate cleared. The migration's central architectural-equivalence claim now has end-to-end live-trial proof through HIL gates with real OpenAI specialist invocations through ProductionDispatchAdapter + checkpoint pause/resume working end-to-end. Persistent live audit trial `b38f5350-0c35-4cd5-821f-29687725bb70` from Codex-side smoke also retained as durable evidence. M5 condition #3 RESOLVED. Bounded-MVP qualifier drops; migration unqualified SHIPPED.
 
 ### Verification
 

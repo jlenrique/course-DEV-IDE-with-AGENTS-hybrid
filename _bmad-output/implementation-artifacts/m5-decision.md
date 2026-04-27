@@ -158,6 +158,39 @@ Companion process anti-pattern **P3 — Composition-Shape Vote Without End-to-En
 
 Five A16 instances + 1 A17 instance + 1 P3 instance discovered in 2 days (A15 model IDs, M2 Wondercraft, M3 Scite, Slab 6.1 first attempt, Slab 6.1 strict-AC halt → A17, M5 process gap → P3). The pattern's persistence demonstrates the discipline (bmad-code-review + party-mode substrate-aware adaptation + halt-and-surface) is functioning as designed. Each finding caught at the cheapest possible moment relative to ship.
 
+## Slab 6.1 close annotation (added 2026-04-27)
+
+Codex implemented Slab 6.1 (`migration-6-1-production-graph-runner.md`) per Path A-prime + Slab 6.0 substrate consumption. Implementation landed in commit `d5cfad8`; bmad-code-review triage cleared in commit `6ca5f43` (5 patch + 5 defer + 3 dismiss + 2 decision_needed surfaced); decision_needed Item 1 (synthetic LangSmith trace_id) deferred per operator ratification; decision_needed Item 2 (checkpoint resume execution-continuation) PATCHED via tight-scope follow-on dispatch (commits `61fede4` + `e6787e3`).
+
+Codex-side verification: focused review suite -> 54 passed; resume/CLI focused -> 12 passed; production/gate focused suite -> 26 passed; ruff clean; live gate-resume smoke -> 1 passed in 291.27s; persistent live audit trial `b38f5350-0c35-4cd5-821f-29687725bb70` with contributions `[texas, irene]` + cost $0.1020115.
+
+Operator dual-gate gate-2 cleared 2026-04-27: operator ran `.venv\Scripts\python.exe -m pytest tests/live/test_production_trial_smoke_with_gate.py -m live -q --tb=short` -> `1 passed in 30.54s`. The migration's central architectural-equivalence claim now has end-to-end live-trial proof through HIL gates with operator-witnessed evidence.
+
+N-item trace recorded: 0 FAIL / 2 decision_needed (DN-1 deferred per operator; DN-2 RESOLVED-AT-PATCH). N6 PASS (gate pause/resume continues to completion); N7 PASS-WITH-DEFER (replay drift pre-existing per DFR-6.1-3); N9 PASS with operator-witnessed live evidence.
+
+Six deferred-inventory entries filed at close per `slab-6-1-close-deferred-inventory-entries-ready-to-paste.md`. Composition Spec Â§3.1 + Â§3.6 + Â§3.7 + Â§10 + Â§12 updated to reflect ratified dispositions + known limitations.
+
+**Status:** Slab 6.1 CLOSED 2026-04-27. M5 condition #3 RESOLVED. Slab 6.0 + 6.1 sequence complete.
+
+## Migration unconditionally shipped (added 2026-04-27)
+
+With Slab 6.1 formal close, all four M5 conditions are RESOLVED:
+- Condition #1 — M2 Wondercraft live artifact/operator addendum: RESOLVED 2026-04-27 (M2 ceremony commit `c2065e9`)
+- Condition #2 — M3 Texas live retrieval: RESOLVED 2026-04-27 (Notion locator-shape ceremony; commit `c2065e9`)
+- Condition #3 — production clone-launch equivalence (REFRAMED-AS-SLAB-6.0-SUBSTRATE-+-SLAB-6.1-RUNNER): RESOLVED 2026-04-27 (Slab 6.0 close + Slab 6.1 close + operator-witnessed live gate-resume smoke)
+- Condition #4 — Plausible-Token Substrate Contamination: RESOLVED 2026-04-27 (live cascade-tier smoke 3/3 PASS in 7.00s)
+
+**Migration verdict promotes from "SHIP for bounded-MVP scope" to unqualified SHIP.** The bounded-MVP qualifier is dropped. The hybrid `dev/langchain-langgraph-foundation` branch carries a production-credible LangChain/LangGraph re-platforming of the course-content production system with: (a) 14 scaffold-conformant specialists; (b) Slab 6.0 production envelope substrate (composition contract that admits multi-specialist execution per Path A-prime); (c) Slab 6.1 production-graph runner (consumes substrate; exercises real OpenAI specialists through ProductionDispatchAdapter; HIL gate pause/resume per FR34 working end-to-end); (d) cost engineering foundation; (e) replay regression suite; (f) 15-invariant audit matrix; (g) post-vote substrate remediation per A15 + A16 + A17 + P3; (h) Composition Specification + Substrate Inventory Checklist + 7 anti-pattern catalog entries (A11-A17 + P1-P3) as standing prevention discipline.
+
+**Known limitations carried forward** (operator-ratified deferrals; do not affect unqualified SHIP claim within bounded-MVP scope):
+- LangSmith trace_id synthetic placeholder at runner aggregation level (operator workaround: query LangSmith manually via trial_id metadata)
+- Multi-pass envelope Path Z ("first contribution wins"; Path X/Y deferred until multi-pass production need emerges)
+- Pre-existing replay-regression pack-hash drift (deferred for golden refresh investigation)
+- Runner iterates manifest order rather than compiled edges (deferred until non-linear topology lands)
+- ProductionTrialEnvelope lifecycle cross-field validators absent (pre-existing; deferred for tech-debt cleanup)
+
+**Next sprint work:** Tier-A-0 (`tier-a-0-promote-dependency-map-into-manifest`; ~1pt; pre-authored at `_bmad-output/implementation-artifacts/migration-tier-a-0-promote-dependency-map-into-manifest.md`) lands as Tier A prerequisite; Tier A bundle (A1 + A2 + A3 per `codex-handoff-tier-a-trial-experience-bundle.md`) follows; first tracked trial run unblocks at Tier A bundle close.
+
 ## Slab 6.0 substrate-ratification waypoint (added 2026-04-27)
 
 Codex implemented Slab 6.0 (`migration-6-0-production-envelope-substrate.md`) per Path A-prime + the 5-agent ratification. Dev-side verification: `pytest tests/composition/ -q --tb=short` → 17 passed; isolation slice → 78 passed; ruff clean; lint-imports 9 KEPT; sandbox-AC validator PASS.
