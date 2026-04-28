@@ -18,7 +18,7 @@
         "file_path": {
           "description": "Local downloaded PNG path.",
           "minLength": 1,
-          "pattern": "^.+[.][Pp][Nn][Gg]$",
+          "pattern": "^(?:[A-Za-z]:[\\\\/])?[^:]+[.][Pp][Nn][Gg]$",
           "title": "File Path",
           "type": "string"
         },
@@ -48,7 +48,7 @@
         },
         "source_image_path": {
           "minLength": 1,
-          "pattern": "^.+[.][Pp][Nn][Gg]$",
+          "pattern": "^(?:[A-Za-z]:[\\\\/])?[^:]+[.][Pp][Nn][Gg]$",
           "title": "Source Image Path",
           "type": "string"
         },
@@ -116,7 +116,7 @@
         },
         "visual_file": {
           "minLength": 1,
-          "pattern": "^.+[.][Pp][Nn][Gg]$",
+          "pattern": "^(?:[A-Za-z]:[\\\\/])?[^:]+[.][Pp][Nn][Gg]$",
           "title": "Visual File",
           "type": "string"
         },

@@ -126,6 +126,11 @@ def test_required_fields_bidirectional_schema_parity() -> None:
             ["establish", "tension", "develop", "resolve"],
             "wrap",
         ),
+        (
+            ("procedural_rules", 0),
+            list(REQUIRED_PROCEDURAL_RULES),
+            "phantom_rule_unknown_value",
+        ),
     ],
 )
 def test_closed_enums_reject_red_three_surfaces(
@@ -165,6 +170,7 @@ def test_closed_enums_reject_red_three_surfaces(
             if "enum" in branch
         )
     assert actual_values == expected_values
+    assert bad_value not in actual_values
 
     bad_payload = _payload()
     cursor = bad_payload
@@ -186,6 +192,35 @@ def test_procedural_rules_partial_rejected() -> None:
     payload["procedural_rules"] = list(reversed(REQUIRED_PROCEDURAL_RULES))
     with pytest.raises(ValidationError, match="validator-enforced rule set"):
         IrenePass2AuthoringEnvelope.model_validate(payload)
+
+
+def test_json_schema_rejects_remote_png_urls() -> None:
+    """6.4-SP2-BH-1: JSON Schema must reject remote .png URLs."""
+    schema = IrenePass2AuthoringEnvelope.model_json_schema()
+    remote_urls = (
+        "https://example.com/slide.png",
+        "http://x/y.png",
+        "file:///etc/slide.png",
+        "ftp://srv/s.png",
+    )
+    field_paths = (
+        ("gary_slide_output", 0, "file_path"),
+        ("perception_artifacts", 0, "source_image_path"),
+        ("segment_manifest", "segments", 0, "visual_file"),
+    )
+
+    for remote_url in remote_urls:
+        for field_path in field_paths:
+            payload = _payload()
+            cursor = payload
+            for part in field_path[:-1]:
+                cursor = cursor[part]  # type: ignore[index]
+            cursor[field_path[-1]] = remote_url  # type: ignore[index]
+
+            with pytest.raises(jsonschema.ValidationError):
+                jsonschema.validate(payload, schema)
+            with pytest.raises(ValidationError):
+                IrenePass2AuthoringEnvelope.model_validate(payload)
 
 
 def test_cross_artifact_path_and_segment_marker_shape_pins() -> None:

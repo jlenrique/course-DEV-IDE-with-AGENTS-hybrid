@@ -7,7 +7,14 @@ from typing import Literal
 
 from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
 
-LOCAL_PNG_PATH_PATTERN = r"^.+[.][Pp][Nn][Gg]$"
+# Pattern is intentionally stricter than runtime Pydantic field validators:
+# Rust-regex (Pydantic v2) does not support negative lookahead, so URL schemes
+# are rejected via "no colons except optional Windows drive prefix" instead.
+# Trade-off: rejects local paths with colons in non-drive positions (Mac classic
+# paths; rare Linux filenames). Trade-off operator-ratified 2026-04-28 per
+# dispatch decision_needed resolution. Defense-in-depth remains in field
+# validators below.
+LOCAL_PNG_PATH_PATTERN = r"^(?:[A-Za-z]:[\\/])?[^:]+[.][Pp][Nn][Gg]$"
 VisualDetailLoad = Literal["light", "medium", "heavy"]
 ContentDensity = Literal["light", "medium", "heavy"]
 BridgeType = Literal["none", "intro", "outro", "pivot", "both", "cluster_boundary"]
@@ -58,9 +65,11 @@ class GarySlideOutput(_StrictModel):
     )
     source_ref: str = Field(min_length=1, description="Traceable source reference.")
 
-    @field_validator("file_path")
+    @field_validator("file_path", mode="before")
     @classmethod
-    def _file_path_must_be_png(cls, value: str) -> str:
+    def _file_path_must_be_png(cls, value: object) -> object:
+        if not isinstance(value, str):
+            return value
         normalized = _normalized_path(value)
         if not normalized.lower().endswith(".png"):
             raise ValueError("file_path must reference a local PNG")
