@@ -189,6 +189,55 @@ Replace `<corpus-path>` with the directory from §3.2.
 
 ---
 
+## Phase 4.5 — Where the prompts come from (HIL prompt sources reference)
+
+**This playbook is structural** (it tells you WHEN gates fire, WHERE artifacts land, WHICH validation scripts to run). **It does NOT contain the conversational prompts Marcus delivers to you at each step** — those live in dedicated SSOTs and are loaded by Marcus the runtime as it walks the pipeline.
+
+**Open the legacy prompt pack in a separate editor pane during your trial.** Marcus is delivering its prose to you in conversational form; you're reading along to know what's coming + what to enter.
+
+### The 8 prompt sources
+
+| # | Source | Path | Purpose |
+|---|---|---|---|
+| 1 | **Full v4.2 prompt pack** (legacy "prompt packet") | `docs/workflow/production-prompt-pack-v4.2-narrated-lesson-with-video-or-animation.md` | Per-step prose Marcus reads to you; questions Marcus asks; data-entry surfaces. The single biggest reference document during a trial. |
+| 2 | **Per-step Jinja templates** | `scripts/generators/v42/templates/sections/*.j2` | Source-of-truth templates that generate the v4.2 pack. Edit these (NOT the rendered pack) to change a step's prompts. |
+| 3 | **DecisionCard schemas** | `app/models/decision_cards.py` (`G1Card`, `G2CCard`, `G3Card`, `G4Card`, `DecisionCardMeta`) | Structured format of what you see at each gate. Each card type has explicit fields (artifact summary, cost, override trail, sanctum warnings) you read + decide on. |
+| 4 | **Marcus PR-\* capability references** | `skills/bmad-agent-marcus/references/` | Marcus's conversational capabilities: CM (conversation management), PR (prompt routing), HC (hot-context), MM (memory management), SP (status protocol), SM (session management), SB (status board), PR-R / PR-RC / PR-4A / etc. (per-procedure prompt routes). |
+| 5 | **Marcus capabilities doc** | `docs/dev-guide/marcus-capabilities.md` | High-level catalog of all PR-\* capabilities + their operator-facing prompt patterns. |
+| 6 | **Marcus persona + sanctum** | `_bmad/memory/bmad-agent-marcus/PERSONA.md` + cross-references in `_bmad/memory/bmad-agent-marcus/INDEX.md` | Marcus's persistent voice + conversational style; loaded at runtime activation. |
+| 7 | **Step 02A prior-run defaults** (Slab 6.3) | `scripts/utilities/operator_directives_defaults.py` + `docs/operator/step-02a-prior-run-defaults.md` + Step 02A pack section | Slab 6.3 surfaces prior-run `operator-directives.md` as named defaults at Step 02A. |
+| 8 | **Operator op docs** (gate addenda) | `docs/operator/conditional-gate-addendum-playbook.md` + `docs/operator/post-m5-runbook.md` | Per-gate operator action patterns; conditional addenda for M-gates that needed extra evidence. |
+
+### Per-step prompt source (Phase 5 cross-reference)
+
+When you reach each Phase 5 step:
+- Look up the step number in the v4.2 pack (Source #1) — that section's prose IS the prompt set Marcus delivers
+- Cross-check the matching `.j2` template (Source #2) if the rendered pack appears stale
+- At gate steps (G1/G2C/G3/G4): the DecisionCard schema (Source #3) defines the card structure you read
+
+For Step 02A specifically: prior-run defaults surface per Source #7 BEFORE the standard pack prose displays.
+
+### Quick-open commands (Windows)
+
+```
+:: Open the v4.2 prompt pack
+start docs\workflow\production-prompt-pack-v4.2-narrated-lesson-with-video-or-animation.md
+
+:: Open Marcus's capability references directory
+explorer skills\bmad-agent-marcus\references\
+
+:: Open the DecisionCard schema
+start app\models\decision_cards.py
+```
+
+### A note on prompt length + future evolution
+
+The v4.2 pack is large (hundreds of pages) because it's a legacy "script of prompts as prose" inherited from the pre-migration primary-repo workflow. The migrated platform ARCHITECTURALLY does not need so much prose-as-script — Marcus + the specialists internalize substantive guidance via skills, sanctum personas, and `_act` body knowledge. The pack persists for: (a) operator-facing reference of what to expect; (b) backward-compat to the prompt-pack-driven primary-repo workflow.
+
+**Future direction (deferred work):** prompt-pack reduction / internalization initiative — gradually migrate prompt content from prose-script into specialist skills + Marcus PR-\* capability references, so operator interaction becomes more conversational and less prompt-feeding. Filed as a candidate post-trial substrate-evolution effort. See deferred-inventory entry `prompt-pack-reduction-internalization` if filed (or surface to operator at first-trial post-run review per Phase 8.3).
+
+---
+
 ## Phase 5 — Steps 01–33 walkthrough
 
 **Goal:** per pipeline step, document what runner shows + what operator inputs (if any) + what artifacts get locked.
