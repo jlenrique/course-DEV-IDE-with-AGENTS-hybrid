@@ -1,232 +1,187 @@
-# Session Handoff — 2026-04-28 (Migration unconditionally SHIPPED + Slab 6 trial-experience bundle 3/3 CLOSED + documentation reset)
+# Session Handoff — 2026-04-28 evening (First tracked production trial: plumbing-PASS, content-FAIL, halted at G1; mitigation work filed)
 
-**Session window:** 2026-04-25 → 2026-04-28 (continuous interactive session arc crossing 4 calendar days).
+**Session window:** 2026-04-28 evening (interactive operator session; 1 commit on `dev/langchain-langgraph-foundation`).
 **Branch touched:** `dev/langchain-langgraph-foundation` (hybrid clone).
 **Operator:** Juan Leon.
-**Session mode:** Multi-slab close arc — Slab 6.0 + 6.1 close → bundle 3/3 close → documentation reset → first-tracked-trial readiness.
-**Commit range:** `21a6e5f` (prior anchor: Story 2a.2 close) → `2c48602` (this session-close commit). 94 commits across the session.
-**Migration verdict at session-close:** **UNCONDITIONALLY SHIPPED** (commit `97842ac`, 2026-04-27). Slab 6 trial-experience bundle 3/3 CLOSED 2026-04-28. First tracked trial UNBLOCKED.
+**Session mode:** First tracked production trial — plumbing shake-out + fix-on-the-fly patches.
+**Commit range:** `72a94c5` (prior session-close) → this session's wrapup commit.
+**Migration verdict at session-close:** **UNCONDITIONALLY SHIPPED** (commit `97842ac`, 2026-04-27, unchanged). Slab 6 trial-experience bundle 3/3 CLOSED 2026-04-28 morning (unchanged). **First tracked trial executed this evening; plumbing verified end-to-end; first-CONTENT-trial blocked on directive-composition seam (filed in deferred-inventory; mitigation is next session's anchor).**
 
 ---
 
 ## What Was Completed This Session
 
-### 1. Slab 6.0 — Production envelope substrate (CLOSED 2026-04-27)
+### 1. First tracked production trial executed (paused-at-gate G1, halted by operator decision)
 
-- Implementation `072724c` + bmad-code-review `7812d3e`
-- `ProductionEnvelope` + `SpecialistContribution` Pydantic v2 strict + four-file-lockstep
-- `ProductionDispatchAdapter` translation surface (the only place that holds knowledge of envelope-vs-cache_prefix)
-- `tests/composition/` tree + `ComposedSpecialistChainHarness` + `test_texas_to_cd_chain.py` (the load-bearing test that mirrors the Slab 6.1 strict-AC HALT scenario)
-- Composition Smoke gate operationalized in slab-opener template
-- Path A-prime ratified by 5-agent party-mode (Winston + Murat + Amelia + Quinn-R + Mary)
-- A17 + P3 anti-pattern entries filed
-- Operator dual-gate gate-2: 17 passed in 1.21s
+- **Trial ID:** `475df528-7d75-48a3-be56-82b54a0b7b8b`
+- **Corpus attempted:** `course-content/courses/tejal-APC-C1/` (~13 files: DOCX + PDF + PPTX + MD + visual exemplars)
+- **Status at trial-stop:** `paused-at-gate G1 (gate_focus: trial_open)`. Operator did NOT submit a verdict. Trial sits paused indefinitely; bundle preserved at `state/config/runs/475df528-7d75-48a3-be56-82b54a0b7b8b/` (gitignored — local audit trail).
+- **Bundle artifacts preserved:** `run.json`, `decision-card-G1.json`, `checkpoint.json`, `cost-report.json/.md`, `trace-fixture.json`.
+- **LangSmith trace:** recorded under project `course-content-production` filterable by `metadata.trial_id == 475df528-7d75-48a3-be56-82b54a0b7b8b`.
 
-### 2. Slab 6.1 — Production-graph runner consuming substrate (CLOSED 2026-04-27)
+### 2. Production-runner end-to-end plumbing VERIFIED real
 
-- Three-cycle close: implementation `d5cfad8` → bmad-code-review `6ca5f43` (5 patch + 5 defer + 3 dismiss + 2 decision_needed) → checkpoint resume patch `61fede4` (DN-2 PATCH; DN-1 DEFER per ratified disposition) → formal close `97842ac`
-- Operator-witnessed live gate-resume smoke: 1 passed in 30.54s; cost ~$0.10–$0.30; trial `b38f5350-0c35-4cd5-821f-29687725bb70` exists with real production-graph evidence
-- Six deferred-inventory entries filed: `tier-a-0-promote-dependency-map-into-manifest` (later renamed `migration-6-2-*`), `slab-6-1-multi-pass-envelope-path-x-or-y`, `replay-regression-pack-hash-drift-pre-slab-6.1`, `slab-6-1-runner-compiled-edge-traversal`, `production-trial-envelope-lifecycle-invariants`, `slab-6-1-langsmith-runner-trace-id-real-binding`
-- Migration verdict promoted from "SHIP for bounded-MVP scope" → unqualified SHIP at this close
+End-to-end smoke evidence from the live trial:
 
-### 3. Slab 6.2 — Manifest dependency_map promotion (CLOSED 2026-04-27)
+| Concern | Result |
+|---|---|
+| `trial start --preset production --input <corpus-path>` invocation | PASS — registered trial, created bundle dir, opened Postgres checkpointer, started LangSmith trace, compiled graph, ran nodes 01–04 autonomously |
+| Postgres checkpointer thread namespace | PASS — `run/475df528-...` persists in DB |
+| LangSmith trace root span | PASS — `langsmith_trace_status: measured-from-langsmith`; `production_clone_launch_evidence: true` (reason: `live-specialist-call-recorded`) |
+| Cost rollup | PASS — `cost-report.json/.md` produced; per-agent breakdown by model (`gpt-5-nano` 1 call / 25 in / 10 out / $0.000005) |
+| Decision card emission | PASS — `decision-card-G1.json` written with `verb: approve`, `gate_focus: trial_open`, signed digest + server_nonce |
+| Pause-and-wait at first declared gate | PASS — runner halted cleanly at G1; awaits `trial resume --verdict-file ...` |
 
-- Implementation `01631b6` (per-node `dependencies: dict[str, str]` field on `NodeSpec`; cycle check; runner-layer fallback retained as PERMANENT) → review `8a780f1` → A9-class alias-drift patch `c652747` (cycle checker normalizes via `_canonical_specialist_id(...)`) → close `0a4f868`
-- 9 BINDING + 3 NON-BLOCKING party-mode riders satisfied
-- Composition Spec §12 known limitation #1 RESOLVED
+**Migration verdict implication:** the `production_clone_launch_evidence: true` flag is genuinely earned at this trial (live OpenAI call + LangSmith span); migration's "SHIPPED" status holds.
 
-### 4. Slab 6 trial-experience bundle 3/3 (CLOSED 2026-04-28)
+### 3. Real defect surfaced: production-runner Texas directive-composition seam missing
 
-- **Taxonomy cleanup `fa7e8a6`:** renamed Tier-A stories under `migration-epic-6-post-mvp-production` (6.2 + 6.3 + 6.4 + 6.5)
-- **Governance discipline doc** `_bmad-output/implementation-artifacts/slab-6-trial-experience-bundle-governance-discipline.md` codifying 6-gate sequence (spec → bmad-party-mode → bmad-dev-story → bmad-code-review with N-item trace → triage → operator acceptance → formal close)
-- **6.3 Step 02A prior-run directives as defaults** (CLOSED `58d428d`): bundled implementation `162d129` → first-pass review (5 patch + 2 DN) → cycle-1 remediation `61c21c4` → second-pass clean → close. 6 BINDING + 3 NON-BLOCKING riders satisfied. Direction ratified: helper + Step 02A pack amendment (NOT Marcus PR-* extension).
-- **6.4 Irene Pass 2 authoring template** (CLOSED `a886b10`; DUAL-GATE; **operator-flagged HIGHEST friction**): 5-cycle close — bundled implementation `162d129` → first-pass review (11 patch + 0 DN; 4 BINDING rider trace failures W-R1/W-R2/M-R3/P-R1) → cycle-1 remediation `c2df610` → second-pass HALT (3 re-trace FAILs) → operator-ratified URL-pattern Rust-regex fallback (Pydantic v2 doesn't support negative lookahead) → cycle-2 remediation `1151bdc` → third-pass clean `e9ede93` → operator Gate 5 dual-gate ceremony PASS (`scripts/operator/gate5_slab_6_4.py` 83 passed) → close. 9 BINDING + 5 NON-BLOCKING riders satisfied. Direction ratified: Pydantic + JSON Schema + Markdown trio with layered validation. Mary harvest-gate A18 disposition: leave as candidate (cycle 2 was procedural-validator-alignment expansion, not state-machine elevation; 50 validator append sites enumerated as 14 schema / 6 procedural / 30 skipped).
-- **6.5 HUD per-step expandable summaries** (CLOSED `58d428d`): bundled implementation `162d129` → first-pass review (11 patch + 1 DN) → cycle-1 remediation `77a86e0` → second-pass clean (direct lockstep invocation verified per AC-6.5-G) → close. 7 BINDING + 4 NON-BLOCKING riders satisfied. Direction ratified: existing-artifact derivation + `<details>` + sessionStorage + pull-based `--watch`.
-- **First tracked trial UNBLOCKED** at bundle 3/3 close.
+**Diagnosis:** Texas's contribution at nodes 02 (Source Authority Map) + 03 (Ingestion + Evidence Log) returned the deterministic test fixture at `tests/fixtures/specialists/texas/fixture_bundle/` (10 lines of placeholder content; `run_id: TEXAS-FIXTURE-001`), NOT the operator's Tejal corpus. Real cost was $0.000005 (token-counter scale, not real DOCX extraction).
 
-### 5. Operator validation scripts (NEW; 2026-04-28)
+**Root cause:** `app/specialists/texas/retrieval_dispatch.py::dispatch_retrieval()` is a CORRECT Slab 2a.4 dispatch seam with explicit fork:
 
-5 validation scripts under `scripts/operator/`:
-- `gate5_slab_6_4.py` — Slab 6.4 Gate 5 dual-gate ceremony
-- `dual_gate_slab_6_0.py` — Slab 6.0 substrate re-runnable
-- `dual_gate_slab_6_1.py` — Slab 6.1 production-runner live re-runnable (live OpenAI ~$0.10–$0.30)
-- `bundle_health_check.py` — Slab 6 bundle focused regression
-- `migration_full_health_check.py` — full migration substrate health
+```python
+if not directive_path or not bundle_dir:
+    return {"status": "mocked", "bundle_dir": str(DEFAULT_FIXTURE_BUNDLE), ...}
+# else: subprocess shell out to skills/bmad-agent-texas/scripts/run_wrangler.py --directive ... --bundle-dir ... --json
+```
 
-Each script:
-- Auto-loads `.env` where credentials needed (inline parser; no new dep)
-- Pre-flight key checks for live ceremonies (fail-fast)
-- Streams pytest output for live tests (fixed buffering issue that made `dual_gate_slab_6_1.py` look like it was hanging)
-- Prints paste-ready Dev Agent Record summary block at end
+The production runner currently invokes this seam with `directive_path=None` AND `bundle_dir=None`, so it falls through to fixture stub. **The directive-composition step (corpus_path → directive YAML → `dispatch_retrieval(directive_path=..., bundle_dir=...)` real-args invocation) is missing upstream of the seam.**
 
-Operator-witnessed verification today (2026-04-28):
-- migration_full_health_check: 213 passed across 11/11 slices in 28s
-- dual_gate_slab_6_0: 18 passed in 1.59s
-- dual_gate_slab_6_1: 1 passed in 226.91s (live; cost realized)
-- bundle_health_check: 151 passed + 1 skipped across 5/5 slices in 16.6s
-- gate5_slab_6_4: 83 passed in 4.52s
+**Implication:** approving G1 would have advanced to G1A (Irene Pass 1 lesson-plan coauthoring) — but Irene's `dependencies: upstream_output: "texas"` means she'd coauthor with the operator using fixture content, not the Tejal corpus. That's substantively pointless, so operator chose to halt.
 
-Index doc at `docs/operator/validation-scripts.md`.
+**Filed:** `production-runner-texas-directive-composition-seam` in `_bmad-output/planning-artifacts/deferred-inventory.md` §Named-But-Not-Filed Follow-Ons. Recommended BMAD workflow for mitigation: `bmad-create-story` → `bmad-dev-story`. Recommended fix shape (also captured): new `app/runtime/compose_directive.py` module (walks `corpus_path`, classifies files by extension, emits directive YAML to `state/config/runs/<trial_id>/directive.yaml`) + runner wiring at trial-init + round-trip test against Tejal corpus + playbook §3 update describing operator override semantics.
 
-### 6. Documentation reset (Tier 1–4; 2026-04-28)
+### 4. Eight fix-on-the-fly patches landed inline during trial setup + execution
 
-- **Tier 1 cleanup** (`aa4004d`): deleted `PROJECT-STRUCTURE-MAP-TEMPORARY.md`; reconciled `requirements.txt` to post-Slab-6 state; refreshed `README.md` status from "M5 SHIP-CONDITIONAL through 2026-05-03" → "Migration unconditionally SHIPPED + Slab 6 bundle 3/3 closed + first tracked trial UNBLOCKED"
-- **Tier 2 staleness sweep** (`aa4004d`): migration-status banners refreshed across `docs/dev-guide.md`, `docs/user-guide.md`, `docs/admin-guide.md`, `docs/agent-environment.md` (date stamp 2026-04-26 → 2026-04-28; M5 SHIP-CONDITIONAL → unconditionally SHIPPED; Condition #4 PENDING-LIVE-VERIFICATION language removed entirely); `lesson-planner-cycle-efficiency-report-2026-04-18.md` moved to `_bmad-output/implementation-artifacts/`
-- **Tier 3 gap-filling** (`6a93ea6`): NEW `docs/dev-guide/sources-of-truth.md` (comprehensive SSOT registry per topic with lockstep partners + change protocols); NEW `docs/dev-guide/how-to-add-a-specialist.md` (10-phase consolidated walkthrough replacing fragmented coverage); `docs/parameter-directory.md` extended with migration runtime parameters section
-- **Tier 4 skeleton** (`6a93ea6`): NEW `docs/operator/production-trial-playbook.md` SKELETON (10 phases; placeholders marked `<!-- FIRST-TRIAL-FILL -->` for population during first tracked trial)
-- **Playbook prompt-sources reference** (`2c48602`): added Phase 4.5 cataloging the 8 prompt sources Marcus delivers from + filed `prompt-pack-reduction-internalization` deferred-inventory entry per operator's architectural observation that prompts should become more conversational and less prompt-feeding
+Per operator's stated stance ("fix-on-the-fly as much as possible through this entire trial"). All patches verified clean (ruff PASS on `run_hud.py`; doc patches don't lint).
 
----
+| # | File | Change |
+|---|---|---|
+| 1 | `docs/operator/production-trial-playbook.md` §1.4 | Bare `python -c` Postgres-reachability command replaced with dotenv-aware version. Root cause: bare `python -c` does NOT inherit `.env`; operator hit `KeyError: 'DATABASE_URL'` even though value was correctly present in `.env`. FIRST-TRIAL-FILL block populated with discovery + resolution sequence. |
+| 2 | `docs/dev-guide/local-postgres-setup.md` | Added Windows winget unattended install path: `winget install -e --id PostgreSQL.PostgreSQL.17 --silent --override "--mode unattended ... --superpassword postgres ..."` + Windows-aware bootstrap command (full path to `psql.exe` since not on PATH by default). Cross-reference to playbook §1.4 added. |
+| 3 | `docs/operator/production-trial-playbook.md` Phase 3 + Phase 4 | Phase 3 retitled "Course corpus preparation (pre-run)" with explicit "Nothing is initialized at this phase" framing. Old §3.3 "Bundle initialization" deleted (no such pre-step exists). §3.3 prior-run-defaults reframed as "heads-up, not an action" (it fires DURING run at Step 02A). Phase 4 retitled "Run initialization (trial launch)" with explicit list of what gets created at §4.1 fire (bundle dir, run-constants.yaml, checkpointer thread, LangSmith span, graph compile). |
+| 4 | `docs/operator/production-trial-playbook.md` §3.2 | Disk-files-only convention; locator/retrieval shape table; URL-list-file exception. Removed misleading `course-content/sources/` path; corrected to `course-content/courses/<lesson_slug>/` per operator-stated convention. Added "What goes where, by source kind" table covering local file / URL list / Notion / Box-URL / Playwright-URL / retrieval-shape; "static-vs-dynamic is not the locator/retrieval boundary" clarification. |
+| 5 | `docs/operator/production-trial-playbook.md` §4.1 | Canonical launch command (template) + concrete-for-this-trial example + optional flags documented (`--operator-id`, `--trial-id`, `--allow-offline-cost-report` with caveat). HTTP transport noted as alternative gate-verdict channel (NOT alternative launcher). |
+| 6 | `docs/operator/production-trial-playbook.md` §4.3 | HUD invocation patched: module form `python -m scripts.utilities.run_hud` (script-path form fails with `ModuleNotFoundError: No module named 'scripts.utilities'` because Python puts script's directory on sys.path, not repo root). Canonical flags documented as `--watch --open --trial-id <uuid>` together; "why each flag" explanation added. |
+| 7 | `scripts/utilities/run_hud.py` defect #1 | `--watch --open` together previously broken: the `if args.open:` block was outside the `while True:` loop, so browser only opened after Ctrl+C. Patched: extracted `_open_in_browser()` helper; opens browser on iteration 1 in watch mode (single-shot path also calls helper after snapshot). |
+| 8 | `scripts/utilities/run_hud.py` defect #2 | Header label and page title showed "No active run" even with `--trial-id <uuid>` set, because `rc.get("RUN_ID", ...)` only consulted the legacy source-bundle's `run-constants.yaml` and ignored the `active_trial` data flowing in from `read_active_trial()`. Patched: when `data.get("active_trial")` is non-None, header reads `<first-8-chars> (<status>)` (e.g., `475df528 (paused-at-gate)`); legacy path preserved when no migrated trial active. |
 
-## What Is Next (Broader Context)
+### 5. PostgreSQL 17 installed natively on operator's machine
 
-### Immediate next session opening
+Per CLAUDE.md `project_no_docker` operator preference. Service `postgresql-x64-17` running, listening on `0.0.0.0:5432`. Role `user` + DB `course_dev_ide_migration` + pgcrypto extension created via `scripts/dev/init_postgres.sql`. Persistent across sessions — next session does NOT need to re-install.
 
-**First tracked trial run.** Migration substrate is unconditionally SHIPPED; Slab 6 trial-experience bundle is 3/3 closed; operator-witnessed validation across 466+ tests + 1 live trial all PASS. The next operationally-meaningful action is queuing a real Pass 2 corpus through the production runner.
+### 6. Workflow-shape discovery: migrated runtime is structurally different from legacy
 
-Open `docs/operator/production-trial-playbook.md` in a separate editor pane during the run; populate the `<!-- FIRST-TRIAL-FILL -->` placeholders as each phase progresses. The playbook becomes battle-tested during the very first run.
+Material conceptual finding from this trial. Legacy v4.2 prompt-pack model: Marcus delivers prose conversationally at every prompt section (1 → 2 → 2A → 3 → ...); operator answers per-section. Migrated LangGraph model: specialists run **autonomously between gates**; conversational interaction happens at gate decision-card review, NOT per-section.
 
-### Production-operations cycle scope (post-trial)
+This means the legacy "now I start talking with Marcus and confirm sources" mental model does not map to the migrated runtime. Operator-Marcus interaction concentrates at gate boundaries (G1 trial-open ratification, G1A Irene Pass 1 lesson-plan coauthoring, G2C Compositor, G3 Audio, G4 Final). Between gates the runtime is autonomous.
 
-After first tracked trial completes:
-1. Composition Spec §11 trigger evidence capture (per Phase 8.1 of playbook)
-2. Mary harvest-gate review for any A18 candidate or new pattern
-3. Deferred-inventory updates if surprises surface
-4. First-trial fill of `production-trial-playbook.md` placeholders (battle-tested becomes canonical)
-5. Decision on `prompt-pack-reduction-internalization` initiative based on what the trial reveals about prompt-prose vs internalized-knowledge balance
+The `prompt-pack-reduction-internalization` deferred-inventory entry (filed prior session) is even more relevant after this trial. Future trial work should explicitly reckon with what conversational surface Marcus DOES expose during a gate-paused state vs what's deferred to specialist `_act` body knowledge.
 
-### Active deferred work (reactivation triggers)
+### 7. Memory + governance updates landed
 
-Active follow-ons: 47. Notable items by reactivation gate:
-- **Epic 15 Learning & Compound Intelligence (7 stories)** — gates on first tracked trial completion. First trial UNBLOCKS this whole chain.
-- **`5a-2-scite-mcp-oauth-integration`** (~5-6pt; Slab 6.2 candidate) — Scite MCP via OAuth 2.1; reactivate if trial production needs Scenario-A Scite dispatch
-- **`prompt-pack-reduction-internalization`** — substrate evolution; reactivate per first-trial evidence + prompt-pack v4.3 candidate window
-- **`slab-6-1-langsmith-runner-trace-id-real-binding`** (~2-3pt) — runner-side real LangSmith trace_id binding; reactivate when first trial reveals operator-friction on the manual trial_id metadata workaround
-- **Layer-1/Layer-2 cascade collapse** + 4 other Plausible-Token-Substrate-Contamination remediation riders — substrate hardening; reactivate at convenience
-- **6 unbuilt specialists** (Mike, Eli, Enrique, Mira, Sally, Kim) — greenfield via `bmad-create-specialist` generator when operational need materializes
+- New project memory file: `project_first_trial_outcome.md` — records the trial outcome + fix-on-the-fly patches that already landed, so next session has continuity.
+- New project memory file: `project_corpus_path_convention.md` — operator's `course-content/courses/<lesson_slug>/` convention.
+- New feedback memory file: `feedback_corpus_directory_scope.md` — disk-files-only scoping rule for the corpus directory.
+- `_bmad-output/planning-artifacts/deferred-inventory.md` — new entry `production-runner-texas-directive-composition-seam` filed; counts updated to 53 filed.
 
 ---
 
-## Unresolved Issues / Risks
+## What Is Next (broader context)
 
-### 1. Latent ruff debt (~1217 errors repo-wide)
+The session-immediate next action is on `next-session-start-here.md` (story-cycle the directive-composition seam). Broader context:
 
-`ruff check .` reports 1217 errors across the whole repo. These are pre-existing latent debt across multiple slabs; per-touched-file ruff was clean throughout this session (every commit verified). Filed as ambient state. Recommended: schedule a one-shot `ruff --fix` sweep in a future session OR file as a tech-debt cleanup story. Not blocking.
+- **First-content-trial unlocks Epic 15 (Learning & Compound Intelligence) reactivation.** Per Epic 15's reactivation trigger ("at least one tracked trial run completed"), the directive-composition mitigation + a real first-content-trial is the gating sequence for Epic 15 work.
+- **Slab 7 (or new slab) directive-composition story** is a candidate scope. Could fit under existing Slab 6.x substrate-polish OR open a new slab boundary depending on size + party-mode consensus at story-authoring time.
+- **`bmad-create-story` + `bmad-dev-story`** are the recommended workflows. NOT `bmad-quick-dev` — this is real substrate work, not a tactical patch.
+- **Trial-experience polish opportunities** also surfaced: HUD's "No active run" was a real defect that affected operator experience; future HUD polish should consider per-step blocker/warning auto-expand for active trial, gate-decision-card preview pane in HUD, etc. Defer to Slab 6.5 successor or a future trial-experience polish slab.
 
-### 2. Replay regression pack-hash drift
+---
 
-`replay-regression-pack-hash-drift-pre-slab-6.1` deferred-inventory entry. Investigate root cause (likely needs golden refresh after Slab 6.0 substrate landed but before 6.1 rewire). Not blocking first trial; needs to clear before any replay-regression-dependent work.
+## Unresolved Issues or Risks
 
-### 3. LangSmith trace_id synthetic placeholder
+### Pre-closure / Audra-equivalent gaps
 
-Slab 6.1 runner records synthetic `trial_trace_id` rather than fetching real LangSmith trace ID at runner aggregation level. Cost rollup works correctly (per-call LangChain runtime emits real spans + real cost; $0.0325215 was real OpenAI spend); deficit is at the runner-aggregation level. Operator workaround: query LangSmith manually for spans where `extra.metadata.trial_id == <trial_id>`. Filed as deferred entry; reactivate when first trial reveals operator-friction.
+- **Cora dissolved per Slab 2 reconciliation** — `/harmonize` and `/preclosure` slash commands are not available; manual close protocols substitute. Steps 0a/0b of the WRAPUP protocol were skipped accordingly. No L1/L2 findings deferred (none generated; manual-substitute protocol).
+- **Audit-trail gap acknowledged:** without `/harmonize`, this session has no `reports/dev-coherence/<ts>/` directory. Substitute audit trail: this SESSION-HANDOFF.md + `state/config/runs/475df528-.../` (trial bundle preserved) + git log of the wrapup commit.
 
-### 4. Multi-pass envelope Path Z
+### Active gotchas carried forward (still active for next session)
 
-Per Slab 6.1 operator-ratified Path Z disposition: if manifest has repeated specialist nodes (e.g., Irene Pass 1 + Irene Pass 2), only the FIRST contribution lands; later duplicate-specialist nodes are skipped (logged + tested). If first tracked trial uses a multi-pass corpus, this surfaces. Path X (node-scoped contribution identity) and Path Y (per-pass envelope) filed as enhancement candidates.
+1. **Slab 6.1 LangSmith trace_id is synthetic at runner level** (deferred-inventory entry exists; cost rollup works; trial lookup by metadata works).
+2. **Multi-pass envelope Path Z** (operator-ratified Slab 6.1): repeated specialist nodes — only the FIRST contribution lands. Verified at this trial (Texas appears once in `production_envelope.contributions` despite running at both nodes 02 + 03).
+3. **Step 04A Maya intake_callable** UI integration deferred per deferred-inventory entry. Operator anticipates fix-on-the-fly when a future trial reaches Step 04A.
+4. **Replay regression pre-existing pack-hash drift** — separate investigation; not affected by this session.
+5. **Ruff debt** — repo-wide `ruff check .` reports ~1217 errors (latent debt; per-touched-file ruff was clean throughout this session).
 
-### 5. Step 04A production intake_callable
+### NEW gotcha from this session
 
-Per deferred-inventory: `Facade.run_4a()` requires `intake_callable` connecting the 4A loop to Maya's UI. Currently only test stubs exist. May affect first trial if corpus traverses Step 04A; trial may need to use synthetic/scripted intake or skip 4A for first run.
+6. **Production runner directive-composition seam missing** — first-content-trial blocked. See `production-runner-texas-directive-composition-seam` deferred-inventory entry. Mitigation is next session's anchor.
 
-### 6. WRAPUP protocol substitutions
+### Non-blocking observations worth noting
 
-Cora dissolved per Slab 2 reconciliation; Cora-orchestrated steps (0a `/harmonize`; 0b `/preclosure`; 0c SW draft) substituted with manual versions. Per discipline doc + per-story close protocols already executed throughout session.
+- **`scripts/operator/check_keys.py`** doesn't enumerate `LANGSMITH_PROJECT` or `DATABASE_URL`; both are required per playbook §1.3 but the script only checks API-key-shaped values. Cosmetic gap; not blocking.
+- **CONSENSUS_PASSWORD shows `(short)` in check_keys output and `[??]` in `.env`** — placeholder. Texas's Consensus retrieval adapter (per Story 27-2.5) won't function until filled. Not blocking unless future trial dispatches Consensus.
+- **YouTube + Box API + Canva credentials are MISSING/placeholder.** Same shape: only matters if a future trial dispatches those providers.
 
 ---
 
 ## Key Lessons Learned
 
-1. **Bundled implementations dilute attention.** Codex committed 6.3+6.4+6.5 in one bundled commit `162d129`; the bmad-code-review surfaced 11 patches against 6.4 alone, including 4 BINDING rider trace failures. Per-story commits (mandated for remediation cycle 2) exposed the gaps cleanly. Lesson: per-story commits should be the default for any multi-story story group.
-
-2. **Pre-flight false-alarms are expensive.** I produced a false-positive "Slab 6.2 already implemented" finding by misreading working-tree state as Codex's in-flight implementation. Operator halted Codex on the basis of my error. Lesson: verify working-tree timestamp/diff against session anchor before drawing "already exists" conclusions.
-
-3. **A17 (Substrate Designed for Isolation, Composition Assumed) was earned the hard way.** Slab 6.1 strict-AC HALT discovered the substrate didn't admit composition; required new Slab 6.0 substrate work + Path A-prime ratification + envelope+adapter pattern. Lesson: composition exercise MUST happen at the substrate-design phase, not at the consume-substrate phase. Composition Specification §11 trigger detection is the prevention.
-
-4. **Operator architectural intuition matters.** Operator's question "shouldn't prompts become 'second nature' to the agent?" surfaced a legitimate substrate-evolution concern (prompt-pack reduction / internalization). Filed as deferred-inventory; not dismissed. Lesson: operator architectural questions during late-cycle audits often reveal real future work.
-
-5. **WRAPUP discipline accumulates value.** This session covered 94 commits across 4 calendar days without intermediate WRAPUPs. Risk: if context were lost, recovery would be expensive. Lesson: shorter session-WRAPUP cycles preserve audit trail; even a minimal SESSION-HANDOFF + next-session-start-here pair is better than waiting for "complete" closure.
+1. **The migrated runtime's gates are NOT equivalent to legacy v4.2 prompt-pack sections.** Operator-Marcus conversation in the migrated stack happens at gate decision-card review boundaries, not at every prompt section. This is a structural difference that must be reflected in operator-facing docs (the playbook patches landed in this session take a first cut; more substantive prompt-pack-reduction work is deferred).
+2. **Fix-on-the-fly works for tactical patches but NOT substrate work.** Operator's stance is sound for command-bug fixes, missing flags, doc errors, environment-setup gaps. It's NOT appropriate for new modules, runner wiring changes, schema migrations — those should route through `bmad-create-story` + `bmad-dev-story` even mid-trial. The directive-composition gap is the canonical example: tempting to "just write the composer inline," but it's structural runner work and deserves a story.
+3. **Trial bundles are valuable evidence even when content is fixture-stubbed.** The `state/config/runs/475df528-.../` bundle is the audit trail for "production-runner plumbing was verified real on 2026-04-28." Don't delete; this evidence is referenceable for migration-verdict defense + future regression debugging.
+4. **`production_clone_launch_evidence: true` is a real flag with real semantics.** It fires when a live OpenAI call is recorded during the run, even if the call was a token-counter-scale stub through a fixture-bound specialist. The flag is honest about what it tracks (live-call-recorded) but doesn't claim "real content was produced." Operator should not over-read the flag as "trial succeeded content-wise."
+5. **HUD defects can mask real trial state for hours.** The "No active run" header on the HUD wasn't just cosmetic — it actively misled the operator into thinking their `--trial-id` flag wasn't working when in fact the migrated trial was loaded; the page title and label rendering just hadn't been updated to consult `active_trial`. Future HUD polish work should run a "is everything that depends on `active_trial` actually using `active_trial`" audit.
+6. **Operator's stated convention for corpus path was different from playbook draft.** `course-content/courses/<lesson_slug>/` not `course-content/sources/`. Saved to memory; saved to playbook; saved to deferred-inventory cross-reference. Convention is now durable across sessions.
 
 ---
 
 ## Validation Summary
 
-### Quality gate (Step 1)
+| What | How | Result |
+|---|---|---|
+| Phase 1.1–1.3 (venv + deps + keys) | Per playbook commands | PASS — operator confirmed with `[OK]` markers in playbook |
+| Phase 1.4 (Postgres reachable) | dotenv-aware `python -c` after install + bootstrap | PASS — `OK` returned |
+| Phase 2.1 (full migration health check) | `migration_full_health_check.py` | PASS — 213 passed + 1 skipped across 11/11 slices in ~30s |
+| Phase 4.1 (trial start) | `app.marcus.cli trial start --preset production` | PASS — `paused-at-gate G1`; `production_clone_launch_evidence: true` |
+| Phase 4.3 (HUD launch) | After 2 patches: module form + canonical flags | PASS — browser opened on iteration 1 with active-trial header |
+| Step 1 quality gate (ruff) | `.venv/Scripts/ruff.exe check scripts/utilities/run_hud.py` | PASS — All checks passed! |
 
-- `ruff check .` — 1217 errors repo-wide (pre-existing latent debt; per-touched-file ruff was clean throughout session per commit verification). Filed as ambient state; NOT blocking.
-- `git diff --check` — clean
+No automated test runs invoked beyond `migration_full_health_check.py`. No new tests added (no substrate code changes — only patches to a CLI script + docs).
 
-### Sprint-status YAML regression (Step 4a)
+---
 
-- `pytest tests/test_sprint_status_yaml.py -q --tb=short` — 2 passed in 0.33s
+## Course Content Summary
 
-### Operator-witnessed live evidence (today)
-
-- `dual_gate_slab_6_0.py` — 18 passed in 1.59s (composition substrate; no live API)
-- `dual_gate_slab_6_1.py` — 1 passed in 226.91s (live OpenAI + LangSmith; cost realized)
-- `bundle_health_check.py` — 151 passed + 1 skipped across 5/5 slices in 16.6s
-- `migration_full_health_check.py` — 213 passed + 1 skipped across 11/11 slices in 28s
-- `gate5_slab_6_4.py` — 83 passed in 4.52s (Slab 6.4 Gate 5 dual-gate ceremony)
-
-### Per-story verification (across the session)
-
-- Slab 6.0: 17 passed → 18 passed (post-cycle-1 Irene Pass 2 composition smoke addition)
-- Slab 6.1: 49 passed (focused) + 1 live smoke 226.91s
-- Slab 6.2: 13 dependency tests + 50 manifest/schema/compiler + 88 broader
-- Slab 6.3: 13 passed + 1 skipped (single-gate close)
-- Slab 6.4: 83 passed (Gate 5 ceremony) — covers validator-oracle alignment 63 + composition smoke 1 + strict + closed-enum + procedural-rule 19
-- Slab 6.5: 24 passed (single-gate close)
-
-### Cumulative test count this session
-
-Approximately ~500+ unique test executions across all close ceremonies + operator-validation script runs + Codex-side per-story regressions. No FAIL outside of operator-ratified deferred items (replay-regression pack-hash drift; latent ruff debt).
+No course content was created or moved this session. Staging directories (`course-content/staging/tracked/`) unchanged. Tejal APC C1-M1 corpus at `course-content/courses/tejal-APC-C1/` unchanged; remains ready for re-use once directive-composition seam ships.
 
 ---
 
 ## Artifact Update Checklist
 
-Updated this session:
-- [x] `_bmad-output/implementation-artifacts/sprint-status.yaml` — 6 stories flipped to done; last_updated header refreshed to bundle 3/3 closed
-- [x] `_bmad-output/implementation-artifacts/m5-decision.md` — Slab 6.0/6.1 close annotations + migration unqualified-SHIP promotion
-- [x] `_bmad-output/upstream-state.md` — condition #3 RESOLVED 2026-04-27
-- [x] `_bmad-output/planning-artifacts/deferred-inventory.md` — 6 Slab 6.1 close entries + 1 prompt-pack-reduction entry; counter line 51 → 52 filed (5 resolved); Last refreshed line bundle 3/3 closed
-- [x] Slab 6.0 spec, Slab 6.1 spec, Slab 6.2 spec, Slab 6.3 spec, Slab 6.4 spec, Slab 6.5 spec — Dev Agent Record + party-mode green-light + close trace per spec
-- [x] `docs/dev-guide/composition-specification.md` — §3.1, §3.6, §3.7, §10 Decision Log, §12 known limitations updated with Slab 6.1 ratified dispositions + Slab 6.2 manifest-promoted state
-- [x] `docs/dev-guide/specialist-anti-patterns.md` — A17 + P3 entries filed
-- [x] `docs/dev-guide/substrate-inventory-checklist.md` — N1–N12 standing reference
-- [x] `docs/dev-guide/migration-story-governance.json` — Slab 6.0/6.1/6.2/6.3/6.4/6.5 entries + version bump to `2026-04-27-slab6-2-implementation`
-- [x] `docs/dev-guide/sources-of-truth.md` — NEW (Tier 3)
-- [x] `docs/dev-guide/how-to-add-a-specialist.md` — NEW (Tier 3)
-- [x] `docs/parameter-directory.md` — extended with migration runtime parameters section (Tier 3)
-- [x] `docs/dev-guide/langgraph-migration-guide.md` — §"Production Envelope Substrate" + §"Production Runner" augmented
-- [x] `docs/operator/production-trial-playbook.md` — NEW skeleton + prompt-sources reference (Tier 4 skeleton)
-- [x] `docs/operator/validation-scripts.md` — NEW catalog
-- [x] `docs/operator/hud-guide.md` — Slab 6.5 expand/collapse semantics
-- [x] `docs/operator/step-02a-prior-run-defaults.md` — NEW Slab 6.3
-- [x] `docs/dev-guide.md`, `docs/user-guide.md`, `docs/admin-guide.md`, `docs/agent-environment.md` — banner refresh (Tier 2)
-- [x] `README.md` — status line + user-row refresh (Tier 1)
-- [x] `requirements.txt` — Last reconciled date + post-Slab-6 note (Tier 1)
-- [x] `scripts/operator/` — 5 new validation scripts
-- [x] `_bmad-output/implementation-artifacts/slab-6-trial-experience-bundle-governance-discipline.md` — NEW (mid-session)
-- [x] All Slab 6 Codex dispatches (handoff files; ~12 dispatches authored across the session arc)
-- [x] All Slab 6 review records (6.0, 6.1, 6.2, 6.3+6.4+6.5 first-pass, 6.4 second-pass, 6.4 third-pass)
-
-NOT updated (intentional):
-- `next-session-start-here.md` — finalized in Step 7 below; gitignored per repo policy
-- `bmm-workflow-status.yaml` — no significant phase change; last update remains valid
-- `docs/project-context.md` — no architecture change; last update remains valid
-- `docs/structural-walk.md` — no control structure change
-
-### Dev-coherence report
-
-Cora dissolved per Slab 2 reconciliation; no `/harmonize` evidence collected. SESSION-HANDOFF and next-session-start-here serve as the audit trail substitute for this session. Per-Slab close artifacts under `_bmad-output/implementation-artifacts/` provide finer-grained evidence per story.
+- [x] `_bmad-output/planning-artifacts/deferred-inventory.md` — new entry filed; counts updated
+- [x] `docs/operator/production-trial-playbook.md` — 5 patches across §1.4, Phase 3, §3.2, §4.1, §4.3
+- [x] `docs/dev-guide/local-postgres-setup.md` — Windows winget path + cross-platform bootstrap
+- [x] `scripts/utilities/run_hud.py` — 2 defects fixed
+- [x] `next-session-start-here.md` — finalized with mitigation anchor + branch metadata + active gotchas
+- [x] `SESSION-HANDOFF.md` — this file
+- [x] Memory files: `project_first_trial_outcome.md`, `project_corpus_path_convention.md`, `feedback_corpus_directory_scope.md`
+- [ ] `_bmad-output/implementation-artifacts/sprint-status.yaml` — NO CHANGE (no story flips this session)
+- [ ] `_bmad-output/implementation-artifacts/bmm-workflow-status.yaml` — NO CHANGE (no phase transition)
+- [ ] `docs/project-context.md` — NO CHANGE (no architectural shift this session)
+- [ ] `docs/agent-environment.md` — NO CHANGE (no MCP/API/skill changes)
+- [ ] `docs/user-guide.md` / `admin-guide.md` / `dev-guide.md` — NO CHANGE (the local-postgres-setup.md patch is the relevant dev-guide-territory change)
 
 ---
 
-## Session-Start Anchor
+## Audit-Trail References
 
-Prior session: `21a6e5f feat(migration): Story 2a.2 BMAD-CLOSED — Migrate Irene Pass 2 to 9-Node Scaffold`
+- **Trial bundle:** `state/config/runs/475df528-7d75-48a3-be56-82b54a0b7b8b/` (gitignored — local-only audit trail; do NOT delete)
+- **LangSmith trace:** `https://smith.langchain.com/traces/475df528-7d75-48a3-be56-82b54a0b7b8b` (per cost-report.md)
+- **Deferred-inventory entry:** `_bmad-output/planning-artifacts/deferred-inventory.md` §Named-But-Not-Filed Follow-Ons → search `production-runner-texas-directive-composition-seam`
+- **No `/harmonize` report this session** (Cora dissolved per Slab 2 reconciliation; manual close protocol substitutes; this SESSION-HANDOFF + git log of the wrapup commit serve as the substitute audit trail)
 
-This session covers `21a6e5f..2c48602` = 94 commits. Major slabs landed: 2a.3, 2a.4, 2a.5, 2b.1–2b.17, 2c.1–2c.4, 3.1–3.6, 4.1–4.7, 5a.1–5a.5, M2/M3/A15/A16 ceremonies, Slab 6.0, Slab 6.1 (3 cycles), Slab 6.2 (2 cycles), Slab 6 trial-experience bundle (multi-cycle close), operator validation scripts, documentation reset.
+---
 
-**The migration project is now production-credible + unconditionally SHIPPED.** Substrate-polish tail (Slab 6 bundle) is complete. First tracked trial UNBLOCKS the production-operations cycle.
+**This file is the permanent backward-looking record. `next-session-start-here.md` is the forward-looking action trigger for the next session.**

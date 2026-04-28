@@ -844,7 +844,13 @@ def render_html(
         watch_interval_seconds=watch_interval_seconds,
     )
 
-    run_id = rc.get("RUN_ID", "No active run")
+    active_trial = data.get("active_trial")
+    if active_trial is not None:
+        run_id = (
+            f"{active_trial.trial_id[:8]} ({active_trial.status})"
+        )
+    else:
+        run_id = rc.get("RUN_ID", "No active run")
     profile = rc.get("EXPERIENCE_PROFILE", "—")
     source = rc.get("PRIMARY_SOURCE_FILE", "—")
     bundle = data["bundle_path"] or "—"
@@ -1416,6 +1422,11 @@ def main(argv: list[str] | None = None) -> None:
     include_adhoc_panel = not args.no_adhoc_panel
     watch_interval = 30.0 if args.watch is None else args.watch
 
+    def _open_in_browser() -> None:
+        import webbrowser
+
+        webbrowser.open(str(output_path.resolve()))
+
     if args.watch is None:
         _write_snapshot(
             bundle_dir=bundle_dir,
@@ -1426,6 +1437,8 @@ def main(argv: list[str] | None = None) -> None:
             watch_interval_seconds=watch_interval,
         )
         print(f"HUD written to {output_path}")
+        if args.open:
+            _open_in_browser()
     else:
         iteration = 0
         try:
@@ -1440,16 +1453,13 @@ def main(argv: list[str] | None = None) -> None:
                     watch_interval_seconds=watch_interval,
                 )
                 print(f"HUD snapshot {iteration} written to {output_path}")
+                if iteration == 1 and args.open:
+                    _open_in_browser()
                 if args.max_iterations is not None and iteration >= args.max_iterations:
                     break
                 time.sleep(watch_interval)
         except KeyboardInterrupt:
             print("HUD watch stopped")
-
-    if args.open:
-        import webbrowser
-
-        webbrowser.open(str(output_path.resolve()))
 
 
 if __name__ == "__main__":

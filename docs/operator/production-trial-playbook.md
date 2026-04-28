@@ -30,9 +30,7 @@
 .venv\Scripts\activate
 ```
 
-**Expected:** prompt prefix changes to `(.venv)`. If venv doesn't exist, run `python -m venv .venv` then re-activate.
-
-<!-- FIRST-TRIAL-FILL: paste actual prompt before/after activation -->
+**Expected:** prompt prefix changes to `(.venv)`. If venv doesn't exist, run `python -m venv .venv` then re-activate. [OK]
 
 ### 1.2 Verify dependencies installed
 
@@ -41,9 +39,7 @@
 .venv\Scripts\python.exe -c "import langgraph, langchain, pydantic, fastapi; print('OK')"
 ```
 
-**Expected:** `OK` on success. If ImportError, run `.venv\Scripts\pip install -e .` to install per `pyproject.toml`.
-
-<!-- FIRST-TRIAL-FILL: paste actual stdout -->
+**Expected:** `OK` on success. If ImportError, run `.venv\Scripts\pip install -e .` to install per `pyproject.toml`. [OK]
 
 ### 1.3 Verify required environment variables
 
@@ -54,7 +50,27 @@
 
 **Expected:** all REQUIRED keys (per `.env.example`) marked PRESENT; OPTIONAL keys may be absent. Required for production trial: `OPENAI_API_KEY`, `LANGSMITH_API_KEY`, `LANGSMITH_PROJECT`, `DATABASE_URL`.
 
-<!-- FIRST-TRIAL-FILL: paste actual key-status table -->
+--------------------------------------------------
+  OPENAI_API_KEY           present (sk-proj-...oc0A)
+  LANGSMITH_API_KEY        present (lsv2_pt_...2da4)
+  WONDERCRAFT_API_KEY      present (c4637ee3...c7c2)
+  ELEVENLABS_API_KEY       present (sk_c5746...6665)
+  GAMMA_API_KEY            present (sk-gamma...3iwc)
+  KLING_ACCESS_KEY         present (APAhNehH...FBhn)
+  KLING_SECRET_KEY         present (TbpRhNng...4pyE)
+  CANVA_API_KEY            MISSING (or placeholder)
+  QUALTRICS_API_TOKEN      present (edUKOCSc...GfND)
+  NOTION_API_KEY           present (ntn_IO78...TdWQ)
+  BOTPRESS_API_KEY         present (bp_pat_L...Smmo)
+  SCITE_USER_NAME          present (jcph@jef....edu)
+  SCITE_PASSWORD           present (pqh4mne8...*tqu)
+  CONSENSUS_API_KEY        MISSING (or placeholder)
+  CONSENSUS_USER_NAME      present (jcph@jef....edu)
+  CONSENSUS_PASSWORD       present ((short))
+  YOUTUBE_API_KEY          MISSING (or placeholder)
+  BOX_CLIENT_ID            MISSING (or placeholder)
+  BOX_CLIENT_SECRET        MISSING (or placeholder)
+--------------------------------------------------
 
 **If any REQUIRED key is missing:** add to `.env` BEFORE proceeding. Restart shell to pick up new env vars.
 
@@ -62,12 +78,19 @@
 
 **Command:**
 ```
-.venv\Scripts\python.exe -c "import psycopg, os; psycopg.connect(os.environ['DATABASE_URL']); print('OK')"
+.venv\Scripts\python.exe -c "from dotenv import load_dotenv; load_dotenv(); import os, psycopg; psycopg.connect(os.environ['DATABASE_URL']); print('OK')"
 ```
 
-**Expected:** `OK`. If connection refused, see `docs/dev-guide/local-postgres-setup.md`.
+**Expected:** `OK`. If connection times out (nothing listening on `localhost:5432`), Postgres is not installed/running — see [`docs/dev-guide/local-postgres-setup.md`](../dev-guide/local-postgres-setup.md) (Windows winget unattended path is documented there). If connection is refused with an auth error, the role `user` may not exist yet — re-run the bootstrap step in the same setup doc. [OK]
 
-<!-- FIRST-TRIAL-FILL: paste actual stdout/stderr -->
+> **Why `load_dotenv()` is required:** a bare `python -c "..."` subprocess does NOT inherit values from `.env` automatically. Earlier versions of this playbook omitted the loader and surfaced `KeyError: 'DATABASE_URL'` even when the value was correctly present in `.env`. Patched 2026-04-28 during first tracked trial setup.
+
+**First-trial-fill (2026-04-28 — Juanl, machine: course-DEV-IDE-with-AGENTS-hybrid clone, Windows 11 Pro):**
+- Pre-install attempt with bare `python -c` → `KeyError: 'DATABASE_URL'` (env-loading defect; now patched).
+- After dotenv fix → `psycopg.errors.ConnectionTimeout` to `localhost:5432` (Postgres not installed on this clone — clean machine).
+- Resolution: `winget install -e --id PostgreSQL.PostgreSQL.17 --silent --accept-package-agreements --accept-source-agreements --override "--mode unattended --unattendedmodeui none --superpassword postgres --servicename postgresql-x64-17 --servicepassword postgres --serverport 5432 --enable-components server,commandlinetools"` → service `postgresql-x64-17` running, `0.0.0.0:5432` listening.
+- Bootstrap: `PGPASSWORD=postgres "/c/Program Files/PostgreSQL/17/bin/psql.exe" -U postgres -h localhost -d postgres -f scripts/dev/init_postgres.sql` → role `user` + DB `course_dev_ide_migration` + pgcrypto extension created.
+- Re-verify: dotenv-aware command above returned `OK`. [confirmed]
 
 ---
 
@@ -84,7 +107,25 @@
 
 **Expected:** ~213 passed + 1 skipped across 11/11 slices in ~28 seconds. All slices PASS.
 
-<!-- FIRST-TRIAL-FILL: paste full output -->
+========================================================================
+Summary:
+========================================================================
+  [PASS] Slab 6.0 substrate (envelope + adapter + composition): 18 passed in 1.97s
+  [PASS] Slab 6.1 production runner (non-live): 14 passed in 1.88s
+  [PASS] Slab 6.2 manifest dependencies: 13 passed in 1.25s
+  [PASS] Slab 6.3 Step 02A prior-run directives: 13 passed, 1 skipped in 0.86s
+  [PASS] Slab 6.4 Irene Pass 2 authoring template: 82 passed in 2.58s
+  [PASS] Slab 6.5 HUD per-step summaries: 24 passed in 4.24s
+  [PASS] Specialist isolation (all 14): 16 passed in 1.14s
+  [PASS] ProductionEnvelope strict: 8 passed in 0.14s
+  [PASS] ProductionDispatchAdapter: 9 passed in 1.08s
+  [PASS] Manifest compiler real dispatch: 3 passed in 1.15s
+  [PASS] Pipeline manifest lockstep (both invocation forms per AC-6.5-G): both invocation forms exit 0 (2 forms)
+
+Slices: 11 PASS / 0 FAIL of 11 total
+Overall: PASS -- migration substrate healthy
+Started: 2026-04-28T21:03:48.614754+00:00
+Finished: 2026-04-28T21:04:18.472737+00:00
 
 **If any slice FAILS:** STOP. Do NOT proceed to trial. Surface to operator session for diagnosis. Common causes: pre-existing test fixture drift; environment dep version mismatch; transient flake (re-run before declaring fail).
 
@@ -96,8 +137,27 @@
 ```
 
 **Expected:** 18 passed in ~1.5 seconds. PASS.
+========================================================================
+Slab 6.0 dual-gate evidence ceremony (production envelope substrate)
+========================================================================
+Started: 2026-04-28T21:06:15.229727+00:00
 
-<!-- FIRST-TRIAL-FILL: paste actual output -->
+$ python.exe -m pytest tests/composition/ -q --tb=short
+
+..................                                                       [100%]
+18 passed in 1.40s
+
+========================================================================
+Summary (paste-ready):
+========================================================================
+
+- **Date:** 2026-04-28
+- **Command:** `.venv\Scripts\python.exe scripts\operator\dual_gate_slab_6_0.py`
+- **Equivalent direct command:** `pytest tests/composition/ -q --tb=short`
+- **Result:** 18 passed in 1.40s
+- **Overall:** PASS
+- **Operator witness:** Juan Leon (operator session)
+- **Disposition:** PASS -- Slab 6.0 substrate (envelope + adapter + composition discipline) verified end-to-end.
 
 ### 2.3 Slab 6.1 dual-gate live ceremony (OPTIONAL; live API; ~$0.10–$0.30 cost)
 
@@ -114,74 +174,108 @@
 
 ---
 
-## Phase 3 — Bundle preparation
+## Phase 3 — Course corpus preparation (pre-run)
 
-**Goal:** create the corpus bundle that the trial will consume.
+**Goal:** before the run is initialized, decide what this lesson is called and gather every source artifact the run will consume into a single directory. **Nothing is "initialized" at this phase** — no run record, no checkpointer thread, no LangSmith span. This is a filesystem-and-naming exercise. The act of *initialization* happens in Phase 4 when `trial start` fires.
 
 ### 3.1 Choose `lesson_slug`
 
 **Decision:** name for this lesson's content. Convention: kebab-case; descriptive; includes audience + topic. Example: `intro-to-cell-biology-undergrad`.
 
-<!-- FIRST-TRIAL-FILL: actual lesson_slug used + rationale -->
+'tejal-APC-C1'
 
-### 3.2 Prepare source materials
+### 3.2 Assemble corpus directory + populate source files
 
-**Decision:** which source materials feed the lesson? Common sources:
+**Decision:** which source materials feed the lesson? Common shapes:
 - PDFs (textbook chapters; papers)
-- DOCX / pptx (existing slide decks; lecture notes)
+- DOCX / PPTX (existing slide decks; lecture notes)
 - Markdown (existing course content)
+- Images (style exemplars; reference diagrams; screenshots)
 - URL list (web articles; YouTube transcripts)
 
-Place under a directory of your choosing — typical: `course-content/sources/<lesson_slug>/`.
+**Action:** place every file the run should see under a single directory and confirm the path. Convention: `course-content/courses/<lesson_slug>/`.
 
-<!-- FIRST-TRIAL-FILL: corpus directory path + files included -->
+The directory must exist with files in place **before** §4.1 fires; `trial start` validates the input path and reads the file inventory at run-init time.
 
-### 3.3 Bundle initialization
+> **Scope of this step — local files on disk (plus, optionally, a URL list as a single file).** The convention for this project (operator-stated 2026-04-28): preload only what lives on disk under the corpus directory. Everything else fetch-shape — Notion page IDs, Box virtual-dir URLs, Playwright-rendered URLs, credentialed-fetch sources — is declared in the **wrangling directive** that Texas reads at run-time, NOT pre-fetched into the corpus directory.
+>
+> The single accepted exception: a flat URL-list file (e.g., `urls.txt` or `urls.md`) **may** live in the corpus directory if it is more convenient than enumerating the URLs inline in the directive. The URL list is itself just a file on disk; it does not pre-fetch the URL contents.
+>
+> Retrieval-shape sources (scite, Consensus, YouTube, image search, openai_chatgpt-backlog) are likewise not pre-staged here — they are configured conversationally with Marcus mid-run as Tracy emits `RetrievalIntent` envelopes on-demand.
+>
+> Run [`.venv\Scripts\python.exe skills\bmad-agent-texas\scripts\run_wrangler.py --list-providers`](../../skills/bmad-agent-texas/scripts/run_wrangler.py) to see the full provider directory split by shape + status + auth-env-vars.
 
-**Command:**
-```
-<!-- FIRST-TRIAL-FILL: actual bundle init command — needs first-trial discovery; CLI surface TBD -->
-```
+**Why the locator/retrieval boundary is not static-vs-dynamic.** Notion and Box content are static and pre-existing — they're locator-shape because the directive *names* the resource (page ID, file URL). Retrieval-shape is reserved for cases where the operator does not know the set of sources in advance (a citation network query, a research-synthesis pack, a YouTube search) and Texas must *discover* them.
 
-**Expected:** `state/config/runs/<run_id>/` directory created with `run-constants.yaml` containing `lesson_slug` + `run_id` (UUID).
+C:\Users\juanl\Documents\GitHub\course-DEV-IDE-with-AGENTS-hybrid\course-content\courses\tejal-APC-C1
 
-<!-- FIRST-TRIAL-FILL: actual run_id assigned + directory contents -->
+### 3.3 (Optional, repeat-run only) Note prior-run directives that will surface mid-run
 
-### 3.4 (Optional) Pull prior-run defaults via Step 02A (Slab 6.3)
+**Heads-up, not an action.** This step does not fire pre-run; it fires *during* the run at Step 02A.
 
-**If you've run a trial for the same `lesson_slug` before,** Step 02A surfaces prior `operator-directives.md` as named defaults (per `docs/operator/step-02a-prior-run-defaults.md`).
+If you have run a trial for the same `lesson_slug` before, Step 02A (Slab 6.3) will surface that prior run's `operator-directives.md` as named defaults inline during the run. See [`docs/operator/step-02a-prior-run-defaults.md`](step-02a-prior-run-defaults.md) for what that looks like and when to accept / modify / replace.
+
+If this is a first-of-its-name run for this `lesson_slug`, Step 02A will simply prompt you for fresh directives. Either way, no pre-run action is needed here.
 
 <!-- FIRST-TRIAL-FILL: capture prior-run-defaults UI/CLI surface during first repeat-run trial -->
 
 ---
 
-## Phase 4 — Trial launch
+## Phase 4 — Run initialization (trial launch)
 
-**Goal:** start the trial; verify it's running on the production graph.
+**Goal:** initialize the production run. Firing `trial start` is what *creates* the run record, the bundle, the checkpointer thread, and the LangSmith trace — and synchronously begins the first specialist invocations.
+
+**What gets initialized at this step (and ONLY at this step):**
+- `state/config/runs/<trial-id>/` directory with `run-constants.yaml` (`lesson_slug` + `run_id` UUID + frozen pack-version metadata)
+- Postgres checkpointer thread namespace (`run/<trial-id>` by default; see `MARCUS_THREAD_NAMESPACE_PREFIX` in `.env`)
+- LangSmith trace root span (project: per `LANGSMITH_PROJECT` in `.env`)
+- Production graph compile (LangGraph; loads frozen-at-ship pack from `runtime/graphs/v42/`)
+- First specialist invocation begins immediately (no further command needed until the first HIL gate)
+
+**There is no preceding daemon, server, or `init` subcommand.** The Marcus runtime is in-process inside the CLI; this single command brings everything online.
 
 ### 4.1 Launch command
 
-**Command:**
+**Canonical command (template — for any future production run):**
 ```
 .venv\Scripts\python.exe -m app.marcus.cli trial start --preset production --input <corpus-path>
 ```
 
 Replace `<corpus-path>` with the directory from §3.2.
 
-<!-- FIRST-TRIAL-FILL: actual launch command -->
+**Optional flags** (from `trial start --help`):
+- `--operator-id <id>` — override default operator identity (used in audit trail / sanctum write attribution)
+- `--trial-id <uuid>` — pre-assign a trial UUID instead of letting the runtime generate one (rarely needed)
+- `--allow-offline-cost-report` — write a zero-cost deterministic local report when LangSmith env is absent. **Does NOT count as production clone-launch evidence; not appropriate for a tracked production trial.**
+
+**Concrete command for THIS trial (2026-04-28 first tracked trial — Tejal APC C1-M1 corpus):**
+```
+.venv\Scripts\python.exe -m app.marcus.cli trial start --preset production --input course-content/courses/tejal-APC-C1
+```
+
+**Alternative interface — HTTP gate transport:** the Slab 3 FastAPI gate-verdict endpoint (per `app/gates/`) can also drive a trial when `HTTP_GATE_PORT` is set in `.env`. This is **not** an alternative *launcher* — `trial start` still kicks off the run. The HTTP transport is an alternative *gate-verdict submission channel* (replaces `--verdict-file` at §5.C / 5.E / 5.G). For this trial, file-based verdict path is the default and `HTTP_GATE_PORT` should remain unset.
+
+(.venv) C:\Users\juanl\Documents\GitHub\course-DEV-IDE-with-AGENTS-hybrid>.venv\Scripts\python.exe -m app.marcus.cli trial start --preset production --input course-content/courses/tejal-APC-C1
 
 ### 4.2 First-screen output verification
 
 **Expected:** trial registration confirmation; trial_id assignment; production-graph compilation; first specialist invocation begins.
 
-<!-- FIRST-TRIAL-FILL: paste first ~30 lines of trial output -->
+
+{"cost_report_json": "C:\\Users\\juanl\\Documents\\GitHub\\course-DEV-IDE-with-AGENTS-hybrid\\state\\config\\runs\\475df528-7d75-48a3-be56-82b54a0b7b8b\\cost-report.json", "cost_report_markdown": "C:\\Users\\juanl\\Documents\\GitHub\\course-DEV-IDE-with-AGENTS-hybrid\\state\\config\\runs\\475df528-7d75-48a3-be56-82b54a0b7b8b\\cost-report.md", "input": "course-content\\courses\\tejal-APC-C1", "langsmith_trace_status": "measured-from-langsmith", "operator_id": "operator_cli", "preset": "production", "production_clone_launch_evidence": true, "run_registry_path": "C:\\Users\\juanl\\Documents\\GitHub\\course-DEV-IDE-with-AGENTS-hybrid\\state\\config\\runs\\475df528-7d75-48a3-be56-82b54a0b7b8b\\run.json", "status": "paused-at-gate", "transport_kind": "cli", "trial_id": "475df528-7d75-48a3-be56-82b54a0b7b8b"}
 
 ### 4.3 (Optional) Open HUD in second pane
 
 **Command (in separate terminal):**
 ```
-.venv\Scripts\python.exe scripts\utilities\run_hud.py --watch
+.venv\Scripts\python.exe -m scripts.utilities.run_hud --watch --open --trial-id <trial_id>
 ```
+
+Substitute `<trial_id>` with the UUID returned by §4.1 `trial start` (also visible in `state/config/runs/<trial_id>/run.json`).
+
+> **Why module form (`-m`) and not script-path form?** `run_hud.py` does `from scripts.utilities.file_helpers import project_root`. When invoked as a script path (`python scripts\utilities\run_hud.py`), Python puts the *script's* directory on `sys.path` instead of the repo root, so `scripts.utilities.*` can't resolve and you get `ModuleNotFoundError: No module named 'scripts.utilities'`. The script's own docstring already specifies the module form. Patched 2026-04-28 during first tracked trial setup after the path form failed.
+
+> **Why three flags, not just `--watch`?** `--watch` regenerates the HTML on a timer (default 30s) but does NOT open a browser; `--open` opens the snapshot in your default browser; `--trial-id` focuses on your active migrated-runtime trial (without it, the HUD auto-detects the latest *source bundle* under `course-content/staging/tracked/source-bundles/`, which is typically a legacy bundle, not your live trial). All three together is the canonical "live HUD on this trial" invocation. Patched 2026-04-28 during first tracked trial setup after `--watch` alone produced snapshots with no browser open and on the wrong bundle.
 
 **Expected:** browser opens to live HUD; per-step expandable summaries (Slab 6.5) visible; current step auto-expanded.
 
@@ -434,7 +528,7 @@ When Epic 15 (Learning & Compound Intelligence) lands, this trial becomes input 
 - Validation scripts catalog: `.venv\Scripts\python.exe scripts\operator\<script-name>.py` (see `docs/operator/validation-scripts.md`)
 
 ### Key paths
-- Corpus: `course-content/sources/<lesson_slug>/` (or operator-chosen)
+- Corpus: `course-content/courses/<lesson_slug>/`
 - Run artifacts: `state/config/runs/<trial-id>/`
 - Pipeline manifest: `state/config/pipeline-manifest.yaml`
 - Frozen graph: `runtime/graphs/v42/`

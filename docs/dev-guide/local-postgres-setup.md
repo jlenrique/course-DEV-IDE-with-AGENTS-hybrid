@@ -8,21 +8,45 @@ No Docker or container runtime is required.
 
 Install Postgres 15+ using your platform-native installer:
 
-- Windows: EDB installer
+- Windows: EDB installer (interactive) — or `winget` unattended (recommended; see below)
 - macOS: `brew install postgresql@15`
 - Linux: distro package for Postgres 15+
 
 Ensure `psql` is on `PATH`.
 
+### Windows — unattended install via winget (recommended for first-trial setup)
+
+Verified path on a clean Windows 11 machine (2026-04-28, first tracked trial setup):
+
+```powershell
+winget install -e --id PostgreSQL.PostgreSQL.17 --silent --accept-package-agreements --accept-source-agreements --override "--mode unattended --unattendedmodeui none --superpassword postgres --servicename postgresql-x64-17 --servicepassword postgres --serverport 5432 --enable-components server,commandlinetools"
+```
+
+Notes:
+- Sets the `postgres` superuser password to `postgres` for local development. Override `--superpassword` if you prefer a different value, but remember to use that password in the bootstrap step below (the `user:pass` role created by `init_postgres.sql` is unaffected).
+- Installs PostgreSQL 17 (within "15+" range). For 18, swap the package id to `PostgreSQL.PostgreSQL.18`.
+- After install, the Windows service `postgresql-x64-17` auto-starts and binds `0.0.0.0:5432`. Verify with:
+  ```powershell
+  Get-Service -Name 'postgresql*'
+  netstat -an | Select-String ":5432.*LISTENING"
+  ```
+- `psql.exe` lands at `C:\Program Files\PostgreSQL\17\bin\psql.exe`. Add `C:\Program Files\PostgreSQL\17\bin` to PATH for shorter invocation, or call the full path inline (the bootstrap example below uses the full path so it works without a PATH change).
+
 ## Bootstrap
 
 1. Ensure `.env` contains:
    - `DATABASE_URL=postgresql://user:pass@localhost:5432/course_dev_ide_migration`
-2. Run:
+2. Run as the `postgres` superuser (the `user` role created by the script does not exist yet):
 
-```bash
-psql "$DATABASE_URL" -f scripts/dev/init_postgres.sql
-```
+   **Linux / macOS:**
+   ```bash
+   PGPASSWORD=postgres psql -U postgres -h localhost -d postgres -f scripts/dev/init_postgres.sql
+   ```
+
+   **Windows (cmd / PowerShell with `psql` not on PATH):**
+   ```bash
+   PGPASSWORD=postgres "/c/Program Files/PostgreSQL/17/bin/psql.exe" -U postgres -h localhost -d postgres -f scripts/dev/init_postgres.sql
+   ```
 
 The script is idempotent and safe to run repeatedly.
 
@@ -33,6 +57,8 @@ psql "$DATABASE_URL" -c "SELECT version();"
 ```
 
 Expected: Postgres version is 15 or higher.
+
+For Python-side verification (matches what the production-trial-playbook §1.4 runs), see [`docs/operator/production-trial-playbook.md`](../operator/production-trial-playbook.md) §1.4 — note that the check loads `DATABASE_URL` from `.env` via `python-dotenv` because a bare `python -c` does **not** auto-load `.env`.
 
 ## Checkpoint retention + cleanup (Story 1.5)
 
