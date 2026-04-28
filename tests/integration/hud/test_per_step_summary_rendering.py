@@ -48,7 +48,7 @@ def test_current_and_blocker_steps_open_by_default(tmp_path: Path) -> None:
 
     assert (
         'id="step-summary-04" class="step-content-summary" '
-        'data-step-summary-id="step-summary-04" open'
+        'data-step-summary-id="step-summary-04" data-auto-open="urgent" open'
     ) in html
     assert (
         'id="step-summary-02A" class="step-content-summary" '
@@ -63,13 +63,17 @@ def test_session_storage_uses_stable_step_summary_ids(tmp_path: Path) -> None:
     assert "data-step-summary-id" in html
     assert "var key = el.getAttribute('data-step-summary-id') || el.id || String(i);" in html
     assert "sessionStorage.setItem('hud_details'" in html
+    assert "try {" in html
+    assert "Ignoring corrupt hud_details sessionStorage" in html
+    assert "data-auto-open') === 'urgent'" in html
 
 
 def test_html_escapes_windows_paths_in_summary(tmp_path: Path) -> None:
     b = _bundle(tmp_path)
-    (b / "source-quality-evidence.md").write_text("C:\\temp\\a&b\n", encoding="utf-8")
+    (b / "preflight-results.json").write_text('{"C:\\\\temp\\\\a&b":"value"}', encoding="utf-8")
     data = hud.collect_hud_data(bundle_dir=b)
     html = hud.render_html(data)
 
-    assert "a&b" not in html
+    assert "C:\\temp\\a&b" not in html
+    assert "C:\\temp\\a&amp;b" in html
     assert "operator-directives.md" in html

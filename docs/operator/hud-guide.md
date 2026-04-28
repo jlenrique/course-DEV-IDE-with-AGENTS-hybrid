@@ -28,7 +28,7 @@ Watch mode rewrites `reports/run-hud.html` every interval. The browser reload ti
 
 Each Production Run step includes an expandable summary. The summary is derived from existing bundle artifacts, keyed by the manifest step ID and label. It shows the locked artifact source, captured fields when the source has structured metadata, and the artifact freshness timestamp. If the HUD cannot find a known artifact for a step, it says `no locked artifact yet`.
 
-The current step and any step with warnings or blockers auto-expand. Other steps stay collapsed. Expand/collapse state persists through browser refresh via `sessionStorage`; the state key is based on each stable step summary ID. You can clear browser session storage to reset expansion state.
+The current step and any step with warnings or blockers auto-expand. Saved collapse state is ignored for current, warning, and blocker steps so urgent states are visible after every refresh. You can manually collapse an urgent step after seeing it, but the next render opens it again while the status remains urgent. Other steps preserve expand/collapse state through browser refresh via `sessionStorage`; the state key is based on each stable step summary ID. Clearing browser session storage resets all non-urgent expansion state to defaults.
 
 `--watch` remains pull-based: the CLI rewrites `reports/run-hud.html` on the requested interval, and the browser reloads the rewritten file. There is no push event bus.
 
