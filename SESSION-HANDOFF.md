@@ -184,4 +184,37 @@ No course content was created or moved this session. Staging directories (`cours
 
 ---
 
+---
+
+## Post-Wrapup Scope Correction (2026-04-28 evening, after wrapup commit `e6b1967`)
+
+After the WRAPUP commit landed, the operator asked the BIG QUESTION: *"Why didn't we use the legacy v4.2 prompts 01/02/02A/03 in their proven sequence?"* — and pasted the full legacy prompt prose for those four sections.
+
+That review exposed that the deferred-inventory entry I filed (`production-runner-texas-directive-composition-seam`) **understated the scope of the gap**. The legacy prompts ARE the missing wiring template — every one of Prompts 01/02/02A/03 encodes operator-Marcus conversation that the migrated runtime currently skips. Three layers are missing:
+
+1. **Early-gate HIL pause discipline** — manifest declares G0/G0A/G0B as gates but production runner only honors terminal gates (G1/G2C/G3/G4)
+2. **Conversational composition surface** — no Marcus-runtime interface to author `source-authority-map.md` / `operator-directives.md` / etc. at gate-paused state; decision cards today only carry binary `verb: approve` verdicts
+3. **Inter-gate composition logic** — once §2 + §2A artifacts exist, no code reads them and emits `directive.yaml` for Texas; legacy Marcus-the-persona did this manually. Same shape applies to every other inter-gate composition step the legacy prompt pack defines
+
+**Operator-stated correction (post-wrapup):** *"Slab 7 should involve not only preproduction but ALL the 'skipper' intermediate activity between gates. Otherwise we'll get the same 'surprises' as we move from one Gate to another in the next trial run."*
+
+### Corrected mitigation framing
+
+- Slab 7 **renamed** from "Pre-Production Conversational Orchestration" → **"Inter-Gate Conversational Orchestration"** to cover ALL gate transitions (G0→G0A→G0B→G1→G1A→G2C→G3→G4), not just pre-production.
+- Legacy v4.2 prompt pack at `docs/workflow/production-prompt-pack-v4.2-narrated-lesson-with-video-or-animation.md` is the canonical inventory of what conversational orchestration was present pre-migration. Slab 7 PRD authoring should walk that pack section-by-section to scope the full set of stories.
+- **Recommended BMAD workflow corrected:** `bmad-create-prd` (or `bmad-party-mode` for architectural alignment) FIRST, BEFORE `bmad-create-story`. Three architectural questions to settle in party-mode: (a) where operator-Marcus conversation happens at non-terminal gates (CLI / Maya UI / IDE-chat-wrapped-runner); (b) what's truly conversational vs auto-derivable from corpus + defaults; (c) how `--verdict-file` evolves to carry operator-authored prose, not just binary verdicts.
+- The originally-filed narrower "directive composition module" becomes ONE downstream story under Slab 7, not the whole answer.
+
+### Artifact corrections landed in this post-wrapup pass
+
+- `_bmad-output/planning-artifacts/deferred-inventory.md` — entry renamed `slab-7-inter-gate-conversational-orchestration`; supersedes-banner notes the original narrower framing; three-layer diagnosis; PRD-first workflow recommendation; legacy prompt-pack pointer.
+- `next-session-start-here.md` — Immediate-next-action rewritten: open Slab 7 PRD, party-mode architectural alignment FIRST, then epics/stories, then per-story dev cycles.
+- This SESSION-HANDOFF.md — added this section so the permanent record reflects the corrected scope.
+
+### Lesson learned (added to the §Key Lessons set above in spirit)
+
+7. **First-trial diagnosis can underestimate scope when only one symptom is examined.** The Texas fixture-stub was the loudest symptom but not the whole disease; the real disease is systemic loss of inter-gate conversational orchestration. Any future "first surprising symptom in a trial run" should be re-examined for "what other manifestations of the same root cause are downstream?" before scoping mitigation. The legacy prompt pack is the single best document to consult against runtime behavior to find the full set.
+
+---
+
 **This file is the permanent backward-looking record. `next-session-start-here.md` is the forward-looking action trigger for the next session.**
