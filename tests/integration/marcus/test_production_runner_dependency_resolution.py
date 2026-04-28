@@ -189,6 +189,38 @@ def test_fallback_on_missing_dependencies_field(tmp_path: Path, monkeypatch) -> 
     assert adapter.calls[1]["dependency_map"] == {"upstream_output": "texas"}
 
 
+def test_manifest_dependencies_accept_visible_alias_specialist_ids(
+    tmp_path: Path,
+    monkeypatch,
+) -> None:
+    _enable_live_path(monkeypatch)
+    adapter = _install_fake_adapter(monkeypatch)
+    manifest_path = _write_manifest(
+        tmp_path,
+        [
+            {"id": "07B", "specialist_id": "quinn-r", "dependencies": {}},
+            {
+                "id": "07E",
+                "specialist_id": "kira",
+                "dependencies": {"upstream_output": "quinn-r"},
+            },
+        ],
+    )
+
+    production_runner.run_production_trial(
+        CORPUS,
+        "production",
+        "operator_test",
+        trial_id=TRIAL_ID,
+        runs_root=tmp_path / "runs",
+        manifest_path=manifest_path,
+        max_specialist_calls=2,
+    )
+
+    assert adapter.calls[0]["specialist_id"] == "quinn_r"
+    assert adapter.calls[1]["dependency_map"] == {"upstream_output": "quinn_r"}
+
+
 def test_missing_upstream_dependency_fails_loud(tmp_path: Path, monkeypatch) -> None:
     _enable_live_path(monkeypatch)
     _install_fake_adapter(monkeypatch)

@@ -71,3 +71,29 @@ def test_schema_rejects_circular_dependencies_at_compile_time() -> None:
 
     with pytest.raises(CompileError, match="circular dependency"):
         compile_run_graph(manifest, dispatch_registry={})
+
+
+def test_schema_rejects_alias_normalized_circular_dependencies_at_compile_time() -> None:
+    manifest = _manifest(
+        [
+            NodeSpec(
+                id="01",
+                specialist_id="quinn-r",
+                dependencies={"upstream_output": "kira"},
+            ),
+            NodeSpec(
+                id="02",
+                specialist_id="kira",
+                dependencies={"upstream_output": "quinn_r"},
+            ),
+        ]
+    )
+
+    with pytest.raises(CompileError, match="kira -> quinn_r -> kira"):
+        compile_run_graph(
+            manifest,
+            dispatch_registry={
+                "quinn_r": "app.specialists.quinn_r.graph:build_quinn_r_graph",
+                "kira": "app.specialists.kira.graph:build_kira_graph",
+            },
+        )

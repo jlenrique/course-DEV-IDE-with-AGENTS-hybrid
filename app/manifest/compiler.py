@@ -291,9 +291,13 @@ def _validate_decision_card_schemas(edges: list[EdgeSpec]) -> None:
 def _validate_dependency_cycles(nodes: list[NodeSpec]) -> None:
     graph: dict[str, set[str]] = {}
     for node in nodes:
-        if not node.specialist_id or not node.dependencies:
+        specialist_id = _canonical_specialist_id(node.specialist_id)
+        if not specialist_id or not node.dependencies:
             continue
-        graph.setdefault(node.specialist_id, set()).update(node.dependencies.values())
+        graph.setdefault(specialist_id, set()).update(
+            _canonical_specialist_id(upstream_id) or upstream_id
+            for upstream_id in node.dependencies.values()
+        )
 
     visiting: set[str] = set()
     visited: set[str] = set()
@@ -301,7 +305,7 @@ def _validate_dependency_cycles(nodes: list[NodeSpec]) -> None:
     def visit(specialist_id: str, path: list[str]) -> None:
         if specialist_id in visiting:
             cycle_start = path.index(specialist_id)
-            cycle = [*path[cycle_start:], specialist_id]
+            cycle = path[cycle_start:]
             raise CompileError(
                 "circular dependency declared in manifest dependencies: "
                 + " -> ".join(cycle)

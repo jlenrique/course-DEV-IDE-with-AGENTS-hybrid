@@ -18,7 +18,11 @@ from app.gates.resume_api import (
     register_decision_card,
     resume_from_verdict,
 )
-from app.manifest.compiler import PRODUCTION_GATE_IDS, compile_run_graph
+from app.manifest.compiler import (
+    PRODUCTION_GATE_IDS,
+    _canonical_specialist_id,
+    compile_run_graph,
+)
 from app.manifest.loader import load as load_manifest
 from app.manifest.schema import NodeSpec
 from app.marcus.orchestrator.dispatch_adapter import ProductionDispatchAdapter
@@ -240,6 +244,29 @@ def _default_dependency_map_for(
     return {"upstream_output": prior_ids[-1]}
 
 
+def _canonical_dependency_specialist_id(specialist_id: str) -> str:
+    return _canonical_specialist_id(specialist_id) or specialist_id
+
+
+def _normalize_dependency_map(
+    *,
+    dependency_map: dict[str, str],
+    production_envelope: ProductionEnvelope,
+) -> dict[str, str]:
+    normalized: dict[str, str] = {}
+    for downstream_input_key, upstream_specialist_id in dependency_map.items():
+        if production_envelope.get_contribution(upstream_specialist_id) is not None:
+            normalized[downstream_input_key] = upstream_specialist_id
+            continue
+        canonical = _canonical_dependency_specialist_id(upstream_specialist_id)
+        normalized[downstream_input_key] = (
+            canonical
+            if production_envelope.get_contribution(canonical) is not None
+            else upstream_specialist_id
+        )
+    return normalized
+
+
 def _ensure_upstream_contributions_present(
     *,
     dependency_map: dict[str, str],
@@ -268,6 +295,10 @@ def _resolve_dependency_map(
             specialist_id=specialist_id,
             production_envelope=production_envelope,
         )
+    dependency_map = _normalize_dependency_map(
+        dependency_map=dependency_map,
+        production_envelope=production_envelope,
+    )
     _ensure_upstream_contributions_present(
         dependency_map=dependency_map,
         production_envelope=production_envelope,
