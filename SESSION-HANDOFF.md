@@ -205,11 +205,17 @@ That review exposed that the deferred-inventory entry I filed (`production-runne
 - **Recommended BMAD workflow corrected:** `bmad-create-prd` (or `bmad-party-mode` for architectural alignment) FIRST, BEFORE `bmad-create-story`. Three architectural questions to settle in party-mode: (a) where operator-Marcus conversation happens at non-terminal gates (CLI / Maya UI / IDE-chat-wrapped-runner); (b) what's truly conversational vs auto-derivable from corpus + defaults; (c) how `--verdict-file` evolves to carry operator-authored prose, not just binary verdicts.
 - The originally-filed narrower "directive composition module" becomes ONE downstream story under Slab 7, not the whole answer.
 
+### Mandatory first deliverable of Slab 7 — Legacy↔Migrated Mapping Checklist
+
+**Operator directive (2026-04-28 evening, captured verbatim, six-exclamation emphasis):** *"the first step in our enhanced PRD/Slab/epic will be to create a checklist in which every single step and corresponding outcome in the production prompt pack v4.2 workflow is mapped to a corresponding step and corresponding outcome in the LangGraph replatformed app."*
+
+This checklist IS the gap-inventory for Slab 7. Walk `docs/workflow/production-prompt-pack-v4.2-narrated-lesson-with-video-or-animation.md` section-by-section; for each legacy step record its expected outcome (artifact / state transition / operator-confirmation / specialist contribution); identify its migrated counterpart (manifest node, specialist, `_act` body, gate, runtime artifact); mark status ✅ FULLY MIGRATED / ⚠️ PARTIALLY MIGRATED (specify dropped sub-outcomes) / ❌ NOT MIGRATED. Output: `_bmad-output/planning-artifacts/slab-7-legacy-migrated-mapping-checklist.md` (or canonical path agreed at PRD scoping). **PRD prose, party-mode architectural debate, and per-story scope cuts are all DOWNSTREAM of this checklist. Do not invoke `bmad-create-prd` until the checklist exists.**
+
 ### Artifact corrections landed in this post-wrapup pass
 
-- `_bmad-output/planning-artifacts/deferred-inventory.md` — entry renamed `slab-7-inter-gate-conversational-orchestration`; supersedes-banner notes the original narrower framing; three-layer diagnosis; PRD-first workflow recommendation; legacy prompt-pack pointer.
-- `next-session-start-here.md` — Immediate-next-action rewritten: open Slab 7 PRD, party-mode architectural alignment FIRST, then epics/stories, then per-story dev cycles.
-- This SESSION-HANDOFF.md — added this section so the permanent record reflects the corrected scope.
+- `_bmad-output/planning-artifacts/deferred-inventory.md` — entry renamed `slab-7-inter-gate-conversational-orchestration`; supersedes-banner notes the original narrower framing; three-layer diagnosis; mapping-checklist mandatory-first-deliverable directive; PRD-second workflow recommendation; legacy prompt-pack pointer.
+- `next-session-start-here.md` — Immediate-next-action rewritten: open Slab 7 PRD, mapping checklist FIRST as anchor artifact, then party-mode architectural alignment, then epics/stories, then per-story dev cycles.
+- This SESSION-HANDOFF.md — added this section so the permanent record reflects the corrected scope + the mapping-checklist directive.
 
 ### Lesson learned (added to the §Key Lessons set above in spirit)
 
