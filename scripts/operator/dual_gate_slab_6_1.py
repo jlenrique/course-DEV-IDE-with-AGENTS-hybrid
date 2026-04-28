@@ -66,15 +66,25 @@ def main() -> int:
     print(f"$ {PYTHON.name} -m pytest tests/live/test_production_trial_smoke_with_gate.py -m live -q --tb=short")
     print()
 
-    proc = subprocess.run(
-        [str(PYTHON), "-m", "pytest", "tests/live/test_production_trial_smoke_with_gate.py", "-m", "live", "-q", "--tb=short"],
-        cwd=REPO_ROOT, capture_output=True, text=True, env=os.environ,
-    )
-    output = proc.stdout
-    print(output)
-    if proc.stderr.strip():
-        print("--- stderr ---")
-        print(proc.stderr)
+    # Stream pytest output to console so operator sees progress in real time
+    # (live tests can take 30s-5min depending on OpenAI response + LangSmith trace upload).
+    # Buffered capture would hide all progress dots and look like a hang.
+    cmd = [str(PYTHON), "-m", "pytest", "tests/live/test_production_trial_smoke_with_gate.py", "-m", "live", "-v", "--tb=short"]
+    proc = subprocess.Popen(cmd, cwd=REPO_ROOT, env=os.environ, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True, bufsize=1)
+    output_lines: list[str] = []
+    assert proc.stdout is not None
+    for line in proc.stdout:
+        print(line, end="")
+        output_lines.append(line)
+    returncode = proc.wait()
+    output = "".join(output_lines)
+    # Manufacture a proc-like result for downstream code
+    class _ProcResult:
+        def __init__(self, returncode: int, stdout: str) -> None:
+            self.returncode = returncode
+            self.stdout = stdout
+            self.stderr = ""
+    proc = _ProcResult(returncode, output)
 
     finished = datetime.now(timezone.utc).isoformat()
     last_line = output.strip().splitlines()[-1] if output.strip() else "(no output)"
