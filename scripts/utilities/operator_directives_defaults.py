@@ -3,6 +3,8 @@
 from __future__ import annotations
 
 import importlib.util
+import os
+import re
 from contextlib import suppress
 from dataclasses import dataclass
 from datetime import UTC, datetime
@@ -20,6 +22,12 @@ if _VALIDATOR_SPEC is None or _VALIDATOR_SPEC.loader is None:  # pragma: no cove
 _VALIDATOR_MODULE = importlib.util.module_from_spec(_VALIDATOR_SPEC)
 _VALIDATOR_SPEC.loader.exec_module(_VALIDATOR_MODULE)
 validate_operator_directives = _VALIDATOR_MODULE.validate_operator_directives
+
+_DIRECTIVE_SECTION_NAMES = (
+    "focus_directives",
+    "exclusion_directives",
+    "special_treatment_directives",
+)
 
 
 class DirectiveDefaultSource(StrEnum):
@@ -39,15 +47,40 @@ class OperatorDirectivesDefault:
     bundle_path: Path
     directives_path: Path
     modified_at_utc: datetime
+    modified_at_ns: int
     content: str
 
 
-def _valid_directives(path: Path) -> bool:
+class InvalidCurrentBundleDirectivesError(ValueError):
+    """Current bundle directives exist but fail validation."""
+
+
+class InvalidNewDirectivesError(ValueError):
+    """New directives content failed validation before replacement."""
+
+
+def _validation_failure_message(result: dict) -> str:
+    issues = result.get("issues") or []
+    issue_text = "; ".join(str(issue) for issue in issues)
+    reason = str(result.get("reason") or "validation failed")
+    if issue_text:
+        return f"{reason}: {issue_text}"
+    return reason
+
+
+def _validate_directives(path: Path) -> dict | None:
     try:
         result = validate_operator_directives(path)
-    except Exception:
-        return False
-    return bool(result.get("valid") is True)
+    except (FileNotFoundError, PermissionError, OSError):
+        return None
+    except Exception as exc:
+        return {"valid": False, "reason": str(exc), "issues": [str(exc)]}
+    return result
+
+
+def _valid_directives(path: Path) -> bool:
+    result = _validate_directives(path)
+    return bool(result and result.get("valid") is True)
 
 
 def _load_bundle_constants(bundle: Path):
@@ -61,12 +94,21 @@ def _default_from_bundle(
     bundle: Path,
     *,
     source: DirectiveDefaultSource,
+    require_tracked: bool = False,
 ) -> OperatorDirectivesDefault | None:
     constants = _load_bundle_constants(bundle)
     directives_path = bundle / "operator-directives.md"
-    if constants is None or not _valid_directives(directives_path):
+    if constants is None:
         return None
-    stat = directives_path.stat()
+    if require_tracked and constants.execution_mode != "tracked/default":
+        return None
+    if not _valid_directives(directives_path):
+        return None
+    try:
+        stat = directives_path.stat()
+        content = directives_path.read_text(encoding="utf-8")
+    except (FileNotFoundError, PermissionError, OSError):
+        return None
     return OperatorDirectivesDefault(
         source=source,
         run_id=constants.run_id,
@@ -74,19 +116,109 @@ def _default_from_bundle(
         bundle_path=bundle.resolve(),
         directives_path=directives_path.resolve(),
         modified_at_utc=datetime.fromtimestamp(stat.st_mtime, tz=UTC),
-        content=directives_path.read_text(encoding="utf-8"),
+        modified_at_ns=stat.st_mtime_ns,
+        content=content,
     )
 
 
 def _candidate_sort_key(default: OperatorDirectivesDefault) -> tuple[int, str]:
-    mtime_ns = default.directives_path.stat().st_mtime_ns
-    return mtime_ns, default.run_id
+    return default.modified_at_ns, default.run_id
+
+
+def _is_relative_to(child: Path, parent: Path) -> bool:
+    try:
+        child.relative_to(parent)
+    except ValueError:
+        return False
+    return True
+
+
+def _current_bundle_validation_result(bundle: Path) -> dict | None:
+    directives_path = bundle / "operator-directives.md"
+    try:
+        exists = directives_path.exists()
+    except OSError:
+        return None
+    if not exists:
+        return None
+    return _validate_directives(directives_path)
+
+
+def _extract_directive_sections(content: str) -> str:
+    section_pattern = re.compile(
+        rf"^({'|'.join(re.escape(name) for name in _DIRECTIVE_SECTION_NAMES)}):\s*$"
+    )
+    lines = content.splitlines()
+    extracted: list[str] = []
+    seen: set[str] = set()
+    index = 0
+    while index < len(lines):
+        match = section_pattern.match(lines[index])
+        if match is None:
+            index += 1
+            continue
+        section_name = match.group(1)
+        seen.add(section_name)
+        extracted.append(lines[index])
+        index += 1
+        while index < len(lines):
+            line = lines[index]
+            if line and not line[0].isspace() and re.match(r"^[A-Za-z_][A-Za-z0-9_]*:", line):
+                break
+            extracted.append(line)
+            index += 1
+    missing = [name for name in _DIRECTIVE_SECTION_NAMES if name not in seen]
+    if missing:
+        raise InvalidNewDirectivesError(
+            "accepted prior directives missing directive sections: " + ", ".join(missing)
+        )
+    return "\n".join(extracted).rstrip()
+
+
+def _current_run_accept_content(bundle_root: Path, default: OperatorDirectivesDefault) -> str:
+    constants = load_run_constants(bundle_root, verify_paths_exist=False)
+    accepted_at = datetime.now(tz=UTC).replace(microsecond=0).isoformat().replace("+00:00", "Z")
+    directive_sections = _extract_directive_sections(default.content)
+    return "\n".join(
+        [
+            f"run_id: {constants.run_id}",
+            f"timestamp: {accepted_at}",
+            f"poll_started_utc: {accepted_at}",
+            f"reply_eligible_utc: {accepted_at}",
+            f"poll_close_utc: {accepted_at}",
+            "poll_status: submitted",
+            "operator: prior-run-default-accept",
+            "source_attribution:",
+            f"  prior_run_id: {default.run_id}",
+            f"  prior_bundle_path: {default.bundle_path.as_posix()}",
+            f"  accepted_at: {accepted_at}",
+            directive_sections,
+            "",
+        ]
+    )
+
+
+def _write_validated(target: Path, content: str) -> Path:
+    target.parent.mkdir(parents=True, exist_ok=True)
+    temp = target.with_name(f".{target.name}.tmp.{os.getpid()}")
+    try:
+        temp.write_text(content.rstrip() + "\n", encoding="utf-8")
+        result = validate_operator_directives(temp)
+        if not result.get("valid"):
+            raise InvalidNewDirectivesError(
+                "new operator directives failed validation at "
+                f"{temp}: {_validation_failure_message(result)}"
+            )
+        os.replace(temp, target)
+    finally:
+        with suppress(OSError):
+            temp.unlink()
+    return target
 
 
 def discover_step_02a_directives_default(
     bundle_root: Path,
-    *,
-    search_root: Path | None = None,
+    lesson_slug: str,
 ) -> OperatorDirectivesDefault | None:
     """Return current-run directives or latest valid same-lesson prior default.
 
@@ -97,15 +229,22 @@ def discover_step_02a_directives_default(
     """
 
     bundle = Path(bundle_root).resolve()
+    current_validation = _current_bundle_validation_result(bundle)
+    if current_validation is not None and not current_validation.get("valid"):
+        failure = _validation_failure_message(current_validation)
+        raise InvalidCurrentBundleDirectivesError(
+            f"invalid current bundle operator directives at "
+            f"{bundle / 'operator-directives.md'}: {failure}"
+        )
     current = _default_from_bundle(bundle, source=DirectiveDefaultSource.CURRENT_RUN)
-    if current is not None:
+    if current is not None and current.lesson_slug == lesson_slug:
         return current
 
     current_constants = _load_bundle_constants(bundle)
     if current_constants is None:
         return None
 
-    root = Path(search_root).resolve() if search_root else bundle.parent
+    root = bundle.parent.resolve()
     if not root.is_dir():
         return None
 
@@ -117,11 +256,14 @@ def discover_step_02a_directives_default(
             continue
         if resolved_candidate == bundle or not candidate_bundle.is_dir():
             continue
+        if not _is_relative_to(resolved_candidate, root):
+            continue
         candidate = _default_from_bundle(
             resolved_candidate,
             source=DirectiveDefaultSource.PRIOR_RUN,
+            require_tracked=True,
         )
-        if candidate is None or candidate.lesson_slug != current_constants.lesson_slug:
+        if candidate is None or candidate.lesson_slug != lesson_slug:
             continue
         candidates.append(candidate)
 
@@ -179,7 +321,11 @@ def write_operator_directives_from_choice(
     if normalized_choice == "accept":
         if default is None:
             raise ValueError("accept requires a discovered default")
-        content = default.content
+        content = (
+            _current_run_accept_content(Path(bundle_root), default)
+            if default.source == DirectiveDefaultSource.PRIOR_RUN
+            else default.content
+        )
     elif normalized_choice == "modify":
         if modified_content is None:
             raise ValueError("modify requires modified_content")
@@ -192,11 +338,4 @@ def write_operator_directives_from_choice(
         raise ValueError("choice must be one of: accept, modify, replace")
 
     target = Path(bundle_root) / "operator-directives.md"
-    target.write_text(content.rstrip() + "\n", encoding="utf-8")
-    result = validate_operator_directives(target)
-    if not result.get("valid"):
-        with suppress(OSError):
-            target.unlink()
-        issues = "; ".join(str(issue) for issue in result.get("issues", []))
-        raise ValueError(f"written operator directives failed validation: {issues}")
-    return target
+    return _write_validated(target, content)

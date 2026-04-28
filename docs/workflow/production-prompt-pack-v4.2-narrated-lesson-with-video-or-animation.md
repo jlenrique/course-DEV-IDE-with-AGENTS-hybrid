@@ -171,7 +171,7 @@ Governance rules:
 When resuming a run that already has `operator-directives.md`, Marcus may present the existing directives for re-confirmation rather than re-polling from scratch.
 
 Prior-run defaults policy:
-- Before polling from scratch, Marcus checks for named defaults using `scripts.utilities.operator_directives_defaults.discover_step_02a_directives_default(bundle_root=Path("[BUNDLE_PATH]"))`.
+- Before polling from scratch, Marcus checks for named defaults using `scripts.utilities.operator_directives_defaults.discover_step_02a_directives_default(bundle_root=Path("[BUNDLE_PATH]"), lesson_slug="[LESSON_SLUG]")`.
 - Current-bundle `operator-directives.md` remains first priority and must be presented for reconfirmation before older runs are considered.
 - If no current file exists, the helper scans sibling tracked source bundles for the latest valid `operator-directives.md` with the same `lesson_slug`, excluding the current bundle.
 - If a prior default is found, present it with `run_id`, source modified UTC, source bundle path, source directives path, and the three directive categories preserved.
