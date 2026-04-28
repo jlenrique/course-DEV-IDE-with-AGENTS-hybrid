@@ -77,9 +77,9 @@ def main() -> int:
         ok, last_line = run(label, paths)
         results.append((label, ok, last_line))
         if ok:
-            print(f"  PASS — {last_line}")
+            print(f"  PASS -- {last_line}")
         else:
-            print(f"  FAIL — {last_line}")
+            print(f"  FAIL -- {last_line}")
             overall_ok = False
         print()
 

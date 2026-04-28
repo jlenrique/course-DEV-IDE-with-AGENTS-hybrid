@@ -80,21 +80,21 @@ def main() -> int:
         ok, last_line = run_pytest(label, paths)
         results.append((label, ok, last_line))
         if ok:
-            print(f"  PASS — {last_line}")
+            print(f"  PASS -- {last_line}")
         else:
-            print(f"  FAIL — {last_line}")
+            print(f"  FAIL -- {last_line}")
             overall_ok = False
         print()
 
-    # Pipeline lockstep — both invocation forms
+    # Pipeline lockstep -- both invocation forms
     label, forms = PIPELINE_LOCKSTEP
     print(f"[{label}]")
     ok, msg = run_lockstep(forms)
     results.append((label, ok, msg))
     if ok:
-        print(f"  PASS — {msg}")
+        print(f"  PASS -- {msg}")
     else:
-        print(f"  FAIL — {msg}")
+        print(f"  FAIL -- {msg}")
         overall_ok = False
     print()
 
@@ -110,7 +110,7 @@ def main() -> int:
         print(f"  [{status}] {label}: {last_line}")
     print()
     print(f"Slices: {pass_count} PASS / {fail_count} FAIL of {len(results)} total")
-    print(f"Overall: {'PASS — migration substrate healthy' if overall_ok else 'FAIL — substrate regression'}")
+    print(f"Overall: {'PASS -- migration substrate healthy' if overall_ok else 'FAIL -- substrate regression'}")
     print(f"Started: {started}")
     print(f"Finished: {finished}")
 

@@ -4,7 +4,7 @@ Run via:
     .venv\\Scripts\\python.exe scripts\\operator\\dual_gate_slab_6_0.py
 
 Exercises the production envelope substrate per AC-6.0-I item 5:
-- tests/composition/ — full composition discipline including Texas → cd chain test
+- tests/composition/ -- full composition discipline including Texas -> cd chain test
   (the load-bearing test that mirrors the Slab 6.1 strict-AC HALT scenario).
 
 Original close commit: 0a4f868 (closed 2026-04-27 with 17 passed in 1.21s).
@@ -58,7 +58,7 @@ def main() -> int:
     print(f"- **Result:** {last_line}")
     print(f"- **Overall:** {'PASS' if overall_ok else 'FAIL'}")
     print(f"- **Operator witness:** Juan Leon (operator session)")
-    print(f"- **Disposition:** {'PASS — Slab 6.0 substrate (envelope + adapter + composition discipline) verified end-to-end.' if overall_ok else 'FAIL — substrate regression; investigate before any composition-affecting work proceeds.'}")
+    print(f"- **Disposition:** {'PASS -- Slab 6.0 substrate (envelope + adapter + composition discipline) verified end-to-end.' if overall_ok else 'FAIL -- substrate regression; investigate before any composition-affecting work proceeds.'}")
     print()
 
     return 0 if overall_ok else 1

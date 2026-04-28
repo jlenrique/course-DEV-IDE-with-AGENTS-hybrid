@@ -4,7 +4,7 @@ Run via:
     .venv\\Scripts\\python.exe scripts\\operator\\dual_gate_slab_6_1.py
 
 Exercises the production-graph runner consuming Slab 6.0 substrate per AC-6.1-K item 5:
-- tests/live/test_production_trial_smoke_with_gate.py — live OpenAI specialist invocations
+- tests/live/test_production_trial_smoke_with_gate.py -- live OpenAI specialist invocations
   through ProductionDispatchAdapter + checkpoint pause/resume working end-to-end.
 
 Original close commit: 97842ac (closed 2026-04-27 with 1 passed in 30.54s).
@@ -57,11 +57,11 @@ def main() -> int:
     required = ("OPENAI_API_KEY", "LANGSMITH_API_KEY", "LANGSMITH_PROJECT")
     missing = [k for k in required if not os.environ.get(k)]
     if missing:
-        print(f"PRE-FLIGHT FAIL — missing env vars: {', '.join(missing)}")
+        print(f"PRE-FLIGHT FAIL -- missing env vars: {', '.join(missing)}")
         print("Set these in .env or environment before re-running.")
         print("(scripts/operator/check_keys.py can verify state.)")
         return 2
-    print(f"PRE-FLIGHT — all 3 required env vars present (OPENAI_API_KEY + LANGSMITH_API_KEY + LANGSMITH_PROJECT)")
+    print(f"PRE-FLIGHT -- all 3 required env vars present (OPENAI_API_KEY + LANGSMITH_API_KEY + LANGSMITH_PROJECT)")
     print()
     print(f"$ {PYTHON.name} -m pytest tests/live/test_production_trial_smoke_with_gate.py -m live -q --tb=short")
     print()
@@ -91,7 +91,7 @@ def main() -> int:
     print(f"- **Overall:** {'PASS' if overall_ok else 'FAIL'}")
     print(f"- **Operator witness:** Juan Leon (operator session)")
     print(f"- **Cost note:** real OpenAI invocation ~$0.10-$0.30 expected; check LangSmith dashboard for trace by trial_id metadata")
-    print(f"- **Disposition:** {'PASS — Slab 6.1 production-graph runner verified end-to-end through HIL gate pause/resume.' if overall_ok else 'FAIL — production runner regression; halt-and-surface before any production trial.'}")
+    print(f"- **Disposition:** {'PASS -- Slab 6.1 production-graph runner verified end-to-end through HIL gate pause/resume.' if overall_ok else 'FAIL -- production runner regression; halt-and-surface before any production trial.'}")
     print()
 
     return 0 if overall_ok else 1
