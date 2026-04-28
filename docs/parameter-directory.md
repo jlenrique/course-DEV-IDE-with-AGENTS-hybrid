@@ -146,3 +146,64 @@ Re-run Party Mode consensus before:
 - changing strictness policy (fail-fast versus permissive-ignore) for unknown keys
 - adding merge/release-blocking automation based on registry compliance
 - reclassifying large groups of parameters across families or statuses
+
+---
+
+## Migration Runtime Parameters (post-SHIP; added 2026-04-28)
+
+The pre-migration parameter sections above are CREATIVE-CONTROL parameters owned by Irene, the CD agent, and the v4.x prompt-pack family. The migrated runtime introduces additional parameter surfaces that were not in scope for the Story 20c-7 audit. This section catalogs them for completeness.
+
+### Cost engineering (Slab 5a.3)
+
+| Parameter | Source | Type | Purpose | Operator authority |
+|---|---|---|---|---|
+| `MARCUS_TRIAL_BUDGET_USD` | Environment variable | float | Soft-cap budget telemetry per trial; emits warning when crossed; no hard-stop | Set in `.env`; default unset means no budget alerting |
+| Per-tier model assignment | `runtime/config/model_cascade.yaml` | YAML | Marcus / mid-tier / narrow-task model IDs (e.g., gpt-5 / gpt-5-mini / gpt-5-nano) | Operator-editable; A15 counter-pattern requires catalog membership |
+| Per-tier pricing | `runtime/config/openai_pricing.yaml` | YAML | Per-million-token rates per model tier | Operator-editable when OpenAI rate-cards change |
+| Per-trial cost report path | `state/config/runs/<trial-id>/cost-report.{json,md}` | Generated | Per-trial cost breakdown by specialist + tier | Read-only artifact |
+
+### Production runner (Slab 6.1)
+
+| Parameter | Source | Type | Purpose | Operator authority |
+|---|---|---|---|---|
+| `production_clone_launch_evidence` | `ProductionTrialEnvelope` field | bool | Flips `True` ONLY after at least one real specialist call completes via adapter; offline mode keeps `False` per AC-6.1-F | Set by runner; not operator-editable |
+| `--allow-offline-cost-report` | `app/marcus/cli/trial.py` flag | CLI bool | Allows trial to proceed without `OPENAI_API_KEY`; produces synthetic cost report; evidence stays `False` | Operator passes flag at trial start |
+| `gate_overrides` | Production runner parameter | dict[str, GateMode] | Promotes named per-specialist gates to production-blocking; default: all per-specialist gates non-blocking under production composition | Operator opt-in for safety-critical promotion |
+
+### Composition envelope (Slab 6.0)
+
+| Parameter | Source | Type | Purpose | Operator authority |
+|---|---|---|---|---|
+| `dependency_map` per specialist | `state/config/pipeline-manifest.yaml` per-node `dependencies:` field (Slab 6.2) | dict[downstream-input-key, upstream-specialist-id] | Manifest-declared cross-specialist coupling; runner falls back to `_default_dependency_map_for(specialist_id)` for nodes that omit declaration (PERMANENT fallback) | Per-specialist filing time |
+| `composition_mode` | `RunState` field | Literal["isolated", "composed"] | Indicates whether specialist runs in M3 harness (isolated) or production runner (composed); affects gate handling | Set by runtime; not operator-editable |
+
+### LangSmith integration
+
+| Parameter | Source | Type | Purpose | Operator authority |
+|---|---|---|---|---|
+| `LANGSMITH_API_KEY` | Environment variable | str | Required for trace upload; auto-skips test classes when missing | `.env` |
+| `LANGSMITH_PROJECT` | Environment variable | str | LangSmith project name for trace organization | `.env` |
+| `LANGSMITH_TRACING` | Environment variable | bool string | Enables tracing when set to `true`; default off | `.env`; usually set by environment of the production run |
+
+### Pipeline manifest pack version
+
+| Parameter | Source | Type | Purpose | Operator authority |
+|---|---|---|---|---|
+| `pack_version` | `runtime/graphs/v42/pack-version.txt` (frozen); `state/config/pipeline-manifest.yaml::pack_version` (live) | str | Identifies the prompt-pack version family (currently v4.2) | Tier-1 (patch) dev-agent authority; Tier-2 (minor) + Tier-3 (major) require party-mode per `docs/dev-guide/pipeline-manifest-regime.md` §"Pack Versioning Policy" |
+| `block_mode_trigger_paths` | `state/config/pipeline-manifest.yaml::block_mode_trigger_paths` | list[str] | Paths that, when modified in a diff, trigger pre-closure block-mode hook | Operator + party-mode |
+
+### Operator-facing CLI flags (frequently used)
+
+| Flag | Surface | Type | Purpose |
+|---|---|---|---|
+| `--preset production` | `app.marcus.cli trial start` | str | Selects production graph runner (vs M3 deterministic harness) |
+| `--input <corpus-path>` | `app.marcus.cli trial start` | path | Corpus directory or file for the trial |
+| `--allow-offline-cost-report` | `app.marcus.cli trial start` | bool | See above |
+| `--require-live-llm` | pytest fixture (DEFERRED per `2a.2-followon-require-live-llm-flag`) | bool | Future: fail (not skip) when `@llm_live` tests would auto-skip |
+
+### See also
+
+- `docs/dev-guide/sources-of-truth.md` §2 "Models + cascade" — SSOT registry
+- `docs/dev-guide/composition-specification.md` §3 — composition substrate
+- `docs/operator/validation-scripts.md` — operator-run validation scripts (consume these parameters)
+- `.env.example` — REQUIRED/RECOMMENDED/OPTIONAL env-var categorization
