@@ -5,7 +5,7 @@
 # This file mirrors pyproject for pip-only operators not using uv.
 # When pyproject.toml's dependencies block changes, regenerate this file.
 #
-# Last reconciled: 2026-04-26 post-Slab-3 close (Marcus + DecisionCard + OperatorVerdict + transports)
+# Last reconciled: 2026-04-28 post-Slab-6 close (migration unconditionally SHIPPED 2026-04-27 commit `97842ac`; Slab 6 trial-experience bundle 3/3 closed 2026-04-28; bundle: 6.0 envelope substrate + 6.1 production-graph runner + 6.2 manifest dependency_map + 6.3 Step 02A defaults + 6.4 Irene Pass 2 authoring template + 6.5 HUD per-step expandable summaries). Verified 2026-04-28 against pyproject.toml [project.dependencies]: identical version pins; no drift.
 
 # --- Core ---
 requests>=2.31,<3

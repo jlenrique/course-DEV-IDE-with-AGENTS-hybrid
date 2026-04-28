@@ -1,22 +1,26 @@
 # Developer Guide — Architecture, Execution Flow, and Extension Points
 
-> ## ⚠️ MIGRATION STATUS BANNER (added 2026-04-26)
+> ## MIGRATION STATUS BANNER (refreshed 2026-04-28)
 >
-> **This guide reflects the PRE-MIGRATION primary-repo architecture** (Cursor IDE + prompt-pack v4.x + Three-Layer Architecture). The hybrid clone on `dev/langchain-langgraph-foundation` is **mid-migration to a LangChain/LangGraph orchestrator** (Marcus + Cora dev-graph + 9-node specialist scaffold + HIL DecisionCard gates with anti-replay digest binding + learning ledger).
+> **This guide reflects the PRE-MIGRATION primary-repo architecture** (Cursor IDE + prompt-pack v4.x + Three-Layer Architecture). The hybrid clone on `dev/langchain-langgraph-foundation` has **MIGRATED** to LangChain/LangGraph: migration **unconditionally SHIPPED** 2026-04-27 (commit `97842ac`); Slab 6 trial-experience bundle 3/3 CLOSED 2026-04-28 (Step 02A defaults + Irene Pass 2 authoring template + HUD per-step expandable summaries); first tracked trial UNBLOCKED. The migrated runtime carries: Marcus orchestrator + production-graph runner consuming Slab 6.0 envelope substrate + 14 scaffold-conformant specialists + HIL DecisionCard gates (G1/G2C/G3/G4) with FR34 tamper-evidence + checkpoint pause/resume verified end-to-end + learning ledger + standing governance discipline (Composition Specification + Substrate Inventory Checklist N1–N12 + anti-pattern catalog A1–A17 + P1–P3).
 >
 > **For migration-aware developer architecture, see:**
 > - **[`docs/dev-guide/langgraph-migration-guide.md`](dev-guide/langgraph-migration-guide.md)** — authoritative migration architecture + per-Slab walkthroughs + §6 Lockstep CI + §7 Frozen-Graph Ceremony
 > - **[`docs/dev-guide/specialist-migration-template.md`](dev-guide/specialist-migration-template.md)** v2.4 — R1-R14 rules for per-specialist migration stories
-> - **[`docs/dev-guide/specialist-anti-patterns.md`](dev-guide/specialist-anti-patterns.md)** — A1-A14+ harvested anti-patterns (FR64 catalog)
+> - **[`docs/dev-guide/specialist-anti-patterns.md`](dev-guide/specialist-anti-patterns.md)** — A1–A17 + P1–P3 catalog (substrate-level + process anti-patterns harvested across migration cycles)
 > - **[`docs/dev-guide/pydantic-v2-schema-checklist.md`](dev-guide/pydantic-v2-schema-checklist.md)** — 14 idioms binding for schema-shape stories
 > - **[`docs/dev-guide/scaffolds/schema-story/`](dev-guide/scaffolds/schema-story/)** — four-file-lockstep recipe
+> - **[`docs/dev-guide/composition-specification.md`](dev-guide/composition-specification.md)** — Option B governing reference (envelope + adapter + composition discipline; §10 Decision Log + §11 Migration Triggers)
+> - **[`docs/dev-guide/substrate-inventory-checklist.md`](dev-guide/substrate-inventory-checklist.md)** — N1–N12 standing pre-flight for substrate-affecting work
+> - **[`docs/dev-guide/sources-of-truth.md`](dev-guide/sources-of-truth.md)** — comprehensive SSOT registry per topic with lockstep partners + change protocols
+> - **[`docs/dev-guide/how-to-add-a-specialist.md`](dev-guide/how-to-add-a-specialist.md)** — single consolidated walkthrough from first-breath sanctum through formal close
 > - **[`_bmad-output/planning-artifacts/architecture-langchain-langgraph-migration.md`](../_bmad-output/planning-artifacts/architecture-langchain-langgraph-migration.md)** — D1-D13 architecture decisions of record
 > - **[`_bmad-output/planning-artifacts/epics-langchain-langgraph-migration.md`](../_bmad-output/planning-artifacts/epics-langchain-langgraph-migration.md)** — Slab 1-5 epic structure (M1-M5 milestones)
 > - **[`README.md`](../README.md)** — top-of-repo project orientation + status-by-slab + migration-master-status enum
 > - **[`CLAUDE.md`](../CLAUDE.md)** — BMAD project instructions + sprint governance + sandbox-AC discipline + Marcus-first activation
 > - **[Migration Dev Appendix](#migration-dev-appendix)** below — migration-specific extension points added post-Slab-3 close
 >
-> **Pre-M5-ship scope of this legacy content:** Three-Layer Architecture + state management + extension points for primary's prompt-pack workflow REMAIN AUTHORITATIVE for understanding the pre-migration codebase. Migration-specific overhauls deferred to post-M5-ship per Bucket-F harmonization.
+> **Scope of this legacy content (post-SHIP):** Three-Layer Architecture + state management + extension points described below are HISTORICAL REFERENCE for the pre-migration primary-repo codebase. They are NOT authoritative for migration-native development. For migrated-runtime architecture and extension points, consult the migration-aware see-also list above. This guide is preserved to keep audit-trail continuity from pre- to post-migration; it does not describe how the shipped LangGraph platform works today.
 
 ---
 

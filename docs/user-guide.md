@@ -1,16 +1,19 @@
 # User Guide — Course Content Production System
 
-> ## ⚠️ MIGRATION STATUS BANNER (added 2026-04-26)
+> ## MIGRATION STATUS BANNER (refreshed 2026-04-28)
 >
-> **This guide reflects the PRE-MIGRATION primary-repo workflow** (Cursor IDE chat + prompt-pack v4.x). The hybrid clone on `dev/langchain-langgraph-foundation` is **M5 SHIP-CONDITIONAL through 2026-05-03** on the LangChain/LangGraph orchestrator path — Marcus runs Plan-and-Execute by default, routes to specialists via manifest, and produces DecisionCards at every gate (G1/G2C/G3/G4) for HIL operator verdict via CLI/MCP/FastAPI transports.
+> **This guide reflects the PRE-MIGRATION primary-repo workflow** (Cursor IDE chat + prompt-pack v4.x). The hybrid clone on `dev/langchain-langgraph-foundation` has **MIGRATED**: migration unconditionally SHIPPED 2026-04-27 (commit `97842ac`); Slab 6 trial-experience bundle 3/3 CLOSED 2026-04-28 (Step 02A prior-run defaults + Irene Pass 2 authoring template + HUD per-step expandable summaries); first tracked trial UNBLOCKED. Marcus orchestrator runs the production-graph runner against the manifest; specialists invoke through ProductionDispatchAdapter; DecisionCards fire at G1/G2C/G3/G4 with HIL operator verdict via CLI/MCP/FastAPI; checkpoint pause/resume verified end-to-end.
 >
-> **For migration-aware user workflow (M5 SHIP-CONDITIONAL through 2026-05-03), see:**
-> - **[`docs/operator/production-run-swimlane.md`](operator/production-run-swimlane.md)** — at-a-glance swimlane for a typical animated-slides + video production run (operator HIL action / platform action / carry-forward / notes lanes; phase-by-phase with the 4 HIL gates G1/G2C/G3/G4 highlighted; cumulative pace + watch-for rubric). **Best entry point** if you want to understand a production run end-to-end without diving into the runbook.
+> **For migration-native user workflow (post-SHIP), see:**
+> - **[`docs/operator/production-trial-playbook.md`](operator/production-trial-playbook.md)** — start-to-stop production-run playbook at action-by-action granularity (in-progress fill during first tracked trial). The migration-native equivalent of legacy prompt-pack + cheat-sheet.
+> - **[`docs/operator/production-run-swimlane.md`](operator/production-run-swimlane.md)** — at-a-glance swimlane for typical animated-slides + video production runs (HIL gates G1/G2C/G3/G4 highlighted; cumulative pace + watch-for rubric). Best high-level entry point.
 > - **[`docs/operator/trial-run-runbook.md`](operator/trial-run-runbook.md)** — first-trial step-by-step (transport choice + corpus + DecisionCard inspection + verdict flow + override + replay).
-> - **[`docs/operator/post-m5-runbook.md`](operator/post-m5-runbook.md)** — what to do during the M5 SHIP-CONDITIONAL conditional window (4 open conditions + closure paths + demotion rule).
+> - **[`docs/operator/hud-guide.md`](operator/hud-guide.md)** — HUD reading guide including Slab 6.5 per-step expandable summaries.
+> - **[`docs/operator/step-02a-prior-run-defaults.md`](operator/step-02a-prior-run-defaults.md)** — Slab 6.3 prior-run directives surfacing.
+> - **[`docs/operator/validation-scripts.md`](operator/validation-scripts.md)** — operator-run validation script catalog (5 validation scripts + 4 ceremony scripts).
 > - **[`README.md`](../README.md)** — top-of-repo project orientation + status-by-slab + quick-start.
 >
-> **M5 conditional scope of this legacy content:** the prompt-pack v4.x workflow remains authoritative for primary-repo content production. Runtime trial execution is covered by the operator runbook while the conditional window remains open. Condition #4, Plausible-Token Substrate Contamination, is REMEDIATED-CODE / PENDING-LIVE-VERIFICATION and closes via the live OpenAI cascade-tier smoke.
+> **Scope of this legacy content (post-SHIP):** the prompt-pack v4.x workflow described below is HISTORICAL REFERENCE for the pre-migration primary-repo. It is preserved to keep audit-trail continuity from pre- to post-migration. For active production-content workflow, consult the migration-native see-also list above.
 
 ---
 

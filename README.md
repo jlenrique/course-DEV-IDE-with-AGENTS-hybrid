@@ -1,6 +1,6 @@
 # course-DEV-IDE-with-AGENTS — Hybrid Migration Clone
 
-**Status:** M5 is `SHIP-CONDITIONAL` on `dev/langchain-langgraph-foundation` through **2026-05-03** (severed from upstream/master @ `3ed7c56` since 2026-04-24). The migrated foundation is ready for operator trial preparation; four carried conditions remain before unconditional SHIP: M2 Wondercraft live artifact, M3 Texas live retrieval, Story 5a.2 production clone-launch equivalence, and Plausible-Token Substrate Contamination live-OpenAI verification.
+**Status:** Migration **unconditionally SHIPPED** 2026-04-27 (commit `97842ac`) on `dev/langchain-langgraph-foundation` (severed from upstream/master @ `3ed7c56` since 2026-04-24). All 4 prior M5 conditions resolved. **Slab 6 trial-experience bundle 3/3 CLOSED** 2026-04-28 (`migration-6-3` Step 02A defaults + `migration-6-4` Irene Pass 2 authoring template + `migration-6-5` HUD per-step expandable summaries; substrate-polish tail complete). **First tracked trial UNBLOCKED** — production-operations cycle opens with the next operator-queued trial. Operator-witnessed live evidence: Slab 6.1 production-graph runner verified through HIL gate pause/resume (~$0.10–$0.30 per live smoke); Slab 6.4 Gate 5 dual-gate ceremony PASS 2026-04-28 (83 passed; AC-6.4-G satisfied); migration-full-health-check 213 passed across 11/11 slices.
 
 **One-line elevator:** Collaborative intelligence platform for course content production — a multi-agent orchestrator (Marcus) + Cora dev-graph + per-specialist 9-node scaffold (gates G1/G2C/G3/G4 with HIL DecisionCard verdicts) + tamper-evident operator-verdict + learning ledger + frozen-graph reproducibility ceremony, built on LangChain/LangGraph.
 
@@ -11,7 +11,7 @@
 | You are... | Read this first |
 |---|---|
 | **An operator running your first trial run** | [`docs/operator/trial-run-runbook.md`](docs/operator/trial-run-runbook.md); run `scripts/setup/ready_for_trial.ps1` or `bash scripts/setup/ready_for_trial.sh` before invoking a trial |
-| **A user creating course content** | [`docs/user-guide.md`](docs/user-guide.md) (legacy; pre-migration content production workflow; post-M5 ship will be re-anchored) |
+| **A user creating course content** | **First trial:** [`docs/operator/production-trial-playbook.md`](docs/operator/production-trial-playbook.md) (start-to-stop action-by-action; in-progress fill during first tracked trial). **Reference:** [`docs/user-guide.md`](docs/user-guide.md) (legacy pre-migration prompt-pack workflow; preserved as historical reference). |
 | **A system administrator setting up the environment** | [`docs/admin-guide.md`](docs/admin-guide.md) + [`.env.example`](.env.example) |
 | **A developer extending the platform** | [`docs/dev-guide.md`](docs/dev-guide.md) + [`docs/dev-guide/langgraph-migration-guide.md`](docs/dev-guide/langgraph-migration-guide.md) |
 | **An agent embodying a BMAD persona** | [`docs/agent-environment.md`](docs/agent-environment.md) + [`CLAUDE.md`](CLAUDE.md) (project instructions) + `skills/bmad-agent-{name}/SKILL.md` (per-persona) |

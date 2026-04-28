@@ -1,17 +1,21 @@
 # Agent environment (Cursor + Claude Code)
 
-> ## ⚠️ MIGRATION STATUS BANNER (added 2026-04-26)
+> ## MIGRATION STATUS BANNER (refreshed 2026-04-28)
 >
-> **This guide reflects the PRE-MIGRATION primary-repo agent environment.** The hybrid clone on `dev/langchain-langgraph-foundation` is M5 SHIP-CONDITIONAL through 2026-05-03 and adds the migration's Marcus orchestrator + 9-node specialist scaffold + BMAD agent persona discipline (per `CLAUDE.md`).
+> **This guide reflects the PRE-MIGRATION primary-repo agent environment.** The hybrid clone on `dev/langchain-langgraph-foundation` has **MIGRATED**: migration unconditionally SHIPPED 2026-04-27 (commit `97842ac`); Slab 6 trial-experience bundle 3/3 CLOSED 2026-04-28; first tracked trial UNBLOCKED. The migrated runtime carries: Marcus orchestrator (Python runtime) + 14 scaffold-conformant specialists + production-graph runner consuming Slab 6.0 envelope substrate + BMAD agent persona discipline (per `CLAUDE.md`).
 >
-> **For migration-aware agent environment, see:**
-> - **[`CLAUDE.md`](../CLAUDE.md)** — project instructions: BMAD sprint governance + sandbox-AC discipline + Marcus-first activation cold-start + custom-vs-stock-persona distinction + sandbox-AC validators + deferred-inventory governance
-> - **[`docs/dev-guide/specialist-anti-patterns.md`](dev-guide/specialist-anti-patterns.md)** — A1-A14+ anti-patterns harvested from migration close cycles (FR64 catalog)
-> - **[`docs/dev-guide/specialist-migration-template.md`](dev-guide/specialist-migration-template.md)** v2.4 — R1-R14 rules for per-specialist migration stories
-> - **[`README.md`](../README.md)** — top-of-repo orientation + migration status-by-slab
-> - **[`skills/bmad-agent-marcus/SKILL.md`](../skills/bmad-agent-marcus/SKILL.md)** — Marcus persona activation sequence (cold-start binding per CLAUDE.md "Marcus-first APP production cold start")
+> **For migration-native agent environment (post-SHIP), see:**
+> - **[`CLAUDE.md`](../CLAUDE.md)** — project instructions: BMAD sprint governance + sandbox-AC discipline + Marcus-first activation cold-start + custom-vs-stock-persona distinction + sandbox-AC validators + deferred-inventory governance.
+> - **[`docs/dev-guide/specialist-anti-patterns.md`](dev-guide/specialist-anti-patterns.md)** — A1–A17 + P1–P3 catalog (substrate-level + process anti-patterns).
+> - **[`docs/dev-guide/specialist-migration-template.md`](dev-guide/specialist-migration-template.md)** — R1-R14 rules for per-specialist migration stories.
+> - **[`docs/dev-guide/composition-specification.md`](dev-guide/composition-specification.md)** — Option B governing reference (envelope + adapter + composition discipline).
+> - **[`docs/dev-guide/substrate-inventory-checklist.md`](dev-guide/substrate-inventory-checklist.md)** — N1–N12 standing pre-flight.
+> - **[`docs/dev-guide/sources-of-truth.md`](dev-guide/sources-of-truth.md)** — comprehensive SSOT registry per topic.
+> - **[`docs/dev-guide/how-to-add-a-specialist.md`](dev-guide/how-to-add-a-specialist.md)** — single consolidated walkthrough for adding a new specialist.
+> - **[`README.md`](../README.md)** — top-of-repo orientation + migration status.
+> - **[`skills/bmad-agent-marcus/SKILL.md`](../skills/bmad-agent-marcus/SKILL.md)** — Marcus persona activation sequence (cold-start binding per CLAUDE.md "Marcus-first APP production cold start").
 >
-> **M5 conditional scope of this legacy content:** repository layout + agent operating mode + handoff guidance below remain authoritative for primary's Cursor + Claude Code workflow. Runtime production runs invoke Marcus the Python runtime, not the BMAD Marcus persona. Condition #4, Plausible-Token Substrate Contamination, is REMEDIATED-CODE / PENDING-LIVE-VERIFICATION and closes via the live OpenAI cascade-tier smoke.
+> **Scope of this legacy content (post-SHIP):** repository layout + agent operating mode + handoff guidance described below are HISTORICAL REFERENCE for the pre-migration primary-repo. Runtime production runs invoke Marcus the Python runtime (not the BMAD Marcus persona). For migration-native agent environment guidance, consult the see-also list above.
 
 ---
 

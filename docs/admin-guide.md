@@ -1,20 +1,21 @@
 # Admin Guide — System Configuration and Operations
 
-> ## ⚠️ MIGRATION STATUS BANNER (added 2026-04-26)
+> ## MIGRATION STATUS BANNER (refreshed 2026-04-28)
 >
-> **This guide reflects the PRE-MIGRATION primary-repo workflow** (Cursor IDE + prompt-pack v4.x + per-Epic-1-24 architectural model). The hybrid clone on `dev/langchain-langgraph-foundation` is **M5 SHIP-CONDITIONAL through 2026-05-03** on the LangChain/LangGraph orchestrator path (Marcus + Cora + 9-node specialist scaffold + HIL DecisionCard gates).
+> **This guide reflects the PRE-MIGRATION primary-repo workflow** (Cursor IDE + prompt-pack v4.x + per-Epic-1-24 architectural model). The hybrid clone on `dev/langchain-langgraph-foundation` has **MIGRATED**: migration unconditionally SHIPPED 2026-04-27 (commit `97842ac`); Slab 6 trial-experience bundle 3/3 CLOSED 2026-04-28; first tracked trial UNBLOCKED.
 >
-> **For migration-aware admin operations, see:**
-> - **[`docs/operator/trial-run-runbook.md`](operator/trial-run-runbook.md)** — first-trial setup + transport choice + verdict workflow
-> - **[`docs/operator/conditional-gate-addendum-playbook.md`](operator/conditional-gate-addendum-playbook.md)** — operator-window addenda for M2/M3/M4 conditional gates
-> - **[`docs/operator/post-m5-runbook.md`](operator/post-m5-runbook.md)** — per-verdict-path operations
-> - **[`README.md`](../README.md)** — top-of-repo project orientation + status-by-slab + quick-start
-> - **[`.env.example`](../.env.example)** — REQUIRED/RECOMMENDED/OPTIONAL env-var categorization (post-Slab-3 close)
-> - **[`scripts/utilities/trial_run_preflight.py`](../scripts/utilities/trial_run_preflight.py)** — 12-point readiness sweep
-> - **[`scripts/setup/first_clone_bootstrap.{ps1,sh}`](../scripts/setup/)** — one-command operator setup
-> - **[Migration Admin Appendix](#migration-admin-appendix)** below — migration-specific admin ops added post-Slab-3 close
+> **For migration-native admin operations (post-SHIP), see:**
+> - **[`docs/operator/production-trial-playbook.md`](operator/production-trial-playbook.md)** — start-to-stop production-run playbook including environment confirmation + pre-flight + health-check sections at action-by-action granularity (in-progress fill during first tracked trial).
+> - **[`docs/operator/validation-scripts.md`](operator/validation-scripts.md)** — operator-run validation script catalog (5 validation + 4 ceremony scripts; check_keys + dual-gate re-runs + bundle health + full health check + M2/M3 ceremonies).
+> - **[`docs/operator/trial-run-runbook.md`](operator/trial-run-runbook.md)** — first-trial setup + transport choice + verdict workflow.
+> - **[`README.md`](../README.md)** — top-of-repo project orientation + status + quick-start.
+> - **[`.env.example`](../.env.example)** — REQUIRED/RECOMMENDED/OPTIONAL env-var categorization.
+> - **[`scripts/utilities/trial_run_preflight.py`](../scripts/utilities/trial_run_preflight.py)** — 12-point readiness sweep.
+> - **[`scripts/setup/first_clone_bootstrap.{ps1,sh}`](../scripts/setup/)** — one-command operator setup.
+> - **[`docs/dev-guide/local-postgres-setup.md`](dev-guide/local-postgres-setup.md)** — native Postgres setup (NOT Dockerized per operator preference).
+> - **[Migration Admin Appendix](#migration-admin-appendix)** below — migration-specific admin ops added post-Slab-3 close.
 >
-> **M5 conditional scope of this legacy content:** environment setup + API-key management + MCP server config + Python env + content directory layout sections remain authoritative for primary-repo operations. Migration-specific admin execution is routed through the operator runbooks while the window remains open. Condition #4, Plausible-Token Substrate Contamination, is REMEDIATED-CODE / PENDING-LIVE-VERIFICATION and closes via the live OpenAI cascade-tier smoke.
+> **Scope of this legacy content (post-SHIP):** environment setup + API-key management + MCP server config + Python env + content directory layout sections described below are HISTORICAL REFERENCE for the pre-migration primary-repo. Some sections (Python env; .env management; MCP transport) carry forward to migration; others (prompt-pack management; per-Epic admin) are pre-migration only. For migration-native admin, consult the see-also list above.
 
 ---
 
