@@ -2,6 +2,8 @@
 
 from app.specialists.irene.authoring.pass_2_template import (
     BridgeType,
+    ClusterPosition,
+    ClusterRole,
     ContentDensity,
     GarySlideOutput,
     IrenePass2AuthoringEnvelope,
@@ -15,6 +17,8 @@ from app.specialists.irene.authoring.pass_2_template import (
 
 __all__ = [
     "BridgeType",
+    "ClusterPosition",
+    "ClusterRole",
     "ContentDensity",
     "GarySlideOutput",
     "IrenePass2AuthoringEnvelope",

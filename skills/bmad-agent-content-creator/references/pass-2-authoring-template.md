@@ -1,223 +1,172 @@
 # Irene Pass 2 Authoring Template
 
-**Canonical authoring-time contract for Pass 2 segment-manifest emission.**
+Canonical authoring-time contract for Irene Pass 2 output.
 
-Story §7.1 discipline. Pair with [`pass-2-procedure.md`](./pass-2-procedure.md) for the authoring flow; this template is the **structural contract** that Pass 2 output must conform to before Storyboard B renders. Validation is deterministic (JSON Schema + fail-closed lint), not LLM-mediated.
-
-Authoritative schema: [`state/config/schemas/segment-manifest.schema.json`](../../../state/config/schemas/segment-manifest.schema.json).
-Enforcement: [`scripts/validators/pass_2_emission_lint.py`](../../../scripts/validators/pass_2_emission_lint.py) (invoked at end of Pack v4.2 §07; failing lint blocks §08 Storyboard B render).
-Upstream-reference reader: [`skills/bmad-agent-content-creator/scripts/motion_gate_receipt_reader.py`](../scripts/motion_gate_receipt_reader.py).
-
-Slab 6.4 authoring contract source of truth: [`app/specialists/irene/authoring/pass_2_template.py`](../../../app/specialists/irene/authoring/pass_2_template.py).
+Slab 6.4 source of truth: [`app/specialists/irene/authoring/pass_2_template.py`](../../../app/specialists/irene/authoring/pass_2_template.py).
 Generated JSON Schema: [`schema/irene_pass_2_authoring.v1.schema.json`](../../../schema/irene_pass_2_authoring.v1.schema.json).
-Post-hoc procedural validator: [`skills/bmad-agent-marcus/scripts/validate-irene-pass2-handoff.py`](../../bmad-agent-marcus/scripts/validate-irene-pass2-handoff.py).
+Procedural validator: [`skills/bmad-agent-marcus/scripts/validate-irene-pass2-handoff.py`](../../bmad-agent-marcus/scripts/validate-irene-pass2-handoff.py).
 
-Validation order is contractual: schema-first via `IrenePass2AuthoringEnvelope`, then procedural validation via `validate-irene-pass2-handoff.py`. Cluster arc continuity, bridge cadence, narration cue presence in narration prose, behavioral-intent parity, motion perception confirmation, and traceable visual-reference proof remain procedural rules.
+Validation order is contractual:
 
-<!-- irene-pass2-pydantic-fields:start -->
-Top-level Pydantic field names referenced by this Markdown:
-`schema_version`, `run_id`, `generated_at_utc`, `composition_mode`, `gary_slide_output`, `perception_artifacts`, `segment_manifest`, `narration_script_markers`, `procedural_rules`.
-<!-- irene-pass2-pydantic-fields:end -->
+1. Schema-first validation with `IrenePass2AuthoringEnvelope`.
+2. Procedural validation with `validate-irene-pass2-handoff.py`.
 
-Composition modes:
-- `composition_mode: isolated` for M3 harness or direct specialist trials.
-- `composition_mode: composed` for production runner consumption through `ProductionDispatchAdapter`.
+The Pydantic model is authoritative for field names, closed values, cardinality,
+UTC timestamp shape, local PNG path shape, and cross-artifact identity checks.
+The procedural validator remains authoritative for narration-prose checks,
+bridge cadence, cluster arc continuity, behavioral-intent parity, motion
+perception confirmation, and visual-reference traceability in spoken narration.
 
----
+## Pydantic Field Inventory
 
-## Why this template exists
+Top-level fields:
+`schema_version`, `run_id`, `generated_at_utc`, `composition_mode`,
+`gary_slide_output`, `perception_artifacts`, `segment_manifest`,
+`narration_script_markers`, `procedural_rules`.
 
-Trial `C1-M1-PRES-20260419B` §6 fix-on-the-fly log surfaced three **structural** emission bugs that cost material time at §14 Compositor:
+Gary slide fields:
+`slide_id`, `card_number`, `file_path`, `source_ref`.
 
-| § | Bug | Durable fix |
-|---|---|---|
-| §6.3 | Irene emitted BOTH `motion_asset` and `motion_asset_path` on motion cards | Emit ONLY `motion_asset_path`; never emit the legacy `motion_asset` key |
-| §6.4 | `visual_file` was missing on 13/14 segments; §14 back-filled from gates | Populate `visual_file` at Pass 2 emission, NOT at §14 back-fill |
-| §6.5 | `motion_duration_seconds` was null despite Motion Gate receipt carrying the value | Carry `motion_duration_seconds` forward from the Motion Gate receipt at Pass 2 emission |
+Perception artifact fields:
+`slide_id`, `source_image_path`, `visual_elements`.
 
-The schema + lint catch all three in seconds, deterministically, before any downstream spend. Irene's creative-layer output (narration prose, behavioral intent, segment ordering, cluster-boundary seams) is **NOT** constrained by this template — creative judgments continue to be LLM-driven and reviewed by Quinn-R / Vera.
+Segment fields:
+`id`, `slide_id`, `card_number`, `narration_text`, `behavioral_intent`,
+`visual_file`, `visual_detail_load`, `timing_role`, `content_density`,
+`duration_rationale`, `bridge_type`, `visual_references`, `cluster_id`,
+`cluster_role`, `cluster_position`.
 
----
+Visual reference fields:
+`element`, `location_on_slide`, `narration_cue`, `perception_source`.
 
-## Structural contract (schema-enforced)
+## Closed Values
 
-### Envelope (top-level required fields)
+- `composition_mode`: isolated, composed.
+- `visual_detail_load`: light, medium, heavy.
+- `content_density`: light, medium, heavy.
+- `bridge_type`: none, intro, outro, pivot, both, cluster_boundary.
+- `cluster_role`: head, interstitial.
+- `cluster_position`: establish, tension, develop, resolve.
+- `procedural_rules`: behavioral_intent_parity, bridge_cadence,
+  cluster_arc_continuity, motion_perception_confirmation,
+  narration_cue_presence, traceable_visual_references.
 
-```yaml
-schema_version: "1.1"            # MUST be exactly "1.1"
-run_id: <string>                 # MUST be non-empty
-generated_at_utc: <ISO-8601>     # MUST be non-empty (UTC, Zulu preferred)
-generated_by: "Irene Pass 2"     # MUST be non-empty
-segments: [...]                  # MUST be a non-empty list of segment objects
-```
+## Required Authoring Guarantees
 
-Other envelope fields (`cluster_density`, `narration_directive`, `slide_echo_policy`, etc.) are permitted and unconstrained — the template is additive-permissive at envelope level.
+- `generated_at_utc` is timezone-aware UTC.
+- Every Gary `file_path`, perception `source_image_path`, and segment
+  `visual_file` is a local PNG path.
+- Every Gary slide has a matching perception artifact.
+- Each perception `source_image_path` exactly matches the Gary `file_path` for
+  the same `slide_id`.
+- Each segment `visual_file` and `card_number` exactly match the Gary slide
+  output for the same `slide_id`.
+- Each segment `id` appears in `narration_script_markers`.
+- If a segment has `cluster_id`, it must also have `cluster_role`.
+- `procedural_rules` must list the complete validator-enforced rule set.
 
-### Segment (per-item required fields)
-
-```yaml
-- id: <string>                          # MUST be non-empty
-  slide_id: <string>                    # MUST be non-empty
-  card_number: <int ≥ 1>                # MUST be ≥ 1
-  visual_mode: video | static | animation | null
-  motion_asset_path: <string> | null    # see per-mode rules below
-  motion_duration_seconds: <number> | null  # see per-mode rules below
-```
-
-Authoring-layer fields (`narration_text`, `behavioral_intent`, `master_behavioral_intent`, `visual_references`, `narration_burden`, `cluster_id`, `cluster_role`, etc.) are permitted and unconstrained.
-
-### Per-mode rules
-
-| `visual_mode` | `visual_file` | `motion_asset_path` | `motion_duration_seconds` |
-|---|---|---|---|
-| `"video"` | **REQUIRED (non-empty string)** | **REQUIRED (non-empty string)** | **REQUIRED (positive number, ≥ 0.001s tolerance against receipt)** |
-| `"static"` | **REQUIRED (non-empty string)** | null | null |
-| `"animation"` | **REQUIRED (non-empty string)** | null | null |
-| `null` | (optional) | null | null |
-
-### Upstream-reference cross-validation (lint only)
-
-The lint cross-references the Motion Gate receipt for every segment with `visual_mode: "video"`:
-
-- If the manifest has `motion_duration_seconds: null`, the receipt's `duration_seconds` MUST be carried forward.
-- If the manifest has a concrete `motion_duration_seconds`, it MUST agree with the receipt (tolerance 0.001s).
-- If the manifest claims `visual_mode: "video"` but the receipt has no matching `slide_id` in `non_static_slides`, the manifest is asserting unapproved motion — lint rejects.
-
----
-
-## Legacy key ban list (do NOT emit)
-
-| Key | Reason | Replacement |
-|---|---|---|
-| `motion_asset` | §6.3 legacy duplicate (pre-Storyboard-B era); downstream ambiguity | `motion_asset_path` only |
-
-The ban is declarative in the schema (`not: {required: [motion_asset]}`). Any future legacy-vocabulary additions land in this section + the schema in lockstep.
-
----
-
-## Reading-path repertoire (Sprint 2)
-
-The Sprint-1 convention `narration_directive: z-pattern-literal-scan` is now one of seven structured patterns in the **reading-path repertoire**. The envelope (or a per-segment override) carries a `reading_path` sub-object with `{pattern, confidence, evidence, fallback}`. Registry: [reading-path-patterns.yaml](../../../state/config/reading-path-patterns.yaml). Schema: `reading_path` sub-object in [segment-manifest.schema.json](../../../state/config/schemas/segment-manifest.schema.json). Narration-grammar worked examples: [pass-2-grammar-riders-examples.md](./pass-2-grammar-riders-examples.md).
-
-### Enum (closed)
-
-| Pattern | Narration cadence | Lint |
-|---|---|---|
-| `z_pattern` | four-beat-sweep (headline / body / visual / CTA) | warning |
-| `f_pattern` | drill-down at evidence markers | warning |
-| `center_out` | establish-orbit-return-to-hero | warning |
-| `top_down` | spine-item boundary cadence | warning |
-| `multi_column` | column-boundary bridges | warning |
-| `grid_quadrant` | compare/contrast connectives | warning |
-| `sequence_numbered` | ordinal markers (first/second/next/step N) | **fail-closed** |
-
-`sequence_numbered` is the only pattern with fail-closed lint in v1 (Murat Sprint-2 ruling) — ordinal-marker absence on that classification is a contract violation.
-
-### Envelope vs. per-segment
-
-The envelope's `reading_path` is the default for every segment. A segment may override by emitting its own `reading_path` sub-object. Backward-compatibility: when neither is present, the lint normalizes free-text `narration_directive: z-pattern-literal-scan` → `reading_path.pattern: "z_pattern"` with `fallback: false` at validation time (preserving byte-identical Sprint-1 fixtures).
-
----
-
-## Worked example: static segment
+## Minimal Passing Shape
 
 ```yaml
-- id: apc-c1m1-tejal-20260419b-motion-card-02
-  slide_id: apc-c1m1-tejal-20260419b-motion-card-02
-  card_number: 2
-  cluster_id: c-u01
-  cluster_role: body
-  cluster_position: develop
-  narrative_arc: develop
-  selected_template_id: concept-anchor
-  visual_mode: static
-  motion_type: null
-  motion_asset_path: null
-  motion_duration_seconds: null
-  visual_file: gamma-export/apc-c1m1-tejal-20260419b-motion_slide_02.png
-  motion_status: not_applicable
-  fidelity: creative
-  slide_echo: paraphrase
-  narration_text: >
-    Burnout is not a personal failure. It is a systems signal — and that
-    signal is an invitation to design.
-  behavioral_intent: >
-    Reframe burnout as systems signal; set up the designer-lens perspective.
+schema_version: irene-pass-2-authoring.v1
+run_id: PASS2-GOLDEN-001
+generated_at_utc: 2026-04-28T10:00:00Z
+composition_mode: composed
+gary_slide_output:
+  - slide_id: slide-01
+    card_number: 1
+    file_path: bundle/slide-01.png
+    source_ref: slide-brief.md#Slide 1
+perception_artifacts:
+  - slide_id: slide-01
+    source_image_path: bundle/slide-01.png
+    visual_elements:
+      - description: Clinician at workstation
+segment_manifest:
+  segments:
+    - id: seg-01
+      slide_id: slide-01
+      card_number: 1
+      narration_text: Notice the clinician at the workstation as the systems signal appears.
+      behavioral_intent: credible
+      visual_file: bundle/slide-01.png
+      visual_detail_load: medium
+      timing_role: concept-build
+      content_density: medium
+      duration_rationale: Medium density needs guided explanation while keeping visual attention on the workstation.
+      bridge_type: none
+      visual_references:
+        - element: Clinician at workstation
+          location_on_slide: center
+          narration_cue: clinician at the workstation
+          perception_source: slide-01
+narration_script_markers:
+  - seg-01
+procedural_rules:
+  - behavioral_intent_parity
+  - bridge_cadence
+  - cluster_arc_continuity
+  - motion_perception_confirmation
+  - narration_cue_presence
+  - traceable_visual_references
 ```
 
-**Why this is correct:**
-- `visual_mode: static` → `visual_file` is populated (§6.4 fix).
-- No motion fields populated (motion_asset_path null, motion_duration_seconds null).
-- `motion_asset` legacy key is absent (§6.3 ban).
-- No Motion Gate receipt cross-reference needed (static segment).
+## Worked Examples From B-Run Section 08
 
----
+### Example 1: Empty Perception And Path Drift
 
-## Worked example: motion segment
+B-Run Section 08 recorded an empty perception list and later path drift between
+perception image paths and Gary slide outputs. The Pydantic contract prevents
+that by requiring at least one perception artifact and by enforcing exact path
+parity against the Gary output.
 
 ```yaml
-- id: apc-c1m1-tejal-20260419b-motion-card-01
-  slide_id: apc-c1m1-tejal-20260419b-motion-card-01
-  card_number: 1
-  cluster_id: c-u01
-  cluster_role: head
-  cluster_position: establish
-  narrative_arc: establish
-  selected_template_id: emotional-arc
-  visual_mode: video
-  motion_type: video
-  motion_asset_path: motion/slide-01-motion.mp4
-  motion_duration_seconds: 5.041                # carried from Motion Gate receipt
-  visual_file: gamma-export/apc-c1m1-tejal-20260419b-motion_slide_01.png
-  motion_status: approved
-  fidelity: creative
-  slide_echo: paraphrase
-  narration_text: >
-    Watch the physician on screen. That pause — the weight behind the eyes,
-    the handheld device, the corridor pressing in around them — is not a
-    personal failure. It is a systems signal.
-  behavioral_intent: >
-    Establish the clinician-as-designer identity reframe.
+gary_slide_output:
+  - slide_id: slide-04
+    card_number: 4
+    file_path: bundle/gamma-export/slide-04.png
+    source_ref: slide-brief.md#Slide 4
+perception_artifacts:
+  - slide_id: slide-04
+    source_image_path: bundle/gamma-export/slide-04.png
 ```
 
-**Why this is correct:**
-- `visual_mode: video` → `visual_file` populated, `motion_asset_path` populated, `motion_duration_seconds` populated with receipt value 5.041s (§6.5 fix).
-- `motion_asset` legacy key is absent (§6.3 ban).
-- Upstream-reference cross-validation: Motion Gate receipt's `non_static_slides[0].duration_seconds == 5.041` matches the manifest — lint passes.
+If `perception_artifacts` is empty or `source_image_path` points elsewhere,
+schema-first validation rejects the handoff before narration work proceeds.
 
----
+### Example 2: Invalid Visual Detail Vocabulary
 
-## Retrieval-intake-consuming segments
+B-Run Section 08 recorded invalid visual-detail values. The Pydantic contract
+uses the same closed density vocabulary as the procedural validator.
 
-When a segment narrates findings from Tracy-dispatched retrieval (sibling Sprint #1 story `irene-retrieval-intake`), the segment carries an additive `retrieval_provenance` field. The canonical worked example for that shape lives in the intake contract, not here:
-
-> See [retrieval-intake-contract.md](./retrieval-intake-contract.md) for the intake-attached segment shape and worked example.
-
-This template's segment-manifest schema permits `retrieval_provenance` as an additive field (`additionalProperties: true`). The intake story's contract doc is single source of truth for its shape.
-
----
-
-## How lint invocation works
-
-From Pack v4.2 §07 end, after Irene emits `segment-manifest.yaml`:
-
-```bash
-python scripts/validators/pass_2_emission_lint.py \
-  --manifest course-content/staging/.../segment-manifest.yaml \
-  --motion-gate-receipt course-content/staging/.../motion-gate-receipt.json
+```yaml
+visual_detail_load: heavy
+content_density: medium
 ```
 
-Exit codes:
-- `0` — clean; §08 Storyboard B renders.
-- `1` — violations found; lint blocks §08 with per-segment findings on stdout.
-- `2` — infrastructure error (missing file, malformed input); treat as §08-blocker pending operator triage.
+Values outside light, medium, and heavy are rejected by both Pydantic and the
+generated JSON Schema.
 
----
+### Example 3: Cluster Arc And Bridge Cadence
 
-## Version history
+B-Run Section 08 recorded a cluster head resolving too early and a boundary
+that lacked required bridge treatment. The schema makes cluster role and arc
+position explicit so the procedural validator can reason over the sequence.
 
-| Schema version | Story | Change |
-|---|---|---|
-| `1.1` | §7.1 (2026-04-22) | Initial authoritative schema — structural enforcement of §6.3 / §6.4 / §6.5 durable fixes; convention promoted to contract. |
+```yaml
+cluster_id: c-u07
+cluster_role: head
+cluster_position: establish
+bridge_type: cluster_boundary
+```
 
-Future schema edits update the version per [`_bmad-output/implementation-artifacts/SCHEMA_CHANGELOG.md`](../../../_bmad-output/implementation-artifacts/SCHEMA_CHANGELOG.md) semver-for-schemas discipline. This template updates in lockstep with the schema (doc-parity enforced by `tests/irene/test_pass_2_authoring_template_doc_parity.py`).
+For clustered segments, Irene must choose the role and position deliberately.
+The procedural validator then rejects disordered arcs, resolve-without-middle
+beats, missing callbacks, and cluster-boundary bridge-cadence failures.
+
+## Operating Rule
+
+Irene Pass 2 should author against this contract before emitting downstream
+artifacts. If schema-first validation fails, repair the structured handoff
+before invoking procedural validation. If procedural validation fails, repair the
+specific validator-reported rule without loosening the Pydantic contract.

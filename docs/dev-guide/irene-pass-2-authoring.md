@@ -8,7 +8,7 @@ Authoritative surfaces:
 - Prompt-facing template: `skills/bmad-agent-content-creator/references/pass-2-authoring-template.md`
 - Procedural oracle: `skills/bmad-agent-marcus/scripts/validate-irene-pass2-handoff.py`
 
-Validation order is schema-first, then procedural. The schema covers structural fields such as Gary slide output, perception artifact alignment, segment timing fields, visual detail load, visual references, and composition mode. Procedural validation covers cross-artifact and prose-level rules such as bridge cadence, cluster arc continuity, narration cue presence in spoken narration, behavioral intent parity, motion perception confirmation, and traceable visual references.
+Validation order is schema-first, then procedural. The schema covers structural fields such as Gary slide output, perception artifact alignment, segment timing fields, visual detail load, visual references, cluster role, cluster position, and composition mode. Procedural validation covers prose-level rules such as bridge cadence, cluster arc continuity, narration cue presence in spoken narration, behavioral intent parity, motion perception confirmation, and traceable visual references.
 
 ## Minimal Passing Example
 
@@ -33,10 +33,21 @@ Validation order is schema-first, then procedural. The schema covers structural 
       "content_density": "medium",
       "duration_rationale": "Medium density needs guided explanation.",
       "bridge_type": "none",
+      "cluster_id": "c1",
+      "cluster_role": "head",
+      "cluster_position": "establish",
       "visual_references": [{"element": "Clinician", "location_on_slide": "center", "narration_cue": "clinician", "perception_source": "slide-01"}]
     }]
   },
-  "narration_script_markers": ["seg-01"]
+  "narration_script_markers": ["seg-01"],
+  "procedural_rules": [
+    "behavioral_intent_parity",
+    "bridge_cadence",
+    "cluster_arc_continuity",
+    "motion_perception_confirmation",
+    "narration_cue_presence",
+    "traceable_visual_references"
+  ]
 }
 ```
 

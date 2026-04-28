@@ -2,15 +2,21 @@ from __future__ import annotations
 
 import json
 import re
-from datetime import datetime
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
+import jsonschema
 import pytest
-from pydantic import TypeAdapter, ValidationError
+from pydantic import BaseModel, TypeAdapter, ValidationError
 
 from app.specialists.irene.authoring.pass_2_template import (
+    REQUIRED_PROCEDURAL_RULES,
+    GarySlideOutput,
     IrenePass2AuthoringEnvelope,
+    PerceptionArtifact,
+    SegmentManifest,
     SegmentManifestSegment,
+    VisualReference,
 )
 
 ROOT = Path(__file__).resolve().parents[3]
@@ -48,6 +54,29 @@ def test_strict_model_rejects_unknown_fields_and_naive_datetime() -> None:
         IrenePass2AuthoringEnvelope.model_validate(payload)
 
 
+def test_strict_mode_rejects_implicit_coercion() -> None:
+    payload = _payload()
+    payload["run_id"] = 123
+
+    with pytest.raises(ValidationError):
+        IrenePass2AuthoringEnvelope.model_validate(payload)
+
+
+def test_generated_at_utc_rejects_non_utc_aware() -> None:
+    payload = _payload()
+    payload["generated_at_utc"] = datetime(
+        2026,
+        4,
+        28,
+        10,
+        0,
+        tzinfo=timezone(timedelta(hours=-4)),
+    )
+
+    with pytest.raises(ValidationError, match="UTC"):
+        IrenePass2AuthoringEnvelope.model_validate(payload)
+
+
 def test_golden_fixture_and_schema_lockstep() -> None:
     model = IrenePass2AuthoringEnvelope.model_validate_json(
         FIXTURE.read_text(encoding="utf-8")
@@ -71,26 +100,92 @@ def test_required_fields_bidirectional_schema_parity() -> None:
     assert schema_required == pydantic_required
 
 
-def test_visual_detail_load_closed_enum_rejects_red_three_surfaces() -> None:
+@pytest.mark.parametrize(
+    ("field_path", "expected_values", "bad_value"),
+    [
+        (("schema_version",), ["irene-pass-2-authoring.v1"], "v2"),
+        (("composition_mode",), ["isolated", "composed"], "parallel"),
+        (
+            ("segment_manifest", "segments", 0, "visual_detail_load"),
+            ["light", "medium", "heavy"],
+            "very_high",
+        ),
+        (
+            ("segment_manifest", "segments", 0, "content_density"),
+            ["light", "medium", "heavy"],
+            "dense",
+        ),
+        (
+            ("segment_manifest", "segments", 0, "bridge_type"),
+            ["none", "intro", "outro", "pivot", "both", "cluster_boundary"],
+            "handoff",
+        ),
+        (("segment_manifest", "segments", 0, "cluster_role"), ["head", "interstitial"], "body"),
+        (
+            ("segment_manifest", "segments", 0, "cluster_position"),
+            ["establish", "tension", "develop", "resolve"],
+            "wrap",
+        ),
+    ],
+)
+def test_closed_enums_reject_red_three_surfaces(
+    field_path: tuple[object, ...],
+    expected_values: list[str],
+    bad_value: str,
+) -> None:
     payload = _payload()
-    segment = payload["segment_manifest"]["segments"][0]  # type: ignore[index]
-    segment["visual_detail_load"] = "overwhelming"  # type: ignore[index]
+    cursor = payload
+    for part in field_path[:-1]:
+        cursor = cursor[part]  # type: ignore[index]
+    cursor[field_path[-1]] = bad_value  # type: ignore[index]
+
     with pytest.raises(ValidationError):
         IrenePass2AuthoringEnvelope.model_validate(payload)
+    with pytest.raises(jsonschema.ValidationError):
+        jsonschema.validate(payload, IrenePass2AuthoringEnvelope.model_json_schema())
 
-    valid_segment = _payload()["segment_manifest"]["segments"][0]  # type: ignore[index]
-    model = SegmentManifestSegment.model_validate(valid_segment)
-    with pytest.raises(ValidationError):
-        model.visual_detail_load = "overwhelming"  # type: ignore[assignment]
+    schema = IrenePass2AuthoringEnvelope.model_json_schema()
+    field_schema = schema
+    for part in field_path:
+        if isinstance(part, str):
+            if "$ref" in field_schema:
+                ref = field_schema["$ref"].split("/")[-1]
+                field_schema = schema["$defs"][ref]
+            field_schema = field_schema["properties"][part]
+        elif isinstance(part, int):
+            field_schema = field_schema["items"]
+            if "$ref" in field_schema:
+                ref = field_schema["$ref"].split("/")[-1]
+                field_schema = schema["$defs"][ref]
+    actual_values = field_schema.get("enum") or [field_schema.get("const")]
+    if "anyOf" in field_schema:
+        actual_values = next(
+            branch["enum"]
+            for branch in field_schema["anyOf"]
+            if "enum" in branch
+        )
+    assert actual_values == expected_values
 
-    schema = SegmentManifestSegment.model_json_schema()
-    enum_values = schema["properties"]["visual_detail_load"]["enum"]
-    assert enum_values == ["low", "medium", "high"]
-    adapter = TypeAdapter(SegmentManifestSegment)
+    bad_payload = _payload()
+    cursor = bad_payload
+    for part in field_path[:-1]:
+        cursor = cursor[part]  # type: ignore[index]
+    cursor[field_path[-1]] = bad_value  # type: ignore[index]
     with pytest.raises(ValidationError):
-        bad = dict(valid_segment)
-        bad["visual_detail_load"] = "overwhelming"
-        adapter.validate_python(bad)
+        TypeAdapter(IrenePass2AuthoringEnvelope).validate_python(bad_payload)
+
+
+def test_procedural_rules_partial_rejected() -> None:
+    payload = _payload()
+    payload["procedural_rules"] = ["behavioral_intent_parity"]
+
+    with pytest.raises(ValidationError, match="at least 6 items"):
+        IrenePass2AuthoringEnvelope.model_validate(payload)
+
+    payload = _payload()
+    payload["procedural_rules"] = list(reversed(REQUIRED_PROCEDURAL_RULES))
+    with pytest.raises(ValidationError, match="validator-enforced rule set"):
+        IrenePass2AuthoringEnvelope.model_validate(payload)
 
 
 def test_cross_artifact_path_and_segment_marker_shape_pins() -> None:
@@ -104,19 +199,55 @@ def test_cross_artifact_path_and_segment_marker_shape_pins() -> None:
     with pytest.raises(ValidationError, match="absent from narration_script_markers"):
         IrenePass2AuthoringEnvelope.model_validate(payload)
 
+    payload = _payload()
+    payload["segment_manifest"]["segments"][0]["visual_file"] = "bundle/other.png"
+    with pytest.raises(ValidationError, match="visual_file must match"):
+        IrenePass2AuthoringEnvelope.model_validate(payload)
+
+    payload = _payload()
+    payload["segment_manifest"]["segments"][0]["card_number"] = 2
+    with pytest.raises(ValidationError, match="card_number must match"):
+        IrenePass2AuthoringEnvelope.model_validate(payload)
+
+    payload = _payload()
+    del payload["segment_manifest"]["segments"][0]["cluster_role"]
+    with pytest.raises(ValidationError, match="cluster_role is required"):
+        IrenePass2AuthoringEnvelope.model_validate(payload)
+
 
 def test_markdown_template_field_names_match_pydantic_model() -> None:
     text = MARKDOWN.read_text(encoding="utf-8")
-    match = re.search(
-        r"<!-- irene-pass2-pydantic-fields:start -->(.*?)<!-- irene-pass2-pydantic-fields:end -->",
-        text,
-        flags=re.S,
-    )
-    assert match is not None
-    referenced = set(re.findall(r"`([a-z_]+)`", match.group(1)))
-
+    referenced = set(re.findall(r"`([a-z_]+)`", text))
+    model_field_names: set[str] = set()
+    for model in (
+        IrenePass2AuthoringEnvelope,
+        GarySlideOutput,
+        PerceptionArtifact,
+        SegmentManifest,
+        SegmentManifestSegment,
+        VisualReference,
+    ):
+        assert issubclass(model, BaseModel)
+        model_field_names.update(model.model_fields)
     assert referenced
-    assert referenced.issubset(set(IrenePass2AuthoringEnvelope.model_fields))
+    assert referenced.issubset(model_field_names)
+
+
+def test_no_intake_orchestrator_leak_pass_2_template() -> None:
+    text = MARKDOWN.read_text(encoding="utf-8").lower()
+
+    forbidden_terms = [
+        "state/config/schemas/segment-manifest.schema.json",
+        "pass_2_emission_lint.py",
+        "generated_by",
+        "visual_mode",
+        "motion_asset",
+        "motion_duration_seconds",
+        "reading_path",
+        "retrieval-intake",
+        "retrieval_provenance",
+    ]
+    assert [term for term in forbidden_terms if term in text] == []
 
 
 def test_template_and_validator_cross_link_bidirectionally() -> None:

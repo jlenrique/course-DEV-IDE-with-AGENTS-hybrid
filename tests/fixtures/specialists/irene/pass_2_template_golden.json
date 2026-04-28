@@ -45,6 +45,7 @@
           }
         ],
         "cluster_id": "c1",
+        "cluster_role": "head",
         "cluster_position": "establish"
       }
     ]

@@ -3,6 +3,12 @@
     "GarySlideOutput": {
       "additionalProperties": false,
       "properties": {
+        "slide_id": {
+          "description": "Gary slide identifier.",
+          "minLength": 1,
+          "title": "Slide Id",
+          "type": "string"
+        },
         "card_number": {
           "description": "One-based slide/card order.",
           "minimum": 1,
@@ -12,13 +18,8 @@
         "file_path": {
           "description": "Local downloaded PNG path.",
           "minLength": 1,
+          "pattern": "^.+[.][Pp][Nn][Gg]$",
           "title": "File Path",
-          "type": "string"
-        },
-        "slide_id": {
-          "description": "Gary slide identifier.",
-          "minLength": 1,
-          "title": "Slide Id",
           "type": "string"
         },
         "source_ref": {
@@ -47,6 +48,7 @@
         },
         "source_image_path": {
           "minLength": 1,
+          "pattern": "^.+[.][Pp][Nn][Gg]$",
           "title": "Source Image Path",
           "type": "string"
         },
@@ -87,9 +89,63 @@
     "SegmentManifestSegment": {
       "additionalProperties": false,
       "properties": {
+        "id": {
+          "minLength": 1,
+          "title": "Id",
+          "type": "string"
+        },
+        "slide_id": {
+          "minLength": 1,
+          "title": "Slide Id",
+          "type": "string"
+        },
+        "card_number": {
+          "minimum": 1,
+          "title": "Card Number",
+          "type": "integer"
+        },
+        "narration_text": {
+          "minLength": 1,
+          "title": "Narration Text",
+          "type": "string"
+        },
         "behavioral_intent": {
           "minLength": 1,
           "title": "Behavioral Intent",
+          "type": "string"
+        },
+        "visual_file": {
+          "minLength": 1,
+          "pattern": "^.+[.][Pp][Nn][Gg]$",
+          "title": "Visual File",
+          "type": "string"
+        },
+        "visual_detail_load": {
+          "enum": [
+            "light",
+            "medium",
+            "heavy"
+          ],
+          "title": "Visual Detail Load",
+          "type": "string"
+        },
+        "timing_role": {
+          "minLength": 1,
+          "title": "Timing Role",
+          "type": "string"
+        },
+        "content_density": {
+          "enum": [
+            "light",
+            "medium",
+            "heavy"
+          ],
+          "title": "Content Density",
+          "type": "string"
+        },
+        "duration_rationale": {
+          "minLength": 1,
+          "title": "Duration Rationale",
           "type": "string"
         },
         "bridge_type": {
@@ -104,10 +160,13 @@
           "title": "Bridge Type",
           "type": "string"
         },
-        "card_number": {
-          "minimum": 1,
-          "title": "Card Number",
-          "type": "integer"
+        "visual_references": {
+          "items": {
+            "$ref": "#/$defs/VisualReference"
+          },
+          "minItems": 1,
+          "title": "Visual References",
+          "type": "array"
         },
         "cluster_id": {
           "anyOf": [
@@ -120,6 +179,22 @@
           ],
           "default": null,
           "title": "Cluster Id"
+        },
+        "cluster_role": {
+          "anyOf": [
+            {
+              "enum": [
+                "head",
+                "interstitial"
+              ],
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Cluster Role"
         },
         "cluster_position": {
           "anyOf": [
@@ -138,62 +213,6 @@
           ],
           "default": null,
           "title": "Cluster Position"
-        },
-        "content_density": {
-          "enum": [
-            "low",
-            "medium",
-            "high"
-          ],
-          "title": "Content Density",
-          "type": "string"
-        },
-        "duration_rationale": {
-          "minLength": 1,
-          "title": "Duration Rationale",
-          "type": "string"
-        },
-        "id": {
-          "minLength": 1,
-          "title": "Id",
-          "type": "string"
-        },
-        "narration_text": {
-          "minLength": 1,
-          "title": "Narration Text",
-          "type": "string"
-        },
-        "slide_id": {
-          "minLength": 1,
-          "title": "Slide Id",
-          "type": "string"
-        },
-        "timing_role": {
-          "minLength": 1,
-          "title": "Timing Role",
-          "type": "string"
-        },
-        "visual_detail_load": {
-          "enum": [
-            "low",
-            "medium",
-            "high"
-          ],
-          "title": "Visual Detail Load",
-          "type": "string"
-        },
-        "visual_file": {
-          "minLength": 1,
-          "title": "Visual File",
-          "type": "string"
-        },
-        "visual_references": {
-          "items": {
-            "$ref": "#/$defs/VisualReference"
-          },
-          "minItems": 1,
-          "title": "Visual References",
-          "type": "array"
         }
       },
       "required": [
@@ -250,6 +269,22 @@
   "additionalProperties": false,
   "description": "Authoring-time contract consumed by Irene prompt guidance.",
   "properties": {
+    "schema_version": {
+      "const": "irene-pass-2-authoring.v1",
+      "default": "irene-pass-2-authoring.v1",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "run_id": {
+      "minLength": 1,
+      "title": "Run Id",
+      "type": "string"
+    },
+    "generated_at_utc": {
+      "format": "date-time",
+      "title": "Generated At Utc",
+      "type": "string"
+    },
     "composition_mode": {
       "enum": [
         "isolated",
@@ -266,10 +301,16 @@
       "title": "Gary Slide Output",
       "type": "array"
     },
-    "generated_at_utc": {
-      "format": "date-time",
-      "title": "Generated At Utc",
-      "type": "string"
+    "perception_artifacts": {
+      "items": {
+        "$ref": "#/$defs/PerceptionArtifact"
+      },
+      "minItems": 1,
+      "title": "Perception Artifacts",
+      "type": "array"
+    },
+    "segment_manifest": {
+      "$ref": "#/$defs/SegmentManifest"
     },
     "narration_script_markers": {
       "items": {
@@ -279,23 +320,7 @@
       "title": "Narration Script Markers",
       "type": "array"
     },
-    "perception_artifacts": {
-      "items": {
-        "$ref": "#/$defs/PerceptionArtifact"
-      },
-      "minItems": 1,
-      "title": "Perception Artifacts",
-      "type": "array"
-    },
     "procedural_rules": {
-      "default": [
-        "behavioral_intent_parity",
-        "bridge_cadence",
-        "cluster_arc_continuity",
-        "motion_perception_confirmation",
-        "narration_cue_presence",
-        "traceable_visual_references"
-      ],
       "items": {
         "enum": [
           "behavioral_intent_parity",
@@ -307,22 +332,10 @@
         ],
         "type": "string"
       },
+      "maxItems": 6,
+      "minItems": 6,
       "title": "Procedural Rules",
       "type": "array"
-    },
-    "run_id": {
-      "minLength": 1,
-      "title": "Run Id",
-      "type": "string"
-    },
-    "schema_version": {
-      "const": "irene-pass-2-authoring.v1",
-      "default": "irene-pass-2-authoring.v1",
-      "title": "Schema Version",
-      "type": "string"
-    },
-    "segment_manifest": {
-      "$ref": "#/$defs/SegmentManifest"
     }
   },
   "required": [
@@ -332,7 +345,8 @@
     "gary_slide_output",
     "perception_artifacts",
     "segment_manifest",
-    "narration_script_markers"
+    "narration_script_markers",
+    "procedural_rules"
   ],
   "title": "IrenePass2AuthoringEnvelope",
   "type": "object"
