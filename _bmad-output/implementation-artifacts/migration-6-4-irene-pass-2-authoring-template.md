@@ -240,7 +240,31 @@ Required verification at implementation close:
 
 ### Decision Needed / Halt-And-Adapt
 
-- `decision_needed`: none at Gate 2. Gate 5 still needs operator dual-gate evidence per AC-6.4-G.
+- `decision_needed`: none at Gate 2.
+- Cycle 2 decision_needed: URL-pattern Rust-regex fallback (operator-ratified 2026-04-28; documented in code at `app/specialists/irene/authoring/pass_2_template.py` LOCAL_PNG_PATH_PATTERN trade-off comment).
+- Gate 5 evidence captured 2026-04-28 (see below).
+
+### Operator Dual-Gate Gate-2 Evidence (AC-6.4-G; Gate 5)
+
+- **Date:** 2026-04-28
+- **Command:** `.venv\Scripts\python.exe scripts\operator\gate5_slab_6_4.py`
+- **Started:** 2026-04-28T13:53:59.762114+00:00
+- **Finished:** 2026-04-28T13:54:08.047333+00:00
+- **validator-oracle alignment:** PASS — 63 passed in 1.90s
+- **composition smoke:** PASS — 1 passed in 1.19s
+- **strict + closed-enum + procedural-rule:** PASS — 19 passed in 1.43s
+- **Total:** 83 passed in 4.52s aggregate
+- **Operator witness:** Juan Leon (operator session)
+- **Disposition:** PASS — substrate_shape gate cleared + invariant_preservation gate cleared. AC-6.4-G satisfied.
+
+### Closeout Trace
+
+- Implementation lineage: `162d129` (bundled) → `3dc6723` review (11 patch + 0 DN) → `c2df610` cycle 1 → `8b165e8` second-pass HALT (3 re-trace FAILs) → operator-ratified URL-pattern fallback → `1151bdc` cycle 2 → `e9ede93` third-pass CLEAN → operator Gate 5 ceremony PASS 2026-04-28
+- Riders: 9 BINDING + 5 NON-BLOCKING all satisfied; cycle 2 patches (BH-1 + EH-1 + AA-1) all PASS at third-pass re-trace
+- N-items: N4 + N5 + N7 + N9 + N11 PASS (N5 flipped FAIL → PASS post-cycle-2)
+- Mary harvest-gate A18 disposition (operator-ratified 2026-04-28): **leave as candidate.** Cycle 2 work was procedural-validator-alignment expansion (50 enforcement points enumerated with rationale), not state-machine elevation. The 6 procedural rules (cluster arc continuity, bridge cadence, narration cue presence, etc.) use procedural alignment functions, not FSM/state-machine modeling. Revisit at next state-machine-shaped substrate work.
+- Composition Spec §10 Decision Log: N/A (no substrate change; Irene `_act` body category unchanged per A-R1; QR-R1 composition smoke unchanged).
+- Bundle progress: 3/3 closed (6.3 + 6.5 closed earlier same day; 6.4 closed via this trace). **First tracked trial UNBLOCKED.**
 - Halt-and-adapt cycles: none.
 
 ### File List
