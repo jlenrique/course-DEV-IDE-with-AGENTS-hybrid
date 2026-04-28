@@ -64,6 +64,8 @@ Built-in (orchestration) capabilities live in `./references/`. Production-readin
 
 Operator-facing reference for PR-*: [`docs/dev-guide/marcus-capabilities.md`](../../docs/dev-guide/marcus-capabilities.md). Contract pinned in `./capabilities/registry.yaml` + `./capabilities/schemas/`. Delegation + envelopes: `./references/external-specialist-registry.md`. Cluster: `./references/cluster-workflow-knowledge.md`. Paths: `./references/specialist-registry.yaml`. Templates: `./references/workflow-templates.yaml`.
 
+Step 02A prior-run operator-directives defaults are documented at [`docs/operator/step-02a-prior-run-defaults.md`](../../docs/operator/step-02a-prior-run-defaults.md). This is a prompt-pack helper, not a PR-* capability.
+
 ## Creative Director Routing
 
 For narrated-lesson runs using experience emphasis, ask the operator the plain-language emphasis question (never expose `experience_profile`); map the answer to the canonical profile id; invoke CD only through a Marcus-owned envelope (CD never mutates run state); resolve the directive path before specialist delegation; downstream specialists consume resolved values only.

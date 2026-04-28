@@ -9,20 +9,20 @@
 | 02A | 02A | scripts/utilities/run_hud.py | M→O | Operator Directives |
 | 03 | 03 | scripts/utilities/run_hud.py | O→M | Ingestion + Evidence Log |
 | 04 | 04 | marcus/orchestrator/loop.py | M→O | Ingestion Quality Gate + Irene Packet |
-| 04A | 04A | marcus/orchestrator/loop.py | M→O | Lesson Plan Coauthoring + Scope Lock |
+| 04A | 04A | marcus/orchestrator/loop.py | M→O | Lesson Plan Coauthoring + Scope Lock (Marcus <-> HIL) |
 | 04.5 | 04.5 | marcus/orchestrator/loop.py | M→self | Parent Slide Count Polling |
 | 04.55 | 04.55 | marcus/orchestrator/loop.py | M→self | Estimator + Run Constants Lock |
-| 4.75 | 4.75 | scripts/utilities/run_hud.py | M→self | Creative Directive Resolution |
+| 4.75 | 4.75 | scripts/utilities/run_hud.py | M→self | Creative Directive Resolution (CD) |
 | 05 | 05 | scripts/utilities/run_hud.py | M→O | Irene Pass 1 + Gate 1 Fidelity |
 | 05B | 05B | scripts/utilities/run_hud.py | M→O | Cluster Plan G1.5 Gate |
 | 06 | 06 | scripts/utilities/run_hud.py | O→M | Pre-Dispatch Package Build |
-| 6.2 | 6.2 | scripts/utilities/run_hud.py | M→self | Cluster Prompt Engineering |
-| 6.3 | 6.3 | scripts/utilities/run_hud.py | M→self | Cluster Dispatch Sequencing |
+| 6.2 | 6.2 | scripts/utilities/run_hud.py | M→self | Cluster Prompt Engineering (Conditional) |
+| 6.3 | 6.3 | scripts/utilities/run_hud.py | M→self | Cluster Dispatch Sequencing (Conditional) |
 | 06B | 06B | scripts/utilities/run_hud.py | M→self | Literal-Visual Operator Build |
 | 07 | 07 | skills/bmad-agent-gary | O→M | Gary Dispatch + Export |
-| 7.5 | 7.5 | scripts/utilities/run_hud.py | M→O | Cluster Coherence G2.5 Gate |
+| 7.5 | 7.5 | scripts/utilities/run_hud.py | M→O | Cluster Coherence G2.5 Gate (Conditional) |
 | 07B | 07B | skills/bmad-agent-gary | M→O | Variant Selection Gate |
-| 07C | 07C | skills/bmad-agent-gary | M→O | Storyboard A + Gate 2 Approval |
+| 07C | 07C | skills/bmad-agent-gary | M→O | Storyboard A + Gate 2 Approval + Winner Authorization |
 | 07D | 07D | skills/bmad-agent-gary | M→O | Gate 2M Motion Designation |
 | 07E | 07E | skills/bmad-agent-gary | M→self | Motion Generation / Import |
 | 07F | 07F | skills/bmad-agent-gary | M→O | Motion Gate |
@@ -169,6 +169,14 @@ Governance rules:
 - This artifact becomes a first-class input alongside `extracted.md` for downstream agents.
 
 When resuming a run that already has `operator-directives.md`, Marcus may present the existing directives for re-confirmation rather than re-polling from scratch.
+
+Prior-run defaults policy:
+- Before polling from scratch, Marcus checks for named defaults using `scripts.utilities.operator_directives_defaults.discover_step_02a_directives_default(bundle_root=Path("[BUNDLE_PATH]"))`.
+- Current-bundle `operator-directives.md` remains first priority and must be presented for reconfirmation before older runs are considered.
+- If no current file exists, the helper scans sibling tracked source bundles for the latest valid `operator-directives.md` with the same `lesson_slug`, excluding the current bundle.
+- If a prior default is found, present it with `run_id`, source modified UTC, source bundle path, source directives path, and the three directive categories preserved.
+- Require one explicit operator choice before writing this run's directives: accept prior defaults unchanged, modify prior defaults, or replace from scratch.
+- If no valid prior same-lesson directives are found, proceed with the existing poll-from-scratch flow.
 
 Required write:
 - `[BUNDLE_PATH]/operator-directives.md`

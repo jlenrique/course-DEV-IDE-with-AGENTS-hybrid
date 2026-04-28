@@ -42,6 +42,11 @@ from scripts.utilities.hud_data_sources import (
     read_cost_engineering_state,
     read_m5_window_state,
 )
+from scripts.utilities.hud_per_step_summary import (
+    StepSummary,
+    derive_per_step_summaries,
+    scan_bundle_summary_artifacts,
+)
 from scripts.utilities.pipeline_manifest import hud_steps, load_manifest
 from scripts.utilities.progress_map import build_report as build_progress_report
 
@@ -237,6 +242,7 @@ def _scan_bundle_artifacts(bundle_dir: Path) -> list[dict[str, str]]:
 
 def _build_pipeline_state(
     gate_results: list[dict[str, Any]],
+    step_summaries: dict[str, StepSummary] | None = None,
 ) -> list[dict[str, Any]]:
     """Merge gate results into pipeline step definitions."""
     gate_by_id = {str(g.get("step_id", "")).upper(): g for g in gate_results}
@@ -259,6 +265,7 @@ def _build_pipeline_state(
             "evidence": gate_data.get("evidence", "") if gate_data else "",
             "inputs": gate_data.get("inputs", []) if gate_data else [],
             "outputs": gate_data.get("outputs", []) if gate_data else [],
+            "step_summary": step_summaries.get(step["id"]) if step_summaries else None,
         }
         steps.append(merged)
     return steps
@@ -288,7 +295,10 @@ def collect_hud_data(
         artifacts = _scan_bundle_artifacts(bundle_dir)
         bundle_path = str(bundle_dir)
 
-    pipeline = _build_pipeline_state(gate_results)
+    manifest = load_manifest()
+    summary_artifacts = scan_bundle_summary_artifacts(bundle_dir) if bundle_dir and bundle_dir.exists() else {}
+    step_summaries = derive_per_step_summaries(manifest, summary_artifacts)
+    pipeline = _build_pipeline_state(gate_results, step_summaries=step_summaries)
 
     # Compute pipeline position
     current_step = 0
@@ -388,6 +398,28 @@ def _render_pipeline_step(step: dict[str, Any], is_current: bool) -> str:
     detail_html = ""
     if step["summary"]:
         detail_html += f'<div class="step-summary">{_esc(step["summary"])}</div>'
+    step_summary = step.get("step_summary")
+    if isinstance(step_summary, StepSummary):
+        open_attr = " open" if is_current or step["conditions"] or step["blockers"] else ""
+        fields = "".join(
+            f"<li>{_esc(field)}</li>"
+            for field in (step_summary.captured_fields or ("artifact_path",))
+        )
+        freshness = step_summary.freshness_timestamp or "n/a"
+        detail_id = f"step-summary-{_esc(step['id']).replace('.', '-')}"
+        detail_html += (
+            f'<details id="{detail_id}" class="step-content-summary" data-step-summary-id="{detail_id}"{open_attr}>'
+            f'<summary>{_esc(step_summary.title)}</summary>'
+            f'<div class="step-content-summary-body">'
+            f'<p>{_esc(step_summary.description)}</p>'
+            f'<dl>'
+            f'<dt>Artifact source</dt><dd>{_esc(step_summary.artifact_source)}</dd>'
+            f'<dt>Freshness</dt><dd>{_esc(freshness)}</dd>'
+            f'</dl>'
+            f'<ul>{fields}</ul>'
+            f'</div>'
+            f'</details>'
+        )
     if step["metrics"]:
         metrics_items = "".join(
             f"<li><strong>{_esc(k)}:</strong> {_esc(str(v))}</li>"
@@ -1140,6 +1172,13 @@ details summary:hover { background: #334155; }
 details > ul, details > pre, details > table, details > div {
   padding: 6px 12px; background: #0f172a;
 }
+.step-content-summary-body p { margin-bottom: 6px; color: #cbd5e1; }
+.step-content-summary-body dl {
+  display: grid; grid-template-columns: 110px 1fr; gap: 3px 8px;
+  font-size: 0.74rem; margin-bottom: 6px;
+}
+.step-content-summary-body dt { color: #94a3b8; font-weight: 700; }
+.step-content-summary-body dd { color: #cbd5e1; overflow-wrap: anywhere; }
 ul { list-style: none; padding-left: 12px; }
 li::before { content: "\\2022"; color: #475569; margin-right: 6px; }
 .warn-list li::before { content: "\\26A0"; color: #eab308; }
@@ -1225,7 +1264,8 @@ document.addEventListener('DOMContentLoaded', function() {
   // Restore expanded details
   var savedDetails = JSON.parse(sessionStorage.getItem('hud_details') || '{}');
   document.querySelectorAll('details').forEach(function(el, i) {
-    if (savedDetails[i] !== undefined) el.open = savedDetails[i];
+    var key = el.getAttribute('data-step-summary-id') || el.id || String(i);
+    if (savedDetails[key] !== undefined) el.open = savedDetails[key];
   });
 
   // Animate refresh bar
@@ -1253,7 +1293,8 @@ document.addEventListener('DOMContentLoaded', function() {
     if (activeTab) sessionStorage.setItem('hud_tab', activeTab.id.replace('tab-',''));
     var details = {};
     document.querySelectorAll('details').forEach(function(el, i) {
-      details[i] = el.open;
+      var key = el.getAttribute('data-step-summary-id') || el.id || String(i);
+      details[key] = el.open;
     });
     sessionStorage.setItem('hud_details', JSON.stringify(details));
     location.reload();

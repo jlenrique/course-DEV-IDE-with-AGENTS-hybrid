@@ -276,6 +276,8 @@ class TestRenderHtml:
         html = hud.render_html(data)
         assert "sessionStorage" in html
         assert "hud_scroll" in html
+        assert "hud_details" in html
+        assert "data-step-summary-id" in html
         assert "refreshBar" in html
 
     def test_includes_tab_switching(self, bundle: Path) -> None:

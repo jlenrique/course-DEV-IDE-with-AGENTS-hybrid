@@ -1,6 +1,6 @@
 # Migration Story 6.5: HUD per-step expandable summaries surface real-time captured and locked content
 
-**Status:** ready-for-party-mode-greenlight
+**Status:** review
 **Sprint key:** `migration-6-5-hud-per-step-expandable-summaries`
 **Epic:** Slab 6 - Post-MVP Production Capability (`migration-epic-6-post-mvp-production`)
 **Pts:** ~4
@@ -10,7 +10,7 @@
 
 ## Governance
 
-This story has completed Gate 0 spec authoring only. Gate 1 is operator-run `bmad-party-mode` green-light with Winston, Murat, Paige, and Amelia before any dev work starts. Gate 2 implementation, Gate 3 `bmad-code-review`, Gate 4 triage, and Gate 6 close remain future work.
+This story completed Gate 1 operator-run `bmad-party-mode` green-light with Winston, Murat, Paige, and Amelia on 2026-04-28. Gate 2 implementation is complete and the story is in `review`; Gate 3 `bmad-code-review`, Gate 4 triage, and Gate 6 close remain future work.
 
 Binding readings completed at authoring T1:
 - `_bmad-output/implementation-artifacts/codex-handoff-slab-6-3-through-6-5-trial-experience-bundle.md`
@@ -217,5 +217,38 @@ Required verification at implementation close:
 
 ## Dev Agent Record
 
-Populated during Gate 2 implementation.
+### Gate 2 Implementation Notes
 
+- Added `scripts/utilities/hud_per_step_summary.py` with one bundle artifact scan per render and O(N) manifest-step derivation keyed by manifest step IDs.
+- Covered all 33 `hud_tracked` steps with known derivation patterns or the exact honest fallback `no locked artifact yet`; Phase 1 pre-flight found 0 steps without known derivation source, so A-R2 did not fire.
+- Integrated summaries into `scripts/utilities/run_hud.py` as per-step `<details>` blocks with stable IDs, artifact source/freshness/captured fields, default-open current/blocker states, and sessionStorage persistence.
+- Updated `docs/operator/hud-guide.md` with expand/collapse semantics, refresh behavior, and honest absent-artifact wording.
+
+### Tests / Evidence
+
+- `.\.venv\Scripts\python.exe -m pytest tests/test_run_hud.py tests/unit/hud/test_per_step_summary_derivation.py tests/integration/hud/test_per_step_summary_rendering.py -q --tb=short` -> 77 passed in 9.14s.
+- `.\.venv\Scripts\python.exe -m scripts.utilities.check_pipeline_manifest_lockstep` -> PASS.
+- `$env:PYTHONPATH='.'; .\.venv\Scripts\python.exe scripts/utilities/check_pipeline_manifest_lockstep.py` -> PASS.
+- `.\.venv\Scripts\python.exe -m scripts.utilities.validate_migration_story_sandbox_acs _bmad-output/implementation-artifacts/migration-6-3-step-02a-prior-run-directives-as-defaults.md _bmad-output/implementation-artifacts/migration-6-4-irene-pass-2-authoring-template.md _bmad-output/implementation-artifacts/migration-6-5-hud-per-step-expandable-summaries.md` -> PASS across 3 story files.
+
+### N-Item / Rider Trace
+
+- N4 PASS: HUD display changes do not affect runtime execution or specialist isolation.
+- N9 PASS-PENDING-OPERATOR: per-step summary readability remains for Gate 6 operator close evidence.
+- A9 PASS: summary derivation is keyed by manifest step ID/label projection.
+- A11 PASS: bundle paths use `Path`, relative path display, and HTML escaping.
+- Section 11 trigger check: no Composition Spec Section 11 trigger fired.
+
+### Decision Needed / Halt-And-Adapt
+
+- `decision_needed`: none.
+- Halt-and-adapt cycles: none.
+
+### File List
+
+- `scripts/utilities/hud_per_step_summary.py`
+- `scripts/utilities/run_hud.py`
+- `tests/test_run_hud.py`
+- `tests/unit/hud/test_per_step_summary_derivation.py`
+- `tests/integration/hud/test_per_step_summary_rendering.py`
+- `docs/operator/hud-guide.md`

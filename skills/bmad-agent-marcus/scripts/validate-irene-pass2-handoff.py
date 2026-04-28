@@ -42,6 +42,10 @@ SEGMENT_MANIFEST_FILENAME = "segment-manifest.yaml"
 PERCEPTION_ARTIFACTS_FILENAME = "perception-artifacts.json"
 PROJECT_ROOT = Path(__file__).resolve().parents[3]
 NARRATION_PARAMS_PATH = PROJECT_ROOT / "state" / "config" / "narration-script-parameters.yaml"
+# Authoring-time companion template:
+# skills/bmad-agent-content-creator/references/pass-2-authoring-template.md
+# Schema source of truth:
+# app/specialists/irene/authoring/pass_2_template.py
 WORD_RE = re.compile(r"\b\w+(?:[-']\w+)?\b")
 _FALLBACK_INTRO_PATTERNS = [
     "in this section",

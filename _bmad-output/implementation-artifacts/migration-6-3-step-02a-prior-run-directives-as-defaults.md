@@ -1,6 +1,6 @@
 # Migration Story 6.3: Step 02A surfaces prior-run operator directives as named defaults
 
-**Status:** ready-for-party-mode-greenlight
+**Status:** review
 **Sprint key:** `migration-6-3-step-02a-prior-run-directives-as-defaults`
 **Epic:** Slab 6 - Post-MVP Production Capability (`migration-epic-6-post-mvp-production`)
 **Pts:** ~1
@@ -10,7 +10,7 @@
 
 ## Governance
 
-This story has completed Gate 0 spec authoring only. Gate 1 is operator-run `bmad-party-mode` green-light with Winston, Murat, Paige, and Amelia before any dev work starts. Gate 2 implementation, Gate 3 `bmad-code-review`, Gate 4 triage, and Gate 6 close remain future work.
+This story completed Gate 1 operator-run `bmad-party-mode` green-light with Winston, Murat, Paige, and Amelia on 2026-04-28. Gate 2 implementation is complete and the story is in `review`; Gate 3 `bmad-code-review`, Gate 4 triage, and Gate 6 close remain future work.
 
 Binding readings completed at authoring T1:
 - `_bmad-output/implementation-artifacts/codex-handoff-slab-6-3-through-6-5-trial-experience-bundle.md`
@@ -189,5 +189,39 @@ Required verification at implementation close:
 
 ## Dev Agent Record
 
-Populated during Gate 2 implementation.
+### Gate 2 Implementation Notes
 
+- Implemented `scripts/utilities/operator_directives_defaults.py` as a pure Step 02A helper with explicit `bundle_root: Path`, current-bundle resume precedence, same-lesson prior-run discovery, invalid-prior fallthrough, deterministic mtime/run_id tiebreak, and explicit accept/modify/replace write choices.
+- Updated the Step 02A v4.2 template additively, regenerated the production prompt pack and fixture hash, and added operator-facing documentation plus Marcus skill/runbook cross-links.
+- Preserved the architectural invariant that the helper does not call Marcus PR-* surfaces and does not touch production composition substrate.
+
+### Tests / Evidence
+
+- `.\.venv\Scripts\python.exe -m pytest tests/integration/marcus/test_step_02a_prior_run_directives_as_defaults.py tests/generators/v42 -q --tb=short` -> 16 passed in 2.01s.
+- `.\.venv\Scripts\python.exe -m scripts.utilities.validate_migration_story_sandbox_acs _bmad-output/implementation-artifacts/migration-6-3-step-02a-prior-run-directives-as-defaults.md _bmad-output/implementation-artifacts/migration-6-4-irene-pass-2-authoring-template.md _bmad-output/implementation-artifacts/migration-6-5-hud-per-step-expandable-summaries.md` -> PASS across 3 story files.
+- `.\.venv\Scripts\python.exe -m scripts.utilities.check_pipeline_manifest_lockstep` -> PASS.
+
+### N-Item / Rider Trace
+
+- N4 PASS: Marcus/operator defaults helper remains isolated; no runtime composition substrate changes.
+- N5 PASS: Step 02A output remains the existing `operator-directives.md` contract.
+- N9 PASS-PENDING-OPERATOR: accept/modify/replace readability remains for Gate 6 operator close evidence.
+- A-R2 pre-flight PASS: fixture bundle layout is compatible with the operator run-bundle pattern used by the helper tests.
+- Section 11 trigger check: no Composition Spec Section 11 trigger fired.
+
+### Decision Needed / Halt-And-Adapt
+
+- `decision_needed`: none.
+- Halt-and-adapt cycles: none.
+
+### File List
+
+- `scripts/utilities/operator_directives_defaults.py`
+- `tests/integration/marcus/test_step_02a_prior_run_directives_as_defaults.py`
+- `scripts/generators/v42/templates/sections/02A-operator-directives.md.j2`
+- `docs/workflow/production-prompt-pack-v4.2-narrated-lesson-with-video-or-animation.md`
+- `tests/generators/v42/fixtures/expected_pack/fixture_pack.md`
+- `tests/generators/v42/fixtures/pack_sha_fixture.txt`
+- `docs/operator/step-02a-prior-run-defaults.md`
+- `docs/operator/trial-run-runbook.md`
+- `skills/bmad-agent-marcus/SKILL.md`

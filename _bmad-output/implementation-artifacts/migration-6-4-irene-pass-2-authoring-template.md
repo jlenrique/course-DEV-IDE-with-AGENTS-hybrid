@@ -1,6 +1,6 @@
 # Migration Story 6.4: Irene Pass 2 authoring template encodes validator contract as explicit schema constraints
 
-**Status:** ready-for-party-mode-greenlight
+**Status:** review
 **Sprint key:** `migration-6-4-irene-pass-2-authoring-template`
 **Epic:** Slab 6 - Post-MVP Production Capability (`migration-epic-6-post-mvp-production`)
 **Pts:** ~4
@@ -10,7 +10,7 @@
 
 ## Governance
 
-This story has completed Gate 0 spec authoring only. Gate 1 is operator-run `bmad-party-mode` green-light with Winston, Murat, Paige, Amelia, Quinn-R, and Mary before dev work starts. Gate 2 implementation, Gate 3 `bmad-code-review`, Gate 4 triage, Gate 5 operator-side dual-gate evidence, and Gate 6 close remain future work.
+This story completed Gate 1 operator-run `bmad-party-mode` green-light with Winston, Murat, Paige, Amelia, Quinn-R, and Mary on 2026-04-28. Gate 2 implementation is complete and the story is in `review`; Gate 3 `bmad-code-review`, Gate 4 triage, Gate 5 operator-side dual-gate evidence, and Gate 6 close remain future work.
 
 Binding readings completed at authoring T1:
 - `_bmad-output/implementation-artifacts/codex-handoff-slab-6-3-through-6-5-trial-experience-bundle.md`
@@ -213,5 +213,47 @@ Required verification at implementation close:
 
 ## Dev Agent Record
 
-Populated during Gate 2 implementation and Gate 5 operator evidence.
+### Gate 2 Implementation Notes
 
+- Added `app/specialists/irene/authoring/pass_2_template.py` as the Pydantic v2 source of truth with strict assignment validation, closed enums, timezone-aware generated timestamps, structural cross-artifact checks, and named procedural-only rule declarations.
+- Generated `schema/irene_pass_2_authoring.v1.schema.json` from the model and pinned parity with a golden fixture plus schema/Markdown lockstep tests.
+- Updated the existing Irene authoring Markdown, validator cross-links, Irene expertise README, and `docs/dev-guide/irene-pass-2-authoring.md`; no duplicate Markdown source of truth was introduced.
+- Verified Irene prompt composition consumes the template/schema guidance through `_read_pass_2_references(...)` and a `ProductionDispatchAdapter` composition smoke without changing contribution shape.
+- A-R1 HALT trigger did not fire: Irene `_act` remains pure-LLM prompt assembly with stricter reference loading.
+- A-R2 HALT trigger did not fire: cluster-arc continuity stayed a named procedural rule; no state-machine expansion was required.
+
+### Tests / Evidence
+
+- `.\.venv\Scripts\python.exe -m pytest tests/unit/specialists/irene/test_pass_2_template_strict.py tests/integration/specialists/irene/test_pass_2_template_validator_alignment.py tests/specialists/irene/test_irene_pass2_authoring_prompt_consumption.py tests/composition/test_irene_pass_2_template_composition_smoke.py -q --tb=short` -> 13 passed in 1.44s.
+- `.\.venv\Scripts\python.exe -m pytest skills/bmad-agent-marcus/scripts/tests/test_validate_irene_pass2_handoff.py -q --tb=short` -> 62 passed in 6.35s.
+- `.\.venv\Scripts\python.exe -m scripts.utilities.validate_migration_story_sandbox_acs _bmad-output/implementation-artifacts/migration-6-3-step-02a-prior-run-directives-as-defaults.md _bmad-output/implementation-artifacts/migration-6-4-irene-pass-2-authoring-template.md _bmad-output/implementation-artifacts/migration-6-5-hud-per-step-expandable-summaries.md` -> PASS across 3 story files.
+
+### N-Item / Rider Trace
+
+- N4 PASS: isolated Irene prompt/reference flow remains functional.
+- N5 PASS: Pass 2 handoff/output shape remains explicit and additive.
+- N7 PASS: existing validator fixtures remain green.
+- N9 PASS-PENDING-OPERATOR: Gate 5 dual-gate evidence still requires operator-selected representative Pass 2 sample.
+- N11 PASS: docs and template declare isolated and composed usage.
+- QR-R1 PASS: composition smoke covers `ProductionDispatchAdapter` path and unchanged contribution shape.
+- Section 11 trigger check: no Composition Spec Section 11 trigger fired.
+
+### Decision Needed / Halt-And-Adapt
+
+- `decision_needed`: none at Gate 2. Gate 5 still needs operator dual-gate evidence per AC-6.4-G.
+- Halt-and-adapt cycles: none.
+
+### File List
+
+- `app/specialists/irene/authoring/__init__.py`
+- `app/specialists/irene/authoring/pass_2_template.py`
+- `schema/irene_pass_2_authoring.v1.schema.json`
+- `tests/fixtures/specialists/irene/pass_2_template_golden.json`
+- `tests/unit/specialists/irene/test_pass_2_template_strict.py`
+- `tests/integration/specialists/irene/test_pass_2_template_validator_alignment.py`
+- `tests/specialists/irene/test_irene_pass2_authoring_prompt_consumption.py`
+- `tests/composition/test_irene_pass_2_template_composition_smoke.py`
+- `skills/bmad-agent-content-creator/references/pass-2-authoring-template.md`
+- `skills/bmad-agent-marcus/scripts/validate-irene-pass2-handoff.py`
+- `docs/dev-guide/irene-pass-2-authoring.md`
+- `app/specialists/irene/expertise/README.md`

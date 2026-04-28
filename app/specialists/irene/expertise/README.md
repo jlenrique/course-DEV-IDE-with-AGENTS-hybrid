@@ -44,3 +44,5 @@ These references are loaded as text into the Pass 2 act-node prompt assembly.
 `SanctumFingerprint.compute(...)` hashes the sanctum directory contents at run
 start; for empty-sanctum runs (this story) the hash is the deterministic empty
 sorted-listing sha256.
+
+Slab 6.4 authoring contract: `pass-2-authoring-template.md` references the Pydantic source of truth at `app/specialists/irene/authoring/pass_2_template.py` and generated schema at `schema/irene_pass_2_authoring.v1.schema.json`. The same prompt reference is used in isolated M3 mode and composed production-runner mode.

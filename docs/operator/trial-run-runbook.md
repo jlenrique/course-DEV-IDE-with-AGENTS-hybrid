@@ -95,6 +95,8 @@ The trial corpus is the **input content bundle** Marcus orchestrates against. Fo
 4. Pipeline-manifest §-IDs (e.g., 01, 02, 02A, ..., 15) executed in declared order
 5. At each gate (G1, G2C, G3, G4), Marcus emits a DecisionCard + `interrupt()` checkpoint pauses the run pending operator verdict
 
+**Step 02A directives defaults:** if you repeat a lesson run, Marcus may surface the latest valid same-lesson `operator-directives.md` as named defaults before polling from scratch. You must explicitly accept, modify, or replace those defaults before ingestion starts. See [`step-02a-prior-run-defaults.md`](step-02a-prior-run-defaults.md).
+
 ---
 
 ## Step 4 — Inspect each DecisionCard at gate fire

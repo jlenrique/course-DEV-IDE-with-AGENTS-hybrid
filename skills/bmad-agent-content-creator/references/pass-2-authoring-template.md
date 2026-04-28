@@ -8,6 +8,21 @@ Authoritative schema: [`state/config/schemas/segment-manifest.schema.json`](../.
 Enforcement: [`scripts/validators/pass_2_emission_lint.py`](../../../scripts/validators/pass_2_emission_lint.py) (invoked at end of Pack v4.2 §07; failing lint blocks §08 Storyboard B render).
 Upstream-reference reader: [`skills/bmad-agent-content-creator/scripts/motion_gate_receipt_reader.py`](../scripts/motion_gate_receipt_reader.py).
 
+Slab 6.4 authoring contract source of truth: [`app/specialists/irene/authoring/pass_2_template.py`](../../../app/specialists/irene/authoring/pass_2_template.py).
+Generated JSON Schema: [`schema/irene_pass_2_authoring.v1.schema.json`](../../../schema/irene_pass_2_authoring.v1.schema.json).
+Post-hoc procedural validator: [`skills/bmad-agent-marcus/scripts/validate-irene-pass2-handoff.py`](../../bmad-agent-marcus/scripts/validate-irene-pass2-handoff.py).
+
+Validation order is contractual: schema-first via `IrenePass2AuthoringEnvelope`, then procedural validation via `validate-irene-pass2-handoff.py`. Cluster arc continuity, bridge cadence, narration cue presence in narration prose, behavioral-intent parity, motion perception confirmation, and traceable visual-reference proof remain procedural rules.
+
+<!-- irene-pass2-pydantic-fields:start -->
+Top-level Pydantic field names referenced by this Markdown:
+`schema_version`, `run_id`, `generated_at_utc`, `composition_mode`, `gary_slide_output`, `perception_artifacts`, `segment_manifest`, `narration_script_markers`, `procedural_rules`.
+<!-- irene-pass2-pydantic-fields:end -->
+
+Composition modes:
+- `composition_mode: isolated` for M3 harness or direct specialist trials.
+- `composition_mode: composed` for production runner consumption through `ProductionDispatchAdapter`.
+
 ---
 
 ## Why this template exists

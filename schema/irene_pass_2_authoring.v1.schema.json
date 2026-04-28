@@ -1,0 +1,339 @@
+{
+  "$defs": {
+    "GarySlideOutput": {
+      "additionalProperties": false,
+      "properties": {
+        "card_number": {
+          "description": "One-based slide/card order.",
+          "minimum": 1,
+          "title": "Card Number",
+          "type": "integer"
+        },
+        "file_path": {
+          "description": "Local downloaded PNG path.",
+          "minLength": 1,
+          "title": "File Path",
+          "type": "string"
+        },
+        "slide_id": {
+          "description": "Gary slide identifier.",
+          "minLength": 1,
+          "title": "Slide Id",
+          "type": "string"
+        },
+        "source_ref": {
+          "description": "Traceable source reference.",
+          "minLength": 1,
+          "title": "Source Ref",
+          "type": "string"
+        }
+      },
+      "required": [
+        "slide_id",
+        "card_number",
+        "file_path",
+        "source_ref"
+      ],
+      "title": "GarySlideOutput",
+      "type": "object"
+    },
+    "PerceptionArtifact": {
+      "additionalProperties": false,
+      "properties": {
+        "slide_id": {
+          "minLength": 1,
+          "title": "Slide Id",
+          "type": "string"
+        },
+        "source_image_path": {
+          "minLength": 1,
+          "title": "Source Image Path",
+          "type": "string"
+        },
+        "visual_elements": {
+          "items": {
+            "additionalProperties": true,
+            "type": "object"
+          },
+          "title": "Visual Elements",
+          "type": "array"
+        }
+      },
+      "required": [
+        "slide_id",
+        "source_image_path"
+      ],
+      "title": "PerceptionArtifact",
+      "type": "object"
+    },
+    "SegmentManifest": {
+      "additionalProperties": false,
+      "properties": {
+        "segments": {
+          "items": {
+            "$ref": "#/$defs/SegmentManifestSegment"
+          },
+          "minItems": 1,
+          "title": "Segments",
+          "type": "array"
+        }
+      },
+      "required": [
+        "segments"
+      ],
+      "title": "SegmentManifest",
+      "type": "object"
+    },
+    "SegmentManifestSegment": {
+      "additionalProperties": false,
+      "properties": {
+        "behavioral_intent": {
+          "minLength": 1,
+          "title": "Behavioral Intent",
+          "type": "string"
+        },
+        "bridge_type": {
+          "enum": [
+            "none",
+            "intro",
+            "outro",
+            "pivot",
+            "both",
+            "cluster_boundary"
+          ],
+          "title": "Bridge Type",
+          "type": "string"
+        },
+        "card_number": {
+          "minimum": 1,
+          "title": "Card Number",
+          "type": "integer"
+        },
+        "cluster_id": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Cluster Id"
+        },
+        "cluster_position": {
+          "anyOf": [
+            {
+              "enum": [
+                "establish",
+                "tension",
+                "develop",
+                "resolve"
+              ],
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Cluster Position"
+        },
+        "content_density": {
+          "enum": [
+            "low",
+            "medium",
+            "high"
+          ],
+          "title": "Content Density",
+          "type": "string"
+        },
+        "duration_rationale": {
+          "minLength": 1,
+          "title": "Duration Rationale",
+          "type": "string"
+        },
+        "id": {
+          "minLength": 1,
+          "title": "Id",
+          "type": "string"
+        },
+        "narration_text": {
+          "minLength": 1,
+          "title": "Narration Text",
+          "type": "string"
+        },
+        "slide_id": {
+          "minLength": 1,
+          "title": "Slide Id",
+          "type": "string"
+        },
+        "timing_role": {
+          "minLength": 1,
+          "title": "Timing Role",
+          "type": "string"
+        },
+        "visual_detail_load": {
+          "enum": [
+            "low",
+            "medium",
+            "high"
+          ],
+          "title": "Visual Detail Load",
+          "type": "string"
+        },
+        "visual_file": {
+          "minLength": 1,
+          "title": "Visual File",
+          "type": "string"
+        },
+        "visual_references": {
+          "items": {
+            "$ref": "#/$defs/VisualReference"
+          },
+          "minItems": 1,
+          "title": "Visual References",
+          "type": "array"
+        }
+      },
+      "required": [
+        "id",
+        "slide_id",
+        "card_number",
+        "narration_text",
+        "behavioral_intent",
+        "visual_file",
+        "visual_detail_load",
+        "timing_role",
+        "content_density",
+        "duration_rationale",
+        "bridge_type",
+        "visual_references"
+      ],
+      "title": "SegmentManifestSegment",
+      "type": "object"
+    },
+    "VisualReference": {
+      "additionalProperties": false,
+      "properties": {
+        "element": {
+          "minLength": 1,
+          "title": "Element",
+          "type": "string"
+        },
+        "location_on_slide": {
+          "minLength": 1,
+          "title": "Location On Slide",
+          "type": "string"
+        },
+        "narration_cue": {
+          "minLength": 1,
+          "title": "Narration Cue",
+          "type": "string"
+        },
+        "perception_source": {
+          "minLength": 1,
+          "title": "Perception Source",
+          "type": "string"
+        }
+      },
+      "required": [
+        "element",
+        "location_on_slide",
+        "narration_cue",
+        "perception_source"
+      ],
+      "title": "VisualReference",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "description": "Authoring-time contract consumed by Irene prompt guidance.",
+  "properties": {
+    "composition_mode": {
+      "enum": [
+        "isolated",
+        "composed"
+      ],
+      "title": "Composition Mode",
+      "type": "string"
+    },
+    "gary_slide_output": {
+      "items": {
+        "$ref": "#/$defs/GarySlideOutput"
+      },
+      "minItems": 1,
+      "title": "Gary Slide Output",
+      "type": "array"
+    },
+    "generated_at_utc": {
+      "format": "date-time",
+      "title": "Generated At Utc",
+      "type": "string"
+    },
+    "narration_script_markers": {
+      "items": {
+        "type": "string"
+      },
+      "minItems": 1,
+      "title": "Narration Script Markers",
+      "type": "array"
+    },
+    "perception_artifacts": {
+      "items": {
+        "$ref": "#/$defs/PerceptionArtifact"
+      },
+      "minItems": 1,
+      "title": "Perception Artifacts",
+      "type": "array"
+    },
+    "procedural_rules": {
+      "default": [
+        "behavioral_intent_parity",
+        "bridge_cadence",
+        "cluster_arc_continuity",
+        "motion_perception_confirmation",
+        "narration_cue_presence",
+        "traceable_visual_references"
+      ],
+      "items": {
+        "enum": [
+          "behavioral_intent_parity",
+          "bridge_cadence",
+          "cluster_arc_continuity",
+          "motion_perception_confirmation",
+          "narration_cue_presence",
+          "traceable_visual_references"
+        ],
+        "type": "string"
+      },
+      "title": "Procedural Rules",
+      "type": "array"
+    },
+    "run_id": {
+      "minLength": 1,
+      "title": "Run Id",
+      "type": "string"
+    },
+    "schema_version": {
+      "const": "irene-pass-2-authoring.v1",
+      "default": "irene-pass-2-authoring.v1",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "segment_manifest": {
+      "$ref": "#/$defs/SegmentManifest"
+    }
+  },
+  "required": [
+    "run_id",
+    "generated_at_utc",
+    "composition_mode",
+    "gary_slide_output",
+    "perception_artifacts",
+    "segment_manifest",
+    "narration_script_markers"
+  ],
+  "title": "IrenePass2AuthoringEnvelope",
+  "type": "object"
+}
