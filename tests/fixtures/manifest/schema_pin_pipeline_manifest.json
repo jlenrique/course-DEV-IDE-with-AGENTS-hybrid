@@ -89,6 +89,22 @@
       "additionalProperties": false,
       "description": "One node in the compiled `StateGraph`.\n\nArchitecture-canonical fields: `id`, `specialist_id`, `scaffold_node`,\n`model_config_ref`. v4.2 inventory deltas ride under the explicit\nextensibility trailing from AC-1.4-A: `label`, `gate`, `gate_code`,\n`sub_phase_of`, `insertion_after`, `hud_tracked`, `pack_section_anchor`,\n`pack_version`, `rationale`, `learning_events`.",
       "properties": {
+        "dependencies": {
+          "anyOf": [
+            {
+              "additionalProperties": {
+                "type": "string"
+              },
+              "type": "object"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Manifest-declared dependency map for production composition. Keys are downstream specialist input keys; values are upstream specialist ids. Missing or empty maps use the runner's permanent fallback resolution.",
+          "title": "Dependencies"
+        },
         "gate": {
           "anyOf": [
             {

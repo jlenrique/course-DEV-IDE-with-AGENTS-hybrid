@@ -288,6 +288,37 @@ def _validate_decision_card_schemas(edges: list[EdgeSpec]) -> None:
         )
 
 
+def _validate_dependency_cycles(nodes: list[NodeSpec]) -> None:
+    graph: dict[str, set[str]] = {}
+    for node in nodes:
+        if not node.specialist_id or not node.dependencies:
+            continue
+        graph.setdefault(node.specialist_id, set()).update(node.dependencies.values())
+
+    visiting: set[str] = set()
+    visited: set[str] = set()
+
+    def visit(specialist_id: str, path: list[str]) -> None:
+        if specialist_id in visiting:
+            cycle_start = path.index(specialist_id)
+            cycle = [*path[cycle_start:], specialist_id]
+            raise CompileError(
+                "circular dependency declared in manifest dependencies: "
+                + " -> ".join(cycle)
+            )
+        if specialist_id in visited:
+            return
+        visiting.add(specialist_id)
+        for upstream_id in sorted(graph.get(specialist_id, ())):
+            if upstream_id in graph:
+                visit(upstream_id, [*path, upstream_id])
+        visiting.remove(specialist_id)
+        visited.add(specialist_id)
+
+    for specialist_id in sorted(graph):
+        visit(specialist_id, [specialist_id])
+
+
 def _edge_target(name: str) -> Any:
     """Map `__start__`/`__end__` sentinels to LangGraph's START/END constants."""
     if name == "__start__":
@@ -364,6 +395,7 @@ def compile(  # noqa: A001 — matches spec naming; callers use `app.manifest.co
     _validate_model_ids_in_model_config_refs(manifest.nodes, root)
     _validate_conditions(manifest.edges)
     _validate_decision_card_schemas(manifest.edges)
+    _validate_dependency_cycles(manifest.nodes)
 
     graph = StateGraph(state_schema=RunState)
     _add_node_and_edges(graph, manifest)
@@ -388,6 +420,7 @@ def compile_run_graph(
     _validate_model_ids_in_model_config_refs(manifest.nodes, root)
     _validate_conditions(manifest.edges)
     _validate_decision_card_schemas(manifest.edges)
+    _validate_dependency_cycles(manifest.nodes)
 
     registry = dispatch_registry if dispatch_registry is not None else _load_dispatch_registry(root)
     graph = StateGraph(state_schema=RunState)

@@ -186,19 +186,19 @@ Production-level gates (G1/G2C/G3/G4) wrap the whole traversal; per-specialist g
 
 ### 3.6 Dependency_map sourcing
 
-**Current shape (Slab 6.1 close, 2026-04-27): runner-layer deterministic fallback at `_default_dependency_map_for(specialist_id)` in `app/marcus/orchestrator/production_runner.py`.** The v4.2 pipeline manifest does NOT yet declare dependency input keys per specialist node; the runner uses a deterministic fallback table:
+**Current shape (Slab 6.2 implementation, 2026-04-27): manifest-declared dependency keys with permanent runner-layer fallback.** `state/config/pipeline-manifest.yaml` may declare per-node `dependencies: dict[str, str]`, where each key is the downstream specialist input key and each value is the upstream specialist id whose `SpecialistContribution` should be read from the envelope.
+
+**Resolution order:** `app/marcus/orchestrator/production_runner.py::_resolve_dependency_map(...)` reads manifest-declared dependencies first. If a node omits `dependencies` or declares an empty map, the runner uses `_default_dependency_map_for(...)`. This fallback retention is permanent: the fallback is the resolution mechanism for nodes that intentionally opt out of explicit manifest declaration. It is not deprecated and not transitional.
+
+**Fallback rule:** the permanent fallback keeps the Slab 6.1 deterministic behavior:
 - `Texas → CD` maps as `source_bundle`
-- All other downstream calls use `upstream_output`
+- All other downstream calls use the immediately previous specialist contribution as `upstream_output`
 
-**Manifest promotion is in flight as Slab-6.2** (`migration-6-2-promote-dependency-map-into-manifest`; ~1pt; lands as Slab 6 trial-experience bundle prerequisite). Once landed, the source-of-truth shifts from runner-layer fallback to manifest-declared dependency keys; the fallback function is preserved as the resolution mechanism for nodes that don't declare keys (backward-compatible).
+**Resolution rule for missing dependencies:** if a manifest-declared or fallback-resolved dependency names an upstream specialist contribution that is absent from the current `ProductionEnvelope`, the runner raises `MissingUpstreamContributionError` with explicit `specialist_id` and `downstream_input_key` fields. Fail loud, not silent fallback.
 
-**Resolution rule for missing dependencies (post-Slab-6.2):** if a manifest node declares a dependency on an upstream specialist that didn't run (offline mode, or node skipped per gate verdict), the adapter raises `MissingUpstreamContributionError` with explicit specialist_id + downstream-input-key in the message. Fail-loud, not silent fallback.
+**Resolution rule for circular dependencies:** the manifest validator at `state/config/pipeline-manifest.yaml` schema check + `app/manifest/compiler.py` reject circular declared dependencies at compile time. Production runner trusts the manifest; circular check is a manifest-level invariant, not a runtime check.
 
-**Resolution rule for missing dependencies (pre-Slab-6.2; current state):** runner-layer fallback uses `upstream_output` for any specialist not in the explicit fallback table (Texas → CD); if the upstream specialist's output doesn't carry the expected key shape, downstream specialist's input construction may fail at the specialist boundary. Test pin: `tests/integration/marcus/test_production_runner_invocation.py` covers fallback contract.
-
-**Resolution rule for circular dependencies:** the manifest validator at `state/config/pipeline-manifest.yaml` schema check + `app/manifest/compiler.py` reject circular dependencies at compile time. Production runner trusts the manifest; circular check is a manifest-level invariant, not a runtime check.
-
-**Evolution rule:** any new specialist added must declare its upstream dependencies in the manifest at filing time (post-Slab-6.2). The `bmad-create-specialist` generator should emit a manifest-entry stub alongside the 9-file specialist tree (deferred as `2c-4-generator-emit-manifest-dependency-stub`).
+**Evolution rule:** any new specialist added should declare its upstream dependencies in the manifest at filing time unless it intentionally opts into permanent fallback resolution. The `bmad-create-specialist` generator should emit a manifest-entry stub alongside the 9-file specialist tree (deferred as `2c-4-generator-emit-manifest-dependency-stub`, which consumes this manifest format as its emission contract).
 
 ### 3.7 Persistence shape: trial envelope + production envelope coexist
 
@@ -391,6 +391,7 @@ Track every composition-substrate decision here. Update at each evolution.
 | 2026-04-27 | Substrate Inventory Checklist N1–N12 standing | A1–A17 + P3 lessons consolidated as pre-flight checklist | Operator request post-Slab-6.0 | Operator |
 | 2026-04-27 | Composition Specification authored as living document (this file) | Pre-emptive prevention vs flying blind during trial evolution | Operator request mid-Slab-6.1-dispatch | Operator |
 | 2026-04-27 | Dependency_map source: deterministic fallback at runner layer (Texas → CD maps as `source_bundle`; other downstream calls use `upstream_output`); manifest promotion deferred as Slab-6.2 prerequisite story | Codex Slab 6.1 implementation surfaced manifest does not yet declare dependency input keys; operator ratified deferral to keep Slab 6.1 close tight; Slab-6.2 (~1pt) lands before Slab 6 trial-experience bundle implementation | Slab 6.1 implementation (commit `d5cfad8`) + bmad-code-review (DFR-6.1-1) | Operator ratification 2026-04-27 |
+| 2026-04-27 | Dependency_map source promoted to pipeline manifest per-node `dependencies`; runner-layer fallback retained permanently for undeclared nodes | Manifest-declared dependencies reduce procedural coupling and make cross-specialist state flow visible in the manifest; permanent fallback preserves backward compatibility and remains the intentional resolution mechanism for opt-out nodes | Slab 6.2 implementation (`migration-6-2-promote-dependency-map-into-manifest`) | Codex implementation + Slab 6.2 party-mode green-light riders |
 | 2026-04-27 | Gate precedence: per-specialist non-blocking by default under production composition; `gate_overrides` opt-in for safety-critical promotion | Confirmed at Slab 6.1 implementation per N6 trace; per-specialist interrupts recorded by adapter; production G1/G2C/G3/G4 remain pause boundary | Slab 6.1 implementation | Codex + N6 trace |
 | 2026-04-27 | Trial envelope persistence: full embed of `ProductionEnvelope` inside `ProductionTrialEnvelope.production_envelope` (required field; not persistence-pointer alternative) | Self-contained trial close artifact; replay-regression reads one file; chosen at implementation; bmad-code-review patch P-2 made it required | Slab 6.1 implementation + bmad-code-review patch `6ca5f43` | Codex + bmad-code-review |
 | 2026-04-27 | Multi-pass / repeated specialist nodes: Path Z ratified ("first contribution wins"; duplicate specialist contributions skipped after first; skip is explicit + logged + tested per bmad-code-review patch P-4) | Codex surfaced manifest topology can have repeated specialist nodes but envelope immutability invariant allows one contribution per specialist; operator ratified Path Z as Slab 6.1 contract; Path X (node-scoped contribution identity) + Path Y (per-pass envelope) filed as enhancement candidates when actual multi-pass production need emerges | Slab 6.1 implementation surfaced via bmad-code-review (EC-2 / AA-3 / DFR-6.1-2) | Operator ratification 2026-04-27 |
@@ -428,7 +429,7 @@ Track every composition-substrate decision here. Update at each evolution.
 
 ### Resolved at Slab 6.1 close (2026-04-27)
 
-1. ~~**Dependency_map source.**~~ **RESOLVED-WITH-DEFERRAL.** Runner-layer deterministic fallback shipped (Texas → CD = `source_bundle`; other downstream = `upstream_output`). Manifest promotion deferred as `migration-6-2-promote-dependency-map-into-manifest` (~1pt; lands as Tier A prerequisite before Slab 6 trial-experience bundle implementation).
+1. ~~**Dependency_map source.**~~ **RESOLVED.** Manifest-declared per-node `dependencies` shipped in Slab 6.2, with runner-layer fallback permanently retained for nodes that omit or intentionally leave `dependencies` empty.
 2. ~~**Gate precedence default.**~~ **RESOLVED.** Per-specialist non-blocking under production composition; `gate_overrides` opt-in for safety-critical promotion. Confirmed at Slab 6.1 implementation per N6 trace.
 3. ~~**`ProductionTrialEnvelope.production_envelope` shape.**~~ **RESOLVED.** Full embed; required field (not optional); bmad-code-review patch P-2 enforces.
 4. **Manifest entry generator-emit (`2c-4-generator-emit-manifest-dependency-stub`).** Still open — currently manual. Should be automated alongside C3 row auto-emit per A12 counter-pattern. Reactivation: when next specialist is generated AND operator wants to retire manual manifest-edit step.

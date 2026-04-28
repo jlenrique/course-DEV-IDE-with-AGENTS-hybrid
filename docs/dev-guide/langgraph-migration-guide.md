@@ -1313,12 +1313,21 @@ and feed `app.runtime.economics.measure_trial_cost(...)`, which writes
 
 Specialist invocations go through `ProductionDispatchAdapter.invoke_specialist`.
 The runner carries a `ProductionEnvelope` beside the trial lifecycle envelope,
-derives each downstream dependency map deterministically from prior specialist
-contributions, and persists the accumulated contribution chain in
-`ProductionTrialEnvelope.production_envelope` for replay inspection. The v4.2
-manifest does not yet declare input-key names, so the runner preserves the
-known Texas -> CD `source_bundle` contract and otherwise uses the immediately
-previous specialist contribution as `upstream_output`.
+resolves each downstream dependency map from the manifest node's `dependencies`
+field first, and persists the accumulated contribution chain in
+`ProductionTrialEnvelope.production_envelope` for replay inspection.
+
+Manifest dependencies use `downstream_input_key: upstream_specialist_id` shape.
+For example, the CD node declares `source_bundle: texas` so the adapter builds
+CD's input from Texas's `SpecialistContribution`. Nodes that omit
+`dependencies` or declare an empty map intentionally use the runner's permanent
+fallback resolution: CD reads Texas as `source_bundle`; other downstream
+specialists read the immediately previous contribution as `upstream_output`.
+This fallback is not a deprecation path; it remains the supported mechanism for
+nodes that opt out of explicit declaration. If a resolved upstream contribution
+is absent from the envelope, the runner raises
+`MissingUpstreamContributionError` with the upstream `specialist_id` and
+`downstream_input_key` named.
 
 `production_clone_launch_evidence` is deliberately conservative. It is `true`
 only after the production runner completes at least one graph step and records

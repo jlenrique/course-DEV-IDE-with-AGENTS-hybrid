@@ -10,7 +10,7 @@ Loader). The shape is the union of:
   top-level `pack_version`, `generator_ref`, `learning_events`, `block_mode_trigger_paths`;
   per-node `label`, `gate`, `gate_code`, `sub_phase_of`, `insertion_after`,
   `hud_tracked`, `pack_section_anchor`, `pack_version`, `rationale`,
-  `learning_events`.
+  `learning_events`, `dependencies`.
 
 Story 1.6 will migrate the real v4.2 manifest into this schema (synthesizing
 `edges` from per-node `insertion_after`, injecting `lane`/`entrypoint`/
@@ -110,6 +110,14 @@ class NodeSpec(BaseModel):
         description=(
             "Repo-relative path to a `model_config.yaml` file. Compiler validates "
             "presence at compile time (NFR-M2 / FR25). `None` skips the lint pass."
+        ),
+    )
+    dependencies: dict[str, str] | None = Field(
+        default=None,
+        description=(
+            "Manifest-declared dependency map for production composition. Keys are "
+            "downstream specialist input keys; values are upstream specialist ids. "
+            "Missing or empty maps use the runner's permanent fallback resolution."
         ),
     )
 

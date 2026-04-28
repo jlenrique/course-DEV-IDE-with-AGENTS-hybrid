@@ -62,6 +62,7 @@ nodes:
     specialist_id: "texas"
     scaffold_node: "act"
     model_config_ref: null
+    dependencies: {}
     gate: true
     gate_code: "G0A"
     sub_phase_of: null
@@ -115,6 +116,8 @@ nodes:
     specialist_id: "irene"
     scaffold_node: "act"
     model_config_ref: null
+    dependencies:
+      upstream_output: "texas"
     gate: true
     gate_code: "G1A"
     insertion_after: "04"
@@ -162,6 +165,8 @@ nodes:
     specialist_id: "cd"
     scaffold_node: "act"
     model_config_ref: null
+    dependencies:
+      source_bundle: "texas"
     gate: false
     sub_phase_of: "04"
     insertion_after: "04.55"
@@ -265,6 +270,8 @@ nodes:
     specialist_id: "vera"
     scaffold_node: "act"
     model_config_ref: null
+    dependencies:
+      upstream_output: "gary"
     gate: true
     gate_code: "G2.5"
     insertion_after: "07"
@@ -278,6 +285,8 @@ nodes:
     specialist_id: "quinn-r"
     scaffold_node: "act"
     model_config_ref: null
+    dependencies:
+      upstream_output: "vera"
     gate: true
     gate_code: "G2B"
     sub_phase_of: "07"
@@ -327,6 +336,8 @@ nodes:
     specialist_id: "kira"
     scaffold_node: "act"
     model_config_ref: null
+    dependencies:
+      upstream_output: "quinn_r"
     gate: false
     sub_phase_of: "07"
     insertion_after: "07D"
@@ -420,6 +431,8 @@ nodes:
     specialist_id: "elevenlabs"
     scaffold_node: "act"
     model_config_ref: null
+    dependencies:
+      upstream_output: "kira"
     gate: true
     gate_code: "G4A"
     insertion_after: "10"
@@ -484,6 +497,8 @@ nodes:
     specialist_id: "desmond"
     scaffold_node: "act"
     model_config_ref: null
+    dependencies:
+      upstream_output: "enrique"
     gate: false
     sub_phase_of: "14"
     insertion_after: "14"

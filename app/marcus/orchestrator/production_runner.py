@@ -20,6 +20,7 @@ from app.gates.resume_api import (
 )
 from app.manifest.compiler import PRODUCTION_GATE_IDS, compile_run_graph
 from app.manifest.loader import load as load_manifest
+from app.manifest.schema import NodeSpec
 from app.marcus.orchestrator.dispatch_adapter import ProductionDispatchAdapter
 from app.models.decision_cards import (
     AnyDecisionCardAdapter,
@@ -46,6 +47,26 @@ REPO_ROOT = Path(__file__).resolve().parents[3]
 DEFAULT_MANIFEST_PATH = REPO_ROOT / "state" / "config" / "pipeline-manifest.yaml"
 DEFAULT_GRAPH_VERSION = "v42"
 LOGGER = logging.getLogger(__name__)
+
+
+class MissingUpstreamContributionError(RuntimeError):
+    """Raised when a dependency map names an upstream contribution that is absent."""
+
+    def __init__(
+        self,
+        *,
+        specialist_id: str,
+        downstream_input_key: str,
+        downstream_specialist_id: str,
+    ) -> None:
+        self.specialist_id = specialist_id
+        self.downstream_input_key = downstream_input_key
+        self.downstream_specialist_id = downstream_specialist_id
+        super().__init__(
+            "missing upstream contribution "
+            f"{specialist_id!r} for downstream input {downstream_input_key!r} "
+            f"while invoking {downstream_specialist_id!r}"
+        )
 
 
 def _has_live_openai() -> bool:
@@ -210,14 +231,7 @@ def _default_dependency_map_for(
     specialist_id: str,
     production_envelope: ProductionEnvelope,
 ) -> dict[str, str]:
-    """Derive the Slab 6.1 deterministic dependency fallback.
-
-    The v4.2 manifest currently carries ordering but not input-key names. Keep
-    the known Texas -> CD contract explicit, then fall back to the immediately
-    preceding specialist output under a generic key. This is the accepted Slab
-    6.1 close shape; `migration-6-2-promote-dependency-map-into-manifest` promotes
-    this mapping into manifest/registry metadata before Tier A work.
-    """
+    """Derive the deterministic dependency fallback for undeclared manifest nodes."""
     prior_ids = [item.specialist_id for item in production_envelope.contributions]
     if not prior_ids:
         return {}
@@ -226,15 +240,40 @@ def _default_dependency_map_for(
     return {"upstream_output": prior_ids[-1]}
 
 
-def _dependency_map_for_specialist(
+def _ensure_upstream_contributions_present(
     *,
+    dependency_map: dict[str, str],
+    production_envelope: ProductionEnvelope,
+    downstream_specialist_id: str,
+) -> None:
+    for downstream_input_key, upstream_specialist_id in dependency_map.items():
+        if production_envelope.get_contribution(upstream_specialist_id) is None:
+            raise MissingUpstreamContributionError(
+                specialist_id=upstream_specialist_id,
+                downstream_input_key=downstream_input_key,
+                downstream_specialist_id=downstream_specialist_id,
+            )
+
+
+def _resolve_dependency_map(
+    *,
+    node: NodeSpec,
     specialist_id: str,
     production_envelope: ProductionEnvelope,
 ) -> dict[str, str]:
-    return _default_dependency_map_for(
-        specialist_id=specialist_id,
+    if node.dependencies:
+        dependency_map = dict(node.dependencies)
+    else:
+        dependency_map = _default_dependency_map_for(
+            specialist_id=specialist_id,
+            production_envelope=production_envelope,
+        )
+    _ensure_upstream_contributions_present(
+        dependency_map=dependency_map,
         production_envelope=production_envelope,
+        downstream_specialist_id=specialist_id,
     )
+    return dependency_map
 
 
 def _card_meta(node_id: str) -> DecisionCardMeta:
@@ -596,7 +635,8 @@ def run_production_trial(
                     graph_step_completed = True
                     continue
                 if _has_live_openai() and not allow_offline_cost_report:
-                    dependency_map = _dependency_map_for_specialist(
+                    dependency_map = _resolve_dependency_map(
+                        node=node,
                         specialist_id=specialist_id,
                         production_envelope=production_envelope,
                     )
@@ -772,7 +812,8 @@ def resume_production_trial(
                     graph_step_completed = True
                     continue
                 if _has_live_openai() and not allow_offline_cost_report:
-                    dependency_map = _dependency_map_for_specialist(
+                    dependency_map = _resolve_dependency_map(
+                        node=node,
                         specialist_id=specialist_id,
                         production_envelope=production_envelope,
                     )
@@ -847,6 +888,7 @@ def resume_production_trial(
 
 __all__ = [
     "DEFAULT_MANIFEST_PATH",
+    "MissingUpstreamContributionError",
     "PRODUCTION_GATE_IDS",
     "resume_production_trial",
     "run_production_trial",
