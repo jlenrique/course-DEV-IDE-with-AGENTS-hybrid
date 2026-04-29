@@ -1,6 +1,6 @@
 # Migration Story 7a.7: A2 Single-Decision Shims for Terminal Gates (G1, G2C, G3, G4)
 
-**Status:** ready-for-dev
+**Status:** done  # 2026-04-29: CLOSED. Claude developed AND self-reviewed directly per operator instruction (Codex on 7a.5).
 **Sprint key:** `migration-7a-7-a2-single-decision-shims-terminal-gates`
 **Epic:** Slab 7a — Inter-Gate Conversational Orchestration (`migration-epic-slab-7a-inter-gate-orchestration`)
 **Pts:** 2
