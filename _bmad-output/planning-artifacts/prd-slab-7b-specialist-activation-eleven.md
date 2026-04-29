@@ -1151,3 +1151,96 @@ Codex deployment continues from Slab 7a; Slab 7b's parallel-authoring assignment
 ---
 
 **End of pre-filled PRD draft. Operator review pending; party-mode ratification per remaining-step → next-action loop.**
+
+---
+
+## Errata Addendum (2026-04-29; post-R9 close, pre-Wave-1 open)
+
+This addendum captures path/contract corrections surfaced by the **P0 path-verification sweep** run during Wave 0 foundational-artifacts authoring (commit `9ed6fcb`). Per R8 Mary's erratum policy: minor path corrections that preserve FR intent are addendum-class (NOT R10 re-open). Contract corrections that change parity-test mechanics are surfaced here so downstream `bmad-create-epics-and-stories` + `bmad-dev-story` workflows operate against verified state, not the pre-sweep PRD draft.
+
+### Errata 1 — FR111 path correction
+
+**PRD draft cited:** `_bmad/_cfg/scaffolds/scaffold-v0.2-D2-pipeline.yaml` (single YAML file)
+**Verified path:** `docs/dev-guide/scaffolds/scaffold-v0.2-D2-pipeline/` (directory; 7 files per Slab 2b.1 schema-story precedent)
+
+**Reason:** `_bmad/_cfg/scaffolds/` directory does not exist in repo. Existing scaffold convention per CLAUDE.md §Lesson Planner is `docs/dev-guide/scaffolds/<scaffold-name>/`. Scaffold-v0.2-D2-pipeline authored at convention-aligned path on 2026-04-29 (commit `9ed6fcb`).
+
+**Affected references throughout PRD:** every mention of `_bmad/_cfg/scaffolds/scaffold-v0.2-D2-pipeline.yaml` should be read as `docs/dev-guide/scaffolds/scaffold-v0.2-D2-pipeline/` going forward. FR111 + D17 + D20 + IR-5 + SR-R5 + Domain Requirements §Compositor predicted-path + Acceptance A-table + frontmatter all carry the original path text; the addendum overrides without per-reference rewrite to preserve commit-history readability.
+
+### Errata 2 — FR101 parity-test contract realignment
+
+**PRD draft asserted:**
+- SKILL.md at `app/specialists/{name}/SKILL.md`
+- Required YAML frontmatter keys: `agent_name`, `sanctum_path`, `activation_order`, `class` enum
+- Auto-derived `sanctum_path == f"_bmad/memory/bmad-agent-{name}/"`
+
+**Verified reality (P0 sweep against Marcus / Irene / Dan / Texas — all currently sanctum-aligned):**
+- SKILL.md actually lives at `skills/bmad-agent-{name}/SKILL.md` (legacy skill quarantine; per CLAUDE.md §"Custom agents vs registered BMAD personas" — intentional, not defect)
+- Required frontmatter keys are MINIMAL: `name` + `description` only
+- BMB alignment marker is **sanctum-directory existence** at `_bmad/memory/bmad-agent-{name}/` containing the 6-file BMB pattern (INDEX.md / PERSONA.md / CREED.md / BOND.md / MEMORY.md / CAPABILITIES.md), NOT YAML frontmatter keys
+- `<name>-sidecar/` directory naming distinguishes option-b documented exception (Cora's `cora-sidecar/`) from canonical `bmad-agent-<name>/` sanctum dirs
+
+**Authoritative source going forward:** `docs/dev-guide/bmb-sanctum-alignment-checklist.md` §3 + §7 (commit `9ed6fcb`). This document is canonical for FR101 parity-test contract; if FR101 PRD prose drifts, the checklist is authoritative — amend FR101 at downstream story-authoring time rather than re-litigating PRD.
+
+**Implications for downstream workflows:**
+- `bmad-create-epics-and-stories` reads FR101 contract from the checklist, not PRD prose.
+- `bmad-dev-story` per-specialist body activation produces:
+  - SKILL.md at `skills/bmad-agent-<name>/SKILL.md` (NOT under `app/specialists/`)
+  - Sanctum dir at `_bmad/memory/bmad-agent-<name>/` (Class-A/B/C/C+/D1) OR option-b documented exception per FR109 allowlist (Class-D2 takes scaffold-v0.2-D2-pipeline variant per FR111, NOT option-b)
+- **`app/specialists/<name>/`** continues to host the LangGraph specialist body code (`_act.py`, helpers, clients) — that path remains correct for FR89/FR94/FR97/FR98/FR99 etc.; only the SKILL.md location was misstated in FR101.
+
+### Errata 3 — `SanctumParityTestBase` is a Wave-1 deliverable, not pre-existing
+
+**PRD draft implied:** `tests/parity/test_skill_md_sanctum_alignment.py` could inherit from a pre-existing `SanctumParityTestBase`.
+
+**Verified reality:** No such class exists in the repo. `SanctumParityTestBase` (or its parity-test base equivalent) is a Slab 7b Wave-1 deliverable.
+
+**Resolution:** First Wave-1 story authoring the FR101 parity-test (likely Story 7b.1 Texas hardening or Story 7b.12 integration) creates the base class. Other per-specialist parity tests inherit. NFR-CG14a (chain-test base class precondition) authoring at Wave 0 is similarly a CREATE-task (`tests/composition/_chain_test_base.py` does not yet exist).
+
+### Errata 4 — `tests/parity/per_specialist/` subdir does not exist
+
+**PRD draft (FR105 + NFR-I10) cited:** `tests/parity/per_specialist/test_<specialist_name>_activation_contract.py`
+
+**Verified reality:** `tests/parity/` directory exists with flat test files (`test_composition_spec_invariants.py`, `test_operator_control_parity.py`, etc.); no `per_specialist/` subdir.
+
+**Resolution:** Two equivalent paths — either (a) Wave 1 creates the `per_specialist/` subdir + lands tests there matching FR105 verbatim, OR (b) Wave 1 lands flat-named tests at `tests/parity/test_<specialist_name>_activation_contract.py` matching the existing flat convention; FR105 is amended at story-authoring time. Recommend (b) per "embrace boring technology" + match Slab 7a convention. Final choice ratified at Wave 1 Story 7b.1 T1 readiness; addendum will be amended once decision lands.
+
+### Path-verification status table (P0 sweep results)
+
+| FR | Citation | Status |
+|---|---|---|
+| FR89 | `dispatch_retrieval(directive_path, bundle_dir)` keyword-only signature | ✅ VERIFIED at `app/specialists/texas/retrieval_dispatch.py:23` (Slab 2a.4 era) |
+| FR94 | `_materialize_exported_slide_paths` | ✅ VERIFIED at `skills/gamma-api-mastery/scripts/gamma_operations.py:1338` |
+| FR97 | `assembly-bundle/audio/` convention | ✅ VERIFIED via `scripts/marcus_shims/run_prompt12_narration.py` |
+| FR100-103 | `tests/parity/test_skill_md_sanctum_alignment.py` + `SanctumParityTestBase` | ⚠️ Wave-1 CREATE-task (Errata 3) |
+| FR101 | parity-test contract details | ⚠️ Errata 2 (path + key shape) |
+| FR104 | `docs/operator/legacy-vs-langgraph-control-parity.md` | ✅ VERIFIED (6.9K, modified 2026-04-29; Slab 7a delivered) |
+| FR105 | `tests/parity/per_specialist/` subdir | ⚠️ Errata 4 |
+| FR108 inheritance | `_bmad-output/implementation-artifacts/epic-26/_shared/scaffold-v0.2-backlog.md` | ✅ VERIFIED (file exists; primary citation valid; soft-fallback unnecessary) |
+| FR111 | scaffold path | ⚠️ Errata 1 |
+
+### Per-FR `verified-at` annotation (R6 Mary deferred — partial application)
+
+R6 Mary recommended every FR citing a file path/symbol carry a `verified-at: <date>` annotation. Partial application at this addendum:
+- FR89 / FR94 / FR97 / FR104 / FR108: **verified-at: 2026-04-29** (P0 sweep)
+- FR101 / FR105 / FR111: superseded by errata above
+- All other FRs (FR88 + FR90-FR93 + FR95-FR100 + FR102-FR103 + FR106-FR107 + FR109-FR110 + FR112-FR113): T1-readiness re-verification required at story-authoring time per individual story scope
+
+Full per-FR `verified-at` institutionalization is filed as a Slab-7c follow-on at `deferred-inventory.md` §Named-But-Not-Filed Follow-Ons under "PRD per-FR verified-at annotation policy."
+
+### Deferred-inventory entries filed by this addendum
+
+The following items are filed at `_bmad-output/planning-artifacts/deferred-inventory.md` §Named-But-Not-Filed Follow-Ons (committed alongside this addendum):
+
+1. **`bmb-checklist-additional-worked-examples-irene-dan-texas`** — FR108 §6.3 deferred Irene/Dan/Texas worked examples; reactivates after Wave 1 parity stories close.
+2. **`fr105-tests-parity-per-specialist-subdir-decision`** — Wave 1 ratifies subdir vs flat convention (Errata 4).
+3. **`prd-per-fr-verified-at-annotation-policy`** — Slab 7c follow-on to institutionalize annotation.
+4. **`slab-7b-prd-domain-requirements-3-subsection-split`** — re-deferred from R5 + R9; post-MVP polish PR.
+
+### Verification status of addendum
+
+This addendum is dev-agent authority per R8 Mary erratum policy (path/contract corrections that preserve FR intent are addendum-class). No party-mode round required for landing. If downstream story-authoring discovers additional drift not captured here, that's its own addendum entry — file at this section's tail with date stamp.
+
+**Addendum authored:** 2026-04-29 (post-Wave-0-merge `9ed6fcb`)
+**Authority:** R8 Mary erratum policy + R1 party-mode scoping consensus on Wave-0 path-verification sweep
+**Next addendum trigger:** discovery of additional FR/NFR drift at Wave 1 story-T1 readiness checks; OR FR105 subdir-vs-flat ratification at first Wave-1 parity-test author
