@@ -9,7 +9,8 @@
     "2026-04-27 - Story 6-0 inserted before 6-1 after A17 Substrate Designed for Isolation, Composition Assumed. Gate is dual (`substrate_shape` + `invariant_preservation`) because it introduces the production envelope substrate while preserving isolated specialist scaffold contracts. Story 6-1 re-scoped to runner-consumes-substrate.",
     "2026-04-27 - Stories 6-2 + 6-3 + 6-4 + 6-5 added as Slab 6 trial-experience bundle. 6-2 is the prerequisite (manifest dependency_map promotion; ~1pt single-gate; closes Composition Spec §12 known limitation #1). 6-3 + 6-4 + 6-5 are the bundle proper (Step 02A defaults; Irene Pass 2 authoring template; HUD per-step summaries). 6-3 + 6-5 single-gate; 6-4 dual-gate (`schema_shape + invariant_preservation`). All operator-flagged from 2026-04-19/20 trial-prep evidence; sequenced for first-tracked-trial readiness.",
     "2026-04-27 - Story 6-2 implementation landed: `dependencies` field accepted on manifest nodes; compile-time circular dependency check added; production runner resolves manifest first and retains runner-layer fallback permanently for undeclared/empty nodes.",
-    "2026-04-28 - Slab 7a 7a-1 through 7a-8 added (Inter-Gate Conversational Orchestration substrate; per `_bmad-output/planning-artifacts/epics-slab-7a-inter-gate-orchestration.md`). Eight stories: 7a-1 directive_composer (dual-gate); 7a-2 manifest fold-flags + compiler ext (single-gate); 7a-6 vocabulary registry + parity-table (single-gate; promoted to wave-3 from wave-6 per Step 1 batch-approved adjustment); 7a-3 pre-gate-marcus shared LLM node (single-gate); 7a-4 per-slide subgraph + HTML review-pack skeleton (single-gate WITH k_contract bounding HTML to skeleton-only + tripwire escalation to dual-gate at K-actual >4.08K = 1.7× band-floor); 7a-5 conversation persistence + specialist-summary writer (single-gate); 7a-7 A2 single-decision shims for terminal gates (single-gate); 7a-8 integration + parity-test suite + Slab 7a closeout (dual-gate; flipped from single per integration-tier risk argument). Party-mode consensus 2026-04-28 (Winston/Murat/Amelia/Paige) — all four voices: GO; no SG-1/SG-2/SG-3 violations."
+    "2026-04-28 - Slab 7a 7a-1 through 7a-8 added (Inter-Gate Conversational Orchestration substrate; per `_bmad-output/planning-artifacts/epics-slab-7a-inter-gate-orchestration.md`). Eight stories: 7a-1 directive_composer (dual-gate); 7a-2 manifest fold-flags + compiler ext (single-gate); 7a-6 vocabulary registry + parity-table (single-gate; promoted to wave-3 from wave-6 per Step 1 batch-approved adjustment); 7a-3 pre-gate-marcus shared LLM node (single-gate); 7a-4 per-slide subgraph + HTML review-pack skeleton (single-gate WITH k_contract bounding HTML to skeleton-only + tripwire escalation to dual-gate at K-actual >4.08K = 1.7× band-floor); 7a-5 conversation persistence + specialist-summary writer (single-gate); 7a-7 A2 single-decision shims for terminal gates (single-gate); 7a-8 integration + parity-test suite + Slab 7a closeout (dual-gate; flipped from single per integration-tier risk argument). Party-mode consensus 2026-04-28 (Winston/Murat/Amelia/Paige) — all four voices: GO; no SG-1/SG-2/SG-3 violations.",
+    "2026-04-29 - Slab 7b 7b-1 through 7b-12 STAGED PENDING PARTY-MODE RATIFICATION (sprint-planning closeout per `_bmad-output/planning-artifacts/epics-slab-7b-specialist-activation-eleven.md` Round-(d) close). Twelve stories per Phased Wave Plan: 7b-1 Texas hardening (single-gate; Class A; carries Errata 3 SanctumParityTestBase + NFR-CG14a chain-test base + NFR-I12 class-conformance validator + Errata 4 subdir-vs-flat ratification as T1 CREATE-tasks); 7b-2 Quinn-R hardening (single-gate; Class A); 7b-3 Vera hardening (single-gate; Class A); 7b-4 Irene Pass-1 refresh (single-gate; Class B); 7b-5 Tracy port-shape + sidecar bundle (single-gate; Class C+; Codex per NFR-CG17); 7b-6 Gary port-shape (single-gate; Class C; Codex; consumes FR107 sandbox-AC `gamma`); 7b-7 Kira port-shape (single-gate; Class C; Codex; consumes `kling`); 7b-8 Enrique port-shape (single-gate; Class C; Codex; consumes `elevenlabs`); 7b-9 Wanda port-shape onto scaffold (single-gate; Class C; Codex; consumes `wondercraft`); 7b-10 Dan greenfield (single-gate; Class D1; Claude; sandbox-AC `dan-api-tbd-pending` resolved at story-T1 — if third-party-API, party-mode + version-bump pre-promotion required per Round-(b) Mary B1 amendment); 7b-11 Compositor greenfield (single-gate; Class D2 sidecar variant per D20; Claude; pre-T1 K-projection check >4K → dual-gate per Round-(b) Amelia B2 amendment; consumes FR111 scaffold-v0.2-D2-pipeline LANDED Wave 0); 7b-12 integration + parity-suite + closeout (DUAL-GATE; integration; Claude; trial-2 cost-projection dry-run AC per Round-(a) John A1 amendment; 5-API live-binding smoke operator-gated). All entries flagged `_staged_pending_party_mode_ratification: true`; party-mode ratification + version bump scheduled for next session pre-bmad-create-story open. After ratification, this _amendment_log entry will be revised with the date + ratifying voices, the staged flags will be removed, the version string will bump, and triage_summary will reflect 72→84 stories + 20→21 dual-gate."
   ],
   "dual_gate_rationale_legend": {
     "schema_shape": "Story introduces a new Pydantic v2 model family with four-file-lockstep (schema + validator + tests + golden fixture).",
@@ -367,6 +368,102 @@
       "expected_pts": 4,
       "expected_k_target": 1.6,
       "amendment_note": "Slab 7a wave-5 strict-last (FLIPPED from single-gate to dual-gate per Step 1 batch-approved adjustment — integration story; cross-story failure modes justify conservative review). Integration + parity-test suite (34-row mapping checklist 1:1) + Composition Spec invariant test suite (NFR-I8) + calibration-tripwire wiring + gate-bypass detection + max-3 oscillation guard + engagement-decay reporting + Slab 7a closeout artifacts. SG-1 + SG-2 + SG-3 aggregated structural enforcement here. Operator acceptance for trial-2 readiness predicate."
+    },
+    "7b-1": {
+      "expected_gate_mode": "single-gate",
+      "rationale": null,
+      "expected_pts": 3,
+      "expected_k_target": 1.3,
+      "_staged_pending_party_mode_ratification": true,
+      "amendment_note": "Slab 7b Wave 1 (Class A hardening; Claude). Texas hardening: live-retrieval-against-real-directive-composer + six-canonical-artifacts contract enforcement + G0 6-dim evidence-sentence rubric + word-count belt-and-suspenders + cross-validation hint application. Single-gate justified: rubric-semantics work; not schema-shape, not lane-boundary. T1 CREATE-tasks per Round-(a) Murat A4: SanctumParityTestBase (Errata 3) + _chain_test_base.py (NFR-CG14a) + class-conformance validator (NFR-I12) + Errata 4 subdir-vs-flat ratification. Wave-1 close tripwire: >2.7K LOC fires K-aggregate escalation."
+    },
+    "7b-2": {
+      "expected_gate_mode": "single-gate",
+      "rationale": null,
+      "expected_pts": 3,
+      "expected_k_target": 1.3,
+      "_staged_pending_party_mode_ratification": true,
+      "amendment_note": "Slab 7b Wave 1 (Class A hardening; Claude; parallel with 7b-1). Quinn-R two-mode rubric (pre-composition / post-composition) + G2C storyboard-bound + G5 pre-composition QA (WPM + VTT monotonicity + coverage + motion-vs-narration coherence + advisory-vs-blocking partition). Single-gate justified: rubric-semantics work."
+    },
+    "7b-3": {
+      "expected_gate_mode": "single-gate",
+      "rationale": null,
+      "expected_pts": 3,
+      "expected_k_target": 1.3,
+      "_staged_pending_party_mode_ratification": true,
+      "amendment_note": "Slab 7b Wave 1 (Class A hardening; Claude; parallel with 7b-1, 7b-2). Vera G0 6-dim evidence-sentence rubric on real Texas output + G1 ingestion-quality 6-dim verdicts + G3 fidelity check on real Storyboard A + G4 19-criterion rubric (G4-01..G4-19) + sensory-bridges dispatch on real motion+audio. Single-gate justified: rubric-semantics work."
+    },
+    "7b-4": {
+      "expected_gate_mode": "single-gate",
+      "rationale": null,
+      "expected_pts": 3,
+      "expected_k_target": 1.3,
+      "_staged_pending_party_mode_ratification": true,
+      "amendment_note": "Slab 7b Wave 2a (Class B refresh; Claude; strict after Wave 1). Irene Pass-1 9-node scaffold mirroring Pass-2 (Slab 2a.2 precedent) + lesson-plan coauthoring + scope-lock contract + per-plan-unit ratification surface for G1A + mode-singularity hard-constraint + scope_decision.set + plan.locked learning-event emission. Single-gate justified: persona-continuity refresh; mirrors existing Pass-2 shape."
+    },
+    "7b-5": {
+      "expected_gate_mode": "single-gate",
+      "rationale": null,
+      "expected_pts": 5,
+      "expected_k_target": 1.5,
+      "_staged_pending_party_mode_ratification": true,
+      "amendment_note": "Slab 7b Wave 2b (Class C+ port-shape + sidecar emission BUNDLE; Codex per NFR-CG17 + D21; strict after Wave 2a). Tracy research-shaped intent enrichment for Pass-2 + sidecar greenfield at _bmad/memory/bmad-agent-tracy/ (4-file BMB pattern). Live LLM-only (no third-party API; sandbox-AC inventory entry NOT required for Tracy specifically per R5 Amelia-scope-amendment). Single-gate justified per Slab 2b.1 TEMPLATE pattern. K-target 1.5× per Class-C+ K-bump (port-shape WITH sidecar emission). Wave-2b close tripwire: >2.7K LOC → Wave-3 first port-shape (Gary) opens at upper-band K-target + Wave-3 second/third stories pre-authorized for dual-gate escalation."
+    },
+    "7b-6": {
+      "expected_gate_mode": "single-gate",
+      "rationale": null,
+      "expected_pts": 4,
+      "expected_k_target": 1.4,
+      "_staged_pending_party_mode_ratification": true,
+      "amendment_note": "Slab 7b Wave 3 (Class C API-bound; Codex per NFR-CG17; first port-shape; consumes FR107 sandbox-AC `gamma` LANDED Wave 0). Gary port-shape: Gamma API live invocation + per-slide variant generation (DOUBLE_DISPATCH branch) + theme-handshake + PNG export normalization + Vera G3 invocation hooks + cache-hit-rate ≥85% post-warm-up + live-API-on-CI strict prohibition. Single-gate per Slab 2b.1 TEMPLATE. Wave-3 first-port tripwire: >2.7K LOC → Wave-3 second + third stories (7b-7 Kira + 7b-8 Enrique) escalate to dual-gate."
+    },
+    "7b-7": {
+      "expected_gate_mode": "single-gate",
+      "rationale": null,
+      "expected_pts": 4,
+      "expected_k_target": 1.4,
+      "_staged_pending_party_mode_ratification": true,
+      "amendment_note": "Slab 7b Wave 3 (Class C API-bound; Codex; parallel with 7b-6, 7b-8; consumes FR107 sandbox-AC `kling`). Kira port-shape: Kling API live invocation + motion generation per motion_plan.yaml + per-slide .progress.json + terminal .json receipts + reviewer inspection pack at [BUNDLE_PATH]/recovery/inspection/ + fail-closed budget rules + cache-hit-rate ≥85%. Single-gate per Slab 2b.1 TEMPLATE (or escalates if 7b-6 first-port tripwire fires)."
+    },
+    "7b-8": {
+      "expected_gate_mode": "single-gate",
+      "rationale": null,
+      "expected_pts": 4,
+      "expected_k_target": 1.4,
+      "_staged_pending_party_mode_ratification": true,
+      "amendment_note": "Slab 7b Wave 3 (Class C API-bound; Codex; parallel with 7b-6, 7b-7; consumes FR107 sandbox-AC `elevenlabs`). Enrique port-shape: ElevenLabs API + voice-preview/voice-selection HIL contract (voice-preview-options.json + voice-selection-review.md + voice-selection.json) + manifest-driven narration on locked package + assembly-bundle build (assembly-bundle/audio/ + captions/) + per-segment progress to stderr + cache-hit-rate ≥85%. Single-gate per Slab 2b.1 TEMPLATE."
+    },
+    "7b-9": {
+      "expected_gate_mode": "single-gate",
+      "rationale": null,
+      "expected_pts": 4,
+      "expected_k_target": 1.4,
+      "_staged_pending_party_mode_ratification": true,
+      "amendment_note": "Slab 7b Wave 4 (Class C; Codex; consumes FR107 sandbox-AC `wondercraft`). Wanda port-shape onto scaffold (closes pre-Slab-2b client-landed-not-on-scaffold gap): Wondercraft API + podcast/audio bed generation scoped into storyboard's audio track + scaffold-v0.2 alignment + cache-hit-rate ≥85%. Single-gate per Slab 2b.1 TEMPLATE."
+    },
+    "7b-10": {
+      "expected_gate_mode": "single-gate",
+      "rationale": null,
+      "expected_pts": 5,
+      "expected_k_target": 1.5,
+      "_staged_pending_party_mode_ratification": true,
+      "amendment_note": "Slab 7b Wave 5a (Class D1 LLM-greenfield; Claude per D21; strict after Waves 1-3 closed per R8 Winston-amendment). Dan greenfield via bmad-create-specialist: SKILL.md (option-a sanctum-aligned) + sidecar at _bmad/memory/bmad-agent-dan/ (full BMB pattern) + app/specialists/dan/ scaffold-v0.2 + _act narrow-lane creative-director aux contributions threaded G1-G2. T1: dan-api-tbd resolution (LLM-only or third-party-API). Round-(b) Mary B1 / Round-(c) C1 amendment: if Dan resolves to third-party-API, sandbox-AC inventory promotion requires party-mode consensus + governance-JSON version bump pre-dev (dev-agent does NOT unilaterally promote). K-target 1.5× per Class-D1 greenfield-uplift bump."
+    },
+    "7b-11": {
+      "expected_gate_mode": "single-gate",
+      "rationale": null,
+      "expected_pts": 5,
+      "expected_k_target": 1.5,
+      "_staged_pending_party_mode_ratification": true,
+      "amendment_note": "Slab 7b Wave 5b (Class D2 pipeline-greenfield, sidecar variant; Claude per D21; parallel with 7b-10 after Waves 1-3 closed). Compositor: Class-D2 sidecar variant per D20 (canonical, NOT exception); persona artifacts as sidecar with operational-metadata content (contract.md/version.md/chronology.md/access-boundaries.md). Consumes FR111 scaffold-v0.2-D2-pipeline LANDED Wave 0. Pipeline-determinism harness ≥99% (bytes-identical for sync-visuals; field-masked-hash for DESCRIPT-ASSEMBLY-GUIDE.md modulo {generated_at, run_id, build_timestamp} per R3 Amelia-amendment). EXEMPT from FR101.iv sanctum-path-equality clause per D20. Round-(b) Amelia B2 / Round-(c) C2 amendment: pre-T1 K-projection check; if T1 LOC estimate >4K, story escalates to dual-gate. K-target 1.5× per Class-D2 greenfield-uplift bump."
+    },
+    "7b-12": {
+      "expected_gate_mode": "dual-gate",
+      "rationale": "operator_acceptance_gate + invariant_preservation",
+      "expected_pts": 4,
+      "expected_k_target": 1.6,
+      "_staged_pending_party_mode_ratification": true,
+      "amendment_note": "Slab 7b Wave 6 strict-last (DUAL-GATE per Slab 7a 7a-8 precedent + Murat integration-tier risk argument; Claude). Integration + parity-test suite aggregation (FR101 + FR105 + FR102 binding to .github/workflows/specialist-parity.yml + activation-contract.yml + mapping-checklist.yml + substrate-frozen-paths-check.yml + codex-scope-audit.yml) + per-specialist operator-reference docs (NFR-OD3 × 11) + sanctum-alignment matrix doc (NFR-OD4 + FR103) + operator-control parity table +11 rows (FR104) + ~28 mapping-checklist row improvements (NFR-I11) + 5-API live-binding smoke (operator-gated AC-12-B; gamma/kling/elevenlabs/wondercraft/dan-api-tbd-resolved; ≤3 canaries/API; cost ≤$0.40/canary) + trial-2 cost-projection dry-run (Round-(a) John A1 amendment; SR-T6 mitigation). SG-1 + SG-2 + SG-3 + SG-4 AGGREGATED structural enforcement. MVP Exit Gate verification (G2 + 9-of-11). Slab 7b Close Gate verification (G3 + 11 cascade-reading). Hard prereq: ALL 11 prior Slab 7b body stories `done`. K-target 1.6× per integration-tier K-bump (mirrors 7a-8)."
     }
   },
   "triage_summary": {

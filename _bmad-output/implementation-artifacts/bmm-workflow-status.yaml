@@ -373,3 +373,28 @@ epic_26_bmb_sanctum_migration:
     next_unblock: "bmad-sprint-planning runs next session to author sprint-status.yaml entries; Wave-1 first story (7b.1 Texas hardening) opens via bmad-create-story after migration-story-governance.json gate-mode entries party-mode-ratified + version-bumped"
     note: "Slab 7b epics-and-stories file authored end-to-end via bmad-create-epics-and-stories workflow with 4 party-mode rounds (4 voices/round; 0 re-opens; 4/4 unanimous on R(d) close). Single-Epic decomposition (specialist body activation is one user-value bundle; multi-epic split would have failed standalone-epic principle). 12 dev stories sequenced strict-serial-with-parallel-waves across 9 effective execution waves. PRD errata addendum (commit ddcd1b1) Errata 1 + 2 + 3 + 4 honored throughout: FR111 scaffold path-corrected; FR101 SKILL.md location at skills/bmad-agent-{name}/ + minimal frontmatter + sanctum-dir 6-file pattern as alignment marker; SanctumParityTestBase as Story 7b.1 T1 CREATE-task; FR105 subdir-vs-flat ratified at first parity-test author (7b.1). Class-D2 sidecar variant (Compositor) is first-class taxonomy bin per D20 — exempt from FR101.iv sanctum-path-equality clause. K-aggregate tripwire clauses placed at three transition points (Wave-1 close, Wave-2b open, Wave-3-first-port Gary, Wave-5b pre-T1) to escalate Class-C/D ports to dual-gate if scaffold isn't amortizing. Trial-2 cost-projection dry-run wired into Wave 6 closeout (Round-(a) John A1 amendment). Distinct artifact from epics-slab-7a-inter-gate-orchestration.md (sibling CLOSED 2026-04-29) and epics-langchain-langgraph-migration.md (parent migration 9-epic / 56-story decomposition; Slab 7b sibling-extends substrate)."
 
+  sprint_planning_slab_7b:
+    status: "completed"
+    completed: "2026-04-29"
+    workflow: "bmad-sprint-planning"
+    sprint_status_updates:
+      - "migration-epic-slab-7b-specialist-activation-eleven: backlog (auto-transitions to in-progress on first story open)"
+      - "migration-7b-1 through migration-7b-12: queued (12 dev stories with K-target / gate-mode / author-binding / FR coverage / wave parallelism / tripwire annotations)"
+      - "migration-epic-slab-7b-specialist-activation-eleven-retrospective: optional"
+    governance_json_staging:
+      file: "docs/dev-guide/migration-story-governance.json"
+      entries_staged: 12  # 7b-1 through 7b-12
+      ratification_pending: true  # all 12 entries flagged `_staged_pending_party_mode_ratification: true`
+      version_bump_pending: true  # version string unchanged (still "2026-04-28-slab7a-eight-stories"); bump scheduled for next session pre-bmad-create-story
+      ratification_voices_required: 4  # John + Mary + Amelia + Murat per Slab 7a precedent
+      after_ratification_actions:
+        - "remove `_staged_pending_party_mode_ratification: true` flag from all 12 entries"
+        - "bump version string from `2026-04-28-slab7a-eight-stories` to `2026-04-29-slab7b-twelve-stories`"
+        - "update _amendment_log entry with ratification date + voices"
+        - "update triage_summary: total_stories 72 → 84; dual_gate 20 → 21; dual_gate_pct ~28% (essentially unchanged)"
+    gate_mode_distribution:
+      single_gate: 11  # 7b-1 through 7b-11 (all body activations)
+      dual_gate: 1     # 7b-12 (integration; mirrors 7a-8 precedent)
+    fresh_session_directive: "operator request: schedule a fresh session before bmad-create-story opens on Story 7b.1 Texas hardening. Hot-start (next-session-start-here.md) updated to surface this. Sprint-planning is the LAST workflow this session; bmad-create-story opens in a fresh session pre-loaded with the per-class story guidance + T1-readiness preconditions."
+    note: "bmad-sprint-planning ran on the just-closed Slab 7b epics-and-stories file (commit fff3364). 12 dev stories already pre-staged in sprint-status.yaml during Step-4 closeout of bmad-create-epics-and-stories; this workflow added the epic-level + retrospective entries (3 new keys total) and staged the gate-mode entries in migration-story-governance.json with `_staged_pending_party_mode_ratification: true` flag. Per operator directive, party-mode ratification + governance-JSON version bump are deferred to next session pre-bmad-create-story open. UNBLOCKS bmad-create-story on 7b.1 Texas hardening AFTER (a) fresh session opens, (b) party-mode round ratifies the 12 staged gate-mode entries, (c) governance-JSON version bumps + staged-pending flags clear."
+
