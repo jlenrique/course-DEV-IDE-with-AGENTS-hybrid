@@ -55,6 +55,32 @@
       "description": "Manifest-declared dependency map for production composition. Keys are downstream specialist input keys; values are upstream specialist ids. Missing or empty maps use the runner's permanent fallback resolution.",
       "title": "Dependencies"
     },
+    "fold_target": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "description": "Named subgraph target for compile-time folding. Mutually exclusive with fold_with.",
+      "title": "Fold Target"
+    },
+    "fold_with": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "description": "Gate code for an upstream/surfaced pause point this node folds into. Mutually exclusive with fold_target.",
+      "title": "Fold With"
+    },
     "gate": {
       "anyOf": [
         {

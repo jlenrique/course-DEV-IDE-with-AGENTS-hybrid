@@ -46,15 +46,25 @@ def test_contributions_persist_across_pause_resume(
     )
 
     direct_trial_id = uuid4()
-    direct = production_runner.run_production_trial(
+    production_runner.run_production_trial(
         CORPUS,
         "production",
         "operator_test",
         trial_id=direct_trial_id,
         runs_root=tmp_path,
         manifest_path=manifest_path,
-        max_specialist_calls=2,
-        pause_at_gates=False,
+        max_specialist_calls=1,
+    )
+    direct = production_runner.resume_production_trial(
+        trial_id=direct_trial_id,
+        verdict=_verdict(
+            tmp_path,
+            trial_id=direct_trial_id,
+            gate_id="G1",
+            verb="approve",
+        ),
+        runs_root=tmp_path,
+        max_specialist_calls=1,
     )
 
     assert [

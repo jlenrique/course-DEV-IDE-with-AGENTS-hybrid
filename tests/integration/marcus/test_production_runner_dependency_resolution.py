@@ -300,6 +300,15 @@ def test_fallback_path_unchanged_for_undeclared_existing_manifest_node(
         "operator_test",
         trial_id=TRIAL_ID,
         runs_root=tmp_path,
+        manifest_path=_write_manifest(
+            tmp_path,
+            [
+                {"id": "02", "specialist_id": "texas", "dependencies": {}},
+                {"id": "04A", "specialist_id": "irene"},
+                {"id": "4.75", "specialist_id": "cd"},
+                {"id": "07", "specialist_id": "gary"},
+            ],
+        ),
         max_specialist_calls=4,
         pause_at_gates=False,
     )

@@ -21,7 +21,7 @@
 # smoke path when invoked without `--full`; the `--full` flag (landed in 1.6)
 # runs this full manifest end-to-end.
 
-schema_version: "v4.2-migration-stub"
+schema_version: "v4.2-migration-stub-with-fold-flags"
 pack_version: "v4.2"
 generator_ref: "scripts/generators/v42/render.py"
 lane: "run_graph"
@@ -43,6 +43,50 @@ block_mode_trigger_paths:
   - skills/bmad-agent-marcus/scripts/validate-literal-visual-pre-dispatch.py
 
 nodes:
+  - id: "directive-composer"
+    label: "G0 — Directive Composition (Slab 7a / Story 7a.1)"
+    specialist_id: null
+    scaffold_node: null
+    model_config_ref: null
+    dependencies: {}
+    gate: false
+    gate_code: null
+    sub_phase_of: null
+    insertion_after: null
+    hud_tracked: false
+    pack_section_anchor: "0)"
+    pack_version: "v4.2"
+    fold_with: null
+    fold_target: null
+    rationale: >-
+      Pure-function orchestration node added by Story 7a.1 (slab-opener) and
+      registered in the manifest by Story 7a.2 (orchestration-node tolerance).
+      Closes trial-475 Gap 2. Composer runs at trial-start before Section 01;
+      operator confirms-or-edits before Texas dispatches. Composition Spec
+      Section 3.6 manifest-declared dependencies honored (FR-A5).
+
+  - id: "pre-gate-marcus"
+    label: "Pre-Gate Marcus - C1 template-with-slots pre-fill (Slab 7a / Story 7a.3)"
+    specialist_id: null
+    scaffold_node: null
+    model_config_ref: null
+    dependencies: {}
+    gate: false
+    gate_code: null
+    sub_phase_of: null
+    insertion_after: null
+    hud_tracked: false
+    pack_section_anchor: "0.5)"
+    pack_version: "v4.2"
+    fold_with: null
+    fold_target: null
+    rationale: >-
+      Pure orchestration node - single LLM call site before each conversational
+      pause-point. Pre-fills C1 template-with-slots decision-card proposals
+      with confidence + rationale. Composition Spec Section 3.5 gate
+      precedence rule UNALTERED (per-specialist gates remain non-blocking by
+      default).
+
   - id: "01"
     label: "Activation + Preflight"
     specialist_id: "marcus"
@@ -50,6 +94,7 @@ nodes:
     model_config_ref: null
     gate: true
     gate_code: "G0"
+    fold_with: "G1"
     sub_phase_of: null
     insertion_after: null
     hud_tracked: true
@@ -65,6 +110,7 @@ nodes:
     dependencies: {}
     gate: true
     gate_code: "G0A"
+    fold_with: "G1"
     sub_phase_of: null
     insertion_after: "01"
     hud_tracked: true
@@ -79,6 +125,7 @@ nodes:
     model_config_ref: null
     gate: true
     gate_code: "G0B"
+    fold_with: "G1"
     sub_phase_of: "02"
     insertion_after: "02"
     hud_tracked: true
@@ -105,6 +152,7 @@ nodes:
     model_config_ref: null
     gate: true
     gate_code: "G1"
+    fold_with: null
     insertion_after: "03"
     hud_tracked: true
     pack_section_anchor: "4)"
@@ -120,6 +168,7 @@ nodes:
       upstream_output: "texas"
     gate: true
     gate_code: "G1A"
+    fold_with: "G2C"
     insertion_after: "04"
     hud_tracked: true
     pack_section_anchor: "04A)"
@@ -182,6 +231,7 @@ nodes:
     model_config_ref: null
     gate: true
     gate_code: "G2"
+    fold_with: "G2C"
     insertion_after: "4.75"
     hud_tracked: true
     pack_section_anchor: "5)"
@@ -195,6 +245,7 @@ nodes:
     model_config_ref: null
     gate: true
     gate_code: "G1.5"
+    fold_with: "G2C"
     sub_phase_of: "05"
     insertion_after: "05"
     hud_tracked: true
@@ -274,6 +325,7 @@ nodes:
       upstream_output: "gary"
     gate: true
     gate_code: "G2.5"
+    fold_with: "G2C"
     insertion_after: "07"
     hud_tracked: true
     pack_section_anchor: "7.5)"
@@ -289,6 +341,7 @@ nodes:
       upstream_output: "vera"
     gate: true
     gate_code: "G2B"
+    fold_with: "G2C"
     sub_phase_of: "07"
     insertion_after: "7.5"
     hud_tracked: true
@@ -303,6 +356,7 @@ nodes:
     model_config_ref: null
     gate: true
     gate_code: "G2C"
+    fold_with: null
     sub_phase_of: "07"
     insertion_after: "07B"
     hud_tracked: true
@@ -324,6 +378,7 @@ nodes:
     model_config_ref: null
     gate: true
     gate_code: "G2M"
+    fold_with: "G2C"
     sub_phase_of: "07"
     insertion_after: "07C"
     hud_tracked: true
@@ -353,6 +408,7 @@ nodes:
     model_config_ref: null
     gate: true
     gate_code: "G2F"
+    fold_with: "G3"
     sub_phase_of: "07"
     insertion_after: "07E"
     hud_tracked: true
@@ -379,6 +435,7 @@ nodes:
     model_config_ref: null
     gate: true
     gate_code: "G3B"
+    fold_with: "G3"
     sub_phase_of: "08"
     insertion_after: "08"
     hud_tracked: true
@@ -393,6 +450,7 @@ nodes:
     model_config_ref: null
     gate: true
     gate_code: "G3"
+    fold_with: null
     insertion_after: "08B"
     hud_tracked: true
     pack_section_anchor: "9)"
@@ -413,6 +471,7 @@ nodes:
     model_config_ref: null
     gate: true
     gate_code: "G4"
+    fold_with: null
     insertion_after: "09"
     hud_tracked: true
     pack_section_anchor: "10)"
@@ -435,6 +494,7 @@ nodes:
       upstream_output: "kira"
     gate: true
     gate_code: "G4A"
+    fold_with: "G4"
     insertion_after: "10"
     hud_tracked: true
     pack_section_anchor: "11)"
@@ -448,6 +508,7 @@ nodes:
     model_config_ref: null
     gate: true
     gate_code: "G4B"
+    fold_with: "G4"
     sub_phase_of: "11"
     insertion_after: "11"
     hud_tracked: true
@@ -474,6 +535,7 @@ nodes:
     model_config_ref: null
     gate: true
     gate_code: "G5"
+    fold_with: "G4"
     insertion_after: "12"
     hud_tracked: true
     pack_section_anchor: "13)"

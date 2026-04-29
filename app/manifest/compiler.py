@@ -39,7 +39,6 @@ from app.models.registry import PipelineRegistry
 from app.models.specialist_model_config import SpecialistModelConfig
 from app.models.state.run_state import RunState
 
-PRODUCTION_GATE_IDS: frozenset[str] = frozenset({"G1", "G2C", "G3", "G4"})
 SPECIALIST_ALIASES: dict[str, str] = {
     "quinn-r": "quinn_r",
     "elevenlabs": "enrique",
@@ -71,6 +70,15 @@ def _canonical_specialist_id(specialist_id: str | None) -> str | None:
         return None
     normalized = specialist_id.replace("-", "_")
     return SPECIALIST_ALIASES.get(specialist_id, SPECIALIST_ALIASES.get(normalized, normalized))
+
+
+def production_gate_ids(manifest: PipelineManifest) -> frozenset[str]:
+    """Return surfaced production pause-point gate codes from manifest metadata."""
+    return frozenset(
+        node.gate_code
+        for node in manifest.nodes
+        if node.gate and node.gate_code and node.fold_with is None and node.fold_target is None
+    )
 
 
 def _load_dispatch_registry(repo_root: Path) -> dict[str, str]:
@@ -155,8 +163,9 @@ def _resolve_production_handler(
     node: NodeSpec,
     *,
     dispatch_registry: dict[str, str],
+    manifest: PipelineManifest,
 ) -> Callable[[Any], dict[str, Any]]:
-    if node.gate and node.gate_code in PRODUCTION_GATE_IDS:
+    if node.gate and node.gate_code in production_gate_ids(manifest):
         return _production_gate_node(node)
     canonical = _canonical_specialist_id(node.specialist_id)
     if canonical is None:
@@ -346,6 +355,7 @@ def _add_node_and_edges(
             handler = _resolve_production_handler(
                 node,
                 dispatch_registry=dispatch_registry,
+                manifest=manifest,
             )
         graph.add_node(node.id, handler)
 
@@ -433,7 +443,7 @@ def compile_run_graph(
 
 
 __all__ = [
-    "PRODUCTION_GATE_IDS",
     "compile",
     "compile_run_graph",
+    "production_gate_ids",
 ]

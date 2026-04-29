@@ -14,6 +14,8 @@ import yaml
 if __package__ in {None, ""}:  # direct script invocation
     sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 
+from app.manifest.loader import load as load_graph_manifest
+from app.manifest.schema import NodeSpec
 from scripts.utilities.file_helpers import project_root
 from scripts.utilities.pipeline_manifest import DEFAULT_MANIFEST_PATH, load_manifest
 from scripts.utilities.run_hud import PIPELINE_STEPS
@@ -69,15 +71,33 @@ def _trace_payload(
     checks: list[dict[str, Any]],
     findings: list[dict[str, Any]],
     closure_gate: str,
+    orchestration_only_nodes: list[str] | None = None,
 ) -> dict[str, Any]:
     return {
         "lane": "L1",
         "scope": "pipeline-lockstep",
         "timestamp": datetime.now(tz=UTC).isoformat(),
         "closure_gate": closure_gate,
+        "orchestration_only_nodes": orchestration_only_nodes or [],
         "l1_checks_run": checks,
         "findings": findings,
     }
+
+
+def _is_orchestration_only(node: NodeSpec) -> bool:
+    return node.specialist_id is None and node.gate is False and node.hud_tracked is False
+
+
+def _orchestration_only_node_ids(manifest_path: Path, pack_version: str | None) -> list[str]:
+    try:
+        manifest = load_graph_manifest(manifest_path)
+    except Exception:  # noqa: BLE001 - legacy steps-shaped manifests have no graph nodes
+        return []
+    return [
+        node.id
+        for node in manifest.nodes
+        if (node.pack_version in (None, pack_version)) and _is_orchestration_only(node)
+    ]
 
 
 def run_check(
@@ -104,8 +124,18 @@ def run_check(
         return 2, _trace_payload([], [{"check": "structural", "message": str(exc)}], "STRUCTURAL")
 
     active_pack_version = pack_version or manifest.pack_version
+    orchestration_only_nodes = _orchestration_only_node_ids(
+        manifest_path,
+        active_pack_version,
+    )
+    orchestration_only_set = set(orchestration_only_nodes)
     manifest_steps = [
-        step for step in manifest.steps if (step.pack_version in (None, active_pack_version))
+        step
+        for step in manifest.steps
+        if (
+            step.pack_version in (None, active_pack_version)
+            and step.id not in orchestration_only_set
+        )
     ]
     manifest_ids = [step.id.upper() for step in manifest_steps]
     hud_ids = [step["id"].upper() for step in PIPELINE_STEPS]
@@ -231,8 +261,8 @@ def run_check(
         findings.append({"check": 8, "message": "Manifest event_types not subset of schema enum"})
 
     if findings:
-        return 1, _trace_payload(checks, findings, "FAIL")
-    return 0, _trace_payload(checks, [], "PASS")
+        return 1, _trace_payload(checks, findings, "FAIL", orchestration_only_nodes)
+    return 0, _trace_payload(checks, [], "PASS", orchestration_only_nodes)
 
 
 def _write_trace(payload: dict[str, Any], exit_code: int) -> Path:

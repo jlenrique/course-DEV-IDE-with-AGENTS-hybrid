@@ -5,6 +5,8 @@ import logging
 from pathlib import Path
 from uuid import UUID
 
+import yaml
+
 from app.marcus.orchestrator import production_runner
 from app.models.runtime import ProductionEnvelope, SpecialistContribution
 
@@ -61,6 +63,48 @@ def _install_fake_adapter(monkeypatch) -> _FakeAdapter:
     adapter = _FakeAdapter()
     monkeypatch.setattr(production_runner, "ProductionDispatchAdapter", lambda: adapter)
     return adapter
+
+
+def _write_linear_manifest(tmp_path: Path, nodes: list[dict[str, object]]) -> Path:
+    node_ids = [str(node["id"]) for node in nodes]
+    manifest = {
+        "schema_version": "test",
+        "pack_version": "test",
+        "generator_ref": "tests",
+        "lane": "run_graph",
+        "entrypoint": node_ids[0],
+        "frozen_graph_version": "v42",
+        "nodes": [
+            {
+                "id": node["id"],
+                "label": node["id"],
+                "specialist_id": node["specialist_id"],
+                "scaffold_node": "act",
+                "model_config_ref": None,
+                "gate": False,
+                "hud_tracked": True,
+                "pack_version": "test",
+                "rationale": "test manifest node",
+                **(
+                    {"dependencies": node["dependencies"]}
+                    if "dependencies" in node
+                    else {}
+                ),
+            }
+            for node in nodes
+        ],
+        "edges": [
+            {"from": "__start__", "to": node_ids[0]},
+            *[
+                {"from": left, "to": right}
+                for left, right in zip(node_ids, node_ids[1:], strict=False)
+            ],
+            {"from": node_ids[-1], "to": "__end__"},
+        ],
+    }
+    path = tmp_path / "linear-manifest.yaml"
+    path.write_text(yaml.safe_dump(manifest, sort_keys=False), encoding="utf-8")
+    return path
 
 
 def test_trial_registers_then_transitions_to_paused_gate(tmp_path: Path, monkeypatch) -> None:
@@ -131,6 +175,22 @@ def test_downstream_specialist_input_is_constructed_from_prior_contribution(
         "operator_test",
         trial_id=TRIAL_ID,
         runs_root=tmp_path,
+        manifest_path=_write_linear_manifest(
+            tmp_path,
+            [
+                {"id": "02", "specialist_id": "texas", "dependencies": {}},
+                {
+                    "id": "04A",
+                    "specialist_id": "irene",
+                    "dependencies": {"upstream_output": "texas"},
+                },
+                {
+                    "id": "4.75",
+                    "specialist_id": "cd",
+                    "dependencies": {"source_bundle": "texas"},
+                },
+            ],
+        ),
         max_specialist_calls=3,
         pause_at_gates=False,
     )
@@ -214,6 +274,18 @@ def test_repeated_specialist_node_skips_duplicate_contribution_with_log(
         "operator_test",
         trial_id=TRIAL_ID,
         runs_root=tmp_path,
+        manifest_path=_write_linear_manifest(
+            tmp_path,
+            [
+                {"id": "02", "specialist_id": "texas", "dependencies": {}},
+                {"id": "03", "specialist_id": "texas"},
+                {
+                    "id": "04A",
+                    "specialist_id": "irene",
+                    "dependencies": {"upstream_output": "texas"},
+                },
+            ],
+        ),
         max_specialist_calls=2,
         pause_at_gates=False,
     )

@@ -1,6 +1,6 @@
 # Migration Story 7a.2: Manifest Fold-Flags + Compiler Extension
 
-**Status:** ready-for-dev
+**Status:** done
 **Sprint key:** `migration-7a-2-manifest-fold-flags-compiler-extension`
 **Epic:** Slab 7a — Inter-Gate Conversational Orchestration (`migration-epic-slab-7a-inter-gate-orchestration`)
 **Pts:** 3
@@ -258,71 +258,71 @@ At close:
 
 ## Tasks / Subtasks
 
-- [ ] **T1: T1 Readiness review (Codex)**
-  - [ ] Read this spec end-to-end + every cited reference (governance JSON; Composition Spec §3.6/§9/§10/§11; pipeline-manifest-regime.md; sandbox-AC inventory; 7a.1 spec for the deferred manifest registration context).
-  - [ ] Read `app/manifest/compiler.py` end-to-end (the hardcoded frozenset at line 42 + its consumer at line 159).
-  - [ ] Read `app/manifest/schema.py::NodeSpec` (line 61-168) for the additive field pattern.
-  - [ ] Read `state/config/pipeline-manifest.yaml` end-to-end and walk the gate_code chain in `insertion_after` order to CONFIRM the AC-7.2-B canonical fold mapping.
-  - [ ] Read `scripts/utilities/check_pipeline_manifest_lockstep.py` to understand the lockstep contract before extending it.
-  - [ ] Confirm no decision_needed surfaces at T1; if yes, HALT and surface to operator.
+- [x] **T1: T1 Readiness review (Codex)**
+  - [x] Read this spec end-to-end + every cited reference (governance JSON; Composition Spec §3.6/§9/§10/§11; pipeline-manifest-regime.md; sandbox-AC inventory; 7a.1 spec for the deferred manifest registration context).
+  - [x] Read `app/manifest/compiler.py` end-to-end (the hardcoded frozenset at line 42 + its consumer at line 159).
+  - [x] Read `app/manifest/schema.py::NodeSpec` (line 61-168) for the additive field pattern.
+  - [x] Read `state/config/pipeline-manifest.yaml` end-to-end and walk the gate_code chain in `insertion_after` order to CONFIRM the AC-7.2-B canonical fold mapping.
+  - [x] Read `scripts/utilities/check_pipeline_manifest_lockstep.py` to understand the lockstep contract before extending it.
+  - [x] Confirm no decision_needed surfaces at T1; if yes, HALT and surface to operator.
 
-- [ ] **T2: NodeSpec schema extension** (AC: A)
-  - [ ] In `app/manifest/schema.py::NodeSpec`, add `fold_with` and `fold_target` optional fields.
-  - [ ] Add a `@model_validator(mode="after")` that enforces mutual exclusion.
-  - [ ] Author `tests/unit/manifest/test_node_spec_fold_fields.py` (4 cases per AC-A).
+- [x] **T2: NodeSpec schema extension** (AC: A)
+  - [x] In `app/manifest/schema.py::NodeSpec`, add `fold_with` and `fold_target` optional fields.
+  - [x] Add a `@model_validator(mode="after")` that enforces mutual exclusion.
+  - [x] Author `tests/unit/manifest/test_node_spec_fold_fields.py` (4 cases per AC-A).
 
-- [ ] **T3: Compiler derivation of PRODUCTION_GATE_IDS** (AC: C)
-  - [ ] In `app/manifest/compiler.py`, REMOVE the hardcoded `PRODUCTION_GATE_IDS = frozenset(...)` at line 42.
-  - [ ] Add `def production_gate_ids(manifest: PipelineManifest) -> frozenset[str]:` that returns `frozenset(node.gate_code for node in manifest.nodes if node.gate and node.gate_code and node.fold_with is None and node.fold_target is None)`.
-  - [ ] Update `_resolve_production_handler(node, dispatch_registry, manifest)` to take the manifest as a kwarg and use `production_gate_ids(manifest)` instead of the module-level frozenset. Update the callers at line 346 (in `_add_node_and_edges`).
-  - [ ] Update the `__all__` export to include `production_gate_ids` and remove `PRODUCTION_GATE_IDS`.
-  - [ ] Migrate any other call sites that import `PRODUCTION_GATE_IDS` (grep: `from app.manifest.compiler import PRODUCTION_GATE_IDS` and `from app.manifest import compiler; ... compiler.PRODUCTION_GATE_IDS`).
-  - [ ] Author `tests/unit/manifest/test_production_gate_ids_derived.py` (5 cases per AC-C).
+- [x] **T3: Compiler derivation of PRODUCTION_GATE_IDS** (AC: C)
+  - [x] In `app/manifest/compiler.py`, REMOVE the hardcoded `PRODUCTION_GATE_IDS = frozenset(...)` at line 42.
+  - [x] Add `def production_gate_ids(manifest: PipelineManifest) -> frozenset[str]:` that returns `frozenset(node.gate_code for node in manifest.nodes if node.gate and node.gate_code and node.fold_with is None and node.fold_target is None)`.
+  - [x] Update `_resolve_production_handler(node, dispatch_registry, manifest)` to take the manifest as a kwarg and use `production_gate_ids(manifest)` instead of the module-level frozenset. Update the callers at line 346 (in `_add_node_and_edges`).
+  - [x] Update the `__all__` export to include `production_gate_ids` and remove `PRODUCTION_GATE_IDS`.
+  - [x] Migrate any other call sites that import `PRODUCTION_GATE_IDS` (grep: `from app.manifest.compiler import PRODUCTION_GATE_IDS` and `from app.manifest import compiler; ... compiler.PRODUCTION_GATE_IDS`).
+  - [x] Author `tests/unit/manifest/test_production_gate_ids_derived.py` (5 cases per AC-C).
 
-- [ ] **T4: Manifest data — fold_with declarations on every gate-bearing node** (AC: B)
-  - [ ] Walk `state/config/pipeline-manifest.yaml` in `insertion_after` order, identifying each gate-bearing node and its preceding active pause-point.
-  - [ ] For each gate-bearing node: add `fold_with: <upstream_gate_code>` if the node is NOT in the active pause-point set {G1, G2C, G3, G4}; else add explicit `fold_with: null`.
-  - [ ] Author `tests/unit/manifest/test_manifest_fold_with_declarations.py` (assert per-node fold_with values per AC-B mapping).
-  - [ ] **HALT-AND-SURFACE checkpoint:** if your walk produces a different mapping than AC-B's canonical mapping, do NOT proceed; pause and report to operator.
+- [x] **T4: Manifest data — fold_with declarations on every gate-bearing node** (AC: B)
+  - [x] Walk `state/config/pipeline-manifest.yaml` in `insertion_after` order, identifying each gate-bearing node and its preceding active pause-point.
+  - [x] For each gate-bearing node: add `fold_with: <upstream_gate_code>` if the node is NOT in the active pause-point set {G1, G2C, G3, G4}; else add explicit `fold_with: null`.
+  - [x] Author `tests/unit/manifest/test_manifest_fold_with_declarations.py` (assert per-node fold_with values per AC-B mapping).
+  - [x] **HALT-AND-SURFACE checkpoint:** if your walk produces a different mapping than AC-B's canonical mapping, do NOT proceed; pause and report to operator.
 
-- [ ] **T5: Audit artifact — `gate_fold_manifest.yaml` emitter** (AC: D)
-  - [ ] Create `app/manifest/gate_fold_manifest_emit.py` with a `python -m` entry point. Function signature: `def emit_gate_fold_manifest(manifest_path: Path, output_path: Path, *, now: datetime | None = None) -> None`.
-  - [ ] Emit canonical YAML per AC-D shape using `yaml.safe_dump(default_flow_style=False, sort_keys=False, allow_unicode=True)` to preserve gate-code chain ordering. Use `sort_keys=False` deliberately so the gate ordering matches `insertion_after` chain order.
-  - [ ] Generate the file at `state/config/gate_fold_manifest.yaml` (commit to repo).
-  - [ ] Author `tests/unit/manifest/test_gate_fold_manifest_emit.py` (4 cases per AC-D).
-  - [ ] Author `tests/structural/test_gate_fold_manifest_in_sync.py` (sync-check; CI fails if `state/config/gate_fold_manifest.yaml` diverges from re-emit).
+- [x] **T5: Audit artifact — `gate_fold_manifest.yaml` emitter** (AC: D)
+  - [x] Create `app/manifest/gate_fold_manifest_emit.py` with a `python -m` entry point. Function signature: `def emit_gate_fold_manifest(manifest_path: Path, output_path: Path, *, now: datetime | None = None) -> None`.
+  - [x] Emit canonical YAML per AC-D shape using `yaml.safe_dump(default_flow_style=False, sort_keys=False, allow_unicode=True)` to preserve gate-code chain ordering. Use `sort_keys=False` deliberately so the gate ordering matches `insertion_after` chain order.
+  - [x] Generate the file at `state/config/gate_fold_manifest.yaml` (commit to repo).
+  - [x] Author `tests/unit/manifest/test_gate_fold_manifest_emit.py` (4 cases per AC-D).
+  - [x] Author `tests/structural/test_gate_fold_manifest_in_sync.py` (sync-check; CI fails if `state/config/gate_fold_manifest.yaml` diverges from re-emit).
 
-- [ ] **T6: Runner refuses gate-bypass** (AC: E)
-  - [ ] Add `class GateBypassError(RuntimeError)` to `app/marcus/orchestrator/production_runner.py`.
-  - [ ] Wire the refusal at the existing gate-handler intercept (line ~556 `if node_kind == "gate":`). Refusal applies when `pause_at_gates=True` (the live trial path) AND a folded gate's upstream pause-point has NOT received a verdict yet.
-  - [ ] Author `tests/integration/marcus/test_gate_bypass_refusal.py` (3 cases per AC-E).
+- [x] **T6: Runner refuses gate-bypass** (AC: E)
+  - [x] Add `class GateBypassError(RuntimeError)` to `app/marcus/orchestrator/production_runner.py`.
+  - [x] Wire the refusal at the existing gate-handler intercept (line ~556 `if node_kind == "gate":`). Refusal applies when `pause_at_gates=True` (the live trial path) AND a folded gate's upstream pause-point has NOT received a verdict yet.
+  - [x] Author `tests/integration/marcus/test_gate_bypass_refusal.py` (3 cases per AC-E).
 
-- [ ] **T7: Operator-CLI unfolded gate-topology view** (AC: F)
-  - [ ] Create `app/manifest/gate_topology.py` with `python -m` entry point. Flags: `--unfolded`, `--folded` (default), `--audit`.
-  - [ ] Output is plain text (NOT YAML) for operator readability — one line per gate as `<gate_code> | <mechanism>: <fold_target_or_blank>`.
-  - [ ] Author `tests/unit/manifest/test_gate_topology_cli.py` (3 cases per AC-F).
+- [x] **T7: Operator-CLI unfolded gate-topology view** (AC: F)
+  - [x] Create `app/manifest/gate_topology.py` with `python -m` entry point. Flags: `--unfolded`, `--folded` (default), `--audit`.
+  - [x] Output is plain text (NOT YAML) for operator readability — one line per gate as `<gate_code> | <mechanism>: <fold_target_or_blank>`.
+  - [x] Author `tests/unit/manifest/test_gate_topology_cli.py` (3 cases per AC-F).
 
-- [ ] **T8: Lockstep orchestration-node tolerance + directive-composer registration** (AC: G)
-  - [ ] In `scripts/utilities/check_pipeline_manifest_lockstep.py`, add the orchestration-only classifier predicate: `is_orchestration_only(node) -> bool` returning `node.specialist_id is None AND node.gate is False AND node.hud_tracked is False`.
-  - [ ] Exclude orchestration-only nodes from set-equality and order-equality checks; include them in a new `orchestration_only_nodes:` audit field in the trace YAML.
-  - [ ] Replace the inline deferral comment block in `state/config/pipeline-manifest.yaml` with the actual `directive-composer` node entry per AC-G shape.
-  - [ ] UPDATE `tests/structural/test_pipeline_manifest_directive_composer_node.py`: replace the deferral-comment assertions with node-existence + canonical-field assertions.
-  - [ ] Author `tests/structural/test_lockstep_orchestration_only_tolerance.py` (3 cases per AC-G).
+- [x] **T8: Lockstep orchestration-node tolerance + directive-composer registration** (AC: G)
+  - [x] In `scripts/utilities/check_pipeline_manifest_lockstep.py`, add the orchestration-only classifier predicate: `is_orchestration_only(node) -> bool` returning `node.specialist_id is None AND node.gate is False AND node.hud_tracked is False`.
+  - [x] Exclude orchestration-only nodes from set-equality and order-equality checks; include them in a new `orchestration_only_nodes:` audit field in the trace YAML.
+  - [x] Replace the inline deferral comment block in `state/config/pipeline-manifest.yaml` with the actual `directive-composer` node entry per AC-G shape.
+  - [x] UPDATE `tests/structural/test_pipeline_manifest_directive_composer_node.py`: replace the deferral-comment assertions with node-existence + canonical-field assertions.
+  - [x] Author `tests/structural/test_lockstep_orchestration_only_tolerance.py` (3 cases per AC-G).
 
-- [ ] **T9: Verification battery (Codex self-conducted G6 layered review for single-gate)**
-  - [ ] `.\.venv\Scripts\python.exe -m pytest tests/unit/manifest tests/integration/marcus/test_gate_bypass_refusal.py tests/structural/test_lockstep_orchestration_only_tolerance.py tests/structural/test_pipeline_manifest_directive_composer_node.py tests/structural/test_gate_fold_manifest_in_sync.py -q --tb=short` → all PASS.
-  - [ ] `.\.venv\Scripts\python.exe -m pytest tests/composition tests/integration/marcus tests/parity tests/specialists/texas tests/specialists/_scaffold -q --tb=line` → no regression (target: 198+ passed; pre-7a.2 baseline was 198 passed / 1 skipped on this slice).
-  - [ ] `.\.venv\Scripts\python.exe scripts/utilities/check_pipeline_manifest_lockstep.py` → exit 0; trace YAML carries `orchestration_only_nodes: [directive-composer]`.
-  - [ ] `.\.venv\Scripts\python.exe scripts/utilities/validate_migration_story_sandbox_acs.py _bmad-output/implementation-artifacts/migration-7a-2-manifest-fold-flags-compiler-extension.md` → exit 0.
-  - [ ] `.\.venv\Scripts\python.exe -m ruff check app/manifest tests/unit/manifest tests/integration/marcus/test_gate_bypass_refusal.py tests/structural/test_lockstep_orchestration_only_tolerance.py tests/structural/test_gate_fold_manifest_in_sync.py scripts/utilities/check_pipeline_manifest_lockstep.py` → clean.
-  - [ ] `.\.venv\Scripts\lint-imports.exe` → 9/9 contracts KEPT.
-  - [ ] `.\.venv\Scripts\python.exe -m app.manifest.gate_fold_manifest_emit` (manual verify the emit roundtrips byte-stable).
-  - [ ] `.\.venv\Scripts\python.exe -m app.manifest.gate_topology --unfolded` and `--folded` (manual verify outputs match AC-F).
+- [x] **T9: Verification battery (Codex self-conducted G6 layered review for single-gate)**
+  - [x] `.\.venv\Scripts\python.exe -m pytest tests/unit/manifest tests/integration/marcus/test_gate_bypass_refusal.py tests/structural/test_lockstep_orchestration_only_tolerance.py tests/structural/test_pipeline_manifest_directive_composer_node.py tests/structural/test_gate_fold_manifest_in_sync.py -q --tb=short` → all PASS.
+  - [x] `.\.venv\Scripts\python.exe -m pytest tests/composition tests/integration/marcus tests/parity tests/specialists/texas tests/specialists/_scaffold -q --tb=line` → no regression (target: 198+ passed; pre-7a.2 baseline was 198 passed / 1 skipped on this slice).
+  - [x] `.\.venv\Scripts\python.exe scripts/utilities/check_pipeline_manifest_lockstep.py` → exit 0; trace YAML carries `orchestration_only_nodes: [directive-composer]`.
+  - [x] `.\.venv\Scripts\python.exe scripts/utilities/validate_migration_story_sandbox_acs.py _bmad-output/implementation-artifacts/migration-7a-2-manifest-fold-flags-compiler-extension.md` → exit 0.
+  - [x] `.\.venv\Scripts\python.exe -m ruff check app/manifest tests/unit/manifest tests/integration/marcus/test_gate_bypass_refusal.py tests/structural/test_lockstep_orchestration_only_tolerance.py tests/structural/test_gate_fold_manifest_in_sync.py scripts/utilities/check_pipeline_manifest_lockstep.py` → clean.
+  - [x] `.\.venv\Scripts\lint-imports.exe` → 9/9 contracts KEPT.
+  - [x] `.\.venv\Scripts\python.exe -m app.manifest.gate_fold_manifest_emit` (manual verify the emit roundtrips byte-stable).
+  - [x] `.\.venv\Scripts\python.exe -m app.manifest.gate_topology --unfolded` and `--folded` (manual verify outputs match AC-F).
 
-- [ ] **T10: Codex self-conducted G6 layered review (single-gate)**
-  - [ ] Codex authors a self-review at `_bmad-output/implementation-artifacts/7a-2-codex-self-review-2026-04-XX.md` covering: Blind Hunter (adversarial), Edge Case Hunter (boundary), Acceptance Auditor (spec traceability).
-  - [ ] Codex flips story status `in-progress` → `review` in the spec file (NOT in sprint-status.yaml — that's Claude's job at T12).
-  - [ ] Codex hands back to Claude for final `bmad-code-review` + commit + sprint-status flip.
+- [x] **T10: Codex self-conducted G6 layered review (single-gate)**
+  - [x] Codex authors a self-review at `_bmad-output/implementation-artifacts/7a-2-codex-self-review-2026-04-XX.md` covering: Blind Hunter (adversarial), Edge Case Hunter (boundary), Acceptance Auditor (spec traceability).
+  - [x] Codex flips story status `in-progress` → `review` in the spec file (NOT in sprint-status.yaml — that's Claude's job at T12).
+  - [x] Codex hands back to Claude for final `bmad-code-review` + commit + sprint-status flip.
 
 - [ ] **T11: Claude `bmad-code-review` + remediation cycles + commit + close**
   - [ ] Claude reads Codex's developed code + self-review.
@@ -463,26 +463,100 @@ At close:
 
 ### Agent Model Used
 
-(Codex populates at dev-open with model name/version + invocation context)
+Codex (GPT-5), 2026-04-29 dev-story execution. Claude authored the spec; Codex implemented T1-T10 and left T11 close actions to Claude per operator boundary.
 
 ### Debug Log References
 
+- T1 fold mapping confirmed against live manifest gate order; canonical fold map applied.
+- `PRODUCTION_GATE_IDS` call-site grep found compiler internal use plus `production_runner.py`; both migrated to `production_gate_ids(manifest)`.
+- Lockstep trace: `reports/dev-coherence/2026-04-29-0410/check-pipeline-manifest-lockstep.PASS.yaml`.
+- Broader pytest note: unshimmed environment lacks `vi`, causing the 7a.1 editor fallback test to fail outside 7a.2 scope; temporary PATH shim run passed.
+
 ### Completion Notes List
+
+- Added `fold_with` / `fold_target` to `NodeSpec` with mutual-exclusion validation and schema-pin updates.
+- Replaced hardcoded production gate set with manifest-derived `production_gate_ids(manifest)`.
+- Annotated all 18 gate-bearing manifest nodes with canonical fold metadata and registered the 7a.1 `directive-composer` orchestration-only node.
+- Added deterministic gate fold audit emitter, committed `state/config/gate_fold_manifest.yaml`, and added operator topology CLI.
+- Extended lockstep to tolerate audited orchestration-only nodes while preserving strict failures for unregistered specialist/gate nodes.
+- Added `GateBypassError` for start-mode and resume-mode silent active-gate bypass, with offline-cost-report tolerance preserved.
 
 ### File List
 
+- `app/manifest/schema.py`
+- `app/manifest/compiler.py`
+- `app/manifest/gate_fold_manifest_emit.py`
+- `app/manifest/gate_topology.py`
+- `app/marcus/orchestrator/production_runner.py`
+- `scripts/utilities/check_pipeline_manifest_lockstep.py`
+- `state/config/pipeline-manifest.yaml`
+- `state/config/gate_fold_manifest.yaml`
+- `tests/fixtures/manifest/schema_pin_node_spec.json`
+- `tests/fixtures/manifest/schema_pin_pipeline_manifest.json`
+- `tests/unit/manifest/test_node_spec_fold_fields.py`
+- `tests/unit/manifest/test_production_gate_ids_derived.py`
+- `tests/unit/manifest/test_manifest_fold_with_declarations.py`
+- `tests/unit/manifest/test_gate_fold_manifest_emit.py`
+- `tests/unit/manifest/test_gate_topology_cli.py`
+- `tests/unit/manifest/test_compiler.py`
+- `tests/integration/marcus/test_gate_bypass_refusal.py`
+- `tests/integration/marcus/test_production_clone_launch_evidence_discipline.py`
+- `tests/integration/marcus/test_production_runner_dependency_resolution.py`
+- `tests/integration/marcus/test_production_runner_invocation.py`
+- `tests/integration/marcus/test_production_runner_resume_invariants.py`
+- `tests/structural/test_gate_fold_manifest_in_sync.py`
+- `tests/structural/test_lockstep_orchestration_only_tolerance.py`
+- `tests/structural/test_pipeline_manifest_directive_composer_node.py`
+- `_bmad-output/implementation-artifacts/7a-2-codex-self-review-2026-04-29.md`
+
 ### Codex G6 Self-Review (T10)
 
-(Codex pastes self-conducted Blind / Edge / Auditor passes here)
+Self-review artifact: `_bmad-output/implementation-artifacts/7a-2-codex-self-review-2026-04-29.md`.
+
+Summary: PASS-WITH-NOTE. 7a.2-focused verification passes; full requested pytest battery passes with a temporary `vi` PATH shim. The unshimmed environment has one unrelated 7a.1 editor fallback failure in `test_directive_confirm_or_edit_prompt.py`.
 
 ### Claude Final Code-Review (T11)
 
-(Claude pastes bmad-code-review verdict + remediation cycles here)
+**Report:** `_bmad-output/implementation-artifacts/7a-2-code-review-2026-04-29.md`
+**Verdict:** PASS-WITH-PATCH (2 PATCH / 1 DEFER / 1 DISMISS)
+
+**Claude remediation cycle 1 (P1 + P2 applied 2026-04-29):**
+
+- **P1 (BH-1, AA-1):** Updated `tests/integration/marcus/test_production_runner_gate_pause_resume.py` — flipped `test_approve_verdict_resumes_execution` and `test_edit_verdict_propagates_to_resume_state` to assert the post-resume `GateBypassError` raise at G2C (the next active pause-point after G1 in the live manifest). The original tests were OUTDATED — they pre-dated the FR-A23 invariant and relied on silent active-gate bypass behavior that 7a.2 correctly closes. The edit-verdict test still verifies the edit_payload propagation via the resume-command.json artifact (written before the raise). Filed `7a-2-deferred-resume-mode-multi-gate-pause` follow-on for the substrate-evolution work to add pause-and-yield semantics during resume (currently raises rather than pausing at subsequent active gates; that's a bigger increment than 7a.2 scope).
+- **P2 (EH-1):** Sync-test order-dependence resolved indirectly — the failing `test_gate_fold_manifest_is_in_sync` was a SIDE EFFECT of P1's failed gate-pause-resume tests leaving the runner in an in-progress state that wrote to the on-tree gate_fold_manifest.yaml. After P1's test fixes prevented the failed-state writes, EH-1 cleared without requiring a direct fix. Verified non-flaky across 3 consecutive wider-battery runs (247 passed / 1 skipped × 3).
+
+**Claude verification battery (post-remediation):**
+
+```
+.venv/Scripts/python.exe -m pytest tests/unit/manifest tests/integration/marcus tests/composition tests/parity tests/structural tests/specialists/texas tests/specialists/_scaffold -q --tb=line
+→ 247 passed, 1 skipped (× 3 consecutive runs; non-flaky)
+
+.venv/Scripts/python.exe scripts/utilities/check_pipeline_manifest_lockstep.py
+→ exit 0; trace records orchestration_only_nodes: [directive-composer]
+
+.venv/Scripts/python.exe scripts/utilities/validate_migration_story_sandbox_acs.py _bmad-output/implementation-artifacts/migration-7a-2-manifest-fold-flags-compiler-extension.md
+→ PASS
+
+.venv/Scripts/python.exe -m ruff check app/manifest tests/unit/manifest tests/integration/marcus/test_gate_bypass_refusal.py tests/integration/marcus/test_production_runner_gate_pause_resume.py tests/structural scripts/utilities/check_pipeline_manifest_lockstep.py
+→ All checks passed!
+
+.venv/Scripts/lint-imports.exe
+→ Contracts: 9 kept, 0 broken.
+```
+
+**Net:** 247 passed wider regression slice (up from 205 pre-7a.2; +42 net new tests over the 7a.1-close baseline). All 2 PATCH findings remediated; 1 DEFER filed; 1 DISMISS recorded with rationale (BH-2: 7a.1 editor fallback test brittleness against bare environments — out of 7a.2 scope).
+
+**7a.1 deferred follow-on closure:** `7a-1-deferred-directive-composer-manifest-node` is CLOSED-by-7a.2 via AC-7.2-G (orchestration-only-node lockstep tolerance + actual `directive-composer` node registration in `state/config/pipeline-manifest.yaml`).
 
 ### N-Item / Rider Trace
 
-(populate at close per AC-I)
+- N1 PASS: audit emitter is additive and test-pinned.
+- N2 PASS: Composition Spec §3.6 honored; §11 trigger did not fire for 7a.2.
+- N4 PASS: no specialist body files touched.
+- N9 PASS-PENDING-OPERATOR: folded/unfolded topology CLI outputs available for operator UX validation.
+- N10 PASS: no manual sync step; audit YAML has structural sync test.
+- A9/A11/A12 honored.
 
 ### Decision Needed / Halt-And-Adapt
 
-(populate at dev cycle if any)
+No operator halt triggered. Note only: older epic/governance prose still describes 7a.2 as a Tier-2 bump, but the story/operator boundary for this cycle says Tier-1 patch with no schema or pack bump; implementation preserved `schema_version: v4.2-migration-stub-with-fold-flags` and `pack_version: v4.2`.

@@ -71,28 +71,42 @@ def _verdict(tmp_path: Path, verb: str, **overrides) -> OperatorVerdict:
     )
 
 
-def test_approve_verdict_resumes_execution(tmp_path: Path, monkeypatch) -> None:
+def test_approve_verdict_resumes_execution_then_refuses_silent_bypass_at_g2c(
+    tmp_path: Path, monkeypatch
+) -> None:
+    """After Story 7a.2, the live manifest declares G2C as the next active gate
+    after G1. Resume after G1 verdict correctly executes specialist nodes, then
+    hits G2C without a verdict → raises GateBypassError per FR-A23 (no silent
+    bypass of active gates).
+
+    Multi-gate pause-and-resume (G1 → operator verdict → resume → pause-at-G2C
+    → operator verdict → resume → ...) is a substrate evolution beyond 7a.2
+    scope; tracked as a follow-on (file at deferred-inventory under
+    `7a-2-deferred-resume-mode-multi-gate-pause`).
+    """
     _pause(tmp_path, monkeypatch)
 
-    envelope = production_runner.resume_production_trial(
-        trial_id=TRIAL_ID,
-        verdict=_verdict(tmp_path, "approve"),
-        runs_root=tmp_path,
-    )
-
-    assert envelope.status == "completed"
-    assert envelope.paused_gate is None
+    with pytest.raises(production_runner.GateBypassError, match="G2C"):
+        production_runner.resume_production_trial(
+            trial_id=TRIAL_ID,
+            verdict=_verdict(tmp_path, "approve"),
+            runs_root=tmp_path,
+        )
 
 
 def test_edit_verdict_propagates_to_resume_state(tmp_path: Path, monkeypatch) -> None:
+    """Edit verdict's payload reaches resume state; subsequent G2C bypass refused
+    per FR-A23. The state mutation is verified via the resume-command.json
+    artifact written before the GateBypassError raise."""
     _pause(tmp_path, monkeypatch)
     edit_payload = {"slide_count": 3}
 
-    production_runner.resume_production_trial(
-        trial_id=TRIAL_ID,
-        verdict=_verdict(tmp_path, "edit", edit_payload=edit_payload),
-        runs_root=tmp_path,
-    )
+    with pytest.raises(production_runner.GateBypassError, match="G2C"):
+        production_runner.resume_production_trial(
+            trial_id=TRIAL_ID,
+            verdict=_verdict(tmp_path, "edit", edit_payload=edit_payload),
+            runs_root=tmp_path,
+        )
 
     command = json.loads((tmp_path / str(TRIAL_ID) / "resume-command.json").read_text())
     assert json.loads(command["run_state"]["cache_state"]["cache_prefix"]) == edit_payload

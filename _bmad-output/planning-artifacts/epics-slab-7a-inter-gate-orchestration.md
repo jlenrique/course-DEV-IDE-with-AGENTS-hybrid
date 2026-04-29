@@ -29,7 +29,7 @@ plannedSiblingEpicsFiles:
   - epics-doc-slab-7-prose-harvest.md
 standingGuardrails:
   - 'SG-1: 11-specialist roster floor (Texas, Irene, Dan, Tracy, Gary, Kira, Wanda, Enrique, Compositor, Quinn-R, Vera) — cannot be reduced; enforced via NFR-I7 / FR-O21 (`len(specialists) == 11` build assertion)'
-  - 'SG-2: 34-row mapping checklist floor at `_bmad-output/planning-artifacts/slab-7-legacy-migrated-mapping-checklist.md` — cannot lose rows; enforced via NFR-I6 / FR-O20 (CI row-count assertion blocks merge)'
+  - 'SG-2: 33-row mapping checklist floor at `_bmad-output/planning-artifacts/slab-7-legacy-migrated-mapping-checklist.md` — cannot lose rows; enforced via NFR-I6 / FR-O20 (CI row-count assertion blocks merge)'
   - 'SG-3: Composition Spec invariants §3.1/§3.5/§3.6/§6/§9/§10/§11 — cannot be violated; enforced via NFR-I8 / FR-O22 (`tests/parity/test_composition_spec_invariants.py`)'
 ratifiedAdjustmentsBatch_2026_04_28:
   reSequencing: '7a.1 → 7a.2 → 7a.6 → 7a.3 → 7a.4 → 7a.5 → 7a.7 → 7a.8 (vocabulary registry promoted from slot 6 to slot 3 — registry must precede stories that emit vocabulary into it)'
@@ -38,7 +38,7 @@ ratifiedAdjustmentsBatch_2026_04_28:
     7a.8: 'flipped to dual-gate (integration story; cross-story failure modes justify conservative review)'
   governanceJSONPrecondition: 'add Slab 7a 7a.1-7a.8 gate-mode entries to docs/dev-guide/migration-story-governance.json via party-mode consensus + version bump before any Slab 7a story opens via bmad-create-story'
   manifestVersionBumpPrecondition: '7a.2 manifest fold-flags + compiler extension is Tier-2 minor pack-version bump per pipeline-manifest-regime.md; party-mode consensus + version bump required before 7a.2 dev opens'
-  parityTestOwnership: 'distributed per-row across stories per row-to-story mapping (Mary); 7a.8 aggregates and asserts 34-row floor as single coverage gate'
+  parityTestOwnership: 'distributed per-row across stories per row-to-story mapping (Mary); 7a.8 aggregates and asserts 33-row floor as single coverage gate'
   nfrFraming: 'NFR-CG1-CG11 (11) + NFR-I8 (1) story-scoped to 7a.8; other 61 NFRs (NFR-P*, NFR-C*, NFR-T*, NFR-R*, NFR-I1-I7, NFR-IN*, NFR-V*, NFR-OX*, NFR-OT*, NFR-OC*, NFR-OR*, NFR-OD*) are cross-cutting AC predicates applied across all 8 stories where touched code path triggers them'
   goldenTraceFixtures: '7a.8 close deliverable = record-once golden-trace fixtures from trial-2 (if trial-2 has run); else fixtures land in Slab 7b kickoff; Slab 7b inherits as input, does NOT block on them'
   scopeFloorComplianceVerified: 'all four party-mode voices (John, Mary, Amelia, Murat) explicit no SG-1/SG-2/SG-3 violations in any adjustment'
@@ -54,7 +54,7 @@ codexDeploymentBoundary:
 This document decomposes the Slab 7a PRD (`prd-slab-7a-inter-gate-orchestration.md`, 87 FRs + 73 NFRs + 5 user journeys + 32 named risks + 10 named failure modes + 7 scope-binding commitments + 3 standing guardrails) into **one epic with eight stories** sequenced strict-serial-with-parallel-waves. Decomposition reflects:
 
 - Substrate-completeness MVP (operator-locked; minimum-viable cut rejected at PRD Round 2)
-- Standing guardrails SG-1 (11-specialist roster floor) + SG-2 (34-row mapping checklist floor) + SG-3 (Composition Spec invariants) enforced structurally via NFR-I6/I7/I8 + FR-O20/O21/O22
+- Standing guardrails SG-1 (11-specialist roster floor) + SG-2 (33-row mapping checklist floor) + SG-3 (Composition Spec invariants) enforced structurally via NFR-I6/I7/I8 + FR-O20/O21/O22
 - Party-mode consensus on all design decisions (PRD Step-by-Step) + Step 1 batch-approved adjustments (re-sequenced 7a.6 to slot 3; 7a.8 flipped to dual-gate; 7a.4 K-contract bounds HTML to skeleton-only)
 - Codex parallel-authoring boundary: all 8 Slab 7a stories Claude-authored; Codex bmad-code-review on every story close
 - Sequenced execution: 7a.1 (closes trial-475 Gap 2) → 7a.2 (manifest foundation) → 7a.6 (vocabulary registry foundation) → 7a.3 → 7a.4 → 7a.5 → 7a.7 → 7a.8
@@ -162,14 +162,14 @@ All 87 FRs assigned to ≥1 of 8 stories (verified 87/87). Cross-cutting FRs (FR
 
 **Standing-guardrail enforcement (SG-1/SG-2/SG-3):**
 - **SG-1 (11-specialist roster):** primary enforcement in 7a.6 (vocabulary registry hard-codes 11 names + emits canonical list via FR-O21 `len(specialists) == 11` build assertion); aggregated assertion in 7a.8 parity suite.
-- **SG-2 (34-row mapping checklist):** distributed authoring across stories per row-to-story mapping; 7a.6 (vocabulary registry) authors registry-related parity tests; 7a.8 aggregates and asserts 34-row floor as single coverage gate via FR-O20 (CI row-count assertion blocks merge).
+- **SG-2 (33-row mapping checklist):** distributed authoring across stories per row-to-story mapping; 7a.6 (vocabulary registry) authors registry-related parity tests; 7a.8 aggregates and asserts 33-row floor as single coverage gate via FR-O20 (CI row-count assertion blocks merge).
 - **SG-3 (Composition Spec invariants):** FR-A1/A2/A3 in 7a.1 (envelope append-only + SHA256 + dispatch adapter); FR-A4 in 7a.3 (gate precedence); FR-A5 in 7a.6 (manifest-declared dependencies); FR-A6 in 7a.6 + 7a.7 (Composition Smoke gate at slab-opener evidence); FR-A11-A14 in 7a.5 (Postgres checkpointer additive evolution); FR-A21/A22/A24 in 7a.8; FR-O22 in 7a.6 + NFR-I8 in 7a.8 author `tests/parity/test_composition_spec_invariants.py`.
 
 ## Epic List
 
 ### Epic 1: Slab 7a — Inter-Gate Conversational + Per-Slide Operator-Review Substrate
 
-**Epic Goal:** Operator can run a multi-hour course-production trial collaborating with the eleven-specialist roster (Texas, Irene, Dan, Tracy, Gary, Kira, Wanda, Enrique, Compositor, Quinn-R, Vera) without (a) the run silently bypassing gates that should have stopped for input, or (b) the operator's attention degrading into rubber-stamp mode by slide 18 / hour 4. Trial-2 reaches G3 cleanly with all 11 specialists active; calibration-tripwire exercised; 34-row mapping-checklist coverage maintained; no fix-on-the-fly patches.
+**Epic Goal:** Operator can run a multi-hour course-production trial collaborating with the eleven-specialist roster (Texas, Irene, Dan, Tracy, Gary, Kira, Wanda, Enrique, Compositor, Quinn-R, Vera) without (a) the run silently bypassing gates that should have stopped for input, or (b) the operator's attention degrading into rubber-stamp mode by slide 18 / hour 4. Trial-2 reaches G3 cleanly with all 11 specialists active; calibration-tripwire exercised; 33-row mapping-checklist coverage maintained; no fix-on-the-fly patches.
 
 **User outcome (post-epic):** post-Epic-1 + Slab 7b specialist activation, the operator participates in ~10 essential conversational gates (3-gate reduction from legacy 13 surfaces), per-slide arrays at G2B/G2F-merged/G3B carry via subgraph-with-`interrupt()` fan-out, revise-loops carry max-3 oscillation guard as state-machine invariant, and the operator-control parity table earns operator trust that the legacy v4.2 floor is honored.
 
@@ -302,7 +302,7 @@ So that all 14 declared gate codes (G0, G0A, G0B, G1, G1A, G1.5, G2, G2B, G2C, G
 
 As the orchestration runtime + dev-agents (Claude/Codex),
 I want a unified namespaced decision-card vocabulary registry at `docs/conversational-gates/_registry/vocabulary.yaml` and an operator-control parity table at `docs/operator/legacy-vs-langgraph-control-parity.md`,
-So that downstream stories (7a.3-7a.5, 7a.7) emit decision-card vocabulary that's pre-registered (FR-O4 no-inline-string-literals; closed-set red-rejection) and so that the 34-row mapping-checklist legacy↔migrated trace is operator-readable + CI-enforceable.
+So that downstream stories (7a.3-7a.5, 7a.7) emit decision-card vocabulary that's pre-registered (FR-O4 no-inline-string-literals; closed-set red-rejection) and so that the 33-row mapping-checklist legacy↔migrated trace is operator-readable + CI-enforceable.
 
 **Story metadata:** Wave 3 (parallel with 7a.3; needs 7a.2 manifest foundation); single-gate; ~2K; FR coverage 14. **Promoted from slot 6 to slot 3 per Step 1 batch-approved adjustment** — registry must precede stories that emit vocabulary into it.
 
@@ -318,11 +318,11 @@ So that downstream stories (7a.3-7a.5, 7a.7) emit decision-card vocabulary that'
 
 **Given** the parity table at `docs/operator/legacy-vs-langgraph-control-parity.md`
 **When** the dev-agent authors the table
-**Then** it has one row per legacy v4.2 operator-control lever in the 34-row mapping checklist (left column = legacy lever, right column = LangGraph equivalent path/command); 34 rows total (FR-O2 + SG-2 floor).
+**Then** it has one row per legacy v4.2 operator-control lever in the 33-row mapping checklist (left column = legacy lever, right column = LangGraph equivalent path/command); 33 rows total (FR-O2 + SG-2 floor).
 
 **Given** the parity-test suite at `tests/parity/test_operator_control_parity.py`
 **When** CI runs
-**Then** the suite fails if any row's right-column command does not produce the asserted control behavior; row-count assertion `len(rows) == 34` blocks merge if violated (FR-O2 + FR-O20 + NFR-I6).
+**Then** the suite fails if any row's right-column command does not produce the asserted control behavior; row-count assertion `len(rows) == 33` blocks merge if violated (FR-O2 + FR-O20 + NFR-I6).
 
 **Given** the canonical specialist roster
 **When** the registry is built
@@ -340,7 +340,7 @@ So that downstream stories (7a.3-7a.5, 7a.7) emit decision-card vocabulary that'
 **When** 7a.3-7a.5 build atop the registry
 **Then** the registry FR-A5 (manifest-declared dependencies) and FR-A17 (subgraph-absorption-via-fold-target) invariants are enforced per Composition Spec §3.6.
 
-**Standing-guardrail enforcement:** **SG-1 primary enforcement here** (FR-O21 hard-codes 11-specialist roster; build assertion blocks drop). **SG-2 primary enforcement here** (FR-O2 + FR-O20 — parity table + parity-test suite + 34-row CI assertion). SG-3 Composition Spec §3.6 + §10 Decision Log entries honored (FR-A5).
+**Standing-guardrail enforcement:** **SG-1 primary enforcement here** (FR-O21 hard-codes 11-specialist roster; build assertion blocks drop). **SG-2 primary enforcement here** (FR-O2 + FR-O20 — parity table + parity-test suite + 33-row CI assertion). SG-3 Composition Spec §3.6 + §10 Decision Log entries honored (FR-A5).
 
 **Story-scoped NFR predicates:** NFR-V3 (registry additive only post-Slab-7a-close); NFR-CG2 Composition Smoke evidence already captured at 7a.1 referenced; NFR-T2 (K-floor 1.2-1.4× single-gate; ~2K target).
 
@@ -525,16 +525,16 @@ So that I have a uniform single-decision CLI surface for terminal gates (no mult
 ### Story 1.8: Integration + Parity-Test Suite + Slab 7a Closeout
 
 As the operator + the substrate-completeness gate,
-I want a parity-test suite at `tests/parity/` mirroring the 34-row mapping checklist (one test per legacy operator-control lever), Composition Spec invariant test suite at `tests/parity/test_composition_spec_invariants.py`, calibration-tripwire substrate behavior wired into the gate-runner, gate-bypass detection hook, max-3 oscillation guard as state-machine invariant, engagement-decay reporting, sandbox-AC validator pass on every Slab 7a story, and Slab 7a closeout artifacts (sprint-status update, deferred-inventory entries, retrospective evidence),
+I want a parity-test suite at `tests/parity/` mirroring the 33-row mapping checklist (one test per legacy operator-control lever), Composition Spec invariant test suite at `tests/parity/test_composition_spec_invariants.py`, calibration-tripwire substrate behavior wired into the gate-runner, gate-bypass detection hook, max-3 oscillation guard as state-machine invariant, engagement-decay reporting, sandbox-AC validator pass on every Slab 7a story, and Slab 7a closeout artifacts (sprint-status update, deferred-inventory entries, retrospective evidence),
 So that all seven scope-binding commitments (Subgraph-with-`interrupt()` / Max-3 / Frozen 10-gate inventory / Pre-composition QA validator / Decision-card vocabulary registry / C1 calibration-tripwire / Parity-test suite) are landed and tested, and trial-2 closes through G3 cleanly with all 11 specialists active.
 
 **Story metadata:** Wave 5 (strict-last); **dual-gate** (flipped from single per Step 1 batch-approved adjustment — integration story; cross-story failure modes justify conservative review); ~3K; FR coverage 17 FR-line + NFR-CG block + NFR-I8.
 
 **Acceptance Criteria:**
 
-**Given** the 34-row mapping-checklist (`_bmad-output/planning-artifacts/slab-7-legacy-migrated-mapping-checklist.md`)
+**Given** the 33-row mapping-checklist (`_bmad-output/planning-artifacts/slab-7-legacy-migrated-mapping-checklist.md`)
 **When** the parity-test suite at `tests/parity/test_mapping_checklist_row_NN.py` is executed
-**Then** the suite enumerates 34 tests (one per row); each test header declares `REFERENCES_FRS = [...]` + `MAPPING_CHECKLIST_ROW = NN`; CI fails if any row lacks a test, any referenced FR is unimplemented, or any referenced FR lacks a passing unit test (FR34 + FR35 + FR-O20 + NFR-I6 + SG-2 floor structurally enforced).
+**Then** the suite enumerates 33 tests (one per row); each test header declares `REFERENCES_FRS = [...]` + `MAPPING_CHECKLIST_ROW = NN`; CI fails if any row lacks a test, any referenced FR is unimplemented, or any referenced FR lacks a passing unit test (FR34 + FR35 + FR-O20 + NFR-I6 + SG-2 floor structurally enforced).
 
 **Given** the Composition Spec invariant test suite at `tests/parity/test_composition_spec_invariants.py`
 **When** CI runs
@@ -608,7 +608,7 @@ So that all seven scope-binding commitments (Subgraph-with-`interrupt()` / Max-3
 **When** trial-2 has run by 7a.8 close
 **Then** record-once-replay-forever fixtures are committed under `_bmad-output/trial-fixtures/<trial-2-id>/`; quarterly re-record cadence calendar-tracked (operator-gated) (NFR-T4); IF trial-2 hasn't run by 7a.8 close, fixtures land in Slab 7b kickoff (Slab 7b inherits as input, does NOT block on them) (per Murat's Step 1 finding).
 
-**Standing-guardrail enforcement:** **SG-1 aggregated assertion here** (parity suite asserts `len(roster) == 11` + name-set equality); **SG-2 aggregated assertion here** (parity suite enumerates 34 tests; row-count CI assertion blocks merge); **SG-3 aggregated assertion here** (Composition Spec invariant test suite enforces all 7 sections).
+**Standing-guardrail enforcement:** **SG-1 aggregated assertion here** (parity suite asserts `len(roster) == 11` + name-set equality); **SG-2 aggregated assertion here** (parity suite enumerates 33 tests; row-count CI assertion blocks merge); **SG-3 aggregated assertion here** (Composition Spec invariant test suite enforces all 7 sections).
 
 **Story-scoped NFR predicates (all NFR-CG1-CG11 + NFR-I8 here):**
 - NFR-CG1 sandbox-AC inventory PR landed (Slab 7b precondition; not a 7a deliverable but referenced)
@@ -635,7 +635,7 @@ So that all seven scope-binding commitments (Subgraph-with-`interrupt()` / Max-3
 
 ---
 
-**Epic 1 closeout:** all 8 stories complete; 87/87 FRs implemented + tested; 73/73 NFRs satisfied (62 cross-cutting AC predicates + 11 NFR-CG block + 1 NFR-I8 + 2 NFR-OD); 34/34 mapping-checklist rows have parity tests; 3/3 standing guardrails (SG-1/SG-2/SG-3) structurally enforced via CI assertions; trial-2 readiness predicate green.
+**Epic 1 closeout:** all 8 stories complete; 87/87 FRs implemented + tested; 73/73 NFRs satisfied (62 cross-cutting AC predicates + 11 NFR-CG block + 1 NFR-I8 + 2 NFR-OD); 33/33 mapping-checklist rows have parity tests; 3/3 standing guardrails (SG-1/SG-2/SG-3) structurally enforced via CI assertions; trial-2 readiness predicate green.
 
 ---
 

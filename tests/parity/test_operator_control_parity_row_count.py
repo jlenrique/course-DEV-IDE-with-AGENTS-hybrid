@@ -1,0 +1,17 @@
+"""SG-2 floor structural enforcement: 33-row parity-test suite."""
+
+from __future__ import annotations
+
+import re
+from pathlib import Path
+
+
+def test_parity_test_suite_has_exactly_33_rows() -> None:
+    suite_path = Path(__file__).parent / "test_operator_control_parity.py"
+    text = suite_path.read_text(encoding="utf-8")
+    test_funcs = re.findall(r"^def (test_row_\d+_\w+)", text, re.MULTILINE)
+    assert len(test_funcs) == 33, (
+        f"SG-2 floor violation: parity-test suite has {len(test_funcs)} test "
+        "functions; expected exactly 33. Adding/removing rows requires "
+        "party-mode consensus per NFR-V3."
+    )

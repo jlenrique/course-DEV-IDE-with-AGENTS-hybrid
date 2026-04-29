@@ -16,6 +16,18 @@ from app.models.decision_cards.g2c import G2CCard
 from app.models.decision_cards.g3 import G3Card
 from app.models.decision_cards.g4 import G4Card
 from app.models.decision_cards.override_event import OverrideEvent
+from app.models.decision_cards.vocabulary import (
+    REGISTRY_PATH,
+    EscapeCardOption,
+    GateDecisionToken,
+    GateDirectiveToken,
+    SharedGateDecision,
+    SpecialistId,
+    VocabularyDecisionCard,
+    decision_card_schema_text,
+    emit_decision_card_schema,
+    load_vocabulary_registry,
+)
 
 AnyDecisionCard: TypeAlias = Annotated[
     G1Card | G2CCard | G3Card | G4Card,
@@ -29,9 +41,19 @@ __all__ = [
     "DecisionCard",
     "DecisionCardMeta",
     "DecisionCardVerb",
+    "EscapeCardOption",
+    "GateDecisionToken",
+    "GateDirectiveToken",
     "G1Card",
     "G2CCard",
     "G3Card",
     "G4Card",
     "OverrideEvent",
+    "REGISTRY_PATH",
+    "SharedGateDecision",
+    "SpecialistId",
+    "VocabularyDecisionCard",
+    "decision_card_schema_text",
+    "emit_decision_card_schema",
+    "load_vocabulary_registry",
 ]

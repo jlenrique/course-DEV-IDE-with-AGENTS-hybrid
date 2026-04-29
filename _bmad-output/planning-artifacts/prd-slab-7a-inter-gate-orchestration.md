@@ -5,13 +5,13 @@ status: 'complete-ready-for-bmm-workflow-status-update-and-implementation-readin
 polishPass2026_04_28:
   navigationAdded: ['table-of-contents', 'operator-non-negotiables-callout', 'quick-reference-anchors']
   acronymGlosses: ['JTBD', 'HIL', 'FM', 'ADR', 'K-floor']
-  standingGuardrailsConsolidatedAs: ['SG-1: 11-specialist roster floor', 'SG-2: 34-row mapping checklist floor', 'SG-3: Composition Spec invariants §3.1/§3.5/§3.6/§6/§9/§10/§11']
+  standingGuardrailsConsolidatedAs: ['SG-1: 11-specialist roster floor', 'SG-2: 33-row mapping checklist floor', 'SG-3: Composition Spec invariants §3.1/§3.5/§3.6/§6/§9/§10/§11']
   crossLinkFixes: ['Step 5 FM-2 → Step 6 FM-2 prefix', 'Step 8 TS-3 → Step 3 TS-3 prefix']
   scopeFloorCheck: 'verified — no specialist drop, no checklist-row drop, no Composition Spec violation across all polish edits'
 guardrailsExpanded2026_04_28:
   mapping_checklist_as_guardrail:
     path: '_bmad-output/planning-artifacts/slab-7-legacy-migrated-mapping-checklist.md'
-    rule: 'Every remaining PRD step content MUST be cross-referenced against the 34-row mapping checklist; any deliverable, requirement, or constraint that would lose essential function from a row is auto-rejected.'
+    rule: 'Every remaining PRD step content MUST be cross-referenced against the 33-row mapping checklist; any deliverable, requirement, or constraint that would lose essential function from a row is auto-rejected.'
     enforcement: 'Party-mode voices instructed to verify mapping-checklist coverage at draft time; assistant verifies at synthesis time before [C] menu.'
   composition_spec_as_guardrail:
     path: 'docs/dev-guide/composition-specification.md'
@@ -26,7 +26,7 @@ metaDirective:
       named: ['Texas', 'Irene', 'Dan', 'Tracy', 'Gary', 'Kira', 'Wanda', 'Enrique', 'Compositor', 'Quinn-R', 'Vera']
       enforcement: 'Any party-mode recommendation that would drop a named specialist from Slab 7b activation roster is auto-rejected and flagged back to operator before proceeding.'
     legacyWorkflowSteps:
-      mustNotDropFromMappingChecklist: 34
+      mustNotDropFromMappingChecklist: 33
       checklistPath: '_bmad-output/planning-artifacts/slab-7-legacy-migrated-mapping-checklist.md'
       enforcement: 'Any party-mode recommendation that would drop a legacy workflow row from the mapping checklist (vs preserve essential function under different mechanism) is auto-rejected and flagged back to operator before proceeding.'
   consensusProtocol: 'Each remaining PRD step (3 through 13) opens with a 3-4 voice party-mode round; assistant synthesizes consensus or supermajority position; if consensus violates either scope-floor guardrail, assistant overrides and flags to operator; otherwise consensus position is presented as the proposed [C] content for operator final approval at step menu.'
@@ -127,7 +127,7 @@ plannedSiblingPRDs:
 These three guardrails are operator-ratified (2026-04-28) and bind every section, story, and dev-cycle of Slab 7a + 7b + Doc-7-D. Codex and any future reviewer parsing this PRD as plain markdown should treat these as the standing scope-floor:
 
 - **SG-1 (Specialist roster floor):** the eleven specialists named for Slab 7b activation — **Texas, Irene, Dan, Tracy, Gary, Kira, Wanda, Enrique, Compositor, Quinn-R, Vera** — cannot be reduced. Enforced structurally by NFR-I7 (`len(specialists) == 11` build assertion).
-- **SG-2 (Legacy workflow step floor):** the **34-row mapping checklist** (`_bmad-output/planning-artifacts/slab-7-legacy-migrated-mapping-checklist.md`) cannot lose rows. Essential-function preservation under different mechanism allowed; outright drops auto-rejected. Enforced structurally by NFR-I6 (CI row-count assertion blocks merge) + parity-test suite at `tests/parity/test_mapping_checklist_row_NN.py`.
+- **SG-2 (Legacy workflow step floor):** the **33-row mapping checklist** (`_bmad-output/planning-artifacts/slab-7-legacy-migrated-mapping-checklist.md`) cannot lose rows. Essential-function preservation under different mechanism allowed; outright drops auto-rejected. Enforced structurally by NFR-I6 (CI row-count assertion blocks merge) + parity-test suite at `tests/parity/test_mapping_checklist_row_NN.py`.
 - **SG-3 (Composition Spec invariants):** Composition Specification (`docs/dev-guide/composition-specification.md`) §3.1 SHA256+append-only, §3.5 gate precedence, §3.6 manifest-declared dependencies, §6 chain-test-per-PR, §9 Composition Smoke gate, §10 Decision Log, §11 migration triggers — all seven sections enforced structurally by NFR-I8 (`tests/parity/test_composition_spec_invariants.py`).
 
 Subsequent mentions of these guardrails reference them as `(per SG-1)`, `(per SG-2)`, or `(per SG-3)` rather than re-enumerating.
@@ -153,7 +153,7 @@ This PRD (Slab 7a) is one of three sequenced slabs:
 | 7 scope-binding commitments | Executive Summary §Scope-Binding Commitments |
 | 10 frozen gates | Project-Type Specific Requirements §Gate topology |
 | 11 specialists (canonical enumeration) | Functional Requirements §FR16 |
-| 34-row mapping checklist | `_bmad-output/planning-artifacts/slab-7-legacy-migrated-mapping-checklist.md` |
+| 33-row mapping checklist | `_bmad-output/planning-artifacts/slab-7-legacy-migrated-mapping-checklist.md` |
 | K-floor / target-range | NFR-T1 (canonical); NFR-CG5 cross-refs |
 | Failure-mode (FM) checks | Success Criteria §Slab-7a-Shaped Failure Modes (FM-1..FM-10) |
 | Innovation risks (IR) | Innovation & Novel Patterns §Risk Mitigation (IR-1..IR-7) |
@@ -215,7 +215,7 @@ Three differentiators distinguish Slab 7a from every prior migration slab:
 
 1. **Checkpointer-native operator-control surface.** Prior slabs (1–6) consumed LangGraph as runtime; Slab 7a is the inflection point where checkpointer state becomes operator-readable evidence (trial-475's checkpoint file, with Slab 7a, becomes a versioned artifact — checkpointer state-shape acquires a format-versioning policy in this slab). CLI shims and HTML review-packs become thin renderers over LangGraph state, not the source of truth. Per-slide arrays carry via subgraph-with-`interrupt()` fan-out rather than CLI-loop-per-slide — the failure mode Quinn-R named in party-mode round 1 ("by slide 18 the operator is rubber-stamping") is structurally prevented, not policy-prevented.
 
-2. **Essential-function preservation, not verbatim recreation.** The legacy v4.2 prompt pack is 1527 lines of operator-typed prose because the legacy runtime had no other mechanism for carrying operator decisions. Slab 7a preserves operator-decision essential function (every gate the operator needs to control is preserved) but explicitly trims legacy ceremony per Quinn-R's ruthless walk: drop §11B, merge §07D into §07F, compress §4.5 to default-accept-after-confirmation. Net: ten essential conversational gates (frozen as a PRD-output gate-inventory artifact, not a sprint-planning number). Each cut is anchored to a row in the mapping checklist (`_bmad-output/planning-artifacts/slab-7-legacy-migrated-mapping-checklist.md`, 34 rows; first deliverable of Slab 7 PRD work, completed 2026-04-28).
+2. **Essential-function preservation, not verbatim recreation.** The legacy v4.2 prompt pack is 1527 lines of operator-typed prose because the legacy runtime had no other mechanism for carrying operator decisions. Slab 7a preserves operator-decision essential function (every gate the operator needs to control is preserved) but explicitly trims legacy ceremony per Quinn-R's ruthless walk: drop §11B, merge §07D into §07F, compress §4.5 to default-accept-after-confirmation. Net: ten essential conversational gates (frozen as a PRD-output gate-inventory artifact, not a sprint-planning number). Each cut is anchored to a row in the mapping checklist (`_bmad-output/planning-artifacts/slab-7-legacy-migrated-mapping-checklist.md`, 33 rows; first deliverable of Slab 7 PRD work, completed 2026-04-28).
 
 3. **Trial-evidence-anchored design.** Every Slab 7a design decision traces to either trial-475 evidence or a named trial-2 readiness criterion: the directive-composer closes content-FAIL root cause from trial-475; subgraph-with-`interrupt()` prevents per-slide CLI collapse named in party-mode round 1; max-3 oscillation guard prevents trust-failure modes named in party-mode round 2; C1-with-calibration-tripwire prevents pre-fill-becomes-rubber-stamp degradation under multi-trial drift. Slab 7a does NOT audit the eleven specialists' `_act` bodies — that work belongs in Slab 7b. Marcus's runtime role as LLM call-site (the `pre-gate-marcus` node) resolves the Marcus-duality named in `dev-agent-anti-patterns.md`, with a defined prompt-pack contract authored as part of Slab 7a §C-axis Implementation.
 
@@ -254,7 +254,7 @@ When trial-2 closes cleanly, the operator participates in roughly ten essential 
 
 **Hard scope-floor guardrails — auto-reject any consensus position that violates either:**
 1. **Specialist roster floor:** the eleven specialists named for Slab 7b activation (Texas, Irene, Dan, Tracy, Gary, Kira, Wanda, Enrique, Compositor, Quinn-R, Vera) cannot be reduced. A consensus position dropping any specialist is auto-blocked and flagged to operator before proceeding.
-2. **Legacy workflow step floor:** the 34-row mapping checklist (`_bmad-output/planning-artifacts/slab-7-legacy-migrated-mapping-checklist.md`) cannot lose rows. Essential-function preservation under different mechanism is allowed (e.g., merging §07D into §07F per Quinn-R's ruthless walk); outright dropping a row is auto-blocked.
+2. **Legacy workflow step floor:** the 33-row mapping checklist (`_bmad-output/planning-artifacts/slab-7-legacy-migrated-mapping-checklist.md`) cannot lose rows. Essential-function preservation under different mechanism is allowed (e.g., merging §07D into §07F per Quinn-R's ruthless walk); outright dropping a row is auto-blocked.
 
 ---
 
@@ -267,7 +267,7 @@ The user is the operator running multi-hour course-production trials with the el
 | ID | Outcome | How measured | Threshold |
 |----|---------|--------------|-----------|
 | US-1 | Operator reaches G3 (Sequencing approved) on real content without silent gate-bypass | LangSmith run tree shows ordered `interrupt(...)` events at every gate; operator `Command(resume=...)` payload at each | 100% gate transitions in trial-2 carry an operator decision-card; zero `state.gate_index += 1` writes outside `interrupt()`-resumed paths |
-| US-2 | Operator participates in ~10 essential conversational gates; legacy 34-row coverage maintained | Gate-presence audit against `slab-7-legacy-migrated-mapping-checklist.md` 34-row inventory; each row maps to a present `interrupt()` site OR a documented essential-function-preserved-elsewhere annotation | All 34 legacy rows accounted for in trial-2 (10 gates fired + 24 essential-function-preserved); zero dropped rows |
+| US-2 | Operator participates in ~10 essential conversational gates; legacy 33-row coverage maintained | Gate-presence audit against `slab-7-legacy-migrated-mapping-checklist.md` 33-row inventory; each row maps to a present `interrupt()` site OR a documented essential-function-preserved-elsewhere annotation | All 33 legacy rows accounted for in trial-2 (10 gates fired + 24 essential-function-preserved); zero dropped rows |
 | US-3 | Revise loops cannot grind — max-3 oscillation guard fires deterministically as state-machine invariant | Parity-test `test_oscillation_guard_invariant` asserts `revise_count <= 3` is a hard graph-edge condition; substrate refuses 4th revise per slide; emits `oscillation_escape_required` decision-card | Zero trial transcripts show `oscillation_count > 3`; guard-trip emits operator decision-card "escalate or accept-as-is", not silent loop |
 | US-4 | No hour-4 rubber-stamping — operator engagement observably distributed across trial | Engagement-signal rate (override entered OR explicit ack-token, not blank-enter) in last quartile of trial-2 ≥ 30% of first-quartile rate; `_artifacts/trial-2/engagement_decay_report.md` auto-generated post-trial | Last-quartile engagement-rate ratio ≥ 0.30 of first-quartile; if breached, C1 calibration tripwire fires |
 | US-5 | Decision-card vocabulary is closed and predictable — no per-gate dialect drift | `decision_card_registry.yaml` enumerates every directive enum value per gate; UI/CLI presents only registered values; CI test `test_no_ad_hoc_vocabulary_tokens` AST-scans gate-handler modules | 100% of trial-2 decision-cards validate against the registry; zero free-text directive fallbacks |
@@ -321,7 +321,7 @@ Record-once-replay-forever; fixtures committed under version control with conten
 | Frozen gate inventory | 10 gates (operator-ratified post-Quinn-R compressions) | drift = halt |
 | Declared gate-codes honored | 14 codes (10 pause-points + 4 fold-targets per `gate_fold_manifest.yaml`) | silent ignore = halt |
 | Specialist activation roster | 11 (Texas, Irene, Dan, Tracy, Gary, Kira, Wanda, Enrique, Compositor, Quinn-R, Vera) | <11 = scope-floor violation, halt |
-| Legacy mapping checklist rows | 34 preserved | <34 = scope-floor violation, halt |
+| Legacy mapping checklist rows | 33 preserved | <33 = scope-floor violation, halt |
 | Slab 7a code surface | ~25 files / ~530 LOC | — |
 | Slab 7a test surface | ~40 tests in 7a (subset of 75–100 four-tier suite) | — |
 | Slab 7a development cost (T2/T4 dev runs) | ~$0.60 total LLM spend | over-budget = halt |
@@ -344,10 +344,10 @@ Record-once-replay-forever; fixtures committed under version control with conten
 |---|---|---|
 | A-1 | All 7 scope-binding commitments landed | Executive Summary §Scope-Binding Commitments | each commitment has a story-ID reference + matching story marked done in `sprint-status.yaml` |
 | A-2 | 14 declared gate_codes resolved (no silent ignore) | `state/config/gate_fold_manifest.yaml` | SM-1 metric green; zero `mechanism: ignore` or absent-mechanism entries |
-| A-3 | Parity-test suite green | `tests/parity/` directory | every legacy operator-control lever from 34-row mapping checklist has reachable test; suite green; coverage report attached |
+| A-3 | Parity-test suite green | `tests/parity/` directory | every legacy operator-control lever from 33-row mapping checklist has reachable test; suite green; coverage report attached |
 | A-4 | Calibration-tripwire mechanism exercised in trial-2 | `_artifacts/trial-2/calibration_tripwire_log.jsonl` | log contains either `fired: true` event OR `armed_check: passed` event (both count as exercised) |
 | A-5 | Trial-2 closes through G3 cleanly | `_artifacts/trial-2/run_summary.yaml` | `terminal_gate: G3` AND `silent_bypass_events: 0` AND `specialist_roster_count: 11` |
-| A-6 | Mapping-checklist 34-row coverage maintained | PRD §Mapping Checklist | 34 rows present; each row has `essential_function` field; legacy↔migrated mechanism cited per row |
+| A-6 | Mapping-checklist 33-row coverage maintained | PRD §Mapping Checklist | 33 rows present; each row has `essential_function` field; legacy↔migrated mechanism cited per row |
 | A-7 | Operator-friction metrics SM-1..SM-6 all green at green-light | each metric's named artifact | each metric's green-light check passes |
 
 ### Slab-7a-Shaped Failure Modes (checkable at green-light, not discovered in trial)
@@ -361,7 +361,7 @@ Each has a concrete check the green-light party-mode round can run in five minut
 | FM-3 | Subgraph degenerating to parent-graph-loop | `pytest tests/structural/test_per_slide_subgraph_pattern.py` red OR parent graph contains `interrupt()` inside per-slide `for` loop |
 | FM-4 | Decision-card vocabulary fragmentation | CI test `test_no_ad_hoc_vocabulary_tokens` red OR vocabulary.yaml diff between Slab-7a-open and Slab-7a-close shows tokens added without registry update |
 | FM-5 | Calibration-tripwire shipped but never exercised | `_artifacts/trial-2/calibration_tripwire_log.jsonl` missing OR contains zero entries (A-4 inverse) |
-| FM-6 | Parity-test suite missing tests for any legacy lever | Coverage matrix: 34-row mapping checklist cross-referenced against `tests/parity/` test names; any unmapped row = fail |
+| FM-6 | Parity-test suite missing tests for any legacy lever | Coverage matrix: 33-row mapping checklist cross-referenced against `tests/parity/` test names; any unmapped row = fail |
 | FM-7 | HTML review-pack skeleton ships but isn't opened in trial-2 | `_artifacts/trial-2/decision_log.jsonl` shows zero `review_pack_opened: true` events at G2B, G2F-merged, OR G3B (UX promise unverified) |
 | FM-8 | Engagement-decay floor breached silently | SM-4 ratio < 0.30 AND no escalation event raised mid-trial (operator-friction analog of FM-1) |
 | FM-9 | Pack-hash drift on replay-regression (Slab 6 carry-over) | T2 canary asserts identical pack-hash run-to-run on identical inputs; trial-475 root-cause-class precursor — non-negotiable |
@@ -396,7 +396,7 @@ The 13 deliverables organize into five clusters:
 
 **Cluster E — Cross-cutting envelope guarantees**
 12. Pydantic-v2 schema discipline across 1–11 — `validate_assignment=True`, tz-aware datetimes, triple-layer red-rejection on closed enums per pydantic-v2-schema-checklist.
-13. Mapping-checklist 34-row Legacy↔Migrated traceability (`_bmad-output/planning-artifacts/slab-7-legacy-migrated-mapping-checklist.md`) — every legacy row maps to migrated mechanism; outright drops auto-rejected. Audit floor.
+13. Mapping-checklist 33-row Legacy↔Migrated traceability (`_bmad-output/planning-artifacts/slab-7-legacy-migrated-mapping-checklist.md`) — every legacy row maps to migrated mechanism; outright drops auto-rejected. Audit floor.
 
 **MVP exit gate:** trial-2 runs end-to-end, reaches G3 with eleven specialists, no fix-on-the-fly patches, no silent gate-bypass.
 
@@ -541,7 +541,7 @@ They continue. Slides 18–30 clear at normal pace. **G2C** (Wanda, Enrique, Kir
 2. **Deferred-inventory consultation.** Operator opens `_bmad-output/planning-artifacts/deferred-inventory.md`. Notes Slab 7b hardening entries (Wanda retry-loop from Journey 4), 15-1-lite-irene + 15-1-lite-gary follow-ons, §4.55 conditional follow-on. Cross-checks against trial-475 evidence — anything reactivatable?
 3. **Sprint-status pull.** Reads `_bmad-output/implementation-artifacts/sprint-status.yaml`. Current Slab 7a story state surfaces; identifies which story is `ready-for-dev` vs `in-progress` vs `review`.
 4. **Trial-475 evidence verification.** Confirms `state/config/runs/475df528-…/` checkpointer state-shape, learning-events, and pause-at-G1 artifacts are intact. *Slab 7a deliverable:* checkpointer state-shape as versioned artifact — operator must be able to inspect a closed trial's persisted state without re-running.
-5. **Frontmatter guardrail audit.** Opens Slab 7a PRD; verifies the 11-specialist roster registry block and 34-row mapping-checklist reference still match the floor. Any drift = STOP signal. *Deliverables touched:* specialist-roster registry (floor-11), mapping-checklist 34-row traceability artifact.
+5. **Frontmatter guardrail audit.** Opens Slab 7a PRD; verifies the 11-specialist roster registry block and 33-row mapping-checklist reference still match the floor. Any drift = STOP signal. *Deliverables touched:* specialist-roster registry (floor-11), mapping-checklist 33-row traceability artifact.
 6. **Next-action lock.** Records the chosen next-action in `next-session-start-here.md` for the *next* hot-start. Closes the loop.
 
 ---
@@ -565,7 +565,7 @@ They continue. Slides 18–30 clear at normal pace. **G2C** (Wanda, Enrique, Kir
 **Trigger:** Slab 7b sprint opens. Per Executive Summary §Codex Deployment Plan, Codex picks up parallel-authoring for the Tracy passthrough → active-LLM port. Claude handles bmad-code-review on the parallel-authored output (mutual-handoff pattern).
 
 **Steps:**
-1. **Reference ingestion.** Codex reads, in order: Slab 7a PRD scope-binding commitments (the 11-specialist + 34-row floors); fold-flag manifest (Tracy's current passthrough flag state); mapping-checklist Tracy rows (legacy Tracy behavior vs. target migrated behavior); decision-card vocabulary registry (Tracy's emitted decision shape).
+1. **Reference ingestion.** Codex reads, in order: Slab 7a PRD scope-binding commitments (the 11-specialist + 33-row floors); fold-flag manifest (Tracy's current passthrough flag state); mapping-checklist Tracy rows (legacy Tracy behavior vs. target migrated behavior); decision-card vocabulary registry (Tracy's emitted decision shape).
 2. **Template-conformance.** Codex pulls Slab 2a.2 Irene activation as the canonical template. *Deliverable:* specialist activation contract — Irene is the reference shape; Tracy port follows it row-for-row.
 3. **Story-spec authoring.** Codex drafts `slab-7b-tracy-activation` story. Includes T1 Readiness block, required readings citation, scaffold reference, K-floor target range, gate-mode designation pulled from `migration-story-governance.json` (no relitigation).
 4. **Sandbox-AC validation.** Codex runs `python scripts/utilities/validate_migration_story_sandbox_acs.py <story>`. *Deliverable:* sandbox-AC inventory — spec passes; dev-agent ACs use shipped deps (httpx for any LLM-endpoint poke), no operator CLIs leaked.
@@ -589,7 +589,7 @@ Each of the five journeys exercises a different cross-section of Slab 7a substra
 
 **WHY — unique capabilities per journey.** Each journey earns its slot by revealing at least one capability no other journey touches. Journey 2 is the only one that exercises the **calibration-tripwire firing path** and the **oscillation-escape escalation** — happy-path runs never see them, and admin/support journeys observe them only after the fact. Journey 3 is the only one that touches the **specialist roster registry** as a write surface (the 11-specialist floor is enforced here, not at runtime). Journey 4 is the only one that requires **LangSmith trace integration + operator-turn record traversal** — troubleshooting is the consumer that justifies the capture envelope's depth. Journey 5 is the only one that exercises the **port-shape pattern** as an external contract, which is why Cluster B's activation contract has a public-API stance even though Slab 7a is internally-facing. If any of these four journeys were dropped, the corresponding capability would lose its named consumer and become speculative scope.
 
-**WHY — load-bearing substrate every journey requires.** Three capabilities appear in every row: the **10-gate frozen inventory** (Cluster A), the **decision-card vocabulary registry** (Cluster A/E), and the **trial-run capture envelope** (Cluster D). This is the empirical proof that substrate-completeness scope was the right call over feature-completeness — these three deliverables are not optional in any journey, including the Codex integration journey where they show up as schema contracts the external authoring tool must conform to. Cross-cutting Cluster E (Pydantic-v2 + 34-row checklist traceability) is the silent fifth column: every capabilities-required cell above implicitly traces to the checklist's essential-function preservation row, which is how we keep the legacy↔migrated mapping honest. Drop any of these three and at least three journeys break.
+**WHY — load-bearing substrate every journey requires.** Three capabilities appear in every row: the **10-gate frozen inventory** (Cluster A), the **decision-card vocabulary registry** (Cluster A/E), and the **trial-run capture envelope** (Cluster D). This is the empirical proof that substrate-completeness scope was the right call over feature-completeness — these three deliverables are not optional in any journey, including the Codex integration journey where they show up as schema contracts the external authoring tool must conform to. Cross-cutting Cluster E (Pydantic-v2 + 33-row checklist traceability) is the silent fifth column: every capabilities-required cell above implicitly traces to the checklist's essential-function preservation row, which is how we keep the legacy↔migrated mapping honest. Drop any of these three and at least three journeys break.
 
 ---
 
@@ -644,7 +644,7 @@ This domain is not subject to external regulators — but operates under interna
 - **CG-3.1** A1-A17 specialist anti-patterns: A12 (procedural-coupling) and A17 (substrate-designed-for-isolation-composition-assumed) are load-bearing for Slab 7a — directive-composer work MUST exercise end-to-end, not just shape-vote.
 - **CG-3.2** P1-P3 cluster anti-patterns: P3 (composition-shape-vote-without-end-to-end-exercise) is the named failure mode trial-475 manifested; party-mode green-light MUST cite P3-rebuttal artifact.
 - **CG-3.3** Dev-agent anti-patterns: Marcus-duality resolved by Slab 7a Cluster C #9 and MUST be referenced in Marcus-touching stories.
-- **CG-3.4** Mapping-checklist 34-row Legacy↔Migrated traceability is audit floor — every row carries a verdict (migrated / deferred-with-entry / dropped-with-rationale). No row may be silently dropped.
+- **CG-3.4** Mapping-checklist 33-row Legacy↔Migrated traceability is audit floor — every row carries a verdict (migrated / deferred-with-entry / dropped-with-rationale). No row may be silently dropped.
 
 **CG-4. Failure-mode compliance:** FM-1..FM-10 from Step 3 are green-light-checkable, not trial-discoverable.
 
@@ -654,7 +654,7 @@ This domain is not subject to external regulators — but operates under interna
 |---|------|---------|--------|------------|---------|
 | **T1.1** | Hour-4 operator-attention breach | Trial-2 wall-clock exceeds 4h before G3 reached | Per-slide rubber-stamping; decision-card collapse; trial invalid as evidence | Time-budget telemetry per gate (<22min target); HUD shows elapsed/remaining; auto-pause at 4h with operator-confirm-to-continue | **Slab 7a (HUD + per-gate budget)** |
 | **T1.2** | Specialist-roster drop below 11 | PRD step trims a specialist or merges seats "for simplicity" | Scope-floor breach; trial-2 invalidated; replay-regression baseline unusable | Hard-coded roster constant in pipeline-manifest.yaml; validator fails build if `len(specialists) != 11`; party-mode consensus required for any change | **Slab 7a (manifest validator)** |
-| **T1.3** | Mapping-checklist row drop below 34 | Author "consolidates" rows or skips checklist on slab-affecting story | Substrate-trace gap; N1-N12 enforcement weakens; A12 path reopens | Checklist validator on every story touching `block_mode_trigger_paths`; row-count assertion; CLAUDE.md governance reference | **Slab 7a (checklist validator)** |
+| **T1.3** | Mapping-checklist row drop below 33 | Author "consolidates" rows or skips checklist on slab-affecting story | Substrate-trace gap; N1-N12 enforcement weakens; A12 path reopens | Checklist validator on every story touching `block_mode_trigger_paths`; row-count assertion; CLAUDE.md governance reference | **Slab 7a (checklist validator)** |
 | **T1.4** | Composition Smoke skipped at slab-opener | Slab 7b or Slab 8 first-story dev rushes past smoke gate | Integration breakage caught at G6 instead of T1; cycle-time blowout | Mandatory smoke-gate hook in workflow_runner.py at slab-open; cannot be bypassed without party-mode override | **Slab 7a (workflow_runner hook)** |
 | **T1.5** | Live-API cost burn 5-8× trial-475 baseline | Trial-2 runs full 11-specialist sequence with live LLM calls, no replay-cache | Operator budget shock; trial-3 funding compressed; replay-regression drifts | Replay-cache-by-default for non-decision steps; live calls only at gates where verdict matters; cost-meter in HUD | **Slab 7a (HUD cost-meter) + Slab 7b (cache plumbing)** |
 | **T2.1** | Per-slide rubber-stamp collapse | Operator approves G2-G9 in <30s each without reading review-pack | Decision-quality degrades; calibration tripwire never trips; trial evidence weak | Decision-card requires one free-text reason per gate (>20 chars); HTML pack auto-opens at gate-entry | **Slab 7a (gate-card schema)** |
@@ -673,7 +673,7 @@ This domain is not subject to external regulators — but operates under interna
 ### Domain Patterns
 
 - **P-D1. Operator-as-Collaborator.** The operator is a creative co-author, not a gate approver. Decisions surface explicitly with rationale and alternatives — never hidden behind silent defaults. *Operationalized by:* Inter-Gate Conversational Orchestration runtime; FM-1 (gate-count drift check enforces operator-cost-floor commitment).
-- **P-D2. Specialist-as-Author.** Each of the 11 specialists holds authorial voice and judgment — proposes, justifies, revises — they do not deterministically transform inputs. *Operationalized by:* mapping checklist 34-row floor (preserves v4.2 authorial-voice idioms across all 11 specialists × 34 rows); Composition Spec §3.1 append-only trace.
+- **P-D2. Specialist-as-Author.** Each of the 11 specialists holds authorial voice and judgment — proposes, justifies, revises — they do not deterministically transform inputs. *Operationalized by:* mapping checklist 33-row floor (preserves v4.2 authorial-voice idioms across all 11 specialists × 33 rows); Composition Spec §3.1 append-only trace.
 - **P-D3. Multi-Hour Trial as First-Class Unit.** A trial is a 4-8 hour collaborative session with persistent state, not a request/response transaction. Hour-4 operator fatigue is a designed-for constraint. *Operationalized by:* LangGraph checkpointer durability spec; SM-4 (engagement-decay floor) and FM-8 (engagement-decay breach check).
 - **P-D4. Append-Only Authorial Trace.** Every specialist contribution is an authorial commit — never overwritten, always attributed. The trace is audit substrate AND calibration evidence. *Operationalized by:* Composition Spec §3.1 binding; FM-3 (substrate-inheritance check verifies trace immutability across gate transitions).
 - **P-D5. Per-Slide Array as Review Surface.** Slides are the unit of operator attention. Cross-slide pattern memory (a recurring tone tic, a slide-7 layout regression) is a first-class signal, not noise. *Operationalized by:* US-6 per-slide-arrays compound metric; subgraph-with-`interrupt()` scope-binding commitment; HTML review-pack.
@@ -682,7 +682,7 @@ This domain is not subject to external regulators — but operates under interna
 
 ### Domain Anti-Patterns
 
-- **AP-D1. Specialists-as-Deterministic-Transformers.** Treating Texas/Irene/Gary as pure functions of input. Erases authorial voice; produces flat artifacts. *Prevented by:* mapping checklist 34-row floor enforces voice-preservation per specialist × stage; A3 specialist-prompt-fidelity catalog entry.
+- **AP-D1. Specialists-as-Deterministic-Transformers.** Treating Texas/Irene/Gary as pure functions of input. Erases authorial voice; produces flat artifacts. *Prevented by:* mapping checklist 33-row floor enforces voice-preservation per specialist × stage; A3 specialist-prompt-fidelity catalog entry.
 - **AP-D2. Operator-as-Approver-of-Record.** Reducing operator to rubber-stamp role. Loses creative partnership; produces compliant-but-soulless content. *Prevented by:* T2.1 mitigation (free-text reason >20 chars); Inter-Gate Conversational runtime explicit-decision-surfacing.
 - **AP-D3. Hiding Gates Behind Defaults (False-Confidence-in-Fold).** Auto-advancing gates with implicit "looked fine" logic — Quinn-R's 06B literal-visual concern from Round 1. *Prevented by:* every-gate-surfaces-decision binding; FM-4 (decision-card vocabulary fragmentation check); audit log must show explicit operator touch on every gate transition.
 - **AP-D4. Optimizing Per-Trial Cost over Per-Trial Trust.** Cheaper specialists, fewer revise-loops, smaller models — defensible individually, corrosive collectively. False economy: trust deficit costs more than tokens saved. *Prevented by:* Trust-floor invariant before cost-ceiling; A14 trust-floor catalog entry.
@@ -696,9 +696,9 @@ This domain is not subject to external regulators — but operates under interna
 
 ### Standing Guardrail (operator-ratified 2026-04-28)
 
-**Mapping Checklist** (`_bmad-output/planning-artifacts/slab-7-legacy-migrated-mapping-checklist.md`, 34 rows) and **Composition Specification** (`docs/dev-guide/composition-specification.md`) are now **standing guardrails** for all remaining PRD steps and downstream Slab 7a/7b/Doc-7-D story authoring. Every party-mode round, every story spec, every dev-cycle close MUST verify:
+**Mapping Checklist** (`_bmad-output/planning-artifacts/slab-7-legacy-migrated-mapping-checklist.md`, 33 rows) and **Composition Specification** (`docs/dev-guide/composition-specification.md`) are now **standing guardrails** for all remaining PRD steps and downstream Slab 7a/7b/Doc-7-D story authoring. Every party-mode round, every story spec, every dev-cycle close MUST verify:
 
-1. **Mapping Checklist** — no row silently dropped; essential-function preservation under different mechanism is allowed (e.g., Quinn-R fold §07D into §07F) but must be explicitly cited; the 34-row floor is hard.
+1. **Mapping Checklist** — no row silently dropped; essential-function preservation under different mechanism is allowed (e.g., Quinn-R fold §07D into §07F) but must be explicitly cited; the 33-row floor is hard.
 2. **Composition Spec invariants** — §3.1 SHA256 output digests + append-only envelope; §3.5 gate precedence; §3.6 manifest-declared dependencies; §6 chain-test-per-PR; §9 Composition Smoke gate at slab-opener; §10 Decision Log entry for any composition-substrate change; §11 migration triggers tracked.
 
 Auto-reject + flag to operator if any party-mode consensus would violate either guardrail.
@@ -721,7 +721,7 @@ Cut to bone: most "AI orchestration" work today is plumbing dressed as innovatio
 
 1. **Subgraph fan-out + `interrupt()` + HTML review-pack as a single pattern for per-slide-array operator review under hour-4 fatigue.** Each component is known. The assembly — fatigue-as-design-constraint driving topology — is uncommon.
 2. **C1 calibration-tripwire as closed-loop substrate behavior.** Override-rate over rolling-N drives gate-batch-approve auto-lock/unlock. The substrate calibrates operator trust *to itself*. Not a dashboard. A feedback controller embedded in the gate-runner.
-3. **Manifest-as-graph-config + fold-flags + subgraph absorption (D6).** Topology is data. Combined with the mapping-checklist's 34-row essential-function floor, this is **traceable graph topology** — every legacy row maps to a migrated mechanism or auto-rejects.
+3. **Manifest-as-graph-config + fold-flags + subgraph absorption (D6).** Topology is data. Combined with the mapping-checklist's 33-row essential-function floor, this is **traceable graph topology** — every legacy row maps to a migrated mechanism or auto-rejects.
 4. **Decision-card vocabulary as typed Pydantic-v2 enum substrate**, not style guide. Closed-set red-rejection.
 
 **Genuine novelty (narrow claims):**
@@ -745,7 +745,7 @@ Slab 7a sits in well-trodden territory at the component level and on relatively 
 
 **Genuine novelty (assembly, not components):**
 1. **Multi-hour authorial-collaboration trials with an 11-specialist roster under an operator-co-author control envelope at every gate.** Most LangGraph deployments are short-running request/response or autonomous-agent loops. Multi-hour, gate-paced, operator-as-co-author with eleven named specialist seats is uncommon in the public landscape.
-2. **Mapping Checklist as a standing substrate invariant** with a 34-row floor and row-count assertion enforced as a PRD/story-spec gate. Most migrations discard their legacy trace; preserving every legacy mechanism as essential-function under a migrated mechanism — and validating that mapping continuously — is unusual discipline.
+2. **Mapping Checklist as a standing substrate invariant** with a 33-row floor and row-count assertion enforced as a PRD/story-spec gate. Most migrations discard their legacy trace; preserving every legacy mechanism as essential-function under a migrated mechanism — and validating that mapping continuously — is unusual discipline.
 3. **Calibration tripwire as closed-loop substrate behavior** — auto-locking/unlocking batch-approve based on operator-override-rate over rolling N-run window. Rare in production HIL systems, which typically treat calibration as out-of-band.
 4. **Composition Spec as a living architectural artifact** with §10 Decision Log + §11 migration triggers at decision granularity. Uncommon in LangGraph application codebases.
 
@@ -765,7 +765,7 @@ Innovation must be falsifiable in trial-2; otherwise this section is innovation 
 - **Composition-smoke gate** (CG-1.2): manifest-as-graph-config compiles + smoke-runs end-to-end on stub corpus. Fallback: revert manifest layer to Slab 6 hand-wired graph wiring.
 - **FM-1..FM-10 green-light**: each failure-mode has a corresponding pre-trial probe.
 - **Replay-fixture suite green**: deterministic replay across canonical lesson fixtures. Fallback: freeze offending node (specialist-floor permitting).
-- **Parity-test suite green**: legacy↔migrated parity per mapping-checklist 34 rows. Fallback: row-level rollback; never drops below 34 rows.
+- **Parity-test suite green**: legacy↔migrated parity per mapping-checklist 33 rows. Fallback: row-level rollback; never drops below 33 rows.
 
 **Layer 2 — Trial-2 load-bearing validation** (the single experiment that proves the substrate):
 
@@ -776,7 +776,7 @@ Innovation must be falsifiable in trial-2; otherwise this section is innovation 
 | Max-3 oscillation guard | Oscillation-counter state | 0 violations over trial-2 | Tighten to max-2 hard-fail; Composition Spec §11 trigger |
 | C1 calibration-tripwire | Fire/quiet ratio in trial log | ≥1 fire AND ≥1 quiet | Demote to advisory; Slab 8 closed-loop |
 | Manifest-as-graph-config + fold-flags | Manifest-driven boot succeeds | G0→G3 boot with zero hand-edits | Hybrid: manifest for nodes, hand-wired edges |
-| Mapping-checklist living artifact | Per-row trial-2 verdict captured | 34/34 rows verdict-recorded | Freeze stale rows; never drop below 34 |
+| Mapping-checklist living artifact | Per-row trial-2 verdict captured | 33/33 rows verdict-recorded | Freeze stale rows; never drop below 33 |
 | Append-only ProductionEnvelope | Envelope diff = pure-append | 0 retroactive mutations | Composition Spec §11 migration trigger |
 | Decision-card vocabulary registry | Vocabulary-violation count | 0 unregistered card types | Auto-register + flag for retro review |
 
@@ -786,7 +786,7 @@ Plus gestalt thresholds: G3 reached cleanly with 11 specialists active; engageme
 
 - **C1 rolling-window performance**: precision/recall over rolling N=5 trial window. Threshold: precision ≥0.7 by trial-5. Fallback if not converging: redesign tripwire-feature set in Slab 8.
 - **Per-specialist drift detection**: drift-score per specialist per trial. Threshold: no specialist drifts >2σ across 3 consecutive trials without retro intervention. Fallback: retro-driven recalibration; never specialist-removal.
-- **Mapping-checklist re-validation**: 34 rows re-verdicted each trial. Threshold: drift-row count <5/trial. Fallback: row-author re-review; checklist stays at 34.
+- **Mapping-checklist re-validation**: 33 rows re-verdicted each trial. Threshold: drift-row count <5/trial. Fallback: row-author re-review; checklist stays at 33.
 
 **No fallback path drops the specialist floor or the checklist floor.** If a candidate innovation can only be validated by dropping either floor, it is not a Slab-7a innovation — it is a Slab-8 research item, and the PRD says so out loud.
 
@@ -822,7 +822,7 @@ Per-specialist `gate_decision` precedence (§3.5) and manifest-declared dependen
 
 **2. Subgraph composition (Slab 7a's load-bearing pattern).** Each specialist node compiles to its own LangGraph subgraph with an isolated checkpoint boundary. Per-slide arrays at G2B, G2F-merged, and G3B use the subgraph-with-`interrupt()` fan-out pattern: the parent graph emits N child invocations (one per slide), each child carries an independent checkpoint thread, and the parent joins on completion. A single slide's `interrupt()` does not stall the cohort.
 
-Subgraph absorption is governed by `fold_target` metadata in `pipeline-manifest.yaml`: all 14 declared `gate_codes` remain in the manifest (preserving auditability and the 34-row mapping-checklist floor), but the runner honors `fold_target` to absorb folded gates into their host gate's subgraph at execute time. This is the mechanism that holds "10 user-visible gates / 14 declared codes" without cheating either side of the contract.
+Subgraph absorption is governed by `fold_target` metadata in `pipeline-manifest.yaml`: all 14 declared `gate_codes` remain in the manifest (preserving auditability and the 33-row mapping-checklist floor), but the runner honors `fold_target` to absorb folded gates into their host gate's subgraph at execute time. This is the mechanism that holds "10 user-visible gates / 14 declared codes" without cheating either side of the contract.
 
 **3. State-machine invariants (new in 7a's shared gate-runner substrate):**
 - **Max-3 oscillation guard** — terminates revise-loops at depth 3 and routes to operator escalation.
@@ -889,7 +889,7 @@ Risk-budgeted test architecture — depth scales with blast radius. Aggregate en
 
 **Parametric cache-hit harness architecture:** Single module `tests/canary/cache_hit_rate_harness.py`. Per-specialist YAML configs at `tests/canary/configs/{irene,gary,kira,enrique,wanda,texas,tracy,dan,quinn_r,vera}_cache_targets.yaml` (10 configs, one per specialist in the 11-floor roster minus Compositor) — plus separate `compositor_pipeline_determinism_targets.yaml` because Compositor tests pipeline-determinism rather than cache-hit-rate. Each config declares: `target_hit_rate` (default 0.85), `fixture_corpus_path`, `essential_function_probe_set`, `allowed_miss_reasons` (closed enum: `cold-start`, `fixture-rotation`, `pack-version-bump`).
 
-**Parity-test suite scaffolding:** `tests/parity/` mirrors the mapping-checklist 34-row structure — exactly 34 tests, one per legacy operator-control lever. `tests/parity/README.md` carries the traceability matrix (test-id → checklist-row → PRD-spec-section). CI-gated: any parity-test red = trial-2 readiness regression, blocks merge.
+**Parity-test suite scaffolding:** `tests/parity/` mirrors the mapping-checklist 33-row structure — exactly 33 tests, one per legacy operator-control lever. `tests/parity/README.md` carries the traceability matrix (test-id → checklist-row → PRD-spec-section). CI-gated: any parity-test red = trial-2 readiness regression, blocks merge.
 
 **Sandbox-AC inventory contract:** `python scripts/utilities/validate_migration_story_sandbox_acs.py` passes on every Slab 7a story. **5 inventory entries required** (gamma, kling, elevenlabs, wondercraft, dan-api-tbd). Inventory PR is hard precondition.
 
@@ -946,18 +946,18 @@ It is explicitly **not** an experience MVP — legacy v4.2 *is* the experience r
 
 **Resources.** Single operator (Juan). Two dev-agents (Claude + Codex) in mutual-handoff per Executive Summary §Codex Deployment Plan. ~21 K-units across ~8 stories. Wall-clock ≤8 weeks (Step 3 BS-2). Spend ≤$3.60 total Slab-7a-attributable (≤$0.60 dev-cycle + ≤$3.00 trial-2).
 
-**Boundary as decision.** **IN:** the 13 deliverables across 5 clusters; the 7 scope-binding commitments; the eleven-specialist roster; the 34-row Mapping Checklist floor; Composition Spec invariants; Doc-7-D harvest. **OUT:** Slab 7b specialist activation; trial-3+; any twelfth specialist; any checklist row reduction; any experience-layer polish on Marcus surfaces. The trial-2 threshold is the gate — pass it, Slab 7a closes; fail it, Doc-7-D harvest informs the next cut, but the substrate stays.
+**Boundary as decision.** **IN:** the 13 deliverables across 5 clusters; the 7 scope-binding commitments; the eleven-specialist roster; the 33-row mapping checklist floor; Composition Spec invariants; Doc-7-D harvest. **OUT:** Slab 7b specialist activation; trial-3+; any twelfth specialist; any checklist row reduction; any experience-layer polish on Marcus surfaces. The trial-2 threshold is the gate — pass it, Slab 7a closes; fail it, Doc-7-D harvest informs the next cut, but the substrate stays.
 
 ### MVP Feature Set (Phase 1)
 
 **Core User Journeys Supported.** Phase 1 covers all five canonical journeys end-to-end: **Journey 1** (Primary Happy-Path, G3 clean), **Journey 2** (Edge-case revise-loop oscillation), **Journey 3** (Admin/Ops one-week-gap re-entry), **Journey 4** (Support/Troubleshooting cost anomaly investigation), and **Journey 5** (API/Integration Codex parallel-authoring port). No journey is deferred to Growth/Vision — all five must be walkable by a single operator before Phase 1 closes.
 
 **Must-Have Capabilities.** Phase 1 ships exactly the **13 substrate-completeness deliverables across the 5 clusters** cataloged in Step 3's MVP tier table. Layered on top:
-- **7 scope-binding commitments** (substrate-completeness lock; 11-specialist roster floor; 34-row mapping-checklist floor; Composition Spec invariants honored; sandbox-AC dev-vs-operator split; cost-budget ceilings; G-gate audit-trail completeness).
+- **7 scope-binding commitments** (substrate-completeness lock; 11-specialist roster floor; 33-row mapping-checklist floor; Composition Spec invariants honored; sandbox-AC dev-vs-operator split; cost-budget ceilings; G-gate audit-trail completeness).
 - **5 sandbox-AC inventory entries** added under `migration-ac-sandbox-inventory.json`: `gamma`, `kling`, `elevenlabs`, `wondercraft`, `dan-api-tbd`.
-- **Parity-test suite — 34 tests, 1:1 with the mapping-checklist rows** — gating the Legacy↔Migrated equivalence claim that lets Slab 7b activate specialists against migrated infrastructure.
+- **Parity-test suite — 33 tests, 1:1 with the mapping-checklist rows** — gating the Legacy↔Migrated equivalence claim that lets Slab 7b activate specialists against migrated infrastructure.
 
-**Phase-1 Acceptance Threshold.** All seven A-clauses from Step 3 (A-1 through A-7) satisfied; trial-2 closes through G3 cleanly with no fix-on-the-fly patches outside the recoverable-deviation envelope; calibration-tripwire exercised; 11-specialist roster active; 34-row mapping-checklist coverage maintained with zero unmapped rows at trial-2 open.
+**Phase-1 Acceptance Threshold.** All seven A-clauses from Step 3 (A-1 through A-7) satisfied; trial-2 closes through G3 cleanly with no fix-on-the-fly patches outside the recoverable-deviation envelope; calibration-tripwire exercised; 11-specialist roster active; 33-row mapping-checklist coverage maintained with zero unmapped rows at trial-2 open.
 
 ### Progressive Feature Roadmap
 
@@ -974,14 +974,14 @@ Step 5 catalogs *execution* risks (15 total). Step 6 catalogs *innovation* risks
 **Technical scoping risks:**
 
 - **SR-T1 — Dependency-chain stall.** Trigger: any of the 13 Slab 7a deliverables slips >1 week past its in-slab milestone. Response: invoke party-mode dependency triage; deliverables on the critical path (Mapping Checklist, Composition Spec, registry) hold the line; non-critical (e.g., docs polish, second-order schema) deferred to Slab 7b without floor impact. Threshold: **>1 week slip on any one deliverable**.
-- **SR-T2 — K-unit blow-out vs IR-5 learning curve.** Trigger: rolling-3-story K-actual/K-target ratio crosses 1.7×. Response: pull back **scope shape** (collapse adjacent schema-shape stories; defer cosmetic polish; preserve all 34 mapping rows + 11 specialists). Threshold: **aggregate Slab 7a K-units projected >27** (≈1.3× the ~21 baseline).
+- **SR-T2 — K-unit blow-out vs IR-5 learning curve.** Trigger: rolling-3-story K-actual/K-target ratio crosses 1.7×. Response: pull back **scope shape** (collapse adjacent schema-shape stories; defer cosmetic polish; preserve all 33 mapping rows + 11 specialists). Threshold: **aggregate Slab 7a K-units projected >27** (≈1.3× the ~21 baseline).
 - **SR-T3 — Compositor greenfield block.** Trigger: Slab 7b Compositor story T1 readiness fails twice. Response: fall back to **inline composition inside existing orchestrator** for trial-3, defer standalone `app/specialists/compositor/` to Slab 8; specialist roster stays at 11 (Compositor still counted; implementation site moves). Threshold: **2 failed T1 readiness attempts**.
 - **SR-T4 — Sandbox-AC inventory PR stall.** Trigger: inventory PR open >5 business days without merge. Response: fast-track via single-reviewer party-mode-lite; Slab 7b kickoff blocked until merge (hard precondition is hard). Threshold: **5 business days open**.
 
 **Operator-priority risks** (domain has no external market):
 
 - **SR-M1 — Mid-Slab 11→12 specialist addition.** Trigger: operator names a 12th specialist during Slab 7a. Response: **floor is a floor, not a ceiling** — accept via party-mode consensus + governance JSON version bump; if the 12th forces re-architecture of registry/dispatch, defer the *addition* to Slab 7b kickoff (not the existing 11). Threshold: **named specialist + party-mode quorum**.
-- **SR-M2 — Trial-2 surfaces additional legacy levers.** Trigger: walkthrough identifies Nth lever beyond the 34 rows. Response: **append to checklist** (35+); 34 is a floor. Threshold: **any operator-confirmed lever**.
+- **SR-M2 — Trial-2 surfaces additional legacy levers.** Trigger: walkthrough identifies Nth lever beyond the 33 rows. Response: **append to checklist** (34+); 33 is a floor (operator-ratified amendment 2026-04-29; floor was 34 in original PRD prose, corrected to 33 due to off-by-one). Threshold: **any operator-confirmed lever**.
 - **SR-M3 — Hour-4 attention failure mode unanticipated.** Trigger: trial-2 reveals a fatigue/dropout pattern the PRD did not model. Response: file as IR-8 in Step 6, schedule scope-revision party-mode within Slab 7a; do not pause execution. Threshold: **operator-confirmed novel failure mode**.
 
 **Resource scoping risks:**
@@ -994,7 +994,7 @@ Step 5 catalogs *execution* risks (15 total). Step 6 catalogs *innovation* risks
 
 **Story sequence — realistic at ~8 stories / ~21 K.** The Step 7 sequencing is correct: directive_composer must land first (Gap 2 closure unblocks 6 downstream stories), and manifest fold-flags + compiler extension is the second gate. Estimated K-distribution: directive_composer ~3.5K, manifest+compiler ~2K, pre-gate-marcus shared node ~2.5K, per-slide subgraph + review-pack skeleton ~3.5K, conversation persistence + summary writer ~2.5K, vocabulary registry + parity-table ~2K, A2 single-decision shims ~2K, integration ~3K. Sum ≈ 21K. Tight but achievable if no Pydantic-lockstep surprise lands mid-story.
 
-**Critical-path stories** (must-not-slip): directive_composer; manifest fold-flags + compiler extension; per-slide subgraph + HTML review-pack skeleton; parity-test suite. Parity-test suite must be authored **alongside** the 34-row mapping checklist, not after — the test file IS the executable form of the checklist. File path lockstep: `_bmad-output/planning-artifacts/slab-7-legacy-migrated-mapping-checklist.md` ↔ `tests/parity/test_legacy_to_migrated_parity.py` (one row → one parametrize entry).
+**Critical-path stories** (must-not-slip): directive_composer; manifest fold-flags + compiler extension; per-slide subgraph + HTML review-pack skeleton; parity-test suite. Parity-test suite must be authored **alongside** the 33-row mapping checklist, not after — the test file IS the executable form of the checklist. File path lockstep: `_bmad-output/planning-artifacts/slab-7-legacy-migrated-mapping-checklist.md` ↔ `tests/parity/test_legacy_to_migrated_parity.py` (one row → one parametrize entry).
 
 **Floatable stories** (can slip without blocking trial-2): what-I-just-did summary writer (passthrough-stub in 7a; populated in 7b); HTML review-pack skeleton (skeleton in 7a; content in 7b); operator-control parity table (documentation parallel with parity-test suite).
 
@@ -1024,7 +1024,7 @@ This is the **capability contract** for Slab 7a. Every feature in the final prod
 - **FR-A1.** ProductionEnvelope MUST reject mutation of any prior specialist contribution; only new entries admissible (Composition Spec §3.1).
 - **FR-A2.** Every specialist contribution MUST carry a SHA256 digest computed over its declared output payload.
 - **FR-A3.** ProductionDispatchAdapter MUST be the sole sanctioned interface between Marcus and LangGraph state.
-- **FR-O1.** Every legacy v4.2 operator-control lever in the 34-row mapping checklist MUST be reachable in the migrated runtime; essential-function preservation under different mechanism allowed.
+- **FR-O1.** Every legacy v4.2 operator-control lever in the 33-row mapping checklist MUST be reachable in the migrated runtime; essential-function preservation under different mechanism allowed.
 - **FR-O2.** Live `docs/operator/legacy-vs-langgraph-control-parity.md` MUST exist with one row per checklist entry, paired with `tests/parity/test_operator_control_parity.py` that fails CI if any row regresses.
 - **FR-O3.** Operator MUST NOT be required to recall legacy v4.2 prose to participate in any gate; per-gate context loaded into decision-card at gate entry.
 
@@ -1113,15 +1113,15 @@ This is the **capability contract** for Slab 7a. Every feature in the final prod
 
 ### CA-8: Substrate Governance & Mapping-Checklist Traceability
 
-- **FR34.** *Codex* can execute the 34-row mapping checklist as automated parity-test suite, with each row producing pass/fail evidence.
-- **FR35.** *Codex* can fail the parity suite if any of the 34 legacy operator-control levers lacks a Slab 7a FR-traceable equivalent.
+- **FR34.** *Codex* can execute the 33-row mapping checklist as automated parity-test suite, with each row producing pass/fail evidence.
+- **FR35.** *Codex* can fail the parity suite if any of the 33 legacy operator-control levers lacks a Slab 7a FR-traceable equivalent.
 - **FR36.** *Slab 7a runtime* can be validated against the migration sandbox-AC inventory at every dev-agent gate, blocking forbidden-CLI assumptions.
 - **FR37.** *Slab 7a runtime* can be validated against Composition Spec invariants at PR-merge time.
 - **FR38.** *Operator* can request a checklist-coverage report mapping every FR back to its checklist row(s) and Step-3/5/6 origin clause.
 - **FR-A5.** Manifest-declared dependency edges MUST resolve before any runner-level fallback path executes (Composition Spec §3.6).
 - **FR-A6.** Composition Smoke gate MUST execute at every slab-opener with PASS evidence captured (§9).
 - **FR-A17.** Subgraph absorption MUST be governed by `fold_target` metadata — never code branches.
-- **FR-O20.** Mapping-checklist 34-row floor MUST be enforced as row-count assertion in CI; any drop blocks merge.
+- **FR-O20.** Mapping-checklist 33-row floor MUST be enforced as row-count assertion in CI; any drop blocks merge.
 - **FR-O21.** Specialist roster floor of 11 MUST be enforced as `len(specialists) == 11` assertion; any drop blocks build.
 - **FR-O22.** Composition Spec invariants §3.1, §3.5, §3.6, §6, §9, §10, §11 MUST be enforced as test assertions in `tests/parity/test_composition_spec_invariants.py`.
 
@@ -1143,7 +1143,7 @@ This is the **capability contract** for Slab 7a. Every feature in the final prod
 
 **Traceability binding principle:** Every FR MUST cite at least one upstream anchor from {Step 3 SC IDs, Step 4 Journeys, Step 5 Domain Reqs, Step 6 Innovation/IR, Step 7 Cluster A-E, Step 8 SR, Mapping Checklist row, Composition Spec §, ADR}. The full traceability registry lives at `_bmad-output/planning-artifacts/slab-7a/fr-traceability-registry.yaml` (machine-readable, parity-test consumes it). FRs without citation FAIL completeness audit and cannot ship.
 
-**34-row Mapping-Checklist Coverage Assertion: 34/34.** Parity-test suite at `tests/parity/test_mapping_checklist_row_NN.py` enumerates 34 tests — one per checklist row. Each test header declares `REFERENCES_FRS = [...]`. CI fails if any row lacks a test, any referenced FR is unimplemented, or any referenced FR lacks a passing unit test. **No checklist row drops.**
+**33-row mapping-checklist Coverage Assertion: 33/33.** Parity-test suite at `tests/parity/test_mapping_checklist_row_NN.py` enumerates 33 tests — one per checklist row. Each test header declares `REFERENCES_FRS = [...]`. CI fails if any row lacks a test, any referenced FR is unimplemented, or any referenced FR lacks a passing unit test. **No checklist row drops.**
 
 **11-Specialist Roster Coverage Assertion: 11/11.** All eleven specialists — **Texas, Irene, Dan, Tracy, Gary, Kira, Wanda, Enrique, Compositor, Quinn-R, Vera** — named as actor or subject in at least one FR (FR16-FR20 cite all eleven explicitly; CA-4 enforces `len(specialists) == 11` via FR-O21). **No specialist drops.** Roster floor of 11 honored.
 
@@ -1212,7 +1212,7 @@ This is the **capability contract** for Slab 7a. Every feature in the final prod
 - **NFR-I3.** Conversation persistence chains as `SHA256(prior_envelope_digest || decision_payload || timestamp_utc || operator_id)`; broken link is hard audit failure, not warning.
 - **NFR-I4.** Trial-475 evidence at `state/config/runs/475df528-…/` preserved for duration of Slab 7a (gitignored, local-only retention contract).
 - **NFR-I5.** Trial-2 evidence captured under same envelope shape; pack-hash binding mandatory.
-- **NFR-I6.** Mapping-checklist 34-row floor enforced as CI row-count assertion; any drop blocks merge (FR-O20). **Floor honored.**
+- **NFR-I6.** Mapping-checklist 33-row floor enforced as CI row-count assertion; any drop blocks merge (FR-O20). **Floor honored.**
 - **NFR-I7.** `len(specialists) == 11` assertion; any drop blocks build (FR-O21). **Floor honored.**
 - **NFR-I8.** Composition Spec invariants §3.1, §3.5, §3.6, §6, §9, §10, §11 enforced in `tests/parity/test_composition_spec_invariants.py` (FR-O22).
 
@@ -1246,7 +1246,7 @@ This is the **capability contract** for Slab 7a. Every feature in the final prod
 
 ### Operator-Control envelope
 
-- **NFR-OC1.** 34/34 parity: all mapping-checklist rows have reachable migrated equivalent; parity-test suite green (A-3 + A-6).
+- **NFR-OC1.** 33/33 parity: all mapping-checklist rows have reachable migrated equivalent; parity-test suite green (A-3 + A-6).
 - **NFR-OC2.** 14/14 gate codes resolved: no silent ignore (A-2; FM-1).
 - **NFR-OC3.** Subgraph-`interrupt()` discipline: per-slide arrays carry via subgraph (FM-3); zero CLI-loop-per-slide; AST scan on parent graph at green-light.
 - **NFR-OC4.** Revise-loop max-3: 0 oscillation violations in trial-2; substrate refuses 4th revise (FR-O9).
@@ -1305,7 +1305,7 @@ This is the **capability contract** for Slab 7a. Every feature in the final prod
 
 **Standing-guardrail structural enforcement:**
 - **11-specialist roster floor:** NFR-I7 (`len(specialists) == 11` assertion blocks build).
-- **34-row checklist floor:** NFR-I6 (CI row-count assertion blocks merge) + NFR-OC1 (parity-test suite).
+- **33-row checklist floor:** NFR-I6 (CI row-count assertion blocks merge) + NFR-OC1 (parity-test suite).
 - **Composition Spec invariants** (all 7 sections): NFR-I8 (Composition Spec conformance check at PR-merge time).
 
 ---

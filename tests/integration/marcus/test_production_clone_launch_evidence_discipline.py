@@ -85,6 +85,7 @@ def test_live_mode_with_zero_specialist_calls_keeps_evidence_false(
         runs_root=tmp_path,
         max_specialist_calls=0,
         pause_at_gates=False,
+        allow_offline_cost_report=True,
     )
 
     assert envelope.production_clone_launch_evidence is False

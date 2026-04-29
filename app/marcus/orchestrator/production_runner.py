@@ -25,7 +25,9 @@ from app.manifest.compiler import (
 )
 from app.manifest.loader import load as load_manifest
 from app.manifest.schema import NodeSpec
+from app.marcus.orchestrator import pre_gate_marcus
 from app.marcus.orchestrator.dispatch_adapter import ProductionDispatchAdapter
+from app.marcus.orchestrator.pre_gate_marcus import PreFillProposal
 from app.models.decision_cards import (
     AnyDecisionCardAdapter,
     DecisionCardMeta,
@@ -205,6 +207,34 @@ def _trace_run_for_contribution(
     )
 
 
+def _trace_run_for_pre_gate_marcus(
+    *,
+    trial_id: UUID,
+    gate_id: str,
+    proposal: PreFillProposal,
+) -> SimpleNamespace:
+    return SimpleNamespace(
+        id=str(uuid4()),
+        trace_id=str(trial_id),
+        name=f"pre-gate-marcus {gate_id}",
+        run_type="llm",
+        prompt_tokens=0,
+        completion_tokens=0,
+        total_tokens=0,
+        extra={
+            "metadata": {
+                "trial_id": str(trial_id),
+                "specialist_id": "marcus",
+                "node_id": "pre-gate-marcus",
+                "gate_id": gate_id,
+                "decision": proposal.decision,
+                "directive": proposal.directive,
+            }
+        },
+        child_runs=[],
+    )
+
+
 def _trace_root(
     *,
     trial_id: UUID,
@@ -330,12 +360,24 @@ def _build_decision_card(
     operator_id: str,
     pending_nodes: list[str],
     artifact_paths: list[Path],
+    pre_fill: PreFillProposal | None = None,
 ) -> Any:
+    drafted_proposal: dict[str, Any] = {"node_id": node_id, "operator_id": operator_id}
+    if pre_fill is not None:
+        drafted_proposal.update(
+            {
+                "decision": pre_fill.decision,
+                "directive": pre_fill.directive,
+                "rationale": pre_fill.rationale,
+                "confidence": pre_fill.confidence,
+                "confidence_signals": list(pre_fill.confidence_signals),
+            }
+        )
     common = {
         "card_id": uuid4(),
         "trial_id": trial_id,
         "created_at": _now(),
-        "drafted_proposal": {"node_id": node_id, "operator_id": operator_id},
+        "drafted_proposal": drafted_proposal,
         "evidence": [{"kind": "production-runner", "node_id": node_id}],
         "risks": [],
         "verb": "approve",
@@ -510,6 +552,57 @@ def _runner_payload_for_specialist(
     }
 
 
+def _should_invoke_pre_gate_marcus(*, allow_offline_cost_report: bool) -> bool:
+    api_key = os.getenv("OPENAI_API_KEY")
+    return bool(api_key and api_key != "sk-test" and not allow_offline_cost_report)
+
+
+def _pre_gate_slot_values(
+    *,
+    trial_id: UUID,
+    gate_id: str,
+    production_envelope: ProductionEnvelope,
+    pending_nodes: list[str],
+    artifact_paths: list[Path],
+) -> dict[str, Any]:
+    return {
+        "trial_id": str(trial_id),
+        "gate_id": gate_id,
+        "upstream_contributions": [
+            contribution.model_dump(mode="json")
+            for contribution in production_envelope.contributions
+        ],
+        "pending_nodes": pending_nodes,
+        "artifact_paths": [path.as_posix() for path in artifact_paths],
+    }
+
+
+def _invoke_pre_gate_marcus_for_gate(
+    *,
+    gate_id: str,
+    trial_id: UUID,
+    production_envelope: ProductionEnvelope,
+    pending_nodes: list[str],
+    artifact_paths: list[Path],
+    allow_offline_cost_report: bool,
+) -> PreFillProposal | None:
+    if not _should_invoke_pre_gate_marcus(
+        allow_offline_cost_report=allow_offline_cost_report
+    ):
+        return None
+    slot_values = _pre_gate_slot_values(
+        trial_id=trial_id,
+        gate_id=gate_id,
+        production_envelope=production_envelope,
+        pending_nodes=pending_nodes,
+        artifact_paths=artifact_paths,
+    )
+    return pre_gate_marcus.invoke_pre_gate_marcus(
+        gate_id=gate_id,
+        slot_values=slot_values,
+    )
+
+
 def run_production_trial(
     corpus_path: Path,
     preset: Literal["production", "explore"],
@@ -600,6 +693,22 @@ def run_production_trial(
                     graph_step_completed = True
                     continue
                 pending = [item.id for item in manifest.nodes[index + 1 :]]
+                pre_fill = _invoke_pre_gate_marcus_for_gate(
+                    gate_id=gate_id,
+                    trial_id=effective_trial_id,
+                    production_envelope=production_envelope,
+                    pending_nodes=pending,
+                    artifact_paths=envelope.artifact_paths,
+                    allow_offline_cost_report=allow_offline_cost_report,
+                )
+                if pre_fill is not None:
+                    child_runs.append(
+                        _trace_run_for_pre_gate_marcus(
+                            trial_id=effective_trial_id,
+                            gate_id=gate_id,
+                            proposal=pre_fill,
+                        )
+                    )
                 card = _build_decision_card(
                     gate_id=gate_id,
                     trial_id=effective_trial_id,
@@ -607,6 +716,7 @@ def run_production_trial(
                     operator_id=operator_id,
                     pending_nodes=pending,
                     artifact_paths=envelope.artifact_paths,
+                    pre_fill=pre_fill,
                 )
                 stored = register_decision_card(card)
                 checkpoint = _write_checkpoint(
@@ -868,10 +978,32 @@ def resume_production_trial(
         preset=runner.get("preset") or envelope.preset,
         operator_id=runner.get("operator_id") or envelope.operator_id,
     ) as trace_metadata:
-        for node in manifest.nodes[start_index:]:
+        for index, node in enumerate(manifest.nodes[start_index:], start=start_index):
             handler = _active_node_handler(graph, node.id)
             node_kind = getattr(handler, "__production_node_kind__", None)
             if node_kind == "gate":
+                gate_id = handler.__production_gate_id__
+                pending = [item.id for item in manifest.nodes[index + 1 :]]
+                pre_fill = _invoke_pre_gate_marcus_for_gate(
+                    gate_id=gate_id,
+                    trial_id=trial_id,
+                    production_envelope=production_envelope,
+                    pending_nodes=pending,
+                    artifact_paths=envelope.artifact_paths,
+                    allow_offline_cost_report=allow_offline_cost_report,
+                )
+                if pre_fill is not None:
+                    child_runs.append(
+                        _trace_run_for_pre_gate_marcus(
+                            trial_id=trial_id,
+                            gate_id=gate_id,
+                            proposal=pre_fill,
+                        )
+                    )
+                if not allow_offline_cost_report:
+                    raise GateBypassError(
+                        f"refused silent bypass of gate {gate_id} at manifest node {node.id}"
+                    )
                 graph_step_completed = True
                 continue
 

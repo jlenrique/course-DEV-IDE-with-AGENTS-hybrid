@@ -120,6 +120,20 @@ class NodeSpec(BaseModel):
             "Missing or empty maps use the runner's permanent fallback resolution."
         ),
     )
+    fold_with: str | None = Field(
+        default=None,
+        description=(
+            "Gate code for an upstream/surfaced pause point this node folds into. "
+            "Mutually exclusive with fold_target."
+        ),
+    )
+    fold_target: str | None = Field(
+        default=None,
+        description=(
+            "Named subgraph target for compile-time folding. Mutually exclusive "
+            "with fold_with."
+        ),
+    )
 
     # v4.2 inventory deltas (per-step metadata)
     label: str | None = Field(
@@ -166,6 +180,14 @@ class NodeSpec(BaseModel):
         default=None,
         description="Per-step learning-event emission config (v4.2 manifest).",
     )
+
+    @model_validator(mode="after")
+    def _enforce_fold_fields_mutually_exclusive(self) -> NodeSpec:
+        if self.fold_with is not None and self.fold_target is not None:
+            raise ValueError(
+                f"node {self.id}: fold_with and fold_target are mutually exclusive"
+            )
+        return self
 
 
 class EdgeSpec(BaseModel):
