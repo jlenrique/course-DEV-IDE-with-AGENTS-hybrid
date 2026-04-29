@@ -345,3 +345,31 @@ epic_26_bmb_sanctum_migration:
     next_unblock: "Wave 1 (Class-A hardening: Texas/Quinn-R/Vera) UNBLOCKED; sandbox-AC inventory landed before Wave 3 (API-bound Class-C port-shapes)"
     note: "Wave 0 atomic-merge per Slab 7b PRD R9 Winston amendment. Resolves 3 named preconditions surfaced at implementation-readiness Steps 1-3. P0 path-verification sweep performed during authoring; 4 findings filed as PRD errata addendum at commit ddcd1b1 (post-close, dev-agent-authority per R8 Mary erratum policy). NFR-CG17 deviation: FR107 sandbox-AC inventory authored by Claude (not Codex) per R1 P1 party-mode scoping consensus that Wave 0 is foundational scaffolding pre-Wave-1, NOT inside Codex's Class-C/C+ port-shape scope. Codex deployment activates at Wave-1 story open."
 
+  epics_slab_7b_specialist_activation_eleven:
+    status: "completed"
+    file: "_bmad-output/planning-artifacts/epics-slab-7b-specialist-activation-eleven.md"
+    completed: "2026-04-29"
+    workflow: "bmad-create-epics-and-stories"
+    epic_count: 1  # single-epic decomposition (specialist body activation is one user-value bundle; mirrors Slab 7a precedent)
+    story_count: 12  # dev stories across Waves 1, 2a, 2b, 3, 4, 5a, 5b, 6 (Wave 0 LANDED + Wave 0.5 verify NOT counted)
+    fr_coverage: "26/26 (100%)"
+    nfr_coverage: "24/24 (100%)"
+    sg_audit: "SG-1 + SG-2 + SG-3 + SG-4 all green at R(d) close; no scope creep"
+    party_mode_rounds: 4  # R(a) epic-shape; R(b) story-roster; R(c) per-story AC adversarial; R(d) ratify-with-amendments-and-close
+    amendments_total: 8  # 4 R(a) + 2 R(b) + 2 R(c) + 0 R(d)
+    re_opens: 0
+    k_aggregate_estimate: "~33.4K LOC (upper-band of R8 Mary's 24-30 K-unit target band; Class-D1 + D2 + integration K-bumps push upper bound)"
+    test_aggregate_estimate: "~325-375 tests"
+    wall_clock_target: "~3-4 weeks per Slab 7a NEW CYCLE acceleration precedent (Codex sub-agent parallelism)"
+    codex_deployment_boundary:
+      claude_authors: 7  # Wave 1 × 3 (Texas/Quinn-R/Vera) + Wave 2a Irene Pass-1 + Wave 5a Dan + Wave 5b Compositor + Wave 6 integration
+      codex_authors: 5  # Wave 2b Tracy + Wave 3 × 3 (Gary/Kira/Enrique) + Wave 4 Wanda
+      codex_reviews: "every story bmad-code-review (mutual-handoff per Slab 7a precedent)"
+      nfr_cg17_deviation_noted: "Wave 0 sandbox-AC inventory FR107 authored by Claude (not Codex) per R1 party-mode scoping consensus; Codex deployment activates at Wave-1 story open"
+    governance_preconditions_landed:
+      wave_0: "FR107-FR112 atomic-merge commit 9ed6fcb (DONE 2026-04-29)"
+      wave_0_5: "Codex deployment + smoke-test verification (TBD before Wave 1 opens; may fold into Wave 0)"
+    party_mode_round_d_close: "RATIFIED-WITH-AMENDMENTS-AND-CLOSE (4/4 unanimous; John + Mary + Amelia + Murat); 0 re-opens; all four standing guardrails green"
+    next_unblock: "bmad-sprint-planning runs next session to author sprint-status.yaml entries; Wave-1 first story (7b.1 Texas hardening) opens via bmad-create-story after migration-story-governance.json gate-mode entries party-mode-ratified + version-bumped"
+    note: "Slab 7b epics-and-stories file authored end-to-end via bmad-create-epics-and-stories workflow with 4 party-mode rounds (4 voices/round; 0 re-opens; 4/4 unanimous on R(d) close). Single-Epic decomposition (specialist body activation is one user-value bundle; multi-epic split would have failed standalone-epic principle). 12 dev stories sequenced strict-serial-with-parallel-waves across 9 effective execution waves. PRD errata addendum (commit ddcd1b1) Errata 1 + 2 + 3 + 4 honored throughout: FR111 scaffold path-corrected; FR101 SKILL.md location at skills/bmad-agent-{name}/ + minimal frontmatter + sanctum-dir 6-file pattern as alignment marker; SanctumParityTestBase as Story 7b.1 T1 CREATE-task; FR105 subdir-vs-flat ratified at first parity-test author (7b.1). Class-D2 sidecar variant (Compositor) is first-class taxonomy bin per D20 — exempt from FR101.iv sanctum-path-equality clause. K-aggregate tripwire clauses placed at three transition points (Wave-1 close, Wave-2b open, Wave-3-first-port Gary, Wave-5b pre-T1) to escalate Class-C/D ports to dual-gate if scaffold isn't amortizing. Trial-2 cost-projection dry-run wired into Wave 6 closeout (Round-(a) John A1 amendment). Distinct artifact from epics-slab-7a-inter-gate-orchestration.md (sibling CLOSED 2026-04-29) and epics-langchain-langgraph-migration.md (parent migration 9-epic / 56-story decomposition; Slab 7b sibling-extends substrate)."
+
