@@ -1,0 +1,43 @@
+# Access boundaries — `<specialist_name>`
+
+**Specialist:** `<specialist_name>` (Class D2 pipeline-greenfield)
+
+> Lives at `_bmad/memory/bmad-agent-<specialist_name>/access-boundaries.md`. Declares read/write/deny zones explicitly. Operational metadata; no persona content.
+
+## Read zones (specialist may read FROM)
+
+- `<path>` — `<purpose>`
+
+Frozen substrate paths consumed (per FR113 + NFR-I13 substrate-as-floor; READ-ONLY for D2 specialists):
+- `_bmad/memory/shared/` — substrate-shared continuity artifacts
+- `state/config/` — frozen YAML configs
+- `course-content/courses/<lesson_slug>/` — corpus directory (per `feedback_corpus_directory_scope` memory)
+
+## Write zones (specialist may write TO)
+
+- `<path>` — `<purpose>`
+
+Per-run write zones (specialist creates/updates):
+- `_bmad/memory/bmad-agent-<specialist_name>/chronology.md` — append-only per pipeline-run
+- `course-content/staging/<run_id>/<specialist_name>/` — per-run staging
+- (assembly-bundle paths if applicable; per FR97 convention)
+
+Cross-cutting envelope writes (substrate-mediated; specialist body returns to Marcus, NOT direct):
+- `state/runtime/coordination.db` — Marcus-mediated; specialist body NEVER writes directly
+
+## Deny zones (specialist MUST NOT write OR read)
+
+- `app/marcus/orchestrator/dispatch_adapter.py:81` — Marcus duality boundary; FROZEN per FR113. Touching this file = governance escalation per `.github/workflows/substrate-frozen.yml`.
+- `_bmad/memory/bmad-agent-<other_specialist>/` — other specialists' sanctums; deny per specialist-isolation invariant.
+- `skills/bmad-agent-<other_specialist>/` — other specialists' skill quarantines; deny.
+- Frozen substrate paths beyond declared READ zones — per FR113 + NFR-I13.
+
+## Boundary enforcement
+
+- Compile-time: `app/specialists/<specialist_name>/access_boundaries.py` declares the boundaries as a Pydantic config; pre-flight checks at `_act` body invocation.
+- Runtime: substrate watchdog at `_bmad/memory/shared/access-watchdog.py` (TBD; lands in Slab 7b Wave-6 integration if not pre-existing) enforces deny zones per dry-run + per pipeline-run.
+- Test-time: `tests/parity/test_<specialist_name>_access_boundaries.py` asserts no out-of-bounds writes during T2/T3 fixture runs.
+
+## Class-D2 specific note
+
+Class-D2 specialists' deny zones are tighter than Class-A/B/C/C+/D1 because deterministic transformations should not have hidden state writes. If a write zone needs to be added beyond what this template declares at story-T1, that's a signal the specialist may not be truly deterministic — escalate to party-mode before adding.
