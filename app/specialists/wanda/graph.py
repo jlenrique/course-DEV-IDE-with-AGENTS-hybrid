@@ -13,6 +13,7 @@ from langgraph.types import Command, interrupt
 
 from app.gates.resume_api import resume_from_verdict as _resume_from_verdict
 from app.models.adapter import make_chat_model
+from app.models.state import specialist_summary_artifacts as specialist_summary_writer
 from app.models.state.model_resolution_entry import ModelResolutionEntry
 from app.models.state.run_state import RunState
 from app.specialists.wanda.wondercraft_dispatch import (
@@ -329,8 +330,7 @@ def _reflect(state: RunState) -> dict[str, Any]:
 
 
 def _emit_spans(state: RunState) -> dict[str, Any]:
-    del state
-    return {}
+    return specialist_summary_writer.emit_summary_for_state("wanda", state)
 
 
 def _gate_decision(state: RunState) -> dict[str, Any]:

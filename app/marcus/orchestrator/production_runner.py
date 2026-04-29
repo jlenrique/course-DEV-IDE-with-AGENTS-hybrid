@@ -512,6 +512,7 @@ def _emit_run_summary_yaml(
         "langsmith_trace_id": langsmith_trace_id or "skipped-no-langsmith-env",
     }
     path = _run_dir(trial_id, runs_root) / "run_summary.yaml"
+    path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(
         yaml.safe_dump(payload, sort_keys=False),
         encoding="utf-8",
