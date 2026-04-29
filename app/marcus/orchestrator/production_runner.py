@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import hashlib
 import json
 import logging
 import os
@@ -11,6 +12,8 @@ from pathlib import Path
 from types import SimpleNamespace
 from typing import Any, Literal
 from uuid import UUID, uuid4
+
+import yaml
 
 from app.gates.errors import GateError
 from app.gates.resume_api import (
@@ -25,7 +28,11 @@ from app.manifest.compiler import (
 )
 from app.manifest.loader import load as load_manifest
 from app.manifest.schema import NodeSpec
-from app.marcus.orchestrator import pre_gate_marcus
+from app.marcus.orchestrator import (
+    conversation_persistence,
+    pre_gate_marcus,
+    specialist_summary_writer,
+)
 from app.marcus.orchestrator.dispatch_adapter import ProductionDispatchAdapter
 from app.marcus.orchestrator.pre_gate_marcus import PreFillProposal
 from app.models.decision_cards import (
@@ -362,6 +369,7 @@ def _build_decision_card(
     pending_nodes: list[str],
     artifact_paths: list[Path],
     pre_fill: PreFillProposal | None = None,
+    runs_root: Path = RUNS_ROOT,
 ) -> Any:
     drafted_proposal: dict[str, Any] = {"node_id": node_id, "operator_id": operator_id}
     if pre_fill is not None:
@@ -374,12 +382,26 @@ def _build_decision_card(
                 "confidence_signals": list(pre_fill.confidence_signals),
             }
         )
+    evidence = [{"kind": "production-runner", "node_id": node_id}]
+    adjacent_summary = specialist_summary_writer.load_most_recent_summary(
+        trial_id=trial_id,
+        runs_root=runs_root,
+        before=_now(),
+    )
+    if adjacent_summary is not None:
+        evidence.append(
+            {
+                "kind": "specialist-summary",
+                "path": adjacent_summary.path.as_posix(),
+                "content": adjacent_summary.text,
+            }
+        )
     common = {
         "card_id": uuid4(),
         "trial_id": trial_id,
         "created_at": _now(),
         "drafted_proposal": drafted_proposal,
-        "evidence": [{"kind": "production-runner", "node_id": node_id}],
+        "evidence": evidence,
         "risks": [],
         "verb": "approve",
         "meta": _card_meta(node_id),
@@ -414,6 +436,88 @@ def _build_decision_card(
             outcome_summary="Production graph reached closeout review.",
         )
     raise RuntimeError(f"unsupported production gate id: {gate_id}")
+
+
+def _persist_conversation_turn_if_possible(
+    *,
+    card: Any,
+    gate_id: str,
+    trial_id: UUID,
+    operator_id: str,
+    runs_root: Path,
+) -> Path | None:
+    draft = getattr(card, "drafted_proposal", {}) or {}
+    required = {"decision", "directive", "rationale", "confidence", "confidence_signals"}
+    if not required.issubset(draft):
+        return None
+    if not (runs_root / str(trial_id) / "directive.yaml").is_file():
+        LOGGER.debug(
+            "skipping conversation turn persistence for trial %s: directive.yaml missing",
+            trial_id,
+        )
+        return None
+    return conversation_persistence.write_turn(
+        trial_id=str(trial_id),
+        gate_id=gate_id,
+        decision_card={
+            "decision": draft["decision"],
+            "directive": draft["directive"],
+            "rationale": draft["rationale"],
+            "confidence": draft["confidence"],
+            "confidence_signals": draft["confidence_signals"],
+        },
+        free_text_rationale=str(draft["rationale"]),
+        operator_id=operator_id,
+        runs_root=runs_root,
+    )
+
+
+def _pack_hash_binding(manifest_path: Path) -> str:
+    return hashlib.sha256(manifest_path.read_bytes()).hexdigest()
+
+
+def _conversation_chain_digest(*, trial_id: UUID, runs_root: Path) -> str:
+    digest = conversation_persistence.latest_turn_digest(str(trial_id), runs_root)
+    if digest is not None:
+        return digest
+    directive_path = runs_root / str(trial_id) / "directive.yaml"
+    if directive_path.is_file():
+        return hashlib.sha256(directive_path.read_bytes()).hexdigest()
+    return "0" * 64
+
+
+def _emit_run_summary_yaml(
+    *,
+    trial_id: UUID,
+    terminal_gate: str,
+    runs_root: Path,
+    manifest_path: Path,
+    langsmith_trace_id: str | None,
+    silent_bypass_events: int = 0,
+) -> Path:
+    if silent_bypass_events != 0:
+        LOGGER.debug(
+            "run_summary.yaml silent_bypass_events expected 0, got %s",
+            silent_bypass_events,
+        )
+    payload = {
+        "terminal_gate": terminal_gate,
+        "silent_bypass_events": silent_bypass_events,
+        "specialist_roster_count": len(specialist_summary_writer.CANONICAL_SPECIALIST_IDS),
+        "pack_hash_binding": _pack_hash_binding(manifest_path),
+        "conversation_chain_digest": _conversation_chain_digest(
+            trial_id=trial_id,
+            runs_root=runs_root,
+        ),
+        "langsmith_trace_id": langsmith_trace_id or "skipped-no-langsmith-env",
+    }
+    path = _run_dir(trial_id, runs_root) / "run_summary.yaml"
+    path.write_text(
+        yaml.safe_dump(payload, sort_keys=False),
+        encoding="utf-8",
+        newline="\n",
+    )
+    return path
 
 
 def _write_checkpoint(
@@ -723,6 +827,14 @@ def run_production_trial(
                     pending_nodes=pending,
                     artifact_paths=envelope.artifact_paths,
                     pre_fill=pre_fill,
+                    runs_root=runs_root,
+                )
+                conversation_path = _persist_conversation_turn_if_possible(
+                    card=card,
+                    gate_id=gate_id,
+                    trial_id=effective_trial_id,
+                    operator_id=operator_id,
+                    runs_root=runs_root,
                 )
                 stored = register_decision_card(card)
                 checkpoint = _write_checkpoint(
@@ -775,6 +887,14 @@ def run_production_trial(
                 if trace_root is not None:
                     trace_path = _run_dir(effective_trial_id, runs_root) / "trace-fixture.json"
                     _write_json(trace_path, _trace_to_json(trace_root))
+                langsmith_trace_id = str(effective_trial_id) if child_runs else None
+                run_summary_path = _emit_run_summary_yaml(
+                    trial_id=effective_trial_id,
+                    terminal_gate=gate_id,
+                    runs_root=runs_root,
+                    manifest_path=manifest_path,
+                    langsmith_trace_id=langsmith_trace_id,
+                )
                 evidence = (
                     _has_production_evidence(
                         graph_step_completed=graph_step_completed,
@@ -786,9 +906,7 @@ def run_production_trial(
                     update={
                         "status": "paused-at-gate",
                         "paused_gate": gate_id,
-                        "langsmith_trace_id": str(effective_trial_id)
-                        if child_runs
-                        else None,
+                        "langsmith_trace_id": langsmith_trace_id,
                         "production_clone_launch_evidence": evidence,
                         "production_clone_launch_evidence_reason": (
                             "live-specialist-call-recorded"
@@ -801,8 +919,10 @@ def run_production_trial(
                             *envelope.artifact_paths,
                             decision_path,
                             checkpoint,
+                            *([conversation_path] if conversation_path is not None else []),
                             *([cost_report_path] if cost_report_path is not None else []),
                             *([trace_path] if trace_path is not None else []),
+                            run_summary_path,
                         ],
                     }
                 )
@@ -873,6 +993,14 @@ def run_production_trial(
     if trace_root is not None:
         trace_path = _run_dir(effective_trial_id, runs_root) / "trace-fixture.json"
         _write_json(trace_path, _trace_to_json(trace_root))
+    langsmith_trace_id = str(effective_trial_id) if child_runs else None
+    run_summary_path = _emit_run_summary_yaml(
+        trial_id=effective_trial_id,
+        terminal_gate="G4",
+        runs_root=runs_root,
+        manifest_path=manifest_path,
+        langsmith_trace_id=langsmith_trace_id,
+    )
     evidence = (
         _has_production_evidence(
             graph_step_completed=graph_step_completed,
@@ -886,7 +1014,7 @@ def run_production_trial(
             "status": "completed",
             "completed_at": completed_at,
             "paused_gate": None,
-            "langsmith_trace_id": str(effective_trial_id) if child_runs else None,
+            "langsmith_trace_id": langsmith_trace_id,
             "production_clone_launch_evidence": evidence,
             "production_clone_launch_evidence_reason": reason,
             "production_envelope": production_envelope,
@@ -895,6 +1023,7 @@ def run_production_trial(
                 *envelope.artifact_paths,
                 cost_report_path,
                 *([trace_path] if trace_path is not None else []),
+                run_summary_path,
             ],
         }
     )
@@ -950,11 +1079,20 @@ def resume_production_trial(
         },
     )
     if verdict.verb == "reject":
+        manifest_path = Path(runner.get("manifest_path") or DEFAULT_MANIFEST_PATH)
+        run_summary_path = _emit_run_summary_yaml(
+            trial_id=trial_id,
+            terminal_gate=verdict.gate_id,
+            runs_root=runs_root,
+            manifest_path=manifest_path,
+            langsmith_trace_id=envelope.langsmith_trace_id,
+        )
         updated = envelope.model_copy(
             update={
                 "status": "failed",
                 "completed_at": _now(),
                 "production_clone_launch_evidence_reason": "operator-rejected-at-gate",
+                "artifact_paths": [*envelope.artifact_paths, run_summary_path],
             }
         )
         _persist_envelope(updated, runs_root)
@@ -1076,6 +1214,14 @@ def resume_production_trial(
     if trace_root is not None:
         trace_path = run_dir / "trace-fixture.json"
         _write_json(trace_path, _trace_to_json(trace_root))
+    langsmith_trace_id = str(trial_id) if child_runs else None
+    run_summary_path = _emit_run_summary_yaml(
+        trial_id=trial_id,
+        terminal_gate="G4",
+        runs_root=runs_root,
+        manifest_path=manifest_path,
+        langsmith_trace_id=langsmith_trace_id,
+    )
     evidence = _has_production_evidence(
         graph_step_completed=graph_step_completed,
         specialist_calls=len(production_envelope.contributions),
@@ -1087,7 +1233,7 @@ def resume_production_trial(
             "status": "completed",
             "completed_at": completed_at,
             "paused_gate": None,
-            "langsmith_trace_id": str(trial_id) if child_runs else None,
+            "langsmith_trace_id": langsmith_trace_id,
             "production_clone_launch_evidence": evidence,
             "production_clone_launch_evidence_reason": reason,
             "production_envelope": production_envelope,
@@ -1097,6 +1243,7 @@ def resume_production_trial(
                 run_dir / "resume-command.json",
                 cost_report_path,
                 *([trace_path] if trace_path is not None else []),
+                run_summary_path,
             ],
         }
     )

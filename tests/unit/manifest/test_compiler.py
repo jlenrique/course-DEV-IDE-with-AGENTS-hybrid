@@ -170,7 +170,7 @@ def test_compile_real_repo_root_with_migrated_v42_manifest() -> None:
     m = load(repo_root / "state" / "config" / "pipeline-manifest.yaml")
     g = compile(m)
     assert isinstance(g, StateGraph)
-    assert len(m.nodes) == 35
+    assert len(m.nodes) == 37
 
 
 def _prepare_runtime_graphs_dir(root: Path) -> None:

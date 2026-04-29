@@ -1,0 +1,13 @@
+{
+  "card_id": "33333333-3333-4333-8333-333333333333",
+  "decision_card_digest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+  "gate_id": "G2B",
+  "operator_id": "operator_1",
+  "reject_reason": null,
+  "revise_count": 2,
+  "trial_id": "22222222-2222-4222-8222-222222222222",
+  "verb": "edit",
+  "edit_payload": {
+    "delta_directive": "Tighten slide language."
+  }
+}

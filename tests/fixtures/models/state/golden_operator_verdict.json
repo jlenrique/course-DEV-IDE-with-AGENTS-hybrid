@@ -5,6 +5,7 @@
   "gate_id": "G2C",
   "operator_id": "juanl",
   "reject_reason": null,
+  "revise_count": 0,
   "timestamp": "2026-04-26T12:00:00Z",
   "trial_id": "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa",
   "verb": "approve",

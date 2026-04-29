@@ -25,6 +25,8 @@ def test_lockstep_passes_with_directive_composer_orchestration_node() -> None:
     assert trace["orchestration_only_nodes"] == [
         "directive-composer",
         "pre-gate-marcus",
+        "per-slide-subgraph",
+        "html-review-pack-emitter",
     ]
 
 
@@ -64,4 +66,6 @@ def test_lockstep_trace_records_orchestration_only_nodes() -> None:
     assert trace["orchestration_only_nodes"] == [
         "directive-composer",
         "pre-gate-marcus",
+        "per-slide-subgraph",
+        "html-review-pack-emitter",
     ]

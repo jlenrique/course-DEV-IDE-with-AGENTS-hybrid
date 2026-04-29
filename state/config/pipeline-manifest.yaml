@@ -87,6 +87,40 @@ nodes:
       precedence rule UNALTERED (per-specialist gates remain non-blocking by
       default).
 
+  - id: "per-slide-subgraph"
+    label: "Per-Slide Subgraph Fan-Out (Slab 7a / Story 7a.4)"
+    specialist_id: null
+    scaffold_node: null
+    model_config_ref: null
+    gate: false
+    gate_code: null
+    sub_phase_of: null
+    insertion_after: null
+    hud_tracked: false
+    dependencies: {}
+    pack_section_anchor: "0.6)"
+    pack_version: "v4.2"
+    fold_with: null
+    fold_target: null
+    rationale: "Fan-out subgraph for G2B/G2F-merged/G3B per-slide arrays; isolated checkpoint per slide."
+
+  - id: "html-review-pack-emitter"
+    label: "HTML Review-Pack Emitter (Slab 7a / Story 7a.4)"
+    specialist_id: null
+    scaffold_node: null
+    model_config_ref: null
+    gate: false
+    gate_code: null
+    sub_phase_of: null
+    insertion_after: null
+    hud_tracked: false
+    dependencies: {}
+    pack_section_anchor: "0.7)"
+    pack_version: "v4.2"
+    fold_with: null
+    fold_target: null
+    rationale: "Emits runs/<trial_id>/gates/<gate>-review-pack.html before per-slide-array gates."
+
   - id: "01"
     label: "Activation + Preflight"
     specialist_id: "marcus"

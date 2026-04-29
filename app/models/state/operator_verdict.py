@@ -2,8 +2,11 @@
 
 from __future__ import annotations
 
+import argparse
+import json
 import re
 from datetime import UTC, datetime
+from pathlib import Path
 from typing import Any, Literal
 from uuid import UUID, uuid4
 
@@ -23,6 +26,7 @@ from app.models.state.validators.operator_verdict_validators import (
 )
 
 OperatorVerdictVerb = Literal["approve", "edit", "reject"]
+SCHEMA_PATH = Path(__file__).resolve().parents[1] / "schemas" / "operator_verdict.schema.json"
 
 
 class OperatorVerdict(BaseModel):
@@ -80,6 +84,12 @@ class OperatorVerdict(BaseModel):
         default=None,
         description="Required iff verb == 'reject'.",
     )
+    revise_count: int = Field(
+        default=0,
+        ge=0,
+        le=3,
+        description="Per-slide revision count; fourth revise is refused by Story 7a.4 guard.",
+    )
 
     @field_validator("verdict_id", "trial_id", "card_id")
     @classmethod
@@ -114,4 +124,33 @@ class OperatorVerdict(BaseModel):
         return self.card_id
 
 
-__all__ = ["OperatorVerdict", "OperatorVerdictVerb"]
+def operator_verdict_schema_text() -> str:
+    """Return the canonical emitted OperatorVerdict JSON Schema."""
+    return json.dumps(OperatorVerdict.model_json_schema(), indent=2, sort_keys=True) + "\n"
+
+
+def emit_operator_verdict_schema(schema_path: Path = SCHEMA_PATH) -> None:
+    """Emit the OperatorVerdict JSON Schema used by Story 7a.4 lockstep tests."""
+    schema_path.parent.mkdir(parents=True, exist_ok=True)
+    schema_path.write_text(operator_verdict_schema_text(), encoding="utf-8", newline="\n")
+
+
+def main(argv: list[str] | None = None) -> int:
+    parser = argparse.ArgumentParser(prog="python -m app.models.state.operator_verdict")
+    parser.add_argument("--emit-schema", action="store_true")
+    args = parser.parse_args(argv)
+    if args.emit_schema:
+        emit_operator_verdict_schema()
+    return 0
+
+
+__all__ = [
+    "OperatorVerdict",
+    "OperatorVerdictVerb",
+    "emit_operator_verdict_schema",
+    "operator_verdict_schema_text",
+]
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())
