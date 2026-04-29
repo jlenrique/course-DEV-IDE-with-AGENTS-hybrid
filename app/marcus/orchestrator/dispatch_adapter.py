@@ -11,6 +11,7 @@ from typing import Any
 import yaml
 from langgraph.checkpoint.memory import InMemorySaver
 
+from app.marcus.orchestrator.gate_runner import assert_payload_duality_boundary
 from app.models.runtime.production_envelope import (
     ProductionEnvelope,
     SpecialistContribution,
@@ -77,6 +78,7 @@ class ProductionDispatchAdapter:
         payload = self._payload_from_dependencies(envelope, dependency_map)
         if runner_supplied_payload:
             payload = {**payload, **runner_supplied_payload}
+        assert_payload_duality_boundary(payload)
         if not dependency_map and not runner_supplied_payload and source.cache_state is not None:
             cache_state = source.cache_state
         else:

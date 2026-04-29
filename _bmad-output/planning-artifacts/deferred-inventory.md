@@ -253,7 +253,7 @@ Cross-cutting tech debt that grew during Slabs 1-4 + that should be properly tra
 |---|---|---|
 | Backlog epics | 5 (Epic 15, 16, 17, 18, Post-M5 Greenfield Specialists) | Triggered by Epic 33 meta-test, trial-run evidence, or post-M5 specialist need |
 | Deferred stories in active epics | 4 (20c-4/5/6, 20a-5) | Triggered by profile-driven run gaps |
-| Named-but-not-filed follow-ons | 37 | Triggered by parent-story closure + condition |
+| Named-but-not-filed follow-ons | 39 | Triggered by parent-story closure + condition (+2 added at Slab 7a Epic close 2026-04-29: trial-2 BS-2 ceremony + trial-2 golden-trace fixtures) |
 | Wave 3/4/5 stories (partially deferred via gating) | ~10 | Triggered by prior-wave stabilization |
 
 **Near-term candidates (post-Epic-33):**
@@ -306,3 +306,12 @@ Filed concurrent with Slab 7a Epic 1 PRD + Epics+Stories authoring. Trigger cond
 | **7a-1-deferred-resume-mode-directive-rederive** | 2026-04-29 | Story 7a.1 close — `resume_production_trial` does NOT thread `directive_path` (start-mode only). Safe under current Path Z first-contribution-wins. | Reactivates at 7a.4/7a.5 work that may shift gate placement pre-Texas. |
 | **7a-1-deferred-trial-start-guide-augment** | 2026-04-29 | Story 7a.1 P-R3 NON-BLOCKING — augment or create `docs/operator/trial-start-guide.md` with confirm-or-edit prompt UX screenshot. | Reactivates as Doc-7-D candidate after trial-2 informs operator-doc priorities. |
 | **7a-1-deferred-directive-composer-manifest-node** | CLOSED-by-7a.2 2026-04-29 | Story 7a.1 close — manifest registration of the `directive-composer` orchestration node was deferred because lockstep set-equality required HUD/pack tolerance for orchestration-only nodes. | **CLOSED 2026-04-29 by Story 7a.2 AC-7.2-G** — orchestration-only-node lockstep tolerance landed in `scripts/utilities/check_pipeline_manifest_lockstep.py`; actual `directive-composer` node entry registered in `state/config/pipeline-manifest.yaml`. |
+
+## Slab 7a Epic-close amendments (2026-04-29)
+
+Filed at Slab 7a Epic close (2026-04-29) as deferred-inventory entries per CLAUDE.md §Deferred-inventory governance binding consultation point #1 (every Epic retrospective).
+
+| Amendment | Date filed | Trigger context | Resolution |
+|---|---|---|---|
+| **slab-7a-trial-2-bs-2-readiness-confirmation-deferred-to-operator-trial-2-ceremony** | 2026-04-29 | Slab 7a Story 7a.8 close via Path 1 (close 7a.8 done now; defer BS-2 ceremony). AC-7.8-I BS-2 readiness predicate (A-1..A-7) requires operator-witnessed Gate-2 ceremony (trial-2 OR trial-2 dry-run) per DUAL-GATE convention. Codex prepared `_bmad-output/implementation-artifacts/7a-8-gate2-evidence-commands.ps1` runner; operator runs ceremony + pastes verbatim stdout into 7a.8 Completion Notes. Path 1 ratified by operator's wrapup invocation: "run bmad session protocol session wrapup. next session we begin to design Slab 7b, beginning with its PRD." | Reactivates when operator runs Gate-2 ceremony. Operator pastes stdout into 7a.8 spec Completion Notes; this entry flips CLOSED. Trial-2 substrate readiness is otherwise UNBLOCKED — operator can launch trial-2 against the Slab 7a substrate without further substrate code changes. |
+| **slab-7a-trial-2-golden-trace-fixtures-deferred-to-slab-7b** | 2026-04-29 | Slab 7a Story 7a.8 close — AC-7.8-K golden-trace fixtures from trial-2 cannot land before trial-2 runs. Per Codex T11 self-review recommendation: Slab 7b inherits as input; does NOT block on them. | Reactivates at trial-2 close OR Slab 7b kickoff (whichever comes first). Slab 7b inherits as input artifact to seed record-once-replay-forever fixtures for the 11-roster activation stories. |

@@ -30,6 +30,7 @@ from app.manifest.loader import load as load_manifest
 from app.manifest.schema import NodeSpec
 from app.marcus.orchestrator import (
     conversation_persistence,
+    gate_runner,
     pre_gate_marcus,
     specialist_summary_writer,
 )
@@ -521,6 +522,27 @@ def _emit_run_summary_yaml(
     return path
 
 
+def _quartile_engagement_counts(child_runs: list[SimpleNamespace]) -> tuple[int, int]:
+    if not child_runs:
+        return 0, 0
+    quartile_size = max(1, len(child_runs) // 4)
+    return len(child_runs[:quartile_size]), len(child_runs[-quartile_size:])
+
+
+def _emit_engagement_decay_report(
+    *,
+    trial_id: UUID,
+    child_runs: list[SimpleNamespace],
+) -> Path:
+    first_quartile, last_quartile = _quartile_engagement_counts(child_runs)
+    result = gate_runner.emit_engagement_decay_report(
+        trial_id=str(trial_id),
+        first_quartile_events=first_quartile,
+        last_quartile_events=last_quartile,
+    )
+    return Path(result["report_path"])
+
+
 def _write_checkpoint(
     *,
     trial_id: UUID,
@@ -1002,6 +1024,10 @@ def run_production_trial(
         manifest_path=manifest_path,
         langsmith_trace_id=langsmith_trace_id,
     )
+    engagement_report_path = _emit_engagement_decay_report(
+        trial_id=effective_trial_id,
+        child_runs=child_runs,
+    )
     evidence = (
         _has_production_evidence(
             graph_step_completed=graph_step_completed,
@@ -1025,6 +1051,7 @@ def run_production_trial(
                 cost_report_path,
                 *([trace_path] if trace_path is not None else []),
                 run_summary_path,
+                engagement_report_path,
             ],
         }
     )
@@ -1223,6 +1250,10 @@ def resume_production_trial(
         manifest_path=manifest_path,
         langsmith_trace_id=langsmith_trace_id,
     )
+    engagement_report_path = _emit_engagement_decay_report(
+        trial_id=trial_id,
+        child_runs=child_runs,
+    )
     evidence = _has_production_evidence(
         graph_step_completed=graph_step_completed,
         specialist_calls=len(production_envelope.contributions),
@@ -1245,6 +1276,7 @@ def resume_production_trial(
                 cost_report_path,
                 *([trace_path] if trace_path is not None else []),
                 run_summary_path,
+                engagement_report_path,
             ],
         }
     )

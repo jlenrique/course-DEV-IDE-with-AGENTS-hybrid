@@ -109,3 +109,10 @@ Thumbs.db
 # See commit message for context; primary repo must mirror this rule + `git rm --cached`
 # for the protection to become bidirectional and eliminate delete/modify merge hazards.
 next-session-start-here.md
+
+# Slab 7a transient runtime evidence (engagement_decay reports, calibration_tripwire JSONL,
+# run_summary.yaml etc. emitted by tests + smoke runs). Per 7a.8 spec line 240:
+# "Composition Smoke runs created transient _artifacts/trial-2/engagement_decay_report.md;
+# removed it because it was smoke output, not operator-witnessed trial-2 evidence."
+# Operator-witnessed trial-2 evidence lives elsewhere (e.g., state/config/runs/<trial-id>/).
+_artifacts/
