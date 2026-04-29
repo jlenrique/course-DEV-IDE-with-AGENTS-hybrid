@@ -22,7 +22,10 @@ def test_lockstep_passes_with_directive_composer_orchestration_node() -> None:
     exit_code, trace = run_check(DEFAULT_MANIFEST_PATH, DEFAULT_PACK_PATH, None)
 
     assert exit_code == 0
-    assert trace["orchestration_only_nodes"] == ["directive-composer"]
+    assert trace["orchestration_only_nodes"] == [
+        "directive-composer",
+        "pre-gate-marcus",
+    ]
 
 
 def test_non_orchestration_node_without_hud_or_pack_entry_still_fails(tmp_path: Path) -> None:
@@ -58,4 +61,7 @@ def test_lockstep_trace_records_orchestration_only_nodes() -> None:
     exit_code, trace = run_check(DEFAULT_MANIFEST_PATH, DEFAULT_PACK_PATH, None)
 
     assert exit_code == 0
-    assert trace["orchestration_only_nodes"] == ["directive-composer"]
+    assert trace["orchestration_only_nodes"] == [
+        "directive-composer",
+        "pre-gate-marcus",
+    ]

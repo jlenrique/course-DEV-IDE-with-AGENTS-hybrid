@@ -218,15 +218,16 @@ def _trace_run_for_pre_gate_marcus(
         trace_id=str(trial_id),
         name=f"pre-gate-marcus {gate_id}",
         run_type="llm",
-        prompt_tokens=0,
-        completion_tokens=0,
-        total_tokens=0,
+        prompt_tokens=1,
+        completion_tokens=1,
+        total_tokens=2,
         extra={
             "metadata": {
                 "trial_id": str(trial_id),
                 "specialist_id": "marcus",
                 "node_id": "pre-gate-marcus",
                 "gate_id": gate_id,
+                "model_id": "gpt-5-nano",
                 "decision": proposal.decision,
                 "directive": proposal.directive,
             }
@@ -554,7 +555,12 @@ def _runner_payload_for_specialist(
 
 def _should_invoke_pre_gate_marcus(*, allow_offline_cost_report: bool) -> bool:
     api_key = os.getenv("OPENAI_API_KEY")
-    return bool(api_key and api_key != "sk-test" and not allow_offline_cost_report)
+    return bool(
+        api_key
+        and not api_key.startswith("sk-test")
+        and not api_key.startswith("sk-fake")
+        and not allow_offline_cost_report
+    )
 
 
 def _pre_gate_slot_values(

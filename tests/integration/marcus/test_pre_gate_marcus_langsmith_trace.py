@@ -1,0 +1,59 @@
+from __future__ import annotations
+
+import json
+from pathlib import Path
+from uuid import UUID
+
+import pytest
+
+from app.gates.resume_api import clear_resume_registry
+from app.marcus.orchestrator import production_runner
+from app.marcus.orchestrator.pre_gate_marcus import PreFillProposal
+
+TRIAL_ID = UUID("12345678-1234-4234-8234-123456789abf")
+CORPUS = Path("tests/fixtures/trial_corpus/README.md")
+
+
+@pytest.fixture(autouse=True)
+def _clear_registry():
+    clear_resume_registry()
+    yield
+    clear_resume_registry()
+
+
+def test_pre_gate_marcus_trace_records_single_invocation_per_gate(
+    tmp_path: Path, monkeypatch
+) -> None:
+    monkeypatch.setenv("OPENAI_API_KEY", "sk-live-test")
+    monkeypatch.setattr(
+        production_runner.pre_gate_marcus,
+        "invoke_pre_gate_marcus",
+        lambda **_: PreFillProposal(
+            decision="confirm",
+            directive="accept-as-is",
+            rationale="The trace fixture should record one pre-gate call.",
+            confidence=0.8,
+            confidence_signals=("trace-pin",),
+        ),
+    )
+
+    envelope = production_runner.run_production_trial(
+        CORPUS,
+        "production",
+        "operator_test",
+        trial_id=TRIAL_ID,
+        runs_root=tmp_path,
+        max_specialist_calls=0,
+    )
+
+    trace_path = tmp_path / str(TRIAL_ID) / "trace-fixture.json"
+    trace = json.loads(trace_path.read_text(encoding="utf-8"))
+    child_runs = trace["root"]["child_runs"]
+    pre_gate_runs = [
+        run for run in child_runs if run["extra"]["metadata"].get("node_id") == "pre-gate-marcus"
+    ]
+
+    assert envelope.paused_gate == "G1"
+    assert len(pre_gate_runs) == 1
+    assert pre_gate_runs[0]["name"] == "pre-gate-marcus G1"
+    assert pre_gate_runs[0]["run_type"] == "llm"
