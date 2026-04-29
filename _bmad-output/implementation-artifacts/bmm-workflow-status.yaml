@@ -301,3 +301,47 @@ epic_26_bmb_sanctum_migration:
     wall_clock_target: "7-9 weeks tight"
     note: "Slab 7a Epic + 8 stories authored via bmad-create-epics-and-stories (4 steps; party-mode consensus at every step). Single-epic decomposition (substrate-completeness is one user-value bundle; multi-epic split would have failed standalone-epic principle per John's Step 2 audit). 8 stories sequenced strict-serial-with-parallel-waves (5 effective waves): 7a.1 directive_composer (dual-gate; closes trial-475 Gap 2) → 7a.2 manifest fold-flags + compiler ext (single-gate) → Wave 3: 7a.6 vocabulary registry + parity-table (single-gate; PROMOTED from wave-6 — registry must precede stories that emit vocabulary into it) || 7a.3 pre-gate-marcus shared LLM node (single-gate) — parallel → Wave 4: 7a.4 per-slide subgraph + HTML review-pack skeleton (single-gate-with-k-contract bounding HTML to skeleton-only; tripwire 4.08 K-floor escalates to dual-gate) || 7a.5 conversation persistence + specialist-summary writer (single-gate; FR ceiling at 20) — parallel → Wave 5: 7a.7 A2 single-decision shims (single-gate) || 7a.8 integration + parity-test suite + Slab 7a closeout (dual-gate; FLIPPED from single per integration-tier risk argument; SG-1+SG-2+SG-3 aggregated structural enforcement). All 87 FRs assigned to ≥1 story (87/87 verified by Mary's coverage audit). 73 NFRs: 11 NFR-CG + 1 NFR-I8 + 2 NFR-OD story-scoped; 59 cross-cutting AC predicates. Codex Deployment Boundary: Claude authors all 8 Slab 7a stories; Codex authors bmad-code-review on every Slab 7a + 7b story close + Slab 7b port-shape stories (Tracy/Gary/Kira/Enrique/Wanda) + sandbox-AC inventory PR. Distinct artifact from epics.md (legacy 22-epic frozen reference), epics-interstitial-clusters.md (Wave 2B frozen), and epics-langchain-langgraph-migration.md (migration 9-epic / 56-story decomposition; Slab 7a sibling-extends)."
 
+  prd_slab_7b_specialist_activation_eleven:
+    status: "completed"
+    file: "_bmad-output/planning-artifacts/prd-slab-7b-specialist-activation-eleven.md"
+    completed: "2026-04-29"
+    functional_requirements: 26  # FR88-FR113 (extends Slab 7a's 87 → aggregate ~113 across 7a + 7b)
+    nonfunctional_requirements: 24  # NFR-T9..T12 + NFR-CG12..CG20 + NFR-I9..I13 + NFR-OD3..OD6 (extends Slab 7a's 73)
+    architectural_decisions: 10  # D14-D23 (extends migration architecture's D1-D13)
+    standing_guardrails: 4  # SG-1/SG-2/SG-3 inherited; SG-4 NEW (BMB sanctum alignment per body)
+    scope_binding_commitments: 8  # 6 inherited (subgraph fan-out, max-3 oscillation, pre-comp QA, vocabulary registry, calibration tripwire, parity-test suite) + 2 new (SG-4 + Codex deployment binding)
+    failure_modes: 16  # FM-11..FM-26 (Slab 7a inherited FM-1..FM-10 + Slab 7b adds FM-11..FM-26)
+    party_mode_rounds: 9  # R1 SG-1..SG-4; R2 Exec Summary + Classification; R3 Success Criteria; R4 Journeys; R5 Domain Requirements; R6 FRs; R7 NFRs; R8 Innovation + Scoping; R9 ADRs + Polish + Step-12 close
+    re_opens: 0
+    commit: "61ce8ee"
+    note: "Slab 7b PRD authored end-to-end via bmad-create-prd workflow with 9 party-mode rounds (4 voices/round; 0 re-opens; 4/4 unanimous on R9 close). Activates eleven specialist body roles into Slab 7a orchestration substrate per 5-class taxonomy A/B/C/C+/D1/D2 (D14 amendment). Class-D2 sidecar variant (Compositor) is canonical inside BMB regime per D20 — NOT exception. SG-4 (BMB sanctum alignment per body) added as 4th standing guardrail with closed-allowlist option-b path; structural parity-test (FR101) + per-PR CI workflow binding (NFR-I9). 8 scope-binding commitments (6 inherited from 7a; SG-4 new; Codex deployment binding new per R7 NFR-CG17). Wave plan proposes 12 stories + Wave-0 + Wave-0.5 = 14 deliverables; ~24-30 K-units at K-floor 1.3-1.5×. MVP exit gate cut at G2+9-of-11 (R8 John amendment); Slab 7b close gate full G3+11 with cascade reading. Three trial-2 readiness preconditions named: foundational artifacts (FR108-FR112) + sandbox-AC inventory (FR107) + scaffold-v0.2-D2-pipeline (FR111) — all landed in Wave-0 atomic-merge commit 9ed6fcb. PRD errata addendum at commit ddcd1b1 captures P0 path-sweep findings post-close. Distinct artifact from prd-slab-7a-inter-gate-orchestration.md (sibling baseline) and prd-langchain-langgraph-migration.md (parent migration PRD)."
+
+  implementation_readiness_slab_7b:
+    status: "completed"
+    file: "_bmad-output/planning-artifacts/implementation-readiness-report-2026-04-29-slab-7b.md"
+    completed: "2026-04-29"
+    verdict: "READY-WITH-MINOR-AMENDMENTS-AND-NAMED-PRECONDITIONS"
+    steps_completed: ["step-01-document-discovery", "step-02-prd-analysis", "step-03-epic-coverage-validation"]
+    steps_deferred: ["step-04-ux-alignment", "step-05-epic-quality-review", "step-06-final-assessment"]
+    fr_coverage: "26/26 (100%)"
+    sg_audit: "SG-1/SG-2/SG-3/SG-4 all green; no implicit-violation surface"
+    note: "Pre-implementation validation per bmad-check-implementation-readiness Steps 1-3 (Steps 4-6 deferred per Slab 7a precedent: UX N/A for body-activation; Steps 5-6 re-run after bmad-create-epics-and-stories produces epic/story file). 26 FRs anchored to ≥1 proposed story or governance gate across the 12-story + Wave-0 + Wave-0.5 decomposition. 24 NFRs each enforced via named CI workflow OR validator script OR per-specialist AC. Three named preconditions (foundational artifacts FR108-FR112 + sandbox-AC inventory FR107 + scaffold-v0.2-D2-pipeline FR111) ALL LANDED in Wave-0 atomic-merge commit 9ed6fcb 2026-04-29; preconditions resolved post-readiness-check."
+
+  slab_7b_wave_0_foundational_artifacts:
+    status: "done"
+    completed: "2026-04-29"
+    commit: "9ed6fcb"  # atomic-merge per R9 Winston intent
+    party_mode_rounds: 1  # R1 P1 scoping consensus; 4 voices
+    artifact_count: 6
+    artifacts:
+      - "docs/dev-guide/bmb-sanctum-alignment-checklist.md (FR108)"
+      - "docs/dev-guide/sanctum-exception-categories.json (FR109)"
+      - "docs/dev-guide/operator-control-parity-template.md (FR110)"
+      - "docs/dev-guide/scaffolds/scaffold-v0.2-D2-pipeline/ (FR111; 7-file directory)"
+      - "skills/bmad-agent-cora/SKILL.md §Sanctum exception anchor (FR112)"
+      - "docs/dev-guide/migration-ac-sandbox-inventory.json +5 entries (FR107)"
+    p0_path_sweep_findings: 4  # FR111 path correction; FR101 contract realignment; SanctumParityTestBase Wave-1 deliverable; tests/parity/per_specialist subdir TBD
+    errata_addendum_commit: "ddcd1b1"
+    next_unblock: "Wave 1 (Class-A hardening: Texas/Quinn-R/Vera) UNBLOCKED; sandbox-AC inventory landed before Wave 3 (API-bound Class-C port-shapes)"
+    note: "Wave 0 atomic-merge per Slab 7b PRD R9 Winston amendment. Resolves 3 named preconditions surfaced at implementation-readiness Steps 1-3. P0 path-verification sweep performed during authoring; 4 findings filed as PRD errata addendum at commit ddcd1b1 (post-close, dev-agent-authority per R8 Mary erratum policy). NFR-CG17 deviation: FR107 sandbox-AC inventory authored by Claude (not Codex) per R1 P1 party-mode scoping consensus that Wave 0 is foundational scaffolding pre-Wave-1, NOT inside Codex's Class-C/C+ port-shape scope. Codex deployment activates at Wave-1 story open."
+
