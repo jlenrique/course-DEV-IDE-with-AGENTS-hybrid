@@ -77,7 +77,9 @@ def test_trial_start_cli_accepts_production_input(
     payload = json.loads(capsys.readouterr().out)
     assert payload["trial_id"] == TRIAL_ID
     assert payload["production_clone_launch_evidence"] is False
-    assert payload["run_registry_path"] == str(tmp_path / TRIAL_ID / "run.json")
+    # Story 7a.1 P5 (Codex review): trial-start payload paths emit POSIX form
+    # via Path.as_posix() for Windows-stable cross-platform digests.
+    assert payload["run_registry_path"] == (tmp_path / TRIAL_ID / "run.json").as_posix()
 
 
 def test_start_trial_requires_langsmith_for_production_evidence(

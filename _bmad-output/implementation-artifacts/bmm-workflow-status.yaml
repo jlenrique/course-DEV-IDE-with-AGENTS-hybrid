@@ -268,3 +268,36 @@ epic_26_bmb_sanctum_migration:
       tier: "Scaffold hardening â€” preservation semantics"
       note: "Opened by 26-4 close-out. Preservation semantics so --force doesn't clobber operator edits. MUST close before batch migration wave begins (once agents go through real First Breaths, operator edits accumulate and --force becomes dangerous). Captures deferred items: Blind Hunter SF-1 whitelist substring caveat, SF-4 idempotent test semantic decay; Edge Case EC-D order-dependent self-referential substitution, EC-G YAML edge cases, EC-H SKILL.md placeholder collision risk, EC-I enforcement gate for 'before batch wave'. Story at _bmad-output/implementation-artifacts/26-5-bmb-scaffold-preservation.md."
 
+  prd_slab_7a_inter_gate_orchestration:
+    status: "completed"
+    file: "_bmad-output/planning-artifacts/prd-slab-7a-inter-gate-orchestration.md"
+    completed: "2026-04-28"
+    functional_requirements: 87
+    nonfunctional_requirements: 73
+    user_journeys: 5
+    risks_named: 32
+    failure_modes: 10
+    scope_binding_commitments: 7
+    standing_guardrails: 3
+    note: "Slab 7a Inter-Gate Conversational Orchestration PRD authored end-to-end via bmad-create-prd workflow with party-mode consensus at every step (12 steps). Closes trial-475 root cause (silent gate-bypass + missing directive composition). Post-M5 work on shipped substrate (97842ac); not pre-MVP. Substrate-completeness MVP locked (operator-ratified; minimum-viable cut rejected at PRD Round 2). 3 Standing Guardrails operator-non-negotiable: SG-1 11-specialist roster floor (Texas/Irene/Dan/Tracy/Gary/Kira/Wanda/Enrique/Compositor/Quinn-R/Vera); SG-2 34-row mapping checklist floor at slab-7-legacy-migrated-mapping-checklist.md; SG-3 Composition Spec invariants §3.1/§3.5/§3.6/§6/§9/§10/§11. Sibling PRDs planned: prd-slab-7b-specialist-activation-eleven.md (sequenced after 7a opens); prd-doc-slab-7-prose-harvest.md (sequenced after first tracked trial-2). Distinct artifact from prd-langchain-langgraph-migration.md (parent migration PRD, SHIPPED) and prd.md (legacy Wave 2B, frozen reference)."
+
+  implementation_readiness_slab_7a:
+    status: "completed"
+    file: "_bmad-output/planning-artifacts/implementation-readiness-report-2026-04-28.md"
+    completed: "2026-04-28"
+    verdict: "READY"
+    steps_completed: ["step-01-document-discovery", "step-02-prd-analysis", "step-03-epic-coverage-validation"]
+    note: "Pre-implementation validation per bmad-check-implementation-readiness Steps 1-3 (operator directive: Steps 4-6 deferred — UX alignment substantively folded into Step 3's reframed coverage validation given UX-not-applicable classification; Epic Quality Review + Final Assessment can run after bmad-create-epics-and-stories produces actual epic/story file). 100% FR coverage (87/87) across ~8 proposed Slab 7a stories at ~21 K-units total. No critical gaps. Pre-architecture readiness verified — no load-bearing ambiguity. Standing-guardrail implicit-violation audit clean (SG-1/SG-2/SG-3 all enforced structurally via FR-O20/O21/O22 + NFR-I6/I7/I8). Two known preconditions flagged at time of report: (1) sandbox-AC inventory PR for Slab 7b (gamma/kling/elevenlabs/wondercraft/dan-api-tbd; not Slab 7a precondition); (2) sanctum-reference-conventions.md path-existence verification (resolved 2026-04-28 — file exists)."
+
+  epics_slab_7a_inter_gate_orchestration:
+    status: "completed"
+    file: "_bmad-output/planning-artifacts/epics-slab-7a-inter-gate-orchestration.md"
+    completed: "2026-04-28"
+    epic_count: 1
+    story_count: 8
+    estimated_k_units: ~21
+    test_count_target: ~74
+    cost_envelope: "≤$3.60 (~$0.60 dev-cycle + ≤$3.00 trial-2)"
+    wall_clock_target: "7-9 weeks tight"
+    note: "Slab 7a Epic + 8 stories authored via bmad-create-epics-and-stories (4 steps; party-mode consensus at every step). Single-epic decomposition (substrate-completeness is one user-value bundle; multi-epic split would have failed standalone-epic principle per John's Step 2 audit). 8 stories sequenced strict-serial-with-parallel-waves (5 effective waves): 7a.1 directive_composer (dual-gate; closes trial-475 Gap 2) → 7a.2 manifest fold-flags + compiler ext (single-gate) → Wave 3: 7a.6 vocabulary registry + parity-table (single-gate; PROMOTED from wave-6 — registry must precede stories that emit vocabulary into it) || 7a.3 pre-gate-marcus shared LLM node (single-gate) — parallel → Wave 4: 7a.4 per-slide subgraph + HTML review-pack skeleton (single-gate-with-k-contract bounding HTML to skeleton-only; tripwire 4.08 K-floor escalates to dual-gate) || 7a.5 conversation persistence + specialist-summary writer (single-gate; FR ceiling at 20) — parallel → Wave 5: 7a.7 A2 single-decision shims (single-gate) || 7a.8 integration + parity-test suite + Slab 7a closeout (dual-gate; FLIPPED from single per integration-tier risk argument; SG-1+SG-2+SG-3 aggregated structural enforcement). All 87 FRs assigned to ≥1 story (87/87 verified by Mary's coverage audit). 73 NFRs: 11 NFR-CG + 1 NFR-I8 + 2 NFR-OD story-scoped; 59 cross-cutting AC predicates. Codex Deployment Boundary: Claude authors all 8 Slab 7a stories; Codex authors bmad-code-review on every Slab 7a + 7b story close + Slab 7b port-shape stories (Tracy/Gary/Kira/Enrique/Wanda) + sandbox-AC inventory PR. Distinct artifact from epics.md (legacy 22-epic frozen reference), epics-interstitial-clusters.md (Wave 2B frozen), and epics-langchain-langgraph-migration.md (migration 9-epic / 56-story decomposition; Slab 7a sibling-extends)."
+

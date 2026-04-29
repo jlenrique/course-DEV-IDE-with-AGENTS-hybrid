@@ -55,8 +55,17 @@ class ProductionDispatchAdapter:
         envelope: ProductionEnvelope,
         dependency_map: dict[str, str],
         base_state: RunState | None = None,
+        runner_supplied_payload: dict[str, Any] | None = None,
     ) -> RunState:
-        """Construct the specialist's isolated RunState from envelope dependencies."""
+        """Construct the specialist's isolated RunState from envelope dependencies.
+
+        ``runner_supplied_payload`` (Story 7a.1 / A-R3 Option A): optional
+        runner-side keys merged into the cache_prefix JSON alongside upstream
+        ``_payload_from_dependencies(...)`` output. Used to thread
+        ``directive_path`` + ``bundle_dir`` into Texas's _act without inventing
+        a synthetic specialist contribution. Runner-supplied keys WIN on
+        collision with dependency_map keys.
+        """
         if base_state is not None and base_state.run_id != envelope.trial_id:
             raise ProductionDispatchAdapterError(
                 "base_state.run_id must match production envelope trial_id"
@@ -66,10 +75,12 @@ class ProductionDispatchAdapter:
             graph_version=DEFAULT_GRAPH_VERSION,
         )
         payload = self._payload_from_dependencies(envelope, dependency_map)
-        cache_state = (
-            source.cache_state
-            if not dependency_map and source.cache_state is not None
-            else CacheState(
+        if runner_supplied_payload:
+            payload = {**payload, **runner_supplied_payload}
+        if not dependency_map and not runner_supplied_payload and source.cache_state is not None:
+            cache_state = source.cache_state
+        else:
+            cache_state = CacheState(
                 cache_prefix=json.dumps(
                     payload,
                     sort_keys=True,
@@ -78,7 +89,6 @@ class ProductionDispatchAdapter:
                     default=str,
                 )
             )
-        )
         state = RunState.model_validate(
             {
                 **source.model_dump(mode="python"),
@@ -98,8 +108,13 @@ class ProductionDispatchAdapter:
         dependency_map: dict[str, str],
         cost_usd: float,
         base_state: RunState | None = None,
+        runner_supplied_payload: dict[str, Any] | None = None,
     ) -> ProductionEnvelope:
-        """Invoke a scaffolded specialist and append its output to the envelope."""
+        """Invoke a scaffolded specialist and append its output to the envelope.
+
+        ``runner_supplied_payload`` is forwarded to ``build_specialist_state``
+        per A-R3 Option A.
+        """
         if envelope.get_contribution(specialist_id) is not None:
             raise ValueError(
                 f"production envelope already has contribution for {specialist_id!r}"
@@ -108,6 +123,7 @@ class ProductionDispatchAdapter:
             envelope=envelope,
             dependency_map=dependency_map,
             base_state=base_state,
+            runner_supplied_payload=runner_supplied_payload,
         )
         input_entries_count = state.cache_state.entries_count if state.cache_state else 0
         compiled_graph = self._compile_graph(specialist_id)

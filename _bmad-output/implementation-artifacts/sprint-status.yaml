@@ -53,7 +53,7 @@
 # - Set story key to `done` here only after the above â€” this file is authoritative for status.
 
 generated: 2026-03-25
-last_updated: 2026-04-28  # **Slab 6 trial-experience bundle 3/3 CLOSED** after Slab 6.4 Gate 5 dual-gate live ceremony PASS (`scripts/operator/gate5_slab_6_4.py` 83 passed; operator-witnessed). 6.3 + 6.5 closed earlier same day after second-pass verification-only re-trace clean; 6.4 closed today after third-pass verification-only re-trace clean + operator Gate 5 PASS. Mary harvest-gate A18 disposition: leave as candidate. **First tracked trial UNBLOCKED.** Migration project remains unconditionally SHIPPED at `97842ac`; Slab 6.0/6.1/6.2 closed 2026-04-27; Slab 6 substrate-polish tail complete.
+last_updated: 2026-04-29  # **Slab 7a 7a.1 CLOSED done** after Codex bmad-code-review HALT-AND-REMEDIATE (6 PATCH items) → Claude P1-P6 remediation cycle 1 clean (205 passed/1 skipped wider; 77 passed focused; +7 net new tests over Codex baseline). Composition Spec §10 Decision Log entry for `runner_supplied_payload` filed (A-R3 Option A). 7a.2 spec authored under NEW cycle (Claude spec → Codex dev+tests → Claude reviews+commits) and `ready-for-dev`; Codex dev prompt provided to operator 2026-04-29. Trial-475 Gap 2 structurally CLOSED. Earlier 2026-04-28: **Slab 7a 7a.1 DEV-COMPLETE → review** (T1-T9 closed; 198 passed / 1 skipped regression slice; Composition Smoke at slab-opener PASS; sandbox-AC + pipeline-manifest lockstep + ruff + lint-imports all clean; 4 halt-and-adapt cycles resolved in-band; manifest registration of `directive-composer` node DEFERRED to 7a.2 + 3 other follow-ons filed). Awaiting T10 operator dual-gate Gate-2 ceremony + T11 Codex bmad-code-review + T12 D12 close. **NEW CYCLE from 7a.2 onward:** Claude writes spec + Gate-1 party-mode → Codex develops (source + tests) → Claude does code-review + commit + sprint-status flip. Earlier 2026-04-28: **Slab 7a 7a.1 SPEC AUTHORED ready-for-dev** (sandbox-AC validator PASS; 12 ACs A-L; 12 tasks T1-T12; 6 BINDING + 3 NON-BLOCKING party-mode riders carried). Epic flipped backlog→in-progress (first story in epic 7a). Wave 1 slab-opener; dual-gate; ~3.5K LOC / ~22 tests target; closes trial-475 Gap 2; Composition Smoke gate evidence required at slab-opener (NFR-CG2). Earlier 2026-04-28: **Slab 7a Epic 1 PLANNING COMPLETE.** PRD authored end-to-end via bmad-create-prd workflow with party-mode consensus at every step (12 steps; 87 FRs / 73 NFRs / 5 user journeys / 3 Standing Guardrails SG-1/SG-2/SG-3 / 7 scope-binding commitments). Implementation-Readiness Check Steps 1-3 verdict READY. Epics+Stories authored: 1 Epic / 8 Stories (7a-1 through 7a-8) at ~21 K-units / ~74 tests / ~$3.60 spend / 7-9 weeks wall-clock. **Three governance preconditions resolved 2026-04-28:** governance JSON (8 entries; v2026-04-28-slab7a-eight-stories); pipeline-manifest.yaml schema bumped to v4.2-migration-stub-with-fold-flags (Tier-2 minor; pack stays v4.2); sanctum-reference-conventions.md verified-exists. Composition Spec §10 Decision Log entry added. **Slab 7a Epic 1 story dev UNBLOCKED.** Next session: bmad-sprint-planning + bmad-create-story for 7a.1. Earlier 2026-04-28: Slab 6 trial-experience bundle 3/3 CLOSED; first tracked trial 475df528 paused-at-G1 cleanly (plumbing-PASS / content-FAIL); Slab 7 mapping checklist authored as PRD's first deliverable.
 project: course-DEV-IDE-with-AGENTS
 project_key: NOKEY
 tracking_system: file-system
@@ -915,3 +915,145 @@ development_status:
   # story-cycle-efficiency.md for the K-floor discipline, dual-gate vs single-gate
   # review policy, and aggressive DISMISS rubric for G6 cosmetic NITs.
   # =============================================================================
+
+  # =============================================================================
+  # SLAB 7A EPIC 1 — INTER-GATE CONVERSATIONAL ORCHESTRATION (added 2026-04-28)
+  # =============================================================================
+  # Sources:
+  #   _bmad-output/planning-artifacts/prd-slab-7a-inter-gate-orchestration.md
+  #   _bmad-output/planning-artifacts/epics-slab-7a-inter-gate-orchestration.md
+  #   _bmad-output/planning-artifacts/implementation-readiness-report-2026-04-28.md
+  #
+  # 1 Epic / 8 Stories / ~21 K-units / ~74 tests / ~$3.60 spend / 7-9 weeks wall-clock
+  # Status: ready-for-bmad-sprint-planning (governance preconditions all resolved 2026-04-28)
+  #
+  # Standing Guardrails (operator non-negotiables — auto-rejected if violated):
+  #   SG-1: 11-specialist roster floor (Texas/Irene/Dan/Tracy/Gary/Kira/Wanda/Enrique/Compositor/Quinn-R/Vera)
+  #   SG-2: 34-row mapping checklist floor at slab-7-legacy-migrated-mapping-checklist.md
+  #   SG-3: Composition Spec invariants §3.1/§3.5/§3.6/§6/§9/§10/§11
+  #
+  # Wave structure (5 waves):
+  #   Wave 1: 7a.1 (composer; dual-gate)
+  #   Wave 2: 7a.2 (manifest fold-flags + compiler ext; single-gate)
+  #   Wave 3: 7a.6 (vocab registry + parity-table; single-gate) || 7a.3 (pre-gate-marcus; single-gate) — parallel
+  #   Wave 4: 7a.4 (per-slide subgraph + HTML pack skeleton; single-gate + k_contract) || 7a.5 (conversation persistence + summary writer; single-gate) — parallel
+  #   Wave 5: 7a.7 (A2 shims; single-gate) || start of 7a.8 (integration + parity suite + closeout; dual-gate; strict-last)
+  #
+  # Codex Deployment Boundary:
+  #   Claude authors all 8 Slab 7a stories.
+  #   Codex authors bmad-code-review on every Slab 7a + 7b story close.
+  #   Codex authors Slab 7b port-shape stories (Tracy, Gary, Kira, Enrique, Wanda) + sandbox-AC inventory PR.
+
+  slab-7a-inter-gate-orchestration:
+    status: "sprint-planned"  # Flipped 2026-04-28 by bmad-sprint-planning; flat development_status keys added below for bmad-create-story / bmad-dev-story consumption.
+    opened: "2026-04-28"
+    epic_count: 1
+    story_count: 8
+    k_units_total: ~21
+    test_count_target: ~74
+    cost_envelope: "≤$3.60 (~$0.60 dev-cycle + ≤$3.00 trial-2)"
+    wall_clock_target: "7-9 weeks tight; 9-10 weeks risk"
+    standing_guardrails: ["SG-1: 11-specialist roster floor", "SG-2: 34-row mapping-checklist floor", "SG-3: Composition Spec invariants"]
+    governance_preconditions_resolved:
+      governance_json: "docs/dev-guide/migration-story-governance.json v2026-04-28-slab7a-eight-stories — 8 entries 7a-1..7a-8"
+      manifest_schema_bump: "state/config/pipeline-manifest.yaml schema_version: v4.2-migration-stub-with-fold-flags (Tier-2 minor; pack stays v4.2)"
+      sanctum_reference_conventions: "docs/dev-guide/sanctum-reference-conventions.md verified-exists (7310 bytes, dated 2026-04-24, Slab 2a.2 close)"
+      composition_spec_decision_log: "§10 Decision Log entry added 2026-04-28 documenting Slab 7a fold-flag schema extension"
+    story_table:
+      "7a.1":
+        title: "directive_composer.py (Gap 2 closure)"
+        gate_mode: "dual-gate"
+        k_target: 1.6
+        wave: 1
+        status: "backlog"
+        fr_coverage: 8
+        rationale: "substrate_shape + invariant_preservation; closes trial-475 silent-bypass root cause; Composition Smoke gate evidence at slab-opener"
+      "7a.2":
+        title: "manifest fold-flags + compiler extension"
+        gate_mode: "single-gate"
+        k_target: 1.3
+        wave: 2
+        status: "backlog"
+        fr_coverage: 10
+        rationale: "Tier-2 minor schema bump pre-landed; PRODUCTION_GATE_IDS derived from manifest at compile-time per FR-A8"
+      "7a.6":
+        title: "vocabulary registry + parity-table"
+        gate_mode: "single-gate"
+        k_target: 1.3
+        wave: 3
+        status: "backlog"
+        fr_coverage: 14
+        rationale: "PROMOTED to wave-3 from wave-6 — registry must precede stories that emit vocabulary into it; SG-1 + SG-2 primary structural enforcement"
+      "7a.3":
+        title: "pre-gate-marcus shared LLM node"
+        gate_mode: "single-gate"
+        k_target: 1.3
+        wave: 3
+        status: "backlog"
+        fr_coverage: 7
+        rationale: "single LLM call site before each conversational gate; C1 template-with-slots; reads vocabulary registry from 7a.6"
+      "7a.4":
+        title: "per-slide subgraph + HTML review-pack skeleton"
+        gate_mode: "single-gate-with-k-contract"
+        k_target: 1.4
+        k_contract:
+          scope: "HTML review-pack BOUNDED to skeleton-only; full styling deferred to post-Slab-7a polish"
+          tripwire_threshold_kloc: 4.08
+          tripwire_action: "escalate_to_dual_gate_via_party_mode"
+        wave: 4
+        status: "backlog"
+        fr_coverage: 15
+        rationale: "subgraph-with-interrupt() fan-out; FM-3 AST scan critical"
+      "7a.5":
+        title: "conversation persistence + specialist-summary writer"
+        gate_mode: "single-gate"
+        k_target: 1.3
+        wave: 4
+        status: "backlog"
+        fr_coverage: 20  # ceiling — Mary's Step 2 audit; rebalance only if breach
+        rationale: "SHA256 tamper-evident chain; 15-25 line summary envelope; Postgres checkpointer additive (ADR-D3)"
+      "7a.7":
+        title: "A2 single-decision shims for terminal gates G1/G2C/G3/G4"
+        gate_mode: "single-gate"
+        k_target: 1.3
+        wave: 5
+        status: "backlog"
+        fr_coverage: 5  # post-augment with FR-A6 + NFR-OD1/OD2 first-class scope
+        rationale: "audience-layered help text (OPERATOR/INPUTS/OUTPUTS/REFERENCE)"
+      "7a.8":
+        title: "integration + parity-test suite + Slab 7a closeout"
+        gate_mode: "dual-gate"
+        k_target: 1.6
+        wave: 5
+        status: "backlog"
+        fr_coverage: "17 FR-line + NFR-CG block + NFR-I8"
+        rationale: "operator_acceptance_gate + invariant_preservation; FLIPPED from single-gate per Step 1 batch-approved adjustment; SG-1 + SG-2 + SG-3 aggregated structural enforcement"
+        closeout_deliverables:
+          - "update sprint-status.yaml (Slab 7a stories closed; Slab 7b queued)"
+          - "update bmm-workflow-status.yaml (Slab 7a PRD + epics done)"
+          - "update next-session-start-here.md (immediate-next-action = Slab 7b PRD authoring OR trial-2 dry-run)"
+          - "update deferred-inventory.md (Slab 7a-named follow-ons)"
+          - "author Slab 7a retrospective per bmad-retrospective skill"
+          - "record-once golden-trace fixtures from trial-2 (or land in Slab 7b kickoff if trial-2 hasn't run)"
+
+  # ---------------------------------------------------------------------------
+  # Flat development_status keys for Slab 7a (added 2026-04-28 by bmad-sprint-planning).
+  # These are the canonical keys bmad-create-story / bmad-dev-story / bmad-code-review read.
+  # The structured block above is the operator-readable summary (k-targets, gate modes,
+  # rationale per story, governance preconditions). Both representations stay in sync;
+  # this flat block is authoritative for status transitions.
+  #
+  # Sequence reflects wave order from epics-slab-7a-inter-gate-orchestration.md:
+  #   Wave 1: 7a.1   |  Wave 2: 7a.2   |  Wave 3: 7a.6 || 7a.3
+  #   Wave 4: 7a.4 || 7a.5             |  Wave 5: 7a.7 || start-of 7a.8 (strict-last)
+  # ---------------------------------------------------------------------------
+  migration-epic-slab-7a-inter-gate-orchestration: in-progress  # Flipped backlog→in-progress 2026-04-28 on 7a.1 story-spec authoring (first story in epic). Epic_count=1, story_count=8, K-units~21, tests~74, $≤3.60, 7-9 weeks. Governance preconditions all resolved 2026-04-28 (governance JSON v2026-04-28-slab7a-eight-stories; pipeline-manifest schema v4.2-migration-stub-with-fold-flags; sanctum-reference-conventions verified). SG-1/SG-2/SG-3 standing-guardrails enforced structurally via NFR-I6/I7/I8 + FR-O20/O21/O22.
+  migration-7a-1-directive-composer: done  # 2026-04-29 CLOSED. ready-for-dev → in-progress → review (2026-04-28) → done (2026-04-29 after Codex bmad-code-review HALT-AND-REMEDIATE → Claude P1-P6 remediation cycle 1 → 205 passed/1 skipped wider regression / 77 passed focused / ruff clean / lint-imports 9/9 KEPT / lockstep PASS / sandbox-AC PASS / Composition Smoke PASS; +7 new tests over Codex baseline). Composition Spec §10 Decision Log entry filed at 2026-04-29 row for `runner_supplied_payload` kwarg per A-R3 Option A. Single DEFER carried: D-1 resume-mode directive re-derive (filed as `7a-1-deferred-resume-mode-directive-rederive`; safe under current Path Z first-contribution-wins). Manifest registration of `directive-composer` orchestration node closes via Story 7a.2 AC-7.2-G. **CLOSES TRIAL-475 GAP 2** structurally — Texas's silent-fixture-stub fallback is unreachable in production trials. 2026-04-28: ready-for-dev → in-progress → review. Dev cycle T1-T9 complete: 198 passed / 1 skipped on the slab-7a Marcus+composition+parity+structural+specialists/{texas,_scaffold} regression slice (52 new 7a.1 tests + 55 neighbor regression preserved); ruff clean; lint-imports 9/9 KEPT; sandbox-AC PASS; pipeline-manifest lockstep PASS; Composition Smoke gate evidence captured at _bmad-output/implementation-artifacts/migration-7-1-directive-composer-composition-smoke.md (slab-opener PASS per NFR-CG2). 4 halt-and-adapt cycles resolved without operator escalation: (1) ruamel.yaml→PyYAML swap (P-R1 functionally satisfied); (2) directive-composer manifest node DEFERRED to 7a.2 (orchestration-node tolerance is 7a.2 substrate scope); (3) resume-mode directive_path re-derivation deferred (filed); (4) test pkg __init__ collision corrected. 5 BINDING + 7 NON-BLOCKING Gate-1 riders applied. T10 (operator dual-gate Gate-2 ceremony) + T11 (Codex bmad-code-review) + T12 (D12 close) remain. File: _bmad-output/implementation-artifacts/migration-7a-1-directive-composer.md.
+  migration-7a-2-manifest-fold-flags-compiler-extension: ready-for-dev  # 2026-04-28: Spec authored by Claude under NEW cycle (Claude spec → Codex dev+tests → Claude reviews+commits); sandbox-AC PASS. Wave 2 (strict after 7a.1); single-gate; K-target ~20 tests / ~2K LOC (~1.3×); FR coverage 10 (FR6-FR10; FR-A7, A8, A9, A10, A23). PRODUCTION_GATE_IDS derived from manifest at compile-time per FR-A8 (no hardcoded frozenset). Tier-2 minor schema bump (v4.2-migration-stub-with-fold-flags) PRE-LANDED 2026-04-28 by 7a.1 substrate; 7a.2 is the operational consumer. CLOSES 7a.1's deferred follow-on `7a-1-deferred-directive-composer-manifest-node` via AC-7.2-G (orchestration-only-node tolerance in lockstep + actual directive-composer node registration). Spec ratifies 11 ACs (A-J + I) + 11 tasks (T1-T11; T1-T9 Codex dev cycle, T10 Codex G6 self-review, T11 Claude bmad-code-review + commit + close). File: _bmad-output/implementation-artifacts/migration-7a-2-manifest-fold-flags-compiler-extension.md.
+  migration-7a-6-vocabulary-registry-parity-table: backlog  # Wave 3 (parallel with 7a.3; needs 7a.2 manifest foundation); single-gate; K-target ~2K (~1.3×); FR coverage 14 (FR21-xc, FR24-xc, FR34, FR35, FR38; FR-A5, A6-xc, A17; FR-O1, O2, O4, O20, O21, O22). PROMOTED from slot 6 to slot 3 per Step 1 batch-approved adjustment — registry must precede stories that emit vocabulary into it. SG-1 + SG-2 PRIMARY structural enforcement (FR-O21 11-roster build assertion + FR-O20 34-row CI assertion). Authoring: Claude. Review: Codex.
+  migration-7a-3-pre-gate-marcus-shared-llm-node: backlog  # Wave 3 (parallel with 7a.6; needs 7a.2; independent of 7a.6); single-gate; K-target ~2.5K (~1.3×); FR coverage 7 (FR2-xc, FR3-xc, FR21-xc, FR22-prep, FR23-prep, FR24-xc; FR-A4). Single LLM call site before each conversational gate via C1 template-with-slots renderer. Reads vocabulary registry from 7a.6. Authoring: Claude. Review: Codex.
+  migration-7a-4-per-slide-subgraph-html-review-pack-skeleton: backlog  # Wave 4 (needs 7a.3 + 7a.6; parallel with 7a.5); single-gate-with-K-contract; K-target ~3.5K (~1.4×); K-contract bounds HTML to skeleton-only (full styling deferred to post-Slab-7a polish); tripwire 4.08 KLOC → escalate to dual-gate via party-mode. FR coverage 15 (FR11-FR15; FR-A15, A16, A18; FR-O5, O6, O7, O8, O10, O11, O12). Subgraph-with-interrupt() fan-out; FM-3 AST scan critical. Authoring: Claude. Review: Codex.
+  migration-7a-5-conversation-persistence-specialist-summary-writer: backlog  # Wave 4 (parallel with 7a.4; needs 7a.3); single-gate; K-target ~2.5K (~1.3×); FR coverage 20 (CEILING per Mary's Step 2 audit; rebalance only if breach occurs at gate-closeout). FRs: FR3-xc, FR5-xc, FR16-FR20, FR29-FR33; FR-A11, A12, A13, A14, A19, A20; FR-O17, O18, O19. SHA256 tamper-evident chain; 15-25 line summary envelope; Postgres checkpointer additive (ADR-D3). Authoring: Claude. Review: Codex.
+  migration-7a-7-a2-single-decision-shims-terminal-gates: backlog  # Wave 5 (parallel with start of 7a.8; independent of 7a.4/7a.5/7a.6); single-gate; K-target ~2K (~1.3×); FR coverage 5 (FR22, FR23; FR-A6-xc; NFR-OD1, NFR-OD2 first-class story-scoped — operator-documentation surface). Audience-layered help text (OPERATOR/INPUTS/OUTPUTS/REFERENCE four-section structure). Authoring: Claude. Review: Codex.
+  migration-7a-8-integration-parity-test-suite-slab-7a-closeout: backlog  # Wave 5 (strict-last); DUAL-GATE (FLIPPED from single per Step 1 batch-approved adjustment — integration story; cross-story failure modes justify conservative review); K-target ~3K (~1.6×); FR coverage 17 FR-line + NFR-CG block + NFR-I8 (FR25-FR28, FR36, FR37; FR-A21, A22, A24; FR-O9, O13, O14, O15, O16, O23, O24, O25; NFR-CG1-CG11 + NFR-I8). SG-1 + SG-2 + SG-3 AGGREGATED structural enforcement (parity suite asserts roster=11 + 34-row count + Composition Spec invariants 7 sections). Closeout deliverables: sprint-status update, deferred-inventory entries, retrospective, golden-trace fixtures (or defer to Slab 7b kickoff if trial-2 hasn't run). Authoring: Claude. Review: Codex.
+  migration-epic-slab-7a-inter-gate-orchestration-retrospective: optional  # Per CLAUDE.md §Deferred-inventory governance: bmad-retrospective is a binding consultation point — review deferred-inventory.md against closing Epic's new substrate/evidence/learnings; record reactivation verdicts. Slab 7a retrospective is a Story 7a.8 closeout deliverable.

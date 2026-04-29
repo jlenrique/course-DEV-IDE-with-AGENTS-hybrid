@@ -19,9 +19,9 @@ from app.gates.resume_api import (
     resume_from_verdict,
 )
 from app.manifest.compiler import (
-    PRODUCTION_GATE_IDS,
     _canonical_specialist_id,
     compile_run_graph,
+    production_gate_ids,
 )
 from app.manifest.loader import load as load_manifest
 from app.manifest.schema import NodeSpec
@@ -71,6 +71,10 @@ class MissingUpstreamContributionError(RuntimeError):
             f"{specialist_id!r} for downstream input {downstream_input_key!r} "
             f"while invoking {downstream_specialist_id!r}"
         )
+
+
+class GateBypassError(RuntimeError):
+    """Raised when a production pause-point gate would be silently skipped."""
 
 
 def _has_live_openai() -> bool:
@@ -487,6 +491,25 @@ def _active_node_handler(compiled_graph: Any, node_id: str) -> Any:
     return compiled_graph.nodes[node_id].runnable.func
 
 
+def _runner_payload_for_specialist(
+    *,
+    specialist_id: str,
+    directive_path: Path | None,
+    bundle_dir: Path | None,
+) -> dict[str, str] | None:
+    """Build runner_supplied_payload for Texas when directive composition has run.
+
+    Story 7a.1 / A-R3 Option A: only Texas receives the runner-supplied keys.
+    Other specialists receive None.
+    """
+    if specialist_id != "texas" or directive_path is None or bundle_dir is None:
+        return None
+    return {
+        "directive_path": directive_path.as_posix(),
+        "bundle_dir": bundle_dir.as_posix(),
+    }
+
+
 def run_production_trial(
     corpus_path: Path,
     preset: Literal["production", "explore"],
@@ -498,12 +521,25 @@ def run_production_trial(
     manifest_path: Path = DEFAULT_MANIFEST_PATH,
     max_specialist_calls: int = 1,
     pause_at_gates: bool = True,
+    directive_path: Path | None = None,
 ) -> ProductionTrialEnvelope:
-    """Register, compose, and start a production trial."""
+    """Register, compose, and start a production trial.
+
+    ``directive_path`` (Story 7a.1): when provided, the runner derives
+    ``bundle_dir = run_dir / "bundle"`` and threads both to Texas's _act
+    via ``ProductionDispatchAdapter.invoke_specialist(runner_supplied_payload=...)``
+    so Texas's ``dispatch_retrieval`` is called with non-None args (closing
+    trial-475 silent-bypass at line 34-40 of retrieval_dispatch.py).
+    """
     if not corpus_path.exists():
         raise FileNotFoundError(f"trial input path does not exist: {corpus_path}")
 
     effective_trial_id = trial_id or uuid4()
+    composer_run_dir = runs_root / str(effective_trial_id)
+    bundle_dir: Path | None = None
+    if directive_path is not None:
+        bundle_dir = composer_run_dir / "bundle"
+        bundle_dir.mkdir(parents=True, exist_ok=True)
     production_envelope = ProductionEnvelope(trial_id=effective_trial_id)
     envelope = ProductionTrialEnvelope(
         trial_id=effective_trial_id,
@@ -519,6 +555,7 @@ def run_production_trial(
     _persist_envelope(envelope, runs_root)
 
     manifest = load_manifest(manifest_path)
+    active_gate_ids = production_gate_ids(manifest)
     graph = compile_run_graph(manifest)
     adapter = ProductionDispatchAdapter()
     run_state = RunState(
@@ -554,10 +591,14 @@ def run_production_trial(
             handler = _active_node_handler(graph, node.id)
             node_kind = getattr(handler, "__production_node_kind__", None)
             if node_kind == "gate":
+                gate_id = handler.__production_gate_id__
                 if not pause_at_gates:
+                    if gate_id in active_gate_ids and not allow_offline_cost_report:
+                        raise GateBypassError(
+                            f"refused silent bypass of gate {gate_id} at manifest node {node.id}"
+                        )
                     graph_step_completed = True
                     continue
-                gate_id = handler.__production_gate_id__
                 pending = [item.id for item in manifest.nodes[index + 1 :]]
                 card = _build_decision_card(
                     gate_id=gate_id,
@@ -671,13 +712,21 @@ def run_production_trial(
                         specialist_id=specialist_id,
                         production_envelope=production_envelope,
                     )
-                    production_envelope = adapter.invoke_specialist(
+                    invoke_kwargs: dict[str, Any] = {
+                        "specialist_id": specialist_id,
+                        "envelope": production_envelope,
+                        "dependency_map": dependency_map,
+                        "cost_usd": 0.0,
+                        "base_state": run_state,
+                    }
+                    runner_payload = _runner_payload_for_specialist(
                         specialist_id=specialist_id,
-                        envelope=production_envelope,
-                        dependency_map=dependency_map,
-                        cost_usd=0.0,
-                        base_state=run_state,
+                        directive_path=directive_path,
+                        bundle_dir=bundle_dir,
                     )
+                    if runner_payload is not None:
+                        invoke_kwargs["runner_supplied_payload"] = runner_payload
+                    production_envelope = adapter.invoke_specialist(**invoke_kwargs)
                     run_state = run_state.model_copy(
                         update={"production_envelope": production_envelope}
                     )
@@ -919,8 +968,8 @@ def resume_production_trial(
 
 __all__ = [
     "DEFAULT_MANIFEST_PATH",
+    "GateBypassError",
     "MissingUpstreamContributionError",
-    "PRODUCTION_GATE_IDS",
     "resume_production_trial",
     "run_production_trial",
 ]

@@ -1,6 +1,6 @@
 {
   "_comment": "Codified gate-mode designations for LangChain/LangGraph migration stories. Authored 2026-04-22 from the triage pass across the 56-story plan in _bmad-output/planning-artifacts/epics-langchain-langgraph-migration.md. The triage RE-AFFIRMED the existing per-story designations — dual-gate is applied only where a story introduces a schema-shape, CI/compile-time contract, lane/package boundary, load-bearing invariant preservation, or operator-acceptance gate. Every other story is single-gate. Stories 2b.2-2b.14 are explicitly pinned to single-gate here (they follow the 2b.1 TEMPLATE scaffold and should not relitigate gate mode at authoring time). Freezing these designations here means bmad-create-story on a migration story does not need to rederive the gate-mode decision — it reads this file. Additions or demotions require party-mode consensus and a version bump below.",
-  "version": "2026-04-27-slab6-2-implementation",
+  "version": "2026-04-28-slab7a-eight-stories",
   "_amendment_log": [
     "2026-04-22 — Initial freeze of 56-story plan (1-1 through 5b-4); 1-1d added via middle-path party-mode consensus on MCP-in-Slab-1.",
     "2026-04-25 — Story 2a-5 added (Generator auto-emit pyproject.toml C3 ignore_imports row; 2a.1 follow-on defect; ~2pt single-gate; party-mode T2 2026-04-24 ratification per Murat (b)-preferred path / Winston path-2 / Paige A12 procedural-coupling category). Filed as the Slab-2a→2b binding gate per slab-2a-retrospective.md.",
@@ -8,7 +8,8 @@
     "2026-04-27 - Story 6-1 added as Slab 6 inaugural production-capability opener after A16 Composition-vs-Component Audit Gap. Gate is dual (`substrate_shape` + `operator_acceptance_gate`) because it introduces the production graph composition layer and requires one operator-accepted live trial through the runner.",
     "2026-04-27 - Story 6-0 inserted before 6-1 after A17 Substrate Designed for Isolation, Composition Assumed. Gate is dual (`substrate_shape` + `invariant_preservation`) because it introduces the production envelope substrate while preserving isolated specialist scaffold contracts. Story 6-1 re-scoped to runner-consumes-substrate.",
     "2026-04-27 - Stories 6-2 + 6-3 + 6-4 + 6-5 added as Slab 6 trial-experience bundle. 6-2 is the prerequisite (manifest dependency_map promotion; ~1pt single-gate; closes Composition Spec §12 known limitation #1). 6-3 + 6-4 + 6-5 are the bundle proper (Step 02A defaults; Irene Pass 2 authoring template; HUD per-step summaries). 6-3 + 6-5 single-gate; 6-4 dual-gate (`schema_shape + invariant_preservation`). All operator-flagged from 2026-04-19/20 trial-prep evidence; sequenced for first-tracked-trial readiness.",
-    "2026-04-27 - Story 6-2 implementation landed: `dependencies` field accepted on manifest nodes; compile-time circular dependency check added; production runner resolves manifest first and retains runner-layer fallback permanently for undeclared/empty nodes."
+    "2026-04-27 - Story 6-2 implementation landed: `dependencies` field accepted on manifest nodes; compile-time circular dependency check added; production runner resolves manifest first and retains runner-layer fallback permanently for undeclared/empty nodes.",
+    "2026-04-28 - Slab 7a 7a-1 through 7a-8 added (Inter-Gate Conversational Orchestration substrate; per `_bmad-output/planning-artifacts/epics-slab-7a-inter-gate-orchestration.md`). Eight stories: 7a-1 directive_composer (dual-gate); 7a-2 manifest fold-flags + compiler ext (single-gate); 7a-6 vocabulary registry + parity-table (single-gate; promoted to wave-3 from wave-6 per Step 1 batch-approved adjustment); 7a-3 pre-gate-marcus shared LLM node (single-gate); 7a-4 per-slide subgraph + HTML review-pack skeleton (single-gate WITH k_contract bounding HTML to skeleton-only + tripwire escalation to dual-gate at K-actual >4.08K = 1.7× band-floor); 7a-5 conversation persistence + specialist-summary writer (single-gate); 7a-7 A2 single-decision shims for terminal gates (single-gate); 7a-8 integration + parity-test suite + Slab 7a closeout (dual-gate; flipped from single per integration-tier risk argument). Party-mode consensus 2026-04-28 (Winston/Murat/Amelia/Paige) — all four voices: GO; no SG-1/SG-2/SG-3 violations."
   ],
   "dual_gate_rationale_legend": {
     "schema_shape": "Story introduces a new Pydantic v2 model family with four-file-lockstep (schema + validator + tests + golden fixture).",
@@ -304,13 +305,75 @@
       "expected_pts": 4,
       "expected_k_target": 1.4,
       "amendment_note": "Filed 2026-04-27 as Slab 6 trial-experience bundle item. HUD per-step expandable summaries surface real-time content captured + locked at each pipeline step. Operator-flagged 2026-04-19 trial during Step 03 hold. Single-gate: HUD enhancement; no schema-shape risk; no substrate-touching contracts."
+    },
+    "7a-1": {
+      "expected_gate_mode": "dual-gate",
+      "rationale": "substrate_shape + invariant_preservation",
+      "expected_pts": 5,
+      "expected_k_target": 1.6,
+      "amendment_note": "Slab 7a opener: directive_composer.py closes trial-475 Gap 2 (silent gate-bypass from missing directive composition). Dual-gate justified: closes trial-475 root cause + introduces Composition Smoke gate evidence at slab-opener (Composition Spec §9). K=1.6× per directive-composer band 3.2-5K; ~3.5K target."
+    },
+    "7a-2": {
+      "expected_gate_mode": "single-gate",
+      "rationale": null,
+      "expected_pts": 3,
+      "expected_k_target": 1.3,
+      "amendment_note": "Slab 7a wave-2: manifest fold-flags + compiler extension. Tier-2 minor manifest schema bump (additive `fold_with`/`fold_target` per-node fields); removes hardcoded PRODUCTION_GATE_IDS frozenset and derives from manifest at compile-time (FR-A8). Hard precondition: pipeline-manifest.yaml schema_version bump 'v4.2-migration-stub' → 'v4.2-migration-stub-with-fold-flags' landed via this same 2026-04-28 party-mode round."
+    },
+    "7a-6": {
+      "expected_gate_mode": "single-gate",
+      "rationale": null,
+      "expected_pts": 3,
+      "expected_k_target": 1.3,
+      "amendment_note": "Slab 7a wave-3 (PROMOTED from wave-6 per Step 1 batch-approved adjustment — registry must precede stories that emit vocabulary into it). Vocabulary registry (Pydantic-v2 namespaced enum) + 34-row operator-control parity table. SG-1 + SG-2 primary structural enforcement here (FR-O20 row-count CI; FR-O21 specialist-roster build assertion)."
+    },
+    "7a-3": {
+      "expected_gate_mode": "single-gate",
+      "rationale": null,
+      "expected_pts": 3,
+      "expected_k_target": 1.3,
+      "amendment_note": "Slab 7a wave-3 (parallel with 7a-6): pre-gate-marcus shared LLM node. Single LLM call site before each conversational gate; C1 template-with-slots pre-fill with confidence + rationale; reads vocabulary registry from 7a-6."
+    },
+    "7a-4": {
+      "expected_gate_mode": "single-gate",
+      "rationale": null,
+      "expected_pts": 5,
+      "expected_k_target": 1.4,
+      "k_contract": {
+        "scope": "HTML review-pack BOUNDED to skeleton-only (semantic structure + checkbox + delta-field; no full styling); full styling deferred to post-Slab-7a polish.",
+        "tripwire_threshold_kloc": 4.08,
+        "tripwire_action": "escalate_to_dual_gate_via_party_mode",
+        "rationale": "K-target 1.4× against gate-shape band 2.4-2.8K positions 7a-4 at upper band edge (3.5K is 1.46× band-ceiling, 1.75× band-floor). The K-contract bounds scope to skeleton-only HTML; if K-actual exceeds 1.7× band-floor (4.08K), the dev round closes and party-mode consensus required to escalate to dual-gate."
+      },
+      "amendment_note": "Slab 7a wave-4: per-slide subgraph + HTML review-pack skeleton. Subgraph-with-`interrupt()` fan-out for G2B/G2F-merged/G3B per-slide arrays. FM-3 AST scan critical (subgraph-degenerating-to-parent-graph-loop check). Single-gate WITH k_contract tripwire per Step 1 batch-approved adjustment."
+    },
+    "7a-5": {
+      "expected_gate_mode": "single-gate",
+      "rationale": null,
+      "expected_pts": 3,
+      "expected_k_target": 1.3,
+      "amendment_note": "Slab 7a wave-4 (parallel with 7a-4): conversation persistence (SHA256 tamper-evident chain) + specialist-summary writer (15-25 line envelope per FR-O19). Postgres checkpointer additive evolution (ADR-D3); FR-A11-A14 cluster."
+    },
+    "7a-7": {
+      "expected_gate_mode": "single-gate",
+      "rationale": null,
+      "expected_pts": 2,
+      "expected_k_target": 1.3,
+      "amendment_note": "Slab 7a wave-5 (parallel with start of 7a-8): A2 single-decision CLI shims for terminal gates G1/G2C/G3/G4. Audience-layered help text (OPERATOR/INPUTS/OUTPUTS/REFERENCE structure). Carries NFR-OD1/OD2 first-class story-scoped; 5 FRs after Mary's augment per Step 2 finding."
+    },
+    "7a-8": {
+      "expected_gate_mode": "dual-gate",
+      "rationale": "operator_acceptance_gate + invariant_preservation",
+      "expected_pts": 4,
+      "expected_k_target": 1.6,
+      "amendment_note": "Slab 7a wave-5 strict-last (FLIPPED from single-gate to dual-gate per Step 1 batch-approved adjustment — integration story; cross-story failure modes justify conservative review). Integration + parity-test suite (34-row mapping checklist 1:1) + Composition Spec invariant test suite (NFR-I8) + calibration-tripwire wiring + gate-bypass detection + max-3 oscillation guard + engagement-decay reporting + Slab 7a closeout artifacts. SG-1 + SG-2 + SG-3 aggregated structural enforcement here. Operator acceptance for trial-2 readiness predicate."
     }
   },
   "triage_summary": {
-    "total_stories": 64,
-    "single_gate": 46,
-    "dual_gate": 18,
+    "total_stories": 72,
+    "single_gate": 52,
+    "dual_gate": 20,
     "dual_gate_pct": 28,
-    "note": "28% dual-gate is the projected workload after Slab 6 trial-experience bundle insertion. Dual-gate stories cluster in Slab 1 substrate (4/10 = 40%), Slab 3 orchestration (3/6 = 50%), and Slab 6 production capability (3/6 = 50% — 6-0 substrate + 6-1 runner + 6-4 Irene authoring template). Slab 2b's 17 specialist migrations are 2/17 = 12% dual. Total grew 56->57 on 2026-04-22 with Story 1-1d; 57->58 on 2026-04-25 with Story 2a-5; 59->60 on 2026-04-27 with Story 6-0; 60->64 on 2026-04-27 with Stories 6-2 + 6-3 + 6-4 + 6-5 (Slab 6 trial-experience bundle)."
+    "note": "28% dual-gate holds after Slab 7a 8-story addition. Dual-gate stories cluster in Slab 1 substrate (4/10 = 40%), Slab 3 orchestration (3/6 = 50%), Slab 6 production capability (3/6 = 50% — 6-0 substrate + 6-1 runner + 6-4 Irene authoring template), and Slab 7a inter-gate orchestration (2/8 = 25% — 7a-1 directive-composer + 7a-8 integration-closeout). Slab 2b's 17 specialist migrations are 2/17 = 12% dual. Total grew 56->57 on 2026-04-22 with Story 1-1d; 57->58 on 2026-04-25 with Story 2a-5; 59->60 on 2026-04-27 with Story 6-0; 60->64 on 2026-04-27 with Stories 6-2 + 6-3 + 6-4 + 6-5 (Slab 6 trial-experience bundle); 64->72 on 2026-04-28 with Slab 7a Stories 7a-1 through 7a-8."
   }
 }

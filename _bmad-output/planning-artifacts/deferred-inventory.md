@@ -279,3 +279,20 @@ Cross-cutting tech debt that grew during Slabs 1-4 + that should be properly tra
 - [_bmad-output/maps/deferred-work.md](../maps/deferred-work.md) â€” **different surface**: tracks deferred G6 code-review FINDINGS per story, not deferred stories themselves. Relevant at retrospectives as a sibling input.
 - [docs/dev-guide/pipeline-manifest-regime.md Â§Pack Versioning Policy](../../docs/dev-guide/pipeline-manifest-regime.md#pack-versioning-policy) â€” relevant for Epic 18 new-pack-type framing.
 - [CLAUDE.md](../../CLAUDE.md) â€” governance umbrella; names the retrospective + session-start consultation requirement.
+
+---
+
+## Slab 7a-Filed Named-But-Not-Filed Follow-Ons (added 2026-04-28)
+
+Filed concurrent with Slab 7a Epic 1 PRD + Epics+Stories authoring. Trigger conditions name the slab/event that reactivates each entry.
+
+| Follow-on | Parent | Condition | Trigger |
+|---|---|---|---|
+| **Slab 7b sandbox-AC inventory PR** (5 entries: gamma, kling, elevenlabs, wondercraft, dan-api-tbd) | Slab 7a NFR-CG1 | Hard precondition before any Slab 7b story opens. **Codex-authored.** | Slab 7b PRD authoring opens; Codex authors PR adding 5 entries to `docs/dev-guide/migration-ac-sandbox-inventory.json` per migration-AC governance. NOT a Slab 7a precondition (Slab 7a is orchestration-only; no live-API surfaces). |
+| **Slab 7a-4 K-contract tripwire** (escalate-to-dual-gate-via-party-mode at K-actual >4.08K = 1.7× band-floor) | Slab 7a Story 7a-4 | Encoded in `migration-story-governance.json` as `k_contract` field per Step 1 batch-approved adjustment. | Reactivates if 7a-4 K-actual breaches 4.08K during dev; closes dev round; party-mode triage. |
+| **Slab 7a-8 golden-trace fixtures from trial-2** | Slab 7a Story 7a-8 close + first trial-2 | Trial-2 must run before record-once-replay-forever fixtures land. If trial-2 hasn't run by 7a-8 close, fixtures land in Slab 7b kickoff. | Reactivates at trial-2 close OR Slab 7b opens; Slab 7b inherits as input, does NOT block on them. |
+| **Slab 7a-2 PRODUCTION_GATE_IDS callsite migration** (grep-and-update test fixtures that pin current 4-gate behavior) | Slab 7a Story 7a-2 | Removing hardcoded `PRODUCTION_GATE_IDS = frozenset({"G1","G2C","G3","G4"})` from `app/manifest/compiler.py:42` may cascade to test fixtures that assert the literal frozenset shape. Per Amelia's Step 1 finding: "AC-level work, not a one-liner." | Reactivates at 7a-2 dev open; T1 readiness includes grep-for-callsites + test-fixture refresh budget. |
+| **Slab 7a-4 HTML review-pack full styling** (post-Slab-7a polish) | Slab 7a Story 7a-4 K-contract | K-contract bounds 7a-4 HTML review-pack to skeleton-only (semantic structure + checkbox + delta-field; no full styling). | Reactivates as Doc-7-D candidate or Slab 8 polish task once trial-2 evidence informs styling priorities. |
+| **Slab 7a-7 + Doc-7-D documentation-completion follow-on** (full anti-pattern catalog from trial-2 evidence) | Doc-7-D scope | Anti-pattern catalogs are post-trial-evidence harvest, not pre-trial speculation. | Reactivates at Doc-7-D PRD authoring (sequenced after first tracked trial-2 post-Slab-7b). |
+| **Polish-pass deferred items** (move Sibling PRD context + Meta-Directive to end-of-doc Governance Appendix; Section 6 trim to ≤30-line summary; Section-flow bridges at Sections 7/9/12; cross-link prefixing) | Slab 7a PRD §Polish-Pass Notes | Larger structural recommendations from Step 11 polish-pass not applied inline (operator-decision risk on content regression); deferred to post-trial-2 doc-pass. | Reactivates at Doc-7-D scope OR if reader-friction surfaces at next-session hot-start. |
+| **Slab 7a impact assessment update for `pipeline-manifest-regime.md` §Slab 7a fold-flag mechanism** (Doc-7-D candidate per Paige's polish-pass) | Doc-7-D scope | Documents the fold-flag mechanism for downstream pack-version evolution. | Reactivates at Doc-7-D PRD authoring. |

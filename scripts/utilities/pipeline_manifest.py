@@ -25,7 +25,17 @@ from app.manifest.schema import PipelineManifest as GraphPipelineManifest
 from scripts.utilities.file_helpers import project_root
 
 DEFAULT_MANIFEST_PATH = project_root() / "state" / "config" / "pipeline-manifest.yaml"
-KNOWN_SCHEMA_VERSIONS = frozenset({"1.0", "0.1-stub", "v4.2-migration-stub"})
+KNOWN_SCHEMA_VERSIONS = frozenset(
+    {
+        "1.0",
+        "0.1-stub",
+        "v4.2-migration-stub",
+        # Slab 7a 2026-04-28 schema bump: additive `fold_with` / `fold_target`
+        # per-node fields. Pack stays v4.2; legacy projection ignores fold-flag
+        # fields (compiler consumption lands in Story 7a.2).
+        "v4.2-migration-stub-with-fold-flags",
+    }
+)
 
 
 class ManifestInternalInconsistencyError(ValueError):
