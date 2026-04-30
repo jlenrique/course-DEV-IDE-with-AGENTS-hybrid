@@ -1,0 +1,41 @@
+name: activation-contract
+
+on:
+  pull_request:
+    paths:
+      - "app/specialists/**"
+      - "tests/parity/test_*_activation_contract.py"
+      - "tests/parity/test_eleven_specialists_addressable.py"
+      - ".github/workflows/activation-contract.yml"
+  push:
+    branches:
+      - master
+      - "dev/**"
+  workflow_dispatch:
+
+jobs:
+  activation-contract:
+    name: SG-1 11-specialist roster + per-specialist activation contracts
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install uv
+        run: pip install uv
+
+      - name: Sync dependencies
+        run: uv sync --frozen
+
+      - name: SG-1 roster floor (FR88 + FR105; 11 specialists)
+        run: uv run pytest tests/parity/test_eleven_specialists_addressable.py --tb=short -q
+
+      - name: Per-specialist activation contracts (11 files)
+        run: uv run pytest tests/parity/test_*_activation_contract.py --tb=short -q

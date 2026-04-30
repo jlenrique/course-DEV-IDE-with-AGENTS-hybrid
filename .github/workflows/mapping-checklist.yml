@@ -1,0 +1,37 @@
+name: mapping-checklist
+
+on:
+  pull_request:
+    paths:
+      - "_bmad-output/planning-artifacts/slab-7-legacy-migrated-mapping-checklist.md"
+      - "tests/parity/test_mapping_checklist_status.py"
+      - ".github/workflows/mapping-checklist.yml"
+  push:
+    branches:
+      - master
+      - "dev/**"
+  workflow_dispatch:
+
+jobs:
+  mapping-checklist:
+    name: SG-2 mapping-checklist row-status invariant (NFR-I11)
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install uv
+        run: pip install uv
+
+      - name: Sync dependencies
+        run: uv sync --frozen
+
+      - name: Mapping-checklist row-status invariant
+        run: uv run pytest tests/parity/test_mapping_checklist_status.py --tb=short -q
