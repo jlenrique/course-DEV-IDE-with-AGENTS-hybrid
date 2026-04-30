@@ -12,9 +12,21 @@ PROJECT-STRUCTURE-MAP-*.md
 .playwright-mcp/
 
 # BMad framework — installed/distributed by bmb; never version-control
-_bmad/
+# EXCEPT `_bmad/memory/` which carries persistent agent sanctum content
+# (BMB 6-file pattern: INDEX/PERSONA/CREED/BOND/MEMORY/CAPABILITIES; legacy
+# sidecar variants; Class-C+/D2 4-file operational-metadata sidecars). These
+# files change with runs / app redevelopment and must be tracked per
+# 2026-04-30 operator ratification (retires `bmad-memory-gitignore-force-add-policy`).
+# NOTE: glob-direct-children (`_bmad/*`) rather than full-tree (`_bmad/`) so
+# the negation `!_bmad/memory/` can re-include the memory subtree (git cannot
+# re-include files under a fully-excluded parent dir).
+_bmad/*
+!_bmad/memory/
 
 # BMad skills distributed to IDE surfaces (installed by bmb setup)
+# `skills/` itself carries critical agent-definition content (SKILL.md +
+# references/ + scripts/) and is tracked. Only IDE-surface mirrors
+# (.agents/.claude/.cline/.github/skills/.cursor/skills/) are ignored.
 .agents/
 .claude/
 .cline/
