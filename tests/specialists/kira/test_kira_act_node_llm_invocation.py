@@ -3,33 +3,46 @@ from __future__ import annotations
 import json
 from typing import Any
 
-import openai
-import pytest
-
 from app.models.state.cache_state import CacheState
 from app.models.state.run_state import RunState
 from app.specialists.kira.graph import _act, _plan
 
 
-@pytest.mark.llm_live
-def test_kira_act_node_real_llm_with_mocked_dispatch(monkeypatch: pytest.MonkeyPatch) -> None:
-    def _fake_dispatch(**_: Any) -> dict[str, Any]:
+class FakeKlingClient:
+    def generate_motion(self, **kwargs: Any) -> dict[str, Any]:
         return {
-            "status": "mocked",
-            "motion_asset_path": "tests/fixtures/specialists/kira/mock_motion.mp4",
-            "kling_choices": {
-                "model_name": "kling-v1",
-                "mode": "std",
-                "duration": 5.0,
-                "negative_prompt": "",
-            },
+            "data": {
+                "task_id": "task-kira-act",
+                "task_status": "succeed",
+                "task_result": {
+                    "videos": [
+                        {
+                            "url": "tests/fixtures/specialist-replay/kira/slide-01.mp4",
+                            "duration": "5",
+                        }
+                    ]
+                },
+            }
         }
 
-    monkeypatch.setattr("app.specialists.kira.graph.dispatch_to_kling", _fake_dispatch)
+
+def test_kira_act_node_uses_api_bound_motion_generation(tmp_path, monkeypatch) -> None:
+    monkeypatch.setattr(
+        "app.specialists.kira._act.KlingClient",
+        lambda: FakeKlingClient(),
+    )
     envelope_payload = {
-        "slide_id": "slide-001",
-        "visual_file": "artifacts/segment-001.png",
-        "motion_goal": "show smooth camera pan over anatomy diagram",
+        "bundle_path": str(tmp_path),
+        "motion_plan": {
+            "slides": [
+                {
+                    "slide_id": "slide-001",
+                    "prompt": "show smooth camera pan over anatomy diagram",
+                    "estimated_cost_usd": 0.12,
+                    "visual_file": "artifacts/segment-001.png",
+                }
+            ]
+        },
     }
     payload_blob = json.dumps(
         envelope_payload, sort_keys=True, ensure_ascii=True, separators=(",", ":")
@@ -39,23 +52,12 @@ def test_kira_act_node_real_llm_with_mocked_dispatch(monkeypatch: pytest.MonkeyP
         temperature=0.0,
         cache_state=CacheState(cache_prefix=payload_blob, entries_count=0),
     )
-    plan_update = _plan(state)
-    state = state.model_copy(update=plan_update)
-    try:
-        act_update = _act(state)
-    except openai.NotFoundError as exc:
-        pytest.skip(f"Model not available in this environment: {exc}")
+    state = state.model_copy(update=_plan(state))
+
+    act_update = _act(state)
+
     output = json.loads(act_update["cache_state"]["cache_prefix"])
-    assert output["motion_asset_path"].endswith(".mp4")
-    assert output["visual_file"] == "artifacts/segment-001.png"
-    assert output["kling_prompt"]
+    assert output["motion_receipts"][0]["motion_asset_path"].endswith(".mp4")
+    assert output["motion_receipts"][0]["status"] == "success"
     assert output["model_id"] == "gpt-5-nano"
-    usage = output.get("usage")
-    if usage is None:
-        pytest.fail("AC-B: missing usage metadata for Kira LLM invocation")
-    prompt_tokens = usage.get("input_tokens") or usage.get("prompt_tokens")
-    if prompt_tokens is None:
-        pytest.fail(f"AC-B: usage missing prompt token key. keys={sorted(usage.keys())}")
-    assert prompt_tokens >= 1024, (
-        f"AC-B: prompt_tokens={prompt_tokens} below 1024 cache-eligibility floor"
-    )
+    assert output["compositor_invocation"]["gate_id"] == "G3"

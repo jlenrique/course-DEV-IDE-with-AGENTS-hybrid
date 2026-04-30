@@ -1,0 +1,16 @@
+upstream: kira
+downstream: compositor
+gate_id: G3
+motion_receipts:
+  - slide_id: slide-01
+    status: success
+    motion_asset_path: tests/fixtures/specialist-replay/kira/slide-01.mp4
+  - slide_id: slide-02
+    status: success
+    motion_asset_path: tests/fixtures/specialist-replay/kira/slide-02.mp4
+compositor_invocation:
+  specialist_id: compositor
+  gate_id: G3
+  motion_asset_paths:
+    - tests/fixtures/specialist-replay/kira/slide-01.mp4
+    - tests/fixtures/specialist-replay/kira/slide-02.mp4

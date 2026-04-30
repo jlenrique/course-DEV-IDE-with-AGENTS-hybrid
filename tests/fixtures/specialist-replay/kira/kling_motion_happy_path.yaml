@@ -1,0 +1,9 @@
+provider: kling
+scenario: motion_generation_happy_path
+slides:
+  - slide_id: slide-01
+    task_id: task-001
+    video_url: tests/fixtures/specialist-replay/kira/slide-01.mp4
+  - slide_id: slide-02
+    task_id: task-002
+    video_url: tests/fixtures/specialist-replay/kira/slide-02.mp4

@@ -1,13 +1,15 @@
-# Kira motion model cascade — Story 2a.3.
+# Kira motion model cascade - Story 7b.7 Class-C port-shape.
 #
 # Framework-over-epic drift lock:
 # - Canonical node is `plan` (not "reason").
-# - Tier request is `fast` for motion prompt composition.
+# - Tier request is `fast` for resolution-trail continuity.
 # - Current policy maps `fast` -> `gpt-5-nano`.
 #
-# Determinism:
-# - `temperature_default: 0.0` keeps prompt assembly + choice JSON stable for
-#   cache-prefix measurements in AC-D.
+# Runtime discipline:
+# - Kira is REST-API tool-dispatch at the Kira layer. The `_plan` node still
+#   records a model-resolution trail entry for FR16 uniformity, but `_act`
+#   does not invoke an LLM and FR106 cache-hit-rate is N/A for Class-C.
+# - `temperature_default: 0.0` is retained for resolution-trail consistency.
 specialist_id: "kira"
 default_model: "gpt-5-nano"
 per_node_overrides:

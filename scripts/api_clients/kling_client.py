@@ -188,6 +188,56 @@ class KlingClient(BaseAPIClient):
 
         return self.post("/v1/videos/image2video", json=payload)
 
+    def generate_motion(
+        self,
+        *,
+        prompt: str,
+        image_url: str | None = None,
+        model_name: str = "kling-v2-6",
+        duration: str = "5",
+        aspect_ratio: str = "16:9",
+        mode: str = "std",
+        negative_prompt: str | None = None,
+        sound: bool | None = None,
+        poll_interval: int = POLL_INTERVAL,
+        max_attempts: int = MAX_POLL_ATTEMPTS,
+        timeout_seconds: int | None = None,
+    ) -> dict[str, Any]:
+        """Submit a motion job and return the completed task payload."""
+        task_type = "image2video" if image_url else "text2video"
+        if image_url:
+            submitted = self.image_to_video(
+                image_url,
+                prompt=prompt,
+                model_name=model_name,
+                duration=duration,
+                aspect_ratio=aspect_ratio,
+                mode=mode,
+                negative_prompt=negative_prompt,
+                sound=sound,
+            )
+        else:
+            submitted = self.text_to_video(
+                prompt,
+                model_name=model_name,
+                duration=duration,
+                aspect_ratio=aspect_ratio,
+                mode=mode,
+                negative_prompt=negative_prompt,
+                sound=sound,
+            )
+        data = submitted.get("data") if isinstance(submitted.get("data"), dict) else {}
+        task_id = submitted.get("task_id") or data.get("task_id")
+        if not task_id:
+            return submitted
+        return self.wait_for_completion(
+            str(task_id),
+            task_type=task_type,
+            poll_interval=poll_interval,
+            max_attempts=max_attempts,
+            timeout_seconds=timeout_seconds,
+        )
+
     def lip_sync(
         self,
         video_url: str,
