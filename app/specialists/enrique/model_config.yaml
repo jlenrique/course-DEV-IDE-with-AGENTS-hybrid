@@ -6,3 +6,4 @@ default_model: "gpt-5"
 per_node_overrides:
   act: "gpt-5"
 temperature_default: 0.0
+# Class-C REST-API tool-dispatch; cache-hit-rate harness is not applicable at Enrique layer.

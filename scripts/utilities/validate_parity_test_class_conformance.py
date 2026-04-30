@@ -1,8 +1,7 @@
 """Validate Slab 7b per-specialist parity test class shape.
 
-Initial Story 7b.1 scope enforces only Class-A activation contracts. Later
-Class-B/C/C+/D1/D2 stories extend this scaffold in lockstep with their first
-per-class parity tests.
+Story 7b.1 introduced Class-A activation contracts. Story 7b.4 adds Class-B
+persona-continuity + sidecar-write parity assertions for Irene Pass-1.
 """
 
 from __future__ import annotations
@@ -14,6 +13,68 @@ from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 DEFAULT_TARGET = REPO_ROOT / "tests" / "parity"
+CLASS_B_REQUIRED_METHODS = frozenset(
+    {
+        "cold_activation_smoke",
+        "test_class_b_scaffold_conformance",
+        "test_lesson_plan_artifact_write_contract",
+        "test_scope_lock_learning_events",
+        "test_mode_singularity",
+        "test_shared_sanctum_fingerprint",
+    }
+)
+CLASS_C_PLUS_IDS = frozenset({"C+", "CPLUS"})
+CLASS_C_PLUS_REQUIRED_METHODS = frozenset(
+    {
+        "cold_activation_smoke",
+        "test_class_c_plus_scaffold_conformance",
+        "test_four_file_sidecar_pattern",
+        "test_live_llm_only_binding",
+        "test_cache_hit_rate_harness_wired",
+        "test_retrieval_intent_shape",
+        "test_skill_md_activation_order",
+    }
+)
+CLASS_C_REQUIRED_METHODS = frozenset(
+    {
+        "cold_activation_smoke",
+        "test_class_c_scaffold_conformance",
+        "test_six_file_bmb_sanctum_pattern",
+        "test_gamma_api_client_binding",
+        "test_vcr_cassettes_present",
+        "test_credential_rotation_register_entry",
+        "test_rate_limit_budget_declared",
+        "test_cache_hit_rate_not_applicable",
+        "test_operator_gated_canary_documented",
+        "test_cold_activation_smoke",
+    }
+)
+CLASS_D1_REQUIRED_METHODS = frozenset(
+    {
+        "cold_activation_smoke",
+        "test_class_d1_scaffold_conformance",
+        "test_six_file_bmb_sanctum_pattern",
+        "test_single_skill_md_pattern",
+        "test_llm_only_shared_facade",
+        "test_aux_contribution_shape",
+        "test_advisory_only_partition",
+        "test_golden_fixture_replay",
+        "test_cold_activation_smoke",
+    }
+)
+CLASS_D2_REQUIRED_METHODS = frozenset(
+    {
+        "cold_activation_smoke",
+        "test_class_d2_scaffold_conformance",
+        "test_four_file_operational_sidecar_pattern",
+        "test_single_compositor_skill_md_pattern",
+        "test_no_llm_or_third_party_api",
+        "test_pipeline_determinism_harness_wired",
+        "test_field_mask_yaml_consumed",
+        "test_four_input_chain_test_present",
+        "test_operator_control_and_decision_log_landed",
+    }
+)
 
 
 @dataclass(frozen=True)
@@ -134,12 +195,76 @@ def _validate_file(path: Path) -> list[Violation]:
                 )
             )
             continue
-        if class_template_id.upper() != "A":
+        normalized_template = class_template_id.upper()
+        if normalized_template == "B":
+            missing_methods = sorted(CLASS_B_REQUIRED_METHODS - _method_names(class_node))
+            if missing_methods:
+                violations.append(
+                    Violation(
+                        path,
+                        class_node.lineno,
+                        "Class-B parity test missing required method(s): "
+                        + ", ".join(missing_methods),
+                    )
+                )
+            continue
+        if normalized_template in CLASS_C_PLUS_IDS:
+            missing_methods = sorted(
+                CLASS_C_PLUS_REQUIRED_METHODS - _method_names(class_node)
+            )
+            if missing_methods:
+                violations.append(
+                    Violation(
+                        path,
+                        class_node.lineno,
+                        "Class-C+ parity test missing required method(s): "
+                        + ", ".join(missing_methods),
+                    )
+                )
+            continue
+        if normalized_template == "C":
+            missing_methods = sorted(CLASS_C_REQUIRED_METHODS - _method_names(class_node))
+            if missing_methods:
+                violations.append(
+                    Violation(
+                        path,
+                        class_node.lineno,
+                        "Class-C parity test missing required method(s): "
+                        + ", ".join(missing_methods),
+                    )
+                )
+            continue
+        if normalized_template == "D1":
+            missing_methods = sorted(CLASS_D1_REQUIRED_METHODS - _method_names(class_node))
+            if missing_methods:
+                violations.append(
+                    Violation(
+                        path,
+                        class_node.lineno,
+                        "Class-D1 parity test missing required method(s): "
+                        + ", ".join(missing_methods),
+                    )
+                )
+            continue
+        if normalized_template == "D2":
+            missing_methods = sorted(CLASS_D2_REQUIRED_METHODS - _method_names(class_node))
+            if missing_methods:
+                violations.append(
+                    Violation(
+                        path,
+                        class_node.lineno,
+                        "Class-D2 parity test missing required method(s): "
+                        + ", ".join(missing_methods),
+                    )
+                )
+            continue
+        if normalized_template != "A":
             violations.append(
                 Violation(
                     path,
                     class_node.lineno,
-                    "Story 7b.1 validator scaffold only enforces Class-A tests",
+                    "validator scaffold enforces only Class-A, Class-B, "
+                    "Class-C, Class-C+, Class-D1, and Class-D2 tests",
                 )
             )
             continue

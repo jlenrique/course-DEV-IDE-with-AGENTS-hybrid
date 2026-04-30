@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import inspect
 import json
+from pathlib import Path
 from typing import Any
 
 import pytest
@@ -9,11 +10,29 @@ import pytest
 from app.models.state.cache_state import CacheState
 from app.models.state.model_resolution_entry import ModelResolutionEntry
 from app.models.state.run_state import RunState
-from app.specialists.wanda.graph import WandaAudioParseError, _act, _parse_wanda_audio
-from app.specialists.wanda.wondercraft_dispatch import WondercraftDispatchError
+from app.specialists.wanda import _act as wanda_act
+from app.specialists.wanda.graph import _act
 
 
-def _build_state(cache_prefix: str) -> RunState:
+class FakeWondercraftClient:
+    def __init__(self) -> None:
+        self.calls: list[dict[str, Any]] = []
+
+    def check_connectivity(self) -> dict[str, Any]:
+        return {"reachable": True, "status_code": 200}
+
+    def generate_audio_bed(self, **kwargs: Any) -> dict[str, Any]:
+        self.calls.append(kwargs)
+        return {
+            "id": "wc-bed-001",
+            "url": "https://cdn.wondercraft.test/bed-focused-ambient.mp3",
+            "format": "mp3",
+            "audio_bytes": b"fake-mp3-bytes",
+            "cost_usd": 0.12,
+        }
+
+
+def _build_state(payload: dict[str, Any]) -> RunState:
     return RunState(
         graph_version="v0.1-stub",
         temperature=0.0,
@@ -27,134 +46,68 @@ def _build_state(cache_prefix: str) -> RunState:
                 cache_prefix_hash="c" * 64,
             )
         ],
-        cache_state=CacheState(cache_prefix=cache_prefix, entries_count=0),
+        cache_state=CacheState(cache_prefix=json.dumps(payload), entries_count=0),
     )
 
 
-def test_parse_wanda_audio_ok() -> None:
-    parsed = _parse_wanda_audio(
+def test_generate_audio_beds_writes_storyboard_scoped_bed(tmp_path: Path) -> None:
+    client = FakeWondercraftClient()
+    payload = {
+        "bundle_path": str(tmp_path),
+        "storyboard": {"audio_track": {"mood": "focused", "genre": "ambient"}},
+        "narration_manifest": {"segments": [{"text": "Explain the concept clearly."}]},
+    }
+
+    verdict = wanda_act.generate_audio_beds(payload, client=client)  # type: ignore[arg-type]
+
+    target = tmp_path / "assembly-bundle" / "audio" / "beds" / "bed-focused-ambient.mp3"
+    assert target.read_bytes() == b"fake-mp3-bytes"
+    assert client.calls[0]["mood"] == "focused"
+    assert verdict["gate_id"] == "G2"
+    assert verdict["storyboard_audio_track"]["beds"][0]["audio_path"] == str(target)
+    assert verdict["compositor_invocation"]["audio_bed_paths"] == [str(target)]
+
+
+def test_wanda_act_returns_audio_bed_receipt(tmp_path: Path) -> None:
+    client = FakeWondercraftClient()
+    state = _build_state(
         {
-            "capability": "CM",
-            "operation_payload": {"chapter_titles": ["Intro", "Body"]},
+            "bundle_path": str(tmp_path),
+            "audio_track": {"beds": [{"bed_id": "intro", "mood": "warm", "genre": "lofi"}]},
+            "script": "Narration text for the lesson.",
         }
     )
-    assert parsed["tag"] == "wanda_audio.parsed.ok"
 
-
-@pytest.mark.parametrize(
-    "raw,tag",
-    [
-        ("{bad", "wanda_audio.parsed.malformed"),
-        ("", "wanda_audio.parsed.empty"),
-        ("[]", "wanda_audio.parsed.wrong-type"),
-        ('{"operation_payload": {}}', "wanda_audio.parsed.missing-key"),
-        ('{"capability": "ZZ", "operation_payload": {}}', "wanda_audio.parsed.missing-key"),
-        ('{"capability": "EP", "operation_payload": []}', "wanda_audio.parsed.wrong-type"),
-    ],
-)
-def test_parse_wanda_audio_branch_errors(raw: str, tag: str) -> None:
-    with pytest.raises(WandaAudioParseError) as exc_info:
-        _parse_wanda_audio(raw)
-    assert exc_info.value.tag == tag
-
-
-def test_wanda_act_parse_failure_sets_two_sided_trail_tag(
-    monkeypatch: pytest.MonkeyPatch,
-) -> None:
-    class _Resp:
-        content = '{"capability":"ZZ","operation_payload":{}}'
-        usage_metadata = {"input_tokens": 1, "output_tokens": 1}
-
-    class _Chat:
-        def invoke(self, _: Any) -> _Resp:
-            return _Resp()
-
-    class _Handle:
-        chat = _Chat()
-
-    monkeypatch.setattr("app.specialists.wanda.graph.make_chat_model", lambda **_: _Handle())
-    state = _build_state(json.dumps({"brief": "x"}))
-    with pytest.raises(WandaAudioParseError) as exc_info:
-        _act(state)
-    assert exc_info.value.tag == "wanda_audio.parsed.missing-key"
-    assert state.model_resolution_trail[-1].reason == exc_info.value.tag
-
-
-def test_wanda_act_dispatch_failure_sets_two_sided_trail_tag(
-    monkeypatch: pytest.MonkeyPatch,
-) -> None:
-    class _Resp:
-        content = '{"capability":"EP","operation_payload":{"prompt":"x"}}'
-        usage_metadata = {"input_tokens": 1, "output_tokens": 1}
-
-    class _Chat:
-        def invoke(self, _: Any) -> _Resp:
-            return _Resp()
-
-    class _Handle:
-        chat = _Chat()
-
-    def _broken_dispatch(**_: Any) -> dict[str, Any]:
-        raise WondercraftDispatchError("boom", tag="wanda_audio.parsed.dispatch-failed")
-
-    monkeypatch.setattr("app.specialists.wanda.graph.make_chat_model", lambda **_: _Handle())
-    monkeypatch.setattr("app.specialists.wanda.graph.dispatch_to_wondercraft", _broken_dispatch)
-    state = _build_state(json.dumps({"brief": "x"}))
-    with pytest.raises(WondercraftDispatchError) as exc_info:
-        _act(state)
-    assert exc_info.value.tag == "wanda_audio.parsed.dispatch-failed"
-    assert state.model_resolution_trail[-1].reason == exc_info.value.tag
-
-
-def test_wanda_act_returns_audio_receipt(monkeypatch: pytest.MonkeyPatch) -> None:
-    class _Resp:
-        content = '{"capability":"CM","operation_payload":{"chapter_titles":["Intro"]}}'
-        usage_metadata = {"input_tokens": 10, "output_tokens": 6}
-
-    class _Chat:
-        def invoke(self, _: Any) -> _Resp:
-            return _Resp()
-
-    class _Handle:
-        chat = _Chat()
-
-    def _fake_dispatch(**_: Any) -> dict[str, Any]:
-        return {"capability": "CM", "receipt": {"status": "success", "chapter_markers": []}}
-
-    monkeypatch.setattr("app.specialists.wanda.graph.make_chat_model", lambda **_: _Handle())
-    monkeypatch.setattr("app.specialists.wanda.graph.dispatch_to_wondercraft", _fake_dispatch)
-    state = _build_state(json.dumps({"brief": "x"}))
-    update = _act(state)
+    update = wanda_act.act(state, client=client)  # type: ignore[arg-type]
     output = json.loads(update["cache_state"]["cache_prefix"])
-    assert output["wanda_audio"]["capability"] == "CM"
-    assert update["model_resolution_trail"][-1].reason == "wanda_audio.parsed.ok"
+
+    assert output["specialist_id"] == "wanda"
+    assert output["audio_beds"][0]["bed_id"] == "intro"
+    assert output["audio_beds"][0]["provider_id"] == "wc-bed-001"
+    assert update["model_resolution_trail"][-1].reason == "wondercraft.audio-bed.ok"
 
 
-@pytest.mark.llm_live
-def test_wanda_act_live_llm_smoke(monkeypatch: pytest.MonkeyPatch) -> None:
-    def _fake_dispatch(**_: Any) -> dict[str, Any]:
-        return {"capability": "CM", "receipt": {"status": "success", "chapter_markers": []}}
-
-    monkeypatch.setattr("app.specialists.wanda.graph.dispatch_to_wondercraft", _fake_dispatch)
-    state = _build_state(
-        json.dumps(
-            {
-                "script": "Podcast script draft",
-                "preferred_capability": "CM",
-            }
-        )
+def test_wanda_act_malformed_cache_prefix_sets_trail_tag() -> None:
+    state = RunState(
+        graph_version="v0.1-stub",
+        model_resolution_trail=[
+            ModelResolutionEntry(
+                level="per_specialist",
+                requested="gpt-5",
+                resolved="gpt-5",
+                reason="test",
+                timestamp="2026-01-01T00:00:00Z",
+            )
+        ],
+        cache_state=CacheState(cache_prefix="{bad", entries_count=0),
     )
-    try:
-        update = _act(state)
-    except WandaAudioParseError as exc:
-        if "model invocation failed" in str(exc):
-            pytest.skip("Wanda live model unavailable in this environment")
-        raise
-    output = json.loads(update["cache_state"]["cache_prefix"])
-    assert isinstance(output["wanda_audio"], dict)
+    with pytest.raises(wanda_act.WandaActError) as exc_info:
+        wanda_act.act(state, client=FakeWondercraftClient())  # type: ignore[arg-type]
+    assert exc_info.value.tag == "wondercraft.malformed"
+    assert state.model_resolution_trail[-1].reason == "wondercraft.malformed"
 
 
-def test_wanda_act_loc_budget() -> None:
+def test_graph_act_is_bounded_wrapper() -> None:
     source = inspect.getsource(_act)
     logical_lines = [line for line in source.splitlines() if line.strip()]
-    assert len(logical_lines) <= 120
+    assert len(logical_lines) <= 10

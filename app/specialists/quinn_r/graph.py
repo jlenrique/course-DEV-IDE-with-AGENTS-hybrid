@@ -16,6 +16,7 @@ from app.models.adapter import make_chat_model
 from app.models.state import specialist_summary_artifacts as specialist_summary_writer
 from app.models.state.model_resolution_entry import ModelResolutionEntry
 from app.models.state.run_state import RunState
+from app.specialists.quinn_r import _act as _quinn_r_act_impl
 from app.specialists.quinn_r.quality_control_dispatch import (
     run_postcomposition_validators,
     run_precomposition_validators,
@@ -36,7 +37,7 @@ TRANSITIONS: tuple[tuple[str, str], ...] = (
 )
 
 REPO_ROOT = Path(__file__).resolve().parents[3]
-SANCTUM_DIR = REPO_ROOT / "_bmad" / "memory" / "bmad-agent-quality-reviewer"
+SANCTUM_DIR = REPO_ROOT / "_bmad" / "memory" / "bmad-agent-quinn-r"
 QUINN_R_REFERENCES_DIR = REPO_ROOT / "skills" / "bmad-agent-quality-reviewer" / "references"
 QUINN_R_REFERENCES: tuple[str, ...] = (
     "feedback-format.md",
@@ -388,8 +389,16 @@ def _plan(state: RunState) -> dict[str, Any]:
     return {"model_resolution_trail": [*state.model_resolution_trail, handle.entry]}
 
 
+ModeMismatchError = _quinn_r_act_impl.ModeMismatchError
+WpmThresholdError = _quinn_r_act_impl.WpmThresholdError
+VttMonotonicityError = _quinn_r_act_impl.VttMonotonicityError
+CoverageGapError = _quinn_r_act_impl.CoverageGapError
+DurationCoherenceError = _quinn_r_act_impl.DurationCoherenceError
+run_g5_checks = _quinn_r_act_impl.run_g5_checks
+
+
 def _act(state: RunState) -> dict[str, Any]:
-    return _act_with_trail(state, _require_planned_state(state))
+    return _quinn_r_act_impl.act(state)
 
 
 def _verify(state: RunState) -> dict[str, Any]:

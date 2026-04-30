@@ -1,0 +1,10 @@
+request:
+  input_text: "Slide 1\n---\nSlide 2"
+  export_as: png
+response:
+  generation_id: gen-gary-fixture-a
+  exported_slide_paths:
+    - tests/fixtures/specialist-replay/gary/slide-01.png
+    - tests/fixtures/specialist-replay/gary/slide-02.png
+theme:
+  id: theme-clean-grid

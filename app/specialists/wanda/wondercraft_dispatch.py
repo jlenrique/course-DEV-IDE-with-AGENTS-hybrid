@@ -71,7 +71,8 @@ def _as_audio_summary_produce(
     voice_id = payload.get("voice_id")
     if not isinstance(voice_id, str) or not voice_id.strip():
         raise WondercraftDispatchError(
-            "AS requires non-empty voice_id (Wondercraft scripted-podcast endpoint requires per-segment voice_id)",
+            "AS requires non-empty voice_id "
+            "(Wondercraft scripted-podcast endpoint requires per-segment voice_id)",
             tag="wanda_audio.parsed.missing-key",
         )
     # Use the new list-of-segments form (preferred); the legacy string form

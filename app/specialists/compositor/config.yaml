@@ -1,0 +1,20 @@
+specialist_id: compositor
+class_template_id: D2
+pipeline:
+  determinism_target_rate: 0.99
+  iterations: 10
+  sync_visuals:
+    stills_dir: assembly-bundle/visuals
+    motion_dir: assembly-bundle/motion
+  assembly_guide:
+    file_name: DESCRIPT-ASSEMBLY-GUIDE.md
+    field_mask_path: docs/dev-guide/scaffolds/scaffold-v0.2-D2-pipeline/field-mask.yaml
+resource_budget:
+  cpu:
+    max_workers: 1
+    rationale: Deterministic byte-copy and guide rendering must remain ordered.
+  memory:
+    soft_limit_mb: 256
+    rationale: Expected assets are copied one file at a time.
+  api_rate_limit: not-applicable
+  third_party_credentials: not-applicable

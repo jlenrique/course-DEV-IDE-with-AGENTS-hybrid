@@ -34,16 +34,18 @@ def test_writer_emits_for_irene_completion(tmp_path) -> None:
     assert "specialist_id: irene" in path.read_text(encoding="utf-8")
 
 
-def test_deferred_specialist_emits_noop_marker(tmp_path) -> None:
+def test_compositor_specialist_emits_active_summary(tmp_path) -> None:
     path = writer.emit_summary(
-        specialist_id="dan",
+        specialist_id="compositor",
         trial_id=TRIAL_ID,
         gate_id="G3",
         runs_root=tmp_path,
         timestamp_utc=datetime(2026, 4, 29, 2, tzinfo=UTC),
     )
 
-    assert "<deferred per Slab 7b roadmap>" in path.read_text(encoding="utf-8")
+    text = path.read_text(encoding="utf-8")
+    assert "specialist_id: compositor" in text
+    assert "deferred: false" in text
 
 
 def test_timestamp_is_iso_utc_in_summary_header(tmp_path) -> None:

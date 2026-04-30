@@ -195,7 +195,7 @@ nodes:
 
   - id: "04A"
     label: "Lesson Plan Coauthoring + Scope Lock (Marcus <-> HIL)"
-    specialist_id: "irene"
+    specialist_id: "irene-pass1"
     scaffold_node: "act"
     model_config_ref: null
     dependencies:
@@ -260,7 +260,7 @@ nodes:
 
   - id: "05"
     label: "Irene Pass 1 + Gate 1 Fidelity"
-    specialist_id: "irene"
+    specialist_id: "irene-pass1"
     scaffold_node: "act"
     model_config_ref: null
     gate: true
@@ -274,7 +274,7 @@ nodes:
 
   - id: "05B"
     label: "Cluster Plan G1.5 Gate"
-    specialist_id: "irene"
+    specialist_id: "irene-pass1"
     scaffold_node: "act"
     model_config_ref: null
     gate: true

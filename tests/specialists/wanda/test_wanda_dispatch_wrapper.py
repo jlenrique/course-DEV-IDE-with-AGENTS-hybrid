@@ -34,14 +34,14 @@ class _FakeClient:
         self,
         *,
         title: str,
-        script: str,
+        script_segments: list[dict[str, str]] | str,
         voice_id: str | None = None,
     ) -> dict[str, Any]:
         return {
             "status": "success",
             "route": "AS",
             "title": title,
-            "script": script,
+            "script_segments": script_segments,
             "voice_id": voice_id,
         }
 

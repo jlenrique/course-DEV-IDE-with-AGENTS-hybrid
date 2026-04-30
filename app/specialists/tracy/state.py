@@ -37,6 +37,10 @@ class TracyReturn(SpecialistReturn):
         default=None,
         description="Suggested resources manifest produced by Tracy.",
     )
+    retrieval_intents: list[dict[str, Any]] | None = Field(
+        default=None,
+        description="Texas-compatible RetrievalIntent objects emitted by Tracy.",
+    )
 
     @model_validator(mode="after")
     def _pin_specialist_id(self) -> TracyReturn:

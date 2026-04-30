@@ -12,7 +12,7 @@ from app.specialists.vera.graph import (
 )
 
 VERA_SANCTUM_LOCK_BASELINE_SHA256 = (
-    "7e5928c4f6f654b5d7f1882946e8f2eb0b6e79696f4e175f95f0e1d87f530ed2"
+    "63480516193a92f36c4f0e94ed170bf240b8f0356facd591080b4d094f607507"
 )
 
 

@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import hashlib
+import importlib
 import json
 import os
 import time
@@ -8,8 +9,6 @@ from pathlib import Path
 from typing import Any
 
 import pytest
-
-from scripts.api_clients.wondercraft_client import WondercraftClient
 
 REPO_ROOT = Path(__file__).resolve().parents[3]
 ARTIFACT_DIR = (
@@ -43,7 +42,7 @@ def _find_value(data: Any, keys: set[str]) -> Any:
     return None
 
 
-def _download_artifact(client: WondercraftClient, url: str) -> bytes:
+def _download_artifact(client: Any, url: str) -> bytes:
     if url.startswith("http://") or url.startswith("https://"):
         response = client.session.get(url, timeout=60)
     else:
@@ -58,14 +57,15 @@ def _download_artifact(client: WondercraftClient, url: str) -> bytes:
     reason="WONDERCRAFT_API_KEY absent; live API test deferred to operator window",
 )
 def test_wanda_live_artifact_via_create_scripted_podcast() -> None:
-    client = WondercraftClient()
+    module = importlib.import_module("scripts.api_clients.wondercraft_client")
+    client = module.WondercraftClient()
     connectivity = client.check_connectivity()
     assert connectivity["reachable"] is True
 
     started = time.perf_counter()
     created = client.create_scripted_podcast(
         title="Wanda 2c.2 Production Check",
-        script=SCRIPT,
+        script_segments=SCRIPT,
         voice_id=os.environ.get("WONDERCRAFT_VOICE_ID"),
     )
     job_id = _find_value(created, {"job_id", "jobId", "id"})

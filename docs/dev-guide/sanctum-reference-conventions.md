@@ -20,6 +20,7 @@ Sanctum directories live at `_bmad/memory/bmad-agent-<skill-dir-name>/`, where `
 | `gary` | `skills/bmad-agent-gamma/` (TBD per Slab-2b authoring) | `_bmad/memory/bmad-agent-gamma/` |
 | `kira` | `skills/bmad-agent-kling/` | `_bmad/memory/bmad-agent-kling/` |
 | `texas` | `skills/bmad-agent-texas/` | `_bmad/memory/bmad-agent-texas/` |
+| `tracy` | `skills/bmad-agent-tracy/` | `_bmad/memory/bmad-agent-tracy/` |
 
 **Drift caught at Story 2a.2:** Epic 2a.2 line 581 said the sanctum was at `_bmad/memory/bmad-agent-irene/`. The actual hybrid path is `_bmad/memory/bmad-agent-content-creator/`. Per CLAUDE.md §Custom-agents and Epic-26 BMB-sanctum-migration, hybrid uses **direct directory** (not symlink). The framework wins per DR-1 GOLDEN ratification — the spec yields to code on conflict. See [`specialist-anti-patterns.md` §A11](./specialist-anti-patterns.md) for the harvested entry.
 
@@ -30,6 +31,21 @@ Sanctum directories live at `_bmad/memory/bmad-agent-<skill-dir-name>/`, where `
 Each migrated specialist's `app/specialists/<name>/expertise/README.md` lists sanctum L-tier references by **dotted-reference convention**: a markdown table with `Dotted reference | Source-tree path | Pass-N step` columns. The sanctum directory itself does not duplicate the reference content; instead it carries the operator-curated continuity files (BOND, CREED, INDEX, MEMORY, PERSONA, etc.) populated at first-breath ceremony.
 
 References are loaded as text into the LLM-invoking node (typically `_act`) at runtime via deterministic file reads — file order is fixed (alphabetical), missing files emit a deterministic placeholder so prompt shape is invariant across environments. See `app/specialists/irene/graph.py::_read_pass_2_references` for the canonical implementation.
+
+### Class-C+ four-file sidecar pattern
+
+Story 7b.5 establishes Tracy as the Class-C+ seed exemplar. Class-C+ sanctum
+directories use a four-file BMB pattern:
+
+- `INDEX.md`
+- `PERSONA.md`
+- `chronology.md`
+- `access-boundaries.md`
+
+This is intentionally distinct from the Class-A six-file BMB pattern
+(`INDEX.md`, `PERSONA.md`, `CREED.md`, `BOND.md`, `MEMORY.md`,
+`CAPABILITIES.md`). Class-C+ port-shape roles carry lighter continuity and
+focus on activation-time intent shaping plus access boundaries.
 
 ---
 

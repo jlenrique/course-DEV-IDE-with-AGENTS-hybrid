@@ -16,26 +16,14 @@ from app.models.adapter import make_chat_model
 from app.models.state import specialist_summary_artifacts as specialist_summary_writer
 from app.models.state.model_resolution_entry import ModelResolutionEntry
 from app.models.state.run_state import RunState
-from app.specialists.gary.gamma_dispatch import GammaDispatchError, dispatch_to_gamma
+from app.specialists.gary import _act as _gary_act_impl
+from app.specialists.gary.gamma_dispatch import dispatch_to_gamma
 from tests.integration.scaffold_conformance.scaffold_contract import SCAFFOLD_NODE_IDS
 
 REPO_ROOT = Path(__file__).resolve().parents[3]
-SANCTUM_DIR = REPO_ROOT / "_bmad" / "memory" / "bmad-agent-gamma"
-GARY_REFERENCES_DIR = REPO_ROOT / "skills" / "bmad-agent-gamma" / "references"
-GARY_REFERENCES: tuple[str, ...] = (
-    "content-type-mapping.md",
-    "context-envelope-schema.md",
-    "exemplar-study.md",
-    "init.md",
-    "interstitial-visual-constraints.md",
-    "memory-system.md",
-    "parameter-recommendation.md",
-    "quality-assessment.md",
-    "save-memory.md",
-    "style-guide-integration.md",
-    "style-preset-library.md",
-    "theme-template-preview.md",
-)
+SANCTUM_DIR = _gary_act_impl.SANCTUM_DIR
+GARY_REFERENCES_DIR = _gary_act_impl.REFERENCES_DIR
+GARY_REFERENCES = _gary_act_impl.GARY_REFERENCES
 
 TRANSITIONS: tuple[tuple[str, str], ...] = (
     ("receive", "plan"),
@@ -93,13 +81,8 @@ def _read_gary_references(
     references_dir: Path = GARY_REFERENCES_DIR,
     names: tuple[str, ...] = GARY_REFERENCES,
 ) -> str:
-    parts: list[str] = []
-    for name in names:
-        path = references_dir / name
-        header = f"### Reference: {name}\n"
-        body = path.read_text(encoding="utf-8") if path.is_file() else f"<missing: {name}>"
-        parts.append(header + body)
-    return "\n\n".join(parts)
+    del references_dir, names
+    return _gary_act_impl.read_references()
 
 
 def _decode_envelope_payload(state: RunState) -> dict[str, Any]:
@@ -197,55 +180,8 @@ def _plan(state: RunState) -> dict[str, Any]:
 
 
 def _act(state: RunState) -> dict[str, Any]:
-    if not state.model_resolution_trail:
-        raise RuntimeError("gary act invoked before plan; resolution trail is empty")
-    last_entry = state.model_resolution_trail[-1]
-    if last_entry.cache_prefix_hash is None:
-        raise RuntimeError(
-            "gary act expected final plan resolution entry with cache_prefix_hash"
-        )
-
-    envelope_payload = _decode_envelope_payload(state)
-    try:
-        dispatch_receipt = dispatch_to_gamma(
-            directive_path=envelope_payload.get("directive_path"),
-            export_dir=envelope_payload.get("export_dir"),
-        )
-        parsed = _parse_dispatch_receipt(dispatch_receipt)
-    except GammaDispatchError as exc:
-        state.model_resolution_trail.append(
-            _new_dispatch_trail_entry(last_entry, tag=exc.tag)
-        )
-        raise
-    except ReceiptParseError as exc:
-        state.model_resolution_trail.append(
-            _new_dispatch_trail_entry(last_entry, tag=exc.tag)
-        )
-        raise
-
-    trail_entry = _new_dispatch_trail_entry(last_entry, tag=parsed["tag"])
-    output_blob = json.dumps(
-        {
-            "generation_id": parsed["generation_id"],
-            "status": parsed["status"],
-            "gary_slide_output": parsed["gary_slide_output"],
-            "export_path": parsed.get("export_path"),
-            "model_id": last_entry.resolved,
-        },
-        sort_keys=True,
-        ensure_ascii=True,
-        separators=(",", ":"),
-        default=str,
-    )
-    return {
-        "model_resolution_trail": [*state.model_resolution_trail, trail_entry],
-        "cache_state": {
-            "cache_prefix": output_blob,
-            "entries_count": (state.cache_state.entries_count + 1)
-            if state.cache_state is not None
-            else 1,
-        },
-    }
+    _gary_act_impl.dispatch_to_gamma = dispatch_to_gamma
+    return _gary_act_impl.act(state)
 
 
 def _verify(state: RunState) -> dict[str, Any]:
@@ -261,7 +197,7 @@ def _reflect(state: RunState) -> dict[str, Any]:
 
 
 def _emit_spans(state: RunState) -> dict[str, Any]:
-    return specialist_summary_writer.emit_summary_for_state("gary", state)
+    return specialist_summary_writer.emit_summary_for_state("gary", state, gate_id="G2B")
 
 
 def _gate_decision(state: RunState) -> dict[str, Any]:
@@ -317,4 +253,5 @@ __all__ = [
     "_read_gary_references",
     "_read_sanctum_digest",
     "build_gary_graph",
+    "dispatch_to_gamma",
 ]

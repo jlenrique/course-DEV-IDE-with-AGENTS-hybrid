@@ -167,26 +167,86 @@ class TestKiraSkillMdSanctumAlignment(SanctumParityTestBase):
         self.cold_activation_smoke()
 
 
-class TestTracySkillMdSanctumAlignment(SanctumParityTestBase):
-    specialist_name = "tracy"
-    class_template_id = "C+"
+class TestEnriqueSkillMdSanctumAlignment(SanctumParityTestBase):
+    specialist_name = "enrique"
+    class_template_id = "C"
 
     def cold_activation_smoke(self) -> None:
-        from app.specialists.tracy.graph import build_tracy_graph
+        from app.specialists.enrique.graph import build_enrique_graph
 
-        assert build_tracy_graph().nodes
+        assert build_enrique_graph().nodes
 
-    def test_tracy_skill_md_has_minimal_frontmatter(self) -> None:
+    def test_enrique_skill_md_has_minimal_frontmatter(self) -> None:
         self.assert_skill_md_minimal_frontmatter()
 
-    def test_tracy_sanctum_has_four_file_bmb_pattern(self) -> None:
+    def test_enrique_sanctum_has_six_file_bmb_pattern(self) -> None:
+        self.assert_sanctum_path_equality()
+
+    def test_enrique_cold_activation_smoke(self) -> None:
+        self.cold_activation_smoke()
+
+
+class TestWandaSkillMdSanctumAlignment(SanctumParityTestBase):
+    specialist_name = "wanda"
+    class_template_id = "C"
+
+    def cold_activation_smoke(self) -> None:
+        from app.specialists.wanda.graph import build_wanda_graph
+
+        assert build_wanda_graph().nodes
+
+    def test_wanda_skill_md_has_minimal_frontmatter(self) -> None:
+        self.assert_skill_md_minimal_frontmatter()
+
+    def test_wanda_sanctum_has_six_file_bmb_pattern(self) -> None:
+        self.assert_sanctum_path_equality()
+
+    def test_wanda_cold_activation_smoke(self) -> None:
+        self.cold_activation_smoke()
+
+
+class TestDanSkillMdSanctumAlignment(SanctumParityTestBase):
+    specialist_name = "dan"
+    class_template_id = "D1"
+
+    def cold_activation_smoke(self) -> None:
+        from app.specialists.dan.graph import build_dan_graph
+
+        assert build_dan_graph().nodes
+
+    def test_dan_skill_md_has_minimal_frontmatter(self) -> None:
+        self.assert_skill_md_minimal_frontmatter()
+
+    def test_dan_sanctum_has_six_file_bmb_pattern(self) -> None:
+        self.assert_sanctum_path_equality()
+
+    def test_dan_cold_activation_smoke(self) -> None:
+        self.cold_activation_smoke()
+
+
+class TestCompositorSkillMdSanctumAlignment(SanctumParityTestBase):
+    specialist_name = "compositor"
+    class_template_id = "D2"
+
+    def _skill_md_path(self) -> Path:
+        return REPO_ROOT / "skills" / "compositor" / "SKILL.md"
+
+    def cold_activation_smoke(self) -> None:
+        from app.specialists.compositor.graph import build_compositor_graph
+
+        assert build_compositor_graph().nodes
+
+    def test_compositor_skill_md_has_minimal_frontmatter(self) -> None:
+        self.assert_skill_md_minimal_frontmatter()
+
+    def test_compositor_sidecar_has_four_file_operational_pattern(self) -> None:
         names = sorted(path.name for path in self._sanctum_dir().iterdir())
         assert names == [
-            "INDEX.md",
-            "PERSONA.md",
             "access-boundaries.md",
             "chronology.md",
+            "contract.md",
+            "version.md",
         ]
 
-    def test_tracy_cold_activation_smoke(self) -> None:
+    def test_compositor_cold_activation_smoke(self) -> None:
         self.cold_activation_smoke()

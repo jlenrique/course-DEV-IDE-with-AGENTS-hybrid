@@ -1,0 +1,5 @@
+rate_limit_per_minute: 8
+daily_budget_usd: 5.00
+per_invocation_cap_usd: 0.40
+default_bed_format: mp3
+default_duration_seconds: 30

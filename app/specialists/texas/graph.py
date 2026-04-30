@@ -17,6 +17,7 @@ from app.models.adapter import make_chat_model
 from app.models.state import specialist_summary_artifacts as specialist_summary_writer
 from app.models.state.model_resolution_entry import ModelResolutionEntry
 from app.models.state.run_state import RunState
+from app.specialists.texas import _act as _texas_act_impl
 from app.specialists.texas.retrieval_dispatch import dispatch_retrieval
 from tests.integration.scaffold_conformance.scaffold_contract import SCAFFOLD_NODE_IDS
 
@@ -105,32 +106,6 @@ class SanctumLockViolation(RuntimeError):  # noqa: N818
     """Raised when the populated sanctum lock baseline drifts."""
 
 
-class BundleParseError(RuntimeError):  # noqa: N818
-    """Raised when Texas's six-artifact bundle cannot be parsed.
-
-    Carries a `tag` attribute drawn from the canonical `bundle.parsed.*`
-    namespace so callers (and tests) can assert two-sidedly: parser shape AND
-    the resolution-trail tag that classifies the failure (Murat M5 rider).
-    """
-
-    def __init__(self, message: str, *, tag: str) -> None:
-        super().__init__(message)
-        self.tag = tag
-
-
-class BundleDispatchError(RuntimeError):  # noqa: N818
-    """Raised when the wrangler subprocess dispatch surfaces a hard error.
-
-    Distinguished from `BundleParseError` because the runner reports the
-    failure (exit code 30 / unknown non-zero) before any bundle artifact has
-    been parsed. Carries a `tag` attribute for two-sided assertions.
-    """
-
-    def __init__(self, message: str, *, tag: str) -> None:
-        super().__init__(message)
-        self.tag = tag
-
-
 def _new_dispatch_trail_entry(
     last_entry: ModelResolutionEntry, *, tag: str
 ) -> ModelResolutionEntry:
@@ -214,64 +189,6 @@ def _read_texas_references(
     return "\n\n".join(parts)
 
 
-def _load_bundle_outputs(bundle_dir: Path) -> dict[str, Any]:
-    result_path = bundle_dir / "result.yaml"
-    report_path = bundle_dir / "extraction-report.yaml"
-    if not result_path.is_file():
-        raise BundleParseError(
-            f"missing bundle artifact: {result_path.as_posix()}",
-            tag="bundle.parsed.missing-key",
-        )
-    if not report_path.is_file():
-        raise BundleParseError(
-            f"missing bundle artifact: {report_path.as_posix()}",
-            tag="bundle.parsed.missing-key",
-        )
-    try:
-        result_payload = yaml.safe_load(result_path.read_text(encoding="utf-8")) or {}
-    except yaml.YAMLError as exc:
-        raise BundleParseError(
-            f"invalid result.yaml content: {exc}",
-            tag="bundle.parsed.malformed",
-        ) from exc
-    try:
-        report_payload = yaml.safe_load(report_path.read_text(encoding="utf-8")) or {}
-    except yaml.YAMLError as exc:
-        raise BundleParseError(
-            f"invalid extraction-report.yaml content: {exc}",
-            tag="bundle.parsed.malformed",
-        ) from exc
-    if not isinstance(result_payload, dict):
-        raise BundleParseError(
-            "result.yaml must parse to a mapping",
-            tag="bundle.parsed.wrong-type",
-        )
-    if not isinstance(report_payload, dict):
-        raise BundleParseError(
-            "extraction-report.yaml must parse to a mapping",
-            tag="bundle.parsed.wrong-type",
-        )
-    status = str(result_payload.get("status") or "").strip()
-    if not status:
-        raise BundleParseError(
-            "result.yaml missing non-empty status",
-            tag="bundle.parsed.empty",
-        )
-    overall_status = str(report_payload.get("overall_status") or "").strip()
-    if not overall_status:
-        raise BundleParseError(
-            "extraction-report.yaml missing non-empty overall_status",
-            tag="bundle.parsed.empty",
-        )
-    return {
-        "result": result_payload,
-        "report": report_payload,
-        "status": status,
-        "overall_status": overall_status,
-        "tag": "bundle.parsed.ok",
-    }
-
-
 def _receive(state: RunState) -> dict[str, Any]:
     del state
     return {}
@@ -313,102 +230,14 @@ def _decode_envelope_payload(state: RunState) -> dict[str, Any]:
     return decoded
 
 
+BundleDispatchError = _texas_act_impl.BundleDispatchError
+BundleParseError = _texas_act_impl.BundleParseError
+RetrievalScopeError = _texas_act_impl.RetrievalScopeError
+_load_bundle_outputs = _texas_act_impl.load_bundle_outputs
+
+
 def _act(state: RunState) -> dict[str, Any]:
-    if not state.model_resolution_trail:
-        raise RuntimeError("texas act invoked before plan; resolution trail is empty")
-    last_entry = state.model_resolution_trail[-1]
-    if last_entry.cache_prefix_hash is None:
-        raise RuntimeError(
-            "texas act expected final plan resolution entry with cache_prefix_hash"
-        )
-    envelope_payload = _decode_envelope_payload(state)
-    dispatch_receipt = dispatch_retrieval(
-        directive_path=envelope_payload.get("directive_path"),
-        bundle_dir=envelope_payload.get("bundle_dir"),
-    )
-    bundle_path = dispatch_receipt.get("bundle_dir")
-    if not bundle_path:
-        raise BundleDispatchError(
-            "texas dispatch receipt missing bundle_dir",
-            tag="bundle.parsed.missing-key",
-        )
-    bundle_dir = Path(str(bundle_path))
-    exit_code = int(dispatch_receipt.get("exit_code") or 0)
-    if exit_code == 30:
-        raise BundleDispatchError(
-            "texas wrangler reported hard error (exit 30); bundle not trusted",
-            tag="bundle.parsed.exit-30",
-        )
-    if exit_code not in (0, 10):
-        raise BundleDispatchError(
-            f"texas wrangler returned unexpected exit code {exit_code}",
-            tag="bundle.parsed.unknown-exit",
-        )
-    if exit_code == 10:
-        # Graceful degrade: wrangler ran cleanly but found no results. Trail
-        # records the outcome; downstream nodes can branch on bundle_reference
-        # being absent.
-        trail_entry = _new_dispatch_trail_entry(last_entry, tag="bundle.parsed.exit-10")
-        output_blob = json.dumps(
-            {
-                "bundle_reference": None,
-                "status": "no-results",
-                "overall_status": "no-results",
-                "artifacts": [],
-                "report_schema_version": None,
-                "dispatch_exit_code": exit_code,
-                "model_id": last_entry.resolved,
-            },
-            sort_keys=True,
-            ensure_ascii=True,
-            separators=(",", ":"),
-            default=str,
-        )
-        return {
-            "model_resolution_trail": [*state.model_resolution_trail, trail_entry],
-            "cache_state": {
-                "cache_prefix": output_blob,
-                "entries_count": (state.cache_state.entries_count + 1)
-                if state.cache_state is not None
-                else 1,
-            },
-        }
-    try:
-        parsed = _load_bundle_outputs(bundle_dir)
-    except BundleParseError as exc:
-        # Mutate the trail in-place so the test assertion (exception side) and
-        # the trail-tag side (state side) are both observable. List append on a
-        # Pydantic field with `validate_assignment=True` is allowed because we
-        # mutate the existing list rather than rebinding the attribute.
-        state.model_resolution_trail.append(
-            _new_dispatch_trail_entry(last_entry, tag=exc.tag)
-        )
-        raise
-    trail_entry = _new_dispatch_trail_entry(last_entry, tag=parsed["tag"])
-    output_blob = json.dumps(
-        {
-            "bundle_reference": str(bundle_dir),
-            "status": parsed["status"],
-            "overall_status": parsed["overall_status"],
-            "artifacts": parsed["result"].get("artifacts", []),
-            "report_schema_version": parsed["report"].get("schema_version"),
-            "dispatch_exit_code": exit_code,
-            "model_id": last_entry.resolved,
-        },
-        sort_keys=True,
-        ensure_ascii=True,
-        separators=(",", ":"),
-        default=str,
-    )
-    return {
-        "model_resolution_trail": [*state.model_resolution_trail, trail_entry],
-        "cache_state": {
-            "cache_prefix": output_blob,
-            "entries_count": (state.cache_state.entries_count + 1)
-            if state.cache_state is not None
-            else 1,
-        },
-    }
+    return _texas_act_impl.act(state, dispatch_func=dispatch_retrieval)
 
 
 def _verify(state: RunState) -> dict[str, Any]:
@@ -470,6 +299,7 @@ def build_texas_graph() -> StateGraph:
 __all__ = [
     "BundleDispatchError",
     "BundleParseError",
+    "RetrievalScopeError",
     "SanctumLockViolation",
     "TEXAS_REFERENCES",
     "TEXAS_SANCTUM_LOCK_BASELINE",

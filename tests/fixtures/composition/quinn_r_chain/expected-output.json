@@ -1,0 +1,10 @@
+{
+  "downstream_consumer": "marcus-gate-runner",
+  "gate_id": "G2C",
+  "quinn_r_output": {
+    "artifact": "authorized-storyboard.json",
+    "mode": "pre-composition",
+    "status": "approved"
+  },
+  "upstream_specialist": "directive-composer"
+}

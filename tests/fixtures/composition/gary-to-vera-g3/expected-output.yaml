@@ -1,0 +1,16 @@
+upstream: gary
+downstream: vera
+gate_id: G3
+gary_slide_output:
+  - slide_id: slide-01
+    card_number: 1
+    file_path: tests/fixtures/specialist-replay/gary/slide-01.png
+  - slide_id: slide-02
+    card_number: 2
+    file_path: tests/fixtures/specialist-replay/gary/slide-02.png
+vera_g3_invocation:
+  specialist_id: vera
+  gate_id: G3
+  artifact_paths:
+    - tests/fixtures/specialist-replay/gary/slide-01.png
+    - tests/fixtures/specialist-replay/gary/slide-02.png

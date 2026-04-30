@@ -1,0 +1,6 @@
+request:
+  method: POST
+  uri: https://api.elevenlabs.io/v1/text-to-speech/voice-a
+response:
+  status: 200
+  body: fixture-mp3-bytes

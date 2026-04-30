@@ -40,6 +40,7 @@ from app.models.specialist_model_config import SpecialistModelConfig
 from app.models.state.run_state import RunState
 
 SPECIALIST_ALIASES: dict[str, str] = {
+    "irene-pass1": "irene_pass1",
     "quinn-r": "quinn_r",
     "elevenlabs": "enrique",
 }

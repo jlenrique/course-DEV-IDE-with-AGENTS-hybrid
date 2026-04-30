@@ -1,0 +1,12 @@
+request:
+  method: GET
+  uri: https://api.elevenlabs.io/v1/voices
+response:
+  status: 200
+  body:
+    voices:
+      - voice_id: voice-a
+        name: Alicia
+        preview_url: https://cdn.eleven.test/a.mp3
+        labels:
+          tone: warm

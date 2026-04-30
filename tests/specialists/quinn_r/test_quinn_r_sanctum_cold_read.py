@@ -12,7 +12,7 @@ from app.specialists.quinn_r.graph import (
 )
 
 QUINN_R_SANCTUM_LOCK_BASELINE_SHA256 = (
-    "3fc130f5b4c489f83f983b5b1be7ab20fbc108560f2f1b8c3bf6c4d1a5d16b1f"
+    "a8938376d98d26f2c5c3677d153e567ecdd4737ac1cb2c656849003dab462ffc"
 )
 
 

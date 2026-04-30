@@ -16,11 +16,12 @@ from app.models.adapter import make_chat_model
 from app.models.state import specialist_summary_artifacts as specialist_summary_writer
 from app.models.state.model_resolution_entry import ModelResolutionEntry
 from app.models.state.run_state import RunState
+from app.specialists.vera import _act as _vera_act_impl
 from app.specialists.vera.sensory_bridges_dispatch import dispatch_to_sensory_bridges
 from tests.integration.scaffold_conformance.scaffold_contract import SCAFFOLD_NODE_IDS
 
 REPO_ROOT = Path(__file__).resolve().parents[3]
-SANCTUM_DIR = REPO_ROOT / "_bmad" / "memory" / "bmad-agent-fidelity-assessor"
+SANCTUM_DIR = REPO_ROOT / "_bmad" / "memory" / "bmad-agent-vera"
 VERA_REFERENCES_DIR = REPO_ROOT / "skills" / "bmad-agent-fidelity-assessor" / "references"
 VERA_REFERENCES: tuple[str, ...] = (
     "context-envelope-schema.md",
@@ -46,14 +47,6 @@ VERA_SYSTEM_MESSAGE = (
     "You are Vera, a fidelity assessor. Return only JSON with keys: "
     "status, severity, summary, findings."
 )
-
-
-class FTRParseError(RuntimeError):  # noqa: N818
-    """Raised when Vera's Fidelity Trace Report cannot be parsed."""
-
-    def __init__(self, message: str, *, tag: str) -> None:
-        super().__init__(message)
-        self.tag = tag
 
 
 def _new_dispatch_trail_entry(
@@ -242,91 +235,12 @@ def _plan(state: RunState) -> dict[str, Any]:
     return {"model_resolution_trail": [*state.model_resolution_trail, handle.entry]}
 
 
+FTRParseError = _vera_act_impl.FTRParseError
+_parse_ftr = _vera_act_impl._parse_ftr
+
+
 def _act(state: RunState) -> dict[str, Any]:
-    if not state.model_resolution_trail:
-        raise RuntimeError("vera act invoked before plan; resolution trail is empty")
-    last_entry = state.model_resolution_trail[-1]
-    if last_entry.cache_prefix_hash is None:
-        raise RuntimeError("vera act expected final plan resolution entry with cache_prefix_hash")
-
-    try:
-        envelope_payload = _decode_envelope_payload(state)
-    except FTRParseError as exc:
-        state.model_resolution_trail.append(
-            _new_dispatch_trail_entry(last_entry, tag=exc.tag)
-        )
-        raise
-
-    try:
-        perception = dispatch_to_sensory_bridges(
-            artifact_path=envelope_payload.get("artifact_path"),
-            source_of_truth_path=envelope_payload.get("source_of_truth_path"),
-            modality=str(envelope_payload.get("modality") or "image"),
-            gate=str(envelope_payload.get("gate") or "fidelity"),
-        )
-    except Exception as exc:
-        error = FTRParseError(
-            "vera sensory dispatch failed",
-            tag="ftr.parsed.contract-failure",
-        )
-        state.model_resolution_trail.append(
-            _new_dispatch_trail_entry(last_entry, tag=error.tag)
-        )
-        raise error from exc
-    system_message, user_message = _assemble_vera_prompt(envelope_payload, perception)
-    try:
-        handle = make_chat_model(
-            specialist_id="vera",
-            temperature=state.temperature,
-            tier_request="reasoning",
-            system_prompt_hash=last_entry.cache_prefix_hash,
-        )
-        response = handle.chat.invoke(
-            [
-                {"role": "system", "content": system_message},
-                {"role": "user", "content": user_message},
-            ]
-        )
-    except Exception as exc:
-        error = FTRParseError(
-            "vera model invocation failed",
-            tag="ftr.parsed.contract-failure",
-        )
-        state.model_resolution_trail.append(
-            _new_dispatch_trail_entry(last_entry, tag=error.tag)
-        )
-        raise error from exc
-    raw_content = response.content if hasattr(response, "content") else str(response)
-    raw_text = raw_content if isinstance(raw_content, str) else str(raw_content)
-    try:
-        parsed = _parse_ftr(raw_text)
-    except FTRParseError as exc:
-        state.model_resolution_trail.append(
-            _new_dispatch_trail_entry(last_entry, tag=exc.tag)
-        )
-        raise
-    trail_entry = _new_dispatch_trail_entry(last_entry, tag="ftr.parsed.ok")
-    output_blob = json.dumps(
-        {
-            "vera_finding": parsed,
-            "perception": perception,
-            "model_id": last_entry.resolved,
-            "usage": getattr(response, "usage_metadata", None),
-        },
-        sort_keys=True,
-        ensure_ascii=True,
-        separators=(",", ":"),
-        default=str,
-    )
-    return {
-        "model_resolution_trail": [*state.model_resolution_trail, trail_entry],
-        "cache_state": {
-            "cache_prefix": output_blob,
-            "entries_count": (state.cache_state.entries_count + 1)
-            if state.cache_state is not None
-            else 1,
-        }
-    }
+    return _vera_act_impl.act(state, dispatch_func=dispatch_to_sensory_bridges)
 
 
 def _verify(state: RunState) -> dict[str, Any]:

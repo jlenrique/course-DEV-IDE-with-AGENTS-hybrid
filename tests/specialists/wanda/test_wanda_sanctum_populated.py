@@ -8,9 +8,10 @@ from app.specialists.wanda.graph import SANCTUM_DIR, _read_sanctum_digest
 EXPECTED_SANCTUM_FILES = (
     "INDEX.md",
     "PERSONA.md",
-    "access-boundaries.md",
-    "chronology.md",
-    "L6-operational/wondercraft-context.md",
+    "CREED.md",
+    "BOND.md",
+    "MEMORY.md",
+    "CAPABILITIES.md",
 )
 
 
@@ -36,8 +37,8 @@ def test_sanctum_digest_nonempty_post_population() -> None:
 
 
 def test_sanctum_digest_deterministic_under_crlf(tmp_path: Path) -> None:
-    crlf_dir = tmp_path / "wanda-sidecar"
-    lf_dir = tmp_path / "wanda-sidecar-lf"
+    crlf_dir = tmp_path / "bmad-agent-wanda"
+    lf_dir = tmp_path / "bmad-agent-wanda-lf"
     crlf_dir.mkdir()
     lf_dir.mkdir()
     (crlf_dir / "PERSONA.md").write_bytes(b"# Wanda\r\n\r\nline\r\n")

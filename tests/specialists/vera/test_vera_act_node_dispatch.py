@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import inspect
 import json
+from pathlib import Path
 from typing import Any
 
 import pytest
@@ -52,8 +53,7 @@ def _build_state(cache_prefix: str) -> RunState:
     ],
 )
 def test_parse_ftr_ok(raw: str, expected: str) -> None:
-    out = _parse_ftr(raw)
-    assert out["status"] == expected
+    assert _parse_ftr(raw)["status"] == expected
 
 
 @pytest.mark.parametrize(
@@ -89,55 +89,6 @@ def test_parse_ftr_branch_errors(raw: str, match: str, tag: str) -> None:
     assert exc_info.value.tag == tag
 
 
-def test_parse_ftr_error_tag_contract() -> None:
-    with pytest.raises(FTRParseError) as exc_info:
-        _parse_ftr('{"status":"mystery","severity":"low","summary":"s","findings":[{"id":"1"}]}')
-    assert exc_info.value.tag == "ftr.parsed.contract-failure"
-
-
-def test_vera_act_parse_failure_sets_two_sided_trail_tag(
-    monkeypatch: pytest.MonkeyPatch,
-) -> None:
-    def _fake_dispatch(**_: Any) -> dict[str, Any]:
-        return {
-            "schema_version": "1.0",
-            "modality": "image",
-            "artifact_path": "artifact.png",
-            "confidence": "HIGH",
-            "confidence_rationale": "clear",
-            "perception_timestamp": "2026-01-01T00:00:00Z",
-        }
-
-    class _Resp:
-        content = '{"status":"mystery","severity":"low","summary":"bad","findings":[{"id":"F-1"}]}'
-        usage_metadata = {"input_tokens": 1, "output_tokens": 1}
-
-    class _Chat:
-        def invoke(self, _: Any) -> _Resp:
-            return _Resp()
-
-    class _Handle:
-        chat = _Chat()
-
-    monkeypatch.setattr("app.specialists.vera.graph.dispatch_to_sensory_bridges", _fake_dispatch)
-    monkeypatch.setattr("app.specialists.vera.graph.make_chat_model", lambda **_: _Handle())
-
-    state = _build_state(
-        json.dumps(
-            {
-                "artifact_path": "artifact.png",
-                "source_of_truth_path": "truth.md",
-                "modality": "image",
-                "gate": "fidelity",
-            }
-        )
-    )
-    with pytest.raises(FTRParseError) as exc_info:
-        _act(state)
-    assert exc_info.value.tag == "ftr.parsed.contract-failure"
-    assert state.model_resolution_trail[-1].reason == exc_info.value.tag
-
-
 def test_vera_act_malformed_envelope_sets_two_sided_trail_tag() -> None:
     state = _build_state("{bad-json")
     with pytest.raises(FTRParseError) as exc_info:
@@ -154,103 +105,68 @@ def test_vera_act_wrong_type_envelope_sets_two_sided_trail_tag() -> None:
     assert state.model_resolution_trail[-1].reason == exc_info.value.tag
 
 
-def test_vera_act_dispatch_failure_sets_two_sided_trail_tag(
-    monkeypatch: pytest.MonkeyPatch,
-) -> None:
-    def _broken_dispatch(**_: Any) -> dict[str, Any]:
-        raise RuntimeError("bridge failure")
-
-    monkeypatch.setattr("app.specialists.vera.graph.dispatch_to_sensory_bridges", _broken_dispatch)
+def test_vera_act_writes_trace_report(tmp_path: Path) -> None:
+    extracted = tmp_path / "extracted.md"
+    extracted.write_text(
+        "Claim one. [evidence: src-1]\nClaim two. [evidence: src-1]\n",
+        encoding="utf-8",
+    )
     state = _build_state(
         json.dumps(
             {
-                "artifact_path": "artifact.png",
-                "source_of_truth_path": "truth.md",
-                "modality": "image",
-                "gate": "fidelity",
+                "gate_id": "G0",
+                "extracted_path": str(extracted),
+                "runs_root": str(tmp_path),
             }
         )
     )
-    with pytest.raises(FTRParseError) as exc_info:
-        _act(state)
-    assert exc_info.value.tag == "ftr.parsed.contract-failure"
-    assert state.model_resolution_trail[-1].reason == exc_info.value.tag
 
-
-def test_vera_act_dispatches_and_returns_finding(monkeypatch: pytest.MonkeyPatch) -> None:
-    def _fake_dispatch(**_: Any) -> dict[str, Any]:
-        return {
-            "schema_version": "1.0",
-            "modality": "image",
-            "artifact_path": "artifact.png",
-            "confidence": "HIGH",
-            "confidence_rationale": "clear",
-            "perception_timestamp": "2026-01-01T00:00:00Z",
-        }
-
-    class _Resp:
-        content = (
-            '{"status":"pass","severity":"low","summary":"ok",'
-            '"findings":[{"id":"F-1","detail":"none"}]}'
-        )
-        usage_metadata = {"input_tokens": 10, "output_tokens": 5}
-
-    class _Chat:
-        def invoke(self, _: Any) -> _Resp:
-            return _Resp()
-
-    class _Handle:
-        chat = _Chat()
-
-    monkeypatch.setattr("app.specialists.vera.graph.dispatch_to_sensory_bridges", _fake_dispatch)
-    monkeypatch.setattr("app.specialists.vera.graph.make_chat_model", lambda **_: _Handle())
-    envelope = json.dumps(
-        {
-            "artifact_path": "artifact.png",
-            "source_of_truth_path": "truth.md",
-            "modality": "image",
-            "gate": "fidelity",
-        }
-    )
-    state = _build_state(envelope)
     update = _act(state)
     output = json.loads(update["cache_state"]["cache_prefix"])
-    assert output["vera_finding"]["status"] == "pass"
+    trace = Path(output["trace_report_path"])
+    report = json.loads(trace.read_text(encoding="utf-8"))
+
+    assert trace.name.startswith("g0-vera-")
+    assert {"O", "I", "A"} == {item["category"] for item in report["findings"]}
+    assert output["vera_finding"]["verdict"]["verb"] == "proceed"
     assert update["model_resolution_trail"][-1].reason == "ftr.parsed.ok"
 
 
-@pytest.mark.llm_live
-def test_vera_act_live_llm_smoke(monkeypatch: pytest.MonkeyPatch) -> None:
-    def _fake_dispatch(**_: Any) -> dict[str, Any]:
+def test_vera_g3_dispatches_visual_audio_motion(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    captured: list[str] = []
+
+    def _fake_dispatch(**kwargs: Any) -> dict[str, Any]:
+        captured.append(str(kwargs["modality"]))
         return {
             "schema_version": "1.0",
-            "modality": "image",
-            "artifact_path": "artifact.png",
+            "modality": kwargs["modality"],
+            "artifact_path": str(kwargs.get("artifact_path") or ""),
             "confidence": "HIGH",
-            "confidence_rationale": "clear",
-            "perception_timestamp": "2026-01-01T00:00:00Z",
         }
 
     monkeypatch.setattr("app.specialists.vera.graph.dispatch_to_sensory_bridges", _fake_dispatch)
     state = _build_state(
         json.dumps(
             {
-                "artifact_path": "artifact.png",
-                "source_of_truth_path": "truth.md",
-                "modality": "image",
-                "gate": "fidelity",
+                "gate_id": "G3",
+                "image_artifact_path": "slide.png",
+                "audio_artifact_path": "voice.mp3",
+                "motion_artifact_path": "clip.mp4",
+                "runs_root": str(tmp_path),
             }
         )
     )
-    update = _act(state)
-    output = json.loads(update["cache_state"]["cache_prefix"])
-    finding = output["vera_finding"]
-    assert isinstance(finding, dict)
-    assert {"status", "severity", "summary", "findings"} <= set(finding.keys())
-    assert isinstance(finding["findings"], list)
+
+    output = json.loads(_act(state)["cache_state"]["cache_prefix"])
+    assert captured == ["image", "audio", "video"]
+    assert output["vera_finding"]["rubrics"]["G3"]["confidence_rubric"]["visual"][
+        "score"
+    ] == 1.0
 
 
 def test_vera_act_loc_budget() -> None:
     source = inspect.getsource(_act)
     logical_lines = [line for line in source.splitlines() if line.strip()]
-    assert len(logical_lines) <= 115
+    assert len(logical_lines) <= 20

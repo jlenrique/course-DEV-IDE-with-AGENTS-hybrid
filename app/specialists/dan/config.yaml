@@ -1,0 +1,8 @@
+specialist_id: dan
+provider: openai-shared-facade
+mode: llm-only
+rate_limit_per_minute: 12
+token_budget_per_minute: 120000
+daily_budget_usd: 3.00
+per_invocation_cap_usd: 0.40
+notes: Dan uses the shared LLM facade only; no third-party creative API is authorized.

@@ -12,7 +12,7 @@ from app.specialists.gary.graph import (
 )
 
 GARY_SANCTUM_LOCK_BASELINE_SHA256 = (
-    "84e608a6405f798eb850af6ccaf13ceff1bb2f7108cd571797d25ecf94ca5cc4"
+    "71dddbdfdacb9ef42135c7ec669e490cc1aa67c28d0d11416a8e66c20ce69005"
 )
 
 

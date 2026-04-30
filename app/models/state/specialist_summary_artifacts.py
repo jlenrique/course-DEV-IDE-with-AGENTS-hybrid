@@ -27,7 +27,7 @@ CANONICAL_SPECIALIST_IDS: tuple[str, ...] = (
     "quinn_r",
     "vera",
 )
-DEFERRED_SPECIALIST_IDS = frozenset({"dan", "compositor"})
+DEFERRED_SPECIALIST_IDS = frozenset()
 
 DISPLAY_NAMES: dict[str, str] = {
     "texas": "Texas",
