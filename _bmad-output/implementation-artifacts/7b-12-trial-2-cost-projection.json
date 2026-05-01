@@ -1,0 +1,118 @@
+{
+  "bs_3_ceiling_usd": 25.0,
+  "delta_usd": -17.265,
+  "generated_at": "2026-05-01T17:55:05.188570+00:00",
+  "per_specialist": [
+    {
+      "cost_usd": 0.18,
+      "name": "texas",
+      "rate_usd_per_1k_in": 0.005,
+      "rate_usd_per_1k_out": 0.015,
+      "tokens_in": 18000,
+      "tokens_out": 6000
+    },
+    {
+      "cost_usd": 0.1,
+      "name": "irene_pass1",
+      "rate_usd_per_1k_in": 0.005,
+      "rate_usd_per_1k_out": 0.015,
+      "tokens_in": 8000,
+      "tokens_out": 4000
+    },
+    {
+      "cost_usd": 0.06,
+      "name": "tracy",
+      "rate_usd_per_1k_in": 0.005,
+      "rate_usd_per_1k_out": 0.015,
+      "tokens_in": 6000,
+      "tokens_out": 2000
+    },
+    {
+      "cost_usd": 0.18,
+      "name": "irene",
+      "rate_usd_per_1k_in": 0.005,
+      "rate_usd_per_1k_out": 0.015,
+      "tokens_in": 12000,
+      "tokens_out": 8000
+    },
+    {
+      "cost_usd": 0.095,
+      "name": "vera",
+      "rate_usd_per_1k_in": 0.005,
+      "rate_usd_per_1k_out": 0.015,
+      "tokens_in": 10000,
+      "tokens_out": 3000
+    },
+    {
+      "cost_usd": 0.07,
+      "name": "quinn_r",
+      "rate_usd_per_1k_in": 0.005,
+      "rate_usd_per_1k_out": 0.015,
+      "tokens_in": 8000,
+      "tokens_out": 2000
+    },
+    {
+      "cost_usd": 0.05,
+      "name": "dan",
+      "rate_usd_per_1k_in": 0.005,
+      "rate_usd_per_1k_out": 0.015,
+      "tokens_in": 4000,
+      "tokens_out": 2000
+    },
+    {
+      "calls": 5,
+      "cost_usd": 2.0,
+      "name": "gary",
+      "per_call_usd": 0.4,
+      "rate_usd_per_1k_in": 0.0,
+      "rate_usd_per_1k_out": 0.0,
+      "tokens_in": 0,
+      "tokens_out": 0
+    },
+    {
+      "calls": 5,
+      "cost_usd": 2.0,
+      "name": "kira",
+      "per_call_usd": 0.4,
+      "rate_usd_per_1k_in": 0.0,
+      "rate_usd_per_1k_out": 0.0,
+      "tokens_in": 0,
+      "tokens_out": 0
+    },
+    {
+      "calls": 6,
+      "cost_usd": 1.8,
+      "name": "enrique",
+      "per_call_usd": 0.3,
+      "rate_usd_per_1k_in": 0.0,
+      "rate_usd_per_1k_out": 0.0,
+      "tokens_in": 0,
+      "tokens_out": 0
+    },
+    {
+      "calls": 3,
+      "cost_usd": 1.2,
+      "name": "wanda",
+      "per_call_usd": 0.4,
+      "rate_usd_per_1k_in": 0.0,
+      "rate_usd_per_1k_out": 0.0,
+      "tokens_in": 0,
+      "tokens_out": 0
+    },
+    {
+      "calls": 0,
+      "cost_usd": 0.0,
+      "name": "compositor",
+      "per_call_usd": 0.0,
+      "rate_usd_per_1k_in": 0.0,
+      "rate_usd_per_1k_out": 0.0,
+      "tokens_in": 0,
+      "tokens_out": 0
+    }
+  ],
+  "projected_cost_usd": 7.735,
+  "projection": "trial_2_cost",
+  "remediation_paths": [],
+  "skeleton_warning": "DEFAULT_INPUTS are placeholder; operator MUST override via --inputs-file with real Trial-2 projection inputs from Slab 6 trial 475df528 telemetry + PRD \u00a7Journey 5 before treating verdict as authoritative",
+  "verdict": "PASS"
+}

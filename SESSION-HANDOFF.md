@@ -1,155 +1,121 @@
-# Session Handoff — 2026-04-29 (Slab 7b PRD Ratification + Wave 0 Foundational Artifacts)
+# Session Handoff — 2026-04-30 (Slab 7b body activation 11/12 CLOSED; 7b.12 integration in-session-developed; Codex T11 PASS-WITH-PATCH cycle-1 remediation COMPLETE)
 
-**Session date:** 2026-04-29
+**Session date:** 2026-04-29 → 2026-04-30 (continuous; spans 11 NEW CYCLE iterations)
 **Branch:** `dev/langchain-langgraph-foundation`
-**Commits this session:** 3 (61ce8ee → 9ed6fcb → ddcd1b1)
-**Quality gate:** 696 passed / 19 skipped (regression baseline preserved through PRD ratification + Wave-0 atomic-merge)
+**Commits this session:** 3 atomic landed (1a3a13f gitignore + 1f81965 7b.1-7b.11 closes + 7534ce7 7b.12 in-session); cycle-1 PATCH remediation NOT yet committed (held for next-session retrospective close commit per operator directive).
+**Branch state at session-end:** ahead of `origin/dev/langchain-langgraph-foundation` by 3 commits; cycle-1 remediation files in working tree (uncommitted by operator design).
 
----
+## What was completed
 
-## What was completed this session
+**Slab 7b body activation 11/12 stories CLOSED end-to-end (NEW CYCLE 11× iterations):**
 
-### 1. Slab 7b PRD ratified end-to-end (commit `61ce8ee`)
+| Wave | Story | Class | Specialist | Verdict | Notes |
+|---|---|---|---|---|---|
+| 1 | 7b.1 | A | Texas | PASS-WITH-PATCH cycle-1 clean | FR89 hardening; G0 6-dim rubric; SanctumParityTestBase |
+| 1 | 7b.2 | A | Quinn-R | PASS | authorized-storyboard.schema.json; G2C+G5 |
+| 1 | 7b.3 | A | Vera | PASS | Pass-2 G4 fidelity |
+| 2a | 7b.4 | B | Irene Pass-1 | PASS | lesson-plan coauthoring; mode-singularity |
+| 2b | 7b.5 | C+ | Tracy | PASS | 4-file sidecar pattern; Class-C+ canonical |
+| 3 | 7b.6 | C | Gary | PASS-WITH-OBSERVATION | first Class-C port; Round-(f) two-SKILL.md ratification party-mode 4/4 unanimous |
+| 3 | 7b.7 | C | Kira | PASS-WITH-PATCH cycle-1 clean | terminal Kling polling |
+| 3 | 7b.8 | C | Enrique (Wave-3 LAST) | PASS-WITH-OBSERVATION | cross-specialist retrofit closed 7b.1-7b.6 prior-close drift (49 files +725/-2161 behavior-preserving) |
+| 4 | 7b.9 | C | Wanda | PASS | 3 drifts CLOSED (sanctum migration + two-SKILL.md 4× + scaffold-v0.2 alignment); closes wanda-sanctum-test-expected-files-constant-drift flake |
+| 5a | 7b.10 | D1 | Dan | PASS | LLM-only path; dan-api-tbd-pending RETIRED; Class-D1 template extension lockstep |
+| 5b | 7b.11 | D2 | Compositor | PASS | pre-T1 K-projection 3.45K<4.0K → single-gate held; Class-D2 sidecar variant per D20; H-Pipeline ≥99%; Class-D2 template extension lockstep |
+| 6 | 7b.12 | integration | — | review (deferred) | Claude in-session T1-T13 dev (POLARITY DEVIATION); Codex T11 PASS-WITH-PATCH; Claude cycle-1 5 PATCH remediation COMPLETE |
 
-`_bmad-output/planning-artifacts/prd-slab-7b-specialist-activation-eleven.md` — 1,153 lines (vs. Slab 7a's 1,325; leaner because 7b inherits 7a substrate). Authored via `bmad-create-prd` workflow with 9 party-mode rounds (R1-R9; 4 voices/round; 0 re-opens; 4/4 unanimous on R9 close):
+**Validator state:** 11 conforming activation contracts across 6 classes (A/B/C+/C/D1/D2 — FULL Slab 7b coverage; SG-4 floor at maximum).
 
-- **R1** Operator Non-Negotiables (SG-1..SG-4) — SG-4 amended with closed allowlist + value-validation parity-test + scaffold-by-default + party-mode option-b consensus
-- **R2** Executive Summary + Project Classification — JTBD opening + emotional hook (Sophia restored "two mental models forever" verbatim); class taxonomy expanded D→D1/D2; Tracy promoted to C+ class
-- **R3** Success Criteria — T-tier split (T1/T2-fixture-replay/T3-canary/T4-cache-determinism/T5-live); K-aggregate restated to 24-30 K-units at K-floor 1.3-1.5×; FM-23/24/25/26 added; A-9 per-specialist file-path table
-- **R4** User Journeys — Journey 1 polyphony rewrite + scar-tissue cautious + Tuesday's-class beat; Journey 2 "substrate remembered" parable; Journey 3 dashboard reassurance + cold-session-operator primary; Journey 5 cost-anomaly-pre-launch fork added
-- **R5** Domain Requirements — Marcus-as-substrate phrasing fix; deferred count alignment 5→6; class-shaped parity-test templates; BMB checklist canonical (vs scaffold-v0.2-backlog historical); Class-D2 sidecar variant for Compositor
-- **R6** Functional Requirements — FR99 Class-D2 restated; FR101 R1-contract restated; FR104-FR107 reframed as substrate-consumption-extended; FR108-FR112 foundational-artifacts; FR113 Marcus boundary frozen
-- **R7** Non-Functional Requirements — NFR-T9..T12 R3-tier split; NFR-CG17 Codex commitment; NFR-CG18 foundational-artifacts precondition; NFR-I9..I13 (CI workflow binding, class-shaped, substrate-as-floor); NFR-OD3..OD6
-- **R8** Innovation + Scoping — IR-1/2/3/4/6 NFR cross-references; SR register expanded 12→18; **MVP exit gate cut to G2+9-of-11** (Slab close gate full G3+11); Wave 0.5 Codex deployment; Tracy bundled C+ in Wave 2
-- **R9** ADRs + Codex + Polish + Step-12 close — D14 5-class taxonomy; D17 split harness; D20 Class-D2 exemplar (NOT exception); D21/D22/D23 added; final scope-floor confirmation
+**.gitignore update (operator ratification 2026-04-30):** `_bmad/*` + `!_bmad/memory/` enables sanctum tracking. Retires `bmad-memory-gitignore-force-add-policy` deferred-inventory follow-on. Sanctum files no longer need `git add --force`.
 
-**Aggregate:** 26 new FRs (FR88-FR113); 24 new NFRs; 10 new ADRs; SG-4 added as 4th standing guardrail.
+**Round-(f) Class-C two-SKILL.md ratification (party-mode 4/4 unanimous 2026-04-29):** persona-skill at `skills/bmad-agent-{specialist}/SKILL.md` + API-mastery preserved at `skills/bmad-agent-{api-name}/SKILL.md`. Applied 4× (Gary/Kira/Enrique/Wanda).
 
-Implementation-readiness Steps 1-3 closed at `_bmad-output/planning-artifacts/implementation-readiness-report-2026-04-29-slab-7b.md` with verdict **READY-WITH-MINOR-AMENDMENTS-AND-NAMED-PRECONDITIONS**. 26/26 FR coverage; SG-1/2/3/4 all green; Steps 4-6 deferred per Slab 7a precedent.
+**7b.12 in-session deliverables (22 files; +~2200 LOC):**
+- 4 new parity tests + 5 new CI workflows + 13 new docs + 2 new artifacts + 2 modified
+- Party-mode T13 review GO-WITH-CONCERN majority 3-of-4 (John+Mary+Murat GO-WITH-CONCERN; Amelia GO; no NO-GO)
+- Codex T11 cross-agent review PASS-WITH-PATCH (5 close-blocking items)
+- Claude cycle-1 remediation: all 5 PATCH items resolved + verified
 
-### 2. Wave 0 foundational-artifacts atomic-merge (commit `9ed6fcb`)
+**Cycle-1 verification (Claude independent re-runs at session-end):**
+- Story-scoped ruff: All checks passed
+- Focused parity + boundary slice: 69 PASS (was 54 pre-PATCH; +15 from CG18 + 14 boundary fixtures)
+- Broad regression deterministic: 1403 passed, 21 skipped, 1 deselected (was 1388; +15)
+- Pipeline-determinism via skeleton: PASS
+- Cache-hit + 5-API skeletons: structured `not_run` JSON (fail-closed by design)
+- Trial-2 cost-projection: $7.73 vs $25 placeholder ceiling = PASS
 
-Six precondition-resolving artifacts authored + landed in single atomic commit per R9 Winston intent. Wave 1 (Class-A hardening: Texas/Quinn-R/Vera) UNBLOCKED; sandbox-AC inventory landed before Wave 3 (API-bound Class-C port-shapes).
-
-| FR | Artifact | Status |
-|---|---|---|
-| FR108 | `docs/dev-guide/bmb-sanctum-alignment-checklist.md` (16K) | NEW; canonical SG-4 alignment authority; 8-section TOC; 2 worked examples (Marcus option-a + Cora option-b); two-sidecar disambiguation in glossary |
-| FR109 | `docs/dev-guide/sanctum-exception-categories.json` | NEW; closed allowlist; sidecar-hook initial entry per Cora precedent; addition protocol = party-mode consensus |
-| FR110 | `docs/dev-guide/operator-control-parity-template.md` | NEW; form-not-prose template; Specialist+Story header; Coverage-status PASS/PARTIAL/MISSING aggregation; Notes/deviations safety valve |
-| FR111 | `docs/dev-guide/scaffolds/scaffold-v0.2-D2-pipeline/` (7 files) | NEW directory; Class-D2 pipeline-greenfield variant; README + scaffold.yaml + field-mask.yaml + 5 .template files |
-| FR112 | `skills/bmad-agent-cora/SKILL.md §Sanctum exception` anchor | EDIT existing 16K; HTML grep marker `<!-- sanctum-exception:sidecar-hook -->`; rationale referencing sanctum activation + BMB pattern; placed between §Does Not Do + §On Activation |
-| FR107 + NFR-CG12 | `docs/dev-guide/migration-ac-sandbox-inventory.json` extension | EXTEND; +5 entries (gamma/kling/elevenlabs/wondercraft/dan-api-tbd-pending); 24 total dev_agent_forbidden; version 2026-04-29; changelog entry |
-
-P0 path-verification sweep performed during authoring. 4 findings filed as PRD errata addendum (commit `ddcd1b1`):
-- FR111 path correction (`_bmad/_cfg/scaffolds/` was wrong; `docs/dev-guide/scaffolds/` is convention)
-- FR101 parity-test contract realignment (SKILL.md at `skills/bmad-agent-{name}/`, NOT `app/specialists/{name}/`; minimal frontmatter `name + description`; BMB alignment marker is sanctum-dir + 6-file BMB pattern, NOT YAML keys)
-- `SanctumParityTestBase` is Wave-1 CREATE-task (not pre-existing)
-- `tests/parity/per_specialist/` subdir TBD (FR105 ratifies subdir-vs-flat at first parity-test author)
-
-**NFR-CG17 deviation:** FR107 sandbox-AC inventory authored by Claude (not Codex) per R1 P1 party-mode scoping consensus that Wave 0 is foundational scaffolding pre-Wave-1, NOT inside Codex's Class-C/C+ port-shape scope. Codex deployment activates at Wave-1 story open.
-
-### 3. PRD errata addendum (commit `ddcd1b1`)
-
-Errata 1-4 captured at PRD §"Errata Addendum (2026-04-29; post-R9 close, pre-Wave-1 open)". Per R8 Mary erratum policy: dev-agent authority; addendum-class corrections that preserve FR intent; NOT R10 re-open. Path-verification status table records P0 sweep results with `verified-at: 2026-04-29` annotations. 4 deferred-inventory entries filed (BMB checklist additional examples; FR105 subdir decision; per-FR verified-at policy; Domain Requirements 3-subsection split re-deferred).
-
----
+**Tripwire ledger entries (sprint-status.yaml::tripwire_events):** wave_1_close (marginal-fired); wave_2b_close (false); wave_3_first_port_tripwire (false); wave_3_parallel_close_kira (n/a); wave_3_parallel_close_enrique (n/a; LAST closer); wave_4_close (n/a); wave_5a_close (k_contract NOT fired); wave_5b_pre_t1_compositor (false); wave_5b_close (k_contract NOT fired). All 9 entries recorded.
 
 ## What is next
 
-**Immediate next workflow:** `bmad-create-epics-and-stories` to author `_bmad-output/planning-artifacts/epics-slab-7b-specialist-activation-eleven.md` with 1 Epic + ~12 stories distributed across Wave 0 (foundational; DONE) + Wave 0.5 (Codex deployment verification) + Wave 1-6 per PRD §Phased Wave Plan.
+**Next session opens with 7b.12 integration close work:**
+1. Operator-witnessed DUAL-GATE Gate-2 ceremony via `7b-12-gate2-evidence-commands.ps1` (skeletons NOW exist; PS wildcard NOW correct; AC-G/H/I sections actually invoke the skeletons)
+2. AC-O MVP Exit Gate (G2 + ≥9-of-11) + AC-P Slab Close Gate (G3 + 11 cascade-reading) — operator runs Trial-2 (or dry-run)
+3. Slab 7b retrospective (T15) per `bmad-retrospective` skill
+4. Atomic close commit bundling cycle-1 PATCH remediation files + retrospective + 7b.12 done flip + epic flip in-progress→done
 
-**After epics+stories:** `bmad-sprint-planning` → per-story `bmad-dev-story` cycle. First story: Wave 1 Class-A Texas hardening (per typical alphabetical-by-class precedent).
+**Slab 7c or Trial-2 launch UNBLOCKS at Slab 7b retrospective close.** Operator decides next-direction at retrospective.
 
-**Trial-2 readiness predicate** (joint Slab 7a + 7b precondition): substrate works (Slab 7a; 7a.8 parity suite green) AND every specialist body produces real content (Slab 7b body activations + integration story). Trial-2 launchable post-Wave-6 close + ≤6 weeks dry-run window per R3 Mary amendment.
+## Unresolved issues / risks / deferred items
 
-**Slab 7c follow-on candidates** (filed in deferred-inventory):
-- Per-FR `verified-at` annotation institutionalization
-- BMB checklist additional worked examples (Irene, Dan, Texas)
-- Domain Requirements 3-subsection structural split
-- FR105 `tests/parity/per_specialist/` subdir-vs-flat ratification (depends on Wave 1 outcome)
+**Cycle-1 PATCH remediation files NOT YET COMMITTED** (held by operator design for next-session retrospective close commit). Working tree carries: 4 utility skeletons under `scripts/utilities/`; `check_substrate_frozen_paths.py`; 14 boundary fixtures at `tests/unit/substrate/`; updated `.github/workflows/substrate-frozen-paths-check.yml`; updated `_bmad-output/implementation-artifacts/7b-12-gate2-evidence-commands.ps1`; updated `tests/parity/test_eleven_specialists_addressable.py` + `test_mapping_checklist_status.py` + `test_nfr_cg_slab7b_block_aggregated.py`; updated `_bmad-output/implementation-artifacts/7b-12-code-review-2026-04-30.md` (cycle-1 outcome appended).
 
----
+**Operator-gated AC blocks pending real evidence:**
+- AC-G cache-hit-rate harness — skeleton fail-closed `not_run`; live-dispatch path not yet authored
+- AC-I 5-API live-binding smoke — skeleton fail-closed `not_run`; live-call path not yet authored
+- AC-H trial-2 cost-projection — uses placeholder DEFAULT_INPUTS; operator overrides via `--inputs-file` for real eval
+- AC-O MVP Exit + AC-P Slab Close — operator runs Trial-2 to populate `_artifacts/trial-2/{g2_exit,g3_close}_evidence.yaml`
 
-## Unresolved issues or risks
+**Filed for retrospective (deferred-inventory entries):**
+- `slab-7b-mapping-checklist-row-status-update` — party-mode-gated row-status flip update for the ~28 row improvements per AC-F
+- `slab-7b-spec-language-row-improvement-vs-party-mode-gating-clarification` — meta-follow-on; tighten spec language for next slab
+- `mapping-checklist-deferred-row-detection-strengthening` — Murat NIT; §6.2/§6.3 sub-row detection precision
+- `slab-7b-pre-existing-full-ruff-debt-cleanup-pass` — pre-existing 1219 ruff findings out-of-Slab-7b scope
+- `slab-7b-scaffold-conformance-dispatch-roster-update` — pre-existing 14-family roster needs Slab 7b registry entries
 
-**None blocking Wave 1 open.** Three named preconditions from implementation-readiness Steps 1-3 ALL LANDED in Wave-0 atomic-merge (commit `9ed6fcb`).
-
-Carrying forward (not blockers):
-- **Trial-2 BS-2 ceremony** (Slab 7a deferred-inventory entry `slab-7a-trial-2-bs-2-readiness-confirmation-deferred-to-operator-trial-2-ceremony`) — operator runs Gate-2 evidence ceremony at trial-2 launch OR dry-run; substrate is otherwise UNBLOCKED.
-- **Trial-2 golden-trace fixtures** (Slab 7a deferred-inventory) — reactivate at trial-2 close OR Slab 7b kickoff (whichever comes first).
-- **Tracy + Dan-without-API exemption** (third precondition; pending Story 7b.5 Tracy + Story 7b.10 Dan T1 readiness confirmation) — not blocker for Wave 1 open; resolved at story-authoring time.
-- **NFR-CG17 deviation** (FR107 sandbox-AC inventory authored by Claude not Codex this session) — operator may flag as governance deviation + re-author via Codex if preferred; otherwise treat as one-time consensus-ratified deviation.
-
-No deferred Audra L1/L2 findings (Step 0a/0b skipped this session — session was tightly scoped to PRD + 6 atomic artifacts + addendum; no whole-repo coherence sweep needed; no story flips). Cora chronology log skip per protocol §0 tripwire mode.
-
----
+**Retired this session (struck-through in deferred-inventory):**
+- `bmad-memory-gitignore-force-add-policy` — closed by 2026-04-30 .gitignore update
+- `wanda-sanctum-test-expected-files-constant-drift` — closed at 7b.9 T2
 
 ## Key lessons learned
 
-1. **Pre-fill PRDs are dramatically more efficient than from-scratch.** Slab 7b PRD authored 1,153 lines via 9 party-mode review rounds in ~1 day; party-mode amendments improved language without requiring re-authorship of structure. Slab 7a's 12-round from-scratch approach took comparable wall-time but party-mode worked harder. Pre-fill + ratify-amendments is the new pattern; record in CLAUDE.md if Slab 7c continues.
+1. **NEW CYCLE proven 11× end-to-end across Slab 7b body activation** (Claude spec → Codex T1-T10/T11 dev+tests + G6 self-review → Claude T11 bmad-code-review + T12 close). Polarity preserved at integration close via DUAL-GATE operator ceremony + deferred Codex T11 cross-agent review.
 
-2. **P0 path-verification sweeps surface PRD drift that party-mode misses.** Mary's R6 path-precision concern (FR101 cites `app/specialists/{name}/SKILL.md` + YAML keys `agent_name/sanctum_path/activation_order`) was correct but under-applied at ratification time. Running grep against actual repo state during Wave 0 surfaced 4 errata-class corrections. **Recommendation:** institutionalize P0 path-sweep as the first task of any Wave 0 (or pre-Wave-1) work; capture findings as PRD errata addendum.
+2. **Cross-agent independence catches real flaws even at integration tier.** Codex T11 surfaced 5 close-blocking PATCH items on 7b.12 that Claude's G6 self-review + party-mode T13 had not flagged. NEW CYCLE polarity preservation pays off — single-agent dev at integration tier was the right exception (operator time pressure) but the deferred cross-agent gate was structurally important.
 
-3. **Class taxonomy splits are operationally important.** R8 split Class-D into D1 (LLM-greenfield Dan) + D2 (pipeline-greenfield Compositor) recognizing these have different chain-test shapes. Without the split, Compositor's option-b "exception" framing leaked into PRD wording at multiple points; D20 amendment retired "exception" terminology in favor of canonical "Class-D2 sidecar variant." Future class-taxonomy questions should be settled at PRD time, not amendment time.
+3. **Working-tree intermingling is unavoidable at high-velocity multi-story sessions.** 7b.8-7b.11 closes all happened back-to-back without commits between them; cross-specialist retrofit drift accumulated across 4 stories. Documented as OBSERVATION-1 in 7b-8 review; deferred-inventory `prior-close-uncommitted-artifacts-audit-trail-7b-1-through-7b-6` filed. Procedural follow-on for future slabs: T11 reviews must verify File-List force-add scope at commit time.
 
-4. **"Two mental models forever" is the operator's load-bearing principle.** SG-4 (BMB sanctum alignment per body) was authored expressly to prevent this. Sophia's R2 amendment restored the verbatim phrase to the Exec Summary differentiator block; the principle is stronger when expressed in the operator's own visceral framing rather than in committee language ("BMB sanctum alignment as default").
+4. **Operator-gated AC blocks need both skeleton-and-evidence-format AND live-dispatch separation.** Codex T11 caught that Claude's initial PS script was `Write-Host`-printing AC-G/H/I commands instead of actually invoking them. Cycle-1 remediation factored fail-closed skeletons + actual invocation; live-dispatch path remains operator-authored at next session.
 
-5. **Atomic-merge for Wave 0 artifacts is load-bearing.** R9 Winston insisted Wave 0 must be a single squashed commit so Wave 1 has unambiguous green-light commit to branch from. Six artifacts authored in parallel; pre-merge cross-reference grep verified path-references resolve; single commit `9ed6fcb` lands the foundational substrate. Splitting across multiple commits would have introduced merge-order ambiguity.
-
----
+5. **Spec language with latent contradictions surfaces as PATCH at integration close.** AC-F "asserts ~28 row improvements" + mapping-checklist preamble "row changes require party-mode consensus, NOT dev-agent authority" was structurally impossible. Claude resolved via integrity-invariant test + party-mode-gated retrospective close commit. Filed `slab-7b-spec-language-row-improvement-vs-party-mode-gating-clarification` for retrospective tightening.
 
 ## Validation summary
 
-- **Step 1 quality gate:** `pytest` regression baseline 696 passed / 19 skipped — matches post-Slab-7a-close baseline; **NO REGRESSION** through PRD ratification + Wave-0 atomic-merge + errata addendum.
-- **Step 4a sprint-status YAML test:** 2 passed (sprint-status.yaml structurally valid post-update with prd-slab-7b-specialist-activation-eleven + slab-7b-wave-0-foundational-artifacts entries).
-- **Step 0a/0b harmonization sweeps:** SKIPPED — session tightly scoped (no whole-repo coherence sweep needed; no story flips). Cora chronology log skip per protocol.
-- **JSON validity:** `sanctum-exception-categories.json` parses (1 category `sidecar-hook`); `migration-ac-sandbox-inventory.json` parses (24 forbidden CLIs); both verified via `python -c "import json; json.load(...)"`.
-- **Cross-reference grep:** FR108 checklist has 10 references to FR109/FR111/FR112/cora-sidecar; all resolve.
-- **Cora HTML grep marker:** `<!-- sanctum-exception:sidecar-hook -->` present at the §Sanctum exception anchor; parity-test grep target verified.
-
----
+- **Sandbox-AC validator:** PASS on all 12 Slab 7b story files
+- **Class-conformance validator:** PASS with 11 activation contracts across 6 classes (A/B/C+/C/D1/D2)
+- **Pipeline-manifest lockstep:** PASS
+- **Live-API detector:** PASS scanning 81 test files
+- **Import-linter:** Contracts 9 kept, 0 broken
+- **Story-scoped ruff:** All checks passed (post-cycle-1 PATCH remediation)
+- **Focused parity + boundary slice:** 69 PASS (cycle-1 outcome)
+- **Broad regression deterministic (`-p no:randomly`):** 1403 passed, 21 skipped, 1 deselected (cycle-1 outcome)
+- **Substrate-as-floor:** `app/marcus/orchestrator/dispatch_adapter.py:70-95` empty diff across all 11 body closes
+- **NEW CYCLE iteration count:** 11× end-to-end proven (Slab 7b body activation 7b.1-7b.11)
 
 ## Artifact update checklist
 
-| Artifact | Updated | Path |
-|---|---|---|
-| Slab 7b PRD | ✅ NEW | `_bmad-output/planning-artifacts/prd-slab-7b-specialist-activation-eleven.md` |
-| Implementation-readiness report | ✅ NEW | `_bmad-output/planning-artifacts/implementation-readiness-report-2026-04-29-slab-7b.md` |
-| BMB sanctum alignment checklist (FR108) | ✅ NEW | `docs/dev-guide/bmb-sanctum-alignment-checklist.md` |
-| Sanctum exception categories (FR109) | ✅ NEW | `docs/dev-guide/sanctum-exception-categories.json` |
-| Operator-control parity template (FR110) | ✅ NEW | `docs/dev-guide/operator-control-parity-template.md` |
-| Class-D2 scaffold (FR111) | ✅ NEW (dir + 7 files) | `docs/dev-guide/scaffolds/scaffold-v0.2-D2-pipeline/` |
-| Cora SKILL.md §Sanctum exception (FR112) | ✅ EDIT | `skills/bmad-agent-cora/SKILL.md` |
-| Sandbox-AC inventory (FR107) | ✅ EXTEND | `docs/dev-guide/migration-ac-sandbox-inventory.json` |
-| Sprint status | ✅ UPDATE | `_bmad-output/implementation-artifacts/sprint-status.yaml` |
-| Workflow status | ✅ UPDATE | `_bmad-output/implementation-artifacts/bmm-workflow-status.yaml` |
-| Project context | ✅ UPDATE | `docs/project-context.md` |
-| Next-session-start-here | ✅ FINALIZE | `next-session-start-here.md` |
-| Session handoff | ✅ FINALIZE | `SESSION-HANDOFF.md` (this file) |
+- ✅ `_bmad-output/implementation-artifacts/sprint-status.yaml` — 11 body stories flipped done; 7b.12 review; 9 tripwire ledger entries; last_updated header refreshed
+- ✅ `_bmad-output/implementation-artifacts/migration-7b-{1..12}-*.md` — all 12 specs (statuses 1-11 done; 12 review)
+- ✅ 11 T11 review reports + 9 Codex self-reviews + 1 Claude G6 self-review (7b.12)
+- ✅ 12 Codex dev-prompts (incl. 1 cross-agent T11 review prompt for 7b.12)
+- ✅ `_bmad-output/planning-artifacts/deferred-inventory.md` — 4 new follow-ons filed; 2 retired struck-through
+- ✅ `next-session-start-here.md` — 4 BLOCKING next-session steps documented; cycle-1 PATCH outcome integrated
+- ✅ `.gitignore` — sanctum tracking enabled
+- ✅ `docs/dev-guide/specialist-sanctum-alignment-matrix.md` — 11-row dev-doc landed
+- ✅ `docs/operator/specialists/sanctum-alignment-matrix.md` + 11 per-specialist OPERATOR docs landed
+- ✅ `docs/operator/legacy-vs-langgraph-control-parity.md` — +11 body-activation rows section
+- ✅ 5 CI workflows landed (`specialist-parity` / `activation-contract` / `mapping-checklist` / `substrate-frozen-paths-check` / `codex-scope-audit`)
+- ✅ `docs/dev-guide/migration-story-governance.json` — verified Round-(e) E6 pin; 12-story coverage
+- ✅ `docs/dev-guide/migration-ac-sandbox-inventory.json` — `dan-api-tbd-pending` retired at 7b.10 T1
 
-**No `reports/dev-coherence/<ts>/` audit trail this session** — Step 0a harmonization sweep skipped per protocol §0 (session tightly scoped; no whole-repo invariant changes; Cora chronology log skip recorded).
-
----
-
-## Commits
-
-```
-ddcd1b1 docs(slab-7b): PRD errata addendum (post-Wave-0; P0 path-sweep findings)
-9ed6fcb feat(slab-7b-wave-0): land 6 foundational artifacts (FR107-FR112) — SG-4 sanctum-alignment substrate
-61ce8ee plan(slab-7b): land PRD + implementation-readiness report
-```
-
-3 commits ahead of `origin/dev/langchain-langgraph-foundation`. Push at session-end OR carry forward to next session per operator preference.
-
----
-
-## Provenance
-
-**Authoring agent:** Claude Opus 4.7 (1M context); single-session orchestrator across PRD ratification (9 rounds), implementation-readiness check (Steps 1-3), Wave-0 foundational-artifacts authoring (6 artifacts), PRD errata addendum, and session-wrapup protocol.
-
-**Party-mode voices invoked across PRD R1-R9:** John (PM), Winston (Architect), Murat (TEA), Mary (Analyst), Sophia (Storyteller), Sally (UX), Maya (Design Thinking), Dr. Quinn (Master Problem Solver), Amelia (Dev), Paige (Tech Writer). Each voice spawned as independent subagent for genuine perspective diversity.
-
-**Operator directives at session-WRAPUP:**
-- "commit with groupings as you see fit. then, add the errata PRD addendum you have proposed. finally, run a bmad session protocol session wrapup. the next session, once we run the START, will be launching into bmad-create-epics-and-stories."
-
-**Session continuation contract:** the next session opens with `bmad-session-protocol-session-START.md` Step 1; reads `next-session-start-here.md` as sole ramp-up document; runs `bmad-create-epics-and-stories` as immediate next workflow.
+**Audit trail:** dev-coherence reports under `reports/dev-coherence/2026-04-30-*` (multiple lockstep PASS records across the session).

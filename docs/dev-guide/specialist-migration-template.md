@@ -201,6 +201,42 @@ Each rule below carries: **Rule**, **Why**, **How to apply**, and (where applica
 
 **M-R18 amendment (2b.8 close, codified in v2.2):** When a multi-mode dispatch specialist (per A-2b.7-R2 pattern) emits per-mode helper smoke tests, those tests MUST be parametrize-collapsible into ONE test function with N cases. Counts as 1 K-floor unit regardless of N. Prevents unbounded K-floor inflation as mode-count grows (Enrique 4 modes â†’ Wanda 6 modes â†’ future N modes). The function may live in `test_<specialist>_dispatch_wrapper.py` alongside the 3 SEAM tests; total test functions in that file = 3 SEAM + 1 parametrized = 4 (regardless of mode count).
 
+## R15. Mapping-checklist row-status authority — integrity-invariant pattern, not aspirational dev-agent flips (Slab 7b retrospective Decision 2)
+
+Per `_bmad-output/planning-artifacts/slab-7-legacy-migrated-mapping-checklist.md` preamble: row addition/removal AND row-status flips (❌/⚠️ → ✅) require party-mode consensus, NOT dev-agent authority.
+
+**Spec authoring rule:** specs that touch the mapping-checklist MUST phrase row-status tests as **integrity-preservation invariants over party-mode-ratified row updates** — not as aspirational dev-agent-authored improvements.
+
+**Test-shape required:**
+
+```python
+PRE_SLAB_<N>_FULLY_MIGRATED_FLOOR = <party-mode-ratified count>
+
+def test_fully_migrated_row_count_at_or_above_floor() -> None:
+    fully_migrated = sum(1 for line in table_lines if "✅" in line)
+    assert fully_migrated >= PRE_SLAB_<N>_FULLY_MIGRATED_FLOOR
+```
+
+Where `<N>` matches the slab/epic and the floor is bumped at retrospective close in lockstep with the row updates.
+
+**Test-shape forbidden:**
+
+```python
+# WRONG — dev-agent cannot author row flips per file preamble
+def test_specialist_X_row_status_is_fully_migrated() -> None:
+    assert get_row_status(legacy_section) == "✅"
+```
+
+**Spec language required when phrasing AC-N row tests:**
+- ✅ correct: "asserts ≥ N FULLY MIGRATED rows where N = post-retrospective floor"
+- ✅ correct: "asserts row-count integrity preserved + legend intact + deferred-rows non-regressed"
+- ❌ forbidden: "asserts ~N row improvements" (testable target unclear; dev-agent has no flip authority)
+- ❌ forbidden: "asserts specialist X's row-status is ✅" (dev-agent cannot author the flip)
+
+**Row-flip evidence aggregates at slab/epic retrospective close.** The retrospective IS the party-mode ratification venue. The dev-agent's job is to satisfy the integrity-invariant test against the post-retrospective floor; the slab/epic retrospective's job is to ratify the row-flip evidence and bump the floor in lockstep.
+
+**Provenance:** Slab 7b 7b.12 T13 party-mode John meta-follow-on `slab-7b-spec-language-row-improvement-vs-party-mode-gating-clarification`; resolved at Slab 7b 2026-05-01 retrospective close with resolution (a) RATIFIED.
+
 ---
 
 ## How to apply this template at a 2b.x story spec
@@ -223,4 +259,5 @@ Each rule below carries: **Rule**, **Why**, **How to apply**, and (where applica
 | v2 | 2026-04-25 | Added R8â€“R12 codifying party-mode amendments at Story 2b.5 close: R8 (M-R11 bounded-scope K-floor recalibration), R9 (M-R12 precedence pin convention), R10 (M-R13 SSOT invariant test pattern), R11 (M-R14 permanent-skip hard cap 3 stories / 30 days), R12 (M-R15 parse-branch ceiling 6 unless named exemption). M-R10 narration precedence convention from Story 2b.4 Desmond is special case of R9 for narration category. | Story 2b.5 close |
 
 | v2.4 | 2026-04-25 | Slab-close amendment: codified M-R22 (tag namespace root tracks category), M-R24 (wave-close framing), and Paige section 12.10 retrospective-container restructure. | Story 2b.17 close |
+| v2.5 | 2026-05-01 | Added R15 (mapping-checklist row-status integrity-invariant pattern; resolves `slab-7b-spec-language-row-improvement-vs-party-mode-gating-clarification` meta-follow-on per Slab 7b retrospective Decision 2 resolution (a) RATIFIED). | Slab 7b retrospective close |
 

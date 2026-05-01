@@ -360,7 +360,42 @@ Operator runs full Gate-2 ceremony script at `_bmad-output/implementation-artifa
 
 ### Completion Notes
 
-(authored by Codex at T11-T12; populated by operator at T12 with verbatim stdout from Gate-2 ceremony)
+**Gate-2 ceremony executed 2026-05-01 17:55 UTC by operator.** Transcript at [`7b-12-gate2-evidence-2026-05-01-1351.utf8.txt`](7b-12-gate2-evidence-2026-05-01-1351.utf8.txt) (UTF-8; 11 KB; re-encoded from PowerShell `Tee-Object` UTF-16 LE original at `7b-12-gate2-evidence-2026-05-01-1351.txt`).
+
+**Verdict matrix (14 evidence blocks):**
+
+| # | Block | Result | Notes |
+|---|---|---|---|
+| 1 | 7b.12 focused parity slice | ✅ **55 passed in 3.32s** | covers SKILL.md sanctum-alignment + 4 new parity tests + pipeline-determinism harness |
+| 2 | 11 per-specialist activation contracts | ✅ **78 passed in 3.04s** | full Slab 7b coverage (A/B/C+/C/D1/D2; 11 contracts) |
+| 3 | Wider regression slice (`-p no:randomly`) | ✅ **1389 passed, 21 skipped, 1 deselected in 161.63s** | +1 vs cycle-1 baseline (1388); zero regressions |
+| 4 | Pipeline-manifest lockstep | ✅ **exit=0** | trace at `reports/dev-coherence/2026-05-01-1755/check-pipeline-manifest-lockstep.PASS.yaml` |
+| 5 | Sandbox-AC validator (12 stories) | ✅ **PASS** — no violations |
+| 6 | Class-conformance validator | ✅ **PASS: 11 activation contract files conform** |
+| 7 | Live-API detector (NFR-CG13 strict) | ✅ **PASS: scanned 81 test files; no forbidden imports** |
+| 8 | Code quality (story-scoped ruff) | ✅ **All checks passed** |
+| 9 | Import-linter (9 contracts) | ✅ **9 kept, 0 broken** |
+| 10 | AC-G.1 cache-hit-rate harness | ⚠️ **`verdict: not_run`** by design (10 specialists fail-closed) |
+| 11 | AC-G.2 H-Pipeline determinism | ✅ **rate=1.0; PASS** (10 iterations; threshold 0.99) |
+| 12 | AC-H trial-2 cost-projection | ✅ **PASS** at $7.735 vs $25 BS-3 ceiling (delta −$17.265); placeholder DEFAULT_INPUTS warning emitted |
+| 13 | AC-I 5-API live-binding smoke | ⚠️ **`verdict: not_run`** by design (5 APIs fail-closed) |
+| 14 | AC-O / AC-P operator-driven Trial-2 | 📝 deferred-to-Trial-2 ceremony (Slab 7a precedent) |
+
+**JSON evidence emitted:**
+- [`7b-12-cache-hit-harness-evidence.json`](7b-12-cache-hit-harness-evidence.json) — `verdict: not_run`; 10 specialists fail-closed
+- [`7b-12-pipeline-determinism-evidence.json`](7b-12-pipeline-determinism-evidence.json) — `verdict: PASS`; rate=1.0
+- [`7b-12-trial-2-cost-projection.json`](7b-12-trial-2-cost-projection.json) — `verdict: PASS`; projected_cost_usd=$7.735
+- [`7b-12-5-api-smoke-evidence.json`](7b-12-5-api-smoke-evidence.json) — `verdict: not_run`; 5 APIs fail-closed
+
+**Party-mode binding decisions (2026-05-01):**
+
+Round 1 — AC-G.1 cache-hit + AC-I 5-API path: **UNANIMOUS 4/4 path (c)** (John+Mary+Amelia+Murat). Accept fail-closed `not_run` posture as DOCUMENTED-INTENT skeleton evidence per cycle-1 PATCH-1 contract. Filed `slab-7c-live-harness-evidence` to deferred-inventory. Rationale highlights: Murat — option (a) raises risk by introducing new code at integration-tier story close; option (b) is "partial coverage theater"; (c) honors the regime working as designed. Mary — AC-N footnote already satisfied by AC-H BS-3 sub-clause ($7.735 < $25). Amelia — `verdict: not_run` IS the AC-G.1/AC-I documented posture per cycle-1 PATCH. John — marginal user value of authoritative live verdicts today is zero vs cost.
+
+Round 2 — Inline Trial-2 vs straight-to-retrospective: **UNANIMOUS 4/4 option (9)** (John+Mary+Amelia+Murat). Skip directly to Slab 7b retrospective T15; defer AC-O+AC-P to Trial-2 as separate ceremony per Slab 7a precedent (commit `95c81b0`; deferred-inventory entry `slab-7a-trial-2-bs-2-readiness-confirmation-deferred-to-operator-trial-2-ceremony`). Filed `slab-7b-trial-2-ac-o-ac-p-readiness-confirmation-deferred-to-operator-trial-2-ceremony` to deferred-inventory. Rationale highlights: Murat — conflating ceremonies inflates blast radius and hurts attribution; Mary — Slab 7a precedent ratified at retrospective, not flagged as deficiency; John — running Trial-2 before retrospective inverts decision order; Amelia — operator-gated AC blocks structurally belong in operator ceremony.
+
+**Wider-regression delta:** 1389 passed (Gate-2 run) vs 1388 (cycle-1 close baseline) = +1 test deterministically. No regressions, no flakes.
+
+**Skeleton fail-closed posture authoritative reading:** Per cycle-1 PATCH-1 contract, the structured-JSON `verdict: not_run` payloads ARE the documented Gate-2 evidence for AC-G.1 + AC-I. Substrate invariant stack (lockstep + sandbox-AC + class-conformance + 11 activation contracts + import-linter + live-API detector + ruff + 9 import contracts) provides the structural behavior-preservation guarantees that matter at this tier. Live-credential verification deferred to Trial-2 ceremony as canonical operator-driven venue per Slab 7a precedent.
 
 ### Verification
 

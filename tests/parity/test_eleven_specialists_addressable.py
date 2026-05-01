@@ -52,11 +52,13 @@ def _literal_class_attr(class_node: ast.ClassDef, attr_name: str) -> str | None:
         if not isinstance(stmt, ast.Assign):
             continue
         for target in stmt.targets:
-            if isinstance(target, ast.Name) and target.id == attr_name:
-                if isinstance(stmt.value, ast.Constant) and isinstance(
-                    stmt.value.value, str
-                ):
-                    return stmt.value.value
+            if (
+                isinstance(target, ast.Name)
+                and target.id == attr_name
+                and isinstance(stmt.value, ast.Constant)
+                and isinstance(stmt.value.value, str)
+            ):
+                return stmt.value.value
     return None
 
 

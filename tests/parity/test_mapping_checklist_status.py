@@ -46,14 +46,21 @@ DEFERRED_ROW_TOKENS: frozenset[str] = frozenset(
 )
 
 # Pre-Slab-7b honest baseline: 0 rows ✅ FULLY MIGRATED in the table (Slab 7a
-# closed at d0ef522 with all specialist bodies still showing ❌ or ⚠️ because
-# the table records the migrated-runtime status as of that snapshot, not
-# aspirational status). The cross-Slab mapping-checklist row-status update —
-# flipping rows owned by 7b.1-7b.11 specialists from ❌/⚠️ to ✅ — is the
-# party-mode-gated retrospective close commit work per the file's preamble.
-# This floor records the regression-only invariant; aspirational ~28 lands
-# at retrospective close.
-PRE_SLAB_7B_FULLY_MIGRATED_FLOOR = 0
+# closed at d0ef522 with all specialist bodies still showing ❌ or ⚠️).
+#
+# Post-Slab-7b body-activation floor (2026-05-01 retrospective close;
+# party-mode-ratified per `_bmad-output/planning-artifacts/slab-7b-retrospective.md`
+# Decision 1): 7 rows ✅ FULLY MIGRATED — §03 Texas, §07 Gary, §07E Kira,
+# §10 Vera+Quinn-R, §12 Enrique, §13 Quinn-R, §14 Compositor.
+#
+# Honest-accounting correction vs Round-(a) A-10 R3 aspirational ~28: the
+# original estimate conflated body-activation work with orchestrational
+# scaffolding (Marcus authoring + per-plan-unit/per-slide HIL surfaces +
+# storyboard build + receipt-emit scripts + final-handoff machinery).
+# Body activation alone closes the 7 rows above where the specialist's `_act`
+# body itself is the load-bearing surface. Orchestrational rows are Slab 7c
+# work and do not flip at this retrospective.
+PRE_SLAB_7B_FULLY_MIGRATED_FLOOR = 7
 
 ROW_STATUS_LEGEND_TOKENS: tuple[str, ...] = (
     "FULLY MIGRATED",
@@ -98,8 +105,9 @@ def test_deferred_rows_preserve_pre_slab_7b_status() -> None:
             if pattern.search(line):
                 deferred_rows_seen.add(token)
                 assert "✅" not in line, (
-                    f"deferred row §{token} regressed to ✅ FULLY MIGRATED; per AC-F "
-                    f"deferred rows MUST retain pre-Slab-7b status legend (NOT regressed): {line[:120]}"
+                    f"deferred row §{token} regressed to ✅ FULLY MIGRATED; "
+                    f"per AC-F deferred rows MUST retain pre-Slab-7b status "
+                    f"legend (NOT regressed): {line[:120]}"
                 )
     expected_seen = DEFERRED_ROW_TOKENS - {"6.2", "6.3"}
     missing = expected_seen - deferred_rows_seen
