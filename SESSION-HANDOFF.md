@@ -1,9 +1,30 @@
-# Session Handoff — 2026-04-30 (Slab 7b body activation 11/12 CLOSED; 7b.12 integration in-session-developed; Codex T11 PASS-WITH-PATCH cycle-1 remediation COMPLETE)
+# Session Handoff — 2026-05-01 (Slab 7b epic CLOSED; atomic close commit landed; retrospective filed; Trial-2 launch UNBLOCKED)
 
-**Session date:** 2026-04-29 → 2026-04-30 (continuous; spans 11 NEW CYCLE iterations)
+**Session date:** 2026-04-29 → 2026-05-01 (multi-day; spans 11 NEW CYCLE iterations + 7b.12 integration close + Slab 7b retrospective + atomic close commit)
 **Branch:** `dev/langchain-langgraph-foundation`
-**Commits this session:** 3 atomic landed (1a3a13f gitignore + 1f81965 7b.1-7b.11 closes + 7534ce7 7b.12 in-session); cycle-1 PATCH remediation NOT yet committed (held for next-session retrospective close commit per operator directive).
-**Branch state at session-end:** ahead of `origin/dev/langchain-langgraph-foundation` by 3 commits; cycle-1 remediation files in working tree (uncommitted by operator design).
+**Commits this session:** 4 atomic landed: `1a3a13f` (gitignore sanctum-tracking) + `1f81965` (7b.1-7b.11 closes) + `7534ce7` (7b.12 in-session dev) + `b7d060d` (**Slab 7b atomic close commit 2026-05-01**: cycle-1 PATCH remediation + Gate-2 evidence + retrospective + mapping-checklist row updates + spec template R15 + status flips).
+**Branch state at session-end:** ahead of `origin/dev/langchain-langgraph-foundation` by ≥4 commits; working tree CLEAN.
+
+---
+
+## 2026-05-01 session-close addendum (post-Slab-7b retrospective + atomic close)
+
+**Session work 2026-05-01 (closeout day):**
+- Operator ran Gate-2 ceremony 17:55 UTC via `_bmad-output/implementation-artifacts/7b-12-gate2-evidence-commands.ps1`. Transcript captured at `7b-12-gate2-evidence-2026-05-01-1351.utf8.txt` (UTF-8 re-encoded; PowerShell `Tee-Object` UTF-16 LE original preserved).
+- Gate-2 verdict matrix: **12 of 14 evidence blocks PASS**; 2 fail-closed `verdict: not_run` JSON skeletons by design (AC-G.1 cache-hit + AC-I 5-API per cycle-1 PATCH-1 contract). Wider regression: 1389 passed/21 skipped/1 deselected (-p no:randomly; +1 vs cycle-1 baseline 1388; deterministic).
+- Two party-mode UNANIMOUS 4/4 binding decisions ratified (John+Mary+Amelia+Murat):
+  - Round 1 path-c: accept fail-closed `not_run` JSON skeletons as authoritative documented Gate-2 evidence; live-dispatch deferred to `slab-7c-live-harness-evidence` follow-on.
+  - Round 2 option-9: skip inline Trial-2; defer AC-O+AC-P to standalone Trial-2 ceremony per Slab 7a precedent. Filed as `slab-7b-trial-2-ac-o-ac-p-readiness-confirmation-deferred-to-operator-trial-2-ceremony`.
+- Slab 7b retrospective T15 authored at `_bmad-output/planning-artifacts/slab-7b-retrospective.md`. Two binding retrospective decisions ratified:
+  - Decision 1: mapping-checklist row-status update (party-mode-gated). Honest-accounting yields 7 full ✅ flips (§03 Texas, §07 Gary, §07E Kira, §10 Vera+Quinn-R, §12 Enrique, §13 Quinn-R, §14 Compositor) + 1 partial flip (§02 Texas ❌→⚠️). Round-(a) A-10 R3 aspirational ~28 estimate corrected; orchestrational scaffolding deferred to Slab 7c+. PRE_SLAB_7B_FULLY_MIGRATED_FLOOR bumped 0→7.
+  - Decision 2: spec-language gating clarification (resolution (a) RATIFIED). Future spec authors phrase mapping-checklist row tests as integrity-preservation invariants over party-mode-ratified row updates. R15 added to `docs/dev-guide/specialist-migration-template.md` v2.5.
+- Atomic close commit `b7d060d` landed: 25 files / +2302 / −253 lines. Sprint-status flips: 7b.12 review→done; epic in-progress→done; retrospective optional→done.
+
+**2026-05-01 substantive Q&A (operator clarifying scope):**
+- Operator confirmed: Trial-2 is NOT a hard prerequisite for opening Slab 7c stories, but recommended sequence is Trial-2 first to surface integration-tier regressions while cycle-1 PATCH remediation is fresh.
+- Operator pushed back on framing of "Slab 7c = redoing Marcus orchestration": correct read is Slab 7a + 7b together implemented MOST of original `epics-langchain-langgraph-migration.md` §Epic 3 (Slab 3). Slab 7c (or Slab 3 closeout, however framed) closes the orchestrational tail (writers + HIL surfaces + GATE_IDS expansion + DecisionCard family verification + three-transport parity verification) — NOT the substrate. PRD authoring should reconcile.
+
+**Sprint-status YAML regression check:** PASS (`tests/test_sprint_status_yaml.py` 2 passed in 0.41s).
 
 ## What was completed
 
