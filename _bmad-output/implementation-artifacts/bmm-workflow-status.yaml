@@ -301,6 +301,19 @@ epic_26_bmb_sanctum_migration:
     wall_clock_target: "7-9 weeks tight"
     note: "Slab 7a Epic + 8 stories authored via bmad-create-epics-and-stories (4 steps; party-mode consensus at every step). Single-epic decomposition (substrate-completeness is one user-value bundle; multi-epic split would have failed standalone-epic principle per John's Step 2 audit). 8 stories sequenced strict-serial-with-parallel-waves (5 effective waves): 7a.1 directive_composer (dual-gate; closes trial-475 Gap 2) → 7a.2 manifest fold-flags + compiler ext (single-gate) → Wave 3: 7a.6 vocabulary registry + parity-table (single-gate; PROMOTED from wave-6 — registry must precede stories that emit vocabulary into it) || 7a.3 pre-gate-marcus shared LLM node (single-gate) — parallel → Wave 4: 7a.4 per-slide subgraph + HTML review-pack skeleton (single-gate-with-k-contract bounding HTML to skeleton-only; tripwire 4.08 K-floor escalates to dual-gate) || 7a.5 conversation persistence + specialist-summary writer (single-gate; FR ceiling at 20) — parallel → Wave 5: 7a.7 A2 single-decision shims (single-gate) || 7a.8 integration + parity-test suite + Slab 7a closeout (dual-gate; FLIPPED from single per integration-tier risk argument; SG-1+SG-2+SG-3 aggregated structural enforcement). All 87 FRs assigned to ≥1 story (87/87 verified by Mary's coverage audit). 73 NFRs: 11 NFR-CG + 1 NFR-I8 + 2 NFR-OD story-scoped; 59 cross-cutting AC predicates. Codex Deployment Boundary: Claude authors all 8 Slab 7a stories; Codex authors bmad-code-review on every Slab 7a + 7b story close + Slab 7b port-shape stories (Tracy/Gary/Kira/Enrique/Wanda) + sandbox-AC inventory PR. Distinct artifact from epics.md (legacy 22-epic frozen reference), epics-interstitial-clusters.md (Wave 2B frozen), and epics-langchain-langgraph-migration.md (migration 9-epic / 56-story decomposition; Slab 7a sibling-extends)."
 
+  epics_slab_7c_orchestrational_tail:
+    status: completed
+    file: "_bmad-output/planning-artifacts/epics-slab-7c-orchestrational-tail.md"
+    completed: "2026-05-04"
+    epic_count: 1
+    story_count: 36  # post-Winston-W1 split (7c.0 → 7c.0a + 7c.0b); pre-split body was 35
+    pts_estimate_range: "60-72 + 0.25 day W1 fold = ~6-7.25 days"
+    duration_estimate_days: "5.5-7 (collapse-paths to ~4.5-6); +0.25 day for 7c.0 split"
+    cross_agent_review_designated: ["7c.0a", "7c.0b", "7c.3a", "7c.4b", "7c.21"]
+    party_mode_rounds: 2  # R1: single-epic-vs-multi-epic ratification (4/4 unanimous); R2: story-decomposition review with Winston-triplet + AMEND-7a/b/c/d + Amelia P1/P2/P3/P4 + JTBD-1/2/3 folds
+    re_opens: 0
+    note: "Slab 7c epic + 36-story decomposition authored end-to-end via bmad-create-epics-and-stories 4-step workflow over single session 2026-05-04. Two party-mode rounds 4/4 unanimous (Round 1 ratifies single-epic; Round 2 folds Winston structural triplet — 7c.0 split to 7c.0a/0b + C4/C5/C6 consolidated at 7c.0a + extend-and-audit gate-mode for G1/G2C/G3/G4 — plus Murat AMEND-7a/b/c/d + Amelia P1/P2/P3/P4 + John JTBD-1/2/3 audit). FR coverage 54/54; NFR coverage 37/37; tripwire coverage 6/6 + TW-7c-6a deferred (Pearson correlation amendment). 5 cross-agent code-review designated stories. AMEND-6 corrects PRD frontmatter story_count_final 26 → 36. JTBD-1/2/3 (operator-failure-recovery + paused-trial-resume + tripwire-runtime-surface) assigned to Slab 4 PRD scope; tripwire-visibility partial at 7c.21 retrospective."
+
   prd_slab_7c_orchestrational_tail:
     status: "completed"
     file: "_bmad-output/planning-artifacts/prd-slab-7c-orchestrational-tail.md"
