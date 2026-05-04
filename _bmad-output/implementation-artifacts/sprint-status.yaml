@@ -351,6 +351,154 @@ tripwire_events:
       scaffold-conformance dispatch-roster failures filed as `slab-7b-scaffold-conformance-dispatch-roster-update`
       follow-on for 7b.12 Integration close.
 
+  # ---------------------------------------------------------------------------
+  # SLAB 7C TRIPWIRES (TW-7c-1..6) — seeded 2026-05-04 at bmad-sprint-planning.
+  # Slab 7c PRD §Tripwires + epics frontmatter `infra_ownership` block.
+  # All entries open in `not_yet_evaluated`; story-owners update at T10/T11/close.
+  #
+  # Amendments folded at Slab 7c epic-decomposition party-mode Round 2 (2026-05-04):
+  #   AMEND-7a (Murat): per-cell flake budget tightens to <0.05% for 7c-added
+  #     cells; pre-7c cells grandfather at 0.1%. Codified at 7c.21 + deferred-inv.
+  #   AMEND-7b (Murat): TW-7c-6a deferred entry adds Pearson correlation check
+  #     (r > 0.3 between any pair of HIL-surface flake-event vectors during
+  #     25-run canary). Out-of-scope for Slab 7c; registered shape only.
+  #   AMEND-7c (Murat): TW-7c-1 firing rule = ≥10% gap-rate against combined
+  #     floor per AUDIT-AC story (7c.20a ≥4 gaps; 7c.20b ≥3 gaps; 7c.20c ≥2 gaps).
+  #   AMEND-7d-i (Murat): TW-7c-3 firing-spec single-source at 7c.4b; the
+  #     seven gate stories (7c.5.G0..G6) cite by reference, never re-derive.
+  #   AMEND-7d-ii (Murat): 7c.0b enumerates THREE separate PASS/FAIL flags
+  #     (TW-7c-4 + TW-7c-5 + TW-7c-6 detection) at scaffold-completeness.
+  #   AMEND-7d-iii (Murat): 7c.21 STOP-on-TW-7c-6-fire branch; do NOT proceed
+  #     to retrospective if TW-7c-6 fires during ceremony.
+  # ---------------------------------------------------------------------------
+  - tripwire_id: TW-7c-1
+    story_owner: 7c-20c  # last AUDIT-AC closer aggregates final gap-rate verdict
+    secondary_owners: [7c-20a, 7c-20b]  # all three AUDIT-AC stories own gap-rate detection
+    fired_at: null
+    fired_verdict: not_yet_evaluated
+    measured_value: null
+    escalation_action_taken: null
+    decision_record_link: |
+      _bmad-output/planning-artifacts/epics-slab-7c-orchestrational-tail.md
+      _bmad-output/planning-artifacts/prd-slab-7c-orchestrational-tail.md
+    notes: |
+      AUDIT-AC gap-rate tripwire (high severity). Fires when ≥10% gap-rate
+      is measured against combined coverage floor per AUDIT-AC story (per
+      AMEND-7c Murat 2026-05-04 percentage-threshold restatement):
+        - 7c.20a: ≥4 gaps against combined floor 31 (≥20 shape-pins on
+          parity-DSL surfaces + ≥11 class-conformance assertions).
+        - 7c.20b: ≥3 gaps against combined floor 23 (≥15 cells in
+          5-family × 3-transport matrix + 8 named gate tests).
+        - 7c.20c: ≥2 gaps against combined floor 20 (14/14 four-file-lockstep
+          co-commit checks + 6/6 tripwire ledger probes).
+      On fire: STOP; party-mode-consensus on absorb-vs-defer per gap; gap-fill
+      follow-ons file as `7c.X.<descriptor>` (cap 5 per AUDIT-AC; >5 escalates
+      to party-mode impasse).
+  - tripwire_id: TW-7c-2
+    story_owner: 7c-3a  # composer body owns Trial-2 forensic-fixture regression test
+    secondary_owners: [7c-2]  # cp1252 fix + fixture-comparison utility
+    fired_at: null
+    fired_verdict: not_yet_evaluated
+    measured_value: null
+    escalation_action_taken: null
+    decision_record_link: |
+      _bmad-output/planning-artifacts/epics-slab-7c-orchestrational-tail.md
+      _bmad-output/planning-artifacts/prd-slab-7c-orchestrational-tail.md
+    notes: |
+      §02A composer regression tripwire (high severity). Fires if 7c.3a
+      regression test against the Trial-2 forensic fixture
+      (`state/config/runs/db276994-edf4-47a2-83bc-771cc214c3c1/`) reproduces
+      the byte-identical broken directive Trial-2 captured, OR if the cp1252
+      fixture-comparison utility (7c.2) detects byte-divergence from expected
+      UTF-8 across Windows + Linux + macOS. On fire: STOP; re-scope §02A;
+      §02A LLM-driven dual-nature claim invalidated.
+  - tripwire_id: TW-7c-3
+    story_owner: 7c-4b  # firing-spec single-source per AMEND-7d-i; 7c.5.G0..G6 cite by reference
+    secondary_owners: [7c-5-g0, 7c-5-g1, 7c-5-g2a, 7c-5-g2c, 7c-5-g3, 7c-5-g4, 7c-5-g5, 7c-5-g6]
+    fired_at: null
+    fired_verdict: not_yet_evaluated
+    measured_value: null
+    escalation_action_taken: null
+    decision_record_link: |
+      _bmad-output/planning-artifacts/epics-slab-7c-orchestrational-tail.md
+      _bmad-output/planning-artifacts/prd-slab-7c-orchestrational-tail.md
+    notes: |
+      Four-file-lockstep co-commit tripwire (critical severity). Fires when
+      any new gate is added without atomic four-file commit (model + JSON
+      schema + shape-pin + golden fixture). Per AMEND-7d-i Murat 2026-05-04:
+      firing condition lives at `app/parity/contracts/tw_7c_3_firing.py`
+      (or analogous architecture path) as the SINGLE SOURCE OF TRUTH; the
+      seven gate stories (7c.5.G0..G6) cite by reference
+      (`from app.parity.contracts.tw_7c_3_firing import LOCKSTEP_CHECK`)
+      rather than re-deriving the firing condition. One source; seven
+      citations; prevents drift. On fire: STOP; lockstep gate-fill required
+      before downstream advancement.
+  - tripwire_id: TW-7c-4
+    story_owner: 7c-21a  # live-dispatch authoring concentrated in named harness
+    secondary_owners: [7c-21]  # slab-close audit verifies no scope creep
+    fired_at: null
+    fired_verdict: not_yet_evaluated
+    measured_value: null
+    escalation_action_taken: null
+    decision_record_link: |
+      _bmad-output/planning-artifacts/epics-slab-7c-orchestrational-tail.md
+      _bmad-output/planning-artifacts/prd-slab-7c-orchestrational-tail.md
+      _bmad-output/planning-artifacts/deferred-inventory.md  # slab-7c-live-harness-evidence
+    notes: |
+      Live-dispatch scope-creep tripwire (medium severity). Fires when
+      live-dispatch authoring leaks outside the named harnesses
+      (`run_cache_hit_harness.py` + `run_5_api_smoke.py`). Detection: CI
+      lint via test-naming convention + import-graph check, scaffolded at
+      7c.0b per AMEND-7d-ii (separate PASS/FAIL flag from TW-7c-5 + TW-7c-6).
+      On fire: STOP; relocate violating live-dispatch into named harness;
+      file scope-creep prevention follow-on if recurrent.
+  - tripwire_id: TW-7c-5
+    story_owner: 7c-0b  # FR-7c-46 UTF-8 CI lint pass scaffold
+    secondary_owners: [7c-2]  # cp1252 fix exercise the lint pass
+    fired_at: null
+    fired_verdict: not_yet_evaluated
+    measured_value: null
+    escalation_action_taken: null
+    decision_record_link: |
+      _bmad-output/planning-artifacts/epics-slab-7c-orchestrational-tail.md
+      _bmad-output/planning-artifacts/prd-slab-7c-orchestrational-tail.md
+    notes: |
+      UTF-8 / encoding-violation tripwire (high severity). Fires when the
+      FR-7c-46 UTF-8 CI lint pass detects a non-UTF-8-encoded file under
+      the declared glob: `_bmad-output/**/*.md`, `app/**/*.py`,
+      `tests/**/*.py`, golden fixtures under `tests/fixtures/**`, and any
+      path declared in `state/config/pipeline-manifest.yaml::block_mode_trigger_paths`.
+      Detection scaffolded at 7c.0b per AMEND-7d-ii (separate PASS/FAIL
+      flag from TW-7c-4 + TW-7c-6). Cross-checks 7c.2 cp1252 fix coverage
+      (U+202F NNBSP and similar). On fire: STOP; remediate encoding;
+      re-run lint pass before advancement.
+  - tripwire_id: TW-7c-6
+    story_owner: 7c-21  # 50-run zero-flake parity baseline at slab-close
+    secondary_owners: [7c-0b]  # 50-run harness scaffold + per-cell flake-rate calculator
+    fired_at: null
+    fired_verdict: not_yet_evaluated
+    measured_value: null
+    escalation_action_taken: null
+    decision_record_link: |
+      _bmad-output/planning-artifacts/epics-slab-7c-orchestrational-tail.md
+      _bmad-output/planning-artifacts/prd-slab-7c-orchestrational-tail.md
+    notes: |
+      Parity-suite zero-flake tripwire (high severity). Fires when the
+      50-run parity baseline at slab-close (7c.21 ceremony) breaches the
+      per-cell flake budget: <0.05% for 7c-added cells (per AMEND-7a
+      Murat 2026-05-04 tightening); <0.1% grandfathered for pre-7c cells.
+      Per-cell flake-rate calculator scaffolded at 7c.0b distinguishes
+      cell classes. Per AMEND-7d-iii (Murat) STOP-on-TW-7c-6-fire branch:
+      if TW-7c-6 fires during 7c.21 ceremony, do NOT proceed to
+      retrospective; escalate to party-mode for parity-budget mitigation
+      per option-c parity-contract DSL; per-surface transport declaration
+      enforcement reviewed; ceremony resumes only after fix lands. The
+      slab-close ceremony itself is in the failure-loop ONLY if the
+      explicit STOP-branch is honored. TW-7c-6a (deferred per AMEND-7b)
+      adds Pearson correlation check (r > 0.3 between any pair of
+      HIL-surface flake-event vectors during 25-run canary) — registered
+      shape only; not seeded here.
+
 # =============================================================================
 # DEVELOPMENT PLAN: Cluster Intelligence + Creative Control (Epics 19-24 + 20c)
 # =============================================================================
@@ -1379,3 +1527,71 @@ development_status:
   migration-7b-11-compositor-greenfield: done  # 2026-04-30 CLOSED via NEW CYCLE end-to-end. Claude T11 review at _bmad-output/implementation-artifacts/7b-11-code-review-2026-04-30.md: PASS (zero PATCH on Compositor scope; 1 NON-BLOCKING OBSERVATION — pre-existing legacy scaffold-conformance dispatch-roster failures filed as `slab-7b-scaffold-conformance-dispatch-roster-update` follow-on for 7b.12 Integration close). **Pre-T1 K-projection check landed clean: 3.45K < 4.0K threshold → single-gate held; Round-(e) E1 binding-hard `conditional_dual_gate_escalation` NOT fired** (recorded at `tripwire_events::wave_5b_pre_t1_compositor::fired_verdict: false`). **Class-D2 template extension to validator landed lockstep — FULL Slab 7b coverage** (6 classes: A/B/C+/C/D1/D2; validator reports 11 conforming activation contracts = ALL 11 specialists). Class-D2 sidecar variant per D20 canonical (4-file operational metadata at `_bmad/memory/bmad-agent-compositor/`: contract.md/version.md/chronology.md/access-boundaries.md; NOT 6-file BMB; sanctum-path-equality EXEMPT per FR101.iv). Single SKILL.md at `skills/compositor/SKILL.md` (refreshed per scaffold-v0.2-D2-pipeline contract; NOT two-SKILL.md per Class-D2). Deterministic assembly pipeline `_act` body 21 LOC (well under AC-B 150 ceiling; NO LLM call — pure compute; sync-visuals + DESCRIPT-ASSEMBLY-GUIDE.md regeneration with field-masked-hash modulo {generated_at, run_id, build_timestamp}). H-Pipeline determinism harness ≥99% (10-iteration; D17 contract). 4-input chain test (Quinn-R + Tracy + Enrique + Wanda → Compositor). Composition Spec §10 Decision Log entry filed (Class-D2 sidecar canonical-not-exception per D20). Independent verification: 49 focused passed; 1368 broad regression passed under -p no:randomly; sandbox-AC PASS; pipeline lockstep PASS; live-API detector PASS (81 test files); lint-imports 9/9 KEPT; dispatch_adapter.py diff empty. **Wave-5b CLOSES; ALL 11 body stories COMPLETE; Wave-6 7b.12 Integration UNBLOCKS** (dual-gate strict-last; spec + Codex dev-prompt staged). NEW CYCLE proven 11× end-to-end. Sanctum files tracked normally per 2026-04-30 .gitignore update. Self-review: _bmad-output/implementation-artifacts/7b-11-codex-self-review-2026-04-30.md.
   migration-7b-12-integration-parity-suite-closeout: done  # 2026-05-01 CLOSED via DUAL-GATE Gate-2 ceremony + party-mode UNANIMOUS 4/4 round-1 path-c (accept fail-closed `not_run` JSON skeletons as documented Gate-2 evidence per cycle-1 PATCH-1 contract; live-dispatch deferred to slab-7c-live-harness-evidence) + party-mode UNANIMOUS 4/4 round-2 option-9 (defer AC-O+AC-P to operator-driven Trial-2 ceremony per Slab 7a precedent; filed as slab-7b-trial-2-ac-o-ac-p-readiness-confirmation-deferred-to-operator-trial-2-ceremony). Gate-2 evidence ceremony 2026-05-01 17:55 UTC — 12 of 14 blocks PASS (transcript at `_bmad-output/implementation-artifacts/7b-12-gate2-evidence-2026-05-01-1351.utf8.txt`); JSON evidence at 7b-12-{cache-hit-harness,pipeline-determinism,trial-2-cost-projection,5-api-smoke}-evidence.json. Wider regression: 1389 passed/21 skipped/1 deselected (-p no:randomly; +1 vs cycle-1 baseline 1388). PRE-EXISTING: 2026-04-30 Claude in-session-developed T1-T12 (POLARITY DEVIATION: first 7b.x story Claude developed vs Codex; operator-authorized in-session because Codex budget refresh was 30 min away). 22 files (+~2200 LOC): 4 new parity tests (test_eleven_specialists_addressable.py 3 PASS + test_mapping_checklist_status.py 4 PASS + test_nfr_cg_slab7b_block_aggregated.py 9 PASS + test_rate_limit_budgets_declared.py 4 PASS) + 5 new CI workflows (specialist-parity / activation-contract / mapping-checklist / substrate-frozen-paths-check / codex-scope-audit) + 13 new docs (dev-doc + operator-doc sanctum-alignment matrices + 11 per-specialist OPERATOR/INPUTS/OUTPUTS/REFERENCE docs) + 2 new artifacts (7b-12-gate2-evidence-commands.ps1 + 7b-12-codex-self-review-2026-04-30.md G6 layered review) + 2 modified (test_skill_md_sanctum_alignment.py duplicate-Tracy-class cleanup + legacy-vs-langgraph-control-parity.md +11 body-activation rows). Verification: validate_parity_test_class_conformance.py PASS (11 contracts; UNCHANGED from 7b.11 close — integration story does NOT introduce new contract); validate_migration_story_sandbox_acs.py PASS; check_pipeline_manifest_lockstep.py PASS; detect_live_api_in_tests.py PASS (81 files); lint-imports.exe 9/9 KEPT; dispatch_adapter.py:70-95 empty diff. **In-session bmad-party-mode T13 (John+Mary+Amelia+Murat) verdict: GO-WITH-CONCERN majority (3-of-4; Amelia GO; no NO-GO).** Remediations applied 2026-04-30: (1) Murat fact-check on "+1 over 7b.11" framing corrected; (2) Murat AC-G/H/I framing tightened — PS script lines are DOCUMENTED INTENDED-INVOCATIONS (underlying Python utilities NOT YET AUTHORED); (3) Mary substantive — T12.5 pre-Gate-2 script-skeleton authoring task carved into next-session-start-here.md as BLOCKING. Filed for retrospective: (4) `slab-7b-spec-language-row-improvement-vs-party-mode-gating-clarification` meta-follow-on; `slab-7b-mapping-checklist-row-status-update`; `mapping-checklist-deferred-row-detection-strengthening`. **DEFERRED to next session (NEW CYCLE polarity preservation):** (a) Codex T11 cross-agent bmad-code-review on the 22-file deliverable; (b) T12.5 script-skeleton authoring (4 Python utilities under scripts/utilities/ for AC-G/H/I); (c) operator-witnessed DUAL-GATE Gate-2 ceremony via 7b-12-gate2-evidence-commands.ps1; (d) MVP Exit Gate AC-O + Slab Close Gate AC-P verification (operator runs Trial-2 or dry-run); (e) Slab 7b retrospective (T15) per bmad-retrospective skill; (f) atomic close commit. [PRE-EXISTING] Wave 6 (integration; strict-last; **DUAL-GATE** per Slab 7a 7a.8 precedent + Murat integration-tier risk argument; Claude); K-target ~3K LOC + ~25 active tests; FR coverage 8 (FR88/FR101/FR102/FR103/FR104/FR105/FR106/FR107 aggregation + NFR-CG12-CG20 + NFR-I9-I13 + NFR-OD3-OD6). Trial-2 cost-projection dry-run AC per Round-(a) John A1; 5-API live-binding smoke (operator-gated AC-12-B). SG-1+SG-2+SG-3+SG-4 AGGREGATED structural enforcement.
   migration-epic-slab-7b-specialist-activation-eleven-retrospective: done  # 2026-05-01 CLOSED via bmad-retrospective skill at slab close. Author: Claude (per CLAUDE.md sprint-governance + operator directive). Output: `_bmad-output/planning-artifacts/slab-7b-retrospective.md`. Two binding decisions ratified at retrospective: (1) `slab-7b-mapping-checklist-row-status-update` row-flip authority — honest-accounting yields 7 full ✅ flips (§03 Texas, §07 Gary, §07E Kira, §10 Vera+Quinn-R, §12 Enrique, §13 Quinn-R, §14 Compositor) + 1 partial ❌→⚠️ (§02 Texas). Round-(a) A-10 R3 aspirational ~28 deferred to Slab 7c+ orchestrational scaffolding work. Preserve deferred-rows §05B/§6.2/§6.3/§7.5/§14.5/§15; PRE_SLAB_7B_FULLY_MIGRATED_FLOOR bumps 0→7 in lockstep. (2) `slab-7b-spec-language-row-improvement-vs-party-mode-gating-clarification` — resolution (a) RATIFIED: future spec language phrases mapping-checklist row tests as integrity-preservation invariants over party-mode-ratified row updates; doc update lands at `docs/dev-guide/specialist-migration-template.md` R-block. Deferred-inventory consultation: 4 new (slab-7c-live-harness-evidence + slab-7b-trial-2-ac-o-ac-p-readiness + mapping-checklist-deferred-row-detection-strengthening + slab-7b-scaffold-conformance-dispatch-roster-update + slab-7b-pre-existing-full-ruff-debt-cleanup-pass) − 2 closed at retrospective − 3 closed during slab execution = net +0 inventory delta. Slab 7c kickoff readiness: hard gates 9/9 + Gate-2 ceremony LANDED 2026-05-01 17:55 UTC (transcript `7b-12-gate2-evidence-2026-05-01-1351.utf8.txt`); soft gates surface Slab 7c discovery scope. NO significant architectural discoveries that invalidate Slab 7c plan-of-record. Atomic close commit pending: bundles cycle-1 PATCH remediation + mapping-checklist row updates + test floor bump + spec-template doc update + retrospective + 7b.12 review→done + epic in-progress→done.
+
+  # ===========================================================================
+  # SLAB 7C — MARCUS ORCHESTRATIONAL TAIL
+  # ===========================================================================
+  # Source: _bmad-output/planning-artifacts/epics-slab-7c-orchestrational-tail.md
+  # Authored 2026-05-04 via bmad-create-epics-and-stories (Steps 1-4 complete).
+  # Single-epic decomposition; 36 stories across 6 waves; ratified party-mode
+  # 4/4 unanimous (John+Winston+Amelia+Murat) over 2 rounds 2026-05-04.
+  #
+  # Wave 0 (2 stories; both dual-gate cross-agent MANDATORY):
+  #   7c.0a Decision Foundation (architecture-tier; precedes 7c.0b)
+  #   7c.0b Scaffold Foundation (build-tier; consumes 7c.0a)
+  # Wave 1 (4 stories; post-7c.0b, except 7c.2 parallel per AMELIA-P1):
+  #   7c.1 / 7c.2 / 7c.3a (cross-agent) / 7c.3b
+  # Wave 2 (10 stories; post-7c.4b for the 8 gate stories):
+  #   7c.4a / 7c.4b (cross-agent) / 7c.5.G0..G6 (8: 4 fresh + 4 extend-and-audit)
+  # Wave 3 (10 stories; per-surface overlap with Wave 2; 4 G2C-aliased stories
+  #   stagger ≥30 min apart per AMELIA-P3):
+  #   7c.6 / 7c.7 / 7c.8 / 7c.9 / 7c.10 / 7c.11 / 7c.12 / 7c.13 / 7c.14 / 7c.15
+  # Wave 4 (2 stories): 7c.17a / 7c.17b
+  # Wave 5 (6 stories): 7c.18a / 7c.18b / 7c.19 / 7c.20a / 7c.20b / 7c.20c
+  # Wave 6 (2 stories): 7c.21 ceremony (cross-agent) / 7c.21a Epic 3 retirement
+  #
+  # Cross-agent code-review pre-designated (5 stories): 7c.0a, 7c.0b, 7c.3a,
+  #   7c.4b, 7c.21.
+  # `dual-gate-cross-agent-CONTRACT-EVOLUTION` (extend-and-audit) gate-mode
+  #   (4 stories): 7c.5.G1, 7c.5.G2C, 7c.5.G3, 7c.5.G4.
+  # ---------------------------------------------------------------------------
+  prd-slab-7c-orchestrational-tail: completed  # 2026-05-04 PRD authored end-to-end via bmad-create-prd; 4 party-mode rounds; 19 FR/NFR amendments + decomposition lock
+  epics-slab-7c-orchestrational-tail: completed  # 2026-05-04 epics + 36-story decomposition authored via bmad-create-epics-and-stories Steps 1-4; 2 party-mode rounds 4/4 unanimous; 22 amendments folded
+  migration-epic-slab-7c-orchestrational-tail: backlog  # 36 stories; flips backlog->in-progress on first story open (7c.0a Decision Foundation per Winston W1 hard precedence)
+  migration-7c-0a-decision-foundation: backlog  # Wave 0; dual-gate cross-agent MANDATORY; gating: 7c.0b + Wave 1 cannot open until 7c.0a closes
+  migration-7c-0b-scaffold-foundation: backlog  # Wave 0; dual-gate cross-agent MANDATORY; consumes 7c.0a artifacts; gating: Wave 1 (except 7c.2) cannot open until 7c.0b closes
+  migration-7c-1-parity-contract-dsl-foundation: backlog  # Wave 1; dual-gate; refactor 8 existing transport-parity files
+  migration-7c-2-cp1252-windows-portability-fix: backlog  # Wave 1; single-gate; AMELIA-P1 path-isolation guard — must NOT touch 7c.0a/0b deliverable paths; opens parallel to 7c.0a/0b per John A2
+  migration-7c-3a-section-02a-llm-directive-composer-body: backlog  # Wave 1; dual-gate cross-agent MANDATORY; closes Trial-2 finding #2; owns TW-7c-2 firing
+  migration-7c-3b-section-02a-g0-poll-surface-canonical-hil-pattern: backlog  # Wave 1; dual-gate; canonical HIL pattern that 7c.6..7c.15 replicate
+  migration-7c-4a-gate-family-taxonomy-ratification: backlog  # Wave 2; single-gate; decision artifact only (ADR 0002)
+  migration-7c-4b-gate-family-foundation-implementation: backlog  # Wave 2; dual-gate cross-agent MANDATORY; AMEND-7d-i TW-7c-3 firing-spec single-source lives here
+  migration-7c-5-g0-decision-card-fresh-author: backlog  # Wave 2; single-gate; fresh-author; G0 trial-open / corpus-confirm gate
+  migration-7c-5-g1-decision-card-extend-and-audit: backlog  # Wave 2; dual-gate-cross-agent-CONTRACT-EVOLUTION; G1 directive-ratification gate (already shipped at 7a substrate); extend with FR-7c-51 schema_version + AMELIA-P4 frozen-hash delta-AC
+  migration-7c-5-g2a-decision-card-fresh-author: backlog  # Wave 2; single-gate; fresh-author; G2A plan-unit-ratification gate
+  migration-7c-5-g2c-decision-card-extend-and-audit: backlog  # Wave 2; dual-gate-cross-agent-CONTRACT-EVOLUTION; G2C pre-composition QA gate (already shipped); 4 Wave-3 stories alias to G2C — AMELIA-P3 staggering keyed off this close
+  migration-7c-5-g3-decision-card-extend-and-audit: backlog  # Wave 2; dual-gate-cross-agent-CONTRACT-EVOLUTION; G3 motion-clip approval gate (already shipped); AMELIA-P4 frozen-hash delta-AC
+  migration-7c-5-g4-decision-card-extend-and-audit: backlog  # Wave 2; dual-gate-cross-agent-CONTRACT-EVOLUTION; G4 fidelity gate (already shipped); AMELIA-P4 frozen-hash delta-AC
+  migration-7c-5-g5-decision-card-fresh-author: backlog  # Wave 2; single-gate; fresh-author; G5 final operator handoff gate
+  migration-7c-5-g6-decision-card-fresh-author: backlog  # Wave 2; single-gate; fresh-author; G6 slab-close ceremony gate
+  migration-7c-6-section-04a-g1a-per-plan-unit-ratification: backlog  # Wave 3; single-gate; predecessor 7c.5.G1
+  migration-7c-7-section-04-5-g1-5-estimator: backlog  # Wave 3; single-gate; predecessor 7c.5.G1
+  migration-7c-8-section-04-55-run-constants-lock: backlog  # Wave 3; single-gate; predecessor 7c.5.G1
+  migration-7c-9-section-05-5-g2b-per-slide-mode: backlog  # Wave 3; single-gate; predecessor 7c.5.G2C; AMELIA-P3 staggering applies (G2C-aliased; >=30 min from 7c.10/7c.11/7c.12)
+  migration-7c-10-section-07b-g2m-per-slide-variant: backlog  # Wave 3; single-gate; predecessor 7c.5.G2C; AMELIA-P3 staggering applies
+  migration-7c-11-section-07d-g2-5-motion-plan-polling: backlog  # Wave 3; single-gate; predecessor 7c.5.G2C; AMELIA-P3 staggering applies
+  migration-7c-12-section-07f-g2f-motion-gate: backlog  # Wave 3; single-gate; predecessor 7c.5.G2C; AMELIA-P3 staggering applies
+  migration-7c-13-section-08b-g3b-storyboard-b-live-url: backlog  # Wave 3; single-gate; predecessor 7c.5.G3
+  migration-7c-14-section-11-g4a-voice-selection: backlog  # Wave 3; single-gate; predecessor 7c.5.G4
+  migration-7c-15-section-11b-g4b-section-15-g5-final-operator-handoff: backlog  # Wave 3; single-gate; AMEND-4 fold (FR-7c-19 + FR-7c-29 §15 bundle emission); predecessors 7c.5.G4 + 7c.5.G5
+  migration-7c-17a-marcus-writers-slide-content-fidelity-slides-diagram-cards: backlog  # Wave 4; single-gate; AMEND-3 specific writer-to-story split (3 of 5 Marcus-bound writers; shared-sanctum partition per Winston W5)
+  migration-7c-17b-marcus-writers-theme-resolution-outbound-envelope: backlog  # Wave 4; single-gate; AMEND-3 specific writer-to-story split (2 of 5 Marcus-bound writers + envelope aggregation; divergent-sanctum partition)
+  migration-7c-18a-section-06b-literal-visual-operator-build: backlog  # Wave 5; single-gate
+  migration-7c-18b-section-07c-storyboard-build-html-reviewer-surface: backlog  # Wave 5; single-gate
+  migration-7c-19-section-09-four-artifact-lock-semantics: backlog  # Wave 5; single-gate; FR-7c-28 four-artifact lock at §09
+  migration-7c-20a-audit-ac-shape-pins-class-conformance: backlog  # Wave 5; single-gate; AUDIT-AC; fires TW-7c-1 at >=4 gaps
+  migration-7c-20b-audit-ac-transport-parity-matrix: backlog  # Wave 5; single-gate; AUDIT-AC; fires TW-7c-1 at >=3 gaps
+  migration-7c-20c-audit-ac-four-file-lockstep-tripwire-ledger: backlog  # Wave 5; single-gate; AUDIT-AC; fires TW-7c-1 at >=2 gaps; aggregates final gap-rate verdict
+  migration-7c-21-integration-parity-suite-slab-7c-closeout: backlog  # Wave 6; dual-gate cross-agent MANDATORY; SG-1+SG-2+SG-3+SG-4 aggregated structural enforcement; fires TW-7c-6 50-run zero-flake; STOP-on-TW-7c-6-fire branch (AMEND-7d-iii)
+  migration-7c-21a-epic-3-retirement-live-dispatch-wiring: backlog  # Wave 6; single-gate; FR-7c-48 live-dispatch authoring + Epic 3 in-place retirement per FR-7c-43
+  migration-epic-slab-7c-orchestrational-tail-retrospective: optional
