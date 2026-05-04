@@ -259,3 +259,82 @@
 - ✅ `docs/dev-guide/migration-ac-sandbox-inventory.json` — `dan-api-tbd-pending` retired at 7b.10 T1
 
 **Audit trail:** dev-coherence reports under `reports/dev-coherence/2026-04-30-*` (multiple lockstep PASS records across the session).
+
+---
+
+# Session Handoff Addendum — 2026-05-04 (Slab 7c PRD authored end-to-end)
+
+**Session date:** 2026-05-04 (single-session PRD authoring; same calendar day as Trial-2 ceremony above; consecutive sessions)
+**Branch:** `dev/langchain-langgraph-foundation`
+**Commit this session:** none yet (pending operator authorization for Step-12 git closeout)
+**Branch state at session-end (pre-commit):** clean baseline at HEAD `16a355f`; 2 uncommitted changes (M `_bmad-output/implementation-artifacts/bmm-workflow-status.yaml` + ?? `_bmad-output/planning-artifacts/prd-slab-7c-orchestrational-tail.md`).
+
+## What was completed
+
+**Slab 7c PRD authored end-to-end** via `bmad-create-prd` 12-step workflow at `_bmad-output/planning-artifacts/prd-slab-7c-orchestrational-tail.md` (1808 lines; 13 H2 sections; 47 H3 sub-sections). PRD formally REPLACES original Epic 3 (Slab 3 Marcus Orchestration) of `epics-langchain-langgraph-migration.md` jointly with Slabs 7a + 7b — Reading 1 ratified party-mode unanimous in Round 1.
+
+**Party-mode roundtables (4 rounds, all 4/4 unanimous, 0 re-opens):**
+
+1. **Round 1 (framing):** Reading 1 vs Reading 2. All four (John + Winston + Amelia + Murat) voted Reading 1: Slab 7a + 7b + 7c REPLACE original Epic 3.
+2. **Round 1.5 (substrate grep):** Operator-authorized substrate-grep confirmed plumbing already on disk for original 3.2/3.3/3.4/3.5 — 8 transport-parity tests + 7 DecisionCard modules + 5 schemas + 9 import-linter contracts. Reframed carry-forwards as AUDIT-ACs (verify-then-file-if-gap), not BUILD-ACs.
+3. **Round 2 (consolidated PRD-Step-1 paragraph):** Winston-lineage framing + John §02A dual-nature caveat + Murat Trial-3 separate-ceremony commitment + Amelia AUDIT-not-BUILD reframing folded into a single Goals/Vision paragraph.
+4. **Round 3 (FR/NFR sign-off):** All four ACCEPT-WITH-AMENDMENT; **19 amendments folded** into PRD §FRs + §NFRs. Murat A5 (`TripwireLedgerEntry` Pydantic-v2 enforcement) flagged as highest-leverage. Six new FRs added: FR-7c-49 OperatorVerdict schema-stability, FR-7c-50 override_event audit-chain integrity, FR-7c-51 schema_version + Trial3Transcript, FR-7c-52 codex-dev-prompt artifact (NEW CYCLE), FR-7c-53 import-linter C4/C5/C6, FR-7c-54 sanctum-alignment for 5 writers. NFR amendments: P1 calibration band, P2 cache-key normalization, P4 transport split, R1 Slab-7b alignment, R7 split into R7a/R7b, S3/S4/S7 import-linter scope, OD2 Pydantic enforcement, NEW OD7 self-registration audit.
+5. **Round 4 (story-decomposition sign-off):** All four ACCEPT-WITH-AMENDMENT; **consolidated story-decomposition amendments folded.** Story count: ~26 stories / ~60-72 pts / 5.5-7 days realistic. 7c.0 ADR + scaffold + cross-cutting infra (~5 pts dual cross-agent). 7c.3 split into 7c.3a composer-body + 7c.3b §02A poll-surface (canonical HIL pattern in Wave 1; 10 followers in Wave 3). 7c.4 split into 7c.4a decision + 7c.4b foundation. Gate taxonomy locked (8 net-new + 6 alias gates). 7c.17 split into 7c.17a + 7c.17b. 7c.18 split into 7c.18a + 7c.18b. 7c.20 hard-split into 7c.20a/b/c per Murat M3. 7c.21 peeled into 7c.21 ceremony + 7c.21a Epic 3 retirement. Cross-agent code-review pre-designated for 7c.0/7c.3a/7c.4b/7c.21.
+
+**Capability contracts:**
+- **54 FRs across 10 capability areas A-J:** A §02A composer (5) + B gate expansion (4) + C 11 HIL surfaces (11) + D 5 writers (5) + E §06B/§07C/§09/§15 (4) + F parity-DSL (4) + G AUDIT-ACs (5) + H tripwire/governance (5) + I CI substrate (5) + J schema-stability + NEW CYCLE (6).
+- **36 NFRs across 6 categories:** P:5, S:7, R:8 (R1-R6 + R7a + R7b), M:6, X:4, OD:7.
+- **6 tripwires (TW-7c-1..TW-7c-6)** with named severity (high/critical) + escalation; detection-infra ownership table per Murat M1 (7c.0 owns TW-7c-4/5/6 detection scaffolds).
+- **3 PRD-level architectural invariants:** D2 (model cascade + DecisionCardMeta cache_state), D3 (HIL tamper-evidence + verdict-digest match + override_event audit chain), D7 (transport parity across CLI / FastAPI / MCP-stdio / MCP-subprocess).
+
+**Workflow status update:** added `prd_slab_7c_orchestrational_tail` block to `_bmad-output/implementation-artifacts/bmm-workflow-status.yaml::workflow_artifacts` (sibling-extends `prd_slab_7a` + `prd_slab_7b` + `prd_langchain_langgraph_migration`).
+
+## What is next
+
+**Immediate next action:** invoke `bmad-check-implementation-readiness` on the new PRD. Slab 7b precedent: ran Steps 1-3 only (Steps 4-6 deferred until `bmad-create-epics-and-stories` produces epic file). Verdict format: READY-WITH-MINOR-AMENDMENTS-AND-NAMED-PRECONDITIONS.
+
+**Subsequent workflow chain (per CLAUDE.md sprint governance):**
+1. `bmad-check-implementation-readiness` (next-session anchor)
+2. `bmad-create-epics-and-stories` → authors `epics-slab-7c-orchestrational-tail.md` (1 epic + ~26 story shells)
+3. `bmad-sprint-planning` → authors `docs/dev-guide/migration-story-governance.json` entries per story (gate-mode + K-target; cross-agent designation for 7c.0/7c.3a/7c.4b/7c.21); seeds `sprint-status.yaml::tripwire_events` for TW-7c-1..6
+4. `bmad-create-story` for **7c.0** (the gating ADR + scaffold story; required before 7c.1 implementation per Amelia A4)
+5. NEW CYCLE Codex/Claude dev cycle per individual story — proven 11× across 7a + 7b
+
+## Unresolved issues / risks
+
+**No blockers.** All Slab 7c PRD authoring closed clean. Two uncommitted changes pending operator-authorized git closeout (Step 12).
+
+**Pre-closure gaps (none unremediated):**
+- Step 0a harmonization sweep skipped per soft-conditional mode (no code changes; PRD-only session).
+- Step 0b pre-closure audit skipped (no stories flipped to `done`).
+- Step 1 quality gate: PRD authoring is markdown-only; no ruff/lint/test relevance.
+
+**Risks carried forward (existing, not new):** Trial-2 finding #1 (G0 cp1252 crash) + finding #2 (directive-composer corpus-scan fallback) remain open as deferred-inventory entries. Both will close at Slab 7c retrospective post-7c.21 close (per FR-7c-43).
+
+## Key lessons learned
+
+1. **Substrate-grep evidence (Round 1.5)** materially compressed Slab 7c scope — Round 1's verification ACs reframed as AUDIT-ACs against already-shipped plumbing. Pattern: at PRD framing, run a substrate-grep before story-count estimates to distinguish BUILD vs AUDIT scope.
+2. **AUDIT-not-BUILD slab framing** is a novel project-internal pattern. Other slabs assumed net-new build; Slab 7c's compression to coverage-only audit is reproducible whenever a closeout sub-slab inherits prior-slab plumbing.
+3. **Six-tripwire structural enforcement at slab-open with per-tripwire severity** transforms tripwires from runtime-evaluation to structural-pre-condition. Murat A5 (Pydantic-v2 `TripwireLedgerEntry`) is the highest-leverage discipline change: schema enforcement at compile time, not retrospective review.
+4. **Parity-contract DSL option-c** (Winston Round-3 architectural pre-decision) prevents 11 inconsistent decisions at story-author time. Pattern: when a slab introduces N>5 surfaces with shared parity-test obligations, decide the DSL once at PRD; do not defer to per-story sprint-planning.
+5. **§02A dual-nature framing** (feature + bug-fix piggyback) is honest about substrate work that piggybacks on a feature story. Without the explicit dual-nature label, the AC shape silently carries an undisclosed regression-fix contract.
+6. **7c.3a composer-body / 7c.3b poll-surface split** (Winston Round-4) inverted the original §02A wave assignment — what was "one of 11 HIL surfaces in Wave 3" became "the canonical HIL pattern in Wave 1 that all 10 followers replicate." Pattern: when a slab has N similar surfaces, lift the canonical-pattern-author to an earlier wave where downstream consumers can pattern-match.
+
+## Validation summary
+
+- **Step 0a harmonization sweep:** SKIPPED (soft-conditional; markdown-only session).
+- **Step 0b pre-closure audit:** SKIPPED (no stories flipped to `done`).
+- **Step 1 quality gate:** N/A for PRD-only session.
+- **Sprint-status YAML test:** N/A (no sprint-status edit this session).
+- **Party-mode consensus:** 4 rounds × 4 voices × 4/4 unanimous × 0 re-opens.
+- **Substrate-grep evidence:** confirmed plumbing on disk for FR-7c-34..37 (8 transport-parity tests + 7 DecisionCard modules + 5 schemas + 9 import-linter contracts).
+
+## Artifact update checklist
+
+- ✅ `_bmad-output/planning-artifacts/prd-slab-7c-orchestrational-tail.md` — NEW; 1808 lines; workflow Steps 1-12 complete; frontmatter `workflowComplete: true; completedAt: 2026-05-04`
+- ✅ `_bmad-output/implementation-artifacts/bmm-workflow-status.yaml` — added `prd_slab_7c_orchestrational_tail` block under `workflow_artifacts`
+- ✅ `next-session-start-here.md` — rewritten for next-session ramp-up to `bmad-check-implementation-readiness`
+- ✅ `SESSION-HANDOFF.md` — this addendum
+- ⏸ Git closeout pending — operator-authorized Step-12 not yet executed (working-branch-only commit recommended; merge-to-master deferred per Slab 7c PRD scope)
+
+**Audit trail:** no dev-coherence report this session (Step 0a skipped per soft-conditional mode).
