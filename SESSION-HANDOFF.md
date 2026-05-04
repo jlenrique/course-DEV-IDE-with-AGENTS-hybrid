@@ -1,3 +1,122 @@
+# Session Handoff — 2026-05-04 (Trial-2 STRUCTURED-STOP ceremony — 3 honest findings; pivot to Route B Slab 7c PRD)
+
+**Session date:** 2026-05-04 (single-session Trial-2 ceremony)
+**Branch:** `dev/langchain-langgraph-foundation`
+**Commit this session:** 1 commit landed: `973afa3` docs(trial-2): structured-stop ceremony 2026-05-04 — three findings; pivot to Route B (Slab 7c PRD).
+**Branch state at session-end:** 6 commits ahead of `origin/dev/langchain-langgraph-foundation`; working tree CLEAN.
+
+---
+
+## What was completed
+
+**Trial-2 ceremony executed against `course-content/courses/tejal-APC-C1/` corpus on the migrated runtime.** Eight successive launch attempts surfaced three orthogonal findings, then the ceremony was paused at a structured stop per operator + Marcus consensus. Trial-2 will re-run as a Slab 7c close gate, not as a standalone ceremony.
+
+**Pre-flight verification** (all PASS):
+- `migration-epic-slab-7b-specialist-activation-eleven` + retrospective + 7b.12 integration: all `done` ✅
+- `validate_parity_test_class_conformance.py tests/parity/`: 11 activation contracts conform across 6 classes (A/B/C+/C/D1/D2) ✅
+- Mapping-checklist parity tests: 4 passed ✅
+- `.env` loads 8 keys including OPENAI_API_KEY + LANGSMITH_API_KEY + LANGSMITH_PROJECT (real LangSmith tracing available) ✅
+- Working tree CLEAN at launch; 5 commits ahead of `origin/dev/langchain-langgraph-foundation` ✅
+- Branch alignment: `dev/langchain-langgraph-foundation` matches handoff target ✅
+
+**Marcus activation:** Sanctum rebirth path (INDEX/PERSONA/CREED/BOND/MEMORY/CAPABILITIES loaded).
+
+**Trial-2 launch attempts (chronological, all preserved as forensic evidence under `state/config/runs/`):**
+1. `d44128e9-...` — vanilla launch; G0 print crashed Windows cp1252 stdout on U+202F NARROW NO-BREAK SPACE (macOS screenshot filenames `... 5.38.36 PM.png`).
+2-4. PowerShell-vs-bash routing diagnostics; `!` prefix routes through Git Bash, not PowerShell.
+5. `9eabd5ac-...` — `PYTHONIOENCODING=utf-8` resolved Finding #1; G0 print rendered cleanly. Then crashed at `input()` with EOFError because Git Bash winpty wraps `.exe` invocations and `sys.stdin.isatty()` returns True from the pseudo-TTY but no actual input source attached.
+6. `c8c3b6be-...` — `< /dev/null` redirect did NOT alter `isatty()` because winpty intercepts at OS layer below bash redirect.
+7. `db05cda7-...` — `echo c |` pipe forced `isatty() == False`; without `--auto-confirm-directive`, code raised `DirectiveConfirmationRequiredError` (correct fail-loud behavior).
+8. `db276994-edf4-47a2-83bc-771cc214c3c1` — **canonical Trial-2 evidence run**: pipe + `--auto-confirm-directive` cleared G0 cleanly; pipeline advanced to Texas extraction; Texas wrangler returned exit code 30; Texas correctly raised `BundleDispatchError("texas wrangler reported hard error (exit 30); bundle not trusted", tag="bundle.parsed.exit-30")` per `app/specialists/texas/_act.py:322-326`. Bundle directory `state/config/runs/db276994-.../bundle/` empty. `production_clone_launch_evidence: false` recorded with reason `registered-no-specialist-fired`.
+
+**Three findings collected:**
+
+1. **G0 print cp1252 crash on macOS-screenshot Unicode** — `app/marcus/cli/trial.py:123` default `print_fn = (lambda msg: print(msg))` crashes on U+202F NARROW NO-BREAK SPACE when corpus contains macOS-generated screenshot filenames (NNBSP separates time and AM/PM). Anti-pattern A11 (Windows-portability), already cataloged. Marcus MEMORY 2026-04-17 records the same class of bug in Texas wrangler `--help` output. Workaround validated: `PYTHONIOENCODING=utf-8` resolves at attempts 5 onward. Permanent fix: replace print_fn lambda with UTF-8-safe writer. ~0.5pt; standalone or Slab 7c §02A precursor patch.
+
+2. **Pre-gate-marcus directive composer is corpus-scan FALLBACK, not LLM-driven** — 5 successive runs produced byte-identical broken directive: `.gitkeep` promoted to `src-001 role: primary`; `APC C1-M1 Tejal 2026-03-29.docx` (the actual primary lesson content) demoted to `src-004 role: supporting`; PNG/JPG/PPTX/PDF binaries all assigned `expected_min_words: 200`. Story 7a.3 pre-gate-marcus shared LLM node infrastructure IS structurally landed (lockstep + tests pass; orchestration-only-node tolerance verified) — what's missing is the prompt + LLM call inside the node that converts corpus-dir scan into a semantically-aware directive. Maps to **Slab 7c §02A operator-directives poll surface** (already scoped per `next-session-start-here.md`; this evidence elevates §02A to first PRD priority within Slab 7c). ~3-5pt single-gate.
+
+3. **Texas wrangler fail-loud guardrail engaged correctly** — Texas refused to write a bundle when handed the broken corpus-scan directive. Bundle directory remains empty. This is exactly the contract Story 7b.1 Texas hardening shipped: no fixture-stub silent-passthrough on broken input. **Substrate honors the contract end-to-end on real corpus content.**
+
+**Decisions ratified at structured stop:**
+- Trial-2 ceremony PAUSED. Three findings constitute sufficient honest gap evidence; pushing further would require either hand-authored directive injection (out of Marcus's lane per CREED — "delegate, don't author") or a real-TTY operator-driven session at the [e]dit branch (deferred until directive composer can be evaluated post-Slab-7c).
+- Pivot to Route B (Slab 7c PRD authoring) at next session, informed by these findings.
+- Two prior deferred-inventory entries CLOSED:
+  - `slab-7a-trial-2-bs-2-readiness-confirmation-deferred-to-operator-trial-2-ceremony` → CLOSED (substrate readiness confirmed end-to-end).
+  - `slab-7b-trial-2-ac-o-ac-p-readiness-confirmation-deferred-to-operator-trial-2-ceremony` → CLOSED-WITH-EVIDENCE (cannot complete until Slab 7c §02A lands; resolves into Finding #2).
+- Two new deferred-inventory entries OPENED:
+  - `trial-2-finding-1-g0-print-cp1252-crash` (~0.5pt; standalone or Slab 7c §02A precursor).
+  - `trial-2-finding-2-directive-composer-corpus-scan-fallback` (~3-5pt; Slab 7c §02A core scope).
+- Net follow-on count unchanged at 41.
+
+## What is next
+
+**Route B — Slab 7c PRD authoring.** Open via `bmad-create-prd`, framing-check against `epics-langchain-langgraph-migration.md` §Epic 3, with Trial-2 finding #2 elevating §02A to first priority within Slab 7c. PRD scope per remaining ⚠️/❌ rows in mapping-checklist + Slab 7b retrospective: `PRODUCTION_GATE_IDS` expansion (14 silent gate_codes), §02A operator-directives poll surface (LLM-driven directive composer), §04A per-plan-unit ratification, §04.5/§04.55 estimator + run-constants lock, §05.5 per-slide mode HIL, §07B per-slide A/B variant, §07D motion-plan polling, §07F motion gate, §08B Storyboard B + live-URL HIL, §11 voice-selection HIL, §11B input-package HIL, §06 pre-dispatch package writers, §06B literal-visual operator build, §07C storyboard build + HTML reviewer surface, §09 four-artifact lock semantics, §15 final operator handoff, DecisionCard schema family verification, three-transport verdict parity, live-dispatch in `run_cache_hit_harness.py` + `run_5_api_smoke.py` (deferred-inventory `slab-7c-live-harness-evidence`), Trial-2 finding #1 G0 print cp1252 fix.
+
+## Unresolved issues or risks
+
+- **No deferred Audra L1/L2 findings to escalate** — Audra/Cora dissolved on hybrid branch per 2026-04-24 ratification (Category D); replacement `scripts/governance/dev_coherence_report.py` itself a deferred-inventory item under Slab 4 Epic E4. Substrate-tier verification ran as Audra L1 proxy: pipeline-manifest lockstep PASS (evidence at `reports/dev-coherence/2026-05-04-1727/check-pipeline-manifest-lockstep.PASS.yaml`), 11 activation contracts conform PASS, 40 parity tests passed.
+- **No pre-closure gaps from Step 0b** — no story flipping to `done` this session.
+- **Trial-2 ergonomic gaps on Windows + Claude Code `!` prefix:** Marcus made three tool-routing mistakes early (assumed `!` routes to PowerShell; assumed `!` has TTY for `input()`; advised against `--auto-confirm-directive` when structurally required). Operator surfaced the mistakes; iteration produced good Trial-2 evidence regardless. The launch model design surfaced the winpty/TTY/auto-confirm interaction as itself a Trial-2 ergonomic finding worth remembering for next ceremony.
+- **AC-7b.12-O / AC-7b.12-P deferred to Slab 7c close gate.** Trial-2 evidence makes this explicit: AC-O (G2 with ≥9-of-11 specialists) and AC-P (G3 cascade-reading 11) cannot complete without LLM-driven directive composition first. Both ACs honor "deferred-to-Trial-2 ceremony" per 2026-05-01 party-mode UNANIMOUS 4/4 verdict option (9); ceremony has now run; remediation path is Slab 7c §02A.
+
+## Key lessons learned
+
+1. **Honest gap evidence is the primary Trial-2 deliverable, not a green-everywhere verdict.** The structured stop after 3 findings produced more durable PRD-shaping evidence than a successful end-to-end run would have. Pushing past Texas exit 30 with a hand-edited directive would have inflated the ceremony into authorship territory (CREED violation) without adding evidentiary value the substrate didn't already carry.
+
+2. **Substrate validation is orthogonal to operator-experience completeness.** Slab 7b body-tier guardrails (Texas Story 7b.1 hardening) engaged correctly on real corpus content. The gap surfaced by Trial-2 is at the orchestrational layer (Slab 7c §02A), exactly where the architecture predicted it would be. The validator's "11 activation contracts conform" verdict and Trial-2's "Texas correctly refuses broken directive" finding are different sides of the same truth.
+
+3. **Tool-routing in Claude Code on Windows + bash + winpty is non-trivial.** The `!` prefix routes to Git Bash; Git Bash on Windows wraps `.exe` invocations with winpty (pseudo-TTY); `sys.stdin.isatty()` returns True from the pty but actual stdin is closed; `< /dev/null` doesn't alter `isatty()` because winpty intercepts at OS layer below bash redirect; only `echo c |` pipe forces non-TTY at the filesystem level. The combination + `--auto-confirm-directive` is the working incantation. Recorded in `C:\tmp\run-trial-2.sh` for future Trial-2 ceremonies.
+
+4. **Marcus's Sacred-Truth standing-order works as designed.** Read-the-files-fresh discipline meant I caught the directive's `.gitkeep`-as-primary defect at attempt 1 by reading the YAML on disk, before re-running. Without that discipline I might have re-run blind 3-5 times trying different env-var combinations before noticing the directive was structurally junk.
+
+5. **Trial-2 should be operator-driven from a real Windows Terminal session for next ceremony.** When Slab 7c §02A lands and Trial-2 re-runs, the operator should run `C:\tmp\run-trial-2.sh` (or equivalent) in their actual terminal — not via Claude Code's `!` prefix — so the [e]dit branch is reachable for hand-tuning the directive at G0 if needed, and so all 4 terminal HIL gates (G1, G2C, G3, G4) can be verdict-filed via real interactive operator input.
+
+## Validation summary
+
+| Check | Tool | Result |
+|---|---|---|
+| Pre-flight: Slab 7b CLOSED | yaml assertion against `sprint-status.yaml::development_status` | PASS |
+| Pre-flight: 11 activation contracts | `scripts/utilities/validate_parity_test_class_conformance.py tests/parity/` | PASS |
+| Pre-flight: mapping-checklist parity | `pytest tests/parity/test_mapping_checklist_status.py` | 4 passed |
+| Pre-flight: branch + commits-ahead | `git status --short` + `git log` | clean; 5 commits ahead at launch |
+| Pre-flight: env keys loaded | `scripts.utilities.env_loader::load_env` + key inspection | 8 keys including OPENAI + LANGSMITH |
+| Pipeline-manifest lockstep (post-stop) | `scripts/utilities/check_pipeline_manifest_lockstep.py` | PASS (evidence at `reports/dev-coherence/2026-05-04-1727/check-pipeline-manifest-lockstep.PASS.yaml`) |
+| Activation-contract validator (post-stop) | `scripts/utilities/validate_parity_test_class_conformance.py tests/parity/` | PASS — 11 contracts |
+| Parity tests (post-stop) | `pytest tests/parity/test_mapping_checklist_status.py tests/parity/test_skill_md_sanctum_alignment.py tests/parity/test_eleven_specialists_addressable.py -q` | 40 passed in 1.31s |
+| Worktree hygiene (post-stop) | `git worktree list` | single worktree; no stale entries |
+
+**Trial-2 ceremony itself:**
+- 8 launch attempts; 5 directive YAML run-state directories preserved as forensic evidence
+- Canonical evidence run: `db276994-edf4-47a2-83bc-771cc214c3c1` (G0 cleared via `--auto-confirm-directive`; Texas exit 30; bundle empty)
+- Cost: zero (no specialist actually fired LLM/API calls; Texas wrangler hard-failed before dispatch)
+- Wall-clock: ~1 hour from session-open to structured stop
+
+## Artifact update checklist
+
+- [x] `_bmad-output/implementation-artifacts/trial-2-postmortem-2026-05-04.md` (NEW; 205 lines; full ceremony record)
+- [x] `_bmad-output/planning-artifacts/deferred-inventory.md` (UPDATED; 2 closures + 2 openings + summary count adjusted)
+- [x] `_bmad-output/implementation-artifacts/bmm-workflow-status.yaml` (UPDATED; Trial-2 entry prepended to header narrative)
+- [x] `next-session-start-here.md` (UPDATED; Route B framed as next session anchor; HEAD reference reconciled to `973afa3` post-commit)
+- [x] `SESSION-HANDOFF.md` (UPDATED; this entry)
+- [x] `reports/dev-coherence/2026-05-04-1727/check-pipeline-manifest-lockstep.PASS.yaml` (NEW; auto-generated audit evidence)
+- [ ] `sprint-status.yaml` — NOT updated (no story Kanban state changes; Trial-2 ceremony does not flip story status; Step 4a pytest skipped per protocol)
+- [ ] `docs/project-context.md`, `docs/agent-environment.md` — NOT updated (no architecture/MCP/skill changes; Step 5 skipped)
+- [ ] Guides (user/admin/dev) — NOT updated (no architecture changes; Step 9a skipped)
+- [ ] Reuse/pattern artifacts — NOT updated (Step 9b skipped)
+- [ ] Structural-walk configs — NOT updated (no control-structure changes; Step 9c skipped)
+
+**Dev-coherence report home:** `reports/dev-coherence/2026-05-04-1727/` (lockstep PASS evidence). Audra/Cora dissolved on hybrid; this is the substrate-tier audit-trail substitute.
+
+**Forensic evidence (gitignored under `state/config/runs/`; preserved for next Trial-2 ceremony):**
+- `d44128e9-4e17-4452-a535-989e826cd7da/directive.yaml` (Attempt 1; cp1252-crashed)
+- `9eabd5ac-e170-49ad-8806-1d6ebd00c48e/directive.yaml` (Attempt 5; PYTHONIOENCODING fix)
+- `c8c3b6be-abea-4932-87bf-e52aa11f6f67/directive.yaml` (Attempt 6; `< /dev/null`)
+- `db05cda7-a45c-4164-9360-549a4323b95d/directive.yaml` (Attempt 7; pipe without --auto-confirm)
+- `db276994-edf4-47a2-83bc-771cc214c3c1/{directive.yaml,run.json}` (Attempt 8; canonical Trial-2 evidence run)
+- `C:\tmp\run-trial-2.sh` (launch helper; bash + winpty + auto-confirm working incantation)
+
+---
+
 # Session Handoff — 2026-05-01 (Slab 7b epic CLOSED; atomic close commit landed; retrospective filed; Trial-2 launch UNBLOCKED)
 
 **Session date:** 2026-04-29 → 2026-05-01 (multi-day; spans 11 NEW CYCLE iterations + 7b.12 integration close + Slab 7b retrospective + atomic close commit)
