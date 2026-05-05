@@ -1,0 +1,194 @@
+{
+  "$defs": {
+    "CacheState": {
+      "description": "Closed cache-state vocabulary for gate-family decision cards.",
+      "enum": [
+        "healthy",
+        "mixed",
+        "cold"
+      ],
+      "title": "CacheState",
+      "type": "string"
+    },
+    "DecisionCardMeta": {
+      "additionalProperties": false,
+      "description": "Shared metadata attached to every Slab 7c gate-family DecisionCard.",
+      "properties": {
+        "affected_nodes": {
+          "description": "Manifest node ids affected by this decision card.",
+          "items": {
+            "type": "string"
+          },
+          "title": "Affected Nodes",
+          "type": "array"
+        },
+        "cache_state": {
+          "$ref": "#/$defs/CacheState",
+          "description": "Closed cache-state tier."
+        },
+        "override_trail": {
+          "description": "Operator override events already applied to this run.",
+          "items": {
+            "$ref": "#/$defs/OverrideEvent"
+          },
+          "title": "Override Trail",
+          "type": "array"
+        }
+      },
+      "required": [
+        "cache_state"
+      ],
+      "title": "DecisionCardMeta",
+      "type": "object"
+    },
+    "OverrideEvent": {
+      "additionalProperties": false,
+      "description": "One operator-approved override that affects cache warmth and routing context.",
+      "properties": {
+        "applied_at": {
+          "description": "Timezone-aware timestamp for when the override applied.",
+          "format": "date-time",
+          "title": "Applied At",
+          "type": "string"
+        },
+        "confirm_token": {
+          "description": "Confirmation token bound to the override submission surface.",
+          "minLength": 1,
+          "title": "Confirm Token",
+          "type": "string"
+        },
+        "event_id": {
+          "description": "UUID4 identity for this override event.",
+          "format": "uuid",
+          "title": "Event Id",
+          "type": "string"
+        },
+        "new_value": {
+          "additionalProperties": true,
+          "description": "Canonical JSON-like view of the new setting.",
+          "title": "New Value",
+          "type": "object"
+        },
+        "node_id": {
+          "description": "Manifest node id that the override touches.",
+          "minLength": 1,
+          "title": "Node Id",
+          "type": "string"
+        },
+        "operator_id": {
+          "description": "Operator identity that confirmed the override.",
+          "minLength": 1,
+          "title": "Operator Id",
+          "type": "string"
+        },
+        "previous_value": {
+          "additionalProperties": true,
+          "description": "Canonical JSON-like view of the previous setting.",
+          "title": "Previous Value",
+          "type": "object"
+        }
+      },
+      "required": [
+        "event_id",
+        "node_id",
+        "operator_id",
+        "confirm_token"
+      ],
+      "title": "OverrideEvent",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "description": "Trial-open corpus-confirmation DecisionCard.",
+  "properties": {
+    "card_id": {
+      "description": "UUID4 identity for this DecisionCard instance.",
+      "format": "uuid",
+      "title": "Card Id",
+      "type": "string"
+    },
+    "corpus_confirmation_summary": {
+      "description": "Non-empty operator-facing summary of corpus confirmation.",
+      "title": "Corpus Confirmation Summary",
+      "type": "string"
+    },
+    "corpus_paths_confirmed": {
+      "description": "Corpus paths confirmed by the operator for this trial.",
+      "items": {
+        "format": "path",
+        "type": "string"
+      },
+      "title": "Corpus Paths Confirmed",
+      "type": "array"
+    },
+    "created_at": {
+      "description": "Timezone-aware creation timestamp for the emitted card.",
+      "format": "date-time",
+      "title": "Created At",
+      "type": "string"
+    },
+    "decision_card_digest": {
+      "description": "Lowercase sha256 digest of the canonical decision card.",
+      "title": "Decision Card Digest",
+      "type": "string"
+    },
+    "directive_run_id": {
+      "description": "UUID4 identity for the directive-composer run being confirmed.",
+      "format": "uuid",
+      "title": "Directive Run Id",
+      "type": "string"
+    },
+    "gate_focus": {
+      "const": "trial_open",
+      "default": "trial_open",
+      "description": "Closed marker for the G0 trial-open gate family.",
+      "title": "Gate Focus",
+      "type": "string"
+    },
+    "gate_id": {
+      "const": "G0",
+      "default": "G0",
+      "description": "Discriminator for the G0 trial-open gate.",
+      "title": "Gate Id",
+      "type": "string"
+    },
+    "meta": {
+      "$ref": "#/$defs/DecisionCardMeta"
+    },
+    "schema_version": {
+      "const": "v1",
+      "default": "v1",
+      "description": "Schema version for the G0 DecisionCard contract.",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "trial_id": {
+      "description": "UUID4 identity for the enclosing trial run.",
+      "format": "uuid",
+      "title": "Trial Id",
+      "type": "string"
+    },
+    "verb": {
+      "description": "Closed decision verb set: approve | edit | reject.",
+      "enum": [
+        "approve",
+        "edit",
+        "reject"
+      ],
+      "title": "Verb",
+      "type": "string"
+    }
+  },
+  "required": [
+    "decision_card_digest",
+    "meta",
+    "card_id",
+    "trial_id",
+    "corpus_paths_confirmed",
+    "directive_run_id",
+    "corpus_confirmation_summary",
+    "verb"
+  ],
+  "title": "G0Card",
+  "type": "object"
+}

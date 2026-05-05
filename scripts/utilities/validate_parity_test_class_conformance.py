@@ -116,6 +116,17 @@ CLASS_D2_REQUIRED_METHODS = frozenset(
         "test_operator_control_and_decision_log_landed",
     }
 )
+DECISION_CARD_SHAPE_REQUIRED_TOKENS = frozenset(
+    {
+        "LOCKSTEP_CHECK",
+        "model_json_schema",
+        "model_validate",
+        "model_dump",
+        "ValidationError",
+        "_golden.json",
+        ".v1.schema.json",
+    }
+)
 
 
 def is_valid_runtime_gate_id(gate_id: str) -> bool:
@@ -191,6 +202,28 @@ def _iter_activation_contract_files(target: Path) -> list[Path]:
     if target.is_file():
         return [target] if target.name.endswith("_activation_contract.py") else []
     return sorted(target.rglob("test_*_activation_contract.py"))
+
+
+def _iter_decision_card_shape_files(target: Path) -> list[Path]:
+    if target.is_file():
+        return [target] if _is_decision_card_shape_pin(target) else []
+    return sorted(
+        path for path in target.glob("test_decision_card_*_shape.py")
+        if _is_decision_card_shape_pin(path)
+    )
+
+
+def _is_decision_card_shape_pin(path: Path) -> bool:
+    return (
+        path.name.startswith("test_decision_card_")
+        and path.name.endswith("_shape.py")
+        and path.name != "test_decision_card_base_shape.py"
+    )
+
+
+def _gate_id_from_shape_pin(path: Path) -> str:
+    gate_slug = path.name.removeprefix("test_decision_card_").removesuffix("_shape.py")
+    return gate_slug.upper().replace("_", ".")
 
 
 def _name_of_expr(node: ast.expr) -> str:
@@ -378,6 +411,37 @@ def _validate_file(path: Path) -> list[Violation]:
     return violations
 
 
+def _validate_decision_card_shape_pin(path: Path) -> list[Violation]:
+    text = path.read_text(encoding="utf-8")
+    gate_id = _gate_id_from_shape_pin(path)
+    violations: list[Violation] = []
+    if not is_valid_runtime_gate_id(gate_id) and gate_id not in GATE_FAMILY_IDS:
+        violations.append(
+            Violation(path, 1, f"unknown DecisionCard shape-pin gate id: {gate_id}")
+        )
+    missing_tokens = sorted(
+        token for token in DECISION_CARD_SHAPE_REQUIRED_TOKENS if token not in text
+    )
+    if missing_tokens:
+        violations.append(
+            Violation(
+                path,
+                1,
+                "DecisionCard shape-pin missing required token(s): "
+                + ", ".join(missing_tokens),
+            )
+        )
+    if f"decision_cards.{gate_id.lower().replace('.', '_')}" not in text:
+        violations.append(
+            Violation(
+                path,
+                1,
+                "DecisionCard shape-pin must import its per-gate model module",
+            )
+        )
+    return violations
+
+
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument(
@@ -392,15 +456,22 @@ def main(argv: list[str] | None = None) -> int:
     if not target.is_absolute():
         target = REPO_ROOT / target
     files = _iter_activation_contract_files(target)
+    shape_files = _iter_decision_card_shape_files(target)
     violations: list[Violation] = []
     for path in files:
         violations.extend(_validate_file(path))
+    for path in shape_files:
+        violations.extend(_validate_decision_card_shape_pin(path))
 
     if violations:
         for violation in violations:
             print(violation.render())
         return 1
-    print(f"PASS: {len(files)} activation contract file(s) conform")
+    total = len(files) + len(shape_files)
+    print(
+        f"PASS: {total} parity contract file(s) conform "
+        f"({len(files)} activation + {len(shape_files)} decision-card shape-pin)"
+    )
     return 0
 
 

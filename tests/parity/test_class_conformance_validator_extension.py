@@ -41,8 +41,8 @@ def test_validator_recognizes_all_18_runtime_gate_ids() -> None:
     assert not is_valid_runtime_gate_id("G9")
 
 
-def test_lockstep_check_reports_missing_g0_four_file_set() -> None:
-    result = gate_lockstep_result("G0")
+def test_lockstep_check_reports_missing_g0_four_file_set(tmp_path) -> None:
+    result = gate_lockstep_result("G0", repo_root=tmp_path)
 
     assert result.gate_id == "G0"
     assert result.all_four_present is False
