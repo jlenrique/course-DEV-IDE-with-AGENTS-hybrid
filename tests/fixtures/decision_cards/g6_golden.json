@@ -1,0 +1,24 @@
+{
+  "card_id": "00000000-0000-4000-8000-000000000006",
+  "closing_artifact_paths": [
+    "_bmad-output/planning-artifacts/slab-7c-retrospective.md",
+    "_bmad-output/planning-artifacts/slab-7c-close-evidence-pointer.md",
+    "_bmad-output/planning-artifacts/slab-7c-final-summary.md"
+  ],
+  "closing_run_id": "66666666-6666-4666-8666-666666666666",
+  "created_at": "2026-05-05T00:00:00Z",
+  "decision_card_digest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+  "gate_focus": "slab_close_ceremony",
+  "gate_id": "G6",
+  "meta": {
+    "affected_nodes": [],
+    "cache_state": "healthy",
+    "override_trail": []
+  },
+  "retrospective_path": "_bmad-output/planning-artifacts/slab-7c-retrospective.md",
+  "schema_version": "v1",
+  "slab_close_summary": "Slab 7c orchestrational tail closed with retrospective and closure evidence ready.",
+  "slab_id": "7c",
+  "trial_id": "77777777-7777-4777-8777-777777777777",
+  "verb": "approve"
+}

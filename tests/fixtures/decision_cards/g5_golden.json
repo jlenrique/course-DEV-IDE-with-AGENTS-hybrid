@@ -1,0 +1,21 @@
+{
+  "bundle_run_id": "50505050-5050-4050-8050-505050505050",
+  "card_id": "51515151-5151-4151-8151-515151515151",
+  "created_at": "2026-05-05T00:00:00Z",
+  "decision_card_digest": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+  "gate_focus": "final_operator_handoff",
+  "gate_id": "G5",
+  "handoff_artifact_paths": [
+    "course-content/courses/example-trial/assembly-bundle",
+    "course-content/courses/example-trial/DESCRIPT-ASSEMBLY-GUIDE.md"
+  ],
+  "handoff_summary": "Trial assembly bundle handed off to the operator for final composition.",
+  "meta": {
+    "affected_nodes": [],
+    "cache_state": "healthy",
+    "override_trail": []
+  },
+  "schema_version": "v1",
+  "trial_id": "52525252-5252-4252-8252-525252525252",
+  "verb": "approve"
+}
