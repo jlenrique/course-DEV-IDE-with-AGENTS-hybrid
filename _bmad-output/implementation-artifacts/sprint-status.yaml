@@ -1564,7 +1564,7 @@ development_status:
   migration-7c-1-parity-contract-dsl-foundation: done  # 2026-05-04 Codex T1-T10 complete; T11 standard review PASS (zero patches; zero deferred); 8 transport-parity files registered via parity_contract DSL with sentinel pattern; structural pins 10 passed; focused 19 passed; broad +10 vs baseline (39 failures preserved); parity wall-clock serial 7.15s / parallel 9.49s; class-conformance 11; lint-imports 12 KEPT; verdict at 7c-1-code-review-2026-05-04.md.
   migration-7c-2-cp1252-windows-portability-fix: done  # 2026-05-04 Codex T1-T10 complete; focused 16 passed, ruff clean, lint-imports 12/12 KEPT, class-conformance 11, sandbox-AC PASS; broad regression executed but red from checkout-level pre-existing failures. Wave 1; single-gate; AMELIA-P1 path-isolation guard honored.
   migration-7c-3a-section-02a-llm-directive-composer-body: ready-for-dev  # Wave 1; dual-gate cross-agent MANDATORY; closes Trial-2 finding #2; owns TW-7c-2 firing
-  migration-7c-3b-section-02a-g0-poll-surface-canonical-hil-pattern: backlog  # Wave 1; dual-gate; canonical HIL pattern that 7c.6..7c.15 replicate
+  migration-7c-3b-section-02a-g0-poll-surface-canonical-hil-pattern: ready-for-dev  # Wave 1; dual-gate; canonical HIL pattern that 7c.6..7c.15 replicate
   migration-7c-4a-gate-family-taxonomy-ratification: ready-for-dev  # Wave 2; single-gate; decision artifact only (ADR 0002)
   migration-7c-4b-gate-family-foundation-implementation: backlog  # Wave 2; dual-gate cross-agent MANDATORY; AMEND-7d-i TW-7c-3 firing-spec single-source lives here
   migration-7c-5-g0-decision-card-fresh-author: backlog  # Wave 2; single-gate; fresh-author; G0 trial-open / corpus-confirm gate
