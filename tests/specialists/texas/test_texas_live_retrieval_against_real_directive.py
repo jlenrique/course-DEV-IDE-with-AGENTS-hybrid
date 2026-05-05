@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from pathlib import Path
 
+import pytest
 import yaml
 
 from app.marcus.orchestrator.directive_composer import compose_directive
@@ -17,6 +18,7 @@ REQUIRED = {
 }
 
 
+@pytest.mark.serial
 def test_texas_dispatch_retrieval_writes_six_artifacts_from_composed_directive(
     tmp_path: Path,
 ) -> None:

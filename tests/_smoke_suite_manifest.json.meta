@@ -1,0 +1,12 @@
+{
+  "generated_at": "2026-05-05T02:48:53.817537+00:00",
+  "curation_version": "7c.0c-v1",
+  "manifest_path": "tests/_smoke_suite_manifest.json",
+  "count": 200,
+  "python": "3.12.13",
+  "source": {
+    "nodeids_cache": ".pytest_cache/v/cache/nodeids",
+    "lastfailed_cache": ".pytest_cache/v/cache/lastfailed"
+  },
+  "methodology": "deterministic zero-dependency approximation of coverage-per-second ranking"
+}

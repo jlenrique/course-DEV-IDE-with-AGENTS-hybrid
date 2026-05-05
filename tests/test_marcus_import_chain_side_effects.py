@@ -24,7 +24,10 @@ import subprocess
 import sys
 import textwrap
 
+import pytest
 
+
+@pytest.mark.serial
 def test_importing_30_1_modules_has_no_filesystem_side_effects() -> None:
     """AC-T.15 — no new files are written by importing the 30-1 modules."""
     script = textwrap.dedent(

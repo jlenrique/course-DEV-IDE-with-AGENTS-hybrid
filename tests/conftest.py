@@ -7,6 +7,7 @@
 
 import importlib
 import importlib.util
+import json
 import os
 import shutil
 import sys
@@ -88,6 +89,12 @@ def pytest_addoption(parser: pytest.Parser) -> None:
         action="store_true",
         default=False,
         help="Run tests marked as live_api_e2e (disabled by default).",
+    )
+    parser.addoption(
+        "--smoke",
+        action="store_true",
+        default=False,
+        help="Run the curated R2 smoke manifest from tests/_smoke_suite_manifest.json.",
     )
 
 
@@ -184,6 +191,21 @@ def pytest_collection_modifyitems(
     if deselected:
         config.hook.pytest_deselected(items=deselected)
         items[:] = selected
+
+    # Pass 1b: curated R2 smoke manifest.
+    if config.getoption("--smoke"):
+        manifest_path = ROOT / "tests" / "_smoke_suite_manifest.json"
+        manifest_nodeids = set(json.loads(manifest_path.read_text(encoding="utf-8")))
+        selected = []
+        deselected = []
+        for item in items:
+            if item.nodeid in manifest_nodeids:
+                selected.append(item)
+            else:
+                deselected.append(item)
+        if deselected:
+            config.hook.pytest_deselected(items=deselected)
+            items[:] = selected
 
     # Pass 2: auto-skip llm_live when no real OpenAI key present
     if _openai_key_is_placeholder_or_unset():

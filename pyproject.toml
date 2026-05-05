@@ -79,7 +79,7 @@ select = ["E", "F", "W", "I", "N", "UP", "B", "SIM"]
 "skills/bmad-agent-marcus/scripts/prepare-irene-pass2-handoff.py" = ["E501"]
 
 [tool.pytest.ini_options]
-addopts = "-m 'not live'"
+addopts = "-p no:randomly -n auto --dist loadfile -m 'not live and not serial'"
 testpaths = [
     "tests",
     "skills/source-wrangler/scripts/tests",
@@ -94,6 +94,7 @@ markers = [
     "live: opt-in live smoke tests under tests/live; excluded from default pytest runs",
     "live_api: tests that call live third-party APIs; excluded by default unless --run-live is provided",
     "live_api_e2e: slower/flakier live end-to-end API tests; excluded by default unless --run-live-e2e is provided",
+    "serial: marks tests that cannot run under xdist parallelism (DB-state / FS / port / LangSmith / RNG coupling); run with -m 'serial' -n0",
     "trial_critical: dev-side tests guarding the pre-Prompt-1 trial path (run_constants validator, preflight receipt, pack-doc schema lockstep). Run before firing any trial production run via `pytest -m trial_critical`. Not a runtime gate — a dev confidence check.",
     "transport_parity: nightly / on-merge cadence; NOT per-PR — see Migration Story 1.1d Cadence + Flakiness Budget AC. Per the 2026-04-22 middle-path consensus, these MCP subprocess + FastAPI↔MCP parity tests carry per-PR-flake risk that does not belong on the Slab 1 critical path. >2% flake across the first 20 runs reopens MCP-in-Slab-1.",
 ]

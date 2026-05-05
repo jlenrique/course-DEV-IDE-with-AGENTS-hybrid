@@ -1,6 +1,6 @@
 # Migration Story 7c.0c: Pytest-xdist Classification + Smoke-Suite Curation (Velocity-Amendment Diagnostic)
 
-**Status:** ready-for-dev *(spec authored 2026-05-04; **DISPATCH HELD until predecessor 7c.0b closes** per governance JSON `prerequisite_stories: [7c-0b]`. Dispatched IMMEDIATELY after 7c.0b closes — AHEAD OF 7c.4a per highest amortization leverage; xdist + smoke-suite gains amortize across ALL subsequent T9 runs in the slab.)*
+**Status:** done *(spec authored 2026-05-04; predecessor 7c.0b closed; Codex T1 started 2026-05-04; Codex T10 ready-for-review posted 2026-05-05; operator accepted complete/closed 2026-05-05.)*
 **Sprint key:** `migration-7c-0c-pytest-xdist-classification`
 **Epic:** Slab 7c — Marcus Orchestrational Tail (`migration-epic-slab-7c-orchestrational-tail`)
 **Pts:** 3
@@ -195,46 +195,46 @@ addopts = -p no:randomly -n auto --dist loadfile -m "not serial"
 
 ## Tasks / Subtasks
 
-- [ ] **T1 — Readiness checks**
-  - [ ] T1.1 Confirm 7c.0a + 7c.0b both `done`.
-  - [ ] T1.2 Confirm pytest-xdist installed in `.venv`; if absent, surface `decision_needed` (operator decides: install or scrap V1).
-  - [ ] T1.3 Verify canonical pytest config location (`pytest.ini` vs `pyproject.toml::[tool.pytest.ini_options]`); pick the existing one for consistency.
-  - [ ] T1.4 Refresh broad-regression baseline at current HEAD: `pytest -p no:randomly -q --tb=no` → record total pass/fail/skip counts as the comparison baseline.
-  - [ ] T1.5 Run sandbox-AC validator on this spec; expect PASS.
+- [x] **T1 — Readiness checks**
+  - [x] T1.1 Confirm 7c.0a + 7c.0b both `done`.
+  - [x] T1.2 Confirm pytest-xdist installed in `.venv`; if absent, surface `decision_needed` (operator decides: install or scrap V1).
+  - [x] T1.3 Verify canonical pytest config location (`pytest.ini` vs `pyproject.toml::[tool.pytest.ini_options]`); pick the existing one for consistency.
+  - [x] T1.4 Refresh broad-regression baseline at current HEAD: `pytest -p no:randomly -q --tb=no` → record total pass/fail/skip counts as the comparison baseline.
+  - [x] T1.5 Run sandbox-AC validator on this spec; expect PASS.
 
-- [ ] **T2 — Run xdist classification diagnostic (AC: 7c.0c-A)**
-  - [ ] T2.1 Run `pytest -n auto --dist loadfile -p no:randomly -q --tb=line` against full suite; capture output.
-  - [ ] T2.2 For each test that fails under xdist but passed serial (per T1.4 baseline), classify into 5-bucket taxonomy.
-  - [ ] T2.3 Apply `@pytest.mark.serial` markers (or class-level / function-level as appropriate) to classified tests.
-  - [ ] T2.4 Register `serial` marker in pytest config; update `addopts` to default-parallel-with-serial-exclusion.
+- [x] **T2 — Run xdist classification diagnostic (AC: 7c.0c-A)**
+  - [x] T2.1 Run `pytest -n auto --dist loadfile -p no:randomly -q --tb=line` against full suite; capture output.
+  - [x] T2.2 For each test that fails under xdist but passed serial (per T1.4 baseline), classify into 5-bucket taxonomy.
+  - [x] T2.3 Apply `@pytest.mark.serial` markers (or class-level / function-level as appropriate) to classified tests.
+  - [x] T2.4 Register `serial` marker in pytest config; update `addopts` to default-parallel-with-serial-exclusion.
 
-- [ ] **T3 — Curate smoke-suite manifest (AC: 7c.0c-B)**
-  - [ ] T3.1 Author `scripts/utilities/curate_smoke_suite.py` with the canonical curation methodology.
-  - [ ] T3.2 Run the curator against current full suite; emit `tests/_smoke_suite_manifest.json` + sibling `.meta`.
-  - [ ] T3.3 Sanity-check coverage by spot-reading the manifest for substrate-shape / retrieval / party-mode / gate-loop / schema-validator entries.
-  - [ ] T3.4 Smoke-pass test: `.venv/Scripts/python.exe -m pytest @tests/_smoke_suite_manifest.json -p no:randomly -q --tb=short` exits 0 (or has documented pre-existing reds).
+- [x] **T3 — Curate smoke-suite manifest (AC: 7c.0c-B)**
+  - [x] T3.1 Author `scripts/utilities/curate_smoke_suite.py` with the canonical curation methodology.
+  - [x] T3.2 Run the curator against current full suite; emit `tests/_smoke_suite_manifest.json` + sibling `.meta`.
+  - [x] T3.3 Sanity-check coverage by spot-reading the manifest for substrate-shape / retrieval / party-mode / gate-loop / schema-validator entries.
+  - [x] T3.4 Smoke-pass test: `.venv/Scripts/python.exe -m pytest @tests/_smoke_suite_manifest.json -p no:randomly -q --tb=short` exits 0 (or has documented pre-existing reds).
 
-- [ ] **T4 — Author documentation (AC: 7c.0c-C)**
-  - [ ] T4.1 `docs/dev-guide/pytest-xdist-classification.md` with all 6 sections per AC.
-  - [ ] T4.2 Markers registry section enumerates every classified test + bucket + rationale.
-  - [ ] T4.3 Cross-reference link to `_bmad-output/planning-artifacts/slab-7c-velocity-amendments-2026-05-04.md`.
+- [x] **T4 — Author documentation (AC: 7c.0c-C)**
+  - [x] T4.1 `docs/dev-guide/pytest-xdist-classification.md` with all 6 sections per AC.
+  - [x] T4.2 Markers registry section enumerates every classified test + bucket + rationale.
+  - [x] T4.3 Cross-reference link to `_bmad-output/planning-artifacts/slab-7c-velocity-amendments-2026-05-04.md`.
 
-- [ ] **T5 — Author 3 structural tests (AC: 7c.0c-A + 7c.0c-B + 7c.0c-C test pins)**
-  - [ ] T5.1 `tests/structural/test_pytest_xdist_config_present.py`.
-  - [ ] T5.2 `tests/structural/test_smoke_suite_manifest_present.py`.
-  - [ ] T5.3 `tests/structural/test_pytest_xdist_classification_doc_present.py`.
+- [x] **T5 — Author 3 structural tests (AC: 7c.0c-A + 7c.0c-B + 7c.0c-C test pins)**
+  - [x] T5.1 `tests/structural/test_pytest_xdist_config_present.py`.
+  - [x] T5.2 `tests/structural/test_smoke_suite_manifest_present.py`.
+  - [x] T5.3 `tests/structural/test_pytest_xdist_classification_doc_present.py`.
 
-- [ ] **T6 — Combined verification battery (AC: 7c.0c-D)**
-  - [ ] T6.1 Parallel pass + serial pass; assert combined total = T1.4 baseline.
-  - [ ] T6.2 Smoke pass; assert exit 0 or document.
-  - [ ] T6.3 Class-conformance: 11 activation contracts.
-  - [ ] T6.4 Lint-imports: KEPT count unchanged or higher.
-  - [ ] T6.5 Sandbox-AC: PASS.
-  - [ ] T6.6 Ruff: clean.
-  - [ ] T6.7 Wall-clock report: parallel + serial + smoke times; acceptance = ≥1.5× combined speedup.
+- [x] **T6 — Combined verification battery (AC: 7c.0c-D)**
+  - [x] T6.1 Parallel pass + serial pass; assert combined total = T1.4 baseline.
+  - [x] T6.2 Smoke pass; assert exit 0 or document.
+  - [x] T6.3 Class-conformance: 11 activation contracts.
+  - [x] T6.4 Lint-imports: KEPT count unchanged or higher.
+  - [x] T6.5 Sandbox-AC: PASS.
+  - [x] T6.6 Ruff: clean.
+  - [x] T6.7 Wall-clock report: parallel + serial + smoke times; acceptance = ≥1.5× combined speedup.
 
-- [ ] **T10 — Codex self-review (NEW CYCLE T10)**
-  - [ ] T10.1 Codex authors `_bmad-output/implementation-artifacts/_codex-handoff/7c-0c.ready-for-review.md` summarizing: file list (~7 NEW + 2 modified config + ≤30 test files with new markers), full classification table (test-name + bucket + rationale), wall-clock report, smoke-suite cardinality + coverage spot-check, T1 `decision_needed` resolutions.
+- [x] **T10 — Codex self-review (NEW CYCLE T10)**
+  - [x] T10.1 Codex authors `_bmad-output/implementation-artifacts/_codex-handoff/7c-0c.ready-for-review.md` summarizing: file list (~7 NEW + 2 modified config + ≤30 test files with new markers), full classification table (test-name + bucket + rationale), wall-clock report, smoke-suite cardinality + coverage spot-check, T1 `decision_needed` resolutions.
 
 - [ ] **T11 — Claude `bmad-code-review` (single-gate; standard tier)**
   - [ ] T11.1 Claude (separate cold context from Codex dev) runs `bmad-code-review` against the diff; produces verdict at `_bmad-output/implementation-artifacts/7c-0c-code-review-2026-05-NN.md`; applies remediation cycles if HALT-AND-REMEDIATE; commits + flips `migration-7c-0c-pytest-xdist-classification: review → done`.
@@ -295,12 +295,42 @@ Codex Sonnet 4.5 or later (NEW CYCLE T1-T9 + T10 self-review per `feedback_new_c
 
 ### Debug Log References
 
-(Populated during dev round.)
+- T1 baseline serial run: `39 failed, 4041 passed, 27 skipped, 46 deselected, 2 xfailed, 11 warnings in 419.34s`; measured wall-clock 429.32s.
+- T2 first xdist diagnostic: `41 failed, 4039 passed, 27 skipped, 2 xfailed, 11 warnings in 213.76s`; two xdist-only failures classified and marked serial.
+- Post-classification default xdist pass: `39 failed, 4048 passed, 27 skipped, 2 xfailed, 11 warnings in 212.26s`; measured wall-clock 214.82s.
+- Serial marker pass: `2 passed, 4162 deselected in 11.48s`; measured wall-clock 13.38s.
+- Smoke pass via `--smoke`: `181 passed, 18 skipped, 3965 deselected in 9.67s`; measured wall-clock 21.05s.
+- Focused structural pins: `9 passed in 11.70s`.
+- Class-conformance: `PASS: 11 activation contract file(s) conform`.
+- Lint-imports: `12 kept, 0 broken`.
+- Sandbox-AC validator: `PASS`.
+- Ruff on touched Python/TOML files: `All checks passed`.
 
 ### Completion Notes List
 
-(Populated during dev round; MUST include classification table + wall-clock report + serial-marker count + smoke-suite cardinality + coverage spot-check verdict.)
+- Classification table:
+  - `tests/test_marcus_import_chain_side_effects.py::test_importing_30_1_modules_has_no_filesystem_side_effects` — Filesystem collisions; repo-wide before/after snapshot races with concurrent worker artifacts under `.tmp` and run output.
+  - `tests/specialists/texas/test_texas_live_retrieval_against_real_directive.py::test_texas_dispatch_retrieval_writes_six_artifacts_from_composed_directive` — Other; serial-passing Texas retrieval dispatcher subprocess timed out under xdist worker scheduling.
+- Serial-marker count: 2 functions; no defensive over-marking.
+- Project default is now `-p no:randomly -n auto --dist loadfile -m 'not live and not serial'` in `pyproject.toml`.
+- Smoke-suite manifest cardinality: 200 JSON node IDs with spot-check coverage for TripwireLedgerEntry/audit-chain, retrieval intent/Texas handoff, gate shim/pre-gate behavior, schema validators, and activation-contract smoke.
+- Native `pytest @tests/_smoke_suite_manifest.json` is documented as not viable with a JSON array under pytest 8's line-oriented argfile parser; the zero-dependency green invocation is `pytest --smoke`.
+- Combined invariant: original-suite pass/fail/skip/xfail totals are preserved after subtracting the 9 new structural tests from the post-change parallel+serial counts. Failure count remains 39; skip count remains 27; xfail count remains 2; original-suite pass count remains 4041.
+- Speedup: serial baseline 429.32s vs parallel+serial 228.21s = 1.88×, clearing the ≥1.5× adoption threshold.
 
 ### File List
 
-(Populated during dev round; expected: ~7 NEW files + 2 MODIFIED config + ≤30 test files with marker additions. Net: ~1.4-2.0K LOC.)
+- `pyproject.toml`
+- `tests/conftest.py`
+- `tests/test_marcus_import_chain_side_effects.py`
+- `tests/specialists/texas/test_texas_live_retrieval_against_real_directive.py`
+- `scripts/utilities/curate_smoke_suite.py`
+- `tests/_smoke_suite_manifest.json`
+- `tests/_smoke_suite_manifest.json.meta`
+- `docs/dev-guide/pytest-xdist-classification.md`
+- `tests/structural/test_pytest_xdist_config_present.py`
+- `tests/structural/test_smoke_suite_manifest_present.py`
+- `tests/structural/test_pytest_xdist_classification_doc_present.py`
+- `_bmad-output/implementation-artifacts/_codex-handoff/7c-0c.ready-for-review.md`
+- `_bmad-output/implementation-artifacts/migration-7c-0c-pytest-xdist-classification.md`
+- `_bmad-output/implementation-artifacts/sprint-status.yaml`
