@@ -7,6 +7,7 @@ REPO_ROOT = Path(__file__).resolve().parents[2]
 FILES_TO_SCAN = (
     REPO_ROOT / "app/marcus/cli/trial.py",
     REPO_ROOT / "app/marcus/orchestrator/directive_composer.py",
+    REPO_ROOT / "app/composers/section_02a/composer.py",
 )
 TEXT_IO_METHODS = {"read_text", "write_text", "open"}
 BINARY_IO_METHODS = {"read_bytes", "write_bytes"}

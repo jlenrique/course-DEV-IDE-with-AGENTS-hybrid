@@ -10,6 +10,11 @@ EXPECTED_C4_FORBIDDEN = {
     "app.marcus.orchestrator.write_api",
     "app.specialists.*",
 }
+EXPECTED_C5_FORBIDDEN = {
+    "app.composers._fallback",
+    "app.composers.legacy",
+    "app.marcus.orchestrator.directive_composer",
+}
 
 
 def _contracts() -> list[dict]:
@@ -28,14 +33,14 @@ def test_c4_forbidden_modules_target_list_is_populated():
     assert c4["source_modules"] == ["app.parity.contracts.*"]
 
 
-def test_c5_and_c6_forbidden_modules_remain_empty():
+def test_c5_is_populated_and_c6_forbidden_modules_remain_empty():
     contracts_by_name = {contract["name"]: contract for contract in _contracts()}
 
     assert (
-        contracts_by_name[
+        set(contracts_by_name[
             "C5: §02A composer boundary may not import corpus-scan fallback paths"
-        ]["forbidden_modules"]
-        == []
+        ]["forbidden_modules"])
+        == EXPECTED_C5_FORBIDDEN
     )
     assert (
         contracts_by_name[

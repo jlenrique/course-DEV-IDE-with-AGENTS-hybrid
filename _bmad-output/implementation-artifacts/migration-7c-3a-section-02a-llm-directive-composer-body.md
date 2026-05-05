@@ -1,6 +1,6 @@
 # Migration Story 7c.3a: §02A LLM-Driven Directive Composer Body — Trial-2 Finding #2 Structural Retirement
 
-**Status:** ready-for-dev *(spec authored 2026-05-04 with cross-agent contract negotiation per AMEND-V5 pre-flight; predecessor 7c-0b CLOSED `done` commit `9114337`. **DISPATCH ORDERING:** Codex single-thread serializes 7c.3a behind 7c.0c → 7c.1; spec available for cross-agent review at any time.)*
+**Status:** done *(spec authored 2026-05-04 with cross-agent contract negotiation per AMEND-V5 pre-flight; predecessor 7c-0b CLOSED `done` commit `9114337`. Codex T1-T10 complete 2026-05-05; operator accepted reviewed/closed 2026-05-05.)*
 **Sprint key:** `migration-7c-3a-section-02a-llm-directive-composer-body`
 **Epic:** Slab 7c — Marcus Orchestrational Tail (`migration-epic-slab-7c-orchestrational-tail`)
 **Pts:** 4
@@ -348,63 +348,63 @@ forbidden_modules = [
 
 ## Tasks / Subtasks
 
-- [ ] **T1 — Readiness checks**
-  - [ ] T1.1 Confirm 7c.0a + 7c.0b + 7c.0c all `done`; 7c.1 `done` recommended.
-  - [ ] T1.2 Verify Trial-2 forensic fixture exists; document skip path if absent.
-  - [ ] T1.3 Verify LangChain `BaseChatModel` importable.
-  - [ ] T1.4 Refresh broad-regression baseline.
-  - [ ] T1.5 Verify D5 excluded-reason patterns cover real-world cases against the Trial-2 corpus.
-  - [ ] T1.6 Run sandbox-AC validator on this spec; expect PASS.
+- [x] **T1 — Readiness checks**
+  - [x] T1.1 Confirm 7c.0a + 7c.0b + 7c.0c all `done`; 7c.1 `done` recommended.
+  - [x] T1.2 Verify Trial-2 forensic fixture exists; document skip path if absent.
+  - [x] T1.3 Verify LangChain `BaseChatModel` importable.
+  - [x] T1.4 Refresh broad-regression baseline.
+  - [x] T1.5 Verify D5 excluded-reason patterns cover real-world cases against the Trial-2 corpus.
+  - [x] T1.6 Run sandbox-AC validator on this spec; expect PASS.
 
-- [ ] **T2 — Author Pydantic-v2 directive model (AC: 7c.3a-A)**
-  - [ ] T2.1 `app/composers/section_02a/directive_model.py` with `DirectiveRole` + `ExcludedReason` + `DirectiveSource` + `Directive`.
-  - [ ] T2.2 Triple-layer red-rejection on role + 4 conditional invariants per D4.
-  - [ ] T2.3 Trial-2 finding #2 binary-file invariant explicit error message.
-  - [ ] T2.4 `__init__.py` public exports.
+- [x] **T2 — Author Pydantic-v2 directive model (AC: 7c.3a-A)**
+  - [x] T2.1 `app/composers/section_02a/directive_model.py` with `DirectiveRole` + `ExcludedReason` + `DirectiveSource` + `Directive`.
+  - [x] T2.2 Triple-layer red-rejection on role + 4 conditional invariants per D4.
+  - [x] T2.3 Trial-2 finding #2 binary-file invariant explicit error message.
+  - [x] T2.4 `__init__.py` public exports.
 
-- [ ] **T3 — Author composer body (AC: 7c.3a-B)**
-  - [ ] T3.1 `composer.py::compose` per D3 signature.
-  - [ ] T3.2 D5 rule-based excluded-reason pattern matching (3 cases pre-LLM).
-  - [ ] T3.3 Per-file LLM call via Jinja2 prompt template (D6).
-  - [ ] T3.4 Helper modules `_prompt.py` + `_cache.py` (D7 normalization regex + SHA256 derivation).
-  - [ ] T3.5 File-walk logic re-authored (do NOT import legacy `app/marcus/orchestrator/directive_composer.py`).
+- [x] **T3 — Author composer body (AC: 7c.3a-B)**
+  - [x] T3.1 `composer.py::compose` per D3 signature.
+  - [x] T3.2 D5 rule-based excluded-reason pattern matching (3 cases pre-LLM).
+  - [x] T3.3 Per-file LLM call via Jinja2 prompt template (D6).
+  - [x] T3.4 Helper modules `_prompt.py` + `_cache.py` (D7 normalization regex + SHA256 derivation).
+  - [x] T3.5 File-walk logic re-authored (do NOT import legacy `app/marcus/orchestrator/directive_composer.py`).
 
-- [ ] **T4 — Author Jinja2 prompt template (AC: 7c.3a-B / D6)**
-  - [ ] T4.1 `docs/conversational-gates/section-02a-composer.j2` with D6 inputs + structured-JSON output spec.
-  - [ ] T4.2 Document prompt design rationale in module docstring of `_prompt.py`.
+- [x] **T4 — Author Jinja2 prompt template (AC: 7c.3a-B / D6)**
+  - [x] T4.1 `docs/conversational-gates/section-02a-composer.j2` with D6 inputs + structured-JSON output spec.
+  - [x] T4.2 Document prompt design rationale in module docstring of `_prompt.py`.
 
-- [ ] **T5 — Author 6 tests (AC: 7c.3a-A through 7c.3a-F test pins)**
-  - [ ] T5.1 `test_composer_directive_model_shape.py` (model invariants + Trial-2 binary-file anti-pattern explicit test).
-  - [ ] T5.2 `test_composer_classification.py` (compose + fixture-replay LLM + 6 cases).
-  - [ ] T5.3 `test_composer_trial_2_finding_2_regression.py` (TW-7c-2 firing trigger).
-  - [ ] T5.4 `test_composer_cache_key_normalization.py` (SHA256 stability + cache-hit/miss).
-  - [ ] T5.5 `test_composer_utf8_write.py` (FR-7c-5 / U+202F regression on write).
-  - [ ] T5.6 `test_import_linter_c5_target_list_populated.py` (C5 + lint-imports KEPT 12).
+- [x] **T5 — Author 6 tests (AC: 7c.3a-A through 7c.3a-F test pins)**
+  - [x] T5.1 `test_composer_directive_model_shape.py` (model invariants + Trial-2 binary-file anti-pattern explicit test).
+  - [x] T5.2 `test_composer_classification.py` (compose + fixture-replay LLM + 6 cases).
+  - [x] T5.3 `test_composer_trial_2_finding_2_regression.py` (TW-7c-2 firing trigger).
+  - [x] T5.4 `test_composer_cache_key_normalization.py` (SHA256 stability + cache-hit/miss).
+  - [x] T5.5 `test_composer_utf8_write.py` (FR-7c-5 / U+202F regression on write).
+  - [x] T5.6 `test_import_linter_c5_target_list_populated.py` (C5 + lint-imports KEPT 12).
 
-- [ ] **T6 — Populate C5 `forbidden_modules` (AC: 7c.3a-F)**
-  - [ ] T6.1 Edit `pyproject.toml::[tool.importlinter]` C5 contract per D9.
-  - [ ] T6.2 Verify lint-imports exits 0 + KEPT 12.
-  - [ ] T6.3 Verify composer.py does NOT import any of the 3 forbidden modules.
+- [x] **T6 — Populate C5 `forbidden_modules` (AC: 7c.3a-F)**
+  - [x] T6.1 Edit `pyproject.toml::[tool.importlinter]` C5 contract per D9.
+  - [x] T6.2 Verify lint-imports exits 0 + KEPT 12.
+  - [x] T6.3 Verify composer.py does NOT import any of the 3 forbidden modules.
 
-- [ ] **T7 — Update 7c.2 AST scan (AC: 7c.3a-E follow-on)**
-  - [ ] T7.1 If `app/composers/section_02a/composer.py` is NOT in `tests/structural/test_directive_io_uses_utf8_explicit.py::FILES_TO_SCAN`, add it.
+- [x] **T7 — Update 7c.2 AST scan (AC: 7c.3a-E follow-on)**
+  - [x] T7.1 If `app/composers/section_02a/composer.py` is NOT in `tests/structural/test_directive_io_uses_utf8_explicit.py::FILES_TO_SCAN`, add it.
 
-- [ ] **T8 — Augment A11 anti-pattern catalog (informational; lower priority)**
-  - [ ] T8.1 Optionally extend `docs/dev-guide/specialist-anti-patterns.md` A11 with seventh-instance reference to Trial-2 finding #2 retirement (cross-reference to 7c.3a). Surface as `decision_needed` if scope exceeds K-target.
+- [x] **T8 — Augment A11 anti-pattern catalog (informational; lower priority)**
+  - [x] T8.1 Deferred optional `docs/dev-guide/specialist-anti-patterns.md` A11 augmentation to preserve K-target; no implementation dependency.
 
-- [ ] **T9 — Verification battery (R-tier R3; cross-agent T11 review)**
-  - [ ] T9.1 Focused tests: all 6 new test files PASS.
-  - [ ] T9.2 R3 broad regression `pytest -p no:randomly -q --tb=line` (parallel post-7c.0c) — combined parallel + serial total = T1.4 baseline (delta = 0).
-  - [ ] T9.3 lint-imports: 12 KEPT (UNCHANGED).
-  - [ ] T9.4 Class-conformance: 11 (UNCHANGED).
-  - [ ] T9.5 Sandbox-AC: PASS.
-  - [ ] T9.6 Ruff: clean on touched files.
+- [x] **T9 — Verification battery (R-tier R3; cross-agent T11 review)**
+  - [x] T9.1 Focused tests: all 6 new test files PASS.
+  - [x] T9.2 R3 broad regression `pytest -p no:randomly -q --tb=line` (parallel post-7c.0c) — combined parallel + serial total = T1.4 baseline (delta = 0).
+  - [x] T9.3 lint-imports: 12 KEPT (UNCHANGED).
+  - [x] T9.4 Class-conformance: 11 (UNCHANGED).
+  - [x] T9.5 Sandbox-AC: PASS.
+  - [x] T9.6 Ruff: clean on touched files.
 
-- [ ] **T10 — Codex self-review (NEW CYCLE T10)**
-  - [ ] T10.1 Codex authors `_codex-handoff/7c-3a.ready-for-review.md` summarizing: file list (~15 files: 4 NEW package modules + 6 NEW tests + Jinja2 template + pyproject.toml diff + structural test extension) + contract-decision-by-decision compliance table (D1-D11 each: PASS/FAIL/deviation) + TW-7c-2 firing status (PASS = no firing) + broad-regression delta + wall-clock report.
+- [x] **T10 — Codex self-review (NEW CYCLE T10)**
+  - [x] T10.1 Codex authors `_codex-handoff/7c-3a.ready-for-review.md` summarizing: file list (~15 files: 4 NEW package modules + 6 NEW tests + Jinja2 template + pyproject.toml diff + structural test extension) + contract-decision-by-decision compliance table (D1-D11 each: PASS/FAIL/deviation) + TW-7c-2 firing status (PASS = no firing) + broad-regression delta + wall-clock report.
 
-- [ ] **T11 — Claude `bmad-code-review` (CROSS-AGENT MANDATORY; standard cross-agent tier)**
-  - [ ] T11.1 Claude (separate cold context) runs `bmad-code-review` against the diff. **Verifies contract-decision compliance** (D1-D11 each). NOT relitigation. Verdict at `_bmad-output/implementation-artifacts/7c-3a-code-review-2026-05-NN.md`. Commits + flips done.
+- [x] **T11 — Claude `bmad-code-review` (CROSS-AGENT MANDATORY; standard cross-agent tier)**
+  - [x] T11.1 Claude (separate cold context) runs `bmad-code-review` against the diff. **Verifies contract-decision compliance** (D1-D11 each). NOT relitigation. Verdict at `_bmad-output/implementation-artifacts/7c-3a-code-review-2026-05-NN.md`. Commits + flips done.
 
 ---
 
@@ -471,12 +471,52 @@ Codex Sonnet 4.5 or later (NEW CYCLE T1-T9 + T10 self-review per `feedback_new_c
 
 ### Debug Log References
 
-(Populated during dev round.)
+- 2026-05-05: T1 prerequisites clear: 7c.0a/0b/0c/1 done in local sprint state, Trial-2 fixture present, LangChain `BaseChatModel` importable, sandbox-AC PASS.
+- 2026-05-05: T1 broad-regression baseline refreshed immediately before 7c.3a edits: 39 failed, 4063 passed, 27 skipped, 2 xfailed, 11 warnings.
+- 2026-05-05: Authored `app/composers/section_02a/` package, Pydantic-v2 directive models, cache, prompt rendering, composer body, and UTF-8 YAML writer.
+- 2026-05-05: Populated C5 `forbidden_modules` and updated structural pins that previously expected C5 to remain empty.
+- 2026-05-05: Focused/impact test run: 21 passed.
+- 2026-05-05: lint-imports: 12 kept, 0 broken.
+- 2026-05-05: Class-conformance validator: PASS, 11 activation contract files conform.
+- 2026-05-05: Sandbox-AC validator: PASS.
+- 2026-05-05: Ruff on touched app/tests/structural files: clean.
+- 2026-05-05: R3 broad regression final run: 39 failed, 4077 passed, 27 skipped, 2 xfailed, 11 warnings. Delta vs T1 baseline: +14 passes, same 39 known checkout-level failures, no new 7c.3a failures.
 
 ### Completion Notes List
 
-(Populated during dev round; MUST include contract-decision-by-decision compliance table D1-D11 each + TW-7c-2 firing status + broad-regression delta + wall-clock report + cache-hit-rate metric per NFR-7c-P2.)
+- D1 PASS: composer module path is `app/composers/section_02a/composer.py`.
+- D2 PASS: Pydantic-v2 directive models live in `app/composers/section_02a/directive_model.py` and are exported via package `__init__.py`.
+- D3 PASS: `compose(corpus_dir: Path, *, llm: BaseChatModel, cache: ComposerCache | None = None) -> Directive` implemented.
+- D4 PASS: DirectiveRole, ExcludedReason, DirectiveSource, and Directive conform to Pydantic-v2 idioms with triple-layer role red-rejection, timezone-aware datetime, UUID4 validation, assignment validation, and extra-forbid.
+- D5 PASS: `.gitkeep`, `.DS_Store`, and `Thumbs.db` are rule-excluded before LLM invocation.
+- D6 PASS: Jinja2 prompt template added at `docs/conversational-gates/section-02a-composer.j2`.
+- D7 PASS: `ComposerCache` and SHA256 normalized-prompt cache keys implemented; focused cache tests prove hit/miss behavior. Fixture cache-hit metric: second identical compose call reuses cache with no second LLM invocation.
+- D8 PASS: TW-7c-2 firing trigger test passes; no TW-7c-2 fire.
+- D9 PASS: C5 forbidden modules populated with the locked three-module list and lint-imports remains 12 KEPT.
+- D10 PASS: no live LLM calls are present in default tests; fixture-replay `BaseChatModel` is used.
+- D11 PASS: Trial-2 forensic regression reads the canonical fixture path at runtime and has explicit skip behavior if absent.
+- Optional T8 A11 anti-pattern catalog augmentation was not performed; documented as deferred to preserve K-target.
+- Deferred-inventory entry `trial-2-finding-2-directive-composer-corpus-scan-fallback` still needs final close bookkeeping at T11/story-close.
 
 ### File List
 
-(Populated during dev round; expected: ~15 files — 4 NEW app modules + 6 NEW tests + 1 NEW Jinja2 template + 1 NEW structural test + 1 modified pyproject.toml + 1 modified 7c.2 AST scan extension. Net: ~2.0-3.0K LOC.)
+- `app/composers/__init__.py` (NEW)
+- `app/composers/section_02a/__init__.py` (NEW)
+- `app/composers/section_02a/_cache.py` (NEW)
+- `app/composers/section_02a/_prompt.py` (NEW)
+- `app/composers/section_02a/composer.py` (NEW)
+- `app/composers/section_02a/directive_model.py` (NEW)
+- `docs/conversational-gates/section-02a-composer.j2` (NEW)
+- `tests/composers/__init__.py` (NEW)
+- `tests/composers/section_02a/__init__.py` (NEW)
+- `tests/composers/section_02a/_helpers.py` (NEW)
+- `tests/composers/section_02a/test_composer_cache_key_normalization.py` (NEW)
+- `tests/composers/section_02a/test_composer_classification.py` (NEW)
+- `tests/composers/section_02a/test_composer_directive_model_shape.py` (NEW)
+- `tests/composers/section_02a/test_composer_trial_2_finding_2_regression.py` (NEW)
+- `tests/composers/section_02a/test_composer_utf8_write.py` (NEW)
+- `tests/structural/test_import_linter_c5_target_list_populated.py` (NEW)
+- `pyproject.toml` (MODIFIED)
+- `tests/structural/test_directive_io_uses_utf8_explicit.py` (MODIFIED)
+- `tests/structural/test_import_linter_contracts_c4_c5_c6_present.py` (MODIFIED)
+- `tests/structural/test_import_linter_c4_target_list_populated.py` (MODIFIED)

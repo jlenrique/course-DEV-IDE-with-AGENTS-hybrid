@@ -47,7 +47,11 @@ def test_c4_c5_c6_contracts_exist_by_name_with_expected_forbidden_lists() -> Non
         "app.marcus.orchestrator.write_api",
         "app.specialists.*",
     ]
-    assert c5["forbidden_modules"] == []
+    assert c5["forbidden_modules"] == [
+        "app.composers._fallback",
+        "app.composers.legacy",
+        "app.marcus.orchestrator.directive_composer",
+    ]
     assert c6["forbidden_modules"] == []
 
 

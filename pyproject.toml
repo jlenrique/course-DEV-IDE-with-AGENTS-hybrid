@@ -230,7 +230,11 @@ include_external_packages = false
 name = "C5: §02A composer boundary may not import corpus-scan fallback paths"
 type = "forbidden"
 source_modules = ["app.composers.section_02a.*"]
-forbidden_modules = []
+forbidden_modules = [
+    "app.composers._fallback",
+    "app.composers.legacy",
+    "app.marcus.orchestrator.directive_composer",
+]
 include_external_packages = false
 
 [[tool.importlinter.contracts]]
