@@ -1,6 +1,6 @@
 # Migration Story 7c.4b: Gate-Family Foundation Implementation — Shared Base + Class-Conformance + FR-7c-49 Harness + C6 Population + TW-7c-3 Single-Source
 
-**Status:** ready-for-dev *(spec authored 2026-05-05 with cross-agent contract negotiation per AMEND-V5 pre-flight; predecessors 7c-0b + 7c-4a CLOSED `done`. **DISPATCHABLE NOW** — operator can pick this up immediately to keep Codex unblocked.)*
+**Status:** review *(spec authored 2026-05-05 with cross-agent contract negotiation per AMEND-V5 pre-flight; predecessors 7c-0b + 7c-4a CLOSED `done`; Codex dev-story completed 2026-05-05 and ready for T11 cross-agent review.)*
 **Sprint key:** `migration-7c-4b-gate-family-foundation-implementation`
 **Epic:** Slab 7c — Marcus Orchestrational Tail (`migration-epic-slab-7c-orchestrational-tail`)
 **Pts:** 3
@@ -305,53 +305,53 @@ so that 7c.5.G0..G6 (8 per-gate stories) inherit a working executable substrate 
 
 ## Tasks / Subtasks
 
-- [ ] **T1 — Readiness checks**
-  - [ ] T1.1 Confirm 7c.4a + 7c.0b `done` + 7c.3b `review`-or-`done`.
-  - [ ] T1.2 Verify ADR 0002 + ADR 0001 importable + present.
-  - [ ] T1.3 Verify `app/models/decision_cards/_base.py` existence; document extend-vs-create.
-  - [ ] T1.4 Verify `app/manifest/compiler.py` Slab 7a substrate.
-  - [ ] T1.5 Verify pyproject.toml C6 contract present (12 source_modules; empty forbidden_modules).
-  - [ ] T1.6 Verify 7c.3b's `section_02a` doesn't cross-import other §sections (post-D5).
-  - [ ] T1.7 Refresh broad-regression baseline.
-  - [ ] T1.8 Run sandbox-AC validator on this spec; expect PASS.
+- [x] **T1 — Readiness checks**
+  - [x] T1.1 Confirm 7c.4a + 7c.0b `done` + 7c.3b `review`-or-`done`.
+  - [x] T1.2 Verify ADR 0002 + ADR 0001 importable + present.
+  - [x] T1.3 Verify `app/models/decision_cards/_base.py` existence; document extend-vs-create.
+  - [x] T1.4 Verify `app/manifest/compiler.py` Slab 7a substrate.
+  - [x] T1.5 Verify pyproject.toml C6 contract present (12 source_modules; empty forbidden_modules).
+  - [x] T1.6 Verify 7c.3b's `section_02a` doesn't cross-import other §sections (post-D5).
+  - [x] T1.7 Refresh broad-regression baseline.
+  - [x] T1.8 Run sandbox-AC validator on this spec; expect PASS.
 
-- [ ] **T2 — Land shared `DecisionCardBase` (AC: 7c.4b-A; D2)**
-  - [ ] T2.1 `app/models/decision_cards/_base.py` Pydantic-v2 base class + DecisionCardMeta sub-model.
-  - [ ] T2.2 Triple-layer red-rejection on `cache_state` (mirror TripwireLedgerEntry pattern).
-  - [ ] T2.3 Update `app/models/decision_cards/__init__.py` exports.
+- [x] **T2 — Land shared `DecisionCardBase` (AC: 7c.4b-A; D2)**
+  - [x] T2.1 `app/models/decision_cards/_base.py` Pydantic-v2 base class + DecisionCardMeta sub-model.
+  - [x] T2.2 Triple-layer red-rejection on `cache_state` (mirror TripwireLedgerEntry pattern).
+  - [x] T2.3 Update `app/models/decision_cards/__init__.py` exports.
 
-- [ ] **T3 — Extend `parity_contract` with `alias_of` syntax (AC: 7c.4b-B; D1)**
-  - [ ] T3.1 Extend `SurfaceTransportDeclaration` in `_declaration.py` with `alias_of: str | None = None` + validator rejecting non-family-IDs.
-  - [ ] T3.2 Extend `parity_contract` decorator in `_decorator.py` to accept `alias_of` kwarg.
-  - [ ] T3.3 Verify `iter_registered_surfaces()` exposes alias_of.
+- [x] **T3 — Extend `parity_contract` with `alias_of` syntax (AC: 7c.4b-B; D1)**
+  - [x] T3.1 Extend `SurfaceTransportDeclaration` in `_declaration.py` with `alias_of: str | None = None` + validator rejecting non-family-IDs.
+  - [x] T3.2 Extend `parity_contract` decorator in `_decorator.py` to accept `alias_of` kwarg.
+  - [x] T3.3 Verify `iter_registered_surfaces()` exposes alias_of.
 
-- [ ] **T4 — Land parametrized OperatorVerdict harness (AC: 7c.4b-C; D3 / FR-7c-49)**
-  - [ ] T4.1 `tests/schemas/operator_verdict/_harness.py` with `assert_operator_verdict_schema_stable_across_transports`.
-  - [ ] T4.2 Surface-as-decision-needed: reshape 7c.3b's `test_section_02a_shape.py` to consume harness, OR keep standalone.
+- [x] **T4 — Land parametrized OperatorVerdict harness (AC: 7c.4b-C; D3 / FR-7c-49)**
+  - [x] T4.1 `tests/schemas/operator_verdict/_harness.py` with `assert_operator_verdict_schema_stable_across_transports`.
+  - [x] T4.2 Surface-as-decision-needed: reshape 7c.3b's `test_section_02a_shape.py` to consume harness, OR keep standalone.
 
-- [ ] **T5 — Land TW-7c-3 firing-spec single-source (AC: 7c.4b-D; D4 / AMEND-7d-i)**
-  - [ ] T5.1 `app/parity/contracts/tw_7c_3_firing.py` with LOCKSTEP_CHECK + FOUR_FILE_GLOBS + LockstepResult.
+- [x] **T5 — Land TW-7c-3 firing-spec single-source (AC: 7c.4b-D; D4 / AMEND-7d-i)**
+  - [x] T5.1 `app/parity/contracts/tw_7c_3_firing.py` with LOCKSTEP_CHECK + FOUR_FILE_GLOBS + LockstepResult.
 
-- [ ] **T6 — Extend class-conformance validator (AC: 7c.4b-D; D6 / FR-7c-8)**
-  - [ ] T6.1 `scripts/utilities/validate_parity_test_class_conformance.py` extension to recognize 18 runtime IDs + LOCKSTEP_CHECK integration + TW-7c-3 firing.
+- [x] **T6 — Extend class-conformance validator (AC: 7c.4b-D; D6 / FR-7c-8)**
+  - [x] T6.1 `scripts/utilities/validate_parity_test_class_conformance.py` extension to recognize 18 runtime IDs + LOCKSTEP_CHECK integration + TW-7c-3 firing.
 
-- [ ] **T7 — Extend manifest compiler (AC: 7c.4b-E; D7 / FR-7c-9)**
-  - [ ] T7.1 `app/manifest/compiler.py` extension to honor 18 runtime IDs.
+- [x] **T7 — Extend manifest compiler (AC: 7c.4b-E; D7 / FR-7c-9)**
+  - [x] T7.1 `app/manifest/compiler.py` extension to honor 18 runtime IDs.
 
-- [ ] **T8 — Populate C6 forbidden_modules (AC: 7c.4b-F; D5 / FR-7c-53)**
-  - [ ] T8.1 Edit `pyproject.toml::[tool.importlinter]` C6 forbidden_modules per D5.
-  - [ ] T8.2 Verify lint-imports KEPT 12 (UNCHANGED).
+- [x] **T8 — Populate C6 forbidden_modules (AC: 7c.4b-F; D5 / FR-7c-53)**
+  - [x] T8.1 Edit `pyproject.toml::[tool.importlinter]` C6 forbidden_modules per D5.
+  - [x] T8.2 Verify lint-imports KEPT 12 (UNCHANGED).
 
-- [ ] **T9 — Author 6 tests (AC test pins)**
-  - [ ] T9.1 `tests/parity/test_decision_card_base_shape.py`.
-  - [ ] T9.2 `tests/parity/test_class_conformance_validator_extension.py`.
-  - [ ] T9.3 `tests/structural/test_import_linter_c6_target_list_populated.py`.
-  - [ ] T9.4 `tests/structural/test_tw_7c_3_firing_spec_single_source.py`.
-  - [ ] T9.5 `tests/parametrized_harness/test_operator_verdict_harness_consumable.py`.
-  - [ ] T9.6 `tests/integration/manifest/test_compiler_honors_new_gate_codes.py`.
+- [x] **T9 — Author 6 tests (AC test pins)**
+  - [x] T9.1 `tests/parity/test_decision_card_base_shape.py`.
+  - [x] T9.2 `tests/parity/test_class_conformance_validator_extension.py`.
+  - [x] T9.3 `tests/structural/test_import_linter_c6_target_list_populated.py`.
+  - [x] T9.4 `tests/structural/test_tw_7c_3_firing_spec_single_source.py`.
+  - [x] T9.5 `tests/parametrized_harness/test_operator_verdict_harness_consumable.py`.
+  - [x] T9.6 `tests/integration/manifest/test_compiler_honors_new_gate_codes.py`.
 
-- [ ] **T10 — Codex T10 self-review at `_codex-handoff/7c-4b.ready-for-review.md`**
-  - [ ] T10.1 Document: file list (~14 files; 7+ new + 5 modified), D1-D8 contract compliance table, broad-regression delta, lint-imports KEPT 12, class-conformance ≥11, ruff status.
+- [x] **T10 — Codex T10 self-review at `_codex-handoff/7c-4b.ready-for-review.md`**
+  - [x] T10.1 Document: file list (~14 files; 7+ new + 5 modified), D1-D8 contract compliance table, broad-regression delta, lint-imports KEPT 12, class-conformance ≥11, ruff status.
 
 - [ ] **T11 — Claude `bmad-code-review` (CROSS-AGENT MANDATORY; cross-agent tier)**
   - [ ] T11.1 Verify D1-D8 contract compliance line-by-line; commit + flip done.
@@ -416,12 +416,49 @@ Codex Sonnet 4.5 or later (NEW CYCLE T1-T9 + T10 self-review per `feedback_new_c
 
 ### Debug Log References
 
-(Populated during dev round.)
+- T1 checks: 7c.4a/7c.0b/7c.3b `done`; ADR 0001 + ADR 0002 present; DSL import OK; `app/manifest/compiler.py` present; C6 source inventory present; `app/models/decision_cards/_base.py` absent, so created new internal shared base; 7c.3b `section_02a` had no imports of the other section packages; sandbox-AC PASS.
+- T1 broad baseline: `43 failed, 4088 passed, 27 skipped, 2 xfailed, 11 warnings`.
+- Focused/scope tests: `39 passed` across decision-card base, DSL alias, validator extension, C6 structural pins, TW-7c-3 single-source, operator-verdict harness, compiler gate-code support, and reshaped §02A schema test.
+- Class conformance: `PASS: 11 activation contract file(s) conform`.
+- Import-linter: `Contracts: 12 kept, 0 broken`.
+- Sandbox-AC: `PASS`.
+- Ruff: `All checks passed`.
+- R3 broad regression: `41 failed, 4112 passed, 27 skipped, 2 xfailed, 11 warnings`; failure count improved by 2 against T1 baseline, with remaining failures inherited from checkout/7c.3b broad-suite state.
 
 ### Completion Notes List
 
-(Populated during dev round; MUST include D1-D8 contract compliance table + lint-imports KEPT 12 + class-conformance ≥11 + broad-regression delta.)
+- D1: Extended `SurfaceTransportDeclaration` and `parity_contract(...)` with `alias_of`; validator rejects non-family IDs outside `G0/G1/G2A/G2C/G3/G4/G5/G6`; registry exposes `alias_of`.
+- D2: Created `app/models/decision_cards/_base.py` with frozen `DecisionCardBase` + `DecisionCardMeta`, sha256 digest validator, cache-state closed enum with TypeAdapter rejection, affected-node validation, and `OverrideEvent` trail typing.
+- D3: Added `tests/schemas/operator_verdict/_harness.py` and reshaped the §02A schema test to consume it while preserving existing assertions.
+- D4: Added `app/parity/contracts/tw_7c_3_firing.py` with `FOUR_FILE_GLOBS`, `LockstepResult`, and contract-locked `LOCKSTEP_CHECK`.
+- D5: Populated executable C6 forbidden list and verified lint-imports remains 12 KEPT. Implementation note for T11: import-linter rejects a contract where an existing package is both source and forbidden (`Modules have shared descendants`), so the executable list forbids the 11 other §section packages from the current 12-source inventory. This preserves cross-section prevention for existing `section_02a`; future section stories should add their reciprocal forbidden target when the package exists.
+- D6: Extended the class-conformance validator with 18 runtime gate IDs, lockstep evaluation helpers, and TW-7c-3 TripwireLedgerEntry construction/writing helper for tmp-ledger exercise.
+- D7: Extended `app/manifest/compiler.py` with the 18-ID runtime gate set and compile-time gate-code validation.
+- D8: Added shape-pin coverage for `DecisionCardBase` including field set, config, closed enum, TypeAdapter red rejection, sha256 digest rejection, and frozen mutation rejection.
 
 ### File List
 
-(Populated during dev round; expected: ~14 files — 7 NEW app modules + 6 NEW tests + 5 modified config/scripts. Net: ~2.0-3.0K LOC.)
+- `app/gates/_shared/__init__.py`
+- `app/manifest/compiler.py`
+- `app/models/decision_cards/__init__.py`
+- `app/models/decision_cards/_base.py`
+- `app/parity/contracts/_declaration.py`
+- `app/parity/contracts/_decorator.py`
+- `app/parity/contracts/tw_7c_3_firing.py`
+- `pyproject.toml`
+- `scripts/utilities/validate_parity_test_class_conformance.py`
+- `tests/integration/manifest/test_compiler_honors_new_gate_codes.py`
+- `tests/parametrized_harness/test_operator_verdict_harness_consumable.py`
+- `tests/parity/test_class_conformance_validator_extension.py`
+- `tests/parity/test_decision_card_base_shape.py`
+- `tests/parity/test_dsl_primitive_contract.py`
+- `tests/schemas/operator_verdict/_harness.py`
+- `tests/schemas/operator_verdict/test_section_02a_shape.py`
+- `tests/structural/test_import_linter_c4_target_list_populated.py`
+- `tests/structural/test_import_linter_c6_target_list_populated.py`
+- `tests/structural/test_import_linter_contracts_c4_c5_c6_present.py`
+- `tests/structural/test_tw_7c_3_firing_spec_single_source.py`
+
+### Change Log
+
+- 2026-05-05: Codex implemented 7c.4b through T10 and moved status to review.

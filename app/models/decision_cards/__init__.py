@@ -6,6 +6,11 @@ from typing import Annotated, TypeAlias
 
 from pydantic import Field, TypeAdapter
 
+from app.models.decision_cards._base import (
+    CacheState,
+    CacheStateLiteral,
+    DecisionCardBase,
+)
 from app.models.decision_cards.base import (
     DecisionCard,
     DecisionCardMeta,
@@ -38,7 +43,10 @@ AnyDecisionCardAdapter = TypeAdapter(AnyDecisionCard)
 __all__ = [
     "AnyDecisionCard",
     "AnyDecisionCardAdapter",
+    "CacheState",
+    "CacheStateLiteral",
     "DecisionCard",
+    "DecisionCardBase",
     "DecisionCardMeta",
     "DecisionCardVerb",
     "EscapeCardOption",

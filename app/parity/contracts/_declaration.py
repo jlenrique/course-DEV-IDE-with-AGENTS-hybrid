@@ -4,9 +4,14 @@ from __future__ import annotations
 
 from typing import Literal
 
-from pydantic import BaseModel, ConfigDict, Field, model_validator
+from pydantic import BaseModel, ConfigDict, Field, TypeAdapter, field_validator, model_validator
 
 Transport = Literal["cli", "http", "mcp-stdio", "mcp-subprocess"]
+GateFamilyId = Literal["G0", "G1", "G2A", "G2C", "G3", "G4", "G5", "G6"]
+GATE_FAMILY_IDS: frozenset[str] = frozenset(
+    {"G0", "G1", "G2A", "G2C", "G3", "G4", "G5", "G6"}
+)
+_GATE_FAMILY_ADAPTER: TypeAdapter[GateFamilyId] = TypeAdapter(GateFamilyId)
 
 
 class SurfaceTransportDeclaration(BaseModel):
@@ -17,6 +22,14 @@ class SurfaceTransportDeclaration(BaseModel):
     surface_id: str = Field(..., min_length=1)
     mandatory_transports: list[Transport] = Field(..., min_length=1)
     optional_transports: list[Transport] = Field(default_factory=list)
+    alias_of: GateFamilyId | None = Field(default=None)
+
+    @field_validator("alias_of", mode="before")
+    @classmethod
+    def _reject_unknown_alias_family(cls, value: object) -> object:
+        if value is None:
+            return None
+        return _GATE_FAMILY_ADAPTER.validate_python(value)
 
     @model_validator(mode="after")
     def _validate_transport_sets(self) -> SurfaceTransportDeclaration:
@@ -34,4 +47,9 @@ class SurfaceTransportDeclaration(BaseModel):
         return self
 
 
-__all__ = ["SurfaceTransportDeclaration", "Transport"]
+__all__ = [
+    "GATE_FAMILY_IDS",
+    "GateFamilyId",
+    "SurfaceTransportDeclaration",
+    "Transport",
+]

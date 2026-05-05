@@ -11,6 +11,9 @@ from app.models.operator_verdict_section_02a import (
     Section02AOperatorVerdict,
 )
 from tests.gates.section_02a._helpers import fixture_directive
+from tests.schemas.operator_verdict._harness import (
+    assert_operator_verdict_schema_stable_across_transports,
+)
 
 
 def _schema_hash() -> str:
@@ -37,6 +40,10 @@ def test_section_02a_operator_verdict_schema_hash_stable_across_transports() -> 
 
     assert len(schema_hashes) == 1
     assert verdict_payloads[0] == verdict_payloads[1] == verdict_payloads[2]
+    assert_operator_verdict_schema_stable_across_transports(
+        verdict_class=Section02AOperatorVerdict,
+        surface_id=SECTION_02A_SURFACE_ID,
+    )
 
 
 def test_section_02a_verdict_variant_is_tagged_with_surface_id() -> None:

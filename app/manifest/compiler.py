@@ -44,6 +44,28 @@ SPECIALIST_ALIASES: dict[str, str] = {
     "quinn-r": "quinn_r",
     "elevenlabs": "enrique",
 }
+RUNTIME_GATE_IDS: frozenset[str] = frozenset(
+    {
+        "G0",
+        "G0A",
+        "G0B",
+        "G1",
+        "G1A",
+        "G1.5",
+        "G2",
+        "G2B",
+        "G2C",
+        "G2M",
+        "G2.5",
+        "G2F",
+        "G3",
+        "G3B",
+        "G4",
+        "G4A",
+        "G4B",
+        "G5",
+    }
+)
 
 
 def _repo_root() -> Path:
@@ -80,6 +102,17 @@ def production_gate_ids(manifest: PipelineManifest) -> frozenset[str]:
         for node in manifest.nodes
         if node.gate and node.gate_code and node.fold_with is None and node.fold_target is None
     )
+
+
+def _validate_gate_codes(nodes: list[NodeSpec]) -> None:
+    for node in nodes:
+        if not node.gate or node.gate_code is None:
+            continue
+        if node.gate_code not in RUNTIME_GATE_IDS:
+            raise CompileError(
+                f"node {node.id!r} references unknown runtime gate code "
+                f"{node.gate_code!r}; expected one of {sorted(RUNTIME_GATE_IDS)}"
+            )
 
 
 def _load_dispatch_registry(repo_root: Path) -> dict[str, str]:
@@ -408,6 +441,7 @@ def compile(  # noqa: A001 — matches spec naming; callers use `app.manifest.co
     _validate_frozen_graph_version(manifest.frozen_graph_version, root)
     _validate_model_config_refs(manifest.nodes, root)
     _validate_model_ids_in_model_config_refs(manifest.nodes, root)
+    _validate_gate_codes(manifest.nodes)
     _validate_conditions(manifest.edges)
     _validate_decision_card_schemas(manifest.edges)
     _validate_dependency_cycles(manifest.nodes)
@@ -433,6 +467,7 @@ def compile_run_graph(
     _validate_frozen_graph_version(manifest.frozen_graph_version, root)
     _validate_model_config_refs(manifest.nodes, root)
     _validate_model_ids_in_model_config_refs(manifest.nodes, root)
+    _validate_gate_codes(manifest.nodes)
     _validate_conditions(manifest.edges)
     _validate_decision_card_schemas(manifest.edges)
     _validate_dependency_cycles(manifest.nodes)
@@ -444,6 +479,7 @@ def compile_run_graph(
 
 
 __all__ = [
+    "RUNTIME_GATE_IDS",
     "compile",
     "compile_run_graph",
     "production_gate_ids",

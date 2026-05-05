@@ -237,24 +237,25 @@ forbidden_modules = [
 ]
 include_external_packages = false
 
+# C6 uses lint-imports' `independence` contract type for symmetric
+# bidirectional cross-import prevention between sibling §section packages.
+# Rationale (T11 P-1 patch on Story 7c.4b): the previously-attempted
+# `forbidden` representation aborted lint-imports with "Modules have shared
+# descendants" once any §section beyond `section_02a` actually existed on
+# disk (verified: synthetic `section_04a` triggers the abort regardless of
+# import direction). `independence` is purpose-built for "modules in this
+# list must not import each other"; it tolerates only-some-modules-existing,
+# stays at 12 KEPT, and is symmetrically enforced (verified: both
+# section_02a -> section_04a and section_04a -> section_02a are caught).
+# The modules list grows incrementally as each §section package lands; each
+# downstream story (7c.6 / 7c.7 / ... 7c.15) appends its own §section to
+# this list when its package is authored.
 [[tool.importlinter.contracts]]
 name = "C6: HIL-surface modules may not import each other across surfaces"
-type = "forbidden"
-source_modules = [
-    "app.gates.section_02a.*",
-    "app.gates.section_04a.*",
-    "app.gates.section_04_5.*",
-    "app.gates.section_04_55.*",
-    "app.gates.section_05_5.*",
-    "app.gates.section_07b.*",
-    "app.gates.section_07d.*",
-    "app.gates.section_07f.*",
-    "app.gates.section_08b.*",
-    "app.gates.section_11.*",
-    "app.gates.section_11b.*",
-    "app.gates.section_15.*",
+type = "independence"
+modules = [
+    "app.gates.section_02a",
 ]
-forbidden_modules = []
 include_external_packages = false
 
 [build-system]

@@ -8,11 +8,52 @@ from __future__ import annotations
 
 import argparse
 import ast
+import sys
 from dataclasses import dataclass
+from datetime import UTC, datetime
 from pathlib import Path
+from uuid import uuid4
+
+import yaml
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
+if str(REPO_ROOT) not in sys.path:
+    sys.path.insert(0, str(REPO_ROOT))
+
+from app.models.tripwire_ledger import (  # noqa: E402
+    TripwireId,
+    TripwireLedgerEntry,
+    TripwireSeverity,
+)
+from app.parity.contracts.tw_7c_3_firing import (  # noqa: E402
+    LOCKSTEP_CHECK,
+    LockstepResult,
+)
+
 DEFAULT_TARGET = REPO_ROOT / "tests" / "parity"
+GATE_FAMILY_IDS = frozenset({"G0", "G1", "G2A", "G2C", "G3", "G4", "G5", "G6"})
+RUNTIME_GATE_IDS = frozenset(
+    {
+        "G0",
+        "G0A",
+        "G0B",
+        "G1",
+        "G1A",
+        "G1.5",
+        "G2",
+        "G2B",
+        "G2C",
+        "G2M",
+        "G2.5",
+        "G2F",
+        "G3",
+        "G3B",
+        "G4",
+        "G4A",
+        "G4B",
+        "G5",
+    }
+)
 CLASS_B_REQUIRED_METHODS = frozenset(
     {
         "cold_activation_smoke",
@@ -75,6 +116,64 @@ CLASS_D2_REQUIRED_METHODS = frozenset(
         "test_operator_control_and_decision_log_landed",
     }
 )
+
+
+def is_valid_runtime_gate_id(gate_id: str) -> bool:
+    """Return whether ``gate_id`` is in 7c.4a's canonical runtime set."""
+
+    return gate_id in RUNTIME_GATE_IDS
+
+
+def gate_lockstep_result(gate_id: str, repo_root: Path | None = None) -> LockstepResult:
+    """Evaluate TW-7c-3's single-source lockstep rule for one gate."""
+
+    if not is_valid_runtime_gate_id(gate_id) and gate_id not in GATE_FAMILY_IDS:
+        raise ValueError(f"unknown Slab 7c runtime gate id: {gate_id}")
+    return LOCKSTEP_CHECK(gate_id, repo_root=repo_root)
+
+
+def build_tw_7c_3_entry(
+    *,
+    gate_id: str,
+    result: LockstepResult,
+) -> TripwireLedgerEntry:
+    """Build the TripwireLedgerEntry emitted when TW-7c-3 fires."""
+
+    return TripwireLedgerEntry(
+        tripwire_id=TripwireId.TW_7C_3,
+        story_owner="7c-4b",
+        fired_at=datetime.now(tz=UTC),
+        fired_verdict="fired" if not result.all_four_present else "not_fired",
+        measured_value={
+            "gate_id": gate_id,
+            "files_present": result.files_present,
+            "all_four_present": result.all_four_present,
+        },
+        escalation_action_taken="halt-and-remediate-four-file-lockstep"
+        if not result.all_four_present
+        else None,
+        decision_record_link="app/parity/contracts/tw_7c_3_firing.py",
+        severity=TripwireSeverity.CRITICAL,
+        trace_id=uuid4(),
+    )
+
+
+def write_tripwire_entry(
+    sprint_status_path: Path,
+    entry: TripwireLedgerEntry,
+) -> Path:
+    """Append a TripwireLedgerEntry-shaped row to sprint-status tripwire_events."""
+
+    payload = yaml.safe_load(sprint_status_path.read_text(encoding="utf-8")) or {}
+    events = payload.setdefault("tripwire_events", [])
+    if not isinstance(events, list):
+        raise ValueError("sprint-status.yaml::tripwire_events must be a list")
+    events.append(entry.model_dump(mode="json"))
+    sprint_status_path.write_text(
+        yaml.safe_dump(payload, sort_keys=False, allow_unicode=True),
+        encoding="utf-8",
+    )
+    return sprint_status_path
 
 
 @dataclass(frozen=True)

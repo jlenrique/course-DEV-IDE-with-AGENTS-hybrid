@@ -15,6 +15,23 @@ EXPECTED_C5_FORBIDDEN = {
     "app.composers.legacy",
     "app.marcus.orchestrator.directive_composer",
 }
+# C6 became `independence` type per T11 P-1 patch on 7c.4b. The full
+# §section target population (filled in incrementally as each §section
+# package lands per 7c.6 / 7c.7 / ... / 7c.15) spans these 12 modules.
+EXPECTED_C6_SECTION_TARGETS = {
+    "app.gates.section_02a",
+    "app.gates.section_04a",
+    "app.gates.section_04_5",
+    "app.gates.section_04_55",
+    "app.gates.section_05_5",
+    "app.gates.section_07b",
+    "app.gates.section_07d",
+    "app.gates.section_07f",
+    "app.gates.section_08b",
+    "app.gates.section_11",
+    "app.gates.section_11b",
+    "app.gates.section_15",
+}
 
 
 def _contracts() -> list[dict]:
@@ -33,7 +50,7 @@ def test_c4_forbidden_modules_target_list_is_populated():
     assert c4["source_modules"] == ["app.parity.contracts.*"]
 
 
-def test_c5_is_populated_and_c6_forbidden_modules_remain_empty():
+def test_c5_forbidden_modules_and_c6_independence_modules_are_populated():
     contracts_by_name = {contract["name"]: contract for contract in _contracts()}
 
     assert (
@@ -42,12 +59,12 @@ def test_c5_is_populated_and_c6_forbidden_modules_remain_empty():
         ]["forbidden_modules"])
         == EXPECTED_C5_FORBIDDEN
     )
-    assert (
-        contracts_by_name[
-            "C6: HIL-surface modules may not import each other across surfaces"
-        ]["forbidden_modules"]
-        == []
-    )
+    c6 = contracts_by_name[
+        "C6: HIL-surface modules may not import each other across surfaces"
+    ]
+    assert c6["type"] == "independence"
+    assert set(c6["modules"]) <= EXPECTED_C6_SECTION_TARGETS
+    assert "app.gates.section_02a" in c6["modules"]
 
 
 def test_import_linter_keeps_contract_count_at_twelve():

@@ -34,6 +34,34 @@ def test_surface_transport_declaration_validates_valid_input():
     assert declaration.optional_transports == ["mcp-stdio"]
 
 
+def test_surface_transport_declaration_accepts_valid_alias_of():
+    declaration = SurfaceTransportDeclaration(
+        surface_id="G0A",
+        mandatory_transports=["cli"],
+        alias_of="G1",
+    )
+
+    assert declaration.alias_of == "G1"
+
+
+def test_surface_transport_declaration_rejects_invalid_alias_family():
+    with pytest.raises(ValidationError):
+        SurfaceTransportDeclaration(
+            surface_id="G0A",
+            mandatory_transports=["cli"],
+            alias_of="G9",
+        )
+
+
+def test_surface_transport_declaration_alias_default_is_none():
+    declaration = SurfaceTransportDeclaration(
+        surface_id="surface_without_alias",
+        mandatory_transports=["cli"],
+    )
+
+    assert declaration.alias_of is None
+
+
 @pytest.mark.parametrize(
     "payload",
     [
@@ -67,6 +95,21 @@ def test_parity_contract_decorator_registers_and_returns_wrapped_object():
 
     assert decorated is handler
     assert [item.surface_id for item in iter_registered_surfaces()] == ["surface_a"]
+
+
+def test_parity_contract_decorator_registers_alias_relationship():
+    def handler() -> str:
+        return "ok"
+
+    parity_contract(
+        surface_id="G0A",
+        mandatory_transports=["cli"],
+        alias_of="G1",
+    )(handler)
+
+    registered = list(iter_registered_surfaces())
+    assert registered[0].surface_id == "G0A"
+    assert registered[0].alias_of == "G1"
 
 
 def test_register_surface_rejects_duplicate_surface_id():
