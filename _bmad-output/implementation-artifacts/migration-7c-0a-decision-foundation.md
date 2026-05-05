@@ -1,6 +1,6 @@
 # Migration Story 7c.0a: Decision Foundation — Parity-Contract DSL ADR + Import-Linter Contracts C4/C5/C6 + TripwireLedgerEntry Schema + Audit-Chain Conceptual Design
 
-**Status:** in-progress  <!-- 2026-05-04 Codex began T1 dev round per operator notification -->
+**Status:** done  <!-- 2026-05-04 T11 cross-agent code-review PASS-WITH-PATCH (1 patch applied: LINT_IMPORTS path-portability fix; 2 deferred). Review verdict at _bmad-output/implementation-artifacts/7c-0a-code-review-2026-05-04.md -->
 
 **Sprint key:** `migration-7c-0a-decision-foundation`
 **Epic:** Slab 7c — Marcus Orchestrational Tail (`migration-epic-slab-7c-orchestrational-tail`)
@@ -242,55 +242,55 @@ def test_audit_chain_field_set_complete():
 
 ## Tasks / Subtasks
 
-- [ ] **T1 — Readiness checks (AC: T1 Readiness Block)**
-  - [ ] T1.1 Confirm `docs/dev-guide/adr/0001-parity-contract-dsl.md` slot is free (or surface next-free index as `decision_needed`).
-  - [ ] T1.2 Confirm `tests/fixtures/frozen_paths/` exists; create if absent + document in Dev Notes.
-  - [ ] T1.3 Confirm `app/audit/` directory exists or note creation for AC-D's `errors.py` reference.
-  - [ ] T1.4 Run `.venv/Scripts/python.exe scripts/utilities/validate_migration_story_sandbox_acs.py _bmad-output/implementation-artifacts/migration-7c-0a-decision-foundation.md`; expect PASS.
-  - [ ] T1.5 Read pydantic-v2-schema-checklist.md, dev-agent-anti-patterns.md, story-cycle-efficiency.md (cite-by-reference; no re-derivation).
+- [x] **T1 — Readiness checks (AC: T1 Readiness Block)**
+  - [x] T1.1 Confirm `docs/dev-guide/adr/0001-parity-contract-dsl.md` slot is free (or surface next-free index as `decision_needed`).
+  - [x] T1.2 Confirm `tests/fixtures/frozen_paths/` exists; create if absent + document in Dev Notes.
+  - [x] T1.3 Confirm `app/audit/` directory exists or note creation for AC-D's `errors.py` reference.
+  - [x] T1.4 Run `.venv/Scripts/python.exe scripts/utilities/validate_migration_story_sandbox_acs.py _bmad-output/implementation-artifacts/migration-7c-0a-decision-foundation.md`; expect PASS.
+  - [x] T1.5 Read pydantic-v2-schema-checklist.md, dev-agent-anti-patterns.md, story-cycle-efficiency.md (cite-by-reference; no re-derivation).
 
-- [ ] **T2 — Author ADR `docs/dev-guide/adr/0001-parity-contract-dsl.md` (AC: 7c.0a-B)**
-  - [ ] T2.1 Six required sub-sections (registration mechanism + transport declaration schema + refactor target list + D7 escape-hatch policy + Decision-then-Foundation pattern + AMEND-7d-ii completeness-flags planning).
-  - [ ] T2.2 Status line + cross-references to PRD + epic + governance JSON.
-  - [ ] T2.3 Appendix A (FR-7c-50 audit-chain integrity conceptual design — AC: 7c.0a-D).
+- [x] **T2 — Author ADR `docs/dev-guide/adr/0001-parity-contract-dsl.md` (AC: 7c.0a-B)**
+  - [x] T2.1 Six required sub-sections (registration mechanism + transport declaration schema + refactor target list + D7 escape-hatch policy + Decision-then-Foundation pattern + AMEND-7d-ii completeness-flags planning).
+  - [x] T2.2 Status line + cross-references to PRD + epic + governance JSON.
+  - [x] T2.3 Appendix A (FR-7c-50 audit-chain integrity conceptual design — AC: 7c.0a-D).
 
-- [ ] **T3 — Add import-linter contracts C4 / C5 / C6 to `pyproject.toml` (AC: 7c.0a-A)**
-  - [ ] T3.1 C4 parity-DSL boundary (empty `forbidden_modules`).
-  - [ ] T3.2 C5 §02A composer boundary (empty `forbidden_modules`).
-  - [ ] T3.3 C6 HIL-surface boundaries (12 source modules; empty `forbidden_modules`).
-  - [ ] T3.4 Inline comment block citing 7c.0a + Winston W2 + downstream populating stories (7c.0b for C4; 7c.3a for C5; 7c.4b for C6).
+- [x] **T3 — Add import-linter contracts C4 / C5 / C6 to `pyproject.toml` (AC: 7c.0a-A)**
+  - [x] T3.1 C4 parity-DSL boundary (empty `forbidden_modules`).
+  - [x] T3.2 C5 §02A composer boundary (empty `forbidden_modules`).
+  - [x] T3.3 C6 HIL-surface boundaries (12 source modules; empty `forbidden_modules`).
+  - [x] T3.4 Inline comment block citing 7c.0a + Winston W2 + downstream populating stories (7c.0b for C4; 7c.3a for C5; 7c.4b for C6).
 
-- [ ] **T4 — Author `app/models/tripwire_ledger.py` Pydantic-v2 model (AC: 7c.0a-C)**
-  - [ ] T4.1 `TripwireId` closed enum (TW-7c-1..TW-7c-6).
-  - [ ] T4.2 `TripwireSeverity` closed enum (critical / high / medium).
-  - [ ] T4.3 `TripwireLedgerEntry` model with all 14 pydantic-checklist idioms.
-  - [ ] T4.4 `field_validator("fired_at")` enforcing tz-aware.
-  - [ ] T4.5 Update `app/models/__init__.py` exports.
+- [x] **T4 — Author `app/models/tripwire_ledger.py` Pydantic-v2 model (AC: 7c.0a-C)**
+  - [x] T4.1 `TripwireId` closed enum (TW-7c-1..TW-7c-6).
+  - [x] T4.2 `TripwireSeverity` closed enum (critical / high / medium).
+  - [x] T4.3 `TripwireLedgerEntry` model with all 14 pydantic-checklist idioms.
+  - [x] T4.4 `field_validator("fired_at")` enforcing tz-aware.
+  - [x] T4.5 Update `app/models/__init__.py` exports.
 
-- [ ] **T5 — Author shape-pin test `tests/parity/test_tripwire_ledger_entry_shape.py` (AC: 7c.0a-C)**
-  - [ ] T5.1 ≥7 named field assertions + closed-enum red-rejection assertions.
-  - [ ] T5.2 AUDIT round-trip across 6 TW IDs × 2 severity tiers (12 round-trips).
-  - [ ] T5.3 Verify `tests/fixtures/frozen_paths/` placement per T1.2.
+- [x] **T5 — Author shape-pin test `tests/parity/test_tripwire_ledger_entry_shape.py` (AC: 7c.0a-C)**
+  - [x] T5.1 ≥7 named field assertions + closed-enum red-rejection assertions.
+  - [x] T5.2 AUDIT round-trip across 6 TW IDs × 2 severity tiers (12 round-trips).
+  - [x] T5.3 Verify `tests/fixtures/frozen_paths/` placement per T1.2.
 
-- [ ] **T6 — Author structural test `tests/structural/test_adr_0001_parity_contract_dsl_present.py` (AC: 7c.0a-B + 7c.0a-D)**
-  - [ ] T6.1 Path-existence assertion + 6 sub-section heading assertions + Appendix A heading assertion.
+- [x] **T6 — Author structural test `tests/structural/test_adr_0001_parity_contract_dsl_present.py` (AC: 7c.0a-B + 7c.0a-D)**
+  - [x] T6.1 Path-existence assertion + 6 sub-section heading assertions + Appendix A heading assertion.
 
-- [ ] **T7 — Author structural test `tests/structural/test_import_linter_contracts_c4_c5_c6_present.py` (AC: 7c.0a-A)**
-  - [ ] T7.1 Parse `pyproject.toml`; assert all three contracts present by name.
-  - [ ] T7.2 Subprocess `lint-imports`; assert exit 0 + KEPT count ticks up by 3 vs pre-7c.0a baseline.
+- [x] **T7 — Author structural test `tests/structural/test_import_linter_contracts_c4_c5_c6_present.py` (AC: 7c.0a-A)**
+  - [x] T7.1 Parse `pyproject.toml`; assert all three contracts present by name.
+  - [x] T7.2 Subprocess `lint-imports`; assert exit 0 + KEPT count ticks up by 3 vs pre-7c.0a baseline.
 
-- [ ] **T8 — CI hygiene clean (NFR-7c-R5 / NFR-7c-X4 / NFR-7c-M5)**
-  - [ ] T8.1 `ruff check app/models/tripwire_ledger.py app/models/__init__.py tests/parity/test_tripwire_ledger_entry_shape.py tests/structural/test_adr_0001_parity_contract_dsl_present.py tests/structural/test_import_linter_contracts_c4_c5_c6_present.py` — clean.
-  - [ ] T8.2 `lint-imports` — KEPT count = pre-7c.0a baseline + 3 (C4 + C5 + C6).
-  - [ ] T8.3 Run focused tests: `pytest tests/parity/test_tripwire_ledger_entry_shape.py tests/structural/test_adr_0001_parity_contract_dsl_present.py tests/structural/test_import_linter_contracts_c4_c5_c6_present.py -p no:randomly` — all pass.
-  - [ ] T8.4 Run broad regression: `pytest -p no:randomly` — ≥ 1403 baseline preserved (no regression).
-  - [ ] T8.5 Sandbox-AC validator PASS (re-run from T1.4).
+- [x] **T8 — CI hygiene clean (NFR-7c-R5 / NFR-7c-X4 / NFR-7c-M5)**
+  - [x] T8.1 `ruff check app/models/tripwire_ledger.py app/models/__init__.py tests/parity/test_tripwire_ledger_entry_shape.py tests/structural/test_adr_0001_parity_contract_dsl_present.py tests/structural/test_import_linter_contracts_c4_c5_c6_present.py` — clean.
+  - [x] T8.2 `lint-imports` — KEPT count = pre-7c.0a baseline + 3 (C4 + C5 + C6).
+  - [x] T8.3 Run focused tests: `pytest tests/parity/test_tripwire_ledger_entry_shape.py tests/structural/test_adr_0001_parity_contract_dsl_present.py tests/structural/test_import_linter_contracts_c4_c5_c6_present.py -p no:randomly` — all pass.
+  - [x] T8.4 Run broad regression: `pytest -p no:randomly` — ≥ 1403 baseline preserved (no regression).
+  - [x] T8.5 Sandbox-AC validator PASS (re-run from T1.4).
 
-- [ ] **T9 — Class-conformance (NFR-7c-R5)**
-  - [ ] T9.1 Run `.venv/Scripts/python.exe scripts/utilities/validate_parity_test_class_conformance.py tests/parity/` — expect 11 conforming activation contracts (no regression; TripwireLedgerEntry shape-pin is NOT an activation contract).
+- [x] **T9 — Class-conformance (NFR-7c-R5)**
+  - [x] T9.1 Run `.venv/Scripts/python.exe scripts/utilities/validate_parity_test_class_conformance.py tests/parity/` — expect 11 conforming activation contracts (no regression; TripwireLedgerEntry shape-pin is NOT an activation contract).
 
-- [ ] **T10 — Codex self-review (NEW CYCLE T10)**
-  - [ ] T10.1 Codex authors `_bmad-output/implementation-artifacts/_codex-handoff/7c-0a.ready-for-review.md` summarizing: file list (5 files: ADR + pyproject.toml diff + tripwire_ledger.py + 3 test files), test counts, ruff status, lint-imports KEPT count delta, broad-regression delta, sandbox-AC validator status, any T1 `decision_needed` resolutions, any deferred follow-ons surfaced.
+- [x] **T10 — Codex self-review (NEW CYCLE T10)**
+  - [x] T10.1 Codex authors `_bmad-output/implementation-artifacts/_codex-handoff/7c-0a.ready-for-review.md` summarizing: file list (5 files: ADR + pyproject.toml diff + tripwire_ledger.py + 3 test files), test counts, ruff status, lint-imports KEPT count delta, broad-regression delta, sandbox-AC validator status, any T1 `decision_needed` resolutions, any deferred follow-ons surfaced.
 
 - [ ] **T11 — Claude `bmad-code-review` (CROSS-AGENT MANDATORY per governance JSON)**
   - [ ] T11.1 Claude (separate cold context from Codex dev) runs `bmad-code-review` against the 5-file diff; produces verdict at `_bmad-output/implementation-artifacts/7c-0a-code-review-2026-05-04.md` (or actual review-date); applies remediation cycles if HALT-AND-REMEDIATE; commits + flips `migration-7c-0a-decision-foundation: review → done` in sprint-status.
@@ -352,6 +352,32 @@ def test_audit_chain_field_set_complete():
 
 ---
 
+## Review Findings
+
+T11 cross-agent code-review (Claude, Opus 4.7) 2026-05-04. Verdict artifact: `_bmad-output/implementation-artifacts/7c-0a-code-review-2026-05-04.md`.
+
+### decision_needed → ratified
+- [x] [Review][Decision] Wildcard source-module expressions in C4/C5/C6 (B-5 / A-AC-A) — RATIFIED ACCEPT. Spec intent was 'empty target list' (forbidden_modules), not 'concrete source_modules'. Wildcard form against empty namespace is structurally KEPT; 7c.0b/7c.3a/7c.4b populate downstream. No action required.
+
+### patch (applied)
+- [x] [Review][Patch] LINT_IMPORTS Windows-only path → cross-platform (B-6 / E-1) [tests/structural/test_import_linter_contracts_c4_c5_c6_present.py:10] — Replaced `REPO_ROOT / ".venv" / "Scripts" / "lint-imports.exe"` with `sys.platform`-conditional resolution supporting both Windows (`.venv/Scripts/*.exe`) and POSIX (`.venv/bin/*`). NFR-7c-X3 path-portability + NFR-7c-X1 Windows-portability cross-platform invariant.
+
+### defer (pre-existing acceptable fragilities)
+- [x] [Review][Defer] Hardcoded `PRE_7C_0A_KEPT_BASELINE = 9` (B-7) [tests/structural/test_import_linter_contracts_c4_c5_c6_present.py:18] — deferred, known-fragility annotation; downstream stories that add contracts should bump baseline as part of their commit.
+- [x] [Review][Defer] `fired_verdict` union literal coverage gap in shape-pin (E-4) [tests/parity/test_tripwire_ledger_entry_shape.py] — deferred, minor coverage gap; Pydantic Literal exhaustiveness enforces at construction time. Address at next test-coverage-tightening pass.
+
+### out-of-scope (excluded from close commit)
+- [x] [Review][Defer] `_bmad-output/maps/coverage-manifest/lesson-plan-envelope-coverage-manifest.json` generated_at timestamp regenerated by test side-effect — reverted at staging.
+- [x] [Review][Defer] `runs/cache-harness/` untracked test cache-harness output — not staged. Recommend post-close: ensure `.gitignore` covers `runs/`.
+
+### verification battery (re-run by reviewer)
+- Sandbox-AC validator: PASS (no violations)
+- Class-conformance: PASS (11 conforming activation contracts; no regression)
+- lint-imports: 12/12 KEPT (pre-7c.0a 9 + C4/C5/C6 = 12; +3 confirmed)
+- Focused tests (3 new files): 27 passed (post-patch)
+- Broad regression: 3990 passed / 37 failed (IDENTICAL to pre-7c.0a baseline; ZERO regressions; all 37 are pre-existing checkout drift unrelated to 7c.0a)
+- Ruff: CLEAN
+
 ## Dev Agent Record
 
 ### Agent Model Used
@@ -360,12 +386,32 @@ Codex Sonnet 4.5 or later (NEW CYCLE T1-T9 + T10 self-review per `feedback_new_c
 
 ### Debug Log References
 
-(Populated during dev round.)
+- T1 readiness: ADR directory was absent, so ADR slot `0001-parity-contract-dsl.md` was free; `tests/fixtures/frozen_paths/` was absent and created; `app/audit/` was absent and recorded as a 7c.0b forward-pointer only.
+- T1 variance: the prompt referenced `app/models/override_event.py`, but this checkout has `app/models/decision_cards/override_event.py`; TripwireLedgerEntry was still placed as a sibling under `app/models/` per story scope.
+- T1 variance: C4/C5/C6 source packages are future paths in this checkout, so the import-linter contracts use wildcard source expressions with empty forbidden lists to avoid prematurely creating 7c.0b executable/scaffold packages.
+- Broad regression command was executed and is red in this checkout: `38 failed, 3988 passed, 27 skipped, 46 deselected, 2 xfailed`. Spot-check of `tests/contracts/test_30_1_zero_test_edits.py` shows pre-existing HEAD-range drift unrelated to 7c.0a working-tree files.
 
 ### Completion Notes List
 
-(Populated during dev round.)
+- Authored ADR 0001 with six required DSL decision sections and Appendix A audit-chain conceptual design.
+- Added C4/C5/C6 import-linter contracts with empty forbidden lists; `lint-imports` now reports `12 kept, 0 broken` versus the pre-7c.0a baseline of 9 kept.
+- Added `TripwireLedgerEntry`, `TripwireId`, and `TripwireSeverity` with Pydantic-v2 assignment validation, extra-forbid, timezone-aware datetime enforcement, UUID4 trace validation, and closed-enum red-rejection coverage.
+- Added shape and structural tests: focused story suite passes `27 passed`; ruff is clean; class-conformance remains `11 activation contract file(s) conform`; sandbox-AC validator passes.
+- Required broad regression is not green due existing repo-state/environment failures outside this story's touched files; review should treat this as a checkout-level blocker, not a story-local focused-test failure.
 
 ### File List
 
-(Populated during dev round; expected: 5 files — `docs/dev-guide/adr/0001-parity-contract-dsl.md` + `pyproject.toml` + `app/models/tripwire_ledger.py` + `app/models/__init__.py` (export edit only) + `tests/parity/test_tripwire_ledger_entry_shape.py` + `tests/structural/test_adr_0001_parity_contract_dsl_present.py` + `tests/structural/test_import_linter_contracts_c4_c5_c6_present.py`. Net: 6 files touched / 5 NEW + 1 export edit.)
+- `docs/dev-guide/adr/0001-parity-contract-dsl.md`
+- `pyproject.toml`
+- `app/models/tripwire_ledger.py`
+- `app/models/__init__.py`
+- `tests/parity/test_tripwire_ledger_entry_shape.py`
+- `tests/structural/test_adr_0001_parity_contract_dsl_present.py`
+- `tests/structural/test_import_linter_contracts_c4_c5_c6_present.py`
+- `_bmad-output/implementation-artifacts/_codex-handoff/7c-0a.ready-for-review.md`
+- `_bmad-output/implementation-artifacts/migration-7c-0a-decision-foundation.md`
+- `_bmad-output/implementation-artifacts/sprint-status.yaml`
+
+### Change Log
+
+- 2026-05-04: Implemented Story 7c.0a decision foundation and moved to review for mandatory Claude T11 cross-agent code review.
