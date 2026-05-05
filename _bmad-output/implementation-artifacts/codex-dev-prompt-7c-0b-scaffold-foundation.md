@@ -3,7 +3,7 @@
 **Cycle:** Claude spec → Codex T1-T9 + T10 self-review → Codex drops `_bmad-output/implementation-artifacts/_codex-handoff/7c-0b.ready-for-review.md` → **Claude T11 `bmad-code-review` (CROSS-AGENT MANDATORY per governance JSON)** → Claude commit + flip done.
 **Wave:** 0 slot 2 (build-tier; consumes 7c.0a's frozen ADR + TripwireLedgerEntry; gates ALL Wave 1 stories except 7c.2; opens immediately after 7c.0a close).
 **Pre-authored:** 2026-05-04 ahead of operator dispatch per `feedback_new_cycle_codex_dev_handoff.md` lookahead-discipline revision.
-**Dispatch state:** **DISPATCHABLE NOW.** Predecessor 7c.0a CLOSED `done` 2026-05-04 commit `f926867`. AMELIA-P2 freshness check at dispatch time.
+**Dispatch state:** **DISPATCHABLE NOW (re-dispatch after 2026-05-04 spec amendment).** Predecessor 7c.0a CLOSED `done` 2026-05-04 commit `f926867`. AMELIA-P2 freshness check at dispatch time. **2026-05-04 amendment:** Codex's first dispatch HALTED at T1.7 due to false-positive UTF-8 violations on binary files (`__pycache__/*.pyc`, generated `*.mp3`). Spec amended at AC-7c.0b-E + T1.7 to add the canonical binary-skip rule (git-ls-files restriction + extension blocklist + null-byte sniff). Codex re-dispatchable; HALT condition narrowed to genuine TEXT-FILE violations only.
 
 ---
 
@@ -37,7 +37,11 @@ Run bmad-dev-story on Story 7c.0b (Slab 7c Wave 0 slot 2; dual-gate; cross-agent
 - C4/C5/C6 contracts in `pyproject.toml::[tool.importlinter]` with empty `forbidden_modules` lists; lint-imports KEPT count = 12.
 - Class-conformance validator: 11 conforming activation contracts.
 - Broad regression baseline: 3990 passed / 37 failed (per 7c.0a-close baseline).
-- **Pre-existing UTF-8 violations check:** dry-run AC-7c.0b-E TW-7c-5 detector against current repo state. If ANY violations found in declared glob, **HALT-AND-SURFACE** to operator (decision: close 7c.2 first, OR have 7c.0b's lint pass start in advisory-only mode and tighten in 7c.2 close). Default recommendation: HALT.
+- **Pre-existing UTF-8 violations check (binary-skip rule mandatory):** dry-run AC-7c.0b-E TW-7c-5 detector against current repo state. **The detector MUST implement the binary-skip rule** (per AC-7c.0b-E spec amendment 2026-05-04 in response to Codex's first T1.7 HALT):
+  - **(a) Source-set = `git ls-files` output**, NOT raw filesystem walk. This excludes `__pycache__/**`, `*.pyc`, untracked test cache-harness output, generated artifacts (gitignored).
+  - **(b) Extension blocklist:** skip `.pyc`, `.pyo`, `.pyd`, `.so`, `.dll`, `.exe`, `.dylib`, `.png`, `.jpg`, `.jpeg`, `.gif`, `.bmp`, `.ico`, `.tif`, `.tiff`, `.pdf`, `.docx`, `.xlsx`, `.pptx`, `.odt`, `.ods`, `.odp`, `.mp3`, `.mp4`, `.wav`, `.ogg`, `.webm`, `.mov`, `.avi`, `.mkv`, `.zip`, `.tar`, `.tar.gz`, `.tgz`, `.gz`, `.bz2`, `.xz`, `.7z`, `.bin`, `.dat`, `.svgz`. (`.svg` IS text-XML — keep.)
+  - **(c) Null-byte sniff:** for any file passing (a)+(b), read first 8KB; if `\x00` present, treat as binary and skip.
+  HALT ONLY if genuine TEXT-FILE violations remain after (a)+(b)+(c). Binary false-positives (`__pycache__/*.pyc`, `tests/fixtures/specialists/wanda/live_artifacts/**/*.mp3`, etc.) are NOT halt conditions.
 - **Reference-surface choice (AC-7c.0b-A T1.5):** RECOMMEND option B (brand-new placeholder module `app/parity/contracts/_reference_surface.py`); option A (existing test file) requires non-trivial decoration. Surface as `decision_needed` if Codex picks B and Claude prefers A or vice versa.
 - **C4 forbidden_modules canonical list (AC-7c.0b-A T1.6):** RECOMMEND `["app.gates.resume_api", "app.marcus.orchestrator.write_api", "app.specialists.*"]`. Surface as `decision_needed` if Codex's read of graph-runtime module surface differs.
 

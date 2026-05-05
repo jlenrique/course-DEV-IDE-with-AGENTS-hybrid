@@ -198,9 +198,14 @@ class AuditChainParentLinkError(AuditChainIntegrityError):
 **TW-7c-5 (UTF-8 violations) detection:**
 - Lands as `scripts/utilities/detect_tw_7c_5_utf8_violations.py` (or analogous; per FR-7c-46 UTF-8 CI lint pass).
 - Glob coverage per FR-7c-46: `_bmad-output/**/*.md`, `app/**/*.py`, `tests/**/*.py`, `tests/fixtures/**`, paths declared in `state/config/pipeline-manifest.yaml::block_mode_trigger_paths`.
-- For each file in glob, attempt UTF-8 decode; if any file fails (e.g., contains cp1252-only bytes), report.
-- Exit 0 if all files UTF-8-clean; exit 1 with violation list otherwise.
-- **PASS/FAIL flag #2 of 3:** TW-7c-5 detection PASS at 7c.0b done-flip (assuming the repo is currently UTF-8-clean; surface any pre-existing violations as `decision_needed` at T1 — they'd block 7c.0b close until 7c.2 closes its cp1252 fix).
+- **Binary-skip rule (canonical; clarifies FR-7c-46 glob scope to TEXT FILES ONLY):**
+  - **(a) Source-set restriction:** the detector iterates `git ls-files` output (NOT a raw filesystem walk). This automatically excludes gitignored files (e.g., `__pycache__/**`, `*.pyc`, untracked test cache-harness output, generated artifacts) — they are not part of the repo's text contract surface.
+  - **(b) Extension blocklist:** the detector skips files matching ANY of these binary extensions: `.pyc`, `.pyo`, `.pyd`, `.so`, `.dll`, `.exe`, `.dylib`, `.png`, `.jpg`, `.jpeg`, `.gif`, `.bmp`, `.ico`, `.tif`, `.tiff`, `.svg.gz`, `.pdf`, `.docx`, `.xlsx`, `.pptx`, `.odt`, `.ods`, `.odp`, `.mp3`, `.mp4`, `.wav`, `.ogg`, `.webm`, `.mov`, `.avi`, `.mkv`, `.zip`, `.tar`, `.tar.gz`, `.tgz`, `.gz`, `.bz2`, `.xz`, `.7z`, `.bin`, `.dat`. (`.svg` IS text-XML — included; `.svgz` is gzipped — excluded.)
+  - **(c) Null-byte sniff:** for any file matching the glob and NOT excluded by (a) or (b), read first 8KB; if it contains a null byte (`\x00`), treat as binary and skip. Belt-and-suspenders for unknown-extension binary files.
+- For each file passing the (a)+(b)+(c) gates, attempt UTF-8 decode; if any file fails (e.g., contains cp1252-only bytes), report.
+- Exit 0 if all in-scope text files UTF-8-clean; exit 1 with violation list otherwise.
+- **Pre-existing-violation T1.7 HALT scope clarification:** T1.7 HALT fires ONLY if violations are found in **TEXT FILES** that pass the binary-skip rule. Binary file false-positives (e.g., `__pycache__/*.pyc` from local pytest runs, `tests/fixtures/specialists/wanda/live_artifacts/**/*.mp3` generated audio) are NOT halt conditions — they are auto-skipped by the binary-skip rule. The T1.7 HALT condition exists to prevent 7c.0b shipping a lint pass that would FAIL CI from day 1; the binary-skip rule prevents false-positive halts during T1 dry-run.
+- **PASS/FAIL flag #2 of 3:** TW-7c-5 detection PASS at 7c.0b done-flip (assuming the repo's TEXT files are UTF-8-clean; surface any genuine TEXT violations as `decision_needed` at T1 — they'd block 7c.0b close until 7c.2 closes its cp1252 fix).
 
 **TW-7c-6 (parity flake) detection scaffold:**
 - Lands as `scripts/utilities/detect_tw_7c_6_parity_flake.py` (or analogous; 50-run harness scaffold).
@@ -238,7 +243,7 @@ class AuditChainParentLinkError(AuditChainIntegrityError):
   - [ ] T1.4 Verify `state/config/pipeline-manifest.yaml::block_mode_trigger_paths` exists for FR-7c-46 lint pass glob discovery.
   - [ ] T1.5 Pick reference-surface for AC-7c.0b-A (option A: existing test file with non-trivial decoration; option B: brand-new placeholder module). RECOMMEND option B.
   - [ ] T1.6 Pick C4 forbidden_modules canonical list for AC-7c.0b-A. RECOMMEND `["app.gates.resume_api", "app.marcus.orchestrator.write_api", "app.specialists.*"]`. Surface as `decision_needed` if Codex's read of graph-runtime module surface differs.
-  - [ ] T1.7 Pre-existing UTF-8 violation check (TW-7c-5 detector dry-run against current repo state). If violations found → **HALT-AND-SURFACE** to operator (decide: close 7c.2 first OR advisory-only mode in 7c.0b).
+  - [ ] T1.7 Pre-existing UTF-8 violation check (TW-7c-5 detector dry-run against current repo state). **Apply binary-skip rule per AC-7c.0b-E:** restrict source-set to `git ls-files` output (excludes gitignored / untracked binaries); apply extension blocklist (`.pyc`, `.png`, `.mp3`, etc.); apply null-byte sniff for unknown-extension binaries. **HALT-AND-SURFACE** ONLY if violations are found in genuine TEXT FILES; binary-file false-positives (e.g., `__pycache__/*.pyc`, generated `*.mp3`) are auto-skipped — they do NOT trigger the halt.
   - [ ] T1.8 Run sandbox-AC validator on this spec; expect PASS.
 
 - [ ] **T2 — Land `app/parity/contracts/` package + DSL primitives (AC: 7c.0b-A)**
