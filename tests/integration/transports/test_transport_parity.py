@@ -2,12 +2,23 @@ from __future__ import annotations
 
 from uuid import UUID
 
+from app.parity.contracts import parity_contract
 from tests.integration.transports._helpers import (
     normalize_response,
     submit_cli,
     submit_http,
     submit_mcp,
 )
+
+
+@parity_contract(
+    surface_id="transport_parity",
+    mandatory_transports=["cli", "http", "mcp-stdio"],
+    optional_transports=[],
+)
+def _parity_contract_registration() -> str:
+    """Module-level parity-contract registration for test_transport_parity.py."""
+    return "transport_parity"
 
 
 def _responses() -> tuple[dict[str, object], dict[str, object], dict[str, object]]:

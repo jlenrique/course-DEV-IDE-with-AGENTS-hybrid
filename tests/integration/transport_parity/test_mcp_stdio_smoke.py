@@ -17,9 +17,20 @@ import sys
 
 import pytest
 
+from app.parity.contracts import parity_contract
 from app.runtime.minimal_node import MINIMAL_NODE_NAME
 
 pytestmark = pytest.mark.transport_parity
+
+
+@parity_contract(
+    surface_id="mcp_stdio_smoke",
+    mandatory_transports=["mcp-stdio"],
+    optional_transports=[],
+)
+def _parity_contract_registration() -> str:
+    """Module-level parity-contract registration for test_mcp_stdio_smoke.py."""
+    return "mcp_stdio_smoke"
 
 
 @pytest.mark.asyncio

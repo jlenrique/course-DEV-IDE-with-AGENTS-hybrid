@@ -6,7 +6,18 @@ import pytest
 
 from app.gates import clear_resume_registry
 from app.marcus.cli.gate_cli import main
+from app.parity.contracts import parity_contract
 from tests.unit.gates._helpers import sample_verdict
+
+
+@parity_contract(
+    surface_id="cli_gate_decide",
+    mandatory_transports=["cli"],
+    optional_transports=[],
+)
+def _parity_contract_registration() -> str:
+    """Module-level parity-contract registration for test_cli_gate_decide.py."""
+    return "cli_gate_decide"
 
 
 def test_cli_gate_decide_happy_path(capsys) -> None:

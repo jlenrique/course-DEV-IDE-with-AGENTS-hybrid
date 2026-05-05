@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from app.parity.contracts import parity_contract
 from tests.integration.transports._helpers import (
     apply_override_cli,
     apply_override_http,
@@ -8,6 +9,16 @@ from tests.integration.transports._helpers import (
     submit_override_http,
     submit_override_mcp,
 )
+
+
+@parity_contract(
+    surface_id="override_transport_parity",
+    mandatory_transports=["cli", "http", "mcp-stdio"],
+    optional_transports=[],
+)
+def _parity_contract_registration() -> str:
+    """Module-level parity-contract registration for test_override_transport_parity.py."""
+    return "override_transport_parity"
 
 
 def test_override_submit_transport_parity() -> None:

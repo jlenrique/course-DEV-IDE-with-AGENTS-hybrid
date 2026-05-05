@@ -1,6 +1,6 @@
 # Migration Story 7c.1: Parity-Contract DSL Foundation — Refactor 8 Existing Transport-Parity Files onto the DSL
 
-**Status:** ready-for-dev *(spec authored 2026-05-04; predecessor 7c-0b CLOSED `done` commit `9114337`. **DISPATCH ORDERING:** Codex single-thread serializes 7c.1 BEHIND 7c.0c (xdist diagnostic) — predecessor chain is technically clean post-7c.0b but operator dispatches 7c.0c first per highest-amortization-leverage rule (velocity-amendments-bundle AMEND-V1). 7c.1 dispatches AFTER 7c.0c closes.)*
+**Status:** done *(spec authored 2026-05-04; predecessor 7c-0b CLOSED `done` commit `9114337`. Codex T1-T10 completed 2026-05-05 after operator accepted 7c.0c closed; operator accepted complete/closed 2026-05-05.)*
 **Sprint key:** `migration-7c-1-parity-contract-dsl-foundation`
 **Epic:** Slab 7c — Marcus Orchestrational Tail (`migration-epic-slab-7c-orchestrational-tail`)
 **Pts:** 3
@@ -183,41 +183,41 @@ so that subsequent HIL-surface stories (7c.6..7c.15) and per-gate stories (7c.5.
 
 ## Tasks / Subtasks
 
-- [ ] **T1 — Readiness checks**
-  - [ ] T1.1 Confirm 7c.0a + 7c.0b + 7c.0c all `done` in spec files + sprint-status.
-  - [ ] T1.2 Confirm DSL primitives importable: `from app.parity.contracts import parity_contract, SurfaceTransportDeclaration, iter_registered_surfaces`.
-  - [ ] T1.3 Confirm reference surface registers at import: import `app.parity.contracts._reference_surface` and verify `reference_7c0b_scaffold` appears in `iter_registered_surfaces()`.
-  - [ ] T1.4 Refresh broad-regression baseline at current HEAD: `pytest -p no:randomly -q --tb=no` → record total pass/fail/skip counts as comparison baseline.
-  - [ ] T1.5 Inspect each of the 8 refactor target files; derive accurate `mandatory_transports` + `optional_transports` from existing test content. Document derivations in Dev Notes.
-  - [ ] T1.6 Confirm `validate_migration_story_sandbox_acs.py` PASS on this spec.
+- [x] **T1 — Readiness checks**
+  - [x] T1.1 Confirm 7c.0a + 7c.0b + 7c.0c all `done` in spec files + sprint-status.
+  - [x] T1.2 Confirm DSL primitives importable: `from app.parity.contracts import parity_contract, SurfaceTransportDeclaration, iter_registered_surfaces`.
+  - [x] T1.3 Confirm reference surface registers at import: import `app.parity.contracts._reference_surface` and verify `reference_7c0b_scaffold` appears in `iter_registered_surfaces()`.
+  - [x] T1.4 Refresh broad-regression baseline at current HEAD: `pytest -p no:randomly -q --tb=no` → record total pass/fail/skip counts as comparison baseline.
+  - [x] T1.5 Inspect each of the 8 refactor target files; derive accurate `mandatory_transports` + `optional_transports` from existing test content. Document derivations in Dev Notes.
+  - [x] T1.6 Confirm `validate_migration_story_sandbox_acs.py` PASS on this spec.
 
-- [ ] **T2 — Refactor 8 transport-parity test files (AC: 7c.1-A)**
-  - [ ] T2.1 `tests/integration/transport_parity/test_fastapi_mcp_parity.py` — add `@parity_contract` decorator + import.
-  - [ ] T2.2 `tests/integration/transport_parity/test_mcp_stdio_smoke.py` — same pattern.
-  - [ ] T2.3 `tests/integration/transport_parity/test_mcp_subprocess_hygiene.py` — same pattern.
-  - [ ] T2.4 `tests/integration/transports/test_transport_parity.py` — same pattern.
-  - [ ] T2.5 `tests/integration/transports/test_override_transport_parity.py` — same pattern.
-  - [ ] T2.6 `tests/integration/transports/test_cli_gate_decide.py` — same pattern.
-  - [ ] T2.7 `tests/integration/transports/test_http_gate_endpoint.py` — same pattern.
-  - [ ] T2.8 `tests/integration/transports/test_mcp_gate_decide_tool.py` — same pattern.
-  - [ ] T2.9 Verify each file passes its OWN tests post-refactor (zero semantic change; pure overlay).
+- [x] **T2 — Refactor 8 transport-parity test files (AC: 7c.1-A)**
+  - [x] T2.1 `tests/integration/transport_parity/test_fastapi_mcp_parity.py` — add `@parity_contract` decorator + import.
+  - [x] T2.2 `tests/integration/transport_parity/test_mcp_stdio_smoke.py` — same pattern.
+  - [x] T2.3 `tests/integration/transport_parity/test_mcp_subprocess_hygiene.py` — same pattern.
+  - [x] T2.4 `tests/integration/transports/test_transport_parity.py` — same pattern.
+  - [x] T2.5 `tests/integration/transports/test_override_transport_parity.py` — same pattern.
+  - [x] T2.6 `tests/integration/transports/test_cli_gate_decide.py` — same pattern.
+  - [x] T2.7 `tests/integration/transports/test_http_gate_endpoint.py` — same pattern.
+  - [x] T2.8 `tests/integration/transports/test_mcp_gate_decide_tool.py` — same pattern.
+  - [x] T2.9 Verify each file passes its OWN tests post-refactor (zero semantic change; pure overlay).
 
-- [ ] **T3 — Author 2 structural tests (AC: 7c.1-A + 7c.1-B test pins)**
-  - [ ] T3.1 `tests/structural/test_transport_parity_files_register_via_dsl.py` — AST scan + import-load + surface_id-in-registry assertion.
-  - [ ] T3.2 `tests/structural/test_transport_parity_dsl_registration_floor.py` — invoke audit harness with explicit `discovery_roots` + assert `audit_status == "PASS"` at floor=9.
+- [x] **T3 — Author 2 structural tests (AC: 7c.1-A + 7c.1-B test pins)**
+  - [x] T3.1 `tests/structural/test_transport_parity_files_register_via_dsl.py` — AST scan + import-load + surface_id-in-registry assertion.
+  - [x] T3.2 `tests/structural/test_transport_parity_dsl_registration_floor.py` — invoke audit harness with explicit `discovery_roots` + assert `audit_status == "PASS"` at floor=9.
 
-- [ ] **T4 — Verification battery (R-tier R3; AC: 7c.1-C + 7c.1-D)**
-  - [ ] T4.1 Focused refactored tests: `pytest tests/integration/transport_parity tests/integration/transports -p no:randomly -q --tb=short` — all pass.
-  - [ ] T4.2 New structural tests: `pytest tests/structural/test_transport_parity_files_register_via_dsl.py tests/structural/test_transport_parity_dsl_registration_floor.py -p no:randomly -q --tb=short` — all pass.
-  - [ ] T4.3 Run R3 broad regression (post-7c.0c parallel defaults): `pytest -p no:randomly -q --tb=line` — combined parallel + serial total = T1.4 baseline (delta = 0).
-  - [ ] T4.4 NFR-7c-P3 wall-clock check: parity-test suite serial ≤90s; parallel ≤45s. Document actual wall-clock.
-  - [ ] T4.5 `lint-imports` — 12 KEPT (no contract change).
-  - [ ] T4.6 Class-conformance: 11 activation contracts (no regression).
-  - [ ] T4.7 Sandbox-AC validator: PASS.
-  - [ ] T4.8 Ruff: clean on touched files.
+- [x] **T4 — Verification battery (R-tier R3; AC: 7c.1-C + 7c.1-D)**
+  - [x] T4.1 Focused refactored tests: `pytest tests/integration/transport_parity tests/integration/transports -p no:randomly -q --tb=short` — all pass.
+  - [x] T4.2 New structural tests: `pytest tests/structural/test_transport_parity_files_register_via_dsl.py tests/structural/test_transport_parity_dsl_registration_floor.py -p no:randomly -q --tb=short` — all pass.
+  - [x] T4.3 Run R3 broad regression (post-7c.0c parallel defaults): `pytest -p no:randomly -q --tb=line` — combined parallel + serial total = T1.4 baseline (delta = 0).
+  - [x] T4.4 NFR-7c-P3 wall-clock check: parity-test suite serial ≤90s; parallel ≤45s. Document actual wall-clock.
+  - [x] T4.5 `lint-imports` — 12 KEPT (no contract change).
+  - [x] T4.6 Class-conformance: 11 activation contracts (no regression).
+  - [x] T4.7 Sandbox-AC validator: PASS.
+  - [x] T4.8 Ruff: clean on touched files.
 
-- [ ] **T10 — Codex self-review (NEW CYCLE T10)**
-  - [ ] T10.1 Codex authors `_bmad-output/implementation-artifacts/_codex-handoff/7c-1.ready-for-review.md` summarizing: file list (8 refactored + 2 NEW structural tests), transport-coverage derivation per refactored file, surface_id naming convention picked, wall-clock report (serial + parallel), broad-regression delta vs T1 baseline, sandbox-AC + class-conformance + lint-imports verdicts, T1 `decision_needed` resolutions.
+- [x] **T10 — Codex self-review (NEW CYCLE T10)**
+  - [x] T10.1 Codex authors `_bmad-output/implementation-artifacts/_codex-handoff/7c-1.ready-for-review.md` summarizing: file list (8 refactored + 2 NEW structural tests), transport-coverage derivation per refactored file, surface_id naming convention picked, wall-clock report (serial + parallel), broad-regression delta vs T1 baseline, sandbox-AC + class-conformance + lint-imports verdicts, T1 `decision_needed` resolutions.
 
 - [ ] **T11 — Claude `bmad-code-review` (single-gate; standard tier)**
   - [ ] T11.1 Claude (separate cold context from Codex dev) runs `bmad-code-review` against the diff; produces verdict at `_bmad-output/implementation-artifacts/7c-1-code-review-2026-05-NN.md`; applies remediation cycles if HALT-AND-REMEDIATE; commits + flips `migration-7c-1-parity-contract-dsl-foundation: review → done`.
@@ -310,12 +310,50 @@ Codex Sonnet 4.5 or later (NEW CYCLE T1-T9 + T10 self-review per `feedback_new_c
 
 ### Debug Log References
 
-(Populated during dev round.)
+- T1 DSL import/reference registration: PASS (`DSL importable + reference surface registers`).
+- T1 lint-imports: 12 KEPT / 0 broken.
+- T1 class-conformance: `PASS: 11 activation contract file(s) conform`.
+- T1 sandbox-AC validator: PASS.
+- T1 broad baseline wall-clock under post-7c.0c defaults: 201.42s; comparison count baseline inherited from 7c.0c close was `39 failed, 4048 passed, 27 skipped, 2 xfailed` for the pre-7c.1 file set.
+- Focused refactored transport tests: `19 passed in 11.30s`.
+- New structural tests: `10 passed in 8.94s`.
+- Post-refactor broad pass: `39 failed, 4058 passed, 27 skipped, 2 xfailed, 11 warnings in 215.39s`; the +10 pass delta is exactly the two new structural test files.
+- Serial marker pass: `2 passed, 4172 deselected in 11.01s`.
+- Parity suite wall-clock: serial 7.15s; parallel 9.49s; both under budget.
+- Post-refactor lint-imports: 12 KEPT / 0 broken.
+- Post-refactor class-conformance: `PASS: 11 activation contract file(s) conform`.
+- Post-refactor sandbox-AC validator: PASS.
+- Ruff on touched files: `All checks passed`.
 
 ### Completion Notes List
 
-(Populated during dev round; MUST include T1.5 transport-coverage derivation table + surface_id naming convention + wall-clock report + broad-regression delta + lint-imports/class-conformance/sandbox-AC/ruff status.)
+- Decoration pattern: one module-level sentinel function named `_parity_contract_registration` per target file; no test logic changed.
+- Surface ID convention: filename stem without `test_` prefix.
+- Transport derivation table:
+  - `test_fastapi_mcp_parity.py` → `fastapi_mcp_parity`; mandatory `["http", "mcp-stdio"]`; FastAPI `/invoke` residual compared with MCP stdio `ping`.
+  - `test_mcp_stdio_smoke.py` → `mcp_stdio_smoke`; mandatory `["mcp-stdio"]`; MCP SDK stdio initialize/list_tools/call_tool smoke.
+  - `test_mcp_subprocess_hygiene.py` → `mcp_subprocess_hygiene`; mandatory `["mcp-subprocess"]`; raw MCP server subprocess shutdown hygiene.
+  - `test_transport_parity.py` → `transport_parity`; mandatory `["cli", "http", "mcp-stdio"]`; compares resume, ledger, and trace responses from all three transport helpers.
+  - `test_override_transport_parity.py` → `override_transport_parity`; mandatory `["cli", "http", "mcp-stdio"]`; compares override submit/apply flows across all three transport helpers.
+  - `test_cli_gate_decide.py` → `cli_gate_decide`; mandatory `["cli"]`; CLI gate decide happy/invalid paths.
+  - `test_http_gate_endpoint.py` → `http_gate_endpoint`; mandatory `["http"]`; HTTP gate endpoint happy/invalid/digest mismatch paths.
+  - `test_mcp_gate_decide_tool.py` → `mcp_gate_decide_tool`; mandatory `["mcp-stdio"]`; MCP gate decide tool helper path.
+- Self-registration audit: PASS at floor=9 with explicit discovery roots for app gates/composers plus both test packages; manifest contains the 8 new test surfaces plus `reference_7c0b_scaffold`.
+- Broad regression retains the existing checkout-level 39 failures; no new failure class introduced by the overlay. Pass count increases by 10 from the two new structural files.
+- NFR-7c-P3 wall-clock budget passed: parity suite serial 7.15s (≤90s), parallel 9.49s (≤45s).
 
 ### File List
 
-(Populated during dev round; expected: 8 MODIFIED transport-parity test files + 2 NEW structural tests = 10 files. Net: ~600-800 LOC.)
+- `tests/integration/transport_parity/test_fastapi_mcp_parity.py`
+- `tests/integration/transport_parity/test_mcp_stdio_smoke.py`
+- `tests/integration/transport_parity/test_mcp_subprocess_hygiene.py`
+- `tests/integration/transports/test_transport_parity.py`
+- `tests/integration/transports/test_override_transport_parity.py`
+- `tests/integration/transports/test_cli_gate_decide.py`
+- `tests/integration/transports/test_http_gate_endpoint.py`
+- `tests/integration/transports/test_mcp_gate_decide_tool.py`
+- `tests/structural/test_transport_parity_files_register_via_dsl.py`
+- `tests/structural/test_transport_parity_dsl_registration_floor.py`
+- `_bmad-output/implementation-artifacts/_codex-handoff/7c-1.ready-for-review.md`
+- `_bmad-output/implementation-artifacts/migration-7c-1-parity-contract-dsl-foundation.md`
+- `_bmad-output/implementation-artifacts/sprint-status.yaml`

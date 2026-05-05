@@ -26,6 +26,7 @@ from collections.abc import Iterator
 import httpx
 import pytest
 
+from app.parity.contracts import parity_contract
 from tests._helpers.runtime_subprocess import (
     DEFAULT_BOOT_BUDGET_S as SERVER_BOOT_BUDGET_S,
 )
@@ -40,6 +41,16 @@ pytestmark = pytest.mark.transport_parity
 
 PARITY_INPUT: str = "parity"
 SHUTDOWN_BUDGET_S: float = 3.0
+
+
+@parity_contract(
+    surface_id="fastapi_mcp_parity",
+    mandatory_transports=["http", "mcp-stdio"],
+    optional_transports=[],
+)
+def _parity_contract_registration() -> str:
+    """Module-level parity-contract registration for test_fastapi_mcp_parity.py."""
+    return "fastapi_mcp_parity"
 
 
 @pytest.fixture

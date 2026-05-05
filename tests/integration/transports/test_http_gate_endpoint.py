@@ -6,7 +6,18 @@ from fastapi.testclient import TestClient
 
 from app.gates import clear_resume_registry
 from app.http.gate_endpoint import create_gate_app
+from app.parity.contracts import parity_contract
 from tests.unit.gates._helpers import sample_verdict
+
+
+@parity_contract(
+    surface_id="http_gate_endpoint",
+    mandatory_transports=["http"],
+    optional_transports=[],
+)
+def _parity_contract_registration() -> str:
+    """Module-level parity-contract registration for test_http_gate_endpoint.py."""
+    return "http_gate_endpoint"
 
 
 def test_http_gate_endpoint_happy_path() -> None:

@@ -24,11 +24,23 @@ import time
 
 import pytest
 
+from app.parity.contracts import parity_contract
+
 pytestmark = pytest.mark.transport_parity
 
 GRACEFUL_SHUTDOWN_BUDGET_S: float = 3.0
 HARD_FAIL_SHUTDOWN_BUDGET_S: float = 10.0
 SERVER_BOOT_PAUSE_S: float = 0.5
+
+
+@parity_contract(
+    surface_id="mcp_subprocess_hygiene",
+    mandatory_transports=["mcp-subprocess"],
+    optional_transports=[],
+)
+def _parity_contract_registration() -> str:
+    """Module-level parity-contract registration for test_mcp_subprocess_hygiene.py."""
+    return "mcp_subprocess_hygiene"
 
 
 def test_mcp_server_subprocess_terminates_cleanly_within_budget() -> None:
