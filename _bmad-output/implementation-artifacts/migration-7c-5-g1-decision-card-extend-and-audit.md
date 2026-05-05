@@ -1,6 +1,6 @@
 # Migration Story 7c.5.G1: G1 DecisionCard Extend-and-Audit (Directive Ratification)
 
-**Status:** ready-for-dev *(spec authored 2026-05-05 lookahead_tier=2 author-skeleton-ahead; predecessor 7c.4b CLOSED at `8b12970`; siblings G0+G2A CLOSED at `e2aa599`; G5+G6 in flight on Codex 2026-05-05. **DISPATCH HELD until G5+G6 close** — main-thread coordinator focus on the new extend-and-audit pattern; serial dispatch only.)*
+**Status:** in-progress *(Codex T0/T1 posted 2026-05-05; predecessor 7c.4b CLOSED at `8b12970`; siblings G0+G2A CLOSED at `e2aa599`; G5+G6 CLOSED per sprint status. **HALTED before T2 pending PRE-T2 cross-agent review** — serial dispatch only.)*
 **Sprint key:** `migration-7c-5-g1-decision-card-extend-and-audit`
 **Epic:** Slab 7c — Marcus Orchestrational Tail (`migration-epic-slab-7c-orchestrational-tail`)
 **Pts:** 2
@@ -106,22 +106,22 @@ Pydantic-v2 14-idiom checklist conformance per `docs/dev-guide/pydantic-v2-schem
 
 ## Tasks / Subtasks
 
-- [ ] **T0 — Frozen-hash recording (PRE-T1)**
-  - [ ] T0.1 Compute SHA256 hashes for legacy `g1.py` / `g2c.py` / `g3.py` / `g4.py`.
-  - [ ] T0.2 Author `app/models/decision_cards/_frozen_hashes.py` per AC-A bullet 3. Substitute the three `<TBD>` placeholders with computed hashes. Verify the spec-recorded G1 hash matches.
-  - [ ] T0.3 Confirm 7c.4b done; G0+G2A done; G5+G6 done (HELD condition satisfied — serial dispatch only).
+- [x] **T0 — Frozen-hash recording (PRE-T1)**
+  - [x] T0.1 Compute SHA256 hashes for legacy `g1.py` / `g2c.py` / `g3.py` / `g4.py`.
+  - [x] T0.2 Author `app/models/decision_cards/_frozen_hashes.py` per AC-A bullet 3. Substitute the three `<TBD>` placeholders with computed hashes. Verify the spec-recorded G1 hash matches.
+  - [x] T0.3 Confirm 7c.4b done; G0+G2A done; G5+G6 done (HELD condition satisfied — serial dispatch only).
 
 - [ ] **T1 — Contract-diff + backward-consumer audit (Winston W3 + AMELIA-P4 deliverables)**
-  - [ ] T1.1 Author `_bmad-output/implementation-artifacts/migration-7c-5-g1-contract-diff.md` per AC-A bullet 1. Section structure:
+  - [x] T1.1 Author `_bmad-output/implementation-artifacts/migration-7c-5-g1-contract-diff.md` per AC-A bullet 1. Section structure:
     - §1 Legacy G1Card field disposition matrix
     - §2 Legacy DecisionCard base field disposition matrix
     - §3 New fields added (FR-7c-51 schema_version)
     - §4 Closed-enum tightening (gate_id / gate_focus from bare-string-with-default to closed Literal)
     - §5 Pattern-parity ratchets (UUID4 typing + strip-then-non-empty validators per G2A pattern)
     - §6 Net diff summary (fields added / preserved / dropped; behavior preserved / changed)
-  - [ ] T1.2 Author `_bmad-output/implementation-artifacts/migration-7c-5-g1-backward-consumer-audit.md` per AC-A bullet 2. Per-call-site enumeration (grep `G1Card` exhaustively; minimum 24 sites identified at spec-author time):
+  - [x] T1.2 Author `_bmad-output/implementation-artifacts/migration-7c-5-g1-backward-consumer-audit.md` per AC-A bullet 2. Per-call-site enumeration (grep `G1Card` exhaustively; minimum 24 sites identified at spec-author time):
     - Per-site row: path:line + field-access pattern + verdict
-  - [ ] T1.3 Drop `_codex-handoff/7c-5-g1.t1-ready.md` notice listing the three deliverable paths + per-deliverable summary; HALT and await cross-agent T1 review verdict.
+  - [x] T1.3 Drop `_codex-handoff/7c-5-g1.t1-ready.md` notice listing the three deliverable paths + per-deliverable summary; HALT and await cross-agent T1 review verdict.
   - [ ] T1.4 (gated; only after cross-agent T1 review PASS) refresh broad-regression baseline. Run sandbox-AC validator on this spec; expect PASS. Record class-conformance baseline (current expected = 13 + Codex G5/G6 increment if landed, so 14 or 15).
 
 - [ ] **T2 — Frozen-hash AMELIA-P4 delta-AC verification + G1Card body extension (AC-B + AC-C)**
@@ -195,3 +195,34 @@ Unlike the fresh-author pattern (Codex T1-T10 → Claude T11), this story has TW
 2. **Post-T9 standard T11 review** — Claude reads the body extension + verification battery results. Verdict at `_bmad-output/implementation-artifacts/7c-5-g1-code-review-2026-05-NN.md`.
 
 Both verdicts must PASS before commit + flip done.
+
+---
+
+## Dev Agent Record
+
+### Debug Log
+
+- 2026-05-05: Confirmed dependency close state in `sprint-status.yaml`: 7c.4b, G0, G2A, G5, and G6 are `done`.
+- 2026-05-05: Computed frozen hashes: G1 `4fe0e985d2285e3219b103424765dec009043564960ec43af1fb5710d2a1a196`; G2C `237ce7d1b6c228cea5bc3653027cb40e50e40f316681a736d0692612dc7ba72a`; G3 `bcfe2865df5e7071cf43ada563e29a8b6fc5dfa1cb3abdf99f78fa5d2d0fddf3`; G4 `98536d2ab845972f96e8d374b08bb3929fb8d02024cbc56616c90424061c6b5a`.
+- 2026-05-05: Ran G1 consumer grep commands required by T1 and consolidated 24 executable `G1Card` sites.
+- 2026-05-05: Ran class-conformance baseline: `PASS: 15 parity contract file(s) conform (11 activation + 4 decision-card shape-pin)`.
+- 2026-05-05: Ran sandbox-AC validator on this spec: `PASS - no sandbox-AC violations across 1 story file(s).`
+
+### Completion Notes
+
+- T0/T1 deliverables are complete and posted for cross-agent review.
+- `app/models/decision_cards/g1.py` remains unmodified at T1.
+- Codex is halted before T2 until the required cross-agent T1 review verdict passes.
+
+### File List
+
+- `app/models/decision_cards/_frozen_hashes.py`
+- `_bmad-output/implementation-artifacts/migration-7c-5-g1-contract-diff.md`
+- `_bmad-output/implementation-artifacts/migration-7c-5-g1-backward-consumer-audit.md`
+- `_bmad-output/implementation-artifacts/_codex-handoff/7c-5-g1.t1-ready.md`
+- `_bmad-output/implementation-artifacts/migration-7c-5-g1-decision-card-extend-and-audit.md`
+- `_bmad-output/implementation-artifacts/sprint-status.yaml`
+
+### Change Log
+
+- 2026-05-05: Marked G1 in progress, recorded T0 hashes, authored T1 contract-diff and backward-consumer audit artifacts, posted T1-ready handoff, and halted before T2.
