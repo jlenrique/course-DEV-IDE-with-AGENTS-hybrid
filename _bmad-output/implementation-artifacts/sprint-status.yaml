@@ -1557,8 +1557,8 @@ development_status:
   # ---------------------------------------------------------------------------
   prd-slab-7c-orchestrational-tail: completed  # 2026-05-04 PRD authored end-to-end via bmad-create-prd; 4 party-mode rounds; 19 FR/NFR amendments + decomposition lock
   epics-slab-7c-orchestrational-tail: completed  # 2026-05-04 epics + 36-story decomposition authored via bmad-create-epics-and-stories Steps 1-4; 2 party-mode rounds 4/4 unanimous; 22 amendments folded
-  migration-epic-slab-7c-orchestrational-tail: backlog  # 36 stories; flips backlog->in-progress on first story open (7c.0a Decision Foundation per Winston W1 hard precedence)
-  migration-7c-0a-decision-foundation: backlog  # Wave 0; dual-gate cross-agent MANDATORY; gating: 7c.0b + Wave 1 cannot open until 7c.0a closes
+  migration-epic-slab-7c-orchestrational-tail: in-progress  # 2026-05-04 flipped backlog->in-progress at 7c.0a story-open (first story per Winston W1 hard precedence). 36 stories total.
+  migration-7c-0a-decision-foundation: in-progress  # 2026-05-04 spec authored at _bmad-output/implementation-artifacts/migration-7c-0a-decision-foundation.md; sandbox-AC validator PASS; cross-agent code-review MANDATORY at T11. Wave 0; dual-gate; gating: 7c.0b + Wave 1 (except 7c.2 per AMELIA-P1) cannot open until 7c.0a closes.
   migration-7c-0b-scaffold-foundation: backlog  # Wave 0; dual-gate cross-agent MANDATORY; consumes 7c.0a artifacts; gating: Wave 1 (except 7c.2) cannot open until 7c.0b closes
   migration-7c-1-parity-contract-dsl-foundation: backlog  # Wave 1; dual-gate; refactor 8 existing transport-parity files
   migration-7c-2-cp1252-windows-portability-fix: backlog  # Wave 1; single-gate; AMELIA-P1 path-isolation guard — must NOT touch 7c.0a/0b deliverable paths; opens parallel to 7c.0a/0b per John A2
