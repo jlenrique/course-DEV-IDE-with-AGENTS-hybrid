@@ -66,7 +66,13 @@ Codex MUST NOT proceed to T2 until cross-agent reviewer drops PASS verdict.
 
 T2: AMELIA-P4 verification + G2CCard rewrite. Inheritance change `DecisionCard` → `DecisionCardBase`. Re-declare per G2A canonical: card_id (UUID4), trial_id (UUID4), gate_id (Literal["G2C"]), created_at, verb, schema_version (Literal["v1"]). Preserve gate-specific: readiness_status (Literal["ready", "blocked"]), blocking_issues (list[str]), ready_nodes (list[str]). ADD `gate_focus: Literal["pre_composition_qa"]`. Drop legacy DecisionCard fields per AC-A contract-diff verdicts.
 
-T3: Regenerate schema/g2c.v1.schema.json.
+T3: Regenerate `app/models/decision_cards/schema/g2c.v1.schema.json` via Python file-write (NOT shell `>` redirection — see anti-pattern A18 in `docs/dev-guide/specialist-anti-patterns.md`; PowerShell `>` emits a UTF-8 BOM that breaks byte-for-byte schema-match in T6).
+
+Canonical command (use this exact form):
+
+```bash
+.venv/Scripts/python.exe -c "from pathlib import Path; from app.models.decision_cards.g2c import G2CCard; import json; Path('app/models/decision_cards/schema/g2c.v1.schema.json').write_text(json.dumps(G2CCard.model_json_schema(), indent=2, sort_keys=True), encoding='utf-8')"
+```
 T4: Author g2c_golden.json (gate_id="G2C", gate_focus="pre_composition_qa", readiness_status="ready", etc.).
 T5: Author shape-pin (9-10 tests including closed-enum on readiness_status). **MANDATORY guardrail #1 self-grep at T5.2.**
 T6: Run R3 verification battery.

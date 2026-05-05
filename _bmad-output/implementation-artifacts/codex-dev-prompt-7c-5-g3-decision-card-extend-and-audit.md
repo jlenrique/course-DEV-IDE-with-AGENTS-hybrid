@@ -72,7 +72,13 @@ T2: AMELIA-P4 verification + G3Card rewrite. Inheritance change `DecisionCard` â
 
 ADD `gate_focus: Literal["motion_clip_approval"]` + `schema_version: Literal["v1"]`. Drop legacy DecisionCard fields per AC-A contract-diff verdicts.
 
-T3: Regenerate schema/g3.v1.schema.json.
+T3: Regenerate `app/models/decision_cards/schema/g3.v1.schema.json` via Python file-write (NOT shell `>` redirection â€” see anti-pattern A18 in `docs/dev-guide/specialist-anti-patterns.md`; PowerShell `>` emits a UTF-8 BOM that breaks byte-for-byte schema-match in T6; first manifested at G1 T3 2026-05-05).
+
+Canonical command (use this exact form):
+
+```bash
+.venv/Scripts/python.exe -c "from pathlib import Path; from app.models.decision_cards.g3 import G3Card; import json; Path('app/models/decision_cards/schema/g3.v1.schema.json').write_text(json.dumps(G3Card.model_json_schema(), indent=2, sort_keys=True), encoding='utf-8')"
+```
 T4: Author g3_golden.json (gate_id="G3", gate_focus="motion_clip_approval", progress_percent=50.0, active_node_id="example-node-id", operator_prompt="Approve motion clip continuation?", etc.).
 T5: Author shape-pin (10-11 tests including: progress_percent boundary tests at 0.0 / 100.0 / -0.1 / 100.1; closed-enum red-rejection on gate_id + gate_focus; non-empty active_node_id; strip-then-non-empty operator_prompt; JSON-Schema byte-match; golden round-trip; frozen mutation rejection). **MANDATORY guardrail #1 self-grep at T5.2.**
 
