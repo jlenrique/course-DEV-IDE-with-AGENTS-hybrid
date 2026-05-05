@@ -6,7 +6,13 @@
 **Pts:** 1
 **Gate:** **single-gate** (per `docs/dev-guide/migration-story-governance.json` v2026-05-04-slab7c-thirty-six-stories, story 7c-4a; rationale: null — decision artifact only; no schema-shape / lane-boundary / invariant-preservation / operator-acceptance surface)
 **K-target:** ~1.0× (decision-tier band; ~1 pt; bounded surface = 1 ADR markdown file + 1 structural test asserting heading set)
-**Authored:** 2026-05-04 via `bmad-create-story` workflow (lookahead-discipline; spec authored ahead of dispatch while Codex devs 7c.0a).
+**R-tier (regression scope):** **R1** — focused-test + impact-zone only; the 1 new structural test + lint-imports + class-conformance are sufficient verification for a decision-only ADR (no production code lands). Per AMEND-V2 2026-05-04 velocity-amendments-bundle.
+**T11-tier (review approach):** **lite** — single-gate AND AC count = 2 (well ≤5) AND single-file or sibling-files only AND no schema/contract/governance touch AND Codex T10 expected clean. ~10-15 min Claude review. Per AMEND-V3 2026-05-04 velocity-amendments-bundle.
+**Files touched (declared at spec-author time):**
+- `docs/dev-guide/adr/0002-slab-7c-gate-taxonomy.md` (NEW; or next-free index per T1.2 if 0002 collides)
+- `tests/structural/test_adr_0002_slab_7c_gate_taxonomy_present.py` (NEW)
+**Lookahead tier:** **1** — author-ahead-aggressively (PRD-locked taxonomy per Amelia A3 PRD Step 11; spec authored 2026-05-04 ahead of 7c.0a/0b dispatch); dispatch HELD until 7c.0b closes per `prerequisite_stories: [7c-0b]`.
+**Authored:** 2026-05-04 via `bmad-create-story` workflow (lookahead-discipline; spec authored ahead of dispatch while Codex devs 7c.0a). Velocity-amendment fields backfilled 2026-05-04 post-amendment-bundle ratification.
 **Wave:** 2 — slot 1 (decision-tier; precedes 7c.4b foundation; 7c.5.G0..G6 per-gate stories also depend on this taxonomy lock).
 
 **FR coverage:** **None direct** (decision artifact only). 7c.4a ratifies the taxonomy that downstream FRs operate against:
