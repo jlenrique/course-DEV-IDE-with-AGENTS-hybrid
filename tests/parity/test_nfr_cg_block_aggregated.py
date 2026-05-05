@@ -105,7 +105,7 @@ def _assert_k_floor_and_tripwire_governance() -> None:
 def _assert_gate_mode_governance() -> None:
     governance = json.loads(GOVERNANCE_JSON.read_text(encoding="utf-8"))
 
-    assert governance["version"] == "2026-04-29-slab7b-twelve-stories"
+    assert governance["version"] == "2026-05-05-amelia-p5-and-wave-3-lookahead-policy"
     assert governance["stories"]["7a-8"]["expected_gate_mode"] == "dual-gate"
     assert governance["stories"]["7a-8"]["rationale"] == (
         "operator_acceptance_gate + invariant_preservation"

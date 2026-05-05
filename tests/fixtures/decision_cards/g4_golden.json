@@ -3,18 +3,10 @@
     "_bmad-output/runs/trial-001/final-report.md"
   ],
   "card_id": "14141414-1414-4414-8414-141414141414",
-  "created_at": "2026-04-26T12:15:00Z",
-  "drafted_proposal": {
-    "action": "close-trial",
-    "checkpoint": "G4"
-  },
-  "evidence": [
-    {
-      "kind": "artifact",
-      "path": "_bmad-output/runs/trial-001/final-report.md"
-    }
-  ],
+  "created_at": "2026-05-05T12:15:00Z",
+  "decision_card_digest": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
   "final_status": "completed",
+  "gate_focus": "fidelity_gate",
   "gate_id": "G4",
   "meta": {
     "affected_nodes": [
@@ -22,16 +14,10 @@
       "13"
     ],
     "cache_state": "cold",
-    "consolidated_at": null,
-    "override_trail": [],
-    "party_mode_contributions": [],
-    "reject_rate": 0.0,
-    "sanctum_warnings": []
+    "override_trail": []
   },
   "outcome_summary": "Trial completed and all expected artifacts were emitted.",
-  "risks": [
-    "post-close replay remains operator-gated"
-  ],
+  "schema_version": "v1",
   "trial_id": "dddddddd-dddd-4ddd-8ddd-dddddddddddd",
   "verb": "approve"
 }

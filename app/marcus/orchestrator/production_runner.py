@@ -432,14 +432,24 @@ def _build_decision_card(
         )
     if gate_id == "G2C":
         return G2CCard(
-            **common,
+            card_id=common["card_id"],
+            trial_id=common["trial_id"],
+            created_at=common["created_at"],
+            decision_card_digest="0" * 64,
+            meta=_base_card_meta(common["meta"]),
+            verb=common["verb"],
             readiness_status="ready",
             blocking_issues=[],
             ready_nodes=pending_nodes[:3],
         )
     if gate_id == "G3":
         return G3Card(
-            **common,
+            card_id=common["card_id"],
+            trial_id=common["trial_id"],
+            created_at=common["created_at"],
+            decision_card_digest="0" * 64,
+            meta=_base_card_meta(common["meta"]),
+            verb=common["verb"],
             progress_percent=50.0,
             active_node_id=node_id,
             pending_nodes=pending_nodes,
@@ -447,7 +457,12 @@ def _build_decision_card(
         )
     if gate_id == "G4":
         return G4Card(
-            **common,
+            card_id=common["card_id"],
+            trial_id=common["trial_id"],
+            created_at=common["created_at"],
+            decision_card_digest="0" * 64,
+            meta=_base_card_meta(common["meta"]),
+            verb=common["verb"],
             final_status="partial",
             artifact_paths=[path.as_posix() for path in artifact_paths],
             outcome_summary="Production graph reached closeout review.",

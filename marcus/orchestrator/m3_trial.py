@@ -167,7 +167,11 @@ def _card_for_gate(
         )
     if gate_id == "G2C":
         return G2CCard(
-            **common,
+            card_id=common["card_id"],
+            trial_id=common["trial_id"],
+            created_at=common["created_at"],
+            decision_card_digest="0" * 64,
+            meta=_base_card_meta(meta),
             verb="edit",
             readiness_status="ready",
             blocking_issues=[],
@@ -175,7 +179,11 @@ def _card_for_gate(
         )
     if gate_id == "G3":
         return G3Card(
-            **common,
+            card_id=common["card_id"],
+            trial_id=common["trial_id"],
+            created_at=common["created_at"],
+            decision_card_digest="0" * 64,
+            meta=_base_card_meta(meta),
             verb="approve",
             progress_percent=72.0,
             active_node_id=node_id,
@@ -183,7 +191,11 @@ def _card_for_gate(
             operator_prompt="Approve the revised storyboard packet and continue?",
         )
     return G4Card(
-        **common,
+        card_id=common["card_id"],
+        trial_id=common["trial_id"],
+        created_at=common["created_at"],
+        decision_card_digest="0" * 64,
+        meta=_base_card_meta(meta),
         verb="approve",
         final_status="completed",
         artifact_paths=[
