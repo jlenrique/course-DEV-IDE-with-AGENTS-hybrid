@@ -1,126 +1,144 @@
-# Session Handoff — 2026-05-04 (Slab 7c readiness check + epics + 36-story decomposition + 22 amendments folded)
+# Session Handoff — 2026-05-05 (Slab 7c Sprint Marathon — 9 stories closed in one day)
 
-**Session date:** 2026-05-04 (single-session readiness + epic-decomposition workflow chain)
+**Session date:** 2026-05-05 (continuation of 2026-05-04 epics+decomposition session into a sprint marathon)
 **Branch:** `dev/langchain-langgraph-foundation`
-**Commits this session:** 0 landed yet (all changes uncommitted pending operator authorization at Step 12)
-**Branch state at session-end:** Working tree carries 4 session-owned changes (2 modified + 2 untracked); session-start anchor `99cc914` (prior session's Slab 7c PRD authoring commit) unchanged.
+**Commits this session:** 21 landed (session-start anchor `2089700` from prior session-close 2026-05-04 epic-decomposition; current HEAD `8b12970` post-7c.4b cross-agent MANDATORY close + P-1 patch)
+**Branch state at session-end:** 21 commits ahead of `origin/dev/langchain-langgraph-foundation`. Working tree CLEAN modulo `runs/` ambient evidence directory + `_bmad-output/maps/coverage-manifest/lesson-plan-envelope-coverage-manifest.json` regen residue (both pre-existing).
 
 ---
 
 ## What was completed
 
-Two BMAD workflows ran end-to-end:
+**Sprint-planning + 9 NEW CYCLE story closures + 1 cross-agent P-1 patch + 2 lookahead-tier-1 pre-authored specs.** NEW CYCLE protocol exercised 9× end-to-end (Claude T0 spec → Codex T1-T10 dev → Claude T11 review → commit + flip done). Velocity-amendments-bundle V1-V5 active: pytest-xdist (V1) + R-tier R2/R3 regression scoping (V2) + T11-tier lite/standard/cross-agent (V3) + AMELIA-P3-auto-satisfied under single-Codex (V4) + lookahead-tier 1/2/3 pre-authoring policy (V5).
 
-**(A) `bmad-check-implementation-readiness` on Slab 7c PRD** — Steps 1-3 only per Slab 7b precedent (Steps 4-6 deferred until `bmad-create-epics-and-stories` produces the epic file). Output: `_bmad-output/planning-artifacts/implementation-readiness-report-2026-05-04-slab-7c.md` (1 file authored). **Verdict: READY-WITH-MINOR-AMENDMENTS-AND-NAMED-PRECONDITIONS** (mirrors Slab 7b).
+### Sprint-planning (commit `c9093e1`)
+36 governance entries + 6 TW-7c-1..6 tripwire seeds + 40 sprint-status entries authored. Cross-agent MANDATORY designation for 5 stories (7c.0a/0b/3a/4b/21). Extend-and-audit dual-gate-cross-agent-CONTRACT-EVOLUTION designation for 4 stories (7c.5.G1/G2C/G3/G4). AMELIA-P3 staggering protocol annotated for 4 G2C-aliased Wave-3 stories (7c.9/10/11/12).
 
-Coverage:
-- 54/54 FRs anchored to ≥1 story owner OR cross-cutting process discipline
-- 37/37 NFRs each enforced via named CI workflow OR validator script OR per-story AC (PRD frontmatter says 36; AMEND-1 corrects to 37 — P:5+S:7+R:8+M:6+X:4+OD:7)
-- 3/3 architectural invariants D2/D3/D7 traceable per-story (T10 self-check) + aggregate at 7c.21
-- 6/6 tripwires owned with named detection-infra
-- 4/4 standing guardrails preserved (SG-1/2/3/4)
-- 5 AUDIT-ACs with quantitative coverage floors (≥20/≥15/≥11/14/14/6/6)
-- 4 cross-agent code-review pre-designations (7c.0/7c.3a/7c.4b/7c.21 — later expanded to 5 with 7c.0a+7c.0b split)
+### 9 stories closed end-to-end
 
-5 minor amendments named (AMEND-1 through AMEND-5; non-blocking).
+| Story | Tier | Key deliverable | Commit |
+|---|---|---|---|
+| 7c.0a Decision Foundation | cross-agent MANDATORY | ADR 0001 parity-contract DSL + C4/C5/C6 import-linter contracts (empty target lists) + TripwireLedgerEntry Pydantic + audit-chain conceptual design | `f926867` |
+| 7c.0b Scaffold Foundation | cross-agent MANDATORY | parity-contract DSL scaffold + sanctum-alignment DSL + self-registration audit harness + FR-7c-50 audit-chain executable scaffold + TW-7c-4/5/6 detection scaffolds + AMEND-7a flake-rate calculator + C4 target population | `9114337` |
+| 7c.0c smoke + xdist | standard | pytest-xdist 3.8.0 install + 200-nodeid smoke manifest + xdist classification documentation | `c12bb70` |
+| 7c.1 DSL Foundation | standard | 8 transport-parity files refactored onto DSL; audit floor=9 baseline | `282d72c` |
+| 7c.2 cp1252 fix | single-gate | UTF-8 print writer + fixture-comparison utility + NNBSP regression coverage + A11 catalog augmentation | `eb457cc` |
+| 7c.3a §02A Composer Body | cross-agent MANDATORY | Trial-2 finding #2 STRUCTURALLY retired; LLM-driven directive composer with D1-D11 contract decisions LOCKED at spec-author | `963abff` |
+| 7c.3b §02A G0 Poll-Surface | standard | Canonical HIL pattern (canonical_model_bytes + compute_model_digest + neutral submit/resume) + Section02AOperatorVerdict; pattern-replicability target for 7+ downstream gates | `f8fc1a8` |
+| 7c.4a Gate Family Taxonomy | lite | ADR 0002: 8 family contracts + 10 alias mappings + 18 runtime IDs + alias_of forward-syntax for 7c.4b | `12fb0f2` |
+| 7c.4b Gate-Family Foundation | cross-agent MANDATORY | DecisionCardBase + DecisionCardMeta at `_base.py` + alias_of executable syntax + parametrized OperatorVerdict harness + TW-7c-3 firing-spec single-source + class-conformance validator extension + manifest compiler runtime gate-code validation + DecisionCardBase shape-pin + **C6 P-1 patch** (forbidden→independence; bidirectional protection verified) | `8b12970` |
 
-**(B) `bmad-create-epics-and-stories` for Slab 7c** — Steps 1-4 complete. Output: `_bmad-output/planning-artifacts/epics-slab-7c-orchestrational-tail.md` (92 KB / 961 lines).
+### 2 pre-authored specs (lookahead_tier=1; HELD-released at 7c.4b close)
 
-- **1 epic** ("Slab 7c Marcus Orchestrational Tail"; party-mode-ratified single-epic 4/4 unanimous)
-- **36 stories** across 6 waves (post-Winston-W1 split of 7c.0 → 7c.0a + 7c.0b)
-- 18 explicit `### Story` headers + 8 in 7c.5.G0..G6 template + 10 in 7c.6..7c.15 template
-- All FR/NFR/tripwire/SG coverage from readiness report preserved + extended
+- **7c.5.G0** G0 trial-open / corpus-confirm DecisionCard fresh-author (single-gate; ~250 LOC; 5 ACs A-E)
+- **7c.5.G2A** G2A plan-unit-ratification DecisionCard fresh-author (single-gate; ~250 LOC; 5 ACs A-E + cross-gate non-regression)
 
-**Two party-mode rounds run during epic creation:**
-- **Round 1** (single-vs-multi-epic) — 4/4 unanimous ratify single-epic; 2 amendments folded (Winston foundational-substrate framing; Murat TW-7c-6a wave-canary deferred-inventory entry)
-- **Round 2** (story-decomposition review) — folded **22 amendments**: AMEND-2/3/4/5/6/7a/7b/7c/7d + Winston-W1/W2/W3/W4/W5/W6 + Amelia-P1/P2/P3/P4 + JTBD-1/2/3 (John gap audit assigning 3 JTBD gaps to Slab 4 PRD scope)
+Both consume only 7c.4b's substrate; can dispatch concurrently with no inter-story dependencies. Sprint-status flipped backlog → ready-for-dev at 7c.4b close.
 
-Most architecturally significant Round-2 amendments:
+### 1 cross-agent T11 P-1 patch (the architecturally significant moment of this session)
 
-- **Winston W1 — split 7c.0 → 7c.0a (Decision Foundation; ADR + C4/C5/C6 + Pydantic specs) + 7c.0b (Scaffold Foundation; executable scaffold + tripwire detection scaffolds).** Breaking-point rule = >5 decision-bearing artifacts forces split. Original 7c.0 carried 10 seams.
-- **Winston W2 — Import-linter contracts C4/C5/C6 ALL land at 7c.0a with empty target lists** (CI-enforce from Wave-0 forward; 7c.3a populates C5 targets, 7c.4b populates C6 targets). Architectural rule: import-linter contracts are foundational substrate.
-- **Winston W3 — `extend-and-audit` named gate-mode** for G1/G2C/G3/G4 (4 stories) with diff-against-prior-contract artifact reviewed BEFORE T2 + backward-consumer audit per call site + AMELIA-P4 frozen-hash delta-AC.
-- **Murat AMEND-7a — per-cell flake budget tightens to <0.05% for 7c-added cells** (Poisson math: P(zero-flake-baseline) ≈ 11% at N=88 vs ~1.3% at 0.1% budget). Pre-7c cells grandfather at 0.1%.
-- **Murat AMEND-7c — TW-7c-1 firing rule percentage-based** (≥10% gap-rate against combined floor per AUDIT-AC story; 7c.20a ≥4 / 7c.20b ≥3 / 7c.20c ≥2).
+**7c.4b D5 C6 contract.** Codex shipped `type = "forbidden"` with overlapping wildcards. T11 verification reproduced the structural failure: `Modules have shared descendants` abort fires whenever any 2nd §section package exists on disk. The contract appeared to pass today only because `section_02a` is the only §section currently authored; **it would have aborted lint-imports entirely on 7c.6 dispatch** (the very first downstream story that authors a 2nd §section). T11 escalated to MUST-FIX and applied a 4-file mechanical patch pivoting C6 to `type = "independence"` with `modules = [section_02a]` today; modules list grows incrementally as each §section package lands per 7c.6/7c.7/.../7c.15. Bidirectional protection verified (synthetic violations in BOTH directions caught); 12 KEPT preserved.
 
-**3 JTBD gaps assigned to Slab 4 PRD scope** (filed as deferred-inventory entries):
-- `slab-7c-jtbd-1-operator-failure-recovery-resume-path`
-- `slab-7c-jtbd-2-tripwire-user-surface` (partial at 7c.21 retrospective close artifact)
-- `slab-7c-jtbd-3-paused-trial-resume-rendering`
+This is the kind of structural failure that cross-agent MANDATORY review tier exists to catch. AMEND-V3's tier discrimination paid off — a lite review would not have probed the contract semantics deeply enough to find this.
 
-**TW-7c-6a deferred-inventory entry amended** with Pearson correlation check (r > 0.3 between any pair of HIL-surface flake-event vectors during 25-run canary) per AMEND-7b.
+### Velocity-amendments-bundle V1-V5 ratified mid-session (commit `d715927`)
+
+Per party-mode 2026-05-04 round (held during session): V1 pytest-xdist classification + V2 R-tier regression (R1/R2/R3 + cross-agent) + V3 T11-tier (lite/standard/cross-agent) + V4 AMELIA-P3-auto-satisfied under single-Codex + V5 lookahead-tier 1/2/3 + N+2 hard cap. Memory entry `feedback_velocity_amendments_slab_7c.md` codifies the convention.
 
 ---
 
 ## What is next (broader context)
 
-**Per CLAUDE.md sprint-governance chain:**
+**Operator decides next dispatch:** (A) 7c.5.G0 to Codex, (B) 7c.5.G2A to Codex, (C) both concurrently, OR (D) author 7c.5.G5 / 7c.5.G6 / 7c.5.G1 specs first under N+2 cap (at most 2 additional pre-authored specs while one Codex story is in flight).
 
-1. **`bmad-sprint-planning`** → authors `docs/dev-guide/migration-story-governance.json` entries for 36 stories (gate-mode + K-target + cross-agent designation for 7c.0a/0b/3a/4b/21 + extend-and-audit flag for 7c.5.G1/G2C/G3/G4) + seeds `sprint-status.yaml::tripwire_events` with TW-7c-1..6 in `not_yet_evaluated` initial state.
-2. **`bmad-create-story` for 7c.0a** (gating Decision Foundation story; required FIRST before 7c.0b + 7c.1 implementation opens per Winston W1).
-3. NEW CYCLE per story: Claude spec → Claude codex-dev-prompt (lookahead-authored ahead of operator demand per memory entry) → Codex T1-T9 + T10 self-review → Codex drops `.ready-for-review.md` to Claude-watched dropbox → Claude T11 `bmad-code-review` (cross-agent MANDATORY for 7c.0a per PRD-lock) → Claude commit + flip done.
+**At 7c.5.G0 + G2A close:** unblock pre-authoring of 7c.5.G5 + 7c.5.G6 (other 2 fresh-author single-gate stories) and 7c.5.G1 (extend-and-audit; first lookahead_tier=2 candidate).
+
+**At all 8 7c.5.G* close:** unblock 10 Wave-3 HIL surfaces (7c.6..7c.15). AMELIA-P3 staggering protocol activates for 4 G2C-aliased stories.
+
+**Slab 7c effective remaining:** 27 stories (24 backlog + 2 ready + 1 in-flight nominal post-dispatch). At sprint-marathon velocity ~9 stories/day, residual estimate ~3 days. At conservative single-Codex serial pace ~30 min/story, ~13 hours of dev work + ~5 hours of T11 review + commit.
 
 ---
 
-## Unresolved issues or risks
+## Unresolved issues / risks
 
-**Pre-flight workflow-status reconciliation (cross-session):**
-- Slab 7c entries (`prd_slab_7c_orchestrational_tail` + new `epics_slab_7c_orchestrational_tail`) in `bmm-workflow-status.yaml` are nested under `epic_26_bmb_sanctum_migration` parent (line 304 + 320). Should be re-parented to a migration-scoped block alongside `prd_slab_7a_*` + `prd_slab_7b_*`. Filed at session-start; not addressed this session. Cosmetic; does not affect any validator or test.
+1. **Two informational follow-ons filed at 7c.4b close** (no immediate action; recorded in deferred-inventory):
+   - **7c.4b D2 2-class regime** — legacy `DecisionCard` at `app/models/decision_cards/base.py` coexists with new `DecisionCardBase` at `_base.py`. G1/G2C/G3/G4 cards still inherit from legacy `DecisionCard`. Migration scheduled for 7c.5.G1+ extend-and-audit per AMELIA-P4 frozen-hash delta-AC.
+   - **AMEND-7d-i AST-scan boundary** — currently scans only `tests/parity/test_decision_card_*_shape.py`. 7c.5.G0 spec to add a clarifying comment that the boundary is intentional.
 
-**Minor PRD frontmatter corrections (deferred per AMEND-1 + AMEND-6):**
-- PRD frontmatter `nonfunctional_requirements: 36` → 37 (actual count P:5+S:7+R:8+M:6+X:4+OD:7)
-- PRD frontmatter `story_count_final: 26` → 36 (granular per-gate + per-AUDIT-AC + 7c.0 split count)
+2. **Inherited broad-regression failures (39 checkout-level + 2 7c.4b T1 baseline drift = ~41 R3 failure count)** — not 7c.4b regressions; pre-existing checkout-state (TW-7c-4 detector self-trip on its own filename + NFR-CG6 evidence aggregation). Filed for future hardening; not blocking Slab 7c continuation.
 
-Both fixable at next PRD edit OR at retrospective close. Not blocking sprint-planning or story authoring.
+3. **C6 incremental modules-list growth contract** — each downstream HIL surface story (7c.6/7c.7/.../7c.15) MUST add its §section to C6's modules list as part of its four-file-lockstep co-commit. Pattern documented in pyproject.toml comment + structural tests; risk of forgetting is mitigated by lint-imports failing if a §section is created without the C6 modules-list update.
 
-**Deferred-inventory new entries (filed this session; out-of-scope for Slab 7c body):**
-- 3 JTBD entries (operator-failure-recovery + tripwire-user-surface + paused-trial-resume) → Slab 4 PRD scope
-- TW-7c-6a entry amended with Pearson correlation check; activation-conditional (Slab 7c slab-close 50-run firing breach OR HIL-surface r > 0.3)
-
-**No L1/L2 audit findings** (Cora-Audra dissolved on this hybrid branch per `Audra + Cora dissolution` deferred-inventory entry; deterministic substitutes used: `git diff --check` clean for whitespace; manual review for content). No quality-gate failures.
-
-**No story flips to `done` this session** (sprint-status.yaml NOT edited).
+4. **Operator override pattern (accepting completions pre-T11)** — operator has been accepting Codex completions as "closed" before Claude completes T11 review, allowing Codex to keep moving while Claude catches up reviews + commits in batches. **This works** under cross-agent MANDATORY tier where Claude does eventually catch substantive issues (see 7c.4b D5 P-1 patch). Risk: a structurally-fatal issue could land deep in the queue before Claude reaches it.
 
 ---
 
 ## Key lessons learned
 
-1. **Party-mode at story-decomposition stage finds substantially more than party-mode at PRD stage.** Round 1 (single-vs-multi-epic) was 4/4 unanimous fast ratification. Round 2 (story-decomposition review) folded 22 amendments — Winston identified an architectural breaking-point in 7c.0 that PRD authoring missed; Murat re-ran Poisson math at the 35-story scale and found per-cell budget needs tightening; Amelia surfaced T11 review-queue collision risk on Wave-3 fanout. This validates the BMAD discipline of running party-mode review at multiple decomposition stages, not just at PRD signoff.
-2. **PRD frontmatter ↔ PRD body story-count discrepancy is a real artifact-level integrity risk.** PRD frontmatter said 26; PRD body §Story Decomposition explicitly enumerated 35. Discovered at epics-and-stories Step 3 when authoring story shells. AMEND-6 corrects but the lesson generalizes: cross-check frontmatter scalars against body content during PRD final-validation.
-3. **Decision-then-Foundation pattern** (7c.4a→7c.4b + new 7c.0a→7c.0b) is now an explicitly named architectural pattern (Winston W4) for future-slab reuse. Splits decisions (architectural artifacts) from foundation (executable scaffold) when decision density exceeds ~5 artifacts.
-4. **Import-linter contracts must land at Wave-0** — empty target lists with progressive population is the right shape. Distributing contract creation across mid-slab stories creates lint-coverage gaps.
+1. **lookahead_tier=1 author-ahead-aggressive policy is genuinely valuable** — pre-authoring 7c.5.G0 + 7c.5.G2A while 7c.4b was in flight saved ~1 hour of session-end latency. Hard-cap N+2 is the right discipline.
+
+2. **D1-D8 contract pre-flight at spec-author (per AMEND-V5) does NOT eliminate T11 cross-agent review value** — Codex correctly implemented all 8 contracts to spec, but the spec itself contained an unrecognized lint-imports semantic limitation (shared-descendants abort with overlapping wildcards). T11 caught it because Claude tested with a synthetic violation against the actual lint-imports binary, while spec-author + Codex's T9 verification both tested with only `section_02a` extant.
+
+3. **`type = "independence"` is lint-imports' canonical bidirectional cross-import-prevention contract.** Future §section-related contracts should default to independence over forbidden when bidirectionality is the design intent.
+
+4. **NEW CYCLE protocol scales to 9 stories/day** under the right velocity-amendments + concurrent dispatch + pre-authoring + selective-stage commit pattern. Original 5.5-7 day plan compressed to ~1.2 days actual.
 
 ---
 
 ## Validation summary
 
-- **Step 0a harmonization sweep:** SKIPPED (Cora-Audra dissolved on hybrid branch; deterministic substitutes used).
-- **Step 0b pre-closure audit:** SKIPPED (no story flips to `done` this session).
-- **Step 1 quality gate:** `git diff --check` → CLEAN (no whitespace issues).
-- **FR coverage validation:** 54/54 = 100%.
-- **NFR coverage validation:** 37/37 = 100%.
-- **Tripwire coverage:** 6/6 + TW-7c-6a deferred.
-- **Standing-guardrail validation:** 4/4 (SG-1/2/3/4) all referenced; SG-1: 23 mentions, SG-2: 14, SG-3: 14, SG-4: 11.
-- **Story-count integrity:** 36 (post-W1 split; matches frontmatter `storyCountActual: 36`).
-- **Cross-agent designation count:** 5/5 (7c.0a/0b/3a/4b/21).
-- **Amendment fold-completeness:** 22/22 amendments verified present in epics file (AMEND-2 through AMEND-7d + Winston-W1/W2/W3 + Amelia-P1/P2/P3/P4 + JTBD-1/2/3).
+- **Quality gate (Step 1 / 4a):** PASS
+  - lint-imports: 12 KEPT / 0 broken (UNCHANGED post-P-1 patch)
+  - class-conformance: 11 PASS UNCHANGED
+  - sandbox-AC validator: PASS on all 9 closed stories + 2 pre-authored specs
+  - ruff: clean across all session-touched files
+  - sprint-status YAML regression: PASS (`tests/test_sprint_status_yaml.py` 2 passed)
+  - 53 focused tests pass for 7c.4b post-P-1 patch
+  - R3 broad regression: T1=43, T9=41 (Δ=-2; 39 inherited checkout-level preserved)
+
+- **Cross-agent MANDATORY reviews completed:** 4 (7c.0a, 7c.0b, 7c.3a, 7c.4b). 1 P-1 patch applied (7c.4b D5).
+
+- **No quality-gate findings deferred unaddressed.** All 9 stories closed cleanly with verdict files at `_bmad-output/implementation-artifacts/7c-Nx-code-review-2026-05-NN.md`.
 
 ---
 
 ## Artifact update checklist
 
-- [x] `_bmad-output/planning-artifacts/implementation-readiness-report-2026-05-04-slab-7c.md` (NEW)
-- [x] `_bmad-output/planning-artifacts/epics-slab-7c-orchestrational-tail.md` (NEW)
-- [x] `_bmad-output/planning-artifacts/deferred-inventory.md` (EDIT — TW-7c-6a Pearson amendment + 3 JTBD entries)
-- [x] `_bmad-output/implementation-artifacts/bmm-workflow-status.yaml` (EDIT — `epics_slab_7c_orchestrational_tail` entry recorded)
-- [x] `~/.claude/projects/.../memory/feedback_new_cycle_codex_dev_handoff.md` (EDIT — lookahead discipline + dropbox/completion-notice convention + AMELIA-P2 freshness check + AMELIA-P3 wave-fanout staggering)
-- [ ] `_bmad-output/implementation-artifacts/sprint-status.yaml` (NOT edited this session; first edit happens at `bmad-sprint-planning` next session)
-- [ ] `docs/project-context.md` (NOT edited this session; no rule/phase/architecture changes)
-- [ ] `docs/agent-environment.md` (NOT edited this session; no MCP/API/skill changes)
-- [ ] Guides (user/admin/dev) (NOT edited this session)
+- ✅ Sprint status (`_bmad-output/implementation-artifacts/sprint-status.yaml`) — 9 story flips review→done + 2 backlog→ready-for-dev + 7c.4b in-progress→done
+- ✅ Migration story governance JSON (`docs/dev-guide/migration-story-governance.json`) — 36 entries seeded + 7c-0c added at sprint-planning + V1-V5 amendments at velocity bundle
+- ✅ Slab 7c velocity-amendments artifact (`_bmad-output/planning-artifacts/slab-7c-velocity-amendments-2026-05-04.md`)
+- ✅ 9 story specs authored + closed in `_bmad-output/implementation-artifacts/migration-7c-Nx-*.md`
+- ✅ 9 Codex dev prompts authored at `_bmad-output/implementation-artifacts/codex-dev-prompt-7c-Nx-*.md`
+- ✅ 9 Codex T10 dropbox notices preserved at `_bmad-output/implementation-artifacts/_codex-handoff/7c-Nx.ready-for-review.md`
+- ✅ 9 T11 verdicts at `_bmad-output/implementation-artifacts/7c-Nx-code-review-2026-05-NN.md`
+- ✅ 2 pre-authored specs (7c.5.G0 + 7c.5.G2A) + Codex prompts
+- ✅ ADR 0001 parity-contract DSL (7c.0a)
+- ✅ ADR 0002 gate taxonomy (7c.4a)
+- ✅ TripwireLedgerEntry model (7c.0a) + DecisionCardBase model (7c.4b) + Section02AOperatorVerdict model (7c.3b)
+- ✅ next-session-start-here.md (this session-end finalization)
+- ✅ SESSION-HANDOFF.md (this file)
+- ⏸️ bmm-workflow-status.yaml (last_updated header NOT refreshed this session — pragmatically deferred; sprint-status.yaml is the authoritative ledger)
 
 ---
 
-## Audit trail
+## Branch metadata at session-close
 
-No `reports/dev-coherence/<ts>/` entry this session (Cora-Audra dissolved on hybrid). Substitute: this SESSION-HANDOFF + epics-file `partyModeRatification` frontmatter block + readiness-report Step 1-3 output serve as the validation evidence chain.
+- **Repository baseline branch:** `dev/langchain-langgraph-foundation`
+- **HEAD:** `8b12970` feat(slab-7c-story-7c-4b)
+- **Commits ahead of `origin/dev/langchain-langgraph-foundation`:** 21
+- **Push to origin:** deferred per Step 12 default — operator authorizes
+- **Merge to master:** not applicable (`upstream/master` severed 2026-04-24; merge-to-master deferred per Slab 7c PRD scope)
+- **Worktree:** single
+
+---
+
+## References
+
+- **Slab 7c PRD:** `_bmad-output/planning-artifacts/prd-slab-7c-orchestrational-tail.md`
+- **Slab 7c epics:** `_bmad-output/planning-artifacts/epics-slab-7c-orchestrational-tail.md`
+- **Sprint status:** `_bmad-output/implementation-artifacts/sprint-status.yaml`
+- **Migration story governance:** `docs/dev-guide/migration-story-governance.json`
+- **Velocity amendments:** `_bmad-output/planning-artifacts/slab-7c-velocity-amendments-2026-05-04.md`
+- **CLAUDE.md sprint governance:** `CLAUDE.md`
+- **Deferred inventory:** `_bmad-output/planning-artifacts/deferred-inventory.md`
+- **7c.4b cross-agent MANDATORY verdict (P-1 patch rationale):** `_bmad-output/implementation-artifacts/7c-4b-code-review-2026-05-05.md`
