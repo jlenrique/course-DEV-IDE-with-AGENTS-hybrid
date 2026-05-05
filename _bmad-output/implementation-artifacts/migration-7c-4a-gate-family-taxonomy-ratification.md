@@ -1,6 +1,6 @@
 # Migration Story 7c.4a: Gate Family Taxonomy Ratification (Decision-Only)
 
-**Status:** ready-for-dev *(spec authored 2026-05-04; **DISPATCH HELD until predecessor 7c.0b closes** per governance JSON `prerequisite_stories: [7c-0a]` — note: 7c.4a's predecessor in the spec is 7c.0b, which itself is gated behind 7c.0a; dispatch chain = 7c.0a closes → 7c.0b closes → 7c.4a unblocks)*
+**Status:** done  <!-- 2026-05-05 T11 lite review PASS (zero patches; zero deferred); ADR 0002 ratifies 8 family + 10 alias + 18 runtime IDs + alias_of forward syntax. Verdict at 7c-4a-code-review-2026-05-05.md --> *(spec authored 2026-05-04; predecessor 7c.0b closed; Codex T1-T5 complete 2026-05-05; ready for Claude T11 lite code review.)*
 **Sprint key:** `migration-7c-4a-gate-family-taxonomy-ratification`
 **Epic:** Slab 7c — Marcus Orchestrational Tail (`migration-epic-slab-7c-orchestrational-tail`)
 **Pts:** 1
@@ -133,31 +133,31 @@ so that 7c.4b foundation (gate shared base classes + class-conformance validator
 
 ## Tasks / Subtasks
 
-- [ ] **T1 — Readiness checks (AC: T1 Readiness Block)**
-  - [ ] T1.1 Verify 7c.0a + 7c.0b both `done` in spec files AND sprint-status.yaml.
-  - [ ] T1.2 Confirm ADR slot `docs/dev-guide/adr/0002-slab-7c-gate-taxonomy.md` is free (or pick next-free if 7c.0a's ADR re-numbered cascaded).
-  - [ ] T1.3 Resolve alias-count discrepancy (recommend 10 explicit mappings).
-  - [ ] T1.4 Resolve PRODUCTION_GATE_IDS final-count discrepancy (FR-7c-6 enumerates 18; epic says expansion is 4 → 14; ADR records canonical resolution).
-  - [ ] T1.5 Confirm 7c.0a's ADR canonicalized alias-DSL syntax (decorator vs YAML); if not, 7c.4a's ADR proposes via forward-pointer.
-  - [ ] T1.6 Run sandbox-AC validator on this spec; expect PASS.
+- [x] **T1 — Readiness checks (AC: T1 Readiness Block)**
+  - [x] T1.1 Verify 7c.0a + 7c.0b both `done` in spec files AND sprint-status.yaml.
+  - [x] T1.2 Confirm ADR slot `docs/dev-guide/adr/0002-slab-7c-gate-taxonomy.md` is free (or pick next-free if 7c.0a's ADR re-numbered cascaded).
+  - [x] T1.3 Resolve alias-count discrepancy (recommend 10 explicit mappings).
+  - [x] T1.4 Resolve PRODUCTION_GATE_IDS final-count discrepancy (FR-7c-6 enumerates 18; epic says expansion is 4 → 14; ADR records canonical resolution).
+  - [x] T1.5 Confirm 7c.0a's ADR canonicalized alias-DSL syntax (decorator vs YAML); if not, 7c.4a's ADR proposes via forward-pointer.
+  - [x] T1.6 Run sandbox-AC validator on this spec; expect PASS.
 
-- [ ] **T2 — Author ADR `docs/dev-guide/adr/0002-slab-7c-gate-taxonomy.md` (AC: 7c.4a-A + 7c.4a-B)**
-  - [ ] T2.1 Five required sub-sections (net-new families + alias gates + alias-DSL inheritance + PRODUCTION_GATE_IDS expansion + status line).
-  - [ ] T2.2 Worked example for one alias mapping (G0A → G1).
-  - [ ] T2.3 Cross-references to PRD + epic + governance JSON + 7c.0a's ADR.
+- [x] **T2 — Author ADR `docs/dev-guide/adr/0002-slab-7c-gate-taxonomy.md` (AC: 7c.4a-A + 7c.4a-B)**
+  - [x] T2.1 Five required sub-sections (net-new families + alias gates + alias-DSL inheritance + PRODUCTION_GATE_IDS expansion + status line).
+  - [x] T2.2 Worked example for one alias mapping (G0A → G1).
+  - [x] T2.3 Cross-references to PRD + epic + governance JSON + 7c.0a's ADR.
 
-- [ ] **T3 — Author structural test `tests/structural/test_adr_0002_slab_7c_gate_taxonomy_present.py` (AC: 7c.4a-A + 7c.4a-B)**
-  - [ ] T3.1 Path-existence assertion + 5 sub-section heading assertions + worked-example heading assertion. Substantive-keyword regex.
+- [x] **T3 — Author structural test `tests/structural/test_adr_0002_slab_7c_gate_taxonomy_present.py` (AC: 7c.4a-A + 7c.4a-B)**
+  - [x] T3.1 Path-existence assertion + 5 sub-section heading assertions + worked-example heading assertion. Substantive-keyword regex.
 
-- [ ] **T4 — CI hygiene clean (NFR-7c-R5 / NFR-7c-X4 / NFR-7c-M5)**
-  - [ ] T4.1 Run focused tests: `pytest tests/structural/test_adr_0002_slab_7c_gate_taxonomy_present.py -p no:randomly` — pass.
-  - [ ] T4.2 Run broad regression: `pytest -p no:randomly` — ≥1403 baseline preserved.
-  - [ ] T4.3 Sandbox-AC validator PASS (re-run from T1.6).
-  - [ ] T4.4 Class-conformance validator: 11 conforming activation contracts (no regression).
-  - [ ] T4.5 `lint-imports` clean (KEPT count unchanged; 7c.4a does not modify import-linter contracts).
+- [x] **T4 — CI hygiene clean (NFR-7c-R5 / NFR-7c-X4 / NFR-7c-M5)**
+  - [x] T4.1 Run focused tests: `pytest tests/structural/test_adr_0002_slab_7c_gate_taxonomy_present.py -p no:randomly` — pass.
+  - [x] T4.2 Run broad regression: `pytest -p no:randomly` — ≥1403 baseline preserved.
+  - [x] T4.3 Sandbox-AC validator PASS (re-run from T1.6).
+  - [x] T4.4 Class-conformance validator: 11 conforming activation contracts (no regression).
+  - [x] T4.5 `lint-imports` clean (KEPT count unchanged; 7c.4a does not modify import-linter contracts).
 
-- [ ] **T5 — Codex self-review (NEW CYCLE T10)**
-  - [ ] T5.1 Codex authors `_bmad-output/implementation-artifacts/_codex-handoff/7c-4a.ready-for-review.md` summarizing: file list (ADR + 1 structural test = 2 NEW files), test counts, ruff status, broad-regression delta, sandbox-AC validator status, alias-count + PRODUCTION_GATE_IDS resolution at T1, alias-DSL syntax resolution at T1, deferred follow-ons surfaced.
+- [x] **T5 — Codex self-review (NEW CYCLE T10)**
+  - [x] T5.1 Codex authors `_bmad-output/implementation-artifacts/_codex-handoff/7c-4a.ready-for-review.md` summarizing: file list (ADR + 1 structural test = 2 NEW files), test counts, ruff status, broad-regression delta, sandbox-AC validator status, alias-count + PRODUCTION_GATE_IDS resolution at T1, alias-DSL syntax resolution at T1, deferred follow-ons surfaced.
 
 - [ ] **T6 — Claude `bmad-code-review` (single-gate; cross-agent NOT mandatory)**
   - [ ] T6.1 Claude (separate cold context from Codex dev) runs `bmad-code-review` against the 2-file diff; produces verdict at `_bmad-output/implementation-artifacts/7c-4a-code-review-2026-05-NN.md`; applies remediation cycles if HALT-AND-REMEDIATE; commits + flips `migration-7c-4a-gate-family-taxonomy-ratification: review → done` in sprint-status.
@@ -213,12 +213,25 @@ Codex Sonnet 4.5 or later (NEW CYCLE T1-T9 + T10 self-review per `feedback_new_c
 
 ### Debug Log References
 
-(Populated during dev round.)
+- 2026-05-05: Verified 7c.0a and 7c.0b `done` in spec files and `sprint-status.yaml`; ADR slot `0002-slab-7c-gate-taxonomy.md` was free.
+- 2026-05-05: Confirmed ADR 0001 / 7c.0b fixed decorator registration but did not expose executable `alias_of`; ADR 0002 therefore ratifies `alias_of` as a forward-compatible clause for 7c.4b.
+- 2026-05-05: Ran sandbox-AC validator on 7c.4a spec: PASS.
+- 2026-05-05: Ran focused structural test: 5 passed.
+- 2026-05-05: Ran ruff on touched structural test: clean.
+- 2026-05-05: Ran class-conformance validator: PASS, 11 activation contract files conform.
+- 2026-05-05: Ran `lint-imports`: 12 kept, 0 broken.
+- 2026-05-05: Ran broad regression: 39 failed, 4063 passed, 27 skipped, 2 xfailed, 11 warnings; failures match the known checkout-level broad-regression red state from stacked prior stories, with no 7c.4a-focused failures.
 
 ### Completion Notes List
 
-(Populated during dev round.)
+- Authored ADR 0002 as a decision-only taxonomy lock with five required sections plus G0A -> G1 worked example.
+- Resolved alias-count discrepancy by ratifying 10 explicit alias mappings; the older "6 alias gates" count is documented as stale.
+- Resolved PRODUCTION_GATE_IDS discrepancy by making the PRD's explicit 18 runtime IDs canonical while keeping the eight family contracts as the four-file-lockstep authoring target.
+- Separated runtime IDs from family-story contracts: `G2A` and `G6` remain Wave 2 family contract targets, while FR-7c-6's runtime list remains the explicit 18-ID list.
+- Documented `alias_of` syntax as a 7c.4b forward executable addition because 7c.0a/0b did not yet implement an alias clause.
+- No production code, pyproject, pipeline manifest, specialist body, or pre-existing ADR was modified.
 
 ### File List
 
-(Populated during dev round; expected: 2 NEW files — ADR + structural test. Net: ~1.1K LOC.)
+- `docs/dev-guide/adr/0002-slab-7c-gate-taxonomy.md` (NEW)
+- `tests/structural/test_adr_0002_slab_7c_gate_taxonomy_present.py` (NEW)
