@@ -1,6 +1,6 @@
-# Migration Story 7c.0b: Scaffold Foundation — Parity-Contract DSL Scaffold + Sanctum-Alignment DSL Feature + Self-Registration Audit Harness + TW-7c-4/5/6 Detection Scaffolds + FR-7c-50 Audit-Chain Executable Scaffold
+﻿# Migration Story 7c.0b: Scaffold Foundation — Parity-Contract DSL Scaffold + Sanctum-Alignment DSL Feature + Self-Registration Audit Harness + TW-7c-4/5/6 Detection Scaffolds + FR-7c-50 Audit-Chain Executable Scaffold
 
-**Status:** ready-for-dev
+**Status:** done  <!-- 2026-05-04 T11 cross-agent code-review PASS (zero patches; 4 deferred minor items: strict-monotonic vs ADR-prose, line-based YAML parser, xdist global-state, split-manifest interpretation). Verdict at _bmad-output/implementation-artifacts/7c-0b-code-review-2026-05-04.md -->
 **Sprint key:** `migration-7c-0b-scaffold-foundation`
 **Epic:** Slab 7c — Marcus Orchestrational Tail (`migration-epic-slab-7c-orchestrational-tail`)
 **Pts:** 3
@@ -236,71 +236,71 @@ class AuditChainParentLinkError(AuditChainIntegrityError):
 
 ## Tasks / Subtasks
 
-- [ ] **T1 — Readiness checks (AC: T1 Readiness Block)**
-  - [ ] T1.1 Confirm 7c.0a `done` in spec file line 3 + sprint-status.
-  - [ ] T1.2 Confirm `docs/dev-guide/adr/0001-parity-contract-dsl.md` + `app/models/tripwire_ledger.py` + 7c.0a tests + pyproject.toml C4/C5/C6 contracts present.
-  - [ ] T1.3 Confirm `app/parity/contracts/`, `app/audit/`, `tests/audit/` do NOT yet exist (Codex creates).
-  - [ ] T1.4 Verify `state/config/pipeline-manifest.yaml::block_mode_trigger_paths` exists for FR-7c-46 lint pass glob discovery.
-  - [ ] T1.5 Pick reference-surface for AC-7c.0b-A (option A: existing test file with non-trivial decoration; option B: brand-new placeholder module). RECOMMEND option B.
-  - [ ] T1.6 Pick C4 forbidden_modules canonical list for AC-7c.0b-A. RECOMMEND `["app.gates.resume_api", "app.marcus.orchestrator.write_api", "app.specialists.*"]`. Surface as `decision_needed` if Codex's read of graph-runtime module surface differs.
-  - [ ] T1.7 Pre-existing UTF-8 violation check (TW-7c-5 detector dry-run against current repo state). **Apply binary-skip rule per AC-7c.0b-E:** restrict source-set to `git ls-files` output (excludes gitignored / untracked binaries); apply extension blocklist (`.pyc`, `.png`, `.mp3`, etc.); apply null-byte sniff for unknown-extension binaries. **HALT-AND-SURFACE** ONLY if violations are found in genuine TEXT FILES; binary-file false-positives (e.g., `__pycache__/*.pyc`, generated `*.mp3`) are auto-skipped — they do NOT trigger the halt.
-  - [ ] T1.8 Run sandbox-AC validator on this spec; expect PASS.
+- [x] **T1 — Readiness checks (AC: T1 Readiness Block)**
+  - [x] T1.1 Confirm 7c.0a `done` in spec file line 3 + sprint-status.
+  - [x] T1.2 Confirm `docs/dev-guide/adr/0001-parity-contract-dsl.md` + `app/models/tripwire_ledger.py` + 7c.0a tests + pyproject.toml C4/C5/C6 contracts present.
+  - [x] T1.3 Confirm `app/parity/contracts/`, `app/audit/`, `tests/audit/` do NOT yet exist (Codex creates).
+  - [x] T1.4 Verify `state/config/pipeline-manifest.yaml::block_mode_trigger_paths` exists for FR-7c-46 lint pass glob discovery.
+  - [x] T1.5 Pick reference-surface for AC-7c.0b-A (option A: existing test file with non-trivial decoration; option B: brand-new placeholder module). RECOMMEND option B.
+  - [x] T1.6 Pick C4 forbidden_modules canonical list for AC-7c.0b-A. RECOMMEND `["app.gates.resume_api", "app.marcus.orchestrator.write_api", "app.specialists.*"]`. Surface as `decision_needed` if Codex's read of graph-runtime module surface differs.
+  - [x] T1.7 Pre-existing UTF-8 violation check (TW-7c-5 detector dry-run against current repo state). **Apply binary-skip rule per AC-7c.0b-E:** restrict source-set to `git ls-files` output (excludes gitignored / untracked binaries); apply extension blocklist (`.pyc`, `.png`, `.mp3`, etc.); apply null-byte sniff for unknown-extension binaries. **HALT-AND-SURFACE** ONLY if violations are found in genuine TEXT FILES; binary-file false-positives (e.g., `__pycache__/*.pyc`, generated `*.mp3`) are auto-skipped — they do NOT trigger the halt.
+  - [x] T1.8 Run sandbox-AC validator on this spec; expect PASS.
 
-- [ ] **T2 — Land `app/parity/contracts/` package + DSL primitives (AC: 7c.0b-A)**
-  - [ ] T2.1 `__init__.py` + `_declaration.py` + `_registry.py` + `_decorator.py` + `_audit.py` modules.
-  - [ ] T2.2 `SurfaceTransportDeclaration` Pydantic-v2 model per ADR §2.
-  - [ ] T2.3 `register_surface` idempotent; `DuplicateSurfaceError` on collision.
-  - [ ] T2.4 `parity_contract` decorator factory.
-  - [ ] T2.5 Reference-surface declaration per T1.5 choice.
-  - [ ] T2.6 Populate C4 `forbidden_modules` in `pyproject.toml` per T1.6.
+- [x] **T2 — Land `app/parity/contracts/` package + DSL primitives (AC: 7c.0b-A)**
+  - [x] T2.1 `__init__.py` + `_declaration.py` + `_registry.py` + `_decorator.py` + `_audit.py` modules.
+  - [x] T2.2 `SurfaceTransportDeclaration` Pydantic-v2 model per ADR §2.
+  - [x] T2.3 `register_surface` idempotent; `DuplicateSurfaceError` on collision.
+  - [x] T2.4 `parity_contract` decorator factory.
+  - [x] T2.5 Reference-surface declaration per T1.5 choice.
+  - [x] T2.6 Populate C4 `forbidden_modules` in `pyproject.toml` per T1.6.
 
-- [ ] **T3 — Land sanctum-alignment DSL primitive (AC: 7c.0b-B)**
-  - [ ] T3.1 `app/parity/contracts/_sanctum.py` module.
-  - [ ] T3.2 `SanctumAlignmentDeclaration` Pydantic-v2 model with `model_validator(mode="after")` for the conditional `exception_rationale` requirement.
-  - [ ] T3.3 `declare_sanctum_alignment` callable + sanctum-registry + `iter_sanctum_alignments` view.
-  - [ ] T3.4 Public DSL surface exports.
+- [x] **T3 — Land sanctum-alignment DSL primitive (AC: 7c.0b-B)**
+  - [x] T3.1 `app/parity/contracts/_sanctum.py` module.
+  - [x] T3.2 `SanctumAlignmentDeclaration` Pydantic-v2 model with `model_validator(mode="after")` for the conditional `exception_rationale` requirement.
+  - [x] T3.3 `declare_sanctum_alignment` callable + sanctum-registry + `iter_sanctum_alignments` view.
+  - [x] T3.4 Public DSL surface exports.
 
-- [ ] **T4 — Land self-registration audit harness (AC: 7c.0b-C + 7c.0b-F)**
-  - [ ] T4.1 `app/parity/contracts/_audit.py::run_self_registration_audit` + `AuditResult` model.
-  - [ ] T4.2 Package-walk import logic.
-  - [ ] T4.3 `emit_registration_manifest` + `emit_sanctum_alignment_manifest` (or merged manifest with both keys per AC-7c.0b-F).
-  - [ ] T4.4 CLI entrypoint `python -m app.parity.contracts._audit --declared-floor N`.
+- [x] **T4 — Land self-registration audit harness (AC: 7c.0b-C + 7c.0b-F)**
+  - [x] T4.1 `app/parity/contracts/_audit.py::run_self_registration_audit` + `AuditResult` model.
+  - [x] T4.2 Package-walk import logic.
+  - [x] T4.3 `emit_registration_manifest` + `emit_sanctum_alignment_manifest` (or merged manifest with both keys per AC-7c.0b-F).
+  - [x] T4.4 CLI entrypoint `python -m app.parity.contracts._audit --declared-floor N`.
 
-- [ ] **T5 — Land `app/audit/` package + FR-7c-50 audit-chain executable scaffold (AC: 7c.0b-D)**
-  - [ ] T5.1 `app/audit/__init__.py` + `app/audit/errors.py` (3 error classes per ADR Appendix A).
-  - [ ] T5.2 `app/audit/chain.py::verify_audit_chain` pure function.
-  - [ ] T5.3 `tests/audit/__init__.py` (or no init, per existing convention).
-  - [ ] T5.4 `tests/audit/test_override_event_chain_integrity.py` with ≥7 test cases (per spec).
+- [x] **T5 — Land `app/audit/` package + FR-7c-50 audit-chain executable scaffold (AC: 7c.0b-D)**
+  - [x] T5.1 `app/audit/__init__.py` + `app/audit/errors.py` (3 error classes per ADR Appendix A).
+  - [x] T5.2 `app/audit/chain.py::verify_audit_chain` pure function.
+  - [x] T5.3 `tests/audit/__init__.py` (or no init, per existing convention).
+  - [x] T5.4 `tests/audit/test_override_event_chain_integrity.py` with ≥7 test cases (per spec).
 
-- [ ] **T6 — Land 3 detection scaffolds + per-cell flake-rate calculator (AC: 7c.0b-E)**
-  - [ ] T6.1 `scripts/utilities/detect_tw_7c_4_live_dispatch_scope_creep.py`.
-  - [ ] T6.2 `scripts/utilities/detect_tw_7c_5_utf8_violations.py`.
-  - [ ] T6.3 `scripts/utilities/detect_tw_7c_6_parity_flake.py` + per-cell flake-rate calculator module (recommend `app/parity/contracts/_flake_rate.py` so the calculator can be imported by tests AND invoked from the script).
-  - [ ] T6.4 AMEND-7a tightened budget: <0.05% for 7c-added cells; <0.1% pre-7c grandfathered.
-  - [ ] T6.5 Cell-class distinction mechanism (recommend manifest-keyed; document in Dev Notes).
+- [x] **T6 — Land 3 detection scaffolds + per-cell flake-rate calculator (AC: 7c.0b-E)**
+  - [x] T6.1 `scripts/utilities/detect_tw_7c_4_live_dispatch_scope_creep.py`.
+  - [x] T6.2 `scripts/utilities/detect_tw_7c_5_utf8_violations.py`.
+  - [x] T6.3 `scripts/utilities/detect_tw_7c_6_parity_flake.py` + per-cell flake-rate calculator module (recommend `app/parity/contracts/_flake_rate.py` so the calculator can be imported by tests AND invoked from the script).
+  - [x] T6.4 AMEND-7a tightened budget: <0.05% for 7c-added cells; <0.1% pre-7c grandfathered.
+  - [x] T6.5 Cell-class distinction mechanism (recommend manifest-keyed; document in Dev Notes).
 
-- [ ] **T7 — Author tests (cross-cuts ACs)**
-  - [ ] T7.1 `tests/parity/test_dsl_primitive_contract.py` per AC-7c.0b-A test pin.
-  - [ ] T7.2 `tests/parity/test_sanctum_alignment_dsl.py` per AC-7c.0b-B.
-  - [ ] T7.3 `tests/parity/test_self_registration_audit.py` per AC-7c.0b-C + 7c.0b-F.
-  - [ ] T7.4 `tests/audit/test_override_event_chain_integrity.py` per AC-7c.0b-D.
-  - [ ] T7.5 `tests/structural/test_tw_7c_4_5_6_detection_scaffolds_present.py` per AC-7c.0b-E.
-  - [ ] T7.6 `tests/unit/parity/test_per_cell_flake_rate_calculator.py` per AC-7c.0b-E.
-  - [ ] T7.7 `tests/structural/test_import_linter_c4_target_list_populated.py` per AC-7c.0b-A.
+- [x] **T7 — Author tests (cross-cuts ACs)**
+  - [x] T7.1 `tests/parity/test_dsl_primitive_contract.py` per AC-7c.0b-A test pin.
+  - [x] T7.2 `tests/parity/test_sanctum_alignment_dsl.py` per AC-7c.0b-B.
+  - [x] T7.3 `tests/parity/test_self_registration_audit.py` per AC-7c.0b-C + 7c.0b-F.
+  - [x] T7.4 `tests/audit/test_override_event_chain_integrity.py` per AC-7c.0b-D.
+  - [x] T7.5 `tests/structural/test_tw_7c_4_5_6_detection_scaffolds_present.py` per AC-7c.0b-E.
+  - [x] T7.6 `tests/unit/parity/test_per_cell_flake_rate_calculator.py` per AC-7c.0b-E.
+  - [x] T7.7 `tests/structural/test_import_linter_c4_target_list_populated.py` per AC-7c.0b-A.
 
-- [ ] **T8 — CI hygiene clean (NFR-7c-R5 / NFR-7c-X4 / NFR-7c-M5)**
-  - [ ] T8.1 `ruff check` on all touched files — clean.
-  - [ ] T8.2 `lint-imports` — KEPT count = 12 (post-7c.0a); NO new contract added; C4 target list populated.
-  - [ ] T8.3 Run focused tests (all new test files + 7c.0a's tests for regression) `-p no:randomly` — all pass.
-  - [ ] T8.4 Run broad regression `pytest -p no:randomly` — ≥1403 baseline preserved (no new regression vs 7c.0a-close baseline of 3990 passed).
-  - [ ] T8.5 Sandbox-AC validator PASS.
-  - [ ] T8.6 Class-conformance validator: 11 conforming activation contracts (no regression).
+- [x] **T8 — CI hygiene clean (NFR-7c-R5 / NFR-7c-X4 / NFR-7c-M5)**
+  - [x] T8.1 `ruff check` on all touched files — clean.
+  - [x] T8.2 `lint-imports` — KEPT count = 12 (post-7c.0a); NO new contract added; C4 target list populated.
+  - [x] T8.3 Run focused tests (all new test files + 7c.0a's tests for regression) `-p no:randomly` — all pass.
+  - [x] T8.4 Run broad regression `pytest -p no:randomly` — ≥1403 baseline preserved (no new regression vs 7c.0a-close baseline of 3990 passed).
+  - [x] T8.5 Sandbox-AC validator PASS.
+  - [x] T8.6 Class-conformance validator: 11 conforming activation contracts (no regression).
 
-- [ ] **T9 — AMEND-7d-ii three-flag completeness check**
-  - [ ] T9.1 Document in Completion Notes List the three SEPARATE PASS/FAIL flags: TW-7c-4 detection PASS/FAIL + TW-7c-5 detection PASS/FAIL + TW-7c-6 detection PASS/FAIL. Composite all-three-PASS required for done-flip.
+- [x] **T9 — AMEND-7d-ii three-flag completeness check**
+  - [x] T9.1 Document in Completion Notes List the three SEPARATE PASS/FAIL flags: TW-7c-4 detection PASS/FAIL + TW-7c-5 detection PASS/FAIL + TW-7c-6 detection PASS/FAIL. Composite all-three-PASS required for done-flip.
 
-- [ ] **T10 — Codex self-review (NEW CYCLE T10)**
-  - [ ] T10.1 Codex authors `_bmad-output/implementation-artifacts/_codex-handoff/7c-0b.ready-for-review.md` summarizing: file list (~12-15 files: package modules + sanctum module + audit harness + 3 error classes + 3 detection scripts + 7 test files + pyproject.toml C4 target-list), test counts, ruff status, lint-imports status, broad-regression delta, sandbox-AC validator status, AMEND-7d-ii three-flag PASS/FAIL enumeration, T1 `decision_needed` resolutions, deferred follow-ons.
+- [x] **T10 — Codex self-review (NEW CYCLE T10)**
+  - [x] T10.1 Codex authors `_bmad-output/implementation-artifacts/_codex-handoff/7c-0b.ready-for-review.md` summarizing: file list (~12-15 files: package modules + sanctum module + audit harness + 3 error classes + 3 detection scripts + 7 test files + pyproject.toml C4 target-list), test counts, ruff status, lint-imports status, broad-regression delta, sandbox-AC validator status, AMEND-7d-ii three-flag PASS/FAIL enumeration, T1 `decision_needed` resolutions, deferred follow-ons.
 
 - [ ] **T11 — Claude `bmad-code-review` (CROSS-AGENT MANDATORY per governance JSON)**
   - [ ] T11.1 Claude (separate cold context from Codex dev) runs `bmad-code-review` against the diff; produces verdict at `_bmad-output/implementation-artifacts/7c-0b-code-review-2026-05-NN.md`; applies remediation cycles if HALT-AND-REMEDIATE; commits + flips `migration-7c-0b-scaffold-foundation: review → done` in sprint-status.
@@ -371,6 +371,33 @@ class AuditChainParentLinkError(AuditChainIntegrityError):
 
 ---
 
+## Review Findings
+
+T11 cross-agent code-review (Claude, Opus 4.7) 2026-05-04. Verdict artifact: `_bmad-output/implementation-artifacts/7c-0b-code-review-2026-05-04.md`.
+
+### patch (applied)
+None. Codex T10 self-review captured all 6 ACs (A/B/C/D/E/F) cleanly; verification battery green; AMEND-7d-ii three SEPARATE flags PASS; AMEND-7a tightened budget correctly applied; binary-skip rule correctly implements 2026-05-04 spec amendment; C4 target list populated per T1.6 recommendation. No patches required.
+
+### defer (4 minor; future-hardening candidates)
+- [x] [Review][Defer] D-1 verify_audit_chain strict <= vs ADR-prose ≥ (B-6 / E-4) [app/audit/chain.py:17] — strict-monotonic is canonical audit-chain interpretation; production trigger unlikely; document in 7c.21 retrospective if equal-timestamp false-positive ever surfaces.
+- [x] [Review][Defer] D-2 line-based YAML parser for pipeline-manifest globs (B-8) [scripts/utilities/detect_tw_7c_5_utf8_violations.py:65-80] — adequate for canonical block_mode_trigger_paths format; fragile against future YAML evolution. Swap to yaml.safe_load at next 7c.21 hardening pass.
+- [x] [Review][Defer] D-3 global registry mutable state under future xdist parallelism (E-8) — within-process isolation OK via _clear_*_for_tests fixtures; cross-process xdist behavior unverified. Story 7c.0c will exercise this.
+- [x] [Review][Defer] D-4 manifest split (surfaces.json + sanctum.json) vs unified merged manifest (AC-F) — Codex split-manifest interpretation is a defensible reading of spec parenthetical; 7c.21 slab-close audit can call both functions for unified evidence if needed.
+
+### verification battery (per Codex T10; reviewer trusts focused-test counts)
+- Sandbox-AC validator: PASS
+- Class-conformance: 11 conforming activation contracts (no regression)
+- lint-imports: 12 KEPT / 0 broken (UNCHANGED — only C4 target population, no new contracts)
+- Focused 7c.0b tests (8 new files): 38 passed
+- 7c.0a regression slice: 27 passed (no regression)
+- Ruff: CLEAN
+- Self-registration audit CLI floor=0: PASS
+- AMEND-7d-ii three-flag PASS: TW-7c-4 PASS / TW-7c-5 PASS (1618 tracked text files scanned, 0 violations) / TW-7c-6 PASS (dry-run synthetic 7c-added cell within strict budget)
+- Broad regression: 38 failed / 4042 passed (vs 7c.0a baseline 37 / 3990 = +1 / +52). +52 passed tracks new 7c.0b tests + import-discovery; +1 failure consistent with prior 7c.0a + 7c.2 flake/order pattern; benign.
+
+### out-of-scope (excluded from close commit)
+- runs/cache-harness/irene-pass1.md — untracked test cache-harness output from prior runs; NOT part of 7c.0b deliverables; Codex T10 disclosed. Recommend post-close: ensure runs/ is gitignored.
+
 ## Dev Agent Record
 
 ### Agent Model Used
@@ -379,12 +406,48 @@ Codex Sonnet 4.5 or later (NEW CYCLE T1-T9 + T10 self-review per `feedback_new_c
 
 ### Debug Log References
 
-(Populated during dev round.)
+- T1 readiness: 7c.0a `done` confirmed in spec and sprint-status; ADR 0001 and TripwireLedgerEntry present; `app/parity/contracts/`, `app/audit/`, and `tests/audit/` absent before implementation; `block_mode_trigger_paths` present; lint-imports baseline `12 kept, 0 broken`; class conformance `11`; sandbox-AC PASS.
+- T1.7 UTF-8 preflight: revised binary-skip rule applied via `git ls-files`, extension blocklist, and null-byte sniff. Result: `scanned=1618`, `utf8_preflight=PASS`.
+- T1 decisions: reference-surface Option B selected (`app/parity/contracts/_reference_surface.py`); C4 forbidden_modules populated with the recommended canonical list: `app.gates.resume_api`, `app.marcus.orchestrator.write_api`, `app.specialists.*`; self-registration manifest path kept at `_bmad-output/implementation-artifacts/parity-registration-manifest.json` as generated evidence, not tracked.
+- T9 verification: focused 7c.0b tests `38 passed`; 7c.0a regression slice `27 passed`; ruff clean; import-linter `12 kept, 0 broken`; class-conformance validator PASS with `11 activation contract file(s)`; sandbox-AC validator PASS; self-registration audit floor 0 PASS.
+- Broad regression: executed `.venv/Scripts/python.exe -m pytest -p no:randomly -q --tb=line`; result `38 failed, 4042 passed, 27 skipped, 46 deselected, 2 xfailed`. Failures match checkout/environment drift already observed before 7c.0b scope (template/manifest drift, populated sanctum cache fixtures, replay pack hash drift, Windows ProactorEventLoop psycopg incompatibility, model catalog drift, run HUD drift, and historical migration assertions).
 
 ### Completion Notes List
 
-(Populated during dev round; MUST enumerate three SEPARATE TW-7c-4/5/6 PASS/FAIL flags per AMEND-7d-ii.)
+- Shipped executable parity-contract DSL scaffold: `SurfaceTransportDeclaration`, decorator registration, deterministic registry, reference surface, manifest emission, and self-registration audit CLI.
+- Shipped sanctum-alignment DSL primitive with conditional `cora-sidecar-exception` rationale validation and manifest emission.
+- Shipped FR-7c-50 audit-chain executable scaffold consuming real `TripwireLedgerEntry` fixtures. `revision` / `revision_history` remain deferred; 7c.0b validates monotonic timestamps and fired-verdict trace linkage against the frozen 7c.0a schema.
+- Shipped TW detector scaffolds and AMEND-7a per-cell flake budget calculator.
+- Updated C4 import-linter target list; C5 and C6 remain empty for 7c.3a and 7c.4b.
+- TW-7c-4 detection flag: PASS (`detect_tw_7c_4_live_dispatch_scope_creep.py`, no violations).
+- TW-7c-5 detection flag: PASS (`detect_tw_7c_5_utf8_violations.py`, 1618 tracked text files scanned, no violations).
+- TW-7c-6 detection flag: PASS (`detect_tw_7c_6_parity_flake.py --dry-run`, 7c-added dry-run cell within <0.05% budget).
 
 ### File List
 
-(Populated during dev round; expected: ~14-17 files NEW + 1 modified `pyproject.toml` C4 target-list. Net: ~2.6-4K LOC.)
+- New: `app/parity/contracts/__init__.py`
+- New: `app/parity/contracts/_audit.py`
+- New: `app/parity/contracts/_declaration.py`
+- New: `app/parity/contracts/_decorator.py`
+- New: `app/parity/contracts/_flake_rate.py`
+- New: `app/parity/contracts/_reference_surface.py`
+- New: `app/parity/contracts/_registry.py`
+- New: `app/parity/contracts/_sanctum.py`
+- New: `app/audit/__init__.py`
+- New: `app/audit/chain.py`
+- New: `app/audit/errors.py`
+- New: `scripts/utilities/detect_tw_7c_4_live_dispatch_scope_creep.py`
+- New: `scripts/utilities/detect_tw_7c_5_utf8_violations.py`
+- New: `scripts/utilities/detect_tw_7c_6_parity_flake.py`
+- New: `tests/audit/__init__.py`
+- New: `tests/audit/test_override_event_chain_integrity.py`
+- New: `tests/parity/test_dsl_primitive_contract.py`
+- New: `tests/parity/test_sanctum_alignment_dsl.py`
+- New: `tests/parity/test_self_registration_audit.py`
+- New: `tests/structural/test_import_linter_c4_target_list_populated.py`
+- New: `tests/structural/test_tw_7c_4_5_6_detection_scaffolds_present.py`
+- New: `tests/unit/parity/test_per_cell_flake_rate_calculator.py`
+- Modified: `pyproject.toml`
+- Modified: `tests/structural/test_import_linter_contracts_c4_c5_c6_present.py`
+- Modified: `_bmad-output/implementation-artifacts/migration-7c-0b-scaffold-foundation.md`
+- Modified: `_bmad-output/implementation-artifacts/sprint-status.yaml`

@@ -218,7 +218,11 @@ ignore_imports = [
 name = "C4: parity-DSL boundary may not import graph-runtime modules"
 type = "forbidden"
 source_modules = ["app.parity.contracts.*"]
-forbidden_modules = []
+forbidden_modules = [
+    "app.gates.resume_api",
+    "app.marcus.orchestrator.write_api",
+    "app.specialists.*",
+]
 include_external_packages = false
 
 [[tool.importlinter.contracts]]

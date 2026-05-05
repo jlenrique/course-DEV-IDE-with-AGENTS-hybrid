@@ -34,12 +34,21 @@ def _contract_by_name(name: str) -> dict[str, object]:
     return matches[0]
 
 
-def test_c4_c5_c6_contracts_exist_by_name_with_empty_forbidden_lists() -> None:
-    for name in [C4_NAME, C5_NAME, C6_NAME]:
-        contract = _contract_by_name(name)
+def test_c4_c5_c6_contracts_exist_by_name_with_expected_forbidden_lists() -> None:
+    c4 = _contract_by_name(C4_NAME)
+    c5 = _contract_by_name(C5_NAME)
+    c6 = _contract_by_name(C6_NAME)
+
+    for contract in [c4, c5, c6]:
         assert contract["type"] == "forbidden"
-        assert contract["forbidden_modules"] == []
         assert contract["include_external_packages"] is False
+    assert c4["forbidden_modules"] == [
+        "app.gates.resume_api",
+        "app.marcus.orchestrator.write_api",
+        "app.specialists.*",
+    ]
+    assert c5["forbidden_modules"] == []
+    assert c6["forbidden_modules"] == []
 
 
 def test_contract_source_module_expressions_are_future_safe() -> None:
