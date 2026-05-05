@@ -1,6 +1,6 @@
 {
   "_comment": "Codified gate-mode designations for LangChain/LangGraph migration stories. Authored 2026-04-22 from the triage pass across the 56-story plan in _bmad-output/planning-artifacts/epics-langchain-langgraph-migration.md. The triage RE-AFFIRMED the existing per-story designations — dual-gate is applied only where a story introduces a schema-shape, CI/compile-time contract, lane/package boundary, load-bearing invariant preservation, or operator-acceptance gate. Every other story is single-gate. Stories 2b.2-2b.14 are explicitly pinned to single-gate here (they follow the 2b.1 TEMPLATE scaffold and should not relitigate gate mode at authoring time). Freezing these designations here means bmad-create-story on a migration story does not need to rederive the gate-mode decision — it reads this file. Additions or demotions require party-mode consensus and a version bump below.",
-  "version": "2026-05-05-amelia-p5-and-wave-3-lookahead-policy",
+  "version": "2026-05-05-v7-v1.1-elevation-and-v2-pre-ratification",
   "_amendment_log": [
     "2026-04-22 — Initial freeze of 56-story plan (1-1 through 5b-4); 1-1d added via middle-path party-mode consensus on MCP-in-Slab-1.",
     "2026-04-25 — Story 2a-5 added (Generator auto-emit pyproject.toml C3 ignore_imports row; 2a.1 follow-on defect; ~2pt single-gate; party-mode T2 2026-04-24 ratification per Murat (b)-preferred path / Winston path-2 / Paige A12 procedural-coupling category). Filed as the Slab-2a→2b binding gate per slab-2a-retrospective.md.",
@@ -13,6 +13,7 @@
     "2026-04-29 — Slab 7b 7b-1 through 7b-12 RATIFIED (party-mode Round-(e) governance-JSON freeze gate; voices: John+Mary+Amelia+Murat; verdict: GO unanimous on consolidated amendment block E1-E7; per `_bmad-output/planning-artifacts/epics-slab-7b-specialist-activation-eleven.md` Round-(d) close). Twelve stories per Phased Wave Plan: 7b-1 Texas hardening (single-gate; Class A; carries Errata 3 SanctumParityTestBase + NFR-CG14a chain-test base + NFR-I12 class-conformance validator + Errata 4 subdir-vs-flat ratification as T1 CREATE-tasks); 7b-2 Quinn-R hardening (single-gate; Class A; prerequisite_stories=[7b-1] per Round-(e) E5/Murat); 7b-3 Vera hardening (single-gate; Class A; prerequisite_stories=[7b-1] per Round-(e) E5/Murat); 7b-4 Irene Pass-1 refresh (single-gate; Class B); 7b-5 Tracy port-shape + sidecar bundle (single-gate; Class C+; Codex per NFR-CG17; required_ac_reference_paths includes Texas retrieval-contract per Round-(e) E4/Amelia; k_contract block per Round-(e) E6/Murat); 7b-6 Gary port-shape (single-gate; Class C; Codex; consumes FR107 sandbox-AC `gamma`); 7b-7 Kira port-shape (single-gate; Class C; Codex; consumes `kling`; conditional_gate_override on 7b-6 first-port tripwire per Round-(e) E3/Mary); 7b-8 Enrique port-shape (single-gate; Class C; Codex; consumes `elevenlabs`; conditional_gate_override on 7b-6 first-port tripwire per Round-(e) E3/Mary); 7b-9 Wanda port-shape onto scaffold (single-gate; Class C; Codex; consumes `wondercraft`); 7b-10 Dan greenfield (single-gate; Class D1; Claude; sandbox-AC `dan-api-tbd-pending` resolved at story-T1 — if third-party-API, party-mode + version-bump pre-promotion required per Round-(b) Mary B1 amendment; k_contract block per Round-(e) E6/Murat); 7b-11 Compositor greenfield (single-gate; Class D2 sidecar variant per D20; Claude; conditional_dual_gate_escalation hard-bound at K>4.0 per Round-(e) E1/John binding-hard amendment; consumes FR111 scaffold-v0.2-D2-pipeline LANDED Wave 0; k_contract block per Round-(e) E6/Murat); 7b-12 integration + parity-suite + closeout (DUAL-GATE; integration; Claude; trial-2 cost-projection dry-run AC per Round-(a) John A1 amendment; 5-API live-binding smoke operator-gated; k_contract block per Round-(e) E6/Murat). Round-(e) consolidated amendment block (E1-E7): E1 conditional_dual_gate_escalation on 7b-11; E2 top-level tripwire_escalation_record_path → sprint-status.yaml::tripwire_events (lockstep yaml-schema follow-on landed in same commit); E3 conditional_gate_override on 7b-7+7b-8 keyed to 7b-6 tripwire; E4 required_ac_reference_paths on 7b-5; E5 prerequisite_stories=[7b-1] on 7b-2+7b-3; E6 k_contract blocks on 7b-5/7b-10/7b-11/7b-12 per 7a-4 precedent; E7 unfreeze (this _amendment_log entry revised in-place with ratifying voices; `_staged_pending_party_mode_ratification` flags removed; version bumped to `2026-04-29-slab7b-twelve-stories`; triage_summary updated 72→84 total / 20→21 dual / 21/84≈25% dual-gate-pct). Round-(e) record (orchestrator): opening verdicts 4× GO-with-concern (six JSON-encoding gaps surfaced; none re-opens of Round (a)-(d) policy); Round-(e)-confirm vote 4× GO unanimous on E1-E7.",
     "2026-05-04 — Slab 7c 7c-0a through 7c-21a RATIFIED (party-mode Round 2 2026-05-04; voices: John+Winston+Amelia+Murat; verdict: GO unanimous 4/4 on single-epic decomposition + AMEND-7 (a/b/c/d) + Winston structural triplet (W1 7c.0 split + W2 C4/C5/C6 consolidation at 7c.0a + W3 extend-and-audit named gate-mode) + Amelia process-discipline triplet (P1 7c.2 path-isolation guard + P2 NEW CYCLE freshness check + P3 Wave-3 G2C-fanout staggering + P4 extend-and-audit frozen-hash delta-AC) + JTBD gap audit; per _bmad-output/planning-artifacts/epics-slab-7c-orchestrational-tail.md). 36 stories per Wave 0..6 plan: Wave 0 (7c-0a + 7c-0b; both dual-gate cross-agent MANDATORY); Wave 1 (7c-1 dual-gate + 7c-2 single-gate with AMELIA-P1 path-isolation guard parallel to 7c.0a/0b + 7c-3a dual-gate cross-agent MANDATORY + 7c-3b dual-gate); Wave 2 (7c-4a single-gate + 7c-4b dual-gate cross-agent MANDATORY + 7c-5-g0/g2a/g5/g6 single-gate fresh-author + 7c-5-g1/g2c/g3/g4 NEW gate-mode dual-gate-cross-agent-CONTRACT-EVOLUTION extend-and-audit per Winston W3); Wave 3 (7c-6..7c-15 all single-gate; 7c-9/7c-10/7c-11/7c-12 carry AMELIA-P3 dispatch staggering >=30 min apart keyed off 7c.5.G2C close); Wave 4 (7c-17a + 7c-17b single-gate; AMEND-3 specific writer-to-story split per Winston W5); Wave 5 (7c-18a + 7c-18b + 7c-19 single-gate + 7c-20a/b/c AUDIT-AC single-gate; all three own TW-7c-1 with AMEND-7c percentage-threshold firing rule); Wave 6 (7c-21 dual-gate cross-agent MANDATORY with STOP-on-TW-7c-6-fire branch per AMEND-7d-iii + 7c-21a single-gate Epic 3 retirement). 5 cross-agent code-review MANDATORY: 7c-0a, 7c-0b, 7c-3a, 7c-4b, 7c-21. NEW gate-mode dual-gate-cross-agent-CONTRACT-EVOLUTION promoted per Winston W3 (4 stories: 7c-5-g1/g2c/g3/g4); T1 readiness REQUIRES (a) diff-against-prior-contract artifact + (b) backward-consumer audit per call site + (c) AMELIA-P4 frozen-at-ship-hash delta-AC. Tripwires TW-7c-1..6 seeded at sprint-status.yaml::tripwire_events in not_yet_evaluated state in same commit. version bump -> 2026-05-04-slab7c-thirty-six-stories; triage_summary 84->120 / 21->28 dual / dual_gate_cross_agent_contract_evolution 0->4; dual_gate_pct 25%->23.3% (single-gate-heavy Slab 7c).",
     "2026-05-04 — Slab 7c VELOCITY-AMENDMENTS bundle ratified (operator single-vote post-party-mode consultation; voices: John+Murat+Amelia+Winston; verdict: 5 amendments ratified, scope-cut declined). Per _bmad-output/planning-artifacts/slab-7c-velocity-amendments-2026-05-04.md: (V1) pytest-xdist classification spike — file new story 7c.0c (~3pts; single-gate; dev-agent-only; dispatched after 7c.0b close ahead of 7c.4a per highest amortization). (V2) Risk-tiered regression — add r_tier R1/R2/R3 field to per-story entries; legend at top-level; designated at spec-author time; T11 verifies; downgrading requires party-mode consensus. (V3) T11 review tiering — add t11_tier lite/standard/cross-agent field; lite eligibility = AC≤5 + single-file/sibling + no schema/contract/governance touch + Codex T10 clean + single-gate; 2-batch on lite-tier path-disjoint stories per Amelia AMEND-Velocity-7. (V4) AMELIA-P3 staggering (dispatch_staggering blocks on 7c-9/10/11/12) marked auto-satisfied under single-Codex via auto_satisfied_under annotation; reinstates if multi-Codex later adopted. (V5) Lookahead tier 1/2/3 — add lookahead_tier field; hard cap N+2 max; cross-agent MANDATORY pre-flight contract-negotiation pass at spec-author time. files_touched field added per-story (replaces deleted AMELIA-P1 hash-allowlist; supports V3 batching + future multi-Codex if reinstated). Estimated savings ~5-8 hrs wall-clock; budget revision 5.5-7d -> 3.5-5d. SKIPPED: scope-cut (operator declined), multi-Codex (risk > reward at current scope), rolling parity canary (file at 7c.21 if needed), gate-mode demotion audit (no scope review). triage_summary unchanged at 120 stories total / 86 single + 30 dual + 4 contract-evolution / 28.3% dual_gate_pct — velocity amendments are governance-tier, not gate-mode-tier.",
+    "2026-05-05 — Slab-opener party-mode (3-voice round Murat+Winston+Amelia; orchestrator=Claude). v1 elevation confirmation + v2 pre-ratification post-G2C+G3+G4 close (commit 0ec80df). Q1 (v1 elevation): 3/3 CONFIRM gate satisfied; codify v1.1 with current_cap=3 alongside default_cap=2 audit-trail (Winston+Amelia majority shape; Murat alternate `default_cap → 3` collapse declined for audit-preservation). Q2 (v2 pre-ratification): 2-1 majority PRE-RATIFY with Amelia v2-defer dissent. Murat hard-revert clause + Winston two revisit triggers BAKED IN: (a) non-obvious cross-file coupling missed by triple-condition; (b) P-1 finding traceable to N+3 staleness; (c) T11 cross-agent escalation on Wave-3 N+3 story. All revert triggers are dev-agent authority (Cora hook); v2 re-promotes only after fresh 3-clean run. Amelia empirical-first principle PRESERVED via trigger condition: v2 auto-fires only at wave_3_closed_count >= 3 (pre-ratification only consolidates procedural step). version bump → 2026-05-05-v7-v1.1-elevation-and-v2-pre-ratification.",
     "2026-05-05 — Party-mode 3-round resolution post-G1-close (voices: John+Winston+Murat+Amelia; orchestrator=Claude). Two open questions ratified. **(V6) AMELIA-P5 DROP-row Heavy gate (Q1 UNANIMOUS):** extend-and-audit T1 backward-consumer audit MUST carry per-row audit_method qualifier (heavy/light) per dropped field; if field marked DROP and downstream-touched, audit_method MUST=heavy with smoke-pass evidence against tests/composition/ + tests/integration/marcus/ + tests/integration/replay/ before T1 declares ready. ADD-only/RENAME-only T1s skip Heavy. Composed with Winston's per-row audit_method qualifier (orthogonal axes: AMELIA-P5 decides WHETHER Heavy fires; audit_method decides WHAT SHAPE the audit takes). Triggered by G1's T6 reversal on drafted_proposal/evidence (audit declared DROP; smoke found live consumers). Cost: ~6-13 min expected per extend-and-audit story (vs flat-BOTH 30-45 min). Winston-rider: instrumentation tracks DROP-row prevalence across next 5-8 G2C T1s; if >60%, revisit. Discarded: John's flag-list (reviewer-discretion is more brittle than DROP-row automation, per John's own R2 concession); Murat's flat-BOTH (over-uniform; superseded by AMELIA-P5 gating). **(V7) Wave-3 lookahead-cap policy (Q2 majority 3-1; documented Murat dissent):** default_cap=2 (status quo from V5); elevation_gate='P2_clean_x3_at_G4_close'; elevated_cap=3; v1 immediate at Wave-3 entry. v2 (steady-state, post-baseline ≥3 Wave-3 closures): Murat's triple-condition (C6 ∧ lookahead_tier=1 ∧ t11_tier=lite) becomes promotion rule. 7c.6 dispatches under N+2 cap (majority verdict; Winston conceded R3, Murat flipped to a-priori R3 dissent based on 3.5-min-expected-rework vs 40-60-min-deterministic-foregone-parallelism risk math). Operator (E)-elasticity authority retained — operator may override default at slab-opener party-mode for path-disjoint waves with clear C6/lookahead_tier=1/t11_tier=lite triple. version bump → 2026-05-05-amelia-p5-and-wave-3-lookahead-policy."
   ],
   "tripwire_escalation_record_path": {
@@ -50,28 +51,74 @@
     "_governance": "Designated at spec-author time. Per AMEND-V5 2026-05-04 + V7 2026-05-05."
   },
   "wave_3_lookahead_policy": {
-    "_comment": "Party-mode V7 amendment 2026-05-05 (Q2 3-1 majority; Murat dissent documented). Wave-3 HIL surface stories (7c.6..15) are largely path-disjoint via C6 import-linter contract (each §section is its own package). Cap-elevation policy ratified in two-stage versioning per Amelia's governance-JSON shape (compose with V5 hard_cap).",
+    "_comment": "V7 v1 ratified 2026-05-05 (party-mode 3-1 majority; Murat dissent). v1.1 ratified 2026-05-05 (slab-opener party-mode 3/3 confirm v1 elevation; 2-1 majority pre-ratify v2 with Amelia dissent on timing). v1 elevation gate satisfied at G2C+G3+G4 close (commit 0ec80df) with P2-clean ×3 across the three close-batches per G4 T11 review. Wave-3 HIL surface stories (7c.6..15) are largely path-disjoint via C6 import-linter contract (each §section is its own package).",
     "default_cap": 2,
+    "current_cap": 3,
     "elevation_gate": "P2_clean_x3_at_G4_close",
-    "elevation_gate_description": "After Slab 7c.5.G4 closes (last extend-and-audit story) AND AMELIA-P2 freshness check has run clean on three consecutive consumed pre-auths under N+2 cap, elevation to N+3 is unlocked. Trust-building gate; immediate v1.",
+    "elevation_satisfied_at": "0ec80df",
+    "elevation_satisfied_date": "2026-05-05",
     "elevated_cap": 3,
-    "version": "1.0",
+    "scope": "wave_3_remaining_stories",
+    "elevation_gate_description": "After Slab 7c.5.G4 closes (last extend-and-audit story) AND AMELIA-P2 freshness check has run clean on three consecutive consumed pre-auths under N+2 cap, elevation to N+3 is unlocked. Trust-building gate; v1.",
+    "version": "1.1",
     "ratified": "2026-05-05",
     "ratified_by": [
-      "John (PM)",
-      "Winston (Architect)",
-      "Amelia (Dev)"
+      "John (PM) — V7 v1 (R3 majority)",
+      "Winston (Architect) — V7 v1 (R3 majority) + v1.1 (slab-opener confirm)",
+      "Amelia (Dev) — V7 v1 (R3 majority) + v1.1 (slab-opener confirm with v2-defer dissent on timing)",
+      "Murat (TEA) — v1.1 (slab-opener confirm post-empirical-baseline; flipped to ratify after V7 R3 dissent)"
     ],
-    "documented_dissent": {
+    "documented_dissent_v7_v1": {
       "voice": "Murat (TEA)",
+      "round": "V7 R3 2026-05-05",
       "position": "a-priori-entry-via-triple-condition",
-      "rationale": "Risk math: 3.5 min expected staleness rework (0.175 coupling-probability × ~20 min spec-patch) vs 40-60 min deterministic foregone parallelism across 7c.6/7c.7/7c.8 under N+2 default. Triple-condition (C6 ∧ lookahead_tier=1 ∧ t11_tier=lite) is a-priori evaluable at slab-open without empirical baseline. Strong opinions weakly held.",
-      "revisit_trigger": "If empirical N+2 conservatism produces >40 min net cost across 7c.6/7c.7/7c.8 closures, operator can exercise (E)-elasticity to bump to N+3 case-by-case OR retroactively ratify Murat's R3 position as v1.5."
+      "rationale": "Risk math: 3.5 min expected staleness rework (0.175 coupling-probability × ~20 min spec-patch) vs 40-60 min deterministic foregone parallelism across 7c.6/7c.7/7c.8 under N+2 default. Triple-condition (C6 ∧ lookahead_tier=1 ∧ t11_tier=lite) is a-priori evaluable at slab-open without empirical baseline.",
+      "resolution": "RESOLVED at v1.1 slab-opener round: empirical baseline now corroborates Murat's hypothesis. Murat ratifies v1.1 elevation."
     },
+    "wave_4_5_6_default_cap": "Reverts to default_cap=2 (V5 hard_cap) for Wave-4/5/6 entry. Wave-scoped granularity NOT codified; future wave-opener may convene party-mode for cap-elevation per the same evidence pattern.",
     "v2_promotion_policy": {
+      "_comment": "v2 PRE-RATIFIED at 2026-05-05 slab-opener party-mode (2-1 majority Murat+Winston for pre-ratification; Amelia dissent on timing — defer until 3 Wave-3 closures provide actual data per V7 empirical-first principle). Pre-ratification consolidates the procedural step but does NOT change the trigger condition: v2 auto-fires only when wave_3_closed_count >= 3. Amelia's empirical-first principle is preserved in the trigger.",
       "trigger": "wave_3_closed_count >= 3",
       "rule": "Murat's triple-condition (C6 ∧ lookahead_tier=1 ∧ t11_tier=lite) replaces P2_clean_x3 as steady-state cap-elevation predicate. At slab-open or wave-open, evaluate the triple; if true, default cap is N+3 for that wave/slab.",
-      "ratification": "Requires party-mode consensus + version bump per CLAUDE.md gate-mode-change rule. Empirical baseline (≥3 Wave-3 closures under v1) is the input; party-mode validates whether triple-condition holds against the observed coupling pattern."
+      "pre_ratified_at": "2026-05-05 slab-opener party-mode (2-1 majority)",
+      "auto_fire_at_trigger": true,
+      "ratified_by": [
+        "Murat (TEA) — pre-ratify",
+        "Winston (Architect) — pre-ratify with revisit triggers"
+      ],
+      "documented_dissent": {
+        "voice": "Amelia (Dev)",
+        "round": "v1.1 slab-opener 2026-05-05",
+        "position": "defer-v2-to-post-3-Wave-3-closures",
+        "rationale": "V7 was 3-1 with Murat dissent precisely because his triple-condition needed more empirical data than V7's single-gate. Pre-ratifying v2 now flips the empirical-first principle that won V7. Land V7 v1.1, close 3 Wave-3 stories under cap-3, then re-open v2 in retro with full evidence.",
+        "resolution_note": "Empirical-first principle preserved in trigger condition (v2 auto-fires only at wave_3_closed_count >= 3). Pre-ratification only consolidates the procedural ratification step so a separate party-mode round is not needed at trigger time."
+      },
+      "hard_revert_clauses": {
+        "_comment": "Murat-authored hard-revert clauses + Winston-authored two revisit triggers. ALL clauses are dev-agent authority (no party-mode required to fire) per Murat's specification. Cora hooks the trigger evaluation.",
+        "auto_revert_to_n_plus_2_triggers": [
+          {
+            "trigger": "any Wave-3 story exhibits non-obvious cross-file coupling that triple-condition gate missed at pre-author time",
+            "scope": "remaining Wave-3 cohort",
+            "authority": "dev-agent (Cora hook)",
+            "consensus_required": false,
+            "v2_re_promotion_path": "v2 re-promotes only after a fresh 3-clean run of Wave-3 stories under restored N+2 cap"
+          },
+          {
+            "trigger": "any P-1 finding traceable to staleness from N+3 lookahead (e.g., pre-authored spec consumed 3 stories ahead became materially stale due to substrate move)",
+            "scope": "remaining Wave-3 cohort",
+            "authority": "dev-agent (Cora hook)",
+            "consensus_required": false,
+            "v2_re_promotion_path": "v2 re-promotes only after a fresh 3-clean run"
+          },
+          {
+            "trigger": "T11 cross-agent escalation on a Wave-3 story authored under N+3 (i.e., the lite-tier T11 was upgraded to standard or cross-agent due to discovered complexity)",
+            "scope": "remaining Wave-3 cohort + revisit lite-tier eligibility for the affected gate-family",
+            "authority": "dev-agent (Cora hook)",
+            "consensus_required": false,
+            "v2_re_promotion_path": "v2 re-promotes only after a fresh 3-clean run"
+          }
+        ]
+      }
     }
   },
   "extend_and_audit_t1_audit_method": {
