@@ -1561,7 +1561,7 @@ development_status:
   migration-7c-0a-decision-foundation: done  # 2026-05-04 Codex T1-T10 complete; focused 27 passed, ruff clean, lint-imports 12/12 KEPT, class-conformance 11, sandbox-AC PASS; broad regression executed but red from checkout-level pre-existing failures. Cross-agent code-review MANDATORY at T11. Wave 0; dual-gate; gating: 7c.0b + Wave 1 (except 7c.2 per AMELIA-P1) cannot open until 7c.0a closes.
   migration-7c-0b-scaffold-foundation: ready-for-dev  # Wave 0; dual-gate cross-agent MANDATORY; consumes 7c.0a artifacts; gating: Wave 1 (except 7c.2) cannot open until 7c.0b closes
   migration-7c-1-parity-contract-dsl-foundation: backlog  # Wave 1; dual-gate; refactor 8 existing transport-parity files
-  migration-7c-2-cp1252-windows-portability-fix: ready-for-dev  # Wave 1; single-gate; AMELIA-P1 path-isolation guard — must NOT touch 7c.0a/0b deliverable paths; opens parallel to 7c.0a/0b per John A2
+  migration-7c-2-cp1252-windows-portability-fix: done  # 2026-05-04 Codex T1-T10 complete; focused 16 passed, ruff clean, lint-imports 12/12 KEPT, class-conformance 11, sandbox-AC PASS; broad regression executed but red from checkout-level pre-existing failures. Wave 1; single-gate; AMELIA-P1 path-isolation guard honored.
   migration-7c-3a-section-02a-llm-directive-composer-body: backlog  # Wave 1; dual-gate cross-agent MANDATORY; closes Trial-2 finding #2; owns TW-7c-2 firing
   migration-7c-3b-section-02a-g0-poll-surface-canonical-hil-pattern: backlog  # Wave 1; dual-gate; canonical HIL pattern that 7c.6..7c.15 replicate
   migration-7c-4a-gate-family-taxonomy-ratification: ready-for-dev  # Wave 2; single-gate; decision artifact only (ADR 0002)

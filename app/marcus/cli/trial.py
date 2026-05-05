@@ -103,6 +103,18 @@ def _g0_prompt_text(directive_path: Path) -> str:
     )
 
 
+def _utf8_safe_print(msg: str) -> None:
+    """Write operator-visible text as UTF-8 bytes even on cp1252 consoles."""
+    text = str(msg)
+    stdout_buffer = getattr(sys.stdout, "buffer", None)
+    if stdout_buffer is not None:
+        stdout_buffer.write(text.encode("utf-8", errors="replace") + b"\n")
+        sys.stdout.flush()
+        return
+    sys.stdout.write(text + "\n")
+    sys.stdout.flush()
+
+
 def _confirm_or_edit_directive(
     *,
     directive_path: Path,
@@ -120,7 +132,7 @@ def _confirm_or_edit_directive(
     input_fn = input_fn or input
     edit_fn = edit_fn or _edit_directive_in_editor
     isatty_fn = isatty_fn or (lambda: sys.stdin.isatty())
-    print_fn = print_fn or (lambda msg: print(msg))
+    print_fn = print_fn or _utf8_safe_print
     if not isatty_fn():
         if auto_confirm_directive:
             return "confirmed"
