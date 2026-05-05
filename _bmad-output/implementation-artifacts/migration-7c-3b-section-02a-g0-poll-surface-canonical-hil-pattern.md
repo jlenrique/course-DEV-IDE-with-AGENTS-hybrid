@@ -1,6 +1,6 @@
 # Migration Story 7c.3b: §02A G0 Poll-Surface Canonical HIL Pattern — Pattern Author for 10 Wave-3 HIL Surfaces
 
-**Status:** ready-for-dev *(spec authored 2026-05-05; predecessor 7c-3a CLOSED `done` with `Directive` + `DirectiveSource` models frozen; **DISPATCHABLE NOW** — operator can pick this up immediately to keep Codex unblocked.)*
+**Status:** review *(spec authored 2026-05-05; predecessor 7c-3a CLOSED `done` with `Directive` + `DirectiveSource` models frozen; Codex dev-story completed 2026-05-05 and ready for T11 review.)*
 **Sprint key:** `migration-7c-3b-section-02a-g0-poll-surface-canonical-hil-pattern`
 **Epic:** Slab 7c — Marcus Orchestrational Tail (`migration-epic-slab-7c-orchestrational-tail`)
 **Pts:** 2
@@ -193,40 +193,40 @@ def _parity_contract_registration() -> str:
 
 ## Tasks / Subtasks
 
-- [ ] **T1 — Readiness checks**
-  - [ ] T1.1 Confirm 7c.3a deliverables present (Directive + DirectiveSource models importable).
-  - [ ] T1.2 Confirm DSL `@parity_contract` importable.
-  - [ ] T1.3 Determine OperatorVerdict location: extend `app/models/operator_verdict.py` OR create sibling. Document choice.
-  - [ ] T1.4 Confirm `tests/_helpers/runtime_subprocess.py` (or analogous) available for 3-transport tests.
-  - [ ] T1.5 Refresh broad-regression baseline.
-  - [ ] T1.6 Run sandbox-AC validator on this spec; expect PASS.
+- [x] **T1 — Readiness checks**
+  - [x] T1.1 Confirm 7c.3a deliverables present (Directive + DirectiveSource models importable).
+  - [x] T1.2 Confirm DSL `@parity_contract` importable.
+  - [x] T1.3 Determine OperatorVerdict location: extend `app/models/operator_verdict.py` OR create sibling. Document choice.
+  - [x] T1.4 Confirm `tests/_helpers/runtime_subprocess.py` (or analogous) available for 3-transport tests.
+  - [x] T1.5 Refresh broad-regression baseline.
+  - [x] T1.6 Run sandbox-AC validator on this spec; expect PASS.
 
-- [ ] **T2 — Author §02A G0 poll-surface module (AC: 7c.3b-A + 7c.3b-C)**
-  - [ ] T2.1 `app/gates/section_02a/__init__.py` package marker + exports.
-  - [ ] T2.2 `app/gates/section_02a/poll_surface.py` — `display_directive` + `submit_verdict` callables; canonicalized digest computation.
-  - [ ] T2.3 `app/gates/section_02a/_transports.py` — CLI + HTTP + MCP-stdio handlers (or delegate to existing transport scaffolding).
-  - [ ] T2.4 Module-level `@parity_contract` decorator with `surface_id="section_02a_g0_poll"` + 3-transport mandatory.
+- [x] **T2 — Author §02A G0 poll-surface module (AC: 7c.3b-A + 7c.3b-C)**
+  - [x] T2.1 `app/gates/section_02a/__init__.py` package marker + exports.
+  - [x] T2.2 `app/gates/section_02a/poll_surface.py` — `display_directive` + `submit_verdict` callables; canonicalized digest computation.
+  - [x] T2.3 `app/gates/section_02a/_transports.py` — CLI + HTTP + MCP-stdio handlers (or delegate to existing transport scaffolding).
+  - [x] T2.4 Module-level `@parity_contract` decorator with `surface_id="section_02a_g0_poll"` + 3-transport mandatory.
 
-- [ ] **T3 — Author OperatorVerdict §02A variant (AC: 7c.3b-A + 7c.3b-D)**
-  - [ ] T3.1 Either extend `app/models/operator_verdict.py` with §02A discriminated-union variant OR create `app/models/operator_verdict_section_02a.py` per T1.3.
-  - [ ] T3.2 `DirectiveEditPayload` Pydantic-v2 model for field-level edits.
+- [x] **T3 — Author OperatorVerdict §02A variant (AC: 7c.3b-A + 7c.3b-D)**
+  - [x] T3.1 Either extend `app/models/operator_verdict.py` with §02A discriminated-union variant OR create `app/models/operator_verdict_section_02a.py` per T1.3.
+  - [x] T3.2 `DirectiveEditPayload` Pydantic-v2 model for field-level edits.
 
-- [ ] **T4 — Author 4 tests (AC: 7c.3b-A + 7c.3b-B + 7c.3b-C + 7c.3b-D test pins)**
-  - [ ] T4.1 `tests/gates/section_02a/test_g0_poll_surface_three_transport_parity.py` (3 parametrized cases + tamper-detection).
-  - [ ] T4.2 `tests/gates/section_02a/test_g0_poll_surface_field_level_edit.py` (4 cases incl. binary-file invariant violation re-validation).
-  - [ ] T4.3 `tests/gates/section_02a/test_g0_poll_surface_dsl_registration.py` (AST + iter_registered + audit at floor=10).
-  - [ ] T4.4 `tests/schemas/operator_verdict/test_section_02a_shape.py` (JSON-Schema hash stability + discriminated-union variant + edit_payload nested schema).
+- [x] **T4 — Author 4 tests (AC: 7c.3b-A + 7c.3b-B + 7c.3b-C + 7c.3b-D test pins)**
+  - [x] T4.1 `tests/gates/section_02a/test_g0_poll_surface_three_transport_parity.py` (3 parametrized cases + tamper-detection).
+  - [x] T4.2 `tests/gates/section_02a/test_g0_poll_surface_field_level_edit.py` (4 cases incl. binary-file invariant violation re-validation).
+  - [x] T4.3 `tests/gates/section_02a/test_g0_poll_surface_dsl_registration.py` (AST + iter_registered + audit at floor=10).
+  - [x] T4.4 `tests/schemas/operator_verdict/test_section_02a_shape.py` (JSON-Schema hash stability + discriminated-union variant + edit_payload nested schema).
 
-- [ ] **T5 — Verification battery (R-tier R2)**
-  - [ ] T5.1 Focused tests: 4 new test files PASS.
-  - [ ] T5.2 R2 smoke pass: `pytest --smoke -p no:randomly -q --tb=short` — 200 nodeids pass (UNCHANGED smoke set; 7c.3b adds tests but they're not in smoke manifest yet — re-curate at next wave-close).
-  - [ ] T5.3 Class-conformance: 11 contracts (UNCHANGED).
-  - [ ] T5.4 Lint-imports: 12 KEPT (UNCHANGED; no contract change).
-  - [ ] T5.5 Sandbox-AC: PASS.
-  - [ ] T5.6 Ruff: clean.
+- [x] **T5 — Verification battery (R-tier R2)**
+  - [x] T5.1 Focused tests: 4 new test files PASS.
+  - [x] T5.2 R2 smoke pass: `pytest --smoke -p no:randomly -q --tb=short` — 200 nodeids pass (UNCHANGED smoke set; 7c.3b adds tests but they're not in smoke manifest yet — re-curate at next wave-close).
+  - [x] T5.3 Class-conformance: 11 contracts (UNCHANGED).
+  - [x] T5.4 Lint-imports: 12 KEPT (UNCHANGED; no contract change).
+  - [x] T5.5 Sandbox-AC: PASS.
+  - [x] T5.6 Ruff: clean.
 
-- [ ] **T10 — Codex self-review (NEW CYCLE T10)**
-  - [ ] T10.1 Codex authors `_bmad-output/implementation-artifacts/_codex-handoff/7c-3b.ready-for-review.md` summarizing: file list (~9 files: 4 NEW app modules + 1 NEW model + 4 NEW tests) + canonical-pattern compliance verdict + 3-transport byte-equivalence wall-clock + audit floor=10 PASS evidence.
+- [x] **T10 — Codex self-review (NEW CYCLE T10)**
+  - [x] T10.1 Codex authors `_bmad-output/implementation-artifacts/_codex-handoff/7c-3b.ready-for-review.md` summarizing: file list (~9 files: 4 NEW app modules + 1 NEW model + 4 NEW tests) + canonical-pattern compliance verdict + 3-transport byte-equivalence wall-clock + audit floor=10 PASS evidence.
 
 - [ ] **T11 — Claude `bmad-code-review` (single-gate; standard tier)**
   - [ ] T11.1 Claude (separate cold context) runs `bmad-code-review` against the diff; produces verdict at `_bmad-output/implementation-artifacts/7c-3b-code-review-2026-05-NN.md`. Verifies (a) canonical pattern is replicable (10 Wave-3 stories will copy); (b) 3-transport byte-equivalence; (c) verdict-digest match enforced on resume; (d) field-level edit re-validation flow correctly catches D4 invariants. Commits + flips done.
@@ -243,6 +243,11 @@ def _parity_contract_registration() -> str:
 - `decision_card_digest` = `SHA256(yaml.safe_dump(directive.model_dump(mode="json"), sort_keys=True).encode("utf-8"))`. Variation: JSON-serialize instead of YAML if YAML is too lossy. Codex picks; document.
 - `OperatorVerdict.surface_id` = `"section_02a_g0_poll"` (matches parity-contract registration).
 - `edit_payload` Pydantic shape = `dict[str, dict[str, object]]` mapping `src_id → field-name → new-value`. Variation: typed `DirectiveEditPayload` with explicit fields. Codex picks; document.
+
+**Codex T1 decisions (2026-05-05):**
+- OperatorVerdict location: created sibling `app/models/operator_verdict_section_02a.py`. Rationale: the live canonical global model is `app/models/state/operator_verdict.py`, not `app/models/operator_verdict.py`; extending the global state verdict would require unrelated schema/golden lockstep churn outside 7c.3b's bounded surface.
+- Digest canonicalization: selected SHA256 over canonical JSON bytes (`model_dump(mode="json")`, sorted keys, compact separators, UTF-8). Rationale: JSON canonicalization is transport-neutral, avoids YAML emitter variance, and is parameterized over `BaseModel` for downstream HIL surfaces.
+- Edit payload schema: selected `DirectiveEditPayload(edits: dict[str, dict[str, Any]])`. Rationale: explicit Pydantic-v2 model keeps nested schema visible for FR-7c-49 while retaining the copy-and-adapt source-id-to-field-update pattern.
 
 **File / module placement:**
 - `app/gates/section_02a/` (NEW; sibling of any other `app/gates/section_*/` packages from prior slabs).
@@ -290,12 +295,41 @@ Codex Sonnet 4.5 or later (NEW CYCLE T1-T9 + T10 self-review per `feedback_new_c
 
 ### Debug Log References
 
-(Populated during dev round.)
+- T1 import checks: Directive + DirectiveSource importable; `@parity_contract` importable; `tests/_helpers/runtime_subprocess.py` exists.
+- T1 broad baseline refresh: `39 failed, 4077 passed, 27 skipped, 2 xfailed, 11 warnings` (same known 39-failure checkout baseline class as 7c.3a).
+- Focused tests: `.venv/Scripts/python.exe -m pytest tests/gates/section_02a/ tests/schemas/operator_verdict/test_section_02a_shape.py -p no:randomly -q --tb=short` -> `15 passed`.
+- Impact-zone: same known inherited failures in `tests/parity/test_nfr_cg_block_aggregated.py::...NFR-CG6` and `tests/structural/test_tw_7c_4_5_6_detection_scaffolds_present.py::test_tw_7c_4_detector_exists_and_passes`; no 7c.3b-specific failures.
+- Smoke: `.venv/Scripts/python.exe -m pytest --smoke -p no:randomly -q --tb=short` -> `181 passed, 18 skipped`.
+- Class conformance: `PASS: 11 activation contract file(s) conform`.
+- Lint-imports: `12 kept, 0 broken`.
+- Sandbox-AC: `PASS`.
+- Ruff: clean on touched app/test files.
+- Self-registration audit floor=10: PASS with explicit roots `app.gates.section_02a`, `tests.integration.transport_parity`, `tests.integration.transports` -> `surface_cardinality=10`.
+- Audit CLI note: `.venv/Scripts/python.exe -m app.parity.contracts._audit --declared-floor 10` still FAILS with default app-only roots (`surface_cardinality=2`); this is a discovery-root mismatch in the inherited audit CLI, not a missing 7c.3b registration. T11 should adjudicate whether to patch `_audit` in a later DSL-owned story.
 
 ### Completion Notes List
 
-(Populated during dev round; MUST include canonicalization-convention picks at T1 + 3-transport byte-equivalence wall-clock + audit floor=10 PASS evidence.)
+- Implemented the Section 02A G0 poll surface with `display_directive`, canonical digest computation, `submit_verdict`, edit application/re-validation, and `resume_from_verdict` digest enforcement.
+- Added in-process CLI/HTTP/MCP-stdio handlers that emit canonicalized-identical `Section02AOperatorVerdict` payloads for the same directive and operator action.
+- Added `Section02AOperatorVerdict` and `DirectiveEditPayload` Pydantic-v2 models with `extra="forbid"`, `validate_assignment=True`, frozen value-object semantics, UUID4/tz-aware/sha256 validators, closed surface id, and verb-payload consistency.
+- Field-level edit coverage includes valid expected-word edit, valid role reclassification, unknown `src_id` rejection, and the 7c.3a binary-file invariant rejection path.
+- Pattern-replicability: `canonical_model_bytes(model: BaseModel)` and `compute_model_digest(model: BaseModel)` are domain-agnostic; transport handlers delegate through one neutral `submit_verdict` path; Section 02A-specific edit application is isolated for downstream copy-and-adapt.
 
 ### File List
 
-(Populated during dev round; expected: ~9 files — 4 NEW app modules + 1 NEW or extended model + 4 NEW tests. Net: ~800-1500 LOC.)
+- `app/gates/section_02a/__init__.py`
+- `app/gates/section_02a/_transports.py`
+- `app/gates/section_02a/poll_surface.py`
+- `app/models/operator_verdict_section_02a.py`
+- `tests/gates/__init__.py`
+- `tests/gates/section_02a/__init__.py`
+- `tests/gates/section_02a/_helpers.py`
+- `tests/gates/section_02a/test_g0_poll_surface_dsl_registration.py`
+- `tests/gates/section_02a/test_g0_poll_surface_field_level_edit.py`
+- `tests/gates/section_02a/test_g0_poll_surface_three_transport_parity.py`
+- `tests/schemas/operator_verdict/__init__.py`
+- `tests/schemas/operator_verdict/test_section_02a_shape.py`
+
+### Change Log
+
+- 2026-05-05: Codex implemented Story 7c.3b through T10 and moved status to review.

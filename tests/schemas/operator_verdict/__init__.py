@@ -1,0 +1,1 @@
+"""Operator verdict schema tests."""
