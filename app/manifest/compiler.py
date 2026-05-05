@@ -320,14 +320,14 @@ def _validate_decision_card_schemas(edges: list[EdgeSpec]) -> None:
     if not any(edge.decision_card_schema for edge in edges):
         return
 
-    from app.models.decision_cards import DecisionCard
+    from app.models.decision_cards import DecisionCard, DecisionCardBase
 
     for edge in edges:
         if edge.decision_card_schema is None:
             continue
         resolve_dotted_ref(
             edge.decision_card_schema,
-            expected_base_class=DecisionCard,
+            expected_base_class=(DecisionCard, DecisionCardBase),
         )
 
 

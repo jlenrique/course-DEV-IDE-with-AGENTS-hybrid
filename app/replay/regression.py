@@ -193,7 +193,7 @@ def _project_replay_payload(payload: dict[str, Any]) -> dict[str, Any]:
                         }
                         for item in meta.get("override_trail", [])
                     ],
-                    "reject_rate": meta["reject_rate"],
+                    "reject_rate": meta.get("reject_rate", 0.0),
                 },
                 "resume_payload": {
                     key: value

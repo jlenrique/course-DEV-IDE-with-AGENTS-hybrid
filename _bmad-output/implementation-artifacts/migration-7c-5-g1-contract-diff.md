@@ -22,8 +22,8 @@ T1 artifact for `migration-7c-5-g1-decision-card-extend-and-audit`.
 
 | Legacy base field/behavior | Migrated disposition | Consumer verdict |
 | --- | --- | --- |
-| `drafted_proposal` | drop from migrated `G1Card` | Dropped from G1 because no audited consumer reads `G1Card.drafted_proposal` directly after construction. Existing G1 constructor sites that pass it must be updated at T2. |
-| `evidence` | drop from migrated `G1Card` | Dropped from G1 because no audited consumer reads `G1Card.evidence` directly after construction. Existing G1 constructor sites that pass it must be updated at T2. |
+| `drafted_proposal` | preserve/re-declare on migrated `G1Card` | T6 smoke exposed direct pre-gate Marcus consumers in `tests/composition/test_pre_gate_marcus_precedence_unaltered.py` and `tests/integration/marcus/test_runner_threads_pre_fill_to_decision_card.py`; preserving this field keeps production pre-fill threading backward-compatible. |
+| `evidence` | preserve/re-declare on migrated `G1Card` | T6 smoke-adjacent integration tests read G1 evidence from `_build_decision_card`; preserving this field keeps adjacent specialist-summary evidence threading backward-compatible. |
 | `risks` | drop from migrated `G1Card` | Dropped from G1 because no audited consumer reads `G1Card.risks` directly after construction. Existing G1 constructor sites that pass it must be updated at T2. |
 | `card_id` UUID4 enforcement | preserve via direct field + validator | New declaration mirrors G2A with `UUID4` annotation and `enforce_uuid4_version`. |
 | `trial_id` UUID4 enforcement | preserve via direct field + validator | New declaration mirrors G2A with `UUID4` annotation and `enforce_uuid4_version`. |
@@ -74,10 +74,21 @@ T2 implementation should mirror `app/models/decision_cards/g2a.py`:
 
 Added: `schema_version`, `decision_card_digest`.
 
-Preserved by re-declaration: `card_id`, `trial_id`, `gate_id`, `gate_focus`, `created_at`, `verb`, `trial_summary`, `opened_by`, `next_nodes`.
+Preserved by re-declaration: `card_id`, `trial_id`, `gate_id`, `gate_focus`, `created_at`, `drafted_proposal`, `evidence`, `verb`, `trial_summary`, `opened_by`, `next_nodes`.
 
 Preserved by `DecisionCardBase`: strict config, `meta` shape, digest validation, frozen assignment behavior.
 
-Dropped from G1: `drafted_proposal`, `evidence`, `risks`, and legacy G1 meta extensions `reject_rate`, `party_mode_contributions`, `consolidated_at`, `sanctum_warnings`.
+Dropped from G1: `risks` and legacy G1 meta extensions `reject_rate`, `party_mode_contributions`, `consolidated_at`, `sanctum_warnings`.
 
-Required T2 consumer updates: G1 constructor call sites must stop passing dropped legacy fields and must provide `decision_card_digest` plus `_base.DecisionCardMeta`. Manifest dotted-reference validation must accept the temporary 2-class regime while G2C/G3/G4 remain on legacy `DecisionCard`.
+Required T2 consumer updates: G1 constructor call sites must stop passing dropped `risks`, preserve direct `drafted_proposal`/`evidence` payloads, and provide `decision_card_digest` plus `_base.DecisionCardMeta`. Manifest dotted-reference validation must accept the temporary 2-class regime while G2C/G3/G4 remain on legacy `DecisionCard`.
+
+## 8. Schema Emission Changes
+
+Regenerated `app/models/decision_cards/schema/g1.v1.schema.json` now emits the 7c `DecisionCardBase` shape:
+
+- Adds required `decision_card_digest`.
+- Adds FR-7c-51 `schema_version` with const `"v1"`.
+- Keeps `drafted_proposal` and `evidence` as directly declared G1 compatibility fields after T6 smoke exposed runtime consumers.
+- Drops legacy `risks` from G1.
+- Replaces legacy `DecisionCardMeta` schema with `_base.DecisionCardMeta`, keeping `cache_state`, `affected_nodes`, and `override_trail` while dropping `reject_rate`, `party_mode_contributions`, `consolidated_at`, and `sanctum_warnings`.
+- Preserves closed consts for `gate_id == "G1"` and `gate_focus == "trial_open"`.

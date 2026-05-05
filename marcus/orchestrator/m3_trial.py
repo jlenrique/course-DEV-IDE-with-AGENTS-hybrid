@@ -16,6 +16,7 @@ from app.gates.resume_api import (
     resume_from_verdict,
 )
 from app.models.decision_cards import DecisionCardMeta, G1Card, G2CCard, G3Card, G4Card
+from app.models.decision_cards._base import DecisionCardMeta as DecisionCardBaseMeta
 from app.models.state import CacheState, OperatorVerdict, RunState, SanctumFingerprint
 from app.runtime.override_api import (
     apply_override,
@@ -123,6 +124,14 @@ def _next_nodes(node_id: str) -> list[str]:
     ]
 
 
+def _base_card_meta(meta: DecisionCardMeta) -> DecisionCardBaseMeta:
+    return DecisionCardBaseMeta(
+        cache_state=meta.cache_state,
+        affected_nodes=meta.affected_nodes,
+        override_trail=meta.override_trail,
+    )
+
+
 def _card_for_gate(
     *,
     trial_id: UUID,
@@ -144,7 +153,13 @@ def _card_for_gate(
     }
     if gate_id == "G1":
         return G1Card(
-            **common,
+            card_id=common["card_id"],
+            trial_id=common["trial_id"],
+            created_at=common["created_at"],
+            decision_card_digest="0" * 64,
+            drafted_proposal=common["drafted_proposal"],
+            evidence=common["evidence"],
+            meta=_base_card_meta(meta),
             verb="approve",
             trial_summary="Marcus opened the trial with the production preset.",
             opened_by="marcus",

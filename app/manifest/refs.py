@@ -11,13 +11,13 @@ from app.manifest.exceptions import ManifestSchemaImportError
 def resolve_dotted_ref(
     dotted_ref: str,
     *,
-    expected_base_class: type[Any] | None = None,
+    expected_base_class: type[Any] | tuple[type[Any], ...] | None = None,
 ) -> Any:
     """Resolve `<module>:<attribute>` to a live Python object.
 
     Args:
         dotted_ref: Import target in `<module>:<attribute>` form.
-        expected_base_class: Optional class that the resolved target must
+        expected_base_class: Optional class or class tuple that the resolved target must
             subclass. Used by Story 3.2 to validate DecisionCard schema refs.
 
     Returns:
@@ -58,9 +58,13 @@ def resolve_dotted_ref(
     if expected_base_class is not None and (
         not isinstance(resolved, type) or not issubclass(resolved, expected_base_class)
     ):
+        if isinstance(expected_base_class, tuple):
+            expected_name = " or ".join(base.__name__ for base in expected_base_class)
+        else:
+            expected_name = expected_base_class.__name__
         raise ManifestSchemaImportError(
             f"manifest dotted ref {dotted_ref!r} must resolve to a subclass of "
-            f"{expected_base_class.__name__}"
+            f"{expected_name}"
         )
 
     return resolved

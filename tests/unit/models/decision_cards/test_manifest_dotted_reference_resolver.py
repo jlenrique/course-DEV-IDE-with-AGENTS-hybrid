@@ -8,7 +8,7 @@ from app.manifest.compiler import compile
 from app.manifest.exceptions import ManifestSchemaImportError
 from app.manifest.refs import resolve_dotted_ref
 from app.manifest.schema import EdgeSpec, NodeSpec, PipelineManifest
-from app.models.decision_cards import DecisionCard
+from app.models.decision_cards import DecisionCard, DecisionCardBase
 
 
 def _manifest_with_schema_ref(schema_ref: str) -> PipelineManifest:
@@ -44,8 +44,11 @@ def test_valid_dotted_reference_imports() -> None:
         "app.models.decision_cards.g4:G4Card",
     ]
     for dotted_ref in refs:
-        resolved = resolve_dotted_ref(dotted_ref, expected_base_class=DecisionCard)
-        assert issubclass(resolved, DecisionCard)
+        resolved = resolve_dotted_ref(
+            dotted_ref,
+            expected_base_class=(DecisionCard, DecisionCardBase),
+        )
+        assert issubclass(resolved, (DecisionCard, DecisionCardBase))
 
 
 def test_invalid_dotted_reference_fails_compile(tmp_path: Path) -> None:

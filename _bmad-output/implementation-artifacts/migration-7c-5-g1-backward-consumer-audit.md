@@ -22,10 +22,10 @@ rg -n "from app\.models\.decision_cards import.*G1Card" --type=py
 | `app/models/decision_cards/g1.py:12` | Class definition currently inherits legacy `DecisionCard`. | requires-update-at-this-story; T2 migrates to `DecisionCardBase`. |
 | `app/models/decision_cards/g1.py:38` | Module `__all__` exports `G1Card`. | preserved-via-module-export. |
 | `app/marcus/orchestrator/production_runner.py:42` | Imports `G1Card` from flat package. | preserved-via-flat-export. |
-| `app/marcus/orchestrator/production_runner.py:411` | Constructs `G1Card(**common, trial_summary=..., opened_by=..., next_nodes=...)`; `common` includes legacy `drafted_proposal`, `evidence`, `risks`, legacy `DecisionCardMeta`, and lacks `decision_card_digest`. | requires-update-at-this-story; remove dropped fields for G1, supply `_base.DecisionCardMeta`, and supply `decision_card_digest`. |
+| `app/marcus/orchestrator/production_runner.py:411` | Constructs `G1Card(**common, trial_summary=..., opened_by=..., next_nodes=...)`; `common` includes legacy `drafted_proposal`, `evidence`, `risks`, legacy `DecisionCardMeta`, and lacks `decision_card_digest`. | requires-update-at-this-story; preserve `drafted_proposal`/`evidence`, drop `risks`, supply `_base.DecisionCardMeta`, and supply `decision_card_digest`. |
 | `marcus/orchestrator/m3_trial.py:18` | Imports `DecisionCardMeta, G1Card, G2CCard, G3Card, G4Card`. | requires-update-at-this-story for G1 path; temporary 2-class regime means G1 must use `_base.DecisionCardMeta` while G2C/G3/G4 remain legacy. |
 | `marcus/orchestrator/m3_trial.py:134` | Return type `G1Card \| G2CCard \| G3Card \| G4Card`. | preserved-via-G1-symbol; type union remains valid. |
-| `marcus/orchestrator/m3_trial.py:146` | Constructs `G1Card(**common, verb="approve", trial_summary=..., opened_by=..., next_nodes=...)`; `common` includes dropped legacy fields and lacks `decision_card_digest`. | requires-update-at-this-story; mirror production runner G1 construction fix. |
+| `marcus/orchestrator/m3_trial.py:146` | Constructs `G1Card(**common, verb="approve", trial_summary=..., opened_by=..., next_nodes=...)`; `common` includes legacy fields and lacks `decision_card_digest`. | requires-update-at-this-story; mirror production runner G1 construction fix. |
 | `tests/unit/models/decision_cards/_helpers.py:10` | Imports G1/G2C/G3/G4. | preserved-via-flat-export. |
 | `tests/unit/models/decision_cards/_helpers.py:23` | `GATE_MODELS` includes `("g1", G1Card)`. | preserved-via-G1-symbol; fixture/schema expectations update with new golden/schema at T3/T4. |
 | `tests/unit/models/decision_cards/test_per_gate_strict.py:8` | Imports G1/G2C/G3/G4. | preserved-via-flat-export. |
@@ -40,6 +40,12 @@ rg -n "from app\.models\.decision_cards import.*G1Card" --type=py
 | `tests/unit/marcus/test_routing_manifest_driven.py:50` | Asserts same dotted ref string. | preserved-via-module-export/string stability. |
 | `tests/unit/gates/_helpers.py:7` | Imports legacy `DecisionCard`, legacy `DecisionCardMeta`, and `G1Card`. | requires-update-at-this-story if G1 remains in this helper; G1 no longer subclasses legacy `DecisionCard` and needs `_base.DecisionCardMeta`. |
 | `tests/unit/gates/_helpers.py:12` | `sample_card()` constructs `G1Card` with legacy base fields and returns `DecisionCard`. | requires-update-at-this-story; update type, metadata, constructor payload, and digest handling or defer helper away from migrated G1. |
+| `tests/composition/test_pre_gate_marcus_precedence_unaltered.py:28` | Reads `card.drafted_proposal["decision"]` from the G1 card returned by `_build_decision_card`. | preserved-via-re-declaration; discovered during T6 smoke, so `drafted_proposal` remains a direct G1 field. |
+| `tests/integration/marcus/test_runner_threads_pre_fill_to_decision_card.py:45` | Asserts `_build_decision_card(...).drafted_proposal` contains pre-fill values. | preserved-via-re-declaration. |
+| `tests/integration/marcus/test_runner_threads_pre_fill_to_decision_card.py:66` | Asserts default `_build_decision_card(...).drafted_proposal` shape. | preserved-via-re-declaration. |
+| `tests/integration/marcus/test_gate_handler_loads_adjacent_summary.py:35` | Reads `card.evidence[-1]` for specialist-summary evidence. | preserved-via-re-declaration; discovered during T6 adjacent integration scan. |
+| `tests/integration/marcus/test_gate_handler_loads_adjacent_summary.py:42` | Asserts default G1 evidence list. | preserved-via-re-declaration. |
+| `tests/integration/marcus/test_gate_handler_loads_adjacent_summary.py:63` | Counts specialist-summary entries in `card.evidence`. | preserved-via-re-declaration. |
 
 ## Related Non-Grep Consumers Found During Audit
 
@@ -60,9 +66,9 @@ rg -n "from app\.models\.decision_cards import.*G1Card" --type=py
 
 ## Field-Access Summary
 
-No audited executable site reads `G1Card.drafted_proposal`, `G1Card.evidence`, `G1Card.risks`, or legacy G1 meta extensions directly after construction.
+No audited executable site reads `G1Card.risks` or legacy G1 meta extensions directly after construction. T6 smoke/integration checks do read `G1Card.drafted_proposal` and `G1Card.evidence`; those fields are preserved by re-declaration on migrated G1.
 
-Constructor sites do pass those fields today. Those constructor payloads are the required T2 update surface:
+Constructor sites do pass legacy fields today. Those constructor payloads are the required T2 update surface:
 
 - `app/marcus/orchestrator/production_runner.py:411`
 - `marcus/orchestrator/m3_trial.py:146`

@@ -13,7 +13,7 @@ from langgraph.types import Command
 
 from app.gates.errors import GateError
 from app.gates.guardrails import assert_scheduler_modules_not_loaded
-from app.models.decision_cards import DecisionCard
+from app.models.decision_cards import DecisionCard, DecisionCardBase
 from app.models.state._base import enforce_tz_aware
 from app.models.state.operator_verdict import OperatorVerdict
 
@@ -22,7 +22,7 @@ assert_scheduler_modules_not_loaded()
 
 @dataclass(frozen=True)
 class StoredDecisionCard:
-    card: DecisionCard
+    card: DecisionCard | DecisionCardBase
     issued_at: datetime
     server_nonce: str
     digest: str
@@ -49,7 +49,7 @@ def _isoformat_utc(value: datetime) -> str:
 
 def compute_decision_card_digest(
     *,
-    card: DecisionCard,
+    card: DecisionCard | DecisionCardBase,
     trial_id: UUID,
     issuance_timestamp: datetime,
     server_nonce: str,
@@ -64,7 +64,7 @@ def compute_decision_card_digest(
 
 
 def register_decision_card(
-    card: DecisionCard,
+    card: DecisionCard | DecisionCardBase,
     *,
     issuance_timestamp: datetime | None = None,
     server_nonce: str | None = None,

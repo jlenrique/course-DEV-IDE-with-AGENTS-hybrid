@@ -1,11 +1,21 @@
 {
   "$defs": {
+    "CacheState": {
+      "description": "Closed cache-state vocabulary for gate-family decision cards.",
+      "enum": [
+        "healthy",
+        "mixed",
+        "cold"
+      ],
+      "title": "CacheState",
+      "type": "string"
+    },
     "DecisionCardMeta": {
       "additionalProperties": false,
-      "description": "Cross-gate context surfaced to the operator with every DecisionCard.",
+      "description": "Shared metadata attached to every Slab 7c gate-family DecisionCard.",
       "properties": {
         "affected_nodes": {
-          "description": "Manifest node ids affected by current overrides or cache churn.",
+          "description": "Manifest node ids affected by this decision card.",
           "items": {
             "type": "string"
           },
@@ -13,59 +23,15 @@
           "type": "array"
         },
         "cache_state": {
-          "description": "Current prompt-cache warmth estimate for the trial.",
-          "enum": [
-            "healthy",
-            "mixed",
-            "cold"
-          ],
-          "title": "Cache State",
-          "type": "string"
-        },
-        "consolidated_at": {
-          "anyOf": [
-            {
-              "format": "date-time",
-              "type": "string"
-            },
-            {
-              "type": "null"
-            }
-          ],
-          "default": null,
-          "description": "Timezone-aware timestamp when party-mode contributions were consolidated.",
-          "title": "Consolidated At"
+          "$ref": "#/$defs/CacheState",
+          "description": "Closed cache-state tier."
         },
         "override_trail": {
-          "description": "Append-only override history already applied to this trial.",
+          "description": "Operator override events already applied to this run.",
           "items": {
             "$ref": "#/$defs/OverrideEvent"
           },
           "title": "Override Trail",
-          "type": "array"
-        },
-        "party_mode_contributions": {
-          "description": "Optional multi-persona contributions consolidated into this card.",
-          "items": {
-            "$ref": "#/$defs/PartyModeContribution"
-          },
-          "title": "Party Mode Contributions",
-          "type": "array"
-        },
-        "reject_rate": {
-          "default": 0.0,
-          "description": "Current gate reject-rate snapshot in [0.0, 1.0].",
-          "maximum": 1.0,
-          "minimum": 0.0,
-          "title": "Reject Rate",
-          "type": "number"
-        },
-        "sanctum_warnings": {
-          "description": "In-flight sanctum mutations that may have invalidated cache prefixes.",
-          "items": {
-            "$ref": "#/$defs/SanctumWarning"
-          },
-          "title": "Sanctum Warnings",
           "type": "array"
         }
       },
@@ -130,103 +96,6 @@
       ],
       "title": "OverrideEvent",
       "type": "object"
-    },
-    "PartyModeContribution": {
-      "additionalProperties": false,
-      "description": "One persona's contribution to a consolidated party-mode review.",
-      "properties": {
-        "contribution_id": {
-          "description": "UUID4 identity for the contribution.",
-          "format": "uuid",
-          "title": "Contribution Id",
-          "type": "string"
-        },
-        "payload": {
-          "additionalProperties": true,
-          "description": "Structured contribution payload.",
-          "title": "Payload",
-          "type": "object"
-        },
-        "persona": {
-          "description": "Persona or reviewer identity that produced the contribution.",
-          "minLength": 1,
-          "title": "Persona",
-          "type": "string"
-        },
-        "submitted_at": {
-          "description": "Timezone-aware submission timestamp.",
-          "format": "date-time",
-          "title": "Submitted At",
-          "type": "string"
-        },
-        "trace_link": {
-          "anyOf": [
-            {
-              "type": "string"
-            },
-            {
-              "type": "null"
-            }
-          ],
-          "default": null,
-          "description": "LangSmith trace URL or repo-relative trace export path.",
-          "title": "Trace Link"
-        }
-      },
-      "required": [
-        "persona"
-      ],
-      "title": "PartyModeContribution",
-      "type": "object"
-    },
-    "SanctumWarning": {
-      "additionalProperties": false,
-      "description": "One operator-visible sanctum mutation warning.",
-      "properties": {
-        "file_path": {
-          "minLength": 1,
-          "title": "File Path",
-          "type": "string"
-        },
-        "hash_after": {
-          "maxLength": 64,
-          "minLength": 64,
-          "pattern": "^[0-9a-f]{64}$",
-          "title": "Hash After",
-          "type": "string"
-        },
-        "hash_before": {
-          "maxLength": 64,
-          "minLength": 64,
-          "pattern": "^[0-9a-f]{64}$",
-          "title": "Hash Before",
-          "type": "string"
-        },
-        "mutated_at": {
-          "format": "date-time",
-          "title": "Mutated At",
-          "type": "string"
-        },
-        "suggested_invalidating_commit": {
-          "anyOf": [
-            {
-              "type": "string"
-            },
-            {
-              "type": "null"
-            }
-          ],
-          "default": null,
-          "title": "Suggested Invalidating Commit"
-        }
-      },
-      "required": [
-        "file_path",
-        "hash_before",
-        "hash_after"
-      ],
-      "title": "SanctumWarning",
-      "type": "object"
     }
   },
   "additionalProperties": false,
@@ -234,7 +103,7 @@
   "properties": {
     "card_id": {
       "description": "UUID4 identity for this DecisionCard instance.",
-      "format": "uuid",
+      "format": "uuid4",
       "title": "Card Id",
       "type": "string"
     },
@@ -242,6 +111,11 @@
       "description": "Timezone-aware creation timestamp for the emitted DecisionCard.",
       "format": "date-time",
       "title": "Created At",
+      "type": "string"
+    },
+    "decision_card_digest": {
+      "description": "Lowercase sha256 digest of the canonical decision card.",
+      "title": "Decision Card Digest",
       "type": "string"
     },
     "drafted_proposal": {
@@ -274,8 +148,7 @@
       "type": "string"
     },
     "meta": {
-      "$ref": "#/$defs/DecisionCardMeta",
-      "description": "Cross-gate cache and override context per architecture D2."
+      "$ref": "#/$defs/DecisionCardMeta"
     },
     "next_nodes": {
       "description": "Next manifest node ids if the operator approves the proposal.",
@@ -291,22 +164,22 @@
       "title": "Opened By",
       "type": "string"
     },
-    "risks": {
-      "description": "Plain-language risk bullets surfaced to the operator.",
-      "items": {
-        "type": "string"
-      },
-      "title": "Risks",
-      "type": "array"
+    "schema_version": {
+      "const": "v1",
+      "default": "v1",
+      "description": "DecisionCard schema version.",
+      "title": "Schema Version",
+      "type": "string"
     },
     "trial_id": {
       "description": "UUID4 identity for the enclosing trial run.",
-      "format": "uuid",
+      "format": "uuid4",
       "title": "Trial Id",
       "type": "string"
     },
     "trial_summary": {
       "description": "Operator-facing summary of the trial-open posture.",
+      "minLength": 1,
       "title": "Trial Summary",
       "type": "string"
     },
@@ -322,12 +195,13 @@
     }
   },
   "required": [
+    "decision_card_digest",
+    "meta",
     "card_id",
     "trial_id",
-    "verb",
-    "meta",
     "trial_summary",
-    "opened_by"
+    "opened_by",
+    "verb"
   ],
   "title": "G1Card",
   "type": "object"

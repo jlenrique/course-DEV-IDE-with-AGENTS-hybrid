@@ -44,6 +44,7 @@ from app.models.decision_cards import (
     G3Card,
     G4Card,
 )
+from app.models.decision_cards._base import DecisionCardMeta as DecisionCardBaseMeta
 from app.models.runtime.production_envelope import ProductionEnvelope, SpecialistContribution
 from app.models.runtime.production_trial_envelope import ProductionTrialEnvelope
 from app.models.runtime.trial_economics_report import (
@@ -361,6 +362,14 @@ def _card_meta(node_id: str) -> DecisionCardMeta:
     )
 
 
+def _base_card_meta(meta: DecisionCardMeta) -> DecisionCardBaseMeta:
+    return DecisionCardBaseMeta(
+        cache_state=meta.cache_state,
+        affected_nodes=meta.affected_nodes,
+        override_trail=meta.override_trail,
+    )
+
+
 def _build_decision_card(
     *,
     gate_id: str,
@@ -409,7 +418,14 @@ def _build_decision_card(
     }
     if gate_id == "G1":
         return G1Card(
-            **common,
+            card_id=common["card_id"],
+            trial_id=common["trial_id"],
+            created_at=common["created_at"],
+            decision_card_digest="0" * 64,
+            drafted_proposal=drafted_proposal,
+            evidence=evidence,
+            meta=_base_card_meta(common["meta"]),
+            verb=common["verb"],
             trial_summary="Production graph reached Gate 1.",
             opened_by="production_runner",
             next_nodes=pending_nodes[:3],

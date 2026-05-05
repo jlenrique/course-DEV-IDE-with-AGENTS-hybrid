@@ -4,28 +4,24 @@ from datetime import UTC, datetime
 from uuid import UUID
 
 from app.gates.resume_api import compute_decision_card_digest, register_decision_card
-from app.models.decision_cards import DecisionCard, DecisionCardMeta, G1Card
+from app.models.decision_cards import G1Card
+from app.models.decision_cards._base import DecisionCardMeta
 from app.models.state.operator_verdict import OperatorVerdict
 
 
-def sample_card(*, trial_id: UUID) -> DecisionCard:
+def sample_card(*, trial_id: UUID) -> G1Card:
     return G1Card(
         card_id=UUID("11111111-1111-4111-8111-111111111111"),
         trial_id=trial_id,
-        gate_id="G1",
         created_at=datetime(2026, 4, 26, 12, 0, tzinfo=UTC),
-        drafted_proposal={"action": "open-trial"},
-        evidence=[{"kind": "manifest", "node": "04"}],
-        risks=["cache cold-start"],
+        decision_card_digest="0" * 64,
         verb="approve",
         meta=DecisionCardMeta(
             cache_state="healthy",
             affected_nodes=["04", "05"],
             override_trail=[],
-            reject_rate=0.25,
         ),
         trial_summary="Trial opened with manifest-backed route and clean cache posture.",
-        gate_focus="trial_open",
         opened_by="marcus",
         next_nodes=["05", "06"],
     )
@@ -61,7 +57,7 @@ def sample_verdict(
     )
 
 
-def digest_for_card(card: DecisionCard) -> str:
+def digest_for_card(card: G1Card) -> str:
     return compute_decision_card_digest(
         card=card,
         trial_id=card.trial_id,
