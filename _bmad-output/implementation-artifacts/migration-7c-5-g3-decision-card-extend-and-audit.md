@@ -42,9 +42,9 @@ So that G3 motion-clip approval gate conforms to the post-Slab-7c contract while
 
 **Then** before T2 begins:
 
-1. **`migration-7c-5-g3-contract-diff.md`** authored with 7 sections mirroring G1 + G2C:
+1. **`migration-7c-5-g3-contract-diff.md`** authored with 7 sections mirroring G1 + G2C (+ AMELIA-P5 V6 amendment 2026-05-05):
    - §1 Legacy G3Card field disposition (preserved-via-re-declaration: gate_id, progress_percent with bounds [0.0, 100.0], active_node_id non-empty, pending_nodes default empty list, operator_prompt strip-then-non-empty per G2A pattern). **PLUS the semantic alignment statement per spec metadata above** — explicit verdict that legacy mid-trial fields are preserved verbatim under the broader "motion-clip approval" gate_focus marker, with operator semantic refinement deferred.
-   - §2 Legacy DecisionCard base field disposition (mirror G1/G2C: drafted_proposal/evidence/risks dropped; card_id/trial_id/created_at/verb/meta re-declared per G2A canonical)
+   - §2 Legacy DecisionCard base field disposition. **AMELIA-P5 binding=hard:** every row MUST carry `audit_method: heavy|light` qualifier per `docs/dev-guide/migration-story-governance.json::extend_and_audit_t1_audit_method`. DROP rows REQUIRE `audit_method=heavy` with smoke-pass evidence against `tests/composition/` + `tests/integration/marcus/` + `tests/integration/replay/`. Schema: `| field | disposition | audit_method | rationale |`. Per G1 precedent, drafted_proposal + evidence + risks are candidate DROP rows — but per AMELIA-P5 each row's verdict requires smoke-pass evidence (G1 saw drafted_proposal + evidence reversed at T6; G3 verifies for itself).
    - §3 Legacy DecisionCardMeta field disposition (mirror G1/G2C)
    - §4 New fields added: `schema_version: Literal["v1"]` + `decision_card_digest` (inherited) + **`gate_focus: Literal["motion_clip_approval"]`** (NEW per ADR 0002)
    - §5 Closed-enum tightening (gate_id Literal["G3"] retained; new gate_focus + schema_version Literals)

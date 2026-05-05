@@ -43,9 +43,9 @@ So that G2C pre-composition QA gate conforms to the post-Slab-7c contract while 
 **When** Codex executes T0/T1 deliverables
 **Then** before T2 (extension) begins:
 
-1. **`_bmad-output/implementation-artifacts/migration-7c-5-g2c-contract-diff.md`** is authored — diff-against-prior-contract artifact with sections (mirror G1's structure):
+1. **`_bmad-output/implementation-artifacts/migration-7c-5-g2c-contract-diff.md`** is authored — diff-against-prior-contract artifact with sections (mirror G1's structure + AMELIA-P5 V6 amendment 2026-05-05):
    - §1 Legacy G2CCard field disposition matrix (gate_id / readiness_status / blocking_issues / ready_nodes — preserved-via-re-declaration)
-   - §2 Legacy DecisionCard base field disposition (drafted_proposal / evidence / risks dropped per G1 precedent; card_id / trial_id / created_at / verb / meta re-declared per G2A canonical pattern)
+   - §2 Legacy DecisionCard base field disposition. **AMELIA-P5 binding=hard:** every row MUST carry `audit_method: heavy|light` qualifier per `docs/dev-guide/migration-story-governance.json::extend_and_audit_t1_audit_method`. DROP rows REQUIRE `audit_method=heavy` with smoke-pass evidence against `tests/composition/` + `tests/integration/marcus/` + `tests/integration/replay/`. Schema: `| field | disposition | audit_method | rationale |`. Per G1 precedent, drafted_proposal + evidence + risks are candidate DROP rows — but per AMELIA-P5 each row's verdict requires smoke-pass evidence (G1's T6 reversal showed drafted_proposal + evidence had live consumers; G2C verifies these for itself).
    - §3 Legacy DecisionCardMeta field disposition (cache_state / affected_nodes / override_trail preserved; reject_rate / party_mode_contributions / consolidated_at / sanctum_warnings dropped per G1 precedent)
    - §4 New fields added: `schema_version: Literal["v1"]` (FR-7c-51) + `decision_card_digest` (inherited from `DecisionCardBase`) + **`gate_focus: Literal["pre_composition_qa"]`** (NEW; legacy G2CCard has NO gate_focus field — this is a contract-evolution add per ADR 0002 family-contract authoring target)
    - §5 Closed-enum tightening (gate_id remains `Literal["G2C"]`; readiness_status remains `Literal["ready", "blocked"]`; new `gate_focus` and `schema_version` Literals)

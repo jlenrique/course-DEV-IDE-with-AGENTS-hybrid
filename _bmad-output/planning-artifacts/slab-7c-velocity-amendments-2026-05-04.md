@@ -241,3 +241,69 @@ Every NEW codex-dev-prompt authored from 2026-05-04 forward MUST include in T9 v
 5. Update memory entries.
 6. Commit bundle.
 7. (Future) Codex 7c.0c is the FIRST story dispatched after 7c.0b closes — ahead of 7c.4a per highest amortization leverage; xdist learnings amortize across ALL subsequent T9 runs.
+
+---
+
+## V6 + V7 Amendments — Party-Mode 2026-05-05 (3-round resolution post-G1-close)
+
+Convened mid-Slab-7c after 14 stories closed (G0+G2A+G5+G6 fresh-author batches; G1 first extend-and-audit). Two open questions surfaced by G1 T11 review (process-finding) and forward-cadence planning. Voices: John+Winston+Murat+Amelia. Orchestrator: Claude. Three rounds; cross-flip dynamic in R3 (Winston conceded to Murat's R2 epistemic argument; Murat simultaneously flipped to Winston's R2 risk-math argument). Final tally: Q1 UNANIMOUS; Q2 majority 3-1 with documented Murat dissent.
+
+### AMEND-V6: AMELIA-P5 DROP-row Heavy gate + Winston per-row audit_method qualifier composition (Q1 UNANIMOUS)
+
+**Trigger:** G1 T6 reversal on `drafted_proposal` + `evidence` — T1 audit declared "drop because no audited consumer reads after construction"; T6 broad regression revealed live consumers exercised at smoke/integration time (composition tests + replay regression + integration runner threads). Codex correctly reversed mid-flight; both fields preserved as direct G1 fields. Static-grep-only audits are blind to `**common` splat propagation, adapter dispatch via `getattr(target, field_name)`, and runtime-typed registries — the 20% tail where production incidents live.
+
+**Action:** Codify in `docs/dev-guide/migration-story-governance.json::extend_and_audit_t1_audit_method` (binding=hard validator rule).
+
+**Schema:** Contract-diff §2 (Legacy DecisionCard Base Field Disposition) carries per-row `audit_method: heavy|light` qualifier. DROP rows REQUIRE `audit_method=heavy` with smoke-pass evidence against `tests/composition/` + `tests/integration/marcus/` + `tests/integration/replay/`. ADD-only / RENAME-only rows can use `audit_method=light` freely. Validator REJECTS DROP+light/missing combination.
+
+**T1 smoke-pass protocol:** `pytest tests/composition/ tests/integration/marcus/ tests/integration/replay/ -k <field_name> --co -q` collect-only run lists tests exercising the field name. Zero collected → DROP confirmed. ≥1 collected → execute; pass → confirmed; fail → DROP REJECTED, field must preserve-via-re-declaration. Generic field names supplemented by targeted grep for `card\.<field_name>` or `getattr\(.*, ['"]<field_name>\b` patterns.
+
+**Cost:** ~6-13 min added per DROP-bearing T1 (vs flat-BOTH 30-45 min). Cost amortizes to where risk lives.
+
+**Composition with Winston's per-row qualifier:** AMELIA-P5 + audit_method are **orthogonal axes** — AMELIA-P5 decides WHETHER Heavy fires (DROP-gated); audit_method qualifier decides WHAT SHAPE the audit takes (heavy=smoke-verified; light=static-grep-only). One rule, two compositions.
+
+**Discarded:**
+- John's R1 reviewer-discretion + common-token flag list (John conceded R2: "reviewer-discretion + hand-curated tokens is more brittle than DROP-row automation").
+- Murat's R1 flat-BOTH (Murat conceded R2: "I withdraw flat-BOTH and adopt AMELIA-P5 as my Q1 position. Strong opinion weakly held — Amelia's gating is structurally better").
+
+**Winston-rider (instrumentation):** Track DROP-row prevalence across next 5-8 G2C/G3/G4 T1s. Threshold: 0.60. If aggregated prevalence > 60%, AMELIA-P5 collapses into uniform-tax territory and warrants v2 audit-method policy.
+
+**Ratification:** UNANIMOUS (John+Winston+Murat+Amelia, R3 close).
+
+### AMEND-V7: Wave-3 lookahead-cap policy v1 + v2 promotion rule (Q2 majority 3-1; documented Murat dissent)
+
+**Trigger:** Forward-cadence planning post-G1-close. 3 extend-and-audit remaining (G2C/G3/G4 serial); 10 Wave-3 HIL stories largely path-disjoint via C6 import-linter contract; 8+ Wave-4/5/6 stories. Question: should Wave-3 entry bump cap from N+2 (V5) to N+3 immediately, or wait for empirical baseline?
+
+**Action:** Codify in `docs/dev-guide/migration-story-governance.json::wave_3_lookahead_policy` (compose with V5 hard_cap).
+
+**v1 (immediate, ratified now):**
+- `default_cap: 2` (status quo from V5)
+- `elevation_gate: "P2_clean_x3_at_G4_close"` — after Slab 7c.5.G4 closes (last extend-and-audit) AND AMELIA-P2 freshness check has run clean on three consecutive consumed pre-auths under N+2 cap, elevation to N+3 unlocks
+- `elevated_cap: 3`
+- 7c.6 dispatches under N+2 cap (ratified by majority 3-1; Murat dissent documented)
+
+**v2 (steady-state, post-baseline ≥3 Wave-3 closures):**
+- Murat's triple-condition (C6 ∧ lookahead_tier=1 ∧ t11_tier=lite) replaces P2_clean_x3 as steady-state cap-elevation predicate. At slab-open or wave-open, evaluate the triple; if true, default cap is N+3 for that wave/slab.
+- Ratification path: Requires party-mode consensus + version bump per CLAUDE.md gate-mode-change rule. Empirical baseline (≥3 Wave-3 closures under v1) is the input; party-mode validates whether triple-condition holds against the observed coupling pattern.
+
+**Documented Murat dissent (R3 final):** Risk math 3.5 min expected staleness rework (0.175 coupling-probability × ~20 min spec-patch) vs 40-60 min deterministic foregone parallelism across 7c.6/7c.7/7c.8 under N+2 default. Murat flipped to Winston's R2 a-priori-entry position based on the cost asymmetry. Strong opinions weakly held. **Revisit trigger:** if empirical N+2 conservatism produces >40 min net cost across 7c.6/7c.7/7c.8 closures, operator can exercise (E)-elasticity to bump to N+3 case-by-case OR retroactively ratify Murat's R3 position as v1.5.
+
+**Operator (E)-elasticity authority retained:** All 4 voices (UNANIMOUS) ratified (E) operator-elasticity as the umbrella framework. Operator may override the N+2 default at slab-opener party-mode for path-disjoint waves with clear C6/lookahead_tier=1/t11_tier=lite triple. This is Murat's risk-math argument operationalized as escape valve.
+
+**R3 cross-flip dynamic (process-noteworthy):**
+- Winston (R3) conceded to Murat's R2 epistemic argument: "Murat's epistemic frame is correct... evaluable a-priori ≠ calibrated... policy follows data."
+- Murat (R3) flipped to Winston's R2 risk-math argument: "I withdraw the empirical-first objection... 3.5 min expected vs 40-60 min deterministic. Not close."
+- John + Amelia held empirical-first; final tally 3-1 for empirical-first.
+
+**Ratification:** Majority 3-1 (John + Winston + Amelia for empirical-first; Murat for a-priori-entry). Documented dissent + revisit trigger.
+
+### Execution at this commit
+
+1. ✅ Governance JSON updated (V6 + V7 blocks added; version → `2026-05-05-amelia-p5-and-wave-3-lookahead-policy`).
+2. ✅ G2C + G3 Codex prompts updated with AMELIA-P5 §audit_method requirement at T1 (smoke-pass protocol embedded).
+3. ✅ G2C + G3 specs updated with AC-A bullet 1 contract-diff §2 row schema (audit_method qualifier per row).
+4. ✅ Deferred-inventory follow-on `audit-pattern-T1-smoke-elaboration-for-extend-and-audit` marked CLOSED via V6 ratification.
+5. ✅ This artifact appended (V6 + V7 history).
+6. ✅ Commit bundle.
+
+Codex G2C dispatch is unblocked post-this-commit.

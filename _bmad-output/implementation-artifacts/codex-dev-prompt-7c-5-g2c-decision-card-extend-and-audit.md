@@ -49,14 +49,41 @@ Spec: `_bmad-output/implementation-artifacts/migration-7c-5-g2c-decision-card-ex
 
 Both MUST equal `237ce7d1b6c228cea5bc3653027cb40e50e40f316681a736d0692612dc7ba72a`. Mismatch → HALT-AND-SURFACE.
 
-## T1 — Contract-diff + backward-consumer audit
+## T1 — Contract-diff + backward-consumer audit + AMELIA-P5 DROP-row Heavy gate
 
 Author both artifacts per spec AC-A. Mirror G1 structure exactly (the G1 contract-diff is the canonical reference). G2C-specific differences:
 - Legacy G2CCard fields: `readiness_status: Literal["ready", "blocked"]`, `blocking_issues: list[str]`, `ready_nodes: list[str]` (preserve all three).
 - **NEW field added:** `gate_focus: Literal["pre_composition_qa"]` — legacy G2CCard has NO gate_focus (unlike G1); spec contract-diff §4 must explicitly mark this as ADD.
-- 2-class-regime compatibility: G1 already widened compiler.py + dotted-ref-test (+ possibly resume_api.py) to accept both regimes. G2C audit verifies G2CCard inherits-via-DecisionCardBase under those wider validators.
+- 2-class-regime compatibility: G1 already widened compiler.py + dotted-ref-test (+ resume_api.py) to accept both regimes. G2C audit verifies G2CCard inherits-via-DecisionCardBase under those wider validators.
 
-After both artifacts authored, drop `_codex-handoff/7c-5-g2c.t1-ready.md` notice. **HALT and await cross-agent T1 review verdict** at `_bmad-output/implementation-artifacts/7c-5-g2c-t1-cross-agent-review-2026-05-NN.md`.
+### AMELIA-P5 — DROP-row Heavy gate (NEW per V6 amendment 2026-05-05; binding=hard)
+
+**Codified in `docs/dev-guide/migration-story-governance.json::extend_and_audit_t1_audit_method`. Triggered by G1 T6 reversal lesson on drafted_proposal/evidence (T1 audit declared 'drop because no audited consumer reads after construction'; T6 broad regression revealed live consumers exercised at smoke/integration time).**
+
+Contract-diff §2 (Legacy DecisionCard Base Field Disposition) MUST carry per-row `audit_method` qualifier per dropped field. Schema:
+
+```
+| Legacy field | Disposition | audit_method | Rationale |
+| --- | --- | --- | --- |
+| drafted_proposal | DROP | heavy | smoke-verified: <test path>::<test name> exercises this field — confirmed/rejected |
+| evidence | DROP | heavy | smoke-verified: ... |
+| risks | DROP | light | static-grep-only — pure-data field; no consumer touches it; G1 dropped cleanly |
+| card_id | preserve-via-re-declaration | light | static-grep-only — re-declaration sufficient |
+```
+
+**Validator rule:** if disposition=DROP and audit_method=light (or missing), AMELIA-P5 REJECTS with HALT message. ADD-only / RENAME-only rows can use audit_method=light freely.
+
+**T1 smoke-pass protocol (when audit_method=heavy required):**
+
+```bash
+.venv/Scripts/python.exe -m pytest tests/composition/ tests/integration/marcus/ tests/integration/replay/ -k <field_name> --co -q
+```
+
+Collect-only run lists tests exercising the field name. If zero → audit_method=heavy DROP verdict confirmed. If ≥1 → execute the test(s); if pass → confirmed; if fail → audit_method=heavy DROP verdict REJECTED, field must be preserve-via-re-declaration. For generic field names (`evidence`, `context`, `payload`), supplement with targeted grep across the three test trees for `card\.<field_name>` or `getattr\(.*, ['"]<field_name>\b` patterns; document found-vs-not-found; surface ambiguity to cross-agent T1 reviewer.
+
+**Cost expectation:** ~6-13 min added to T1 per DROP-bearing field; parallelizable across fields. Lighter than flat-BOTH (which would have added 30-45 min flat to every T1).
+
+After both artifacts authored (with AMELIA-P5 audit_method qualifiers populated), drop `_codex-handoff/7c-5-g2c.t1-ready.md` notice. **HALT and await cross-agent T1 review verdict** at `_bmad-output/implementation-artifacts/7c-5-g2c-t1-cross-agent-review-2026-05-NN.md`. Cross-agent reviewer specifically validates AMELIA-P5 compliance.
 
 ## CROSS-AGENT T1 REVIEW CHECKPOINT (binding HALT)
 
