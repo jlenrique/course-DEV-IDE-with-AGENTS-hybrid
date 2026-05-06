@@ -280,6 +280,14 @@ The Slab 1+2+3+4+5a harvest cycle annotation above froze the *retrospective scop
 
 ---
 
+### A19. Class-definition substring scanners go stale when class names change
+
+- **Example:** Story 7c.20b surfaced an inherited scanner-staleness failure in `test_no_unauthorized_callers`: the test looked for class definitions by raw substring instead of parsing Python syntax. A renamed or refactored class can make the scanner report a gap even when the runtime contract remains intact, producing a false transport-parity gap during AUDIT-AC closeout.
+- **Counter-pattern:** Use AST-based discovery for Python class/function contracts. Parse the file with `ast.parse`, inspect `ast.ClassDef` / `ast.FunctionDef` nodes, and assert semantic symbols or decorators. If text scanning is unavoidable for non-Python artifacts, centralize the token list and tie it to a schema/hash pin so the scanner changes with the contract.
+- **Slab-of-discovery:** Slab 7c Story 7c.20b during the AUDIT-AC transport-parity matrix review. The gap was below the AMEND-7c firing threshold, but Slab 7c closeout records it because scanner staleness is a repeatable false-positive pattern.
+
+---
+
 ## Process Anti-Patterns (NEW subheading; 2026-04-27)
 
 The above A1-A17 entries cover *substrate* and *implementation* anti-patterns — defects in code or system design. The entries below cover *process* anti-patterns — defects in governance / gate-process discipline that allow substrate or implementation defects to ship. Filed at 2026-04-27 per Mary harvest-gate authority + Quinn-R 5-agent-party-mode-round process-change recommendation. Format-freeze v1 same four-field shape; numbered P1+ to distinguish from A1+ codebase-anti-patterns.

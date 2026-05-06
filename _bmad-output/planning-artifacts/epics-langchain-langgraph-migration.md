@@ -1623,6 +1623,19 @@ These land in `_bmad-output/planning-artifacts/deferred-inventory.md` at Slab 1 
 
 ---
 
+## Slab 7c Invariant-Preservation Notes
+
+Story 7c.21 appended this D12 close-protocol note at Slab 7c closeout. Slab 7c replaced the original Epic 3 Marcus-orchestration shape through Slab 7a substrate, Slab 7b body activation, and Slab 7c orchestrational-tail work while preserving these load-bearing invariants:
+
+- **SG-1 11-roster class-conformance floor preserved.** Enforcement remains in `scripts/utilities/validate_parity_test_class_conformance.py`; closeout proof is `tests/trial/test_trial3_readiness.py` plus `tests/audit/test_audit_ac_sg_aggregate_enforcement.py`, which assert the validator still reports 11 activation contracts and 19 total parity contract files.
+- **SG-2 33-row mapping-checklist floor preserved.** The dev-agent did not flip row statuses. `tests/parity/test_mapping_checklist_status.py` remains the floor guard and `tests/audit/test_audit_ac_sg_aggregate_enforcement.py` invokes it as the Slab 7c aggregate audit.
+- **SG-3 Composition Spec Section 3.1 SHA256 + append-only invariant preserved.** `docs/dev-guide/composition-specification.md` stays authoritative; `app/marcus/orchestrator/writers/outbound_envelope.py::GaryOutboundEnvelope` retains deterministic YAML emission with `schema_version`, `sort_keys=True`, and explicit UTF-8 `write_text`.
+- **SG-4 sanctum-alignment registry preserved and extended.** The five `gary-*` writer IDs from 7c.17a/7c.17b plus `section-15-bundle` from 7c.15 are asserted by `tests/audit/test_audit_ac_sg_aggregate_enforcement.py`.
+- **Tripwire-ledger append-only invariant preserved.** Story 7c.21 appended the concrete TW-7c-6 `not_fired` row to `_bmad-output/implementation-artifacts/sprint-status.yaml::tripwire_events`; schema and chain validation are exercised by `tests/trial/test_trial3_readiness.py`.
+- **Trial-3 transcript schema invariant introduced.** `app/models/trial3_transcript.py`, `app/models/trial3_transcript.v1.schema.json`, and `tests/trial/test_trial3_transcript_shape.py` pin the FR-7c-51 transcript contract to manifest-derived production gates.
+
+---
+
 ## Completion
 
 **Epic + story decomposition for the LangChain + LangGraph migration is complete.**

@@ -1333,3 +1333,17 @@ is absent from the envelope, the runner raises
 only after the production runner completes at least one graph step and records
 at least one live OpenAI specialist call. Offline cost-report mode and zero-call
 paths keep the flag `false` and record an explicit reason in the envelope.
+
+## Slab 7c - Marcus Orchestrational Tail
+
+Slab 7c closed the orchestrational tail that Slab 7a and Slab 7b deliberately left out of the body-activation tranche. The useful pattern was to treat the tail as AUDIT-AC work unless a story was explicitly authoring a new surface: verify the migrated control plane, file or trip a named gap if the invariant fails, and keep row-status or retrospective decisions in the operator Gate-2 lane.
+
+Key takeaways:
+
+- **AUDIT-AC framing scales.** 7c.20a/b/c verified shape pins, class conformance, transport parity, four-file lockstep, and tripwire-ledger integrity without rebuilding the substrate they were auditing.
+- **AMEND-7c percentage thresholds prevented noisy closeout.** The TW-7c-1 rule used percentage-based gap thresholds per AUDIT story, so one inherited scanner-staleness gap did not block the slab.
+- **Parity DSL adoption is most valuable as a registration surface.** The closeout evidence depends on the existing parity contracts, class-conformance validator, and tripwire ledger instead of bespoke per-story counters.
+- **sanctum-alignment applies to Marcus writers too.** The five `gary-*` writer IDs plus the `section-15-bundle` writer give Slab 7c an explicit SG-4 registry surface for downstream writer memory boundaries.
+- **The AMEND-4 dual-FR fold can be safe when the runtime dependency is real.** Story 7c.15 folded Section 11B G4B and Section 15 G5 final handoff because the section bundle needs the transcript anchor and outbound envelope together.
+- **Trial3Transcript is the slab-close schema anchor.** `Trial3Transcript` carries `schema_version`, manifest-derived production gate IDs, closed event verbs, UUID4 identity, timezone-aware timestamps, and sha256 payload anchors for Trial-3 evidence.
+- **Operator Gate-2 remains operator-owned.** The dev-agent prepares the retrospective evidence pack and structural tests; row flips, retrospective facilitation, and final done transitions remain party-mode/operator decisions.
