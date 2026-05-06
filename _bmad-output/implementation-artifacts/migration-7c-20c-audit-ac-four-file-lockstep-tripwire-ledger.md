@@ -1,6 +1,6 @@
 # Migration Story 7c.20c: AUDIT-AC 14/14 Four-File-Lockstep + 6/6 Tripwire-Ledger Probes (FR-7c-37 + FR-7c-38)
 
-**Status:** ready-for-dev *(spec authored 2026-05-06 lookahead_tier=2 per governance JSON; predecessors 7c.4b + 7c.5.G0..G6 all DONE — story fully unblocked. **LAST-AUDIT-AC closer**: aggregates final TW-7c-1 fired_verdict at sprint-status.yaml::tripwire_events.)*
+**Status:** review *(Codex dev complete 2026-05-06; T11/code-review pending. **LAST-AUDIT-AC closer**: aggregates final TW-7c-1 fired_verdict at sprint-status.yaml::tripwire_events.)*
 **Sprint key:** `migration-7c-20c-audit-ac-four-file-lockstep-tripwire-ledger`
 **Epic:** Slab 7c — Marcus Orchestrational Tail
 **Pts:** 1-2
@@ -87,34 +87,34 @@ If gap-rate exceeds AMEND-7c percentage threshold (≥2 gaps = 10% of combined f
 
 ## Tasks / Subtasks
 
-- [ ] **T1 — Readiness checks**
-  - [ ] T1.1 Confirm 7c.4b + 7c.5.G0..G6 done.
-  - [ ] T1.2 Confirm 7c.20a + 7c.20b are at done (or in-progress; aggregation requires their fire-status, but T1 readiness allows either).
-  - [ ] T1.3 Read existing `tests/audit/test_override_event_chain_integrity.py` (7c.0b deliverable; FR-7c-50 audit-chain integrity scaffold).
-  - [ ] T1.4 Read `sprint-status.yaml::tripwire_events` ledger to inventory existing entries (Slab-7b had 4 entries; Slab-7c entries to be added by 7c.20a/b first).
-  - [ ] T1.5 Read NFR-7c-OD2 TripwireLedgerEntry schema.
-  - [ ] T1.6 Refresh broad-regression baseline + class-conformance baseline.
+- [x] **T1 — Readiness checks**
+  - [x] T1.1 Confirm 7c.4b + 7c.5.G0..G6 done.
+  - [x] T1.2 Confirm 7c.20a + 7c.20b are at done (or in-progress; aggregation requires their fire-status, but T1 readiness allows either).
+  - [x] T1.3 Read existing `tests/audit/test_override_event_chain_integrity.py` (7c.0b deliverable; FR-7c-50 audit-chain integrity scaffold).
+  - [x] T1.4 Read `sprint-status.yaml::tripwire_events` ledger to inventory existing entries (Slab-7b had 4 entries; Slab-7c entries to be added by 7c.20a/b first).
+  - [x] T1.5 Read NFR-7c-OD2 TripwireLedgerEntry schema.
+  - [x] T1.6 Refresh broad-regression baseline + class-conformance baseline.
 
-- [ ] **T2 — Author AUDIT test module**
-  - [ ] T2.1 Author `tests/audit/test_audit_ac_four_file_lockstep_tripwire_ledger.py` per ACs A-D.
-  - [ ] T2.2 Implement four-file-lockstep verification: enumerate 14 gates (8 direct + 6 inherited via alias-DSL); verify lockstep co-commit for each.
-  - [ ] T2.3 Implement tripwire-ledger probe verification: load `sprint-status.yaml::tripwire_events`; validate each entry against TripwireLedgerEntry schema + append-only + monotonic-timestamp + parent-trace invariants.
-  - [ ] T2.4 Implement AUDIT-AC trio aggregation logic: read 7c.20a/b individual TW-7c-1 fire status (if their tripwire entries are present); compute final aggregated verdict.
-  - [ ] T2.5 Implement final TW-7c-1 ledger entry write: APPEND aggregated verdict entry to `sprint-status.yaml::tripwire_events` (append-only; deterministic byte output).
+- [x] **T2 — Author AUDIT test module**
+  - [x] T2.1 Author `tests/audit/test_audit_ac_four_file_lockstep_tripwire_ledger.py` per ACs A-D.
+  - [x] T2.2 Implement four-file-lockstep verification: enumerate 14 gates (8 direct + 6 inherited via alias-DSL); verify lockstep co-commit for each.
+  - [x] T2.3 Implement tripwire-ledger probe verification: load `sprint-status.yaml::tripwire_events`; validate each entry against TripwireLedgerEntry schema + append-only + monotonic-timestamp + parent-trace invariants.
+  - [x] T2.4 Implement AUDIT-AC trio aggregation logic: read 7c.20a/b individual TW-7c-1 fire status (if their tripwire entries are present); compute final aggregated verdict.
+  - [x] T2.5 Implement final TW-7c-1 ledger entry write: APPEND aggregated verdict entry to `sprint-status.yaml::tripwire_events` (append-only; deterministic byte output).
 
-- [ ] **T3 — Verification battery (R-tier R3; T11-tier standard)**
-  - [ ] T3.1 Focused: `pytest tests/audit/test_audit_ac_four_file_lockstep_tripwire_ledger.py -p no:randomly -q --tb=short` PASS (or STOP-and-escalate per AMEND-7c).
-  - [ ] T3.2 Audit-chain integrity test PASS UNCHANGED (`tests/audit/test_override_event_chain_integrity.py` continues passing; new ledger entry must conform).
-  - [ ] T3.3 Non-regression sweep: §02A + Wave-3/4/5 + Marcus writer + AUDIT-AC siblings PASS UNCHANGED.
-  - [ ] T3.4 R3 broad: delta ≤ 0.
-  - [ ] T3.5 Class-conformance UNCHANGED.
-  - [ ] T3.6 Lint-imports: 12 KEPT UNCHANGED.
-  - [ ] T3.7 Sandbox-AC: PASS.
-  - [ ] T3.8 Ruff: clean.
-  - [ ] T3.9 Sprint-status YAML hygiene test PASS post-ledger-append.
+- [x] **T3 — Verification battery (R-tier R3; T11-tier standard)**
+  - [x] T3.1 Focused: `pytest tests/audit/test_audit_ac_four_file_lockstep_tripwire_ledger.py -p no:randomly -q --tb=short` PASS (or STOP-and-escalate per AMEND-7c).
+  - [x] T3.2 Audit-chain integrity test PASS UNCHANGED (`tests/audit/test_override_event_chain_integrity.py` continues passing; new ledger entry must conform).
+  - [x] T3.3 Non-regression sweep: §02A + Wave-3/4/5 + Marcus writer + AUDIT-AC siblings PASS UNCHANGED.
+  - [x] T3.4 R3 broad: delta ≤ 0.
+  - [x] T3.5 Class-conformance UNCHANGED.
+  - [x] T3.6 Lint-imports: 12 KEPT UNCHANGED.
+  - [x] T3.7 Sandbox-AC: PASS.
+  - [x] T3.8 Ruff: clean.
+  - [x] T3.9 Sprint-status YAML hygiene test PASS post-ledger-append.
 
-- [ ] **T10 — Codex self-review dropbox**
-  - [ ] T10.1 Drop `_codex-handoff/7c-20c.ready-for-review.md` with: 14/14 lockstep verification + 6/6 tripwire-probe verification + per-gap descriptors + 7c.20c TW-7c-1 fire/no-fire + **final aggregated TW-7c-1 verdict** (across the trio) + ledger-append byte-determinism evidence.
+- [x] **T10 — Codex self-review dropbox**
+  - [x] T10.1 Drop `_codex-handoff/7c-20c.ready-for-review.md` with: 14/14 lockstep verification + 6/6 tripwire-probe verification + per-gap descriptors + 7c.20c TW-7c-1 fire/no-fire + **final aggregated TW-7c-1 verdict** (across the trio) + ledger-append byte-determinism evidence.
 
 ---
 
@@ -155,15 +155,24 @@ Codex GPT-5 (bmad-dev-story discipline).
 
 ### Debug Log References
 
-(populated by Codex at T1-T3)
+- `.venv\Scripts\python.exe -m pytest tests/audit/test_audit_ac_shape_pins_class_conformance.py tests/audit/test_audit_ac_transport_parity_matrix.py tests/audit/test_audit_ac_four_file_lockstep_tripwire_ledger.py -q` -> `10 passed`.
+- `.venv\Scripts\python.exe -m pytest tests/audit/test_override_event_chain_integrity.py -q` -> `8 passed`.
+- `.venv\Scripts\python.exe -m pytest --smoke -q` -> `181 passed, 18 skipped`.
+- `.venv\Scripts\python.exe -m pytest -q` -> `45 failed, 4454 passed, 27 skipped, 2 xfailed` (inherited broad failure band; no new audit failures).
 
 ### Completion Notes List
 
-(populated by Codex at T10; include 14/14 lockstep + 6/6 tripwire verification + 7c.20c TW-7c-1 fire/no-fire + final aggregated trio verdict + ledger-append determinism)
+- Verified 14/14 lockstep targets: 8 direct DecisionCard families plus 6 alias surfaces inheriting via `alias_of`.
+- Verified 6/6 TripwireLedgerEntry probe rows against FR-7c-50 audit-chain integrity.
+- Appended final TW-7c-1 aggregate ledger row to `sprint-status.yaml::tripwire_events`.
+- Final aggregate: 7c.20a gaps 0, 7c.20b gaps 1, 7c.20c gaps 0; combined gap rate 0.0135; TW-7c-1 `not_fired`.
 
 ### File List
 
-(populated by Codex at T10)
+- `tests/audit/test_audit_ac_four_file_lockstep_tripwire_ledger.py`
+- `_codex-handoff/7c-20c.ready-for-review.md`
+- `_bmad-output/implementation-artifacts/migration-7c-20c-audit-ac-four-file-lockstep-tripwire-ledger.md`
+- `_bmad-output/implementation-artifacts/sprint-status.yaml`
 
 ### Change Log
 

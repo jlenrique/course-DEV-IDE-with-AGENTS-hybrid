@@ -1,6 +1,6 @@
 # Migration Story 7c.20b: AUDIT-AC ≥15 Cells in 5-Family × 3-Transport Matrix + 8 Named Gate Tests (FR-7c-35)
 
-**Status:** ready-for-dev *(spec authored 2026-05-06 lookahead_tier=2 per governance JSON; predecessors 7c.1 + 7c.4b done — story fully unblocked at this commit. AUDIT-only verification of shipped substrate.)*
+**Status:** review *(Codex dev complete 2026-05-06; T11/code-review pending. AUDIT-only verification of shipped substrate.)*
 **Sprint key:** `migration-7c-20b-audit-ac-transport-parity-matrix`
 **Epic:** Slab 7c — Marcus Orchestrational Tail
 **Pts:** 2
@@ -83,31 +83,31 @@ T1-T9 decision: locate each named test via `find tests/ -name "<test_name>.py"` 
 
 ## Tasks / Subtasks
 
-- [ ] **T1 — Readiness checks**
-  - [ ] T1.1 Confirm 7c.1 + 7c.4b done in sprint-status.
-  - [ ] T1.2 Read existing 8 transport-parity test files under `tests/integration/transport_parity/` + `tests/integration/transports/` to inventory cell coverage.
-  - [ ] T1.3 Locate each of the 8 named gate tests via pytest collection or filesystem-find.
-  - [ ] T1.4 Read AMEND-7c percentage-threshold logic from PRD + governance JSON for TW-7c-1 firing rule.
-  - [ ] T1.5 Read `app.parity.contracts.iter_registered_surfaces` API for matrix discovery.
-  - [ ] T1.6 Refresh broad-regression baseline + record current class-conformance baseline.
+- [x] **T1 — Readiness checks**
+  - [x] T1.1 Confirm 7c.1 + 7c.4b done in sprint-status.
+  - [x] T1.2 Read existing 8 transport-parity test files under `tests/integration/transport_parity/` + `tests/integration/transports/` to inventory cell coverage.
+  - [x] T1.3 Locate each of the 8 named gate tests via pytest collection or filesystem-find.
+  - [x] T1.4 Read AMEND-7c percentage-threshold logic from PRD + governance JSON for TW-7c-1 firing rule.
+  - [x] T1.5 Read `app.parity.contracts.iter_registered_surfaces` API for matrix discovery.
+  - [x] T1.6 Refresh broad-regression baseline + record current class-conformance baseline.
 
-- [ ] **T2 — Author AUDIT test module**
-  - [ ] T2.1 Author `tests/audit/test_audit_ac_transport_parity_matrix.py` per ACs A-D.
-  - [ ] T2.2 Implement matrix-cell discovery helper: enumerate (family, transport) pairs vs registered surfaces / passing tests.
-  - [ ] T2.3 Implement named-gate-test verification: for each of 8 named tests, assert location + last-known-PASS status (via pytest --collect-only).
-  - [ ] T2.4 Implement TW-7c-1 firing path: on gap-rate ≥13% (≥3 gaps), write tripwire-ledger entry to `sprint-status.yaml::tripwire_events` (append-only).
+- [x] **T2 — Author AUDIT test module**
+  - [x] T2.1 Author `tests/audit/test_audit_ac_transport_parity_matrix.py` per ACs A-D.
+  - [x] T2.2 Implement matrix-cell discovery helper: enumerate (family, transport) pairs vs registered surfaces / passing tests.
+  - [x] T2.3 Implement named-gate-test verification: for each of 8 named tests, assert location + last-known-PASS status (via pytest --collect-only).
+  - [x] T2.4 Implement TW-7c-1 firing path: on gap-rate ≥13% (≥3 gaps), write tripwire-ledger entry to `sprint-status.yaml::tripwire_events` (append-only).
 
-- [ ] **T3 — Verification battery (R-tier R3; T11-tier standard)**
-  - [ ] T3.1 Focused: `pytest tests/audit/test_audit_ac_transport_parity_matrix.py -p no:randomly -q --tb=short` PASS (or STOP-and-escalate per AMEND-7c if gap-rate trips).
-  - [ ] T3.2 Non-regression sweep: §02A + Wave-3/4/5 + Marcus writer PASS UNCHANGED.
-  - [ ] T3.3 R3 broad: delta ≤ 0.
-  - [ ] T3.4 Class-conformance UNCHANGED (no parity_contract registered).
-  - [ ] T3.5 Lint-imports: 12 KEPT UNCHANGED.
-  - [ ] T3.6 Sandbox-AC: PASS.
-  - [ ] T3.7 Ruff: clean.
+- [x] **T3 — Verification battery (R-tier R3; T11-tier standard)**
+  - [x] T3.1 Focused: `pytest tests/audit/test_audit_ac_transport_parity_matrix.py -p no:randomly -q --tb=short` PASS (or STOP-and-escalate per AMEND-7c if gap-rate trips).
+  - [x] T3.2 Non-regression sweep: §02A + Wave-3/4/5 + Marcus writer PASS UNCHANGED.
+  - [x] T3.3 R3 broad: delta ≤ 0.
+  - [x] T3.4 Class-conformance UNCHANGED (no parity_contract registered).
+  - [x] T3.5 Lint-imports: 12 KEPT UNCHANGED.
+  - [x] T3.6 Sandbox-AC: PASS.
+  - [x] T3.7 Ruff: clean.
 
-- [ ] **T10 — Codex self-review dropbox**
-  - [ ] T10.1 Drop `_codex-handoff/7c-20b.ready-for-review.md` with: matrix-cell count + 8-named-test verification result + per-gap descriptors + TW-7c-1 fire/no-fire verdict + AUDIT determinism evidence.
+- [x] **T10 — Codex self-review dropbox**
+  - [x] T10.1 Drop `_codex-handoff/7c-20b.ready-for-review.md` with: matrix-cell count + 8-named-test verification result + per-gap descriptors + TW-7c-1 fire/no-fire verdict + AUDIT determinism evidence.
 
 ---
 
@@ -145,15 +145,24 @@ Codex GPT-5 (bmad-dev-story discipline).
 
 ### Debug Log References
 
-(populated by Codex at T1-T3)
+- `.venv\Scripts\python.exe -m pytest tests/audit/test_audit_ac_shape_pins_class_conformance.py tests/audit/test_audit_ac_transport_parity_matrix.py tests/audit/test_audit_ac_four_file_lockstep_tripwire_ledger.py -q` -> `10 passed`.
+- Direct named-gate run -> `13 passed, 1 failed`; failure is `tests/integration/gates/test_resume_api_authority.py::test_no_unauthorized_callers`.
+- `.venv\Scripts\lint-imports.exe --config pyproject.toml` -> `12 kept, 0 broken`.
+- `.venv\Scripts\python.exe -m pytest -q` -> `45 failed, 4454 passed, 27 skipped, 2 xfailed` (inherited broad failure band; no new audit failures).
 
 ### Completion Notes List
 
-(populated by Codex at T10)
+- Transport matrix covers 15/15 required cells for G1/G2C/G3/G4/G5 across cli/http/mcp-stdio.
+- All 8 named gate test files are present and collectable.
+- Runtime gap descriptors: `named-gate-test-failing:tests/integration/gates/test_resume_api_authority.py`.
+- 7c.20b gap count is 1, below the 3-gap TW-7c-1 threshold; TW-7c-1 did not fire.
 
 ### File List
 
-(populated by Codex at T10)
+- `tests/audit/test_audit_ac_transport_parity_matrix.py`
+- `_codex-handoff/7c-20b.ready-for-review.md`
+- `_bmad-output/implementation-artifacts/migration-7c-20b-audit-ac-transport-parity-matrix.md`
+- `_bmad-output/implementation-artifacts/sprint-status.yaml`
 
 ### Change Log
 

@@ -1,6 +1,6 @@
 # Migration Story 7c.20a: AUDIT-AC ≥20 Shape-Pins + ≥11 Class-Conformance (FR-7c-34 + FR-7c-36)
 
-**Status:** ready-for-dev *(spec authored 2026-05-06 lookahead_tier=2 per governance JSON; predecessors 7c.1 + 7c.4b + 7c.5.G0..G6 all DONE — story fully unblocked at this commit. Story is verification-only — runs the AUDIT against shipped substrate; files gaps as TW-7c-1 follow-ons if gap-rate exceeds AMEND-7c threshold.)*
+**Status:** review *(Codex dev complete 2026-05-06; T11/code-review pending. Story is verification-only — runs the AUDIT against shipped substrate; files gaps as TW-7c-1 follow-ons if gap-rate exceeds AMEND-7c threshold.)*
 **Sprint key:** `migration-7c-20a-audit-ac-shape-pins-class-conformance`
 **Epic:** Slab 7c — Marcus Orchestrational Tail
 **Pts:** 2
@@ -76,33 +76,33 @@ This is **NOT a net-new-build story** — it runs the AUDIT against existing tes
 
 ## Tasks / Subtasks
 
-- [ ] **T1 — Readiness checks**
-  - [ ] T1.1 Confirm 7c.1 + 7c.4b + 7c.5.G0..G6 done in sprint-status.
-  - [ ] T1.2 Read `tests/parity/test_decision_card_*.py` to inventory existing shape-pin tests (count + family + dimension coverage).
-  - [ ] T1.3 Read `scripts/utilities/validate_parity_test_class_conformance.py` to understand the current activation + decision-card-shape-pin classification.
-  - [ ] T1.4 Read AMEND-7c percentage-threshold logic from PRD + governance JSON for TW-7c-1 firing rule.
-  - [ ] T1.5 Read `sprint-status.yaml::tripwire_events` ledger schema (per Slab-7b precedent: tripwire_id + story_owner + fired_at + fired_verdict + measured_value + escalation_action_taken + decision_record_link).
-  - [ ] T1.6 Refresh broad-regression baseline + record current class-conformance baseline (expected 19 — 11 activation + 8 decision-card shape-pin).
+- [x] **T1 — Readiness checks**
+  - [x] T1.1 Confirm 7c.1 + 7c.4b + 7c.5.G0..G6 done in sprint-status.
+  - [x] T1.2 Read `tests/parity/test_decision_card_*.py` to inventory existing shape-pin tests (count + family + dimension coverage).
+  - [x] T1.3 Read `scripts/utilities/validate_parity_test_class_conformance.py` to understand the current activation + decision-card-shape-pin classification.
+  - [x] T1.4 Read AMEND-7c percentage-threshold logic from PRD + governance JSON for TW-7c-1 firing rule.
+  - [x] T1.5 Read `sprint-status.yaml::tripwire_events` ledger schema (per Slab-7b precedent: tripwire_id + story_owner + fired_at + fired_verdict + measured_value + escalation_action_taken + decision_record_link).
+  - [x] T1.6 Refresh broad-regression baseline + record current class-conformance baseline (expected 19 — 11 activation + 8 decision-card shape-pin).
 
-- [ ] **T2 — Author AUDIT test module**
-  - [ ] T2.1 Author `tests/audit/__init__.py` (empty namespace; create if not present).
-  - [ ] T2.2 Author `tests/audit/test_audit_ac_shape_pins_class_conformance.py` per ACs A-D. Use pytest collection for shape-pin discovery + subprocess-call to validator script for class-conformance count.
-  - [ ] T2.3 Implement gap-discovery helper: enumerate (family, dimension) pairs vs discovered tests; report missing pairs as gap descriptors.
-  - [ ] T2.4 Implement TW-7c-1 firing path: on gap-rate ≥10%, write tripwire-ledger entry to `sprint-status.yaml::tripwire_events` (append-only — preserve existing entries; add new entry).
+- [x] **T2 — Author AUDIT test module**
+  - [x] T2.1 Author `tests/audit/__init__.py` (empty namespace; create if not present).
+  - [x] T2.2 Author `tests/audit/test_audit_ac_shape_pins_class_conformance.py` per ACs A-D. Use pytest collection for shape-pin discovery + subprocess-call to validator script for class-conformance count.
+  - [x] T2.3 Implement gap-discovery helper: enumerate (family, dimension) pairs vs discovered tests; report missing pairs as gap descriptors.
+  - [x] T2.4 Implement TW-7c-1 firing path: on gap-rate ≥10%, write tripwire-ledger entry to `sprint-status.yaml::tripwire_events` (append-only — preserve existing entries; add new entry).
 
-- [ ] **T3 — Verification battery (R-tier R3; T11-tier standard)**
-  - [ ] T3.1 Focused: `.venv/Scripts/python.exe -m pytest tests/audit/test_audit_ac_shape_pins_class_conformance.py -p no:randomly -q --tb=short` PASS (assuming no gap-rate trip; if trips, follow STOP-and-escalate AMEND-7c protocol).
-  - [ ] T3.2 §02A non-regression PASS UNCHANGED.
-  - [ ] T3.3 Wave-3/4/5 closed-section non-regression sweep PASS UNCHANGED.
-  - [ ] T3.4 Wave-4 Marcus-writer non-regression PASS UNCHANGED.
-  - [ ] T3.5 R3 broad regression: failure count ≤ T1 baseline (delta ≤ 0); per-failure git-log-attribution.
-  - [ ] T3.6 Class-conformance: T1-baseline UNCHANGED (AUDIT does NOT register new parity_contract; class-conformance count stable at 19).
-  - [ ] T3.7 Lint-imports: 12 KEPT UNCHANGED (no pyproject.toml edit).
-  - [ ] T3.8 Sandbox-AC: PASS.
-  - [ ] T3.9 Ruff: clean.
+- [x] **T3 — Verification battery (R-tier R3; T11-tier standard)**
+  - [x] T3.1 Focused: `.venv/Scripts/python.exe -m pytest tests/audit/test_audit_ac_shape_pins_class_conformance.py -p no:randomly -q --tb=short` PASS (assuming no gap-rate trip; if trips, follow STOP-and-escalate AMEND-7c protocol).
+  - [x] T3.2 §02A non-regression PASS UNCHANGED.
+  - [x] T3.3 Wave-3/4/5 closed-section non-regression sweep PASS UNCHANGED.
+  - [x] T3.4 Wave-4 Marcus-writer non-regression PASS UNCHANGED.
+  - [x] T3.5 R3 broad regression: failure count ≤ T1 baseline (delta ≤ 0); per-failure git-log-attribution.
+  - [x] T3.6 Class-conformance: T1-baseline UNCHANGED (AUDIT does NOT register new parity_contract; class-conformance count stable at 19).
+  - [x] T3.7 Lint-imports: 12 KEPT UNCHANGED (no pyproject.toml edit).
+  - [x] T3.8 Sandbox-AC: PASS.
+  - [x] T3.9 Ruff: clean.
 
-- [ ] **T10 — Codex self-review dropbox**
-  - [ ] T10.1 Drop `_codex-handoff/7c-20a.ready-for-review.md` with: shape-pin count discovered + class-conformance count + per-gap descriptors (if any) + TW-7c-1 fire/no-fire verdict + AUDIT determinism evidence (twice-run byte-identical).
+- [x] **T10 — Codex self-review dropbox**
+  - [x] T10.1 Drop `_codex-handoff/7c-20a.ready-for-review.md` with: shape-pin count discovered + class-conformance count + per-gap descriptors (if any) + TW-7c-1 fire/no-fire verdict + AUDIT determinism evidence (twice-run byte-identical).
 
 ---
 
@@ -142,15 +142,24 @@ Codex GPT-5 (bmad-dev-story discipline).
 
 ### Debug Log References
 
-(populated by Codex at T1-T3)
+- `.venv\Scripts\python.exe -m pytest tests/audit/test_audit_ac_shape_pins_class_conformance.py tests/audit/test_audit_ac_transport_parity_matrix.py tests/audit/test_audit_ac_four_file_lockstep_tripwire_ledger.py -q` -> `10 passed`.
+- `.venv\Scripts\python.exe scripts/utilities/validate_parity_test_class_conformance.py tests/parity` -> `PASS: 19 parity contract file(s) conform (11 activation + 8 decision-card shape-pin)`.
+- `.venv\Scripts\python.exe -m pytest --smoke -q` -> `181 passed, 18 skipped`.
+- `.venv\Scripts\python.exe -m pytest -q` -> `45 failed, 4454 passed, 27 skipped, 2 xfailed` (inherited broad failure band; no new audit failures).
 
 ### Completion Notes List
 
-(populated by Codex at T10; include shape-pin count discovered + class-conformance count + per-gap descriptors + TW-7c-1 fire/no-fire verdict)
+- Discovered 128 shape-pin assertions across DecisionCard/operator-verdict shape tests, above the 20 floor.
+- Class-conformance validator stayed at 19 conforming files: 11 activation + 8 DecisionCard shape-pin.
+- Gap descriptors: none for 7c.20a; TW-7c-1 did not fire.
+- Audit determinism/read-only check preserves `sprint-status.yaml` bytes across repeated 20a audit snapshots.
 
 ### File List
 
-(populated by Codex at T10)
+- `tests/audit/test_audit_ac_shape_pins_class_conformance.py`
+- `_codex-handoff/7c-20a.ready-for-review.md`
+- `_bmad-output/implementation-artifacts/migration-7c-20a-audit-ac-shape-pins-class-conformance.md`
+- `_bmad-output/implementation-artifacts/sprint-status.yaml`
 
 ### Change Log
 
