@@ -255,6 +255,9 @@ name = "C6: HIL-surface modules may not import each other across surfaces"
 type = "independence"
 modules = [
     "app.gates.section_02a",
+    "app.gates.section_04a",
+    "app.gates.section_04_5",
+    "app.gates.section_04_55",
 ]
 include_external_packages = false
 

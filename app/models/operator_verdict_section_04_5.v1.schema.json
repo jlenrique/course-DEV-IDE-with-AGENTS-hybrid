@@ -1,0 +1,107 @@
+{
+  "$defs": {
+    "EstimatorEditPayload": {
+      "additionalProperties": false,
+      "description": "Field-level edits for the run-budget estimator operator inputs.",
+      "properties": {
+        "updates": {
+          "additionalProperties": true,
+          "description": "Mapping of estimator field names to operator-confirmed updates.",
+          "minProperties": 1,
+          "title": "Updates",
+          "type": "object"
+        }
+      },
+      "required": [
+        "updates"
+      ],
+      "title": "EstimatorEditPayload",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "description": "Tamper-evident verdict emitted by the Section 04.5 G1.5 estimator surface.",
+  "properties": {
+    "decision_card_digest": {
+      "description": "Lowercase sha256 digest of the reviewed estimator payload.",
+      "title": "Decision Card Digest",
+      "type": "string"
+    },
+    "edit_payload": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/EstimatorEditPayload"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "description": "Required iff verb is edit."
+    },
+    "estimator_id": {
+      "description": "Run-budget estimator identifier.",
+      "minLength": 1,
+      "title": "Estimator Id",
+      "type": "string"
+    },
+    "operator_id": {
+      "description": "Operator identifier.",
+      "minLength": 1,
+      "pattern": "^[a-zA-Z][a-zA-Z0-9_-]+$",
+      "title": "Operator Id",
+      "type": "string"
+    },
+    "reject_reason": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "description": "Required iff verb is reject.",
+      "title": "Reject Reason"
+    },
+    "run_id": {
+      "description": "UUID4 identity for the estimator run.",
+      "format": "uuid",
+      "title": "Run Id",
+      "type": "string"
+    },
+    "submitted_at": {
+      "description": "Timezone-aware verdict submission time.",
+      "format": "date-time",
+      "title": "Submitted At",
+      "type": "string"
+    },
+    "surface_id": {
+      "const": "section_04_5_g1_5_estimator",
+      "default": "section_04_5_g1_5_estimator",
+      "description": "Closed Section 04.5 estimator surface identifier.",
+      "title": "Surface Id",
+      "type": "string"
+    },
+    "verb": {
+      "description": "acknowledged | edit | reject",
+      "enum": [
+        "acknowledged",
+        "edit",
+        "reject"
+      ],
+      "title": "Verb",
+      "type": "string"
+    }
+  },
+  "required": [
+    "run_id",
+    "verb",
+    "estimator_id",
+    "operator_id",
+    "decision_card_digest"
+  ],
+  "title": "Section04_5OperatorVerdict",
+  "type": "object"
+}

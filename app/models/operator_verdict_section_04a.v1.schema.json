@@ -1,0 +1,107 @@
+{
+  "$defs": {
+    "PlanUnitEditPayload": {
+      "additionalProperties": false,
+      "description": "Field-level edits for one ratified PlanUnit.",
+      "properties": {
+        "updates": {
+          "additionalProperties": true,
+          "description": "Field-level updates to apply to the reviewed plan unit.",
+          "minProperties": 1,
+          "title": "Updates",
+          "type": "object"
+        }
+      },
+      "required": [
+        "updates"
+      ],
+      "title": "PlanUnitEditPayload",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "description": "Tamper-evident verdict emitted by the Section 04A G1A poll surface.",
+  "properties": {
+    "decision_card_digest": {
+      "description": "Lowercase sha256 digest of the reviewed G1 decision card.",
+      "title": "Decision Card Digest",
+      "type": "string"
+    },
+    "edit_payload": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/PlanUnitEditPayload"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "description": "Required iff verb is edit."
+    },
+    "operator_id": {
+      "description": "Operator identifier.",
+      "minLength": 1,
+      "pattern": "^[a-zA-Z][a-zA-Z0-9_-]+$",
+      "title": "Operator Id",
+      "type": "string"
+    },
+    "plan_unit_id": {
+      "description": "Identifier of the plan unit being ratified.",
+      "minLength": 1,
+      "title": "Plan Unit Id",
+      "type": "string"
+    },
+    "reject_reason": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "description": "Required iff verb is reject.",
+      "title": "Reject Reason"
+    },
+    "run_id": {
+      "description": "UUID4 identity for the G1A ratification run.",
+      "format": "uuid",
+      "title": "Run Id",
+      "type": "string"
+    },
+    "submitted_at": {
+      "description": "Timezone-aware verdict submission time.",
+      "format": "date-time",
+      "title": "Submitted At",
+      "type": "string"
+    },
+    "surface_id": {
+      "const": "section_04a_g1a_poll",
+      "default": "section_04a_g1a_poll",
+      "description": "Closed Section 04A poll-surface identifier.",
+      "title": "Surface Id",
+      "type": "string"
+    },
+    "verb": {
+      "description": "Closed verdict verb set: approve | edit | reject.",
+      "enum": [
+        "approve",
+        "edit",
+        "reject"
+      ],
+      "title": "Verb",
+      "type": "string"
+    }
+  },
+  "required": [
+    "run_id",
+    "verb",
+    "plan_unit_id",
+    "operator_id",
+    "decision_card_digest"
+  ],
+  "title": "Section04AOperatorVerdict",
+  "type": "object"
+}
