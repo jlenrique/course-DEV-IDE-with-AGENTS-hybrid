@@ -260,6 +260,10 @@ modules = [
     "app.gates.section_04_55",
     "app.gates.section_08b",
     "app.gates.section_11",
+    "app.gates.section_05_5",
+    "app.gates.section_07b",
+    "app.gates.section_07d",
+    "app.gates.section_07f",
 ]
 include_external_packages = false
 

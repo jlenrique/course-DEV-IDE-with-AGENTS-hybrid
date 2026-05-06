@@ -1,6 +1,6 @@
 # Migration Story 7c.9: §05.5 G2B Per-Slide Presentation Mode HIL Surface (FR-7c-13)
 
-**Status:** ready-for-dev *(spec authored 2026-05-06 lookahead_tier=1; predecessors 7c.5.G2C CLOSED at `0ec80df` + 7c.3b CLOSED at `f8fc1a8`. Pre-authored as part of G2C-aliased Wave-3 fanout (7c.9/10/11/12). AMELIA-P3 dispatch staggering ≥30 min apart NORMALLY required; AUTO-SATISFIED under single-Codex dispatch per `feedback_velocity_amendments_slab_7c.md` + governance JSON `auto_satisfied_under: single_codex_dispatch`. Concurrent dispatch with 7c.10/7c.11/7c.12 is in-policy.)*
+**Status:** done *(Codex T1-T10 complete 2026-05-06 + Claude T11 lite PASS-zero-patches at `7c-9-code-review-2026-05-06.md`; focused 13 passed, 4-story focused 52 passed, §02A non-regression 15 passed, sibling HIL regression 43 passed, smoke 181 passed/18 skipped, lint-imports 12 KEPT (C6 6→10 entries via 4-way coordinate-or-sequence), sandbox-AC PASS, ruff clean; broad regression 4352 passed/43 failed UNCHANGED from inherited baseline. Verb-pattern verified: select/edit/reject + closed selected_mode enum + 3-way `model_validator(mode="after")`.)*
 **Sprint key:** `migration-7c-9-section-05-5-g2b-per-slide-mode`
 **Epic:** Slab 7c — Marcus Orchestrational Tail
 **Pts:** 2
@@ -74,47 +74,47 @@ So that operators can select per-slide presentation mode (narrated-deck vs motio
 
 ## Tasks / Subtasks
 
-- [ ] **T1 — Readiness checks**
-  - [ ] T1.1 Confirm 7c.5.G2C + 7c.3b done in sprint-status; confirm Wave-3 trio + 7c.13/7c.14 closed (reference patterns).
-  - [ ] T1.2 Read §02A canonical pattern + Wave-3 trio + 7c.13/7c.14 sibling pattern for re-emit-helpers C6-isolation.
-  - [ ] T1.3 Read `app/models/decision_cards/g2c.py` (POST-G2C-migration; inherits DecisionCardBase) for G2CCard consumption.
-  - [ ] T1.4 Read ADR 0002 §3 for alias_of forward syntax.
-  - [ ] T1.5 Refresh broad-regression baseline + record class-conformance baseline.
+- [x] **T1 — Readiness checks**
+  - [x] T1.1 Confirm 7c.5.G2C + 7c.3b done in sprint-status; confirm Wave-3 trio + 7c.13/7c.14 closed (reference patterns).
+  - [x] T1.2 Read §02A canonical pattern + Wave-3 trio + 7c.13/7c.14 sibling pattern for re-emit-helpers C6-isolation.
+  - [x] T1.3 Read `app/models/decision_cards/g2c.py` (POST-G2C-migration; inherits DecisionCardBase) for G2CCard consumption.
+  - [x] T1.4 Read ADR 0002 §3 for alias_of forward syntax.
+  - [x] T1.5 Refresh broad-regression baseline + record class-conformance baseline.
 
-- [ ] **T2 — Author §section package + OperatorVerdict model**
-  - [ ] T2.1 Author `app/gates/section_05_5/__init__.py` (empty namespace).
-  - [ ] T2.2 Author `app/gates/section_05_5/poll_surface.py` per AC-A.
-  - [ ] T2.3 Author `app/models/operator_verdict_section_05_5.py` per AC-B with `Section05_5OperatorVerdict` + `PerSlideModePayload` + `PerSlideModeEditPayload` + `Section05_5VerdictVerb` + `SECTION_05_5_SURFACE_ID`.
+- [x] **T2 — Author §section package + OperatorVerdict model**
+  - [x] T2.1 Author `app/gates/section_05_5/__init__.py` (empty namespace).
+  - [x] T2.2 Author `app/gates/section_05_5/poll_surface.py` per AC-A.
+  - [x] T2.3 Author `app/models/operator_verdict_section_05_5.py` per AC-B with `Section05_5OperatorVerdict` + `PerSlideModePayload` + `PerSlideModeEditPayload` + `Section05_5VerdictVerb` + `SECTION_05_5_SURFACE_ID`.
 
-- [ ] **T3 — Generate JSON schema (AC-B)**
-  - [ ] T3.1 Generate `app/models/operator_verdict_section_05_5.v1.schema.json` via:
+- [x] **T3 — Generate JSON schema (AC-B)**
+  - [x] T3.1 Generate `app/models/operator_verdict_section_05_5.v1.schema.json` via:
     ```bash
     .venv/Scripts/python.exe -c "from pathlib import Path; from app.models.operator_verdict_section_05_5 import Section05_5OperatorVerdict; import json; Path('app/models/operator_verdict_section_05_5.v1.schema.json').write_text(json.dumps(Section05_5OperatorVerdict.model_json_schema(), indent=2, sort_keys=True), encoding='utf-8')"
     ```
     (Path.write_text per A18; NO PowerShell `>` redirection.)
 
-- [ ] **T4 — Author shape-pin + 3-transport-parity test + DSL-registration audit (AC-C + AC-D)**
-  - [ ] T4.1 Author `tests/schemas/operator_verdict/test_section_05_5_shape.py`.
-  - [ ] T4.2 Author `tests/gates/section_05_5/__init__.py` + `_helpers.py`.
-  - [ ] T4.3 Author `tests/gates/section_05_5/test_g2b_poll_surface_dsl_registration.py` (reload-isolated).
-  - [ ] T4.4 Author `tests/gates/section_05_5/test_g2b_poll_surface_three_transport_parity.py`.
+- [x] **T4 — Author shape-pin + 3-transport-parity test + DSL-registration audit (AC-C + AC-D)**
+  - [x] T4.1 Author `tests/schemas/operator_verdict/test_section_05_5_shape.py`.
+  - [x] T4.2 Author `tests/gates/section_05_5/__init__.py` + `_helpers.py`.
+  - [x] T4.3 Author `tests/gates/section_05_5/test_g2b_poll_surface_dsl_registration.py` (reload-isolated).
+  - [x] T4.4 Author `tests/gates/section_05_5/test_g2b_poll_surface_three_transport_parity.py`.
 
-- [ ] **T5 — C6 import-linter modules list append (AC-E)**
-  - [ ] T5.1 Update `pyproject.toml::tool.importlinter::contracts::C6::modules` to append `app.gates.section_05_5`. **PARALLEL-DISPATCH GUARDRAIL #3:** 4-way coordinate-or-sequence with concurrent 7c.10/7c.11/7c.12.
+- [x] **T5 — C6 import-linter modules list append (AC-E)**
+  - [x] T5.1 Update `pyproject.toml::tool.importlinter::contracts::C6::modules` to append `app.gates.section_05_5`. **PARALLEL-DISPATCH GUARDRAIL #3:** 4-way coordinate-or-sequence with concurrent 7c.10/7c.11/7c.12.
 
-- [ ] **T6 — Verification battery (R-tier R2)**
-  - [ ] T6.1 Focused: `pytest tests/gates/section_05_5/ tests/schemas/operator_verdict/test_section_05_5_shape.py -p no:randomly -q --tb=short` PASS.
-  - [ ] T6.2 §02A non-regression PASS UNCHANGED.
-  - [ ] T6.3 Wave-3 trio + 7c.13/7c.14 non-regression PASS UNCHANGED.
-  - [ ] T6.4 Smoke baseline UNCHANGED.
-  - [ ] T6.5 R2 broad: failure count ≤ T1 baseline (delta ≤ 0); per-failure git-log-attribution.
-  - [ ] T6.6 Class-conformance: T1-baseline + 1 (new shape-pin file).
-  - [ ] T6.7 Lint-imports: 12 KEPT / 0 broken.
-  - [ ] T6.8 Sandbox-AC: PASS.
-  - [ ] T6.9 Ruff: clean.
+- [x] **T6 — Verification battery (R-tier R2)**
+  - [x] T6.1 Focused: `pytest tests/gates/section_05_5/ tests/schemas/operator_verdict/test_section_05_5_shape.py -p no:randomly -q --tb=short` PASS.
+  - [x] T6.2 §02A non-regression PASS UNCHANGED.
+  - [x] T6.3 Wave-3 trio + 7c.13/7c.14 non-regression PASS UNCHANGED.
+  - [x] T6.4 Smoke baseline UNCHANGED.
+  - [x] T6.5 R2 broad: failure count ≤ T1 baseline (delta ≤ 0); per-failure git-log-attribution.
+  - [x] T6.6 Class-conformance: T1-baseline + 1 (new shape-pin file).
+  - [x] T6.7 Lint-imports: 12 KEPT / 0 broken.
+  - [x] T6.8 Sandbox-AC: PASS.
+  - [x] T6.9 Ruff: clean.
 
-- [ ] **T10 — Codex self-review dropbox**
-  - [ ] T10.1 Drop `_codex-handoff/7c-9.ready-for-review.md`.
+- [x] **T10 — Codex self-review dropbox**
+  - [x] T10.1 Drop `_codex-handoff/7c-9.ready-for-review.md`.
 
 ---
 
@@ -156,16 +156,34 @@ Codex GPT-5 (bmad-dev-story discipline).
 
 ### Debug Log References
 
-(populated by Codex at T1-T9)
+- T1: Confirmed 7c.5.G2C, 7c.3b, Wave-3 trio, and 7c.13/7c.14 closed context; class-conformance baseline observed at 19.
+- T2-T5: Worker authored `section_05_5` package, verdict model, LF-only schema, shape-pin, DSL audit, and 3-transport parity tests. Main thread applied the 4-way C6 union append.
+- T6: Focused §05.5 suite `13 passed`; integrated 4-story focused suite `52 passed`; §02A non-regression `15 passed`; sibling HIL regression `43 passed`; smoke `181 passed, 18 skipped`; lint-imports `12 kept, 0 broken`; sandbox-AC PASS; ruff clean.
+- T6 broad: `4352 passed, 43 failed, 27 skipped, 2 xfailed`; inherited failure count unchanged. `test_resume_api_authority` remains inherited and now lists new verdict-model paths in the already-failing direct-constructor scanner.
 
 ### Completion Notes List
 
-(populated by Codex at T10)
+- Implemented Section 05.5 G2B per-slide presentation-mode HIL surface with `alias_of="G2C"` and CLI mandatory / HTTP+MCP-stdio optional transport declaration.
+- Added `Section05_5OperatorVerdict`, `PerSlideModePayload`, `PerSlideModeEditPayload`, LF-only JSON schema, FR-7c-49 shape-pin, reload-isolated DSL audit, and 3-transport parity tests.
+- Coordinated shared C6 import-linter edit as a 4-way union append with 7c.10/7c.11/7c.12.
 
 ### File List
 
-(populated by Codex at T10)
+- `app/gates/section_05_5/__init__.py`
+- `app/gates/section_05_5/poll_surface.py`
+- `app/models/operator_verdict_section_05_5.py`
+- `app/models/operator_verdict_section_05_5.v1.schema.json`
+- `tests/gates/section_05_5/__init__.py`
+- `tests/gates/section_05_5/_helpers.py`
+- `tests/gates/section_05_5/test_g2b_poll_surface_dsl_registration.py`
+- `tests/gates/section_05_5/test_g2b_poll_surface_three_transport_parity.py`
+- `tests/schemas/operator_verdict/test_section_05_5_shape.py`
+- `_bmad-output/implementation-artifacts/migration-7c-9-section-05-5-g2b-per-slide-mode.md`
+- `_bmad-output/implementation-artifacts/sprint-status.yaml`
+- `_codex-handoff/7c-9.ready-for-review.md`
+- `pyproject.toml`
 
 ### Change Log
 
+- 2026-05-06: Codex implemented 7c.9 through T10 and moved story to review.
 - 2026-05-06: Spec pre-authored by Claude (lookahead_tier=1) for next-batch G2C-aliased fanout dispatch.

@@ -1,6 +1,6 @@
 # Migration Story 7c.11: §07D G2.5 Motion-Plan Polling HIL Surface (FR-7c-15)
 
-**Status:** ready-for-dev *(spec authored 2026-05-06 lookahead_tier=1; predecessors 7c.5.G2C CLOSED at `0ec80df` + 7c.3b CLOSED at `f8fc1a8`. Pre-authored as part of G2C-aliased Wave-3 fanout. AMELIA-P3 stagger AUTO-SATISFIED under single-Codex.)*
+**Status:** done *(Codex T1-T10 complete 2026-05-06 + Claude T11 lite PASS-zero-patches at `7c-11-code-review-2026-05-06.md`; focused 13 passed, 4-story focused 52 passed, §02A non-regression 15 passed, sibling HIL regression 43 passed, smoke 181 passed/18 skipped, lint-imports 12 KEPT (C6 6→10 entries), sandbox-AC PASS, ruff clean; broad regression 4352 passed/43 failed UNCHANGED. Verb-pattern verified: approve/edit/reject + 2-way `model_validator(mode="after")` mirrors §02A canonical. **Out-of-scope async-polling boundary HONORED**: zero async/await/sleep/retry/Kira/httpx/requests primitives in §07D poll-surface per ripgrep.)*
 **Sprint key:** `migration-7c-11-section-07d-g2-5-motion-plan-polling`
 **Epic:** Slab 7c — Marcus Orchestrational Tail
 **Pts:** 2; **K-target:** 1.3×; **Estimated LOC:** ~400; **Gate-mode:** single-gate; **R-tier:** R2; **T11-tier:** lite; **Lookahead-tier:** 1.
@@ -67,20 +67,20 @@ So that operators can poll motion-plan generation status (surface fires async un
 
 ## Tasks / Subtasks
 
-- [ ] **T1 — Readiness checks** (mirror 7c.9/7c.10 T1 with §07D substitutions)
-- [ ] **T2 — Author §section package + OperatorVerdict model**
-  - [ ] T2.1 `app/gates/section_07d/__init__.py`
-  - [ ] T2.2 `app/gates/section_07d/poll_surface.py` per AC-A
-  - [ ] T2.3 `app/models/operator_verdict_section_07d.py` per AC-B
-- [ ] **T3 — Generate JSON schema (AC-B)**
-  - [ ] T3.1 Generate `app/models/operator_verdict_section_07d.v1.schema.json` via:
+- [x] **T1 — Readiness checks** (mirror 7c.9/7c.10 T1 with §07D substitutions)
+- [x] **T2 — Author §section package + OperatorVerdict model**
+  - [x] T2.1 `app/gates/section_07d/__init__.py`
+  - [x] T2.2 `app/gates/section_07d/poll_surface.py` per AC-A
+  - [x] T2.3 `app/models/operator_verdict_section_07d.py` per AC-B
+- [x] **T3 — Generate JSON schema (AC-B)**
+  - [x] T3.1 Generate `app/models/operator_verdict_section_07d.v1.schema.json` via:
     ```bash
     .venv/Scripts/python.exe -c "from pathlib import Path; from app.models.operator_verdict_section_07d import Section07DOperatorVerdict; import json; Path('app/models/operator_verdict_section_07d.v1.schema.json').write_text(json.dumps(Section07DOperatorVerdict.model_json_schema(), indent=2, sort_keys=True), encoding='utf-8')"
     ```
-- [ ] **T4 — Author shape-pin + 3-transport-parity test + DSL-registration audit (AC-C + AC-D)**
-- [ ] **T5 — C6 import-linter modules list append (AC-E)**
-- [ ] **T6 — Verification battery (R-tier R2)**
-- [ ] **T10 — Codex self-review dropbox** at `_codex-handoff/7c-11.ready-for-review.md`
+- [x] **T4 — Author shape-pin + 3-transport-parity test + DSL-registration audit (AC-C + AC-D)**
+- [x] **T5 — C6 import-linter modules list append (AC-E)**
+- [x] **T6 — Verification battery (R-tier R2)**
+- [x] **T10 — Codex self-review dropbox** at `_codex-handoff/7c-11.ready-for-review.md`
 
 ---
 
@@ -102,8 +102,41 @@ Spec contains zero forbidden CLIs in dev-agent AC blocks. PASS (expected; valida
 
 ## Dev Agent Record
 
-(populated by Codex at T1-T10)
+### Agent Model Used
+
+Codex GPT-5 (bmad-dev-story discipline).
+
+### Debug Log References
+
+- T1: Confirmed 7c.5.G2C, 7c.3b, Wave-3 trio, and 7c.13/7c.14 closed context; class-conformance baseline observed at 19.
+- T2-T5: Worker authored `section_07d` package, verdict model, LF-only schema, shape-pin, DSL audit, and 3-transport parity tests. Main thread applied the 4-way C6 union append.
+- T6: Focused §07D suite `13 passed`; integrated 4-story focused suite `52 passed`; §02A non-regression `15 passed`; sibling HIL regression `43 passed`; smoke `181 passed, 18 skipped`; lint-imports `12 kept, 0 broken`; sandbox-AC PASS; ruff clean.
+- T6 broad: `4352 passed, 43 failed, 27 skipped, 2 xfailed`; inherited failure count unchanged. `test_resume_api_authority` remains inherited and now lists new verdict-model paths in the already-failing direct-constructor scanner.
+
+### Completion Notes List
+
+- Implemented Section 07D G2.5 motion-plan completion HIL surface with `alias_of="G2C"` and CLI mandatory / HTTP+MCP-stdio optional transport declaration.
+- Added `Section07DOperatorVerdict`, `MotionPlanEditPayload`, LF-only JSON schema, FR-7c-49 shape-pin, reload-isolated DSL audit, and 3-transport parity tests.
+- Kept async polling-loop implementation out of scope; this surface receives completed G2C motion-plan review payloads only.
+- Coordinated shared C6 import-linter edit as a 4-way union append with 7c.9/7c.10/7c.12.
+
+### File List
+
+- `app/gates/section_07d/__init__.py`
+- `app/gates/section_07d/poll_surface.py`
+- `app/models/operator_verdict_section_07d.py`
+- `app/models/operator_verdict_section_07d.v1.schema.json`
+- `tests/gates/section_07d/__init__.py`
+- `tests/gates/section_07d/_helpers.py`
+- `tests/gates/section_07d/test_g2_5_poll_surface_dsl_registration.py`
+- `tests/gates/section_07d/test_g2_5_poll_surface_three_transport_parity.py`
+- `tests/schemas/operator_verdict/test_section_07d_shape.py`
+- `_bmad-output/implementation-artifacts/migration-7c-11-section-07d-g2-5-motion-plan-polling.md`
+- `_bmad-output/implementation-artifacts/sprint-status.yaml`
+- `_codex-handoff/7c-11.ready-for-review.md`
+- `pyproject.toml`
 
 ### Change Log
 
+- 2026-05-06: Codex implemented 7c.11 through T10 and moved story to review.
 - 2026-05-06: Spec pre-authored by Claude (lookahead_tier=1) for next-batch G2C-aliased fanout dispatch.

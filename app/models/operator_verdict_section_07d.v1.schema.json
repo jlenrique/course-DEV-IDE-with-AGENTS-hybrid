@@ -1,0 +1,107 @@
+{
+  "$defs": {
+    "MotionPlanEditPayload": {
+      "additionalProperties": false,
+      "description": "Field-level edits for the reviewed motion-plan payload.",
+      "properties": {
+        "edits": {
+          "additionalProperties": true,
+          "description": "Mapping of motion-plan field names or paths to replacement values.",
+          "minProperties": 1,
+          "title": "Edits",
+          "type": "object"
+        }
+      },
+      "required": [
+        "edits"
+      ],
+      "title": "MotionPlanEditPayload",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "description": "Tamper-evident verdict emitted by the Section 07D G2.5 poll surface.",
+  "properties": {
+    "decision_card_digest": {
+      "description": "Lowercase sha256 digest of the reviewed G2C card.",
+      "title": "Decision Card Digest",
+      "type": "string"
+    },
+    "edit_payload": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/MotionPlanEditPayload"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "description": "Required iff verb is edit."
+    },
+    "motion_plan_id": {
+      "description": "Identifier of the completed motion-plan card under review.",
+      "minLength": 1,
+      "title": "Motion Plan Id",
+      "type": "string"
+    },
+    "operator_id": {
+      "description": "Operator identifier.",
+      "minLength": 1,
+      "pattern": "^[a-zA-Z][a-zA-Z0-9_-]+$",
+      "title": "Operator Id",
+      "type": "string"
+    },
+    "reject_reason": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "description": "Required iff verb is reject.",
+      "title": "Reject Reason"
+    },
+    "run_id": {
+      "description": "UUID4 identity for the motion-plan polling review run.",
+      "format": "uuid",
+      "title": "Run Id",
+      "type": "string"
+    },
+    "submitted_at": {
+      "description": "Timezone-aware verdict submission time.",
+      "format": "date-time",
+      "title": "Submitted At",
+      "type": "string"
+    },
+    "surface_id": {
+      "const": "section_07d_g2_5_motion_plan_polling",
+      "default": "section_07d_g2_5_motion_plan_polling",
+      "description": "Closed Section 07D poll-surface identifier.",
+      "title": "Surface Id",
+      "type": "string"
+    },
+    "verb": {
+      "description": "Closed verdict verb set: approve | edit | reject.",
+      "enum": [
+        "approve",
+        "edit",
+        "reject"
+      ],
+      "title": "Verb",
+      "type": "string"
+    }
+  },
+  "required": [
+    "run_id",
+    "verb",
+    "motion_plan_id",
+    "operator_id",
+    "decision_card_digest"
+  ],
+  "title": "Section07DOperatorVerdict",
+  "type": "object"
+}

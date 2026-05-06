@@ -1,0 +1,152 @@
+{
+  "$defs": {
+    "PerSlideModeEditPayload": {
+      "additionalProperties": false,
+      "description": "Field-level edits for per-slide mode candidates or metadata.",
+      "properties": {
+        "updates": {
+          "additionalProperties": true,
+          "description": "Mapping of per-slide mode field names or paths to replacement values.",
+          "minProperties": 1,
+          "title": "Updates",
+          "type": "object"
+        }
+      },
+      "required": [
+        "updates"
+      ],
+      "title": "PerSlideModeEditPayload",
+      "type": "object"
+    },
+    "PerSlideModePayload": {
+      "additionalProperties": false,
+      "description": "Selected presentation mode for one slide.",
+      "properties": {
+        "rationale": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Optional operator rationale for the selected mode.",
+          "title": "Rationale"
+        },
+        "selected_mode": {
+          "description": "Selected per-slide presentation mode.",
+          "enum": [
+            "narrated-deck",
+            "motion-enabled-narrated-lesson"
+          ],
+          "title": "Selected Mode",
+          "type": "string"
+        }
+      },
+      "required": [
+        "selected_mode"
+      ],
+      "title": "PerSlideModePayload",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "description": "Tamper-evident verdict emitted by the Section 05.5 G2B poll surface.",
+  "properties": {
+    "decision_card_digest": {
+      "description": "Lowercase sha256 digest of the reviewed G2C card.",
+      "title": "Decision Card Digest",
+      "type": "string"
+    },
+    "edit_payload": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/PerSlideModeEditPayload"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "description": "Required iff verb is edit."
+    },
+    "operator_id": {
+      "description": "Operator identifier.",
+      "minLength": 1,
+      "pattern": "^[a-zA-Z][a-zA-Z0-9_-]+$",
+      "title": "Operator Id",
+      "type": "string"
+    },
+    "reject_reason": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "description": "Required iff verb is reject.",
+      "title": "Reject Reason"
+    },
+    "run_id": {
+      "description": "UUID4 identity for the per-slide mode run.",
+      "format": "uuid",
+      "title": "Run Id",
+      "type": "string"
+    },
+    "select_payload": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/PerSlideModePayload"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "description": "Required iff verb is select."
+    },
+    "slide_id": {
+      "description": "Identifier of the slide whose presentation mode is under review.",
+      "minLength": 1,
+      "title": "Slide Id",
+      "type": "string"
+    },
+    "submitted_at": {
+      "description": "Timezone-aware verdict submission time.",
+      "format": "date-time",
+      "title": "Submitted At",
+      "type": "string"
+    },
+    "surface_id": {
+      "const": "section_05_5_g2b_per_slide_mode",
+      "default": "section_05_5_g2b_per_slide_mode",
+      "description": "Closed Section 05.5 per-slide mode surface identifier.",
+      "title": "Surface Id",
+      "type": "string"
+    },
+    "verb": {
+      "description": "Closed verdict verb set: select | edit | reject.",
+      "enum": [
+        "select",
+        "edit",
+        "reject"
+      ],
+      "title": "Verb",
+      "type": "string"
+    }
+  },
+  "required": [
+    "run_id",
+    "verb",
+    "slide_id",
+    "operator_id",
+    "decision_card_digest"
+  ],
+  "title": "Section05_5OperatorVerdict",
+  "type": "object"
+}
