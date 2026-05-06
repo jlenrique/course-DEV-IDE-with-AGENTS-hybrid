@@ -1,144 +1,179 @@
-# Session Handoff — 2026-05-05 (Slab 7c Sprint Marathon — 9 stories closed in one day)
+# Session Handoff — 2026-05-05 (Day 2; Slab 7c Sprint Marathon — 8 stories closed; 4-story extend-and-audit chain CLOSED; 2-class-regime migration COMPLETE; Wave-3 opened under V7 v1.1)
 
-**Session date:** 2026-05-05 (continuation of 2026-05-04 epics+decomposition session into a sprint marathon)
+**Session date:** 2026-05-05 (Day 2; continuation of 2026-05-05 Day 1 sprint marathon)
 **Branch:** `dev/langchain-langgraph-foundation`
-**Commits this session:** 21 landed (session-start anchor `2089700` from prior session-close 2026-05-04 epic-decomposition; current HEAD `8b12970` post-7c.4b cross-agent MANDATORY close + P-1 patch)
-**Branch state at session-end:** 21 commits ahead of `origin/dev/langchain-langgraph-foundation`. Working tree CLEAN modulo `runs/` ambient evidence directory + `_bmad-output/maps/coverage-manifest/lesson-plan-envelope-coverage-manifest.json` regen residue (both pre-existing).
+**Session-start anchor:** `301a61c` (prior session's wrapup commit)
+**HEAD at session-end:** `fe02b09`
+**Commits this session:** 19
+**Branch state at session-end:** 37 commits ahead of `origin/dev/langchain-langgraph-foundation`. Working tree CLEAN modulo `runs/` ambient evidence directory + `_bmad-output/maps/coverage-manifest/lesson-plan-envelope-coverage-manifest.json` regen residue (both pre-existing).
 
 ---
 
 ## What was completed
 
-**Sprint-planning + 9 NEW CYCLE story closures + 1 cross-agent P-1 patch + 2 lookahead-tier-1 pre-authored specs.** NEW CYCLE protocol exercised 9× end-to-end (Claude T0 spec → Codex T1-T10 dev → Claude T11 review → commit + flip done). Velocity-amendments-bundle V1-V5 active: pytest-xdist (V1) + R-tier R2/R3 regression scoping (V2) + T11-tier lite/standard/cross-agent (V3) + AMELIA-P3-auto-satisfied under single-Codex (V4) + lookahead-tier 1/2/3 pre-authoring policy (V5).
+**8 stories closed (Slab 7c reaches 17/36 = 47%) + 4-story extend-and-audit chain CLOSED + 2-class-regime migration COMPLETE + 3 Wave-3 stories pre-authored + 3 governance amendments ratified across 4 party-mode rounds.**
 
-### Sprint-planning (commit `c9093e1`)
-36 governance entries + 6 TW-7c-1..6 tripwire seeds + 40 sprint-status entries authored. Cross-agent MANDATORY designation for 5 stories (7c.0a/0b/3a/4b/21). Extend-and-audit dual-gate-cross-agent-CONTRACT-EVOLUTION designation for 4 stories (7c.5.G1/G2C/G3/G4). AMELIA-P3 staggering protocol annotated for 4 G2C-aliased Wave-3 stories (7c.9/10/11/12).
+### Stories closed (8)
 
-### 9 stories closed end-to-end
+1. **7c.5.G0** Trial-open / corpus-confirm DecisionCard fresh-author (commit `e2aa599`; concurrent Codex parallel-dispatch with G2A)
+2. **7c.5.G2A** Plan-unit-ratification DecisionCard fresh-author (`e2aa599`; parallel with G0)
+3. **7c.5.G5** Final operator handoff DecisionCard fresh-author (`f059e84`; parallel with G6)
+4. **7c.5.G6** Slab-close ceremony DecisionCard fresh-author (`f059e84`; parallel with G5)
+5. **7c.5.G1** Directive-ratification DecisionCard extend-and-audit (`6a81e66`; FIRST extend-and-audit; canonical pattern + first end-to-end PRE-T2 cross-agent T1 review)
+6. **7c.5.G2C** Pre-composition QA DecisionCard extend-and-audit (`0ec80df`; T11 PASS-with-1-patch — schema CRLF→LF normalization)
+7. **7c.5.G3** Motion-clip approval DecisionCard extend-and-audit (`0ec80df`; T11 PASS-zero-patches; semantic-alignment statement honored)
+8. **7c.5.G4** Fidelity gate DecisionCard extend-and-audit (`0ec80df`; T11 PASS-zero-patches-zero-findings; closes 4-story chain)
 
-| Story | Tier | Key deliverable | Commit |
-|---|---|---|---|
-| 7c.0a Decision Foundation | cross-agent MANDATORY | ADR 0001 parity-contract DSL + C4/C5/C6 import-linter contracts (empty target lists) + TripwireLedgerEntry Pydantic + audit-chain conceptual design | `f926867` |
-| 7c.0b Scaffold Foundation | cross-agent MANDATORY | parity-contract DSL scaffold + sanctum-alignment DSL + self-registration audit harness + FR-7c-50 audit-chain executable scaffold + TW-7c-4/5/6 detection scaffolds + AMEND-7a flake-rate calculator + C4 target population | `9114337` |
-| 7c.0c smoke + xdist | standard | pytest-xdist 3.8.0 install + 200-nodeid smoke manifest + xdist classification documentation | `c12bb70` |
-| 7c.1 DSL Foundation | standard | 8 transport-parity files refactored onto DSL; audit floor=9 baseline | `282d72c` |
-| 7c.2 cp1252 fix | single-gate | UTF-8 print writer + fixture-comparison utility + NNBSP regression coverage + A11 catalog augmentation | `eb457cc` |
-| 7c.3a §02A Composer Body | cross-agent MANDATORY | Trial-2 finding #2 STRUCTURALLY retired; LLM-driven directive composer with D1-D11 contract decisions LOCKED at spec-author | `963abff` |
-| 7c.3b §02A G0 Poll-Surface | standard | Canonical HIL pattern (canonical_model_bytes + compute_model_digest + neutral submit/resume) + Section02AOperatorVerdict; pattern-replicability target for 7+ downstream gates | `f8fc1a8` |
-| 7c.4a Gate Family Taxonomy | lite | ADR 0002: 8 family contracts + 10 alias mappings + 18 runtime IDs + alias_of forward-syntax for 7c.4b | `12fb0f2` |
-| 7c.4b Gate-Family Foundation | cross-agent MANDATORY | DecisionCardBase + DecisionCardMeta at `_base.py` + alias_of executable syntax + parametrized OperatorVerdict harness + TW-7c-3 firing-spec single-source + class-conformance validator extension + manifest compiler runtime gate-code validation + DecisionCardBase shape-pin + **C6 P-1 patch** (forbidden→independence; bidirectional protection verified) | `8b12970` |
+### Stories pre-authored (3 Wave-3; ready-for-dev)
 
-### 2 pre-authored specs (lookahead_tier=1; HELD-released at 7c.4b close)
+9. **7c.6** §04A G1A per-plan-unit ratification HIL surface (FR-7c-10; commit `fe02b09`)
+10. **7c.7** §04.5 G1.5 estimator HIL surface (FR-7c-11; `fe02b09`)
+11. **7c.8** §04.55 G1.5 run-constants lock HIL surface (FR-7c-12; `fe02b09`)
 
-- **7c.5.G0** G0 trial-open / corpus-confirm DecisionCard fresh-author (single-gate; ~250 LOC; 5 ACs A-E)
-- **7c.5.G2A** G2A plan-unit-ratification DecisionCard fresh-author (single-gate; ~250 LOC; 5 ACs A-E + cross-gate non-regression)
+### Governance amendments ratified (3)
 
-Both consume only 7c.4b's substrate; can dispatch concurrently with no inter-story dependencies. Sprint-status flipped backlog → ready-for-dev at 7c.4b close.
+- **V6 AMELIA-P5 DROP-row Heavy gate** (Q1 UNANIMOUS; party-mode round 1; codified at `57b92b2`): contract-diff §2 must carry per-row `audit_method=heavy|light` qualifier; DROP rows REQUIRE `audit_method=heavy` with smoke-pass evidence against `tests/composition/` + `tests/integration/marcus/` + `tests/integration/replay/`. Composed with Winston's per-row qualifier (orthogonal axes). Triggered by G1 T6 reversal on `drafted_proposal`/`evidence` (T1 audit declared DROP; T6 broad regression revealed live consumers).
+- **V7 wave_3_lookahead_policy v1** (Q2 majority 3-1; Murat dissent documented; `57b92b2`): default_cap=2; elevation_gate=P2_clean_x3_at_G4_close; elevated_cap=3. v2 promotion deferred to post-3-Wave-3-closures.
+- **V7 v1.1 + v2 pre-ratification** (slab-opener party-mode 3-voice round Murat+Winston+Amelia; `fe02b09`): v1 elevation gate satisfied at G2C+G3+G4 close (P2-clean ×3 verified by G4 T11 reviewer); current_cap=3 codified for Wave-3 scope. v2 pre-ratified 2-1 majority with Amelia v2-defer dissent. Murat's three hard-revert clauses + Winston's two revisit triggers BAKED INTO governance JSON. Amelia's empirical-first principle preserved via trigger condition (v2 auto-fires only at `wave_3_closed_count >= 3`).
 
-### 1 cross-agent T11 P-1 patch (the architecturally significant moment of this session)
+### Anti-patterns harvested (1)
 
-**7c.4b D5 C6 contract.** Codex shipped `type = "forbidden"` with overlapping wildcards. T11 verification reproduced the structural failure: `Modules have shared descendants` abort fires whenever any 2nd §section package exists on disk. The contract appeared to pass today only because `section_02a` is the only §section currently authored; **it would have aborted lint-imports entirely on 7c.6 dispatch** (the very first downstream story that authors a 2nd §section). T11 escalated to MUST-FIX and applied a 4-file mechanical patch pivoting C6 to `type = "independence"` with `modules = [section_02a]` today; modules list grows incrementally as each §section package lands per 7c.6/7c.7/.../7c.15. Bidirectional protection verified (synthetic violations in BOTH directions caught); 12 KEPT preserved.
+- **A18 PowerShell `>` redirection emits UTF-8 BOM** (`88dbef4`): Discovered at G1 T3 mid-flight. Codex's canonical schema-regen command `python -c "...print(json.dumps(...))..." > schema/g1.v1.schema.json` produced BOM-prefixed file on Windows PowerShell 5.1. Counter-pattern: `Path.write_text(..., encoding="utf-8")`. G2C+G3+G4 prompts hardened with explicit Python file-write idiom. Filed as A18 in `docs/dev-guide/specialist-anti-patterns.md`.
 
-This is the kind of structural failure that cross-agent MANDATORY review tier exists to catch. AMEND-V3's tier discrimination paid off — a lite review would not have probed the contract semantics deeply enough to find this.
+### Party-mode rounds (4)
 
-### Velocity-amendments-bundle V1-V5 ratified mid-session (commit `d715927`)
-
-Per party-mode 2026-05-04 round (held during session): V1 pytest-xdist classification + V2 R-tier regression (R1/R2/R3 + cross-agent) + V3 T11-tier (lite/standard/cross-agent) + V4 AMELIA-P3-auto-satisfied under single-Codex + V5 lookahead-tier 1/2/3 + N+2 hard cap. Memory entry `feedback_velocity_amendments_slab_7c.md` codifies the convention.
+1. **R1-R3 governance round (V6+V7)** post-G1-close: 3 rounds; cross-flip dynamic in R3 (Winston conceded to Murat's R2 epistemic argument; Murat simultaneously flipped to Winston's R2 risk-math argument). Final: Q1 UNANIMOUS V6; Q2 3-1 majority V7 with Murat dissent.
+2. **Slab-opener round (V7 v1.1 + v2 pre-ratification)** post-G4-close: 1 round; 3-voice (Murat+Winston+Amelia); Q1 3/3 confirm v1 elevation; Q2 2-1 pre-ratify v2 with Amelia v2-defer dissent.
 
 ---
 
-## What is next (broader context)
+## What is next
 
-**Operator decides next dispatch:** (A) 7c.5.G0 to Codex, (B) 7c.5.G2A to Codex, (C) both concurrently, OR (D) author 7c.5.G5 / 7c.5.G6 / 7c.5.G1 specs first under N+2 cap (at most 2 additional pre-authored specs while one Codex story is in flight).
+### Immediate (next session)
 
-**At 7c.5.G0 + G2A close:** unblock pre-authoring of 7c.5.G5 + 7c.5.G6 (other 2 fresh-author single-gate stories) and 7c.5.G1 (extend-and-audit; first lookahead_tier=2 candidate).
+1. **Operator dispatches Wave-3 trio (7c.6 + 7c.7 + 7c.8) to Codex in parallel** under V7 v1.1 elevated_cap=N+3.
+2. **Three parallel T11 lite reviews** when Codex drops ready-for-review notices (~10-15 min each in parallel = ~15 min wall-clock).
+3. **Close-batch commit when all 3 PASS** — flips sprint-status to done; **wave_3_closed_count = 3 → V7 v2 promotion auto-fires** (Murat triple-condition becomes steady-state cap predicate).
 
-**At all 8 7c.5.G* close:** unblock 10 Wave-3 HIL surfaces (7c.6..7c.15). AMELIA-P3 staggering protocol activates for 4 G2C-aliased stories.
+### Forward queue (post-Wave-3-trio close)
 
-**Slab 7c effective remaining:** 27 stories (24 backlog + 2 ready + 1 in-flight nominal post-dispatch). At sprint-marathon velocity ~9 stories/day, residual estimate ~3 days. At conservative single-Codex serial pace ~30 min/story, ~13 hours of dev work + ~5 hours of T11 review + commit.
+- 7c.9-7c.12 (G2C-aliased; AMELIA-P3 staggered ≥30 min apart per dispatch_staggering rule)
+- 7c.13 (G3-aliased; G3B Storyboard B + live-URL)
+- 7c.14 (G4-aliased; G4A voice-selection)
+- 7c.15 (G4 + G5 + 7c.3b + 7c.17b gated; final §15 G5 handoff)
+- 7c.17a/b + 7c.18a/b/19 + 7c.20a/b/c + 7c.21/21a (Wave-4/5/6)
 
 ---
 
-## Unresolved issues / risks
+## Unresolved issues or risks
 
-1. **Two informational follow-ons filed at 7c.4b close** (no immediate action; recorded in deferred-inventory):
-   - **7c.4b D2 2-class regime** — legacy `DecisionCard` at `app/models/decision_cards/base.py` coexists with new `DecisionCardBase` at `_base.py`. G1/G2C/G3/G4 cards still inherit from legacy `DecisionCard`. Migration scheduled for 7c.5.G1+ extend-and-audit per AMELIA-P4 frozen-hash delta-AC.
-   - **AMEND-7d-i AST-scan boundary** — currently scans only `tests/parity/test_decision_card_*_shape.py`. 7c.5.G0 spec to add a clarifying comment that the boundary is intentional.
+### Codex behavior pattern: T1-PASS halts (4× consecutively observed)
 
-2. **Inherited broad-regression failures (39 checkout-level + 2 7c.4b T1 baseline drift = ~41 R3 failure count)** — not 7c.4b regressions; pre-existing checkout-state (TW-7c-4 detector self-trip on its own filename + NFR-CG6 evidence aggregation). Filed for future hardening; not blocking Slab 7c continuation.
+After dropping `_codex-handoff/<story>.t1-ready.md` and reading the cross-agent T1 PASS verdict, Codex does NOT auto-resume to T2. Operator must issue explicit resume-T2 directive. Observed across G1, G2C, G3, G4. **V8 amendment candidate (next session):** bake auto-resume-T2 into Codex prompt template ("After cross-agent T1 review PASS verdict lands at the named verdict file, AUTO-RESUME T2 without further operator confirmation"). Velocity cost this session: ~3 hours of wait-state across the four extend-and-audit stories.
 
-3. **C6 incremental modules-list growth contract** — each downstream HIL surface story (7c.6/7c.7/.../7c.15) MUST add its §section to C6's modules list as part of its four-file-lockstep co-commit. Pattern documented in pyproject.toml comment + structural tests; risk of forgetting is mitigated by lint-imports failing if a §section is created without the C6 modules-list update.
+### A18 doc-prescription gap
 
-4. **Operator override pattern (accepting completions pre-T11)** — operator has been accepting Codex completions as "closed" before Claude completes T11 review, allowing Codex to keep moving while Claude catches up reviews + commits in batches. **This works** under cross-agent MANDATORY tier where Claude does eventually catch substantive issues (see 7c.4b D5 P-1 patch). Risk: a structurally-fatal issue could land deep in the queue before Claude reaches it.
+`Path.write_text(..., encoding="utf-8")` produces context-dependent CRLF/LF on Windows. G2C schema came back CRLF (mechanical patch applied at T11); G3+G4 schemas LF (no patch). `.gitattributes eol=lf` rule auto-corrects at commit time anyway, so workspace CRLF is technically a NIT. **V8 candidate:** simplify A18 to acknowledge `.gitattributes` auto-correction, OR specify `Path.write_bytes(canonical.encode("utf-8"))` to lock LF regardless of context.
+
+### Audra L1/L2 sweeps not run this session
+
+Per session-WRAPUP Step 0a/0b, Cora-orchestrated harmonization sweep + pre-closure audit not invoked this session. Acknowledged as pre-closure gap; surfaced here for next-session-start-here Step 1a tripwire pre-check (per session-START protocol). Next session's Cora SS protocol will treat this as missing-audit-trail and may auto-promote `/harmonize` default scope from `since-handoff` to `full-repo`.
+
+### Pre-existing dirty worktree items
+
+- `_bmad-output/maps/coverage-manifest/lesson-plan-envelope-coverage-manifest.json` (modified; pre-existing regen residue from prior session)
+- `runs/` (untracked; pre-existing ambient evidence directory)
+
+Both documented in prior session-handoff. NOT session-owned. Carried forward.
 
 ---
 
 ## Key lessons learned
 
-1. **lookahead_tier=1 author-ahead-aggressive policy is genuinely valuable** — pre-authoring 7c.5.G0 + 7c.5.G2A while 7c.4b was in flight saved ~1 hour of session-end latency. Hard-cap N+2 is the right discipline.
+1. **PRE-T2 cross-agent T1 review pattern (Winston W3) validated 4× end-to-end.** G1 first run caught 3 substrate-level scope adjacencies (compiler.py + dotted-ref-test + resume_api.py) NOT pre-enumerated in spec. Subsequent G2C/G3/G4 reviews benefited from G1's substrate-widening. Estimated ~2 hours of HALT-AND-REMEDIATE iteration avoided across the chain.
 
-2. **D1-D8 contract pre-flight at spec-author (per AMEND-V5) does NOT eliminate T11 cross-agent review value** — Codex correctly implemented all 8 contracts to spec, but the spec itself contained an unrecognized lint-imports semantic limitation (shared-descendants abort with overlapping wildcards). T11 caught it because Claude tested with a synthetic violation against the actual lint-imports binary, while spec-author + Codex's T9 verification both tested with only `section_02a` extant.
+2. **Static-grep-only T1 audits are blind to live consumers.** G1 T1 declared `drafted_proposal`/`evidence` DROP; T6 broad regression revealed live consumers in composition/integration/replay tests. AMELIA-P5 V6 amendment codified DROP-row Heavy gate (smoke-pass evidence required). G2C/G3/G4 audits applied V6 cleanly on first try.
 
-3. **`type = "independence"` is lint-imports' canonical bidirectional cross-import-prevention contract.** Future §section-related contracts should default to independence over forbidden when bidirectionality is the design intent.
+3. **Concurrent Codex parallel-dispatch works for path-disjoint stories.** Fresh-author parallel pairs (G0+G2A, G5+G6) closed at ~21 min effective per story under standard-tier T11 + parallel review subagents. Extend-and-audit parallel-T0/T1 (G2C+G3+G4) also worked under operator (E)-elasticity override of the spec's serial-dispatch language. Three-way `__init__.py` coordination held cleanly.
 
-4. **NEW CYCLE protocol scales to 9 stories/day** under the right velocity-amendments + concurrent dispatch + pre-authoring + selective-stage commit pattern. Original 5.5-7 day plan compressed to ~1.2 days actual.
+4. **G2A worker AMEND-7d-i AST-scan near-miss** earlier today: parallel worker initially shipped re-derivation of `all_four_present` from `FOUR_FILE_GLOBS`; main thread caught + cleaned pre-T10. Lesson harvested into PARALLEL-DISPATCH GUARDRAIL #1 (mandatory T5.2 self-grep). Embedded in all subsequent prompts.
+
+5. **Cross-flip dynamic in V7 R3:** Winston conceded to Murat's R2 epistemic argument; Murat simultaneously flipped to Winston's R2 risk-math argument. Each used different reasoning lenses; positions swapped in same round. Memorialized in V7 amendment record as a process-noteworthy outcome.
+
+6. **`__init__.py` discriminated-union no-edit pattern (G2C T11 finding):** Pydantic discriminator routes by `gate_id` field-value, NOT parent class. DecisionCard → DecisionCardBase migration does NOT break the existing flat-export union; 35 routing tests passed without `__init__.py` modification. Pattern codified for future inheritance migrations.
 
 ---
 
 ## Validation summary
 
-- **Quality gate (Step 1 / 4a):** PASS
-  - lint-imports: 12 KEPT / 0 broken (UNCHANGED post-P-1 patch)
-  - class-conformance: 11 PASS UNCHANGED
-  - sandbox-AC validator: PASS on all 9 closed stories + 2 pre-authored specs
-  - ruff: clean across all session-touched files
-  - sprint-status YAML regression: PASS (`tests/test_sprint_status_yaml.py` 2 passed)
-  - 53 focused tests pass for 7c.4b post-P-1 patch
-  - R3 broad regression: T1=43, T9=41 (Δ=-2; 39 inherited checkout-level preserved)
+### Quality gate (Step 1)
 
-- **Cross-agent MANDATORY reviews completed:** 4 (7c.0a, 7c.0b, 7c.3a, 7c.4b). 1 P-1 patch applied (7c.4b D5).
+- Lint-imports: 12 KEPT / 0 broken ✅
+- Class-conformance: 19 (11 activation + 8 decision-card shape-pin) ✅
+- Sprint-status YAML hygiene: 2 passed ✅
+- Sandbox-AC validator: PASS across all newly-authored specs ✅
 
-- **No quality-gate findings deferred unaddressed.** All 9 stories closed cleanly with verdict files at `_bmad-output/implementation-artifacts/7c-Nx-code-review-2026-05-NN.md`.
+### Verification battery aggregates (across all stories)
+
+- All 8 closed stories: T11 PASS verdicts on disk + committed
+- All 11 specs (8 closed + 3 pre-authored): sandbox-AC PASS
+- All 4 PRE-T2 cross-agent T1 reviews: PASS verdicts committed
+- AMEND-7d-i AST-scan: clean across all G* shape-pins
+- Frozen-hash AMELIA-P4: all 4 legacy hashes UNCHANGED post-extension
+- 2-class-regime migration: VERIFIED COMPLETE (all 4 G*Card inherit DecisionCardBase; legacy base.py intact)
+
+### Step 0a Audra sweeps
+
+NOT run this session (acknowledged pre-closure gap; see Unresolved issues above).
 
 ---
 
 ## Artifact update checklist
 
-- ✅ Sprint status (`_bmad-output/implementation-artifacts/sprint-status.yaml`) — 9 story flips review→done + 2 backlog→ready-for-dev + 7c.4b in-progress→done
-- ✅ Migration story governance JSON (`docs/dev-guide/migration-story-governance.json`) — 36 entries seeded + 7c-0c added at sprint-planning + V1-V5 amendments at velocity bundle
-- ✅ Slab 7c velocity-amendments artifact (`_bmad-output/planning-artifacts/slab-7c-velocity-amendments-2026-05-04.md`)
-- ✅ 9 story specs authored + closed in `_bmad-output/implementation-artifacts/migration-7c-Nx-*.md`
-- ✅ 9 Codex dev prompts authored at `_bmad-output/implementation-artifacts/codex-dev-prompt-7c-Nx-*.md`
-- ✅ 9 Codex T10 dropbox notices preserved at `_bmad-output/implementation-artifacts/_codex-handoff/7c-Nx.ready-for-review.md`
-- ✅ 9 T11 verdicts at `_bmad-output/implementation-artifacts/7c-Nx-code-review-2026-05-NN.md`
-- ✅ 2 pre-authored specs (7c.5.G0 + 7c.5.G2A) + Codex prompts
-- ✅ ADR 0001 parity-contract DSL (7c.0a)
-- ✅ ADR 0002 gate taxonomy (7c.4a)
-- ✅ TripwireLedgerEntry model (7c.0a) + DecisionCardBase model (7c.4b) + Section02AOperatorVerdict model (7c.3b)
-- ✅ next-session-start-here.md (this session-end finalization)
-- ✅ SESSION-HANDOFF.md (this file)
-- ⏸️ bmm-workflow-status.yaml (last_updated header NOT refreshed this session — pragmatically deferred; sprint-status.yaml is the authoritative ledger)
+| Artifact | Updated this session | Notes |
+|---|---|---|
+| `_bmad-output/implementation-artifacts/sprint-status.yaml` | ✅ G0/G2A/G5/G6/G1/G2C/G3/G4 → done; 7c.6/7/8 → ready-for-dev | |
+| `_bmad-output/implementation-artifacts/bmm-workflow-status.yaml` | ⚠️ Step 3 pending (will append Last-Updated note in this commit) | |
+| `docs/dev-guide/migration-story-governance.json` | ✅ V6 AMELIA-P5 + V7 v1 + V7 v1.1+v2 pre-rat blocks added; version → `2026-05-05-v7-v1.1-elevation-and-v2-pre-ratification` | |
+| `docs/dev-guide/specialist-anti-patterns.md` | ✅ A18 PowerShell-BOM entry added | |
+| `_bmad-output/planning-artifacts/deferred-inventory.md` | ✅ `audit-pattern-T1-smoke-elaboration-for-extend-and-audit` marked CLOSED via V6 ratification | |
+| `_bmad-output/planning-artifacts/slab-7c-velocity-amendments-2026-05-04.md` | ✅ V6+V7 amendment history appended | |
+| Specs + Codex prompts (8 closed + 3 pre-authored stories) | ✅ All on disk + committed | |
+| T11 verdicts (8 close stories) | ✅ All on disk + committed | |
+| PRE-T2 T1 cross-agent verdicts (4 extend-and-audit stories) | ✅ All on disk + committed | |
+| `next-session-start-here.md` | ✅ Updated this commit | |
+| `SESSION-HANDOFF.md` | ✅ This file | |
+| `docs/project-context.md` | ⚠️ Not updated; architecture changes (V6+V7) are governance-tier not architecture-tier | |
+| `docs/agent-environment.md` | ❌ Not updated; no MCP/API/skill changes | |
+
+### Step 0a report home
+
+NOT created this session (Cora-orchestrated harmonization sweep skipped). Acknowledged gap.
 
 ---
 
-## Branch metadata at session-close
+## Course content summary
 
-- **Repository baseline branch:** `dev/langchain-langgraph-foundation`
-- **HEAD:** `8b12970` feat(slab-7c-story-7c-4b)
-- **Commits ahead of `origin/dev/langchain-langgraph-foundation`:** 21
-- **Push to origin:** deferred per Step 12 default — operator authorizes
-- **Merge to master:** not applicable (`upstream/master` severed 2026-04-24; merge-to-master deferred per Slab 7c PRD scope)
-- **Worktree:** single
+NOT applicable this session (Slab 7c is system development; no course content created or reviewed).
 
 ---
 
-## References
+## Session metrics
 
-- **Slab 7c PRD:** `_bmad-output/planning-artifacts/prd-slab-7c-orchestrational-tail.md`
-- **Slab 7c epics:** `_bmad-output/planning-artifacts/epics-slab-7c-orchestrational-tail.md`
-- **Sprint status:** `_bmad-output/implementation-artifacts/sprint-status.yaml`
-- **Migration story governance:** `docs/dev-guide/migration-story-governance.json`
-- **Velocity amendments:** `_bmad-output/planning-artifacts/slab-7c-velocity-amendments-2026-05-04.md`
-- **CLAUDE.md sprint governance:** `CLAUDE.md`
-- **Deferred inventory:** `_bmad-output/planning-artifacts/deferred-inventory.md`
-- **7c.4b cross-agent MANDATORY verdict (P-1 patch rationale):** `_bmad-output/implementation-artifacts/7c-4b-code-review-2026-05-05.md`
+- **Wall-clock duration:** ~7-8 hours from session-START to wrapup
+- **Stories closed:** 8 (G0+G2A+G5+G6+G1+G2C+G3+G4)
+- **Stories pre-authored:** 9 (G5+G6+G1+G2C+G3+G4 closed; 7c.6+7c.7+7c.8 ready-for-dev)
+- **Commits:** 19
+- **Governance amendments ratified:** 3 (V6 + V7 v1 + V7 v1.1+v2 pre-rat)
+- **Anti-patterns harvested:** 1 (A18 PowerShell BOM)
+- **Party-mode rounds:** 4 (V6+V7 R1-R3 with cross-flip dynamic; slab-opener single round)
+- **Velocity:** ~50 min/story average across mixed (fresh-author parallel pairs ~21 min effective + extend-and-audit serial+parallel ~60 min effective)
+- **2-class-regime migration:** COMPLETE (all 4 legacy DecisionCard subclasses now inherit DecisionCardBase)
+- **Slab 7c progress:** 17/36 (47%); 19 stories remaining
+
+---
+
+## Cross-references
+
+- Prior session-handoff (Day 1): commit `301a61c` (`docs(session-handoff): finalize 2026-05-05 Slab 7c sprint marathon close — 9 stories closed in one day`). Day 1 closed 7c.0a/0b/0c/1/2/3a/3b/4a/4b.
+- Session-START anchor for next session: `fe02b09` (this session's HEAD; will become next session-start anchor)
