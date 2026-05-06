@@ -11,6 +11,26 @@ This repository uses BMAD methodology. For sprint-style runs, follow the **BMAD 
 
 This preference does **not** override **migration sandbox-AC** rules later in this file: story specs must still avoid forbidden operator-only CLIs in *dev-agent* AC blocks. It **does** mean: when implementation is in scope, **run the allowed tooling freely** to verify and close work.
 
+## Push cadence policy — push at least once every 2 hours of active work
+
+**Local commits alone are NOT durable storage.** A single-disk failure or accidental data loss between commits and a push wipes out unpushed work. The operator also needs to access this repo from remote locations and machines, which is impossible while commits live only on one disk. **Mitigation: push to `origin` at least once every 2 hours of active session work**, and ALWAYS push at session-WRAPUP Step 12 (no longer deferred by default).
+
+Operating rules:
+
+- **Proactive push triggers:** push to `origin/<current-branch>` whenever any of the following holds:
+  - **≥ 2 hours** have elapsed since the last push (estimate from commit timestamps via `git log -1 --format=%ci HEAD` vs the timestamp of `git log -1 --format=%ci origin/<branch>`)
+  - **≥ 5 commits** have accumulated ahead of origin (rough commit-count proxy when timestamps are ambiguous)
+  - **A meaningful safety checkpoint just landed** — e.g., a story-close batch commit, a governance-amendment ratification, a session-START state-anchoring commit, or any commit the operator would not want to redo
+  - **The operator is about to step away from the machine** for any meaningful interval (announce + push first)
+- **Session-WRAPUP Step 12 default is now PUSH (not defer).** The "merge-to-master deferred per Slab 7c PRD scope" exception still applies for the Slab 7c branch (push to `origin/dev/langchain-langgraph-foundation` only; do NOT merge to master), but **a working-branch push at session-close is mandatory**, not deferred.
+- **Force-pushes remain forbidden** absent explicit operator authorization. Standard `git push origin <branch>` only.
+- **Hooks must not be bypassed.** No `--no-verify` unless the operator explicitly authorizes; if a pre-push hook fails, investigate the underlying issue before re-pushing.
+- **Track the trigger explicitly.** When proactively pushing mid-session, surface a one-line note to the operator: "pushed N commits to origin/<branch> at <commit-sha> per push-cadence policy (trigger: <2h-elapsed | 5-commit-threshold | safety-checkpoint>)." This keeps the operator informed without interrupting the work loop.
+
+This policy supersedes the prior "push deferred per session-protocol Step 12 default — operator authorizes" pattern. Implementation: agents reading this file proactively push at the triggers above without per-push permission prompts (per the operator-preference section earlier in this file). The standard `git push origin <branch>` is non-destructive when strictly ahead; permission-gate it only if a force-push or unusual remote arrangement applies.
+
+Ratified 2026-05-05 post-session-close after observing that 40 commits sat unpushed for ~7-8 hours of active work — single-machine-failure risk realized in policy gap. Codified at `408b868` predecessor (HEAD at `408b868` before this codification).
+
 ## Custom agents vs. “registered” BMAD personas (cold start)
 
 **Do not treat `_bmad/_config/agent-manifest.csv` as the full roster of invocable agents.** That file lists BMAD stock personas used by party mode (Mary, Amelia, Murat, etc.). Custom production agents for this repo — including **Marcus** — are **intentionally absent** from that manifest. If the operator says “talk to Marcus” (or another custom name), do **not** reply that they are “unregistered” based only on that CSV or on Claude Code’s native agent list.
