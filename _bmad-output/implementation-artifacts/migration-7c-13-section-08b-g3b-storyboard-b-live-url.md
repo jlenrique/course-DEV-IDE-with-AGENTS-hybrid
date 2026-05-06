@@ -1,6 +1,6 @@
 # Migration Story 7c.13: §08B G3B Storyboard B + Live-URL HIL Surface (FR-7c-17)
 
-**Status:** ready-for-dev *(spec authored 2026-05-05 lookahead_tier=1; predecessor 7c.5.G3 CLOSED at `0ec80df`; 7c.3b CLOSED at `f8fc1a8` provides canonical poll-surface pattern. Pre-authored for next-batch dispatch post-Wave-3-trio close + V7 v2 auto-fire.)*
+**Status:** done *(Codex T1-T10 complete 2026-05-06 + Claude T11 lite PASS-zero-patches at `7c-13-code-review-2026-05-06.md`; focused 13 passed, combined next-batch focused 26 passed, §02A non-regression 15 passed, Wave-3 trio non-regression 25 passed, smoke 181 passed/18 skipped, lint-imports 12 KEPT (C6 4→6 entries), sandbox-AC PASS, ruff clean; broad regression 4300 passed/43 failed BELOW inherited Wave-3 band. `test_no_unauthorized_callers` confirmed PRE-EXISTING scanner-staleness — DISMISSED; deferred-inventory entry filed for scanner-hardening.)*
 **Sprint key:** `migration-7c-13-section-08b-g3b-storyboard-b-live-url`
 **Epic:** Slab 7c — Marcus Orchestrational Tail
 **Pts:** 2
@@ -72,48 +72,48 @@ So that operators can review Storyboard B + live-URL content via mandatory CLI +
 
 ## Tasks / Subtasks
 
-- [ ] **T1 — Readiness checks**
-  - [ ] T1.1 Confirm 7c.5.G3 + 7c.3b done in sprint-status; confirm Wave-3 trio (7c.6/7c.7/7c.8) closed (reference patterns).
-  - [ ] T1.2 Read `app/gates/section_02a/poll_surface.py` + `app/models/operator_verdict_section_02a.py` + `tests/gates/section_02a/*.py` + `tests/schemas/operator_verdict/test_section_02a_shape.py` for canonical pattern.
-  - [ ] T1.3 Read `app/gates/section_04a/poll_surface.py` + `app/models/operator_verdict_section_04a.py` (Wave-3 sibling reference for re-emit pattern; same §02A mirror).
-  - [ ] T1.4 Read `app/models/decision_cards/g3.py` (POST-G3-migration; inherits DecisionCardBase) for G3Card consumption.
-  - [ ] T1.5 Read ADR 0002 §3 for alias_of forward syntax; verify `parity_contract` decorator accepts `alias_of` kwarg (per 7c.4b D1).
-  - [ ] T1.6 Refresh broad-regression baseline + record class-conformance baseline (likely 19 post-Wave-3-trio close +N for trio's shape-pins; recompute at T1).
+- [x] **T1 — Readiness checks**
+  - [x] T1.1 Confirm 7c.5.G3 + 7c.3b done in sprint-status; confirm Wave-3 trio (7c.6/7c.7/7c.8) closed (reference patterns).
+  - [x] T1.2 Read `app/gates/section_02a/poll_surface.py` + `app/models/operator_verdict_section_02a.py` + `tests/gates/section_02a/*.py` + `tests/schemas/operator_verdict/test_section_02a_shape.py` for canonical pattern.
+  - [x] T1.3 Read `app/gates/section_04a/poll_surface.py` + `app/models/operator_verdict_section_04a.py` (Wave-3 sibling reference for re-emit pattern; same §02A mirror).
+  - [x] T1.4 Read `app/models/decision_cards/g3.py` (POST-G3-migration; inherits DecisionCardBase) for G3Card consumption.
+  - [x] T1.5 Read ADR 0002 §3 for alias_of forward syntax; verify `parity_contract` decorator accepts `alias_of` kwarg (per 7c.4b D1).
+  - [x] T1.6 Refresh broad-regression baseline + record class-conformance baseline (likely 19 post-Wave-3-trio close +N for trio's shape-pins; recompute at T1).
 
-- [ ] **T2 — Author §section package + OperatorVerdict model**
-  - [ ] T2.1 Author `app/gates/section_08b/__init__.py` (empty namespace; mirror §02A).
-  - [ ] T2.2 Author `app/gates/section_08b/poll_surface.py` per AC-A.
-  - [ ] T2.3 Author `app/models/operator_verdict_section_08b.py` per AC-B with `Section08BOperatorVerdict` + `StoryboardBEditPayload` + `Section08BVerdictVerb` + `SECTION_08B_SURFACE_ID`.
+- [x] **T2 — Author §section package + OperatorVerdict model**
+  - [x] T2.1 Author `app/gates/section_08b/__init__.py` (empty namespace; mirror §02A).
+  - [x] T2.2 Author `app/gates/section_08b/poll_surface.py` per AC-A.
+  - [x] T2.3 Author `app/models/operator_verdict_section_08b.py` per AC-B with `Section08BOperatorVerdict` + `StoryboardBEditPayload` + `Section08BVerdictVerb` + `SECTION_08B_SURFACE_ID`.
 
-- [ ] **T3 — Generate JSON schema (AC-B)**
-  - [ ] T3.1 Generate `app/models/operator_verdict_section_08b.v1.schema.json` via:
+- [x] **T3 — Generate JSON schema (AC-B)**
+  - [x] T3.1 Generate `app/models/operator_verdict_section_08b.v1.schema.json` via:
     ```bash
     .venv/Scripts/python.exe -c "from pathlib import Path; from app.models.operator_verdict_section_08b import Section08BOperatorVerdict; import json; Path('app/models/operator_verdict_section_08b.v1.schema.json').write_text(json.dumps(Section08BOperatorVerdict.model_json_schema(), indent=2, sort_keys=True), encoding='utf-8')"
     ```
     (Path.write_text per A18; NO PowerShell `>` redirection.)
 
-- [ ] **T4 — Author shape-pin + 3-transport-parity test + DSL-registration audit (AC-C + AC-D)**
-  - [ ] T4.1 Author `tests/schemas/operator_verdict/test_section_08b_shape.py` using FR-7c-49 harness.
-  - [ ] T4.2 Author `tests/gates/section_08b/__init__.py` + `_helpers.py` (mirror §02A / Wave-3-trio).
-  - [ ] T4.3 Author `tests/gates/section_08b/test_g3b_poll_surface_dsl_registration.py` (reload-isolated).
-  - [ ] T4.4 Author `tests/gates/section_08b/test_g3b_poll_surface_three_transport_parity.py`.
+- [x] **T4 — Author shape-pin + 3-transport-parity test + DSL-registration audit (AC-C + AC-D)**
+  - [x] T4.1 Author `tests/schemas/operator_verdict/test_section_08b_shape.py` using FR-7c-49 harness.
+  - [x] T4.2 Author `tests/gates/section_08b/__init__.py` + `_helpers.py` (mirror §02A / Wave-3-trio).
+  - [x] T4.3 Author `tests/gates/section_08b/test_g3b_poll_surface_dsl_registration.py` (reload-isolated).
+  - [x] T4.4 Author `tests/gates/section_08b/test_g3b_poll_surface_three_transport_parity.py`.
 
-- [ ] **T5 — C6 import-linter modules list append (AC-E)**
-  - [ ] T5.1 Update `pyproject.toml::tool.importlinter::contracts::C6::modules` to append `app.gates.section_08b`. **PARALLEL-DISPATCH GUARDRAIL #3:** if running concurrently with 7c.14, write the union of both new §section entries OR coordinate-or-sequence per main-thread integration pattern.
+- [x] **T5 — C6 import-linter modules list append (AC-E)**
+  - [x] T5.1 Update `pyproject.toml::tool.importlinter::contracts::C6::modules` to append `app.gates.section_08b`. **PARALLEL-DISPATCH GUARDRAIL #3:** if running concurrently with 7c.14, write the union of both new §section entries OR coordinate-or-sequence per main-thread integration pattern.
 
-- [ ] **T6 — Verification battery (R-tier R2)**
-  - [ ] T6.1 Focused: `pytest tests/gates/section_08b/ tests/schemas/operator_verdict/test_section_08b_shape.py -p no:randomly -q --tb=short` PASS.
-  - [ ] T6.2 §02A non-regression: `pytest tests/gates/section_02a/ tests/schemas/operator_verdict/test_section_02a_shape.py -p no:randomly -q --tb=short` PASS UNCHANGED.
-  - [ ] T6.3 Wave-3 trio non-regression: `pytest tests/gates/section_04a/ tests/gates/section_04_5/ tests/gates/section_04_55/ -p no:randomly -q --tb=short` PASS UNCHANGED.
-  - [ ] T6.4 Smoke: nodeid baseline UNCHANGED.
-  - [ ] T6.5 R2 broad: failure count ≤ T1 baseline (delta ≤ 0); per-failure git-log-attribution required for any failures present.
-  - [ ] T6.6 Class-conformance: T1-baseline + 1 (new shape-pin file).
-  - [ ] T6.7 Lint-imports: 12 KEPT / 0 broken (UNCHANGED count; C6 modules list grew).
-  - [ ] T6.8 Sandbox-AC: PASS.
-  - [ ] T6.9 Ruff: clean.
+- [x] **T6 — Verification battery (R-tier R2)**
+  - [x] T6.1 Focused: `pytest tests/gates/section_08b/ tests/schemas/operator_verdict/test_section_08b_shape.py -p no:randomly -q --tb=short` PASS.
+  - [x] T6.2 §02A non-regression: `pytest tests/gates/section_02a/ tests/schemas/operator_verdict/test_section_02a_shape.py -p no:randomly -q --tb=short` PASS UNCHANGED.
+  - [x] T6.3 Wave-3 trio non-regression: `pytest tests/gates/section_04a/ tests/gates/section_04_5/ tests/gates/section_04_55/ -p no:randomly -q --tb=short` PASS UNCHANGED.
+  - [x] T6.4 Smoke: nodeid baseline UNCHANGED.
+  - [x] T6.5 R2 broad: failure count ≤ T1 baseline (delta ≤ 0); per-failure git-log-attribution required for any failures present.
+  - [x] T6.6 Class-conformance: T1-baseline + 1 (new shape-pin file).
+  - [x] T6.7 Lint-imports: 12 KEPT / 0 broken (UNCHANGED count; C6 modules list grew).
+  - [x] T6.8 Sandbox-AC: PASS.
+  - [x] T6.9 Ruff: clean.
 
-- [ ] **T10 — Codex self-review dropbox**
-  - [ ] T10.1 Drop `_codex-handoff/7c-13.ready-for-review.md`.
+- [x] **T10 — Codex self-review dropbox**
+  - [x] T10.1 Drop `_codex-handoff/7c-13.ready-for-review.md`.
 
 ---
 
@@ -156,16 +156,34 @@ Codex GPT-5 (bmad-dev-story discipline).
 
 ### Debug Log References
 
-(populated by Codex at T1-T9)
+- T1: Confirmed 7c.5.G3, 7c.3b, and Wave-3 trio close state via sprint-status/commit context; class-conformance baseline observed at 19.
+- T2-T5: Authored `section_08b` package, verdict model, LF-only schema, shape-pin, DSL registration audit, 3-transport parity tests, and C6 union append with 7c.14.
+- T6: Focused §08B suite `13 passed`; combined next-batch focused suite `26 passed`; §02A non-regression `15 passed`; Wave-3 trio non-regression `25 passed`; smoke `181 passed, 18 skipped`; lint-imports `12 kept, 0 broken`; sandbox-AC PASS; ruff clean.
+- T6 broad: `4300 passed, 43 failed, 27 skipped, 2 xfailed`; failure count is below inherited Wave-3 band. Failures are outside new §08B behavior; `test_resume_api_authority` remains inherited and now reports the new verdict model files in an already-failing direct-constructor scanner.
 
 ### Completion Notes List
 
-(populated by Codex at T10)
+- Implemented Section 08B G3B Storyboard B/live-URL HIL surface with alias-aware parity registration: mandatory `cli` + `http`, optional `mcp-stdio`, `alias_of="G3"`.
+- Added `Section08BOperatorVerdict`, `StoryboardBEditPayload`, LF-only JSON schema, schema-stability shape-pin, reload-isolated DSL audit, and three-transport parity tests.
+- Coordinated the shared C6 import-linter edit as a union append with 7c.14 (`app.gates.section_08b` + `app.gates.section_11`).
 
 ### File List
 
-(populated by Codex at T10)
+- `app/gates/section_08b/__init__.py`
+- `app/gates/section_08b/poll_surface.py`
+- `app/models/operator_verdict_section_08b.py`
+- `app/models/operator_verdict_section_08b.v1.schema.json`
+- `tests/gates/section_08b/__init__.py`
+- `tests/gates/section_08b/_helpers.py`
+- `tests/gates/section_08b/test_g3b_poll_surface_dsl_registration.py`
+- `tests/gates/section_08b/test_g3b_poll_surface_three_transport_parity.py`
+- `tests/schemas/operator_verdict/test_section_08b_shape.py`
+- `_bmad-output/implementation-artifacts/migration-7c-13-section-08b-g3b-storyboard-b-live-url.md`
+- `_bmad-output/implementation-artifacts/sprint-status.yaml`
+- `_codex-handoff/7c-13.ready-for-review.md`
+- `pyproject.toml`
 
 ### Change Log
 
+- 2026-05-06: Codex implemented 7c.13 through T10 and moved story to review.
 - 2026-05-05: Spec pre-authored by Claude (lookahead_tier=1) for next-batch dispatch.
