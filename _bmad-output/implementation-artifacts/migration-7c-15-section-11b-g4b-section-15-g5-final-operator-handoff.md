@@ -1,6 +1,6 @@
 # Migration Story 7c.15: §11B G4B Input-Package + §15 G5 Final Operator Handoff (FR-7c-19 + FR-7c-29 AMEND-4 Fold)
 
-**Status:** ready-for-dev *(spec authored 2026-05-05 lookahead_tier=2; predecessors 7c.5.G4 CLOSED at `0ec80df` + 7c.5.G5 CLOSED at `f059e84` + 7c.3b CLOSED at `f8fc1a8`. **HARD BLOCKER: 7c.17b is in Wave-4 backlog and MUST close before 7c.15 dispatches** — the §15 Marcus writer consumes 7c.17b's outbound-envelope aggregation. Spec pre-authored to capture scope intent; dispatch holds until 7c.17b closes.)*
+**Status:** in-progress *(Codex T1 started 2026-05-06; 7c.17b predecessor is now done.)*
 **Sprint key:** `migration-7c-15-section-11b-g4b-section-15-g5-final-operator-handoff`
 **Epic:** Slab 7c — Marcus Orchestrational Tail
 **Pts:** 3 (heavier than other Wave-3 stories — dual-FR + dual surface + Marcus writer)

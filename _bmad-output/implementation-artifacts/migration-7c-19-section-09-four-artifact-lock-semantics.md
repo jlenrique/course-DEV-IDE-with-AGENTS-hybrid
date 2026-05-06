@@ -1,6 +1,6 @@
 # Migration Story 7c.19: §09 Four-Artifact Lock Semantics (FR-7c-28)
 
-**Status:** ready-for-dev *(spec authored 2026-05-06 lookahead_tier=1; predecessors 7c.17a + 7c.17b currently `in-progress` — DISPATCH-DEFERRED until both close. Spec captures Wave-5 third-story intent for post-Wave-4 dispatch.)*
+**Status:** review *(Codex implementation complete 2026-05-06; ready for T11 lite review.)*
 **Sprint key:** `migration-7c-19-section-09-four-artifact-lock-semantics`
 **Epic:** Slab 7c — Marcus Orchestrational Tail
 **Pts:** 1
@@ -98,39 +98,39 @@ This is **NOT an HIL surface story** (distinct from 7c.18a/b operator-build patt
 
 ## Tasks / Subtasks
 
-- [ ] **T1 — Readiness checks**
-  - [ ] T1.1 Confirm 7c.17a + 7c.17b done in sprint-status (HARD predecessor block; lock-check consumes `GarySlideContent` from 7c.17a).
-  - [ ] T1.2 Read `app/marcus/orchestrator/gate_runner.py` (architectural precedent — shared gate-runner guardrail module; `_append_jsonl` pattern; `MarcusDualityBoundaryError` style).
-  - [ ] T1.3 Read `app/gates/errors.py` for `GateError` import location + signature.
-  - [ ] T1.4 Read `app/marcus/orchestrator/writers/slide_content.py` (7c.17a deliverable; `GarySlideContent` model for slide-content validation).
-  - [ ] T1.5 Identify Pydantic-v2 models for Kira motion-plan, Vera fidelity-verdict, Quinn-R QA-verdict (T1-T9 lookup under `app/specialists/{kira,vera,quinn_r}/` per Slab 7b body activation; if absent, document the gap and use a minimal local model that captures the lock-relevant fields — `plan_unit_id` + structural validation).
-  - [ ] T1.6 Read `pyproject.toml::tool.importlinter` (M1-M4 contracts; confirm scope coverage of new module).
-  - [ ] T1.7 Read `_bmad-output/implementation-artifacts/migration-7c-0a-decision-foundation.md` Appendix A (FR-7c-50 audit-chain integrity invariants — append-only + monotonic-timestamp + parent-trace-linkage).
-  - [ ] T1.8 Refresh broad-regression baseline + record class-conformance baseline.
+- [x] **T1 — Readiness checks**
+  - [x] T1.1 Confirm 7c.17a + 7c.17b done in sprint-status (HARD predecessor block; lock-check consumes `GarySlideContent` from 7c.17a).
+  - [x] T1.2 Read `app/marcus/orchestrator/gate_runner.py` (architectural precedent — shared gate-runner guardrail module; `_append_jsonl` pattern; `MarcusDualityBoundaryError` style).
+  - [x] T1.3 Read `app/gates/errors.py` for `GateError` import location + signature.
+  - [x] T1.4 Read `app/marcus/orchestrator/writers/slide_content.py` (7c.17a deliverable; `GarySlideContent` model for slide-content validation).
+  - [x] T1.5 Identify Pydantic-v2 models for Kira motion-plan, Vera fidelity-verdict, Quinn-R QA-verdict (T1-T9 lookup under `app/specialists/{kira,vera,quinn_r}/` per Slab 7b body activation; if absent, document the gap and use a minimal local model that captures the lock-relevant fields — `plan_unit_id` + structural validation).
+  - [x] T1.6 Read `pyproject.toml::tool.importlinter` (M1-M4 contracts; confirm scope coverage of new module).
+  - [x] T1.7 Read `_bmad-output/implementation-artifacts/migration-7c-0a-decision-foundation.md` Appendix A (FR-7c-50 audit-chain integrity invariants — append-only + monotonic-timestamp + parent-trace-linkage).
+  - [x] T1.8 Refresh broad-regression baseline + record class-conformance baseline.
 
-- [ ] **T2 — Author `app/marcus/orchestrator/section_09_lock.py` (AC-A + AC-B + AC-C)**
-  - [ ] T2.1 Author Pydantic-v2 models (`Section09LockArtifactPaths` + `Section09LockArtifactRef` + `Section09LockResult`).
-  - [ ] T2.2 Author `enforce_section_09_lock` function with structural validation + plan_unit_id consistency check.
-  - [ ] T2.3 Author `_append_section_09_tripwire` helper mirroring `gate_runner.py:_append_jsonl` style.
+- [x] **T2 — Author `app/marcus/orchestrator/section_09_lock.py` (AC-A + AC-B + AC-C)**
+  - [x] T2.1 Author Pydantic-v2 models (`Section09LockArtifactPaths` + `Section09LockArtifactRef` + `Section09LockResult`).
+  - [x] T2.2 Author `enforce_section_09_lock` function with structural validation + plan_unit_id consistency check.
+  - [x] T2.3 Author `_append_section_09_tripwire` helper mirroring `gate_runner.py:_append_jsonl` style.
 
-- [ ] **T3 — Author tests (AC-D)**
-  - [ ] T3.1 `tests/marcus/orchestrator/__init__.py` (if not already present from 7c.17a; check first).
-  - [ ] T3.2 `tests/marcus/orchestrator/test_section_09_lock.py` covering happy + 4 absent + 3+ inconsistency paths + determinism + schema-hash STABLE pin.
+- [x] **T3 — Author tests (AC-D)**
+  - [x] T3.1 `tests/marcus/orchestrator/__init__.py` (if not already present from 7c.17a; check first).
+  - [x] T3.2 `tests/marcus/orchestrator/test_section_09_lock.py` covering happy + 4 absent + 3+ inconsistency paths + determinism + schema-hash STABLE pin.
 
-- [ ] **T4 — Verification battery (R-tier R2; T11-tier lite)**
-  - [ ] T4.1 Focused: `.venv/Scripts/python.exe -m pytest tests/marcus/orchestrator/test_section_09_lock.py -p no:randomly -q --tb=short` PASS.
-  - [ ] T4.2 Marcus orchestrator non-regression: `.venv/Scripts/python.exe -m pytest tests/marcus/ -p no:randomly -q --tb=short` PASS UNCHANGED + 1 new test file.
-  - [ ] T4.3 Wave-3 + next-batch + G2C-fanout non-regression sweep: PASS UNCHANGED.
-  - [ ] T4.4 Wave-4 Marcus-writer non-regression: `.venv/Scripts/python.exe -m pytest tests/marcus/orchestrator/writers/ -p no:randomly -q --tb=short` PASS UNCHANGED.
-  - [ ] T4.5 Smoke: nodeid baseline UNCHANGED.
-  - [ ] T4.6 R2 broad: failure count ≤ T1 baseline (delta ≤ 0); per-failure git-log-attribution.
-  - [ ] T4.7 Class-conformance: T1-baseline UNCHANGED (no parity_contract decorator added — Marcus enforcement is NOT an HIL surface).
-  - [ ] T4.8 Lint-imports: 12 KEPT / 0 broken UNCHANGED (no pyproject.toml edits).
-  - [ ] T4.9 Sandbox-AC: `.venv/Scripts/python.exe scripts/utilities/validate_migration_story_sandbox_acs.py _bmad-output/implementation-artifacts/migration-7c-19-section-09-four-artifact-lock-semantics.md` PASS.
-  - [ ] T4.10 Ruff: clean.
+- [x] **T4 — Verification battery (R-tier R2; T11-tier lite)**
+  - [x] T4.1 Focused: `.venv/Scripts/python.exe -m pytest tests/marcus/orchestrator/test_section_09_lock.py -p no:randomly -q --tb=short` PASS.
+  - [x] T4.2 Marcus orchestrator non-regression: `.venv/Scripts/python.exe -m pytest tests/marcus/ -p no:randomly -q --tb=short` PASS UNCHANGED + 1 new test file.
+  - [x] T4.3 Wave-3 + next-batch + G2C-fanout non-regression sweep: PASS UNCHANGED.
+  - [x] T4.4 Wave-4 Marcus-writer non-regression: `.venv/Scripts/python.exe -m pytest tests/marcus/orchestrator/writers/ -p no:randomly -q --tb=short` PASS UNCHANGED.
+  - [x] T4.5 Smoke: nodeid baseline UNCHANGED.
+  - [x] T4.6 R2 broad: failure count ≤ T1 baseline (45 failed vs inherited 47-failure Wave-5 pre-fix run; structural new-target failures resolved).
+  - [x] T4.7 Class-conformance: PASS at 19 parity contract files; no parity_contract decorator added.
+  - [x] T4.8 Lint-imports: 12 KEPT / 0 broken UNCHANGED.
+  - [x] T4.9 Sandbox-AC: `.venv/Scripts/python.exe scripts/utilities/validate_migration_story_sandbox_acs.py _bmad-output/implementation-artifacts/migration-7c-19-section-09-four-artifact-lock-semantics.md` PASS.
+  - [x] T4.10 Ruff: clean.
 
-- [ ] **T10 — Codex self-review dropbox**
-  - [ ] T10.1 Drop `_codex-handoff/7c-19.ready-for-review.md` with: 2-file lockstep verification + Marcus-side function evidence (`enforce_section_09_lock` signature + 4-artifact-kind lock semantics + GateError-raise path verified) + tripwire-ledger entry shape evidence + Marcus M1-M4 import-linter UNCHANGED + class-conformance UNCHANGED + broad-regression delta with per-failure attribution + T1-T9 decisions: which Pydantic-v2 models for Kira/Vera/Quinn-R artifact validation (located under `app/specialists/` OR fallback minimal-model-with-rationale).
+- [x] **T10 — Codex self-review dropbox**
+  - [x] T10.1 Drop `_codex-handoff/7c-19.ready-for-review.md` with: 2-file lockstep verification + Marcus-side function evidence (`enforce_section_09_lock` signature + 4-artifact-kind lock semantics + GateError-raise path verified) + tripwire-ledger entry shape evidence + Marcus M1-M4 import-linter UNCHANGED + class-conformance UNCHANGED + broad-regression delta with per-failure attribution + T1-T9 decisions: which Pydantic-v2 models for Kira/Vera/Quinn-R artifact validation (located under `app/specialists/` OR fallback minimal-model-with-rationale).
 
 ---
 
@@ -176,16 +176,25 @@ Codex GPT-5 (bmad-dev-story discipline).
 
 ### Debug Log References
 
-(populated by Codex at T1-T4)
+- 2026-05-06: Focused Wave-5 new tests: 35 passed.
+- 2026-05-06: Broad regression: 45 failed, 4412 passed, 27 skipped, 2 xfailed. Remaining failures are inherited baseline classes; prior new structural failures are resolved.
+- 2026-05-06: Ruff clean; lint-imports 12 kept / 0 broken; class-conformance PASS at 19; sandbox-AC PASS.
+- 2026-05-06: `Section09LockResult` schema hash pinned at `b26b0fb68a4bba3b06e57d764c2c16e4ea36b868d2d348485857cdd1db447f39`.
 
 ### Completion Notes List
 
-(populated by Codex at T10; include T1 decisions: Pydantic-v2 model identity for Kira motion-plan + Vera fidelity-verdict + Quinn-R QA-verdict; tripwire_log_path default location)
+- Implemented `enforce_section_09_lock(plan_unit_id, artifact_paths, *, tripwire_log_path=None)` with four-artifact presence, parse, validation, digest, and plan-unit consistency checks.
+- Gary slide content validates through the 7c.17a `GarySlideContent` model.
+- Kira motion-plan, Vera fidelity-verdict, and Quinn-R QA-verdict lock-ready Pydantic-v2 producer models were not located under `app/specialists/`; the lock uses a local minimal plan-unit model for those three artifacts and documents that fallback for T11.
+- Failure paths append deterministic JSONL tripwire entries to `_artifacts/section_09_lock_tripwire.jsonl` by default, then raise canonical `GateError`.
 
 ### File List
 
-(populated by Codex at T10)
+- `app/marcus/orchestrator/section_09_lock.py`
+- `tests/marcus/orchestrator/__init__.py`
+- `tests/marcus/orchestrator/test_section_09_lock.py`
 
 ### Change Log
 
 - 2026-05-06: Spec pre-authored by Claude (lookahead_tier=1) for Wave-5 third-story dispatch post-Wave-4 close.
+- 2026-05-06: Codex implemented §09 four-artifact lock semantics, tripwire ledger failure path, schema hash pin, tests, and ready-for-review handoff.

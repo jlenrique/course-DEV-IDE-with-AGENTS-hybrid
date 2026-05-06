@@ -1,0 +1,143 @@
+{
+  "$defs": {
+    "StoryboardBuildPayload": {
+      "additionalProperties": false,
+      "description": "Submitted storyboard build payload for Section 07C.",
+      "properties": {
+        "slide_count": {
+          "description": "Number of slides represented in the storyboard artifact.",
+          "minimum": 1,
+          "title": "Slide Count",
+          "type": "integer"
+        },
+        "storyboard_html_digest": {
+          "description": "Lowercase sha256 digest of the emitted HTML artifact bytes.",
+          "title": "Storyboard Html Digest",
+          "type": "string"
+        },
+        "storyboard_html_path": {
+          "description": "Relative path to the emitted HTML reviewer artifact.",
+          "minLength": 1,
+          "title": "Storyboard Html Path",
+          "type": "string"
+        },
+        "target_section": {
+          "description": "Target course section for the storyboard build.",
+          "minLength": 1,
+          "title": "Target Section",
+          "type": "string"
+        }
+      },
+      "required": [
+        "target_section",
+        "storyboard_html_path",
+        "slide_count",
+        "storyboard_html_digest"
+      ],
+      "title": "StoryboardBuildPayload",
+      "type": "object"
+    },
+    "StoryboardEditPayload": {
+      "additionalProperties": false,
+      "description": "Field-level edits for a submitted storyboard build.",
+      "properties": {
+        "edits": {
+          "additionalProperties": true,
+          "description": "Mapping of storyboard field names or paths to replacements.",
+          "minProperties": 1,
+          "title": "Edits",
+          "type": "object"
+        }
+      },
+      "required": [
+        "edits"
+      ],
+      "title": "StoryboardEditPayload",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "description": "Tamper-evident verdict emitted by the Section 07C build surface.",
+  "properties": {
+    "build_payload": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/StoryboardBuildPayload"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "description": "Required iff verb is submit."
+    },
+    "decision_card_digest": {
+      "description": "Lowercase sha256 digest of the storyboard build payload.",
+      "title": "Decision Card Digest",
+      "type": "string"
+    },
+    "edit_payload": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/StoryboardEditPayload"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "description": "Required iff verb is edit."
+    },
+    "operator_id": {
+      "description": "Operator identifier.",
+      "minLength": 1,
+      "pattern": "^[a-zA-Z][a-zA-Z0-9_-]+$",
+      "title": "Operator Id",
+      "type": "string"
+    },
+    "plan_unit_id": {
+      "description": "Plan-unit identifier for the storyboard build.",
+      "minLength": 1,
+      "title": "Plan Unit Id",
+      "type": "string"
+    },
+    "run_id": {
+      "description": "UUID4 identity for the storyboard build run.",
+      "format": "uuid",
+      "title": "Run Id",
+      "type": "string"
+    },
+    "submitted_at": {
+      "description": "Timezone-aware verdict submission time.",
+      "format": "date-time",
+      "title": "Submitted At",
+      "type": "string"
+    },
+    "surface_id": {
+      "const": "section_07c_storyboard_build",
+      "default": "section_07c_storyboard_build",
+      "description": "Closed Section 07C build-surface identifier.",
+      "title": "Surface Id",
+      "type": "string"
+    },
+    "verb": {
+      "description": "Closed build verb set: submit | edit | discard.",
+      "enum": [
+        "submit",
+        "edit",
+        "discard"
+      ],
+      "title": "Verb",
+      "type": "string"
+    }
+  },
+  "required": [
+    "run_id",
+    "verb",
+    "plan_unit_id",
+    "operator_id",
+    "decision_card_digest"
+  ],
+  "title": "Section07COperatorVerdict",
+  "type": "object"
+}
