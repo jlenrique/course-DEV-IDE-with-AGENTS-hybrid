@@ -1,6 +1,6 @@
 # Migration Story 7c.15: §11B G4B Input-Package + §15 G5 Final Operator Handoff (FR-7c-19 + FR-7c-29 AMEND-4 Fold)
 
-**Status:** in-progress *(Codex T1 started 2026-05-06; 7c.17b predecessor is now done.)*
+**Status:** review *(Codex implementation complete 2026-05-06; ready for T11 standard review.)*
 **Sprint key:** `migration-7c-15-section-11b-g4b-section-15-g5-final-operator-handoff`
 **Epic:** Slab 7c — Marcus Orchestrational Tail
 **Pts:** 3 (heavier than other Wave-3 stories — dual-FR + dual surface + Marcus writer)
@@ -102,57 +102,57 @@ Both via `assert_operator_verdict_schema_stable_across_transports(...)` from `te
 
 ## Tasks / Subtasks
 
-- [ ] **T1 — Readiness checks**
-  - [ ] T1.1 Confirm 7c.5.G4 + 7c.5.G5 + 7c.3b done. **CONFIRM 7c.17b done (HARD BLOCKER).**
-  - [ ] T1.2 Read §02A canonical pattern + Wave-3 trio sibling pattern (7c.6/7c.7/7c.8) + 7c.13/7c.14 specs (next-batch sibling pattern; closer transport-set match for §11B).
-  - [ ] T1.3 Read `app/models/decision_cards/g4.py` + `app/models/decision_cards/g5.py` for G4Card + G5Card consumption.
-  - [ ] T1.4 Read 7c.17b deliverable: `gary-outbound-envelope.yaml` schema + writer module (`app/marcus/orchestrator/writers/outbound_envelope.py` per Wave-4 7c.17b spec).
-  - [ ] T1.5 Read existing Marcus writer modules under `app/marcus/orchestrator/writers/` for sanctum-alignment pattern (per Slab 7b precedent).
-  - [ ] T1.6 Read ADR 0002 §3 for alias_of forward syntax (G4 + G5 alias-clause inheritance for §11B + §15 surfaces).
-  - [ ] T1.7 Refresh broad-regression baseline + record class-conformance baseline.
+- [x] **T1 — Readiness checks**
+  - [x] T1.1 Confirm 7c.5.G4 + 7c.5.G5 + 7c.3b done. **CONFIRM 7c.17b done (HARD BLOCKER).**
+  - [x] T1.2 Read §02A canonical pattern + Wave-3 trio sibling pattern (7c.6/7c.7/7c.8) + 7c.13/7c.14 specs (next-batch sibling pattern; closer transport-set match for §11B).
+  - [x] T1.3 Read `app/models/decision_cards/g4.py` + `app/models/decision_cards/g5.py` for G4Card + G5Card consumption.
+  - [x] T1.4 Read 7c.17b deliverable: `gary-outbound-envelope.yaml` schema + writer module (`app/marcus/orchestrator/writers/outbound_envelope.py` per Wave-4 7c.17b spec).
+  - [x] T1.5 Read existing Marcus writer modules under `app/marcus/orchestrator/writers/` for sanctum-alignment pattern (per Slab 7b precedent).
+  - [x] T1.6 Read ADR 0002 §3 for alias_of forward syntax (G4 + G5 alias-clause inheritance for §11B + §15 surfaces).
+  - [x] T1.7 Refresh broad-regression baseline + record class-conformance baseline.
 
-- [ ] **T2 — Author §11B G4B §section package + OperatorVerdict model + JSON schema**
-  - [ ] T2.1 `app/gates/section_11b/{__init__,poll_surface}.py`.
-  - [ ] T2.2 `app/models/operator_verdict_section_11b.py` + regen `.v1.schema.json`.
+- [x] **T2 — Author §11B G4B §section package + OperatorVerdict model + JSON schema**
+  - [x] T2.1 `app/gates/section_11b/{__init__,poll_surface}.py`.
+  - [x] T2.2 `app/models/operator_verdict_section_11b.py` + regen `.v1.schema.json`.
 
-- [ ] **T3 — Author §15 G5 §section package + OperatorVerdict model + JSON schema**
-  - [ ] T3.1 `app/gates/section_15/{__init__,poll_surface}.py`.
-  - [ ] T3.2 `app/models/operator_verdict_section_15.py` + regen `.v1.schema.json`.
+- [x] **T3 — Author §15 G5 §section package + OperatorVerdict model + JSON schema**
+  - [x] T3.1 `app/gates/section_15/{__init__,poll_surface}.py`.
+  - [x] T3.2 `app/models/operator_verdict_section_15.py` + regen `.v1.schema.json`.
 
-- [ ] **T4 — Author Marcus §15 bundle emission writer (FR-7c-29)**
-  - [ ] T4.1 `app/marcus/orchestrator/writers/section_15_bundle.py` with `Section15Bundle` Pydantic-v2 model + `emit_section_15_bundle` function.
-  - [ ] T4.2 Sanctum-alignment row added to Marcus activation block (per Slab 7b precedent) OR Cora-sidecar exception documented.
-  - [ ] T4.3 DESCRIPT-ASSEMBLY-GUIDE.md regeneration logic (consume 7c.17b outbound-envelope.yaml + per-plan-unit packages).
-  - [ ] T4.4 Trial-3 transcript anchor computation (sha256).
-  - [ ] T4.5 Slab-close evidence pointer wiring.
+- [x] **T4 — Author Marcus §15 bundle emission writer (FR-7c-29)**
+  - [x] T4.1 `app/marcus/orchestrator/writers/section_15_bundle.py` with `Section15Bundle` Pydantic-v2 model + `emit_section_15_bundle` function.
+  - [x] T4.2 Sanctum-alignment row added to Marcus activation block (per Slab 7b precedent) OR Cora-sidecar exception documented.
+  - [x] T4.3 DESCRIPT-ASSEMBLY-GUIDE.md regeneration logic (consume 7c.17b outbound-envelope.yaml + per-plan-unit packages).
+  - [x] T4.4 Trial-3 transcript anchor computation (sha256).
+  - [x] T4.5 Slab-close evidence pointer wiring.
 
-- [ ] **T5 — Author shape-pins + 3-transport-parity tests + DSL-registration audits (×2 surfaces)**
-  - [ ] T5.1 `tests/schemas/operator_verdict/test_section_11b_shape.py`.
-  - [ ] T5.2 `tests/schemas/operator_verdict/test_section_15_shape.py`.
-  - [ ] T5.3 `tests/gates/section_11b/{__init__,_helpers,test_g4b_poll_surface_dsl_registration,test_g4b_poll_surface_three_transport_parity}.py`.
-  - [ ] T5.4 `tests/gates/section_15/{__init__,_helpers,test_g5_poll_surface_dsl_registration,test_g5_poll_surface_three_transport_parity}.py`.
+- [x] **T5 — Author shape-pins + 3-transport-parity tests + DSL-registration audits (×2 surfaces)**
+  - [x] T5.1 `tests/schemas/operator_verdict/test_section_11b_shape.py`.
+  - [x] T5.2 `tests/schemas/operator_verdict/test_section_15_shape.py`.
+  - [x] T5.3 `tests/gates/section_11b/{__init__,_helpers,test_g4b_poll_surface_dsl_registration,test_g4b_poll_surface_three_transport_parity}.py`.
+  - [x] T5.4 `tests/gates/section_15/{__init__,_helpers,test_g5_poll_surface_dsl_registration,test_g5_poll_surface_three_transport_parity}.py`.
 
-- [ ] **T6 — Author Marcus writer tests**
-  - [ ] T6.1 `tests/marcus/orchestrator/writers/test_section_15_bundle.py` — covers `Section15Bundle` shape, `emit_section_15_bundle` behavior, DESCRIPT-ASSEMBLY-GUIDE.md regen determinism, Trial-3 anchor sha256, sanctum-alignment row presence.
+- [x] **T6 — Author Marcus writer tests**
+  - [x] T6.1 `tests/marcus/orchestrator/writers/test_section_15_bundle.py` — covers `Section15Bundle` shape, `emit_section_15_bundle` behavior, DESCRIPT-ASSEMBLY-GUIDE.md regen determinism, Trial-3 anchor sha256, sanctum-alignment row presence.
 
-- [ ] **T7 — C6 import-linter modules list append (AC-G)**
-  - [ ] T7.1 Update `pyproject.toml::tool.importlinter::contracts::C6::modules` to append BOTH `app.gates.section_11b` AND `app.gates.section_15`.
+- [x] **T7 — C6 import-linter modules list append (AC-G)**
+  - [x] T7.1 Update `pyproject.toml::tool.importlinter::contracts::C6::modules` to append BOTH `app.gates.section_11b` AND `app.gates.section_15`.
 
-- [ ] **T8 — Verification battery (R-tier R2; standard-tier T11)**
-  - [ ] T8.1 Focused: pytest `tests/gates/section_11b/` + `tests/gates/section_15/` + both shape-pins.
-  - [ ] T8.2 Focused: pytest Marcus writer tests.
-  - [ ] T8.3 §02A non-regression PASS.
-  - [ ] T8.4 Wave-3 trio non-regression PASS.
-  - [ ] T8.5 Marcus contracts M1-M4 non-regression PASS.
-  - [ ] T8.6 Smoke baseline UNCHANGED.
-  - [ ] T8.7 R2 broad: failure count ≤ T1 baseline (delta ≤ 0); per-failure git-log-attribution.
-  - [ ] T8.8 Class-conformance: T1-baseline + 2 (TWO new shape-pin files).
-  - [ ] T8.9 Lint-imports: 12 KEPT / 0 broken.
-  - [ ] T8.10 Sandbox-AC: PASS.
-  - [ ] T8.11 Ruff: clean.
+- [x] **T8 — Verification battery (R-tier R2; standard-tier T11)**
+  - [x] T8.1 Focused: pytest `tests/gates/section_11b/` + `tests/gates/section_15/` + both shape-pins.
+  - [x] T8.2 Focused: pytest Marcus writer tests.
+  - [x] T8.3 §02A non-regression PASS.
+  - [x] T8.4 Wave-3 trio non-regression PASS.
+  - [x] T8.5 Marcus contracts M1-M4 non-regression PASS.
+  - [x] T8.6 Smoke baseline UNCHANGED.
+  - [x] T8.7 R2 broad: failure count ≤ T1 baseline (44 failed vs prior 45-failure Wave-5 baseline).
+  - [x] T8.8 Class-conformance: PASS at 19; validator counts parity activation + decision-card shape pins, not operator-verdict schema pins.
+  - [x] T8.9 Lint-imports: 12 KEPT / 0 broken.
+  - [x] T8.10 Sandbox-AC: PASS.
+  - [x] T8.11 Ruff: clean.
 
-- [ ] **T10 — Codex self-review dropbox**
-  - [ ] T10.1 Drop `_codex-handoff/7c-15.ready-for-review.md`. Standard-tier T11 means dropbox includes deeper coverage: Marcus-writer-test attribution + sanctum-alignment evidence + cross-surface coordination evidence + dual-FR fold rationale verification.
+- [x] **T10 — Codex self-review dropbox**
+  - [x] T10.1 Drop `_codex-handoff/7c-15.ready-for-review.md`. Standard-tier T11 means dropbox includes deeper coverage: Marcus-writer-test attribution + sanctum-alignment evidence + cross-surface coordination evidence + dual-FR fold rationale verification.
 
 ---
 
@@ -203,16 +203,49 @@ Codex GPT-5 (bmad-dev-story discipline).
 
 ### Debug Log References
 
-(populated by Codex at T1-T9)
+- 2026-05-06: 7c.17b predecessor confirmed done in sprint-status; story moved to in-progress.
+- 2026-05-06: Focused §11B/§15 surface + schema tests: 26 passed.
+- 2026-05-06: Focused Marcus §15 bundle + sanctum tests: 8 passed.
+- 2026-05-06: §02A non-regression: 15 passed; Wave sibling non-regression: 43 passed; Marcus non-regression: 43 passed.
+- 2026-05-06: Structural C6 target-list tests: 10 passed; lint-imports 12 kept / 0 broken; ruff clean; sandbox-AC PASS.
+- 2026-05-06: Smoke: 181 passed / 18 skipped.
+- 2026-05-06: Broad regression: 44 failed, 4445 passed, 27 skipped, 2 xfailed; inherited baseline classes only.
 
 ### Completion Notes List
 
-(populated by Codex at T10)
+- Implemented §11B G4B input-package HIL surface with alias_of="G4", mandatory CLI+HTTP, optional MCP-stdio, and `approve / edit / reject` `Section11BOperatorVerdict`.
+- Implemented §15 G5 final handoff HIL surface with alias_of="G5", all three transports mandatory, no optional transports, and `complete / edit / reject` `Section15OperatorVerdict`.
+- Added LF/no-BOM JSON schemas and FR-7c-49 schema-stability tests for both operator-verdict variants.
+- Implemented Marcus `section_15_bundle` writer: complete-only trigger, deterministic DESCRIPT-ASSEMBLY-GUIDE.md rendering, Trial-3 transcript sha256 anchor, slab-close evidence pointer, and `section-15-bundle` sanctum alignment declaration.
+- C6 modules list now includes both `app.gates.section_11b` and `app.gates.section_15`; import-linter remains 12 kept / 0 broken.
 
 ### File List
 
-(populated by Codex at T10)
+- `app/gates/section_11b/__init__.py`
+- `app/gates/section_11b/poll_surface.py`
+- `app/gates/section_15/__init__.py`
+- `app/gates/section_15/poll_surface.py`
+- `app/models/operator_verdict_section_11b.py`
+- `app/models/operator_verdict_section_11b.v1.schema.json`
+- `app/models/operator_verdict_section_15.py`
+- `app/models/operator_verdict_section_15.v1.schema.json`
+- `app/marcus/orchestrator/writers/section_15_bundle.py`
+- `tests/gates/section_11b/__init__.py`
+- `tests/gates/section_11b/_helpers.py`
+- `tests/gates/section_11b/test_g4b_poll_surface_dsl_registration.py`
+- `tests/gates/section_11b/test_g4b_poll_surface_three_transport_parity.py`
+- `tests/gates/section_15/__init__.py`
+- `tests/gates/section_15/_helpers.py`
+- `tests/gates/section_15/test_g5_poll_surface_dsl_registration.py`
+- `tests/gates/section_15/test_g5_poll_surface_three_transport_parity.py`
+- `tests/schemas/operator_verdict/test_section_11b_shape.py`
+- `tests/schemas/operator_verdict/test_section_15_shape.py`
+- `tests/marcus/orchestrator/writers/test_section_15_bundle.py`
+- `tests/marcus/orchestrator/writers/test_sanctum_alignments_complement.py`
+- `pyproject.toml`
+- `_codex-handoff/7c-15.ready-for-review.md`
 
 ### Change Log
 
 - 2026-05-05: Spec pre-authored by Claude (lookahead_tier=2) for post-7c.17b dispatch.
+- 2026-05-06: Codex implemented §11B + §15 HIL surfaces, Marcus §15 bundle writer, tests, schemas, C6 update, and ready-for-review handoff.

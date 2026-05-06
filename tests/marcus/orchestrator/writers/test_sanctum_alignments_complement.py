@@ -52,6 +52,7 @@ def test_all_five_writer_alignments_emit_manifest(tmp_path):
         "app.marcus.orchestrator.writers.diagram_cards",
         "app.marcus.orchestrator.writers.theme_resolution",
         "app.marcus.orchestrator.writers.outbound_envelope",
+        "app.marcus.orchestrator.writers.section_15_bundle",
     ]:
         _reload_module(module_name)
 
@@ -65,4 +66,5 @@ def test_all_five_writer_alignments_emit_manifest(tmp_path):
         "gary-outbound-envelope",
         "gary-slide-content",
         "gary-theme-resolution",
+        "section-15-bundle",
     ]
