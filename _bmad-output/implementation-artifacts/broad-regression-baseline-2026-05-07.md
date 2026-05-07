@@ -13,14 +13,12 @@ measurement_command: |
 measurement_environment: |
   branch: dev/langchain-langgraph-foundation
   base commit (pre-S1 stash test): 0ef8594 (Slab 7c retrospective close, 2026-05-07)
-  measurement run: 2026-05-07T18:14 (during S1 dispatch; post P0-3/P0-4/P0-5/P0-7/P0-8/P0-10/P0-11/P0-6/PP-2; post-regression-fix on P0-3 hybrid registry + P3→P4 test rename)
-  total_collected: 4168
-  passed: 4077
-  failed: 55 (54 unique nodeids; 1 parameterized variant of replay-all)
-  skipped: 26
-  xfailed: 2
-  warnings: 11
-  duration: 110.18s
+  measurement run 1 (mid-S1): 2026-05-07T18:14 — post P0-3/P0-4/P0-5/P0-7/P0-8/P0-10/P0-11/P0-6/PP-2; pre-regression-fix
+    - failed: 55 (54 unique + 1 parameterized variant); duration 110.18s
+  measurement run 2 (post-S1): 2026-05-07T~19:00 (post `725f55f` S1-close commit; post P0-1 + P0-2 + P0-IH + 6 regression-fixes + P3→P4 test rename)
+    - failed: 48 (-7 from mid-S1; matches expected 6 regression-fixes + 1 test-rename closure); duration 68.91s
+    - delta vs Murat's pre-S1 estimate of 47: +1 (within sampling variance + +1 AM-12 TW-7c-4 scope-creep audit entry not in original sample)
+  total_collected: 4168 (post-S1: 4084 passed + 48 failed + 26 skipped + 2 xfailed)
 murat_estimate_at_pre_S1_review: 47
 actual_failure_count: 55
 delta_explanation: |
@@ -202,6 +200,7 @@ Failures grouped by likely root cause. Each entry: nodeid + one-line attribution
 | `tests/structural/test_transport_parity_dsl_registration_floor.py::test_transport_parity_dsl_self_registration_floor` | parity-DSL registration count below floor |
 | `tests/structural/test_tw_7c_4_5_6_detection_scaffolds_present.py::test_tw_7c_4_detector_exists_and_passes` | TW-7c-4 detector scaffold presence |
 | `tests/audit/test_audit_tw_7c_4_no_live_dispatch_scope_creep.py::test_tw_7c_4_detector_reports_no_fire` | TW-7c-4 audit AC; should pass; investigate at S5 |
+| `tests/audit/test_audit_tw_7c_4_no_live_dispatch_scope_creep.py::test_live_dispatch_python_scope_is_bounded` | TW-7c-4 scope-creep audit; +1 entry surfaced post-S1 measurement (Murat post-S1 AM-12) |
 | `tests/gates/section_02a/test_g0_poll_surface_dsl_registration.py::test_self_registration_audit_passes_floor_10` | §02A G0 poll-surface DSL self-registration ≥ floor 10 |
 
 ---
