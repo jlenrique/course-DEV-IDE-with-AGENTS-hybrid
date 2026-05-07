@@ -21,18 +21,24 @@ def _assert_four_field_shape(section: str) -> None:
     assert "- **Owner:**" not in section
 
 
-def test_a17_and_p3_entries_present_with_frozen_shape() -> None:
+def test_a17_and_p4_entries_present_with_frozen_shape() -> None:
+    """Composition-Shape Vote entry was renumbered P3 → P4 at pre-Trial-3 cleanup
+    S1 P0-4 (2026-05-07) per Mary's surgical-precision amendment. The original
+    `## Process Anti-Patterns` section had a duplicate-heading + reserved-placeholder
+    structural defect (P1/P2 reserved + shadowed P3); collapse + renumber rescued
+    the post-Slab-5a Composition-Shape Vote entry to P4 while Slab 7c entries
+    became canonical P1/P2/P3."""
     body = CATALOG.read_text(encoding="utf-8")
 
     post_cycle_index = body.index("## Post-Cycle Harvest")
     a17_index = body.index("### A17. Substrate Designed for Isolation, Composition Assumed")
     process_index = body.index("## Process Anti-Patterns")
-    p3_index = body.index("### P3. Composition-Shape Vote Without End-to-End Exercise")
+    p4_index = body.index("### P4. Composition-Shape Vote Without End-to-End Exercise")
 
-    assert post_cycle_index < a17_index < process_index < p3_index
+    assert post_cycle_index < a17_index < process_index < p4_index
     _assert_four_field_shape(
         _section(body, "### A17. Substrate Designed for Isolation, Composition Assumed")
     )
     _assert_four_field_shape(
-        _section(body, "### P3. Composition-Shape Vote Without End-to-End Exercise")
+        _section(body, "### P4. Composition-Shape Vote Without End-to-End Exercise")
     )

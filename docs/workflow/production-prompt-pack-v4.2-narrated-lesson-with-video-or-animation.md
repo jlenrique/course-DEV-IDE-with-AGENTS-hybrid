@@ -1,4 +1,14 @@
+---
+title: Production Prompt Pack v4.2 — Narrated Lesson with Video/Animation
+version: 4.2j
+status: legacy-frozen authority for `slab-7-legacy-migrated-mapping-checklist.md` (mapping axis); superseded for production runs by **v5** (forthcoming at pre-Trial-3 cleanup S4)
+last-updated: 2026-05-07 (S1 P0-5 + P0-6 cleanup; PP-1 Audra→Enrique fix; §3.g sunset deletion; broken xref fix; PP-3 four-concern preamble inserted)
+generated: true
+---
+
 # Production Prompt Pack v4.2 (Generated)
+
+> **Banner — read first (PP-2 disposition, S1 mid-session 2026-05-07):** This pack is preserved as the **legacy-axis frozen authority** that `_bmad-output/planning-artifacts/slab-7-legacy-migrated-mapping-checklist.md` maps against. The "Marcus module" column in §0) TL;DR Crosswalk references the **legacy primary-repo runtime** paths (`marcus/orchestrator/loop.py`, `scripts/utilities/run_hud.py`, etc.) preserved here as historical anchor. The migrated runtime executes a production trial via `app/marcus/cli/trial.py` → `app/marcus/orchestrator/production_runner.py` (post-Slab-1 substrate; 11 specialists activated at Slab 7b; orchestrational tail completed at Slab 7c). **The forthcoming v5 pack** (authored at pre-Trial-3 cleanup Session 4 from this corrected v4.2 + the four-concern preamble in §0.5 below + post-Slab-7c specialist roster + migrated runtime paths) **becomes the canonical pack for production runs**; v4.2 stays frozen for the mapping-checklist's legacy axis.
 
 ## 0) TL;DR Crosswalk
 
@@ -30,13 +40,108 @@
 | 08B | 08B | scripts/utilities/run_hud.py | M→O | Storyboard B + HIL Review |
 | 09 | 09 | scripts/utilities/run_hud.py | M→O | Gate 3 - Lock Pass 2 Package |
 | 10 | 10 | scripts/utilities/run_hud.py | M→O | Fidelity + Quality Pre-Spend |
-| 11 | 11 | skills/bmad-agent-audra | M→O | ElevenLabs Voice Selection HIL |
-| 11B | 11B | skills/bmad-agent-audra | M→O | ElevenLabs Input Package HIL |
-| 12 | 12 | skills/bmad-agent-audra | O→M | ElevenLabs Audio Generation |
+| 11 | 11 | skills/bmad-agent-enrique | M→O | ElevenLabs Voice Selection HIL |
+| 11B | 11B | skills/bmad-agent-enrique | M→O | ElevenLabs Input Package HIL |
+| 12 | 12 | skills/bmad-agent-enrique | O→M | ElevenLabs Audio Generation |
 | 13 | 13 | scripts/utilities/run_hud.py | M→O | Quinn-R Pre-Composition QA |
 | 14 | 14 | skills/bmad-agent-desmond | O→M | Compositor Assembly Bundle |
 | 14.5 | 14.5 | skills/bmad-agent-desmond | M→self | Desmond Run-Scoped Operator Brief |
 | 15 | 15 | skills/bmad-agent-desmond | O→M | Operator Handoff - Descript Ready |
+
+---
+
+## 0.5) Pre-Run Operator Launchpad (PP-3 four-concern preamble; S1 P0-6, 2026-05-07)
+
+> **Per operator directive 2026-05-07:** "the prompt pack needs to ensure environment, system health, default values of production run constants, and preflight check are all addressable and verifiable." The four sub-sections below cover those four concerns. Each item is **verifiable** — the operator (or an automated probe) can run the cited command and observe a PASS/FAIL outcome. Cite real probe paths; nothing is stubbed.
+
+### 0.5.A) Environment verification (PP-3a)
+
+Pre-launch checklist. Run each command; expect PASS/FAIL per the third column.
+
+| Concern | Command | PASS condition |
+|---|---|---|
+| Required env vars present | `Get-Content .env \| Select-String "OPENAI_API_KEY"` | line returned (key declared) |
+| Recommended env vars present | `Get-Content .env \| Select-String "LANGSMITH_API_KEY","DATABASE_URL"` | both lines returned |
+| Per-API smoke env vars (only if `--live` opt-ins are intended) | `Get-Content .env \| Select-String "WONDERCRAFT_API_KEY","ELEVENLABS_API_KEY","GAMMA_API_KEY","KLING_ACCESS_KEY"` | each line returned for the APIs you intend to invoke |
+| Course-content corpus directory | `Test-Path "course-content/courses/<lesson_slug>"` | `True` |
+| Corpus directory contents | `Get-ChildItem course-content/courses/<lesson_slug>/` | at least one primary source + one supporting reference; no `.tmp/` leakage; no `.gitkeep` placeholder if real content absent |
+| Working tree clean (no uncommitted production code) | `git status --short` | empty (or only untracked `runs/` / `_artifacts/` directories) |
+| `.venv` present + Python interpreter on path | `Test-Path .venv/Scripts/python.exe` + `.venv/Scripts/python.exe --version` | `True` + Python 3.11+ |
+
+**Validity check (separate; not in this gate):** env-var validity (does the key actually authenticate?) is **NOT** part of PP-3a — that's a separate scope at `P1-27` cred-readiness sweep + `--live` smoke harness. PP-3a verifies presence + naming only.
+
+**See also:** [`docs/operator/corpus-preparation-guide.md`](../operator/corpus-preparation-guide.md) for full corpus-prep convention.
+
+### 0.5.B) System health + preflight gate (PP-3b)
+
+The migrated runtime ships with an **existing preflight harness** at `skills/pre-flight-check/`. The PP-3b gate documents how to invoke it; it does NOT introduce a parallel system.
+
+**Primary preflight gate command:**
+```powershell
+.\.venv\Scripts\python.exe -m skills.pre-flight-check.scripts.preflight_runner --double-dispatch --motion-enabled
+```
+
+**Expected PASS output:** preflight runner emits a JSON receipt classifying each tool integration as one of:
+- **MCP-ready** — green; tool reachable via MCP protocol
+- **API-ready** — green; tool reachable via direct HTTP API
+- **Manual-only** — yellow; operator-driven invocation (still launch-able)
+- **Blocked** — red; cannot invoke until resolution
+
+**On FAIL:** the runner emits a `RESOLUTION-NEEDED` block per blocked tool with actionable next-steps (env-var-add / OAuth-renew / network-config / etc.). The operator resolves each blocker before re-running, OR launches with reduced-scope invocation set if blocker is non-load-bearing for the planned trial.
+
+**Secondary health probes (lighter-weight; pre-trial sanity):**
+```powershell
+.\.venv\Scripts\python.exe scripts\utilities\app_session_readiness.py --with-preflight
+node scripts\heartbeat_check.mjs
+```
+
+**Verifiable launch-permission token (per AM-11 / Murat ratified pre-S1):**
+```powershell
+.\.venv\Scripts\python.exe -m pytest tests/trial/test_trial3_readiness.py tests/test_preflight_check.py tests/marcus_capabilities/test_preflight_receipt_contract.py -v
+```
+PASS condition: all three test modules green AND preflight runner above shows zero `RESOLUTION-NEEDED` for production-required tools (per the trial's planned dispatch set).
+
+**Activation receipt** for a specific trial (existing v4.2 §01 mechanism; preserved):
+```powershell
+.\.venv\Scripts\python.exe -m scripts.utilities.emit_preflight_receipt --with-preflight --motion-enabled --bundle-dir [BUNDLE_PATH] --output [BUNDLE_PATH]/preflight-results.json
+.\.venv\Scripts\python.exe -m scripts.utilities.venv_health_check
+```
+
+**FAIL handling:** halt before §01; remediate per the receipt's `RESOLUTION-NEEDED` block; re-run.
+
+### 0.5.C) Production run-constants visible + diffable (PP-3c)
+
+Run-constants govern per-trial parameters: `cluster_density`, `slide-mode-proportions` (visual-led / text-led / motion-led ratios), `narration_profile_controls`, `motion_enabled`, `double_dispatch`, etc.
+
+**Path convention:**
+- **Per-run run-constants** (canonical for the trial in flight) live at `<run-dir>/run/run-constants.yaml` where `<run-dir>` is the trial's bundle dir under `state/config/runs/<trial-id>/`.
+- **Top-level template** (`state/config/run-constants.yaml`) **is not currently provided**. Per pre-S1 verification 2026-05-07: the file is absent; the operator's run-constants are composed at `trial start` time per the operator's CLI flags + Marcus PR-RC capability + `creative-directive.schema.yaml` defaults. **Resolution of whether a top-level template SHOULD exist is filed as P1-25 spike (S5)**; this preamble documents the current state honestly.
+
+**Recommended defaults (composed by Marcus PR-RC at trial start):**
+
+| Constant | Default | Override mechanism |
+|---|---|---|
+| `cluster_density` | (composed from Dan §4.75 directive) | operator can pre-set via `--cluster-density <value>` flag |
+| `slide-mode-proportions` | (composed from creative-directive.schema.yaml + experience-profiles.yaml) | operator can pre-set via `--experience-profile <name>` |
+| `narration_profile_controls` | (per experience-profile selection) | operator can override individual fields via §4.75 CD HIL |
+| `motion_enabled` | `true` (this pack supports motion) | `--motion-enabled` / `--no-motion` |
+| `double_dispatch` | `false` (single-dispatch default) | `--double-dispatch` flag |
+| `pack_version` | `v4.2` (this pack); `v5` after S4 close | manifest-driven; no per-run override |
+
+**Diff command (operator pre-launch sanity check):**
+After Marcus PR-RC composes the run-constants but BEFORE §04.55 lock semantics fire, the operator can inspect the composed run-constants:
+```powershell
+Get-Content state/config/runs/<trial-id>/run/run-constants.yaml
+```
+Compare against operator's intent. Any mismatch should be resolved via §04.55 G1.5 lock surface's `edit` verb BEFORE the operator picks `lock` (which is irreversible — see HIL Verb Legend).
+
+**See also:**
+- [`docs/operator/hil-verb-legend.md`](../operator/hil-verb-legend.md) §04.55 — `lock` is irreversible
+- [`state/config/schemas/creative-directive.schema.yaml`](../../state/config/schemas/creative-directive.schema.yaml) — defaults composition source
+- [`docs/dev-guide/composition-specification.md`](../dev-guide/composition-specification.md) §3.1 — envelope first-contribution-wins for run-constants
+- P1-25 spike (S5; pre-trial-3 cleanup plan) — top-level template existence-decision
+
+---
 
 ## 01) Activation + Preflight
 [M→O]
@@ -272,21 +377,6 @@ Expected files after Prompt 3 completes: `run-constants.yaml`, `preflight-result
 ### 3.f) Fallback
 
 - If any planning-critical area is medium/low confidence, stop for targeted remediation before Prompt 4.
-
-### 3.g) Legacy prose-only fallback (deprecated — removal after two clean runner trials)
-
-**Deprecated / Sunset:** Use this path only if the runner fails unexpectedly mid-pipeline (runner-specific infra issue, not a source problem) **and** you have NOT yet logged two clean runner trials. If two clean trials are already recorded, skip this section entirely.
-
-If the fallback is explicitly authorized, Marcus may revert to the pre-Epic-25 prose-only path:
-
-1. Hand-execute fetch + extract using the helpers in `skills/bmad-agent-texas/scripts/source_wrangler_operations.py`
-2. Write `extracted.md`, `metadata.json`, `ingestion-evidence.md` by hand
-3. Run the old validator wrapper: `.\.venv\Scripts\python.exe -m scripts.utilities.validate_source_bundle_confidence --bundle-dir [BUNDLE_PATH]`
-4. Place a `.runner-bypassed` breadcrumb file in the bundle so post-mortems can identify which path ran and why
-
-This fallback survives for exactly two clean trial runs of the runner path (per story 25-1 party-mode decision, Murat's risk-math argument). After two clean runs, delete this section. Bundles that use the fallback cannot claim Texas-integrated status.
-
----
 
 ## 04) Ingestion Quality Gate + Irene Packet
 [M→O]
@@ -1049,7 +1139,7 @@ Required governance at this stage:
 - do not use `storyboard/index.html`, unresolved review payloads, or stale Pass 2 artifacts as execution inputs
 - preserve the exact Motion Gate-approved `motion_asset_path` for every non-static segment (see consolidated "Motion Contract" rules)
 - do not re-open Gate 2M, motion generation, or Motion Gate from downstream prompts unless the operator explicitly redirects the run
-- cross-ref: `docs/human-in-the-loop.md` for HIL protocol
+- cross-ref: `docs/workflow/human-in-the-loop.md` for HIL protocol
 
 Motion-specific lock rule:
 - Gate 3 approval must lock not only the script and manifest, but also the approved `motion_plan.yaml` bindings for every non-static segment

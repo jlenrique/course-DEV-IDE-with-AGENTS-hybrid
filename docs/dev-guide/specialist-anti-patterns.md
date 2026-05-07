@@ -318,21 +318,7 @@ The above A1-A20 entries cover *substrate* and *implementation* anti-patterns �
 - **Counter-pattern:** Long-term remediations under exploration (file as deferred-inventory entry + scope post-Trial-3 PRD): (a) **shared workspace coordination signaling** — agents read/write a shared coordination file (`_codex-handoff/` is partial precedent; extend to bidirectional state); (b) **webhook-style dropbox detection** — Claude polls `_codex-handoff/` on a cron loop (already used for Slab 7c marathon polling) but with auto-trigger on file-creation rather than fixed-interval; (c) **agent-to-agent direct handoff protocol** — defined IPC channel where Claude can dispatch a story directly to Codex (or vice versa) without operator-bridge. Until any of these land, the operator-bridge is the load-bearing connection — the COST is operator-attention per story; the BENEFIT is operator-judgment on every batch (which has prevented multiple structural defects from shipping; e.g., 7c.21 spec-defect carve-out caught at pre-author).
 - **Slab-of-discovery:** Slab 7c retrospective 2026-05-07 (Juanl, this entry's named operator). Reactivation trigger: post-Trial-3 PRD scoping where multi-agent coordination becomes a primary architectural concern.
 
----
-
-## Process Anti-Patterns (NEW subheading; 2026-04-27)
-
-The above A1-A17 entries cover *substrate* and *implementation* anti-patterns — defects in code or system design. The entries below cover *process* anti-patterns — defects in governance / gate-process discipline that allow substrate or implementation defects to ship. Filed at 2026-04-27 per Mary harvest-gate authority + Quinn-R 5-agent-party-mode-round process-change recommendation. Format-freeze v1 same four-field shape; numbered P1+ to distinguish from A1+ codebase-anti-patterns.
-
-### P1. (Reserved for future)
-
-(Placeholder; first instance discovered will populate.)
-
-### P2. (Reserved for future)
-
-(Placeholder; first instance discovered will populate.)
-
-### P3. Composition-Shape Vote Without End-to-End Exercise
+### P4. Composition-Shape Vote Without End-to-End Exercise
 
 - **Example:** The migration's M5 SHIP-CONDITIONAL vote (2026-04-26) was reached without any end-to-end composition exercise of the production-graph runner. Subsequent investigation (Codex Phase A 2026-04-27 + Slab 6.1 first-attempt bmad-code-review + Slab 6.1 strict-AC HALT) revealed the runner did not exist as a composed-and-invokable artifact at vote time. The 6-agent party-mode read the spec + the per-component invariant matrix + the trial-replay regression suite + the cost-engineering foundation + the head-to-head control-plane parity — all proved internal correctness — and ratified SHIP-CONDITIONAL on a composition assumption never exercised. This is a process defect distinct from the substrate defect (A17): even if the substrate had cleanly admitted composition, the *vote* itself proceeded without testing that assumption. Five A16 instances + the A17 substrate finding all trace to this single process gap: composition was always assumed implementation-distance away, never exercised before votes.
 - **Counter-pattern:** Before any composition-shape MVP/SHIP-CONDITIONAL vote, run ONE real upstream→downstream pair through the proposed substrate end-to-end. The pair MUST be real components (not stubs, not mocks of the composition boundary), not isolated per-component pass-through. The exercise output joins the vote evidence base; if the exercise fails, the vote either (a) RE-SCOPES to bounded-MVP scope that excludes the composition claim, (b) DEFERS until the composition substrate exists, OR (c) GREENs explicitly as a composition-shape vote with the substrate gap named in the conditional-window list. Operationalize via Quinn-R "Composition Smoke" gate added to the slab-opener template: a 30-line throwaway that wires components together end-to-end before the slab spec is ratified. Failing the smoke is not a slab-blocker; it's a vote-evidence-base requirement.
