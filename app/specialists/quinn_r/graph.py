@@ -23,7 +23,7 @@ from app.specialists.quinn_r.quality_control_dispatch import (
 )
 from app.specialists.quinn_r.sensory_bridges_dispatch import dispatch_to_sensory_bridges
 from app.specialists.texas.graph import SanctumLockViolation as _SanctumLockViolation
-from tests.integration.scaffold_conformance.scaffold_contract import SCAFFOLD_NODE_IDS
+from app.specialists._scaffold.contract import SCAFFOLD_NODE_IDS
 
 TRANSITIONS: tuple[tuple[str, str], ...] = (
     ("receive", "plan"),

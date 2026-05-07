@@ -10,7 +10,7 @@ from langgraph.types import Command, interrupt
 
 from app.gates.resume_api import resume_from_verdict as _resume_from_verdict
 from app.models.state.run_state import RunState
-from tests.integration.scaffold_conformance.scaffold_contract import SCAFFOLD_NODE_IDS
+from app.specialists._scaffold.contract import SCAFFOLD_NODE_IDS
 
 TRANSITIONS: tuple[tuple[str, str], ...] = (
     ("receive", "plan"),

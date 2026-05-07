@@ -13,7 +13,7 @@ from app.gates.resume_api import resume_from_verdict as _resume_from_verdict
 from app.models.adapter import make_chat_model
 from app.models.state.model_resolution_entry import ModelResolutionEntry
 from app.models.state.run_state import RunState
-from tests.integration.scaffold_conformance.scaffold_contract import SCAFFOLD_NODE_IDS
+from app.specialists._scaffold.contract import SCAFFOLD_NODE_IDS
 
 TRANSITIONS: tuple[tuple[str, str], ...] = (
     ("receive", "plan"),

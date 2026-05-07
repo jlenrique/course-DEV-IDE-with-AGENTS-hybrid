@@ -52,7 +52,7 @@ from app.gates.resume_api import resume_from_verdict as _resume_from_verdict
 from app.models.adapter import make_chat_model
 from app.models.state import specialist_summary_artifacts as specialist_summary_writer
 from app.models.state.run_state import RunState
-from tests.integration.scaffold_conformance.scaffold_contract import SCAFFOLD_NODE_IDS
+from app.specialists._scaffold.contract import SCAFFOLD_NODE_IDS
 
 REPO_ROOT: Path = Path(__file__).resolve().parents[3]
 SANCTUM_DIR: Path = REPO_ROOT / "_bmad" / "memory" / "bmad-agent-content-creator"

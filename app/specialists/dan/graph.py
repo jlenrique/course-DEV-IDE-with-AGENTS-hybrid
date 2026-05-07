@@ -12,7 +12,7 @@ from app.models.adapter import make_chat_model
 from app.models.state import specialist_summary_artifacts as specialist_summary_writer
 from app.models.state.run_state import RunState
 from app.specialists.dan import _act as _dan_act_impl
-from tests.integration.scaffold_conformance.scaffold_contract import SCAFFOLD_NODE_IDS
+from app.specialists._scaffold.contract import SCAFFOLD_NODE_IDS
 
 TRANSITIONS: tuple[tuple[str, str], ...] = (
     ("receive", "plan"),

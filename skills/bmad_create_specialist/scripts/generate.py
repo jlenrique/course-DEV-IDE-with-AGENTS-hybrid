@@ -13,7 +13,7 @@ from pathlib import Path
 
 import yaml
 
-from tests.integration.scaffold_conformance.scaffold_contract import SCAFFOLD_NODE_IDS
+from app.specialists._scaffold.contract import SCAFFOLD_NODE_IDS
 
 ALLOWED_MCP_TOOLS: frozenset[str] = frozenset(
     {"none", "gamma", "elevenlabs", "canvas", "kling", "wondercraft"}

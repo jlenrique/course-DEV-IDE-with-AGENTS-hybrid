@@ -8,7 +8,11 @@ from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
 
-DEFAULT_TRIAL_2_ARTIFACT_DIR = Path("_artifacts") / "trial-2"
+DEFAULT_ARTIFACT_DIR = Path("_artifacts") / "current-trial"
+
+# Backward-compat alias for any external caller still referencing the
+# Trial-2-bound name. Removed at S6 P3 housekeeping.
+DEFAULT_TRIAL_2_ARTIFACT_DIR = DEFAULT_ARTIFACT_DIR
 CALIBRATION_TRIPWIRE_LOG = "calibration_tripwire_log.jsonl"
 ENGAGEMENT_DECAY_REPORT = "engagement_decay_report.md"
 
@@ -35,7 +39,7 @@ def _now_iso() -> str:
 
 
 def _artifact_dir(root: Path | None) -> Path:
-    return root if root is not None else DEFAULT_TRIAL_2_ARTIFACT_DIR
+    return root if root is not None else DEFAULT_ARTIFACT_DIR
 
 
 def _append_jsonl(path: Path, payload: dict[str, Any]) -> None:
@@ -184,7 +188,8 @@ def assert_payload_duality_boundary(payload: dict[str, Any]) -> None:
 
 __all__ = [
     "CALIBRATION_TRIPWIRE_LOG",
-    "DEFAULT_TRIAL_2_ARTIFACT_DIR",
+    "DEFAULT_ARTIFACT_DIR",
+    "DEFAULT_TRIAL_2_ARTIFACT_DIR",  # backward-compat alias; removed at S6
     "ENGAGEMENT_DECAY_REPORT",
     "CalibrationTripwireConfig",
     "DEFAULT_CALIBRATION_TRIPWIRE_CONFIG",

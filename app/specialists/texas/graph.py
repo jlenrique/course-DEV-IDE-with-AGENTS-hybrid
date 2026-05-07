@@ -19,7 +19,7 @@ from app.models.state.model_resolution_entry import ModelResolutionEntry
 from app.models.state.run_state import RunState
 from app.specialists.texas import _act as _texas_act_impl
 from app.specialists.texas.retrieval_dispatch import dispatch_retrieval
-from tests.integration.scaffold_conformance.scaffold_contract import SCAFFOLD_NODE_IDS
+from app.specialists._scaffold.contract import SCAFFOLD_NODE_IDS
 
 REPO_ROOT = Path(__file__).resolve().parents[3]
 SANCTUM_DIR = REPO_ROOT / "_bmad" / "memory" / "bmad-agent-texas"

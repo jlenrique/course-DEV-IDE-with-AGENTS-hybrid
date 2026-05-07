@@ -13,7 +13,7 @@ from app.models.state import specialist_summary_artifacts as specialist_summary_
 from app.models.state.model_resolution_entry import ModelResolutionEntry
 from app.models.state.run_state import RunState
 from app.specialists.compositor import _act as _compositor_act_impl
-from tests.integration.scaffold_conformance.scaffold_contract import SCAFFOLD_NODE_IDS
+from app.specialists._scaffold.contract import SCAFFOLD_NODE_IDS
 
 SANCTUM_DIR = _compositor_act_impl.SANCTUM_DIR
 TRANSITIONS: tuple[tuple[str, str], ...] = (
