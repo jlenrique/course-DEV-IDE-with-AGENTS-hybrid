@@ -1,26 +1,22 @@
-"""Marcus gate decision wiring for learning-event capture."""
+"""Reverse-shim: legacy `marcus.orchestrator.learning_event_wiring` -> `app.marcus.orchestrator.learning_event_wiring` (pre-Trial-3 S2 collapse 2026-05-07).
 
-from __future__ import annotations
+This module is a thin re-export shim. Production content lives at `app.marcus.orchestrator.learning_event_wiring`.
+Will be deleted at S2 close once all consumers migrate to `app.marcus.*` paths.
+Retained as bridge during S2 to keep 108-150 test-file imports green during transition.
 
-from pathlib import Path
-from uuid import UUID
+Mirror pattern: re-exports the full `app.marcus.orchestrator.learning_event_wiring` namespace (public + select non-`__all__`
+attributes that backward-compat callers depend on, e.g., test-only helpers).
+"""
 
-from scripts.utilities.learning_event_capture import append_to_ledger, create_event
+from app.marcus.orchestrator.learning_event_wiring import *  # noqa: F401, F403
 
+import app.marcus.orchestrator.learning_event_wiring as _src  # noqa: E402
+import sys as _sys  # noqa: E402
 
-def record_gate_2_decision(run_id: UUID, run_dir: Path) -> None:
-    """Record Gate 2 learning event."""
-    event = create_event(run_id=run_id, gate="G2C", event_type="approval")
-    append_to_ledger(event, run_dir)
-
-
-def record_gate_3_decision(run_id: UUID, run_dir: Path) -> None:
-    """Record Gate 3 learning event."""
-    event = create_event(run_id=run_id, gate="G3", event_type="revision")
-    append_to_ledger(event, run_dir)
-
-
-def record_gate_4_decision(run_id: UUID, run_dir: Path) -> None:
-    """Record Gate 4 learning event."""
-    event = create_event(run_id=run_id, gate="G4", event_type="waiver")
-    append_to_ledger(event, run_dir)
+# Mirror everything (except dunder attrs) so `from marcus.orchestrator.learning_event_wiring import X` works
+# for both `__all__` exports AND non-public-but-test-imported names.
+_sys.modules[__name__].__dict__.update(
+    {k: v for k, v in _src.__dict__.items() if not k.startswith("__")}
+)
+# Mirror module docstring so docstring-discovery tests find canonical content.
+__doc__ = _src.__doc__

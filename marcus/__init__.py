@@ -1,28 +1,15 @@
-"""Marcus package namespace.
+"""Reverse-shim: legacy `marcus` -> `app.marcus` (pre-Trial-3 S2 collapse 2026-05-07).
 
-This package hosts Marcus-side modules.
-
-* Story 31-1 introduced the first sub-package :mod:`marcus.lesson_plan`
-  — the foundation schema for the Lesson Planner MVP.
-* Story 30-1 introduced the Marcus duality split: :mod:`marcus.intake`
-  (steps 01-04 + pre-packet construction) and :mod:`marcus.orchestrator`
-  (4A loop + log write-API + 05+ fan-out), both hidden behind a single
-  Maya-facing facade at :mod:`marcus.facade`.
-
-Maya-facing public surface
---------------------------
-
-The ONE top-level export is :func:`get_facade` (re-exported from
-:mod:`marcus.facade`). Sub-packages :mod:`marcus.intake` and
-:mod:`marcus.orchestrator` are NOT re-exported at the top level — they
-are internal development surfaces, not Maya's consumption path.
-
-R1 amendment 17 (Marcus-as-one-voice): Maya sees one Marcus. No
-hyphenated sub-identity tokens appear in any Maya-facing string.
+Package-level shim. Sub-modules are individually shimmed to `app.marcus.*` siblings.
 """
 
-from __future__ import annotations
+from app.marcus import *  # noqa: F401, F403
 
-from marcus.facade import get_facade
+import app.marcus as _src  # noqa: E402
+import sys as _sys  # noqa: E402
 
-__all__ = ("get_facade",)
+_sys.modules[__name__].__dict__.update(
+    {k: v for k, v in _src.__dict__.items() if not k.startswith("__")}
+)
+# Mirror module docstring so docstring-discovery tests find canonical content.
+__doc__ = _src.__doc__

@@ -1,35 +1,22 @@
-"""Step 05 pre-packet handoff consumer boundary (Story 30-4)."""
+"""Reverse-shim: legacy `marcus.lesson_plan.step_05_pre_packet_handoff` -> `app.marcus.lesson_plan.step_05_pre_packet_handoff` (pre-Trial-3 S2 collapse 2026-05-07).
 
-from __future__ import annotations
+This module is a thin re-export shim. Production content lives at `app.marcus.lesson_plan.step_05_pre_packet_handoff`.
+Will be deleted at S2 close once all consumers migrate to `app.marcus.*` paths.
+Retained as bridge during S2 to keep 108-150 test-file imports green during transition.
 
-from typing import Any, Literal
+Mirror pattern: re-exports the full `app.marcus.lesson_plan.step_05_pre_packet_handoff` namespace (public + select non-`__all__`
+attributes that backward-compat callers depend on, e.g., test-only helpers).
+"""
 
-from pydantic import BaseModel, ConfigDict, Field
+from app.marcus.lesson_plan.step_05_pre_packet_handoff import *  # noqa: F401, F403
 
-from marcus.lesson_plan.log import LessonPlanLog, assert_plan_fresh
+import app.marcus.lesson_plan.step_05_pre_packet_handoff as _src  # noqa: E402
+import sys as _sys  # noqa: E402
 
-
-class Step05PrePacketEnvelope(BaseModel):
-    """Top-level plan-ref envelope consumed at step 05."""
-
-    model_config = ConfigDict(extra="forbid", frozen=True)
-
-    lesson_plan_revision: int = Field(..., ge=0)
-    lesson_plan_digest: str = Field(..., min_length=1)
-    step_id: Literal["05"] = "05"
-
-
-def consume(
-    envelope: Step05PrePacketEnvelope | dict[str, Any],
-    *,
-    log: LessonPlanLog,
-) -> Step05PrePacketEnvelope:
-    """Validate freshness before step-05 consumer logic executes."""
-    parsed = (
-        envelope
-        if isinstance(envelope, Step05PrePacketEnvelope)
-        else Step05PrePacketEnvelope.model_validate(envelope)
-    )
-    assert_plan_fresh(parsed, log=log)
-    return parsed
-
+# Mirror everything (except dunder attrs) so `from marcus.lesson_plan.step_05_pre_packet_handoff import X` works
+# for both `__all__` exports AND non-public-but-test-imported names.
+_sys.modules[__name__].__dict__.update(
+    {k: v for k, v in _src.__dict__.items() if not k.startswith("__")}
+)
+# Mirror module docstring so docstring-discovery tests find canonical content.
+__doc__ = _src.__doc__

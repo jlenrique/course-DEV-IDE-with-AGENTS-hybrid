@@ -1,0 +1,139 @@
+{
+  "$defs": {
+    "FitDiagnosis": {
+      "additionalProperties": false,
+      "description": "Single diagnostic verdict produced by the attestor (AC-B.9).",
+      "properties": {
+        "commentary": {
+          "minLength": 1,
+          "title": "Commentary",
+          "type": "string"
+        },
+        "fitness": {
+          "enum": [
+            "sufficient",
+            "partial",
+            "absent"
+          ],
+          "title": "Fitness",
+          "type": "string"
+        },
+        "recommended_scope_decision": {
+          "anyOf": [
+            {
+              "enum": [
+                "in-scope",
+                "out-of-scope",
+                "delegated",
+                "blueprint"
+              ],
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Recommended Scope Decision"
+        },
+        "recommended_weather_band": {
+          "anyOf": [
+            {
+              "enum": [
+                "gold",
+                "green",
+                "amber",
+                "gray"
+              ],
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Recommended Weather Band"
+        },
+        "unit_id": {
+          "minLength": 1,
+          "title": "Unit Id",
+          "type": "string"
+        }
+      },
+      "required": [
+        "unit_id",
+        "fitness",
+        "commentary"
+      ],
+      "title": "FitDiagnosis",
+      "type": "object"
+    },
+    "PlanRef": {
+      "additionalProperties": false,
+      "description": "Lightweight plan reference carried on emitted artifacts (fit-report, events).",
+      "properties": {
+        "lesson_plan_digest": {
+          "minLength": 1,
+          "title": "Lesson Plan Digest",
+          "type": "string"
+        },
+        "lesson_plan_revision": {
+          "minimum": 0,
+          "title": "Lesson Plan Revision",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "lesson_plan_revision",
+        "lesson_plan_digest"
+      ],
+      "title": "PlanRef",
+      "type": "object"
+    }
+  },
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "description": "Fit-report-v1 artifact class (AC-B.9).",
+  "properties": {
+    "diagnoses": {
+      "items": {
+        "$ref": "#/$defs/FitDiagnosis"
+      },
+      "title": "Diagnoses",
+      "type": "array"
+    },
+    "generated_at": {
+      "format": "date-time",
+      "title": "Generated At",
+      "type": "string"
+    },
+    "irene_budget_ms": {
+      "description": "Observed diagnostic latency.",
+      "minimum": 0,
+      "title": "Irene Budget Ms",
+      "type": "integer"
+    },
+    "plan_ref": {
+      "$ref": "#/$defs/PlanRef"
+    },
+    "schema_version": {
+      "default": "1.0",
+      "pattern": "^\\d+\\.\\d+$",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "source_ref": {
+      "minLength": 1,
+      "title": "Source Ref",
+      "type": "string"
+    }
+  },
+  "required": [
+    "source_ref",
+    "plan_ref",
+    "generated_at",
+    "irene_budget_ms"
+  ],
+  "title": "FitReport",
+  "type": "object"
+}

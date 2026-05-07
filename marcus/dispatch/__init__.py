@@ -1,19 +1,15 @@
-"""Marcus dispatch-contract package."""
+"""Reverse-shim: legacy `marcus.dispatch` -> `app.marcus.dispatch` (pre-Trial-3 S2 collapse 2026-05-07).
 
-from marcus.dispatch.contract import (
-    DispatchEnvelope,
-    DispatchKind,
-    DispatchOutcome,
-    DispatchReceipt,
-    build_dispatch_envelope,
-    build_dispatch_receipt,
+Package-level shim. Sub-modules are individually shimmed to `app.marcus.*` siblings.
+"""
+
+from app.marcus.dispatch import *  # noqa: F401, F403
+
+import app.marcus.dispatch as _src  # noqa: E402
+import sys as _sys  # noqa: E402
+
+_sys.modules[__name__].__dict__.update(
+    {k: v for k, v in _src.__dict__.items() if not k.startswith("__")}
 )
-
-__all__ = [
-    "DispatchEnvelope",
-    "DispatchKind",
-    "DispatchOutcome",
-    "DispatchReceipt",
-    "build_dispatch_envelope",
-    "build_dispatch_receipt",
-]
+# Mirror module docstring so docstring-discovery tests find canonical content.
+__doc__ = _src.__doc__

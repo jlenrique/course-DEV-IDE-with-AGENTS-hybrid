@@ -1,51 +1,22 @@
-"""Manifest-driven Marcus specialist routing."""
+"""Reverse-shim: legacy `marcus.orchestrator.routing` -> `app.marcus.orchestrator.routing` (pre-Trial-3 S2 collapse 2026-05-07).
 
-from __future__ import annotations
+This module is a thin re-export shim. Production content lives at `app.marcus.orchestrator.routing`.
+Will be deleted at S2 close once all consumers migrate to `app.marcus.*` paths.
+Retained as bridge during S2 to keep 108-150 test-file imports green during transition.
 
-from typing import Any
+Mirror pattern: re-exports the full `app.marcus.orchestrator.routing` namespace (public + select non-`__all__`
+attributes that backward-compat callers depend on, e.g., test-only helpers).
+"""
 
-from pydantic import BaseModel, ConfigDict, Field
+from app.marcus.orchestrator.routing import *  # noqa: F401, F403
 
-from app.manifest.schema import PipelineManifest
+import app.marcus.orchestrator.routing as _src  # noqa: E402
+import sys as _sys  # noqa: E402
 
-
-class RoutingDecision(BaseModel):
-    """One manifest-resolved step transition."""
-
-    model_config = ConfigDict(extra="forbid", validate_assignment=True)
-
-    current_node_id: str
-    next_node_id: str
-    target_specialist: str
-    dispatch_envelope: dict[str, Any] | None = Field(default=None)
-    decision_card_schema: str | None = Field(default=None)
-
-
-def route_step(*, current_node: str | None, manifest: PipelineManifest) -> RoutingDecision:
-    from_node = current_node or "__start__"
-    edge = next(
-        (candidate for candidate in manifest.edges if candidate.from_node == from_node),
-        None,
-    )
-    if edge is None:
-        raise ValueError(f"No routing edge found from node {from_node!r}")
-    target_node = next(
-        (node for node in manifest.nodes if node.id == edge.to),
-        None,
-    )
-    if target_node is None:
-        raise ValueError(f"Manifest edge targets unknown node {edge.to!r}")
-    if not target_node.specialist_id:
-        raise ValueError(
-            f"Manifest node {target_node.id!r} has no specialist_id for routing"
-        )
-    return RoutingDecision(
-        current_node_id=from_node,
-        next_node_id=target_node.id,
-        target_specialist=target_node.specialist_id,
-        dispatch_envelope=edge.dispatch_envelope,
-        decision_card_schema=edge.decision_card_schema,
-    )
-
-
-__all__ = ["RoutingDecision", "route_step"]
+# Mirror everything (except dunder attrs) so `from marcus.orchestrator.routing import X` works
+# for both `__all__` exports AND non-public-but-test-imported names.
+_sys.modules[__name__].__dict__.update(
+    {k: v for k, v in _src.__dict__.items() if not k.startswith("__")}
+)
+# Mirror module docstring so docstring-discovery tests find canonical content.
+__doc__ = _src.__doc__

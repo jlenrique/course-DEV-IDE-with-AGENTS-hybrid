@@ -1,63 +1,22 @@
-"""Stub-dials affordance (Story 30-3a — Sally R1 guardrail).
+"""Reverse-shim: legacy `marcus.orchestrator.stub_dials` -> `app.marcus.orchestrator.stub_dials` (pre-Trial-3 S2 collapse 2026-05-07).
 
-Maya-facing note
-----------------
+This module is a thin re-export shim. Production content lives at `app.marcus.orchestrator.stub_dials`.
+Will be deleted at S2 close once all consumers migrate to `app.marcus.*` paths.
+Retained as bridge during S2 to keep 108-150 test-file imports green during transition.
 
-Maya sees the dials as a read-only "coming soon" affordance. Marcus's
-line is pinned verbatim: *"I'll learn to tune these next sprint."*
-
-Developer discipline note
--------------------------
-
-* **30-3a (this commit):** read-only affordance — no mutator methods, no
-  tuning logic, no dial state transitions. Frozen dataclass semantics.
-* **30-3b (next):** adds the tuning surface + sync reassessment cycles.
-
-The class deliberately exposes **no** ``tune()`` / ``set()`` / ``update()``
-mutator API. A contract test asserts the absence of such methods.
+Mirror pattern: re-exports the full `app.marcus.orchestrator.stub_dials` namespace (public + select non-`__all__`
+attributes that backward-compat callers depend on, e.g., test-only helpers).
 """
 
-from __future__ import annotations
+from app.marcus.orchestrator.stub_dials import *  # noqa: F401, F403
 
-from typing import Final, Literal
+import app.marcus.orchestrator.stub_dials as _src  # noqa: E402
+import sys as _sys  # noqa: E402
 
-from pydantic import BaseModel, ConfigDict, Field
-
-__all__: Final[tuple[str, ...]] = (
-    "STUB_DIALS_MARCUS_LINE",
-    "StubDialsAffordance",
+# Mirror everything (except dunder attrs) so `from marcus.orchestrator.stub_dials import X` works
+# for both `__all__` exports AND non-public-but-test-imported names.
+_sys.modules[__name__].__dict__.update(
+    {k: v for k, v in _src.__dict__.items() if not k.startswith("__")}
 )
-
-
-STUB_DIALS_MARCUS_LINE: Final[str] = "I'll learn to tune these next sprint."
-"""Verbatim Marcus line rendered alongside the read-only stub-dials affordance
-(Sally R1 guardrail). Exact string — no emoji, no hedges, no variations."""
-
-
-class StubDialsAffordance(BaseModel):
-    """Read-only dials affordance surfaced at plan-drafting time.
-
-    Frozen model with no mutator methods. Rendered in the facade's
-    conversation surface as a visual placeholder; the tuning UI lands
-    at Story 30-3b.
-    """
-
-    model_config = ConfigDict(
-        extra="forbid",
-        frozen=True,
-        validate_assignment=True,
-    )
-
-    mode: Literal["read-only"] = "read-only"
-    marcus_line: Literal["I'll learn to tune these next sprint."] = Field(
-        default=STUB_DIALS_MARCUS_LINE,
-        description="Sally R1 guardrail — verbatim.",
-    )
-    dial_names: frozenset[str] = Field(
-        default=frozenset(),
-        description=(
-            "Names of dials that will become tunable at 30-3b. Frozenset for "
-            "immutability; empty default until the 30-3b spec fixes the "
-            "dial-name set."
-        ),
-    )
+# Mirror module docstring so docstring-discovery tests find canonical content.
+__doc__ = _src.__doc__

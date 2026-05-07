@@ -1,53 +1,22 @@
-"""Marcus orchestration supervisor preset routing.
+"""Reverse-shim: legacy `marcus.orchestrator.supervisor` -> `app.marcus.orchestrator.supervisor` (pre-Trial-3 S2 collapse 2026-05-07).
 
-This module adapts the Slab 3 FR27 preset switch onto the existing root
-`marcus/` package without disturbing the legacy 30-x lesson-planner flow.
+This module is a thin re-export shim. Production content lives at `app.marcus.orchestrator.supervisor`.
+Will be deleted at S2 close once all consumers migrate to `app.marcus.*` paths.
+Retained as bridge during S2 to keep 108-150 test-file imports green during transition.
+
+Mirror pattern: re-exports the full `app.marcus.orchestrator.supervisor` namespace (public + select non-`__all__`
+attributes that backward-compat callers depend on, e.g., test-only helpers).
 """
 
-from __future__ import annotations
+from app.marcus.orchestrator.supervisor import *  # noqa: F401, F403
 
-from dataclasses import dataclass
-from typing import Any, Literal
+import app.marcus.orchestrator.supervisor as _src  # noqa: E402
+import sys as _sys  # noqa: E402
 
-from app.manifest.schema import PipelineManifest
-from marcus.orchestrator.routing import RoutingDecision, route_step
-
-SupervisorPreset = Literal["production", "explore"]
-SupervisorMode = Literal["plan_and_execute", "react"]
-
-
-def mode_for_preset(preset: SupervisorPreset) -> SupervisorMode:
-    return "react" if preset == "explore" else "plan_and_execute"
-
-
-@dataclass(slots=True)
-class Supervisor:
-    """Minimal manifest-driven supervisor used by Slab 3 story tests."""
-
-    preset: SupervisorPreset
-    manifest: PipelineManifest
-
-    @property
-    def mode(self) -> SupervisorMode:
-        return mode_for_preset(self.preset)
-
-    def run_step(self, state: Any) -> RoutingDecision:
-        current_node = getattr(state, "current_node", None)
-        decision = route_step(current_node=current_node, manifest=self.manifest)
-        events = getattr(state, "events", None)
-        if isinstance(events, list):
-            events.append(
-                {
-                    "actor": "Marcus",
-                    "preset": self.preset,
-                    "mode": self.mode,
-                    "current_node": current_node,
-                    "next_node": decision.next_node_id,
-                    "target_specialist": decision.target_specialist,
-                }
-            )
-        state.current_node = decision.next_node_id
-        return decision
-
-
-__all__ = ["Supervisor", "SupervisorMode", "SupervisorPreset", "mode_for_preset"]
+# Mirror everything (except dunder attrs) so `from marcus.orchestrator.supervisor import X` works
+# for both `__all__` exports AND non-public-but-test-imported names.
+_sys.modules[__name__].__dict__.update(
+    {k: v for k, v in _src.__dict__.items() if not k.startswith("__")}
+)
+# Mirror module docstring so docstring-discovery tests find canonical content.
+__doc__ = _src.__doc__

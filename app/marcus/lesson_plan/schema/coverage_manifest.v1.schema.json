@@ -1,0 +1,199 @@
+{
+  "$defs": {
+    "CoverageSummary": {
+      "additionalProperties": false,
+      "description": "Machine-readable rollup consumed by the 32-3 smoke harness.",
+      "properties": {
+        "total_surfaces": {
+          "minimum": 0,
+          "title": "Total Surfaces",
+          "type": "integer"
+        },
+        "implemented_surfaces": {
+          "minimum": 0,
+          "title": "Implemented Surfaces",
+          "type": "integer"
+        },
+        "pending_surfaces": {
+          "minimum": 0,
+          "title": "Pending Surfaces",
+          "type": "integer"
+        },
+        "deferred_surfaces": {
+          "minimum": 0,
+          "title": "Deferred Surfaces",
+          "type": "integer"
+        },
+        "surfaces_with_full_plan_ref_coverage": {
+          "minimum": 0,
+          "title": "Surfaces With Full Plan Ref Coverage",
+          "type": "integer"
+        },
+        "surfaces_missing_one_or_both_fields": {
+          "minimum": 0,
+          "title": "Surfaces Missing One Or Both Fields",
+          "type": "integer"
+        },
+        "surfaces_missing_freshness_gate_verification": {
+          "minimum": 0,
+          "title": "Surfaces Missing Freshness Gate Verification",
+          "type": "integer"
+        },
+        "trial_ready": {
+          "title": "Trial Ready",
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "total_surfaces",
+        "implemented_surfaces",
+        "pending_surfaces",
+        "deferred_surfaces",
+        "surfaces_with_full_plan_ref_coverage",
+        "surfaces_missing_one_or_both_fields",
+        "surfaces_missing_freshness_gate_verification",
+        "trial_ready"
+      ],
+      "title": "CoverageSummary",
+      "type": "object"
+    },
+    "CoverageSurface": {
+      "additionalProperties": false,
+      "description": "One audited producer/consumer boundary in the 05\u219213 lesson-plan path.",
+      "properties": {
+        "step_id": {
+          "enum": [
+            "05",
+            "06",
+            "07",
+            "08",
+            "09",
+            "10",
+            "11",
+            "12",
+            "13"
+          ],
+          "title": "Step Id",
+          "type": "string"
+        },
+        "surface_name": {
+          "minLength": 1,
+          "title": "Surface Name",
+          "type": "string"
+        },
+        "owner_story_key": {
+          "minLength": 1,
+          "title": "Owner Story Key",
+          "type": "string"
+        },
+        "module_path": {
+          "minLength": 1,
+          "title": "Module Path",
+          "type": "string"
+        },
+        "artifact_kind": {
+          "enum": [
+            "envelope",
+            "produced-asset",
+            "fit-report",
+            "gate-payload",
+            "manifest-entry"
+          ],
+          "title": "Artifact Kind",
+          "type": "string"
+        },
+        "plan_ref_mode": {
+          "enum": [
+            "top-level-fields",
+            "nested-plan-ref"
+          ],
+          "title": "Plan Ref Mode",
+          "type": "string"
+        },
+        "has_lesson_plan_revision": {
+          "title": "Has Lesson Plan Revision",
+          "type": "boolean"
+        },
+        "has_lesson_plan_digest": {
+          "title": "Has Lesson Plan Digest",
+          "type": "boolean"
+        },
+        "assert_plan_fresh_required": {
+          "title": "Assert Plan Fresh Required",
+          "type": "boolean"
+        },
+        "assert_plan_fresh_verified": {
+          "title": "Assert Plan Fresh Verified",
+          "type": "boolean"
+        },
+        "status": {
+          "enum": [
+            "implemented",
+            "pending",
+            "deferred"
+          ],
+          "title": "Status",
+          "type": "string"
+        },
+        "notes": {
+          "minLength": 1,
+          "title": "Notes",
+          "type": "string"
+        }
+      },
+      "required": [
+        "step_id",
+        "surface_name",
+        "owner_story_key",
+        "module_path",
+        "artifact_kind",
+        "plan_ref_mode",
+        "has_lesson_plan_revision",
+        "has_lesson_plan_digest",
+        "assert_plan_fresh_required",
+        "assert_plan_fresh_verified",
+        "status",
+        "notes"
+      ],
+      "title": "CoverageSurface",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "description": "Top-level emitted coverage-manifest artifact.",
+  "properties": {
+    "schema_version": {
+      "default": "1.0",
+      "minLength": 1,
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "generated_at": {
+      "format": "date-time",
+      "title": "Generated At",
+      "type": "string"
+    },
+    "source_story_key": {
+      "default": "32-2-plan-ref-envelope-coverage-manifest",
+      "title": "Source Story Key",
+      "type": "string"
+    },
+    "surfaces": {
+      "items": {
+        "$ref": "#/$defs/CoverageSurface"
+      },
+      "title": "Surfaces",
+      "type": "array"
+    },
+    "summary": {
+      "$ref": "#/$defs/CoverageSummary"
+    }
+  },
+  "required": [
+    "generated_at",
+    "surfaces",
+    "summary"
+  ],
+  "title": "CoverageManifest",
+  "type": "object"
+}

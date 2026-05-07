@@ -120,14 +120,18 @@ def test_maya_facing_docstring_sections_have_no_forbidden_tokens() -> None:
     Scans the 30-1 module docstrings for the "Maya-facing note" section
     only; other audience-layered sections are dev-facing and exempt.
     """
+    # S2 collapse 2026-05-07: canonical paths moved from marcus/* to app/marcus/*.
+    # Reverse-shim layer at marcus/* preserves backward-compat for live imports
+    # (108-150 test files); docstring-discovery tests read canonical app-side
+    # files directly. Forward-compatible with legacy `marcus/` deletion at Phase 5.
     repo_root = Path(__file__).parent.parent.parent
     modules: dict[str, Path] = {
-        "marcus.intake": repo_root / "marcus" / "intake" / "__init__.py",
-        "marcus.orchestrator": repo_root / "marcus" / "orchestrator" / "__init__.py",
-        "marcus.orchestrator.write_api": (
-            repo_root / "marcus" / "orchestrator" / "write_api.py"
+        "app.marcus.intake": repo_root / "app" / "marcus" / "intake" / "__init__.py",
+        "app.marcus.orchestrator": repo_root / "app" / "marcus" / "orchestrator" / "__init__.py",
+        "app.marcus.orchestrator.write_api": (
+            repo_root / "app" / "marcus" / "orchestrator" / "write_api.py"
         ),
-        "marcus.facade": repo_root / "marcus" / "facade.py",
+        "app.marcus.facade": repo_root / "app" / "marcus" / "facade.py",
     }
     # Terminate the Maya-facing capture at the next section heading of ANY
     # shape (any non-empty line followed by a rule-of-dashes), not just
