@@ -9,7 +9,7 @@ from __future__ import annotations
 import pytest
 from pydantic import ValidationError
 
-from marcus.lesson_plan.log import PrePacketSnapshotPayload, SourceRef
+from app.marcus.lesson_plan.log import PrePacketSnapshotPayload, SourceRef
 
 EXPECTED_PRE_PACKET_FIELDS = {
     "sme_refs",

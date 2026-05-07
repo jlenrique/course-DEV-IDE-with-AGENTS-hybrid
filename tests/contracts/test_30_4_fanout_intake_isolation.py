@@ -28,7 +28,7 @@ _FORBIDDEN_CALL: str = "emit_plan_lock_fanout"
 
 
 def _intake_files(repo_root: Path) -> list[Path]:
-    intake_dir = repo_root / "marcus" / "intake"
+    intake_dir = repo_root / "app" / "marcus" / "intake"
     return [p for p in sorted(intake_dir.rglob("*.py")) if p.is_file()]
 
 

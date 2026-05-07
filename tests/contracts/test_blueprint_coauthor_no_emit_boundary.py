@@ -5,7 +5,7 @@ from __future__ import annotations
 from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
-MODULE_PATH = REPO_ROOT / "marcus" / "lesson_plan" / "blueprint_coauthor.py"
+MODULE_PATH = REPO_ROOT / "app" / "marcus" / "lesson_plan" / "blueprint_coauthor.py"
 
 
 def test_blueprint_coauthor_does_not_import_emit_fit_report_or_log_writer() -> None:

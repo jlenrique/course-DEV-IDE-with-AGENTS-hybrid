@@ -11,7 +11,7 @@ from __future__ import annotations
 import ast
 from pathlib import Path
 
-_HIL_INTAKE = Path(__file__).parents[2] / "marcus" / "orchestrator" / "hil_intake.py"
+_HIL_INTAKE = Path(__file__).parents[2] / "app" / "marcus" / "orchestrator" / "hil_intake.py"
 _FORBIDDEN_TOKENS = frozenset({"intake", "orchestrator", "dispatch"})
 
 
@@ -53,7 +53,7 @@ def test_hil_intake_no_direct_lesson_plan_log_import() -> None:
 
 def test_missing_intake_decision_error_message_no_forbidden_tokens() -> None:
     """AC-T.9 / AC-E.3: MissingIntakeDecisionError has no Voice Register forbidden tokens."""
-    from marcus.orchestrator.hil_intake import MissingIntakeDecisionError
+    from app.marcus.orchestrator.hil_intake import MissingIntakeDecisionError
 
     err = MissingIntakeDecisionError("u-test")
     message = str(err).lower()

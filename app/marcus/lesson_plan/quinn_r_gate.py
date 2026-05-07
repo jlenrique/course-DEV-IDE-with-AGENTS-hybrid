@@ -29,7 +29,7 @@ from app.marcus.lesson_plan.gagne_diagnostician import PriorDeclinedRationale
 from app.marcus.lesson_plan.produced_asset import ProducedAsset
 from app.marcus.lesson_plan.schema import LessonPlan, PlanRef, PlanUnit
 
-REPO_ROOT: Final[Path] = Path(__file__).resolve().parents[2]
+REPO_ROOT: Final[Path] = Path(__file__).resolve().parents[3]
 DEFAULT_QUINN_R_GATE_OUTPUT_ROOT: Final[str] = "_bmad-output/artifacts/quinn-r"
 
 

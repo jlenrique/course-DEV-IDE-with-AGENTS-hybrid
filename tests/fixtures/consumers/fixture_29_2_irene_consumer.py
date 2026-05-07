@@ -9,7 +9,7 @@ The ``demonstrate()`` callable at module scope is the loader entry point.
 
 from __future__ import annotations
 
-from marcus.lesson_plan import get_modality_entry
+from app.marcus.lesson_plan import get_modality_entry
 
 
 def _check_modality_ref_validity(modality_ref: str) -> bool:

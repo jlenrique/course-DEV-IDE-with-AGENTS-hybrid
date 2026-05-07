@@ -11,16 +11,16 @@ from pathlib import Path
 
 import pytest
 
-from marcus.lesson_plan.log import LessonPlanLog
-from marcus.lesson_plan.schema import LearningModel, LessonPlan, PlanUnit, ScopeDecision
-from marcus.orchestrator.hil_intake import (
+from app.marcus.lesson_plan.log import LessonPlanLog
+from app.marcus.lesson_plan.schema import LearningModel, LessonPlan, PlanUnit, ScopeDecision
+from app.marcus.orchestrator.hil_intake import (
     _FORBIDDEN_TOKENS,
     LogResetNotConfirmedError,
     MissingIntakeDecisionError,
     build_hil_intake_callable,
     reset_lesson_plan_log,
 )
-from marcus.orchestrator.loop import FourAState
+from app.marcus.orchestrator.loop import FourAState
 
 # ---------------------------------------------------------------------------
 # Helpers
@@ -210,7 +210,7 @@ def test_full_5_3_loop_event_counts_and_ordering(tmp_path: Path) -> None:
     """AC-T.6: 5+3 run emits 8 plan_unit.created + 8 scope_decision.set + 1 plan.locked;
     plan.locked index > max(scope_decision.set indices); real FourALoop execution.
     """
-    from marcus.orchestrator.workflow_runner import route_step_04_gate_to_step_05
+    from app.marcus.orchestrator.workflow_runner import route_step_04_gate_to_step_05
 
     log_path = tmp_path / "lesson-plan-log.jsonl"
     log = LessonPlanLog(path=log_path)
@@ -243,7 +243,7 @@ def test_full_5_3_loop_event_counts_and_ordering(tmp_path: Path) -> None:
 
 def test_full_5_3_loop_unit_ids_match_decisions_not_fixtures(tmp_path: Path) -> None:
     """AC-T.7: log unit_ids == pre_collected_decisions keys; no fixture IDs contaminate."""
-    from marcus.orchestrator.workflow_runner import route_step_04_gate_to_step_05
+    from app.marcus.orchestrator.workflow_runner import route_step_04_gate_to_step_05
 
     log_path = tmp_path / "lesson-plan-log.jsonl"
     log = LessonPlanLog(path=log_path)
@@ -278,7 +278,7 @@ def test_full_5_3_loop_unit_ids_match_decisions_not_fixtures(tmp_path: Path) -> 
 
 def test_reset_then_run_produces_clean_log(tmp_path: Path) -> None:
     """AC-T.8: after reset on contaminated log, subsequent run contains only new events."""
-    from marcus.orchestrator.workflow_runner import route_step_04_gate_to_step_05
+    from app.marcus.orchestrator.workflow_runner import route_step_04_gate_to_step_05
 
     # Seed a "contaminated" log with fixture events
     log_path = tmp_path / "lesson-plan-log.jsonl"
@@ -321,7 +321,7 @@ def test_reset_then_run_produces_clean_log(tmp_path: Path) -> None:
 
 def test_rationale_preserved_through_log_round_trip(tmp_path: Path) -> None:
     """G6-P3 / AC-D.2: 10K rationale survives emission, log serialisation, and read-back."""
-    from marcus.orchestrator.workflow_runner import route_step_04_gate_to_step_05
+    from app.marcus.orchestrator.workflow_runner import route_step_04_gate_to_step_05
 
     long_rationale = "R" * 10_000
     decisions = {
@@ -360,8 +360,8 @@ def test_rationale_preserved_through_log_round_trip(tmp_path: Path) -> None:
 
 def test_both_intake_callable_and_decisions_raises(tmp_path: Path) -> None:
     """G6-P1: providing both intake_callable and pre_collected_decisions is ambiguous."""
-    from marcus.lesson_plan.schema import ScopeDecision
-    from marcus.orchestrator.workflow_runner import route_step_04_gate_to_step_05
+    from app.marcus.lesson_plan.schema import ScopeDecision
+    from app.marcus.orchestrator.workflow_runner import route_step_04_gate_to_step_05
 
     def stub(_state: FourAState, _unit_id: str) -> tuple[ScopeDecision, str]:
         return ScopeDecision(state="ratified", scope="in-scope",
@@ -382,7 +382,7 @@ def test_both_intake_callable_and_decisions_raises(tmp_path: Path) -> None:
 
 def test_extra_decision_ids_raise(tmp_path: Path) -> None:
     """G6-P2: pre_collected_decisions with extra unit_ids not in plan fails fast."""
-    from marcus.orchestrator.workflow_runner import route_step_04_gate_to_step_05
+    from app.marcus.orchestrator.workflow_runner import route_step_04_gate_to_step_05
 
     plan = _make_plan("u-01")
     with pytest.raises(ValueError, match="not in the packet plan"):

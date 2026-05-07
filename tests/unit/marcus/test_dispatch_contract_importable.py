@@ -3,7 +3,7 @@ from __future__ import annotations
 
 def test_dispatch_contract_import_paths_share_identity() -> None:
     from app.marcus.dispatch import contract as app_contract
-    from marcus.dispatch import contract as root_contract
+    from app.marcus.dispatch import contract as root_contract
 
     assert root_contract.DispatchKind is app_contract.DispatchKind
     assert root_contract.DispatchOutcome is app_contract.DispatchOutcome

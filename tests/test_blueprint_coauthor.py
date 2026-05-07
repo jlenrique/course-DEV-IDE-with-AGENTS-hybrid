@@ -9,15 +9,15 @@ from pathlib import Path
 
 import pytest
 
-from marcus.lesson_plan.blueprint_coauthor import (
+from app.marcus.lesson_plan.blueprint_coauthor import (
     IRENE_APPROVED_MARKER,
     WRITER_APPROVED_MARKER,
     BlueprintCoauthorError,
     coauthor_blueprint,
 )
-from marcus.lesson_plan.blueprint_producer import BlueprintProducer
-from marcus.lesson_plan.produced_asset import ProducedAsset, ProductionContext
-from marcus.lesson_plan.schema import PlanUnit, ScopeDecision
+from app.marcus.lesson_plan.blueprint_producer import BlueprintProducer
+from app.marcus.lesson_plan.produced_asset import ProducedAsset, ProductionContext
+from app.marcus.lesson_plan.schema import PlanUnit, ScopeDecision
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
 

@@ -26,7 +26,7 @@ import argparse
 import sys
 from pathlib import Path
 
-from marcus.intake.pre_packet import prepare_irene_packet
+from app.marcus.intake.pre_packet import prepare_irene_packet
 from scripts.utilities.emit_ingestion_quality_receipt import inspect_receipt_state
 
 

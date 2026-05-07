@@ -80,7 +80,7 @@ __all__: Final[tuple[str, ...]] = (
 
 # Repo root derived from this module's location (<repo>/marcus/intake/pre_packet.py).
 # Cwd-independent; mirrors the 31-2 LOG_PATH discipline (G6 MF-BH-1 precedent).
-_REPO_ROOT: Final[Path] = Path(__file__).resolve().parents[2]
+_REPO_ROOT: Final[Path] = Path(__file__).resolve().parents[3]
 
 
 def prepare_irene_packet(

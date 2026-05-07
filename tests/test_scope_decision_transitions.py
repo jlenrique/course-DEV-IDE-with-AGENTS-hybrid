@@ -12,7 +12,7 @@ from datetime import UTC, datetime
 import pytest
 from pydantic import ValidationError
 
-from marcus.lesson_plan.schema import ScopeDecision
+from app.marcus.lesson_plan.schema import ScopeDecision
 
 
 def _proposed(internal: str = "marcus") -> ScopeDecision:

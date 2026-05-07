@@ -13,9 +13,9 @@ from __future__ import annotations
 
 import pytest
 
-from marcus.lesson_plan.modality_producer import ModalityProducer
-from marcus.lesson_plan.produced_asset import ProducedAsset, ProductionContext
-from marcus.lesson_plan.schema import PlanUnit, ScopeDecision
+from app.marcus.lesson_plan.modality_producer import ModalityProducer
+from app.marcus.lesson_plan.produced_asset import ProducedAsset, ProductionContext
+from app.marcus.lesson_plan.schema import PlanUnit, ScopeDecision
 
 # ---------------------------------------------------------------------------
 # (a) Full valid subclass — instantiable; smoke-test produce()

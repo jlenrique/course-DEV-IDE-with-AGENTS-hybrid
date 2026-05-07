@@ -13,7 +13,7 @@ from typing import Any, Literal
 
 from app.replay.discovery import TrialRef, get_closed_trial, list_closed_trials
 from app.runtime.compiled_graph_digest import compute_compiled_graph_digest
-from marcus.orchestrator.m3_trial import run_local_m3_trial
+from app.marcus.orchestrator.m3_trial import run_local_m3_trial
 
 ReplayMode = Literal["fail-loud", "warn-on-clone"]
 

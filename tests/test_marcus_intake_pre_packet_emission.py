@@ -15,11 +15,11 @@ from typing import Any
 
 import pytest
 
-from marcus.intake import pre_packet
-from marcus.intake.pre_packet import prepare_and_emit_irene_packet
-from marcus.lesson_plan.events import EventEnvelope
-from marcus.lesson_plan.log import LessonPlanLog
-from marcus.orchestrator.dispatch import dispatch_intake_pre_packet
+from app.marcus.intake import pre_packet
+from app.marcus.intake.pre_packet import prepare_and_emit_irene_packet
+from app.marcus.lesson_plan.events import EventEnvelope
+from app.marcus.lesson_plan.log import LessonPlanLog
+from app.marcus.orchestrator.dispatch import dispatch_intake_pre_packet
 
 
 def _write_bundle(

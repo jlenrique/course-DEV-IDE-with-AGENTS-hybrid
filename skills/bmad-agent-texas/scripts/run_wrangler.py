@@ -55,7 +55,7 @@ _REPO_ROOT = _THIS_DIR.parents[2]
 if str(_REPO_ROOT) not in sys.path:
     sys.path.insert(0, str(_REPO_ROOT))
 
-from marcus.dispatch.contract import (  # noqa: E402
+from app.marcus.dispatch.contract import (  # noqa: E402
     DispatchKind,
     DispatchOutcome,
     build_dispatch_envelope,

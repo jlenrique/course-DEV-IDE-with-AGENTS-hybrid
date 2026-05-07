@@ -8,8 +8,7 @@ loses an export (e.g., refactor), consumer stories (30-3 / 29-2 / 28-2 /
 
 from __future__ import annotations
 
-import marcus.lesson_plan as pkg
-
+import app.marcus.lesson_plan as pkg
 EXPECTED_31_3_EXPORTS = {
     # modality_registry
     "MODALITY_REGISTRY",

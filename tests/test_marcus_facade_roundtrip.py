@@ -13,11 +13,11 @@ from uuid import uuid4
 
 import pytest
 
-from marcus.facade import get_facade, reset_facade
-from marcus.lesson_plan.events import EventEnvelope
-from marcus.lesson_plan.log import LessonPlanLog
-from marcus.orchestrator import ORCHESTRATOR_MODULE_IDENTITY
-from marcus.orchestrator.write_api import emit_pre_packet_snapshot
+from app.marcus.facade import get_facade, reset_facade
+from app.marcus.lesson_plan.events import EventEnvelope
+from app.marcus.lesson_plan.log import LessonPlanLog
+from app.marcus.orchestrator import ORCHESTRATOR_MODULE_IDENTITY
+from app.marcus.orchestrator.write_api import emit_pre_packet_snapshot
 
 _VALID_PAYLOAD: dict = {
     "source_ref": {

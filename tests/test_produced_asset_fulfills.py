@@ -5,7 +5,7 @@ from __future__ import annotations
 import pytest
 from pydantic import ValidationError
 
-from marcus.lesson_plan.produced_asset import ProducedAsset
+from app.marcus.lesson_plan.produced_asset import ProducedAsset
 
 
 def _build_asset(

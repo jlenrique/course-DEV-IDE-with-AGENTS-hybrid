@@ -7,11 +7,11 @@ from datetime import UTC, datetime
 
 import pytest
 
-from marcus.lesson_plan.fit_report import (
+from app.marcus.lesson_plan.fit_report import (
     deserialize_fit_report,
     serialize_fit_report,
 )
-from marcus.lesson_plan.schema import FitDiagnosis, FitReport, PlanRef
+from app.marcus.lesson_plan.schema import FitDiagnosis, FitReport, PlanRef
 
 
 def _base_report(

@@ -4,8 +4,8 @@ from __future__ import annotations
 
 from types import SimpleNamespace
 
-from marcus.lesson_plan.coverage_manifest import verify_plan_ref_fields
-from marcus.lesson_plan.schema import PlanRef
+from app.marcus.lesson_plan.coverage_manifest import verify_plan_ref_fields
+from app.marcus.lesson_plan.schema import PlanRef
 
 
 def test_verify_plan_ref_fields_top_level_matrix() -> None:

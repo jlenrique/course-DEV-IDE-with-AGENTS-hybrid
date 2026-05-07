@@ -7,9 +7,9 @@ import shutil
 import uuid
 from pathlib import Path
 
-from marcus.lesson_plan.blueprint_producer import BlueprintProducer
-from marcus.lesson_plan.produced_asset import ProductionContext
-from marcus.lesson_plan.schema import PlanUnit, ScopeDecision
+from app.marcus.lesson_plan.blueprint_producer import BlueprintProducer
+from app.marcus.lesson_plan.produced_asset import ProductionContext
+from app.marcus.lesson_plan.schema import PlanUnit, ScopeDecision
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 FORBIDDEN_TOKEN_PATTERN = re.compile(r"\b(intake|orchestrator)\b", re.IGNORECASE)
@@ -35,7 +35,7 @@ def _make_plan_unit() -> PlanUnit:
 
 
 def test_blueprint_producer_module_text_has_no_forbidden_tokens() -> None:
-    path = REPO_ROOT / "marcus" / "lesson_plan" / "blueprint_producer.py"
+    path = REPO_ROOT / "app" / "marcus" / "lesson_plan" / "blueprint_producer.py"
     text = path.read_text(encoding="utf-8")
     match = FORBIDDEN_TOKEN_PATTERN.search(text)
     assert match is None, f"Forbidden token {match.group()!r} found in {path}"

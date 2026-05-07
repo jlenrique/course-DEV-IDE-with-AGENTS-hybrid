@@ -10,22 +10,22 @@ from typing import Any
 import pytest
 from pydantic import ValidationError
 
-from marcus.facade import Facade
-from marcus.lesson_plan.event_type_registry import EVENT_FANOUT_ENVELOPE_EMITTED
-from marcus.lesson_plan.events import EventEnvelope
-from marcus.lesson_plan.log import LessonPlanLog, PlanLockedPayload, StalePlanRefError
-from marcus.lesson_plan.schema import (
+from app.marcus.facade import Facade
+from app.marcus.lesson_plan.event_type_registry import EVENT_FANOUT_ENVELOPE_EMITTED
+from app.marcus.lesson_plan.events import EventEnvelope
+from app.marcus.lesson_plan.log import LessonPlanLog, PlanLockedPayload, StalePlanRefError
+from app.marcus.lesson_plan.schema import (
     IdentifiedGap,
     LearningModel,
     LessonPlan,
     PlanUnit,
     ScopeDecision,
 )
-from marcus.lesson_plan.step_05_pre_packet_handoff import consume as consume_step_05
-from marcus.lesson_plan.step_06_plan_lock_fanout import consume as consume_step_06
-from marcus.lesson_plan.step_07_gap_dispatch import consume as consume_step_07
-from marcus.orchestrator.dispatch import dispatch_orchestrator_event
-from marcus.orchestrator.fanout import emit_plan_lock_fanout
+from app.marcus.lesson_plan.step_05_pre_packet_handoff import consume as consume_step_05
+from app.marcus.lesson_plan.step_06_plan_lock_fanout import consume as consume_step_06
+from app.marcus.lesson_plan.step_07_gap_dispatch import consume as consume_step_07
+from app.marcus.orchestrator.dispatch import dispatch_orchestrator_event
+from app.marcus.orchestrator.fanout import emit_plan_lock_fanout
 
 
 def _decision(scope: str) -> ScopeDecision:

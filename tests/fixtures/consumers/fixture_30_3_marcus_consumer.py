@@ -15,7 +15,7 @@ The ``demonstrate()`` callable at module scope is the loader entry point.
 
 from __future__ import annotations
 
-from marcus.lesson_plan import (
+from app.marcus.lesson_plan import (
     MODALITY_REGISTRY,
     ProducedAsset,
     ProductionContext,

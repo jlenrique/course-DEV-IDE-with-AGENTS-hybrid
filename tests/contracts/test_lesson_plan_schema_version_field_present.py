@@ -8,7 +8,7 @@ from __future__ import annotations
 
 from datetime import UTC, datetime
 
-from marcus.lesson_plan.schema import (
+from app.marcus.lesson_plan.schema import (
     SCHEMA_VERSION,
     LearningModel,
     LessonPlan,

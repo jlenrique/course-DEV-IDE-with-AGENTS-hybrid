@@ -36,7 +36,7 @@ _FORBIDDEN_ATTRIBUTE_CHAINS: frozenset[tuple[str, ...]] = frozenset(
 
 
 def _iter_intake_py_files(repo_root: Path) -> list[Path]:
-    intake_dir = repo_root / "marcus" / "intake"
+    intake_dir = repo_root / "app" / "marcus" / "intake"
     return sorted(intake_dir.rglob("*.py"))
 
 

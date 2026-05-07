@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from marcus.orchestrator.m3_trial import run_local_m3_trial
+from app.marcus.orchestrator.m3_trial import run_local_m3_trial
 
 
 def test_edit_verb_propagates_to_downstream_payload(monkeypatch) -> None:

@@ -11,7 +11,7 @@ def test_29_1_unblock_handshake() -> None:
     ``marcus.lesson_plan.fit_report`` and use them immediately. If this test
     fails, 29-2 cannot begin.
     """
-    from marcus.lesson_plan.fit_report import (  # noqa: PLC0415
+    from app.marcus.lesson_plan.fit_report import (  # noqa: PLC0415
         StaleFitReportError,
         UnknownUnitIdError,
         deserialize_fit_report,

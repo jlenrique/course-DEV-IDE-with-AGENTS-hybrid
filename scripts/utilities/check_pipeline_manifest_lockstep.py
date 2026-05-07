@@ -47,7 +47,7 @@ def _parse_pack_sections(pack_path: Path) -> list[dict[str, str]]:
 
 
 def _parse_insert_between_calls() -> list[tuple[str | None, str | None]]:
-    workflow_runner = (project_root() / "marcus" / "orchestrator" / "workflow_runner.py").read_text(
+    workflow_runner = (project_root() / "app" / "marcus" / "orchestrator" / "workflow_runner.py").read_text(
         encoding="utf-8"
     )
     tree = ast.parse(workflow_runner)

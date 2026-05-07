@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from marcus.lesson_plan.coverage_manifest import verify_assert_plan_fresh_usage
+from app.marcus.lesson_plan.coverage_manifest import verify_assert_plan_fresh_usage
 
 FIXTURES = Path(__file__).resolve().parent / "fixtures" / "lesson_plan" / "coverage_manifest"
 

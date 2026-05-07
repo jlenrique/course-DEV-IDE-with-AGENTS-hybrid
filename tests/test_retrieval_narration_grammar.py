@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import pytest
 
-from marcus.lesson_plan.retrieval_narration_grammar import (
+from app.marcus.lesson_plan.retrieval_narration_grammar import (
     RetrievalNarrationError,
     render_retrieval_narration,
 )

@@ -24,7 +24,7 @@ def test_no_cora_imports_rule_declared() -> None:
 
 def test_dispatch_contract_shim_re_export_identity() -> None:
     from app.marcus.dispatch.contract import DispatchKind as AppDispatchKind
-    from marcus.dispatch.contract import DispatchKind as RootDispatchKind
+    from app.marcus.dispatch.contract import DispatchKind as RootDispatchKind
 
     assert RootDispatchKind is AppDispatchKind
 

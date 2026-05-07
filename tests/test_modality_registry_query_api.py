@@ -4,12 +4,12 @@ from __future__ import annotations
 
 import pytest
 
-from marcus.lesson_plan.component_type_registry import (
+from app.marcus.lesson_plan.component_type_registry import (
     COMPONENT_TYPE_REGISTRY,
     ComponentTypeEntry,
     get_component_type_entry,
 )
-from marcus.lesson_plan.modality_registry import (
+from app.marcus.lesson_plan.modality_registry import (
     MODALITY_REGISTRY,
     ModalityEntry,
     get_modality_entry,
@@ -162,7 +162,7 @@ def test_ac_c_6_pending_status_implies_null_producer_class_path() -> None:
     """AC-C.6: model_validator rejects pending + non-null producer_class_path."""
     from pydantic import ValidationError
 
-    from marcus.lesson_plan.modality_registry import ModalityEntry
+    from app.marcus.lesson_plan.modality_registry import ModalityEntry
 
     with pytest.raises(ValidationError) as exc_info:
         ModalityEntry(
@@ -178,7 +178,7 @@ def test_ac_c_6_pending_status_implies_null_producer_class_path() -> None:
 
 def test_ac_c_6_ready_may_have_null_producer_class_path() -> None:
     """AC-C.6: ready+None is legal (backfill pattern for Gary/slides + 31-4)."""
-    from marcus.lesson_plan.modality_registry import ModalityEntry
+    from app.marcus.lesson_plan.modality_registry import ModalityEntry
 
     entry = ModalityEntry(
         modality_ref="slides",
@@ -191,7 +191,7 @@ def test_ac_c_6_ready_may_have_null_producer_class_path() -> None:
 
 def test_ac_c_6_ready_may_have_dotted_producer_class_path() -> None:
     """AC-C.6: ready+non-null is legal (post-backfill state)."""
-    from marcus.lesson_plan.modality_registry import ModalityEntry
+    from app.marcus.lesson_plan.modality_registry import ModalityEntry
 
     entry = ModalityEntry(
         modality_ref="slides",
@@ -210,7 +210,7 @@ def test_ac_c_6_ready_may_have_dotted_producer_class_path() -> None:
 def test_production_context_rejects_negative_revision() -> None:
     from pydantic import ValidationError
 
-    from marcus.lesson_plan.produced_asset import ProductionContext
+    from app.marcus.lesson_plan.produced_asset import ProductionContext
 
     with pytest.raises(ValidationError):
         ProductionContext(lesson_plan_revision=-1, lesson_plan_digest="x")
@@ -219,14 +219,14 @@ def test_production_context_rejects_negative_revision() -> None:
 def test_production_context_rejects_empty_digest() -> None:
     from pydantic import ValidationError
 
-    from marcus.lesson_plan.produced_asset import ProductionContext
+    from app.marcus.lesson_plan.produced_asset import ProductionContext
 
     with pytest.raises(ValidationError):
         ProductionContext(lesson_plan_revision=0, lesson_plan_digest="")
 
 
 def test_production_context_accepts_zero_revision_bootstrap() -> None:
-    from marcus.lesson_plan.produced_asset import ProductionContext
+    from app.marcus.lesson_plan.produced_asset import ProductionContext
 
     ctx = ProductionContext(lesson_plan_revision=0, lesson_plan_digest="x")
     assert ctx.lesson_plan_revision == 0

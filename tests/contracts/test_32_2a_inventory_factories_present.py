@@ -10,7 +10,7 @@ corresponding factory, silently breaking `emit_coverage_manifest()`.
 
 from __future__ import annotations
 
-from marcus.lesson_plan.coverage_manifest import (
+from app.marcus.lesson_plan.coverage_manifest import (
     DEFAULT_COVERAGE_INVENTORY,
     PROJECT_ROOT,
     _load_story_statuses,

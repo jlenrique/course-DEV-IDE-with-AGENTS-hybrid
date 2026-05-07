@@ -25,10 +25,10 @@ from uuid import uuid4
 
 import pytest
 
-from marcus.facade import MARCUS_DISPLAY_NAME, get_facade, reset_facade
-from marcus.lesson_plan.events import EventEnvelope
-from marcus.lesson_plan.log import LessonPlanLog
-from marcus.orchestrator.write_api import emit_pre_packet_snapshot
+from app.marcus.facade import MARCUS_DISPLAY_NAME, get_facade, reset_facade
+from app.marcus.lesson_plan.events import EventEnvelope
+from app.marcus.lesson_plan.log import LessonPlanLog
+from app.marcus.orchestrator.write_api import emit_pre_packet_snapshot
 
 _FORBIDDEN_HYPHENATED_TOKENS: tuple[str, ...] = (
     "marcus-intake",
@@ -87,7 +87,7 @@ def test_facade_return_paths_name_one_marcus_identity(
                 "sme_refs": ["x"],
             },
         )
-        from marcus.orchestrator.write_api import UnauthorizedFacadeCallerError
+        from app.marcus.orchestrator.write_api import UnauthorizedFacadeCallerError
 
         with pytest.raises(UnauthorizedFacadeCallerError) as exc_info:
             emit_pre_packet_snapshot(
@@ -107,7 +107,7 @@ def test_non_maya_direct_invocation_of_orchestrator_fails() -> None:
 
     R1 amendment 12 binding — facade-leak detector negative case.
     """
-    from marcus.orchestrator.write_api import UnauthorizedFacadeCallerError
+    from app.marcus.orchestrator.write_api import UnauthorizedFacadeCallerError
 
     envelope = EventEnvelope(
         event_id=str(uuid4()),

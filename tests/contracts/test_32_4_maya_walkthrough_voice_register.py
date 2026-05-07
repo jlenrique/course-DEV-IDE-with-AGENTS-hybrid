@@ -16,8 +16,8 @@ from typing import Any
 
 import pytest
 
-from marcus.lesson_plan.log import LessonPlanLog
-from marcus.orchestrator.maya_walkthrough import run_maya_walkthrough
+from app.marcus.lesson_plan.log import LessonPlanLog
+from app.marcus.orchestrator.maya_walkthrough import run_maya_walkthrough
 
 _FIXTURE_DIR = Path(__file__).resolve().parents[1] / "fixtures" / "maya_walkthrough" / "sme_corpus"
 _OPERATOR_MARKDOWN = (
@@ -33,7 +33,7 @@ _FORBIDDEN_PATTERN = re.compile(r"\b(intake|orchestrator)\b", re.IGNORECASE)
 
 @pytest.fixture(autouse=True)
 def _patch_pre_packet_repo_root(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
-    from marcus.intake import pre_packet
+    from app.marcus.intake import pre_packet
 
     monkeypatch.setattr(pre_packet, "_REPO_ROOT", tmp_path)
 

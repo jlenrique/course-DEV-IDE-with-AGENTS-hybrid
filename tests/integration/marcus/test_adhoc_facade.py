@@ -4,7 +4,7 @@ import os
 
 import pytest
 
-from marcus.facade import get_facade
+from app.marcus.facade import get_facade
 
 
 def _skip_without_openai() -> None:

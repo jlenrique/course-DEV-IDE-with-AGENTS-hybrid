@@ -20,7 +20,7 @@ from pathlib import Path
 
 import pytest
 
-from marcus.lesson_plan.schema import (
+from app.marcus.lesson_plan.schema import (
     BlueprintSignoff,
     Dials,
     FitDiagnosis,
@@ -32,7 +32,7 @@ from marcus.lesson_plan.schema import (
     ScopeDecision,
 )
 
-SCHEMAS_DIR = Path(__file__).parents[2] / "marcus" / "lesson_plan" / "schema"
+SCHEMAS_DIR = Path(__file__).parents[2] / "app" / "marcus" / "lesson_plan" / "schema"
 
 # Fields intentionally hidden from the published JSON Schema (R2 S-4).
 _SKIP_JSON_SCHEMA_FIELDS: dict[type, set[str]] = {

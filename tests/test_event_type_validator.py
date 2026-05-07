@@ -14,8 +14,8 @@ import logging
 
 import pytest
 
-from marcus.lesson_plan import event_type_registry
-from marcus.lesson_plan.event_type_registry import (
+from app.marcus.lesson_plan import event_type_registry
+from app.marcus.lesson_plan.event_type_registry import (
     KNOWN_PLAN_UNIT_EVENT_TYPES,
     RESERVED_LOG_EVENT_TYPES,
     validate_event_type,

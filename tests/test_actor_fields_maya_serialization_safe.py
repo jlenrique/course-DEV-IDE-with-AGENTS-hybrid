@@ -15,8 +15,8 @@ import json
 import re
 from datetime import UTC, datetime
 
-from marcus.lesson_plan.events import ScopeDecisionTransition
-from marcus.lesson_plan.schema import ScopeDecision
+from app.marcus.lesson_plan.events import ScopeDecisionTransition
+from app.marcus.lesson_plan.schema import ScopeDecision
 
 FORBIDDEN_VALUES = ("marcus", "marcus-intake", "marcus-orchestrator", "irene")
 

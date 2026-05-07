@@ -7,7 +7,7 @@ from pathlib import Path
 
 from pydantic_core import PydanticUndefined
 
-from marcus.lesson_plan.coverage_manifest import CoverageManifest, CoverageSummary, CoverageSurface
+from app.marcus.lesson_plan.coverage_manifest import CoverageManifest, CoverageSummary, CoverageSurface
 
 SCHEMA_PATH = (
     Path(__file__).resolve().parents[2]

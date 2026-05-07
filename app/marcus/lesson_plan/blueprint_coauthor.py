@@ -28,7 +28,7 @@ from app.marcus.lesson_plan.blueprint_producer import (
 from app.marcus.lesson_plan.produced_asset import ProducedAsset
 from app.marcus.lesson_plan.schema import BlueprintSignoff, PlanUnit
 
-REPO_ROOT: Final[Path] = Path(__file__).resolve().parents[2]
+REPO_ROOT: Final[Path] = Path(__file__).resolve().parents[3]
 DEFAULT_BLUEPRINT_SIGNOFF_ROOT: Final[str] = "_bmad-output/artifacts/blueprints/signoffs"
 IRENE_APPROVED_MARKER: Final[str] = "- [x] Irene blueprint review complete"
 WRITER_APPROVED_MARKER: Final[str] = "- [x] Writer sign-off complete"

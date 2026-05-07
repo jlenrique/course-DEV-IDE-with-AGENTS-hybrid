@@ -3,7 +3,7 @@ from __future__ import annotations
 from pathlib import Path
 
 from app.manifest.schema import EdgeSpec, NodeSpec, PipelineManifest
-from marcus.orchestrator.routing import route_step
+from app.marcus.orchestrator.routing import route_step
 
 
 def _manifest() -> PipelineManifest:

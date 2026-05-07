@@ -6,7 +6,7 @@ import ast
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-WIRING = ROOT / "marcus" / "orchestrator" / "learning_event_wiring.py"
+WIRING = ROOT / "app" / "marcus" / "orchestrator" / "learning_event_wiring.py"
 
 
 def test_marcus_calls_append_at_gates_234() -> None:

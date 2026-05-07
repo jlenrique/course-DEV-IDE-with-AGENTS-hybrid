@@ -7,13 +7,13 @@ from pathlib import Path
 
 import pytest
 
-from marcus.lesson_plan.log import LessonPlanLog
-from marcus.orchestrator.trial_smoke_harness import run_trial_run_smoke_harness
+from app.marcus.lesson_plan.log import LessonPlanLog
+from app.marcus.orchestrator.trial_smoke_harness import run_trial_run_smoke_harness
 
 
 @pytest.fixture(autouse=True)
 def _patch_pre_packet_repo_root(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
-    from marcus.intake import pre_packet
+    from app.marcus.intake import pre_packet
 
     monkeypatch.setattr(pre_packet, "_REPO_ROOT", tmp_path)
 

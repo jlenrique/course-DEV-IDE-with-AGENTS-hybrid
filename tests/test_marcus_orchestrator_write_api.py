@@ -19,10 +19,10 @@ from uuid import uuid4
 
 import pytest
 
-from marcus.lesson_plan.events import EventEnvelope
-from marcus.lesson_plan.log import LessonPlanLog
-from marcus.orchestrator import ORCHESTRATOR_MODULE_IDENTITY
-from marcus.orchestrator.write_api import (
+from app.marcus.lesson_plan.events import EventEnvelope
+from app.marcus.lesson_plan.log import LessonPlanLog
+from app.marcus.orchestrator import ORCHESTRATOR_MODULE_IDENTITY
+from app.marcus.orchestrator.write_api import (
     UnauthorizedFacadeCallerError,
     emit_pre_packet_snapshot,
 )

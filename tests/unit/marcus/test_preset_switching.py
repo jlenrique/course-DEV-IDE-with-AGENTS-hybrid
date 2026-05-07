@@ -3,7 +3,7 @@ from __future__ import annotations
 from types import SimpleNamespace
 
 from app.manifest.schema import EdgeSpec, NodeSpec, PipelineManifest
-from marcus.orchestrator.supervisor import Supervisor
+from app.marcus.orchestrator.supervisor import Supervisor
 
 
 def _manifest() -> PipelineManifest:

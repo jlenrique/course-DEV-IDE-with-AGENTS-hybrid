@@ -9,7 +9,7 @@ The ``demonstrate()`` callable at module scope is the loader entry point.
 
 from __future__ import annotations
 
-from marcus.lesson_plan import (
+from app.marcus.lesson_plan import (
     COMPONENT_TYPE_REGISTRY,
     get_component_type_entry,
 )

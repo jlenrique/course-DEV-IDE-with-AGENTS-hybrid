@@ -30,7 +30,7 @@ def test_root_marcus_init_only_exports_get_facade() -> None:
 
 def test_root_marcus_init_does_not_star_import_sub_packages() -> None:
     """AC-C.2 — no ``from marcus.intake/orchestrator import *`` at root."""
-    root_init = Path(__file__).parent.parent.parent / "marcus" / "__init__.py"
+    root_init = Path(__file__).parent.parent.parent / "app" / "marcus" / "__init__.py"
     tree = ast.parse(root_init.read_text(encoding="utf-8"))
 
     star_import_targets: list[str] = []

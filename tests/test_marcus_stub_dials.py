@@ -9,7 +9,7 @@ from __future__ import annotations
 import pytest
 from pydantic import ValidationError
 
-from marcus.orchestrator.stub_dials import STUB_DIALS_MARCUS_LINE, StubDialsAffordance
+from app.marcus.orchestrator.stub_dials import STUB_DIALS_MARCUS_LINE, StubDialsAffordance
 
 
 def test_stub_dials_is_read_only_with_verbatim_marcus_line() -> None:

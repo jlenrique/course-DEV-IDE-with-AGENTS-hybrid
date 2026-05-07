@@ -21,7 +21,7 @@ from app.models.operator_verdict_section_04a import (
     Section04AOperatorVerdict,
 )
 from app.parity.contracts import parity_contract
-from marcus.lesson_plan.schema import PlanUnit
+from app.marcus.lesson_plan.schema import PlanUnit
 
 SURFACE_ID = SECTION_04A_SURFACE_ID
 TransportName = Literal["cli", "http", "mcp-stdio"]

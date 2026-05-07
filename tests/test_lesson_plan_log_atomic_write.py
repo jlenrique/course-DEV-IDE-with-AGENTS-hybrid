@@ -23,8 +23,8 @@ from uuid import uuid4
 
 import pytest
 
-from marcus.lesson_plan.events import EventEnvelope
-from marcus.lesson_plan.log import LessonPlanLog, LogCorruptError
+from app.marcus.lesson_plan.events import EventEnvelope
+from app.marcus.lesson_plan.log import LessonPlanLog, LogCorruptError
 
 
 def _env(event_type: str = "plan_unit.created", rev: int = 1) -> EventEnvelope:

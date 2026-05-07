@@ -34,9 +34,9 @@ from uuid import uuid4
 
 import pytest
 
-from marcus.facade import get_facade, reset_facade
-from marcus.lesson_plan.events import EventEnvelope
-from marcus.orchestrator.write_api import (
+from app.marcus.facade import get_facade, reset_facade
+from app.marcus.lesson_plan.events import EventEnvelope
+from app.marcus.orchestrator.write_api import (
     UnauthorizedFacadeCallerError,
     emit_pre_packet_snapshot,
 )

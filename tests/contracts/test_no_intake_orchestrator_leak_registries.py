@@ -23,17 +23,17 @@ from pathlib import Path
 
 import pytest
 
-from marcus.lesson_plan.component_type_registry import ComponentTypeEntry
-from marcus.lesson_plan.modality_registry import MODALITY_REGISTRY, ModalityEntry
-from marcus.lesson_plan.produced_asset import ProducedAsset, ProductionContext
+from app.marcus.lesson_plan.component_type_registry import ComponentTypeEntry
+from app.marcus.lesson_plan.modality_registry import MODALITY_REGISTRY, ModalityEntry
+from app.marcus.lesson_plan.produced_asset import ProducedAsset, ProductionContext
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 
 FILES_TO_SCAN: list[Path] = [
-    REPO_ROOT / "marcus" / "lesson_plan" / "modality_registry.py",
-    REPO_ROOT / "marcus" / "lesson_plan" / "component_type_registry.py",
-    REPO_ROOT / "marcus" / "lesson_plan" / "modality_producer.py",
-    REPO_ROOT / "marcus" / "lesson_plan" / "produced_asset.py",
+    REPO_ROOT / "app" / "marcus" / "lesson_plan" / "modality_registry.py",
+    REPO_ROOT / "app" / "marcus" / "lesson_plan" / "component_type_registry.py",
+    REPO_ROOT / "app" / "marcus" / "lesson_plan" / "modality_producer.py",
+    REPO_ROOT / "app" / "marcus" / "lesson_plan" / "produced_asset.py",
 ]
 
 FORBIDDEN_TOKEN_PATTERN = re.compile(

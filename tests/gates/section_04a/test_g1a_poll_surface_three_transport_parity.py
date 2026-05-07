@@ -19,7 +19,7 @@ from app.models.operator_verdict_section_04a import (
     Section04AOperatorVerdict,
     Section04AVerdictVerb,
 )
-from marcus.lesson_plan.schema import PlanUnit
+from app.marcus.lesson_plan.schema import PlanUnit
 from tests.gates.section_04a._helpers import fixture_plan_unit
 
 

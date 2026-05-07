@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import pytest
 
-from marcus.orchestrator.m3_trial import run_local_m3_trial
+from app.marcus.orchestrator.m3_trial import run_local_m3_trial
 
 
 @pytest.mark.parametrize("gate_id", ["G1", "G2C", "G3", "G4"])

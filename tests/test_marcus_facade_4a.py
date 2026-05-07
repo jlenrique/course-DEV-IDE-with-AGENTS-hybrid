@@ -11,9 +11,9 @@ from __future__ import annotations
 from datetime import UTC, datetime
 from pathlib import Path
 
-from marcus.facade import Facade, get_facade, reset_facade
-from marcus.lesson_plan.log import LessonPlanLog
-from marcus.lesson_plan.schema import LearningModel, LessonPlan, PlanUnit, ScopeDecision
+from app.marcus.facade import Facade, get_facade, reset_facade
+from app.marcus.lesson_plan.log import LessonPlanLog
+from app.marcus.lesson_plan.schema import LearningModel, LessonPlan, PlanUnit, ScopeDecision
 
 
 def _single_unit_plan() -> LessonPlan:

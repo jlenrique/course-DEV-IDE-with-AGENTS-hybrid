@@ -1,6 +1,6 @@
 """Fixture: wrapper calls canonical gate on the wrong object."""
 
-from marcus.lesson_plan.log import assert_plan_fresh
+from app.marcus.lesson_plan.log import assert_plan_fresh
 
 
 def _require_fresh(surface) -> None:

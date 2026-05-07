@@ -9,7 +9,7 @@ import sys
 from typing import Any
 
 from app.runtime.cascade_config import normalize_agent_name
-from marcus.facade import get_facade
+from app.marcus.facade import get_facade
 
 
 def _load_env_if_available() -> None:

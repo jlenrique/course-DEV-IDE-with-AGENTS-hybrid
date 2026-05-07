@@ -13,8 +13,8 @@ from pathlib import Path
 from types import MappingProxyType
 from typing import get_args
 
-import marcus.lesson_plan.modality_registry as modality_registry_module
-from marcus.lesson_plan.modality_registry import (
+import app.marcus.lesson_plan.modality_registry as modality_registry_module
+from app.marcus.lesson_plan.modality_registry import (
     MODALITY_REGISTRY,
     SCHEMA_VERSION,
     ModalityEntry,

@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from marcus.lesson_plan import (
+from app.marcus.lesson_plan import (
     DEFAULT_QUINN_R_GATE_OUTPUT_ROOT,
     QuinnRGateError,
     QuinnRTwoBranchResult,

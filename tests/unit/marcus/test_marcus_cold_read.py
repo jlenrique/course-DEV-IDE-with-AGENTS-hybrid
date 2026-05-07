@@ -4,7 +4,7 @@ from pathlib import Path
 
 import pytest
 
-from marcus.facade import get_facade
+from app.marcus.facade import get_facade
 
 
 def _write_skill(path: Path) -> None:

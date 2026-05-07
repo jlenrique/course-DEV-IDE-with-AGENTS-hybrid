@@ -88,7 +88,7 @@ _CANNED_TRACY_RESULT: Final[dict[str, Any]] = {
 _GRAY_UNIT_ID: Final[str] = "u-sensing-loop"
 _GREEN_UNIT_ID: Final[str] = "u-techniques"
 _DECLINED_UNIT_ID: Final[str] = "u-assessment-theory"
-_REPO_ROOT: Final[Path] = Path(__file__).resolve().parents[2]
+_REPO_ROOT: Final[Path] = Path(__file__).resolve().parents[3]
 
 
 # ---------------------------------------------------------------------------

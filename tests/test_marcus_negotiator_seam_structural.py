@@ -8,7 +8,7 @@ discoverable sentinel contract.
 
 from __future__ import annotations
 
-from marcus.orchestrator import NEGOTIATOR_SEAM, NegotiatorSeam
+from app.marcus.orchestrator import NEGOTIATOR_SEAM, NegotiatorSeam
 
 
 def test_negotiator_seam_is_structural_marker_with_string_backcompat() -> None:

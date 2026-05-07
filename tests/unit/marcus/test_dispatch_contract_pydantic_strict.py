@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import pytest
 
-from marcus.dispatch.contract import DispatchEnvelope, DispatchReceipt
+from app.marcus.dispatch.contract import DispatchEnvelope, DispatchReceipt
 
 
 @pytest.mark.parametrize("model_cls", [DispatchEnvelope, DispatchReceipt])

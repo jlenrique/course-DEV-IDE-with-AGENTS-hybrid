@@ -21,8 +21,8 @@ import inspect
 from pathlib import Path
 from typing import get_args
 
-import marcus.lesson_plan.log as log_module
-from marcus.lesson_plan.log import (
+import app.marcus.lesson_plan.log as log_module
+from app.marcus.lesson_plan.log import (
     LOG_PATH,
     NAMED_MANDATORY_EVENTS,
     WRITER_EVENT_MATRIX,

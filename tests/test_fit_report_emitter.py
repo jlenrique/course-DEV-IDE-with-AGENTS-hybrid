@@ -9,24 +9,24 @@ from unittest.mock import MagicMock
 
 import pytest
 
-from marcus.lesson_plan.digest import compute_digest
-from marcus.lesson_plan.event_type_registry import (
+from app.marcus.lesson_plan.digest import compute_digest
+from app.marcus.lesson_plan.event_type_registry import (
     REGISTERED_EVENT_TYPES,
     RESERVED_LOG_EVENT_TYPES,
 )
-from marcus.lesson_plan.fit_report import (
+from app.marcus.lesson_plan.fit_report import (
     FIT_REPORT_EMITTED_EVENT_TYPE,
     StaleFitReportError,
     deserialize_fit_report,
     emit_fit_report,
     serialize_fit_report,
 )
-from marcus.lesson_plan.log import (
+from app.marcus.lesson_plan.log import (
     WRITER_EVENT_MATRIX,
     LessonPlanLog,
     UnauthorizedWriterError,
 )
-from marcus.lesson_plan.schema import (
+from app.marcus.lesson_plan.schema import (
     Dials,
     FitDiagnosis,
     FitReport,

@@ -2,8 +2,7 @@
 
 from __future__ import annotations
 
-import marcus.lesson_plan as pkg
-
+import app.marcus.lesson_plan as pkg
 EXPECTED_29_2_EXPORTS = {
     "DEFAULT_BUDGET_FALLBACK_MODE",
     "DuplicateDiagnosisTargetError",

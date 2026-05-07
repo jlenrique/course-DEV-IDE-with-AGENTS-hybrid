@@ -25,7 +25,7 @@ from app.marcus.lesson_plan.modality_producer import ModalityProducer
 from app.marcus.lesson_plan.produced_asset import ProducedAsset, ProductionContext
 from app.marcus.lesson_plan.schema import PlanUnit
 
-REPO_ROOT: Final[Path] = Path(__file__).resolve().parents[2]
+REPO_ROOT: Final[Path] = Path(__file__).resolve().parents[3]
 DEFAULT_BLUEPRINT_OUTPUT_ROOT: Final[str] = "_bmad-output/artifacts/blueprints"
 HUMAN_REVIEW_SECTION_HEADING: Final[str] = "## Human Review Checkpoint"
 IRENE_REVIEW_MARKER: Final[str] = "- [ ] Irene blueprint review complete"
