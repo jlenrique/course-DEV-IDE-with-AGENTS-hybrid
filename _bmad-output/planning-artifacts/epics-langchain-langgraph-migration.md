@@ -891,6 +891,13 @@ So that **FR64 is met and the generator is production-ready for the optional sec
 
 ## Epic 3: Slab 3 Marcus Orchestration — Supervisor + Gates + DecisionCards + Verdict Flow
 
+**7c.21a retirement record (2026-05-07).** Original Epic 3 stories 3.1-3.6 are retired in place via the Slab 7 replacement chain. The operator-facing Marcus orchestration substrate is now delivered by:
+
+- Slab 7a inter-gate orchestration: `_bmad-output/planning-artifacts/epics-slab-7a-inter-gate-orchestration.md`
+- Slab 7b specialist activation: `_bmad-output/planning-artifacts/epics-slab-7b-specialist-activation-eleven.md`
+- Slab 7c orchestrational tail: `_bmad-output/planning-artifacts/epics-slab-7c-orchestrational-tail.md`
+
+Mapping-checklist lineage is preserved under SG-2: the Epic 3 row remains present and its retirement status is `retired-via-7a+7b+7c`. The row is not deleted; the parent epic now points reviewers to the Slab 7 mapping checklist for section-by-section migrated coverage.
 **Milestone:** M3 go/no-go — "Marcus orchestrates end-to-end."
 
 **Goal:** Marcus runs Plan-and-Execute by default (ReAct on `explore` preset), routes to specialists via manifest, produces DecisionCards at every gate, operator verdict via CLI/MCP/FastAPI transports. HIL tamper-evidence enforced. New tracked trial run §01→§15 completes with operator approve/edit/reject at every gate.

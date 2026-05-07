@@ -60,6 +60,8 @@
 
 ## Summary Counts
 
+**Epic 3 lineage status (7c.21a, 2026-05-07):** `retired-via-7a+7b+7c`. The legacy Epic 3 row is preserved by this checklist and retired in place by cross-reference to Slab 7a, Slab 7b, and Slab 7c rather than deleted from SG-2 accounting.
+
 **Pre-Slab-7b baseline (commit `d0ef522`, 2026-04-28):**
 - ✅ **FULLY MIGRATED:** 0
 - ⚠️ **PARTIALLY MIGRATED:** 7 (steps 5/§04, 9/§4.75, 10/§05, 19/§07C, 23/§08, 25/§09, 26/§10)

@@ -131,9 +131,9 @@ def test_trial3_class_conformance_floor_stays_at_11_or_above() -> None:
 
 
 def test_slab_7c_deferred_inventory_states_are_preserved() -> None:
-    live_entry = _inventory_row("**slab-7c-live-harness-evidence**")
-    assert "Reactivates at Slab 7c opener OR Trial-2 ceremony" in live_entry
-    assert "CLOSED" not in live_entry
+    live_entry = _inventory_row("~~**slab-7c-live-harness-evidence**~~")
+    assert "CLOSED 2026-05-07 via 7c.21a" in live_entry
+    assert "_codex-handoff/7c-21a.ready-for-review.md" in live_entry
 
     finding_1 = _inventory_row("**trial-2-finding-1-g0-print-cp1252-crash**")
     assert "CLOSED-BY Story 7c.2" in finding_1

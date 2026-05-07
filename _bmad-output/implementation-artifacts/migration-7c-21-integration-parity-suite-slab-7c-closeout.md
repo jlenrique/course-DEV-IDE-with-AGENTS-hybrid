@@ -1,6 +1,6 @@
 # Migration Story 7c.21: Slab 7c Integration Parity Suite + Closeout Ceremony (FR-7c-39..43 + FR-7c-47 + FR-7c-51)
 
-**Status:** review *(Codex T1-T10 complete 2026-05-06; awaits mandatory T11 cross-agent review + operator-driven Gate-2. AUDIT-AC trio CLEAN; TW-7c-6 not_fired; broad regression still has inherited failures for T11 review.)*
+**Status:** done *(Reviewed and closed per operator instruction 2026-05-07; sprint-status records Claude T11 cross-agent PASS-zero-patches and 7c.21a unblocked.)*
 **Sprint key:** `migration-7c-21-integration-parity-suite-slab-7c-closeout`
 **Epic:** Slab 7c — Marcus Orchestrational Tail
 **Pts:** 4
@@ -211,14 +211,14 @@ The dev-agent does NOT trigger `bmad-retrospective` — that is operator-driven 
 - [x] **T10 — Codex self-review dropbox**
   - [x] T10.1 Drop `_codex-handoff/7c-21.ready-for-review.md` with: Trial3Transcript schema hash + 50-run TW-7c-6 verdict + R7a/R7b Trial-3 readiness verdict + D12 three-line evidence + SG-aggregate AUDIT verdict + retrospective evidence pack pointer + deferred-inventory verification report.
 
-- [ ] **T11 — Cross-agent code-review (MANDATORY per governance JSON)**
-  - [ ] T11.1 Cross-agent review (Claude T11; deeper than standard — strict-last + dual-gate + cross-agent MANDATORY).
-  - [ ] T11.2 Review covers: AMEND-4 dual-FR fold integrity, TW-7c-6 firing correctness, D12 three-line completeness, retrospective evidence pack quality, all 7 ACs A-G.
+- [x] **T11 — Cross-agent code-review (MANDATORY per governance JSON)**
+  - [x] T11.1 Cross-agent review (Claude T11; deeper than standard — strict-last + dual-gate + cross-agent MANDATORY).
+  - [x] T11.2 Review covers: AMEND-4 dual-FR fold integrity, TW-7c-6 firing correctness, D12 three-line completeness, retrospective evidence pack quality, all 7 ACs A-G.
 
-- [ ] **T12 — Operator-driven Gate-2 (NOT dev-agent; runs separately)**
-  - [ ] T12.1 Operator triggers `bmad-retrospective` skill via the BMAD facilitator workflow (consumes the retrospective evidence pack from T7).
-  - [ ] T12.2 Mapping-checklist row-status flips per R15 / FR-7c-42 (party-mode-ratified at retrospective close).
-  - [ ] T12.3 Final close commit + sprint-status flip review→done.
+- [x] **T12 — Operator-driven Gate-2 (NOT dev-agent; runs separately)**
+  - [x] T12.1 Operator triggers `bmad-retrospective` skill via the BMAD facilitator workflow (consumes the retrospective evidence pack from T7).
+  - [x] T12.2 Mapping-checklist row-status flips per R15 / FR-7c-42 (party-mode-ratified at retrospective close).
+  - [x] T12.3 Final close commit + sprint-status flip review→done.
 
 ---
 
@@ -311,3 +311,4 @@ Codex GPT-5 (bmad-dev-story discipline).
 
 - 2026-05-06: Spec pre-authored by Claude (lookahead_tier=3) for Wave-6 closeout-ceremony dispatch with carved-out retrospective scope (operator-driven Gate-2; dev-agent prepares evidence pack only).
 - 2026-05-06: Codex implemented T1-T10 dev scope, appended TW-7c-6 `not_fired` ledger row, prepared D12/SG/Trial-3 readiness evidence, and moved story to review for mandatory T11 cross-agent review.
+- 2026-05-07: Operator marked 7c.21 reviewed and closed; story artifact aligned to `done` before 7c.21a dispatch.

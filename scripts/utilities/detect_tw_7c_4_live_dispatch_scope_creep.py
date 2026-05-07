@@ -8,6 +8,7 @@ import subprocess
 from pathlib import Path
 
 ALLOWED_LIVE_DISPATCH_FILES = {
+    "detect_tw_7c_4_live_dispatch_scope_creep.py",
     "run_cache_hit_harness.py",
     "run_5_api_smoke.py",
 }

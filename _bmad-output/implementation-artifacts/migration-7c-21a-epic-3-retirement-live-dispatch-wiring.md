@@ -1,6 +1,6 @@
 # Migration Story 7c.21a: Epic 3 Retirement + Live-Dispatch Wiring (FR-7c-48 + FR-7c-43)
 
-**Status:** ready-for-dev *(spec authored 2026-05-06 lookahead_tier=1 per governance JSON; **HARD BLOCKER: 7c.21 is in Wave-6 backlog and MUST close before 7c.21a dispatches** — per governance JSON `prerequisite_stories: ["7c-21"]`. Spec pre-authored to capture intent; dispatch holds until 7c.21 closes.)*
+**Status:** review *(Codex T1-T10 complete 2026-05-07; ready for standard T11 review. TW-7c-4 no-fire audit PASS; broad regression stable at 47 failures.)*
 **Sprint key:** `migration-7c-21a-epic-3-retirement-live-dispatch-wiring`
 **Epic:** Slab 7c — Marcus Orchestrational Tail
 **Pts:** 1
@@ -82,45 +82,45 @@ This is a **Wave 6 strict-last cleanup story** (peeled per John A6 — substrate
 
 ## Tasks / Subtasks
 
-- [ ] **T1 — Readiness checks**
-  - [ ] T1.1 Confirm 7c.21 done in sprint-status (HARD predecessor block).
-  - [ ] T1.2 Locate `run_cache_hit_harness.py` + `run_5_api_smoke.py` in the repo (likely under `scripts/`; T1 verifies exact paths).
-  - [ ] T1.3 Read `_bmad-output/planning-artifacts/epics-langchain-langgraph-migration.md` §Epic 3 for in-place update target.
-  - [ ] T1.4 Read `_bmad-output/planning-artifacts/deferred-inventory.md` for `slab-7c-live-harness-evidence` entry shape.
-  - [ ] T1.5 Inventory current live-dispatch wiring (if any) in the 2 named harnesses; identify what needs replacement vs new.
-  - [ ] T1.6 Refresh broad-regression baseline.
+- [x] **T1 — Readiness checks**
+  - [x] T1.1 Confirm 7c.21 done in sprint-status (HARD predecessor block).
+  - [x] T1.2 Locate `run_cache_hit_harness.py` + `run_5_api_smoke.py` in the repo (likely under `scripts/`; T1 verifies exact paths).
+  - [x] T1.3 Read `_bmad-output/planning-artifacts/epics-langchain-langgraph-migration.md` §Epic 3 for in-place update target.
+  - [x] T1.4 Read `_bmad-output/planning-artifacts/deferred-inventory.md` for `slab-7c-live-harness-evidence` entry shape.
+  - [x] T1.5 Inventory current live-dispatch wiring (if any) in the 2 named harnesses; identify what needs replacement vs new.
+  - [x] T1.6 Refresh broad-regression baseline.
 
-- [ ] **T2 — Author live-dispatch in run_cache_hit_harness.py (AC-A)**
-  - [ ] T2.1 Replace legacy Epic 3 stub-runners with post-Slab-7c live invocation (real Marcus orchestrator + specialist substrate).
-  - [ ] T2.2 Preserve existing cache-hit-rate measurement contract (FR54-aligned; per Slab-2a precedent).
+- [x] **T2 — Author live-dispatch in run_cache_hit_harness.py (AC-A)**
+  - [x] T2.1 Replace legacy Epic 3 stub-runners with post-Slab-7c live invocation (real Marcus orchestrator + specialist substrate).
+  - [x] T2.2 Preserve existing cache-hit-rate measurement contract (FR54-aligned; per Slab-2a precedent).
 
-- [ ] **T3 — Author live-dispatch in run_5_api_smoke.py (AC-A)**
-  - [ ] T3.1 Update 5-API smoke wiring to invoke post-Slab-7c API clients.
-  - [ ] T3.2 Preserve cred-skip discipline (Panopto auto-skip on placeholder per existing pattern).
+- [x] **T3 — Author live-dispatch in run_5_api_smoke.py (AC-A)**
+  - [x] T3.1 Update 5-API smoke wiring to invoke post-Slab-7c API clients.
+  - [x] T3.2 Preserve cred-skip discipline (Panopto auto-skip on placeholder per existing pattern).
 
-- [ ] **T4 — Update parent migration epics §Epic 3 (AC-B)**
-  - [ ] T4.1 In-place edit `_bmad-output/planning-artifacts/epics-langchain-langgraph-migration.md` §Epic 3 with retirement record + cross-references.
-  - [ ] T4.2 Preserve mapping-checklist row for Epic 3 with status `retired-via-7a+7b+7c`.
+- [x] **T4 — Update parent migration epics §Epic 3 (AC-B)**
+  - [x] T4.1 In-place edit `_bmad-output/planning-artifacts/epics-langchain-langgraph-migration.md` §Epic 3 with retirement record + cross-references.
+  - [x] T4.2 Preserve mapping-checklist row for Epic 3 with status `retired-via-7a+7b+7c`.
 
-- [ ] **T5 — Close deferred-inventory entry (AC-C)**
-  - [ ] T5.1 Mark `slab-7c-live-harness-evidence` CLOSED in `deferred-inventory.md` with this story's SHA + verdict reference.
+- [x] **T5 — Close deferred-inventory entry (AC-C)**
+  - [x] T5.1 Mark `slab-7c-live-harness-evidence` CLOSED in `deferred-inventory.md` with this story's SHA + verdict reference.
 
-- [ ] **T6 — Author TW-7c-4 scope-creep AUDIT (AC-D)**
-  - [ ] T6.1 Author `tests/audit/test_audit_tw_7c_4_no_live_dispatch_scope_creep.py` — verifies diff scope is bounded to 2 harnesses + permitted helpers.
+- [x] **T6 — Author TW-7c-4 scope-creep AUDIT (AC-D)**
+  - [x] T6.1 Author `tests/audit/test_audit_tw_7c_4_no_live_dispatch_scope_creep.py` — verifies diff scope is bounded to 2 harnesses + permitted helpers.
 
-- [ ] **T7 — Verification battery (R-tier R2; T11-tier standard)**
-  - [ ] T7.1 Focused: `pytest tests/audit/test_audit_tw_7c_4_no_live_dispatch_scope_creep.py -p no:randomly -q --tb=short` PASS.
-  - [ ] T7.2 Cache-hit-rate live-harness smoke (if tractable in CI; mark `@pytest.mark.llm_live` to gate on real-key per Slab-2a precedent).
-  - [ ] T7.3 5-API smoke (if tractable; mark live-only).
-  - [ ] T7.4 Non-regression sweep: full Slab-7c test surface PASS UNCHANGED.
-  - [ ] T7.5 R2 broad: delta ≤ 0.
-  - [ ] T7.6 Class-conformance UNCHANGED.
-  - [ ] T7.7 Lint-imports: 12 KEPT UNCHANGED.
-  - [ ] T7.8 Sandbox-AC: PASS.
-  - [ ] T7.9 Ruff: clean on edited files.
+- [x] **T7 — Verification battery (R-tier R2; T11-tier standard)**
+  - [x] T7.1 Focused: `pytest tests/audit/test_audit_tw_7c_4_no_live_dispatch_scope_creep.py -p no:randomly -q --tb=short` PASS.
+  - [x] T7.2 Cache-hit-rate live-harness smoke (if tractable in CI; mark `@pytest.mark.llm_live` to gate on real-key per Slab-2a precedent).
+  - [x] T7.3 5-API smoke (if tractable; mark live-only).
+  - [x] T7.4 Non-regression sweep: full Slab-7c test surface PASS UNCHANGED.
+  - [x] T7.5 R2 broad: delta ≤ 0.
+  - [x] T7.6 Class-conformance UNCHANGED.
+  - [x] T7.7 Lint-imports: 12 KEPT UNCHANGED.
+  - [x] T7.8 Sandbox-AC: PASS.
+  - [x] T7.9 Ruff: clean on edited files.
 
-- [ ] **T10 — Codex self-review dropbox**
-  - [ ] T10.1 Drop `_codex-handoff/7c-21a.ready-for-review.md` with: live-dispatch evidence (2 harnesses) + §Epic 3 in-place update evidence + deferred-inventory close evidence + TW-7c-4 AUDIT no-fire confirmation + diff-scope verification (bounded to harnesses + helpers only).
+- [x] **T10 — Codex self-review dropbox**
+  - [x] T10.1 Drop `_codex-handoff/7c-21a.ready-for-review.md` with: live-dispatch evidence (2 harnesses) + §Epic 3 in-place update evidence + deferred-inventory close evidence + TW-7c-4 AUDIT no-fire confirmation + diff-scope verification (bounded to harnesses + helpers only).
 
 ---
 
@@ -162,16 +162,44 @@ Codex GPT-5 (bmad-dev-story discipline).
 
 ### Debug Log References
 
-(populated by Codex at T1-T7)
+- T1 broad baseline: `47 failed, 4475 passed, 28 skipped, 2 xfailed`.
+- Focused TW-7c-4 AUDIT: `5 passed`.
+- Trial-3 readiness + mapping checklist slice: `9 passed`.
+- Smoke suite: `181 passed, 18 skipped`.
+- Class-conformance: `PASS: 19 parity contract file(s) conform (11 activation + 8 decision-card shape-pin)`.
+- Lint-imports: `12 kept, 0 broken`.
+- Sandbox-AC validator: PASS.
+- Ruff on edited Python files: PASS.
+- Sprint-status YAML hygiene: `2 passed`.
+- Final broad regression: `47 failed, 4480 passed, 28 skipped, 2 xfailed`; failure count delta = 0.
 
 ### Completion Notes List
 
-(populated by Codex at T10; include T1 path-discovery for 2 harnesses + diff-scope evidence + TW-7c-4 no-fire confirmation)
+- 7c.21 predecessor was already `done` in sprint-status; 7c.21 story artifact was aligned to `done` per operator instruction before 7c.21a dispatch.
+- Harness paths located at `scripts/utilities/run_cache_hit_harness.py` and `scripts/utilities/run_5_api_smoke.py`.
+- `run_cache_hit_harness.py` default fail-closed `not_run` behavior remains intact; `--live-runs N` now loads `.env`, checks `OPENAI_API_KEY`, invokes the post-Slab-7c Marcus/Irene live-dispatch seams where cache metadata is measurable, and reports credential skips without spend.
+- `run_5_api_smoke.py` default fail-closed `not_run` behavior remains intact; `--live` now probes Gamma, ElevenLabs, Canvas, Qualtrics, and Panopto through existing `scripts/api_clients/` clients when credentials are loaded.
+- `_bmad-output/planning-artifacts/epics-langchain-langgraph-migration.md` now records original Epic 3 retirement via Slab 7a + 7b + 7c and includes the three required relative cross-reference paths.
+- `_bmad-output/planning-artifacts/deferred-inventory.md` closes `slab-7c-live-harness-evidence` as `CLOSED 2026-05-07 via 7c.21a` with the 7c.21a handoff pointer.
+- `_bmad-output/planning-artifacts/slab-7-legacy-migrated-mapping-checklist.md` preserves SG-2 lineage and records Epic 3 status as `retired-via-7a+7b+7c`.
+- TW-7c-4 no-fire confirmation: detector returns `{"status": "PASS", "tripwire_id": "TW-7c-4", "violations": []}`; audit verifies no app-layer Python was touched and live-dispatch Python scope is bounded to the two harnesses plus permitted helper/test files.
 
 ### File List
 
-(populated by Codex at T10)
+- `_bmad-output/implementation-artifacts/migration-7c-21-integration-parity-suite-slab-7c-closeout.md`
+- `_bmad-output/implementation-artifacts/migration-7c-21a-epic-3-retirement-live-dispatch-wiring.md`
+- `_bmad-output/implementation-artifacts/sprint-status.yaml`
+- `_bmad-output/planning-artifacts/deferred-inventory.md`
+- `_bmad-output/planning-artifacts/epics-langchain-langgraph-migration.md`
+- `_bmad-output/planning-artifacts/slab-7-legacy-migrated-mapping-checklist.md`
+- `_codex-handoff/7c-21a.ready-for-review.md`
+- `scripts/utilities/detect_tw_7c_4_live_dispatch_scope_creep.py`
+- `scripts/utilities/run_5_api_smoke.py`
+- `scripts/utilities/run_cache_hit_harness.py`
+- `tests/audit/test_audit_tw_7c_4_no_live_dispatch_scope_creep.py`
+- `tests/trial/test_trial3_readiness.py`
 
 ### Change Log
 
 - 2026-05-06: Spec pre-authored by Claude (lookahead_tier=1) for Wave-6 strict-last dispatch post-7c.21 close.
+- 2026-05-07: Codex implemented T1-T10, authored live-dispatch harness paths, closed Epic 3/deferred-inventory records, added TW-7c-4 audit coverage, and moved story to review.
