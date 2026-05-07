@@ -41,7 +41,11 @@ DEFERRED_ROW_TOKENS: frozenset[str] = frozenset(
         "6.3",
         "7.5",
         "14.5",
-        "15",
+        # §15 REMOVED post-Slab-7c retrospective close (2026-05-07): Slab 7c.15
+        # explicitly closed §15 G5 final-operator-handoff (operator-ratified
+        # row-flip ❌→✅). The Slab 7b deferred-row prediction was superseded
+        # by Slab 7c PRD scope (§15 G5 surface + Marcus §15 bundle writer
+        # `section-15-bundle`).
     }
 )
 
@@ -60,7 +64,30 @@ DEFERRED_ROW_TOKENS: frozenset[str] = frozenset(
 # Body activation alone closes the 7 rows above where the specialist's `_act`
 # body itself is the load-bearing surface. Orchestrational rows are Slab 7c
 # work and do not flip at this retrospective.
-PRE_SLAB_7B_FULLY_MIGRATED_FLOOR = 7
+#
+# Post-Slab-7c retrospective close (2026-05-07; party-mode-ratified by operator):
+# +16 net new orchestrational rows close in Slab 7c. Floor lifts 7 -> 23:
+#   1. §02A operator directives (G0) -- 7c.3a + 7c.3b
+#   2. §04A per-plan-unit ratification (G1A) -- 7c.6
+#   3. §04.5 estimator (G1.5) -- 7c.7
+#   4. §04.55 run-constants lock (G1.5) -- 7c.8
+#   5. §05.5 per-slide presentation mode (G2B) -- 7c.9
+#   6. §06 pre-dispatch package (Marcus 5-writer set: gary-slide-content +
+#      gary-fidelity-slides + gary-diagram-cards + gary-theme-resolution +
+#      gary-outbound-envelope) -- 7c.17a + 7c.17b
+#   7. §06B literal-visual operator build -- 7c.18a
+#   8. §07B per-slide A/B variant (G2M) -- 7c.10
+#   9. §07C storyboard build + HTML reviewer (Gate 2 G2C) -- 7c.18b
+#  10. §07D motion-plan polling (G2.5) -- 7c.11
+#  11. §07F motion gate (G2F) -- 7c.12
+#  12. §08B Storyboard B + live-URL (G3B) -- 7c.13
+#  13. §09 four-artifact lock semantics (G3 lock) -- 7c.19
+#  14. §11 voice-selection (G4A) -- 7c.14
+#  15. §11B input-package preview (G4B) -- 7c.15
+#  16. §15 final operator handoff (G5; includes Marcus §15 bundle writer) -- 7c.15
+# Constant name preserved for backward-compatibility; semantic now reflects
+# post-Slab-7c floor.
+PRE_SLAB_7B_FULLY_MIGRATED_FLOOR = 23
 
 ROW_STATUS_LEGEND_TOKENS: tuple[str, ...] = (
     "FULLY MIGRATED",
@@ -99,9 +126,15 @@ def test_deferred_rows_preserve_pre_slab_7b_status() -> None:
     ]
     assert table_lines, "table rows not detected"
     deferred_rows_seen: set[str] = set()
+    # Detection strengthened post-Slab-7c retrospective close (2026-05-07) per
+    # `mapping-checklist-deferred-row-detection-strengthening` deferred-inventory
+    # entry (Murat NIT 2026-04-30). Pattern now anchors the token to the
+    # legacy-section-name cell (bold-marked: `**{token})`), NOT the
+    # row-counter cell. Eliminates false-positive on row 15 (§06B) when token
+    # "15" matches the row-counter column.
     for line in table_lines:
         for token in DEFERRED_ROW_TOKENS:
-            pattern = re.compile(rf"\b{re.escape(token)}\)?\s")
+            pattern = re.compile(rf"\*\*{re.escape(token)}\)")
             if pattern.search(line):
                 deferred_rows_seen.add(token)
                 assert "✅" not in line, (
