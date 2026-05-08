@@ -1,8 +1,10 @@
 # Production Prompt Pack v4.1: Narrated Deck Video Export
 
+> **Banner (added 2026-05-08 at pre-Trial-3 cleanup S6 per Paige post-S5 audit):** This pack is **legacy-frozen for non-motion narrated-deck-video-export runs**. It is the **non-motion cousin** (NOT sibling) of v5 — v5 absorbed v4.2 + v4.3 motion lineage; v4.1 is the orthogonal non-motion lineage. Audit at S6 confirmed: no Audra→Enrique correctness defects (Enrique ElevenLabs references are absent because non-motion runs don't dispatch §11/§11B/§12 voice-selection). No `marcus/` legacy package paths (S2 collapse not relevant here; pack predates the collapse). Status: **legacy-frozen for non-motion runs**; do not edit in place; future v6 will absorb the non-motion lineage when first non-motion FRESH-corpus trial completes.
+
 Status:
-- Standard tracked/default prompt pack for the non-motion narrated workflow (`narrated-deck-video-export`).
-- Sibling to the motion-enabled prompt pack, not superseded by it.
+- **Legacy-frozen for non-motion narrated workflows** (`narrated-deck-video-export`); cousin of v5 (motion-enabled).
+- Pre-Slab-7c era; all post-Slab-7c work is motion-enabled (v5).
 - Supersedes v3 (trial/ad-hoc era). v3 retained for historical traceability.
 
 ## Changelog

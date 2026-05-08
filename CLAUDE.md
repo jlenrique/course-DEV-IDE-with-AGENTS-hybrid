@@ -85,6 +85,16 @@ Binding consultation points (all three are mandatory, not advisory):
 
 Maintenance: the inventory is updated at (a) each Epic retrospective close, (b) each story closure that names a new follow-on, (c) any session-wrapup where the operator flags a new deferred item.
 
+**Direction-of-cleanup-may-flip-with-substrate-evolution caveat (Mary post-S2 amendment; codified at S6 2026-05-08):** when a deferred-inventory entry declares a CLEANUP DIRECTION (e.g., "delete X; keep Y"), the entry MUST carry an explicit "direction may flip if substrate evolves" caveat. Reactivation review re-validates direction before dispatch. Precedent: `migration-tech-debt-app-marcus-stub-disposition` filed 2026-04-26 with direction "delete app/marcus/, keep marcus/"; by S2 dispatch (2026-05-07), Slab 6/7 production runtime had landed in app/marcus/, inverting the canonical-vs-shim direction. Direction was correctly flipped at S2; without the caveat, dispatch could have executed the original direction-of-cleanup blindly.
+
+## Trial-postmortem governance (S6 2026-05-08; per methodology.md §9)
+
+Trial-run postmortems consult `docs/trials/cross-trial-learnings.md` AND file their harvest entries per the four-question routing discipline at `docs/trials/methodology.md §7`. Reactivation-trigger firings are recorded bidirectionally (inventory entry strikethrough cites cross-trial entry; cross-trial entry cites inventory entry). Cross-trial pattern synthesis fires every 3 trials OR at Epic-close. Methodology updates per `methodology.md §8` lifecycle protocol.
+
+## Cleanup-arc execution mode (S6 2026-05-08)
+
+Multi-session cleanup arcs (e.g., the pre-Trial-3 cleanup arc 2026-05-07/08; future post-Trial-N cleanup arcs) execute **Claude-direct** by default. The NEW CYCLE Codex hand-off pattern (Claude pre-author → Codex T1-T10 → Claude T11) is reserved for **formal `bmad-dev-story` discipline** on substrate-impacting stories ratified by party-mode. Cleanup work in multi-session arcs is Claude-direct to avoid P3 anti-pattern (operator-as-bridge friction with no payoff). Operator authority overrides this default.
+
 ## Texas retrieval
 
 Shape 3-Disciplined retrieval contract lives at [`skills/bmad-agent-texas/references/retrieval-contract.md`](skills/bmad-agent-texas/references/retrieval-contract.md). The provider directory (`run_wrangler.py --list-providers`, or `retrieval.list_providers()`) is authoritative for "what Texas can fetch." Schema v1.1 changelog at [`_bmad-output/implementation-artifacts/SCHEMA_CHANGELOG.md`](_bmad-output/implementation-artifacts/SCHEMA_CHANGELOG.md).

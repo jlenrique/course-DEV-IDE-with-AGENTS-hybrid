@@ -296,6 +296,20 @@ The Slab 1+2+3+4+5a harvest cycle annotation above froze the *retrospective scop
 
 ---
 
+### A21. AUDIT-not-BUILD scope discipline for extend-and-audit migration stories
+
+- **Example:** Slab 7c Wave-3 trio close (7c.6/7c.7/7c.8) shipped under "extend-and-audit" framing — extend the substrate per AC-Bs, then audit per AC-Ms with backward-consumer scan. Story 7c.5.G1 nearly weakened the audit framing by treating T1 backward-consumer audit as static-grep-only ("drop because no audited consumer reads them after construction"). T6 broad regression revealed live consumers exercised at smoke/integration time. Risk grew for G2C/G3/G4 with AMELIA-P3 staggering downstream pressure. The savings from AUDIT-AC framing (positive headroom verification vs absolute-count thresholds) are real — Slab 7c showed 6.4× shape-pin headroom + 1.7× class-conformance headroom — but require disciplined per-row `audit_method` declaration at T1 to prevent vacuous-PASS evidence.
+- **Counter-pattern:** When a substrate is rumored over-engineered or has positive-headroom characteristics, frame the story as **AUDIT** (verify the headroom rather than reduce the substrate) rather than **BUILD** (introduce more scope). Use **AMEND-7c percentage-threshold pattern** (see A22) instead of absolute-count thresholds; per-row `audit_method` declarations at T1 (binding=hard validator rule: if disposition=DROP and audit_method=light/missing → REJECT). Codify in `docs/dev-guide/migration-story-governance.json` per V6 amendment ratifying AMELIA-P5 DROP-row Heavy gate.
+- **Slab-of-discovery:** Slab 7c Wave-3 trio close 2026-05-05 (Story 7c.5.G1 surfacing + V6 party-mode amendment ratifying AMELIA-P5). Filed at S6 (2026-05-08; pre-Trial-3 cleanup) per Mary harvest backfill discipline — the framing was load-bearing across 36 stories but never canonicalized at anti-pattern catalog tier.
+
+### A22. AMEND-7c percentage-threshold pattern (replace absolute gap-counts with percentage gap-rates)
+
+- **Example:** Slab 7c originally specified "≤2 gaps" absolute-count thresholds for AUDIT-AC failure; surfaced (correctly) by Murat at AMEND-7c (Round-1) that absolute counts are sample-size-fragile. Replaced with "≤10% gap rate" percentage-threshold per AMEND-7c. The 7c.20a/b/c trio (AUDIT-AC verification) measured 1.35% gap-rate vs 10% floor; absolute counts would have triggered TW-7c-1 false-fire at any sample-size growth. Percentage thresholds scale gracefully across substrate evolution; absolute counts do not.
+- **Counter-pattern:** When authoring tripwire / gap-detection / audit thresholds, use **percentage rates** (e.g., "≥80% coverage", "≤10% gap rate") rather than absolute counts ("≤2 missing"; "≥18 entries"). Percentage thresholds remain valid as the substrate grows; absolute counts require manual re-tuning at each growth event. Codify the percentage-rate decision-rule at threshold-authoring time in the spec body, not as an after-thought amendment.
+- **Slab-of-discovery:** Slab 7c AMEND-7c (Murat Round-1 amendment 2026-05-04). Codified at `_bmad-output/implementation-artifacts/sprint-status.yaml::tripwire_events` TW-7c-1 reservation entry. Filed at S6 (2026-05-08; pre-Trial-3 cleanup) per Mary harvest backfill discipline.
+
+---
+
 ## Process Anti-Patterns (NEW subheading; 2026-04-27)
 
 The above A1-A20 entries cover *substrate* and *implementation* anti-patterns — defects in code or system design. The entries below cover *process* anti-patterns — defects in governance / gate-process discipline that allow substrate or implementation defects to ship. Filed at 2026-04-27 per Mary harvest-gate authority + Quinn-R 5-agent-party-mode-round process-change recommendation. Format-freeze v1 same four-field shape; numbered P1+ to distinguish from A1+ codebase-anti-patterns.

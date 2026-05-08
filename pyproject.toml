@@ -125,6 +125,9 @@ forbidden_modules = ["app.models.state.run_state"]
 # to know about run_state shape because it dispatches through write_api.
 
 [[tool.importlinter.contracts]]
+# Symmetric pair with C2 (Cora-suite); retained for operator-discoverability per
+# composition-spec §10 entry 2026-05-07 (Winston post-S5 amendment A3). M-prefixed
+# contracts are the Marcus invariant suite; C-prefixed are the Cora suite.
 name = "Marcus Contract M2 - app.marcus may not import app.cora"
 type = "forbidden"
 source_modules = ["app.marcus"]
@@ -140,6 +143,9 @@ forbidden_modules = ["app.marcus"]
 # Contract M5 below (Murat AM-17 / Winston D14 architectural decision).
 
 [[tool.importlinter.contracts]]
+# Symmetric pair with M2 (Marcus-suite); retained for operator-discoverability per
+# composition-spec §10 entry 2026-05-07 (Winston post-S5 amendment A3). M-prefixed
+# contracts are the Marcus invariant suite; C-prefixed are the Cora suite.
 name = "Cora Contract C2 - Marcus may not import app.cora"
 type = "forbidden"
 source_modules = ["app.marcus"]
