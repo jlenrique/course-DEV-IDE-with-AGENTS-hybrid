@@ -1,6 +1,6 @@
 # course-DEV-IDE-with-AGENTS — Hybrid Migration Clone
 
-**Status:** Migration **unconditionally SHIPPED** 2026-04-27 (commit `97842ac`) on `dev/langchain-langgraph-foundation` (severed from upstream/master @ `3ed7c56` since 2026-04-24). All 4 prior M5 conditions resolved. **Slab 6 trial-experience bundle 3/3 CLOSED** 2026-04-28 (`migration-6-3` Step 02A defaults + `migration-6-4` Irene Pass 2 authoring template + `migration-6-5` HUD per-step expandable summaries; substrate-polish tail complete). **First tracked trial UNBLOCKED** — production-operations cycle opens with the next operator-queued trial. Operator-witnessed live evidence: Slab 6.1 production-graph runner verified through HIL gate pause/resume (~$0.10–$0.30 per live smoke); Slab 6.4 Gate 5 dual-gate ceremony PASS 2026-04-28 (83 passed; AC-6.4-G satisfied); migration-full-health-check 213 passed across 11/11 slices.
+**Status (refreshed 2026-05-07 at pre-Trial-3 cleanup S5 Tier-2):** Migration **unconditionally SHIPPED** 2026-04-27 (commit `97842ac`) on `dev/langchain-langgraph-foundation` (severed from upstream/master @ `3ed7c56` since 2026-04-24). **Slab 7 orchestrational arc COMPLETE:** Slab 7a (inter-gate orchestration; closed 2026-05-01), Slab 7b (specialist activation × 11; closed 2026-05-01), Slab 7c (orchestrational tail; 36 dev-stories; closed 2026-05-07). **Pre-Trial-3 cleanup arc** (operator-mandated 6-session sweep) currently active: S1 foundation done (`725f55f`), S2 marcus/ namespace collapse done (`e48e107`), S3 trial-run methodology done (`473928c`), S4 v5 canonical pack done (`ca31f8d`), S5/S6 in progress. **First tracked trial (Trial-3) launches post-cleanup-close** against the v5 canonical pack + post-Slab-7c substrate. v5 canonical pack at `docs/workflow/production-prompt-pack-v5-narrated-lesson-with-video-or-animation.md`; trial methodology at `docs/trials/methodology.md`.
 
 **One-line elevator:** Collaborative intelligence platform for course content production — a multi-agent orchestrator (Marcus) + Cora dev-graph + per-specialist 9-node scaffold (gates G1/G2C/G3/G4 with HIL DecisionCard verdicts) + tamper-evident operator-verdict + learning ledger + frozen-graph reproducibility ceremony, built on LangChain/LangGraph.
 
@@ -68,7 +68,12 @@ The hybrid clone has passed M5 as a conditional ship from primary's prompt-pack 
 | 2c — Wondercraft pilot + generator validation | done | M2 | **CONDITIONAL-GREEN** (operator addendum pending) |
 | 3 — Marcus orchestration | done | M3 | **CONDITIONAL-GREEN** (Texas live-wire addendum pending) |
 | 4 — Lockstep + gates + Cora + ledger + frozen-graph | done | M4 | GREEN-WITH-RIDERS |
-| 5a — Acceptance (replay + parity + economics + invariant audit + ship verdict) | done | **M5 (THE ship gate)** | **SHIP-CONDITIONAL** through 2026-05-03 |
+| 5a — Acceptance (replay + parity + economics + invariant audit + ship verdict) | done | **M5 (THE ship gate)** | **SHIPPED** 2026-04-27 (unconditional; M5 conditions all resolved) |
+| 6 — Trial-experience bundle (3/3) | done | post-M5 | CLOSED 2026-04-28 |
+| 7a — Inter-gate orchestration | done | post-Slab-6 | CLOSED 2026-05-01 |
+| 7b — Specialist activation × 11 | done | post-Slab-7a | CLOSED 2026-05-01 |
+| 7c — Orchestrational tail (36 dev-stories) | done | post-Slab-7b | CLOSED 2026-05-07 |
+| Pre-Trial-3 cleanup arc (S1-S6) | in-progress (S5/6) | post-Slab-7c | Trial-3 launches post-arc-close |
 | 5b — Polish (fork UX + economics dashboard + guide final + generator polish) | bounded follow-up | post-M5 | opens after conditional window closes or is explicitly extended |
 
 **Migration-master-status enum** (set at 5a.5 SLAB CLOSING per M5 verdict):

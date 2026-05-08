@@ -612,6 +612,63 @@ Split Slab 5 into two sub-slabs with distinct risk profiles:
 
 **Each sub-slab becomes an epic at epic-authoring time.** M5 ship verdict gates on 5a only; 5b completion is a follow-up milestone.
 
+### Decision D19 — Marcus-Writer Partition Principle (W5)
+
+Authored 2026-05-07 at pre-Trial-3 cleanup S5 Tier-2. Codifies the W5 partition principle that emerged during Slab 7c orchestrational tail authoring (W5 amendment to slab-7c PRD). Currently scattered across composition spec + import-linter contract comments; this entry promotes it to architecture-of-record.
+
+**Decision:** Marcus is the SOLE author of envelope contributions. Specialists are pure functions returning `SpecialistReturn` payloads; Marcus's orchestrator owns aggregation + emission. The `production_runner.py` is the SOLE graph-execution authority. This three-way partition (specialist = pure function; Marcus = sole writer; runner = sole executor) is structurally enforced via:
+- M1 import-linter contract: only `app.marcus.orchestrator.write_api` may import `app.models.state.run_state` (single-writer rule per R1 amendment 13 / Quinn)
+- D3 HIL tamper-evidence (only authorized verdict-bridge modules import `app.gates.resume_api`)
+- C6 `independence` contract (§section packages may not import each other; cross-§ shared content extracted to `app.gates._common`)
+
+**Why this decision now:** Slab 7c shipped 14 §section packages each carrying a `poll_surface.py`. The §02A LLM composer pivot (7c.3a) demonstrated that §section bodies must NOT side-effect the run_state; they emit DECISIONCARD payloads, Marcus aggregates, runner persists. Without W5 codified at architecture tier, future §section authors will be tempted to duplicate write surfaces.
+
+**Cross-references:** ADR 0001 parity-DSL; ADR 0002 eight-family gate taxonomy; M1+M3+M4 import-linter contracts; W5 amendment in `prd-slab-7c-orchestrational-tail.md`.
+
+### Decision D18 — Eight-Family Gate Taxonomy LOCK (ADR 0002)
+
+Authored 2026-05-07 at pre-Trial-3 cleanup S5 Tier-2. Promotes ADR 0002 to a binding architectural decision. The eight-family taxonomy (G0/G1/G2/G2A/G2C/G3/G4/G5/G6) ratified during Slab 7c is now load-bearing for §section package layout.
+
+**Decision:** Gate codes are partitioned into 8 family contracts; alias gates inherit family semantics via `alias_of` clause. The C6 import-linter `independence` contract enumerates the §section list; this enumeration is itself a load-bearing artifact (changes require party-mode + ADR 0002 amendment). Runtime gate IDs (currently 18) are validated against the eight-family taxonomy at compile time. `production_gate_ids(manifest)` derives the runner-pause set from manifest fold-flag metadata (currently {G1, G2C, G3, G4}; 4 of 18).
+
+**Authoritative reference:** [`docs/dev-guide/adr/0002-slab-7c-gate-taxonomy.md`](../../docs/dev-guide/adr/0002-slab-7c-gate-taxonomy.md). D18 binds ADR 0002 to architecture-of-record currency.
+
+### Decision D17 — Crosswalk-vs-Disk Parity Test Pattern (Murat AM-2 from post-S4)
+
+Authored 2026-05-07 at pre-Trial-3 cleanup S5 Tier-2. Generalizes the test pattern Murat introduced at S4 post-review when 2/6 v5 Crosswalk paths were stale.
+
+**Decision:** Every governance map that declares disk paths (production-prompt-pack TL;DR Crosswalk; pipeline-manifest dispatch registry; coverage-manifest module_path entries; sources-of-truth.md SSOT pointers) MUST have a parity test at `tests/parity/` that:
+1. Parses the governance map (markdown table OR YAML)
+2. Extracts every path-string token
+3. Asserts each resolves to an existing file or directory on disk
+4. Excludes explicit deferred-placeholder markers per documented exclusion glob
+
+**First instance:** `tests/parity/test_v5_crosswalk_paths_exist.py` (S4 post-review; v5 pack). **Pattern propagation:** when authoring a new governance map, file an adjacent parity test before declaring the map canonical. Filed in deferred-inventory `s5-followup-parity-test-pattern-propagation` for cross-map adoption.
+
+### Decision D16 — v5 Canonical Prompt-Pack Discipline + Tier-1/2/3 Versioning
+
+Authored 2026-05-07 at pre-Trial-3 cleanup S5 Tier-2. Codifies the v5-canonical / v4.2-frozen-legacy disposition + Tier-1/2/3 versioning posture established at S4.
+
+**Decision:** Production prompt packs follow the legacy-frozen-anchor pattern when superseded:
+- New canonical version (e.g., v5) supersedes prior (v4.2 / v4.3)
+- Prior canonical preserved on disk as legacy-frozen authority for the mapping checklist axis (audit reference)
+- New canonical adopts Tier-1/2/3 versioning posture: Tier-1 = prose/connective tissue (dev-agent authority); Tier-2 = new pipeline step (party-mode); Tier-3 = new pack family (full party-mode + operator sign-off)
+- Frozen-at-ship discipline: once a canonical pack ships + first tracked trial completes, structural edits bump version; the frozen prior-version stays on disk for audit
+
+**First instance:** v5 supersedes v4.2 (legacy-frozen) and v4.3 (fully superseded; cluster-mode already absorbed into v4.2/v5). v4.2 retained as mapping-checklist legacy-axis anchor.
+
+**Cross-references:** Sources-of-truth.md "Production prompt pack (canonical for production runs)" row; v5 frontmatter `versioning-posture` block; Pipeline Manifest Regime §Pack Versioning Policy.
+
+### Decision D15 — Trial-Run Methodology Standing Operations
+
+Authored 2026-05-07 at pre-Trial-3 cleanup S5 Tier-2. Promotes the S3 trial-run methodology to architecture-of-record.
+
+**Decision:** Production trial runs follow the cadence + verdict framing + filing-disposition rules at [`docs/trials/methodology.md`](../../docs/trials/methodology.md). Every operator-launched full-pipeline run is a **tracked trial** producing the per-run trio (`launch.md` + `log.md` + `postmortem.md`) under `docs/trials/trial-N/`. Verdict framing: PASS / PARTIAL-PASS / STRUCTURED-STOP / FAIL. Filing-disposition: 4-question routing (anti-pattern? deferred? architecture? cross-trial?) — first YES wins; Routing Summary hygiene check at postmortem close.
+
+**Cross-references:** `docs/trials/methodology.md`; `docs/trials/cross-trial-learnings.md`; `docs/trials/trial-N-templates/`. CLAUDE.md amendment proposed at S5 P1-32 codifies the routing rules at governance tier.
+
+**Why D15 not D14:** D14 was used at S2 for Marcus namespace single-package discipline. S3-S6 cleanup arc decisions occupy D15+.
+
 ### Decision D14 — Marcus Namespace Single-Package Discipline (pre-Trial-3 Cleanup S2)
 
 Authored 2026-05-07 at pre-Trial-3 cleanup S2 close. Closes deferred-inventory entry

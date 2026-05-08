@@ -1,5 +1,8 @@
 # Developer Guide — Architecture, Execution Flow, and Extension Points
 
+> **Migration Status (refreshed 2026-05-07 at pre-Trial-3 cleanup S5 Tier-2):** Migration unconditionally SHIPPED 2026-04-27. Slab 7 orchestrational arc COMPLETE (7a+7b+7c closed 2026-05-01 / 2026-05-01 / 2026-05-07). Pre-Trial-3 cleanup arc S1-S6 currently in progress (S1+S2+S3+S4 closed; S5+S6 in flight). **First tracked trial (Trial-3) launches post-cleanup-close** against v5 canonical pack + post-Slab-7c substrate. v5 canonical pack: `docs/workflow/production-prompt-pack-v5-narrated-lesson-with-video-or-animation.md`. Trial methodology: `docs/trials/methodology.md`. Legacy v4.2 retained as mapping-checklist legacy-axis frozen authority.
+
+
 > ## MIGRATION STATUS BANNER (refreshed 2026-04-28)
 >
 > **This guide reflects the PRE-MIGRATION primary-repo architecture** (Cursor IDE + prompt-pack v4.x + Three-Layer Architecture). The hybrid clone on `dev/langchain-langgraph-foundation` has **MIGRATED** to LangChain/LangGraph: migration **unconditionally SHIPPED** 2026-04-27 (commit `97842ac`); Slab 6 trial-experience bundle 3/3 CLOSED 2026-04-28 (Step 02A defaults + Irene Pass 2 authoring template + HUD per-step expandable summaries); first tracked trial UNBLOCKED. The migrated runtime carries: Marcus orchestrator + production-graph runner consuming Slab 6.0 envelope substrate + 14 scaffold-conformant specialists + HIL DecisionCard gates (G1/G2C/G3/G4) with FR34 tamper-evidence + checkpoint pause/resume verified end-to-end + learning ledger + standing governance discipline (Composition Specification + Substrate Inventory Checklist N1–N12 + anti-pattern catalog A1–A17 + P1–P3).
