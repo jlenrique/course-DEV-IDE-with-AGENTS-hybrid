@@ -45,7 +45,7 @@ def test_last_two_marcus_writers_register_sanctum_alignments():
         assert declaration.alignment_kind == "bmb-pattern"
 
 
-def test_all_five_writer_alignments_emit_manifest(tmp_path):
+def test_all_six_writer_alignments_emit_manifest(tmp_path):
     for module_name in [
         "app.marcus.orchestrator.writers.slide_content",
         "app.marcus.orchestrator.writers.fidelity_slides",

@@ -81,6 +81,8 @@ Binding consultation points (all three are mandatory, not advisory):
 2. **Every session hot-start.** `next-session-start-here.md` carries a standing "Deferred inventory status" line with current counts (backlog epics / deferred stories / follow-ons). Operator sees it every session open; serves as the "don't overlook" standing reminder.
 3. **Every new story spec that names a follow-on.** The story author adds the follow-on to `deferred-inventory.md` §Named-But-Not-Filed Follow-Ons (not in the parent story spec alone — the inventory is the single source of truth for "what's queued but not filed yet"). Examples: 15-1-lite-marcus names 15-1-lite-irene + 15-1-lite-gary; 33-1a names §4.55 body-polish as a conditional follow-on. Both live in the inventory.
 
+4. **Every multi-slab retrospective close** (Mary AM-7 codified at S5 Tier-1 2026-05-07; closes the gap pre-Trial-3 cleanup S1 P0-IH discovered). At the close of every retrospective spanning multiple slabs (e.g., Slab 7a+7b+7c retrospective; future multi-slab retros), execute a hygiene pass: archive closed entries to bottom-of-file §"Closed Entries — Archived"; refresh stale "reactivate at Slab N" triggers where Slab N has now closed; merge duplicate framings; update Inventory Summary count. Without this, inventory accumulates 60%+ noise overhead per arc (per S1 P0-IH discovery: 24 closed entries clogging a 41-active register).
+
 Maintenance: the inventory is updated at (a) each Epic retrospective close, (b) each story closure that names a new follow-on, (c) any session-wrapup where the operator flags a new deferred item.
 
 ## Texas retrieval

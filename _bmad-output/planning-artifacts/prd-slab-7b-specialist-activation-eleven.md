@@ -4,6 +4,8 @@ draftedAt: '2026-04-29'
 ratifiedAt: '2026-04-29'
 draftMode: 'pre-fill-for-operator-review-then-party-mode-ratified-9-rounds'
 status: 'complete-ready-for-bmm-workflow-status-update-and-implementation-readiness-check'
+executionClosedAt: '2026-05-01'  # S5 Tier-1 amendment 2026-05-07: PRD-execution close date (vs PRD-authoring complete date)
+supersededBy: '_bmad-output/planning-artifacts/slab-7b-retrospective.md'  # S5 Tier-1 amendment: retrospective is the authoritative post-execution record
 ratificationLog:
   rounds: 9
   voicesPerRound: 4

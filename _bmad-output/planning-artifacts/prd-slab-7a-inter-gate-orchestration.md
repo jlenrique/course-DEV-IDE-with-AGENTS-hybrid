@@ -2,6 +2,8 @@
 stepsCompleted: ['step-01-init', 'step-02-discovery', 'step-02b-vision', 'step-02c-executive-summary', 'step-03-success', 'step-04-journeys', 'step-05-domain', 'step-06-innovation', 'step-07-project-type', 'step-08-scoped', 'step-09-functional', 'step-10-nonfunctional', 'step-11-polish', 'step-12-complete']
 completedAt: '2026-04-28'
 status: 'complete-ready-for-bmm-workflow-status-update-and-implementation-readiness-check'
+executionClosedAt: '2026-05-01'  # S5 Tier-1 amendment 2026-05-07: PRD-execution close date (vs PRD-authoring complete date)
+supersededBy: '_bmad-output/planning-artifacts/slab-7a-retrospective.md'  # S5 Tier-1 amendment: retrospective is the authoritative post-execution record
 polishPass2026_04_28:
   navigationAdded: ['table-of-contents', 'operator-non-negotiables-callout', 'quick-reference-anchors']
   acronymGlosses: ['JTBD', 'HIL', 'FM', 'ADR', 'K-floor']

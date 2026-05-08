@@ -1,31 +1,16 @@
-# Product Requirements Document (PRD)
+# Product Requirements Document — Forwarder
 
-## Overview
-This PRD defines the requirements for the Multi-Agent Course Content Production System (APP), a persistent collaborative intelligence infrastructure for scaling creative expertise in online course content production.
-
-## Status
-- **Version:** Wave 2B (Parameter Registry + Creative Director)
-- **Last Updated:** 2026-04-14
-- **Total FRs:** 70 (recast for agent .md approach)
-
-## Key Capabilities
-- Agent-orchestrated production workflows
-- Tool mastery via exemplar-driven development
-- Fidelity assurance and quality gates
-- Cluster intelligence + creative control parameters
-
-## Epic Links
-- See `_bmad-output/planning-artifacts/epics.md` for detailed breakdown
-- Current focus: Epic 20c (Wave 2B) - Parameter registry, CD agent, experience profiles
-
-## Wave 2B Additions
-- Parameter families: Run Constants, Narration-time, Assembly-time
-- Creative Director agent for orchestration
-- Experience profiles (visual-led, text-led)
-
-## Implementation Notes
-- Agents created via bmad-agent-builder
-- Skills provide tool capabilities
-- BMad memory for learning persistence
-
-For full FR details, see historical PRD artifacts.
+> **This file is a forwarder.** The 30-line stub previously here (Wave 2B Epic 20c orientation, dated 2026-04-14) was replaced 2026-05-07 at pre-Trial-3 cleanup S5 Tier-1 per John post-S2 review (cold-start orientation hazard).
+>
+> **Authoritative PRD locations:**
+> - **Migration parent PRD (frozen 2026-04-22):** [`prd-langchain-langgraph-migration.md`](./prd-langchain-langgraph-migration.md) — the LangChain/LangGraph migration project; status frozen post-FR60-severance.
+> - **Slab-7 sub-PRDs (closed; preserved as audit reference):**
+>   - [`prd-slab-7a-inter-gate-orchestration.md`](./prd-slab-7a-inter-gate-orchestration.md) — Slab 7a; closed 2026-05-01; supersededBy `slab-7a-retrospective.md`
+>   - [`prd-slab-7b-specialist-activation-eleven.md`](./prd-slab-7b-specialist-activation-eleven.md) — Slab 7b; closed 2026-05-01; supersededBy `slab-7b-retrospective.md`
+>   - [`prd-slab-7c-orchestrational-tail.md`](./prd-slab-7c-orchestrational-tail.md) — Slab 7c; closed 2026-05-07; supersededBy `slab-7c-retrospective.md`
+> - **Pre-Trial-3 cleanup arc:** [`pre-trial-3-cleanup-plan.md`](./pre-trial-3-cleanup-plan.md) — 6-session cleanup arc (S1-S6) currently active; multi-agent-ratified 2026-05-07.
+> - **Pre-migration legacy PRD context** (Wave 2B / Epic 20c era): see Epic 20c entries in [`epics.md`](./epics.md).
+> - **Trial-run methodology (S3 deliverable):** [`docs/trials/methodology.md`](../../docs/trials/methodology.md) — standing operations document for tracked trial cadence.
+> - **v5 canonical pack (S4 deliverable):** [`docs/workflow/production-prompt-pack-v5-narrated-lesson-with-video-or-animation.md`](../../docs/workflow/production-prompt-pack-v5-narrated-lesson-with-video-or-animation.md).
+>
+> **Pre-Trial-3 cleanup arc S5 Tier-1 disposition (2026-05-07):** the prior 30-line stub was actively misleading (Wave 2B / Epic 20c framing was 25 days stale and missed the entire LangChain/LangGraph migration). Replaced with this forwarder. Closes deferred-inventory follow-on `prd-md-stub-disposition`.

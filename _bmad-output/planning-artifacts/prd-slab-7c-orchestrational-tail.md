@@ -16,6 +16,8 @@ stepsCompleted:
   - step-12-complete
 workflowComplete: true
 completedAt: 2026-05-04
+executionClosedAt: 2026-05-07  # S5 Tier-1 amendment 2026-05-07: PRD-execution close (vs PRD-authoring complete date above)
+supersededBy: _bmad-output/planning-artifacts/slab-7c-retrospective.md  # S5 Tier-1 amendment: retrospective is the authoritative post-execution record
 fr_nfr_signoff:
   date: 2026-05-04
   voices: [John, Winston, Amelia, Murat]
@@ -82,7 +84,7 @@ story_decomposition_signoff:
     operator_picks_resolved:
       - 'Alias decision LOCKED at PRD Step 11 per Amelia A3 (8 net-new + 6 alias; not deferred to 7c.4 sprint-planning)'
       - '7c.20 hard-split per Murat M3 (not envelope-clause per Amelia A6; Amelia A6 envelope-clause folded as fallback if any AUDIT discovers gaps)'
-  story_count_final: 26
+  story_count_final: 36 (AMEND-6 honored at S5 2026-05-07; was 26 pre-AMEND-6)
   pts_estimate_range: 60-72
   duration_estimate_days: 5.5-7
 classification:
