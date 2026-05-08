@@ -88,7 +88,9 @@ Mark this section explicitly **"PENDING — fill within 48h"** at trial close if
 | Number of attempts | `<N>` |
 | Total cost (LLM + APIs) | `$<X>` |
 | Tripwire firings | `<count + which>` |
-| Broad-regression delta | `<+/- N tests vs pre-trial baseline>` |
+| Broad-regression delta | `<+/- N NEW tests vs allowlisted baseline per methodology.md §3a>` |
+| Specialists exercised (out of 11) | `<list each: texas / quinn-r / vera / irene / tracy / gary / kira / enrique / wanda / dan / compositor>` |
+| Gates reached (explicit list) | `<G0 / G1 / G1A / G1.5 / G2B / G2C / G2.5 / G3B / G3 / G4A / G4B / G5 — list those reached, not just highest>` |
 | Operator attention-quality (subjective 1-5) | `<N>` |
 
 ---

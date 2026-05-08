@@ -52,6 +52,7 @@ verdict_predicted: PASS or PARTIAL-PASS (FRESH corpus first-attempt risk)
 | Field | Value |
 |---|---|
 | trial_id | `trial-3` |
+| run_id | `<fill IMMEDIATELY after launch from runner stdout — Murat post-S3 amendment for forensic-trail bidirectionality with log.md>` |
 | date | `<YYYY-MM-DD>` |
 | operator | `Juanl` |
 | branch | `<branch>` |

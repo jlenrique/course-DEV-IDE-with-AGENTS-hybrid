@@ -48,9 +48,13 @@ What we collect at each trial. Mapped to where it lives on disk.
 | Runtime artifacts (transcripts, run-id directories) | Production runner | `state/config/runs/<trial-id>/` |
 | Gate decisions + verbs | Operator at each HIL surface | `docs/trials/trial-N/log.md` (operator records); `<run-dir>/run/decisions/` (runner persists) |
 | Trial transcript | `Trial3Transcript` schema (FR-7c-51) | `<run-dir>/run/trial-transcript.json` |
+| LangSmith trace ID | run-graph entry; persists to disk per Slab 6 NFR-trace-ID | `<run-dir>/run/langsmith-trace-id.txt` (forensic complement to local transcript) |
+| Launch-state snapshot | `launch.md` §2 prereq checklist outputs (cred-readiness; ruff/lint state; preflight runner exit; final-launch token result) | `<run-dir>/launch-snapshot.json` (Murat post-S3 GAP-2; preserves "what operator saw at launch" for post-trial review) |
 | Tripwire firings | Tripwire ledger | `_bmad-output/implementation-artifacts/sprint-status.yaml::tripwire_events` |
 | Anti-pattern hits | Postmortem author | `docs/trials/trial-N/postmortem.md` (with filing target per §7) |
-| Cycle metrics | wall-clock + cost | `docs/trials/trial-N/postmortem.md` |
+| Cycle metrics | wall-clock + cost + specialists-exercised count + gates-reached list | `docs/trials/trial-N/postmortem.md` (broad-regression delta protocol per §3a below) |
+
+**§3a — Broad-regression delta protocol (Murat post-S3 amendment):** Broad-regression delta = full `pytest` run at trial-close minus pre-trial baseline captured at `launch.md §1 head_sha`. Known-baseline failures (e.g., `s2-test-cleanup-residual-37` at 37 entries; reference `_bmad-output/implementation-artifacts/broad-regression-baseline-2026-05-07.md`) are excluded by allowlist — only NEW failures count toward the delta. Without this protocol, "delta" is operator-interpretive and fragile across trials.
 | Cross-trial pattern emergence | Postmortem author at trio close | `docs/trials/cross-trial-learnings.md` (per §7) |
 
 ## §4 — Reflection cadence
@@ -71,9 +75,9 @@ Four verdicts per tracked trial:
 
 | Verdict | Condition | Downstream action |
 |---|---|---|
-| **PASS** | Trial completes G0 → G5; transcript shape valid; ≥9-of-11 specialists exercised; tripwire ledger green; broad-regression delta ≤ 0 | Postmortem authored; deferred-inventory triggers fire (e.g., Epic 15 reactivation post-first-tracked-trial); next trial planned |
+| **PASS** | Trial completes G0 → G5; transcript shape valid; ≥9-of-11 specialists exercised (the 11 = Texas, Quinn-R, Vera, Irene, Tracy, Gary, Kira, Enrique, Wanda, Dan, Compositor — see `skills/bmad-agent-marcus/references/specialist-registry.yaml`); tripwire ledger green; broad-regression delta ≤ 0 per §3a protocol | Postmortem authored; deferred-inventory triggers fire (e.g., Epic 15 reactivation post-first-tracked-trial); next trial planned |
 | **PARTIAL-PASS** | Trial reaches at least G3 with major-stage progress but does not reach G5 cleanly. Operator decides whether evidence base is sufficient for the trial's stated hypothesis. | Postmortem authored; explicit hypothesis-vs-evidence reconciliation; deferred-inventory entries filed for incomplete sections; re-run scheduled OR substrate gap escalated |
-| **STRUCTURED-STOP** | Trial halts cleanly at a fail-loud point (specialist guardrail engaged; CI gate refused; etc.). The substrate honors its contracts; the run does not produce trial evidence but DOES produce diagnostic evidence. | Postmortem authored; finding(s) filed per §7; re-run after substrate fix lands. Trial-2 set the precedent (`trial-2-postmortem-2026-05-04.md`) |
+| **STRUCTURED-STOP** | Trial halts cleanly at a fail-loud point (specialist guardrail engaged; CI gate refused; etc.). **Discriminator (Murat post-S3):** STRUCTURED-STOP requires the SUBSTRATE (not the operator) to have refused to proceed. Operator-elective stops post-progress are PARTIAL-PASS. | Postmortem authored; finding(s) filed per §7; re-run after substrate fix lands. Trial-2 set the precedent (`trial-2-postmortem-2026-05-04.md`) |
 | **FAIL** | Substrate behaves UNEXPECTEDLY (silent corruption, contract violation that didn't fail loud, data loss). Distinct from STRUCTURED-STOP because the runtime did NOT honor its contracts. | Operator escalation; party-mode investigation; halt all subsequent dev work until root cause identified; this is a HIGH-severity event |
 
 Operator at trial-close declares verdict in `postmortem.md`. Verdicts are operator authority; party-mode review may dispute (PARTIAL-PASS ↔ STRUCTURED-STOP boundary is the most common dispute).
