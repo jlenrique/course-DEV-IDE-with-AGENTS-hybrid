@@ -52,4 +52,4 @@ def test_lint_imports_kept_count_remains_unchanged_after_c5_population() -> None
     assert result.returncode == 0, result.stdout + result.stderr
     match = re.search(r"Contracts:\s+(\d+)\s+kept,\s+0\s+broken", result.stdout)
     assert match, result.stdout
-    assert int(match.group(1)) == 12
+    assert int(match.group(1)) == 13

@@ -12,7 +12,7 @@ def test_blueprint_registry_backfill_points_at_concrete_producer() -> None:
     assert entry.status == "ready"
     assert (
         entry.producer_class_path
-        == "marcus.lesson_plan.blueprint_producer.BlueprintProducer"
+        == "app.marcus.lesson_plan.blueprint_producer.BlueprintProducer"
     )
 
 

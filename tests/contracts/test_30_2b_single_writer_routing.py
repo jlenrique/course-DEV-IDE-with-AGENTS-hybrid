@@ -22,9 +22,9 @@ from pathlib import Path
 _FORBIDDEN_IMPORT_TARGETS: frozenset[tuple[str, str]] = frozenset(
     {
         # (module_string, imported_name)
-        ("marcus.lesson_plan.log", "LessonPlanLog"),
-        ("marcus.orchestrator.write_api", "emit_pre_packet_snapshot"),
-        ("marcus.orchestrator.write_api", "UnauthorizedFacadeCallerError"),
+        ("app.marcus.lesson_plan.log", "LessonPlanLog"),
+        ("app.marcus.orchestrator.write_api", "emit_pre_packet_snapshot"),
+        ("app.marcus.orchestrator.write_api", "UnauthorizedFacadeCallerError"),
     }
 )
 _FORBIDDEN_ATTRIBUTE_CHAINS: frozenset[tuple[str, ...]] = frozenset(
@@ -51,7 +51,7 @@ def _find_forbidden_imports(tree: ast.AST) -> list[tuple[str, str, int]]:
         elif isinstance(node, ast.Import):
             for alias in node.names:
                 # Reject ``import marcus.orchestrator.write_api as _wa`` too.
-                if alias.name == "marcus.orchestrator.write_api":
+                if alias.name == "app.marcus.orchestrator.write_api":
                     violations.append((alias.name, "<module>", node.lineno))
     return violations
 

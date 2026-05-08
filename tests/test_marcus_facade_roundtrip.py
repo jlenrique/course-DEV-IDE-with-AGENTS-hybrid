@@ -71,7 +71,7 @@ def test_get_facade_thread_safe_fresh_instances() -> None:
     try:
         with ThreadPoolExecutor(max_workers=16) as pool:
             instances = list(pool.map(lambda _: get_facade(), range(128)))
-        assert len({id(instance) for instance in instances}) == 128
+        assert len({id(instance) for instance in instances}) == 138
     finally:
         reset_facade()
 

@@ -64,9 +64,9 @@ def test_marcus_fingerprint_changes_when_sanctum_changes(
     (sanctum_root / "ignored").mkdir(exist_ok=True)
     (sanctum_root / "ignored" / "noise.md").write_text("ignored", encoding="utf-8")
 
-    monkeypatch.setattr("marcus.facade._MARCUS_SKILL_PATH", skill_path)
-    monkeypatch.setattr("marcus.facade._MARCUS_SANCTUM_ROOT", sanctum_root)
-    monkeypatch.setattr("marcus.facade._PIPELINE_MANIFEST_PATH", manifest_path)
+    monkeypatch.setattr("app.marcus.facade._MARCUS_SKILL_PATH", skill_path)
+    monkeypatch.setattr("app.marcus.facade._MARCUS_SANCTUM_ROOT", sanctum_root)
+    monkeypatch.setattr("app.marcus.facade._PIPELINE_MANIFEST_PATH", manifest_path)
 
     facade_a = get_facade()
     _write_sanctum(sanctum_root, persona="# persona b\n")
@@ -86,9 +86,9 @@ def test_marcus_fingerprint_populated_on_init(
     _write_manifest(manifest_path)
     _write_sanctum(sanctum_root, persona="# persona a\n")
 
-    monkeypatch.setattr("marcus.facade._MARCUS_SKILL_PATH", skill_path)
-    monkeypatch.setattr("marcus.facade._MARCUS_SANCTUM_ROOT", sanctum_root)
-    monkeypatch.setattr("marcus.facade._PIPELINE_MANIFEST_PATH", manifest_path)
+    monkeypatch.setattr("app.marcus.facade._MARCUS_SKILL_PATH", skill_path)
+    monkeypatch.setattr("app.marcus.facade._MARCUS_SANCTUM_ROOT", sanctum_root)
+    monkeypatch.setattr("app.marcus.facade._PIPELINE_MANIFEST_PATH", manifest_path)
 
     facade = get_facade()
 
@@ -108,9 +108,9 @@ def test_no_singleton_short_circuit_across_calls(
     _write_manifest(manifest_path)
     _write_sanctum(sanctum_root, persona="# persona a\n")
 
-    monkeypatch.setattr("marcus.facade._MARCUS_SKILL_PATH", skill_path)
-    monkeypatch.setattr("marcus.facade._MARCUS_SANCTUM_ROOT", sanctum_root)
-    monkeypatch.setattr("marcus.facade._PIPELINE_MANIFEST_PATH", manifest_path)
+    monkeypatch.setattr("app.marcus.facade._MARCUS_SKILL_PATH", skill_path)
+    monkeypatch.setattr("app.marcus.facade._MARCUS_SANCTUM_ROOT", sanctum_root)
+    monkeypatch.setattr("app.marcus.facade._PIPELINE_MANIFEST_PATH", manifest_path)
 
     facade_a = get_facade()
     facade_b = get_facade()

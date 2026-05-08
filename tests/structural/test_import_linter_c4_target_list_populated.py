@@ -69,7 +69,7 @@ def test_c5_forbidden_modules_and_c6_independence_modules_are_populated():
     assert "app.gates.section_02a" in c6["modules"]
 
 
-def test_import_linter_keeps_contract_count_at_twelve():
+def test_import_linter_keeps_contract_count_at_thirteen():
     result = subprocess.run(
         [str(REPO_ROOT / ".venv/Scripts/lint-imports.exe")],
         cwd=REPO_ROOT,
@@ -79,4 +79,4 @@ def test_import_linter_keeps_contract_count_at_twelve():
     )
 
     assert result.returncode == 0
-    assert "Contracts: 12 kept, 0 broken." in result.stdout
+    assert "Contracts: 13 kept, 0 broken." in result.stdout

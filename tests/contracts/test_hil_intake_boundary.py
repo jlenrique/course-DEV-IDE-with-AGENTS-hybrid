@@ -32,7 +32,7 @@ def test_hil_intake_no_import_from_marcus_intake() -> None:
     """AC-T.9 / AC-E.1: hil_intake.py must not import from marcus.intake.*"""
     source = _HIL_INTAKE.read_text(encoding="utf-8")
     all_imports = _collect_imports(source)
-    violations = [m for (m,) in all_imports if m.startswith("marcus.intake")]
+    violations = [m for (m,) in all_imports if m.startswith("app.marcus.intake")]
     assert violations == [], (
         f"hil_intake.py imports from marcus.intake (boundary violation): {violations}"
     )

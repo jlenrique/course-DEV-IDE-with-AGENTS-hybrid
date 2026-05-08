@@ -418,7 +418,7 @@ def test_manifest_loader_reads_repo_manifest_contract(tmp_path: Path) -> None:
     # creative-directive, cluster-prompt-engineering, cluster-dispatch-sequencing,
     # cluster-coherence, gate-2m (x2 — prompt-pack + operator-card), motion-gate
     # (x2), narration-and-manifest.
-    assert len(spec.sequence_doc_parity_specs) == 12
+    assert len(spec.sequence_doc_parity_specs) == 13
 
 
 def test_manifest_loader_reads_cluster_manifest_contract(tmp_path: Path) -> None:

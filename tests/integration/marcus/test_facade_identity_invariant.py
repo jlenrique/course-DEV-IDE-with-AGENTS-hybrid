@@ -71,9 +71,9 @@ def test_facade_identity_loop_keeps_one_marcus(
     _write_skill(skill_path)
     _write_manifest(manifest_path)
     _write_sanctum(sanctum_root)
-    monkeypatch.setattr("marcus.facade._MARCUS_SKILL_PATH", skill_path)
-    monkeypatch.setattr("marcus.facade._MARCUS_SANCTUM_ROOT", sanctum_root)
-    monkeypatch.setattr("marcus.facade._PIPELINE_MANIFEST_PATH", manifest_path)
+    monkeypatch.setattr("app.marcus.facade._MARCUS_SKILL_PATH", skill_path)
+    monkeypatch.setattr("app.marcus.facade._MARCUS_SANCTUM_ROOT", sanctum_root)
+    monkeypatch.setattr("app.marcus.facade._PIPELINE_MANIFEST_PATH", manifest_path)
 
     state = SimpleNamespace(current_node=None, events=[])
     facade = get_facade()

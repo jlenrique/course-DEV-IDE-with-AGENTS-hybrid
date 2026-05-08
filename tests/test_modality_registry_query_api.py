@@ -29,7 +29,7 @@ from app.marcus.lesson_plan.modality_registry import (
         (
             "blueprint",
             "ready",
-            "marcus.lesson_plan.blueprint_producer.BlueprintProducer",
+            "app.marcus.lesson_plan.blueprint_producer.BlueprintProducer",
         ),
         ("leader-guide", "pending", None),
         ("handout", "pending", None),

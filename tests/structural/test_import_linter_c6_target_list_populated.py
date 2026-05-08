@@ -70,7 +70,7 @@ def test_c6_modules_list_includes_section_02a() -> None:
     )
 
 
-def test_lint_imports_still_reports_12_kept() -> None:
+def test_lint_imports_still_reports_13_kept() -> None:
     result = subprocess.run(
         [str(LINT_IMPORTS)],
         cwd=REPO_ROOT,
@@ -80,4 +80,4 @@ def test_lint_imports_still_reports_12_kept() -> None:
     )
 
     assert result.returncode == 0, result.stdout + result.stderr
-    assert "Contracts: 12 kept, 0 broken." in result.stdout
+    assert "Contracts: 13 kept, 0 broken." in result.stdout

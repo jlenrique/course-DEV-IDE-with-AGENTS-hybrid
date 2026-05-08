@@ -138,7 +138,7 @@ def test_producer_class_paths_match_current_mvp_state() -> None:
     assert MODALITY_REGISTRY["slides"].producer_class_path is None
     assert (
         MODALITY_REGISTRY["blueprint"].producer_class_path
-        == "marcus.lesson_plan.blueprint_producer.BlueprintProducer"
+        == "app.marcus.lesson_plan.blueprint_producer.BlueprintProducer"
     )
     for key in EXPECTED_PENDING_MODALITIES:
         assert MODALITY_REGISTRY[key].producer_class_path is None, (

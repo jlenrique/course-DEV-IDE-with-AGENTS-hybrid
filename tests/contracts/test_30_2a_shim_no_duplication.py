@@ -34,7 +34,7 @@ def test_shim_discipline_invariants() -> None:
         if isinstance(node, ast.ImportFrom)
     ]
     assert any(
-        module == "marcus.intake.pre_packet" and "prepare_irene_packet" in names
+        module == "app.marcus.intake.pre_packet" and "prepare_irene_packet" in names
         for module, names in imports
     ), (
         f"Expected `from marcus.intake.pre_packet import prepare_irene_packet`; "

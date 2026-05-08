@@ -153,9 +153,9 @@ def test_emit_does_not_re_trigger_model_validate_at_import_site(
     envelope = _make_envelope()
 
     with (
-        patch("marcus.orchestrator.write_api.EventEnvelope.model_validate") as mv,
+        patch("app.marcus.orchestrator.write_api.EventEnvelope.model_validate") as mv,
         patch(
-            "marcus.orchestrator.write_api.EventEnvelope.model_validate_json"
+            "app.marcus.orchestrator.write_api.EventEnvelope.model_validate_json"
         ) as mvj,
     ):
         emit_pre_packet_snapshot(

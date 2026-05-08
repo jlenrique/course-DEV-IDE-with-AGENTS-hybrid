@@ -23,7 +23,7 @@ from __future__ import annotations
 import ast
 from pathlib import Path
 
-_FORBIDDEN_MODULE: str = "marcus.orchestrator.fanout"
+_FORBIDDEN_MODULE: str = "app.marcus.orchestrator.fanout"
 _FORBIDDEN_CALL: str = "emit_plan_lock_fanout"
 
 

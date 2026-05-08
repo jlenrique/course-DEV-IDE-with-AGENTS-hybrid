@@ -40,7 +40,7 @@ def _env(event_type: str = "plan_unit.created", rev: int = 1) -> EventEnvelope:
 def test_fsync_called_on_append(tmp_path: Path) -> None:
     """AC-T.9 (all platforms): os.fsync must be called after each append."""
     log = LessonPlanLog(path=tmp_path / "log.jsonl")
-    with patch("marcus.lesson_plan.log.os.fsync", wraps=os.fsync) as fsync_spy:
+    with patch("app.marcus.lesson_plan.log.os.fsync", wraps=os.fsync) as fsync_spy:
         log.append_event(_env(), writer_identity="marcus-orchestrator")
     assert fsync_spy.call_count == 1, (
         f"os.fsync must be called exactly once per append; got {fsync_spy.call_count}"
@@ -50,7 +50,7 @@ def test_fsync_called_on_append(tmp_path: Path) -> None:
 def test_fsync_called_multiple_appends(tmp_path: Path) -> None:
     """AC-T.9: N appends → N fsync calls."""
     log = LessonPlanLog(path=tmp_path / "log.jsonl")
-    with patch("marcus.lesson_plan.log.os.fsync", wraps=os.fsync) as fsync_spy:
+    with patch("app.marcus.lesson_plan.log.os.fsync", wraps=os.fsync) as fsync_spy:
         log.append_event(_env(), writer_identity="marcus-orchestrator")
         log.append_event(_env(), writer_identity="marcus-orchestrator")
         log.append_event(_env(), writer_identity="marcus-orchestrator")
@@ -75,7 +75,7 @@ def test_fsync_is_final_call(tmp_path: Path) -> None:
         call_order.append("fsync")
         real_fsync(fd)
 
-    with patch("marcus.lesson_plan.log.os.fsync", side_effect=fsync_stub):
+    with patch("app.marcus.lesson_plan.log.os.fsync", side_effect=fsync_stub):
         # Append; write + flush happen inside the with-block before fsync.
         log.append_event(_env(), writer_identity="marcus-orchestrator")
 
