@@ -49,12 +49,10 @@ $env:PYTHONIOENCODING="utf-8"
 
 **Reading order map:**
 - **Pre-launch (5 min):** this card → `cross-trial-learnings.md` skim → `corpus-preparation-guide.md` if first FRESH corpus → `launch.md` template
-- **At-gate (lookup):** `hil-verb-legend.md` (verb-set + edit-payload + irreversibility) → per-§ "Operator at this gate" sub-block in v5 below
+- **At-gate (lookup):** `docs/operator/hil-verb-legend.md` (verb-set + edit-payload + irreversibility) — canonical at-gate reference. Per-§ "Operator at this gate" sub-blocks in v5 are **deferred to S5 P1** (filed in deferred-inventory `s4-per-section-operator-sub-blocks`); use the verb legend in the meantime.
 - **Post-trial (15 min mandatory + 48h deferred):** `postmortem.md` Shape A → Shape B → harvest-discipline routing per `methodology.md §7`
 
 ---
-
-## 0) TL;DR Crosswalk
 
 ## 0) TL;DR Crosswalk
 
@@ -62,16 +60,16 @@ $env:PYTHONIOENCODING="utf-8"
 |---|---|---|---|---|
 | 01 | 01 | app/marcus/orchestrator/production_runner.py | M→O | Activation + Preflight |
 | 02 | 02 | app/specialists/texas/retrieval_dispatch.py | M→O | Source Authority Map |
-| 02A | 02A | app/marcus/composers/section_02a/composer.py | M→O | Operator Directives (LLM-driven; G0; 7c.3a) |
+| 02A | 02A | app/composers/section_02a/composer.py | M→O | Operator Directives (LLM-driven; G0; 7c.3a) |
 | 03 | 03 | app/specialists/texas/retrieval_dispatch.py | O→M | Ingestion + Evidence Log (FR89; six-canonical-artifacts) |
-| 04 | 04 | app/specialists/vera/_act.py + app/gates/section_04/poll_surface.py | M→O | G1 runner-pause; six-dim evidence rubric |
+| 04 | 04 | app/specialists/vera/_act.py + app/specialists/vera/graph.py | M→O | G1 runner-pause; six-dim evidence rubric (Vera body) |
 | 04A | 04A | app/gates/section_04a/poll_surface.py | M→O | G1A per-plan-unit ratification; 7c.6 |
 | 04.5 | 04.5 | app/gates/section_04_5/poll_surface.py | M→O | G1.5 estimator; 7c.7 |
 | 04.55 | 04.55 | app/gates/section_04_55/poll_surface.py | M→O | G1.5 lock (IRREVERSIBLE); 7c.8 |
 | 4.75 | 4.75 | app/specialists/cd/_act.py (PARTIAL; Dan persona) | M→self | Creative Directive Resolution; activation pending future slab |
 | 05 | 05 | app/specialists/irene_pass1/_act.py | M→O | Pass-1 narration + Gate 1 fidelity (orchestration partial) |
 | 05B | 05B | (placeholder; NOT MIGRATED - see deferred-inventory) | M→O | Cluster Plan G1.5 Gate (deferred) |
-| 06 | 06 | app/marcus/orchestrator/writers/section_06_pre_dispatch_5_writers.py | O→M | Marcus 5-writer pre-dispatch (W5 partition); 7c.17a + 7c.17b |
+| 06 | 06 | app/marcus/orchestrator/writers/{slide_content, fidelity_slides, diagram_cards, theme_resolution, outbound_envelope}.py | O→M | Marcus 5-writer pre-dispatch (W5 partition); 7c.17a + 7c.17b |
 | 6.2 | 6.2 | (placeholder; NOT MIGRATED - see deferred-inventory) | M→self | Cluster Prompt Engineering (deferred) |
 | 6.3 | 6.3 | (placeholder; NOT MIGRATED - see deferred-inventory) | M→self | Cluster Dispatch Sequencing (deferred) |
 | 06B | 06B | app/gates/section_06b/poll_surface.py | M→O | Literal-Visual Operator Build; 7c.18a |
@@ -82,14 +80,14 @@ $env:PYTHONIOENCODING="utf-8"
 | 07D | 07D | app/gates/section_07d/poll_surface.py | M→O | G2.5 motion-plan polling; 7c.11 |
 | 07E | 07E | app/specialists/kira/_act.py + skills/bmad-agent-kling/SKILL.md (Class-C; 7b.7) | M→self | Motion Generation/Import |
 | 07F | 07F | app/gates/section_07f/poll_surface.py | M→O | G2F motion gate; 7c.12 |
-| 08 | 08 | app/specialists/irene/_act.py (Pass-2; orchestration partial) | O→M | Irene Pass 2 + Segment Manifest |
+| 08 | 08 | app/specialists/irene/graph.py + app/specialists/irene/authoring (Pass-2; orchestration partial) | O→M | Irene Pass 2 + Segment Manifest |
 | 08B | 08B | app/gates/section_08b/poll_surface.py | M→O | G3B Storyboard B + live-URL; 7c.13 |
-| 09 | 09 | app/marcus/orchestrator/writers/section_09_lock.py | M→O | G3 four-artifact lock (IRREVERSIBLE); 7c.19 |
+| 09 | 09 | app/marcus/orchestrator/section_09_lock.py | M→O | G3 four-artifact lock (IRREVERSIBLE); 7c.19 |
 | 10 | 10 | app/specialists/vera/_act.py (G4 19-criterion canonical) | M→O | Fidelity + Quality Pre-Spend; 7b.3 + 23-1 |
 | 11 | 11 | app/gates/section_11/poll_surface.py + skills/bmad-agent-enrique (Class-C; 7b.8) | M→O | G4A voice selection; 7c.14 |
 | 11B | 11B | app/gates/section_11b/poll_surface.py + skills/bmad-agent-enrique | M→O | G4B input-package preview; 7c.15 |
 | 12 | 12 | app/specialists/enrique/_act.py + skills/bmad-agent-elevenlabs/SKILL.md (Class-C; 7b.8) | O→M | ElevenLabs Audio Generation |
-| 13 | 13 | app/specialists/quinn_r/_act.py (G5 5-sub-checks; 7b.2) | M→O | Quinn-R Pre-Composition QA |
+| 13 | 13 | app/specialists/quinn_r/graph.py + app/specialists/quinn_r/expertise (G5 5-sub-checks; 7b.2) | M→O | Quinn-R Pre-Composition QA |
 | 14 | 14 | app/specialists/compositor/_act.py + skills/compositor/SKILL.md (Class-D2 EXEMPT per D20; 7b.11) | O→M | Compositor Assembly Bundle (deterministic) |
 | 14.5 | 14.5 | app/specialists/desmond/_act.py (body absent; Marcus or operator fallback) | M→self | Desmond Run-Scoped Operator Brief |
 | 15 | 15 | app/gates/section_15/poll_surface.py + app/marcus/orchestrator/writers/section_15_bundle.py | O→M | G5 final operator handoff (DESCRIPT-ready); 7c.15 |
@@ -1616,6 +1614,7 @@ Primary contract references:
 
 ## Changelog
 
+- **v5.0.0 (2026-05-07; pre-Trial-3 cleanup S4 close commit `a713112` + post-S4 review amendments)** — Authored from corrected v4.2 via Paige's deterministic 10-step mutation pass. Status: canonical-for-production-runs (post-Slab-7c). Frontmatter expanded with versioning posture (Tier-1 / Tier-2 / Tier-3) + methodology pointer + gate-taxonomy authority. Banner inverted: v5 IS canonical; v4.2 frozen as legacy-axis mapping authority; v4.3 fully superseded (no carry-forward; cluster-mode already in v4.2). Top-of-pack gate-pause asymmetry disclosure added per ADR 0002 (4 of 18 gates are runner-pauses). New §0 Pre-Launch Operator Card per Sally pre-S3 amendment (10-step pre-launch sequence; tape-to-second-monitor; 5-min skim). TL;DR Crosswalk Marcus-module column substituted with migrated runtime paths (33-row deterministic substitution). Specialist column refined per post-Slab-7c roster (Enrique not Audra; Class-C two-SKILL.md surfacing for Gary+Gamma / Kira+Kling / Enrique+ElevenLabs; Class-D2 EXEMPT for Compositor per D20). 6 NOT-MIGRATED rows explicitly marked as deferred-inventory placeholders (§05B / §6.2 / §6.3 / §7.5 cluster-mode; §4.75 cd-PARTIAL; §14.5 Desmond-body-absent). Methodology cross-references inserted at §0 Operator Card (3 mentions; restraint held). Per-§ "Operator at this gate" sub-blocks deferred to S5 P1. Crosswalk path-accuracy: 31/33 paths grep-verified post-S4-Murat-review; §02A corrected to `app/composers/section_02a/composer.py`; §06 corrected to enumerate 5 actual writer files.
 - **v4.2i (2026-04-19)** — Added explicit Prompt `04A` Lesson Plan coauthoring + scope-lock checkpoint between Prompt 4 and Prompt 4.5, with required event evidence (`scope_decision.set`, `plan.locked`) and hard block on downstream progression until Step 04A is completed.
 - **v4.2g (2026-04-16)** — Prompt 1: added `--bundle-dir [BUNDLE_PATH]` to preflight command (was identified as a blocker in the 2026-04-15 trial run — preflight skipped bundle-specific run-constants.yaml validation without it).
 - **v4.2h (2026-04-17)** — Added Prompt 4.75 Creative Directive resolution (CD), including `creative-directive.yaml` validation and `narration_profile_controls` persistence; added cluster prompt engineering (6.2), dispatch sequencing (6.3), and G2.5 coherence gate (7.5) for cluster-enabled runs; added Prompt 1 `app_session_readiness --with-preflight`; added `narration-script-parameters.yaml` to Pass 2 inputs; linked Irene A/B loop guidance; clarified motion-first ordering.
