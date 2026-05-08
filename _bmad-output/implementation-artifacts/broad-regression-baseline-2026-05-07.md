@@ -53,6 +53,23 @@ Failures grouped by likely root cause. Each entry: nodeid + one-line attribution
 
 ---
 
+## Post-S6 closure annotations (added 2026-05-08 per Murat final ratification baseline-currency hygiene)
+
+**RESOLVED-AT-`7111633`** (S6 Wave-A+B close 2026-05-08): **Cat-2 housekeeping-2 closed** — `tests/integration/gates/test_resume_api_authority.py::test_no_unauthorized_callers` rewritten as AST-based constructor scanner (replaces pre-S6 substring scanner per A19 anti-pattern). Both tests in the file now PASS. The 7+ DISMISS-thread anti-pattern (verdicts 7c.9/10/11/12/13/14/20b) is structurally closed; future iterations will not re-encounter the substring-scanner-staleness false-positive class.
+
+**Post-S6 broad-regression count: 82 failures** (same as post-S5 baseline; substrate-currency work landed at S5+S6 doesn't move pytest count by design — the structural value is governance + architecture-of-record currency + harvest discipline + Cat-2 closure).
+
+**Post-S6 delta-summary roll-up:**
+- Cat-2 housekeeping-2 (1 entry): RESOLVED-AT-`7111633` (S6 Wave-A+B)
+- Cat-15 NFR-CG / contracts (8 entries; 6 fixed at S1 hybrid registry): RESOLVED-AT-`725f55f` (S1 close)
+- All other categories (Cat-1, Cat-3, Cat-4, Cat-5, Cat-6, Cat-7, Cat-8, Cat-9, Cat-10, Cat-11, Cat-12, Cat-13, Cat-14, Cat-16): **carry forward to S7+** as `s6-tier-3-post-trial-3-housekeeping-batch` per Amelia pre-S6 Tier-3 triage; not Trial-3-blocking; operator-priority-driven scheduling.
+
+**Trial-3 forensic comparison protocol (still active):** when Trial-3 launch surfaces a failing test, grep this catalog for the nodeid first. Expected behavior: PRE-EXISTING (still-open Cat-* entries) means substrate-noise from the cleanup arc; CANDIDATE NEW REGRESSION (absent from catalog) requires investigation per protocol.
+
+**File status:** retained as forensic catalog through Trial-3 close; at first Trial-3 retrospective, the catalog is rolled into a Trial-N-baseline cycle per `docs/trials/methodology.md §3a`.
+
+---
+
 ### Cat-2: DISMISS-thread / scanner-staleness (housekeeping-2 target; A19) — 1 failure
 
 **Root cause:** `tests/integration/gates/test_resume_api_authority.py::test_no_unauthorized_callers` does substring matching on `OperatorVerdict(` against `app/**/*.py` with filename exclusion that doesn't match variant filenames (`operator_verdict_section_*.py`). Catches CLASS DEFINITIONS as if they were direct constructor calls. 7+ DISMISS-thread cycles (P2 anti-pattern).
