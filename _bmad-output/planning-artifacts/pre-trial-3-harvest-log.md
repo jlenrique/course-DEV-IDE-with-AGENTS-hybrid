@@ -106,6 +106,51 @@ _(Empty; populated session-by-session)_
 
 ---
 
-## S6 close — roll-up distribution
+## S6 close — roll-up distribution (executed 2026-05-08)
 
-_(At S6 close, this section enumerates each harvest item's filing destination: anti-pattern catalog entry / deferred-inventory entry / ADR / governance JSON / CLAUDE.md amendment. After distribution, this file is marked historical-archive.)_
+Per Mary pre-S6 disposition map, every harvest entry routed to its permanent home. After distribution, this file is marked **HISTORICAL-ARCHIVE**.
+
+### Filing destinations (21 entries → permanent registers)
+
+| Harvest entry | Filing destination | Status |
+|---|---|---|
+| Pre-S1 #1 (Mary "renumber-without-reading") | `specialist-anti-patterns.md` (folded into A19 scanner-staleness counter-pattern) | LANDED |
+| Pre-S1 #2 (Amelia partial-migration discovery) | Architecture-of-record D14 (S2 close) | CLOSED-AT-S2 |
+| Pre-S1 #3 (Murat run-constants absent) | architecture doc D-Log spike resolution; deferred-inventory P1-25 | LANDED-AT-S5 |
+| Pre-S1 #4 (Murat scripts/health phantom) | v4.2 PP-3 preamble cited real `skills/pre-flight-check/` paths | CLOSED-AT-S1 |
+| Pre-S1 #5 (Paige PP-2 disposition) | v4.2 + v5 banner | CLOSED-AT-S1 |
+| Pre-S1 #6 (Mary asymmetric weighting) | DEFERRED to next multi-slab retrospective — needs 2-instance evidence base | DEFERRED |
+| Post-S1 #1 (hybrid-registry positive-pattern) | Sources-of-truth.md S5 row + Marcus registry comment + S5 commit body | LANDED-AT-S5 |
+| Post-S1 #2 (Audra→Enrique replacement-pattern) | v5 banner + sources-of-truth.md + Marcus registry comment | LANDED-AT-S4 |
+| Post-S1 #3 (PP-2 frozen-historical-anchor) | DEFERRED to next multi-slab retrospective — needs 2-instance evidence base | DEFERRED |
+| Post-S1 #4 (cleanup zero-substrate-harvest signal) | `cross-trial-learnings.md` §B by-methodology — added at S6 | LANDED-AT-S6 |
+| Post-S1 #5 (Murat AM-13/14/15) | S2 substrate work + S6 housekeeping-2 land | CLOSED-AT-S6 |
+| Post-S1 #6 (Mary AM-B v4.2 grep sweep) | Banner-disposition pre-existing | CLOSED-AT-S2 |
+| Post-S1 #7 (Claude-direct vs Codex NEW CYCLE) | CLAUDE.md amendment "Cleanup-arc execution mode" | LANDED-AT-S6 |
+| Pre-S2 #1 (Amelia partial-migration repeat) | DEDUP — see Pre-S1 #2 | DEDUP |
+| Pre-S2 #2 (operator clarification on duality) | architecture doc D14 entry | LANDED-AT-S2 |
+| Pre-S2 #3 (direction-of-cleanup-can-flip) | CLAUDE.md amendment "Direction-of-cleanup-may-flip caveat" | LANDED-AT-S6 |
+| Pre-S2 #4 (Murat reverse-shim positive-pattern) | architecture doc D14 + S2 commit body | LANDED-AT-S2 |
+| Post-S2 #1 (S2 deliverables COMPLETE) | Historical record only | NO-FILING |
+| Post-S2 #2 (37 net-new test failures) | deferred-inventory `s2-test-cleanup-residual-37` (38 items post-correction) | LANDED-AT-S2 |
+| Post-S2 #3 (Mary AM-B v4.2 sweep attestation) | Historical record + cited in §10 Decision Log | LANDED-AT-S5 |
+| Post-S2 #4 (positive patterns trio) | Sources-of-truth.md + S5 commit body + cross-trial-learnings | LANDED-AT-S5 |
+
+### Roll-up tally
+
+- **17 LANDED** in permanent registers across S1-S6
+- **2 DEFERRED** to next multi-slab retrospective (Pre-S1 #6 + Post-S1 #3 lack 2-instance evidence base)
+- **1 DEDUP** (Pre-S2 #1)
+- **1 NO-FILING** (Post-S2 #1; historical record only)
+
+### Cross-trial-learnings.md addition (Post-S1 #4)
+
+The Paige meta-signal "S1 implementation harvested ZERO new substrate anti-patterns despite 12 P0 items + 6 regression-fixes" is itself a cross-trial-style observation about cleanup-session profiles. Filed at `cross-trial-learnings.md §B by-methodology` as: *"cleanup-session harvest profile differs from slab-close — slab-close routinely yields A-entries; cleanup yields process-patterns + governance amendments."*
+
+### File status: HISTORICAL-ARCHIVE
+
+This file is now historical-archive. Future cleanup arcs author their own harvest log following this precedent. New harvest items land directly in permanent registers per the methodology §7 four-question routing — the harvest log was a transient staging ground for the pre-Trial-3 cleanup arc only.
+
+**S6 close commit:** TBD (this commit + final all-7 ratification commit).
+**Cleanup arc duration:** 2026-05-07 → 2026-05-08 (single-day intensive across 6 sessions).
+**Cleanup arc total commits:** ~25 commits across S1 (`725f55f`+`11f0bf4`) → S2 (`343220f`→`e48e107`) → S3 (`288c1ed`+`473928c`) → S4 (`a713112`+`ca31f8d`) → S5 (`59f4e12`+`13f1458`+`a3c35c3`) → S6 (`7111633`+TBD).
