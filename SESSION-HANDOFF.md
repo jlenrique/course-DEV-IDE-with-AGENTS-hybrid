@@ -1,171 +1,163 @@
-# Session Handoff — 2026-05-06 → 2026-05-07 (Day 4; Slab 7c FULLY COMPLETE on dev-agent side — 11 stories closed in single session; Slab 7c reaches 36/36 = 100%)
+# Session Handoff — 2026-05-07 → 2026-05-08 (Pre-Trial-3 Cleanup Arc COMPLETE; 6-session intensive across S1-S6; Trial-3 launch UNBLOCKED)
 
-**Session date:** 2026-05-06 → 2026-05-07 (Day 4 of Slab 7c sprint marathon; session opened 2026-05-06 morning, crossed midnight into 2026-05-07)
+**Session date:** 2026-05-07 → 2026-05-08 (single-day intensive; cleanup arc opened post-Slab-7c retrospective close at `0ef8594` and closed at `669e99f`)
 **Branch:** `dev/langchain-langgraph-foundation`
-**Session-start anchor:** `6c31945` (prior session's docs(session-handoff) finalize commit)
-**HEAD at session-end:** `0780de1` (7c.21a close)
-**Commits this session:** 11 (post-anchor; all pushed; push-cadence policy honored)
-**Branch state at session-end:** Origin in sync at HEAD. Working tree CLEAN modulo `runs/` ambient evidence directory + `_bmad-output/maps/coverage-manifest/lesson-plan-envelope-coverage-manifest.json` regen residue (both pre-existing, carried from prior session, never touched).
+**Session-start anchor:** `0ef8594` (Slab 7c retrospective close — Day 3 wrapup)
+**HEAD at session-end:** `669e99f` (S6 final all-7-agent ratification commit)
+**Commits this session:** ~28 (post-anchor; all pushed; push-cadence policy honored every 2 hours during active work)
+**Branch state at session-end:** Origin in sync at HEAD. Working tree CLEAN.
 
 ---
 
 ## What was completed
 
-**🎉 Slab 7c brownfield migration is FULLY COMPLETE on the dev-agent side. 36/36 dev-stories DONE across 7 Waves.** Plus 4 housekeeping stories pre-authored at lookahead_tier=1/2 + Trial-3 readiness checklist authored. NEW CYCLE proven 36 times end-to-end across the full slab. SG-1+SG-2+SG-3+SG-4 standing-guardrails AGGREGATED structurally enforced at slab close. TW-7c-1..6 all `not_fired` or scaffolded. Trial-3 readiness PASS.
+**🎯 Pre-Trial-3 cleanup arc COMPLETE.** Operator-mandated 6-session sweep across S1-S6 to reach a fully-clean substrate before Trial-3 launches. All-7-agent rite-of-passage ratification at S6 close: **READY** verdicts from Paige + Mary + John + Winston + Murat + Amelia + Sally. **Trial-3 launch UNBLOCKED.**
 
-### Stories closed this session (11 stories)
+### Session-by-session deliverables
 
-**Wave 4 close (commit `411b8fe` — first parallel-dispatch under V7 v2 with 4-story batch precedent applied):**
-1. **7c.17a** Marcus writers (slide-content + fidelity-slides + diagram-cards) — shared-sanctum partition per Winston W5; 3 writer modules + 3 schemas + tests; sanctum-alignment registrations; T11 lite PASS-zero-patches
-2. **7c.17b** Marcus writers (theme-resolution + outbound-envelope) + envelope aggregation — divergent-sanctum partition; FR-7c-25 envelope schema location pin honored; PyYAML deterministic emit; 5-entry sanctum-manifest emission smoke test; T11 lite PASS-zero-patches
+**S1 — Foundation (commits `725f55f` + `11f0bf4`):**
+- 12/12 P0 items closed: Marcus registry rewrite (hybrid superset preserving contract); anti-pattern dedup (P3→P4 + zombie heading delete); v4.2 quick fixes (Audra→Enrique; §3.g sunset; broken xref); v4.2 PP-3 four-concern preamble (env / health-gate / run-constants); sources-of-truth.md fix; mapping-checklist line 7 fix; HIL verb legend authored; corpus-prep guide authored; 47-failure baseline catalog authored; PP-2 disposition vote (3/3 unanimous banner-only); inventory archive (24 closed entries); 6 regression-fixes self-healed
+- Pre-S1 + post-S1 4-agent party-mode reviews (Paige + Amelia + Murat + Mary)
 
-**Wave 5 trio close (commit `7345f93`):**
-3. **7c.18a** §06B literal-visual operator build — first NEW family (no alias_of) in parity_contract DSL; submit/edit/discard verb-set; T11 lite PASS-zero-patches
-4. **7c.18b** §07C storyboard build + HTML reviewer surface — paired with 7c.18a; deterministic stdlib-only HTML emitter (`html.escape` + string-template; sha256-byte-deterministic); T11 lite PASS-zero-patches
-5. **7c.19** §09 four-artifact lock semantics — Marcus-side enforcement (NOT HIL); GateError on quartet-incomplete + tripwire-ledger linkage per NFR-7c-R3; T11 lite PASS-zero-patches (1 SHOULD-FIX-DEFERRED specialist-producer-models follow-on filed)
+**S2 — Marcus namespace collapse (commits `343220f` → `accd226` → `195be7c` → `1bc49fa` → `e48e107`):**
+- Legacy `marcus/` package DELETED (40 files retired)
+- Canonical `app.marcus.*` (lesson_plan/intake/orchestrator/dispatch/facade) — 30-1 INTERNAL duality preserved verbatim per R1 amendments 12+13+17
+- 30-1 token-strings preserved: marcus-intake / marcus-orchestrator / marcus-negotiator / marcus / Marcus
+- M5 import-linter contract added (forbidden top-level marcus); 13 contracts kept
+- Pre-S2 + post-S2 4-agent reviews (Amelia + Winston + Murat + Paige)
+- D14 architecture-of-record entry codifies the discipline
 
-**7c.15 close (commit `a6dd0c0`; AMEND-4 dual-FR fold):**
-6. **7c.15** §11B G4B input-package + §15 G5 final operator handoff + Marcus §15 bundle writer — DISPATCH-DEFERRED on 7c.17b for entire Day-3 marathon; unblocked at Wave-4 close. Section11BOperatorVerdict verb=approve/edit/reject; Section15OperatorVerdict verb=complete/edit/reject; Marcus §15 bundle writer with fail-closed verb=complete check + Trial-3 transcript anchor + slab-close evidence pointer + 6th sanctum-alignment writer_id `section-15-bundle`; T11 standard PASS-zero-patches
+**S3 — Trial-run methodology (commits `288c1ed` + `473928c`):**
+- `docs/trials/methodology.md` — 8-section standing operations document (run taxonomy + verdict framing + filing-disposition routing + per-run trio contract)
+- `docs/trials/cross-trial-learnings.md` — synthesis register with 4-question routing
+- `docs/trials/trial-N-templates/{launch,log,postmortem}.md` — reusable per-run trio
+- `docs/trials/trial-3/{README,launch,log,postmortem}.md` — skeleton populated for Trial-3 launch
+- Pre-S3 (3 agents) + post-S3 (4 agents) reviews
 
-**AUDIT-AC trio close (commit `513229b` — substrate verified clean):**
-7. **7c.20a** AUDIT-AC ≥20 shape-pins + ≥11 class-conformance — discovered 128 shape-pin assertions (6.4× headroom over floor 20) + 19 class-conformance (1.7× headroom over floor 11); 0 gaps; TW-7c-1 verdict not_fired
-8. **7c.20b** AUDIT-AC 5×3 transport matrix + 8 named gate tests — 15/15 cells covered + 8/8 named tests located; 13/14 runtime PASS (1 inherited scanner-staleness DISMISSED); TW-7c-1 not_fired
-9. **7c.20c** AUDIT-AC 14/14 four-file-lockstep + 6/6 tripwire-ledger probes — **LAST-CLOSER**; appended final aggregated TW-7c-1 verdict to `sprint-status.yaml::tripwire_events`: combined gap rate 1.35% / not_fired
+**S4 — v5 canonical pack (commits `a713112` + `ca31f8d`):**
+- `docs/workflow/production-prompt-pack-v5-narrated-lesson-with-video-or-animation.md` — 1693 lines; canonical-for-production-runs
+- v4.2 frozen as legacy-axis mapping authority; v4.3 fully superseded
+- Pre-Launch Operator Card; 33-row Crosswalk with migrated paths
+- D17 Crosswalk-vs-disk parity test pattern (first instance)
+- Pre-S4 (3 agents) + post-S4 (4 agents; including Murat path-correction round) reviews
+- 6 path-string corrections + Crosswalk parity test PASS
 
-**Wave 6 closeout ceremony close (commit `d2ba1c8`; cross-agent MANDATORY):**
-10. **7c.21** Slab 7c integration parity suite + closeout ceremony — Trial3Transcript Pydantic-v2 schema (hash `818b740594a7fe95c62a5c8d27399ea6e8a0b77336c2900bdbb5f7cc0ab24491`); TW-7c-6 50-run zero-flake parity baseline `not_fired` (synthetic-zero-fail-reference; 68 cells; max_flake_rate=0.0 vs AMEND-7a budgets); Trial-3 readiness PASS (4 predicates); D12 three-line set landed (invariant-preservation note + A19 anti-pattern + §Slab 7c migration-guide section); SG-aggregate AUDIT verified; retrospective evidence pack at `slab-7c-retrospective-evidence-pack.md`; T11 cross-agent (deepest tier) PASS-zero-patches
+**S5 — P1 risk-reduction (commits `59f4e12` + `13f1458` + `a3c35c3`):**
+- D15-D19 architecture-of-record entries (trial methodology / v5 pack / Crosswalk parity / 8-family taxonomy / Marcus-writer partition)
+- Composition Spec §10 — 7 Slab-7c era entries
+- 11 §section operator-reference doc stubs at `docs/conversational-gates/`
+- Sources-of-truth.md "Legacy production prompt-pack authority" extension
+- README + 3 migration banners refreshed
+- Epic 15 PRD skeleton (post-Trial-3 reactivation prep)
+- Forensic preservation CI guard authored
+- Pre-S5 (3 agents) + post-S5 (4 agents) reviews
 
-**Wave 6 strict-last close (commit `0780de1`):**
-11. **7c.21a** Epic 3 retirement + live-dispatch wiring — live-dispatch authoring in 2 named harnesses with `--live-runs N` / `--live` operator-gated flags; §Epic 3 in-place retirement record; `slab-7c-live-harness-evidence` deferred-inventory CLOSED; TW-7c-4 no-scope-creep AUDIT PASS (5 tests + detector verdict PASS); broad-regression delta=0; T11 standard PASS-zero-patches. **🎉 SLAB 7C DEV-AGENT SIDE FULLY COMPLETE.**
-
-### Stories pre-authored this session (5 immediate batches; spec + Codex prompt for each)
-
-**Wave 4 entry pre-author (commit `1d3bc54`):**
-- 7c.17a + 7c.17b at lookahead_tier=1 (Marcus-writer pair; Winston W5 partition principle)
-
-**Wave 5 entry pre-author (commit `cdd84ee`):**
-- 7c.18a + 7c.18b at lookahead_tier=1 (operator-build HIL surface pair; first NEW family in parity_contract DSL)
-
-**Wave 5/6 expansion pre-author (commit `2a5aedd`):**
-- 7c.18a + 7c.18b + 7c.19 at lookahead_tier=1 (corrected Wave 5 trio with 7c.19 added; 7c.18a/b were already pre-authored at `cdd84ee` so this commit added 7c.19 + AUDIT-AC trio + 7c.21a)
-- AUDIT-AC trio (7c.20a + 7c.20b + 7c.20c) at lookahead_tier=2 per governance JSON
-- 7c.21a at lookahead_tier=1 per governance JSON
-
-**Wave 6 closeout-ceremony pre-author (commit `7c7c567`):**
-- 7c.21 at lookahead_tier=3 (deepest tier per governance; cross-agent MANDATORY); SPEC DEFECT carved out — `bmad-retrospective` trigger correctly assigned to operator-driven Gate-2 (NOT dev-agent)
-
-**Slab 7c housekeeping batch + Trial-3 readiness checklist pre-author (commit `efbb03f`):**
-- 7c-housekeeping-1 (digest helpers extract; 1-2 pt; lite T11)
-- 7c-housekeeping-2 (scanner-staleness AST-rewrite; 1 pt; lite T11; closes long-standing DISMISS thread)
-- 7c-housekeeping-3 (specialist-side producer models for Kira/Vera/Quinn-R + §09 lock wiring; 3 pts; standard T11)
-- 7c-housekeeping-4 (legacy sidecar cleanup vera+dan bundled; 1 pt; lite T11; **DISPATCH-DEFERRED until Trial-2 validation evidence**)
-- Trial-3 readiness checklist (operator-facing playbook; 10 sections + ~390 lines)
+**S6 — P2/P3 + final ratification (commits `7111633` + `b617b52` + `669e99f`):**
+- A21 (AUDIT-not-BUILD) + A22 (AMEND-7c percentage-threshold) anti-pattern entries
+- ADR 0003 — NEW family precedent for §06B + §07C (no `alias_of` parent)
+- 4 CLAUDE.md governance amendments (4th deferred-inventory trigger; trial-postmortem governance; direction-of-cleanup-may-flip; cleanup-arc execution mode)
+- v4.1 banner-disposition (cousin-not-sibling-of-v5)
+- M2/C2 inline symmetric-pair comments + D20 disambiguation (composition-spec → D-Class-2-codification)
+- **Cat-2 housekeeping-2 land:** scanner-staleness AST rewrite — closes A19 substring-scanner-staleness anti-pattern (7+ DISMISS-thread cycle)
+- Harvest log roll-up (21 entries → 17 LANDED + 2 DEFERRED + 1 DEDUP + 1 NO-FILING); file flipped to HISTORICAL-ARCHIVE
+- s6-tier-3-post-trial-3-housekeeping-batch deferred-inventory entry (16-item cluster filed per Amelia "no-deferrals-but-sequenced" posture)
+- Pre-S6 (4 agents) + final all-7-agent rite-of-passage ratification
 
 ---
 
-## Lessons learned
+## What is next
 
-### Velocity discipline
-- **NEW CYCLE proven 36× end-to-end** across the full Slab 7c (Claude pre-authors spec + Codex prompt → Codex T1-T10 → Claude T11 review + commit + flip done). Pattern is grooved.
-- **V7 v2 in steady-state**: Murat triple-condition (C6 ∧ lookahead_tier=1 ∧ t11_tier=lite) gated parallel-dispatch successfully throughout Day-3 + Day-4. Hard-revert clauses untriggered.
-- **Lookahead-tier=1 pre-author + parallel-dispatch** is the Day-4 working cadence. Operator dispatches Codex on multiple stories in parallel; Claude reviews dropboxes as they land.
-- **Standard-tier T11 (~25-40 min)** vs lite-tier (~10-15 min) vs cross-agent (~40-60 min) tier system stable; governance JSON `t11_tier` field correctly drives review depth.
+**Trial-3 launch.** Operator dispatches when ready against a FRESH corpus per `docs/operator/corpus-preparation-guide.md`:
 
-### Spec-defect carve-out (7c.21)
-- The 7c.21 epic-level AC said "the dev-agent triggers `bmad-retrospective`" — this was a **structural mismatch**: `bmad-retrospective` is a facilitator-driven multi-agent workflow, NOT executable under `bmad-dev-story` discipline. Pre-author correctly carved it out: dev-agent prepares the retrospective evidence pack (markdown); operator-driven Gate-2 actually triggers `bmad-retrospective`. Codex internalized the carve-out cleanly — opening sentence of the pack states: *"This pack is evidence only; it does not trigger `bmad-retrospective`, flip mapping-checklist rows, or mark the story done."*
-- **Lesson for future spec-authoring:** when an epic AC mentions a multi-agent / facilitator skill (`bmad-retrospective`, `bmad-party-mode`, etc.), the dev-agent scope is the EVIDENCE PREPARATION, not the SKILL TRIGGER. Document the carve-out explicitly in the spec.
+```powershell
+$env:PYTHONIOENCODING="utf-8"
+.\.venv\Scripts\python.exe -m app.marcus.cli trial start --preset production --input course-content/courses/<lesson_slug>/ --motion-enabled
+```
 
-### AUDIT-not-BUILD framing (7c.20a/b/c)
-- AUDIT-AC stories COMPRESS Slab 7c's net-new-build to coverage-only audit. The trio collectively verifies original Epic 3 stories 3.2 + 3.3 + 3.4 + 3.5 + 3.6 against the SHIPPED substrate.
-- The single new test file per AUDIT-AC story (under `tests/audit/`) does not modify production code; it merely VERIFIES coverage floors.
-- **Substrate verified at floors with substantial headroom** (128 vs 20; 19 vs 11; 14/14; 6/6) — Slab 7c shipped well above the AUDIT-AC bar. The headroom is positive evidence that the Wave-3/4/5 closes were over-engineered (in a good way).
-- AMEND-7c percentage threshold (10% gap-rate per AUDIT-AC) provides a quantitative tripwire that's harder to game than absolute counts.
+Pre-launch sequence per v5 §0 Pre-Launch Operator Card. Trial-3 outcome → postmortem (Shape A 15 min; Shape B 48h) → potentially Epic 15 reactivation gate.
 
-### A19 anti-pattern harvest
-- The 7c.21 D12-2 anti-pattern A19 ("Class-definition substring scanners go stale when class names change") is a SUBSTANTIVE harvest from a long-standing DISMISS thread (7c.9/10/11/12/13/14/20b verdicts all dismissed `test_no_unauthorized_callers` as PRE-EXISTING noise). The remediation (AST-walk for `Call` nodes vs substring scan) is now documented; the housekeeping-2 story implements it.
-- **Lesson:** when multiple verdicts independently DISMISS the same finding, that's a signal to harvest as an anti-pattern + file a remediation story. The DISMISS thread itself contains the diagnosis.
+---
 
-### Dispatch state precision (7c.15 example)
-- 7c.15 was DISPATCH-DEFERRED on 7c.17b for the entire Day-3 marathon; Codex correctly observed the predecessor-not-met and waited. The moment 7c.17b closed in commit `411b8fe`, Codex began T1 on 7c.15 within minutes.
-- **Lesson:** governance JSON `prerequisite_stories` (binding=hard) + spec dispatch_state framing produces correct Codex behavior without operator hand-holding.
+## Unresolved issues / risks
 
-### Cross-agent T11 (7c.21)
-- 7c.21's cross-agent MANDATORY review was the deepest tier (~40-60 min coverage of 7 ACs + AMEND-7d-iii STOP-on-fire branch + retrospective evidence pack quality). Notable findings beyond AC verification: spec-defect carve-out internalization, A19 anti-pattern harvest substantivity, broad-regression delta investigation.
-- The cross-agent tier produces deeper review at a cost of ~2-3× standard-tier wall-clock. For strict-last + dual-gate stories, this depth is appropriate.
+**Non-blocking but tracked:**
+- **`s2-test-cleanup-residual-37`** (38 items; AST-scan / file-IO / shim-era pin tests) — deferred to S6 Tier-3 batch per Amelia pre-S6 triage; not Trial-3-blocking
+- **`s6-tier-3-post-trial-3-housekeeping-batch`** (16 cluster items: skill-dir archives; sidecar archives; legacy script archives; module relocations; placeholder specialist resolution; ENVELOPE-CARRIER-HACK retirement; app/cora→app/dev_workflow rename; Node→Python port; etc.) — operator-priority-driven scheduling
+- **`s4-per-section-operator-sub-blocks`** — v5 §sections retained v4.2's Marcus-addressed prompt body voice; per-§ "Operator at this gate" sub-blocks deferred (verb legend covers in interim)
+- **`winston-post-s2-followon-architecture-currency`** (A1 §Project Tree update; A2 §10 entry; A3 M2/C2 fold) — deferred to S7+ housekeeping; A1 + A2 + A3 inline comments landed at S6
 
-### Codex's clock rolled over mid-session (2026-05-06 → 2026-05-07)
-- 7c.21a's spec body status flip was timestamped 2026-05-07 because Codex's wall-clock crossed midnight during T1. Verdict file accordingly named `7c-21a-code-review-2026-05-07.md` per cron prompt instruction.
-- Sprint-status YAML hygiene test PASSES regardless of date crossings (timestamps are recorded, not constrained).
+**Post-S6 broad regression: 82 failures** (-3 from S4 close 85). Cat-2 closed at S6; rest carry to S7+ post-Trial-3 batch.
+
+**Test-architecture observation (Murat post-S5):** S5+S6 substrate-currency work doesn't move pytest count by design — the structural value is governance + architecture-of-record currency + harvest discipline + Cat-2 closure. Trial-3 launch-permission token GREEN throughout.
+
+---
+
+## Key lessons learned
+
+1. **Direction-of-cleanup may flip with substrate evolution.** The deferred-inventory `migration-tech-debt-app-marcus-stub-disposition` was filed 2026-04-26 with direction "delete app/marcus/, keep marcus/" — reality flipped during Slab 6/7 to "delete marcus/, keep app/marcus/". S2 executed the inverted direction correctly; CLAUDE.md amendment now codifies this caveat.
+2. **Reverse-shim during cross-namespace migration.** Murat AM-16 reverse-shim discipline (copy + reverse-shim + bulk-rewrite-imports + delete) was the right execution pattern for the 108-150 test-import surface. NOT move-and-sweep.
+3. **Two distinct Marcus dualities.** 30-1 INTERNAL duality (intake ↔ orchestrator + Maya-as-one-voice) is intentional architecture per R1 amendments 12+13+17. EXTERNAL duality (legacy marcus/ vs app/marcus/) was the bug class; eliminated at S2.
+4. **Cleanup arc execution = Claude-direct (NOT Codex NEW CYCLE).** Multi-session cleanup work doesn't need formal bmad-dev-story discipline. CLAUDE.md amendment codifies.
+5. **30-1 token-strings are PACKAGE-INDEPENDENT.** WriterIdentity Literal values + Golden-Trace fixture content; package home moves but strings stay.
+6. **Harvest log = transient staging ground.** Roll up to permanent registers at arc-close; mark file historical-archive.
 
 ---
 
 ## Validation summary
 
-### Quality gate at session-close (Step 1 of WRAPUP)
-- ✅ `lint-imports.exe`: **12 KEPT / 0 broken** UNCHANGED across the entire session
-- ✅ `validate_parity_test_class_conformance.py tests/parity/`: **PASS: 19 parity contract files conform** (= 11 activation + 8 decision-card shape-pin) UNCHANGED
-- ✅ `pytest tests/test_sprint_status_yaml.py`: **2 passed** (sprint-status YAML hygiene)
-- ✅ Sandbox-AC validator: PASS across all session-authored specs (~9 spec files validated)
-- ✅ Ruff: clean across all session-authored production + test code
-
-### Per-story verification gates (across all 11 stories closed)
-- Focused tests: PASS-zero-patches × 11 (combined per-batch suites: 33 / 35 / 32 / 18 / 24 / 14 across the close-batches)
-- Smoke: 181 passed / 18 skipped UNCHANGED across the entire session
-- Class-conformance: UNCHANGED at 19 (no parity_contract added by Marcus writers, AUDIT-AC modules, or §09 lock — those are not HIL surfaces)
-- Lint-imports: UNCHANGED at 12 KEPT (C6 modules list grew from 10→12→14 entries via §section appends; contract count stable)
-- Broad regression: in-band noise (43 → 47 → 48 → 47 across the session; ±3 xdist-ordering noise band per established Wave-3 precedent)
-
-### Tripwire ledger (post-7c.20c LAST-CLOSER + 7c.21 closeout)
-- TW-7c-1 (gap-rate detection): **not_fired** at 1.35% combined gap rate (well below 10% threshold)
-- TW-7c-2..5: seeded reservation entries; 0 fires
-- TW-7c-6 (parity flake; 50-run zero-flake): **not_fired** at synthetic-zero-fail-reference baseline (live firing happens at Trial-3+)
-
----
-
-## Unresolved issues / risks for next session
-
-1. **Operator-driven Gate-2 ceremony for 7c.21 is REQUIRED before Trial-3 launch.** Per `next-session-start-here.md` immediate next action. Includes `bmad-retrospective` trigger + party-mode-ratified mapping-checklist row-flips (~17-22 candidates per FR-7c-42) + per-tripwire firing-rate review per FR-7c-41.
-2. **Trial-2 validation evidence dependency on housekeeping-4** — `vera-sidecar-cleanup-post-trial-2-validation` + `dan-sidecar-cleanup-post-trial-2-validation` housekeeping is gated on Trial-2 evidence. Could close opportunistically post-Gate-2 OR defer until Trial-3 validates the BMB-canonical sanctum cold-activation paths.
-3. **Broad-regression failures (~47 inherited)** — known-band noise; spot-checked failures consistently OUTSIDE 7c.21 deliverable scope. Housekeeping-2 (scanner-staleness AST-rewrite) will reduce by 1; housekeeping-1 (digest-helpers extract) is pure refactor; housekeeping-3 (producer models) may surface 1-2 schema-shape changes that propagate.
-4. **No active blockers** — the brownfield migration is functionally complete on the dev-agent side. The remaining work is operator-led ceremony + Trial-3 launch.
+- **Final all-7-agent rite-of-passage ratification:** READY × 7 at S6 close (`669e99f`)
+- **AM-11 launch-permission token:** GREEN — 52/52 tests (test_trial3_readiness + test_preflight_check + test_preflight_receipt_contract)
+- **30-1 contract suite:** GREEN — 17/17 tests (facade-leak-detector + intake-orchestrator-leak + duality-imports + golden-trace-regression)
+- **D17 Crosswalk-vs-Disk parity:** GREEN
+- **Forensic preservation CI guard:** GREEN (vacuous; armed for first Trial-3 postmortem)
+- **Cat-2 housekeeping-2 (AST rewrite):** Both tests PASS
+- **Import-linter:** 13 contracts kept, 0 broken (M5 collapse-guard active)
+- **Production imports without pytest:** GREEN (cold-load `from app.specialists._scaffold.contract import SCAFFOLD_NODE_IDS`)
+- **Post-S6 broad regression:** 82 failures (stable; cleanup-arc work landed without introducing new failures)
 
 ---
 
 ## Artifact update checklist
 
-This session updated:
-- ✅ `_bmad-output/implementation-artifacts/sprint-status.yaml` — 11 story flips (review → done) + housekeeping batch entries added (4 new entries)
-- ✅ 11 verdict files (`7c-{17a,17b,18a,18b,19,15,20a,20b,20c,21,21a}-code-review-2026-05-{06,07}.md`)
-- ✅ 11 Codex dropboxes captured (`_codex-handoff/7c-{17a,17b,18a,18b,19,15,20a,20b,20c,21,21a}.ready-for-review.md`)
-- ✅ 8 spec files authored (Wave 4 + Wave 5 + Wave 6 + 4 housekeeping)
-- ✅ 8 Codex prompt files authored (matching specs)
-- ✅ Trial-3 readiness checklist authored (`_bmad-output/implementation-artifacts/trial-3-readiness-checklist.md`)
-- ✅ Slab 7c retrospective evidence pack authored at 7c.21 close (`_bmad-output/implementation-artifacts/slab-7c-retrospective-evidence-pack.md`)
-- ✅ `pyproject.toml` C6 modules list grew 10→14 entries (proactive multi-§section append at Wave-5 entry)
-- ✅ D12 three-line set landed at 7c.21 close: invariant-preservation note in `epics-langchain-langgraph-migration.md` + A19 anti-pattern in `specialist-anti-patterns.md` + §Slab 7c section in `langgraph-migration-guide.md`
-- ✅ Deferred-inventory closure: `slab-7c-live-harness-evidence` CLOSED-BY 7c.21a (strikethrough + provenance)
-- ✅ §Epic 3 in-place retirement record at `epics-langchain-langgraph-migration.md` + mapping-checklist row flipped to `retired-via-7a+7b+7c` (SG-2 row-floor preserved)
-- ✅ Multiple production code files (Marcus writers + §section poll-surfaces + Trial3Transcript model + lock module + AUDIT modules + harness wiring + scanner) — totals across session: ~30+ new files; ~10+ modified files
-- ✅ `next-session-start-here.md` — finalized at WRAPUP Step 7 (Gate-2 ceremony as immediate next action)
-- ✅ `SESSION-HANDOFF.md` — finalized at WRAPUP Step 8 (this file)
-- ⏳ WRAPUP Step 5 (project-context.md update) + Step 9a (migration-guide consolidation + anti-pattern A20+ harvest) — landing in pending wrapup commit
+| Artifact | Updated this arc | Verified at S6 close |
+|---|---|---|
+| `_bmad-output/planning-artifacts/architecture-langchain-langgraph-migration.md` | ✓ D14-D19 entries | ✓ |
+| `_bmad-output/planning-artifacts/deferred-inventory.md` | ✓ archive sweep + 4 new follow-ons | ✓ 25 closed-archived |
+| `_bmad-output/planning-artifacts/pre-trial-3-cleanup-plan.md` | ✓ created at S1; 13 amendments folded | ✓ |
+| `_bmad-output/planning-artifacts/pre-trial-3-harvest-log.md` | ✓ 21 entries; rolled up at S6 close | ✓ HISTORICAL-ARCHIVE |
+| `_bmad-output/planning-artifacts/prd-epic-15-learning-compound-intelligence.md` | ✓ NEW skeleton | ✓ |
+| `_bmad-output/planning-artifacts/prd.md` | ✓ replaced 30-line stub with forwarder | ✓ |
+| `_bmad-output/planning-artifacts/prd-slab-7a/7b/7c-*.md` | ✓ executionClosedAt + supersededBy stamps | ✓ |
+| `_bmad-output/implementation-artifacts/sprint-status.yaml` | ✓ epic-7c flip in-progress→done | ✓ |
+| `_bmad-output/implementation-artifacts/broad-regression-baseline-2026-05-07.md` | ✓ NEW + post-S6 closure annotations | ✓ |
+| `docs/dev-guide/specialist-anti-patterns.md` | ✓ A21+A22; P1-P4 unique numbering | ✓ |
+| `docs/dev-guide/sources-of-truth.md` | ✓ legacy-prompt-pack authority section | ✓ |
+| `docs/dev-guide/composition-specification.md` | ✓ §10 7 Slab-7c entries; D-Class-2 disambig | ✓ |
+| `docs/dev-guide/adr/0003-new-family-precedent-section-06b-section-07c.md` | ✓ NEW | ✓ |
+| `docs/workflow/production-prompt-pack-v5-narrated-lesson-with-video-or-animation.md` | ✓ NEW canonical (1693 lines) | ✓ |
+| `docs/workflow/production-prompt-pack-v4.3-*.md` | ✓ superseded-by-v5 | ✓ |
+| `docs/workflow/production-prompt-pack-v4.1-*.md` | ✓ banner-disposition | ✓ |
+| `docs/operator/hil-verb-legend.md` | ✓ NEW | ✓ |
+| `docs/operator/corpus-preparation-guide.md` | ✓ NEW | ✓ |
+| `docs/trials/methodology.md` | ✓ NEW | ✓ |
+| `docs/trials/cross-trial-learnings.md` | ✓ NEW | ✓ |
+| `docs/trials/trial-N-templates/{launch,log,postmortem}.md` | ✓ NEW | ✓ |
+| `docs/trials/trial-3/{README,launch,log,postmortem}.md` | ✓ NEW skeleton | ✓ |
+| `docs/conversational-gates/section-*-operator-reference.md` | ✓ 11 NEW stubs | ✓ |
+| `tests/parity/test_v5_crosswalk_paths_exist.py` | ✓ NEW | ✓ GREEN |
+| `tests/trial/test_forensic_preservation.py` | ✓ NEW | ✓ GREEN |
+| `tests/integration/gates/test_resume_api_authority.py` | ✓ AST rewrite (housekeeping-2) | ✓ GREEN |
+| `app/specialists/_scaffold/contract.py` | ✓ NEW (production-side canonical SCAFFOLD_NODE_IDS) | ✓ |
+| `app/marcus/{intake,lesson_plan,orchestrator,dispatch,facade}.py` | ✓ S2 collapse copy + reconcile | ✓ |
+| `pyproject.toml::tool.importlinter` | ✓ M5 added; M2/C2 symmetric-pair comments | ✓ 13 contracts kept |
+| `CLAUDE.md` | ✓ 4 governance amendments | ✓ |
+| `README.md` + `docs/{user,admin,dev}-guide.md` migration banners | ✓ refreshed at S5 | ✓ |
+| `skills/bmad-agent-marcus/references/specialist-registry.yaml` | ✓ hybrid superset | ✓ |
 
 ---
 
-## Critical-path next (across the project)
+## Cleanup arc closure
 
-Per `_bmad-output/implementation-artifacts/trial-3-readiness-checklist.md` + `next-session-start-here.md`:
+The pre-Trial-3 cleanup arc (2026-05-07 → 2026-05-08) closes here. Future cleanup arcs author their own harvest log per the precedent. Trial-3 is unblocked; operator dispatch when ready.
 
-1. **Operator Gate-2 ceremony for 7c.21** — IMMEDIATE NEXT ACTION (operator + party-mode; consumes retrospective evidence pack)
-2. **Trial-3 launch** — strategic payoff event (operator + Marcus orchestration)
-3. **(Optional in parallel)** Slab 7c housekeeping batch dispatch (3 immediately dispatchable stories; 1 gated on Trial-2 evidence)
-4. **Post-Trial-3 PASS:** Epic 15 (Learning & Compound Intelligence) reactivation; converts project from migration-execution to product-iteration mode
-5. **Then operator-priority-driven:** Epic 16 / 17 / 18 / Post-M5 Greenfield Specialists
-
----
-
-## Audit trail
-
-- Audra L1/L2 sweeps SKIPPED entire session (Audra/Cora dissolved per 2026-04-24 ratification — LangGraph CI stack covers code-invariant functions; session-ritual functions covered by BMAD session-START/WRAPUP protocols).
-- Quality gate verifications run inline at each close-batch (per session log).
-- All 11 commits contain co-author attribution per CLAUDE.md sprint-governance (`Co-Authored-By: Claude Opus 4.7 (1M context) <noreply@anthropic.com>`).
+**Final commit:** `669e99f` (`feat(s6-final-close): all-7-agent rite-of-passage ratification COMPLETE — Trial-3 launch UNBLOCKED`).
