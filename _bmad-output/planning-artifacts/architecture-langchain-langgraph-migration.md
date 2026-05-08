@@ -612,6 +612,56 @@ Split Slab 5 into two sub-slabs with distinct risk profiles:
 
 **Each sub-slab becomes an epic at epic-authoring time.** M5 ship verdict gates on 5a only; 5b completion is a follow-up milestone.
 
+### Decision D14 — Marcus Namespace Single-Package Discipline (pre-Trial-3 Cleanup S2)
+
+Authored 2026-05-07 at pre-Trial-3 cleanup S2 close. Closes deferred-inventory entry
+`migration-tech-debt-app-marcus-stub-disposition` (filed 2026-04-26; reality-corrected
+direction adopted at S2: legacy `marcus/` retired; canonical `app.marcus.*`).
+
+**Decision:** the Marcus namespace lives at `app.marcus.*`. The legacy top-level `marcus/`
+package — preserved as Slab-1-era migration shim — has been DELETED. Future code MUST
+NOT introduce `from marcus.X` or `import marcus` references. Enforced structurally via
+import-linter contract M5 (`forbidden`; `source_modules=["app"]`, `forbidden_modules=["marcus"]`).
+
+**Story 30-1 internal duality preserved.** The Marcus-Intake / Marcus-Orchestrator
+sub-package separation (R1 amendment 13 / Quinn single-writer rule) and the Maya-as-one-voice
+facade (R1 amendment 17) are PRESERVED VERBATIM under the new home:
+- `app.marcus.intake/` — Marcus-Intake (steps 01-04 + 4A pre-packet construction)
+- `app.marcus.orchestrator/` — Marcus-Orchestrator (single-writer write API + 4A loop +
+  fan-out + `NEGOTIATOR_SEAM` for 30-3a)
+- `app.marcus.facade.py` — single Maya-facing voice surface
+- `app.marcus.lesson_plan/` — Lesson Plan log subsystem (31-2's writer-identity discipline)
+- `app.marcus.dispatch/` — dispatch contract types
+
+**30-1 token preservation (R1 amendments 12+13+17 binding):**
+- `ORCHESTRATOR_MODULE_IDENTITY = "marcus-orchestrator"` (WriterIdentity Literal value)
+- `INTAKE_MODULE_IDENTITY = "marcus-intake"` (WriterIdentity Literal value)
+- `NEGOTIATOR_SEAM` token `"marcus-negotiator"` (grep-discoverable sentinel)
+- `MARCUS_IDENTITY = "marcus"` (programming-token; lowercase tripwire)
+- `MARCUS_DISPLAY_NAME = "Marcus"` (Maya-facing render constant)
+
+These string tokens are PRESERVED VERBATIM (not renamed to `app-marcus-*`) because they
+are 31-2's WriterIdentity Literal values and Golden-Trace fixture content. Changing them
+would break the single-writer log contract; the package home moved but the identity
+strings stay.
+
+**Why this decision now (not at original 30-1 ratification):** 30-1 created the duality
+deliberately for Lesson Planner Epic 30. Post-brownfield-completion (Slab 7c close
+2026-05-07), operator reclassified the legacy `marcus/` ↔ `app/marcus/` duality as a
+bug class with production-run risk: dual-namespace ambiguity surfaces unexpected behaviors
+when callers reach for one path or the other. D14 closes that duality. The 30-1 INTERNAL
+duality (intake ↔ orchestrator) remains because it serves a different purpose — single-writer
+discipline within one namespace, not two parallel namespaces.
+
+**Verification:** `pytest tests/test_marcus_facade_leak_detector.py
+tests/contracts/test_no_intake_orchestrator_leak_marcus_duality.py
+tests/test_marcus_duality_imports.py tests/test_marcus_golden_trace_regression.py` —
+17/17 GREEN at S2 close commit `195be7c` (post-Phase-7).
+
+**Future modifications:** any future code introducing dual-namespace patterns (e.g.,
+parallel `app.marcus_v2/` shim) requires party-mode ratification per the same governance
+applied at S2 close. The M5 import-linter contract is the structural backstop.
+
 ### Decision D13 — Model-Registry Mid-Migration Bump Procedure (Readiness T1 #7)
 
 Documented at `app/models/` Slab 1 deliverable + `docs/dev-guide/model-selection-guide.md` §Mid-Migration Bump:

@@ -52,15 +52,51 @@ Items surfaced during S1 implementation + post-S1 4-agent review (Paige + Amelia
 
 ---
 
-## Pre-S2 review harvest (PENDING)
+## Pre-S2 review harvest (2026-05-07)
 
-_(Empty until S1 closes and pre-S2 review fires)_
+Items surfaced during the 3-agent pre-S2 review (Amelia + Winston + Murat):
+
+1. **(Amelia)** Discovery: legacy `marcus/` was a partial-migration NOT a shim — `app/marcus/lesson_plan/` and `app/marcus/intake/` did not exist; canonical content for the Lesson Planner / 4A foundation lived only at top-level `marcus/`. Pre-S1 framing as "collapse direction = legacy → app" was empirically right about file presence but architecturally wrong about intent — see operator clarification below.
+
+2. **(Operator clarification surfaced via question 2026-05-07)** The 30-1 spec ratified an INTERNAL duality (intake ↔ orchestrator) deliberately. **The operator's "marcus duality is a bug" framing referred to a DIFFERENT duality** — the EXTERNAL duality between top-level `marcus/` and `app/marcus/` filed 2026-04-26 as `migration-tech-debt-app-marcus-stub-disposition`. Two distinct dualities; only the external one was being eliminated. Internal duality (single-writer rule + Maya-as-one-voice) preserved verbatim.
+
+3. **(Operator clarification)** The deferred-inventory entry's stated DIRECTION (delete app/marcus/, keep marcus/) was filed 2026-04-26 when app/marcus/ was a thin Slab-1 stub. Reality flipped during Slab 6/7a/7b/7c — substantial Slab 6/7 production runtime landed in app/marcus/. By S2 dispatch (2026-05-07), the right collapse direction was the OPPOSITE of the original entry: keep app/marcus/, delete legacy marcus/. Direction-of-cleanup-can-flip-over-time is itself a harvest pattern. **Filing target:** S6 governance amendment to deferred-inventory protocol — entries should declare a "direction-of-cleanup-may-flip-with-substrate-evolution" caveat.
+
+4. **(Murat AM-16)** Reverse-shim during transition (NOT direct file move) was the right execution discipline for 108-150-test-import surface. Cleaner than "move + sweep + hope nothing breaks." **Filing target:** new positive-pattern entry at S6 — "Cross-namespace migrations: reverse-shim + bulk-rewrite + delete; not move-and-sweep."
 
 ---
 
-## Post-S2 review harvest (PENDING)
+## Post-S2 review harvest (2026-05-07)
 
-_(Empty)_
+S2 marcus/ namespace collapse completed across 7 phases (commits `343220f`, `accd226`, `195be7c`):
+
+1. **S2 deliverables COMPLETE:**
+   - Legacy `marcus/` package DELETED (40 files retired)
+   - Canonical content at `app.marcus.*` (lesson_plan/intake/orchestrator/dispatch/facade)
+   - 30-1 contracts preserved verbatim (17/17 tests GREEN throughout)
+   - Import-linter clean (13 contracts kept; M5 collapse-guard added)
+   - Operator's "no more deferrals" mandate honored
+   - Deferred-inventory entry `migration-tech-debt-app-marcus-stub-disposition` CLOSED
+   - D14 architecture-of-record entry authored
+
+2. **Residual S2 work — 37 net-new test failures (vs post-S1 baseline of 48):**
+   - AST-scan / file-IO / shim-era pin tests need long-tail path-string + assertion updates
+   - Categories: import-linter contract count (mostly fixed at iter-3); facade-public-surface tests (fixed); composition chain tests (some still scan legacy paths); coverage-manifest / event-type-validator / fit-report-emitter tests (file scans); test_trial_run_e2e (smoke harness scans); test_marcus_orchestrator_write_api / test_lesson_plan_log_atomic_write (need investigation)
+   - These are TEST CLEANUP work, not substrate work
+   - **Filing target:** new deferred-inventory entry `s2-test-cleanup-residual-37` — defer to S6 housekeeping batch; non-Trial-3-blocking
+
+3. **Mary AM-B v4.2 grep sweep attestation:** v4.2 prose contains 17 `marcus/` path-string references. Per PP-2 unanimous disposition (S1 mid-session 2026-05-07), v4.2 is declared LEGACY-FROZEN authority for the mapping checklist; the §0 banner declares the Marcus-module column as legacy historical anchor. **No v4.2 prose edits required at S2 close** — the banner-disposition pre-existing covers all path-string occurrences. v5 (forthcoming at S4) will use migrated paths exclusively. AM-B closed at S2 close per banner-disposition pre-existing coverage.
+
+4. **Positive patterns harvested at S2:**
+   - **Reverse-shim during cross-namespace migration** (Murat AM-16) — copy + reverse-shim + bulk-rewrite-imports + delete; not move-and-sweep. Preserves test-suite-green-state during transition.
+   - **Namespace-mirror shim pattern** (`_sys.modules[__name__].__dict__.update({k: v for k, v in _src.__dict__.items() if not k.startswith("__")})` + `__doc__ = _src.__doc__`) re-exports non-`__all__` symbols + canonical docstrings.
+   - **30-1 token preservation discipline** — programming-token strings (WriterIdentity Literal values) are PACKAGE-INDEPENDENT; the package can move without touching the strings; the strings ARE the contract.
+
+---
+
+## Pre-S3 / Post-S3 / Pre-S4 / Post-S4 / Pre-S5 / Post-S5 / Pre-S6 / Post-S6 review harvests
+
+_(Empty; populated session-by-session)_
 
 ---
 
