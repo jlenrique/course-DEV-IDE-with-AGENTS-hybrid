@@ -26,11 +26,17 @@ _bmad/*
 # BMad skills distributed to IDE surfaces (installed by bmb setup)
 # `skills/` itself carries critical agent-definition content (SKILL.md +
 # references/ + scripts/) and is tracked. Only IDE-surface mirrors
-# (.agents/.claude/.cline/.github/skills/.cursor/skills/) are ignored.
+# (.agents/.claude/.cline/.github/skills/.cursor/skills/.github/agents/)
+# are ignored. `.github/agents/` carries BMAD-installer-emitted
+# chat-agent persona stubs for GitHub Copilot Chat (5-line redirects
+# into the gitignored `.agents/skills/` tree); sibling-but-distinct from
+# `.github/instructions/` (file-scoped rules with `applyTo` frontmatter,
+# which is tracked). See AGENTS.md for the mechanism distinction.
 .agents/
 .claude/
 .cline/
 .github/skills/
+.github/agents/
 .cursor/skills/
 
 # Optional local-only drops (large media, exports)
