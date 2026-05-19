@@ -51,14 +51,13 @@
 
 ## What is next
 
-**Operator selects between two tracks** (both queued, both ratified):
+**Operator selected Path B (2026-05-19, post-wrapup):** Trial-3 launch is the next-session opener. Decision basis recorded in session chronology: post-classification of the 88 broad-regression failures revealed they are overwhelmingly TEST HYGIENE noise (post-S2 stale path pins, env-conditional cache-hit-rate tests, replay-infrastructure scaffolds, snapshot-freshness audits, audit-only tripwire scaffolds), NOT production-code defects. AM-11 launch-permission token is 52/52 GREEN; none of the 88 catalogued failures point at Trial-3's runtime paths. Path A's ~45-min insurance premium for a cleaner catalog count was judged not worth the substrate-change ambiguity it introduces between S6 ratification and Trial-3 launch.
 
-- **Track A: Execute the ratified Sprint Change Proposal pre-Trial-3.** Spec at `_bmad-output/planning-artifacts/sprint-change-proposal-2026-05-19.md`. Pre-C1 fold-in: Murat M1-M4 + John J1-J2 amendments. Expected outcome: −12 broad-regression delta (88 → ~76); refreshed Trial-3 forensic-comparison baseline. Estimated wallclock: ~45 min.
-- **Track B: Trial-3 launch (operator-driven; unchanged from prior session).** v5 §0 Pre-Launch Operator Card. Substrate the team ratified at S6 remains untouched; SCP becomes post-Trial-3 work.
+**Selected path:** Walk the v5 §0 Pre-Launch Operator Card. Substrate the team ratified at S6 remains untouched. Use the Pre-Launch Operator Card sequence in `next-session-start-here.md §🎯 Immediate next action`.
 
-Recommendation depends on operator JTBD: Track A first if forensic-comparison cleanliness pre-Trial-3 is the higher value; Track B first if Trial-3 launch is the higher-leverage user-value milestone today.
+**Deferred to post-Trial-3:** the ratified Sprint Change Proposal (`_bmad-output/planning-artifacts/sprint-change-proposal-2026-05-19.md`) stays as a queued post-Trial-3 housekeeping candidate. Murat M1-M4 + John J1-J2 amendment refinements must fold in pre-C1 whenever it dispatches.
 
-Post-Trial-3 path is unchanged: verdict declaration → Shape A postmortem → Shape B postmortem 48h → potentially Epic 15 reactivation gate per `prd-epic-15-learning-compound-intelligence.md` skeleton.
+Post-Trial-3 path: verdict declaration → Shape A postmortem (15 min mandatory at trial close) → Shape B postmortem 48h → potentially dispatch the SCP as post-Trial-3 housekeeping → potentially Epic 15 reactivation gate per `prd-epic-15-learning-compound-intelligence.md` skeleton (if Trial-3 PASS or PARTIAL-PASS).
 
 ---
 
@@ -151,4 +150,6 @@ Operator initially chose Path 1 (continue housekeeping with party-mode gating) f
 
 Operator's pivot to WRAPUP before SCP execution is the disciplined call: it banks the session's value (5 commits + 1 ratified proposal + 1 governance amendment) into permanent record, hands clean state to the next session, and preserves Trial-3 launch flexibility.
 
-**Final commit:** this WRAPUP commit (`docs(governance + wrapup): impasse-resolution chain landed; session 2026-05-19 closeout`; sha at HEAD post-push).
+**Post-wrapup operator clarification (2026-05-19):** after reviewing the 88-failure classification (which showed the failures are overwhelmingly test-hygiene noise rather than production defects, with AM-11 at 52/52 GREEN being the actual Trial-3 gate), operator **selected Path B** as the next-session opener. Trial-3 launches against the S6-ratified substrate; the SCP defers to post-Trial-3 housekeeping. This addendum + the next-session-start-here Path B reframing landed as a docs-only follow-up commit per WRAPUP Step 12 step 9 (metadata reconciliation).
+
+**Final commits:** WRAPUP commit `docs(governance + wrapup)` + this Path-B-decision follow-up `docs(handoff): record operator Path B selection`.
