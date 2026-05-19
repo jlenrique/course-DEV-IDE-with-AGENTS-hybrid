@@ -91,6 +91,20 @@ Maintenance: the inventory is updated at (a) each Epic retrospective close, (b) 
 
 Trial-run postmortems consult `docs/trials/cross-trial-learnings.md` AND file their harvest entries per the four-question routing discipline at `docs/trials/methodology.md §7`. Reactivation-trigger firings are recorded bidirectionally (inventory entry strikethrough cites cross-trial entry; cross-trial entry cites inventory entry). Cross-trial pattern synthesis fires every 3 trials OR at Epic-close. Methodology updates per `methodology.md §8` lifecycle protocol.
 
+## Party-mode impasse-resolution chain (2026-05-19; operator-ratified)
+
+When `bmad-party-mode` reaches a documented impasse on a substantive decision (one full round of party-mode complete; disagreement explicitly stated; no consensus option remains acceptable to all relevant voices per sprint-governance §6), the orchestrator follows this escalation chain **before** escalating to the human operator:
+
+1. **Dr. Quinn synthesis round.** Spawn Dr. Quinn (`bmad-cis-agent-creative-problem-solver`) via the Task tool with the FULL impasse context: every voice's position verbatim, the disposition options on the table, the project context relevant to the choice, and an explicit ask to either (a) find a systems-level synthesis option that resolves the contradiction the four voices stepped past, or (b) declare honest failure. Quinn may NOT just vote one of the existing options — that's not synthesis. Quinn must also predict each voice's reaction to the proposed synthesis so the orchestrator can judge consensus viability.
+2. **John (PM) tiebreaker round.** ONLY if Dr. Quinn explicitly declares synthesis failure. Spawn John (`bmad-agent-pm`) with the same impasse context plus Quinn's synthesis attempt, and authorize John to make the final decision + declare next steps unilaterally as PM. The orchestrator executes John's decision verbatim.
+3. **Escalate to human operator** ONLY if both Quinn and John fail to produce an actionable verdict (rare; reserved for true strategic impasses).
+
+Precedent established at Slice A R1-vs-R2-vs-R3 impasse 2026-05-19 during pre-Trial-3 housekeeping arc; Dr. Quinn succeeded with R5 "Probe-Capture" synthesis (3-of-4 voice consensus with named dissent). Full session record at `_bmad-output/planning-artifacts/sprint-change-proposal-2026-05-19.md` and `SESSION-HANDOFF.md`.
+
+The chain is binding for orchestrator-facilitated party-mode rounds during multi-story BMAD work (per sprint-governance §§2/4/5/6). Operator authority overrides at any link in the chain.
+
+## Cleanup-arc execution mode (S6 2026-05-08)
+
 ## Cleanup-arc execution mode (S6 2026-05-08)
 
 Multi-session cleanup arcs (e.g., the pre-Trial-3 cleanup arc 2026-05-07/08; future post-Trial-N cleanup arcs) execute **Claude-direct** by default. The NEW CYCLE Codex hand-off pattern (Claude pre-author → Codex T1-T10 → Claude T11) is reserved for **formal `bmad-dev-story` discipline** on substrate-impacting stories ratified by party-mode. Cleanup work in multi-session arcs is Claude-direct to avoid P3 anti-pattern (operator-as-bridge friction with no payoff). Operator authority overrides this default.

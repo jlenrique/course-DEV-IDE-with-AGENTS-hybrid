@@ -1,163 +1,154 @@
-# Session Handoff — 2026-05-07 → 2026-05-08 (Pre-Trial-3 Cleanup Arc COMPLETE; 6-session intensive across S1-S6; Trial-3 launch UNBLOCKED)
+# Session Handoff — 2026-05-18 → 2026-05-19 (Post-S6 Housekeeping Probe + Quinn R5 Impasse-Synthesis + Pre-Trial-3 SCP Authoring)
 
-**Session date:** 2026-05-07 → 2026-05-08 (single-day intensive; cleanup arc opened post-Slab-7c retrospective close at `0ef8594` and closed at `669e99f`)
+**Session date:** 2026-05-18 → 2026-05-19 (single intensive session under Path 1 — operator-chosen housekeeping with party-mode gating each slice)
 **Branch:** `dev/langchain-langgraph-foundation`
-**Session-start anchor:** `0ef8594` (Slab 7c retrospective close — Day 3 wrapup)
-**HEAD at session-end:** `669e99f` (S6 final all-7-agent ratification commit)
-**Commits this session:** ~28 (post-anchor; all pushed; push-cadence policy honored every 2 hours during active work)
+**Session-start anchor:** `02e0c08` (prior session's WRAPUP docs commit)
+**HEAD at session-end:** WRAPUP commit (governance amendment + this handoff + next-session-start-here finalization; sha resolves to this commit in `git log`)
+**Commits this session:** 5 (all pushed; push-cadence policy honored at every safety-checkpoint)
 **Branch state at session-end:** Origin in sync at HEAD. Working tree CLEAN.
 
 ---
 
 ## What was completed
 
-**🎯 Pre-Trial-3 cleanup arc COMPLETE.** Operator-mandated 6-session sweep across S1-S6 to reach a fully-clean substrate before Trial-3 launches. All-7-agent rite-of-passage ratification at S6 close: **READY** verdicts from Paige + Mary + John + Winston + Murat + Amelia + Sally. **Trial-3 launch UNBLOCKED.**
+**🎯 Two productive operator-strategic shifts + one ratified-but-unexecuted substrate-amendment artifact.** Session opened on Path 1 (continue housekeeping with party-mode gating), discovered a structural freeze constraint (TW-7c-4 line 65 `unexpected == []`) that materially narrows the pre-Trial-3 housekeeping surface, escalated to formal `bmad-correct-course` Sprint Change Proposal authoring per operator direction, ratified the proposal via party-mode Round-3, and pivoted to WRAPUP at the operator's call before execution.
 
-### Session-by-session deliverables
+### Commits landed (in order)
 
-**S1 — Foundation (commits `725f55f` + `11f0bf4`):**
-- 12/12 P0 items closed: Marcus registry rewrite (hybrid superset preserving contract); anti-pattern dedup (P3→P4 + zombie heading delete); v4.2 quick fixes (Audra→Enrique; §3.g sunset; broken xref); v4.2 PP-3 four-concern preamble (env / health-gate / run-constants); sources-of-truth.md fix; mapping-checklist line 7 fix; HIL verb legend authored; corpus-prep guide authored; 47-failure baseline catalog authored; PP-2 disposition vote (3/3 unanimous banner-only); inventory archive (24 closed entries); 6 regression-fixes self-healed
-- Pre-S1 + post-S1 4-agent party-mode reviews (Paige + Amelia + Murat + Mary)
+1. **`f0a35c0` — `chore(gitignore): ignore .github/agents/ — 6th IDE-surface installer mirror`**
+   - Untracked dir surfaced at session-START hot-start: 13 BMAD stock-persona `.agent.md` stubs emitted by BMAD installer v6.6.1-next.5 into `.github/agents/`. Pattern matched the existing 5 gitignored IDE-surface mirrors (`.agents/`, `.claude/`, `.cline/`, `.github/skills/`, `.cursor/skills/`). Party-mode unanimous (Paige + Winston + Amelia + John): add as 6th mirror.
+   - Also disambiguated in `AGENTS.md`: `.github/agents/*.agent.md` (chat-agent personas; installer-emitted; ignored) vs `.github/instructions/*.instructions.md` (file-scoped operator rules; tracked).
 
-**S2 — Marcus namespace collapse (commits `343220f` → `accd226` → `195be7c` → `1bc49fa` → `e48e107`):**
-- Legacy `marcus/` package DELETED (40 files retired)
-- Canonical `app.marcus.*` (lesson_plan/intake/orchestrator/dispatch/facade) — 30-1 INTERNAL duality preserved verbatim per R1 amendments 12+13+17
-- 30-1 token-strings preserved: marcus-intake / marcus-orchestrator / marcus-negotiator / marcus / Marcus
-- M5 import-linter contract added (forbidden top-level marcus); 13 contracts kept
-- Pre-S2 + post-S2 4-agent reviews (Amelia + Winston + Murat + Paige)
-- D14 architecture-of-record entry codifies the discipline
+2. **`4698ce5` — `docs(deferred-inventory): capture Slice A path-pin probe + Quinn R5 synthesis`**
+   - Slice A (1-edit 9-line path-pin update to `app/marcus/lesson_plan/coverage_manifest.py`; replaces stale `marcus/lesson_plan/...` with `app/marcus/lesson_plan/...` post-S2 namespace collapse) executed per Round-1 unanimous (Murat + Amelia + Winston + John).
+   - Targeted result: 21 → 10 failures in the trial-smoke-harness + coverage-manifest cluster.
+   - Broad regression: 88 → 78 (−10 net, −12 cascade resolved).
+   - BUT 2 new failures surfaced: (a) `tests/test_coverage_manifest_regenerates_on_current_state.py:51` pinned LEGACY canonical path; (b) **TW-7c-4 substrate tripwire FIRED by design** on the `app/`-layer Python touch.
+   - Round-2 IMPASSE (R1 revert = Winston + John; R2 commit + minimal amendment = Murat; R3 commit + 30-1 + lockstep = Amelia).
+   - **Operator-ratified governance amendment mid-session: party-mode impasse → Dr. Quinn synthesis → John PM tiebreaker.**
+   - **Dr. Quinn R5 synthesis ("Probe-Capture"):** the diff was never the deliverable — the EVIDENCE was. Separate "land the code" from "capture the learning." Revert, capture evidence verbatim, pre-draft substrate-amendment motion for post-Trial-3 dispatch. 3-of-4 consensus (Winston + John + Murat); Amelia named principled dissent (preferred R3's same-commit lockstep).
+   - Slice A reverted. Probe artifact filed in `deferred-inventory.md §Post-S6 Housekeeping Probe — Slice A`. Diff preserved at `.tmp/slice-a-diff.patch` (9308 bytes; gitignored). Pre-drafted motion at `.tmp/slice-a-post-trial-3-correct-course-draft.md` (later superseded by the formal SCP).
 
-**S3 — Trial-run methodology (commits `288c1ed` + `473928c`):**
-- `docs/trials/methodology.md` — 8-section standing operations document (run taxonomy + verdict framing + filing-disposition routing + per-run trio contract)
-- `docs/trials/cross-trial-learnings.md` — synthesis register with 4-question routing
-- `docs/trials/trial-N-templates/{launch,log,postmortem}.md` — reusable per-run trio
-- `docs/trials/trial-3/{README,launch,log,postmortem}.md` — skeleton populated for Trial-3 launch
-- Pre-S3 (3 agents) + post-S3 (4 agents) reviews
+3. **`f7cecd1` — `docs(deferred-inventory): expand Slice A probe with Slice D + TW-7c-4 scope finding`**
+   - Slice D (`git rm tests/migration/test_slab_2c_next_session_start_here_updated.py`; pure `tests/` deletion of a test that asserts content of the gitignored `next-session-start-here.md`) executed per Quinn's R5 plan.
+   - Murat's pre-slice tripwire scan was incomplete; missed that **TW-7c-4 has TWO assertions** (line 56 `app_scope == []` AND line 65 `unexpected == []`). The line-65 predicate fired on the pure `tests/` deletion.
+   - **Major finding:** the pre-Trial-3 freeze is total for ALL Python file modifications, NOT just `app/`. Most catalogued housekeeping items in `s6-tier-3-post-trial-3-housekeeping-batch` (16 items) are structurally blocked until post-Trial-3 substrate amendment.
+   - Slice D reverted in lockstep with Slice A; both probes folded into the same evidence bundle. Operator decision point: stop housekeeping / pivot to freeze-safe slices / dispatch `bmad-correct-course` motion pre-Trial-3 / pivot to Trial-3 prep.
+   - **Operator selected `dispatch_correct_course`** — formal substrate-amendment route.
 
-**S4 — v5 canonical pack (commits `a713112` + `ca31f8d`):**
-- `docs/workflow/production-prompt-pack-v5-narrated-lesson-with-video-or-animation.md` — 1693 lines; canonical-for-production-runs
-- v4.2 frozen as legacy-axis mapping authority; v4.3 fully superseded
-- Pre-Launch Operator Card; 33-row Crosswalk with migrated paths
-- D17 Crosswalk-vs-disk parity test pattern (first instance)
-- Pre-S4 (3 agents) + post-S4 (4 agents; including Murat path-correction round) reviews
-- 6 path-string corrections + Crosswalk parity test PASS
+4. **`43bf589` — `docs(scp): Sprint Change Proposal for pre-Trial-3 TW-7c-4 substrate amendment`**
+   - 236-line Sprint Change Proposal authored at `_bmad-output/planning-artifacts/sprint-change-proposal-2026-05-19.md` per `bmad-correct-course` skill workflow (Batch mode).
+   - **Section 4 specifies 3 commits:** C1 substrate amendment (3 paths to TW-7c-4 `PERMITTED_PYTHON_DIFFS` + 1 path to 30-1 `_ALLOWED_MODIFIED_PATHS_UNDER_TESTS`) + C2 Slice A+D re-application (~22 LOC bundled) + C3 catalog refresh (broad-regression baseline 82 → ~76 + deferred-inventory entry closure).
+   - **Party-mode Round-3 ratification:** Winston APPROVE-as-authored; Amelia APPROVE-as-authored (with verbatim commit-message draft for C2); Murat APPROVE-with-amendments (M1-M4: dry-run TW-7c-4 between C1/C2 + xdist-pinned regression re-run + top-of-file delta-summary header + abort tripwire if delta > −10); John APPROVE-with-amendments (J1-J2: reorder C3-predict ahead of C2 + operator baseline re-confirm gate + precise green-light condition delta in −10 to −14 band).
+   - **Status:** ratified, awaiting execution. Operator pivoted to WRAPUP before dispatching C1.
 
-**S5 — P1 risk-reduction (commits `59f4e12` + `13f1458` + `a3c35c3`):**
-- D15-D19 architecture-of-record entries (trial methodology / v5 pack / Crosswalk parity / 8-family taxonomy / Marcus-writer partition)
-- Composition Spec §10 — 7 Slab-7c era entries
-- 11 §section operator-reference doc stubs at `docs/conversational-gates/`
-- Sources-of-truth.md "Legacy production prompt-pack authority" extension
-- README + 3 migration banners refreshed
-- Epic 15 PRD skeleton (post-Trial-3 reactivation prep)
-- Forensic preservation CI guard authored
-- Pre-S5 (3 agents) + post-S5 (4 agents) reviews
-
-**S6 — P2/P3 + final ratification (commits `7111633` + `b617b52` + `669e99f`):**
-- A21 (AUDIT-not-BUILD) + A22 (AMEND-7c percentage-threshold) anti-pattern entries
-- ADR 0003 — NEW family precedent for §06B + §07C (no `alias_of` parent)
-- 4 CLAUDE.md governance amendments (4th deferred-inventory trigger; trial-postmortem governance; direction-of-cleanup-may-flip; cleanup-arc execution mode)
-- v4.1 banner-disposition (cousin-not-sibling-of-v5)
-- M2/C2 inline symmetric-pair comments + D20 disambiguation (composition-spec → D-Class-2-codification)
-- **Cat-2 housekeeping-2 land:** scanner-staleness AST rewrite — closes A19 substring-scanner-staleness anti-pattern (7+ DISMISS-thread cycle)
-- Harvest log roll-up (21 entries → 17 LANDED + 2 DEFERRED + 1 DEDUP + 1 NO-FILING); file flipped to HISTORICAL-ARCHIVE
-- s6-tier-3-post-trial-3-housekeeping-batch deferred-inventory entry (16-item cluster filed per Amelia "no-deferrals-but-sequenced" posture)
-- Pre-S6 (4 agents) + final all-7-agent rite-of-passage ratification
+5. **WRAPUP commit — `docs(governance + wrapup): impasse-resolution chain landed; session 2026-05-19 closeout`** *(this commit; sha resolves at HEAD via `git log -1`)*
+   - **Governance amendment landed in CLAUDE.md §Party-mode impasse-resolution chain** + `.cursor/rules/bmad-sprint-governance.mdc` rule 7: when party-mode hits documented impasse, escalate via Dr. Quinn synthesis → John PM tiebreaker → human (in that order). Precedent recorded: Slice A R1-vs-R2-vs-R3 impasse 2026-05-19; Quinn succeeded with R5 "Probe-Capture."
+   - `next-session-start-here.md` finalized with two-track opener (Track A: execute SCP; Track B: Trial-3 launch).
+   - `SESSION-HANDOFF.md` finalized (this file).
 
 ---
 
 ## What is next
 
-**Trial-3 launch.** Operator dispatches when ready against a FRESH corpus per `docs/operator/corpus-preparation-guide.md`:
+**Operator selects between two tracks** (both queued, both ratified):
 
-```powershell
-$env:PYTHONIOENCODING="utf-8"
-.\.venv\Scripts\python.exe -m app.marcus.cli trial start --preset production --input course-content/courses/<lesson_slug>/ --motion-enabled
-```
+- **Track A: Execute the ratified Sprint Change Proposal pre-Trial-3.** Spec at `_bmad-output/planning-artifacts/sprint-change-proposal-2026-05-19.md`. Pre-C1 fold-in: Murat M1-M4 + John J1-J2 amendments. Expected outcome: −12 broad-regression delta (88 → ~76); refreshed Trial-3 forensic-comparison baseline. Estimated wallclock: ~45 min.
+- **Track B: Trial-3 launch (operator-driven; unchanged from prior session).** v5 §0 Pre-Launch Operator Card. Substrate the team ratified at S6 remains untouched; SCP becomes post-Trial-3 work.
 
-Pre-launch sequence per v5 §0 Pre-Launch Operator Card. Trial-3 outcome → postmortem (Shape A 15 min; Shape B 48h) → potentially Epic 15 reactivation gate.
+Recommendation depends on operator JTBD: Track A first if forensic-comparison cleanliness pre-Trial-3 is the higher value; Track B first if Trial-3 launch is the higher-leverage user-value milestone today.
+
+Post-Trial-3 path is unchanged: verdict declaration → Shape A postmortem → Shape B postmortem 48h → potentially Epic 15 reactivation gate per `prd-epic-15-learning-compound-intelligence.md` skeleton.
 
 ---
 
 ## Unresolved issues / risks
 
 **Non-blocking but tracked:**
-- **`s2-test-cleanup-residual-37`** (38 items; AST-scan / file-IO / shim-era pin tests) — deferred to S6 Tier-3 batch per Amelia pre-S6 triage; not Trial-3-blocking
-- **`s6-tier-3-post-trial-3-housekeeping-batch`** (16 cluster items: skill-dir archives; sidecar archives; legacy script archives; module relocations; placeholder specialist resolution; ENVELOPE-CARRIER-HACK retirement; app/cora→app/dev_workflow rename; Node→Python port; etc.) — operator-priority-driven scheduling
-- **`s4-per-section-operator-sub-blocks`** — v5 §sections retained v4.2's Marcus-addressed prompt body voice; per-§ "Operator at this gate" sub-blocks deferred (verb legend covers in interim)
-- **`winston-post-s2-followon-architecture-currency`** (A1 §Project Tree update; A2 §10 entry; A3 M2/C2 fold) — deferred to S7+ housekeeping; A1 + A2 + A3 inline comments landed at S6
 
-**Post-S6 broad regression: 82 failures** (-3 from S4 close 85). Cat-2 closed at S6; rest carry to S7+ post-Trial-3 batch.
+- **`sprint-change-proposal-2026-05-19`** — ratified-but-not-executed substrate amendment. Operator-priority-driven dispatch (Track A vs Track B). Pre-C1 fold-in required: Murat M1-M4 + John J1-J2 amendment refinements (documented in SCP §4 verification gates + `next-session-start-here.md §Track A`).
 
-**Test-architecture observation (Murat post-S5):** S5+S6 substrate-currency work doesn't move pytest count by design — the structural value is governance + architecture-of-record currency + harvest discipline + Cat-2 closure. Trial-3 launch-permission token GREEN throughout.
+- **TW-7c-4 freeze scope (binding for next session's Python work):** the freeze is total for ALL Python file modifications, NOT just `app/`. Discovered via Slice D probe. Implication: only non-Python edits (YAML/JSON/Markdown/TOML) or edits to the 5 allowlisted `PERMITTED_PYTHON_DIFFS` paths are freeze-safe. Pre-slice tripwire scans MUST check both assertions (line 56 + line 65) per Murat's R2-amendment discipline.
+
+- **Pre-slice tripwire scan discipline** (Murat amendment, ratified Round-3 ): codify in BOTH `_bmad-output/planning-artifacts/deferred-inventory.md` (artifact-side: which tripwires + paths participate) AND CLAUDE.md (process-side: "full tripwire scan, no partials, before any slice opens"). This session's slice-by-slice failure on a partial scan was the impetus.
+
+- **Broad regression at 88 failures** (vs S6 catalog's 82; +6 drift over the past 11 days from `669e99f` close). 44/88 enumerated in `broad-regression-baseline-2026-05-07.md` Cat-1..16; 44/88 fall into the `s2-test-cleanup-residual-37` unenumerated bulk-cluster bucket. Catalog Summary section needs refresh — either during Track A C3 (preferred per SCP) or at post-Trial-3 housekeeping.
+
+- **Carry-forward from prior session (still tracked):** `s2-test-cleanup-residual-37` (38 items), `s6-tier-3-post-trial-3-housekeeping-batch` (16 cluster items; +2 this session's probes folded in), `s4-per-section-operator-sub-blocks`, `winston-post-s2-followon-architecture-currency`. None are Trial-3-blocking.
+
+**No critical blockers. Trial-3 launch criteria remain GREEN.**
 
 ---
 
 ## Key lessons learned
 
-1. **Direction-of-cleanup may flip with substrate evolution.** The deferred-inventory `migration-tech-debt-app-marcus-stub-disposition` was filed 2026-04-26 with direction "delete app/marcus/, keep marcus/" — reality flipped during Slab 6/7 to "delete marcus/, keep app/marcus/". S2 executed the inverted direction correctly; CLAUDE.md amendment now codifies this caveat.
-2. **Reverse-shim during cross-namespace migration.** Murat AM-16 reverse-shim discipline (copy + reverse-shim + bulk-rewrite-imports + delete) was the right execution pattern for the 108-150 test-import surface. NOT move-and-sweep.
-3. **Two distinct Marcus dualities.** 30-1 INTERNAL duality (intake ↔ orchestrator + Maya-as-one-voice) is intentional architecture per R1 amendments 12+13+17. EXTERNAL duality (legacy marcus/ vs app/marcus/) was the bug class; eliminated at S2.
-4. **Cleanup arc execution = Claude-direct (NOT Codex NEW CYCLE).** Multi-session cleanup work doesn't need formal bmad-dev-story discipline. CLAUDE.md amendment codifies.
-5. **30-1 token-strings are PACKAGE-INDEPENDENT.** WriterIdentity Literal values + Golden-Trace fixture content; package home moves but strings stay.
-6. **Harvest log = transient staging ground.** Roll up to permanent registers at arc-close; mark file historical-archive.
+1. **Quinn's "Probe-Capture" (R5) is a reusable synthesis pattern.** When a slice's value is the EVIDENCE rather than the LOC on disk, separate "land the code" from "capture the learning." Revert + augment deferred-inventory with full forensic artifacts + pre-draft the proper governance motion. This dissolves freeze-vs-progress contradictions cleanly and feeds the post-freeze substrate-amendment process with credibility evidence.
+
+2. **Pre-slice tripwire scans MUST be exhaustive.** The Round-2 party-mode reasoned only about TW-7c-4's line-56 `app_scope == []` predicate; missed the line-65 `unexpected == []` predicate. Slice D's pure `tests/` deletion fired the unread predicate. Discipline going forward: read EVERY assertion in EVERY working-tree-scanning tripwire before declaring a slice freeze-safe. Codify in CLAUDE.md + deferred-inventory per Murat M-amendment.
+
+3. **The pre-Trial-3 freeze is broader than the team initially appreciated.** TW-7c-4 is total for all Python; the 5-file `PERMITTED_PYTHON_DIFFS` allowlist is the only carve-out. Most `s6-tier-3-post-trial-3-housekeeping-batch` work is structurally blocked until post-Trial-3 OR until a deliberate substrate-amendment via `bmad-correct-course`. Pre-Trial-3 housekeeping surface = non-Python edits only.
+
+4. **Operator-ratified governance amendment: party-mode impasse → Dr. Quinn → John (PM) tiebreaker.** Reduces operator-interrupt load when party-mode splits and adds two principled synthesis layers before human escalation. Quinn's role is systems-level synthesis (not vote-counting); John's role is unilateral PM tiebreaker if Quinn fails. Both reserve human escalation for true strategic impasses. Landed in CLAUDE.md + cursor rule this session.
+
+5. **`bmad-correct-course` is the formal route for substrate amendments.** When a session surfaces evidence that warrants a substrate change (tripwire allowlist, contract update, etc.), produce a Sprint Change Proposal via the skill workflow rather than ad-hoc edits. The proposal becomes a planning artifact (`_bmad-output/planning-artifacts/sprint-change-proposal-{date}.md`), ratifiable via party-mode, dispatchable in a follow-up execution session.
 
 ---
 
 ## Validation summary
 
-- **Final all-7-agent rite-of-passage ratification:** READY × 7 at S6 close (`669e99f`)
-- **AM-11 launch-permission token:** GREEN — 52/52 tests (test_trial3_readiness + test_preflight_check + test_preflight_receipt_contract)
-- **30-1 contract suite:** GREEN — 17/17 tests (facade-leak-detector + intake-orchestrator-leak + duality-imports + golden-trace-regression)
-- **D17 Crosswalk-vs-Disk parity:** GREEN
-- **Forensic preservation CI guard:** GREEN (vacuous; armed for first Trial-3 postmortem)
-- **Cat-2 housekeeping-2 (AST rewrite):** Both tests PASS
-- **Import-linter:** 13 contracts kept, 0 broken (M5 collapse-guard active)
-- **Production imports without pytest:** GREEN (cold-load `from app.specialists._scaffold.contract import SCAFFOLD_NODE_IDS`)
-- **Post-S6 broad regression:** 82 failures (stable; cleanup-arc work landed without introducing new failures)
+- **Quality gate (Step 1):** ruff clean on transient-edit surface (`app/marcus/lesson_plan/coverage_manifest.py` post-revert)
+- **TW-7c-4 freeze:** PRESERVED at session-end (clean working tree; predicate intact)
+- **Broad regression:** STABLE at 88 failures pre/post session (no NEW regressions introduced; Slice A + D probes both reverted)
+- **Pre-existing 88-failure baseline cross-ref:** 44 catalogued + 44 in `s2-test-cleanup-residual-37` unenumerated bucket
+- **AM-11 launch-permission token:** unchanged from prior session (52/52; not re-run this session since no app/ Python touched committedly)
+- **30-1 contract suite:** pre-existing failure in 88 baseline (not introduced this session)
+- **Import-linter:** 13 contracts kept (M5 collapse-guard active)
+- **Origin sync:** 5 commits pushed at every safety-checkpoint per push-cadence policy
+- **Party-mode rounds executed:** 3 substantive rounds (Round 1 Slice selection; Round 2 Slice A disposition; Round 3 SCP ratification) + 1 Quinn synthesis round + 1 governance-amendment ratification (inline operator directive)
+
+**Step 0a/0b skipped:** Cora not deployed in this repo. Step 0c self-executed via direct drafting of the hot-start pair (this section + `next-session-start-here.md`). No `reports/dev-coherence/` entries this session.
 
 ---
 
 ## Artifact update checklist
 
-| Artifact | Updated this arc | Verified at S6 close |
+| Artifact | Updated this session | Verified at WRAPUP |
 |---|---|---|
-| `_bmad-output/planning-artifacts/architecture-langchain-langgraph-migration.md` | ✓ D14-D19 entries | ✓ |
-| `_bmad-output/planning-artifacts/deferred-inventory.md` | ✓ archive sweep + 4 new follow-ons | ✓ 25 closed-archived |
-| `_bmad-output/planning-artifacts/pre-trial-3-cleanup-plan.md` | ✓ created at S1; 13 amendments folded | ✓ |
-| `_bmad-output/planning-artifacts/pre-trial-3-harvest-log.md` | ✓ 21 entries; rolled up at S6 close | ✓ HISTORICAL-ARCHIVE |
-| `_bmad-output/planning-artifacts/prd-epic-15-learning-compound-intelligence.md` | ✓ NEW skeleton | ✓ |
-| `_bmad-output/planning-artifacts/prd.md` | ✓ replaced 30-line stub with forwarder | ✓ |
-| `_bmad-output/planning-artifacts/prd-slab-7a/7b/7c-*.md` | ✓ executionClosedAt + supersededBy stamps | ✓ |
-| `_bmad-output/implementation-artifacts/sprint-status.yaml` | ✓ epic-7c flip in-progress→done | ✓ |
-| `_bmad-output/implementation-artifacts/broad-regression-baseline-2026-05-07.md` | ✓ NEW + post-S6 closure annotations | ✓ |
-| `docs/dev-guide/specialist-anti-patterns.md` | ✓ A21+A22; P1-P4 unique numbering | ✓ |
-| `docs/dev-guide/sources-of-truth.md` | ✓ legacy-prompt-pack authority section | ✓ |
-| `docs/dev-guide/composition-specification.md` | ✓ §10 7 Slab-7c entries; D-Class-2 disambig | ✓ |
-| `docs/dev-guide/adr/0003-new-family-precedent-section-06b-section-07c.md` | ✓ NEW | ✓ |
-| `docs/workflow/production-prompt-pack-v5-narrated-lesson-with-video-or-animation.md` | ✓ NEW canonical (1693 lines) | ✓ |
-| `docs/workflow/production-prompt-pack-v4.3-*.md` | ✓ superseded-by-v5 | ✓ |
-| `docs/workflow/production-prompt-pack-v4.1-*.md` | ✓ banner-disposition | ✓ |
-| `docs/operator/hil-verb-legend.md` | ✓ NEW | ✓ |
-| `docs/operator/corpus-preparation-guide.md` | ✓ NEW | ✓ |
-| `docs/trials/methodology.md` | ✓ NEW | ✓ |
-| `docs/trials/cross-trial-learnings.md` | ✓ NEW | ✓ |
-| `docs/trials/trial-N-templates/{launch,log,postmortem}.md` | ✓ NEW | ✓ |
-| `docs/trials/trial-3/{README,launch,log,postmortem}.md` | ✓ NEW skeleton | ✓ |
-| `docs/conversational-gates/section-*-operator-reference.md` | ✓ 11 NEW stubs | ✓ |
-| `tests/parity/test_v5_crosswalk_paths_exist.py` | ✓ NEW | ✓ GREEN |
-| `tests/trial/test_forensic_preservation.py` | ✓ NEW | ✓ GREEN |
-| `tests/integration/gates/test_resume_api_authority.py` | ✓ AST rewrite (housekeeping-2) | ✓ GREEN |
-| `app/specialists/_scaffold/contract.py` | ✓ NEW (production-side canonical SCAFFOLD_NODE_IDS) | ✓ |
-| `app/marcus/{intake,lesson_plan,orchestrator,dispatch,facade}.py` | ✓ S2 collapse copy + reconcile | ✓ |
-| `pyproject.toml::tool.importlinter` | ✓ M5 added; M2/C2 symmetric-pair comments | ✓ 13 contracts kept |
-| `CLAUDE.md` | ✓ 4 governance amendments | ✓ |
-| `README.md` + `docs/{user,admin,dev}-guide.md` migration banners | ✓ refreshed at S5 | ✓ |
-| `skills/bmad-agent-marcus/references/specialist-registry.yaml` | ✓ hybrid superset | ✓ |
+| `.gitignore` | ✓ added `.github/agents/` as 6th IDE-surface mirror | ✓ |
+| `AGENTS.md` | ✓ disambiguation block for `.github/agents/` vs `.github/instructions/` | ✓ |
+| `_bmad-output/planning-artifacts/deferred-inventory.md` | ✓ +2 entries (`s6-housekeeping-coverage-manifest-path-pin-probe` + `s6-housekeeping-stale-test-path-pins-survey`) + governance amendment note | ✓ |
+| `_bmad-output/planning-artifacts/sprint-change-proposal-2026-05-19.md` | ✓ NEW (236 lines; ratified, awaiting execution) | ✓ |
+| `CLAUDE.md` | ✓ NEW §Party-mode impasse-resolution chain | ✓ |
+| `.cursor/rules/bmad-sprint-governance.mdc` | ✓ rule 7 added (impasse-resolution chain) | ✓ |
+| `next-session-start-here.md` | ✓ rewritten with two-track opener (Track A SCP / Track B Trial-3) | ✓ |
+| `SESSION-HANDOFF.md` | ✓ this file (replaces prior session's handoff) | ✓ |
+| `_bmad-output/implementation-artifacts/broad-regression-baseline-2026-05-07.md` | NOT this session (slated for Track A C3 catalog refresh) | (deferred per SCP §4.6) |
+| `_bmad-output/implementation-artifacts/sprint-status.yaml` | NOT this session (no story state transitions) | N/A |
+| `_bmad-output/implementation-artifacts/bmm-workflow-status.yaml` | NOT this session (no phase transitions) | N/A |
+| `docs/project-context.md` | NOT this session (no architecture/phase changes) | N/A |
+| `docs/agent-environment.md` | NOT this session (no MCP/API/skill changes) | N/A |
+
+**Forensic evidence artifacts (gitignored; local-only; preserved for next session):**
+
+- `.tmp/slice-a-diff.patch` (9308 bytes)
+- `.tmp/slice-a-post-trial-3-correct-course-draft.md` (now superseded by formal SCP)
+- `.tmp/pytest-baseline-now.txt` (88-failure snapshot)
+- `.tmp/pytest-after-slice-a.txt` (78-failure snapshot)
+- `.tmp/pytest-after-slice-d.txt` (87-failure snapshot)
+- `.tmp/failures-now.txt` (nodeid list)
+- `.tmp/agents-roster.json` (13-persona BMAD roster)
+- `.tmp/commit-msg-r5.txt`, `.tmp/commit-msg.txt`, `.tmp/commit-msg-wrapup.txt`
 
 ---
 
-## Cleanup arc closure
+## Session arc closure
 
-The pre-Trial-3 cleanup arc (2026-05-07 → 2026-05-08) closes here. Future cleanup arcs author their own harvest log per the precedent. Trial-3 is unblocked; operator dispatch when ready.
+Operator initially chose Path 1 (continue housekeeping with party-mode gating) for this session. The arc demonstrated two valuable governance discoveries:
 
-**Final commit:** `669e99f` (`feat(s6-final-close): all-7-agent rite-of-passage ratification COMPLETE — Trial-3 launch UNBLOCKED`).
+1. **The pre-Trial-3 freeze is genuinely binding.** Slice A probed it; Slice D confirmed it. The freeze is the architecture-of-record substrate the team ratified at S6 close; respecting it is not friction-to-be-overcome but rather the system working as designed.
+
+2. **Formal substrate amendment is the right route, not ad-hoc workarounds.** `bmad-correct-course` produced a 236-line Sprint Change Proposal that's ratifiable, dispatchable, and reversible post-Trial-3. The probe evidence captured during this session is exactly what makes the proposal credible.
+
+Operator's pivot to WRAPUP before SCP execution is the disciplined call: it banks the session's value (5 commits + 1 ratified proposal + 1 governance amendment) into permanent record, hands clean state to the next session, and preserves Trial-3 launch flexibility.
+
+**Final commit:** this WRAPUP commit (`docs(governance + wrapup): impasse-resolution chain landed; session 2026-05-19 closeout`; sha at HEAD post-push).

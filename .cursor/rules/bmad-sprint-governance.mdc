@@ -13,8 +13,13 @@ Follow this charter for multi-story BMAD work in this repository.
 4. Proceed by **BMAD team consensus** across the active workflow steps and party-mode rounds; keep a short written record of agreed decisions when it affects scope or quality.
 5. **Do not** stop the run except when **(a)** every in-scope story is **done** according to [`_bmad-output/implementation-artifacts/sprint-status.yaml`](_bmad-output/implementation-artifacts/sprint-status.yaml), or **(b)** **impasse**: after documented party-mode rounds the team still cannot agree on a path—then pause and escalate to the human.
 6. **Impasse** means: relevant voices in party mode have had at least one full round, the disagreement is stated explicitly, and no consensus option remains acceptable to all; it does not mean routine questions or a single agent’s uncertainty.
+7. **Impasse-resolution chain (2026-05-19; operator-ratified).** When rule 5(b) impasse triggers, escalate via this chain **before** escalating to the human operator:
+   1. **Dr. Quinn synthesis round.** Spawn Dr. Quinn (`bmad-cis-agent-creative-problem-solver`) with the full impasse context and an explicit ask to either (a) find a systems-level synthesis option that resolves the contradiction the voices stepped past, or (b) declare honest failure. Quinn may NOT just vote one of the existing options. Quinn must predict each voice's reaction to the proposed synthesis.
+   2. **John (PM) tiebreaker round.** ONLY if Dr. Quinn explicitly declares synthesis failure. Spawn John (`bmad-agent-pm`) with the impasse context plus Quinn's synthesis attempt; authorize John to make the final decision + declare next steps unilaterally as PM. The orchestrator executes John's decision verbatim.
+   3. **Escalate to the human operator** ONLY if both Quinn and John fail to produce an actionable verdict (rare; reserved for true strategic impasses).
+   Precedent: Slice A R1-vs-R2-vs-R3 impasse 2026-05-19 (pre-Trial-3 housekeeping arc); Dr. Quinn succeeded with R5 "Probe-Capture" synthesis (3-of-4 voice consensus with named dissent). Operator authority overrides at any link in the chain.
 
-Related skills: `bmad-help`, `bmad-party-mode`, `bmad-code-review`, `bmad-quick-dev`, `bmad-sprint-run-charter`.
+Related skills: `bmad-help`, `bmad-party-mode`, `bmad-code-review`, `bmad-quick-dev`, `bmad-sprint-run-charter`, `bmad-cis-agent-creative-problem-solver` (Quinn), `bmad-agent-pm` (John).
 
 ## Lesson Planner governance enforcement
 
