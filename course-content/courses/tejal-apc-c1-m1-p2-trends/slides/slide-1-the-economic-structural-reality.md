@@ -1,0 +1,7 @@
+# **Slide 1: The Economic & Structural Reality**
+
+-  **Visual Format:** Dual-Axis Data Visualization (Clean, high-contrast chart).
+- **Prompt to Generate Image:** > *A sleek, corporate data visualization slide on a dark navy background. The left side features an upward trending line graph labeled 'National Health Expenditures reaching $5.2 Trillion'. The right side features two comparing bar charts showing 'Independent Practice' shrinking and 'Hospital Employment' growing. Clean sans-serif typography, highly legible, modern aesthetic.*
+- **Narration (Speaker Notes):** "To understand our current environment, we must first look at the structural forces at play. U.S. healthcare spending continues to rise exponentially, now accounting for nearly one-fifth of the nation's economy and reaching $5.2 trillion in 2024. Alongside this financial pressure is a massive structural shift in how we work. Between 2012 and 2022, independent private practice fell drastically, while the share of physicians employed by large health systems surged. We are increasingly working within massive, complex organizations, which fundamentally changes our autonomy and decision-making authority. To effect change now, you cannot just optimize your own clinic; you must know how to navigate and influence a large enterprise."
+
+• **References:** CMS NHE Fact Sheet; American Medical Association Practice Ownership Report.

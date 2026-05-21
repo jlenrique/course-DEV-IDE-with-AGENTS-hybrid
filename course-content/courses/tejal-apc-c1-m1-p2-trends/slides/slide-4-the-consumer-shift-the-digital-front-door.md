@@ -1,0 +1,4 @@
+# **Slide 4: The Consumer Shift & The Digital Front Door**
+
+- **Visual Format:** Infographic showing a patient journey (Smartphone to Provider).
+- **Narration (Speaker Notes):** "Patients are no longer just passive recipients of care; they are consumers who expect the same transparency, digital access, and convenience they experience in every other industry. This requires organizations to rethink access through infrastructure like the 'Digital Front Door.' A true digital front door doesn't just offer a basic patient portal; it creates a frictionless journey. For example, Jefferson Health has moved beyond basic telehealth to create a comprehensive digital ecosystem, leveraging AI-driven triage to allow patients to navigate their care journey seamlessly. In a consumer-driven environment, intentional system design is what separates a frustrating patient experience from a world-class one."
