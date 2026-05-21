@@ -116,6 +116,37 @@ class GammaClient(BaseAPIClient):
 
         return self.post("/generations", json=payload)
 
+    def generate_deck(
+        self,
+        input_text: str,
+        *,
+        text_mode: str = "generate",
+        num_cards: int | None = None,
+        theme_id: str | None = None,
+        additional_instructions: str | None = None,
+        export_as: str | None = "png",
+        wait: bool = True,
+        **options: Any,
+    ) -> dict[str, Any]:
+        """Generate a presentation deck and optionally wait for completion."""
+        response = self.generate(
+            input_text,
+            text_mode=text_mode,
+            num_cards=num_cards,
+            theme_id=theme_id,
+            additional_instructions=additional_instructions,
+            export_as=export_as,
+            **options,
+        )
+        generation_id = response.get("id") or response.get("generation_id")
+        if wait and isinstance(generation_id, str) and generation_id:
+            completed = self.wait_for_generation(generation_id)
+            completed.setdefault("generation_id", generation_id)
+            return completed
+        if isinstance(generation_id, str) and generation_id:
+            response.setdefault("generation_id", generation_id)
+        return response
+
     def generate_from_template(
         self,
         gamma_id: str,

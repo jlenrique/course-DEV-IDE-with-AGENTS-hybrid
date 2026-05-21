@@ -1,0 +1,95 @@
+{
+  "additionalProperties": false,
+  "description": "Frozen tamper-evident receipt of one HIL gate decision.",
+  "properties": {
+    "card_id": {
+      "description": "UUID4 of the DecisionCard the operator was reviewing.",
+      "format": "uuid",
+      "title": "Card Id",
+      "type": "string"
+    },
+    "decision_card_digest": {
+      "description": "Lowercase sha256 bound to card content, trial, issuance time, and nonce.",
+      "title": "Decision Card Digest",
+      "type": "string"
+    },
+    "edit_payload": {
+      "anyOf": [
+        {
+          "additionalProperties": true,
+          "type": "object"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "description": "Required iff verb == 'edit'.",
+      "title": "Edit Payload"
+    },
+    "gate_id": {
+      "description": "Gate identifier (for example G2C, G3, G4).",
+      "minLength": 1,
+      "title": "Gate Id",
+      "type": "string"
+    },
+    "operator_id": {
+      "description": "Operator identifier (letter-first, alnum / underscore / dash).",
+      "minLength": 1,
+      "pattern": "^[a-zA-Z][a-zA-Z0-9_-]+$",
+      "title": "Operator Id",
+      "type": "string"
+    },
+    "reject_reason": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "description": "Required iff verb == 'reject'.",
+      "title": "Reject Reason"
+    },
+    "timestamp": {
+      "description": "Timezone-aware verdict timestamp.",
+      "format": "date-time",
+      "title": "Timestamp",
+      "type": "string"
+    },
+    "trial_id": {
+      "description": "UUID4 identity for the enclosing trial run.",
+      "format": "uuid",
+      "title": "Trial Id",
+      "type": "string"
+    },
+    "verb": {
+      "description": "Closed enum: approve | edit | reject.",
+      "enum": [
+        "approve",
+        "edit",
+        "reject"
+      ],
+      "title": "Verb",
+      "type": "string"
+    },
+    "verdict_id": {
+      "description": "UUID4 identity for this verdict receipt.",
+      "format": "uuid",
+      "title": "Verdict Id",
+      "type": "string"
+    }
+  },
+  "required": [
+    "trial_id",
+    "verb",
+    "gate_id",
+    "card_id",
+    "operator_id",
+    "decision_card_digest"
+  ],
+  "title": "OperatorVerdict",
+  "type": "object"
+}

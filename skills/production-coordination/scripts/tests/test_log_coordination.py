@@ -41,7 +41,7 @@ class TempDB:
         self.path = self._tmpfile.name
         self._tmpfile.close()
 
-    def __enter__(self) -> "TempDB":
+    def __enter__(self) -> TempDB:
         conn = sqlite3.connect(self.path)
         conn.executescript(SCHEMA_SQL)
         conn.commit()

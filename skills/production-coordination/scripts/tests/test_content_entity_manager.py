@@ -16,7 +16,6 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[4]))
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 import content_entity_manager as cem
 
-
 SCHEMA_SQL = """
 CREATE TABLE IF NOT EXISTS asset_evolution (
     evolution_id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -46,7 +45,7 @@ class TempDB:
         self.path = Path(self._tmp.name)
         self._tmp.close()
 
-    def __enter__(self) -> "TempDB":
+    def __enter__(self) -> TempDB:
         conn = sqlite3.connect(str(self.path))
         conn.executescript(SCHEMA_SQL)
         conn.commit()

@@ -1,6 +1,6 @@
 """Fixture: wrapper exists but is not on the live consumer path."""
 
-from marcus.lesson_plan.log import assert_plan_fresh
+from app.marcus.lesson_plan.log import assert_plan_fresh
 
 
 def _require_fresh(surface) -> None:

@@ -1,49 +1,215 @@
 version: 1
-notes: Canonical specialist resolution for Marcus delegation. Paths are repo-relative.
+notes: |
+  Canonical specialist resolution for Marcus delegation. Paths are repo-relative.
+
+  This registry has TWO complementary views:
+  - `specialists:` map (legacy contract; 14 keys) — keyed by API/skill name; each entry has `path` to SKILL.md.
+    Asserted by `tests/test_specialist_registry_contract.py` (REQUIRED_SPECIALISTS set of 14).
+  - `personas:` map (post-Slab-7 enrichment, added 2026-05-07 per pre-Trial-3 cleanup S1 P0-3) —
+    keyed by canonical specialist persona name; each entry surfaces the BMB sanctum directory,
+    persona-skill SKILL.md, and (where applicable) API-mastery-skill SKILL.md per the
+    Class-C two-SKILL.md convention ratified party-mode 4/4 unanimous Round-(f) 2026-04-29.
+
+  Authoritative source: `docs/dev-guide/specialist-sanctum-alignment-matrix.md` (Slab 7b SG-4 final form, 2026-05-01).
+
+  Class-D2 sanctum-path-equality EXEMPT per D20: Compositor uses `skills/compositor/SKILL.md`
+  (NOT `bmad-agent-compositor/`) — canonical-not-exception.
+
+  Per Slab 7b 7b.8 close (2026-05-01): the dissolved `bmad-agent-audra` was REPLACED by `bmad-agent-enrique`
+  as the canonical Class-C two-SKILL.md ElevenLabs specialist. The `elevenlabs-specialist` legacy entry
+  below STILL points to `skills/bmad-agent-elevenlabs/` (the API-mastery skill, unchanged); the
+  persona behind it is now Enrique (NOT Audra). See `personas.enrique` block below.
+
 specialists:
   content-creator:
     path: skills/bmad-agent-content-creator/SKILL.md
     status: active
+    notes: Irene Pass-1 + Pass-2 narration authoring. Sanctum shared across both Irene passes per Slab 2a.2 era.
   gamma-specialist:
     path: skills/bmad-agent-gamma/SKILL.md
     status: active
+    notes: API-mastery skill consumed by Gary specialist persona (Class-C two-SKILL.md per 7b.6).
   kling-specialist:
     path: skills/bmad-agent-kling/SKILL.md
     status: active
+    notes: API-mastery skill consumed by Kira specialist persona (Class-C two-SKILL.md per 7b.7).
   elevenlabs-specialist:
     path: skills/bmad-agent-elevenlabs/SKILL.md
     status: active
+    notes: |
+      API-mastery skill consumed by Enrique specialist persona (Class-C two-SKILL.md per 7b.8).
+      REPLACES dissolved Audra (skills/bmad-agent-audra/ scheduled for archive at S6).
   vyond-specialist:
     path: skills/bmad-agent-vyond/SKILL.md
     status: active
+    notes: API-mastery skill; no Slab-7-activated specialist consumes (yet); operator-invokable.
   midjourney-specialist:
     path: skills/bmad-agent-midjourney/SKILL.md
     status: active
+    notes: API-mastery skill; not currently in production dispatch graph.
   articulate-specialist:
     path: skills/bmad-agent-articulate/SKILL.md
     status: active
+    notes: API-mastery skill; staged for future Course-Arc integration.
   compositor:
     path: skills/compositor/SKILL.md
     status: active
+    notes: Compositor specialist (Class-D2 EXEMPT per D20; deterministic pipeline; no API; no LLM). §14.
   fidelity-assessor:
     path: skills/bmad-agent-fidelity-assessor/SKILL.md
     status: active
+    notes: |
+      Vera specialist persona-skill (Class-A; gate-evidence integrity).
+      Sanctum at `_bmad/memory/bmad-agent-vera/` per 7b.3.
+      Legacy `_bmad/memory/vera-sidecar/` preserved out-of-band (operator-gated cleanup post-Trial-2).
   quality-reviewer:
     path: skills/bmad-agent-quality-reviewer/SKILL.md
     status: active
+    notes: |
+      Quinn-R specialist persona-skill (Class-A; G3 + G5 fidelity audits).
+      Sanctum at `_bmad/memory/bmad-agent-quinn-r/` per 7b.2; sanctum path canonicalized at 7b.8 retrofit.
   canva-specialist:
     path: skills/bmad-agent-canva/SKILL.md
     status: active
+    notes: API-mastery skill; operator-invokable for visual exhibits; not in production dispatch graph.
   canvas-specialist:
     path: skills/canvas-deployment/SKILL.md
     status: active
+    notes: LMS deployment skill; post-production pipeline; not in production dispatch graph.
   qualtrics-specialist:
     path: skills/qualtrics-assessment/SKILL.md
     status: active
+    notes: Assessment authoring; downstream of Course-Arc; not in production dispatch graph.
   coursearc-specialist:
     path: skills/bmad-agent-coursearc/SKILL.md
     status: active
+    notes: Course-Arc LMS export; post-production pipeline; not in production dispatch graph.
   creative-director:
     path: skills/bmad-agent-cd/SKILL.md
     status: active
-    notes: Dan — resolves creative directives, experience profile mapping, narration shaping. Invoked at §4.75.
+    notes: |
+      Dan — resolves creative directives, experience profile mapping, narration shaping. Invoked at §4.75.
+      PARTIAL status — specialist exists; conditional-skip + artifact-write contract absent. Slab 7c did NOT activate CD.
+      Trial-3 dispatch routes around CD; activation pending future slab.
+
+personas:
+  # Post-Slab-7 enrichment (added 2026-05-07): canonical specialist persona resolution for Marcus delegation.
+  # Each entry maps specialist persona name to BMB sanctum + persona-skill + (where applicable) API-mastery-skill.
+  # Authoritative cross-reference: docs/dev-guide/specialist-sanctum-alignment-matrix.md.
+
+  texas:
+    class: A
+    sanctum: _bmad/memory/bmad-agent-texas/
+    persona_skill: skills/bmad-agent-texas/SKILL.md
+    role: source-authority retrieval and provenance (§02 / §03)
+    activated_at: slab-7b-1 (2026-05-01)
+
+  quinn-r:
+    class: A
+    sanctum: _bmad/memory/bmad-agent-quinn-r/
+    persona_skill: skills/bmad-agent-quality-reviewer/SKILL.md
+    role: quality reviewer; G3 + G5 fidelity audits (§13)
+    activated_at: slab-7b-2 (2026-05-01)
+
+  vera:
+    class: A
+    sanctum: _bmad/memory/bmad-agent-vera/
+    persona_skill: skills/bmad-agent-fidelity-assessor/SKILL.md
+    role: fidelity assessor; gate-evidence integrity (§10)
+    activated_at: slab-7b-3 (2026-05-01)
+    legacy_sidecar_note: vera-sidecar/ preserved out-of-band per vera-sidecar-cleanup-post-trial-2-validation follow-on (operator-gated)
+
+  irene:
+    class: B
+    sanctum: _bmad/memory/bmad-agent-content-creator/  # SHARED with irene_pass1 + irene_pass2 per Slab 2a.2 era
+    persona_skill: skills/bmad-agent-content-creator/SKILL.md
+    role: content creator; Pass-1 (§04) + Pass-2 (§08) narration authoring
+    activated_at: slab-7b-4 (2026-05-01)
+    sanctum_shared: irene_pass1 / irene_pass2
+
+  tracy:
+    class: C+
+    sanctum: _bmad/memory/bmad-agent-tracy/  # 4-file Class-C+ sidecar pattern (NFR-CG15)
+    persona_skill: skills/bmad-agent-tracy/SKILL.md
+    role: typography + visual-design adjudication (§07B / §08B)
+    activated_at: slab-7b-5 (2026-05-01)
+    sanctum_pattern: 4-file Class-C+ canonical (INDEX/PERSONA/access-boundaries/chronology)
+
+  gary:
+    class: C
+    sanctum: _bmad/memory/bmad-agent-gary/
+    persona_skill: skills/bmad-agent-gary/SKILL.md
+    api_mastery_skill: skills/bmad-agent-gamma/SKILL.md
+    role: slide content + Gamma API integration (§07)
+    activated_at: slab-7b-6 (2026-05-01)
+    note: First Class-C two-SKILL.md ratified party-mode 4/4 unanimous
+
+  kira:
+    class: C
+    sanctum: _bmad/memory/bmad-agent-kira/
+    persona_skill: skills/bmad-agent-kira/SKILL.md
+    api_mastery_skill: skills/bmad-agent-kling/SKILL.md
+    role: motion-plan + Kling video generation (§07D / §07E)
+    activated_at: slab-7b-7 (2026-05-01)
+
+  enrique:
+    class: C
+    sanctum: _bmad/memory/bmad-agent-enrique/
+    persona_skill: skills/bmad-agent-enrique/SKILL.md
+    api_mastery_skill: skills/bmad-agent-elevenlabs/SKILL.md
+    role: voice-selection + ElevenLabs audio generation (§11 / §11B / §12)
+    activated_at: slab-7b-8 (2026-05-01)
+    note: |
+      Wave-3 LAST closer; Class-C inheritance proven 3x.
+      REPLACES dissolved bmad-agent-audra (skill dir scheduled for archive at S6 P2 housekeeping).
+
+  wanda:
+    class: C
+    sanctum: _bmad/memory/bmad-agent-wanda/
+    persona_skill: skills/bmad-agent-wanda/SKILL.md
+    api_mastery_skill: skills/bmad-agent-wondercraft/SKILL.md
+    role: Wondercraft podcast / audio-narrative integration
+    activated_at: slab-7b-9 (2026-05-01)
+    sanctum_origin: migrated from wanda-sidecar/ at 7b.9 T2
+
+  dan:
+    class: D1
+    sanctum: _bmad/memory/bmad-agent-dan/
+    persona_skill: skills/bmad-agent-dan/SKILL.md
+    role: Creative Director; experience profile mapping; narration shaping (§4.75)
+    activated_at: slab-7b-10 (2026-05-01)
+    note: LLM-only (no third-party API); single-SKILL.md per Class-D1
+
+  compositor:
+    class: D2
+    sanctum: _bmad/memory/bmad-agent-compositor/  # 4-file operational-metadata pattern (canonical-not-exception per D20)
+    persona_skill: skills/compositor/SKILL.md  # NOT bmad-agent-compositor/ — D20 EXEMPT
+    role: deterministic composition pipeline (§14)
+    activated_at: slab-7b-11 (2026-05-01)
+    note: Class-D2 sanctum-path-equality EXEMPT per D20; FR99 sidecar canonical; deterministic (no API; no LLM)
+
+partial-status:
+  cd:
+    class: D1-pending
+    sanctum: _bmad/memory/bmad-agent-cd/
+    persona_skill: skills/bmad-agent-cd/SKILL.md
+    role: Creative Director (specialist exists; conditional-skip + artifact-write contract absent)
+    note: Slab 7c did NOT activate CD; Trial-3 dispatch routes around CD; activation pending future slab.
+
+dissolved:
+  audra:
+    note: Dissolved 2026-04-24 per slab-2-roster-reconciliation.md §Category D. Replaced by enrique (Slab 7b.8). Skill dir scheduled for archive at S6 P2 housekeeping (skills/_archive/bmad-agent-audra-pre-2a-dissolution-2026-04-24/).
+  cora:
+    note: Dissolved 2026-04-24 per slab-2-roster-reconciliation.md §Category D. NOTE — the app/cora/ Python package is unrelated — it is the dev-graph workflow runner (rename pending S6 to app/dev_workflow/). Cora SPECIALIST persona was dissolved.
+  mike:
+    note: Never activated; placeholder retired post-roster-reconciliation 2026-04-24.
+
+cross-references:
+  authoritative_matrix: docs/dev-guide/specialist-sanctum-alignment-matrix.md
+  sanctum_alignment_checklist: docs/dev-guide/bmb-sanctum-alignment-checklist.md
+  sanctum_exception_categories: docs/dev-guide/sanctum-exception-categories.json
+  operator_specialist_cards: docs/operator/specialists/sanctum-alignment-matrix.md
+  parity_test: tests/parity/test_skill_md_sanctum_alignment.py
+  activation_test: tests/parity/test_eleven_specialists_addressable.py
+  contract_test: tests/test_specialist_registry_contract.py
+  ci_workflow: .github/workflows/specialist-parity.yml

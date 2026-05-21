@@ -1,0 +1,45 @@
+{
+  "specialist_id": "dan",
+  "request_id": "550e8400-e29b-41d4-a716-446655440000",
+  "payload_in": {
+    "topic": "renal physiology",
+    "lesson_outline": "draft outline for glomerular filtration"
+  },
+  "created_at": "2026-04-24T00:00:00Z",
+  "payload_out": {
+    "specialist_id": "dan",
+    "verb": "proceed",
+    "payload": {
+      "specialist_id": "dan",
+      "model_id": "gpt-5.4",
+      "verb": "proceed",
+      "advisory_only": true,
+      "contributions": [
+        {
+          "gate_id": "G1",
+          "contribution_type": "creative_director_critique",
+          "prose": "Open with the learner tension before the outline branches.",
+          "advisory": true,
+          "blocking": false
+        },
+        {
+          "gate_id": "G1A",
+          "contribution_type": "narrative_arc_check",
+          "prose": "Hold cluster boundaries to question changes, not source headings.",
+          "advisory": true,
+          "blocking": false
+        },
+        {
+          "gate_id": "G2",
+          "contribution_type": "tone_voice_consistency_review",
+          "prose": "Keep narration grounded in the visible storyboard action.",
+          "advisory": true,
+          "blocking": false
+        }
+      ]
+    },
+    "edit_payload": null,
+    "reject_reason": null,
+    "timestamp": "2026-04-24T00:00:01Z"
+  }
+}

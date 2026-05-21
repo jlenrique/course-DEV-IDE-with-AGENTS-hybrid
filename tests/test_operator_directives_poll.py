@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime, timedelta
 
 from scripts.utilities.operator_directives_poll import (
     NO_DIRECTIVES_ACK,
@@ -12,7 +12,7 @@ from scripts.utilities.operator_directives_poll import (
 
 
 def _dt() -> datetime:
-    return datetime(2026, 4, 3, 18, 0, 0, tzinfo=timezone.utc)
+    return datetime(2026, 4, 3, 18, 0, 0, tzinfo=UTC)
 
 
 def test_build_poll_window_uses_hard_timing_policy() -> None:

@@ -72,7 +72,7 @@ Coverage verified by readiness report (100% of FRs have slab assignment; no orph
 
 **Non-Functional Requirements (43 NFRs across 7 categories).** Load-bearing inputs to architecture decisions, not post-hoc quality bars:
 
-- **Performance (6)** — mostly operator-latency budgets (DecisionCard ≤5s, cold-start ≤10s, checkpoint ≤500ms, sanctum ≤200ms). Shapes physical deployment (local Docker Postgres; sanctum on local SSD; MCP over localhost).
+- **Performance (6)** — mostly operator-latency budgets (DecisionCard ≤5s, cold-start ≤10s, checkpoint ≤500ms, sanctum ≤200ms). Shapes physical deployment (local native Postgres on operator's machine; sanctum on local SSD; MCP over localhost).
 - **Security (7)** — single-operator trust boundary (`.env` discipline; `127.0.0.1`-only FastAPI; local MCP; no multi-tenant). Constrains escape-hatch API surface area.
 - **Integration (6) — brownfield-critical** — transient OpenAI tolerance; LangSmith non-fatal; Postgres-down → thread-pause; MCP protocol spec pinned; **Texas retrieval unmodified (NFR-I5)**; sanctum fatal-on-error.
 - **Reliability (7)** — operator-presence availability; checkpoint-recoverable; `act` idempotent; `interrupt()` re-enterable; ledger idempotent; ≥48hr pause survival. Shapes state-machine discipline at every node.
@@ -84,8 +84,8 @@ Coverage verified by readiness report (100% of FRs have slab assignment; no orph
 
 - **Primary domain:** internal multi-agent orchestration platform (developer-tool shape; Python framework + persistent service).
 - **Complexity:** high — driven by 15 load-bearing substrate invariants (drop-rate budget zero), not regulatory load.
-- **Deployment:** single-operator self-hosted. Local Postgres via Docker; IDE+CLI clients via MCP; FastAPI localhost-only escape hatch.
-- **Estimated top-level packages:** ~12 (`app/runtime/`, `app/models/`, `app/specialists/`, `app/orchestrator/marcus/`, `app/orchestrator/cora/`, `app/gates/`, `app/state/`, `app/ledger/`, `app/mcp_server/`, `app/http/`, `app/manifest/`, `app/replay/`) plus sanctum tree + `runtime/graphs/v42/` siblings + Docker compose + test tiers.
+- **Deployment:** single-operator self-hosted. Local native Postgres (operator-installed; no container runtime required); IDE+CLI clients via MCP; FastAPI localhost-only escape hatch.
+- **Estimated top-level packages:** ~12 (`app/runtime/`, `app/models/`, `app/specialists/`, `app/orchestrator/marcus/`, `app/orchestrator/cora/`, `app/gates/`, `app/state/`, `app/ledger/`, `app/mcp_server/`, `app/http/`, `app/manifest/`, `app/replay/`) plus sanctum tree + `runtime/graphs/v42/` siblings + `scripts/dev/init_postgres.sql` bootstrap + test tiers.
 
 ### Technical Constraints & Dependencies
 
@@ -260,17 +260,20 @@ mkdir -p app/{runtime,models,state,manifest,http,mcp_server}
 mkdir -p runtime/graphs/v42
 # Test-tier scaffold (all 4 dirs + canaries + fixtures per Amendment C)
 mkdir -p tests/{unit,integration/scaffold_conformance,end_to_end,trial_replay,fixtures/specialists}
-# Docker compose for Postgres 15+
-# docker-compose.yml at repo root
-docker compose up -d postgres
+# Native local Postgres 15+ bootstrap (NO Docker — operator installs Postgres directly;
+# Windows: EDB installer, macOS: Homebrew, Linux: distro package)
+# Ship scripts/dev/init_postgres.sql (idempotent CREATE DATABASE + CREATE ROLE + GRANTs)
+# and docs/dev-guide/local-postgres-setup.md (one-time operator bootstrap).
+psql "$DATABASE_URL" -f scripts/dev/init_postgres.sql
+psql "$DATABASE_URL" -c "SELECT version();"   # must report >= 15
 # Sanctum fork discipline (Amendment G — Amelia)
 # Write _bmad/memory/bmad-agent-{name}/CLONE-FORK-NOTICE.md per specialist:
 #   "Sanctum authored in clone from <date>; primary sanctum frozen at commit <sha>;
 #    backports stop after Slab 1 close per FR60."
 ```
-AC: six Slab-1 packages present with READMEs; `docker compose ps` shows postgres healthy; canary tests green (`pytest tests/end_to_end/test_harness_contract.py tests/trial_replay/test_harness_contract.py`); CLONE-FORK-NOTICE.md exists per sanctum directory; `python -c "import app.runtime; import app.models; import app.state; import app.manifest; import app.http; import app.mcp_server"` succeeds (smoke-import shape-pin test lives in 1b AC, not a separate story).
+AC: six Slab-1 packages present with READMEs; `scripts/dev/init_postgres.sql` + `docs/dev-guide/local-postgres-setup.md` authored and idempotent; `tests/integration/postgres/test_server_version.py` uses **`psycopg` (shipped dep from 1.1a lockfile) — NOT `psql`** and **skips cleanly** with a documented reason when `DATABASE_URL` is unset or unreachable (dev-agent sessions must never block on operator-side CLI availability — this is the general "verify via shipped deps, not operator CLIs" rule); canary tests green (`pytest tests/end_to_end/test_harness_contract.py tests/trial_replay/test_harness_contract.py`); CLONE-FORK-NOTICE.md exists per sanctum directory; `python -c "import app.runtime; import app.models; import app.state; import app.manifest; import app.http; import app.mcp_server"` succeeds (smoke-import shape-pin test lives in 1b AC, not a separate story). Operator-gated live `psql "$DATABASE_URL" -c "SELECT version();"` evidence is recorded once at story closure as Completion-Notes paste — it is **not** a dev-agent AC.
 
-> 💬 Amelia concern flagged: Story 1b review must include `docker compose up -d postgres` smoke on reviewer's box. Flag as dual-gate candidate if Cora's block-mode hook trips.
+> 💬 Amelia concern flagged: Story 1b review exercises the psycopg-based `test_server_version.py` on the reviewer's box when Postgres is up; if Postgres is not installed on the reviewer's machine the test must skip (not error) per the "verify via shipped deps, not operator CLIs" rule. Live `psql` version smoke is operator-gated Completion-Notes evidence, not a reviewer-box gate. Flag as dual-gate candidate if Cora's block-mode hook trips.
 
 **Story 1c — "Smoke Test + Runtime Server Entry"** (~1.5 dev-days; K ≈ 1.6× target)
 ```bash
@@ -609,6 +612,113 @@ Split Slab 5 into two sub-slabs with distinct risk profiles:
 
 **Each sub-slab becomes an epic at epic-authoring time.** M5 ship verdict gates on 5a only; 5b completion is a follow-up milestone.
 
+### Decision D19 — Marcus-Writer Partition Principle (W5)
+
+Authored 2026-05-07 at pre-Trial-3 cleanup S5 Tier-2. Codifies the W5 partition principle that emerged during Slab 7c orchestrational tail authoring (W5 amendment to slab-7c PRD). Currently scattered across composition spec + import-linter contract comments; this entry promotes it to architecture-of-record.
+
+**Decision:** Marcus is the SOLE author of envelope contributions. Specialists are pure functions returning `SpecialistReturn` payloads; Marcus's orchestrator owns aggregation + emission. The `production_runner.py` is the SOLE graph-execution authority. This three-way partition (specialist = pure function; Marcus = sole writer; runner = sole executor) is structurally enforced via:
+- M1 import-linter contract: only `app.marcus.orchestrator.write_api` may import `app.models.state.run_state` (single-writer rule per R1 amendment 13 / Quinn)
+- D3 HIL tamper-evidence (only authorized verdict-bridge modules import `app.gates.resume_api`)
+- C6 `independence` contract (§section packages may not import each other; cross-§ shared content extracted to `app.gates._common`)
+
+**Why this decision now:** Slab 7c shipped 14 §section packages each carrying a `poll_surface.py`. The §02A LLM composer pivot (7c.3a) demonstrated that §section bodies must NOT side-effect the run_state; they emit DECISIONCARD payloads, Marcus aggregates, runner persists. Without W5 codified at architecture tier, future §section authors will be tempted to duplicate write surfaces.
+
+**Cross-references:** ADR 0001 parity-DSL; ADR 0002 eight-family gate taxonomy; M1+M3+M4 import-linter contracts; W5 amendment in `prd-slab-7c-orchestrational-tail.md`.
+
+### Decision D18 — Eight-Family Gate Taxonomy LOCK (ADR 0002)
+
+Authored 2026-05-07 at pre-Trial-3 cleanup S5 Tier-2. Promotes ADR 0002 to a binding architectural decision. The eight-family taxonomy (G0/G1/G2/G2A/G2C/G3/G4/G5/G6) ratified during Slab 7c is now load-bearing for §section package layout.
+
+**Decision:** Gate codes are partitioned into 8 family contracts; alias gates inherit family semantics via `alias_of` clause. The C6 import-linter `independence` contract enumerates the §section list; this enumeration is itself a load-bearing artifact (changes require party-mode + ADR 0002 amendment). Runtime gate IDs (currently 18) are validated against the eight-family taxonomy at compile time. `production_gate_ids(manifest)` derives the runner-pause set from manifest fold-flag metadata (currently {G1, G2C, G3, G4}; 4 of 18).
+
+**Authoritative reference:** [`docs/dev-guide/adr/0002-slab-7c-gate-taxonomy.md`](../../docs/dev-guide/adr/0002-slab-7c-gate-taxonomy.md). D18 binds ADR 0002 to architecture-of-record currency.
+
+### Decision D17 — Crosswalk-vs-Disk Parity Test Pattern (Murat AM-2 from post-S4)
+
+Authored 2026-05-07 at pre-Trial-3 cleanup S5 Tier-2. Generalizes the test pattern Murat introduced at S4 post-review when 2/6 v5 Crosswalk paths were stale.
+
+**Decision:** Every governance map that declares disk paths (production-prompt-pack TL;DR Crosswalk; pipeline-manifest dispatch registry; coverage-manifest module_path entries; sources-of-truth.md SSOT pointers) MUST have a parity test at `tests/parity/` that:
+1. Parses the governance map (markdown table OR YAML)
+2. Extracts every path-string token
+3. Asserts each resolves to an existing file or directory on disk
+4. Excludes explicit deferred-placeholder markers per documented exclusion glob
+
+**First instance:** `tests/parity/test_v5_crosswalk_paths_exist.py` (S4 post-review; v5 pack). **Pattern propagation:** when authoring a new governance map, file an adjacent parity test before declaring the map canonical. Filed in deferred-inventory `s5-followup-parity-test-pattern-propagation` for cross-map adoption.
+
+### Decision D16 — v5 Canonical Prompt-Pack Discipline + Tier-1/2/3 Versioning
+
+Authored 2026-05-07 at pre-Trial-3 cleanup S5 Tier-2. Codifies the v5-canonical / v4.2-frozen-legacy disposition + Tier-1/2/3 versioning posture established at S4.
+
+**Decision:** Production prompt packs follow the legacy-frozen-anchor pattern when superseded:
+- New canonical version (e.g., v5) supersedes prior (v4.2 / v4.3)
+- Prior canonical preserved on disk as legacy-frozen authority for the mapping checklist axis (audit reference)
+- New canonical adopts Tier-1/2/3 versioning posture: Tier-1 = prose/connective tissue (dev-agent authority); Tier-2 = new pipeline step (party-mode); Tier-3 = new pack family (full party-mode + operator sign-off)
+- Frozen-at-ship discipline: once a canonical pack ships + first tracked trial completes, structural edits bump version; the frozen prior-version stays on disk for audit
+
+**First instance:** v5 supersedes v4.2 (legacy-frozen) and v4.3 (fully superseded; cluster-mode already absorbed into v4.2/v5). v4.2 retained as mapping-checklist legacy-axis anchor.
+
+**Cross-references:** Sources-of-truth.md "Production prompt pack (canonical for production runs)" row; v5 frontmatter `versioning-posture` block; Pipeline Manifest Regime §Pack Versioning Policy.
+
+### Decision D15 — Trial-Run Methodology Standing Operations
+
+Authored 2026-05-07 at pre-Trial-3 cleanup S5 Tier-2. Promotes the S3 trial-run methodology to architecture-of-record.
+
+**Decision:** Production trial runs follow the cadence + verdict framing + filing-disposition rules at [`docs/trials/methodology.md`](../../docs/trials/methodology.md). Every operator-launched full-pipeline run is a **tracked trial** producing the per-run trio (`launch.md` + `log.md` + `postmortem.md`) under `docs/trials/trial-N/`. Verdict framing: PASS / PARTIAL-PASS / STRUCTURED-STOP / FAIL. Filing-disposition: 4-question routing (anti-pattern? deferred? architecture? cross-trial?) — first YES wins; Routing Summary hygiene check at postmortem close.
+
+**Cross-references:** `docs/trials/methodology.md`; `docs/trials/cross-trial-learnings.md`; `docs/trials/trial-N-templates/`. CLAUDE.md amendment proposed at S5 P1-32 codifies the routing rules at governance tier.
+
+**Why D15 not D14:** D14 was used at S2 for Marcus namespace single-package discipline. S3-S6 cleanup arc decisions occupy D15+.
+
+### Decision D14 — Marcus Namespace Single-Package Discipline (pre-Trial-3 Cleanup S2)
+
+Authored 2026-05-07 at pre-Trial-3 cleanup S2 close. Closes deferred-inventory entry
+`migration-tech-debt-app-marcus-stub-disposition` (filed 2026-04-26; reality-corrected
+direction adopted at S2: legacy `marcus/` retired; canonical `app.marcus.*`).
+
+**Decision:** the Marcus namespace lives at `app.marcus.*`. The legacy top-level `marcus/`
+package — preserved as Slab-1-era migration shim — has been DELETED. Future code MUST
+NOT introduce `from marcus.X` or `import marcus` references. Enforced structurally via
+import-linter contract M5 (`forbidden`; `source_modules=["app"]`, `forbidden_modules=["marcus"]`).
+
+**Story 30-1 internal duality preserved.** The Marcus-Intake / Marcus-Orchestrator
+sub-package separation (R1 amendment 13 / Quinn single-writer rule) and the Maya-as-one-voice
+facade (R1 amendment 17) are PRESERVED VERBATIM under the new home:
+- `app.marcus.intake/` — Marcus-Intake (steps 01-04 + 4A pre-packet construction)
+- `app.marcus.orchestrator/` — Marcus-Orchestrator (single-writer write API + 4A loop +
+  fan-out + `NEGOTIATOR_SEAM` for 30-3a)
+- `app.marcus.facade.py` — single Maya-facing voice surface
+- `app.marcus.lesson_plan/` — Lesson Plan log subsystem (31-2's writer-identity discipline)
+- `app.marcus.dispatch/` — dispatch contract types
+
+**30-1 token preservation (R1 amendments 12+13+17 binding):**
+- `ORCHESTRATOR_MODULE_IDENTITY = "marcus-orchestrator"` (WriterIdentity Literal value)
+- `INTAKE_MODULE_IDENTITY = "marcus-intake"` (WriterIdentity Literal value)
+- `NEGOTIATOR_SEAM` token `"marcus-negotiator"` (grep-discoverable sentinel)
+- `MARCUS_IDENTITY = "marcus"` (programming-token; lowercase tripwire)
+- `MARCUS_DISPLAY_NAME = "Marcus"` (Maya-facing render constant)
+
+These string tokens are PRESERVED VERBATIM (not renamed to `app-marcus-*`) because they
+are 31-2's WriterIdentity Literal values and Golden-Trace fixture content. Changing them
+would break the single-writer log contract; the package home moved but the identity
+strings stay.
+
+**Why this decision now (not at original 30-1 ratification):** 30-1 created the duality
+deliberately for Lesson Planner Epic 30. Post-brownfield-completion (Slab 7c close
+2026-05-07), operator reclassified the legacy `marcus/` ↔ `app/marcus/` duality as a
+bug class with production-run risk: dual-namespace ambiguity surfaces unexpected behaviors
+when callers reach for one path or the other. D14 closes that duality. The 30-1 INTERNAL
+duality (intake ↔ orchestrator) remains because it serves a different purpose — single-writer
+discipline within one namespace, not two parallel namespaces.
+
+**Verification:** `pytest tests/test_marcus_facade_leak_detector.py
+tests/contracts/test_no_intake_orchestrator_leak_marcus_duality.py
+tests/test_marcus_duality_imports.py tests/test_marcus_golden_trace_regression.py` —
+17/17 GREEN at S2 close commit `195be7c` (post-Phase-7).
+
+**Future modifications:** any future code introducing dual-namespace patterns (e.g.,
+parallel `app.marcus_v2/` shim) requires party-mode ratification per the same governance
+applied at S2 close. The M5 import-linter contract is the structural backstop.
+
 ### Decision D13 — Model-Registry Mid-Migration Bump Procedure (Readiness T1 #7)
 
 Documented at `app/models/` Slab 1 deliverable + `docs/dev-guide/model-selection-guide.md` §Mid-Migration Bump:
@@ -668,7 +778,7 @@ All four land in the same PR; violation = bmad-code-review MUST-FIX (inherited f
 - `app/models/registry.yaml` (model catalog)
 - `app/models/selection_policy.yaml` (auto-select rules)
 - `app/specialists/{name}/model_config.yaml` (per-specialist model cascade)
-- `docker-compose.yml` (repo root; Postgres 15+ local)
+- `scripts/dev/init_postgres.sql` (repo; idempotent bootstrap for operator's native Postgres 15+ install — **no Docker / no compose file**)
 
 **Frozen-graph-version directory:** `runtime/graphs/v{N}/` per D8. Contents fixed (manifest-snapshot, dev-graph-manifest-snapshot, pack-version.txt, dispatch-registry-snapshot, compiled-graph-digest, README). No ad-hoc files.
 
@@ -1089,7 +1199,7 @@ course-DEV-IDE-with-AGENTS/                   # hybrid clone repo root
 │       ├── langgraph-migration-guide.md       # Slab 1 skeleton (11 sections); Slab 5 final (FR65)
 │       └── specialist-anti-patterns.md        # Slab 1 stub; Slab 2 harvest; Slab 5 ≥5 entries (FR64)
 │
-├── docker-compose.yml                         # NEW Slab 1 — Postgres 15+ local (Story 1b AC)
+├── scripts/dev/init_postgres.sql              # NEW Slab 1 — idempotent bootstrap for native local Postgres 15+ (Story 1b AC; NO Docker)
 ├── pyproject.toml                             # extended — ruff + import-linter contracts + dep pins
 ├── requirements.lock                          # NEW Slab 1 Story 1a
 ├── uv.lock                                    # existing
@@ -1123,7 +1233,7 @@ course-DEV-IDE-with-AGENTS/                   # hybrid clone repo root
 ### Requirements-to-Component Matrix (Spot Check)
 
 - **FR1 persistent runtime** → `app/runtime/server.py`
-- **FR3 checkpointing** → `app/runtime/checkpointer.py` + `docker-compose.yml`
+- **FR3 checkpointing** → `app/runtime/checkpointer.py` + `scripts/dev/init_postgres.sql` (native local Postgres; no container runtime)
 - **FR8 manifest topology** → `app/manifest/loader.py` + `app/manifest/compiler.py`
 - **FR11 sanctum cold-read** → `app/runtime/sanctum.py`
 - **FR14 scaffold-conformance** → `tests/integration/scaffold_conformance/` + `app/specialists/_scaffold/`
@@ -1144,7 +1254,7 @@ Every FR has a component. Every component has an FR.
 
 - No web UI code (no `ui/`, `static/`, `templates/`).
 - No multi-tenant authorization (no `auth/`, no RBAC module).
-- No deploy tooling beyond local Docker Compose.
+- No deploy tooling. Postgres runs as a natively-installed service on the operator's machine; no Docker, no docker-compose, no container runtime is part of the architecture.
 - No Celery / Ray / Dask task queues.
 - No remote API gateway (FastAPI stays localhost).
 

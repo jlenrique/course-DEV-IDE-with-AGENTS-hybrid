@@ -8,15 +8,15 @@ from pathlib import Path
 
 import pytest
 
-from marcus.lesson_plan.blueprint_producer import (
+from app.marcus.lesson_plan.blueprint_producer import (
     HUMAN_REVIEW_SECTION_HEADING,
     IRENE_REVIEW_MARKER,
     WRITER_SIGNOFF_MARKER,
     BlueprintProducer,
     BlueprintScopeError,
 )
-from marcus.lesson_plan.produced_asset import ProductionContext
-from marcus.lesson_plan.schema import Dials, PlanUnit, ScopeDecision
+from app.marcus.lesson_plan.produced_asset import ProductionContext
+from app.marcus.lesson_plan.schema import Dials, PlanUnit, ScopeDecision
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
 

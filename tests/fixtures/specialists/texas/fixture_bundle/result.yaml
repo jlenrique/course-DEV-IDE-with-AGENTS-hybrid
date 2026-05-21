@@ -1,0 +1,10 @@
+status: complete
+run_id: TEXAS-FIXTURE-001
+artifacts:
+  - extracted.md
+  - metadata.json
+  - manifest.json
+  - extraction-report.yaml
+  - ingestion-evidence.md
+  - result.yaml
+

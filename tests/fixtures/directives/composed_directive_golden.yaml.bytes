@@ -1,0 +1,20 @@
+run_id: GOLDEN-RUN-001
+sources:
+- ref_id: src-001
+  provider: local_file
+  locator: appendix.md
+  role: primary
+  description: 'Auto-derived from corpus dir: appendix.md'
+  expected_min_words: 200
+- ref_id: src-002
+  provider: local_file
+  locator: chapter-1.md
+  role: supporting
+  description: 'Auto-derived from corpus dir: chapter-1.md'
+  expected_min_words: 200
+- ref_id: src-003
+  provider: local_file
+  locator: intro.md
+  role: supporting
+  description: 'Auto-derived from corpus dir: intro.md'
+  expected_min_words: 200

@@ -1,0 +1,8 @@
+# Level 1: per-call override (set via RunState.model_overrides at runtime)
+# Level 2: per-specialist default (this field)
+# Level 3: registry default (app/models/registry.py)
+specialist_id: "dan"
+default_model: "gpt-5.4"
+per_node_overrides:
+  act: "gpt-5.4"
+temperature_default: 0.3

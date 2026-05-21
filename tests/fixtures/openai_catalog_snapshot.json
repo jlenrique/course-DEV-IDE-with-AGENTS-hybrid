@@ -1,0 +1,24 @@
+{
+  "_doc": "Vendored snapshot of OpenAI's published model catalog. Used by tests/integration/runtime/test_cascade_ids_in_openai_published_catalog.py to assert every model_id referenced by the runtime appears in this snapshot. Per Quinn-R + Winston party-mode round-2 close-review (2026-04-26): an allowlist that silently rots is worse than no allowlist. Refresh discipline below is load-bearing for the test's value.",
+  "_provenance": {
+    "snapshot_source_url": "https://platform.openai.com/docs/models",
+    "snapshot_date": "2026-04-26",
+    "snapshot_method": "operator-verified against current OpenAI public docs at snapshot date",
+    "next_refresh_due_by": "2026-07-26",
+    "refresh_cadence": "quarterly OR whenever OpenAI publishes a model catalog change OR whenever runtime config references a model not in this snapshot",
+    "refresh_owner": "operator",
+    "deferred_inventory_followon": "openai-catalog-snapshot-staleness-ci-warn — file CI guard that fails build if next_refresh_due_by has passed"
+  },
+  "snapshot_date": "2026-04-26",
+  "models": [
+    "gpt-5",
+    "gpt-5-mini",
+    "gpt-5-nano",
+    "gpt-4.1",
+    "gpt-4.1-mini",
+    "gpt-4o",
+    "gpt-4o-mini",
+    "o3",
+    "o4-mini"
+  ]
+}

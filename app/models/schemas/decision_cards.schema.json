@@ -1,0 +1,48 @@
+{
+  "$defs": {
+    "GateDecisionToken": {
+      "enum": [
+        "confirm",
+        "revise",
+        "reject",
+        "escape",
+        "skip-slide",
+        "abort-run"
+      ],
+      "title": "GateDecisionToken",
+      "type": "string"
+    },
+    "GateDirectiveToken": {
+      "enum": [
+        "accept-as-is",
+        "apply-edit",
+        "re-emit",
+        "halt-for-repair"
+      ],
+      "title": "GateDirectiveToken",
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "description": "Minimal closed-enum vocabulary card pinned by Story 7a.6.",
+  "properties": {
+    "decision": {
+      "$ref": "#/$defs/GateDecisionToken"
+    },
+    "directive": {
+      "$ref": "#/$defs/GateDirectiveToken"
+    },
+    "rationale": {
+      "minLength": 20,
+      "title": "Rationale",
+      "type": "string"
+    }
+  },
+  "required": [
+    "decision",
+    "directive",
+    "rationale"
+  ],
+  "title": "VocabularyDecisionCard",
+  "type": "object"
+}

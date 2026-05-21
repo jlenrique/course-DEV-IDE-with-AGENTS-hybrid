@@ -13,8 +13,6 @@ import re
 from pathlib import Path
 from typing import Any
 
-from scripts.utilities.file_helpers import project_root
-
 
 def validate_operator_directives(directives_path: Path) -> dict[str, Any]:
     """Validate operator-directives.md for completeness and format."""

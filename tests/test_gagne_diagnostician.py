@@ -6,8 +6,8 @@ from datetime import UTC, datetime
 
 import pytest
 
-from marcus.lesson_plan.digest import compute_digest
-from marcus.lesson_plan.gagne_diagnostician import (
+from app.marcus.lesson_plan.digest import compute_digest
+from app.marcus.lesson_plan.gagne_diagnostician import (
     DEFAULT_BUDGET_FALLBACK_MODE,
     DuplicateDiagnosisTargetError,
     PriorDeclinedRationale,
@@ -15,7 +15,7 @@ from marcus.lesson_plan.gagne_diagnostician import (
     diagnose_lesson_plan,
     diagnose_plan_unit,
 )
-from marcus.lesson_plan.schema import (
+from app.marcus.lesson_plan.schema import (
     Dials,
     LearningModel,
     LessonPlan,

@@ -15,10 +15,7 @@ Covers all 6 acceptance criteria:
 from __future__ import annotations
 
 import sys
-from copy import deepcopy
 from pathlib import Path
-
-import pytest
 
 # Ensure project root is on sys.path for imports
 ROOT = Path(__file__).resolve().parents[4]
@@ -26,16 +23,15 @@ if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
 from skills.bmad_agent_content_creator.scripts.perception_contract import (
-    build_perception_confirmation,
     build_motion_perception_confirmation,
+    build_perception_confirmation,
     check_escalation_needed,
-    enforce_perception_contract,
     enforce_motion_perception_contract,
+    enforce_perception_contract,
     generate_inline_perception,
     retry_low_confidence,
     validate_perception_presence,
 )
-
 
 # ---------------------------------------------------------------------------
 # Fixtures

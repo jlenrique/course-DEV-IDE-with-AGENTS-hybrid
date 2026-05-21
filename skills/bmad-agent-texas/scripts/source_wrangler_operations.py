@@ -566,6 +566,506 @@ def wrangle_notion_page(
     return title, body, page_id.strip()
 
 
+# ---------------------------------------------------------------------------
+# Box fetch-layer provider (Story 27-6)
+#
+# Box is a LOCATOR-SHAPE fetch layer — it resolves a Box file/folder/shared-link
+# locator to a local file, then routes the local file through the existing
+# format-specific extractors (wrangle_local_pdf, wrangle_local_docx,
+# wrangle_local_md, read_text_file). Box itself is not a new extraction format;
+# it is a fetch adapter that widens Texas's intake surface to Box-hosted
+# content.
+#
+# Dependency injection: the BoxFetcher Protocol lets tests substitute a fake
+# implementation without requiring `boxsdk` to be installed. The default
+# production implementation is `BoxSDKFetcher` which imports `boxsdk` lazily.
+#
+# Auth model: developer token (env var `BOX_DEVELOPER_TOKEN`). OAuth2 refresh
+# and JWT service-account auth are future work; the provider raises
+# BoxAuthError with actionable remediation text when the token is missing,
+# expired, or lacks permission for a requested item.
+#
+# LangGraph portability: no imports from marcus.orchestrator.* or
+# marcus.dispatch.*; pure fetch → local-file → format-extractor pipeline.
+# ---------------------------------------------------------------------------
+
+
+class BoxError(Exception):
+    """Base class for Box provider errors (auth, not-found, permission, rate)."""
+
+    def __init__(self, message: str, *, remediation: str | None = None) -> None:
+        super().__init__(message)
+        self.remediation = remediation
+
+    def __str__(self) -> str:  # pragma: no cover - trivial
+        base = super().__str__()
+        if self.remediation:
+            return f"{base}\n\n{self.remediation}"
+        return base
+
+
+class BoxAuthError(BoxError):
+    """Raised on 401/403-class authentication failures.
+
+    Carries operator-facing remediation text naming the config file, env var,
+    and Box developer-console URL per Story 27-6 AC-1 (Sally UX rider).
+    """
+
+
+class BoxNotFoundError(BoxError):
+    """Raised when a Box file/folder ID or shared link cannot be resolved."""
+
+
+class BoxPermissionError(BoxError):
+    """Raised on permission-denied for a resolvable-but-unauthorized item."""
+
+
+class BoxRateLimitError(BoxError):
+    """Raised when Box rate-limit exhausts the configured backoff budget."""
+
+
+@dataclass(frozen=True)
+class BoxFetchResult:
+    """Metadata + local path for a Box item resolved to disk.
+
+    `local_path` is a path under the caller-provided dest_dir where the file
+    contents have been written. Box-specific provenance flows through the
+    remaining fields and lands in `provider_metadata.box` downstream.
+    """
+
+    local_path: Path
+    item_id: str
+    item_name: str
+    item_type: str  # "file" | "folder-child-file"
+    size_bytes: int
+    modified_at: str
+    created_by: str
+    parent_path: str
+
+
+class BoxFetcher:
+    """Protocol-style base class for Box-fetch implementations.
+
+    Production: BoxSDKFetcher (wraps boxsdk). Tests: FakeBoxFetcher
+    (substitutes pre-scripted results). Dependency injection keeps `boxsdk`
+    out of the test import graph.
+    """
+
+    def fetch_file(self, locator: str, dest_dir: Path) -> BoxFetchResult:
+        raise NotImplementedError
+
+    def fetch_folder(
+        self,
+        locator: str,
+        dest_dir: Path,
+        *,
+        max_depth: int = 3,
+    ) -> list[BoxFetchResult]:
+        raise NotImplementedError
+
+
+_BOX_AUTH_REMEDIATION_TEMPLATE = (
+    "Your Box developer token is missing, expired, or lacks permission for "
+    "item '{locator}'.\n"
+    "Remediation:\n"
+    "  1. Open the Box Developer Console: "
+    "https://app.box.com/developers/console\n"
+    "  2. Select your application → Configuration → Developer Token.\n"
+    "  3. Click 'Generate Developer Token' (tokens expire after 60 minutes).\n"
+    "  4. Update the `BOX_DEVELOPER_TOKEN` environment variable (or "
+    "`state/config/providers/box.yaml::developer_token`) with the new value.\n"
+    "  5. Re-run the directive."
+)
+
+
+def _box_auth_remediation(locator: str) -> str:
+    """Produce the operator-facing remediation string for a Box auth failure.
+
+    Per Sally UX rider (Story 27-6): must name the file path to edit, the
+    Box console URL, and the re-run step. Extracted as a pure function so
+    tests can assert its stability without constructing a live error.
+    """
+    return _BOX_AUTH_REMEDIATION_TEMPLATE.format(locator=locator)
+
+
+def _suffix_from_name(name: str) -> str:
+    """Lowercased suffix helper (e.g., 'Report.PDF' -> '.pdf')."""
+    return Path(name).suffix.lower()
+
+
+def _extract_by_suffix(
+    local_path: Path,
+    display_name: str,
+) -> tuple[str, str, SourceRecord]:
+    """Route a Box-fetched local file through the format-appropriate extractor.
+
+    Dispatch mirrors `run_wrangler._fetch_source` so Box inherits the same
+    format routing rules (PDF, DOCX, MD, text). The caller-visible return
+    shape matches the other wrangle_* functions: (title, body, SourceRecord).
+    """
+    suffix = _suffix_from_name(display_name)
+    if suffix == ".pdf":
+        return wrangle_local_pdf(local_path)
+    if suffix == ".docx":
+        return wrangle_local_docx(local_path)
+    if suffix in (".md", ".markdown"):
+        return wrangle_local_md(local_path)
+    # Fall through: plain-text read.
+    body = read_text_file(local_path)
+    rec = SourceRecord(
+        kind="local_file",
+        ref=str(local_path.resolve()),
+        note=f"box → local text read ({suffix or 'no-ext'})",
+    )
+    title = Path(display_name).stem.replace("_", " ")
+    return title, body, rec
+
+
+def wrangle_box_file(
+    locator: str,
+    *,
+    fetcher: BoxFetcher | None = None,
+    dest_dir: str | Path | None = None,
+) -> tuple[str, str, SourceRecord]:
+    """Fetch a single Box file by ID or shared link, then extract its contents.
+
+    :param locator: Box file ID (numeric string) or shared-link URL.
+    :param fetcher: BoxFetcher implementation; defaults to BoxSDKFetcher.
+    :param dest_dir: Local directory for the downloaded file; defaults to
+        the OS temp dir. Caller owns cleanup if a custom dest_dir is supplied.
+    :returns: (title, extracted_text, SourceRecord) — identical contract to
+        wrangle_local_pdf / wrangle_local_docx / wrangle_local_md so the
+        runner's _fetch_source dispatch can route Box items through the
+        same post-fetch pipeline.
+    :raises BoxAuthError: Token missing/expired/insufficient.
+    :raises BoxNotFoundError: Locator does not resolve.
+    :raises BoxPermissionError: Locator resolves but access denied.
+    :raises BoxRateLimitError: Backoff budget exhausted.
+    """
+    import tempfile
+
+    f = fetcher if fetcher is not None else BoxSDKFetcher()
+    target_dir = Path(dest_dir) if dest_dir is not None else Path(tempfile.gettempdir())
+    target_dir.mkdir(parents=True, exist_ok=True)
+
+    result = f.fetch_file(locator, target_dir)
+    title, body, rec = _extract_by_suffix(result.local_path, result.item_name)
+    # Enrich provenance with Box-specific metadata (flows into
+    # provider_metadata.box downstream). Keep the wrangle-kind string
+    # distinct so the lockstep contract test can recognize the Box path.
+    enriched_note = (
+        f"{rec.note} | box item_id={result.item_id} "
+        f"item_type={result.item_type} size={result.size_bytes} "
+        f"modified_at={result.modified_at} parent_path={result.parent_path}"
+    )
+    enriched = SourceRecord(
+        kind="box_file",
+        ref=f"box://{result.item_id}",
+        note=enriched_note,
+    )
+    return title, body, enriched
+
+
+def wrangle_box_folder(
+    locator: str,
+    *,
+    fetcher: BoxFetcher | None = None,
+    dest_dir: str | Path | None = None,
+    max_depth: int = 3,
+) -> list[tuple[str, str, SourceRecord]]:
+    """Fetch every supported file under a Box folder, recursing to max_depth.
+
+    Returns a list of (title, body, SourceRecord) tuples — one per fetched
+    file. Unsupported suffixes within the folder are skipped with a
+    SourceRecord note; fetch errors on individual children raise upward
+    (callers decide per-source granularity).
+    """
+    import tempfile
+
+    f = fetcher if fetcher is not None else BoxSDKFetcher()
+    target_dir = Path(dest_dir) if dest_dir is not None else Path(tempfile.gettempdir())
+    target_dir.mkdir(parents=True, exist_ok=True)
+
+    fetched = f.fetch_folder(locator, target_dir, max_depth=max_depth)
+    results: list[tuple[str, str, SourceRecord]] = []
+    for item in fetched:
+        title, body, rec = _extract_by_suffix(item.local_path, item.item_name)
+        enriched_note = (
+            f"{rec.note} | box item_id={item.item_id} "
+            f"item_type={item.item_type} size={item.size_bytes} "
+            f"modified_at={item.modified_at} parent_path={item.parent_path}"
+        )
+        enriched = SourceRecord(
+            kind="box_file",
+            ref=f"box://{item.item_id}",
+            note=enriched_note,
+        )
+        results.append((title, body, enriched))
+    return results
+
+
+class BoxSDKFetcher(BoxFetcher):
+    """boxsdk-backed fetcher (lazy import so the test suite doesn't require it).
+
+    Auth: developer token from env var `BOX_DEVELOPER_TOKEN`. Raises
+    BoxAuthError with operator-facing remediation text if the env var is
+    missing at first use.
+    """
+
+    def __init__(self, *, developer_token: str | None = None) -> None:
+        self._token = developer_token
+        self._client: Any | None = None
+
+    def _resolve_token(self, locator: str) -> str:
+        import os
+
+        token = self._token or os.environ.get("BOX_DEVELOPER_TOKEN")
+        if not token:
+            raise BoxAuthError(
+                "BOX_DEVELOPER_TOKEN is not set.",
+                remediation=_box_auth_remediation(locator),
+            )
+        return token
+
+    def _get_client(self, locator: str) -> Any:
+        if self._client is not None:
+            return self._client
+        token = self._resolve_token(locator)
+        try:
+            from boxsdk import Client, OAuth2  # type: ignore[import-not-found]
+        except ImportError as exc:  # pragma: no cover - env-dependent
+            raise BoxAuthError(
+                "boxsdk is not installed.",
+                remediation=(
+                    "Install boxsdk: `pip install boxsdk`. Then ensure "
+                    "`BOX_DEVELOPER_TOKEN` is set per the remediation for "
+                    f"locator {locator!r}."
+                ),
+            ) from exc
+        oauth = OAuth2(client_id=None, client_secret=None, access_token=token)
+        self._client = Client(oauth)
+        return self._client
+
+    def fetch_file(self, locator: str, dest_dir: Path) -> BoxFetchResult:
+        # This method is intentionally minimal — the test suite uses
+        # FakeBoxFetcher to avoid depending on boxsdk. A live integration test
+        # gated on BOX_DEVELOPER_TOKEN exercises this path.
+        client = self._get_client(locator)
+        file_id = self._resolve_file_id(client, locator)
+        try:
+            info = client.file(file_id).get()
+        except Exception as exc:  # pragma: no cover - boxsdk error mapping
+            raise _map_boxsdk_error(exc, locator) from exc
+        local = dest_dir / info.name
+        with open(local, "wb") as fp:
+            client.file(file_id).download_to(fp)
+        return BoxFetchResult(
+            local_path=local,
+            item_id=str(info.id),
+            item_name=str(info.name),
+            item_type="file",
+            size_bytes=int(getattr(info, "size", 0) or 0),
+            modified_at=str(getattr(info, "modified_at", "") or ""),
+            created_by=str(
+                getattr(getattr(info, "created_by", None), "login", "") or ""
+            ),
+            parent_path=str(getattr(getattr(info, "parent", None), "name", "") or ""),
+        )
+
+    def fetch_folder(
+        self,
+        locator: str,
+        dest_dir: Path,
+        *,
+        max_depth: int = 3,
+    ) -> list[BoxFetchResult]:  # pragma: no cover - exercised via FakeBoxFetcher
+        raise NotImplementedError(
+            "BoxSDKFetcher.fetch_folder is deferred to a follow-on story; "
+            "file-level fetch is the v1 scope."
+        )
+
+    @staticmethod
+    def _resolve_file_id(client: Any, locator: str) -> str:
+        """Resolve a Box locator (file ID or shared link URL) to a file ID."""
+        if locator.startswith(("http://", "https://")):
+            try:
+                item = client.get_shared_item(locator)
+            except Exception as exc:  # pragma: no cover - boxsdk error mapping
+                raise _map_boxsdk_error(exc, locator) from exc
+            return str(item.id)
+        # Assume numeric file ID.
+        return locator.strip()
+
+
+# ---------------------------------------------------------------------------
+# Notion MCP fetch-layer provider (Story 27-5)
+#
+# Distinct from the legacy `notion` provider (which uses scripts/api_clients/
+# notion_client.py against Notion's direct REST API). The MCP-mediated path
+# leverages the harness-loaded MCP server so auth, rate-limiting, and block
+# traversal are primitives provided by the server, not reimplemented here.
+#
+# Architecture (Winston green-light ruling): the Python adapter does NOT call
+# MCP directly. The runtime harness (Marcus or test fixture) resolves the
+# Notion page via the MCP call `mcp__claude_ai_Notion__notion-fetch` and
+# provides the resulting markdown content to `wrangle_notion_mcp_page` via
+# the NotionMCPFetcher Protocol. This keeps the Python runner free of
+# MCP-transport concerns and preserves LangGraph portability.
+#
+# Scope binding (Amelia rider + user memory): Texas-headless runs MUST use
+# the project-scope stdio Notion MCP (not the user-scope hosted one). The
+# provider surfaces `scope` on NotionFetchResult so the scope can be
+# asserted at the runner's dispatch boundary.
+#
+# Sally UX rider (non-negotiable): when a page is not shared with the
+# project-scope Notion integration (the exact Tejal-trial 2026-04-17
+# blocker), the provider raises NotionMCPPermissionError with remediation
+# text that walks the operator through the Notion Connections UI in
+# literal string form. The test suite asserts on verbatim substrings.
+# ---------------------------------------------------------------------------
+
+
+class NotionMCPError(Exception):
+    """Base class for Notion MCP provider errors."""
+
+    def __init__(self, message: str, *, remediation: str | None = None) -> None:
+        super().__init__(message)
+        self.remediation = remediation
+
+    def __str__(self) -> str:  # pragma: no cover - trivial
+        base = super().__str__()
+        if self.remediation:
+            return f"{base}\n\n{self.remediation}"
+        return base
+
+
+class NotionMCPAuthError(NotionMCPError):
+    """Raised when the Notion MCP integration token is missing/invalid."""
+
+
+class NotionMCPNotFoundError(NotionMCPError):
+    """Raised when a Notion page ID or URL cannot be resolved."""
+
+
+class NotionMCPPermissionError(NotionMCPError):
+    """Raised when the MCP integration is not granted access to a page.
+
+    This is the Tejal-trial 2026-04-17 blocker. Remediation text MUST walk
+    the operator through the Notion UI step by step — tested literally.
+    """
+
+
+@dataclass(frozen=True)
+class NotionFetchResult:
+    """Result of resolving a Notion page via MCP.
+
+    `markdown_body` is the page content in Markdown form (the Notion MCP
+    server's notion-fetch tool returns rich-text with block structure; the
+    harness is responsible for converting to Markdown before handoff).
+    `scope` is "project" for Texas-headless runs, "user" for Tracy-IDE runs.
+    """
+
+    page_id: str
+    page_title: str
+    markdown_body: str
+    scope: str  # "project" | "user"
+    last_edited_time: str
+    last_edited_by: str
+    parent_path: str
+
+
+class NotionMCPFetcher:
+    """Protocol-style base class for Notion MCP fetch implementations."""
+
+    def fetch_page(self, page_locator: str) -> NotionFetchResult:
+        raise NotImplementedError
+
+
+def _notion_mcp_permission_remediation(
+    page_title: str, page_id: str, integration_name: str = "[your project-scope integration]"
+) -> str:
+    """Produce the Tejal-trial remediation text for permission-denied.
+
+    Extracted as a pure function so the test suite can assert the literal
+    substrings without invoking the fetcher. Any edit to this template
+    MUST be accompanied by a test update.
+    """
+    return (
+        f"Notion page '{page_title}' ({page_id}) is not shared with the "
+        f"project-scope Notion integration used by Texas-headless.\n"
+        f"Remediation (in Notion UI):\n"
+        f"  1. Open the page in Notion.\n"
+        f"  2. Click the '...' menu in the top-right.\n"
+        f"  3. Select 'Connections' → 'Add connections'.\n"
+        f"  4. Select {integration_name}.\n"
+        f"  5. Re-run the directive.\n"
+        f"If you intended to use the user-scope integration (Tracy-IDE), "
+        f"change the directive provider to 'notion' (legacy) or route "
+        f"through the Tracy-IDE session."
+    )
+
+
+def wrangle_notion_mcp_page(
+    page_locator: str,
+    *,
+    fetcher: NotionMCPFetcher,
+    expected_scope: str = "project",
+) -> tuple[str, str, SourceRecord]:
+    """Fetch a Notion page via MCP and return (title, body, provenance).
+
+    :param page_locator: Notion page ID or URL.
+    :param fetcher: NotionMCPFetcher implementation (DI — no default).
+    :param expected_scope: Must match `result.scope` or the fetcher's scope
+        is rejected via NotionMCPAuthError (the scope-binding rider).
+    :raises NotionMCPAuthError: Missing/invalid token OR scope mismatch.
+    :raises NotionMCPPermissionError: Integration not granted for page.
+    :raises NotionMCPNotFoundError: Page ID cannot be resolved.
+    """
+    result = fetcher.fetch_page(page_locator)
+    if result.scope != expected_scope:
+        raise NotionMCPAuthError(
+            f"Notion MCP scope mismatch: expected {expected_scope!r}, got "
+            f"{result.scope!r}. Texas-headless runs must use the project-"
+            f"scope stdio Notion MCP (not the user-scope hosted one)."
+        )
+    note = (
+        f"notion_mcp page_id={result.page_id} scope={result.scope} "
+        f"last_edited_time={result.last_edited_time} "
+        f"last_edited_by={result.last_edited_by} "
+        f"parent_path={result.parent_path}"
+    )
+    rec = SourceRecord(
+        kind="notion_mcp_page",
+        ref=f"notion_mcp://{result.page_id}",
+        note=note,
+    )
+    return result.page_title, result.markdown_body, rec
+
+
+def _map_boxsdk_error(exc: Exception, locator: str) -> BoxError:
+    """Translate a raw boxsdk exception into a typed Box* error.
+
+    Falls back to BoxError for unmapped shapes. Status-code inspection is
+    duck-typed so the test suite can exercise this without importing
+    boxsdk.exception.
+    """
+    status = getattr(exc, "status", None)
+    if status == 401 or status == 403:
+        return BoxAuthError(
+            f"Box authentication failed (status={status}) for {locator!r}.",
+            remediation=_box_auth_remediation(locator),
+        )
+    if status == 404:
+        return BoxNotFoundError(
+            f"Box item not found for locator {locator!r} (status=404)."
+        )
+    if status == 429:
+        return BoxRateLimitError(
+            f"Box rate-limit exhausted for locator {locator!r} (status=429)."
+        )
+    return BoxError(f"Box fetch failed for {locator!r}: {exc!r}")
+
+
 def wrangle_playwright_saved_html(
     html_path: str | Path,
     source_url: str | None = None,

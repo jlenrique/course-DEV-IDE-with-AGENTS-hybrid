@@ -7,6 +7,291 @@ Per semver-for-schemas:
 - **Minor (1.X)** â€” additive only: new optional fields with v1.0-compatible defaults, new enum values that don't break old consumers.
 - **Patch (1.0.X)** â€” docs / clarifications / typo fixes; no machine-readable change.
 
+## Ledger Verdict Event v1.0 - 2026-04-26 - Story 4.4 Learning Ledger
+
+**Type:** Initial shape (no predecessor family).
+
+**Reason for introduction:** Story 4.4 creates the typed learning-ledger
+substrate for gate receipts so verdict traffic can be audited,
+de-duplicated, and queried independently of transport envelopes.
+
+**Shapes and contracts pinned:**
+
+- `app/ledger/events.py`:
+  `VerdictLedgerEvent`, `build_verdict_ledger_event(...)`.
+- `app/ledger/schema/verdict_event.v1.schema.json`:
+  schema pin for the verdict ledger shape.
+- `app/ledger/emitter.py`:
+  `EmissionResult`, `emit_ledger_event(...)`,
+  `ensure_ledger_schema(...)`.
+- `app/gates/resume_api.py`:
+  `build_transport_response(...)` now emits the typed verdict event
+  non-fatally while preserving the transport response shape.
+
+**Semantics pinned:**
+
+- `kind="verdict"` is the discriminant for gate receipts.
+- The idempotency key shape is
+  `sha256(f"{trial_id}|{gate_id}|{kind}|{event_specific_natural_key}")`.
+- Emission failure is non-fatal: the emitter returns
+  `EmissionResult(status="failed", ...)`, logs at warning, and increments
+  `ledger_emission_failures_total`.
+
+**Migration:** N/A (initial family).
+
+## Ledger Override Event v1.0 - 2026-04-26 - Story 4.4 Learning Ledger
+
+**Type:** Initial shape (no predecessor family).
+
+**Reason for introduction:** Story 4.4 absorbs the Story 3.5 override
+proto-events into the typed ledger union so submit/apply override flows can
+share the same Postgres-backed audit surface as gate receipts.
+
+**Shapes and contracts pinned:**
+
+- `app/ledger/events.py`:
+  `OverrideLedgerEvent`, `build_override_ledger_event(...)`.
+- `app/ledger/schema/override_event.v1.schema.json`:
+  schema pin for the override ledger shape.
+- `app/runtime/override_api.py`:
+  `submit_override(...)` and `apply_override(...)` now build typed override
+  ledger events, retain the in-memory trail, and attempt non-fatal emission.
+
+**Semantics pinned:**
+
+- `kind="override"` is the discriminant for runtime override ledger entries.
+- `phase` distinguishes the `submitted` and `applied` proto-events.
+- The natural key is `confirm_token|phase`, so a replay of the same
+  override step de-duplicates deterministically.
+
+**Migration:** Story 3.5's raw dict proto-events are replaced by
+`OverrideLedgerEvent.model_dump(mode="json")` payloads; existing consumers
+still read JSON-shaped ledger rows.
+
+## Ledger Sanctum Mutation Event v1.0 - 2026-04-26 - Story 4.4 Learning Ledger
+
+**Type:** Initial shape (no predecessor family).
+
+**Reason for introduction:** Story 4.4 reserves the typed ledger union slot
+that Story 4.6 will emit for sanctum mutations, allowing the learning ledger
+query surface to close FR45 without a second schema introduction later.
+
+**Shapes and contracts pinned:**
+
+- `app/ledger/events.py`:
+  `SanctumMutationLedgerEvent`,
+  `build_sanctum_mutation_ledger_event(...)`.
+- `app/ledger/schema/sanctum_mutation_event.v1.schema.json`:
+  schema pin for the sanctum-mutation shape.
+- `app/ledger/queries.py`:
+  `sanctum_mutations(...)` query helper.
+
+**Semantics pinned:**
+
+- `kind="sanctum_mutation"` is the discriminant for sanctum invalidation
+  evidence rows.
+- The payload carries `file_path`, `hash_before`, `hash_after`,
+  `mutated_at`, and optional `suggested_invalidating_commit`.
+- Query results are materialized back into strict
+  `SanctumMutationLedgerEvent` models.
+
+**Migration:** N/A (initial family).
+
+## DecisionCard Family v1.2 - 2026-04-26 - Story 4.6 Sanctum Invalidation Hook
+
+**Type:** Additive extension to the DecisionCard meta surface.
+
+**Reason for introduction:** Story 4.6 makes in-flight sanctum mutations
+operator-visible at the next gate by extending `DecisionCardMeta` with a
+typed warning list.
+
+**Shapes and contracts pinned:**
+
+- `app/models/decision_cards/base.py`:
+  additive `DecisionCardMeta.sanctum_warnings`.
+- `app/models/decision_cards/schema/{decision_card_base,g1,g2c,g3,g4}.v1.schema.json`:
+  schema pins updated for the additive warning field.
+- `tests/fixtures/decision_cards/{g1,g2c,g3,g4}_golden.json`:
+  goldens updated with `sanctum_warnings=[]`.
+- `app/runtime/override_api.py`:
+  `decision_card_meta_for_trial(...)` now surfaces warnings and downgrades
+  `cache_state` to `mixed` when an in-flight sanctum mutation exists.
+
+**Semantics pinned:**
+
+- `sanctum_warnings` is additive and defaults to an empty list.
+- Warnings are typed `SanctumWarning` records, not loose dict payloads.
+- A sanctum mutation during an active trial is operator-visible without
+  failing the trial.
+
+**Migration:** Additive only. Pre-4.6 DecisionCard payloads remain parseable;
+goldens and schema pins gain `sanctum_warnings=[]` by default.
+
+## SanctumWarning v1.0 - 2026-04-26 - Story 4.6 Sanctum Invalidation Hook
+
+**Type:** Initial shape (no predecessor family).
+
+**Reason for introduction:** Story 4.6 needs a strict, replayable warning
+payload for sanctum mutations that can be attached to DecisionCards.
+
+**Shapes and contracts pinned:**
+
+- `app/runtime/sanctum_warning.py`:
+  `SanctumWarning`.
+- `app/runtime/schema/sanctum_warning.v1.schema.json`:
+  schema pin for the warning payload.
+- `tests/fixtures/runtime/sanctum_warning_golden.json`:
+  golden fixture.
+
+**Semantics pinned:**
+
+- The warning carries `file_path`, `hash_before`, `hash_after`,
+  `mutated_at`, and optional `suggested_invalidating_commit`.
+- `mutated_at` is timezone-aware.
+- Hash fields are lowercase 64-char sha256 hex strings.
+
+**Migration:** N/A (initial family).
+
+## DecisionCard Family v1.0 - 2026-04-26 - Story 3.2 DecisionCard Schema Family
+
+**Type:** Initial shape (no predecessor family).
+
+**Reason for introduction:** Story 3.2 established the Marcus gate payload
+family so every Slab 3 gate emits a typed DecisionCard with a stable,
+per-gate schema and a shared D2 meta surface.
+
+**Shapes and contracts pinned:**
+
+- `app/models/decision_cards/base.py`:
+  `DecisionCard`, `DecisionCardMeta`, `DecisionCardVerb`.
+- `app/models/decision_cards/{g1,g2c,g3,g4}.py`:
+  `G1Card`, `G2CCard`, `G3Card`, `G4Card`.
+- `app/models/decision_cards/override_event.py`:
+  `OverrideEvent`.
+- Manifest additive field:
+  `app.manifest.schema.EdgeSpec.decision_card_schema`.
+- Dotted-ref resolver:
+  `app.manifest.refs.resolve_dotted_ref(...)`.
+
+**Semantics pinned:**
+
+- Discriminated-union routing is keyed by `gate_id`.
+- `DecisionCardMeta` carries `cache_state`, `affected_nodes`,
+  `override_trail`, and `reject_rate`.
+- `decision_card_schema` uses `<module>:<ClassName>` dotted refs and is
+  compile-time validated against DecisionCard subclasses.
+
+**Migration:** N/A (initial family).
+
+## DecisionCard Family v1.1 - 2026-04-26 - Story 4.3 Party-Mode-as-Interrupt
+
+**Type:** Additive extension to the DecisionCard meta surface plus a new
+supporting schema.
+
+**Reason for introduction:** Story 4.3 makes party-mode a first-class graph
+primitive by consolidating multi-persona review into a checkpointed interrupt
+flow. That requires the DecisionCard family to carry structured contribution
+evidence and the consolidation timestamp, while also introducing a strict
+contribution model with its own schema pin.
+
+**Shapes and contracts pinned:**
+
+- `app/models/decision_cards/base.py`:
+  additive `DecisionCardMeta.party_mode_contributions` and
+  `DecisionCardMeta.consolidated_at`.
+- `app/models/decision_cards/schema/{decision_card_base,g1,g2c,g3,g4}.v1.schema.json`:
+  schema pins updated for the additive meta fields.
+- `app/models/gates/party_mode_contribution.py`:
+  `PartyModeContribution`, `TRACE_LINK_PATTERN`.
+- `app/models/gates/schema/party_mode_contribution.v1.schema.json`:
+  schema pin for the new contribution model.
+- `app/gates/party_mode_as_interrupt.py`:
+  `build_party_mode_decision_card(...)`,
+  `party_mode_as_interrupt(...)`,
+  `finding_record_has_trace_link(...)`.
+
+**Semantics pinned:**
+
+- `party_mode_contributions` is append-only evidence attached to the emitted
+  DecisionCard meta and typed as strict `PartyModeContribution` entries.
+- `consolidated_at` is timezone-aware and marks the exact consolidation
+  boundary for the multi-persona review.
+- `trace_link` accepts either
+  `https://smith.langchain.com/traces/<trace_id>` or a repo-relative trace
+  export path, satisfying the FR42 evidence convention.
+
+**Migration:** Additive only. Pre-4.3 DecisionCard fixtures remain parseable;
+golden files and schema pins gain the new optional meta fields at default
+values (`party_mode_contributions=[]`, `consolidated_at=null`).
+
+## OperatorVerdict Gate Surface v2.0 - 2026-04-26 - Story 3.3 Verdict + Resume API
+
+**Type:** Breaking change to the verdict receipt shape.
+
+**Reason for introduction:** Story 3.3 upgraded the Slab 1 verdict substrate
+into a trial-bound tamper-evident receipt that can safely drive gate resume.
+
+**Shapes and contracts pinned:**
+
+- `app/models/state/operator_verdict.py`:
+  `OperatorVerdict`, `OperatorVerdictVerb`.
+- `app/gates/schema/operator_verdict.v1.schema.json`:
+  gate-surface schema pin.
+- `app/gates/resume_api.py`:
+  `register_decision_card(...)`,
+  `compute_decision_card_digest(...)`,
+  `resume_from_verdict(...)`.
+
+**Semantics pinned:**
+
+- Verdict identity now binds `verdict_id`, `trial_id`, `card_id`, and
+  `decision_card_digest`.
+- `decision_card_digest` is sha256 over DecisionCard canonical JSON plus
+  `trial_run_id`, `issuance_timestamp_iso`, and `server_nonce`.
+- Replay of a consumed nonce is rejected.
+- Legacy input name `decision_card_id` remains accepted as a compatibility alias
+  for `card_id`, but the canonical serialized field is now `card_id`.
+
+**Migration:** Existing callers must provide `trial_id` and
+`decision_card_digest`. Serialized fixtures and downstream schemas move from
+`decision_card_id` to `card_id`.
+
+## ModelOverrideWarning v1.0 - 2026-04-26 - Story 3.5 Runtime Override Warning
+
+**Type:** Initial shape (strict FR24 warning contract for runtime model
+override confirmation).
+
+**Reason for introduction:** Story 3.5 closes FR24 by making every runtime
+model override two-phase and operator-confirmed. Before state mutation, the
+operator must see a pinned warning that carries projected cache impact,
+affected nodes, cost delta, and a short-lived `confirm_token`.
+
+**Shapes and contracts pinned:**
+
+- `app/runtime/override_warning.py`:
+  `ModelOverrideWarning`.
+- `app/runtime/schema/override_warning.v1.schema.json`:
+  runtime warning schema pin.
+- `app/runtime/override_api.py`:
+  `submit_override(...)`, `apply_override(...)`,
+  `compute_cache_impact(...)`.
+- `app/models/state/run_state.py` additive field:
+  `model_overrides: dict[str, str]`.
+
+**Semantics pinned:**
+
+- `confirm_token` is lowercase sha256 hex.
+- `issued_at` and `expires_at` must be timezone-aware.
+- `expires_at` must be after `issued_at`.
+- `submit_override(...)` is idempotent for the same
+  `(trial_id, node_id, new_model)` tuple while the warning is still live.
+- `apply_override(...)` consumes the pending token, updates
+  `RunState.model_overrides`, appends an `OverrideEvent`, and emits
+  a proto ledger event with `kind="override"`.
+
+**Migration:** `RunState` gains an additive `model_overrides` field with a
+default-empty mapping, so pre-3.5 serialized fixtures remain parseable.
+
 ## Epic 33 Pipeline Lockstep Substrate v1.0 - 2026-04-19 - Story 33-2 Pipeline Manifest SSOT
 
 **Type:** Initial shape (no predecessor manifest contract).

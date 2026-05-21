@@ -1,0 +1,34 @@
+{
+  "_comment": "Closed allowlist of categories for SG-4 option-b documented exceptions. Slab 7b Wave 0 foundational artifact (FR109). Authored 2026-04-29. Required reading: docs/dev-guide/bmb-sanctum-alignment-checklist.md §5. ADDITIONS to this allowlist require party-mode consensus + governance-JSON entry trail; silent invocation of an unlisted category in a SKILL.md `# Sanctum exception` block is a HALT-AND-REMEDIATE governance failure per Slab 7b PRD FR101 parity-test C-7.",
+  "version": "2026-04-29",
+  "schema_version": "1.0",
+  "categories": [
+    {
+      "id": "sidecar-hook",
+      "name": "Sidecar Hook (operator-control authority living as runtime hook)",
+      "description": "Specialist is operator-control authority that operates as a runtime hook (substrate-coherence checker, gate validator, etc.) rather than a conversational specialist. Persona-shaped continuity does not apply because the specialist has no operator dialogue surface; substrate gates are the only interaction shape.",
+      "rationale_template_keys": ["why_no_dialogue_surface", "what_runtime_hook_role", "how_persona_continuity_inapplicable"],
+      "precedent_skill_path": "skills/bmad-agent-cora/SKILL.md",
+      "precedent_anchor": "## Sanctum exception",
+      "precedent_state_path": "_bmad/memory/cora-sidecar/",
+      "added_at": "2026-04-29",
+      "added_by": "Slab 7b PRD R1 + R5 (Cora-sidecar precedent)",
+      "party_mode_ratification": "Slab 7b PRD R1 ratification of SG-4 with closed-allowlist option-b path"
+    }
+  ],
+  "_explicitly_excluded": [
+    {
+      "concept": "Class-D2 pipeline-greenfield (Compositor variant)",
+      "rationale": "Per Slab 7b PRD D20 (R9 amendment): Class-D2 pipeline-greenfield specialists follow the scaffold-v0.2-D2-pipeline variant (FR111) which is canonical inside the BMB regime, NOT an exception. Class-D2 specialists are identified by `class: D2` in the per-specialist registry; the parity-test skips sanctum-presence checks for `class: D2` rows via the C-4 branch. NO option-b allowlist category required, NO party-mode ratification required for Class-D2 specialists invoking the variant. The variant scaffold is pre-ratified architecture, not per-instance exception.",
+      "see_also": "docs/dev-guide/scaffolds/scaffold-v0.2-D2-pipeline/"
+    }
+  ],
+  "_addition_protocol": {
+    "step_1": "Dev agent encounters a specialist whose nature legitimately doesn't fit any existing allowlist category AND isn't covered by Class-D2 variant.",
+    "step_2": "Dev agent files a party-mode round to ratify a new category. Round inputs: proposed category id + name + description + rationale template + precedent.",
+    "step_3": "Party-mode reaches consensus or supermajority. If consensus violates SG-4 intent (any drift toward 'two mental models'), reject.",
+    "step_4": "Add new category row to this JSON. Update added_at + added_by + party_mode_ratification fields.",
+    "step_5": "Document the addition in the Slab's retrospective (per CLAUDE.md §Deferred-inventory governance).",
+    "step_6": "Update docs/dev-guide/bmb-sanctum-alignment-checklist.md §5 worked examples if a new precedent emerges."
+  }
+}

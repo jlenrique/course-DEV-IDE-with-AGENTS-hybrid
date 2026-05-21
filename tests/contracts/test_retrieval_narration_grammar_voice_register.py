@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import pytest
 
-from marcus.lesson_plan.retrieval_narration_grammar import render_retrieval_narration
+from app.marcus.lesson_plan.retrieval_narration_grammar import render_retrieval_narration
 
 
 @pytest.mark.parametrize(

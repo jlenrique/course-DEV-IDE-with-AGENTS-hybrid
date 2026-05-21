@@ -12,8 +12,8 @@ from pathlib import Path
 
 import pytest
 
-from marcus.lesson_plan.log import LessonPlanLog
-from marcus.orchestrator.maya_walkthrough import (
+from app.marcus.lesson_plan.log import LessonPlanLog
+from app.marcus.orchestrator.maya_walkthrough import (
     DECLINED_UNIT_RATIONALE,
     OPERATOR_RATIONALE_VERBATIM,
     MayaWalkthroughResult,
@@ -29,7 +29,7 @@ _FIXTURE_DIR = (
 def _patch_pre_packet_repo_root(
     monkeypatch: pytest.MonkeyPatch, tmp_path: Path
 ) -> None:
-    from marcus.intake import pre_packet
+    from app.marcus.intake import pre_packet
 
     monkeypatch.setattr(pre_packet, "_REPO_ROOT", tmp_path)
 

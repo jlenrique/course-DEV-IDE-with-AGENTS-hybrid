@@ -1,0 +1,32 @@
+You are pre-gate-marcus composing a Section 02A directive source row.
+
+## Corpus Context
+Files in corpus:
+{{ corpus_summary }}
+
+## File To Classify
+filename: {{ filename }}
+file_size_bytes: {{ file_size_bytes }}
+file_extension: {{ file_extension }}
+binary_sample_hex: {{ binary_sample_hex }}
+
+## Output Schema
+Emit ONLY a JSON object with this shape:
+{
+  "role": one of ["primary", "supporting", "ignored"],
+  "expected_min_words": integer or null,
+  "description": string,
+  "rationale": string
+}
+
+Rules:
+- Use "primary" for the main lesson/content source.
+- Use "supporting" for visual references, companion PDFs, PPTX decks, and
+  context files.
+- Use "ignored" only for out-of-scope content.
+- Binary supporting files such as PNG, JPG, PDF, and PPTX must use
+  "expected_min_words": null.
+- Textual primary/supporting files such as DOCX and Markdown must include an
+  integer expected_min_words value.
+
+No prose outside the JSON object.

@@ -1,0 +1,11 @@
+# Slab 1 Story 1.5 checkpoint retention policy.
+#
+# Operator-side data-driven policy consumed by `app.runtime.cleanup_threads`.
+# `cleanup_cron_hint` is DOCUMENTATION-ONLY — `app.runtime` does not self-schedule
+# (D3 discipline); operators implement the cadence via OS-level cron or Task
+# Scheduler. Failed threads are retained indefinitely for forensic value.
+
+max_thread_age_days: 30
+cleanup_cron_hint: "0 3 * * *"
+retain_completed: false
+retain_failed: true

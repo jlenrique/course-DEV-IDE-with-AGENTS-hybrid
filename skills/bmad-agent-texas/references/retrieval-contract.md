@@ -66,6 +66,18 @@ The scite adapter ships ready in Epic 27 and populates `provider_metadata.scite`
 
 **Full `provider_metadata.scite` schema** — see [extraction-report-schema.md § Provider Metadata Sub-objects](./extraction-report-schema.md#provider-metadata-sub-objects). Single source of truth lives there.
 
+### Consensus-specific signals (Story 27-2.5)
+
+The Consensus adapter ships ready in Epic 27 and populates `provider_metadata.consensus` on every returned row. Signals to design around:
+
+- **Research-synthesis score** — `consensus_score` is a provider-native agreement-strength signal you can gate with `provider_scored.consensus_score_min` when you want stronger consensus-first retrieval.
+- **Study-design metadata** — `study_design_tag` + `sample_size` enable deterministic narrowing (`provider_scored.study_design_allow`, `provider_scored.sample_size_min`) without semantic inference in Texas.
+- **Graceful sparsity handling** — when optional provider fields are absent, rows are still emitted and `provider_metadata.consensus.known_losses` records explicit sentinels (`study_design_unknown`, `sample_size_unknown`, `evidence_strength_unknown`, plus `abstract_only`).
+- **Identity key** — DOI (primary) → `consensus_paper_id` (fallback) → `source_id`. This is what makes scite+Consensus cross-validation merge by a shared scholarly identity key.
+- **Cross-validation interpretation** — if both adapters return the same DOI, `convergence_signal` marks structural convergence even when semantics differ (for example, high scite supporting counts with a low Consensus score). Semantic reconciliation is Tracy's downstream pass.
+
+**Full `provider_metadata.consensus` schema** — see [extraction-report-schema.md § Provider Metadata Sub-objects](./extraction-report-schema.md#provider-metadata-sub-objects) (subsection `provider_metadata.consensus`). That document remains the single schema source of truth.
+
 ## For operators (directive authors)
 
 Nothing changes about the directive shapes you already use. DOCX / PDF / Notion / Box / Playwright directives continue to work as they did before Story 27-0. Internally the dispatcher transforms a legacy directive:
@@ -132,9 +144,9 @@ python skills/bmad-agent-texas/scripts/run_wrangler.py --list-providers --status
 python skills/bmad-agent-texas/scripts/run_wrangler.py --list-providers --json
 ```
 
-Shows every fetch surface Texas knows about — ready implementations (DOCX, PDF, HTML, Markdown, Notion direct API, Box Drive local FS, Playwright-saved HTML), ratified stubs (Notion MCP, Box API, Playwright MCP, scite, Consensus, image, YouTube), and forward-looking backlog entries (OpenAI/ChatGPT). Use this when you're about to ask "can Texas pull from X?" — the directory answers authoritatively.
+Shows every fetch surface Texas knows about — ready implementations (DOCX, PDF, HTML, Markdown, Notion direct API, Box Drive local FS, Playwright-saved HTML, and any loaded retrieval adapters such as scite/Consensus), ratified stubs (Notion MCP, Box API, Playwright MCP, image, YouTube, plus retrieval placeholders when no live adapter is loaded), and forward-looking backlog entries (OpenAI/ChatGPT). Use this when you're about to ask "can Texas pull from X?" — the directory answers authoritatively.
 
-The `--list-providers` output also includes each provider's required `auth_env_vars` — that's your discovery path for credentials (e.g., `SCITE_USER_NAME`, `SCITE_PASSWORD` for scite; `CONSENSUS_API_KEY` for Consensus). This repo does not ship a top-level `.env.example` file; [`provider_directory.py`](../scripts/retrieval/provider_directory.py) is the authoritative source for per-provider env var requirements. Copy the names into your local `.env` (gitignored) and fill in actual values.
+The `--list-providers` output also includes each provider's required `auth_env_vars` — that's your discovery path for credentials (e.g., `SCITE_USER_NAME`, `SCITE_PASSWORD` for scite; Consensus accepts `CONSENSUS_API_KEY` or `CONSENSUS_USER_NAME` + `CONSENSUS_PASSWORD`). This repo does not ship a top-level `.env.example` file; [`provider_directory.py`](../scripts/retrieval/provider_directory.py) is the authoritative source for per-provider env var requirements. Copy the names into your local `.env` (gitignored) and fill in actual values.
 
 ## For dev-agents (extending the base)
 

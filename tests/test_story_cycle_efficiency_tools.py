@@ -44,7 +44,7 @@ def test_instantiate_skip_story_spec_preserves_existing_preseed(
             "--schema-name",
             "Registries",
             "--module-path",
-            "marcus.lesson_plan.registries",
+            "app.marcus.lesson_plan.registries",
             "--points",
             "2",
             "--predecessors",
@@ -58,7 +58,7 @@ def test_instantiate_skip_story_spec_preserves_existing_preseed(
 
     assert exit_code == 0
     assert existing_preseed.read_text(encoding="utf-8") == "pre-existing pre-seed"
-    assert (repo_root / "marcus" / "lesson_plan" / "registries.py").exists()
+    assert (repo_root / "app" / "marcus" / "lesson_plan" / "registries.py").exists()
     assert (repo_root / "tests" / "contracts" / "test_registries_shape_stable.py").exists()
     assert (
         repo_root / "tests" / "contracts" / "test_registries_json_schema_parity.py"
@@ -77,7 +77,7 @@ def test_instantiate_collision_without_force_returns_nonzero(
 ) -> None:
     repo_root = _prepare_scaffold_repo(tmp_path, monkeypatch)
 
-    collision = repo_root / "marcus" / "lesson_plan" / "registries.py"
+    collision = repo_root / "app" / "marcus" / "lesson_plan" / "registries.py"
     collision.parent.mkdir(parents=True, exist_ok=True)
     collision.write_text("occupied", encoding="utf-8")
 
@@ -88,7 +88,7 @@ def test_instantiate_collision_without_force_returns_nonzero(
             "--schema-name",
             "Registries",
             "--module-path",
-            "marcus.lesson_plan.registries",
+            "app.marcus.lesson_plan.registries",
             "--no-digest",
             "--skip-story-spec",
         ]
@@ -111,7 +111,7 @@ def test_instantiate_generates_dormant_contract_tests_and_clean_schema_stub(
             "--schema-name",
             "Registries",
             "--module-path",
-            "marcus.lesson_plan.registries",
+            "app.marcus.lesson_plan.registries",
             "--no-digest",
             "--skip-story-spec",
         ]
@@ -120,7 +120,7 @@ def test_instantiate_generates_dormant_contract_tests_and_clean_schema_stub(
     assert exit_code == 0
 
     generated_schema = (
-        repo_root / "marcus" / "lesson_plan" / "registries.py"
+        repo_root / "app" / "marcus" / "lesson_plan" / "registries.py"
     ).read_text(encoding="utf-8").lower()
     assert "intake" not in generated_schema
     assert "orchestrator" not in generated_schema

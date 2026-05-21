@@ -5,7 +5,7 @@ from __future__ import annotations
 from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
-MODULE_PATH = REPO_ROOT / "marcus" / "lesson_plan" / "gagne_diagnostician.py"
+MODULE_PATH = REPO_ROOT / "app" / "marcus" / "lesson_plan" / "gagne_diagnostician.py"
 
 
 def test_gagne_diagnostician_does_not_import_emit_fit_report() -> None:

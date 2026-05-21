@@ -14,10 +14,11 @@ PROJECT_ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(PROJECT_ROOT))
 sys.path.insert(0, str(PROJECT_ROOT / "skills" / "gamma-api-mastery" / "scripts"))
 
-from dotenv import load_dotenv
-import requests
-import zipfile
 import io
+import zipfile
+
+import requests
+from dotenv import load_dotenv
 
 load_dotenv(PROJECT_ROOT / ".env")
 

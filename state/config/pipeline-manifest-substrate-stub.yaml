@@ -1,0 +1,26 @@
+# Slab 1 substrate smoke stub — single-node manifest for 1.1c / 1.1d
+# byte-equivalent smoke contract (`{"smoke": "ok", "node": "noop"}`).
+#
+# The primary manifest `state/config/pipeline-manifest.yaml` is the migrated
+# v4.2 33-node pipeline (Story 1.6). This stub exists so `app.smoke_test.run_smoke()`
+# and the 1.1d transport-parity tests keep their substrate contract without
+# bloating per-call across the full 33-node graph. The full manifest is
+# exercised via `run_full_smoke()` / `python -m app.smoke_test --full`.
+
+schema_version: "0.1-stub"
+pack_version: "substrate-stub"
+lane: "run_graph"
+entrypoint: "noop"
+frozen_graph_version: "v0.1-stub"
+block_mode_trigger_paths:
+  - state/config/pipeline-manifest-substrate-stub.yaml
+nodes:
+  - id: noop
+    specialist_id: smoke
+    label: "Slab 1 substrate smoke node"
+    rationale: "Single-node manifest exercising loader + compiler round-trip."
+edges:
+  - from: __start__
+    to: noop
+  - from: noop
+    to: __end__

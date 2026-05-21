@@ -1,0 +1,8 @@
+run_id: TEXAS-FIXTURE-001
+sources:
+  - ref_id: src-001
+    provider: local_file
+    locator: skills/bmad-agent-texas/scripts/tests/fixtures/wrangler-golden/primary.md
+    role: primary
+    description: Fixture source
+    expected_min_words: 200

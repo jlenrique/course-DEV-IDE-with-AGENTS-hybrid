@@ -13,7 +13,7 @@ import hashlib
 import json
 from collections import defaultdict, deque
 from pathlib import Path
-from typing import Any, Dict, List, Set, Tuple
+from typing import Any
 
 try:
     import yaml
@@ -29,7 +29,7 @@ class DispatchPlanError(ValueError):
         self.code = code
 
 
-def load_dispatch_config(path: Path = CONFIG_PATH) -> Dict[str, Any]:
+def load_dispatch_config(path: Path = CONFIG_PATH) -> dict[str, Any]:
     if yaml is None:  # pragma: no cover
         raise DispatchPlanError("config_missing", "pyyaml is required")
     if not path.is_file():
@@ -43,11 +43,11 @@ def load_dispatch_config(path: Path = CONFIG_PATH) -> Dict[str, Any]:
     return raw
 
 
-def _topo_sort(nodes: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+def _topo_sort(nodes: list[dict[str, Any]]) -> list[dict[str, Any]]:
     # Build graph
-    indeg: Dict[str, int] = {}
-    edges: Dict[str, Set[str]] = defaultdict(set)
-    node_by_id: Dict[str, Dict[str, Any]] = {}
+    indeg: dict[str, int] = {}
+    edges: dict[str, set[str]] = defaultdict(set)
+    node_by_id: dict[str, dict[str, Any]] = {}
     for n in nodes:
         cid = str(n.get("cluster_id"))
         node_by_id[cid] = n
@@ -59,7 +59,7 @@ def _topo_sort(nodes: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
             indeg.setdefault(dep_id, 0)
 
     q = deque([cid for cid, deg in indeg.items() if deg == 0])
-    ordered: List[str] = []
+    ordered: list[str] = []
     while q:
         cid = q.popleft()
         ordered.append(cid)
@@ -75,7 +75,7 @@ def _topo_sort(nodes: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
     return [node_by_id[c] for c in ordered if c in node_by_id]
 
 
-def _order_nodes(nodes: List[Dict[str, Any]], policy: Dict[str, Any]) -> List[Dict[str, Any]]:
+def _order_nodes(nodes: list[dict[str, Any]], policy: dict[str, Any]) -> list[dict[str, Any]]:
     ordering = policy.get("ordering", "priority_size_id")
     if ordering == "manifest":
         return nodes
@@ -90,23 +90,23 @@ def _order_nodes(nodes: List[Dict[str, Any]], policy: Dict[str, Any]) -> List[Di
     )
 
 
-def _batch(nodes: List[Dict[str, Any]], batch_size: int) -> List[List[Dict[str, Any]]]:
+def _batch(nodes: list[dict[str, Any]], batch_size: int) -> list[list[dict[str, Any]]]:
     if batch_size <= 0:
         batch_size = 1
     return [nodes[i : i + batch_size] for i in range(0, len(nodes), batch_size)]
 
 
-def _plan_hash(plan: Dict[str, Any], algo: str = "sha256") -> str:
+def _plan_hash(plan: dict[str, Any], algo: str = "sha256") -> str:
     h = hashlib.new(algo)
     h.update(json.dumps(plan, sort_keys=True).encode("utf-8"))
     return h.hexdigest()
 
 
 def generate_dispatch_plan(
-    clusters: List[Dict[str, Any]],
+    clusters: list[dict[str, Any]],
     *,
-    config: Dict[str, Any] | None = None,
-) -> Dict[str, Any]:
+    config: dict[str, Any] | None = None,
+) -> dict[str, Any]:
     cfg = config or load_dispatch_config()
     policy = cfg.get("policy") or {}
     batch_size = int(policy.get("batch_size", 1))
@@ -125,7 +125,7 @@ def generate_dispatch_plan(
     retries_cfg = cfg.get("retries", {}) or {}
     backoff_cfg = cfg.get("backoff", {}) or {}
 
-    steps: List[Dict[str, Any]] = []
+    steps: list[dict[str, Any]] = []
     for batch_index, batch in enumerate(batches):
         for item in batch:
             cid = str(item.get("cluster_id"))

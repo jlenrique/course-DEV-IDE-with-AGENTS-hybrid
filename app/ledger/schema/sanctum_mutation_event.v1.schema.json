@@ -1,0 +1,74 @@
+{
+  "additionalProperties": false,
+  "description": "One detected sanctum mutation.",
+  "properties": {
+    "created_at": {
+      "format": "date-time",
+      "title": "Created At",
+      "type": "string"
+    },
+    "event_id": {
+      "format": "uuid",
+      "title": "Event Id",
+      "type": "string"
+    },
+    "file_path": {
+      "minLength": 1,
+      "title": "File Path",
+      "type": "string"
+    },
+    "gate_id": {
+      "minLength": 1,
+      "title": "Gate Id",
+      "type": "string"
+    },
+    "hash_after": {
+      "minLength": 1,
+      "title": "Hash After",
+      "type": "string"
+    },
+    "hash_before": {
+      "minLength": 1,
+      "title": "Hash Before",
+      "type": "string"
+    },
+    "kind": {
+      "const": "sanctum_mutation",
+      "default": "sanctum_mutation",
+      "title": "Kind",
+      "type": "string"
+    },
+    "mutated_at": {
+      "format": "date-time",
+      "title": "Mutated At",
+      "type": "string"
+    },
+    "suggested_invalidating_commit": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Suggested Invalidating Commit"
+    },
+    "trial_id": {
+      "format": "uuid",
+      "title": "Trial Id",
+      "type": "string"
+    }
+  },
+  "required": [
+    "trial_id",
+    "gate_id",
+    "file_path",
+    "hash_before",
+    "hash_after",
+    "mutated_at"
+  ],
+  "title": "SanctumMutationLedgerEvent",
+  "type": "object"
+}

@@ -8,13 +8,13 @@ from unittest.mock import patch
 import pytest
 from pydantic import ValidationError
 
-from marcus.lesson_plan.digest import compute_digest
-from marcus.lesson_plan.fit_report import (
+from app.marcus.lesson_plan.digest import compute_digest
+from app.marcus.lesson_plan.fit_report import (
     StaleFitReportError,
     UnknownUnitIdError,
     validate_fit_report,
 )
-from marcus.lesson_plan.schema import (
+from app.marcus.lesson_plan.schema import (
     Dials,
     FitDiagnosis,
     FitReport,

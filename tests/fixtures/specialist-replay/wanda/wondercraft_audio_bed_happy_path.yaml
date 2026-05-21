@@ -1,0 +1,19 @@
+interactions:
+  - request:
+      method: POST
+      uri: https://api.wondercraft.ai/v1/audio-beds
+      body:
+        title: "Storyboard Audio Bed"
+        mood: "focused"
+        genre: "ambient"
+        duration_seconds: 30
+    response:
+      status:
+        code: 200
+        message: OK
+      body:
+        id: "bed-focused-ambient"
+        url: "https://cdn.wondercraft.test/bed-focused-ambient.mp3"
+        format: "mp3"
+        cost_usd: 0.12
+version: 1

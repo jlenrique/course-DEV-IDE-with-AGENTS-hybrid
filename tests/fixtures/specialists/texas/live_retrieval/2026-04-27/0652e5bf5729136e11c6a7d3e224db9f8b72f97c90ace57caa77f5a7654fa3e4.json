@@ -1,0 +1,26 @@
+{
+  "ceremony_date": "2026-04-27",
+  "captured_at": "2026-04-27T07:18:57.390149+00:00",
+  "provider": "scite",
+  "transport": "MCP Streamable HTTP via OAuth 2.1 (Authorization Code + PKCE)",
+  "endpoint": "https://api.scite.ai/mcp",
+  "tools_discovered": [
+    {
+      "name": "search_literature",
+      "description": "Search scientific literature and read full-text content from peer-reviewed papers.\n\nUse `dois` (preferred) or `titles` with targeted `term` queries to extract full-text passages from specific papers. "
+    }
+  ],
+  "tool_invoked": "search_literature",
+  "tool_arguments": {
+    "term": "neuroplasticity adult learning evidence-based instructional design",
+    "limit": 5
+  },
+  "is_error": false,
+  "content_summary": [
+    {
+      "type": "text",
+      "text_excerpt": "{\n  \"total\": 53877481,\n  \"count\": 5,\n  \"query\": \"neuroplasticity adult learning evidence-based instructional design\",\n  \"limit\": 5,\n  \"offset\": 0,\n  \"hits\": [\n    {\n      \"doi\": \"10.1080/15374416.2022.2070851\",\n      \"title\": \"A Smartphone App for Parental Management of Adolescent Conduct Problems: Randomized Clinical Trial of iKinnect\",\n      \"authors\": [\n        {\n          \"authorName\": \"Cindy M. Schaeffer\"\n        },\n        {\n          \"authorName\": \"Linda A. Dimeff\"\n        },\n        {\n  ..."
+    }
+  ],
+  "raw_content_count": 1
+}

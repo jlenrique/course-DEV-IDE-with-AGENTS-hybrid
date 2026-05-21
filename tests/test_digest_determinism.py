@@ -14,8 +14,8 @@ from datetime import UTC, datetime
 
 import pytest
 
-from marcus.lesson_plan.digest import assert_digest_matches, compute_digest
-from marcus.lesson_plan.schema import (
+from app.marcus.lesson_plan.digest import assert_digest_matches, compute_digest
+from app.marcus.lesson_plan.schema import (
     IdentifiedGap,
     LearningModel,
     LessonPlan,

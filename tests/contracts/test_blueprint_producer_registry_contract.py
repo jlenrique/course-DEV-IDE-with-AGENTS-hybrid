@@ -2,9 +2,9 @@
 
 from __future__ import annotations
 
-import marcus.lesson_plan.blueprint_producer as blueprint_producer_module
-from marcus.lesson_plan.modality_registry import MODALITY_REGISTRY, SCHEMA_VERSION
-from marcus.lesson_plan.produced_asset import SCHEMA_VERSION as PRODUCED_ASSET_SCHEMA_VERSION
+import app.marcus.lesson_plan.blueprint_producer as blueprint_producer_module
+from app.marcus.lesson_plan.modality_registry import MODALITY_REGISTRY, SCHEMA_VERSION
+from app.marcus.lesson_plan.produced_asset import SCHEMA_VERSION as PRODUCED_ASSET_SCHEMA_VERSION
 
 
 def test_blueprint_registry_backfill_points_at_concrete_producer() -> None:
@@ -12,7 +12,7 @@ def test_blueprint_registry_backfill_points_at_concrete_producer() -> None:
     assert entry.status == "ready"
     assert (
         entry.producer_class_path
-        == "marcus.lesson_plan.blueprint_producer.BlueprintProducer"
+        == "app.marcus.lesson_plan.blueprint_producer.BlueprintProducer"
     )
 
 

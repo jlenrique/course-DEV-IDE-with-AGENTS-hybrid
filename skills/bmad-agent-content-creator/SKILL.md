@@ -41,11 +41,11 @@ Read course context fresh from `state/config/course_context.yaml` before any des
 ## Passes + Delegation
 
 - **Pass 1** (before Gary): lesson plan + slide brief + cluster plan (when `cluster_density` ≠ none). See `./references/delegation-protocol.md` and `./references/cluster-decision-criteria.md`.
-- **Pass 2** (after Gary + HIL Gate 2): narration script + segment manifest, plus optional dialogue scripts / assessment briefs / first-person explainers. **Full Pass 2 procedure:** `./references/pass-2-procedure.md` — perception contract (Step 0), narration + visual references + bridges (Step 2), motion hydration (Step 3), motion perception confirmation (Step 4).
+- **Pass 2** (after Gary + HIL Gate 2): narration script + segment manifest, plus optional dialogue scripts / assessment briefs / first-person explainers. **Full Pass 2 procedure:** `./references/pass-2-procedure.md` — perception contract (Step 0), narration + visual references + bridges (Step 2), motion hydration (Step 3), motion perception confirmation (Step 4). **Structural contract for segment-manifest emission:** `./references/pass-2-authoring-template.md` (story §7.1) — schema + fail-closed lint rules; read before writing the manifest.
 
 ## Capabilities (Router)
 
-20+ capability codes — CAPABILITIES.md in the sanctum is auto-generated from reference frontmatter and is the canonical router. Highlights: IA (pedagogical framework), WD (delegation), MG (segment manifest), CP (cluster planning), PC/VR/MP/MC/MA (Pass 2 script-backed). Delegation targets + context envelopes: `./references/external-agent-registry.md`. Exception playbook: `./references/degradation-handling.md`.
+20+ capability codes — CAPABILITIES.md in the sanctum is auto-generated from reference frontmatter and is the canonical router. Highlights: IA (pedagogical framework), WD (delegation), MG (segment manifest), CP (cluster planning), CE (cluster exemplar library), PC/VR/MP/MC/MA (Pass 2 script-backed). Delegation targets + context envelopes: `./references/external-agent-registry.md`. Exception playbook: `./references/degradation-handling.md`.
 
 ## Session Close
 

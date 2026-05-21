@@ -1,0 +1,15 @@
+{
+  "specialist_id": "quinn_r",
+  "request_id": "00000000-0000-4000-8000-000000000010",
+  "payload_in": {
+    "gate_phase": "pre-composition",
+    "artifact_paths": [
+      "tests/fixtures/specialists/quinn_r/fixture_artifacts/sample.txt"
+    ],
+    "artifact_path": "tests/fixtures/specialists/quinn_r/fixture_artifacts/sample.txt",
+    "modality": "image"
+  },
+  "model_hint": null,
+  "schema_version": "1.0",
+  "timestamp": "2026-04-24T00:00:00Z"
+}

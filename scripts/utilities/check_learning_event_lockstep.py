@@ -17,7 +17,7 @@ ROOT = project_root()
 REPORTS_ROOT = ROOT / "reports" / "dev-coherence"
 DEFAULT_SCHEMA = ROOT / "state" / "config" / "learning-event-schema.yaml"
 DEFAULT_CAPTURE = ROOT / "scripts" / "utilities" / "learning_event_capture.py"
-DEFAULT_WIRING = ROOT / "marcus" / "orchestrator" / "learning_event_wiring.py"
+DEFAULT_WIRING = ROOT / "app" / "marcus" / "orchestrator" / "learning_event_wiring.py"
 DEFAULT_MANIFEST = ROOT / "state" / "config" / "pipeline-manifest.yaml"
 
 

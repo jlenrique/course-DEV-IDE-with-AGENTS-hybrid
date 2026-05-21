@@ -15,8 +15,8 @@ from uuid import uuid4
 
 import pytest
 
-from marcus.lesson_plan.events import EventEnvelope
-from marcus.lesson_plan.log import (
+from app.marcus.lesson_plan.events import EventEnvelope
+from app.marcus.lesson_plan.log import (
     NAMED_MANDATORY_EVENTS,
     WRITER_EVENT_MATRIX,
     LessonPlanLog,

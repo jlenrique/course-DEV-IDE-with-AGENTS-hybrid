@@ -1,0 +1,69 @@
+{
+  "additionalProperties": false,
+  "description": "One cascade-resolution audit entry (NFR-X4 carrier).",
+  "properties": {
+    "cache_prefix_hash": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "description": "Deterministic SHA-256 hex of the cache-prefix tuple; None for non-final cascade entries that don't carry the cache identity.",
+      "title": "Cache Prefix Hash"
+    },
+    "level": {
+      "description": "Closed enum: per_call | per_specialist | registry_default | auto_select_fallback.",
+      "enum": [
+        "per_call",
+        "per_specialist",
+        "registry_default",
+        "auto_select_fallback"
+      ],
+      "title": "Level",
+      "type": "string"
+    },
+    "reason": {
+      "description": "Free-text explanation of why this level resolved as it did.",
+      "minLength": 1,
+      "title": "Reason",
+      "type": "string"
+    },
+    "requested": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "description": "The model the caller requested at this level (None if no override was provided at this level \u2014 e.g. registry_default level always has requested=None).",
+      "title": "Requested"
+    },
+    "resolved": {
+      "description": "The model the cascade resolved to at this level.",
+      "minLength": 1,
+      "title": "Resolved",
+      "type": "string"
+    },
+    "timestamp": {
+      "description": "Timezone-aware resolution timestamp.",
+      "format": "date-time",
+      "title": "Timestamp",
+      "type": "string"
+    }
+  },
+  "required": [
+    "level",
+    "resolved",
+    "reason",
+    "timestamp"
+  ],
+  "title": "ModelResolutionEntry",
+  "type": "object"
+}

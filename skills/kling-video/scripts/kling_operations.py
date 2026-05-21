@@ -15,8 +15,8 @@ from __future__ import annotations
 import argparse
 import json
 import logging
-from pathlib import Path
 import sys
+from pathlib import Path
 from typing import Any
 
 PROJECT_ROOT = Path(__file__).resolve().parents[3]
@@ -24,8 +24,8 @@ if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
 
 from dotenv import load_dotenv
+
 from scripts.utilities.motion_budgeting import (
-    MODEL_CREDIT_ESTIMATES,
     estimate_motion_credits,
     normalize_motion_mode,
 )

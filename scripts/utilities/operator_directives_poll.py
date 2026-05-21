@@ -9,7 +9,7 @@ This module codifies Prompt 2A timing policy:
 from __future__ import annotations
 
 from dataclasses import dataclass
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime, timedelta
 from typing import Any
 
 REPLY_HOLD_SECONDS = 3 * 60
@@ -43,13 +43,13 @@ def parse_iso_utc(ts: str) -> datetime:
     """Parse an ISO timestamp and normalize to UTC."""
     dt = datetime.fromisoformat(ts.replace("Z", "+00:00"))
     if dt.tzinfo is None:
-        return dt.replace(tzinfo=timezone.utc)
-    return dt.astimezone(timezone.utc)
+        return dt.replace(tzinfo=UTC)
+    return dt.astimezone(UTC)
 
 
 def build_poll_window(poll_started_utc: datetime) -> PollWindow:
     """Build a poll window using hard timing policy constants."""
-    start = poll_started_utc.astimezone(timezone.utc)
+    start = poll_started_utc.astimezone(UTC)
     return PollWindow(
         poll_started_utc=start,
         reply_eligible_utc=start + timedelta(seconds=REPLY_HOLD_SECONDS),
@@ -83,7 +83,7 @@ def evaluate_submission(
 ) -> SubmissionDecision:
     """Evaluate whether a Prompt 2A submission is valid and in-window."""
     window = build_poll_window(poll_started_utc)
-    now = now_utc.astimezone(timezone.utc)
+    now = now_utc.astimezone(UTC)
 
     if now < window.reply_eligible_utc:
         return SubmissionDecision(

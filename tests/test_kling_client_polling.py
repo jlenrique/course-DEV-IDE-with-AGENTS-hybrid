@@ -74,3 +74,42 @@ def test_wait_for_completion_failed_task_raises_runtime_error(
 
     with pytest.raises(RuntimeError, match="quota exceeded"):
         client.wait_for_completion("task-failed", poll_interval=0, max_attempts=2)
+
+
+def test_generate_motion_waits_for_terminal_image_to_video_result() -> None:
+    class RecordingKlingClient(KlingClient):
+        def __init__(self) -> None:
+            self.submitted: list[dict[str, object]] = []
+            self.waited: list[dict[str, object]] = []
+
+        def image_to_video(self, image_url: str, **kwargs: object) -> dict[str, object]:
+            self.submitted.append({"image_url": image_url, **kwargs})
+            return {"data": {"task_id": "task-terminal"}}
+
+        def wait_for_completion(self, task_id: str, **kwargs: object) -> dict[str, object]:
+            self.waited.append({"task_id": task_id, **kwargs})
+            assert kwargs["task_type"] == "image2video"
+            assert kwargs["poll_interval"] == 0
+            assert kwargs["max_attempts"] == 1
+            return {
+                "data": {
+                    "task_id": task_id,
+                    "task_status": "succeed",
+                    "task_result": {
+                        "videos": [{"url": "https://cdn.kling.test/slide-01.mp4"}]
+                    },
+                }
+            }
+
+    client = RecordingKlingClient()
+
+    result = client.generate_motion(
+        prompt="slow pan",
+        image_url="https://cdn.test/still.png",
+        poll_interval=0,
+        max_attempts=1,
+    )
+
+    assert client.submitted[0]["image_url"] == "https://cdn.test/still.png"
+    assert client.waited[0]["task_id"] == "task-terminal"
+    assert result["data"]["task_result"]["videos"][0]["url"].endswith(".mp4")

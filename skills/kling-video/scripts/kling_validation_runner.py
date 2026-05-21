@@ -8,12 +8,12 @@
 from __future__ import annotations
 
 import argparse
-from datetime import datetime, timezone
 import hashlib
 import json
-from pathlib import Path
 import platform
 import sys
+from datetime import UTC, datetime
+from pathlib import Path
 from typing import Any
 
 import yaml
@@ -49,7 +49,7 @@ class KlingValidationError(RuntimeError):
 
 
 def _now_utc() -> str:
-    return datetime.now(timezone.utc).isoformat()
+    return datetime.now(UTC).isoformat()
 
 
 def load_validation_cases(case_file: Path = DEFAULT_CASE_FILE) -> list[dict[str, Any]]:

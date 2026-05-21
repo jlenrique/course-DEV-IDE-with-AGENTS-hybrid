@@ -51,7 +51,7 @@ def _repo_relative(path: Path) -> str:
 def _iter_candidate_python_files() -> list[Path]:
     """Yield production .py files under marcus/ (excluding test/cache dirs)."""
     out: list[Path] = []
-    for p in (REPO_ROOT / "marcus").rglob("*.py"):
+    for p in (REPO_ROOT / "app" / "marcus").rglob("*.py"):
         if "__pycache__" in p.parts:
             continue
         out.append(p)

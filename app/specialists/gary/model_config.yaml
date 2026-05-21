@@ -1,0 +1,10 @@
+# Level 1: per-call override (set via RunState.model_overrides at runtime)
+# Level 2: per-specialist default (this field)
+# Level 3: registry default (app/models/registry.py)
+specialist_id: "gary"
+default_model: "gpt-5-nano"
+per_node_overrides:
+  act: "gpt-5-nano"
+temperature_default: 0.0
+# Gary is REST-API tool-dispatch at `_act` (no chat-model invocation there).
+# We still resolve the model at `_plan` to keep FR16 trail-entry shape consistent.

@@ -1,0 +1,49 @@
+# Operational contract — `<specialist_name>`
+
+**Specialist:** `<specialist_name>` (Class D2 pipeline-greenfield)
+**Authored at:** `<YYYY-MM-DD>` (story-T1 readiness)
+**Last updated at:** `<YYYY-MM-DD>`
+
+> Lives at `_bmad/memory/bmad-agent-<specialist_name>/contract.md`. Operational metadata for Class-D2 specialists; replaces persona-shaped continuity (PERSONA / CREED / BOND / MEMORY / CAPABILITIES) which doesn't apply.
+
+## Input contract
+
+What this specialist receives from Marcus's dispatch envelope.
+
+**Schema reference:** `app/specialists/<specialist_name>/state.py::<SpecialistState>` (Pydantic v2)
+
+| Field | Type | Required | Source | Description |
+|---|---|---|---|---|
+| `<field>` | `<type>` | yes \| no | `<upstream-specialist>` | `<one-line description>` |
+
+## Output contract
+
+What this specialist returns to Marcus's append-only envelope.
+
+**Schema reference:** `app/specialists/<specialist_name>/state.py::<SpecialistOutput>` (Pydantic v2)
+
+| Field | Type | Determinism | Description |
+|---|---|---|---|
+| `<field>` | `<type>` | bytes-identical \| field-masked-hash \| nondeterministic | `<one-line description>` |
+
+## Side effects
+
+Files written outside the envelope (e.g., assembly-bundle, descript-assembly-guide).
+
+| Path | Format | Determinism | Cleanup behavior |
+|---|---|---|---|
+| `<path>` | `<format>` | bytes-identical \| field-masked-hash | retained \| cleaned-on-rerun |
+
+## Substrate paths consumed (READ-only; per FR113 + NFR-I13)
+
+- `<path>` — `<role>`
+
+## Substrate paths NOT touched
+
+- (verify against frozen-paths list at `state/config/substrate-frozen-paths.yaml` — TBD if not yet authored)
+
+## Error modes
+
+| Error | When raised | Recovery |
+|---|---|---|
+| `<error_class>` | `<condition>` | `<recovery action>` |

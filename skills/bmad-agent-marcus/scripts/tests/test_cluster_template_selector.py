@@ -5,7 +5,6 @@ from pathlib import Path
 
 import yaml
 
-
 ROOT = Path(__file__).resolve().parents[4]
 SCRIPT_PATH = ROOT / "skills" / "bmad-agent-marcus" / "scripts" / "cluster_template_selector.py"
 TEMPLATE_PATH = ROOT / "skills" / "bmad-agent-content-creator" / "references" / "cluster-templates.yaml"

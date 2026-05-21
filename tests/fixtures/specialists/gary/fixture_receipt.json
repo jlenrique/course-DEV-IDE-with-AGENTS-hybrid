@@ -1,0 +1,21 @@
+{
+  "generation_id": "gen-fixture-001",
+  "status": "complete",
+  "export_path": "exports/gary-fixture/",
+  "gary_slide_output": [
+    {
+      "slide_id": "slide-01",
+      "card_number": 1,
+      "file_path": "exports/gary_slide_01.png",
+      "visual_description": "A clean title slide with subtle grid background.",
+      "source_ref": "slide-brief.md#1"
+    },
+    {
+      "slide_id": "slide-02",
+      "card_number": 2,
+      "file_path": "exports/gary_slide_02.png",
+      "visual_description": "A two-column comparison slide.",
+      "source_ref": "slide-brief.md#2"
+    }
+  ]
+}

@@ -33,7 +33,7 @@ def test_no_hardcoded_pipeline_step_lists() -> None:
 def test_insert_between_arguments_resolve_to_manifest_ids() -> None:
     root = Path(__file__).resolve().parents[2]
     manifest_ids = {step.id for step in load_manifest().steps}
-    workflow_runner = root / "marcus" / "orchestrator" / "workflow_runner.py"
+    workflow_runner = root / "app" / "marcus" / "orchestrator" / "workflow_runner.py"
     tree = ast.parse(workflow_runner.read_text(encoding="utf-8"))
     invalid: list[str] = []
     for node in ast.walk(tree):

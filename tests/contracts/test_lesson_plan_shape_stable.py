@@ -10,7 +10,7 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
-from marcus.lesson_plan.schema import Dials, IdentifiedGap, LessonPlan, PlanUnit
+from app.marcus.lesson_plan.schema import Dials, IdentifiedGap, LessonPlan, PlanUnit
 
 FIXTURES = Path(__file__).parent / "fixtures" / "lesson_plan"
 CHANGELOG = (

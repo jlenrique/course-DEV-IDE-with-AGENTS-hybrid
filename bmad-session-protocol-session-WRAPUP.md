@@ -240,25 +240,26 @@ If a temporary worktree directory was deleted manually outside Git, clean stale 
 
 If you intentionally keep more than one worktree, record why and the exact paths in `next-session-start-here.md` Step 7.
 
-### 12. Git closeout (default)
+### 12. Git closeout (default — PUSH MANDATORY)
+
+**Push-cadence policy (per CLAUDE.md):** Working-branch push at session-WRAPUP is MANDATORY, not deferred. The session ends with `origin/<working-branch>` at the local HEAD. A working branch left unpushed at session-close violates the push-cadence policy ratified 2026-05-05.
 
 Default end-of-session flow is:
 1. Finalize `next-session-start-here.md` branch metadata for expected post-closeout state (baseline + next working branch + startup commands)
 2. Stage all intended changes (`git add ...`)
 3. Commit session work on the working branch with a clear summary message
-4. Resolve remotes by role before updating `master`:
+4. Resolve remotes by role before optional master update:
    - **Source remote** (read-only upstream feed): prefer `upstream`; fallback `origin` only when `upstream` does not exist
    - **Publish remote** (where this repo pushes): prefer `origin`
    - Recommended check:
      - `git remote -v`
      - Confirm source remote is fetch-capable
      - Confirm publish remote is the intended writable destination for this repo
-5. Checkout and update `master` from the **source remote** (`<source-remote>/master`)
-6. Merge the working branch into `master`
-7. Push `master` to the **publish remote** (`<publish-remote>`)
-8. Create the **next working branch** from updated `master` (for the next session), and push with upstream
-9. Re-run `git worktree list` and verify only intended worktrees remain registered
-10. Re-verify `next-session-start-here.md` branch metadata matches reality. If it does not, make a small docs-only follow-up commit and push.
+5. **MANDATORY: push the working branch to the publish remote** — `git push origin <working-branch>`. This is the safety gate. Do NOT defer. If a pre-push hook fails, investigate + fix + retry; do not bypass with `--no-verify`.
+6. Optional: checkout and update `master` from the **source remote** (`<source-remote>/master`); merge the working branch into `master`; push `master` to the **publish remote**. (Only if the team's workflow merges to `master` at session-close. For Slab-7c-style scoped-work branches, skip the master-merge and leave the working branch as the resume point.)
+7. Optional: create the **next working branch** from updated `master` (for the next session), and push with upstream. (Skip when continuing on the same working branch.)
+8. Re-run `git worktree list` and verify only intended worktrees remain registered
+9. Re-verify `next-session-start-here.md` branch metadata matches reality. If it does not, make a small docs-only follow-up commit and push.
 
 Example (hybrid clone topology):
 - Source remote: `upstream`
@@ -274,14 +275,14 @@ Maintenance note for one-way clones:
 - After each pull from the primary project, quickly re-check this section still maps source=`upstream` and publish=`origin`.
 - If upstream edits this protocol block, keep the remote-role model above when resolving merge conflicts.
 
-If your team intentionally skips merge-to-master for a session, explicitly record that exception and the exact resume branch in both `next-session-start-here.md` and `SESSION-HANDOFF.md`.
+If your team intentionally skips merge-to-master for a session, explicitly record that exception and the exact resume branch in both `next-session-start-here.md` and `SESSION-HANDOFF.md`. **The working-branch push (Step 5) is still mandatory** — only the master-merge step (Step 6) is skipped.
 
 Do not perform the merge-to-master flow when any of the following are true:
 - unrelated pre-existing worktree changes remain
 - the session produced a scoped checkpoint that should stay isolated on the working branch
 - branch metadata or startup commands have not yet been reconciled
 
-In those cases, commit the working branch only, record the exception, and leave the repo in a truthful resume state.
+In those cases, commit + push the working branch only (Steps 1-5 + 8-9; skip Steps 6-7), record the exception, and leave the repo in a truthful resume state.
 
 **Course content commit examples**:
 - "Add lesson 3 presentation slides to staging with lesson plan scaffold"

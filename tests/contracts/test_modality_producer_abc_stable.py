@@ -5,18 +5,18 @@ from __future__ import annotations
 import inspect
 from pathlib import Path
 
-import marcus.lesson_plan.modality_producer as mp_module
-import marcus.lesson_plan.produced_asset as pa_module
-from marcus.lesson_plan.modality_producer import (
+import app.marcus.lesson_plan.modality_producer as mp_module
+import app.marcus.lesson_plan.produced_asset as pa_module
+from app.marcus.lesson_plan.modality_producer import (
     SCHEMA_VERSION as MP_SCHEMA_VERSION,
 )
-from marcus.lesson_plan.modality_producer import (
+from app.marcus.lesson_plan.modality_producer import (
     ModalityProducer,
 )
-from marcus.lesson_plan.produced_asset import (
+from app.marcus.lesson_plan.produced_asset import (
     SCHEMA_VERSION as PA_SCHEMA_VERSION,
 )
-from marcus.lesson_plan.produced_asset import (
+from app.marcus.lesson_plan.produced_asset import (
     ProducedAsset,
     ProductionContext,
 )
@@ -146,7 +146,7 @@ def test_produced_asset_config_is_extra_forbid_frozen() -> None:
 
 def test_fulfills_regex_pattern_pinned() -> None:
     """AC-B.7: the regex pattern is part of the contract surface."""
-    from marcus.lesson_plan.produced_asset import _FULFILLS_REGEX
+    from app.marcus.lesson_plan.produced_asset import _FULFILLS_REGEX
 
     expected = r"^[a-z0-9._-]+@(?:0|[1-9]\d*)$"
     assert _FULFILLS_REGEX.pattern == expected, (

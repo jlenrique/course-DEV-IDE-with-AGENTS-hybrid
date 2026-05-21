@@ -1,0 +1,26 @@
+# Pipeline-run chronology — `<specialist_name>`
+
+**Specialist:** `<specialist_name>` (Class D2 pipeline-greenfield)
+
+> Lives at `_bmad/memory/bmad-agent-<specialist_name>/chronology.md`. Records every pipeline-run; one entry per run. APPEND-only (per Composition Spec §3.1 + Slab 7b SG-3).
+
+## Format
+
+```
+### YYYY-MM-DDTHH:MM:SSZ — run_id=<run_id> trial_id=<trial_id>
+
+**Stages:** <stage_1> → <stage_2> → ... → <stage_N>
+**Outcome:** PASS | PARTIAL | FAIL
+**Pipeline-determinism rate (this run):** <X.XX> (vs target ≥0.99)
+**Bytes-identical hashes:** <stage>: <sha256_first_8_chars>
+**Field-masked hashes:** <stage>: <sha256_first_8_chars>
+**Notes:** <free-prose any anomalies; remediation pointers>
+```
+
+## Chronology
+
+(Entries appended at every pipeline-run; do NOT edit prior entries — append-only invariant per Composition Spec §3.1.)
+
+---
+
+(initial template; first entry lands at first Compositor invocation post-Story-7b.11 close)

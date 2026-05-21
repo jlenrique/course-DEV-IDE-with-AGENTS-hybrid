@@ -15,7 +15,7 @@ from datetime import UTC, datetime
 import pytest
 from pydantic import ValidationError
 
-from marcus.lesson_plan.events import ScopeDecisionTransition, to_internal_actor
+from app.marcus.lesson_plan.events import ScopeDecisionTransition, to_internal_actor
 
 
 def _build_transition(**overrides) -> ScopeDecisionTransition:

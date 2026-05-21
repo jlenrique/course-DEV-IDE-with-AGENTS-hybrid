@@ -1,0 +1,9 @@
+{
+  "_doc": "Vendored allowlist for endpoint URLs named directly by tests/live smoke scaffolds. Provider clients own their own base URLs; this snapshot covers test-local raw URLs so endpoint drift is reviewed intentionally.",
+  "snapshot_date": "2026-04-26",
+  "endpoints": [
+    "https://api.canva.com/rest/v1/users/me",
+    "https://api.notion.com/v1/users/me",
+    "https://mcp.consensus.app/mcp"
+  ]
+}

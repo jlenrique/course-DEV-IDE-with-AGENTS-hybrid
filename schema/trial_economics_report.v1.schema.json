@@ -1,0 +1,190 @@
+{
+  "$defs": {
+    "AgentCostEntry": {
+      "additionalProperties": false,
+      "description": "Per-agent aggregate cost attribution for one trial.",
+      "properties": {
+        "agent_name": {
+          "minLength": 1,
+          "title": "Agent Name",
+          "type": "string"
+        },
+        "model_assigned": {
+          "minLength": 1,
+          "title": "Model Assigned",
+          "type": "string"
+        },
+        "call_count": {
+          "minimum": 0,
+          "title": "Call Count",
+          "type": "integer"
+        },
+        "input_tokens": {
+          "minimum": 0,
+          "title": "Input Tokens",
+          "type": "integer"
+        },
+        "output_tokens": {
+          "minimum": 0,
+          "title": "Output Tokens",
+          "type": "integer"
+        },
+        "cost_usd": {
+          "minimum": 0.0,
+          "title": "Cost Usd",
+          "type": "number"
+        }
+      },
+      "required": [
+        "agent_name",
+        "model_assigned",
+        "call_count",
+        "input_tokens",
+        "output_tokens",
+        "cost_usd"
+      ],
+      "title": "AgentCostEntry",
+      "type": "object"
+    },
+    "BudgetStatus": {
+      "additionalProperties": false,
+      "description": "Soft-cap budget posture for the measured trial.",
+      "properties": {
+        "state": {
+          "enum": [
+            "no-cap",
+            "under-budget",
+            "over-budget-warning"
+          ],
+          "title": "State",
+          "type": "string"
+        },
+        "over_by_usd": {
+          "minimum": 0.0,
+          "title": "Over By Usd",
+          "type": "number"
+        }
+      },
+      "required": [
+        "state",
+        "over_by_usd"
+      ],
+      "title": "BudgetStatus",
+      "type": "object"
+    },
+    "DriftAlert": {
+      "additionalProperties": false,
+      "description": "Informational per-agent drift alert against rolling historical median.",
+      "properties": {
+        "agent_name": {
+          "minLength": 1,
+          "title": "Agent Name",
+          "type": "string"
+        },
+        "rolling_median_usd_per_call": {
+          "minimum": 0.0,
+          "title": "Rolling Median Usd Per Call",
+          "type": "number"
+        },
+        "observed_usd_per_call": {
+          "minimum": 0.0,
+          "title": "Observed Usd Per Call",
+          "type": "number"
+        },
+        "deviation_pct": {
+          "title": "Deviation Pct",
+          "type": "number"
+        }
+      },
+      "required": [
+        "agent_name",
+        "rolling_median_usd_per_call",
+        "observed_usd_per_call",
+        "deviation_pct"
+      ],
+      "title": "DriftAlert",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "description": "Strict cost-engineering report captured for one trial.",
+  "properties": {
+    "trial_id": {
+      "minLength": 1,
+      "title": "Trial Id",
+      "type": "string"
+    },
+    "measured_at": {
+      "format": "date-time",
+      "title": "Measured At",
+      "type": "string"
+    },
+    "total_cost_usd": {
+      "minimum": 0.0,
+      "title": "Total Cost Usd",
+      "type": "number"
+    },
+    "per_agent_breakdown": {
+      "additionalProperties": {
+        "$ref": "#/$defs/AgentCostEntry"
+      },
+      "title": "Per Agent Breakdown",
+      "type": "object"
+    },
+    "per_model_breakdown": {
+      "additionalProperties": {
+        "type": "number"
+      },
+      "title": "Per Model Breakdown",
+      "type": "object"
+    },
+    "cascade_config_digest": {
+      "maxLength": 64,
+      "minLength": 64,
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Cascade Config Digest",
+      "type": "string"
+    },
+    "pricing_table_digest": {
+      "maxLength": 64,
+      "minLength": 64,
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Pricing Table Digest",
+      "type": "string"
+    },
+    "langsmith_trace_url": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Langsmith Trace Url"
+    },
+    "drift_alerts": {
+      "items": {
+        "$ref": "#/$defs/DriftAlert"
+      },
+      "title": "Drift Alerts",
+      "type": "array"
+    },
+    "budget_status": {
+      "$ref": "#/$defs/BudgetStatus"
+    }
+  },
+  "required": [
+    "trial_id",
+    "measured_at",
+    "total_cost_usd",
+    "per_agent_breakdown",
+    "per_model_breakdown",
+    "cascade_config_digest",
+    "pricing_table_digest",
+    "budget_status"
+  ],
+  "title": "TrialEconomicsReport",
+  "type": "object"
+}

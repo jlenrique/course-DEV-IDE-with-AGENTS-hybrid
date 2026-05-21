@@ -24,7 +24,10 @@ import subprocess
 import sys
 import textwrap
 
+import pytest
 
+
+@pytest.mark.serial
 def test_importing_30_1_modules_has_no_filesystem_side_effects() -> None:
     """AC-T.15 — no new files are written by importing the 30-1 modules."""
     script = textwrap.dedent(
@@ -103,15 +106,15 @@ def test_30_1_modules_do_not_call_atexit_register_in_source() -> None:
 
     repo_root = Path(__file__).parent.parent
     guarded_files: list[Path] = [
-        repo_root / "marcus" / "__init__.py",
-        repo_root / "marcus" / "facade.py",
-        repo_root / "marcus" / "intake" / "__init__.py",
-        repo_root / "marcus" / "intake" / "pre_packet.py",  # 30-2b AC-B.9
-        repo_root / "marcus" / "orchestrator" / "__init__.py",
-        repo_root / "marcus" / "orchestrator" / "dispatch.py",  # 30-2b AC-B.9
-        repo_root / "marcus" / "orchestrator" / "loop.py",  # 30-3a AC-T.12
-        repo_root / "marcus" / "orchestrator" / "stub_dials.py",  # 30-3a AC-T.12
-        repo_root / "marcus" / "orchestrator" / "write_api.py",
+        repo_root / "app" / "marcus" / "__init__.py",
+        repo_root / "app" / "marcus" / "facade.py",
+        repo_root / "app" / "marcus" / "intake" / "__init__.py",
+        repo_root / "app" / "marcus" / "intake" / "pre_packet.py",  # 30-2b AC-B.9
+        repo_root / "app" / "marcus" / "orchestrator" / "__init__.py",
+        repo_root / "app" / "marcus" / "orchestrator" / "dispatch.py",  # 30-2b AC-B.9
+        repo_root / "app" / "marcus" / "orchestrator" / "loop.py",  # 30-3a AC-T.12
+        repo_root / "app" / "marcus" / "orchestrator" / "stub_dials.py",  # 30-3a AC-T.12
+        repo_root / "app" / "marcus" / "orchestrator" / "write_api.py",
     ]
     offenders: list[str] = []
     for path in guarded_files:

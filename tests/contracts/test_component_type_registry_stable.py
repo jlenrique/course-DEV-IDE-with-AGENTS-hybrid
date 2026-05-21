@@ -5,13 +5,13 @@ from __future__ import annotations
 from pathlib import Path
 from types import MappingProxyType
 
-import marcus.lesson_plan.component_type_registry as ct_module
-from marcus.lesson_plan.component_type_registry import (
+import app.marcus.lesson_plan.component_type_registry as ct_module
+from app.marcus.lesson_plan.component_type_registry import (
     COMPONENT_TYPE_REGISTRY,
     SCHEMA_VERSION,
     ComponentTypeEntry,
 )
-from marcus.lesson_plan.modality_registry import MODALITY_REGISTRY
+from app.marcus.lesson_plan.modality_registry import MODALITY_REGISTRY
 
 CHANGELOG = (
     Path(__file__).resolve().parents[2]

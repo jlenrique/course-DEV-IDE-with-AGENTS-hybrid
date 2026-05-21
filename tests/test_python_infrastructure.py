@@ -9,6 +9,7 @@ from __future__ import annotations
 import os
 import sys
 import tempfile
+
 try:
     import tomllib
 except ImportError:
@@ -315,17 +316,22 @@ class TestProjectPackaging:
 
 
 class TestEnvDocumentation:
-    def test_no_env_example_in_repo(self):
+    def test_env_example_is_canonical_template(self):
+        """Migration policy (post-Slab-3 close): .env.example IS the canonical
+        operator-onboarding template; tracked in repo with placeholder values.
+        Reverses primary-repo policy that forbid env templates in-tree."""
         from scripts.utilities.file_helpers import project_root
 
-        assert not (project_root() / ".env.example").exists()
+        assert (project_root() / ".env.example").exists()
 
-    def test_env_is_gitignored(self):
+    def test_env_is_gitignored_with_template_exception(self):
+        """Migration policy: .env stays gitignored; .env.example is exception
+        (tracked) per `!.env.example` line in .gitignore."""
         from scripts.utilities.file_helpers import project_root
 
         content = (project_root() / ".gitignore").read_text(encoding="utf-8")
         assert ".env" in content
-        assert "!.env.example" not in content
+        assert "!.env.example" in content
 
     def test_admin_guide_documents_tier1_keys(self):
         from scripts.utilities.file_helpers import project_root

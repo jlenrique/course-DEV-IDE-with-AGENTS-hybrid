@@ -12,7 +12,7 @@ import argparse
 import hashlib
 import json
 from pathlib import Path
-from typing import Any, Dict, List, TypedDict
+from typing import Any, TypedDict
 
 try:
     import yaml
@@ -33,7 +33,7 @@ class PromptEngineeringError(ValueError):
 class PromptResult(TypedDict):
     prompt_id: str
     prompt_text: str
-    audit: Dict[str, Any]
+    audit: dict[str, Any]
 
 
 def _require(cond: bool, code: str, msg: str) -> None:
@@ -41,7 +41,7 @@ def _require(cond: bool, code: str, msg: str) -> None:
         raise PromptEngineeringError(code, msg)
 
 
-def load_prompt_config(path: Path = CONFIG_PATH) -> Dict[str, Any]:
+def load_prompt_config(path: Path = CONFIG_PATH) -> dict[str, Any]:
     if yaml is None:  # pragma: no cover
         raise PromptEngineeringError("config_missing", "pyyaml is required")
     if not path.is_file():
@@ -55,7 +55,7 @@ def load_prompt_config(path: Path = CONFIG_PATH) -> Dict[str, Any]:
     return raw
 
 
-def _select_template(config: Dict[str, Any], cluster: Dict[str, Any]) -> Dict[str, Any]:
+def _select_template(config: dict[str, Any], cluster: dict[str, Any]) -> dict[str, Any]:
     templates = config.get("templates") or {}
     slides = cluster.get("slides") or cluster.get("segments") or []
     size = len(slides)
@@ -69,10 +69,10 @@ def _approx_tokens(text: str) -> int:
     return len(text.split())
 
 
-def _check_safety(config: Dict[str, Any], cluster: Dict[str, Any]) -> None:
+def _check_safety(config: dict[str, Any], cluster: dict[str, Any]) -> None:
     safety = config.get("safety") or {}
-    blocked: List[str] = safety.get("blocked_terms") or []
-    haystack_parts: List[str] = []
+    blocked: list[str] = safety.get("blocked_terms") or []
+    haystack_parts: list[str] = []
     for field in ("goal", "objective"):
         val = cluster.get(field)
         if isinstance(val, str):
@@ -85,7 +85,7 @@ def _check_safety(config: Dict[str, Any], cluster: Dict[str, Any]) -> None:
             raise PromptEngineeringError("safety_violation", f"blocked term detected: {term}")
 
 
-def _render_constraints(cluster: Dict[str, Any]) -> str:
+def _render_constraints(cluster: dict[str, Any]) -> str:
     constraints = cluster.get("constraints") or {}
     visual = constraints.get("visual_constraints")
     if visual:
@@ -102,9 +102,9 @@ def _render_constraints(cluster: Dict[str, Any]) -> str:
 
 
 def render_prompt(
-    cluster: Dict[str, Any],
+    cluster: dict[str, Any],
     *,
-    config: Dict[str, Any] | None = None,
+    config: dict[str, Any] | None = None,
     seed: str | None = None,
 ) -> PromptResult:
     cfg = config or load_prompt_config()
@@ -154,7 +154,7 @@ def render_prompt(
     h.update(hash_source.encode("utf-8"))
     prompt_id = h.hexdigest()
 
-    audit: Dict[str, Any] = {
+    audit: dict[str, Any] = {
         "template_version": tmpl_version,
         "constraints_applied": constraints_section != "none (visual constraints not provided)",
         "token_budget_used": used_tokens,

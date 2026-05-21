@@ -1,0 +1,207 @@
+{
+  "$defs": {
+    "CacheState": {
+      "description": "Closed cache-state vocabulary for gate-family decision cards.",
+      "enum": [
+        "healthy",
+        "mixed",
+        "cold"
+      ],
+      "title": "CacheState",
+      "type": "string"
+    },
+    "DecisionCardMeta": {
+      "additionalProperties": false,
+      "description": "Shared metadata attached to every Slab 7c gate-family DecisionCard.",
+      "properties": {
+        "affected_nodes": {
+          "description": "Manifest node ids affected by this decision card.",
+          "items": {
+            "type": "string"
+          },
+          "title": "Affected Nodes",
+          "type": "array"
+        },
+        "cache_state": {
+          "$ref": "#/$defs/CacheState",
+          "description": "Closed cache-state tier."
+        },
+        "override_trail": {
+          "description": "Operator override events already applied to this run.",
+          "items": {
+            "$ref": "#/$defs/OverrideEvent"
+          },
+          "title": "Override Trail",
+          "type": "array"
+        }
+      },
+      "required": [
+        "cache_state"
+      ],
+      "title": "DecisionCardMeta",
+      "type": "object"
+    },
+    "OverrideEvent": {
+      "additionalProperties": false,
+      "description": "One operator-approved override that affects cache warmth and routing context.",
+      "properties": {
+        "applied_at": {
+          "description": "Timezone-aware timestamp for when the override applied.",
+          "format": "date-time",
+          "title": "Applied At",
+          "type": "string"
+        },
+        "confirm_token": {
+          "description": "Confirmation token bound to the override submission surface.",
+          "minLength": 1,
+          "title": "Confirm Token",
+          "type": "string"
+        },
+        "event_id": {
+          "description": "UUID4 identity for this override event.",
+          "format": "uuid",
+          "title": "Event Id",
+          "type": "string"
+        },
+        "new_value": {
+          "additionalProperties": true,
+          "description": "Canonical JSON-like view of the new setting.",
+          "title": "New Value",
+          "type": "object"
+        },
+        "node_id": {
+          "description": "Manifest node id that the override touches.",
+          "minLength": 1,
+          "title": "Node Id",
+          "type": "string"
+        },
+        "operator_id": {
+          "description": "Operator identity that confirmed the override.",
+          "minLength": 1,
+          "title": "Operator Id",
+          "type": "string"
+        },
+        "previous_value": {
+          "additionalProperties": true,
+          "description": "Canonical JSON-like view of the previous setting.",
+          "title": "Previous Value",
+          "type": "object"
+        }
+      },
+      "required": [
+        "event_id",
+        "node_id",
+        "operator_id",
+        "confirm_token"
+      ],
+      "title": "OverrideEvent",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "description": "Slab-close ceremony DecisionCard.",
+  "properties": {
+    "card_id": {
+      "description": "UUID4 identity for this DecisionCard instance.",
+      "format": "uuid4",
+      "title": "Card Id",
+      "type": "string"
+    },
+    "closing_artifact_paths": {
+      "description": "Non-empty paths for slab-close ceremony evidence artifacts.",
+      "items": {
+        "format": "path",
+        "type": "string"
+      },
+      "title": "Closing Artifact Paths",
+      "type": "array"
+    },
+    "closing_run_id": {
+      "description": "UUID4 identity for the final trial run referenced by closure.",
+      "format": "uuid4",
+      "title": "Closing Run Id",
+      "type": "string"
+    },
+    "created_at": {
+      "description": "Timezone-aware creation timestamp for the emitted card.",
+      "format": "date-time",
+      "title": "Created At",
+      "type": "string"
+    },
+    "decision_card_digest": {
+      "description": "Lowercase sha256 digest of the canonical decision card.",
+      "title": "Decision Card Digest",
+      "type": "string"
+    },
+    "gate_focus": {
+      "const": "slab_close_ceremony",
+      "default": "slab_close_ceremony",
+      "description": "Closed marker for the G6 slab-close ceremony gate family.",
+      "title": "Gate Focus",
+      "type": "string"
+    },
+    "gate_id": {
+      "const": "G6",
+      "default": "G6",
+      "description": "Discriminator for the G6 slab-close ceremony gate.",
+      "title": "Gate Id",
+      "type": "string"
+    },
+    "meta": {
+      "$ref": "#/$defs/DecisionCardMeta"
+    },
+    "retrospective_path": {
+      "description": "Canonical retrospective document path for the closed slab.",
+      "format": "path",
+      "title": "Retrospective Path",
+      "type": "string"
+    },
+    "schema_version": {
+      "const": "v1",
+      "default": "v1",
+      "description": "Schema version for the G6 DecisionCard contract.",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "slab_close_summary": {
+      "description": "Non-empty operator-facing summary of slab closure.",
+      "title": "Slab Close Summary",
+      "type": "string"
+    },
+    "slab_id": {
+      "description": "Slab identifier in numeric plus optional lowercase-letter form.",
+      "title": "Slab Id",
+      "type": "string"
+    },
+    "trial_id": {
+      "description": "UUID4 identity for the enclosing trial run.",
+      "format": "uuid4",
+      "title": "Trial Id",
+      "type": "string"
+    },
+    "verb": {
+      "description": "Closed decision verb set: approve | edit | reject.",
+      "enum": [
+        "approve",
+        "edit",
+        "reject"
+      ],
+      "title": "Verb",
+      "type": "string"
+    }
+  },
+  "required": [
+    "decision_card_digest",
+    "meta",
+    "card_id",
+    "trial_id",
+    "slab_id",
+    "closing_run_id",
+    "retrospective_path",
+    "closing_artifact_paths",
+    "slab_close_summary",
+    "verb"
+  ],
+  "title": "G6Card",
+  "type": "object"
+}

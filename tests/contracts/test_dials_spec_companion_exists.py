@@ -11,7 +11,7 @@ import re
 from pathlib import Path
 
 DIALS_SPEC = (
-    Path(__file__).parents[2] / "marcus" / "lesson_plan" / "dials-spec.md"
+    Path(__file__).parents[2] / "app" / "marcus" / "lesson_plan" / "dials-spec.md"
 )
 
 REQUIRED_SECTIONS = (

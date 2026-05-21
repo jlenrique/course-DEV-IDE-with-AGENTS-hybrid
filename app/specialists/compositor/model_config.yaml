@@ -1,0 +1,6 @@
+# Class-D2 deterministic body: this config is a scaffold placeholder only.
+# Runtime graph records `deterministic-compositor-v0` and never resolves a chat handle.
+specialist_id: "compositor"
+default_model: "gpt-5"
+per_node_overrides: {}
+temperature_default: 0.0

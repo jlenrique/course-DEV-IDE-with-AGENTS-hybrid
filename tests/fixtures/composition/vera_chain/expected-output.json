@@ -1,0 +1,9 @@
+{
+  "downstream_consumer": "marcus-gate-runner",
+  "gate_id": "G4",
+  "upstream_specialist": "irene",
+  "vera_output": {
+    "artifact": "g4-vera-trace.json",
+    "status": "PROCEED"
+  }
+}

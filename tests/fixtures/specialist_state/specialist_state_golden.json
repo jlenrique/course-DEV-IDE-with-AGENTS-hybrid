@@ -1,0 +1,15 @@
+{
+  "artifact_paths": [
+    "state/config/runs/12345678-1234-4234-8234-123456789abc/source.md"
+  ],
+  "cache_prefix": "{\"source\":\"bundle\"}",
+  "cache_prefix_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+  "gate_id": "G1",
+  "model_resolution_trail": [],
+  "schema_version": "specialist-state.v1",
+  "specialist_id": "texas",
+  "status": "completed",
+  "summary_path": "state/config/runs/12345678-1234-4234-8234-123456789abc/specialist-summaries/texas-20260429T000000000000Z.md",
+  "trial_id": "12345678-1234-4234-8234-123456789abc",
+  "updated_at": "2026-04-29T00:00:00Z"
+}

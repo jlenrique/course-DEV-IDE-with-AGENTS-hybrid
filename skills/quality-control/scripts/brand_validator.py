@@ -11,7 +11,6 @@ import re
 import sys
 from pathlib import Path
 
-
 DEFAULT_BRAND_MARKERS = {
     "colors": {
         "JCPH_Navy": "#1e3a5f",

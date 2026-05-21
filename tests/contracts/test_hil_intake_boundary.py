@@ -11,7 +11,7 @@ from __future__ import annotations
 import ast
 from pathlib import Path
 
-_HIL_INTAKE = Path(__file__).parents[2] / "marcus" / "orchestrator" / "hil_intake.py"
+_HIL_INTAKE = Path(__file__).parents[2] / "app" / "marcus" / "orchestrator" / "hil_intake.py"
 _FORBIDDEN_TOKENS = frozenset({"intake", "orchestrator", "dispatch"})
 
 
@@ -32,7 +32,7 @@ def test_hil_intake_no_import_from_marcus_intake() -> None:
     """AC-T.9 / AC-E.1: hil_intake.py must not import from marcus.intake.*"""
     source = _HIL_INTAKE.read_text(encoding="utf-8")
     all_imports = _collect_imports(source)
-    violations = [m for (m,) in all_imports if m.startswith("marcus.intake")]
+    violations = [m for (m,) in all_imports if m.startswith("app.marcus.intake")]
     assert violations == [], (
         f"hil_intake.py imports from marcus.intake (boundary violation): {violations}"
     )
@@ -53,7 +53,7 @@ def test_hil_intake_no_direct_lesson_plan_log_import() -> None:
 
 def test_missing_intake_decision_error_message_no_forbidden_tokens() -> None:
     """AC-T.9 / AC-E.3: MissingIntakeDecisionError has no Voice Register forbidden tokens."""
-    from marcus.orchestrator.hil_intake import MissingIntakeDecisionError
+    from app.marcus.orchestrator.hil_intake import MissingIntakeDecisionError
 
     err = MissingIntakeDecisionError("u-test")
     message = str(err).lower()

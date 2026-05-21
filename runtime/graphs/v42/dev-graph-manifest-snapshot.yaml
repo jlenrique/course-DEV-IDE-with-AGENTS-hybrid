@@ -1,0 +1,36 @@
+schema_version: "1.0"
+thread_namespace: "dev/{story_id}"
+dev_nodes:
+  - id: plan_story
+    label: Plan Story
+    handler: app.cora.handlers.plan_story:plan_story
+  - id: implement_story
+    label: Implement Story
+    handler: app.cora.handlers.implement_story:implement_story
+  - id: test_story
+    label: Test Story
+    handler: app.cora.handlers.test_story:test_story
+  - id: review_story
+    label: Review Story
+    handler: app.cora.handlers.review_story:review_story
+  - id: block_mode
+    label: Block Mode Gate
+    handler: app.cora.block_mode_node:block_mode_node
+  - id: close_story
+    label: Close Story
+    handler: app.cora.handlers.close_story:close_story
+dev_edges:
+  - from: __start__
+    to: plan_story
+  - from: plan_story
+    to: implement_story
+  - from: implement_story
+    to: test_story
+  - from: test_story
+    to: review_story
+  - from: review_story
+    to: block_mode
+  - from: block_mode
+    to: close_story
+  - from: close_story
+    to: __end__

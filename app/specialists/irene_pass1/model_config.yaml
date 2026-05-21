@@ -1,0 +1,6 @@
+# Irene Pass-1 model cascade - Story 7b.4.
+specialist_id: "irene_pass1"
+default_model: "gpt-5.4"
+per_node_overrides:
+  act: "gpt-5.4"
+temperature_default: 0.3

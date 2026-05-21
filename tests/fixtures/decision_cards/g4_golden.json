@@ -1,0 +1,23 @@
+{
+  "artifact_paths": [
+    "_bmad-output/runs/trial-001/final-report.md"
+  ],
+  "card_id": "14141414-1414-4414-8414-141414141414",
+  "created_at": "2026-05-05T12:15:00Z",
+  "decision_card_digest": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+  "final_status": "completed",
+  "gate_focus": "fidelity_gate",
+  "gate_id": "G4",
+  "meta": {
+    "affected_nodes": [
+      "12",
+      "13"
+    ],
+    "cache_state": "cold",
+    "override_trail": []
+  },
+  "outcome_summary": "Trial completed and all expected artifacts were emitted.",
+  "schema_version": "v1",
+  "trial_id": "dddddddd-dddd-4ddd-8ddd-dddddddddddd",
+  "verb": "approve"
+}

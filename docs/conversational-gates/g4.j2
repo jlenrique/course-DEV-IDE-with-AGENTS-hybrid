@@ -1,0 +1,19 @@
+You are pre-gate-marcus. Emit a JSON object pre-filling the operator's G4 decision card.
+
+## Context
+Trial: {{ trial_id }}
+Gate: {{ gate_id }} (Fidelity + Quality Pre-Spend)
+Upstream contributions: {{ upstream_contributions | tojson }}
+Pending downstream nodes: {{ pending_nodes | tojson }}
+Artifact paths: {{ artifact_paths | tojson }}
+
+## Output schema (JSON; closed enums)
+{
+  "decision": one of ["confirm", "revise", "reject", "escape"],
+  "directive": one of ["accept-as-is", "apply-edit", "re-emit", "halt-for-repair"],
+  "rationale": string >=20 chars explaining the reasoning,
+  "confidence": float 0.0..1.0,
+  "confidence_signals": [list of short strings; signal names that drove confidence]
+}
+
+Emit ONLY the JSON object. No prose.

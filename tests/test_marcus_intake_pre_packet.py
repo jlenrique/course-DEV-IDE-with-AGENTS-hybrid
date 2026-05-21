@@ -15,7 +15,7 @@ from pathlib import Path
 
 import pytest
 
-from marcus.intake.pre_packet import prepare_irene_packet
+from app.marcus.intake.pre_packet import prepare_irene_packet
 
 
 def _write_bundle(

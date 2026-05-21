@@ -1,0 +1,13 @@
+narration_outputs:
+  - segment_id: seg-01
+    audio_path: runs/enrique/assembly-bundle/audio/seg-01.mp3
+    caption_path: runs/enrique/assembly-bundle/captions/seg-01.vtt
+    duration_seconds: 2.5
+    cost_usd: 0.01
+compositor_invocation:
+  specialist_id: compositor
+  gate_id: G3
+  audio_paths:
+    - runs/enrique/assembly-bundle/audio/seg-01.mp3
+  caption_paths:
+    - runs/enrique/assembly-bundle/captions/seg-01.vtt

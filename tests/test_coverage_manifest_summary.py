@@ -8,7 +8,7 @@ from types import SimpleNamespace
 
 import pytest
 
-from marcus.lesson_plan.coverage_manifest import (
+from app.marcus.lesson_plan.coverage_manifest import (
     CoverageInventoryEntry,
     CoverageManifestError,
     CoverageSurface,
@@ -16,7 +16,7 @@ from marcus.lesson_plan.coverage_manifest import (
     emit_coverage_manifest,
     summarize_surfaces,
 )
-from marcus.lesson_plan.schema import PlanRef
+from app.marcus.lesson_plan.schema import PlanRef
 
 
 def test_summary_marks_pending_rows_not_trial_ready() -> None:

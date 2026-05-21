@@ -1,0 +1,9 @@
+request:
+  double_dispatch: true
+  variants:
+    - A
+    - B
+response:
+  calls_made: 2
+  generation_mode: double-dispatch
+  variant_rows: 4

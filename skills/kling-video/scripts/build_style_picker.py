@@ -225,7 +225,7 @@ def build_local(output_dir: Path, catalog: dict) -> Path:
 
 def publish(local_dir: Path, catalog: dict) -> str:
     """Push the picker to GitHub Pages. Returns the published URL."""
-    from gamma_operations import _git_auth_env, _run_git_command, _github_pages_base_url
+    from gamma_operations import _git_auth_env, _github_pages_base_url, _run_git_command
 
     token = os.environ.get("GITHUB_PAGES_TOKEN", "").strip()
     if not token:

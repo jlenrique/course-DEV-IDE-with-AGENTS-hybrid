@@ -1,0 +1,24 @@
+{
+  "specialist_id": "vera",
+  "verb": "proceed",
+  "payload": {
+    "status": "pass",
+    "severity": "low",
+    "summary": "Fixture fidelity check complete."
+  },
+  "vera_finding": {
+    "status": "pass",
+    "severity": "low",
+    "summary": "Fixture fidelity check complete.",
+    "findings": [
+      {
+        "id": "F-001",
+        "category": "integrity",
+        "detail": "No material drift detected."
+      }
+    ]
+  },
+  "edit_payload": null,
+  "reject_reason": null,
+  "timestamp": "2026-04-24T00:00:01Z"
+}

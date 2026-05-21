@@ -24,15 +24,19 @@ for path in (
     if str(path) not in sys.path:
         sys.path.insert(0, str(path))
 
-from compositor_operations import generate_assembly_guide, load_manifest, sync_approved_visuals_to_assembly_bundle
+from compositor_operations import (
+    generate_assembly_guide,
+    load_manifest,
+    sync_approved_visuals_to_assembly_bundle,
+)
 from kling_operations import generate_motion_clip
-from manual_animation_workflow import import_manual_motion_asset
 from manifest_visual_enrichment import (
     apply_motion_plan_to_segments,
     enrich_manifest,
     validate_manifest_motion_fields,
     validate_manifest_visual_references,
 )
+from manual_animation_workflow import import_manual_motion_asset
 from motion_plan import apply_motion_designations, build_motion_plan_from_authorized_storyboard
 from perception_contract import enforce_motion_perception_contract
 from visual_reference_injector import inject_all_slides

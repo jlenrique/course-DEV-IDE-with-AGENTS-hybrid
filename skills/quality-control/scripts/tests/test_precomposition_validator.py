@@ -5,7 +5,6 @@ from pathlib import Path
 
 import yaml
 
-
 MODULE_PATH = (
     Path(__file__).resolve().parents[1] / "precomposition_validator.py"
 )

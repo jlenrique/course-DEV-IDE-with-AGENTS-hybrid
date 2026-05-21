@@ -1,0 +1,86 @@
+{
+  "schema_version": "0.1-stub",
+  "lane": "run_graph",
+  "entrypoint": "n1",
+  "frozen_graph_version": "v0.1-stub",
+  "nodes": [
+    {
+      "id": "n1",
+      "specialist_id": "spec-a",
+      "scaffold_node": null,
+      "model_config_ref": null,
+      "label": null,
+      "gate": null,
+      "gate_code": null,
+      "sub_phase_of": null,
+      "insertion_after": null,
+      "hud_tracked": null,
+      "pack_section_anchor": null,
+      "pack_version": null,
+      "rationale": "first",
+      "learning_events": null
+    },
+    {
+      "id": "n2",
+      "specialist_id": "spec-b",
+      "scaffold_node": null,
+      "model_config_ref": null,
+      "label": null,
+      "gate": null,
+      "gate_code": null,
+      "sub_phase_of": null,
+      "insertion_after": null,
+      "hud_tracked": null,
+      "pack_section_anchor": null,
+      "pack_version": null,
+      "rationale": "",
+      "learning_events": null
+    },
+    {
+      "id": "n3",
+      "specialist_id": "spec-c",
+      "scaffold_node": null,
+      "model_config_ref": null,
+      "label": null,
+      "gate": null,
+      "gate_code": null,
+      "sub_phase_of": null,
+      "insertion_after": null,
+      "hud_tracked": null,
+      "pack_section_anchor": null,
+      "pack_version": null,
+      "rationale": "",
+      "learning_events": null
+    }
+  ],
+  "edges": [
+    {
+      "from": "__start__",
+      "to": "n1",
+      "condition": null,
+      "dispatch_envelope": null
+    },
+    {
+      "from": "n1",
+      "to": "n2",
+      "condition": "always_true",
+      "dispatch_envelope": null
+    },
+    {
+      "from": "n2",
+      "to": "n3",
+      "condition": null,
+      "dispatch_envelope": null
+    },
+    {
+      "from": "n3",
+      "to": "__end__",
+      "condition": null,
+      "dispatch_envelope": null
+    }
+  ],
+  "pack_version": "substrate-stub",
+  "generator_ref": null,
+  "learning_events": null,
+  "block_mode_trigger_paths": []
+}

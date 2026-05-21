@@ -1,0 +1,67 @@
+{
+  "additionalProperties": false,
+  "description": "Specialist-side return payload. Cross-field invariants on verb/payload pairing.",
+  "properties": {
+    "edit_payload": {
+      "anyOf": [
+        {
+          "additionalProperties": true,
+          "type": "object"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "description": "REQUIRED iff verb == 'edit'; cross-field-validated.",
+      "title": "Edit Payload"
+    },
+    "payload": {
+      "additionalProperties": true,
+      "description": "Specialist's primary output payload (shape varies per specialist).",
+      "title": "Payload",
+      "type": "object"
+    },
+    "reject_reason": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "description": "REQUIRED iff verb == 'reject'; cross-field-validated.",
+      "title": "Reject Reason"
+    },
+    "specialist_id": {
+      "description": "Stable specialist identifier.",
+      "minLength": 1,
+      "title": "Specialist Id",
+      "type": "string"
+    },
+    "timestamp": {
+      "description": "Timezone-aware return timestamp.",
+      "format": "date-time",
+      "title": "Timestamp",
+      "type": "string"
+    },
+    "verb": {
+      "description": "Closed enum: proceed | edit | reject.",
+      "enum": [
+        "proceed",
+        "edit",
+        "reject"
+      ],
+      "title": "Verb",
+      "type": "string"
+    }
+  },
+  "required": [
+    "specialist_id",
+    "verb"
+  ],
+  "title": "SpecialistReturn",
+  "type": "object"
+}

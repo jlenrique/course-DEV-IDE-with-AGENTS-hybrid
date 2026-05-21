@@ -8,17 +8,44 @@ authors = [{ name = "Juanl" }]
 keywords = ["edtech", "course-production", "multi-agent", "content-creation"]
 
 dependencies = [
+    # Core
     "requests>=2.31,<3",
     "python-dotenv>=1.0,<2",
     "PyJWT>=2.8,<3",
     "pydantic>=2.7,<3",
     "aiohttp>=3.9,<4",
     "pyyaml>=6.0,<7",
+
+    # Source-wrangler / sensory bridges (Slab 1+ substrate)
     "imageio-ffmpeg>=0.5,<1",
     "pypdf>=5.0,<6",
     "pillow>=11.0,<12",
     "python-pptx>=1.0,<2",
     "python-docx>=1.1,<2",
+
+    # LangChain / LangGraph orchestration substrate (Slab 1+ — Marcus + specialists + gates)
+    # Pinned-as-installed in live .venv (verified 2026-04-26 post-Slab-3 close)
+    "langchain>=1.2,<2",
+    "langchain-core>=1.3,<2",
+    "langchain-openai>=1.1,<2",
+    "langgraph>=1.1,<2",
+    "langgraph-checkpoint>=4.0,<5",
+    "langgraph-checkpoint-postgres>=3.0,<4",
+    "langgraph-prebuilt>=1.0,<2",
+    "langgraph-sdk>=0.3,<1",
+    "langsmith>=0.7,<1",
+
+    # Persistence (Slab 1 substrate + Slab 4.4 ledger)
+    "psycopg[binary]>=3.3,<4",
+    "psycopg-pool>=3.3,<4",
+
+    # HTTP transport (Slab 3.4 FastAPI gate endpoint per AC-B)
+    "fastapi>=0.136,<1",
+    "uvicorn>=0.45,<1",
+    "httpx>=0.28,<1",
+
+    # File-watcher (Slab 4.6 sanctum_watcher per AC-A; FR59 invalidation hook)
+    "watchdog>=4.0,<6",
 ]
 
 [project.optional-dependencies]
@@ -28,9 +55,13 @@ dev = [
     "pytest-timeout>=2.3,<3",
     "responses>=0.25,<1",
     "ruff>=0.4,<1",
+    "import-linter>=2.0,<3",
     "pre-commit>=3.7,<5",
     "jsonschema>=4.0,<5",
+    # Generator template-rendering (Story 2a.5 + 33-1a)
+    "jinja2>=3.1,<4",
 ]
+live-smoke = []
 
 [tool.ruff]
 target-version = "py311"
@@ -48,6 +79,7 @@ select = ["E", "F", "W", "I", "N", "UP", "B", "SIM"]
 "skills/bmad-agent-marcus/scripts/prepare-irene-pass2-handoff.py" = ["E501"]
 
 [tool.pytest.ini_options]
+addopts = "-p no:randomly -n auto --dist loadfile -m 'not live and not serial'"
 testpaths = [
     "tests",
     "skills/source-wrangler/scripts/tests",
@@ -59,10 +91,219 @@ testpaths = [
 pythonpath = [".", "skills/bmad-agent-texas/scripts"]  # retrieval/ package (Story 27-0)
 asyncio_mode = "auto"
 markers = [
+    "live: opt-in live smoke tests under tests/live; excluded from default pytest runs",
     "live_api: tests that call live third-party APIs; excluded by default unless --run-live is provided",
     "live_api_e2e: slower/flakier live end-to-end API tests; excluded by default unless --run-live-e2e is provided",
+    "serial: marks tests that cannot run under xdist parallelism (DB-state / FS / port / LangSmith / RNG coupling); run with -m 'serial' -n0",
     "trial_critical: dev-side tests guarding the pre-Prompt-1 trial path (run_constants validator, preflight receipt, pack-doc schema lockstep). Run before firing any trial production run via `pytest -m trial_critical`. Not a runtime gate — a dev confidence check.",
+    "transport_parity: nightly / on-merge cadence; NOT per-PR — see Migration Story 1.1d Cadence + Flakiness Budget AC. Per the 2026-04-22 middle-path consensus, these MCP subprocess + FastAPI↔MCP parity tests carry per-PR-flake risk that does not belong on the Slab 1 critical path. >2% flake across the first 20 runs reopens MCP-in-Slab-1.",
 ]
+
+[tool.importlinter]
+root_packages = ["app"]
+include_external_packages = true
+
+[[tool.importlinter.contracts]]
+name = "app.marcus and app.cora are lane-isolated siblings (D3 + D4 lane separation)"
+type = "independence"
+modules = ["app.marcus", "app.cora"]
+
+[[tool.importlinter.contracts]]
+name = "Marcus Contract M1 - only app.marcus.orchestrator.write_api may import app.models.state.run_state"
+type = "forbidden"
+source_modules = [
+    "app.marcus.intake",
+    "app.marcus.orchestrator.supervisor",
+    "app.marcus.orchestrator.routing",
+]
+forbidden_modules = ["app.models.state.run_state"]
+# S2 collapse 2026-05-07: app.marcus.facade removed from source_modules.
+# The legacy `marcus/facade.py` (now `app/marcus/facade.py` post-S2) carries
+# direct + transitive run_state imports as part of the Maya-facing routing
+# layer (lines 77/80). Single-writer enforcement remains at write_api's
+# writer-identity check (R1 amendment 13 / Quinn); facade routing is allowed
+# to know about run_state shape because it dispatches through write_api.
+
+[[tool.importlinter.contracts]]
+# Symmetric pair with C2 (Cora-suite); retained for operator-discoverability per
+# composition-spec §10 entry 2026-05-07 (Winston post-S5 amendment A3). M-prefixed
+# contracts are the Marcus invariant suite; C-prefixed are the Cora suite.
+name = "Marcus Contract M2 - app.marcus may not import app.cora"
+type = "forbidden"
+source_modules = ["app.marcus"]
+forbidden_modules = ["app.cora"]
+
+[[tool.importlinter.contracts]]
+name = "Cora Contract C1 - app.cora may not import app.marcus"
+type = "forbidden"
+source_modules = ["app.cora"]
+forbidden_modules = ["app.marcus"]
+# S2 collapse 2026-05-07: legacy `marcus` (top-level) removed from forbidden_modules
+# alongside namespace collapse. Top-level `marcus` is now FORBIDDEN globally per
+# Contract M5 below (Murat AM-17 / Winston D14 architectural decision).
+
+[[tool.importlinter.contracts]]
+# Symmetric pair with M2 (Marcus-suite); retained for operator-discoverability per
+# composition-spec §10 entry 2026-05-07 (Winston post-S5 amendment A3). M-prefixed
+# contracts are the Marcus invariant suite; C-prefixed are the Cora suite.
+name = "Cora Contract C2 - Marcus may not import app.cora"
+type = "forbidden"
+source_modules = ["app.marcus"]
+forbidden_modules = ["app.cora"]
+# S2 collapse 2026-05-07: legacy `marcus` (top-level) removed from source_modules.
+# Post-collapse the only Marcus namespace is `app.marcus.*`.
+
+[[tool.importlinter.contracts]]
+name = "Marcus Contract M3 - app.specialists may not import app.marcus facade/intake/orchestrator"
+type = "forbidden"
+source_modules = ["app.specialists"]
+forbidden_modules = [
+    "app.marcus.facade",
+    "app.marcus.intake",
+    "app.marcus.orchestrator",
+]
+
+[[tool.importlinter.contracts]]
+name = "Marcus Contract M4 - app.marcus.dispatch stays dependency-light"
+type = "forbidden"
+source_modules = ["app.marcus.dispatch"]
+forbidden_modules = ["app.specialists", "app.gates.resume_api", "app.cora"]
+
+[[tool.importlinter.contracts]]
+name = "app.gates.** may not import schedulers (D3 HIL tamper-evidence)"
+type = "forbidden"
+source_modules = ["app.gates"]
+forbidden_modules = ["threading", "apscheduler", "schedule"]
+# TODO Slab 3: callable-level asyncio.sleep ban via ruff custom rule or import-time assertion in app/gates/resume_api.py
+
+[[tool.importlinter.contracts]]
+# Contract C3 (architecture §D3 HIL tamper-evidence).
+# Only the three authorized verdict-bridge modules may import app.gates.resume_api:
+#   - app.mcp_server.tools.gate_decide  (MCP tool surface — exists in Slab 1)
+#   - app.http.gate_endpoint            (FastAPI surface — ships in Slab 3 Story 3.3)
+#   - app.marcus.cli.gate_cli           (CLI surface — ships in Slab 3 Story 3.3)
+# Forbidding the rest of the Slab-1 tree from importing resume_api prevents silent
+# bypass of FR34 (no auto-approve) at any other layer. Slab 3 Story 3.3 adds the
+# two future ignore_imports entries (`app.http.gate_endpoint ->` and
+# `app.marcus.cli.gate_cli ->`) when the bridge modules materialize; import-linter
+# rejects unused ignores, so pre-seeding them here would fail.
+name = "Contract C3 — only the three authorized bridge modules may import app.gates.resume_api (D3)"
+type = "forbidden"
+source_modules = [
+    "app.runtime",
+    "app.specialists",
+    "app.cora",
+    "app.marcus",
+    "app.models",
+    "app.manifest",
+    "app.mcp_server",
+]
+forbidden_modules = ["app.gates.resume_api"]
+ignore_imports = [
+    "app.mcp_server.tools.gate_decide -> app.gates.resume_api",
+    "app.http.gate_endpoint -> app.gates.resume_api",
+    "app.marcus.cli.gate_cli -> app.gates.resume_api",
+    "app.marcus.orchestrator.production_runner -> app.gates.resume_api",
+    "app.specialists._scaffold.graph -> app.gates.resume_api",
+    "app.specialists.irene.graph -> app.gates.resume_api",
+    "app.specialists.kira.graph -> app.gates.resume_api",
+    "app.specialists.texas.graph -> app.gates.resume_api",
+    "app.specialists.gary.graph -> app.gates.resume_api",  # generated by bmad-create-specialist for gary
+    "app.specialists.vera.graph -> app.gates.resume_api",  # generated by bmad-create-specialist for vera
+    "app.specialists.quinn_r.graph -> app.gates.resume_api",  # generated by bmad-create-specialist for quinn_r
+    "app.specialists.desmond.graph -> app.gates.resume_api",  # generated by bmad-create-specialist for desmond
+    "app.specialists.tracy.graph -> app.gates.resume_api",  # generated by bmad-create-specialist for tracy
+    "app.specialists.cd.graph -> app.gates.resume_api",  # generated by bmad-create-specialist for cd
+    "app.specialists.enrique.graph -> app.gates.resume_api",  # generated by bmad-create-specialist for enrique
+    "app.specialists.wanda.graph -> app.gates.resume_api",  # generated by bmad-create-specialist for wanda
+    "app.specialists.kim.graph -> app.gates.resume_api",  # generated by bmad-create-specialist for kim
+    "app.specialists.vyx.graph -> app.gates.resume_api",  # generated by bmad-create-specialist for vyx
+    "app.specialists.aria.graph -> app.gates.resume_api",  # generated by bmad-create-specialist for aria
+    "app.specialists.mira.graph -> app.gates.resume_api",  # generated by bmad-create-specialist for mira
+    "app.specialists.tamara.graph -> app.gates.resume_api",  # generated by bmad-create-specialist for tamara
+    # 2c.1 retire-to-fixtures: wanda_validation row removed at AC-F per Decision #2
+    # (2026-04-25); fixture frozen at tests/fixtures/generator_validation/wanda_baseline/2026-04-25/
+    # - see BASELINE_METADATA.md
+    "app.specialists.dan.graph -> app.gates.resume_api",  # generated by bmad-create-specialist for dan
+    # S2 collapse 2026-05-07: legacy marcus/orchestrator/m3_trial.py copied to
+    # app/marcus/orchestrator/; it imports app.gates.resume_api as a runner-internal
+    # surface (NOT an unauthorized bridge — m3_trial is the trial-replay harness).
+    "app.marcus.orchestrator.m3_trial -> app.gates.resume_api",
+]
+
+# Story 7c.0a / Winston W2: C4/C5/C6 land together with empty forbidden lists.
+# Downstream target population: 7c.0b populates C4, 7c.3a populates C5,
+# and 7c.4b populates C6. Source module expressions use wildcards because
+# 7c.0a is decision-tier only; the executable packages materialize later.
+[[tool.importlinter.contracts]]
+name = "C4: parity-DSL boundary may not import graph-runtime modules"
+type = "forbidden"
+source_modules = ["app.parity.contracts.*"]
+forbidden_modules = [
+    "app.gates.resume_api",
+    "app.marcus.orchestrator.write_api",
+    "app.specialists.*",
+]
+include_external_packages = false
+
+[[tool.importlinter.contracts]]
+name = "C5: §02A composer boundary may not import corpus-scan fallback paths"
+type = "forbidden"
+source_modules = ["app.composers.section_02a.*"]
+forbidden_modules = [
+    "app.composers._fallback",
+    "app.composers.legacy",
+    "app.marcus.orchestrator.directive_composer",
+]
+include_external_packages = false
+
+# C6 uses lint-imports' `independence` contract type for symmetric
+# bidirectional cross-import prevention between sibling §section packages.
+# Rationale (T11 P-1 patch on Story 7c.4b): the previously-attempted
+# `forbidden` representation aborted lint-imports with "Modules have shared
+# descendants" once any §section beyond `section_02a` actually existed on
+# disk (verified: synthetic `section_04a` triggers the abort regardless of
+# import direction). `independence` is purpose-built for "modules in this
+# list must not import each other"; it tolerates only-some-modules-existing,
+# stays at 12 KEPT, and is symmetrically enforced (verified: both
+# section_02a -> section_04a and section_04a -> section_02a are caught).
+# The modules list grows incrementally as each §section package lands; each
+# downstream story (7c.6 / 7c.7 / ... 7c.15) appends its own §section to
+# this list when its package is authored.
+[[tool.importlinter.contracts]]
+name = "C6: HIL-surface modules may not import each other across surfaces"
+type = "independence"
+modules = [
+    "app.gates.section_02a",
+    "app.gates.section_04a",
+    "app.gates.section_04_5",
+    "app.gates.section_04_55",
+    "app.gates.section_08b",
+    "app.gates.section_11",
+    "app.gates.section_05_5",
+    "app.gates.section_07b",
+    "app.gates.section_07d",
+    "app.gates.section_07f",
+    "app.gates.section_06b",
+    "app.gates.section_07c",
+    "app.gates.section_11b",
+    "app.gates.section_15",
+]
+include_external_packages = false
+
+# M5 (NEW pre-Trial-3 cleanup S2 2026-05-07; Murat AM-17 + Winston D14):
+# Post-collapse top-level `marcus` namespace is RETIRED. The legacy `marcus/` package
+# was deleted at S2 Phase 5; this contract is the structural backstop that prevents
+# any future code from accidentally re-introducing `from marcus.X` or `import marcus`
+# imports. Honors operator 2026-05-07 directive: NO DEFERRALS; clean up the marcus
+# duality bug. Closes deferred-inventory entry `migration-tech-debt-app-marcus-stub-disposition`
+# (filed 2026-04-26; reality-corrected direction: canonical app/marcus/* + legacy retired).
+[[tool.importlinter.contracts]]
+name = "M5 - top-level `marcus` namespace is retired (S2 collapse 2026-05-07)"
+type = "forbidden"
+source_modules = ["app"]
+forbidden_modules = ["marcus"]
+include_external_packages = false
 
 [build-system]
 requires = ["setuptools>=68"]

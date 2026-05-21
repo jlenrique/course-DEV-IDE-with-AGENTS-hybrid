@@ -1,0 +1,80 @@
+# Pipeline-determinism contract — `<specialist_name>`
+
+**Specialist:** `<specialist_name>` (Class D2 pipeline-greenfield)
+**Sanctum path:** `_bmad/memory/bmad-agent-<specialist_name>/`
+**Authored at:** `<YYYY-MM-DD>` (story-T1 readiness)
+**Last updated at:** `<YYYY-MM-DD>` (refresh through story close + per-PR amendments)
+
+> Instantiated from `docs/dev-guide/scaffolds/scaffold-v0.2-D2-pipeline/pipeline-determinism.md.template`. This file lives at the specialist's sanctum, not at the scaffold path.
+
+---
+
+## §1 Pipeline stages
+
+Enumerate each stage of the pipeline. One row per stage.
+
+| Stage | Operation | Input shape | Output shape | Determinism mode |
+|---|---|---|---|---|
+| `<stage_name>` | `<one-line description>` | `<input schema reference>` | `<output schema reference>` | bytes-identical \| field-masked-hash |
+
+For Compositor (illustrative — populate at Story 7b.11):
+- `sync-visuals` → bytes-identical (file-copy of approved stills + motion clips into `assembly-bundle/visuals/` + `motion/`)
+- `regenerate-assembly-guide` → field-masked-hash (`DESCRIPT-ASSEMBLY-GUIDE.md` regeneration; embeds timestamps and run-IDs)
+
+## §2 Determinism mode per stage
+
+### bytes-identical (default; preferred when achievable)
+
+Stage produces byte-stable output given identical input + frozen substrate paths. Regression test: SHA256 of stage output matches SHA256 of canonical fixture run-by-run. Failure = block-mode; investigate fixture drift OR substrate edit.
+
+**Strategy for image bytes** (encoder metadata): EITHER strip encoder metadata post-write (`--strip-metadata` flag in encoder config) OR disable encoder timestamps at write-time (`tIME` chunk omission for PNG, EXIF stripping for JPEG). Per-stage: declare which strategy is in force.
+
+### field-masked-hash (when bytes-identical not achievable)
+
+Stage produces output whose bytes vary across runs at declared-nondeterministic fields, but content is otherwise identical. Regression test: SHA256 of output AFTER masking declared-nondeterministic fields matches canonical fixture. Failure = block-mode; investigate which masked-out field changed (telemetry signal, possibly SR-T2 fixture-staleness).
+
+## §3 Field mask (extends scaffold defaults)
+
+Defaults from `docs/dev-guide/scaffolds/scaffold-v0.2-D2-pipeline/field-mask.yaml`:
+- `generated_at`
+- `run_id`
+- `build_timestamp`
+- `trial_trace_id`
+
+**Specialist-specific extensions for `<specialist_name>`:**
+- `<field_path>` — `<rationale: why this field is nondeterministic>`
+
+(Add fields per specialist as discovered. Removing fields from this list requires party-mode consensus; adding is dev-agent authority.)
+
+## §4 Pipeline-determinism harness
+
+**Path:** `tests/composition/test_<specialist_name>_pipeline_determinism.py`
+**Inherits from:** `tests/parity/_chain_test_base.py` (NFR-CG14a)
+
+**Harness contract:**
+- N=10 runs against pinned fixture inputs
+- Compute SHA256 of each stage's output (post-mask if applicable)
+- Assert all 10 hashes identical for bytes-identical stages
+- Assert all 10 post-masked hashes identical for field-masked-hash stages
+- Pipeline-determinism rate = (matching runs) / (N=10) ≥ 99% (per Slab 7b PRD NFR-T11a + D17)
+
+**Cadence:**
+- T4 cache-determinism harness equivalent (per NFR-T11a; nightly OR green-light cadence; NOT in dev-cycle inner loop)
+- Wall-clock budget <45s per specialist (per NFR-T11a)
+
+## §5 Failure-mode triage
+
+When pipeline-determinism harness fails:
+
+1. **Determinism-violation (rate <99%):** investigate which stage's output diverged. Identify whether:
+   - (a) declared-nondeterministic field changed value but ISN'T in §3 mask → add to mask + re-run + investigate why field is nondeterministic
+   - (b) genuine non-determinism leak (RNG, timing-dependent, race condition) → block-mode; stage code defect; remediate before close
+   - (c) substrate edit broke the contract → file Slab-7a-defect (substrate-as-floor invariant; per FR113 + NFR-I13)
+
+2. **Fixture drift (input changed):** re-record fixture per NFR-OD5 fixture-refresh dry-run mode; document in story Completion Notes; ratify via party-mode if non-trivial.
+
+## §6 Cross-references
+
+- Scaffold contract: `docs/dev-guide/scaffolds/scaffold-v0.2-D2-pipeline/scaffold.yaml`
+- BMB checklist: `docs/dev-guide/bmb-sanctum-alignment-checklist.md` §3 + §4 (Class-D2 C-4 branch)
+- Slab 7b PRD: §FR99 + §FR111 + §D17 + §D20 + §NFR-T11a

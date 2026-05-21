@@ -11,7 +11,8 @@ Implements targeted interstitial repair driven by coherence findings, including:
 from __future__ import annotations
 
 import copy
-from typing import Any, Callable, Dict, List, Tuple
+from collections.abc import Callable
+from typing import Any
 
 MAX_REDISPATCH_ATTEMPTS = 2
 
@@ -25,8 +26,8 @@ class InterstitialRedispatchError(ValueError):
 
 
 def extract_head_perception_constraints(
-    coherence_report: Dict[str, Any],
-) -> Dict[str, Any]:
+    coherence_report: dict[str, Any],
+) -> dict[str, Any]:
     """Extract prompt-tightening constraints from head-slide perception results."""
     head = coherence_report.get("head_perception") or {}
     palette = head.get("palette_hex") or []
@@ -39,7 +40,7 @@ def extract_head_perception_constraints(
     }
 
 
-def build_tightened_redispatch_prompt(original_prompt: str, constraints: Dict[str, Any]) -> str:
+def build_tightened_redispatch_prompt(original_prompt: str, constraints: dict[str, Any]) -> str:
     """Append explicit perception constraints to narrow generative variance."""
     palette = ", ".join(constraints.get("palette_hex") or []) or "none provided"
     fonts = ", ".join(constraints.get("font_families") or []) or "none provided"
@@ -53,7 +54,7 @@ def build_tightened_redispatch_prompt(original_prompt: str, constraints: Dict[st
     return f"{original_prompt.rstrip()}{additions}"
 
 
-def _find_interstitial_index(interstitials: List[Dict[str, Any]], slide_id: str) -> int:
+def _find_interstitial_index(interstitials: list[dict[str, Any]], slide_id: str) -> int:
     for idx, item in enumerate(interstitials):
         if str(item.get("slide_id")) == slide_id:
             return idx
@@ -65,10 +66,10 @@ def _find_interstitial_index(interstitials: List[Dict[str, Any]], slide_id: str)
 
 def _apply_fallback(
     *,
-    bundle: Dict[str, Any],
+    bundle: dict[str, Any],
     interstitial_idx: int,
     fallback: str,
-) -> Dict[str, Any]:
+) -> dict[str, Any]:
     interstitial = bundle["interstitials"][interstitial_idx]
     if fallback == "accept-as-is":
         interstitial["fallback_decision"] = "accept-as-is"
@@ -92,13 +93,13 @@ def _apply_fallback(
 
 def execute_interstitial_redispatch(
     *,
-    cluster_bundle: Dict[str, Any],
+    cluster_bundle: dict[str, Any],
     interstitial_id: str,
-    coherence_report: Dict[str, Any],
-    dispatch_single_interstitial: Callable[[Dict[str, Any]], Dict[str, Any]],
-    validate_replacement: Callable[[Dict[str, Any], Dict[str, Any]], Dict[str, Any]],
+    coherence_report: dict[str, Any],
+    dispatch_single_interstitial: Callable[[dict[str, Any]], dict[str, Any]],
+    validate_replacement: Callable[[dict[str, Any], dict[str, Any]], dict[str, Any]],
     fallback: str = "accept-as-is",
-) -> Dict[str, Any]:
+) -> dict[str, Any]:
     """Run targeted interstitial re-dispatch and return updated bundle/report."""
     bundle = copy.deepcopy(cluster_bundle)
     interstitials = bundle.get("interstitials")
@@ -156,7 +157,7 @@ def execute_interstitial_redispatch(
     return {"status": "retry_available", "bundle": bundle, "validation": validation}
 
 
-def reset_interstitial_counters_for_cluster_redispatch(cluster_bundle: Dict[str, Any]) -> Dict[str, Any]:
+def reset_interstitial_counters_for_cluster_redispatch(cluster_bundle: dict[str, Any]) -> dict[str, Any]:
     """Reset interstitial re-dispatch counters when operator chooses full cluster re-dispatch."""
     bundle = copy.deepcopy(cluster_bundle)
     interstitials = bundle.get("interstitials")

@@ -1,0 +1,10 @@
+{
+  "generated_at": "2026-05-01T17:55:05.106510+00:00",
+  "harness": "pipeline_determinism",
+  "iterations": 10,
+  "pytest_returncode": 0,
+  "pytest_summary": "1 passed in 0.49s",
+  "rate": 1.0,
+  "threshold": 0.99,
+  "verdict": "PASS"
+}

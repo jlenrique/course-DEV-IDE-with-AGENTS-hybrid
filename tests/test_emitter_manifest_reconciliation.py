@@ -4,10 +4,10 @@ from __future__ import annotations
 
 from datetime import UTC, datetime
 
-from marcus.lesson_plan.event_type_registry import EVENT_PLAN_LOCKED, EVENT_PLAN_UNIT_CREATED
-from marcus.lesson_plan.events import EventEnvelope
-from marcus.lesson_plan.schema import LearningModel, LessonPlan, PlanUnit, ScopeDecision
-from marcus.orchestrator.loop import FourALoop
+from app.marcus.lesson_plan.event_type_registry import EVENT_PLAN_LOCKED, EVENT_PLAN_UNIT_CREATED
+from app.marcus.lesson_plan.events import EventEnvelope
+from app.marcus.lesson_plan.schema import LearningModel, LessonPlan, PlanUnit, ScopeDecision
+from app.marcus.orchestrator.loop import FourALoop
 from scripts.utilities.pipeline_manifest import load_manifest
 
 

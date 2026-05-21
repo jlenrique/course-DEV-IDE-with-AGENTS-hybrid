@@ -1,0 +1,35 @@
+{
+  "specialist_id": "wanda",
+  "verb": "proceed",
+  "payload": {},
+  "edit_payload": null,
+  "reject_reason": null,
+  "timestamp": "2026-04-24T00:00:01Z",
+  "wanda_audio": {
+    "capability": "CM",
+    "selection": {
+      "tag": "wanda_audio.parsed.ok",
+      "capability": "CM",
+      "operation_payload": {
+        "chapter_titles": [
+          "Intro",
+          "Mechanism",
+          "Summary"
+        ]
+      }
+    },
+    "dispatch_receipt": {
+      "capability": "CM",
+      "receipt": {
+        "status": "success",
+        "chapter_markers": [
+          {
+            "index": 1,
+            "timestamp": "00:00:00",
+            "title": "Intro"
+          }
+        ]
+      }
+    }
+  }
+}

@@ -5,7 +5,6 @@
 """Tests for manage_style_guide.py — style guide parameter management."""
 from __future__ import annotations
 
-import json
 import sys
 import tempfile
 import unittest
@@ -15,7 +14,6 @@ import yaml
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 import manage_style_guide
-
 
 SAMPLE_STYLE_GUIDE = {
     "tool_parameters": {
@@ -32,7 +30,7 @@ class TempYAML:
         self._tmpfile.close()
         self.path = self._tmpfile.name
 
-    def __enter__(self) -> "TempYAML":
+    def __enter__(self) -> TempYAML:
         return self
 
     def __exit__(self, *args: object) -> None:

@@ -1,0 +1,14 @@
+"""Scaffold-conformance registration test for generated specialist {{name}}."""
+
+from __future__ import annotations
+
+from app.specialists.{{name}}.graph import build_{{name}}_graph
+from tests.integration.scaffold_conformance.scaffold_contract import validate_scaffold
+
+
+def test_{{name}}_conforms_to_9_node_scaffold() -> None:
+    result = validate_scaffold("{{name}}", build_{{name}}_graph())
+    assert result.is_conforming, (
+        f"{{name}} scaffold drift - missing: {sorted(result.missing)}; "
+        f"extra: {sorted(result.extra)}"
+    )

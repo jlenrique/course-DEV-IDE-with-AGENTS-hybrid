@@ -1,0 +1,20 @@
+{
+  "specialist_id": "texas",
+  "request_id": "550e8400-e29b-41d4-a716-446655440000",
+  "payload_in": {
+    "directive_path": "tests/fixtures/specialists/texas/fixture_directive.yaml",
+    "bundle_dir": "tests/fixtures/specialists/texas/fixture_bundle"
+  },
+  "created_at": "2026-04-24T00:00:00Z",
+  "payload_out": {
+    "specialist_id": "texas",
+    "verb": "proceed",
+    "payload": {
+      "status": "complete"
+    },
+    "bundle_reference": "tests/fixtures/specialists/texas/fixture_bundle",
+    "edit_payload": null,
+    "reject_reason": null,
+    "timestamp": "2026-04-24T00:00:01Z"
+  }
+}

@@ -21,8 +21,8 @@ from uuid import uuid4
 import pytest
 from pydantic import ValidationError
 
-from marcus.lesson_plan.events import EventEnvelope, ScopeDecisionTransition
-from marcus.lesson_plan.schema import (
+from app.marcus.lesson_plan.events import EventEnvelope, ScopeDecisionTransition
+from app.marcus.lesson_plan.schema import (
     FitReport,
     LearningModel,
     LessonPlan,

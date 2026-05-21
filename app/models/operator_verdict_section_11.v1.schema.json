@@ -1,0 +1,149 @@
+{
+  "$defs": {
+    "VoiceSelectionEditPayload": {
+      "additionalProperties": false,
+      "description": "Field-level edits for voice candidates or voice-selection metadata.",
+      "properties": {
+        "edits": {
+          "additionalProperties": true,
+          "description": "Mapping of voice-selection field names or paths to replacement values.",
+          "minProperties": 1,
+          "title": "Edits",
+          "type": "object"
+        }
+      },
+      "required": [
+        "edits"
+      ],
+      "title": "VoiceSelectionEditPayload",
+      "type": "object"
+    },
+    "VoiceSelectionPayload": {
+      "additionalProperties": false,
+      "description": "Selected ElevenLabs voice for Section 11 handoff.",
+      "properties": {
+        "rationale": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Optional operator rationale for the selected voice.",
+          "title": "Rationale"
+        },
+        "selected_voice_id": {
+          "description": "Selected ElevenLabs voice identifier.",
+          "minLength": 1,
+          "title": "Selected Voice Id",
+          "type": "string"
+        }
+      },
+      "required": [
+        "selected_voice_id"
+      ],
+      "title": "VoiceSelectionPayload",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "description": "Tamper-evident verdict emitted by the Section 11 G4A poll surface.",
+  "properties": {
+    "decision_card_digest": {
+      "description": "Lowercase sha256 digest of the reviewed G4 card.",
+      "title": "Decision Card Digest",
+      "type": "string"
+    },
+    "edit_payload": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/VoiceSelectionEditPayload"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "description": "Required iff verb is edit."
+    },
+    "operator_id": {
+      "description": "Operator identifier.",
+      "minLength": 1,
+      "pattern": "^[a-zA-Z][a-zA-Z0-9_-]+$",
+      "title": "Operator Id",
+      "type": "string"
+    },
+    "reject_reason": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "description": "Required iff verb is reject.",
+      "title": "Reject Reason"
+    },
+    "run_id": {
+      "description": "UUID4 identity for the voice-selection run.",
+      "format": "uuid",
+      "title": "Run Id",
+      "type": "string"
+    },
+    "select_payload": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/VoiceSelectionPayload"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "description": "Required iff verb is select."
+    },
+    "submitted_at": {
+      "description": "Timezone-aware verdict submission time.",
+      "format": "date-time",
+      "title": "Submitted At",
+      "type": "string"
+    },
+    "surface_id": {
+      "const": "section_11_g4a_voice_selection",
+      "default": "section_11_g4a_voice_selection",
+      "description": "Closed Section 11 voice-selection surface identifier.",
+      "title": "Surface Id",
+      "type": "string"
+    },
+    "verb": {
+      "description": "Closed verdict verb set: select | edit | reject.",
+      "enum": [
+        "select",
+        "edit",
+        "reject"
+      ],
+      "title": "Verb",
+      "type": "string"
+    },
+    "voice_selection_id": {
+      "description": "Identifier of the voice-selection card under review.",
+      "minLength": 1,
+      "title": "Voice Selection Id",
+      "type": "string"
+    }
+  },
+  "required": [
+    "run_id",
+    "verb",
+    "voice_selection_id",
+    "operator_id",
+    "decision_card_digest"
+  ],
+  "title": "Section11OperatorVerdict",
+  "type": "object"
+}

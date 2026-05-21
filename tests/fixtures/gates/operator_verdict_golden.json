@@ -1,0 +1,13 @@
+{
+  "card_id": "22222222-2222-4222-8222-222222222222",
+  "decision_card_digest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+  "edit_payload": null,
+  "gate_id": "G2C",
+  "operator_id": "juanl",
+  "reject_reason": null,
+  "revise_count": 0,
+  "timestamp": "2026-04-26T12:00:00Z",
+  "trial_id": "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa",
+  "verb": "approve",
+  "verdict_id": "11111111-1111-4111-8111-111111111111"
+}

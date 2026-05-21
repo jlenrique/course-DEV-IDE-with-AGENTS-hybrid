@@ -58,8 +58,8 @@ def test_intake_and_orchestrator_packages_route_through_write_api() -> None:
     write_api.py.
     """
     repo_root = Path(__file__).parent.parent.parent
-    intake_dir = repo_root / "marcus" / "intake"
-    orchestrator_dir = repo_root / "marcus" / "orchestrator"
+    intake_dir = repo_root / "app" / "marcus" / "intake"
+    orchestrator_dir = repo_root / "app" / "marcus" / "orchestrator"
 
     violations: list[str] = []
     for scan_root in (intake_dir, orchestrator_dir):

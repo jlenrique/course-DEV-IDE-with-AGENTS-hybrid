@@ -1,5 +1,24 @@
 # Agent environment (Cursor + Claude Code)
 
+> ## MIGRATION STATUS BANNER (refreshed 2026-04-28)
+>
+> **This guide reflects the PRE-MIGRATION primary-repo agent environment.** The hybrid clone on `dev/langchain-langgraph-foundation` has **MIGRATED**: migration unconditionally SHIPPED 2026-04-27 (commit `97842ac`); Slab 6 trial-experience bundle 3/3 CLOSED 2026-04-28; first tracked trial UNBLOCKED. The migrated runtime carries: Marcus orchestrator (Python runtime) + 14 scaffold-conformant specialists + production-graph runner consuming Slab 6.0 envelope substrate + BMAD agent persona discipline (per `CLAUDE.md`).
+>
+> **For migration-native agent environment (post-SHIP), see:**
+> - **[`CLAUDE.md`](../CLAUDE.md)** — project instructions: BMAD sprint governance + sandbox-AC discipline + Marcus-first activation cold-start + custom-vs-stock-persona distinction + sandbox-AC validators + deferred-inventory governance.
+> - **[`docs/dev-guide/specialist-anti-patterns.md`](dev-guide/specialist-anti-patterns.md)** — A1–A17 + P1–P3 catalog (substrate-level + process anti-patterns).
+> - **[`docs/dev-guide/specialist-migration-template.md`](dev-guide/specialist-migration-template.md)** — R1-R14 rules for per-specialist migration stories.
+> - **[`docs/dev-guide/composition-specification.md`](dev-guide/composition-specification.md)** — Option B governing reference (envelope + adapter + composition discipline).
+> - **[`docs/dev-guide/substrate-inventory-checklist.md`](dev-guide/substrate-inventory-checklist.md)** — N1–N12 standing pre-flight.
+> - **[`docs/dev-guide/sources-of-truth.md`](dev-guide/sources-of-truth.md)** — comprehensive SSOT registry per topic.
+> - **[`docs/dev-guide/how-to-add-a-specialist.md`](dev-guide/how-to-add-a-specialist.md)** — single consolidated walkthrough for adding a new specialist.
+> - **[`README.md`](../README.md)** — top-of-repo orientation + migration status.
+> - **[`skills/bmad-agent-marcus/SKILL.md`](../skills/bmad-agent-marcus/SKILL.md)** — Marcus persona activation sequence (cold-start binding per CLAUDE.md "Marcus-first APP production cold start").
+>
+> **Scope of this legacy content (post-SHIP):** repository layout + agent operating mode + handoff guidance described below are HISTORICAL REFERENCE for the pre-migration primary-repo. Runtime production runs invoke Marcus the Python runtime (not the BMAD Marcus persona). For migration-native agent environment guidance, consult the see-also list above.
+
+---
+
 ## Repository layout
 
 | Path | Purpose |
@@ -50,7 +69,7 @@ These specialists are guidance-only (manual-tool pattern): no API runtime, no wo
 | **Woodshed** | `skills/woodshed/` | Exemplar-driven agent skill development — study, reproduce, compare, reflect, regress (faithful + creative modes) | Active |
 | **Production coordination** | `skills/production-coordination/` | Workflow stages, delegation, mode management, style guide | Active |
 | **Tech spec wrangler** | `skills/tech-spec-wrangler/` | Tool API doc refresh, research, validation via Ref MCP; ensures agents always have current API knowledge | Active |
-| **Texas (Source Wrangler)** | `skills/bmad-agent-texas/` | Source extraction with quality validation, cross-validation against reference assets, fallback chains, proportionality checks. Memory agent (evolvable). Replaces legacy `skills/source-wrangler/`. **Runtime entry point**: `python skills/bmad-agent-texas/scripts/run_wrangler.py --directive <path> --bundle-dir <path>` — orchestrates fetch + extract + validate + cross-validate + emits 6 bundle artifacts per `references/extraction-report-schema.md` (Epic 25 Story 25-1, 2026-04-17). **2026-04-18 (Story 27-0)**: Shape 3-Disciplined retrieval foundation package shipped at `scripts/retrieval/` (contracts / base ABC / dispatcher / hand-rolled MCP client / provider directory / FakeProvider). Operator directory surface: `python skills/bmad-agent-texas/scripts/run_wrangler.py --list-providers [--shape retrieval\|locator] [--status ready\|stub\|ratified\|backlog] [--json]` — canonical answer to "what can Texas fetch?" See `references/retrieval-contract.md` (audience-segmented — Tracy / operators / dev-agents) + `_bmad-output/implementation-artifacts/SCHEMA_CHANGELOG.md` for schema v1.1. Unblocks 27-2 scite + 27-2.5 Consensus. | Active |
+| **Texas (Source Wrangler)** | `skills/bmad-agent-texas/` | Source extraction with quality validation, cross-validation against reference assets, fallback chains, proportionality checks. Memory agent (evolvable). Replaces legacy `skills/source-wrangler/`. **Runtime entry point**: `python skills/bmad-agent-texas/scripts/run_wrangler.py --directive <path> --bundle-dir <path>` — orchestrates fetch + extract + validate + cross-validate + emits 6 bundle artifacts per `references/extraction-report-schema.md` (Epic 25 Story 25-1, 2026-04-17). **2026-04-18 (Story 27-0)**: Shape 3-Disciplined retrieval foundation package shipped at `scripts/retrieval/` (contracts / base ABC / dispatcher / hand-rolled MCP client / provider directory / FakeProvider). Operator directory surface: `python skills/bmad-agent-texas/scripts/run_wrangler.py --list-providers [--shape retrieval\|locator] [--status ready\|stub\|ratified\|backlog] [--json]` — canonical answer to "what can Texas fetch?" See `references/retrieval-contract.md` (audience-segmented — Tracy / operators / dev-agents) + `_bmad-output/implementation-artifacts/SCHEMA_CHANGELOG.md` for schema v1.1. Auth contracts: scite MCP uses `SCITE_USER_NAME` + `SCITE_PASSWORD` (basic auth, default URL `https://api.scite.ai/mcp`); Consensus MCP accepts `CONSENSUS_API_KEY` (bearer) or `CONSENSUS_USER_NAME` + `CONSENSUS_PASSWORD` (basic auth, default URL `https://mcp.consensus.app/mcp`). Unblocks 27-2 scite + 27-2.5 Consensus. | Active |
 | **Source wrangler (legacy)** | `skills/source-wrangler/` | Legacy extraction scripts — being migrated to Texas. Retained for backward compatibility during transition. | Deprecated |
 | **Sensory bridges** | `skills/sensory-bridges/` | Multimodal perception: PPTX, image, audio (ElevenLabs STT), PDF, video bridges with canonical schema, confidence rubric, and universal perception protocol | Active |
 | **Fidelity Assessor (Vera)** | `skills/bmad-agent-fidelity-assessor/` | Forensic fidelity verification at G0-G5. O/I/A taxonomy, Fidelity Trace Reports, circuit breaker. Runs before Quinn-R at every gate. | Active |

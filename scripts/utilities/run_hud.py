@@ -24,6 +24,7 @@ from __future__ import annotations
 import argparse
 import html as html_mod
 import sqlite3
+import time
 from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
@@ -31,6 +32,22 @@ from typing import Any
 import yaml
 
 from scripts.utilities.file_helpers import project_root
+from scripts.utilities.hud_data_sources import (
+    ActiveTrialView,
+    AdhocSummaryView,
+    CostEngineeringView,
+    M5WindowView,
+    read_active_trial,
+    read_adhoc_summary,
+    read_cost_engineering_state,
+    read_m5_window_state,
+)
+from scripts.utilities.hud_per_step_summary import (
+    StepSummary,
+    SummaryArtifactIndex,
+    derive_per_step_summaries,
+    scan_bundle_summary_artifacts,
+)
 from scripts.utilities.pipeline_manifest import hud_steps, load_manifest
 from scripts.utilities.progress_map import build_report as build_progress_report
 
@@ -197,35 +214,41 @@ def _load_gate_results(bundle_dir: Path) -> list[dict[str, Any]]:
 _MAX_ARTIFACTS = 200
 
 
-def _scan_bundle_artifacts(bundle_dir: Path) -> list[dict[str, str]]:
-    """List files in the bundle directory with sizes (capped at _MAX_ARTIFACTS)."""
+def _format_size(size: int) -> str:
+    if size < 1024:
+        return f"{size} B"
+    if size < 1024 * 1024:
+        return f"{size / 1024:.1f} KB"
+    return f"{size / (1024 * 1024):.1f} MB"
+
+
+def _bundle_artifacts_listing(index: SummaryArtifactIndex) -> list[dict[str, str]]:
+    """List files from the already-scanned summary artifact index."""
     artifacts = []
-    if not bundle_dir.exists():
-        return artifacts
-    count = 0
-    for f in sorted(bundle_dir.rglob("*")):
-        if f.is_file():
-            count += 1
-            if count > _MAX_ARTIFACTS:
-                artifacts.append({
+    for count, artifact in enumerate(
+        sorted(index.by_relative_path.values(), key=lambda item: item.relative_path),
+        start=1,
+    ):
+        if count > _MAX_ARTIFACTS:
+            artifacts.append(
+                {
                     "path": f"(+{count - _MAX_ARTIFACTS} more files not shown)",
                     "size": "",
-                })
-                break
-            rel = f.relative_to(bundle_dir)
-            size = f.stat().st_size
-            if size < 1024:
-                size_str = f"{size} B"
-            elif size < 1024 * 1024:
-                size_str = f"{size / 1024:.1f} KB"
-            else:
-                size_str = f"{size / (1024 * 1024):.1f} MB"
-            artifacts.append({"path": str(rel), "size": size_str})
+                }
+            )
+            break
+        artifacts.append(
+            {
+                "path": artifact.relative_path,
+                "size": _format_size(artifact.size_bytes),
+            }
+        )
     return artifacts
 
 
 def _build_pipeline_state(
     gate_results: list[dict[str, Any]],
+    step_summaries: dict[str, StepSummary] | None = None,
 ) -> list[dict[str, Any]]:
     """Merge gate results into pipeline step definitions."""
     gate_by_id = {str(g.get("step_id", "")).upper(): g for g in gate_results}
@@ -248,6 +271,7 @@ def _build_pipeline_state(
             "evidence": gate_data.get("evidence", "") if gate_data else "",
             "inputs": gate_data.get("inputs", []) if gate_data else [],
             "outputs": gate_data.get("outputs", []) if gate_data else [],
+            "step_summary": step_summaries.get(step["id"]) if step_summaries else None,
         }
         steps.append(merged)
     return steps
@@ -257,6 +281,8 @@ def collect_hud_data(
     bundle_dir: Path | None = None,
     bundles_dir: Path | None = None,
     db_path: Path | None = None,
+    trial_id: str | None = None,
+    include_adhoc_panel: bool = True,
 ) -> dict[str, Any]:
     """Collect all data needed for the HUD rendering."""
     bdir = bundles_dir or BUNDLES_DIR
@@ -272,10 +298,15 @@ def collect_hud_data(
     if bundle_dir and bundle_dir.exists():
         run_constants = _load_run_constants(bundle_dir)
         gate_results = _load_gate_results(bundle_dir)
-        artifacts = _scan_bundle_artifacts(bundle_dir)
+        summary_artifacts = scan_bundle_summary_artifacts(bundle_dir)
+        artifacts = _bundle_artifacts_listing(summary_artifacts)
         bundle_path = str(bundle_dir)
+    else:
+        summary_artifacts = SummaryArtifactIndex()
 
-    pipeline = _build_pipeline_state(gate_results)
+    manifest = load_manifest()
+    step_summaries = derive_per_step_summaries(manifest, summary_artifacts)
+    pipeline = _build_pipeline_state(gate_results, step_summaries=step_summaries)
 
     # Compute pipeline position
     current_step = 0
@@ -314,6 +345,11 @@ def collect_hud_data(
                 newest = max(gate_files, key=lambda f: f.stat().st_mtime)
                 _file_ts(newest, "gate-sidecars")
 
+    active_trial = read_active_trial(trial_id)
+    cost_engineering = read_cost_engineering_state()
+    m5_window = read_m5_window_state()
+    adhoc_summary = read_adhoc_summary() if include_adhoc_panel else None
+
     return {
         "generated": now.isoformat(),
         "bundle_path": bundle_path,
@@ -330,6 +366,10 @@ def collect_hud_data(
         "artifacts": artifacts,
         "dev_report": dev_report,
         "source_freshness": source_freshness,
+        "active_trial": active_trial,
+        "cost_engineering": cost_engineering,
+        "m5_window": m5_window,
+        "adhoc_summary": adhoc_summary,
     }
 
 
@@ -338,11 +378,11 @@ def collect_hud_data(
 # ---------------------------------------------------------------------------
 
 _STATUS_ICONS = {
-    "pass": "&#x2705;",       # green check
+    "pass": "&#x2705;",  # green check
     "conditional-pass": "&#x26A0;&#xFE0F;",  # warning
-    "fail": "&#x274C;",       # red X
+    "fail": "&#x274C;",  # red X
     "skip": "&#x23ED;&#xFE0F;",  # skip
-    "pending": "&#x23F3;",    # hourglass
+    "pending": "&#x23F3;",  # hourglass
     "not-started": "&#x25CB;",  # open circle
 }
 
@@ -366,12 +406,37 @@ def _render_pipeline_step(step: dict[str, Any], is_current: bool) -> str:
     detail_html = ""
     if step["summary"]:
         detail_html += f'<div class="step-summary">{_esc(step["summary"])}</div>'
+    step_summary = step.get("step_summary")
+    if isinstance(step_summary, StepSummary):
+        urgent = is_current or bool(step["conditions"]) or bool(step["blockers"])
+        open_attr = " open" if urgent else ""
+        auto_open_attr = ' data-auto-open="urgent"' if urgent else ""
+        fields = "".join(
+            f"<li>{_esc(field)}</li>"
+            for field in (step_summary.captured_fields or ("artifact_path",))
+        )
+        freshness = step_summary.freshness_timestamp or "n/a"
+        detail_id = f"step-summary-{_esc(step['id']).replace('.', '-')}"
+        detail_html += (
+            f'<details id="{detail_id}" class="step-content-summary" '
+            f'data-step-summary-id="{detail_id}"{auto_open_attr}{open_attr}>'
+            f"<summary>{_esc(step_summary.title)}</summary>"
+            f'<div class="step-content-summary-body">'
+            f"<p>{_esc(step_summary.description)}</p>"
+            f"<dl>"
+            f"<dt>Artifact source</dt><dd>{_esc(step_summary.artifact_source)}</dd>"
+            f"<dt>Freshness</dt><dd>{_esc(freshness)}</dd>"
+            f"</dl>"
+            f"<ul>{fields}</ul>"
+            f"</div>"
+            f"</details>"
+        )
     if step["metrics"]:
         metrics_items = "".join(
             f"<li><strong>{_esc(k)}:</strong> {_esc(str(v))}</li>"
             for k, v in step["metrics"].items()
         )
-        detail_html += f'<details><summary>Metrics</summary><ul>{metrics_items}</ul></details>'
+        detail_html += f"<details><summary>Metrics</summary><ul>{metrics_items}</ul></details>"
     if step["conditions"]:
         cond_items = "".join(f"<li>{_esc(c)}</li>" for c in step["conditions"])
         detail_html += f'<details><summary>Conditions ({len(step["conditions"])})</summary><ul class="warn-list">{cond_items}</ul></details>'
@@ -385,7 +450,7 @@ def _render_pipeline_step(step: dict[str, Any], is_current: bool) -> str:
             f"<li>{_esc(o['path'] if isinstance(o, dict) else str(o))}</li>"
             for o in step["outputs"]
         )
-        detail_html += f'<details><summary>Outputs ({len(step["outputs"])})</summary><ul>{out_items}</ul></details>'
+        detail_html += f"<details><summary>Outputs ({len(step['outputs'])})</summary><ul>{out_items}</ul></details>"
 
     dur = ""
     if step["duration"]:
@@ -397,9 +462,9 @@ def _render_pipeline_step(step: dict[str, Any], is_current: bool) -> str:
         f'<span class="step-icon">{icon}</span>'
         f'<span class="step-id">{_esc(step["id"])}</span>'
         f'<span class="step-name">{_esc(step["name"])}{gate_badge}{dur}</span>'
-        f'</div>'
-        f'{detail_html}'
-        f'</div>'
+        f"</div>"
+        f"{detail_html}"
+        f"</div>"
     )
 
 
@@ -416,8 +481,8 @@ def _render_dev_panel(dev_report: dict[str, Any] | None) -> str:
     done_rows = ""
     for e in dev_report.get("completed_epics", []):
         done_rows += (
-            f'<tr><td>&#x2705;</td><td>{_esc(e["id"])}</td>'
-            f'<td>{_esc(e["label"])}</td><td>{e["stories"]}</td></tr>'
+            f"<tr><td>&#x2705;</td><td>{_esc(e['id'])}</td>"
+            f"<td>{_esc(e['label'])}</td><td>{e['stories']}</td></tr>"
         )
 
     # Active epics
@@ -443,23 +508,25 @@ def _render_dev_panel(dev_report: dict[str, Any] | None) -> str:
             f'<div class="progress-bar-container">'
             f'<div class="progress-bar-fill" style="width:{bar}px"></div>'
             f'<span class="progress-text">{done}/{total} ({epic_pct}%)</span>'
-            f'</div>'
-            f'{details}'
-            f'</div>'
+            f"</div>"
+            f"{details}"
+            f"</div>"
         )
 
     # Backlog epics
     backlog_rows = ""
     for e in dev_report.get("backlog_epics", []):
         backlog_rows += (
-            f'<tr><td>&#x25CB;</td><td>{_esc(e["id"])}</td>'
-            f'<td>{_esc(e["label"])}</td><td>{e["stories"]}</td></tr>'
+            f"<tr><td>&#x25CB;</td><td>{_esc(e['id'])}</td>"
+            f"<td>{_esc(e['label'])}</td><td>{e['stories']}</td></tr>"
         )
 
     # Source health
     sh = dev_report.get("source_health", {})
-    health_cls = "health-clean" if sh.get("verdict") == "CLEAN" else (
-        "health-warn" if sh.get("verdict") == "DEGRADED" else "health-fail"
+    health_cls = (
+        "health-clean"
+        if sh.get("verdict") == "CLEAN"
+        else ("health-warn" if sh.get("verdict") == "DEGRADED" else "health-fail")
     )
     health_items = ""
     for f in sh.get("findings", []):
@@ -478,10 +545,10 @@ def _render_dev_panel(dev_report: dict[str, Any] | None) -> str:
       <div class="dev-bar">
         <div class="progress-bar-container wide">
           <div class="progress-bar-fill" style="width:{bar_w}px"></div>
-          <span class="progress-text">{pct}% &mdash; {s.get('done_stories',0)}/{s.get('total_stories',0)} stories</span>
+          <span class="progress-text">{pct}% &mdash; {s.get("done_stories", 0)}/{s.get("total_stories", 0)} stories</span>
         </div>
         <div class="dev-counts">
-          {s.get('done_epics',0)} done / {s.get('active_epics',0)} active / {s.get('backlog_epics',0)} backlog epics
+          {s.get("done_epics", 0)} done / {s.get("active_epics", 0)} active / {s.get("backlog_epics", 0)} backlog epics
         </div>
       </div>
     </div>
@@ -490,17 +557,17 @@ def _render_dev_panel(dev_report: dict[str, Any] | None) -> str:
       {active_html or '<div class="dim">No active epics</div>'}
     </div>
     <details>
-      <summary>Completed ({len(dev_report.get('completed_epics',[]))} epics)</summary>
+      <summary>Completed ({len(dev_report.get("completed_epics", []))} epics)</summary>
       <table class="epic-table"><thead><tr><th></th><th>ID</th><th>Epic</th><th>Stories</th></tr></thead>
       <tbody>{done_rows}</tbody></table>
     </details>
     <details>
-      <summary>Backlog ({len(dev_report.get('backlog_epics',[]))} epics)</summary>
+      <summary>Backlog ({len(dev_report.get("backlog_epics", []))} epics)</summary>
       <table class="epic-table"><thead><tr><th></th><th>ID</th><th>Epic</th><th>Stories</th></tr></thead>
       <tbody>{backlog_rows}</tbody></table>
     </details>
     <details class="{health_cls}">
-      <summary>Source Health: {sh.get('verdict','UNKNOWN')}</summary>
+      <summary>Source Health: {sh.get("verdict", "UNKNOWN")}</summary>
       {health_items}
     </details>
     {"<details><summary>Risks / Unresolved</summary>" + risks_html + "</details>" if risks_html else ""}
@@ -523,7 +590,11 @@ def _render_health_panel(
         if step_01["metrics"]:
             for k, v in step_01["metrics"].items():
                 val_str = _esc(str(v))
-                check_icon = "&#x2705;" if str(v).lower() in ("true", "connected", "pass", "ok") else "&#x26A0;&#xFE0F;"
+                check_icon = (
+                    "&#x2705;"
+                    if str(v).lower() in ("true", "connected", "pass", "ok")
+                    else "&#x26A0;&#xFE0F;"
+                )
                 metrics_html += f'<div class="health-row">{check_icon} <strong>{_esc(k)}:</strong> {val_str}</div>'
         summary = step_01.get("summary", "")
         summary_html = f'<div class="step-summary">{_esc(summary)}</div>' if summary else ""
@@ -531,26 +602,30 @@ def _render_health_panel(
         timestamp_html = f'<div class="dim">Ran: {_esc(timestamp)}</div>' if timestamp else ""
         sections.append(
             f'<div class="health-section {css}">'
-            f'<h4>{icon} Preflight</h4>'
-            f'{summary_html}'
-            f'{metrics_html}'
-            f'{timestamp_html}'
-            f'</div>'
+            f"<h4>{icon} Preflight</h4>"
+            f"{summary_html}"
+            f"{metrics_html}"
+            f"{timestamp_html}"
+            f"</div>"
         )
     else:
         sections.append(
             '<div class="health-section status-idle">'
-            '<h4>&#x25CB; Preflight</h4>'
+            "<h4>&#x25CB; Preflight</h4>"
             '<div class="dim">Not yet run</div>'
-            '</div>'
+            "</div>"
         )
 
     # Source health from dev report
     if dev_report:
         sh = dev_report.get("source_health", {})
         verdict = sh.get("verdict", "UNKNOWN")
-        v_icon = {"CLEAN": "&#x2705;", "DEGRADED": "&#x26A0;&#xFE0F;", "FAIL": "&#x274C;"}.get(verdict, "&#x2753;")
-        v_cls = {"CLEAN": "status-pass", "DEGRADED": "status-warn", "FAIL": "status-fail"}.get(verdict, "")
+        v_icon = {"CLEAN": "&#x2705;", "DEGRADED": "&#x26A0;&#xFE0F;", "FAIL": "&#x274C;"}.get(
+            verdict, "&#x2753;"
+        )
+        v_cls = {"CLEAN": "status-pass", "DEGRADED": "status-warn", "FAIL": "status-fail"}.get(
+            verdict, ""
+        )
         items = ""
         for f in sh.get("findings", []):
             if f.get("level") == "ok":
@@ -561,11 +636,11 @@ def _render_health_panel(
                 items += f'<div class="health-row">&#x274C; {_esc(f.get("check", ""))}: {_esc(f.get("message", ""))}</div>'
         sections.append(
             f'<div class="health-section {v_cls}">'
-            f'<h4>{v_icon} Source Health: {_esc(verdict)}</h4>'
-            f'<details><summary>Details ({sh.get("error_count", 0)} errors, {sh.get("warning_count", 0)} warnings)</summary>'
-            f'{items}'
-            f'</details>'
-            f'</div>'
+            f"<h4>{v_icon} Source Health: {_esc(verdict)}</h4>"
+            f"<details><summary>Details ({sh.get('error_count', 0)} errors, {sh.get('warning_count', 0)} warnings)</summary>"
+            f"{items}"
+            f"</details>"
+            f"</div>"
         )
 
     if not sections:
@@ -582,6 +657,118 @@ def _render_health_panel(
         badge = '<span class="badge badge-pass">READY</span>'
 
     return f'<div class="readiness-badge">{badge}</div>' + "\n".join(sections)
+
+
+def _render_active_trial_panel(view: ActiveTrialView | None) -> str:
+    if view is None:
+        return (
+            '<section class="runtime-panel">'
+            "<h3>Active Trial</h3>"
+            '<div class="panel-empty">No migrated-runtime trial found under state/config/runs.</div>'
+            "</section>"
+        )
+    cost_rows = "".join(
+        f"<tr><td>{_esc(agent)}</td><td>${cost:.6f}</td></tr>"
+        for agent, cost in view.per_agent_cost.items()
+    )
+    trace = (
+        f'<a href="{_esc(view.langsmith_trace_url)}">{_esc(view.langsmith_trace_url)}</a>'
+        if view.langsmith_trace_url
+        else '<span class="dim">unavailable</span>'
+    )
+    alerts = "".join(f"<li>{_esc(alert)}</li>" for alert in view.drift_alerts_last_24h)
+    return f"""
+    <section class="runtime-panel">
+      <h3>Active Trial</h3>
+      <div class="runtime-grid">
+        <div><strong>Trial</strong><span>{_esc(view.trial_id)}</span></div>
+        <div><strong>Status</strong><span class="badge badge-idle">{_esc(view.status)}</span></div>
+        <div><strong>Step</strong><span>{_esc(view.current_step)}</span></div>
+        <div><strong>Agent / Model</strong><span>{_esc(view.current_agent)} / {_esc(view.current_model)}</span></div>
+      </div>
+      <details open><summary>Per-agent cost</summary>
+        <table class="kv-table"><tbody>{cost_rows or '<tr><td colspan="2">No cost report yet</td></tr>'}</tbody></table>
+      </details>
+      <div class="health-row"><strong>LangSmith:</strong> {trace}</div>
+      <details><summary>Drift alerts last 24h ({len(view.drift_alerts_last_24h)})</summary>
+        <ul>{alerts or "<li>No drift alerts</li>"}</ul>
+      </details>
+    </section>
+    """
+
+
+def _render_cost_engineering_panel(view: CostEngineeringView) -> str:
+    cascade_rows = "".join(
+        f"<tr><td>{_esc(agent)}</td><td>{_esc(model)}</td></tr>"
+        for agent, model in view.cascade_preview.items()
+    )
+    price_rows = "".join(
+        f"<tr><td>{_esc(model)}</td><td>${row['input']:.2f}</td><td>${row['output']:.2f}</td></tr>"
+        for model, row in view.pricing_preview.items()
+    )
+    median_cost = (
+        f"${view.median_trial_cost_last_5:.6f}"
+        if view.median_trial_cost_last_5 is not None
+        else "n/a"
+    )
+    budget = (
+        f"${view.soft_cap_budget_usd:.2f}" if view.soft_cap_budget_usd is not None else "not set"
+    )
+    return f"""
+    <section class="runtime-panel">
+      <h3>Cost Engineering</h3>
+      <div class="runtime-grid">
+        <div><strong>Median trial cost</strong><span>{median_cost}</span></div>
+        <div><strong>Soft cap</strong><span>{_esc(budget)}</span></div>
+      </div>
+      <details open><summary>Cascade preview ({len(view.cascade_preview)})</summary>
+        <table class="kv-table"><tbody>{cascade_rows}</tbody></table>
+      </details>
+      <details><summary>Pricing table</summary>
+        <table><thead><tr><th>Model</th><th>Input / 1M</th><th>Output / 1M</th></tr></thead><tbody>{price_rows}</tbody></table>
+      </details>
+    </section>
+    """
+
+
+def _render_m5_window_panel(view: M5WindowView) -> str:
+    if not view.visible:
+        return ""
+    rows = "".join(
+        f"<tr><td>{_esc(item['condition'])}</td><td>{_esc(item['status'])}</td></tr>"
+        for item in view.open_conditions
+    )
+    return f"""
+    <section class="runtime-panel">
+      <h3>M5 Conditional Window</h3>
+      <div class="runtime-grid">
+        <div><strong>Days remaining</strong><span>{view.days_remaining}</span></div>
+        <div><strong>Demotion threshold</strong><span>{_esc(view.demotion_threshold)}</span></div>
+      </div>
+      <table class="kv-table"><tbody>{rows}</tbody></table>
+    </section>
+    """
+
+
+def _render_adhoc_panel(view: AdhocSummaryView | None) -> str:
+    if view is None:
+        return ""
+    cost = (
+        f"${view.total_cost_last_24h:.6f}"
+        if view.total_cost_last_24h is not None
+        else "inline-only"
+    )
+    return f"""
+    <section class="runtime-panel">
+      <h3>Ad-hoc Mode</h3>
+      <div class="runtime-grid">
+        <div><strong>Runs last 24h</strong><span>{view.run_count_last_24h}</span></div>
+        <div><strong>Cost last 24h</strong><span>{_esc(cost)}</span></div>
+      </div>
+      <pre class="evidence">python -m app.marcus.cli ask "summarize this lesson outline" --max-tokens 500</pre>
+      <div class="dim">{_esc(view.note)}</div>
+    </section>
+    """
 
 
 def _esc(text: str) -> str:
@@ -633,7 +820,7 @@ def _render_snapshot_banner(
         f'<span class="banner-label">{mode_label}</span>'
         f'<span class="banner-timestamp">Generated: {_esc(generated_human)}</span>'
         f'<span class="banner-detail">{detail}</span>'
-        f'</div>'
+        f"</div>"
     )
 
 
@@ -657,7 +844,13 @@ def render_html(
         watch_interval_seconds=watch_interval_seconds,
     )
 
-    run_id = rc.get("RUN_ID", "No active run")
+    active_trial = data.get("active_trial")
+    if active_trial is not None:
+        run_id = (
+            f"{active_trial.trial_id[:8]} ({active_trial.status})"
+        )
+    else:
+        run_id = rc.get("RUN_ID", "No active run")
     profile = rc.get("EXPERIENCE_PROFILE", "—")
     source = rc.get("PRIMARY_SOURCE_FILE", "—")
     bundle = data["bundle_path"] or "—"
@@ -680,18 +873,24 @@ def render_html(
     # Artifacts
     artifacts_html = ""
     for a in data["artifacts"]:
-        artifacts_html += f'<tr><td>{_esc(a["path"])}</td><td>{_esc(a["size"])}</td></tr>'
+        artifacts_html += f"<tr><td>{_esc(a['path'])}</td><td>{_esc(a['size'])}</td></tr>"
 
     # Run constants display
     rc_html = ""
     for k, v in rc.items():
-        rc_html += f'<tr><td>{_esc(str(k))}</td><td>{_esc(str(v))}</td></tr>'
+        rc_html += f"<tr><td>{_esc(str(k))}</td><td>{_esc(str(v))}</td></tr>"
 
     # Dev panel
     dev_html = _render_dev_panel(data.get("dev_report"))
 
     # System health panel — preflight step + source health
     health_html = _render_health_panel(pipeline, data.get("dev_report"))
+    runtime_html = (
+        _render_active_trial_panel(data.get("active_trial"))
+        + _render_cost_engineering_panel(data["cost_engineering"])
+        + _render_m5_window_panel(data["m5_window"])
+        + _render_adhoc_panel(data.get("adhoc_summary"))
+    )
 
     # Freshness bar
     freshness = data.get("source_freshness", {})
@@ -705,7 +904,9 @@ def render_html(
                 age = 9999
             age_str = f"{int(age)}s ago" if age < 120 else f"{int(age / 60)}m ago"
             age_cls = "fresh" if age < 60 else ("stale-warn" if age < 300 else "stale-bad")
-            freshness_items += f'<span class="freshness-src {age_cls}">{_esc(src_name)}: {age_str}</span>'
+            freshness_items += (
+                f'<span class="freshness-src {age_cls}">{_esc(src_name)}: {age_str}</span>'
+            )
             max_age = max(max_age, age)
     freshness_cls = "fresh" if max_age < 60 else ("stale-warn" if max_age < 300 else "stale-bad")
 
@@ -743,7 +944,7 @@ def render_html(
   <div class="header-meta">
     <span class="meta-item"><strong>Run:</strong> {_esc(run_id)}</span>
     <span class="meta-item"><strong>Profile:</strong> {_esc(profile)}</span>
-    <span class="meta-item"><strong>Source:</strong> {_esc(str(source).split('/')[-1] if source != '—' else '—')}</span>
+    <span class="meta-item"><strong>Source:</strong> {_esc(str(source).split("/")[-1] if source != "—" else "—")}</span>
   </div>
 </header>
 
@@ -752,19 +953,20 @@ def render_html(
 
     <div id="tab-health" class="tab-content active">
       {health_html}
+      {runtime_html}
     </div>
 
     <div id="tab-production" class="tab-content">
       <div class="pipeline-overview">
         <div class="progress-bar-container wide">
           <div class="progress-bar-fill" style="width:{pct}%"></div>
-          <span class="progress-text">Step {ps['current_step']} / {ps['total_steps']} ({pct}%)</span>
+          <span class="progress-text">Step {ps["current_step"]} / {ps["total_steps"]} ({pct}%)</span>
         </div>
         <div class="status-badges">
-          <span class="badge badge-pass">{ps['passed']} passed</span>
-          {"<span class='badge badge-fail'>" + str(ps['failed']) + " FAILED</span>" if ps['failed'] else ""}
-          {"<span class='badge badge-warn'>" + str(ps['warnings']) + " warnings</span>" if ps['warnings'] else ""}
-          <span class="badge badge-idle">{ps['total_steps'] - ps['current_step']} remaining</span>
+          <span class="badge badge-pass">{ps["passed"]} passed</span>
+          {"<span class='badge badge-fail'>" + str(ps["failed"]) + " FAILED</span>" if ps["failed"] else ""}
+          {"<span class='badge badge-warn'>" + str(ps["warnings"]) + " warnings</span>" if ps["warnings"] else ""}
+          <span class="badge badge-idle">{ps["total_steps"] - ps["current_step"]} remaining</span>
         </div>
       </div>
 
@@ -791,7 +993,7 @@ def render_html(
       <div class="bundle-path">{_esc(bundle)}</div>
     </div>
     <details>
-      <summary>Artifacts ({len(data['artifacts'])} files)</summary>
+      <summary>Artifacts ({len(data["artifacts"])} files)</summary>
       <table class="kv-table">
       <tbody>{artifacts_html}</tbody></table>
     </details>
@@ -900,6 +1102,25 @@ h3 { font-size: 0.95rem; margin: 12px 0 6px; color: #94a3b8; }
 .health-section h4 { font-size: 0.85rem; margin-bottom: 4px; }
 .health-row { font-size: 0.78rem; padding: 2px 0 2px 4px; }
 .readiness-badge { margin-bottom: 8px; }
+.runtime-panel {
+  padding: 10px; margin: 10px 0; border-radius: 4px;
+  background: #111827; border: 1px solid #253244;
+}
+.runtime-panel h3 { color: #cbd5e1; margin-top: 0; }
+.runtime-grid {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 8px; margin: 6px 0 8px;
+}
+.runtime-grid > div {
+  background: #0f172a; border: 1px solid #1e293b; border-radius: 4px;
+  padding: 6px 8px; min-width: 0;
+}
+.runtime-grid strong {
+  display: block; color: #94a3b8; font-size: 0.68rem;
+  text-transform: uppercase; letter-spacing: 0;
+}
+.runtime-grid span { display: block; color: #e2e8f0; font-size: 0.78rem; overflow-wrap: anywhere; }
+.runtime-panel a { color: #7dd3fc; overflow-wrap: anywhere; }
 
 header {
   padding: 8px 0; border-bottom: 1px solid #1e293b; margin-bottom: 12px;
@@ -978,6 +1199,13 @@ details summary:hover { background: #334155; }
 details > ul, details > pre, details > table, details > div {
   padding: 6px 12px; background: #0f172a;
 }
+.step-content-summary-body p { margin-bottom: 6px; color: #cbd5e1; }
+.step-content-summary-body dl {
+  display: grid; grid-template-columns: 110px 1fr; gap: 3px 8px;
+  font-size: 0.74rem; margin-bottom: 6px;
+}
+.step-content-summary-body dt { color: #94a3b8; font-weight: 700; }
+.step-content-summary-body dd { color: #cbd5e1; overflow-wrap: anywhere; }
 ul { list-style: none; padding-left: 12px; }
 li::before { content: "\\2022"; color: #475569; margin-right: 6px; }
 .warn-list li::before { content: "\\26A0"; color: #eab308; }
@@ -1061,9 +1289,19 @@ document.addEventListener('DOMContentLoaded', function() {
   if (savedPanel === 'hidden') togglePanel();
 
   // Restore expanded details
-  var savedDetails = JSON.parse(sessionStorage.getItem('hud_details') || '{}');
+  var savedDetails = {};
+  try {
+    savedDetails = JSON.parse(sessionStorage.getItem('hud_details') || '{}');
+  } catch (err) {
+    console.warn('Ignoring corrupt hud_details sessionStorage', err);
+  }
   document.querySelectorAll('details').forEach(function(el, i) {
-    if (savedDetails[i] !== undefined) el.open = savedDetails[i];
+    var key = el.getAttribute('data-step-summary-id') || el.id || String(i);
+    if (el.getAttribute('data-auto-open') === 'urgent') {
+      el.open = true;
+      return;
+    }
+    if (savedDetails[key] !== undefined) el.open = savedDetails[key];
   });
 
   // Animate refresh bar
@@ -1091,7 +1329,8 @@ document.addEventListener('DOMContentLoaded', function() {
     if (activeTab) sessionStorage.setItem('hud_tab', activeTab.id.replace('tab-',''));
     var details = {};
     document.querySelectorAll('details').forEach(function(el, i) {
-      details[i] = el.open;
+      var key = el.getAttribute('data-step-summary-id') || el.id || String(i);
+      details[key] = el.open;
     });
     sessionStorage.setItem('hud_details', JSON.stringify(details));
     location.reload();
@@ -1105,37 +1344,122 @@ document.addEventListener('DOMContentLoaded', function() {
 # ---------------------------------------------------------------------------
 
 
+def _write_snapshot(
+    *,
+    bundle_dir: Path | None,
+    output_path: Path,
+    trial_id: str | None,
+    include_adhoc_panel: bool,
+    watching: bool,
+    watch_interval_seconds: float,
+) -> None:
+    data = collect_hud_data(
+        bundle_dir=bundle_dir,
+        trial_id=trial_id,
+        include_adhoc_panel=include_adhoc_panel,
+    )
+    html = render_html(
+        data,
+        watching=watching,
+        watch_interval_seconds=watch_interval_seconds,
+    )
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+    output_path.write_text(html, encoding="utf-8")
+
+
 def main(argv: list[str] | None = None) -> None:
     parser = argparse.ArgumentParser(
         description="Run HUD: Heads-Up Display for production runs and dev tracking."
     )
     parser.add_argument(
-        "--bundle-dir", type=str, default=None,
+        "--bundle-dir",
+        type=str,
+        default=None,
         help="Path to a specific source bundle directory. Auto-detects latest if omitted.",
     )
     parser.add_argument(
-        "--output", "-o", type=str, default=None,
+        "--output",
+        "-o",
+        type=str,
+        default=None,
         help="Output HTML file path. Defaults to reports/run-hud.html.",
     )
     parser.add_argument(
-        "--open", action="store_true",
+        "--open",
+        action="store_true",
         help="Open the generated HTML in the default browser.",
+    )
+    parser.add_argument(
+        "--trial-id",
+        type=str,
+        default=None,
+        help="Read migrated-runtime trial state for a specific trial id.",
+    )
+    parser.add_argument(
+        "--watch",
+        type=float,
+        nargs="?",
+        const=30.0,
+        default=None,
+        metavar="SECONDS",
+        help="Regenerate the HUD every N seconds (default 30).",
+    )
+    parser.add_argument(
+        "--max-iterations",
+        type=int,
+        default=None,
+        help=argparse.SUPPRESS,
+    )
+    parser.add_argument(
+        "--no-adhoc-panel",
+        action="store_true",
+        help="Hide the LangSmith-backed ad-hoc summary panel.",
     )
     args = parser.parse_args(argv)
 
     bundle_dir = Path(args.bundle_dir) if args.bundle_dir else None
     output_path = Path(args.output) if args.output else HUD_OUTPUT
+    include_adhoc_panel = not args.no_adhoc_panel
+    watch_interval = 30.0 if args.watch is None else args.watch
 
-    data = collect_hud_data(bundle_dir=bundle_dir)
-    html = render_html(data)
-
-    output_path.parent.mkdir(parents=True, exist_ok=True)
-    output_path.write_text(html, encoding="utf-8")
-    print(f"HUD written to {output_path}")
-
-    if args.open:
+    def _open_in_browser() -> None:
         import webbrowser
+
         webbrowser.open(str(output_path.resolve()))
+
+    if args.watch is None:
+        _write_snapshot(
+            bundle_dir=bundle_dir,
+            output_path=output_path,
+            trial_id=args.trial_id,
+            include_adhoc_panel=include_adhoc_panel,
+            watching=False,
+            watch_interval_seconds=watch_interval,
+        )
+        print(f"HUD written to {output_path}")
+        if args.open:
+            _open_in_browser()
+    else:
+        iteration = 0
+        try:
+            while True:
+                iteration += 1
+                _write_snapshot(
+                    bundle_dir=bundle_dir,
+                    output_path=output_path,
+                    trial_id=args.trial_id,
+                    include_adhoc_panel=include_adhoc_panel,
+                    watching=True,
+                    watch_interval_seconds=watch_interval,
+                )
+                print(f"HUD snapshot {iteration} written to {output_path}")
+                if iteration == 1 and args.open:
+                    _open_in_browser()
+                if args.max_iterations is not None and iteration >= args.max_iterations:
+                    break
+                time.sleep(watch_interval)
+        except KeyboardInterrupt:
+            print("HUD watch stopped")
 
 
 if __name__ == "__main__":

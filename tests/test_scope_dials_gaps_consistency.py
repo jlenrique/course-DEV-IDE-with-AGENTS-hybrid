@@ -12,7 +12,7 @@ from __future__ import annotations
 import pytest
 from pydantic import ValidationError
 
-from marcus.lesson_plan.schema import Dials, IdentifiedGap, PlanUnit, ScopeDecision
+from app.marcus.lesson_plan.schema import Dials, IdentifiedGap, PlanUnit, ScopeDecision
 
 
 def _sd(scope: str) -> ScopeDecision:

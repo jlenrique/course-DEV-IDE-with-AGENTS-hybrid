@@ -15,7 +15,7 @@ from pathlib import Path
 import pytest
 from pydantic import ValidationError
 
-from marcus.lesson_plan.schema import PlanUnit, ScopeDecision
+from app.marcus.lesson_plan.schema import PlanUnit, ScopeDecision
 
 SCHEMA_PATH = (
     Path(__file__).parents[1]
@@ -91,7 +91,7 @@ def test_weather_band_rejects_red_via_real_jsonschema_validate() -> None:
     """
     import jsonschema
 
-    from marcus.lesson_plan.schema import LessonPlan
+    from app.marcus.lesson_plan.schema import LessonPlan
 
     schema = LessonPlan.model_json_schema()
     bad_payload = {
@@ -126,7 +126,7 @@ def test_weather_band_rejects_red_via_real_jsonschema_validate() -> None:
 
 
 def test_recommended_weather_band_on_fit_diagnosis_also_rejects_red() -> None:
-    from marcus.lesson_plan.schema import FitDiagnosis
+    from app.marcus.lesson_plan.schema import FitDiagnosis
 
     with pytest.raises(ValidationError):
         FitDiagnosis(
@@ -145,7 +145,7 @@ def test_weather_band_rejects_red_via_type_adapter() -> None:
     """
     from pydantic import TypeAdapter
 
-    from marcus.lesson_plan.schema import PlanUnit, ScopeDecision
+    from app.marcus.lesson_plan.schema import PlanUnit, ScopeDecision
 
     sd = ScopeDecision(
         state="proposed",

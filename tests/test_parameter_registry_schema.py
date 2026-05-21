@@ -7,7 +7,6 @@ from typing import Any
 
 import yaml
 
-
 SCHEMA_PATH = Path("state/config/parameter-registry-schema.yaml")
 NARRATION_PARAMS_PATH = Path("state/config/narration-script-parameters.yaml")
 

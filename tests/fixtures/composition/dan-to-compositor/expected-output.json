@@ -1,0 +1,41 @@
+{
+  "dan_aux": {
+    "specialist_id": "dan",
+    "model_id": "gpt-5.4",
+    "verb": "proceed",
+    "advisory_only": true,
+    "contributions": [
+      {
+        "gate_id": "G1",
+        "contribution_type": "creative_director_critique",
+        "prose": "Open with the learner tension before the outline branches.",
+        "advisory": true,
+        "blocking": false
+      },
+      {
+        "gate_id": "G1A",
+        "contribution_type": "narrative_arc_check",
+        "prose": "Hold cluster boundaries to question changes, not source headings.",
+        "advisory": true,
+        "blocking": false
+      },
+      {
+        "gate_id": "G2",
+        "contribution_type": "tone_voice_consistency_review",
+        "prose": "Keep narration grounded in the visible storyboard action.",
+        "advisory": true,
+        "blocking": false
+      }
+    ]
+  },
+  "compositor_invocation": {
+    "specialist_id": "compositor",
+    "gate_id": "G2",
+    "upstream_specialist": "dan",
+    "aux_contributions_by_gate": {
+      "G1": "creative_director_critique",
+      "G1A": "narrative_arc_check",
+      "G2": "tone_voice_consistency_review"
+    }
+  }
+}

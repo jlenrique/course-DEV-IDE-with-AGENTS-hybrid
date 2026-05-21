@@ -32,7 +32,7 @@ _MIN_CONTENT_STDDEV = 25.0
 _FADED_STDDEV_CEIL = 25.0
 
 
-def _edge_fill_ratio(img: "Image.Image", band_px: int = 8) -> dict[str, float]:
+def _edge_fill_ratio(img: Image.Image, band_px: int = 8) -> dict[str, float]:
     """Measure the ratio of non-white pixels along each edge band."""
     rgb = img.convert("RGB")
     width, height = rgb.size
@@ -62,7 +62,7 @@ def _edge_fill_ratio(img: "Image.Image", band_px: int = 8) -> dict[str, float]:
     }
 
 
-def _content_stddev(img: "Image.Image") -> float:
+def _content_stddev(img: Image.Image) -> float:
     """Average per-channel standard deviation — measures image content level.
 
     Returns ~0 for blank/white slides, ~12 for faded, >25 for real content.

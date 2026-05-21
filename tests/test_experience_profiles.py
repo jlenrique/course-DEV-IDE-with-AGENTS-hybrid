@@ -9,7 +9,6 @@ import yaml
 
 from scripts.utilities import run_constants as rc
 
-
 PROFILES_PATH = Path("state/config/experience-profiles.yaml")
 NARRATION_PARAMS_PATH = Path("state/config/narration-script-parameters.yaml")
 EXPECTED_MODE_KEYS = {"literal-text", "literal-visual", "creative"}

@@ -14,8 +14,8 @@ from uuid import uuid4
 
 import pytest
 
-from marcus.lesson_plan.events import EventEnvelope
-from marcus.lesson_plan.log import LessonPlanLog
+from app.marcus.lesson_plan.events import EventEnvelope
+from app.marcus.lesson_plan.log import LessonPlanLog
 
 
 @pytest.fixture

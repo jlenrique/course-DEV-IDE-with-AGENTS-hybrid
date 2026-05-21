@@ -1,0 +1,1662 @@
+---
+title: Production Prompt Pack v5 — Narrated Lesson with Video/Animation
+version: 5.0.0
+status: canonical-for-production-runs
+supersedes: production-prompt-pack-v4.2-narrated-lesson-with-video-or-animation.md (legacy-frozen authority for slab-7-legacy-migrated-mapping-checklist.md mapping axis; preserved on disk for audit)
+also-supersedes: production-prompt-pack-v4.3-narrated-lesson-with-video-or-animation.md (paused 2026-04-11; cluster-mode content already absorbed into v4.2 §05B/§6.2/§6.3/§7.5; no v4.3-only carry-forward)
+last-updated: 2026-05-07 (S4 close; pre-Trial-3 cleanup arc Session 4)
+generated: false (hand-authored from v4.2 source via deterministic mutation pass)
+methodology: docs/trials/methodology.md
+gate-taxonomy-authority: docs/dev-guide/adr/0002-slab-7c-gate-taxonomy.md
+mapping-checklist-authority: _bmad-output/planning-artifacts/slab-7-legacy-migrated-mapping-checklist.md (NOTE: v5 is NOT in the mapping checklist axis; v4.2 stays frozen for that purpose)
+specialist-registry-authority: skills/bmad-agent-marcus/references/specialist-registry.yaml
+runtime-entrypoint: app/marcus/cli/trial.py
+runtime-orchestrator: app/marcus/orchestrator/production_runner.py
+versioning-posture: |
+  v5.0.x = Tier-1 (prose / connective tissue; dev-agent authority)
+  v5.1   = Tier-2 (new pipeline step; party-mode required before dev opens)
+  v6     = Tier-3 (new pack family; full party-mode + operator sign-off)
+  Frozen-at-ship discipline: once Trial-3 launches and reaches a tracked verdict, structural edits to v5 bump version; the frozen v5.0 stays on disk for audit.
+success-criteria-pointer: trial-N reaches verdict ≥ PARTIAL-PASS per docs/trials/methodology.md §5; defects routed per §7 filing-disposition matrix
+---
+
+# Production Prompt Pack v5
+
+> **Banner — read first (PP-2 inversion at S4 close 2026-05-07):** This pack **is the canonical production-run pack** as of post-Slab-7c orchestrational-tail close. It executes against the migrated runtime: `app/marcus/cli/trial.py` invokes `app/marcus/orchestrator/production_runner.py`, which dispatches the 11 Slab-7-activated specialists (Texas, Quinn-R, Vera, Irene, Tracy, Gary, Kira, Enrique, Wanda, Dan, Compositor — see `skills/bmad-agent-marcus/references/specialist-registry.yaml`). The "Marcus module" column in §0) TL;DR Crosswalk references the **migrated runtime paths**. v4.2 is **retained as the legacy-axis frozen authority** that `_bmad-output/planning-artifacts/slab-7-legacy-migrated-mapping-checklist.md` maps against — do not edit v4.2; refer to v5 for production runs. v4.3 is **fully superseded by v5**; any cluster-mode content was already absorbed into v4.2 §05B/§6.2/§6.3/§7.5 placeholders pending future activation. Per ADR 0002 gate taxonomy: 18 runtime gate IDs are declared but **only 4 (G1, G2C, G3, G4) cause runner-pauses** — the other 14 are body-validated by specialists without a runner pause; see per-§ disclosures inline.
+
+> **Gate-pause asymmetry (per ADR 0002 §4):** This pack declares 18 runtime gate IDs across §sections. Only **G1, G2C, G3, G4** are in `app/manifest/compiler.py::production_gate_ids(manifest)` — those are the **runner-pause gates** where `production_runner.py` halts and waits for an operator verdict file. The other **14 (G0, G0A, G0B, G1A, G1.5, G2, G2B, G2M, G2.5, G2F, G3B, G4A, G4B, G5)** are **body-validated** — the responsible specialist enforces the gate semantics inline, but the runner does NOT pause. Operator presence at non-pause gates is captured via parity-DSL HIL surfaces (CLI / HTTP / MCP-stdio per `@parity_contract` declarations) rather than a runner halt. Each non-pause-gate §section below carries an inline disclosure noting this.
+
+## 0) Pre-Launch Operator Card (Sally post-S3 5-min skim; tape to second monitor)
+
+You are launching a Trial-N production run. **In order:**
+
+1. **Verify env** (PP-3a; ~1 min) — `Get-Content .env | Select-String "OPENAI_API_KEY"` returns key declaration. Recommended: `LANGSMITH_API_KEY`, `DATABASE_URL`. Per-API smoke as needed.
+2. **Verify preflight** (PP-3b; ~1 min) — `.\.venv\Scripts\python.exe -m skills.pre-flight-check.scripts.preflight_runner --double-dispatch --motion-enabled` returns zero `RESOLUTION-NEEDED` for production-required tools.
+3. **Confirm corpus shape** (~1 min) — corpus at `course-content/courses/<lesson_slug>/` per `docs/operator/corpus-preparation-guide.md`. No `.gitkeep` in primary slot. No Notion/Box fetch-shape contamination.
+4. **Tape verb legend** (`docs/operator/hil-verb-legend.md`) to second monitor or print.
+5. **Pre-launch trial-tracking** — copy `docs/trials/trial-N-templates/launch.md` → `docs/trials/trial-N/launch.md`; fill placeholders. Read `docs/trials/cross-trial-learnings.md` top-to-bottom (5 min; mandatory pre-Trial-N read).
+6. **Final-launch token** — `pytest tests/trial/test_trial3_readiness.py tests/test_preflight_check.py tests/marcus_capabilities/test_preflight_receipt_contract.py -v` — all GREEN.
+7. **Launch:**
+```powershell
+$env:PYTHONIOENCODING="utf-8"
+.\.venv\Scripts\python.exe -m app.marcus.cli trial start --preset production --input course-content/courses/<lesson_slug>/ --motion-enabled
+```
+8. **Capture run-id** from runner stdout immediately; record in `docs/trials/trial-N/launch.md §1` AND `log.md` Attempt 1 header.
+9. **At each gate**, choose verb per `hil-verb-legend.md`. **§04.55 G1.5 lock and §09 G3 lock are IRREVERSIBLE.**
+10. **At G5 §15**, `complete` ends the trial. Author postmortem (Shape A 5 questions; 15 min mandatory) per `docs/trials/methodology.md §6` + Sally's two-shape protocol.
+
+**What success looks like:** Trial reaches G5 with `complete`; Trial3Transcript schema-valid; ≥9-of-11 specialists exercised; tripwire ledger green; broad-regression delta ≤ 0 per `methodology.md §3a` allowlist protocol. Verdict per methodology §5 (PASS / PARTIAL-PASS / STRUCTURED-STOP / FAIL).
+
+**Reading order map:**
+- **Pre-launch (5 min):** this card → `cross-trial-learnings.md` skim → `corpus-preparation-guide.md` if first FRESH corpus → `launch.md` template
+- **At-gate (lookup):** `docs/operator/hil-verb-legend.md` (verb-set + edit-payload + irreversibility) — canonical at-gate reference. Per-§ "Operator at this gate" sub-blocks in v5 are **deferred to S5 P1** (filed in deferred-inventory `s4-per-section-operator-sub-blocks`); use the verb legend in the meantime.
+- **Post-trial (15 min mandatory + 48h deferred):** `postmortem.md` Shape A → Shape B → harvest-discipline routing per `methodology.md §7`
+
+---
+
+## 0) TL;DR Crosswalk
+
+| Pack § | HUD id | Marcus module | Audience | One-line purpose |
+|---|---|---|---|---|
+| 01 | 01 | app/marcus/orchestrator/production_runner.py | M→O | Activation + Preflight |
+| 02 | 02 | app/specialists/texas/retrieval_dispatch.py | M→O | Source Authority Map |
+| 02A | 02A | app/composers/section_02a/composer.py | M→O | Operator Directives (LLM-driven; G0; 7c.3a) |
+| 03 | 03 | app/specialists/texas/retrieval_dispatch.py | O→M | Ingestion + Evidence Log (FR89; six-canonical-artifacts) |
+| 04 | 04 | app/specialists/vera/_act.py + app/specialists/vera/graph.py | M→O | G1 runner-pause; six-dim evidence rubric (Vera body) |
+| 04A | 04A | app/gates/section_04a/poll_surface.py | M→O | G1A per-plan-unit ratification; 7c.6 |
+| 04.5 | 04.5 | app/gates/section_04_5/poll_surface.py | M→O | G1.5 estimator; 7c.7 |
+| 04.55 | 04.55 | app/gates/section_04_55/poll_surface.py | M→O | G1.5 lock (IRREVERSIBLE); 7c.8 |
+| 4.75 | 4.75 | app/specialists/cd/_act.py (PARTIAL; Dan persona) | M→self | Creative Directive Resolution; activation pending future slab |
+| 05 | 05 | app/specialists/irene_pass1/_act.py | M→O | Pass-1 narration + Gate 1 fidelity (orchestration partial) |
+| 05B | 05B | (placeholder; NOT MIGRATED - see deferred-inventory) | M→O | Cluster Plan G1.5 Gate (deferred) |
+| 06 | 06 | app/marcus/orchestrator/writers/{slide_content, fidelity_slides, diagram_cards, theme_resolution, outbound_envelope}.py | O→M | Marcus 5-writer pre-dispatch (W5 partition); 7c.17a + 7c.17b |
+| 6.2 | 6.2 | (placeholder; NOT MIGRATED - see deferred-inventory) | M→self | Cluster Prompt Engineering (deferred) |
+| 6.3 | 6.3 | (placeholder; NOT MIGRATED - see deferred-inventory) | M→self | Cluster Dispatch Sequencing (deferred) |
+| 06B | 06B | app/gates/section_06b/poll_surface.py | M→O | Literal-Visual Operator Build; 7c.18a |
+| 07 | 07 | app/specialists/gary/_act.py + skills/bmad-agent-gamma/SKILL.md (Class-C two-SKILL.md; 7b.6) | O→M | Gary Dispatch + Export |
+| 7.5 | 7.5 | (placeholder; NOT MIGRATED - see deferred-inventory) | M→O | Cluster Coherence G2.5 Gate (deferred) |
+| 07B | 07B | app/gates/section_07b/poll_surface.py | M→O | G2M per-slide A/B variant selection; 7c.10 |
+| 07C | 07C | app/gates/section_07c/poll_surface.py | M→O | G2C runner-pause; storyboard build + HTML reviewer; 7c.18b |
+| 07D | 07D | app/gates/section_07d/poll_surface.py | M→O | G2.5 motion-plan polling; 7c.11 |
+| 07E | 07E | app/specialists/kira/_act.py + skills/bmad-agent-kling/SKILL.md (Class-C; 7b.7) | M→self | Motion Generation/Import |
+| 07F | 07F | app/gates/section_07f/poll_surface.py | M→O | G2F motion gate; 7c.12 |
+| 08 | 08 | app/specialists/irene/graph.py + app/specialists/irene/authoring (Pass-2; orchestration partial) | O→M | Irene Pass 2 + Segment Manifest |
+| 08B | 08B | app/gates/section_08b/poll_surface.py | M→O | G3B Storyboard B + live-URL; 7c.13 |
+| 09 | 09 | app/marcus/orchestrator/section_09_lock.py | M→O | G3 four-artifact lock (IRREVERSIBLE); 7c.19 |
+| 10 | 10 | app/specialists/vera/_act.py (G4 19-criterion canonical) | M→O | Fidelity + Quality Pre-Spend; 7b.3 + 23-1 |
+| 11 | 11 | app/gates/section_11/poll_surface.py + skills/bmad-agent-enrique (Class-C; 7b.8) | M→O | G4A voice selection; 7c.14 |
+| 11B | 11B | app/gates/section_11b/poll_surface.py + skills/bmad-agent-enrique | M→O | G4B input-package preview; 7c.15 |
+| 12 | 12 | app/specialists/enrique/_act.py + skills/bmad-agent-elevenlabs/SKILL.md (Class-C; 7b.8) | O→M | ElevenLabs Audio Generation |
+| 13 | 13 | app/specialists/quinn_r/graph.py + app/specialists/quinn_r/expertise (G5 5-sub-checks; 7b.2) | M→O | Quinn-R Pre-Composition QA |
+| 14 | 14 | app/specialists/compositor/_act.py + skills/compositor/SKILL.md (Class-D2 EXEMPT per D20; 7b.11) | O→M | Compositor Assembly Bundle (deterministic) |
+| 14.5 | 14.5 | app/specialists/desmond/_act.py (body absent; Marcus or operator fallback) | M→self | Desmond Run-Scoped Operator Brief |
+| 15 | 15 | app/gates/section_15/poll_surface.py + app/marcus/orchestrator/writers/section_15_bundle.py | O→M | G5 final operator handoff (DESCRIPT-ready); 7c.15 |
+
+---
+
+## 0.5) Pre-Run Operator Launchpad (PP-3 four-concern preamble; S1 P0-6, 2026-05-07)
+
+> **Per operator directive 2026-05-07:** "the prompt pack needs to ensure environment, system health, default values of production run constants, and preflight check are all addressable and verifiable." The four sub-sections below cover those four concerns. Each item is **verifiable** — the operator (or an automated probe) can run the cited command and observe a PASS/FAIL outcome. Cite real probe paths; nothing is stubbed.
+
+### 0.5.A) Environment verification (PP-3a)
+
+Pre-launch checklist. Run each command; expect PASS/FAIL per the third column.
+
+| Concern | Command | PASS condition |
+|---|---|---|
+| Required env vars present | `Get-Content .env \| Select-String "OPENAI_API_KEY"` | line returned (key declared) |
+| Recommended env vars present | `Get-Content .env \| Select-String "LANGSMITH_API_KEY","DATABASE_URL"` | both lines returned |
+| Per-API smoke env vars (only if `--live` opt-ins are intended) | `Get-Content .env \| Select-String "WONDERCRAFT_API_KEY","ELEVENLABS_API_KEY","GAMMA_API_KEY","KLING_ACCESS_KEY"` | each line returned for the APIs you intend to invoke |
+| Course-content corpus directory | `Test-Path "course-content/courses/<lesson_slug>"` | `True` |
+| Corpus directory contents | `Get-ChildItem course-content/courses/<lesson_slug>/` | at least one primary source + one supporting reference; no `.tmp/` leakage; no `.gitkeep` placeholder if real content absent |
+| Working tree clean (no uncommitted production code) | `git status --short` | empty (or only untracked `runs/` / `_artifacts/` directories) |
+| `.venv` present + Python interpreter on path | `Test-Path .venv/Scripts/python.exe` + `.venv/Scripts/python.exe --version` | `True` + Python 3.11+ |
+
+**Validity check (separate; not in this gate):** env-var validity (does the key actually authenticate?) is **NOT** part of PP-3a — that's a separate scope at `P1-27` cred-readiness sweep + `--live` smoke harness. PP-3a verifies presence + naming only.
+
+**See also:** [`docs/operator/corpus-preparation-guide.md`](../operator/corpus-preparation-guide.md) for full corpus-prep convention.
+
+### 0.5.B) System health + preflight gate (PP-3b)
+
+The migrated runtime ships with an **existing preflight harness** at `skills/pre-flight-check/`. The PP-3b gate documents how to invoke it; it does NOT introduce a parallel system.
+
+**Primary preflight gate command:**
+```powershell
+.\.venv\Scripts\python.exe -m skills.pre-flight-check.scripts.preflight_runner --double-dispatch --motion-enabled
+```
+
+**Expected PASS output:** preflight runner emits a JSON receipt classifying each tool integration as one of:
+- **MCP-ready** — green; tool reachable via MCP protocol
+- **API-ready** — green; tool reachable via direct HTTP API
+- **Manual-only** — yellow; operator-driven invocation (still launch-able)
+- **Blocked** — red; cannot invoke until resolution
+
+**On FAIL:** the runner emits a `RESOLUTION-NEEDED` block per blocked tool with actionable next-steps (env-var-add / OAuth-renew / network-config / etc.). The operator resolves each blocker before re-running, OR launches with reduced-scope invocation set if blocker is non-load-bearing for the planned trial.
+
+**Secondary health probes (lighter-weight; pre-trial sanity):**
+```powershell
+.\.venv\Scripts\python.exe scripts\utilities\app_session_readiness.py --with-preflight
+node scripts\heartbeat_check.mjs
+```
+
+**Verifiable launch-permission token (per AM-11 / Murat ratified pre-S1):**
+```powershell
+.\.venv\Scripts\python.exe -m pytest tests/trial/test_trial3_readiness.py tests/test_preflight_check.py tests/marcus_capabilities/test_preflight_receipt_contract.py -v
+```
+PASS condition: all three test modules green AND preflight runner above shows zero `RESOLUTION-NEEDED` for production-required tools (per the trial's planned dispatch set).
+
+**Activation receipt** for a specific trial (existing v4.2 §01 mechanism; preserved):
+```powershell
+.\.venv\Scripts\python.exe -m scripts.utilities.emit_preflight_receipt --with-preflight --motion-enabled --bundle-dir [BUNDLE_PATH] --output [BUNDLE_PATH]/preflight-results.json
+.\.venv\Scripts\python.exe -m scripts.utilities.venv_health_check
+```
+
+**FAIL handling:** halt before §01; remediate per the receipt's `RESOLUTION-NEEDED` block; re-run.
+
+### 0.5.C) Production run-constants visible + diffable (PP-3c)
+
+Run-constants govern per-trial parameters: `cluster_density`, `slide-mode-proportions` (visual-led / text-led / motion-led ratios), `narration_profile_controls`, `motion_enabled`, `double_dispatch`, etc.
+
+**Path convention:**
+- **Per-run run-constants** (canonical for the trial in flight) live at `<run-dir>/run/run-constants.yaml` where `<run-dir>` is the trial's bundle dir under `state/config/runs/<trial-id>/`.
+- **Top-level template** (`state/config/run-constants.yaml`) **is not currently provided**. Per pre-S1 verification 2026-05-07: the file is absent; the operator's run-constants are composed at `trial start` time per the operator's CLI flags + Marcus PR-RC capability + `creative-directive.schema.yaml` defaults. **Resolution of whether a top-level template SHOULD exist is filed as P1-25 spike (S5)**; this preamble documents the current state honestly.
+
+**Recommended defaults (composed by Marcus PR-RC at trial start):**
+
+| Constant | Default | Override mechanism |
+|---|---|---|
+| `cluster_density` | (composed from Dan §4.75 directive) | operator can pre-set via `--cluster-density <value>` flag |
+| `slide-mode-proportions` | (composed from creative-directive.schema.yaml + experience-profiles.yaml) | operator can pre-set via `--experience-profile <name>` |
+| `narration_profile_controls` | (per experience-profile selection) | operator can override individual fields via §4.75 CD HIL |
+| `motion_enabled` | `true` (this pack supports motion) | `--motion-enabled` / `--no-motion` |
+| `double_dispatch` | `false` (single-dispatch default) | `--double-dispatch` flag |
+| `pack_version` | `v4.2` (this pack); `v5` after S4 close | manifest-driven; no per-run override |
+
+**Diff command (operator pre-launch sanity check):**
+After Marcus PR-RC composes the run-constants but BEFORE §04.55 lock semantics fire, the operator can inspect the composed run-constants:
+```powershell
+Get-Content state/config/runs/<trial-id>/run/run-constants.yaml
+```
+Compare against operator's intent. Any mismatch should be resolved via §04.55 G1.5 lock surface's `edit` verb BEFORE the operator picks `lock` (which is irreversible — see HIL Verb Legend).
+
+**See also:**
+- [`docs/operator/hil-verb-legend.md`](../operator/hil-verb-legend.md) §04.55 — `lock` is irreversible
+- [`state/config/schemas/creative-directive.schema.yaml`](../../state/config/schemas/creative-directive.schema.yaml) — defaults composition source
+- [`docs/dev-guide/composition-specification.md`](../dev-guide/composition-specification.md) §3.1 — envelope first-contribution-wins for run-constants
+- P1-25 spike (S5; pre-trial-3 cleanup plan) — top-level template existence-decision
+
+---
+
+## 01) Activation + Preflight
+[M→O]
+
+
+**Prerequisite:** Run constants must be authored (via Marcus PR-RC) before this prompt
+can be executed. `RUN_ID` and `BUNDLE_PATH` are required by the commands below.
+If run constants are not yet established, stop and run PR-RC first.
+
+
+Marcus, return an activation receipt for RUN_ID [RUN_ID]:
+
+1. Active agent identity and role.
+2. Execution mode and quality preset.
+3. Requested content type and effective workflow template.
+4. Contracts/schemas enforced this run.
+5. Required fields validated before specialist dispatch.
+6. Motion + double-dispatch readiness summary.
+
+Required commands:
+- `.\.venv\Scripts\python.exe -m scripts.utilities.emit_preflight_receipt --with-preflight --motion-enabled --bundle-dir [BUNDLE_PATH] --output [BUNDLE_PATH]/preflight-results.json [--session-receipt [BUNDLE_PATH]/session-preflight-receipt.json]`
+- `.\.venv\Scripts\python.exe -m scripts.utilities.venv_health_check`
+- If `DOUBLE_DISPATCH: true`, also require double-dispatch compatibility confirmation from preflight runner before proceeding.
+
+Required write:
+- `[BUNDLE_PATH]/preflight-results.json` (generated by emit_preflight_receipt.py)
+
+Artifact verification (deterministic — expected file count: **2**):
+- Run: `Get-ChildItem [BUNDLE_PATH] -File | Measure-Object | Select-Object -ExpandProperty Count`
+- Expected files: `run-constants.yaml`, `preflight-results.json`
+- If count < 2, halt and remediate before proceeding.
+
+Gate rule:
+- All checks must pass.
+- Any warn/fail blocks progression.
+
+Wait for explicit GO.
+
+---
+
+## 02) Source Authority Map
+[M→O]
+
+
+Marcus, produce source authority and ingestion map for RUN_ID [RUN_ID].
+
+Primary source:
+- [PRIMARY_SOURCE_FILE]
+
+Optional context:
+- [OPTIONAL_CONTEXT_ASSETS]
+
+**Required pre-map gate (mandatory — do not skip):**
+Before drafting the source authority map:
+1. Scan the source directory containing `[PRIMARY_SOURCE_FILE]` and list every file found.
+2. Present the full discovered file list to the operator and record that operator-facing scan
+   at `[BUNDLE_PATH]/source-directory-scan.md` with a numbered row per file, proposed role
+   for each (`primary` / `validation` / `supplementary` / `skip`), the operator-assigned
+   role, and a brief note.
+3. Wait for operator role assignments.
+4. Run `.\.venv\Scripts\python.exe -m scripts.utilities.validate_source_directory_scan_gate --scan-path [BUNDLE_PATH]/source-directory-scan.md`
+5. Draft the source authority map only after the scan gate passes.
+
+Operator-assigned roles are authoritative. Do not infer roles from run-constants alone — run-constants lists intended sources but the directory is ground truth.
+
+For each source, return:
+- source_id
+- source_type
+- authority_level
+- downstream_consumers_direct
+- downstream_consumers_indirect
+- extraction_pathway
+- expected_confidence
+- known_risks
+
+When the operator has already provided directives in a prior session (e.g. the same run resumed), Marcus may pre-populate the source map from prior artifacts. When this is a fresh greenfield run, produce the map from scratch and present it for operator approval after the scan gate passes.
+
+Required writes:
+- `[BUNDLE_PATH]/source-directory-scan.md`
+- `[BUNDLE_PATH]/source-authority-map.md`
+
+Gate rule:
+- The source-directory scan gate must pass before the source authority map is drafted.
+- Operator must approve the source authority map before ingestion begins.
+- Any unresolved source authority, routing, or risk concern blocks progression.
+
+Wait for explicit GO.
+
+---
+
+## 02A) Operator Directives
+[M→O]
+
+
+**This step is mandatory.** Ingestion (Prompt 3) cannot proceed without either explicit directives or an explicit "no special directives" acknowledgment from the operator.
+
+Poll timing policy (hard requirement):
+- Start a poll timer when Prompt 2A is issued.
+- The poll must remain open for a minimum of 3 minutes — Marcus
+  may not auto-close or auto-advance before this floor has elapsed.
+- Operator input received before the floor elapses is valid and accepted immediately.
+- Auto-close the poll 15 minutes after poll start
+  if a complete submission has not been received.
+- If the poll auto-closes, keep ingestion blocked and require a new Prompt 2A poll.
+
+Marcus, record the operator's source-processing directives for RUN_ID [RUN_ID].
+
+The operator will provide directives in three categories. For each, record exactly what is stated:
+
+**Focus directives** — sections, topics, or content to emphasize:
+- [e.g., "Focus on Part 1 slides and their visual format descriptions"]
+- [e.g., "The table on page 12 is the primary data for slide content"]
+
+**Exclusion directives** — content to ignore or deprioritize:
+- [e.g., "Ignore Appendix B (instructor notes, not student-facing)"]
+- [e.g., "Skip the bibliography and references section"]
+
+**Special treatment directives** — content requiring non-default handling:
+- [e.g., "Treat the infographic on page 8 as a literal-visual candidate"]
+- [e.g., "The acronym list on page 2 should feed the pronunciation dictionary, not slide content"]
+- [e.g., "Diagram on page 14 must be preserved exactly as-is (source-crop, no rebranding)"]
+
+If the operator has no special directives, record: "No operator directives — process all source content at default authority levels."
+
+Governance rules:
+- Operator directives bind Texas (Source Wrangler agent) during ingestion and Irene during planning.
+- Exclusion directives are provenance records: Vera G0 must not flag excluded content as an omission if the exclusion is recorded here.
+- Focus directives are emphasis signals, not exclusion of unmentioned content. The entire source must still be extracted; focus directives control downstream emphasis, not ingestion scope.
+- Special treatment directives override default fidelity classification for the specified content only.
+- This artifact becomes a first-class input alongside `extracted.md` for downstream agents.
+
+When resuming a run that already has `operator-directives.md`, Marcus may present the existing directives for re-confirmation rather than re-polling from scratch.
+
+Prior-run defaults policy:
+- Before polling from scratch, Marcus checks for named defaults using `scripts.utilities.operator_directives_defaults.discover_step_02a_directives_default(bundle_root=Path("[BUNDLE_PATH]"), lesson_slug="[LESSON_SLUG]")`.
+- Current-bundle `operator-directives.md` remains first priority and must be presented for reconfirmation before older runs are considered.
+- If no current file exists, the helper scans sibling tracked source bundles for the latest valid `operator-directives.md` with the same `lesson_slug`, excluding the current bundle.
+- If a prior default is found, present it with `run_id`, source modified UTC, source bundle path, source directives path, and the three directive categories preserved.
+- Require one explicit operator choice before writing this run's directives: accept prior defaults unchanged, modify prior defaults, or replace from scratch.
+- If no valid prior same-lesson directives are found, proceed with the existing poll-from-scratch flow.
+
+Required write:
+- `[BUNDLE_PATH]/operator-directives.md`
+
+Artifact verification (deterministic — expected file count: **3**):
+- Run: `Get-ChildItem [BUNDLE_PATH] -File | Measure-Object | Select-Object -ExpandProperty Count`
+- Expected files: `run-constants.yaml`, `preflight-results.json`, `operator-directives.md`
+- If count < 3, halt and remediate before proceeding.
+
+Gate rule:
+- Operator directives (or an explicit "no special directives" acknowledgment) must be recorded before ingestion begins.
+- Any poll auto-close or missing directive category blocks progression until re-polled. Early operator submission within the minimum open window is valid.
+
+Wait for explicit GO.
+
+---
+
+## 03) Ingestion + Evidence Log
+[M→O]
+
+
+Marcus, delegate ingestion for RUN_ID [RUN_ID] to Texas (Source Wrangler agent) by invoking his runtime wrangling runner. Texas's runner orchestrates fetch + extract + validate + cross-validate + artifact emission in one deterministic pass, using his 4-tier quality classifier and (when validation-role assets are supplied) his cross-validator.
+
+Inputs:
+- source authority map
+- operator directives
+
+Ingestion scope rule:
+- Extract ALL content from the primary source, regardless of focus directives. Focus directives control downstream emphasis, not extraction scope.
+- The full extraction must be preserved in `extracted.md` so downstream agents and the estimator can analyze word count and section depth accurately.
+
+### 3.a) Write the wrangling directive
+
+Marcus authors `[BUNDLE_PATH]/directive.yaml` from the source authority map gathered in Prompt 2 and the operator directives from Prompt 2A. The directive shape is documented in `skills/bmad-agent-texas/references/delegation-contract.md`. Minimum fields:
+
+```yaml
+run_id: "[RUN_ID]"
+sources:
+  - ref_id: "src-001"
+    provider: "local_file"      # local_file | pdf | url | notion | playwright_html
+    locator: "[absolute-or-repo-relative path or URL]"
+    role: "primary"              # primary | validation | supplementary
+    description: "[human-readable]"
+    expected_min_words: [int]    # optional; operator-declared floor
+    pages_total: [int]           # optional; for PDF provider
+  # - add validation-role entries to enable cross-validation
+```
+
+### 3.b) Invoke Texas's runner
+
+```
+.\.venv\Scripts\python.exe skills/bmad-agent-texas/scripts/run_wrangler.py --directive [BUNDLE_PATH]/directive.yaml --bundle-dir [BUNDLE_PATH]
+```
+
+Exit-code semantics (non-zero is NOT automatically a halt — Marcus consults the result envelope):
+- `0`  complete — proceed to Prompt 4
+- `10` complete_with_warnings — proceed; surface warnings to operator
+- `20` blocked — halt; present `result.yaml`'s `blocking_issues[]` to operator; do NOT proceed to Prompt 4
+- `30` directive/IO error — malformed directive or missing locator; fix the directive and re-run
+
+### 3.c) Required artifacts after runner exits
+
+Texas writes all six canonical artifacts to `[BUNDLE_PATH]/`:
+
+- `extracted.md`
+- `metadata.json`
+- `extraction-report.yaml` (Texas's quality report per `skills/bmad-agent-texas/references/extraction-report-schema.md`)
+- `manifest.json` (bundle index with sha256 per artifact)
+- `ingestion-evidence.md`
+- `result.yaml` (Marcus's return envelope — read this into the production envelope)
+
+### 3.d) Belt-and-suspenders word-count check (retained)
+
+After the runner exits 0 or 10, Marcus still independently verifies extraction word count — the runner's tier classifier and this prose check validate the same invariant at different levels, and either firing alone is sufficient to halt the run:
+
+1. Count words in `extracted.md`: `(Get-Content [BUNDLE_PATH]/extracted.md | Measure-Object -Word).Words`
+2. Compare against `metadata.json` page count: expect approximately 250–400 words per source page as a rough floor.
+3. If extracted word count is less than 50% of the expected floor (page_count × 250), HALT and report an extraction gap. Do not proceed to Prompt 4.
+4. Record the actual word count in `ingestion-evidence.md` alongside the page count for audit.
+
+This check exists because a prior trial run produced a 30-line extracted.md from a 24-page source, resulting in a stub that passed the quality gate but would have produced garbage estimates downstream. Texas's runner enforces the same floor via tier classification, but keeping the prose check in place provides defense in depth.
+
+Cross-validation hint: if the primary source PDF is known to be a Notion export (as with APC C1-M1 Tejal), supply the Notion-exported Markdown as a `role: validation` entry in the directive — Texas will run his cross-validator automatically and report section + key-term coverage in `extraction-report.yaml.cross_validation[]`.
+
+### 3.e) Artifact verification (deterministic — expected file count: **10**)
+
+```
+Get-ChildItem [BUNDLE_PATH] -File | Measure-Object | Select-Object -ExpandProperty Count
+```
+
+Expected files after Prompt 3 completes: `run-constants.yaml`, `preflight-results.json`, `operator-directives.md`, `directive.yaml`, `extracted.md`, `metadata.json`, `extraction-report.yaml`, `manifest.json`, `ingestion-evidence.md`, plus `result.yaml` (total 10 files; `gates/` subdir contents are counted separately). If count is less than 10, halt and remediate before proceeding.
+
+### 3.f) Fallback
+
+- If any planning-critical area is medium/low confidence, stop for targeted remediation before Prompt 4.
+
+## 04) Ingestion Quality Gate + Irene Packet
+[M→O]
+
+
+Marcus, run ingestion quality gate for RUN_ID [RUN_ID].
+
+Required checks (each must include a one-sentence evidence justification — bare PASS/FAIL labels are not accepted):
+- **completeness** — e.g., "All 6 Part 1 slides extracted with narration scripts; word count 6200 vs. expected floor of 6000 (24 pages × 250)."
+- **readability** — e.g., "Extracted text parses cleanly; no OCR artifacts or encoding corruptions detected."
+- **anchorability** — e.g., "All slide topics traceable to source page ranges via section headers."
+- **provenance quality** — e.g., "Source references maintained for 5/5 slides; context asset (roadmap image) linked."
+- **planning usability** — e.g., "Content structured with clear section boundaries suitable for Irene Pass 1 planning."
+- **fidelity usability** — e.g., "Narration scripts, visual format descriptions, and learning objectives present with sufficient detail for fidelity assessment."
+
+Evidence rule: Every dimension MUST carry a specific evidence sentence citing extracted content, not just a confidence score. A gate that returns only "PASS (0.95)" with no evidence sentence is a gate that proved nothing — reject it and require evidence.
+
+Receipt writing (mandatory before packet generation):
+
+Marcus runs Vera G0, then persists the full gate outcome as the canonical receipt before generating the Irene packet. Use the emit script so the output shape stays parity with the 30-1 golden-trace fixture (the `gate_decision: proceed` key is what downstream evidence checks parse):
+
+```powershell
+.\.venv\Scripts\python.exe -m scripts.utilities.emit_ingestion_quality_receipt `
+  --bundle-dir [BUNDLE_PATH] `
+  --spec [BUNDLE_PATH]/ingestion-quality-gate-spec.yaml
+```
+
+The spec file captures, per source: the six-dimension verdicts + evidence sentences, Vera G0 verdict + critical findings + interpretation notes, and the overall `gate_decision` (`proceed` or `halt`). The writer fail-closes on internal inconsistency (e.g. `gate_decision: proceed` with any dimension `fail`). A `--template` mode is available for guided authoring and emits `[FILL IN: ...]` placeholders that the downstream guard refuses to accept.
+
+Then generate the Irene packet (the CLI shim guards on the receipt by default):
+
+```powershell
+.\.venv\Scripts\python.exe scripts/utilities/prepare-irene-packet.py `
+  --bundle-dir [BUNDLE_PATH] `
+  --run-id [RUN_ID] `
+  --output [BUNDLE_PATH]/irene-packet.md
+```
+
+`prepare-irene-packet.py` defaults to `--require-receipt` and refuses to run when `ingestion-quality-gate-receipt.md` is missing, empty, or still carries `[FILL IN:` template markers. The `--no-require-receipt` escape hatch exists for golden-trace capture and rerun-carry-forward tooling only; regular operator runs must not pass it.
+
+Required writes (both mandatory; order matters because the shim guard blocks if the receipt is absent):
+- `[BUNDLE_PATH]/ingestion-quality-gate-receipt.md` (generated by emit_ingestion_quality_receipt.py) — Before invoking prepare-irene-packet.py, write `[BUNDLE_PATH]/ingestion-quality-gate-receipt.md` containing the six-dimension gate results and Vera G0 verdict — this file is embedded verbatim into the Irene packet's `## Ingestion Quality Receipt` section.
+- `[BUNDLE_PATH]/irene-packet.md` (generated by prepare-irene-packet.py)
+
+Artifact verification (deterministic — expected file count: **12**):
+- Run: `Get-ChildItem [BUNDLE_PATH] -File | Measure-Object | Select-Object -ExpandProperty Count`
+- Expected files (10 carried forward from Prompt 3 + 2 written here): `run-constants.yaml`, `preflight-results.json`, `operator-directives.md`, `directive.yaml`, `extracted.md`, `metadata.json`, `extraction-report.yaml`, `manifest.json`, `ingestion-evidence.md`, `result.yaml`, `ingestion-quality-gate-receipt.md`, `irene-packet.md`
+- If count < 12, halt and list missing files. Do not report checkpoint PASS until count is verified.
+
+Stop if any dimension or G0 fails.
+
+---
+
+## 04A) Lesson Plan Coauthoring + Scope Lock (Marcus <-> HIL)
+[M→O]
+
+
+Marcus, run the mandatory Lesson Plan coauthoring checkpoint for RUN_ID [RUN_ID] after Prompt 4 and before Prompt 4.5.
+
+Purpose:
+- This is the explicit operator-facing 4A conversation loop where Marcus and the operator ratify scope per plan unit.
+- The checkpoint must lock the plan revision before any downstream estimator, creative-directive, or dispatch-prep work.
+
+Required Marcus behavior:
+- Present each plan unit with the current proposed scope in plain language.
+- Capture operator ratification (or revision) per unit with rationale.
+- Lock the plan only after every in-scope decision is ratified.
+- Emit a baton handoff for Step 05 from the locked plan state.
+
+Required evidence:
+- At least one `scope_decision.set` event exists for this run.
+- A `plan.locked` event exists for the same locked revision.
+- A fanout envelope or sidecar records Step `04A` completion before Step `05`.
+
+Gate rule:
+- Prompt 4.5 is blocked until 04A is complete and the locked plan revision is confirmed.
+- If no ratified in-scope plan units remain, halt and return to operator scope decisions instead of silently advancing.
+
+Stop and wait for operator confirmation.
+
+---
+
+## 04.5) Parent Slide Count Polling
+[M→O]
+
+
+Marcus, run the profile-aware slide count and runtime precursor step for RUN_ID [RUN_ID].
+
+Required analysis:
+- Run `scripts/utilities/slide_count_runtime_estimator.py` on `[BUNDLE_PATH]/extracted.md`
+  with `--experience-profile [EXPERIENCE_PROFILE]` and `--parent-slides [operator value or recommendation]`
+  and `--target-runtime [operator value or recommendation]`.
+- The estimator calls `estimate_and_validate()` which loads the experience profile,
+  derives `estimated_total_slides` and `avg_slide_seconds` from the profile's
+  `cluster_expansion` block, and runs a 5-condition feasibility triangle.
+
+Required polling:
+- Poll operator for exactly two inputs: `parent_slide_count` and `target_total_runtime_minutes`
+- All other values (`estimated_total_slides`, `avg_slide_seconds`, word budgets) are
+  system-derived from the experience profile — do not poll for them.
+- Poll with 3-minute hold, 15-minute auto-close
+- If feasibility returns BLOCK, loop — re-poll with adjusted values
+- If feasibility returns WARN, surface the warning and require operator ACK before proceeding
+
+Required locking:
+- Persist locked values in `run-constants.yaml`:
+  - `parent_slide_count` (operator-confirmed)
+  - `target_total_runtime_minutes` (operator-confirmed)
+  - `estimated_total_slides` (system-derived, informational)
+  - `avg_slide_seconds` (system-derived, informational)
+
+Stop and wait for operator lock confirmation.
+
+---
+
+## 04.55) Estimator + Run Constants Lock
+[M→O]
+
+This lock commits the estimator outputs and run constants into a single deterministic checkpoint before downstream emissions proceed. The polling pass in 4.5 observes inputs and readiness; 4.55 performs the transactional lock that gates later event emission.
+
+When this lock succeeds, the HUD confirms the run constants are frozen for the active revision and downstream stages can trust a stable baseline. When it fails, resolve estimator or run-constant mismatches first, then rerun the lock so subsequent sections do not operate on mixed assumptions.
+
+[M→self] Keep the lock boundary strict: no emission side effects should be recorded as complete until this lock transitions to success.
+
+## 4.75) Creative Directive Resolution (CD)
+[M→O]
+
+
+**Conditional:** Run this step only when `EXPERIENCE_PROFILE` is set. If no experience profile is set, skip to Prompt 5.
+
+Marcus, delegate Creative Directive resolution to the Creative Director (CD) and resolve the directive into run constants.
+
+Inputs:
+- operator emphasis answer (visuals lead vs text lead)
+- `run-constants.yaml`
+- style-bible signals (visual tone, voice/tone constraints)
+- `state/config/experience-profiles.yaml`
+
+Required outputs:
+- `[BUNDLE_PATH]/creative-directive.yaml` (must follow `skills/bmad-agent-cd/references/creative-directive-contract.md`)
+
+Required resolution actions (Marcus-owned, not CD-owned):
+- Update `run-constants.yaml` to match the directive’s `slide_mode_proportions`
+- Persist the directive’s `narration_profile_controls` into `state/config/narration-script-parameters.yaml`
+- Carry both resolved values forward in the Irene Pass 1 envelope and the later Pass 2 envelope
+
+Validation rule:
+- Validate the directive against `scripts/utilities/creative_directive_validator.py`. If validation errors exist, halt and re-run CD.
+
+Validation command (example):
+```powershell
+.\.venv\Scripts\python.exe -c "import yaml,sys; from scripts.utilities.creative_directive_validator import validate_creative_directive; payload=yaml.safe_load(open(r'[BUNDLE_PATH]\\creative-directive.yaml')); errors=validate_creative_directive(payload); print(errors); sys.exit(1 if errors else 0)"
+```
+
+Artifact verification (deterministic — expected file count: **13**):
+- Run: `Get-ChildItem [BUNDLE_PATH] -File | Measure-Object | Select-Object -ExpandProperty Count`
+- Expected files (12 carried forward from Prompt 4 + 1 written here): `run-constants.yaml`, `preflight-results.json`, `operator-directives.md`, `directive.yaml`, `extracted.md`, `metadata.json`, `extraction-report.yaml`, `manifest.json`, `ingestion-evidence.md`, `result.yaml`, `ingestion-quality-gate-receipt.md`, `irene-packet.md`, `creative-directive.yaml`
+- If count < 13, halt and remediate before proceeding.
+
+Stop and wait for operator confirmation.
+
+---
+
+## 05) Irene Pass 1 + Gate 1 Fidelity
+[M→O]
+
+
+Marcus, delegate Irene Pass 1 for RUN_ID [RUN_ID].
+
+Inputs:
+- Irene packet
+- source bundle
+- source metadata
+- operator directives
+- ingestion quality receipt
+
+Required output:
+- `[BUNDLE_PATH]/irene-pass1.md`
+
+Before Gate 1 approval, run:
+- Vera G1
+- Vera G2
+- Quinn-R quality G2
+
+Hard constraints:
+- Exactly one mode per slide: creative, literal-text, or literal-visual.
+- No slides planned from excluded content.
+- Literal-visual slides must carry complete spec cards.
+
+Stop after Gate 1 review and approval.
+
+### Prompt 5.5: Irene Mode Assignments + HIL Approval
+
+Marcus, after Irene Pass 1, run HIL review of mode assignments.
+
+Required inputs:
+- `[BUNDLE_PATH]/irene-pass1.md` (with mode assignments per slide)
+- `slide_mode_proportions` from run-constants.yaml
+
+Required HIL task:
+- Review Irene's mode assignments against operator proportions
+- Approve or override specific slide modes
+- Ensure proportions are approximately met (within 10% tolerance)
+
+Required write:
+- `[BUNDLE_PATH]/hil-mode-approval.json` with final approved modes per slide
+
+Gate rule:
+- Irene Pass 1 cannot proceed to Gate 1 until HIL approval is recorded.
+- If overrides change proportions significantly, flag for operator re-confirmation.
+
+Stop after HIL approval.
+
+---
+
+## 05B) Cluster Plan G1.5 Gate
+[M→O]
+
+
+**Conditional:** Run this step only when `CLUSTER_DENSITY` ≠ none. If `CLUSTER_DENSITY` is none or absent, skip to Prompt 6 immediately.
+
+Marcus, run G1.5 Cluster Plan gate for RUN_ID [RUN_ID]:
+
+Legacy heading alias retained for compatibility checks: `5B) Cluster Plan G1.5 Gate + Operator Review`.
+
+Required command:
+- `.\.venv\Scripts\python.exe skills/bmad-agent-marcus/scripts/run-g1.5-cluster-gate.py --bundle-dir [BUNDLE_PATH]`
+
+Gate rule:
+- If the command exits non-zero (G1.5 fail): surface the failing criteria, return Irene's cluster plan for revision. **Do not advance to Prompt 6.**
+- If the command exits zero (G1.5 pass): display the contents of `[BUNDLE_PATH]/cluster-plan-review.md` for operator review. **Halt and wait for explicit operator approval.**
+
+Operator approval options:
+- **APPROVE** — cluster plan is sound; proceed to Prompt 6.
+- **REJECT** — return to Irene for revision; re-run Prompt 5 cluster planning section with revision notes, then re-run this gate.
+
+Do not auto-advance. Explicit operator approval is required before Gary dispatch.
+
+---
+
+> **Optional A/B Loop:** If you are running an Irene Pass 1 tuning loop, pause here and follow
+> `docs/workflow/operator-script-v4.2-irene-ab-loop.md`. Resume at Prompt 6 once a winner is promoted.
+
+## 06) Pre-Dispatch Package Build
+[M→O]
+
+
+Marcus, after Gate 1 approval, build Gary's pre-dispatch package and stop before dispatch.
+
+Required machine artifacts:
+- `[BUNDLE_PATH]/g2-slide-brief.md`
+- `[BUNDLE_PATH]/gary-slide-content.json`
+- `[BUNDLE_PATH]/gary-fidelity-slides.json`
+- `[BUNDLE_PATH]/gary-diagram-cards.json`
+- `[BUNDLE_PATH]/gary-theme-resolution.json`
+- `[BUNDLE_PATH]/gary-outbound-envelope.yaml`
+- `[BUNDLE_PATH]/pre-dispatch-package-gary.md`
+
+Double-dispatch behavior:
+- If `DOUBLE_DISPATCH: true`, `gary-outbound-envelope.yaml` must carry `dispatch_count: 2`.
+- Variant B artifacts use `-B` suffix where applicable.
+
+Stop if any artifact fails contract rules.
+
+---
+
+## 6.2) Cluster Prompt Engineering (Conditional)
+[M→O]
+
+
+**Conditional:** Run this step only when `CLUSTER_DENSITY` ≠ none.
+
+Marcus, render cluster-aware prompts using the G1.5-approved cluster plan.
+
+Required command (capture stdout to file):
+- `.\.venv\Scripts\python.exe skills/bmad-agent-marcus/scripts/cluster_prompt_engineering.py --cluster [BUNDLE_PATH]/clusters.json --config state/config/prompting.yaml > [BUNDLE_PATH]/cluster-prompts.json`
+
+Required write:
+- `[BUNDLE_PATH]/cluster-prompts.json` (contains prompt_id, audit metadata, and prompt text per cluster)
+
+Gate rule:
+- Halt if prompt engineering fails or `cluster-prompts.json` is empty.
+
+---
+
+## 6.3) Cluster Dispatch Sequencing (Conditional)
+[M→O]
+
+
+**Conditional:** Run this step only when `CLUSTER_DENSITY` ≠ none.
+
+Marcus, build a deterministic cluster dispatch plan.
+
+Required command (capture stdout to file):
+- `.\.venv\Scripts\python.exe skills/bmad-agent-marcus/scripts/cluster_dispatch_sequencing.py --clusters [BUNDLE_PATH]/clusters-list.json --config state/config/dispatch.yaml > [BUNDLE_PATH]/cluster-dispatch-plan.json`
+
+Required write:
+- `[BUNDLE_PATH]/cluster-dispatch-plan.json` (includes `plan_hash`, batch schedule, retry policy)
+
+Gate rule:
+- Halt if dispatch sequencing fails or `plan_hash` is missing.
+
+---
+
+## 06B) Literal-Visual Operator Build
+[M→O]
+
+
+Marcus, before Prompt 7, run the mandatory literal-visual operator checkpoint.
+
+Prompt the operator in plain language:
+- "Should the visuals lead, or should the text lead for this lesson?"
+- Record the internal profile choice as one of:
+  - `experience_profile: visual-led`
+  - `experience_profile: text-led`
+
+Required write:
+- `[BUNDLE_PATH]/literal-visual-operator-packet.md`
+
+Required gate command (run after writing the packet, before advancing to Prompt 7):
+- `.\.venv\Scripts\python.exe skills/bmad-agent-marcus/scripts/validate-literal-visual-pre-dispatch.py --bundle-dir [BUNDLE_PATH]`
+
+Gate rule:
+- Prompt 7 is blocked until this gate exits 0.
+- If any required diagram card has `image_url: null` and no valid `preintegration_png_path` on disk, the gate fails and Gary dispatch is blocked. Resolve all failing cards (publish asset to get a hosted HTTPS URL, or confirm `preintegration_png_path` file exists on disk) and re-run the gate before advancing.
+- If `diagram_cards` is empty (no literal-visual source assets this run), the gate exits 0 automatically.
+- The more literal the slide, the more critical operator scrutiny — source asset integrity for literal-visual slides is non-negotiable before Gamma API spend.
+
+---
+
+## 07) Gary Dispatch + Export
+[M→O]
+
+
+Marcus, dispatch Gary only if all checks are true:
+- no unresolved literal-visual blockers
+- envelope READY
+- singular mode preserved
+- theme mapping frozen
+- requested content is content-bearing and dispatch-ready
+
+Dispatch behavior:
+- If `DOUBLE_DISPATCH: false`, run one Gary dispatch cycle.
+- If `DOUBLE_DISPATCH: true`, run variant A and variant B for every eligible slide position.
+
+Required outputs:
+- `[BUNDLE_PATH]/gary-dispatch-result.json`
+- `[BUNDLE_PATH]/gary-dispatch-run-log.json`
+- If `DOUBLE_DISPATCH: true`: `[BUNDLE_PATH]/gary-dispatch-result-B.json`
+- If `DOUBLE_DISPATCH: true`: `[BUNDLE_PATH]/gary-dispatch-run-log-B.json`
+- `gamma-export/...`
+- If `DOUBLE_DISPATCH: true`: `gamma-export-B/...`
+
+Required validation:
+- Vera G3 on every dispatch set produced
+- `.\.venv\Scripts\python.exe skills/bmad-agent-marcus/scripts/validate-gary-dispatch-ready.py --payload [BUNDLE_PATH]/gary-dispatch-result.json`
+- PNG export-to-card mapping validation (ensure slide_XX.png matches card number XX)
+- If `DOUBLE_DISPATCH: true`, run the same validator against `[BUNDLE_PATH]/gary-dispatch-result-B.json`
+
+Required write:
+- `[BUNDLE_PATH]/gary-dispatch-validation-result.json`
+- If `DOUBLE_DISPATCH: true`: `[BUNDLE_PATH]/gary-dispatch-validation-result-B.json`
+
+Stop on any validator or G3 failure.
+
+---
+
+## 7.5) Cluster Coherence G2.5 Gate (Conditional)
+[M→O]
+
+
+**Conditional:** Run this step only when `CLUSTER_DENSITY` ≠ none.
+
+Marcus, run G2.5 cluster coherence validation on the generated cluster outputs **before** Storyboard A.
+
+Required command (capture stdout to file):
+- `.\.venv\Scripts\python.exe skills/bmad-agent-marcus/scripts/cluster_coherence_validation.py --manifest [CLUSTER_MANIFEST_PATH] --outputs [CLUSTER_OUTPUTS_PATH] --config state/config/validation.yaml > [BUNDLE_PATH]/cluster-coherence-report.json`
+
+Inputs guidance:
+- `CLUSTER_MANIFEST_PATH` should reference the cluster-aware manifest used for dispatch ordering (cluster plan + slide ids).
+- `CLUSTER_OUTPUTS_PATH` should reference the generated cluster outputs from Gary (or the merged outputs list for double-dispatch).
+
+Required write:
+- `[BUNDLE_PATH]/cluster-coherence-report.json`
+
+Gate rule:
+- If coherence fails, run the interstitial redispatch protocol (`skills/bmad-agent-marcus/scripts/run-interstitial-redispatch.py`) and re-run this gate.
+- Do not proceed to Prompt 7B/7C until G2.5 passes or the operator explicitly accepts the violations.
+
+---
+
+## 07B) Variant Selection Gate
+[M→O]
+
+
+> Skip this prompt when `DOUBLE_DISPATCH` is false.
+
+Marcus, run per-slide variant selection for RUN_ID [RUN_ID].
+
+Preconditions:
+- Both variant sets exist and passed G3.
+- All file paths are valid.
+
+Required operator task:
+- Review paired A/B variants per slide.
+- Select the stronger treatment for each slide position.
+
+Required write:
+- `[BUNDLE_PATH]/variant-selection.json`
+
+Gate rule:
+- No downstream progression until every slide has exactly one selected variant.
+- Deferred slides block progression.
+
+Fallback:
+- If one side failed, auto-select the surviving side and record that fallback explicitly.
+
+---
+
+## 07C) Storyboard A + Gate 2 Approval + Winner Authorization
+[M→O]
+
+
+Marcus, build the pre-Irene review storyboard for the winner deck and obtain Gate 2 approval.
+
+Storyboard inputs:
+- If `DOUBLE_DISPATCH: false`, use `[BUNDLE_PATH]/gary-dispatch-result.json`
+- If `DOUBLE_DISPATCH: true`, use `storyboard/storyboard.json` plus `[BUNDLE_PATH]/variant-selection.json` for winner collapse
+
+Required behavior:
+- Generate `storyboard/storyboard.json` and `storyboard/index.html`
+- Present the slide review summary and the reviewer-friendly HTML storyboard surface (ordered thumbnails, script/script-notes panels, orientation/provenance metadata, related-assets section)
+- Obtain explicit Gate 2 approval on the selected winner deck
+
+Required write:
+- `[BUNDLE_PATH]/authorized-storyboard.json`
+
+Authorization command:
+
+```powershell
+.\.venv\Scripts\python.exe skills/bmad-agent-marcus/scripts/write-authorized-storyboard.py `
+  --manifest [BUNDLE_PATH]/storyboard/storyboard.json `
+  --run-id [RUN_ID] `
+  --output [BUNDLE_PATH]/authorized-storyboard.json `
+  [--selections [BUNDLE_PATH]/variant-selection.json]
+```
+
+Gate rule:
+- Motion planning and Irene Pass 2 must consume the authorized winner deck, not unresolved A/B variants.
+
+---
+
+## 07D) Gate 2M Motion Designation
+[M→O]
+
+
+Marcus, after `authorized-storyboard.json` exists and `MOTION_ENABLED: true`, present Gate 2M.
+
+Required Marcus behavior before operator designation:
+- Generate a per-slide recommendation for every authorized slide.
+- Every recommendation must include:
+  - recommended motion type
+  - rationale
+  - source anchor
+  - confidence label
+- Present the recommendation set as the starting point for operator review; the operator may override or add detail.
+
+Required operator task:
+- For each authorized slide, choose exactly one:
+  - `static`
+  - `video`
+  - `animation`
+- Add optional `motion_brief` for video slides
+- Add optional `guidance_notes` for animation slides
+- If you override Marcus's recommendation on any slide, add `override_reason`
+
+Required writes:
+- `[BUNDLE_PATH]/motion-designations.json`
+- `[BUNDLE_PATH]/motion_plan.yaml`
+
+Required commands:
+
+```powershell
+.\.venv\Scripts\python.exe skills/production-coordination/scripts/motion_plan.py build `
+  --authorized-storyboard [BUNDLE_PATH]/authorized-storyboard.json `
+  --output [BUNDLE_PATH]/motion_plan.yaml `
+  --designations-output [BUNDLE_PATH]/motion-designations.json `
+  --motion-enabled `
+  --motion-budget-max-credits [MOTION_BUDGET_MAX_CREDITS] `
+  --motion-budget-model-preference [MOTION_BUDGET_MODEL_PREFERENCE]
+```
+
+```powershell
+.\.venv\Scripts\python.exe skills/production-coordination/scripts/motion_plan.py apply `
+  --motion-plan [BUNDLE_PATH]/motion_plan.yaml `
+  --designations [BUNDLE_PATH]/motion-designations.json `
+  --output [BUNDLE_PATH]/motion_plan.yaml
+```
+
+Optional routing summary:
+
+```powershell
+.\.venv\Scripts\python.exe skills/production-coordination/scripts/motion_plan.py route `
+  --motion-plan [BUNDLE_PATH]/motion_plan.yaml
+```
+
+Gate rules:
+- Every authorized slide must have Gate 2M coverage.
+- Recommendations must be presented for every authorized slide before operator selection.
+- Unknown slide IDs or incomplete coverage block progression.
+
+---
+
+## 07E) Motion Generation / Import
+[M→O]
+
+
+Marcus, route non-static slides from `motion_plan.yaml` to their downstream handlers.
+
+Routing rules:
+- `static` slides remain unchanged.
+- `video` slides route to Kling.
+- `animation` slides route to manual animation guidance and import validation.
+
+Required outcomes:
+- video rows acquire generated MP4s plus credits consumed
+- animation rows acquire imported approved files plus duration
+- `motion_plan.yaml` is updated with concrete asset paths and statuses
+- reviewer-facing inspection artifacts exist under `[BUNDLE_PATH]/recovery/inspection/` before Motion Gate closes
+
+Recommended authoritative command for `video` rows:
+
+```powershell
+.\.venv\Scripts\python.exe skills/production-coordination/scripts/run_motion_generation.py `
+  --motion-plan [BUNDLE_PATH]/motion_plan.yaml `
+  --slide-id [AUTHORIZED_SLIDE_ID]
+```
+
+Expected receipts per generated slide:
+- run-scoped `.progress.json` receipt with `task_id` for resume/reconciliation
+- run-scoped terminal `.json` receipt with provider status, local asset path, credits, and validation details
+- production silence encoded as `requested_audio_mode: silent` with Kling native-audio field omitted from the API request
+
+Recommended inspection-pack command after generation/import settles:
+
+```powershell
+.\.venv\Scripts\python.exe skills/bmad-agent-marcus/scripts/build-pass2-inspection-pack.py `
+  --bundle [BUNDLE_PATH]
+```
+
+Implementation note:
+- motion/perception helpers should resolve `ffmpeg` through the repo utility (`scripts/utilities/ffmpeg.py`) before assuming it is unavailable on `PATH`.
+
+Fail-closed rules:
+- One `pro -> std` downgrade is allowed per over-budget clip.
+- If a clip still exceeds budget after downgrade, pause for operator action.
+- No silent partial continuation.
+- If a `.progress.json` receipt already exists for the same slide, resume polling that `task_id` instead of submitting a duplicate job.
+- Patch `motion_plan.yaml` only after the downloaded MP4 passes local validation.
+
+Stop before Irene Pass 2 until all non-static rows intended for this run have concrete assets or explicit operator resolution.
+
+---
+
+## 07F) Motion Gate
+[M→O]
+
+
+Marcus, run Motion Gate after motion generation/import is complete.
+
+Required operator review:
+- confirm generated/imported motion assets are acceptable
+- confirm each non-static slide is either approved or intentionally reset to static
+- confirm the exact approved asset path for each non-static slide before Irene Pass 2 handoff
+
+Required state:
+- every non-static row in `motion_plan.yaml` must be `approved`
+- any reset-to-static row must be updated in `motion_plan.yaml` before Irene Pass 2
+
+Gate rule:
+- Irene Pass 2 is blocked until Motion Gate closes cleanly.
+
+---
+
+## 08) Irene Pass 2 + Segment Manifest
+[M→O]
+
+
+Marcus, delegate Irene Pass 2 only after:
+- Gate 2 approval completed
+- `authorized-storyboard.json` exists
+- `motion_plan.yaml` exists and fully covers the authorized winner deck
+- all approved motion assets are present for non-static slides
+
+Inputs:
+- winner slide output derived from the authorized deck
+- source bundle
+- operator directives
+- Irene Pass 1
+- refreshed `[BUNDLE_PATH]/pass2-envelope.json`
+- `state/config/narration-script-parameters.yaml` (resolved `narration_profile_controls`)
+- if `DOUBLE_DISPATCH: true`, `[BUNDLE_PATH]/variant-selection.json`
+- if `MOTION_ENABLED: true`, `[BUNDLE_PATH]/motion_plan.yaml`
+
+Required Marcus behavior before delegation:
+- refresh or regenerate `[BUNDLE_PATH]/pass2-envelope.json` so it reflects the current authorized deck, current `motion_plan.yaml`, expected Pass 2 outputs, and any approved motion assets for this run
+- carry forward the locked runtime plan into `pass2-envelope.json` as structured data, including slide-count/runtime settings and any per-slide runtime targets from Irene Pass 1
+- carry forward `voice_direction_defaults` into `pass2-envelope.json` so downstream voice work inherits the current recommended ElevenLabs starting settings
+- if this is a rerun, archive or remove stale partial Pass 2 outputs before delegation so Irene writes fresh canonical artifacts at bundle root
+- treat `authorized-storyboard.json` plus the approved local winner-slide PNGs as the slide identity source of truth; do not reuse prior storyboard review projections as execution inputs
+- in motion runs, preserve the exact Motion Gate-approved asset path per non-static slide; do not re-decide motion inside Pass 2
+
+Canonical Marcus prep command:
+
+```powershell
+.\.venv\Scripts\python.exe skills/bmad-agent-marcus/scripts/prepare-irene-pass2-handoff.py `
+  --bundle [BUNDLE_PATH]
+```
+
+Expected prep outputs before Irene runs:
+- fresh `[BUNDLE_PATH]/pass2-envelope.json`
+- `[BUNDLE_PATH]/pass2-prep-receipt.json`
+- stale prior Pass 2 root artifacts archived under `[BUNDLE_PATH]/recovery/archive/pass2-reruns/` when this is a rerun
+- static-slide motion leftovers reported but not rebound into the handoff
+
+Required outputs:
+- `[BUNDLE_PATH]/narration-script.md`
+- `[BUNDLE_PATH]/segment-manifest.yaml`
+- `[BUNDLE_PATH]/perception-artifacts.json`
+- image perception artifacts must include `visual_complexity_level` and `visual_complexity_summary`
+- if motion exists: motion perception confirmations aligned to non-static segments, written into `pass2-envelope.json` as `motion_perception_artifacts`
+- if motion exists: video perception artifacts should include `temporal_event_density_level` and `temporal_event_density_summary`
+
+Required Pass 2 timing metadata per segment:
+- `timing_role`
+- `content_density`
+- `visual_detail_load`
+- `duration_rationale`
+- `bridge_type`
+
+Required validation:
+- `.\.venv\Scripts\python.exe skills/bmad-agent-marcus/scripts/validate-irene-pass2-handoff.py --envelope [BUNDLE_PATH]/pass2-envelope.json`
+- Vera G4
+
+Validator expectations at this stage:
+- every authorized slide must have at least one segment in `segment-manifest.yaml`
+- every manifest segment must have non-empty `narration_text`
+- every manifest segment must contain at least one non-empty `visual_references[].narration_cue` that is traceable to `perception-artifacts.json` and present in the segment narration text
+- every manifest segment must remain audience-directed when `narration-script-parameters.yaml` forbids meta slide language; grounded cues stay required, but slide-tour phrasing does not pass
+- if `runtime_plan.per_slide_targets[]` exists, Pass 2 validation fails closed when narration word count falls materially outside the soft runtime band implied by target runtime and `narration_density.target_wpm` (unless explicitly run in advisory mode)
+- missing or invalid `timing_role`, `content_density`, `visual_detail_load`, `duration_rationale`, or weak timing rationale are hard failures in strict mode (not advisory drift)
+- bridge-cadence gaps are hard failures in strict mode when the configured intro/outro cadence is exceeded
+- every non-static motion segment must remain bound to the approved `motion_plan.yaml` asset and have matching motion perception confirmation before handoff passes
+- every manifest segment should include a non-empty `behavioral_intent` in both narration-script.md and segment-manifest.yaml; segments missing `behavioral_intent` generate a warning (Vera G4-13 validates quality at gate time)
+- video segments (`visual_mode: video`) should contain motion-first narration referencing dynamic/temporal visual content; the validator flags segments whose narration lacks motion keywords as a heuristic advisory (Vera G4-09 performs the agentic assessment)
+
+Vera G4 criteria at this gate (19 criteria):
+- G4-01 through G4-12 (existing): slide correspondence, visual accuracy, assessment exactness, terminology consistency, invention detection, manifest alignment, source depth, perception lineage, audience-directed visual grounding (now including motion-first narration for video segments), runtime plan coherence, timing rationale completeness, script-parameter policy
+- **G4-13**: behavioral_intent validation — verifies the claim is segment-specific and narration supports the stated learner effect
+- **G4-14**: motion_brief fidelity — verifies motion_brief descriptions match motion perception confirmations
+- **G4-15**: duration_rationale semantic correctness — agentic companion to G4-11, verifying rationale quality beyond field presence
+- **G4-16**: cluster narration coherence — interstitials serve `master_behavioral_intent` (skipped when `CLUSTER_DENSITY` is none)
+- **G4-17**: cluster word budget — head: 80–140 words, interstitial: 25–40 words (skipped when `CLUSTER_DENSITY` is none)
+- **G4-18**: no new concepts in interstitials — interstitials scoped to head's `source_ref` (skipped when `CLUSTER_DENSITY` is none)
+- **G4-19**: cluster arc integrity — establish → tension → develop → resolve progression (skipped when `CLUSTER_DENSITY` is none)
+
+Motion-specific rules:
+- Irene must hydrate motion fields from `motion_plan.yaml`, not infer them from draft narration.
+- Motion-enabled manifest hydration must fail closed on empty or partial plan coverage.
+- Motion-enabled reruns must fail closed if `motion_plan.yaml` is not already in final Motion Gate-approved state.
+- Non-static segments must pass motion perception confirmation before final handoff.
+- If a segment's approved playback visual is a motion clip (`visual_mode: video`, `motion_type: video`), Irene should write motion-first narration: use the slide once for orientation if needed, then speak primarily to the visible action/change in the approved clip rather than continuing to narrate the static slide layout as if it were still on screen.
+
+**Visual-Led Profile HIL Notes:**
+- Favor creative slides (60% proportion) for maximum visual impact and motion opportunities.
+- Use literal-visual slides (25%) for direct source-anchored visual grounding.
+- Limit literal-text slides (15%) to essential data or transitions.
+- Ensure narration grounds in visual elements, especially for motion segments.
+
+Rerun rule:
+- If Prompt 8 is being re-run after a partial or invalid Pass 2 attempt, restart at Prompt 8 itself once Gate 2 and Motion Gate remain valid; do not jump ahead to Storyboard B from stale Pass 2 artifacts.
+
+## 08B) Storyboard B + HIL Review
+[M→O]
+
+
+Regenerate Storyboard B with script context before downstream audio finalization.
+
+Marcus, after Irene Pass 2 G4 and Motion Gate approval, regenerate Storyboard B with full script context before Gate 3 or any audio spend. **Generation of storyboards (both A and B) now always concludes with the existing publish_snapshot_tree routine (in generate-storyboard.py) to post the hydrated snapshot to the site repo, generating a publish-receipt.json containing the live GitHub.io URL for HIL review.**
+
+Inputs:
+- `[BUNDLE_PATH]/narration-script.md`
+- `[BUNDLE_PATH]/segment-manifest.yaml`
+- `[BUNDLE_PATH]/authorized-storyboard.json`
+- `[BUNDLE_PATH]/motion_plan.yaml` (final approved state)
+- `[BUNDLE_PATH]/perception-artifacts.json` (motion perception confirmations)
+
+Required behavior:
+- Treat `authorized-storyboard.json` + approved local winner-slide PNGs as the sole slide identity source of truth.
+- Hydrate storyboard.json and regenerate `storyboard/index.html` with script context (thumbnails, script/script-notes panels, orientation/provenance, related-assets including motion clips, perception cues).
+- Include Storyboard B runtime/script-policy metadata in the header (target total runtime, target average slide runtime, target slide-runtime variance, script policy highlights) sourced from `pass2-envelope.json` when present.
+- Include voice-direction variability defaults in the Storyboard B header when present (`voice_direction_defaults.emotional_variability`, `voice_direction_defaults.pace_variability`) so operators can compare script intent vs synthesis settings before spend.
+- Include per-slide timing-policy metadata in the reviewer evidence panel when available (runtime target seconds, timing role, content density, visual detail load, duration rationale, bridge type, behavioral intent) from `segment-manifest.yaml` / `pass2-envelope.json`.
+- Preserve all Motion Gate-approved `motion_asset_path` bindings; use motion-first narration cues for non-static segments.
+- Do not reuse prior storyboard review projections.
+- **Always conclude with the existing publish routine to copy snapshot to target_subdir under assets/storyboards/ in the jlenrique.github.io repo and emit publish-receipt.json with `publish_url`.**
+
+Required command (example):
+```powershell
+.\.venv\Scripts\python.exe skills/bmad-agent-marcus/scripts/write-authorized-storyboard.py `
+  --manifest [BUNDLE_PATH]/storyboard/storyboard.json `
+  --run-id [RUN_ID] `
+  --output [BUNDLE_PATH]/authorized-storyboard.json `
+  --script-context [BUNDLE_PATH]/narration-script.md `
+  --motion-plan [BUNDLE_PATH]/motion_plan.yaml
+# Follow-on generate-storyboard.py call (with --segment-manifest) will now always trigger publish_snapshot_tree
+```
+
+Required validation:
+- Vera G4 (re-run if changed) — includes G4-13 (behavioral_intent), G4-14 (motion_brief fidelity), G4-15 (duration_rationale semantic), G4-16..19 (cluster criteria, when applicable), and G4-09 motion-first narration checks
+- `validate-irene-pass2-handoff.py` (confirm motion perception alignment + behavioral_intent presence + motion-first narration heuristic)
+- Confirm publish-receipt.json exists with valid `publish_url` and "status": "published"
+
+Required HIL review (replaces prior bullet):
+- Operator reviews regenerated reviewer-friendly HTML storyboard surface **from the live publish_url** (e.g. https://jlenrique.github.io/assets/storyboards/.../index.html).
+- Explicit approval on the script-context-aware winner deck.
+- Record approval artifact (e.g. update receipt or create approval note linked to the URL).
+
+Gate rule:
+- Gate 3 (Prompt 9) is blocked until this regeneration + publish-to-Git + HIL approval completes.
+- Revision at Gate 3 must trigger re-regeneration of Storyboard B with updated script context + re-publish before any downstream spend.
+
+---
+
+## 09) Gate 3 - Lock Pass 2 Package
+[M→O]
+
+
+This prompt begins only after **8B Storyboard B regeneration + explicit HIL approval** (with full script context).
+
+```
+Gate 3 decision: [APPROVED or REVISION].
+
+If APPROVED:
+- lock `[BUNDLE_PATH]/narration-script.md`
+- lock `[BUNDLE_PATH]/segment-manifest.yaml`
+- lock `[BUNDLE_PATH]/pass2-envelope.json`
+- lock the final Motion Gate-approved `[BUNDLE_PATH]/motion_plan.yaml`
+- record that downstream audio/composition work must use the approved Storyboard B package (with script context) as-is
+- (see cross-ref to `docs/fidelity-gate-map.md` and `trial-run-pass2-artifacts-contract.md`)
+
+If REVISION:
+- list only the affected segment ids / slide ids and required edits
+- patch only the named artifacts
+- rerun Prompt 8 validation + 8B Storyboard B regeneration (with updated script context) before any downstream spend
+```
+
+Required governance at this stage:
+- treat `authorized-storyboard.json` plus the approved local winner-slide PNGs as the only slide identity source of truth
+- do not use `storyboard/index.html`, unresolved review payloads, or stale Pass 2 artifacts as execution inputs
+- preserve the exact Motion Gate-approved `motion_asset_path` for every non-static segment (see consolidated "Motion Contract" rules)
+- do not re-open Gate 2M, motion generation, or Motion Gate from downstream prompts unless the operator explicitly redirects the run
+- cross-ref: `docs/workflow/human-in-the-loop.md` for HIL protocol
+
+Motion-specific lock rule:
+- Gate 3 approval must lock not only the script and manifest, but also the approved `motion_plan.yaml` bindings for every non-static segment
+
+---
+
+## 10) Fidelity + Quality Pre-Spend
+[M→O]
+
+
+Marcus, run the downstream readiness checks on the Gate 3-approved package before ElevenLabs and compositor spend.
+
+Inputs:
+- locked `[BUNDLE_PATH]/narration-script.md`
+- locked `[BUNDLE_PATH]/segment-manifest.yaml`
+- locked `[BUNDLE_PATH]/pass2-envelope.json`
+- locked `[BUNDLE_PATH]/motion_plan.yaml`
+- Storyboard B approval record
+
+Required Marcus behavior:
+- present the most recent Prompt 8 Vera G4 receipt if the artifacts are unchanged
+- if any Pass 2 artifact changed after Prompt 8, rerun Vera G4 on the changed package before continuing — G4 now includes G4-13 (behavioral_intent), G4-14 (motion_brief fidelity), G4-15 (duration_rationale semantic correctness), G4-16..19 (cluster criteria, when applicable), and extended G4-09 (motion-first narration quality)
+- run Quinn-R on the approved Pass 2 package before ElevenLabs spend — Quinn-R now includes SFX/music cue selection check (CI sub-check), behavioral_intent pre-composition validation (IF extension), and bridge re-validation at pre-composition
+- in motion runs, include motion-cue alignment and approved-asset-path drift checks against `motion_plan.yaml`
+
+Required checks:
+- no G4 critical findings remain open (includes G4-13 through G4-15, plus G4-16..19 cluster criteria when applicable)
+- Quinn-R sees no blocker that would make audio generation wasteful (includes SFX/music cue and behavioral_intent coherence checks)
+- every non-static segment still preserves:
+  - `visual_file` as the approved still/poster-frame reference
+  - `motion_asset_path` as the approved playback asset
+  - motion-first narration intent for `visual_mode: video`
+
+Go/no-go:
+- no go if motion bindings drifted from `motion_plan.yaml`
+- no go if any non-static segment would require regenerated copy or regenerated motion to remain coherent
+
+---
+
+## 11) ElevenLabs Voice Selection HIL
+[M→O]
+
+
+Marcus, before actual ElevenLabs narration generation, run the Voice Director in preview-only mode on the locked Gate 3 package.
+
+Inputs:
+- locked `[BUNDLE_PATH]/narration-script.md`
+- locked `[BUNDLE_PATH]/segment-manifest.yaml`
+- locked `[BUNDLE_PATH]/pass2-envelope.json`
+- voice continuity state for this presentation when available
+- style-guide ElevenLabs defaults for new-presentation fallback
+- governed recommendation profile from `state/config/elevenlabs-voice-profiles.yaml`
+- presentation attributes that matter for voice fit: audience, tone, content type, pacing expectations
+
+Required Marcus behavior:
+- delegate a preview-only request to the Voice Director; do not generate any new audio in this prompt
+- confirm the audio buffer (default 1.5s lead-in + 1.5s tail) and capture the operator-approved value for voice selection
+- provide the operator with exactly one of these review paths:
+  - `continuity_preview` or `default_plus_alternatives`:
+    - previously used voice for this presentation, if one exists
+    - otherwise the style-guide default voice for a new presentation
+    - plus two APP-selected alternatives based on presentation attributes
+  - `description_driven_search`:
+    - if the operator provides a narrative description of the ideal voice, return three recommended catalog voices instead
+- present catalog sample links only; these must be existing ElevenLabs preview/sample URLs, not newly generated clips
+- bind the preview receipt to the locked Gate 3 package by recording the script/manifest hashes in the preview artifact
+
+Suggested command surface:
+
+```powershell
+.\.venv\Scripts\python.exe skills/elevenlabs-audio/scripts/elevenlabs_operations.py voice-preview `
+  --mode [continuity_preview|default_plus_alternatives|description_driven_search] `
+  --locked-manifest [BUNDLE_PATH]/segment-manifest.yaml `
+  --locked-script [BUNDLE_PATH]/narration-script.md `
+  --presentation-attributes-json "{...}" `
+  [--previous-voice-receipt [BUNDLE_PATH]/voice-selection.json] `
+  [--ideal-voice-description "..."] `
+  [--audio-buffer-seconds 1.5] `
+  --output-path [BUNDLE_PATH]/voice-preview-options.json
+```
+
+Required writes:
+- `[BUNDLE_PATH]/voice-preview-options.json`
+- `[BUNDLE_PATH]/voice-selection-review.md`
+- after operator approval: `[BUNDLE_PATH]/voice-selection.json`
+
+Suggested decision command surface:
+
+```powershell
+.\.venv\Scripts\python.exe skills/elevenlabs-audio/scripts/elevenlabs_operations.py voice-select `
+  [BUNDLE_PATH]/voice-preview-options.json `
+  --selected-voice-id [VOICE_ID] `
+  --output-path [BUNDLE_PATH]/voice-selection.json `
+  [--operator-notes "..."] `
+  [--override-reason "..."] `
+  [--audio-buffer-seconds 1.5]
+```
+
+Required fields in `voice-selection.json`:
+- `selected_voice_id`
+- `selection_mode`
+- `selected_from`
+- `preview_url`
+- `selection_rationale`
+- `selected_from_rank`
+- `audio_buffer_seconds`
+- `locked_manifest_hash`
+- `locked_script_hash`
+- `override_reason` when the operator selects a non-primary candidate
+
+Governance rules:
+- keep the Gate 3-approved root `narration-script.md` and `segment-manifest.yaml` locked
+- record lesson-level voice choice separately in `voice-selection.json`; do not treat voice selection as a Storyboard B rewrite
+- preserve any explicit segment-level `voice_id` overrides already present in the locked manifest
+
+Go/no-go:
+- no go to ElevenLabs synthesis until the operator has approved a lesson-level default voice or explicitly accepted an existing prior selection
+- no go if any presented candidate lacks a working catalog preview/sample URL
+- no go if the preview receipt hashes no longer match the locked script/manifest at synthesis time
+
+---
+
+## 11B) ElevenLabs Input Package HIL
+[M→O]
+
+
+Marcus, before Prompt 12 synthesis, deliberately display the exact locked ElevenLabs input package and wait for explicit operator GO.
+
+Inputs:
+- locked `[BUNDLE_PATH]/narration-script.md`
+- locked `[BUNDLE_PATH]/segment-manifest.yaml`
+- locked `[BUNDLE_PATH]/pass2-envelope.json` when present
+- approved `[BUNDLE_PATH]/voice-selection.json`
+
+Required Marcus behavior:
+- present a concise, operator-readable package review that shows:
+  - locked script path + hash
+  - locked manifest path + hash
+  - approved lesson-level voice id and preview/source
+  - audio buffer setting
+  - segment count and segment id range
+  - any explicit segment-level `voice_id` overrides
+  - any non-default voice-direction controls inherited from `pass2-envelope.json` such as `speed`, `emotional_variability`, and `pace_variability`
+  - runtime-plan summary sufficient to show the intended slide-length variability
+  - bridge-cadence expectations sufficient to show how intros/outros are meant to appear
+- write the review artifact before asking for approval
+- require explicit operator GO before Prompt 12 begins
+
+Required writes:
+- `[BUNDLE_PATH]/elevenlabs-input-review.md`
+
+Go/no-go:
+- no go to Prompt 12 until the operator explicitly approves the displayed ElevenLabs input package
+- if the locked script, manifest, voice selection, or inherited voice-direction defaults change after this review, regenerate the review artifact and re-approve before synthesis
+
+---
+
+## 12) ElevenLabs Audio Generation
+[M→O]
+
+
+Marcus, delegate the Voice Director to run manifest-driven narration from the locked Gate 3 package.
+
+Inputs:
+- downstream mutable manifest path: `[BUNDLE_PATH]/assembly-bundle/segment-manifest.yaml`
+- source of truth to copy from: locked `[BUNDLE_PATH]/segment-manifest.yaml`
+- locked `[BUNDLE_PATH]/narration-script.md`
+- locked `[BUNDLE_PATH]/pass2-envelope.json` when present, so the Voice Director can inherit runtime-plan and voice-direction defaults
+- approved `[BUNDLE_PATH]/voice-selection.json`
+- style-guide defaults and any approved pronunciation dictionaries
+
+Required Marcus behavior before delegation:
+- create or refresh `[BUNDLE_PATH]/assembly-bundle/`
+- designate `[BUNDLE_PATH]/assembly-bundle/segment-manifest.yaml` as the downstream mutable manifest for audio/composition
+- if needed, copy the locked root manifest into the assembly bundle before ElevenLabs so the same manifest path is mutated downstream
+- keep segment order and segment ids frozen
+- confirm `[BUNDLE_PATH]/elevenlabs-input-review.md` exists and corresponds to the current locked package before synthesis begins
+- verify `voice-selection.json.locked_manifest_hash` and `voice-selection.json.locked_script_hash` still match the locked Gate 3 package before synthesis begins
+- pass the approved lesson-level `selected_voice_id` from `voice-selection.json` as the default synthesis voice without mutating the locked root manifest
+
+Required outputs:
+- `[BUNDLE_PATH]/assembly-bundle/audio/`
+- `[BUNDLE_PATH]/assembly-bundle/captions/`
+- updated `[BUNDLE_PATH]/assembly-bundle/segment-manifest.yaml` with:
+  - `narration_duration`
+  - `narration_file`
+  - `narration_vtt`
+  - `audio_buffer_seconds`
+  - `sfx_file` where applicable
+
+Motion-specific rules:
+- this workflow is already in the motion-enabled branch; do not trigger new motion routing or regeneration here
+- preserve all approved motion bindings already present in the manifest
+- do not overwrite `visual_file`, `motion_asset_path`, `motion_type`, `motion_duration_seconds`, or `motion_status`
+- for segments where `motion_type != static`, treat the clip as silent-by-omission; ElevenLabs owns narration and intentional audio
+
+Voice rules:
+- use the locked manifest only; do not regenerate copy ad hoc during ElevenLabs execution
+- preserve segment order continuity across requests
+- preserve script-led runtime variability as the primary driver; use ElevenLabs `speed` only for mild delivery nudges rather than hard duration forcing
+- when present, treat pipeline `emotional_variability` as the upstream control for ElevenLabs stability and `pace_variability` as the bound on per-segment speed nudges
+- prefer pronunciation dictionaries over one-off wording hacks for medical terminology
+
+Suggested command surface:
+
+```powershell
+.\.venv\Scripts\python.exe skills/elevenlabs-audio/scripts/elevenlabs_operations.py manifest `
+  [BUNDLE_PATH]/assembly-bundle/segment-manifest.yaml `
+  --output-dir [BUNDLE_PATH]/assembly-bundle `
+  --voice-selection [BUNDLE_PATH]/voice-selection.json `
+  [--audio-buffer-seconds 1.5]
+```
+
+The `--voice-selection` flag causes the tool to:
+- verify `locked_manifest_hash` and `locked_script_hash` against the Gate 3 locked artifacts before any ElevenLabs spend
+- auto-resolve `selected_voice_id` as the default synthesis voice (explicit `--default-voice-id` still overrides)
+- apply `audio_buffer_seconds` to each clip, offset VTT cues by the lead-in buffer, and update `narration_duration`
+- emit per-segment progress to stderr during synthesis
+
+Go/no-go:
+- no go if the Voice Director would need to rewrite narration text instead of synthesizing the approved text
+
+---
+
+## 13) Quinn-R Pre-Composition QA
+[M→O]
+
+
+Marcus, run Quinn-R pre-composition review after ElevenLabs completes and before compositor packaging.
+
+Inputs:
+- `[BUNDLE_PATH]/assembly-bundle/segment-manifest.yaml`
+- generated audio and VTT assets
+- approved still PNG references
+- approved motion clips for every non-static segment
+
+Required Quinn-R checks:
+- narration WPM is reviewed against the expected range, with advisory notes when the approved script itself already implies the pacing rather than ElevenLabs causing the issue
+- VTT timestamps are monotonic
+- segment coverage is complete
+- when `motion_type != static`, `motion_duration_seconds` is coherent against `narration_duration`
+- video/animation duration vs narration duration stays within accepted tolerance, or explicit edit guidance is produced
+- required audio/SFX/music files referenced by the manifest exist
+
+Advisory vs blocking rule:
+- blocking: missing assets, missing coverage, non-monotonic VTT, unreadable motion assets, or material motion mismatch that would make composition incorrect
+- advisory: script-implied pacing variance, upstream runtime-band warnings, weak timing rationale, or bridge-cadence drift that the operator accepts
+
+Motion-specific rules:
+- treat `narration_duration` as the authoritative timing signal for downstream composition
+- do not silently retime, overwrite, or replace approved motion clips inside this prompt
+- if a non-static segment has material duration mismatch or unreadable `motion_asset_path`, stop and report the exact segment ids
+- remediation target must be explicit:
+  - ElevenLabs if the issue is narration pacing or audio coverage
+  - motion/editing decision if the issue is clip fit against approved narration
+
+Go/no-go:
+- no go to compositor until Quinn-R pre-composition passes or the operator explicitly accepts the reported non-blocking notes
+
+---
+
+## 14) Compositor Assembly Bundle
+[M→O]
+
+
+Marcus, build the final assembly bundle for Descript from the pre-composition-approved manifest.
+
+Inputs:
+- `[BUNDLE_PATH]/assembly-bundle/segment-manifest.yaml`
+- generated audio/captions
+- approved still PNG references
+- approved motion assets for non-static segments
+
+Required Marcus/compositor behavior:
+- run compositor `sync-visuals` on `[BUNDLE_PATH]/assembly-bundle/segment-manifest.yaml`
+- localize approved stills into `[BUNDLE_PATH]/assembly-bundle/visuals/`
+- localize approved motion assets into `[BUNDLE_PATH]/assembly-bundle/motion/`
+- regenerate `[BUNDLE_PATH]/assembly-bundle/DESCRIPT-ASSEMBLY-GUIDE.md`
+- confirm the guide points at the localized bundle paths, not the original Gary/motion source trees
+
+Required assembly-bundle contents:
+- `segment-manifest.yaml`
+- `DESCRIPT-ASSEMBLY-GUIDE.md`
+- `audio/`
+- `captions/`
+- `visuals/`
+- `motion/` when any segment is non-static
+
+Motion-specific rules:
+- keep `visual_file` bound to the approved still/poster-frame reference
+- keep `motion_asset_path` bound to the approved playback asset
+- do not collapse still and motion references into one field
+- the assembly guide must include per-segment placement/sync instructions for motion segments, using the approved clip on the visual track and the still as the reference/poster asset
+
+Packaging rule:
+- use the actual compositor output layout for handoff: `visuals/` plus `motion/`
+
+Go/no-go:
+- do not advance to **15** until **14.5** completes successfully (Desmond operator brief written)
+
+---
+
+## 14.5) Desmond Run-Scoped Operator Brief
+[M→O]
+
+
+Marcus delegates to **Desmond** (`skills/bmad-agent-desmond/`) immediately after compositor artifacts exist. Desmond translates the generic compositor guide into **Descript-product-specific** operator steps for **this run** and closes with a mandatory **`## Automation Advisory`** (REST API vs MCP vs CLI vs manual app) per `skills/bmad-agent-desmond/references/automation-advisory.md`.
+
+Inputs:
+- `[BUNDLE_PATH]/assembly-bundle/` (entire folder, including localized `visuals/` and `motion/`)
+- `[BUNDLE_PATH]/assembly-bundle/DESCRIPT-ASSEMBLY-GUIDE.md`
+- `run_id`, workflow template (`narrated-lesson-with-video-or-animation`), `motion_enabled`, slide count / segment count as relevant
+- Open notes: Quinn-R pre-composition receipt or path (`quinnr-precomposition-review.json` or successor), plus **explicit operator-accepted** advisory items (e.g. post-production sync fixes)
+- Any bundle-local approvals that constrain finishing (e.g. `gate-3-approval.json`)
+
+Required output:
+- **`[BUNDLE_PATH]/assembly-bundle/DESMOND-OPERATOR-BRIEF.md`** containing:
+  - **Run header** — lesson title, run id, motion vs static summary, known finishing debt called out in plain language
+  - **Descript-native steps** — timeline/track language grounded in current team conventions (`_bmad/memory/bmad-agent-desmond/` when present) and doc cache under `skills/bmad-agent-desmond/references/cache/`
+  - **Per-segment reminders** where this run differs from a generic lesson (e.g. motion on specific slides, accepted WPM advisory)
+  - **`## Automation Advisory`** — required subsection classifying ingest, assembly, captions, audio polish, export/publish vs **Full / Partial / Manual** for **REST** (`descriptapi.com/v1`), **MCP** (`https://api.descript.com/v2/mcp`), **CLI**, and **Descript app**
+
+Fallback:
+- If Desmond is not invoked in-tool, Marcus (or the operator) still **writes** `DESMOND-OPERATOR-BRIEF.md` to the same contract by following the skill references above.
+
+Required assembly-bundle contents (adds to 14):
+- `DESMOND-OPERATOR-BRIEF.md`
+
+---
+
+## 15) Operator Handoff - Descript Ready
+[M→O]
+
+
+Marcus, present the final handoff package for the human operator who will assemble/edit in Descript.
+
+Required handoff receipt:
+- run id
+- assembly bundle path
+- manifest path
+- compositor guide path (`DESCRIPT-ASSEMBLY-GUIDE.md`)
+- **Desmond operator brief path** (`DESMOND-OPERATOR-BRIEF.md`)
+- **Automation advisory present** (yes — must be inside `DESMOND-OPERATOR-BRIEF.md` per 14.5)
+- audio status
+- captions status
+- visuals status
+- motion status
+- open notes, if any
+
+Required operator-facing instructions:
+- open **`DESMOND-OPERATOR-BRIEF.md`** for **run-specific** Descript vocabulary and finishing callouts; use **`DESCRIPT-ASSEMBLY-GUIDE.md`** as the **deterministic** segment order, timings, and asset inventory from compositor
+- import assets from `audio/`, `captions/`, `visuals/`, and `motion/` when present
+- follow manifest/guide segment order exactly
+- treat the approved motion clip as the playback visual for non-static segments and the approved still as the poster/reference asset
+- do not improvise new narration copy or new motion assets during Descript assembly
+- read **`## Automation Advisory`** before choosing scripted/API work vs manual finishing
+
+Completion condition:
+- this prompt pack's required path is complete once the assembly bundle contains **`DESCRIPT-ASSEMBLY-GUIDE.md`**, **`DESMOND-OPERATOR-BRIEF.md`** (with Automation Advisory), and all referenced media folders are ready for Descript handoff
+
+Optional post-handoff operations:
+- append the run update to the trial log
+- execute `docs/workflow/production-session-wrapup.md` if the operator wants to close the shift
+
+---
+
+## Mandatory Receipts Per Stage
+
+Require Marcus to emit a compact receipt for every prompt:
+- stage
+- status (pass | warn | fail)
+- artifacts_written
+- validator_results
+- gate_decision
+- next_action
+
+---
+
+## Scope Position
+
+This prompt pack is the right home for motion-enabled narrated runs.
+
+Documentation rule going forward:
+- keep `docs/workflow/production-prompt-pack-v4.1-narrated-deck-video-export.md` for the non-motion narrated workflow
+- keep this doc for motion-enabled narrated workflow
+- keep `DOUBLE_DISPATCH` as a conditional branch inside either doc rather than splitting it into separate single-dispatch and double-dispatch prompt packs
+
+---
+
+# Appendix
+
+## Prompt Pack Lineage
+
+Status:
+- Cousin to `docs/workflow/production-prompt-pack-v4.1-narrated-deck-video-export.md`, not a replacement.
+- Intended for tracked/default runs that include Epic 14 motion controls.
+- `DOUBLE_DISPATCH` remains an inline branch inside this workflow rather than requiring its own separate prompt pack.
+
+## Why This Is A Separate Prompt Pack
+
+Motion changes the control plane enough to warrant its own prompts document:
+- a new HIL checkpoint exists after slide approval (`Gate 2M`)
+- Marcus must persist and route a run-scoped `motion_plan.yaml`
+- non-static slides must pass motion generation/import and Motion Gate before Irene Pass 2
+- Irene Pass 2 becomes motion-aware and fail-closed on incomplete motion coverage
+
+By contrast, double-dispatch is a bounded branch inside the Gary stage:
+- Gary produces A/B variants
+- Marcus captures per-slide selections
+- the selected winner deck then rejoins the normal path
+
+That makes motion a separate workflow doc, and `DOUBLE_DISPATCH` a conditional branch inside it.
+
+## Design Principles
+
+- Use one workflow doc for all motion-enabled narrated runs.
+- Treat `motion_enabled` as the authoritative workflow switch.
+- Treat `DOUBLE_DISPATCH` as a local branch in slide generation and selection, not a separate workflow family.
+- Bind Gate 2M to the authorized winner deck only, never unresolved A/B pairs.
+- Keep explicit stop rules at every human gate.
+
+Execution mode: tracked/default.
+
+Primary contract references:
+- `docs/workflow/trial-run-pass2-artifacts-contract.md`
+- `state/config/fidelity-contracts/`
+- `_bmad-output/planning-artifacts/motion-enhanced-workflow-design.md`
+
+## Changelog
+
+- **v5.0.0 (2026-05-07; pre-Trial-3 cleanup S4 close commit `a713112` + post-S4 review amendments)** — Authored from corrected v4.2 via Paige's deterministic 10-step mutation pass. Status: canonical-for-production-runs (post-Slab-7c). Frontmatter expanded with versioning posture (Tier-1 / Tier-2 / Tier-3) + methodology pointer + gate-taxonomy authority. Banner inverted: v5 IS canonical; v4.2 frozen as legacy-axis mapping authority; v4.3 fully superseded (no carry-forward; cluster-mode already in v4.2). Top-of-pack gate-pause asymmetry disclosure added per ADR 0002 (4 of 18 gates are runner-pauses). New §0 Pre-Launch Operator Card per Sally pre-S3 amendment (10-step pre-launch sequence; tape-to-second-monitor; 5-min skim). TL;DR Crosswalk Marcus-module column substituted with migrated runtime paths (33-row deterministic substitution). Specialist column refined per post-Slab-7c roster (Enrique not Audra; Class-C two-SKILL.md surfacing for Gary+Gamma / Kira+Kling / Enrique+ElevenLabs; Class-D2 EXEMPT for Compositor per D20). 6 NOT-MIGRATED rows explicitly marked as deferred-inventory placeholders (§05B / §6.2 / §6.3 / §7.5 cluster-mode; §4.75 cd-PARTIAL; §14.5 Desmond-body-absent). Methodology cross-references inserted at §0 Operator Card (3 mentions; restraint held). Per-§ "Operator at this gate" sub-blocks deferred to S5 P1. Crosswalk path-accuracy: 31/33 paths grep-verified post-S4-Murat-review; §02A corrected to `app/composers/section_02a/composer.py`; §06 corrected to enumerate 5 actual writer files.
+- **v4.2i (2026-04-19)** — Added explicit Prompt `04A` Lesson Plan coauthoring + scope-lock checkpoint between Prompt 4 and Prompt 4.5, with required event evidence (`scope_decision.set`, `plan.locked`) and hard block on downstream progression until Step 04A is completed.
+- **v4.2g (2026-04-16)** — Prompt 1: added `--bundle-dir [BUNDLE_PATH]` to preflight command (was identified as a blocker in the 2026-04-15 trial run — preflight skipped bundle-specific run-constants.yaml validation without it).
+- **v4.2h (2026-04-17)** — Added Prompt 4.75 Creative Directive resolution (CD), including `creative-directive.yaml` validation and `narration_profile_controls` persistence; added cluster prompt engineering (6.2), dispatch sequencing (6.3), and G2.5 coherence gate (7.5) for cluster-enabled runs; added Prompt 1 `app_session_readiness --with-preflight`; added `narration-script-parameters.yaml` to Pass 2 inputs; linked Irene A/B loop guidance; clarified motion-first ordering.
+- **v4.2f (2026-04-15)** — Preamble reordered: Pre-Run Checklist → Run Constants → Initialization → Execution Rules → Prompts. Added audience tags (OPERATOR vs MARCUS). Prompt 2 gains greenfield vs. resume guidance. Prompt 2A rewritten with concrete directive examples, governance rules (focus=emphasis, exclusion=provenance, special treatment=override), and resume-run re-confirmation. Prompt 3 adds ingestion scope rule (extract ALL content), extraction completeness validation (word-count floor check, HALT threshold), and cross-validation hint for Notion-exported PDFs. Prompt 4 now requires per-dimension evidence sentences (bare PASS/FAIL rejected). Source Wrangler agent vision document created (`_bmad-output/planning-artifacts/source-wrangler-agent-vision.md`). Design principles, lineage, and changelog moved to appendix.
+- **v4.2e (2026-04-15)** — Story 20c-15: profile-aware slide count estimator integrated into Prompt 4.5, 2-input operator poll (parent_slide_count + target_total_runtime_minutes), experience-profile-driven feasibility triangle, run-constants locking.
+- **v4.2d (2026-04-15)** — Pre-Run Checklist added for visual-led profile. Run Constants updated with concrete C1-M1-PRES-20260415 values, experience profile mapping rule, and CLUSTER_DENSITY. Initialization Instructions expanded with step-by-step bundle setup. Artifact verification protocol added to Execution Rules.
+- **v4.2** — Added Epic 14 motion controls (`motion_enabled`, Gate 2M, motion generation/import, Motion Gate, motion-aware Irene Pass 2) while preserving the Epic 12 `DOUBLE_DISPATCH` branch inside the same document. Canonical generators for preflight receipts, operator directives, Irene packets.
+
+## Provenance Appendix
+
+| Section | Rationale |
+|---|---|
+| 01 | Section 01 maintains manifest-driven pipeline contract. |
+| 02 | Section 02 maintains manifest-driven pipeline contract. |
+| 02A | Section 02A maintains manifest-driven pipeline contract. |
+| 03 | Section 03 maintains manifest-driven pipeline contract. |
+| 04 | Section 04 maintains manifest-driven pipeline contract. |
+| 04A | Section 04A maintains manifest-driven pipeline contract. |
+| 04.5 | Section 04.5 maintains manifest-driven pipeline contract. |
+| 04.55 | Section 04.55 maintains manifest-driven pipeline contract. |
+| 4.75 | Section 4.75 maintains manifest-driven pipeline contract. |
+| 05 | Section 05 maintains manifest-driven pipeline contract. |
+| 05B | Section 05B maintains manifest-driven pipeline contract. |
+| 06 | Section 06 maintains manifest-driven pipeline contract. |
+| 6.2 | Section 6.2 maintains manifest-driven pipeline contract. |
+| 6.3 | Section 6.3 maintains manifest-driven pipeline contract. |
+| 06B | Section 06B maintains manifest-driven pipeline contract. |
+| 07 | Section 07 maintains manifest-driven pipeline contract. |
+| 7.5 | Section 7.5 maintains manifest-driven pipeline contract. |
+| 07B | Section 07B maintains manifest-driven pipeline contract. |
+| 07C | Section 07C maintains manifest-driven pipeline contract. |
+| 07D | Section 07D maintains manifest-driven pipeline contract. |
+| 07E | Section 07E maintains manifest-driven pipeline contract. |
+| 07F | Section 07F maintains manifest-driven pipeline contract. |
+| 08 | Section 08 maintains manifest-driven pipeline contract. |
+| 08B | Section 08B maintains manifest-driven pipeline contract. |
+| 09 | Section 09 maintains manifest-driven pipeline contract. |
+| 10 | Section 10 maintains manifest-driven pipeline contract. |
+| 11 | Section 11 maintains manifest-driven pipeline contract. |
+| 11B | Section 11B maintains manifest-driven pipeline contract. |
+| 12 | Section 12 maintains manifest-driven pipeline contract. |
+| 13 | Section 13 maintains manifest-driven pipeline contract. |
+| 14 | Section 14 maintains manifest-driven pipeline contract. |
+| 14.5 | Section 14.5 maintains manifest-driven pipeline contract. |
+| 15 | Section 15 maintains manifest-driven pipeline contract. |

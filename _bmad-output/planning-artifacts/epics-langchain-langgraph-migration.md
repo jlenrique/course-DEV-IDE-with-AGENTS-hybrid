@@ -141,7 +141,7 @@ Legend: **Pts** = rough story-point estimate; **Gate** = single/dual-gate per `d
 
 **FR coverage:** FR1, FR2, FR3, FR4, FR5, FR6, FR7, FR8, FR17, FR18, FR19, FR20, FR21, FR22, FR23, FR24 (pre-submission portion), FR25, FR54 (baseline measurement), FR58, FR59 (stub), FR60 (backport policy commit).
 
-**Stories:** 1.1a, 1.1b, 1.1c, 1.2, 1.3, 1.4, 1.5, 1.6, 1.7 (9 stories).
+**Stories:** 1.1a, 1.1b, 1.1c, 1.1d, 1.2, 1.3, 1.4, 1.5, 1.6, 1.7 (10 stories — Story 1.1d added 2026-04-22 via party-mode middle-path consensus on MCP-in-Slab-1 scope).
 
 ---
 
@@ -164,8 +164,8 @@ So that **every subsequent Slab 1 story starts from an identical, reproducible b
 **Then** the import succeeds with `ok` on stdout; no import errors or version conflicts.
 
 **Given** `pyproject.toml` is extended
-**When** the dev agent runs `ruff check .` and `import-linter --config pyproject.toml`
-**Then** both tools report clean on the (currently-empty) `app/` tree; the import-linter contract stubs for `app.marcus ⊥ app.cora` and `app.gates.**` scheduler-forbidden are declared but produce no violations yet.
+**When** the dev agent runs `ruff check .` and `lint-imports --config pyproject.toml`
+**Then** both tools report clean on the minimal contract-stub `app/` tree required by import-linter; the contract stubs for `app.marcus ⊥ app.cora` and `app.gates.**` scheduler-forbidden are declared and pass without violations.
 
 **Given** no `.env` exists yet
 **When** the dev agent creates `.env.example` with placeholder `OPENAI_API_KEY=<placeholder>`, `LANGSMITH_API_KEY=<placeholder>`, `LANGSMITH_PROJECT=course-dev-ide-migration`, `DATABASE_URL=postgresql://...`
@@ -176,20 +176,28 @@ So that **every subsequent Slab 1 story starts from an identical, reproducible b
 ### Story 1.1b: Package Layout + Postgres + Sanctum Fork Notice (Story 1b per Amendment F)
 
 As a **dev agent completing Slab 1 substrate scaffolding**,
-I want **the seven Slab-1 packages created with READMEs citing justifying FRs, a Postgres container running, four test tiers with canaries, and CLONE-FORK-NOTICE in every sanctum directory**,
+I want **the seven Slab-1 packages created with READMEs citing justifying FRs, a locally-installed Postgres 15+ reachable via `DATABASE_URL`, four test tiers with canaries, and CLONE-FORK-NOTICE in every sanctum directory**,
 So that **the substrate shape is in place before any handler code is written, clone-fork discipline is codified Day 1, and the test harness is real from the first story**.
 
 **Pts:** 3 | **Gate:** dual (substrate-shape story) | **K:** ~1.4×
 
 **Acceptance Criteria:**
 
-**Given** `app/` is empty
+**Given** `app/` contains only the empty contract-stub packages seeded in Story 1.1a (`app/`, `app/marcus/`, `app/cora/`, `app/gates/`)
 **When** the dev agent creates the seven Slab-1 packages (`app/runtime/`, `app/models/`, `app/models/state/`, `app/models/decision_cards/`, `app/manifest/`, `app/http/`, `app/mcp_server/`)
 **Then** each package has `__init__.py` + `README.md` stub naming the justifying FR(s) per architecture §Project Structure §Requirements-to-Component Matrix; `python -c "import app.runtime, app.models, app.manifest, app.http, app.mcp_server"` succeeds.
 
-**Given** `docker-compose.yml` does not exist
-**When** the dev agent authors `docker-compose.yml` with a Postgres 15+ service + init SQL + retention-friendly volume + `DATABASE_URL` wired from `.env`
-**Then** `docker compose up -d postgres` returns a healthy container; `psql $DATABASE_URL -c "SELECT version();"` reports Postgres ≥ 15.
+**AC-Postgres-A (dev-agent-executable — code + artifact correctness, verified via shipped deps):**
+
+**Given** no Postgres bootstrap artifacts exist yet and the dev agent cannot assume operator-side CLIs (`psql`, `docker`, etc.) are on the session `PATH`
+**When** the dev agent authors (a) `scripts/dev/init_postgres.sql` creating the migration database + role + initial schema grants consumed later by the checkpointer (the init script must be idempotent — re-running is a no-op); (b) `docs/dev-guide/local-postgres-setup.md` documenting the one-time operator install (Windows: EDB installer; macOS: Homebrew; Linux: distro package — **no Docker / no container runtime**) + the `psql -f scripts/dev/init_postgres.sql` bootstrap; (c) a SQL parse-only syntax check that the dev agent runs against `init_postgres.sql` using a pure-Python parser already resolvable via `uv` (e.g., `sqlparse`) — no live DB required; (d) `tests/integration/postgres/test_server_version.py` that connects via **`psycopg`** (already in the 1.1a lockfile — NOT `psql`) to `DATABASE_URL`, asserts `server_version >= 150000`, and **calls `pytest.skip(...)` with a clear reason when `DATABASE_URL` is unset or the connection is refused** so the dev agent's sandbox never blocks on operator-side Postgres availability
+**Then** the three artifacts exist; the SQL parse-only check exits 0; `pytest tests/integration/postgres/test_server_version.py` either passes (if a local Postgres is reachable) or skips with the documented reason (never errors/fails due to missing CLI tooling); `DATABASE_URL` is sourced from `.env` per NFR-S1; the test relies only on `psycopg` + `pytest` — no external CLI is invoked.
+
+**AC-Postgres-B (operator-gated — one-time runtime smoke on operator's machine, recorded as Completion-Notes evidence):**
+
+**Given** AC-Postgres-A artifacts have landed and the operator has completed the one-time native Postgres 15+ install per `docs/dev-guide/local-postgres-setup.md`
+**When** the **operator** (not the dev agent) runs `psql "$DATABASE_URL" -f scripts/dev/init_postgres.sql` once, then `psql "$DATABASE_URL" -c "SELECT version();"`
+**Then** the version output reports Postgres ≥ 15; the operator pastes that output into the story's Completion Notes / Dev Agent Record as evidence; this AC is recorded once at story closure and is **never** rerun per-session — it is not a dev-agent AC and must not block the dev agent if `psql` is absent from the session `PATH`.
 
 **Given** `tests/` is empty
 **When** the dev agent creates `tests/{unit,integration/scaffold_conformance,end_to_end,trial_replay,fixtures/specialists}/`
@@ -204,36 +212,104 @@ So that **the substrate shape is in place before any handler code is written, cl
 **Then** every sanctum directory in `_bmad/memory/` has the notice; a test in `tests/integration/sanctum/test_clone_fork_notice_present.py` asserts all are present.
 
 **Given** the import-linter contracts are declared
-**When** CI runs `import-linter --config pyproject.toml`
-**Then** the contracts validate: `app.marcus ⊥ app.cora` (both empty at this slab; trivially passes), `app.gates.**` forbids scheduler imports (empty; trivially passes), `app.mcp_server.tools.gate_decide`-only access to `app.gates.resume_api` (both empty; trivially passes).
+**When** CI runs `lint-imports --config pyproject.toml`
+**Then** the contracts validate: `app.marcus ⊥ app.cora` (both remain empty at this slab; trivially passes), `app.gates.**` forbids scheduler imports (still empty; trivially passes), `app.mcp_server.tools.gate_decide`-only access to `app.gates.resume_api` (both empty; trivially passes once Story 1.1b adds that third contract).
 
 ---
 
-### Story 1.1c: Smoke Test + Runtime Server Entry (Story 1c per Amendment F)
+### Story 1.1c: Smoke Test + Runtime Server Entry + MCP Code Substrate (Story 1c per Amendment F, middle-path-revised 2026-04-22)
 
 As a **dev agent bringing the runtime substrate online**,
-I want **working `app.smoke_test` + `app.runtime_server` entry points + `app.models.registry_check` that collectively prove the substrate boots end-to-end**,
-So that **M1 acceptance evidence can begin accruing and the empty-manifest-loaded graph exercise is demonstrable**.
+I want **working `app.smoke_test` + `app.runtime_server` entry points + `app.models.registry_check` that prove the FastAPI transport boots end-to-end, PLUS the MCP code substrate (protocol-version pin + one real tool handler + stdio wire-up in `app/mcp_server/`) landed but NOT yet exercised by the per-PR smoke gate**,
+So that **M1 acceptance evidence can begin accruing, the empty-manifest-loaded graph exercise is demonstrable via FastAPI, and FR2's compound MCP+FastAPI+CLI contract has the MCP code present in Slab 1 substrate (smoke + parity-test cadence lives in Story 1.1d)**.
 
-**Pts:** 2 | **Gate:** single | **K:** ~1.5×
+**Pts:** 3 | **Gate:** single | **K:** ~1.5×
+
+> **Authoring note (party-mode consensus 2026-04-22):** This story was re-scoped via a two-round party-mode consensus (5/5 MIDDLE PATH) from the pre-split architecture version. The MCP smoke test + FastAPI↔MCP parity assertions that originally lived here were moved to new Story 1.1d to keep MCP transport off the per-PR critical path (Murat's flake-vector concern) while preserving FR2 substrate presence in Slab 1 (Mary's compound-contract concern) and D7 three-transport architecture commitment (Winston). 1.1c code scope grew (+1 Pt for MCP code substrate); smoke scope stayed narrow (FastAPI-only per-PR).
 
 **Acceptance Criteria:**
+
+**AC-1.1c-A — Registry check (dev-agent-executable)**
 
 **Given** `app/models/registry.yaml` and `app/specialists/_scaffold/model_config.yaml` exist (stub content)
 **When** the dev agent runs `uv run python -m app.models.registry_check`
 **Then** the script loads the registry, validates every referenced model ID against the Pydantic `PipelineRegistry` model, and exits 0; invalid refs exit 1 with named violation.
 
+**AC-1.1c-B — Smoke test via stub manifest (dev-agent-executable)**
+
 **Given** a minimal stub manifest at `state/config/pipeline-manifest.yaml` (1-step no-op graph)
 **When** the dev agent runs `uv run python -m app.smoke_test`
 **Then** the manifest loads, the compiler produces a compiled StateGraph, one node executes, the graph returns, and stdout shows "smoke ok" + node count.
 
-**Given** the smoke test passes
-**When** the dev agent runs `uv run python -m app.runtime_server` in one terminal
-**Then** a FastAPI server binds to `127.0.0.1:<port>` per NFR-S2; a curl `GET /health` returns `200` + body `{"status": "ok", "postgres": "connected"}`; Ctrl-C terminates cleanly within 2 seconds.
+**AC-1.1c-C — FastAPI runtime server + /health + /invoke (dev-agent-executable)**
 
-**Given** `LANGSMITH_API_KEY` is set
-**When** the smoke test runs
+**Given** the smoke test passes and `app.runtime_server` is importable
+**When** the dev agent runs `uv run python -m app.runtime_server` in a subprocess and probes it via `httpx` from a pytest (NOT `curl`, per sandbox-AC rule "verify via shipped deps not operator CLIs")
+**Then** a FastAPI server binds to `127.0.0.1:<port>` per NFR-S2; `GET /health` returns `200` with body `{"status": "ok", "postgres": "connected"}` (when Postgres reachable) or `{"status": "ok", "postgres": "skipped"}` (when Postgres unreachable — same skip-not-fail discipline as AC-Postgres-A); `POST /invoke` with the minimal-graph input invokes the shared minimal LangGraph node and returns its output; `SIGTERM` (or equivalent clean-shutdown signal) terminates the server within 2 seconds with no orphaned threads.
+
+**AC-1.1c-D — LangSmith span-tag contract (dev-agent-executable)**
+
+**Given** `LANGSMITH_API_KEY` is set (skip if unset per sandbox-AC discipline)
+**When** the smoke test or `/invoke` runs
 **Then** a LangSmith trace is created and visible in the configured project; the trace has ≥1 span per node with the contract tag set `{trial_id, node_id, agent, lane}` (per architecture §8 span-tag contract).
+
+**AC-1.1c-E — MCP code substrate present (dev-agent-executable; NO smoke yet — smoke is 1.1d scope)**
+
+**Given** `app/mcp_server/` is an empty-stub package (README-only from 1.1b)
+**When** the dev agent authors (a) `app/mcp_server/protocol.py` with `MCP_PROTOCOL_VERSION: str = "<pinned version>"` (FR2 protocol-version pin, exact value per architecture §MCP Protocol Pin — Slab 1 decides); (b) `app/mcp_server/server.py` with a stdio transport wire-up using `mcp.server.stdio` (shipped SDK per 2026 maturity confirmed by team); (c) `app/mcp_server/tools/ping.py` (or `trial_run_start.py` if architecture prefers) — one real `@server.tool()` handler that invokes the SAME minimal LangGraph node used by FastAPI `/invoke` so parity can be asserted in 1.1d; (d) `app/mcp_server/__main__.py` entry point (`uv run python -m app.mcp_server`) so the server can be spawned as a subprocess in 1.1d
+**Then** `uv run python -c "from app.mcp_server import server; from app.mcp_server.protocol import MCP_PROTOCOL_VERSION; print(MCP_PROTOCOL_VERSION)"` prints the pinned version; the import-linter contracts continue to pass (`lint-imports --config pyproject.toml` exits 0); **no subprocess MCP round-trip is exercised in this story** — per-PR smoke stays FastAPI-only.
+
+**AC-1.1c-F — Forward-pointer to 1.1d in docs stub (dev-agent-executable)**
+
+**Given** `docs/dev-guide/langgraph-runtime-setup.md` stub exists (Slab 1 deliverable; final polish in 1.7)
+**When** the dev agent authors the stub with the inverted **transport-parity matrix** (3 columns FastAPI / MCP / CLI × 3 rows code-present / smoke-test / parity-test) showing 1.1c lights the FastAPI column rows code+smoke, the MCP column row code-only, and 1.1d pointer callouts on the MCP smoke/parity cells; PLUS an explicit "MCP acceptance gated on Story 1.1d — handler present but not production-ready until 1.1d closes" callout in the MCP section per Paige's Round 2 doc-shape recommendation
+**Then** the stub exists, the matrix is present (Mermaid table or markdown table acceptable; Paige to finalize shape in 1.7), and the 1.1d reference is grep-able.
+
+---
+
+### Story 1.1d: MCP Transport Smoke + Two-Transport Parity (NEW — party-mode consensus 2026-04-22)
+
+As a **dev agent closing the FR2 compound-contract evidence at M1 acceptance**,
+I want **a dedicated MCP stdio smoke test + FastAPI↔MCP byte-equivalent parity assertion that runs nightly / on-merge (NOT per-PR) against the same minimal LangGraph node 1.1c wires to both transports**,
+So that **the MCP transport is proven substrate at M1 without putting subprocess stdio flake vectors on every Slab 1 PR's critical path (Murat's concern), the D7 three-transport parity claim is falsifiable not aspirational (Winston/Mary's concern), and Slab 3 Story 3.4 three-transport verdict inherits a pre-proven two-transport baseline**.
+
+**Pts:** 3 | **Gate:** single | **K:** ~1.5× (floor 1.2, ceiling 1.8; subprocess fixture is the K risk — budget absorbs it per Amelia's Round 2 math)
+
+**Origin:** Middle-path consensus from party-mode round on MCP-in-Slab-1 (transcript in session memory; 5/5 MIDDLE PATH vote). Pulls the MCP smoke + parity matrix out of 1.1c's per-PR critical path while keeping MCP code substrate in Slab 1 per FR2 and D7.
+
+**Dependencies:** 1.1c (provides MCP code + shared minimal LangGraph node), 1.1b (provides test-tier scaffold at `tests/integration/`), 1.1a (provides `mcp` SDK via lockfile — verify in story T1).
+
+**Acceptance Criteria:**
+
+**AC-1.1d-A — Shared-fixture contract (dev-agent-executable)**
+
+**Given** 1.1c shipped the MCP code substrate + the same minimal LangGraph node wired to both FastAPI `/invoke` and the MCP `ping` (or `trial_run_start`) tool
+**When** 1.1d authors `tests/integration/transport_parity/conftest.py` with a fixture that imports the literal same minimal-node module (not a re-implementation) and parametrizes it across both transports
+**Then** the fixture is the single source of truth for the node-under-test; any drift between transports is caught by import-site changes, not test-site duplication.
+
+**AC-1.1d-B — MCP stdio subprocess smoke (dev-agent-executable)**
+
+**Given** the shipped `mcp` PyPI SDK provides `mcp.client.stdio.stdio_client` + `ClientSession` primitives (verified at T1 against the locked version in `requirements.lock`)
+**When** 1.1d authors `tests/integration/transport_parity/test_mcp_stdio_smoke.py` that spawns `uv run python -m app.mcp_server` as a real subprocess, connects via `stdio_client`, runs `await session.initialize()` → `await session.list_tools()` → `await session.call_tool("ping", {...})` → graceful shutdown via `SIGTERM` (or equivalent on Windows) within N seconds (target ≤3s; hard-fail ≥10s)
+**Then** `list_tools` returns the one registered tool (plus protocol-version metadata); `call_tool` returns the minimal node's output; subprocess exits cleanly; no orphaned pipes or threads; pytest passes with `pytest.skip(...)` when `mcp` SDK import fails (sandbox-AC discipline).
+
+**AC-1.1d-C — FastAPI↔MCP byte-equivalent parity (dev-agent-executable)**
+
+**Given** AC-1.1d-A + AC-1.1d-B are green
+**When** 1.1d authors `tests/integration/transport_parity/test_fastapi_mcp_parity.py` that drives the SAME input through both transports and compares response payloads
+**Then** response payloads are **byte-equivalent modulo a documented transport-envelope exceptions table** (request-id, timestamps, transport-name, per-transport framing — full list authored in `docs/dev-guide/transport-parity-envelope-exceptions.md`); any drift outside the exceptions table = test failure; CLI/SSE parity legs explicitly **deferred** with visible-roadmap pointer to Slab 3 Story 3.4.
+
+**AC-1.1d-D — Cadence + flakiness budget (dev-agent-executable)**
+
+**Given** AC-1.1d-B + AC-1.1d-C are the high-flake-risk tests per Round 2 test-architect analysis
+**When** 1.1d authors CI lane configuration placing these tests in a nightly / on-merge-to-main lane, NOT the per-PR Slab 1 smoke lane; plus a reopen-trigger note: "if subprocess smoke or parity test flakes >2% across its first 20 runs, reopen the MCP-in-Slab-1 deferral conversation"
+**Then** the CI configuration exists (skeleton — full CI wiring lands in Slab 4 Story 4.1 graph-compile-time hook); per-PR Slab 1 smoke remains the FastAPI-only gate from 1.1c; the flakiness budget is grep-able in the story spec and the transport-parity test module docstring.
+
+**AC-1.1d-E — M1 acceptance gate (dev-agent-executable)**
+
+**Given** all above ACs are green
+**When** the M1 acceptance evidence is compiled (Slab 1 close)
+**Then** 1.1d's transport-parity test run is part of the M1 evidence pack; if it is red, M1 is not met; the FR2 compound-contract claim is satisfied by this story's closure, not by 1.1c's closure.
 
 ---
 
@@ -384,7 +460,7 @@ So that **M1 acceptance evidence (empty-manifest-loaded graph §01→§15) is bu
 **Then** LangSmith reports prompt-cache hit rate ≥ 60% on the second run (M1 Required Evidence bar).
 
 **Given** the pipeline manifest declares block-mode-trigger-paths per step
-**When** `import-linter --config pyproject.toml` runs
+**When** `lint-imports --config pyproject.toml` runs
 **Then** no violations; block-mode-trigger-paths are declared (Slab-4 CI hook consumes them later).
 
 ---
@@ -425,6 +501,30 @@ So that **M1 acceptance closes with all documentation deliverables landed, Amend
 
 ---
 
+## Epic 2 Reconciliation Banner (2026-04-24)
+
+> **Slab 2 roster reconciled 2026-04-24** against actual skill directories on
+> hybrid post-severance absorption. The named 14-specialist Epic 2b roster
+> (*Gary, Vera, Quinn-R, Desmond, Tracy, Paige, Mike, Dan, Eli, Enrique,
+> Mira, Sally, Kim, CD*) resolved to **9 migratable (Category A+B, including
+> absorbed Wondercraft) + 5 Tier-4 thin nodes (Category C) + 2 dissolved
+> (Audra, Cora — replaced by LangGraph CI + BMAD session protocols) + 7
+> roadmap-only names with no skill directory (Category E — deferred to
+> post-M5 greenfield mini-epic).** Full reconciliation at
+> [`slab-2-roster-reconciliation.md`](slab-2-roster-reconciliation.md).
+>
+> **Upstream severance** per [`langgraph-migration-guide.md §8.1`](../../docs/dev-guide/langgraph-migration-guide.md#81-upstream-severance-slab-2)
+> replaces FR60 forward-port freeze. 2b.N T1 reads go against hybrid's
+> working-tree skill directories directly; no more `upstream/master` reads.
+> Absorption + severance audit trail at [`upstream-severance-log.md`](../implementation-artifacts/upstream-severance-log.md).
+>
+> **Wondercraft decision** flagged for Slab 2 kickoff party-mode: absorbed
+> as a real skill directory, Wondercraft can migrate as 2b.N (Path A) or
+> remain as 2c.1 generator-validation target (Path B). See reconciliation
+> doc §Wondercraft Decision. Default pending kickoff: Path A.
+
+---
+
 ## Epic 2a: Slab 2a Scaffold Pilot — PR-R-Conformant Specialists
 
 **Milestone:** Intermediate (feeds M2).
@@ -451,6 +551,7 @@ So that **FR13 is proven and the three PR-R-conformant specialists (Irene Pass 2
 **When** the dev agent authors SKILL.md + `templates/` (9-node graph.py template, state.py envelope/return, model_config.yaml, expertise/README.md, sanctum-symlink target) + `scripts/generate.py`
 **Then** running `uv run python -m skills.bmad_create_specialist.scripts.generate --name toytest --mcp none --expertise-tier L5-toy` emits `app/specialists/toytest/` with all required files; scaffold-conformance framework (from Story 1.7) validates the new specialist; test passes.
 
+<!-- KNOWN-DRIFT 2026-04-24: The 9-node list below is STALE DRIFT from pre-Slab-1 architecture sketches. The Slab-1-hardened authoritative node set at tests/integration/scaffold_conformance/scaffold_contract.py::SCAFFOLD_NODE_IDS is `receive/plan/act/verify/reflect/emit_spans/gate_decision/finalize/handoff` (NOT the list shown here). This drift is preserved as live exhibit material for anti-pattern #3 (architecture-vs-epics drift) per docs/dev-guide/specialist-anti-patterns.md. Dev agents at Slab 2+ T1 MUST read scaffold_contract.py as the source of truth; the epic-doc text below is KEPT INTENTIONALLY UNFIXED to serve as the training exhibit. Party-mode round 3 (2026-04-24) ratified this preservation choice; Mary H6 + Paige caveat 5 + this marker close the artifact-integrity gap. -->
 **Given** `app/specialists/_scaffold/` was created in Story 1.7
 **When** the dev agent populates it with the canonical 9-node reference (`plan → enter_sanctum → load_expertise → reason → act → validate → emit → return → exit_sanctum`) + reference `model_config.yaml` showing all three cascade levels
 **Then** the scaffold is the generator's template source; doc reference added to `docs/dev-guide/langgraph-migration-guide.md` §Specialist Walkthrough.
@@ -790,6 +891,13 @@ So that **FR64 is met and the generator is production-ready for the optional sec
 
 ## Epic 3: Slab 3 Marcus Orchestration — Supervisor + Gates + DecisionCards + Verdict Flow
 
+**7c.21a retirement record (2026-05-07).** Original Epic 3 stories 3.1-3.6 are retired in place via the Slab 7 replacement chain. The operator-facing Marcus orchestration substrate is now delivered by:
+
+- Slab 7a inter-gate orchestration: `_bmad-output/planning-artifacts/epics-slab-7a-inter-gate-orchestration.md`
+- Slab 7b specialist activation: `_bmad-output/planning-artifacts/epics-slab-7b-specialist-activation-eleven.md`
+- Slab 7c orchestrational tail: `_bmad-output/planning-artifacts/epics-slab-7c-orchestrational-tail.md`
+
+Mapping-checklist lineage is preserved under SG-2: the Epic 3 row remains present and its retirement status is `retired-via-7a+7b+7c`. The row is not deleted; the parent epic now points reviewers to the Slab 7 mapping checklist for section-by-section migrated coverage.
 **Milestone:** M3 go/no-go — "Marcus orchestrates end-to-end."
 
 **Goal:** Marcus runs Plan-and-Execute by default (ReAct on `explore` preset), routes to specialists via manifest, produces DecisionCards at every gate, operator verdict via CLI/MCP/FastAPI transports. HIL tamper-evidence enforced. New tracked trial run §01→§15 completes with operator approve/edit/reject at every gate.
@@ -1398,8 +1506,8 @@ All 65 FRs map to at least one story's AC:
 | FR | Covered by |
 |---|---|
 | FR1 | 1.1c (runtime_server), 1.6 (manifest-loaded graph) |
-| FR2 | 1.1c (FastAPI), 3.4 (MCP + FastAPI + CLI), 1.1b (mcp_server stub) |
-| FR3 | 1.1b (docker postgres), 1.5 (checkpointer retention) |
+| FR2 | 1.1c (FastAPI runtime + MCP code substrate per middle-path consensus), 1.1d (MCP stdio smoke + FastAPI↔MCP byte-equivalent parity, M1 acceptance gate), 3.4 (3-transport verdict parity inheriting 1.1d baseline), 1.1b (mcp_server stub) |
+| FR3 | 1.1b (native local postgres + init SQL), 1.5 (checkpointer retention) |
 | FR4 | 1.6 (empty-graph + resume implicit), 3.6 (trial with resume) |
 | FR5 | 1.5 |
 | FR6 | 1.1c (LangSmith wiring), 1.3 (resolution trail spans) |
@@ -1522,6 +1630,19 @@ These land in `_bmad-output/planning-artifacts/deferred-inventory.md` at Slab 1 
 
 ---
 
+## Slab 7c Invariant-Preservation Notes
+
+Story 7c.21 appended this D12 close-protocol note at Slab 7c closeout. Slab 7c replaced the original Epic 3 Marcus-orchestration shape through Slab 7a substrate, Slab 7b body activation, and Slab 7c orchestrational-tail work while preserving these load-bearing invariants:
+
+- **SG-1 11-roster class-conformance floor preserved.** Enforcement remains in `scripts/utilities/validate_parity_test_class_conformance.py`; closeout proof is `tests/trial/test_trial3_readiness.py` plus `tests/audit/test_audit_ac_sg_aggregate_enforcement.py`, which assert the validator still reports 11 activation contracts and 19 total parity contract files.
+- **SG-2 33-row mapping-checklist floor preserved.** The dev-agent did not flip row statuses. `tests/parity/test_mapping_checklist_status.py` remains the floor guard and `tests/audit/test_audit_ac_sg_aggregate_enforcement.py` invokes it as the Slab 7c aggregate audit.
+- **SG-3 Composition Spec Section 3.1 SHA256 + append-only invariant preserved.** `docs/dev-guide/composition-specification.md` stays authoritative; `app/marcus/orchestrator/writers/outbound_envelope.py::GaryOutboundEnvelope` retains deterministic YAML emission with `schema_version`, `sort_keys=True`, and explicit UTF-8 `write_text`.
+- **SG-4 sanctum-alignment registry preserved and extended.** The five `gary-*` writer IDs from 7c.17a/7c.17b plus `section-15-bundle` from 7c.15 are asserted by `tests/audit/test_audit_ac_sg_aggregate_enforcement.py`.
+- **Tripwire-ledger append-only invariant preserved.** Story 7c.21 appended the concrete TW-7c-6 `not_fired` row to `_bmad-output/implementation-artifacts/sprint-status.yaml::tripwire_events`; schema and chain validation are exercised by `tests/trial/test_trial3_readiness.py`.
+- **Trial-3 transcript schema invariant introduced.** `app/models/trial3_transcript.py`, `app/models/trial3_transcript.v1.schema.json`, and `tests/trial/test_trial3_transcript_shape.py` pin the FR-7c-51 transcript contract to manifest-derived production gates.
+
+---
+
 ## Completion
 
 **Epic + story decomposition for the LangChain + LangGraph migration is complete.**
@@ -1535,5 +1656,3 @@ These land in `_bmad-output/planning-artifacts/deferred-inventory.md` at Slab 1 
 - M1–M5 acceptance bars expressed as concrete story-level ACs.
 
 **Ready for Slab 1 kickoff** — Stories 1.1a, 1.1b, 1.1c queue first per Amelia's strict-serial pattern. Remaining Slab 1 stories (1.2–1.7) open in parallel-allowed order once 1.1c closes.
-
-

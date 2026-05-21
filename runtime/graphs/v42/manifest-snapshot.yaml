@@ -1,0 +1,541 @@
+# Slab 1 Story 1.6 migrated v4.2 manifest — primary repo's 33-step
+# narrated-lesson-with-video-or-animation pack reshaped to the migration's
+# `PipelineManifest` schema (from Story 1.4).
+#
+# Preserves the v4.2 step ids (01, 02, 02A, 03, 04, 04A, 04.5, 04.55, 4.75,
+# 05, 05B, 06, 6.2, 6.3, 06B, 07, 7.5, 07B, 07C, 07D, 07E, 07F, 08, 08B, 09,
+# 10, 11, 11B, 12, 13, 14, 14.5, 15) byte-equivalent; synthesizes edges from
+# per-step `insertion_after` (linear chain; conditionals + dispatch envelopes
+# are Slab 2/3 territory per AC-1.6-A). Each node's `specialist_id` names the
+# canonical APP specialist the step routes to; Slab 1 resolves every
+# `specialist_id` to `app.specialists._stub.passthrough_specialist.passthrough_node`
+# so §01→§15 end-to-end smoke runs without real specialists.
+#
+# Provenance: field shapes match `git show upstream/master:state/config/pipeline-manifest.yaml`
+# (33 steps at 2026-04-22 upstream HEAD). Per Winston/Amelia 2026-04-22
+# amendment, the v4.2 schema-delta inventory was completed at Story 1.4
+# authoring, so `PipelineManifest` already accommodates every v4.2 field —
+# this file requires NO schema extension on 1.6.
+#
+# `app/smoke_test.py` continues to exercise the single-node `noop` substrate
+# smoke path when invoked without `--full`; the `--full` flag (landed in 1.6)
+# runs this full manifest end-to-end.
+
+schema_version: "v4.2-migration-stub"
+pack_version: "v4.2"
+generator_ref: "scripts/generators/v42/render.py"
+lane: "run_graph"
+entrypoint: "01"
+frozen_graph_version: "v42"
+learning_events:
+  schema_ref: "state/config/learning-event-schema.yaml"
+block_mode_trigger_paths:
+  - state/config/pipeline-manifest.yaml
+  - scripts/utilities/check_pipeline_manifest_lockstep.py
+  - scripts/utilities/run_hud.py
+  - scripts/utilities/progress_map.py
+  - marcus/orchestrator/workflow_runner.py
+  - tests/test_run_hud.py
+  - tests/test_progress_map.py
+  - docs/workflow/production-prompt-pack-v4.2-*.md
+  - state/config/learning-event-schema.yaml
+  - scripts/utilities/learning_event_capture.py
+  - skills/bmad-agent-marcus/scripts/validate-literal-visual-pre-dispatch.py
+
+nodes:
+  - id: "01"
+    label: "Activation + Preflight"
+    specialist_id: "marcus"
+    scaffold_node: "act"
+    model_config_ref: null
+    gate: true
+    gate_code: "G0"
+    sub_phase_of: null
+    insertion_after: null
+    hud_tracked: true
+    pack_section_anchor: "1)"
+    pack_version: "v4.2"
+    rationale: "Section 01 maintains manifest-driven pipeline contract."
+
+  - id: "02"
+    label: "Source Authority Map"
+    specialist_id: "texas"
+    scaffold_node: "act"
+    model_config_ref: null
+    gate: true
+    gate_code: "G0A"
+    sub_phase_of: null
+    insertion_after: "01"
+    hud_tracked: true
+    pack_section_anchor: "2)"
+    pack_version: "v4.2"
+    rationale: "Section 02 maintains manifest-driven pipeline contract."
+
+  - id: "02A"
+    label: "Operator Directives"
+    specialist_id: "marcus"
+    scaffold_node: "act"
+    model_config_ref: null
+    gate: true
+    gate_code: "G0B"
+    sub_phase_of: "02"
+    insertion_after: "02"
+    hud_tracked: true
+    pack_section_anchor: "2A)"
+    pack_version: "v4.2"
+    rationale: "Section 02A maintains manifest-driven pipeline contract."
+
+  - id: "03"
+    label: "Ingestion + Evidence Log"
+    specialist_id: "texas"
+    scaffold_node: "act"
+    model_config_ref: null
+    gate: false
+    insertion_after: "02A"
+    hud_tracked: true
+    pack_section_anchor: "3)"
+    pack_version: "v4.2"
+    rationale: "Section 03 maintains manifest-driven pipeline contract."
+
+  - id: "04"
+    label: "Ingestion Quality Gate + Irene Packet"
+    specialist_id: "vera"
+    scaffold_node: "act"
+    model_config_ref: null
+    gate: true
+    gate_code: "G1"
+    insertion_after: "03"
+    hud_tracked: true
+    pack_section_anchor: "4)"
+    pack_version: "v4.2"
+    rationale: "Section 04 maintains manifest-driven pipeline contract."
+
+  - id: "04A"
+    label: "Lesson Plan Coauthoring + Scope Lock"
+    specialist_id: "irene"
+    scaffold_node: "act"
+    model_config_ref: null
+    gate: true
+    gate_code: "G1A"
+    insertion_after: "04"
+    hud_tracked: true
+    pack_section_anchor: "04A)"
+    pack_version: "v4.2"
+    rationale: "Section 04A maintains manifest-driven pipeline contract."
+
+  - id: "04.5"
+    label: "Parent Slide Count Polling"
+    specialist_id: "marcus"
+    scaffold_node: "act"
+    model_config_ref: null
+    gate: false
+    sub_phase_of: "04"
+    insertion_after: "04A"
+    hud_tracked: true
+    pack_section_anchor: "4.5)"
+    pack_version: "v4.2"
+    rationale: "Section 04.5 maintains manifest-driven pipeline contract."
+    learning_events:
+      emits: true
+      event_types:
+        - plan_unit.created
+
+  - id: "04.55"
+    label: "Estimator + Run Constants Lock"
+    specialist_id: "marcus"
+    scaffold_node: "act"
+    model_config_ref: null
+    gate: false
+    sub_phase_of: "04"
+    insertion_after: "04.5"
+    hud_tracked: true
+    pack_section_anchor: "4.55)"
+    pack_version: "v4.2"
+    rationale: "Section 04.55 maintains manifest-driven pipeline contract."
+    learning_events:
+      emits: true
+      event_types:
+        - plan.locked
+
+  - id: "4.75"
+    label: "Creative Directive Resolution"
+    specialist_id: "cd"
+    scaffold_node: "act"
+    model_config_ref: null
+    gate: false
+    sub_phase_of: "04"
+    insertion_after: "04.55"
+    hud_tracked: true
+    pack_section_anchor: "4.75)"
+    pack_version: "v4.2"
+    rationale: "Section 4.75 maintains manifest-driven pipeline contract."
+
+  - id: "05"
+    label: "Irene Pass 1 + Gate 1 Fidelity"
+    specialist_id: "irene"
+    scaffold_node: "act"
+    model_config_ref: null
+    gate: true
+    gate_code: "G2"
+    insertion_after: "4.75"
+    hud_tracked: true
+    pack_section_anchor: "5)"
+    pack_version: "v4.2"
+    rationale: "Section 05 maintains manifest-driven pipeline contract."
+
+  - id: "05B"
+    label: "Cluster Plan G1.5 Gate"
+    specialist_id: "irene"
+    scaffold_node: "act"
+    model_config_ref: null
+    gate: true
+    gate_code: "G1.5"
+    sub_phase_of: "05"
+    insertion_after: "05"
+    hud_tracked: true
+    pack_section_anchor: "5B)"
+    pack_version: "v4.2"
+    rationale: "Section 05B maintains manifest-driven pipeline contract."
+
+  - id: "06"
+    label: "Pre-Dispatch Package Build"
+    specialist_id: "marcus"
+    scaffold_node: "act"
+    model_config_ref: null
+    gate: false
+    insertion_after: "05B"
+    hud_tracked: true
+    pack_section_anchor: "6)"
+    pack_version: "v4.2"
+    rationale: "Section 06 maintains manifest-driven pipeline contract."
+
+  - id: "6.2"
+    label: "Cluster Prompt Engineering"
+    specialist_id: "marcus"
+    scaffold_node: "act"
+    model_config_ref: null
+    gate: false
+    sub_phase_of: "06"
+    insertion_after: "06"
+    hud_tracked: true
+    pack_section_anchor: "6.2)"
+    pack_version: "v4.2"
+    rationale: "Section 6.2 maintains manifest-driven pipeline contract."
+
+  - id: "6.3"
+    label: "Cluster Dispatch Sequencing"
+    specialist_id: "marcus"
+    scaffold_node: "act"
+    model_config_ref: null
+    gate: false
+    sub_phase_of: "06"
+    insertion_after: "6.2"
+    hud_tracked: true
+    pack_section_anchor: "6.3)"
+    pack_version: "v4.2"
+    rationale: "Section 6.3 maintains manifest-driven pipeline contract."
+
+  - id: "06B"
+    label: "Literal-Visual Operator Build"
+    specialist_id: "marcus"
+    scaffold_node: "act"
+    model_config_ref: null
+    gate: false
+    sub_phase_of: "06"
+    insertion_after: "6.3"
+    hud_tracked: true
+    pack_section_anchor: "6B)"
+    pack_version: "v4.2"
+    rationale: "Section 06B maintains manifest-driven pipeline contract."
+
+  - id: "07"
+    label: "Gary Dispatch + Export"
+    specialist_id: "gary"
+    scaffold_node: "act"
+    model_config_ref: null
+    gate: false
+    insertion_after: "06B"
+    hud_tracked: true
+    pack_section_anchor: "7)"
+    pack_version: "v4.2"
+    rationale: "Section 07 maintains manifest-driven pipeline contract."
+
+  - id: "7.5"
+    label: "Cluster Coherence G2.5 Gate"
+    specialist_id: "vera"
+    scaffold_node: "act"
+    model_config_ref: null
+    gate: true
+    gate_code: "G2.5"
+    insertion_after: "07"
+    hud_tracked: true
+    pack_section_anchor: "7.5)"
+    pack_version: "v4.2"
+    rationale: "Section 7.5 maintains manifest-driven pipeline contract."
+
+  - id: "07B"
+    label: "Variant Selection Gate"
+    specialist_id: "quinn-r"
+    scaffold_node: "act"
+    model_config_ref: null
+    gate: true
+    gate_code: "G2B"
+    sub_phase_of: "07"
+    insertion_after: "7.5"
+    hud_tracked: true
+    pack_section_anchor: "7B)"
+    pack_version: "v4.2"
+    rationale: "Section 07B maintains manifest-driven pipeline contract."
+
+  - id: "07C"
+    label: "Storyboard A + Gate 2 Approval"
+    specialist_id: "quinn-r"
+    scaffold_node: "act"
+    model_config_ref: null
+    gate: true
+    gate_code: "G2C"
+    sub_phase_of: "07"
+    insertion_after: "07B"
+    hud_tracked: true
+    pack_section_anchor: "7C)"
+    pack_version: "v4.2"
+    rationale: "Section 07C maintains manifest-driven pipeline contract."
+    learning_events:
+      emits: true
+      event_types:
+        - approval
+        - revision
+        - waiver
+      schema_ref: "state/config/learning-event-schema.yaml"
+
+  - id: "07D"
+    label: "Gate 2M Motion Designation"
+    specialist_id: "marcus"
+    scaffold_node: "act"
+    model_config_ref: null
+    gate: true
+    gate_code: "G2M"
+    sub_phase_of: "07"
+    insertion_after: "07C"
+    hud_tracked: true
+    pack_section_anchor: "7D)"
+    pack_version: "v4.2"
+    rationale: "Section 07D maintains manifest-driven pipeline contract."
+
+  - id: "07E"
+    label: "Motion Generation / Import"
+    specialist_id: "kira"
+    scaffold_node: "act"
+    model_config_ref: null
+    gate: false
+    sub_phase_of: "07"
+    insertion_after: "07D"
+    hud_tracked: true
+    pack_section_anchor: "7E)"
+    pack_version: "v4.2"
+    rationale: "Section 07E maintains manifest-driven pipeline contract."
+
+  - id: "07F"
+    label: "Motion Gate"
+    specialist_id: "quinn-r"
+    scaffold_node: "act"
+    model_config_ref: null
+    gate: true
+    gate_code: "G2F"
+    sub_phase_of: "07"
+    insertion_after: "07E"
+    hud_tracked: true
+    pack_section_anchor: "7F)"
+    pack_version: "v4.2"
+    rationale: "Section 07F maintains manifest-driven pipeline contract."
+
+  - id: "08"
+    label: "Irene Pass 2 + Segment Manifest"
+    specialist_id: "irene"
+    scaffold_node: "act"
+    model_config_ref: null
+    gate: false
+    insertion_after: "07F"
+    hud_tracked: true
+    pack_section_anchor: "8)"
+    pack_version: "v4.2"
+    rationale: "Section 08 maintains manifest-driven pipeline contract."
+
+  - id: "08B"
+    label: "Storyboard B + HIL Review"
+    specialist_id: "quinn-r"
+    scaffold_node: "act"
+    model_config_ref: null
+    gate: true
+    gate_code: "G3B"
+    sub_phase_of: "08"
+    insertion_after: "08"
+    hud_tracked: true
+    pack_section_anchor: "8B)"
+    pack_version: "v4.2"
+    rationale: "Section 08B maintains manifest-driven pipeline contract."
+
+  - id: "09"
+    label: "Gate 3 - Lock Pass 2 Package"
+    specialist_id: "marcus"
+    scaffold_node: "act"
+    model_config_ref: null
+    gate: true
+    gate_code: "G3"
+    insertion_after: "08B"
+    hud_tracked: true
+    pack_section_anchor: "9)"
+    pack_version: "v4.2"
+    rationale: "Section 09 maintains manifest-driven pipeline contract."
+    learning_events:
+      emits: true
+      event_types:
+        - approval
+        - revision
+        - waiver
+      schema_ref: "state/config/learning-event-schema.yaml"
+
+  - id: "10"
+    label: "Fidelity + Quality Pre-Spend"
+    specialist_id: "vera"
+    scaffold_node: "act"
+    model_config_ref: null
+    gate: true
+    gate_code: "G4"
+    insertion_after: "09"
+    hud_tracked: true
+    pack_section_anchor: "10)"
+    pack_version: "v4.2"
+    rationale: "Section 10 maintains manifest-driven pipeline contract."
+    learning_events:
+      emits: true
+      event_types:
+        - approval
+        - revision
+        - waiver
+      schema_ref: "state/config/learning-event-schema.yaml"
+
+  - id: "11"
+    label: "ElevenLabs Voice Selection HIL"
+    specialist_id: "elevenlabs"
+    scaffold_node: "act"
+    model_config_ref: null
+    gate: true
+    gate_code: "G4A"
+    insertion_after: "10"
+    hud_tracked: true
+    pack_section_anchor: "11)"
+    pack_version: "v4.2"
+    rationale: "Section 11 maintains manifest-driven pipeline contract."
+
+  - id: "11B"
+    label: "ElevenLabs Input Package HIL"
+    specialist_id: "elevenlabs"
+    scaffold_node: "act"
+    model_config_ref: null
+    gate: true
+    gate_code: "G4B"
+    sub_phase_of: "11"
+    insertion_after: "11"
+    hud_tracked: true
+    pack_section_anchor: "11B)"
+    pack_version: "v4.2"
+    rationale: "Section 11B maintains manifest-driven pipeline contract."
+
+  - id: "12"
+    label: "ElevenLabs Audio Generation"
+    specialist_id: "elevenlabs"
+    scaffold_node: "act"
+    model_config_ref: null
+    gate: false
+    insertion_after: "11B"
+    hud_tracked: true
+    pack_section_anchor: "12)"
+    pack_version: "v4.2"
+    rationale: "Section 12 maintains manifest-driven pipeline contract."
+
+  - id: "13"
+    label: "Quinn-R Pre-Composition QA"
+    specialist_id: "quinn-r"
+    scaffold_node: "act"
+    model_config_ref: null
+    gate: true
+    gate_code: "G5"
+    insertion_after: "12"
+    hud_tracked: true
+    pack_section_anchor: "13)"
+    pack_version: "v4.2"
+    rationale: "Section 13 maintains manifest-driven pipeline contract."
+
+  - id: "14"
+    label: "Compositor Assembly Bundle"
+    specialist_id: "compositor"
+    scaffold_node: "act"
+    model_config_ref: null
+    gate: false
+    insertion_after: "13"
+    hud_tracked: true
+    pack_section_anchor: "14)"
+    pack_version: "v4.2"
+    rationale: "Section 14 maintains manifest-driven pipeline contract."
+
+  - id: "14.5"
+    label: "Desmond Run-Scoped Operator Brief"
+    specialist_id: "desmond"
+    scaffold_node: "act"
+    model_config_ref: null
+    gate: false
+    sub_phase_of: "14"
+    insertion_after: "14"
+    hud_tracked: true
+    pack_section_anchor: "14.5)"
+    pack_version: "v4.2"
+    rationale: "Section 14.5 maintains manifest-driven pipeline contract."
+
+  - id: "15"
+    label: "Operator Handoff - Descript Ready"
+    specialist_id: "marcus"
+    scaffold_node: "act"
+    model_config_ref: null
+    gate: false
+    insertion_after: "14.5"
+    hud_tracked: true
+    pack_section_anchor: "15)"
+    pack_version: "v4.2"
+    rationale: "Section 15 maintains manifest-driven pipeline contract."
+
+edges:
+  - {from: __start__, to: "01"}
+  - {from: "01", to: "02"}
+  - {from: "02", to: "02A"}
+  - {from: "02A", to: "03"}
+  - {from: "03", to: "04"}
+  - {from: "04", to: "04A"}
+  - {from: "04A", to: "04.5"}
+  - {from: "04.5", to: "04.55"}
+  - {from: "04.55", to: "4.75"}
+  - {from: "4.75", to: "05"}
+  - {from: "05", to: "05B"}
+  - {from: "05B", to: "06"}
+  - {from: "06", to: "6.2"}
+  - {from: "6.2", to: "6.3"}
+  - {from: "6.3", to: "06B"}
+  - {from: "06B", to: "07"}
+  - {from: "07", to: "7.5"}
+  - {from: "7.5", to: "07B"}
+  - {from: "07B", to: "07C"}
+  - {from: "07C", to: "07D"}
+  - {from: "07D", to: "07E"}
+  - {from: "07E", to: "07F"}
+  - {from: "07F", to: "08"}
+  - {from: "08", to: "08B"}
+  - {from: "08B", to: "09"}
+  - {from: "09", to: "10"}
+  - {from: "10", to: "11"}
+  - {from: "11", to: "11B"}
+  - {from: "11B", to: "12"}
+  - {from: "12", to: "13"}
+  - {from: "13", to: "14"}
+  - {from: "14", to: "14.5"}
+  - {from: "14.5", to: "15"}
+  - {from: "15", to: __end__}

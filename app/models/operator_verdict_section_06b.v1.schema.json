@@ -1,0 +1,182 @@
+{
+  "$defs": {
+    "LiteralVisualBuildPayload": {
+      "additionalProperties": false,
+      "description": "Submitted literal-visual build payload for Section 06B.",
+      "properties": {
+        "slide_specifications": {
+          "description": "Operator-authored slide visual specifications.",
+          "items": {
+            "$ref": "#/$defs/SlideVisualSpecification"
+          },
+          "minItems": 1,
+          "title": "Slide Specifications",
+          "type": "array"
+        },
+        "target_section": {
+          "description": "Target course section for the literal-visual build.",
+          "minLength": 1,
+          "title": "Target Section",
+          "type": "string"
+        }
+      },
+      "required": [
+        "target_section",
+        "slide_specifications"
+      ],
+      "title": "LiteralVisualBuildPayload",
+      "type": "object"
+    },
+    "LiteralVisualEditPayload": {
+      "additionalProperties": false,
+      "description": "Field-level edits for a literal-visual build payload.",
+      "properties": {
+        "edits": {
+          "additionalProperties": true,
+          "description": "Mapping of literal-visual field names or paths to replacements.",
+          "minProperties": 1,
+          "title": "Edits",
+          "type": "object"
+        }
+      },
+      "required": [
+        "edits"
+      ],
+      "title": "LiteralVisualEditPayload",
+      "type": "object"
+    },
+    "SlideVisualSpecification": {
+      "additionalProperties": false,
+      "description": "Operator-authored visual specification for one slide.",
+      "properties": {
+        "caption": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Optional rendering caption.",
+          "title": "Caption"
+        },
+        "slide_index": {
+          "description": "One-based slide index.",
+          "minimum": 1,
+          "title": "Slide Index",
+          "type": "integer"
+        },
+        "specification": {
+          "description": "Operator-authored per-slide visual specification.",
+          "minLength": 1,
+          "title": "Specification",
+          "type": "string"
+        },
+        "visual_kind": {
+          "description": "Closed visual specification kind.",
+          "enum": [
+            "flowchart",
+            "sequence",
+            "comparison",
+            "literal-visual"
+          ],
+          "title": "Visual Kind",
+          "type": "string"
+        }
+      },
+      "required": [
+        "slide_index",
+        "visual_kind",
+        "specification"
+      ],
+      "title": "SlideVisualSpecification",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "description": "Tamper-evident verdict emitted by the Section 06B build surface.",
+  "properties": {
+    "build_payload": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/LiteralVisualBuildPayload"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "description": "Required iff verb is submit."
+    },
+    "decision_card_digest": {
+      "description": "Lowercase sha256 digest of the build payload or upstream source.",
+      "title": "Decision Card Digest",
+      "type": "string"
+    },
+    "edit_payload": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/LiteralVisualEditPayload"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "description": "Required iff verb is edit."
+    },
+    "operator_id": {
+      "description": "Operator identifier.",
+      "minLength": 1,
+      "pattern": "^[a-zA-Z][a-zA-Z0-9_-]+$",
+      "title": "Operator Id",
+      "type": "string"
+    },
+    "plan_unit_id": {
+      "description": "Plan-unit identifier for the literal-visual build.",
+      "minLength": 1,
+      "title": "Plan Unit Id",
+      "type": "string"
+    },
+    "run_id": {
+      "description": "UUID4 identity for the build run.",
+      "format": "uuid",
+      "title": "Run Id",
+      "type": "string"
+    },
+    "submitted_at": {
+      "description": "Timezone-aware verdict submission time.",
+      "format": "date-time",
+      "title": "Submitted At",
+      "type": "string"
+    },
+    "surface_id": {
+      "const": "section_06b_literal_visual_build",
+      "default": "section_06b_literal_visual_build",
+      "description": "Closed Section 06B build-surface identifier.",
+      "title": "Surface Id",
+      "type": "string"
+    },
+    "verb": {
+      "description": "Closed build verb set: submit | edit | discard.",
+      "enum": [
+        "submit",
+        "edit",
+        "discard"
+      ],
+      "title": "Verb",
+      "type": "string"
+    }
+  },
+  "required": [
+    "run_id",
+    "verb",
+    "plan_unit_id",
+    "operator_id",
+    "decision_card_digest"
+  ],
+  "title": "Section06BOperatorVerdict",
+  "type": "object"
+}

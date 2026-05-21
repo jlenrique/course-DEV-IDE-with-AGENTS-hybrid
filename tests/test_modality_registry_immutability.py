@@ -11,11 +11,11 @@ from types import MappingProxyType
 
 import pytest
 
-from marcus.lesson_plan.component_type_registry import (
+from app.marcus.lesson_plan.component_type_registry import (
     COMPONENT_TYPE_REGISTRY,
     ComponentTypeEntry,
 )
-from marcus.lesson_plan.modality_registry import MODALITY_REGISTRY, ModalityEntry
+from app.marcus.lesson_plan.modality_registry import MODALITY_REGISTRY, ModalityEntry
 
 REGISTRIES_FIXTURE = pytest.mark.parametrize(
     "registry, known_key",

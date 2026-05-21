@@ -1,10 +1,10 @@
 """Tests for audio sensory bridge."""
 
-import pytest
-from pathlib import Path
-from unittest.mock import patch, MagicMock
+from unittest.mock import patch
 
-from skills.sensory_bridges.scripts.audio_to_agent import transcribe_audio, _compute_wpm
+import pytest
+
+from skills.sensory_bridges.scripts.audio_to_agent import _compute_wpm, transcribe_audio
 from skills.sensory_bridges.scripts.bridge_utils import validate_response
 
 

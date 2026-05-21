@@ -1,0 +1,27 @@
+{
+  "specialist_id": "gary",
+  "verb": "proceed",
+  "payload": {
+    "generation_id": "gen-fixture-001",
+    "status": "complete"
+  },
+  "gary_slide_output": [
+    {
+      "card_number": 1,
+      "file_path": "exports/gary_slide_01.png",
+      "slide_id": "slide-01",
+      "source_ref": "slide-brief.md#1",
+      "visual_description": "A clean title slide with subtle grid background."
+    },
+    {
+      "card_number": 2,
+      "file_path": "exports/gary_slide_02.png",
+      "slide_id": "slide-02",
+      "source_ref": "slide-brief.md#2",
+      "visual_description": "A two-column comparison slide."
+    }
+  ],
+  "edit_payload": null,
+  "reject_reason": null,
+  "timestamp": "2026-04-24T00:00:01Z"
+}

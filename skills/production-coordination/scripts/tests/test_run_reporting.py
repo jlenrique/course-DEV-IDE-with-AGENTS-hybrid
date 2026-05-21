@@ -18,7 +18,6 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[4]))
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 import run_reporting
 
-
 SCHEMA_SQL = """
 CREATE TABLE IF NOT EXISTS production_runs (
     run_id TEXT PRIMARY KEY,
@@ -78,7 +77,7 @@ class TempDB:
         self.path = Path(self._tmp.name)
         self._tmp.close()
 
-    def __enter__(self) -> "TempDB":
+    def __enter__(self) -> TempDB:
         conn = sqlite3.connect(str(self.path))
         conn.executescript(SCHEMA_SQL)
 
@@ -235,7 +234,7 @@ class TestRunReporting(unittest.TestCase):
 class TestDoubleDispatchReporting(unittest.TestCase):
     """Story 12.5: double_dispatch flag appears in run reports."""
 
-    def _make_db_with_context(self, context: dict) -> "TempDB":
+    def _make_db_with_context(self, context: dict) -> TempDB:
         """Create a TempDB with a single run using custom context."""
         db = TempDB()
         conn = sqlite3.connect(str(db.path))

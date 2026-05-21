@@ -16,10 +16,10 @@ from pathlib import Path
 
 import pytest
 
-from marcus.lesson_plan.log import LessonPlanLog
-from marcus.lesson_plan.schema import LearningModel, LessonPlan, PlanUnit, ScopeDecision
-from marcus.orchestrator.dispatch import dispatch_orchestrator_event
-from marcus.orchestrator.loop import (
+from app.marcus.lesson_plan.log import LessonPlanLog
+from app.marcus.lesson_plan.schema import LearningModel, LessonPlan, PlanUnit, ScopeDecision
+from app.marcus.orchestrator.dispatch import dispatch_orchestrator_event
+from app.marcus.orchestrator.loop import (
     FourALoop,
     FourAState,
     PlanAlreadyLockedError,

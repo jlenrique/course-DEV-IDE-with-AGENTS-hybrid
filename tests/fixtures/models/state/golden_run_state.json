@@ -1,0 +1,32 @@
+{
+  "run_id": "55555555-5555-4555-8555-555555555555",
+  "status": "pending",
+  "created_at": "2026-04-23T12:00:00Z",
+  "completed_at": null,
+  "graph_version": "v0.1-stub",
+  "temperature": 0.0,
+  "model_resolution_trail": [
+    {
+      "level": "registry_default",
+      "requested": null,
+      "resolved": "gpt-5",
+      "reason": "PipelineRegistry.default_model_id='gpt-5' available; per_call + per_specialist did not fire",
+      "timestamp": "2026-04-23T12:00:00Z",
+      "cache_prefix_hash": "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef"
+    }
+  ],
+  "model_overrides": {},
+  "sanctum_fingerprint": {
+    "snapshot_id": "66666666-6666-4666-8666-666666666666",
+    "content_sha256": "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef",
+    "captured_at": "2026-04-23T12:00:00Z"
+  },
+  "marcus_fingerprint": null,
+  "story_states": [],
+  "cache_state": {
+    "cache_prefix": "sanctum-v1-gpt54-noop",
+    "entries_count": 0,
+    "last_invalidated_at": null
+  },
+  "production_envelope": null
+}

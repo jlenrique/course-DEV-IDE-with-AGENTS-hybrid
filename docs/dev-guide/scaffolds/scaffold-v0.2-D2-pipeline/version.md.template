@@ -1,0 +1,32 @@
+# Behavioral version history — `<specialist_name>`
+
+**Specialist:** `<specialist_name>` (Class D2 pipeline-greenfield)
+**Current version:** `<v0.1>` (initial body activation)
+
+> Lives at `_bmad/memory/bmad-agent-<specialist_name>/version.md`. Tracks behavioral changes ONLY (not implementation refactors). Bump version on any change to the input/output contract or determinism mode.
+
+## Version history
+
+### v0.1 — `<YYYY-MM-DD>` (initial body activation)
+
+**Story:** `<story-id>`
+**Behavioral baseline:** `<one-paragraph description of canonical behavior>`
+**Determinism contract:** `<bytes-identical for stages X/Y; field-masked-hash for stages Z>`
+**Pipeline-determinism harness rate:** `<measured rate; ≥99% target>`
+
+### vN.M — `<future entry>`
+
+**Story:** `<story-id>`
+**Change:** `<what changed; non-implementation>`
+**Migration path:** `<how prior-version invocations adapt>`
+**Determinism contract delta:** `<changes if any>`
+
+---
+
+## Version-bump policy
+
+- **Patch bump (vN.M.P+1):** implementation refactor; no contract change; no determinism contract change. NOT recorded here.
+- **Minor bump (vN.M+1):** input/output contract addition (additive); determinism contract preserved. Record above.
+- **Major bump (vN+1.0):** breaking contract change; determinism contract may shift. Record above + party-mode consensus required.
+
+Per Slab 7b PRD §Pack Versioning Policy + Composition Spec §11.

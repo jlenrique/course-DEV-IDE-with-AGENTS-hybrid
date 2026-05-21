@@ -1,0 +1,446 @@
+{
+  "$defs": {
+    "EdgeSpec": {
+      "additionalProperties": false,
+      "description": "One edge in the compiled `StateGraph`.\n\n`condition` (optional) names a callable in the condition-function registry\n(`app.manifest.conditions`). Slab 1 stub registry exposes only\n`\"always_true\"` and `\"always_false\"`; full dispatch registry is Slab 3.\n\n`dispatch_envelope` is the Slab 3 dispatch-shape pointer (trailing `...` from\nAC-1.4-A). Slab 1 accepts any dict payload; Slab 3 narrows to `SpecialistEnvelope`.\n\n`decision_card_schema` is an additive Slab 3 pointer to the Pydantic model\nthat an interrupting gate emits. It uses `<module>:<ClassName>` dotted-ref\nsyntax and is compile-time validated by `app.manifest.refs.resolve_dotted_ref`.\n\n`from_node` is aliased to the YAML/JSON key `\"from\"` because `from` is a\nPython reserved word and cannot be a field name directly.",
+      "properties": {
+        "condition": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Optional condition-function name. Presence triggers `add_conditional_edges`; absence triggers `add_edge`. Resolved at compile time against the condition registry.",
+          "title": "Condition"
+        },
+        "decision_card_schema": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Optional `<module>:<ClassName>` dotted reference naming the DecisionCard subclass emitted at this edge's gate boundary.",
+          "title": "Decision Card Schema"
+        },
+        "dispatch_envelope": {
+          "anyOf": [
+            {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Slab 3 dispatch envelope payload. Slab 1 accepts arbitrary dicts; Slab 3 narrows the shape to `SpecialistEnvelope`.",
+          "title": "Dispatch Envelope"
+        },
+        "from": {
+          "description": "Source node id (LangGraph convention: `__start__` marks graph entry).",
+          "minLength": 1,
+          "title": "From",
+          "type": "string"
+        },
+        "to": {
+          "description": "Target node id (LangGraph convention: `__end__` marks graph exit).",
+          "minLength": 1,
+          "title": "To",
+          "type": "string"
+        }
+      },
+      "required": [
+        "from",
+        "to"
+      ],
+      "title": "EdgeSpec",
+      "type": "object"
+    },
+    "LearningEventsConfig": {
+      "additionalProperties": false,
+      "description": "Top-level learning-event wiring (Epic 33 substrate).\n\nCarries the `schema_ref` pointer the primary-repo v4.2 manifest uses at its\ntop level. Per-step emissions live on `NodeSpec.learning_events` via\n`StepLearningEventsConfig`.",
+      "properties": {
+        "schema_ref": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Path (repo-relative) to the learning-event schema YAML.",
+          "title": "Schema Ref"
+        }
+      },
+      "title": "LearningEventsConfig",
+      "type": "object"
+    },
+    "NodeSpec": {
+      "additionalProperties": false,
+      "description": "One node in the compiled `StateGraph`.\n\nArchitecture-canonical fields: `id`, `specialist_id`, `scaffold_node`,\n`model_config_ref`. v4.2 inventory deltas ride under the explicit\nextensibility trailing from AC-1.4-A: `label`, `gate`, `gate_code`,\n`sub_phase_of`, `insertion_after`, `hud_tracked`, `pack_section_anchor`,\n`pack_version`, `rationale`, `learning_events`.",
+      "properties": {
+        "dependencies": {
+          "anyOf": [
+            {
+              "additionalProperties": {
+                "type": "string"
+              },
+              "type": "object"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Manifest-declared dependency map for production composition. Keys are downstream specialist input keys; values are upstream specialist ids. Missing or empty maps use the runner's permanent fallback resolution.",
+          "title": "Dependencies"
+        },
+        "fold_target": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Named subgraph target for compile-time folding. Mutually exclusive with fold_with.",
+          "title": "Fold Target"
+        },
+        "fold_with": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Gate code for an upstream/surfaced pause point this node folds into. Mutually exclusive with fold_target.",
+          "title": "Fold With"
+        },
+        "gate": {
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Whether this step is a HIL gate (v4.2 manifest).",
+          "title": "Gate"
+        },
+        "gate_code": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "HIL gate identifier (e.g., 'G0', 'G2C'); v4.2 manifest.",
+          "title": "Gate Code"
+        },
+        "hud_tracked": {
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Whether `run_hud` surfaces this step (v4.2 manifest).",
+          "title": "Hud Tracked"
+        },
+        "id": {
+          "description": "Node identifier (unique within the manifest).",
+          "minLength": 1,
+          "title": "Id",
+          "type": "string"
+        },
+        "insertion_after": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Prior step id for linear-chain ordering (v4.2 manifest). Story 1.6 synthesizes `EdgeSpec` entries from this field when migrating the real v4.2 manifest.",
+          "title": "Insertion After"
+        },
+        "label": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Human-readable step label (v4.2 manifest).",
+          "title": "Label"
+        },
+        "learning_events": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/StepLearningEventsConfig"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Per-step learning-event emission config (v4.2 manifest)."
+        },
+        "model_config_ref": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Repo-relative path to a `model_config.yaml` file. Compiler validates presence at compile time (NFR-M2 / FR25). `None` skips the lint pass.",
+          "title": "Model Config Ref"
+        },
+        "pack_section_anchor": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Prompt-pack section anchor (v4.2 manifest cross-ref).",
+          "title": "Pack Section Anchor"
+        },
+        "pack_version": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Per-step prompt-pack version identifier (v4.2 manifest).",
+          "title": "Pack Version"
+        },
+        "rationale": {
+          "default": "",
+          "description": "Free-text rationale (stored verbatim; NO min_length per checklist \u00a76).",
+          "title": "Rationale",
+          "type": "string"
+        },
+        "scaffold_node": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Which scaffold-node slot (of the 9-node specialist scaffold) this node represents. Slab 2 concept; optional in Slab 1.",
+          "title": "Scaffold Node"
+        },
+        "specialist_id": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Specialist identifier the compiler resolves to a callable. Slab 1 uses a passthrough stub; full resolution is Slab 2 Story 2a.1 scope.",
+          "title": "Specialist Id"
+        },
+        "sub_phase_of": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Parent step id for nested sub-phases (v4.2 manifest).",
+          "title": "Sub Phase Of"
+        }
+      },
+      "required": [
+        "id"
+      ],
+      "title": "NodeSpec",
+      "type": "object"
+    },
+    "StepLearningEventsConfig": {
+      "additionalProperties": false,
+      "description": "Per-node learning-event emission metadata (v4.2 inventory delta).",
+      "properties": {
+        "emits": {
+          "default": false,
+          "description": "Whether this node emits learning events at runtime.",
+          "title": "Emits",
+          "type": "boolean"
+        },
+        "event_types": {
+          "description": "Event-type strings this node may emit (open-set; validated by capture layer).",
+          "items": {
+            "type": "string"
+          },
+          "title": "Event Types",
+          "type": "array"
+        },
+        "schema_ref": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Optional per-node override of the top-level learning-event schema_ref.",
+          "title": "Schema Ref"
+        }
+      },
+      "title": "StepLearningEventsConfig",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "description": "The manifest-as-graph-config root shape.\n\nLoaded by `app.manifest.loader.load()` from YAML; compiled by\n`app.manifest.compiler.compile()` into a LangGraph `StateGraph` (one per\n`lane`). Architecture-canonical fields + v4.2 inventory deltas are unified\nhere per the Winston/Amelia 2026-04-22 amendment.",
+  "properties": {
+    "block_mode_trigger_paths": {
+      "description": "Paths whose modification triggers pipeline-manifest regime block-mode review.",
+      "items": {
+        "type": "string"
+      },
+      "title": "Block Mode Trigger Paths",
+      "type": "array"
+    },
+    "edges": {
+      "description": "Explicit edges. For the v4.2 migration, Story 1.6 synthesizes these from per-node `insertion_after`. Empty is legal (graph with just an entrypoint and no transitions).",
+      "items": {
+        "$ref": "#/$defs/EdgeSpec"
+      },
+      "title": "Edges",
+      "type": "array"
+    },
+    "entrypoint": {
+      "description": "Node id that starts the graph. Must match a `nodes[].id` OR the LangGraph sentinel `__start__` (edges from `__start__` then name the real entry node).",
+      "minLength": 1,
+      "title": "Entrypoint",
+      "type": "string"
+    },
+    "frozen_graph_version": {
+      "description": "Frozen-graph version identifier (e.g., 'v0.1-stub', 'v42'). Compiler asserts `runtime/graphs/v{version}/` exists at compile time. Full ceremony (Slab 4 Story 4.5).",
+      "minLength": 1,
+      "title": "Frozen Graph Version",
+      "type": "string"
+    },
+    "generator_ref": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "description": "Repo-relative path to the generator script (pipeline-manifest regime).",
+      "title": "Generator Ref"
+    },
+    "lane": {
+      "description": "D4 lane identity (`run_graph` for Marcus runtime; `dev_graph` for Cora).",
+      "enum": [
+        "run_graph",
+        "dev_graph"
+      ],
+      "title": "Lane",
+      "type": "string"
+    },
+    "learning_events": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/LearningEventsConfig"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "description": "Top-level learning-event wiring (Epic 33 substrate)."
+    },
+    "nodes": {
+      "description": "All graph nodes. Must be non-empty; node ids must be unique.",
+      "items": {
+        "$ref": "#/$defs/NodeSpec"
+      },
+      "title": "Nodes",
+      "type": "array"
+    },
+    "pack_version": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "description": "Prompt-pack version identifier (e.g., 'v4.2'). Distinct from `frozen_graph_version` (LangGraph compiled-graph identity).",
+      "title": "Pack Version"
+    },
+    "schema_version": {
+      "description": "Manifest schema version (e.g., '0.1-stub', '1.0').",
+      "minLength": 1,
+      "title": "Schema Version",
+      "type": "string"
+    }
+  },
+  "required": [
+    "schema_version",
+    "lane",
+    "entrypoint",
+    "frozen_graph_version",
+    "nodes"
+  ],
+  "title": "PipelineManifest",
+  "type": "object"
+}

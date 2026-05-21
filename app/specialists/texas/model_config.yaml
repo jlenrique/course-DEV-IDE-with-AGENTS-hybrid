@@ -1,0 +1,10 @@
+# Texas source-wrangling model cascade — Story 2a.4.
+#
+# Texas is a pure-tool-dispatch specialist: `_plan` records a resolution-trail
+# entry for FR16 contract consistency, but `_act` does not invoke ChatOpenAI.
+# Tier mapping still follows the live policy (`fast` -> `gpt-5-nano`).
+specialist_id: "texas"
+default_model: "gpt-5-nano"
+per_node_overrides:
+  act: "gpt-5-nano"
+temperature_default: 0.0

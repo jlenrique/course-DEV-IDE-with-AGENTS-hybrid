@@ -1,0 +1,19 @@
+{
+  "trace_id": "slab-4-m4-review-trace",
+  "story": "4.7",
+  "captured_at": "2026-04-26T00:00:00Z",
+  "events": [
+    {
+      "node": "retry_node",
+      "mode": "without_workaround",
+      "attempts": 1,
+      "outcome": "raw_validation_error"
+    },
+    {
+      "node": "retry_node",
+      "mode": "with_workaround",
+      "attempts": 2,
+      "outcome": "success_after_retry"
+    }
+  ]
+}

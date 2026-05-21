@@ -1,0 +1,58 @@
+schema_version: "1.0"
+registry_version: "2026-04-24"
+dispatch_edges:
+  - dispatch_kind: irene_pass2
+    specialist_id: irene
+    owner: marcus
+    entrypoint: skills/bmad-agent-marcus/scripts/prepare-irene-pass2-handoff.py
+    contract_module: marcus.dispatch.contract
+    notes: "Pass 2 handoff envelope and receipt boundary"
+  - dispatch_kind: kira_motion
+    specialist_id: kira
+    owner: marcus
+    entrypoint: skills/kling-video/scripts/run_motion_generation.py
+    contract_module: marcus.dispatch.contract
+    notes: "Gate 7E motion-generation receipt boundary"
+  - dispatch_kind: texas_retrieval
+    specialist_id: texas
+    owner: marcus
+    entrypoint: skills/bmad-agent-texas/scripts/run_wrangler.py
+    contract_module: marcus.dispatch.contract
+    notes: "Retrieval-shape and locator-shape result envelope boundary"
+  # Sprint 2 — Wanda podcast specialist edges (6 capability cards)
+  - dispatch_kind: wanda_podcast_episode
+    specialist_id: wanda
+    owner: marcus
+    entrypoint: skills/bmad-agent-wondercraft/SKILL.md
+    contract_module: marcus.dispatch.contract
+    notes: "Single-host monologue podcast episode (capability EP)"
+  - dispatch_kind: wanda_podcast_dialogue
+    specialist_id: wanda
+    owner: marcus
+    entrypoint: skills/bmad-agent-wondercraft/SKILL.md
+    contract_module: marcus.dispatch.contract
+    notes: "Multi-voice dialogue / interview / case-discussion podcast (capability DP)"
+  - dispatch_kind: wanda_audio_summary
+    specialist_id: wanda
+    owner: marcus
+    entrypoint: skills/bmad-agent-wondercraft/SKILL.md
+    contract_module: marcus.dispatch.contract
+    notes: "Short-form recap / summary audio (capability AS)"
+  - dispatch_kind: wanda_music_bed_apply
+    specialist_id: wanda
+    owner: marcus
+    entrypoint: skills/bmad-agent-wondercraft/SKILL.md
+    contract_module: marcus.dispatch.contract
+    notes: "Apply background music bed to existing audio (capability MB)"
+  - dispatch_kind: wanda_chapter_markers_emit
+    specialist_id: wanda
+    owner: marcus
+    entrypoint: skills/bmad-agent-wondercraft/SKILL.md
+    contract_module: marcus.dispatch.contract
+    notes: "Emit chapter-marked output + metadata (capability CM)"
+  - dispatch_kind: wanda_audio_assembly_handoff
+    specialist_id: wanda
+    owner: marcus
+    entrypoint: skills/bmad-agent-wondercraft/SKILL.md
+    contract_module: marcus.dispatch.contract
+    notes: "Descript project + assembly guide for manual finish (capability AH)"

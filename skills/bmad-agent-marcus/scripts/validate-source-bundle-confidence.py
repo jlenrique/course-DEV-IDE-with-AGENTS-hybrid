@@ -30,7 +30,6 @@ from scripts.utilities.run_constants import (  # noqa: E402
     validate_run_id_for_bundle,
 )
 
-
 CONFIDENCE_ORDER = {"low": 0, "medium": 1, "high": 2}
 SENSORY_HEADING_RE = re.compile(r"^##\s+(.+?)\s+[—-]\s+sensory bridge(?:\s+\(G0\))?\s*$")
 BRIDGE_CONFIDENCE_RE = re.compile(r"^(HIGH|MEDIUM|LOW):\s*(.*)$")

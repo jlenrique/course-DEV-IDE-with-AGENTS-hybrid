@@ -1,0 +1,6 @@
+provider: kling
+scenario: budget_exhaust
+slides:
+  - slide_id: slide-01
+    estimated_cost_usd: 0.55
+    status: budget-exceeded

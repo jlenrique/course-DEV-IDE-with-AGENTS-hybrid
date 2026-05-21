@@ -1,7 +1,27 @@
 # User Guide — Course Content Production System
 
+> **Migration Status (refreshed 2026-05-07 at pre-Trial-3 cleanup S5 Tier-2):** Migration unconditionally SHIPPED 2026-04-27. Slab 7 orchestrational arc COMPLETE (7a+7b+7c closed 2026-05-01 / 2026-05-01 / 2026-05-07). Pre-Trial-3 cleanup arc S1-S6 currently in progress (S1+S2+S3+S4 closed; S5+S6 in flight). **First tracked trial (Trial-3) launches post-cleanup-close** against v5 canonical pack + post-Slab-7c substrate. v5 canonical pack: `docs/workflow/production-prompt-pack-v5-narrated-lesson-with-video-or-animation.md`. Trial methodology: `docs/trials/methodology.md`. Legacy v4.2 retained as mapping-checklist legacy-axis frozen authority.
+
+
+> ## MIGRATION STATUS BANNER (refreshed 2026-04-28)
+>
+> **This guide reflects the PRE-MIGRATION primary-repo workflow** (Cursor IDE chat + prompt-pack v4.x). The hybrid clone on `dev/langchain-langgraph-foundation` has **MIGRATED**: migration unconditionally SHIPPED 2026-04-27 (commit `97842ac`); Slab 6 trial-experience bundle 3/3 CLOSED 2026-04-28 (Step 02A prior-run defaults + Irene Pass 2 authoring template + HUD per-step expandable summaries); first tracked trial UNBLOCKED. Marcus orchestrator runs the production-graph runner against the manifest; specialists invoke through ProductionDispatchAdapter; DecisionCards fire at G1/G2C/G3/G4 with HIL operator verdict via CLI/MCP/FastAPI; checkpoint pause/resume verified end-to-end.
+>
+> **For migration-native user workflow (post-SHIP), see:**
+> - **[`docs/operator/production-trial-playbook.md`](operator/production-trial-playbook.md)** — start-to-stop production-run playbook at action-by-action granularity (in-progress fill during first tracked trial). The migration-native equivalent of legacy prompt-pack + cheat-sheet.
+> - **[`docs/operator/production-run-swimlane.md`](operator/production-run-swimlane.md)** — at-a-glance swimlane for typical animated-slides + video production runs (HIL gates G1/G2C/G3/G4 highlighted; cumulative pace + watch-for rubric). Best high-level entry point.
+> - **[`docs/operator/trial-run-runbook.md`](operator/trial-run-runbook.md)** — first-trial step-by-step (transport choice + corpus + DecisionCard inspection + verdict flow + override + replay).
+> - **[`docs/operator/hud-guide.md`](operator/hud-guide.md)** — HUD reading guide including Slab 6.5 per-step expandable summaries.
+> - **[`docs/operator/step-02a-prior-run-defaults.md`](operator/step-02a-prior-run-defaults.md)** — Slab 6.3 prior-run directives surfacing.
+> - **[`docs/operator/validation-scripts.md`](operator/validation-scripts.md)** — operator-run validation script catalog (5 validation scripts + 4 ceremony scripts).
+> - **[`README.md`](../README.md)** — top-of-repo project orientation + status-by-slab + quick-start.
+>
+> **Scope of this legacy content (post-SHIP):** the prompt-pack v4.x workflow described below is HISTORICAL REFERENCE for the pre-migration primary-repo. It is preserved to keep audit-trail continuity from pre- to post-migration. For active production-content workflow, consult the migration-native see-also list above.
+
+---
+
 **Audience:** Course creators and instructional designers using the system to produce educational content.
-**Last Updated:** 2026-04-12 | **Project Phase:** Epics 1–14 complete; Wave 1 cluster features live (v4.3 prompt pack); standard, motion, and cluster workflow templates available
+**Last Updated:** 2026-04-12 (migration banner actualized 2026-04-26) | **Project Phase:** Epics 1–14 complete (primary); hybrid clone is M5 SHIP-CONDITIONAL through 2026-05-03.
 
 ---
 
@@ -224,7 +244,7 @@ Run presets are the quality-strictness axis (separate from execution mode). If n
 ```
 course-content/
 ├── staging/              ← Agent drafts awaiting your review
-│   └── m03-intro-ai/    ← One folder per module in progress
+│   └── m03-intro-ai/    ← One folder per active module
 ├── courses/              ← Approved, published content
 │   └── course-slug/
 │       └── module-01-topic/
@@ -615,7 +635,7 @@ CLOSE SHIFT. Execute docs/workflow/production-session-wrapup.md fully and output
 **Trial-run checklist (copy — same steps as # column)**  
 ☐ 0 Mode + pre-flight ☐ 1 Fidelity + URLs ready ☐ 2 Source (opt.) ☐ **3 Phase 1 files** ☐ 4 Gate 1 ☐ 5 Gary + diagram_cards ☐ 6 Gate 2 ☐ **7 Phase 2 files** ☐ 8 Gate 3 ☐ 9 Vera/Quinn-R ☐ 9A Voice preview ☐ 10 ElevenLabs ☐ 11 Motion branch only if using the motion workflow template ☐ 12 Quinn-R pre-comp ☐ 13 Compositor ☐ 14 Desmond operator brief (`DESMOND-OPERATOR-BRIEF.md`) ☐ 15 Descript assembly
 
-**Trial-run running log (in progress)**
+**Trial-run running log (active)**
 
 - 2026-03-29 | Failure | When attempting to study course material, Marcus created an ad-hoc PDF-reading script instead of routing through source wrangler and existing PDF-reading skills.
 - 2026-03-30 | Success | APC C1-M1 SME PDF ingested via **official** `source-wrangler`: `wrangle_local_pdf` + `write_source_bundle` → `course-content/staging/ad-hoc/source-bundles/apc-c1m1-tejal-2026-03-29/` (`extracted.md`, `metadata.json`, provenance `local_pdf`, pypdf 24/24).

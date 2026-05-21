@@ -1,0 +1,130 @@
+{
+  "$defs": {
+    "RegistryEntry": {
+      "additionalProperties": false,
+      "description": "One model entry in the catalog.",
+      "properties": {
+        "available": {
+          "default": true,
+          "description": "Operator availability flag; toggling False removes the entry from selector resolution without deleting the catalog row (D13 Tier-1).",
+          "title": "Available",
+          "type": "boolean"
+        },
+        "context_window": {
+          "description": "Maximum prompt+completion tokens this model accepts.",
+          "exclusiveMinimum": 0,
+          "title": "Context Window",
+          "type": "integer"
+        },
+        "cost_per_million_input_tokens": {
+          "anyOf": [
+            {
+              "minimum": 0.0,
+              "type": "number"
+            },
+            {
+              "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+              "type": "string"
+            }
+          ],
+          "description": "USD per 1,000,000 input tokens (pricing snapshot, refresh per D13).",
+          "title": "Cost Per Million Input Tokens"
+        },
+        "cost_per_million_output_tokens": {
+          "anyOf": [
+            {
+              "minimum": 0.0,
+              "type": "number"
+            },
+            {
+              "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+              "type": "string"
+            }
+          ],
+          "description": "USD per 1,000,000 output tokens (pricing snapshot, refresh per D13).",
+          "title": "Cost Per Million Output Tokens"
+        },
+        "display_name": {
+          "description": "Operator-facing human label.",
+          "minLength": 1,
+          "title": "Display Name",
+          "type": "string"
+        },
+        "id": {
+          "description": "UUID4 stable identity for this catalog entry.",
+          "format": "uuid",
+          "title": "Id",
+          "type": "string"
+        },
+        "model_id": {
+          "description": "Provider-side model identifier (e.g. 'gpt-5', 'gpt-5-nano'); the string the runtime passes to the provider's chat-completions API.",
+          "minLength": 1,
+          "title": "Model Id",
+          "type": "string"
+        },
+        "provider": {
+          "const": "openai",
+          "description": "Closed enum: openai (extended in later slabs as new providers land).",
+          "title": "Provider",
+          "type": "string"
+        },
+        "tier": {
+          "description": "Closed enum: reasoning | code | fast (drives auto-select policy).",
+          "enum": [
+            "reasoning",
+            "code",
+            "fast"
+          ],
+          "title": "Tier",
+          "type": "string"
+        }
+      },
+      "required": [
+        "model_id",
+        "display_name",
+        "provider",
+        "context_window",
+        "cost_per_million_input_tokens",
+        "cost_per_million_output_tokens",
+        "tier"
+      ],
+      "title": "RegistryEntry",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "description": "Catalog container with cascade-default + auto-select-enable flag.",
+  "properties": {
+    "auto_select_enabled": {
+      "default": true,
+      "description": "When True, cascade falls through to ModelSelectionPolicy auto-select rules after registry default is exhausted. False disables auto-select (per-call + per-specialist + registry default only).",
+      "title": "Auto Select Enabled",
+      "type": "boolean"
+    },
+    "default_model_id": {
+      "description": "model_id of the entry the registry falls back to as `registry_default` in the cascade. Cross-field-validated to match an existing entry.",
+      "minLength": 1,
+      "title": "Default Model Id",
+      "type": "string"
+    },
+    "entries": {
+      "description": "Model catalog entries.",
+      "items": {
+        "$ref": "#/$defs/RegistryEntry"
+      },
+      "title": "Entries",
+      "type": "array"
+    },
+    "id": {
+      "description": "UUID4 identity for this registry instance (snapshot of catalog state).",
+      "format": "uuid",
+      "title": "Id",
+      "type": "string"
+    }
+  },
+  "required": [
+    "default_model_id"
+  ],
+  "title": "PipelineRegistry",
+  "type": "object"
+}

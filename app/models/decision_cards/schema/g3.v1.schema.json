@@ -1,0 +1,201 @@
+{
+  "$defs": {
+    "CacheState": {
+      "description": "Closed cache-state vocabulary for gate-family decision cards.",
+      "enum": [
+        "healthy",
+        "mixed",
+        "cold"
+      ],
+      "title": "CacheState",
+      "type": "string"
+    },
+    "DecisionCardMeta": {
+      "additionalProperties": false,
+      "description": "Shared metadata attached to every Slab 7c gate-family DecisionCard.",
+      "properties": {
+        "affected_nodes": {
+          "description": "Manifest node ids affected by this decision card.",
+          "items": {
+            "type": "string"
+          },
+          "title": "Affected Nodes",
+          "type": "array"
+        },
+        "cache_state": {
+          "$ref": "#/$defs/CacheState",
+          "description": "Closed cache-state tier."
+        },
+        "override_trail": {
+          "description": "Operator override events already applied to this run.",
+          "items": {
+            "$ref": "#/$defs/OverrideEvent"
+          },
+          "title": "Override Trail",
+          "type": "array"
+        }
+      },
+      "required": [
+        "cache_state"
+      ],
+      "title": "DecisionCardMeta",
+      "type": "object"
+    },
+    "OverrideEvent": {
+      "additionalProperties": false,
+      "description": "One operator-approved override that affects cache warmth and routing context.",
+      "properties": {
+        "applied_at": {
+          "description": "Timezone-aware timestamp for when the override applied.",
+          "format": "date-time",
+          "title": "Applied At",
+          "type": "string"
+        },
+        "confirm_token": {
+          "description": "Confirmation token bound to the override submission surface.",
+          "minLength": 1,
+          "title": "Confirm Token",
+          "type": "string"
+        },
+        "event_id": {
+          "description": "UUID4 identity for this override event.",
+          "format": "uuid",
+          "title": "Event Id",
+          "type": "string"
+        },
+        "new_value": {
+          "additionalProperties": true,
+          "description": "Canonical JSON-like view of the new setting.",
+          "title": "New Value",
+          "type": "object"
+        },
+        "node_id": {
+          "description": "Manifest node id that the override touches.",
+          "minLength": 1,
+          "title": "Node Id",
+          "type": "string"
+        },
+        "operator_id": {
+          "description": "Operator identity that confirmed the override.",
+          "minLength": 1,
+          "title": "Operator Id",
+          "type": "string"
+        },
+        "previous_value": {
+          "additionalProperties": true,
+          "description": "Canonical JSON-like view of the previous setting.",
+          "title": "Previous Value",
+          "type": "object"
+        }
+      },
+      "required": [
+        "event_id",
+        "node_id",
+        "operator_id",
+        "confirm_token"
+      ],
+      "title": "OverrideEvent",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "description": "Mid-trial DecisionCard for in-flight operator review.",
+  "properties": {
+    "active_node_id": {
+      "description": "Manifest node actively under review when the gate fired.",
+      "minLength": 1,
+      "title": "Active Node Id",
+      "type": "string"
+    },
+    "card_id": {
+      "description": "UUID4 identity for this DecisionCard instance.",
+      "format": "uuid4",
+      "title": "Card Id",
+      "type": "string"
+    },
+    "created_at": {
+      "description": "Timezone-aware creation timestamp for the emitted DecisionCard.",
+      "format": "date-time",
+      "title": "Created At",
+      "type": "string"
+    },
+    "decision_card_digest": {
+      "description": "Lowercase sha256 digest of the canonical decision card.",
+      "title": "Decision Card Digest",
+      "type": "string"
+    },
+    "gate_focus": {
+      "const": "motion_clip_approval",
+      "default": "motion_clip_approval",
+      "description": "Closed one-value marker for the G3 gate family.",
+      "title": "Gate Focus",
+      "type": "string"
+    },
+    "gate_id": {
+      "const": "G3",
+      "default": "G3",
+      "description": "Discriminator for the G3 mid-trial gate.",
+      "title": "Gate Id",
+      "type": "string"
+    },
+    "meta": {
+      "$ref": "#/$defs/DecisionCardMeta"
+    },
+    "operator_prompt": {
+      "description": "Direct operator question or action request for the gate.",
+      "minLength": 1,
+      "title": "Operator Prompt",
+      "type": "string"
+    },
+    "pending_nodes": {
+      "description": "Manifest node ids still waiting to execute.",
+      "items": {
+        "type": "string"
+      },
+      "title": "Pending Nodes",
+      "type": "array"
+    },
+    "progress_percent": {
+      "description": "Observed trial completion percentage at the checkpoint.",
+      "maximum": 100.0,
+      "minimum": 0.0,
+      "title": "Progress Percent",
+      "type": "number"
+    },
+    "schema_version": {
+      "const": "v1",
+      "default": "v1",
+      "description": "DecisionCard schema version.",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "trial_id": {
+      "description": "UUID4 identity for the enclosing trial run.",
+      "format": "uuid4",
+      "title": "Trial Id",
+      "type": "string"
+    },
+    "verb": {
+      "description": "Closed decision verb set: approve | edit | reject.",
+      "enum": [
+        "approve",
+        "edit",
+        "reject"
+      ],
+      "title": "Verb",
+      "type": "string"
+    }
+  },
+  "required": [
+    "decision_card_digest",
+    "meta",
+    "card_id",
+    "trial_id",
+    "progress_percent",
+    "active_node_id",
+    "operator_prompt",
+    "verb"
+  ],
+  "title": "G3Card",
+  "type": "object"
+}

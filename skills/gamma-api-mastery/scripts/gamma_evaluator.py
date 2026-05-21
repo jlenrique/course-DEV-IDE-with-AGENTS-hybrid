@@ -15,8 +15,6 @@ from difflib import SequenceMatcher
 from pathlib import Path
 from typing import Any
 
-import yaml
-
 _PROJECT_ROOT = Path(__file__).resolve().parents[3]
 
 
@@ -306,9 +304,7 @@ class GammaEvaluator(BaseEvaluator):
         if style_guide.get("theme_id"):
             spec["theme_id"] = style_guide["theme_id"]
 
-        if analysis.get("pedagogical_type") == "assessment":
-            spec["text_options"] = {"amount": "brief"}
-        elif layout == "title-plus-body":
+        if analysis.get("pedagogical_type") == "assessment" or layout == "title-plus-body":
             spec["text_options"] = {"amount": "brief"}
 
         return spec

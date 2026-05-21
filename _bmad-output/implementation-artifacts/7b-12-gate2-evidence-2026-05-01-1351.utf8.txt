@@ -1,0 +1,319 @@
+﻿== 7b.12 focused parity slice ==
+.......................................................                  [100%]
+55 passed in 3.32s
+== All 11 per-specialist activation contracts ==
+........................................................................ [ 92%]
+......                                                                   [100%]
+78 passed in 3.04s
+== Wider regression slice (deterministic order; -p no:randomly) ==
+........................................................................ [  5%]
+........................................................................ [ 10%]
+.........................s.............................................. [ 15%]
+........................................................................ [ 20%]
+.............................s.s.sss..ssss.sss.sss.s....s..s............ [ 25%]
+........................................................................ [ 30%]
+........................................................................ [ 35%]
+........................................................................ [ 40%]
+.............s.......................................................... [ 45%]
+........................................................................ [ 51%]
+........................................................................ [ 56%]
+........................................................................ [ 61%]
+........................................................................ [ 66%]
+........................................................................ [ 71%]
+........................................................................ [ 76%]
+..............................s......................................... [ 81%]
+........................................................................ [ 86%]
+........................................................................ [ 91%]
+........................................................................ [ 97%]
+..........................................                               [100%]
+1389 passed, 21 skipped, 1 deselected in 161.63s (0:02:41)
+== Substrate gates ==
+lockstep-check exit=0 trace=C:\Users\juanl\Documents\GitHub\course-DEV-IDE-with-AGENTS-hybrid\reports\dev-coherence\2026-05-01-1755\check-pipeline-manifest-lockstep.PASS.yaml
+== Sandbox-AC validator on all 12 Slab 7b stories ==
+PASS ù no sandbox-AC violations across 12 story file(s).
+== Class-conformance validator (6 classes; 11 contracts) ==
+PASS: 11 activation contract file(s) conform
+== Live-API detector (NFR-CG13 strict) ==
+PASS: scanned 81 test file(s); no forbidden live API imports
+== Code quality (story-scoped) ==
+All checks passed!
+== Import-linter contracts ==
+=============
+Import Linter
+=============
+
+
+---------
+Contracts
+---------
+
+Analyzed 327 files, 1508 dependencies.
+--------------------------------------
+
+app.marcus and app.cora are lane-isolated siblings (D3 + D4 lane separation) KEPT
+Marcus Contract M1 - only app.marcus.orchestrator.write_api may import 
+app.models.state.run_state KEPT
+Marcus Contract M2 - app.marcus may not import app.cora KEPT
+Cora Contract C1 - app.cora may not import app.marcus or marcus KEPT
+Cora Contract C2 - Marcus may not import app.cora KEPT
+Marcus Contract M3 - app.specialists may not import app.marcus 
+facade/intake/orchestrator KEPT
+Marcus Contract M4 - app.marcus.dispatch stays dependency-light KEPT
+app.gates.** may not import schedulers (D3 HIL tamper-evidence) KEPT
+Contract C3 ù only the three authorized bridge modules may import 
+app.gates.resume_api (D3) KEPT
+
+Contracts: 9 kept, 0 broken.
+
+============================================================
+== AC-G operator-gated harness aggregation (skeleton invocation) ==
+============================================================
+
+AC-G.1 cache-hit-rate harness (default fail-closed not_run; pass --live-runs N to enable real LLM dispatch):
+{
+  "generated_at": "2026-05-01T17:55:03.552504+00:00",
+  "harness": "cache_hit_rate",
+  "median_from_index": 2,
+  "reason": "fail-closed skeleton; pass --live-runs N to enable live LLM invocation. Operator must load API credentials and run with --live-runs >= median_from_index + 3 to populate post-warmup window.",
+  "specialists": [
+    {
+      "name": "texas",
+      "status": "not_run"
+    },
+    {
+      "name": "quinn_r",
+      "status": "not_run"
+    },
+    {
+      "name": "vera",
+      "status": "not_run"
+    },
+    {
+      "name": "irene_pass1",
+      "status": "not_run"
+    },
+    {
+      "name": "irene",
+      "status": "not_run"
+    },
+    {
+      "name": "tracy",
+      "status": "not_run"
+    },
+    {
+      "name": "dan",
+      "status": "not_run"
+    },
+    {
+      "name": "marcus",
+      "status": "not_run"
+    },
+    {
+      "name": "desmond",
+      "status": "not_run"
+    },
+    {
+      "name": "aria",
+      "status": "not_run"
+    }
+  ],
+  "threshold": 0.85,
+  "verdict": "not_run"
+}
+
+AC-G.2 H-Pipeline determinism harness (delegates to pytest harness; PASS expected):
+{
+  "generated_at": "2026-05-01T17:55:05.106510+00:00",
+  "harness": "pipeline_determinism",
+  "iterations": 10,
+  "pytest_returncode": 0,
+  "pytest_summary": "1 passed in 0.49s",
+  "rate": 1.0,
+  "threshold": 0.99,
+  "verdict": "PASS"
+}
+
+============================================================
+== AC-H trial-2 cost-projection (Round-(a) John A1 / SR-T6) ==
+============================================================
+
+AC-H trial-2 cost-projection (placeholder DEFAULT_INPUTS; operator overrides via --inputs-file for real evaluation):
+{
+  "bs_3_ceiling_usd": 25.0,
+  "delta_usd": -17.265,
+  "generated_at": "2026-05-01T17:55:05.188570+00:00",
+  "per_specialist": [
+    {
+      "cost_usd": 0.18,
+      "name": "texas",
+      "rate_usd_per_1k_in": 0.005,
+      "rate_usd_per_1k_out": 0.015,
+      "tokens_in": 18000,
+      "tokens_out": 6000
+    },
+    {
+      "cost_usd": 0.1,
+      "name": "irene_pass1",
+      "rate_usd_per_1k_in": 0.005,
+      "rate_usd_per_1k_out": 0.015,
+      "tokens_in": 8000,
+      "tokens_out": 4000
+    },
+    {
+      "cost_usd": 0.06,
+      "name": "tracy",
+      "rate_usd_per_1k_in": 0.005,
+      "rate_usd_per_1k_out": 0.015,
+      "tokens_in": 6000,
+      "tokens_out": 2000
+    },
+    {
+      "cost_usd": 0.18,
+      "name": "irene",
+      "rate_usd_per_1k_in": 0.005,
+      "rate_usd_per_1k_out": 0.015,
+      "tokens_in": 12000,
+      "tokens_out": 8000
+    },
+    {
+      "cost_usd": 0.095,
+      "name": "vera",
+      "rate_usd_per_1k_in": 0.005,
+      "rate_usd_per_1k_out": 0.015,
+      "tokens_in": 10000,
+      "tokens_out": 3000
+    },
+    {
+      "cost_usd": 0.07,
+      "name": "quinn_r",
+      "rate_usd_per_1k_in": 0.005,
+      "rate_usd_per_1k_out": 0.015,
+      "tokens_in": 8000,
+      "tokens_out": 2000
+    },
+    {
+      "cost_usd": 0.05,
+      "name": "dan",
+      "rate_usd_per_1k_in": 0.005,
+      "rate_usd_per_1k_out": 0.015,
+      "tokens_in": 4000,
+      "tokens_out": 2000
+    },
+    {
+      "calls": 5,
+      "cost_usd": 2.0,
+      "name": "gary",
+      "per_call_usd": 0.4,
+      "rate_usd_per_1k_in": 0.0,
+      "rate_usd_per_1k_out": 0.0,
+      "tokens_in": 0,
+      "tokens_out": 0
+    },
+    {
+      "calls": 5,
+      "cost_usd": 2.0,
+      "name": "kira",
+      "per_call_usd": 0.4,
+      "rate_usd_per_1k_in": 0.0,
+      "rate_usd_per_1k_out": 0.0,
+      "tokens_in": 0,
+      "tokens_out": 0
+    },
+    {
+      "calls": 6,
+      "cost_usd": 1.8,
+      "name": "enrique",
+      "per_call_usd": 0.3,
+      "rate_usd_per_1k_in": 0.0,
+      "rate_usd_per_1k_out": 0.0,
+      "tokens_in": 0,
+      "tokens_out": 0
+    },
+    {
+      "calls": 3,
+      "cost_usd": 1.2,
+      "name": "wanda",
+      "per_call_usd": 0.4,
+      "rate_usd_per_1k_in": 0.0,
+      "rate_usd_per_1k_out": 0.0,
+      "tokens_in": 0,
+      "tokens_out": 0
+    },
+    {
+      "calls": 0,
+      "cost_usd": 0.0,
+      "name": "compositor",
+      "per_call_usd": 0.0,
+      "rate_usd_per_1k_in": 0.0,
+      "rate_usd_per_1k_out": 0.0,
+      "tokens_in": 0,
+      "tokens_out": 0
+    }
+  ],
+  "projected_cost_usd": 7.735,
+  "projection": "trial_2_cost",
+  "remediation_paths": [],
+  "skeleton_warning": "DEFAULT_INPUTS are placeholder; operator MUST override via --inputs-file with real Trial-2 projection inputs from Slab 6 trial 475df528 telemetry + PRD \u00a7Journey 5 before treating verdict as authoritative",
+  "verdict": "PASS"
+}
+
+============================================================
+== AC-I 5-API live-binding smoke (operator-gated; cost ceiling) ==
+============================================================
+
+AC-I 5-API smoke (default fail-closed not_run; pass --live to enable real API invocation after .env credentials loaded):
+{
+  "apis": [
+    {
+      "name": "gamma",
+      "status": "not_run"
+    },
+    {
+      "name": "kling",
+      "status": "not_run"
+    },
+    {
+      "name": "elevenlabs",
+      "status": "not_run"
+    },
+    {
+      "name": "wondercraft",
+      "status": "not_run"
+    },
+    {
+      "name": "dan-llm-only",
+      "status": "not_run"
+    }
+  ],
+  "generated_at": "2026-05-01T17:55:05.279145+00:00",
+  "max_canaries_per_api": 3,
+  "max_cost_per_canary_usd": 0.4,
+  "reason": "fail-closed skeleton; pass --live to enable real API invocation. Operator must load credentials in .env (GAMMA_API_KEY, KLING_*, ELEVENLABS_API_KEY, WONDERCRAFT_API_KEY) before re-running.",
+  "smoke": "5_api_live_binding",
+  "spend_ceiling_usd": 6.0,
+  "total_spend_usd": 0.0,
+  "verdict": "not_run"
+}
+
+============================================================
+== AC-O + AC-P operator-driven Trial-2 verification ==
+============================================================
+
+AC-O MVP Exit Gate verification (G2 + 9-of-11):
+  Operator runs trial-2 (or trial-2 dry-run); verifies G2 reached cleanly with
+  real content from >=9 of 11 specialists (>=3 per class); SG-1+SG-2+SG-3 green.
+  Evidence: _artifacts/trial-2/g2_exit_evidence.yaml
+
+AC-P Slab Close Gate verification (G3 + 11 cascade-reading):
+  Operator runs trial-2 to G3; verifies cascade-reading of 11 specialists
+  (Wanda + Tracy contribute via Pass-2 cascade audit logs).
+  Evidence: _artifacts/trial-2/g3_close_evidence.yaml
+
+Gate-2 PASS = all evidence blocks above PASS + 5-API smoke total spend <= \.00 +
+trial-2 cost-projection <= BS-3 ceiling. Operator pastes verbatim stdout/JSON into
+Completion Notes; Slab 7b retrospective opens at T15.
+
+NOTE: AC-G cache-hit + AC-I 5-API skeletons fail-closed by default (verdict='not_run').
+Real Gate-2 close requires: (a) operator authors live-dispatch in those scripts OR
+(b) operator runs the existing per-specialist operator-gated AC-N-B canary blocks
+(AC-6-B Gary, AC-7-B Kira, AC-8-B Enrique, AC-9-B Wanda) and aggregates manually.

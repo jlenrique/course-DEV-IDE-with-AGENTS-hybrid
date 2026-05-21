@@ -12,7 +12,7 @@ import argparse
 import hashlib
 import json
 from pathlib import Path
-from typing import Any, Dict, List, Tuple
+from typing import Any
 
 try:
     import yaml
@@ -28,7 +28,7 @@ class CoherenceValidationError(ValueError):
         self.code = code
 
 
-def load_validation_config(path: Path = CONFIG_PATH) -> Dict[str, Any]:
+def load_validation_config(path: Path = CONFIG_PATH) -> dict[str, Any]:
     if yaml is None:  # pragma: no cover
         raise CoherenceValidationError("config_missing", "pyyaml is required")
     if not path.is_file():
@@ -42,14 +42,14 @@ def load_validation_config(path: Path = CONFIG_PATH) -> Dict[str, Any]:
     return raw
 
 
-def _hash_report(payload: Dict[str, Any], algo: str = "sha256") -> str:
+def _hash_report(payload: dict[str, Any], algo: str = "sha256") -> str:
     h = hashlib.new(algo)
     h.update(json.dumps(payload, sort_keys=True).encode("utf-8"))
     return h.hexdigest()
 
 
-def _check_required(manifest: Dict[str, Any], outputs: List[Dict[str, Any]]) -> List[str]:
-    errors: List[str] = []
+def _check_required(manifest: dict[str, Any], outputs: list[dict[str, Any]]) -> list[str]:
+    errors: list[str] = []
     manifest_ids = [str(s.get("slide_id")) for s in manifest.get("segments", [])]
     output_ids = {str(o.get("slide_id")) for o in outputs}
     for sid in manifest_ids:
@@ -58,8 +58,8 @@ def _check_required(manifest: Dict[str, Any], outputs: List[Dict[str, Any]]) -> 
     return errors
 
 
-def _check_ordering(manifest: Dict[str, Any], outputs: List[Dict[str, Any]]) -> List[str]:
-    errors: List[str] = []
+def _check_ordering(manifest: dict[str, Any], outputs: list[dict[str, Any]]) -> list[str]:
+    errors: list[str] = []
     manifest_ids = [str(s.get("slide_id")) for s in manifest.get("segments", [])]
     output_ids = [str(o.get("slide_id")) for o in outputs]
     if manifest_ids != output_ids:
@@ -67,8 +67,8 @@ def _check_ordering(manifest: Dict[str, Any], outputs: List[Dict[str, Any]]) -> 
     return errors
 
 
-def _check_constraints(outputs: List[Dict[str, Any]], constraints: Dict[str, Any]) -> List[str]:
-    errors: List[str] = []
+def _check_constraints(outputs: list[dict[str, Any]], constraints: dict[str, Any]) -> list[str]:
+    errors: list[str] = []
     required_terms = constraints.get("required_terms") or []
     forbidden_terms = constraints.get("forbidden_terms") or []
     for out in outputs:
@@ -83,8 +83,8 @@ def _check_constraints(outputs: List[Dict[str, Any]], constraints: Dict[str, Any
     return errors
 
 
-def _check_conflicts(outputs: List[Dict[str, Any]]) -> List[str]:
-    errors: List[str] = []
+def _check_conflicts(outputs: list[dict[str, Any]]) -> list[str]:
+    errors: list[str] = []
     for out in outputs:
         text = (out.get("text") or "").lower()
         sid = str(out.get("slide_id"))
@@ -95,13 +95,13 @@ def _check_conflicts(outputs: List[Dict[str, Any]]) -> List[str]:
 
 def validate_cluster(
     *,
-    manifest: Dict[str, Any],
-    outputs: List[Dict[str, Any]],
-    constraints: Dict[str, Any] | None = None,
-    sequencing_expectations: Dict[str, Any] | None = None,
-    config: Dict[str, Any] | None = None,
+    manifest: dict[str, Any],
+    outputs: list[dict[str, Any]],
+    constraints: dict[str, Any] | None = None,
+    sequencing_expectations: dict[str, Any] | None = None,
+    config: dict[str, Any] | None = None,
     seed: str | None = None,
-) -> Dict[str, Any]:
+) -> dict[str, Any]:
     cfg = config or load_validation_config()
     hash_algo = (cfg.get("hashing", {}) or {}).get("algorithm", "sha256")
     constraints = constraints or {}
@@ -109,7 +109,7 @@ def validate_cluster(
     if not isinstance(outputs, list):
         raise CoherenceValidationError("invalid_output_format", "outputs must be a list")
 
-    errors: List[str] = []
+    errors: list[str] = []
     errors.extend(_check_required(manifest, outputs))
     errors.extend(_check_ordering(manifest, outputs))
     errors.extend(_check_constraints(outputs, constraints))
@@ -138,12 +138,12 @@ def validate_cluster(
 
 def validate_interstitial_replacement(
     *,
-    head_output: Dict[str, Any],
-    replacement_output: Dict[str, Any],
-    constraints: Dict[str, Any] | None = None,
-    config: Dict[str, Any] | None = None,
+    head_output: dict[str, Any],
+    replacement_output: dict[str, Any],
+    constraints: dict[str, Any] | None = None,
+    config: dict[str, Any] | None = None,
     seed: str | None = None,
-) -> Dict[str, Any]:
+) -> dict[str, Any]:
     """Run coherence validation for a replacement interstitial against head context only."""
     head_id = str(head_output.get("slide_id") or "").strip()
     replacement_id = str(replacement_output.get("slide_id") or "").strip()

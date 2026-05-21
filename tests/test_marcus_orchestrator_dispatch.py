@@ -8,11 +8,11 @@ from typing import Any
 
 import pytest
 
-from marcus.lesson_plan.events import EventEnvelope
-from marcus.lesson_plan.log import LessonPlanLog, PrePacketSnapshotPayload, SourceRef
-from marcus.orchestrator import ORCHESTRATOR_MODULE_IDENTITY
-from marcus.orchestrator import dispatch as dispatch_mod
-from marcus.orchestrator.dispatch import dispatch_intake_pre_packet
+from app.marcus.lesson_plan.events import EventEnvelope
+from app.marcus.lesson_plan.log import LessonPlanLog, PrePacketSnapshotPayload, SourceRef
+from app.marcus.orchestrator import ORCHESTRATOR_MODULE_IDENTITY
+from app.marcus.orchestrator import dispatch as dispatch_mod
+from app.marcus.orchestrator.dispatch import dispatch_intake_pre_packet
 
 
 def _sample_envelope() -> EventEnvelope:

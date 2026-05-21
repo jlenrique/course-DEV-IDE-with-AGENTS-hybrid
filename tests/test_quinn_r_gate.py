@@ -9,17 +9,17 @@ from pathlib import Path
 
 import pytest
 
-from marcus.lesson_plan.blueprint_coauthor import coauthor_blueprint
-from marcus.lesson_plan.blueprint_producer import BlueprintProducer
-from marcus.lesson_plan.digest import compute_digest
-from marcus.lesson_plan.produced_asset import ProducedAsset, ProductionContext
-from marcus.lesson_plan.quinn_r_gate import (
+from app.marcus.lesson_plan.blueprint_coauthor import coauthor_blueprint
+from app.marcus.lesson_plan.blueprint_producer import BlueprintProducer
+from app.marcus.lesson_plan.digest import compute_digest
+from app.marcus.lesson_plan.produced_asset import ProducedAsset, ProductionContext
+from app.marcus.lesson_plan.quinn_r_gate import (
     QuinnRGateError,
     emit_quinn_r_gate_artifact,
     evaluate_quinn_r_two_branch_gate,
     extract_prior_declined_rationales,
 )
-from marcus.lesson_plan.schema import LearningModel, LessonPlan, PlanUnit, ScopeDecision
+from app.marcus.lesson_plan.schema import LearningModel, LessonPlan, PlanUnit, ScopeDecision
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
 

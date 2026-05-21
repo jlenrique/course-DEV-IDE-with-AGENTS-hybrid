@@ -10,7 +10,7 @@ from __future__ import annotations
 
 from datetime import UTC, datetime
 
-from marcus.lesson_plan.events import EventEnvelope
+from app.marcus.lesson_plan.events import EventEnvelope
 
 EXPECTED_ENVELOPE_FIELDS = {
     "event_id",

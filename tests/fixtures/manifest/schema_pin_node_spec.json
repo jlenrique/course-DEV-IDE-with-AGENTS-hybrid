@@ -1,0 +1,257 @@
+{
+  "$defs": {
+    "StepLearningEventsConfig": {
+      "additionalProperties": false,
+      "description": "Per-node learning-event emission metadata (v4.2 inventory delta).",
+      "properties": {
+        "emits": {
+          "default": false,
+          "description": "Whether this node emits learning events at runtime.",
+          "title": "Emits",
+          "type": "boolean"
+        },
+        "event_types": {
+          "description": "Event-type strings this node may emit (open-set; validated by capture layer).",
+          "items": {
+            "type": "string"
+          },
+          "title": "Event Types",
+          "type": "array"
+        },
+        "schema_ref": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Optional per-node override of the top-level learning-event schema_ref.",
+          "title": "Schema Ref"
+        }
+      },
+      "title": "StepLearningEventsConfig",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "description": "One node in the compiled `StateGraph`.\n\nArchitecture-canonical fields: `id`, `specialist_id`, `scaffold_node`,\n`model_config_ref`. v4.2 inventory deltas ride under the explicit\nextensibility trailing from AC-1.4-A: `label`, `gate`, `gate_code`,\n`sub_phase_of`, `insertion_after`, `hud_tracked`, `pack_section_anchor`,\n`pack_version`, `rationale`, `learning_events`.",
+  "properties": {
+    "dependencies": {
+      "anyOf": [
+        {
+          "additionalProperties": {
+            "type": "string"
+          },
+          "type": "object"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "description": "Manifest-declared dependency map for production composition. Keys are downstream specialist input keys; values are upstream specialist ids. Missing or empty maps use the runner's permanent fallback resolution.",
+      "title": "Dependencies"
+    },
+    "fold_target": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "description": "Named subgraph target for compile-time folding. Mutually exclusive with fold_with.",
+      "title": "Fold Target"
+    },
+    "fold_with": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "description": "Gate code for an upstream/surfaced pause point this node folds into. Mutually exclusive with fold_target.",
+      "title": "Fold With"
+    },
+    "gate": {
+      "anyOf": [
+        {
+          "type": "boolean"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "description": "Whether this step is a HIL gate (v4.2 manifest).",
+      "title": "Gate"
+    },
+    "gate_code": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "description": "HIL gate identifier (e.g., 'G0', 'G2C'); v4.2 manifest.",
+      "title": "Gate Code"
+    },
+    "hud_tracked": {
+      "anyOf": [
+        {
+          "type": "boolean"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "description": "Whether `run_hud` surfaces this step (v4.2 manifest).",
+      "title": "Hud Tracked"
+    },
+    "id": {
+      "description": "Node identifier (unique within the manifest).",
+      "minLength": 1,
+      "title": "Id",
+      "type": "string"
+    },
+    "insertion_after": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "description": "Prior step id for linear-chain ordering (v4.2 manifest). Story 1.6 synthesizes `EdgeSpec` entries from this field when migrating the real v4.2 manifest.",
+      "title": "Insertion After"
+    },
+    "label": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "description": "Human-readable step label (v4.2 manifest).",
+      "title": "Label"
+    },
+    "learning_events": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/StepLearningEventsConfig"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "description": "Per-step learning-event emission config (v4.2 manifest)."
+    },
+    "model_config_ref": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "description": "Repo-relative path to a `model_config.yaml` file. Compiler validates presence at compile time (NFR-M2 / FR25). `None` skips the lint pass.",
+      "title": "Model Config Ref"
+    },
+    "pack_section_anchor": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "description": "Prompt-pack section anchor (v4.2 manifest cross-ref).",
+      "title": "Pack Section Anchor"
+    },
+    "pack_version": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "description": "Per-step prompt-pack version identifier (v4.2 manifest).",
+      "title": "Pack Version"
+    },
+    "rationale": {
+      "default": "",
+      "description": "Free-text rationale (stored verbatim; NO min_length per checklist \u00a76).",
+      "title": "Rationale",
+      "type": "string"
+    },
+    "scaffold_node": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "description": "Which scaffold-node slot (of the 9-node specialist scaffold) this node represents. Slab 2 concept; optional in Slab 1.",
+      "title": "Scaffold Node"
+    },
+    "specialist_id": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "description": "Specialist identifier the compiler resolves to a callable. Slab 1 uses a passthrough stub; full resolution is Slab 2 Story 2a.1 scope.",
+      "title": "Specialist Id"
+    },
+    "sub_phase_of": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "description": "Parent step id for nested sub-phases (v4.2 manifest).",
+      "title": "Sub Phase Of"
+    }
+  },
+  "required": [
+    "id"
+  ],
+  "title": "NodeSpec",
+  "type": "object"
+}

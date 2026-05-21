@@ -1,0 +1,99 @@
+{
+  "$defs": {
+    "ResolvedTheme": {
+      "additionalProperties": false,
+      "description": "Resolved Gary theme metadata.",
+      "properties": {
+        "palette": {
+          "description": "Closed palette hint for Gary theme selection.",
+          "enum": [
+            "light",
+            "dark",
+            "high-contrast",
+            "brand-default"
+          ],
+          "title": "Palette",
+          "type": "string"
+        },
+        "template_intent": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Optional Gary template intent hint.",
+          "title": "Template Intent"
+        },
+        "theme_name": {
+          "description": "Resolved Gary theme name.",
+          "minLength": 1,
+          "title": "Theme Name",
+          "type": "string"
+        }
+      },
+      "required": [
+        "theme_name",
+        "palette"
+      ],
+      "title": "ResolvedTheme",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "description": "Resolved theme payload for Gary dispatch.",
+  "properties": {
+    "creative_directive_id": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "description": "Optional creative directive provenance identifier.",
+      "title": "Creative Directive Id"
+    },
+    "experience_profile_id": {
+      "description": "Experience profile used to resolve the theme.",
+      "minLength": 1,
+      "title": "Experience Profile Id",
+      "type": "string"
+    },
+    "plan_unit_id": {
+      "description": "Plan-unit identifier for this theme payload.",
+      "minLength": 1,
+      "title": "Plan Unit Id",
+      "type": "string"
+    },
+    "resolved_theme": {
+      "$ref": "#/$defs/ResolvedTheme",
+      "description": "Resolved Gary theme details."
+    },
+    "schema_version": {
+      "default": 1,
+      "description": "Schema version for FR-7c-51 bump-on-change discipline.",
+      "title": "Schema Version",
+      "type": "integer"
+    },
+    "target_section": {
+      "description": "Target course section for the theme payload.",
+      "minLength": 1,
+      "title": "Target Section",
+      "type": "string"
+    }
+  },
+  "required": [
+    "plan_unit_id",
+    "target_section",
+    "experience_profile_id",
+    "resolved_theme"
+  ],
+  "title": "GaryThemeResolution",
+  "type": "object"
+}

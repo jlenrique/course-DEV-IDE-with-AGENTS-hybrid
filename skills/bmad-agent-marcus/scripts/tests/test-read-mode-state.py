@@ -8,8 +8,8 @@ import json
 import sqlite3
 import subprocess
 import sys
-from pathlib import Path
 from datetime import datetime
+from pathlib import Path
 
 SCRIPT = Path(__file__).resolve().parent.parent / "read-mode-state.py"
 

@@ -35,7 +35,7 @@ from .refinement_registry import drop_filters_in_order
 # Module-level constants — data, not inference (AC-C.7 guardrail).
 # ---------------------------------------------------------------------------
 
-SCITE_MCP_URL = os.environ.get("SCITE_MCP_URL", "https://mcp.scite.ai/mcp")
+SCITE_MCP_URL = os.environ.get("SCITE_MCP_URL", "https://api.scite.ai/mcp")
 """scite MCP endpoint. Override via `SCITE_MCP_URL` env for local testing."""
 
 SCITE_AUTH_ENV_VARS: tuple[str, str] = ("SCITE_USER_NAME", "SCITE_PASSWORD")
@@ -353,7 +353,7 @@ class SciteProvider(RetrievalAdapter):
         out = list(results)
         # date_range: [start, end] as "YYYY-MM-DD" strings.
         date_range = criteria.get("date_range")
-        if isinstance(date_range, (list, tuple)) and len(date_range) == 2:
+        if isinstance(date_range, list | tuple) and len(date_range) == 2:
             start, end = str(date_range[0]), str(date_range[1])
             out = [
                 r for r in out
@@ -370,7 +370,7 @@ class SciteProvider(RetrievalAdapter):
             ]
         # license_allow: substring match against the row's license string.
         license_allow = criteria.get("license_allow")
-        if isinstance(license_allow, (list, tuple)) and license_allow:
+        if isinstance(license_allow, list | tuple) and license_allow:
             allow_lower = {str(x).lower() for x in license_allow}
             out = [
                 r for r in out

@@ -19,7 +19,7 @@ How to wire up a Cowork Project for ongoing development on this repo, using the 
    - Name it something like `course-DEV-IDE-with-AGENTS — pipeline dev`.
    - Pick a local save location for project data (per-machine; no cloud sync).
 3. **Connect the repo folder.**
-   - When prompted for a folder, or via the project's folder setting, point it at `C:\Users\juanl\Documents\GitHub\course-DEV-IDE-with-AGENTS`.
+   - When prompted for a folder, or via the project's folder setting, point it at the local repo root (e.g., `C:\Users\juanl\Documents\GitHub\course-DEV-IDE-with-AGENTS-hybrid` for the hybrid clone, or `...\course-DEV-IDE-with-AGENTS` for primary).
    - Connecting the folder is what gives Claude read/write access to the whole repo. You do not need to upload repo docs into Files — they're already reachable.
 4. **Paste the Instructions.**
    - Open `maintenance/cowork-project-instructions.md`.

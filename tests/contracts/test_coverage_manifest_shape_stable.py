@@ -4,8 +4,8 @@ from __future__ import annotations
 
 from pathlib import Path
 
-import marcus.lesson_plan.coverage_manifest as cm_module
-from marcus.lesson_plan.coverage_manifest import (
+import app.marcus.lesson_plan.coverage_manifest as cm_module
+from app.marcus.lesson_plan.coverage_manifest import (
     SCHEMA_VERSION,
     CoverageManifest,
     CoverageSummary,

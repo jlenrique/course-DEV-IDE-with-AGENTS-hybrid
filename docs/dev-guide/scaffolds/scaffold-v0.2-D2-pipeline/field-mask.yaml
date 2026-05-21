@@ -1,0 +1,38 @@
+# Default declared-nondeterministic field set for Class-D2 specialists
+# Slab 7b foundational artifact (FR111 sub-file). 2026-04-29.
+# Read scaffold.yaml + pipeline-determinism.md.template first.
+
+# Default fields to mask before computing field-masked-hash for templated outputs.
+# Per-specialist instantiation extends this set in _bmad/memory/bmad-agent-<name>/pipeline-determinism.md.
+
+defaults:
+  # Time-shaped fields (generated at run time; never deterministic)
+  - generated_at
+  - run_id
+  - build_timestamp
+  # Trace-shaped fields (LangSmith binding placeholder per Slab 6.1; real-binding deferred)
+  - trial_trace_id
+
+# Syntax: dotted-key with wildcard-suffix
+# Examples:
+#   metadata.generated_at        → exact match on top-level metadata.generated_at
+#   metadata.timestamps.*        → all keys under metadata.timestamps
+#   *.run_id                     → run_id at any nesting depth
+syntax_convention: "dotted-key with wildcard-suffix; Pydantic-aware traversal"
+
+# Per-specialist extension protocol
+extension_protocol:
+  step_1: "Identify any specialist-specific declared-nondeterministic fields beyond defaults"
+  step_2: "Document in _bmad/memory/bmad-agent-<name>/pipeline-determinism.md §Field mask"
+  step_3: "Add per-instance YAML key 'specialist_extensions:' below; do NOT modify defaults: section without party-mode consensus"
+
+# Class-D2 specialists may extend below this line
+specialist_extensions:
+  # Format:
+  # <specialist_name>:
+  #   - field_path
+  #   - field_path
+  # Example (when Compositor lands at Story 7b.11):
+  # compositor:
+  #   - assembly_guide.encoder_metadata.tIME
+  #   - assembly_guide.descript_localized_paths.*.created_at

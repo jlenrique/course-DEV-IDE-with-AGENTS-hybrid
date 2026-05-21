@@ -1,6 +1,6 @@
 """Fixture: same-module thin wrapper around the canonical freshness gate."""
 
-from marcus.lesson_plan.log import assert_plan_fresh
+from app.marcus.lesson_plan.log import assert_plan_fresh
 
 
 def _require_fresh(surface) -> None:

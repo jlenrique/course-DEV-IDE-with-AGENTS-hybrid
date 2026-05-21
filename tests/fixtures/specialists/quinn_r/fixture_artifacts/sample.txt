@@ -1,0 +1,4 @@
+## Sample Artifact
+
+This is a deterministic fixture artifact for Quinn-R quality review tests.
+It includes simple markdown content and enough text to pass parser plumbing.

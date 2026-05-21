@@ -1,8 +1,14 @@
 ---
 title: Production Prompt Pack v4.3 — Narrated Lesson with Video/Animation
-status: ready
-updated: 2026-04-11
-scope: Storyboard A (C1M1) trial run
+status: superseded-by-v5 (2026-05-07; pre-Trial-3 cleanup S4 close)
+superseded-by: production-prompt-pack-v5-narrated-lesson-with-video-or-animation.md
+original-status: ready (2026-04-11; Storyboard A C1M1 trial run; paused before completion)
+note: |
+  **SUPERSEDED.** This pack's cluster-mode content (cluster prompt engineering 21-2 / dispatch sequencing 21-3
+  / cluster coherence validation 21-4) was already absorbed into v4.2 §05B / §6.2 / §6.3 / §7.5. v5 inherits
+  v4.2's full content (with migrated runtime paths + post-Slab-7c roster); v4.3 has no v4.3-only content beyond
+  what already lives in v4.2/v5. Preserved here for git-history reference only — DO NOT EDIT or use for production runs.
+  Use `docs/workflow/production-prompt-pack-v5-narrated-lesson-with-video-or-animation.md` (canonical-for-production).
 ---
 
 # Overview

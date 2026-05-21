@@ -2,11 +2,7 @@
     "python.defaultInterpreterPath": "${workspaceFolder}\\.venv\\Scripts\\python.exe",
     "python.testing.cwd": "${workspaceFolder}",
     "python.testing.pytestArgs": [
-        "tests",
-        "skills/source-wrangler/scripts/tests",
-        "skills/compositor/scripts/tests",
-        "skills/bmad-agent-marcus/scripts/tests",
-        "skills/kling-video/scripts/tests"
+        "tests"
     ],
     "python.testing.unittestEnabled": false,
     "python.testing.pytestEnabled": true,

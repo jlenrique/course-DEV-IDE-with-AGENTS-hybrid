@@ -1,0 +1,31 @@
+{
+  "additionalProperties": false,
+  "description": "Content-addressable snapshot identity. Frozen by architecture invariant.",
+  "properties": {
+    "captured_at": {
+      "description": "Timezone-aware capture timestamp.",
+      "format": "date-time",
+      "title": "Captured At",
+      "type": "string"
+    },
+    "content_sha256": {
+      "description": "Lowercase-hex SHA-256 of the snapshot's canonical bytes.",
+      "maxLength": 64,
+      "minLength": 64,
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Content Sha256",
+      "type": "string"
+    },
+    "snapshot_id": {
+      "description": "UUID4 identity for this fingerprint instance.",
+      "format": "uuid",
+      "title": "Snapshot Id",
+      "type": "string"
+    }
+  },
+  "required": [
+    "content_sha256"
+  ],
+  "title": "SanctumFingerprint",
+  "type": "object"
+}

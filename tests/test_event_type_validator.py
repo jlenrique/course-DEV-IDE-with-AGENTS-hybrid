@@ -14,8 +14,8 @@ import logging
 
 import pytest
 
-from marcus.lesson_plan import event_type_registry
-from marcus.lesson_plan.event_type_registry import (
+from app.marcus.lesson_plan import event_type_registry
+from app.marcus.lesson_plan.event_type_registry import (
     KNOWN_PLAN_UNIT_EVENT_TYPES,
     RESERVED_LOG_EVENT_TYPES,
     validate_event_type,
@@ -30,7 +30,7 @@ def _reset_warn_state() -> None:
 
 @pytest.mark.parametrize("label", sorted(KNOWN_PLAN_UNIT_EVENT_TYPES))
 def test_event_type_accepts_all_gagne_nine_silently(label: str, caplog) -> None:
-    with caplog.at_level(logging.WARNING, logger="marcus.lesson_plan.event_type_registry"):
+    with caplog.at_level(logging.WARNING, logger="app.marcus.lesson_plan.event_type_registry"):
         assert validate_event_type(label) == label
     assert not any(
         "not in known registry" in r.message for r in caplog.records
@@ -39,7 +39,7 @@ def test_event_type_accepts_all_gagne_nine_silently(label: str, caplog) -> None:
 
 @pytest.mark.parametrize("label", sorted(RESERVED_LOG_EVENT_TYPES))
 def test_event_type_accepts_reserved_log_events_silently(label: str, caplog) -> None:
-    with caplog.at_level(logging.WARNING, logger="marcus.lesson_plan.event_type_registry"):
+    with caplog.at_level(logging.WARNING, logger="app.marcus.lesson_plan.event_type_registry"):
         assert validate_event_type(label) == label
     assert not any(
         "not in known registry" in r.message for r in caplog.records
@@ -47,7 +47,7 @@ def test_event_type_accepts_reserved_log_events_silently(label: str, caplog) -> 
 
 
 def test_event_type_warns_on_unknown_registered(caplog) -> None:
-    with caplog.at_level(logging.WARNING, logger="marcus.lesson_plan.event_type_registry"):
+    with caplog.at_level(logging.WARNING, logger="app.marcus.lesson_plan.event_type_registry"):
         assert validate_event_type("custom-event-42") == "custom-event-42"
     messages = [r.message for r in caplog.records]
     assert any("not in known registry" in m for m in messages), (
@@ -85,7 +85,7 @@ def test_pre_packet_snapshot_is_reserved_not_known_plan_unit() -> None:
 
 def test_unknown_event_type_warns_only_once_across_repeated_calls(caplog) -> None:
     """SF-4: a repeated unknown event_type warns exactly once per process lifetime."""
-    with caplog.at_level(logging.WARNING, logger="marcus.lesson_plan.event_type_registry"):
+    with caplog.at_level(logging.WARNING, logger="app.marcus.lesson_plan.event_type_registry"):
         for _ in range(5):
             assert validate_event_type("noisy-unknown-event") == "noisy-unknown-event"
     relevant = [
@@ -105,7 +105,7 @@ def test_warn_state_reset_helper_reenables_warning() -> None:
 
     validate_event_type("another-unknown-event")  # first call — warns
     event_type_registry._reset_warning_state()
-    logger = _logging.getLogger("marcus.lesson_plan.event_type_registry")
+    logger = _logging.getLogger("app.marcus.lesson_plan.event_type_registry")
     records: list[_logging.LogRecord] = []
 
     class _Capture(_logging.Handler):

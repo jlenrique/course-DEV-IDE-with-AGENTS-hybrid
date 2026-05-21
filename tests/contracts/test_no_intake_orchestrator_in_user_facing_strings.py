@@ -28,7 +28,7 @@ import json
 import re
 from pathlib import Path
 
-PACKAGE_ROOT = Path(__file__).parents[2] / "marcus" / "lesson_plan"
+PACKAGE_ROOT = Path(__file__).parents[2] / "app" / "marcus" / "lesson_plan"
 SCHEMA_FILES = list((PACKAGE_ROOT / "schema").glob("*.schema.json"))
 DIALS_SPEC = PACKAGE_ROOT / "dials-spec.md"
 PYTHON_FILES = [

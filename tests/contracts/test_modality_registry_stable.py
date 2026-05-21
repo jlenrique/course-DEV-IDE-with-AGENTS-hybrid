@@ -13,8 +13,8 @@ from pathlib import Path
 from types import MappingProxyType
 from typing import get_args
 
-import marcus.lesson_plan.modality_registry as modality_registry_module
-from marcus.lesson_plan.modality_registry import (
+import app.marcus.lesson_plan.modality_registry as modality_registry_module
+from app.marcus.lesson_plan.modality_registry import (
     MODALITY_REGISTRY,
     SCHEMA_VERSION,
     ModalityEntry,
@@ -138,7 +138,7 @@ def test_producer_class_paths_match_current_mvp_state() -> None:
     assert MODALITY_REGISTRY["slides"].producer_class_path is None
     assert (
         MODALITY_REGISTRY["blueprint"].producer_class_path
-        == "marcus.lesson_plan.blueprint_producer.BlueprintProducer"
+        == "app.marcus.lesson_plan.blueprint_producer.BlueprintProducer"
     )
     for key in EXPECTED_PENDING_MODALITIES:
         assert MODALITY_REGISTRY[key].producer_class_path is None, (

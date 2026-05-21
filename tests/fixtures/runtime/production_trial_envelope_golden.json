@@ -1,0 +1,21 @@
+{
+  "schema_version": "production-trial-envelope.v1",
+  "trial_id": "12345678-1234-4234-8234-123456789abc",
+  "preset": "production",
+  "corpus_path": "tests/fixtures/trial_corpus/README.md",
+  "operator_id": "operator_test",
+  "started_at": "2026-04-27T10:00:00Z",
+  "completed_at": null,
+  "status": "registered",
+  "paused_gate": null,
+  "langsmith_trace_id": null,
+  "production_clone_launch_evidence": false,
+  "production_clone_launch_evidence_reason": "registered-no-specialist-fired",
+  "production_envelope": {
+    "schema_version": "production-envelope.v1",
+    "trial_id": "12345678-1234-4234-8234-123456789abc",
+    "contributions": []
+  },
+  "cost_report_path": null,
+  "artifact_paths": []
+}

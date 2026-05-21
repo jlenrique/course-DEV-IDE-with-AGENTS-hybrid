@@ -1,0 +1,44 @@
+name: specialist-parity
+
+on:
+  pull_request:
+    paths:
+      - "app/specialists/**"
+      - "_bmad/memory/**"
+      - "skills/bmad-agent-*/**"
+      - "skills/compositor/**"
+      - "tests/parity/**"
+      - "scripts/utilities/validate_parity_test_class_conformance.py"
+      - ".github/workflows/specialist-parity.yml"
+  push:
+    branches:
+      - master
+      - "dev/**"
+  workflow_dispatch:
+
+jobs:
+  parity:
+    name: SG-4 sanctum-alignment + class-conformance
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install uv
+        run: pip install uv
+
+      - name: Sync dependencies
+        run: uv sync --frozen
+
+      - name: SG-4 sanctum-alignment parity (FR101 + FR102; 11 specialists)
+        run: uv run pytest tests/parity/test_skill_md_sanctum_alignment.py --tb=short -q
+
+      - name: Class-conformance validator (NFR-I12; 6 classes A/B/C+/C/D1/D2)
+        run: uv run python scripts/utilities/validate_parity_test_class_conformance.py tests/parity/

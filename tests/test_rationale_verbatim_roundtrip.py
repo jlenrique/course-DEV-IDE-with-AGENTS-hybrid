@@ -9,7 +9,7 @@ from __future__ import annotations
 
 import pytest
 
-from marcus.lesson_plan.schema import PlanUnit, ScopeDecision
+from app.marcus.lesson_plan.schema import PlanUnit, ScopeDecision
 
 
 def _make_unit(rationale: str) -> PlanUnit:

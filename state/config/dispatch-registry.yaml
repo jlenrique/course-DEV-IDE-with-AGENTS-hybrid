@@ -1,0 +1,24 @@
+_status: production
+_lifecycle:
+  state: production
+  promoted_at: 2026-04-26
+  source_of_truth: primary PR-R dispatch-registry
+specialists:
+  gary: app.specialists.gary.graph:build_gary_graph
+  texas: app.specialists.texas.graph:build_texas_graph
+  vera: app.specialists.vera.graph:build_vera_graph
+  quinn_r: app.specialists.quinn_r.graph:build_quinn_r_graph
+  desmond: app.specialists.desmond.graph:build_desmond_graph
+  tracy: app.specialists.tracy.graph:build_tracy_graph
+  cd: app.specialists.cd.graph:build_cd_graph
+  kira: app.specialists.kira.graph:build_kira_graph
+  enrique: app.specialists.enrique.graph:build_enrique_graph
+  wanda: app.specialists.wanda.graph:build_wanda_graph
+  kim: app.specialists.kim.graph:build_kim_graph
+  vyx: app.specialists.vyx.graph:build_vyx_graph
+  aria: app.specialists.aria.graph:build_aria_graph
+  mira: app.specialists.mira.graph:build_mira_graph
+  tamara: app.specialists.tamara.graph:build_tamara_graph
+  irene: app.specialists.irene.graph:build_irene_graph
+  irene_pass1: app.specialists.irene_pass1.graph:build_irene_pass1_graph
+  compositor: app.specialists.compositor.graph:build_compositor_graph

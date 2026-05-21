@@ -15,8 +15,8 @@ import json
 import re
 import sys
 from pathlib import Path
-from urllib.parse import urlparse
 from typing import Any
+from urllib.parse import urlparse
 
 try:
     import yaml

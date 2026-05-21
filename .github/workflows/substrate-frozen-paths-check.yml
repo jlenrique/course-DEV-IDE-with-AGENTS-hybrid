@@ -1,0 +1,69 @@
+name: substrate-frozen-paths-check
+
+on:
+  pull_request:
+    paths:
+      - "app/marcus/orchestrator/dispatch_adapter.py"
+      - "scripts/utilities/check_substrate_frozen_paths.py"
+      - "tests/unit/substrate/**"
+      - ".github/workflows/substrate-frozen-paths-check.yml"
+  push:
+    branches:
+      - master
+      - "dev/**"
+  workflow_dispatch:
+
+jobs:
+  substrate-frozen-paths-check:
+    name: FR113 substrate-frozen-paths invariant (NFR-I13)
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+
+    steps:
+      - name: Checkout (full history)
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Determine base/head SHAs
+        id: shas
+        shell: bash
+        run: |
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            echo "base=${{ github.event.pull_request.base.sha }}" >> "$GITHUB_OUTPUT"
+            echo "head=${{ github.event.pull_request.head.sha }}" >> "$GITHUB_OUTPUT"
+          else
+            echo "base=${{ github.event.before }}" >> "$GITHUB_OUTPUT"
+            echo "head=${{ github.sha }}" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Skip when no base/head SHAs
+        id: skip-check
+        shell: bash
+        run: |
+          base="${{ steps.shas.outputs.base }}"
+          head="${{ steps.shas.outputs.head }}"
+          if [ -z "$base" ] || [ -z "$head" ] || [ "$base" = "0000000000000000000000000000000000000000" ]; then
+            echo "skip=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "skip=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Run substrate-frozen-paths Python check (POSIX-portable)
+        if: steps.skip-check.outputs.skip == 'false'
+        shell: bash
+        run: |
+          python scripts/utilities/check_substrate_frozen_paths.py \
+            --base "${{ steps.shas.outputs.base }}" \
+            --head "${{ steps.shas.outputs.head }}"
+
+      - name: Run hunk-parser boundary tests
+        if: steps.skip-check.outputs.skip == 'false'
+        shell: bash
+        run: |
+          python -m pytest tests/unit/substrate/test_substrate_frozen_paths_parser.py -q --tb=short

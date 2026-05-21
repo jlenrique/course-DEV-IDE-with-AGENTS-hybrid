@@ -1,0 +1,13 @@
+audio_beds:
+  - bed_id: bed-focused-ambient
+    audio_path: runs/wanda/assembly-bundle/audio/beds/bed-focused-ambient.mp3
+    mood: focused
+    genre: ambient
+    provider_id: wc-bed-001
+    provider_url: https://cdn.wondercraft.test/bed-focused-ambient.mp3
+    cost_usd: 0.12
+compositor_invocation:
+  specialist_id: compositor
+  gate_id: G3
+  audio_bed_paths:
+    - runs/wanda/assembly-bundle/audio/beds/bed-focused-ambient.mp3

@@ -45,7 +45,7 @@ def _calls_emit_pre_packet_snapshot(tree: ast.AST) -> list[int]:
 def test_dispatch_is_sole_orchestrator_caller() -> None:
     """AC-T.7 — only dispatch.py (besides write_api.py) may call emit."""
     repo_root = Path(__file__).parent.parent.parent
-    orchestrator_dir = repo_root / "marcus" / "orchestrator"
+    orchestrator_dir = repo_root / "app" / "marcus" / "orchestrator"
     offenders: list[str] = []
     for py in sorted(orchestrator_dir.rglob("*.py")):
         relative = py.relative_to(repo_root).as_posix()

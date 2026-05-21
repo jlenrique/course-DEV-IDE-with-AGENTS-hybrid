@@ -28,7 +28,7 @@ import logging
 import os
 import sys
 import time
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
 
@@ -46,8 +46,9 @@ from dotenv import load_dotenv  # noqa: E402
 
 load_dotenv(_PROJECT_ROOT / ".env")
 
-from scripts.api_clients.gamma_client import GammaClient  # noqa: E402
 from visual_fill_validator import validate_visual_fill  # noqa: E402
+
+from scripts.api_clients.gamma_client import GammaClient  # noqa: E402
 
 logger = logging.getLogger(__name__)
 
@@ -158,7 +159,7 @@ PROMPT_VARIANTS: dict[str, Any] = {
 
 def _ensure_output_dir() -> Path:
     """Create timestamped output directory for this harness run."""
-    timestamp = datetime.now(timezone.utc).strftime("%Y%m%d-%H%M%S")
+    timestamp = datetime.now(UTC).strftime("%Y%m%d-%H%M%S")
     out = _HARNESS_OUTPUT_DIR / f"run-{timestamp}"
     out.mkdir(parents=True, exist_ok=True)
     return out
@@ -198,9 +199,9 @@ def _write_summary(output_dir: Path, results: list[dict[str, Any]]) -> Path:
     lines = [
         "# Literal-Visual Prompt Harness Results\n",
         f"**Template:** `{TEMPLATE_ID}` (image source: placeholder)\n",
-        f"**imageOptions:** not sent (template endpoint rejects source param)\n",
-        f"**Run time:** {datetime.now(timezone.utc).isoformat()}\n",
-        f"**API reference:** https://developers.gamma.app/llms-full.txt\n",
+        "**imageOptions:** not sent (template endpoint rejects source param)\n",
+        f"**Run time:** {datetime.now(UTC).isoformat()}\n",
+        "**API reference:** https://developers.gamma.app/llms-full.txt\n",
         "",
         "| Variant | Image | Fill Valid | Gen Time (s) | Credits | File |",
         "|---------|-------|-----------|-------------|---------|------|",

@@ -7,9 +7,9 @@ from pathlib import Path
 
 import pytest
 
-from marcus.lesson_plan.log import LessonPlanLog
-from marcus.lesson_plan.schema import LearningModel, LessonPlan, PlanUnit, ScopeDecision
-from marcus.orchestrator.workflow_runner import (
+from app.marcus.lesson_plan.log import LessonPlanLog
+from app.marcus.lesson_plan.schema import LearningModel, LessonPlan, PlanUnit, ScopeDecision
+from app.marcus.orchestrator.workflow_runner import (
     Step4AWorkflowResult,
     insert_between,
     route_step_04_gate_to_step_05,

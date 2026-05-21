@@ -2,10 +2,9 @@ from __future__ import annotations
 
 from importlib import util
 from pathlib import Path
-from typing import Any, Dict
+from typing import Any
 
 import pytest
-
 
 ROOT = Path(__file__).resolve().parents[4]
 SCRIPT_PATH = ROOT / "skills" / "bmad-agent-marcus" / "scripts" / "interstitial_redispatch_protocol.py"
@@ -26,7 +25,7 @@ reset_interstitial_counters_for_cluster_redispatch = mod.reset_interstitial_coun
 InterstitialRedispatchError = mod.InterstitialRedispatchError
 
 
-def _bundle() -> Dict[str, Any]:
+def _bundle() -> dict[str, Any]:
     return {
         "cluster_id": "c1",
         "cluster_interstitial_count": 2,
@@ -43,7 +42,7 @@ def _bundle() -> Dict[str, Any]:
     }
 
 
-def _coherence_report() -> Dict[str, Any]:
+def _coherence_report() -> dict[str, Any]:
     return {
         "head_perception": {
             "palette_hex": ["#112233", "#abcdef"],
@@ -68,9 +67,9 @@ def test_tightened_prompt_includes_perception_constraints():
 
 
 def test_targeted_redispatch_updates_only_failed_interstitial():
-    captured_payload: Dict[str, Any] = {}
+    captured_payload: dict[str, Any] = {}
 
-    def _dispatch(payload: Dict[str, Any]) -> Dict[str, Any]:
+    def _dispatch(payload: dict[str, Any]) -> dict[str, Any]:
         captured_payload.update(payload)
         return {
             "session_id": "sess-1",
@@ -78,7 +77,7 @@ def test_targeted_redispatch_updates_only_failed_interstitial():
             "replacement_output": {"slide_id": "s-int-2", "text": "coherent replacement"},
         }
 
-    def _validate(_head: Dict[str, Any], _replacement: Dict[str, Any]) -> Dict[str, Any]:
+    def _validate(_head: dict[str, Any], _replacement: dict[str, Any]) -> dict[str, Any]:
         return {"decision": "pass", "score": 1.0, "violations": []}
 
     result = execute_interstitial_redispatch(
@@ -104,10 +103,10 @@ def test_circuit_breaker_after_two_attempts_with_accept_fallback():
     bundle = _bundle()
     bundle["interstitials"][1]["re_dispatch_count"] = 2
 
-    def _dispatch(_payload: Dict[str, Any]) -> Dict[str, Any]:
+    def _dispatch(_payload: dict[str, Any]) -> dict[str, Any]:
         raise AssertionError("dispatch should not run when circuit breaker already tripped")
 
-    def _validate(_head: Dict[str, Any], _replacement: Dict[str, Any]) -> Dict[str, Any]:
+    def _validate(_head: dict[str, Any], _replacement: dict[str, Any]) -> dict[str, Any]:
         raise AssertionError("validate should not run when circuit breaker already tripped")
 
     result = execute_interstitial_redispatch(
@@ -127,14 +126,14 @@ def test_circuit_breaker_after_two_attempts_with_accept_fallback():
 def test_drop_from_cluster_fallback_updates_cluster_count():
     bundle = _bundle()
 
-    def _dispatch(_payload: Dict[str, Any]) -> Dict[str, Any]:
+    def _dispatch(_payload: dict[str, Any]) -> dict[str, Any]:
         return {
             "session_id": "sess-2",
             "png_path": "new-int-2.png",
             "replacement_output": {"slide_id": "s-int-2", "text": "still conflict present"},
         }
 
-    def _validate(_head: Dict[str, Any], _replacement: Dict[str, Any]) -> Dict[str, Any]:
+    def _validate(_head: dict[str, Any], _replacement: dict[str, Any]) -> dict[str, Any]:
         return {"decision": "fail", "score": 0.2, "violations": ["conflict_detected:s-int-2"]}
 
     bundle["interstitials"][1]["re_dispatch_count"] = 1

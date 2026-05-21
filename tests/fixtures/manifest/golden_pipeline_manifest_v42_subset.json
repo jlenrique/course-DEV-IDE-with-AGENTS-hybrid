@@ -1,0 +1,105 @@
+{
+  "schema_version": "1.0",
+  "lane": "run_graph",
+  "entrypoint": "01",
+  "frozen_graph_version": "v42",
+  "nodes": [
+    {
+      "id": "01",
+      "specialist_id": "preflight",
+      "scaffold_node": null,
+      "model_config_ref": null,
+      "label": "Activation + Preflight",
+      "gate": true,
+      "gate_code": "G0",
+      "sub_phase_of": null,
+      "insertion_after": null,
+      "hud_tracked": true,
+      "pack_section_anchor": "1)",
+      "pack_version": "v4.2",
+      "rationale": "Section 01 maintains manifest-driven pipeline contract.",
+      "learning_events": null
+    },
+    {
+      "id": "04.55",
+      "specialist_id": null,
+      "scaffold_node": null,
+      "model_config_ref": null,
+      "label": "Estimator + Run Constants Lock",
+      "gate": false,
+      "gate_code": null,
+      "sub_phase_of": "04",
+      "insertion_after": "04.5",
+      "hud_tracked": true,
+      "pack_section_anchor": "4.55)",
+      "pack_version": "v4.2",
+      "rationale": "Section 04.55 maintains manifest-driven pipeline contract.",
+      "learning_events": {
+        "emits": true,
+        "event_types": [
+          "plan.locked"
+        ],
+        "schema_ref": null
+      }
+    },
+    {
+      "id": "07C",
+      "specialist_id": null,
+      "scaffold_node": null,
+      "model_config_ref": null,
+      "label": "Storyboard A + Gate 2 Approval",
+      "gate": true,
+      "gate_code": "G2C",
+      "sub_phase_of": "07",
+      "insertion_after": "7B",
+      "hud_tracked": true,
+      "pack_section_anchor": "7C)",
+      "pack_version": "v4.2",
+      "rationale": "Section 07C maintains manifest-driven pipeline contract.",
+      "learning_events": {
+        "emits": true,
+        "event_types": [
+          "approval",
+          "revision",
+          "waiver"
+        ],
+        "schema_ref": "state/config/learning-event-schema.yaml"
+      }
+    }
+  ],
+  "edges": [
+    {
+      "from": "__start__",
+      "to": "01",
+      "condition": null,
+      "dispatch_envelope": null
+    },
+    {
+      "from": "01",
+      "to": "04.55",
+      "condition": null,
+      "dispatch_envelope": null
+    },
+    {
+      "from": "04.55",
+      "to": "07C",
+      "condition": null,
+      "dispatch_envelope": null
+    },
+    {
+      "from": "07C",
+      "to": "__end__",
+      "condition": null,
+      "dispatch_envelope": null
+    }
+  ],
+  "pack_version": "v4.2",
+  "generator_ref": "scripts/generators/v42/render.py",
+  "learning_events": {
+    "schema_ref": "state/config/learning-event-schema.yaml"
+  },
+  "block_mode_trigger_paths": [
+    "state/config/pipeline-manifest.yaml",
+    "scripts/utilities/run_hud.py"
+  ]
+}

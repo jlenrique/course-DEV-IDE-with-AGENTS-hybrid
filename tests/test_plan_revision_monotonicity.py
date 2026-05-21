@@ -11,8 +11,8 @@ from datetime import UTC, datetime
 
 import pytest
 
-from marcus.lesson_plan.digest import compute_digest
-from marcus.lesson_plan.schema import (
+from app.marcus.lesson_plan.digest import compute_digest
+from app.marcus.lesson_plan.schema import (
     LearningModel,
     LessonPlan,
     StaleRevisionError,

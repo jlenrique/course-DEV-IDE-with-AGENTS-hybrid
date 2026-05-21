@@ -14,7 +14,7 @@ from __future__ import annotations
 import pytest
 from pydantic import ValidationError
 
-from marcus.lesson_plan.schema import Dials
+from app.marcus.lesson_plan.schema import Dials
 
 # ---------------------------------------------------------------------------
 # Accept cases

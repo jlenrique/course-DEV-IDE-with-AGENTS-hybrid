@@ -34,7 +34,6 @@ from gamma_operations import (  # noqa: E402
     validate_image_url,
 )
 
-
 # ---------------------------------------------------------------------------
 # Helper shared with other test modules
 # ---------------------------------------------------------------------------

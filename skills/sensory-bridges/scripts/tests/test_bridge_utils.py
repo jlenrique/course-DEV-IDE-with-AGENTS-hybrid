@@ -3,20 +3,19 @@
 import json
 import threading
 import types
-import pytest
 from unittest.mock import patch
-from pathlib import Path
+
+import pytest
 
 import skills.sensory_bridges.scripts.bridge_utils as bridge_utils_module
 from skills.sensory_bridges.scripts.bridge_utils import (
+    SCHEMA_VERSION,
+    VALID_MODALITIES,
+    _resolve_bridge_callable,
     build_request,
     build_response,
     perceive,
     validate_response,
-    VALID_MODALITIES,
-    VALID_CONFIDENCE,
-    SCHEMA_VERSION,
-    _resolve_bridge_callable,
 )
 from skills.sensory_bridges.scripts.perception_cache import PerceptionCache
 

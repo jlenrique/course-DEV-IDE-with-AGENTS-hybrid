@@ -1,0 +1,27 @@
+"""State-shape pins for generated specialist {{name}}."""
+
+from __future__ import annotations
+
+import json
+from pathlib import Path
+
+from app.specialists.{{name}}.state import {{class_name}}Envelope, {{class_name}}Return
+
+FIXTURE_ROOT = Path("tests") / "fixtures" / "specialists" / "{{name}}"
+
+
+def test_{{name}}_envelope_and_return_subclass_bases() -> None:
+    assert {{class_name}}Envelope._SPECIALIST_ID == "{{specialist_id}}"
+    assert {{class_name}}Return._SPECIALIST_ID == "{{specialist_id}}"
+
+
+def test_{{name}}_golden_envelope_round_trip() -> None:
+    payload = json.loads((FIXTURE_ROOT / "golden_envelope.json").read_text(encoding="utf-8"))
+    model = {{class_name}}Envelope.model_validate(payload)
+    assert model.specialist_id == "{{specialist_id}}"
+
+
+def test_{{name}}_golden_return_round_trip() -> None:
+    payload = json.loads((FIXTURE_ROOT / "golden_return.json").read_text(encoding="utf-8"))
+    model = {{class_name}}Return.model_validate(payload)
+    assert model.specialist_id == "{{specialist_id}}"

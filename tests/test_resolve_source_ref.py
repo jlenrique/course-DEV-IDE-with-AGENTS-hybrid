@@ -1,6 +1,5 @@
 """Tests for resolve_source_ref provenance resolver."""
 
-import tempfile
 from pathlib import Path
 
 import pytest

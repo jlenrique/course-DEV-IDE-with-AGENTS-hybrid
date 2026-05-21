@@ -1,0 +1,51 @@
+# Vocabulary registry - Slab 7a Story 7a.6.
+# Authoritative closed-enum source for decision-card vocabulary across all
+# 10 essential conversational gates + 11-specialist roster + shared tokens.
+# Loaded by app.models.decision_cards via a Pydantic v2 enum loader.
+# NFR-V3: post-Slab-7a-close token changes are additive-only and require a
+# schema_version bump plus party-mode consensus.
+schema_version: "1.0"
+namespaces:
+  gates:
+    description: "Decision tokens emitted at conversational gates."
+    tokens:
+      decision:
+        - confirm
+        - revise
+        - reject
+        - escape
+        - skip-slide
+        - abort-run
+      directive:
+        - accept-as-is
+        - apply-edit
+        - re-emit
+        - halt-for-repair
+      rationale_floor_chars: 20
+  specialists:
+    description: "Canonical specialist roster (SG-1 11-floor)."
+    tokens:
+      roster:
+        - texas
+        - irene
+        - dan
+        - tracy
+        - gary
+        - kira
+        - wanda
+        - enrique
+        - compositor
+        - quinn_r
+        - vera
+  shared:
+    description: "Tokens shared across gates + specialists."
+    tokens:
+      gate_decision:
+        - approved
+        - approved-with-edits
+        - rejected
+        - escalated
+      escape_card_options:
+        - accept-as-is
+        - reject-and-skip-slide
+        - abort-run

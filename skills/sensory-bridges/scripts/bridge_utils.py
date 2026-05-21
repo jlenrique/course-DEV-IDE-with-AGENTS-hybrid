@@ -6,14 +6,14 @@ and the top-level ``perceive()`` dispatcher.
 
 from __future__ import annotations
 
+import importlib
+import importlib.util
 import json
 import logging
-import importlib.util
-import importlib
 import sqlite3
 import sys
 import types
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
 
@@ -104,7 +104,9 @@ def _record_cache_observability(
     """Best-effort cache observability that must not break perception."""
     try:
         try:
-            from skills.production_coordination.scripts.observability_hooks import record_cache_event
+            from skills.production_coordination.scripts.observability_hooks import (
+                record_cache_event,
+            )
         except Exception:
             hooks_path = (
                 Path(__file__).resolve().parents[2]
@@ -219,7 +221,7 @@ def build_response(
         "artifact_path": str(artifact_path),
         "confidence": confidence,
         "confidence_rationale": confidence_rationale,
-        "perception_timestamp": datetime.now(timezone.utc).isoformat(),
+        "perception_timestamp": datetime.now(UTC).isoformat(),
         **modality_fields,
     }
 

@@ -1,6 +1,7 @@
+import os
 import subprocess
 import sys
-import os
+
 
 def get_changed_files():
     """Gets the list of files changed in the most recent commit."""
@@ -21,17 +22,17 @@ def check_documentation_drift(changed_files):
     """
     code_changes = []
     doc_changes = []
-    
+
     # Define what we consider 'core code' and 'core docs' for this project
     core_code_prefixes = ('scripts/', 'skills/', '.cursor/rules/')
     core_doc_prefixes = ('docs/', 'rules/', 'README.md')
-    
+
     for file in changed_files:
         if file.startswith(core_code_prefixes):
             code_changes.append(file)
         elif file.startswith(core_doc_prefixes):
             doc_changes.append(file)
-            
+
     if code_changes and not doc_changes:
         print("\n" + "="*60)
         print("⚠️  DOCUMENTATION DRIFT WARNING ⚠️")
@@ -42,7 +43,7 @@ def check_documentation_drift(changed_files):
             print(f"  - {cf}")
         if len(code_changes) > 5:
             print(f"  - ... and {len(code_changes) - 5} more.")
-            
+
         print("\nConsider checking if the following core docs need updates:")
         print("  - docs/dev-guide.md (Technical architecture & extension points)")
         print("  - docs/agent-environment.md (API/MCP tool map for agents)")
@@ -50,7 +51,7 @@ def check_documentation_drift(changed_files):
         print("  - docs/admin-guide.md (API keys & environment setup)")
         print("  - docs/user-guide.md (End-user instructions & workflows)")
         print("="*60 + "\n")
-        
+
         # Returning a non-zero exit code will mark the GitHub Action step as "failed"
         # (which serves as an alert), but because of our "continue-on-error" YAML setup,
         # it won't block any of your workflow.
@@ -64,7 +65,7 @@ if __name__ == "__main__":
     if not os.path.exists('.git'):
         print("Not a git repository, skipping drift check.")
         sys.exit(0)
-        
+
     changed = get_changed_files()
     if changed:
         check_documentation_drift(changed)

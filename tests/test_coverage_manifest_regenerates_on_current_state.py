@@ -11,14 +11,14 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from marcus.lesson_plan.coverage_manifest import (
+from app.marcus.lesson_plan.coverage_manifest import (
     DEFAULT_COVERAGE_INVENTORY,
     build_coverage_manifest,
     emit_coverage_manifest,
     verify_plan_ref_fields,
 )
-from marcus.lesson_plan.produced_asset import ProducedAsset
-from marcus.lesson_plan.quinn_r_gate import QuinnRTwoBranchResult, QuinnRUnitVerdict
+from app.marcus.lesson_plan.produced_asset import ProducedAsset
+from app.marcus.lesson_plan.quinn_r_gate import QuinnRTwoBranchResult, QuinnRUnitVerdict
 
 
 def _entry_by_step_id(step_id: str):

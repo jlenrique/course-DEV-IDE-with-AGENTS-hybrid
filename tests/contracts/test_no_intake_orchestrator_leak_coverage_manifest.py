@@ -5,10 +5,10 @@ from __future__ import annotations
 import re
 from pathlib import Path
 
-from marcus.lesson_plan.coverage_manifest import CoverageManifest, CoverageSummary, CoverageSurface
+from app.marcus.lesson_plan.coverage_manifest import CoverageManifest, CoverageSummary, CoverageSurface
 
 FILE_TO_SCAN = (
-    Path(__file__).resolve().parents[2] / "marcus" / "lesson_plan" / "coverage_manifest.py"
+    Path(__file__).resolve().parents[2] / "app" / "marcus" / "lesson_plan" / "coverage_manifest.py"
 )
 FORBIDDEN = re.compile(r"\b(intake|orchestrator)\b", flags=re.IGNORECASE)
 

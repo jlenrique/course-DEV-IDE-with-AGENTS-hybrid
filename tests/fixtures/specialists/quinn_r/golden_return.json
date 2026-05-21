@@ -1,0 +1,17 @@
+{
+  "specialist_id": "quinn_r",
+  "verb": "proceed",
+  "payload": {},
+  "quinn_r_review": {
+    "status": "pass",
+    "summary": "fixture",
+    "findings": [
+      {
+        "id": "Q-0"
+      }
+    ]
+  },
+  "edit_payload": null,
+  "reject_reason": null,
+  "timestamp": "2026-04-24T00:00:01Z"
+}

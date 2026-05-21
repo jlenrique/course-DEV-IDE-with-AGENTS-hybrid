@@ -1,0 +1,95 @@
+# Scaffold v0.2 — Class-D2 Pipeline-Greenfield Variant
+# Slab 7b foundational artifact (FR111). 2026-04-29.
+# Read README.md first.
+
+scaffold_id: scaffold-v0.2-D2-pipeline
+version: "0.2"
+class: D2  # per Slab 7b PRD D14 taxonomy
+audience: [dev-agent, reviewer-agent, story-author]
+
+# Story shape this scaffold targets
+story_shape:
+  type: "specialist-body-greenfield-pipeline-deterministic"
+  characteristic:
+    - "Deterministic transformation; byte-stable output given fixed input + frozen substrate paths"
+    - "No LLM call"
+    - "No persona-shaped continuity (no PERSONA/CREED/BOND/MEMORY/CAPABILITIES)"
+    - "Operational metadata sidecar (contract / version / chronology / access-boundaries / pipeline-determinism)"
+  examples:
+    - "Compositor (Slab 7b Story 7b.11; canonical seed exemplar)"
+
+# K-target per Slab 7b PRD R3 amendment (Class-D K-floor 1.4-1.6×; greenfield uplift)
+k_target:
+  loc: "~3.5K"
+  tests: "~40"
+  k_floor_factor: "1.4-1.6×"
+  gate_mode: "single-gate"
+
+# AC pattern this scaffold enforces (per FR105 NFR-I10 class-shaped templates)
+ac_pattern:
+  - id: "AC-D2-1"
+    description: "specialist body delivers deterministic transformation; bytes-identical OR field-masked-hash per pipeline-determinism contract"
+    ref: "pipeline-determinism.md.template"
+  - id: "AC-D2-2"
+    description: "sanctum dir exists at _bmad/memory/bmad-agent-<name>/ with 5 operational-metadata files (contract / version / chronology / access-boundaries / pipeline-determinism)"
+    ref: "README.md §Per-specialist instantiation"
+  - id: "AC-D2-3"
+    description: "SKILL.md frontmatter has minimal (name, description); 'On Activation' prose names sanctum files"
+    ref: "bmb-sanctum-alignment-checklist.md §3.1"
+  - id: "AC-D2-4"
+    description: "pipeline-determinism harness ≥99% rate (NOT cache-hit-rate; cache-hit-rate undefined for non-LLM specialists)"
+    ref: "Slab 7b PRD NFR-T11a + D17"
+  - id: "AC-D2-5"
+    description: "SG-4 sanctum alignment per FR101 C-4 branch (skip C-5/C-6/C-7 sanctum-persona checks; assert C-4 D2 contract)"
+    ref: "bmb-sanctum-alignment-checklist.md §7"
+  - id: "AC-D2-6"
+    description: "specialist-registry.yaml entry with class: D2 designation"
+    ref: "FR101 C-4 read source"
+
+# Substrate paths consumed (frozen per Slab 7b PRD FR113 + NFR-I13)
+substrate_consumed:
+  - path: "app/marcus/orchestrator/dispatch_adapter.py:81"
+    note: "Marcus duality boundary; frozen per FR113. Specialist body invoked across boundary, never amends boundary."
+  - path: "_bmad/memory/shared/"
+    note: "Substrate-shared continuity artifacts; frozen."
+  - path: "tests/parity/_chain_test_base.py"  # NFR-CG14a; lands in Wave 0
+    note: "Chain-test base class; per-specialist chain-tests inherit. MUST land before Wave 1."
+  - path: "state/config/specialist-registry.yaml"
+    note: "Per-specialist registry; Class designation read from here at parity-test time."
+
+# Substrate paths NOT consumed (specialist body authors fresh)
+substrate_not_consumed:
+  - path: "skills/bmad-agent-<name>/"  # legacy skill quarantine
+    note: "Per-specialist new dir; SKILL.md authored as part of story."
+  - path: "_bmad/memory/bmad-agent-<name>/"  # canonical sanctum
+    note: "Per-specialist new dir; 5 operational-metadata files authored as part of story."
+  - path: "app/specialists/<name>/"
+    note: "Per-specialist body code; _act.py + helpers authored as part of story."
+  - path: "tests/parity/test_<name>_activation_contract.py"
+    note: "Per-specialist parity test; class-shaped per NFR-I10 + FR105."
+  - path: "tests/composition/test_<name>_chain.py"  # NFR-CG14
+    note: "Per-specialist chain test; inherits from _chain_test_base.py."
+
+# Determinism contract (Class-D2 specific; differs from Class-A/B/C/C+/D1 cache-hit-rate harness)
+determinism_contract:
+  bytes_identical_default: true
+  field_masked_hash_for_templated_outputs: true
+  declared_nondeterministic_fields_default:
+    - generated_at
+    - run_id
+    - build_timestamp
+  field_mask_extension_path: "field-mask.yaml"
+  encoder_metadata_handling:
+    note: "Image bytes can include encoder timestamps (PNG tIME chunk, JPEG metadata). Bytes-identical means POST-strip-of-encoder-metadata, OR generator MUST disable encoder timestamps. Per-specialist: declare strategy in pipeline-determinism.md."
+  field_mask_syntax:
+    note: "Dotted-key with wildcard-suffix (e.g., metadata.generated_at, metadata.run_id, metadata.build_timestamp). Matches Pydantic-aware traversal."
+
+# Codex deployment scope (per NFR-CG17)
+codex_deployment:
+  scope: "Class-D1 (Dan) + Class-D2 (Compositor) greenfield stories remain CLAUDE-AUTHORED per NFR-CG17 + R7 amendment. Codex is bound to Class-C/C+ port-shape stories + sandbox-AC inventory PR + per-story bmad-code-review."
+  exception_for_d2: false  # no exception; Claude authors
+
+# Worked-example reference (concrete instantiation precedent)
+worked_example:
+  status: "deferred-to-Compositor-Story-7b.11"
+  note: "First Class-D2 specialist (Compositor) authoring at Story 7b.11 produces the worked example. Once Compositor sanctum lands, this scaffold is amended to reference Compositor's structure as the canonical concrete precedent."

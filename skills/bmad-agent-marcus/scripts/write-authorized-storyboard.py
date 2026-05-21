@@ -17,7 +17,7 @@ import argparse
 import json
 import subprocess
 import sys
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
 
@@ -244,14 +244,14 @@ def main() -> int:
                         "card_number": pair.get("card_number"),
                         "selected_variant": selected_variant,
                         "rejected_variant": rejected_variant,
-                        "selection_timestamp": datetime.now(timezone.utc).isoformat(),
+                        "selection_timestamp": datetime.now(UTC).isoformat(),
                     }
                 )
 
         record = {
             "authorized_storyboard_version": 2,  # bumped for full 8B context
             "run_id": args.run_id,
-            "authorized_at_utc": datetime.now(timezone.utc).isoformat(),
+            "authorized_at_utc": datetime.now(UTC).isoformat(),
             "slide_ids": slide_ids,
             "authorized_slides": authorized_slides,  # full items from manifest to preserve all nuances
             "source_manifest": args.manifest.resolve().as_posix(),

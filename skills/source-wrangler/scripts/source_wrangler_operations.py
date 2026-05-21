@@ -6,7 +6,7 @@ import json
 import re
 from collections.abc import Sequence
 from dataclasses import dataclass, field
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from html.parser import HTMLParser
 from pathlib import Path
 from typing import Any
@@ -224,7 +224,7 @@ class SourceRecord:
     ref: str
     note: str = ""
     fetched_at: str = field(
-        default_factory=lambda: datetime.now(timezone.utc).isoformat()
+        default_factory=lambda: datetime.now(UTC).isoformat()
     )
 
     def to_dict(self) -> dict[str, Any]:
@@ -296,7 +296,7 @@ def write_source_bundle(
     (out / "extracted.md").write_text(extracted_md, encoding="utf-8")
     meta = {
         "title": title,
-        "generated_at": datetime.now(timezone.utc).isoformat(),
+        "generated_at": datetime.now(UTC).isoformat(),
         "provenance": [p.to_dict() for p in provenance],
         "primary_consumption_path": str(out / "extracted.md"),
     }

@@ -14,11 +14,11 @@ from pathlib import Path
 
 def test_30_2a_unblock_handshake_resolves() -> None:
     """AC-T.2 — the five imports 30-2a depends on all resolve."""
-    from marcus.facade import get_facade  # noqa: F401 — import smoke
-    from marcus.intake import INTAKE_MODULE_IDENTITY
-    from marcus.lesson_plan.log import WriterIdentity  # noqa: F401
-    from marcus.orchestrator import NEGOTIATOR_SEAM, ORCHESTRATOR_MODULE_IDENTITY
-    from marcus.orchestrator.write_api import (
+    from app.marcus.facade import get_facade  # noqa: F401 — import smoke
+    from app.marcus.intake import INTAKE_MODULE_IDENTITY
+    from app.marcus.lesson_plan.log import WriterIdentity  # noqa: F401
+    from app.marcus.orchestrator import NEGOTIATOR_SEAM, ORCHESTRATOR_MODULE_IDENTITY
+    from app.marcus.orchestrator.write_api import (
         UnauthorizedFacadeCallerError,  # noqa: F401
         emit_pre_packet_snapshot,  # noqa: F401
     )
@@ -39,9 +39,9 @@ def test_module_identities_are_writer_identity_literal_members() -> None:
     (b) write_api.py guard check via import, (c) the 31-2 WriterIdentity
     Literal. This test asserts (a) is a subset of (c).
     """
-    from marcus.intake import INTAKE_MODULE_IDENTITY
-    from marcus.lesson_plan.log import WriterIdentity
-    from marcus.orchestrator import ORCHESTRATOR_MODULE_IDENTITY
+    from app.marcus.intake import INTAKE_MODULE_IDENTITY
+    from app.marcus.lesson_plan.log import WriterIdentity
+    from app.marcus.orchestrator import ORCHESTRATOR_MODULE_IDENTITY
 
     literal_members = typing.get_args(WriterIdentity)
     assert INTAKE_MODULE_IDENTITY in literal_members
@@ -58,7 +58,7 @@ def test_write_api_does_not_duplicate_orchestrator_literal_in_code() -> None:
     """
     import ast
 
-    source_path = Path(__file__).parent.parent / "marcus" / "orchestrator" / "write_api.py"
+    source_path = Path(__file__).parent.parent / "app" / "marcus" / "orchestrator" / "write_api.py"
     source = source_path.read_text(encoding="utf-8")
     tree = ast.parse(source)
 

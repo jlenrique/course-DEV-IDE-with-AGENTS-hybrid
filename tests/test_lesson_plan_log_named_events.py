@@ -13,9 +13,9 @@ from uuid import uuid4
 
 import pytest
 
-from marcus.lesson_plan.event_type_registry import RESERVED_LOG_EVENT_TYPES
-from marcus.lesson_plan.events import EventEnvelope
-from marcus.lesson_plan.log import NAMED_MANDATORY_EVENTS, LessonPlanLog
+from app.marcus.lesson_plan.event_type_registry import RESERVED_LOG_EVENT_TYPES
+from app.marcus.lesson_plan.events import EventEnvelope
+from app.marcus.lesson_plan.log import NAMED_MANDATORY_EVENTS, LessonPlanLog
 
 
 @pytest.fixture

@@ -22,7 +22,7 @@ class TempModeFile:
         self._tmpfile.close()
         self.path = self._tmpfile.name
 
-    def __enter__(self) -> "TempModeFile":
+    def __enter__(self) -> TempModeFile:
         return self
 
     def __exit__(self, *args: object) -> None:

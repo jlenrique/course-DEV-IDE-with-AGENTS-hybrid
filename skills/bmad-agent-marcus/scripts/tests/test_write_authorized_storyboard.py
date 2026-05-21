@@ -17,9 +17,7 @@ import subprocess
 import sys
 from pathlib import Path
 from typing import Any
-from unittest.mock import patch, call
-
-import pytest
+from unittest.mock import patch
 
 _SCRIPTS_DIR = Path(__file__).resolve().parents[1]
 _AUTHORIZE_SCRIPT = _SCRIPTS_DIR / "write-authorized-storyboard.py"

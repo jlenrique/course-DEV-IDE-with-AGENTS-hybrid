@@ -20,7 +20,6 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[4]))
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 import manage_run
 
-
 SCHEMA_SQL = """
 CREATE TABLE IF NOT EXISTS production_runs (
     run_id         TEXT PRIMARY KEY,
@@ -76,7 +75,7 @@ class TempDB:
         self.path = self._tmpfile.name
         self._tmpfile.close()
 
-    def __enter__(self) -> "TempDB":
+    def __enter__(self) -> TempDB:
         conn = sqlite3.connect(self.path)
         conn.executescript(SCHEMA_SQL)
         conn.commit()

@@ -74,7 +74,7 @@ Load available config from `{project-root}/_bmad/config.yaml` and `{project-root
 - `{communication_language}` (English) — use for all communications
 - `{document_output_language}` (English) — use for generated document content
 
-Load `./references/memory-system.md` for memory discipline and access boundary rules. Load sidecar memory from `{project-root}/_bmad/memory/quinn-r-sidecar/index.md` — this is the single entry point to the memory system and tells Quinn-R what else to load. If sidecar doesn't exist, load `./references/init.md` for first-run onboarding.
+Load `./references/memory-system.md` for memory discipline and access boundary rules. Load Quinn-R sanctum memory from `{project-root}/_bmad/memory/bmad-agent-quinn-r/INDEX.md` — this is the canonical activation-time hot-load batch and tells Quinn-R what else to load. If the sanctum doesn't exist, load `./references/init.md` for first-run onboarding.
 
 **Direct invocation authority check (required):**
 Before accepting direct user work, check active baton authority:

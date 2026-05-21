@@ -23,12 +23,12 @@ from __future__ import annotations
 import ast
 from pathlib import Path
 
-_FORBIDDEN_MODULE: str = "marcus.orchestrator.fanout"
+_FORBIDDEN_MODULE: str = "app.marcus.orchestrator.fanout"
 _FORBIDDEN_CALL: str = "emit_plan_lock_fanout"
 
 
 def _intake_files(repo_root: Path) -> list[Path]:
-    intake_dir = repo_root / "marcus" / "intake"
+    intake_dir = repo_root / "app" / "marcus" / "intake"
     return [p for p in sorted(intake_dir.rglob("*.py")) if p.is_file()]
 
 

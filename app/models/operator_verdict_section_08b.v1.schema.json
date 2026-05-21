@@ -1,0 +1,107 @@
+{
+  "$defs": {
+    "StoryboardBEditPayload": {
+      "additionalProperties": false,
+      "description": "Field-level edits for the reviewed Storyboard B payload.",
+      "properties": {
+        "edits": {
+          "additionalProperties": true,
+          "description": "Mapping of Storyboard B field names or paths to replacement values.",
+          "minProperties": 1,
+          "title": "Edits",
+          "type": "object"
+        }
+      },
+      "required": [
+        "edits"
+      ],
+      "title": "StoryboardBEditPayload",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "description": "Tamper-evident verdict emitted by the Section 08B G3B poll surface.",
+  "properties": {
+    "decision_card_digest": {
+      "description": "Lowercase sha256 digest of the reviewed G3 card.",
+      "title": "Decision Card Digest",
+      "type": "string"
+    },
+    "edit_payload": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/StoryboardBEditPayload"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "description": "Required iff verb is edit."
+    },
+    "operator_id": {
+      "description": "Operator identifier.",
+      "minLength": 1,
+      "pattern": "^[a-zA-Z][a-zA-Z0-9_-]+$",
+      "title": "Operator Id",
+      "type": "string"
+    },
+    "reject_reason": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "description": "Required iff verb is reject.",
+      "title": "Reject Reason"
+    },
+    "run_id": {
+      "description": "UUID4 identity for the Storyboard B review run.",
+      "format": "uuid",
+      "title": "Run Id",
+      "type": "string"
+    },
+    "storyboard_id": {
+      "description": "Identifier of the Storyboard B card under review.",
+      "minLength": 1,
+      "title": "Storyboard Id",
+      "type": "string"
+    },
+    "submitted_at": {
+      "description": "Timezone-aware verdict submission time.",
+      "format": "date-time",
+      "title": "Submitted At",
+      "type": "string"
+    },
+    "surface_id": {
+      "const": "section_08b_g3b_poll",
+      "default": "section_08b_g3b_poll",
+      "description": "Closed Section 08B poll-surface identifier.",
+      "title": "Surface Id",
+      "type": "string"
+    },
+    "verb": {
+      "description": "Closed verdict verb set: approve | edit | reject.",
+      "enum": [
+        "approve",
+        "edit",
+        "reject"
+      ],
+      "title": "Verb",
+      "type": "string"
+    }
+  },
+  "required": [
+    "run_id",
+    "verb",
+    "storyboard_id",
+    "operator_id",
+    "decision_card_digest"
+  ],
+  "title": "Section08BOperatorVerdict",
+  "type": "object"
+}

@@ -151,7 +151,7 @@ def test_pr_rc_normalizes_halt_fixture(tmp_path: Path) -> None:
     assert parsed.run_id == "C1-M1-PRES-20260415"
     # Nested motion_budget present as a mapping, not flat keys
     assert parsed.motion_budget is not None
-    assert parsed.motion_budget.max_credits == 125.0
+    assert parsed.motion_budget.max_credits == 135.0
     assert parsed.motion_budget.model_preference == "pro"
 
 

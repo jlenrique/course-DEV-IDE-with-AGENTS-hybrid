@@ -1,0 +1,107 @@
+{
+  "$defs": {
+    "TrialEvent": {
+      "additionalProperties": false,
+      "description": "One operator interaction captured during Trial-3.",
+      "properties": {
+        "event_at": {
+          "format": "date-time",
+          "title": "Event At",
+          "type": "string"
+        },
+        "event_id": {
+          "format": "uuid4",
+          "title": "Event Id",
+          "type": "string"
+        },
+        "event_type": {
+          "enum": [
+            "edit",
+            "approve",
+            "reject",
+            "complete"
+          ],
+          "title": "Event Type",
+          "type": "string"
+        },
+        "gate_id": {
+          "enum": [
+            "G1",
+            "G2C",
+            "G3",
+            "G4"
+          ],
+          "title": "Gate Id",
+          "type": "string"
+        },
+        "operator_id": {
+          "minLength": 1,
+          "title": "Operator Id",
+          "type": "string"
+        },
+        "payload_digest": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Payload Digest",
+          "type": "string"
+        }
+      },
+      "required": [
+        "event_id",
+        "gate_id",
+        "event_type",
+        "event_at",
+        "operator_id",
+        "payload_digest"
+      ],
+      "title": "TrialEvent",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "description": "Append-only transcript envelope for the Trial-3 closeout attempt.",
+  "properties": {
+    "completed_at": {
+      "anyOf": [
+        {
+          "format": "date-time",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Completed At"
+    },
+    "events": {
+      "items": {
+        "$ref": "#/$defs/TrialEvent"
+      },
+      "minItems": 1,
+      "title": "Events",
+      "type": "array"
+    },
+    "schema_version": {
+      "default": 1,
+      "title": "Schema Version",
+      "type": "integer"
+    },
+    "started_at": {
+      "format": "date-time",
+      "title": "Started At",
+      "type": "string"
+    },
+    "trial_id": {
+      "format": "uuid4",
+      "title": "Trial Id",
+      "type": "string"
+    }
+  },
+  "required": [
+    "trial_id",
+    "started_at",
+    "events"
+  ],
+  "title": "Trial3Transcript",
+  "type": "object"
+}

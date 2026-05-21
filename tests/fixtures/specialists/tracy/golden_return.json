@@ -1,0 +1,25 @@
+{
+  "specialist_id": "tracy",
+  "verb": "proceed",
+  "payload": {
+    "status": "ok"
+  },
+  "tracy_manifest": {
+    "query": "evidence for memory retention and spaced repetition",
+    "query_attempted": "memory retention spaced repetition peer-reviewed",
+    "results": [
+      {
+        "intent_class": "supporting_evidence",
+        "fit_score": 0.92,
+        "authority_tier": "primary",
+        "editorial_note": "Supports the slide's core retention claim with a direct peer-reviewed source.",
+        "provider_metadata": {
+          "source": "scite"
+        }
+      }
+    ]
+  },
+  "edit_payload": null,
+  "reject_reason": null,
+  "timestamp": "2026-04-24T00:00:01Z"
+}

@@ -5,8 +5,6 @@ import sys
 from pathlib import Path
 from unittest.mock import MagicMock, patch
 
-import pytest
-
 SCRIPTS_DIR = Path(__file__).resolve().parents[1]
 spec = importlib.util.spec_from_file_location(
     "gamma_operations", SCRIPTS_DIR / "gamma_operations.py"

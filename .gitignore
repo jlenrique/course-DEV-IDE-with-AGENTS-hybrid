@@ -1,18 +1,42 @@
 # Local secrets — never commit (document keys in docs/admin-guide.md)
 .env
 .env.*
+!.env.example
+
+# Operator local scratch / structure-snapshot drops — not version-controlled
+# (Permanent project orientation lives in README.md + docs/dev-guide/langgraph-migration-guide.md)
+PROJECT-STRUCTURE-MAP-TEMPORARY.md
+PROJECT-STRUCTURE-MAP-*.md
 
 # Cursor / Playwright MCP local logs
 .playwright-mcp/
 
 # BMad framework — installed/distributed by bmb; never version-control
-_bmad/
+# EXCEPT `_bmad/memory/` which carries persistent agent sanctum content
+# (BMB 6-file pattern: INDEX/PERSONA/CREED/BOND/MEMORY/CAPABILITIES; legacy
+# sidecar variants; Class-C+/D2 4-file operational-metadata sidecars). These
+# files change with runs / app redevelopment and must be tracked per
+# 2026-04-30 operator ratification (retires `bmad-memory-gitignore-force-add-policy`).
+# NOTE: glob-direct-children (`_bmad/*`) rather than full-tree (`_bmad/`) so
+# the negation `!_bmad/memory/` can re-include the memory subtree (git cannot
+# re-include files under a fully-excluded parent dir).
+_bmad/*
+!_bmad/memory/
 
 # BMad skills distributed to IDE surfaces (installed by bmb setup)
+# `skills/` itself carries critical agent-definition content (SKILL.md +
+# references/ + scripts/) and is tracked. Only IDE-surface mirrors
+# (.agents/.claude/.cline/.github/skills/.cursor/skills/.github/agents/)
+# are ignored. `.github/agents/` carries BMAD-installer-emitted
+# chat-agent persona stubs for GitHub Copilot Chat (5-line redirects
+# into the gitignored `.agents/skills/` tree); sibling-but-distinct from
+# `.github/instructions/` (file-scoped rules with `applyTo` frontmatter,
+# which is tracked). See AGENTS.md for the mechanism distinction.
 .agents/
 .claude/
 .cline/
 .github/skills/
+.github/agents/
 .cursor/skills/
 
 # Optional local-only drops (large media, exports)
@@ -52,12 +76,21 @@ course-content/**/*.webp
 # State runtime (SQLite + backups)
 state/runtime/*.db
 state/runtime/*.db-journal
+state/runtime/*.db-shm
+state/runtime/*.db-wal
 state/runtime/backup/*.db
 state/runtime/mode_state.json
 state/runtime/ad-hoc-observability/
 state/runtime/perception-cache/
 state/runtime/ad-hoc-runs/
 state/runtime/run_baton.*.json
+
+# Operator session evidence drops (live smoke output captured by operator; not authoritative)
+slab-*-dual-gate-evidence.txt
+slab-*-evidence.txt
+
+# Local temp scratch
+.tmp/
 
 # Generated run context (runtime artifacts; not source-of-truth docs)
 state/config/runs/
@@ -94,3 +127,10 @@ Thumbs.db
 # See commit message for context; primary repo must mirror this rule + `git rm --cached`
 # for the protection to become bidirectional and eliminate delete/modify merge hazards.
 next-session-start-here.md
+
+# Slab 7a transient runtime evidence (engagement_decay reports, calibration_tripwire JSONL,
+# run_summary.yaml etc. emitted by tests + smoke runs). Per 7a.8 spec line 240:
+# "Composition Smoke runs created transient _artifacts/trial-2/engagement_decay_report.md;
+# removed it because it was smoke output, not operator-witnessed trial-2 evidence."
+# Operator-witnessed trial-2 evidence lives elsewhere (e.g., state/config/runs/<trial-id>/).
+_artifacts/

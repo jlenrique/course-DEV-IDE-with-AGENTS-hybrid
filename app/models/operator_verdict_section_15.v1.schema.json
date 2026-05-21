@@ -1,0 +1,107 @@
+{
+  "$defs": {
+    "HandoffEditPayload": {
+      "additionalProperties": false,
+      "description": "Field-level edits for the reviewed final handoff package.",
+      "properties": {
+        "edits": {
+          "additionalProperties": true,
+          "description": "Mapping of final-handoff field names or paths to replacement values.",
+          "minProperties": 1,
+          "title": "Edits",
+          "type": "object"
+        }
+      },
+      "required": [
+        "edits"
+      ],
+      "title": "HandoffEditPayload",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "description": "Tamper-evident verdict emitted by the Section 15 G5 poll surface.",
+  "properties": {
+    "decision_card_digest": {
+      "description": "Lowercase sha256 digest of the reviewed G5 card.",
+      "title": "Decision Card Digest",
+      "type": "string"
+    },
+    "edit_payload": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/HandoffEditPayload"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "description": "Required iff verb is edit."
+    },
+    "handoff_id": {
+      "description": "Identifier of the G5 final handoff under review.",
+      "minLength": 1,
+      "title": "Handoff Id",
+      "type": "string"
+    },
+    "operator_id": {
+      "description": "Operator identifier.",
+      "minLength": 1,
+      "pattern": "^[a-zA-Z][a-zA-Z0-9_-]+$",
+      "title": "Operator Id",
+      "type": "string"
+    },
+    "reject_reason": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "description": "Required iff verb is reject.",
+      "title": "Reject Reason"
+    },
+    "run_id": {
+      "description": "UUID4 identity for the final-operator-handoff run.",
+      "format": "uuid",
+      "title": "Run Id",
+      "type": "string"
+    },
+    "submitted_at": {
+      "description": "Timezone-aware verdict submission time.",
+      "format": "date-time",
+      "title": "Submitted At",
+      "type": "string"
+    },
+    "surface_id": {
+      "const": "section_15_g5_final_handoff",
+      "default": "section_15_g5_final_handoff",
+      "description": "Closed Section 15 final-handoff surface identifier.",
+      "title": "Surface Id",
+      "type": "string"
+    },
+    "verb": {
+      "description": "Closed verdict verb set: complete | edit | reject.",
+      "enum": [
+        "complete",
+        "edit",
+        "reject"
+      ],
+      "title": "Verb",
+      "type": "string"
+    }
+  },
+  "required": [
+    "run_id",
+    "verb",
+    "handoff_id",
+    "operator_id",
+    "decision_card_digest"
+  ],
+  "title": "Section15OperatorVerdict",
+  "type": "object"
+}

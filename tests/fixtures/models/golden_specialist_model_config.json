@@ -1,0 +1,6 @@
+{
+  "specialist_id": "_scaffold",
+  "default_model": "gpt-5",
+  "per_node_overrides": {},
+  "temperature_default": 0.0
+}

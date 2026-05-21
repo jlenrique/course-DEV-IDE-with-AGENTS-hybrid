@@ -1,0 +1,48 @@
+"""State pins for generated specialist {{name}}."""
+
+from __future__ import annotations
+
+import json
+from typing import ClassVar
+from typing import Literal
+
+from pydantic import Field
+from pydantic import model_validator
+
+from app.models.state.specialist_envelope import SpecialistEnvelope
+from app.models.state.specialist_return import SpecialistReturn
+
+
+class {{class_name}}Envelope(SpecialistEnvelope):
+    """Generated envelope with specialist-id pin."""
+
+    _SPECIALIST_ID: ClassVar[str] = "{{specialist_id}}"
+    schema_version: Literal["1.0"] = Field(default="1.0")
+
+    @model_validator(mode="after")
+    def _pin_specialist_id(self) -> "{{class_name}}Envelope":
+        if self.specialist_id != self._SPECIALIST_ID:
+            raise ValueError(
+                f"specialist_id must equal {self._SPECIALIST_ID!r} for {{name}} envelope"
+            )
+        payload_size = len(json.dumps(self.payload_in, sort_keys=True))
+        if payload_size > 50_000:
+            raise ValueError("payload_in exceeds 50KB cap for {{name}} envelope")
+        return self
+
+
+class {{class_name}}Return(SpecialistReturn):
+    """Generated return payload with specialist-id pin."""
+
+    _SPECIALIST_ID: ClassVar[str] = "{{specialist_id}}"
+
+    @model_validator(mode="after")
+    def _pin_specialist_id(self) -> "{{class_name}}Return":
+        if self.specialist_id != self._SPECIALIST_ID:
+            raise ValueError(
+                f"specialist_id must equal {self._SPECIALIST_ID!r} for {{name}} return"
+            )
+        return self
+
+
+__all__ = ["{{class_name}}Envelope", "{{class_name}}Return"]

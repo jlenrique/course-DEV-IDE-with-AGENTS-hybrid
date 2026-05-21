@@ -15,7 +15,6 @@ from pathlib import Path
 
 import yaml
 
-
 PROJECT_ROOT = Path(__file__).resolve().parents[3]
 EXEMPLARS_DIR = PROJECT_ROOT / "resources" / "exemplars"
 
@@ -85,7 +84,6 @@ def run_regression(tool: str, dry_run: bool = False) -> dict:
         else:
             try:
                 from reproduce_exemplar import reproduce
-                from compare_reproduction import find_latest_attempt
 
                 reproduce_result = reproduce(tool, exemplar_id)
 

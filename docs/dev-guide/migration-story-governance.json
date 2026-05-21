@@ -1,0 +1,1402 @@
+{
+  "_comment": "Codified gate-mode designations for LangChain/LangGraph migration stories. Authored 2026-04-22 from the triage pass across the 56-story plan in _bmad-output/planning-artifacts/epics-langchain-langgraph-migration.md. The triage RE-AFFIRMED the existing per-story designations — dual-gate is applied only where a story introduces a schema-shape, CI/compile-time contract, lane/package boundary, load-bearing invariant preservation, or operator-acceptance gate. Every other story is single-gate. Stories 2b.2-2b.14 are explicitly pinned to single-gate here (they follow the 2b.1 TEMPLATE scaffold and should not relitigate gate mode at authoring time). Freezing these designations here means bmad-create-story on a migration story does not need to rederive the gate-mode decision — it reads this file. Additions or demotions require party-mode consensus and a version bump below.",
+  "version": "2026-05-05-v7-v1.1-elevation-and-v2-pre-ratification",
+  "_amendment_log": [
+    "2026-04-22 — Initial freeze of 56-story plan (1-1 through 5b-4); 1-1d added via middle-path party-mode consensus on MCP-in-Slab-1.",
+    "2026-04-25 — Story 2a-5 added (Generator auto-emit pyproject.toml C3 ignore_imports row; 2a.1 follow-on defect; ~2pt single-gate; party-mode T2 2026-04-24 ratification per Murat (b)-preferred path / Winston path-2 / Paige A12 procedural-coupling category). Filed as the Slab-2a→2b binding gate per slab-2a-retrospective.md.",
+    "2026-04-26 — Story 5a-3 substrate-aware amendment (operator-ratified this session). Original spec (≥50% cost-reduction bar vs primary-repo baseline + cited non-existent app/runtime/model_cascade.py) halted Codex T1: legacy code does not capture per-call token data; primary baseline file does not exist; cited cost source absent. Repointed to cost-engineering foundation: parameterized OpenAI cascade in runtime/config/model_cascade.yaml (Marcus=gpt-5; mid-tier specialists=gpt-5-mini; narrow=gpt-5-nano), config-file pricing in runtime/config/openai_pricing.yaml, per-trial cost reports at state/config/runs/<trial-id>/cost-report.{json,md}, soft-cap budget telemetry via MARCUS_TRIAL_BUDGET_USD, per-agent drift alerts (rolling 5-trial median ±50%), characterization baseline on migrated runtime (NOT primary comparison). Pts 3→5; K-target ~1.3×→~1.4× (target 14 / floor 10). Gate stays single. 5a-4 + 5a-5 references to ≥50% bar amended in lockstep. Operator-ratified D1-D9 are binding.",
+    "2026-04-27 - Story 6-1 added as Slab 6 inaugural production-capability opener after A16 Composition-vs-Component Audit Gap. Gate is dual (`substrate_shape` + `operator_acceptance_gate`) because it introduces the production graph composition layer and requires one operator-accepted live trial through the runner.",
+    "2026-04-27 - Story 6-0 inserted before 6-1 after A17 Substrate Designed for Isolation, Composition Assumed. Gate is dual (`substrate_shape` + `invariant_preservation`) because it introduces the production envelope substrate while preserving isolated specialist scaffold contracts. Story 6-1 re-scoped to runner-consumes-substrate.",
+    "2026-04-27 - Stories 6-2 + 6-3 + 6-4 + 6-5 added as Slab 6 trial-experience bundle. 6-2 is the prerequisite (manifest dependency_map promotion; ~1pt single-gate; closes Composition Spec §12 known limitation #1). 6-3 + 6-4 + 6-5 are the bundle proper (Step 02A defaults; Irene Pass 2 authoring template; HUD per-step summaries). 6-3 + 6-5 single-gate; 6-4 dual-gate (`schema_shape + invariant_preservation`). All operator-flagged from 2026-04-19/20 trial-prep evidence; sequenced for first-tracked-trial readiness.",
+    "2026-04-27 - Story 6-2 implementation landed: `dependencies` field accepted on manifest nodes; compile-time circular dependency check added; production runner resolves manifest first and retains runner-layer fallback permanently for undeclared/empty nodes.",
+    "2026-04-28 - Slab 7a 7a-1 through 7a-8 added (Inter-Gate Conversational Orchestration substrate; per `_bmad-output/planning-artifacts/epics-slab-7a-inter-gate-orchestration.md`). Eight stories: 7a-1 directive_composer (dual-gate); 7a-2 manifest fold-flags + compiler ext (single-gate); 7a-6 vocabulary registry + parity-table (single-gate; promoted to wave-3 from wave-6 per Step 1 batch-approved adjustment); 7a-3 pre-gate-marcus shared LLM node (single-gate); 7a-4 per-slide subgraph + HTML review-pack skeleton (single-gate WITH k_contract bounding HTML to skeleton-only + tripwire escalation to dual-gate at K-actual >4.08K = 1.7× band-floor); 7a-5 conversation persistence + specialist-summary writer (single-gate); 7a-7 A2 single-decision shims for terminal gates (single-gate); 7a-8 integration + parity-test suite + Slab 7a closeout (dual-gate; flipped from single per integration-tier risk argument). Party-mode consensus 2026-04-28 (Winston/Murat/Amelia/Paige) — all four voices: GO; no SG-1/SG-2/SG-3 violations.",
+    "2026-04-29 — Slab 7b 7b-1 through 7b-12 RATIFIED (party-mode Round-(e) governance-JSON freeze gate; voices: John+Mary+Amelia+Murat; verdict: GO unanimous on consolidated amendment block E1-E7; per `_bmad-output/planning-artifacts/epics-slab-7b-specialist-activation-eleven.md` Round-(d) close). Twelve stories per Phased Wave Plan: 7b-1 Texas hardening (single-gate; Class A; carries Errata 3 SanctumParityTestBase + NFR-CG14a chain-test base + NFR-I12 class-conformance validator + Errata 4 subdir-vs-flat ratification as T1 CREATE-tasks); 7b-2 Quinn-R hardening (single-gate; Class A; prerequisite_stories=[7b-1] per Round-(e) E5/Murat); 7b-3 Vera hardening (single-gate; Class A; prerequisite_stories=[7b-1] per Round-(e) E5/Murat); 7b-4 Irene Pass-1 refresh (single-gate; Class B); 7b-5 Tracy port-shape + sidecar bundle (single-gate; Class C+; Codex per NFR-CG17; required_ac_reference_paths includes Texas retrieval-contract per Round-(e) E4/Amelia; k_contract block per Round-(e) E6/Murat); 7b-6 Gary port-shape (single-gate; Class C; Codex; consumes FR107 sandbox-AC `gamma`); 7b-7 Kira port-shape (single-gate; Class C; Codex; consumes `kling`; conditional_gate_override on 7b-6 first-port tripwire per Round-(e) E3/Mary); 7b-8 Enrique port-shape (single-gate; Class C; Codex; consumes `elevenlabs`; conditional_gate_override on 7b-6 first-port tripwire per Round-(e) E3/Mary); 7b-9 Wanda port-shape onto scaffold (single-gate; Class C; Codex; consumes `wondercraft`); 7b-10 Dan greenfield (single-gate; Class D1; Claude; sandbox-AC `dan-api-tbd-pending` resolved at story-T1 — if third-party-API, party-mode + version-bump pre-promotion required per Round-(b) Mary B1 amendment; k_contract block per Round-(e) E6/Murat); 7b-11 Compositor greenfield (single-gate; Class D2 sidecar variant per D20; Claude; conditional_dual_gate_escalation hard-bound at K>4.0 per Round-(e) E1/John binding-hard amendment; consumes FR111 scaffold-v0.2-D2-pipeline LANDED Wave 0; k_contract block per Round-(e) E6/Murat); 7b-12 integration + parity-suite + closeout (DUAL-GATE; integration; Claude; trial-2 cost-projection dry-run AC per Round-(a) John A1 amendment; 5-API live-binding smoke operator-gated; k_contract block per Round-(e) E6/Murat). Round-(e) consolidated amendment block (E1-E7): E1 conditional_dual_gate_escalation on 7b-11; E2 top-level tripwire_escalation_record_path → sprint-status.yaml::tripwire_events (lockstep yaml-schema follow-on landed in same commit); E3 conditional_gate_override on 7b-7+7b-8 keyed to 7b-6 tripwire; E4 required_ac_reference_paths on 7b-5; E5 prerequisite_stories=[7b-1] on 7b-2+7b-3; E6 k_contract blocks on 7b-5/7b-10/7b-11/7b-12 per 7a-4 precedent; E7 unfreeze (this _amendment_log entry revised in-place with ratifying voices; `_staged_pending_party_mode_ratification` flags removed; version bumped to `2026-04-29-slab7b-twelve-stories`; triage_summary updated 72→84 total / 20→21 dual / 21/84≈25% dual-gate-pct). Round-(e) record (orchestrator): opening verdicts 4× GO-with-concern (six JSON-encoding gaps surfaced; none re-opens of Round (a)-(d) policy); Round-(e)-confirm vote 4× GO unanimous on E1-E7.",
+    "2026-05-04 — Slab 7c 7c-0a through 7c-21a RATIFIED (party-mode Round 2 2026-05-04; voices: John+Winston+Amelia+Murat; verdict: GO unanimous 4/4 on single-epic decomposition + AMEND-7 (a/b/c/d) + Winston structural triplet (W1 7c.0 split + W2 C4/C5/C6 consolidation at 7c.0a + W3 extend-and-audit named gate-mode) + Amelia process-discipline triplet (P1 7c.2 path-isolation guard + P2 NEW CYCLE freshness check + P3 Wave-3 G2C-fanout staggering + P4 extend-and-audit frozen-hash delta-AC) + JTBD gap audit; per _bmad-output/planning-artifacts/epics-slab-7c-orchestrational-tail.md). 36 stories per Wave 0..6 plan: Wave 0 (7c-0a + 7c-0b; both dual-gate cross-agent MANDATORY); Wave 1 (7c-1 dual-gate + 7c-2 single-gate with AMELIA-P1 path-isolation guard parallel to 7c.0a/0b + 7c-3a dual-gate cross-agent MANDATORY + 7c-3b dual-gate); Wave 2 (7c-4a single-gate + 7c-4b dual-gate cross-agent MANDATORY + 7c-5-g0/g2a/g5/g6 single-gate fresh-author + 7c-5-g1/g2c/g3/g4 NEW gate-mode dual-gate-cross-agent-CONTRACT-EVOLUTION extend-and-audit per Winston W3); Wave 3 (7c-6..7c-15 all single-gate; 7c-9/7c-10/7c-11/7c-12 carry AMELIA-P3 dispatch staggering >=30 min apart keyed off 7c.5.G2C close); Wave 4 (7c-17a + 7c-17b single-gate; AMEND-3 specific writer-to-story split per Winston W5); Wave 5 (7c-18a + 7c-18b + 7c-19 single-gate + 7c-20a/b/c AUDIT-AC single-gate; all three own TW-7c-1 with AMEND-7c percentage-threshold firing rule); Wave 6 (7c-21 dual-gate cross-agent MANDATORY with STOP-on-TW-7c-6-fire branch per AMEND-7d-iii + 7c-21a single-gate Epic 3 retirement). 5 cross-agent code-review MANDATORY: 7c-0a, 7c-0b, 7c-3a, 7c-4b, 7c-21. NEW gate-mode dual-gate-cross-agent-CONTRACT-EVOLUTION promoted per Winston W3 (4 stories: 7c-5-g1/g2c/g3/g4); T1 readiness REQUIRES (a) diff-against-prior-contract artifact + (b) backward-consumer audit per call site + (c) AMELIA-P4 frozen-at-ship-hash delta-AC. Tripwires TW-7c-1..6 seeded at sprint-status.yaml::tripwire_events in not_yet_evaluated state in same commit. version bump -> 2026-05-04-slab7c-thirty-six-stories; triage_summary 84->120 / 21->28 dual / dual_gate_cross_agent_contract_evolution 0->4; dual_gate_pct 25%->23.3% (single-gate-heavy Slab 7c).",
+    "2026-05-04 — Slab 7c VELOCITY-AMENDMENTS bundle ratified (operator single-vote post-party-mode consultation; voices: John+Murat+Amelia+Winston; verdict: 5 amendments ratified, scope-cut declined). Per _bmad-output/planning-artifacts/slab-7c-velocity-amendments-2026-05-04.md: (V1) pytest-xdist classification spike — file new story 7c.0c (~3pts; single-gate; dev-agent-only; dispatched after 7c.0b close ahead of 7c.4a per highest amortization). (V2) Risk-tiered regression — add r_tier R1/R2/R3 field to per-story entries; legend at top-level; designated at spec-author time; T11 verifies; downgrading requires party-mode consensus. (V3) T11 review tiering — add t11_tier lite/standard/cross-agent field; lite eligibility = AC≤5 + single-file/sibling + no schema/contract/governance touch + Codex T10 clean + single-gate; 2-batch on lite-tier path-disjoint stories per Amelia AMEND-Velocity-7. (V4) AMELIA-P3 staggering (dispatch_staggering blocks on 7c-9/10/11/12) marked auto-satisfied under single-Codex via auto_satisfied_under annotation; reinstates if multi-Codex later adopted. (V5) Lookahead tier 1/2/3 — add lookahead_tier field; hard cap N+2 max; cross-agent MANDATORY pre-flight contract-negotiation pass at spec-author time. files_touched field added per-story (replaces deleted AMELIA-P1 hash-allowlist; supports V3 batching + future multi-Codex if reinstated). Estimated savings ~5-8 hrs wall-clock; budget revision 5.5-7d -> 3.5-5d. SKIPPED: scope-cut (operator declined), multi-Codex (risk > reward at current scope), rolling parity canary (file at 7c.21 if needed), gate-mode demotion audit (no scope review). triage_summary unchanged at 120 stories total / 86 single + 30 dual + 4 contract-evolution / 28.3% dual_gate_pct — velocity amendments are governance-tier, not gate-mode-tier.",
+    "2026-05-05 — Slab-opener party-mode (3-voice round Murat+Winston+Amelia; orchestrator=Claude). v1 elevation confirmation + v2 pre-ratification post-G2C+G3+G4 close (commit 0ec80df). Q1 (v1 elevation): 3/3 CONFIRM gate satisfied; codify v1.1 with current_cap=3 alongside default_cap=2 audit-trail (Winston+Amelia majority shape; Murat alternate `default_cap → 3` collapse declined for audit-preservation). Q2 (v2 pre-ratification): 2-1 majority PRE-RATIFY with Amelia v2-defer dissent. Murat hard-revert clause + Winston two revisit triggers BAKED IN: (a) non-obvious cross-file coupling missed by triple-condition; (b) P-1 finding traceable to N+3 staleness; (c) T11 cross-agent escalation on Wave-3 N+3 story. All revert triggers are dev-agent authority (Cora hook); v2 re-promotes only after fresh 3-clean run. Amelia empirical-first principle PRESERVED via trigger condition: v2 auto-fires only at wave_3_closed_count >= 3 (pre-ratification only consolidates procedural step). version bump → 2026-05-05-v7-v1.1-elevation-and-v2-pre-ratification.",
+    "2026-05-05 — Party-mode 3-round resolution post-G1-close (voices: John+Winston+Murat+Amelia; orchestrator=Claude). Two open questions ratified. **(V6) AMELIA-P5 DROP-row Heavy gate (Q1 UNANIMOUS):** extend-and-audit T1 backward-consumer audit MUST carry per-row audit_method qualifier (heavy/light) per dropped field; if field marked DROP and downstream-touched, audit_method MUST=heavy with smoke-pass evidence against tests/composition/ + tests/integration/marcus/ + tests/integration/replay/ before T1 declares ready. ADD-only/RENAME-only T1s skip Heavy. Composed with Winston's per-row audit_method qualifier (orthogonal axes: AMELIA-P5 decides WHETHER Heavy fires; audit_method decides WHAT SHAPE the audit takes). Triggered by G1's T6 reversal on drafted_proposal/evidence (audit declared DROP; smoke found live consumers). Cost: ~6-13 min expected per extend-and-audit story (vs flat-BOTH 30-45 min). Winston-rider: instrumentation tracks DROP-row prevalence across next 5-8 G2C T1s; if >60%, revisit. Discarded: John's flag-list (reviewer-discretion is more brittle than DROP-row automation, per John's own R2 concession); Murat's flat-BOTH (over-uniform; superseded by AMELIA-P5 gating). **(V7) Wave-3 lookahead-cap policy (Q2 majority 3-1; documented Murat dissent):** default_cap=2 (status quo from V5); elevation_gate='P2_clean_x3_at_G4_close'; elevated_cap=3; v1 immediate at Wave-3 entry. v2 (steady-state, post-baseline ≥3 Wave-3 closures): Murat's triple-condition (C6 ∧ lookahead_tier=1 ∧ t11_tier=lite) becomes promotion rule. 7c.6 dispatches under N+2 cap (majority verdict; Winston conceded R3, Murat flipped to a-priori R3 dissent based on 3.5-min-expected-rework vs 40-60-min-deterministic-foregone-parallelism risk math). Operator (E)-elasticity authority retained — operator may override default at slab-opener party-mode for path-disjoint waves with clear C6/lookahead_tier=1/t11_tier=lite triple. version bump → 2026-05-05-amelia-p5-and-wave-3-lookahead-policy."
+  ],
+  "tripwire_escalation_record_path": {
+    "_comment": "Round-(e) E2/Mary amendment (2026-04-29). Designated audit slot for K-aggregate tripwires fired during Slab 7b execution. The four named tripwires (Wave-1 close, Wave-2b close, Wave-3 first-port, Wave-5b pre-T1 — per Round-(a) Amelia A3 of Slab 7b epics-and-stories workflow) record their fired-or-not-fired verdict + escalation outcome at the path below. Lockstep follow-on: a `tripwire_events:` schema section was added to `sprint-status.yaml` in the same commit that unfroze this governance JSON, so the slot exists before any tripwire could fire. This applies to all migration stories carrying tripwire clauses (currently Slab 7b 7b-1/7b-5/7b-6/7b-11), not just Slab 7b — future tripwire-bearing stories reference this slot.",
+    "path": "_bmad-output/implementation-artifacts/sprint-status.yaml",
+    "yaml_section": "tripwire_events",
+    "binding": "hard"
+  },
+  "dual_gate_rationale_legend": {
+    "schema_shape": "Story introduces a new Pydantic v2 model family with four-file-lockstep (schema + validator + tests + golden fixture).",
+    "ci_or_compile_shape": "Story adds or changes a CI/graph-compile-time contract that affects every downstream story.",
+    "lane_or_package_boundary": "Story establishes or changes a lane-separation / package-boundary import-linter contract.",
+    "invariant_preservation": "Story preserves a load-bearing PRD invariant (FR34 HIL, FR40 lane separation, FR43 frozen-graph, etc.).",
+    "operator_acceptance_gate": "Story is a slab-closing or milestone go/no-go story with operator sign-off.",
+    "substrate_shape": "Story lays down substrate inherited by many downstream stories; mis-wiring has cascading cost.",
+    "contract_evolution": "Story extends an already-shipped contract to a post-slab-N contract, requiring (a) diff-against-prior-contract artifact reviewed BEFORE T2; (b) backward-consumer audit per call site; (c) AMELIA-P4 frozen-at-ship-hash delta-AC. Promoted to NAMED GATE-MODE (`dual-gate-cross-agent-CONTRACT-EVOLUTION`) per Winston W3 amendment Slab 7c Round-2 party-mode 2026-05-04. Distinct from `dual-gate` and from `dual-gate-cross-agent`."
+  },
+  "r_tier_legend": {
+    "R1": "Focused + impact-zone (~30-90 sec); cp1252-fix style narrow scope, ADR-only, structural-only stories",
+    "R2": "Focused + impact-zone + cross-cutting smoke suite (~2-3 min); most single-gate code stories, HIL surfaces, Marcus-bound writers",
+    "R3": "Full broad regression (~7 min; xdist-accelerated post-7c.0c if classification clean); substrate-shape, contract-evolution, AUDIT-AC, slab-close stories",
+    "_governance": "Designated at spec-author time. T11 review verifies tier was honored. Downgrading R-tier requires party-mode consensus (no ad-hoc downgrades). Per AMEND-V2 2026-05-04."
+  },
+  "t11_tier_legend": {
+    "lite": "Spec-checklist + diff-skim + status flip (~10-15 min). Eligibility: single-gate AND AC count <=5 AND single-file or sibling-files only AND no schema/contract/governance touch AND Codex T10 self-review clean. CAN batch 2-per-session if path-disjoint AND second-review uses explicit context-reset prompt.",
+    "standard": "Current 3-layer Blind/Edge/Auditor review (~25-40 min). Default for single-gate or dual-gate stories not eligible for lite.",
+    "cross-agent": "MANDATORY full-fresh-context Blind/Edge/Auditor (~30-50 min). Triggered by cross_agent_review_required=true. NEVER batched.",
+    "_governance": "Designated at spec-author time. Per AMEND-V3 2026-05-04."
+  },
+  "lookahead_tier_legend": {
+    "1": "Author-ahead-aggressively. Spec depends only on closed substrate; PRD-locked OR known-pattern-replication. Full spec + Codex dev-prompt; mark dispatch HELD until predecessor closes.",
+    "2": "Author-skeleton-ahead. Spec depends on substrate currently in dev. AC scaffolding + T-task structure + dispatch criteria; substrate-dependent signatures placeholder-marked `<TBD-when-7c.X-closes>`.",
+    "3": "Hold. AC shape contingent on unresolved substrate semantics. Do NOT pre-author beyond placeholder spec key in governance JSON.",
+    "_hard_cap": "Pre-author N+2 max where N = current in-flight Codex story; N+3 only if Wave-3 lookahead policy gate fires (see wave_3_lookahead_policy block) OR operator (E)-elasticity override at slab-opener party-mode.",
+    "_governance": "Designated at spec-author time. Per AMEND-V5 2026-05-04 + V7 2026-05-05."
+  },
+  "wave_3_lookahead_policy": {
+    "_comment": "V7 v1 ratified 2026-05-05 (party-mode 3-1 majority; Murat dissent). v1.1 ratified 2026-05-05 (slab-opener party-mode 3/3 confirm v1 elevation; 2-1 majority pre-ratify v2 with Amelia dissent on timing). v1 elevation gate satisfied at G2C+G3+G4 close (commit 0ec80df) with P2-clean ×3 across the three close-batches per G4 T11 review. Wave-3 HIL surface stories (7c.6..15) are largely path-disjoint via C6 import-linter contract (each §section is its own package).",
+    "default_cap": 2,
+    "current_cap": 3,
+    "elevation_gate": "P2_clean_x3_at_G4_close",
+    "elevation_satisfied_at": "0ec80df",
+    "elevation_satisfied_date": "2026-05-05",
+    "elevated_cap": 3,
+    "scope": "wave_3_remaining_stories",
+    "elevation_gate_description": "After Slab 7c.5.G4 closes (last extend-and-audit story) AND AMELIA-P2 freshness check has run clean on three consecutive consumed pre-auths under N+2 cap, elevation to N+3 is unlocked. Trust-building gate; v1.",
+    "version": "1.1",
+    "ratified": "2026-05-05",
+    "ratified_by": [
+      "John (PM) — V7 v1 (R3 majority)",
+      "Winston (Architect) — V7 v1 (R3 majority) + v1.1 (slab-opener confirm)",
+      "Amelia (Dev) — V7 v1 (R3 majority) + v1.1 (slab-opener confirm with v2-defer dissent on timing)",
+      "Murat (TEA) — v1.1 (slab-opener confirm post-empirical-baseline; flipped to ratify after V7 R3 dissent)"
+    ],
+    "documented_dissent_v7_v1": {
+      "voice": "Murat (TEA)",
+      "round": "V7 R3 2026-05-05",
+      "position": "a-priori-entry-via-triple-condition",
+      "rationale": "Risk math: 3.5 min expected staleness rework (0.175 coupling-probability × ~20 min spec-patch) vs 40-60 min deterministic foregone parallelism across 7c.6/7c.7/7c.8 under N+2 default. Triple-condition (C6 ∧ lookahead_tier=1 ∧ t11_tier=lite) is a-priori evaluable at slab-open without empirical baseline.",
+      "resolution": "RESOLVED at v1.1 slab-opener round: empirical baseline now corroborates Murat's hypothesis. Murat ratifies v1.1 elevation."
+    },
+    "wave_4_5_6_default_cap": "Reverts to default_cap=2 (V5 hard_cap) for Wave-4/5/6 entry. Wave-scoped granularity NOT codified; future wave-opener may convene party-mode for cap-elevation per the same evidence pattern.",
+    "v2_promotion_policy": {
+      "_comment": "v2 PRE-RATIFIED at 2026-05-05 slab-opener party-mode (2-1 majority Murat+Winston for pre-ratification; Amelia dissent on timing — defer until 3 Wave-3 closures provide actual data per V7 empirical-first principle). Pre-ratification consolidates the procedural step but does NOT change the trigger condition: v2 auto-fires only when wave_3_closed_count >= 3. Amelia's empirical-first principle is preserved in the trigger.",
+      "trigger": "wave_3_closed_count >= 3",
+      "rule": "Murat's triple-condition (C6 ∧ lookahead_tier=1 ∧ t11_tier=lite) replaces P2_clean_x3 as steady-state cap-elevation predicate. At slab-open or wave-open, evaluate the triple; if true, default cap is N+3 for that wave/slab.",
+      "pre_ratified_at": "2026-05-05 slab-opener party-mode (2-1 majority)",
+      "auto_fire_at_trigger": true,
+      "ratified_by": [
+        "Murat (TEA) — pre-ratify",
+        "Winston (Architect) — pre-ratify with revisit triggers"
+      ],
+      "documented_dissent": {
+        "voice": "Amelia (Dev)",
+        "round": "v1.1 slab-opener 2026-05-05",
+        "position": "defer-v2-to-post-3-Wave-3-closures",
+        "rationale": "V7 was 3-1 with Murat dissent precisely because his triple-condition needed more empirical data than V7's single-gate. Pre-ratifying v2 now flips the empirical-first principle that won V7. Land V7 v1.1, close 3 Wave-3 stories under cap-3, then re-open v2 in retro with full evidence.",
+        "resolution_note": "Empirical-first principle preserved in trigger condition (v2 auto-fires only at wave_3_closed_count >= 3). Pre-ratification only consolidates the procedural ratification step so a separate party-mode round is not needed at trigger time."
+      },
+      "hard_revert_clauses": {
+        "_comment": "Murat-authored hard-revert clauses + Winston-authored two revisit triggers. ALL clauses are dev-agent authority (no party-mode required to fire) per Murat's specification. Cora hooks the trigger evaluation.",
+        "auto_revert_to_n_plus_2_triggers": [
+          {
+            "trigger": "any Wave-3 story exhibits non-obvious cross-file coupling that triple-condition gate missed at pre-author time",
+            "scope": "remaining Wave-3 cohort",
+            "authority": "dev-agent (Cora hook)",
+            "consensus_required": false,
+            "v2_re_promotion_path": "v2 re-promotes only after a fresh 3-clean run of Wave-3 stories under restored N+2 cap"
+          },
+          {
+            "trigger": "any P-1 finding traceable to staleness from N+3 lookahead (e.g., pre-authored spec consumed 3 stories ahead became materially stale due to substrate move)",
+            "scope": "remaining Wave-3 cohort",
+            "authority": "dev-agent (Cora hook)",
+            "consensus_required": false,
+            "v2_re_promotion_path": "v2 re-promotes only after a fresh 3-clean run"
+          },
+          {
+            "trigger": "T11 cross-agent escalation on a Wave-3 story authored under N+3 (i.e., the lite-tier T11 was upgraded to standard or cross-agent due to discovered complexity)",
+            "scope": "remaining Wave-3 cohort + revisit lite-tier eligibility for the affected gate-family",
+            "authority": "dev-agent (Cora hook)",
+            "consensus_required": false,
+            "v2_re_promotion_path": "v2 re-promotes only after a fresh 3-clean run"
+          }
+        ]
+      }
+    }
+  },
+  "extend_and_audit_t1_audit_method": {
+    "_comment": "Party-mode V6 amendment 2026-05-05 (Q1 UNANIMOUS). Codifies AMELIA-P5 (DROP-row Heavy gate) + Winston's per-row audit_method qualifier (orthogonal axes). Triggered by Slab 7c.5.G1 T6 reversal on drafted_proposal/evidence: T1 audit declared 'drop because no audited consumer reads after construction' but T6 broad regression revealed live consumers exercised at smoke/integration time (composition/integration-marcus/integration-replay paths). Static-grep-only audits are blind to **common splat propagation, adapter dispatch via getattr(target, field_name), and runtime-typed registries.",
+    "scope": "All extend-and-audit stories (gate-mode dual-gate-cross-agent-CONTRACT-EVOLUTION). Currently: 7c.5.G1 (closed; baseline lesson) + 7c.5.G2C/G3/G4 (forward-binding).",
+    "contract_diff_row_schema": {
+      "_comment": "Contract-diff §2 Legacy DecisionCard Base Field Disposition (and any other DROP-bearing section) MUST carry per-row audit_method qualifier.",
+      "fields": ["field_name", "disposition", "audit_method", "rationale"],
+      "audit_method_values": ["heavy", "light"],
+      "audit_method_legend": {
+        "heavy": "Smoke-pass executed at T1 against tests/composition/ + tests/integration/marcus/ + tests/integration/replay/ to confirm no live consumer reads the field at runtime. ~10-15 min added to T1 per dropped field; parallelizable across fields. Required when disposition=DROP AND field is in downstream-touched set.",
+        "light": "Static-grep-only; no smoke run executed. Permitted ONLY when disposition is preserve-via-re-declaration / preserve-via-base / inherit / new-field-add. NEVER permitted when disposition=DROP."
+      }
+    },
+    "validator_rule": {
+      "_comment": "Sandbox-AC validator extension target. Validator rejects T1 deliverable if a contract-diff §2 row has disposition=DROP AND audit_method=light (or missing).",
+      "rule_id": "AMELIA-P5",
+      "binding": "hard",
+      "predicate": "for each row in contract_diff.dropped_fields: if disposition.startswith('DROP') and audit_method != 'heavy': REJECT with message 'AMELIA-P5: DROP-row requires audit_method=heavy with smoke-pass evidence against tests/composition/, tests/integration/marcus/, tests/integration/replay/ before T1 ready.'",
+      "exception": "ADD-only / RENAME-only T1 deliverables (no DROP rows in §2) bypass AMELIA-P5 entirely; audit_method qualifier still required per row but light is permitted for non-DROP dispositions."
+    },
+    "t1_smoke_pass_protocol": {
+      "_comment": "When audit_method=heavy is required for a DROP row, Codex T1 executes this protocol BEFORE declaring T1 ready.",
+      "command_template": ".venv/Scripts/python.exe -m pytest tests/composition/ tests/integration/marcus/ tests/integration/replay/ -k <field_name> --co -q",
+      "interpretation": "Collect-only run (--co) lists tests that exercise the field name. If zero collected → audit_method=heavy DROP verdict confirmed. If ≥1 collected → execute the test(s); if pass → confirmed; if fail → audit_method=heavy DROP verdict REJECTED, field must be preserve-via-re-declaration.",
+      "fallback": "If field name is too generic (e.g., 'evidence', 'context', 'payload') and collect surfaces broad set, Codex MUST run a targeted grep across the three test trees for `card\\.{field_name}` or `getattr\\(.*, ['\\\"]{field_name}\\b` patterns, document found-vs-not-found, and surface ambiguity to cross-agent T1 reviewer."
+    },
+    "instrumentation": {
+      "_comment": "Winston-rider 2026-05-05: track DROP-row prevalence across next 5-8 G2C/G3/G4 T1s; revisit AMELIA-P5 cost-benefit if DROP-row prevalence > 60% (would suggest extend-and-audit work is structurally DROP-heavy and AMELIA-P5 collapses into uniform-tax territory).",
+      "metric": "drop_row_count_per_extend_and_audit_t1",
+      "threshold": 0.60,
+      "revisit_rule": "If aggregated DROP-row prevalence over Slab 7c.5.G2C/G3/G4 T1s exceeds 0.60, file follow-on for v2 audit-method policy."
+    },
+    "ratified": "2026-05-05",
+    "ratified_by": [
+      "John (PM)",
+      "Winston (Architect)",
+      "Murat (TEA)",
+      "Amelia (Dev)"
+    ],
+    "supersedes": [
+      "Reviewer-discretion + common-token flag list (John's R1 proposal; conceded in R2)",
+      "Flat-BOTH (Heavy on every extend-and-audit T1; Murat's R1 proposal; superseded by AMELIA-P5 in R2)"
+    ]
+  },
+  "velocity_amendment_record": {
+    "date": "2026-05-04",
+    "party_mode_consultation": [
+      "John (PM)",
+      "Murat (TEA)",
+      "Amelia (Dev)",
+      "Winston (Architect)"
+    ],
+    "ratified": [
+      "V1",
+      "V2",
+      "V3",
+      "V4",
+      "V5"
+    ],
+    "declined": [
+      "scope-cut",
+      "multi-Codex parallelism",
+      "rolling-parity-canary (deferred)",
+      "gate-mode-demotion-audit (no scope review)"
+    ],
+    "estimated_savings_hours": "5-8",
+    "budget_revision": "5.5-7d -> 3.5-5d",
+    "artifact": "_bmad-output/planning-artifacts/slab-7c-velocity-amendments-2026-05-04.md"
+  },
+  "stories": {
+    "1-1a": {
+      "expected_gate_mode": "single-gate",
+      "rationale": null
+    },
+    "1-1b": {
+      "expected_gate_mode": "dual-gate",
+      "rationale": "substrate_shape"
+    },
+    "1-1c": {
+      "expected_gate_mode": "single-gate",
+      "rationale": "Reshaped 2026-04-22 via middle-path party-mode consensus: FastAPI smoke + MCP code substrate (protocol pin + handler + stdio wire-up) but NO MCP smoke (which moved to 1-1d). Pts grew 2→3; gate stays single."
+    },
+    "1-1d": {
+      "expected_gate_mode": "single-gate",
+      "rationale": "NEW story added 2026-04-22 via middle-path party-mode consensus on MCP-in-Slab-1. MCP stdio subprocess smoke + FastAPI↔MCP byte-equivalent parity assertion, runs nightly/on-merge (not per-PR), gates M1 acceptance for FR2 compound contract. Single-gate justified: not schema-shape, not lane-boundary, not invariant-preservation — just transport-parity test scaffold."
+    },
+    "1-2": {
+      "expected_gate_mode": "dual-gate",
+      "rationale": "schema_shape",
+      "expected_pts": 5,
+      "expected_k_target": 1.6,
+      "amendment_note": "Bumped 2026-04-22 from Pts=3/K=1.5× per Amelia set-level review: 8 models (incl. OperatorVerdict per BLOCKER-1) × four-file-lockstep × triple-layer red-rejection × reproducibility-invariants × schema-pin emission = ~32 files; 31-1 precedent (1 model at K=1.5× → MUST-FIX) is the warning."
+    },
+    "1-3": {
+      "expected_gate_mode": "dual-gate",
+      "rationale": "schema_shape",
+      "expected_k_target": 1.6,
+      "amendment_note": "K bumped 2026-04-22 from 1.4× per Amelia: cross-story schema migration (replace 1.2 stub) + 3 new schemas + selector + adapter + cache-prefix stability is 1.6× minimum."
+    },
+    "1-4": {
+      "expected_gate_mode": "dual-gate",
+      "rationale": "ci_or_compile_shape",
+      "amendment_note": "Scope expanded 2026-04-22 to include `app/gates/resume_api.py` stub + import-linter Contract C3 + ledger verdict-event shape stub per BLOCKER-1 honoring architecture §D3 Slab-1 distribution. Pts unchanged (5) — additions are signature stubs + one contract block, not load-bearing on K."
+    },
+    "1-5": {
+      "expected_gate_mode": "single-gate",
+      "rationale": null
+    },
+    "1-6": {
+      "expected_gate_mode": "dual-gate",
+      "rationale": "schema_shape"
+    },
+    "1-7": {
+      "expected_gate_mode": "single-gate",
+      "rationale": null,
+      "expected_k_target": 1.4,
+      "amendment_note": "K bumped 2026-04-22 from 1.3× per Amelia: 3 polished docs + scaffold-conformance framework + anti-patterns catalog + 11-section migration guide + M1 evidence pack + retrospective convening + sprint-status hygiene is 1.4× realistic. Closing-story-drift risk."
+    },
+    "2a-1": {
+      "expected_gate_mode": "dual-gate",
+      "rationale": "schema_shape"
+    },
+    "2a-2": {
+      "expected_gate_mode": "single-gate",
+      "rationale": null
+    },
+    "2a-3": {
+      "expected_gate_mode": "single-gate",
+      "rationale": null
+    },
+    "2a-4": {
+      "expected_gate_mode": "single-gate",
+      "rationale": null
+    },
+    "2a-5": {
+      "expected_gate_mode": "single-gate",
+      "rationale": null,
+      "_amendment_note": "Added 2026-04-25 as 2a.1 follow-on defect (A12 procedural-coupling resolution path b). Generator auto-emits pyproject.toml C3 ignore_imports row alongside 9-file specialist tree; eliminates the 14-instance manual-edit flakiness vector across Slab 2b.1-2b.14. ~2pt, K-target ~1.4× (target 6-8 / floor 5). Single-gate justified: defect fix with no schema-shape risk surface, no lane/package boundary, no invariant preservation, no operator-acceptance gate. Party-mode T2 2026-04-24 ratification (Murat (b)-preferred path / Winston path-2 / Paige A12 procedural-coupling category). Slab-2a→2b binding gate per slab-2a-retrospective.md §Slab 2b kickoff readiness checklist hard gate 1."
+    },
+    "2b-1": {
+      "expected_gate_mode": "single-gate",
+      "rationale": "TEMPLATE: establishes the per-specialist migration scaffold pattern for 2b.2-2b.14."
+    },
+    "2b-2": {
+      "expected_gate_mode": "single-gate",
+      "rationale": "Follows 2b.1 TEMPLATE; scaffold-conformant specialist migration."
+    },
+    "2b-3": {
+      "expected_gate_mode": "single-gate",
+      "rationale": "Follows 2b.1 TEMPLATE."
+    },
+    "2b-4": {
+      "expected_gate_mode": "single-gate",
+      "rationale": "Follows 2b.1 TEMPLATE."
+    },
+    "2b-5": {
+      "expected_gate_mode": "single-gate",
+      "rationale": "Follows 2b.1 TEMPLATE."
+    },
+    "2b-6": {
+      "expected_gate_mode": "single-gate",
+      "rationale": "Follows 2b.1 TEMPLATE."
+    },
+    "2b-7": {
+      "expected_gate_mode": "single-gate",
+      "rationale": "Follows 2b.1 TEMPLATE."
+    },
+    "2b-8": {
+      "expected_gate_mode": "single-gate",
+      "rationale": "Follows 2b.1 TEMPLATE."
+    },
+    "2b-9": {
+      "expected_gate_mode": "single-gate",
+      "rationale": "Follows 2b.1 TEMPLATE."
+    },
+    "2b-10": {
+      "expected_gate_mode": "single-gate",
+      "rationale": "Follows 2b.1 TEMPLATE."
+    },
+    "2b-11": {
+      "expected_gate_mode": "single-gate",
+      "rationale": "Follows 2b.1 TEMPLATE."
+    },
+    "2b-12": {
+      "expected_gate_mode": "single-gate",
+      "rationale": "Follows 2b.1 TEMPLATE."
+    },
+    "2b-13": {
+      "expected_gate_mode": "single-gate",
+      "rationale": "Follows 2b.1 TEMPLATE."
+    },
+    "2b-14": {
+      "expected_gate_mode": "single-gate",
+      "rationale": "Follows 2b.1 TEMPLATE."
+    },
+    "2b-15": {
+      "expected_gate_mode": "dual-gate",
+      "rationale": "schema_shape"
+    },
+    "2b-16": {
+      "expected_gate_mode": "single-gate",
+      "rationale": null
+    },
+    "2b-17": {
+      "expected_gate_mode": "single-gate",
+      "rationale": null
+    },
+    "2c-1": {
+      "expected_gate_mode": "single-gate",
+      "rationale": null
+    },
+    "2c-2": {
+      "expected_gate_mode": "single-gate",
+      "rationale": null
+    },
+    "2c-3": {
+      "expected_gate_mode": "single-gate",
+      "rationale": null
+    },
+    "2c-4": {
+      "expected_gate_mode": "single-gate",
+      "rationale": null
+    },
+    "3-1": {
+      "expected_gate_mode": "dual-gate",
+      "rationale": "lane_or_package_boundary"
+    },
+    "3-2": {
+      "expected_gate_mode": "dual-gate",
+      "rationale": "schema_shape"
+    },
+    "3-3": {
+      "expected_gate_mode": "dual-gate",
+      "rationale": "invariant_preservation"
+    },
+    "3-4": {
+      "expected_gate_mode": "single-gate",
+      "rationale": null
+    },
+    "3-5": {
+      "expected_gate_mode": "single-gate",
+      "rationale": null
+    },
+    "3-6": {
+      "expected_gate_mode": "dual-gate",
+      "rationale": "operator_acceptance_gate"
+    },
+    "4-1": {
+      "expected_gate_mode": "dual-gate",
+      "rationale": "ci_or_compile_shape"
+    },
+    "4-2": {
+      "expected_gate_mode": "dual-gate",
+      "rationale": "lane_or_package_boundary"
+    },
+    "4-3": {
+      "expected_gate_mode": "single-gate",
+      "rationale": null
+    },
+    "4-4": {
+      "expected_gate_mode": "dual-gate",
+      "rationale": "schema_shape"
+    },
+    "4-5": {
+      "expected_gate_mode": "single-gate",
+      "rationale": null
+    },
+    "4-6": {
+      "expected_gate_mode": "single-gate",
+      "rationale": null
+    },
+    "4-7": {
+      "expected_gate_mode": "single-gate",
+      "rationale": null
+    },
+    "5a-1": {
+      "expected_gate_mode": "dual-gate",
+      "rationale": "operator_acceptance_gate"
+    },
+    "5a-2": {
+      "expected_gate_mode": "dual-gate",
+      "rationale": "operator_acceptance_gate"
+    },
+    "5a-3": {
+      "expected_gate_mode": "single-gate",
+      "rationale": null,
+      "expected_pts": 5,
+      "expected_k_target": 1.4,
+      "amendment_note": "2026-04-26 substrate-aware amendment: scope repointed from ≥50% reduction-vs-legacy bar to cost-engineering foundation (cascade + telemetry + characterization-on-migrated-runtime). See _amendment_log entry for full operator-ratified D1-D9 decision set."
+    },
+    "5a-4": {
+      "expected_gate_mode": "single-gate",
+      "rationale": null
+    },
+    "5a-5": {
+      "expected_gate_mode": "dual-gate",
+      "rationale": "operator_acceptance_gate"
+    },
+    "5b-1": {
+      "expected_gate_mode": "single-gate",
+      "rationale": null
+    },
+    "5b-2": {
+      "expected_gate_mode": "single-gate",
+      "rationale": null
+    },
+    "5b-3": {
+      "expected_gate_mode": "single-gate",
+      "rationale": null
+    },
+    "5b-4": {
+      "expected_gate_mode": "single-gate",
+      "rationale": null
+    },
+    "6-0": {
+      "expected_gate_mode": "dual-gate",
+      "rationale": "substrate_shape + invariant_preservation",
+      "expected_pts": 8,
+      "expected_k_target": 1.4,
+      "amendment_note": "Slab 6 substrate opener: production envelope + dispatch adapter + composition fixture. Path A-prime keeps specialists unchanged and proves Texas -> cd composition through tests/composition."
+    },
+    "6-1": {
+      "expected_gate_mode": "dual-gate",
+      "rationale": "substrate_shape + operator_acceptance_gate",
+      "expected_pts": 5,
+      "expected_k_target": 1.4,
+      "amendment_note": "Re-scoped 2026-04-27 after Slab 6.0 insertion: runner consumes ProductionEnvelope + ProductionDispatchAdapter substrate; retains manifest composition, HIL pause/resume, trace binding, and live smoke/operator acceptance."
+    },
+    "6-2": {
+      "expected_gate_mode": "single-gate",
+      "rationale": null,
+      "expected_pts": 1,
+      "expected_k_target": 1.4,
+      "amendment_note": "Filed 2026-04-27 after Slab 6.1 close per bmad-code-review DFR-6.1-1. Promotes dependency_map declaration from runner-layer fallback into pipeline manifest; preserves runner-layer fallback as the permanent resolution mechanism for undeclared or empty nodes. Slab 6 trial-experience bundle prerequisite (precedes 6.3 + 6.4 + 6.5)."
+    },
+    "6-3": {
+      "expected_gate_mode": "single-gate",
+      "rationale": null,
+      "expected_pts": 1,
+      "expected_k_target": 1.4,
+      "amendment_note": "Filed 2026-04-27 as Slab 6 trial-experience bundle item. Step 02A surfaces prior-run operator-directives.md as named defaults; eliminates re-entry burden on resumed/repeated runs. Operator-flagged 2026-04-19 trial. Single-gate: minor enhancement; no schema-shape risk."
+    },
+    "6-4": {
+      "expected_gate_mode": "dual-gate",
+      "rationale": "schema_shape + invariant_preservation",
+      "expected_pts": 4,
+      "expected_k_target": 1.4,
+      "amendment_note": "Filed 2026-04-27 as Slab 6 trial-experience bundle item. Encodes validate-irene-pass2-handoff.py validator contract as explicit Pydantic v2 schema + authoring template. Operator-flagged HIGHEST friction step in production pipeline (2026-04-20 trial run B-Run §08). Dual-gate: new schema surface + existing validator contract preservation."
+    },
+    "6-5": {
+      "expected_gate_mode": "single-gate",
+      "rationale": null,
+      "expected_pts": 4,
+      "expected_k_target": 1.4,
+      "amendment_note": "Filed 2026-04-27 as Slab 6 trial-experience bundle item. HUD per-step expandable summaries surface real-time content captured + locked at each pipeline step. Operator-flagged 2026-04-19 trial during Step 03 hold. Single-gate: HUD enhancement; no schema-shape risk; no substrate-touching contracts."
+    },
+    "7a-1": {
+      "expected_gate_mode": "dual-gate",
+      "rationale": "substrate_shape + invariant_preservation",
+      "expected_pts": 5,
+      "expected_k_target": 1.6,
+      "amendment_note": "Slab 7a opener: directive_composer.py closes trial-475 Gap 2 (silent gate-bypass from missing directive composition). Dual-gate justified: closes trial-475 root cause + introduces Composition Smoke gate evidence at slab-opener (Composition Spec §9). K=1.6× per directive-composer band 3.2-5K; ~3.5K target."
+    },
+    "7a-2": {
+      "expected_gate_mode": "single-gate",
+      "rationale": null,
+      "expected_pts": 3,
+      "expected_k_target": 1.3,
+      "amendment_note": "Slab 7a wave-2: manifest fold-flags + compiler extension. Tier-2 minor manifest schema bump (additive `fold_with`/`fold_target` per-node fields); removes hardcoded PRODUCTION_GATE_IDS frozenset and derives from manifest at compile-time (FR-A8). Hard precondition: pipeline-manifest.yaml schema_version bump 'v4.2-migration-stub' → 'v4.2-migration-stub-with-fold-flags' landed via this same 2026-04-28 party-mode round."
+    },
+    "7a-6": {
+      "expected_gate_mode": "single-gate",
+      "rationale": null,
+      "expected_pts": 3,
+      "expected_k_target": 1.3,
+      "amendment_note": "Slab 7a wave-3 (PROMOTED from wave-6 per Step 1 batch-approved adjustment — registry must precede stories that emit vocabulary into it). Vocabulary registry (Pydantic-v2 namespaced enum) + 34-row operator-control parity table. SG-1 + SG-2 primary structural enforcement here (FR-O20 row-count CI; FR-O21 specialist-roster build assertion)."
+    },
+    "7a-3": {
+      "expected_gate_mode": "single-gate",
+      "rationale": null,
+      "expected_pts": 3,
+      "expected_k_target": 1.3,
+      "amendment_note": "Slab 7a wave-3 (parallel with 7a-6): pre-gate-marcus shared LLM node. Single LLM call site before each conversational gate; C1 template-with-slots pre-fill with confidence + rationale; reads vocabulary registry from 7a-6."
+    },
+    "7a-4": {
+      "expected_gate_mode": "single-gate",
+      "rationale": null,
+      "expected_pts": 5,
+      "expected_k_target": 1.4,
+      "k_contract": {
+        "scope": "HTML review-pack BOUNDED to skeleton-only (semantic structure + checkbox + delta-field; no full styling); full styling deferred to post-Slab-7a polish.",
+        "tripwire_threshold_kloc": 4.08,
+        "tripwire_action": "escalate_to_dual_gate_via_party_mode",
+        "rationale": "K-target 1.4× against gate-shape band 2.4-2.8K positions 7a-4 at upper band edge (3.5K is 1.46× band-ceiling, 1.75× band-floor). The K-contract bounds scope to skeleton-only HTML; if K-actual exceeds 1.7× band-floor (4.08K), the dev round closes and party-mode consensus required to escalate to dual-gate."
+      },
+      "amendment_note": "Slab 7a wave-4: per-slide subgraph + HTML review-pack skeleton. Subgraph-with-`interrupt()` fan-out for G2B/G2F-merged/G3B per-slide arrays. FM-3 AST scan critical (subgraph-degenerating-to-parent-graph-loop check). Single-gate WITH k_contract tripwire per Step 1 batch-approved adjustment."
+    },
+    "7a-5": {
+      "expected_gate_mode": "single-gate",
+      "rationale": null,
+      "expected_pts": 3,
+      "expected_k_target": 1.3,
+      "amendment_note": "Slab 7a wave-4 (parallel with 7a-4): conversation persistence (SHA256 tamper-evident chain) + specialist-summary writer (15-25 line envelope per FR-O19). Postgres checkpointer additive evolution (ADR-D3); FR-A11-A14 cluster."
+    },
+    "7a-7": {
+      "expected_gate_mode": "single-gate",
+      "rationale": null,
+      "expected_pts": 2,
+      "expected_k_target": 1.3,
+      "amendment_note": "Slab 7a wave-5 (parallel with start of 7a-8): A2 single-decision CLI shims for terminal gates G1/G2C/G3/G4. Audience-layered help text (OPERATOR/INPUTS/OUTPUTS/REFERENCE structure). Carries NFR-OD1/OD2 first-class story-scoped; 5 FRs after Mary's augment per Step 2 finding."
+    },
+    "7a-8": {
+      "expected_gate_mode": "dual-gate",
+      "rationale": "operator_acceptance_gate + invariant_preservation",
+      "expected_pts": 4,
+      "expected_k_target": 1.6,
+      "amendment_note": "Slab 7a wave-5 strict-last (FLIPPED from single-gate to dual-gate per Step 1 batch-approved adjustment — integration story; cross-story failure modes justify conservative review). Integration + parity-test suite (34-row mapping checklist 1:1) + Composition Spec invariant test suite (NFR-I8) + calibration-tripwire wiring + gate-bypass detection + max-3 oscillation guard + engagement-decay reporting + Slab 7a closeout artifacts. SG-1 + SG-2 + SG-3 aggregated structural enforcement here. Operator acceptance for trial-2 readiness predicate."
+    },
+    "7b-1": {
+      "expected_gate_mode": "single-gate",
+      "rationale": null,
+      "expected_pts": 3,
+      "expected_k_target": 1.3,
+      "amendment_note": "Slab 7b Wave 1 (Class A hardening; Claude; slab-opener for Wave 1 parallelism). Texas hardening: live-retrieval-against-real-directive-composer + six-canonical-artifacts contract enforcement + G0 6-dim evidence-sentence rubric + word-count belt-and-suspenders + cross-validation hint application. Single-gate justified: rubric-semantics work; not schema-shape, not lane-boundary. T1 CREATE-tasks per Round-(a) Murat A4: SanctumParityTestBase (Errata 3) + _chain_test_base.py (NFR-CG14a) + class-conformance validator (NFR-I12) + Errata 4 subdir-vs-flat ratification. Wave-1 close tripwire: >2.7K LOC fires K-aggregate escalation; tripwire fired-verdict recorded at top-level `tripwire_escalation_record_path` per Round-(e) E2."
+    },
+    "7b-2": {
+      "expected_gate_mode": "single-gate",
+      "rationale": null,
+      "expected_pts": 3,
+      "expected_k_target": 1.3,
+      "prerequisite_stories": [
+        "7b-1"
+      ],
+      "prerequisite_rationale": "Round-(e) E5/Murat. 7b-1 must land 4 T1 CREATE-tasks atomically (SanctumParityTestBase at tests/parity/_sanctum_parity_base.py, _chain_test_base.py at tests/composition/_chain_test_base.py, validate_parity_test_class_conformance.py at scripts/utilities/, Errata 4 subdir-vs-flat ratification in tests/parity/README.md) before 7b-2 opens. Substrate dependency: Quinn-R parity tests cannot derive their fixtures or class-shape without these bases. Sprint runner must NOT open 7b-2 until 7b-1's T1 CREATE-tasks land.",
+      "amendment_note": "Slab 7b Wave 1 (Class A hardening; Claude; parallel with 7b-1, 7b-3 — gated on 7b-1 T1 CREATE-tasks per `prerequisite_stories`). Quinn-R two-mode rubric (pre-composition / post-composition) + G2C storyboard-bound + G5 pre-composition QA (WPM + VTT monotonicity + coverage + motion-vs-narration coherence + advisory-vs-blocking partition). Single-gate justified: rubric-semantics work."
+    },
+    "7b-3": {
+      "expected_gate_mode": "single-gate",
+      "rationale": null,
+      "expected_pts": 3,
+      "expected_k_target": 1.3,
+      "prerequisite_stories": [
+        "7b-1"
+      ],
+      "prerequisite_rationale": "Round-(e) E5/Murat. Same substrate dependency as 7b-2: Vera parity tests cannot derive their fixtures or class-shape without 7b-1's T1 CREATE-tasks (SanctumParityTestBase + _chain_test_base.py + class-conformance validator + Errata 4 ratification). Sprint runner must NOT open 7b-3 until 7b-1's T1 CREATE-tasks land.",
+      "amendment_note": "Slab 7b Wave 1 (Class A hardening; Claude; parallel with 7b-1, 7b-2 — gated on 7b-1 T1 CREATE-tasks per `prerequisite_stories`). Vera G0 6-dim evidence-sentence rubric on real Texas output + G1 ingestion-quality 6-dim verdicts + G3 fidelity check on real Storyboard A + G4 19-criterion rubric (G4-01..G4-19) + sensory-bridges dispatch on real motion+audio. Single-gate justified: rubric-semantics work."
+    },
+    "7b-4": {
+      "expected_gate_mode": "single-gate",
+      "rationale": null,
+      "expected_pts": 3,
+      "expected_k_target": 1.3,
+      "amendment_note": "Slab 7b Wave 2a (Class B refresh; Claude; strict after Wave 1 — inherits Vera G4 rubric from 7b-3). Irene Pass-1 9-node scaffold mirroring Pass-2 (Slab 2a.2 precedent) + lesson-plan coauthoring + scope-lock contract + per-plan-unit ratification surface for G1A + mode-singularity hard-constraint + scope_decision.set + plan.locked learning-event emission. Single-gate justified: persona-continuity refresh; mirrors existing Pass-2 shape."
+    },
+    "7b-5": {
+      "expected_gate_mode": "single-gate",
+      "rationale": null,
+      "expected_pts": 5,
+      "expected_k_target": 1.5,
+      "k_contract": {
+        "scope": "Class-C+ port-shape + sidecar emission BUNDLE bounded to: (1) Pass-2 research-shaped intent enrichment + (2) sidecar greenfield at _bmad/memory/bmad-agent-tracy/ (4-file BMB pattern: INDEX.md/PERSONA.md/chronology.md/access-boundaries.md). LLM-only (no third-party API integration; if scope drifts to API integration, party-mode + version-bump pre-promotion required mirroring Round-(b) Mary B1 / Round-(c) C1 amendment for Dan).",
+        "tripwire_threshold_kloc": 2.7,
+        "tripwire_action": "wave_2b_close_k_aggregate_escalation_per_round_a_amelia_a3 (records at top-level `tripwire_escalation_record_path`; if fired: Wave-3 first-port (7b-6) opens at upper-band K-target; 7b-7+7b-8 pre-authorized for dual-gate escalation via their `conditional_gate_override` hooks)",
+        "rationale": "K-target 1.5× against Class-C+ band; tripwire at 2.7K is the Wave-2b close trigger consistent with Wave-1 close threshold per Round-(a) Amelia A3 four-tripwire framework."
+      },
+      "required_ac_reference_paths": [
+        "skills/bmad-agent-texas/references/retrieval-contract.md"
+      ],
+      "required_ac_reference_rationale": "Round-(e) E4/Amelia. Tracy's research-shaped intent enrichment touches the Texas retrieval-lane interface contract. AC coverage of the Tracy↔Texas retrieval-shape interface is required (not optional). bmad-create-story on 7b-5 reads this file at T1 and the resulting story spec must explicitly cite it in the relevant ACs.",
+      "amendment_note": "Slab 7b Wave 2b (Class C+ port-shape + sidecar emission BUNDLE; Codex per NFR-CG17 + D21; strict after Wave 2a). Tracy research-shaped intent enrichment for Pass-2 + sidecar greenfield at _bmad/memory/bmad-agent-tracy/ (4-file BMB pattern). Live LLM-only (no third-party API; sandbox-AC inventory entry NOT required for Tracy specifically per R5 Amelia-scope-amendment). Single-gate justified per Slab 2b.1 TEMPLATE pattern. K-target 1.5× per Class-C+ K-bump (port-shape WITH sidecar emission)."
+    },
+    "7b-6": {
+      "expected_gate_mode": "single-gate",
+      "rationale": null,
+      "expected_pts": 4,
+      "expected_k_target": 1.4,
+      "amendment_note": "Slab 7b Wave 3 (Class C API-bound; Codex per NFR-CG17; first port-shape; consumes FR107 sandbox-AC `gamma` LANDED Wave 0). Gary port-shape: Gamma API live invocation + per-slide variant generation (DOUBLE_DISPATCH branch) + theme-handshake + PNG export normalization + Vera G3 invocation hooks + cache-hit-rate ≥85% post-warm-up + live-API-on-CI strict prohibition. Single-gate per Slab 2b.1 TEMPLATE. Wave-3 first-port tripwire: >2.7K LOC → fired-verdict recorded at top-level `tripwire_escalation_record_path` per Round-(e) E2 → 7b-7 Kira + 7b-8 Enrique gate-mode flips to dual-gate via their `conditional_gate_override` structural hooks per Round-(e) E3."
+    },
+    "7b-7": {
+      "expected_gate_mode": "single-gate",
+      "rationale": null,
+      "expected_pts": 4,
+      "expected_k_target": 1.4,
+      "conditional_gate_override": {
+        "trigger_story": "7b-6",
+        "trigger_condition": "wave_3_first_port_tripwire (7b-6 closes at >2.7K LOC)",
+        "trigger_check_owner": "sprint runner at 7b-7 story-open (must read `tripwire_escalation_record_path` for 7b-6 close-verdict)",
+        "override_gate_mode": "dual-gate",
+        "override_rationale": "Round-(e) E3/Mary. If 7b-6 (Gary) closes above 2.7K LOC, the Wave-3 first-port tripwire signals the Codex-port template is not amortizing as expected. 7b-7 (Kira) and 7b-8 (Enrique) both inherit the same Slab 2b.1 TEMPLATE pattern as 7b-6, so cross-port failure-mode risk justifies escalating their gate mode. Mirrors Round-(a) Amelia A3 four-tripwire framework with structural enforcement (not prose-only).",
+        "binding": "hard"
+      },
+      "amendment_note": "Slab 7b Wave 3 (Class C API-bound; Codex; parallel with 7b-6, 7b-8; consumes FR107 sandbox-AC `kling`). Kira port-shape: Kling API live invocation + motion generation per motion_plan.yaml + per-slide .progress.json + terminal .json receipts + reviewer inspection pack at [BUNDLE_PATH]/recovery/inspection/ + fail-closed budget rules + cache-hit-rate ≥85%. Default single-gate per Slab 2b.1 TEMPLATE; conditional dual-gate override via `conditional_gate_override` if 7b-6 first-port tripwire fires."
+    },
+    "7b-8": {
+      "expected_gate_mode": "single-gate",
+      "rationale": null,
+      "expected_pts": 4,
+      "expected_k_target": 1.4,
+      "conditional_gate_override": {
+        "trigger_story": "7b-6",
+        "trigger_condition": "wave_3_first_port_tripwire (7b-6 closes at >2.7K LOC)",
+        "trigger_check_owner": "sprint runner at 7b-8 story-open (must read `tripwire_escalation_record_path` for 7b-6 close-verdict)",
+        "override_gate_mode": "dual-gate",
+        "override_rationale": "Round-(e) E3/Mary. Mirrors 7b-7 conditional escalation; same cross-port failure-mode argument: if Slab 2b.1 TEMPLATE pattern fails to amortize on 7b-6, both 7b-7 and 7b-8 escalate together because they share the template.",
+        "binding": "hard"
+      },
+      "amendment_note": "Slab 7b Wave 3 (Class C API-bound; Codex; parallel with 7b-6, 7b-7; consumes FR107 sandbox-AC `elevenlabs`). Enrique port-shape: ElevenLabs API + voice-preview/voice-selection HIL contract (voice-preview-options.json + voice-selection-review.md + voice-selection.json) + manifest-driven narration on locked package + assembly-bundle build (assembly-bundle/audio/ + captions/) + per-segment progress to stderr + cache-hit-rate ≥85%. Default single-gate per Slab 2b.1 TEMPLATE; conditional dual-gate override via `conditional_gate_override` if 7b-6 first-port tripwire fires."
+    },
+    "7b-9": {
+      "expected_gate_mode": "single-gate",
+      "rationale": null,
+      "expected_pts": 4,
+      "expected_k_target": 1.4,
+      "amendment_note": "Slab 7b Wave 4 (Class C; Codex; consumes FR107 sandbox-AC `wondercraft`). Wanda port-shape onto scaffold (closes pre-Slab-2b client-landed-not-on-scaffold gap): Wondercraft API + podcast/audio bed generation scoped into storyboard's audio track + scaffold-v0.2 alignment + cache-hit-rate ≥85%. Single-gate per Slab 2b.1 TEMPLATE."
+    },
+    "7b-10": {
+      "expected_gate_mode": "single-gate",
+      "rationale": null,
+      "expected_pts": 5,
+      "expected_k_target": 1.5,
+      "k_contract": {
+        "scope": "Class-D1 LLM-greenfield bounded to: (1) SKILL.md (option-a sanctum-aligned); (2) sidecar at _bmad/memory/bmad-agent-dan/ (full BMB pattern); (3) app/specialists/dan/ scaffold-v0.2 instantiation; (4) _act body shaped as narrow-lane creative-director aux contributions threaded G1-G2. EXCLUDES third-party-API integration — if T1 dan-api-tbd resolution lands as third-party-API, Round-(b) B1 / Round-(c) C1 binding requires party-mode consensus + governance-JSON version bump pre-promotion (dev-agent does NOT unilaterally promote).",
+        "tripwire_threshold_kloc": 4.0,
+        "tripwire_action": "escalate_to_party_mode_for_scope_review (records at top-level `tripwire_escalation_record_path`; >4K signals likely scope creep, most plausibly an API integration leak that should have triggered B1/C1 promotion gating)",
+        "rationale": "K-target 1.5× per Class-D1 greenfield-uplift bump (defensible against 27-2 / 31-1 precedents per Round-(e) Amelia note). Tripwire 4.0K = ~2.67× band-floor; well above K-target band-ceiling. Scope-creep signal."
+      },
+      "amendment_note": "Slab 7b Wave 5a (Class D1 LLM-greenfield; Claude per D21; strict after Waves 1-3 closed per R8 Winston-amendment). Dan greenfield via bmad-create-specialist: SKILL.md (option-a sanctum-aligned) + sidecar at _bmad/memory/bmad-agent-dan/ (full BMB pattern) + app/specialists/dan/ scaffold-v0.2 + _act narrow-lane creative-director aux contributions threaded G1-G2. T1: dan-api-tbd resolution (LLM-only or third-party-API). Round-(b) Mary B1 / Round-(c) C1 amendment: if Dan resolves to third-party-API, sandbox-AC inventory promotion requires party-mode consensus + governance-JSON version bump pre-dev (dev-agent does NOT unilaterally promote). K-target 1.5× per Class-D1 greenfield-uplift bump."
+    },
+    "7b-11": {
+      "expected_gate_mode": "single-gate",
+      "rationale": null,
+      "expected_pts": 5,
+      "expected_k_target": 1.5,
+      "conditional_dual_gate_escalation": {
+        "trigger_condition": "pre_t1_k_projection_kloc > 4.0",
+        "trigger_check_owner": "dev-agent at story T1 (before any code is written)",
+        "escalation_action": "story_gate_mode := dual-gate; record decision in `_amendment_log` and at top-level `tripwire_escalation_record_path`; downstream gate ceremony (Gate-2 operator-witnessed) added to story workflow",
+        "binding": "hard",
+        "rationale": "Round-(e) E1/John (binding-hard amendment to Round-(b) Amelia B2 / Round-(c) C2). PRD risk model flags Compositor as greenfield-adjacent with sidecar complexity. Round-(b)/(c) prose-only conditional was insufficient — this structural field makes the K-projection check a hard gate, not advisory. Dev-agent T1 K-projection >4K is a non-discretionary trigger; gate mode flips before any code is written."
+      },
+      "k_contract": {
+        "scope": "Class-D2 pipeline-greenfield SIDECAR variant per D20 (canonical, NOT exception) bounded to: (1) persona artifacts as sidecar with operational-metadata content (contract.md/version.md/chronology.md/access-boundaries.md); (2) scaffold-v0.2-D2-pipeline (FR111) consumption; (3) pipeline-determinism harness ≥99% rate (bytes-identical for sync-visuals; field-masked-hash for DESCRIPT-ASSEMBLY-GUIDE.md modulo {generated_at, run_id, build_timestamp} per R3 Amelia-amendment); (4) EXEMPT from FR101.iv sanctum-path-equality clause per D20.",
+        "tripwire_threshold_kloc": 4.0,
+        "tripwire_action": "escalate_to_dual_gate (mandatory; binds to `conditional_dual_gate_escalation` above; Round-(b) Amelia B2 / Round-(c) C2 / Round-(e) E1 binding-hard chain)",
+        "rationale": "K-target 1.5× per Class-D2 greenfield-uplift bump. >4K = D2 pipeline complexity confirmed beyond sidecar pattern; dual-gate required to absorb cross-component failure-mode risk."
+      },
+      "amendment_note": "Slab 7b Wave 5b (Class D2 pipeline-greenfield, sidecar variant; Claude per D21; parallel with 7b-10 after Waves 1-3 closed). Compositor: Class-D2 sidecar variant per D20 (canonical, NOT exception); persona artifacts as sidecar with operational-metadata content (contract.md/version.md/chronology.md/access-boundaries.md). Consumes FR111 scaffold-v0.2-D2-pipeline LANDED Wave 0. Pipeline-determinism harness ≥99% (bytes-identical for sync-visuals; field-masked-hash for DESCRIPT-ASSEMBLY-GUIDE.md modulo {generated_at, run_id, build_timestamp} per R3 Amelia-amendment). EXEMPT from FR101.iv sanctum-path-equality clause per D20. Round-(b) Amelia B2 / Round-(c) C2 amendment: pre-T1 K-projection check; if T1 LOC estimate >4K, story escalates to dual-gate. Round-(e) E1/John amendment: this conditional is now structurally enforced via `conditional_dual_gate_escalation` field with binding=hard (was prose-only; now load-bearing). K-target 1.5× per Class-D2 greenfield-uplift bump."
+    },
+    "7b-12": {
+      "expected_gate_mode": "dual-gate",
+      "rationale": "operator_acceptance_gate + invariant_preservation",
+      "expected_pts": 4,
+      "expected_k_target": 1.6,
+      "k_contract": {
+        "scope": "Integration + parity-test suite aggregation BOUNDED to: (1) FR101 + FR105 + FR102 binding to .github/workflows/specialist-parity.yml + activation-contract.yml + mapping-checklist.yml + substrate-frozen-paths-check.yml + codex-scope-audit.yml; (2) per-specialist operator-reference docs (NFR-OD3 × 11); (3) sanctum-alignment matrix doc (NFR-OD4 + FR103); (4) operator-control parity table +11 rows (FR104); (5) ~28 mapping-checklist row improvements (NFR-I11); (6) 5-API live-binding smoke (operator-gated AC-12-B; gamma/kling/elevenlabs/wondercraft/dan-api-tbd-resolved; ≤3 canaries/API; cost ≤$0.40/canary); (7) trial-2 cost-projection dry-run per Round-(a) John A1.",
+        "tripwire_threshold_kloc": 4.8,
+        "tripwire_action": "party_mode_review_for_scope_reduction (records at top-level `tripwire_escalation_record_path`; party-mode considers four named remediation paths from Round-(a) A1: scope-cut / budget-exception / trial-redesign / Slab-7c precondition deferral; e.g., defer NFR-OD3 docs to follow-on)",
+        "rationale": "K-target 1.6× against integration-tier band; mirrors 7a-8 K-target. >4.8K = 1.7× band-floor edge per 7a-4 K-contract pattern; integration stories bloat predictably and a structural ceiling forces explicit scope conversation."
+      },
+      "amendment_note": "Slab 7b Wave 6 strict-last (DUAL-GATE per Slab 7a 7a-8 precedent + Murat integration-tier risk argument; Claude). Integration + parity-test suite aggregation (FR101 + FR105 + FR102 binding to .github/workflows/specialist-parity.yml + activation-contract.yml + mapping-checklist.yml + substrate-frozen-paths-check.yml + codex-scope-audit.yml) + per-specialist operator-reference docs (NFR-OD3 × 11) + sanctum-alignment matrix doc (NFR-OD4 + FR103) + operator-control parity table +11 rows (FR104) + ~28 mapping-checklist row improvements (NFR-I11) + 5-API live-binding smoke (operator-gated AC-12-B; gamma/kling/elevenlabs/wondercraft/dan-api-tbd-resolved; ≤3 canaries/API; cost ≤$0.40/canary) + trial-2 cost-projection dry-run (Round-(a) John A1 amendment; SR-T6 mitigation). SG-1 + SG-2 + SG-3 + SG-4 AGGREGATED structural enforcement. MVP Exit Gate verification (G2 + 9-of-11). Slab 7b Close Gate verification (G3 + 11 cascade-reading). Hard prereq: ALL 11 prior Slab 7b body stories `done`. K-target 1.6× per integration-tier K-bump (mirrors 7a-8)."
+    },
+    "7c-0a": {
+      "expected_gate_mode": "dual-gate",
+      "rationale": "substrate_shape + invariant_preservation",
+      "expected_pts": 3,
+      "expected_k_target": 1.3,
+      "cross_agent_review_required": true,
+      "prerequisite_stories": [],
+      "amendment_note": "Slab 7c Wave 0 (architecture-tier; precedes 7c.0b per Winston W1). Decision Foundation: parity-contract DSL ADR (FR-7c-30..33) + import-linter contracts C4/C5/C6 ALL land here with empty target lists per Winston W2 (7c.3a populates C5; 7c.4b populates C6) + TripwireLedgerEntry Pydantic-v2 model spec (NFR-7c-OD2; Murat A5 highest-leverage) + FR-7c-50 audit-chain integrity conceptual design + Decision-then-Foundation pattern named per Winston W4 + D7 transport-DSL-completeness policy per Winston W6. Cross-agent code-review MANDATORY (architectural ADR + 3 import-linter contracts). Hard precedence: 7c.0b + Wave 1 (except 7c.2 per AMELIA-P1 path-isolation) cannot open until 7c.0a closes. K-target 1.3x (decision artifacts; ~3 pts).",
+      "r_tier": "R3",
+      "t11_tier": "cross-agent",
+      "lookahead_tier": 1
+    },
+    "7c-0b": {
+      "expected_gate_mode": "dual-gate",
+      "rationale": "substrate_shape",
+      "expected_pts": 3,
+      "expected_k_target": 1.4,
+      "cross_agent_review_required": true,
+      "prerequisite_stories": [
+        "7c-0a"
+      ],
+      "amendment_note": "Slab 7c Wave 0 (build-tier; consumes 7c.0a artifacts). Scaffold Foundation: executable parity-contract DSL scaffold + FR-7c-54 sanctum-alignment DSL feature + NFR-7c-OD7 self-registration audit harness skeleton + TW-7c-4/5/6 detection scaffolds + FR-7c-46 UTF-8 CI lint pass + per-cell flake-rate calculator (AMEND-7a tightened: <0.05% for 7c-added cells; pre-7c grandfathered at 0.1%). AC block per AMEND-7d-ii enumerates THREE separate PASS/FAIL flags (TW-7c-4 + TW-7c-5 + TW-7c-6 detection) at scaffold-completeness; ANY one FAIL blocks done. Cross-agent code-review MANDATORY (executable substrate consumed by ~30 downstream stories). Hard precedence: Wave 1 (except 7c.2) cannot open until 7c.0b closes.",
+      "r_tier": "R3",
+      "t11_tier": "cross-agent",
+      "lookahead_tier": 1
+    },
+    "7c-0c": {
+      "expected_gate_mode": "single-gate",
+      "rationale": null,
+      "expected_pts": 3,
+      "expected_k_target": 1.2,
+      "cross_agent_review_required": false,
+      "prerequisite_stories": [
+        "7c-0b"
+      ],
+      "r_tier": "R3",
+      "t11_tier": "standard",
+      "files_touched": [
+        "pytest.ini",
+        "pyproject.toml",
+        "docs/dev-guide/pytest-xdist-classification.md",
+        "tests/_smoke_suite_manifest.json",
+        "scripts/utilities/curate_smoke_suite.py"
+      ],
+      "lookahead_tier": 1,
+      "amendment_note": "FILED 2026-05-04 per Slab 7c velocity-amendments-bundle AMEND-V1 (Murat A1 + John #3 spike). Diagnostic story: pytest-xdist classification + smoke-suite curation for R-tier R2 enabling. Deliverables: (a) full-suite run under `pytest -n auto --dist loadfile`; (b) classify failure modes (DB-shared-state / FS / port-binding / LangSmith trace / RNG-coupling); (c) `@pytest.mark.serial` markers; (d) `pytest.ini` defaults `-n auto --dist loadfile -m \"not serial\"` + serial pass; (e) curate top-200 smoke-suite manifest at `tests/_smoke_suite_manifest.json` from full-suite `--durations=0 --cov` data; (f) document safe invocation at `docs/dev-guide/pytest-xdist-classification.md`. Single-gate; dev-agent-only; dispatched IMMEDIATELY after 7c.0b closes (ahead of 7c.4a per highest amortization leverage — every subsequent T9 benefits from xdist + R2 smoke-suite). Pts ~3; K-target ~1.2x."
+    },
+    "7c-1": {
+      "expected_gate_mode": "dual-gate",
+      "rationale": "substrate_shape",
+      "expected_pts": 3,
+      "expected_k_target": 1.4,
+      "cross_agent_review_required": false,
+      "prerequisite_stories": [
+        "7c-0b"
+      ],
+      "amendment_note": "Slab 7c Wave 1 (post-7c.0b; substrate-precondition for HIL surface stories). Parity-contract DSL foundation primitives + 8 existing transport-parity test files refactored to consume DSL (FR-7c-30..33). NFR-7c-P3 wall-clock <=90s at ~15-cell baseline preserved. Dual-gate justified by substrate-shape (downstream HIL surfaces 7c.6..7c.15 + per-gate stories 7c.5.G0..G6 self-register through these primitives). K-target 1.4x.",
+      "r_tier": "R3",
+      "t11_tier": "standard",
+      "lookahead_tier": 1
+    },
+    "7c-2": {
+      "expected_gate_mode": "single-gate",
+      "rationale": null,
+      "expected_pts": 1,
+      "expected_k_target": 1.2,
+      "cross_agent_review_required": false,
+      "prerequisite_stories": [],
+      "path_isolation_guard": {
+        "binding": "hard",
+        "rationale": "AMELIA-P1 (Round-2 party-mode 2026-05-04). 7c.2 opens parallel to 7c.0a/0b per John A2; 7c.2 spec MUST forbid touching any artifact 7c.0a or 7c.0b produces. Forbidden paths: app/parity/contracts/**, app/models/tripwire_ledger.py, tests/audit/test_override_event_chain_integrity.py, docs/dev-guide/adr/0001-parity-contract-dsl.md, pyproject.toml::[tool.importlinter] C4/C5/C6 contract definitions, TW-7c-4/5/6 detection scaffolds. Prevents parallel-execution merge-conflict."
+      },
+      "amendment_note": "Slab 7c Wave 1 (parallel to 7c.0a/0b per John A2; AMELIA-P1 path-isolation guard active). cp1252 Windows-portability fix + fixture-comparison utility (FR-7c-5). Owns TW-7c-2 detection (cp1252 regression) + TW-7c-5 partial (cp1252 encoding regression). Closes Trial-2 finding #1 root cause structurally (not via PYTHONIOENCODING=utf-8 workaround). Single-gate justified: cp1252 fix is below the spec layer; no schema-shape, lane-boundary, or invariant-preservation risk.",
+      "r_tier": "R1",
+      "t11_tier": "lite",
+      "lookahead_tier": 1
+    },
+    "7c-3a": {
+      "expected_gate_mode": "dual-gate",
+      "rationale": "substrate_shape + invariant_preservation",
+      "expected_pts": 4,
+      "expected_k_target": 1.5,
+      "cross_agent_review_required": true,
+      "prerequisite_stories": [
+        "7c-0b"
+      ],
+      "amendment_note": "Slab 7c Wave 1 (highest-priority story within Slab 7c per epic prose; dual-nature feature + Trial-2 finding #2 retirement). Section 02A LLM-driven directive composer body: replaces corpus-scan fallback that produced byte-identical broken directives across 5 successive Trial-2 runs (FR-7c-1 + FR-7c-2 + FR-7c-5 + FR-7c-53 C5 target-list population). Owns TW-7c-2 firing. Cross-agent code-review MANDATORY per Murat M6. K-target 1.5x (composer body + Trial-2 forensic regression + UTF-8 + C5 import-linter target population).",
+      "r_tier": "R3",
+      "t11_tier": "cross-agent",
+      "lookahead_tier": 3
+    },
+    "7c-3b": {
+      "expected_gate_mode": "dual-gate",
+      "rationale": "substrate_shape",
+      "expected_pts": 2,
+      "expected_k_target": 1.4,
+      "cross_agent_review_required": false,
+      "prerequisite_stories": [
+        "7c-3a"
+      ],
+      "amendment_note": "Slab 7c Wave 1 (pattern-author, NOT pattern-consumer). Section 02A G0 poll-surface canonical HIL pattern: 3-transport verdicts with digest match + field-level edit + re-validation (FR-7c-3 + FR-7c-4 + FR-7c-20 + FR-7c-49 schema-stability case). 7c.6..7c.15 (10 stories) replicate this pattern. Dual-gate justified by substrate-shape (canonical HIL pattern establishes the contract for the entire orchestrational tail).",
+      "r_tier": "R2",
+      "t11_tier": "standard",
+      "lookahead_tier": 2
+    },
+    "7c-4a": {
+      "expected_gate_mode": "single-gate",
+      "rationale": null,
+      "expected_pts": 1,
+      "expected_k_target": 1.0,
+      "cross_agent_review_required": false,
+      "prerequisite_stories": [
+        "7c-0b"
+      ],
+      "amendment_note": "Slab 7c Wave 2 (decision artifact only; no code). Gate-family taxonomy ratification: 8 net-new gate families (G0/G1/G2A/G2C/G3/G4/G5/G6) + 6 alias gates (G0A/G0B/G1A->G1; G2B/G2M/G2.5/G2F->G2C; G3B->G3; G4A/G4B->G4) via alias-DSL clause inheritance. Lands at docs/dev-guide/adr/0002-slab-7c-gate-taxonomy.md. K-target 1.0x (decision ADR; no implementation). Predecessor: 7c.0b (alias-DSL clause defined there).",
+      "r_tier": "R1",
+      "t11_tier": "lite",
+      "lookahead_tier": 1
+    },
+    "7c-4b": {
+      "expected_gate_mode": "dual-gate",
+      "rationale": "ci_or_compile_shape + substrate_shape",
+      "expected_pts": 3,
+      "expected_k_target": 1.4,
+      "cross_agent_review_required": true,
+      "prerequisite_stories": [
+        "7c-4a"
+      ],
+      "amendment_note": "Slab 7c Wave 2 (gate-family foundation; cross-agent MANDATORY per John A5 + Murat M6). Shared base classes + class-conformance validator extension (FR-7c-8) + manifest fold-flags + compiler (FR-7c-9) + parametrized OperatorVerdict schema-stability harness (FR-7c-49) + import-linter Contract C6 HIL boundaries target-list population (FR-7c-53 C6) + TW-7c-3 detection registration. Per AMEND-7d-i (Murat): TW-7c-3 firing-spec lives at app/parity/contracts/tw_7c_3_firing.py as the SINGLE SOURCE OF TRUTH; 7c.5.G0..G6 cite by reference (never re-derive). K-target 1.4x.",
+      "r_tier": "R3",
+      "t11_tier": "cross-agent",
+      "lookahead_tier": 3
+    },
+    "7c-5-g0": {
+      "expected_gate_mode": "single-gate",
+      "rationale": null,
+      "expected_pts": 1,
+      "expected_k_target": 1.2,
+      "cross_agent_review_required": false,
+      "amend_5_bucket": "fresh-author",
+      "prerequisite_stories": [
+        "7c-4b"
+      ],
+      "amendment_note": "Slab 7c Wave 2 per-gate four-file-lockstep (AMEND-5 fresh-author). G0 = trial-open / corpus-confirm gate. Files: app/models/decision_cards/g0.py + schema/g0.v1.schema.json + tests/parity/test_decision_card_g0_shape.py + tests/fixtures/decision_cards/g0_golden.json. Cites tw_7c_3_firing::LOCKSTEP_CHECK by reference per AMEND-7d-i. K-target 1.2x.",
+      "r_tier": "R2",
+      "t11_tier": "standard",
+      "lookahead_tier": 1
+    },
+    "7c-5-g1": {
+      "expected_gate_mode": "dual-gate-cross-agent-CONTRACT-EVOLUTION",
+      "rationale": "contract_evolution",
+      "expected_pts": 2,
+      "expected_k_target": 1.4,
+      "cross_agent_review_required": false,
+      "amend_5_bucket": "extend-and-audit",
+      "prerequisite_stories": [
+        "7c-4b"
+      ],
+      "extend_and_audit_t1_deliverables": {
+        "binding": "hard",
+        "deliverables": [
+          "diff-against-prior-contract artifact at _bmad-output/implementation-artifacts/migration-7c-5-g1-contract-diff.md (reviewed by cross-agent reviewer BEFORE T2)",
+          "backward-consumer audit (grep/import-graph artifact) listing every call site of the prior G1 contract + per-site verdict",
+          "AMELIA-P4 delta-AC: prior-gate body file SHA256 matches frozen-at-ship hash recorded at app/models/decision_cards/_frozen_hashes.py BEFORE extension begins"
+        ],
+        "rationale": "Winston W3 (Round-2 party-mode 2026-05-04). G1 directive-ratification gate is already shipped at 7a substrate (app/models/decision_cards/g1.py); extending the contract with FR-7c-51 schema_version + regenerated fixtures requires explicit diff-then-audit gating to prevent silent inheritance of stale body or behavior change without consumer-side review."
+      },
+      "amendment_note": "Slab 7c Wave 2 per-gate four-file-lockstep (AMEND-5 extend-and-audit per Winston W3). G1 = directive-ratification gate (already shipped at 7a substrate). Gate-mode = dual-gate-cross-agent-CONTRACT-EVOLUTION (NEW named gate-mode per Winston W3); T1 readiness REQUIRES (a) diff-against-prior-contract + (b) backward-consumer audit per call site + (c) AMELIA-P4 frozen-hash delta-AC. K-target 1.4x (heavier than fresh-author due to backward-consumer audit load).",
+      "r_tier": "R3",
+      "t11_tier": "standard",
+      "lookahead_tier": 2
+    },
+    "7c-5-g2a": {
+      "expected_gate_mode": "single-gate",
+      "rationale": null,
+      "expected_pts": 1,
+      "expected_k_target": 1.2,
+      "cross_agent_review_required": false,
+      "amend_5_bucket": "fresh-author",
+      "prerequisite_stories": [
+        "7c-4b"
+      ],
+      "amendment_note": "Slab 7c Wave 2 per-gate four-file-lockstep (AMEND-5 fresh-author). G2A = plan-unit-ratification gate per the taxonomy alias map; net-new (not previously shipped). Files: g2a.py + schema/g2a.v1.schema.json + test_decision_card_g2a_shape.py + g2a_golden.json. K-target 1.2x.",
+      "r_tier": "R2",
+      "t11_tier": "standard",
+      "lookahead_tier": 1
+    },
+    "7c-5-g2c": {
+      "expected_gate_mode": "dual-gate-cross-agent-CONTRACT-EVOLUTION",
+      "rationale": "contract_evolution",
+      "expected_pts": 2,
+      "expected_k_target": 1.4,
+      "cross_agent_review_required": false,
+      "amend_5_bucket": "extend-and-audit",
+      "prerequisite_stories": [
+        "7c-4b"
+      ],
+      "extend_and_audit_t1_deliverables": {
+        "binding": "hard",
+        "deliverables": [
+          "diff-against-prior-contract artifact at migration-7c-5-g2c-contract-diff.md",
+          "backward-consumer audit per call site",
+          "AMELIA-P4 frozen-hash delta-AC against _frozen_hashes.py"
+        ],
+        "rationale": "Winston W3. G2C pre-composition QA gate already shipped; 4 Wave-3 HIL stories (7c.9 / 7c.10 / 7c.11 / 7c.12) alias to G2C and key their dispatch staggering (AMELIA-P3) off this story's close."
+      },
+      "downstream_dispatch_staggering_keyed": [
+        "7c-9",
+        "7c-10",
+        "7c-11",
+        "7c-12"
+      ],
+      "amendment_note": "Slab 7c Wave 2 per-gate four-file-lockstep (AMEND-5 extend-and-audit per Winston W3). G2C = pre-composition QA gate (already shipped). Gate-mode = dual-gate-cross-agent-CONTRACT-EVOLUTION; T1 deliverables per W3 + AMELIA-P4. After 7c.5.G2C closes, four downstream Wave-3 stories (7c.9/7c.10/7c.11/7c.12) alias to G2C; AMELIA-P3 dispatch staggering >=30 min apart applies to those four to prevent T11 review-queue collision. K-target 1.4x.",
+      "r_tier": "R3",
+      "t11_tier": "standard",
+      "lookahead_tier": 2
+    },
+    "7c-5-g3": {
+      "expected_gate_mode": "dual-gate-cross-agent-CONTRACT-EVOLUTION",
+      "rationale": "contract_evolution",
+      "expected_pts": 2,
+      "expected_k_target": 1.4,
+      "cross_agent_review_required": false,
+      "amend_5_bucket": "extend-and-audit",
+      "prerequisite_stories": [
+        "7c-4b"
+      ],
+      "extend_and_audit_t1_deliverables": {
+        "binding": "hard",
+        "deliverables": [
+          "diff-against-prior-contract at migration-7c-5-g3-contract-diff.md",
+          "backward-consumer audit per call site",
+          "AMELIA-P4 frozen-hash delta-AC"
+        ],
+        "rationale": "Winston W3. G3 motion-clip approval gate already shipped."
+      },
+      "amendment_note": "Slab 7c Wave 2 per-gate four-file-lockstep (AMEND-5 extend-and-audit per Winston W3). G3 = motion-clip approval gate (already shipped). Gate-mode = dual-gate-cross-agent-CONTRACT-EVOLUTION; T1 deliverables per W3 + AMELIA-P4. K-target 1.4x.",
+      "r_tier": "R3",
+      "t11_tier": "standard",
+      "lookahead_tier": 2
+    },
+    "7c-5-g4": {
+      "expected_gate_mode": "dual-gate-cross-agent-CONTRACT-EVOLUTION",
+      "rationale": "contract_evolution",
+      "expected_pts": 2,
+      "expected_k_target": 1.4,
+      "cross_agent_review_required": false,
+      "amend_5_bucket": "extend-and-audit",
+      "prerequisite_stories": [
+        "7c-4b"
+      ],
+      "extend_and_audit_t1_deliverables": {
+        "binding": "hard",
+        "deliverables": [
+          "diff-against-prior-contract at migration-7c-5-g4-contract-diff.md",
+          "backward-consumer audit per call site",
+          "AMELIA-P4 frozen-hash delta-AC"
+        ],
+        "rationale": "Winston W3. G4 fidelity gate already shipped."
+      },
+      "amendment_note": "Slab 7c Wave 2 per-gate four-file-lockstep (AMEND-5 extend-and-audit per Winston W3). G4 = fidelity gate (already shipped). Gate-mode = dual-gate-cross-agent-CONTRACT-EVOLUTION; T1 deliverables per W3 + AMELIA-P4. K-target 1.4x.",
+      "r_tier": "R3",
+      "t11_tier": "standard",
+      "lookahead_tier": 2
+    },
+    "7c-5-g5": {
+      "expected_gate_mode": "single-gate",
+      "rationale": null,
+      "expected_pts": 1,
+      "expected_k_target": 1.2,
+      "cross_agent_review_required": false,
+      "amend_5_bucket": "fresh-author",
+      "prerequisite_stories": [
+        "7c-4b"
+      ],
+      "amendment_note": "Slab 7c Wave 2 per-gate four-file-lockstep (AMEND-5 fresh-author). G5 = final operator handoff gate (net-new). Files: g5.py + schema/g5.v1.schema.json + test_decision_card_g5_shape.py + g5_golden.json. K-target 1.2x.",
+      "r_tier": "R2",
+      "t11_tier": "standard",
+      "lookahead_tier": 1
+    },
+    "7c-5-g6": {
+      "expected_gate_mode": "single-gate",
+      "rationale": null,
+      "expected_pts": 1,
+      "expected_k_target": 1.2,
+      "cross_agent_review_required": false,
+      "amend_5_bucket": "fresh-author",
+      "prerequisite_stories": [
+        "7c-4b"
+      ],
+      "amendment_note": "Slab 7c Wave 2 per-gate four-file-lockstep (AMEND-5 fresh-author). G6 = slab-close ceremony gate (net-new). Files: g6.py + schema/g6.v1.schema.json + test_decision_card_g6_shape.py + g6_golden.json. K-target 1.2x.",
+      "r_tier": "R2",
+      "t11_tier": "standard",
+      "lookahead_tier": 1
+    },
+    "7c-6": {
+      "expected_gate_mode": "single-gate",
+      "rationale": null,
+      "expected_pts": 2,
+      "expected_k_target": 1.3,
+      "cross_agent_review_required": false,
+      "prerequisite_stories": [
+        "7c-5-g1",
+        "7c-3b"
+      ],
+      "amendment_note": "Slab 7c Wave 3 HIL surface follower (FR-7c-10 §04A G1A per-plan-unit ratification). Predecessor: 7c.5.G1 + 7c.3b canonical pattern. Mandatory transports: CLI; optional: HTTP, MCP-stdio. K-target 1.3x.",
+      "r_tier": "R2",
+      "t11_tier": "lite",
+      "lookahead_tier": 1
+    },
+    "7c-7": {
+      "expected_gate_mode": "single-gate",
+      "rationale": null,
+      "expected_pts": 2,
+      "expected_k_target": 1.3,
+      "cross_agent_review_required": false,
+      "prerequisite_stories": [
+        "7c-5-g1",
+        "7c-3b"
+      ],
+      "amendment_note": "Slab 7c Wave 3 HIL surface follower (FR-7c-11 §04.5 G1.5 estimator). Predecessor: 7c.5.G1 + 7c.3b. Mandatory transports: CLI + HTTP; optional: MCP-stdio. K-target 1.3x.",
+      "r_tier": "R2",
+      "t11_tier": "lite",
+      "lookahead_tier": 1
+    },
+    "7c-8": {
+      "expected_gate_mode": "single-gate",
+      "rationale": null,
+      "expected_pts": 2,
+      "expected_k_target": 1.3,
+      "cross_agent_review_required": false,
+      "prerequisite_stories": [
+        "7c-5-g1",
+        "7c-3b"
+      ],
+      "amendment_note": "Slab 7c Wave 3 HIL surface follower (FR-7c-12 §04.55 G1.5 run-constants lock). Predecessor: 7c.5.G1 + 7c.3b. Mandatory transports: CLI + HTTP. K-target 1.3x.",
+      "r_tier": "R2",
+      "t11_tier": "lite",
+      "lookahead_tier": 1
+    },
+    "7c-9": {
+      "expected_gate_mode": "single-gate",
+      "rationale": null,
+      "expected_pts": 2,
+      "expected_k_target": 1.3,
+      "cross_agent_review_required": false,
+      "prerequisite_stories": [
+        "7c-5-g2c",
+        "7c-3b"
+      ],
+      "dispatch_staggering": {
+        "binding": "hard",
+        "protocol": "AMELIA-P3 (Round-2 party-mode 2026-05-04)",
+        "minimum_offset_minutes": 30,
+        "siblings": [
+          "7c-10",
+          "7c-11",
+          "7c-12"
+        ],
+        "rationale": "All four stories alias to G2C and would queue 4× T11 review latency if dispatched concurrently. Operator picks one G2C-aliased story per 30-min window; document Wave-3 dispatch protocol explicitly in next-session-start-here.md once 7c.5.G2C close approaches.",
+        "auto_satisfied_under": "single_codex_dispatch",
+        "reinstate_trigger": "multi-Codex parallelism adoption (declined 2026-05-04 per velocity_amendment_record; reinstate AMELIA-P3 30-min stagger if multi-Codex is later adopted)"
+      },
+      "amendment_note": "Slab 7c Wave 3 HIL surface follower (FR-7c-13 §05.5 G2B per-slide mode). Predecessor: 7c.5.G2C (G2B aliases to G2C) + 7c.3b. AMELIA-P3 staggering applies (>=30 min from 7c.10/7c.11/7c.12 dispatches). Mandatory: CLI. K-target 1.3x.",
+      "r_tier": "R2",
+      "t11_tier": "lite",
+      "lookahead_tier": 1
+    },
+    "7c-10": {
+      "expected_gate_mode": "single-gate",
+      "rationale": null,
+      "expected_pts": 2,
+      "expected_k_target": 1.3,
+      "cross_agent_review_required": false,
+      "prerequisite_stories": [
+        "7c-5-g2c",
+        "7c-3b"
+      ],
+      "dispatch_staggering": {
+        "binding": "hard",
+        "protocol": "AMELIA-P3",
+        "minimum_offset_minutes": 30,
+        "siblings": [
+          "7c-9",
+          "7c-11",
+          "7c-12"
+        ],
+        "rationale": "G2C-aliased Wave-3 staggering.",
+        "auto_satisfied_under": "single_codex_dispatch",
+        "reinstate_trigger": "multi-Codex parallelism adoption (declined 2026-05-04 per velocity_amendment_record; reinstate AMELIA-P3 30-min stagger if multi-Codex is later adopted)"
+      },
+      "amendment_note": "Slab 7c Wave 3 HIL surface follower (FR-7c-14 §07B G2M per-slide A/B variant). Predecessor: 7c.5.G2C + 7c.3b. AMELIA-P3 staggering applies. K-target 1.3x.",
+      "r_tier": "R2",
+      "t11_tier": "lite",
+      "lookahead_tier": 1
+    },
+    "7c-11": {
+      "expected_gate_mode": "single-gate",
+      "rationale": null,
+      "expected_pts": 2,
+      "expected_k_target": 1.3,
+      "cross_agent_review_required": false,
+      "prerequisite_stories": [
+        "7c-5-g2c",
+        "7c-3b"
+      ],
+      "dispatch_staggering": {
+        "binding": "hard",
+        "protocol": "AMELIA-P3",
+        "minimum_offset_minutes": 30,
+        "siblings": [
+          "7c-9",
+          "7c-10",
+          "7c-12"
+        ],
+        "rationale": "G2C-aliased Wave-3 staggering.",
+        "auto_satisfied_under": "single_codex_dispatch",
+        "reinstate_trigger": "multi-Codex parallelism adoption (declined 2026-05-04 per velocity_amendment_record; reinstate AMELIA-P3 30-min stagger if multi-Codex is later adopted)"
+      },
+      "amendment_note": "Slab 7c Wave 3 HIL surface follower (FR-7c-15 §07D G2.5 motion-plan polling). Predecessor: 7c.5.G2C + 7c.3b. AMELIA-P3 staggering applies. K-target 1.3x.",
+      "r_tier": "R2",
+      "t11_tier": "lite",
+      "lookahead_tier": 1
+    },
+    "7c-12": {
+      "expected_gate_mode": "single-gate",
+      "rationale": null,
+      "expected_pts": 2,
+      "expected_k_target": 1.3,
+      "cross_agent_review_required": false,
+      "prerequisite_stories": [
+        "7c-5-g2c",
+        "7c-3b"
+      ],
+      "dispatch_staggering": {
+        "binding": "hard",
+        "protocol": "AMELIA-P3",
+        "minimum_offset_minutes": 30,
+        "siblings": [
+          "7c-9",
+          "7c-10",
+          "7c-11"
+        ],
+        "rationale": "G2C-aliased Wave-3 staggering.",
+        "auto_satisfied_under": "single_codex_dispatch",
+        "reinstate_trigger": "multi-Codex parallelism adoption (declined 2026-05-04 per velocity_amendment_record; reinstate AMELIA-P3 30-min stagger if multi-Codex is later adopted)"
+      },
+      "amendment_note": "Slab 7c Wave 3 HIL surface follower (FR-7c-16 §07F G2F motion gate). Predecessor: 7c.5.G2C + 7c.3b. AMELIA-P3 staggering applies. K-target 1.3x.",
+      "r_tier": "R2",
+      "t11_tier": "lite",
+      "lookahead_tier": 1
+    },
+    "7c-13": {
+      "expected_gate_mode": "single-gate",
+      "rationale": null,
+      "expected_pts": 2,
+      "expected_k_target": 1.3,
+      "cross_agent_review_required": false,
+      "prerequisite_stories": [
+        "7c-5-g3",
+        "7c-3b"
+      ],
+      "amendment_note": "Slab 7c Wave 3 HIL surface follower (FR-7c-17 §08B G3B Storyboard B + live-URL). Predecessor: 7c.5.G3 (G3B aliases to G3) + 7c.3b. K-target 1.3x.",
+      "r_tier": "R2",
+      "t11_tier": "lite",
+      "lookahead_tier": 1
+    },
+    "7c-14": {
+      "expected_gate_mode": "single-gate",
+      "rationale": null,
+      "expected_pts": 2,
+      "expected_k_target": 1.3,
+      "cross_agent_review_required": false,
+      "prerequisite_stories": [
+        "7c-5-g4",
+        "7c-3b"
+      ],
+      "amendment_note": "Slab 7c Wave 3 HIL surface follower (FR-7c-18 §11 G4A voice-selection). Predecessor: 7c.5.G4 (G4A aliases to G4) + 7c.3b. K-target 1.3x.",
+      "r_tier": "R2",
+      "t11_tier": "lite",
+      "lookahead_tier": 1
+    },
+    "7c-15": {
+      "expected_gate_mode": "single-gate",
+      "rationale": null,
+      "expected_pts": 3,
+      "expected_k_target": 1.6,
+      "cross_agent_review_required": false,
+      "prerequisite_stories": [
+        "7c-5-g4",
+        "7c-5-g5",
+        "7c-3b",
+        "7c-17b"
+      ],
+      "amendment_note": "Slab 7c Wave 3 HIL surface follower (AMEND-4 fold: FR-7c-19 §11B G4B input-package + §15 G5 final operator handoff + FR-7c-29 Marcus-side §15 bundle emission). Per John PM Round-2: dual-FR co-dependent (JTBD round-trip); do NOT split. Predecessors: 7c.5.G4 + 7c.5.G5 + 7c.3b + 7c.17b (envelope aggregation). K-target 1.6x (sized for both FRs; ~1.5-1.8x a single-FR sibling story). Mandatory transports: CLI + HTTP + MCP-stdio (§15 final handoff).",
+      "r_tier": "R2",
+      "t11_tier": "standard",
+      "lookahead_tier": 2
+    },
+    "7c-17a": {
+      "expected_gate_mode": "single-gate",
+      "rationale": null,
+      "expected_pts": 2,
+      "expected_k_target": 1.3,
+      "cross_agent_review_required": false,
+      "prerequisite_stories": [
+        "7c-0b"
+      ],
+      "amendment_note": "Slab 7c Wave 4 (AMEND-3 specific writer-to-story split per Winston W5 architectural partition). 3 of 5 Marcus-bound writers: slide-content + fidelity-slides + diagram-cards (FR-7c-21..23). Shared-sanctum partition (text+payload-shape pre-dispatch with Vera-fidelity-criteria as the unifying contract). FR-7c-54 sanctum-alignment per writer. K-target 1.3x.",
+      "r_tier": "R2",
+      "t11_tier": "lite",
+      "lookahead_tier": 1
+    },
+    "7c-17b": {
+      "expected_gate_mode": "single-gate",
+      "rationale": null,
+      "expected_pts": 2,
+      "expected_k_target": 1.3,
+      "cross_agent_review_required": false,
+      "prerequisite_stories": [
+        "7c-0b"
+      ],
+      "amendment_note": "Slab 7c Wave 4 (AMEND-3 specific writer-to-story split per Winston W5). 2 of 5 Marcus-bound writers + envelope aggregation: theme-resolution + outbound-envelope.yaml + pre-dispatch-package-gary.md (FR-7c-24 + FR-7c-25). Divergent-sanctum partition (theme-resolution + envelope aggregation layer). FR-7c-54 sanctum-alignment per writer. K-target 1.3x.",
+      "r_tier": "R2",
+      "t11_tier": "lite",
+      "lookahead_tier": 1
+    },
+    "7c-18a": {
+      "expected_gate_mode": "single-gate",
+      "rationale": null,
+      "expected_pts": 1,
+      "expected_k_target": 1.3,
+      "cross_agent_review_required": false,
+      "prerequisite_stories": [
+        "7c-17a",
+        "7c-17b"
+      ],
+      "amendment_note": "Slab 7c Wave 5 (FR-7c-26 §06B literal-visual operator build). Consumes the pre-dispatch-package-gary substrate from 7c.17a + 7c.17b. K-target 1.3x.",
+      "r_tier": "R2",
+      "t11_tier": "lite",
+      "lookahead_tier": 1
+    },
+    "7c-18b": {
+      "expected_gate_mode": "single-gate",
+      "rationale": null,
+      "expected_pts": 2,
+      "expected_k_target": 1.3,
+      "cross_agent_review_required": false,
+      "prerequisite_stories": [
+        "7c-17a",
+        "7c-17b"
+      ],
+      "amendment_note": "Slab 7c Wave 5 (FR-7c-27 §07C storyboard build + HTML reviewer surface). Consumed by 7c.13 §08B Storyboard B + live-URL HIL. K-target 1.3x.",
+      "r_tier": "R2",
+      "t11_tier": "lite",
+      "lookahead_tier": 1
+    },
+    "7c-19": {
+      "expected_gate_mode": "single-gate",
+      "rationale": null,
+      "expected_pts": 1,
+      "expected_k_target": 1.2,
+      "cross_agent_review_required": false,
+      "prerequisite_stories": [
+        "7c-17a",
+        "7c-17b"
+      ],
+      "amendment_note": "Slab 7c Wave 5 (FR-7c-28 §09 four-artifact lock semantics; post-Gary + post-Kira + post-Vera + post-Quinn-R). K-target 1.2x.",
+      "r_tier": "R2",
+      "t11_tier": "lite",
+      "lookahead_tier": 1
+    },
+    "7c-20a": {
+      "expected_gate_mode": "single-gate",
+      "rationale": null,
+      "expected_pts": 2,
+      "expected_k_target": 1.2,
+      "cross_agent_review_required": false,
+      "prerequisite_stories": [
+        "7c-1",
+        "7c-4b",
+        "7c-5-g0",
+        "7c-5-g1",
+        "7c-5-g2a",
+        "7c-5-g2c",
+        "7c-5-g3",
+        "7c-5-g4",
+        "7c-5-g5",
+        "7c-5-g6"
+      ],
+      "tripwire_ownership": [
+        "TW-7c-1"
+      ],
+      "amendment_note": "Slab 7c Wave 5 AUDIT-AC (FR-7c-34 + FR-7c-36; >=20 shape-pins on parity-DSL surfaces + >=11 class-conformance assertions). Fires TW-7c-1 at >=4 gaps (10% gap-rate against combined floor 31) per AMEND-7c (Murat). Combined floor 31 = 20 shape-pins + 11 class-conformance. K-target 1.2x.",
+      "r_tier": "R3",
+      "t11_tier": "standard",
+      "lookahead_tier": 2
+    },
+    "7c-20b": {
+      "expected_gate_mode": "single-gate",
+      "rationale": null,
+      "expected_pts": 2,
+      "expected_k_target": 1.2,
+      "cross_agent_review_required": false,
+      "prerequisite_stories": [
+        "7c-1",
+        "7c-4b"
+      ],
+      "tripwire_ownership": [
+        "TW-7c-1"
+      ],
+      "amendment_note": "Slab 7c Wave 5 AUDIT-AC (FR-7c-35; >=15 cells in 5-family x 3-transport matrix + 8 named gate tests). Fires TW-7c-1 at >=3 gaps (13% gap-rate against combined floor 23; closest to 10% boundary at this story size). K-target 1.2x.",
+      "r_tier": "R3",
+      "t11_tier": "standard",
+      "lookahead_tier": 2
+    },
+    "7c-20c": {
+      "expected_gate_mode": "single-gate",
+      "rationale": null,
+      "expected_pts": 1,
+      "expected_k_target": 1.2,
+      "cross_agent_review_required": false,
+      "prerequisite_stories": [
+        "7c-4b",
+        "7c-5-g0",
+        "7c-5-g1",
+        "7c-5-g2a",
+        "7c-5-g2c",
+        "7c-5-g3",
+        "7c-5-g4",
+        "7c-5-g5",
+        "7c-5-g6"
+      ],
+      "tripwire_ownership": [
+        "TW-7c-1"
+      ],
+      "amendment_note": "Slab 7c Wave 5 AUDIT-AC (FR-7c-37 + FR-7c-38; 14/14 four-file-lockstep co-commit + 6/6 tripwire ledger probes). Fires TW-7c-1 at >=2 gaps (10% gap-rate against combined floor 20). Last-AUDIT-AC closer; aggregates final gap-rate verdict into TW-7c-1 fired_verdict at sprint-status.yaml::tripwire_events. K-target 1.2x.",
+      "r_tier": "R3",
+      "t11_tier": "standard",
+      "lookahead_tier": 2
+    },
+    "7c-21": {
+      "expected_gate_mode": "dual-gate",
+      "rationale": "operator_acceptance_gate + invariant_preservation",
+      "expected_pts": 4,
+      "expected_k_target": 1.4,
+      "cross_agent_review_required": true,
+      "prerequisite_stories": [
+        "7c-1",
+        "7c-3a",
+        "7c-3b",
+        "7c-4b",
+        "7c-5-g0",
+        "7c-5-g1",
+        "7c-5-g2a",
+        "7c-5-g2c",
+        "7c-5-g3",
+        "7c-5-g4",
+        "7c-5-g5",
+        "7c-5-g6",
+        "7c-6",
+        "7c-7",
+        "7c-8",
+        "7c-9",
+        "7c-10",
+        "7c-11",
+        "7c-12",
+        "7c-13",
+        "7c-14",
+        "7c-15",
+        "7c-17a",
+        "7c-17b",
+        "7c-18a",
+        "7c-18b",
+        "7c-19",
+        "7c-20a",
+        "7c-20b",
+        "7c-20c"
+      ],
+      "tripwire_ownership": [
+        "TW-7c-6"
+      ],
+      "stop_on_tripwire_fire": {
+        "binding": "hard",
+        "tripwire_id": "TW-7c-6",
+        "rationale": "AMEND-7d-iii (Murat). If TW-7c-6 (50-run zero-flake parity) fires during 7c.21 ceremony, STOP; do NOT proceed to retrospective; escalate to party-mode for parity-budget mitigation per option-c parity-contract DSL; per-surface transport declaration enforcement reviewed; ceremony resumes only after fix lands."
+      },
+      "amendment_note": "Slab 7c Wave 6 strict-last (DUAL-GATE per 7a.8 + 7b.12 precedent + Murat integration-tier risk argument; cross-agent code-review MANDATORY per John A5 + Murat M6). Slab 7c integration parity suite + closeout ceremony: 50-run zero-flake parity (FR-7c-47; AMEND-7a tightened budget) + FR-7c-51 schema_version + Trial3Transcript schema + Trial-3 readiness AC + retrospective deliverables (FR-7c-39..43) + deferred-inventory closure. SG-1+SG-2+SG-3+SG-4 AGGREGATED structural enforcement. Owns TW-7c-6 firing. STOP-on-TW-7c-6-fire branch (AMEND-7d-iii). K-target 1.4x.",
+      "r_tier": "R3",
+      "t11_tier": "cross-agent",
+      "lookahead_tier": 3
+    },
+    "7c-21a": {
+      "expected_gate_mode": "single-gate",
+      "rationale": null,
+      "expected_pts": 1,
+      "expected_k_target": 1.3,
+      "cross_agent_review_required": false,
+      "prerequisite_stories": [
+        "7c-21"
+      ],
+      "tripwire_ownership": [
+        "TW-7c-4"
+      ],
+      "amendment_note": "Slab 7c Wave 6 (peeled per John A6 — substrate-touching change distinct from slab-close ceremony). Live-dispatch authoring in run_cache_hit_harness.py + run_5_api_smoke.py (FR-7c-48) + Epic 3 in-place retirement in epics-langchain-langgraph-migration.md per FR-7c-43. Closes deferred-inventory entry slab-7c-live-harness-evidence. Owns TW-7c-4 (no live-dispatch scope creep). K-target 1.3x.",
+      "r_tier": "R2",
+      "t11_tier": "standard",
+      "lookahead_tier": 1
+    }
+  },
+  "triage_summary": {
+    "total_stories": 121,
+    "single_gate": 87,
+    "dual_gate": 30,
+    "dual_gate_pct": 28.1,
+    "note": "Slab 7c velocity-amendments bundle 2026-05-04 adds 7c-0c diagnostic story (AMEND-V1 pytest-xdist classification + R2 smoke-suite curation). Total 120 -> 121 / single 86 -> 87 / dual unchanged at 30 / contract-evolution unchanged at 4. dual_gate_pct (combining dual + contract-evolution / total) = 34/121 = 28.1%. Velocity-amendment record at top-level velocity_amendment_record field; full artifact at _bmad-output/planning-artifacts/slab-7c-velocity-amendments-2026-05-04.md. Prior triage state: pre-velocity-bundle 84 stories then Slab 7c 36 = 120; this update brings total to 121 with the diagnostic story addition. Prior pre-Slab-7c reconciliation: 61 single + 23 dual = 84 actual at 7b ratification time (triage_summary single_gate=63 / dual_gate=21 was stale by +2/-2; recomputed from data 2026-05-04). Slab-by-slab dual-gate density (incl. contract-evolution): Slab 1 substrate 4/10 = 40%; Slab 3 orchestration 3/6 = 50%; Slab 6 production 3/6 = 50%; Slab 7a 2/8 = 25%; Slab 7b 1/12 = 8%; Slab 7c 11/37 = 29.7% (with 7c-0c addition; was 11/36).",
+    "dual_gate_cross_agent_contract_evolution": 4
+  }
+}

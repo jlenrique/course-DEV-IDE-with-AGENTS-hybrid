@@ -1,0 +1,38 @@
+{
+  "additionalProperties": false,
+  "description": "Cache prefix + invalidation tracking for sanctum + model-resolution caches.",
+  "properties": {
+    "cache_prefix": {
+      "description": "Stable prefix derived from sanctum + model + manifest version.",
+      "minLength": 1,
+      "title": "Cache Prefix",
+      "type": "string"
+    },
+    "entries_count": {
+      "default": 0,
+      "description": "Number of entries currently held under this prefix.",
+      "minimum": 0,
+      "title": "Entries Count",
+      "type": "integer"
+    },
+    "last_invalidated_at": {
+      "anyOf": [
+        {
+          "format": "date-time",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "description": "Timezone-aware timestamp of the most recent invalidation event; None means 'never invalidated since process start'.",
+      "title": "Last Invalidated At"
+    }
+  },
+  "required": [
+    "cache_prefix"
+  ],
+  "title": "CacheState",
+  "type": "object"
+}

@@ -35,8 +35,8 @@ from uuid import uuid4
 import pytest
 from pydantic import ValidationError
 
-from marcus.lesson_plan.events import EventEnvelope
-from marcus.lesson_plan.log import (
+from app.marcus.lesson_plan.events import EventEnvelope
+from app.marcus.lesson_plan.log import (
     LOG_PATH,
     NAMED_MANDATORY_EVENTS,
     WRITER_EVENT_MATRIX,
@@ -47,7 +47,7 @@ from marcus.lesson_plan.log import (
     UnauthorizedWriterError,
     _json_default,
 )
-from marcus.lesson_plan.schema import StaleRevisionError
+from app.marcus.lesson_plan.schema import StaleRevisionError
 
 # ---------------------------------------------------------------------------
 # Fixtures

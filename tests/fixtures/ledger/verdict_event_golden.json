@@ -1,0 +1,12 @@
+{
+  "event_id": "55555555-5555-4555-8555-555555555555",
+  "trial_id": "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa",
+  "gate_id": "G2C",
+  "kind": "verdict",
+  "created_at": "2026-04-26T12:00:00Z",
+  "verdict_id": "66666666-6666-4666-8666-666666666666",
+  "card_id": "77777777-7777-4777-8777-777777777777",
+  "operator_id": "juanl",
+  "verb": "reject",
+  "transport_kind": "cli"
+}

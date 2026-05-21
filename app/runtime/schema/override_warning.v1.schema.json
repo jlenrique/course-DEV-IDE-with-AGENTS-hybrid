@@ -1,0 +1,80 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "warning_id": {
+      "format": "uuid",
+      "title": "Warning Id",
+      "type": "string"
+    },
+    "trial_id": {
+      "format": "uuid",
+      "title": "Trial Id",
+      "type": "string"
+    },
+    "node_id": {
+      "minLength": 1,
+      "title": "Node Id",
+      "type": "string"
+    },
+    "requested_model": {
+      "minLength": 1,
+      "title": "Requested Model",
+      "type": "string"
+    },
+    "current_model": {
+      "minLength": 1,
+      "title": "Current Model",
+      "type": "string"
+    },
+    "estimated_cost_delta_usd": {
+      "minimum": 0.0,
+      "title": "Estimated Cost Delta Usd",
+      "type": "number"
+    },
+    "affected_nodes": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Affected Nodes",
+      "type": "array"
+    },
+    "cache_state_delta": {
+      "additionalProperties": {
+        "enum": [
+          "healthy",
+          "mixed",
+          "cold"
+        ],
+        "type": "string"
+      },
+      "title": "Cache State Delta",
+      "type": "object"
+    },
+    "confirm_token": {
+      "title": "Confirm Token",
+      "type": "string"
+    },
+    "issued_at": {
+      "format": "date-time",
+      "title": "Issued At",
+      "type": "string"
+    },
+    "expires_at": {
+      "format": "date-time",
+      "title": "Expires At",
+      "type": "string"
+    }
+  },
+  "required": [
+    "trial_id",
+    "node_id",
+    "requested_model",
+    "current_model",
+    "estimated_cost_delta_usd",
+    "cache_state_delta",
+    "confirm_token",
+    "expires_at"
+  ],
+  "title": "ModelOverrideWarning",
+  "type": "object"
+}

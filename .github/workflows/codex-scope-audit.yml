@@ -1,0 +1,52 @@
+name: codex-scope-audit
+
+on:
+  pull_request:
+    paths:
+      - ".github/workflows/**"
+      - ".github/codex-scope-allowlist.txt"
+      - ".github/workflows/codex-scope-audit.yml"
+  push:
+    branches:
+      - master
+      - "dev/**"
+  workflow_dispatch:
+
+jobs:
+  codex-scope-audit:
+    name: NFR-OD6 codex-scope-audit (no unauthorized Codex CLI references)
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Audit workflow files for Codex references
+        run: |
+          set -euo pipefail
+          # Per NFR-OD6: no `.github/workflows/*.yml` may reference `codex` or
+          # invoke a Codex CLI absent a governance-JSON `7b-{N}` entry naming
+          # Codex as author. The reference set lives in
+          # `docs/dev-guide/migration-story-governance.json::stories.<id>.author`.
+          #
+          # This audit is a structural shield: it forbids `codex` tokens in
+          # workflow files. Codex's role in Slab 7b is dev-time only (per NEW
+          # CYCLE: Claude spec → Codex dev+tests → Claude review+commit).
+          # No CI workflow file should reference Codex; if a future story
+          # genuinely needs Codex CLI in CI, governance JSON is the
+          # ratification record + this audit is updated in lockstep.
+          echo "Auditing .github/workflows/*.yml for unauthorized 'codex' references..."
+          violations=$(grep -rilE "\bcodex\b" .github/workflows/ || true)
+          # The audit workflow itself references 'codex' in its name and
+          # documentation, so allowlist this file specifically.
+          violations=$(echo "$violations" | grep -v ".github/workflows/codex-scope-audit.yml" || true)
+          if [ -n "$violations" ]; then
+            echo "::error::NFR-OD6 violation: workflow files reference 'codex'." >&2
+            echo "::error::Affected files:" >&2
+            echo "$violations" | sed 's/^/::error::  /' >&2
+            echo "::error::If a story genuinely needs Codex CLI in CI, ratify via governance JSON" >&2
+            echo "::error::and update this audit's allowlist in the same PR." >&2
+            exit 1
+          fi
+          echo "PASS: no unauthorized Codex CLI references in workflow files."
