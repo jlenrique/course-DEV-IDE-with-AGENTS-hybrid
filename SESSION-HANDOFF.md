@@ -296,4 +296,76 @@ Two new entries appended to `docs/dev-guide/specialist-anti-patterns.md`:
 
 ---
 
-**End of SESSION-HANDOFF for 2026-05-22 (Epic 34 §02A Downstream-Consumer Coherence FULLY COMPLETE + Trial-3 attempt-3 launch readiness).**
+## Final session-WRAPUP additions 2026-05-22 — Trial-3 operator guide via party-mode + WRAPUP coherence pass
+
+After Epic 34 close + harmonization batch, operator caught a critical conflation in Claude's framing about the trial-3 attempt-3 run. Claude had said "Marcus is your SPOC during the trial," eliding the distinction between Marcus-runtime (`app/marcus/` LangGraph code that emits DecisionCards) and Marcus-agent (`skills/bmad-agent-marcus/` BMAD persona — the conversational AI). Operator's instinct was correct: Marcus-agent is NOT in the runtime loop.
+
+### Party-mode resolution
+
+Invoked `bmad-party-mode` with explicit roster: Marcus + Winston + Amelia + Paige. Round 1 spawned the first three in parallel; UNANIMOUS correction:
+
+- **🎬 Marcus (the agent persona himself):** "During Trial-3 attempt-3, you are interfacing with Marcus-runtime. It is NOT me. I do not live inside the trial runtime. I am your post-hoc and pre-flight interlocutor, not your in-flight one."
+- **🏗️ Winston (architect):** "Bright boundary by design. During a tracked trial, the operator's loop is closed against the runtime. Period. Architectural invariant: chat-agent mid-loop violates determinism contract for reproducible trial evidence."
+- **💻 Amelia (code-grounded):** Cited `app/marcus/cli/trial.py:104-115` for the G0 prompt verbatim; documented the verb sets per gate from `docs/operator/hil-verb-legend.md:29-57`; explained that post-G0 gates write `run.json` + `checkpoint.json` + `decision-card-<gate_id>.json` and RETURN FROM THE PYTHON FUNCTION + EXIT THE PROCESS (no daemon); resume requires separate `trial resume --verdict-file verdict.json` invocation.
+
+Round 2: Paige drafted single-source operator guide using Round 1 voices as authoritative inputs.
+
+### Deliverable
+
+`_bmad-output/implementation-artifacts/trial-3-operator-guide-attempt-3.md` (263 lines; commit `0dd38ba`). Contents:
+- §0 Bright-line Marcus-runtime vs Marcus-agent clarification table
+- §1 Pre-launch checklist (8 items)
+- §2 Launch command (exact PowerShell)
+- §3 G0 in-process prompt walkthrough + Ctrl+C wrinkle
+- §4 Per-gate action table (15 rows; G0 through G5; default-recommended verb per gate per Marcus's weed-clearing posture)
+- §5 Resume command + verdict.json templates (approve + edit variants)
+- §6 Reference files to keep open during trial
+- §7 Escalation chain (7 steps; explicitly forbids chatting with runtime; routes operator out-of-band to separate Claude/Codex session for Marcus-agent activation)
+- §8 Evidence capture (auto + manual)
+- §9 Closeout (PASS / FAIL paths)
+- §10 Copy-paste prompts (NONE for weed-clearing trial; ONE escalation-only template)
+
+Post-Paige correction: she guessed run-dir path as `runs/trial-3/<uuid>/`; code-grounded reality per `app/runtime/economics.py:30` is `state/config/runs/<uuid>/`. All 9 occurrences patched before commit.
+
+### Final WRAPUP coherence pass
+
+Operator requested formal session-WRAPUP protocol execution.
+
+- **Step 0 (Cora-orchestrated):** Substantively covered by earlier harmonization pass at `e5a5881` + per-story T11 reviews. Cora dissolved 2026-04-24 per ratification; Audra L1/L2 sweeps formally retired.
+- **Step 1 Quality gate:** ruff PASS on Epic 34 touched surfaces; lint-imports 13 KEPT 0 broken.
+- **Step 2 BMAD artifacts:** all migration-34-N specs + Codex dev-prompts + handoffs flipped done in-session.
+- **Step 3 bmm-workflow-status.yaml:** updated 2026-05-22 with Epic 34 close ledger + next_workflow_step refreshed to Trial-3 launch (commit `e5a5881`).
+- **Step 4a sprint-status.yaml:** 2 tests PASS via `tests/test_sprint_status_yaml.py`. All 7 Epic 34 stories `done`. Stale "experience-profiles" Epic-34 outline tombstoned to eliminate numeric-slot collision.
+- **Step 4b Interaction testing:** N/A — no new agents created this session.
+- **Step 5 project-context.md:** updated 2026-05-22 (commit `e5a5881`). `docs/agent-environment.md` unchanged (no MCP/API/skill/tier changes this session).
+- **Step 6 Content state:** N/A.
+- **Step 7 next-session-start-here.md:** finalized at WRAPUP — immediate next action set to "Trial-3 attempt-3 launch (operator-confirmed)" with explicit pointer to `trial-3-operator-guide-attempt-3.md` as authoritative ramp-up artifact + 7-step opener sequence.
+- **Step 8 SESSION-HANDOFF.md:** finalizing now (this section).
+- **Step 9a Guides:** unchanged. Operator guide is implementation-artifact, not docs/.
+- **Step 9b Reuse patterns:** A23 + P5 anti-pattern entries landed at `1b59487` per Murat M-Murat-2 binding.
+- **Step 9c Structural walks:** unchanged.
+- **Step 10 Stale files:** none.
+- **Step 10a Dirty worktree:** only `runs/cache-harness/irene-pass1.md` remains transient (cache-harness operational state; gitignored-class; pre-existing throughout session). NOT session-owned; ambient worktree state.
+- **Step 11 Artifact completeness:** sprint-status + workflow-status + project-context + next-session-start-here + SESSION-HANDOFF all final.
+- **Step 11a Worktree hygiene:** single worktree at `C:/Users/juanl/Documents/GitHub/course-DEV-IDE-with-AGENTS-hybrid`. No stale entries.
+- **Step 12 Git closeout:** push mandatory per CLAUDE.md push-cadence policy. Working-branch HEAD at `0dd38ba` matches `origin/trial/3-2026-05-21` — already in sync. Final WRAPUP commit (this SESSION-HANDOFF update + next-session-start-here finalization) follows + push.
+
+### Session-WRAPUP push count
+
+11 total pushes this session (10 prior + 1 final WRAPUP closeout).
+
+### Trial-3 attempt-3 launch readiness affirmed
+
+Substrate gates verified at WRAPUP:
+- 59 focused Epic 34 ratchet tests PASS
+- ruff PASS
+- lint-imports 13 KEPT
+- AC-34-7-H forensic grep-sweep: 0 hits both retired markers across entire repo
+- Orphan grep for legacy composer in app/: 0 matches
+- sprint-status YAML test: 2 PASS
+
+Operator opens `_bmad-output/implementation-artifacts/trial-3-operator-guide-attempt-3.md` at start of next session, runs pre-launch checklist, then launches.
+
+---
+
+**End of SESSION-HANDOFF for 2026-05-22 (Epic 34 FULLY COMPLETE + Trial-3 attempt-3 LAUNCH READY + single-source operator guide landed).**
