@@ -2,9 +2,10 @@
 
 **Purpose:** end-to-end execution playbook for Trial-3 — the first real production trial against the post-Slab-7c substrate. Trial-3 is the strategic payoff event that validates the orchestrational tail (§01→§15) end-to-end and unblocks Epic 15 (Learning & Compound Intelligence) reactivation.
 
-**Status:** **substrate ready** as of 2026-05-06 (Slab 7c dev-stories closed at 35/36 with 7c.21a in flight; 7c.21 closeout ceremony confirmed Trial-3 readiness via Murat M4 4-predicate verification).
+**Status:** **substrate FULLY HARMONIZED** as of 2026-05-22 (Slab 7c dev-stories closed 2026-05-07 at 36/36; **Epic 34 §02A Downstream-Consumer Coherence FULLY COMPLETE 2026-05-22** at 7/7 stories; commit range `bc477ed..1b59487`). Substrate now carries: §02A composer emitting `ref_id` natively (renamed from `src_id`); Texas wrangler accepting 7-role union + closed `excluded_reason` enum + cross-field invariants + `sme_refs[]` metadata; no temporary translator scaffold; no legacy `directive_composer.py`; integration-boundary green test installed at `tests/integration/test_section_02a_to_wrangler_subprocess_roundtrip.py` (sha256-pinned forensic-anchor `351a57f...` from Trial-3 attempt-2 forensic evidence). Trial-3 attempt-2 launch-failure root cause (untested integration boundary; §02A vs wrangler schema fork) is now closed via the integration-ratchet-first Quinn-synthesis Option 5 pattern.
 
 **Authored:** 2026-05-06 — Claude (post-7c.21 close).
+**Substrate-state refresh:** 2026-05-22 — Claude (post-Epic-34 close). Trial-3 execution playbook (§§1-N below) remains authoritative; substrate is now MORE harmonized than the 2026-05-06 baseline (no translator, no legacy composer, integration boundary green-tested + extended through 4 stories + ratified through Epic close).
 
 **Owner of execution:** Operator (with Marcus orchestration). Codex is NOT in scope for Trial-3 dispatch — this is a real-content production run, not a dev-story cycle.
 

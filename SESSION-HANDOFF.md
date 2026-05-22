@@ -234,4 +234,66 @@ N/A — pure system-development session (Epic 34 substrate-coherence work).
 
 ---
 
-**End of SESSION-HANDOFF for 2026-05-22.**
+## Session continuation 2026-05-22 — Epic 34 stories 34-2 through 34-7 closed + Epic 34 FULLY COMPLETE
+
+**Continuation HEAD progression:** `bc477ed` → `e6f887a` (prior wrap docs) → `cabf850` (Story 34-2 close) → `dcdb7c8` (Story 34-4 spec substrate-currency patch) → `08dfc4a` (Story 34-3 close) → `cbfca40` (Story 34-3 SHA substitution) → `16e36f7` (Story 34-4 close) → `e59b0f4` (Story 34-5 close) → `55a4d25` (Story 34-6 close) → `1b59487` (Story 34-7 close + 🎉 EPIC 34 CLOSED) → `31a2f72` (Epic 34 SHA substitution).
+
+**Continuation commit count:** 9 additional commits closing Stories 34-2 through 34-7 + Epic close ceremony.
+
+### Continuation work completed
+
+#### Stories closed (6 of 7 remaining at session-continuation start)
+
+| Story | Commit | T11 verdict | Notes |
+|---|---|---|---|
+| 34-2 wrangler 6-role union + ignored-row filter | `cabf850` | PASS / 0 MF / 0 SF / 1 DEFER-NIT | retrieval-shape + role=ignored corner case out of D4 scope |
+| 34-3 §02A src_id→ref_id + J-A1(a)/(b) | `08dfc4a` | PASS / 0 MF / 0 SF / 1 PATCH applied | NIT-1 docstring added to `_accept_legacy_source_id_key` validator (AC-34-1-B load-bearing rationale) |
+| 34-4 sme_refs additive + ratchet extension | `16e36f7` | PASS / 0 MF / 0 SF / 0 NITs | Cleanest story; bounded 3pts delivered with no findings |
+| 34-5 translator-shrinkage carrier ratchet | `e59b0f4` | PASS / 0 MF / 0 SF / 0 NITs | Carrier discipline preserved (0 production code edits) |
+| 34-6 legacy directive_composer.py DELETION | `55a4d25` | PASS / 0 MF / 0 SF / 0 NITs | Substrate-audit at session-START predicted ALL 7 hit counts EXACTLY (20/23/5/2/2/2/2); 2 structural-orphan cleanups surfaced at Codex T1 |
+| 34-7 translator deletion + A23/P5 + Epic close | `1b59487` | PASS / 0 MF / 0 SF / 0 NITs | AC-34-7-H forensic grep-sweep PERFECT zero hits both markers |
+
+**Track record:** 4-of-6 stories closed with ZERO T11 findings; 1 with 1 DEFER-NIT (corner case); 1 with 1 PATCH applied (docstring). Operator-friction overhead per story remained minimal — operator-bridge pattern (P3 anti-pattern) compensated by clean Codex T1-T10 handoffs and predictable substrate-audit-driven spec authoring.
+
+#### Substrate-audit downtime work (during Codex Story 34-3 dev)
+
+While Codex was working on Story 34-3 (the largest substrate edit in Epic 34), I performed a preemptive substrate-audit of Stories 34-4 through 34-7 specs. Findings:
+
+- **Story 34-4 line-citation drift:** `_write_metadata_json` had shifted from spec-author-time location (lines 1239-1266) to current (lines 1308-1335) due to Story 34-2's validator-constants additions. Patched at `dcdb7c8` (3 spec locations + 3 dev-prompt locations updated with corrected line numbers + grep idiom for further drift absorption).
+- **Stories 34-5/34-6/34-7 specs:** All substrate citations verified accurate. Story 34-6's 7 test-file hit counts predicted EXACTLY (20/23/5/2/2/2/2) — substrate-tested authoring discipline held perfectly.
+
+#### Deferred-inventory closures
+
+Three entries closed during Epic 34 execution:
+- `section-02a-downstream-consumer-compatibility-systemic-drift` (CRITICAL Trial-3-blocking; filed 2026-05-21T22:30) — CLOSED at commit range `bc477ed..1b59487`
+- `trial-cli-effective-trial-id-vs-section-02a-composer-run-id-divergence` (J-A1(a)) — CLOSED via Story 34-3 @ `08dfc4a`
+- `trial-cli-model-resolution-trail-not-appended-from-adapter` (J-A1(b)) — CLOSED via Story 34-3 @ `08dfc4a`
+
+#### Anti-pattern entries filed (Murat M-Murat-2 binding)
+
+Two new entries appended to `docs/dev-guide/specialist-anti-patterns.md`:
+- **A23. Two-source-of-truth vocab fork latent across N-year-old integration boundary** — sibling-to-A17 but distinct (A17 is shape-hostile; A23 is vocab-forked at boundary that no test exercised). Counter-pattern: integration-boundary green test as authoritative source-of-truth for shared contracts; static-grep coverage NOT a substitute.
+- **P5. Schema-coherence Epic without integration-boundary green test is governance failure** — process-tier. Counter-pattern: any Epic touching a producer-consumer contract MUST include integration-boundary green test as FIRST story (RED→GREEN ratchet); subsequent stories EXTEND the test in lockstep per AC-34-4-A-EXT extension pattern.
+
+#### Substrate state at Epic 34 close
+
+- §02A composer emits `ref_id` natively (no translator); composer requires operator-supplied `run_id: UUID`; cli_adapter writes `model_resolution_trail.json` sidecar
+- Texas wrangler accepts 7-role union {primary, supporting, ignored, validation, supplementary, visual-primary, visual-supplementary} + closed-set `excluded_reason` enum + cross-field invariants + `sme_refs[]` metadata
+- Legacy `app/marcus/orchestrator/directive_composer.py` DELETED (no two-source-of-truth)
+- Temporary `app/composers/section_02a/_wrangler_translator.py` scaffold DELETED (died-as-planned per NFR-E34-10)
+- Integration-boundary green test installed at `tests/integration/test_section_02a_to_wrangler_subprocess_roundtrip.py` (sha256-pinned forensic-anchor `351a57f...` from Trial-3 attempt-2 forensic evidence); test EXTENDED through 34-4 (sme_refs assertions) and ratified through 34-7's direct-ratchet simplification
+- AC-34-7-H forensic grep-sweep: ZERO hits for both retired Epic-34 scaffold marker literals across entire repo
+- Marker-literal hygiene: Codex mechanically rewrote historical artifact mentions (Story 34-1 spec/handoff/dev-prompt + Epic 34 spec + SCP doc + governance JSON) to non-matching obfuscated text preserving audit trail
+
+### Continuation wrapup discipline
+
+- **Final harmonization pass executed:** state artifacts updated at this commit batch (bmm-workflow-status.yaml + project-context.md + this SESSION-HANDOFF.md continuation + sprint-status.yaml — including tombstone for stale experience-profiles Epic 34 outline placeholders that competed for the Epic-34 numeric slot before §02A coherence reclaimed it).
+- **Substrate gates pre-Trial-3:** 59 focused Epic 34 tests PASS; ruff PASS; lint-imports 13 KEPT; orphan-grep for legacy composer imports in app/ = 0; AC-34-7-H marker grep-sweep = 0 hits both markers.
+- **Pre-existing test failures unchanged:** Codex T8 broad regression measurement 86 failed @ 4456 passed (delta -2 vs requested 88-baseline; failures remain outside Story-34-N focused surface; documented in Story 34-7 handoff Review Notes — e.g., test_lint_imports_kept_count_increases_by_three is a baseline failure even though actual `lint-imports.exe` passes 13 KEPT).
+- **Trial-3 attempt-3 LAUNCH READY** — substrate fully harmonized. Per CLAUDE.md §Deferred-inventory governance #1, `bmad-retrospective` on Epic 34 is binding consultation point before next-Epic dispatch; operator discretion whether retrospective precedes Trial-3 launch or follows it.
+
+**Continuation push count:** 9 additional pushes (each commit pushed per push-cadence policy).
+
+---
+
+**End of SESSION-HANDOFF for 2026-05-22 (Epic 34 §02A Downstream-Consumer Coherence FULLY COMPLETE + Trial-3 attempt-3 launch readiness).**
