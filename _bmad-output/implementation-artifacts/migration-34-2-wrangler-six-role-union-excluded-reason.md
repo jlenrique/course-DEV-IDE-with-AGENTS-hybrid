@@ -1,6 +1,6 @@
 # Migration Story 34-2: Texas Wrangler 6-Role Union + excluded_reason + Cross-Field Invariants (Winston A1 binding)
 
-**Status:** ready-for-dev *(spec authored 2026-05-22 with locked contract decisions D1-D5; predecessor Story 34-1 expected `done` at dispatch time.)*
+**Status:** done *(Codex T1-T10 complete 2026-05-22 + Claude T11 standard `bmad-code-review` PASS 2026-05-22; implementation at commit `bc477ed`; T11 verdict 0 MUST-FIX / 0 SHOULD-FIX / 1 DEFER-NIT recorded in commit message.)*
 **Sprint key:** `migration-34-2-wrangler-six-role-union-excluded-reason`
 **Epic:** Epic 34 — §02A Downstream-Consumer Schema Coherence
 **Pts:** 5
