@@ -147,7 +147,7 @@ So that every subsequent harmonization story moves canonical contract with a gre
 
 **Acceptance Criteria:**
 
-**AC-34-1-A** (test landing):
+**AC-34-1-A** (test landing — Story-34-1-substrate-only assertions):
 **Given** the §02A composer produces directives via `app/composers/section_02a/composer.compose()` and the Texas wrangler validates input via `skills/bmad-agent-texas/scripts/run_wrangler.py` lines 280-394
 **When** I author `tests/integration/test_section_02a_to_wrangler_subprocess_roundtrip.py`
 **Then** the test composes a §02A `Directive` via the actual composer entry point (LLM call mocked with deterministic fixture corpus is acceptable; the composer-to-wrangler boundary MUST be real),
@@ -155,8 +155,9 @@ So that every subsequent harmonization story moves canonical contract with a gre
 **And** invokes `run_wrangler.py` as a REAL subprocess (NOT in-process import) via `subprocess.run([sys.executable, "skills/bmad-agent-texas/scripts/run_wrangler.py", "--directive", str(directive_yaml), "--bundle-dir", str(bundle_dir), "--json"], capture_output=True, text=True, check=False)`,
 **And** asserts `result.returncode == 0`,
 **And** asserts `len(result.yaml::materials) >= 1` BEFORE asserting per-row shape (Murat new-A9-surface mitigation: prevents vacuous-pass on empty-materials case),
-**And** asserts at least one row with `role=primary` carrying `word_count` + `content_path` exists in `result.yaml::materials[]`,
-**And** asserts `metadata.json::sme_refs[]` exists with `len(sme_refs) >= 1` AND each entry matches `{source_id, path, content_digest}` shape (FR-E34-4/5 forward-contract assertion; will fail until Story 34-4 lands).
+**And** asserts at least one row with `role=primary` carrying `word_count` + `content_path` exists in `result.yaml::materials[]`.
+
+**Scope discipline (post-Round-2 amendment 2026-05-22; Codex T1 surface):** Story 34-1 SHALL NOT assert `metadata.json::sme_refs[]` shape here — Story 34-4 owns wrangler `sme_refs[]` emission, and a translator that only changes directive INPUT shape cannot make the wrangler emit a new metadata.json OUTPUT key. The sme_refs forward-contract assertion is moved to Story 34-4 AC-34-4-A as a "test extension" deliverable (Story 34-4 EXTENDS Story 34-1's round-trip test to add the new assertion in lockstep with the new emission). This honors Quinn-synthesis Option 5's "one drift dimension per story" sequencing.
 
 **AC-34-1-B** (forensic-anchor assertion — Murat M-Murat-5):
 **Given** the Trial-3 attempt-2 forensic directive at `state/config/runs/6a3393f8-f369-4a30-b7c1-b50c60c1d1a2/directive.yaml` (sha256 `351a57fbe12aff4a49349c4a646618d92ae38a798ec53eee61668f74f8bbd703`; gitignored — fixture-copy MUST land under `tests/fixtures/integration/section_02a/`)
@@ -303,6 +304,17 @@ So that the soft-degrade where `pre_packet._build_sme_refs` falls back to `sourc
 **And** `source_id` matches the source's `ref_id` (one-to-one mapping; field-name fork D6 closure),
 **And** `path` is the source's locator if `provider == "local_file"` else `null`,
 **And** `content_digest` is `sha256(extracted-bytes-for-this-source)` (per-source digest, NOT whole-bundle digest).
+
+**AC-34-4-A-EXT** (integration-test extension — INHERITED FROM AC-34-1-A AT 2026-05-22 ROUND-2 AMENDMENT post Codex T1 surface):
+**Given** Story 34-1 landed `tests/integration/test_section_02a_to_wrangler_subprocess_roundtrip.py` WITHOUT the `sme_refs[]` assertion (deferred per scope discipline)
+**When** Story 34-4 lands
+**Then** Story 34-4 MUST EXTEND the round-trip test to add the following assertion block:
+- asserts `metadata.json::sme_refs[]` exists with `len(sme_refs) >= 1` BEFORE asserting per-row shape (Murat new-A9-surface mitigation parallel to AC-34-1-A's materials assertion),
+- asserts each entry matches `{source_id: str, path: str | None, content_digest: str}` shape,
+- asserts `len(sme_refs) == len([m for m in materials if m["role"] in {"primary","supporting","supplementary","visual-primary","visual-supplementary"}])` (i.e., one sme_refs entry per non-ignored material per AC-34-4-D ignored-row exclusion),
+- asserts each `sme_refs[i].source_id` equals the corresponding `materials[i].ref_id` (FR-E34-5 one-to-one mapping verification).
+
+This extension is what makes Story 34-4 "ratchet-extending" per Quinn-synthesis Option 5: the integration test grows as substrate harmonizes; the new assertion validates the new substrate behavior in lockstep.
 
 **AC-34-4-B** (pre_packet contract satisfaction):
 **Given** `app/marcus/intake/pre_packet.py::_build_sme_refs` reads `metadata["sme_refs"]` with the preferred branch

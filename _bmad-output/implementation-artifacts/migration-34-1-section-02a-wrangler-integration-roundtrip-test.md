@@ -248,6 +248,13 @@ def test_forensic_directive_round_trips_through_wrangler_subprocess_via_translat
         "no primary row has content_path=extracted.md"
     )
 
+    # NOTE: metadata.json::sme_refs[] assertion DEFERRED to Story 34-4 AC-34-4-A-EXT.
+    # The wrangler at Story 34-1 close writes only `{run_id, generated_at, provenance,
+    # primary_consumption_path}` to metadata.json; sme_refs[] is Story 34-4's additive
+    # emission. Story 34-4 will EXTEND this test to add the sme_refs assertion block
+    # in lockstep with the new wrangler behavior — per Quinn-synthesis Option 5
+    # per-story ratchet-extension pattern.
+
 
 def test_translator_active_mappings_is_load_bearing_in_production():
     """AC-34-5-A precursor: at Story 34-1 close, all 3 mappings are active.
@@ -385,7 +392,7 @@ AC-34-1-F is **operator-gated**:
 
 ## Acceptance Criteria (carryforward from Epic 34 spec; amendments folded from Round-1 SCP-ratification)
 
-**AC-34-1-A** (test landing):
+**AC-34-1-A** (test landing — Story-34-1-substrate-only assertions; AMENDED 2026-05-22 post-Codex-T1-surface):
 **Given** the §02A composer produces directives via `app/composers/section_02a/composer.compose()` and the Texas wrangler validates input via `skills/bmad-agent-texas/scripts/run_wrangler.py` lines 280-394
 **When** I author `tests/integration/test_section_02a_to_wrangler_subprocess_roundtrip.py`
 **Then** the test composes a §02A `Directive` via the actual composer entry point (LLM call mocked with deterministic fixture corpus is acceptable; the composer-to-wrangler boundary MUST be real),
@@ -393,8 +400,9 @@ AC-34-1-F is **operator-gated**:
 **And** invokes `run_wrangler.py` as a REAL subprocess (NOT in-process import),
 **And** asserts `result.returncode == 0`,
 **And** asserts `len(result.yaml::materials) >= 1` BEFORE asserting per-row shape (Murat new-A9-surface mitigation: prevents vacuous-pass on empty-materials case),
-**And** asserts at least one row with `role=primary` carrying `word_count` + `content_path` exists in `result.yaml::materials[]`,
-**And** asserts `metadata.json::sme_refs[]` exists with `len(sme_refs) >= 1` AND each entry matches `{source_id, path, content_digest}` shape (FR-E34-4/5 forward-contract assertion; will fail until Story 34-4 lands).
+**And** asserts at least one row with `role=primary` carrying `word_count` + `content_path` exists in `result.yaml::materials[]`.
+
+**Scope discipline (post-Codex-T1-surface amendment 2026-05-22):** Story 34-1 SHALL NOT assert `metadata.json::sme_refs[]` shape — Story 34-4 owns the wrangler's metadata.json sme_refs[] emission. Story 34-1's translator only translates directive INPUT shape, not wrangler OUTPUT shape; the wrangler still writes only `{run_id, generated_at, provenance, primary_consumption_path}` to metadata.json at Story 34-1 close. The sme_refs forward-contract assertion is RELOCATED to Story 34-4 AC-34-4-A-EXT (Story 34-4 EXTENDS this round-trip test to add the sme_refs assertion block when sme_refs becomes real). This honors Quinn-synthesis Option 5's "one drift dimension per story" sequencing and per-story ratchet-extension pattern.
 
 **AC-34-1-B** (forensic-anchor assertion — Murat M-Murat-5):
 **Given** the Trial-3 attempt-2 forensic directive at `state/config/runs/6a3393f8-f369-4a30-b7c1-b50c60c1d1a2/directive.yaml` (sha256 `351a57fbe12aff4a49349c4a646618d92ae38a798ec53eee61668f74f8bbd703`; gitignored — fixture-copy MUST land under `tests/fixtures/integration/section_02a/`)
