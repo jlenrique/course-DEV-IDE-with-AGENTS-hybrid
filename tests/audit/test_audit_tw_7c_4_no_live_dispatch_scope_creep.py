@@ -61,8 +61,26 @@ def test_live_dispatch_python_scope_is_bounded() -> None:
     untracked = set(_git_lines("ls-files", "--others", "--exclude-standard", "--", "*.py"))
     touched_python = changed | untracked
 
-    app_scope = sorted(path for path in touched_python if path.startswith("app/"))
-    assert app_scope == [], f"TW-7c-4 fired: app-layer Python touched: {app_scope}"
+    # SCP 2026-05-21 §4.1 + C1b (Trial-3 wiring fix substrate amendment): the
+    # `app_scope` predicate was originally a hard ban on all app/ Python edits,
+    # not allowlist-aware. The 2026-05-19 SCP and 2026-05-21 Round-1 party-mode
+    # ratification both reasoned only about the line-74 `unexpected` predicate;
+    # the dual-predicate structure (line-65 + line-74) was a known-but-
+    # underspecified seam. C1b folds line-65 into the same PERMITTED_PYTHON_DIFFS
+    # allowlist mechanism so that ratified app/ edits (currently
+    # app/marcus/cli/trial.py + app/composers/section_02a/cli_adapter.py) can
+    # land without tripwire firing. Defense-in-depth is preserved: app/ edits
+    # still require explicit allowlisting; non-app/ edits also still bounded by
+    # line 74.
+    app_scope = sorted(
+        path
+        for path in touched_python
+        if path.startswith("app/") and path not in PERMITTED_PYTHON_DIFFS
+    )
+    assert app_scope == [], (
+        f"TW-7c-4 fired: unauthorized app-layer Python touched (not in "
+        f"PERMITTED_PYTHON_DIFFS): {app_scope}"
+    )
 
     unexpected = sorted(
         path
