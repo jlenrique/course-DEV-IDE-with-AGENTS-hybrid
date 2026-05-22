@@ -28,6 +28,69 @@ PERMITTED_PYTHON_DIFFS = {
     # part of C2a; allowlisting per same C1 substrate-amendment scope.
     "tests/marcus_cli/__init__.py",
     "tests/marcus_cli/test_compose_section_02a_directive_adapter.py",
+    # Epic 34 §02A downstream-consumer coherence amendment 2026-05-22
+    # (sprint-change-proposal-2026-05-22-epic-34-substrate-amendment.md):
+    # Phase B Quinn-synthesis ratified Option 5 "Round-Trip First, Then Harmonize."
+    # 7-story Epic resolving §02A→wrangler→pre_packet schema drift surfaced by
+    # Trial-3 attempt-2 (run-id 6a3393f8-...). SCP-ratification party-mode Round
+    # 1 (2026-05-22): 4-of-4 APPROVE-with-amendments (W-SCP-A1 + A-A1/A-A2/A-A3
+    # + M-Murat-SCP-1..3 + A-John-1/A-John-2). 27-path bounded extension across
+    # the §02A composer package + Texas wrangler script + Marcus intake + new
+    # integration-test paths + temporary translator scaffolding + §02A test
+    # surface for src_id→ref_id migration + legacy composer test surface for
+    # Story 34-6 rewire/delete. Freeze predicates (L79 app_scope bind / L84
+    # `app_scope == []` assert + L89 unexpected bind / L96 `unexpected == []`
+    # assert) remain enforced for all non-allowlisted paths.
+    #
+    # Story 34-1 — NEW temporary in-tree translator scaffolding (deleted at
+    # Story 34-7 per NFR-E34-10 hard AC); integration-test ship-proof.
+    "app/composers/section_02a/_wrangler_translator.py",
+    "tests/integration/test_section_02a_to_wrangler_subprocess_roundtrip.py",
+    # Story 34-1 fixture-dir defensive (Murat seam): pre-bind in case Codex T1-T9
+    # emits any .py under fixture dir (__init__.py / conftest.py). Fixture data
+    # files (.yaml/.md/.txt) escape the *.py-scoped predicate at audit-file L64.
+    "tests/fixtures/integration/section_02a/__init__.py",
+    "tests/fixtures/integration/section_02a/conftest.py",
+    # Story 34-2 — wrangler input validator: 6-role union + excluded_reason
+    # + cross-field invariants (Winston A1 + Murat M-Murat-3 bindings).
+    "skills/bmad-agent-texas/scripts/run_wrangler.py",
+    # Story 34-3 — §02A composer src_id → ref_id rename + J-A1(a)/(b)
+    # cli_adapter completion (Winston A2 binding).
+    "app/composers/section_02a/directive_model.py",
+    "app/composers/section_02a/composer.py",
+    "app/composers/section_02a/_prompt.py",
+    "app/composers/section_02a/_cache.py",
+    # Story 34-3 / 34-7 — §02A package __init__.py re-export surface
+    # (Winston W-SCP-A1 + Amelia A-A2 2-voice consensus); covers both
+    # field-rename ripple AND translator-deletion re-export prune.
+    "app/composers/section_02a/__init__.py",
+    # Story 34-3 — §02A test surface migration for `src_id → ref_id` rename
+    # (Amelia A-A1 grep-verified hits across both composer + gate test trees).
+    "tests/composers/section_02a/_helpers.py",
+    "tests/composers/section_02a/__init__.py",
+    "tests/composers/section_02a/test_composer_cache_key_normalization.py",
+    "tests/composers/section_02a/test_composer_classification.py",
+    "tests/composers/section_02a/test_composer_directive_model_shape.py",
+    "tests/composers/section_02a/test_composer_trial_2_finding_2_regression.py",
+    "tests/composers/section_02a/test_composer_utf8_write.py",
+    "tests/gates/section_02a/_helpers.py",
+    "tests/gates/section_02a/test_g0_poll_surface_field_level_edit.py",
+    # Story 34-4 — wrangler metadata.json sme_refs additive emission;
+    # pre_packet possibly minor touch (consumer side).
+    "app/marcus/intake/pre_packet.py",
+    # Story 34-5 — translator-shrinkage sequence test (carrier story).
+    "tests/integration/test_section_02a_translator_shrinkage_sequence.py",
+    # Story 34-6 — legacy directive_composer.py DELETION; 7 test files
+    # rewired or deleted (existing tests; deletion still counts as
+    # `git diff` touch for the L79/L84 + L89/L96 predicates).
+    "app/marcus/orchestrator/directive_composer.py",
+    "tests/unit/marcus/orchestrator/test_directive_composer_pure.py",
+    "tests/unit/marcus/orchestrator/test_directive_composer_materialization.py",
+    "tests/specialists/texas/test_texas_live_retrieval_against_real_directive.py",
+    "tests/parity/test_trial_475_texas_hardening_regression.py",
+    "tests/parity/test_trial_475_directive_composition_regression.py",
+    "tests/composition/test_texas_to_cd_chain.py",
+    "tests/composition/test_slab_7b_wave_1_opener_composition_smoke.py",
 }
 
 

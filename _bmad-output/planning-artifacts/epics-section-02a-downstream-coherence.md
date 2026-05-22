@@ -58,7 +58,7 @@ NFR-E34-6: `run_id` UUID4-validated tz-aware at every boundary (composer accepts
 
 NFR-E34-7: Round-trip integration test MUST assert against the actual Trial-3 attempt-2 forensic directive (sha256 `351a57fbe12aff4a49349c4a646618d92ae38a798ec53eee61668f74f8bbd703`) to prove the exact seam crash that triggered this Epic is closed (Murat M-Murat-5 anticipated amendment).
 
-NFR-E34-8: TW-7c-4 freeze-safety preserved: BOTH predicates (set-equality at line 65 + line-89 `unexpected` list) honored on any `PERMITTED_PYTHON_DIFFS` allowlist amendment per Murat dual-predicate binding from SCP-2026-05-19.
+NFR-E34-8: TW-7c-4 freeze-safety preserved: BOTH predicates honored on any `PERMITTED_PYTHON_DIFFS` allowlist amendment per Murat dual-predicate binding from SCP-2026-05-19. Current predicate structure (post-SCP-2026-05-21 C1b refactor): line-79 `app_scope = sorted(...)` bind + L84 `assert app_scope == []` (filters `app/`-prefixed Python NOT in allowlist) AND line-89 `unexpected = sorted(...)` bind + L96 `assert unexpected == []` (filters all other touched Python excluding `.venv/` and `runs/`). Citation lockstep with SCP-2026-05-22 §4.1 per Murat M-Murat-SCP-2 amendment (prior draft cited stale L65; current discipline names both bind site AND predicate assertion line).
 
 NFR-E34-9: Anti-pattern entries A23 + P5 filed at Epic close in `docs/dev-guide/specialist-anti-patterns.md`:
 - **A23:** "Two-source-of-truth vocab fork latent across N-year-old integration boundary."
@@ -154,8 +154,9 @@ So that every subsequent harmonization story moves canonical contract with a gre
 **And** writes the directive YAML to a real `tmp_path/directive.yaml`,
 **And** invokes `run_wrangler.py` as a REAL subprocess (NOT in-process import) via `subprocess.run([sys.executable, "skills/bmad-agent-texas/scripts/run_wrangler.py", "--directive", str(directive_yaml), "--bundle-dir", str(bundle_dir), "--json"], capture_output=True, text=True, check=False)`,
 **And** asserts `result.returncode == 0`,
-**And** asserts `result.yaml::materials[]` contains at least one row with `role=primary` carrying `word_count` + `content_path`,
-**And** asserts `metadata.json::sme_refs[]` exists with entries matching `{source_id, path, content_digest}` shape (FR-E34-4/5 forward-contract assertion; will fail until Story 34-4 lands).
+**And** asserts `len(result.yaml::materials) >= 1` BEFORE asserting per-row shape (Murat new-A9-surface mitigation: prevents vacuous-pass on empty-materials case),
+**And** asserts at least one row with `role=primary` carrying `word_count` + `content_path` exists in `result.yaml::materials[]`,
+**And** asserts `metadata.json::sme_refs[]` exists with `len(sme_refs) >= 1` AND each entry matches `{source_id, path, content_digest}` shape (FR-E34-4/5 forward-contract assertion; will fail until Story 34-4 lands).
 
 **AC-34-1-B** (forensic-anchor assertion — Murat M-Murat-5):
 **Given** the Trial-3 attempt-2 forensic directive at `state/config/runs/6a3393f8-f369-4a30-b7c1-b50c60c1d1a2/directive.yaml` (sha256 `351a57fbe12aff4a49349c4a646618d92ae38a798ec53eee61668f74f8bbd703`; gitignored — fixture-copy MUST land under `tests/fixtures/integration/section_02a/`)
@@ -329,10 +330,12 @@ So that the Quinn synthesis "continuous green-gate ratchet" property is enforcea
 
 **Acceptance Criteria:**
 
-**AC-34-5-A** (parametrized translator-state test):
+**AC-34-5-A** (parametrized translator-state test + production-load-bearing constant):
 **Given** the translator at `app/composers/section_02a/_wrangler_translator.py` exposes a documented `TRANSLATOR_ACTIVE_MAPPINGS: frozenset[str]` constant naming which mappings are still active (e.g., `{"role-supporting-to-supplementary"}` post-34-1; empty set post-34-N)
 **When** Story 34-5 lands `tests/integration/test_section_02a_translator_shrinkage_sequence.py`
-**Then** the test asserts `TRANSLATOR_ACTIVE_MAPPINGS` shrinks monotonically across story landings (the test gets parametrized with the expected state per Story-N close).
+**Then** the test asserts `TRANSLATOR_ACTIVE_MAPPINGS` shrinks monotonically across story landings (the test gets parametrized with the expected state per Story-N close),
+**And** the translator's `compose_and_write` (or equivalent production-path invocation function) MUST read `TRANSLATOR_ACTIVE_MAPPINGS` at runtime and skip absent mappings (Murat new-A9-surface-2 mitigation: make the constant load-bearing in production, NOT just test-observable; prevents vacuous-shrinkage-test where the constant could be set to empty without any production-behavior change),
+**And** a sibling assertion verifies that the translator's production-path invocation grep-confirms a reference to `TRANSLATOR_ACTIVE_MAPPINGS` (not just import, actual read).
 
 **AC-34-5-B** (Story-34-1 ratchet preserved):
 **Given** the round-trip test from Story 34-1
@@ -442,6 +445,13 @@ So that no two-source-of-truth substrate drift survives Epic 34 close (Quinn syn
 **Given** Murat amendment M-Murat-4 (if party-mode overrides to Option 1, audit vacuous-test surface)
 **When** Story 34-7 lands
 **Then** since Quinn synthesis ratified Option 5 (not Option 1), M-Murat-4 audit is REFRAMED as: audit every test mocking `run_wrangler` subprocess across the repo, validate each mock is documented per the AC-34-1-D pattern, and file follow-on if any vacuous-test surface persists.
+
+**AC-34-7-H** (forensic-sweep for translator-scaffold residue — Murat SCP-ratification new-A23-adjacent-surface mitigation):
+**Given** Story 34-1's translator scaffold carried a `__epic_34_scaffolding__ = True` module-level constant + `# DELETE-AT-EPIC-34-CLOSE — SCAFFOLDING` docstring marker (AC-34-1-C grep-detection hooks)
+**When** Story 34-7 closes
+**Then** a repo-wide grep MUST return ZERO results for both markers: `grep -rn "__epic_34_scaffolding__" .` returns nothing AND `grep -rn "DELETE-AT-EPIC-34-CLOSE" .` returns nothing,
+**And** Story 34-7's commit message includes the grep evidence (`zero hits across N files searched`) as forensic proof of complete scaffold deletion,
+**And** if either grep returns >0 hits, Story 34-7 is NOT done — investigate residue, complete deletion, re-run grep.
 
 ---
 
