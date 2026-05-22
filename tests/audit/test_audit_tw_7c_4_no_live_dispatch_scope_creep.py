@@ -96,6 +96,8 @@ PERMITTED_PYTHON_DIFFS = {
     "tests/parity/test_trial_475_directive_composition_regression.py",
     "tests/composition/test_texas_to_cd_chain.py",
     "tests/composition/test_slab_7b_wave_1_opener_composition_smoke.py",
+    # Story 34-6 structural orphan cleanup after deleting the legacy composer.
+    "tests/structural/test_directive_io_uses_utf8_explicit.py",
 }
 
 

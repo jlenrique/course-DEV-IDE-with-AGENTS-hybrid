@@ -1,6 +1,6 @@
 # Migration Story 34-6: Legacy `directive_composer.py` Deletion + 7-File Test Rewire/Delete (C1 cleanup)
 
-**Status:** ready-for-dev *(spec authored 2026-05-22; predecessor Stories 34-1..34-5 expected `done` at dispatch.)*
+**Status:** done *(Codex T1-T10 + Claude T11 standard `bmad-code-review` PASS 2026-05-22; T11 verdict 0 MUST-FIX / 0 SHOULD-FIX / 0 NITs — substrate-audit at session-START predicted all 7 hit counts exactly + 2 unexpected structural-orphan cleanup files surfaced and handled at Codex T1.)*
 **Sprint key:** `migration-34-6-legacy-directive-composer-deletion`
 **Epic:** Epic 34 — §02A Downstream-Consumer Schema Coherence
 **Pts:** 5

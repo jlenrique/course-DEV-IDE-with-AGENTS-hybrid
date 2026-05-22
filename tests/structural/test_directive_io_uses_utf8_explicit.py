@@ -6,7 +6,6 @@ from pathlib import Path
 REPO_ROOT = Path(__file__).resolve().parents[2]
 FILES_TO_SCAN = (
     REPO_ROOT / "app/marcus/cli/trial.py",
-    REPO_ROOT / "app/marcus/orchestrator/directive_composer.py",
     REPO_ROOT / "app/composers/section_02a/composer.py",
 )
 TEXT_IO_METHODS = {"read_text", "write_text", "open"}
@@ -71,5 +70,4 @@ def test_directive_text_io_calls_use_explicit_utf8_encoding():
             if not _has_utf8_encoding(node):
                 violations.append(f"{path.relative_to(REPO_ROOT).as_posix()}:{node.lineno}")
 
-    assert scanned_binary_sites
     assert violations == []
