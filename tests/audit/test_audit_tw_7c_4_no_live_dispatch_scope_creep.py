@@ -24,6 +24,10 @@ PERMITTED_PYTHON_DIFFS = {
     # freeze predicates (line 56 + line 65) remain in force for all other paths.
     "app/marcus/cli/trial.py",
     "app/composers/section_02a/cli_adapter.py",
+    # SCP 2026-05-21 §7 M-A1: new adapter wiring-contract tests authored as
+    # part of C2a; allowlisting per same C1 substrate-amendment scope.
+    "tests/marcus_cli/__init__.py",
+    "tests/marcus_cli/test_compose_section_02a_directive_adapter.py",
 }
 
 
