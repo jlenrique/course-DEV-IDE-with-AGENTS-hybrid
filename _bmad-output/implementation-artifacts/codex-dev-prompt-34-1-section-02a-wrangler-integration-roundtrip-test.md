@@ -53,7 +53,7 @@ The spec at `_bmad-output/implementation-artifacts/migration-34-1-section-02a-wr
 - `tests/fixtures/integration/section_02a/` directory does NOT exist yet; you create it at T2. Allowlisted at C1 (the `__init__.py` + `conftest.py` paths are pre-bound; data fixtures like `forensic_directive_trial_3_attempt_2.yaml` are non-`.py` so they're not subject to the dual-predicate).
 - Class-conformance: 11 contracts unchanged (no model changes in this story).
 - lint-imports: 12-13 KEPT unchanged (no new import-linter contracts in this story).
-- TW-7c-4 dual-predicate test PASS on working tree at dispatch start (allows you to verify mid-implementation that you haven't drifted out of allowlist).
+- TW-7c-4 dual-predicate test PASS on working tree at dispatch start. **Specifically:** `.\.venv\Scripts\python.exe -m pytest tests/audit/test_audit_tw_7c_4_no_live_dispatch_scope_creep.py -v` MUST report 5 passed, 0 failed. (Post detector-script patch at commit-after-d9168c5, all 5 audit tests including `test_tw_7c_4_detector_reports_no_fire` + `test_live_dispatch_python_scope_is_bounded` PASS. If your local working tree shows 4 passed + 1 failed on `test_tw_7c_4_detector_reports_no_fire`, your branch is behind — pull latest then retry T1.)
 
 ## Files in scope
 
