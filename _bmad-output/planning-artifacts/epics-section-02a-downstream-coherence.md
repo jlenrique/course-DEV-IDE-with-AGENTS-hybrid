@@ -153,11 +153,18 @@ So that every subsequent harmonization story moves canonical contract with a gre
 **Then** the test composes a §02A `Directive` via the actual composer entry point (LLM call mocked with deterministic fixture corpus is acceptable; the composer-to-wrangler boundary MUST be real),
 **And** writes the directive YAML to a real `tmp_path/directive.yaml`,
 **And** invokes `run_wrangler.py` as a REAL subprocess (NOT in-process import) via `subprocess.run([sys.executable, "skills/bmad-agent-texas/scripts/run_wrangler.py", "--directive", str(directive_yaml), "--bundle-dir", str(bundle_dir), "--json"], capture_output=True, text=True, check=False)`,
-**And** asserts `result.returncode == 0`,
+**And** asserts the wrangler subprocess **completed without schema-seam failure** per the wrangler's exit-code taxonomy at `skills/bmad-agent-texas/scripts/run_wrangler.py:19-24`:
+  - `result.returncode in {0, 10}` — both 0 (`complete`) and 10 (`complete_with_warnings`) indicate the wrangler accepted the directive, completed extraction, and produced result.yaml. Exit 20 (`blocked`) or 30 (`directive/IO error`) are the actual schema-seam failures Story 34-1 must catch.
+  - `result.yaml::status in {"complete", "complete_with_warnings"}` (matches exit-code semantics)
+  - `result.yaml::blocking_issues == []` (no source-level extraction-quality blocks — distinguishes "schema-seam works AND quality is acceptable" from "schema-seam works but extraction quality bad")
 **And** asserts `len(result.yaml::materials) >= 1` BEFORE asserting per-row shape (Murat new-A9-surface mitigation: prevents vacuous-pass on empty-materials case),
 **And** asserts at least one row with `role=primary` carrying `word_count` + `content_path` exists in `result.yaml::materials[]`.
 
-**Scope discipline (post-Round-2 amendment 2026-05-22; Codex T1 surface):** Story 34-1 SHALL NOT assert `metadata.json::sme_refs[]` shape here — Story 34-4 owns wrangler `sme_refs[]` emission, and a translator that only changes directive INPUT shape cannot make the wrangler emit a new metadata.json OUTPUT key. The sme_refs forward-contract assertion is moved to Story 34-4 AC-34-4-A as a "test extension" deliverable (Story 34-4 EXTENDS Story 34-1's round-trip test to add the new assertion in lockstep with the new emission). This honors Quinn-synthesis Option 5's "one drift dimension per story" sequencing.
+**Scope discipline (amended 2026-05-22 post-Codex-T1-substrate-runtime surface):**
+1. Story 34-1 SHALL NOT assert `metadata.json::sme_refs[]` shape — Story 34-4 owns wrangler `sme_refs[]` emission; relocated to Story 34-4 AC-34-4-A-EXT.
+2. Story 34-1 SHALL accept `exit 10` (`complete_with_warnings`) as a schema-seam-success condition. Extraction-quality warnings (tier-2 classifications on supporting sources, etc.) are SUBSTRATE-EXISTING behavior orthogonal to Story 34-1's schema-seam goal. Suppressing warnings to force exit-0 would be substrate-touching scope creep into Story 34-2's territory (or worse, a fixture-rigging anti-pattern). The Trial-3 attempt-2 forensic Tejal corpus produces `complete_with_warnings` against the current substrate — that's reality; the spec must match reality, not vice versa.
+
+This honors Quinn-synthesis Option 5's "one drift dimension per story" sequencing AND prevents the spec-as-paper anti-pattern that surfaced Codex T1 blockers (1)+(2)+(3) on Story 34-1 dispatch 2026-05-22.
 
 **AC-34-1-B** (forensic-anchor assertion — Murat M-Murat-5):
 **Given** the Trial-3 attempt-2 forensic directive at `state/config/runs/6a3393f8-f369-4a30-b7c1-b50c60c1d1a2/directive.yaml` (sha256 `351a57fbe12aff4a49349c4a646618d92ae38a798ec53eee61668f74f8bbd703`; gitignored — fixture-copy MUST land under `tests/fixtures/integration/section_02a/`)
