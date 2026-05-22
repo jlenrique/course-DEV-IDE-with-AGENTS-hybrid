@@ -15,6 +15,15 @@ PERMITTED_PYTHON_DIFFS = {
     "scripts/utilities/detect_tw_7c_4_live_dispatch_scope_creep.py",
     "tests/audit/test_audit_tw_7c_4_no_live_dispatch_scope_creep.py",
     "tests/trial/test_trial3_readiness.py",
+    # Trial-3-blocking wiring fix 2026-05-21 (sprint-change-proposal-2026-05-21-trial3-wiring.md):
+    # §02A LLM-driven composer was authored at Story 7c.3a but never wired into the
+    # trial CLI; G0 directive composition was still invoking the legacy Story-7a.1
+    # naive corpus-scan fallback. Party-mode-ratified Round 1 4-of-4 APPROVE-with-
+    # amendments (Winston W-A1 lifted adapter to app/composers/section_02a/cli_adapter.py
+    # so future consumers reuse the call-shape bridge). Bounded 2-path extension;
+    # freeze predicates (line 56 + line 65) remain in force for all other paths.
+    "app/marcus/cli/trial.py",
+    "app/composers/section_02a/cli_adapter.py",
 }
 
 
