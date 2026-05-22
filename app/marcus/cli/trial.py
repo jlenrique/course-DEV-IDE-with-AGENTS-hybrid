@@ -47,6 +47,22 @@ def _load_env_if_available() -> None:
         pass
 
 
+def _ensure_utf8_io() -> None:
+    """Force UTF-8 stdio regardless of OS default codepage (SCP 2026-05-21 §4.3).
+
+    Closes Trial-2 finding #1 cp1252 crash vector for any invocation path
+    (PowerShell, CMD, IDE terminal). Idempotent; safe to call repeatedly.
+    """
+    os.environ.setdefault("PYTHONIOENCODING", "utf-8")
+    for stream in (sys.stdout, sys.stderr):
+        reconfigure = getattr(stream, "reconfigure", None)
+        if callable(reconfigure):
+            try:
+                reconfigure(encoding="utf-8", errors="replace")
+            except (ValueError, OSError):
+                pass
+
+
 def _has_langsmith_env() -> bool:
     return bool(os.getenv("LANGSMITH_API_KEY") and os.getenv("LANGSMITH_PROJECT"))
 
@@ -191,6 +207,7 @@ def start_trial(
     auto_confirm_directive: bool = False,
     confirm_fn: Callable[..., Literal["confirmed", "saved-only"]] | None = None,
 ) -> dict[str, Any]:
+    _ensure_utf8_io()
     _load_env_if_available()
     if not input_path.exists():
         raise FileNotFoundError(f"trial input path does not exist: {input_path}")
