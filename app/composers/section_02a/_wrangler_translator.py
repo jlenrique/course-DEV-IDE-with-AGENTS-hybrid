@@ -24,24 +24,23 @@ from app.composers.section_02a.directive_model import Directive
 
 __epic_34_scaffolding__ = True  # AC-34-7-H grep-sweep target (post-Story-34-7 must return 0)
 
-TRANSLATOR_ACTIVE_MAPPINGS: frozenset[str] = frozenset(
-    {
-        "src-id-to-ref-id",
-    }
-)
+TRANSLATOR_ACTIVE_MAPPINGS: frozenset[str] = frozenset()
 
 
 def translate_directive_for_wrangler(directive: Directive) -> dict[str, Any]:
     """Map Section 02A Directive to wrangler-acceptable plain dict."""
+
+    if TRANSLATOR_ACTIVE_MAPPINGS:
+        raise RuntimeError(
+            f"unsupported active Epic 34 translator mappings: "
+            f"{sorted(TRANSLATOR_ACTIVE_MAPPINGS)}"
+        )
 
     payload = directive.model_dump(mode="json")
     translated_sources: list[dict[str, Any]] = []
 
     for source in payload["sources"]:
         row = dict(source)
-
-        if "src-id-to-ref-id" in TRANSLATOR_ACTIVE_MAPPINGS:
-            row["ref_id"] = row.pop("src_id")
 
         translated_sources.append(row)
 

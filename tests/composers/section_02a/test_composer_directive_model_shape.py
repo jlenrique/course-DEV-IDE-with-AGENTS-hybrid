@@ -17,7 +17,7 @@ from app.composers.section_02a.directive_model import (
 
 def _source(**overrides: object) -> DirectiveSource:
     payload = {
-        "src_id": "src-001",
+        "ref_id": "src-001",
         "locator": "lesson.docx",
         "role": DirectiveRole.PRIMARY,
         "expected_min_words": 500,
@@ -41,7 +41,7 @@ def test_directive_source_forbids_extra_and_validates_assignment() -> None:
 
     with pytest.raises(ValidationError):
         DirectiveSource(
-            src_id="src-001",
+            ref_id="src-001",
             locator="lesson.docx",
             role="primary",
             expected_min_words=500,

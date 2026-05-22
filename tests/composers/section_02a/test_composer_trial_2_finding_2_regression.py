@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from pathlib import Path
+from uuid import uuid4
 
 import pytest
 import yaml
@@ -57,7 +58,7 @@ def test_trial_2_finding_2_regression_does_not_reproduce_broken_directive(
         default_response=payload(description="Supporting binary or visual reference."),
     )
 
-    directive = compose(tmp_path, llm=llm)
+    directive = compose(tmp_path, llm=llm, run_id=uuid4())
     composed_yaml = yaml.safe_dump(
         directive.model_dump(mode="json"),
         sort_keys=False,
@@ -72,4 +73,3 @@ def test_trial_2_finding_2_regression_does_not_reproduce_broken_directive(
     for source in directive.sources:
         if Path(source.locator).suffix.lower() in BINARY_SUFFIXES:
             assert source.expected_min_words is None, source.locator
-

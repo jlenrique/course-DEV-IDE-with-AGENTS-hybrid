@@ -93,21 +93,21 @@ def apply_directive_edit(
     """Apply source-level edits, then re-validate the complete directive."""
 
     source_rows = [source.model_dump(mode="json") for source in directive.sources]
-    index_by_src_id = {row["src_id"]: index for index, row in enumerate(source_rows)}
-    for src_id, updates in edit_payload.edits.items():
-        if src_id not in index_by_src_id:
+    index_by_ref_id = {row["ref_id"]: index for index, row in enumerate(source_rows)}
+    for ref_id, updates in edit_payload.edits.items():
+        if ref_id not in index_by_ref_id:
             raise GateError(
                 "directive_edit_invalid",
-                f"edit references unknown DirectiveSource src_id={src_id!r}",
+                f"edit references unknown DirectiveSource ref_id={ref_id!r}",
             )
         unexpected_fields = set(updates).difference(_EDITABLE_SOURCE_FIELDS)
         if unexpected_fields:
             rendered = ", ".join(sorted(unexpected_fields))
             raise GateError(
                 "directive_edit_invalid",
-                f"edit for src_id={src_id!r} contains non-editable field(s): {rendered}",
+                f"edit for ref_id={ref_id!r} contains non-editable field(s): {rendered}",
             )
-        source_rows[index_by_src_id[src_id]].update(updates)
+        source_rows[index_by_ref_id[ref_id]].update(updates)
 
     updated_payload = directive.model_dump(mode="json")
     updated_payload["sources"] = source_rows

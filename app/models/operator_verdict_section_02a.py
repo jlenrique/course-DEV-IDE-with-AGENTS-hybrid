@@ -17,7 +17,7 @@ SECTION_02A_SURFACE_ID: Section02ASurfaceId = "section_02a_g0_poll"
 
 
 class DirectiveEditPayload(BaseModel):
-    """Field-level edits keyed by DirectiveSource ``src_id``."""
+    """Field-level edits keyed by DirectiveSource ``ref_id``."""
 
     model_config = ConfigDict(extra="forbid", validate_assignment=True, frozen=True)
 
@@ -33,11 +33,11 @@ class DirectiveEditPayload(BaseModel):
         cls,
         value: dict[str, dict[str, Any]],
     ) -> dict[str, dict[str, Any]]:
-        for src_id, updates in value.items():
-            if not src_id:
+        for ref_id, updates in value.items():
+            if not ref_id:
                 raise ValueError("edit source id must be non-empty")
             if not updates:
-                raise ValueError(f"edit block for {src_id!r} must be non-empty")
+                raise ValueError(f"edit block for {ref_id!r} must be non-empty")
         return value
 
 

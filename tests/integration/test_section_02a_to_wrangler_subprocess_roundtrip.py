@@ -117,11 +117,7 @@ def test_forensic_directive_round_trips_through_wrangler_subprocess_via_translat
 def test_translator_active_mappings_is_load_bearing_in_production() -> None:
     """AC-34-5-A precursor: remaining active mapping is load-bearing."""
 
-    expected_mappings = frozenset(
-        {
-            "src-id-to-ref-id",
-        }
-    )
+    expected_mappings = frozenset()
     assert expected_mappings == TRANSLATOR_ACTIVE_MAPPINGS
     source = inspect.getsource(translate_directive_for_wrangler)
     assert "TRANSLATOR_ACTIVE_MAPPINGS" in source

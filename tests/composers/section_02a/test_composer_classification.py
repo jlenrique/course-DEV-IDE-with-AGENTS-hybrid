@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from pathlib import Path
+from uuid import uuid4
 
 import pytest
 from pydantic import ValidationError
@@ -37,7 +38,8 @@ def test_compose_classifies_sources_and_skips_known_metadata(tmp_path: Path) -> 
         }
     )
 
-    directive = compose(tmp_path, llm=llm)
+    run_id = uuid4()
+    directive = compose(tmp_path, llm=llm, run_id=run_id)
     by_locator = {source.locator: source for source in directive.sources}
 
     assert by_locator[".gitkeep"].role is DirectiveRole.IGNORED
@@ -47,6 +49,7 @@ def test_compose_classifies_sources_and_skips_known_metadata(tmp_path: Path) -> 
     assert by_locator["lesson.docx"].role is DirectiveRole.PRIMARY
     assert by_locator["visual.png"].expected_min_words is None
     assert by_locator["photo.jpg"].expected_min_words is None
+    assert directive.run_id == run_id
     assert llm.invoke_count == 3
 
 
@@ -65,5 +68,4 @@ def test_compose_raises_validation_error_on_malformed_llm_classification(
     )
 
     with pytest.raises(ValidationError, match="requires expected_min_words"):
-        compose(tmp_path, llm=llm)
-
+        compose(tmp_path, llm=llm, run_id=uuid4())

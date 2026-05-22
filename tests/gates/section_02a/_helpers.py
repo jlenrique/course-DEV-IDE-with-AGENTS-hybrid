@@ -21,20 +21,20 @@ def fixture_directive() -> Directive:
         composed_at=datetime(2026, 5, 5, 12, 0, tzinfo=UTC),
         sources=[
             DirectiveSource(
-                src_id="src-001",
+                ref_id="src-001",
                 locator="primary.docx",
                 role=DirectiveRole.PRIMARY,
                 description="Primary source",
                 expected_min_words=120,
             ),
             DirectiveSource(
-                src_id="src-002",
+                ref_id="src-002",
                 locator="support.png",
                 role=DirectiveRole.SUPPORTING,
                 description="Supporting image",
             ),
             DirectiveSource(
-                src_id="src-003",
+                ref_id="src-003",
                 locator="notes.md",
                 role=DirectiveRole.SUPPORTING,
                 description="Supporting notes",

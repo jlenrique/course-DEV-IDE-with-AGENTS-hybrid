@@ -1,6 +1,6 @@
 # Migration Story 34-3: §02A `src_id` → `ref_id` Rename + J-A1(a)/(b) cli_adapter Completion (Winston A2 binding)
 
-**Status:** ready-for-dev *(spec authored 2026-05-22 with locked contract decisions D1-D7; predecessor Stories 34-1 + 34-2 expected `done` at dispatch.)*
+**Status:** done *(Codex T1-T10 + Claude T11 standard `bmad-code-review` PASS 2026-05-22; T11 verdict 0 MUST-FIX / 0 SHOULD-FIX / 1 PATCH applied (NIT-1: docstring on `_accept_legacy_source_id_key`) + 1 ratchet-extension ratified (Story 34-1 integration test updated to expect empty `TRANSLATOR_ACTIVE_MAPPINGS`).)*
 **Sprint key:** `migration-34-3-section-02a-src-id-rename-and-cli-adapter-completion`
 **Epic:** Epic 34 — §02A Downstream-Consumer Schema Coherence
 **Pts:** 5

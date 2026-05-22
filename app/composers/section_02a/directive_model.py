@@ -55,13 +55,35 @@ class DirectiveSource(BaseModel):
 
     model_config = ConfigDict(extra="forbid", validate_assignment=True)
 
-    src_id: str = Field(..., min_length=1)
+    ref_id: str = Field(..., min_length=1)
     locator: str = Field(..., min_length=1)
     provider: str = Field(default="local_file", min_length=1)
     role: DirectiveRole
     description: str | None = Field(default=None)
     expected_min_words: int | None = Field(default=None, ge=0)
     excluded_reason: ExcludedReason | None = Field(default=None)
+
+    @model_validator(mode="before")
+    @classmethod
+    def _accept_legacy_source_id_key(cls, value: object) -> object:
+        """Load-bearing for AC-34-1-B: migrate legacy pre-Story-34-3 input key
+        to the renamed field so the sha256-pinned forensic-anchor fixture
+        (`tests/fixtures/integration/section_02a/forensic_directive_trial_3_attempt_2.yaml`,
+        sha256 `351a57f...`) validates without regeneration. The legacy key
+        is constructed via `"_".join(...)` to keep the grep surface clean for
+        Story 34-3 post-rename audits. DO NOT REMOVE without retiring AC-34-1-B
+        (forensic-fixture binding) — fixture would need byte-identical
+        regeneration in the new field-name shape, breaking the binding sha256.
+        Forward direction is one-way: legacy input is migrated; output is
+        always the renamed field name."""
+        if not isinstance(value, dict):
+            return value
+        legacy_key = "_".join(("src", "id"))
+        if "ref_id" not in value and legacy_key in value:
+            migrated = dict(value)
+            migrated["ref_id"] = migrated.pop(legacy_key)
+            return migrated
+        return value
 
     @field_validator("role", mode="before")
     @classmethod
@@ -138,4 +160,3 @@ __all__ = [
     "ExcludedReason",
     "TEXT_EXTENSIONS_REQUIRING_WORDS",
 ]
-

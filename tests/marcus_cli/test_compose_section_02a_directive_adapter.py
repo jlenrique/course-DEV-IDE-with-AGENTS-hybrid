@@ -16,8 +16,22 @@ import hashlib
 from pathlib import Path
 from types import SimpleNamespace
 from unittest.mock import MagicMock, patch
+from uuid import uuid4
 
 from app.composers.section_02a import cli_adapter
+
+
+def _entry_stub() -> SimpleNamespace:
+    return SimpleNamespace(
+        model_dump=lambda mode="json": {
+            "level": "registry_default",
+            "requested": None,
+            "resolved": "gpt-5.4",
+            "reason": "test stub",
+            "timestamp": "2026-05-22T00:00:00+00:00",
+            "cache_prefix_hash": None,
+        }
+    )
 
 
 def _stub_directive(corpus_dir: Path) -> SimpleNamespace:
@@ -40,9 +54,10 @@ def test_adapter_calls_make_chat_model_marcus_when_llm_is_none(tmp_path: Path) -
     corpus_dir.mkdir()
     run_dir = tmp_path / "run"
     run_dir.mkdir()
+    run_id = uuid4()
 
     chat_stub = MagicMock(name="chat_stub")
-    handle = SimpleNamespace(chat=chat_stub, entry=MagicMock())
+    handle = SimpleNamespace(chat=chat_stub, entry=_entry_stub())
 
     with patch.object(cli_adapter, "compose") as mock_compose, patch(
         "app.models.adapter.make_chat_model", return_value=handle
@@ -50,9 +65,14 @@ def test_adapter_calls_make_chat_model_marcus_when_llm_is_none(tmp_path: Path) -
         mock_compose.return_value = _stub_directive(corpus_dir)
         with patch.object(cli_adapter, "write_directive_yaml") as mock_write:
             mock_write.side_effect = lambda directive, path: path.write_bytes(b"stub")
-            cli_adapter.compose_and_write(corpus_dir=corpus_dir, run_dir=run_dir)
+            cli_adapter.compose_and_write(
+                corpus_dir=corpus_dir,
+                run_dir=run_dir,
+                run_id=run_id,
+            )
 
     mock_make.assert_called_once_with("marcus")
+    assert mock_compose.call_args.kwargs["run_id"] == run_id
 
 
 def test_adapter_threads_chat_attribute_as_llm_kwarg(tmp_path: Path) -> None:
@@ -62,9 +82,10 @@ def test_adapter_threads_chat_attribute_as_llm_kwarg(tmp_path: Path) -> None:
     corpus_dir.mkdir()
     run_dir = tmp_path / "run"
     run_dir.mkdir()
+    run_id = uuid4()
 
     chat_stub = MagicMock(name="chat_stub")
-    handle = SimpleNamespace(chat=chat_stub, entry=MagicMock(name="entry_discarded"))
+    handle = SimpleNamespace(chat=chat_stub, entry=_entry_stub())
 
     with patch.object(cli_adapter, "compose") as mock_compose, patch(
         "app.models.adapter.make_chat_model", return_value=handle
@@ -72,13 +93,18 @@ def test_adapter_threads_chat_attribute_as_llm_kwarg(tmp_path: Path) -> None:
         mock_compose.return_value = _stub_directive(corpus_dir)
         with patch.object(cli_adapter, "write_directive_yaml") as mock_write:
             mock_write.side_effect = lambda directive, path: path.write_bytes(b"stub")
-            cli_adapter.compose_and_write(corpus_dir=corpus_dir, run_dir=run_dir)
+            cli_adapter.compose_and_write(
+                corpus_dir=corpus_dir,
+                run_dir=run_dir,
+                run_id=run_id,
+            )
 
     kwargs = mock_compose.call_args.kwargs
     assert kwargs["llm"] is chat_stub, (
         f"compose() must receive ChatModelHandle.chat as llm kwarg, "
         f"got {type(kwargs.get('llm'))}"
     )
+    assert kwargs["run_id"] == run_id
 
 
 def test_adapter_returns_path_and_sha256_digest_tuple(tmp_path: Path) -> None:
@@ -89,12 +115,13 @@ def test_adapter_returns_path_and_sha256_digest_tuple(tmp_path: Path) -> None:
     run_dir = tmp_path / "run"
     run_dir.mkdir()
     written_bytes = b"directive-yaml-payload\n"
+    run_id = uuid4()
 
     chat_stub = MagicMock(name="chat_stub")
 
     with patch.object(cli_adapter, "compose") as mock_compose, patch(
         "app.models.adapter.make_chat_model",
-        return_value=SimpleNamespace(chat=chat_stub, entry=MagicMock()),
+        return_value=SimpleNamespace(chat=chat_stub, entry=_entry_stub()),
     ):
         mock_compose.return_value = _stub_directive(corpus_dir)
         with patch.object(cli_adapter, "write_directive_yaml") as mock_write:
@@ -102,6 +129,7 @@ def test_adapter_returns_path_and_sha256_digest_tuple(tmp_path: Path) -> None:
             result = cli_adapter.compose_and_write(
                 corpus_dir=corpus_dir,
                 run_dir=run_dir,
+                run_id=run_id,
             )
 
     assert isinstance(result, tuple) and len(result) == 2
@@ -117,6 +145,7 @@ def test_adapter_accepts_injected_llm_and_skips_make_chat_model(tmp_path: Path) 
     corpus_dir.mkdir()
     run_dir = tmp_path / "run"
     run_dir.mkdir()
+    run_id = uuid4()
 
     injected_llm = MagicMock(name="injected_llm")
 
@@ -129,8 +158,11 @@ def test_adapter_accepts_injected_llm_and_skips_make_chat_model(tmp_path: Path) 
             cli_adapter.compose_and_write(
                 corpus_dir=corpus_dir,
                 run_dir=run_dir,
+                run_id=run_id,
                 llm=injected_llm,
             )
 
     mock_make.assert_not_called()
     assert mock_compose.call_args.kwargs["llm"] is injected_llm
+    assert mock_compose.call_args.kwargs["run_id"] == run_id
+    assert not (run_dir / "model_resolution_trail.json").exists()

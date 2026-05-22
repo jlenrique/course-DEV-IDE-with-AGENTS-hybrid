@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from pathlib import Path
+from uuid import uuid4
 
 from app.composers.section_02a import ComposerCache, compose
 from app.composers.section_02a._prompt import cache_key_for_prompt
@@ -39,8 +40,8 @@ def test_compose_cache_hit_avoids_second_llm_invocation(tmp_path: Path) -> None:
         }
     )
 
-    compose(tmp_path, llm=llm, cache=cache)
-    compose(tmp_path, llm=llm, cache=cache)
+    compose(tmp_path, llm=llm, cache=cache, run_id=uuid4())
+    compose(tmp_path, llm=llm, cache=cache, run_id=uuid4())
 
     assert llm.invoke_count == 1
 
@@ -56,7 +57,6 @@ def test_compose_cache_miss_invokes_llm_for_new_prompt(tmp_path: Path) -> None:
         }
     )
 
-    compose(tmp_path, llm=llm, cache=cache)
+    compose(tmp_path, llm=llm, cache=cache, run_id=uuid4())
 
     assert llm.invoke_count == 2
-

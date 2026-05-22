@@ -9,6 +9,7 @@ import shutil
 import subprocess
 import sys
 from collections.abc import Callable
+from contextlib import suppress
 from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any, Literal
@@ -54,10 +55,8 @@ def _ensure_utf8_io() -> None:
     for stream in (sys.stdout, sys.stderr):
         reconfigure = getattr(stream, "reconfigure", None)
         if callable(reconfigure):
-            try:
+            with suppress(ValueError, OSError):
                 reconfigure(encoding="utf-8", errors="replace")
-            except (ValueError, OSError):
-                pass
 
 
 def _has_langsmith_env() -> bool:
@@ -241,6 +240,7 @@ def start_trial(
         directive_path, directive_digest = compose_and_write(
             corpus_dir=input_path,
             run_dir=run_dir,
+            run_id=effective_trial_id,
         )
 
         confirm = confirm_fn or _confirm_or_edit_directive

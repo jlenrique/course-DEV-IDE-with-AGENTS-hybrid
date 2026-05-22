@@ -22,7 +22,7 @@ def test_write_directive_yaml_preserves_utf8_without_pythonioencoding(
         corpus_dir=tmp_path.as_posix(),
         sources=[
             DirectiveSource(
-                src_id="src-001",
+                ref_id="src-001",
                 locator=locator,
                 role=DirectiveRole.SUPPORTING,
                 description="Visual reference with macOS screenshot filename.",
@@ -36,4 +36,3 @@ def test_write_directive_yaml_preserves_utf8_without_pythonioencoding(
 
     assert b"\xe2\x80\xaf" in raw
     assert raw.decode("utf-8")
-
