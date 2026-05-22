@@ -239,6 +239,80 @@ _SUPPORTED_PROVIDERS: frozenset[str] = frozenset(
         "image",  # Story 27-3: image intake via sensory-bridges image_to_agent
     }
 )
+_ALLOWED_ROLES: frozenset[str] = frozenset(
+    {
+        "primary",
+        "supporting",
+        "ignored",
+        "validation",
+        "supplementary",
+        "visual-primary",
+        "visual-supplementary",
+    }
+)
+_ALLOWED_EXCLUDED_REASONS: frozenset[str] = frozenset(
+    {
+        "git-marker-file",
+        "macos-metadata",
+        "windows-metadata",
+        "llm-classified-out-of-scope",
+    }
+)
+_TEXT_EXTENSIONS_REQUIRING_WORDS: frozenset[str] = frozenset({".docx", ".md"})
+_BINARY_EXTENSIONS_FORBID_WORDS: frozenset[str] = frozenset(
+    {".png", ".jpg", ".jpeg", ".gif", ".bmp", ".pdf", ".pptx"}
+)
+
+
+def _enforce_source_cross_field_invariants(src: dict[str, Any], index: int) -> None:
+    role = src["role"]
+    excluded_reason = src.get("excluded_reason")
+
+    if role == "ignored":
+        if not isinstance(excluded_reason, str) or not excluded_reason.strip():
+            raise DirectiveError(
+                f"sources[{index}].excluded_reason MUST be a non-empty string "
+                f"when role=ignored; got {excluded_reason!r}"
+            )
+        if excluded_reason not in _ALLOWED_EXCLUDED_REASONS:
+            raise DirectiveError(
+                f"sources[{index}].excluded_reason must be one of "
+                f"{sorted(_ALLOWED_EXCLUDED_REASONS)}, got {excluded_reason!r}"
+            )
+        if src.get("expected_min_words") is not None:
+            raise DirectiveError(
+                f"sources[{index}].expected_min_words forbidden when role=ignored"
+            )
+        return
+
+    if excluded_reason is not None:
+        raise DirectiveError(
+            f"sources[{index}].excluded_reason forbidden on non-ignored sources; "
+            f"role={role!r} got excluded_reason={excluded_reason!r}"
+        )
+
+    locator = src.get("locator")
+    if not isinstance(locator, str):
+        return
+    suffix = Path(locator).suffix.lower()
+    if (
+        role in {"primary", "supporting", "supplementary"}
+        and suffix in _TEXT_EXTENSIONS_REQUIRING_WORDS
+        and src.get("expected_min_words") is None
+    ):
+        raise DirectiveError(
+            f"sources[{index}].expected_min_words required for text source "
+            f"role={role!r} locator={locator!r}"
+        )
+    if (
+        role == "supporting"
+        and suffix in _BINARY_EXTENSIONS_FORBID_WORDS
+        and src.get("expected_min_words") is not None
+    ):
+        raise DirectiveError(
+            f"sources[{index}].expected_min_words forbidden for binary "
+            f"supporting source locator={locator!r}"
+        )
 
 
 # Story 27-2 AC-B.6: per-row shape classification for the dispatcher-wiring cascade.
@@ -325,17 +399,12 @@ def _load_directive(path: Path) -> dict[str, Any]:
         # sources so operator can flag an image as the source of truth for a
         # learning-objective chain (visual-primary) vs. illustrative
         # (visual-supplementary). Text-source roles unchanged.
-        if src["role"] not in (
-            "primary",
-            "validation",
-            "supplementary",
-            "visual-primary",
-            "visual-supplementary",
-        ):
+        if src["role"] not in _ALLOWED_ROLES:
             raise DirectiveError(
-                f"sources[{i}].role must be primary|validation|supplementary"
-                f"|visual-primary|visual-supplementary, got {src['role']!r}"
+                f"sources[{i}].role must be one of "
+                f"{sorted(_ALLOWED_ROLES)}, got {src['role']!r}"
             )
+        _enforce_source_cross_field_invariants(src, i)
         ref_id = src["ref_id"]
         if not isinstance(ref_id, str) or not ref_id.strip():
             raise DirectiveError(
@@ -1772,14 +1841,28 @@ def run(directive_path: Path, bundle_dir: Path) -> dict[str, Any]:
         return _run_retrieval_shape(directive, bundle_dir, run_id, run_timestamp)
 
     # Legacy locator-shape path (anti-pattern #3: UNCHANGED).
+    ignored_sources = [src for src in directive["sources"] if src["role"] == "ignored"]
+    non_ignored_sources = [
+        src for src in directive["sources"] if src["role"] != "ignored"
+    ]
+
+    for ignored_src in ignored_sources:
+        print(
+            "[run_wrangler] filtered ignored source: "
+            f"ref_id={ignored_src['ref_id']} "
+            f"excluded_reason={ignored_src.get('excluded_reason', 'unknown')} "
+            f"locator={ignored_src.get('locator', '<no-locator>')}",
+            file=sys.stderr,
+        )
+
     outcomes: list[SourceOutcome] = []
-    for src in directive["sources"]:
+    for src in non_ignored_sources:
         outcomes.append(_wrangle_source(src, run_timestamp))
 
     primaries = [o for o in outcomes if o.role == "primary"]
     validators = [o for o in outcomes if o.role == "validation"]
 
-    cross_entries = _run_cross_validation(primaries, validators, directive["sources"])
+    cross_entries = _run_cross_validation(primaries, validators, non_ignored_sources)
     overall_status, blocking_issues = _derive_overall_status(outcomes, cross_entries)
 
     # Write artifacts in a specific order so manifest.json indexes all the

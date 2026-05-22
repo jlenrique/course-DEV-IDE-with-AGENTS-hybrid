@@ -54,6 +54,11 @@ PERMITTED_PYTHON_DIFFS = {
     # Story 34-2 — wrangler input validator: 6-role union + excluded_reason
     # + cross-field invariants (Winston A1 + Murat M-Murat-3 bindings).
     "skills/bmad-agent-texas/scripts/run_wrangler.py",
+    # Story 34-2 wrangler-side test (substrate-audit-corrected path 2026-05-22;
+    # co-located with existing test_run_wrangler.py at skills/.../tests/).
+    "skills/bmad-agent-texas/scripts/tests/test_run_wrangler_role_enum_union_and_excluded_reason.py",
+    # Story 34-4 wrangler-side test (also under skills/.../tests/).
+    "skills/bmad-agent-texas/scripts/tests/test_run_wrangler_sme_refs_emission.py",
     # Story 34-3 — §02A composer src_id → ref_id rename + J-A1(a)/(b)
     # cli_adapter completion (Winston A2 binding).
     "app/composers/section_02a/directive_model.py",
