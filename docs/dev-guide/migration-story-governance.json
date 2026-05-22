@@ -1,6 +1,6 @@
 {
   "_comment": "Codified gate-mode designations for LangChain/LangGraph migration stories. Authored 2026-04-22 from the triage pass across the 56-story plan in _bmad-output/planning-artifacts/epics-langchain-langgraph-migration.md. The triage RE-AFFIRMED the existing per-story designations — dual-gate is applied only where a story introduces a schema-shape, CI/compile-time contract, lane/package boundary, load-bearing invariant preservation, or operator-acceptance gate. Every other story is single-gate. Stories 2b.2-2b.14 are explicitly pinned to single-gate here (they follow the 2b.1 TEMPLATE scaffold and should not relitigate gate mode at authoring time). Freezing these designations here means bmad-create-story on a migration story does not need to rederive the gate-mode decision — it reads this file. Additions or demotions require party-mode consensus and a version bump below.",
-  "version": "2026-05-22-epic-34-substrate-coherence-three-stories",
+  "version": "2026-05-22-epic-34-substrate-coherence-seven-stories",
   "_amendment_log": [
     "2026-05-22 — Epic 34 stories 34-1, 34-2, 34-3 registered post-Phase-B-Quinn-synthesis-ratification + post-Round-1-SCP-ratification (party-mode 4-of-4 APPROVE-with-amendments 2026-05-22; NO impasse). Registration was operator-driven mid-Codex-T1 — Story 34-1 dispatch surfaced decision_needed for governance JSON registration per spec required-reading item 11. Three story entries appended with full r_tier + t11_tier + lookahead_tier + prerequisite_stories per AMEND-V2/V3/V5 velocity-amendments discipline. 34-1 cross-agent MANDATORY per Murat M-Murat-1 binding (mock-surface audit load-bearing on the integration ratchet). 34-2 + 34-3 standard T11. triage_summary updates: total 121 → 124 / single 87 → 88 / dual 30 → 32 / dual_gate_pct 28.1% → 28.2% (33-of-124-including-contract-evolution-4 = 29.8% if counting). Cross-references: Epic 34 spec at _bmad-output/planning-artifacts/epics-section-02a-downstream-coherence.md; SCP at _bmad-output/planning-artifacts/sprint-change-proposal-2026-05-22-epic-34-substrate-amendment.md; C1 substrate amendment commit 3159a0e. Stories 34-4 through 34-7 pending pre-authoring per operator directive.",
     "2026-04-22 — Initial freeze of 56-story plan (1-1 through 5b-4); 1-1d added via middle-path party-mode consensus on MCP-in-Slab-1.",
@@ -1427,17 +1427,87 @@
         "34-1",
         "34-2"
       ],
-      "amendment_note": "Epic 34 Wave 1 slot 3 (Winston A2 binding: §02A src_id → ref_id rename matching wrangler downstream-rooted identifier vocab). Closes deferred-inventory J-A1(a) (trial CLI effective_trial_id threads through to composer via run_id parameter) + J-A1(b) (cli_adapter persists ChatModelHandle.entry as ModelResolutionEntry sidecar JSON at run_dir/model_resolution_trail.json). 8 §02A test-surface paths migrate per Amelia A-A1 grep-verification + 1 j2 template + 1 M-A1 wiring-contract test update + 2 new J-A1 regression tests. Translator TRANSLATOR_ACTIVE_MAPPINGS shrinks from 1 → 0 (empty frozenset) at story close — Story 34-5 sequence test verifies; Story 34-7 deletes the translator file entirely.",
+      "amendment_note": "Epic 34 Wave 1 slot 3 (Winston A2 binding: §02A src_id → ref_id rename matching wrangler downstream-rooted identifier vocab). Closes deferred-inventory J-A1(a) (trial CLI effective_trial_id threads through to composer via run_id parameter) + J-A1(b) (cli_adapter persists ChatModelHandle.entry as ModelResolutionEntry sidecar JSON at run_dir/model_resolution_trail.json). 4 §02A test-surface files migrate (substrate-audit-corrected from Amelia's Round-1 8-file estimate; per-file grep confirmed actual hits in 4 files) + 1 M-A1 wiring-contract test update + 2 new J-A1 regression tests. Translator TRANSLATOR_ACTIVE_MAPPINGS shrinks from 1 → 0 (empty frozenset) at story close — Story 34-5 sequence test verifies; Story 34-7 deletes the translator file entirely.",
       "r_tier": "R2",
       "t11_tier": "standard",
       "lookahead_tier": 2
+    },
+    "34-4": {
+      "expected_gate_mode": "single-gate",
+      "rationale": null,
+      "expected_pts": 3,
+      "expected_k_target": 1.5,
+      "cross_agent_review_required": false,
+      "prerequisite_stories": [
+        "34-1",
+        "34-2",
+        "34-3"
+      ],
+      "amendment_note": "Epic 34 Wave 1 slot 4 (Murat M-Murat-3 binding: sme_refs ADDITIVE alongside provenance, do NOT remove). Wrangler `metadata.json` adds sme_refs[] emission per FR-E34-4/5 matching pre_packet.SourceRef shape {source_id, path, content_digest}; source_id mirrors ref_id (D6 field-name fork closure); content_digest is per-source sha256 (NOT whole-bundle). EXTENDS Story 34-1's integration test per AC-34-4-A-EXT — adds sme_refs[] assertion block in lockstep with new wrangler behavior (Quinn-synthesis Option 5 ratchet-extension pattern). Translator unchanged (sme_refs is wrangler OUTPUT, not translator INPUT).",
+      "r_tier": "R1",
+      "t11_tier": "standard",
+      "lookahead_tier": 1
+    },
+    "34-5": {
+      "expected_gate_mode": "single-gate",
+      "rationale": null,
+      "expected_pts": 3,
+      "expected_k_target": 1.5,
+      "cross_agent_review_required": false,
+      "prerequisite_stories": [
+        "34-1",
+        "34-2",
+        "34-3",
+        "34-4"
+      ],
+      "amendment_note": "Epic 34 Wave 1 slot 5 (carrier story; Murat new-A9-surface-2 production-load-bearing mitigation). NEW test file `tests/integration/test_section_02a_translator_shrinkage_sequence.py` with 3 tests: (1) TRANSLATOR_ACTIVE_MAPPINGS == frozenset() at story close (predecessors retired all 3 mappings); (2) inspect.getsource(translate_directive_for_wrangler) contains 'TRANSLATOR_ACTIVE_MAPPINGS' substring (production-load-bearing); (3) every element in TRANSLATOR_ACTIVE_MAPPINGS is in the closed _RECOGNIZED_MAPPING_NAMES set (catches typos/drift). Carrier-story discipline: test-only; no production code; no live-service evidence.",
+      "r_tier": "R1",
+      "t11_tier": "standard",
+      "lookahead_tier": 1
+    },
+    "34-6": {
+      "expected_gate_mode": "dual-gate",
+      "rationale": "invariant_preservation",
+      "expected_pts": 5,
+      "expected_k_target": 1.5,
+      "cross_agent_review_required": false,
+      "prerequisite_stories": [
+        "34-1",
+        "34-2",
+        "34-3",
+        "34-4",
+        "34-5"
+      ],
+      "amendment_note": "Epic 34 Wave 1 slot 6 (Phase A CLEANUP-class C1; direction-may-flip caveat at AC-34-6-A re-grep). DELETE app/marcus/orchestrator/directive_composer.py (legacy Story 7a.1 broken-fallback composer; substrate-verified 0 production imports in app/) + per-file rewire/delete classification across 7 test files (substrate-verified hit counts: test_directive_composer_pure.py=20, test_directive_composer_materialization.py=23, test_texas_to_cd_chain.py=5, test_trial_475_directive_composition_regression.py=2, test_trial_475_texas_hardening_regression.py=2, test_slab_7b_wave_1_opener_composition_smoke.py=2, test_texas_live_retrieval_against_real_directive.py=2). Codex T1 reads each + classifies via spec D3 decision tree. Zero-orphan invariant: post-close, 3 grep-zero checks (no production imports; no legacy-composer references in production code; no skipped tests left behind).",
+      "r_tier": "R2",
+      "t11_tier": "standard",
+      "lookahead_tier": 2
+    },
+    "34-7": {
+      "expected_gate_mode": "dual-gate",
+      "rationale": "operator_acceptance_gate",
+      "expected_pts": 3,
+      "expected_k_target": 1.5,
+      "cross_agent_review_required": false,
+      "prerequisite_stories": [
+        "34-1",
+        "34-2",
+        "34-3",
+        "34-4",
+        "34-5",
+        "34-6"
+      ],
+      "amendment_note": "Epic 34 Wave 1 slot 7 (FINAL story; NFR-E34-9 + NFR-E34-10 BINDING). DELETE app/composers/section_02a/_wrangler_translator.py (temporary scaffold from Story 34-1; carries __epic_34_scaffolding__ markers); DELETE tests/integration/test_section_02a_translator_shrinkage_sequence.py (Story 34-5 deliverable; module under test no longer exists); SIMPLIFY tests/integration/test_section_02a_to_wrangler_subprocess_roundtrip.py (remove translator import + invocation; runs §02A → wrangler DIRECTLY). APPEND A23 + P5 anti-pattern entries to docs/dev-guide/specialist-anti-patterns.md per Murat M-Murat-2 binding (format-frozen 4-field shape; substrate-verified next ordinals A23 + P5; current ends at A22 + P4). CLOSE deferred-inventory entries: section-02a-downstream-consumer-compatibility-systemic-drift + trial-cli-effective-trial-id-vs-section-02a-composer-run-id-divergence (J-A1(a)) + trial-cli-model-resolution-trail-not-appended-from-adapter (J-A1(b)). Forensic grep-sweep (AC-34-7-H): `grep -rn '__epic_34_scaffolding__' .` AND `grep -rn 'DELETE-AT-EPIC-34-CLOSE' .` MUST BOTH return 0 hits. EPIC 34 CLOSURE CEREMONY at story close.",
+      "r_tier": "R2",
+      "t11_tier": "standard",
+      "lookahead_tier": 1
     }
   },
   "triage_summary": {
-    "total_stories": 124,
-    "single_gate": 88,
-    "dual_gate": 32,
-    "dual_gate_pct": 29.0,
+    "total_stories": 128,
+    "single_gate": 90,
+    "dual_gate": 34,
+    "dual_gate_pct": 29.7,
     "note": "Epic 34 §02A downstream-consumer coherence registration 2026-05-22 adds Stories 34-1 (dual cross-agent) + 34-2 (single) + 34-3 (dual). Total 121 -> 124 / single 87 -> 88 / dual 30 -> 32 / contract-evolution unchanged at 4. dual_gate_pct (combining dual + contract-evolution / total) = 36/124 = 29.0%. Epic 34 absorbed via Phase B Quinn-synthesis Option 5 ratification + Round-1 SCP-ratification 4-of-4 APPROVE-with-amendments; spec at _bmad-output/planning-artifacts/epics-section-02a-downstream-coherence.md; SCP at _bmad-output/planning-artifacts/sprint-change-proposal-2026-05-22-epic-34-substrate-amendment.md. Stories 34-4 through 34-7 pending pre-authoring (will further bump counts). Prior velocity-bundle entry: Slab 7c velocity-amendments bundle 2026-05-04 adds 7c-0c diagnostic story (AMEND-V1 pytest-xdist classification + R2 smoke-suite curation). Prior pre-Slab-7c reconciliation: 61 single + 23 dual = 84 actual at 7b ratification time (triage_summary single_gate=63 / dual_gate=21 was stale by +2/-2; recomputed from data 2026-05-04). Slab-by-slab dual-gate density (incl. contract-evolution): Slab 1 substrate 4/10 = 40%; Slab 3 orchestration 3/6 = 50%; Slab 6 production 3/6 = 50%; Slab 7a 2/8 = 25%; Slab 7b 1/12 = 8%; Slab 7c 11/37 = 29.7%; Epic 34 (post-Slab-7c) 2/3-so-far = 66.7% (3 stories registered; 4 pending).",
     "dual_gate_cross_agent_contract_evolution": 4
   }
