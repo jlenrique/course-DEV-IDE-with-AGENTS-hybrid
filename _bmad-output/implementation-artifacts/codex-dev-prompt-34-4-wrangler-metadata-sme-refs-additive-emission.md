@@ -17,7 +17,7 @@ Spec: `_bmad-output/implementation-artifacts/migration-34-4-wrangler-metadata-sm
 
 1. Story 34-4 spec D1-D5 (substrate-verified; code blocks in D1 + D5 are the literal target shape).
 2. Stories 34-1 + 34-2 + 34-3 specs (predecessor context; Story 34-1's integration test is the ratchet you EXTEND).
-3. `skills/bmad-agent-texas/scripts/run_wrangler.py:1239-1266` — current `_write_metadata_json` (your edit target).
+3. `skills/bmad-agent-texas/scripts/run_wrangler.py:1308-1335` — current `_write_metadata_json` (your edit target). **Line citation updated 2026-05-22 post Story-34-2 close: +69 lines from initial 1239-1266 due to Story 34-2's validator-constants + ignored-row filter additions. At T1, locate via `grep -n '^def _write_metadata_json' skills/bmad-agent-texas/scripts/run_wrangler.py` if line numbers drift further from concurrent Story 34-3 edits.**
 4. `skills/bmad-agent-texas/scripts/run_wrangler.py:171-187` — `SourceOutcome` dataclass with `content_text` field for per-source digest.
 5. `app/marcus/intake/pre_packet.py:175-207` — consumer `_build_sme_refs` (verify at T5 that NO pre_packet change is needed).
 6. `app/marcus/lesson_plan/log.py:311-336` — `SourceRef` Pydantic model (the shape your sme_refs entries must satisfy).
@@ -31,12 +31,12 @@ Spec: `_bmad-output/implementation-artifacts/migration-34-4-wrangler-metadata-sm
 - All 5 TW-7c-4 audit tests PASS.
 - Verify `SourceOutcome.content_text` field exists at `run_wrangler.py:183`.
 - Verify `hashlib` imported at `run_wrangler.py` top (Phase A confirmed).
-- Verify `_write_metadata_json` signature at `run_wrangler.py:1239-1266` matches spec D1 expected shape.
+- Verify `_write_metadata_json` signature at `run_wrangler.py:1308-1335` (post Story-34-2 close; locate via `grep -n '^def _write_metadata_json'` to absorb any further drift from concurrent Story 34-3 substrate edits) matches spec D1 expected shape.
 
 ## Files in scope
 
 **Modified (2 files):**
-- `skills/bmad-agent-texas/scripts/run_wrangler.py` (D1: lines 1239-1266 metadata writer + add `hashlib.sha256(...)` per-source)
+- `skills/bmad-agent-texas/scripts/run_wrangler.py` (D1: lines 1308-1335 metadata writer + add `hashlib.sha256(...)` per-source; locate via `grep -n '^def _write_metadata_json'`)
 - `tests/integration/test_section_02a_to_wrangler_subprocess_roundtrip.py` (D5: extend with sme_refs assertion block per AC-34-4-A-EXT)
 
 **New (1 file):**

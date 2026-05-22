@@ -11,7 +11,7 @@
 **Files touched (substrate-verified 2026-05-22):**
 
 **Modified (~2 files):**
-- `skills/bmad-agent-texas/scripts/run_wrangler.py` (lines 1239-1266 metadata writer; D1 implementation — add `sme_refs` key to meta dict)
+- `skills/bmad-agent-texas/scripts/run_wrangler.py` (lines 1308-1335 metadata writer; D1 implementation — add `sme_refs` key to meta dict). **Line citation re-verified 2026-05-22 post Story-34-2 close** (Story 34-2's `_ALLOWED_ROLES`/`_ALLOWED_EXCLUDED_REASONS`/`_enforce_source_cross_field_invariants` + ignored-row filter shifted `_write_metadata_json` by +69 lines from spec-author-time citation 1239-1266); function body unchanged. At T1, locate via `grep -n '^def _write_metadata_json' skills/bmad-agent-texas/scripts/run_wrangler.py`.
 - `tests/integration/test_section_02a_to_wrangler_subprocess_roundtrip.py` (Story 34-1's test extended per AC-34-4-A-EXT — adds sme_refs assertion block)
 
 **New (~1-2 files):**
@@ -30,7 +30,7 @@
 
 **D1. `_write_metadata_json` additive sme_refs (AC-34-4-A BINDING):**
 
-**Current substrate** (verified via Read of `run_wrangler.py:1239-1266`):
+**Current substrate** (verified via Read of `run_wrangler.py:1308-1335` post Story-34-2 close; +69 lines from initial spec-author citation 1239-1266 due to Story 34-2's validator-constants + ignored-row filter additions):
 ```python
 def _write_metadata_json(
     bundle_dir: Path,
@@ -184,7 +184,7 @@ This is the "ratchet extension" pattern per Quinn-synthesis Option 5 — Story 3
 
 **T1 readiness check:** C1 + Stories 34-1 + 34-2 + 34-3 = `done` in sprint-status.yaml. Story 34-1 round-trip test PASS on clean tree. Verify `SourceOutcome.content_text` field exists (substrate at `run_wrangler.py:183`). Verify `hashlib` import at wrangler top (Phase A confirmed).
 
-**T2 wrangler metadata writer extension:** D1 implementation at lines 1239-1266.
+**T2 wrangler metadata writer extension:** D1 implementation at lines 1308-1335 (locate via `grep -n '^def _write_metadata_json' skills/bmad-agent-texas/scripts/run_wrangler.py` to absorb any further line drift from concurrent Story 34-3 substrate edits).
 
 **T3 Story-34-1 ratchet extension:** D5 implementation — extend `tests/integration/test_section_02a_to_wrangler_subprocess_roundtrip.py` with sme_refs assertion block.
 
