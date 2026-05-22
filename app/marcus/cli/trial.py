@@ -14,10 +14,7 @@ from pathlib import Path
 from typing import Any, Literal
 from uuid import UUID, uuid4
 
-from app.marcus.orchestrator.directive_composer import (
-    compose_directive,
-    materialize_directive,
-)
+from app.composers.section_02a.cli_adapter import compose_and_write
 from app.marcus.orchestrator.production_runner import (
     resume_production_trial,
     run_production_trial,
@@ -241,11 +238,10 @@ def start_trial(
     directive_path: Path | None = None
     directive_digest: str | None = None
     if input_path.is_dir():
-        composed = compose_directive(
-            corpus_path=input_path,
-            run_id=str(effective_trial_id),
+        directive_path, directive_digest = compose_and_write(
+            corpus_dir=input_path,
+            run_dir=run_dir,
         )
-        directive_path, directive_digest = materialize_directive(composed, run_dir)
 
         confirm = confirm_fn or _confirm_or_edit_directive
         try:
