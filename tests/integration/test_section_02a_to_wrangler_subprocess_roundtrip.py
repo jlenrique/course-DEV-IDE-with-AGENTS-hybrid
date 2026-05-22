@@ -13,6 +13,7 @@ from __future__ import annotations
 
 import hashlib
 import inspect
+import json
 import subprocess
 import sys
 from pathlib import Path
@@ -109,9 +110,48 @@ def test_forensic_directive_round_trips_through_wrangler_subprocess_via_translat
     assert all("word_count" in row for row in primary_rows)
     assert any(row.get("content_path") == "extracted.md" for row in primary_rows)
 
-    # Story 34-4 owns metadata.json::sme_refs[] emission and extends this test.
-    metadata = yaml.safe_load((bundle_dir / "metadata.json").read_text(encoding="utf-8"))
-    assert "provenance" in metadata
+    metadata_path = bundle_dir / "metadata.json"
+    metadata = json.loads(metadata_path.read_text(encoding="utf-8"))
+
+    # Story 34-4 extension: sme_refs[] additive emission verification.
+    assert "sme_refs" in metadata, (
+        f"metadata.json missing 'sme_refs' key: {metadata.keys()}"
+    )
+    assert len(metadata["sme_refs"]) >= 1, (
+        f"metadata.json.sme_refs is empty: {metadata['sme_refs']!r}"
+    )
+
+    for i, entry in enumerate(metadata["sme_refs"]):
+        assert set(entry.keys()) == {"source_id", "path", "content_digest"}, (
+            f"sme_refs[{i}] keys drift: expected {{source_id, path, content_digest}}, "
+            f"got {set(entry.keys())}"
+        )
+        assert isinstance(entry["source_id"], str) and entry["source_id"], (
+            f"sme_refs[{i}].source_id must be non-empty string: "
+            f"{entry['source_id']!r}"
+        )
+        assert entry["path"] is None or isinstance(entry["path"], str), (
+            f"sme_refs[{i}].path must be str or None: {entry['path']!r}"
+        )
+        assert (
+            isinstance(entry["content_digest"], str)
+            and len(entry["content_digest"]) == 64
+        ), (
+            f"sme_refs[{i}].content_digest must be 64-char sha256 hex: "
+            f"{entry['content_digest']!r}"
+        )
+
+    assert "provenance" in metadata, "Story 34-4 MUST preserve provenance key"
+    assert len(metadata["provenance"]) == len(metadata["sme_refs"]), (
+        "sme_refs and provenance must have same cardinality (one entry per outcome)"
+    )
+
+    materials_ref_ids = {m["ref_id"] for m in result_yaml["materials"]}
+    sme_refs_source_ids = {e["source_id"] for e in metadata["sme_refs"]}
+    assert materials_ref_ids == sme_refs_source_ids, (
+        f"materials.ref_id set != sme_refs.source_id set: "
+        f"materials={materials_ref_ids} sme_refs={sme_refs_source_ids}"
+    )
 
 
 def test_translator_active_mappings_is_load_bearing_in_production() -> None:

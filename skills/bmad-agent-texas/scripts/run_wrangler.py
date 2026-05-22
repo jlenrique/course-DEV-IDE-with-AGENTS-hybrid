@@ -1311,7 +1311,7 @@ def _write_metadata_json(
     outcomes: list[SourceOutcome],
     run_timestamp: str,
 ) -> Path:
-    """Write metadata.json with the provenance chain preserved."""
+    """Write metadata.json with the provenance chain preserved + sme_refs additive."""
     provenance = [
         {
             "ref_id": o.ref_id,
@@ -1324,10 +1324,22 @@ def _write_metadata_json(
         }
         for o in outcomes
     ]
+    # Story 34-4: additive sme_refs[] emission matching pre_packet.SourceRef shape.
+    sme_refs = [
+        {
+            "source_id": o.ref_id,
+            "path": o.locator if o.provider == "local_file" else None,
+            "content_digest": hashlib.sha256(
+                o.content_text.encode("utf-8")
+            ).hexdigest(),
+        }
+        for o in outcomes
+    ]
     meta = {
         "run_id": run_id,
         "generated_at": run_timestamp,
         "provenance": provenance,
+        "sme_refs": sme_refs,
         "primary_consumption_path": "extracted.md",
     }
     path = bundle_dir / "metadata.json"

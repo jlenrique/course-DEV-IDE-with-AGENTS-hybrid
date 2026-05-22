@@ -1,6 +1,6 @@
 # Migration Story 34-4: Wrangler `metadata.json` `sme_refs[]` Additive Emission (Murat M-Murat-3 binding)
 
-**Status:** ready-for-dev *(spec authored 2026-05-22 with locked contract decisions D1-D5; predecessor Stories 34-1 + 34-2 + 34-3 expected `done` at dispatch.)*
+**Status:** done *(Codex T1-T10 + Claude T11 standard `bmad-code-review` PASS 2026-05-22; T11 verdict 0 MUST-FIX / 0 SHOULD-FIX / 0 NITs — bounded surface delivered cleanly.)*
 **Sprint key:** `migration-34-4-wrangler-metadata-sme-refs-additive-emission`
 **Epic:** Epic 34 — §02A Downstream-Consumer Schema Coherence
 **Pts:** 3
