@@ -13,8 +13,10 @@
 **Modified:**
 - `skills/bmad-agent-texas/scripts/run_wrangler.py` (lines 280-394 input validator; expand role enum; add `excluded_reason` handling; migrate §02A cross-field invariants)
 
-**New:**
-- `skills/bmad-agent-texas/scripts/tests/test_wrangler_role_enum_union_and_excluded_reason.py` (OR equivalent path under `tests/specialists/texas/` per existing pattern — verify at T1)
+**New (SUBSTRATE-AUDIT-CORRECTED 2026-05-22 — existing wrangler-validator tests live at `skills/bmad-agent-texas/scripts/tests/`, NOT `tests/specialists/texas/`; verified via Glob):**
+- `skills/bmad-agent-texas/scripts/tests/test_run_wrangler_role_enum_union_and_excluded_reason.py` (NEW; co-located with existing `test_run_wrangler.py`)
+
+Note: `tests/specialists/texas/` contains tests for the LangGraph specialist node (Story 7b.1 surface), NOT wrangler validator unit tests. Story 34-2's wrangler-validator changes are tested at the script-level via the wrangler subprocess, not via the specialist node.
 - Translator-shrinkage update at `app/composers/section_02a/_wrangler_translator.py`: remove `role-supporting-to-supplementary` AND `filter-ignored-rows` mappings from `TRANSLATOR_ACTIVE_MAPPINGS` (Story 34-1's frozenset shrinks)
 
 **Lookahead tier:** **1** (focused; small surface).
@@ -25,30 +27,83 @@
 
 **Contract Decisions (LOCKED 2026-05-22):**
 
-**D1. Role enum extension (Winston A1 BINDING):** Wrangler's `run_wrangler.py:328-338` role-check MUST extend from current 5-element set to **6-element union**:
+**D1. Role enum extension (Winston A1 BINDING — SUBSTRATE-AUDIT-CORRECTED 2026-05-22):**
 
+**Current substrate** (verified via Read of `run_wrangler.py:328-338`):
 ```python
-ALLOWED_ROLES: frozenset[str] = frozenset({
+if src["role"] not in (
     "primary",
-    "supporting",        # NEW — §02A taxonomy (was not in pre-Epic-34 wrangler set)
-    "ignored",           # NEW — §02A taxonomy (was not in pre-Epic-34 wrangler set)
-    "validation",        # PRESERVED — Stories 27-2/27-3 substrate (NFR-E34-5)
-    "supplementary",     # PRESERVED — original wrangler vocab (NFR-E34-5)
-    "visual-primary",    # PRESERVED — Stories 27-2/27-3 substrate (NFR-E34-5)
-    "visual-supplementary",  # PRESERVED — Stories 27-2/27-3 substrate (NFR-E34-5)
-})
+    "validation",
+    "supplementary",
+    "visual-primary",
+    "visual-supplementary",
+):
+    raise DirectiveError(
+        f"sources[{i}].role must be primary|validation|supplementary"
+        f"|visual-primary|visual-supplementary, got {src['role']!r}"
+    )
 ```
 
-(That's actually 7 elements once written out; the §"6-role union" naming is shorthand from Winston A1 referring to the union itself, not the cardinality. Codex MUST extend to ALL members listed, not lose any.)
+**Story 34-2 deliverable: extract to module-level constant AND extend the 5-element tuple to 7-element frozenset.** The wrangler currently uses an INLINE tuple (no named constant). Story 34-2 introduces:
 
-**D2. `excluded_reason` handling (FR-E34-3):** For sources with `role=ignored`:
-- `excluded_reason` field MUST be present + non-empty
-- Value MUST be in §02A's `ExcludedReason` enum: `{git-marker-file, macos-metadata, windows-metadata, llm-classified-out-of-scope}`
-- If absent OR not in enum → `DirectiveError` with explicit error message naming the enum members
+```python
+# At module top (alongside _SUPPORTED_PROVIDERS at line 228):
+_ALLOWED_ROLES: frozenset[str] = frozenset({
+    "primary",
+    "supporting",        # NEW — §02A taxonomy
+    "ignored",           # NEW — §02A taxonomy (filtered before materialization per D4)
+    "validation",        # PRESERVED — Stories 27-2/27-3 substrate
+    "supplementary",     # PRESERVED — original wrangler vocab
+    "visual-primary",    # PRESERVED — Stories 27-2/27-3 substrate
+    "visual-supplementary",  # PRESERVED — Stories 27-2/27-3 substrate
+})
 
-For sources with `role` in `{primary, supporting, validation, supplementary, visual-primary, visual-supplementary}`:
-- `excluded_reason` MUST be absent (or None)
-- If present + non-None → `DirectiveError` with explicit "excluded_reason forbidden on non-ignored sources"
+# At lines 328-338 (REPLACE inline tuple with constant reference):
+if src["role"] not in _ALLOWED_ROLES:
+    raise DirectiveError(
+        f"sources[{i}].role must be one of "
+        f"{sorted(_ALLOWED_ROLES)}, got {src['role']!r}"
+    )
+```
+
+Refactor-to-constant is INTENTIONAL story scope (improves testability + downstream consumers like the ignored-row filter in D4 can reuse the same set). The §"6-role union" naming in Winston A1 is shorthand for the union itself — 7 elements once written out (one preserved + two new + four 27-2/27-3 visual+validation+supplementary).
+
+**D2. `excluded_reason` handling (FR-E34-3 — SUBSTRATE-AUDIT-CORRECTED 2026-05-22):**
+
+Insert new validation block at the boundary between role-check (currently line 338, post-D1 refactor) and ref_id-check (currently line 339):
+
+```python
+# After D1's `if src["role"] not in _ALLOWED_ROLES:` raise block at ~line 338:
+# NEW excluded_reason cross-field invariants (D2):
+_ALLOWED_EXCLUDED_REASONS: frozenset[str] = frozenset({
+    "git-marker-file",
+    "macos-metadata",
+    "windows-metadata",
+    "llm-classified-out-of-scope",
+})
+
+if src["role"] == "ignored":
+    excluded_reason = src.get("excluded_reason")
+    if not isinstance(excluded_reason, str) or not excluded_reason.strip():
+        raise DirectiveError(
+            f"sources[{i}].excluded_reason MUST be a non-empty string "
+            f"when role=ignored; got {excluded_reason!r}"
+        )
+    if excluded_reason not in _ALLOWED_EXCLUDED_REASONS:
+        raise DirectiveError(
+            f"sources[{i}].excluded_reason must be one of "
+            f"{sorted(_ALLOWED_EXCLUDED_REASONS)}, got {excluded_reason!r}"
+        )
+else:
+    # role in {primary, supporting, validation, supplementary, visual-primary, visual-supplementary}
+    if "excluded_reason" in src and src["excluded_reason"] is not None:
+        raise DirectiveError(
+            f"sources[{i}].excluded_reason forbidden on non-ignored sources; "
+            f"role={src['role']!r} got excluded_reason={src['excluded_reason']!r}"
+        )
+```
+
+`_ALLOWED_EXCLUDED_REASONS` constant lives at module level (alongside `_ALLOWED_ROLES` per D1) and mirrors §02A's `ExcludedReason` enum at `app/composers/section_02a/directive_model.py:44-50`.
 
 **D3. Cross-field invariants from §02A (FR-E34-6 BINDING):**
 
@@ -62,15 +117,41 @@ e) Binary extensions (`.png`, `.jpg`, `.jpeg`, `.gif`, `.bmp`, `.pdf`, `.pptx`) 
 
 The validator MAY use a helper function (`_enforce_cross_field_invariants(src: dict, src_idx: int) -> None`) to keep validator readable. Each invariant violation raises `DirectiveError` with the specific clause cited.
 
-**D4. Ignored-row filtering (downstream behavior — AC-34-2-B):**
+**D4. Ignored-row filtering (downstream behavior — AC-34-2-B; SUBSTRATE-AUDIT-CORRECTED 2026-05-22):**
 
-After validation, before materialization, the wrangler MUST filter out `role=ignored` rows from materialization:
-- Removed from `materials[]` in `result.yaml`
-- Removed from `provenance[]` in `metadata.json`
-- Removed from `extracted.md` content
-- Audit-log line emitted per filtered-out row: `[run_wrangler] filtered ignored source: ref_id={ref_id} excluded_reason={excluded_reason} locator={locator}`
+After validation, before materialization, the wrangler MUST filter out `role=ignored` rows. **Verified substrate control flow** (Read of `run_wrangler.py:1771-1820`):
 
-Implementation hint: at the boundary between `_load_directive` (validation) and materialization (extraction pipeline), insert a filter step. Per-row, if `role == "ignored"`, log + skip.
+```python
+# Current locator-shape path at lines 1774-1778:
+outcomes: list[SourceOutcome] = []
+for src in directive["sources"]:
+    outcomes.append(_wrangle_source(src, run_timestamp))
+```
+
+**Story 34-2 deliverable: insert ignored-row filter at line 1776 (immediately before the materialization for-loop). Filter ignored rows from `directive["sources"]` + emit audit log line per filtered row.**
+
+```python
+# At line 1776, REPLACE the for-loop start:
+ignored_sources = [src for src in directive["sources"] if src["role"] == "ignored"]
+non_ignored_sources = [src for src in directive["sources"] if src["role"] != "ignored"]
+
+for ignored_src in ignored_sources:
+    print(  # or wrangler's existing log mechanism — verify at T1
+        f"[run_wrangler] filtered ignored source: "
+        f"ref_id={ignored_src['ref_id']} "
+        f"excluded_reason={ignored_src.get('excluded_reason', 'unknown')} "
+        f"locator={ignored_src.get('locator', '<no-locator>')}",
+        file=sys.stderr,  # audit log to stderr; preserves stdout for --json
+    )
+
+outcomes: list[SourceOutcome] = []
+for src in non_ignored_sources:
+    outcomes.append(_wrangle_source(src, run_timestamp))
+```
+
+Result: `outcomes`, `extracted.md`, `metadata.json::provenance`, `result.yaml::materials` ALL exclude ignored rows. Audit log emitted to stderr (does not pollute --json stdout).
+
+**Codex T1 verification:** confirm wrangler's existing log mechanism (print to stderr vs Python `logging`). The file uses `print(..., file=sys.stderr)` pattern at multiple sites (verify; if `logging`, use that instead).
 
 **D5. Primary-presence invariant preserved (AC-34-2-C):**
 

@@ -47,114 +47,162 @@
 - Pydantic-v2 hygiene preserved (`extra="forbid"`, `validate_assignment=True`)
 - `__all__` exports unchanged (field name is on the model, not at module level)
 
-**D2. Cascading rename across §02A package:** Search `app/composers/section_02a/` and `docs/conversational-gates/section-02a-composer.j2` for ALL references to `src_id` and replace with `ref_id`. Files affected (Codex T1 grep-verify):
-- `composer.py` — likely consumes the field name in payload construction
-- `_prompt.py` — if the LLM prompt template names the field (likely yes per 7c.3a precedent)
-- `_cache.py` — if cache-key derivation includes field name (unlikely; cache key is SHA256 of normalized prompt)
-- `cli_adapter.py` — likely consumes via `Directive.sources[i].src_id` access patterns
-- `__init__.py` — re-exports unchanged (field name is internal to Pydantic model)
-- `section-02a-composer.j2` — if it tells the LLM to emit `src_id: ...` per source
+**D2. Cascading rename across §02A package (SUBSTRATE-AUDIT-CORRECTED 2026-05-22):**
 
-**D3. J-A1(a) — operator-supplied run_id wins (FR-E34-8 BINDING):**
+**Verified via per-file grep at substrate-audit time** (2026-05-22):
+- `docs/conversational-gates/section-02a-composer.j2` — **0 matches for `src_id` or `ref_id`**. j2 template does NOT reference the field name. **NO-OP for Story 34-3.** Remove from scope.
+- `app/composers/section_02a/{composer.py, _prompt.py, _cache.py, cli_adapter.py, __init__.py}` — Codex T1 MUST grep each file individually. Expected hits per source-of-truth (`directive_model.py:58` is the only declaration; consumers reference via `DirectiveSource.src_id` attribute access). Likely small per-file count (≤5 hits each).
 
-Per `app/composers/section_02a/composer.py` current behavior, `Directive.run_id` is generated internally as `uuid4()` (per `directive_model.py:114`). Story 34-3 changes this:
+Codex T1 SHALL run `grep -rn "src_id" app/composers/section_02a/` to enumerate EXACT hits before authoring. If a file shows 0 hits, REMOVE from the modify list. Do NOT touch files with no field references.
+
+**D3. J-A1(a) — operator-supplied run_id wins (FR-E34-8 BINDING — SUBSTRATE-AUDIT-CORRECTED 2026-05-22):**
+
+**Current substrate** (verified via Read of `app/composers/section_02a/cli_adapter.py` and `app/marcus/cli/trial.py:241-244`):
 
 ```python
-# composer.py — new signature
+# cli_adapter.py CURRENT signature (lines 29-34):
+def compose_and_write(
+    corpus_dir: Path,         # positional
+    run_dir: Path,            # positional
+    *,
+    llm: BaseChatModel | None = None,  # keyword-only, optional
+) -> tuple[Path, str]:
+```
+
+```python
+# trial.py CURRENT call site (lines 241-244):
+directive_path, directive_digest = compose_and_write(
+    corpus_dir=input_path,
+    run_dir=run_dir,
+)
+```
+
+`effective_trial_id` is in scope at trial.py line 220 (`effective_trial_id = trial_id or uuid4()`).
+
+**Story 34-3 changes (preserving the positional+kwarg structure):**
+
+```python
+# cli_adapter.py NEW signature — ADD `run_id` as keyword-only required:
+def compose_and_write(
+    corpus_dir: Path,
+    run_dir: Path,
+    *,
+    run_id: UUID,                       # NEW keyword-only REQUIRED
+    llm: BaseChatModel | None = None,   # existing kwarg unchanged
+) -> tuple[Path, str]:
+    """Bridge trial CLI's effective_trial_id to §02A composer's run_id."""
+    if llm is None:
+        from app.models.adapter import make_chat_model
+        handle = make_chat_model("marcus")
+        llm = handle.chat
+        # ... J-A1(b) trail-write happens here per D4 (handle.entry usage)
+    else:
+        handle = None  # no audit-trail to write when caller injects llm (test path)
+
+    directive = compose(
+        corpus_dir,
+        llm=llm,
+        cache=ComposerCache(),
+        run_id=run_id,                  # threaded through; NOT internally generated
+    )
+    directive_path = run_dir / "directive.yaml"
+    write_directive_yaml(directive, directive_path)
+    digest = hashlib.sha256(directive_path.read_bytes()).hexdigest()
+    return directive_path, digest
+```
+
+```python
+# composer.py — ADD `run_id: UUID` REQUIRED kwarg:
 def compose(
     corpus_dir: Path,
     *,
     llm: BaseChatModel,
     cache: ComposerCache | None = None,
-    run_id: UUID,  # NEW required parameter; uuid4-validated by Pydantic at Directive instantiation
+    run_id: UUID,                       # NEW required parameter
 ) -> Directive:
     """LLM-driven §02A directive composition; uses caller-supplied run_id."""
-    # ... (existing body)
+    # ... (existing body unchanged)
     return Directive(
-        run_id=run_id,  # threaded through; NOT internally generated
+        run_id=run_id,                  # threaded through
         corpus_dir=str(corpus_dir),
         sources=tuple(...),
         composed_at=datetime.now(tz=UTC),
     )
 ```
 
-And in `cli_adapter.py::compose_and_write`:
-
 ```python
-def compose_and_write(
-    *,
-    corpus_dir: Path,
-    run_dir: Path,
-    effective_trial_id: UUID,  # NEW required parameter (was probably absent before)
-) -> tuple[Path, str]:
-    """Bridge trial CLI's effective_trial_id to §02A composer's run_id."""
-    chat_handle = make_chat_model("marcus")
-    directive = compose(
-        corpus_dir,
-        llm=chat_handle.chat,
-        cache=ComposerCache(),
-        run_id=effective_trial_id,  # NEW threaded param
-    )
-    directive_path = run_dir / "directive.yaml"
-    write_directive_yaml(directive, directive_path)
-    digest = hashlib.sha256(directive_path.read_bytes()).hexdigest()
-    # ... J-A1(b) trail-append happens here per D4
-    return directive_path, digest
-```
-
-And in `app/marcus/cli/trial.py` (carries the `effective_trial_id` already):
-
-```python
-# At call site, update from:
-#   directive_path, directive_digest = compose_and_write(corpus_dir=input_path, run_dir=run_dir)
-# To:
+# trial.py NEW call site (replaces lines 241-244):
 directive_path, directive_digest = compose_and_write(
     corpus_dir=input_path,
     run_dir=run_dir,
-    effective_trial_id=effective_trial_id,  # NEW
+    run_id=effective_trial_id,           # NEW threaded param
 )
 ```
 
-**D4. J-A1(b) — model_resolution_trail sidecar (FR-E34-9 BINDING):**
+**TODO(post-trial-3-retro) block REMOVAL (BINDING):** cli_adapter.py:50-63 docstring contains a `Known seams (TODO(post-trial-3-retro)):` block documenting J-A1(a) + J-A1(b) deferral. Story 34-3 MUST EXCISE this entire docstring block in lockstep with the code fix. Replace with a single line: `Threads operator-supplied run_id (J-A1(a)) and writes model_resolution_trail sidecar (J-A1(b)).`
 
-`cli_adapter.compose_and_write` currently discards `ChatModelHandle.entry`. Story 34-3 persists it as a sidecar JSON in `run_dir`:
+**D4. J-A1(b) — model_resolution_trail sidecar (FR-E34-9 BINDING — SUBSTRATE-AUDIT-CORRECTED 2026-05-22):**
+
+`cli_adapter.compose_and_write` currently discards `ChatModelHandle.entry` (TODO block at lines 56-63 documents this). Story 34-3 persists it as a sidecar JSON in `run_dir`.
+
+**Verified imports** (Read of `app/models/adapter.py:31-52`):
+- `ModelResolutionEntry` is at `app.models.state.model_resolution_entry` (NOT `app.models.adapter` — adapter re-imports it).
+- `ChatModelHandle = NamedTuple` with fields `(chat: ChatOpenAI, entry: ModelResolutionEntry)`.
 
 ```python
-# cli_adapter.py — inside compose_and_write, after chat_handle obtained:
+# cli_adapter.py — add imports:
 import json
-from app.models.adapter import ModelResolutionEntry  # or equivalent path
+from datetime import UTC, datetime
 
-# ... after `chat_handle = make_chat_model("marcus")`:
-trail_sidecar_path = run_dir / "model_resolution_trail.json"
-trail_data = {
-    "specialist_id": "marcus",
-    "resolved": chat_handle.entry.resolved,  # access via NamedTuple field names per current adapter
-    "level": chat_handle.entry.level,
-    "cache_prefix_hash": chat_handle.entry.cache_prefix_hash,
-    # ... any other ModelResolutionEntry fields per current schema
-    "captured_at": datetime.now(tz=UTC).isoformat(),
-}
-trail_sidecar_path.write_text(
-    json.dumps(trail_data, indent=2, sort_keys=True),
-    encoding="utf-8",
-)
+# Inside compose_and_write, after `handle = make_chat_model("marcus")` (only the
+# default branch where caller did NOT inject llm; if caller injected, skip the
+# trail write since there's no handle.entry available):
+if handle is not None:
+    trail_sidecar_path = run_dir / "model_resolution_trail.json"
+    trail_data = {
+        "specialist_id": "marcus",
+        "resolved": handle.entry.resolved,
+        "level": handle.entry.level,
+        "cache_prefix_hash": handle.entry.cache_prefix_hash,
+        "captured_at": datetime.now(tz=UTC).isoformat(),
+        # Codex T1: verify ModelResolutionEntry actual field shape via
+        # `Read app/models/state/model_resolution_entry.py`; include any
+        # additional fields needed for audit-trail reproducibility.
+    }
+    trail_sidecar_path.write_text(
+        json.dumps(trail_data, indent=2, sort_keys=True),
+        encoding="utf-8",
+    )
 ```
 
-The sidecar path is **deterministic** (`run_dir / "model_resolution_trail.json"`); downstream consumers OR Marcus run state can pick it up later. (This is the simpler-of-two-options per J-A1(b) entry; threading through `RunState.model_resolution_trail` is a deeper refactor that Story 34-3 does NOT undertake — surface as decision_needed if Codex believes the sidecar is wrong direction.)
+The sidecar path is **deterministic** (`run_dir / "model_resolution_trail.json"`); downstream consumers OR Marcus run state can pick it up later.
 
-**D5. §02A test surface migration (Amelia A-A1 BINDING):**
+**Codex T1 readiness:** verify `ModelResolutionEntry` actual field shape at `app/models/state/model_resolution_entry.py` before authoring. If the model has more fields than `{resolved, level, cache_prefix_hash}`, include all relevant ones in the sidecar JSON for NFR-X4 audit-trail completeness.
 
-Codex T2 sweeps the 8 §02A test-surface paths (all pre-allowlisted at C1) and replaces ALL occurrences of `src_id` → `ref_id`. Grep-verify count per Amelia's pre-Round-1 inventory:
-- `tests/composers/section_02a/test_composer_directive_model_shape.py` — 2 hits
-- `tests/composers/section_02a/_helpers.py` — N hits
-- `tests/composers/section_02a/test_composer_classification.py` — N hits
-- `tests/composers/section_02a/test_composer_cache_key_normalization.py` — N hits
-- `tests/composers/section_02a/test_composer_trial_2_finding_2_regression.py` — N hits
-- `tests/composers/section_02a/test_composer_utf8_write.py` — N hits
-- `tests/gates/section_02a/_helpers.py` — 3 hits
-- `tests/gates/section_02a/test_g0_poll_surface_field_level_edit.py` — 1 hit
+(This is the simpler-of-two-options per J-A1(b) entry; threading through `RunState.model_resolution_trail` is a deeper refactor that Story 34-3 does NOT undertake — surface as decision_needed if Codex believes the sidecar is wrong direction.)
 
-Total ≥ 7 hits (Amelia grep) + however many in the _helpers files. Codex T2 final-grep MUST confirm zero residual `src_id` references in §02A test surface.
+**D5. §02A test surface migration (Amelia A-A1 BINDING — SUBSTRATE-AUDIT-CORRECTED 2026-05-22):**
+
+**Verified per-file grep at substrate-audit time** (2026-05-22 via `Grep "src_id|ref_id" tests/composers/section_02a/` + `tests/gates/section_02a/`):
+
+**Files with ACTUAL `src_id|ref_id` matches (4 files):**
+- `tests/composers/section_02a/test_composer_directive_model_shape.py` — 2 matches
+- `tests/composers/section_02a/test_composer_utf8_write.py` — 1 match
+- `tests/gates/section_02a/_helpers.py` — 3 matches
+- `tests/gates/section_02a/test_g0_poll_surface_field_level_edit.py` — 1 match
+
+**Total: 7 matches across 4 files** (NOT 8 files as my prior spec said; Amelia's Round-1 list named the right SCOPE but I overstated the per-file count without verifying).
+
+**Files allowlisted at C1 but with ZERO grep hits at audit time** (Codex T1 verify):
+- `tests/composers/section_02a/_helpers.py` — 0 (may need touches if it imports `DirectiveSource` and uses attribute access via `.src_id`)
+- `tests/composers/section_02a/__init__.py` — 0 (package marker)
+- `tests/composers/section_02a/test_composer_cache_key_normalization.py` — 0
+- `tests/composers/section_02a/test_composer_classification.py` — 0
+- `tests/composers/section_02a/test_composer_trial_2_finding_2_regression.py` — 0
+
+These files are PRE-ALLOWLISTED but Codex SHALL NOT modify them unless T1 grep surfaces actual `src_id` references (e.g., attribute access patterns my literal-string grep missed: `directive.sources[0].src_id` would be hits). Codex T1 SHALL run a wider grep: `grep -rn "src_id\|\.src_id\|.*src_id.*=" tests/composers/section_02a/ tests/gates/section_02a/` to catch attribute access. If wider grep surfaces more hits, expand the modify list. Otherwise, restrict to the 4 files above.
+
+**T2 final-grep verification:** post-rename, `grep -rn "src_id" tests/composers/section_02a/ tests/gates/section_02a/` MUST return 0 matches. Any residual hit = halt + investigate.
 
 **D6. M-A1 wiring-contract tests migration:**
 

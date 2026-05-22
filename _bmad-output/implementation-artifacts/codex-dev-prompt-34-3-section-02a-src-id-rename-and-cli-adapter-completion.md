@@ -55,16 +55,31 @@ See spec §"Files touched". Notable:
 - `skills/bmad-agent-texas/scripts/run_wrangler.py` (Stories 34-2 + 34-4 surface; READ ONLY at T1)
 - Story 34-1 integration test (READ ONLY)
 
-## Critical implementation notes
+## Critical implementation notes (SUBSTRATE-AUDIT-CORRECTED 2026-05-22)
 
-- **D1 rename:** the field `src_id` → `ref_id` in DirectiveSource. Pydantic field constraints preserved.
-- **D2 cascading sweep:** grep `app/composers/section_02a/` AND `docs/conversational-gates/section-02a-composer.j2` for ALL `src_id` references. Replace each with `ref_id`.
-- **D3 J-A1(a):** `compose()` gains `run_id: UUID` REQUIRED parameter. `cli_adapter.compose_and_write` gains `effective_trial_id: UUID` REQUIRED parameter. `trial.py` call-site threads `effective_trial_id` through.
-- **D4 J-A1(b):** sidecar JSON at `run_dir / "model_resolution_trail.json"`. Codex MAY surface `decision_needed` if the simpler-sidecar direction feels wrong vs threading through `RunState.model_resolution_trail` (the deeper refactor not in Story 34-3 scope).
-- **D5 test migration:** 8 test files + grep-verify zero residual `src_id` references.
-- **D6 M-A1 wiring tests:** update existing 4 tests + author 2 new J-A1 tests.
+- **D1 rename:** the field `src_id` → `ref_id` in DirectiveSource (`directive_model.py:58`). Pydantic field constraints preserved.
+- **D2 cascading sweep — NARROWED post-audit:**
+  - `docs/conversational-gates/section-02a-composer.j2` is a **NO-OP** (0 src_id references; verified via grep). Remove from your touch list.
+  - `app/composers/section_02a/{composer.py, _prompt.py, _cache.py, cli_adapter.py, __init__.py}`: Codex T1 SHALL `grep -rn "src_id" app/composers/section_02a/` to enumerate exact per-file hits. Touch ONLY files with non-zero hits. Do NOT touch files with 0 hits.
+- **D3 J-A1(a) signature — SUBSTRATE-CORRECTED:**
+  - Current `compose_and_write` signature is **`compose_and_write(corpus_dir, run_dir, *, llm=None)`** (positional+kwarg), NOT all-kwarg.
+  - Add `run_id: UUID` as **keyword-only REQUIRED** (after the `*` and before `llm`). Preserve existing `llm` kwarg.
+  - `trial.py` call site at lines 241-244 ALREADY uses keyword args; simply add `run_id=effective_trial_id`. `effective_trial_id` is in scope at trial.py line 220.
+  - **CRITICAL: REMOVE the `TODO(post-trial-3-retro)` docstring block at cli_adapter.py:50-63** in lockstep with the code fix. Replace with single-line: `Threads operator-supplied run_id (J-A1(a)) and writes model_resolution_trail sidecar (J-A1(b)).`
+- **D4 J-A1(b) — import path SUBSTRATE-CORRECTED:**
+  - `ModelResolutionEntry` import is `from app.models.state.model_resolution_entry import ModelResolutionEntry`, NOT `from app.models.adapter import ModelResolutionEntry`.
+  - At T1, `Read app/models/state/model_resolution_entry.py` to verify the field shape (the sidecar JSON includes those fields).
+  - Sidecar landing path: `run_dir / "model_resolution_trail.json"`.
+- **D5 test migration — COUNT SUBSTRATE-CORRECTED:**
+  - **Actual `src_id|ref_id` hits live in 4 files** (verified via grep), NOT 8:
+    - `tests/composers/section_02a/test_composer_directive_model_shape.py` (2)
+    - `tests/composers/section_02a/test_composer_utf8_write.py` (1)
+    - `tests/gates/section_02a/_helpers.py` (3)
+    - `tests/gates/section_02a/test_g0_poll_surface_field_level_edit.py` (1)
+  - The other 4 files allowlisted at C1 may need touches IF wider grep (attribute access via `.src_id`) surfaces hits. Codex T1 SHALL run wider grep to confirm; do NOT modify files with 0 hits.
+- **D6 M-A1 wiring tests:** update existing 4 tests at `tests/marcus_cli/test_compose_section_02a_directive_adapter.py` + author 2 new J-A1 regression tests. Codex T1 SHALL read the existing test file to understand the actual mock pattern before authoring.
 - **D7 translator shrinkage:** `TRANSLATOR_ACTIVE_MAPPINGS = frozenset()` at this story's close. Story 34-5's sequence test will verify the empty state.
-- **K-target 1.5× ≈ ~7.5K LOC.** Multi-file rename + 2 new tests. Estimate ~500-1000 LOC. Comfortable.
+- **K-target 1.5× ≈ ~7.5K LOC.** Multi-file rename + 2 new tests. Estimate ~400-700 LOC (smaller after D5 count correction). Comfortable.
 - **Story 34-1 ratchet stay-green is BINDING abort trigger.** With the translator's `src-id-to-ref-id` mapping removed, §02A now natively emits `ref_id` so the wrangler accepts it directly. Test should still pass.
 
 ## T9 self-G6 + T10 ready-for-review handoff (standard pattern).

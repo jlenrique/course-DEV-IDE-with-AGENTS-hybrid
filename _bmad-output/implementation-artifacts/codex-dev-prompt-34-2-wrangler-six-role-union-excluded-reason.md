@@ -45,15 +45,17 @@ Spec: `_bmad-output/implementation-artifacts/migration-34-2-wrangler-six-role-un
 - §02A composer test suite (Story 34-3 surface)
 - Story 34-1 integration test (READ ONLY — must stay green underneath you)
 
-## Critical implementation notes
+## Critical implementation notes (SUBSTRATE-AUDIT-CORRECTED 2026-05-22)
 
-- **D1 7-element frozenset (NOT 6).** The Winston A1 binding shorthand "6-role union" refers to the union itself, not the cardinality. Codex MUST include ALL 7 members: `primary, supporting, ignored, validation, supplementary, visual-primary, visual-supplementary`.
-- **D3 cross-field invariants migrated from §02A directive_model.py:80-106.** Each invariant raises `DirectiveError` with the specific clause cited (mirror §02A's error message style).
-- **D4 ignored-row filtering at the boundary between `_load_directive` (validation) and materialization.** Audit-log per filtered row.
-- **D5 primary-presence rule UNCHANGED** — operates on POST-filter sources list (after D4 removes ignored).
-- **Translator shrinkage (T4)** — `TRANSLATOR_ACTIVE_MAPPINGS` reduces from 3 → 1 element. Story 34-1 round-trip test continues to PASS (the test asserts current state; you update it lockstep if needed, but spec D6 of Story 34-1 has the test only assert non-empty membership, so removal of 2 elements should not break the round-trip test).
+- **D1 inline-tuple-to-constant refactor IS story scope (not assumed).** Current wrangler at lines 328-338 uses an INLINE tuple `if src["role"] not in ("primary", "validation", ...)`. Story 34-2 extracts to a module-level `_ALLOWED_ROLES: frozenset[str]` constant + extends to 7 elements (1 existing + 2 new §02A + 4 existing wrangler vocab preserved). See spec D1 for the exact code; the constant placement is alongside `_SUPPORTED_PROVIDERS` at line 228.
+- **D2 excluded_reason validation location is the boundary at line 338-339** (after role check, before ref_id check). See spec D2 code block — `_ALLOWED_EXCLUDED_REASONS: frozenset[str]` constant at module top + new validation block inserted at the boundary.
+- **D3 cross-field invariants migrated from §02A directive_model.py:80-106.** Each invariant raises `DirectiveError` with the specific clause cited (mirror §02A's error message style). Line range 80-106 is stable across Story 34-3 (the rename is at line 58, not 80-106).
+- **D4 ignored-row filtering at line 1776** (immediately before the locator-shape materialization for-loop). See spec D4 for code; filter `directive["sources"]` into `ignored_sources` + `non_ignored_sources`; iterate only over `non_ignored_sources`; emit audit log to STDERR per filtered row.
+- **D5 primary-presence rule UNCHANGED** — operates on POST-filter sources list (after D4 removes ignored). Rule at line 388-394 stays intact.
+- **Translator shrinkage (T4)** — `TRANSLATOR_ACTIVE_MAPPINGS` reduces from 3 → 1 element. Story 34-1 round-trip test continues to PASS (test asserts current state; you update lockstep if needed). Story 34-1 spec D6 has the test only assert non-empty membership, so removal of 2 elements should not break the round-trip test.
 - **K-target 1.5× ≈ ~7.5K LOC ceiling.** Estimate ~200-400 LOC. Comfortable.
 - **Story 34-1 ratchet stay-green is BINDING abort trigger** per SCP §5 abort tripwire.
+- **Test file location:** `skills/bmad-agent-texas/scripts/tests/test_run_wrangler_role_enum_union_and_excluded_reason.py` (co-located with existing `test_run_wrangler.py`; NOT under `tests/specialists/texas/` which is the LangGraph specialist surface).
 
 ## T9 self-conducted G6 layered review
 
