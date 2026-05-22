@@ -381,9 +381,11 @@ Filed during post-S6 housekeeping session (Path 1; party-mode-gated). Slice A wa
 
 Slice D has been added to the `s6-housekeeping-coverage-manifest-path-pin-probe` evidence bundle as a paired finding: same root-cause class (post-S6 substrate-currency drift), same architectural disposition (revert + capture + post-Trial-3 reactivation), same `bmad-correct-course` pre-drafted motion at `.tmp/slice-a-post-trial-3-correct-course-draft.md` (motion §1 will be expanded at dispatch time to include the Slice D test-file deletion alongside the Slice A path-pin update).
 
-## CRITICAL Trial-3-blocking regression — §02A composer unwired (filed 2026-05-21)
+## CRITICAL Trial-3-blocking regression — §02A composer unwired (filed 2026-05-21) ~~CLOSED 2026-05-21 via SCP-2026-05-21-trial3-wiring (commits 12453bc..ab5562d)~~
 
-**Status:** **TRIAL-3-BLOCKING.** Operator-driven Trial-3 launch attempted 2026-05-21T19:51 against fresh corpus `course-content/courses/tejal-apc-c1-m1-p2-trends/` (Notion-sourced Part 2 of Tejal C1M1 outline; 11 .md files; committed at `7d3fab2`). Trial halted at G0 with operator cancellation verb `x` after the composed directive revealed the LLM-driven §02A composer was NOT invoked. Forensic evidence preserved at `state/config/runs/bef9a2c6-8305-44db-9194-9204f684f25e/{trial-cancelled-at-g0.json,directive.yaml}` (gitignored runs dir; directive_digest `777d385ba40553ae3452e891c984f9d21234f985cba43652860d31d6610c1a10`).
+**Status:** **CLOSED 2026-05-21** via Sprint Change Proposal 2026-05-21-trial3-wiring (party-mode Round-1-ratified 4-of-4 APPROVE-with-amendments; commits C0..C2a at `371db9e..ab5562d`). Re-launch 2026-05-21T22:00 against the same Tejal corpus produced an LLM-composed directive (digest `351a57fb...`) confirming the §02A composer is now invoked at G0; directive shape matches the §02A canonical schema (real LLM-judged descriptions, content-aware `expected_min_words`, no broken-fallback "Auto-derived" boilerplate). Operator confirmed at G0 with verb `c`; trial then halted at the FIRST SPECIALIST DISPATCH (Texas wrangler exit 30) due to a DIFFERENT class of defect — schema-drift between the §02A composer's output shape and Texas wrangler's expected input shape. **The wiring fix worked; the integration boundary downstream is a separate issue.** New finding filed as `section-02a-downstream-consumer-compatibility-systemic-drift` below.
+
+**Original entry preserved verbatim for audit trail (Trial-3 attempt-1 forensic record):**
 
 | Entry | Filed | Trigger context | Resolution |
 |---|---|---|---|
@@ -392,7 +394,97 @@ Slice D has been added to the `s6-housekeeping-coverage-manifest-path-pin-probe`
 
 **Convergent disposition recommendation:** the existing 2026-05-19 SCP at `_bmad-output/planning-artifacts/sprint-change-proposal-2026-05-19.md` was a post-Trial-3 housekeeping motion. This Trial-3-blocking regression elevates it to a pre-Trial-3 binding amendment with extended scope. Either (a) extend the SCP §4 to include the §02A wiring fix + UTF-8 launcher fix alongside the original C1/C2/C3 phases, OR (b) author a NEW SCP scoped purely to Trial-3-blocking fixes and defer the SCP-2026-05-19 to post-Trial-3 as originally planned. Operator decides at next session start.
 
-**Operator selected option (b) at 2026-05-21 session continuation:** narrow Trial-3-blocking-only SCP. New SCP file to be authored at `_bmad-output/planning-artifacts/sprint-change-proposal-2026-05-21-trial3-wiring.md`. 2026-05-19 SCP remains queued for post-Trial-3 dispatch unchanged.
+**Operator selected option (b) at 2026-05-21 session continuation:** narrow Trial-3-blocking-only SCP. New SCP file authored at `_bmad-output/planning-artifacts/sprint-change-proposal-2026-05-21-trial3-wiring.md` and party-mode-ratified (Round 1 4-of-4 APPROVE-with-amendments). Commits `12453bc..ab5562d` landed the substrate amendment + wiring fix + UTF-8 hardening + integration test. 2026-05-19 SCP remains queued for post-Trial-3 dispatch unchanged.
+
+**Closure verdict 2026-05-21T22:00 re-launch (attempt-2):** §02A composer was successfully invoked at G0; LLM produced a real-judgment directive (digest `351a57fb...`; size 4192 bytes; preserved at `state/config/runs/6a3393f8-f369-4a30-b7c1-b50c60c1d1a2/directive.yaml`, gitignored). Operator confirmed at G0 with verb `c`. Trial then halted at first specialist dispatch (Texas wrangler exit 30) — DIFFERENT defect class, schema-drift between §02A output and Texas wrangler input. **The wiring fix worked. The integration boundary downstream is a separate Epic-scope issue filed below as `section-02a-downstream-consumer-compatibility-systemic-drift`.**
+
+**Sibling entry `trial-3-blocker-trial-cli-utf-8-launcher-wrapper-cmd` also CLOSED 2026-05-21 via the same SCP (C2b commit `42ae4ec`):** trial CLI now invokes `_ensure_utf8_io()` at the top of `start_trial` to set `PYTHONIOENCODING=utf-8` + reconfigure stdout/stderr unconditionally before any I/O. CMD invocations work without the `$env:` prelude. Verified via 22:00 re-launch from cmd.exe.
+
+---
+
+## CRITICAL Trial-3-blocking — §02A composer downstream-consumer schema-drift (filed 2026-05-21T22:30)
+
+**Status:** **TRIAL-3-BLOCKING; Epic-scope.** Second occurrence in the same trial-launch arc of "tested module, untested integration" defect class. The first occurrence (§02A composer not wired into trial CLI) was patched via SCP-2026-05-21-trial3-wiring; the wiring fix REVEALED the second occurrence at the §02A composer → Texas wrangler integration boundary. **Operator-directed halt of Trial-3 attempt-2** at this finding (2026-05-21T22:30): rather than patch the symptom (one schema-drift gap) and risk discovering further gaps one-at-a-time, batch the full systemic fix.
+
+**Observed at:** Trial-3 attempt-2 re-launch 2026-05-21T22:00 against `course-content/courses/tejal-apc-c1-m1-p2-trends/`. Run-id `6a3393f8-f369-4a30-b7c1-b50c60c1d1a2`. Operator confirmed `c` at G0. Texas dispatch raised `BundleDispatchError('texas wrangler reported hard error (exit 30); bundle not trusted')` from [app/specialists/texas/_act.py:323](../../app/specialists/texas/_act.py#L323).
+
+**Root cause (verified by reproducing the wrangler subprocess directly):** the §02A composer's `Directive` schema diverges from the Texas wrangler's expected input schema along multiple field/enum boundaries. Three known incompatibilities surfaced so far; more may exist deeper in the wrangler validation, and additional drift is likely at other downstream surfaces (Texas bundle → Irene Pass-1, Irene packet → §04 G1, etc.) that this trial never reached.
+
+| §02A composer emits | Texas wrangler expects | Wrangler enforcement | Severity |
+|---|---|---|---|
+| `src_id` | `ref_id` | [run_wrangler.py:319-348](../../skills/bmad-agent-texas/scripts/run_wrangler.py#L319-L348) | Hard fail at validation; this is what crashed attempt-2 |
+| `role: supporting` | `role: supplementary` | [run_wrangler.py:328-338](../../skills/bmad-agent-texas/scripts/run_wrangler.py#L328-L338) (allowed set: primary / validation / supplementary / visual-primary / visual-supplementary) | Would hard-fail on the next gate even after `src_id` fix |
+| `role: ignored` | not in wrangler's allowed set | Same line range | Would hard-fail if any ignored source appears (Tejal corpus has none; dodged for attempt-2) |
+
+**Forensic evidence preserved (gitignored; local-only):**
+- `state/config/runs/6a3393f8-f369-4a30-b7c1-b50c60c1d1a2/directive.yaml` — §02A-composed directive (sha256 `351a57fbe12aff4a49349c4a646618d92ae38a798ec53eee61668f74f8bbd703`; size 4192 bytes; 11 sources). Reference baseline for next-session diff comparison.
+- `state/config/runs/6a3393f8-f369-4a30-b7c1-b50c60c1d1a2/run.json` — trial envelope at point of crash; `status: in-flight`, `completed_at: null`, `production_clone_launch_evidence_reason: registered-no-specialist-fired`.
+- Reproduced wrangler error message: `[run_wrangler] directive error: sources[0] missing required field: ref_id`
+
+**Why this is Epic-scope, not a one-line patch:** Story 7c.3a authored the §02A composer as a fresh schema without verifying it conforms to **any** downstream consumer. The §02A composer's own test suite (5 files, 12 tests) verifies the composer-in-isolation but never feeds output into the wrangler. AM-11 launch-permission token (52/52 GREEN) tests preflight + readiness fixtures, not end-to-end specialist dispatch. The Murat M-A1 wiring-contract test added in SCP-2026-05-21-trial3-wiring tests the adapter-to-composer contract but mocks `compose()` itself — it cannot detect output-shape drift. **Every §02A→downstream boundary is unprobed.**
+
+**Resolution scope (Epic-level):**
+
+**Phase A — comprehensive probe (~30-45 min next session):** Before any fix lands, audit ALL §02A→downstream integration surfaces. Targets:
+- Texas wrangler input schema (this surface; surface more drift in the rest of `run_wrangler.py` beyond `ref_id` + `role`)
+- Texas bundle output → Irene Pass-1 input (does Irene read fields that the new wrangler bundle produces in a different shape?)
+- Irene packet → §04 G1 decision card input
+- §04A per-plan-unit row schema
+- §04.55 run-constants lock structure
+- §07C storyboard build input/output
+- §11 voice-selection input
+- §15 final bundle output shape
+
+Each surface gets a `grep` + `Read` audit; the result is a full integration-drift inventory (zero finding → schema is clean; N findings → batch into Phase B fix).
+
+**Phase B — batched fix (1-2 sessions, scope-dependent):**
+- **Decision point ratified at party-mode:** harmonize §02A→canonical or harmonize-downstream-to-§02A? The §02A schema is the NEWER authored deliverable (Story 7c.3a); the wrangler + downstream consumers reflect the pre-§02A canonical. Honoring "newer schema is canonical" → update wrangler + consumers. Honoring "minimize-blast-radius" → revert §02A to match the existing canonical.
+- Either direction: requires substrate amendment (TW-7c-4 allowlist extension + lockstep test updates) via formal SCP route. Likely larger Epic than the wiring SCP (multi-file, multi-specialist).
+- Consider authoring as an **integration-coherence Epic** via `bmad-create-epics-and-stories` with stories per affected surface.
+
+**Phase C — closure (Trial-3 attempt-3 re-launch):** Once Phase B lands, re-launch from `course-content/courses/tejal-apc-c1-m1-p2-trends/`. Same corpus; same trial protocol. The Phase A audit + Phase B fix should de-risk additional integration-drift surprises within the §02A→downstream chain.
+
+**Reactivation trigger:** immediate (next session is the BMAD sprint specifically dedicated to this Epic, per operator directive 2026-05-21T22:30: *"Start next session with a BMAD sprint to correct and address as many related issues as can be identified now and corrected proactively."*).
+
+**Cross-reference:**
+- Sibling-class finding: `marcus-interactive-experience-not-delivered-by-slab-7c` (Epic-scope; post-Trial-3 successor). That Epic is downstream of Trial-3 closure; THIS Epic is the gate before Trial-3 can re-launch successfully.
+- Parent SCP (closes the wiring blocker that surfaced this gap): `_bmad-output/planning-artifacts/sprint-change-proposal-2026-05-21-trial3-wiring.md`.
+- Pattern: this is the SECOND "tested module, untested integration" gap in the same trial-launch arc — worth flagging as a Mary-tier anti-pattern candidate for cross-trial-learnings.
+
+---
+
+## J-A1 follow-ons from SCP-2026-05-21-trial3-wiring (filed 2026-05-21T22:30)
+
+Two seams the cli_adapter.py docstring + SCP §7 named explicitly; filed here per John J-A1 binding before re-launch (now retroactively filed since attempt-2 occurred without these on disk).
+
+| Entry | Filed | Trigger context | Resolution shape |
+|---|---|---|---|
+| **`trial-cli-effective-trial-id-vs-section-02a-composer-run-id-divergence`** | 2026-05-21 | The §02A composer's `Directive.run_id` is internally generated as `uuid4()` (per [directive_model.py:114](../../app/composers/section_02a/directive_model.py#L114)) independent of the trial CLI's `effective_trial_id`. The trial CLI passes a UUID to its run-dir path but does NOT thread it into the directive payload. **Observed in attempt-2:** stdout printed `run_id: c9f8c16a-1fd9-41fc-bc31-98167a8a8080` (composer's internal UUID); directive landed at `state\config\runs\6a3393f8-f369-4a30-b7c1-b50c60c1d1a2\directive.yaml` (trial CLI's `effective_trial_id`). Two different UUIDs. Downstream consumers reading the directive see a `run_id` that does not match the run-dir path. | **Resolution shape:** decide which UUID is canonical (likely trial CLI's `effective_trial_id`); thread it through `cli_adapter.compose_and_write(...)` to `compose(...)` as an explicit `run_id` parameter; update §02A composer to accept the caller-supplied UUID instead of generating its own. Likely 5-10 LOC plus test updates. **Reactivation:** fold into the §02A-downstream-consumer-compatibility Epic (Phase B) so it lands lockstep with the field-name + role-enum harmonization. |
+| **`trial-cli-model-resolution-trail-not-appended-from-adapter`** | 2026-05-21 | `cli_adapter.compose_and_write` calls `make_chat_model("marcus")` which returns a `ChatModelHandle(chat, entry)` NamedTuple. The `.entry` field is the NFR-X4 `ModelResolutionEntry` audit record meant to be appended to `RunState.model_resolution_trail`. The adapter currently discards `.entry` because the trial CLI does not currently exercise `RunState.model_resolution_trail` append. **Result:** §02A composer LLM calls are NOT tracked in the run's reproducibility trail; NFR-X4 contract is silently bypassed at G0. | **Resolution shape:** thread the trail through trial.py state OR have the §02A composer write the entry to a sidecar JSON in `run_dir`. Decide at Epic-design time. **Reactivation:** fold into the §02A-downstream-consumer-compatibility Epic (Phase B). |
+
+---
+
+## Documentation-currency drift (filed 2026-05-21T22:30; surfaced by operator-requested resource audit pre-attempt-2)
+
+Five entries surfaced when the operator asked the orchestrator to verify resource currency + harmonization before Trial-3 re-launch. None blocked launch (the launch command I gave the operator correctly avoided the stale flag) but all represent doc drift that misleads readers.
+
+| Entry | Filed | Trigger context | Resolution shape |
+|---|---|---|---|
+| **`g0-directive-composition-doc-stale-post-c2a`** | 2026-05-21 | [docs/conversational-gates/g0-directive-composition.md](../../docs/conversational-gates/g0-directive-composition.md) references the LEGACY composer behavior throughout: example directive at lines 13-22 shows the broken-fallback signature (`Auto-derived from corpus dir: X`, uniform `expected_min_words: 200`); mermaid diagram at lines 50-74 references `compose_directive()` + `materialize_directive` (the functions removed in C2a); paths at lines 10, 55, 107 cite `state/runs/<trial_id>/directive.yaml` but actual path is `state/config/runs/<trial-uuid>/directive.yaml`. | Rewrite the doc to reflect §02A composer behavior, current call-chain (`cli_adapter.compose_and_write` → `compose` → `write_directive_yaml`), and correct run-dir path. Land alongside the §02A-downstream-consumer-compatibility Epic OR as a separate cleanup commit. ~30 min docs work. |
+| **`hil-verb-legend-s5-stub-paths-never-landed`** | 2026-05-21 | [docs/operator/hil-verb-legend.md](../../docs/operator/hil-verb-legend.md) cites 14+ `section-XX-operator-reference.md` files marked "(S5)" or "(S5 stub)" that never landed on disk — `section-02`, `section-03`, `section-04a`, `section-05`, `section-05b`, `section-10`, `section-11`, `section-13`, `section-14.5`, `section-15` operator-reference docs. Of the section-XX-operator-reference docs cited, only ~half exist on disk. Verb-set table information is still authoritative; file-pointer column is aspirational. | EITHER author the missing operator-reference docs OR remove the file-pointer references from the verb legend (recommend the latter; verb-sets are the load-bearing content). Land as part of pre-Trial-3 doc cleanup. |
+| **`hil-verb-legend-section-path-dot-vs-dash-syntax-drift`** | 2026-05-21 | hil-verb-legend.md cites `section-04.5-operator-reference.md`, `section-04.55-operator-reference.md`, `section-05.5-operator-reference.md` (dotted) but actual filenames use dashes (`section-04-5-...`). Three citations affected (lines 37, 38, 40). | Trivial 3-line edit — change dots to dashes in the cited paths. ~5 min. |
+| **`v5-pack-motion-enabled-flag-stale-across-launch-commands`** | 2026-05-21 (RE-CONFIRMED) | [docs/workflow/production-prompt-pack-v5-narrated-lesson-with-video-or-animation.md](../../docs/workflow/production-prompt-pack-v5-narrated-lesson-with-video-or-animation.md) lines 34, 42, 125, 150, 171 reference `--motion-enabled` as an active CLI flag; trial CLI rejects with `error: unrecognized arguments: --motion-enabled`. Operator-requested audit re-confirmed the v5 pack is canonical-but-stale at the launch command. **Pre-existing finding** also tracked in next-session-start-here ("~27 doc files still carry the stale flag; cleanup filed as a post-Trial-3 follow-on"). | Pattern-search-and-replace across all docs that reference `--motion-enabled` as an active CLI flag; remove flag from launch commands; preserve mention in historical docs (e.g., v4.2 frozen pack) with explicit deprecation note. ~1 hour cleanup. |
+| **`g0-verb-set-mismatch-legend-vs-cli`** | 2026-05-21 | hil-verb-legend.md table line 33 (§02A G0 row) lists verbs as `approve / edit / reject`, but the CLI hardcoded prompt at [trial.py:92-103](../../app/marcus/cli/trial.py#L92-L103) emits `[c/e/s/x]` — confirm/edit/save/cancel. The legend has no equivalent of CLI's `s` (save-only). Semantic mapping is clean (approve↔c, edit↔e, reject↔x) but the verb-text differs and the legend is missing one verb. | Update the verb legend to reflect the CLI's actual verb-set OR update the CLI to use the legend's verbs (CLI-side change is heavier). Decide at doc cleanup time. |
+
+**Cross-reference:** these doc drift entries are sibling-class to the integration-drift Epic (same root cause: substrate evolved post-Slab-7c without lockstep updates to operator-facing surfaces) but with smaller blast radius. Likely candidate for a single docs-cleanup batch after the integration-coherence Epic lands.
+
+---
+
+## Ruff SIM105 nit in C2b `_ensure_utf8_io` (filed 2026-05-21)
+
+| Entry | Filed | Trigger context | Resolution shape |
+|---|---|---|---|
+| **`trial-cli-sim105-utf8-io-try-except-pass`** | 2026-05-21 | Ruff flagged SIM105 on [trial.py:57-60](../../app/marcus/cli/trial.py#L57-L60): `try`-`except`-`pass` should be `with contextlib.suppress(ValueError, OSError):`. Recorded as deferred at SCP-2026-05-21-trial3-wiring session-WRAPUP Step 1 quality gate per the discipline "fix findings or record explicitly as deferred." | Trivial 4-line edit + `import contextlib` if not present. Land alongside the next substrate-amendment touching `trial.py` so we don't re-allowlist a new fragment edit. ~5 min. |
 
 ---
 
