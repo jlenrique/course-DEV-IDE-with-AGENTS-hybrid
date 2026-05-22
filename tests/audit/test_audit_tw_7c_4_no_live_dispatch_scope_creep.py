@@ -85,6 +85,8 @@ PERMITTED_PYTHON_DIFFS = {
     "app/marcus/intake/pre_packet.py",
     # Story 34-5 — translator-shrinkage sequence test (carrier story).
     "tests/integration/test_section_02a_translator_shrinkage_sequence.py",
+    # Story 34-7 — final translator deletion + round-trip simplification.
+    "docs/dev-guide/specialist-anti-patterns.md",
     # Story 34-6 — legacy directive_composer.py DELETION; 7 test files
     # rewired or deleted (existing tests; deletion still counts as
     # `git diff` touch for the L79/L84 + L89/L96 predicates).

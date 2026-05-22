@@ -6,13 +6,12 @@ AC-34-1-D mock-surface audit:
   Trial-3 attempt-2 forensic directive, so no mock bypasses the Section 02A to
   wrangler boundary.
 - The wrangler subprocess is real, the directive write path is real, the
-  translator call is real, and the Section 02A Directive model is real.
+  Section 02A Directive model is real, and no translator layer remains.
 """
 
 from __future__ import annotations
 
 import hashlib
-import inspect
 import json
 import subprocess
 import sys
@@ -21,10 +20,6 @@ from pathlib import Path
 import pytest
 import yaml
 
-from app.composers.section_02a._wrangler_translator import (
-    TRANSLATOR_ACTIVE_MAPPINGS,
-    translate_directive_for_wrangler,
-)
 from app.composers.section_02a.directive_model import Directive
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
@@ -44,7 +39,7 @@ FORENSIC_DIRECTIVE_SHA256 = (
 )
 
 
-def test_forensic_directive_round_trips_through_wrangler_subprocess_via_translator(
+def test_forensic_directive_round_trips_through_wrangler_subprocess(
     tmp_path: Path,
 ) -> None:
     """AC-34-1-A/B: forensic directive passes real wrangler subprocess."""
@@ -62,11 +57,10 @@ def test_forensic_directive_round_trips_through_wrangler_subprocess_via_translat
         FORENSIC_DIRECTIVE_FIXTURE.read_text(encoding="utf-8")
     )
     directive = Directive.model_validate(forensic_data)
-    translated = translate_directive_for_wrangler(directive)
 
     directive_yaml_path = tmp_path / "directive.yaml"
     directive_yaml_path.write_text(
-        yaml.safe_dump(translated, sort_keys=False),
+        yaml.safe_dump(directive.model_dump(mode="json"), sort_keys=False),
         encoding="utf-8",
     )
 
@@ -152,23 +146,3 @@ def test_forensic_directive_round_trips_through_wrangler_subprocess_via_translat
         f"materials.ref_id set != sme_refs.source_id set: "
         f"materials={materials_ref_ids} sme_refs={sme_refs_source_ids}"
     )
-
-
-def test_translator_active_mappings_is_load_bearing_in_production() -> None:
-    """AC-34-5-A precursor: remaining active mapping is load-bearing."""
-
-    expected_mappings = frozenset()
-    assert expected_mappings == TRANSLATOR_ACTIVE_MAPPINGS
-    source = inspect.getsource(translate_directive_for_wrangler)
-    assert "TRANSLATOR_ACTIVE_MAPPINGS" in source
-
-
-def test_translator_module_carries_deletion_markers() -> None:
-    """AC-34-1-C + AC-34-7-H prep: scaffold deletion markers are present."""
-
-    translator_path = (
-        REPO_ROOT / "app" / "composers" / "section_02a" / "_wrangler_translator.py"
-    )
-    text = translator_path.read_text(encoding="utf-8")
-    assert "__epic_34_scaffolding__ = True" in text
-    assert "DELETE-AT-EPIC-34-CLOSE" in text

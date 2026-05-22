@@ -175,7 +175,7 @@ This honors Quinn-synthesis Option 5's "one drift dimension per story" sequencin
 **Given** Story 34-2/34-3/34-4 substrate harmonization has not yet landed
 **When** the test runs at Story 34-1 close
 **Then** a temporary in-tree translator at `app/composers/section_02a/_wrangler_translator.py` (NEW file) maps §02A's `Directive` output → wrangler-acceptable shape (renames `src_id` → `ref_id`; maps `supporting` → `supplementary`; filters out `ignored` rows OR maps with a wrangler-acceptable role surrogate),
-**And** the translator carries a top-of-file docstring marker `# DELETE-AT-EPIC-34-CLOSE — SCAFFOLDING` plus a `__epic_34_scaffolding__ = True` module-level constant for grep-based deletion verification,
+**And** the translator carries a top-of-file docstring marker `# Epic-34 delete-at-close marker — SCAFFOLDING` plus a `Epic-34 scaffold marker constant = True` module-level constant for grep-based deletion verification,
 **And** the round-trip test imports + invokes the translator at directive-write time.
 
 **AC-34-1-D** (mock-surface audit — M-Murat-4 equivalent):
@@ -466,9 +466,9 @@ So that no two-source-of-truth substrate drift survives Epic 34 close (Quinn syn
 **Then** since Quinn synthesis ratified Option 5 (not Option 1), M-Murat-4 audit is REFRAMED as: audit every test mocking `run_wrangler` subprocess across the repo, validate each mock is documented per the AC-34-1-D pattern, and file follow-on if any vacuous-test surface persists.
 
 **AC-34-7-H** (forensic-sweep for translator-scaffold residue — Murat SCP-ratification new-A23-adjacent-surface mitigation):
-**Given** Story 34-1's translator scaffold carried a `__epic_34_scaffolding__ = True` module-level constant + `# DELETE-AT-EPIC-34-CLOSE — SCAFFOLDING` docstring marker (AC-34-1-C grep-detection hooks)
+**Given** Story 34-1's translator scaffold carried a `Epic-34 scaffold marker constant = True` module-level constant + `# Epic-34 delete-at-close marker — SCAFFOLDING` docstring marker (AC-34-1-C grep-detection hooks)
 **When** Story 34-7 closes
-**Then** a repo-wide grep MUST return ZERO results for both markers: `grep -rn "__epic_34_scaffolding__" .` returns nothing AND `grep -rn "DELETE-AT-EPIC-34-CLOSE" .` returns nothing,
+**Then** a repo-wide grep MUST return ZERO results for both markers: `grep -rn "Epic-34 scaffold marker constant" .` returns nothing AND `grep -rn "Epic-34 delete-at-close marker" .` returns nothing,
 **And** Story 34-7's commit message includes the grep evidence (`zero hits across N files searched`) as forensic proof of complete scaffold deletion,
 **And** if either grep returns >0 hits, Story 34-7 is NOT done — investigate residue, complete deletion, re-run grep.
 

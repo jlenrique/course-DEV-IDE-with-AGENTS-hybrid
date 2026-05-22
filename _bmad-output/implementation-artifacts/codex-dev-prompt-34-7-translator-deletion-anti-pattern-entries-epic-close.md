@@ -16,7 +16,7 @@ Spec: `_bmad-output/implementation-artifacts/migration-34-7-translator-deletion-
 ## Required reading
 
 1. Story 34-7 spec D1-D7 (substrate-verified throughout).
-2. Story 34-1 spec D2 (scaffold marker source-of-truth: `__epic_34_scaffolding__ = True` + `DELETE-AT-EPIC-34-CLOSE`).
+2. Story 34-1 spec D2 (scaffold marker source-of-truth: `Epic-34 scaffold marker constant = True` + `Epic-34 delete-at-close marker`).
 3. Phase B consensus + Quinn-synthesis Option 5 record (Murat M-Murat-2 binding for A23 + P5).
 4. `docs/dev-guide/specialist-anti-patterns.md` — format-frozen 4-field shape; substrate-verified next ordinals A23 + P5 (current ends at A22 + P4).
 5. `_bmad-output/planning-artifacts/deferred-inventory.md` §"CRITICAL Trial-3-blocking" entry to close.
@@ -57,7 +57,7 @@ Spec: `_bmad-output/implementation-artifacts/migration-34-7-translator-deletion-
 - **D3 Story-34-5 sequence-test DELETED** — the module it tested no longer exists; import would fail.
 - **D4 A23 + P5 entries per format-frozen 4-field shape** (literal markdown blocks in spec D4). Anti-pattern doc next ordinals: A23 + P5 (verify via grep at T1).
 - **D5 deferred-inventory closure markers** — `section-02a-downstream-consumer-compatibility-systemic-drift` + J-A1(a) + J-A1(b) all get strikethrough + closure markers per spec D5 markdown.
-- **D6 forensic grep-sweep BINDING:** `grep -rn "__epic_34_scaffolding__" .` AND `grep -rn "DELETE-AT-EPIC-34-CLOSE" .` MUST BOTH return 0 matches post-deletion. Codex T9 self-review handoff MUST include grep evidence as forensic proof.
+- **D6 forensic grep-sweep BINDING:** `grep -rn "Epic-34 scaffold marker constant" .` AND `grep -rn "Epic-34 delete-at-close marker" .` MUST BOTH return 0 matches post-deletion. Codex T9 self-review handoff MUST include grep evidence as forensic proof.
 - **D7 Trial-3-PASS gate satisfaction:** at Story 34-7 close, operator can launch Trial-3 attempt-3 immediately. No substrate work remaining.
 - **K-target 1.5× ≈ ~4.5K LOC for 3-pt story.** Estimate ~200-400 LOC delta (mostly deletions + 2 new anti-pattern markdown blocks + closure markers). Comfortable.
 

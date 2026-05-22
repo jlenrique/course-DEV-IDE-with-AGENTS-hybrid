@@ -402,9 +402,11 @@ Slice D has been added to the `s6-housekeeping-coverage-manifest-path-pin-probe`
 
 ---
 
-## CRITICAL Trial-3-blocking — §02A composer downstream-consumer schema-drift (filed 2026-05-21T22:30)
+## ~~CRITICAL Trial-3-blocking — §02A composer downstream-consumer schema-drift~~ (filed 2026-05-21T22:30; CLOSED 2026-05-22)
 
-**Status:** **TRIAL-3-BLOCKING; Epic-scope.** Second occurrence in the same trial-launch arc of "tested module, untested integration" defect class. The first occurrence (§02A composer not wired into trial CLI) was patched via SCP-2026-05-21-trial3-wiring; the wiring fix REVEALED the second occurrence at the §02A composer → Texas wrangler integration boundary. **Operator-directed halt of Trial-3 attempt-2** at this finding (2026-05-21T22:30): rather than patch the symptom (one schema-drift gap) and risk discovering further gaps one-at-a-time, batch the full systemic fix.
+**Status:** **CLOSED 2026-05-22 via Epic 34** (`migration-34-1-section-02a-wrangler-integration-roundtrip-test` through `migration-34-7-translator-deletion-anti-pattern-entries-epic-close`). Phase B Quinn-synthesis Option 5 ratified the integration-ratchet-first sequence; Story 34-1 installed the Section 02A -> Texas wrangler subprocess ratchet; Stories 34-2 through 34-4 harmonized the wrangler/schema substrate; Story 34-5 pinned translator shrinkage; Story 34-6 deleted the legacy composer; Story 34-7 deleted the temporary translator scaffold. Trial-3 attempt-3 is unblocked on fully harmonized substrate with no temporary translator and no legacy directive composer.
+
+~~Second occurrence in the same trial-launch arc of "tested module, untested integration" defect class. The first occurrence (§02A composer not wired into trial CLI) was patched via SCP-2026-05-21-trial3-wiring; the wiring fix REVEALED the second occurrence at the §02A composer → Texas wrangler integration boundary. **Operator-directed halt of Trial-3 attempt-2** at this finding (2026-05-21T22:30): rather than patch the symptom (one schema-drift gap) and risk discovering further gaps one-at-a-time, batch the full systemic fix.~~
 
 **Observed at:** Trial-3 attempt-2 re-launch 2026-05-21T22:00 against `course-content/courses/tejal-apc-c1-m1-p2-trends/`. Run-id `6a3393f8-f369-4a30-b7c1-b50c60c1d1a2`. Operator confirmed `c` at G0. Texas dispatch raised `BundleDispatchError('texas wrangler reported hard error (exit 30); bundle not trusted')` from [app/specialists/texas/_act.py:323](../../app/specialists/texas/_act.py#L323).
 

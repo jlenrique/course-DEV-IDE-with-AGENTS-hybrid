@@ -99,7 +99,7 @@ The spec at `_bmad-output/implementation-artifacts/migration-34-1-section-02a-wr
 - **Wrangler exit-code taxonomy at run_wrangler.py:19-24 (BINDING; post-Codex-T1-substrate-runtime surface 2026-05-22):** the test MUST accept BOTH `exit 0` (`complete` = all sources tier-1) AND `exit 10` (`complete_with_warnings` = sources at tier-2, all passed) as schema-seam success. Exit 20 (`blocked`) and exit 30 (`directive/IO error`) are the actual schema-seam failure modes. The Trial-3 attempt-2 forensic Tejal corpus currently produces `complete_with_warnings` against the substrate (quality warnings on supporting sources orthogonal to schema-seam goal). DO NOT modify wrangler quality classification to force exit-0 — that's scope creep into Story 34-2's territory + fixture-rigging anti-pattern. Assertion shape: `assert result.returncode in {0, 10}` + `assert result_yaml["status"] in {"complete", "complete_with_warnings"}` + `assert result_yaml["blocking_issues"] == []`.
 - **Murat new-A9-surface-2 mitigation in AC-34-5-A (preserve at Story-34-1 close):** `TRANSLATOR_ACTIVE_MAPPINGS` MUST be read at runtime by `translate_directive_for_wrangler` (not just declared at module-top). Your translator implementation MUST gate each mapping on membership in the frozenset; Story 34-5's test will assert this via `inspect.getsource()` grep.
 - **Trial-3 attempt-2 forensic-anchor (AC-34-1-B BINDING):** the test MUST assert byte-identical sha256 match against `351a57fbe12aff4a49349c4a646618d92ae38a798ec53eee61668f74f8bbd703`. If your local fixture-copy drifts (e.g., line-ending normalization on Windows), the test fails — and that's correct behavior. Verify the copy with `Get-FileHash` or `sha256sum` BEFORE running the test.
-- **Translator scaffolding markers (AC-34-1-C + Story-34-7 AC-34-7-H BINDING):** the translator file MUST contain `__epic_34_scaffolding__ = True` (module-level) AND `# DELETE-AT-EPIC-34-CLOSE — SCAFFOLDING` (docstring). Story 34-7's forensic sweep does `grep -rn "__epic_34_scaffolding__" .` and `grep -rn "DELETE-AT-EPIC-34-CLOSE" .` expecting 0 hits post-deletion; the presence at Story 34-1 close is the deletion-target marker.
+- **Translator scaffolding markers (AC-34-1-C + Story-34-7 AC-34-7-H BINDING):** the translator file MUST contain `Epic-34 scaffold marker constant = True` (module-level) AND `# Epic-34 delete-at-close marker — SCAFFOLDING` (docstring). Story 34-7's forensic sweep does `grep -rn "Epic-34 scaffold marker constant" .` and `grep -rn "Epic-34 delete-at-close marker" .` expecting 0 hits post-deletion; the presence at Story 34-1 close is the deletion-target marker.
 - **Mock-surface audit (AC-34-1-D BINDING):** every mock the test uses MUST be enumerated in the test docstring with rationale. The ONLY acceptable mock is the upstream LLM call (which fixture-replay obviates anyway). Do NOT mock: the wrangler subprocess, the directive write path, the translator function, or the §02A Directive model.
 - **Sandbox-AC discipline (AC-34-1-F = operator-gated; per CLAUDE.md):** AC-34-1-A through AC-34-1-E are dev-agent verifiable (no live LLM, no operator-only CLIs). AC-34-1-F is operator-gated (live-LLM exercise on real Tejal corpus); dev-agent SHALL NOT exercise live LLM. The sandbox-AC validator (`scripts/utilities/validate_migration_story_sandbox_acs.py`) will inspect this split at ready-for-dev finalization.
 - **Pipeline-lockstep regime (AMELIA-RISK-3 from SCP-ratification):** read `docs/dev-guide/pipeline-manifest-regime.md` at T1 before touching `app/composers/section_02a/`. The translator's creation MAY trigger block-mode evaluation; Cora's hook (`skills/bmad-agent-cora/scripts/preclosure_hook.py`) is the gate. Surface decision_needed if hook fires unexpectedly.
@@ -137,7 +137,7 @@ When you reach T9, conduct a self-review with three layers:
 **Acceptance Auditor:** verify each AC against the test.
 - AC-34-1-A: ✓ subprocess + materials-non-empty + row-shape + sme_refs forward-contract
 - AC-34-1-B: ✓ forensic sha256 byte-identical match
-- AC-34-1-C: ✓ translator file with `__epic_34_scaffolding__ = True` + DELETE-AT-EPIC-34-CLOSE marker
+- AC-34-1-C: ✓ translator file with `Epic-34 scaffold marker constant = True` + Epic-34 delete-at-close marker marker
 - AC-34-1-D: ✓ mock-surface enumeration in test docstring
 - AC-34-1-E: ✓ pytest exit 0 with >=3 tests passing
 
@@ -160,7 +160,7 @@ Claude T11 will:
 - Verify mock-surface audit (AC-34-1-D) is faithful + complete.
 - Verify forensic-anchor sha256 byte-identical (AC-34-1-B).
 - Verify A9 mitigation (`len(materials) >= 1` before row-shape; AC-34-1-A).
-- Verify scaffolding markers (`__epic_34_scaffolding__` + DELETE-AT-EPIC-34-CLOSE; AC-34-1-C).
+- Verify scaffolding markers (`Epic-34 scaffold marker constant` + Epic-34 delete-at-close marker; AC-34-1-C).
 - Verify TRANSLATOR_ACTIVE_MAPPINGS production-load-bearing (precursor to AC-34-5-A).
 - Run focused suite + broad regression sweep.
 - Commit + flip Story 34-1 done.

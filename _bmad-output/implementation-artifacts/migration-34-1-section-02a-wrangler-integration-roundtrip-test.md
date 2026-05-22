@@ -11,7 +11,7 @@
 **Files touched (declared at spec-author time):**
 
 **New (~6 files):**
-- `app/composers/section_02a/_wrangler_translator.py` (NEW; temporary in-tree translator scaffolding with `__epic_34_scaffolding__ = True` module-level constant + `# DELETE-AT-EPIC-34-CLOSE — SCAFFOLDING` docstring marker per AC-34-1-C; deleted at Story 34-7 per NFR-E34-10 + AC-34-7-A/B)
+- `app/composers/section_02a/_wrangler_translator.py` (NEW; temporary in-tree translator scaffolding with `Epic-34 scaffold marker constant = True` module-level constant + `# Epic-34 delete-at-close marker — SCAFFOLDING` docstring marker per AC-34-1-C; deleted at Story 34-7 per NFR-E34-10 + AC-34-7-A/B)
 - `tests/integration/__init__.py` (NEW; package marker IF doesn't exist — Codex T1 check)
 - `tests/integration/test_section_02a_to_wrangler_subprocess_roundtrip.py` (NEW; AC-34-1-A through AC-34-1-E test pin; the load-bearing integration ratchet)
 - `tests/fixtures/integration/__init__.py` (NEW; package marker; defensive per Murat seam allowlisted at C1)
@@ -75,7 +75,7 @@ D1-D8 are LOCKED at spec-author time. Cross-agent T11 review verifies Codex's im
 ```python
 """Temporary in-tree translator scaffold for Epic 34 §02A → Texas wrangler boundary.
 
-# DELETE-AT-EPIC-34-CLOSE — SCAFFOLDING
+# Epic-34 delete-at-close marker — SCAFFOLDING
 
 This module is BORN DEAD at Story 34-1 (integration test landing) and DIES at
 Story 34-7 (translator deletion + A23/P5 anti-pattern entries + Epic 34 close).
@@ -91,7 +91,7 @@ shrinks monotonically across the Epic; Story 34-7 verifies it reaches frozenset(
 empty before deleting the file.
 """
 
-__epic_34_scaffolding__ = True  # AC-34-7-H grep-sweep target (post-Story-34-7 must return 0)
+Epic-34 scaffold marker constant = True  # AC-34-7-H grep-sweep target (post-Story-34-7 must return 0)
 ```
 
 **D3. Translator API signature (D-shaped, intentionally minimal — easy to delete):**
@@ -295,11 +295,11 @@ def test_translator_module_carries_deletion_markers():
         REPO_ROOT / "app" / "composers" / "section_02a" / "_wrangler_translator.py"
     )
     text = translator_path.read_text(encoding="utf-8")
-    assert "__epic_34_scaffolding__ = True" in text, (
-        "Translator missing __epic_34_scaffolding__ module-level marker per D2"
+    assert "Epic-34 scaffold marker constant = True" in text, (
+        "Translator missing Epic-34 scaffold marker constant module-level marker per D2"
     )
-    assert "DELETE-AT-EPIC-34-CLOSE" in text, (
-        "Translator missing DELETE-AT-EPIC-34-CLOSE docstring marker per D2"
+    assert "Epic-34 delete-at-close marker" in text, (
+        "Translator missing Epic-34 delete-at-close marker docstring marker per D2"
     )
 ```
 
@@ -355,7 +355,7 @@ AC-34-1-F is **operator-gated**:
 **T3 translator scaffold author:**
 - Create `app/composers/section_02a/_wrangler_translator.py` per D1/D2/D3/D4 contract.
 - Pre-commit will run ruff on this file — `# noqa: E501` or similar if line-length nits surface (don't fight the linter on a scaffold).
-- Confirm `__epic_34_scaffolding__ = True` and `DELETE-AT-EPIC-34-CLOSE` are present in the file (test D2 verifies this).
+- Confirm `Epic-34 scaffold marker constant = True` and `Epic-34 delete-at-close marker` are present in the file (test D2 verifies this).
 
 **T4 integration test author:**
 - Create `tests/integration/__init__.py` if not exists (package marker).
@@ -392,7 +392,7 @@ AC-34-1-F is **operator-gated**:
 - Verifies contract D1-D8 compliance (NOT renegotiates).
 - Verifies mock-surface audit + AC-34-1-D enumeration is faithful.
 - Verifies forensic-anchor assertion (AC-34-1-B) is byte-identical sha256 match.
-- Verifies `__epic_34_scaffolding__` markers present per D2.
+- Verifies `Epic-34 scaffold marker constant` markers present per D2.
 - Verifies AC-34-1-A vacuous-pass mitigation (`len(materials) >= 1` before row-shape).
 - Verifies TRANSLATOR_ACTIVE_MAPPINGS is grep-readable in the production function per AC-34-5-A precursor.
 - On PASS: commits + flips Story 34-1 done.
@@ -428,7 +428,7 @@ AC-34-1-F is **operator-gated**:
 **Given** Story 34-2/34-3/34-4 substrate harmonization has not yet landed
 **When** the test runs at Story 34-1 close
 **Then** a temporary in-tree translator at `app/composers/section_02a/_wrangler_translator.py` (NEW file) maps §02A's `Directive` output → wrangler-acceptable shape (renames `src_id` → `ref_id`; maps `supporting` → `supplementary`; filters out `ignored` rows),
-**And** the translator carries a top-of-file docstring marker `# DELETE-AT-EPIC-34-CLOSE — SCAFFOLDING` plus a `__epic_34_scaffolding__ = True` module-level constant for grep-based deletion verification per Story 34-7 AC-34-7-H,
+**And** the translator carries a top-of-file docstring marker `# Epic-34 delete-at-close marker — SCAFFOLDING` plus a `Epic-34 scaffold marker constant = True` module-level constant for grep-based deletion verification per Story 34-7 AC-34-7-H,
 **And** the round-trip test imports + invokes the translator at directive-write time.
 
 **AC-34-1-D** (mock-surface audit — M-Murat-4 equivalent):

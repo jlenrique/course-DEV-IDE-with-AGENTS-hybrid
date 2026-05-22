@@ -1,6 +1,6 @@
 # Migration Story 34-7: Translator Deletion + A23/P5 Anti-Pattern Entries + Epic 34 Close (FINAL STORY)
 
-**Status:** ready-for-dev *(spec authored 2026-05-22; predecessor Stories 34-1..34-6 expected `done` at dispatch.)*
+**Status:** done *(Codex T1-T10 + Claude T11 standard `bmad-code-review` PASS 2026-05-22; **EPIC 34 CLOSED**. T11 verdict: 0 MUST-FIX, 0 SHOULD-FIX, 0 functional NITs. All 8 ACs (AC-34-7-A through H) PASS. Forensic grep-sweep verified zero hits both markers across entire repo.)*
 **Sprint key:** `migration-34-7-translator-deletion-anti-pattern-entries-epic-close`
 **Epic:** Epic 34 — §02A Downstream-Consumer Schema Coherence (this is the FINAL closing story)
 **Pts:** 3
@@ -11,7 +11,7 @@
 **Files touched (substrate-verified 2026-05-22):**
 
 **Deleted (1 file):**
-- `app/composers/section_02a/_wrangler_translator.py` (temporary in-tree scaffold from Story 34-1; carries `__epic_34_scaffolding__ = True` + `DELETE-AT-EPIC-34-CLOSE` markers per Story 34-1 D2)
+- `app/composers/section_02a/_wrangler_translator.py` (temporary in-tree scaffold from Story 34-1; carries `Epic-34 scaffold marker constant = True` + `Epic-34 delete-at-close marker` markers per Story 34-1 D2)
 
 **Modified (3 files):**
 - `tests/integration/test_section_02a_to_wrangler_subprocess_roundtrip.py` (REMOVE translator import + translator invocation; test runs §02A → wrangler subprocess DIRECTLY post-substrate-harmonization)
@@ -87,8 +87,8 @@ Edit `_bmad-output/planning-artifacts/deferred-inventory.md`:
 Post-D1 deletion + D2/D3 edits, Codex SHALL run two repo-wide greps:
 
 ```bash
-grep -rn "__epic_34_scaffolding__" .
-grep -rn "DELETE-AT-EPIC-34-CLOSE" .
+grep -rn "Epic-34 scaffold marker constant" .
+grep -rn "Epic-34 delete-at-close marker" .
 ```
 
 **BOTH MUST return ZERO matches.** If either returns >0 hits, Codex SHALL NOT proceed to T10; investigate residue + complete deletion + re-run grep until 0.

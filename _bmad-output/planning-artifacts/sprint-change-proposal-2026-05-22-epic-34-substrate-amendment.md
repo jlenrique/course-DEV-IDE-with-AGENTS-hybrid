@@ -408,7 +408,7 @@ Convened post-SCP-authoring per CLAUDE.md §BMAD sprint governance §2 (operator
 |---|---|---|
 | 🏗️ Winston | APPROVE-with-amendments | W-SCP-A1 (add `app/composers/section_02a/__init__.py`) |
 | 💻 Amelia | APPROVE-with-amendments | A-A1 (~8 §02A test-surface paths Story 34-3 migrates) + A-A2 (= W-SCP-A1 convergent) + A-A3 (fixture-dir defensive) |
-| 🧪 Murat | APPROVE-with-amendments | M-Murat-SCP-1 (line-number citation L79/L84 + L89/L96) + M-Murat-SCP-2 (Epic NFR-E34-8 lockstep fix) + M-Murat-SCP-3 (T11 bmad-code-review wording) + Story-34-1-ratchet abort-trigger tightening + 2 new A9-surface mitigations (vacuous-pass AC-34-1-A + production-load-bearing AC-34-5-A) + post-Epic forensic sweep for `__epic_34_scaffolding__` |
+| 🧪 Murat | APPROVE-with-amendments | M-Murat-SCP-1 (line-number citation L79/L84 + L89/L96) + M-Murat-SCP-2 (Epic NFR-E34-8 lockstep fix) + M-Murat-SCP-3 (T11 bmad-code-review wording) + Story-34-1-ratchet abort-trigger tightening + 2 new A9-surface mitigations (vacuous-pass AC-34-1-A + production-load-bearing AC-34-5-A) + post-Epic forensic sweep for `Epic-34 scaffold marker constant` |
 | 📋 John | APPROVE-with-amendments | A-John-1 (abort-revert exit-state assertion; fail-back ratchet) + A-John-2 (split Pre-Trial-3 launch into substrate-readiness + launch-readiness two-checkbox green-light) |
 
 **Ratified amendment set (BINDING; all folded into this SCP body + Epic 34 lockstep):**
@@ -422,7 +422,7 @@ Convened post-SCP-authoring per CLAUDE.md §BMAD sprint governance §2 (operator
 7. Epic 34 NFR-E34-8 lockstep citation fix (separate file edit)
 8. Epic 34 AC-34-1-A vacuous-pass mitigation (`len(materials) >= 1` before row-shape assertion)
 9. Epic 34 AC-34-5-A production-load-bearing requirement (`compose_and_write` must read `TRANSLATOR_ACTIVE_MAPPINGS`)
-10. Epic 34 Story 34-7 forensic-sweep AC (post-Story-34-7 grep for `__epic_34_scaffolding__` returns 0)
+10. Epic 34 Story 34-7 forensic-sweep AC (post-Story-34-7 grep for `Epic-34 scaffold marker constant` returns 0)
 11. §8 dispositions resolved (single C1 commit + FULL Story 34-1 codex-dev-prompt)
 
 **Consensus discipline observed:** all 4 amendments are CONVERGENT (no contradictions across voices). Winston caught the `app/`-surface single-path; Amelia caught the test-surface 8-path expansion; Murat caught the citation drift + A9 vigilance; John caught PM-scope + sequencing tightening. Each voice operated strictly within their lane. No re-litigation of Phase B. No impasse.
