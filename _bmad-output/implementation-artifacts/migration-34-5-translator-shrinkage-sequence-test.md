@@ -1,6 +1,6 @@
 # Migration Story 34-5: Translator-Shrinkage Sequence Test (Carrier Story; Murat new-A9-surface-2 mitigation)
 
-**Status:** ready-for-dev *(spec authored 2026-05-22; predecessor Stories 34-1 through 34-4 expected `done` at dispatch.)*
+**Status:** done *(Codex T1-T10 + Claude T11 standard `bmad-code-review` PASS 2026-05-22; T11 verdict 0 MUST-FIX / 0 SHOULD-FIX / 0 NITs — carrier discipline cleanly executed.)*
 **Sprint key:** `migration-34-5-translator-shrinkage-sequence-test`
 **Epic:** Epic 34 — §02A Downstream-Consumer Schema Coherence
 **Pts:** 3
