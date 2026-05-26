@@ -369,3 +369,81 @@ Operator opens `_bmad-output/implementation-artifacts/trial-3-operator-guide-att
 ---
 
 **End of SESSION-HANDOFF for 2026-05-22 (Epic 34 FULLY COMPLETE + Trial-3 attempt-3 LAUNCH READY + single-source operator guide landed).**
+
+---
+
+## Interim session 2026-05-25 — Docs/tooling side-quest: ONBOARDING.md generated from knowledge-graph scan
+
+**Session date:** 2026-05-25 (Claude Code CLI)
+**WRAPUP date:** 2026-05-26 (Cursor; retroactive WRAPUP run by operator request)
+**Branch:** `trial/3-2026-05-21` (continued from 2026-05-22 close)
+**Session-start anchor:** `61aaf03` (prior session's final WRAPUP commit — last commit modifying `SESSION-HANDOFF.md`)
+**HEAD at session-end:** `94d5810`
+**Commits this session:** 2 (`2a3a39c`, `94d5810`)
+**Branch state at session-end:** `origin/trial/3-2026-05-21` in sync at HEAD. Working tree clean.
+**Dev-coherence report:** N/A — Cora dissolved 2026-04-24; this session was docs/tooling-only (no substrate/schema/workflow change), so Step 0a sweep skip is well-formed.
+
+### What was completed this session
+
+1. **Installed `/understand-anything` Claude Code plugin** (`/plugin marketplace add Lum1104/Understand-Anything`). The plugin emits a knowledge-graph scan of the codebase (nodes per file/symbol, edges per call/import/inheritance, layered by architectural tier) plus an interactive HTML dashboard plus a `/understand-chat` REPL over the graph.
+
+2. **Ran `/understand` against code-only scope** (`app/` + `scripts/` + `skills/`; 685 files) anchored at commit `61aaf03`. Output: 1,937 nodes, 3,472 edges, 8 layers, 12-step tour.
+
+3. **Generated `docs/ONBOARDING.md`** (281 lines) from the knowledge graph. Commit `2a3a39c`. Sections: §1 read-this-first ordering, §2 90-second mental model, §3 architecture-layer map, §4 file-by-file tour, §5 BMAD discipline overview, §6 audit invariants, §7 first-contribution recommended path, §8 operator quick-start, §9 references.
+
+4. **Committed knowledge-graph artifacts** at `94d5810`:
+   - `.understand-anything/.understandignore` (82 lines; tool-side ignore for code-analysis scope)
+   - `.understand-anything/fingerprints.json` (42,229 lines; per-file fingerprints for incremental rescan)
+   - `.understand-anything/knowledge-graph.json` (56,245 lines; the analysis graph itself)
+   - `.understand-anything/meta.json` (6 lines; commit anchor + scan metadata)
+   - `.gitignore` (+11 lines; excludes `.understand-anything/intermediate/` + `tmp/` + `diff-overlay.json` scratch dirs)
+   - `runs/cache-harness/irene-pass1.md` (+60/-35; minor in-session edit; cache-harness operational state)
+
+5. **Pushed both commits** to `origin/trial/3-2026-05-21` per push-cadence policy (safety-checkpoint trigger; `61aaf03..2a3a39c` push + subsequent `94d5810` push in-session).
+
+### What is next
+
+**Unchanged from 2026-05-22 close:** Trial-3 attempt-3 launch on the Tejal corpus (`course-content/courses/tejal-apc-c1-m1-p2-trends/`). Authoritative ramp-up doc is `_bmad-output/implementation-artifacts/trial-3-operator-guide-attempt-3.md` (263 lines; commit `0dd38ba`). The interim 2026-05-25 session did NOT advance toward Trial-3 launch — it added supplementary onboarding context.
+
+### Unresolved issues or risks
+
+- **None blocking Trial-3 attempt-3 launch.** All Epic-34-close gates remain green; substrate is unchanged since 2026-05-22.
+- **`docs/ONBOARDING.md` line 7 stale-branch caveat:** the doc reports the branch as `dev/langchain-langgraph-foundation` (the migration-foundation fork-point from which `trial/3-2026-05-21` was branched). Current is `trial/3-2026-05-21`. Generation-time context; not a defect. Refresh naturally via `/understand` after next substantive substrate change.
+- **`.gitignore` scope decision deferred:** the knowledge-graph + fingerprints JSON files are 98k+ lines combined (~3 MB). Committed alongside the onboarding doc to keep `/understand-chat` and `/understand-dashboard` usable for teammates without re-running `/understand`. If repo size becomes a concern, switch to "regenerate-locally" pattern (gitignore the graph JSON; track only `.understandignore` + `docs/ONBOARDING.md`).
+
+### Key lessons learned
+
+- **Knowledge-graph scans as session-START preflight:** `.understand-anything/meta.json` carries the commit anchor of the scan. A future session-START could diff `meta.json` anchor against current HEAD to decide whether the ONBOARDING.md is stale. Candidate for retrospective formalization (if pattern proves repeatable).
+- **WRAPUP can be retroactive when session was conducted in a sibling agent surface.** This session ran in Claude Code; the operator exited Claude Code without running WRAPUP, then opened Cursor and asked for WRAPUP a day later. The protocol handled this gracefully because: (a) the working-branch was already pushed in-session, (b) Cora dissolution simplified Step 0, (c) the docs/tooling scope was small enough to reconstruct from `git log` + the operator's terminal-transcript file.
+
+### Validation summary
+
+- **Step 0a sweep:** SKIPPED — Cora dissolved 2026-04-24; docs/tooling-only change window with no substrate/schema/workflow files touched; no drift risk.
+- **Step 0b pre-closure:** SKIPPED — no stories flipped to `done` this session.
+- **Step 1 quality gate:** PASS — `git diff --check 61aaf03..HEAD` returned clean; `docs/ONBOARDING.md` is well-formed markdown; no Python edits this session so ruff/lint-imports are N/A.
+- **Step 3 workflow status:** Unchanged. Trial-3 attempt-3 LAUNCH READY position preserved from 2026-05-22.
+- **Step 4a sprint-status:** Unchanged. No story status transitions; `tests/test_sprint_status_yaml.py` not re-run (no edits to the YAML).
+- **Step 11a worktree hygiene:** Single worktree at `C:/Users/juanl/Documents/GitHub/course-DEV-IDE-with-AGENTS-hybrid`; no stragglers.
+
+### Artifact update checklist
+
+| File | Status |
+|---|---|
+| `docs/ONBOARDING.md` | **NEW** (committed `2a3a39c`; 281 lines) |
+| `.understand-anything/.understandignore` | NEW (committed `94d5810`; 82 lines) |
+| `.understand-anything/fingerprints.json` | NEW (committed `94d5810`; 42k lines; tool artifact) |
+| `.understand-anything/knowledge-graph.json` | NEW (committed `94d5810`; 56k lines; tool artifact) |
+| `.understand-anything/meta.json` | NEW (committed `94d5810`; carries commit anchor `61aaf03`) |
+| `.gitignore` | MODIFIED (committed `94d5810`; +11 lines for `.understand-anything/{intermediate,tmp,diff-overlay.json}`) |
+| `runs/cache-harness/irene-pass1.md` | MODIFIED (committed `94d5810`; cache-harness operational state) |
+| `next-session-start-here.md` | UPDATED at WRAPUP (interim 2026-05-25 session section added; Epic-34 table stale rows cleaned; branch metadata refreshed; validation status refreshed) — gitignored; local-only |
+| `SESSION-HANDOFF.md` | THIS FILE (this WRAPUP appendix) |
+
+### Wrapup discipline notes
+
+- **Step 0a (this WRAPUP):** SKIPPED with reason — Cora dissolved 2026-04-24; docs/tooling-only window; no drift risk.
+- **Step 0b (this WRAPUP):** SKIPPED with reason — no stories flipped to `done`.
+- **Step 0c (this WRAPUP):** N/A — Cora dissolved; SESSION-HANDOFF + next-session-start-here authored directly in Steps 7 + 8.
+- **Step 12 push-cadence:** Both session commits already pushed in-session at safety-checkpoint trigger (Mon May 25 ~22:01). HEAD = origin HEAD at `94d5810`. WRAPUP-finalization commit (this appendix) will be the only new push.
+
+**End of SESSION-HANDOFF appendix for interim 2026-05-25 (docs/tooling side-quest: ONBOARDING.md + knowledge-graph artifacts; Trial-3 attempt-3 launch posture unchanged).**
