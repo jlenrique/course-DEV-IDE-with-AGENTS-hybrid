@@ -36,6 +36,14 @@ Before running the steps below, name the session class. This determines which st
 
 **Class-drift self-check (Step 11):** WRAPUP verifies the declared class matches the actual diff. If the diff contains files outside the class envelope, upgrade and re-engage the missed steps before close.
 
+### How session class is communicated
+
+Three handoff points, in order:
+
+1. **Forecast** — This WRAPUP's Step 7 writes the **expected class for the next session** at the top of `next-session-start-here.md` (one line: `**Expected class for next session:** <S|D|P> — <one-line reason tied to the immediate next action>`). The forecast is informed by the next session's stated immediate-next-action.
+2. **Confirm at open** — At session open, the next session's agent reads the forecast and announces the operating class to the operator (e.g., "Opening as Class D per next-session-start-here.md forecast and your stated objective"). The operator confirms or overrides in plain text. If `next-session-start-here.md` is missing (fresh clone), the agent infers class from SESSION-HANDOFF.md's last session-close section header and the user's stated objective, then announces for confirmation the same way.
+3. **Verify at close** — This WRAPUP's Step 11 runs the class-drift self-check; Step 8 records this session's **final class** (after any mid-session upgrade) in the SESSION-HANDOFF.md section header (one line: `**Final class:** <S|D|P>` with a note if the class drifted upward from the open).
+
 ---
 
 ## Steps
@@ -118,6 +126,7 @@ For Class S: Cora drafted this in Step 0c — reconcile against anything added i
 For Class D/P: author or update directly.
 
 Required content:
+- **Expected class for next session** (one line near the top): `**Expected class for next session:** <S|D|P> — <one-line reason tied to the immediate next action>`. Forecast only — the next session's agent confirms at open and the operator can override.
 - **Immediate next action** (concrete, unambiguous — the first thing the next session should do).
 - **Unresolved issues or blockers** affecting the next session — including every Audra finding deferred from Step 0a and every pre-closure gap acknowledged-but-not-remediated from Step 0b.
 - Branch metadata: baseline branch + next working branch + exact checkout/create commands.
@@ -129,6 +138,7 @@ This file is gitignored — local-only. It accelerates the next session's ramp b
 ### 8. Finalize `SESSION-HANDOFF.md` (cross-machine canonical record)
 
 This file is the tracked record that survives across clones. Append a new session-close section (preserve prior sessions as archive). Required content:
+- **Section header includes the final class** for this session (one line): `**Final class:** <S|D|P>` — with a note if the class drifted upward from the session-open declaration (e.g., `**Final class:** S (upgraded from D at HH:MM when <file> was touched)`).
 - What was completed (summary, not play-by-play).
 - What is next (broader than next-session-start-here; preserves multi-session context).
 - Unresolved issues or risks (must cite Step 0a deferrals and Step 0b acknowledged gaps).

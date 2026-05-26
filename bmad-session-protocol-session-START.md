@@ -71,6 +71,14 @@ Before running the steps below, name the expected session class. This determines
 
 If the session unexpectedly touches a substrate file, upgrade to Class S and run the missed Step 1a check before continuing.
 
+### How session class is communicated
+
+Three handoff points, in order:
+
+1. **Forecast** — The prior session's WRAPUP (Step 7) writes the expected class at the top of `next-session-start-here.md` (one line: `**Expected class for next session:** <S|D|P> — <reason>`).
+2. **Confirm at open** — During Step 1 of this protocol, the agent reads the forecast and announces the operating class to the operator: *"Opening as Class D (docs/tooling) per next-session-start-here.md forecast and your stated objective `<X>`."* The operator confirms or overrides in plain text. If `next-session-start-here.md` is missing (fresh clone), infer class from SESSION-HANDOFF.md's last session-close section header (which carries the prior session's **final class**) + the user's stated objective, then announce the same way.
+3. **Verify at close** — WRAPUP Step 11 runs the class-drift self-check against the actual diff; WRAPUP Step 8 records this session's **final class** (after any mid-session upgrade) in the new SESSION-HANDOFF.md section header.
+
 ---
 
 ## Start-of-Session (hot start)
