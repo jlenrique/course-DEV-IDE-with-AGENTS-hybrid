@@ -1,0 +1,82 @@
+# .understandignore — scope: code only (app/ + scripts/ + skills/)
+# Built-in defaults already exclude: node_modules/, .git/, dist/, build/, *.lock, *.min.js, etc.
+#
+# Strategy: exclude everything at the repo root, then negate the three keep-dirs.
+# Patterns follow .gitignore syntax.
+
+# --- Exclude all top-level dirs except app/, scripts/, skills/ ---
+_bmad/
+_bmad-output/
+_codex-handoff/
+docs/
+tests/
+state/
+resources/
+reports/
+course-content/
+maintenance/
+runtime/
+run-records/
+integrations/
+hooks/
+config/
+schema/
+.github/
+.cursor/
+.vscode/
+.idea/
+
+# --- Exclude top-level files we don't want in the graph ---
+*.md
+*.yaml
+*.yml
+*.json
+*.toml
+*.txt
+*.ps1
+*.cjs
+*.mjs
+
+# --- Skills sub-areas to skip (per-skill references/templates are heavy + repetitive) ---
+skills/**/references/
+skills/**/templates/
+skills/**/temp_workflows/
+skills/**/scripts/
+skills/**/test*/
+
+# --- App sub-areas to keep tight ---
+# (keep app/ wholesale; trim only obviously generated or fixture content)
+app/**/__pycache__/
+app/**/*.pyc
+
+# --- Scripts: skip ad-hoc one-off runners and migration cruft ---
+scripts/utilities/
+scripts/migration_helpers/
+
+# --- Generic test / cache patterns ---
+*.test.*
+*.spec.*
+*.snap
+__pycache__/
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+
+# --- Re-include the keep dirs explicitly (negation must come AFTER exclusions) ---
+!app/
+!app/**
+!scripts/
+!scripts/**
+!skills/
+!skills/**
+
+# After negations, re-exclude the sub-areas we don't want from the keep dirs
+app/**/__pycache__/
+app/**/*.pyc
+scripts/utilities/
+scripts/migration_helpers/
+skills/**/references/
+skills/**/templates/
+skills/**/temp_workflows/
+skills/**/scripts/
+skills/**/test*/

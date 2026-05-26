@@ -1,53 +1,43 @@
 # Irene Pass-1 Lesson Plan
 
-This lesson should be planned as an introductory cardiac pharmacology session focused on beta blockers as a drug class. Recommended lesson arc: opener on why slowing cardiac workload matters, concept introduction to beta blockers, mechanism explanation, physiologic effects, common cardiac indications, representative examples, then safety/caution coverage. Slide-scope outline should favor a simple-to-complex progression with one likely concept cluster around mechanism -> effects -> indications. Ratification surface by unit: foundational definition, mechanism, effects, indications, exemplar drugs, adverse effects, and contraindication flags are ratified in-scope; advanced subtype comparison, detailed dosing, and interaction-heavy therapeutic trade-off analysis are not ratified for this pass due to insufficient source specificity and cognitive-load control.
+This lesson should be structured as an introductory-to-intermediate cardiac pharmacology sequence focused on beta blockers. Recommended flow: establish the drug-class definition and relevance, explain mechanism, connect mechanism to major cardiac indications, cover safety and contraindications, then reinforce learning with a lightweight subtype comparison and a basic application case. Advanced non-cardiac coverage and specialist-level PK/dosing detail should be excluded to control cognitive load and maintain tight objective alignment.
 
-## PU-1: What beta blockers are and where they fit in cardiac pharmacology
-- Learning objective: Define beta blockers as a medication class and explain their broad role in cardiovascular care.
+## PU-1: What beta blockers are and why they matter in cardiac pharmacology
+- Learning objective: Define beta blockers and explain their high-level role in cardiovascular care.
 - Scope decision: in-scope
-- Rationale: The source corpus is overwhelmingly centered on beta blockers, and the stated topic is cardiac pharmacology. A foundational orientation unit is necessary for simple-to-complex sequencing and supports later mechanism and use-case instruction.
+- Rationale: The source corpus is overwhelmingly centered on beta blockers, so the lesson should begin with a concise foundation. This supports simple-to-complex sequencing and establishes prerequisite context for any later mechanism, indication, or safety content.
 
-## PU-2: Core mechanism of action: beta-adrenergic receptor blockade
-- Learning objective: Explain how beta-adrenergic receptor blockade changes heart rate, contractility, and cardiac workload.
+## PU-2: Core mechanism of action: beta-adrenergic blockade and cardiovascular effects
+- Learning objective: Explain how beta blockers affect heart rate, contractility, and blood pressure through beta-adrenergic receptor blockade.
 - Scope decision: in-scope
-- Rationale: Mechanism is the essential concept that links drug class identity to therapeutic effect. This unit is required to move from Remember/Understand toward clinical application while preserving backward-design alignment.
+- Rationale: Mechanism is the central conceptual payload implied by the topic and is essential for understanding downstream clinical uses. It fits a core Understand-level block and provides the conceptual bridge from definition to application.
 
-## PU-3: Major physiologic and hemodynamic effects
-- Learning objective: Describe the main cardiovascular effects of beta blockers, including reduced heart rate, reduced myocardial oxygen demand, and blood pressure effects.
+## PU-3: Major therapeutic uses in cardiac care
+- Learning objective: Identify common cardiac indications for beta blockers and connect each use to the underlying physiologic effect.
 - Scope decision: in-scope
-- Rationale: Learners need an explicit bridge between receptor mechanism and observable physiologic outcomes. This creates a clean slide-scope progression from concept introduction to elaboration.
+- Rationale: After mechanism, learners should see where the drug class is used clinically. This preserves known instructional sequence: concept introduction first, then elaboration through indications.
 
-## PU-4: Common clinical indications in cardiac care
-- Learning objective: Identify common cardiac indications for beta blockers, such as hypertension, angina, arrhythmias, heart failure contexts, and post-myocardial-infarction use.
+## PU-4: Key risks, contraindications, and monitoring considerations
+- Learning objective: Recognize major safety concerns associated with beta blockers and describe basic monitoring priorities.
 - Scope decision: in-scope
-- Rationale: Application to recognizable clinical scenarios is central to cardiac pharmacology instruction. This unit supports known-to-novel sequencing and provides a natural cluster head for examples or cases.
+- Rationale: Safety content is instructionally necessary in pharmacology and prevents an incomplete or misleading treatment of the class. It also supports cognitive contrast between benefits and risks without requiring advanced case complexity.
 
-## PU-5: Key examples within the class
-- Learning objective: Recognize representative beta blockers and distinguish them at a basic introductory level.
+## PU-5: Class distinctions and representative agents
+- Learning objective: Differentiate broad beta-blocker subtypes and recognize representative examples relevant to cardiac practice.
 - Scope decision: in-scope
-- Rationale: A drug-class lesson usually requires exemplar agents so learners can connect the category to real medication names. However, scope remains introductory because the source corpus does not provide structured detail for deep agent-by-agent comparison.
+- Rationale: A limited compare/contrast unit is appropriate if kept lightweight. It adds germane load by organizing the class into meaningful chunks rather than listing drugs without structure.
 
-## PU-6: Adverse effects, cautions, and monitoring considerations
-- Learning objective: List common adverse effects and basic safety considerations associated with beta blocker therapy.
+## PU-6: Worked clinical application: selecting or interpreting beta-blocker use in a basic cardiac scenario
+- Learning objective: Apply foundational knowledge of beta blockers to a simple clinical decision or interpretation task.
 - Scope decision: in-scope
-- Rationale: Safe-use framing is instructionally necessary in pharmacology and supports clinically relevant retention. This also balances the lesson by preventing mechanism-only teaching without consequences and constraints.
+- Rationale: Backward design suggests at least one Apply-level learning experience after foundational explanation. A basic scenario keeps complexity manageable while verifying transfer beyond recall.
 
-## PU-7: Basic contraindications and patient-specific caution flags
-- Learning objective: Recognize major situations in which beta blockers may be inappropriate or require caution.
-- Scope decision: in-scope
-- Rationale: This extends the safety unit into decision-relevant screening without overreaching into advanced management. It aligns with Bloom's Understand/Apply boundary and is appropriate for a concise lesson plan.
-
-## PU-8: Comparison across beta blocker subtypes and advanced selectivity nuances
-- Learning objective: Compare cardioselective versus nonselective beta blockers and discuss advanced pharmacologic distinctions.
+## PU-7: Advanced non-cardiac uses of beta blockers
+- Learning objective: Describe non-cardiac indications of beta blockers.
 - Scope decision: out-of-scope
-- Rationale: This is valuable content, but the provided source corpus lacks sufficient structured detail to justify a robust comparison block. It risks over-expansion and increased intrinsic load for a first-pass lesson centered on broad class understanding.
+- Rationale: The declared topic is cardiac pharmacology. Non-cardiac applications may be acknowledged briefly if needed for boundary-setting, but they should not consume lesson time in this plan.
 
-## PU-9: Detailed dosing, titration, and prescribing protocol design
-- Learning objective: Apply dosing and titration principles for specific beta blockers in distinct cardiac conditions.
+## PU-8: Deep pharmacokinetics and specialist dosing protocols
+- Learning objective: Analyze detailed pharmacokinetic variation and specialist dosing strategy across agents.
 - Scope decision: out-of-scope
-- Rationale: The envelope provides no dosing data, no condition-specific protocol information, and no evidence basis for safe detailed instruction. Including this would violate scope discipline and backward-design fidelity.
-
-## PU-10: Drug-drug interactions and complex therapeutic trade-offs
-- Learning objective: Analyze interaction risks and evaluate treatment trade-offs involving beta blockers and other cardiovascular agents.
-- Scope decision: out-of-scope
-- Rationale: This belongs to a more advanced Analyze/Evaluate lesson or later module in a spiral curriculum. The current material density supports introductory class-level instruction rather than complex decision analysis.
+- Rationale: The provided corpus does not support a detailed advanced treatment, and including it would likely over-teach relative to a reasonable introductory lesson objective set. This material is better reserved for a higher-complexity module.
