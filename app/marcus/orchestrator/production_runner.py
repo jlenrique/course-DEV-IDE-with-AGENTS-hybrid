@@ -737,7 +737,10 @@ def _runner_payload_for_specialist(
             "directive_path": directive_path.as_posix(),
             "bundle_dir": bundle_dir.as_posix(),
         }
-    if specialist_id == "quinn-r" and gate_code:
+    # The walker passes the CANONICAL id ("quinn_r" via SPECIALIST_ALIASES),
+    # not the manifest spelling ("quinn-r") — match both; the hyphen form
+    # cost a second live ModeMismatchError('') crash on 2026-06-11.
+    if specialist_id in {"quinn_r", "quinn-r"} and gate_code:
         return {"gate_id": gate_code}
     return None
 

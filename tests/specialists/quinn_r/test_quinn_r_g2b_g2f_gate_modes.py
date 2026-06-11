@@ -91,6 +91,15 @@ def test_gate_modes_cover_every_quinn_r_manifest_gate() -> None:
 
 
 def test_runner_payload_supplies_gate_id_for_quinn_r_only() -> None:
+    # CANONICAL form first — this is what the walker actually passes
+    # (handler.__production_specialist_id__ goes through SPECIALIST_ALIASES);
+    # matching only the manifest's hyphen form cost a second live crash.
+    assert _runner_payload_for_specialist(
+        specialist_id="quinn_r",
+        directive_path=None,
+        bundle_dir=None,
+        gate_code="G2B",
+    ) == {"gate_id": "G2B"}
     assert _runner_payload_for_specialist(
         specialist_id="quinn-r",
         directive_path=None,
