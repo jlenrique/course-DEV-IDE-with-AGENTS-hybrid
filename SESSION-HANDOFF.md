@@ -1,3 +1,38 @@
+# Session Handoff — 2026-06-10/11 (Class S — Trial-3 live-fire: first multi-gate crossing; 9 findings; attempt-4 alive at G1)
+
+**Session dates:** 2026-06-10 (readiness verification + /goal confidence scrub) → 2026-06-11 (corpus refresh probe, trial launches, live-fire defect arc).
+**Branch:** `trial/3-2026-05-21`. **Session-start anchor:** `b611e0a`. **HEAD at session-end:** WRAPUP commit (see git log; substantive head `08d5e34`). **Origin in sync after push.**
+**Final class:** S (substrate — declared S at open, no drift).
+
+## What happened (compressed ledger)
+
+1. **Readiness verification (2026-06-10):** GO verdict — ratchet 29/29, conformance 19, Postgres, heartbeat, session-readiness all green. Found + fixed 4 doc-drift items (stale handoff pytest command incl. 34-7-deleted file; session-readiness module path; heartbeat invocation; ANTHROPIC_API_KEY→LANGSMITH keys).
+2. **/goal 60-min confidence scrub** (party-mode-designed, operator-armed): VERDICT GO 10/10. **Critical catch: composer no-primary roll** against real corpus (wrangler rejects fail-loud) — template + guide fixes, 2/2 clean re-rolls (`bb81b6f`). Operator playbook authored (`c6d0a8d`).
+3. **Corpus probe:** Tejal's Notion page unchanged since 2026-05-21 (his fresh material lives on HIS workspace — unreachable by workspace-scoped integrations; operator's page copy is the bridge; fresh share requested). Pull-script README-template regression fixed. (`f3cd33c`)
+4. **Trial-3 attempt-3 live-fire arc (2026-06-11)** — 9 findings:
+   - #2 dispatch cwd fork (ratchet pinned cwd=corpus_dir; production used REPO_ROOT → 11× File-not-found → 73-byte bundle) + #3 exit-10 "no-results" invented semantics discarding valid 903-word bundles → fixed `919b16d`.
+   - #4 irene_pass1 missing from CANONICAL_SPECIALIST_IDS (aliases already targeted it) → roster 11→12 + shape-pin bump → `cd31b33`.
+   - #5 **resume walker had NO gate-pause machinery** (raised GateBypassError at every gate live; the known-deferred `7a-2-deferred-resume-mode-multi-gate-pause` follow-on; NO live trial had ever crossed gate-to-gate). Party-mode 4-of-4 Option-A consensus (Winston/Murat/Amelia/John, guardrails: two-commit discipline, 4-assertion floor, 90-min fuse, 5-fix cap, mandatory batch review) → `_pause_at_gate` extracted (proven by unmodified suite) + wired into resume + 3 defect-pinning tests rewritten → `cd31b33`+`d727248`. **LIVE-CONFIRMED: G1→G2C crossed on `a0d31fc0` — first in platform history.**
+   - #6 gpt-5.4 missing from operator-editable pricing table (config class, outside cap) → `08d5e34`.
+   - #7 pause write sequence non-atomic (torn state on `d8d1332a` from pricing crash mid-pause) → FILED.
+   - #8 `max_specialist_calls` default-1 segment cap permanently skips specialists → starved kira of quinn_r on `a0d31fc0` → FILED.
+   - #9 CD directive validator fails its own LLM output 2/2 rolls (systematic; first-ever CD live dispatch) → FILED 🔴 — the only blocker on attempt-4.
+5. **Attempt-4 (`50b7d353`) is ALIVE, cleanly paused-at-G1, resumable** — first structurally-completable trial ever (all fixes in, throttle strategy known).
+
+## Operational learnings (binding for next session)
+
+Verdict file = full OperatorVerdict shape (guide §5 "minimal" is wrong — doc-drift queue); verdict digest = top-level decision-card `digest` field; `trial resume` is non-interactive (Claude-runnable); resumes re-register cards from disk (cross-process replay valid); ALWAYS pass `--max-specialist-calls 12` on resume; runner pauses at G1/G2C/G3/G4 only.
+
+## Governance trail
+
+Party-mode rounds: 2 (pre-scrub /goal design; A-vs-B hotfix consensus — both unanimous, no Quinn/John escalation needed). 5-hotfix cap honored (#6 config-class, #7/#8/#9 filed not fixed). 🔴 MANDATORY: 5-fix batch `bmad-code-review` before attempt-5 (deferred-inventory entry). Deferred-inventory: +4 entries. Carried Step-1a findings (motion-pack marker order; raw-HTTP allowlist) untouched, carry forward again.
+
+## Next session
+
+Class S forecast: fix #9 CD validator → resume `50b7d353` (open throttle every segment) → G2C → G3 (Storyboard B on Pages site) → G4 → closeout per playbook Phases 5-6. Then postmortem (methodology §7 routing; cross-trial-learnings: "test pinned the correct contract, production never adopted it"; "speculative exit-code semantics"; "known-deferred follow-on never reactivated before launch despite readiness review") + Epic-34 retrospective + 5-fix batch review.
+
+---
+
 # Session Handoff — 2026-05-22 (Epic 34 §02A Downstream-Consumer Coherence opened + Story 34-1 done)
 
 **Session date:** 2026-05-22
