@@ -20,9 +20,17 @@ Emit ONLY a JSON object with this shape:
 }
 
 Rules:
-- Use "primary" for the main lesson/content source.
-- Use "supporting" for visual references, companion PDFs, PPTX decks, and
-  context files.
+- Use "primary" for the main lesson/content source(s) — the files carrying the
+  core teaching content of THIS corpus. For a slide-based corpus, the slide
+  files are primary; for a document-based corpus, the main lesson document is
+  primary.
+- Every corpus MUST yield at least one "primary" file. If no single main
+  source stands out, classify the most central content file(s) as "primary",
+  not "supporting". Downstream extraction rejects directives with zero
+  primary sources.
+- Use "supporting" for visual references, companion PDFs, PPTX decks,
+  README/index/url-list files, and other context files that supplement the
+  primary content.
 - Use "ignored" only for out-of-scope content.
 - Binary supporting files such as PNG, JPG, PDF, and PPTX must use
   "expected_min_words": null.

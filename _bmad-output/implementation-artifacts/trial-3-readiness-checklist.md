@@ -79,7 +79,7 @@ Operator confirms these on the dispatch session:
 - [ ] **Slab 7c at 36/36 dev-stories DONE** in `sprint-status.yaml` (7c.21 + 7c.21a both `done`).
 - [ ] **Operator-driven Gate-2 of 7c.21 complete** (`bmad-retrospective` triggered + mapping-checklist row-flips party-mode-ratified per FR-7c-42 + per-tripwire firing-rate review per FR-7c-41). Recommended but not strictly blocking.
 - [ ] **Real corpus selected** (e.g., Tejal APC C1-M1 corpus from Trial-2 OR a fresh corpus). Path documented.
-- [ ] **API credentials in `.env`**: GAMMA_API_KEY + ELEVENLABS_API_KEY + CANVAS_API_KEY + (optional) PANOPTO_API_KEY + (optional) WONDERCRAFT_API_KEY + (optional) KLING_API_KEY + OPENAI_API_KEY (for LLM specialists). Per-cred validation: `.venv/Scripts/python.exe scripts/heartbeat_check.mjs` (per CLAUDE.md project-context).
+- [ ] **API credentials in `.env`**: GAMMA_API_KEY + ELEVENLABS_API_KEY + CANVAS_ACCESS_TOKEN + (optional) PANOPTO_CLIENT_ID/SECRET + (optional) WONDERCRAFT_API_KEY + (optional) KLING_ACCESS_KEY/SECRET_KEY + OPENAI_API_KEY (for LLM specialists). Per-cred validation: `node scripts/heartbeat_check.mjs` (it is a Node script, not Python; var names corrected 2026-06-10 scrub).
 - [ ] **`PYTHONIOENCODING=utf-8`** set in PowerShell environment per A11 Windows-portability anti-pattern. Verify: `$env:PYTHONIOENCODING == "utf-8"`.
 - [ ] **Postgres running natively** (per CLAUDE.md memory `project_no_docker.md`; LangGraph checkpointer relies on local Postgres).
 - [ ] **No active git-uncommitted state** that could mask Trial-3 evidence.
@@ -93,8 +93,8 @@ Trial-3 is launched via Marcus orchestrator's CLI surface. The exact command sha
 ### 4.1 Pre-flight (runtime substrate health)
 
 ```powershell
-# From repo root
-.venv/Scripts/python.exe -m app.session_readiness  # or analogous app_session_readiness CLI
+# From repo root (corrected 2026-06-10 scrub: module lives under scripts.utilities)
+.venv/Scripts/python.exe -m scripts.utilities.app_session_readiness
 ```
 
 Confirm: SQLite + Postgres up, all 11 specialists discoverable, all API clients reachable.

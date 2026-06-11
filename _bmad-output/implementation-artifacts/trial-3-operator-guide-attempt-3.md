@@ -30,7 +30,7 @@ Run through this top-to-bottom before invoking `trial start`.
 - [ ] **Branch state.** Confirm you are on `trial/3-2026-05-21` (or the branch designated by the readiness checklist). `git status` clean or only expected mods.
 - [ ] **Virtual env active.** `.venv\Scripts\python.exe --version` returns the expected Python (3.11+).
 - [ ] **Postgres native running.** No Docker. `pg_isready` on operator side (operator-gated check; not part of dev-AC). The runtime expects a reachable Postgres per `.env`.
-- [ ] **`.env` keys present.** Confirm `OPENAI_API_KEY`, `ANTHROPIC_API_KEY`, `DATABASE_URL`, and any provider keys used by the production preset. Do NOT echo values.
+- [ ] **`.env` keys present.** Confirm `OPENAI_API_KEY`, `DATABASE_URL`, `LANGSMITH_API_KEY` + `LANGSMITH_PROJECT` (required by `trial start` unless `--allow-offline-cost-report`), and any provider keys used by the production preset. Do NOT echo values. (`ANTHROPIC_API_KEY` removed 2026-06-10 scrub — zero references in `app/`; OpenAI is the locked provider.)
 - [ ] **Encoding:** `$env:PYTHONIOENCODING = "utf-8"` set in the current PowerShell session. Without this, gate prompts emit mojibake on Windows.
 - [ ] **Corpus present.** `course-content/courses/tejal-apc-c1-m1-p2-trends/` exists and contains the expected source files.
 - [ ] **Two terminals ready.** One for the trial process. One spare PowerShell window (resume commands, jq, ls of run-dir) so you don't Ctrl+C the trial by accident.
@@ -78,6 +78,8 @@ Choice [c/e/s/x]:
 | `x` | Cancel trial entirely; no specialist dispatch | Substrate corruption smell at G0 itself |
 
 **✅ Attempt-3 recommendation:** Press `c`. This is a weed-clearing run; harvest quality nits to a postmortem, not at the gate.
+
+**⚠️ MANDATORY G0 check before pressing `c` (pre-trial scrub finding 2026-06-10):** scan the printed directive's `role:` lines and confirm **at least one source has `role: primary`** (or `visual-primary`). Composition is LLM-driven and non-deterministic; a scrub dry-run against this exact corpus produced an all-`supporting` directive, which the Texas wrangler **rejects fail-loud** (`run_wrangler.py` primary-presence check) — the trial would halt right after G0 confirm. If no primary is present: press `e` and change the most central content source(s) (the slide files for this corpus) to `role: primary`, then confirm. `role` is on the G0 editable-fields whitelist.
 
 **⚠️ Ctrl+C wrinkle at G0.** G0 is the one fragile spot. If you Ctrl+C during the in-process prompt, the directive file persists but **no checkpoint exists yet**. Recovery: re-run `trial start` with the **same `--trial-id`** (pass it explicitly). The directive is deterministic for the same corpus + run_id, so this is cheap restart, not lost work.
 
