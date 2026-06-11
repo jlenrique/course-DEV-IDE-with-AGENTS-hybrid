@@ -195,9 +195,16 @@ def test_texas_act_exit_unknown_raises_dispatch_error_with_tag(
     assert exc_info.value.tag == "bundle.parsed.unknown-exit"
 
 
-def test_texas_act_exit_10_returns_no_results_with_trail_tag(
+def test_texas_act_exit_10_parses_bundle_as_complete_with_warnings(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
+    """Exit 10 = complete_with_warnings (wrangler taxonomy) — bundle is KEPT.
+
+    Trial-3 attempt-3 fix (2026-06-11): the prior exit-10 -> "no-results"
+    early-return discarded a valid 903-word bundle. The wrangler taxonomy has
+    no "no-results" status; exit 10 bundles parse exactly like exit 0.
+    """
+
     def _fake_dispatch(**_: Any) -> dict[str, Any]:
         return {
             "status": "dispatched",
@@ -205,6 +212,7 @@ def test_texas_act_exit_10_returns_no_results_with_trail_tag(
             "exit_code": 10,
             "stdout": "",
             "stderr": "",
+            "command": None,
         }
 
     monkeypatch.setattr(
@@ -213,11 +221,12 @@ def test_texas_act_exit_10_returns_no_results_with_trail_tag(
     state = _build_state(cache_prefix=_envelope_cache_prefix())
     update = _act(state)
     output = json.loads(update["cache_state"]["cache_prefix"])
-    assert output["bundle_reference"] is None
-    assert output["status"] == "no-results"
+    # Bundle is parsed and referenced, NOT discarded.
+    assert output["bundle_reference"]
+    assert output["status"] != "no-results"
     assert output["dispatch_exit_code"] == 10
     trail = update["model_resolution_trail"]
-    assert trail[-1].reason == "bundle.parsed.exit-10"
+    assert trail[-1].reason == "bundle.parsed.ok"
 
 
 def test_texas_act_records_bundle_parse_tag_on_partial_bundle(
@@ -400,3 +409,69 @@ def test_dispatch_wrapper_pins_subprocess_kwargs(
     assert kwargs["capture_output"] is True
     assert kwargs["cwd"]
     assert receipt["exit_code"] == 0
+
+
+# ---------------------------------------------------------------------------
+# Trial-3 attempt-3 crash fix (2026-06-11) — subprocess cwd MUST be the
+# directive's corpus_dir so corpus-relative local_file locators resolve.
+# Mirrors the Story 34-1 ratchet's invocation contract (cwd=corpus_dir);
+# the prior cwd=REPO_ROOT caused File-not-found on all 11 sources →
+# empty bundle → RetrievalScopeError at Texas hardening.
+# ---------------------------------------------------------------------------
+
+
+def _capture_subprocess_run(monkeypatch: pytest.MonkeyPatch) -> dict[str, Any]:
+    captured: dict[str, Any] = {}
+
+    class _Completed:
+        def __init__(self) -> None:
+            self.returncode = 0
+            self.stdout = "{}"
+            self.stderr = ""
+
+    def _fake_run(*args: Any, **kwargs: Any) -> _Completed:
+        captured["args"] = args
+        captured["kwargs"] = kwargs
+        return _Completed()
+
+    monkeypatch.setattr(
+        "app.specialists.texas.retrieval_dispatch.subprocess.run", _fake_run
+    )
+    return captured
+
+
+def test_dispatch_cwd_is_directive_corpus_dir(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """cwd resolves to the directive's corpus_dir when present + existing."""
+    corpus = tmp_path / "corpus"
+    corpus.mkdir()
+    directive = tmp_path / "directive.yaml"
+    directive.write_text(
+        f"run_id: 00000000-0000-4000-8000-000000000000\n"
+        f"corpus_dir: {corpus.as_posix()}\n"
+        f"sources: []\n",
+        encoding="utf-8",
+    )
+    captured = _capture_subprocess_run(monkeypatch)
+    dispatch_retrieval(directive_path=directive, bundle_dir=tmp_path / "bundle")
+    assert captured["kwargs"]["cwd"] == str(corpus)
+
+
+def test_dispatch_cwd_falls_back_to_repo_root(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """Missing/non-dir corpus_dir falls back to REPO_ROOT (no crash)."""
+    from app.specialists.texas.retrieval_dispatch import REPO_ROOT
+
+    no_corpus_field = tmp_path / "no-corpus-field.yaml"
+    no_corpus_field.write_text("run_id: x\nsources: []\n", encoding="utf-8")
+    nonexistent_corpus = tmp_path / "bad-corpus.yaml"
+    nonexistent_corpus.write_text(
+        f"corpus_dir: {(tmp_path / 'does-not-exist').as_posix()}\nsources: []\n",
+        encoding="utf-8",
+    )
+    for directive in (no_corpus_field, nonexistent_corpus):
+        captured = _capture_subprocess_run(monkeypatch)
+        dispatch_retrieval(directive_path=directive, bundle_dir=tmp_path / "bundle")
+        assert captured["kwargs"]["cwd"] == str(REPO_ROOT)

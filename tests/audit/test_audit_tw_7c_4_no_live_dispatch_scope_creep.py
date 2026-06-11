@@ -54,6 +54,22 @@ PERMITTED_PYTHON_DIFFS = {
     # Story 34-2 — wrangler input validator: 6-role union + excluded_reason
     # + cross-field invariants (Winston A1 + Murat M-Murat-3 bindings).
     "skills/bmad-agent-texas/scripts/run_wrangler.py",
+    # Trial-3 attempt-3 crash fix 2026-06-11 (run-id 235e0570-...): production
+    # dispatch invoked the wrangler subprocess with cwd=REPO_ROOT while the
+    # §02A composer emits corpus-relative locators — every local_file fetch
+    # failed File-not-found → empty bundle → RetrievalScopeError at Texas
+    # hardening (observed_words=7 vs floor=570). Fix mirrors the Story 34-1
+    # ratchet's pinned invocation contract (cwd=directive.corpus_dir) in
+    # app/specialists/texas/retrieval_dispatch.py + pins the cwd contract in
+    # the dispatch test (the prior kwargs-pin only asserted cwd truthy).
+    # Bounded 3-path extension; freeze predicates remain in force. Second
+    # finding in the same crash arc: _act.py's exit-10 -> "no-results"
+    # early-return discarded valid complete_with_warnings bundles (903
+    # extracted words dropped); the wrangler taxonomy has no "no-results"
+    # status. Exit-10 bundles now parse exactly like exit 0.
+    "app/specialists/texas/retrieval_dispatch.py",
+    "app/specialists/texas/_act.py",
+    "tests/specialists/texas/test_texas_act_node_dispatch.py",
     # Story 34-2 wrangler-side test (substrate-audit-corrected path 2026-05-22;
     # co-located with existing test_run_wrangler.py at skills/.../tests/).
     "skills/bmad-agent-texas/scripts/tests/test_run_wrangler_role_enum_union_and_excluded_reason.py",
