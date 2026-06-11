@@ -77,7 +77,9 @@ def test_clean_trial_run_summary_populated(tmp_path: Path, monkeypatch) -> None:
     payload = yaml.safe_load((tmp_path / str(TRIAL_ID) / "run_summary.yaml").read_text())
     assert payload["terminal_gate"] == "G4"
     assert payload["silent_bypass_events"] == 0
-    assert payload["specialist_roster_count"] == 11
+    # 12 = 11-roster + irene_pass1 adopted as distinct canonical id
+    # (Trial-3 attempt-3 fix 2026-06-11; SPECIALIST_ALIASES already targeted it).
+    assert payload["specialist_roster_count"] == 12
     assert len(payload["pack_hash_binding"]) == 64
     assert len(payload["conversation_chain_digest"]) == 64
 

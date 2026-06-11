@@ -70,6 +70,13 @@ PERMITTED_PYTHON_DIFFS = {
     "app/specialists/texas/retrieval_dispatch.py",
     "app/specialists/texas/_act.py",
     "tests/specialists/texas/test_texas_act_node_dispatch.py",
+    # Third finding, same trial arc: CANONICAL_SPECIALIST_IDS never adopted
+    # irene_pass1 (a distinct §04 specialist package the compiler's
+    # SPECIALIST_ALIASES already targets) — first live §04 dispatch crashed
+    # at emit_spans with "unknown specialist_id". Roster 11 -> 12 with
+    # coordinated shape-pin bump in test_run_summary_yaml_emit.py.
+    "app/models/state/specialist_summary_artifacts.py",
+    "tests/integration/marcus/test_run_summary_yaml_emit.py",
     # Story 34-2 wrangler-side test (substrate-audit-corrected path 2026-05-22;
     # co-located with existing test_run_wrangler.py at skills/.../tests/).
     "skills/bmad-agent-texas/scripts/tests/test_run_wrangler_role_enum_union_and_excluded_reason.py",

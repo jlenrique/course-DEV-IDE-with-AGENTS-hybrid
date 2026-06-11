@@ -767,6 +767,162 @@ def _invoke_pre_gate_marcus_for_gate(
     )
 
 
+def _pause_at_gate(
+    *,
+    gate_id: str,
+    node_id: str,
+    node_index: int,
+    manifest: Any,
+    trial_id: UUID,
+    operator_id: str,
+    envelope: ProductionTrialEnvelope,
+    production_envelope: ProductionEnvelope,
+    run_state: RunState,
+    child_runs: list[SimpleNamespace],
+    trace_metadata: dict[str, str],
+    specialist_calls: int,
+    graph_step_completed: bool,
+    manifest_path: Path,
+    runs_root: Path,
+    allow_offline_cost_report: bool,
+    max_specialist_calls: int,
+) -> ProductionTrialEnvelope:
+    """Pause the trial at ``gate_id``: draft, card, checkpoint, persist, return.
+
+    Extracted verbatim from the run_production_trial gate branch (Trial-3
+    attempt-3 fix, 2026-06-11) so BOTH walkers share one pause implementation.
+    The resume walker previously had no pause path at all — it raised
+    GateBypassError at every gate in live mode, making any live trial unable
+    to advance from one gate to the next (pause logic existed once, was wired
+    once — the A23 fork pattern at function granularity).
+    """
+    pending = [item.id for item in manifest.nodes[node_index + 1 :]]
+    pre_fill = _invoke_pre_gate_marcus_for_gate(
+        gate_id=gate_id,
+        trial_id=trial_id,
+        production_envelope=production_envelope,
+        pending_nodes=pending,
+        artifact_paths=envelope.artifact_paths,
+        allow_offline_cost_report=allow_offline_cost_report,
+    )
+    if pre_fill is not None:
+        child_runs.append(
+            _trace_run_for_pre_gate_marcus(
+                trial_id=trial_id,
+                gate_id=gate_id,
+                proposal=pre_fill,
+            )
+        )
+    card = _build_decision_card(
+        gate_id=gate_id,
+        trial_id=trial_id,
+        node_id=node_id,
+        operator_id=operator_id,
+        pending_nodes=pending,
+        artifact_paths=envelope.artifact_paths,
+        pre_fill=pre_fill,
+        runs_root=runs_root,
+    )
+    conversation_path = _persist_conversation_turn_if_possible(
+        card=card,
+        gate_id=gate_id,
+        trial_id=trial_id,
+        operator_id=operator_id,
+        runs_root=runs_root,
+    )
+    stored = register_decision_card(card)
+    checkpoint = _write_checkpoint(
+        trial_id=trial_id,
+        runs_root=runs_root,
+        node_index=node_index,
+        gate_id=gate_id,
+        run_state=run_state,
+        envelope=envelope,
+        manifest_path=manifest_path,
+        allow_offline_cost_report=allow_offline_cost_report,
+        max_specialist_calls=max_specialist_calls,
+    )
+    decision_path = (
+        _run_dir(trial_id, runs_root) / f"decision-card-{gate_id}.json"
+    )
+    _write_json(
+        decision_path,
+        {
+            "card": card.model_dump(mode="json"),
+            "digest": stored.digest,
+            "issued_at": stored.issued_at.astimezone(UTC)
+            .isoformat()
+            .replace("+00:00", "Z"),
+            "server_nonce": stored.server_nonce,
+            "checkpoint_path": checkpoint.as_posix(),
+        },
+    )
+    trace_root = (
+        _trace_root(
+            trial_id=trial_id,
+            metadata=trace_metadata,
+            child_runs=child_runs,
+        )
+        if child_runs
+        else None
+    )
+    cost_report_path = (
+        _record_cost(
+            trial_id=trial_id,
+            runs_root=runs_root,
+            trace_root=trace_root,
+            allow_offline_cost_report=allow_offline_cost_report,
+        )
+        if trace_root is not None or allow_offline_cost_report
+        else None
+    )
+    trace_path = None
+    if trace_root is not None:
+        trace_path = _run_dir(trial_id, runs_root) / "trace-fixture.json"
+        _write_json(trace_path, _trace_to_json(trace_root))
+    langsmith_trace_id = str(trial_id) if child_runs else None
+    run_summary_path = _emit_run_summary_yaml(
+        trial_id=trial_id,
+        terminal_gate=gate_id,
+        runs_root=runs_root,
+        manifest_path=manifest_path,
+        langsmith_trace_id=langsmith_trace_id,
+    )
+    evidence = (
+        _has_production_evidence(
+            graph_step_completed=graph_step_completed,
+            specialist_calls=specialist_calls,
+            allow_offline_cost_report=allow_offline_cost_report,
+        )
+    )
+    envelope = envelope.model_copy(
+        update={
+            "status": "paused-at-gate",
+            "paused_gate": gate_id,
+            "langsmith_trace_id": langsmith_trace_id,
+            "production_clone_launch_evidence": evidence,
+            "production_clone_launch_evidence_reason": (
+                "live-specialist-call-recorded"
+                if evidence
+                else "paused-before-live-specialist-call"
+            ),
+            "production_envelope": production_envelope,
+            "cost_report_path": cost_report_path,
+            "artifact_paths": [
+                *envelope.artifact_paths,
+                decision_path,
+                checkpoint,
+                *([conversation_path] if conversation_path is not None else []),
+                *([cost_report_path] if cost_report_path is not None else []),
+                *([trace_path] if trace_path is not None else []),
+                run_summary_path,
+            ],
+        }
+    )
+    _persist_envelope(envelope, runs_root)
+    return envelope
+
+
 def run_production_trial(
     corpus_path: Path,
     preset: Literal["production", "explore"],
@@ -856,132 +1012,25 @@ def run_production_trial(
                         )
                     graph_step_completed = True
                     continue
-                pending = [item.id for item in manifest.nodes[index + 1 :]]
-                pre_fill = _invoke_pre_gate_marcus_for_gate(
+                return _pause_at_gate(
                     gate_id=gate_id,
-                    trial_id=effective_trial_id,
-                    production_envelope=production_envelope,
-                    pending_nodes=pending,
-                    artifact_paths=envelope.artifact_paths,
-                    allow_offline_cost_report=allow_offline_cost_report,
-                )
-                if pre_fill is not None:
-                    child_runs.append(
-                        _trace_run_for_pre_gate_marcus(
-                            trial_id=effective_trial_id,
-                            gate_id=gate_id,
-                            proposal=pre_fill,
-                        )
-                    )
-                card = _build_decision_card(
-                    gate_id=gate_id,
-                    trial_id=effective_trial_id,
                     node_id=node.id,
-                    operator_id=operator_id,
-                    pending_nodes=pending,
-                    artifact_paths=envelope.artifact_paths,
-                    pre_fill=pre_fill,
-                    runs_root=runs_root,
-                )
-                conversation_path = _persist_conversation_turn_if_possible(
-                    card=card,
-                    gate_id=gate_id,
-                    trial_id=effective_trial_id,
-                    operator_id=operator_id,
-                    runs_root=runs_root,
-                )
-                stored = register_decision_card(card)
-                checkpoint = _write_checkpoint(
-                    trial_id=effective_trial_id,
-                    runs_root=runs_root,
                     node_index=index,
-                    gate_id=gate_id,
-                    run_state=run_state,
+                    manifest=manifest,
+                    trial_id=effective_trial_id,
+                    operator_id=operator_id,
                     envelope=envelope,
+                    production_envelope=production_envelope,
+                    run_state=run_state,
+                    child_runs=child_runs,
+                    trace_metadata=trace_metadata,
+                    specialist_calls=specialist_calls,
+                    graph_step_completed=graph_step_completed,
                     manifest_path=manifest_path,
+                    runs_root=runs_root,
                     allow_offline_cost_report=allow_offline_cost_report,
                     max_specialist_calls=max_specialist_calls,
                 )
-                decision_path = (
-                    _run_dir(effective_trial_id, runs_root)
-                    / f"decision-card-{gate_id}.json"
-                )
-                _write_json(
-                    decision_path,
-                    {
-                        "card": card.model_dump(mode="json"),
-                        "digest": stored.digest,
-                        "issued_at": stored.issued_at.astimezone(UTC)
-                        .isoformat()
-                        .replace("+00:00", "Z"),
-                        "server_nonce": stored.server_nonce,
-                        "checkpoint_path": checkpoint.as_posix(),
-                    },
-                )
-                trace_root = (
-                    _trace_root(
-                        trial_id=effective_trial_id,
-                        metadata=trace_metadata,
-                        child_runs=child_runs,
-                    )
-                    if child_runs
-                    else None
-                )
-                cost_report_path = (
-                    _record_cost(
-                        trial_id=effective_trial_id,
-                        runs_root=runs_root,
-                        trace_root=trace_root,
-                        allow_offline_cost_report=allow_offline_cost_report,
-                    )
-                    if trace_root is not None or allow_offline_cost_report
-                    else None
-                )
-                trace_path = None
-                if trace_root is not None:
-                    trace_path = _run_dir(effective_trial_id, runs_root) / "trace-fixture.json"
-                    _write_json(trace_path, _trace_to_json(trace_root))
-                langsmith_trace_id = str(effective_trial_id) if child_runs else None
-                run_summary_path = _emit_run_summary_yaml(
-                    trial_id=effective_trial_id,
-                    terminal_gate=gate_id,
-                    runs_root=runs_root,
-                    manifest_path=manifest_path,
-                    langsmith_trace_id=langsmith_trace_id,
-                )
-                evidence = (
-                    _has_production_evidence(
-                        graph_step_completed=graph_step_completed,
-                        specialist_calls=specialist_calls,
-                        allow_offline_cost_report=allow_offline_cost_report,
-                    )
-                )
-                envelope = envelope.model_copy(
-                    update={
-                        "status": "paused-at-gate",
-                        "paused_gate": gate_id,
-                        "langsmith_trace_id": langsmith_trace_id,
-                        "production_clone_launch_evidence": evidence,
-                        "production_clone_launch_evidence_reason": (
-                            "live-specialist-call-recorded"
-                            if evidence
-                            else "paused-before-live-specialist-call"
-                        ),
-                        "production_envelope": production_envelope,
-                        "cost_report_path": cost_report_path,
-                        "artifact_paths": [
-                            *envelope.artifact_paths,
-                            decision_path,
-                            checkpoint,
-                            *([conversation_path] if conversation_path is not None else []),
-                            *([cost_report_path] if cost_report_path is not None else []),
-                            *([trace_path] if trace_path is not None else []),
-                            run_summary_path,
-                        ],
-                    }
-                )
-                _persist_envelope(envelope, runs_root)
-                return envelope
 
             if node_kind == "specialist" and specialist_calls < max_specialist_calls:
                 specialist_id = handler.__production_specialist_id__

@@ -17,6 +17,13 @@ LOGGER = logging.getLogger(__name__)
 CANONICAL_SPECIALIST_IDS: tuple[str, ...] = (
     "texas",
     "irene",
+    # Trial-3 attempt-3 fix (2026-06-11): irene_pass1 is a DISTINCT specialist
+    # package (app/specialists/irene_pass1/) dispatched at §04 lesson-planning;
+    # SPECIALIST_ALIASES already targets it ("irene-pass1" -> "irene_pass1")
+    # but this roster never adopted it — emit_spans crashed the first live
+    # §04 dispatch with "unknown specialist_id 'irene_pass1'". Folding it
+    # into "irene" would conflate Pass-1 and Pass-2 summary attribution.
+    "irene_pass1",
     "dan",
     "tracy",
     "gary",
@@ -32,6 +39,7 @@ DEFERRED_SPECIALIST_IDS = frozenset()
 DISPLAY_NAMES: dict[str, str] = {
     "texas": "Texas",
     "irene": "Irene",
+    "irene_pass1": "Irene-Pass1",
     "dan": "Dan",
     "tracy": "Tracy",
     "gary": "Gary",
