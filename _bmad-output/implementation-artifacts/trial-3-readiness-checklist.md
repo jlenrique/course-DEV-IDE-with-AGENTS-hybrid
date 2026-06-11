@@ -15,7 +15,7 @@
 
 Trial-3 is a **real production trial** of the LangChain/LangGraph migrated platform end-to-end (§01 Activation through §15 Final Operator Handoff) against a real corpus. It validates:
 
-- All 11 specialists (Texas / Quinn-R / Vera / Irene-Pass1 / Tracy / Gary / Kira / Wanda / Enrique / Dan / Compositor) execute with real content (NOT fixture stubs).
+- All 12 specialists (Texas / Quinn-R / Vera / Irene / Irene-Pass1 / Tracy / Gary / Kira / Wanda / Enrique / Dan / Compositor) execute with real content (NOT fixture stubs). (Roster 11→12 at `cd31b33`: irene_pass1 adopted into CANONICAL_SPECIALIST_IDS, Trial-3 finding #4.)
 - All 14+ HIL surfaces (per Slab-7c §section packages) accept operator input + emit OperatorVerdict.
 - All 5 Marcus-bound writers (gary-slide-content + gary-fidelity-slides + gary-diagram-cards + gary-theme-resolution + gary-outbound-envelope) emit per-plan-unit packages.
 - The §15 G5 final-handoff bundle (`section-15-bundle` writer) emits assembly-bundle + DESCRIPT-ASSEMBLY-GUIDE.md regen + Trial3Transcript anchor + slab-close evidence pointer.
@@ -97,7 +97,7 @@ Trial-3 is launched via Marcus orchestrator's CLI surface. The exact command sha
 .venv/Scripts/python.exe -m scripts.utilities.app_session_readiness
 ```
 
-Confirm: SQLite + Postgres up, all 11 specialists discoverable, all API clients reachable.
+Confirm: SQLite + Postgres up, all 12 specialists discoverable, all API clients reachable.
 
 ### 4.2 Trial-3 dispatch
 
@@ -174,7 +174,7 @@ Anchor (sha256) of the transcript file lands in `Section15Bundle.trial_3_transcr
 Trial-3 is PASS when:
 
 - [ ] Reaches §15 G5 with operator verb=`complete` (NOT paused/halted/rejected).
-- [ ] All 11 specialists produce real content (zero fixture-stub fallbacks).
+- [ ] All 12 specialists produce real content (zero fixture-stub fallbacks).
 - [ ] All 14+ HIL surfaces accept operator input + emit valid OperatorVerdict (verbs match per-surface contracts).
 - [ ] All 5 Marcus-bound pre-Gary writers emit per-plan-unit packages.
 - [ ] §15 G5 Marcus bundle writer (`section-15-bundle`) emits assembly-bundle + DESCRIPT-ASSEMBLY-GUIDE.md + Trial-3 transcript anchor + slab-close evidence pointer.

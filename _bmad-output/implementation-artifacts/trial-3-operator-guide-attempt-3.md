@@ -81,7 +81,7 @@ Choice [c/e/s/x]:
 
 **⚠️ MANDATORY G0 check before pressing `c` (pre-trial scrub finding 2026-06-10):** scan the printed directive's `role:` lines and confirm **at least one source has `role: primary`** (or `visual-primary`). Composition is LLM-driven and non-deterministic; a scrub dry-run against this exact corpus produced an all-`supporting` directive, which the Texas wrangler **rejects fail-loud** (`run_wrangler.py` primary-presence check) — the trial would halt right after G0 confirm. If no primary is present: press `e` and change the most central content source(s) (the slide files for this corpus) to `role: primary`, then confirm. `role` is on the G0 editable-fields whitelist.
 
-**⚠️ Ctrl+C wrinkle at G0.** G0 is the one fragile spot. If you Ctrl+C during the in-process prompt, the directive file persists but **no checkpoint exists yet**. Recovery: re-run `trial start` with the **same `--trial-id`** (pass it explicitly). The directive is deterministic for the same corpus + run_id, so this is cheap restart, not lost work.
+**⚠️ Ctrl+C wrinkle at G0.** G0 is the one fragile spot. If you Ctrl+C during the in-process prompt, the directive file persists but **no checkpoint exists yet**. Recovery: re-run `trial start` with the **same `--trial-id`** (pass it explicitly). This is cheap restart, not lost work — but the composer is LLM-driven and **re-rolls a NEW directive** on the re-run (the persisted directive file from the interrupted run is overwritten, and the new roll may differ — including re-rolling into the all-`supporting` landmine). Re-do the MANDATORY `role: primary` check above on every re-roll.
 
 ---
 

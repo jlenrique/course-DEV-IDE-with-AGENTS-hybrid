@@ -221,9 +221,12 @@ def test_texas_act_exit_10_parses_bundle_as_complete_with_warnings(
     state = _build_state(cache_prefix=_envelope_cache_prefix())
     update = _act(state)
     output = json.loads(update["cache_state"]["cache_prefix"])
-    # Bundle is parsed and referenced, NOT discarded.
+    # Bundle is parsed and referenced, NOT discarded. Pin the ACTUAL parsed
+    # status from the bundle's result.yaml (a negative `!= "no-results"`
+    # assertion would pass for any garbage status).
     assert output["bundle_reference"]
-    assert output["status"] != "no-results"
+    assert output["status"] == "complete"
+    assert output["overall_status"] == "complete"
     assert output["dispatch_exit_code"] == 10
     trail = update["model_resolution_trail"]
     assert trail[-1].reason == "bundle.parsed.ok"
@@ -458,20 +461,78 @@ def test_dispatch_cwd_is_directive_corpus_dir(
     assert captured["kwargs"]["cwd"] == str(corpus)
 
 
-def test_dispatch_cwd_falls_back_to_repo_root(
+def test_dispatch_cwd_falls_back_to_repo_root_when_corpus_dir_absent(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
-    """Missing/non-dir corpus_dir falls back to REPO_ROOT (no crash)."""
+    """Directives with NO corpus_dir keep the legacy REPO_ROOT fallback."""
     from app.specialists.texas.retrieval_dispatch import REPO_ROOT
 
     no_corpus_field = tmp_path / "no-corpus-field.yaml"
     no_corpus_field.write_text("run_id: x\nsources: []\n", encoding="utf-8")
+    captured = _capture_subprocess_run(monkeypatch)
+    dispatch_retrieval(directive_path=no_corpus_field, bundle_dir=tmp_path / "bundle")
+    assert captured["kwargs"]["cwd"] == str(REPO_ROOT)
+
+
+def test_dispatch_invalid_corpus_dir_fails_loud(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """A present-but-nonexistent corpus_dir raises instead of silently
+    reverting to REPO_ROOT (the attempt-3 wrong-cwd crash signature)."""
+    from app.specialists.texas._act import BundleDispatchError
+
     nonexistent_corpus = tmp_path / "bad-corpus.yaml"
     nonexistent_corpus.write_text(
         f"corpus_dir: {(tmp_path / 'does-not-exist').as_posix()}\nsources: []\n",
         encoding="utf-8",
     )
-    for directive in (no_corpus_field, nonexistent_corpus):
-        captured = _capture_subprocess_run(monkeypatch)
+    _capture_subprocess_run(monkeypatch)
+    with pytest.raises(BundleDispatchError) as excinfo:
+        dispatch_retrieval(
+            directive_path=nonexistent_corpus, bundle_dir=tmp_path / "bundle"
+        )
+    assert excinfo.value.tag == "bundle.dispatch.corpus-dir-invalid"
+    assert "does-not-exist" in str(excinfo.value)
+
+
+def test_dispatch_relative_corpus_dir_is_anchored_to_repo_root(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """Relative corpus_dir resolves against REPO_ROOT, not the process cwd."""
+    from app.specialists.texas.retrieval_dispatch import REPO_ROOT
+
+    relative_corpus = "tests/fixtures/specialists/texas/fixture_bundle"
+    directive = tmp_path / "relative-corpus.yaml"
+    directive.write_text(
+        f"corpus_dir: {relative_corpus}\nsources: []\n", encoding="utf-8"
+    )
+    captured = _capture_subprocess_run(monkeypatch)
+    monkeypatch.chdir(tmp_path)  # process cwd must NOT influence resolution
+    dispatch_retrieval(directive_path=directive, bundle_dir=tmp_path / "bundle")
+    assert captured["kwargs"]["cwd"] == str(REPO_ROOT / relative_corpus)
+
+
+def test_dispatch_timeout_raises_tagged_dispatch_error(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """subprocess.TimeoutExpired surfaces as a tagged BundleDispatchError."""
+    import subprocess as _subprocess
+
+    from app.specialists.texas._act import BundleDispatchError
+
+    corpus = tmp_path / "corpus"
+    corpus.mkdir()
+    directive = tmp_path / "directive.yaml"
+    directive.write_text(
+        f"corpus_dir: {corpus.as_posix()}\nsources: []\n", encoding="utf-8"
+    )
+
+    def _raise_timeout(*args: Any, **kwargs: Any) -> None:
+        raise _subprocess.TimeoutExpired(cmd="run_wrangler.py", timeout=30)
+
+    monkeypatch.setattr(
+        "app.specialists.texas.retrieval_dispatch.subprocess.run", _raise_timeout
+    )
+    with pytest.raises(BundleDispatchError) as excinfo:
         dispatch_retrieval(directive_path=directive, bundle_dir=tmp_path / "bundle")
-        assert captured["kwargs"]["cwd"] == str(REPO_ROOT)
+    assert excinfo.value.tag == "bundle.dispatch.timeout"

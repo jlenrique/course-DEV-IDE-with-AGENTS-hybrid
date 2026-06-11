@@ -9,11 +9,14 @@ from typing import Any
 
 import yaml
 
+from app.specialists.texas._act import BundleDispatchError
+
 REPO_ROOT = Path(__file__).resolve().parents[3]
 RUN_WRANGLER = REPO_ROOT / "skills" / "bmad-agent-texas" / "scripts" / "run_wrangler.py"
 DEFAULT_FIXTURE_BUNDLE = (
     REPO_ROOT / "tests" / "fixtures" / "specialists" / "texas" / "fixture_bundle"
 )
+DISPATCH_TIMEOUT_SECONDS = 30
 
 
 def _directive_corpus_cwd(directive_path: Path) -> Path:
@@ -24,12 +27,17 @@ def _directive_corpus_cwd(directive_path: Path) -> Path:
     ``corpus_dir`` field. The Story 34-1 integration ratchet pins the correct
     invocation contract (``cwd=directive.corpus_dir``); production dispatch
     must mirror it or every locator fails ``File not found`` (Trial-3
-    attempt-3 crash, 2026-06-11). Falls back to ``REPO_ROOT`` when the
-    directive carries no usable ``corpus_dir``.
+    attempt-3 crash, 2026-06-11). Falls back to ``REPO_ROOT`` only when the
+    directive carries NO ``corpus_dir`` (legacy directives) or cannot be
+    read at all (the wrangler subprocess then fail-louds with its own
+    taxonomy). A ``corpus_dir`` that is present but not a directory is a
+    misconfiguration and raises instead of silently reproducing the
+    attempt-3 wrong-cwd signature; a relative ``corpus_dir`` is anchored
+    against ``REPO_ROOT`` so the result never depends on the process cwd.
     """
     try:
         loaded = yaml.safe_load(directive_path.read_text(encoding="utf-8"))
-    except (OSError, yaml.YAMLError):
+    except (OSError, UnicodeDecodeError, yaml.YAMLError):
         return REPO_ROOT
     if not isinstance(loaded, dict):
         return REPO_ROOT
@@ -37,7 +45,15 @@ def _directive_corpus_cwd(directive_path: Path) -> Path:
     if not corpus_dir:
         return REPO_ROOT
     candidate = Path(str(corpus_dir))
-    return candidate if candidate.is_dir() else REPO_ROOT
+    if not candidate.is_absolute():
+        candidate = REPO_ROOT / candidate
+    if not candidate.is_dir():
+        raise BundleDispatchError(
+            f"directive corpus_dir is not a directory: {corpus_dir!r} "
+            f"(resolved to {candidate})",
+            tag="bundle.dispatch.corpus-dir-invalid",
+        )
+    return candidate
 
 
 def _venv_python() -> Path:
@@ -80,14 +96,20 @@ def dispatch_retrieval(
         str(bundle_arg),
         "--json",
     ]
-    completed = subprocess.run(
-        command,
-        capture_output=True,
-        text=True,
-        shell=False,
-        timeout=30,
-        cwd=str(_directive_corpus_cwd(Path(directive_path))),
-    )
+    try:
+        completed = subprocess.run(
+            command,
+            capture_output=True,
+            text=True,
+            shell=False,
+            timeout=DISPATCH_TIMEOUT_SECONDS,
+            cwd=str(_directive_corpus_cwd(directive_arg)),
+        )
+    except subprocess.TimeoutExpired as exc:
+        raise BundleDispatchError(
+            f"texas wrangler dispatch timed out after {DISPATCH_TIMEOUT_SECONDS}s",
+            tag="bundle.dispatch.timeout",
+        ) from exc
     return {
         "status": "dispatched",
         "bundle_dir": str(bundle_dir),

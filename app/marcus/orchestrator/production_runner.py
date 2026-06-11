@@ -673,6 +673,25 @@ def _record_cost(
     return record_trial_cost_report(str(trial_id), report, runs_root=runs_root)
 
 
+def _merge_artifact_paths(
+    existing: list[Path], *candidates: Path | None
+) -> list[Path]:
+    """Append candidates in order, dropping Nones and duplicates.
+
+    Multi-gate pause-and-resume re-emits stable-path artifacts
+    (checkpoint.json, run_summary.yaml, the cost report) at every pause;
+    without dedupe the envelope accumulates one duplicate per crossed gate.
+    """
+    merged: list[Path] = []
+    for path in (*existing, *candidates):
+        if path is None:
+            continue
+        candidate = Path(path)
+        if candidate not in merged:
+            merged.append(candidate)
+    return merged
+
+
 def _has_production_evidence(
     *,
     graph_step_completed: bool,
@@ -866,6 +885,9 @@ def _pause_at_gate(
         if child_runs
         else None
     )
+    # A resume segment can reach the next gate with zero new child runs
+    # (e.g., pre-gate-Marcus declined under a non-live key). Preserve the
+    # prior segment's persisted values instead of regressing them to None.
     cost_report_path = (
         _record_cost(
             trial_id=trial_id,
@@ -874,13 +896,15 @@ def _pause_at_gate(
             allow_offline_cost_report=allow_offline_cost_report,
         )
         if trace_root is not None or allow_offline_cost_report
-        else None
+        else envelope.cost_report_path
     )
     trace_path = None
     if trace_root is not None:
         trace_path = _run_dir(trial_id, runs_root) / "trace-fixture.json"
         _write_json(trace_path, _trace_to_json(trace_root))
-    langsmith_trace_id = str(trial_id) if child_runs else None
+    langsmith_trace_id = (
+        str(trial_id) if child_runs else envelope.langsmith_trace_id
+    )
     run_summary_path = _emit_run_summary_yaml(
         trial_id=trial_id,
         terminal_gate=gate_id,
@@ -908,15 +932,15 @@ def _pause_at_gate(
             ),
             "production_envelope": production_envelope,
             "cost_report_path": cost_report_path,
-            "artifact_paths": [
-                *envelope.artifact_paths,
+            "artifact_paths": _merge_artifact_paths(
+                envelope.artifact_paths,
                 decision_path,
                 checkpoint,
-                *([conversation_path] if conversation_path is not None else []),
-                *([cost_report_path] if cost_report_path is not None else []),
-                *([trace_path] if trace_path is not None else []),
+                conversation_path,
+                cost_report_path,
+                trace_path,
                 run_summary_path,
-            ],
+            ),
         }
     )
     _persist_envelope(envelope, runs_root)
@@ -993,6 +1017,7 @@ def run_production_trial(
     child_runs: list[SimpleNamespace] = []
     specialist_calls = 0
     graph_step_completed = False
+    last_gate_crossed: str | None = None
     trace_metadata: dict[str, str]
 
     with _trial_trace_context(
@@ -1010,6 +1035,7 @@ def run_production_trial(
                         raise GateBypassError(
                             f"refused silent bypass of gate {gate_id} at manifest node {node.id}"
                         )
+                    last_gate_crossed = gate_id
                     graph_step_completed = True
                     continue
                 return _pause_at_gate(
@@ -1099,7 +1125,9 @@ def run_production_trial(
     langsmith_trace_id = str(effective_trial_id) if child_runs else None
     run_summary_path = _emit_run_summary_yaml(
         trial_id=effective_trial_id,
-        terminal_gate="G4",
+        # Last gate actually traversed this walk; "G4" only as the legacy
+        # fallback for manifests that carry no gate nodes at all.
+        terminal_gate=last_gate_crossed or "G4",
         runs_root=runs_root,
         manifest_path=manifest_path,
         langsmith_trace_id=langsmith_trace_id,
@@ -1126,13 +1154,13 @@ def run_production_trial(
             "production_clone_launch_evidence_reason": reason,
             "production_envelope": production_envelope,
             "cost_report_path": cost_report_path,
-            "artifact_paths": [
-                *envelope.artifact_paths,
+            "artifact_paths": _merge_artifact_paths(
+                envelope.artifact_paths,
                 cost_report_path,
-                *([trace_path] if trace_path is not None else []),
+                trace_path,
                 run_summary_path,
                 engagement_report_path,
-            ],
+            ),
         }
     )
     _persist_envelope(envelope, runs_root)
@@ -1200,7 +1228,9 @@ def resume_production_trial(
                 "status": "failed",
                 "completed_at": _now(),
                 "production_clone_launch_evidence_reason": "operator-rejected-at-gate",
-                "artifact_paths": [*envelope.artifact_paths, run_summary_path],
+                "artifact_paths": _merge_artifact_paths(
+                    envelope.artifact_paths, run_summary_path
+                ),
             }
         )
         _persist_envelope(updated, runs_root)
@@ -1224,6 +1254,9 @@ def resume_production_trial(
     allow_offline_cost_report = bool(runner.get("allow_offline_cost_report", False))
     start_index = int(checkpoint["next_node_index"])
     graph_step_completed = bool(production_envelope.contributions)
+    # The gate just approved is the last crossed until the walk traverses
+    # further gates (offline mode); live mode pauses at the next gate instead.
+    last_gate_crossed = verdict.gate_id
 
     with _trial_trace_context(
         trial_id=trial_id,
@@ -1256,6 +1289,7 @@ def resume_production_trial(
                                 proposal=pre_fill,
                             )
                         )
+                    last_gate_crossed = gate_id
                     graph_step_completed = True
                     continue
                 # Trial-3 attempt-3 fix (2026-06-11): live resume previously
@@ -1348,10 +1382,12 @@ def resume_production_trial(
     if trace_root is not None:
         trace_path = run_dir / "trace-fixture.json"
         _write_json(trace_path, _trace_to_json(trace_root))
-    langsmith_trace_id = str(trial_id) if child_runs else None
+    langsmith_trace_id = (
+        str(trial_id) if child_runs else envelope.langsmith_trace_id
+    )
     run_summary_path = _emit_run_summary_yaml(
         trial_id=trial_id,
-        terminal_gate="G4",
+        terminal_gate=last_gate_crossed,
         runs_root=runs_root,
         manifest_path=manifest_path,
         langsmith_trace_id=langsmith_trace_id,
@@ -1376,14 +1412,14 @@ def resume_production_trial(
             "production_clone_launch_evidence_reason": reason,
             "production_envelope": production_envelope,
             "cost_report_path": cost_report_path,
-            "artifact_paths": [
-                *envelope.artifact_paths,
+            "artifact_paths": _merge_artifact_paths(
+                envelope.artifact_paths,
                 run_dir / "resume-command.json",
                 cost_report_path,
-                *([trace_path] if trace_path is not None else []),
+                trace_path,
                 run_summary_path,
                 engagement_report_path,
-            ],
+            ),
         }
     )
     _persist_envelope(updated, runs_root)

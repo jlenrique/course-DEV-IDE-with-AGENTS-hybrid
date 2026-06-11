@@ -87,6 +87,16 @@ PERMITTED_PYTHON_DIFFS = {
     "app/marcus/orchestrator/production_runner.py",
     "tests/integration/marcus/test_gate_bypass_refusal.py",
     "tests/integration/marcus/test_production_runner_gate_pause_resume.py",
+    # 5-fix batch bmad-code-review remediation 2026-06-11 (party-mode
+    # guardrail #3 discharge; findings ledger in deferred-work.md §code
+    # review of trial-3-five-fix-batch). Lint-only on graph.py (ruff I001
+    # import-sort + F401 unused yaml — pre-existing nits queued into the
+    # batch review); env-robustness fixes in the two test files (editor
+    # PATH stub + composer seam stub; facade sweep list tracks the Story
+    # 34-6 intake.py deletion). No dispatch-surface behavior change.
+    "app/specialists/texas/graph.py",
+    "tests/integration/marcus/test_directive_confirm_or_edit_prompt.py",
+    "tests/integration/marcus/test_facade_identity_invariant.py",
     # Story 34-2 wrangler-side test (substrate-audit-corrected path 2026-05-22;
     # co-located with existing test_run_wrangler.py at skills/.../tests/).
     "skills/bmad-agent-texas/scripts/tests/test_run_wrangler_role_enum_union_and_excluded_reason.py",
