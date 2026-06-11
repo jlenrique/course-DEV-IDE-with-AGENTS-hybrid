@@ -31,6 +31,12 @@ Party-mode rounds: 2 (pre-scrub /goal design; A-vs-B hotfix consensus — both u
 
 Class S forecast: fix #9 CD validator → resume `50b7d353` (open throttle every segment) → G2C → G3 (Storyboard B on Pages site) → G4 → closeout per playbook Phases 5-6. Then postmortem (methodology §7 routing; cross-trial-learnings: "test pinned the correct contract, production never adopted it"; "speculative exit-code semantics"; "known-deferred follow-on never reactivated before launch despite readiness review") + Epic-34 retrospective + 5-fix batch review.
 
+## WRAPUP step log (Class S, 2026-06-11)
+
+- **Step 0 SKIPPED-WITH-RATIONALE:** `/harmonize`/Cora sweep not available in this session's toolset (Audra/Cora dissolved 2026-04-24; CLI wrapper still Slab-4-scoped). Compensating evidence: per-fix battery discipline (ratchet 29 / marcus suite 133 / conformance 19 / lint-imports 13 KEPT / ruff clean on every touched file) + stash-A/B attribution of all 3 ambient failures as pre-existing. No `reports/dev-coherence/` entry this session.
+- **Step 1 quality gate:** PASS (git diff --check clean; workflow-status YAML parses; lint-imports 13 KEPT; ruff clean on touched set). Pre-existing ambient: texas/graph.py I001+F401; facade AST sweep stale file list; 2 directive-prompt env tests — all queued into the 5-fix batch review entry.
+- **Steps 2/3/5:** deferred-inventory +4; cross-trial-learnings §Trial-3 interim entries; DISPOSITION.md in all 4 run dirs; bmm-workflow-status + project-context dated updates. **Step 4a SKIP** (sprint-status untouched). **4b SKIP** (no agent/skill changes). **6 SKIP** (no content promotion; corpus re-pull committed `f3cd33c`). **Step 9:** guide §5 verdict-shape fix + playbook gate-table corrections QUEUED to doc-drift batch (listed in hot-start); **knowledge-graph staleness flagged** — ~10 substrate files changed since anchor `61aaf03`; recommend `/understand` re-run + ONBOARDING regen at next docs window. **Step 10:** worktree reconciled — untracked `verdict.json` (consumed run-scratch) + repo-root `runs/<uuid>/` dirs (summary-writer RUNS_ROOT inconsistency, harvested as nit) left as documented ambient state. **Step 11:** class S declared=actual, no drift; single worktree. **Step 12:** push mandatory — done (final HEAD per git log).
+
 ---
 
 # Session Handoff — 2026-05-22 (Epic 34 §02A Downstream-Consumer Coherence opened + Story 34-1 done)
