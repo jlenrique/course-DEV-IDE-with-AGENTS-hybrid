@@ -716,18 +716,30 @@ def _runner_payload_for_specialist(
     specialist_id: str,
     directive_path: Path | None,
     bundle_dir: Path | None,
+    gate_code: str | None = None,
 ) -> dict[str, str] | None:
-    """Build runner_supplied_payload for Texas when directive composition has run.
+    """Build runner_supplied_payload for specialists needing runner-side context.
 
-    Story 7a.1 / A-R3 Option A: only Texas receives the runner-supplied keys.
+    Story 7a.1 / A-R3 Option A: Texas receives directive/bundle paths when
+    directive composition has run.
+
+    Trial-3 finding #10 (2026-06-11): Quinn-R's _act selects its body from a
+    payload-supplied ``gate_id``, but production dispatch never threaded the
+    manifest node's gate context — the first-ever live Quinn-R dispatch
+    (§07B under open throttle) crashed with ModeMismatchError(''). Quinn-R
+    now receives the dispatching node's ``gate_code`` as ``gate_id`` via the
+    same A-R3 Option-A seam.
+
     Other specialists receive None.
     """
-    if specialist_id != "texas" or directive_path is None or bundle_dir is None:
-        return None
-    return {
-        "directive_path": directive_path.as_posix(),
-        "bundle_dir": bundle_dir.as_posix(),
-    }
+    if specialist_id == "texas" and directive_path is not None and bundle_dir is not None:
+        return {
+            "directive_path": directive_path.as_posix(),
+            "bundle_dir": bundle_dir.as_posix(),
+        }
+    if specialist_id == "quinn-r" and gate_code:
+        return {"gate_id": gate_code}
+    return None
 
 
 def _should_invoke_pre_gate_marcus(*, allow_offline_cost_report: bool) -> bool:
@@ -1088,6 +1100,7 @@ def run_production_trial(
                         specialist_id=specialist_id,
                         directive_path=directive_path,
                         bundle_dir=bundle_dir,
+                        gate_code=node.gate_code,
                     )
                     if runner_payload is not None:
                         invoke_kwargs["runner_supplied_payload"] = runner_payload
@@ -1341,13 +1354,25 @@ def resume_production_trial(
                         specialist_id=specialist_id,
                         production_envelope=production_envelope,
                     )
-                    production_envelope = adapter.invoke_specialist(
+                    resume_invoke_kwargs: dict[str, Any] = {
+                        "specialist_id": specialist_id,
+                        "envelope": production_envelope,
+                        "dependency_map": dependency_map,
+                        "cost_usd": 0.0,
+                        "base_state": run_state,
+                    }
+                    # Finding #10: the resume walker passed no runner-side
+                    # context at all (the Texas-only seam lived in the start
+                    # walker); Quinn-R needs the node's gate_code here too.
+                    resume_runner_payload = _runner_payload_for_specialist(
                         specialist_id=specialist_id,
-                        envelope=production_envelope,
-                        dependency_map=dependency_map,
-                        cost_usd=0.0,
-                        base_state=run_state,
+                        directive_path=None,
+                        bundle_dir=None,
+                        gate_code=node.gate_code,
                     )
+                    if resume_runner_payload is not None:
+                        resume_invoke_kwargs["runner_supplied_payload"] = resume_runner_payload
+                    production_envelope = adapter.invoke_specialist(**resume_invoke_kwargs)
                     run_state = run_state.model_copy(
                         update={"production_envelope": production_envelope}
                     )

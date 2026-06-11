@@ -129,4 +129,7 @@ def test_quinn_r_act_body_loc_budget() -> None:
 
     source = inspect.getsource(act_module)
     logical_lines = [line for line in source.splitlines() if line.strip()]
-    assert len(logical_lines) <= 150
+    # Budget 150 -> 160 at Trial-3 finding #10 (2026-06-11): G2B variant-selection
+    # + G2F motion-gate bodies added (manifest dispatches Quinn-R at 5 gates; only
+    # 3 had bodies). Bounded headroom, not an open ceiling.
+    assert len(logical_lines) <= 160

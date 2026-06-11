@@ -114,6 +114,24 @@ PERMITTED_PYTHON_DIFFS = {
     "app/specialists/cd/graph.py",
     "scripts/utilities/creative_directive_validator.py",
     "tests/specialists/cd/test_cd_act_node_dispatch.py",
+    # Trial-3 finding #10 fix 2026-06-11 (attempt-4 first resume crash):
+    # first-ever live Quinn-R dispatch (§07B, open throttle) raised
+    # ModeMismatchError('') — two-layer gap: (1) production dispatch never
+    # threaded the manifest node's gate context (Texas-only A-R3 seam;
+    # resume walker passed no runner payload at all); (2) GATE_MODES only
+    # covered 3 of Quinn-R's 5 manifest gates (G2B variant-selection + G2F
+    # motion-gate had no bodies). Fix: _runner_payload_for_specialist gains
+    # gate_code -> {"gate_id": ...} for quinn-r at both walk sites; Quinn-R
+    # gains dedicated minimal G2B/G2F bodies (mapping onto "pre" would write
+    # a premature authorized-storyboard at §07B; "post" assumes a composed
+    # artifact absent at G2F). Manifest-coverage lockstep test pins against
+    # a recurrence. Fourth A23/P5 instance in the trial-launch arc. Bounded
+    # 2-path extension (production_runner.py already allowlisted above);
+    # freeze predicates remain in force.
+    "app/specialists/quinn_r/_act.py",
+    "tests/specialists/quinn_r/test_quinn_r_g2b_g2f_gate_modes.py",
+    # LOC-budget guard bumped 150->160 for the two new gate bodies (same fix).
+    "tests/specialists/quinn_r/test_quinn_r_act_node_dispatch.py",
     # Story 34-2 wrangler-side test (substrate-audit-corrected path 2026-05-22;
     # co-located with existing test_run_wrangler.py at skills/.../tests/).
     "skills/bmad-agent-texas/scripts/tests/test_run_wrangler_role_enum_union_and_excluded_reason.py",

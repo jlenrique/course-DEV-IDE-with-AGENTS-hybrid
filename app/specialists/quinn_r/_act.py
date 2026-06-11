@@ -21,7 +21,9 @@ from app.specialists.quinn_r.sensory_bridges_dispatch import dispatch_to_sensory
 
 REPO_ROOT = Path(__file__).resolve().parents[3]
 SCHEMA_PATH = REPO_ROOT / "state/config/schemas/authorized-storyboard.schema.json"
-GATE_MODES = {"G2C": "pre", "G5": "g5", "G3B": "post"}
+# Finding #10 (2026-06-11): manifest dispatches Quinn-R at 5 gates; G2B/G2F have
+# dedicated minimal bodies (pre/post bodies presume G2C/G3B artifacts that don't exist there).
+GATE_MODES = {"G2C": "pre", "G5": "g5", "G3B": "post", "G2B": "variant", "G2F": "motion"}
 
 
 class ModeMismatchError(ValueError):
@@ -62,7 +64,7 @@ def _mode(payload: dict[str, Any]) -> tuple[str, str]:
     if mode is None:
         raise ModeMismatchError(f"unknown Quinn-R gate_id/gate_phase: {gate_id!r}")
     phase = str(payload.get("gate_phase") or "")
-    expected = {"pre": "pre-composition", "g5": "pre-composition", "post": "post-composition"}[mode]
+    expected = {"pre": "pre-composition", "g5": "pre-composition", "post": "post-composition", "variant": "pre-composition", "motion": "post-composition"}[mode]  # noqa: E501
     if phase and phase != expected:
         raise ModeMismatchError(f"Quinn-R {gate_id or phase} cannot run {phase} body")
     return gate_id or expected, mode
@@ -162,6 +164,12 @@ def act(state: RunState) -> dict[str, Any]:
             verdict = {"mode": "pre-composition", "status": "approved", "artifact_paths": [str(artifact)]}  # noqa: E501
         elif mode == "g5":
             verdict = {"mode": "g5-pre-composition-qa", "status": "approved", **run_g5_checks(payload)}  # noqa: E501
+        elif mode == "variant":
+            selections = [{"slide_id": str(s.get("slide_id") or s.get("id") or f"slide-{i}"), "selected_variant": str(s.get("selected_variant") or "variant-1")} for i, s in enumerate(_slides(payload), start=1)]  # noqa: E501
+            verdict = {"mode": "variant-selection", "status": "approved", "selections": selections}
+        elif mode == "motion":
+            assets = payload.get("motion_assets")
+            verdict = {"mode": "motion-gate", "status": "reviewed", "motion_assets_reviewed": len(assets) if isinstance(assets, list) else 0}  # noqa: E501
         else:
             artifact_path = payload.get("artifact_path")
             perception = dispatch_to_sensory_bridges(artifact_path=artifact_path, modality=str(payload.get("modality") or "video"), gate=gate_id)  # noqa: E501
