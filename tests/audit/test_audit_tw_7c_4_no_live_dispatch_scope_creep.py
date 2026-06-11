@@ -77,6 +77,16 @@ PERMITTED_PYTHON_DIFFS = {
     # coordinated shape-pin bump in test_run_summary_yaml_emit.py.
     "app/models/state/specialist_summary_artifacts.py",
     "tests/integration/marcus/test_run_summary_yaml_emit.py",
+    # Fifth finding, same trial arc (party-mode 4-of-4 Option-A consensus
+    # 2026-06-11): resume_production_trial had NO gate-pause machinery —
+    # raised GateBypassError at every gate in live mode; no live trial
+    # could advance gate-to-gate. Fix: _pause_at_gate extracted verbatim
+    # from the start-path gate branch (commit 1, proven by unmodified
+    # marcus suite) and wired into the resume walker (commit 2); the
+    # defect-pinning test rewritten to pin pause-at-next-gate.
+    "app/marcus/orchestrator/production_runner.py",
+    "tests/integration/marcus/test_gate_bypass_refusal.py",
+    "tests/integration/marcus/test_production_runner_gate_pause_resume.py",
     # Story 34-2 wrangler-side test (substrate-audit-corrected path 2026-05-22;
     # co-located with existing test_run_wrangler.py at skills/.../tests/).
     "skills/bmad-agent-texas/scripts/tests/test_run_wrangler_role_enum_union_and_excluded_reason.py",

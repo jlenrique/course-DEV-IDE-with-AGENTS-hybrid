@@ -1235,29 +1235,55 @@ def resume_production_trial(
             node_kind = getattr(handler, "__production_node_kind__", None)
             if node_kind == "gate":
                 gate_id = handler.__production_gate_id__
-                pending = [item.id for item in manifest.nodes[index + 1 :]]
-                pre_fill = _invoke_pre_gate_marcus_for_gate(
-                    gate_id=gate_id,
-                    trial_id=trial_id,
-                    production_envelope=production_envelope,
-                    pending_nodes=pending,
-                    artifact_paths=envelope.artifact_paths,
-                    allow_offline_cost_report=allow_offline_cost_report,
-                )
-                if pre_fill is not None:
-                    child_runs.append(
-                        _trace_run_for_pre_gate_marcus(
-                            trial_id=trial_id,
-                            gate_id=gate_id,
-                            proposal=pre_fill,
+                if allow_offline_cost_report:
+                    # Offline runs traverse gates without pausing (existing
+                    # contract); keep the pre-gate draft + trace append the
+                    # prior code performed before continuing.
+                    pending = [item.id for item in manifest.nodes[index + 1 :]]
+                    pre_fill = _invoke_pre_gate_marcus_for_gate(
+                        gate_id=gate_id,
+                        trial_id=trial_id,
+                        production_envelope=production_envelope,
+                        pending_nodes=pending,
+                        artifact_paths=envelope.artifact_paths,
+                        allow_offline_cost_report=allow_offline_cost_report,
+                    )
+                    if pre_fill is not None:
+                        child_runs.append(
+                            _trace_run_for_pre_gate_marcus(
+                                trial_id=trial_id,
+                                gate_id=gate_id,
+                                proposal=pre_fill,
+                            )
                         )
-                    )
-                if not allow_offline_cost_report:
-                    raise GateBypassError(
-                        f"refused silent bypass of gate {gate_id} at manifest node {node.id}"
-                    )
-                graph_step_completed = True
-                continue
+                    graph_step_completed = True
+                    continue
+                # Trial-3 attempt-3 fix (2026-06-11): live resume previously
+                # raised GateBypassError at EVERY gate — the pause machinery
+                # existed only in the start walker, so no live trial could
+                # ever advance gate-to-gate. The guard is deliberately
+                # converted to the shared pause (the decided gate is never
+                # revisited: start_index = checkpoint.next_node_index is
+                # already past it, so this only fires at genuinely new gates).
+                return _pause_at_gate(
+                    gate_id=gate_id,
+                    node_id=node.id,
+                    node_index=index,
+                    manifest=manifest,
+                    trial_id=trial_id,
+                    operator_id=runner.get("operator_id") or envelope.operator_id,
+                    envelope=envelope,
+                    production_envelope=production_envelope,
+                    run_state=run_state,
+                    child_runs=child_runs,
+                    trace_metadata=trace_metadata,
+                    specialist_calls=len(production_envelope.contributions),
+                    graph_step_completed=graph_step_completed,
+                    manifest_path=manifest_path,
+                    runs_root=runs_root,
+                    allow_offline_cost_report=allow_offline_cost_report,
+                    max_specialist_calls=resumed_max_specialist_calls,
+                )
 
             if (
                 node_kind == "specialist"

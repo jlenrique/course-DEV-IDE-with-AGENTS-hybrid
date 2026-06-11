@@ -96,7 +96,24 @@ def test_offline_cost_report_can_still_skip_pause_points(tmp_path: Path, monkeyp
     assert envelope.cost_report_path is not None
 
 
-def test_resume_refuses_later_gate_bypass(tmp_path: Path, monkeypatch) -> None:
+def test_resume_pauses_at_next_gate_with_full_artifacts(
+    tmp_path: Path, monkeypatch
+) -> None:
+    """Live resume from an approved G1 PAUSES at G2C with full pause artifacts.
+
+    REWRITES the former ``test_resume_refuses_later_gate_bypass``, which
+    pinned Trial-3 attempt-3 defect #5 as a feature: the resume walker had
+    no pause machinery and raised GateBypassError at every gate in live
+    mode, so no live trial could ever advance gate-to-gate. The guard was
+    DELIBERATELY converted into the shared ``_pause_at_gate`` pause (party-
+    mode 4-of-4 Option-A consensus 2026-06-11; Murat assertion #4 "decide,
+    don't drift"). Silent bypass remains impossible: an undecided gate now
+    pauses with a registered DecisionCard instead of crashing the resume,
+    and a decided gate is never revisited because the resume walk starts at
+    checkpoint.next_node_index, which is already past it. The start-path
+    bypass guard (test_active_gate_bypass_without_verdict_raises) is
+    unchanged.
+    """
     monkeypatch.setenv("OPENAI_API_KEY", "sk-test")
     monkeypatch.setattr(production_runner, "ProductionDispatchAdapter", _FakeAdapter)
     manifest_path = tmp_path / "two-gate-manifest.yaml"
@@ -152,13 +169,41 @@ edges:
         decision_card_digest=payload["digest"],
     )
 
-    with pytest.raises(
-        production_runner.GateBypassError,
-        match="refused silent bypass of gate G2C at manifest node 04",
-    ):
-        production_runner.resume_production_trial(
-            trial_id=TRIAL_ID,
-            verdict=verdict,
-            runs_root=tmp_path,
-            max_specialist_calls=1,
+    envelope = production_runner.resume_production_trial(
+        trial_id=TRIAL_ID,
+        verdict=verdict,
+        runs_root=tmp_path,
+        max_specialist_calls=1,
+    )
+
+    # Envelope paused at the NEXT gate, not crashed, not completed.
+    assert envelope.status == "paused-at-gate"
+    assert envelope.paused_gate == "G2C"
+    # The resume segment dispatched the intervening specialist (node 03).
+    assert envelope.production_envelope.get_contribution("irene") is not None
+    # Full pause artifacts: decision card on disk with registered digest.
+    card_payload = json.loads(
+        (tmp_path / str(TRIAL_ID) / "decision-card-G2C.json").read_text(
+            encoding="utf-8"
         )
+    )
+    assert card_payload["card"]["gate_id"] == "G2C"
+    assert len(card_payload["digest"]) == 64
+    from app.gates.resume_api import get_registered_decision_card
+
+    stored = get_registered_decision_card(TRIAL_ID, "G2C")
+    assert stored is not None
+    assert stored.digest == card_payload["digest"]
+    # Checkpoint advanced to the ABSOLUTE post-G2C index (G2C is manifest
+    # node index 3; next_node_index = 3 + 1). Guards the off-by-relative
+    # landmine: a relative resume index would write a wrong checkpoint and
+    # re-enter or skip a gate on the following resume.
+    checkpoint = json.loads(
+        (tmp_path / str(TRIAL_ID) / "checkpoint.json").read_text(encoding="utf-8")
+    )
+    assert checkpoint["gate_id"] == "G2C"
+    assert checkpoint["next_node_index"] == 4
+    # Persisted run.json agrees with the returned envelope.
+    persisted = json.loads((tmp_path / str(TRIAL_ID) / "run.json").read_text())
+    assert persisted["status"] == "paused-at-gate"
+    assert persisted["paused_gate"] == "G2C"
