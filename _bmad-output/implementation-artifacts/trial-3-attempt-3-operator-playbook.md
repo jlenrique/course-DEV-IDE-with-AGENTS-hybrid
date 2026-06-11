@@ -82,7 +82,7 @@ $env:PYTHONIOENCODING = "utf-8"
 .\.venv\Scripts\python.exe -m app.marcus.cli trial start --preset production --input course-content/courses/tejal-apc-c1-m1-p2-trends/ --operator-id juanl
 ```
 
-**Note the trial UUID from stdout immediately** — every resume needs it. [2026-06-11 3:53pm: run ID 235e0570-08b1-4d80-8119-e715d7cbd793]
+**Note the trial UUID from stdout immediately** — every resume needs it. [2026-06-11 4:17: d8d1332a-60e8-49e8-b246-e5f10badab1e]
 
 At the G0 prompt (directive printed above the prompt):
 
