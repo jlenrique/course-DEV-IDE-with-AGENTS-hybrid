@@ -2,7 +2,7 @@
 
 **Source:** [Tejal C1M1 Outline](https://www.notion.so/Tejal-C1M1-Outline-75c02e8c7930832bb7e3819afe23ef9b)
 **Section pulled:** Part 2: The Macro Trends & The Case for Change (Chapters 2 & 3) — from the "C1M1: Gemini Updated" outline (block id `77902e8c-7930-8249-a434-017f4e96b477`).
-**Pull timestamp (UTC):** 2026-05-21T23:37:47Z
+**Pull timestamp (UTC):** 2026-06-11T18:13:39Z
 **Pulled via:** Notion MCP (`project-0-course-DEV-IDE-with-AGENTS-hybrid-notion`); rendered by `.tmp/notion_pull_tejal_c1m1_part2.py`.
 **Integration:** `BMAD-Agentic-Course-Content-DEV [2026-03-26]:` (integration id `32f02e8c-7930-814b-909b-00274acc39bc`)
 
