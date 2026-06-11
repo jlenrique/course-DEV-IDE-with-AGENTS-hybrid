@@ -15,7 +15,9 @@ except ImportError:  # pragma: no cover
 
 
 PROJECT_ROOT = default_project_root()
-CREATIVE_DIRECTIVE_SCHEMA_PATH = PROJECT_ROOT / "state" / "config" / "schemas" / "creative-directive.schema.json"
+CREATIVE_DIRECTIVE_SCHEMA_PATH = (
+    PROJECT_ROOT / "state" / "config" / "schemas" / "creative-directive.schema.json"
+)
 EXPERIENCE_PROFILES_PATH = PROJECT_ROOT / "state" / "config" / "experience-profiles.yaml"
 SUM_TOLERANCE = 0.001
 
@@ -34,6 +36,25 @@ def _load_yaml(path: Path) -> dict[str, Any]:
     if not isinstance(payload, dict):
         raise ValueError(f"Expected YAML mapping at {path}")
     return payload
+
+
+def load_experience_profile_targets(
+    *,
+    profiles_path: Path | None = None,
+) -> dict[str, Any]:
+    """Return the configured profile target blocks keyed by profile name.
+
+    Single source of truth for directive emitters (e.g., the CD specialist's
+    deterministic canonicalization): the parity rule below forbids any
+    deviation from these targets, so emitters must bind values from here
+    rather than asking an LLM to reproduce them.
+    """
+    profiles_path = profiles_path or EXPERIENCE_PROFILES_PATH
+    payload = _load_yaml(profiles_path)
+    profiles = payload.get("profiles")
+    if not isinstance(profiles, dict) or not profiles:
+        raise ValueError(f"no profiles mapping in {profiles_path}")
+    return profiles
 
 
 def validate_creative_directive(
@@ -70,7 +91,9 @@ def validate_creative_directive(
     profile_schema = ((schema.get("properties") or {}).get("experience_profile") or {})
     allowed_profiles = set(profile_schema.get("enum", []))
     if profile not in allowed_profiles:
-        errors.append(f"experience_profile must be one of {sorted(allowed_profiles)}; got {profile!r}")
+        errors.append(
+            f"experience_profile must be one of {sorted(allowed_profiles)}; got {profile!r}"
+        )
 
     modes = directive.get("slide_mode_proportions")
     mode_schema = ((schema.get("properties") or {}).get("slide_mode_proportions") or {})
@@ -108,7 +131,9 @@ def validate_creative_directive(
     if not isinstance(controls, dict):
         errors.append("narration_profile_controls must be an object")
     else:
-        allowed_control_keys = set(control_props.keys()) if isinstance(control_props, dict) else set()
+        allowed_control_keys = (
+            set(control_props.keys()) if isinstance(control_props, dict) else set()
+        )
         unknown_control_keys = sorted(set(controls.keys()) - allowed_control_keys)
         if unknown_control_keys:
             errors.append(
@@ -118,7 +143,11 @@ def validate_creative_directive(
             if field not in controls:
                 errors.append(f"narration_profile_controls missing required key: {field}")
         for field, value in controls.items():
-            allowed = ((control_props.get(field) or {}).get("enum")) if isinstance(control_props, dict) else None
+            allowed = (
+                (control_props.get(field) or {}).get("enum")
+                if isinstance(control_props, dict)
+                else None
+            )
             if allowed and value not in allowed:
                 errors.append(
                     f"narration_profile_controls.{field} must be one of {allowed}; got {value!r}"
@@ -130,20 +159,32 @@ def validate_creative_directive(
 
     # Enforce profile parity with configured targets.
     configured_profiles = profiles_data.get("profiles", {})
-    if isinstance(profile, str) and isinstance(configured_profiles, dict) and profile in configured_profiles:
+    if (
+        isinstance(profile, str)
+        and isinstance(configured_profiles, dict)
+        and profile in configured_profiles
+    ):
         target = configured_profiles[profile]
         if isinstance(target, dict):
             target_modes = target.get("slide_mode_proportions")
-            if isinstance(target_modes, dict) and isinstance(modes, dict):
-                if target_modes != modes:
-                    errors.append(
-                        "slide_mode_proportions must match profile target values in experience-profiles.yaml"
-                    )
+            if (
+                isinstance(target_modes, dict)
+                and isinstance(modes, dict)
+                and target_modes != modes
+            ):
+                errors.append(
+                    "slide_mode_proportions must match profile target values "
+                    "in experience-profiles.yaml"
+                )
             target_controls = target.get("narration_profile_controls")
-            if isinstance(target_controls, dict) and isinstance(controls, dict):
-                if target_controls != controls:
-                    errors.append(
-                        "narration_profile_controls must match profile target values in experience-profiles.yaml"
-                    )
+            if (
+                isinstance(target_controls, dict)
+                and isinstance(controls, dict)
+                and target_controls != controls
+            ):
+                errors.append(
+                    "narration_profile_controls must match profile target values "
+                    "in experience-profiles.yaml"
+                )
 
     return errors

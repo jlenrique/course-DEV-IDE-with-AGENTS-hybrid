@@ -81,6 +81,123 @@ def test_parse_cd_directive_branch_errors(raw: str, tag: str) -> None:
     assert exc_info.value.tag == tag
 
 
+# ---------------------------------------------------------------------------
+# Trial-3 finding #9 fix (2026-06-11): the validator's parity rule forbids
+# any deviation from experience-profiles.yaml targets, so the LLM judgment
+# surface is exactly {experience_profile, creative_rationale}; the parse
+# path canonicalizes the rest deterministically. The live 2/2 failure mode
+# (LLM inventing the 11 narration-control values) is structurally closed.
+# ---------------------------------------------------------------------------
+
+
+def test_parse_minimal_llm_output_canonicalizes_to_full_directive() -> None:
+    """profile + rationale alone parse OK; values bound from profile targets."""
+    parsed = _parse_cd_directive(
+        json.dumps(
+            {
+                "cd_directive": {
+                    "experience_profile": "visual-led",
+                    "creative_rationale": "Lead with imagery for this lesson.",
+                }
+            }
+        )
+    )
+    assert parsed["tag"] == "cd_directive.parsed.ok"
+    directive = parsed["cd_directive"]
+    assert directive == _valid_directive() | {
+        "creative_rationale": "Lead with imagery for this lesson."
+    }
+
+
+def test_parse_deviating_values_are_canonicalized_to_profile_targets() -> None:
+    """LLM-invented proportions/controls (the live failure mode) are replaced
+    by the chosen profile's configured targets instead of failing parity."""
+    deviating = {
+        "cd_directive": {
+            "experience_profile": "visual-led",
+            "creative_rationale": "Verbatim rationale.",
+            "slide_mode_proportions": {
+                "literal-text": 0.9,
+                "literal-visual": 0.05,
+                "creative": 0.05,
+            },
+            "narration_profile_controls": {"narrator_source_authority": "invented"},
+        }
+    }
+    parsed = _parse_cd_directive(json.dumps(deviating))
+    assert parsed["cd_directive"]["slide_mode_proportions"] == {
+        "literal-text": 0.15,
+        "literal-visual": 0.25,
+        "creative": 0.60,
+    }
+    assert (
+        parsed["cd_directive"]["narration_profile_controls"]
+        == _valid_directive()["narration_profile_controls"]
+    )
+
+
+def test_parse_unknown_profile_fails_with_raw_excerpt_captured() -> None:
+    raw = json.dumps(
+        {
+            "cd_directive": {
+                "experience_profile": "cinematic-led",
+                "creative_rationale": "x",
+            }
+        }
+    )
+    with pytest.raises(CdDirectiveParseError) as exc_info:
+        _parse_cd_directive(raw)
+    assert exc_info.value.tag == "cd_directive.parsed.validator-failed"
+    assert "cinematic-led" in str(exc_info.value)
+    assert exc_info.value.raw_excerpt is not None
+    assert "cinematic-led" in exc_info.value.raw_excerpt
+
+
+def test_parse_missing_rationale_fails_with_raw_excerpt_captured() -> None:
+    raw = json.dumps({"cd_directive": {"experience_profile": "text-led"}})
+    with pytest.raises(CdDirectiveParseError) as exc_info:
+        _parse_cd_directive(raw)
+    assert exc_info.value.tag == "cd_directive.parsed.validator-failed"
+    assert "creative_rationale" in str(exc_info.value)
+    assert exc_info.value.raw_excerpt is not None
+
+
+def test_parse_post_canonicalization_validator_drift_surfaces_errors(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """If schema and profiles config ever drift apart, the validator error
+    list is surfaced on the exception instead of being discarded."""
+    monkeypatch.setattr(
+        "app.specialists.cd.graph.validate_creative_directive",
+        lambda _directive: ["synthetic drift error"],
+    )
+    raw = json.dumps(
+        {
+            "cd_directive": {
+                "experience_profile": "visual-led",
+                "creative_rationale": "x",
+            }
+        }
+    )
+    with pytest.raises(CdDirectiveParseError) as exc_info:
+        _parse_cd_directive(raw)
+    assert exc_info.value.tag == "cd_directive.parsed.validator-failed"
+    assert exc_info.value.errors == ["synthetic drift error"]
+    assert "synthetic drift error" in str(exc_info.value)
+
+
+def test_assembled_prompt_embeds_authoritative_profile_targets() -> None:
+    """Lockstep guard: the prompt must carry the values the parity rule
+    enforces (finding #9 root cause was their absence)."""
+    from app.specialists.cd.graph import _assemble_cd_prompt
+
+    _system, user_message = _assemble_cd_prompt({"brief": "x"})
+    assert "Experience profile targets (authoritative)" in user_message
+    assert "narrator_source_authority" in user_message
+    assert "source-grounded" in user_message  # visual-led control value
+    assert "0.6" in user_message  # text-led literal-text / visual-led creative
+
+
 def test_cd_act_parse_failure_sets_two_sided_trail_tag(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
@@ -166,9 +283,11 @@ def test_cd_act_live_llm_smoke() -> None:
     try:
         update = _act(state)
     except CdDirectiveParseError as exc:
-        if "model invocation failed" in str(exc) or (
-            exc.tag == "cd_directive.parsed.validator-failed"
-        ):
+        # Trial-3 finding #9: this test previously ALSO skipped on
+        # validator-failed, masking the live prompt<->validator mismatch in
+        # every green run. Only environment unavailability may skip now;
+        # a validator failure on a live roll is a real defect and must fail.
+        if "model invocation failed" in str(exc):
             pytest.skip("CD live model unavailable in this environment")
         raise
     output = json.loads(update["cache_state"]["cache_prefix"])

@@ -15,9 +15,12 @@ from app.gates.resume_api import resume_from_verdict as _resume_from_verdict
 from app.models.adapter import make_chat_model
 from app.models.state.model_resolution_entry import ModelResolutionEntry
 from app.models.state.run_state import RunState
-from app.specialists.texas.graph import SanctumLockViolation as _SanctumLockViolation
-from scripts.utilities.creative_directive_validator import validate_creative_directive
 from app.specialists._scaffold.contract import SCAFFOLD_NODE_IDS
+from app.specialists.texas.graph import SanctumLockViolation as _SanctumLockViolation
+from scripts.utilities.creative_directive_validator import (
+    load_experience_profile_targets,
+    validate_creative_directive,
+)
 
 REPO_ROOT = Path(__file__).resolve().parents[3]
 SANCTUM_DIR = REPO_ROOT / "_bmad" / "memory" / "bmad-agent-cd"
@@ -40,8 +43,13 @@ CD_SANCTUM_LOCK_BASELINE: dict[str, str] = {
 }
 
 CD_SYSTEM_MESSAGE = (
-    "You are Dan, the creative director. Return only JSON with one top-level "
-    "key `cd_directive` whose value is a valid creative directive object."
+    "You are Dan, the creative director. Choose the experience profile for "
+    "this run and write its creative rationale. Return only JSON with one "
+    "top-level key `cd_directive` whose value is an object carrying "
+    "`experience_profile` (one of the configured profile names) and "
+    "`creative_rationale` (a non-empty string). `schema_version`, "
+    "`slide_mode_proportions`, and `narration_profile_controls` are bound "
+    "deterministically to the chosen profile's configured targets."
 )
 
 TRANSITIONS: tuple[tuple[str, str], ...] = (
@@ -57,11 +65,25 @@ TRANSITIONS: tuple[tuple[str, str], ...] = (
 
 
 class CdDirectiveParseError(RuntimeError):  # noqa: N818
-    """Raised when Dan's creative directive cannot be parsed/validated."""
+    """Raised when Dan's creative directive cannot be parsed/validated.
 
-    def __init__(self, message: str, *, tag: str) -> None:
+    Carries the raw LLM response excerpt (Trial-3 finding #9 raw-response
+    capture: the live 2/2 validator failures left no payload evidence) and
+    any validator error list so postmortems see the offending output.
+    """
+
+    def __init__(
+        self,
+        message: str,
+        *,
+        tag: str,
+        errors: list[str] | None = None,
+        raw_excerpt: str | None = None,
+    ) -> None:
         super().__init__(message)
         self.tag = tag
+        self.errors = errors or []
+        self.raw_excerpt = raw_excerpt
 
 
 def _new_dispatch_trail_entry(
@@ -162,6 +184,19 @@ def _decode_envelope_payload(state: RunState) -> dict[str, Any]:
     return decoded
 
 
+def _profile_targets_prompt_block() -> str:
+    profiles = load_experience_profile_targets()
+    rendered = {
+        name: {
+            "slide_mode_proportions": target.get("slide_mode_proportions"),
+            "narration_profile_controls": target.get("narration_profile_controls"),
+        }
+        for name, target in sorted(profiles.items())
+        if isinstance(target, dict)
+    }
+    return json.dumps(rendered, indent=2, sort_keys=True)
+
+
 def _assemble_cd_prompt(envelope_payload: dict[str, Any]) -> tuple[str, str]:
     payload_json = json.dumps(
         envelope_payload,
@@ -175,9 +210,15 @@ def _assemble_cd_prompt(envelope_payload: dict[str, Any]) -> tuple[str, str]:
         f"{_read_sanctum_digest()}\n\n"
         "## CD references\n\n"
         f"{_read_cd_references()}\n\n"
+        "## Experience profile targets (authoritative)\n\n"
+        f"```json\n{_profile_targets_prompt_block()}\n```\n\n"
         "## Envelope payload\n\n"
         f"```json\n{payload_json}\n```\n\n"
-        "Return a single creative directive object under `cd_directive`."
+        "Return a single creative directive object under `cd_directive`: "
+        "choose `experience_profile` from the targets above and write "
+        "`creative_rationale`. The directive's numeric and control values "
+        "are bound verbatim to the chosen profile's targets "
+        "(validator-enforced parity)."
     )
     return CD_SYSTEM_MESSAGE, user_message
 
@@ -192,7 +233,69 @@ def _extract_json_text(raw_text: str) -> str:
     return stripped
 
 
+_RAW_EXCERPT_CHARS = 500
+
+
+def _raw_excerpt(raw_content: Any) -> str:
+    if isinstance(raw_content, str):
+        text = raw_content
+    else:
+        text = json.dumps(raw_content, sort_keys=True, default=str)
+    return text[:_RAW_EXCERPT_CHARS]
+
+
+def _canonicalize_cd_directive(
+    directive: dict[str, Any], *, raw_excerpt: str
+) -> dict[str, Any]:
+    """Deterministically bind directive values to the chosen profile's targets.
+
+    The validator's parity rule forbids ANY deviation from the configured
+    profile targets in experience-profiles.yaml, so Dan's creative-judgment
+    surface is exactly {experience_profile, creative_rationale}; the
+    deterministic neck fills the rest (Hourglass model). Trial-3 finding #9:
+    the prompt never carried the 11 narration-control target values, so the
+    LLM could not emit a parity-passing directive — systematic 2/2 validator
+    failure at CD's first live dispatch.
+    """
+    profiles = load_experience_profile_targets()
+    profile = directive.get("experience_profile")
+    if not isinstance(profile, str) or profile not in profiles:
+        raise CdDirectiveParseError(
+            f"cd directive experience_profile must be one of {sorted(profiles)}; "
+            f"got {profile!r}; raw response excerpt: {raw_excerpt}",
+            tag="cd_directive.parsed.validator-failed",
+            raw_excerpt=raw_excerpt,
+        )
+    rationale = directive.get("creative_rationale")
+    if not isinstance(rationale, str) or not rationale.strip():
+        raise CdDirectiveParseError(
+            "cd directive creative_rationale must be a non-empty string; "
+            f"raw response excerpt: {raw_excerpt}",
+            tag="cd_directive.parsed.validator-failed",
+            raw_excerpt=raw_excerpt,
+        )
+    target = profiles[profile]
+    if (
+        not isinstance(target, dict)
+        or "slide_mode_proportions" not in target
+        or "narration_profile_controls" not in target
+    ):
+        raise RuntimeError(
+            f"experience profile {profile!r} target block is missing "
+            "slide_mode_proportions/narration_profile_controls"
+        )
+    return {
+        "schema_version": "1.0",
+        "experience_profile": profile,
+        "slide_mode_proportions": dict(target["slide_mode_proportions"]),
+        "narration_profile_controls": dict(target["narration_profile_controls"]),
+        # Rationale is preserved verbatim (S-2 rationale-verbatim-edges).
+        "creative_rationale": rationale,
+    }
+
+
 def _parse_cd_directive(raw_content: Any) -> dict[str, Any]:
+    excerpt = _raw_excerpt(raw_content)
     parsed: Any
     if isinstance(raw_content, dict):
         parsed = raw_content
@@ -207,8 +310,10 @@ def _parse_cd_directive(raw_content: Any) -> dict[str, Any]:
             parsed = json.loads(text)
         except json.JSONDecodeError as exc:
             raise CdDirectiveParseError(
-                f"cd directive parse failed: {exc}",
+                f"cd directive parse failed: {exc}; raw response excerpt: "
+                f"{excerpt}",
                 tag="cd_directive.parsed.malformed",
+                raw_excerpt=excerpt,
             ) from exc
     else:
         raise CdDirectiveParseError(
@@ -220,6 +325,7 @@ def _parse_cd_directive(raw_content: Any) -> dict[str, Any]:
         raise CdDirectiveParseError(
             "cd directive payload must be a mapping",
             tag="cd_directive.parsed.wrong-type",
+            raw_excerpt=excerpt,
         )
 
     directive = parsed.get("cd_directive", parsed)
@@ -227,23 +333,30 @@ def _parse_cd_directive(raw_content: Any) -> dict[str, Any]:
         raise CdDirectiveParseError(
             "cd directive value must be a mapping",
             tag="cd_directive.parsed.wrong-type",
+            raw_excerpt=excerpt,
         )
     if not directive:
         raise CdDirectiveParseError(
             "cd directive cannot be empty",
             tag="cd_directive.parsed.empty",
+            raw_excerpt=excerpt,
         )
 
-    errors = validate_creative_directive(directive)
+    canonical = _canonicalize_cd_directive(directive, raw_excerpt=excerpt)
+    errors = validate_creative_directive(canonical)
     if errors:
         raise CdDirectiveParseError(
-            "cd directive validator failed",
+            "cd directive validator failed after deterministic "
+            f"canonicalization — schema vs experience-profiles config drift? "
+            f"errors: {errors}; raw response excerpt: {excerpt}",
             tag="cd_directive.parsed.validator-failed",
+            errors=errors,
+            raw_excerpt=excerpt,
         )
 
     return {
         "tag": "cd_directive.parsed.ok",
-        "cd_directive": directive,
+        "cd_directive": canonical,
     }
 
 

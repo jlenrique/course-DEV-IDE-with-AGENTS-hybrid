@@ -97,6 +97,23 @@ PERMITTED_PYTHON_DIFFS = {
     "app/specialists/texas/graph.py",
     "tests/integration/marcus/test_directive_confirm_or_edit_prompt.py",
     "tests/integration/marcus/test_facade_identity_invariant.py",
+    # Trial-3 finding #9 fix 2026-06-11 (cd-directive-validator-prompt-
+    # contract-mismatch, deferred-inventory TRIAL-4-RESUME-BLOCKING): the
+    # creative-directive validator's parity rule requires the directive's
+    # slide_mode_proportions + 11-key narration_profile_controls to EXACTLY
+    # equal the chosen profile's targets in experience-profiles.yaml, but
+    # CD's prompt never carried those values — the LLM had to invent them,
+    # failing 2/2 live rolls systematically. Fix: prompt embeds the
+    # authoritative targets; parse path canonicalizes the directive
+    # deterministically from {experience_profile, creative_rationale}
+    # (Hourglass: deterministic neck fills parity-bound values); parse
+    # failures now capture a raw-response excerpt + validator error list.
+    # load_experience_profile_targets() added to the validator module as
+    # the single source of truth. Bounded 3-path extension; freeze
+    # predicates remain in force.
+    "app/specialists/cd/graph.py",
+    "scripts/utilities/creative_directive_validator.py",
+    "tests/specialists/cd/test_cd_act_node_dispatch.py",
     # Story 34-2 wrangler-side test (substrate-audit-corrected path 2026-05-22;
     # co-located with existing test_run_wrangler.py at skills/.../tests/).
     "skills/bmad-agent-texas/scripts/tests/test_run_wrangler_role_enum_union_and_excluded_reason.py",
