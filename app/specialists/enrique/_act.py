@@ -16,7 +16,7 @@ from app.models.state.run_state import RunState
 from app.runtime.economics import RUNS_ROOT
 from app.specialists.dispatch_errors import SpecialistDispatchError
 from app.specialists.enrique.elevenlabs_dispatch import dispatch_to_elevenlabs
-from app.specialists.narration_join import join_narration_segments
+from app.specialists.narration_join import join_narration_segments, phantom_segment_ids
 from scripts.api_clients.elevenlabs_client import ElevenLabsClient
 
 REPO_ROOT = Path(__file__).resolve().parents[3]
@@ -207,6 +207,17 @@ def _segments(payload: dict[str, Any]) -> list[dict[str, Any]]:
                 f"narration join dropped segment(s) {dropped}; refusing "
                 "pre-spend (paid audio must cover the approved narration)",
                 tag="elevenlabs.join.dropped-segments",
+            )
+        # dp-v1.2 rider (Amelia R1): a delta with no matching narration
+        # joins with empty text; the TTS loop would skip it silently while
+        # G5 counted its slide as covered. Refuse BEFORE spend.
+        phantom = phantom_segment_ids(raw)
+        if phantom:
+            raise EnriqueActError(
+                f"narration join produced empty-text segment(s) {phantom}; "
+                "refusing pre-spend (a phantom delta would skip TTS silently "
+                "yet count toward G5 coverage)",
+                tag="elevenlabs.join.empty-narration-text",
             )
     else:
         raw = []

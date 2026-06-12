@@ -65,12 +65,24 @@ def run_g5_grounding(payload: dict[str, Any]) -> dict[str, Any]:
             "(narration_script + segment_manifest_deltas projections)",
             tag="quinn_r.g5.input-missing",
         )
-    from app.specialists.narration_join import join_narration_segments
+    from app.specialists.narration_join import join_narration_segments, phantom_segment_ids
 
     rows = join_narration_segments(narration, deltas)
+    # dp-v1.2 rider (Amelia R1): a delta with no matching narration joins
+    # with empty text — drop it BEFORE coverage counting so its slide
+    # reports uncovered (CoverageGapError) instead of silently passing
+    # while enrique skipped its audio.
+    phantom = phantom_segment_ids(rows)
+    if phantom:
+        rows = [
+            row
+            for row in rows
+            if str(row.get("segment_id") or row.get("id") or "") not in phantom
+        ]
     if not rows:
+        detail = f" (all joined rows were phantom deltas: {phantom})" if phantom else ""
         raise StoryboardBInputError(
-            "G5 narration join produced zero segments",
+            f"G5 narration join produced zero segments{detail}",
             tag="quinn_r.g5.input-missing",
         )
     durations: dict[str, float] = {}
@@ -108,6 +120,10 @@ def run_g5_grounding(payload: dict[str, Any]) -> dict[str, Any]:
         )
     grounded = dict(payload)
     grounded["narration_segments"] = segments
+    if phantom:
+        # Witness record (review patch): the drop must leave an audit trail
+        # even when another segment covers the same slide.
+        grounded["phantom_segment_ids_dropped"] = phantom
     if any_estimated:
         grounded["wpm_durations_estimated"] = True
     return grounded

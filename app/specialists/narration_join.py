@@ -62,4 +62,21 @@ def join_narration_segments(
     return rows
 
 
-__all__ = ["join_narration_segments"]
+def phantom_segment_ids(rows: list[dict[str, Any]]) -> list[str]:
+    """Sorted ids of joined rows whose narration_text strips empty.
+
+    dp-v1.2 rider (Amelia R1): a delta whose id matches no narration
+    segment joins with empty text — a "phantom delta" demanding narration
+    that does not exist. Detection only; refusal/drop semantics belong to
+    callers (enrique refuses pre-spend; G5 drops pre-coverage).
+    """
+    return sorted(
+        {
+            str(row.get("segment_id") or row.get("id") or "")
+            for row in rows
+            if isinstance(row, dict) and not str(row.get("narration_text") or "").strip()
+        }
+    )
+
+
+__all__ = ["join_narration_segments", "phantom_segment_ids"]

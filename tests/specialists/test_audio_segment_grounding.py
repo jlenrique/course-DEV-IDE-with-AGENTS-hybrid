@@ -17,7 +17,7 @@ import pytest
 
 from app.specialists.compositor._act import run_compositor_pipeline
 from app.specialists.enrique._act import EnriqueActError, generate_enrique_outputs
-from app.specialists.quinn_r._act import run_g5_checks
+from app.specialists.quinn_r._act import CoverageGapError, run_g5_checks
 from app.specialists.quinn_r.quality_control_dispatch import (
     StoryboardBInputError,
     run_g5_grounding,
@@ -89,6 +89,46 @@ def test_enrique_join_drop_refuses_pre_spend(tmp_path: Path) -> None:
     assert client.tts_calls == []  # refused BEFORE spend
 
 
+def test_enrique_phantom_delta_refuses_pre_spend(tmp_path: Path) -> None:
+    """PIN (dp-v1.2 rider Amelia R1): a delta id with NO matching narration
+    segment joins with empty text; pre-fix, the TTS loop skipped it silently
+    (no mp3, no error) while G5 counted its slide as covered. Refuse BEFORE
+    spend, naming the phantom id."""
+    client = _FakeElevenLabs()
+    with pytest.raises(EnriqueActError) as excinfo:
+        generate_enrique_outputs(
+            {
+                "bundle_path": str(tmp_path),
+                # seg-2 exists in the manifest deltas but not in narration.
+                "narration_script": [NARRATION[0]],
+                "segment_manifest_deltas": DELTAS,
+            },
+            client=client,
+        )
+    assert excinfo.value.tag == "elevenlabs.join.empty-narration-text"
+    assert "seg-2" in str(excinfo.value)
+    assert client.tts_calls == []  # refused BEFORE spend
+
+
+def test_enrique_whitespace_narration_is_phantom(tmp_path: Path) -> None:
+    client = _FakeElevenLabs()
+    with pytest.raises(EnriqueActError) as excinfo:
+        generate_enrique_outputs(
+            {
+                "bundle_path": str(tmp_path),
+                "narration_script": [
+                    NARRATION[0],
+                    {"id": "seg-2", "narration_text": "   "},
+                ],
+                "segment_manifest_deltas": DELTAS,
+            },
+            client=client,
+        )
+    assert excinfo.value.tag == "elevenlabs.join.empty-narration-text"
+    assert "seg-2" in str(excinfo.value)
+    assert client.tts_calls == []
+
+
 def test_enrique_voice_only_dispatch_stays_voice_only(tmp_path: Path) -> None:
     # Nodes 11/11B carry no narration projections by design (single shared
     # act body; only node 12 synthesizes). No segments → no TTS.
@@ -124,6 +164,49 @@ def test_g5_grounding_builds_segments_with_enrique_durations(tmp_path: Path) -> 
     # Full pipeline: grounded payload passes the real checks.
     verdict = run_g5_checks(grounded)
     assert verdict["blocking"] == []
+
+
+def test_g5_phantom_delta_drops_to_coverage_gap(tmp_path: Path) -> None:
+    """PIN twin (dp-v1.2 rider Amelia R1): at G5 the phantom row drops
+    BEFORE coverage counting, so the silent slide raises CoverageGapError
+    naming it — pre-fix it counted as covered while enrique skipped its
+    audio."""
+    caption = tmp_path / "seg-1.vtt"
+    caption.write_text("WEBVTT\n", encoding="utf-8")
+    grounded = run_g5_grounding(
+        {
+            "slides": SLIDES,
+            "narration_script": [NARRATION[0]],  # seg-2 is a phantom delta
+            "segment_manifest_deltas": DELTAS,
+            "narration_outputs": [
+                {
+                    "segment_id": "seg-1",
+                    "duration_seconds": 12.5,
+                    "duration_source": "estimated-chars",
+                    "caption_path": str(caption),
+                }
+            ],
+        }
+    )
+    assert [s["slide_id"] for s in grounded["narration_segments"]] == ["s1"]
+    assert grounded["phantom_segment_ids_dropped"] == ["seg-2"]  # witness trail
+    with pytest.raises(CoverageGapError) as excinfo:
+        run_g5_checks(grounded)
+    assert "s2" in str(excinfo.value)
+
+
+def test_g5_all_phantom_raises_input_missing() -> None:
+    """Every delta phantom → zero segments after the pre-coverage drop →
+    the existing starvation raise fires (never an empty-but-passing G5)."""
+    with pytest.raises(StoryboardBInputError) as excinfo:
+        run_g5_grounding(
+            {
+                "slides": SLIDES,
+                "narration_script": [{"id": "seg-9", "narration_text": "Unjoined."}],
+                "segment_manifest_deltas": DELTAS,
+            }
+        )
+    assert excinfo.value.tag == "quinn_r.g5.input-missing"
 
 
 def test_g5_grounding_starved_raises(tmp_path: Path) -> None:

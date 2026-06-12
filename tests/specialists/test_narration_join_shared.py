@@ -58,6 +58,32 @@ def test_consumers_import_the_one_join() -> None:
         )
 
 
+def test_phantom_detection_single_homed() -> None:
+    """dp-v1.2 rider (Amelia R1): phantom detection (joined row with empty
+    narration_text) lives in the shared module; enrique refuses pre-spend
+    and G5 drops pre-coverage through the SAME helper — import-identity
+    pinned like the join itself."""
+    from app.specialists.narration_join import phantom_segment_ids
+
+    rows = join_narration_segments([NARRATION[0]], DELTAS)
+    assert phantom_segment_ids(rows) == ["seg-2"]
+    assert phantom_segment_ids(join_narration_segments(NARRATION, DELTAS)) == []
+    assert phantom_segment_ids([{"segment_id": "w", "narration_text": "   "}]) == ["w"]
+    assert phantom_segment_ids(
+        [{"segment_id": "d", "narration_text": ""}, {"id": "d", "narration_text": " "}]
+    ) == ["d"]  # de-duplicated
+
+    from app.specialists.enrique import _act as enrique_act
+    from app.specialists.quinn_r import quality_control_dispatch as qcd
+
+    assert enrique_act.phantom_segment_ids is phantom_segment_ids
+    # Module-qualified pin (review patch): a private re-implementation or an
+    # import from elsewhere must not satisfy this.
+    assert "narration_join import join_narration_segments, phantom_segment_ids" in (
+        inspect.getsource(qcd.run_g5_grounding)
+    )
+
+
 def test_publisher_segment_manifest_byte_stable_through_shared_join(tmp_path) -> None:
     """Amelia REQUIRE: the publisher's B segment-manifest output through the
     shared helper carries the same rows the private join produced."""
