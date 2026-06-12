@@ -154,18 +154,43 @@ def _envelope_with_gary_and_irene() -> ProductionEnvelope:
 
 def test_storyboard_gate_roster_pins_a_and_b() -> None:
     # PIN-B1: the pre-filed Storyboard-B rider landed as a roster entry
-    # (dp-v1.1, S5 criterion 7 — B reviews happen ONLINE at G3B).
+    # (dp-v1.1, S5 criterion 7). Keyed "G3", NOT "G3B": node 08B folds into
+    # G3, so G3B never pauses — cycle-5 live evidence (trial 036e7ff8,
+    # 2026-06-12) caught the original "G3B" key as unreachable.
     assert storyboard_publisher.STORYBOARD_GATES == {
         "G2C": "storyboard-A",
-        "G3B": "storyboard-B",
+        "G3": "storyboard-B",
     }
 
 
-def test_g3b_missing_irene_contribution_fails_loud(tmp_path: Path, monkeypatch) -> None:
+def test_roster_keys_are_pausing_gates_in_the_manifest() -> None:
+    """Cycle-5 live-gap pin: every STORYBOARD_GATES key must name a gate
+    whose manifest carrier node is a fold TARGET (fold_with null) — a key
+    naming a folded gate (the original "G3B") is unreachable and the pause
+    goes up without its review surface, the exact criterion-7 violation."""
+    import yaml
+
+    manifest = yaml.safe_load(
+        (Path(__file__).resolve().parents[3] / "state/config/pipeline-manifest.yaml")
+        .read_text(encoding="utf-8")
+    )
+    pausing_gates = {
+        str(node.get("gate_code"))
+        for node in manifest["nodes"]
+        if node.get("gate") and node.get("gate_code") and not node.get("fold_with")
+    }
+    unreachable = set(storyboard_publisher.STORYBOARD_GATES) - pausing_gates
+    assert unreachable == set(), (
+        f"STORYBOARD_GATES key(s) {sorted(unreachable)} name gates that never "
+        "pause (folded or absent) — the publisher would never fire there"
+    )
+
+
+def test_g3_missing_irene_contribution_fails_loud(tmp_path: Path, monkeypatch) -> None:
     monkeypatch.setenv(storyboard_publisher.TOKEN_ENV_VAR, "tok")
     with pytest.raises(storyboard_publisher.StoryboardPublishError) as excinfo:
         storyboard_publisher.publish_storyboard_for_gate(
-            gate_id="G3B",
+            gate_id="G3",
             trial_id=str(TRIAL_ID),
             production_envelope=_envelope_with_gary(),
             runs_root=tmp_path,
@@ -173,13 +198,14 @@ def test_g3b_missing_irene_contribution_fails_loud(tmp_path: Path, monkeypatch) 
     assert excinfo.value.tag == "storyboard.input.missing-irene"
 
 
-def test_g3b_threads_segment_manifest_and_distinct_slug(
+def test_g3_threads_segment_manifest_and_distinct_slug(
     tmp_path: Path, monkeypatch
 ) -> None:
-    """PIN-B2 (publisher leg): at G3B the generate call receives a REAL
-    segment-manifest path (non-None — fields-passed-as-None is the hollow
-    payload shape) and the pack publishes under its own run id so the B pack
-    never overwrites the operator-approved A pack."""
+    """PIN-B2 (publisher leg): at the G3 pause (the B-side review moment —
+    G3B folds into it) the generate call receives a REAL segment-manifest
+    path (non-None — fields-passed-as-None is the hollow payload shape) and
+    the pack publishes under its own run id so the B pack never overwrites
+    the operator-approved A pack."""
     monkeypatch.setenv(storyboard_publisher.TOKEN_ENV_VAR, "tok")
     calls: list[tuple[str, Namespace]] = []
     exports_dir = tmp_path / "exports-root"
@@ -211,7 +237,7 @@ def test_g3b_threads_segment_manifest_and_distinct_slug(
     )
 
     result = storyboard_publisher.publish_storyboard_for_gate(
-        gate_id="G3B",
+        gate_id="G3",
         trial_id=str(TRIAL_ID),
         production_envelope=_envelope_with_gary_and_irene(),
         runs_root=tmp_path,
@@ -226,7 +252,7 @@ def test_g3b_threads_segment_manifest_and_distinct_slug(
     assert "Opening narration." in manifest_text
     assert result is not None and result["label"] == "storyboard-B"
     record = json.loads(Path(result["record_path"]).read_text(encoding="utf-8"))
-    assert record["gate_id"] == "G3B"
+    assert record["gate_id"] == "G3"
 
 
 def test_g2c_still_passes_no_segment_manifest(tmp_path: Path, monkeypatch) -> None:

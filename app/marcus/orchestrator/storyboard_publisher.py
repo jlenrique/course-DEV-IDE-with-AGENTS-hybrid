@@ -36,11 +36,15 @@ GENERATOR_SCRIPT = (
 # Deployment-specific publishing targets live in state/config, not app code
 # (Winston MUST-FIX 2, party review 2026-06-12).
 PUBLISHER_CONFIG_PATH = REPO_ROOT / "state" / "config" / "storyboard-publisher.yaml"
-# Storyboard review gates and which artifact they review. Storyboard B joined
-# the roster at dp-v1.1 (Trial-3 cycle-4 defect 2, party consensus 2026-06-12)
-# when the G3B segment came into scope, per the same operator ruling
-# (S5 criterion 7: B reviews happen on the ONLINE interactive rendering).
-STORYBOARD_GATES: dict[str, str] = {"G2C": "storyboard-A", "G3B": "storyboard-B"}
+# Storyboard review gates and which artifact they review. Keys are PAUSING
+# gate codes: the runner fires this seam only where the walk actually pauses.
+# Storyboard B publishes at G3 — node 08B (gate G3B) declares fold_with: G3,
+# so G3B itself never pauses; cycle-5 live evidence 2026-06-12 (trial
+# 036e7ff8) caught the original "G3B" key as unreachable and the G3 pause
+# went up without its review surface. A manifest-driven pin now enforces
+# that every roster key names a fold-TARGET gate (criterion 7: a storyboard
+# gate must never pause blind).
+STORYBOARD_GATES: dict[str, str] = {"G2C": "storyboard-A", "G3": "storyboard-B"}
 SITE_REPO_URL_ENV = "STORYBOARD_SITE_REPO_URL"
 TOKEN_ENV_VAR = "GITHUB_PAGES_TOKEN"
 
