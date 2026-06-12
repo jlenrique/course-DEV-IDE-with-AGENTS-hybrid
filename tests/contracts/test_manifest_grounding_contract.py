@@ -48,10 +48,16 @@ GROUNDLESS_ALLOWLIST: frozenset[tuple[str, str]] = frozenset(
         ("07F", "quinn-r"),
         ("09", "marcus"),
         ("10", "vera"),
+        # dp-v1.2 (audio-arc 2026-06-12): rows (12, elevenlabs),
+        # (13, quinn-r), (14, compositor) RETIRED — grounded via
+        # projections. (11, elevenlabs) ADDED: its dead quarantined
+        # upstream_output edge was removed; the voice-selection leg is
+        # config/HIL-only (no content inputs; G4A folds into G4 — voice
+        # HIL rider filed). (11B, elevenlabs) stays: all three elevenlabs
+        # nodes share one act body — projecting narration into 11B would
+        # synthesize audio twice.
+        ("11", "elevenlabs"),
         ("11B", "elevenlabs"),
-        ("12", "elevenlabs"),
-        ("13", "quinn-r"),
-        ("14", "compositor"),
         ("15", "marcus"),
     }
 )

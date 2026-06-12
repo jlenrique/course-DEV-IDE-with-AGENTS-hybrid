@@ -126,7 +126,9 @@ def test_quinn_r_act_body_loc_budget() -> None:
     # Budget 150 -> 160 at Trial-3 finding #10 (2026-06-11): G2B variant-selection
     # + G2F motion-gate bodies added (manifest dispatches Quinn-R at 5 gates; only
     # 3 had bodies). 160 -> 168 at dp-v1.1 (2026-06-12): G3B storyboard_b body
-    # replaces the post mapping that crashed cycle-4 live (checks live in
-    # quality_control_dispatch; the act carries only the branch). Bounded
-    # headroom, not an open ceiling.
-    assert len(logical_lines) <= 168
+    # replaces the post mapping that crashed cycle-4 live. 168 -> 180 at
+    # dp-v1.2 audio-arc (2026-06-12): G5 grounding wire + fabricated-default
+    # kill (raise replaces the slide-1 roster) + duration-aware WPM raise;
+    # the heavy lifting lives in quality_control_dispatch. Bounded headroom,
+    # not an open ceiling.
+    assert len(logical_lines) <= 180

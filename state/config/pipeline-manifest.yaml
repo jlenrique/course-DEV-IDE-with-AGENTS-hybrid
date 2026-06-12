@@ -36,7 +36,10 @@ frozen_graph_version: "v42"
 # additive projections onto nodes 08 + 08B — same dp-v1 mechanics, new
 # vocabulary rows. dp-v2 remains reserved for the refinement self-edge
 # vocabulary (deferred-inventory rider).
-data_plane_vocabulary_version: "dp-v1.1"
+# dp-v1.2 (party consensus 2026-06-12, audio-segment arc): additive
+# projections onto nodes 12/13/14 (audio synthesis + G5 QA + compositor);
+# node 11's dead quarantined upstream_output←kira edge retired.
+data_plane_vocabulary_version: "dp-v1.2"
 learning_events:
   schema_ref: "state/config/learning-event-schema.yaml"
 block_mode_trigger_paths:
@@ -613,8 +616,11 @@ nodes:
     specialist_id: "elevenlabs"
     scaffold_node: "act"
     model_config_ref: null
-    dependencies:
-      upstream_output: "kira"
+    # dp-v1.2 (audio-arc 2026-06-12): the quarantined upstream_output←kira
+    # whole-dict edge is RETIRED — Enrique's voice-selection leg reads none
+    # of it (config/HIL inputs only; G4A folds into G4 so the voice HIL
+    # rides the blanket delegation — rider filed). Node 11 joins the
+    # PIN-G1 groundless allowlist with this rationale.
     gate: true
     gate_code: "G4A"
     fold_with: "G4"
@@ -644,6 +650,19 @@ nodes:
     specialist_id: "elevenlabs"
     scaffold_node: "act"
     model_config_ref: null
+    # dp-v1.2 (audio-arc 2026-06-12, cycle-5 defect 1): the synthesis node
+    # grounds on the SAME Pass-2 narration the operator approved in the
+    # online Storyboard B — the shared join (narration_join) turns these
+    # into the segments Enrique pays to synthesize. Only node 12 gets the
+    # narration keys: projecting them into 11/11B would synthesize audio
+    # three times (all three nodes share one act body).
+    dependency_projections:
+      narration_script:
+        from: irene
+        key: narration_script
+      segment_manifest_deltas:
+        from: irene
+        key: segment_manifest_deltas
     gate: false
     insertion_after: "11B"
     hud_tracked: true
@@ -656,6 +675,23 @@ nodes:
     specialist_id: "quinn-r"
     scaffold_node: "act"
     model_config_ref: null
+    # dp-v1.2 (audio-arc 2026-06-12, cycle-5 defects 2+3): G5 audits the
+    # REAL roster (gary) against the REAL narration (irene) with REAL
+    # durations (elevenlabs) — the fabricated slide-1 default is retired
+    # and the content errors are recoverable dispatch-family raises.
+    dependency_projections:
+      slides:
+        from: gary
+        key: gary_slide_output
+      narration_script:
+        from: irene
+        key: narration_script
+      segment_manifest_deltas:
+        from: irene
+        key: segment_manifest_deltas
+      narration_outputs:
+        from: elevenlabs
+        key: narration_outputs
     gate: true
     gate_code: "G5"
     fold_with: "G4"
@@ -670,6 +706,21 @@ nodes:
     specialist_id: "compositor"
     scaffold_node: "act"
     model_config_ref: null
+    # dp-v1.2 (audio-arc 2026-06-12): pre-grounded by consensus (convicted
+    # by construction — written before projections existed). Visuals from
+    # gary, motion from kira, audio handoff from enrique's purpose-built
+    # compositor_invocation (audio paths derived in the act; dp-v1
+    # projections are top-level-key only).
+    dependency_projections:
+      gary_slide_output:
+        from: gary
+        key: gary_slide_output
+      motion_receipts:
+        from: kira
+        key: motion_receipts
+      compositor_invocation:
+        from: elevenlabs
+        key: compositor_invocation
     gate: false
     insertion_after: "13"
     hud_tracked: true

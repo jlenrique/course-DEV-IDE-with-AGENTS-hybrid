@@ -169,6 +169,58 @@ def test_g2c_pause_invokes_online_storyboard_publisher(
     assert g2c_call["trial_id"] == str(TRIAL_ID)
 
 
+def test_content_error_pauses_recoverably_and_persists_progress(
+    tmp_path: Path, monkeypatch
+) -> None:
+    """PIN-AUD-3P (audio-arc 2026-06-12): cycle-5's CoverageGapError was a
+    bare ValueError — process CRASH, nodes 10-12 progress lost. Re-based to
+    the dispatch family, a content error now (a) error-pauses instead of
+    crashing, (b) PERSISTS the contributions completed before the failure,
+    and (c) `trial recover` re-enters at the failed node and continues."""
+    from app.specialists.quinn_r.quality_control_dispatch import CoverageGapError
+
+    failing = {"on": True}
+
+    class _ContentErrorAdapter(_FakeAdapter):
+        def invoke_specialist(self, *, specialist_id: str, **kwargs):
+            if specialist_id == "gary" and failing["on"]:
+                raise CoverageGapError("missing narration coverage: ['s9']")
+            return super().invoke_specialist(specialist_id=specialist_id, **kwargs)
+
+    monkeypatch.setenv("OPENAI_API_KEY", "sk-test")
+    monkeypatch.setattr(
+        production_runner, "ProductionDispatchAdapter", _ContentErrorAdapter
+    )
+    production_runner.run_production_trial(
+        CORPUS,
+        "production",
+        "operator_test",
+        trial_id=TRIAL_ID,
+        runs_root=tmp_path,
+        max_specialist_calls=12,
+    )
+    envelope = production_runner.resume_production_trial(
+        trial_id=TRIAL_ID,
+        verdict=_verdict(tmp_path, "approve"),
+        runs_root=tmp_path,
+    )
+    assert envelope.status == "paused-at-error"
+    assert envelope.paused_error_tag == "quinn_r.g5.coverage-gap"
+    persisted = {
+        c.node_id for c in envelope.production_envelope.contributions
+    }
+    assert {"04A", "4.75", "05", "05B", "06"}.issubset(persisted), (
+        "progress completed before the content error was lost — the "
+        "cycle-5 crash class"
+    )
+    failing["on"] = False
+    recovered = production_runner.recover_production_trial(
+        trial_id=TRIAL_ID, runs_root=tmp_path
+    )
+    assert recovered.status == "paused-at-gate"
+    assert recovered.paused_gate == "G2C"
+
+
 def test_broken_brief_fails_the_gate_not_quality_theater(
     tmp_path: Path, monkeypatch, storyboard_publish_calls
 ) -> None:

@@ -26,6 +26,8 @@ from app.manifest.compiler import SPECIALIST_ALIASES
 # Amelia a.2 (party review 2026-06-12): contracts resolve THROUGH the act
 # module's namespace, pinning that each act imports its own contract — the
 # contract must participate in the consumer's import graph, not sit beside it.
+from app.specialists.compositor._act import CONSUMED_PAYLOAD_KEYS as COMPOSITOR_KEYS
+from app.specialists.enrique._act import CONSUMED_PAYLOAD_KEYS as ENRIQUE_KEYS
 from app.specialists.gary._act import CONSUMED_PAYLOAD_KEYS as GARY_KEYS
 from app.specialists.irene.graph import CONSUMED_PAYLOAD_KEYS as IRENE_KEYS
 from app.specialists.irene_pass1._act import CONSUMED_PAYLOAD_KEYS as IRENE_PASS1_KEYS
@@ -43,6 +45,10 @@ CONTRACTED_CONSUMERS: dict[str, frozenset[str]] = {
     "gary": GARY_KEYS,
     "irene_pass1": IRENE_PASS1_KEYS,
     "irene": IRENE_KEYS,
+    # Audio-arc (dp-v1.2, 2026-06-12): enrique + compositor joined when
+    # nodes 12/14 gained projections (cycle-5 ungrounded-audio defect).
+    "enrique": ENRIQUE_KEYS,
+    "compositor": COMPOSITOR_KEYS,
 }
 
 # Edges whose consumer has NOT yet published a contract. Raw manifest
@@ -58,7 +64,10 @@ QUARANTINED_EDGES: frozenset[tuple[str, str, str]] = frozenset(
         ("4.75", "source_bundle", "cd"),
         ("7.5", "upstream_output", "vera"),
         ("07E", "upstream_output", "kira"),
-        ("11", "upstream_output", "elevenlabs"),
+        # ("11","upstream_output","elevenlabs") RETIRED at dp-v1.2
+        # (2026-06-12): the edge delivered kira's whole output dict to the
+        # voice-selection leg, which reads none of it — edge deleted from
+        # the manifest, enrique published CONSUMED_PAYLOAD_KEYS.
         ("14.5", "upstream_output", "desmond"),
     }
 )

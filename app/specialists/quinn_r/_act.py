@@ -13,7 +13,17 @@ from app.models.state import specialist_summary_artifacts as summary_writer
 from app.models.state.model_resolution_entry import ModelResolutionEntry
 from app.models.state.run_state import RunState
 from app.runtime.economics import RUNS_ROOT
+
+# Audio-arc taxonomy re-base (2026-06-12): the G5 content errors live in
+# quality_control_dispatch as SpecialistDispatchError+ValueError duals — the
+# bare-ValueError form CRASHED cycle-5 at node 13 and lost walk progress.
 from app.specialists.quinn_r.quality_control_dispatch import (
+    CoverageGapError,
+    DurationCoherenceError,
+    StoryboardBInputError,
+    VttMonotonicityError,
+    WpmThresholdError,
+    run_g5_grounding,
     run_postcomposition_validators,
     run_precomposition_validators,
     run_storyboard_b_review,
@@ -31,12 +41,6 @@ GATE_MODES = {"G2C": "pre", "G5": "g5", "G3B": "storyboard_b", "G2B": "variant",
 
 class ModeMismatchError(ValueError):
     """Raised when Quinn-R is invoked for a gate/body mismatch."""
-
-
-WpmThresholdError = type("WpmThresholdError", (ValueError,), {})
-VttMonotonicityError = type("VttMonotonicityError", (ValueError,), {})
-CoverageGapError = type("CoverageGapError", (ValueError,), {})
-DurationCoherenceError = type("DurationCoherenceError", (ValueError,), {})
 
 
 def _trail(last: ModelResolutionEntry, reason: str) -> ModelResolutionEntry:
@@ -74,8 +78,15 @@ def _mode(payload: dict[str, Any]) -> tuple[str, str]:
 
 
 def _slides(payload: dict[str, Any]) -> list[dict[str, Any]]:
+    # Audio-arc 2026-06-12: the fabricated single-phantom-slide default is
+    # RETIRED — a QA body that invents the roster it audits is not QA.
     source = payload.get("slides") or payload.get("storyboard", {}).get("slides", [])
-    return source if isinstance(source, list) and source else [{"slide_id": "slide-1"}]
+    if not (isinstance(source, list) and source):
+        raise StoryboardBInputError(
+            "quinn_r requires a real slide roster (slides projection)",
+            tag="quinn_r.slides.starved",
+        )
+    return source
 
 
 def _authorized_doc(payload: dict[str, Any]) -> dict[str, Any]:
@@ -117,7 +128,8 @@ def run_g5_checks(payload: dict[str, Any]) -> dict[str, Any]:
     text = " ".join(str(seg.get("text", "")) for seg in segments if isinstance(seg, dict))
     duration = sum(float(seg.get("duration_seconds", 0)) for seg in segments if isinstance(seg, dict))  # noqa: E501
     observed = (len(text.split()) / duration * 60) if duration else target_wpm
-    if abs(observed - target_wpm) > tolerance:
+    # Winston (audio-arc): WPM vs ESTIMATED durations is self-referential — advisory only.
+    if abs(observed - target_wpm) > tolerance and not payload.get("wpm_durations_estimated"):
         raise WpmThresholdError(f"WPM {observed:.1f} outside target {target_wpm:.1f}")
     previous = -1.0
     for line in str(payload.get("vtt_text") or "").splitlines():
@@ -166,7 +178,7 @@ def act(state: RunState) -> dict[str, Any]:
             run_precomposition_validators(artifact_paths=[str(artifact)])
             verdict = {"mode": "pre-composition", "status": "approved", "artifact_paths": [str(artifact)]}  # noqa: E501
         elif mode == "g5":
-            verdict = {"mode": "g5-pre-composition-qa", "status": "approved", **run_g5_checks(payload)}  # noqa: E501
+            verdict = {"mode": "g5-pre-composition-qa", "status": "approved", **run_g5_checks(run_g5_grounding(payload))}  # noqa: E501
         elif mode == "variant":
             selections = [{"slide_id": str(s.get("slide_id") or s.get("id") or f"slide-{i}"), "selected_variant": str(s.get("selected_variant") or "variant-1")} for i, s in enumerate(_slides(payload), start=1)]  # noqa: E501
             verdict = {"mode": "variant-selection", "status": "approved", "selections": selections}

@@ -21,6 +21,7 @@ CONSUMED_PAYLOAD_KEYS: frozenset[str] = frozenset(
         "gate_phase",
         "modality",
         "motion_assets",
+        "narration_outputs",
         "narration_profile_controls",
         "narration_script",
         "narration_segments",

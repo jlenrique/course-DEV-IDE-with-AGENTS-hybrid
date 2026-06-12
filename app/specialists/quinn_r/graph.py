@@ -16,6 +16,8 @@ from app.models.adapter import make_chat_model
 from app.models.state import specialist_summary_artifacts as specialist_summary_writer
 from app.models.state.model_resolution_entry import ModelResolutionEntry
 from app.models.state.run_state import RunState
+from app.specialists._scaffold.contract import SCAFFOLD_NODE_IDS
+from app.specialists.dispatch_errors import SpecialistDispatchError
 from app.specialists.quinn_r import _act as _quinn_r_act_impl
 from app.specialists.quinn_r.quality_control_dispatch import (
     run_postcomposition_validators,
@@ -23,7 +25,6 @@ from app.specialists.quinn_r.quality_control_dispatch import (
 )
 from app.specialists.quinn_r.sensory_bridges_dispatch import dispatch_to_sensory_bridges
 from app.specialists.texas.graph import SanctumLockViolation as _SanctumLockViolation
-from app.specialists._scaffold.contract import SCAFFOLD_NODE_IDS
 
 TRANSITIONS: tuple[tuple[str, str], ...] = (
     ("receive", "plan"),
@@ -64,12 +65,13 @@ DIMENSION_IDS = (
 )
 
 
-class QRRParseError(RuntimeError):  # noqa: N818
-    """Raised when Quinn-R's quality review report cannot be parsed."""
+class QRRParseError(SpecialistDispatchError):  # noqa: N818
+    """Raised when Quinn-R's quality review report cannot be parsed.
 
-    def __init__(self, message: str, *, tag: str) -> None:
-        super().__init__(message)
-        self.tag = tag
+    Audio-arc taxonomy re-base (2026-06-12): an LLM parse flake is a
+    transient dispatch failure — error-pause + `trial recover`, not a
+    process crash.
+    """
 
 
 def _new_dispatch_trail_entry(

@@ -328,6 +328,23 @@ PERMITTED_PYTHON_DIFFS = {
     "app/specialists/quinn_r/_act.py",
     "app/specialists/quinn_r/payload_contract.py",
     "app/specialists/quinn_r/quality_control_dispatch.py",
+    # dp-v1.2 — audio-segment arc (party consensus 2026-06-12, operator
+    # full-delegation completion directive): enrique grounded via Pass-2
+    # narration projections (cycle-5 ran §11-12 ungrounded → zero audio);
+    # quinn_r G5 grounded + fabricated slide-1 roster killed + content
+    # errors re-based to the recoverable dispatch family (the bare
+    # ValueError form crashed cycle-5 and lost walk progress); compositor
+    # pre-grounded (convicted by construction); shared narration join
+    # (one policy home for publisher + enrique + G5).
+    "app/specialists/narration_join.py",
+    "app/specialists/enrique/_act.py",
+    "app/specialists/enrique/payload_contract.py",
+    "app/specialists/compositor/_act.py",
+    "app/specialists/compositor/payload_contract.py",
+    "app/specialists/quinn_r/graph.py",
+    "tests/specialists/test_narration_join_shared.py",
+    "tests/specialists/test_audio_segment_grounding.py",
+    "tests/contracts/test_specialist_error_taxonomy.py",
     "tests/specialists/irene/conftest.py",
     "tests/specialists/irene/test_irene_pass2_grounding_fail_loud.py",
     "tests/specialists/irene/test_irene_prompt_byte_stability_5x.py",

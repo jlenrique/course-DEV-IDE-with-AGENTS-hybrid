@@ -28,6 +28,7 @@ from typing import Any
 import yaml
 
 from app.specialists.dispatch_errors import SpecialistDispatchError
+from app.specialists.narration_join import join_narration_segments
 
 REPO_ROOT = Path(__file__).resolve().parents[3]
 GENERATOR_SCRIPT = (
@@ -95,43 +96,16 @@ def _write_segment_manifest_for_b(
     ``perception_source`` names the real slide id) — joined here by segment id.
     """
     narration = irene_output.get("narration_script")
-    deltas = irene_output.get("segment_manifest_deltas")
     if not isinstance(narration, list) or not narration:
         raise StoryboardPublishError(
             "storyboard-B publish requires Irene Pass-2 narration_script",
             tag="storyboard.input.missing-irene",
         )
-    text_by_id = {
-        str(seg.get("id") or ""): str(seg.get("narration_text") or "")
-        for seg in narration
-        if isinstance(seg, dict)
-    }
-    segments: list[dict[str, Any]] = []
-    for delta in deltas if isinstance(deltas, list) else []:
-        if not isinstance(delta, dict):
-            continue
-        segment_id = str(delta.get("id") or "")
-        slide_id = ""
-        for ref in delta.get("visual_references") or []:
-            if isinstance(ref, dict):
-                slide_id = str(ref.get("perception_source") or "").strip()
-                if slide_id:
-                    break
-        if not slide_id:
-            continue
-        segments.append(
-            {
-                "id": segment_id,
-                "slide_id": slide_id,
-                "narration_text": text_by_id.get(segment_id, ""),
-                "timing_role": delta.get("timing_role"),
-                "content_density": delta.get("content_density"),
-                "visual_detail_load": delta.get("visual_detail_load"),
-                "duration_rationale": delta.get("duration_rationale"),
-                "bridge_type": delta.get("bridge_type"),
-                "behavioral_intent": delta.get("behavioral_intent"),
-            }
-        )
+    # Audio-segment arc: the join policy lives ONLY in narration_join (the
+    # publisher, enrique synthesis, and G5 QA must agree byte-for-byte).
+    segments = join_narration_segments(
+        narration, irene_output.get("segment_manifest_deltas")
+    )
     if not segments:
         raise StoryboardPublishError(
             "Irene Pass-2 deltas joined to zero slides; storyboard-B has no "

@@ -13,14 +13,22 @@ import yaml
 
 from app.models.state.cache_state import CacheState
 from app.models.state.run_state import RunState
+from app.specialists.dispatch_errors import SpecialistDispatchError
 
 REPO_ROOT = Path(__file__).resolve().parents[3]
 SANCTUM_DIR = REPO_ROOT / "_bmad" / "memory" / "bmad-agent-compositor"
 FIELD_MASK_PATH = REPO_ROOT / "docs/dev-guide/scaffolds/scaffold-v0.2-D2-pipeline/field-mask.yaml"
 
 
-class CompositorActError(RuntimeError):
-    """Raised when Compositor cannot assemble deterministic outputs."""
+class CompositorActError(SpecialistDispatchError):
+    """Raised when Compositor cannot assemble deterministic outputs.
+
+    Audio-arc taxonomy re-base (2026-06-12): a missing asset mid-copy must
+    error-pause recoverably AFTER real audio spend, never crash the walk.
+    """
+
+    def __init__(self, message: str, *, tag: str = "compositor.assembly.failed") -> None:
+        super().__init__(message, tag=tag)
 
 
 def _json_dumps(value: Any) -> str:
@@ -140,6 +148,18 @@ def regenerate_assembly_guide(payload: dict[str, Any], copied: dict[str, dict[st
 
 
 def run_compositor_pipeline(payload: dict[str, Any]) -> dict[str, Any]:
+    # Audio-arc grounding (2026-06-12): node 14 projects enrique's
+    # compositor_invocation (top-level key); audio/caption paths ride nested
+    # inside it, so the act derives them — dp-v1 projections are strictly
+    # top-level-key (party consensus: derive in the act, don't grow the
+    # projection substrate mid-arc).
+    invocation = payload.get("compositor_invocation")
+    if not payload.get("audio_paths") and isinstance(invocation, dict):
+        payload = {
+            **payload,
+            "audio_paths": list(invocation.get("audio_paths") or []),
+            "caption_paths": list(invocation.get("caption_paths") or []),
+        }
     copied = sync_visuals(payload)
     guide = regenerate_assembly_guide(payload, copied)
     return {
@@ -162,7 +182,10 @@ def act(state: RunState) -> dict[str, Any]:
     }
 
 
+from app.specialists.compositor.payload_contract import CONSUMED_PAYLOAD_KEYS  # noqa: E402
+
 __all__ = [
+    "CONSUMED_PAYLOAD_KEYS",
     "FIELD_MASK_PATH",
     "SANCTUM_DIR",
     "CompositorActError",

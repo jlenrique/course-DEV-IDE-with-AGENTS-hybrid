@@ -13,7 +13,10 @@ import yaml
 from app.models.state.cache_state import CacheState
 from app.models.state.model_resolution_entry import ModelResolutionEntry
 from app.models.state.run_state import RunState
+from app.runtime.economics import RUNS_ROOT
+from app.specialists.dispatch_errors import SpecialistDispatchError
 from app.specialists.enrique.elevenlabs_dispatch import dispatch_to_elevenlabs
+from app.specialists.narration_join import join_narration_segments
 from scripts.api_clients.elevenlabs_client import ElevenLabsClient
 
 REPO_ROOT = Path(__file__).resolve().parents[3]
@@ -22,12 +25,13 @@ CONFIG_PATH = REPO_ROOT / "app" / "specialists" / "enrique" / "config.yaml"
 DEFAULT_BUNDLE_PATH = REPO_ROOT / "runs" / "enrique-narration"
 
 
-class EnriqueActError(RuntimeError):
-    """Raised when Enrique cannot produce a valid narration envelope."""
+class EnriqueActError(SpecialistDispatchError):
+    """Raised when Enrique cannot produce a valid narration envelope.
 
-    def __init__(self, message: str, *, tag: str) -> None:
-        super().__init__(message)
-        self.tag = tag
+    Audio-arc taxonomy re-base (2026-06-12): Enrique is the REAL-spend
+    node — a mid-batch TTS failure must error-pause recoverably, never
+    crash away paid audio.
+    """
 
 
 def _json_dumps(value: Any) -> str:
@@ -177,6 +181,33 @@ def _segments(payload: dict[str, Any]) -> list[dict[str, Any]]:
             str(payload.get("locked_manifest_path") or payload["manifest_path"])
         )
         raw = manifest.get("segments") or manifest.get("narration_segments") or []
+    elif payload.get("narration_script") or payload.get("segment_manifest_deltas"):
+        # Audio-arc grounding (2026-06-12): node 12 projects Pass-2 narration
+        # keys; the shared join (the SAME policy the published Storyboard B
+        # used) produces the segments Enrique pays to synthesize. Pre-spend
+        # guard (Amelia): a join that drops narration segments refuses
+        # BEFORE the TTS loop — bad join must never become paid garbage.
+        narration = payload.get("narration_script")
+        deltas = payload.get("segment_manifest_deltas")
+        if not narration or not deltas:
+            raise EnriqueActError(
+                "enrique grounding requires BOTH narration_script and "
+                "segment_manifest_deltas projections",
+                tag="elevenlabs.input.missing-narration",
+            )
+        raw = join_narration_segments(narration, deltas)
+        joined_ids = {str(row.get("id") or "") for row in raw}
+        dropped = sorted(
+            str(seg.get("id") or "")
+            for seg in narration
+            if isinstance(seg, dict) and str(seg.get("id") or "") not in joined_ids
+        )
+        if not raw or dropped:
+            raise EnriqueActError(
+                f"narration join dropped segment(s) {dropped}; refusing "
+                "pre-spend (paid audio must cover the approved narration)",
+                tag="elevenlabs.join.dropped-segments",
+            )
     else:
         raw = []
     if not isinstance(raw, list) or not all(isinstance(item, dict) for item in raw):
@@ -244,9 +275,17 @@ def build_assembly_bundle(
         outputs.append(
             {
                 "segment_id": sid,
+                "slide_id": str(segment.get("slide_id") or ""),
                 "audio_path": str(audio_path),
                 "caption_path": str(caption_path),
                 "duration_seconds": duration,
+                # Winston (audio-arc + review MUST-FIX 2): "measured" is
+                # RESERVED for a real mp3 probe (rider). Payload-supplied
+                # durations are PLANNED numbers — labeling them measured
+                # would arm G5's WPM raise against the plan itself.
+                "duration_source": "provided"
+                if segment.get("duration_seconds")
+                else "estimated-chars",
                 "cost_usd": cost,
             }
         )
@@ -286,8 +325,13 @@ def act(state: RunState, *, client: ElevenLabsClient | None = None) -> dict[str,
     if not state.model_resolution_trail:
         raise RuntimeError("enrique act invoked before plan; resolution trail is empty")
     last_entry = state.model_resolution_trail[-1]
+    payload = decode_envelope_payload(state)
+    if not payload.get("bundle_path"):
+        # Audio-arc (Amelia): run-scoped bundle — a shared repo-root default
+        # means cross-run mp3 contamination in the compositor's input.
+        payload["bundle_path"] = str(RUNS_ROOT / str(state.run_id) / "enrique-narration")
     try:
-        verdict = generate_enrique_outputs(decode_envelope_payload(state), client=client)
+        verdict = generate_enrique_outputs(payload, client=client)
     except EnriqueActError as exc:
         state.model_resolution_trail.append(_trail_entry(last_entry, tag=exc.tag))
         raise
@@ -304,8 +348,11 @@ def act(state: RunState, *, client: ElevenLabsClient | None = None) -> dict[str,
     }
 
 
+from app.specialists.enrique.payload_contract import CONSUMED_PAYLOAD_KEYS  # noqa: E402
+
 __all__ = [
     "CONFIG_PATH",
+    "CONSUMED_PAYLOAD_KEYS",
     "EnriqueActError",
     "SANCTUM_DIR",
     "act",

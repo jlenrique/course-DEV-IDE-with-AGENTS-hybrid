@@ -27,6 +27,11 @@ FIXTURE_SIGNATURES = re.compile(
     # API-shape bug all the way to the G2C pause. Any reintroduction of
     # fabricated fixture-ids must either be rostered or die here.
     r"|fixture-\{"
+    # The NINTH seam's shape (quinn_r G5 _slides, cycle-5 2026-06-12): an
+    # INLINE fabricated single-row roster let a QA body audit a phantom
+    # slide. Inline placeholder rosters in production modules are the same
+    # genus as fixture reads.
+    r"|\[\{['\"]slide_id['\"]:\s*['\"]slide-1['\"]\}\]"
 )
 
 # The S0-converted seams (five from the sweep + wanda's MB, the SEVENTH seam
