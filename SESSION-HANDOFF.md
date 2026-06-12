@@ -1,3 +1,36 @@
+# Session Handoff — 2026-06-12 (Class S — 🏆 FIRST COMPLETE PRODUCTION RUNS: cycle-5 full walk + cycle-6 FRESH CERTIFICATION E2E through composition hand-off)
+
+**Branch:** `trial/3-2026-05-21`. **Session anchor:** `0a5604a` → **HEAD `8b306b1`** (+WRAPUP commit). Origin in sync.
+**Operator rulings this session:** (1) G2C cycle-5 approved after mechanical A-side comparison surfaced content deltas (delegation lapsed correctly); (2) G3 approved on the ONLINE Storyboard B; (3) FULL-DELEGATION COMPLETION DIRECTIVE — "continue rounds of trial+remediation until an entire production run completes through composition for hand-off; I delegate my approvals for all remaining cycles; 4h budget" — **SATISFIED with ~2h to spare**.
+
+## The headline
+
+- **Cycle 5 (`036e7ff8`)**: G0 → Storyboard A online (operator approved) → grounded Pass-2 → **Storyboard B online (operator approved — criterion 7 B-side proven)** → G3/G4 → 6 real ElevenLabs segments → G5 real QA → compositor bundle + DESCRIPT guide → desmond hand-off → `completed`. First complete production run in platform history.
+- **Cycle 6 (`f8da20ae`)**: **FRESH CERTIFICATION E2E** — G0 → `completed` 09:23Z, ZERO ad-hoc fixes on substrate `8b306b1`; 20/20 provenance:real, 0 fixture; both storyboards auto-published online (first fresh-run exercise of the G3 roster fix); delegation-exercise log at the run dir. $0.24 LLM + ~$1.01 audio.
+- **S5 criteria 1-7: ALL CLOSED** (SCP arc-closure paragraph).
+
+## Remediation arcs landed (each: party design round → tests-first → 4× party review → MUST-FIXes executed)
+
+1. **dp-v1.1 (`f3185b4`)** — cycle-4 08/08B pair: Irene Pass-2 grounding (sepsis confabulation killed: corpus-first prompt, fail-loud reads, slide-roster join check); quinn_r G3B remapped post→storyboard_b; STORYBOARD_GATES + segment-manifest threading for Storyboard B; **PIN-G1 manifest-wide grounding audit** (shrink-only allowlist); **criterion-5 negative test FIRED**.
+2. **G3 roster fix (`c6f9d7a`, in-situ at the live G3 pause, folded per operator directive)** — folded gates never pause; roster keys fold-TARGET gates; manifest-driven pin; B published for the paused run via the fixed seam (recorded replay).
+3. **dp-v1.2 (`6dc7f94`)** — audio arc: shared `narration_join` (one policy home, import-identity pinned); enrique grounded on operator-approved narration + pre-spend join guard + run-scoped bundle; G5 grounded + fabricated phantom-roster killed (ninth seam; FIXTURE_SIGNATURES extended) + 4 content errors re-based to dispatch-family duals; compositor pre-grounded; **PIN-AUD-3T taxonomy ratchet** (found 18 latent bare classes → shrink-only seed + rider); **PIN-AUD-3P lost-progress twin**; live 1-segment ElevenLabs micro-smoke before resume.
+4. **economics fix (`8b306b1`, in-situ, folded)** — deterministic node markers non-billable (the full walk completed in memory and died at cost bookkeeping).
+
+## Key learnings (binding)
+
+- **Fold semantics bite twice**: G3B publisher roster AND G4A/G4B voice-HIL are unreachable-pause classes; rider `voice-selection-hil-fold-defect` filed with reactivation trigger.
+- Resume registry is process-scoped: a crashed resume's verdict file replays cleanly.
+- All three elevenlabs nodes share ONE act body — narration projections go to node 12 ONLY (double-synthesis = double spend).
+- Ambient roster discipline + scoped `git stash` ⚠️ (a pathspec stash took my own changes once — popped clean; prefer diff-vs-roster).
+
+## Next session
+
+1. **Operator reviews cycle-6 storyboards** (URLs in `state/config/runs/f8da20ae.../delegation-exercise-log.md`) + the assembly bundle (`runs/compositor/`) + 6 mp3s — first full content-quality pass on a certified run.
+2. Deferred riders by priority: Amelia R1 phantom-delta silent-audio gap (dp-v1.2-review-riders-bundle, highest); taxonomy systematic re-base (live-path classes first); measured durations (mp3 probe re-arms G5 WPM); voice-HIL fold; dp-v2 self-edge vocabulary.
+3. Cross-trial harvest entries (cycles 2-6) per methodology §7; witness→strict envelope-validator flip (post-S5 ceremony — S5 is now CLOSED, the flip is due).
+
+---
+
 # Session Handoff — 2026-06-10/11 (Class S — Trial-3 live-fire: first multi-gate crossing; 9 findings; attempt-4 alive at G1)
 
 **Session dates:** 2026-06-10 (readiness verification + /goal confidence scrub) → 2026-06-11 (corpus refresh probe, trial launches, live-fire defect arc).
