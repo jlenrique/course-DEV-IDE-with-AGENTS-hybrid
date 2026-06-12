@@ -17,6 +17,7 @@ from uuid import UUID, uuid4
 
 from app.composers.section_02a.cli_adapter import compose_and_write
 from app.marcus.orchestrator.production_runner import (
+    recover_production_trial,
     resume_production_trial,
     run_production_trial,
 )
@@ -399,6 +400,53 @@ def resume_trial_cli(args: argparse.Namespace) -> int:
     return 0
 
 
+def recover_trial(
+    *,
+    trial_id: UUID,
+    runs_root: Path = RUNS_ROOT,
+    max_specialist_calls: int | None = None,
+) -> dict[str, Any]:
+    """Continue an error-paused trial from its failed node (S4 part 2).
+
+    No verdict file: dispatch-error pauses carry no operator decision — the
+    operator fixes the transient cause and re-enters the walk. Gate pauses
+    still require `trial resume` + a verdict.
+    """
+    _load_env_if_available()
+    envelope = recover_production_trial(
+        trial_id=trial_id,
+        runs_root=runs_root,
+        max_specialist_calls=max_specialist_calls,
+    )
+    result = {
+        "status": envelope.status,
+        "trial_id": str(trial_id),
+        "paused_gate": envelope.paused_gate,
+        "paused_error_tag": envelope.paused_error_tag,
+        "run_registry_path": str(runs_root / str(trial_id) / "run.json"),
+        "cost_report_json": str(envelope.cost_report_path)
+        if envelope.cost_report_path is not None
+        else None,
+        "production_clone_launch_evidence": envelope.production_clone_launch_evidence,
+        "transport_kind": "cli",
+    }
+    (runs_root / str(trial_id) / "trial-recover.json").write_text(
+        json.dumps(result, indent=2, sort_keys=True) + "\n",
+        encoding="utf-8",
+    )
+    return result
+
+
+def recover_trial_cli(args: argparse.Namespace) -> int:
+    payload = recover_trial(
+        trial_id=args.trial_id,
+        runs_root=Path(args.runs_root) if args.runs_root else RUNS_ROOT,
+        max_specialist_calls=args.max_specialist_calls,
+    )
+    print(json.dumps(payload, sort_keys=True))
+    return 0
+
+
 def build_trial_parser(parser: argparse.ArgumentParser) -> None:
     subparsers = parser.add_subparsers(dest="trial_command")
     start = subparsers.add_parser("start")
@@ -436,6 +484,24 @@ def build_trial_parser(parser: argparse.ArgumentParser) -> None:
             "continuation. Defaults to the paused runner cap."
         ),
     )
+    recover = subparsers.add_parser(
+        "recover",
+        help=(
+            "Continue an error-paused trial from its failed node (no verdict "
+            "file; dispatch-error pauses carry no operator decision)."
+        ),
+    )
+    recover.add_argument("--trial-id", required=True, type=UUID)
+    recover.add_argument("--runs-root", required=False, help=argparse.SUPPRESS)
+    recover.add_argument(
+        "--max-specialist-calls",
+        required=False,
+        type=int,
+        help=(
+            "Maximum downstream specialist calls to make during this recovery "
+            "continuation. Defaults to the paused runner cap."
+        ),
+    )
 
 
 __all__ = [
@@ -443,6 +509,8 @@ __all__ = [
     "DirectiveDeclinedError",
     "EditorUnavailableError",
     "build_trial_parser",
+    "recover_trial",
+    "recover_trial_cli",
     "resume_trial",
     "resume_trial_cli",
     "start_trial",

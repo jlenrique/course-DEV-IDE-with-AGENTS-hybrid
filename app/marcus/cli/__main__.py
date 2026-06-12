@@ -5,7 +5,12 @@ import sys
 
 from app.marcus.cli.adhoc_cli import adhoc_ask_cli, build_adhoc_parser
 from app.marcus.cli.gate_cli import main as gate_main
-from app.marcus.cli.trial import build_trial_parser, resume_trial_cli, start_trial_cli
+from app.marcus.cli.trial import (
+    build_trial_parser,
+    recover_trial_cli,
+    resume_trial_cli,
+    start_trial_cli,
+)
 
 
 def build_parser() -> argparse.ArgumentParser:
@@ -34,6 +39,8 @@ def main(argv: list[str] | None = None) -> int:
         return start_trial_cli(args)
     if args.command == "trial" and args.trial_command == "resume":
         return resume_trial_cli(args)
+    if args.command == "trial" and args.trial_command == "recover":
+        return recover_trial_cli(args)
     parser.error("a command is required")
     return 2
 

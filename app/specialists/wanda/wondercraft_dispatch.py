@@ -5,17 +5,14 @@ from __future__ import annotations
 from datetime import UTC, datetime
 from typing import Any
 
+from app.specialists.dispatch_errors import SpecialistDispatchError
 from scripts.api_clients.wondercraft_client import WondercraftClient
 
 CAPABILITY_CODES: frozenset[str] = frozenset({"EP", "DP", "AS", "MB", "CM", "AH"})
 
 
-class WondercraftDispatchError(RuntimeError):  # noqa: N818
+class WondercraftDispatchError(SpecialistDispatchError):
     """Raised when Wanda dispatch cannot execute the requested capability."""
-
-    def __init__(self, message: str, *, tag: str) -> None:
-        super().__init__(message)
-        self.tag = tag
 
 
 def _ep_podcast_episode_produce(

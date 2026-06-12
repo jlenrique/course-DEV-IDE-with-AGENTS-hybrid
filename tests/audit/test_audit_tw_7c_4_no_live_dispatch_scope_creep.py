@@ -221,6 +221,16 @@ PERMITTED_PYTHON_DIFFS = {
     # rejection; builder id marcus -> package_builder; seam slimmed to
     # runner context only (tombstone deliberately rewritten).
     "app/manifest/schema.py",
+    # S4 part 2 (same SCP; Winston d.2 + Amelia trap 1): shared
+    # SpecialistDispatchError base (six S0 seam classes re-based onto it);
+    # single _dispatch_specialist_at_node call site for both walkers;
+    # typed dispatch failure -> paused-at-error + error-pause.json instead
+    # of cycle death; _continue_production_walk shared by resume + the new
+    # verdict-less recover_production_trial; `trial recover` CLI subcommand.
+    "app/specialists/dispatch_errors.py",
+    "app/models/runtime/production_trial_envelope.py",
+    "app/marcus/cli/__main__.py",
+    "tests/integration/marcus/test_production_runner_error_pause_recover.py",
     # Story 34-2 wrangler-side test (substrate-audit-corrected path 2026-05-22;
     # co-located with existing test_run_wrangler.py at skills/.../tests/).
     "skills/bmad-agent-texas/scripts/tests/test_run_wrangler_role_enum_union_and_excluded_reason.py",

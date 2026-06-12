@@ -166,6 +166,7 @@
         "registered",
         "in-flight",
         "paused-at-gate",
+        "paused-at-error",
         "completed",
         "failed"
       ],
@@ -189,6 +190,18 @@
       ],
       "default": null,
       "title": "Paused Gate"
+    },
+    "paused_error_tag": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Paused Error Tag"
     },
     "langsmith_trace_id": {
       "anyOf": [

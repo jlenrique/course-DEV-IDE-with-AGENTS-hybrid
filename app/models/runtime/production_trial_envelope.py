@@ -16,6 +16,7 @@ ProductionTrialStatus = Literal[
     "registered",
     "in-flight",
     "paused-at-gate",
+    "paused-at-error",
     "completed",
     "failed",
 ]
@@ -44,6 +45,10 @@ class ProductionTrialEnvelope(BaseModel):
     completed_at: datetime | None = None
     status: ProductionTrialStatus
     paused_gate: ProductionGateId | None = None
+    # S4 part 2 (SCP 2026-06-11): set with status "paused-at-error" — the
+    # stable machine tag of the SpecialistDispatchError that paused the run
+    # (recoverable via `trial recover`, no operator verdict required).
+    paused_error_tag: str | None = None
     langsmith_trace_id: str | None = None
     production_clone_launch_evidence: bool
     production_clone_launch_evidence_reason: str | None = None

@@ -8,6 +8,8 @@ import types
 from pathlib import Path
 from typing import Any
 
+from app.specialists.dispatch_errors import SpecialistDispatchError
+
 REPO_ROOT = Path(__file__).resolve().parents[3]
 BRIDGE_UTILS = REPO_ROOT / "skills" / "sensory-bridges" / "scripts" / "bridge_utils.py"
 
@@ -35,12 +37,8 @@ def _load_perceive_callable() -> Any:
     return module.perceive
 
 
-class SensoryBridgeDispatchError(RuntimeError):
+class SensoryBridgeDispatchError(SpecialistDispatchError):
     """Raised when perception inputs are missing (S0 fail-loud policy)."""
-
-    def __init__(self, message: str, *, tag: str) -> None:
-        super().__init__(message)
-        self.tag = tag
 
 
 def dispatch_to_sensory_bridges(

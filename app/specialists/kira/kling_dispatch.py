@@ -12,6 +12,8 @@ import importlib.util
 from pathlib import Path
 from typing import Any
 
+from app.specialists.dispatch_errors import SpecialistDispatchError
+
 REPO_ROOT = Path(__file__).resolve().parents[3]
 TARGET_PATH = REPO_ROOT / "skills" / "kling-video" / "scripts" / "run_motion_generation.py"
 DEFAULT_FIXTURE_MOTION_PATH = (
@@ -28,12 +30,8 @@ def _load_target_module() -> Any:
     return module
 
 
-class KlingDispatchError(RuntimeError):
+class KlingDispatchError(SpecialistDispatchError):
     """Raised when Kling dispatch inputs are missing (S0 fail-loud policy)."""
-
-    def __init__(self, message: str, *, tag: str) -> None:
-        super().__init__(message)
-        self.tag = tag
 
 
 def dispatch_to_kling(

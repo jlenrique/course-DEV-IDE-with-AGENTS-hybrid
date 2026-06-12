@@ -6,6 +6,7 @@ import json
 from pathlib import Path
 from typing import Any
 
+from app.specialists.dispatch_errors import SpecialistDispatchError
 from skills.gamma_api_mastery.scripts.gamma_operations import execute_generation
 
 REPO_ROOT = Path(__file__).resolve().parents[3]
@@ -14,12 +15,8 @@ DEFAULT_FIXTURE_RECEIPT = (
 )
 
 
-class GammaDispatchError(RuntimeError):  # noqa: N818
+class GammaDispatchError(SpecialistDispatchError):
     """Raised when gamma dispatch fails before receipt parsing."""
-
-    def __init__(self, message: str, *, tag: str) -> None:
-        super().__init__(message)
-        self.tag = tag
 
 
 def _load_fixture_receipt(path: Path = DEFAULT_FIXTURE_RECEIPT) -> dict[str, Any]:

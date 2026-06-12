@@ -13,6 +13,7 @@ import yaml
 
 from app.models.state.model_resolution_entry import ModelResolutionEntry
 from app.models.state.run_state import RunState
+from app.specialists.dispatch_errors import SpecialistDispatchError
 
 REQUIRED_BUNDLE_ARTIFACTS = (
     "extracted.md",
@@ -40,12 +41,8 @@ class BundleParseError(RuntimeError):  # noqa: N818
         self.tag = tag
 
 
-class BundleDispatchError(RuntimeError):  # noqa: N818
+class BundleDispatchError(SpecialistDispatchError):
     """Raised when the wrangler dispatch receipt is unusable."""
-
-    def __init__(self, message: str, *, tag: str) -> None:
-        super().__init__(message)
-        self.tag = tag
 
 
 class RetrievalScopeError(Exception):
