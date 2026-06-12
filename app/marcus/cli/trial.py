@@ -203,6 +203,7 @@ def start_trial(
     runs_root: Path = RUNS_ROOT,
     auto_confirm_directive: bool = False,
     confirm_fn: Callable[..., Literal["confirmed", "saved-only"]] | None = None,
+    max_specialist_calls: int | None = None,
 ) -> dict[str, Any]:
     _ensure_utf8_io()
     _load_env_if_available()
@@ -280,6 +281,14 @@ def start_trial(
                 "transport_kind": "cli",
             }
 
+    # Open-throttle discipline (finding #8 at trial scale, 2026-06-12): under
+    # S2 per-node keying a resume never revisits pre-checkpoint nodes, so a
+    # cap-starved START permanently under-populates the pre-G1 segment and
+    # the §06 builder fail-louds post-G1. Production starts pass the cap
+    # explicitly; the runner default (1) stays for harness checks.
+    runner_kwargs: dict[str, Any] = {}
+    if max_specialist_calls is not None:
+        runner_kwargs["max_specialist_calls"] = max_specialist_calls
     envelope = run_production_trial(
         corpus_path=input_path,
         preset=preset,
@@ -289,6 +298,7 @@ def start_trial(
         allow_offline_cost_report=allow_offline_cost_report,
         pause_at_gates=not allow_offline_cost_report,
         directive_path=directive_path,
+        **runner_kwargs,
     )
 
     run_json = run_dir / "run.json"
@@ -337,6 +347,7 @@ def start_trial_cli(args: argparse.Namespace) -> int:
             allow_offline_cost_report=args.allow_offline_cost_report,
             runs_root=Path(args.runs_root) if args.runs_root else RUNS_ROOT,
             auto_confirm_directive=getattr(args, "auto_confirm_directive", False),
+            max_specialist_calls=getattr(args, "max_specialist_calls", None),
         )
     except DirectiveConfirmationRequiredError as exc:
         print(f"ERROR: {exc}", file=sys.stderr)
@@ -469,6 +480,17 @@ def build_trial_parser(parser: argparse.ArgumentParser) -> None:
         help=(
             "Skip the G0 confirm-or-edit prompt and accept the composed "
             "directive verbatim. Required for non-interactive trial starts."
+        ),
+    )
+    start.add_argument(
+        "--max-specialist-calls",
+        required=False,
+        type=int,
+        help=(
+            "Maximum live specialist calls during the start walk (G0 to the "
+            "first gate). Production starts should open the throttle: under "
+            "per-node keying, resumes never revisit pre-checkpoint nodes, so "
+            "a starved start cannot be repaired downstream."
         ),
     )
     resume = subparsers.add_parser("resume")
