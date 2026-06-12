@@ -4,8 +4,8 @@
 
 **Languages:** Python (3.11+), Markdown, JSON, Jinja2, YAML, JavaScript, PowerShell, Shell, SQL
 **Core frameworks:** LangChain, LangGraph, FastAPI, Pydantic v2, Pytest, Uvicorn, Jinja2
-**Branch:** `dev/langchain-langgraph-foundation` (severed from `upstream/master` since 2026-04-24)
-**Status (2026-05-25):** Migration SHIPPED (commit `97842ac`, 2026-04-27); Slab 7 orchestrational arc CLOSED; **first tracked trial (Trial-3) imminent** against the v5 canonical pack.
+**Branch:** `trial/3-2026-05-21` (working branch for the Trial-3 arc; severed from `upstream/master` since 2026-04-24)
+**Status (2026-06-12):** Migration SHIPPED (commit `97842ac`, 2026-04-27); Slab 7 orchestrational arc CLOSED; Trial-3 attempts in flight. Data-plane segment S0–S4 landed: real S06 pre-dispatch package builders, shared dispatch helper with error-pause + trial recover, edge-key projection, vocabulary versioning, provenance + builder identity, fail-loud dispatch error taxonomy.
 
 ---
 
@@ -73,25 +73,29 @@ The single source of truth for what flows through the system. Every contract cha
 - `app/models/decision_cards/` — G0/G1/G2a/G2c/G3/G4/G5/G6 DecisionCard models + JSON Schemas.
 - `app/models/operator_verdict_section_*.py` — 14 per-section OperatorVerdict envelopes with closed-enum verb constraints.
 - `app/models/registry.py` + `app/models/selector.py` — model-resolution cascade (NFR-X4 audit trail).
+- `app/models/runtime/production_envelope.py` + `production_trial_envelope.py` — the production trial's data spine: per-node envelopes keyed by edge-key projection, with vocabulary version + provenance + builder identity (S4).
 - `app/models/trial3_transcript.py` — Trial-3 gate-event transcript schema.
 
-### 3.2 `layer:orchestration` — Marcus LangGraph (72 nodes)
+### 3.2 `layer:orchestration` — Marcus LangGraph (73 nodes)
 
 Marcus is the runtime orchestrator process. *Not* the BMAD persona — the production-runtime engine.
 
 - `app/marcus/cli/__main__.py` + `cli/trial.py` — operator entry point (`python -m app.marcus.cli trial start`).
-- `app/marcus/orchestrator/production_runner.py` — drives the manifest, handles gate-pause/resume, persists envelopes. ⚠️ **complex**.
+- `app/marcus/orchestrator/production_runner.py` — drives the manifest via the shared `_continue_production_walk` engine backing start/resume/recover trial flows; handles gate-pause, error-pause, and envelope persistence. ⚠️ **complex** (~1,850 lines — the batch hub with 23 internal imports).
 - `app/marcus/orchestrator/dispatch_adapter.py` — bridges `ProductionEnvelope` → specialist `RunState`; compiles per-specialist subgraphs.
+- `app/marcus/orchestrator/package_builders.py` — real S06 pre-dispatch package builders (S3); assembles the per-specialist dispatch package from plan-locked state.
 - `app/marcus/orchestrator/loop.py` — the **4A loop** (intake → tune → reassess → plan-lock). ⚠️ **complex**.
 - `app/marcus/lesson_plan/` — lesson-plan domain: schema, blueprint authoring, Gagne diagnosis, fit reports, Quinn-R gate.
 - `app/marcus/facade.py` — single-process aggregator for step dispatch, ad-hoc ask, 4A workflow, sanctum/conversation persistence.
 - `app/marcus/orchestrator/writers/section_15_bundle.py` — G5 final-handoff bundle (Descript assembly guide).
 
-### 3.3 `layer:specialists` — 14 specialist LangGraph agents (142 nodes)
+### 3.3 `layer:specialists` — 14 specialist LangGraph agents (145 nodes)
 
 Each specialist lives in `app/specialists/<name>/` with the same shape:
 - `graph.py` — builds the 9-node `StateGraph` via `build_<name>_graph()`.
 - `_act.py` (heavy specialists) — the LLM-calling work; the only non-trivial node.
+- `*_dispatch.py` (emission specialists) — external-API dispatch seam (Gamma, Kling, ElevenLabs, Wondercraft, sensory-bridges, retrieval); each raises a per-seam error class inheriting `app/specialists/dispatch_errors.py::SpecialistDispatchError` (S0 fail-loud re-basing).
+- `payload_contract.py` (Gary, Quinn-R) — governance contract enumerating the payload keys the specialist consumes.
 - `state.py` — `<Name>Envelope` + `<Name>Return` Pydantic models.
 - `__init__.py` — package barrel re-exporting the builder.
 
@@ -117,7 +121,7 @@ The HIL gate substrate that makes LangGraph `interrupt`/`Command` work:
 - `app/cora/graph.py` — **Cora dev-graph**: separate LangGraph instance for story handlers (plan/implement/review/test/close). ⚠️ **complex**.
 - `app/parity/contracts/` — parity-contracts framework (declaration, decorator, registry, sanctum alignment, audit).
 
-### 3.5 `layer:runtime-infra` — persistence + transport (48 nodes)
+### 3.5 `layer:runtime-infra` — persistence + transport (47 nodes)
 
 - `app/runtime/checkpointer.py` — `AsyncPostgresSaver` factory for LangGraph checkpointer (`make_checkpointer()`).
 - `app/runtime/override_api.py` — in-process override registry + cache-invalidation. ⚠️ **complex**.
@@ -161,22 +165,24 @@ Sanctum scaffold templates (BOND/CAPABILITIES/CREED/INDEX/MEMORY/PERSONA) live a
 
 ---
 
-## 4. Guided tour (12 steps, 30-45 min)
+## 4. Guided tour (14 steps, 45-60 min)
 
 The recommended reading path the knowledge graph generated:
 
-1. **Project Orientation: Skills Index and Environment** — `README.md` + `skills/` index + `.env.example`.
-2. **Operator Entry Point: The Marcus CLI** — `app/marcus/cli/__main__.py` + `cli/trial.py`.
-3. **Marcus Orchestrator: Driving Trials Through Gates** — `orchestrator/production_runner.py` + `orchestrator/loop.py`.
-4. **The Pipeline Manifest: Declarative Graph Assembly** — `state/config/pipeline-manifest.yaml` + `app/manifest/{schema,compiler}.py`.
-5. **The Specialist Scaffold: 9-Node RPAVRSGFH Pattern** — `app/specialists/_scaffold/graph.py` + `_scaffold/contract.py`.
-6. **Three Specialists in Practice** — Irene (`irene/graph.py` + `authoring/pass_2_template.py`), Quinn-R (`quinn_r/_act.py`), Compositor.
-7. **Gates, HIL, and Party-Mode-as-Interrupt** — `app/gates/resume_api.py` + `gates/party_mode_as_interrupt.py` + a representative `section_*/poll_surface.py`.
-8. **Decision Cards: Tamper-Evident Operator Verdicts** — `app/models/decision_cards/g{1,2c,3,4}.py` + `models/state/operator_verdict.py`.
-9. **RunState and Envelopes: The Pydantic Source-of-Truth** — `app/models/state/run_state.py` + `models/state/specialist_envelope.py`.
-10. **Parity Contracts and the Cora Dev-Graph** — `app/parity/contracts/_audit.py` + `app/cora/graph.py`.
-11. **Runtime Infrastructure: Checkpointer, Ledger, FastAPI, MCP** — `app/runtime/checkpointer.py` + `app/ledger/emitter.py` + `app/http/gate_endpoint.py` + `app/mcp_server/server.py`.
-12. **BMAD Skills and the v4.2 Pack Generator** — `skills/bmad-agent-marcus/SKILL.md` + `scripts/generators/v42/`.
+1. **Project Orientation: Skills Index and Environment** — `skills/README.md` + `skills/bmad-agent-marcus/SKILL.md` + `.env.example`.
+2. **Operator Entry Point: The Marcus CLI** — `app/marcus/cli/__main__.py` + `cli/trial.py` + `cli/gate_cli.py`.
+3. **Production Runner: The Trial Engine** — `orchestrator/production_runner.py` + `dispatch_adapter.py` + `gate_runner.py` + `conversation_persistence.py`.
+4. **The Pipeline Manifest: Declarative Graph Assembly** — `app/manifest/{schema,loader,compiler}.py`.
+5. **Production Envelopes: The Trial's Data Spine** — `app/models/runtime/{production_envelope,production_trial_envelope,trial_economics_report}.py`.
+6. **The Specialist Scaffold: 9-Node Pattern** — `app/specialists/_scaffold/{contract,graph}.py`.
+7. **Three Specialists in Practice** — Irene (`irene/graph.py`), Quinn-R (`quinn_r/graph.py` + `marcus/lesson_plan/quinn_r_gate.py`), Compositor (`compositor/_act.py`).
+8. **Dispatch Seams, Payload Contracts, Package Builders** — `specialists/dispatch_errors.py` + `gary/{gamma_dispatch,payload_contract}.py` + `quinn_r/payload_contract.py` + `orchestrator/package_builders.py`.
+9. **Gates, HIL, and Party-Mode-as-Interrupt** — `app/gates/{resume_api,errors,party_mode_as_interrupt}.py` + `orchestrator/hil_intake.py`.
+10. **Decision Cards: Tamper-Evident Verdicts** — `app/models/decision_cards/{_base,g1,g2c,g3,g4}.py`.
+11. **RunState: The Pydantic Source-of-Truth** — `app/models/state/{_base,run_state,specialist_envelope,operator_verdict}.py`.
+12. **Parity Contracts and the Cora Dev-Graph** — `app/parity/contracts/_decorator.py` + `app/cora/{graph,block_mode_node}.py`.
+13. **Runtime Infrastructure: Checkpointer, Ledger, Transports** — `app/runtime/checkpointer.py` + `app/ledger/emitter.py` + `ledger/schema.sql` + `app/http/gate_endpoint.py` + `app/mcp_server/tools/gate_decide.py`.
+14. **BMAD Skills and the v4.2 Pack Generator** — `skills/bmad-agent-{cora,gamma}/SKILL.md` + `scripts/generators/v42/{render,manifest}.py` + `templates/layout/pack.md.j2`.
 
 ---
 
@@ -198,7 +204,7 @@ The recommended reading path the knowledge graph generated:
 
 ## 6. Complexity hotspots — read carefully, change cautiously
 
-The graph flagged **119 file-level nodes as `complex`** (≥ ~250 LOC with non-trivial logic). The ones a new contributor most often needs to touch (and where most regressions originate):
+The graph flags **101 file-level nodes as `complex`** (≥ ~250 LOC with non-trivial logic). The ones a new contributor most often needs to touch (and where most regressions originate):
 
 ### Critical path — touched by almost every change
 - `app/manifest/compiler.py` — manifest → StateGraph compiler; lint failures here block all trials.
@@ -213,8 +219,9 @@ The graph flagged **119 file-level nodes as `complex`** (≥ ~250 LOC with non-t
 - `app/models/operator_verdict_section_*.py` — 14 envelopes; verb-payload consistency is enforced by cross-field validators.
 
 ### Specialist hotspots — `_act.py` is where the work happens
-- `app/specialists/{gary,quinn_r,texas,vera,wanda,kira,enrique,dan,tracy,irene_pass1}/_act.py` and `irene/graph.py`.
-- `app/specialists/irene/authoring/pass_2_template.py` — 253-line Pydantic source-of-truth with cross-artifact `model_validator`.
+- `app/specialists/{gary,texas,vera,kira,enrique,tracy,irene_pass1}/_act.py` plus the flagged graphs: `{irene,quinn_r,texas,vera,cd,desmond}/graph.py`.
+- `app/specialists/wanda/wondercraft_dispatch.py` — the heaviest dispatch seam.
+- `app/specialists/irene/authoring/pass_2_template.py` — Pydantic source-of-truth with cross-artifact `model_validator`.
 
 ### Composer / poll surface hotspots — Trial-3 surface
 - `app/composers/section_02a/composer.py` + `directive_model.py` — corpus → directive composition (G0).
@@ -273,9 +280,9 @@ Full operator playbook: `_bmad-output/implementation-artifacts/trial-3-readiness
 - **Migration guide:** `docs/dev-guide/langgraph-migration-guide.md`
 - **Pipeline manifest regime:** `docs/dev-guide/pipeline-manifest-regime.md`
 - **Trial methodology:** `docs/trials/methodology.md`
-- **Knowledge graph (this analysis):** `.understand-anything/knowledge-graph.json` (1,937 nodes, 3,472 edges, 8 layers, 12-step tour)
+- **Knowledge graph (this analysis):** `.understand-anything/knowledge-graph.json` (1,663 nodes, 3,001 edges, 8 layers, 14-step tour)
 - **Interactive dashboard:** run `/understand-anything:understand-dashboard` to launch the Vite-served visualizer (requires the token printed at startup).
 
 ---
 
-*Generated 2026-05-25 from `.understand-anything/knowledge-graph.json` at commit `61aaf03`. Code-only scope: `app/` + `scripts/` + `skills/` (685 files). Refresh by running `/understand` after substantive changes.*
+*Generated 2026-06-12 from `.understand-anything/knowledge-graph.json` at commit `8fb7bbf` (incremental refresh; 163 files re-analyzed). Code-only scope: `app/` + `scripts/` + `skills/` (691 files). Refresh by running `/understand` after substantive changes.*

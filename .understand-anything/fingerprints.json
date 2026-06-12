@@ -1,7 +1,7 @@
 {
   "version": "1.0.0",
-  "gitCommitHash": "61aaf03bc60dc87abddf4b5c28fba83c9ba489fd",
-  "generatedAt": "2026-05-25T22:02:37.622Z",
+  "gitCommitHash": "ac3f16422eaa54d92a94b9af9add7843e59d1617",
+  "generatedAt": "2026-06-12T16:25:33.318Z",
   "files": {
     ".coverage": {
       "filePath": ".coverage",
@@ -6082,8 +6082,18 @@
     },
     "app/manifest/schema.py": {
       "filePath": "app/manifest/schema.py",
-      "contentHash": "74e7311122c4c8f71b67ce7496776d8f0f6ecab74a72724775cbb65db7226039",
-      "functions": [],
+      "contentHash": "e3cc07e32c49ceb1889142b9329868735fc3fbdff583e37734366a1f9e9c5441",
+      "functions": [
+        {
+          "name": "is_orchestration_only",
+          "params": [
+            "node"
+          ],
+          "returnType": "bool",
+          "exported": true,
+          "lineCount": 13
+        }
+      ],
       "classes": [
         {
           "name": "LearningEventsConfig",
@@ -6108,7 +6118,8 @@
         {
           "name": "NodeSpec",
           "methods": [
-            "_enforce_fold_fields_mutually_exclusive"
+            "_enforce_fold_fields_mutually_exclusive",
+            "_enforce_projection_keys_disjoint_from_dependencies"
           ],
           "properties": [
             "id",
@@ -6116,6 +6127,7 @@
             "scaffold_node",
             "model_config_ref",
             "dependencies",
+            "dependency_projections",
             "fold_with",
             "fold_target",
             "label",
@@ -6130,7 +6142,17 @@
             "learning_events"
           ],
           "exported": true,
-          "lineCount": 114
+          "lineCount": 140
+        },
+        {
+          "name": "ProjectionSpec",
+          "methods": [],
+          "properties": [
+            "from_specialist",
+            "key"
+          ],
+          "exported": true,
+          "lineCount": 20
         },
         {
           "name": "EdgeSpec",
@@ -6158,6 +6180,7 @@
             "lane",
             "entrypoint",
             "frozen_graph_version",
+            "data_plane_vocabulary_version",
             "nodes",
             "edges",
             "pack_version",
@@ -6166,7 +6189,7 @@
             "block_mode_trigger_paths"
           ],
           "exported": true,
-          "lineCount": 117
+          "lineCount": 128
         }
       ],
       "imports": [
@@ -6192,10 +6215,12 @@
         "LearningEventsConfig",
         "StepLearningEventsConfig",
         "NodeSpec",
+        "ProjectionSpec",
         "EdgeSpec",
-        "PipelineManifest"
+        "PipelineManifest",
+        "is_orchestration_only"
       ],
-      "totalLines": 379,
+      "totalLines": 454,
       "hasStructuralAnalysis": true
     },
     "app/marcus/__init__.py": {
@@ -6254,7 +6279,7 @@
     },
     "app/marcus/cli/__main__.py": {
       "filePath": "app/marcus/cli/__main__.py",
-      "contentHash": "60d40b89d69f1f5543cc898f0ce1762ac41e3b1cd86717095fc779178ff46352",
+      "contentHash": "e475f5c4868e167c4d332428468acd6d167294fe4c9befd5cb7b92977bd069fd",
       "functions": [
         {
           "name": "build_parser",
@@ -6270,7 +6295,7 @@
           ],
           "returnType": "int",
           "exported": true,
-          "lineCount": 15
+          "lineCount": 17
         }
       ],
       "classes": [],
@@ -6304,6 +6329,7 @@
           "source": "app.marcus.cli.trial",
           "specifiers": [
             "build_trial_parser",
+            "recover_trial_cli",
             "resume_trial_cli",
             "start_trial_cli"
           ]
@@ -6313,7 +6339,7 @@
         "build_parser",
         "main"
       ],
-      "totalLines": 43,
+      "totalLines": 50,
       "hasStructuralAnalysis": true
     },
     "app/marcus/cli/adhoc_cli.py": {
@@ -6926,7 +6952,7 @@
     },
     "app/marcus/cli/trial.py": {
       "filePath": "app/marcus/cli/trial.py",
-      "contentHash": "b946ff97b90a42dd9e7c30926bc876cbf83ef260dbe1314ac75f298f80138b16",
+      "contentHash": "f85909c06c76f17818afad5697ca26a05ae5fc6535df4797a63c8a00721244d4",
       "functions": [
         {
           "name": "_load_env_if_available",
@@ -6995,7 +7021,7 @@
           ],
           "returnType": "Literal[\"confirmed\", \"saved-only\"]",
           "exported": true,
-          "lineCount": 41
+          "lineCount": 46
         },
         {
           "name": "_write_cancellation_record",
@@ -7019,11 +7045,12 @@
             "allow_offline_cost_report",
             "runs_root",
             "auto_confirm_directive",
-            "confirm_fn"
+            "confirm_fn",
+            "max_specialist_calls"
           ],
           "returnType": "dict[str, Any]",
           "exported": true,
-          "lineCount": 132
+          "lineCount": 142
         },
         {
           "name": "start_trial_cli",
@@ -7032,7 +7059,7 @@
           ],
           "returnType": "int",
           "exported": true,
-          "lineCount": 21
+          "lineCount": 22
         },
         {
           "name": "resume_trial",
@@ -7056,13 +7083,33 @@
           "lineCount": 9
         },
         {
+          "name": "recover_trial",
+          "params": [
+            "trial_id",
+            "runs_root",
+            "max_specialist_calls"
+          ],
+          "returnType": "dict[str, Any]",
+          "exported": true,
+          "lineCount": 35
+        },
+        {
+          "name": "recover_trial_cli",
+          "params": [
+            "args"
+          ],
+          "returnType": "int",
+          "exported": true,
+          "lineCount": 8
+        },
+        {
           "name": "build_trial_parser",
           "params": [
             "parser"
           ],
           "returnType": "None",
           "exported": true,
-          "lineCount": 37
+          "lineCount": 66
         }
       ],
       "classes": [
@@ -7173,6 +7220,7 @@
         {
           "source": "app.marcus.orchestrator.production_runner",
           "specifiers": [
+            "recover_production_trial",
             "resume_production_trial",
             "run_production_trial"
           ]
@@ -7207,9 +7255,11 @@
         "start_trial_cli",
         "resume_trial",
         "resume_trial_cli",
+        "recover_trial",
+        "recover_trial_cli",
         "build_trial_parser"
       ],
-      "totalLines": 451,
+      "totalLines": 546,
       "hasStructuralAnalysis": true
     },
     "app/marcus/dispatch/__init__.py": {
@@ -7526,7 +7576,7 @@
     },
     "app/marcus/intake/__init__.py": {
       "filePath": "app/marcus/intake/__init__.py",
-      "contentHash": "35c5e13d1796f457b4e9776554a9784a4c1856f023ea571dd9dc910c76e9cc83",
+      "contentHash": "f78d4722fb719a717f9f6f4952a32dad1ec5d5663cb63a9c3a71a1611a429072",
       "functions": [
         {
           "name": "extract_pre_packet",
@@ -8129,7 +8179,7 @@
     },
     "app/marcus/lesson_plan/component_type_registry.py": {
       "filePath": "app/marcus/lesson_plan/component_type_registry.py",
-      "contentHash": "51cb67d57d2076c22a23b5a55dbce140163f26e3adc339989cdd51e1631491e2",
+      "contentHash": "726a329c77fa0c53efc7f918e410a2b867408abd36d4409aa10009e4a4954407",
       "functions": [
         {
           "name": "get_component_type_entry",
@@ -8202,7 +8252,7 @@
     },
     "app/marcus/lesson_plan/coverage_manifest.py": {
       "filePath": "app/marcus/lesson_plan/coverage_manifest.py",
-      "contentHash": "ce09955dddacfe10296fe9a0e6270cdc71e2cada8d21a37880a5fcd2ab57b27b",
+      "contentHash": "9aa0d162e728ff2b45e0ff278a3f06e8aa50ac0f53b2f3c16a87169f5fee5632",
       "functions": [
         {
           "name": "_find_project_root",
@@ -8786,7 +8836,7 @@
     },
     "app/marcus/lesson_plan/events.py": {
       "filePath": "app/marcus/lesson_plan/events.py",
-      "contentHash": "e195881a87db0de50f7d9cb4aee0d4d0314d408fe66428ea5f18c27d5a886925",
+      "contentHash": "e5073d989457f2660d74c3e62109e9e7156cfa65c57eaf8ae56496f02b54af6f",
       "functions": [
         {
           "name": "to_internal_actor",
@@ -8891,7 +8941,7 @@
     },
     "app/marcus/lesson_plan/fit_report.py": {
       "filePath": "app/marcus/lesson_plan/fit_report.py",
-      "contentHash": "b48907210eb730c8c638d1e87cf1ab39dbfc06c03d6c2fff1d3355c5341195f3",
+      "contentHash": "b533f925ade45b3b3f76db4440be0d68b09b42a3cb0df8495155d76118ccf599",
       "functions": [
         {
           "name": "validate_fit_report",
@@ -9012,7 +9062,7 @@
     },
     "app/marcus/lesson_plan/gagne_diagnostician.py": {
       "filePath": "app/marcus/lesson_plan/gagne_diagnostician.py",
-      "contentHash": "1773c8c58244635981fa01a829093d3ee8d00a62c4ac414b99e733bc1c69492d",
+      "contentHash": "2a226e7338d7bc2ef21565c08038ba826cd8667091bdaf16350dfd9369ce6da0",
       "functions": [
         {
           "name": "_normalize_prior_declined_rationales",
@@ -9225,7 +9275,7 @@
     },
     "app/marcus/lesson_plan/log.py": {
       "filePath": "app/marcus/lesson_plan/log.py",
-      "contentHash": "e6fad4bf9c1210ba720169844d6d48579ea8f65691718fe8105fde67d81bf9bf",
+      "contentHash": "01c0a88b72b9026531e5dc69a0d31ed2d2228ce1f460414377f3152ae6419b0f",
       "functions": [
         {
           "name": "_find_project_root",
@@ -9497,7 +9547,7 @@
     },
     "app/marcus/lesson_plan/modality_registry.py": {
       "filePath": "app/marcus/lesson_plan/modality_registry.py",
-      "contentHash": "1935fb6b225c045c663677ae468e8e3c03457eaa89159aeebaf701e2aebcefad",
+      "contentHash": "3c66a82a6add9bd5b1e8a0bf60bfffbe06f9f9522d8c485ea32dded8f010b369",
       "functions": [
         {
           "name": "get_modality_entry",
@@ -9953,7 +10003,7 @@
     },
     "app/marcus/lesson_plan/schema.py": {
       "filePath": "app/marcus/lesson_plan/schema.py",
-      "contentHash": "13ebe382d944382ed0b1ff95dc40f6886f76baca5d9e91086cb7dc66a6f8ce3f",
+      "contentHash": "2980157326f221b900da5360b685065a6c1e0ab7f1d38285d114ca1ef69d02b6",
       "functions": [],
       "classes": [
         {
@@ -10678,7 +10728,7 @@
     },
     "app/marcus/orchestrator/dispatch_adapter.py": {
       "filePath": "app/marcus/orchestrator/dispatch_adapter.py",
-      "contentHash": "6a1f272afc611bcc37e68430ee75534b12bc0a2747d592972c1e47e0378c5fa4",
+      "contentHash": "60e099e29651493d3dd21da01af93a434583f1879d45d16cdc50ca4ef59efb2f",
       "functions": [],
       "classes": [
         {
@@ -10703,7 +10753,7 @@
           ],
           "properties": [],
           "exported": true,
-          "lineCount": 219
+          "lineCount": 269
         }
       ],
       "imports": [
@@ -10751,6 +10801,12 @@
           ]
         },
         {
+          "source": "app.manifest.compiler",
+          "specifiers": [
+            "SPECIALIST_ALIASES"
+          ]
+        },
+        {
           "source": "app.marcus.orchestrator.gate_runner",
           "specifiers": [
             "assert_payload_duality_boundary"
@@ -10780,7 +10836,7 @@
         "ProductionDispatchAdapterError",
         "ProductionDispatchAdapter"
       ],
-      "totalLines": 259,
+      "totalLines": 310,
       "hasStructuralAnalysis": true
     },
     "app/marcus/orchestrator/dispatch.py": {
@@ -11502,7 +11558,7 @@
     },
     "app/marcus/orchestrator/loop.py": {
       "filePath": "app/marcus/orchestrator/loop.py",
-      "contentHash": "2b95fc019484ef2528bced43de6cbab3b25e6d142194392fa18ce37ea59b3f60",
+      "contentHash": "d3a37e6eeee307115097d82a4b82a1935748b535f1169590f93b121b80d3cafd",
       "functions": [
         {
           "name": "intake_scope_decision",
@@ -11962,7 +12018,7 @@
     },
     "app/marcus/orchestrator/maya_walkthrough.py": {
       "filePath": "app/marcus/orchestrator/maya_walkthrough.py",
-      "contentHash": "a9da74c9260e07e5070ed51cdf50af7f445c85e286752136b29c6a247c3ba1ef",
+      "contentHash": "8a5d89338c0ed10b0f3825d59dceb13156f34b46f37ea1fe856129375791d4f3",
       "functions": [
         {
           "name": "_build_canned_plan",
@@ -12257,6 +12313,81 @@
       "totalLines": 479,
       "hasStructuralAnalysis": true
     },
+    "app/marcus/orchestrator/package_builders.py": {
+      "filePath": "app/marcus/orchestrator/package_builders.py",
+      "contentHash": "ba1af48b602739da8b64dacd962ba3aef9ddaea7e12b23747e4e21902b7f9b25",
+      "functions": [
+        {
+          "name": "_unit_included",
+          "params": [
+            "unit"
+          ],
+          "returnType": "bool",
+          "exported": true,
+          "lineCount": 12
+        },
+        {
+          "name": "build_gary_briefs",
+          "params": [
+            "lesson_plan",
+            "cd_directive"
+          ],
+          "returnType": "dict[str, Any]",
+          "exported": true,
+          "lineCount": 66
+        },
+        {
+          "name": "run_builder_node",
+          "params": [
+            "node_id",
+            "production_envelope"
+          ],
+          "returnType": "ProductionEnvelope",
+          "exported": true,
+          "lineCount": 44
+        }
+      ],
+      "classes": [
+        {
+          "name": "BuilderInputError",
+          "methods": [
+            "__init__"
+          ],
+          "properties": [],
+          "exported": true,
+          "lineCount": 10
+        }
+      ],
+      "imports": [
+        {
+          "source": "typing",
+          "specifiers": [
+            "Any"
+          ]
+        },
+        {
+          "source": "app.models.runtime.production_envelope",
+          "specifiers": [
+            "ProductionEnvelope",
+            "SpecialistContribution"
+          ]
+        },
+        {
+          "source": "app.specialists.gary.payload_contract",
+          "specifiers": [
+            "GARY_CONSUMED_PAYLOAD_KEYS"
+          ]
+        }
+      ],
+      "exports": [
+        "BuilderInputError",
+        "_unit_included",
+        "build_gary_briefs",
+        "run_builder_node"
+      ],
+      "totalLines": 193,
+      "hasStructuralAnalysis": true
+    },
     "app/marcus/orchestrator/per_slide_subgraph.py": {
       "filePath": "app/marcus/orchestrator/per_slide_subgraph.py",
       "contentHash": "6ca177b5bf9bedc233b46dc3952e9e4e6b7dd724b6216de545fc3506dd4d5e7c",
@@ -12523,7 +12654,7 @@
     },
     "app/marcus/orchestrator/production_runner.py": {
       "filePath": "app/marcus/orchestrator/production_runner.py",
-      "contentHash": "8f01e0bb9f3dd92f05b78a224907311bc6956bba334b365871fecd47b7c024d2",
+      "contentHash": "bd5812f3484e26558f1306ce7a92a1af634be351ad7fe7f4364527ba30a8f293",
       "functions": [
         {
           "name": "_has_live_openai",
@@ -12677,7 +12808,7 @@
           ],
           "returnType": "dict[str, str]",
           "exported": true,
-          "lineCount": 17
+          "lineCount": 20
         },
         {
           "name": "_ensure_upstream_contributions_present",
@@ -12851,6 +12982,15 @@
           "lineCount": 14
         },
         {
+          "name": "_merge_artifact_paths",
+          "params": [
+            "existing"
+          ],
+          "returnType": "list[Path]",
+          "exported": true,
+          "lineCount": 17
+        },
+        {
           "name": "_has_production_evidence",
           "params": [
             "graph_step_completed",
@@ -12876,11 +13016,15 @@
           "params": [
             "specialist_id",
             "directive_path",
-            "bundle_dir"
+            "bundle_dir",
+            "gate_code",
+            "production_envelope",
+            "runs_root",
+            "trial_id"
           ],
-          "returnType": "dict[str, str] | None",
+          "returnType": "dict[str, Any] | None",
           "exported": true,
-          "lineCount": 17
+          "lineCount": 45
         },
         {
           "name": "_should_invoke_pre_gate_marcus",
@@ -12919,6 +13063,76 @@
           "lineCount": 24
         },
         {
+          "name": "_pause_at_gate",
+          "params": [
+            "gate_id",
+            "node_id",
+            "node_index",
+            "manifest",
+            "trial_id",
+            "operator_id",
+            "envelope",
+            "production_envelope",
+            "run_state",
+            "child_runs",
+            "trace_metadata",
+            "specialist_calls",
+            "graph_step_completed",
+            "manifest_path",
+            "runs_root",
+            "allow_offline_cost_report",
+            "max_specialist_calls"
+          ],
+          "returnType": "ProductionTrialEnvelope",
+          "exported": true,
+          "lineCount": 160
+        },
+        {
+          "name": "_dispatch_specialist_at_node",
+          "params": [
+            "adapter",
+            "node",
+            "specialist_id",
+            "production_envelope",
+            "run_state",
+            "child_runs",
+            "trial_id",
+            "runs_root",
+            "directive_path",
+            "bundle_dir"
+          ],
+          "returnType": "tuple[ProductionEnvelope, RunState]",
+          "exported": true,
+          "lineCount": 59
+        },
+        {
+          "name": "_pause_at_error",
+          "params": [
+            "error",
+            "node_id",
+            "node_index",
+            "specialist_id",
+            "trial_id",
+            "envelope",
+            "production_envelope",
+            "run_state",
+            "child_runs",
+            "trace_metadata",
+            "last_gate_crossed",
+            "graph_step_completed",
+            "specialist_calls",
+            "manifest_path",
+            "runs_root",
+            "allow_offline_cost_report",
+            "max_specialist_calls",
+            "directive_path",
+            "bundle_dir"
+          ],
+          "returnType": "ProductionTrialEnvelope",
+          "exported": true,
+          "lineCount": 117
+        },
+        {
           "name": "run_production_trial",
           "params": [
             "corpus_path",
@@ -12934,7 +13148,7 @@
           ],
           "returnType": "ProductionTrialEnvelope",
           "exported": true,
-          "lineCount": 321
+          "lineCount": 278
         },
         {
           "name": "resume_production_trial",
@@ -12946,7 +13160,39 @@
           ],
           "returnType": "ProductionTrialEnvelope",
           "exported": true,
-          "lineCount": 223
+          "lineCount": 100
+        },
+        {
+          "name": "recover_production_trial",
+          "params": [
+            "trial_id",
+            "runs_root",
+            "max_specialist_calls"
+          ],
+          "returnType": "ProductionTrialEnvelope",
+          "exported": true,
+          "lineCount": 69
+        },
+        {
+          "name": "_continue_production_walk",
+          "params": [
+            "trial_id",
+            "envelope",
+            "run_state",
+            "runner",
+            "manifest_path",
+            "runs_root",
+            "start_index",
+            "last_gate_crossed",
+            "max_specialist_calls",
+            "directive_path",
+            "bundle_dir",
+            "extra_artifacts",
+            "non_evidence_reason"
+          ],
+          "returnType": "ProductionTrialEnvelope",
+          "exported": true,
+          "lineCount": 271
         }
       ],
       "classes": [
@@ -12958,6 +13204,13 @@
           "properties": [],
           "exported": true,
           "lineCount": 18
+        },
+        {
+          "name": "LegacyEnvelopeSchemaError",
+          "methods": [],
+          "properties": [],
+          "exported": true,
+          "lineCount": 10
         },
         {
           "name": "GateBypassError",
@@ -13076,8 +13329,10 @@
           "specifiers": [
             "conversation_persistence",
             "gate_runner",
+            "package_builders",
             "pre_gate_marcus",
-            "specialist_summary_writer"
+            "specialist_summary_writer",
+            "storyboard_publisher"
           ]
         },
         {
@@ -13163,10 +13418,17 @@
             "measure_trial_cost",
             "record_trial_cost_report"
           ]
+        },
+        {
+          "source": "app.specialists.dispatch_errors",
+          "specifiers": [
+            "SpecialistDispatchError"
+          ]
         }
       ],
       "exports": [
         "MissingUpstreamContributionError",
+        "LegacyEnvelopeSchemaError",
         "GateBypassError",
         "_has_live_openai",
         "_has_langsmith_env",
@@ -13199,16 +13461,22 @@
         "_ensure_decision_card_registered_from_disk",
         "_apply_verdict_to_run_state",
         "_record_cost",
+        "_merge_artifact_paths",
         "_has_production_evidence",
         "_active_node_handler",
         "_runner_payload_for_specialist",
         "_should_invoke_pre_gate_marcus",
         "_pre_gate_slot_values",
         "_invoke_pre_gate_marcus_for_gate",
+        "_pause_at_gate",
+        "_dispatch_specialist_at_node",
+        "_pause_at_error",
         "run_production_trial",
-        "resume_production_trial"
+        "resume_production_trial",
+        "recover_production_trial",
+        "_continue_production_walk"
       ],
-      "totalLines": 1325,
+      "totalLines": 1911,
       "hasStructuralAnalysis": true
     },
     "app/marcus/orchestrator/routing.py": {
@@ -13521,6 +13789,128 @@
       ],
       "exports": [],
       "totalLines": 34,
+      "hasStructuralAnalysis": true
+    },
+    "app/marcus/orchestrator/storyboard_publisher.py": {
+      "filePath": "app/marcus/orchestrator/storyboard_publisher.py",
+      "contentHash": "882d781d197d6de3dd0e026141e45268dc3ba23eeaee350118ae598c31c13c73",
+      "functions": [
+        {
+          "name": "_publisher_config",
+          "params": [],
+          "returnType": "dict[str, Any]",
+          "exported": true,
+          "lineCount": 13
+        },
+        {
+          "name": "_load_generator_module",
+          "params": [],
+          "returnType": "Any",
+          "exported": true,
+          "lineCount": 12
+        },
+        {
+          "name": "_write_segment_manifest_for_b",
+          "params": [
+            "run_dir",
+            "irene_output"
+          ],
+          "returnType": "Path",
+          "exported": true,
+          "lineCount": 35
+        },
+        {
+          "name": "publish_storyboard_for_gate",
+          "params": [
+            "gate_id",
+            "trial_id",
+            "production_envelope",
+            "runs_root"
+          ],
+          "returnType": "dict[str, Any] | None",
+          "exported": true,
+          "lineCount": 136
+        }
+      ],
+      "classes": [
+        {
+          "name": "StoryboardPublishError",
+          "methods": [],
+          "properties": [],
+          "exported": true,
+          "lineCount": 2
+        }
+      ],
+      "imports": [
+        {
+          "source": "importlib.util",
+          "specifiers": [
+            "importlib.util"
+          ]
+        },
+        {
+          "source": "json",
+          "specifiers": [
+            "json"
+          ]
+        },
+        {
+          "source": "os",
+          "specifiers": [
+            "os"
+          ]
+        },
+        {
+          "source": "argparse",
+          "specifiers": [
+            "Namespace"
+          ]
+        },
+        {
+          "source": "functools",
+          "specifiers": [
+            "lru_cache"
+          ]
+        },
+        {
+          "source": "pathlib",
+          "specifiers": [
+            "Path"
+          ]
+        },
+        {
+          "source": "typing",
+          "specifiers": [
+            "Any"
+          ]
+        },
+        {
+          "source": "yaml",
+          "specifiers": [
+            "yaml"
+          ]
+        },
+        {
+          "source": "app.specialists.dispatch_errors",
+          "specifiers": [
+            "SpecialistDispatchError"
+          ]
+        },
+        {
+          "source": "app.specialists.narration_join",
+          "specifiers": [
+            "join_narration_segments"
+          ]
+        }
+      ],
+      "exports": [
+        "_publisher_config",
+        "StoryboardPublishError",
+        "_load_generator_module",
+        "_write_segment_manifest_for_b",
+        "publish_storyboard_for_gate"
+      ],
+      "totalLines": 267,
       "hasStructuralAnalysis": true
     },
     "app/marcus/orchestrator/stub_dials.py": {
@@ -13967,7 +14357,7 @@
     },
     "app/marcus/orchestrator/write_api.py": {
       "filePath": "app/marcus/orchestrator/write_api.py",
-      "contentHash": "f78cf6f4c1259847db15f60ee6d3687eaaebba65ccb1630a10e209baaab835fc",
+      "contentHash": "cda6f207d989d64add0385a098a4d1fac6ba26d2802ad9901ece3a2cff454001",
       "functions": [
         {
           "name": "emit_pre_packet_snapshot",
@@ -20752,7 +21142,7 @@
     },
     "app/models/runtime/production_envelope.py": {
       "filePath": "app/models/runtime/production_envelope.py",
-      "contentHash": "f146f07eecac687cd8fa689d4143e14b223b70bb7fac0bad03d518e4c6e60526",
+      "contentHash": "49d5c990cc25ba36742121e51e595b686ecabd1bd6ba433e9115a0d6947b8727",
       "functions": [
         {
           "name": "compute_output_digest",
@@ -20796,25 +21186,30 @@
             "output",
             "cost_usd",
             "model_used",
-            "output_digest"
+            "output_digest",
+            "node_id",
+            "attempt",
+            "provenance"
           ],
           "exported": true,
-          "lineCount": 42
+          "lineCount": 60
         },
         {
           "name": "ProductionEnvelope",
           "methods": [
             "_enforce_trial_uuid4",
             "get_contribution",
+            "latest_for_specialist",
             "add_contribution"
           ],
           "properties": [
             "schema_version",
             "trial_id",
-            "contributions"
+            "contributions",
+            "fixture_run"
           ],
           "exported": true,
-          "lineCount": 33
+          "lineCount": 79
         }
       ],
       "imports": [
@@ -20868,12 +21263,12 @@
         "SpecialistContribution",
         "ProductionEnvelope"
       ],
-      "totalLines": 122,
+      "totalLines": 186,
       "hasStructuralAnalysis": true
     },
     "app/models/runtime/production_trial_envelope.py": {
       "filePath": "app/models/runtime/production_trial_envelope.py",
-      "contentHash": "0ecfc23d63333e1f6c51950725222ff4c4d556b53acc562ba4dfe569cfa96055",
+      "contentHash": "78aad6e1a53a17a1b129067f70710e60c3cf2b4579be642299569435c06aff0c",
       "functions": [],
       "classes": [
         {
@@ -20881,7 +21276,8 @@
           "methods": [
             "_enforce_trial_uuid4",
             "_enforce_started_tz",
-            "_enforce_completed_tz"
+            "_enforce_completed_tz",
+            "_lifecycle_invariants"
           ],
           "properties": [
             "schema_version",
@@ -20893,6 +21289,7 @@
             "completed_at",
             "status",
             "paused_gate",
+            "paused_error_tag",
             "langsmith_trace_id",
             "production_clone_launch_evidence",
             "production_clone_launch_evidence_reason",
@@ -20901,13 +21298,26 @@
             "artifact_paths"
           ],
           "exported": true,
-          "lineCount": 42
+          "lineCount": 101
         }
       ],
       "imports": [
         {
+          "source": "json",
+          "specifiers": [
+            "json"
+          ]
+        },
+        {
+          "source": "logging",
+          "specifiers": [
+            "logging"
+          ]
+        },
+        {
           "source": "datetime",
           "specifiers": [
+            "UTC",
             "datetime"
           ]
         },
@@ -20935,7 +21345,9 @@
             "BaseModel",
             "ConfigDict",
             "Field",
-            "field_validator"
+            "ValidationInfo",
+            "field_validator",
+            "model_validator"
           ]
         },
         {
@@ -20955,7 +21367,7 @@
       "exports": [
         "ProductionTrialEnvelope"
       ],
-      "totalLines": 76,
+      "totalLines": 140,
       "hasStructuralAnalysis": true
     },
     "app/models/runtime/trial_economics_report.py": {
@@ -22246,7 +22658,7 @@
     },
     "app/models/state/specialist_summary_artifacts.py": {
       "filePath": "app/models/state/specialist_summary_artifacts.py",
-      "contentHash": "65c216c5dca74d50c7a91cc4949e0862b0dac7be30c2243cf6e7c6c0e5ea7e82",
+      "contentHash": "96b8d1bcd512d32134c2be3b7ead02e23264334c79756f62d19d8b513284ab8a",
       "functions": [
         {
           "name": "canonical_specialist_id",
@@ -22507,7 +22919,7 @@
         "_timestamp_from_summary",
         "load_most_recent_summary"
       ],
-      "totalLines": 279,
+      "totalLines": 287,
       "hasStructuralAnalysis": true
     },
     "app/models/state/story_state.py": {
@@ -24942,7 +25354,7 @@
     },
     "app/runtime/economics.py": {
       "filePath": "app/runtime/economics.py",
-      "contentHash": "41bd7257ee390033da34f6eb74b68be777ce28a62ad4d163f682fdd359f4a9d2",
+      "contentHash": "6bc025eb8ad533ea97931e3c02c968c563a298c1fa38013dae802bbf59b629fd",
       "functions": [
         {
           "name": "_round_usd",
@@ -25127,7 +25539,7 @@
           ],
           "returnType": "TrialEconomicsReport",
           "exported": true,
-          "lineCount": 123
+          "lineCount": 131
         },
         {
           "name": "_render_cost_report_markdown",
@@ -25267,7 +25679,7 @@
         "summarize_cost_reports",
         "load_trace_fixture"
       ],
-      "totalLines": 567,
+      "totalLines": 575,
       "hasStructuralAnalysis": true
     },
     "app/runtime/minimal_node.py": {
@@ -27110,7 +27522,7 @@
     },
     "app/specialists/cd/graph.py": {
       "filePath": "app/specialists/cd/graph.py",
-      "contentHash": "a352ff5b67123ba9ddfaef1b19ead0a20d1539c961cbd7359802d33dc032f1bf",
+      "contentHash": "bdcae6072762975b9d3679e76b579fba4751d4774d3b18d508cbc1cff5a789a8",
       "functions": [
         {
           "name": "_new_dispatch_trail_entry",
@@ -27170,13 +27582,21 @@
           "lineCount": 19
         },
         {
+          "name": "_profile_targets_prompt_block",
+          "params": [],
+          "returnType": "str",
+          "exported": true,
+          "lineCount": 11
+        },
+        {
           "name": "_assemble_cd_prompt",
           "params": [
-            "envelope_payload"
+            "envelope_payload",
+            "extracted_source"
           ],
           "returnType": "tuple[str, str]",
           "exported": true,
-          "lineCount": 18
+          "lineCount": 31
         },
         {
           "name": "_extract_json_text",
@@ -27188,13 +27608,32 @@
           "lineCount": 8
         },
         {
+          "name": "_raw_excerpt",
+          "params": [
+            "raw_content"
+          ],
+          "returnType": "str",
+          "exported": true,
+          "lineCount": 6
+        },
+        {
+          "name": "_canonicalize_cd_directive",
+          "params": [
+            "directive",
+            "raw_excerpt"
+          ],
+          "returnType": "dict[str, Any]",
+          "exported": true,
+          "lineCount": 48
+        },
+        {
           "name": "_parse_cd_directive",
           "params": [
             "raw_content"
           ],
           "returnType": "dict[str, Any]",
           "exported": true,
-          "lineCount": 53
+          "lineCount": 64
         },
         {
           "name": "_receive",
@@ -27221,7 +27660,7 @@
           ],
           "returnType": "dict[str, Any]",
           "exported": true,
-          "lineCount": 69
+          "lineCount": 72
         },
         {
           "name": "_verify",
@@ -27293,7 +27732,7 @@
           ],
           "properties": [],
           "exported": true,
-          "lineCount": 6
+          "lineCount": 20
         }
       ],
       "imports": [
@@ -27368,6 +27807,18 @@
           ]
         },
         {
+          "source": "app.specialists._scaffold.contract",
+          "specifiers": [
+            "SCAFFOLD_NODE_IDS"
+          ]
+        },
+        {
+          "source": "app.specialists.source_bundle",
+          "specifiers": [
+            "read_extracted_source"
+          ]
+        },
+        {
           "source": "app.specialists.texas.graph",
           "specifiers": [
             "_SanctumLockViolation"
@@ -27376,13 +27827,8 @@
         {
           "source": "scripts.utilities.creative_directive_validator",
           "specifiers": [
+            "load_experience_profile_targets",
             "validate_creative_directive"
-          ]
-        },
-        {
-          "source": "app.specialists._scaffold.contract",
-          "specifiers": [
-            "SCAFFOLD_NODE_IDS"
           ]
         }
       ],
@@ -27394,8 +27840,11 @@
         "assert_sanctum_lock",
         "_read_cd_references",
         "_decode_envelope_payload",
+        "_profile_targets_prompt_block",
         "_assemble_cd_prompt",
         "_extract_json_text",
+        "_raw_excerpt",
+        "_canonicalize_cd_directive",
         "_parse_cd_directive",
         "_receive",
         "_plan",
@@ -27408,7 +27857,7 @@
         "_handoff",
         "build_cd_graph"
       ],
-      "totalLines": 410,
+      "totalLines": 534,
       "hasStructuralAnalysis": true
     },
     "app/specialists/cd/model_config.yaml": {
@@ -27512,7 +27961,7 @@
     },
     "app/specialists/compositor/_act.py": {
       "filePath": "app/specialists/compositor/_act.py",
-      "contentHash": "da240b2ee8f875b428a48067c0b0c8c44b3afb36d4977e7ed74e72d1d7309c52",
+      "contentHash": "42181ebcd2f669f636b9b52448228c47b7f8fe749ff957f4e588943220994982",
       "functions": [
         {
           "name": "_json_dumps",
@@ -27631,7 +28080,7 @@
           ],
           "returnType": "dict[str, Any]",
           "exported": true,
-          "lineCount": 11
+          "lineCount": 23
         },
         {
           "name": "act",
@@ -27646,10 +28095,12 @@
       "classes": [
         {
           "name": "CompositorActError",
-          "methods": [],
+          "methods": [
+            "__init__"
+          ],
           "properties": [],
           "exported": true,
-          "lineCount": 2
+          "lineCount": 9
         }
       ],
       "imports": [
@@ -27707,6 +28158,18 @@
           "specifiers": [
             "RunState"
           ]
+        },
+        {
+          "source": "app.specialists.dispatch_errors",
+          "specifiers": [
+            "SpecialistDispatchError"
+          ]
+        },
+        {
+          "source": "app.specialists.compositor.payload_contract",
+          "specifiers": [
+            "CONSUMED_PAYLOAD_KEYS"
+          ]
         }
       ],
       "exports": [
@@ -27726,7 +28189,7 @@
         "run_compositor_pipeline",
         "act"
       ],
-      "totalLines": 177,
+      "totalLines": 200,
       "hasStructuralAnalysis": true
     },
     "app/specialists/compositor/config.yaml": {
@@ -27932,6 +28395,16 @@
       "imports": [],
       "exports": [],
       "totalLines": 7,
+      "hasStructuralAnalysis": true
+    },
+    "app/specialists/compositor/payload_contract.py": {
+      "filePath": "app/specialists/compositor/payload_contract.py",
+      "contentHash": "73bd5b311dc4d205af125e91ac67525742587b69482b529e1163a887fa3f27a9",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 29,
       "hasStructuralAnalysis": true
     },
     "app/specialists/compositor/state.py": {
@@ -28860,6 +29333,28 @@
       "totalLines": 51,
       "hasStructuralAnalysis": true
     },
+    "app/specialists/dispatch_errors.py": {
+      "filePath": "app/specialists/dispatch_errors.py",
+      "contentHash": "9fbf73ea126ff668e399c644e07eae364f970d6bd8edb2abddb7348bdf7579f9",
+      "functions": [],
+      "classes": [
+        {
+          "name": "SpecialistDispatchError",
+          "methods": [
+            "__init__"
+          ],
+          "properties": [],
+          "exported": true,
+          "lineCount": 6
+        }
+      ],
+      "imports": [],
+      "exports": [
+        "SpecialistDispatchError"
+      ],
+      "totalLines": 24,
+      "hasStructuralAnalysis": true
+    },
     "app/specialists/enrique/__init__.py": {
       "filePath": "app/specialists/enrique/__init__.py",
       "contentHash": "528d12d6fd7ecfa0763251f35b209c4c41095e80d4de9ba7500dcff6a0a9b76e",
@@ -28886,7 +29381,7 @@
     },
     "app/specialists/enrique/_act.py": {
       "filePath": "app/specialists/enrique/_act.py",
-      "contentHash": "cf3cbdaf4daff7e00aedc7ec956ed11a79619c4dc892e490c9bb73e413c67de7",
+      "contentHash": "286cb466a645f38ad137500f624dd7344453f189faca688cd7d65f77b0561f1f",
       "functions": [
         {
           "name": "_json_dumps",
@@ -29001,7 +29496,7 @@
           ],
           "returnType": "list[dict[str, Any]]",
           "exported": true,
-          "lineCount": 15
+          "lineCount": 42
         },
         {
           "name": "_segment_text",
@@ -29042,7 +29537,7 @@
           ],
           "returnType": "dict[str, Any]",
           "exported": true,
-          "lineCount": 49
+          "lineCount": 57
         },
         {
           "name": "build_compositor_invocation",
@@ -29071,18 +29566,16 @@
           ],
           "returnType": "dict[str, Any]",
           "exported": true,
-          "lineCount": 20
+          "lineCount": 25
         }
       ],
       "classes": [
         {
           "name": "EnriqueActError",
-          "methods": [
-            "__init__"
-          ],
+          "methods": [],
           "properties": [],
           "exported": true,
-          "lineCount": 6
+          "lineCount": 7
         }
       ],
       "imports": [
@@ -29142,15 +29635,39 @@
           ]
         },
         {
+          "source": "app.runtime.economics",
+          "specifiers": [
+            "RUNS_ROOT"
+          ]
+        },
+        {
+          "source": "app.specialists.dispatch_errors",
+          "specifiers": [
+            "SpecialistDispatchError"
+          ]
+        },
+        {
           "source": "app.specialists.enrique.elevenlabs_dispatch",
           "specifiers": [
             "dispatch_to_elevenlabs"
           ]
         },
         {
+          "source": "app.specialists.narration_join",
+          "specifiers": [
+            "join_narration_segments"
+          ]
+        },
+        {
           "source": "scripts.api_clients.elevenlabs_client",
           "specifiers": [
             "ElevenLabsClient"
+          ]
+        },
+        {
+          "source": "app.specialists.enrique.payload_contract",
+          "specifiers": [
+            "CONSUMED_PAYLOAD_KEYS"
           ]
         }
       ],
@@ -29176,7 +29693,7 @@
         "generate_enrique_outputs",
         "act"
       ],
-      "totalLines": 318,
+      "totalLines": 365,
       "hasStructuralAnalysis": true
     },
     "app/specialists/enrique/config.yaml": {
@@ -29511,6 +30028,16 @@
       "totalLines": 10,
       "hasStructuralAnalysis": true
     },
+    "app/specialists/enrique/payload_contract.py": {
+      "filePath": "app/specialists/enrique/payload_contract.py",
+      "contentHash": "9e304cf26fda0735bc821677bc16ab2c0e0a765ec1865ea8cbb45c7e3539f971",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 32,
+      "hasStructuralAnalysis": true
+    },
     "app/specialists/enrique/state.py": {
       "filePath": "app/specialists/enrique/state.py",
       "contentHash": "b3fd748db5c5e907a4e6d30c85801329a8925af0a3a743b419e78c9ef468cdcb",
@@ -29609,7 +30136,7 @@
     },
     "app/specialists/gary/_act.py": {
       "filePath": "app/specialists/gary/_act.py",
-      "contentHash": "1dae71724e6680e7188a7aec1bdf9bbbae71d5db9d11be49f837b870c87c5cd0",
+      "contentHash": "a8e0cb55a8be86d0a0d6207df101170d46565c7bc263e22eb0830531d5607db7",
       "functions": [
         {
           "name": "_json_dumps",
@@ -29696,7 +30223,7 @@
           ],
           "returnType": "list[str]",
           "exported": true,
-          "lineCount": 23
+          "lineCount": 44
         },
         {
           "name": "build_vera_g3_invocation",
@@ -29715,7 +30242,7 @@
           ],
           "returnType": "dict[str, Any]",
           "exported": true,
-          "lineCount": 50
+          "lineCount": 73
         },
         {
           "name": "act",
@@ -29805,7 +30332,14 @@
         {
           "source": "skills.gamma_api_mastery.scripts.gamma_operations",
           "specifiers": [
-            "_materialize_exported_slide_paths"
+            "_materialize_exported_slide_paths",
+            "download_export"
+          ]
+        },
+        {
+          "source": "app.specialists.gary.payload_contract",
+          "specifiers": [
+            "CONSUMED_PAYLOAD_KEYS"
           ]
         }
       ],
@@ -29824,7 +30358,7 @@
         "generate_gamma_variants",
         "act"
       ],
-      "totalLines": 258,
+      "totalLines": 308,
       "hasStructuralAnalysis": true
     },
     "app/specialists/gary/config.yaml": {
@@ -29849,7 +30383,7 @@
     },
     "app/specialists/gary/gamma_dispatch.py": {
       "filePath": "app/specialists/gary/gamma_dispatch.py",
-      "contentHash": "692966b4531db0b02f8c1f43000bb1bf46a9d957e0b7b40b73c07a2bcf0aa210",
+      "contentHash": "f3db4e57a622cd70fbe78c44430ac04cca5c0dd7784127375f6046d84fe6f93f",
       "functions": [
         {
           "name": "_load_fixture_receipt",
@@ -29864,22 +30398,21 @@
           "name": "dispatch_to_gamma",
           "params": [
             "directive_path",
-            "export_dir"
+            "export_dir",
+            "allow_fixture"
           ],
           "returnType": "dict[str, Any]",
           "exported": true,
-          "lineCount": 54
+          "lineCount": 63
         }
       ],
       "classes": [
         {
           "name": "GammaDispatchError",
-          "methods": [
-            "__init__"
-          ],
+          "methods": [],
           "properties": [],
           "exported": true,
-          "lineCount": 6
+          "lineCount": 2
         }
       ],
       "imports": [
@@ -29902,6 +30435,12 @@
           ]
         },
         {
+          "source": "app.specialists.dispatch_errors",
+          "specifiers": [
+            "SpecialistDispatchError"
+          ]
+        },
+        {
           "source": "skills.gamma_api_mastery.scripts.gamma_operations",
           "specifiers": [
             "execute_generation"
@@ -29913,7 +30452,7 @@
         "_load_fixture_receipt",
         "dispatch_to_gamma"
       ],
-      "totalLines": 86,
+      "totalLines": 92,
       "hasStructuralAnalysis": true
     },
     "app/specialists/gary/graph.py": {
@@ -30194,6 +30733,16 @@
       "totalLines": 11,
       "hasStructuralAnalysis": true
     },
+    "app/specialists/gary/payload_contract.py": {
+      "filePath": "app/specialists/gary/payload_contract.py",
+      "contentHash": "61d9f9019668449d6642ab9650a63c4e7a5455c7177bff0dba9547f5b09843a5",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 28,
+      "hasStructuralAnalysis": true
+    },
     "app/specialists/gary/state.py": {
       "filePath": "app/specialists/gary/state.py",
       "contentHash": "3f0660ae2667255b8c15608d335f1dc196469617caa934691a0dff9485d855c4",
@@ -30292,7 +30841,7 @@
     },
     "app/specialists/irene_pass1/_act.py": {
       "filePath": "app/specialists/irene_pass1/_act.py",
-      "contentHash": "c4c3552a25a1a17795ec7932e9d77551691cb491843cc59322dd9626f3a5ccee",
+      "contentHash": "102a0433614d0fd0730162e1f08a4acfb3649074c83232447fa5f3fd4b97c9a5",
       "functions": [
         {
           "name": "_json_dumps",
@@ -30342,11 +30891,12 @@
         {
           "name": "assemble_pass1_prompt",
           "params": [
-            "payload"
+            "payload",
+            "extracted_source"
           ],
           "returnType": "tuple[str, str]",
           "exported": true,
-          "lineCount": 13
+          "lineCount": 34
         },
         {
           "name": "parse_pass1_response",
@@ -30397,7 +30947,7 @@
           ],
           "returnType": "dict[str, Any]",
           "exported": true,
-          "lineCount": 31
+          "lineCount": 41
         }
       ],
       "classes": [
@@ -30466,6 +31016,19 @@
           "specifiers": [
             "RunState"
           ]
+        },
+        {
+          "source": "app.specialists.source_bundle",
+          "specifiers": [
+            "SourceBundleError",
+            "read_extracted_source"
+          ]
+        },
+        {
+          "source": "app.specialists.irene_pass1.payload_contract",
+          "specifiers": [
+            "CONSUMED_PAYLOAD_KEYS"
+          ]
         }
       ],
       "exports": [
@@ -30484,7 +31047,7 @@
         "build_learning_events",
         "act"
       ],
-      "totalLines": 241,
+      "totalLines": 278,
       "hasStructuralAnalysis": true
     },
     "app/specialists/irene_pass1/expertise/README.md": {
@@ -30499,7 +31062,7 @@
     },
     "app/specialists/irene_pass1/graph.py": {
       "filePath": "app/specialists/irene_pass1/graph.py",
-      "contentHash": "4665ca5e9c6dcd8f643533dfb6e29337f1e1f64766bfef3e01d20fd61819791c",
+      "contentHash": "c645f142f005e5a9db67cf3d95cc009ea8061ec511cf0bcfaa85ea3168c2ee20",
       "functions": [
         {
           "name": "_receive",
@@ -30632,15 +31195,15 @@
           ]
         },
         {
-          "source": "app.specialists.irene_pass1",
-          "specifiers": [
-            "_pass1_act"
-          ]
-        },
-        {
           "source": "app.specialists._scaffold.contract",
           "specifiers": [
             "SCAFFOLD_NODE_IDS"
+          ]
+        },
+        {
+          "source": "app.specialists.irene_pass1",
+          "specifiers": [
+            "_pass1_act"
           ]
         }
       ],
@@ -30667,6 +31230,16 @@
       "imports": [],
       "exports": [],
       "totalLines": 7,
+      "hasStructuralAnalysis": true
+    },
+    "app/specialists/irene_pass1/payload_contract.py": {
+      "filePath": "app/specialists/irene_pass1/payload_contract.py",
+      "contentHash": "1fe714c42ce99fb8ef2c82726129a8ad2d3d9addc76af3efbbe7ffa4c2232375",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 30,
       "hasStructuralAnalysis": true
     },
     "app/specialists/irene_pass1/state.py": {
@@ -30975,8 +31548,27 @@
     },
     "app/specialists/irene/graph.py": {
       "filePath": "app/specialists/irene/graph.py",
-      "contentHash": "56229c2f91bef7dd28560e645bc41de5af2b8cbcd0fdfb2b7fd432a261bb2e94",
+      "contentHash": "e210a141fcf937f0291b0ff0d6f8d48d7bda39262c8c54e109047678aa4f68e2",
       "functions": [
+        {
+          "name": "_slide_roster",
+          "params": [
+            "envelope_payload"
+          ],
+          "returnType": "list[dict[str, str]]",
+          "exported": true,
+          "lineCount": 35
+        },
+        {
+          "name": "_assert_narration_joins_roster",
+          "params": [
+            "parsed",
+            "roster"
+          ],
+          "returnType": "None",
+          "exported": true,
+          "lineCount": 30
+        },
         {
           "name": "_read_sanctum_digest",
           "params": [
@@ -30999,11 +31591,13 @@
         {
           "name": "_assemble_pass_2_prompt",
           "params": [
-            "envelope_payload"
+            "envelope_payload",
+            "extracted_source",
+            "slide_roster"
           ],
           "returnType": "tuple[str, str]",
           "exported": true,
-          "lineCount": 35
+          "lineCount": 51
         },
         {
           "name": "_parse_pass_2_response",
@@ -31054,7 +31648,7 @@
           ],
           "returnType": "dict[str, Any]",
           "exported": true,
-          "lineCount": 38
+          "lineCount": 58
         },
         {
           "name": "_receive",
@@ -31145,7 +31739,15 @@
           "lineCount": 25
         }
       ],
-      "classes": [],
+      "classes": [
+        {
+          "name": "Pass2GroundingError",
+          "methods": [],
+          "properties": [],
+          "exported": true,
+          "lineCount": 8
+        }
+      ],
       "imports": [
         {
           "source": "hashlib",
@@ -31215,9 +31817,30 @@
           "specifiers": [
             "SCAFFOLD_NODE_IDS"
           ]
+        },
+        {
+          "source": "app.specialists.dispatch_errors",
+          "specifiers": [
+            "SpecialistDispatchError"
+          ]
+        },
+        {
+          "source": "app.specialists.irene.payload_contract",
+          "specifiers": [
+            "CONSUMED_PAYLOAD_KEYS"
+          ]
+        },
+        {
+          "source": "app.specialists.source_bundle",
+          "specifiers": [
+            "read_extracted_source"
+          ]
         }
       ],
       "exports": [
+        "Pass2GroundingError",
+        "_slide_roster",
+        "_assert_narration_joins_roster",
         "_read_sanctum_digest",
         "_read_pass_2_references",
         "_assemble_pass_2_prompt",
@@ -31237,12 +31860,22 @@
         "_handoff",
         "build_irene_graph"
       ],
-      "totalLines": 492,
+      "totalLines": 612,
       "hasStructuralAnalysis": true
     },
     "app/specialists/irene/model_config.yaml": {
       "filePath": "app/specialists/irene/model_config.yaml",
       "contentHash": "6d6d325d90f8b1775c19e7e1362fa8f8997f995b9d5762e98d5f69692339f19d",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 29,
+      "hasStructuralAnalysis": true
+    },
+    "app/specialists/irene/payload_contract.py": {
+      "filePath": "app/specialists/irene/payload_contract.py",
+      "contentHash": "0272d4cb2642d9f090711652a9124f8731d46e9f1ead7a676c76912accb1dc6e",
       "functions": [],
       "classes": [],
       "imports": [],
@@ -31692,7 +32325,7 @@
     },
     "app/specialists/kira/_act.py": {
       "filePath": "app/specialists/kira/_act.py",
-      "contentHash": "5c78b03504e49dcb1ad5f29d0b79b161ce933ae0137fef5321644dd00135f22c",
+      "contentHash": "7dc85a0ca47b4f6dc74c0bfb6232bc04e3f7a94dca537c530bb387f1a1a099ef",
       "functions": [
         {
           "name": "_json_dumps",
@@ -31827,7 +32460,7 @@
           ],
           "returnType": "dict[str, Any]",
           "exported": true,
-          "lineCount": 89
+          "lineCount": 85
         },
         {
           "name": "build_compositor_invocation",
@@ -31911,12 +32544,6 @@
           ]
         },
         {
-          "source": "app.specialists.kira.kling_dispatch",
-          "specifiers": [
-            "dispatch_to_kling"
-          ]
-        },
-        {
           "source": "scripts.api_clients.kling_client",
           "specifiers": [
             "KlingClient"
@@ -31942,7 +32569,7 @@
         "build_compositor_invocation",
         "act"
       ],
-      "totalLines": 291,
+      "totalLines": 286,
       "hasStructuralAnalysis": true
     },
     "app/specialists/kira/config.yaml": {
@@ -32168,7 +32795,7 @@
     },
     "app/specialists/kira/kling_dispatch.py": {
       "filePath": "app/specialists/kira/kling_dispatch.py",
-      "contentHash": "276f7f4a7a7556d9b276e57b1f24412a286eb98e48b4199a3e68ee76c2e4e8ef",
+      "contentHash": "bd1947353ab71593e1c453a9be30c3654cdbdfb3fc2377311a014ec92c3d8094",
       "functions": [
         {
           "name": "_load_target_module",
@@ -32186,14 +32813,23 @@
             "duration",
             "negative_prompt",
             "motion_plan_path",
-            "slide_id"
+            "slide_id",
+            "allow_fixture"
           ],
           "returnType": "dict[str, Any]",
           "exported": true,
-          "lineCount": 51
+          "lineCount": 59
         }
       ],
-      "classes": [],
+      "classes": [
+        {
+          "name": "KlingDispatchError",
+          "methods": [],
+          "properties": [],
+          "exported": true,
+          "lineCount": 2
+        }
+      ],
       "imports": [
         {
           "source": "importlib.util",
@@ -32212,13 +32848,20 @@
           "specifiers": [
             "Any"
           ]
+        },
+        {
+          "source": "app.specialists.dispatch_errors",
+          "specifiers": [
+            "SpecialistDispatchError"
+          ]
         }
       ],
       "exports": [
         "_load_target_module",
+        "KlingDispatchError",
         "dispatch_to_kling"
       ],
-      "totalLines": 85,
+      "totalLines": 99,
       "hasStructuralAnalysis": true
     },
     "app/specialists/kira/model_config.yaml": {
@@ -32645,6 +33288,36 @@
       "totalLines": 48,
       "hasStructuralAnalysis": true
     },
+    "app/specialists/narration_join.py": {
+      "filePath": "app/specialists/narration_join.py",
+      "contentHash": "8375e2718646b6fe3933659d71391ae9749ba7ee2224494062e3840ed30e918b",
+      "functions": [
+        {
+          "name": "join_narration_segments",
+          "params": [
+            "narration_script",
+            "segment_manifest_deltas"
+          ],
+          "returnType": "list[dict[str, Any]]",
+          "exported": true,
+          "lineCount": 43
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "typing",
+          "specifiers": [
+            "Any"
+          ]
+        }
+      ],
+      "exports": [
+        "join_narration_segments"
+      ],
+      "totalLines": 66,
+      "hasStructuralAnalysis": true
+    },
     "app/specialists/quinn_r/__init__.py": {
       "filePath": "app/specialists/quinn_r/__init__.py",
       "contentHash": "6228da8fa48402a7d66dbab3af92a47bedd9df4029a8c463526e6420958de3e1",
@@ -32671,7 +33344,7 @@
     },
     "app/specialists/quinn_r/_act.py": {
       "filePath": "app/specialists/quinn_r/_act.py",
-      "contentHash": "35cf4635649bba35acc028170c6a059d5e7ea033549fda5e24a3f153d9d3cd9d",
+      "contentHash": "d76756c4476ee41c370ccc629001e1ac591c50423b86d5a6a5b61f59f1ecf3b6",
       "functions": [
         {
           "name": "_trail",
@@ -32708,7 +33381,7 @@
           ],
           "returnType": "list[dict[str, Any]]",
           "exported": true,
-          "lineCount": 3
+          "lineCount": 10
         },
         {
           "name": "_authorized_doc",
@@ -32746,7 +33419,7 @@
           ],
           "returnType": "dict[str, Any]",
           "exported": true,
-          "lineCount": 29
+          "lineCount": 30
         },
         {
           "name": "_summary",
@@ -32767,7 +33440,7 @@
           ],
           "returnType": "dict[str, Any]",
           "exported": true,
-          "lineCount": 28
+          "lineCount": 36
         }
       ],
       "classes": [
@@ -32838,14 +33511,27 @@
         {
           "source": "app.specialists.quinn_r.quality_control_dispatch",
           "specifiers": [
+            "CoverageGapError",
+            "DurationCoherenceError",
+            "StoryboardBInputError",
+            "VttMonotonicityError",
+            "WpmThresholdError",
+            "run_g5_grounding",
             "run_postcomposition_validators",
-            "run_precomposition_validators"
+            "run_precomposition_validators",
+            "run_storyboard_b_review"
           ]
         },
         {
           "source": "app.specialists.quinn_r.sensory_bridges_dispatch",
           "specifiers": [
             "dispatch_to_sensory_bridges"
+          ]
+        },
+        {
+          "source": "app.specialists.quinn_r.payload_contract",
+          "specifiers": [
+            "CONSUMED_PAYLOAD_KEYS"
           ]
         }
       ],
@@ -32862,7 +33548,7 @@
         "_summary",
         "act"
       ],
-      "totalLines": 182,
+      "totalLines": 209,
       "hasStructuralAnalysis": true
     },
     "app/specialists/quinn_r/expertise/README.md": {
@@ -32877,7 +33563,7 @@
     },
     "app/specialists/quinn_r/graph.py": {
       "filePath": "app/specialists/quinn_r/graph.py",
-      "contentHash": "d51b1725ffca7ec822f20b6a1ed497ab711cabb9e2086536015cc0fd3e1fffd0",
+      "contentHash": "304607964f7a2d82491b1e3a682f6de2cf675c0fd83931b6ed9302509024c038",
       "functions": [
         {
           "name": "_new_dispatch_trail_entry",
@@ -33091,12 +33777,10 @@
       "classes": [
         {
           "name": "QRRParseError",
-          "methods": [
-            "__init__"
-          ],
+          "methods": [],
           "properties": [],
           "exported": true,
-          "lineCount": 6
+          "lineCount": 7
         }
       ],
       "imports": [
@@ -33177,6 +33861,18 @@
           ]
         },
         {
+          "source": "app.specialists._scaffold.contract",
+          "specifiers": [
+            "SCAFFOLD_NODE_IDS"
+          ]
+        },
+        {
+          "source": "app.specialists.dispatch_errors",
+          "specifiers": [
+            "SpecialistDispatchError"
+          ]
+        },
+        {
           "source": "app.specialists.quinn_r",
           "specifiers": [
             "_quinn_r_act_impl"
@@ -33199,12 +33895,6 @@
           "source": "app.specialists.texas.graph",
           "specifiers": [
             "_SanctumLockViolation"
-          ]
-        },
-        {
-          "source": "app.specialists._scaffold.contract",
-          "specifiers": [
-            "SCAFFOLD_NODE_IDS"
           ]
         }
       ],
@@ -33233,7 +33923,7 @@
         "_handoff",
         "build_quinn_r_graph"
       ],
-      "totalLines": 475,
+      "totalLines": 477,
       "hasStructuralAnalysis": true
     },
     "app/specialists/quinn_r/model_config.yaml": {
@@ -33246,10 +33936,48 @@
       "totalLines": 9,
       "hasStructuralAnalysis": true
     },
+    "app/specialists/quinn_r/payload_contract.py": {
+      "filePath": "app/specialists/quinn_r/payload_contract.py",
+      "contentHash": "14872df1b7d34cfb0cfa73d5cd0143a1fd88fa80beafaaeaa9ff88af8aec41fa",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 38,
+      "hasStructuralAnalysis": true
+    },
     "app/specialists/quinn_r/quality_control_dispatch.py": {
       "filePath": "app/specialists/quinn_r/quality_control_dispatch.py",
-      "contentHash": "58c1ecf137f71522f03b2dc29f0d6207670174f63a3b6b6b1332d4a3c4c02feb",
+      "contentHash": "74a1dac8f21302cd751ad777a3daab77ed6eca896e2789b45a3971878b4af3e4",
       "functions": [
+        {
+          "name": "_content_error",
+          "params": [
+            "name",
+            "tag"
+          ],
+          "returnType": "type",
+          "exported": true,
+          "lineCount": 11
+        },
+        {
+          "name": "run_g5_grounding",
+          "params": [
+            "payload"
+          ],
+          "returnType": "dict[str, Any]",
+          "exported": true,
+          "lineCount": 66
+        },
+        {
+          "name": "run_storyboard_b_review",
+          "params": [
+            "payload"
+          ],
+          "returnType": "dict[str, Any]",
+          "exported": true,
+          "lineCount": 68
+        },
         {
           "name": "_ensure_module_stub",
           "params": [
@@ -33295,7 +34023,15 @@
           "lineCount": 47
         }
       ],
-      "classes": [],
+      "classes": [
+        {
+          "name": "StoryboardBInputError",
+          "methods": [],
+          "properties": [],
+          "exported": true,
+          "lineCount": 8
+        }
+      ],
       "imports": [
         {
           "source": "importlib.util",
@@ -33326,21 +34062,31 @@
           "specifiers": [
             "Any"
           ]
+        },
+        {
+          "source": "app.specialists.dispatch_errors",
+          "specifiers": [
+            "SpecialistDispatchError"
+          ]
         }
       ],
       "exports": [
+        "_content_error",
+        "StoryboardBInputError",
+        "run_g5_grounding",
+        "run_storyboard_b_review",
         "_ensure_module_stub",
         "_ensure_package_stubs",
         "_load_module",
         "run_precomposition_validators",
         "run_postcomposition_validators"
       ],
-      "totalLines": 136,
+      "totalLines": 317,
       "hasStructuralAnalysis": true
     },
     "app/specialists/quinn_r/sensory_bridges_dispatch.py": {
       "filePath": "app/specialists/quinn_r/sensory_bridges_dispatch.py",
-      "contentHash": "19801b994344f5381b469ac436c43fadfc245b3d26bcef4079ade163d0bec461",
+      "contentHash": "cf2d210c1bfc2e34f410f5e6607628db4e7c282f04604f95ae032285d075bda5",
       "functions": [
         {
           "name": "_ensure_module_stub",
@@ -33370,14 +34116,23 @@
           "params": [
             "artifact_path",
             "modality",
-            "gate"
+            "gate",
+            "allow_fixture"
           ],
           "returnType": "dict[str, Any]",
           "exported": true,
-          "lineCount": 27
+          "lineCount": 38
         }
       ],
-      "classes": [],
+      "classes": [
+        {
+          "name": "SensoryBridgeDispatchError",
+          "methods": [],
+          "properties": [],
+          "exported": true,
+          "lineCount": 2
+        }
+      ],
       "imports": [
         {
           "source": "importlib.util",
@@ -33408,15 +34163,22 @@
           "specifiers": [
             "Any"
           ]
+        },
+        {
+          "source": "app.specialists.dispatch_errors",
+          "specifiers": [
+            "SpecialistDispatchError"
+          ]
         }
       ],
       "exports": [
         "_ensure_module_stub",
         "_ensure_package_stubs",
         "_load_perceive_callable",
+        "SensoryBridgeDispatchError",
         "dispatch_to_sensory_bridges"
       ],
-      "totalLines": 68,
+      "totalLines": 85,
       "hasStructuralAnalysis": true
     },
     "app/specialists/quinn_r/state.py": {
@@ -33489,6 +34251,56 @@
         "QuinnRReturn"
       ],
       "totalLines": 51,
+      "hasStructuralAnalysis": true
+    },
+    "app/specialists/source_bundle.py": {
+      "filePath": "app/specialists/source_bundle.py",
+      "contentHash": "252ea5fbbddac5570378c4ca1c77e1c6454b986d762eac776b90b8ac57563371",
+      "functions": [
+        {
+          "name": "read_extracted_source",
+          "params": [
+            "payload"
+          ],
+          "returnType": "str",
+          "exported": true,
+          "lineCount": 36
+        }
+      ],
+      "classes": [
+        {
+          "name": "SourceBundleError",
+          "methods": [],
+          "properties": [],
+          "exported": true,
+          "lineCount": 2
+        }
+      ],
+      "imports": [
+        {
+          "source": "pathlib",
+          "specifiers": [
+            "Path"
+          ]
+        },
+        {
+          "source": "typing",
+          "specifiers": [
+            "Any"
+          ]
+        },
+        {
+          "source": "app.specialists.dispatch_errors",
+          "specifiers": [
+            "SpecialistDispatchError"
+          ]
+        }
+      ],
+      "exports": [
+        "SourceBundleError",
+        "read_extracted_source"
+      ],
+      "totalLines": 66,
       "hasStructuralAnalysis": true
     },
     "app/specialists/tamara/__init__.py": {
@@ -33860,7 +34672,7 @@
     },
     "app/specialists/texas/_act.py": {
       "filePath": "app/specialists/texas/_act.py",
-      "contentHash": "8e6f9dd34ae4875582f5fb2febe2864765a7847e371f22cf758561d7321aa3ef",
+      "contentHash": "c58df74afe9d28d81c5c669e1e0c2031cb86ff2021d8d7a81e84a8e8b65767c1",
       "functions": [
         {
           "name": "_new_dispatch_trail_entry",
@@ -33974,7 +34786,7 @@
           ],
           "returnType": "dict[str, Any]",
           "exported": true,
-          "lineCount": 106
+          "lineCount": 87
         }
       ],
       "classes": [
@@ -33989,12 +34801,10 @@
         },
         {
           "name": "BundleDispatchError",
-          "methods": [
-            "__init__"
-          ],
+          "methods": [],
           "properties": [],
           "exported": true,
-          "lineCount": 6
+          "lineCount": 2
         },
         {
           "name": "RetrievalScopeError",
@@ -34061,6 +34871,12 @@
           "specifiers": [
             "RunState"
           ]
+        },
+        {
+          "source": "app.specialists.dispatch_errors",
+          "specifiers": [
+            "SpecialistDispatchError"
+          ]
         }
       ],
       "exports": [
@@ -34080,7 +34896,7 @@
         "_harden_bundle",
         "act"
       ],
-      "totalLines": 409,
+      "totalLines": 387,
       "hasStructuralAnalysis": true
     },
     "app/specialists/texas/expertise/README.md": {
@@ -34105,7 +34921,7 @@
     },
     "app/specialists/texas/graph.py": {
       "filePath": "app/specialists/texas/graph.py",
-      "contentHash": "3bf28eb8aad33815b8bacf8c1cc376af3bccd7b61c50cae2ba0ed8ac9b304520",
+      "contentHash": "e30faa0700cbd5084e9e76d43902215afe6a8388803d1cde94c863c6be0b811d",
       "functions": [
         {
           "name": "_new_dispatch_trail_entry",
@@ -34295,12 +35111,6 @@
           ]
         },
         {
-          "source": "yaml",
-          "specifiers": [
-            "yaml"
-          ]
-        },
-        {
           "source": "langgraph.graph",
           "specifiers": [
             "END",
@@ -34346,6 +35156,12 @@
           ]
         },
         {
+          "source": "app.specialists._scaffold.contract",
+          "specifiers": [
+            "SCAFFOLD_NODE_IDS"
+          ]
+        },
+        {
           "source": "app.specialists.texas",
           "specifiers": [
             "_texas_act_impl"
@@ -34355,12 +35171,6 @@
           "source": "app.specialists.texas.retrieval_dispatch",
           "specifiers": [
             "dispatch_retrieval"
-          ]
-        },
-        {
-          "source": "app.specialists._scaffold.contract",
-          "specifiers": [
-            "SCAFFOLD_NODE_IDS"
           ]
         }
       ],
@@ -34383,7 +35193,7 @@
         "_handoff",
         "build_texas_graph"
       ],
-      "totalLines": 310,
+      "totalLines": 309,
       "hasStructuralAnalysis": true
     },
     "app/specialists/texas/model_config.yaml": {
@@ -34398,8 +35208,17 @@
     },
     "app/specialists/texas/retrieval_dispatch.py": {
       "filePath": "app/specialists/texas/retrieval_dispatch.py",
-      "contentHash": "ee2d9ffb2e1dc04bd9da7e945852b93d389adb9b59daaf70417ef2bc1f8a7688",
+      "contentHash": "b9304c4f6f04b168b0573086d526a3cd40e5f6f219007983faf2c955be3c4a28",
       "functions": [
+        {
+          "name": "_directive_corpus_cwd",
+          "params": [
+            "directive_path"
+          ],
+          "returnType": "Path",
+          "exported": true,
+          "lineCount": 35
+        },
         {
           "name": "_venv_python",
           "params": [],
@@ -34411,11 +35230,12 @@
           "name": "dispatch_retrieval",
           "params": [
             "directive_path",
-            "bundle_dir"
+            "bundle_dir",
+            "allow_fixture"
           ],
           "returnType": "dict[str, Any]",
           "exported": true,
-          "lineCount": 45
+          "lineCount": 63
         }
       ],
       "classes": [],
@@ -34443,13 +35263,26 @@
           "specifiers": [
             "Any"
           ]
+        },
+        {
+          "source": "yaml",
+          "specifiers": [
+            "yaml"
+          ]
+        },
+        {
+          "source": "app.specialists.texas._act",
+          "specifiers": [
+            "BundleDispatchError"
+          ]
         }
       ],
       "exports": [
+        "_directive_corpus_cwd",
         "_venv_python",
         "dispatch_retrieval"
       ],
-      "totalLines": 71,
+      "totalLines": 131,
       "hasStructuralAnalysis": true
     },
     "app/specialists/texas/state.py": {
@@ -35636,7 +36469,7 @@
     },
     "app/specialists/vera/sensory_bridges_dispatch.py": {
       "filePath": "app/specialists/vera/sensory_bridges_dispatch.py",
-      "contentHash": "31863e451612092b778a369422a6caa7284db528530d55bbe29410c65ec2115d",
+      "contentHash": "8c33cc44f5cf68c14e3b62e6ce71951a4df49bbdebe098b52d14699f69ab3664",
       "functions": [
         {
           "name": "_ensure_module_stub",
@@ -35667,14 +36500,23 @@
             "artifact_path",
             "source_of_truth_path",
             "modality",
-            "gate"
+            "gate",
+            "allow_fixture"
           ],
           "returnType": "dict[str, Any]",
           "exported": true,
-          "lineCount": 32
+          "lineCount": 46
         }
       ],
-      "classes": [],
+      "classes": [
+        {
+          "name": "SensoryBridgeDispatchError",
+          "methods": [],
+          "properties": [],
+          "exported": true,
+          "lineCount": 2
+        }
+      ],
       "imports": [
         {
           "source": "importlib.util",
@@ -35705,15 +36547,22 @@
           "specifiers": [
             "Any"
           ]
+        },
+        {
+          "source": "app.specialists.dispatch_errors",
+          "specifiers": [
+            "SpecialistDispatchError"
+          ]
         }
       ],
       "exports": [
         "_ensure_module_stub",
         "_ensure_package_stubs",
         "_load_perceive_callable",
+        "SensoryBridgeDispatchError",
         "dispatch_to_sensory_bridges"
       ],
-      "totalLines": 76,
+      "totalLines": 96,
       "hasStructuralAnalysis": true
     },
     "app/specialists/vera/state.py": {
@@ -36157,7 +37006,7 @@
     },
     "app/specialists/wanda/_act.py": {
       "filePath": "app/specialists/wanda/_act.py",
-      "contentHash": "671a6e744ce90a9bfa016f728e923888535b6dfb5a84dc7f29f35ca8d2981f6e",
+      "contentHash": "448d875b0ea3a3d3b27aae76d865caa9385296d8f69cde06f1faf126fefe8c65",
       "functions": [
         {
           "name": "_json_dumps",
@@ -36270,7 +37119,7 @@
           ],
           "returnType": "dict[str, Any]",
           "exported": true,
-          "lineCount": 40
+          "lineCount": 38
         },
         {
           "name": "act",
@@ -36345,12 +37194,6 @@
           ]
         },
         {
-          "source": "app.specialists.wanda.wondercraft_dispatch",
-          "specifiers": [
-            "dispatch_to_wondercraft"
-          ]
-        },
-        {
           "source": "scripts.api_clients.wondercraft_client",
           "specifiers": [
             "WondercraftClient"
@@ -36373,7 +37216,7 @@
         "generate_audio_beds",
         "act"
       ],
-      "totalLines": 243,
+      "totalLines": 240,
       "hasStructuralAnalysis": true
     },
     "app/specialists/wanda/config.yaml": {
@@ -36681,7 +37524,7 @@
     },
     "app/specialists/wanda/wondercraft_dispatch.py": {
       "filePath": "app/specialists/wanda/wondercraft_dispatch.py",
-      "contentHash": "76ddf370101a621e98120b4a20aa71eef9178ca570c49e94d40d614ee0916d5c",
+      "contentHash": "8abab34f244e8752b421d1034cb5c4461217e1f9ffbfdb461e240620f80dcf2e",
       "functions": [
         {
           "name": "_ep_podcast_episode_produce",
@@ -36748,22 +37591,21 @@
           "params": [
             "capability",
             "operation_payload",
-            "client"
+            "client",
+            "allow_fixture"
           ],
           "returnType": "dict[str, Any]",
           "exported": true,
-          "lineCount": 44
+          "lineCount": 58
         }
       ],
       "classes": [
         {
           "name": "WondercraftDispatchError",
-          "methods": [
-            "__init__"
-          ],
+          "methods": [],
           "properties": [],
           "exported": true,
-          "lineCount": 6
+          "lineCount": 2
         }
       ],
       "imports": [
@@ -36778,6 +37620,12 @@
           "source": "typing",
           "specifiers": [
             "Any"
+          ]
+        },
+        {
+          "source": "app.specialists.dispatch_errors",
+          "specifiers": [
+            "SpecialistDispatchError"
           ]
         },
         {
@@ -36797,7 +37645,7 @@
         "_ah_audio_assembly_handoff",
         "dispatch_to_wondercraft"
       ],
-      "totalLines": 199,
+      "totalLines": 210,
       "hasStructuralAnalysis": true
     },
     "scripts/__init__.py": {
@@ -37197,7 +38045,7 @@
     },
     "scripts/api_clients/gamma_client.py": {
       "filePath": "scripts/api_clients/gamma_client.py",
-      "contentHash": "e0b8d675916e9bf96018657a76780504dfd81ff4a533da79d0762578a7295ee7",
+      "contentHash": "a24336a02d8f09b9da2f9c81fc3059be8f4d98bb6de24d53ab27c9f2bdfaa1ed",
       "functions": [],
       "classes": [
         {
@@ -37213,7 +38061,7 @@
           ],
           "properties": [],
           "exported": true,
-          "lineCount": 212
+          "lineCount": 220
         }
       ],
       "imports": [
@@ -37251,7 +38099,7 @@
       "exports": [
         "GammaClient"
       ],
-      "totalLines": 236,
+      "totalLines": 244,
       "hasStructuralAnalysis": true
     },
     "scripts/api_clients/kling_client.py": {
@@ -38370,7 +39218,7 @@
     },
     "scripts/generators/v42/manifest.py": {
       "filePath": "scripts/generators/v42/manifest.py",
-      "contentHash": "755d9c86f875fc741a82061ac8fbfab76362e93ad3104e594e773eac0986b465",
+      "contentHash": "2005fac89e6b177adffa9effbfdc8fcbb3fa4b69745f2a638df26fc1c11bc309",
       "functions": [
         {
           "name": "_slugify",
@@ -38384,11 +39232,12 @@
         {
           "name": "_template_name",
           "params": [
-            "step"
+            "step",
+            "template_root"
           ],
           "returnType": "str",
           "exported": true,
-          "lineCount": 6
+          "lineCount": 10
         },
         {
           "name": "_module_path",
@@ -38397,7 +39246,7 @@
           ],
           "returnType": "str",
           "exported": true,
-          "lineCount": 10
+          "lineCount": 13
         },
         {
           "name": "_audience",
@@ -38409,16 +39258,33 @@
           "lineCount": 6
         },
         {
-          "name": "load_generator_manifest",
+          "name": "_orchestration_only_ids",
           "params": [
             "path"
           ],
+          "returnType": "frozenset[str]",
+          "exported": true,
+          "lineCount": 22
+        },
+        {
+          "name": "load_generator_manifest",
+          "params": [
+            "path",
+            "template_root"
+          ],
           "returnType": "GeneratorManifest",
           "exported": true,
-          "lineCount": 25
+          "lineCount": 28
         }
       ],
       "classes": [
+        {
+          "name": "MissingSectionTemplateError",
+          "methods": [],
+          "properties": [],
+          "exported": true,
+          "lineCount": 8
+        },
         {
           "name": "GeneratorStep",
           "methods": [],
@@ -38473,30 +39339,33 @@
         }
       ],
       "exports": [
+        "MissingSectionTemplateError",
         "GeneratorStep",
         "GeneratorManifest",
         "_slugify",
         "_template_name",
         "_module_path",
         "_audience",
+        "_orchestration_only_ids",
         "load_generator_manifest"
       ],
-      "totalLines": 98,
+      "totalLines": 142,
       "hasStructuralAnalysis": true
     },
     "scripts/generators/v42/render.py": {
       "filePath": "scripts/generators/v42/render.py",
-      "contentHash": "028f6a3857ddfb30de104e6f8846f2c060927f57cc2a05cbfd5dfe3c318525b0",
+      "contentHash": "588021ed36ba8293d298a11140ab3d46591df656a0ff21d49e1dec7cecbe2f58",
       "functions": [
         {
           "name": "render_pack",
           "params": [
             "manifest_path",
-            "output_path"
+            "output_path",
+            "template_root"
           ],
           "returnType": "None",
           "exported": true,
-          "lineCount": 13
+          "lineCount": 21
         },
         {
           "name": "_parser",
@@ -38551,12 +39420,12 @@
         "_parser",
         "main"
       ],
-      "totalLines": 43,
+      "totalLines": 51,
       "hasStructuralAnalysis": true
     },
     "scripts/generators/v42/templates/layout/pack.md.j2": {
       "filePath": "scripts/generators/v42/templates/layout/pack.md.j2",
-      "contentHash": "c0dc18988ea3e49bc3b9fedc32cff79da93fb5b27cf8fd741c697a0114c6be3e",
+      "contentHash": "418b7d4c792178fa01358a52c5128fc89cce94109b440ba7f0564def915e754c",
       "functions": [],
       "classes": [],
       "imports": [],
@@ -38572,6 +39441,26 @@
       "imports": [],
       "exports": [],
       "totalLines": 2,
+      "hasStructuralAnalysis": false
+    },
+    "scripts/generators/v42/templates/partials/pack_header.md.j2": {
+      "filePath": "scripts/generators/v42/templates/partials/pack_header.md.j2",
+      "contentHash": "e4bc76e59c80f082a0946472b040b12da98913b2d0c84d9ef455f453b48b3d24",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 13,
+      "hasStructuralAnalysis": false
+    },
+    "scripts/generators/v42/templates/partials/pre_run_launchpad.md.j2": {
+      "filePath": "scripts/generators/v42/templates/partials/pre_run_launchpad.md.j2",
+      "contentHash": "defab2b74bd2eee4dd641a6014234532e6b3d71ab7e7d07ad2ef81f5ec93889f",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 96,
       "hasStructuralAnalysis": false
     },
     "scripts/generators/v42/templates/partials/provenance_appendix.md.j2": {
@@ -38626,12 +39515,12 @@
     },
     "scripts/generators/v42/templates/sections/03-ingestion-evidence-log.md.j2": {
       "filePath": "scripts/generators/v42/templates/sections/03-ingestion-evidence-log.md.j2",
-      "contentHash": "6a9668662cd9d3b21926d287d01bece9324bced22385b54e07aa38543c6073a1",
+      "contentHash": "dd68f99eefeb6e2f55c1602cd7772f5788986968731291c1cec1a55dae41e9fc",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 93,
+      "totalLines": 78,
       "hasStructuralAnalysis": false
     },
     "scripts/generators/v42/templates/sections/04-ingestion-quality-gate-irene-packet.md.j2": {
@@ -38796,7 +39685,7 @@
     },
     "scripts/generators/v42/templates/sections/09-gate-3-lock-pass-2-package.md.j2": {
       "filePath": "scripts/generators/v42/templates/sections/09-gate-3-lock-pass-2-package.md.j2",
-      "contentHash": "c4df17c07d136101d2d2998c89647df66c07979c83236157bbe4915d9c5287a4",
+      "contentHash": "6efcc48000547d6fcb4d61b38631ff05368619c5aee406f53ae324814ea0d28c",
       "functions": [],
       "classes": [],
       "imports": [],
