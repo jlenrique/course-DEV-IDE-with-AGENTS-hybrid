@@ -1597,9 +1597,9 @@ Primary contract references:
 | 6.2 | Section 6.2 maintains manifest-driven pipeline contract. |
 | 6.3 | Section 6.3 maintains manifest-driven pipeline contract. |
 | 06B | Section 06B maintains manifest-driven pipeline contract. |
-| 07 | Section 07 maintains manifest-driven pipeline contract. |
+| 07 | Section 07 maintains manifest-driven pipeline contract. S4 edge-level key projection (party review 2026-06-12, dp-v1): Gary's slide briefs flow from the §06 package_builder contribution under the exact keys gary's CONSUMED_PAYLOAD_KEYS declares — the manifest now tells the truth about the §06→07 data plane (formerly delivered via the A-R3 seam bridge, retired this story). |
 | 7.5 | Section 7.5 maintains manifest-driven pipeline contract. |
-| 07B | Section 07B maintains manifest-driven pipeline contract. |
+| 07B | Section 07B maintains manifest-driven pipeline contract. Data-plane history: the original edge (upstream_output: vera) was the wrong key AND wrong producer — quinn_r approved content it never received in Trial-3 attempt-4 (S1 corrected vocabulary; party review 2026-06-12 ruled whole-dict dependency delivery the wrong SHAPE). S4 edge-level key projection (dp-v1): variant selection receives Gary's gary_slide_output rows under quinn_r's declared "slides" key — the manifest now tells the truth about the 07→07B data plane. |
 | 07C | Section 07C maintains manifest-driven pipeline contract. |
 | 07D | Section 07D maintains manifest-driven pipeline contract. |
 | 07E | Section 07E maintains manifest-driven pipeline contract. |

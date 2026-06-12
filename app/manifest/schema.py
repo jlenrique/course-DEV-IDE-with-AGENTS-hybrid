@@ -427,6 +427,21 @@ class PipelineManifest(BaseModel):
         return self
 
 
+def is_orchestration_only(node: NodeSpec) -> bool:
+    """True for runtime-only orchestration nodes that are never pack prose.
+
+    THE shared classification predicate (renderer/L1 story, 2026-06-12):
+    Story 7a.2 established that the four Slab-7a orchestration nodes
+    (directive-composer, pre-gate-marcus, per-slide-subgraph,
+    html-review-pack-emitter) participate in the run graph but not in the
+    operator-facing prompt pack or HUD. The L1 lockstep check and the v4.2
+    generator both consume this predicate — a node classified here is
+    excluded from pack rendering AND from pack/HUD lockstep comparison, so
+    the two consumers cannot drift apart again.
+    """
+    return node.specialist_id is None and node.gate is False and node.hud_tracked is False
+
+
 __all__ = [
     "EdgeSpec",
     "LearningEventsConfig",
@@ -434,4 +449,5 @@ __all__ = [
     "NodeSpec",
     "PipelineManifest",
     "StepLearningEventsConfig",
+    "is_orchestration_only",
 ]

@@ -258,6 +258,25 @@ PERMITTED_PYTHON_DIFFS = {
     "tests/contracts/test_composition_spec_envelope_version_lockstep.py",
     "tests/unit/runtime/test_production_trial_envelope_invariants.py",
     "tests/parity/test_composition_spec_invariants.py",
+    # Renderer/L1 story 2026-06-12 (🔴 MUST-FIX-BEFORE-S5, drift-audit fold;
+    # Tier-1: classification fix + guard hardening, no pack structural
+    # change): shared is_orchestration_only predicate (app/manifest/schema);
+    # generator skips runtime-only orchestration nodes instead of fabricating
+    # template names (MissingSectionTemplateError raises early); ratified S1
+    # pack hand-edits folded back into templates (A12 counter-pattern:
+    # header/banner/§0.5 partials, PP-1 enrique, §3.g deletion, xref); L1
+    # gains Check 9 regeneration-determinism (render crash → exit 2; SHA
+    # mismatch → exit 1; previously NEVER rendered = vacuous guard); Pin A
+    # roster-derived render loop + Pin B red-tests; stale 33-node
+    # characterizations re-derived through the predicate.
+    "scripts/generators/v42/manifest.py",
+    "scripts/generators/v42/render.py",
+    "scripts/utilities/check_pipeline_manifest_lockstep.py",
+    "tests/generators/v42/test_renderer_classification_and_l1_fail_loud.py",
+    "tests/generators/v42/test_red_path_fixtures.py",
+    "tests/contracts/test_33_1a_verbatim_extraction.py",
+    "tests/end_to_end/test_full_pipeline_smoke.py",
+    "tests/test_33_3_dc2_resolution.py",
     # Story 34-2 wrangler-side test (substrate-audit-corrected path 2026-05-22;
     # co-located with existing test_run_wrangler.py at skills/.../tests/).
     "skills/bmad-agent-texas/scripts/tests/test_run_wrangler_role_enum_union_and_excluded_reason.py",
