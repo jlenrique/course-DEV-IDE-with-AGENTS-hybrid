@@ -155,6 +155,28 @@ def test_non_interactive_with_auto_confirm_returns_confirmed(
     assert verdict == "confirmed"
 
 
+def test_auto_confirm_honored_even_when_isatty_claims_tty(
+    composed_directive_path: Path,
+) -> None:
+    """Trial-3 cycle-3 launch fix (2026-06-12): the flag is explicit operator
+    consent and must short-circuit the prompt UNCONDITIONALLY. Windows NUL is
+    a character device, so isatty() lies under `< /dev/null` — two live
+    launches died on EOFError at the G0 prompt before this pin."""
+
+    def _explode(_prompt: str) -> str:
+        raise AssertionError("prompt must not be shown when auto-confirm is set")
+
+    verdict = _confirm_or_edit_directive(
+        directive_path=composed_directive_path,
+        auto_confirm_directive=True,
+        input_fn=_explode,
+        edit_fn=MagicMock(),
+        isatty_fn=lambda: True,  # the lying-NUL case
+        print_fn=lambda _msg: None,
+    )
+    assert verdict == "confirmed"
+
+
 def test_resolve_editor_prefers_env(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setenv("EDITOR", "emacs")
     assert _resolve_editor() == "emacs"

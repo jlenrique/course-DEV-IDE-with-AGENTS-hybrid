@@ -269,6 +269,16 @@ nodes:
     specialist_id: "irene-pass1"
     scaffold_node: "act"
     model_config_ref: null
+    # dp-v1 (Trial-3 cycle-3 error-pause 2026-06-12): the corpus rides as a
+    # projected reference so the Gate-1 fidelity pass plans against SOURCE,
+    # not against whatever the runtime fallback happens to deliver (in v1
+    # this never surfaced because per-specialist keying SKIPPED this node).
+    # A declared upstream_output: irene-pass1 self-edge is refused by the
+    # compiler's cycle guard; the runtime fallback covers upstream delivery.
+    dependency_projections:
+      bundle_reference:
+        from: texas
+        key: bundle_reference
     gate: true
     gate_code: "G2"
     fold_with: "G2C"
@@ -283,6 +293,13 @@ nodes:
     specialist_id: "irene-pass1"
     scaffold_node: "act"
     model_config_ref: null
+    # dp-v1: same shape as node 05 — corpus projected alongside; upstream
+    # plan delivery rides the runtime fallback (self-edge refused by the
+    # compiler's cycle guard).
+    dependency_projections:
+      bundle_reference:
+        from: texas
+        key: bundle_reference
     gate: true
     gate_code: "G1.5"
     fold_with: "G2C"

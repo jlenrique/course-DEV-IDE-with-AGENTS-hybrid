@@ -50,8 +50,13 @@
 4. Vera's verdict cites the artifact (hash/path) it judged; Quinn-R demonstrably received what it approved.
 5. Negative test fired once; gate FAILED as designed.
 6. Operator eyeballs slides at the G2C pause and says go.
+7. **(Operator-ratified amendment 2026-06-12, post-cycle-3.)** The pipeline itself PUBLISHES Storyboard A as its ONLINE interactive rendering (legacy `generate-storyboard.py` pack published to the operator's GitHub Pages site) at the G2C pause, with zero manual interventions from G0 onward; **G2C approval = operator approval of Storyboard A in that online interactive incarnation** (local PNGs/JSON are evidence, not the review surface). The same standard applies to Storyboard B at its gate (G3-side) when that segment comes into scope. A fresh launch must reach storyboard-A-online error-free before the operator reviews content.
 
 **Explicit OUT (scope guard):** audio (§11-12), compositor (§14), Epic 15, Marcus-interactive, slide aesthetics. Advance-to-next-failure-point is the method.
+
+**Gate-delegation record (John MUST-FIX, codification review 2026-06-12):** within the "zero manual interventions G0 → storyboard-A-online" path, **G0 directive confirmation is auto-confirmed** (`--auto-confirm-directive`, explicit operator consent honored unconditionally) and **G1 bundle-fidelity approval is delegated to Claude** under the operator's standing in-between-gates delegation ("I want to personally review storyboards A and B and final project — but you could run in-between interactions"). Claude reviews the Texas bundle against fidelity evidence (artifact count, word floor, per-source quality reports) before approving. G2C, Storyboard-B-side, and final-output verdicts remain EXCLUSIVELY the operator's.
+
+**Cycle history note (2026-06-12):** cycle 2 (825abb00) closed at G2C as plumbing evidence (camelCase generationId root cause; eighth-seam fixture-id sentinel; empty file_path rows); cycle 3 (e2722f2b) PROVED criteria 1-4 live plus the criterion-7 mechanism end-to-end (content-plane corpus grounding, two recoverable error-pauses + `trial recover`, 6/6 real PNGs, online pack operator-confirmed) and was operator-close-rejected to absorb the ad-hoc fixes into substrate. Criterion 5 (negative test) and the zero-manual-interventions fresh run remain for the next cycle.
 
 ---
 *Party-mode record: 4 independent subagent voices 2026-06-11; full responses in session transcript. Orchestrator: Claude (consultant session). Block-mode trigger paths touched throughout — pipeline-manifest-regime.md read at T1 per story, no exceptions.*

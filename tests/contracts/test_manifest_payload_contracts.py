@@ -27,16 +27,19 @@ from app.manifest.compiler import SPECIALIST_ALIASES
 # module's namespace, pinning that each act imports its own contract — the
 # contract must participate in the consumer's import graph, not sit beside it.
 from app.specialists.gary._act import CONSUMED_PAYLOAD_KEYS as GARY_KEYS
+from app.specialists.irene_pass1._act import CONSUMED_PAYLOAD_KEYS as IRENE_PASS1_KEYS
 from app.specialists.quinn_r._act import CONSUMED_PAYLOAD_KEYS as QUINN_R_KEYS
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 MANIFEST_PATH = REPO_ROOT / "state" / "config" / "pipeline-manifest.yaml"
 
 # Consumers with published payload contracts (S1 roster: quinn_r + gary;
-# expand per-story as each specialist's data plane becomes real).
+# irene_pass1 joined 2026-06-12 when the quarantined 04A edge's bill arrived
+# as a confabulated lesson plan in Trial-3 cycle 2).
 CONTRACTED_CONSUMERS: dict[str, frozenset[str]] = {
     "quinn_r": QUINN_R_KEYS,
     "gary": GARY_KEYS,
+    "irene_pass1": IRENE_PASS1_KEYS,
 }
 
 # Edges whose consumer has NOT yet published a contract. Raw manifest
@@ -46,7 +49,9 @@ CONTRACTED_CONSUMERS: dict[str, frozenset[str]] = {
 QUARANTINED_EDGES: frozenset[tuple[str, str, str]] = frozenset(
     {
         # (node_id, input_key, declared specialist_id of the CONSUMING node)
-        ("04A", "upstream_output", "irene-pass1"),
+        # ("04A","upstream_output","irene-pass1") RETIRED 2026-06-12:
+        # irene_pass1 published CONSUMED_PAYLOAD_KEYS after the quarantined
+        # edge produced cycle-2's confabulated lesson plan.
         ("4.75", "source_bundle", "cd"),
         ("7.5", "upstream_output", "vera"),
         ("07E", "upstream_output", "kira"),
@@ -107,6 +112,25 @@ def test_uncontracted_edges_are_exactly_the_quarantine_list() -> None:
         f"Quarantine entries no longer present in the manifest: {sorted(retired)} "
         "— remove them from QUARANTINED_EDGES."
     )
+
+
+def test_every_cd_reachable_edge_delivers_a_source_bundle() -> None:
+    """Amelia MUST-FIX (party review 2026-06-12): cd's act REQUIRES corpus
+    access (read_extracted_source, no fallback). Production safety must be a
+    suite property, not an eyeball property: every manifest node consuming
+    as cd must declare an edge that delivers bundle access."""
+    manifest = yaml.safe_load(MANIFEST_PATH.read_text(encoding="utf-8"))
+    bundle_keys = {"source_bundle", "bundle_reference", "upstream_output"}
+    violations = []
+    for node in manifest["nodes"]:
+        if _canonical(str(node.get("specialist_id") or "")) != "cd":
+            continue
+        delivered = set(node.get("dependencies") or {}) | set(
+            node.get("dependency_projections") or {}
+        )
+        if not (delivered & bundle_keys):
+            violations.append(f"node {node['id']}: cd edge without bundle access")
+    assert violations == [], violations
 
 
 def test_alias_forms_resolve_to_canonical() -> None:

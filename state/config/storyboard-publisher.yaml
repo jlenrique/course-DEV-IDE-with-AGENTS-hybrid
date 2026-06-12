@@ -1,0 +1,7 @@
+# Storyboard publisher deployment config (Winston MUST-FIX 2, party review
+# 2026-06-12): environment-specific publishing targets live in state/config,
+# not app code. Env var STORYBOARD_SITE_REPO_URL overrides at runtime.
+site_repo_url: "https://github.com/jlenrique/jlenrique.github.io"
+site_branch: "main"
+publish_subdir: "assets/storyboards"
+token_env_var: "GITHUB_PAGES_TOKEN"

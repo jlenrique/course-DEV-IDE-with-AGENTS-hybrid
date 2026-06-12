@@ -554,6 +554,18 @@ Five entries surfaced when the operator asked the orchestrator to verify resourc
 
 ---
 
+## Codification-batch riders (filed 2026-06-12; party review of the Trial-3 cycle-2/3 codification batch, 4× APPROVE-WITH-AMENDMENTS; MUST-FIXes executed same-session)
+
+| Entry | Filed | Trigger context | Resolution shape |
+|---|---|---|---|
+| **`dp-v2-refinement-self-edge-vocabulary-plus-storyboard-b-roster`** | 2026-06-12 | Winston MUST-FIX 1: nodes 05/05B's refinement input (latest irene-pass1 plan) rides the RUNTIME FALLBACK because the compiler's cycle guard refuses a declared `upstream_output: irene-pass1` self-edge — an undeclared seam of exactly the class Ratchet-D exists to retire. Bundled per Winston: the G3-side Storyboard-B entry in `storyboard_publisher.STORYBOARD_GATES` is the same vocabulary-extension moment. Winston rider R2 rides here too: tighten `read_extracted_source`'s scan-every-dict tolerance to declared keys when dp-v2 lands. | dp-v2 vocabulary story: refinement/self-history projection form the compiler can validate without a cycle; extend STORYBOARD_GATES with the G3-side Storyboard-B entry; tighten the reader. Reactivate when the G2C→G3 segment enters scope. |
+| **`storyboard-publish-idempotency-pin`** | 2026-06-12 | Amelia rider R2: recovery re-entering a publish-succeeded-then-pause-crashed state re-runs publish; the legacy routine archives/replaces same-run publishes — verified BY HAND at cycle 3, which is evidence, not a pin. | Re-publish-same-run test against the real routine (skills-side or handshake-suite leg). Low urgency; the routine is frozen. |
+| **`conftest-publisher-stub-exemption-self-check`** | 2026-06-12 | Murat rider A: the nodeid exemption protecting the publisher's own suite from the autouse stub fails open on file rename. | One-line collection-time assertion that the exemption matched ≥1 test, or replace dir-wide autouse with an opt-out marker at next touch (Amelia rider R1 same surface). |
+
+**Also recorded:** Murat rider B — the S5 negative test (broken brief → gate FAILS) is OWNED by the S5 fresh-run story; recorded here so the ownership claim cannot orphan at story close. John riders — first error in the fresh run is stop-and-codify, never silent hot-fix; Mary's cross-trial harvest entries for cycles 2/3 file at the next methodology window.
+
+---
+
 ## Drift-audit micro-batch riders (filed 2026-06-12; drift-audit party round + Dr. Quinn "witness, don't gate" synthesis, predicted 4/4 ACCEPT-WITH-CONDITION, operator GO)
 
 | Entry | Filed | Trigger context | Resolution shape |

@@ -10,6 +10,7 @@ from typing import Any
 
 from app.models.state.operator_verdict import OperatorVerdict
 from app.models.state.run_state import RunState
+from app.specialists.source_bundle import SourceBundleError, read_extracted_source
 
 REPO_ROOT = Path(__file__).resolve().parents[3]
 SANCTUM_DIR = REPO_ROOT / "_bmad" / "memory" / "bmad-agent-content-creator"
@@ -89,9 +90,30 @@ def read_references(references_dir: Path = REFERENCES_DIR) -> str:
     return "\n\n".join(parts)
 
 
-def assemble_pass1_prompt(payload: dict[str, Any]) -> tuple[str, str]:
+def assemble_pass1_prompt(
+    payload: dict[str, Any], *, extracted_source: str | None
+) -> tuple[str, str]:
+    # Trial-3 cycle-2 content-plane fix (2026-06-12): the prompt previously
+    # carried only bundle METADATA (the quarantined 04A edge) — no corpus
+    # text — and Pass-1 confabulated a lesson plan from the reference docs'
+    # domain. At plan CREATION (§04A) the extracted source leads the prompt
+    # and is the only planning basis. At refinement passes (§05/§05B) the
+    # input contract is the prior corpus-grounded plan delivered in the
+    # payload; the corpus section is omitted (cycle-3 error-pause evidence:
+    # node 05's payload carries upstream_output.lesson_plan, no bundle).
+    corpus_section = (
+        "## Source corpus (extracted) — the ONLY planning basis\n\n"
+        "Plan ONLY from the source corpus below. Reference material further "
+        "down informs FORM (unit structure, scope discipline), never TOPIC.\n\n"
+        f"{extracted_source}\n\n"
+        if extracted_source is not None
+        else "## Refinement pass — the prior corpus-grounded lesson plan in "
+        "the envelope payload below is the planning basis; stay on ITS "
+        "topic.\n\n"
+    )
     return (
         PASS_1_SYSTEM_MESSAGE,
+        f"{corpus_section}"
         "## Sanctum digest\n\n"
         f"{read_sanctum_digest()}\n\n"
         "## Irene Pass-1 references\n\n"
@@ -192,7 +214,17 @@ def build_learning_events(*, run_id: str, locked_scope: dict[str, Any]) -> list[
 def act(state: RunState, *, handle: Any, model_id: str) -> dict[str, Any]:
     payload = decode_envelope_payload(state)
     enforce_pass1_mode(payload)
-    system_msg, user_msg = assemble_pass1_prompt(payload)
+    upstream = payload.get("upstream_output")
+    has_prior_plan = isinstance(upstream, dict) and "lesson_plan" in upstream
+    try:
+        extracted_source: str | None = read_extracted_source(payload)
+    except SourceBundleError:
+        if not has_prior_plan:
+            raise  # plan creation without corpus = contract violation
+        extracted_source = None  # refinement pass over the prior plan
+    system_msg, user_msg = assemble_pass1_prompt(
+        payload, extracted_source=extracted_source
+    )
     response = handle.chat.invoke(
         [{"role": "system", "content": system_msg}, {"role": "user", "content": user_msg}]
     )
@@ -222,8 +254,13 @@ def act(state: RunState, *, handle: Any, model_id: str) -> dict[str, Any]:
     }
 
 
+# Amelia a.2 (party review 2026-06-12): the payload contract participates in
+# the act's import graph so it cannot rot as an orphan module.
+from app.specialists.irene_pass1.payload_contract import CONSUMED_PAYLOAD_KEYS  # noqa: E402
+
 __all__ = [
     "BulkRatificationError",
+    "CONSUMED_PAYLOAD_KEYS",
     "ModeMismatchError",
     "PASS_1_REFERENCES",
     "PASS_1_SYSTEM_MESSAGE",

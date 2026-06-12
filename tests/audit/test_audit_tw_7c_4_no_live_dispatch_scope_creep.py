@@ -288,6 +288,30 @@ PERMITTED_PYTHON_DIFFS = {
     "tests/specialists/gary/test_gary_generation_id_fail_loud.py",
     "tests/unit/api_clients/__init__.py",
     "tests/unit/api_clients/test_gamma_client_generation_id.py",
+    # Content-plane batch (Trial-3 cycle-2/3 codification, operator-directed
+    # 2026-06-12): shared fail-loud source-bundle reader (SpecialistDispatch-
+    # Error family → error-pause + recover, proven live twice at §05);
+    # irene_pass1 + cd prompts lead with the extracted corpus (cycle-2
+    # confabulation root cause); irene_pass1 publishes CONSUMED_PAYLOAD_KEYS
+    # (first Ratchet-D quarantine retirement); manifest 05/05B gain
+    # bundle_reference projections from texas (dp-v1).
+    "app/specialists/source_bundle.py",
+    "app/specialists/irene_pass1/_act.py",
+    "app/specialists/irene_pass1/graph.py",
+    "app/specialists/irene_pass1/payload_contract.py",
+    "app/specialists/cd/graph.py",
+    "tests/specialists/cd/test_cd_act_node_dispatch.py",
+    "tests/contracts/test_manifest_payload_contracts.py",
+    # S5 criterion 7 (operator-ratified 2026-06-12): automatic ONLINE
+    # storyboard publication at storyboard review gates — publisher seam
+    # invoking the proven legacy generate-storyboard routine; wired into
+    # both live gate-pause paths with error-pause on failure; G0
+    # auto-confirm flag honored unconditionally (Windows NUL isatty lie).
+    "app/marcus/orchestrator/storyboard_publisher.py",
+    "tests/integration/marcus/conftest.py",
+    "tests/integration/marcus/test_storyboard_publisher.py",
+    "tests/integration/marcus/test_storyboard_generator_seam_handshake.py",
+    "tests/specialists/irene_pass1/test_irene_pass1_lesson_plan_authoring.py",
     "tests/generators/v42/test_renderer_classification_and_l1_fail_loud.py",
     "tests/generators/v42/test_red_path_fixtures.py",
     "tests/contracts/test_33_1a_verbatim_extraction.py",

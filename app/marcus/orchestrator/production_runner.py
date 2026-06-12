@@ -34,6 +34,7 @@ from app.marcus.orchestrator import (
     package_builders,
     pre_gate_marcus,
     specialist_summary_writer,
+    storyboard_publisher,
 )
 from app.marcus.orchestrator.dispatch_adapter import ProductionDispatchAdapter
 from app.marcus.orchestrator.pre_gate_marcus import PreFillProposal
@@ -1264,6 +1265,40 @@ def run_production_trial(
                     last_gate_crossed = gate_id
                     graph_step_completed = True
                     continue
+                # S5 criterion 7 (operator-ratified 2026-06-12): storyboard
+                # review gates publish their ONLINE interactive pack BEFORE
+                # the pause — a storyboard gate without its review surface is
+                # the attempt-4 quality-theater class. Publish failure
+                # error-pauses (recoverable; retry re-enters this gate node).
+                try:
+                    storyboard_publisher.publish_storyboard_for_gate(
+                        gate_id=gate_id,
+                        trial_id=str(effective_trial_id),
+                        production_envelope=production_envelope,
+                        runs_root=runs_root,
+                    )
+                except SpecialistDispatchError as exc:
+                    return _pause_at_error(
+                        error=exc,
+                        node_id=node.id,
+                        node_index=index,
+                        specialist_id="storyboard_publisher",
+                        trial_id=effective_trial_id,
+                        envelope=envelope,
+                        production_envelope=production_envelope,
+                        run_state=run_state,
+                        child_runs=child_runs,
+                        trace_metadata=trace_metadata,
+                        last_gate_crossed=last_gate_crossed,
+                        graph_step_completed=graph_step_completed,
+                        specialist_calls=specialist_calls,
+                        manifest_path=manifest_path,
+                        runs_root=runs_root,
+                        allow_offline_cost_report=allow_offline_cost_report,
+                        max_specialist_calls=max_specialist_calls,
+                        directive_path=directive_path,
+                        bundle_dir=bundle_dir,
+                    )
                 return _pause_at_gate(
                     gate_id=gate_id,
                     node_id=node.id,
@@ -1675,6 +1710,37 @@ def _continue_production_walk(
                 # converted to the shared pause (the decided gate is never
                 # revisited: start_index = checkpoint.next_node_index is
                 # already past it, so this only fires at genuinely new gates).
+                # S5 criterion 7: storyboard gates publish their online pack
+                # before pausing — see start-walker note.
+                try:
+                    storyboard_publisher.publish_storyboard_for_gate(
+                        gate_id=gate_id,
+                        trial_id=str(trial_id),
+                        production_envelope=production_envelope,
+                        runs_root=runs_root,
+                    )
+                except SpecialistDispatchError as exc:
+                    return _pause_at_error(
+                        error=exc,
+                        node_id=node.id,
+                        node_index=index,
+                        specialist_id="storyboard_publisher",
+                        trial_id=trial_id,
+                        envelope=envelope,
+                        production_envelope=production_envelope,
+                        run_state=run_state,
+                        child_runs=child_runs,
+                        trace_metadata=trace_metadata,
+                        last_gate_crossed=last_gate_crossed,
+                        graph_step_completed=graph_step_completed,
+                        specialist_calls=specialist_calls,
+                        manifest_path=manifest_path,
+                        runs_root=runs_root,
+                        allow_offline_cost_report=allow_offline_cost_report,
+                        max_specialist_calls=max_specialist_calls,
+                        directive_path=directive_path,
+                        bundle_dir=bundle_dir,
+                    )
                 return _pause_at_gate(
                     gate_id=gate_id,
                     node_id=node.id,

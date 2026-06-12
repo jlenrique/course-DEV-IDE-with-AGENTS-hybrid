@@ -146,9 +146,14 @@ def _confirm_or_edit_directive(
     edit_fn = edit_fn or _edit_directive_in_editor
     isatty_fn = isatty_fn or (lambda: sys.stdin.isatty())
     print_fn = print_fn or _utf8_safe_print
+    # Trial-3 cycle-3 launch fix (2026-06-12): the flag is EXPLICIT operator
+    # consent and is honored unconditionally — the old tty-gated form
+    # prompted anyway whenever isatty() lied (Windows NUL is a character
+    # device, so `< /dev/null` still reads as a tty and two launches died
+    # on EOFError at the G0 prompt).
+    if auto_confirm_directive:
+        return "confirmed"
     if not isatty_fn():
-        if auto_confirm_directive:
-            return "confirmed"
         raise DirectiveConfirmationRequiredError(
             "non-interactive stdin and --auto-confirm-directive not set; "
             "directive composition cannot be silently auto-confirmed"

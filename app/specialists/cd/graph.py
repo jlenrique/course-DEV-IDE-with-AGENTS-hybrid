@@ -16,6 +16,7 @@ from app.models.adapter import make_chat_model
 from app.models.state.model_resolution_entry import ModelResolutionEntry
 from app.models.state.run_state import RunState
 from app.specialists._scaffold.contract import SCAFFOLD_NODE_IDS
+from app.specialists.source_bundle import read_extracted_source
 from app.specialists.texas.graph import SanctumLockViolation as _SanctumLockViolation
 from scripts.utilities.creative_directive_validator import (
     load_experience_profile_targets,
@@ -197,7 +198,9 @@ def _profile_targets_prompt_block() -> str:
     return json.dumps(rendered, indent=2, sort_keys=True)
 
 
-def _assemble_cd_prompt(envelope_payload: dict[str, Any]) -> tuple[str, str]:
+def _assemble_cd_prompt(
+    envelope_payload: dict[str, Any], *, extracted_source: str
+) -> tuple[str, str]:
     payload_json = json.dumps(
         envelope_payload,
         sort_keys=True,
@@ -205,7 +208,12 @@ def _assemble_cd_prompt(envelope_payload: dict[str, Any]) -> tuple[str, str]:
         separators=(",", ":"),
         default=str,
     )
+    # Trial-3 cycle-2 content-plane fix (2026-06-12): the quarantined 4.75
+    # edge delivered bundle METADATA only; the directive choice now sees the
+    # actual extracted corpus it is styling.
     user_message = (
+        "## Source corpus (extracted) — the material this directive styles\n\n"
+        f"{extracted_source}\n\n"
         "## Sanctum digest\n\n"
         f"{_read_sanctum_digest()}\n\n"
         "## CD references\n\n"
@@ -394,7 +402,10 @@ def _act(state: RunState) -> dict[str, Any]:
         )
         raise
 
-    system_message, user_message = _assemble_cd_prompt(envelope_payload)
+    extracted_source = read_extracted_source(envelope_payload)
+    system_message, user_message = _assemble_cd_prompt(
+        envelope_payload, extracted_source=extracted_source
+    )
     try:
         handle = make_chat_model(
             specialist_id="cd",

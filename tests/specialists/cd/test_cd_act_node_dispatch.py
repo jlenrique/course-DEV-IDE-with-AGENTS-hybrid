@@ -12,6 +12,18 @@ from app.models.state.run_state import RunState
 from app.specialists.cd.graph import CdDirectiveParseError, _act, _parse_cd_directive
 
 
+def _bundle_payload(tmp_path: Any, **extra: Any) -> str:
+    """Payload with a real tmp source bundle (content-plane contract,
+    2026-06-12: cd refuses to style a corpus it cannot see)."""
+    bundle = tmp_path / "bundle"
+    bundle.mkdir(exist_ok=True)
+    (bundle / "extracted.md").write_text(
+        "# Sample corpus\n\nHealthcare inflection-point lesson content.",
+        encoding="utf-8",
+    )
+    return json.dumps({"bundle_reference": str(bundle), **extra})
+
+
 def _build_state(cache_prefix: str) -> RunState:
     return RunState(
         graph_version="v0.1-stub",
@@ -191,15 +203,19 @@ def test_assembled_prompt_embeds_authoritative_profile_targets() -> None:
     enforces (finding #9 root cause was their absence)."""
     from app.specialists.cd.graph import _assemble_cd_prompt
 
-    _system, user_message = _assemble_cd_prompt({"brief": "x"})
+    _system, user_message = _assemble_cd_prompt(
+        {"brief": "x"}, extracted_source="Sample corpus body."
+    )
     assert "Experience profile targets (authoritative)" in user_message
     assert "narrator_source_authority" in user_message
     assert "source-grounded" in user_message  # visual-led control value
     assert "0.6" in user_message  # text-led literal-text / visual-led creative
+    # Content-plane contract 2026-06-12: the directive choice SEES the corpus.
+    assert "Sample corpus body." in user_message
 
 
 def test_cd_act_parse_failure_sets_two_sided_trail_tag(
-    monkeypatch: pytest.MonkeyPatch,
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Any
 ) -> None:
     class _Resp:
         content = '{"cd_directive": {"schema_version":"2.0"}}'
@@ -213,7 +229,7 @@ def test_cd_act_parse_failure_sets_two_sided_trail_tag(
         chat = _Chat()
 
     monkeypatch.setattr("app.specialists.cd.graph.make_chat_model", lambda **_: _Handle())
-    state = _build_state(json.dumps({"brief": "x"}))
+    state = _build_state(_bundle_payload(tmp_path, brief="x"))
     with pytest.raises(CdDirectiveParseError) as exc_info:
         _act(state)
     assert exc_info.value.tag == "cd_directive.parsed.validator-failed"
@@ -250,7 +266,9 @@ def test_cd_act_missing_envelope_sets_two_sided_trail_tag() -> None:
     assert state.model_resolution_trail[-1].reason == exc_info.value.tag
 
 
-def test_cd_act_returns_cd_directive(monkeypatch: pytest.MonkeyPatch) -> None:
+def test_cd_act_returns_cd_directive(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Any
+) -> None:
     class _Resp:
         content = json.dumps({"cd_directive": _valid_directive()})
         usage_metadata = {"input_tokens": 10, "output_tokens": 8}
@@ -263,7 +281,7 @@ def test_cd_act_returns_cd_directive(monkeypatch: pytest.MonkeyPatch) -> None:
         chat = _Chat()
 
     monkeypatch.setattr("app.specialists.cd.graph.make_chat_model", lambda **_: _Handle())
-    state = _build_state(json.dumps({"brief": "x"}))
+    state = _build_state(_bundle_payload(tmp_path, brief="x"))
     update = _act(state)
     output = json.loads(update["cache_state"]["cache_prefix"])
     assert output["cd_directive"]["schema_version"] == "1.0"
@@ -271,13 +289,12 @@ def test_cd_act_returns_cd_directive(monkeypatch: pytest.MonkeyPatch) -> None:
 
 
 @pytest.mark.llm_live
-def test_cd_act_live_llm_smoke() -> None:
+def test_cd_act_live_llm_smoke(tmp_path: Any) -> None:
     state = _build_state(
-        json.dumps(
-            {
-                "brief": "Design a visual-led directive for a short pathology lesson.",
-                "target_audience": "medical students",
-            }
+        _bundle_payload(
+            tmp_path,
+            brief="Design a visual-led directive for a short pathology lesson.",
+            target_audience="medical students",
         )
     )
     try:

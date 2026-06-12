@@ -151,6 +151,24 @@ def test_approve_verdict_resumes_execution_then_pauses_at_g2c(
     assert len(card_payload["digest"]) == 64
 
 
+def test_g2c_pause_invokes_online_storyboard_publisher(
+    tmp_path: Path, monkeypatch, storyboard_publish_calls
+) -> None:
+    """S5 criterion 7 wiring pin (operator-ratified 2026-06-12): the live
+    G2C pause publishes the ONLINE storyboard BEFORE issuing the decision
+    card — the review surface is part of reaching the gate."""
+    _pause(tmp_path, monkeypatch)
+    production_runner.resume_production_trial(
+        trial_id=TRIAL_ID,
+        verdict=_verdict(tmp_path, "approve"),
+        runs_root=tmp_path,
+    )
+    gate_ids = [call["gate_id"] for call in storyboard_publish_calls]
+    assert "G2C" in gate_ids
+    g2c_call = next(c for c in storyboard_publish_calls if c["gate_id"] == "G2C")
+    assert g2c_call["trial_id"] == str(TRIAL_ID)
+
+
 def test_edit_verdict_propagates_to_resume_state(tmp_path: Path, monkeypatch) -> None:
     """Edit verdict's payload reaches resume state; the resume then pauses at
     G2C (multi-gate pause implemented 2026-06-11). The state mutation is
