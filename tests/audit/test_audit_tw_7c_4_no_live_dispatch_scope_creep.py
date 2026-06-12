@@ -231,6 +231,33 @@ PERMITTED_PYTHON_DIFFS = {
     "app/models/runtime/production_trial_envelope.py",
     "app/marcus/cli/__main__.py",
     "tests/integration/marcus/test_production_runner_error_pause_recover.py",
+    # Drift micro-batch 2026-06-12 (party consensus + Dr. Quinn "witness,
+    # don't gate" synthesis; operator GO): retired top-level `marcus`
+    # namespace strings canonicalized to app.marcus / app/marcus across
+    # registries + docstring cross-references (import-linter M5 is blind to
+    # strings; the stale rows crashed build_coverage_manifest); two layered
+    # string-path pins (importlib resolution + prefix grep-ratchet);
+    # composition-spec docs-version lockstep pin; two-mode trial-envelope
+    # lifecycle validator (witness default at runtime, strict in tests) +
+    # characterization round-trip suite; runner load sites pass the
+    # anomaly-sink context.
+    "app/marcus/intake/__init__.py",
+    "app/marcus/lesson_plan/component_type_registry.py",
+    "app/marcus/lesson_plan/coverage_manifest.py",
+    "app/marcus/lesson_plan/events.py",
+    "app/marcus/lesson_plan/fit_report.py",
+    "app/marcus/lesson_plan/gagne_diagnostician.py",
+    "app/marcus/lesson_plan/log.py",
+    "app/marcus/lesson_plan/modality_registry.py",
+    "app/marcus/lesson_plan/schema.py",
+    "app/marcus/orchestrator/loop.py",
+    "app/marcus/orchestrator/maya_walkthrough.py",
+    "app/marcus/orchestrator/write_api.py",
+    "tests/test_coverage_manifest_regenerates_on_current_state.py",
+    "tests/contracts/test_lesson_plan_string_path_resolution.py",
+    "tests/contracts/test_composition_spec_envelope_version_lockstep.py",
+    "tests/unit/runtime/test_production_trial_envelope_invariants.py",
+    "tests/parity/test_composition_spec_invariants.py",
     # Story 34-2 wrangler-side test (substrate-audit-corrected path 2026-05-22;
     # co-located with existing test_run_wrangler.py at skills/.../tests/).
     "skills/bmad-agent-texas/scripts/tests/test_run_wrangler_role_enum_union_and_excluded_reason.py",

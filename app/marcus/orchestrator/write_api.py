@@ -20,7 +20,7 @@ orchestrator writer identity. The function:
    about envelope-shape validity (Q-1 precedence rider).
 3. **Event-gates** the envelope type (``event_type == "pre_packet_snapshot"``;
    raises :class:`ValueError` on mismatch).
-4. Delegates to :meth:`marcus.lesson_plan.log.LessonPlanLog.append_event`.
+4. Delegates to :meth:`app.marcus.lesson_plan.log.LessonPlanLog.append_event`.
 
 Idempotency (AC-B.3.1)
 ----------------------
@@ -65,7 +65,7 @@ _MAYA_SAFE_UNAUTHORIZED_MESSAGE: str = (
     "Sorry — I hit an internal hiccup. Give me a moment and try again?"
 )
 # 30-1 G6-D2 closure: single-source-of-truth — reference the named constant
-# exported from marcus.lesson_plan.log rather than hard-coding the literal.
+# exported from app.marcus.lesson_plan.log rather than hard-coding the literal.
 _PRE_PACKET_SNAPSHOT_EVENT_TYPE: str = PRE_PACKET_SNAPSHOT_EVENT_TYPE
 
 

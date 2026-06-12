@@ -3,7 +3,7 @@
 Story 32-2 audits the downstream contract claim carried forward by 31-2:
 every lesson-plan envelope surface in the 05→13 path must preserve
 ``lesson_plan_revision`` + ``lesson_plan_digest`` and, when required, gate the
-live consumer entry path with ``marcus.lesson_plan.log.assert_plan_fresh``.
+live consumer entry path with ``app.marcus.lesson_plan.log.assert_plan_fresh``.
 
 This module intentionally stays narrow:
 
@@ -220,7 +220,7 @@ DEFAULT_COVERAGE_INVENTORY: tuple[CoverageInventoryEntry, ...] = (
         step_id="05",
         surface_name="Pre-packet handoff consumer boundary",
         owner_story_key="30-4-plan-lock-fanout",
-        module_path="marcus/lesson_plan/step_05_pre_packet_handoff.py",
+        module_path="app/marcus/lesson_plan/step_05_pre_packet_handoff.py",
         artifact_kind="envelope",
         plan_ref_mode="top-level-fields",
         assert_plan_fresh_required=True,
@@ -235,7 +235,7 @@ DEFAULT_COVERAGE_INVENTORY: tuple[CoverageInventoryEntry, ...] = (
         step_id="06",
         surface_name="30-4 plan-lock fanout envelope",
         owner_story_key="30-4-plan-lock-fanout",
-        module_path="marcus/lesson_plan/step_06_plan_lock_fanout.py",
+        module_path="app/marcus/lesson_plan/step_06_plan_lock_fanout.py",
         artifact_kind="envelope",
         plan_ref_mode="top-level-fields",
         assert_plan_fresh_required=True,
@@ -247,7 +247,7 @@ DEFAULT_COVERAGE_INVENTORY: tuple[CoverageInventoryEntry, ...] = (
         step_id="07",
         surface_name="30-4 gap-dispatch envelope",
         owner_story_key="30-4-plan-lock-fanout",
-        module_path="marcus/lesson_plan/step_07_gap_dispatch.py",
+        module_path="app/marcus/lesson_plan/step_07_gap_dispatch.py",
         artifact_kind="envelope",
         plan_ref_mode="top-level-fields",
         assert_plan_fresh_required=True,
@@ -259,7 +259,7 @@ DEFAULT_COVERAGE_INVENTORY: tuple[CoverageInventoryEntry, ...] = (
         step_id="08",
         surface_name="30-4 produced-asset consumer boundary",
         owner_story_key="30-4-plan-lock-fanout",
-        module_path="marcus/lesson_plan/step_08_produced_asset_consumer.py",
+        module_path="app/marcus/lesson_plan/step_08_produced_asset_consumer.py",
         artifact_kind="produced-asset",
         plan_ref_mode="nested-plan-ref",
         assert_plan_fresh_required=True,
@@ -276,7 +276,7 @@ DEFAULT_COVERAGE_INVENTORY: tuple[CoverageInventoryEntry, ...] = (
         step_id="09",
         surface_name="30-4 fit-report bridge payload",
         owner_story_key="30-4-plan-lock-fanout",
-        module_path="marcus/lesson_plan/step_09_fit_report_bridge.py",
+        module_path="app/marcus/lesson_plan/step_09_fit_report_bridge.py",
         artifact_kind="fit-report",
         plan_ref_mode="nested-plan-ref",
         assert_plan_fresh_required=True,
@@ -292,7 +292,7 @@ DEFAULT_COVERAGE_INVENTORY: tuple[CoverageInventoryEntry, ...] = (
         step_id="10",
         surface_name="30-4 manifest-bound handoff payload",
         owner_story_key="30-4-plan-lock-fanout",
-        module_path="marcus/lesson_plan/step_10_manifest_bound_handoff.py",
+        module_path="app/marcus/lesson_plan/step_10_manifest_bound_handoff.py",
         artifact_kind="manifest-entry",
         plan_ref_mode="nested-plan-ref",
         assert_plan_fresh_required=True,
@@ -308,7 +308,7 @@ DEFAULT_COVERAGE_INVENTORY: tuple[CoverageInventoryEntry, ...] = (
         step_id="11",
         surface_name="31-4 blueprint-producer output",
         owner_story_key="31-4-blueprint-producer",
-        module_path="marcus/lesson_plan/blueprint_producer.py",
+        module_path="app/marcus/lesson_plan/blueprint_producer.py",
         artifact_kind="produced-asset",
         plan_ref_mode="nested-plan-ref",
         assert_plan_fresh_required=True,
@@ -325,7 +325,7 @@ DEFAULT_COVERAGE_INVENTORY: tuple[CoverageInventoryEntry, ...] = (
         step_id="12",
         surface_name="31-5 branch-result payload",
         owner_story_key="31-5-quinn-r-two-branch",
-        module_path="marcus/lesson_plan/quinn_r_gate.py",
+        module_path="app/marcus/lesson_plan/quinn_r_gate.py",
         artifact_kind="gate-payload",
         plan_ref_mode="nested-plan-ref",
         assert_plan_fresh_required=True,
@@ -342,7 +342,7 @@ DEFAULT_COVERAGE_INVENTORY: tuple[CoverageInventoryEntry, ...] = (
         step_id="13",
         surface_name="31-5 quinn-r gate payload",
         owner_story_key="31-5-quinn-r-two-branch",
-        module_path="marcus/lesson_plan/quinn_r_gate.py",
+        module_path="app/marcus/lesson_plan/quinn_r_gate.py",
         artifact_kind="gate-payload",
         plan_ref_mode="nested-plan-ref",
         assert_plan_fresh_required=True,
@@ -401,13 +401,13 @@ def _canonical_import_bindings(tree: ast.Module) -> tuple[set[str], set[str]]:
     direct_names: set[str] = set()
     module_aliases: set[str] = set()
     for node in tree.body:
-        if isinstance(node, ast.ImportFrom) and node.module == "marcus.lesson_plan.log":
+        if isinstance(node, ast.ImportFrom) and node.module == "app.marcus.lesson_plan.log":
             for alias in node.names:
                 if alias.name == "assert_plan_fresh":
                     direct_names.add(alias.asname or alias.name)
         elif isinstance(node, ast.Import):
             for alias in node.names:
-                if alias.name == "marcus.lesson_plan.log" and alias.asname:
+                if alias.name == "app.marcus.lesson_plan.log" and alias.asname:
                     module_aliases.add(alias.asname)
     return direct_names, module_aliases
 
@@ -482,7 +482,7 @@ def verify_assert_plan_fresh_usage(module_path: Path | str, *, entrypoint_name: 
 
     Accepted proofs:
     - direct invocation of the canonical imported symbol from
-      ``marcus.lesson_plan.log``;
+      ``app.marcus.lesson_plan.log``;
     - a same-module local wrapper that calls the canonical symbol and is
       itself invoked on the entry path before downstream processing.
     """

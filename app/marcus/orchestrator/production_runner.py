@@ -1429,7 +1429,11 @@ def resume_production_trial(
     """Validate a gate verdict and continue the persisted trial past the gate."""
     run_dir = _run_dir(trial_id, runs_root)
     envelope = ProductionTrialEnvelope.model_validate_json(
-        (run_dir / "run.json").read_text(encoding="utf-8")
+        (run_dir / "run.json").read_text(encoding="utf-8"),
+        # Witness-mode lifecycle invariants: violations on persisted state are
+        # recorded to the run's anomaly sidecar, never raised (S4p2 follow-on;
+        # witness->strict flip is a post-S5 ceremony).
+        context={"anomaly_sink": run_dir / "anomalies.jsonl"},
     )
     if envelope.status != "paused-at-gate":
         raise RuntimeError(
@@ -1534,7 +1538,11 @@ def recover_production_trial(
     """
     run_dir = _run_dir(trial_id, runs_root)
     envelope = ProductionTrialEnvelope.model_validate_json(
-        (run_dir / "run.json").read_text(encoding="utf-8")
+        (run_dir / "run.json").read_text(encoding="utf-8"),
+        # Witness-mode lifecycle invariants: violations on persisted state are
+        # recorded to the run's anomaly sidecar, never raised (S4p2 follow-on;
+        # witness->strict flip is a post-S5 ceremony).
+        context={"anomaly_sink": run_dir / "anomalies.jsonl"},
     )
     if envelope.status != "paused-at-error":
         raise RuntimeError(

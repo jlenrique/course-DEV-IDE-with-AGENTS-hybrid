@@ -17,7 +17,7 @@ Developer discipline note
 
 * No new schema shape. :class:`MayaWalkthroughResult` is an in-module result
   container; none of its sub-models are exported through
-  :mod:`marcus.lesson_plan`.
+  :mod:`app.marcus.lesson_plan`.
 * Zero new Lesson Plan log events. The walkthrough reads through existing
   seams (``prepare_and_emit_irene_packet``, :meth:`Facade.run_4a`,
   :func:`render_retrieval_narration`) and emits nothing beyond what those

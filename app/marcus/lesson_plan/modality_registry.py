@@ -132,7 +132,7 @@ _MODALITY_REGISTRY_UNDERLYING: dict[str, ModalityEntry] = {
     "blueprint": ModalityEntry(
         modality_ref="blueprint",
         status="ready",
-        producer_class_path="marcus.lesson_plan.blueprint_producer.BlueprintProducer",
+        producer_class_path="app.marcus.lesson_plan.blueprint_producer.BlueprintProducer",
         description=(
             "Blueprint modality — authoring-ready lesson blueprint artifact. "
             "Producer landed in Story 31-4 (blueprint-producer); "
@@ -185,7 +185,7 @@ AC-C.4.
 def get_modality_entry(modality_ref: str) -> ModalityEntry | None:
     """Return the :class:`ModalityEntry` for ``modality_ref`` or ``None``.
 
-    Unlike :func:`marcus.lesson_plan.event_type_registry.validate_event_type`,
+    Unlike :func:`app.marcus.lesson_plan.event_type_registry.validate_event_type`,
     this lookup does NOT warn on unknown values. Modality registry is a CLOSED
     SET (AC-B.8), not an extensibility surface. Consumers handle the ``None``
     return explicitly.

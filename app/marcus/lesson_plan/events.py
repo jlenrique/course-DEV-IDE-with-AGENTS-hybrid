@@ -114,7 +114,7 @@ class EventEnvelope(BaseModel):
         Design choice: accept any timezone-aware datetime (not just UTC) because
         Pydantic serializes to ISO 8601 with offset — deterministic across
         timezones. Naive datetimes are rejected because canonical-JSON digest
-        (see :mod:`marcus.lesson_plan.digest`) requires deterministic timezone
+        (see :mod:`app.marcus.lesson_plan.digest`) requires deterministic timezone
         semantics on the wire.
         """
         if value.tzinfo is None:

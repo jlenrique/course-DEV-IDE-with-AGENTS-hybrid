@@ -25,7 +25,7 @@ Developer discipline note
 Single-writer discipline
 ------------------------
 
-This module NEVER calls :meth:`marcus.lesson_plan.log.LessonPlanLog.append_event`
+This module NEVER calls :meth:`app.marcus.lesson_plan.log.LessonPlanLog.append_event`
 directly. All log writes route through the caller-injected ``dispatch``
 callable, which production callers set to
 :func:`marcus.orchestrator.dispatch.dispatch_orchestrator_event`. Tests

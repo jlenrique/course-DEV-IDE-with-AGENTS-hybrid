@@ -2,15 +2,19 @@
 
 from __future__ import annotations
 
-from datetime import datetime
+import json
+import logging
+from datetime import UTC, datetime
 from pathlib import Path
 from typing import Literal
 from uuid import UUID
 
-from pydantic import BaseModel, ConfigDict, Field, field_validator
+from pydantic import BaseModel, ConfigDict, Field, ValidationInfo, field_validator, model_validator
 
 from app.models.runtime.production_envelope import ProductionEnvelope
 from app.models.state._base import enforce_tz_aware, enforce_uuid4_version
+
+LOGGER = logging.getLogger(__name__)
 
 ProductionTrialStatus = Literal[
     "registered",
@@ -70,6 +74,61 @@ class ProductionTrialEnvelope(BaseModel):
     @classmethod
     def _enforce_completed_tz(cls, value: datetime | None) -> datetime | None:
         return enforce_tz_aware(value) if value is not None else None
+
+    @model_validator(mode="after")
+    def _lifecycle_invariants(self, info: ValidationInfo) -> ProductionTrialEnvelope:
+        """Two-mode lifecycle-invariant check (drift micro-batch 2026-06-12).
+
+        "Witness, don't gate" (Dr. Quinn synthesis, 4-voice party consensus):
+        inside the S5 acceptance window a new guard must add ZERO abort paths
+        on the live trial path. Default mode is **witness** — violations are
+        logged and, when the validation context provides an ``anomaly_sink``
+        path, appended to that JSONL sidecar (never a field; persisted
+        envelope bytes stay untouched). ``invariant_mode: "strict"`` in the
+        context raises instead — used by tests/CI. The witness→strict default
+        flip is a post-S5 ceremony gated on a clean anomaly log
+        (deferred-inventory: trial-envelope-validator-witness-to-strict-flip;
+        closes composition-spec §12 limitation #9 / DFR-6.1-5).
+        """
+        violations: list[str] = []
+        if self.status == "paused-at-gate" and self.paused_gate is None:
+            violations.append("status=paused-at-gate requires paused_gate")
+        if self.status == "paused-at-error" and self.paused_error_tag is None:
+            violations.append("status=paused-at-error requires paused_error_tag")
+        if self.status == "completed" and self.completed_at is None:
+            violations.append("status=completed requires completed_at")
+        if not violations:
+            return self
+        context = info.context or {}
+        if context.get("invariant_mode") == "strict":
+            raise ValueError(
+                f"trial {self.trial_id} lifecycle invariant violation(s): "
+                + "; ".join(violations)
+            )
+        LOGGER.warning(
+            "trial %s lifecycle invariant violation(s) [witness mode]: %s",
+            self.trial_id,
+            "; ".join(violations),
+        )
+        sink = context.get("anomaly_sink")
+        if sink is not None:
+            try:
+                with Path(sink).open("a", encoding="utf-8") as handle:
+                    handle.write(
+                        json.dumps(
+                            {
+                                "observed_at": datetime.now(tz=UTC).isoformat(),
+                                "trial_id": str(self.trial_id),
+                                "status": self.status,
+                                "violations": violations,
+                            },
+                            sort_keys=True,
+                        )
+                        + "\n"
+                    )
+            except OSError:  # the witness must never become an abort path
+                LOGGER.exception("anomaly sink %s unwritable; violation logged only", sink)
+        return self
 
 
 __all__ = [

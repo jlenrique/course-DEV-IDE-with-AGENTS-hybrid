@@ -48,7 +48,10 @@ def test_step_11_factory_returns_real_blueprint_producer_output() -> None:
 def test_step_12_module_path_fix_and_unit_verdict_factory() -> None:
     entry = _entry_by_step_id("12")
 
-    assert entry.module_path == "marcus/lesson_plan/quinn_r_gate.py"
+    # Prefix canonicalized to app/marcus in the 2026-06-12 drift micro-batch
+    # (namespace retired 2026-05-07; the stale string crashed
+    # build_coverage_manifest via the done-but-module-missing drift check).
+    assert entry.module_path == "app/marcus/lesson_plan/quinn_r_gate.py"
     assert entry.sample_factory is not None
     sample = entry.sample_factory()
     assert isinstance(sample, QuinnRUnitVerdict)

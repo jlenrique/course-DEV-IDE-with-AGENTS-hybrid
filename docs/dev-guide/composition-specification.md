@@ -6,6 +6,8 @@
 
 **Authorship:** drafted 2026-04-27 in operator session immediately after Slab 6.1 dispatch authored. Living document — extend as trial evidence accumulates per §10 Decision Log + §11 Migration Triggers.
 
+**As-built revision (2026-06-12):** §3.1 and §12 transcribed to the envelope contract as built at HEAD `c4678ff` after SCP 2026-06-11 segment-data-plane S0–S4 (party-ratified). The envelope is now **`production-envelope.v2` with per-node contribution keying and same-node retry-overwrite** — the v1 duplicate-skip (Path Z) semantics described in earlier revisions are RETIRED and appear below only inside fenced history sections. A lockstep test (`tests/contracts/test_composition_spec_envelope_version_lockstep.py`) pins this doc to the code's version token; if the envelope version bumps without a doc touch, the build breaks.
+
 **Binding:** this spec is normative for Option B evolution decisions. Any change to the composition substrate (envelope shape, adapter contract, dependency_map mechanism, gate precedence rule, composition-test discipline) requires party-mode ratification + an entry in §10 Decision Log. Any decision to escalate from Option B to Option C requires the trigger conditions in §11 to be met + party-mode ratification.
 
 ---
@@ -94,23 +96,30 @@ Source: `app/models/runtime/production_envelope.py`. Pydantic v2 strict.
 class ProductionEnvelope(BaseModel):
     model_config = ConfigDict(extra="forbid", validate_assignment=True, strict=True)
 
-    schema_version: Literal["production-envelope.v1"] = "production-envelope.v1"
+    schema_version: Literal["production-envelope.v1", "production-envelope.v2"] = "production-envelope.v2"
     trial_id: UUID
+    fixture_run: bool = False
     contributions: list[SpecialistContribution] = Field(default_factory=list)
 
-    def get_contribution(self, specialist_id: str) -> SpecialistContribution | None: ...
-    def add_contribution(self, contribution: SpecialistContribution) -> None: ...  # raises if specialist_id already present
+    def get_contribution(self, specialist_id: str, node_id: str | None = None) -> SpecialistContribution | None: ...
+    def latest_for_specialist(self, specialist_id: str) -> SpecialistContribution | None: ...
+    def add_contribution(self, contribution: SpecialistContribution) -> None: ...
 ```
 
-**Invariants (load-bearing):**
-- Append-only within a trial; immutability via `add_contribution` raising on duplicate `specialist_id`
-- Closed-set `Literal` red-rejection on `schema_version`
+**Invariants (load-bearing; v2 per-node keying, SCP 2026-06-11 S2/S4):**
+- Contribution identity is **per (specialist_id, node_id)**, not per specialist. A specialist with multiple manifest nodes (irene_pass1 at §04A/§05/§05B; quinn_r's five gate nodes) contributes at EACH node; `SpecialistContribution` carries `node_id` + `attempt (>=1)`.
+- Same-(specialist, node) re-dispatch is a **retry-overwrite**: the new contribution replaces the old one with `attempt + 1`. Different nodes accumulate.
+- `get_contribution(specialist_id, node_id=...)` is node-pinned (the `node_id=None` form is the any-node legacy read); `latest_for_specialist` serves dependency-payload reads.
+- **Provenance**: each contribution carries `provenance: "real" | "fixture"`; `add_contribution` REFUSES a fixture-provenance contribution unless the envelope is flagged `fixture_run=True` (test-only). Production runs cannot silently absorb fixture output.
+- v1 envelopes (per-specialist keyed, no node_id) are **not resumable**: `resume_production_trial` / `recover_production_trial` raise `LegacyEnvelopeSchemaError`; v1 run dirs stay frozen as evidence and new cycles relaunch fresh (operator relaunch-as-cycle-2 ruling).
 - Each contribution's `output_digest` is SHA256 of canonical-JSON-serialized output (sort_keys=True, separators=(",",":")) — enables replay-regression reproducibility
 - Tz-aware `contributed_at`; `cost_usd >= 0.0`; `model_used` non-empty
 
-**Multi-pass / repeated-specialist node behavior (Path Z; Slab 6.1 close 2026-04-27):** the immutability invariant means if the manifest topology has multiple nodes invoking the same specialist (e.g., Irene Pass 1 + Irene Pass 2), only the FIRST contribution lands; subsequent duplicate-specialist node invocations are skipped at the runner layer with an explicit log entry. This is the agreed Slab 6.1 close shape ("first contribution wins"). Path X (node-scoped contribution identity: `<specialist>:<node_index>`) and Path Y (per-pass envelope) are filed as enhancement candidates (`slab-6-1-multi-pass-envelope-path-x-or-y`) for when actual multi-pass production need emerges. See §10 Decision Log + §12 known limitation #7.
+<!-- RETIRED-HISTORY:BEGIN -->
+**History (retired — v1 "first contribution wins"):** under `production-envelope.v1` (Slab 6.1 close 2026-04-27 through SCP 2026-06-11 S2), contribution identity was per-specialist and Path Z applied: only the FIRST contribution per specialist landed; later duplicate-specialist nodes were skipped. This silently skipped multi-node specialists' later jobs (the fifth A23/P5 instance, found in Trial-3 attempt-4 forensics) and was retired by the S2 per-node keying migration. Path X, as ratified, effectively landed as per-(specialist_id, node_id) keying; the old semantics survive only in frozen v1 run dirs kept as evidence.
+<!-- RETIRED-HISTORY:END -->
 
-**Four-file-lockstep:** model + `schema/production_envelope.v1.schema.json` + `tests/unit/runtime/test_production_envelope_strict.py` + `tests/fixtures/runtime/production_envelope_golden.json`. Any change to the model requires lockstep updates to all four.
+**Four-file-lockstep:** model + `schema/production_envelope.v1.schema.json` (filename retained; contents regenerated at each model change) + `tests/unit/runtime/test_production_envelope_strict.py` + `tests/fixtures/runtime/production_envelope_golden.json`. Any change to the model requires lockstep updates to all four. Node-keying behavior is pinned by `tests/integration/marcus/test_production_envelope_node_keying.py`.
 
 ### 3.2 The contribution: `SpecialistContribution`
 
@@ -255,7 +264,7 @@ Persistence path: `state/config/runs/<trial-id>/trial_envelope.json`.
 3. Update each downstream specialist's input-construction logic to handle new shape
 4. Update chain tests covering all affected specialist pairs
 5. Run replay-regression suite (`tests/replay/`) — if regression fires, the output shape change is a breaking change requiring trial envelope schema_version bump
-6. If breaking: bump `schema_version` literal (production-envelope.v1 → v2); preserve v1 read path for replay; party-mode ratify
+6. If breaking: bump the envelope `schema_version` literal (v2 → v3); preserve the prior read path for replay; party-mode ratify
 
 ### 5.3 Add a new gate
 1. Decide layer: per-specialist (internal to specialist scaffold) or production-level (G1/G2C/G3/G4 family)
@@ -382,7 +391,10 @@ Template location: `skills/bmad-create-story/templates/slab-opener-template.md` 
 ## 10. Decision Log
 
 Track every composition-substrate decision here. Update at each evolution.
+(The whole log is a historical record: rows describe the contract AS OF their
+date, not necessarily the contract today — read §3 for current semantics.)
 
+<!-- RETIRED-HISTORY:BEGIN -->
 | Date | Decision | Rationale | Trigger | Authority |
 |---|---|---|---|---|
 | 2026-04-27 | Path A-prime ratified (envelope alongside cache_prefix; specialists unchanged; adapter at runner layer) | 14 working specialists + M3 replay-regression baseline preserved; ~8pt cost vs ~3-6 months of Option C restart | Slab 6.1 strict-AC HALT discovery | 5-agent party-mode (Winston + Murat + Amelia + Quinn-R + Mary) |
@@ -408,6 +420,11 @@ Track every composition-substrate decision here. Update at each evolution.
 | 2026-05-07 | C6 import-linter contract pivoted from `forbidden` to `independence` shape. Symmetric bidirectional cross-import prevention between sibling §section packages; tolerates only-some-modules-existing; stays at 12 KEPT during incremental §section materialization. | Initially-attempted `forbidden` representation aborted lint-imports with "Modules have shared descendants" once any §section beyond `section_02a` actually existed on disk. `independence` is purpose-built for "modules in this list must not import each other." | Slab 7c Story 7c.4b T11 P-1 patch | Codex implementation + Slab 7c.4b T11 PASS-zero-patches |
 | 2026-05-07 | A20 cross-package helper duplication anti-pattern filed at `docs/dev-guide/specialist-anti-patterns.md`. Slab 7c shipped 14 §section poll-surface modules each carrying byte-identical `canonical_model_bytes` + `compute_model_digest` helpers (~30 LOC × 14 = ~420 LOC duplication) — forced by C6 `independence` contract. Counter-pattern: extract shared helpers to a sibling package outside the import-isolation contract's modules list (e.g., `app.gates._common.digest_helpers`). | Recurring class of duplication that A19 anti-pattern (substring-scanner staleness) hinted at; A20 codifies the prescriptive remediation pattern for any future `independence`/`forbidden` import-linter contract that forces local re-emission across N siblings. | Slab 7c Story 7c.7 T11 review (digest-helpers-extract follow-on) + Slab 7c retrospective Mary harvest-gate | Mary harvest-gate + Slab 7c retrospective party-mode |
 | 2026-05-07 | M2/C2 import-linter contract redundancy fold disposition: option (b) — keep both contracts with explicit "symmetric-pair" comment in `pyproject.toml`; defer physical fold to S6 housekeeping batch. M-prefixed contracts are the Marcus invariant suite; C-prefixed are the Cora suite — naming preserves operator-discoverability when auditing import-linter contracts in future. | M2 + C2 are now structurally identical post-S2 marcus collapse; option (a) merge loses naming convention; option (c) delete C2 makes "Cora contract preventing Marcus contamination" lookup fail. Option (b) costs one extra contract row, gains operator-discoverability + grep-friendly "symmetric pair" comment. | Pre-Trial-3 cleanup S5 Tier-2 (Winston post-S2 amendment A3) | Winston pre-S5 review recommendation |
+| 2026-06-11 | Envelope schema bumped to v2 with per-node contribution keying: identity per (specialist_id, node_id) + attempt counter; same-node retry-overwrite; Path Z retired; v1 runs not resumable (LegacyEnvelopeSchemaError; frozen as evidence; relaunch-as-cycle-2). | Trial-3 attempt-4 forensics: per-specialist keying silently skipped multi-node specialists' later jobs (fifth A23/P5 instance); 3 of 6 G2C contributions were quality theater → G2C card VOID. | SCP 2026-06-11 segment-data-plane S2 | 4-voice party-mode (Winston + Amelia + Murat + John) + operator ratification |
+| 2026-06-12 | Cross-mechanism payload collisions REFUSE LOUDLY at the adapter (ProductionDispatchAdapterError): runner_supplied_payload, dependency_map, and projection_map may not deliver the same key. Supersedes the 2026-04-29 "runner-supplied keys win on collision" rule. | Silent key-shadowing across three delivery mechanisms is the same defect class as silent fixture fallback; the S4 projection mechanism made a third writer possible. | SCP 2026-06-11 party-review amendment batch + S4 | Party review (S0-S3 amendments) + S4 riders |
+| 2026-06-12 | Edge-level key projection (NodeSpec.dependency_projections, ProjectionSpec from/key) + data_plane_vocabulary_version "dp-v1" as the Tier-2 governance home for data-plane vocabulary; provenance real-vs-fixture on contributions with envelope-writer rejection; §06 deterministic package builder contributes as BUILDER_SPECIALIST_ID="package_builder" (not "marcus"). | Manifest must tell the truth about producer→consumer key flow (Winston Deviation-2: projection, NOT spread); pack_version provably does not govern dependencies (generator never reads them). | SCP 2026-06-11 S3 + S4 | Party review riders + recorded determination in pipeline-manifest-regime.md |
+| 2026-06-12 | Trial-envelope lifecycle invariants land as a two-mode validator: WITNESS default at runtime (violations recorded to runs/<id>/anomalies.jsonl + warning; never raises) and STRICT in tests/CI; witness→strict flip is a post-S5 ceremony gated on a clean anomaly log. Closes §12 limitation #9 (DFR-6.1-5) detection-first. | "Witness, don't gate": inside an acceptance window every new guard ships with zero new abort paths on the live trial path; a recorded violation is a finding, a raising validator mid-trial is a contaminated acceptance run. | Drift-audit party round + Dr. Quinn synthesis 2026-06-12 | 4-voice party-mode predicted 4/4 ACCEPT-WITH-CONDITION + operator GO |
+<!-- RETIRED-HISTORY:END -->
 
 ---
 
@@ -450,11 +467,13 @@ Track every composition-substrate decision here. Update at each evolution.
 
 6. **LangSmith trace/cost evidence in runner code: synthetic trace_id placeholder.** Cost rollup works correctly (per-call LangChain runtime emits real spans + real cost). The runner records a synthetic `trial_trace_id` placeholder rather than fetching the real LangSmith trace ID. Operator workaround: query LangSmith manually for spans where `extra.metadata.trial_id == <trial_id>`. Deferred as `slab-6-1-langsmith-runner-trace-id-real-binding` (~2-3pt). Reactivation: when first trial reveals operator-friction on the manual workaround OR when audit-trail completeness becomes load-bearing for stakeholder review.
 
-7. **Multi-pass / repeated specialist nodes: Path Z ("first contribution wins").** Envelope immutability invariant allows one contribution per `specialist_id`; if manifest topology has repeated specialist nodes (e.g., Irene Pass 1 + Irene Pass 2), only the FIRST contribution lands; later duplicate-specialist nodes are skipped (explicitly logged per bmad-code-review patch P-4). Path X (node-scoped contribution identity: `<specialist>:<node_index>`) and Path Y (per-pass envelope) filed as enhancement candidates. Reactivation: when actual multi-pass production need emerges in trial work; deferred as `slab-6-1-multi-pass-envelope-path-x-or-y`.
+<!-- RETIRED-HISTORY:BEGIN -->
+7. ~~**Multi-pass / repeated specialist nodes: Path Z ("first contribution wins").**~~ **RESOLVED** by SCP 2026-06-11 S2 per-node keying (see §3.1): contribution identity is per (specialist_id, node_id) + attempt; multi-node specialists contribute at each node; same-node retry overwrites. Path X effectively landed; `slab-6-1-multi-pass-envelope-path-x-or-y` closed by substrate evolution.
+<!-- RETIRED-HISTORY:END -->
 
 8. **Runner ignores compiled graph edges; iterates manifest order.** Current v4.2 manifest is linear so this is not blocking. Required before non-linear branch/conditional production manifests. Deferred as `slab-6-1-runner-compiled-edge-traversal` (DFR-6.1-4). Reactivation: when first non-linear manifest topology lands.
 
-9. **`ProductionTrialEnvelope` permits impossible lifecycle states.** Cross-field validators for the `completed_at` / `paused_gate` / `cost_report_path` state matrix are absent. Pre-existing issue not introduced by Slab 6.1 rewire. Deferred as `production-trial-envelope-lifecycle-invariants` (DFR-6.1-5). Reactivation: when first lifecycle-state-confusion incident surfaces in trial OR scheduled tech-debt cleanup pass.
+9. **`ProductionTrialEnvelope` lifecycle invariants: WITNESS mode landed 2026-06-12; strict flip pending.** Cross-field status invariants (`paused-at-gate` ⇒ `paused_gate`; `paused-at-error` ⇒ `paused_error_tag`; `completed` ⇒ `completed_at`) are now checked by a two-mode validator: witness default at runtime (violations recorded to `runs/<id>/anomalies.jsonl` + logged; never raises) and strict in tests/CI. The witness→strict default flip is a post-S5 ceremony gated on a clean S5 anomaly log (deferred-inventory: `trial-envelope-validator-witness-to-strict-flip`). Originally DFR-6.1-5.
 
 10. **Checkpoint resume execution-continuation: PATCHED.** Resume now actually continues graph execution from the gate node post-verdict via LangGraph native `compiled_graph.invoke(post_gate_state, config={"thread_id": str(trial_id)})`. OUT OF SCOPE for the patch (deferred to follow-on stories if real production need emerges): multi-checkpoint walking; cross-restart resume; conflict resolution; verdict-rejection branching; non-gate-node resume; cross-pack-version resume.
 
