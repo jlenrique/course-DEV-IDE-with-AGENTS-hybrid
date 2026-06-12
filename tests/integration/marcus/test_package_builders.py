@@ -253,12 +253,27 @@ def test_manifest_declares_projection_edges() -> None:
         )
     )
     nodes = {node["id"]: node for node in manifest["nodes"]}
-    assert manifest["data_plane_vocabulary_version"] == "dp-v1"
+    # dp-v1 → dp-v1.1: additive node-08/08B projections (party consensus
+    # 2026-06-12, Trial-3 cycle-4 remediation). Deliberate pin bump.
+    assert manifest["data_plane_vocabulary_version"] == "dp-v1.1"
     gary_projections = nodes["07"]["dependency_projections"]
     assert set(gary_projections) == {"slides", "prompt", "additional_instructions"}
     assert all(p["from"] == "package_builder" for p in gary_projections.values())
     quinn_projections = nodes["07B"]["dependency_projections"]
     assert quinn_projections == {"slides": {"from": "gary", "key": "gary_slide_output"}}
+    # dp-v1.1: Pass 2 grounds on corpus + latest refined plan + §06 briefs +
+    # Gary's real slides; 08B reviews Pass-2 narration against the roster.
+    assert set(nodes["08"]["dependency_projections"]) == {
+        "bundle_reference",
+        "lesson_plan",
+        "slide_briefs",
+        "gary_slide_output",
+    }
+    assert set(nodes["08B"]["dependency_projections"]) == {
+        "narration_script",
+        "segment_manifest_deltas",
+        "gary_slide_output",
+    }
 
 
 def test_runner_payload_for_quinn_r_is_gate_context_only() -> None:

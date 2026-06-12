@@ -5,11 +5,24 @@ prompt assembler with byte-identical inputs MUST produce byte-identical
 output. This catches non-deterministic ordering, datetime/UUID injection,
 or randomized components. CRLF cross-platform variant lives in a sibling
 test file.
+
+dp-v1.1 (party consensus 2026-06-12): goldens deliberately regenerated —
+the assembler now REQUIRES grounding kwargs (extracted_source + slide
+roster) and leads with the corpus. The prior shape pinned the
+confabulation-enabling prompt (cycle-4 sepsis narration).
 """
 
 from __future__ import annotations
 
 from app.specialists.irene.graph import _assemble_pass_2_prompt
+
+GROUNDING = {
+    "extracted_source": "# Source corpus\n\nMacro trends in healthcare.",
+    "slide_roster": [
+        {"slide_id": "slide-01", "visual_description": "Dual-axis chart"},
+        {"slide_id": "slide-02", "visual_description": "Burnout infographic"},
+    ],
+}
 
 
 def test_prompt_assembly_is_byte_identical_across_5_iterations() -> None:
@@ -24,7 +37,7 @@ def test_prompt_assembly_is_byte_identical_across_5_iterations() -> None:
             "visual_references_per_slide": 2,
         },
     }
-    outputs = [_assemble_pass_2_prompt(payload) for _ in range(5)]
+    outputs = [_assemble_pass_2_prompt(payload, **GROUNDING) for _ in range(5)]
     first_system, first_user = outputs[0]
     for system, user in outputs[1:]:
         assert system == first_system
@@ -44,6 +57,21 @@ def test_prompt_assembly_dict_key_order_independent() -> None:
     """Two equivalent payloads with different key-insertion orders → same prompt."""
     payload_a = {"alpha": 1, "beta": 2, "gamma": 3}
     payload_b = {"gamma": 3, "alpha": 1, "beta": 2}
-    _, user_a = _assemble_pass_2_prompt(payload_a)
-    _, user_b = _assemble_pass_2_prompt(payload_b)
+    _, user_a = _assemble_pass_2_prompt(payload_a, **GROUNDING)
+    _, user_b = _assemble_pass_2_prompt(payload_b, **GROUNDING)
     assert user_a == user_b
+
+
+def test_corpus_leads_and_references_are_demoted() -> None:
+    """dp-v1.1 ordering pin: corpus section FIRST, real roster SECOND, the
+    L5 references explicitly format-only — corpus-first cannot silently
+    regress (the regression IS the cycle-4 defect)."""
+    _, user = _assemble_pass_2_prompt({"alpha": 1}, **GROUNDING)
+    corpus_at = user.index("## Source corpus (the ONLY content basis for narration)")
+    roster_at = user.index("## Real slide roster (narrate THESE slides and no others)")
+    references_at = user.index("## L5 references (fixed order — STRUCTURE AND FORMAT ONLY")
+    task_at = user.index("## Task")
+    assert corpus_at < roster_at < references_at < task_at
+    assert "Macro trends in healthcare." in user
+    assert "- slide-01: Dual-axis chart" in user
+    assert "grounded EXCLUSIVELY in the source corpus" in user

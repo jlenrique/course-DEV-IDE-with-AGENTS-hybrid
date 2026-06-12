@@ -317,6 +317,27 @@ PERMITTED_PYTHON_DIFFS = {
     "tests/contracts/test_33_1a_verbatim_extraction.py",
     "tests/end_to_end/test_full_pipeline_smoke.py",
     "tests/test_33_3_dc2_resolution.py",
+    # dp-v1.1 — Trial-3 cycle-4 08/08B remediation (party consensus
+    # 2026-06-12, Winston/Amelia/Murat/John): node 08 grounding (Irene Pass 2
+    # received cache_prefix only → sepsis narration from L5 exemplars —
+    # fourth ungrounded-prompt instance) + 08B storyboard-B body (G3B "post"
+    # mapping crashed live on sensory.input.missing; Storyboard B = A pack +
+    # Pass-2 narration overlay, published online per S5 criterion 7).
+    "app/specialists/irene/graph.py",
+    "app/specialists/irene/payload_contract.py",
+    "app/specialists/quinn_r/_act.py",
+    "app/specialists/quinn_r/payload_contract.py",
+    "app/specialists/quinn_r/quality_control_dispatch.py",
+    "tests/specialists/irene/conftest.py",
+    "tests/specialists/irene/test_irene_pass2_grounding_fail_loud.py",
+    "tests/specialists/irene/test_irene_prompt_byte_stability_5x.py",
+    "tests/specialists/irene/test_irene_pass_routing.py",
+    "tests/specialists/irene/test_irene_act_node_pass2_procedures.py",
+    "tests/specialists/irene/test_irene_act_node_llm_invocation.py",
+    "tests/specialists/quinn_r/test_quinn_r_g3b_post_composition.py",
+    "tests/composition/test_irene_pass_2_template_composition_smoke.py",
+    "tests/end_to_end/test_cache_hit_rate_baseline.py",
+    "tests/contracts/test_manifest_grounding_contract.py",
     # Story 34-2 wrangler-side test (substrate-audit-corrected path 2026-05-22;
     # co-located with existing test_run_wrangler.py at skills/.../tests/).
     "skills/bmad-agent-texas/scripts/tests/test_run_wrangler_role_enum_union_and_excluded_reason.py",

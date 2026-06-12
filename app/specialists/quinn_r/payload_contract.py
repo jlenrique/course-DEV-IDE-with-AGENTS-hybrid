@@ -16,13 +16,16 @@ from __future__ import annotations
 CONSUMED_PAYLOAD_KEYS: frozenset[str] = frozenset(
     {
         "artifact_path",
+        "gary_slide_output",
         "gate_id",
         "gate_phase",
         "modality",
         "motion_assets",
         "narration_profile_controls",
+        "narration_script",
         "narration_segments",
         "runs_root",
+        "segment_manifest_deltas",
         "slides",
         "storyboard",
         "vtt_text",

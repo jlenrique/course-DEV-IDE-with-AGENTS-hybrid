@@ -32,7 +32,11 @@ frozen_graph_version: "v42"
 # Tier-2 governance for vocabulary changes attaches HERE (party-mode
 # consensus per bump); pack_version provably does not govern the data
 # plane (regime doc, determination 2026-06-12, commit 2a617f5).
-data_plane_vocabulary_version: "dp-v1"
+# dp-v1.1 (party consensus 2026-06-12, Trial-3 cycle-4 08/08B remediation):
+# additive projections onto nodes 08 + 08B — same dp-v1 mechanics, new
+# vocabulary rows. dp-v2 remains reserved for the refinement self-edge
+# vocabulary (deferred-inventory rider).
+data_plane_vocabulary_version: "dp-v1.1"
 learning_events:
   schema_ref: "state/config/learning-event-schema.yaml"
 block_mode_trigger_paths:
@@ -504,6 +508,26 @@ nodes:
     specialist_id: "irene"
     scaffold_node: "act"
     model_config_ref: null
+    # dp-v1.1 (Trial-3 cycle-4 defect 1, 2026-06-12): node 08 received
+    # `input keys: cache_prefix` only and Irene Pass 2 authored a sepsis
+    # narration from her L5 exemplars — the fourth ungrounded-prompt
+    # instance. Pass 2 narrates SLIDES: she grounds on the corpus, the
+    # latest refined lesson plan (irene_pass1 via latest-contribution
+    # resolution = node 05B), the §06 briefs, and Gary's real slide
+    # outputs (visual descriptions she must track per slide).
+    dependency_projections:
+      bundle_reference:
+        from: texas
+        key: bundle_reference
+      lesson_plan:
+        from: irene-pass1
+        key: lesson_plan
+      slide_briefs:
+        from: package_builder
+        key: slides
+      gary_slide_output:
+        from: gary
+        key: gary_slide_output
     gate: false
     insertion_after: "07F"
     hud_tracked: true
@@ -516,6 +540,22 @@ nodes:
     specialist_id: "quinn-r"
     scaffold_node: "act"
     model_config_ref: null
+    # dp-v1.1 (Trial-3 cycle-4 defect 2, 2026-06-12): G3B reviews
+    # STORYBOARD B = Storyboard A + Pass-2 narration overlay — NOT a
+    # composed §14 artifact (the old "post" body crashed here on
+    # sensory.input.missing). Quinn-R checks narration coverage against
+    # Gary's real slide roster; the orchestrator publishes the B pack
+    # online before the pause (S5 criterion 7).
+    dependency_projections:
+      narration_script:
+        from: irene
+        key: narration_script
+      segment_manifest_deltas:
+        from: irene
+        key: segment_manifest_deltas
+      gary_slide_output:
+        from: gary
+        key: gary_slide_output
     gate: true
     gate_code: "G3B"
     fold_with: "G3"

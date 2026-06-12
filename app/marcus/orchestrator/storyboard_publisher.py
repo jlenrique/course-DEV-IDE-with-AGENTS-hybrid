@@ -36,9 +36,11 @@ GENERATOR_SCRIPT = (
 # Deployment-specific publishing targets live in state/config, not app code
 # (Winston MUST-FIX 2, party review 2026-06-12).
 PUBLISHER_CONFIG_PATH = REPO_ROOT / "state" / "config" / "storyboard-publisher.yaml"
-# Storyboard review gates and which artifact they review. G3-side Storyboard B
-# joins this roster when that segment comes into scope (same operator ruling).
-STORYBOARD_GATES: dict[str, str] = {"G2C": "storyboard-A"}
+# Storyboard review gates and which artifact they review. Storyboard B joined
+# the roster at dp-v1.1 (Trial-3 cycle-4 defect 2, party consensus 2026-06-12)
+# when the G3B segment came into scope, per the same operator ruling
+# (S5 criterion 7: B reviews happen on the ONLINE interactive rendering).
+STORYBOARD_GATES: dict[str, str] = {"G2C": "storyboard-A", "G3B": "storyboard-B"}
 SITE_REPO_URL_ENV = "STORYBOARD_SITE_REPO_URL"
 TOKEN_ENV_VAR = "GITHUB_PAGES_TOKEN"
 
@@ -77,6 +79,70 @@ def _load_generator_module() -> Any:
     return module
 
 
+def _write_segment_manifest_for_b(
+    *, run_dir: Path, irene_output: dict[str, Any]
+) -> Path:
+    """Transform Irene's Pass-2 contribution into the legacy segment-manifest YAML.
+
+    The legacy routine's ``load_narration_by_slide_id`` expects a top-level
+    ``segments:`` list with ``slide_id`` + ``narration_text`` per segment.
+    Pass 2 emits ``narration_script`` (id + narration_text) and
+    ``segment_manifest_deltas`` (id + metadata + visual_references whose
+    ``perception_source`` names the real slide id) — joined here by segment id.
+    """
+    narration = irene_output.get("narration_script")
+    deltas = irene_output.get("segment_manifest_deltas")
+    if not isinstance(narration, list) or not narration:
+        raise StoryboardPublishError(
+            "storyboard-B publish requires Irene Pass-2 narration_script",
+            tag="storyboard.input.missing-irene",
+        )
+    text_by_id = {
+        str(seg.get("id") or ""): str(seg.get("narration_text") or "")
+        for seg in narration
+        if isinstance(seg, dict)
+    }
+    segments: list[dict[str, Any]] = []
+    for delta in deltas if isinstance(deltas, list) else []:
+        if not isinstance(delta, dict):
+            continue
+        segment_id = str(delta.get("id") or "")
+        slide_id = ""
+        for ref in delta.get("visual_references") or []:
+            if isinstance(ref, dict):
+                slide_id = str(ref.get("perception_source") or "").strip()
+                if slide_id:
+                    break
+        if not slide_id:
+            continue
+        segments.append(
+            {
+                "id": segment_id,
+                "slide_id": slide_id,
+                "narration_text": text_by_id.get(segment_id, ""),
+                "timing_role": delta.get("timing_role"),
+                "content_density": delta.get("content_density"),
+                "visual_detail_load": delta.get("visual_detail_load"),
+                "duration_rationale": delta.get("duration_rationale"),
+                "bridge_type": delta.get("bridge_type"),
+                "behavioral_intent": delta.get("behavioral_intent"),
+            }
+        )
+    if not segments:
+        raise StoryboardPublishError(
+            "Irene Pass-2 deltas joined to zero slides; storyboard-B has no "
+            "narration overlay to publish",
+            tag="storyboard.input.missing-irene",
+        )
+    manifest_path = run_dir / "exports" / "segment-manifest-storyboard-b.yaml"
+    manifest_path.parent.mkdir(parents=True, exist_ok=True)
+    manifest_path.write_text(
+        yaml.safe_dump({"segments": segments}, sort_keys=False, allow_unicode=True),
+        encoding="utf-8",
+    )
+    return manifest_path
+
+
 def publish_storyboard_for_gate(
     *,
     gate_id: str,
@@ -113,6 +179,25 @@ def publish_storyboard_for_gate(
     payload_path.write_text(json.dumps(gary.output, indent=2), encoding="utf-8")
     out_dir = run_dir / "exports" / f"{label}-pack"
 
+    # Storyboard B overlays Pass-2 narration on the A pack and publishes to
+    # its OWN slug — the manifest run_id drives both the Pages subdir and the
+    # receipt name, so B must never collide with the A pack (Winston risk,
+    # party consensus 2026-06-12).
+    segment_manifest_path: Path | None = None
+    pack_run_id = str(trial_id)
+    if label == "storyboard-B":
+        pack_run_id = f"{trial_id}-b"
+        irene = production_envelope.latest_for_specialist("irene")
+        if irene is None:
+            raise StoryboardPublishError(
+                f"{gate_id} reached with no irene Pass-2 contribution; "
+                "storyboard-B has no narration overlay",
+                tag="storyboard.input.missing-irene",
+            )
+        segment_manifest_path = _write_segment_manifest_for_b(
+            run_dir=run_dir, irene_output=irene.output
+        )
+
     module = _load_generator_module()
     try:
         generate_rc = module.cmd_generate(
@@ -122,9 +207,9 @@ def publish_storyboard_for_gate(
                 asset_base=None,
                 print_summary=False,
                 strict=True,
-                segment_manifest=None,
+                segment_manifest=segment_manifest_path,
                 related_assets=None,
-                run_id=str(trial_id),
+                run_id=pack_run_id,
                 cluster_coherence_report=None,
                 pass2_envelope=None,
             )
@@ -170,7 +255,7 @@ def publish_storyboard_for_gate(
 
     receipt_path = (
         Path(module.DEFAULT_EXPORTS_DIR)
-        / f"storyboard-{trial_id}-publish-receipt.json"
+        / f"storyboard-{pack_run_id}-publish-receipt.json"
     )
     if not receipt_path.is_file():
         raise StoryboardPublishError(

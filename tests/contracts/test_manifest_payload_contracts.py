@@ -27,6 +27,7 @@ from app.manifest.compiler import SPECIALIST_ALIASES
 # module's namespace, pinning that each act imports its own contract — the
 # contract must participate in the consumer's import graph, not sit beside it.
 from app.specialists.gary._act import CONSUMED_PAYLOAD_KEYS as GARY_KEYS
+from app.specialists.irene.graph import CONSUMED_PAYLOAD_KEYS as IRENE_KEYS
 from app.specialists.irene_pass1._act import CONSUMED_PAYLOAD_KEYS as IRENE_PASS1_KEYS
 from app.specialists.quinn_r._act import CONSUMED_PAYLOAD_KEYS as QUINN_R_KEYS
 
@@ -35,11 +36,13 @@ MANIFEST_PATH = REPO_ROOT / "state" / "config" / "pipeline-manifest.yaml"
 
 # Consumers with published payload contracts (S1 roster: quinn_r + gary;
 # irene_pass1 joined 2026-06-12 when the quarantined 04A edge's bill arrived
-# as a confabulated lesson plan in Trial-3 cycle 2).
+# as a confabulated lesson plan in Trial-3 cycle 2; irene joined at dp-v1.1
+# when node 08's empty payload produced cycle-4's sepsis narration).
 CONTRACTED_CONSUMERS: dict[str, frozenset[str]] = {
     "quinn_r": QUINN_R_KEYS,
     "gary": GARY_KEYS,
     "irene_pass1": IRENE_PASS1_KEYS,
+    "irene": IRENE_KEYS,
 }
 
 # Edges whose consumer has NOT yet published a contract. Raw manifest

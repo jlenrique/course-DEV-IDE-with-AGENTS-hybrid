@@ -61,6 +61,75 @@ def test_publisher_fields_match_generator_cli_surface() -> None:
         assert hasattr(MODULE, name), name
 
 
+def test_real_generate_dry_run_with_segment_manifest_overlays_narration(
+    tmp_path: Path,
+) -> None:
+    """PIN-B2 (real-seam leg, dp-v1.1): the B-variant handshake — a segment
+    manifest built by the publisher's own transform feeds the REAL
+    cmd_generate and the narration lands on the slide."""
+    png = tmp_path / "slide-01.png"
+    png.write_bytes(b"\x89PNG\r\n\x1a\n" + b"0" * 32)
+    payload_path = tmp_path / "gary-dispatch-payload.json"
+    payload_path.write_text(
+        json.dumps(
+            {
+                "generation_id": "gen-handshake-b",
+                "status": "complete",
+                "gary_slide_output": [
+                    {
+                        "slide_id": "slide-01",
+                        "card_number": 1,
+                        "dispatch_variant": "A",
+                        "file_path": str(png),
+                        "generation_id": "gen-handshake-b",
+                        "visual_description": "Handshake sample",
+                    }
+                ],
+            }
+        ),
+        encoding="utf-8",
+    )
+    manifest_path = storyboard_publisher._write_segment_manifest_for_b(
+        run_dir=tmp_path,
+        irene_output={
+            "narration_script": [
+                {"id": "seg-1", "narration_text": "B-side narration text."}
+            ],
+            "segment_manifest_deltas": [
+                {
+                    "id": "seg-1",
+                    "timing_role": "concept-build",
+                    "visual_references": [{"perception_source": "slide-01"}],
+                }
+            ],
+        },
+    )
+    out_dir = tmp_path / "pack-b"
+
+    rc = MODULE.cmd_generate(
+        Namespace(
+            payload=payload_path,
+            out_dir=out_dir,
+            asset_base=None,
+            print_summary=False,
+            strict=True,
+            segment_manifest=manifest_path,
+            related_assets=None,
+            run_id="handshake-test-b",
+            cluster_coherence_report=None,
+            pass2_envelope=None,
+        )
+    )
+
+    assert rc == 0
+    manifest = json.loads(
+        (out_dir / "storyboard" / "storyboard.json").read_text(encoding="utf-8")
+    )
+    slide = manifest["slides"][0]
+    assert slide["asset_status"] == "present"
+    assert "B-side narration text." in json.dumps(slide)
+
+
 def test_real_generate_dry_run_emits_pack(tmp_path: Path) -> None:
     png = tmp_path / "slide-01.png"
     png.write_bytes(b"\x89PNG\r\n\x1a\n" + b"0" * 32)

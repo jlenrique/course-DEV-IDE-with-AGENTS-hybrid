@@ -21,7 +21,15 @@ class _IreneFakeChat:
             content=json.dumps(
                 {
                     "narration_script": [{"segment_id": "seg-01", "text": "Pass 2 narration."}],
-                    "segment_manifest_deltas": [{"segment_id": "seg-01", "bridge_type": "none"}],
+                    # dp-v1.1: deltas must join the grounded roster or the act
+                    # raises Pass2GroundingError (cycle-4 confabulation kill).
+                    "segment_manifest_deltas": [
+                        {
+                            "segment_id": "seg-01",
+                            "bridge_type": "none",
+                            "visual_references": [{"perception_source": "s1"}],
+                        }
+                    ],
                 }
             ),
             usage_metadata={"input_tokens": 20, "output_tokens": 10},
@@ -43,14 +51,17 @@ def _fake_make_chat_model(specialist_id: str, **kwargs: object) -> SimpleNamespa
     )
 
 
-def test_irene_pass_2_template_composition_smoke(monkeypatch) -> None:
+def test_irene_pass_2_template_composition_smoke(monkeypatch, tmp_path) -> None:
+    from tests.specialists.irene.conftest import make_grounded_pass2_payload
+
     monkeypatch.setattr("app.specialists.irene.graph.make_chat_model", _fake_make_chat_model)
     trial_id = UUID("12345678-1234-4234-8234-123456789abc")
-    payload = {
-        "pass_phase": "pass-2",
-        "composition_mode": "composed",
-        "authoring_schema": "schema/irene_pass_2_authoring.v1.schema.json",
-    }
+    payload = make_grounded_pass2_payload(
+        tmp_path,
+        pass_phase="pass-2",
+        composition_mode="composed",
+        authoring_schema="schema/irene_pass_2_authoring.v1.schema.json",
+    )
     base_state = RunState(
         run_id=trial_id,
         graph_version="v42",

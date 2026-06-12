@@ -169,6 +169,60 @@ def test_g2c_pause_invokes_online_storyboard_publisher(
     assert g2c_call["trial_id"] == str(TRIAL_ID)
 
 
+def test_broken_brief_fails_the_gate_not_quality_theater(
+    tmp_path: Path, monkeypatch, storyboard_publish_calls
+) -> None:
+    """S5 criterion 5 (negative test, party consensus 2026-06-12 — Murat/John):
+    a BROKEN brief upstream of the storyboard gate makes the run FAIL with a
+    typed raise; it must never pause at G2C for approval over hollow content,
+    and the online storyboard must never publish. The fixture corrupts the
+    lesson plan to the shape the §06 builder refuses (plan_units empty)."""
+    from app.marcus.orchestrator.package_builders import BuilderInputError
+
+    class _BrokenBriefAdapter(_FakeAdapter):
+        def invoke_specialist(self, *, specialist_id: str, **kwargs):
+            if specialist_id == "irene_pass1":
+                envelope = kwargs["envelope"].model_copy(deep=True)
+                envelope.add_contribution(
+                    SpecialistContribution.from_output(
+                        specialist_id=specialist_id,
+                        output={"lesson_plan": {"plan_units": []}},
+                        model_used="gpt-5-nano",
+                        cost_usd=kwargs["cost_usd"],
+                        node_id=kwargs.get("node_id"),
+                    )
+                )
+                return envelope
+            return super().invoke_specialist(specialist_id=specialist_id, **kwargs)
+
+    monkeypatch.setenv("OPENAI_API_KEY", "sk-test")
+    monkeypatch.setattr(production_runner, "ProductionDispatchAdapter", _FakeAdapter)
+    production_runner.run_production_trial(
+        CORPUS,
+        "production",
+        "operator_test",
+        trial_id=TRIAL_ID,
+        runs_root=tmp_path,
+        max_specialist_calls=12,
+    )
+    monkeypatch.setattr(
+        production_runner, "ProductionDispatchAdapter", _BrokenBriefAdapter
+    )
+    with pytest.raises(BuilderInputError) as excinfo:
+        production_runner.resume_production_trial(
+            trial_id=TRIAL_ID,
+            verdict=_verdict(tmp_path, "approve"),
+            runs_root=tmp_path,
+        )
+    assert excinfo.value.tag == "builder.gary.lesson-plan-shape"
+    assert not (tmp_path / str(TRIAL_ID) / "decision-card-G2C.json").exists(), (
+        "gate opened over a broken brief — the attempt-4 quality-theater class"
+    )
+    assert all(c["gate_id"] != "G2C" for c in storyboard_publish_calls), (
+        "storyboard published for a run that never legitimately reached G2C"
+    )
+
+
 def test_edit_verdict_propagates_to_resume_state(tmp_path: Path, monkeypatch) -> None:
     """Edit verdict's payload reaches resume state; the resume then pauses at
     G2C (multi-gate pause implemented 2026-06-11). The state mutation is

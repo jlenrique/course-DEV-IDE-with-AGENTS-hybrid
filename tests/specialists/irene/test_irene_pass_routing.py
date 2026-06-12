@@ -83,21 +83,21 @@ def test_irene_pass_1_dispatch_branch(monkeypatch: Any) -> None:
     assert output["irene_pass_2_envelope"] is None
 
 
-def test_irene_pass_2_default_branch_stays_intact(monkeypatch: Any) -> None:
+def test_irene_pass_2_default_branch_stays_intact(monkeypatch: Any, tmp_path: Any) -> None:
+    from tests.specialists.irene.conftest import (
+        joined_pass2_response,
+        make_grounded_pass2_payload,
+    )
+
+    response = joined_pass2_response()
+
     def _fake_model(*args: Any, **kwargs: Any) -> _FakeHandle:
         del args, kwargs
-        return _FakeHandle(
-            response_text=json.dumps(
-                {
-                    "narration_script": [{"segment_id": "s1"}],
-                    "segment_manifest_deltas": [{"op": "replace"}],
-                }
-            )
-        )
+        return _FakeHandle(response_text=json.dumps(response))
 
     monkeypatch.setattr("app.specialists.irene.graph.make_chat_model", _fake_model)
-    update = _act(_state({"topic": "cells"}))
+    update = _act(_state(make_grounded_pass2_payload(tmp_path, topic="cells")))
     output = json.loads(update["cache_state"]["cache_prefix"])
-    assert output["narration_script"] == [{"segment_id": "s1"}]
-    assert output["segment_manifest_deltas"] == [{"op": "replace"}]
+    assert output["narration_script"] == response["narration_script"]
+    assert output["segment_manifest_deltas"] == response["segment_manifest_deltas"]
 
