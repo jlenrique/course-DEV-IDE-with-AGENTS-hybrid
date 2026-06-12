@@ -372,7 +372,7 @@ nodes:
     scaffold_node: "act"
     model_config_ref: null
     dependencies:
-      upstream_output: "vera"
+      slides: "gary"
     gate: true
     gate_code: "G2B"
     fold_with: "G2C"
@@ -381,7 +381,15 @@ nodes:
     hud_tracked: true
     pack_section_anchor: "7B)"
     pack_version: "v4.2"
-    rationale: "Section 07B maintains manifest-driven pipeline contract."
+    rationale: >-
+      Section 07B maintains manifest-driven pipeline contract. S1 vocabulary
+      correction (SCP 2026-06-11 segment-data-plane, Tier-2 consensus):
+      variant selection consumes GARY's slide variants under the key quinn_r
+      actually reads ("slides"); the prior edge (upstream_output: vera) was
+      both the wrong key and the wrong producer — quinn_r approved content
+      it never received in Trial-3 attempt-4. Data-plane-only edit: the
+      generator does not render dependencies, so the frozen v4.2 pack is
+      byte-identical (proven by L1 lockstep at commit).
 
   - id: "07C"
     label: "Storyboard A + Gate 2 Approval + Winner Authorization"

@@ -155,6 +155,15 @@ PERMITTED_PYTHON_DIFFS = {
     # quinn_r two-mode test payload now supplies a real artifact for G3B.
     "app/specialists/kira/_act.py",
     "tests/specialists/quinn_r/test_quinn_r_two_mode_dispatch.py",
+    # S1 contract regime (same SCP): CONSUMED_PAYLOAD_KEYS contracts for
+    # quinn_r + gary (own modules — quinn_r/_act.py carries a LOC budget) +
+    # Ratchet-D manifest<->consumer vocabulary lockstep test with pinned
+    # quarantine roster. Manifest 07B edge corrected (upstream_output:vera
+    # -> slides:gary) — data-plane-only; generator does not render
+    # dependencies; L1 lockstep exit 0; pack file untouched.
+    "app/specialists/quinn_r/payload_contract.py",
+    "app/specialists/gary/payload_contract.py",
+    "tests/contracts/test_manifest_payload_contracts.py",
     # Story 34-2 wrangler-side test (substrate-audit-corrected path 2026-05-22;
     # co-located with existing test_run_wrangler.py at skills/.../tests/).
     "skills/bmad-agent-texas/scripts/tests/test_run_wrangler_role_enum_union_and_excluded_reason.py",

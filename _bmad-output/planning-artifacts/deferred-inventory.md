@@ -530,6 +530,14 @@ Five entries surfaced when the operator asked the orchestrator to verify resourc
 
 ---
 
+## SUBSTRATE — v4.2 pack renderer broken since Slab-7a orchestration nodes; L1 regeneration guard vacuous (filed 2026-06-12)
+
+| Entry | Filed | Trigger context | Resolution shape |
+|---|---|---|---|
+| **`v42-renderer-crashes-on-orchestration-nodes-l1-guard-vacuous`** | 2026-06-12 | Surfaced during S1 of SCP-2026-06-11 segment-data-plane when executing the regime's render step: `python -m scripts.generators.v42.render` crashes with `TemplateNotFound: sections/directive-composer-g0-...` — the four Slab-7a orchestration nodes (directive-composer, pre-gate-marcus, per-slide-subgraph, html-review-pack-emitter) were registered in the manifest with no section templates, and `pack.md.j2` includes a template per node unconditionally. Verified pre-existing via stash probe against the pre-edit manifest. Compounding: `check_pipeline_manifest_lockstep.py` still exits 0 — the Scenario-E regeneration-determinism guard is vacuous when rendering crashes, so hand-edits to the pack would currently NOT be caught by re-render SHA comparison. Same guard-exists-but-never-exercised class as the A23/P5 family. | Small story: (a) renderer skips nodes without section templates (orchestration nodes are runtime-only, not pack prose) OR authors minimal section templates for the four nodes; (b) L1 check made to FAIL (not pass) when regeneration itself crashes; (c) re-render and verify committed pack SHA. Reactivate at the segment-data-plane arc close or next docs window, whichever first. |
+
+---
+
 ## Closed Entries — Archived (preserved for audit trail)
 
 _24 closed entries archived 2026-05-07 at pre-Trial-3 cleanup S1 P0-IH per Mary AM-5 amendment. These rows previously lived intermixed with active entries throughout the inventory; segregated here for hot-start scannability of S2-S6 sessions. All content preserved verbatim — no entries deleted; this is a structural reorganization only._
