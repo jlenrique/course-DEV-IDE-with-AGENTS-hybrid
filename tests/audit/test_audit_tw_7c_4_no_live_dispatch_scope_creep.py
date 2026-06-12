@@ -132,6 +132,29 @@ PERMITTED_PYTHON_DIFFS = {
     "tests/specialists/quinn_r/test_quinn_r_g2b_g2f_gate_modes.py",
     # LOC-budget guard bumped 150->160 for the two new gate bodies (same fix).
     "tests/specialists/quinn_r/test_quinn_r_act_node_dispatch.py",
+    # SCP 2026-06-11 segment-data-plane S0 (party-mode 4-of-4 + operator-
+    # ratified): fail-loud policy sweep — absence of inputs is a contract
+    # violation, never a mode switch. Five dispatch seams converted from
+    # silent fixture fallback to typed raise with explicit allow_fixture
+    # opt-in (test-harness only; production_runner/dispatch_adapter pinned
+    # to never set it). Trial-3 attempt-4 evidence: gary fixture slides
+    # entered a production envelope and two gates blessed them. Conversions
+    # only — no new implementations (John S0 scope guard).
+    "app/specialists/gary/gamma_dispatch.py",
+    "app/specialists/kira/kling_dispatch.py",
+    "app/specialists/vera/sensory_bridges_dispatch.py",
+    "app/specialists/quinn_r/sensory_bridges_dispatch.py",
+    "tests/integration/test_dispatch_fail_loud_policy.py",
+    "tests/specialists/gary/test_gary_dispatch_wrapper.py",
+    "tests/composition/test_tracy_to_texas_chain.py",
+    "tests/specialists/vera/test_vera_sensory_bridges_dispatch.py",
+    "tests/specialists/quinn_r/test_quinn_r_dispatch_wrappers.py",
+    "tests/specialists/kira/test_kira_kling_dispatch.py",
+    # Same S0 sweep: kira/_act.py's "legacy_receipt" dispatch existed only to
+    # harvest the fixture MP4 path as a silent video-URL fallback — removed;
+    # quinn_r two-mode test payload now supplies a real artifact for G3B.
+    "app/specialists/kira/_act.py",
+    "tests/specialists/quinn_r/test_quinn_r_two_mode_dispatch.py",
     # Story 34-2 wrangler-side test (substrate-audit-corrected path 2026-05-22;
     # co-located with existing test_run_wrangler.py at skills/.../tests/).
     "skills/bmad-agent-texas/scripts/tests/test_run_wrangler_role_enum_union_and_excluded_reason.py",

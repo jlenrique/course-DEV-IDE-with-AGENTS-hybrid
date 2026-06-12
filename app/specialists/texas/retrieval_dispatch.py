@@ -66,20 +66,27 @@ def dispatch_retrieval(
     *,
     directive_path: str | Path | None = None,
     bundle_dir: str | Path | None = None,
+    allow_fixture: bool = False,
 ) -> dict[str, Any]:
-    """Run Texas wrangler or return a deterministic fixture bundle reference.
+    """Run Texas wrangler.
 
-    Dev-agent paths stay deterministic and non-network by default. A live
-    subprocess dispatch only occurs when both directive and bundle path are
-    explicitly provided.
+    S0 fail-loud policy (SCP 2026-06-11 segment-data-plane): missing inputs
+    RAISE; the fixture bundle is reachable only via explicit ``allow_fixture``
+    opt-in, which production dispatch never sets.
     """
     if not directive_path or not bundle_dir:
-        return {
-            "status": "mocked",
-            "bundle_dir": str(DEFAULT_FIXTURE_BUNDLE),
-            "exit_code": 0,
-            "command": None,
-        }
+        if allow_fixture:
+            return {
+                "status": "mocked",
+                "bundle_dir": str(DEFAULT_FIXTURE_BUNDLE),
+                "exit_code": 0,
+                "command": None,
+            }
+        missing = "directive_path" if not directive_path else "bundle_dir"
+        raise BundleDispatchError(
+            f"dispatch_retrieval missing required input: {missing}",
+            tag="bundle.dispatch.input-missing",
+        )
 
     py = _venv_python()
     # Absolutize both path args: cwd below is the directive's corpus_dir (so

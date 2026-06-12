@@ -28,6 +28,14 @@ def _load_target_module() -> Any:
     return module
 
 
+class KlingDispatchError(RuntimeError):
+    """Raised when Kling dispatch inputs are missing (S0 fail-loud policy)."""
+
+    def __init__(self, message: str, *, tag: str) -> None:
+        super().__init__(message)
+        self.tag = tag
+
+
 def dispatch_to_kling(
     *,
     kling_prompt: str,
@@ -37,28 +45,36 @@ def dispatch_to_kling(
     negative_prompt: str | None = None,
     motion_plan_path: str | Path | None = None,
     slide_id: str | None = None,
+    allow_fixture: bool = False,
 ) -> dict[str, Any]:
-    """Dispatch Kira's composed prompt to Kling or return a deterministic fixture.
+    """Dispatch Kira's composed prompt to Kling.
 
-    The default fixture path is used whenever motion-plan context is absent, so
-    dev/test paths avoid paid API calls.
+    S0 fail-loud policy (SCP 2026-06-11 segment-data-plane): missing
+    motion-plan context RAISES; the fixture MP4 is reachable only via
+    explicit ``allow_fixture`` opt-in, which production dispatch never sets.
     """
     # Truthy guard (EH-3): empty-string slide_id / motion_plan_path must NOT
     # dispatch to the live runner. Without this guard, `slide_id=""` passed an
     # `is None` check and fell through to a paid Kuaishou call that would fail
     # mid-runner with a deep filesystem/billing-API error.
     if not motion_plan_path or not slide_id:
-        return {
-            "status": "mocked",
-            "motion_asset_path": str(DEFAULT_FIXTURE_MOTION_PATH),
-            "kling_choices": {
-                "model_name": model_name,
-                "mode": mode,
-                "duration": duration,
-                "negative_prompt": negative_prompt or "",
-            },
-            "kling_prompt": kling_prompt,
-        }
+        if allow_fixture:
+            return {
+                "status": "mocked",
+                "motion_asset_path": str(DEFAULT_FIXTURE_MOTION_PATH),
+                "kling_choices": {
+                    "model_name": model_name,
+                    "mode": mode,
+                    "duration": duration,
+                    "negative_prompt": negative_prompt or "",
+                },
+                "kling_prompt": kling_prompt,
+            }
+        missing = "motion_plan_path" if not motion_plan_path else "slide_id"
+        raise KlingDispatchError(
+            f"dispatch_to_kling missing required input: {missing}",
+            tag="kling.input.missing",
+        )
     module = _load_target_module()
     if not hasattr(module, "run_motion_generation_for_slide"):
         raise RuntimeError("kling runner missing run_motion_generation_for_slide")
@@ -81,4 +97,4 @@ def dispatch_to_kling(
     }
 
 
-__all__ = ["DEFAULT_FIXTURE_MOTION_PATH", "dispatch_to_kling"]
+__all__ = ["DEFAULT_FIXTURE_MOTION_PATH", "KlingDispatchError", "dispatch_to_kling"]

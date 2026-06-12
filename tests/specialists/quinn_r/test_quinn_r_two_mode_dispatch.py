@@ -14,6 +14,9 @@ def _payload(tmp_path: Path, gate_id: str) -> str:
         {
             "gate_id": gate_id,
             "gate_phase": "post-composition" if gate_id == "G3B" else "pre-composition",
+            # S0 fail-loud policy: the G3B post body's sensory dispatch now
+            # requires a real artifact; tests must supply one.
+            "artifact_path": "tests/fixtures/specialists/quinn_r/fixture_artifacts/sample.txt",
             "runs_root": str(tmp_path),
             "slides": [{"slide_id": "s1", "title": "Intro"}],
             "narration_segments": [
@@ -33,7 +36,20 @@ def _payload(tmp_path: Path, gate_id: str) -> str:
     ("gate_id", "mode"),
     [("G2C", "pre-composition"), ("G5", "g5-pre-composition-qa"), ("G3B", "post-composition")],
 )
-def test_quinn_r_dispatches_by_gate_id(gate_id: str, mode: str, tmp_path: Path) -> None:
+def test_quinn_r_dispatches_by_gate_id(
+    gate_id: str, mode: str, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    # S0 fail-loud policy: G3B's sensory dispatch refuses missing/unreadable
+    # artifacts, so the perception boundary is mocked here (the dedicated
+    # G3B test owns that contract).
+    monkeypatch.setattr(
+        "app.specialists.quinn_r._act.dispatch_to_sensory_bridges",
+        lambda **_: {"confidence": "HIGH", "layout_description": "mocked"},
+    )
+    monkeypatch.setattr(
+        "app.specialists.quinn_r._act.run_postcomposition_validators",
+        lambda **_: {"status": "ok", "dimension_scores": {"composition": "PASS"}},
+    )
     update = _act(make_state(_payload(tmp_path, gate_id)))
     output = json.loads(update["cache_state"]["cache_prefix"])
     assert output["quinn_r_review"]["mode"] == mode

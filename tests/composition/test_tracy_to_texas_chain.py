@@ -54,5 +54,6 @@ class TestTracyToTexasChain(ChainTestBase):
     def test_texas_dispatch_signature_accepts_directive_and_bundle_paths(self) -> None:
         signature = inspect.signature(dispatch_retrieval)
         assert {"directive_path", "bundle_dir"} <= set(signature.parameters)
-        receipt = dispatch_retrieval(directive_path=None, bundle_dir=None)
+        # S0 fail-loud policy: fixture path now requires explicit opt-in.
+        receipt = dispatch_retrieval(directive_path=None, bundle_dir=None, allow_fixture=True)
         assert receipt["status"] == "mocked"

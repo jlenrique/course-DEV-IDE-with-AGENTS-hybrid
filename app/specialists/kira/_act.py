@@ -12,7 +12,6 @@ import yaml
 from app.models.state.cache_state import CacheState
 from app.models.state.model_resolution_entry import ModelResolutionEntry
 from app.models.state.run_state import RunState
-from app.specialists.kira.kling_dispatch import dispatch_to_kling
 from scripts.api_clients.kling_client import KlingClient
 
 REPO_ROOT = Path(__file__).resolve().parents[3]
@@ -196,13 +195,11 @@ def generate_motion_from_plan(
         prompt = _prompt_for(slide)
         progress = {"slide_id": sid, "status": "submitted", "prompt": prompt}
         _write_json(motion_dir / f"{sid}.progress.json", progress)
-        legacy_receipt = dispatch_to_kling(
-            kling_prompt=prompt,
-            model_name=str(slide.get("model_name") or "kling-v2-6"),
-            mode=str(slide.get("mode") or "std"),
-            duration=float(slide.get("duration") or 5),
-            negative_prompt=slide.get("negative_prompt"),
-        )
+        # S0 fail-loud sweep (SCP 2026-06-11): the former "legacy_receipt"
+        # dispatch_to_kling call existed only to harvest the fixture MP4 path
+        # as a silent fallback when the provider response carried no video
+        # URL — a fixture leak into production receipts. An absent video URL
+        # now yields an empty motion_asset_path, visible downstream.
         try:
             provider_response = _call_generate_motion(client, slide, prompt=prompt)
             final_response = provider_response
@@ -214,9 +211,7 @@ def generate_motion_from_plan(
         cumulative_cost += actual_cost
         motion_asset_path = ""
         if status == "success":
-            motion_asset_path = _video_url(final_response) or legacy_receipt[
-                "motion_asset_path"
-            ]
+            motion_asset_path = _video_url(final_response) or ""
         receipt = {
             "slide_id": sid,
             "status": status,
