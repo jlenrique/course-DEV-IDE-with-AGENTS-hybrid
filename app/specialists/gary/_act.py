@@ -198,9 +198,23 @@ def generate_gamma_variants(
             ),
             export_as="png",
         )
-        generation_id = str(
-            generation.get("generation_id") or generation.get("id") or f"fixture-{variant}"
+        raw_generation_id = (
+            generation.get("generation_id")
+            or generation.get("id")
+            or generation.get("generationId")
         )
+        if not raw_generation_id:
+            # Trial-3 cycle-2 root-cause hardening (2026-06-12): the old
+            # fabricated per-variant fixture-id sentinel here was the EIGHTH
+            # silent seam — it masked generate_deck returning a bare POST ack
+            # and let untracked spend + empty slide rows flow to G2C.
+            # Recoverable family: error-pause + `trial recover` retries.
+            raise GammaDispatchError(
+                f"gamma generation returned no id for variant {variant}; "
+                f"keys={sorted(generation)}",
+                tag="gamma.generation.id-missing",
+            )
+        generation_id = str(raw_generation_id)
         calls.append(generation_id)
         paths = _paths_from_generation(
             generation, slides=slides, export_dir=export_dir, label=variant
@@ -218,6 +232,15 @@ def generate_gamma_variants(
                     ),
                 }
             )
+    if output and not any(row.get("file_path") for row in output):
+        # Twice-bitten guard (deferred this morning, bitten this evening):
+        # slide rows with no materialized artifacts are quality theater —
+        # downstream gates would review metadata, not slides. Recoverable.
+        raise GammaDispatchError(
+            f"no slide artifacts materialized for generation(s) {calls}; "
+            "every gary_slide_output row has an empty file_path",
+            tag="gamma.export.unmaterialized",
+        )
     return {
         "generation_id": calls[0],
         "status": "complete",

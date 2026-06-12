@@ -22,6 +22,11 @@ APP_ROOT = REPO_ROOT / "app"
 FIXTURE_SIGNATURES = re.compile(
     r"DEFAULT_FIXTURE_|_load_fixture|\"status\": \"mocked\"|'status': 'mocked'"
     r"|fixture short-circuit"
+    # The EIGHTH seam's shape (gary act, Trial-3 cycle-2 2026-06-12): a
+    # fabricated `fixture-{...}` identifier on the real path masked an
+    # API-shape bug all the way to the G2C pause. Any reintroduction of
+    # fabricated fixture-ids must either be rostered or die here.
+    r"|fixture-\{"
 )
 
 # The S0-converted seams (five from the sweep + wanda's MB, the SEVENTH seam

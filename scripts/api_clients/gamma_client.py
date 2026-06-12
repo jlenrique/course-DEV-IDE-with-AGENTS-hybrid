@@ -138,7 +138,15 @@ class GammaClient(BaseAPIClient):
             export_as=export_as,
             **options,
         )
-        generation_id = response.get("id") or response.get("generation_id")
+        # Gamma's POST /generations ack uses camelCase generationId (Trial-3
+        # cycle-2 root cause 2026-06-12: the snake/bare keys missed it, so
+        # generate_deck never polled and returned the bare ack — no
+        # exportUrl, orphaned server-side generation).
+        generation_id = (
+            response.get("id")
+            or response.get("generation_id")
+            or response.get("generationId")
+        )
         if wait and isinstance(generation_id, str) and generation_id:
             completed = self.wait_for_generation(generation_id)
             completed.setdefault("generation_id", generation_id)

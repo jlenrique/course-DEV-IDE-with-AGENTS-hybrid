@@ -276,6 +276,18 @@ PERMITTED_PYTHON_DIFFS = {
     # gary _paths_from_generation (generate_deck never downloads; rows landed
     # file_path "" → Storyboard A at G2C would have had no viewable slides).
     "tests/specialists/gary/test_gary_export_url_materialization.py",
+    # Trial-3 cycle-2 root cause (2026-06-12, caught AT the G2C pause):
+    # Gamma POST ack is camelCase generationId → generate_deck never polled →
+    # bare ack → gary's fixture-id sentinel (EIGHTH seam) masked it → seven
+    # empty-file_path rows reached G2C. Fixes: camelCase key in client id
+    # extraction; sentinel → GammaDispatchError(gamma.generation.id-missing);
+    # all-empty file_path → GammaDispatchError(gamma.export.unmaterialized)
+    # (both recoverable via error-pause + trial recover); ratchet gains the
+    # fabricated fixture-id signature.
+    "scripts/api_clients/gamma_client.py",
+    "tests/specialists/gary/test_gary_generation_id_fail_loud.py",
+    "tests/unit/api_clients/__init__.py",
+    "tests/unit/api_clients/test_gamma_client_generation_id.py",
     "tests/generators/v42/test_renderer_classification_and_l1_fail_loud.py",
     "tests/generators/v42/test_red_path_fixtures.py",
     "tests/contracts/test_33_1a_verbatim_extraction.py",
