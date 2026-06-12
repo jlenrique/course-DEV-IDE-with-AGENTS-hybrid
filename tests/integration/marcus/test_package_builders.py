@@ -171,6 +171,49 @@ def test_runner_payload_for_gary_spreads_package_with_export_dir(tmp_path: Path)
     )
 
 
+def test_spread_key_roster_is_exactly_pinned() -> None:
+    # Amelia b.2 (party review 2026-06-12): the seam spreads the package at
+    # top level, so a NEW builder field is a deliberate two-file contract
+    # change (builder + gary contract), never a silent addition.
+    lesson_plan, cd_directive = _fixture_outputs()
+    package = build_gary_briefs(lesson_plan, cd_directive)
+    assert set(package) == {"slides", "prompt", "additional_instructions"}
+
+
+def test_seam_collision_with_dependency_keys_refuses() -> None:
+    # Amelia b.1: runner-keys-win silent precedence is retired — a key
+    # delivered by BOTH the dependency map and the runner seam refuses loud.
+    from app.marcus.orchestrator.dispatch_adapter import (
+        ProductionDispatchAdapter,
+        ProductionDispatchAdapterError,
+    )
+
+    adapter = ProductionDispatchAdapter(graph_builders={})
+    envelope = ProductionEnvelope(trial_id=TRIAL_ID)
+    envelope.add_contribution(
+        _contribution("gary", {"gary_slide_output": []}, node_id="07")
+    )
+    with pytest.raises(ProductionDispatchAdapterError, match="collides"):
+        adapter.build_specialist_state(
+            envelope=envelope,
+            dependency_map={"slides": "gary"},
+            runner_supplied_payload={"slides": ["seam-delivered"]},
+        )
+
+
+def test_seam_tombstone_cites_projection_followon() -> None:
+    # Winston S3-A: when S4's edge-level key projection lands, removing the
+    # seam must be a deliberate act that breaks a test — not a leftover that
+    # double-delivers beside the new path.
+    import inspect
+
+    source = inspect.getsource(production_runner._runner_payload_for_specialist)
+    assert "manifest-edge-key-projection-s4" in source, (
+        "the gary/quinn_r seam must cite its deferred-inventory exit "
+        "condition (manifest-edge-key-projection-s4) until projection lands"
+    )
+
+
 def test_runner_payload_for_quinn_r_threads_gary_slides() -> None:
     envelope = ProductionEnvelope(trial_id=TRIAL_ID)
     rows = [{"slide_id": "slide-01", "card_number": 1, "file_path": "exports/s1.png"}]

@@ -102,6 +102,24 @@ def _verdict(tmp_path: Path, verb: str, **overrides) -> OperatorVerdict:
     )
 
 
+def test_starved_resume_fails_loud_at_06_builder(tmp_path: Path, monkeypatch) -> None:
+    """Finding-#8 made flesh, permanently pinned (Murat + Amelia MUST-FIX,
+    party review 2026-06-12): a cap-starved resume that reaches §06 without
+    the cd contribution refuses with the specific tagged raise — observed
+    live during S3, frozen here so no refactor re-feeds the path silently."""
+    from app.marcus.orchestrator.package_builders import BuilderInputError
+
+    _pause(tmp_path, monkeypatch)
+    with pytest.raises(BuilderInputError) as excinfo:
+        production_runner.resume_production_trial(
+            trial_id=TRIAL_ID,
+            verdict=_verdict(tmp_path, "approve"),
+            runs_root=tmp_path,
+            max_specialist_calls=1,
+        )
+    assert excinfo.value.tag == "builder.gary.upstream-missing"
+
+
 def test_approve_verdict_resumes_execution_then_pauses_at_g2c(
     tmp_path: Path, monkeypatch
 ) -> None:

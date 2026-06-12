@@ -312,13 +312,16 @@ def _normalize_dependency_map(
 ) -> dict[str, str]:
     normalized: dict[str, str] = {}
     for downstream_input_key, upstream_specialist_id in dependency_map.items():
-        if production_envelope.get_contribution(upstream_specialist_id) is not None:
+        # Presence checks use latest_for_specialist — the intentful any-node
+        # API (Winston S2-A: bare get_contribution without node_id is pinned
+        # out of production call sites).
+        if production_envelope.latest_for_specialist(upstream_specialist_id) is not None:
             normalized[downstream_input_key] = upstream_specialist_id
             continue
         canonical = _canonical_dependency_specialist_id(upstream_specialist_id)
         normalized[downstream_input_key] = (
             canonical
-            if production_envelope.get_contribution(canonical) is not None
+            if production_envelope.latest_for_specialist(canonical) is not None
             else upstream_specialist_id
         )
     return normalized
@@ -331,7 +334,7 @@ def _ensure_upstream_contributions_present(
     downstream_specialist_id: str,
 ) -> None:
     for downstream_input_key, upstream_specialist_id in dependency_map.items():
-        if production_envelope.get_contribution(upstream_specialist_id) is None:
+        if production_envelope.latest_for_specialist(upstream_specialist_id) is None:
             raise MissingUpstreamContributionError(
                 specialist_id=upstream_specialist_id,
                 downstream_input_key=downstream_input_key,
@@ -748,8 +751,11 @@ def _runner_payload_for_specialist(
     S3 (SCP 2026-06-11): Gary receives the §06 package-builder contribution
     spread at top level — exactly the granular keys its contract declares
     (the manifest dependency-map merge delivers whole-dict-per-key, which is
-    the wrong shape; the spread question is filed for the party review) —
-    plus an ``export_dir`` inside the run dir.
+    the wrong shape) — plus an ``export_dir`` inside the run dir. Party
+    review 2026-06-12 ruled the end state: edge-level key PROJECTION on the
+    manifest (not spread); this seam is the bridge until the
+    manifest-edge-key-projection-s4 deferred-inventory entry lands, at which
+    point removing this branch must break its tombstone test deliberately.
 
     Other specialists receive None.
     """

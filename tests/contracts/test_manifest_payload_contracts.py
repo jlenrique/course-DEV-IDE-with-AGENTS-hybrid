@@ -22,12 +22,12 @@ from pathlib import Path
 import yaml
 
 from app.manifest.compiler import SPECIALIST_ALIASES
-from app.specialists.gary.payload_contract import (
-    CONSUMED_PAYLOAD_KEYS as GARY_KEYS,
-)
-from app.specialists.quinn_r.payload_contract import (
-    CONSUMED_PAYLOAD_KEYS as QUINN_R_KEYS,
-)
+
+# Amelia a.2 (party review 2026-06-12): contracts resolve THROUGH the act
+# module's namespace, pinning that each act imports its own contract — the
+# contract must participate in the consumer's import graph, not sit beside it.
+from app.specialists.gary._act import CONSUMED_PAYLOAD_KEYS as GARY_KEYS
+from app.specialists.quinn_r._act import CONSUMED_PAYLOAD_KEYS as QUINN_R_KEYS
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 MANIFEST_PATH = REPO_ROOT / "state" / "config" / "pipeline-manifest.yaml"

@@ -77,6 +77,17 @@ class ProductionDispatchAdapter:
         )
         payload = self._payload_from_dependencies(envelope, dependency_map)
         if runner_supplied_payload:
+            # Amelia S3-b.1 (party review 2026-06-12): runner-keys-win was
+            # silent precedence — a collision between seam and dependency
+            # delivery now refuses instead of silently shadowing (the
+            # first-contribution-wins genus, different chromosome).
+            collisions = sorted(set(payload) & set(runner_supplied_payload))
+            if collisions:
+                raise ProductionDispatchAdapterError(
+                    "runner_supplied_payload collides with dependency-map "
+                    f"key(s) {collisions}; deliver each key through exactly "
+                    "one mechanism (edge projection lands at S4)"
+                )
             payload = {**payload, **runner_supplied_payload}
         assert_payload_duality_boundary(payload)
         if not dependency_map and not runner_supplied_payload and source.cache_state is not None:

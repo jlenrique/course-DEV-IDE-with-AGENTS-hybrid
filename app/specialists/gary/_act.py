@@ -244,7 +244,12 @@ def act(state: RunState, *, client: GammaClient | None = None) -> dict[str, Any]
     }
 
 
+# Amelia a.1 (party review 2026-06-12): the payload contract participates in
+# the act's import graph so it cannot rot as an orphan module.
+from app.specialists.gary.payload_contract import CONSUMED_PAYLOAD_KEYS  # noqa: E402
+
 __all__ = [
+    "CONSUMED_PAYLOAD_KEYS",
     "GARY_REFERENCES",
     "GaryActError",
     "SANCTUM_DIR",

@@ -5,6 +5,8 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
+import pytest
+
 from app.marcus.orchestrator.dispatch_adapter import ProductionDispatchAdapter
 from app.marcus.orchestrator.production_runner import _runner_payload_for_specialist
 from app.models.runtime.production_envelope import ProductionEnvelope
@@ -79,10 +81,15 @@ def test_dispatch_adapter_merges_runner_supplied_payload(tmp_path: Path) -> None
     assert payload["bundle_dir"] == "state/runs/abc/bundle"
 
 
-def test_dispatch_adapter_runner_payload_wins_on_collision(tmp_path: Path) -> None:
-    """runner_supplied_payload wins over dependency_map keys on collision (documented)."""
+def test_dispatch_adapter_collision_refuses_loudly(tmp_path: Path) -> None:
+    """Party review 2026-06-12 (Amelia b.1) SUPERSEDES the prior runner-keys-
+    win pin: silent precedence on seam/dependency collision was the first-
+    contribution-wins genus reborn — a colliding key now refuses."""
     from uuid import uuid4
 
+    from app.marcus.orchestrator.dispatch_adapter import (
+        ProductionDispatchAdapterError,
+    )
     from app.models.runtime.production_envelope import SpecialistContribution
 
     trial_id = uuid4()
@@ -96,14 +103,12 @@ def test_dispatch_adapter_runner_payload_wins_on_collision(tmp_path: Path) -> No
     envelope.add_contribution(contribution)
 
     adapter = ProductionDispatchAdapter(graph_builders={})
-    state = adapter.build_specialist_state(
-        envelope=envelope,
-        dependency_map={"key1": "upstream"},
-        runner_supplied_payload={"key1": "from-runner"},
-    )
-    assert state.cache_state is not None
-    payload = json.loads(state.cache_state.cache_prefix)
-    assert payload["key1"] == "from-runner"
+    with pytest.raises(ProductionDispatchAdapterError, match="collides"):
+        adapter.build_specialist_state(
+            envelope=envelope,
+            dependency_map={"key1": "upstream"},
+            runner_supplied_payload={"key1": "from-runner"},
+        )
 
 
 def test_dispatch_adapter_no_runner_payload_preserves_existing_behavior(

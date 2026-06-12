@@ -130,6 +130,30 @@ def test_adapter_duplicate_guard_is_node_aware() -> None:
         )
 
 
+def test_production_call_sites_always_pass_node_id() -> None:
+    """Winston S2-A (party review 2026-06-12): bare get_contribution without
+    node_id is an attractive nuisance — any-node reads in production go
+    through latest_for_specialist (intentful) or pass node_id explicitly."""
+    import inspect
+    import re as _re
+
+    import app.marcus.orchestrator.dispatch_adapter as adapter_module
+    import app.marcus.orchestrator.package_builders as builders_module
+    import app.marcus.orchestrator.production_runner as runner_module
+
+    call_re = _re.compile(r"\.get_contribution\((?P<args>[^()]*(?:\([^()]*\)[^()]*)*)\)")
+    offenders: list[str] = []
+    for module in (runner_module, adapter_module, builders_module):
+        source = inspect.getsource(module)
+        for match in call_re.finditer(source):
+            if "node_id" not in match.group("args"):
+                offenders.append(f"{module.__name__}: {match.group(0)[:80]}")
+    assert offenders == [], (
+        "production get_contribution call(s) without explicit node_id — use "
+        f"latest_for_specialist for any-node intent: {offenders}"
+    )
+
+
 def test_resume_rejects_legacy_v1_envelope_loudly(tmp_path: Path) -> None:
     """Characterization against the REAL frozen attempt-4 run dir: the new
     reader rejects v1 explicitly with a named error — never half-reads."""

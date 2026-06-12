@@ -197,6 +197,22 @@ PERMITTED_PYTHON_DIFFS = {
     # under its declared "slides" key.
     "app/marcus/orchestrator/package_builders.py",
     "tests/integration/marcus/test_package_builders.py",
+    # Party-review amendment batch 2026-06-12 (S0-S3 4-voice APPROVE-with-
+    # amendments): seam/dependency collision raise in the adapter; 07B
+    # shape-lying edge withdrawn pending S4 projection; contract imports
+    # bound through act namespaces; presence checks -> latest_for_specialist
+    # + bare-get_contribution static pin; spread key-roster pin; seam
+    # tombstone; starved-cap §06 regression (finding #8 pinned); platform
+    # fixture-grep ratchet (Murat MUST-FIX-BEFORE-S5) — which caught a
+    # SEVENTH seam on its first run: wanda's MB music-bed returned a mocked
+    # receipt unconditionally (missed in the S0 sweep via grep truncation);
+    # now gated behind allow_fixture. Old runner-keys-win collision pin
+    # superseded by the refuse-loud pin. Contract imports touched gary/_act.
+    "tests/audit/test_no_silent_fixture_fallbacks.py",
+    "app/specialists/wanda/wondercraft_dispatch.py",
+    "app/specialists/wanda/_act.py",
+    "app/specialists/gary/_act.py",
+    "tests/integration/marcus/test_production_runner_threads_directive.py",
     # Story 34-2 wrangler-side test (substrate-audit-corrected path 2026-05-22;
     # co-located with existing test_run_wrangler.py at skills/.../tests/).
     "skills/bmad-agent-texas/scripts/tests/test_run_wrangler_role_enum_union_and_excluded_reason.py",

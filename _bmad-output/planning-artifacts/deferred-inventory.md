@@ -530,11 +530,25 @@ Five entries surfaced when the operator asked the orchestrator to verify resourc
 
 ---
 
-## SUBSTRATE — v4.2 pack renderer broken since Slab-7a orchestration nodes; L1 regeneration guard vacuous (filed 2026-06-12)
+## 🔴 MUST-FIX-BEFORE-S5 — v4.2 pack renderer broken since Slab-7a orchestration nodes; L1 regeneration guard vacuous (filed 2026-06-12; priority upgraded by party review 2026-06-12: Winston S1-A + Murat + John)
+
+**Priority determination (party review 2026-06-12):** a guard that cannot fail launders confidence (Winston); fix before any future story cites L1 as a verification gate. INSEPARABLE PAIR: L1 cannot be made render-aware while the renderer crashes (every closure hook would brick), so the renderer skip-or-template fix and the L1 fail-loud land as ONE story. Until it lands, **L1-green is EXCLUDED from S5's evidence basis** (Murat's alternate branch, recorded in the SCP).
 
 | Entry | Filed | Trigger context | Resolution shape |
 |---|---|---|---|
 | **`v42-renderer-crashes-on-orchestration-nodes-l1-guard-vacuous`** | 2026-06-12 | Surfaced during S1 of SCP-2026-06-11 segment-data-plane when executing the regime's render step: `python -m scripts.generators.v42.render` crashes with `TemplateNotFound: sections/directive-composer-g0-...` — the four Slab-7a orchestration nodes (directive-composer, pre-gate-marcus, per-slide-subgraph, html-review-pack-emitter) were registered in the manifest with no section templates, and `pack.md.j2` includes a template per node unconditionally. Verified pre-existing via stash probe against the pre-edit manifest. Compounding: `check_pipeline_manifest_lockstep.py` still exits 0 — the Scenario-E regeneration-determinism guard is vacuous when rendering crashes, so hand-edits to the pack would currently NOT be caught by re-render SHA comparison. Same guard-exists-but-never-exercised class as the A23/P5 family. | Small story: (a) renderer skips nodes without section templates (orchestration nodes are runtime-only, not pack prose) OR authors minimal section templates for the four nodes; (b) L1 check made to FAIL (not pass) when regeneration itself crashes; (c) re-render and verify committed pack SHA. Reactivate at the segment-data-plane arc close or next docs window, whichever first. |
+
+---
+
+## Party-review riders — segment-data-plane arc (filed 2026-06-12; SCP-2026-06-11 S0-S3 batch review, 4-voice APPROVE-with-amendments)
+
+| Entry | Filed | Trigger context | Resolution shape |
+|---|---|---|---|
+| **`manifest-edge-key-projection-s4`** | 2026-06-12 | Winston Deviation-2 ruling: the adapter dependency-map merge delivers whole-dict-per-key (wrong shape for granular consumers); the A-R3 seam spread is the documented BRIDGE (tombstone test cites this entry by name). End state: edge-level key PROJECTION declared on the manifest (producer output keys → consumer input keys), compile-validated against producer belt-pins + consumer CONSUMED_PAYLOAD_KEYS; §06→gary and 07B→quinn_r edges then move from quarantine to contracted; seam retires by deliberately breaking its tombstone. SEQUENCED AFTER the manifest vocabulary-version field (Winston S1-B: the manifest data plane currently has no versioned home; pack_version provably does not govern dependencies — determination at commit 2a617f5). John deadline: ruled mechanism lands before S5. | S4 story (with manifest version field first or same commit). Also at S4: builder specialist_id "marcus" → dedicated id (Winston c; latest_for_specialist("marcus") collision); walker shared-policy extraction (Winston d.2); seam-vs-dependency disagreement detector pairs with provenance plumbing (Murat b); GammaDispatchError → pause-not-cycle-death (Amelia trap 1). |
+| **`ratchet-d-producer-write-keys-leg`** | 2026-06-12 | Murat: Ratchet-D is two-way (manifest↔consumer); the third leg (producer write keys match manifest claims) is unproven statically. Mitigated: S3's builder-output⊆contract pin instances it for the bitten edge; S0 fail-loud converts producer-drift starvation to a raise. | Rides — **binding trigger: lands BEFORE any NEW producer node is added to the manifest** (that is when drift gets authored). |
+| **`gary-gamma-repo-root-export-default-retirement`** | 2026-06-12 | Amelia c: orchestrated Gary now exports under the run dir (state/config/runs/<id>/exports/gary — already gitignored via state/config/runs/; decision recorded, no .gitignore change needed). The old repo-root `runs/gary-gamma` default in generate_gamma_variants remains for standalone invocation. | Grep gary skill/references/tests for `runs/gary-gamma` readers; retire or redirect. **Direction may flip if substrate evolves** — standalone (non-orchestrated) Gary may legitimately keep a repo-root default; re-validate at dispatch. Also pin export-vs-attempt re-emit semantics when S4 touches exports (attempt+1 overwrite can desync disk exports from envelope attempt). |
+
+**Also recorded:** Winston nit (kira empty-string video URL graduates to a typed raise if cycle-2 shows it surviving to a gate); Amelia trap 5 (pin the exact 21-test ambient-failure roster so S4 breakage shows as roster growth — fold into S5 prep); John (e) ruling: S4+S5 get their own lean party round.
 
 ---
 

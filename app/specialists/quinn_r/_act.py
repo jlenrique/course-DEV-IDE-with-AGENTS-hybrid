@@ -186,4 +186,6 @@ def act(state: RunState) -> dict[str, Any]:
     }
 
 
-__all__ = ["CoverageGapError", "DurationCoherenceError", "ModeMismatchError", "VttMonotonicityError", "WpmThresholdError", "act", "run_g5_checks"]  # noqa: E501
+from app.specialists.quinn_r.payload_contract import CONSUMED_PAYLOAD_KEYS  # noqa: E402
+
+__all__ = ["CONSUMED_PAYLOAD_KEYS", "CoverageGapError", "DurationCoherenceError", "ModeMismatchError", "VttMonotonicityError", "WpmThresholdError", "act", "run_g5_checks"]  # noqa: E501

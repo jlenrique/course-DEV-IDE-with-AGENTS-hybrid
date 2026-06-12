@@ -69,6 +69,18 @@ class TestMissingInputRaises:
             quinn_sensory_dispatch(artifact_path=None, modality="image", gate="qrr")
         assert excinfo.value.tag == "sensory.input.missing"
 
+    def test_wanda_mb_raises_not_mock(self) -> None:
+        # Seventh seam — caught by the fixture-grep ratchet on its first run
+        # (2026-06-12): MB music-bed returned a mocked receipt unconditionally.
+        from app.specialists.wanda.wondercraft_dispatch import (
+            WondercraftDispatchError,
+            dispatch_to_wondercraft,
+        )
+
+        with pytest.raises(WondercraftDispatchError) as excinfo:
+            dispatch_to_wondercraft(capability="MB", operation_payload={})
+        assert excinfo.value.tag == "wanda_audio.capability.unimplemented"
+
 
 class TestFixtureRequiresExplicitOptIn:
     """allow_fixture=True (test-harness only) preserves deterministic paths."""
@@ -110,6 +122,18 @@ class TestFixtureRequiresExplicitOptIn:
             artifact_path=None, modality="image", gate="qrr", allow_fixture=True
         )
         assert out["confidence"] == "LOW"
+
+    def test_wanda_mb_fixture_optin(self) -> None:
+        from unittest.mock import MagicMock
+
+        from app.specialists.wanda.wondercraft_dispatch import dispatch_to_wondercraft
+
+        client = MagicMock()
+        client.check_connectivity.return_value = {"ok": True}
+        out = dispatch_to_wondercraft(
+            capability="MB", operation_payload={}, client=client, allow_fixture=True
+        )
+        assert out["receipt"]["status"] == "mocked"
 
 
 def test_production_runner_never_sets_allow_fixture() -> None:

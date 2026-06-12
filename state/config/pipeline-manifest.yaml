@@ -371,8 +371,7 @@ nodes:
     specialist_id: "quinn-r"
     scaffold_node: "act"
     model_config_ref: null
-    dependencies:
-      slides: "gary"
+    dependencies: {}
     gate: true
     gate_code: "G2B"
     fold_with: "G2C"
@@ -382,14 +381,17 @@ nodes:
     pack_section_anchor: "7B)"
     pack_version: "v4.2"
     rationale: >-
-      Section 07B maintains manifest-driven pipeline contract. S1 vocabulary
-      correction (SCP 2026-06-11 segment-data-plane, Tier-2 consensus):
-      variant selection consumes GARY's slide variants under the key quinn_r
-      actually reads ("slides"); the prior edge (upstream_output: vera) was
-      both the wrong key and the wrong producer — quinn_r approved content
-      it never received in Trial-3 attempt-4. Data-plane-only edit: the
-      generator does not render dependencies, so the frozen v4.2 pack is
-      byte-identical (proven by L1 lockstep at commit).
+      Section 07B maintains manifest-driven pipeline contract. Data-plane
+      history (SCP 2026-06-11 + party review 2026-06-12): the original edge
+      (upstream_output: vera) was the wrong key AND wrong producer — quinn_r
+      approved content it never received in Trial-3 attempt-4. S1 corrected
+      the vocabulary (slides: gary); the party review then ruled the
+      dependency-map merge delivers whole-dict-per-key (wrong SHAPE), so the
+      edge is withdrawn until S4's edge-level key projection lands (Winston
+      Deviation-2 ruling: projection, not spread). Delivery meanwhile is the
+      A-R3 runner seam, which supplies gary_slide_output under quinn_r's
+      declared "slides" key — see manifest-edge-key-projection-s4 in the
+      deferred inventory.
 
   - id: "07C"
     label: "Storyboard A + Gate 2 Approval + Winner Authorization"

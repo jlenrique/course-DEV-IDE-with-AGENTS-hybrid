@@ -113,6 +113,21 @@ The regime's `pack_version` field + L1 check `--pack-version` arg are the *mecha
 
 Podcasts, infographics, slide-deck-only are **different packs, not v5 of narrated-lesson**. Filename stem changes (`production-prompt-pack-podcast-v1-*.md`); new generator sibling (`scripts/generators/podcast-v1/`); manifest likely extends with a `pack_family` discriminator to support multiple families. Backlogged Epic 18 territory — probably Epic 35+ substrate when new content types come online. The regime itself is family-agnostic.
 
+### Recorded determination — per-node `dependencies` edits are data-plane-only (2026-06-12)
+
+The v4.2 generator does not read per-node `dependencies` (no template/render
+reference exists), so dependency-edge edits cannot change the rendered pack —
+the frozen-at-ship obligation attaches to the PACK artifact, which such edits
+leave byte-identical. Do NOT flip an existing node's `pack_version` for a
+dependency edit: the L1 filter (`step.pack_version in (None, active)`) would
+drop the node from v4.2 validation and rendering. Tier-2 governance for
+data-plane vocabulary attaches to the (forthcoming) manifest vocabulary-version
+field instead. Party-mode consensus + party review accepted: commits `2a617f5`
+(determination) and the 2026-06-12 S0-S3 batch review (Winston Deviation-1
+ruling). Note: the manifest vocabulary-version field is mandated before the
+next data-plane vocabulary change (deferred-inventory
+`manifest-edge-key-projection-s4`).
+
 ### Frozen-at-Ship Discipline
 
 **Once a pack ships to an operator AND a tracked trial-run completes against it, the pack becomes frozen at that version.** Prose patches regenerate in place (Tier 1); minor-or-major changes bump the version (Tier 2 / Tier 3).
