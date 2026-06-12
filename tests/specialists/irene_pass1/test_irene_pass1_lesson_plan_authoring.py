@@ -59,6 +59,13 @@ def _state(payload: dict[str, Any]) -> RunState:
 
 
 def test_pass1_act_writes_irene_pass1_markdown(tmp_path) -> None:
+    # Content-plane contract (2026-06-12): plan creation requires the
+    # extracted corpus in sight — provide a real tmp bundle.
+    bundle = tmp_path / "bundle"
+    bundle.mkdir()
+    (bundle / "extracted.md").write_text(
+        "# Corpus\n\nBeta blocker source material.", encoding="utf-8"
+    )
     response = json.dumps(
         {
             "lesson_summary": "Teach beta blocker essentials.",
@@ -74,7 +81,14 @@ def test_pass1_act_writes_irene_pass1_markdown(tmp_path) -> None:
         }
     )
     update = pass1_act.act(
-        _state({"mode": "pass-1", "run_id": "run-123", "runs_root": str(tmp_path)}),
+        _state(
+            {
+                "mode": "pass-1",
+                "run_id": "run-123",
+                "runs_root": str(tmp_path),
+                "bundle_reference": str(bundle),
+            }
+        ),
         handle=_FakeHandle(response),
         model_id="gpt-5.4",
     )
@@ -90,6 +104,26 @@ def test_pass1_act_writes_irene_pass1_markdown(tmp_path) -> None:
 
 def test_prompt_assembly_is_byte_stable() -> None:
     payload = {"mode": "pass-1", "topic": "cardiac pharmacology"}
-    assert pass1_act.assemble_pass1_prompt(payload) == pass1_act.assemble_pass1_prompt(
-        dict(reversed(payload.items()))
+    assert pass1_act.assemble_pass1_prompt(
+        payload, extracted_source="Corpus body."
+    ) == pass1_act.assemble_pass1_prompt(
+        dict(reversed(payload.items())), extracted_source="Corpus body."
     )
+
+
+def test_prompt_leads_with_extracted_corpus() -> None:
+    """Content-plane pin (cycle-2 confabulation root cause): at plan creation
+    the corpus leads the prompt and is declared the only planning basis."""
+    _system, user = pass1_act.assemble_pass1_prompt(
+        {"mode": "pass-1"}, extracted_source="UNIQUE-CORPUS-MARKER body."
+    )
+    assert user.index("UNIQUE-CORPUS-MARKER") < user.index("Sanctum digest")
+    assert "ONLY planning basis" in user
+
+
+def test_prompt_refinement_pass_without_corpus_names_prior_plan_basis() -> None:
+    _system, user = pass1_act.assemble_pass1_prompt(
+        {"mode": "pass-1"}, extracted_source=None
+    )
+    assert "Refinement pass" in user
+    assert "ONLY planning basis" not in user

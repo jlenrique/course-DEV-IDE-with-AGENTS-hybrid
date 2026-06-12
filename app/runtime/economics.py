@@ -345,6 +345,14 @@ def measure_trial_cost(
         model_id = _extract_model_id(run)
         if model_id is None:
             raise RuntimeError("billable LangSmith run missing model identifier")
+        if model_id.startswith("deterministic-"):
+            # Audio-arc fix (2026-06-12): deterministic node markers
+            # (deterministic-compositor-v0, deterministic-package-builder)
+            # are NOT LLM spend — pricing has no row for them by design.
+            # Cycle-5's full walk through §15 completed in memory and was
+            # LOST when this loop KeyError'd on the compositor's marker at
+            # the completion-path cost recording.
+            continue
         input_tokens, output_tokens = _extract_usage(run)
         cost_usd = loaded_pricing.compute_cost(
             model_id,

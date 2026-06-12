@@ -36,18 +36,32 @@ def _make_mock_response(narration: list[dict[str, Any]], deltas: list[dict[str, 
     return response
 
 
+# dp-v1.1: every scenario's deltas carry visual_references joined to the
+# grounded roster (s1/s2) — unjoined narration now raises Pass2GroundingError
+# by design (the cycle-4 confabulation kill).
+_REFS_S1 = [{"perception_source": "s1"}]
+_REFS_S2 = [{"perception_source": "s2"}]
+
+
 @pytest.mark.parametrize(
     ("scenario", "narration", "deltas"),
     [
         (
             "static-only",
             [{"slide_id": "s1", "narration": "Welcome to the lesson."}],
-            [],
+            [{"slide_id": "s1", "visual_references": _REFS_S1}],
         ),
         (
             "motion-enabled",
             [{"slide_id": "s1", "narration": "Watch how the membrane reshapes."}],
-            [{"slide_id": "s1", "motion_type": "kira_video", "motion_duration_seconds": 8.0}],
+            [
+                {
+                    "slide_id": "s1",
+                    "motion_type": "kira_video",
+                    "motion_duration_seconds": 8.0,
+                    "visual_references": _REFS_S1,
+                }
+            ],
         ),
         (
             "cluster-aware",
@@ -55,7 +69,10 @@ def _make_mock_response(narration: list[dict[str, Any]], deltas: list[dict[str, 
                 {"slide_id": "s1", "cluster_role": "head", "narration": "Three core ideas..."},
                 {"slide_id": "s2", "cluster_role": "interstitial", "narration": "First..."},
             ],
-            [],
+            [
+                {"slide_id": "s1", "visual_references": _REFS_S1},
+                {"slide_id": "s2", "visual_references": _REFS_S2},
+            ],
         ),
     ],
 )
@@ -63,9 +80,12 @@ def test_irene_act_handles_pass2_procedure_scenarios(
     scenario: str,
     narration: list[dict[str, Any]],
     deltas: list[dict[str, Any]],
+    tmp_path: Any,
 ) -> None:
     """Each scenario produces a parseable IreneReturn shape after _act."""
-    envelope = {"lesson_slug": "test", "scenario": scenario}
+    from tests.specialists.irene.conftest import make_grounded_pass2_payload
+
+    envelope = make_grounded_pass2_payload(tmp_path, lesson_slug="test", scenario=scenario)
     payload_blob = json.dumps(envelope, sort_keys=True, ensure_ascii=True, separators=(",", ":"))
     state = RunState(
         graph_version="v0.1-stub",

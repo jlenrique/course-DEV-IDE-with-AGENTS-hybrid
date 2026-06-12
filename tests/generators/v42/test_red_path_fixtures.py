@@ -7,8 +7,8 @@ from pathlib import Path
 
 import pytest
 import yaml
-from jinja2 import TemplateNotFound
 
+from scripts.generators.v42.manifest import MissingSectionTemplateError
 from scripts.generators.v42.render import render_pack
 
 ROOT = Path(__file__).resolve().parents[3]
@@ -37,7 +37,9 @@ def test_red_path_missing_section(tmp_path: Path) -> None:
     )
     mpath = tmp_path / "missing.yaml"
     mpath.write_text(yaml.safe_dump(manifest, sort_keys=False), encoding="utf-8")
-    with pytest.raises(TemplateNotFound):
+    # Renderer/L1 story 2026-06-12: the fabricate-then-TemplateNotFound late
+    # crash is retired; missing templates raise EARLY with the step named.
+    with pytest.raises(MissingSectionTemplateError, match="'99'"):
         render_pack(mpath, tmp_path / "out.md")
 
 

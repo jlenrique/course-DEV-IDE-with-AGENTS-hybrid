@@ -20,6 +20,7 @@ class _FakeAdapter:
         *,
         specialist_id: str,
         envelope: ProductionEnvelope,
+        node_id: str | None = None,
         **_,
     ) -> ProductionEnvelope:
         updated = envelope.model_copy(deep=True)
@@ -29,6 +30,7 @@ class _FakeAdapter:
                 output={"specialist_id": specialist_id},
                 model_used="gpt-5-nano",
                 cost_usd=0.0,
+                node_id=node_id,
             )
         )
         return updated
@@ -100,9 +102,12 @@ def _manifest(tmp_path: Path) -> Path:
     return path
 
 
-def test_duplicate_specialist_is_skipped_and_no_second_turn_json(
+def test_multi_node_specialist_contributes_at_each_node(
     tmp_path: Path, monkeypatch, caplog
 ) -> None:
+    # S2 (SCP 2026-06-11): the per-specialist Path-Z skip became per-node
+    # idempotency — texas at texas-1 AND texas-2 produces TWO contributions
+    # (the old rule silently skipped irene_pass1's §05/§05B jobs live).
     caplog.set_level(logging.INFO, logger=production_runner.__name__)
     monkeypatch.setenv("OPENAI_API_KEY", "sk-live-test")
     monkeypatch.setattr(production_runner, "ProductionDispatchAdapter", _FakeAdapter)
@@ -115,7 +120,7 @@ def test_duplicate_specialist_is_skipped_and_no_second_turn_json(
     run_dir.mkdir()
     (run_dir / "directive.yaml").write_text("trial: test\n", encoding="utf-8")
 
-    production_runner.run_production_trial(
+    envelope = production_runner.run_production_trial(
         CORPUS,
         "production",
         "operator_test",
@@ -125,9 +130,11 @@ def test_duplicate_specialist_is_skipped_and_no_second_turn_json(
         max_specialist_calls=2,
     )
 
+    contributions = envelope.production_envelope.contributions
+    assert [c.node_id for c in contributions] == ["texas-1", "texas-2"]
+    assert all(c.specialist_id == "texas" for c in contributions)
     turns = list((run_dir / "conversation" / "G1").glob("*.json"))
     assert len(turns) == 1
-    assert "Path Z first-contribution-wins contract" in caplog.text
 
 
 def test_chain_integrity_preserved_across_duplicate_skip(tmp_path: Path, monkeypatch) -> None:

@@ -2,9 +2,9 @@
 
 All shapes in this module are the reviewable contract downstream stories read and
 write against. Pydantic v2. Canonical-JSON serialization invariants live in
-:mod:`marcus.lesson_plan.digest`; event primitives live in
-:mod:`marcus.lesson_plan.events`; event-type registry lives in
-:mod:`marcus.lesson_plan.event_type_registry`.
+:mod:`app.marcus.lesson_plan.digest`; event primitives live in
+:mod:`app.marcus.lesson_plan.events`; event-type registry lives in
+:mod:`app.marcus.lesson_plan.event_type_registry`.
 
 Discipline notes:
     - ``PlanUnit.rationale`` is free text, stored verbatim, surfaced verbatim

@@ -27,8 +27,11 @@ class _FakeAdapter:
         dependency_map: dict[str, str],
         cost_usd: float,
         base_state=None,
+        node_id: str | None = None,
+        runner_supplied_payload: dict | None = None,
+        projection_map: dict | None = None,
     ) -> ProductionEnvelope:
-        del base_state
+        del base_state, runner_supplied_payload, projection_map
         input_payload: dict[str, object] = {}
         for input_key, upstream_id in dependency_map.items():
             contribution = envelope.get_contribution(upstream_id)
@@ -54,6 +57,7 @@ class _FakeAdapter:
                 },
                 model_used="gpt-5-nano",
                 cost_usd=cost_usd,
+                node_id=node_id,
             )
         )
         return updated

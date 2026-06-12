@@ -11,6 +11,13 @@ ALLOWED_LIVE_DISPATCH_FILES = {
     "detect_tw_7c_4_live_dispatch_scope_creep.py",
     "run_cache_hit_harness.py",
     "run_5_api_smoke.py",
+    # Epic 34 Story 34-1 dispatch unblock 2026-05-22: the audit test file name
+    # itself contains the "live_dispatch" substring (as "no_live_dispatch"),
+    # which the substring-scan flagged as scope creep. The file IS the audit
+    # surface for TW-7c-4 — its presence is BY DESIGN, not scope creep.
+    # Pre-existing detector defect surfaced when Codex T1 hard checkpoint
+    # ran the FULL audit suite at dispatch start; minor fix to unblock Epic 34.
+    "test_audit_tw_7c_4_no_live_dispatch_scope_creep.py",
 }
 SCANNED_PREFIXES = ("app/specialists/", "app/gates/")
 

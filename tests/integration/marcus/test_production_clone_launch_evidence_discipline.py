@@ -19,6 +19,7 @@ class _FakeAdapter:
         dependency_map: dict[str, str],
         cost_usd: float,
         base_state=None,
+        node_id: str | None = None,
     ) -> ProductionEnvelope:
         del dependency_map, base_state
         updated = envelope.model_copy(deep=True)
@@ -28,6 +29,7 @@ class _FakeAdapter:
                 output={"specialist_id": specialist_id},
                 model_used="gpt-5-nano",
                 cost_usd=cost_usd,
+                node_id=node_id,
             )
         )
         return updated

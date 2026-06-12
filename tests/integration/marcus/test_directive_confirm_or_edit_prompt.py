@@ -155,6 +155,28 @@ def test_non_interactive_with_auto_confirm_returns_confirmed(
     assert verdict == "confirmed"
 
 
+def test_auto_confirm_honored_even_when_isatty_claims_tty(
+    composed_directive_path: Path,
+) -> None:
+    """Trial-3 cycle-3 launch fix (2026-06-12): the flag is explicit operator
+    consent and must short-circuit the prompt UNCONDITIONALLY. Windows NUL is
+    a character device, so isatty() lies under `< /dev/null` — two live
+    launches died on EOFError at the G0 prompt before this pin."""
+
+    def _explode(_prompt: str) -> str:
+        raise AssertionError("prompt must not be shown when auto-confirm is set")
+
+    verdict = _confirm_or_edit_directive(
+        directive_path=composed_directive_path,
+        auto_confirm_directive=True,
+        input_fn=_explode,
+        edit_fn=MagicMock(),
+        isatty_fn=lambda: True,  # the lying-NUL case
+        print_fn=lambda _msg: None,
+    )
+    assert verdict == "confirmed"
+
+
 def test_resolve_editor_prefers_env(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setenv("EDITOR", "emacs")
     assert _resolve_editor() == "emacs"
@@ -173,6 +195,9 @@ def test_resolve_editor_posix_fallback(
 ) -> None:
     monkeypatch.delenv("EDITOR", raising=False)
     monkeypatch.setattr("sys.platform", "linux")
+    # vi is not on PATH on a Windows dev box; the test pins fallback
+    # RESOLUTION, not PATH presence (same idiom as the sibling P6 tests).
+    monkeypatch.setattr("shutil.which", lambda _name: "/usr/bin/vi")
     assert _resolve_editor() == "vi"
 
 
@@ -253,6 +278,24 @@ def test_cancel_path_writes_cancellation_record_and_exits_2(
     monkeypatch.setattr("os.environ", {"OPENAI_API_KEY": "sk-fake",
                                         "LANGSMITH_API_KEY": "lsv2",
                                         "LANGSMITH_PROJECT": "test"})
+
+    # The §02A composer is LLM-driven (post-7c §02A); a real call with the
+    # sk-fake sentinel 401s. This test pins the G0 CANCELLATION contract,
+    # not composition — stub the composer at the trial-CLI seam.
+    def _stub_compose_and_write(
+        corpus_dir: Path, run_dir: Path, *, run_id: Any, llm: Any = None
+    ) -> tuple[Path, str]:
+        run_dir.mkdir(parents=True, exist_ok=True)
+        path = run_dir / "directive.yaml"
+        path.write_text(
+            f"run_id: {run_id}\ncorpus_dir: {corpus_dir.as_posix()}\nsources: []\n",
+            encoding="utf-8",
+        )
+        return path, "stub-digest"
+
+    monkeypatch.setattr(
+        "app.marcus.cli.trial.compose_and_write", _stub_compose_and_write
+    )
 
     def _confirm(*, directive_path: Path, auto_confirm_directive: bool) -> str:
         raise DirectiveDeclinedError(

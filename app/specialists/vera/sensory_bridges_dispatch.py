@@ -8,6 +8,8 @@ import types
 from pathlib import Path
 from typing import Any
 
+from app.specialists.dispatch_errors import SpecialistDispatchError
+
 REPO_ROOT = Path(__file__).resolve().parents[3]
 BRIDGE_UTILS = REPO_ROOT / "skills" / "sensory-bridges" / "scripts" / "bridge_utils.py"
 
@@ -38,15 +40,33 @@ def _load_perceive_callable() -> Any:
     return module.perceive
 
 
+class SensoryBridgeDispatchError(SpecialistDispatchError):
+    """Raised when perception inputs are missing (S0 fail-loud policy)."""
+
+
 def dispatch_to_sensory_bridges(
     *,
     artifact_path: str | Path | None,
     source_of_truth_path: str | Path | None,
     modality: str,
     gate: str,
+    allow_fixture: bool = False,
 ) -> dict[str, Any]:
-    """Dispatch perception request to sensory-bridges `perceive` entrypoint."""
+    """Dispatch perception request to sensory-bridges `perceive` entrypoint.
+
+    S0 fail-loud policy (SCP 2026-06-11 segment-data-plane): a missing
+    artifact RAISES; the LOW-confidence short-circuit is reachable only via
+    explicit ``allow_fixture`` opt-in, which production dispatch never sets.
+    Vera PROCEED'd over fixture slides in Trial-3 attempt-4 because this
+    seam silently degraded instead of refusing.
+    """
     if not artifact_path:
+        if not allow_fixture:
+            raise SensoryBridgeDispatchError(
+                f"dispatch_to_sensory_bridges missing required input: "
+                f"artifact_path (gate={gate})",
+                tag="sensory.input.missing",
+            )
         return {
             "schema_version": "1.0",
             "modality": modality,
@@ -72,4 +92,4 @@ def dispatch_to_sensory_bridges(
     return perceived
 
 
-__all__ = ["dispatch_to_sensory_bridges"]
+__all__ = ["SensoryBridgeDispatchError", "dispatch_to_sensory_bridges"]

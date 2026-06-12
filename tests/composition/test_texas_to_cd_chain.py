@@ -1,9 +1,11 @@
 from __future__ import annotations
 
+import hashlib
 from pathlib import Path
 from uuid import UUID
 
 import pytest
+import yaml
 
 from tests.composition.composed_specialist_chain_harness import (
     ComposedSpecialistChainHarness,
@@ -11,6 +13,39 @@ from tests.composition.composed_specialist_chain_harness import (
 )
 
 TRIAL_ID = UUID("12345678-1234-4234-8234-123456789abc")
+
+
+def _write_current_directive(
+    *,
+    corpus: Path,
+    run_dir: Path,
+    trial_id: UUID,
+) -> tuple[Path, str]:
+    payload = {
+        "run_id": str(trial_id),
+        "sources": [
+            {
+                "ref_id": "src-001",
+                "provider": "local_file",
+                "locator": (corpus / "intro.md").resolve().as_posix(),
+                "role": "primary",
+                "description": "Current Section 02A-compatible test directive",
+                "expected_min_words": 1,
+            },
+            {
+                "ref_id": "src-002",
+                "provider": "local_file",
+                "locator": (corpus / "chapter-1.md").resolve().as_posix(),
+                "role": "supporting",
+                "description": "Current Section 02A-compatible support source",
+                "expected_min_words": 1,
+            },
+        ],
+    }
+    run_dir.mkdir(parents=True, exist_ok=True)
+    directive_path = run_dir / "directive.yaml"
+    directive_path.write_text(yaml.safe_dump(payload, sort_keys=False), encoding="utf-8")
+    return directive_path, hashlib.sha256(directive_path.read_bytes()).hexdigest()
 
 
 @pytest.mark.parametrize("trial_id", [TRIAL_ID])
@@ -36,20 +71,15 @@ def test_texas_to_cd_chain_accumulates_envelope_and_threads_dependency(
     assert harness.adapter.last_interrupts
 
 
-def test_texas_to_cd_chain_with_composer_driven_directive(
+def test_texas_to_cd_chain_with_current_directive_fixture(
     monkeypatch: pytest.MonkeyPatch,
     tmp_path: Path,
 ) -> None:
-    """M-R4 BINDING (Story 7a.1): composer-driven directive path threads through
+    """A current-shape directive path threads through
     the same Texas → CD envelope-append + dependency-threading invariants as
     the fixture-stub path. Pinned in the existing dispatch-path-driven envelope
     assertion site per Codex P2 review.
     """
-    from app.marcus.orchestrator.directive_composer import (
-        compose_directive,
-        materialize_directive,
-    )
-
     trial_id = UUID("87654321-4321-4321-8321-cba987654321")
 
     monkeypatch.setattr("app.specialists.texas.graph.make_chat_model", fake_make_chat_model)
@@ -60,9 +90,12 @@ def test_texas_to_cd_chain_with_composer_driven_directive(
     corpus.mkdir()
     (corpus / "intro.md").write_text("body", encoding="utf-8")
     (corpus / "chapter-1.md").write_text("body", encoding="utf-8")
-    composed = compose_directive(corpus_path=corpus, run_id=str(trial_id))
     run_dir = tmp_path / str(trial_id)
-    directive_path, directive_digest = materialize_directive(composed, run_dir)
+    directive_path, directive_digest = _write_current_directive(
+        corpus=corpus,
+        run_dir=run_dir,
+        trial_id=trial_id,
+    )
     # Point bundle_dir at the existing 6-artifact fixture bundle so Texas's
     # `_load_bundle_outputs` finds parseable artifacts (M-R5: monkeypatching
     # only `dispatch_retrieval` leaves Texas's bundle-read in place).

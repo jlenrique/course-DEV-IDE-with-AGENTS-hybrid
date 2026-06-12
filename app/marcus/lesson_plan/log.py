@@ -10,7 +10,7 @@ Literal closed set, the single-writer matrix (`WRITER_EVENT_MATRIX`), the
 Amendments surfaced here:
 
 * **R1 ruling amendment 8** — six named mandatory events (aliased from
-  :data:`marcus.lesson_plan.event_type_registry.RESERVED_LOG_EVENT_TYPES`).
+  :data:`app.marcus.lesson_plan.event_type_registry.RESERVED_LOG_EVENT_TYPES`).
 * **R1 ruling amendment 13** — Marcus-Orchestrator is the SOLE writer for
   five of six event_types; `pre_packet_snapshot` is the single Intake-
   permitted row (enforced by `WRITER_EVENT_MATRIX` + runtime matrix check
@@ -58,7 +58,7 @@ Log lifecycle contract (G6 MF-EC-2):
     MUST consult :meth:`LessonPlanLog.latest_plan_revision` to compute the
     next revision (``latest + 1``). Re-using a prior revision number
     (including ``plan_revision=1`` against a non-empty log) raises
-    :class:`marcus.lesson_plan.schema.StaleRevisionError`. This is the
+    :class:`app.marcus.lesson_plan.schema.StaleRevisionError`. This is the
     strict-monotonic pin per §6-B2; idempotent-relock is out-of-scope.
 
 Out-of-scope (AC-C.7):
@@ -99,7 +99,7 @@ def _find_project_root() -> Path:
 
     Returns the first ancestor containing either ``pyproject.toml`` or a
     ``.git/`` directory. Falls back to the module's grandparent directory
-    (``marcus/lesson_plan/`` → repo root) if no marker is found.
+    (``app/marcus/lesson_plan/`` → repo root) if no marker is found.
 
     Pinned at module import time to keep :data:`LOG_PATH` cwd-independent
     across interpreters launched from arbitrary working directories.
@@ -108,7 +108,7 @@ def _find_project_root() -> Path:
     for candidate in [here, *here.parents]:
         if (candidate / "pyproject.toml").exists() or (candidate / ".git").exists():
             return candidate
-    # Fallback: marcus/lesson_plan/log.py → marcus/lesson_plan/ → marcus/ → repo
+    # Fallback: app/marcus/lesson_plan/log.py → app/marcus/lesson_plan/ → marcus/ → repo
     return Path(__file__).resolve().parent.parent.parent
 
 
@@ -146,7 +146,7 @@ NAMED_MANDATORY_EVENTS: frozenset[str] = RESERVED_LOG_EVENT_TYPES
 
 Single source of truth, two naming surfaces: 31-1 registered the six named
 mandatory event_types in
-:data:`marcus.lesson_plan.event_type_registry.RESERVED_LOG_EVENT_TYPES`; 31-2
+:data:`app.marcus.lesson_plan.event_type_registry.RESERVED_LOG_EVENT_TYPES`; 31-2
 aliases them here to keep the write-path readable. AC-T.7 asserts set
 equality; M-3 asserts immutability via the underlying frozenset type.
 """
@@ -162,7 +162,7 @@ _WRITER_EVENT_MATRIX_UNDERLYING: dict[str, frozenset[WriterIdentity]] = {
     # Story 29-1 — fit-report emissions are Marcus-Orchestrator-only.
     # Irene (29-2) produces FitReport instances and hands them to Marcus via
     # the orchestration seam; Irene MUST NOT emit directly. See
-    # marcus/lesson_plan/fit_report.py docstring for the canonical-caller
+    # app/marcus/lesson_plan/fit_report.py docstring for the canonical-caller
     # invariant (AC-B.5.1).
     "fit_report.emitted": frozenset({"marcus-orchestrator"}),
     # Registered by 30-3b retroactively (G6-Opus party-mode 2026-04-19 follow-on):
@@ -225,10 +225,10 @@ PRE_PACKET_SNAPSHOT_EVENT_TYPE: Final[str] = EVENT_PRE_PACKET_SNAPSHOT
 Callers constructing a :class:`EventEnvelope` or gating an event_type in
 :mod:`marcus.orchestrator.write_api` MUST reference this constant rather
 than hard-coding the literal. Pattern precedent: 29-1's
-:data:`marcus.lesson_plan.fit_report.FIT_REPORT_EMITTED_EVENT_TYPE`.
+:data:`app.marcus.lesson_plan.fit_report.FIT_REPORT_EMITTED_EVENT_TYPE`.
 
 **Single source of truth:** value is re-exported from
-:data:`marcus.lesson_plan.event_type_registry.EVENT_PRE_PACKET_SNAPSHOT`
+:data:`app.marcus.lesson_plan.event_type_registry.EVENT_PRE_PACKET_SNAPSHOT`
 (party-mode 2026-04-19 consolidation closing 30-1 G6-D2 cross-story slip).
 The registry is the canonical home for log event-type literals; this module
 binds the same value for callers already importing from ``log``.

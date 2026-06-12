@@ -16,6 +16,27 @@ TRIAL_ID = UUID("12345678-1234-4234-8234-123456789abc")
 CORPUS = Path("tests/fixtures/trial_corpus/README.md")
 
 
+# Minimal REAL-shaped upstream outputs: since S3 the resume walk executes
+# the §06 package builder, which fail-louds (correctly) if irene_pass1/cd
+# contributions are absent or shapeless. The pause-machinery tests need a
+# valid data plane to walk through, not just any contributions.
+_REAL_SHAPED_OUTPUTS: dict[str, dict] = {
+    "irene_pass1": {
+        "lesson_plan": {
+            "plan_units": [
+                {
+                    "unit_id": "PU-1",
+                    "title": "Unit",
+                    "learning_objective": "Objective",
+                    "scope_decision": "in-scope",
+                }
+            ]
+        }
+    },
+    "cd": {"cd_directive": {"experience_profile": "text-led"}},
+}
+
+
 class _FakeAdapter:
     def invoke_specialist(
         self,
@@ -25,15 +46,21 @@ class _FakeAdapter:
         dependency_map: dict[str, str],
         cost_usd: float,
         base_state=None,
+        node_id: str | None = None,
+        runner_supplied_payload: dict | None = None,
+        projection_map: dict | None = None,
     ) -> ProductionEnvelope:
-        del dependency_map, base_state
+        del dependency_map, base_state, runner_supplied_payload, projection_map
         updated = envelope.model_copy(deep=True)
         updated.add_contribution(
             SpecialistContribution.from_output(
                 specialist_id=specialist_id,
-                output={"specialist_id": specialist_id},
+                output=_REAL_SHAPED_OUTPUTS.get(
+                    specialist_id, {"specialist_id": specialist_id}
+                ),
                 model_used="gpt-5-nano",
                 cost_usd=cost_usd,
+                node_id=node_id,
             )
         )
         return updated
@@ -55,6 +82,11 @@ def _pause(tmp_path: Path, monkeypatch):
         "operator_test",
         trial_id=TRIAL_ID,
         runs_root=tmp_path,
+        # Open throttle: with the default cap of 1, the resume walk reaches
+        # the §06 builder without a cd contribution and fail-louds (the
+        # finding-#8 starvation class made visible by S3 — correct behavior,
+        # wrong fixture for testing pause machinery).
+        max_specialist_calls=12,
     )
 
 
@@ -71,43 +103,193 @@ def _verdict(tmp_path: Path, verb: str, **overrides) -> OperatorVerdict:
     )
 
 
-def test_approve_verdict_resumes_execution_then_refuses_silent_bypass_at_g2c(
+def test_starved_resume_fails_loud_at_06_builder(tmp_path: Path, monkeypatch) -> None:
+    """Finding-#8 made flesh, permanently pinned (Murat + Amelia MUST-FIX,
+    party review 2026-06-12): a cap-starved resume that reaches §06 without
+    the cd contribution refuses with the specific tagged raise — observed
+    live during S3, frozen here so no refactor re-feeds the path silently."""
+    from app.marcus.orchestrator.package_builders import BuilderInputError
+
+    _pause(tmp_path, monkeypatch)
+    with pytest.raises(BuilderInputError) as excinfo:
+        production_runner.resume_production_trial(
+            trial_id=TRIAL_ID,
+            verdict=_verdict(tmp_path, "approve"),
+            runs_root=tmp_path,
+            max_specialist_calls=1,
+        )
+    assert excinfo.value.tag == "builder.gary.upstream-missing"
+
+
+def test_approve_verdict_resumes_execution_then_pauses_at_g2c(
     tmp_path: Path, monkeypatch
 ) -> None:
-    """After Story 7a.2, the live manifest declares G2C as the next active gate
-    after G1. Resume after G1 verdict correctly executes specialist nodes, then
-    hits G2C without a verdict → raises GateBypassError per FR-A23 (no silent
-    bypass of active gates).
+    """Resume after G1 verdict executes specialist nodes, then PAUSES at G2C.
 
-    Multi-gate pause-and-resume (G1 → operator verdict → resume → pause-at-G2C
-    → operator verdict → resume → ...) is a substrate evolution beyond 7a.2
-    scope; tracked as a follow-on (file at deferred-inventory under
-    `7a-2-deferred-resume-mode-multi-gate-pause`).
+    Multi-gate pause-and-resume was the `7a-2-deferred-resume-mode-multi-gate-
+    pause` follow-on this test's predecessor documented; implemented 2026-06-11
+    (Trial-3 attempt-3 defect #5, party-mode 4-of-4 Option-A consensus). The
+    former GateBypassError raise is deliberately converted to the shared
+    `_pause_at_gate` pause — silent bypass remains impossible because an
+    undecided gate pauses with a registered DecisionCard, and decided gates
+    are never revisited (resume starts at checkpoint.next_node_index).
     """
     _pause(tmp_path, monkeypatch)
 
-    with pytest.raises(production_runner.GateBypassError, match="G2C"):
+    envelope = production_runner.resume_production_trial(
+        trial_id=TRIAL_ID,
+        verdict=_verdict(tmp_path, "approve"),
+        runs_root=tmp_path,
+    )
+
+    assert envelope.status == "paused-at-gate"
+    assert envelope.paused_gate == "G2C"
+    card_payload = json.loads(
+        (tmp_path / str(TRIAL_ID) / "decision-card-G2C.json").read_text()
+    )
+    assert card_payload["card"]["gate_id"] == "G2C"
+    assert len(card_payload["digest"]) == 64
+
+
+def test_g2c_pause_invokes_online_storyboard_publisher(
+    tmp_path: Path, monkeypatch, storyboard_publish_calls
+) -> None:
+    """S5 criterion 7 wiring pin (operator-ratified 2026-06-12): the live
+    G2C pause publishes the ONLINE storyboard BEFORE issuing the decision
+    card — the review surface is part of reaching the gate."""
+    _pause(tmp_path, monkeypatch)
+    production_runner.resume_production_trial(
+        trial_id=TRIAL_ID,
+        verdict=_verdict(tmp_path, "approve"),
+        runs_root=tmp_path,
+    )
+    gate_ids = [call["gate_id"] for call in storyboard_publish_calls]
+    assert "G2C" in gate_ids
+    g2c_call = next(c for c in storyboard_publish_calls if c["gate_id"] == "G2C")
+    assert g2c_call["trial_id"] == str(TRIAL_ID)
+
+
+def test_content_error_pauses_recoverably_and_persists_progress(
+    tmp_path: Path, monkeypatch
+) -> None:
+    """PIN-AUD-3P (audio-arc 2026-06-12): cycle-5's CoverageGapError was a
+    bare ValueError — process CRASH, nodes 10-12 progress lost. Re-based to
+    the dispatch family, a content error now (a) error-pauses instead of
+    crashing, (b) PERSISTS the contributions completed before the failure,
+    and (c) `trial recover` re-enters at the failed node and continues."""
+    from app.specialists.quinn_r.quality_control_dispatch import CoverageGapError
+
+    failing = {"on": True}
+
+    class _ContentErrorAdapter(_FakeAdapter):
+        def invoke_specialist(self, *, specialist_id: str, **kwargs):
+            if specialist_id == "gary" and failing["on"]:
+                raise CoverageGapError("missing narration coverage: ['s9']")
+            return super().invoke_specialist(specialist_id=specialist_id, **kwargs)
+
+    monkeypatch.setenv("OPENAI_API_KEY", "sk-test")
+    monkeypatch.setattr(
+        production_runner, "ProductionDispatchAdapter", _ContentErrorAdapter
+    )
+    production_runner.run_production_trial(
+        CORPUS,
+        "production",
+        "operator_test",
+        trial_id=TRIAL_ID,
+        runs_root=tmp_path,
+        max_specialist_calls=12,
+    )
+    envelope = production_runner.resume_production_trial(
+        trial_id=TRIAL_ID,
+        verdict=_verdict(tmp_path, "approve"),
+        runs_root=tmp_path,
+    )
+    assert envelope.status == "paused-at-error"
+    assert envelope.paused_error_tag == "quinn_r.g5.coverage-gap"
+    persisted = {
+        c.node_id for c in envelope.production_envelope.contributions
+    }
+    assert {"04A", "4.75", "05", "05B", "06"}.issubset(persisted), (
+        "progress completed before the content error was lost — the "
+        "cycle-5 crash class"
+    )
+    failing["on"] = False
+    recovered = production_runner.recover_production_trial(
+        trial_id=TRIAL_ID, runs_root=tmp_path
+    )
+    assert recovered.status == "paused-at-gate"
+    assert recovered.paused_gate == "G2C"
+
+
+def test_broken_brief_fails_the_gate_not_quality_theater(
+    tmp_path: Path, monkeypatch, storyboard_publish_calls
+) -> None:
+    """S5 criterion 5 (negative test, party consensus 2026-06-12 — Murat/John):
+    a BROKEN brief upstream of the storyboard gate makes the run FAIL with a
+    typed raise; it must never pause at G2C for approval over hollow content,
+    and the online storyboard must never publish. The fixture corrupts the
+    lesson plan to the shape the §06 builder refuses (plan_units empty)."""
+    from app.marcus.orchestrator.package_builders import BuilderInputError
+
+    class _BrokenBriefAdapter(_FakeAdapter):
+        def invoke_specialist(self, *, specialist_id: str, **kwargs):
+            if specialist_id == "irene_pass1":
+                envelope = kwargs["envelope"].model_copy(deep=True)
+                envelope.add_contribution(
+                    SpecialistContribution.from_output(
+                        specialist_id=specialist_id,
+                        output={"lesson_plan": {"plan_units": []}},
+                        model_used="gpt-5-nano",
+                        cost_usd=kwargs["cost_usd"],
+                        node_id=kwargs.get("node_id"),
+                    )
+                )
+                return envelope
+            return super().invoke_specialist(specialist_id=specialist_id, **kwargs)
+
+    monkeypatch.setenv("OPENAI_API_KEY", "sk-test")
+    monkeypatch.setattr(production_runner, "ProductionDispatchAdapter", _FakeAdapter)
+    production_runner.run_production_trial(
+        CORPUS,
+        "production",
+        "operator_test",
+        trial_id=TRIAL_ID,
+        runs_root=tmp_path,
+        max_specialist_calls=12,
+    )
+    monkeypatch.setattr(
+        production_runner, "ProductionDispatchAdapter", _BrokenBriefAdapter
+    )
+    with pytest.raises(BuilderInputError) as excinfo:
         production_runner.resume_production_trial(
             trial_id=TRIAL_ID,
             verdict=_verdict(tmp_path, "approve"),
             runs_root=tmp_path,
         )
+    assert excinfo.value.tag == "builder.gary.lesson-plan-shape"
+    assert not (tmp_path / str(TRIAL_ID) / "decision-card-G2C.json").exists(), (
+        "gate opened over a broken brief — the attempt-4 quality-theater class"
+    )
+    assert all(c["gate_id"] != "G2C" for c in storyboard_publish_calls), (
+        "storyboard published for a run that never legitimately reached G2C"
+    )
 
 
 def test_edit_verdict_propagates_to_resume_state(tmp_path: Path, monkeypatch) -> None:
-    """Edit verdict's payload reaches resume state; subsequent G2C bypass refused
-    per FR-A23. The state mutation is verified via the resume-command.json
-    artifact written before the GateBypassError raise."""
+    """Edit verdict's payload reaches resume state; the resume then pauses at
+    G2C (multi-gate pause implemented 2026-06-11). The state mutation is
+    verified via the resume-command.json artifact."""
     _pause(tmp_path, monkeypatch)
     edit_payload = {"slide_count": 3}
 
-    with pytest.raises(production_runner.GateBypassError, match="G2C"):
-        production_runner.resume_production_trial(
-            trial_id=TRIAL_ID,
-            verdict=_verdict(tmp_path, "edit", edit_payload=edit_payload),
-            runs_root=tmp_path,
-        )
+    envelope = production_runner.resume_production_trial(
+        trial_id=TRIAL_ID,
+        verdict=_verdict(tmp_path, "edit", edit_payload=edit_payload),
+        runs_root=tmp_path,
+    )
 
+    assert envelope.status == "paused-at-gate"
+    assert envelope.paused_gate == "G2C"
     command = json.loads((tmp_path / str(TRIAL_ID) / "resume-command.json").read_text())
     assert json.loads(command["run_state"]["cache_state"]["cache_prefix"]) == edit_payload
 

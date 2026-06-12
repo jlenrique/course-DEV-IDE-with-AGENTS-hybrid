@@ -22,10 +22,14 @@ def _composition_spec_text() -> str:
 
 
 def test_section_3_1_envelope_append_only_and_sha256_invariant() -> None:
+    # Doc-phrase pins follow the v2 as-built rewrite (drift micro-batch
+    # 2026-06-12): per-node keying replaced the v1 append-only-per-specialist
+    # invariant; the SHA256 digest invariant is unchanged.
     text = _composition_spec_text()
 
     assert "### 3.1 The accumulator: `ProductionEnvelope`" in text
-    assert "Append-only within a trial" in text
+    assert "per (specialist_id, node_id)" in text
+    assert "retry-overwrite" in text
     assert "SHA256 of canonical-JSON-serialized output" in text
     assert "add_contribution" in ProductionEnvelope.__dict__
     assert (

@@ -2,293 +2,209 @@
 
 Companion to `bmad-session-protocol-session-START.md`. Together these two files guarantee reliable context transfer between sessions.
 
-### Context transfer contract
+## Context transfer contract
 
 The startup protocol **reads** certain files; the wrapup protocol **writes** them. Every read must have a corresponding write, or context is lost.
 
 | File | Startup reads | Wrapup writes | Role |
 |------|:---:|:---:|------|
-| `next-session-start-here.md` | Step 1 | Draft 0c, finalize 7 | **Forward-looking hot-start** — next actions, branch, risks, gotchas |
-| `docs/project-context.md` | Step 1 | Step 5 | Current state, key decisions, architecture summary |
-| `docs/agent-environment.md` | Step 1 | Step 5 | MCP/API/tool/skill inventory for agents |
-| `bmm-workflow-status.yaml` | Step 5 | Step 3 | BMAD phase and workflow transitions |
-| `sprint-status.yaml` | Step 5 | Step 4a | Epic/story Kanban state |
-| `SESSION-HANDOFF.md` | — | Draft 0c, finalize 8 | **Backward-looking record** — lessons, decisions, validation (permanent archive; startup does not read) |
-| Guides (user/admin/dev) | Step 5 on-demand | Step 9a | Large stable docs — updated only when content changes |
-| `reports/dev-coherence/<ts>/` | — | Step 0a | **Audit trail** — Audra L1/L2 evidence files; linked from SESSION-HANDOFF for permanent reference |
+| `SESSION-HANDOFF.md` | Always (canonical) | Step 8 | **Cross-machine canonical record** — tracked. Survives across clones. Lessons, decisions, validation, permanent archive. |
+| `next-session-start-here.md` | If present (per-clone cache) | Step 7 | **Local hot-start cache** — gitignored per hybrid-clone policy. Action-oriented. If absent on a fresh clone, reconstruct from SESSION-HANDOFF.md + recent commits. |
+| `docs/ONBOARDING.md` | Once per fresh agent context | Step 9 if regenerated | **Architectural mental model** — knowledge-graph-derived structural ramp. |
+| `docs/project-context.md` | Step 1 | Step 5 | Current state, key decisions, architecture summary. |
+| `docs/agent-environment.md` | Step 1 | Step 5 | MCP / API / tool / skill inventory for agents. |
+| `bmm-workflow-status.yaml` | Step 4 | Step 3 | BMAD phase and workflow transitions. |
+| `sprint-status.yaml` | Step 4 | Step 4a | Epic / story Kanban state. |
+| Guides (user/admin/dev) | Step 4 on-demand | Step 9 | Large stable docs — updated only when content changes. |
+| `reports/dev-coherence/<ts>/` | — | Step 0 (Class S only) | Audit trail for Cora-orchestrated sweeps. |
 
-> **Key principle:** `next-session-start-here.md` is the sole ramp-up document for the next session. Any risk, blocker, or unresolved issue from the current session — including every deferred Audra finding from Step 0a and every pre-closure gap acknowledged-but-not-remediated in Step 0b — MUST be surfaced there (Step 7), not only in SESSION-HANDOFF. SESSION-HANDOFF is the permanent record; next-session-start-here is the action trigger.
+> **Key principle:** `SESSION-HANDOFF.md` is the cross-machine source-of-truth (tracked). `next-session-start-here.md` is the local hot-start cache (gitignored). Every risk, blocker, or unresolved finding MUST appear in SESSION-HANDOFF.md (Step 8); next-session-start-here.md mirrors what's needed for the fastest next-session ramp.
+
+---
+
+## Session class — declare at WRAPUP open
+
+Before running the steps below, name the session class. This determines which steps engage. Light sessions are a legitimate work shape the protocol explicitly supports — not a failure mode to apologize for.
+
+| Class | Pattern | Steps engaged |
+|---|---|---|
+| **S — Substrate** | Story/epic dispatch; schema, pipeline-manifest, runtime, or test edits; content production | **All 13 steps.** Cora orchestrates Step 0. |
+| **D — Docs / Tooling** | Markdown-only edits, lint refactors, knowledge-graph refresh, tool/plugin install, session-meta edits | **Minimum-viable: Steps 1, 7, 8, 12.** All others default-SKIP with one-line rationale in Step 8. |
+| **P — Planning** | PRD, architecture, epics/stories authoring; party-mode rounds; retrospectives | **Steps 1, 2, 7, 8, 12.** Step 0 only if invariant files touched (pipeline-manifest, structural-walk, governance JSON, schemas). |
+
+**Upgrade-only rule:** A session that opens as Class D or P but touches a substrate file mid-session UPGRADES to Class S. Once upgraded, downgrade is forbidden — the full ceremony engages. A session that opens as Class S stays as Class S.
+
+**Class-drift self-check (Step 11):** WRAPUP verifies the declared class matches the actual diff. If the diff contains files outside the class envelope, upgrade and re-engage the missed steps before close.
+
+### How session class is communicated
+
+Three handoff points, in order:
+
+1. **Forecast** — This WRAPUP's Step 7 writes the **expected class for the next session** at the top of `next-session-start-here.md` (one line: `**Expected class for next session:** <S|D|P> — <one-line reason tied to the immediate next action>`). The forecast is informed by the next session's stated immediate-next-action.
+2. **Confirm at open** — At session open, the next session's agent reads the forecast and announces the operating class to the operator (e.g., "Opening as Class D per next-session-start-here.md forecast and your stated objective"). The operator confirms or overrides in plain text. If `next-session-start-here.md` is missing (fresh clone), the agent infers class from SESSION-HANDOFF.md's last session-close section header and the user's stated objective, then announces for confirmation the same way.
+3. **Verify at close** — This WRAPUP's Step 11 runs the class-drift self-check; Step 8 records this session's **final class** (after any mid-session upgrade) in the SESSION-HANDOFF.md section header (one line: `**Final class:** <S|D|P>` with a note if the class drifted upward from the open).
 
 ---
 
 ## Steps
 
-Execute these steps in order before ending a session.
+### 0. Pre-wrapup coherence (Class S only)
 
-### 0. Pre-wrapup coherence and closure (Cora-orchestrated)
+**Skip if Class D or P** (unless Class P touched invariant files).
 
-Run this block **before** the quality gate and artifact updates so that Steps 1-13 operate against an already-harmonized, already-audited repo. Cora orchestrates; Audra does the deterministic judgment. All findings are warn-mode — nothing blocks, but unremediated findings must be surfaced in Step 7.
+For Class S sessions, ask Cora to run her Session-WRAPUP (SW) protocol:
 
-**Scope — session-work change window.** Unless a tripwire escalates (see below), Step 0a runs against the union of:
-- Committed changes since the session-start anchor: `git diff --name-only <session-start-anchor>..HEAD`
-- Uncommitted modifications: `git diff --name-only HEAD`
-- Untracked files: `git ls-files --others --exclude-standard`
+- **0a Harmonization sweep:** `/harmonize` with scope `since-handoff` (default) or `full-repo` (on tripwire or operator request). Cora invokes Audra L1 deterministic + L2 agentic sweeps; report home at `reports/dev-coherence/YYYY-MM-DD-HHMM/`.
+- **0b Pre-closure audit** for any story flipping to `done` this session. Cora invokes Audra's closure-artifact audit; evidence at `{report_home}/evidence/ca-<story_id>.md`.
+- **0c Hot-start drafts:** Cora reads git log since the session-start anchor and drafts the hot-start pair (Steps 7 + 8) for operator review.
 
-The session-start anchor is the commit that last modified `SESSION-HANDOFF.md`, resolved via `git log -1 --format=%H -- SESSION-HANDOFF.md`. It marks the last moment the prior session certified the repo as closed-out. Whole-repo invariant checks (parameter-directory <-> schema lockstep, gate-contract lockstep, lane-matrix coverage) run every time regardless of change window.
+Outcomes for 0a/0b: remediate, queue for next session (record in Step 7), or proceed-with-acknowledged-gap (record in Step 8). L2 does not run until L1 is clean.
 
-**Mode — soft-conditional.** Each sub-step below can be skipped when its precondition is not met (e.g., no doc changes in the window, no stories flipping to `done`). When a sub-step is skipped, Cora appends to her `chronology.md`: `YYYY-MM-DD HH:MM — Step 0<x> skipped: <reason>`. This preserves the audit trail.
-
-**Tripwire — drift escalation.** Before running Step 0a, Cora reads her `chronology.md` and checks the most recent wrapup entry. If that wrapup recorded a skipped 0a, the current session's 0a auto-promotes to **full-repo scope** rather than the default change-window scope. One skip is absorbed by the next session; two consecutive skips force a full sweep. This closes the drift-accumulation gap that soft-conditional would otherwise open.
-
-#### 0a. Harmonization sweep
-
-Ask Cora to run `/harmonize` with scope `since-handoff` (default) or `full-repo` (if the tripwire fires, or on operator request). Cora creates a report home at `reports/dev-coherence/YYYY-MM-DD-HHMM/`, invokes Audra's L1 deterministic sweep against the resolved scope, and — if L1 exits clean — invokes Audra's L2 agentic sweep on the changed-docs subset.
-
-Outcomes:
-- **L1 + L2 both clean** -> proceed to Step 0b.
-- **L1 findings** -> Cora relays findings to the operator with the choice: remediate now, queue for next session (findings recorded as outstanding in Step 7), or consciously defer (note recorded in Step 8). L2 does not run until L1 is clean.
-- **L1 clean, L2 findings** -> same three-choice prompt; if remediation exceeds paragraph scope, Cora offers to route to Paige.
-
-Skip condition: change window is empty and no whole-repo invariant has a pending known-drift flag. Log the skip reason.
-
-#### 0b. Pre-closure audit for stories flipping to `done`
-
-For each story the operator intends to flip from an in-progress state to `done` in `sprint-status.yaml` this session, ask Cora to run `/preclosure {story_id}`. Cora invokes Audra's closure-artifact audit (AC satisfied, automated verification logged, layered review present, remediated review record present) and writes evidence to `{report_home}/evidence/ca-<story_id>.md`.
-
-Outcomes:
-- **All four artifacts present** -> operator proceeds with the flip in Step 4a.
-- **Any gap** -> Cora relays in warn-mode with the standard three-choice prompt (remediate, defer with note, flip anyway with explicit risk acknowledgement). Cora never writes `sprint-status.yaml` herself — the operator owns that write in Step 4a.
-
-Skip condition: no stories are being flipped to `done` this session. Log the skip.
-
-#### 0c. Cora SW — draft the hot-start pair
-
-Ask Cora to run her Session-WRAPUP (SW) protocol. Cora reads git log since the session-start anchor, drafts `SESSION-HANDOFF.md` and `next-session-start-here.md` (including all unremediated Audra findings from 0a/0b as outstanding items), shows both drafts to the operator, and writes them on approval. Cora also appends a wrapup entry to her own `chronology.md` and updates her `index.md`.
-
-Note: the files Cora writes here are *drafts*. Steps 1-9 may add artifacts (test results, guide edits, content-state changes) that need to flow into the hot-start pair. Steps 7 and 8 finalize these drafts against the post-closeout state.
-
-Skip condition: none. Step 0c runs every session. If the operator requests a lighter wrapup, Cora writes a minimal `SESSION-HANDOFF.md` and marks `next-session-start-here.md` as "operator-deferred," per Cora's own SW protocol forcing-function clause.
+**For Class D/P sessions:** record the skip in Step 8 with one-line rationale (e.g., "Class D — docs-only window; no substrate/schema/workflow files touched"). Cora's tripwire still fires per her chronology — two consecutive skips force a full sweep on the next session, even Class D.
 
 ### 1. Run quality gate
 
-Run the project's quality/hygiene checks:
-- **System development**: linter + type checker commands (e.g., `ruff check .`, `npm run lint`)
-- **Course content**: content-standards.yaml compliance check, broken link validation
-- **General**: `git diff --check` + manual review if no automation exists
+Quality / hygiene checks scoped to what was touched:
+- **System development:** linter + type checker (e.g., `ruff check .`, `lint-imports`).
+- **Course content:** content-standards.yaml compliance + broken-link validation.
+- **General fallback:** `git diff --check` + manual review.
 
-Any L1 findings from Step 0a that haven't been remediated count as quality-gate failures for this purpose — the gate is not bypassable by ignoring Audra. Fix findings before proceeding, or record them explicitly as deferred in Steps 7 and 8. If no quality mechanism exists, note this as a gap to address in a future story.
+Any L1 findings from Step 0 not remediated count as quality-gate failures — record explicitly as deferred in Steps 7 + 8 if proceeding.
 
 ### 2. Update BMAD planning and story artifacts
 
-Update canonical BMAD artifacts in `_bmad-output/` to reflect the session's work. This step covers **content artifacts only** — status YAMLs are handled separately in Steps 3 and 4a.
+**Skip if no PRD / architecture / epic / story content edits this session.**
 
-- **Planning phase**: PRD, architecture, epics/stories files in `_bmad-output/planning-artifacts/`
-- **Implementation phase**: story artifacts and task checklists in `_bmad-output/implementation-artifacts/` (excluding the two status YAMLs)
-- **Brainstorming phase**: brainstorming session files in `_bmad-output/brainstorming/`
-- **Content creation**: staging content status, review checklist updates
+Update content artifacts in `_bmad-output/`:
+- Planning: `_bmad-output/planning-artifacts/`
+- Implementation: `_bmad-output/implementation-artifacts/` (excluding the two status YAMLs in Steps 3 + 4a)
+- Brainstorming: `_bmad-output/brainstorming/`
+- Content creation: staging status + review checklists
 
 ### 3. Update workflow status
 
-Update `_bmad-output/implementation-artifacts/bmm-workflow-status.yaml` only for significant workflow phase changes or status transitions (e.g., story started, story completed, phase advanced). Do not update for minor in-session progress.
+**Skip if no phase / workflow transition this session.**
+
+Update `_bmad-output/implementation-artifacts/bmm-workflow-status.yaml` only for significant transitions (story started/completed, phase advanced). Do not update for minor in-session progress.
 
 ### 4a. Update sprint status
 
-If `sprint-status.yaml` was edited this session, run:
+**Skip if `sprint-status.yaml` was not edited this session.**
+
+Otherwise: update Epic and story Kanban state, then run:
 - `.venv\Scripts\python.exe -m pytest -q tests/test_sprint_status_yaml.py`
 
-Do not close the session with a modified sprint ledger unless that targeted regression check passes or the failure is explicitly recorded as an unresolved blocker.
+Do not close the session with a modified sprint ledger unless that targeted test passes or the failure is explicitly recorded as an unresolved blocker.
 
-Update `_bmad-output/implementation-artifacts/sprint-status.yaml` for epic and story Kanban state changes (e.g., `in-progress` -> `review` -> `done`).
+### 4b. Interaction testing
 
-### 4b. Interaction Testing: 
-Confirm presence, if appropriate at this phase of the project work, of an 'Interaction test' for a newly created agent.  The test should be modeled on the interaction test guide now available in the project. If an agent or supporting skill has been modified, ensure the corresponding interaction test is updated, if warranted.
+**Skip if no agent or supporting skill created or modified this session.**
+
+For new or modified agents/skills, confirm an Interaction test exists per the project's interaction-test guide, or update the existing one if warranted.
 
 ### 5. Update project context and agent environment
 
-Update `docs/project-context.md` only if rules, phase, or architecture changed this session. Do not update for routine implementation progress.
+**Skip if no rules / phase / architecture / MCP / API / shared-skill / tool-tier changes this session.**
 
-Update `docs/agent-environment.md` if any of the following changed this session:
-- MCP servers added, removed, or reconfigured
-- API clients added or auth patterns changed
-- Shared skills added, renamed, or retired
-- Tool tier classifications changed in the tool inventory
+- `docs/project-context.md` — update if rules, phase, or architecture changed.
+- `docs/agent-environment.md` — update if MCP servers, API clients, shared skills, or tool tier classifications changed.
 
-Both files are read at startup Step 1 — stale content here means the next session starts with wrong assumptions.
+Both files are read at startup Step 1 — stale content means the next session starts with wrong assumptions.
 
 ### 6. Update course content state
 
-**For content creation sessions**:
-- Move completed content from `course-content/staging/` to `course-content/courses/` if human-approved
-- Update content workflow status in `docs/workflow/` (and `workflows/` if your project later adds that directory)
-- Log any platform integration results or issues
+**Skip if no content creation this session.**
 
-*Skip if no content creation occurred this session.*
+- Move human-approved content from `course-content/staging/` to `course-content/courses/`.
+- Update workflow status in `docs/workflow/`.
+- Log platform integration results.
 
-### 7. Finalize next-session-start-here
+### 7. Finalize `next-session-start-here.md` (local hot-start cache)
 
-Cora drafted `next-session-start-here.md` in Step 0c. In this step, reconcile the draft against anything that changed during Steps 1-6, and confirm the file is final. Specifically verify the draft includes:
+For Class S: Cora drafted this in Step 0c — reconcile against anything added in Steps 1–6 and confirm final.
 
-- **Immediate next action** (concrete, unambiguous — the first thing the next session should do)
-- **Unresolved issues or blockers** from this session that affect the next session's work (this MUST include every L1 or L2 finding from Step 0a that was deferred rather than remediated, and every pre-closure gap from Step 0b where the operator proceeded with the flip anyway — do not bury these only in SESSION-HANDOFF)
-- Branch metadata and startup commands:
-  - `Repository baseline branch` after closeout (commonly `master`)
-  - `Next working branch` for implementation in the next session
-  - Exact checkout/create commands for the next working branch
-- Hot-start notes (key file paths, API references, gotchas discovered this session)
-- **Course content context**: staging items pending review, workflow status, platform connection notes
+For Class D/P: author or update directly.
 
-If anything added in Steps 1-6 isn't reflected in Cora's draft, ask Cora to patch the draft; don't rewrite it yourself. This file is action-oriented and forward-looking. Its purpose is to give the next session's agent the fastest possible ramp-up to productive work. It is the **sole ramp-up document** — the next session reads this file first and may not read SESSION-HANDOFF at all.
+Required content:
+- **Expected class for next session** (one line near the top): `**Expected class for next session:** <S|D|P> — <one-line reason tied to the immediate next action>`. Forecast only — the next session's agent confirms at open and the operator can override.
+- **Immediate next action** (concrete, unambiguous — the first thing the next session should do).
+- **Unresolved issues or blockers** affecting the next session — including every Audra finding deferred from Step 0a and every pre-closure gap acknowledged-but-not-remediated from Step 0b.
+- Branch metadata: baseline branch + next working branch + exact checkout/create commands.
+- Hot-start notes (key file paths, gotchas discovered this session).
+- Course-content context (staging items pending review, workflow status, platform connection notes).
 
-### 8. Finalize session handoff
+This file is gitignored — local-only. It accelerates the next session's ramp but is NOT the cross-machine source-of-truth.
 
-Cora drafted `SESSION-HANDOFF.md` in Step 0c. In this step, reconcile and confirm final. Verify the draft includes:
+### 8. Finalize `SESSION-HANDOFF.md` (cross-machine canonical record)
 
-- What was completed this session (summary, not play-by-play)
-- What is next (broader context than next-session-start-here)
-- Unresolved issues or risks (must cite Audra findings deferred from Step 0a and any pre-closure gaps acknowledged-but-not-remediated from Step 0b)
-- Key lessons learned
-- Validation summary (what was tested, how, results — include Step 0a sweep results and Step 1 quality-gate results)
-- **Content creation summary**: what content was created/reviewed, platform status, human review queue
-- Artifact update checklist (which canonical files were updated)
-- Link to the Step 0a report home under `reports/dev-coherence/YYYY-MM-DD-HHMM/`
+This file is the tracked record that survives across clones. Append a new session-close section (preserve prior sessions as archive). Required content:
+- **Section header includes the final class** for this session (one line): `**Final class:** <S|D|P>` — with a note if the class drifted upward from the session-open declaration (e.g., `**Final class:** S (upgraded from D at HH:MM when <file> was touched)`).
+- What was completed (summary, not play-by-play).
+- What is next (broader than next-session-start-here; preserves multi-session context).
+- Unresolved issues or risks (must cite Step 0a deferrals and Step 0b acknowledged gaps).
+- Key lessons learned.
+- Validation summary (Step 0 results, Step 1 quality-gate results, focused-suite results).
+- Content creation summary.
+- Artifact update checklist.
+- For Class S: link to `reports/dev-coherence/YYYY-MM-DD-HHMM/`.
 
-This file is record-oriented and backward-looking. Its purpose is to preserve context, decisions, and lessons that would otherwise be lost between sessions. The linked dev-coherence report home is the permanent audit trail for this session's coherence posture.
+If `next-session-start-here.md` is missing on a fresh clone next session, the next session's agent can reconstruct it from this file's last section + recent commit messages.
 
-### 9a. Update guides (if affected)
+### 9. Update guides, reuse patterns, structural walks, knowledge graph (consolidated)
 
-Update these only if the session changed something they document (new skill, new API client, new workflow, architecture change). Do not update for routine content creation.
-
-- `docs/user-guide.md` — user-facing workflows, Marcus interactions, content organization
-- `docs/admin-guide.md` — credentials, MCP config, environment setup, operational procedures
-- `docs/dev-guide.md` — architecture, extension recipes, testing, coding standards
-
-These are startup "read on demand" docs (Step 5). Stale guide content wastes context window when the next session loads them.
-
-### 9b. Review reuse and pattern artifacts
-
-If the project maintains reuse, pattern, or service tracking files, review and update them. Check for:
-- Design patterns discovered or refined -> update `design-patterns.md`
-- Services that should be cataloged -> update `service-catalog.md`
-- **Course content patterns**: content templates, workflow improvements -> update `course-content/_templates/`
-- **Tool integration patterns**: new MCP/API integrations -> update `resources/tool-inventory/`
-- Reuse opportunities for future stories -> update `reuse-first-protocol.md`
-
-*Skip if none of these files exist or no new patterns/services emerged.*
-
-### 9c. Update structural-walk definitions if control structure changed
-
-If the session changed any of the following, update the structural-walk configuration before shutdown:
-- canonical workflow or control docs
-- gate names or checkpoint sequencing
-- required artifact contracts
-- expected bundle assets or validation targets
-- workflow families covered by the walk manifests
+**Skip if none of the following changed this session.**
 
 Touch the smallest required set:
-- `state/config/structural-walk/standard.yaml`
-- `state/config/structural-walk/motion.yaml`
-- `docs/structural-walk.md`
+- **Guides** (`docs/user-guide.md` / `admin-guide.md` / `dev-guide.md`) — update if the session changed something they document (new skill, new API client, new workflow, architecture change).
+- **Reuse + pattern artifacts** — `design-patterns.md`, `service-catalog.md`, `course-content/_templates/`, `resources/tool-inventory/`, `reuse-first-protocol.md`.
+- **Structural-walk definitions** — `state/config/structural-walk/standard.yaml` + `motion.yaml` + `docs/structural-walk.md`, only if canonical workflow / gate names / artifact contracts / bundle assets / walk-covered families changed.
+- **Knowledge graph + ONBOARDING.md** — if substantive substrate changes landed (≥10 files in app/scripts/skills/ OR pipeline-manifest/schema/manifest changes OR Epic close), recommend the operator regenerate `.understand-anything/knowledge-graph.json` via `/understand` and re-emit `docs/ONBOARDING.md`. Staleness anchor: `.understand-anything/meta.json::commit_sha` vs HEAD.
 
-Do not update the walks for routine content or code changes that do not alter what the walks are expected to validate.
+### 10. Clean stale files + dirty-worktree reconciliation
 
-### 10. Clean up stale files
+**Skip cleanup if workspace already clean.**
 
-Remove or archive any stale session tracking files, orphaned artifacts, or deprecated references that are no longer canonical. This prevents context pollution in future sessions.
+Remove or archive stale session tracking files, orphaned artifacts, deprecated references.
 
-**Course content cleanup**: Remove outdated staging content, broken workflow references, stale tool configurations.
+**Worktree reconciliation (mandatory):** run `git status --short`. Partition into:
+- Session-owned changes to include in closeout.
+- Collaborative in-scope changes from the user or other active agents during the same session.
+- Pre-existing unrelated changes to leave untouched.
 
-*Skip if the workspace is already clean.*
+Rules: do not stage unrelated modifications; do not exclude same-session collaborative changes just because another agent authored them; do not claim ownership of unrelated files in the hot-start docs; if unrelated changes remain after the session commit, list them explicitly as ambient worktree state.
 
-### 10a. Dirty-worktree reconciliation (mandatory)
+### 11. Verify artifact completeness + class-drift self-check
 
-Before Git closeout, run:
-- `git status --short`
+Cross-check that every artifact in Step 8's checklist is current. Minimum verification: story artifact, sprint-status, workflow-status, project-context, next-session-start-here.
 
-Partition the worktree into:
-- **Session-owned changes** to include in closeout
-- **Collaborative in-scope changes** produced during the same session by the user or other active agents/browser contexts
-- **Pre-existing unrelated changes** to leave untouched
+**Class-drift self-check:** does the declared session class still match the actual diff?
+- Declared Class D and `git diff` shows app/scripts/skills/ Python edits → upgrade to Class S; re-engage missed steps.
+- Declared Class P and any non-planning-artifact substrate file was touched → upgrade to Class S.
+- Record any drift + re-engagement in Step 8.
 
-Rules:
-- Do not stage unrelated modified or untracked files into the session commit.
-- Do not exclude same-session collaborative changes merely because they were authored by another active agent or browser context working on the same objective.
-- Do not claim ownership of unrelated files in `next-session-start-here.md` or `SESSION-HANDOFF.md`.
-- If unrelated changes remain after the session commit, list them explicitly as ambient worktree state so the next session does not confuse them with the just-closed work.
+**Worktree hygiene:** run `git worktree list`. Remove temporary investigation worktrees (`git worktree remove <path>`) and prune stale metadata (`git worktree prune --verbose`). If keeping multiple worktrees intentionally, record why in Step 7.
 
-### 11. Verify artifact completeness
+Verify branch metadata in `next-session-start-here.md` matches the intended post-closeout Git state; verify startup commands are executable as written.
 
-Cross-check that every artifact listed in `SESSION-HANDOFF.md` (artifact update checklist) is confirmed current. 
+### 12. Git closeout — push MANDATORY
 
-**Minimum verification**: story artifact, sprint-status, workflow-status, project-context, and next-session-start-here.
+**Working-branch push at session-WRAPUP is MANDATORY per CLAUDE.md push-cadence policy (ratified 2026-05-05).** Do NOT defer. The session ends with `origin/<working-branch>` at the local HEAD.
 
-Also verify branch metadata consistency:
-- `next-session-start-here.md` branch instructions match the intended post-closeout Git state
-- Startup commands in `next-session-start-here.md` are executable as written
+For mid-session triggers (≥ 2h elapsed since last push, ≥ 5 commits ahead, safety-checkpoint commit, operator stepping away), see CLAUDE.md "Push cadence policy" — proactive pushes are also required.
 
-**Course content verification**: content-standards compliance, human review queue status, platform connectivity.
+Default flow:
+1. Finalize `next-session-start-here.md` branch metadata for expected post-closeout state.
+2. Stage intended changes (`git add ...`).
+3. Commit with clear summary message.
+4. Resolve remotes by role: source remote `upstream` (read-only feed), publish remote `origin` (writable). Verify with `git remote -v`.
+5. **`git push origin <working-branch>`** — mandatory safety gate. If a pre-push hook fails, investigate and fix; do not bypass with `--no-verify`.
+6. **Optional** (only if team's workflow merges to master at session-close): checkout master, fast-forward-merge from `upstream/master`, merge the working branch, push master to `origin`. Skip for scoped-work branches (e.g., trial branches).
+7. **Optional** (only if creating the next working branch this WRAPUP): create from updated master, push with upstream tracking.
+8. Re-run `git worktree list` — confirm only intended worktrees registered.
+9. Re-verify `next-session-start-here.md` branch metadata matches reality. If not, make a small docs-only follow-up commit + push.
 
-### 11a. Worktree hygiene closeout (mandatory)
-
-Before Git closeout, run:
-- `git worktree list`
-
-If a temporary merge/investigation worktree was created during the session, remove it now:
-- `git worktree remove <path-to-temporary-worktree>`
-
-If a temporary worktree directory was deleted manually outside Git, clean stale metadata:
-- `git worktree prune --verbose`
-
-If you intentionally keep more than one worktree, record why and the exact paths in `next-session-start-here.md` Step 7.
-
-### 12. Git closeout (default — PUSH MANDATORY)
-
-**Push-cadence policy (per CLAUDE.md):** Working-branch push at session-WRAPUP is MANDATORY, not deferred. The session ends with `origin/<working-branch>` at the local HEAD. A working branch left unpushed at session-close violates the push-cadence policy ratified 2026-05-05.
-
-Default end-of-session flow is:
-1. Finalize `next-session-start-here.md` branch metadata for expected post-closeout state (baseline + next working branch + startup commands)
-2. Stage all intended changes (`git add ...`)
-3. Commit session work on the working branch with a clear summary message
-4. Resolve remotes by role before optional master update:
-   - **Source remote** (read-only upstream feed): prefer `upstream`; fallback `origin` only when `upstream` does not exist
-   - **Publish remote** (where this repo pushes): prefer `origin`
-   - Recommended check:
-     - `git remote -v`
-     - Confirm source remote is fetch-capable
-     - Confirm publish remote is the intended writable destination for this repo
-5. **MANDATORY: push the working branch to the publish remote** — `git push origin <working-branch>`. This is the safety gate. Do NOT defer. If a pre-push hook fails, investigate + fix + retry; do not bypass with `--no-verify`.
-6. Optional: checkout and update `master` from the **source remote** (`<source-remote>/master`); merge the working branch into `master`; push `master` to the **publish remote**. (Only if the team's workflow merges to `master` at session-close. For Slab-7c-style scoped-work branches, skip the master-merge and leave the working branch as the resume point.)
-7. Optional: create the **next working branch** from updated `master` (for the next session), and push with upstream. (Skip when continuing on the same working branch.)
-8. Re-run `git worktree list` and verify only intended worktrees remain registered
-9. Re-verify `next-session-start-here.md` branch metadata matches reality. If it does not, make a small docs-only follow-up commit and push.
-
-Example (hybrid clone topology):
-- Source remote: `upstream`
-- Publish remote: `origin`
-- Commands:
-  - `git fetch upstream`
-  - `git switch master`
-  - `git merge --ff-only upstream/master`
-  - `git merge <working-branch>`
-  - `git push origin master`
-
-Maintenance note for one-way clones:
-- After each pull from the primary project, quickly re-check this section still maps source=`upstream` and publish=`origin`.
-- If upstream edits this protocol block, keep the remote-role model above when resolving merge conflicts.
-
-If your team intentionally skips merge-to-master for a session, explicitly record that exception and the exact resume branch in both `next-session-start-here.md` and `SESSION-HANDOFF.md`. **The working-branch push (Step 5) is still mandatory** — only the master-merge step (Step 6) is skipped.
-
-Do not perform the merge-to-master flow when any of the following are true:
-- unrelated pre-existing worktree changes remain
-- the session produced a scoped checkpoint that should stay isolated on the working branch
-- branch metadata or startup commands have not yet been reconciled
-
-In those cases, commit + push the working branch only (Steps 1-5 + 8-9; skip Steps 6-7), record the exception, and leave the repo in a truthful resume state.
-
-**Course content commit examples**:
-- "Add lesson 3 presentation slides to staging with lesson plan scaffold"
-- "Implement Canvas quiz API integration with working example"
-- "Complete brainstorming Phase 2: clustered requirements into epic boundaries"
+If your team intentionally skips the master-merge for a session, explicitly record the exception in Steps 7 + 8. **The working-branch push (step 5) is still mandatory** — only the master-merge step is skipped.
 
 ### 13. Optional: session close
 
-Morale summary, party mode wrap-up, or any other team ritual.
+Morale summary, party-mode wrap-up, or any other team ritual.

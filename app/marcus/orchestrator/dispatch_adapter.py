@@ -11,6 +11,7 @@ from typing import Any
 import yaml
 from langgraph.checkpoint.memory import InMemorySaver
 
+from app.manifest.compiler import SPECIALIST_ALIASES
 from app.marcus.orchestrator.gate_runner import assert_payload_duality_boundary
 from app.models.runtime.production_envelope import (
     ProductionEnvelope,
@@ -57,6 +58,7 @@ class ProductionDispatchAdapter:
         dependency_map: dict[str, str],
         base_state: RunState | None = None,
         runner_supplied_payload: dict[str, Any] | None = None,
+        projection_map: dict[str, Any] | None = None,
     ) -> RunState:
         """Construct the specialist's isolated RunState from envelope dependencies.
 
@@ -76,7 +78,45 @@ class ProductionDispatchAdapter:
             graph_version=DEFAULT_GRAPH_VERSION,
         )
         payload = self._payload_from_dependencies(envelope, dependency_map)
+        if projection_map:
+            # S4 edge-level key projection (Winston Deviation-2 ruling, party
+            # review 2026-06-12): the manifest declares producer-output-key →
+            # consumer-input-key per edge; granular keys land exactly where
+            # the consumer's contract reads them. Missing producers/keys and
+            # cross-mechanism collisions refuse loudly.
+            for input_key, spec in projection_map.items():
+                from_specialist = getattr(spec, "from_specialist", None) or spec["from"]
+                producer_key = getattr(spec, "key", None) or spec["key"]
+                canonical = SPECIALIST_ALIASES.get(str(from_specialist), str(from_specialist))
+                contribution = envelope.latest_for_specialist(canonical)
+                if contribution is None:
+                    raise ProductionDispatchAdapterError(
+                        f"projection for input {input_key!r} names producer "
+                        f"{from_specialist!r} with no contribution in the envelope"
+                    )
+                if producer_key not in contribution.output:
+                    raise ProductionDispatchAdapterError(
+                        f"projection for input {input_key!r}: producer "
+                        f"{from_specialist!r} output has no key {producer_key!r}"
+                    )
+                if input_key in payload:
+                    raise ProductionDispatchAdapterError(
+                        f"projection input key {input_key!r} collides with a "
+                        "dependency-map delivery"
+                    )
+                payload[input_key] = contribution.output[producer_key]
         if runner_supplied_payload:
+            # Amelia S3-b.1 (party review 2026-06-12): runner-keys-win was
+            # silent precedence — a collision between seam and dependency
+            # delivery now refuses instead of silently shadowing (the
+            # first-contribution-wins genus, different chromosome).
+            collisions = sorted(set(payload) & set(runner_supplied_payload))
+            if collisions:
+                raise ProductionDispatchAdapterError(
+                    "runner_supplied_payload collides with dependency-map "
+                    f"key(s) {collisions}; deliver each key through exactly "
+                    "one mechanism (edge projection lands at S4)"
+                )
             payload = {**payload, **runner_supplied_payload}
         assert_payload_duality_boundary(payload)
         if not dependency_map and not runner_supplied_payload and source.cache_state is not None:
@@ -111,21 +151,29 @@ class ProductionDispatchAdapter:
         cost_usd: float,
         base_state: RunState | None = None,
         runner_supplied_payload: dict[str, Any] | None = None,
+        node_id: str | None = None,
+        projection_map: dict[str, Any] | None = None,
     ) -> ProductionEnvelope:
         """Invoke a scaffolded specialist and append its output to the envelope.
 
         ``runner_supplied_payload`` is forwarded to ``build_specialist_state``
-        per A-R3 Option A.
+        per A-R3 Option A. ``node_id`` keys the contribution to the dispatching
+        manifest node (S2 per-node keying); the duplicate guard is node-aware —
+        multi-node specialists pass it at each of their nodes (Amelia: this
+        guard and the walker skip-rule changed in the same commit, or the
+        first multi-node dispatch crashes live).
         """
-        if envelope.get_contribution(specialist_id) is not None:
+        if envelope.get_contribution(specialist_id, node_id=node_id) is not None:
             raise ValueError(
-                f"production envelope already has contribution for {specialist_id!r}"
+                f"production envelope already has contribution for "
+                f"{specialist_id!r} at node {node_id!r}"
             )
         state = self.build_specialist_state(
             envelope=envelope,
             dependency_map=dependency_map,
             base_state=base_state,
             runner_supplied_payload=runner_supplied_payload,
+            projection_map=projection_map,
         )
         input_entries_count = state.cache_state.entries_count if state.cache_state else 0
         compiled_graph = self._compile_graph(specialist_id)
@@ -140,6 +188,7 @@ class ProductionDispatchAdapter:
             output=output,
             model_used=self._model_used(state),
             cost_usd=cost_usd,
+            node_id=node_id,
         )
         updated = envelope.model_copy(deep=True)
         updated.add_contribution(contribution)
@@ -152,7 +201,9 @@ class ProductionDispatchAdapter:
     ) -> dict[str, Any]:
         payload: dict[str, Any] = {}
         for input_key, upstream_specialist_id in dependency_map.items():
-            contribution = envelope.get_contribution(upstream_specialist_id)
+            # S2: dependency consumers want the upstream specialist's most
+            # recent output (multi-node specialists contribute per node).
+            contribution = envelope.latest_for_specialist(upstream_specialist_id)
             if contribution is None:
                 raise ProductionDispatchAdapterError(
                     f"dependency {upstream_specialist_id!r} for input "

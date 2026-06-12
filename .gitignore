@@ -1,3 +1,14 @@
+# Understand Anything scratch artifacts
+.understand-anything/intermediate/
+.understand-anything/tmp/
+.understand-anything/diff-overlay.json
+
+# Optional: ignore the final generated graph and supporting files until reviewed
+# .understand-anything/knowledge-graph.js
+# .understand-anything/meta.jsonon
+# .understand-anything/fingerprints.json
+
+
 # Local secrets — never commit (document keys in docs/admin-guide.md)
 .env
 .env.*

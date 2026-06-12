@@ -86,13 +86,15 @@ def test_facade_identity_loop_keeps_one_marcus(
 
 def test_ast_string_sweep_finds_no_operator_leak_tokens() -> None:
     forbidden_tokens = {"Marcus-Intake", "Marcus-Orchestrator"}
+    # app/marcus/intake.py was deleted at Story 34-6 structural-orphan
+    # cleanup; the sweep list must track live files only.
     paths = [
         Path("app/marcus/facade.py"),
-        Path("app/marcus/intake.py"),
         Path("app/marcus/orchestrator/supervisor.py"),
         Path("app/marcus/orchestrator/routing.py"),
     ]
     for path in paths:
+        assert path.is_file(), f"sweep path missing — update the sweep list: {path}"
         tree = ast.parse(path.read_text(encoding="utf-8"))
         string_constants = [
             node.value

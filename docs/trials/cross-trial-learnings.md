@@ -140,3 +140,64 @@ This file is updated:
 - Per-Epic-close: roll-up review consumed by `bmad-retrospective`
 
 When an entry's pattern matures into a reproducible-outside-trial-context anti-pattern, it migrates to the anti-pattern catalog (Mary harvest-gate ratification). The cross-trial entry then becomes a one-line stub citing the catalog entry; this preserves cross-trial discoverability without duplicating the prescriptive remediation.
+
+---
+
+## §Trial-3 attempts 3-4 — INTERIM ENTRIES (2026-06-10/11; formal postmortem PENDING next session)
+
+> Filed at session-WRAPUP per guide §9 closeout ("file the trial result"). The formal Shape-A
+> postmortem (Marcus-agent session) re-routes these per methodology §7 at next session; Q2
+> (inventory) routing already done for findings #7/#8/#9 + the 5-fix batch-review obligation.
+
+**Trial result:** attempt-3 (3 instances: `235e0570` / `d8d1332a` / `a0d31fc0`) = structured stop,
+exceptional harvest — **9 findings, and the first live G1→G2C gate crossing in platform history**
+(`a0d31fc0`). Attempt-4 (`50b7d353`) ALIVE, paused-at-G1, resumable; sole blocker = CD validator
+(finding #9, deferred-inventory 🔴).
+
+### By gate / surface (symptoms, compact)
+
+- **G0/§02A composer — Symptom: all-`supporting` directive roll (zero primary) on real corpus.**
+  LLM role assignment is per-file with no corpus-level constraint; wrangler rejects fail-loud
+  post-confirm. Fixed: template corpus-level primary rules + mandatory G0 operator role-check
+  (`bb81b6f`). 4/4 clean rolls since. Anti-pattern-candidate (Q1, route at postmortem):
+  "per-item LLM classification with no set-level invariant the consumer enforces."
+- **§04 Texas dispatch — Symptom: every local_file fetch File-not-found; 73-byte extracted.md;
+  RetrievalScopeError 7 vs 570.** Production subprocess cwd=REPO_ROOT vs composer's
+  corpus-relative locators; the Story-34-1 ratchet PINNED the correct cwd contract and production
+  never adopted it. Fixed `919b16d`. Q1 candidate: "test pinned the correct invocation contract;
+  production caller never adopted it" (A23 sibling at invocation-context granularity).
+- **§04 Texas _act — Symptom: valid 903-word bundle discarded as "no-results" on wrangler
+  exit 10.** Exit 10 = complete_with_warnings in the wrangler taxonomy; "no-results" never existed.
+  Fixed `919b16d`. Q1 candidate: "speculative exit-code semantics never integration-exercised."
+- **§04 Irene-Pass1 — Symptom: emit_spans crash `unknown specialist_id`.** CANONICAL_SPECIALIST_IDS
+  never adopted irene_pass1 though SPECIALIST_ALIASES targets it. Roster 11→12, `cd31b33`.
+- **Runner/gates — Symptom: GateBypassError at EVERY gate on live resume.** Resume walker had no
+  pause machinery (known-deferred `7a-2-deferred-resume-mode-multi-gate-pause`, documented in test
+  docstrings, never reactivated pre-launch despite TWO readiness reviews). `_pause_at_gate`
+  extracted + wired per party-mode 4-of-4 (`cd31b33`+`d727248`); live-confirmed. PROCESS LEARNING
+  (Q4): readiness verification must include "can the runner traverse ALL active gates" —
+  no checklist line or test asked it; the deferred-inventory reactivation trigger never fired.
+- **Runner economics — Symptom: KeyError pricing gpt-5.4 at first G2C pause.** Live model since
+  Slab 2a, never priced; masked because all prior live segments were texas-only (gpt-5-nano).
+  Config fix `08d5e34`.
+- **Runner pause — Symptom: checkpoint_gate_mismatch on re-resume after mid-pause crash.**
+  Pause write sequence non-atomic (torn state). FILED `trial-3-pause-write-sequence-atomicity`.
+- **Runner cap — Symptom: MissingUpstreamContributionError quinn_r→kira.** max_specialist_calls
+  default 1/segment, not exposed at start; skipped specialists permanently passed. FILED
+  `trial-3-max-specialist-calls-segment-cap-semantics`.
+- **CD specialist — Symptom: CdDirectiveParseError 2/2 rolls (systematic) on first-ever live CD
+  dispatch.** FILED 🔴 `cd-directive-validator-prompt-contract-mismatch` — blocks attempt-4 resume.
+
+### Run-shape learnings (Q4, this register)
+
+- Verdict file = FULL OperatorVerdict (verb/card_id/operator_id/digest); guide §5 "minimal shape"
+  is doc-drift. Verdict digest = decision-card top-level `digest` (embedded field is placeholder).
+- `trial resume` is non-interactive → agent-runnable; only `trial start` G0 needs TTY (or
+  `--auto-confirm-directive` + post-hoc directive verification).
+- Cards re-register from disk per process → cross-process verdict replay is valid; pre-pause
+  crashes leave clean resumable state; mid-pause crashes kill the trial instance (see atomicity).
+- ALWAYS resume with `--max-specialist-calls <high>` until cap semantics are redesigned.
+- Live-fire fix cadence that worked: fail-loud → diagnose from run-dir evidence → fix + pinning
+  test + battery + tripwire-allowlist amendment + push → relaunch. 5-fix cap + party-mode
+  consensus for the structural one. Cost per trial instance: cents (LLM) — instances are cheap,
+  torn state is not.

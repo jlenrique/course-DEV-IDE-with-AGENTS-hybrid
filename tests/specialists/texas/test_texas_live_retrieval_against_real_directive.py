@@ -5,7 +5,6 @@ from pathlib import Path
 import pytest
 import yaml
 
-from app.marcus.orchestrator.directive_composer import compose_directive
 from app.specialists.texas.retrieval_dispatch import dispatch_retrieval
 
 REQUIRED = {
@@ -26,10 +25,19 @@ def test_texas_dispatch_retrieval_writes_six_artifacts_from_composed_directive(
     corpus.mkdir()
     source = corpus / "intro.md"
     source.write_text(" ".join(["anchored evidence sentence"] * 40), encoding="utf-8")
-    composed = compose_directive(corpus_path=corpus, run_id="7b1-live")
-    payload = composed.to_dict()
-    payload["sources"][0]["locator"] = source.resolve().as_posix()
-    payload["sources"][0]["expected_min_words"] = 10
+    payload = {
+        "run_id": "7b1-live",
+        "sources": [
+            {
+                "ref_id": "src-001",
+                "provider": "local_file",
+                "locator": source.resolve().as_posix(),
+                "role": "primary",
+                "description": "Live retrieval current-shape directive",
+                "expected_min_words": 10,
+            }
+        ],
+    }
     directive_path = tmp_path / "directive.yaml"
     directive_path.write_text(yaml.safe_dump(payload, sort_keys=False), encoding="utf-8")
 

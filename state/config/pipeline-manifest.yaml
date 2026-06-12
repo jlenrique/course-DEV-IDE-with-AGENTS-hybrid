@@ -27,6 +27,19 @@ generator_ref: "scripts/generators/v42/render.py"
 lane: "run_graph"
 entrypoint: "01"
 frozen_graph_version: "v42"
+# Versioned home for the data-plane vocabulary (dependencies +
+# dependency_projections) — Winston S1-B, party review 2026-06-12.
+# Tier-2 governance for vocabulary changes attaches HERE (party-mode
+# consensus per bump); pack_version provably does not govern the data
+# plane (regime doc, determination 2026-06-12, commit 2a617f5).
+# dp-v1.1 (party consensus 2026-06-12, Trial-3 cycle-4 08/08B remediation):
+# additive projections onto nodes 08 + 08B — same dp-v1 mechanics, new
+# vocabulary rows. dp-v2 remains reserved for the refinement self-edge
+# vocabulary (deferred-inventory rider).
+# dp-v1.2 (party consensus 2026-06-12, audio-segment arc): additive
+# projections onto nodes 12/13/14 (audio synthesis + G5 QA + compositor);
+# node 11's dead quarantined upstream_output←kira edge retired.
+data_plane_vocabulary_version: "dp-v1.2"
 learning_events:
   schema_ref: "state/config/learning-event-schema.yaml"
 block_mode_trigger_paths:
@@ -263,6 +276,16 @@ nodes:
     specialist_id: "irene-pass1"
     scaffold_node: "act"
     model_config_ref: null
+    # dp-v1 (Trial-3 cycle-3 error-pause 2026-06-12): the corpus rides as a
+    # projected reference so the Gate-1 fidelity pass plans against SOURCE,
+    # not against whatever the runtime fallback happens to deliver (in v1
+    # this never surfaced because per-specialist keying SKIPPED this node).
+    # A declared upstream_output: irene-pass1 self-edge is refused by the
+    # compiler's cycle guard; the runtime fallback covers upstream delivery.
+    dependency_projections:
+      bundle_reference:
+        from: texas
+        key: bundle_reference
     gate: true
     gate_code: "G2"
     fold_with: "G2C"
@@ -277,6 +300,13 @@ nodes:
     specialist_id: "irene-pass1"
     scaffold_node: "act"
     model_config_ref: null
+    # dp-v1: same shape as node 05 — corpus projected alongside; upstream
+    # plan delivery rides the runtime fallback (self-edge refused by the
+    # compiler's cycle guard).
+    dependency_projections:
+      bundle_reference:
+        from: texas
+        key: bundle_reference
     gate: true
     gate_code: "G1.5"
     fold_with: "G2C"
@@ -343,12 +373,28 @@ nodes:
     specialist_id: "gary"
     scaffold_node: "act"
     model_config_ref: null
+    dependency_projections:
+      slides:
+        from: "package_builder"
+        key: "slides"
+      prompt:
+        from: "package_builder"
+        key: "prompt"
+      additional_instructions:
+        from: "package_builder"
+        key: "additional_instructions"
     gate: false
     insertion_after: "06B"
     hud_tracked: true
     pack_section_anchor: "7)"
     pack_version: "v4.2"
-    rationale: "Section 07 maintains manifest-driven pipeline contract."
+    rationale: >-
+      Section 07 maintains manifest-driven pipeline contract. S4 edge-level
+      key projection (party review 2026-06-12, dp-v1): Gary's slide briefs
+      flow from the §06 package_builder contribution under the exact keys
+      gary's CONSUMED_PAYLOAD_KEYS declares — the manifest now tells the
+      truth about the §06→07 data plane (formerly delivered via the A-R3
+      seam bridge, retired this story).
 
   - id: "7.5"
     label: "Cluster Coherence G2.5 Gate (Conditional)"
@@ -371,8 +417,10 @@ nodes:
     specialist_id: "quinn-r"
     scaffold_node: "act"
     model_config_ref: null
-    dependencies:
-      upstream_output: "vera"
+    dependency_projections:
+      slides:
+        from: "gary"
+        key: "gary_slide_output"
     gate: true
     gate_code: "G2B"
     fold_with: "G2C"
@@ -381,7 +429,15 @@ nodes:
     hud_tracked: true
     pack_section_anchor: "7B)"
     pack_version: "v4.2"
-    rationale: "Section 07B maintains manifest-driven pipeline contract."
+    rationale: >-
+      Section 07B maintains manifest-driven pipeline contract. Data-plane
+      history: the original edge (upstream_output: vera) was the wrong key
+      AND wrong producer — quinn_r approved content it never received in
+      Trial-3 attempt-4 (S1 corrected vocabulary; party review 2026-06-12
+      ruled whole-dict dependency delivery the wrong SHAPE). S4 edge-level
+      key projection (dp-v1): variant selection receives Gary's
+      gary_slide_output rows under quinn_r's declared "slides" key — the
+      manifest now tells the truth about the 07→07B data plane.
 
   - id: "07C"
     label: "Storyboard A + Gate 2 Approval + Winner Authorization"
@@ -455,6 +511,26 @@ nodes:
     specialist_id: "irene"
     scaffold_node: "act"
     model_config_ref: null
+    # dp-v1.1 (Trial-3 cycle-4 defect 1, 2026-06-12): node 08 received
+    # `input keys: cache_prefix` only and Irene Pass 2 authored a sepsis
+    # narration from her L5 exemplars — the fourth ungrounded-prompt
+    # instance. Pass 2 narrates SLIDES: she grounds on the corpus, the
+    # latest refined lesson plan (irene_pass1 via latest-contribution
+    # resolution = node 05B), the §06 briefs, and Gary's real slide
+    # outputs (visual descriptions she must track per slide).
+    dependency_projections:
+      bundle_reference:
+        from: texas
+        key: bundle_reference
+      lesson_plan:
+        from: irene-pass1
+        key: lesson_plan
+      slide_briefs:
+        from: package_builder
+        key: slides
+      gary_slide_output:
+        from: gary
+        key: gary_slide_output
     gate: false
     insertion_after: "07F"
     hud_tracked: true
@@ -467,6 +543,22 @@ nodes:
     specialist_id: "quinn-r"
     scaffold_node: "act"
     model_config_ref: null
+    # dp-v1.1 (Trial-3 cycle-4 defect 2, 2026-06-12): G3B reviews
+    # STORYBOARD B = Storyboard A + Pass-2 narration overlay — NOT a
+    # composed §14 artifact (the old "post" body crashed here on
+    # sensory.input.missing). Quinn-R checks narration coverage against
+    # Gary's real slide roster; the orchestrator publishes the B pack
+    # online before the pause (S5 criterion 7).
+    dependency_projections:
+      narration_script:
+        from: irene
+        key: narration_script
+      segment_manifest_deltas:
+        from: irene
+        key: segment_manifest_deltas
+      gary_slide_output:
+        from: gary
+        key: gary_slide_output
     gate: true
     gate_code: "G3B"
     fold_with: "G3"
@@ -524,8 +616,11 @@ nodes:
     specialist_id: "elevenlabs"
     scaffold_node: "act"
     model_config_ref: null
-    dependencies:
-      upstream_output: "kira"
+    # dp-v1.2 (audio-arc 2026-06-12): the quarantined upstream_output←kira
+    # whole-dict edge is RETIRED — Enrique's voice-selection leg reads none
+    # of it (config/HIL inputs only; G4A folds into G4 so the voice HIL
+    # rides the blanket delegation — rider filed). Node 11 joins the
+    # PIN-G1 groundless allowlist with this rationale.
     gate: true
     gate_code: "G4A"
     fold_with: "G4"
@@ -555,6 +650,19 @@ nodes:
     specialist_id: "elevenlabs"
     scaffold_node: "act"
     model_config_ref: null
+    # dp-v1.2 (audio-arc 2026-06-12, cycle-5 defect 1): the synthesis node
+    # grounds on the SAME Pass-2 narration the operator approved in the
+    # online Storyboard B — the shared join (narration_join) turns these
+    # into the segments Enrique pays to synthesize. Only node 12 gets the
+    # narration keys: projecting them into 11/11B would synthesize audio
+    # three times (all three nodes share one act body).
+    dependency_projections:
+      narration_script:
+        from: irene
+        key: narration_script
+      segment_manifest_deltas:
+        from: irene
+        key: segment_manifest_deltas
     gate: false
     insertion_after: "11B"
     hud_tracked: true
@@ -567,6 +675,23 @@ nodes:
     specialist_id: "quinn-r"
     scaffold_node: "act"
     model_config_ref: null
+    # dp-v1.2 (audio-arc 2026-06-12, cycle-5 defects 2+3): G5 audits the
+    # REAL roster (gary) against the REAL narration (irene) with REAL
+    # durations (elevenlabs) — the fabricated slide-1 default is retired
+    # and the content errors are recoverable dispatch-family raises.
+    dependency_projections:
+      slides:
+        from: gary
+        key: gary_slide_output
+      narration_script:
+        from: irene
+        key: narration_script
+      segment_manifest_deltas:
+        from: irene
+        key: segment_manifest_deltas
+      narration_outputs:
+        from: elevenlabs
+        key: narration_outputs
     gate: true
     gate_code: "G5"
     fold_with: "G4"
@@ -581,6 +706,21 @@ nodes:
     specialist_id: "compositor"
     scaffold_node: "act"
     model_config_ref: null
+    # dp-v1.2 (audio-arc 2026-06-12): pre-grounded by consensus (convicted
+    # by construction — written before projections existed). Visuals from
+    # gary, motion from kira, audio handoff from enrique's purpose-built
+    # compositor_invocation (audio paths derived in the act; dp-v1
+    # projections are top-level-key only).
+    dependency_projections:
+      gary_slide_output:
+        from: gary
+        key: gary_slide_output
+      motion_receipts:
+        from: kira
+        key: motion_receipts
+      compositor_invocation:
+        from: elevenlabs
+        key: compositor_invocation
     gate: false
     insertion_after: "13"
     hud_tracked: true

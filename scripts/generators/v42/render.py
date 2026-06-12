@@ -10,11 +10,19 @@ from scripts.generators.v42.manifest import load_generator_manifest
 from scripts.utilities.workflow_policy import load_workflow_policy
 
 
-def render_pack(manifest_path: Path, output_path: Path) -> None:
-    """Render pack markdown at the requested output path."""
-    generator_manifest = load_generator_manifest(manifest_path)
+def render_pack(
+    manifest_path: Path,
+    output_path: Path,
+    template_root: Path | None = None,
+) -> None:
+    """Render pack markdown at the requested output path.
+
+    ``template_root`` overrides the bundled templates directory — the seam
+    Pin B's template-removal red-tests exercise (renderer/L1 story).
+    """
+    generator_manifest = load_generator_manifest(manifest_path, template_root)
     workflow_policy = load_workflow_policy()
-    env = make_env()
+    env = make_env(template_root)
     template = env.get_template("layout/pack.md.j2")
     content = template.render(
         steps=generator_manifest.steps,

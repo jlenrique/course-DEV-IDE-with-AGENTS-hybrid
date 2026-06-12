@@ -8,11 +8,13 @@ from app.specialists.kira.kling_dispatch import dispatch_to_kling
 
 
 def test_dispatch_to_kling_returns_fixture_when_context_missing() -> None:
+    # S0 fail-loud policy: fixture path now requires explicit opt-in.
     receipt = dispatch_to_kling(
         kling_prompt="camera pan over diagram",
         model_name="kling-v1",
         mode="std",
         duration=5.0,
+        allow_fixture=True,
     )
     assert receipt["status"] == "mocked"
     assert receipt["motion_asset_path"].endswith(".mp4")

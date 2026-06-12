@@ -41,7 +41,10 @@ def test_quality_wrapper_uses_importlib_loader() -> None:
 
 
 def test_sensory_dispatch_short_circuit_when_artifact_missing() -> None:
-    out = dispatch_to_sensory_bridges(artifact_path=None, modality="image", gate="qrr")
+    # S0 fail-loud policy: fixture short-circuit now requires explicit opt-in.
+    out = dispatch_to_sensory_bridges(
+        artifact_path=None, modality="image", gate="qrr", allow_fixture=True
+    )
     assert out["confidence"] == "LOW"
 
 

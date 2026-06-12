@@ -26,7 +26,8 @@ def test_dispatch_does_not_call_subprocess() -> None:
 
 
 def test_dispatch_short_circuits_on_no_directive() -> None:
-    receipt = dispatch_to_gamma(directive_path=None, export_dir=None)
+    # S0 fail-loud policy: fixture path now requires explicit opt-in.
+    receipt = dispatch_to_gamma(directive_path=None, export_dir=None, allow_fixture=True)
     assert receipt["generation_id"] == "gen-fixture-001"
     assert receipt["gary_slide_output"]
     assert DEFAULT_FIXTURE_RECEIPT.is_file()

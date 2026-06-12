@@ -75,18 +75,3 @@ Expected files after Prompt 3 completes: `run-constants.yaml`, `preflight-result
 ### 3.f) Fallback
 
 - If any planning-critical area is medium/low confidence, stop for targeted remediation before Prompt 4.
-
-### 3.g) Legacy prose-only fallback (deprecated — removal after two clean runner trials)
-
-**Deprecated / Sunset:** Use this path only if the runner fails unexpectedly mid-pipeline (runner-specific infra issue, not a source problem) **and** you have NOT yet logged two clean runner trials. If two clean trials are already recorded, skip this section entirely.
-
-If the fallback is explicitly authorized, Marcus may revert to the pre-Epic-25 prose-only path:
-
-1. Hand-execute fetch + extract using the helpers in `skills/bmad-agent-texas/scripts/source_wrangler_operations.py`
-2. Write `extracted.md`, `metadata.json`, `ingestion-evidence.md` by hand
-3. Run the old validator wrapper: `.\.venv\Scripts\python.exe -m scripts.utilities.validate_source_bundle_confidence --bundle-dir [BUNDLE_PATH]`
-4. Place a `.runner-bypassed` breadcrumb file in the bundle so post-mortems can identify which path ran and why
-
-This fallback survives for exactly two clean trial runs of the runner path (per story 25-1 party-mode decision, Murat's risk-math argument). After two clean runs, delete this section. Bundles that use the fallback cannot claim Texas-integrated status.
-
----

@@ -53,6 +53,9 @@ from app.models.adapter import make_chat_model
 from app.models.state import specialist_summary_artifacts as specialist_summary_writer
 from app.models.state.run_state import RunState
 from app.specialists._scaffold.contract import SCAFFOLD_NODE_IDS
+from app.specialists.dispatch_errors import SpecialistDispatchError
+from app.specialists.irene.payload_contract import CONSUMED_PAYLOAD_KEYS
+from app.specialists.source_bundle import read_extracted_source
 
 REPO_ROOT: Path = Path(__file__).resolve().parents[3]
 SANCTUM_DIR: Path = REPO_ROOT / "_bmad" / "memory" / "bmad-agent-content-creator"
@@ -80,6 +83,85 @@ PASS_2_SYSTEM_MESSAGE: str = (
     "present, honor cluster boundaries and bridge cadence. Output deterministic, "
     "well-structured prose with explicit visual references woven into the flow."
 )
+
+class Pass2GroundingError(SpecialistDispatchError):
+    """Pass-2 grounding input absent or output unjoined to the real slide roster.
+
+    dp-v1.1 (Trial-3 cycle-4 defect 1): an ungrounded Pass-2 prompt produces
+    confabulated narration with ``provenance: real`` — a false green. Raising
+    this (SpecialistDispatchError family) error-pauses the trial recoverably
+    instead of shipping invented content downstream.
+    """
+
+
+def _slide_roster(envelope_payload: dict[str, Any]) -> list[dict[str, str]]:
+    """Extract the real slide roster (id + visual description) from Gary's output.
+
+    Fail-loud: Pass 2 narrates SLIDES; without Gary's node-07 contribution
+    there is nothing real to narrate.
+    """
+    rows = envelope_payload.get("gary_slide_output")
+    if not isinstance(rows, list) or not rows:
+        raise Pass2GroundingError(
+            "Pass 2 requires gary_slide_output (real slide roster) in its "
+            "payload; node 08 projections must deliver it",
+            tag="irene.pass2.grounding-missing",
+        )
+    roster: list[dict[str, str]] = []
+    for index, row in enumerate(rows, start=1):
+        if not isinstance(row, dict):
+            continue
+        slide_id = str(row.get("slide_id") or "").strip()
+        if not slide_id:
+            raise Pass2GroundingError(
+                f"gary_slide_output row {index} carries no slide_id",
+                tag="irene.pass2.grounding-missing",
+            )
+        roster.append(
+            {
+                "slide_id": slide_id,
+                "visual_description": str(row.get("visual_description") or ""),
+            }
+        )
+    if not roster:
+        raise Pass2GroundingError(
+            "gary_slide_output contained no usable slide rows",
+            tag="irene.pass2.grounding-missing",
+        )
+    return roster
+
+
+def _assert_narration_joins_roster(
+    parsed: dict[str, Any], roster: list[dict[str, str]]
+) -> None:
+    """Winston post-check: narration must reference REAL slide ids only.
+
+    Converts residual confabulation (exemplar bleed despite grounding) from
+    silent to fail-loud. Every non-empty ``perception_source`` in the
+    segment_manifest_deltas' visual_references must name a roster slide id,
+    and at least one real slide must be referenced.
+    """
+    slide_ids = {entry["slide_id"] for entry in roster}
+    referenced: set[str] = set()
+    for delta in parsed.get("segment_manifest_deltas") or []:
+        if not isinstance(delta, dict):
+            continue
+        for ref in delta.get("visual_references") or []:
+            if isinstance(ref, dict):
+                source = str(ref.get("perception_source") or "").strip()
+                if source:
+                    referenced.add(source)
+    if not parsed.get("narration_script"):
+        return
+    orphans = sorted(referenced - slide_ids)
+    if orphans or not referenced:
+        raise Pass2GroundingError(
+            "Pass-2 narration does not join the real slide roster "
+            f"(orphan perception_source values: {orphans}; "
+            f"roster: {sorted(slide_ids)})",
+            tag="irene.pass2.slide-join-failed",
+        )
+
 
 TRANSITIONS: tuple[tuple[str, str], ...] = (
     ("receive", "plan"),
@@ -143,39 +225,55 @@ def _read_pass_2_references(
     return "\n\n".join(parts)
 
 
-def _assemble_pass_2_prompt(envelope_payload: dict[str, Any]) -> tuple[str, str]:
+def _assemble_pass_2_prompt(
+    envelope_payload: dict[str, Any],
+    *,
+    extracted_source: str,
+    slide_roster: list[dict[str, str]],
+) -> tuple[str, str]:
     """Build (system_message, user_message) for Irene's Pass-2 invocation.
 
     Deterministic concatenation; no datetime, UUIDs, or randomized components
-    in the prompt body. The user_message contains the sanctum digest, the
-    reference bundle, and the envelope's `payload_in` serialized as
-    sorted-keys canonical JSON (NFR-I6 byte-stability).
+    in the prompt body. dp-v1.1 grounding order (party consensus 2026-06-12):
+    the CORPUS leads, then the REAL slide roster she narrates, then the
+    sanctum digest and L5 references — explicitly demoted to format-only —
+    then the envelope payload as sorted-keys canonical JSON (NFR-I6
+    byte-stability; pinned dumps signature per Murat MF3 T4 binding).
     """
     sanctum_section = _read_sanctum_digest()
     references_section = _read_pass_2_references()
-    # Pinned dumps signature for byte-stability (Murat MF3 T4 binding):
-    # sort_keys=True for key-order determinism; ensure_ascii=True so any
-    # non-ASCII payload bytes are escape-stable across Python versions;
-    # separators pinned to remove platform/version whitespace variance.
     payload_section = json.dumps(
         envelope_payload,
         sort_keys=True,
         ensure_ascii=True,
         separators=(",", ":"),
     )
+    roster_lines = "\n".join(
+        f"- {entry['slide_id']}: {entry['visual_description']}"
+        for entry in slide_roster
+    )
     user_message = (
+        "## Source corpus (the ONLY content basis for narration)\n\n"
+        f"{extracted_source}\n\n"
+        "## Real slide roster (narrate THESE slides and no others)\n\n"
+        f"{roster_lines}\n\n"
         "## Sanctum digest (sorted file listing + sha256)\n\n"
         f"{sanctum_section}\n\n"
-        "## L5 references (fixed order)\n\n"
+        "## L5 references (fixed order — STRUCTURE AND FORMAT ONLY; any "
+        "subject matter inside these references is exemplar, NOT course "
+        "content)\n\n"
         f"{references_section}\n\n"
         "## Envelope payload (sorted-keys JSON)\n\n"
         f"```json\n{payload_section}\n```\n\n"
         "## Task\n\n"
         "Author Pass 2 narration + segment manifest deltas per the procedure "
-        "above. Return your output as a JSON object with two top-level keys: "
-        "`narration_script` (an array of segment objects) and "
-        "`segment_manifest_deltas` (an array of manifest patch objects). "
-        "Be explicit about visual references and cluster-boundary bridges."
+        "above, grounded EXCLUSIVELY in the source corpus and the real slide "
+        "roster. Every visual_reference's `perception_source` MUST be one of "
+        "the roster slide ids verbatim. Return your output as a JSON object "
+        "with two top-level keys: `narration_script` (an array of segment "
+        "objects) and `segment_manifest_deltas` (an array of manifest patch "
+        "objects). Be explicit about visual references and cluster-boundary "
+        "bridges."
     )
     return PASS_2_SYSTEM_MESSAGE, user_message
 
@@ -301,8 +399,27 @@ def _act_pass_2(
     envelope_payload: dict[str, Any],
     model_id: str,
 ) -> dict[str, Any]:
-    """Pass-2 narration branch (existing 2a.2 behavior)."""
-    system_msg, user_msg = _assemble_pass_2_prompt(envelope_payload)
+    """Pass-2 narration branch (dp-v1.1 grounded; party consensus 2026-06-12).
+
+    Fail-loud grounding reads BEFORE prompt assembly: corpus via the shared
+    ``read_extracted_source`` reader (raises ``SourceBundleError``), real
+    slide roster via ``_slide_roster`` (raises ``Pass2GroundingError``), and
+    the latest refined lesson plan. Post-parse, the narration must join the
+    real roster (Winston deterministic post-check).
+    """
+    extracted_source = read_extracted_source(envelope_payload)
+    slide_roster = _slide_roster(envelope_payload)
+    if not envelope_payload.get("lesson_plan"):
+        raise Pass2GroundingError(
+            "Pass 2 requires the latest refined lesson_plan in its payload; "
+            "node 08 projections must deliver it",
+            tag="irene.pass2.grounding-missing",
+        )
+    system_msg, user_msg = _assemble_pass_2_prompt(
+        envelope_payload,
+        extracted_source=extracted_source,
+        slide_roster=slide_roster,
+    )
     response = handle.chat.invoke(
         [
             {"role": "system", "content": system_msg},
@@ -312,6 +429,7 @@ def _act_pass_2(
     raw_content = response.content if hasattr(response, "content") else str(response)
     raw_text = raw_content if isinstance(raw_content, str) else str(raw_content)
     parsed = _parse_pass_2_response(raw_text)
+    _assert_narration_joins_roster(parsed, slide_roster)
     output_blob = json.dumps(
         {
             "narration_script": parsed["narration_script"],
@@ -474,8 +592,10 @@ def build_irene_graph() -> StateGraph:
 
 
 __all__ = [
+    "CONSUMED_PAYLOAD_KEYS",
     "PASS_2_PROMPT_REFERENCES",
     "PASS_2_SYSTEM_MESSAGE",
+    "Pass2GroundingError",
     "TRANSITIONS",
     "_act",
     "_assemble_pass_2_prompt",

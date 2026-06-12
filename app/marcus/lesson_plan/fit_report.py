@@ -9,12 +9,12 @@ Discipline notes:
   path is a contract violation that the 31-2 single-writer enforcement
   will catch, but should never reach. AC-B.5.1 + AC-T.11 pin this.
 * :class:`FitReport`, :class:`FitDiagnosis`, :class:`PlanRef` shapes are
-  pinned in 31-1 :mod:`marcus.lesson_plan.schema`. This module re-exports
+  pinned in 31-1 :mod:`app.marcus.lesson_plan.schema`. This module re-exports
   them; it does NOT re-define.
 * :func:`serialize_fit_report` produces canonical-JSON per AC-B.3:
   ``json.dumps(model_dump(mode="json"), sort_keys=True, ensure_ascii=True,
   separators=(",", ":"))``. The ``sort_keys`` / ``ensure_ascii`` /
-  ``separators`` kwargs match :func:`marcus.lesson_plan.digest.compute_digest`.
+  ``separators`` kwargs match :func:`app.marcus.lesson_plan.digest.compute_digest`.
   This serializer does NOT claim byte-identity with ``compute_digest``
   output on the same semantic content — ``compute_digest`` additionally
   strips ``None``-valued fields before serializing (``_strip_none`` step).
@@ -69,11 +69,11 @@ FIT_REPORT_EMITTED_EVENT_TYPE: str = EVENT_FIT_REPORT_EMITTED
 """Event-type string registered for fit-report emissions (AC-B.5 + AC-B.5.4).
 
 Single source of truth: re-exported from
-:data:`marcus.lesson_plan.event_type_registry.EVENT_FIT_REPORT_EMITTED`
+:data:`app.marcus.lesson_plan.event_type_registry.EVENT_FIT_REPORT_EMITTED`
 (party-mode 2026-04-19 follow-on consolidation, mirrors the
 ``PRE_PACKET_SNAPSHOT_EVENT_TYPE`` / ``EVENT_PRE_PACKET_SNAPSHOT`` chain).
-Registered in :data:`marcus.lesson_plan.event_type_registry.RESERVED_LOG_EVENT_TYPES`
-and :data:`marcus.lesson_plan.log.WRITER_EVENT_MATRIX` (marcus-orchestrator
+Registered in :data:`app.marcus.lesson_plan.event_type_registry.RESERVED_LOG_EVENT_TYPES`
+and :data:`app.marcus.lesson_plan.log.WRITER_EVENT_MATRIX` (marcus-orchestrator
 only). Naming grammar: ``<domain_noun>.<past_tense_verb>``.
 """
 
@@ -99,7 +99,7 @@ class UnknownUnitIdError(ValueError):
 
 
 # Canonical-JSON kwargs lifted verbatim from
-# :func:`marcus.lesson_plan.digest.compute_digest` — do NOT modify without
+# :func:`app.marcus.lesson_plan.digest.compute_digest` — do NOT modify without
 # a coordinated change to digest.py, since the digest of a FitReport
 # embedded in a LessonPlan must match a digest computed from the serialized
 # form.
@@ -191,7 +191,7 @@ def serialize_fit_report(report: FitReport) -> str:
     :class:`FitReport` instances ALWAYS produce byte-identical bytes.
 
     The ``sort_keys`` / ``ensure_ascii`` / ``separators`` kwargs match
-    :func:`marcus.lesson_plan.digest.compute_digest`. Note: ``compute_digest``
+    :func:`app.marcus.lesson_plan.digest.compute_digest`. Note: ``compute_digest``
     additionally strips ``None``-valued fields before serializing, so
     hashing this serializer's output does NOT yield a value comparable to
     :attr:`LessonPlan.digest` — see the module docstring for the rationale.

@@ -10,7 +10,7 @@ Two entries at MVP (AC-B.2):
     - ``motion-enabled-narrated-lesson`` — composes ``("slides", "blueprint")``
 
 Composition constraint (AC-T.3): every element of ``modality_refs`` MUST be a
-key in :data:`marcus.lesson_plan.modality_registry.MODALITY_REGISTRY`. Enforced
+key in :data:`app.marcus.lesson_plan.modality_registry.MODALITY_REGISTRY`. Enforced
 both by :class:`ComponentTypeEntry`'s ``@model_validator(mode="after")`` AND at
 module import time via an assertion over the seeded dict literal (defense in
 depth).

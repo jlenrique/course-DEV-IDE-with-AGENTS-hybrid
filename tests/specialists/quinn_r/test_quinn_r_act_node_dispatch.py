@@ -3,7 +3,6 @@ from __future__ import annotations
 import inspect
 import json
 from pathlib import Path
-from typing import Any
 
 import pytest
 
@@ -20,8 +19,15 @@ def _payload(tmp_path: Path, *, gate_id: str = "G2C") -> str:
     return json.dumps(
         {
             "gate_id": gate_id,
-            "gate_phase": "post-composition" if gate_id == "G3B" else "pre-composition",
+            # dp-v1.1: every quinn_r manifest gate is pre-composition; the
+            # post body is gate_phase-fallback only (no manifest gate maps it).
+            "gate_phase": "pre-composition",
             "runs_root": str(tmp_path),
+            "gary_slide_output": [{"slide_id": "s1", "file_path": "s1.png"}],
+            "narration_script": [{"id": "seg-1", "narration_text": "Opening."}],
+            "segment_manifest_deltas": [
+                {"id": "seg-1", "visual_references": [{"perception_source": "s1"}]}
+            ],
             "artifact_path": str(tmp_path / "assembled.mp4"),
             "modality": "video",
             "slides": [
@@ -94,26 +100,14 @@ def test_quinn_r_act_g5_runs_structured_qa(tmp_path: Path) -> None:
     assert verdict["advisory"] == []
 
 
-def test_quinn_r_act_g3b_consumes_dispatch_helpers(
-    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
-) -> None:
-    calls: list[str] = []
-
-    def _sensory(**_: Any) -> dict[str, Any]:
-        calls.append("sensory")
-        return {"confidence": "HIGH"}
-
-    def _quality(**_: Any) -> dict[str, Any]:
-        calls.append("quality")
-        return {"status": "ok"}
-
-    monkeypatch.setattr("app.specialists.quinn_r._act.dispatch_to_sensory_bridges", _sensory)
-    monkeypatch.setattr("app.specialists.quinn_r._act.run_postcomposition_validators", _quality)
+def test_quinn_r_act_g3b_runs_storyboard_b_review(tmp_path: Path) -> None:
+    # dp-v1.1: G3B no longer dispatches sensory bridges (the cycle-4 crash);
+    # it reviews Pass-2 narration against Gary's real slide roster.
     state = make_state(_payload(tmp_path, gate_id="G3B"))
     update = _act(state)
     verdict = json.loads(update["cache_state"]["cache_prefix"])["quinn_r_review"]
-    assert verdict["mode"] == "post-composition"
-    assert calls == ["sensory", "quality"]
+    assert verdict["mode"] == "storyboard-b-review"
+    assert verdict["status"] == "reviewed"
 
 
 def test_quinn_r_act_mode_mismatch_fails_loudly(tmp_path: Path) -> None:
@@ -129,4 +123,12 @@ def test_quinn_r_act_body_loc_budget() -> None:
 
     source = inspect.getsource(act_module)
     logical_lines = [line for line in source.splitlines() if line.strip()]
-    assert len(logical_lines) <= 150
+    # Budget 150 -> 160 at Trial-3 finding #10 (2026-06-11): G2B variant-selection
+    # + G2F motion-gate bodies added (manifest dispatches Quinn-R at 5 gates; only
+    # 3 had bodies). 160 -> 168 at dp-v1.1 (2026-06-12): G3B storyboard_b body
+    # replaces the post mapping that crashed cycle-4 live. 168 -> 180 at
+    # dp-v1.2 audio-arc (2026-06-12): G5 grounding wire + fabricated-default
+    # kill (raise replaces the slide-1 roster) + duration-aware WPM raise;
+    # the heavy lifting lives in quality_control_dispatch. Bounded headroom,
+    # not an open ceiling.
+    assert len(logical_lines) <= 180

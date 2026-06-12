@@ -1,0 +1,547 @@
+﻿{
+    "schema_version":  "production-envelope.v1",
+    "trial_id":  "50b7d353-d10d-45d7-a0cc-7a4caa2dd572",
+    "contributions":  [
+                          {
+                              "specialist_id":  "texas",
+                              "contributed_at":  "2026-06-11T21:24:32.192037Z",
+                              "output":  {
+                                             "artifacts":  [
+                                                               "extracted.md",
+                                                               "metadata.json",
+                                                               "extraction-report.yaml",
+                                                               "manifest.json",
+                                                               "ingestion-evidence.md",
+                                                               "result.yaml"
+                                                           ],
+                                             "bundle_reference":  "C:\\Users\\juanl\\Documents\\GitHub\\course-DEV-IDE-with-AGENTS-hybrid\\state\\config\\runs\\50b7d353-d10d-45d7-a0cc-7a4caa2dd572\\bundle",
+                                             "dispatch_exit_code":  10,
+                                             "g0_expected_floor":  560,
+                                             "g0_word_count":  903,
+                                             "model_id":  "gpt-5-nano",
+                                             "overall_status":  "complete_with_warnings",
+                                             "report_schema_version":  "1.0",
+                                             "status":  "complete_with_warnings"
+                                         },
+                              "cost_usd":  0.0,
+                              "model_used":  "gpt-5-nano",
+                              "output_digest":  "469b83e62907ea35a5fc7bccbe69e6cc1bb0ceed8d49d89ef419a6b876cd25a4"
+                          },
+                          {
+                              "specialist_id":  "irene_pass1",
+                              "contributed_at":  "2026-06-11T23:17:50.789382Z",
+                              "output":  {
+                                             "artifact_path":  "C:\\Users\\juanl\\Documents\\GitHub\\course-DEV-IDE-with-AGENTS-hybrid\\runs\\50b7d353-d10d-45d7-a0cc-7a4caa2dd572\\irene-pass1.md",
+                                             "learning_events":  [
+                                                                     {
+                                                                         "event_type":  "scope_decision.set",
+                                                                         "gate":  "G1A",
+                                                                         "payload":  {
+                                                                                         "locked":  false,
+                                                                                         "plan_units":  [
+                                                                                                            {
+                                                                                                                "learning_objective":  "Explain the role of AI agents in an IDE-centered development workflow and why this lesson is relevant to developers.",
+                                                                                                                "rationale":  "Fits the template lesson-plan opener/hook pattern from the pedagogical framework and establishes known-to-novel relevance before tool/process detail. Likely supported by extracted bundle artifacts and appropriate for an introductory content block.",
+                                                                                                                "scope_decision":  "in-scope",
+                                                                                                                "title":  "Lesson framing: why IDE agents matter in modern development",
+                                                                                                                "unit_id":  "PU-1"
+                                                                                                            },
+                                                                                                            {
+                                                                                                                "learning_objective":  "Define key terms learners must recognize to follow the workflow, such as agent, bundle, extraction, pass structure, and artifact traceability.",
+                                                                                                                "rationale":  "Supports Remember/Understand objectives, reduces intrinsic load by normalizing vocabulary early, and aligns with the template requirement for key terminology and source-traceable block planning.",
+                                                                                                                "scope_decision":  "in-scope",
+                                                                                                                "title":  "Core concepts and terminology for agent-assisted development",
+                                                                                                                "unit_id":  "PU-2"
+                                                                                                            },
+                                                                                                            {
+                                                                                                                "learning_objective":  "Describe the end-to-end workflow from ingested source materials through extracted artifacts, planning, and downstream outputs.",
+                                                                                                                "rationale":  "The envelope explicitly lists upstream artifacts such as extracted.md, metadata.json, extraction-report.yaml, manifest.json, and result.yaml. A workflow map is therefore justified and helps learners build a mental model before detail-level instruction.",
+                                                                                                                "scope_decision":  "in-scope",
+                                                                                                                "title":  "Workflow overview: from source bundle to instructional or development artifacts",
+                                                                                                                "unit_id":  "PU-3"
+                                                                                                            },
+                                                                                                            {
+                                                                                                                "learning_objective":  "Interpret the purpose of the generated artifacts in the bundle and distinguish which ones are used for evidence, planning, and verification.",
+                                                                                                                "rationale":  "Strongly grounded in the provided artifact manifest. This unit supports Analyze-lite behavior without overreaching, and it gives concrete content for dual coding and chunking.",
+                                                                                                                "scope_decision":  "in-scope",
+                                                                                                                "title":  "Reading the artifact set and understanding what each file contributes",
+                                                                                                                "unit_id":  "PU-4"
+                                                                                                            },
+                                                                                                            {
+                                                                                                                "learning_objective":  "Apply a structured method for turning extracted source material into a lesson plan, slide-scope outline, or comparable downstream artifact.",
+                                                                                                                "rationale":  "Directly aligned to learning-objective decomposition and backward design. The request itself asks for lesson-plan style planning, so including the transformation method is central rather than incidental.",
+                                                                                                                "scope_decision":  "in-scope",
+                                                                                                                "title":  "Using extracted content to derive structured plans and task outputs",
+                                                                                                                "unit_id":  "PU-5"
+                                                                                                            },
+                                                                                                            {
+                                                                                                                "learning_objective":  "Explain how warnings, status fields, and partial-completion signals affect trust, review, and next-step decisions in an agent-assisted workflow.",
+                                                                                                                "rationale":  "The envelope includes \u0027complete_with_warnings\u0027, dispatch exit code, expected floor, and word count. These are meaningful operational signals and support evaluation of output reliability without requiring unsupported technical depth.",
+                                                                                                                "scope_decision":  "in-scope",
+                                                                                                                "title":  "Quality controls, warnings, and graceful degradation in agent workflows",
+                                                                                                                "unit_id":  "PU-6"
+                                                                                                            },
+                                                                                                            {
+                                                                                                                "learning_objective":  "Walk through a concrete example of interpreting one run\u0027s outputs to decide what content is usable, what needs review, and what can be produced next.",
+                                                                                                                "rationale":  "Follows the pedagogical framework sequence from concept introduction to application. The provided payload supplies enough concrete detail for a worked example, which improves germane load and transfer.",
+                                                                                                                "scope_decision":  "in-scope",
+                                                                                                                "title":  "Practical guided example using the provided run outputs",
+                                                                                                                "unit_id":  "PU-7"
+                                                                                                            },
+                                                                                                            {
+                                                                                                                "learning_objective":  "Explain undocumented internal orchestration, private agent prompts, or exact runtime implementation details behind the upstream system.",
+                                                                                                                "rationale":  "Not safely supported by the provided references or payload. Learning-objective decomposition requires traceable content, and this topic would create orphaned or speculative material.",
+                                                                                                                "scope_decision":  "out-of-scope",
+                                                                                                                "title":  "Advanced internals of model orchestration or hidden implementation specifics",
+                                                                                                                "unit_id":  "PU-8"
+                                                                                                            },
+                                                                                                            {
+                                                                                                                "learning_objective":  "Author narration-level retrieval provenance behavior and convergence phrasing for Pass 2 consumption.",
+                                                                                                                "rationale":  "Although the sanctum digest includes the retrieval intake contract, the user asked for a general lesson-plan style output from the current bundle, not a Pass 2 narration contract lesson. This should only be included if the lesson specifically targets retrieval evidence authoring.",
+                                                                                                                "scope_decision":  "out-of-scope",
+                                                                                                                "title":  "Deep retrieval-provenance and corroboration authoring behavior",
+                                                                                                                "unit_id":  "PU-9"
+                                                                                                            },
+                                                                                                            {
+                                                                                                                "learning_objective":  "Demonstrate understanding by identifying artifact roles, sequencing the workflow correctly, and judging whether an output is production-ready or review-required.",
+                                                                                                                "rationale":  "Backward design requires assessment alignment. This unit closes the lesson with evidence of learning at the same Bloom\u0027s level as the planned content and prevents content-without-verification drift.",
+                                                                                                                "scope_decision":  "in-scope",
+                                                                                                                "title":  "Assessment and reflection checkpoint",
+                                                                                                                "unit_id":  "PU-10"
+                                                                                                            }
+                                                                                                        ]
+                                                                                     },
+                                                                         "run_id":  "50b7d353-d10d-45d7-a0cc-7a4caa2dd572",
+                                                                         "timestamp":  "2026-06-11T23:17:50.781779+00:00"
+                                                                     },
+                                                                     {
+                                                                         "event_type":  "plan.locked",
+                                                                         "gate":  "G1A",
+                                                                         "payload":  {
+                                                                                         "locked_scope":  {
+                                                                                                              "locked":  false,
+                                                                                                              "plan_units":  [
+                                                                                                                                 {
+                                                                                                                                     "learning_objective":  "Explain the role of AI agents in an IDE-centered development workflow and why this lesson is relevant to developers.",
+                                                                                                                                     "rationale":  "Fits the template lesson-plan opener/hook pattern from the pedagogical framework and establishes known-to-novel relevance before tool/process detail. Likely supported by extracted bundle artifacts and appropriate for an introductory content block.",
+                                                                                                                                     "scope_decision":  "in-scope",
+                                                                                                                                     "title":  "Lesson framing: why IDE agents matter in modern development",
+                                                                                                                                     "unit_id":  "PU-1"
+                                                                                                                                 },
+                                                                                                                                 {
+                                                                                                                                     "learning_objective":  "Define key terms learners must recognize to follow the workflow, such as agent, bundle, extraction, pass structure, and artifact traceability.",
+                                                                                                                                     "rationale":  "Supports Remember/Understand objectives, reduces intrinsic load by normalizing vocabulary early, and aligns with the template requirement for key terminology and source-traceable block planning.",
+                                                                                                                                     "scope_decision":  "in-scope",
+                                                                                                                                     "title":  "Core concepts and terminology for agent-assisted development",
+                                                                                                                                     "unit_id":  "PU-2"
+                                                                                                                                 },
+                                                                                                                                 {
+                                                                                                                                     "learning_objective":  "Describe the end-to-end workflow from ingested source materials through extracted artifacts, planning, and downstream outputs.",
+                                                                                                                                     "rationale":  "The envelope explicitly lists upstream artifacts such as extracted.md, metadata.json, extraction-report.yaml, manifest.json, and result.yaml. A workflow map is therefore justified and helps learners build a mental model before detail-level instruction.",
+                                                                                                                                     "scope_decision":  "in-scope",
+                                                                                                                                     "title":  "Workflow overview: from source bundle to instructional or development artifacts",
+                                                                                                                                     "unit_id":  "PU-3"
+                                                                                                                                 },
+                                                                                                                                 {
+                                                                                                                                     "learning_objective":  "Interpret the purpose of the generated artifacts in the bundle and distinguish which ones are used for evidence, planning, and verification.",
+                                                                                                                                     "rationale":  "Strongly grounded in the provided artifact manifest. This unit supports Analyze-lite behavior without overreaching, and it gives concrete content for dual coding and chunking.",
+                                                                                                                                     "scope_decision":  "in-scope",
+                                                                                                                                     "title":  "Reading the artifact set and understanding what each file contributes",
+                                                                                                                                     "unit_id":  "PU-4"
+                                                                                                                                 },
+                                                                                                                                 {
+                                                                                                                                     "learning_objective":  "Apply a structured method for turning extracted source material into a lesson plan, slide-scope outline, or comparable downstream artifact.",
+                                                                                                                                     "rationale":  "Directly aligned to learning-objective decomposition and backward design. The request itself asks for lesson-plan style planning, so including the transformation method is central rather than incidental.",
+                                                                                                                                     "scope_decision":  "in-scope",
+                                                                                                                                     "title":  "Using extracted content to derive structured plans and task outputs",
+                                                                                                                                     "unit_id":  "PU-5"
+                                                                                                                                 },
+                                                                                                                                 {
+                                                                                                                                     "learning_objective":  "Explain how warnings, status fields, and partial-completion signals affect trust, review, and next-step decisions in an agent-assisted workflow.",
+                                                                                                                                     "rationale":  "The envelope includes \u0027complete_with_warnings\u0027, dispatch exit code, expected floor, and word count. These are meaningful operational signals and support evaluation of output reliability without requiring unsupported technical depth.",
+                                                                                                                                     "scope_decision":  "in-scope",
+                                                                                                                                     "title":  "Quality controls, warnings, and graceful degradation in agent workflows",
+                                                                                                                                     "unit_id":  "PU-6"
+                                                                                                                                 },
+                                                                                                                                 {
+                                                                                                                                     "learning_objective":  "Walk through a concrete example of interpreting one run\u0027s outputs to decide what content is usable, what needs review, and what can be produced next.",
+                                                                                                                                     "rationale":  "Follows the pedagogical framework sequence from concept introduction to application. The provided payload supplies enough concrete detail for a worked example, which improves germane load and transfer.",
+                                                                                                                                     "scope_decision":  "in-scope",
+                                                                                                                                     "title":  "Practical guided example using the provided run outputs",
+                                                                                                                                     "unit_id":  "PU-7"
+                                                                                                                                 },
+                                                                                                                                 {
+                                                                                                                                     "learning_objective":  "Explain undocumented internal orchestration, private agent prompts, or exact runtime implementation details behind the upstream system.",
+                                                                                                                                     "rationale":  "Not safely supported by the provided references or payload. Learning-objective decomposition requires traceable content, and this topic would create orphaned or speculative material.",
+                                                                                                                                     "scope_decision":  "out-of-scope",
+                                                                                                                                     "title":  "Advanced internals of model orchestration or hidden implementation specifics",
+                                                                                                                                     "unit_id":  "PU-8"
+                                                                                                                                 },
+                                                                                                                                 {
+                                                                                                                                     "learning_objective":  "Author narration-level retrieval provenance behavior and convergence phrasing for Pass 2 consumption.",
+                                                                                                                                     "rationale":  "Although the sanctum digest includes the retrieval intake contract, the user asked for a general lesson-plan style output from the current bundle, not a Pass 2 narration contract lesson. This should only be included if the lesson specifically targets retrieval evidence authoring.",
+                                                                                                                                     "scope_decision":  "out-of-scope",
+                                                                                                                                     "title":  "Deep retrieval-provenance and corroboration authoring behavior",
+                                                                                                                                     "unit_id":  "PU-9"
+                                                                                                                                 },
+                                                                                                                                 {
+                                                                                                                                     "learning_objective":  "Demonstrate understanding by identifying artifact roles, sequencing the workflow correctly, and judging whether an output is production-ready or review-required.",
+                                                                                                                                     "rationale":  "Backward design requires assessment alignment. This unit closes the lesson with evidence of learning at the same Bloom\u0027s level as the planned content and prevents content-without-verification drift.",
+                                                                                                                                     "scope_decision":  "in-scope",
+                                                                                                                                     "title":  "Assessment and reflection checkpoint",
+                                                                                                                                     "unit_id":  "PU-10"
+                                                                                                                                 }
+                                                                                                                             ]
+                                                                                                          }
+                                                                                     },
+                                                                         "run_id":  "50b7d353-d10d-45d7-a0cc-7a4caa2dd572",
+                                                                         "timestamp":  "2026-06-11T23:17:50.781779+00:00"
+                                                                     }
+                                                                 ],
+                                             "lesson_plan":  {
+                                                                 "lesson_summary":  "This lesson should teach learners how an agent-assisted IDE workflow turns source material into structured outputs, using the provided run bundle as the anchor example. The recommended sequence is: relevance and framing, core terminology, workflow overview, artifact-by-artifact interpretation, structured transformation into downstream plans, quality and warning interpretation, a guided worked example, and a short assessment/reflection checkpoint. Avoid speculative internals unless explicitly provided in the source bundle or lesson objectives.",
+                                                                 "plan_units":  [
+                                                                                    {
+                                                                                        "learning_objective":  "Explain the role of AI agents in an IDE-centered development workflow and why this lesson is relevant to developers.",
+                                                                                        "rationale":  "Fits the template lesson-plan opener/hook pattern from the pedagogical framework and establishes known-to-novel relevance before tool/process detail. Likely supported by extracted bundle artifacts and appropriate for an introductory content block.",
+                                                                                        "scope_decision":  "in-scope",
+                                                                                        "title":  "Lesson framing: why IDE agents matter in modern development",
+                                                                                        "unit_id":  "PU-1"
+                                                                                    },
+                                                                                    {
+                                                                                        "learning_objective":  "Define key terms learners must recognize to follow the workflow, such as agent, bundle, extraction, pass structure, and artifact traceability.",
+                                                                                        "rationale":  "Supports Remember/Understand objectives, reduces intrinsic load by normalizing vocabulary early, and aligns with the template requirement for key terminology and source-traceable block planning.",
+                                                                                        "scope_decision":  "in-scope",
+                                                                                        "title":  "Core concepts and terminology for agent-assisted development",
+                                                                                        "unit_id":  "PU-2"
+                                                                                    },
+                                                                                    {
+                                                                                        "learning_objective":  "Describe the end-to-end workflow from ingested source materials through extracted artifacts, planning, and downstream outputs.",
+                                                                                        "rationale":  "The envelope explicitly lists upstream artifacts such as extracted.md, metadata.json, extraction-report.yaml, manifest.json, and result.yaml. A workflow map is therefore justified and helps learners build a mental model before detail-level instruction.",
+                                                                                        "scope_decision":  "in-scope",
+                                                                                        "title":  "Workflow overview: from source bundle to instructional or development artifacts",
+                                                                                        "unit_id":  "PU-3"
+                                                                                    },
+                                                                                    {
+                                                                                        "learning_objective":  "Interpret the purpose of the generated artifacts in the bundle and distinguish which ones are used for evidence, planning, and verification.",
+                                                                                        "rationale":  "Strongly grounded in the provided artifact manifest. This unit supports Analyze-lite behavior without overreaching, and it gives concrete content for dual coding and chunking.",
+                                                                                        "scope_decision":  "in-scope",
+                                                                                        "title":  "Reading the artifact set and understanding what each file contributes",
+                                                                                        "unit_id":  "PU-4"
+                                                                                    },
+                                                                                    {
+                                                                                        "learning_objective":  "Apply a structured method for turning extracted source material into a lesson plan, slide-scope outline, or comparable downstream artifact.",
+                                                                                        "rationale":  "Directly aligned to learning-objective decomposition and backward design. The request itself asks for lesson-plan style planning, so including the transformation method is central rather than incidental.",
+                                                                                        "scope_decision":  "in-scope",
+                                                                                        "title":  "Using extracted content to derive structured plans and task outputs",
+                                                                                        "unit_id":  "PU-5"
+                                                                                    },
+                                                                                    {
+                                                                                        "learning_objective":  "Explain how warnings, status fields, and partial-completion signals affect trust, review, and next-step decisions in an agent-assisted workflow.",
+                                                                                        "rationale":  "The envelope includes \u0027complete_with_warnings\u0027, dispatch exit code, expected floor, and word count. These are meaningful operational signals and support evaluation of output reliability without requiring unsupported technical depth.",
+                                                                                        "scope_decision":  "in-scope",
+                                                                                        "title":  "Quality controls, warnings, and graceful degradation in agent workflows",
+                                                                                        "unit_id":  "PU-6"
+                                                                                    },
+                                                                                    {
+                                                                                        "learning_objective":  "Walk through a concrete example of interpreting one run\u0027s outputs to decide what content is usable, what needs review, and what can be produced next.",
+                                                                                        "rationale":  "Follows the pedagogical framework sequence from concept introduction to application. The provided payload supplies enough concrete detail for a worked example, which improves germane load and transfer.",
+                                                                                        "scope_decision":  "in-scope",
+                                                                                        "title":  "Practical guided example using the provided run outputs",
+                                                                                        "unit_id":  "PU-7"
+                                                                                    },
+                                                                                    {
+                                                                                        "learning_objective":  "Explain undocumented internal orchestration, private agent prompts, or exact runtime implementation details behind the upstream system.",
+                                                                                        "rationale":  "Not safely supported by the provided references or payload. Learning-objective decomposition requires traceable content, and this topic would create orphaned or speculative material.",
+                                                                                        "scope_decision":  "out-of-scope",
+                                                                                        "title":  "Advanced internals of model orchestration or hidden implementation specifics",
+                                                                                        "unit_id":  "PU-8"
+                                                                                    },
+                                                                                    {
+                                                                                        "learning_objective":  "Author narration-level retrieval provenance behavior and convergence phrasing for Pass 2 consumption.",
+                                                                                        "rationale":  "Although the sanctum digest includes the retrieval intake contract, the user asked for a general lesson-plan style output from the current bundle, not a Pass 2 narration contract lesson. This should only be included if the lesson specifically targets retrieval evidence authoring.",
+                                                                                        "scope_decision":  "out-of-scope",
+                                                                                        "title":  "Deep retrieval-provenance and corroboration authoring behavior",
+                                                                                        "unit_id":  "PU-9"
+                                                                                    },
+                                                                                    {
+                                                                                        "learning_objective":  "Demonstrate understanding by identifying artifact roles, sequencing the workflow correctly, and judging whether an output is production-ready or review-required.",
+                                                                                        "rationale":  "Backward design requires assessment alignment. This unit closes the lesson with evidence of learning at the same Bloom\u0027s level as the planned content and prevents content-without-verification drift.",
+                                                                                        "scope_decision":  "in-scope",
+                                                                                        "title":  "Assessment and reflection checkpoint",
+                                                                                        "unit_id":  "PU-10"
+                                                                                    }
+                                                                                ]
+                                                             },
+                                             "locked_scope":  {
+                                                                  "locked":  false,
+                                                                  "plan_units":  [
+                                                                                     {
+                                                                                         "learning_objective":  "Explain the role of AI agents in an IDE-centered development workflow and why this lesson is relevant to developers.",
+                                                                                         "rationale":  "Fits the template lesson-plan opener/hook pattern from the pedagogical framework and establishes known-to-novel relevance before tool/process detail. Likely supported by extracted bundle artifacts and appropriate for an introductory content block.",
+                                                                                         "scope_decision":  "in-scope",
+                                                                                         "title":  "Lesson framing: why IDE agents matter in modern development",
+                                                                                         "unit_id":  "PU-1"
+                                                                                     },
+                                                                                     {
+                                                                                         "learning_objective":  "Define key terms learners must recognize to follow the workflow, such as agent, bundle, extraction, pass structure, and artifact traceability.",
+                                                                                         "rationale":  "Supports Remember/Understand objectives, reduces intrinsic load by normalizing vocabulary early, and aligns with the template requirement for key terminology and source-traceable block planning.",
+                                                                                         "scope_decision":  "in-scope",
+                                                                                         "title":  "Core concepts and terminology for agent-assisted development",
+                                                                                         "unit_id":  "PU-2"
+                                                                                     },
+                                                                                     {
+                                                                                         "learning_objective":  "Describe the end-to-end workflow from ingested source materials through extracted artifacts, planning, and downstream outputs.",
+                                                                                         "rationale":  "The envelope explicitly lists upstream artifacts such as extracted.md, metadata.json, extraction-report.yaml, manifest.json, and result.yaml. A workflow map is therefore justified and helps learners build a mental model before detail-level instruction.",
+                                                                                         "scope_decision":  "in-scope",
+                                                                                         "title":  "Workflow overview: from source bundle to instructional or development artifacts",
+                                                                                         "unit_id":  "PU-3"
+                                                                                     },
+                                                                                     {
+                                                                                         "learning_objective":  "Interpret the purpose of the generated artifacts in the bundle and distinguish which ones are used for evidence, planning, and verification.",
+                                                                                         "rationale":  "Strongly grounded in the provided artifact manifest. This unit supports Analyze-lite behavior without overreaching, and it gives concrete content for dual coding and chunking.",
+                                                                                         "scope_decision":  "in-scope",
+                                                                                         "title":  "Reading the artifact set and understanding what each file contributes",
+                                                                                         "unit_id":  "PU-4"
+                                                                                     },
+                                                                                     {
+                                                                                         "learning_objective":  "Apply a structured method for turning extracted source material into a lesson plan, slide-scope outline, or comparable downstream artifact.",
+                                                                                         "rationale":  "Directly aligned to learning-objective decomposition and backward design. The request itself asks for lesson-plan style planning, so including the transformation method is central rather than incidental.",
+                                                                                         "scope_decision":  "in-scope",
+                                                                                         "title":  "Using extracted content to derive structured plans and task outputs",
+                                                                                         "unit_id":  "PU-5"
+                                                                                     },
+                                                                                     {
+                                                                                         "learning_objective":  "Explain how warnings, status fields, and partial-completion signals affect trust, review, and next-step decisions in an agent-assisted workflow.",
+                                                                                         "rationale":  "The envelope includes \u0027complete_with_warnings\u0027, dispatch exit code, expected floor, and word count. These are meaningful operational signals and support evaluation of output reliability without requiring unsupported technical depth.",
+                                                                                         "scope_decision":  "in-scope",
+                                                                                         "title":  "Quality controls, warnings, and graceful degradation in agent workflows",
+                                                                                         "unit_id":  "PU-6"
+                                                                                     },
+                                                                                     {
+                                                                                         "learning_objective":  "Walk through a concrete example of interpreting one run\u0027s outputs to decide what content is usable, what needs review, and what can be produced next.",
+                                                                                         "rationale":  "Follows the pedagogical framework sequence from concept introduction to application. The provided payload supplies enough concrete detail for a worked example, which improves germane load and transfer.",
+                                                                                         "scope_decision":  "in-scope",
+                                                                                         "title":  "Practical guided example using the provided run outputs",
+                                                                                         "unit_id":  "PU-7"
+                                                                                     },
+                                                                                     {
+                                                                                         "learning_objective":  "Explain undocumented internal orchestration, private agent prompts, or exact runtime implementation details behind the upstream system.",
+                                                                                         "rationale":  "Not safely supported by the provided references or payload. Learning-objective decomposition requires traceable content, and this topic would create orphaned or speculative material.",
+                                                                                         "scope_decision":  "out-of-scope",
+                                                                                         "title":  "Advanced internals of model orchestration or hidden implementation specifics",
+                                                                                         "unit_id":  "PU-8"
+                                                                                     },
+                                                                                     {
+                                                                                         "learning_objective":  "Author narration-level retrieval provenance behavior and convergence phrasing for Pass 2 consumption.",
+                                                                                         "rationale":  "Although the sanctum digest includes the retrieval intake contract, the user asked for a general lesson-plan style output from the current bundle, not a Pass 2 narration contract lesson. This should only be included if the lesson specifically targets retrieval evidence authoring.",
+                                                                                         "scope_decision":  "out-of-scope",
+                                                                                         "title":  "Deep retrieval-provenance and corroboration authoring behavior",
+                                                                                         "unit_id":  "PU-9"
+                                                                                     },
+                                                                                     {
+                                                                                         "learning_objective":  "Demonstrate understanding by identifying artifact roles, sequencing the workflow correctly, and judging whether an output is production-ready or review-required.",
+                                                                                         "rationale":  "Backward design requires assessment alignment. This unit closes the lesson with evidence of learning at the same Bloom\u0027s level as the planned content and prevents content-without-verification drift.",
+                                                                                         "scope_decision":  "in-scope",
+                                                                                         "title":  "Assessment and reflection checkpoint",
+                                                                                         "unit_id":  "PU-10"
+                                                                                     }
+                                                                                 ]
+                                                              },
+                                             "model_id":  "gpt-5.4",
+                                             "specialist_id":  "irene_pass1",
+                                             "usage":  {
+                                                           "input_token_details":  {
+                                                                                       "audio":  0,
+                                                                                       "cache_read":  5888
+                                                                                   },
+                                                           "input_tokens":  6256,
+                                                           "output_token_details":  {
+                                                                                        "audio":  0,
+                                                                                        "reasoning":  0
+                                                                                    },
+                                                           "output_tokens":  1058,
+                                                           "total_tokens":  7314
+                                                       }
+                                         },
+                              "cost_usd":  0.0,
+                              "model_used":  "gpt-5.4",
+                              "output_digest":  "08047f5cf875520989953385b3573793d0dc7d4b752b3179ecf1981c49ebe1b1"
+                          },
+                          {
+                              "specialist_id":  "cd",
+                              "contributed_at":  "2026-06-11T23:18:02.165997Z",
+                              "output":  {
+                                             "cd_directive":  {
+                                                                  "creative_rationale":  "The run context signals a practitioner-focused, technical module (DEV IDE with agents), where precision, stepwise guidance, and code/UI callouts must lead. A text-led frame prioritizes dense literal text for procedures, flags, and code semantics, with visuals supporting UI flows and mental models rather than carrying the argument. Creative bandwidth stays light to keep cognitive load on exactness while still allowing brief narrative bridges (motivation, pitfalls, heuristics). Professional register and slide-led authority align with an audience moving quickly from concept to execution.",
+                                                                  "experience_profile":  "text-led",
+                                                                  "narration_profile_controls":  {
+                                                                                                     "arc_awareness":  "medium",
+                                                                                                     "callback_frequency":  "moderate",
+                                                                                                     "connective_weight":  "balanced",
+                                                                                                     "elaboration_budget":  "low",
+                                                                                                     "emotional_coloring":  "neutral",
+                                                                                                     "narrative_tension":  "medium",
+                                                                                                     "narrator_source_authority":  "slide-led",
+                                                                                                     "rhetorical_richness":  "balanced",
+                                                                                                     "slide_content_density":  "dense",
+                                                                                                     "visual_narration_coupling":  "balanced",
+                                                                                                     "vocabulary_register":  "professional"
+                                                                                                 },
+                                                                  "schema_version":  "1.0",
+                                                                  "slide_mode_proportions":  {
+                                                                                                 "creative":  0.15,
+                                                                                                 "literal-text":  0.6,
+                                                                                                 "literal-visual":  0.25
+                                                                                             }
+                                                              },
+                                             "model_id":  "gpt-5",
+                                             "usage":  {
+                                                           "input_token_details":  {
+                                                                                       "audio":  0,
+                                                                                       "cache_read":  3840
+                                                                                   },
+                                                           "input_tokens":  3896,
+                                                           "output_token_details":  {
+                                                                                        "audio":  0,
+                                                                                        "reasoning":  768
+                                                                                    },
+                                                           "output_tokens":  910,
+                                                           "total_tokens":  4806
+                                                       }
+                                         },
+                              "cost_usd":  0.0,
+                              "model_used":  "gpt-5",
+                              "output_digest":  "f689f08cfe36671daad7e1200c2be824aa10506e4d45bcdf338d4b4ad3b5bda1"
+                          },
+                          {
+                              "specialist_id":  "gary",
+                              "contributed_at":  "2026-06-11T23:18:02.189719Z",
+                              "output":  {
+                                             "export_path":  "exports/gary-fixture/",
+                                             "gary_slide_output":  [
+                                                                       {
+                                                                           "card_number":  1,
+                                                                           "file_path":  "exports/gary_slide_01.png",
+                                                                           "slide_id":  "slide-01",
+                                                                           "source_ref":  "slide-brief.md#1",
+                                                                           "visual_description":  "A clean title slide with subtle grid background."
+                                                                       },
+                                                                       {
+                                                                           "card_number":  2,
+                                                                           "file_path":  "exports/gary_slide_02.png",
+                                                                           "slide_id":  "slide-02",
+                                                                           "source_ref":  "slide-brief.md#2",
+                                                                           "visual_description":  "A two-column comparison slide."
+                                                                       }
+                                                                   ],
+                                             "generation_id":  "gen-fixture-001",
+                                             "model_id":  "gpt-5-nano",
+                                             "specialist_id":  "gary",
+                                             "status":  "complete"
+                                         },
+                              "cost_usd":  0.0,
+                              "model_used":  "gpt-5-nano",
+                              "output_digest":  "f3f9fbfa56bfb308da1df8509817ea56e5be62f33fc9ed10eb968bf117538ee3"
+                          },
+                          {
+                              "specialist_id":  "vera",
+                              "contributed_at":  "2026-06-11T23:18:02.214804Z",
+                              "output":  {
+                                             "perception":  {
+
+                                                            },
+                                             "summary_path":  "C:\\Users\\juanl\\Documents\\GitHub\\course-DEV-IDE-with-AGENTS-hybrid\\state\\config\\runs\\50b7d353-d10d-45d7-a0cc-7a4caa2dd572\\specialist-summaries\\vera-20260611T231802208226Z.md",
+                                             "trace_report_path":  "C:\\Users\\juanl\\Documents\\GitHub\\course-DEV-IDE-with-AGENTS-hybrid\\state\\config\\runs\\50b7d353-d10d-45d7-a0cc-7a4caa2dd572\\fidelity\\g0-vera-20260611T231802207221Z.json",
+                                             "vera_finding":  {
+                                                                  "findings":  [
+                                                                                   {
+                                                                                       "category":  "O",
+                                                                                       "description":  "extracted text is below the expected word floor",
+                                                                                       "evidence_anchor":  "texas:extracted.md",
+                                                                                       "severity":  "warning"
+                                                                                   },
+                                                                                   {
+                                                                                       "category":  "O",
+                                                                                       "description":  "claim text lacks evidence-sentence anchors",
+                                                                                       "evidence_anchor":  "texas:extracted.md",
+                                                                                       "severity":  "warning"
+                                                                                   }
+                                                                               ],
+                                                                  "gate_id":  "G0",
+                                                                  "rubrics":  {
+                                                                                  "G0":  {
+                                                                                             "dimensions":  {
+                                                                                                                "alteration_scan":  {
+                                                                                                                                        "evidence_sentence":  "alteration_scan checked against Texas extracted.md",
+                                                                                                                                        "score":  1.0,
+                                                                                                                                        "verdict":  "pass"
+                                                                                                                                    },
+                                                                                                                "claim_atomicity":  {
+                                                                                                                                        "evidence_sentence":  "claim_atomicity checked against Texas extracted.md",
+                                                                                                                                        "score":  1.0,
+                                                                                                                                        "verdict":  "pass"
+                                                                                                                                    },
+                                                                                                                "evidence_sentence":  {
+                                                                                                                                          "evidence_sentence":  "evidence_sentence checked against Texas extracted.md",
+                                                                                                                                          "score":  1.0,
+                                                                                                                                          "verdict":  "pass"
+                                                                                                                                      },
+                                                                                                                "omission_scan":  {
+                                                                                                                                      "evidence_sentence":  "omission_scan checked against Texas extracted.md",
+                                                                                                                                      "score":  1.0,
+                                                                                                                                      "verdict":  "pass"
+                                                                                                                                  },
+                                                                                                                "provenance_anchor":  {
+                                                                                                                                          "evidence_sentence":  "provenance_anchor checked against Texas extracted.md",
+                                                                                                                                          "score":  1.0,
+                                                                                                                                          "verdict":  "pass"
+                                                                                                                                      },
+                                                                                                                "source_coverage":  {
+                                                                                                                                        "evidence_sentence":  "source_coverage checked against Texas extracted.md",
+                                                                                                                                        "score":  1.0,
+                                                                                                                                        "verdict":  "pass"
+                                                                                                                                    }
+                                                                                                            },
+                                                                                             "gate_id":  "G0",
+                                                                                             "word_count":  0
+                                                                                         }
+                                                                              },
+                                                                  "run_id":  "50b7d353-d10d-45d7-a0cc-7a4caa2dd572",
+                                                                  "schema_version":  "fidelity-trace.v1",
+                                                                  "specialist_id":  "vera",
+                                                                  "trace_report_path":  "C:\\Users\\juanl\\Documents\\GitHub\\course-DEV-IDE-with-AGENTS-hybrid\\state\\config\\runs\\50b7d353-d10d-45d7-a0cc-7a4caa2dd572\\fidelity\\g0-vera-20260611T231802207221Z.json",
+                                                                  "verdict":  {
+                                                                                  "failure_reason":  null,
+                                                                                  "status":  "PROCEED",
+                                                                                  "verb":  "proceed"
+                                                                              }
+                                                              }
+                                         },
+                              "cost_usd":  0.0,
+                              "model_used":  "gpt-5",
+                              "output_digest":  "d1ed076d0504eda97f45b0fc73d69dbf33f262f4331dddceda7374e5e19fb04b"
+                          },
+                          {
+                              "specialist_id":  "quinn_r",
+                              "contributed_at":  "2026-06-11T23:18:02.237598Z",
+                              "output":  {
+                                             "gate_id":  "G2B",
+                                             "quinn_r_review":  {
+                                                                    "mode":  "variant-selection",
+                                                                    "selections":  [
+                                                                                       {
+                                                                                           "selected_variant":  "variant-1",
+                                                                                           "slide_id":  "slide-1"
+                                                                                       }
+                                                                                   ],
+                                                                    "status":  "approved"
+                                                                },
+                                             "summary_path":  "C:\\Users\\juanl\\Documents\\GitHub\\course-DEV-IDE-with-AGENTS-hybrid\\state\\config\\runs\\50b7d353-d10d-45d7-a0cc-7a4caa2dd572\\specialist-summaries\\quinn_r-20260611T231802232504Z.md"
+                                         },
+                              "cost_usd":  0.0,
+                              "model_used":  "gpt-5",
+                              "output_digest":  "ecbb1fdae9c654d408541f83e46af85b0db4f6bb707e20fa4e56e6aa5626600b"
+                          }
+                      ]
+}

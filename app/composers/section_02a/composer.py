@@ -6,7 +6,7 @@ import json
 from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
-from uuid import uuid4
+from uuid import UUID
 
 import yaml
 from langchain_core.language_models import BaseChatModel
@@ -72,12 +72,12 @@ def _load_llm_payload(response_text: str) -> dict[str, Any]:
 
 def _source_from_payload(
     *,
-    src_id: str,
+    ref_id: str,
     locator: str,
     payload: dict[str, Any],
 ) -> DirectiveSource:
     return DirectiveSource(
-        src_id=src_id,
+        ref_id=ref_id,
         locator=locator,
         role=payload["role"],
         expected_min_words=payload.get("expected_min_words"),
@@ -87,12 +87,12 @@ def _source_from_payload(
 
 def _ignored_source(
     *,
-    src_id: str,
+    ref_id: str,
     locator: str,
     excluded_reason: ExcludedReason,
 ) -> DirectiveSource:
     return DirectiveSource(
-        src_id=src_id,
+        ref_id=ref_id,
         locator=locator,
         role=DirectiveRole.IGNORED,
         excluded_reason=excluded_reason,
@@ -104,7 +104,7 @@ def _classify_with_llm(
     *,
     file_path: Path,
     corpus_dir: Path,
-    src_id: str,
+    ref_id: str,
     llm: BaseChatModel,
     cache: ComposerCache,
     corpus_summary: str,
@@ -121,7 +121,7 @@ def _classify_with_llm(
         response_text = _message_content(llm.invoke(prompt))
         cache.set(cache_key, response_text)
     payload = _load_llm_payload(response_text)
-    return _source_from_payload(src_id=src_id, locator=locator, payload=payload)
+    return _source_from_payload(ref_id=ref_id, locator=locator, payload=payload)
 
 
 def compose(
@@ -129,6 +129,7 @@ def compose(
     *,
     llm: BaseChatModel,
     cache: ComposerCache | None = None,
+    run_id: UUID,
 ) -> Directive:
     """Compose a validated Section 02A directive from a corpus directory."""
 
@@ -140,13 +141,13 @@ def compose(
     corpus_summary = corpus_summary_for(files, corpus_dir)
     sources: list[DirectiveSource] = []
     for index, file_path in enumerate(files, start=1):
-        src_id = f"src-{index:03d}"
+        ref_id = f"src-{index:03d}"
         locator = file_path.relative_to(corpus_dir).as_posix()
         excluded_reason = _rule_based_exclusion(file_path)
         if excluded_reason is not None:
             sources.append(
                 _ignored_source(
-                    src_id=src_id,
+                    ref_id=ref_id,
                     locator=locator,
                     excluded_reason=excluded_reason,
                 )
@@ -156,7 +157,7 @@ def compose(
             _classify_with_llm(
                 file_path=file_path,
                 corpus_dir=corpus_dir,
-                src_id=src_id,
+                ref_id=ref_id,
                 llm=llm,
                 cache=composer_cache,
                 corpus_summary=corpus_summary,
@@ -164,7 +165,7 @@ def compose(
         )
 
     return Directive(
-        run_id=uuid4(),
+        run_id=run_id,
         corpus_dir=corpus_dir.resolve().as_posix(),
         sources=sources,
         composed_at=datetime.now(tz=UTC),
@@ -193,4 +194,3 @@ __all__ = [
     "compose",
     "write_directive_yaml",
 ]
-

@@ -27,6 +27,7 @@ class _RecordingAdapter:
         dependency_map: dict[str, str],
         cost_usd: float,
         base_state=None,
+        node_id: str | None = None,
     ) -> ProductionEnvelope:
         cache_prefix = None
         if base_state is not None and base_state.cache_state is not None:
@@ -49,6 +50,7 @@ class _RecordingAdapter:
                 },
                 model_used="gpt-5-nano",
                 cost_usd=cost_usd,
+                node_id=node_id,
             )
         )
         return updated

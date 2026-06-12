@@ -2,9 +2,10 @@
 
 **Purpose:** end-to-end execution playbook for Trial-3 — the first real production trial against the post-Slab-7c substrate. Trial-3 is the strategic payoff event that validates the orchestrational tail (§01→§15) end-to-end and unblocks Epic 15 (Learning & Compound Intelligence) reactivation.
 
-**Status:** **substrate ready** as of 2026-05-06 (Slab 7c dev-stories closed at 35/36 with 7c.21a in flight; 7c.21 closeout ceremony confirmed Trial-3 readiness via Murat M4 4-predicate verification).
+**Status:** **substrate FULLY HARMONIZED** as of 2026-05-22 (Slab 7c dev-stories closed 2026-05-07 at 36/36; **Epic 34 §02A Downstream-Consumer Coherence FULLY COMPLETE 2026-05-22** at 7/7 stories; commit range `bc477ed..1b59487`). Substrate now carries: §02A composer emitting `ref_id` natively (renamed from `src_id`); Texas wrangler accepting 7-role union + closed `excluded_reason` enum + cross-field invariants + `sme_refs[]` metadata; no temporary translator scaffold; no legacy `directive_composer.py`; integration-boundary green test installed at `tests/integration/test_section_02a_to_wrangler_subprocess_roundtrip.py` (sha256-pinned forensic-anchor `351a57f...` from Trial-3 attempt-2 forensic evidence). Trial-3 attempt-2 launch-failure root cause (untested integration boundary; §02A vs wrangler schema fork) is now closed via the integration-ratchet-first Quinn-synthesis Option 5 pattern.
 
 **Authored:** 2026-05-06 — Claude (post-7c.21 close).
+**Substrate-state refresh:** 2026-05-22 — Claude (post-Epic-34 close). Trial-3 execution playbook (§§1-N below) remains authoritative; substrate is now MORE harmonized than the 2026-05-06 baseline (no translator, no legacy composer, integration boundary green-tested + extended through 4 stories + ratified through Epic close).
 
 **Owner of execution:** Operator (with Marcus orchestration). Codex is NOT in scope for Trial-3 dispatch — this is a real-content production run, not a dev-story cycle.
 
@@ -14,7 +15,7 @@
 
 Trial-3 is a **real production trial** of the LangChain/LangGraph migrated platform end-to-end (§01 Activation through §15 Final Operator Handoff) against a real corpus. It validates:
 
-- All 11 specialists (Texas / Quinn-R / Vera / Irene-Pass1 / Tracy / Gary / Kira / Wanda / Enrique / Dan / Compositor) execute with real content (NOT fixture stubs).
+- All 12 specialists (Texas / Quinn-R / Vera / Irene / Irene-Pass1 / Tracy / Gary / Kira / Wanda / Enrique / Dan / Compositor) execute with real content (NOT fixture stubs). (Roster 11→12 at `cd31b33`: irene_pass1 adopted into CANONICAL_SPECIALIST_IDS, Trial-3 finding #4.)
 - All 14+ HIL surfaces (per Slab-7c §section packages) accept operator input + emit OperatorVerdict.
 - All 5 Marcus-bound writers (gary-slide-content + gary-fidelity-slides + gary-diagram-cards + gary-theme-resolution + gary-outbound-envelope) emit per-plan-unit packages.
 - The §15 G5 final-handoff bundle (`section-15-bundle` writer) emits assembly-bundle + DESCRIPT-ASSEMBLY-GUIDE.md regen + Trial3Transcript anchor + slab-close evidence pointer.
@@ -78,7 +79,7 @@ Operator confirms these on the dispatch session:
 - [ ] **Slab 7c at 36/36 dev-stories DONE** in `sprint-status.yaml` (7c.21 + 7c.21a both `done`).
 - [ ] **Operator-driven Gate-2 of 7c.21 complete** (`bmad-retrospective` triggered + mapping-checklist row-flips party-mode-ratified per FR-7c-42 + per-tripwire firing-rate review per FR-7c-41). Recommended but not strictly blocking.
 - [ ] **Real corpus selected** (e.g., Tejal APC C1-M1 corpus from Trial-2 OR a fresh corpus). Path documented.
-- [ ] **API credentials in `.env`**: GAMMA_API_KEY + ELEVENLABS_API_KEY + CANVAS_API_KEY + (optional) PANOPTO_API_KEY + (optional) WONDERCRAFT_API_KEY + (optional) KLING_API_KEY + OPENAI_API_KEY (for LLM specialists). Per-cred validation: `.venv/Scripts/python.exe scripts/heartbeat_check.mjs` (per CLAUDE.md project-context).
+- [ ] **API credentials in `.env`**: GAMMA_API_KEY + ELEVENLABS_API_KEY + CANVAS_ACCESS_TOKEN + (optional) PANOPTO_CLIENT_ID/SECRET + (optional) WONDERCRAFT_API_KEY + (optional) KLING_ACCESS_KEY/SECRET_KEY + OPENAI_API_KEY (for LLM specialists). Per-cred validation: `node scripts/heartbeat_check.mjs` (it is a Node script, not Python; var names corrected 2026-06-10 scrub).
 - [ ] **`PYTHONIOENCODING=utf-8`** set in PowerShell environment per A11 Windows-portability anti-pattern. Verify: `$env:PYTHONIOENCODING == "utf-8"`.
 - [ ] **Postgres running natively** (per CLAUDE.md memory `project_no_docker.md`; LangGraph checkpointer relies on local Postgres).
 - [ ] **No active git-uncommitted state** that could mask Trial-3 evidence.
@@ -92,11 +93,11 @@ Trial-3 is launched via Marcus orchestrator's CLI surface. The exact command sha
 ### 4.1 Pre-flight (runtime substrate health)
 
 ```powershell
-# From repo root
-.venv/Scripts/python.exe -m app.session_readiness  # or analogous app_session_readiness CLI
+# From repo root (corrected 2026-06-10 scrub: module lives under scripts.utilities)
+.venv/Scripts/python.exe -m scripts.utilities.app_session_readiness
 ```
 
-Confirm: SQLite + Postgres up, all 11 specialists discoverable, all API clients reachable.
+Confirm: SQLite + Postgres up, all 12 specialists discoverable, all API clients reachable.
 
 ### 4.2 Trial-3 dispatch
 
@@ -173,7 +174,7 @@ Anchor (sha256) of the transcript file lands in `Section15Bundle.trial_3_transcr
 Trial-3 is PASS when:
 
 - [ ] Reaches §15 G5 with operator verb=`complete` (NOT paused/halted/rejected).
-- [ ] All 11 specialists produce real content (zero fixture-stub fallbacks).
+- [ ] All 12 specialists produce real content (zero fixture-stub fallbacks).
 - [ ] All 14+ HIL surfaces accept operator input + emit valid OperatorVerdict (verbs match per-surface contracts).
 - [ ] All 5 Marcus-bound pre-Gary writers emit per-plan-unit packages.
 - [ ] §15 G5 Marcus bundle writer (`section-15-bundle`) emits assembly-bundle + DESCRIPT-ASSEMBLY-GUIDE.md + Trial-3 transcript anchor + slab-close evidence pointer.

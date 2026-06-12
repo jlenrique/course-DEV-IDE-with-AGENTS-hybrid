@@ -31,8 +31,10 @@ from app.manifest.schema import NodeSpec
 from app.marcus.orchestrator import (
     conversation_persistence,
     gate_runner,
+    package_builders,
     pre_gate_marcus,
     specialist_summary_writer,
+    storyboard_publisher,
 )
 from app.marcus.orchestrator.dispatch_adapter import ProductionDispatchAdapter
 from app.marcus.orchestrator.pre_gate_marcus import PreFillProposal
@@ -57,6 +59,7 @@ from app.models.state.operator_verdict import OperatorVerdict
 from app.models.state.run_state import RunState
 from app.runtime.cascade_config import ensure_pricing_covers_cascade, load_cascade, load_pricing
 from app.runtime.economics import RUNS_ROOT, measure_trial_cost, record_trial_cost_report
+from app.specialists.dispatch_errors import SpecialistDispatchError
 
 REPO_ROOT = Path(__file__).resolve().parents[3]
 DEFAULT_MANIFEST_PATH = REPO_ROOT / "state" / "config" / "pipeline-manifest.yaml"
@@ -82,6 +85,18 @@ class MissingUpstreamContributionError(RuntimeError):
             f"{specialist_id!r} for downstream input {downstream_input_key!r} "
             f"while invoking {downstream_specialist_id!r}"
         )
+
+
+class LegacyEnvelopeSchemaError(RuntimeError):
+    """Raised when resuming a run whose envelope predates per-node keying.
+
+    S2 (SCP 2026-06-11): production-envelope.v1 rows carry no node_id; a
+    resume against them would re-dispatch every specialist (double spend)
+    or half-read the walk state. Murat's characterization ruling: legacy
+    envelopes are migrated explicitly or rejected loudly — never half-read.
+    Per the operator's relaunch-as-cycle-2 ruling, v1 runs stay frozen as
+    evidence and new cycles launch fresh.
+    """
 
 
 class GateBypassError(RuntimeError):
@@ -299,13 +314,16 @@ def _normalize_dependency_map(
 ) -> dict[str, str]:
     normalized: dict[str, str] = {}
     for downstream_input_key, upstream_specialist_id in dependency_map.items():
-        if production_envelope.get_contribution(upstream_specialist_id) is not None:
+        # Presence checks use latest_for_specialist — the intentful any-node
+        # API (Winston S2-A: bare get_contribution without node_id is pinned
+        # out of production call sites).
+        if production_envelope.latest_for_specialist(upstream_specialist_id) is not None:
             normalized[downstream_input_key] = upstream_specialist_id
             continue
         canonical = _canonical_dependency_specialist_id(upstream_specialist_id)
         normalized[downstream_input_key] = (
             canonical
-            if production_envelope.get_contribution(canonical) is not None
+            if production_envelope.latest_for_specialist(canonical) is not None
             else upstream_specialist_id
         )
     return normalized
@@ -318,7 +336,7 @@ def _ensure_upstream_contributions_present(
     downstream_specialist_id: str,
 ) -> None:
     for downstream_input_key, upstream_specialist_id in dependency_map.items():
-        if production_envelope.get_contribution(upstream_specialist_id) is None:
+        if production_envelope.latest_for_specialist(upstream_specialist_id) is None:
             raise MissingUpstreamContributionError(
                 specialist_id=upstream_specialist_id,
                 downstream_input_key=downstream_input_key,
@@ -673,6 +691,25 @@ def _record_cost(
     return record_trial_cost_report(str(trial_id), report, runs_root=runs_root)
 
 
+def _merge_artifact_paths(
+    existing: list[Path], *candidates: Path | None
+) -> list[Path]:
+    """Append candidates in order, dropping Nones and duplicates.
+
+    Multi-gate pause-and-resume re-emits stable-path artifacts
+    (checkpoint.json, run_summary.yaml, the cost report) at every pause;
+    without dedupe the envelope accumulates one duplicate per crossed gate.
+    """
+    merged: list[Path] = []
+    for path in (*existing, *candidates):
+        if path is None:
+            continue
+        candidate = Path(path)
+        if candidate not in merged:
+            merged.append(candidate)
+    return merged
+
+
 def _has_production_evidence(
     *,
     graph_step_completed: bool,
@@ -697,18 +734,46 @@ def _runner_payload_for_specialist(
     specialist_id: str,
     directive_path: Path | None,
     bundle_dir: Path | None,
-) -> dict[str, str] | None:
-    """Build runner_supplied_payload for Texas when directive composition has run.
+    gate_code: str | None = None,
+    production_envelope: ProductionEnvelope | None = None,
+    runs_root: Path | None = None,
+    trial_id: UUID | None = None,
+) -> dict[str, Any] | None:
+    """Build runner_supplied_payload for specialists needing runner-side context.
 
-    Story 7a.1 / A-R3 Option A: only Texas receives the runner-supplied keys.
+    Story 7a.1 / A-R3 Option A: Texas receives directive/bundle paths when
+    directive composition has run.
+
+    Trial-3 finding #10 (2026-06-11): Quinn-R receives the dispatching
+    node's ``gate_code`` as ``gate_id`` (its _act selects its body from the
+    payload; production dispatch previously supplied no gate context).
+
+    S4 (party review 2026-06-12, manifest-edge-key-projection-s4 LANDED):
+    content keys now flow through manifest ``dependency_projections`` — the
+    S3 bridge spread is retired (its tombstone test was updated
+    deliberately, per Winston S3-A). This seam carries RUNNER CONTEXT only:
+    Texas's directive/bundle paths, Quinn-R's gate_id, Gary's run-dir
+    ``export_dir``. Content delivery via the seam is forbidden — the
+    adapter collision guard refuses any seam key that a projection or
+    dependency also delivers.
+
     Other specialists receive None.
     """
-    if specialist_id != "texas" or directive_path is None or bundle_dir is None:
-        return None
-    return {
-        "directive_path": directive_path.as_posix(),
-        "bundle_dir": bundle_dir.as_posix(),
-    }
+    if specialist_id == "texas" and directive_path is not None and bundle_dir is not None:
+        return {
+            "directive_path": directive_path.as_posix(),
+            "bundle_dir": bundle_dir.as_posix(),
+        }
+    # The walker passes the CANONICAL id ("quinn_r" via SPECIALIST_ALIASES),
+    # not the manifest spelling ("quinn-r") — match both; the hyphen form
+    # cost a second live ModeMismatchError('') crash on 2026-06-11.
+    if specialist_id in {"quinn_r", "quinn-r"} and gate_code:
+        return {"gate_id": gate_code}
+    if specialist_id == "gary" and runs_root is not None and trial_id is not None:
+        return {
+            "export_dir": (runs_root / str(trial_id) / "exports" / "gary").as_posix()
+        }
+    return None
 
 
 def _should_invoke_pre_gate_marcus(*, allow_offline_cost_report: bool) -> bool:
@@ -765,6 +830,348 @@ def _invoke_pre_gate_marcus_for_gate(
         gate_id=gate_id,
         slot_values=slot_values,
     )
+
+
+def _pause_at_gate(
+    *,
+    gate_id: str,
+    node_id: str,
+    node_index: int,
+    manifest: Any,
+    trial_id: UUID,
+    operator_id: str,
+    envelope: ProductionTrialEnvelope,
+    production_envelope: ProductionEnvelope,
+    run_state: RunState,
+    child_runs: list[SimpleNamespace],
+    trace_metadata: dict[str, str],
+    specialist_calls: int,
+    graph_step_completed: bool,
+    manifest_path: Path,
+    runs_root: Path,
+    allow_offline_cost_report: bool,
+    max_specialist_calls: int,
+) -> ProductionTrialEnvelope:
+    """Pause the trial at ``gate_id``: draft, card, checkpoint, persist, return.
+
+    Extracted verbatim from the run_production_trial gate branch (Trial-3
+    attempt-3 fix, 2026-06-11) so BOTH walkers share one pause implementation.
+    The resume walker previously had no pause path at all — it raised
+    GateBypassError at every gate in live mode, making any live trial unable
+    to advance from one gate to the next (pause logic existed once, was wired
+    once — the A23 fork pattern at function granularity).
+    """
+    pending = [item.id for item in manifest.nodes[node_index + 1 :]]
+    pre_fill = _invoke_pre_gate_marcus_for_gate(
+        gate_id=gate_id,
+        trial_id=trial_id,
+        production_envelope=production_envelope,
+        pending_nodes=pending,
+        artifact_paths=envelope.artifact_paths,
+        allow_offline_cost_report=allow_offline_cost_report,
+    )
+    if pre_fill is not None:
+        child_runs.append(
+            _trace_run_for_pre_gate_marcus(
+                trial_id=trial_id,
+                gate_id=gate_id,
+                proposal=pre_fill,
+            )
+        )
+    card = _build_decision_card(
+        gate_id=gate_id,
+        trial_id=trial_id,
+        node_id=node_id,
+        operator_id=operator_id,
+        pending_nodes=pending,
+        artifact_paths=envelope.artifact_paths,
+        pre_fill=pre_fill,
+        runs_root=runs_root,
+    )
+    conversation_path = _persist_conversation_turn_if_possible(
+        card=card,
+        gate_id=gate_id,
+        trial_id=trial_id,
+        operator_id=operator_id,
+        runs_root=runs_root,
+    )
+    stored = register_decision_card(card)
+    checkpoint = _write_checkpoint(
+        trial_id=trial_id,
+        runs_root=runs_root,
+        node_index=node_index,
+        gate_id=gate_id,
+        run_state=run_state,
+        envelope=envelope,
+        manifest_path=manifest_path,
+        allow_offline_cost_report=allow_offline_cost_report,
+        max_specialist_calls=max_specialist_calls,
+    )
+    decision_path = (
+        _run_dir(trial_id, runs_root) / f"decision-card-{gate_id}.json"
+    )
+    _write_json(
+        decision_path,
+        {
+            "card": card.model_dump(mode="json"),
+            "digest": stored.digest,
+            "issued_at": stored.issued_at.astimezone(UTC)
+            .isoformat()
+            .replace("+00:00", "Z"),
+            "server_nonce": stored.server_nonce,
+            "checkpoint_path": checkpoint.as_posix(),
+        },
+    )
+    trace_root = (
+        _trace_root(
+            trial_id=trial_id,
+            metadata=trace_metadata,
+            child_runs=child_runs,
+        )
+        if child_runs
+        else None
+    )
+    # A resume segment can reach the next gate with zero new child runs
+    # (e.g., pre-gate-Marcus declined under a non-live key). Preserve the
+    # prior segment's persisted values instead of regressing them to None.
+    cost_report_path = (
+        _record_cost(
+            trial_id=trial_id,
+            runs_root=runs_root,
+            trace_root=trace_root,
+            allow_offline_cost_report=allow_offline_cost_report,
+        )
+        if trace_root is not None or allow_offline_cost_report
+        else envelope.cost_report_path
+    )
+    trace_path = None
+    if trace_root is not None:
+        trace_path = _run_dir(trial_id, runs_root) / "trace-fixture.json"
+        _write_json(trace_path, _trace_to_json(trace_root))
+    langsmith_trace_id = (
+        str(trial_id) if child_runs else envelope.langsmith_trace_id
+    )
+    run_summary_path = _emit_run_summary_yaml(
+        trial_id=trial_id,
+        terminal_gate=gate_id,
+        runs_root=runs_root,
+        manifest_path=manifest_path,
+        langsmith_trace_id=langsmith_trace_id,
+    )
+    evidence = (
+        _has_production_evidence(
+            graph_step_completed=graph_step_completed,
+            specialist_calls=specialist_calls,
+            allow_offline_cost_report=allow_offline_cost_report,
+        )
+    )
+    envelope = envelope.model_copy(
+        update={
+            "status": "paused-at-gate",
+            "paused_gate": gate_id,
+            "paused_error_tag": None,
+            "langsmith_trace_id": langsmith_trace_id,
+            "production_clone_launch_evidence": evidence,
+            "production_clone_launch_evidence_reason": (
+                "live-specialist-call-recorded"
+                if evidence
+                else "paused-before-live-specialist-call"
+            ),
+            "production_envelope": production_envelope,
+            "cost_report_path": cost_report_path,
+            "artifact_paths": _merge_artifact_paths(
+                envelope.artifact_paths,
+                decision_path,
+                checkpoint,
+                conversation_path,
+                cost_report_path,
+                trace_path,
+                run_summary_path,
+            ),
+        }
+    )
+    _persist_envelope(envelope, runs_root)
+    return envelope
+
+
+def _dispatch_specialist_at_node(
+    *,
+    adapter: Any,
+    node: NodeSpec,
+    specialist_id: str,
+    production_envelope: ProductionEnvelope,
+    run_state: RunState,
+    child_runs: list[SimpleNamespace],
+    trial_id: UUID,
+    runs_root: Path,
+    directive_path: Path | None,
+    bundle_dir: Path | None,
+) -> tuple[ProductionEnvelope, RunState]:
+    """The single specialist-dispatch call site shared by both walkers.
+
+    S4 part 2 (SCP 2026-06-11, Winston d.2): the start and resume walkers
+    each carried a verbatim copy of this block, and every new invoke kwarg
+    broke one copy or the other (finding #10; the projection_map fake
+    breakage). One call site means dispatch semantics evolve in one place.
+    """
+    dependency_map = _resolve_dependency_map(
+        node=node,
+        specialist_id=specialist_id,
+        production_envelope=production_envelope,
+    )
+    invoke_kwargs: dict[str, Any] = {
+        "specialist_id": specialist_id,
+        "envelope": production_envelope,
+        "dependency_map": dependency_map,
+        "cost_usd": 0.0,
+        "base_state": run_state,
+        "node_id": node.id,
+    }
+    if node.dependency_projections:
+        invoke_kwargs["projection_map"] = node.dependency_projections
+    runner_payload = _runner_payload_for_specialist(
+        specialist_id=specialist_id,
+        directive_path=directive_path,
+        bundle_dir=bundle_dir,
+        gate_code=node.gate_code,
+        production_envelope=production_envelope,
+        runs_root=runs_root,
+        trial_id=trial_id,
+    )
+    if runner_payload is not None:
+        invoke_kwargs["runner_supplied_payload"] = runner_payload
+    production_envelope = adapter.invoke_specialist(**invoke_kwargs)
+    run_state = run_state.model_copy(
+        update={"production_envelope": production_envelope}
+    )
+    contribution = production_envelope.get_contribution(specialist_id, node_id=node.id)
+    if contribution is not None:
+        child_runs.append(
+            _trace_run_for_contribution(
+                trial_id=trial_id,
+                contribution=contribution,
+            )
+        )
+    return production_envelope, run_state
+
+
+def _pause_at_error(
+    *,
+    error: SpecialistDispatchError,
+    node_id: str,
+    node_index: int,
+    specialist_id: str,
+    trial_id: UUID,
+    envelope: ProductionTrialEnvelope,
+    production_envelope: ProductionEnvelope,
+    run_state: RunState,
+    child_runs: list[SimpleNamespace],
+    trace_metadata: dict[str, str],
+    last_gate_crossed: str | None,
+    graph_step_completed: bool,
+    specialist_calls: int,
+    manifest_path: Path,
+    runs_root: Path,
+    allow_offline_cost_report: bool,
+    max_specialist_calls: int,
+    directive_path: Path | None,
+    bundle_dir: Path | None,
+) -> ProductionTrialEnvelope:
+    """Pause the trial at a typed dispatch failure instead of killing the cycle.
+
+    S4 part 2 (Amelia trap 1): a transient Gamma/Kling/bridge blip previously
+    unwound the whole walk, so the operator paid a fresh cycle to retry one
+    node. The error-pause persists everything ``trial recover`` needs to retry
+    the FAILED node itself — note ``node_index`` is stored unshifted, unlike
+    the gate checkpoint's ``next_node_index`` (+1), because recovery re-enters
+    at the failed node rather than past a decided gate.
+    """
+    LOGGER.error(
+        "dispatch error at manifest node %s (specialist %s): [%s] %s — "
+        "pausing trial %s for recovery",
+        node_id,
+        specialist_id,
+        error.tag,
+        error,
+        trial_id,
+    )
+    error_pause_path = _run_dir(trial_id, runs_root) / "error-pause.json"
+    _write_json(
+        error_pause_path,
+        {
+            "trial_id": str(trial_id),
+            "node_index": node_index,
+            "node_id": node_id,
+            "specialist_id": specialist_id,
+            "tag": error.tag,
+            "message": str(error),
+            "last_gate_crossed": last_gate_crossed,
+            "run_state": run_state.model_dump(mode="json"),
+            "runner": {
+                "corpus_path": envelope.corpus_path,
+                "preset": envelope.preset,
+                "operator_id": envelope.operator_id,
+                "manifest_path": manifest_path.as_posix(),
+                "allow_offline_cost_report": allow_offline_cost_report,
+                "max_specialist_calls": max_specialist_calls,
+                "directive_path": directive_path.as_posix() if directive_path else None,
+                "bundle_dir": bundle_dir.as_posix() if bundle_dir else None,
+            },
+        },
+    )
+    trace_root = (
+        _trace_root(
+            trial_id=trial_id,
+            metadata=trace_metadata,
+            child_runs=child_runs,
+        )
+        if child_runs
+        else None
+    )
+    # Spend already incurred this segment is recorded at the pause, exactly
+    # as _pause_at_gate does — an error pause must not orphan cost evidence.
+    cost_report_path = (
+        _record_cost(
+            trial_id=trial_id,
+            runs_root=runs_root,
+            trace_root=trace_root,
+            allow_offline_cost_report=allow_offline_cost_report,
+        )
+        if trace_root is not None or allow_offline_cost_report
+        else envelope.cost_report_path
+    )
+    trace_path = None
+    if trace_root is not None:
+        trace_path = _run_dir(trial_id, runs_root) / "trace-fixture.json"
+        _write_json(trace_path, _trace_to_json(trace_root))
+    langsmith_trace_id = str(trial_id) if child_runs else envelope.langsmith_trace_id
+    evidence = _has_production_evidence(
+        graph_step_completed=graph_step_completed,
+        specialist_calls=specialist_calls,
+        allow_offline_cost_report=allow_offline_cost_report,
+    )
+    envelope = envelope.model_copy(
+        update={
+            "status": "paused-at-error",
+            "paused_gate": None,
+            "paused_error_tag": error.tag,
+            "langsmith_trace_id": langsmith_trace_id,
+            "production_clone_launch_evidence": evidence,
+            "production_clone_launch_evidence_reason": (
+                f"paused-at-dispatch-error:{error.tag}"
+            ),
+            "production_envelope": production_envelope,
+            "cost_report_path": cost_report_path,
+            "artifact_paths": _merge_artifact_paths(
+                envelope.artifact_paths,
+                error_pause_path,
+                cost_report_path,
+                trace_path,
+            ),
+        }
+    )
+    _persist_envelope(envelope, runs_root)
+    return envelope
 
 
 def run_production_trial(
@@ -837,6 +1244,7 @@ def run_production_trial(
     child_runs: list[SimpleNamespace] = []
     specialist_calls = 0
     graph_step_completed = False
+    last_gate_crossed: str | None = None
     trace_metadata: dict[str, str]
 
     with _trial_trace_context(
@@ -854,179 +1262,133 @@ def run_production_trial(
                         raise GateBypassError(
                             f"refused silent bypass of gate {gate_id} at manifest node {node.id}"
                         )
+                    last_gate_crossed = gate_id
                     graph_step_completed = True
                     continue
-                pending = [item.id for item in manifest.nodes[index + 1 :]]
-                pre_fill = _invoke_pre_gate_marcus_for_gate(
-                    gate_id=gate_id,
-                    trial_id=effective_trial_id,
-                    production_envelope=production_envelope,
-                    pending_nodes=pending,
-                    artifact_paths=envelope.artifact_paths,
-                    allow_offline_cost_report=allow_offline_cost_report,
-                )
-                if pre_fill is not None:
-                    child_runs.append(
-                        _trace_run_for_pre_gate_marcus(
-                            trial_id=effective_trial_id,
-                            gate_id=gate_id,
-                            proposal=pre_fill,
-                        )
+                # S5 criterion 7 (operator-ratified 2026-06-12): storyboard
+                # review gates publish their ONLINE interactive pack BEFORE
+                # the pause — a storyboard gate without its review surface is
+                # the attempt-4 quality-theater class. Publish failure
+                # error-pauses (recoverable; retry re-enters this gate node).
+                try:
+                    storyboard_publisher.publish_storyboard_for_gate(
+                        gate_id=gate_id,
+                        trial_id=str(effective_trial_id),
+                        production_envelope=production_envelope,
+                        runs_root=runs_root,
                     )
-                card = _build_decision_card(
+                except SpecialistDispatchError as exc:
+                    return _pause_at_error(
+                        error=exc,
+                        node_id=node.id,
+                        node_index=index,
+                        specialist_id="storyboard_publisher",
+                        trial_id=effective_trial_id,
+                        envelope=envelope,
+                        production_envelope=production_envelope,
+                        run_state=run_state,
+                        child_runs=child_runs,
+                        trace_metadata=trace_metadata,
+                        last_gate_crossed=last_gate_crossed,
+                        graph_step_completed=graph_step_completed,
+                        specialist_calls=specialist_calls,
+                        manifest_path=manifest_path,
+                        runs_root=runs_root,
+                        allow_offline_cost_report=allow_offline_cost_report,
+                        max_specialist_calls=max_specialist_calls,
+                        directive_path=directive_path,
+                        bundle_dir=bundle_dir,
+                    )
+                return _pause_at_gate(
                     gate_id=gate_id,
-                    trial_id=effective_trial_id,
                     node_id=node.id,
-                    operator_id=operator_id,
-                    pending_nodes=pending,
-                    artifact_paths=envelope.artifact_paths,
-                    pre_fill=pre_fill,
-                    runs_root=runs_root,
-                )
-                conversation_path = _persist_conversation_turn_if_possible(
-                    card=card,
-                    gate_id=gate_id,
-                    trial_id=effective_trial_id,
-                    operator_id=operator_id,
-                    runs_root=runs_root,
-                )
-                stored = register_decision_card(card)
-                checkpoint = _write_checkpoint(
-                    trial_id=effective_trial_id,
-                    runs_root=runs_root,
                     node_index=index,
-                    gate_id=gate_id,
-                    run_state=run_state,
+                    manifest=manifest,
+                    trial_id=effective_trial_id,
+                    operator_id=operator_id,
                     envelope=envelope,
+                    production_envelope=production_envelope,
+                    run_state=run_state,
+                    child_runs=child_runs,
+                    trace_metadata=trace_metadata,
+                    specialist_calls=specialist_calls,
+                    graph_step_completed=graph_step_completed,
                     manifest_path=manifest_path,
+                    runs_root=runs_root,
                     allow_offline_cost_report=allow_offline_cost_report,
                     max_specialist_calls=max_specialist_calls,
                 )
-                decision_path = (
-                    _run_dir(effective_trial_id, runs_root)
-                    / f"decision-card-{gate_id}.json"
+
+            if (
+                node_kind == "orchestration"
+                and node.id in package_builders.BUILDER_NODE_IDS
+                and _has_live_openai()
+                and not allow_offline_cost_report
+            ):
+                # S3 (SCP 2026-06-11): §06 builds the Gary slide-brief
+                # package as a first-class contribution at its own node
+                # (pre_gate_marcus runner-invocation pattern; deterministic,
+                # so it runs on the live path only, mirroring specialists).
+                production_envelope = package_builders.run_builder_node(
+                    node_id=node.id,
+                    production_envelope=production_envelope,
                 )
-                _write_json(
-                    decision_path,
-                    {
-                        "card": card.model_dump(mode="json"),
-                        "digest": stored.digest,
-                        "issued_at": stored.issued_at.astimezone(UTC)
-                        .isoformat()
-                        .replace("+00:00", "Z"),
-                        "server_nonce": stored.server_nonce,
-                        "checkpoint_path": checkpoint.as_posix(),
-                    },
+                run_state = run_state.model_copy(
+                    update={"production_envelope": production_envelope}
                 )
-                trace_root = (
-                    _trace_root(
-                        trial_id=effective_trial_id,
-                        metadata=trace_metadata,
-                        child_runs=child_runs,
-                    )
-                    if child_runs
-                    else None
-                )
-                cost_report_path = (
-                    _record_cost(
-                        trial_id=effective_trial_id,
-                        runs_root=runs_root,
-                        trace_root=trace_root,
-                        allow_offline_cost_report=allow_offline_cost_report,
-                    )
-                    if trace_root is not None or allow_offline_cost_report
-                    else None
-                )
-                trace_path = None
-                if trace_root is not None:
-                    trace_path = _run_dir(effective_trial_id, runs_root) / "trace-fixture.json"
-                    _write_json(trace_path, _trace_to_json(trace_root))
-                langsmith_trace_id = str(effective_trial_id) if child_runs else None
-                run_summary_path = _emit_run_summary_yaml(
-                    trial_id=effective_trial_id,
-                    terminal_gate=gate_id,
-                    runs_root=runs_root,
-                    manifest_path=manifest_path,
-                    langsmith_trace_id=langsmith_trace_id,
-                )
-                evidence = (
-                    _has_production_evidence(
-                        graph_step_completed=graph_step_completed,
-                        specialist_calls=specialist_calls,
-                        allow_offline_cost_report=allow_offline_cost_report,
-                    )
-                )
-                envelope = envelope.model_copy(
-                    update={
-                        "status": "paused-at-gate",
-                        "paused_gate": gate_id,
-                        "langsmith_trace_id": langsmith_trace_id,
-                        "production_clone_launch_evidence": evidence,
-                        "production_clone_launch_evidence_reason": (
-                            "live-specialist-call-recorded"
-                            if evidence
-                            else "paused-before-live-specialist-call"
-                        ),
-                        "production_envelope": production_envelope,
-                        "cost_report_path": cost_report_path,
-                        "artifact_paths": [
-                            *envelope.artifact_paths,
-                            decision_path,
-                            checkpoint,
-                            *([conversation_path] if conversation_path is not None else []),
-                            *([cost_report_path] if cost_report_path is not None else []),
-                            *([trace_path] if trace_path is not None else []),
-                            run_summary_path,
-                        ],
-                    }
-                )
-                _persist_envelope(envelope, runs_root)
-                return envelope
+                graph_step_completed = True
+                continue
 
             if node_kind == "specialist" and specialist_calls < max_specialist_calls:
                 specialist_id = handler.__production_specialist_id__
-                if production_envelope.get_contribution(specialist_id) is not None:
+                # S2 per-node keying (SCP 2026-06-11): the skip rule guards
+                # node revisits, not specialist revisits — the per-specialist
+                # Path-Z rule silently skipped irene_pass1's §05/§05B jobs.
+                if production_envelope.get_contribution(specialist_id, node_id=node.id) is not None:
                     LOGGER.info(
-                        "specialist %s was reached again at manifest node %s but "
-                        "the production envelope already contains its contribution; "
-                        "new contribution skipped per Slab 6.1 Path Z first-"
-                        "contribution-wins contract",
-                        specialist_id,
+                        "manifest node %s (specialist %s) already carries its "
+                        "contribution; node re-dispatch skipped per S2 "
+                        "per-node idempotency contract",
                         node.id,
+                        specialist_id,
                     )
                     graph_step_completed = True
                     continue
                 if _has_live_openai() and not allow_offline_cost_report:
-                    dependency_map = _resolve_dependency_map(
-                        node=node,
-                        specialist_id=specialist_id,
-                        production_envelope=production_envelope,
-                    )
-                    invoke_kwargs: dict[str, Any] = {
-                        "specialist_id": specialist_id,
-                        "envelope": production_envelope,
-                        "dependency_map": dependency_map,
-                        "cost_usd": 0.0,
-                        "base_state": run_state,
-                    }
-                    runner_payload = _runner_payload_for_specialist(
-                        specialist_id=specialist_id,
-                        directive_path=directive_path,
-                        bundle_dir=bundle_dir,
-                    )
-                    if runner_payload is not None:
-                        invoke_kwargs["runner_supplied_payload"] = runner_payload
-                    production_envelope = adapter.invoke_specialist(**invoke_kwargs)
-                    run_state = run_state.model_copy(
-                        update={"production_envelope": production_envelope}
-                    )
-                    contribution = production_envelope.get_contribution(specialist_id)
-                    if contribution is not None:
-                        child_runs.append(
-                            _trace_run_for_contribution(
-                                trial_id=effective_trial_id,
-                                contribution=contribution,
-                            )
+                    try:
+                        production_envelope, run_state = _dispatch_specialist_at_node(
+                            adapter=adapter,
+                            node=node,
+                            specialist_id=specialist_id,
+                            production_envelope=production_envelope,
+                            run_state=run_state,
+                            child_runs=child_runs,
+                            trial_id=effective_trial_id,
+                            runs_root=runs_root,
+                            directive_path=directive_path,
+                            bundle_dir=bundle_dir,
+                        )
+                    except SpecialistDispatchError as exc:
+                        return _pause_at_error(
+                            error=exc,
+                            node_id=node.id,
+                            node_index=index,
+                            specialist_id=specialist_id,
+                            trial_id=effective_trial_id,
+                            envelope=envelope,
+                            production_envelope=production_envelope,
+                            run_state=run_state,
+                            child_runs=child_runs,
+                            trace_metadata=trace_metadata,
+                            last_gate_crossed=last_gate_crossed,
+                            graph_step_completed=graph_step_completed,
+                            specialist_calls=specialist_calls,
+                            manifest_path=manifest_path,
+                            runs_root=runs_root,
+                            allow_offline_cost_report=allow_offline_cost_report,
+                            max_specialist_calls=max_specialist_calls,
+                            directive_path=directive_path,
+                            bundle_dir=bundle_dir,
                         )
                     specialist_calls += 1
                 graph_step_completed = True
@@ -1050,7 +1412,9 @@ def run_production_trial(
     langsmith_trace_id = str(effective_trial_id) if child_runs else None
     run_summary_path = _emit_run_summary_yaml(
         trial_id=effective_trial_id,
-        terminal_gate="G4",
+        # Last gate actually traversed this walk; "G4" only as the legacy
+        # fallback for manifests that carry no gate nodes at all.
+        terminal_gate=last_gate_crossed or "G4",
         runs_root=runs_root,
         manifest_path=manifest_path,
         langsmith_trace_id=langsmith_trace_id,
@@ -1077,13 +1441,13 @@ def run_production_trial(
             "production_clone_launch_evidence_reason": reason,
             "production_envelope": production_envelope,
             "cost_report_path": cost_report_path,
-            "artifact_paths": [
-                *envelope.artifact_paths,
+            "artifact_paths": _merge_artifact_paths(
+                envelope.artifact_paths,
                 cost_report_path,
-                *([trace_path] if trace_path is not None else []),
+                trace_path,
                 run_summary_path,
                 engagement_report_path,
-            ],
+            ),
         }
     )
     _persist_envelope(envelope, runs_root)
@@ -1100,7 +1464,11 @@ def resume_production_trial(
     """Validate a gate verdict and continue the persisted trial past the gate."""
     run_dir = _run_dir(trial_id, runs_root)
     envelope = ProductionTrialEnvelope.model_validate_json(
-        (run_dir / "run.json").read_text(encoding="utf-8")
+        (run_dir / "run.json").read_text(encoding="utf-8"),
+        # Witness-mode lifecycle invariants: violations on persisted state are
+        # recorded to the run's anomaly sidecar, never raised (S4p2 follow-on;
+        # witness->strict flip is a post-S5 ceremony).
+        context={"anomaly_sink": run_dir / "anomalies.jsonl"},
     )
     if envelope.status != "paused-at-gate":
         raise RuntimeError(
@@ -1110,6 +1478,13 @@ def resume_production_trial(
         raise GateError(
             "checkpoint_gate_mismatch",
             f"verdict gate_id={verdict.gate_id} does not match paused_gate={envelope.paused_gate}",
+        )
+    if envelope.production_envelope.schema_version == "production-envelope.v1":
+        raise LegacyEnvelopeSchemaError(
+            f"trial {trial_id} carries a production-envelope.v1 (per-specialist "
+            "keyed) envelope; v1 runs are not resumable after the S2 per-node "
+            "keying migration (SCP 2026-06-11) — relaunch as a new cycle; the "
+            "run dir stays frozen as evidence."
         )
     _ensure_decision_card_registered_from_disk(
         trial_id=trial_id,
@@ -1151,13 +1526,132 @@ def resume_production_trial(
                 "status": "failed",
                 "completed_at": _now(),
                 "production_clone_launch_evidence_reason": "operator-rejected-at-gate",
-                "artifact_paths": [*envelope.artifact_paths, run_summary_path],
+                "artifact_paths": _merge_artifact_paths(
+                    envelope.artifact_paths, run_summary_path
+                ),
             }
         )
         _persist_envelope(updated, runs_root)
         return updated
 
     manifest_path = Path(runner.get("manifest_path") or DEFAULT_MANIFEST_PATH)
+    resumed_max_specialist_calls = (
+        max_specialist_calls
+        if max_specialist_calls is not None
+        else int(runner.get("max_specialist_calls") or 1)
+    )
+    return _continue_production_walk(
+        trial_id=trial_id,
+        envelope=envelope,
+        run_state=run_state,
+        runner=runner,
+        manifest_path=manifest_path,
+        runs_root=runs_root,
+        start_index=int(checkpoint["next_node_index"]),
+        # The gate just approved is the last crossed until the walk traverses
+        # further gates (offline mode); live mode pauses at the next gate.
+        last_gate_crossed=verdict.gate_id,
+        max_specialist_calls=resumed_max_specialist_calls,
+        extra_artifacts=(run_dir / "resume-command.json",),
+    )
+
+
+def recover_production_trial(
+    *,
+    trial_id: UUID,
+    runs_root: Path = RUNS_ROOT,
+    max_specialist_calls: int | None = None,
+) -> ProductionTrialEnvelope:
+    """Continue an error-paused trial from the failed node — no verdict needed.
+
+    S4 part 2 (SCP 2026-06-11, Amelia trap 1): the recovery counterpart to
+    ``resume_production_trial``. Gates carry operator verdicts; dispatch-error
+    pauses carry none — the operator (or a wrapper) fixes the transient cause
+    and re-enters the walk at the node that failed. Idempotent with respect to
+    completed work: every prior contribution is per-node keyed, so recovery
+    re-dispatches only the failed node and onward.
+    """
+    run_dir = _run_dir(trial_id, runs_root)
+    envelope = ProductionTrialEnvelope.model_validate_json(
+        (run_dir / "run.json").read_text(encoding="utf-8"),
+        # Witness-mode lifecycle invariants: violations on persisted state are
+        # recorded to the run's anomaly sidecar, never raised (S4p2 follow-on;
+        # witness->strict flip is a post-S5 ceremony).
+        context={"anomaly_sink": run_dir / "anomalies.jsonl"},
+    )
+    if envelope.status != "paused-at-error":
+        raise RuntimeError(
+            f"trial {trial_id} is not paused at a dispatch error; "
+            f"status={envelope.status!r} — `trial recover` only applies to "
+            "error-paused runs (gate pauses take `trial resume` + a verdict)"
+        )
+    if envelope.production_envelope.schema_version == "production-envelope.v1":
+        raise LegacyEnvelopeSchemaError(
+            f"trial {trial_id} carries a production-envelope.v1 (per-specialist "
+            "keyed) envelope; v1 runs are not recoverable after the S2 per-node "
+            "keying migration (SCP 2026-06-11) — relaunch as a new cycle; the "
+            "run dir stays frozen as evidence."
+        )
+    error_pause_path = run_dir / "error-pause.json"
+    error_pause = json.loads(error_pause_path.read_text(encoding="utf-8"))
+    if error_pause.get("trial_id") != str(trial_id):
+        raise RuntimeError(
+            "persisted error-pause record does not match the trial being "
+            f"recovered: {error_pause.get('trial_id')!r} != {trial_id}"
+        )
+    runner = error_pause.get("runner") or {}
+    run_state = RunState.model_validate_json(json.dumps(error_pause["run_state"]))
+    run_state = run_state.model_copy(
+        update={"production_envelope": envelope.production_envelope}
+    )
+    directive_path_raw = runner.get("directive_path")
+    bundle_dir_raw = runner.get("bundle_dir")
+    return _continue_production_walk(
+        trial_id=trial_id,
+        envelope=envelope,
+        run_state=run_state,
+        runner=runner,
+        manifest_path=Path(runner.get("manifest_path") or DEFAULT_MANIFEST_PATH),
+        runs_root=runs_root,
+        # Unshifted on purpose: recovery retries the failed node itself.
+        start_index=int(error_pause["node_index"]),
+        last_gate_crossed=error_pause.get("last_gate_crossed"),
+        max_specialist_calls=(
+            max_specialist_calls
+            if max_specialist_calls is not None
+            else int(runner.get("max_specialist_calls") or 1)
+        ),
+        directive_path=Path(directive_path_raw) if directive_path_raw else None,
+        bundle_dir=Path(bundle_dir_raw) if bundle_dir_raw else None,
+        non_evidence_reason="recovered-after-error-pause",
+    )
+
+
+def _continue_production_walk(
+    *,
+    trial_id: UUID,
+    envelope: ProductionTrialEnvelope,
+    run_state: RunState,
+    runner: dict[str, Any],
+    manifest_path: Path,
+    runs_root: Path,
+    start_index: int,
+    last_gate_crossed: str | None,
+    max_specialist_calls: int,
+    directive_path: Path | None = None,
+    bundle_dir: Path | None = None,
+    extra_artifacts: tuple[Path, ...] = (),
+    non_evidence_reason: str = "resumed-after-gate",
+) -> ProductionTrialEnvelope:
+    """Walk manifest nodes from ``start_index`` to the next pause or completion.
+
+    Shared by ``resume_production_trial`` (post-verdict) and
+    ``recover_production_trial`` (post-error-pause) so the continuation walk
+    exists exactly once — the resume walker was already the A23 second copy
+    of the start walk; a third copy for recovery was vetoed (S4 part 2,
+    Winston d.2).
+    """
+    run_dir = _run_dir(trial_id, runs_root)
     manifest = load_manifest(manifest_path)
     graph = compile_run_graph(manifest)
     adapter = ProductionDispatchAdapter()
@@ -1165,15 +1659,14 @@ def resume_production_trial(
     child_runs = [
         _trace_run_for_contribution(trial_id=trial_id, contribution=contribution)
         for contribution in production_envelope.contributions
+        # Deterministic §06 builder rows carry no LLM spend and no pricing
+        # entry; in-segment they are never traced as child runs either —
+        # seeding them here crashed cost recording on any continuation past
+        # a builder node (latent since S3; surfaced by the S4p2 recover walk).
+        if contribution.model_used != package_builders.BUILDER_MODEL_MARKER
     ]
     specialist_calls = 0
-    resumed_max_specialist_calls = (
-        max_specialist_calls
-        if max_specialist_calls is not None
-        else int(runner.get("max_specialist_calls") or 1)
-    )
     allow_offline_cost_report = bool(runner.get("allow_offline_cost_report", False))
-    start_index = int(checkpoint["next_node_index"])
     graph_step_completed = bool(production_envelope.contributions)
 
     with _trial_trace_context(
@@ -1186,69 +1679,156 @@ def resume_production_trial(
             node_kind = getattr(handler, "__production_node_kind__", None)
             if node_kind == "gate":
                 gate_id = handler.__production_gate_id__
-                pending = [item.id for item in manifest.nodes[index + 1 :]]
-                pre_fill = _invoke_pre_gate_marcus_for_gate(
-                    gate_id=gate_id,
-                    trial_id=trial_id,
-                    production_envelope=production_envelope,
-                    pending_nodes=pending,
-                    artifact_paths=envelope.artifact_paths,
-                    allow_offline_cost_report=allow_offline_cost_report,
-                )
-                if pre_fill is not None:
-                    child_runs.append(
-                        _trace_run_for_pre_gate_marcus(
-                            trial_id=trial_id,
-                            gate_id=gate_id,
-                            proposal=pre_fill,
+                if allow_offline_cost_report:
+                    # Offline runs traverse gates without pausing (existing
+                    # contract); keep the pre-gate draft + trace append the
+                    # prior code performed before continuing.
+                    pending = [item.id for item in manifest.nodes[index + 1 :]]
+                    pre_fill = _invoke_pre_gate_marcus_for_gate(
+                        gate_id=gate_id,
+                        trial_id=trial_id,
+                        production_envelope=production_envelope,
+                        pending_nodes=pending,
+                        artifact_paths=envelope.artifact_paths,
+                        allow_offline_cost_report=allow_offline_cost_report,
+                    )
+                    if pre_fill is not None:
+                        child_runs.append(
+                            _trace_run_for_pre_gate_marcus(
+                                trial_id=trial_id,
+                                gate_id=gate_id,
+                                proposal=pre_fill,
+                            )
                         )
+                    last_gate_crossed = gate_id
+                    graph_step_completed = True
+                    continue
+                # Trial-3 attempt-3 fix (2026-06-11): live resume previously
+                # raised GateBypassError at EVERY gate — the pause machinery
+                # existed only in the start walker, so no live trial could
+                # ever advance gate-to-gate. The guard is deliberately
+                # converted to the shared pause (the decided gate is never
+                # revisited: start_index = checkpoint.next_node_index is
+                # already past it, so this only fires at genuinely new gates).
+                # S5 criterion 7: storyboard gates publish their online pack
+                # before pausing — see start-walker note.
+                try:
+                    storyboard_publisher.publish_storyboard_for_gate(
+                        gate_id=gate_id,
+                        trial_id=str(trial_id),
+                        production_envelope=production_envelope,
+                        runs_root=runs_root,
                     )
-                if not allow_offline_cost_report:
-                    raise GateBypassError(
-                        f"refused silent bypass of gate {gate_id} at manifest node {node.id}"
+                except SpecialistDispatchError as exc:
+                    return _pause_at_error(
+                        error=exc,
+                        node_id=node.id,
+                        node_index=index,
+                        specialist_id="storyboard_publisher",
+                        trial_id=trial_id,
+                        envelope=envelope,
+                        production_envelope=production_envelope,
+                        run_state=run_state,
+                        child_runs=child_runs,
+                        trace_metadata=trace_metadata,
+                        last_gate_crossed=last_gate_crossed,
+                        graph_step_completed=graph_step_completed,
+                        specialist_calls=specialist_calls,
+                        manifest_path=manifest_path,
+                        runs_root=runs_root,
+                        allow_offline_cost_report=allow_offline_cost_report,
+                        max_specialist_calls=max_specialist_calls,
+                        directive_path=directive_path,
+                        bundle_dir=bundle_dir,
                     )
+                return _pause_at_gate(
+                    gate_id=gate_id,
+                    node_id=node.id,
+                    node_index=index,
+                    manifest=manifest,
+                    trial_id=trial_id,
+                    operator_id=runner.get("operator_id") or envelope.operator_id,
+                    envelope=envelope,
+                    production_envelope=production_envelope,
+                    run_state=run_state,
+                    child_runs=child_runs,
+                    trace_metadata=trace_metadata,
+                    specialist_calls=len(production_envelope.contributions),
+                    graph_step_completed=graph_step_completed,
+                    manifest_path=manifest_path,
+                    runs_root=runs_root,
+                    allow_offline_cost_report=allow_offline_cost_report,
+                    max_specialist_calls=max_specialist_calls,
+                )
+
+            if (
+                node_kind == "orchestration"
+                and node.id in package_builders.BUILDER_NODE_IDS
+                and _has_live_openai()
+                and not allow_offline_cost_report
+            ):
+                # S3 §06 package builder — see start-walker note.
+                production_envelope = package_builders.run_builder_node(
+                    node_id=node.id,
+                    production_envelope=production_envelope,
+                )
+                run_state = run_state.model_copy(
+                    update={"production_envelope": production_envelope}
+                )
                 graph_step_completed = True
                 continue
 
             if (
                 node_kind == "specialist"
-                and specialist_calls < resumed_max_specialist_calls
+                and specialist_calls < max_specialist_calls
             ):
                 specialist_id = handler.__production_specialist_id__
-                if production_envelope.get_contribution(specialist_id) is not None:
+                # S2 per-node keying — see start-walker note.
+                if production_envelope.get_contribution(specialist_id, node_id=node.id) is not None:
                     LOGGER.info(
-                        "specialist %s was reached again at manifest node %s but "
-                        "the production envelope already contains its contribution; "
-                        "new contribution skipped per Slab 6.1 Path Z first-"
-                        "contribution-wins contract",
-                        specialist_id,
+                        "manifest node %s (specialist %s) already carries its "
+                        "contribution; node re-dispatch skipped per S2 "
+                        "per-node idempotency contract",
                         node.id,
+                        specialist_id,
                     )
                     graph_step_completed = True
                     continue
                 if _has_live_openai() and not allow_offline_cost_report:
-                    dependency_map = _resolve_dependency_map(
-                        node=node,
-                        specialist_id=specialist_id,
-                        production_envelope=production_envelope,
-                    )
-                    production_envelope = adapter.invoke_specialist(
-                        specialist_id=specialist_id,
-                        envelope=production_envelope,
-                        dependency_map=dependency_map,
-                        cost_usd=0.0,
-                        base_state=run_state,
-                    )
-                    run_state = run_state.model_copy(
-                        update={"production_envelope": production_envelope}
-                    )
-                    contribution = production_envelope.get_contribution(specialist_id)
-                    if contribution is not None:
-                        child_runs.append(
-                            _trace_run_for_contribution(
-                                trial_id=trial_id,
-                                contribution=contribution,
-                            )
+                    try:
+                        production_envelope, run_state = _dispatch_specialist_at_node(
+                            adapter=adapter,
+                            node=node,
+                            specialist_id=specialist_id,
+                            production_envelope=production_envelope,
+                            run_state=run_state,
+                            child_runs=child_runs,
+                            trial_id=trial_id,
+                            runs_root=runs_root,
+                            directive_path=directive_path,
+                            bundle_dir=bundle_dir,
+                        )
+                    except SpecialistDispatchError as exc:
+                        return _pause_at_error(
+                            error=exc,
+                            node_id=node.id,
+                            node_index=index,
+                            specialist_id=specialist_id,
+                            trial_id=trial_id,
+                            envelope=envelope,
+                            production_envelope=production_envelope,
+                            run_state=run_state,
+                            child_runs=child_runs,
+                            trace_metadata=trace_metadata,
+                            last_gate_crossed=last_gate_crossed,
+                            graph_step_completed=graph_step_completed,
+                            specialist_calls=specialist_calls,
+                            manifest_path=manifest_path,
+                            runs_root=runs_root,
+                            allow_offline_cost_report=allow_offline_cost_report,
+                            max_specialist_calls=max_specialist_calls,
+                            directive_path=directive_path,
+                            bundle_dir=bundle_dir,
                         )
                     specialist_calls += 1
                 graph_step_completed = True
@@ -1273,10 +1853,14 @@ def resume_production_trial(
     if trace_root is not None:
         trace_path = run_dir / "trace-fixture.json"
         _write_json(trace_path, _trace_to_json(trace_root))
-    langsmith_trace_id = str(trial_id) if child_runs else None
+    langsmith_trace_id = (
+        str(trial_id) if child_runs else envelope.langsmith_trace_id
+    )
     run_summary_path = _emit_run_summary_yaml(
         trial_id=trial_id,
-        terminal_gate="G4",
+        # "G4" only as the legacy fallback for walks that crossed no gate at
+        # all (e.g., recovery of a pre-G1 error pause in offline mode).
+        terminal_gate=last_gate_crossed or "G4",
         runs_root=runs_root,
         manifest_path=manifest_path,
         langsmith_trace_id=langsmith_trace_id,
@@ -1290,25 +1874,26 @@ def resume_production_trial(
         specialist_calls=len(production_envelope.contributions),
         allow_offline_cost_report=allow_offline_cost_report,
     )
-    reason = "live-specialist-call-recorded" if evidence else "resumed-after-gate"
+    reason = "live-specialist-call-recorded" if evidence else non_evidence_reason
     updated = envelope.model_copy(
         update={
             "status": "completed",
             "completed_at": completed_at,
             "paused_gate": None,
+            "paused_error_tag": None,
             "langsmith_trace_id": langsmith_trace_id,
             "production_clone_launch_evidence": evidence,
             "production_clone_launch_evidence_reason": reason,
             "production_envelope": production_envelope,
             "cost_report_path": cost_report_path,
-            "artifact_paths": [
-                *envelope.artifact_paths,
-                run_dir / "resume-command.json",
+            "artifact_paths": _merge_artifact_paths(
+                envelope.artifact_paths,
+                *extra_artifacts,
                 cost_report_path,
-                *([trace_path] if trace_path is not None else []),
+                trace_path,
                 run_summary_path,
                 engagement_report_path,
-            ],
+            ),
         }
     )
     _persist_envelope(updated, runs_root)
@@ -1319,6 +1904,7 @@ __all__ = [
     "DEFAULT_MANIFEST_PATH",
     "GateBypassError",
     "MissingUpstreamContributionError",
+    "recover_production_trial",
     "resume_production_trial",
     "run_production_trial",
 ]

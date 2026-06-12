@@ -13,25 +13,34 @@ from app.models.state import specialist_summary_artifacts as summary_writer
 from app.models.state.model_resolution_entry import ModelResolutionEntry
 from app.models.state.run_state import RunState
 from app.runtime.economics import RUNS_ROOT
+
+# Audio-arc taxonomy re-base (2026-06-12): the G5 content errors live in
+# quality_control_dispatch as SpecialistDispatchError+ValueError duals — the
+# bare-ValueError form CRASHED cycle-5 at node 13 and lost walk progress.
 from app.specialists.quinn_r.quality_control_dispatch import (
+    CoverageGapError,
+    DurationCoherenceError,
+    StoryboardBInputError,
+    VttMonotonicityError,
+    WpmThresholdError,
+    run_g5_grounding,
     run_postcomposition_validators,
     run_precomposition_validators,
+    run_storyboard_b_review,
 )
 from app.specialists.quinn_r.sensory_bridges_dispatch import dispatch_to_sensory_bridges
 
 REPO_ROOT = Path(__file__).resolve().parents[3]
 SCHEMA_PATH = REPO_ROOT / "state/config/schemas/authorized-storyboard.schema.json"
-GATE_MODES = {"G2C": "pre", "G5": "g5", "G3B": "post"}
+# Finding #10 (2026-06-11) retired at dp-v1.1 (Trial-3 cycle-4 defect 2):
+# G3B remapped post→storyboard_b — the "post" body presumed a §14 composed
+# artifact that cannot exist at 08B; G3B reviews Storyboard B = Pass-2
+# narration against Gary's real slide roster.
+GATE_MODES = {"G2C": "pre", "G5": "g5", "G3B": "storyboard_b", "G2B": "variant", "G2F": "motion"}  # noqa: E501
 
 
 class ModeMismatchError(ValueError):
     """Raised when Quinn-R is invoked for a gate/body mismatch."""
-
-
-WpmThresholdError = type("WpmThresholdError", (ValueError,), {})
-VttMonotonicityError = type("VttMonotonicityError", (ValueError,), {})
-CoverageGapError = type("CoverageGapError", (ValueError,), {})
-DurationCoherenceError = type("DurationCoherenceError", (ValueError,), {})
 
 
 def _trail(last: ModelResolutionEntry, reason: str) -> ModelResolutionEntry:
@@ -62,15 +71,22 @@ def _mode(payload: dict[str, Any]) -> tuple[str, str]:
     if mode is None:
         raise ModeMismatchError(f"unknown Quinn-R gate_id/gate_phase: {gate_id!r}")
     phase = str(payload.get("gate_phase") or "")
-    expected = {"pre": "pre-composition", "g5": "pre-composition", "post": "post-composition"}[mode]
+    expected = {"pre": "pre-composition", "g5": "pre-composition", "post": "post-composition", "variant": "pre-composition", "motion": "post-composition", "storyboard_b": "pre-composition"}[mode]  # noqa: E501
     if phase and phase != expected:
         raise ModeMismatchError(f"Quinn-R {gate_id or phase} cannot run {phase} body")
     return gate_id or expected, mode
 
 
 def _slides(payload: dict[str, Any]) -> list[dict[str, Any]]:
+    # Audio-arc 2026-06-12: the fabricated single-phantom-slide default is
+    # RETIRED — a QA body that invents the roster it audits is not QA.
     source = payload.get("slides") or payload.get("storyboard", {}).get("slides", [])
-    return source if isinstance(source, list) and source else [{"slide_id": "slide-1"}]
+    if not (isinstance(source, list) and source):
+        raise StoryboardBInputError(
+            "quinn_r requires a real slide roster (slides projection)",
+            tag="quinn_r.slides.starved",
+        )
+    return source
 
 
 def _authorized_doc(payload: dict[str, Any]) -> dict[str, Any]:
@@ -112,7 +128,8 @@ def run_g5_checks(payload: dict[str, Any]) -> dict[str, Any]:
     text = " ".join(str(seg.get("text", "")) for seg in segments if isinstance(seg, dict))
     duration = sum(float(seg.get("duration_seconds", 0)) for seg in segments if isinstance(seg, dict))  # noqa: E501
     observed = (len(text.split()) / duration * 60) if duration else target_wpm
-    if abs(observed - target_wpm) > tolerance:
+    # Winston (audio-arc): WPM vs ESTIMATED durations is self-referential — advisory only.
+    if abs(observed - target_wpm) > tolerance and not payload.get("wpm_durations_estimated"):
         raise WpmThresholdError(f"WPM {observed:.1f} outside target {target_wpm:.1f}")
     previous = -1.0
     for line in str(payload.get("vtt_text") or "").splitlines():
@@ -161,7 +178,15 @@ def act(state: RunState) -> dict[str, Any]:
             run_precomposition_validators(artifact_paths=[str(artifact)])
             verdict = {"mode": "pre-composition", "status": "approved", "artifact_paths": [str(artifact)]}  # noqa: E501
         elif mode == "g5":
-            verdict = {"mode": "g5-pre-composition-qa", "status": "approved", **run_g5_checks(payload)}  # noqa: E501
+            verdict = {"mode": "g5-pre-composition-qa", "status": "approved", **run_g5_checks(run_g5_grounding(payload))}  # noqa: E501
+        elif mode == "variant":
+            selections = [{"slide_id": str(s.get("slide_id") or s.get("id") or f"slide-{i}"), "selected_variant": str(s.get("selected_variant") or "variant-1")} for i, s in enumerate(_slides(payload), start=1)]  # noqa: E501
+            verdict = {"mode": "variant-selection", "status": "approved", "selections": selections}
+        elif mode == "motion":
+            assets = payload.get("motion_assets")
+            verdict = {"mode": "motion-gate", "status": "reviewed", "motion_assets_reviewed": len(assets) if isinstance(assets, list) else 0}  # noqa: E501
+        elif mode == "storyboard_b":
+            verdict = run_storyboard_b_review(payload)
         else:
             artifact_path = payload.get("artifact_path")
             perception = dispatch_to_sensory_bridges(artifact_path=artifact_path, modality=str(payload.get("modality") or "video"), gate=gate_id)  # noqa: E501
@@ -178,4 +203,6 @@ def act(state: RunState) -> dict[str, Any]:
     }
 
 
-__all__ = ["CoverageGapError", "DurationCoherenceError", "ModeMismatchError", "VttMonotonicityError", "WpmThresholdError", "act", "run_g5_checks"]  # noqa: E501
+from app.specialists.quinn_r.payload_contract import CONSUMED_PAYLOAD_KEYS  # noqa: E402
+
+__all__ = ["CONSUMED_PAYLOAD_KEYS", "CoverageGapError", "DurationCoherenceError", "ModeMismatchError", "VttMonotonicityError", "WpmThresholdError", "act", "run_g5_checks"]  # noqa: E501

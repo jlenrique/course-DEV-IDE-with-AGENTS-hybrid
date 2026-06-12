@@ -33,11 +33,13 @@ def test_loader_registers_bridge_utils_module_for_runtime_resolution() -> None:
 
 
 def test_dispatch_short_circuits_when_artifact_missing() -> None:
+    # S0 fail-loud policy: fixture short-circuit now requires explicit opt-in.
     result = dispatch_to_sensory_bridges(
         artifact_path=None,
         source_of_truth_path=None,
         modality="image",
         gate="fidelity",
+        allow_fixture=True,
     )
     assert result["confidence"] == "LOW"
     assert result["schema_version"] == "1.0"

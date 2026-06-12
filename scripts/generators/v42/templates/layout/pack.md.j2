@@ -1,7 +1,7 @@
-# Production Prompt Pack v4.2 (Generated)
-
+{% include "partials/pack_header.md.j2" %}
 {% include "partials/tldr_crosswalk.md.j2" %}
 
+{% include "partials/pre_run_launchpad.md.j2" %}
 {% from "macros/audience_tag.j2" import audience %}
 {% for step in steps %}
 ## {{ step.id }}) {{ step.label }}

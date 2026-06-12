@@ -69,7 +69,7 @@ def test_unknown_source_edit_is_rejected_explicitly() -> None:
     directive = fixture_directive()
     payload = DirectiveEditPayload(edits={"src-999": {"description": "missing"}})
 
-    with pytest.raises(GateError, match="unknown DirectiveSource src_id"):
+    with pytest.raises(GateError, match="unknown DirectiveSource ref_id"):
         submit_verdict(
             directive,
             verb="edit",

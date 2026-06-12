@@ -1,0 +1,100 @@
+run_id: c9f8c16a-1fd9-41fc-bc31-98167a8a8080
+corpus_dir: C:/Users/juanl/Documents/GitHub/course-DEV-IDE-with-AGENTS-hybrid/course-content/courses/tejal-apc-c1-m1-p2-trends
+sources:
+- src_id: src-001
+  locator: assessments/chapter-2-knowledge-check.md
+  provider: local_file
+  role: supporting
+  description: 'Chapter 2 Knowledge Check in Markdown: a 5-question assessment focused
+    on the macro trends covered in Chapter 2.'
+  expected_min_words: 100
+  excluded_reason: null
+- src_id: src-002
+  locator: assessments/chapter-3-knowledge-check.md
+  provider: local_file
+  role: supporting
+  description: 'Chapter 3 Knowledge Check: The Case for Change (5 questions) assessment
+    in Markdown.'
+  expected_min_words: 100
+  excluded_reason: null
+- src_id: src-003
+  locator: README.md
+  provider: local_file
+  role: supporting
+  description: Repository overview and context for the trends module, including source
+    attribution and pointers to slides, references, and assessments.
+  expected_min_words: 150
+  excluded_reason: null
+- src_id: src-004
+  locator: references/intro-video-youtube.md
+  provider: local_file
+  role: supporting
+  description: Markdown reference providing the YouTube intro video link/embedding
+    details for multimedia integration in the course.
+  expected_min_words: 50
+  excluded_reason: null
+- src_id: src-005
+  locator: references/required-reading-beauchamp.md
+  provider: local_file
+  role: supporting
+  description: Reference markdown listing the Beauchamp required reading with embedded
+    hyperlinks to external article(s) supporting the course content.
+  expected_min_words: 50
+  excluded_reason: null
+- src_id: src-006
+  locator: slides/slide-1-the-economic-structural-reality.md
+  provider: local_file
+  role: primary
+  description: Markdown slide content for Slide 1, titled 'The Economic & Structural
+    Reality,' outlining key teaching points on macroeconomic pressures and structural
+    constraints affecting healthcare systems and organizations.
+  expected_min_words: 120
+  excluded_reason: null
+- src_id: src-007
+  locator: slides/slide-2-the-human-cost-system-waste-burnout.md
+  provider: local_file
+  role: primary
+  description: 'Markdown slide outlining Slide 2: The Human Cost—System Waste and
+    Burnout, highlighting clinician burnout, moral injury, staffing shortages, patient
+    safety impacts, delays, and systemic waste as drivers for change.'
+  expected_min_words: 80
+  excluded_reason: null
+- src_id: src-008
+  locator: slides/slide-3-the-knowledge-explosion-new-technologies.md
+  provider: local_file
+  role: supporting
+  description: 'Markdown slide outlining Slide 3: The Knowledge Explosion and New
+    Technologies, summarizing key points about rapid growth of knowledge and emerging
+    tech.'
+  expected_min_words: 40
+  excluded_reason: null
+- src_id: src-009
+  locator: slides/slide-4-the-consumer-shift-the-digital-front-door.md
+  provider: local_file
+  role: supporting
+  description: 'Markdown slide titled ''Slide 4: The Consumer Shift & The Digital
+    Front Door'' outlining key points about changing consumer expectations and the
+    healthcare digital front door, likely including bullets on access, convenience,
+    omnichannel, and virtual care.'
+  expected_min_words: 80
+  excluded_reason: null
+- src_id: src-010
+  locator: slides/slide-5-the-leadership-gap.md
+  provider: local_file
+  role: primary
+  description: Markdown slide for Slide 5 titled 'The Leadership Gap,' containing
+    bullet points and guidance (e.g., visual format notes and key talking points)
+    that convey core instructional content on leadership challenges.
+  expected_min_words: 150
+  excluded_reason: null
+- src_id: src-011
+  locator: slides/slide-6-part-2-summary.md
+  provider: local_file
+  role: supporting
+  description: Slide 6 markdown for Part 2 summary and knowledge check, consolidating
+    key points from prior slides (economic structures, human cost, knowledge explosion,
+    consumer shift, leadership gap).
+  expected_min_words: 80
+  excluded_reason: null
+composed_at: '2026-05-22T02:00:25.820824Z'
+schema_version: 1

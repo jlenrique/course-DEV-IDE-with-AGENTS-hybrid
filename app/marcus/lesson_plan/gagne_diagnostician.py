@@ -1,7 +1,7 @@
 """Deterministic Gagne diagnostician for Lesson Planner stories (29-2).
 
 This module is Irene-authored behavior that lives in the shared
-``marcus.lesson_plan`` package because the returned artifact is a shared
+``app.marcus.lesson_plan`` package because the returned artifact is a shared
 transport contract, not a private specialist surface.
 
 Discipline notes:

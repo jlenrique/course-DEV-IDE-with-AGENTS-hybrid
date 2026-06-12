@@ -11,7 +11,6 @@ from typing import Any
 from app.models.state.cache_state import CacheState
 from app.models.state.model_resolution_entry import ModelResolutionEntry
 from app.models.state.run_state import RunState
-from app.specialists.wanda.wondercraft_dispatch import dispatch_to_wondercraft
 from scripts.api_clients.wondercraft_client import WondercraftClient
 
 REPO_ROOT = Path(__file__).resolve().parents[3]
@@ -176,12 +175,11 @@ def generate_audio_beds(
     beds_dir.mkdir(parents=True, exist_ok=True)
     prompt = _narration_text(payload)
     audio_beds: list[dict[str, Any]] = []
+    # S0 fail-loud sweep extension (party review 2026-06-12, seventh seam):
+    # the former per-bed "legacy_probe" dispatch existed only to stamp MB's
+    # unconditionally-mocked receipt into production bed rows — same disease
+    # as kira's legacy_receipt. The real path is _call_generate_audio_bed.
     for spec in _bed_specs(payload):
-        legacy_probe = dispatch_to_wondercraft(
-            capability="MB",
-            operation_payload={"music_profile": spec.get("genre"), "ducking": "moderate"},
-            client=client,
-        )
         result = _call_generate_audio_bed(client, spec, prompt)
         target = beds_dir / f"{spec['bed_id']}.{_extension(result)}"
         target.write_bytes(_audio_bytes(result))
@@ -194,7 +192,6 @@ def generate_audio_beds(
                 "provider_id": str(result.get("id") or result.get("job_id") or spec["bed_id"]),
                 "provider_url": str(result.get("url") or result.get("audio_url") or ""),
                 "cost_usd": float(result.get("cost_usd") or 0.0),
-                "legacy_dispatch_probe": legacy_probe,
             }
         )
     track = _audio_track(payload)

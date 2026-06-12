@@ -2,10 +2,8 @@ from __future__ import annotations
 
 from pathlib import Path
 
-import pytest
 import yaml
 
-from app.marcus.orchestrator.directive_composer import compose_directive
 from app.specialists.texas.retrieval_dispatch import dispatch_retrieval
 
 REQUIRED = {
@@ -20,16 +18,23 @@ REQUIRED = {
 
 def test_trial_475_replay_honors_six_artifact_contract(tmp_path: Path) -> None:
     corpus = Path("tests/fixtures/trials/trial_475_mini_corpus")
-    if not corpus.is_dir():
-        pytest.skip("trial-475 mini-corpus cassette unavailable")
-    composed = compose_directive(corpus_path=corpus, run_id="trial-475-texas")
-    payload = composed.to_dict()
-    for source in payload["sources"]:
-        locator = corpus / source["locator"]
-        source["locator"] = locator.resolve().as_posix()
-        if source["role"] == "supporting":
-            source["role"] = "supplementary"
-        source["expected_min_words"] = 1
+    assert corpus.is_dir(), f"missing trial-475 mini-corpus cassette: {corpus}"
+    payload = {
+        "run_id": "trial-475-texas",
+        "sources": [
+            {
+                "ref_id": f"src-{index:03d}",
+                "provider": "local_file",
+                "locator": (corpus / name).resolve().as_posix(),
+                "role": "primary" if index == 1 else "supporting",
+                "description": f"trial-475 fixture source: {name}",
+                "expected_min_words": 1,
+            }
+            for index, name in enumerate(
+                ["appendix.md", "chapter-1.md", "intro.md"], start=1
+            )
+        ],
+    }
     directive_path = tmp_path / "directive.yaml"
     directive_path.write_text(yaml.safe_dump(payload, sort_keys=False), encoding="utf-8")
     bundle_dir = tmp_path / "bundle"

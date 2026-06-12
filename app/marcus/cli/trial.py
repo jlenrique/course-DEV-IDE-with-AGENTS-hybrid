@@ -9,16 +9,15 @@ import shutil
 import subprocess
 import sys
 from collections.abc import Callable
+from contextlib import suppress
 from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any, Literal
 from uuid import UUID, uuid4
 
-from app.marcus.orchestrator.directive_composer import (
-    compose_directive,
-    materialize_directive,
-)
+from app.composers.section_02a.cli_adapter import compose_and_write
 from app.marcus.orchestrator.production_runner import (
+    recover_production_trial,
     resume_production_trial,
     run_production_trial,
 )
@@ -45,6 +44,20 @@ def _load_env_if_available() -> None:
         load_env()
     except (FileNotFoundError, ImportError):
         pass
+
+
+def _ensure_utf8_io() -> None:
+    """Force UTF-8 stdio regardless of OS default codepage (SCP 2026-05-21 §4.3).
+
+    Closes Trial-2 finding #1 cp1252 crash vector for any invocation path
+    (PowerShell, CMD, IDE terminal). Idempotent; safe to call repeatedly.
+    """
+    os.environ.setdefault("PYTHONIOENCODING", "utf-8")
+    for stream in (sys.stdout, sys.stderr):
+        reconfigure = getattr(stream, "reconfigure", None)
+        if callable(reconfigure):
+            with suppress(ValueError, OSError):
+                reconfigure(encoding="utf-8", errors="replace")
 
 
 def _has_langsmith_env() -> bool:
@@ -133,9 +146,14 @@ def _confirm_or_edit_directive(
     edit_fn = edit_fn or _edit_directive_in_editor
     isatty_fn = isatty_fn or (lambda: sys.stdin.isatty())
     print_fn = print_fn or _utf8_safe_print
+    # Trial-3 cycle-3 launch fix (2026-06-12): the flag is EXPLICIT operator
+    # consent and is honored unconditionally — the old tty-gated form
+    # prompted anyway whenever isatty() lied (Windows NUL is a character
+    # device, so `< /dev/null` still reads as a tty and two launches died
+    # on EOFError at the G0 prompt).
+    if auto_confirm_directive:
+        return "confirmed"
     if not isatty_fn():
-        if auto_confirm_directive:
-            return "confirmed"
         raise DirectiveConfirmationRequiredError(
             "non-interactive stdin and --auto-confirm-directive not set; "
             "directive composition cannot be silently auto-confirmed"
@@ -190,7 +208,9 @@ def start_trial(
     runs_root: Path = RUNS_ROOT,
     auto_confirm_directive: bool = False,
     confirm_fn: Callable[..., Literal["confirmed", "saved-only"]] | None = None,
+    max_specialist_calls: int | None = None,
 ) -> dict[str, Any]:
+    _ensure_utf8_io()
     _load_env_if_available()
     if not input_path.exists():
         raise FileNotFoundError(f"trial input path does not exist: {input_path}")
@@ -224,11 +244,11 @@ def start_trial(
     directive_path: Path | None = None
     directive_digest: str | None = None
     if input_path.is_dir():
-        composed = compose_directive(
-            corpus_path=input_path,
-            run_id=str(effective_trial_id),
+        directive_path, directive_digest = compose_and_write(
+            corpus_dir=input_path,
+            run_dir=run_dir,
+            run_id=effective_trial_id,
         )
-        directive_path, directive_digest = materialize_directive(composed, run_dir)
 
         confirm = confirm_fn or _confirm_or_edit_directive
         try:
@@ -266,6 +286,14 @@ def start_trial(
                 "transport_kind": "cli",
             }
 
+    # Open-throttle discipline (finding #8 at trial scale, 2026-06-12): under
+    # S2 per-node keying a resume never revisits pre-checkpoint nodes, so a
+    # cap-starved START permanently under-populates the pre-G1 segment and
+    # the §06 builder fail-louds post-G1. Production starts pass the cap
+    # explicitly; the runner default (1) stays for harness checks.
+    runner_kwargs: dict[str, Any] = {}
+    if max_specialist_calls is not None:
+        runner_kwargs["max_specialist_calls"] = max_specialist_calls
     envelope = run_production_trial(
         corpus_path=input_path,
         preset=preset,
@@ -275,6 +303,7 @@ def start_trial(
         allow_offline_cost_report=allow_offline_cost_report,
         pause_at_gates=not allow_offline_cost_report,
         directive_path=directive_path,
+        **runner_kwargs,
     )
 
     run_json = run_dir / "run.json"
@@ -323,6 +352,7 @@ def start_trial_cli(args: argparse.Namespace) -> int:
             allow_offline_cost_report=args.allow_offline_cost_report,
             runs_root=Path(args.runs_root) if args.runs_root else RUNS_ROOT,
             auto_confirm_directive=getattr(args, "auto_confirm_directive", False),
+            max_specialist_calls=getattr(args, "max_specialist_calls", None),
         )
     except DirectiveConfirmationRequiredError as exc:
         print(f"ERROR: {exc}", file=sys.stderr)
@@ -386,6 +416,53 @@ def resume_trial_cli(args: argparse.Namespace) -> int:
     return 0
 
 
+def recover_trial(
+    *,
+    trial_id: UUID,
+    runs_root: Path = RUNS_ROOT,
+    max_specialist_calls: int | None = None,
+) -> dict[str, Any]:
+    """Continue an error-paused trial from its failed node (S4 part 2).
+
+    No verdict file: dispatch-error pauses carry no operator decision — the
+    operator fixes the transient cause and re-enters the walk. Gate pauses
+    still require `trial resume` + a verdict.
+    """
+    _load_env_if_available()
+    envelope = recover_production_trial(
+        trial_id=trial_id,
+        runs_root=runs_root,
+        max_specialist_calls=max_specialist_calls,
+    )
+    result = {
+        "status": envelope.status,
+        "trial_id": str(trial_id),
+        "paused_gate": envelope.paused_gate,
+        "paused_error_tag": envelope.paused_error_tag,
+        "run_registry_path": str(runs_root / str(trial_id) / "run.json"),
+        "cost_report_json": str(envelope.cost_report_path)
+        if envelope.cost_report_path is not None
+        else None,
+        "production_clone_launch_evidence": envelope.production_clone_launch_evidence,
+        "transport_kind": "cli",
+    }
+    (runs_root / str(trial_id) / "trial-recover.json").write_text(
+        json.dumps(result, indent=2, sort_keys=True) + "\n",
+        encoding="utf-8",
+    )
+    return result
+
+
+def recover_trial_cli(args: argparse.Namespace) -> int:
+    payload = recover_trial(
+        trial_id=args.trial_id,
+        runs_root=Path(args.runs_root) if args.runs_root else RUNS_ROOT,
+        max_specialist_calls=args.max_specialist_calls,
+    )
+    print(json.dumps(payload, sort_keys=True))
+    return 0
+
+
 def build_trial_parser(parser: argparse.ArgumentParser) -> None:
     subparsers = parser.add_subparsers(dest="trial_command")
     start = subparsers.add_parser("start")
@@ -410,6 +487,17 @@ def build_trial_parser(parser: argparse.ArgumentParser) -> None:
             "directive verbatim. Required for non-interactive trial starts."
         ),
     )
+    start.add_argument(
+        "--max-specialist-calls",
+        required=False,
+        type=int,
+        help=(
+            "Maximum live specialist calls during the start walk (G0 to the "
+            "first gate). Production starts should open the throttle: under "
+            "per-node keying, resumes never revisit pre-checkpoint nodes, so "
+            "a starved start cannot be repaired downstream."
+        ),
+    )
     resume = subparsers.add_parser("resume")
     resume.add_argument("--trial-id", required=True, type=UUID)
     resume.add_argument("--verdict-file", required=True)
@@ -423,6 +511,24 @@ def build_trial_parser(parser: argparse.ArgumentParser) -> None:
             "continuation. Defaults to the paused runner cap."
         ),
     )
+    recover = subparsers.add_parser(
+        "recover",
+        help=(
+            "Continue an error-paused trial from its failed node (no verdict "
+            "file; dispatch-error pauses carry no operator decision)."
+        ),
+    )
+    recover.add_argument("--trial-id", required=True, type=UUID)
+    recover.add_argument("--runs-root", required=False, help=argparse.SUPPRESS)
+    recover.add_argument(
+        "--max-specialist-calls",
+        required=False,
+        type=int,
+        help=(
+            "Maximum downstream specialist calls to make during this recovery "
+            "continuation. Defaults to the paused runner cap."
+        ),
+    )
 
 
 __all__ = [
@@ -430,6 +536,8 @@ __all__ = [
     "DirectiveDeclinedError",
     "EditorUnavailableError",
     "build_trial_parser",
+    "recover_trial",
+    "recover_trial_cli",
     "resume_trial",
     "resume_trial_cli",
     "start_trial",

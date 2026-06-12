@@ -8,7 +8,6 @@ from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
 
-import yaml
 from langgraph.graph import END, START, StateGraph
 from langgraph.types import Command, interrupt
 
@@ -17,9 +16,9 @@ from app.models.adapter import make_chat_model
 from app.models.state import specialist_summary_artifacts as specialist_summary_writer
 from app.models.state.model_resolution_entry import ModelResolutionEntry
 from app.models.state.run_state import RunState
+from app.specialists._scaffold.contract import SCAFFOLD_NODE_IDS
 from app.specialists.texas import _act as _texas_act_impl
 from app.specialists.texas.retrieval_dispatch import dispatch_retrieval
-from app.specialists._scaffold.contract import SCAFFOLD_NODE_IDS
 
 REPO_ROOT = Path(__file__).resolve().parents[3]
 SANCTUM_DIR = REPO_ROOT / "_bmad" / "memory" / "bmad-agent-texas"

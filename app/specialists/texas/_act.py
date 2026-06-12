@@ -13,6 +13,7 @@ import yaml
 
 from app.models.state.model_resolution_entry import ModelResolutionEntry
 from app.models.state.run_state import RunState
+from app.specialists.dispatch_errors import SpecialistDispatchError
 
 REQUIRED_BUNDLE_ARTIFACTS = (
     "extracted.md",
@@ -40,12 +41,8 @@ class BundleParseError(RuntimeError):  # noqa: N818
         self.tag = tag
 
 
-class BundleDispatchError(RuntimeError):  # noqa: N818
+class BundleDispatchError(SpecialistDispatchError):
     """Raised when the wrangler dispatch receipt is unusable."""
-
-    def __init__(self, message: str, *, tag: str) -> None:
-        super().__init__(message)
-        self.tag = tag
 
 
 class RetrievalScopeError(Exception):
@@ -329,32 +326,13 @@ def act(
             f"texas wrangler returned unexpected exit code {exit_code}",
             tag="bundle.parsed.unknown-exit",
         )
-    if exit_code == 10:
-        trail_entry = _new_dispatch_trail_entry(last_entry, tag="bundle.parsed.exit-10")
-        output_blob = json.dumps(
-            {
-                "bundle_reference": None,
-                "status": "no-results",
-                "overall_status": "no-results",
-                "artifacts": [],
-                "report_schema_version": None,
-                "dispatch_exit_code": exit_code,
-                "model_id": last_entry.resolved,
-            },
-            sort_keys=True,
-            ensure_ascii=True,
-            separators=(",", ":"),
-            default=str,
-        )
-        return {
-            "model_resolution_trail": [*state.model_resolution_trail, trail_entry],
-            "cache_state": {
-                "cache_prefix": output_blob,
-                "entries_count": (state.cache_state.entries_count + 1)
-                if state.cache_state is not None
-                else 1,
-            },
-        }
+    # exit 10 = complete_with_warnings per the wrangler taxonomy
+    # (run_wrangler.py EXIT_COMPLETE_WITH_WARNINGS). The bundle is real and
+    # hardened below exactly like exit 0; the parsed status surfaces the
+    # warning state. The prior exit-10 -> "no-results" early-return discarded
+    # a valid bundle (Trial-3 attempt-3 finding 2026-06-11: 903 extracted
+    # words dropped) — the wrangler has no "no-results" status in its
+    # taxonomy, so that mapping was speculative and is retired.
     try:
         if dispatch_receipt.get("command") is None or not directive_path:
             parsed = load_bundle_outputs(bundle_dir)

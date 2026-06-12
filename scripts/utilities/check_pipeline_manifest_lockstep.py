@@ -15,7 +15,7 @@ if __package__ in {None, ""}:  # direct script invocation
     sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 
 from app.manifest.loader import load as load_graph_manifest
-from app.manifest.schema import NodeSpec
+from app.manifest.schema import is_orchestration_only
 from scripts.utilities.file_helpers import project_root
 from scripts.utilities.pipeline_manifest import DEFAULT_MANIFEST_PATH, load_manifest
 from scripts.utilities.run_hud import PIPELINE_STEPS
@@ -47,9 +47,10 @@ def _parse_pack_sections(pack_path: Path) -> list[dict[str, str]]:
 
 
 def _parse_insert_between_calls() -> list[tuple[str | None, str | None]]:
-    workflow_runner = (project_root() / "app" / "marcus" / "orchestrator" / "workflow_runner.py").read_text(
-        encoding="utf-8"
+    workflow_runner_path = (
+        project_root() / "app" / "marcus" / "orchestrator" / "workflow_runner.py"
     )
+    workflow_runner = workflow_runner_path.read_text(encoding="utf-8")
     tree = ast.parse(workflow_runner)
     pairs: list[tuple[str | None, str | None]] = []
     for node in ast.walk(tree):
@@ -84,11 +85,9 @@ def _trace_payload(
     }
 
 
-def _is_orchestration_only(node: NodeSpec) -> bool:
-    return node.specialist_id is None and node.gate is False and node.hud_tracked is False
-
-
 def _orchestration_only_node_ids(manifest_path: Path, pack_version: str | None) -> list[str]:
+    # Classification delegated to the SHARED predicate (also consumed by the
+    # v4.2 generator) so renderer and lockstep check cannot drift apart.
     try:
         manifest = load_graph_manifest(manifest_path)
     except Exception:  # noqa: BLE001 - legacy steps-shaped manifests have no graph nodes
@@ -96,7 +95,7 @@ def _orchestration_only_node_ids(manifest_path: Path, pack_version: str | None) 
     return [
         node.id
         for node in manifest.nodes
-        if (node.pack_version in (None, pack_version)) and _is_orchestration_only(node)
+        if (node.pack_version in (None, pack_version)) and is_orchestration_only(node)
     ]
 
 
@@ -261,6 +260,61 @@ def run_check(
         findings.append({"check": 8, "message": "Manifest event_types not subset of schema enum"})
 
     if findings:
+        return 1, _trace_payload(checks, findings, "FAIL", orchestration_only_nodes)
+
+    # Check 9: regeneration determinism (Scenario-E made NON-VACUOUS;
+    # renderer/L1 story, drift-audit fold 2026-06-12). Before this check the
+    # guard never rendered at all: the v4.2 renderer crashed on Slab-7a
+    # orchestration nodes while this script exited 0 — a guard that cannot
+    # fail launders confidence. Runs only when checks 1-8 are clean (it is
+    # the last line of defense against hand-edits the projections cannot
+    # see, not a duplicate drift signal). A regeneration CRASH is exit 2
+    # STRUCTURAL: the guard refuses to certify a pack it cannot reproduce.
+    import hashlib
+    import tempfile
+
+    from scripts.generators.v42.render import render_pack
+
+    def _normalized_sha(text: str) -> str:
+        return hashlib.sha256(text.replace("\r\n", "\n").encode("utf-8")).hexdigest()
+
+    try:
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            rendered_path = Path(tmp_dir) / "regenerated-pack.md"
+            render_pack(manifest_path, rendered_path)
+            rendered_sha = _normalized_sha(rendered_path.read_text(encoding="utf-8"))
+    except Exception as exc:  # noqa: BLE001 - any crash is a structural failure
+        checks.append({"check": 9, "name": "regeneration-determinism", "pass": False})
+        return 2, _trace_payload(
+            checks,
+            [
+                {
+                    "check": 9,
+                    "message": (
+                        "pack regeneration CRASHED; the determinism guard cannot "
+                        f"certify the committed pack: {type(exc).__name__}: {exc}"
+                    ),
+                }
+            ],
+            "STRUCTURAL",
+            orchestration_only_nodes,
+        )
+    committed_sha = _normalized_sha(pack_path.read_text(encoding="utf-8"))
+    regen_ok = rendered_sha == committed_sha
+    checks.append({"check": 9, "name": "regeneration-determinism", "pass": regen_ok})
+    if not regen_ok:
+        findings.append(
+            {
+                "check": 9,
+                "message": (
+                    "committed pack is not the regeneration output of the current "
+                    "manifest + templates (hand-edit or stale pack); re-render via "
+                    "python -m scripts.generators.v42.render and review the diff"
+                ),
+                "committed_sha256": committed_sha,
+                "regenerated_sha256": rendered_sha,
+            }
+        )
         return 1, _trace_payload(checks, findings, "FAIL", orchestration_only_nodes)
     return 0, _trace_payload(checks, [], "PASS", orchestration_only_nodes)
 

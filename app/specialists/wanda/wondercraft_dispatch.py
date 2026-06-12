@@ -5,17 +5,14 @@ from __future__ import annotations
 from datetime import UTC, datetime
 from typing import Any
 
+from app.specialists.dispatch_errors import SpecialistDispatchError
 from scripts.api_clients.wondercraft_client import WondercraftClient
 
 CAPABILITY_CODES: frozenset[str] = frozenset({"EP", "DP", "AS", "MB", "CM", "AH"})
 
 
-class WondercraftDispatchError(RuntimeError):  # noqa: N818
+class WondercraftDispatchError(SpecialistDispatchError):
     """Raised when Wanda dispatch cannot execute the requested capability."""
-
-    def __init__(self, message: str, *, tag: str) -> None:
-        super().__init__(message)
-        self.tag = tag
 
 
 def _ep_podcast_episode_produce(
@@ -150,13 +147,27 @@ def dispatch_to_wondercraft(
     capability: str,
     operation_payload: dict[str, Any] | None = None,
     client: WondercraftClient | None = None,
+    allow_fixture: bool = False,
 ) -> dict[str, Any]:
-    """Dispatch Wanda capability requests to Wondercraft client helpers."""
+    """Dispatch Wanda capability requests to Wondercraft client helpers.
+
+    S0 fail-loud policy (SCP 2026-06-11; seventh seam, caught by the
+    platform fixture-grep ratchet 2026-06-12): the MB music-bed capability
+    is unimplemented and previously returned a mocked receipt regardless of
+    inputs — production now refuses unless the test-only ``allow_fixture``
+    opt-in is set.
+    """
     normalized_capability = str(capability).strip().upper()
     if normalized_capability not in CAPABILITY_CODES:
         raise WondercraftDispatchError(
             f"unsupported wanda capability: {normalized_capability!r}",
             tag="wanda_audio.parsed.missing-key",
+        )
+    if normalized_capability == "MB" and not allow_fixture:
+        raise WondercraftDispatchError(
+            "MB music-bed capability is not implemented; the mocked receipt "
+            "is reachable only via the test-only allow_fixture opt-in",
+            tag="wanda_audio.capability.unimplemented",
         )
     payload = dict(operation_payload or {})
     client = client or WondercraftClient()

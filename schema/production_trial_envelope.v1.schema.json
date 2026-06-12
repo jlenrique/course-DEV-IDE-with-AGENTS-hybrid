@@ -5,8 +5,11 @@
       "description": "Canonical cross-specialist accumulator for production composition.\n\nThis is distinct from ``RunState.cache_state.cache_prefix``, which remains\nper-specialist scratch for isolated scaffold execution.",
       "properties": {
         "schema_version": {
-          "const": "production-envelope.v1",
-          "default": "production-envelope.v1",
+          "default": "production-envelope.v2",
+          "enum": [
+            "production-envelope.v1",
+            "production-envelope.v2"
+          ],
           "title": "Schema Version",
           "type": "string"
         },
@@ -21,6 +24,11 @@
           },
           "title": "Contributions",
           "type": "array"
+        },
+        "fixture_run": {
+          "default": false,
+          "title": "Fixture Run",
+          "type": "boolean"
         }
       },
       "required": [
@@ -31,7 +39,7 @@
     },
     "SpecialistContribution": {
       "additionalProperties": false,
-      "description": "One immutable specialist output appended to a production envelope.",
+      "description": "One immutable specialist output appended to a production envelope.\n\nS2 (SCP 2026-06-11 segment-data-plane, per-node keying): ``node_id``\nidentifies the manifest node that produced this contribution \u2014 the unit\nof contribution is the node, not the specialist (Winston A-ruling).\n``None`` only on legacy v1 envelopes deserialized from disk. ``attempt``\nrecords same-node retry provenance (Murat regression shape: retry\noverwrites, never duplicate-appends).",
       "properties": {
         "specialist_id": {
           "minLength": 1,
@@ -63,6 +71,33 @@
           "minLength": 64,
           "pattern": "^[0-9a-f]{64}$",
           "title": "Output Digest",
+          "type": "string"
+        },
+        "node_id": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Node Id"
+        },
+        "attempt": {
+          "default": 1,
+          "minimum": 1,
+          "title": "Attempt",
+          "type": "integer"
+        },
+        "provenance": {
+          "default": "real",
+          "enum": [
+            "real",
+            "fixture"
+          ],
+          "title": "Provenance",
           "type": "string"
         }
       },
@@ -131,6 +166,7 @@
         "registered",
         "in-flight",
         "paused-at-gate",
+        "paused-at-error",
         "completed",
         "failed"
       ],
@@ -154,6 +190,18 @@
       ],
       "default": null,
       "title": "Paused Gate"
+    },
+    "paused_error_tag": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Paused Error Tag"
     },
     "langsmith_trace_id": {
       "anyOf": [

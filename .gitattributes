@@ -7,3 +7,9 @@
 *.{md,mdc,yml,yaml,json,toml,txt,py,js,mjs,ts,tsx,jsx,css,html,xml} text diff
 _bmad/memory/** text=auto eol=lf
 tests/fixtures/**/*.mp4 binary
+
+# Epic 34 forensic fixture (sha256 byte-identical assertion per AC-34-1-B);
+# preserve native line endings — DO NOT normalize. Sha256 of the file on disk
+# MUST match the hardcoded constant in tests/integration/
+# test_section_02a_to_wrangler_subprocess_roundtrip.py.
+tests/fixtures/integration/section_02a/forensic_directive_*.yaml -text

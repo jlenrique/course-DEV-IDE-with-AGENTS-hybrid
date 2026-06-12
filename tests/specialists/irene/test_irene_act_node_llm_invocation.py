@@ -29,26 +29,25 @@ from app.specialists.irene.graph import _act, _plan
 
 
 @pytest.mark.llm_live
-def test_irene_act_node_real_llm_invocation_with_token_floor() -> None:
+def test_irene_act_node_real_llm_invocation_with_token_floor(tmp_path: Any) -> None:
     """Run _plan → _act with a real OpenAI key; assert MF2 floor + parse success."""
+    from tests.specialists.irene.conftest import make_grounded_pass2_payload
+
     # Synthetic envelope payload — embedded in cache_state.cache_prefix per the
     # Slab-2 envelope-carrier-hack pattern documented in graph.py module
-    # docstring. Slab 3 retires this hack.
-    envelope_payload: dict[str, Any] = {
-        "lesson_slug": "test-c1m1",
-        "gary_slide_output": [
-            {"slide_id": "s1", "slide_purpose": "intro", "title": "Welcome"},
-            {"slide_id": "s2", "slide_purpose": "concept", "title": "Cell Membrane"},
-        ],
-        "perception_artifacts": [
+    # docstring. Slab 3 retires this hack. dp-v1.1: grounded fail-loud.
+    envelope_payload: dict[str, Any] = make_grounded_pass2_payload(
+        tmp_path,
+        lesson_slug="test-c1m1",
+        perception_artifacts=[
             {"slide_id": "s1", "confidence": "HIGH", "elements": ["title-banner"]},
             {"slide_id": "s2", "confidence": "HIGH", "elements": ["diagram", "labels"]},
         ],
-        "narration_profile_controls": {
+        narration_profile_controls={
             "bridge_cadence_minutes": 2,
             "visual_references_per_slide": 2,
         },
-    }
+    )
     payload_blob = json.dumps(
         envelope_payload, sort_keys=True, ensure_ascii=True, separators=(",", ":")
     )

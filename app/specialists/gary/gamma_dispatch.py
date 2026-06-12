@@ -6,6 +6,7 @@ import json
 from pathlib import Path
 from typing import Any
 
+from app.specialists.dispatch_errors import SpecialistDispatchError
 from skills.gamma_api_mastery.scripts.gamma_operations import execute_generation
 
 REPO_ROOT = Path(__file__).resolve().parents[3]
@@ -14,12 +15,8 @@ DEFAULT_FIXTURE_RECEIPT = (
 )
 
 
-class GammaDispatchError(RuntimeError):  # noqa: N818
+class GammaDispatchError(SpecialistDispatchError):
     """Raised when gamma dispatch fails before receipt parsing."""
-
-    def __init__(self, message: str, *, tag: str) -> None:
-        super().__init__(message)
-        self.tag = tag
 
 
 def _load_fixture_receipt(path: Path = DEFAULT_FIXTURE_RECEIPT) -> dict[str, Any]:
@@ -30,15 +27,24 @@ def dispatch_to_gamma(
     *,
     directive_path: str | Path | None = None,
     export_dir: str | Path | None = None,
+    allow_fixture: bool = False,
 ) -> dict[str, Any]:
-    """Run Gary gamma generation or short-circuit to deterministic fixture data.
+    """Run Gary gamma generation.
 
-    `export_dir` is owned by the caller envelope. When either `directive_path`
-    or `export_dir` is missing, we return the fixture receipt and avoid external
-    calls in dev-agent execution.
+    S0 fail-loud policy (SCP 2026-06-11 segment-data-plane): missing inputs
+    RAISE; the fixture receipt is reachable only via explicit ``allow_fixture``
+    opt-in, which production dispatch never sets. The prior silent fallback
+    emitted placeholder slides into Trial-3 attempt-4's production envelope
+    and downstream gates blessed them.
     """
     if not directive_path or not export_dir:
-        return _load_fixture_receipt()
+        if allow_fixture:
+            return _load_fixture_receipt()
+        missing = "directive_path" if not directive_path else "export_dir"
+        raise GammaDispatchError(
+            f"dispatch_to_gamma missing required input: {missing}",
+            tag="gamma.input.missing",
+        )
 
     directive = Path(str(directive_path))
     if not directive.is_absolute():

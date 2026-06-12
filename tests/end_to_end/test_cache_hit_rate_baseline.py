@@ -76,7 +76,7 @@ def _sanctum_file_count(sanctum_dir: Path = SANCTUM_DIR) -> int:
 
 
 @pytest.mark.llm_live
-def test_irene_pass_2_cache_hit_rate_meets_60_percent_median() -> None:
+def test_irene_pass_2_cache_hit_rate_meets_60_percent_median(tmp_path: Path) -> None:
     """FR54 cache-hit-rate baseline — closes M1 ACCEPT-WITH-GAP at story 2a.2 done flip."""
     # MF6 sanctum-lock pre-check
     pre_count = _sanctum_file_count()
@@ -87,8 +87,21 @@ def test_irene_pass_2_cache_hit_rate_meets_60_percent_median() -> None:
         f"content to `_bmad/memory/_archive/` before re-running."
     )
 
+    # dp-v1.1 grounding: Pass 2 is fail-loud on corpus + lesson plan; the
+    # bundle is fixed for the whole 10-invocation window so the prompt
+    # prefix stays byte-identical (the corpus TEXT is embedded, not the path).
+    bundle_dir = tmp_path / "bundle"
+    bundle_dir.mkdir()
+    (bundle_dir / "extracted.md").write_text(
+        "# Source corpus\n\nCell membrane structure and transport.\n",
+        encoding="utf-8",
+    )
     payload_blob = json.dumps(
-        _PASS_2_ENVELOPE,
+        {
+            **_PASS_2_ENVELOPE,
+            "bundle_reference": str(bundle_dir),
+            "lesson_plan": {"title": "Cell Membrane", "objectives": ["obj-1"]},
+        },
         sort_keys=True,
         ensure_ascii=True,
         separators=(",", ":"),

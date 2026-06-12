@@ -50,7 +50,7 @@ Single-writer discipline
 ------------------------
 
 Intake-side code MUST NOT call
-:func:`marcus.lesson_plan.log.LessonPlanLog.append_event` directly. All
+:func:`app.marcus.lesson_plan.log.LessonPlanLog.append_event` directly. All
 log writes route through :func:`marcus.orchestrator.write_api.emit_pre_packet_snapshot`,
 which the facade's internal dispatch invokes on Intake's behalf. R1
 amendment 13 (Quinn single-writer rule); enforced by
@@ -66,7 +66,7 @@ INTAKE_MODULE_IDENTITY: Literal["marcus-intake"] = "marcus-intake"
 
 String-equal to the 31-2 ``WriterIdentity`` Literal value. Used for log
 writer-identity routing and internal audit — NOT a Maya-facing string.
-See :data:`marcus.lesson_plan.log.WriterIdentity`.
+See :data:`app.marcus.lesson_plan.log.WriterIdentity`.
 """
 
 # ---- merged from legacy app/marcus/intake.py flat module (S2 merge 2026-05-07) ----

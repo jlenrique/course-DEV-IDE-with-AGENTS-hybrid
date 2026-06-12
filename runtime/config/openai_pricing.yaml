@@ -14,6 +14,15 @@ models:
     # Frontier tier.
     input_per_1m_tokens_usd: 1.25
     output_per_1m_tokens_usd: 10.0
+  gpt-5.4:
+    # Frontier tier (current). Resolved by tracy / irene_pass1 / dan
+    # model_config.yaml + app/models/registry.yaml. Row added 2026-06-11
+    # (Trial-3 attempt-3: cost report crashed at first G2C pause — this
+    # model was live since Slab 2a but never priced; G1-segment-only runs
+    # masked the gap because texas resolves gpt-5-nano). Verified against
+    # https://developers.openai.com/api/docs/pricing on 2026-06-11.
+    input_per_1m_tokens_usd: 2.5
+    output_per_1m_tokens_usd: 15.0
   gpt-5-mini:
     # Mid-tier; not currently used in cascade but available as future optimization.
     input_per_1m_tokens_usd: 0.25

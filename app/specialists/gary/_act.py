@@ -15,6 +15,7 @@ from app.specialists.gary.gamma_dispatch import GammaDispatchError, dispatch_to_
 from scripts.api_clients.gamma_client import GammaClient
 from skills.gamma_api_mastery.scripts.gamma_operations import (
     _materialize_exported_slide_paths,
+    download_export,
 )
 
 REPO_ROOT = Path(__file__).resolve().parents[3]
@@ -144,6 +145,27 @@ def _paths_from_generation(
             export_dir=export_dir,
             label=label,
         )
+    # Pre-S5 recon gap (2026-06-12): generate_deck waits for completion but
+    # never downloads — completed generations carry only exportUrl, so every
+    # gary_slide_output row landed with file_path "" and Storyboard A at G2C
+    # would have had NO viewable slides (the kira-empty-URL class, on the
+    # acceptance path). Download + materialize here; the machinery existed
+    # in gamma_operations but was only wired into the standalone lane.
+    export_url = generation.get("exportUrl") or generation.get("export_url")
+    if isinstance(export_url, str) and export_url.strip():
+        downloaded_export = download_export(
+            export_url,
+            output_dir=export_dir,
+            filename=f"gary_{label}.png",
+        )
+        return _materialize_exported_slide_paths(
+            Path(str(downloaded_export)),
+            requested_format="png",
+            expected_card_numbers=list(range(1, len(slides) + 1)),
+            module_lesson_part="gary",
+            export_dir=export_dir,
+            label=label,
+        )
     rows = generation.get("gary_slide_output")
     if isinstance(rows, list):
         return [str(row.get("file_path", "")) for row in rows if isinstance(row, dict)]
@@ -176,9 +198,23 @@ def generate_gamma_variants(
             ),
             export_as="png",
         )
-        generation_id = str(
-            generation.get("generation_id") or generation.get("id") or f"fixture-{variant}"
+        raw_generation_id = (
+            generation.get("generation_id")
+            or generation.get("id")
+            or generation.get("generationId")
         )
+        if not raw_generation_id:
+            # Trial-3 cycle-2 root-cause hardening (2026-06-12): the old
+            # fabricated per-variant fixture-id sentinel here was the EIGHTH
+            # silent seam — it masked generate_deck returning a bare POST ack
+            # and let untracked spend + empty slide rows flow to G2C.
+            # Recoverable family: error-pause + `trial recover` retries.
+            raise GammaDispatchError(
+                f"gamma generation returned no id for variant {variant}; "
+                f"keys={sorted(generation)}",
+                tag="gamma.generation.id-missing",
+            )
+        generation_id = str(raw_generation_id)
         calls.append(generation_id)
         paths = _paths_from_generation(
             generation, slides=slides, export_dir=export_dir, label=variant
@@ -196,6 +232,15 @@ def generate_gamma_variants(
                     ),
                 }
             )
+    if output and not any(row.get("file_path") for row in output):
+        # Twice-bitten guard (deferred this morning, bitten this evening):
+        # slide rows with no materialized artifacts are quality theater —
+        # downstream gates would review metadata, not slides. Recoverable.
+        raise GammaDispatchError(
+            f"no slide artifacts materialized for generation(s) {calls}; "
+            "every gary_slide_output row has an empty file_path",
+            tag="gamma.export.unmaterialized",
+        )
     return {
         "generation_id": calls[0],
         "status": "complete",
@@ -244,7 +289,12 @@ def act(state: RunState, *, client: GammaClient | None = None) -> dict[str, Any]
     }
 
 
+# Amelia a.1 (party review 2026-06-12): the payload contract participates in
+# the act's import graph so it cannot rot as an orphan module.
+from app.specialists.gary.payload_contract import CONSUMED_PAYLOAD_KEYS  # noqa: E402
+
 __all__ = [
+    "CONSUMED_PAYLOAD_KEYS",
     "GARY_REFERENCES",
     "GaryActError",
     "SANCTUM_DIR",

@@ -2,21 +2,21 @@
 
 Companion to `bmad-session-protocol-session-WRAPUP.md`. Together these two files guarantee reliable context transfer between sessions.
 
-## Canonical Session Protocol Set
+## Canonical session protocol set
 
 The canonical BMAD session protocol is this pair:
 - `bmad-session-protocol-session-START.md`
 - `bmad-session-protocol-session-WRAPUP.md`
 
-If a user or older note refers to a literal "session xyz" document and no such file exists, treat that as a stale label and use this start/wrapup pair instead. Record the assumption in session notes if it affects execution.
+If a user or older note refers to a literal "session xyz" document and no such file exists, treat that as a stale label and use this START/WRAPUP pair instead. Record the assumption in session notes if it affects execution.
 
-## §0: Project Purpose TL;DR (For Unfamiliar Agents)
+## §0: Project purpose TL;DR (for unfamiliar agents)
 
-**Purpose**: Build a persistent collaborative intelligence infrastructure for systematically scaling creative expertise in online course content production. A custom master orchestrator agent (Marcus) coordinates specialist agents that manipulate professional media tools through skills backed by Python scripts for API calls, while systematically capturing creative decision-making patterns in BMad memory sidecars for iterative refinement and reuse.
+**Purpose:** Persistent collaborative intelligence infrastructure for systematically scaling creative expertise in online course content production. Marcus (the master orchestrator) coordinates ~14 LangGraph specialist agents that manipulate professional media tools through skills backed by Python scripts; BMAD memory sidecars capture creative decision-making patterns for refinement and reuse.
 
-**Architecture**: Agents are skill directories created via `bmad-agent-builder` six-phase discovery process, living under `skills/bmad-agent-{name}/`. Skills are SKILL.md directories with references/ + scripts/ for tool mastery. Cursor plugin packaging enables native IDE integration.
+**Architecture:** See [`docs/ONBOARDING.md`](docs/ONBOARDING.md) for the structural mental model (8 layers, 12-step guided tour, derived from a knowledge-graph scan of the codebase). Read this once per fresh agent context.
 
-**Repo Contract**:
+**Repo contract:**
 ```
 course-content/courses/     # Published content
 course-content/staging/     # Agent drafts (human review queue)
@@ -27,269 +27,193 @@ scripts/                    # Python infrastructure
 state/                      # YAML configs + SQLite runtime
 ```
 
-### Context transfer contract
+## Context transfer contract
 
-The startup protocol **reads** certain files; the wrapup protocol **writes** them. Every read must have a corresponding write, or context is lost.
+The startup protocol **reads** certain files; the WRAPUP protocol **writes** them. Every read must have a corresponding write, or context is lost.
 
 | File | Startup reads | Wrapup writes | Role |
 |------|:---:|:---:|------|
-| `next-session-start-here.md` | Step 1 | Draft 0c, finalize 7 | **Forward-looking hot-start** — next actions, branch, risks, gotchas |
-| `docs/project-context.md` | Step 1 | Step 5 | Current state, key decisions, architecture summary |
-| `docs/agent-environment.md` | Step 1 | Step 5 | MCP/API/tool/skill inventory for agents |
-| `bmm-workflow-status.yaml` | Step 5 | Step 3 | BMAD phase and workflow transitions |
-| `sprint-status.yaml` | Step 5 | Step 4a | Epic/story Kanban state |
-| `SESSION-HANDOFF.md` | — | Draft 0c, finalize 8 | **Backward-looking record** — lessons, decisions, validation (permanent archive; startup does not read) |
-| Guides (user/admin/dev) | Step 5 on-demand | Step 9a | Large stable docs — updated only when content changes |
-| `reports/dev-coherence/<ts>/` | — | Step 0a | **Audit trail** — Audra L1/L2 evidence files; linked from SESSION-HANDOFF |
+| `SESSION-HANDOFF.md` | Always (canonical) | WRAPUP Step 8 | **Cross-machine canonical record** — tracked; survives across clones. |
+| `next-session-start-here.md` | If present (per-clone cache) | WRAPUP Step 7 | **Local hot-start cache** — gitignored; reconstruct from SESSION-HANDOFF.md + recent commits if missing. |
+| `docs/ONBOARDING.md` | Once per fresh agent context | WRAPUP Step 9 if regenerated | **Architectural mental model** — knowledge-graph-derived. |
+| `docs/project-context.md` | Step 1 | WRAPUP Step 5 | Current state, key decisions, architecture summary. |
+| `docs/agent-environment.md` | Step 1 | WRAPUP Step 5 | MCP / API / tool / skill inventory. |
+| `bmm-workflow-status.yaml` | Step 4 | WRAPUP Step 3 | BMAD phase and workflow transitions. |
+| `sprint-status.yaml` | Step 4 | WRAPUP Step 4a | Epic / story Kanban state. |
+| Guides (user/admin/dev) | Step 4 on-demand | WRAPUP Step 9 | Large stable docs. |
 
-> **Key principle:** `next-session-start-here.md` is the sole ramp-up document for the next session. Any risk, blocker, or unresolved issue that affects the next session MUST appear there, not only in SESSION-HANDOFF.
-
----
-
-## First Session Setup (Cold Start)
-
-Use this section the first time you open this BMAD project in a new tool context. Once confirmed, you will not need to repeat these checks — proceed directly to the Start-of-Session sequence for all subsequent sessions.
-
-1. Confirm these paths exist in the project root:
-   - `_bmad/` (BMad Method configuration)
-   - `_bmad-output/` (planning and implementation artifacts)
-   - `docs/` (project documentation and agent guidance)
-   - Skill folder for your tool: `.cursor/skills/` (Cursor) or `.claude/skills/` (Claude Code)
-2. If any path is missing, install or initialize BMAD before continuing.
-3. **Course content project specifics**: Confirm these paths exist:
-   - `course-content/staging/` (agent drafts for human review)
-   - `course-content/courses/` (approved/published content)
-   - `config/content-standards.yaml` (voice, audience, accessibility defaults)
-   - `.env` file (Canvas API, CourseArc, other platform credentials)
-4. Once confirmed, proceed to the **Start-of-Session** sequence below.
-
-> **Gitignore caveat:** `.env`, `state/runtime/*.db`, and binary media under `course-content/` are all gitignored. File-search tools (glob, find, ripgrep) that respect `.gitignore` will not see them. Always verify gitignored files by **reading the file directly** (e.g. `Read .env`), never by pattern search. This applies to Cold Start checks and Hot Start step 6.
+> **Key principle:** `SESSION-HANDOFF.md` is the cross-machine source-of-truth. If `next-session-start-here.md` is missing (fresh clone or hybrid-secondary), reconstruct it from the latest SESSION-HANDOFF.md section + recent commit messages, and record the reconstruction in this session's WRAPUP Step 8.
 
 ---
 
-## Start-of-Session (Hot Start)
+## First Session Setup (cold start)
+
+Use this the first time you open this BMAD project in a new tool context. Once confirmed, proceed directly to the Start-of-Session sequence below for all subsequent sessions.
+
+1. Confirm root paths exist: `_bmad/`, `_bmad-output/`, `docs/`, `course-content/staging/`, `course-content/courses/`, `config/content-standards.yaml`, `.env`, and the IDE skill folder (`.cursor/skills/` or `.claude/skills/`). If any path is missing, install or initialize BMAD before continuing.
+2. Read [`docs/ONBOARDING.md`](docs/ONBOARDING.md) (~280 lines) for the architectural mental model + complexity hotspots + 12-step guided tour. This is the fastest cold-start ramp asset; the knowledge-graph scan it derives from is at `.understand-anything/knowledge-graph.json`.
+3. If the session involves production orchestration, content production, or APP runs: read [`skills/bmad-agent-marcus/SKILL.md`](skills/bmad-agent-marcus/SKILL.md) and follow its activation sequence (sanctum batch under `_bmad/memory/bmad-agent-marcus/`) before any specialist invocation. Per CLAUDE.md "Marcus first" cold-start rule.
+4. Skim [`docs/agent-environment.md`](docs/agent-environment.md) for the MCP/API/skill inventory, and [`CLAUDE.md`](CLAUDE.md) for project rules (sprint governance, push cadence, deferred-inventory governance).
+
+> **Gitignore caveat:** `.env`, `state/runtime/*.db`, binary media under `course-content/`, and `next-session-start-here.md` are all gitignored. File-search tools (glob, find, ripgrep) that respect `.gitignore` will not see them. Always verify gitignored files by **reading the file directly**, never by pattern search.
+
+---
+
+## Session class — declare at session open
+
+Before running the steps below, name the expected session class. This determines step engagement at WRAPUP. Mid-session upgrade is allowed; downgrade is not.
+
+| Class | Pattern | Steps engaged |
+|---|---|---|
+| **S — Substrate** | Story/epic dispatch; schema, pipeline-manifest, runtime, or test edits; content production | All steps including Step 1a (Cora outstanding-findings gate). |
+| **D — Docs / Tooling** | Markdown-only edits, lint refactors, knowledge-graph refresh, tool/plugin install, session-meta edits | Steps 1, 2, 3, 10, 12. Step 1a SKIPPED — read `next-session-start-here.md` unresolved-issues block directly. |
+| **P — Planning** | PRD, architecture, epics/stories authoring; party-mode rounds; retrospectives | Steps 1, 2, 3, 7, 10, 11, 12. Step 1a only if prior session left invariant-touching findings. |
+
+If the session unexpectedly touches a substrate file, upgrade to Class S and run the missed Step 1a check before continuing.
+
+### How session class is communicated
+
+Three handoff points, in order:
+
+1. **Forecast** — The prior session's WRAPUP (Step 7) writes the expected class at the top of `next-session-start-here.md` (one line: `**Expected class for next session:** <S|D|P> — <reason>`).
+2. **Confirm at open** — During Step 1 of this protocol, the agent reads the forecast and announces the operating class to the operator: *"Opening as Class D (docs/tooling) per next-session-start-here.md forecast and your stated objective `<X>`."* The operator confirms or overrides in plain text. If `next-session-start-here.md` is missing (fresh clone), infer class from SESSION-HANDOFF.md's last session-close section header (which carries the prior session's **final class**) + the user's stated objective, then announce the same way.
+3. **Verify at close** — WRAPUP Step 11 runs the class-drift self-check against the actual diff; WRAPUP Step 8 records this session's **final class** (after any mid-session upgrade) in the new SESSION-HANDOFF.md section header.
+
+---
+
+## Start-of-Session (hot start)
 
 Execute these steps in order at the beginning of every session.
 
 ### 1. Load session context
 
-Open and read:
-- `next-session-start-here.md`
+**Always read:**
+- `SESSION-HANDOFF.md` — the latest session-close section (cross-machine canonical).
+- `next-session-start-here.md` — if present (local cache); if absent, reconstruct from SESSION-HANDOFF.md per the contract note above.
 - `docs/project-context.md`
-- **Course content context**: `docs/agent-environment.md` (MCP, API, platform guidance)
+- `docs/agent-environment.md`
 
-### 1a. Outstanding-findings gate (Cora-orchestrated)
+**Read once per fresh agent context** (new chat / new Claude or Cursor session in this project for the first time):
+- `docs/ONBOARDING.md` — architectural mental model. Check freshness: if `.understand-anything/meta.json::commit_sha` is significantly behind HEAD, the doc may be stale; flag at WRAPUP Step 9.
 
-Before picking an implementation target, ask Cora to run her Session-START (SS) protocol and scan `next-session-start-here.md` (and `SESSION-HANDOFF.md` if referenced) for the *Unresolved issues or blockers* block. Any entry that cites a deferred Audra L1/L2 finding from the prior session's Wrapup Step 0a, or an acknowledged-but-not-remediated pre-closure gap from Wrapup Step 0b, must be surfaced before any work begins.
+### 1a. Outstanding-findings gate
 
-Cora presents the list with three choices:
-- **Remediate first** — make the findings today's opening anchor; defer the originally-intended anchor
-- **Run `/harmonize` full-repo now** — re-verify against whole-repo invariants plus the full change window since the handoff anchor; recommended when the prior session's audit trail is incomplete
-- **Proceed with original anchor, carrying findings forward** — findings remain in the queue and must reappear in this session's Wrapup Step 7 if still unremediated
+**Class S only.** Skip for Class D and Class P (unless Class P inherits invariant-touching findings from the prior session).
 
-If `next-session-start-here.md` lists findings but no Step 0a report exists under `reports/dev-coherence/` for the prior session's timestamp, Cora treats that as missing-audit-trail and recommends option 2. Do not silently bypass this gate.
+For Class S sessions, ask Cora to run her Session-START (SS) protocol: scan `next-session-start-here.md` (and `SESSION-HANDOFF.md` if referenced) for deferred Step 0a Audra L1/L2 findings and acknowledged-but-not-remediated Step 0b pre-closure gaps. Cora presents the list with three choices:
+- **Remediate first** — make findings the opening anchor; defer the originally-intended anchor.
+- **Run `/harmonize` full-repo now** — re-verify against whole-repo invariants + full change window since handoff anchor; recommended when the prior session's audit trail is incomplete.
+- **Proceed with original anchor, carrying findings forward** — findings must reappear in this session's WRAPUP Step 7.
 
-Cora also performs a tripwire pre-check here: if the most recent wrapup entry in her `chronology.md` recorded a skipped Step 0a, any `/harmonize` invoked during this session (mid-session on operator request, or at this session's Wrapup Step 0a) will auto-promote default scope from since-handoff to full-repo. Cora surfaces this at the moment of invocation, not preemptively.
+If `next-session-start-here.md` cites findings but no `reports/dev-coherence/` report exists for the prior session, treat as missing-audit-trail and recommend the full-repo sweep.
 
-Skip condition: no unresolved findings from the prior session and no missing-audit-trail condition. Cora logs the clean gate in her `chronology.md` regardless.
+**Tripwire pre-check:** if the most recent WRAPUP entry in Cora's `chronology.md` recorded a skipped Step 0, any `/harmonize` invoked in this session (mid-session or at WRAPUP) auto-promotes default scope from since-handoff to full-repo.
 
-### 1.5: APP Agent Team & Skills Catalog (For Coding Agents)
+**For Class D / P sessions:** read the unresolved-issues block of `next-session-start-here.md` directly and decide whether to remediate, carry forward, or proceed. Log the decision; Cora's tripwire still applies on the second consecutive skip.
 
-**Master Orchestrator**: Marcus (`skills/bmad-agent-marcus/SKILL.md`) — Creative Production Orchestrator. Coordinates all APP runs. Consult for production workflows.
+### 2. Confirm branch + worktree alignment
 
-**Core APP Agents** (Top 12, see `_bmad/_config/agent-manifest.csv` for full 16):
-| Agent | Role | Path |
-|-------|------|------|
-| Marcus | Production orchestrator | `skills/bmad-agent-marcus/` |
-| Irene | Content creator (lesson plans, scripts) | `skills/bmad-agent-content-creator/` |
-| Gary | Slide generation (Gamma API) | `skills/bmad-agent-gamma/` |
-| ElevenLabs | Voice synthesis | `skills/bmad-agent-elevenlabs/` |
-| Canvas | LMS deployment | `skills/bmad-agent-canvas/` |
-| Kira | Video generation (Kling) | `skills/bmad-agent-kling/` |
-| Quinn-R | Quality review | `skills/bmad-agent-quality-reviewer/` |
-| Vera | Fidelity assessment | `skills/bmad-agent-fidelity-assessor/` |
-| Texas | Source wrangling + extraction validation | `skills/bmad-agent-texas/` |
-| Tech Spec Wrangler | Tool documentation refresh | `skills/tech-spec-wrangler/` |
-| Compositor | Video assembly | `skills/compositor/` |
-| Woodshed | Exemplar mastery training | `skills/woodshed/` |
+Run all of: `git status --short`, `git branch --show-current`, `git rev-parse --show-toplevel`, `git worktree list`. Compare against the branch instructions in `next-session-start-here.md`.
 
-**Shared Skills** (available to all agents):
-- `pre-flight-check` — System readiness verification
-- `production-coordination` — Workflow management
-- `sensory-bridges` — Multimodal perception (image/audio/PDF)
-- `parameter-intelligence` — Tool parameter optimization
+Reconciliation rules:
+- If the current branch is a plausible successor to the recorded target (e.g., post-WRAPUP docs commits landed), treat the current branch as authoritative and reconcile the docs at this session's WRAPUP Step 7.
+- If the current branch is clearly unrelated to intended next work, checkout the recorded target.
+- If unexplained mismatch, treat `next-session-start-here.md` as stale and record a reconciliation note for WRAPUP Step 7.
+- If a stale worktree appears (manually-removed directory), run `git worktree prune --verbose`.
 
-**Do NOT create ad-hoc scripts**: Use existing agents/skills first. If missing, request via `bmad-agent-builder`.
+**Dirty-worktree scope fence (mandatory):** classify uncommitted changes before any work:
+- **Session-owned** — files this session is expected to touch.
+- **Collaborative in-scope** — same-session changes by user or other active agents/browser contexts.
+- **Pre-existing unrelated** — modified or untracked files outside session scope.
 
-### 2. Confirm branch
+Rules: do not revert, normalize, or silently absorb unrelated changes; do not misclassify same-session collaborative changes; record any conflict immediately and plan around it.
 
-Check the current Git branch and compare it with the branch instructions recorded in `next-session-start-here.md`.
+### 3. Identify session target and BMAD phase
 
-- If `next-session-start-here.md` includes both a repository baseline branch and a next working branch, use the **next working branch** as the implementation target.
-- If the current branch differs from the recorded target, do **not** assume the current branch is wrong. First determine whether a legitimate post-wrapup event occurred after the handoff was written (for example: the user created the next branch, a docs-only closeout follow-up commit landed, or the branch was advanced intentionally outside the prior session's wrapup flow).
-- If the current branch is a plausible successor to the recorded target and the repo state is otherwise coherent, treat the current branch as authoritative and reconcile `next-session-start-here.md` at the next wrapup instead of force-checking out the older branch.
-- Only checkout the recorded target immediately when the current branch is clearly unrelated to the intended next work.
-- If there is an unexplained mismatch, treat `next-session-start-here.md` as stale and record a reconciliation note for wrap-up Step 7 before ending the session.
+State a single session objective. Determine the applicable BMAD phase:
+- **1-analysis** — brainstorming, research, ideation
+- **2-planning** — PRD, UX, architecture
+- **3-solutioning** — epics/stories, implementation readiness
+- **4-implementation** — story development, code review, testing
 
-> **Post-merge convention:** If your team merges to `master` at session end, the next session may open on `master` first. In that case, use the startup commands in `next-session-start-here.md` to checkout/create the next working branch.
+Identify the target artifact (PRD / story / epic / module / lesson / content type) and acceptance criteria where applicable.
 
-### 2b. Dirty-worktree scope fence
+For the **APP agent team & skills catalog** and **BMAD glossary**, see [`docs/agent-environment.md`](docs/agent-environment.md) and [`docs/ONBOARDING.md`](docs/ONBOARDING.md) §3 (architectural layers). Do not duplicate those catalogs in this protocol.
 
-Run:
-- `git status --short`
+### 4. Review BMAD status artifacts
 
-Classify changes before doing any work:
-- **Session-owned changes**: files this session is expected to touch
-- **Pre-existing unrelated changes**: modified or untracked files outside the session scope
-- **Collaborative in-scope changes**: changes made during the same session by the user or by other active agents/browser contexts working on the same objective
+**Skip for Class D unless tooling-status YAMLs are in scope.**
 
-Rules:
-- Do not revert, normalize, or silently absorb unrelated changes into the session.
-- Do not misclassify same-session collaborative changes as unrelated just because this agent did not author them.
-- If another browser, terminal, or agent has been working on the same session objective, treat those changes as in-scope until evidence shows otherwise.
-- If unrelated changes could interfere with the session objective, record the conflict immediately and plan around it.
-- If you proceed with unrelated changes still present, carry that forward into wrap-up notes so closeout does not falsely imply a clean tree.
-
-### 2a. Worktree and IDE alignment guard (mandatory)
-
-Run these commands in every active IDE terminal (for example, VS Code and Cursor) and confirm they match:
-- `git worktree list`
-- `git rev-parse --show-toplevel`
-- `git branch --show-current`
-
-Expected result for aligned sessions:
-- Same `--show-toplevel` path in each IDE
-- Same current branch in each IDE
-- No unexpected extra worktree directories in `git worktree list`
-
-If a stale worktree appears (directory was manually removed earlier), run:
-- `git worktree prune --verbose`
-
-If one IDE points to a different worktree path, stop and re-open that IDE on the intended project path before making changes.
-
-### 3. Identify session target
-
-- **If in brainstorming/ideation phase**: identify which brainstorming session to continue or which analysis skill to run
-- **If in planning phase**: identify target artifact (PRD, architecture, epics/stories)
-- **If in implementation phase**: identify the target epic, story, and acceptance criteria
-- **If in content creation**: identify target course module/lesson and content type (presentation, assessment, discussion)
-- In all phases: state a single session objective
-
-### 4. Confirm BMAD phase
-
-Determine which BMAD phase applies to this session's objective:
-- **1-analysis** (brainstorming, research, ideation)
-- **2-planning** (PRD, UX design, architecture documentation)
-- **3-solutioning** (epics/stories, implementation readiness)
-- **4-implementation** (story development, code review, testing)
-
-Some subsequent steps are implementation-only; skip those steps in earlier phases.
-
-### 4.5: BMAD Glossary (For Unfamiliar Agents)
-
-| Term | Meaning |
-|------|---------|
-| **BMAD Phases** | 1-analysis -> 2-planning -> 3-solutioning -> 4-implementation |
-| **Artifacts** | Deliverables: PRD (requirements), architecture (design), epics/stories (work breakdown), sprint-status.yaml (progress) |
-| **Agents** | Custom AI assistants created via `bmad-agent-builder` (e.g., Marcus orchestrator) |
-| **Skills** | Reusable capabilities (SKILL.md + scripts/) for tool mastery |
-| **Memory Sidecars** | `_bmad/memory/{agent}-sidecar/` for learning/persistence |
-| **Party Mode** | Multi-agent discussions via `bmad-party-mode` skill |
-| **Woodshed** | Exemplar-driven skill training (study -> reproduce -> compare) |
-
-### 5. Review BMAD status artifacts
-
-**Always read** (small, frequently changing):
+Always read (small, frequently changing):
 - `_bmad-output/implementation-artifacts/bmm-workflow-status.yaml`
 - `_bmad-output/implementation-artifacts/sprint-status.yaml`
 
-**Scan for relevance** (read only the listing or headers, not full content):
-- `_bmad-output/planning-artifacts/` (PRD, architecture, epics/stories)
-- `_bmad-output/brainstorming/` (active brainstorming sessions)
+Scan for relevance (read listing or headers, not full content):
+- `_bmad-output/planning-artifacts/`
+- `_bmad-output/brainstorming/`
 
-**Read on demand** (large, stable documents — read only when the session objective involves onboarding, system development, or cross-cutting changes):
+Read on demand (large, stable; read only when session objective requires the detail):
 - `docs/user-guide.md` (~260 lines)
 - `docs/admin-guide.md` (~475 lines)
 - `docs/dev-guide.md` (~730 lines)
 
-These guides are already summarized in `docs/project-context.md` (loaded in Step 1). Read the full guide only when you need detail beyond what the project context provides.
+**Interaction testing:** for any new agent / supporting skill, confirm presence of an Interaction test per the project's test guide.
 
-**Interaction Testing:** Confirm presence, if appropriate at this phase of the project work, of an 'Interaction test' for a newly created agent. The test should be modeled on the interaction test guide now available in the project.
+### 5. Check content creation state (course-content sessions)
 
-If these files don't exist yet, note their absence — the project may be in early ideation phase.
+**Skip if session is pure system development.**
 
-### 6. Check content creation state
+- Review `course-content/staging/` for pending human-review items.
+- Check `config/content-standards.yaml` for current voice / accessibility requirements.
+- Verify `.env` has required platform credentials (read the file directly — gitignored).
+- Review active workflow docs in `docs/workflow/` (at minimum `human-in-the-loop.md`).
 
-**For course content sessions**:
-- Review `course-content/staging/` for pending human review items
-- Check `config/content-standards.yaml` for current voice/accessibility requirements  
-- Verify `.env` has required platform credentials loaded — **read the file directly** (`.env` is gitignored; pattern searches will not find it)
-- Review active workflow docs in `docs/workflow/` (at minimum `human-in-the-loop.md`)
+### 6. Open implementation files
 
-*Skip if the session objective is pure system development (orchestrator, skills) only.*
+**Class S only.** Skip for Class D and Class P.
 
-### 7. Open implementation files
+Open primary implementation files for the target acceptance criteria, plus any existing tests for the target scope. Coding entry points are documented in [`docs/ONBOARDING.md`](docs/ONBOARDING.md) §3 (architectural layers) and §6 (complexity hotspots).
 
-Open primary implementation files for the target acceptance criteria. If tests exist for the target scope, open those too.
+### 7. Review recent history
 
-**Coding Entry Points** (for APP development):
-- **Marcus Orchestrator**: `skills/bmad-agent-marcus/scripts/` (production run scripts)
-- **API Clients**: `scripts/api_clients/` (Gamma, ElevenLabs, Canvas, etc.)
-- **Utilities**: `scripts/utilities/` (file ops, logging, state management)
-- **State Management**: `state/runtime/coordination.db` (SQLite), `state/config/` (YAML configs)
-- **Tests**: `tests/` (unit/integration for agents/skills)
+Review recent commits and unresolved TODOs/FIXMEs in the target scope.
 
-*Skip if the session objective is analysis, planning, or review only.*
-
-### 8. Review recent history
-
-Review recent commits and unresolved TODOs/FIXMEs for the same scope.
-
-### 9. Run a validation checkpoint
+### 8. Run a validation checkpoint (Class S)
 
 Run the smallest relevant validation for the feature slice:
-- **System development**: automated tests, linter/type checks, or manual verification
-- **Course content**: review staging content against content-standards.yaml, check platform connectivity
-- **General**: confirm current implementation state against last recorded validation
+- **System development:** automated tests, linter / type checks, or manual verification.
+- **Course content:** review staging content against content-standards.yaml; check platform connectivity.
 
-If no automated validation exists, confirm against the last recorded validation evidence in story artifacts.
+Skip for Class D and Class P (no implementation surface to validate).
 
-*Skip if the session objective is analysis, planning, or review only.*
+### 9. State definition of done
 
-### 10. State definition of done
+State one explicit definition of done for THIS session. A session DoD is scoped to the session, not the story — a story may span multiple sessions.
 
-State one explicit definition of done for this session. A session DoD is scoped to the session, not the story — a story may span multiple sessions.
+Course-content session examples:
+- "Draft lesson 3 slides in staging/ with paired lesson plan, ready for human review."
+- "Complete Canvas API integration for quiz deployment with one working example."
+- "Generate Gamma prompt templates for presentation workflow with tool inventory entry."
 
-**Course content session examples**:
-- "Draft lesson 3 slides in staging/ with paired lesson plan, ready for human review"
-- "Complete Canvas API integration for quiz deployment with one working example"
-- "Generate Gamma prompt templates for presentation workflow with tool inventory entry"
+### 10. Scope guard
 
-### 11. Scope guard
+Confirm the session objective is achievable in a single session. If multi-session, decompose to a single-session slice before proceeding.
 
-Confirm the session objective is achievable within a single session. If the objective spans multiple sessions, decompose it into a single-session slice before proceeding.
+### 11. Reuse-first pre-check (Class S + content-creation P)
 
-### 12. Reuse-first pre-check
+Run a reuse-first check against the service catalog, design patterns, existing code, and `course-content/_templates/` + `resources/exemplars/` for content sessions.
 
-**For system development**: run a reuse-first check against the service catalog, design patterns, and existing code before creating anything new.
+### 12. Route via BMAD
 
-**For content creation**: check `course-content/_templates/` and `resources/exemplars/` before creating new content structures.
-
-*Skip if the session is review, closure, or planning only.*
-
-### 13. Route via BMAD
-
-Invoke the `bmad-help` skill (`.cursor/skills/bmad-help/SKILL.md`) with your objective and current phase/story:
+Invoke `bmad-help` (`.cursor/skills/bmad-help/SKILL.md` or `.claude/skills/bmad-help/SKILL.md`) with your objective and current phase/story:
 
 > Route me for this objective: <objective>. Current phase: <1-analysis | 2-planning | 3-solutioning | 4-implementation>. Current story: <id if applicable>.
 
-`bmad-help` analyzes completed artifacts and recommends the next workflow or agent for the current phase.
+`bmad-help` analyzes completed artifacts and recommends the next workflow or agent for the current phase. Follow only the routed workflow or agent.
 
-**Course content routing examples**:
-- For ideation: `bmad-brainstorming`, `bmad-product-brief`, CIS skills
-- For content creation: `bmad-quick-dev`, content-focused custom skills
-- For review: `bmad-editorial-review-prose`, `bmad-review-adversarial-general`
-
-Follow only the routed workflow or agent for the current phase or story.
+Course-content routing examples:
+- Ideation: `bmad-brainstorming`, `bmad-product-brief`, CIS skills.
+- Content creation: `bmad-quick-dev`, content-focused custom skills.
+- Review: `bmad-editorial-review-prose`, `bmad-review-adversarial-general`.
 
 ---
