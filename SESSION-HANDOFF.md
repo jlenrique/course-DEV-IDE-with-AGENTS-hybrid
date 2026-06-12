@@ -29,6 +29,23 @@
 2. Deferred riders by priority: Amelia R1 phantom-delta silent-audio gap (dp-v1.2-review-riders-bundle, highest); taxonomy systematic re-base (live-path classes first); measured durations (mp3 probe re-arms G5 WPM); voice-HIL fold; dp-v2 self-edge vocabulary.
 3. Cross-trial harvest entries (cycles 2-6) per methodology §7; witness→strict envelope-validator flip (post-S5 ceremony — S5 is now CLOSED, the flip is due).
 
+## WRAPUP ceremony record (protocol steps)
+
+**Final class:** S (declared S at open — substrate session throughout; no drift).
+- **Step 0:** Cora /harmonize ceremony NOT run (no slash-skill registered in this session's context). L1-equivalents green: pipeline-manifest lockstep PASS (2 runs this session), audit suite 33/33 (incl. TW-7c-4, fixture ratchet + new ninth-seam signature, PIN-G1, PIN-AUD-3T), Ratchet-D green with enrique+compositor joined. **Counts as one skip toward Cora's two-skip tripwire.** No story flipped done in sprint-status (Step 0b N/A — arc ran under SCP governance, not story Kanban).
+- **Step 1:** ruff clean on batch; `lint-imports` 13 kept / 0 broken; `git diff --check` clean.
+- **Step 2:** planning artifacts updated (SCP closure paragraph; deferred-inventory dp-v1.1 + dp-v1.2 + review-rider sections).
+- **Steps 3/4a/4b/6:** SKIP — no bmm-workflow phase transition (SCP-governed arc); sprint-status.yaml untouched; no agent/skill files modified; no course-content staging moves (production output lives in run dirs pending operator review).
+- **Step 5:** docs/project-context.md updated (2026-06-12 headline block). docs/agent-environment.md SKIP — no MCP/API/tool-tier changes (ElevenLabs client pre-existed).
+- **Step 9:** knowledge-graph regeneration RECOMMENDED (≥10 app/ files changed + manifest changes) — operator's other terminal ran /understand mid-session; re-run post-WRAPUP for `8b306b1`+ to refresh `.understand-anything/meta.json::commit_sha`. Guides untouched (no operator-facing workflow change; the trial CLI surface is unchanged).
+- **Step 10:** worktree reconciled — session-owned changes all committed; ambient: `.understand-anything/*` + `docs/ONBOARDING.md` (knowledge-graph terminal — left untouched); untracked `runs/<uuid>/`, `runs/compositor/` (cycle-6 assembly bundle — PRESERVE), `runs/enrique-narration/` (legacy default-path voice artifacts from cycle-5's pre-fix leg) are runtime artifacts by design.
+- **Step 11:** class-drift check PASS (S→S); single worktree registered; branch metadata verified.
+- **Step 12:** pushes — `f3185b4`, `c6f9d7a`, `6dc7f94`, `8b306b1`, `4a654d5`, + this WRAPUP commit, all to `origin/trial/3-2026-05-21`. Master-merge intentionally skipped (scoped trial branch per protocol step-12 exception).
+
+**Validation summary:** batch superset 352+ passed across audit/contracts/specialists/integration; ambient failures roster-matched against `C:/tmp/codify-batch-failures.txt` (incl. schema_pin pair, verified pre-existing on clean tree via scoped stash); live ElevenLabs micro-smoke PASS (45 voices, 62.7KB mp3); two full production walks completed live (the strongest validation the platform has).
+
+**Artifact checklist:** SESSION-HANDOFF ✅ · next-session-start-here ✅ (class forecast D) · project-context ✅ · SCP ✅ · deferred-inventory ✅ · delegation-exercise-log ✅ (run-dir, gitignored tree) · sprint-status/bmm-workflow N/A · knowledge-graph: operator action recommended.
+
 ---
 
 # Session Handoff — 2026-06-10/11 (Class S — Trial-3 live-fire: first multi-gate crossing; 9 findings; attempt-4 alive at G1)
