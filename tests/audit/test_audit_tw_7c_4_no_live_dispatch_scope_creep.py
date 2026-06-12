@@ -188,6 +188,15 @@ PERMITTED_PYTHON_DIFFS = {
     "tests/integration/marcus/test_production_clone_launch_evidence_discipline.py",
     # (test_run_summary_yaml_emit.py already allowlisted above at the
     # irene_pass1 roster fix — S2 touched it again for node_id stamping.)
+    # S3 package builders (same SCP): §06 pre-dispatch builder as a pure
+    # deterministic module (no LLM in the neck per regime), invoked by both
+    # walkers at its manifest node (pre_gate_marcus pattern), emitting a
+    # first-class contribution; Gary receives the package via the A-R3 seam
+    # (granular keys; dependency-map merge is whole-dict-per-key — spread
+    # question filed for party review); Quinn-R receives Gary's slide rows
+    # under its declared "slides" key.
+    "app/marcus/orchestrator/package_builders.py",
+    "tests/integration/marcus/test_package_builders.py",
     # Story 34-2 wrangler-side test (substrate-audit-corrected path 2026-05-22;
     # co-located with existing test_run_wrangler.py at skills/.../tests/).
     "skills/bmad-agent-texas/scripts/tests/test_run_wrangler_role_enum_union_and_excluded_reason.py",

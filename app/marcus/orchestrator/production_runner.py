@@ -31,6 +31,7 @@ from app.manifest.schema import NodeSpec
 from app.marcus.orchestrator import (
     conversation_persistence,
     gate_runner,
+    package_builders,
     pre_gate_marcus,
     specialist_summary_writer,
 )
@@ -729,18 +730,26 @@ def _runner_payload_for_specialist(
     directive_path: Path | None,
     bundle_dir: Path | None,
     gate_code: str | None = None,
-) -> dict[str, str] | None:
+    production_envelope: ProductionEnvelope | None = None,
+    runs_root: Path | None = None,
+    trial_id: UUID | None = None,
+) -> dict[str, Any] | None:
     """Build runner_supplied_payload for specialists needing runner-side context.
 
     Story 7a.1 / A-R3 Option A: Texas receives directive/bundle paths when
     directive composition has run.
 
-    Trial-3 finding #10 (2026-06-11): Quinn-R's _act selects its body from a
-    payload-supplied ``gate_id``, but production dispatch never threaded the
-    manifest node's gate context — the first-ever live Quinn-R dispatch
-    (§07B under open throttle) crashed with ModeMismatchError(''). Quinn-R
-    now receives the dispatching node's ``gate_code`` as ``gate_id`` via the
-    same A-R3 Option-A seam.
+    Trial-3 finding #10 (2026-06-11): Quinn-R receives the dispatching
+    node's ``gate_code`` as ``gate_id`` (its _act selects its body from the
+    payload; production dispatch previously supplied no gate context). S3:
+    Quinn-R additionally receives Gary's slide rows under the ``slides`` key
+    its contract declares, so variant selection reviews what Gary produced.
+
+    S3 (SCP 2026-06-11): Gary receives the §06 package-builder contribution
+    spread at top level — exactly the granular keys its contract declares
+    (the manifest dependency-map merge delivers whole-dict-per-key, which is
+    the wrong shape; the spread question is filed for the party review) —
+    plus an ``export_dir`` inside the run dir.
 
     Other specialists receive None.
     """
@@ -753,7 +762,29 @@ def _runner_payload_for_specialist(
     # not the manifest spelling ("quinn-r") — match both; the hyphen form
     # cost a second live ModeMismatchError('') crash on 2026-06-11.
     if specialist_id in {"quinn_r", "quinn-r"} and gate_code:
-        return {"gate_id": gate_code}
+        payload: dict[str, Any] = {"gate_id": gate_code}
+        if production_envelope is not None:
+            gary = production_envelope.latest_for_specialist("gary")
+            rows = gary.output.get("gary_slide_output") if gary is not None else None
+            if isinstance(rows, list) and rows:
+                payload["slides"] = rows
+        return payload
+    if specialist_id == "gary" and production_envelope is not None:
+        package = production_envelope.get_contribution(
+            package_builders.BUILDER_SPECIALIST_ID,
+            node_id=package_builders.GARY_PACKAGE_NODE_ID,
+        )
+        if package is None:
+            # No §06 package -> no payload; Gary's dispatch then fail-louds
+            # on missing inputs per the S0 policy instead of receiving an
+            # invented brief.
+            return None
+        gary_payload: dict[str, Any] = dict(package.output)
+        if runs_root is not None and trial_id is not None:
+            gary_payload["export_dir"] = (
+                runs_root / str(trial_id) / "exports" / "gary"
+            ).as_posix()
+        return gary_payload
     return None
 
 
@@ -1085,6 +1116,26 @@ def run_production_trial(
                     max_specialist_calls=max_specialist_calls,
                 )
 
+            if (
+                node_kind == "orchestration"
+                and node.id in package_builders.BUILDER_NODE_IDS
+                and _has_live_openai()
+                and not allow_offline_cost_report
+            ):
+                # S3 (SCP 2026-06-11): §06 builds the Gary slide-brief
+                # package as a first-class contribution at its own node
+                # (pre_gate_marcus runner-invocation pattern; deterministic,
+                # so it runs on the live path only, mirroring specialists).
+                production_envelope = package_builders.run_builder_node(
+                    node_id=node.id,
+                    production_envelope=production_envelope,
+                )
+                run_state = run_state.model_copy(
+                    update={"production_envelope": production_envelope}
+                )
+                graph_step_completed = True
+                continue
+
             if node_kind == "specialist" and specialist_calls < max_specialist_calls:
                 specialist_id = handler.__production_specialist_id__
                 # S2 per-node keying (SCP 2026-06-11): the skip rule guards
@@ -1119,6 +1170,9 @@ def run_production_trial(
                         directive_path=directive_path,
                         bundle_dir=bundle_dir,
                         gate_code=node.gate_code,
+                        production_envelope=production_envelope,
+                        runs_root=runs_root,
+                        trial_id=effective_trial_id,
                     )
                     if runner_payload is not None:
                         invoke_kwargs["runner_supplied_payload"] = runner_payload
@@ -1360,6 +1414,23 @@ def resume_production_trial(
                 )
 
             if (
+                node_kind == "orchestration"
+                and node.id in package_builders.BUILDER_NODE_IDS
+                and _has_live_openai()
+                and not allow_offline_cost_report
+            ):
+                # S3 §06 package builder — see start-walker note.
+                production_envelope = package_builders.run_builder_node(
+                    node_id=node.id,
+                    production_envelope=production_envelope,
+                )
+                run_state = run_state.model_copy(
+                    update={"production_envelope": production_envelope}
+                )
+                graph_step_completed = True
+                continue
+
+            if (
                 node_kind == "specialist"
                 and specialist_calls < resumed_max_specialist_calls
             ):
@@ -1397,6 +1468,9 @@ def resume_production_trial(
                         directive_path=None,
                         bundle_dir=None,
                         gate_code=node.gate_code,
+                        production_envelope=production_envelope,
+                        runs_root=runs_root,
+                        trial_id=trial_id,
                     )
                     if resume_runner_payload is not None:
                         resume_invoke_kwargs["runner_supplied_payload"] = resume_runner_payload

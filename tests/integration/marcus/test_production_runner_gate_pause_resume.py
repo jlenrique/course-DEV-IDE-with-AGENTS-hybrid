@@ -16,6 +16,27 @@ TRIAL_ID = UUID("12345678-1234-4234-8234-123456789abc")
 CORPUS = Path("tests/fixtures/trial_corpus/README.md")
 
 
+# Minimal REAL-shaped upstream outputs: since S3 the resume walk executes
+# the §06 package builder, which fail-louds (correctly) if irene_pass1/cd
+# contributions are absent or shapeless. The pause-machinery tests need a
+# valid data plane to walk through, not just any contributions.
+_REAL_SHAPED_OUTPUTS: dict[str, dict] = {
+    "irene_pass1": {
+        "lesson_plan": {
+            "plan_units": [
+                {
+                    "unit_id": "PU-1",
+                    "title": "Unit",
+                    "learning_objective": "Objective",
+                    "scope_decision": "in-scope",
+                }
+            ]
+        }
+    },
+    "cd": {"cd_directive": {"experience_profile": "text-led"}},
+}
+
+
 class _FakeAdapter:
     def invoke_specialist(
         self,
@@ -26,13 +47,16 @@ class _FakeAdapter:
         cost_usd: float,
         base_state=None,
         node_id: str | None = None,
+        runner_supplied_payload: dict | None = None,
     ) -> ProductionEnvelope:
-        del dependency_map, base_state
+        del dependency_map, base_state, runner_supplied_payload
         updated = envelope.model_copy(deep=True)
         updated.add_contribution(
             SpecialistContribution.from_output(
                 specialist_id=specialist_id,
-                output={"specialist_id": specialist_id},
+                output=_REAL_SHAPED_OUTPUTS.get(
+                    specialist_id, {"specialist_id": specialist_id}
+                ),
                 model_used="gpt-5-nano",
                 cost_usd=cost_usd,
                 node_id=node_id,
@@ -57,6 +81,11 @@ def _pause(tmp_path: Path, monkeypatch):
         "operator_test",
         trial_id=TRIAL_ID,
         runs_root=tmp_path,
+        # Open throttle: with the default cap of 1, the resume walk reaches
+        # the §06 builder without a cd contribution and fail-louds (the
+        # finding-#8 starvation class made visible by S3 — correct behavior,
+        # wrong fixture for testing pause machinery).
+        max_specialist_calls=12,
     )
 
 
