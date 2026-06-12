@@ -272,6 +272,10 @@ PERMITTED_PYTHON_DIFFS = {
     "scripts/generators/v42/manifest.py",
     "scripts/generators/v42/render.py",
     "scripts/utilities/check_pipeline_manifest_lockstep.py",
+    # Pre-S5 recon fix 2026-06-12: §07 exportUrl download/materialize leg in
+    # gary _paths_from_generation (generate_deck never downloads; rows landed
+    # file_path "" → Storyboard A at G2C would have had no viewable slides).
+    "tests/specialists/gary/test_gary_export_url_materialization.py",
     "tests/generators/v42/test_renderer_classification_and_l1_fail_loud.py",
     "tests/generators/v42/test_red_path_fixtures.py",
     "tests/contracts/test_33_1a_verbatim_extraction.py",

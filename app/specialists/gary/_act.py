@@ -15,6 +15,7 @@ from app.specialists.gary.gamma_dispatch import GammaDispatchError, dispatch_to_
 from scripts.api_clients.gamma_client import GammaClient
 from skills.gamma_api_mastery.scripts.gamma_operations import (
     _materialize_exported_slide_paths,
+    download_export,
 )
 
 REPO_ROOT = Path(__file__).resolve().parents[3]
@@ -138,6 +139,27 @@ def _paths_from_generation(
     if downloaded:
         return _materialize_exported_slide_paths(
             Path(str(downloaded)),
+            requested_format="png",
+            expected_card_numbers=list(range(1, len(slides) + 1)),
+            module_lesson_part="gary",
+            export_dir=export_dir,
+            label=label,
+        )
+    # Pre-S5 recon gap (2026-06-12): generate_deck waits for completion but
+    # never downloads — completed generations carry only exportUrl, so every
+    # gary_slide_output row landed with file_path "" and Storyboard A at G2C
+    # would have had NO viewable slides (the kira-empty-URL class, on the
+    # acceptance path). Download + materialize here; the machinery existed
+    # in gamma_operations but was only wired into the standalone lane.
+    export_url = generation.get("exportUrl") or generation.get("export_url")
+    if isinstance(export_url, str) and export_url.strip():
+        downloaded_export = download_export(
+            export_url,
+            output_dir=export_dir,
+            filename=f"gary_{label}.png",
+        )
+        return _materialize_exported_slide_paths(
+            Path(str(downloaded_export)),
             requested_format="png",
             expected_card_numbers=list(range(1, len(slides) + 1)),
             module_lesson_part="gary",
