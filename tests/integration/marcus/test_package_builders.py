@@ -119,7 +119,7 @@ def test_run_builder_node_emits_first_class_contribution_and_is_idempotent() -> 
         _contribution("cd", {"cd_directive": cd_directive}, node_id="4.75")
     )
     updated = run_builder_node(node_id="06", production_envelope=envelope)
-    package = updated.get_contribution("marcus", node_id="06")
+    package = updated.get_contribution("package_builder", node_id="06")
     assert package is not None
     assert package.model_used == package_builders.BUILDER_MODEL_MARKER
     assert set(package.output) <= GARY_KEYS
@@ -135,7 +135,27 @@ def test_run_builder_node_fails_loud_on_missing_upstream() -> None:
     assert excinfo.value.tag == "builder.gary.upstream-missing"
 
 
-def test_runner_payload_for_gary_spreads_package_with_export_dir(tmp_path: Path) -> None:
+def test_runner_payload_for_gary_is_runner_context_only(tmp_path: Path) -> None:
+    # S4: content keys flow via manifest projections; the seam carries ONLY
+    # runner context (export_dir under the run dir).
+    payload = production_runner._runner_payload_for_specialist(
+        specialist_id="gary",
+        directive_path=None,
+        bundle_dir=None,
+        runs_root=tmp_path,
+        trial_id=TRIAL_ID,
+    )
+    assert payload == {
+        "export_dir": (tmp_path / str(TRIAL_ID) / "exports" / "gary").as_posix()
+    }
+    assert set(payload) <= GARY_KEYS
+
+
+def test_projection_resolves_package_keys_for_gary(tmp_path: Path) -> None:
+    # The adapter projects §06 package keys into gary's payload per the
+    # manifest dependency_projections (Winston: projection, not spread).
+    from app.marcus.orchestrator.dispatch_adapter import ProductionDispatchAdapter
+
     lesson_plan, cd_directive = _fixture_outputs()
     envelope = ProductionEnvelope(trial_id=TRIAL_ID)
     envelope.add_contribution(
@@ -145,30 +165,42 @@ def test_runner_payload_for_gary_spreads_package_with_export_dir(tmp_path: Path)
         _contribution("cd", {"cd_directive": cd_directive}, node_id="4.75")
     )
     envelope = run_builder_node(node_id="06", production_envelope=envelope)
-    payload = production_runner._runner_payload_for_specialist(
-        specialist_id="gary",
-        directive_path=None,
-        bundle_dir=None,
-        production_envelope=envelope,
-        runs_root=tmp_path,
-        trial_id=TRIAL_ID,
+    adapter = ProductionDispatchAdapter(graph_builders={})
+    state = adapter.build_specialist_state(
+        envelope=envelope,
+        dependency_map={},
+        projection_map={
+            "slides": {"from": "package_builder", "key": "slides"},
+            "prompt": {"from": "package_builder", "key": "prompt"},
+            "additional_instructions": {
+                "from": "package_builder",
+                "key": "additional_instructions",
+            },
+        },
+        runner_supplied_payload={
+            "export_dir": (tmp_path / str(TRIAL_ID) / "exports" / "gary").as_posix()
+        },
     )
-    assert payload is not None
+    payload = json.loads(state.cache_state.cache_prefix)
     assert set(payload) <= GARY_KEYS
     assert payload["slides"]
-    assert payload["export_dir"].endswith(f"{TRIAL_ID}/exports/gary")
-    # No §06 package -> None -> Gary fail-louds downstream (S0 policy).
-    assert (
-        production_runner._runner_payload_for_specialist(
-            specialist_id="gary",
-            directive_path=None,
-            bundle_dir=None,
-            production_envelope=ProductionEnvelope(trial_id=TRIAL_ID),
-            runs_root=tmp_path,
-            trial_id=TRIAL_ID,
-        )
-        is None
+    assert payload["prompt"]
+    assert payload["export_dir"].endswith("exports/gary")
+
+
+def test_projection_missing_producer_refuses(tmp_path: Path) -> None:
+    from app.marcus.orchestrator.dispatch_adapter import (
+        ProductionDispatchAdapter,
+        ProductionDispatchAdapterError,
     )
+
+    adapter = ProductionDispatchAdapter(graph_builders={})
+    with pytest.raises(ProductionDispatchAdapterError, match="no contribution"):
+        adapter.build_specialist_state(
+            envelope=ProductionEnvelope(trial_id=TRIAL_ID),
+            dependency_map={},
+            projection_map={"slides": {"from": "package_builder", "key": "slides"}},
+        )
 
 
 def test_spread_key_roster_is_exactly_pinned() -> None:
@@ -201,32 +233,62 @@ def test_seam_collision_with_dependency_keys_refuses() -> None:
         )
 
 
-def test_seam_tombstone_cites_projection_followon() -> None:
-    # Winston S3-A: when S4's edge-level key projection lands, removing the
-    # seam must be a deliberate act that breaks a test — not a leftover that
-    # double-delivers beside the new path.
+def test_seam_carries_runner_context_only_post_projection() -> None:
+    # Winston S3-A executed: projection LANDED at S4, the bridge spread was
+    # removed by deliberately rewriting this tombstone. The seam must never
+    # again deliver content keys — slides/prompt flow through the manifest.
     import inspect
 
     source = inspect.getsource(production_runner._runner_payload_for_specialist)
-    assert "manifest-edge-key-projection-s4" in source, (
-        "the gary/quinn_r seam must cite its deferred-inventory exit "
-        "condition (manifest-edge-key-projection-s4) until projection lands"
+    assert "manifest-edge-key-projection-s4" in source  # history stays cited
+    assert '"slides"' not in source.replace("``slides``", ""), (
+        "the seam must not deliver content keys; projections own them"
     )
 
 
-def test_runner_payload_for_quinn_r_threads_gary_slides() -> None:
-    envelope = ProductionEnvelope(trial_id=TRIAL_ID)
-    rows = [{"slide_id": "slide-01", "card_number": 1, "file_path": "exports/s1.png"}]
-    envelope.add_contribution(
-        _contribution("gary", {"gary_slide_output": rows}, node_id="07")
+def test_manifest_declares_projection_edges() -> None:
+    manifest = yaml.safe_load(
+        (REPO_ROOT / "state" / "config" / "pipeline-manifest.yaml").read_text(
+            encoding="utf-8"
+        )
     )
+    nodes = {node["id"]: node for node in manifest["nodes"]}
+    assert manifest["data_plane_vocabulary_version"] == "dp-v1"
+    gary_projections = nodes["07"]["dependency_projections"]
+    assert set(gary_projections) == {"slides", "prompt", "additional_instructions"}
+    assert all(p["from"] == "package_builder" for p in gary_projections.values())
+    quinn_projections = nodes["07B"]["dependency_projections"]
+    assert quinn_projections == {"slides": {"from": "gary", "key": "gary_slide_output"}}
+
+
+def test_runner_payload_for_quinn_r_is_gate_context_only() -> None:
+    # S4: gary_slide_output reaches quinn_r via the 07B manifest projection;
+    # the seam carries only the gate context.
     payload = production_runner._runner_payload_for_specialist(
         specialist_id="quinn_r",
         directive_path=None,
         bundle_dir=None,
         gate_code="G2B",
-        production_envelope=envelope,
     )
+    assert payload == {"gate_id": "G2B"}
+
+
+def test_projection_resolves_gary_rows_for_quinn_r() -> None:
+    from app.marcus.orchestrator.dispatch_adapter import ProductionDispatchAdapter
+
+    envelope = ProductionEnvelope(trial_id=TRIAL_ID)
+    rows = [{"slide_id": "slide-01", "card_number": 1, "file_path": "exports/s1.png"}]
+    envelope.add_contribution(
+        _contribution("gary", {"gary_slide_output": rows}, node_id="07")
+    )
+    adapter = ProductionDispatchAdapter(graph_builders={})
+    state = adapter.build_specialist_state(
+        envelope=envelope,
+        dependency_map={},
+        projection_map={"slides": {"from": "gary", "key": "gary_slide_output"}},
+        runner_supplied_payload={"gate_id": "G2B"},
+    )
+    payload = json.loads(state.cache_state.cache_prefix)
     assert payload == {"gate_id": "G2B", "slides": rows}
 
 
@@ -241,6 +303,7 @@ class _RecordingFakeAdapter:
             "gary": {"gary_slide_output": [{"slide_id": "slide-01"}], "status": "complete"},
         }
         self.runner_payloads: dict[str, dict | None] = {}
+        self.projection_maps: dict[str, dict | None] = {}
 
     def invoke_specialist(
         self,
@@ -249,9 +312,20 @@ class _RecordingFakeAdapter:
         envelope: ProductionEnvelope,
         runner_supplied_payload: dict | None = None,
         node_id: str | None = None,
+        projection_map: dict | None = None,
         **_,
     ) -> ProductionEnvelope:
         self.runner_payloads[specialist_id] = runner_supplied_payload
+        self.projection_maps[specialist_id] = (
+            {
+                key: dict(spec)
+                if isinstance(spec, dict)
+                else spec.model_dump(by_alias=True)
+                for key, spec in projection_map.items()
+            }
+            if projection_map
+            else None
+        )
         updated = envelope.model_copy(deep=True)
         updated.add_contribution(
             SpecialistContribution.from_output(
@@ -269,7 +343,18 @@ def _manifest(tmp_path: Path) -> Path:
         {"id": "04A", "specialist_id": "irene-pass1"},
         {"id": "4.75", "specialist_id": "cd"},
         {"id": "06", "specialist_id": "marcus", "label": "Pre-Dispatch Package Build"},
-        {"id": "07", "specialist_id": "gary"},
+        {
+            "id": "07",
+            "specialist_id": "gary",
+            "dependency_projections": {
+                "slides": {"from": "package_builder", "key": "slides"},
+                "prompt": {"from": "package_builder", "key": "prompt"},
+                "additional_instructions": {
+                    "from": "package_builder",
+                    "key": "additional_instructions",
+                },
+            },
+        },
     ]
     manifest = {
         "schema_version": "test",
@@ -332,10 +417,13 @@ def test_walker_builds_package_at_06_and_threads_briefs_to_gary(
 
     production_envelope = envelope.production_envelope
     assert production_envelope is not None
-    package = production_envelope.get_contribution("marcus", node_id="06")
+    package = production_envelope.get_contribution("package_builder", node_id="06")
     assert package is not None, "§06 must emit a first-class contribution"
     gary_payload = adapter.runner_payloads.get("gary")
-    assert gary_payload is not None, "gary must receive the §06 package via the seam"
-    assert set(gary_payload) <= GARY_KEYS
-    assert gary_payload["slides"]
+    assert gary_payload is not None
+    assert set(gary_payload) == {"export_dir"}, "seam carries runner context only"
     assert gary_payload["export_dir"].endswith("exports/gary")
+    # Content keys travel via the manifest projection (S4).
+    gary_projections = adapter.projection_maps.get("gary")
+    assert gary_projections is not None
+    assert set(gary_projections) == {"slides", "prompt", "additional_instructions"}

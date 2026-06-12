@@ -213,6 +213,14 @@ PERMITTED_PYTHON_DIFFS = {
     "app/specialists/wanda/_act.py",
     "app/specialists/gary/_act.py",
     "tests/integration/marcus/test_production_runner_threads_directive.py",
+    # S4 (same SCP; party-review riders executed): ProjectionSpec +
+    # dependency_projections + data_plane_vocabulary_version on the manifest
+    # schema (Winston S1-B + Deviation-2: projection, not spread); adapter
+    # projection resolution with refuse-loud missing-producer/key/collision;
+    # provenance real|fixture on contributions with envelope-writer
+    # rejection; builder id marcus -> package_builder; seam slimmed to
+    # runner context only (tombstone deliberately rewritten).
+    "app/manifest/schema.py",
     # Story 34-2 wrangler-side test (substrate-audit-corrected path 2026-05-22;
     # co-located with existing test_run_wrangler.py at skills/.../tests/).
     "skills/bmad-agent-texas/scripts/tests/test_run_wrangler_role_enum_union_and_excluded_reason.py",

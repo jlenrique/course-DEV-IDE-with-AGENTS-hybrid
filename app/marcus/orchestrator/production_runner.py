@@ -744,18 +744,16 @@ def _runner_payload_for_specialist(
 
     Trial-3 finding #10 (2026-06-11): Quinn-R receives the dispatching
     node's ``gate_code`` as ``gate_id`` (its _act selects its body from the
-    payload; production dispatch previously supplied no gate context). S3:
-    Quinn-R additionally receives Gary's slide rows under the ``slides`` key
-    its contract declares, so variant selection reviews what Gary produced.
+    payload; production dispatch previously supplied no gate context).
 
-    S3 (SCP 2026-06-11): Gary receives the §06 package-builder contribution
-    spread at top level — exactly the granular keys its contract declares
-    (the manifest dependency-map merge delivers whole-dict-per-key, which is
-    the wrong shape) — plus an ``export_dir`` inside the run dir. Party
-    review 2026-06-12 ruled the end state: edge-level key PROJECTION on the
-    manifest (not spread); this seam is the bridge until the
-    manifest-edge-key-projection-s4 deferred-inventory entry lands, at which
-    point removing this branch must break its tombstone test deliberately.
+    S4 (party review 2026-06-12, manifest-edge-key-projection-s4 LANDED):
+    content keys now flow through manifest ``dependency_projections`` — the
+    S3 bridge spread is retired (its tombstone test was updated
+    deliberately, per Winston S3-A). This seam carries RUNNER CONTEXT only:
+    Texas's directive/bundle paths, Quinn-R's gate_id, Gary's run-dir
+    ``export_dir``. Content delivery via the seam is forbidden — the
+    adapter collision guard refuses any seam key that a projection or
+    dependency also delivers.
 
     Other specialists receive None.
     """
@@ -768,29 +766,11 @@ def _runner_payload_for_specialist(
     # not the manifest spelling ("quinn-r") — match both; the hyphen form
     # cost a second live ModeMismatchError('') crash on 2026-06-11.
     if specialist_id in {"quinn_r", "quinn-r"} and gate_code:
-        payload: dict[str, Any] = {"gate_id": gate_code}
-        if production_envelope is not None:
-            gary = production_envelope.latest_for_specialist("gary")
-            rows = gary.output.get("gary_slide_output") if gary is not None else None
-            if isinstance(rows, list) and rows:
-                payload["slides"] = rows
-        return payload
-    if specialist_id == "gary" and production_envelope is not None:
-        package = production_envelope.get_contribution(
-            package_builders.BUILDER_SPECIALIST_ID,
-            node_id=package_builders.GARY_PACKAGE_NODE_ID,
-        )
-        if package is None:
-            # No §06 package -> no payload; Gary's dispatch then fail-louds
-            # on missing inputs per the S0 policy instead of receiving an
-            # invented brief.
-            return None
-        gary_payload: dict[str, Any] = dict(package.output)
-        if runs_root is not None and trial_id is not None:
-            gary_payload["export_dir"] = (
-                runs_root / str(trial_id) / "exports" / "gary"
-            ).as_posix()
-        return gary_payload
+        return {"gate_id": gate_code}
+    if specialist_id == "gary" and runs_root is not None and trial_id is not None:
+        return {
+            "export_dir": (runs_root / str(trial_id) / "exports" / "gary").as_posix()
+        }
     return None
 
 
@@ -1171,6 +1151,8 @@ def run_production_trial(
                         "base_state": run_state,
                         "node_id": node.id,
                     }
+                    if node.dependency_projections:
+                        invoke_kwargs["projection_map"] = node.dependency_projections
                     runner_payload = _runner_payload_for_specialist(
                         specialist_id=specialist_id,
                         directive_path=directive_path,
@@ -1466,6 +1448,8 @@ def resume_production_trial(
                         "base_state": run_state,
                         "node_id": node.id,
                     }
+                    if node.dependency_projections:
+                        resume_invoke_kwargs["projection_map"] = node.dependency_projections
                     # Finding #10: the resume walker passed no runner-side
                     # context at all (the Texas-only seam lived in the start
                     # walker); Quinn-R needs the node's gate_code here too.

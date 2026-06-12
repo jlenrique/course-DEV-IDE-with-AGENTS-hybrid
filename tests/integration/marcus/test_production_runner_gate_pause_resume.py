@@ -48,8 +48,9 @@ class _FakeAdapter:
         base_state=None,
         node_id: str | None = None,
         runner_supplied_payload: dict | None = None,
+        projection_map: dict | None = None,
     ) -> ProductionEnvelope:
-        del dependency_map, base_state, runner_supplied_payload
+        del dependency_map, base_state, runner_supplied_payload, projection_map
         updated = envelope.model_copy(deep=True)
         updated.add_contribution(
             SpecialistContribution.from_output(

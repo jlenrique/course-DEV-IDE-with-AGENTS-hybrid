@@ -130,6 +130,30 @@ def test_adapter_duplicate_guard_is_node_aware() -> None:
         )
 
 
+def test_fixture_provenance_refused_unless_fixture_run() -> None:
+    """S4 provenance policy (Murat #3): the envelope writer rejects fixture-
+    provenance contributions unless the run itself is flagged as a fixture
+    run — the runtime half of the static fixture-grep ratchet."""
+    envelope = ProductionEnvelope(trial_id=uuid4())
+    fixture_contribution = SpecialistContribution.from_output(
+        specialist_id="gary",
+        output={"specialist_id": "gary"},
+        model_used="gpt-5-nano",
+        node_id="07",
+        provenance="fixture",
+    )
+    with pytest.raises(ValueError, match="fixture-provenance"):
+        envelope.add_contribution(fixture_contribution)
+    flagged = ProductionEnvelope(trial_id=uuid4(), fixture_run=True)
+    flagged.add_contribution(fixture_contribution)
+    assert flagged.contributions[0].provenance == "fixture"
+
+
+def test_contributions_default_to_real_provenance() -> None:
+    contribution = _contribution("texas", "02")
+    assert contribution.provenance == "real"
+
+
 def test_production_call_sites_always_pass_node_id() -> None:
     """Winston S2-A (party review 2026-06-12): bare get_contribution without
     node_id is an attractive nuisance — any-node reads in production go

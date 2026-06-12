@@ -117,7 +117,20 @@ class NodeSpec(BaseModel):
         description=(
             "Manifest-declared dependency map for production composition. Keys are "
             "downstream specialist input keys; values are upstream specialist ids. "
-            "Missing or empty maps use the runner's permanent fallback resolution."
+            "Missing or empty maps use the runner's permanent fallback resolution. "
+            "Delivers the WHOLE upstream output dict under the input key — for "
+            "granular consumers use dependency_projections instead."
+        ),
+    )
+    dependency_projections: dict[str, ProjectionSpec] | None = Field(
+        default=None,
+        description=(
+            "Edge-level key projection (party review 2026-06-12, Winston "
+            "Deviation-2 ruling: projection, not spread). Keys are downstream "
+            "consumer input keys; values name the producer specialist and the "
+            "producer OUTPUT key to project. Projected input keys are validated "
+            "against the consumer's CONSUMED_PAYLOAD_KEYS by the Ratchet-D "
+            "contract test; governed by data_plane_vocabulary_version."
         ),
     )
     fold_with: str | None = Field(
@@ -188,6 +201,41 @@ class NodeSpec(BaseModel):
                 f"node {self.id}: fold_with and fold_target are mutually exclusive"
             )
         return self
+
+    @model_validator(mode="after")
+    def _enforce_projection_keys_disjoint_from_dependencies(self) -> NodeSpec:
+        # A key delivered by both mechanisms would reintroduce the silent-
+        # precedence genus the adapter collision guard retired.
+        if self.dependencies and self.dependency_projections:
+            overlap = sorted(set(self.dependencies) & set(self.dependency_projections))
+            if overlap:
+                raise ValueError(
+                    f"node {self.id}: input key(s) {overlap} declared in BOTH "
+                    "dependencies and dependency_projections"
+                )
+        return self
+
+
+class ProjectionSpec(BaseModel):
+    """One projected key on a dependency edge: producer output key -> consumer input key."""
+
+    model_config = ConfigDict(
+        extra="forbid",
+        validate_assignment=True,
+        populate_by_name=True,
+    )
+
+    from_specialist: str = Field(
+        ...,
+        min_length=1,
+        alias="from",
+        description="Producer specialist id (canonical or manifest spelling).",
+    )
+    key: str = Field(
+        ...,
+        min_length=1,
+        description="Key inside the producer's contribution output to project.",
+    )
 
 
 class EdgeSpec(BaseModel):
@@ -286,6 +334,17 @@ class PipelineManifest(BaseModel):
             "Frozen-graph version identifier (e.g., 'v0.1-stub', 'v42'). "
             "Compiler asserts `runtime/graphs/v{version}/` exists at compile time. "
             "Full ceremony (Slab 4 Story 4.5)."
+        ),
+    )
+    data_plane_vocabulary_version: str | None = Field(
+        default=None,
+        description=(
+            "Versioned home for the manifest's data-plane vocabulary "
+            "(dependencies + dependency_projections) — Winston S1-B, party "
+            "review 2026-06-12: pack_version provably does not govern the "
+            "data plane (regime doc, determination 2026-06-12). Tier-2 "
+            "governance for vocabulary changes attaches HERE: bump requires "
+            "party-mode consensus, like a pack bump but for edges."
         ),
     )
     nodes: list[NodeSpec] = Field(

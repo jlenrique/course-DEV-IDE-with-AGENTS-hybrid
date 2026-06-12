@@ -24,6 +24,11 @@
           },
           "title": "Contributions",
           "type": "array"
+        },
+        "fixture_run": {
+          "default": false,
+          "title": "Fixture Run",
+          "type": "boolean"
         }
       },
       "required": [
@@ -85,6 +90,15 @@
           "minimum": 1,
           "title": "Attempt",
           "type": "integer"
+        },
+        "provenance": {
+          "default": "real",
+          "enum": [
+            "real",
+            "fixture"
+          ],
+          "title": "Provenance",
+          "type": "string"
         }
       },
       "required": [

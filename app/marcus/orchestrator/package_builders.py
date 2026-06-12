@@ -31,7 +31,11 @@ from app.specialists.gary.payload_contract import (
     CONSUMED_PAYLOAD_KEYS as GARY_CONSUMED_PAYLOAD_KEYS,
 )
 
-BUILDER_SPECIALIST_ID = "marcus"
+# Dedicated identity (Winston ruling c, party review 2026-06-12): the envelope
+# must tell the truth about who produced what — a deterministic builder is not
+# the Marcus persona, and latest_for_specialist("marcus") must never return
+# builder output to a consumer expecting persona output.
+BUILDER_SPECIALIST_ID = "package_builder"
 GARY_PACKAGE_NODE_ID = "06"
 BUILDER_NODE_IDS: frozenset[str] = frozenset({GARY_PACKAGE_NODE_ID})
 BUILDER_MODEL_MARKER = "deterministic-package-builder"

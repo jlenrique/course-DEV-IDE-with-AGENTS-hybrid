@@ -56,6 +56,10 @@ class SpecialistContribution(BaseModel):
     output_digest: str = Field(..., min_length=64, max_length=64, pattern=r"^[0-9a-f]{64}$")
     node_id: str | None = None
     attempt: int = Field(default=1, ge=1)
+    # S4 provenance marking (Murat fixture policy #3, party review 2026-06-12):
+    # travels with the artifact; the envelope writer REJECTS fixture provenance
+    # unless the run itself is flagged as a fixture run.
+    provenance: Literal["real", "fixture"] = "real"
 
     @classmethod
     def from_output(
@@ -67,6 +71,7 @@ class SpecialistContribution(BaseModel):
         cost_usd: float = 0.0,
         contributed_at: datetime | None = None,
         node_id: str | None = None,
+        provenance: Literal["real", "fixture"] = "real",
     ) -> SpecialistContribution:
         return cls(
             specialist_id=specialist_id,
@@ -76,6 +81,7 @@ class SpecialistContribution(BaseModel):
             model_used=model_used,
             output_digest=compute_output_digest(output),
             node_id=node_id,
+            provenance=provenance,
         )
 
     @field_validator("contributed_at")
@@ -108,6 +114,9 @@ class ProductionEnvelope(BaseModel):
     )
     trial_id: UUID
     contributions: tuple[SpecialistContribution, ...] = Field(default_factory=tuple)
+    # Explicit fixture-run flag (test harnesses only): without it, the
+    # envelope REFUSES fixture-provenance contributions.
+    fixture_run: bool = False
 
     @field_validator("trial_id")
     @classmethod
@@ -146,6 +155,12 @@ class ProductionEnvelope(BaseModel):
         the SAME node replaces the prior entry with ``attempt`` incremented —
         never a duplicate append, never a silent skip.
         """
+        if contribution.provenance == "fixture" and not self.fixture_run:
+            raise ValueError(
+                f"fixture-provenance contribution for {contribution.specialist_id!r} "
+                "refused: this envelope is not flagged as a fixture run (S4 "
+                "provenance policy, party review 2026-06-12)"
+            )
         for index, existing in enumerate(self.contributions):
             if (
                 existing.specialist_id == contribution.specialist_id

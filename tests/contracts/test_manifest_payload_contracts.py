@@ -61,14 +61,16 @@ def _canonical(specialist_id: str) -> str:
 
 
 def _dependency_edges() -> list[tuple[str, str, str]]:
+    """All data-plane edges: classic dependencies AND S4 key projections."""
     manifest = yaml.safe_load(MANIFEST_PATH.read_text(encoding="utf-8"))
     edges: list[tuple[str, str, str]] = []
     for node in manifest["nodes"]:
         consumer = node.get("specialist_id")
-        dependencies = node.get("dependencies") or {}
-        if not consumer or not dependencies:
+        if not consumer:
             continue
-        for input_key in dependencies:
+        for input_key in node.get("dependencies") or {}:
+            edges.append((str(node["id"]), str(input_key), str(consumer)))
+        for input_key in node.get("dependency_projections") or {}:
             edges.append((str(node["id"]), str(input_key), str(consumer)))
     return edges
 

@@ -28,8 +28,10 @@ class _FakeAdapter:
         cost_usd: float,
         base_state=None,
         node_id: str | None = None,
+        runner_supplied_payload: dict | None = None,
+        projection_map: dict | None = None,
     ) -> ProductionEnvelope:
-        del base_state
+        del base_state, runner_supplied_payload, projection_map
         input_payload: dict[str, object] = {}
         for input_key, upstream_id in dependency_map.items():
             contribution = envelope.get_contribution(upstream_id)
