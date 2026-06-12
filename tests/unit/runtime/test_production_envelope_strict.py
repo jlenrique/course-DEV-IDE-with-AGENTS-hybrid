@@ -58,8 +58,10 @@ def test_cost_non_negative_enforced() -> None:
 
 
 def test_schema_version_literal_red_rejection() -> None:
+    # S2: v1 (legacy read) and v2 (per-node keying) are the closed set;
+    # anything else red-rejects.
     payload = {
-        "schema_version": "production-envelope.v2",
+        "schema_version": "production-envelope.v3",
         "trial_id": UUID("12345678-1234-4234-8234-123456789abc"),
         "contributions": [],
     }
@@ -68,16 +70,20 @@ def test_schema_version_literal_red_rejection() -> None:
         ProductionEnvelope.model_validate(payload)
 
 
-def test_add_contribution_is_append_only_per_specialist() -> None:
+def test_add_contribution_same_node_retry_overwrites_with_attempt() -> None:
+    # S2 (SCP 2026-06-11): the per-specialist append-only raise became
+    # per-(specialist, node) retry-overwrite with attempt provenance —
+    # never a duplicate append, never a silent skip (Murat regression shape).
     envelope = ProductionEnvelope(
         trial_id=UUID("12345678-1234-4234-8234-123456789abc")
     )
     contribution = _contribution()
 
     envelope.add_contribution(contribution)
+    envelope.add_contribution(contribution)
 
-    with pytest.raises(ValueError, match="already has contribution"):
-        envelope.add_contribution(contribution)
+    assert len(envelope.contributions) == 1
+    assert envelope.contributions[0].attempt == 2
 
 
 def test_contributions_cannot_be_appended_around_add_contribution() -> None:

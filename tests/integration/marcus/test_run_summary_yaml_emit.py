@@ -18,6 +18,7 @@ class _FakeAdapter:
         *,
         specialist_id: str,
         envelope: ProductionEnvelope,
+        node_id: str | None = None,
         **_,
     ) -> ProductionEnvelope:
         updated = envelope.model_copy(deep=True)
@@ -27,6 +28,7 @@ class _FakeAdapter:
                 output={"specialist_id": specialist_id},
                 model_used="gpt-5-nano",
                 cost_usd=0.0,
+                node_id=node_id,
             )
         )
         return updated

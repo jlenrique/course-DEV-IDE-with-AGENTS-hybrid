@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import json
-import logging
 from pathlib import Path
 from uuid import UUID
 
@@ -28,6 +27,7 @@ class _FakeAdapter:
         dependency_map: dict[str, str],
         cost_usd: float,
         base_state=None,
+        node_id: str | None = None,
     ) -> ProductionEnvelope:
         del base_state
         input_payload: dict[str, object] = {}
@@ -54,6 +54,7 @@ class _FakeAdapter:
                 },
                 model_used="gpt-5-nano",
                 cost_usd=cost_usd,
+                node_id=node_id,
             )
         )
         return updated
@@ -257,12 +258,13 @@ def test_dependency_map_fallback_isolated_contract() -> None:
     ) == {"upstream_output": "texas"}
 
 
-def test_repeated_specialist_node_skips_duplicate_contribution_with_log(
+def test_multi_node_specialist_contributes_at_each_node(
     tmp_path: Path,
     monkeypatch,
-    caplog,
 ) -> None:
-    caplog.set_level(logging.INFO, logger=production_runner.__name__)
+    # S2 (SCP 2026-06-11): per-node keying — texas at §02 AND §03 produces
+    # two distinct contributions; the retired per-specialist Path-Z skip
+    # silently dropped the second job (irene_pass1 §05/§05B class).
     monkeypatch.setenv("OPENAI_API_KEY", "sk-test")
     monkeypatch.setenv("LANGSMITH_API_KEY", "ls-test")
     monkeypatch.setenv("LANGSMITH_PROJECT", "test-project")
@@ -286,13 +288,18 @@ def test_repeated_specialist_node_skips_duplicate_contribution_with_log(
                 },
             ],
         ),
-        max_specialist_calls=2,
+        max_specialist_calls=3,
         pause_at_gates=False,
     )
 
     assert envelope.production_envelope is not None
+    texas_rows = [
+        item
+        for item in envelope.production_envelope.contributions
+        if item.specialist_id == "texas"
+    ]
+    assert [row.node_id for row in texas_rows] == ["02", "03"]
+    assert [item["specialist_id"] for item in adapter.calls].count("texas") == 2
     assert [item.specialist_id for item in envelope.production_envelope.contributions].count(
-        "texas"
+        "irene"
     ) == 1
-    assert [item["specialist_id"] for item in adapter.calls].count("texas") == 1
-    assert "Path Z first-contribution-wins contract" in caplog.text

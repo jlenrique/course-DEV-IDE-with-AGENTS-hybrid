@@ -111,15 +111,21 @@ class ProductionDispatchAdapter:
         cost_usd: float,
         base_state: RunState | None = None,
         runner_supplied_payload: dict[str, Any] | None = None,
+        node_id: str | None = None,
     ) -> ProductionEnvelope:
         """Invoke a scaffolded specialist and append its output to the envelope.
 
         ``runner_supplied_payload`` is forwarded to ``build_specialist_state``
-        per A-R3 Option A.
+        per A-R3 Option A. ``node_id`` keys the contribution to the dispatching
+        manifest node (S2 per-node keying); the duplicate guard is node-aware —
+        multi-node specialists pass it at each of their nodes (Amelia: this
+        guard and the walker skip-rule changed in the same commit, or the
+        first multi-node dispatch crashes live).
         """
-        if envelope.get_contribution(specialist_id) is not None:
+        if envelope.get_contribution(specialist_id, node_id=node_id) is not None:
             raise ValueError(
-                f"production envelope already has contribution for {specialist_id!r}"
+                f"production envelope already has contribution for "
+                f"{specialist_id!r} at node {node_id!r}"
             )
         state = self.build_specialist_state(
             envelope=envelope,
@@ -140,6 +146,7 @@ class ProductionDispatchAdapter:
             output=output,
             model_used=self._model_used(state),
             cost_usd=cost_usd,
+            node_id=node_id,
         )
         updated = envelope.model_copy(deep=True)
         updated.add_contribution(contribution)
@@ -152,7 +159,9 @@ class ProductionDispatchAdapter:
     ) -> dict[str, Any]:
         payload: dict[str, Any] = {}
         for input_key, upstream_specialist_id in dependency_map.items():
-            contribution = envelope.get_contribution(upstream_specialist_id)
+            # S2: dependency consumers want the upstream specialist's most
+            # recent output (multi-node specialists contribute per node).
+            contribution = envelope.latest_for_specialist(upstream_specialist_id)
             if contribution is None:
                 raise ProductionDispatchAdapterError(
                     f"dependency {upstream_specialist_id!r} for input "

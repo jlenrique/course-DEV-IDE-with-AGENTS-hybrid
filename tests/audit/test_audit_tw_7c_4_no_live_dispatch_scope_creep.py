@@ -164,6 +164,30 @@ PERMITTED_PYTHON_DIFFS = {
     "app/specialists/quinn_r/payload_contract.py",
     "app/specialists/gary/payload_contract.py",
     "tests/contracts/test_manifest_payload_contracts.py",
+    # S2 envelope v2 (same SCP): per-node contribution keying. node_id +
+    # attempt on SpecialistContribution (nullable -> legacy v1 envelopes
+    # deserialize unchanged); schema_version v2 default with v1 read-only;
+    # add_contribution: same-(specialist,node) retry overwrites w/ attempt
+    # provenance, multi-node specialists accumulate per node (Path-Z
+    # per-specialist skip retired — it silently dropped irene_pass1's
+    # 05/05B jobs); adapter duplicate-guard node-aware IN THE SAME CHANGE
+    # as the walker skip-rule (Amelia live-crash trap); dependency
+    # resolution -> latest_for_specialist; resume REJECTS v1 envelopes
+    # loudly (LegacyEnvelopeSchemaError; relaunch-as-cycle-2 ruling).
+    "app/models/runtime/production_envelope.py",
+    "app/marcus/orchestrator/dispatch_adapter.py",
+    "tests/integration/marcus/test_production_envelope_node_keying.py",
+    "tests/integration/marcus/test_path_z_first_contribution_wins_with_persistence.py",
+    "tests/unit/runtime/test_production_envelope_strict.py",
+    # S2 mechanical sweep: every walker-test _FakeAdapter gains the node_id
+    # kwarg and stamps it (the runner's post-invoke lookup is node-pinned);
+    # repeated-specialist test re-pinned to per-node semantics.
+    "tests/integration/marcus/test_production_runner_invocation.py",
+    "tests/integration/marcus/test_production_runner_dependency_resolution.py",
+    "tests/integration/marcus/test_production_runner_resume_continues_execution.py",
+    "tests/integration/marcus/test_production_clone_launch_evidence_discipline.py",
+    # (test_run_summary_yaml_emit.py already allowlisted above at the
+    # irene_pass1 roster fix — S2 touched it again for node_id stamping.)
     # Story 34-2 wrangler-side test (substrate-audit-corrected path 2026-05-22;
     # co-located with existing test_run_wrangler.py at skills/.../tests/).
     "skills/bmad-agent-texas/scripts/tests/test_run_wrangler_role_enum_union_and_excluded_reason.py",

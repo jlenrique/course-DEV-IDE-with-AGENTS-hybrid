@@ -84,6 +84,18 @@ class MissingUpstreamContributionError(RuntimeError):
         )
 
 
+class LegacyEnvelopeSchemaError(RuntimeError):
+    """Raised when resuming a run whose envelope predates per-node keying.
+
+    S2 (SCP 2026-06-11): production-envelope.v1 rows carry no node_id; a
+    resume against them would re-dispatch every specialist (double spend)
+    or half-read the walk state. Murat's characterization ruling: legacy
+    envelopes are migrated explicitly or rejected loudly — never half-read.
+    Per the operator's relaunch-as-cycle-2 ruling, v1 runs stay frozen as
+    evidence and new cycles launch fresh.
+    """
+
+
 class GateBypassError(RuntimeError):
     """Raised when a production pause-point gate would be silently skipped."""
 
@@ -1075,14 +1087,16 @@ def run_production_trial(
 
             if node_kind == "specialist" and specialist_calls < max_specialist_calls:
                 specialist_id = handler.__production_specialist_id__
-                if production_envelope.get_contribution(specialist_id) is not None:
+                # S2 per-node keying (SCP 2026-06-11): the skip rule guards
+                # node revisits, not specialist revisits — the per-specialist
+                # Path-Z rule silently skipped irene_pass1's §05/§05B jobs.
+                if production_envelope.get_contribution(specialist_id, node_id=node.id) is not None:
                     LOGGER.info(
-                        "specialist %s was reached again at manifest node %s but "
-                        "the production envelope already contains its contribution; "
-                        "new contribution skipped per Slab 6.1 Path Z first-"
-                        "contribution-wins contract",
-                        specialist_id,
+                        "manifest node %s (specialist %s) already carries its "
+                        "contribution; node re-dispatch skipped per S2 "
+                        "per-node idempotency contract",
                         node.id,
+                        specialist_id,
                     )
                     graph_step_completed = True
                     continue
@@ -1098,6 +1112,7 @@ def run_production_trial(
                         "dependency_map": dependency_map,
                         "cost_usd": 0.0,
                         "base_state": run_state,
+                        "node_id": node.id,
                     }
                     runner_payload = _runner_payload_for_specialist(
                         specialist_id=specialist_id,
@@ -1111,7 +1126,9 @@ def run_production_trial(
                     run_state = run_state.model_copy(
                         update={"production_envelope": production_envelope}
                     )
-                    contribution = production_envelope.get_contribution(specialist_id)
+                    contribution = production_envelope.get_contribution(
+                        specialist_id, node_id=node.id
+                    )
                     if contribution is not None:
                         child_runs.append(
                             _trace_run_for_contribution(
@@ -1203,6 +1220,13 @@ def resume_production_trial(
         raise GateError(
             "checkpoint_gate_mismatch",
             f"verdict gate_id={verdict.gate_id} does not match paused_gate={envelope.paused_gate}",
+        )
+    if envelope.production_envelope.schema_version == "production-envelope.v1":
+        raise LegacyEnvelopeSchemaError(
+            f"trial {trial_id} carries a production-envelope.v1 (per-specialist "
+            "keyed) envelope; v1 runs are not resumable after the S2 per-node "
+            "keying migration (SCP 2026-06-11) — relaunch as a new cycle; the "
+            "run dir stays frozen as evidence."
         )
     _ensure_decision_card_registered_from_disk(
         trial_id=trial_id,
@@ -1340,14 +1364,14 @@ def resume_production_trial(
                 and specialist_calls < resumed_max_specialist_calls
             ):
                 specialist_id = handler.__production_specialist_id__
-                if production_envelope.get_contribution(specialist_id) is not None:
+                # S2 per-node keying — see start-walker note.
+                if production_envelope.get_contribution(specialist_id, node_id=node.id) is not None:
                     LOGGER.info(
-                        "specialist %s was reached again at manifest node %s but "
-                        "the production envelope already contains its contribution; "
-                        "new contribution skipped per Slab 6.1 Path Z first-"
-                        "contribution-wins contract",
-                        specialist_id,
+                        "manifest node %s (specialist %s) already carries its "
+                        "contribution; node re-dispatch skipped per S2 "
+                        "per-node idempotency contract",
                         node.id,
+                        specialist_id,
                     )
                     graph_step_completed = True
                     continue
@@ -1363,6 +1387,7 @@ def resume_production_trial(
                         "dependency_map": dependency_map,
                         "cost_usd": 0.0,
                         "base_state": run_state,
+                        "node_id": node.id,
                     }
                     # Finding #10: the resume walker passed no runner-side
                     # context at all (the Texas-only seam lived in the start
@@ -1379,7 +1404,9 @@ def resume_production_trial(
                     run_state = run_state.model_copy(
                         update={"production_envelope": production_envelope}
                     )
-                    contribution = production_envelope.get_contribution(specialist_id)
+                    contribution = production_envelope.get_contribution(
+                        specialist_id, node_id=node.id
+                    )
                     if contribution is not None:
                         child_runs.append(
                             _trace_run_for_contribution(
