@@ -19,3 +19,10 @@
 - [edge] Enrique non-join branches (`segments` payload key + locked_manifest_path/manifest_path) still silent-skip empty-text rows in the TTS loop (`if not text: continue`). Pre-existing; spec "Ask First" fenced. Same silent-gap family; fold with the row above.
 - [blind] Join id-truthiness policy collapses falsy delta ids (0/""/None) to "" (narration_join.py line 39 pre-existing; phantom helper mirrors it for consistency). Revisit with the dp-v2 segment-manifest schema rework alongside b-manifest-join-lossiness (same policy home).
 - [edge] G5 emits no verdict-level signal when a dropped phantom's slide is covered by another real segment (witness key `phantom_segment_ids_dropped` records it in the grounded payload; enrique refuse guards the live path at node 12). Consider escalating to a G5 advisory entry at next G5-touching story — would change verdict shape, needs its own ceremony.
+
+
+## Deferred from: code review of spec-dp-v1-2-hygiene-mini-batch (2026-06-12)
+
+- [edge+blind] Ninth-seam inline-roster regex (tests/audit/test_no_silent_fixture_fallbacks.py) does not match multi-key or multi-row literal rosters; live near-instance exists at app/specialists/gary/_act.py:95 (two-key fabricated roster on the empty-input path, module NOT on ALLOWED_FIXTURE_MODULES). Widen the regex WHEN gary re-bases (taxonomy re-base slice, gary first) — widening now would fire on gary before his fix lands.
+- [auditor] quinn_r residual dead subtree one level down: _act_precomposition/_act_postcomposition (+ transitively _invoke_quinn_r_llm, _assemble_quinn_r_prompt) lost their only caller (_run_gate_phase, deleted this batch) yet remain __all__-exported with zero test imports; live act body (quinn_r/_act.py) calls validators directly. Next quinn_r-touching story: either delete the subtree + __all__ rows or document why the export surface stays.
+- [blind] _require_bundle_path enforces presence, not run-scopedness — an explicit repo-root bundle_path (".", "runs/enrique-narration") still writes outside a run dir. Callers own scoping today (act() injects); revisit if a non-act caller appears.

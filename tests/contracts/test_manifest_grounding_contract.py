@@ -76,6 +76,44 @@ def _groundless_nodes() -> set[tuple[str, str]]:
     return groundless
 
 
+DEFERRED_INVENTORY_PATH = (
+    REPO_ROOT / "_bmad-output" / "planning-artifacts" / "deferred-inventory.md"
+)
+
+
+def test_11b_allowlist_row_tied_to_voice_hil_rider() -> None:
+    """John R1 (dp-v1.2 rider): the (11B, elevenlabs) row exists ONLY because
+    all three elevenlabs nodes share one act body pending the voice-HIL fold
+    fix (per-node act discrimination). The row must not outlive its rationale:
+    while it is allowlisted, the voice-selection-hil-fold-defect rider must be
+    an ACTIVE deferred-inventory entry; when that rider closes, retire the row.
+    (Precedent for tests reading planning artifacts:
+    tests/parity/test_mapping_checklist_status.py.)"""
+    if ("11B", "elevenlabs") not in GROUNDLESS_ALLOWLIST:
+        return  # row retired — the tie is satisfied
+    inventory = DEFERRED_INVENTORY_PATH.read_text(encoding="utf-8")
+    parts = inventory.split("## Closed Entries", 1)
+    assert len(parts) == 2, (
+        "deferred-inventory.md no longer carries the '## Closed Entries' "
+        "archive anchor — update this test's split marker or the tie is "
+        "silently fail-open."
+    )
+    # Strikethrough-in-place is this repo's closure mode (archival happens at
+    # the next multi-slab hygiene pass) — a struck entry is CLOSED, not active.
+    live_lines = [
+        line
+        for line in parts[0].splitlines()
+        if "voice-selection-hil-fold-defect" in line and "~~" not in line
+    ]
+    assert live_lines, (
+        "(11B, elevenlabs) is still on GROUNDLESS_ALLOWLIST but "
+        "voice-selection-hil-fold-defect is no longer an active "
+        "deferred-inventory entry — the fold fix landed (or the rider moved): "
+        "retire the allowlist row (per-node act discrimination makes 11B "
+        "groundable) or re-file the rider."
+    )
+
+
 def test_no_new_groundless_specialist_nodes() -> None:
     groundless = _groundless_nodes()
     new_nodes = groundless - GROUNDLESS_ALLOWLIST

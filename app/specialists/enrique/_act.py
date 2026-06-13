@@ -22,7 +22,6 @@ from scripts.api_clients.elevenlabs_client import ElevenLabsClient
 REPO_ROOT = Path(__file__).resolve().parents[3]
 SANCTUM_DIR = REPO_ROOT / "_bmad" / "memory" / "bmad-agent-enrique"
 CONFIG_PATH = REPO_ROOT / "app" / "specialists" / "enrique" / "config.yaml"
-DEFAULT_BUNDLE_PATH = REPO_ROOT / "runs" / "enrique-narration"
 
 
 class EnriqueActError(SpecialistDispatchError):
@@ -32,6 +31,20 @@ class EnriqueActError(SpecialistDispatchError):
     node — a mid-batch TTS failure must error-pause recoverably, never
     crash away paid audio.
     """
+
+
+def _require_bundle_path(payload: dict[str, Any]) -> Path:
+    """dp-v1.2 rider (Winston R2): the repo-root DEFAULT_BUNDLE_PATH is
+    retired — every write lands in a run-scoped bundle. act() injects the
+    path on the production walk; a direct caller without one fails loud."""
+    raw = str(payload.get("bundle_path") or "").strip()
+    if not raw:
+        raise EnriqueActError(
+            "payload carries no bundle_path; refusing to write to an "
+            "implicit default location",
+            tag="elevenlabs.bundle.path-missing",
+        )
+    return Path(raw)
 
 
 def _json_dumps(value: Any) -> str:
@@ -119,7 +132,7 @@ def build_voice_selection_contract(
 ) -> dict[str, Any]:
     client = client or ElevenLabsClient()
     config = _load_config()
-    bundle_path = Path(str(payload.get("bundle_path") or DEFAULT_BUNDLE_PATH))
+    bundle_path = _require_bundle_path(payload)
     selection_dir = bundle_path / "voice-selection"
     count = int(
         payload.get("voice_preview_candidate_count")
@@ -252,7 +265,7 @@ def build_assembly_bundle(
     payload: dict[str, Any], *, selection: dict[str, Any], client: ElevenLabsClient | None = None
 ) -> dict[str, Any]:
     client = client or ElevenLabsClient()
-    bundle_path = Path(str(payload.get("bundle_path") or DEFAULT_BUNDLE_PATH))
+    bundle_path = _require_bundle_path(payload)
     audio_dir = bundle_path / "assembly-bundle" / "audio"
     captions_dir = bundle_path / "assembly-bundle" / "captions"
     segments = _segments(payload)

@@ -31,22 +31,32 @@ EXTRA_MODULES = (
 # Systematic re-base (with per-class catch-site greps) is a filed
 # deferred-inventory rider; rows retire as their classes re-base. New
 # tagged classes get NO exclusion — they must be born dispatch-family.
+# Module-qualified per Murat R2 (dp-v1.2 rider): a new class reusing a
+# bare excluded name in another module must NOT inherit the exclusion.
 EXCLUSIONS: frozenset[str] = frozenset(
     {
-        "BuilderInputError",  # raised pre-dispatch by the runner walk (criterion-5 leg)
-        "OperatorInstructionsParseError",  # aria/kim/mira/tamara/vyx (unexercised seams)
-        "CdDirectiveParseError",
-        "DanAuxParseError",
-        "HandoffParseError",
-        "ElevenlabsDispatchError",  # legacy-probe path only
-        "GaryActError",
-        "ReceiptParseError",
-        "KiraActError",
-        "BundleParseError",
-        "ManifestParseError",
-        "RetrievalIntentParseError",
-        "FTRParseError",
-        "WandaActError",
+        # raised pre-dispatch by the runner walk (criterion-5 leg)
+        "app.marcus.orchestrator.package_builders.BuilderInputError",
+        # aria/kim/mira/tamara/vyx (unexercised seams)
+        "app.specialists.aria.graph.OperatorInstructionsParseError",
+        "app.specialists.kim.graph.OperatorInstructionsParseError",
+        "app.specialists.mira.graph.OperatorInstructionsParseError",
+        "app.specialists.tamara.graph.OperatorInstructionsParseError",
+        "app.specialists.vyx.graph.OperatorInstructionsParseError",
+        "app.specialists.cd.graph.CdDirectiveParseError",
+        "app.specialists.dan._act.DanAuxParseError",
+        "app.specialists.desmond.graph.HandoffParseError",
+        # legacy-probe path only
+        "app.specialists.enrique.elevenlabs_dispatch.ElevenlabsDispatchError",
+        "app.specialists.gary._act.GaryActError",
+        "app.specialists.gary.graph.ReceiptParseError",
+        "app.specialists.kira._act.KiraActError",
+        "app.specialists.texas._act.BundleParseError",
+        # ManifestParseError is an in-module alias of RetrievalIntentParseError
+        "app.specialists.tracy._act.ManifestParseError",
+        "app.specialists.tracy._act.RetrievalIntentParseError",
+        "app.specialists.vera._act.FTRParseError",
+        "app.specialists.wanda._act.WandaActError",
     }
 )
 
@@ -75,7 +85,7 @@ def test_every_tagged_error_class_is_dispatch_family() -> None:
                 continue
             if obj.__module__ != module.__name__:
                 continue  # re-exports are checked at their defining module
-            if name in EXCLUSIONS:
+            if f"{module.__name__}.{name}" in EXCLUSIONS:
                 continue
             if _takes_tag(obj) and not issubclass(obj, SpecialistDispatchError):
                 violations.append(f"{module.__name__}.{name}")
@@ -84,6 +94,26 @@ def test_every_tagged_error_class_is_dispatch_family() -> None:
         f"(the cycle-5 crash class): {sorted(set(violations))} — re-base them "
         "so failures error-pause recoverably instead of killing the walk."
     )
+
+
+def test_exclusions_rows_still_name_live_bare_classes() -> None:
+    """Murat R2 follow-through (review patch): shrink-only means a row must
+    retire when its class re-bases, renames, or disappears — a stale
+    module-qualified row excludes nothing, invisibly, forever."""
+    stale: list[str] = []
+    for entry in sorted(EXCLUSIONS):
+        module_name, _, class_name = entry.rpartition(".")
+        try:
+            module = importlib.import_module(module_name)
+        except ModuleNotFoundError:
+            stale.append(f"{entry} (module gone)")
+            continue
+        obj = vars(module).get(class_name)
+        if not (isinstance(obj, type) and issubclass(obj, Exception)):
+            stale.append(f"{entry} (class gone)")
+        elif issubclass(obj, SpecialistDispatchError) or not _takes_tag(obj):
+            stale.append(f"{entry} (re-based or untagged — retire the row)")
+    assert stale == [], f"Stale EXCLUSIONS row(s): {stale}"
 
 
 def test_known_rebased_classes() -> None:

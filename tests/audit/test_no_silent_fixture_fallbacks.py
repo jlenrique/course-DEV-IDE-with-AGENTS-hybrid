@@ -30,8 +30,9 @@ FIXTURE_SIGNATURES = re.compile(
     # The NINTH seam's shape (quinn_r G5 _slides, cycle-5 2026-06-12): an
     # INLINE fabricated single-row roster let a QA body audit a phantom
     # slide. Inline placeholder rosters in production modules are the same
-    # genus as fixture reads.
-    r"|\[\{['\"]slide_id['\"]:\s*['\"]slide-1['\"]\}\]"
+    # genus as fixture reads. Generalized per Murat R1 (dp-v1.2 rider):
+    # whitespace variants and renamed placeholder ids must not escape.
+    r"|\[\s*\{\s*['\"]slide_id['\"]\s*:\s*['\"][^'\"]*['\"]\s*,?\s*\}\s*,?\s*\]"
 )
 
 # The S0-converted seams (five from the sweep + wanda's MB, the SEVENTH seam
@@ -79,6 +80,20 @@ def test_rostered_modules_gate_fixture_paths_behind_opt_in() -> None:
     assert ungated == [], (
         f"Rostered fixture module(s) lost their allow_fixture gate: {ungated}"
     )
+
+
+def test_ninth_seam_regex_catches_evasion_variants() -> None:
+    """Murat R1 (dp-v1.2 rider): whitespace/rename must not escape the
+    inline-roster signature; a variable-built roster is NOT a literal."""
+    for variant in (
+        '[{"slide_id": "slide-1"}]',
+        "[ { 'slide_id' : 'slide-1' } ]",
+        '[{"slide_id": "intro-1"}]',
+        '[{"slide_id":"s1",}]',
+        '[{"slide_id": "s1"}, ]',
+    ):
+        assert FIXTURE_SIGNATURES.search(variant), variant
+    assert not FIXTURE_SIGNATURES.search('rows = [{"slide_id": slide_id}]')
 
 
 def test_roster_entries_still_reference_fixture_machinery() -> None:

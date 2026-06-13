@@ -139,6 +139,30 @@ def test_enrique_voice_only_dispatch_stays_voice_only(tmp_path: Path) -> None:
     assert result["voice_selection"]["selected_voice_id"] == "v-1"
 
 
+def test_enrique_missing_bundle_path_refuses_both_legs() -> None:
+    """Winston R2 (dp-v1.2 rider): the repo-root DEFAULT_BUNDLE_PATH is
+    retired — a payload without bundle_path fails loud on the voice leg AND
+    the synthesis leg, before anything is written."""
+    from app.specialists.enrique._act import (
+        build_assembly_bundle,
+        build_voice_selection_contract,
+    )
+
+    client = _FakeElevenLabs()
+    with pytest.raises(EnriqueActError) as excinfo:
+        generate_enrique_outputs({}, client=client)
+    assert excinfo.value.tag == "elevenlabs.bundle.path-missing"
+    with pytest.raises(EnriqueActError) as excinfo:
+        build_voice_selection_contract({}, client=client)
+    assert excinfo.value.tag == "elevenlabs.bundle.path-missing"
+    with pytest.raises(EnriqueActError) as excinfo:
+        build_assembly_bundle(
+            {"segments": []}, selection={"selected_voice_id": "v-1"}, client=client
+        )
+    assert excinfo.value.tag == "elevenlabs.bundle.path-missing"
+    assert client.tts_calls == []
+
+
 def test_g5_grounding_builds_segments_with_enrique_durations(tmp_path: Path) -> None:
     caption = tmp_path / "seg-1.vtt"
     caption.write_text("WEBVTT\n", encoding="utf-8")

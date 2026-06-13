@@ -4,7 +4,6 @@ from __future__ import annotations
 
 import hashlib
 import json
-from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
 
@@ -74,19 +73,6 @@ class QRRParseError(SpecialistDispatchError):  # noqa: N818
     """
 
 
-def _new_dispatch_trail_entry(
-    last_entry: ModelResolutionEntry, *, tag: str
-) -> ModelResolutionEntry:
-    return ModelResolutionEntry(
-        level=last_entry.level,
-        requested=last_entry.requested,
-        resolved=last_entry.resolved,
-        reason=tag,
-        timestamp=datetime.now(UTC),
-        cache_prefix_hash=last_entry.cache_prefix_hash,
-    )
-
-
 def _read_sanctum_digest(sanctum_dir: Path = SANCTUM_DIR) -> str:
     if not sanctum_dir.exists() or not sanctum_dir.is_dir():
         return ""
@@ -117,24 +103,6 @@ def _read_quinn_r_references(
         body = path.read_text(encoding="utf-8") if path.is_file() else f"<missing: {name}>"
         parts.append(header + body)
     return "\n\n".join(parts)
-
-
-def _decode_envelope_payload(state: RunState) -> dict[str, Any]:
-    if state.cache_state is None or not state.cache_state.cache_prefix:
-        return {}
-    try:
-        decoded = json.loads(state.cache_state.cache_prefix)
-    except json.JSONDecodeError as exc:
-        raise QRRParseError(
-            f"quinn_r act envelope cache_prefix is not valid JSON: {exc}",
-            tag="qrr.parsed.malformed",
-        ) from exc
-    if not isinstance(decoded, dict):
-        raise QRRParseError(
-            "quinn_r act envelope cache_prefix must decode to a mapping",
-            tag="qrr.parsed.wrong-type",
-        )
-    return decoded
 
 
 def _assemble_quinn_r_prompt(
@@ -308,70 +276,6 @@ def _act_postcomposition(state: RunState, payload: dict[str, Any]) -> dict[str, 
         deterministic=deterministic,
         perception=perception,
     )
-
-
-def _run_gate_phase(state: RunState, payload: dict[str, Any]) -> dict[str, Any]:
-    gate_phase = payload.get("gate_phase")
-    if gate_phase not in ("pre-composition", "post-composition"):
-        raise ValueError(f"unknown gate_phase: {gate_phase!r}")
-    if gate_phase == "pre-composition":
-        return _act_precomposition(state, payload)
-    return _act_postcomposition(state, payload)
-
-
-def _require_planned_state(state: RunState) -> ModelResolutionEntry:
-    if not state.model_resolution_trail:
-        raise RuntimeError("quinn_r act invoked before plan; resolution trail is empty")
-    last_entry = state.model_resolution_trail[-1]
-    if last_entry.cache_prefix_hash is None:
-        raise RuntimeError(
-            "quinn_r act expected final plan resolution entry with cache_prefix_hash"
-        )
-    return last_entry
-
-
-def _act_with_trail(state: RunState, last_entry: ModelResolutionEntry) -> dict[str, Any]:
-    try:
-        payload = _decode_envelope_payload(state)
-        parsed = _run_gate_phase(state, payload)
-    except ValueError:
-        raise
-    except QRRParseError as exc:
-        state.model_resolution_trail.append(
-            _new_dispatch_trail_entry(last_entry, tag=exc.tag)
-        )
-        raise
-    except Exception as exc:
-        err = QRRParseError(
-            "quinn_r dispatch/model invocation failed",
-            tag="qrr.parsed.contract-failure",
-        )
-        state.model_resolution_trail.append(
-            _new_dispatch_trail_entry(last_entry, tag=err.tag)
-        )
-        raise err from exc
-
-    trail_entry = _new_dispatch_trail_entry(last_entry, tag="qrr.parsed.ok")
-    output_blob = json.dumps(
-        {
-            "quinn_r_review": parsed,
-            "model_id": last_entry.resolved,
-            "gate_phase": payload.get("gate_phase"),
-        },
-        sort_keys=True,
-        ensure_ascii=True,
-        separators=(",", ":"),
-        default=str,
-    )
-    return {
-        "model_resolution_trail": [*state.model_resolution_trail, trail_entry],
-        "cache_state": {
-            "cache_prefix": output_blob,
-            "entries_count": (state.cache_state.entries_count + 1)
-            if state.cache_state is not None
-            else 1,
-        },
-    }
 
 
 def _receive(state: RunState) -> dict[str, Any]:

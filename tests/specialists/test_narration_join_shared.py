@@ -10,6 +10,8 @@ from __future__ import annotations
 
 import inspect
 
+import yaml
+
 from app.specialists.narration_join import join_narration_segments
 
 NARRATION = [
@@ -31,8 +33,15 @@ def test_join_policy() -> None:
     ]
     assert rows[0]["timing_role"] == "head"
     assert join_narration_segments(None, None) == []
-    assert join_narration_segments([], DELTAS) == [
-        {**row, "narration_text": ""} for row in join_narration_segments([], DELTAS)
+    # Winston R1 (dp-v1.2 rider): explicit expectation — the prior form
+    # re-derived its expectation from the call under test (only the
+    # empty-text field was falsifiable).
+    empty_script_rows = join_narration_segments([], DELTAS)
+    assert [
+        (r["segment_id"], r["slide_id"], r["narration_text"]) for r in empty_script_rows
+    ] == [
+        ("seg-1", "s1", ""),
+        ("seg-2", "s2", ""),
     ]
 
 
@@ -98,8 +107,17 @@ def test_publisher_segment_manifest_byte_stable_through_shared_join(tmp_path) ->
             "segment_manifest_deltas": DELTAS,
         },
     )
+    # Winston R1 (dp-v1.2 rider): byte-equality against the canonical
+    # serialization of the shared-join output, not substring presence.
+    # The literal anchors stay as the independent content oracle (review
+    # patch: byte-equality alone moves with a join regression).
     text = path.read_text(encoding="utf-8")
-    assert "slide_id: s1" in text
-    assert "slide_id: s2" in text
+    expected = yaml.safe_dump(
+        {"segments": join_narration_segments(NARRATION, DELTAS)},
+        sort_keys=False,
+        allow_unicode=True,
+    )
+    assert text == expected
     assert "Opening." in text and "Closing." in text
+    assert "slide_id: s1" in text and "slide_id: s2" in text
     assert "seg-x" not in text
