@@ -1,3 +1,56 @@
+# Session Handoff — 2026-06-13 (Class S — WAVE 0 robustness arc: 4 of 6 items landed on the certified frozen engine)
+
+**Final class:** S (declared S at open — substrate session throughout: 5 specialists + audio seam + 9 test files edited; no drift).
+**Branch:** `trial/4-2026-06-12` (cut from merged master post-Trial-3-campaign). **Session anchor:** `c510b82` → **HEAD `37f8323`**. Origin in sync (5 commits pushed, working-branch push mandatory-per-policy satisfied; master-merge SKIPPED — scoped trial branch).
+
+## The headline
+
+First working session on the certified substrate. Opened WAVE 0 of the post-certification roadmap (`roadmap-consensus-2026-06-12`). Engine is FROZEN for Trial A, so all four landed items are correctness/honesty hardening with **zero production-walk behavior change** — each ran quick-dev (spec → 3-lane code review blind/edge/acceptance → commit → push). The robustness theme the operator named: build an unimpeachable error-flagging platform first, then build on it.
+
+## What was completed (4 of 6 WAVE-0 items)
+
+1. **Phantom-delta silent-audio gap CLOSED** (`ebe0c3f`). A segment-manifest delta with no matching narration joined with empty text → enrique silently skipped TTS (no mp3, no error) while G5 counted the slide as covered. Fix: enrique REFUSES pre-spend (`elevenlabs.join.empty-narration-text`) + G5 DROPS pre-coverage so `CoverageGapError` names the silent slide; detection single-homed in `narration_join.phantom_segment_ids`. Highest-priority dp-v1.2 rider (Amelia R1).
+2. **dp-v1.2 hygiene mini-batch — 6 rows** (`6b4c9c4`). Winston R1 (join-test honesty: self-compare killed, publisher byte-equality + content anchors), Winston R2 (enrique `DEFAULT_BUNDLE_PATH` retired → fail-loud `elevenlabs.bundle.path-missing`), Amelia R2 (dead `_act_with_trail` + 4 orphaned quinn_r helpers deleted), Murat R1 (ninth-seam regex generalized), Murat R2 (EXCLUSIONS module-qualified + reverse-existence pin), John R1 ((11B,elevenlabs) allowlist row machine-tied to the active voice-HIL rider, strikethrough-aware).
+3. **Motion-receipts diagnosis** (`e9edc61`, HIGH confidence). Case file: `_bmad-output/implementation-artifacts/investigations/motion-receipts-cycle-5-6-investigation.md`. Kira node 07E ran in BOTH certified runs but was input-starved (`input keys: cache_prefix`); `_load_motion_plan` empty-default → zero-iteration loop → `motion_receipts: []` + `kling.dispatch.ok` + `provenance: real`. Four-layer silence: no manifest producer for a motion plan / kira silent empty-default / G2F gate folded (`fold_with: G3`) + groundless-allowlisted / compositor tolerates `[]`. Certification stands for the narrated-deck deliverable; the motion leg is structurally UNPROVEN (the party's "visual-scan VO after motion proven" gate was correct). Fix = motion data-plane arc (dp-v2-class, own party round, post-Trial-A); kira taxonomy re-base is a prerequisite (done this session).
+4. **Taxonomy re-base — live-path tranche** (`37f8323`). GaryActError / ReceiptParseError / BundleParseError / KiraActError / FTRParseError re-based onto `SpecialistDispatchError` (RuntimeError-derived base → all existing handlers preserved; catch-site audit: each caught once by name in its own `act()`). A mid-walk failure in gary/texas/kira/vera now error-pauses recoverably instead of killing the trial. Rode along: gary fabricated slide-01 roster KILLED (`gamma.slides.starved`; live path unaffected — node-06 builder guarantees non-empty slides) + ninth-seam regex widened to multi-key/multi-row. EXCLUSIONS 18→13.
+
+## What is next
+
+- **WAVE 0 remaining (2 items):** storyboard correctness (BLOCKED on operator cycle-6 content review — glitch #1 already on file: Storyboard B VO-slide sync, maps to `b-manifest-join-lossiness`) → **Trial A** (literal text/visual slides + clustering, frozen-engine baseline; needs no motion).
+- **Robustness continuation (operator's stated priority):** taxonomy re-base tranche 2 — `BuilderInputError` (node 06) FIRST (the last live-walk dispatch leg outside error-pause; pair with wrapping `run_builder_node`), then the remaining 12 bare classes.
+- **WAVE 1 (after A+B certify):** pause-topology pin → fold-semantics gate-engine fix → wake variant-pick + voice-pick. Then witness→strict envelope-validator flip; Marcus SPOC thin slice.
+
+## Unresolved issues / risks
+
+- 🟡 `BuilderInputError` node-06 recoverability asymmetry (deferred-work §taxonomy review, 2026-06-12) — non-blocking; sharpest next robustness target.
+- 2 carried pre-existing L1 findings (non-blocking, unremediated): motion-pack structural-walk marker order (since 2026-04-21); raw-HTTP allowlist drift 19 call-sites (since 2026-05-22).
+- 8 ambient `app/specialists/*/graph.py` ruff I001 import-sort nits — pre-existing, NOT session-introduced (none in this session's diff); `ruff --fix` at next touch of those modules.
+- 3 deferred findings from the taxonomy review + 4 from the phantom-delta review + 4 from the hygiene review, all filed to `deferred-work.md` (silent-gap family residuals on legacy non-join paths; ninth-seam in-genus regex escapes; gary routing-predicate cleanup).
+
+## Key lessons (binding)
+
+- **Starvation has two failure modes by specialist temperament:** Irene confabulates from exemplars when starved (cycle-4 sepsis); kira silently no-ops (motion). Same root cause (no data-plane producer), opposite symptom. The `input keys: cache_prefix` summary phrase is the universal starvation detector.
+- **3-lane review caught real defects** the single-pass would miss: the constructor-identity blind spot (issubclass passes with a broken ctor), the strikethrough-closure blind spot in the linkage test, and the node-06 recoverability asymmetry. The blind hunter's FAIL verdicts were context-artifacts (untracked files absent from the diff) — verify MUST-FIXes against the project before acting.
+- **Re-base mechanics:** `SpecialistDispatchError` is RuntimeError-derived, so re-basing a bare `RuntimeError` class needs no dual base (unlike the ValueError-based G5 classes which keep ValueError too). Catch-site grep per class is mandatory (Amelia discipline).
+
+## WRAPUP ceremony record (Class S, 2026-06-13)
+
+- **Step 0:** Cora WRAPUP sweep run — deterministic L1-equivalent battery GREEN at HEAD (lockstep PASS, lint-imports 13/13, audit/contract/audio 59 passed, marcus 182/1 per-slice). Tripwire NOT fired (START sweep cleared it). 0 new blocking findings. Report: `reports/dev-coherence/2026-06-13-0302/`. Step 0b N/A — no sprint-status story flipped (quick-dev specs, story_key unset; arc runs under roadmap/SCP governance not story Kanban).
+- **Step 1:** quality gate PASS for session-owned changes — ruff clean on all touched files; `git diff --check` clean; lint-imports 13 KEPT. 8 ambient `*/graph.py` I001 nits recorded as pre-existing.
+- **Step 2:** planning + implementation artifacts updated — 3 quick-dev specs (`spec-phantom-delta-silent-audio-gap`, `spec-dp-v1-2-hygiene-mini-batch`, `spec-taxonomy-rebase-live-path`) + 1 investigation case file; `deferred-inventory.md` (3 entries annotated) + `deferred-work.md` (3 review-defer blocks).
+- **Steps 3/4a/4b/6:** SKIP — no bmm-workflow phase transition (dated note added to bmm-workflow-status.yaml); `sprint-status.yaml` untouched; no agent/skill SKILL.md changes (specialist `_act.py`/`graph.py` are runtime, not BMAD-persona skill dirs); no course-content staging moves (production output in run dirs pending operator review).
+- **Step 5:** `docs/project-context.md` updated (2026-06-13 WAVE-0 block). `docs/agent-environment.md` SKIP — no MCP/API/tool-tier changes.
+- **Step 9:** knowledge-graph regeneration RECOMMENDED next docs window (≥10 app/specialists + tests files changed; meta.json commit_sha `ac3f164` now behind HEAD `37f8323`). Guides untouched (no operator-facing workflow change). Structural-walk untouched (no gate/workflow name changes).
+- **Step 10:** worktree reconciled — all session-owned changes committed; untracked `runs/<uuid>/` + `runs/compositor/` (cycle-6 bundle, PRESERVE) + `runs/enrique-narration/` are runtime artifacts by design. Single worktree.
+- **Step 11:** class-drift check PASS (S declared = S actual). Single worktree registered. Branch metadata in next-session-start-here verified against HEAD.
+- **Step 12:** pushes — `16ea90a`, `ebe0c3f`, `6b4c9c4`, `e9edc61`, `37f8323` + this WRAPUP commit, all to `origin/trial/4-2026-06-12`. Master-merge intentionally SKIPPED (scoped trial branch per Step-12 exception); working-branch push satisfied.
+
+**Validation summary:** per-slice batteries green across the session (phantom-delta 313/1; hygiene 322/1; re-base 847+83); ambient full-suite failures roster-matched to `C:\tmp\codify-batch-failures.txt`; 2 live-LLM flakes (desmond, irene) pass solo; zero session-introduced failures (acceptance auditor stash-verified). Lockstep PASS ×3 this session; lint-imports 13/13 throughout.
+
+**Artifact checklist:** SESSION-HANDOFF ✅ · next-session-start-here ✅ (3-way class forecast) · project-context ✅ · 3 specs ✅ · 1 investigation ✅ · deferred-inventory ✅ · deferred-work ✅ · cora chronology ✅ · dev-coherence report ✅ · sprint-status/bmm-workflow N/A (dated note only) · knowledge-graph: operator regen recommended.
+
+---
+
 # Session Handoff — 2026-06-12 (Class S — 🏆 FIRST COMPLETE PRODUCTION RUNS: cycle-5 full walk + cycle-6 FRESH CERTIFICATION E2E through composition hand-off)
 
 **Branch:** `trial/3-2026-05-21`. **Session anchor:** `0a5604a` → **HEAD `8b306b1`** (+WRAPUP commit). Origin in sync.
