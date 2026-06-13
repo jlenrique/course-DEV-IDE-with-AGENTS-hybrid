@@ -48,14 +48,12 @@ EXCLUSIONS: frozenset[str] = frozenset(
         "app.specialists.desmond.graph.HandoffParseError",
         # legacy-probe path only
         "app.specialists.enrique.elevenlabs_dispatch.ElevenlabsDispatchError",
-        "app.specialists.gary._act.GaryActError",
-        "app.specialists.gary.graph.ReceiptParseError",
-        "app.specialists.kira._act.KiraActError",
-        "app.specialists.texas._act.BundleParseError",
+        # 2026-06-12 live-path tranche RETIRED: GaryActError,
+        # ReceiptParseError, BundleParseError, KiraActError, FTRParseError
+        # re-based to SpecialistDispatchError (rows removed; shrink-only).
         # ManifestParseError is an in-module alias of RetrievalIntentParseError
         "app.specialists.tracy._act.ManifestParseError",
         "app.specialists.tracy._act.RetrievalIntentParseError",
-        "app.specialists.vera._act.FTRParseError",
         "app.specialists.wanda._act.WandaActError",
     }
 )
@@ -117,14 +115,23 @@ def test_exclusions_rows_still_name_live_bare_classes() -> None:
 
 
 def test_known_rebased_classes() -> None:
-    """The five classes the cycle-5 crash convicted, pinned by name."""
+    """Re-based classes pinned by name: the five the cycle-5 crash convicted
+    plus the five of the live-path tranche (gary/texas/kira/vera, 2026-06-12).
+    Membership AND constructor semantics — issubclass alone would pass with a
+    broken (message, *, tag) ctor (blind-hunter review patch)."""
+    assert issubclass(SpecialistDispatchError, RuntimeError)
     from app.specialists.compositor._act import CompositorActError
     from app.specialists.enrique._act import EnriqueActError
+    from app.specialists.gary._act import GaryActError
+    from app.specialists.gary.graph import ReceiptParseError
+    from app.specialists.kira._act import KiraActError
     from app.specialists.quinn_r.graph import QRRParseError
     from app.specialists.quinn_r.quality_control_dispatch import (
         CoverageGapError,
         WpmThresholdError,
     )
+    from app.specialists.texas._act import BundleParseError
+    from app.specialists.vera._act import FTRParseError
 
     for cls in (
         CoverageGapError,
@@ -132,8 +139,18 @@ def test_known_rebased_classes() -> None:
         QRRParseError,
         EnriqueActError,
         CompositorActError,
+        GaryActError,
+        ReceiptParseError,
+        BundleParseError,
+        KiraActError,
+        FTRParseError,
     ):
         assert issubclass(cls, SpecialistDispatchError), cls.__name__
+        # Base is RuntimeError-derived: existing handlers keep working.
+        assert issubclass(cls, RuntimeError), cls.__name__
+        instance = cls("msg", tag="t")
+        assert instance.tag == "t", cls.__name__
+        assert str(instance) == "msg", cls.__name__
     # Dual base preserved: existing ValueError handlers keep working.
     assert issubclass(CoverageGapError, ValueError)
     assert issubclass(WpmThresholdError, ValueError)

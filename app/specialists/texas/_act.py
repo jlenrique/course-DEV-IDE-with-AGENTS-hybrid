@@ -33,12 +33,12 @@ G0_RUBRIC_DIMENSIONS = (
 )
 
 
-class BundleParseError(RuntimeError):  # noqa: N818
-    """Raised when Texas's six-artifact bundle cannot be parsed."""
+class BundleParseError(SpecialistDispatchError):  # noqa: N818
+    """Raised when Texas's six-artifact bundle cannot be parsed.
 
-    def __init__(self, message: str, *, tag: str) -> None:
-        super().__init__(message)
-        self.tag = tag
+    Taxonomy re-base (live-path tranche, 2026-06-12): dispatch-family so a
+    mid-walk failure error-pauses recoverably instead of killing the trial.
+    """
 
 
 class BundleDispatchError(SpecialistDispatchError):

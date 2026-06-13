@@ -14,6 +14,7 @@ from app.models.state import specialist_summary_artifacts as summary_writer
 from app.models.state.model_resolution_entry import ModelResolutionEntry
 from app.models.state.run_state import RunState
 from app.runtime.economics import RUNS_ROOT
+from app.specialists.dispatch_errors import SpecialistDispatchError
 
 REPO_ROOT = Path(__file__).resolve().parents[3]
 G4_CONTRACT = REPO_ROOT / "state/config/fidelity-contracts/g4-narration-script.yaml"
@@ -36,12 +37,12 @@ G1_DIMENSIONS = (
 OIA = {"O", "I", "A"}
 
 
-class FTRParseError(RuntimeError):  # noqa: N818
-    """Raised when Vera's Fidelity Trace Report cannot be parsed."""
+class FTRParseError(SpecialistDispatchError):  # noqa: N818
+    """Raised when Vera's Fidelity Trace Report cannot be parsed.
 
-    def __init__(self, message: str, *, tag: str) -> None:
-        super().__init__(message)
-        self.tag = tag
+    Taxonomy re-base (live-path tranche, 2026-06-12): dispatch-family so a
+    mid-walk failure error-pauses recoverably instead of killing the trial.
+    """
 
 
 def _trail(last: ModelResolutionEntry, reason: str) -> ModelResolutionEntry:

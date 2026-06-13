@@ -32,7 +32,10 @@ FIXTURE_SIGNATURES = re.compile(
     # slide. Inline placeholder rosters in production modules are the same
     # genus as fixture reads. Generalized per Murat R1 (dp-v1.2 rider):
     # whitespace variants and renamed placeholder ids must not escape.
-    r"|\[\s*\{\s*['\"]slide_id['\"]\s*:\s*['\"][^'\"]*['\"]\s*,?\s*\}\s*,?\s*\]"
+    # Widened at the gary re-base (2026-06-12): extra keys after the
+    # slide_id literal and additional roster rows no longer escape either
+    # (gary's two-key fabricated roster was the live near-instance).
+    r"|\[\s*\{\s*['\"]slide_id['\"]\s*:\s*['\"][^'\"]*['\"][^]]*\}\s*,?\s*\]"
 )
 
 # The S0-converted seams (five from the sweep + wanda's MB, the SEVENTH seam
@@ -91,6 +94,10 @@ def test_ninth_seam_regex_catches_evasion_variants() -> None:
         '[{"slide_id": "intro-1"}]',
         '[{"slide_id":"s1",}]',
         '[{"slide_id": "s1"}, ]',
+        # gary's retired two-key fabrication shape (multi-key)
+        '[{"slide_id": "slide-01", "prompt": payload.get("prompt")}]',
+        # multi-row literal roster
+        '[{"slide_id": "s1"}, {"slide_id": "s2"}]',
     ):
         assert FIXTURE_SIGNATURES.search(variant), variant
     assert not FIXTURE_SIGNATURES.search('rows = [{"slide_id": slide_id}]')

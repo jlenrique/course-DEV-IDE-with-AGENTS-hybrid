@@ -16,9 +16,10 @@ from app.models.adapter import make_chat_model
 from app.models.state import specialist_summary_artifacts as specialist_summary_writer
 from app.models.state.model_resolution_entry import ModelResolutionEntry
 from app.models.state.run_state import RunState
+from app.specialists._scaffold.contract import SCAFFOLD_NODE_IDS
+from app.specialists.dispatch_errors import SpecialistDispatchError
 from app.specialists.gary import _act as _gary_act_impl
 from app.specialists.gary.gamma_dispatch import dispatch_to_gamma
-from app.specialists._scaffold.contract import SCAFFOLD_NODE_IDS
 
 REPO_ROOT = Path(__file__).resolve().parents[3]
 SANCTUM_DIR = _gary_act_impl.SANCTUM_DIR
@@ -37,12 +38,12 @@ TRANSITIONS: tuple[tuple[str, str], ...] = (
 )
 
 
-class ReceiptParseError(RuntimeError):  # noqa: N818
-    """Raised when Gary's gamma receipt cannot be parsed into the contract."""
+class ReceiptParseError(SpecialistDispatchError):  # noqa: N818
+    """Raised when Gary's gamma receipt cannot be parsed into the contract.
 
-    def __init__(self, message: str, *, tag: str) -> None:
-        super().__init__(message)
-        self.tag = tag
+    Taxonomy re-base (live-path tranche, 2026-06-12): dispatch-family so a
+    mid-walk failure error-pauses recoverably instead of killing the trial.
+    """
 
 
 def _new_dispatch_trail_entry(

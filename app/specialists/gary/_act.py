@@ -11,6 +11,7 @@ from typing import Any
 from app.models.state.cache_state import CacheState
 from app.models.state.model_resolution_entry import ModelResolutionEntry
 from app.models.state.run_state import RunState
+from app.specialists.dispatch_errors import SpecialistDispatchError
 from app.specialists.gary.gamma_dispatch import GammaDispatchError, dispatch_to_gamma
 from scripts.api_clients.gamma_client import GammaClient
 from skills.gamma_api_mastery.scripts.gamma_operations import (
@@ -29,12 +30,12 @@ GARY_REFERENCES = (
 )
 
 
-class GaryActError(RuntimeError):
-    """Raised when Gary cannot produce a valid Gamma output envelope."""
+class GaryActError(SpecialistDispatchError):
+    """Raised when Gary cannot produce a valid Gamma output envelope.
 
-    def __init__(self, message: str, *, tag: str) -> None:
-        super().__init__(message)
-        self.tag = tag
+    Taxonomy re-base (live-path tranche, 2026-06-12): dispatch-family so a
+    mid-walk failure error-pauses recoverably instead of killing the trial.
+    """
 
 
 def _json_dumps(value: Any) -> str:
@@ -92,12 +93,14 @@ def _trail_entry(last_entry: ModelResolutionEntry, *, tag: str) -> ModelResoluti
 def _slides(payload: dict[str, Any]) -> list[dict[str, Any]]:
     raw = payload.get("slides") or payload.get("per_slide_directives") or []
     if not raw:
-        raw = [
-            {
-                "slide_id": "slide-01",
-                "prompt": payload.get("prompt", "Generate one course slide."),
-            }
-        ]
+        # Taxonomy re-base tranche (2026-06-12): the fabricated slide-01
+        # roster was the slides-leg sibling of quinn_r's ninth seam —
+        # absence of inputs is a contract violation, never a mode switch.
+        raise GaryActError(
+            "gary dispatched with no slides/per_slide_directives; refusing "
+            "to fabricate a placeholder roster",
+            tag="gamma.slides.starved",
+        )
     if not isinstance(raw, list) or not all(isinstance(item, dict) for item in raw):
         raise GaryActError("gary slides must be a list of objects", tag="gamma.slides.invalid")
     return raw

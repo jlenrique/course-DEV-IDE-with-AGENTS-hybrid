@@ -299,9 +299,7 @@ PERMITTED_PYTHON_DIFFS = {
     "app/specialists/irene_pass1/_act.py",
     "app/specialists/irene_pass1/graph.py",
     "app/specialists/irene_pass1/payload_contract.py",
-    "app/specialists/cd/graph.py",
-    "tests/specialists/cd/test_cd_act_node_dispatch.py",
-    "tests/contracts/test_manifest_payload_contracts.py",
+    # (test_manifest_payload_contracts.py already rostered above)
     # S5 criterion 7 (operator-ratified 2026-06-12): automatic ONLINE
     # storyboard publication at storyboard review gates — publisher seam
     # invoking the proven legacy generate-storyboard routine; wired into
@@ -325,8 +323,6 @@ PERMITTED_PYTHON_DIFFS = {
     # Pass-2 narration overlay, published online per S5 criterion 7).
     "app/specialists/irene/graph.py",
     "app/specialists/irene/payload_contract.py",
-    "app/specialists/quinn_r/_act.py",
-    "app/specialists/quinn_r/payload_contract.py",
     "app/specialists/quinn_r/quality_control_dispatch.py",
     # dp-v1.2 — audio-segment arc (party consensus 2026-06-12, operator
     # full-delegation completion directive): enrique grounded via Pass-2
@@ -355,6 +351,17 @@ PERMITTED_PYTHON_DIFFS = {
     "tests/composition/test_irene_pass_2_template_composition_smoke.py",
     "tests/end_to_end/test_cache_hit_rate_baseline.py",
     "tests/contracts/test_manifest_grounding_contract.py",
+    # Taxonomy re-base live-path tranche (WAVE 0, rider
+    # tagged-error-taxonomy-systematic-rebase, 2026-06-12): GaryActError /
+    # ReceiptParseError / BundleParseError / KiraActError / FTRParseError
+    # re-based onto SpecialistDispatchError (crash → error-pause; base is
+    # RuntimeError-derived so all existing handlers preserved); gary's
+    # fabricated slide-01 roster killed (gamma.slides.starved). Files
+    # already rostered above are not repeated; the two new app-layer
+    # touches plus the new pin test are:
+    "app/specialists/gary/graph.py",
+    "app/specialists/vera/_act.py",
+    "tests/specialists/gary/test_gary_slides_starvation_pin.py",
     # Story 34-2 wrangler-side test (substrate-audit-corrected path 2026-05-22;
     # co-located with existing test_run_wrangler.py at skills/.../tests/).
     "skills/bmad-agent-texas/scripts/tests/test_run_wrangler_role_enum_union_and_excluded_reason.py",

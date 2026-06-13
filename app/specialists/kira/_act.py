@@ -12,6 +12,7 @@ import yaml
 from app.models.state.cache_state import CacheState
 from app.models.state.model_resolution_entry import ModelResolutionEntry
 from app.models.state.run_state import RunState
+from app.specialists.dispatch_errors import SpecialistDispatchError
 from scripts.api_clients.kling_client import KlingClient
 
 REPO_ROOT = Path(__file__).resolve().parents[3]
@@ -20,12 +21,14 @@ CONFIG_PATH = REPO_ROOT / "app" / "specialists" / "kira" / "config.yaml"
 DEFAULT_BUNDLE_PATH = REPO_ROOT / "runs" / "kira-motion"
 
 
-class KiraActError(RuntimeError):
-    """Raised when Kira cannot produce a valid motion-generation envelope."""
+class KiraActError(SpecialistDispatchError):
+    """Raised when Kira cannot produce a valid motion-generation envelope.
 
-    def __init__(self, message: str, *, tag: str) -> None:
-        super().__init__(message)
-        self.tag = tag
+    Taxonomy re-base (live-path tranche, 2026-06-12): dispatch-family so a
+    mid-walk failure error-pauses recoverably instead of killing the trial.
+    Prerequisite for the motion data-plane arc's starvation raise (see
+    investigations/motion-receipts-cycle-5-6-investigation.md).
+    """
 
 
 def _json_dumps(value: Any) -> str:
