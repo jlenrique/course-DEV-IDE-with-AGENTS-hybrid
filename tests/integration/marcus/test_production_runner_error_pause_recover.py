@@ -294,6 +294,26 @@ def test_dispatch_error_family_shares_recoverable_base() -> None:
         assert instance.tag == "x.y.z"
 
 
+def test_builder_node_error_pause_wraps_both_walkers() -> None:
+    """WAVE-0 tranche 2 (2026-06-17, party-ratified): the §06 package builder
+    is invoked at TWO call sites (start walker + resume/recover walker). Both
+    must route a BuilderInputError into _pause_at_error under the dedicated
+    ``package_builder`` identity, or a node-06 starvation regresses to cycle
+    death on whichever sibling is left unwrapped (Amelia MUST: cover both
+    sites; Murat: kill-the-mutant guard — drop a wrap and a count drops).
+
+    §06 sits post-G1, so it is only behaviorally reachable on the resume/
+    recover walker (pinned end-to-end in test_production_runner_gate_pause_
+    resume.py::test_starved_resume_pauses_at_error_at_06_builder and
+    ::test_broken_brief_pauses_at_error_not_quality_theater). This source pin
+    guards the start-walker sibling that those black-box tests cannot reach,
+    and pins Winston's identity axis at BOTH sites (the envelope must name
+    package_builder, never the Marcus persona)."""
+    source = inspect.getsource(production_runner)
+    assert source.count("package_builders.run_builder_node(") == 2
+    assert source.count("specialist_id=package_builders.BUILDER_SPECIALIST_ID") == 2
+
+
 def test_single_shared_dispatch_call_site() -> None:
     """Winston d.2 ratchet: both walkers route dispatch through ONE call
     site (_dispatch_specialist_at_node). A second `adapter.invoke_specialist(`

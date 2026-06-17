@@ -1329,10 +1329,38 @@ def run_production_trial(
                 # package as a first-class contribution at its own node
                 # (pre_gate_marcus runner-invocation pattern; deterministic,
                 # so it runs on the live path only, mirroring specialists).
-                production_envelope = package_builders.run_builder_node(
-                    node_id=node.id,
-                    production_envelope=production_envelope,
-                )
+                # WAVE-0 tranche 2 (2026-06-17): a BuilderInputError starvation
+                # now error-pauses recoverably (the last live-walk dispatch leg
+                # to join the family) instead of killing the trial — the pause
+                # halts BEFORE the next gate, so no quality-theater path opens
+                # (Murat/John adjudication; S5-crit-5 contract preserved).
+                try:
+                    production_envelope = package_builders.run_builder_node(
+                        node_id=node.id,
+                        production_envelope=production_envelope,
+                    )
+                except SpecialistDispatchError as exc:
+                    return _pause_at_error(
+                        error=exc,
+                        node_id=node.id,
+                        node_index=index,
+                        specialist_id=package_builders.BUILDER_SPECIALIST_ID,
+                        trial_id=effective_trial_id,
+                        envelope=envelope,
+                        production_envelope=production_envelope,
+                        run_state=run_state,
+                        child_runs=child_runs,
+                        trace_metadata=trace_metadata,
+                        last_gate_crossed=last_gate_crossed,
+                        graph_step_completed=graph_step_completed,
+                        specialist_calls=specialist_calls,
+                        manifest_path=manifest_path,
+                        runs_root=runs_root,
+                        allow_offline_cost_report=allow_offline_cost_report,
+                        max_specialist_calls=max_specialist_calls,
+                        directive_path=directive_path,
+                        bundle_dir=bundle_dir,
+                    )
                 run_state = run_state.model_copy(
                     update={"production_envelope": production_envelope}
                 )
@@ -1767,11 +1795,38 @@ def _continue_production_walk(
                 and _has_live_openai()
                 and not allow_offline_cost_report
             ):
-                # S3 §06 package builder — see start-walker note.
-                production_envelope = package_builders.run_builder_node(
-                    node_id=node.id,
-                    production_envelope=production_envelope,
-                )
+                # S3 §06 package builder — see start-walker note. WAVE-0
+                # tranche 2 (2026-06-17): error-pause wrap mirrored onto the
+                # recover walker so a §06 starvation pauses recoverably here
+                # too — the recover path is the one most likely to re-enter a
+                # still-starved node, so an unwrapped sibling would let it kill.
+                try:
+                    production_envelope = package_builders.run_builder_node(
+                        node_id=node.id,
+                        production_envelope=production_envelope,
+                    )
+                except SpecialistDispatchError as exc:
+                    return _pause_at_error(
+                        error=exc,
+                        node_id=node.id,
+                        node_index=index,
+                        specialist_id=package_builders.BUILDER_SPECIALIST_ID,
+                        trial_id=trial_id,
+                        envelope=envelope,
+                        production_envelope=production_envelope,
+                        run_state=run_state,
+                        child_runs=child_runs,
+                        trace_metadata=trace_metadata,
+                        last_gate_crossed=last_gate_crossed,
+                        graph_step_completed=graph_step_completed,
+                        specialist_calls=specialist_calls,
+                        manifest_path=manifest_path,
+                        runs_root=runs_root,
+                        allow_offline_cost_report=allow_offline_cost_report,
+                        max_specialist_calls=max_specialist_calls,
+                        directive_path=directive_path,
+                        bundle_dir=bundle_dir,
+                    )
                 run_state = run_state.model_copy(
                     update={"production_envelope": production_envelope}
                 )

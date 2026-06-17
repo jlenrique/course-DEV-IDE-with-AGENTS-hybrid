@@ -103,22 +103,57 @@ def _verdict(tmp_path: Path, verb: str, **overrides) -> OperatorVerdict:
     )
 
 
-def test_starved_resume_fails_loud_at_06_builder(tmp_path: Path, monkeypatch) -> None:
-    """Finding-#8 made flesh, permanently pinned (Murat + Amelia MUST-FIX,
-    party review 2026-06-12): a cap-starved resume that reaches §06 without
-    the cd contribution refuses with the specific tagged raise — observed
-    live during S3, frozen here so no refactor re-feeds the path silently."""
-    from app.marcus.orchestrator.package_builders import BuilderInputError
+def test_starved_resume_pauses_at_error_at_06_builder(
+    tmp_path: Path, monkeypatch
+) -> None:
+    """Finding-#8 made flesh — intent preserved across a mechanism migration.
 
+    Originally pinned as a crash (Murat + Amelia MUST-FIX, party review
+    2026-06-12): a cap-starved resume reaching §06 without the cd contribution
+    must REFUSE and must not silently re-feed the path. WAVE-0 tranche 2
+    (party-ratified 2026-06-17, Winston/Murat/John) migrated the HALT MECHANISM
+    crash→error-pause — the contract is unchanged: the refusal is non-silent
+    (tagged), halts AT §06, and opens no gate. The original 'no refactor
+    re-feeds the path silently' guarantee is now carried by the recover
+    assertions: recover re-enters §06 and re-pauses while still starved, never
+    skipping forward into §07. (Old crash-mechanism pin retired, NOT the
+    contract.)"""
     _pause(tmp_path, monkeypatch)
-    with pytest.raises(BuilderInputError) as excinfo:
-        production_runner.resume_production_trial(
-            trial_id=TRIAL_ID,
-            verdict=_verdict(tmp_path, "approve"),
-            runs_root=tmp_path,
-            max_specialist_calls=1,
-        )
-    assert excinfo.value.tag == "builder.gary.upstream-missing"
+
+    # (1) No exception escapes — the §06 wrap caught it. This is the inverse of
+    # the old crash pin: an un-wrap regression would raise BuilderInputError
+    # out of resume and this call would error instead of returning.
+    errored = production_runner.resume_production_trial(
+        trial_id=TRIAL_ID,
+        verdict=_verdict(tmp_path, "approve"),
+        runs_root=tmp_path,
+        max_specialist_calls=1,
+    )
+
+    # (2) Exact terminal status + (3) the SPECIFIC tag, persisted non-silently.
+    assert errored.status == "paused-at-error"
+    assert errored.paused_gate is None
+    assert errored.paused_error_tag == "builder.gary.upstream-missing"
+    error_pause = json.loads(
+        (tmp_path / str(TRIAL_ID) / "error-pause.json").read_text(encoding="utf-8")
+    )
+    assert error_pause["specialist_id"] == "package_builder"
+    assert error_pause["tag"] == "builder.gary.upstream-missing"
+
+    # (4) No gate opened over the starved brief: §06 halts BEFORE the gate, so
+    # no G2C DecisionCard exists (anti-quality-theater core preserved).
+    assert not (tmp_path / str(TRIAL_ID) / "decision-card-G2C.json").exists()
+
+    # (5)+(6) Determinism / no-silent-refeed (Murat MUST-FIX): recover
+    # re-enters §06 (still starved under the persisted cap=1) and re-pauses
+    # with the SAME tag — it never walks past the refusal into §07.
+    recovered = production_runner.recover_production_trial(
+        trial_id=TRIAL_ID,
+        runs_root=tmp_path,
+    )
+    assert recovered.status == "paused-at-error"
+    assert recovered.paused_error_tag == "builder.gary.upstream-missing"
+    assert not (tmp_path / str(TRIAL_ID) / "decision-card-G2C.json").exists()
 
 
 def test_approve_verdict_resumes_execution_then_pauses_at_g2c(
@@ -221,15 +256,20 @@ def test_content_error_pauses_recoverably_and_persists_progress(
     assert recovered.paused_gate == "G2C"
 
 
-def test_broken_brief_fails_the_gate_not_quality_theater(
+def test_broken_brief_pauses_at_error_not_quality_theater(
     tmp_path: Path, monkeypatch, storyboard_publish_calls
 ) -> None:
-    """S5 criterion 5 (negative test, party consensus 2026-06-12 — Murat/John):
-    a BROKEN brief upstream of the storyboard gate makes the run FAIL with a
-    typed raise; it must never pause at G2C for approval over hollow content,
-    and the online storyboard must never publish. The fixture corrupts the
-    lesson plan to the shape the §06 builder refuses (plan_units empty)."""
-    from app.marcus.orchestrator.package_builders import BuilderInputError
+    """S5 criterion 5 (negative test, party consensus 2026-06-12 — Murat/John;
+    halt mechanism migrated crash→error-pause WAVE-0 tranche 2, party-ratified
+    2026-06-17 Winston/Murat/John).
+
+    A BROKEN brief upstream of the storyboard gate must make the run FAIL —
+    halting AT §06 — and must NEVER pause at G2C for approval over hollow
+    content, and the online storyboard must NEVER publish. The anti-quality-
+    theater core (no G2C card, no publish) is asserted VERBATIM; only the halt
+    transport changed from a propagating raise to a recoverable error-pause.
+    The fixture corrupts the lesson plan to the shape the §06 builder refuses
+    (plan_units empty → builder.gary.lesson-plan-shape)."""
 
     class _BrokenBriefAdapter(_FakeAdapter):
         def invoke_specialist(self, *, specialist_id: str, **kwargs):
@@ -260,19 +300,47 @@ def test_broken_brief_fails_the_gate_not_quality_theater(
     monkeypatch.setattr(
         production_runner, "ProductionDispatchAdapter", _BrokenBriefAdapter
     )
-    with pytest.raises(BuilderInputError) as excinfo:
-        production_runner.resume_production_trial(
-            trial_id=TRIAL_ID,
-            verdict=_verdict(tmp_path, "approve"),
-            runs_root=tmp_path,
-        )
-    assert excinfo.value.tag == "builder.gary.lesson-plan-shape"
+    # No exception escapes — the §06 wrap converts the broken-brief refusal to
+    # a recoverable error-pause (was: a propagating BuilderInputError that
+    # killed the cycle). The anti-theater guarantees below are asserted
+    # verbatim — the halt still occurs strictly before G2C.
+    errored = production_runner.resume_production_trial(
+        trial_id=TRIAL_ID,
+        verdict=_verdict(tmp_path, "approve"),
+        runs_root=tmp_path,
+    )
+    assert errored.status == "paused-at-error"
+    # The theater door (paused-at-gate over hollow content) is explicitly
+    # closed — a refactor that let the broken brief reach an approvable gate
+    # would flip this.
+    assert errored.paused_gate is None
+    assert errored.paused_error_tag == "builder.gary.lesson-plan-shape"
+    error_pause = json.loads(
+        (tmp_path / str(TRIAL_ID) / "error-pause.json").read_text(encoding="utf-8")
+    )
+    assert error_pause["specialist_id"] == "package_builder"
+    assert error_pause["tag"] == "builder.gary.lesson-plan-shape"
+    # --- S5-crit-5 anti-quality-theater core, PRESERVED VERBATIM (John binding
+    #     condition 1): no gate over hollow content, no storyboard publish. ---
     assert not (tmp_path / str(TRIAL_ID) / "decision-card-G2C.json").exists(), (
         "gate opened over a broken brief — the attempt-4 quality-theater class"
     )
     assert all(c["gate_id"] != "G2C" for c in storyboard_publish_calls), (
         "storyboard published for a run that never legitimately reached G2C"
     )
+
+    # Recover with the brief STILL broken must not be an escape hatch into the
+    # gate: §06 re-pauses, no card opens, nothing publishes (Murat MUST-FIX —
+    # the recover loop cannot silently degrade into gate-over-hollow-content).
+    recovered = production_runner.recover_production_trial(
+        trial_id=TRIAL_ID,
+        runs_root=tmp_path,
+    )
+    assert recovered.status == "paused-at-error"
+    assert recovered.paused_gate is None
+    assert recovered.paused_error_tag == "builder.gary.lesson-plan-shape"
+    assert not (tmp_path / str(TRIAL_ID) / "decision-card-G2C.json").exists()
+    assert all(c["gate_id"] != "G2C" for c in storyboard_publish_calls)
 
 
 def test_edit_verdict_propagates_to_resume_state(tmp_path: Path, monkeypatch) -> None:

@@ -35,8 +35,11 @@ EXTRA_MODULES = (
 # bare excluded name in another module must NOT inherit the exclusion.
 EXCLUSIONS: frozenset[str] = frozenset(
     {
-        # raised pre-dispatch by the runner walk (criterion-5 leg)
-        "app.marcus.orchestrator.package_builders.BuilderInputError",
+        # 2026-06-17 WAVE-0 tranche 2 RETIRED: BuilderInputError re-based to
+        # SpecialistDispatchError + both run_builder_node call sites wrapped
+        # in error-pause (the last live-walk dispatch leg; node-06 starvation
+        # now pauses recoverably instead of killing the trial). Row removed
+        # per the reverse-existence pin (red observed before deletion).
         # aria/kim/mira/tamara/vyx (unexercised seams)
         "app.specialists.aria.graph.OperatorInstructionsParseError",
         "app.specialists.kim.graph.OperatorInstructionsParseError",
@@ -115,11 +118,15 @@ def test_exclusions_rows_still_name_live_bare_classes() -> None:
 
 
 def test_known_rebased_classes() -> None:
-    """Re-based classes pinned by name: the five the cycle-5 crash convicted
-    plus the five of the live-path tranche (gary/texas/kira/vera, 2026-06-12).
-    Membership AND constructor semantics — issubclass alone would pass with a
-    broken (message, *, tag) ctor (blind-hunter review patch)."""
+    """Re-based classes pinned by name: the five the cycle-5 crash convicted,
+    the five of the live-path tranche (gary/texas/kira/vera, 2026-06-12), and
+    BuilderInputError (WAVE-0 tranche 2, 2026-06-17 — the last live-walk
+    dispatch leg). Membership AND constructor semantics — issubclass alone
+    would pass with a broken (message, *, tag) ctor (blind-hunter review
+    patch); BuilderInputError now inherits the base ctor, so this pin proves
+    the INHERITED ctor still carries the tag."""
     assert issubclass(SpecialistDispatchError, RuntimeError)
+    from app.marcus.orchestrator.package_builders import BuilderInputError
     from app.specialists.compositor._act import CompositorActError
     from app.specialists.enrique._act import EnriqueActError
     from app.specialists.gary._act import GaryActError
@@ -144,6 +151,7 @@ def test_known_rebased_classes() -> None:
         BundleParseError,
         KiraActError,
         FTRParseError,
+        BuilderInputError,
     ):
         assert issubclass(cls, SpecialistDispatchError), cls.__name__
         # Base is RuntimeError-derived: existing handlers keep working.

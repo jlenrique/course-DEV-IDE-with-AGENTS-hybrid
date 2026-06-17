@@ -27,6 +27,7 @@ from app.models.runtime.production_envelope import (
     ProductionEnvelope,
     SpecialistContribution,
 )
+from app.specialists.dispatch_errors import SpecialistDispatchError
 from app.specialists.gary.payload_contract import (
     CONSUMED_PAYLOAD_KEYS as GARY_CONSUMED_PAYLOAD_KEYS,
 )
@@ -41,16 +42,34 @@ BUILDER_NODE_IDS: frozenset[str] = frozenset({GARY_PACKAGE_NODE_ID})
 BUILDER_MODEL_MARKER = "deterministic-package-builder"
 
 
-class BuilderInputError(RuntimeError):
+class BuilderInputError(SpecialistDispatchError):
     """Raised when a package builder's upstream inputs are missing or malformed.
 
     S0 fail-loud policy: a builder never invents a package from absent
     inputs — that is exactly how Gary's fixture slides reached G2C.
-    """
 
-    def __init__(self, message: str, *, tag: str) -> None:
-        super().__init__(message)
-        self.tag = tag
+    WAVE-0 tranche 2 (2026-06-17, party-ratified): re-based onto
+    ``SpecialistDispatchError`` (RuntimeError-derived, byte-identical
+    ``(message, *, tag)`` ctor — inherited, no override needed) so a §06
+    starvation ERROR-PAUSES recoverably (``trial recover`` re-enters node-06)
+    instead of KILLING the trial. Node-06 was the last live-walk dispatch leg
+    outside the error-pause family. Fail-loud intent preserved: the pause is
+    non-silent (tagged error-pause.json), opens no DecisionCard, and halts
+    BEFORE the G2C gate — no quality-theater path is created (Murat/John
+    adjudication, S5-crit-5 + Finding-#8 mechanism migrated crash→error-pause,
+    contract unchanged).
+
+    Tag taxonomy spans two classes, told apart by the per-condition ``tag`` on
+    the persisted error-pause.json (party no-split ruling — one family, honest
+    tags): TRANSIENT/INPUT conditions (``upstream-missing``,
+    ``lesson-plan-shape``, ``cd-directive-shape``, ``no-in-scope-units``) that
+    ``trial recover`` resolves once upstream is fixed; and DEFENSIVE
+    programmer-error conditions (``unknown-node`` — unreachable while
+    ``BUILDER_NODE_IDS`` matches the dispatch set; ``contract-violation``) that
+    also error-pause rather than crash, but which recovery cannot resolve
+    without a code change. Pausing them is still strictly better than killing a
+    paid walk; the tag is what signals "fix code, not corpus".
+    """
 
 
 def _unit_included(unit: dict[str, Any]) -> bool:
