@@ -1,0 +1,11 @@
+Cycle-6 storyboard review — published URLs
+Run: f8da20ae-3ed7-44b1-a054-794b0c5e09a0  (lesson: tejal-apc-c1-m1-p2-trends)
+Verified live (HTTP 200) 2026-06-17.
+
+Storyboard A (visual deck):
+https://jlenrique.github.io/assets/storyboards/f8da20ae-3ed7-44b1-a054-794b0c5e09a0/index.html
+
+Storyboard B (deck + narration overlay):
+https://jlenrique.github.io/assets/storyboards/f8da20ae-3ed7-44b1-a054-794b0c5e09a0-b/index.html
+
+(Review ledger: _bmad-output/implementation-artifacts/content-review-cycle-6-f8da20ae.md)

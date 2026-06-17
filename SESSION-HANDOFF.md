@@ -1,3 +1,52 @@
+# Session Handoff — 2026-06-17 (Class S — WAVE 0 tranche 2 landed + cycle-6 storyboard-correctness operator review COMPLETE)
+
+**Final class:** S (declared S at open — substrate session: `production_runner.py` + `package_builders.py` + 3 test files edited & committed; no drift). 
+**Branch:** `trial/4-2026-06-12`. **Session anchor:** `262101a` → **HEAD `e096661`** (tranche-2) → docs closeout commit at WRAPUP. Origin in sync; master-merge SKIPPED (scoped trial branch); working-branch push satisfied per policy.
+
+## The headline
+Two things landed. (1) **WAVE-0 tranche 2 (BuilderInputError)** — the last live-walk dispatch leg outside the error-pause family — re-based + both `run_builder_node` call sites wrapped, so a §06 starvation now error-pauses recoverably instead of killing the trial. The live-path crash→error-pause invariant is now COMPLETE (WAVE-0 now 5 of 6). (2) **Operator-led cycle-6 storyboard-correctness review** — the gating input the BLOCKED storyboard slice was waiting on — ran to completion and root-caused the storyboard glitches to ONE bug. WAVE-0 storyboard-correctness is now UNBLOCKED.
+
+## What was completed
+1. **Tranche 2 (`e096661`, pushed).** `BuilderInputError` re-based onto `SpecialistDispatchError` (byte-identical inherited ctor; all 6 per-condition tags preserved); both start- and recover-walker `run_builder_node` sites wrapped in `except SpecialistDispatchError → _pause_at_error` under the `package_builder` identity. EXCLUSIONS 13→12 (reverse-existence red observed before deletion). Governance: party-mode green-light (unanimous live-path-only) + a conflict-adjudication round when Amelia's mandatory catch-site grep found two party-ratified pins (`test_starved_resume_*`, `test_broken_brief_*`) that pinned §06 to PROPAGATE (fail-loud-as-crash). Winston/Murat/John ruled COMPATIBLE — the pins ratified INVARIANTS (non-silent, no-theater-gate, no-publish), not the crash mechanism; both pins migrated crash→error-pause with anti-theater assertions preserved VERBATIM + recover-determinism + kill-the-mutant. 3-lane bmad-code-review: Acceptance Auditor PASS; 2 patches applied, 1 deferred (pre-existing, already-filed), 6 dismissed. The 12 off-path classes filed as deferred-inventory `tagged-error-taxonomy-tranche-3-offpath-sweep`. Validation: 39 in-scope green; 14 contract failures all ambient-roster; lockstep 0; lint-imports 13/13; ruff clean.
+2. **Cycle-6 storyboard review COMPLETE** (ledger: `_bmad-output/implementation-artifacts/content-review-cycle-6-f8da20ae.md`; URLs: `STORYBOARD-REVIEW-URLS.txt`). Operator-led, one-step-at-a-time, pausable/resumable via the durable ledger. Bar = production fidelity only (pedagogy/QA explicitly out of scope, agents' later job). **ROOT CAUSE (single bug, both storyboards = operator Glitch #1 + #2):** Gary's deck export → `slide_id` mapping is positional, so the Gamma-generated COVER page ("The Case for Physician Leadership", a non-briefed slide) consumes `slide-01` and shifts every content image down one — A shows Script Notes one row down; B's (correct, cleanly-1:1-matched) VO narrates the next image's content. SECOND coupled defect: Gamma collapsed 6 briefed topics into 5 content pages (Leadership+Summary merged), so the Summary&Knowledge-Check brief has NO dedicated image. Fix direction: **title-based page→slide_id matching** (skips the unmatched cover + fail-louds the missing Summary page) in gary `_paths_from_generation`/export-materialization. `b-manifest-join-lossiness` rider CLEARED for this run (join was clean). Fidelity POSITIVES recorded: publish wiring live (A+B 200); 6/6 assets present; B script-policy fields populate real slide-specific values (behavioral_intent/duration_rationale/timing_role/content_density/visual_detail_load). Low-sev riders: title=slide-id; source_ref blank. Parked (content-QA, out of scope): VO "$5.2T" vs slide "$4.5T".
+
+## What is next
+- **WAVE-0 storyboard-correctness DISPATCH (now unblocked):** spec the Gary cover-injection + brief→page-cardinality fix per the ledger's title-based-matching direction; party-mode per sprint governance. Recommended immediate next action.
+- **Then Trial A** closes WAVE 0 (literal text/visual slides + clustering, frozen-engine baseline; needs no motion — kira `motion_receipts: []` is EXPECTED).
+- **Available in parallel / alternative:** tranche-3 off-path taxonomy sweep (`tagged-error-taxonomy-tranche-3-offpath-sweep`, 12 classes, each needs its own catch-site grep + fail-loud-vs-pause adjudication — Winston: do NOT presume pause family).
+- **WAVE 1 (after A+B certify):** pause-topology pin → fold-semantics gate-engine fix → variant/voice wake. Then witness→strict envelope-validator flip; Marcus SPOC thin slice.
+
+## Unresolved issues / risks
+- WAVE-0 storyboard-correctness fix not yet specced (root-caused only) — see ledger.
+- Open fix-design question: should the deck cover be dropped or retained as an intentional title row? How to handle Gamma merging/dropping a briefed topic (enforce 1:1 vs detect+flag)?
+- 2 carried pre-existing L1 findings (non-blocking): motion-pack structural-walk marker order (since 2026-04-21); raw-HTTP allowlist drift, 19 call-sites (since 2026-05-22).
+- 8 ambient `app/specialists/*/graph.py` ruff I001 nits (pre-existing; clean on next touch).
+- Witness→strict envelope-validator flip still due (gate: every S5 `anomalies.jsonl` reviewed clean).
+- `BuilderInputError` node-06 asymmetry — RESOLVED this session (tranche 2).
+
+## Key lessons (binding)
+- **Mandatory catch-site grep before a re-base is load-bearing, not ceremony.** Amelia's grep caught two party-ratified pins that the green-light round had not known about; skipping it would have silently broken MUST-FIX pins. Re-bases that change a class's catchability MUST grep every raise + catch site first.
+- **"Fail loud" ratified as a crash can be honored by a recoverable error-pause** — when the pin's true intent is non-silent + no-theater + no-publish, not crash-as-mechanism. Surface such conflicts to the original ratifiers rather than unilaterally rewriting their pins.
+- **Production-fidelity review ≠ QA review.** Holding the bar at "did the wiring assemble what it was told to build" kept the review fast and surfaced the real systemic bug; blank/aspirational fields and content inaccuracies were correctly parked.
+- **One operator observation ("notes match the slide one row down") + direct PNG inspection collapsed two reported glitches into one root cause.**
+
+## Validation summary
+- Tranche 2: lockstep exit 0; lint-imports 13/13; ruff clean; 39 in-scope tests green; kill-the-mutant verified; 14 broader contract failures all confirmed ambient (`C:\tmp\codify-batch-failures.txt`), zero regressions. 3-lane bmad-code-review PASS.
+- **Step 0 coherence:** no separate `/harmonize` Cora sweep this WRAPUP — the substrate (tranche 2) landed earlier this session WITH full inline adversarial validation (battery + 3-lane review) at `e096661`; all post-commit work is docs-only (no app/scripts/skills `.py` after the commit). Proceed-with-rationale, not a skipped gate. (Tripwire note: next substrate session opens with the normal Step-0 sweep.)
+- WRAPUP quality gate: `git diff --check` clean.
+
+## Artifact update checklist
+- [x] `app/marcus/orchestrator/{package_builders,production_runner}.py` + 3 test files (committed `e096661`)
+- [x] `spec-taxonomy-rebase-tranche-2.md` · [x] `deferred-inventory.md` (+ tranche-3 entry) · [x] `deferred-work.md` (committed `e096661`)
+- [x] `content-review-cycle-6-f8da20ae.md` (review ledger) · [x] `STORYBOARD-REVIEW-URLS.txt` (closeout commit)
+- [x] `SESSION-HANDOFF.md` (this section) · [x] `next-session-start-here.md` (Step 7)
+- [ ] knowledge-graph/ONBOARDING regen — NOT needed (tranche 2 = 5 files < 10 threshold; no manifest/schema change)
+
+## WRAPUP ceremony record (Class S, 2026-06-17)
+Step 0 satisfied-by-inline-validation (see Validation summary) · 1 quality gate clean · 2 artifacts updated · 3 no workflow transition (skip) · 4a sprint-status not edited (skip) · 4b no agent/skill interaction-surface change (skip) · 5 no rules/MCP/API change (skip) · 6 no new staging content (skip) · 7 next-session-start-here rewritten · 8 this section · 9 KG regen not needed · 10 worktree clean (untracked `runs/` by-design preserve) · 11 class-drift none (Class S confirmed by tranche-2 app py diff); single worktree · 12 closeout commit + push (MANDATORY) · 13 —.
+
+---
+
 # Session Handoff — 2026-06-13 (Class S — WAVE 0 robustness arc: 4 of 6 items landed on the certified frozen engine)
 
 **Final class:** S (declared S at open — substrate session throughout: 5 specialists + audio seam + 9 test files edited; no drift).
