@@ -2,9 +2,9 @@
 title: 'Arc 1 — pause-topology contract pin + fold-semantics gate-engine fix (wake folded HIL gates to pause AFTER their content)'
 type: 'feature'
 created: '2026-06-18'
-status: 'draft-pending-party-green-light'
-baseline_commit: '72f1884'
-checkpoint_1: 'PENDING — bmad-party-mode green-light (gate-engine-cutting; Murat: golden-replay pin before trial; Winston: pin precedes fix; the trial-4 keystone)'
+status: 'D2-RESOLVED-via-tiebreaker — split into Arc-1a (manifest topology, Tier-2 pack bump, party-ratification pending) + Arc-1b (membership wake)'
+baseline_commit: '7156678'
+checkpoint_1: 'IN PROGRESS — party green-light reached consensus on D1/D3/D4 + all amendments, but D2 (un-fold-on-wake vs deferred-pause) is at IMPASSE (3 un-fold: Winston/Amelia/John; 1 deferred: Murat, who requested escalation). Party-mode impasse-resolution chain invoked: Dr. Quinn synthesis round. See Spec Change Log.'
 context:
   - '{project-root}/_bmad-output/planning-artifacts/trial-4-scope-plan.md'
   - '{project-root}/_bmad-output/planning-artifacts/deferred-inventory.md (voice-selection-hil-fold-defect)'
@@ -63,7 +63,13 @@ This is a **gate-engine-cutting** change (the one real engine cut in trial-4). Z
 - Full battery green (manifest unit + marcus integration + lockstep + lint-imports + ruff), no new failures vs the ambient roster.
 
 ## Spec Change Log
-(none yet — pending party-mode green-light + the 4 design decisions)
+**2026-06-18 — party green-light + D2 impasse + Quinn synthesis REFUTED by verification → John PM tiebreaker.**
+- Consensus on D1 (CLI `--wake-gates` as a COMPILER input, not runtime — Winston firewall), D3 (scope-moved to Arc 2: Arc 1 round-trips an opaque token on a sentinel gate; real pick-threading + envelope spike = Arc 2), D4 (compile-time golden on `production_gate_ids(woken=∅)` == today + Winston membership lint + provenance stamp + config-plane/no-pack-bump).
+- **D2 IMPASSE:** 3 (Winston/Amelia/John) = un-fold-on-wake; 1 (Murat) = deferred-pause (drift-proof one-edge delta); Murat requested escalation.
+- **Dr. Quinn synthesis ("membership-only wake": add gate_code to `production_gate_ids`, activate the gate's intrinsic post-content scaffold gate_decision) — predicted 4-of-4 CONTINGENT on a code fact.**
+- **VERIFICATION REFUTES the synthesis (orchestrator, code-read):** the folded HIL gate-codes are CO-LOCATED on content-producing specialist nodes (node-11/11B `elevenlabs` carry G4A/G4B; node-07B `quinn-r` carries G2B); `compiler._production_gate_node` is a content-free no-op that SUPPRESSES the specialist (runtime pauses, never dispatches). So membership-only wake → content-free PRE-content pause = the original bug. No separate post-content gate node exists for these codes; the gate IS the content node. Surfaced gates today (G1/G2C/G3/G4) are content-free pause nodes positioned AFTER prior content-producing nodes.
+- **Implication:** a post-content voice/variant pause requires EITHER (i) manifest topology split (a separate folded post-content gate node after the content specialist — likely pack-plane) — possibly enabling Quinn's membership-only wake afterward (candidate "synthesis-2"); OR (ii) runtime honoring a post-content pause for the co-located node (Winston-blocked as second control plane). Neither is "free"; Murat's drift concern about (i) stands.
+- **CHAIN STEP 2 — John (PM) tiebreaker, FINAL + BINDING (2026-06-18):** path **(i) manifest topology split → membership-only wake**; (ii) deferred-pause REJECTED (Winston firewall upheld). Arc 1 splits: **Arc 1a** — restructure each co-located voice/variant gate into [content specialist, gate_code REMOVED] → [separate content-free gate node carrying the gate_code, FOLDED/no-op by default]; **Tier-2 pack-version bump**, party-ratified BEFORE dev; folded behavior byte-identical to today. **Arc 1b** — wake = membership inclusion of the separate gate node's gate_code (Quinn's wake, now valid). **1a ships + folded-verified BEFORE 1b.** Murat pin = 3 lockstep-wired invariants: (1) gate_code only on content-free nodes immediately preceded by their content specialist (no gate_code on content-producing nodes); (2) folded-equivalence no-op (byte-identical folded trace); (3) single-control-plane (only `production_gate_ids` membership converts folded→pause; no runtime pause-branch — Winston firewall as a test). **Arc-1 ship def revised:** 1a merged+pack-ratified+folded-equivalent run, AND 1b merged + woken run renders content THEN pauses post-content for G4A/G4B + G2B. Next: party-mode RATIFY the Tier-2 pack bump (not relitigate i/ii) → author Arc-1a spec → NEW-CYCLE Codex hand-off.
 
 ## Verification
 - `.\.venv\Scripts\python.exe -m pytest tests/unit/manifest/ tests/integration/marcus/ -q`
