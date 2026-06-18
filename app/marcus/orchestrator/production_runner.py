@@ -42,8 +42,10 @@ from app.models.decision_cards import (
     AnyDecisionCardAdapter,
     DecisionCardMeta,
     G1Card,
+    G2BCard,
     G2CCard,
     G3Card,
+    G4ACard,
     G4Card,
 )
 from app.models.decision_cards._base import DecisionCardMeta as DecisionCardBaseMeta
@@ -484,6 +486,42 @@ def _build_decision_card(
             final_status="partial",
             artifact_paths=[path.as_posix() for path in artifact_paths],
             outcome_summary="Production graph reached closeout review.",
+        )
+    if gate_id == "G2B":
+        # Arc 2 woken variant-pick HIL (07B-gate, after node 07B quinn-r variant
+        # eval). `pick_context` carries the adjacent quinn-r evaluation (evidence,
+        # incl. the specialist summary) so the operator has the variants to pick
+        # FROM; the operator picks one or default-accepts (verb=approve,
+        # selected_variant_id=None). Structured `variant_candidates` parsing is a
+        # follow-on (weed-clearing posture: the pick must function + show the
+        # evaluation; rich per-candidate parsing is a postmortem-harvest item).
+        return G2BCard(
+            card_id=common["card_id"],
+            trial_id=common["trial_id"],
+            created_at=common["created_at"],
+            decision_card_digest="0" * 64,
+            meta=_base_card_meta(common["meta"]),
+            verb=common["verb"],
+            variant_candidates=[],
+            selected_variant_id=None,
+            pick_context=evidence,
+            operator_prompt="Approve the proposed slide variants, or edit to select alternates.",
+        )
+    if gate_id == "G4A":
+        # Arc 2 woken voice-pick HIL (11-gate, after node 11 elevenlabs voice
+        # options). Same shape as G2B — `pick_context` carries the adjacent
+        # elevenlabs evaluation for the operator.
+        return G4ACard(
+            card_id=common["card_id"],
+            trial_id=common["trial_id"],
+            created_at=common["created_at"],
+            decision_card_digest="0" * 64,
+            meta=_base_card_meta(common["meta"]),
+            verb=common["verb"],
+            voice_candidates=[],
+            selected_voice_id=None,
+            pick_context=evidence,
+            operator_prompt="Approve the proposed voice, or edit to select an alternate.",
         )
     raise RuntimeError(f"unsupported production gate id: {gate_id}")
 

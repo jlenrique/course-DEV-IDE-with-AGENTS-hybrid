@@ -448,17 +448,18 @@ nodes:
     model_config_ref: null
     gate: true
     gate_code: "G2B"
-    fold_with: "G2C"
+    fold_with: null
     sub_phase_of: "07"
     insertion_after: "07B"
     hud_tracked: false
     pack_section_anchor: "7B-gate)"
     pack_version: "v4.2"
     rationale: >-
-      Arc 1a content-free folded HIL gate split out of 07B so a woken G2B
-      variant pick pauses AFTER quinn-r's evaluation. FOLDED by default
-      (fold_with G2C → excluded from production_gate_ids → no-op pass-through,
-      pack-invisible via is_folded_gate). Arc 1b wakes it via membership.
+      Arc 1a content-free HIL gate split out of 07B so a woken G2B variant pick
+      pauses AFTER quinn-r's evaluation. Arc 2 (2026-06-18) WOKEN via membership
+      (fold_with cleared → enters production_gate_ids → pauses). Stays pack/HUD-
+      invisible via is_content_free_gate (a HIL pause is a runtime pause point,
+      not pack prose). Emits a G2BCard at the pause.
 
   - id: "07C"
     label: "Storyboard A + Gate 2 Approval + Winner Authorization"
@@ -659,16 +660,17 @@ nodes:
     model_config_ref: null
     gate: true
     gate_code: "G4A"
-    fold_with: "G4"
+    fold_with: null
     sub_phase_of: "11"
     insertion_after: "11"
     hud_tracked: false
     pack_section_anchor: "11-gate)"
     pack_version: "v4.2"
     rationale: >-
-      Arc 1a content-free folded HIL gate split out of 11 so a woken G4A voice
-      pick pauses AFTER voice rendering. FOLDED by default (no-op pass-through,
-      pack-invisible via is_folded_gate). Arc 1b wakes via membership.
+      Arc 1a content-free HIL gate split out of 11 so a woken G4A voice pick
+      pauses AFTER voice rendering. Arc 2 (2026-06-18) WOKEN via membership
+      (fold_with cleared → enters production_gate_ids → pauses). Stays pack/HUD-
+      invisible via is_content_free_gate. Emits a G4ACard at the pause.
 
   - id: "11B"
     label: "ElevenLabs Input Package HIL"

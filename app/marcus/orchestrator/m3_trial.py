@@ -33,6 +33,12 @@ from app.marcus.orchestrator.supervisor import Supervisor
 M3_TRIAL_ID = UUID("33333333-3333-4333-8333-333333333333")
 M3_SESSION_ID = UUID("44444444-4444-4444-8444-444444444444")
 BASE_TIME = datetime(2026, 4, 26, 16, 0, tzinfo=UTC)
+# NOTE (Arc 2, 2026-06-18): this deterministic M3 replay harness intentionally
+# covers only the four originally-surfaced gates. The LIVE production runner now
+# also pauses at the woken G2B (variant) + G4A (voice) HIL gates, so the two
+# trial paths diverge here BY DESIGN — the frozen M3 baseline walks past G2B/G4A
+# (they were folded when this baseline was pinned). Do NOT treat this tuple as
+# the live gate-coverage oracle; production_gate_ids(manifest) is authoritative.
 SUPPORTED_GATES = ("G1", "G2C", "G3", "G4")
 _UUIDS = {
     "sanctum-fingerprint": UUID("55555555-5555-4555-8555-555555555555"),

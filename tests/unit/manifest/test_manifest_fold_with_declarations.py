@@ -16,14 +16,14 @@ EXPECTED_FOLD_WITH = {
     "G2": "G2C",
     "G1.5": "G2C",
     "G2.5": "G2C",
-    "G2B": "G2C",
+    "G2B": None,  # Arc 2 (2026-06-18): woken — fold_with cleared
     "G2C": None,
     "G2M": "G2C",
     "G2F": "G3",
     "G3B": "G3",
     "G3": None,
     "G4": None,
-    "G4A": "G4",
+    "G4A": None,  # Arc 2 (2026-06-18): woken — fold_with cleared
     "G4B": "G4",
     "G5": "G4",
 }

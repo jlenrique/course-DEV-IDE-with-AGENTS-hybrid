@@ -90,12 +90,14 @@ def _pause(tmp_path: Path, monkeypatch):
     )
 
 
-def _verdict(tmp_path: Path, verb: str, **overrides) -> OperatorVerdict:
-    payload = json.loads((tmp_path / str(TRIAL_ID) / "decision-card-G1.json").read_text())
+def _verdict(tmp_path: Path, verb: str, *, gate_id: str = "G1", **overrides) -> OperatorVerdict:
+    payload = json.loads(
+        (tmp_path / str(TRIAL_ID) / f"decision-card-{gate_id}.json").read_text()
+    )
     return OperatorVerdict(
         trial_id=TRIAL_ID,
         verb=verb,
-        gate_id="G1",
+        gate_id=gate_id,
         card_id=UUID(payload["card"]["card_id"]),
         operator_id="operator_test",
         decision_card_digest=overrides.pop("digest", payload["digest"]),
@@ -156,18 +158,19 @@ def test_starved_resume_pauses_at_error_at_06_builder(
     assert not (tmp_path / str(TRIAL_ID) / "decision-card-G2C.json").exists()
 
 
-def test_approve_verdict_resumes_execution_then_pauses_at_g2c(
+def test_approve_verdict_resumes_execution_then_pauses_at_g2b(
     tmp_path: Path, monkeypatch
 ) -> None:
-    """Resume after G1 verdict executes specialist nodes, then PAUSES at G2C.
+    """Resume after G1 verdict executes specialist nodes, then PAUSES at G2B.
 
-    Multi-gate pause-and-resume was the `7a-2-deferred-resume-mode-multi-gate-
-    pause` follow-on this test's predecessor documented; implemented 2026-06-11
-    (Trial-3 attempt-3 defect #5, party-mode 4-of-4 Option-A consensus). The
-    former GateBypassError raise is deliberately converted to the shared
-    `_pause_at_gate` pause — silent bypass remains impossible because an
-    undecided gate pauses with a registered DecisionCard, and decided gates
-    are never revisited (resume starts at checkpoint.next_node_index).
+    Arc 2 (2026-06-18) woke the variant-pick gate G2B (07B-gate), which sits
+    AFTER node 07B (quinn-r variant eval) and BEFORE G2C (07C storyboard-A). So
+    the first gate the resume reaches after G1 is now G2B, not G2C — the woken
+    variant pick. (Multi-gate pause-and-resume mechanism implemented 2026-06-11
+    Trial-3 attempt-3 defect #5; the former GateBypassError raise was converted
+    to the shared `_pause_at_gate` pause — silent bypass remains impossible
+    because an undecided gate pauses with a registered DecisionCard, and decided
+    gates are never revisited.)
     """
     _pause(tmp_path, monkeypatch)
 
@@ -178,11 +181,11 @@ def test_approve_verdict_resumes_execution_then_pauses_at_g2c(
     )
 
     assert envelope.status == "paused-at-gate"
-    assert envelope.paused_gate == "G2C"
+    assert envelope.paused_gate == "G2B"
     card_payload = json.loads(
-        (tmp_path / str(TRIAL_ID) / "decision-card-G2C.json").read_text()
+        (tmp_path / str(TRIAL_ID) / "decision-card-G2B.json").read_text()
     )
-    assert card_payload["card"]["gate_id"] == "G2C"
+    assert card_payload["card"]["gate_id"] == "G2B"
     assert len(card_payload["digest"]) == 64
 
 
@@ -191,11 +194,24 @@ def test_g2c_pause_invokes_online_storyboard_publisher(
 ) -> None:
     """S5 criterion 7 wiring pin (operator-ratified 2026-06-12): the live
     G2C pause publishes the ONLINE storyboard BEFORE issuing the decision
-    card — the review surface is part of reaching the gate."""
+    card — the review surface is part of reaching the gate.
+
+    Arc 2 (2026-06-18): the woken G2B variant-pick now pauses before G2C, so
+    reaching G2C takes an extra resume hop (approve G1 → pause G2B → approve
+    G2B → pause G2C). G2B is intentionally NOT a storyboard gate (pinned in
+    test_storyboard_publisher_skips_non_storyboard_gates)."""
     _pause(tmp_path, monkeypatch)
-    production_runner.resume_production_trial(
+    # Hop 1: approve G1 → pauses at the woken G2B variant pick.
+    paused_g2b = production_runner.resume_production_trial(
         trial_id=TRIAL_ID,
         verdict=_verdict(tmp_path, "approve"),
+        runs_root=tmp_path,
+    )
+    assert paused_g2b.paused_gate == "G2B"
+    # Hop 2: approve G2B → pauses at G2C (storyboard publishes here).
+    production_runner.resume_production_trial(
+        trial_id=TRIAL_ID,
+        verdict=_verdict(tmp_path, "approve", gate_id="G2B"),
         runs_root=tmp_path,
     )
     gate_ids = [call["gate_id"] for call in storyboard_publish_calls]
@@ -253,7 +269,10 @@ def test_content_error_pauses_recoverably_and_persists_progress(
         trial_id=TRIAL_ID, runs_root=tmp_path
     )
     assert recovered.status == "paused-at-gate"
-    assert recovered.paused_gate == "G2C"
+    # Arc 2 (2026-06-18): the content error is at node 07B (first quinn_r after
+    # §06); recovery re-runs it clean and pauses at the woken G2B variant pick
+    # (which precedes G2C) — was G2C before the wake.
+    assert recovered.paused_gate == "G2B"
 
 
 def test_broken_brief_pauses_at_error_not_quality_theater(
@@ -345,8 +364,9 @@ def test_broken_brief_pauses_at_error_not_quality_theater(
 
 def test_edit_verdict_propagates_to_resume_state(tmp_path: Path, monkeypatch) -> None:
     """Edit verdict's payload reaches resume state; the resume then pauses at
-    G2C (multi-gate pause implemented 2026-06-11). The state mutation is
-    verified via the resume-command.json artifact."""
+    the woken G2B variant pick (Arc 2 2026-06-18 — was G2C before the wake;
+    multi-gate pause implemented 2026-06-11). The state mutation is verified via
+    the resume-command.json artifact."""
     _pause(tmp_path, monkeypatch)
     edit_payload = {"slide_count": 3}
 
@@ -357,7 +377,7 @@ def test_edit_verdict_propagates_to_resume_state(tmp_path: Path, monkeypatch) ->
     )
 
     assert envelope.status == "paused-at-gate"
-    assert envelope.paused_gate == "G2C"
+    assert envelope.paused_gate == "G2B"
     command = json.loads((tmp_path / str(TRIAL_ID) / "resume-command.json").read_text())
     assert json.loads(command["run_state"]["cache_state"]["cache_prefix"]) == edit_payload
 

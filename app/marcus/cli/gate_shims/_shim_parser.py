@@ -15,7 +15,11 @@ import argparse
 from pathlib import Path
 from uuid import UUID
 
-ACTIVE_TERMINAL_GATES: tuple[str, ...] = ("G1", "G2C", "G3", "G4")
+# G2B (variant pick) + G4A (voice pick) woken at Arc 2 (2026-06-18). They are
+# mid-pipeline HIL pause points rather than terminal gates, but the shim
+# mechanism is gate-agnostic (load verdict → resume_production_trial), so they
+# share the same single-decision shim surface the operator drives at a pause.
+ACTIVE_TERMINAL_GATES: tuple[str, ...] = ("G1", "G2B", "G2C", "G3", "G4A", "G4")
 
 _HELP_TEMPLATE = """\
 OPERATOR

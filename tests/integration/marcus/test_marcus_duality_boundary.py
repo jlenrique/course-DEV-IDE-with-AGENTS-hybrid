@@ -68,7 +68,9 @@ def test_trial2_bypass_and_max3_invariants_hold_across_terminal_gates(tmp_path) 
     gates = production_gate_ids(load(DEFAULT_MANIFEST_PATH))
 
     assert payload["silent_bypass_events"] == 0
-    assert gates == frozenset({"G1", "G2C", "G3", "G4"})
+    # Arc 2 (2026-06-18): G2B (variant pick) + G4A (voice pick) woken into the
+    # surfaced pause set.
+    assert gates == frozenset({"G1", "G2B", "G2C", "G3", "G4A", "G4"})
     for gate_id in gates:
         verdict = OperatorVerdict(
             trial_id=TRIAL_ID,

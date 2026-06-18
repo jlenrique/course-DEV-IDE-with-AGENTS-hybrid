@@ -226,7 +226,10 @@ def test_resume_walk_error_pauses_then_recover_reaches_g2c(
         runs_root=tmp_path,
     )
     assert recovered.status == "paused-at-gate"
-    assert recovered.paused_gate == "G2C"
+    # Arc 2 (2026-06-18): the gary error is at node 07 (precedes 07B); recovery
+    # re-runs gary clean, then pauses at the woken G2B variant pick (07B-gate)
+    # before G2C — was G2C before the wake.
+    assert recovered.paused_gate == "G2B"
     assert recovered.paused_error_tag is None
     assert (
         recovered.production_envelope.get_contribution(

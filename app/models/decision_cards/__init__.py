@@ -19,9 +19,11 @@ from app.models.decision_cards.base import (
 from app.models.decision_cards.g0 import G0Card
 from app.models.decision_cards.g1 import G1Card
 from app.models.decision_cards.g2a import G2ACard
+from app.models.decision_cards.g2b import G2BCard
 from app.models.decision_cards.g2c import G2CCard
 from app.models.decision_cards.g3 import G3Card
 from app.models.decision_cards.g4 import G4Card
+from app.models.decision_cards.g4a import G4ACard
 from app.models.decision_cards.g5 import G5Card
 from app.models.decision_cards.g6 import G6Card
 from app.models.decision_cards.override_event import OverrideEvent
@@ -39,7 +41,7 @@ from app.models.decision_cards.vocabulary import (
 )
 
 AnyDecisionCard: TypeAlias = Annotated[
-    G0Card | G1Card | G2ACard | G2CCard | G3Card | G4Card | G5Card | G6Card,
+    G0Card | G1Card | G2ACard | G2BCard | G2CCard | G3Card | G4Card | G4ACard | G5Card | G6Card,
     Field(discriminator="gate_id"),
 ]
 AnyDecisionCardAdapter = TypeAdapter(AnyDecisionCard)
@@ -59,9 +61,11 @@ __all__ = [
     "G0Card",
     "G1Card",
     "G2ACard",
+    "G2BCard",
     "G2CCard",
     "G3Card",
     "G4Card",
+    "G4ACard",
     "G5Card",
     "G6Card",
     "OverrideEvent",

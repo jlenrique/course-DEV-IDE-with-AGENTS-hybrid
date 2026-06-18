@@ -467,12 +467,34 @@ def is_folded_gate(node: NodeSpec) -> bool:
     return node.specialist_id is None and bool(node.gate) and node.fold_with is not None
 
 
+def is_content_free_gate(node: NodeSpec) -> bool:
+    """True for a content-free HIL gate node REGARDLESS of fold state — a gate
+    node with no specialist body of its own (`specialist_id is None`) that
+    carries a gate_code.
+
+    Arc 2 (2026-06-18, party-ratified membership wake): waking a folded gate
+    clears its `fold_with` (so it enters production_gate_ids and pauses), which
+    flips `is_folded_gate` → False. But a WOKEN HIL gate is still a *runtime
+    pause point*, not operator-pack/HUD prose — it must stay pack-invisible
+    whether folded OR woken. `is_folded_gate` is fold-state-specific (it gates
+    the inert-when-folded semantics and the production_gate_ids exclusion); this
+    predicate is the fold-state-INDEPENDENT pack/HUD-visibility classification.
+    For the Arc-1a split gate nodes (07B-gate/11-gate/11B-gate) both hold while
+    folded; only this one survives the wake. CONTENT-FREE only (specialist_id is
+    None): content-bearing gates (01/04A/… carry a specialist_id) render their
+    pack section and are not matched here.
+    """
+    return node.specialist_id is None and bool(node.gate) and node.gate_code is not None
+
+
 def is_pack_excluded(node: NodeSpec) -> bool:
     """Nodes excluded from operator-pack rendering AND L1 pack/HUD lockstep:
-    runtime-only orchestration nodes plus folded HIL gate nodes. THE shared
-    classification both the v4.2 generator and the lockstep check consume so
-    they cannot drift apart."""
-    return is_orchestration_only(node) or is_folded_gate(node)
+    runtime-only orchestration nodes plus content-free HIL gate nodes (folded OR
+    woken). THE shared classification both the v4.2 generator and the lockstep
+    check consume so they cannot drift apart. Uses is_content_free_gate (not
+    is_folded_gate) so a membership-woken gate stays pack-invisible — a HIL
+    pause is a runtime pause point, not pack prose (Arc 2, Murat §5)."""
+    return is_orchestration_only(node) or is_content_free_gate(node)
 
 
 __all__ = [
@@ -482,6 +504,7 @@ __all__ = [
     "NodeSpec",
     "PipelineManifest",
     "StepLearningEventsConfig",
+    "is_content_free_gate",
     "is_folded_gate",
     "is_orchestration_only",
     "is_pack_excluded",

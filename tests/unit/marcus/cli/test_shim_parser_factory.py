@@ -14,7 +14,9 @@ from app.marcus.cli.gate_shims._shim_parser import (
 
 
 def test_active_terminal_gates_canonical_inventory() -> None:
-    assert ACTIVE_TERMINAL_GATES == ("G1", "G2C", "G3", "G4")
+    # Arc 2 (2026-06-18): G2B (variant) + G4A (voice) woken HIL gates added —
+    # the operator drives their verdict through the same single-decision shim.
+    assert ACTIVE_TERMINAL_GATES == ("G1", "G2B", "G2C", "G3", "G4A", "G4")
 
 
 @pytest.mark.parametrize("gate_id", list(ACTIVE_TERMINAL_GATES))

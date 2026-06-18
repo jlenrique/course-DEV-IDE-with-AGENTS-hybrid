@@ -20,14 +20,14 @@ EXPECTED = {
     "G2": ("fold_with", "G2C"),
     "G1.5": ("fold_with", "G2C"),
     "G2.5": ("fold_with", "G2C"),
-    "G2B": ("fold_with", "G2C"),
+    "G2B": ("pause_point", None),  # Arc 2 (2026-06-18): woken
     "G2C": ("pause_point", None),
     "G2M": ("fold_with", "G2C"),
     "G2F": ("fold_with", "G3"),
     "G3B": ("fold_with", "G3"),
     "G3": ("pause_point", None),
     "G4": ("pause_point", None),
-    "G4A": ("fold_with", "G4"),
+    "G4A": ("pause_point", None),  # Arc 2 (2026-06-18): woken
     "G4B": ("fold_with", "G4"),
     "G5": ("fold_with", "G4"),
 }

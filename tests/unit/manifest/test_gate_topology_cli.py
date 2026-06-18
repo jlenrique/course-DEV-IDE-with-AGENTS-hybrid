@@ -14,9 +14,13 @@ def test_unfolded_topology_lists_all_declared_gates() -> None:
 def test_folded_topology_lists_active_pause_points_only() -> None:
     output = gate_topology.render_topology(unfolded=False)
 
-    assert output.count("|") == 4
+    # Arc 2 (2026-06-18): G2B (variant) + G4A (voice) woken → 6 active pause
+    # points (was 4: G1/G2C/G3/G4).
+    assert output.count("|") == 6
     assert "G1    | pause_point" in output
+    assert "G2B   | pause_point" in output
     assert "G2C   | pause_point" in output
+    assert "G4A   | pause_point" in output
     assert "G0    |" not in output
 
 

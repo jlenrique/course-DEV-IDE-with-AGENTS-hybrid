@@ -462,6 +462,35 @@ PERMITTED_PYTHON_DIFFS = {
     # regression tests + repointed the stale legacy `marcus/orchestrator/
     # routing.py` guard path to `app/marcus/...` (was FileNotFound-inert).
     "tests/unit/marcus/test_routing_manifest_driven.py",
+    # Arc 2 membership wake of G2B (variant) + G4A (voice) HIL gates
+    # (2026-06-18; party green-light APPROVE-WITH-CONDITIONS Winston/Amelia/
+    # Murat/John, Claude-direct per operator). Clears fold_with on the two
+    # gate nodes (manifest, not *.py) so they surface in production_gate_ids;
+    # adds the G2B/G4A decision-card models + _build_decision_card branches the
+    # green-light found missing (it raised RuntimeError); extends is_pack_excluded
+    # (woken gates stay pack-invisible) + the ProductionGateId literal. Bounded;
+    # the live pause path gains two gate ids, no new dispatch surface. Freeze
+    # predicates remain in force for all other paths.
+    "app/models/decision_cards/g2b.py",
+    "app/models/decision_cards/g4a.py",
+    "app/models/decision_cards/__init__.py",
+    "app/models/runtime/production_trial_envelope.py",
+    # Arc 2 3-lane review remediation (Blind Spot BLOCKER #1 + MUST-FIX #2/#4):
+    # the live-only paths the offline test posture hid — operator CLI shims for
+    # the woken gates + the m3_trial divergence note. (Pre-gate-marcus templates
+    # g2b.j2/g4a.j2 are .j2, outside the *.py fence.)
+    "app/marcus/cli/gate_shims/g2b_shim.py",
+    "app/marcus/cli/gate_shims/g4a_shim.py",
+    "app/marcus/cli/gate_shims/_shim_parser.py",
+    "app/marcus/orchestrator/m3_trial.py",
+    "tests/unit/marcus/cli/test_shim_parser_factory.py",
+    "tests/integration/marcus/test_woken_gate_cards.py",
+    "tests/integration/marcus/test_production_runner_error_pause_recover.py",
+    "tests/integration/marcus/test_marcus_duality_boundary.py",
+    "tests/unit/manifest/test_manifest_fold_with_declarations.py",
+    "tests/unit/manifest/test_gate_topology_cli.py",
+    "tests/unit/manifest/test_production_gate_ids_derived.py",
+    "tests/unit/manifest/test_gate_fold_manifest_emit.py",
 }
 
 

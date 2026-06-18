@@ -25,7 +25,13 @@ ProductionTrialStatus = Literal[
     "failed",
 ]
 ProductionPreset = Literal["production", "explore"]
-ProductionGateId = Literal["G1", "G2C", "G3", "G4"]
+# G2B (variant pick) + G4A (voice pick) woken at Arc 2 (2026-06-18) — they are
+# surfaced production pause points (in production_gate_ids), so the envelope's
+# paused_gate must accept them. Runtime pause-order (by node index): G1 → G2B →
+# G2C → G3 → G4 → G4A (G4 = the mid-pipeline fidelity gate at node "10" pauses
+# BEFORE the voice pick G4A at node "11-gate"). Literal member order is
+# validation-irrelevant; this is the node-walk order, for the reader.
+ProductionGateId = Literal["G1", "G2B", "G2C", "G3", "G4", "G4A"]
 
 
 class ProductionTrialEnvelope(BaseModel):

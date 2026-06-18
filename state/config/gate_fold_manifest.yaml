@@ -28,8 +28,8 @@ gates:
   mechanism: fold_with
   fold_target: G2C
 - code: G2B
-  mechanism: fold_with
-  fold_target: G2C
+  mechanism: pause_point
+  fold_target: null
 - code: G2C
   mechanism: pause_point
   fold_target: null
@@ -49,8 +49,8 @@ gates:
   mechanism: pause_point
   fold_target: null
 - code: G4A
-  mechanism: fold_with
-  fold_target: G4
+  mechanism: pause_point
+  fold_target: null
 - code: G4B
   mechanism: fold_with
   fold_target: G4

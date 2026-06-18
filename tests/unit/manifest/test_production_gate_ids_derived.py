@@ -28,7 +28,8 @@ def _manifest(nodes: list[NodeSpec]) -> PipelineManifest:
 def test_production_gate_ids_from_live_manifest() -> None:
     manifest = load(LIVE_MANIFEST)
 
-    assert production_gate_ids(manifest) == frozenset({"G1", "G2C", "G3", "G4"})
+    # Arc 2 (2026-06-18): G2B (variant) + G4A (voice) woken into the surfaced set.
+    assert production_gate_ids(manifest) == frozenset({"G1", "G2B", "G2C", "G3", "G4A", "G4"})
 
 
 def test_production_gate_ids_empty_manifest() -> None:
@@ -68,7 +69,7 @@ def test_resolve_production_handler_preserves_active_pause_points() -> None:
     manifest = load(LIVE_MANIFEST)
     by_code = {node.gate_code: node for node in manifest.nodes if node.gate_code}
 
-    for gate_code in ("G1", "G2C", "G3", "G4"):
+    for gate_code in ("G1", "G2B", "G2C", "G3", "G4A", "G4"):
         handler = _resolve_production_handler(
             by_code[gate_code],
             dispatch_registry={},
