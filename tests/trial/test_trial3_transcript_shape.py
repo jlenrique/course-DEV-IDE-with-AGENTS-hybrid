@@ -18,7 +18,9 @@ REPO_ROOT = Path(__file__).resolve().parents[2]
 SCHEMA_PATH = REPO_ROOT / "app/models/trial3_transcript.v1.schema.json"
 MANIFEST_PATH = REPO_ROOT / "state/config/pipeline-manifest.yaml"
 SCHEMA_VERSION_TO_SHA256 = {
-    1: "818b740594a7fe95c62a5c8d27399ea6e8a0b77336c2900bdbb5f7cc0ab24491",
+    # Updated 2026-06-18 (Arc 2): GateId widened with the woken G2B + G4A gates
+    # (additive enum members). Schema regenerated; hash re-pinned in lockstep.
+    1: "40de12a6a257e8b387d4b665a5b579067593ef59c24f43f99bf8e1485203950b",
 }
 
 

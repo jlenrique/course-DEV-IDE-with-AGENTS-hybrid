@@ -27,9 +27,11 @@
         "gate_id": {
           "enum": [
             "G1",
+            "G2B",
             "G2C",
             "G3",
-            "G4"
+            "G4",
+            "G4A"
           ],
           "title": "Gate Id",
           "type": "string"

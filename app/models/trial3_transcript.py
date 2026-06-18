@@ -18,9 +18,11 @@ from app.models.state._base import enforce_tz_aware, enforce_uuid4_version
 
 GateId = Literal[
     "G1",
+    "G2B",  # Arc 2 (2026-06-18): woken variant pick
     "G2C",
     "G3",
     "G4",
+    "G4A",  # Arc 2 (2026-06-18): woken voice pick
 ]
 TrialEventType = Literal["edit", "approve", "reject", "complete"]
 
