@@ -32,6 +32,20 @@ def test_production_gate_ids_from_live_manifest() -> None:
     assert production_gate_ids(manifest) == frozenset({"G1", "G2B", "G2C", "G3", "G4A", "G4"})
 
 
+def test_production_gate_id_literal_stays_in_sync_with_manifest() -> None:
+    """Drift guard (Winston P2, 2026-06-18): the runtime envelope's
+    `ProductionGateId` literal is the type that lets the runner REPRESENT a
+    pause at a gate. It is hand-maintained; pin it to the manifest authority so
+    a future woken/retired gate that diverges fails CI here, not at a live pause.
+    Mirrors the GateId pin in tests/trial/test_trial3_transcript_shape.py."""
+    from typing import get_args
+
+    from app.models.runtime.production_trial_envelope import ProductionGateId
+
+    manifest = load(LIVE_MANIFEST)
+    assert set(get_args(ProductionGateId)) == production_gate_ids(manifest)
+
+
 def test_production_gate_ids_empty_manifest() -> None:
     assert production_gate_ids(_manifest([])) == frozenset()
 

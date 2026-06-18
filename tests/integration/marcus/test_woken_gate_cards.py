@@ -54,6 +54,31 @@ def test_build_decision_card_g4a_does_not_crash(tmp_path: Path) -> None:
     assert card.pick_context, "G4A card must surface pick context (review-finding remediation)"
 
 
+def test_pick_context_surfaces_the_real_adjacent_evaluation(tmp_path: Path, monkeypatch) -> None:
+    """Murat P2 (2026-06-18): the bare `assert card.pick_context` passes on the
+    always-present production-runner stub even when NO specialist evaluation
+    surfaced. This proves the operator actually SEES the quinn-r evaluation —
+    when an adjacent specialist summary exists, it lands in pick_context."""
+    from datetime import UTC, datetime
+
+    from app.models.state.specialist_summary_artifacts import AdjacentSummary
+
+    summary = AdjacentSummary(
+        path=tmp_path / "07B-quinn_r.md",
+        text="VARIANT EVALUATION: slide-1 → variant-A (clearest); slide-2 → variant-B",
+        timestamp_utc=datetime.now(UTC),
+    )
+    monkeypatch.setattr(
+        production_runner.specialist_summary_writer,
+        "load_most_recent_summary",
+        lambda **_: summary,
+    )
+    card = _build("G2B", "07B-gate", tmp_path)
+    summary_entries = [e for e in card.pick_context if e.get("kind") == "specialist-summary"]
+    assert summary_entries, "the adjacent quinn-r evaluation must surface in pick_context"
+    assert summary_entries[0]["content"] == summary.text
+
+
 def test_every_surfaced_gate_has_a_pre_gate_template() -> None:
     """Live-path guard (Blind Spot BLOCKER #1): a surfaced production gate
     crashes at the live pause if its pre-gate-marcus template is missing. Every

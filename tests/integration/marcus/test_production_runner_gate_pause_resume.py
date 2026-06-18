@@ -382,6 +382,42 @@ def test_edit_verdict_propagates_to_resume_state(tmp_path: Path, monkeypatch) ->
     assert json.loads(command["run_state"]["cache_state"]["cache_prefix"]) == edit_payload
 
 
+def test_g2b_operator_shim_resumes_the_paused_trial(tmp_path: Path, monkeypatch, capsys) -> None:
+    """Murat P2 (2026-06-18): exercise the OPERATOR's actual entrypoint at a
+    live G2B pause — g2b_shim.main(--verdict-file ...) → resume_production_trial
+    → JSON payload. The shims were previously only smoke-tested at argparse
+    level; this pins the load-verdict → trial-id-match → resume round-trip."""
+    from app.marcus.cli.gate_shims import g2b_shim
+
+    _pause(tmp_path, monkeypatch)
+    # Approve G1 → the trial pauses at the woken G2B variant pick.
+    paused = production_runner.resume_production_trial(
+        trial_id=TRIAL_ID, verdict=_verdict(tmp_path, "approve"), runs_root=tmp_path
+    )
+    assert paused.paused_gate == "G2B"
+
+    # The operator authors a G2B verdict file and runs the shim.
+    verdict_file = tmp_path / "g2b-verdict.json"
+    verdict_file.write_text(
+        _verdict(tmp_path, "approve", gate_id="G2B").model_dump_json(), encoding="utf-8"
+    )
+    exit_code = g2b_shim.main(
+        [
+            "--trial-id",
+            str(TRIAL_ID),
+            "--verdict-file",
+            str(verdict_file),
+            "--runs-root",
+            str(tmp_path),
+        ]
+    )
+    assert exit_code == 0
+    payload = json.loads(capsys.readouterr().out.strip())
+    assert payload["gate_id"] == "G2B"
+    assert payload["status"] in {"paused-at-gate", "completed"}
+    assert payload["transport_kind"] == "cli"
+
+
 def test_reject_verdict_halts_trial(tmp_path: Path, monkeypatch) -> None:
     _pause(tmp_path, monkeypatch)
 
