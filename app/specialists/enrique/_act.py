@@ -251,6 +251,57 @@ def _segment_id(segment: dict[str, Any], index: int) -> str:
     return str(segment.get("segment_id") or segment.get("id") or f"segment-{index:02d}")
 
 
+# MP3 frame-duration parser (Arc 3, measured-durations 2026-06-18). Dep-free —
+# no mutagen, no ffprobe subprocess (operator-CLI avoidance + shipped-deps
+# rule). Sums per-frame durations from the MPEG audio frame headers, so it is
+# correct for CBR and VBR alike. Returns None on anything that is not a valid
+# MPEG-1/2/2.5 Layer III stream (e.g. test fixture bytes) so the caller falls
+# back to the char-count estimate — folded/fixture behavior is unchanged.
+_MP3_BITRATES = {
+    1: [0, 32, 40, 48, 56, 64, 80, 96, 112, 128, 160, 192, 224, 256, 320, 0],  # MPEG1 L3
+    2: [0, 8, 16, 24, 32, 40, 48, 56, 64, 80, 96, 112, 128, 144, 160, 0],  # MPEG2/2.5 L3
+}
+_MP3_SAMPLE_RATES = {3: [44100, 48000, 32000], 2: [22050, 24000, 16000], 0: [11025, 12000, 8000]}
+
+
+def _mp3_duration_seconds(data: bytes) -> float | None:
+    """Sum MPEG Layer III frame durations; None if not a parseable MP3."""
+    i = 0
+    n = len(data)
+    if n >= 10 and data[:3] == b"ID3":  # skip ID3v2 tag (syncsafe size)
+        tag = (data[6] & 0x7F) << 21 | (data[7] & 0x7F) << 14
+        tag |= (data[8] & 0x7F) << 7 | (data[9] & 0x7F)
+        i = 10 + tag
+    total = 0.0
+    frames = 0
+    while i + 4 <= n:
+        if data[i] != 0xFF or (data[i + 1] & 0xE0) != 0xE0:
+            i += 1
+            continue
+        ver_bits = (data[i + 1] >> 3) & 0x03  # 3=MPEG1, 2=MPEG2, 0=MPEG2.5
+        layer_bits = (data[i + 1] >> 1) & 0x03  # 1=Layer III
+        if layer_bits != 1 or ver_bits == 1:
+            i += 1
+            continue
+        br_idx = (data[i + 2] >> 4) & 0x0F
+        sr_idx = (data[i + 2] >> 2) & 0x03
+        padding = (data[i + 2] >> 1) & 0x01
+        if br_idx in (0, 15) or sr_idx == 3 or ver_bits not in _MP3_SAMPLE_RATES:
+            i += 1
+            continue
+        bitrate = _MP3_BITRATES[1 if ver_bits == 3 else 2][br_idx] * 1000
+        sample_rate = _MP3_SAMPLE_RATES[ver_bits][sr_idx]
+        samples = 1152 if ver_bits == 3 else 576
+        frame_len = int((samples // 8 * bitrate) // sample_rate) + padding
+        if frame_len <= 4:
+            i += 1
+            continue
+        total += samples / sample_rate
+        frames += 1
+        i += frame_len
+    return round(total, 3) if frames else None
+
+
 def _write_vtt(path: Path, text: str, duration: float) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     seconds = max(1, int(round(duration)))
@@ -281,9 +332,22 @@ def build_assembly_bundle(
             continue
         audio_path = audio_dir / f"{sid}.mp3"
         audio = client.text_to_speech(text, selection["selected_voice_id"])
+        audio_bytes = audio if isinstance(audio, bytes) else bytes(str(audio), "utf-8")
         audio_path.parent.mkdir(parents=True, exist_ok=True)
-        audio_path.write_bytes(audio if isinstance(audio, bytes) else bytes(str(audio), "utf-8"))
-        duration = float(segment.get("duration_seconds") or max(1.0, len(text) / 14.0))
+        audio_path.write_bytes(audio_bytes)
+        # Arc 3 (measured-durations): probe the REAL synthesized mp3. A valid
+        # probe is the only thing that earns the "measured" label that arms
+        # G5's WPM raise; otherwise fall back to payload/estimate (unchanged).
+        measured = _mp3_duration_seconds(audio_bytes)
+        if measured is not None:
+            duration = measured
+            duration_source = "measured"
+        elif segment.get("duration_seconds"):
+            duration = float(segment["duration_seconds"])
+            duration_source = "provided"
+        else:
+            duration = max(1.0, len(text) / 14.0)
+            duration_source = "estimated-chars"
         caption_path = captions_dir / f"{sid}.vtt"
         _write_vtt(caption_path, text, duration)
         cost = round((len(text) / 1000.0) * cost_per_1k, 4)
@@ -304,12 +368,11 @@ def build_assembly_bundle(
                 "caption_path": str(caption_path),
                 "duration_seconds": duration,
                 # Winston (audio-arc + review MUST-FIX 2): "measured" is
-                # RESERVED for a real mp3 probe (rider). Payload-supplied
-                # durations are PLANNED numbers — labeling them measured
-                # would arm G5's WPM raise against the plan itself.
-                "duration_source": "provided"
-                if segment.get("duration_seconds")
-                else "estimated-chars",
+                # RESERVED for a real mp3 probe — now satisfied by Arc 3's
+                # frame-duration parser. "provided"/"estimated-chars" remain
+                # PLANNED numbers; only "measured" arms G5's WPM raise against
+                # reality.
+                "duration_source": duration_source,
                 "cost_usd": cost,
             }
         )

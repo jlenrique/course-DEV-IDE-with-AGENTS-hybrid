@@ -423,6 +423,13 @@ PERMITTED_PYTHON_DIFFS = {
     "skills/gamma-api-mastery/scripts/gamma_operations.py",
     "tests/specialists/gary/test_gamma_title_matching.py",
     "tests/specialists/gary/test_gary_gamma_dispatch.py",
+    # Arc 3 measured-durations 2026-06-18 (trial-4 backlog, party-classified
+    # additive/low-risk): enrique probes the real synthesized mp3 (dep-free
+    # frame-duration parser, no mutagen/ffprobe) and labels it "measured",
+    # arming G5's WPM raise; non-mp3 fixtures fall back to the estimate (zero
+    # folded/fixture behavior change). enrique/_act.py already allowlisted
+    # above (dp-v1.2 audio batch); the new test file is added here.
+    "tests/specialists/enrique/test_measured_durations.py",
 }
 
 
