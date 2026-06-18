@@ -15,16 +15,20 @@ if __package__ in {None, ""}:  # direct script invocation
     sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 
 from app.manifest.loader import load as load_graph_manifest
-from app.manifest.schema import is_orchestration_only
+from app.manifest.schema import is_pack_excluded
 from scripts.utilities.file_helpers import project_root
 from scripts.utilities.pipeline_manifest import DEFAULT_MANIFEST_PATH, load_manifest
 from scripts.utilities.run_hud import PIPELINE_STEPS
 
+# Arc-1a (2026-06-18): the determinism guard targets the LIVE generated witness
+# (`-gen`), not the frozen v4.2 mapping-axis anchor. The split lets manifest
+# topology refinements update the witness while the frozen anchor (SHA-pinned in
+# frozen-pack-shas.json) stays put for the slab-7 mapping checklist's legacy axis.
 DEFAULT_PACK_PATH = (
     project_root()
     / "docs"
     / "workflow"
-    / "production-prompt-pack-v4.2-narrated-lesson-with-video-or-animation.md"
+    / "production-prompt-pack-v4.2-gen-narrated-lesson-with-video-or-animation.md"
 )
 REPORTS_ROOT = project_root() / "reports" / "dev-coherence"
 
@@ -86,8 +90,10 @@ def _trace_payload(
 
 
 def _orchestration_only_node_ids(manifest_path: Path, pack_version: str | None) -> list[str]:
-    # Classification delegated to the SHARED predicate (also consumed by the
-    # v4.2 generator) so renderer and lockstep check cannot drift apart.
+    # Classification delegated to the SHARED predicate is_pack_excluded (also
+    # consumed by the v4.2 generator) so renderer and lockstep check cannot
+    # drift apart. Covers runtime-only orchestration nodes AND folded HIL gate
+    # nodes (Arc 1a) — both are pack-invisible.
     try:
         manifest = load_graph_manifest(manifest_path)
     except Exception:  # noqa: BLE001 - legacy steps-shaped manifests have no graph nodes
@@ -95,7 +101,7 @@ def _orchestration_only_node_ids(manifest_path: Path, pack_version: str | None) 
     return [
         node.id
         for node in manifest.nodes
-        if (node.pack_version in (None, pack_version)) and is_orchestration_only(node)
+        if (node.pack_version in (None, pack_version)) and is_pack_excluded(node)
     ]
 
 
@@ -316,6 +322,66 @@ def run_check(
             }
         )
         return 1, _trace_payload(checks, findings, "FAIL", orchestration_only_nodes)
+
+    # Check 10: frozen-pack SHA registry integrity (Arc-1a, Murat condition b).
+    # Check 9 guards the LIVE generated witness. The frozen packs — the v4.2
+    # mapping-axis anchor and the v5 hand-authored production canonical — have NO
+    # regeneration guard by design, so they need an immutability tripwire: their
+    # on-disk SHA must match the registry, and a `generated: false` pack must keep
+    # that sentinel (anti-regeneration: nothing should silently machine-overwrite
+    # hand-authored content).
+    import json
+
+    registry_path = project_root() / "state" / "config" / "frozen-pack-shas.json"
+    frozen_findings: list[dict[str, Any]] = []
+    registry: dict[str, Any] = {}
+    if not registry_path.exists():
+        frozen_findings.append({"check": 10, "message": "frozen-pack-shas.json registry missing"})
+    else:
+        try:
+            registry = json.loads(registry_path.read_text(encoding="utf-8"))
+        except (json.JSONDecodeError, OSError) as exc:
+            # Fail-closed with a structured finding, not an uncaught traceback
+            # (Arc-1a code review, Edge Case Hunter SHOULD-FIX).
+            frozen_findings.append(
+                {"check": 10, "message": f"frozen-pack-shas.json unreadable/malformed: {exc}"}
+            )
+        for rel_path, meta in registry.get("frozen_packs", {}).items():
+            fp = project_root() / rel_path
+            if not fp.exists():
+                frozen_findings.append({"check": 10, "message": f"frozen pack missing: {rel_path}"})
+                continue
+            expected_sha = meta.get("sha256")
+            if not expected_sha:
+                frozen_findings.append(
+                    {"check": 10, "message": f"registry entry {rel_path} missing sha256"}
+                )
+                continue
+            disk_sha = hashlib.sha256(fp.read_bytes()).hexdigest()
+            if disk_sha != expected_sha:
+                frozen_findings.append(
+                    {
+                        "check": 10,
+                        "message": f"frozen pack {rel_path} SHA drift (frozen-at-ship violation)",
+                        "expected_sha256": expected_sha,
+                        "disk_sha256": disk_sha,
+                    }
+                )
+            if meta.get("generated") is False and "generated: false" not in fp.read_text(
+                encoding="utf-8"
+            )[:3000]:
+                frozen_findings.append(
+                    {
+                        "check": 10,
+                        "message": (
+                            f"{rel_path} lost its `generated: false` anti-regeneration sentinel"
+                        ),
+                    }
+                )
+    frozen_ok = not frozen_findings
+    checks.append({"check": 10, "name": "frozen-pack-sha-registry", "pass": frozen_ok})
+    if not frozen_ok:
+        return 1, _trace_payload(checks, frozen_findings, "FAIL", orchestration_only_nodes)
     return 0, _trace_payload(checks, [], "PASS", orchestration_only_nodes)
 
 

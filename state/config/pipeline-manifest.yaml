@@ -421,9 +421,11 @@ nodes:
       slides:
         from: "gary"
         key: "gary_slide_output"
-    gate: true
-    gate_code: "G2B"
-    fold_with: "G2C"
+    # Arc 1a (2026-06-18): gate_code/fold_with MOVED to the new content-free
+    # `07B-gate` node positioned immediately after this node, so a woken G2B
+    # variant pick pauses AFTER quinn-r's evaluation content (not pre-content).
+    # Label/anchor UNCHANGED → pack/HUD byte-identical (folded-equivalence).
+    gate: false
     sub_phase_of: "07"
     insertion_after: "7.5"
     hud_tracked: true
@@ -438,6 +440,25 @@ nodes:
       key projection (dp-v1): variant selection receives Gary's
       gary_slide_output rows under quinn_r's declared "slides" key — the
       manifest now tells the truth about the 07→07B data plane.
+
+  - id: "07B-gate"
+    label: "Variant Selection HIL Gate"
+    specialist_id: null
+    scaffold_node: null
+    model_config_ref: null
+    gate: true
+    gate_code: "G2B"
+    fold_with: "G2C"
+    sub_phase_of: "07"
+    insertion_after: "07B"
+    hud_tracked: false
+    pack_section_anchor: "7B-gate)"
+    pack_version: "v4.2"
+    rationale: >-
+      Arc 1a content-free folded HIL gate split out of 07B so a woken G2B
+      variant pick pauses AFTER quinn-r's evaluation. FOLDED by default
+      (fold_with G2C → excluded from production_gate_ids → no-op pass-through,
+      pack-invisible via is_folded_gate). Arc 1b wakes it via membership.
 
   - id: "07C"
     label: "Storyboard A + Gate 2 Approval + Winner Authorization"
@@ -621,29 +642,66 @@ nodes:
     # of it (config/HIL inputs only; G4A folds into G4 so the voice HIL
     # rides the blanket delegation — rider filed). Node 11 joins the
     # PIN-G1 groundless allowlist with this rationale.
-    gate: true
-    gate_code: "G4A"
-    fold_with: "G4"
+    # Arc 1a (2026-06-18): gate_code/fold_with MOVED to the new content-free
+    # `11-gate` node so a woken G4A voice pick pauses AFTER the voice options
+    # render. Label/anchor unchanged → pack byte-identical (folded-equivalence).
+    gate: false
     insertion_after: "10"
     hud_tracked: true
     pack_section_anchor: "11)"
     pack_version: "v4.2"
     rationale: "Section 11 maintains manifest-driven pipeline contract."
 
+  - id: "11-gate"
+    label: "Voice Selection HIL Gate"
+    specialist_id: null
+    scaffold_node: null
+    model_config_ref: null
+    gate: true
+    gate_code: "G4A"
+    fold_with: "G4"
+    sub_phase_of: "11"
+    insertion_after: "11"
+    hud_tracked: false
+    pack_section_anchor: "11-gate)"
+    pack_version: "v4.2"
+    rationale: >-
+      Arc 1a content-free folded HIL gate split out of 11 so a woken G4A voice
+      pick pauses AFTER voice rendering. FOLDED by default (no-op pass-through,
+      pack-invisible via is_folded_gate). Arc 1b wakes via membership.
+
   - id: "11B"
     label: "ElevenLabs Input Package HIL"
     specialist_id: "elevenlabs"
     scaffold_node: "act"
     model_config_ref: null
-    gate: true
-    gate_code: "G4B"
-    fold_with: "G4"
+    # Arc 1a (2026-06-18): gate_code/fold_with MOVED to the new `11B-gate`.
+    # insertion_after stays "11" (visible-step ordering); the runtime edge
+    # 11-gate→11B threads the actual topology through the folded gate node.
+    gate: false
     sub_phase_of: "11"
     insertion_after: "11"
     hud_tracked: true
     pack_section_anchor: "11B)"
     pack_version: "v4.2"
     rationale: "Section 11B maintains manifest-driven pipeline contract."
+
+  - id: "11B-gate"
+    label: "Input Package HIL Gate"
+    specialist_id: null
+    scaffold_node: null
+    model_config_ref: null
+    gate: true
+    gate_code: "G4B"
+    fold_with: "G4"
+    sub_phase_of: "11"
+    insertion_after: "11B"
+    hud_tracked: false
+    pack_section_anchor: "11B-gate)"
+    pack_version: "v4.2"
+    rationale: >-
+      Arc 1a content-free folded HIL gate split out of 11B. FOLDED by default
+      (no-op pass-through, pack-invisible). Arc 1b wakes via membership.
 
   - id: "12"
     label: "ElevenLabs Audio Generation"
@@ -774,7 +832,8 @@ edges:
   - {from: "06B", to: "07"}
   - {from: "07", to: "7.5"}
   - {from: "7.5", to: "07B"}
-  - {from: "07B", to: "07C"}
+  - {from: "07B", to: "07B-gate"}
+  - {from: "07B-gate", to: "07C"}
   - {from: "07C", to: "07D"}
   - {from: "07D", to: "07E"}
   - {from: "07E", to: "07F"}
@@ -783,8 +842,10 @@ edges:
   - {from: "08B", to: "09"}
   - {from: "09", to: "10"}
   - {from: "10", to: "11"}
-  - {from: "11", to: "11B"}
-  - {from: "11B", to: "12"}
+  - {from: "11", to: "11-gate"}
+  - {from: "11-gate", to: "11B"}
+  - {from: "11B", to: "11B-gate"}
+  - {from: "11B-gate", to: "12"}
   - {from: "12", to: "13"}
   - {from: "13", to: "14"}
   - {from: "14", to: "14.5"}

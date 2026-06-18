@@ -170,7 +170,10 @@ def test_compile_real_repo_root_with_migrated_v42_manifest() -> None:
     m = load(repo_root / "state" / "config" / "pipeline-manifest.yaml")
     g = compile(m)
     assert isinstance(g, StateGraph)
-    assert len(m.nodes) == 37
+    # 37 → 40: Arc 1a (2026-06-18) split the 3 co-located voice/variant HIL
+    # gates into content node + content-free folded gate node (07B-gate,
+    # 11-gate, 11B-gate).
+    assert len(m.nodes) == 40
 
 
 def _prepare_runtime_graphs_dir(root: Path) -> None:

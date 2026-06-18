@@ -22,25 +22,35 @@ class RoutingDecision(BaseModel):
 
 
 def route_step(*, current_node: str | None, manifest: PipelineManifest) -> RoutingDecision:
-    from_node = current_node or "__start__"
-    edge = next(
-        (candidate for candidate in manifest.edges if candidate.from_node == from_node),
-        None,
-    )
-    if edge is None:
-        raise ValueError(f"No routing edge found from node {from_node!r}")
-    target_node = next(
-        (node for node in manifest.nodes if node.id == edge.to),
-        None,
-    )
-    if target_node is None:
-        raise ValueError(f"Manifest edge targets unknown node {edge.to!r}")
-    if not target_node.specialist_id:
-        raise ValueError(
-            f"Manifest node {target_node.id!r} has no specialist_id for routing"
+    origin = current_node or "__start__"
+    from_node = origin
+    # Skip content-free pass-through nodes (Arc 1a folded HIL gate nodes:
+    # specialist_id is None, no pause while folded) to the next specialist
+    # step. The visible routing is unchanged (e.g. 07B → 07C through the
+    # folded 07B-gate). When a gate is woken (Arc 1b), the pause machinery —
+    # not this router — handles it via production_gate_ids membership.
+    visited: set[str] = set()
+    while True:
+        edge = next(
+            (candidate for candidate in manifest.edges if candidate.from_node == from_node),
+            None,
         )
+        if edge is None:
+            raise ValueError(f"No routing edge found from node {from_node!r}")
+        target_node = next(
+            (node for node in manifest.nodes if node.id == edge.to),
+            None,
+        )
+        if target_node is None:
+            raise ValueError(f"Manifest edge targets unknown node {edge.to!r}")
+        if target_node.specialist_id:
+            break
+        if target_node.id in visited:
+            raise ValueError(f"Routing cycle through content-free nodes at {target_node.id!r}")
+        visited.add(target_node.id)
+        from_node = target_node.id
     return RoutingDecision(
-        current_node_id=from_node,
+        current_node_id=origin,
         next_node_id=target_node.id,
         target_specialist=target_node.specialist_id,
         dispatch_envelope=edge.dispatch_envelope,

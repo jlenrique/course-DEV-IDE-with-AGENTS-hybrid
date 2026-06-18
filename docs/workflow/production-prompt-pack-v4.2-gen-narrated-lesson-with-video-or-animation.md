@@ -1,97 +1,59 @@
 ---
-title: Production Prompt Pack v5 — Narrated Lesson with Video/Animation
-version: 5.0.0
-status: canonical-for-production-runs
-lockstep_role: production-canonical
-supersedes: production-prompt-pack-v4.2-narrated-lesson-with-video-or-animation.md (legacy-frozen authority for slab-7-legacy-migrated-mapping-checklist.md mapping axis; preserved on disk for audit)
-also-supersedes: production-prompt-pack-v4.3-narrated-lesson-with-video-or-animation.md (paused 2026-04-11; cluster-mode content already absorbed into v4.2 §05B/§6.2/§6.3/§7.5; no v4.3-only carry-forward)
-last-updated: 2026-05-07 (S4 close; pre-Trial-3 cleanup arc Session 4)
-generated: false (hand-authored from v4.2 source via deterministic mutation pass)
-methodology: docs/trials/methodology.md
-gate-taxonomy-authority: docs/dev-guide/adr/0002-slab-7c-gate-taxonomy.md
-mapping-checklist-authority: _bmad-output/planning-artifacts/slab-7-legacy-migrated-mapping-checklist.md (NOTE: v5 is NOT in the mapping checklist axis; v4.2 stays frozen for that purpose)
-specialist-registry-authority: skills/bmad-agent-marcus/references/specialist-registry.yaml
-runtime-entrypoint: app/marcus/cli/trial.py
-runtime-orchestrator: app/marcus/orchestrator/production_runner.py
-versioning-posture: |
-  v5.0.x = Tier-1 (prose / connective tissue; dev-agent authority)
-  v5.1   = Tier-2 (new pipeline step; party-mode required before dev opens)
-  v6     = Tier-3 (new pack family; full party-mode + operator sign-off)
-  Frozen-at-ship discipline: once Trial-3 launches and reaches a tracked verdict, structural edits to v5 bump version; the frozen v5.0 stays on disk for audit.
-success-criteria-pointer: trial-N reaches verdict ≥ PARTIAL-PASS per docs/trials/methodology.md §5; defects routed per §7 filing-disposition matrix
+title: Production Prompt Pack v4.2-gen — Narrated Lesson with Video/Animation (Generated Lockstep Witness)
+version: 4.2j
+lineage: v4.2
+lockstep_role: determinism-target
+status: live generated witness — regenerated from state/config/pipeline-manifest.yaml on every manifest change; guarded by L1 check 9 (regeneration-determinism) + tests/contracts/test_33_3_no_hand_edits_to_v42.py. NOT the frozen mapping-axis anchor (that is production-prompt-pack-v4.2-narrated-lesson-with-video-or-animation.md, SHA-pinned in state/config/frozen-pack-shas.json); NOT the production narrative (that is production-prompt-pack-v5-narrated-lesson-with-video-or-animation.md, hand-authored canonical-for-production).
+last-updated: regenerated artifact — do not hand-edit; edit the manifest + templates and regenerate.
+generated: true
 ---
 
-# Production Prompt Pack v5
+# Production Prompt Pack v4.2-gen (Generated Lockstep Witness)
 
-> **Banner — read first (PP-2 inversion at S4 close 2026-05-07):** This pack **is the canonical production-run pack** as of post-Slab-7c orchestrational-tail close. It executes against the migrated runtime: `app/marcus/cli/trial.py` invokes `app/marcus/orchestrator/production_runner.py`, which dispatches the 11 Slab-7-activated specialists (Texas, Quinn-R, Vera, Irene, Tracy, Gary, Kira, Enrique, Wanda, Dan, Compositor — see `skills/bmad-agent-marcus/references/specialist-registry.yaml`). The "Marcus module" column in §0) TL;DR Crosswalk references the **migrated runtime paths**. v4.2 is **retained as the legacy-axis frozen authority** that `_bmad-output/planning-artifacts/slab-7-legacy-migrated-mapping-checklist.md` maps against — do not edit v4.2; refer to v5 for production runs. v4.3 is **fully superseded by v5**; any cluster-mode content was already absorbed into v4.2 §05B/§6.2/§6.3/§7.5 placeholders pending future activation. Per ADR 0002 gate taxonomy: 18 runtime gate IDs are declared but **only 4 (G1, G2C, G3, G4) cause runner-pauses** — the other 14 are body-validated by specialists without a runner pause; see per-§ disclosures inline.
-
-> **Gate-pause asymmetry (per ADR 0002 §4):** This pack declares 18 runtime gate IDs across §sections. Only **G1, G2C, G3, G4** are in `app/manifest/compiler.py::production_gate_ids(manifest)` — those are the **runner-pause gates** where `production_runner.py` halts and waits for an operator verdict file. The other **14 (G0, G0A, G0B, G1A, G1.5, G2, G2B, G2M, G2.5, G2F, G3B, G4A, G4B, G5)** are **body-validated** — the responsible specialist enforces the gate semantics inline, but the runner does NOT pause. Operator presence at non-pause gates is captured via parity-DSL HIL surfaces (CLI / HTTP / MCP-stdio per `@parity_contract` declarations) rather than a runner halt. Each non-pause-gate §section below carries an inline disclosure noting this.
-
-## 0) Pre-Launch Operator Card (Sally post-S3 5-min skim; tape to second monitor)
-
-You are launching a Trial-N production run. **In order:**
-
-1. **Verify env** (PP-3a; ~1 min) — `Get-Content .env | Select-String "OPENAI_API_KEY"` returns key declaration. Recommended: `LANGSMITH_API_KEY`, `DATABASE_URL`. Per-API smoke as needed.
-2. **Verify preflight** (PP-3b; ~1 min) — `.\.venv\Scripts\python.exe -m skills.pre-flight-check.scripts.preflight_runner --double-dispatch --motion-enabled` returns zero `RESOLUTION-NEEDED` for production-required tools.
-3. **Confirm corpus shape** (~1 min) — corpus at `course-content/courses/<lesson_slug>/` per `docs/operator/corpus-preparation-guide.md`. No `.gitkeep` in primary slot. No Notion/Box fetch-shape contamination.
-4. **Tape verb legend** (`docs/operator/hil-verb-legend.md`) to second monitor or print.
-5. **Pre-launch trial-tracking** — copy `docs/trials/trial-N-templates/launch.md` → `docs/trials/trial-N/launch.md`; fill placeholders. Read `docs/trials/cross-trial-learnings.md` top-to-bottom (5 min; mandatory pre-Trial-N read).
-6. **Final-launch token** — `pytest tests/trial/test_trial3_readiness.py tests/test_preflight_check.py tests/marcus_capabilities/test_preflight_receipt_contract.py -v` — all GREEN.
-7. **Launch:**
-```powershell
-$env:PYTHONIOENCODING="utf-8"
-.\.venv\Scripts\python.exe -m app.marcus.cli trial start --preset production --input course-content/courses/<lesson_slug>/ --motion-enabled
-```
-8. **Capture run-id** from runner stdout immediately; record in `docs/trials/trial-N/launch.md §1` AND `log.md` Attempt 1 header.
-9. **At each gate**, choose verb per `hil-verb-legend.md`. **§04.55 G1.5 lock and §09 G3 lock are IRREVERSIBLE.**
-10. **At G5 §15**, `complete` ends the trial. Author postmortem (Shape A 5 questions; 15 min mandatory) per `docs/trials/methodology.md §6` + Sally's two-shape protocol.
-
-**What success looks like:** Trial reaches G5 with `complete`; Trial3Transcript schema-valid; ≥9-of-11 specialists exercised; tripwire ledger green; broad-regression delta ≤ 0 per `methodology.md §3a` allowlist protocol. Verdict per methodology §5 (PASS / PARTIAL-PASS / STRUCTURED-STOP / FAIL).
-
-**Reading order map:**
-- **Pre-launch (5 min):** this card → `cross-trial-learnings.md` skim → `corpus-preparation-guide.md` if first FRESH corpus → `launch.md` template
-- **At-gate (lookup):** `docs/operator/hil-verb-legend.md` (verb-set + edit-payload + irreversibility) — canonical at-gate reference. Per-§ "Operator at this gate" sub-blocks in v5 are **deferred to S5 P1** (filed in deferred-inventory `s4-per-section-operator-sub-blocks`); use the verb legend in the meantime.
-- **Post-trial (15 min mandatory + 48h deferred):** `postmortem.md` Shape A → Shape B → harvest-discipline routing per `methodology.md §7`
-
----
+> **Banner — read first (Arc-1a, 2026-06-18):** This file is the **live generated projection** of the v4.2-lineage pipeline manifest — the machine-faithful witness the lockstep determinism guard (L1 check 9 / `test_33_3_no_hand_edits_to_v42.py`) compares `render_pack(manifest)` against. It is one of **three co-resident packs with distinct roles** (machine-greppable registry: `state/config/frozen-pack-shas.json`):
+> - **this file** (`-gen`) — `lockstep_role: determinism-target`; regenerated on every manifest change; never hand-edited.
+> - **`production-prompt-pack-v4.2-narrated-lesson-with-video-or-animation.md`** (no `-gen`) — `mapping-axis-frozen`; the legacy authority `slab-7-legacy-migrated-mapping-checklist.md` maps against; SHA-pinned; never regenerated in place. Arc-1a split the determinism-witness role off it so manifest topology refinements (e.g. the voice/variant HIL gate split) no longer disturb the frozen legacy axis.
+> - **`production-prompt-pack-v5-narrated-lesson-with-video-or-animation.md`** — `production-canonical`; the hand-authored production narrative; `generated: false`; runtime entrypoint `app/marcus/cli/trial.py`.
+>
+> These three are **NOT a version sequence** — they are three roles. Do not infer that `-gen` supersedes v4.2 or precedes v5. The `Marcus module` column in §0) TL;DR Crosswalk references **legacy primary-repo runtime** paths preserved as historical anchor; the migrated runtime executes via `app/marcus/cli/trial.py` → `app/marcus/orchestrator/production_runner.py`.
 
 ## 0) TL;DR Crosswalk
 
 | Pack § | HUD id | Marcus module | Audience | One-line purpose |
 |---|---|---|---|---|
-| 01 | 01 | app/marcus/orchestrator/production_runner.py | M→O | Activation + Preflight |
-| 02 | 02 | app/specialists/texas/retrieval_dispatch.py | M→O | Source Authority Map |
-| 02A | 02A | app/composers/section_02a/composer.py | M→O | Operator Directives (LLM-driven; G0; 7c.3a) |
-| 03 | 03 | app/specialists/texas/retrieval_dispatch.py | O→M | Ingestion + Evidence Log (FR89; six-canonical-artifacts) |
-| 04 | 04 | app/specialists/vera/_act.py + app/specialists/vera/graph.py | M→O | G1 runner-pause; six-dim evidence rubric (Vera body) |
-| 04A | 04A | app/gates/section_04a/poll_surface.py | M→O | G1A per-plan-unit ratification; 7c.6 |
-| 04.5 | 04.5 | app/gates/section_04_5/poll_surface.py | M→O | G1.5 estimator; 7c.7 |
-| 04.55 | 04.55 | app/gates/section_04_55/poll_surface.py | M→O | G1.5 lock (IRREVERSIBLE); 7c.8 |
-| 4.75 | 4.75 | app/specialists/cd/_act.py (PARTIAL; Dan persona) | M→self | Creative Directive Resolution; activation pending future slab |
-| 05 | 05 | app/specialists/irene_pass1/_act.py | M→O | Pass-1 narration + Gate 1 fidelity (orchestration partial) |
-| 05B | 05B | (placeholder; NOT MIGRATED - see deferred-inventory) | M→O | Cluster Plan G1.5 Gate (deferred) |
-| 06 | 06 | app/marcus/orchestrator/writers/{slide_content, fidelity_slides, diagram_cards, theme_resolution, outbound_envelope}.py | O→M | Marcus 5-writer pre-dispatch (W5 partition); 7c.17a + 7c.17b |
-| 6.2 | 6.2 | (placeholder; NOT MIGRATED - see deferred-inventory) | M→self | Cluster Prompt Engineering (deferred) |
-| 6.3 | 6.3 | (placeholder; NOT MIGRATED - see deferred-inventory) | M→self | Cluster Dispatch Sequencing (deferred) |
-| 06B | 06B | app/gates/section_06b/poll_surface.py | M→O | Literal-Visual Operator Build; 7c.18a |
-| 07 | 07 | app/specialists/gary/_act.py + skills/bmad-agent-gamma/SKILL.md (Class-C two-SKILL.md; 7b.6) | O→M | Gary Dispatch + Export |
-| 7.5 | 7.5 | (placeholder; NOT MIGRATED - see deferred-inventory) | M→O | Cluster Coherence G2.5 Gate (deferred) |
-| 07B | 07B | app/gates/section_07b/poll_surface.py | M→O | G2M per-slide A/B variant selection; 7c.10 |
-| 07C | 07C | app/gates/section_07c/poll_surface.py | M→O | G2C runner-pause; storyboard build + HTML reviewer; 7c.18b |
-| 07D | 07D | app/gates/section_07d/poll_surface.py | M→O | G2.5 motion-plan polling; 7c.11 |
-| 07E | 07E | app/specialists/kira/_act.py + skills/bmad-agent-kling/SKILL.md (Class-C; 7b.7) | M→self | Motion Generation/Import |
-| 07F | 07F | app/gates/section_07f/poll_surface.py | M→O | G2F motion gate; 7c.12 |
-| 08 | 08 | app/specialists/irene/graph.py + app/specialists/irene/authoring (Pass-2; orchestration partial) | O→M | Irene Pass 2 + Segment Manifest |
-| 08B | 08B | app/gates/section_08b/poll_surface.py | M→O | G3B Storyboard B + live-URL; 7c.13 |
-| 09 | 09 | app/marcus/orchestrator/section_09_lock.py | M→O | G3 four-artifact lock (IRREVERSIBLE); 7c.19 |
-| 10 | 10 | app/specialists/vera/_act.py (G4 19-criterion canonical) | M→O | Fidelity + Quality Pre-Spend; 7b.3 + 23-1 |
-| 11 | 11 | app/gates/section_11/poll_surface.py + skills/bmad-agent-enrique (Class-C; 7b.8) | M→O | G4A voice selection; 7c.14 |
-| 11B | 11B | app/gates/section_11b/poll_surface.py + skills/bmad-agent-enrique | M→O | G4B input-package preview; 7c.15 |
-| 12 | 12 | app/specialists/enrique/_act.py + skills/bmad-agent-elevenlabs/SKILL.md (Class-C; 7b.8) | O→M | ElevenLabs Audio Generation |
-| 13 | 13 | app/specialists/quinn_r/graph.py + app/specialists/quinn_r/expertise (G5 5-sub-checks; 7b.2) | M→O | Quinn-R Pre-Composition QA |
-| 14 | 14 | app/specialists/compositor/_act.py + skills/compositor/SKILL.md (Class-D2 EXEMPT per D20; 7b.11) | O→M | Compositor Assembly Bundle (deterministic) |
-| 14.5 | 14.5 | app/specialists/desmond/_act.py (body absent; Marcus or operator fallback) | M→self | Desmond Run-Scoped Operator Brief |
-| 15 | 15 | app/gates/section_15/poll_surface.py + app/marcus/orchestrator/writers/section_15_bundle.py | O→M | G5 final operator handoff (DESCRIPT-ready); 7c.15 |
+| 01 | 01 | scripts/utilities/run_hud.py | M→O | Activation + Preflight |
+| 02 | 02 | scripts/utilities/run_hud.py | M→O | Source Authority Map |
+| 02A | 02A | scripts/utilities/run_hud.py | M→O | Operator Directives |
+| 03 | 03 | scripts/utilities/run_hud.py | O→M | Ingestion + Evidence Log |
+| 04 | 04 | marcus/orchestrator/loop.py | M→O | Ingestion Quality Gate + Irene Packet |
+| 04A | 04A | marcus/orchestrator/loop.py | M→O | Lesson Plan Coauthoring + Scope Lock (Marcus <-> HIL) |
+| 04.5 | 04.5 | marcus/orchestrator/loop.py | M→self | Parent Slide Count Polling |
+| 04.55 | 04.55 | marcus/orchestrator/loop.py | M→self | Estimator + Run Constants Lock |
+| 4.75 | 4.75 | scripts/utilities/run_hud.py | M→self | Creative Directive Resolution (CD) |
+| 05 | 05 | scripts/utilities/run_hud.py | M→O | Irene Pass 1 + Gate 1 Fidelity |
+| 05B | 05B | scripts/utilities/run_hud.py | M→O | Cluster Plan G1.5 Gate |
+| 06 | 06 | scripts/utilities/run_hud.py | O→M | Pre-Dispatch Package Build |
+| 6.2 | 6.2 | scripts/utilities/run_hud.py | M→self | Cluster Prompt Engineering (Conditional) |
+| 6.3 | 6.3 | scripts/utilities/run_hud.py | M→self | Cluster Dispatch Sequencing (Conditional) |
+| 06B | 06B | scripts/utilities/run_hud.py | M→self | Literal-Visual Operator Build |
+| 07 | 07 | skills/bmad-agent-gary | O→M | Gary Dispatch + Export |
+| 7.5 | 7.5 | scripts/utilities/run_hud.py | M→O | Cluster Coherence G2.5 Gate (Conditional) |
+| 07B | 07B | skills/bmad-agent-gary | M→self | Variant Selection Gate |
+| 07C | 07C | skills/bmad-agent-gary | M→O | Storyboard A + Gate 2 Approval + Winner Authorization |
+| 07D | 07D | skills/bmad-agent-gary | M→O | Gate 2M Motion Designation |
+| 07E | 07E | skills/bmad-agent-gary | M→self | Motion Generation / Import |
+| 07F | 07F | skills/bmad-agent-gary | M→O | Motion Gate |
+| 08 | 08 | scripts/utilities/run_hud.py | O→M | Irene Pass 2 + Segment Manifest |
+| 08B | 08B | scripts/utilities/run_hud.py | M→O | Storyboard B + HIL Review |
+| 09 | 09 | scripts/utilities/run_hud.py | M→O | Gate 3 - Lock Pass 2 Package |
+| 10 | 10 | scripts/utilities/run_hud.py | M→O | Fidelity + Quality Pre-Spend |
+| 11 | 11 | skills/bmad-agent-enrique | O→M | ElevenLabs Voice Selection HIL |
+| 11B | 11B | skills/bmad-agent-enrique | M→self | ElevenLabs Input Package HIL |
+| 12 | 12 | skills/bmad-agent-enrique | O→M | ElevenLabs Audio Generation |
+| 13 | 13 | scripts/utilities/run_hud.py | M→O | Quinn-R Pre-Composition QA |
+| 14 | 14 | skills/bmad-agent-desmond | O→M | Compositor Assembly Bundle |
+| 14.5 | 14.5 | skills/bmad-agent-desmond | M→self | Desmond Run-Scoped Operator Brief |
+| 15 | 15 | skills/bmad-agent-desmond | O→M | Operator Handoff - Descript Ready |
 
 ---
 
@@ -1615,7 +1577,6 @@ Primary contract references:
 
 ## Changelog
 
-- **v5.0.0 (2026-05-07; pre-Trial-3 cleanup S4 close commit `a713112` + post-S4 review amendments)** — Authored from corrected v4.2 via Paige's deterministic 10-step mutation pass. Status: canonical-for-production-runs (post-Slab-7c). Frontmatter expanded with versioning posture (Tier-1 / Tier-2 / Tier-3) + methodology pointer + gate-taxonomy authority. Banner inverted: v5 IS canonical; v4.2 frozen as legacy-axis mapping authority; v4.3 fully superseded (no carry-forward; cluster-mode already in v4.2). Top-of-pack gate-pause asymmetry disclosure added per ADR 0002 (4 of 18 gates are runner-pauses). New §0 Pre-Launch Operator Card per Sally pre-S3 amendment (10-step pre-launch sequence; tape-to-second-monitor; 5-min skim). TL;DR Crosswalk Marcus-module column substituted with migrated runtime paths (33-row deterministic substitution). Specialist column refined per post-Slab-7c roster (Enrique not Audra; Class-C two-SKILL.md surfacing for Gary+Gamma / Kira+Kling / Enrique+ElevenLabs; Class-D2 EXEMPT for Compositor per D20). 6 NOT-MIGRATED rows explicitly marked as deferred-inventory placeholders (§05B / §6.2 / §6.3 / §7.5 cluster-mode; §4.75 cd-PARTIAL; §14.5 Desmond-body-absent). Methodology cross-references inserted at §0 Operator Card (3 mentions; restraint held). Per-§ "Operator at this gate" sub-blocks deferred to S5 P1. Crosswalk path-accuracy: 31/33 paths grep-verified post-S4-Murat-review; §02A corrected to `app/composers/section_02a/composer.py`; §06 corrected to enumerate 5 actual writer files.
 - **v4.2i (2026-04-19)** — Added explicit Prompt `04A` Lesson Plan coauthoring + scope-lock checkpoint between Prompt 4 and Prompt 4.5, with required event evidence (`scope_decision.set`, `plan.locked`) and hard block on downstream progression until Step 04A is completed.
 - **v4.2g (2026-04-16)** — Prompt 1: added `--bundle-dir [BUNDLE_PATH]` to preflight command (was identified as a blocker in the 2026-04-15 trial run — preflight skipped bundle-specific run-constants.yaml validation without it).
 - **v4.2h (2026-04-17)** — Added Prompt 4.75 Creative Directive resolution (CD), including `creative-directive.yaml` validation and `narration_profile_controls` persistence; added cluster prompt engineering (6.2), dispatch sequencing (6.3), and G2.5 coherence gate (7.5) for cluster-enabled runs; added Prompt 1 `app_session_readiness --with-preflight`; added `narration-script-parameters.yaml` to Pass 2 inputs; linked Irene A/B loop guidance; clarified motion-first ordering.
@@ -1643,9 +1604,9 @@ Primary contract references:
 | 6.2 | Section 6.2 maintains manifest-driven pipeline contract. |
 | 6.3 | Section 6.3 maintains manifest-driven pipeline contract. |
 | 06B | Section 06B maintains manifest-driven pipeline contract. |
-| 07 | Section 07 maintains manifest-driven pipeline contract. |
+| 07 | Section 07 maintains manifest-driven pipeline contract. S4 edge-level key projection (party review 2026-06-12, dp-v1): Gary's slide briefs flow from the §06 package_builder contribution under the exact keys gary's CONSUMED_PAYLOAD_KEYS declares — the manifest now tells the truth about the §06→07 data plane (formerly delivered via the A-R3 seam bridge, retired this story). |
 | 7.5 | Section 7.5 maintains manifest-driven pipeline contract. |
-| 07B | Section 07B maintains manifest-driven pipeline contract. |
+| 07B | Section 07B maintains manifest-driven pipeline contract. Data-plane history: the original edge (upstream_output: vera) was the wrong key AND wrong producer — quinn_r approved content it never received in Trial-3 attempt-4 (S1 corrected vocabulary; party review 2026-06-12 ruled whole-dict dependency delivery the wrong SHAPE). S4 edge-level key projection (dp-v1): variant selection receives Gary's gary_slide_output rows under quinn_r's declared "slides" key — the manifest now tells the truth about the 07→07B data plane. |
 | 07C | Section 07C maintains manifest-driven pipeline contract. |
 | 07D | Section 07D maintains manifest-driven pipeline contract. |
 | 07E | Section 07E maintains manifest-driven pipeline contract. |

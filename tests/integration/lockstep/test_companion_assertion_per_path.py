@@ -17,7 +17,10 @@ from scripts.utilities.check_manifest_lockstep import check_lockstep
             ["state/config/pipeline-manifest.yaml"],
         ),
         (
-            ["docs/workflow/production-prompt-pack-v4.2-narrated-lesson-with-video-or-animation.md"],
+            [
+                "docs/workflow/"
+                "production-prompt-pack-v4.2-gen-narrated-lesson-with-video-or-animation.md"
+            ],
             ["state/config/pipeline-manifest.yaml"],
         ),
         (

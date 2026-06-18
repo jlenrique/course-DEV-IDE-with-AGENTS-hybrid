@@ -100,14 +100,16 @@ def _orchestration_only_ids(path: Path) -> frozenset[str]:
     Legacy steps-shaped manifests carry no graph nodes; treat as none.
     """
     from app.manifest.loader import load as load_graph_manifest
-    from app.manifest.schema import is_orchestration_only
+    from app.manifest.schema import is_pack_excluded
 
     try:
         graph_manifest = load_graph_manifest(path)
     except Exception:  # noqa: BLE001 - legacy steps-shaped manifests
         return frozenset()
+    # is_pack_excluded = orchestration-only nodes PLUS folded HIL gate nodes
+    # (Arc 1a) — both are runtime-only / pack-invisible.
     return frozenset(
-        node.id for node in graph_manifest.nodes if is_orchestration_only(node)
+        node.id for node in graph_manifest.nodes if is_pack_excluded(node)
     )
 
 

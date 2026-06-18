@@ -442,6 +442,39 @@ def is_orchestration_only(node: NodeSpec) -> bool:
     return node.specialist_id is None and node.gate is False and node.hud_tracked is False
 
 
+def is_folded_gate(node: NodeSpec) -> bool:
+    """True for a FOLDED HIL gate node — a content-free gate that folds into a
+    surfaced parent gate and therefore presents no operator-facing pause while
+    folded.
+
+    Arc 1a (2026-06-18, party-ratified): the voice/variant HIL gates were split
+    out of their content specialist nodes into separate content-free gate nodes
+    (so a woken pause lands AFTER content). A folded gate node is pack-invisible
+    and runtime-inert (excluded from production_gate_ids → runs as a no-op
+    orchestration pass-through). The renderer AND the L1 lockstep check both
+    exclude these from the manifest↔HUD↔pack projections via this predicate, so
+    a folded run's pack stays byte-identical (folded-equivalence) and the two
+    consumers cannot drift apart — mirroring the is_orchestration_only contract.
+    Kept SEPARATE from is_orchestration_only (folded gates are not orchestration
+    nodes; conflating the two would overload that predicate's L1 semantics).
+
+    CONTENT-FREE only (`specialist_id is None`): the EXISTING folded gates
+    (01/02/04A/05/… carry a specialist_id) are content-bearing and DO render
+    their pack section today — folding affects only PAUSING (production_gate_ids),
+    not rendering. Only the Arc-1a split gate nodes are content-free + pack-
+    invisible, so the predicate must require specialist_id is None.
+    """
+    return node.specialist_id is None and bool(node.gate) and node.fold_with is not None
+
+
+def is_pack_excluded(node: NodeSpec) -> bool:
+    """Nodes excluded from operator-pack rendering AND L1 pack/HUD lockstep:
+    runtime-only orchestration nodes plus folded HIL gate nodes. THE shared
+    classification both the v4.2 generator and the lockstep check consume so
+    they cannot drift apart."""
+    return is_orchestration_only(node) or is_folded_gate(node)
+
+
 __all__ = [
     "EdgeSpec",
     "LearningEventsConfig",
@@ -449,5 +482,7 @@ __all__ = [
     "NodeSpec",
     "PipelineManifest",
     "StepLearningEventsConfig",
+    "is_folded_gate",
     "is_orchestration_only",
+    "is_pack_excluded",
 ]

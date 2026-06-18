@@ -12,7 +12,7 @@ PACK_PATH = (
     PROJECT_ROOT
     / "docs"
     / "workflow"
-    / "production-prompt-pack-v4.2-narrated-lesson-with-video-or-animation.md"
+    / "production-prompt-pack-v4.2-gen-narrated-lesson-with-video-or-animation.md"
 )
 
 

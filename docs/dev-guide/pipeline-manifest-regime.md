@@ -136,6 +136,26 @@ next data-plane vocabulary change (deferred-inventory
 
 **Concrete rule**: after the freeze point, any Tier 2 or Tier 3 class change → v4.3 (or v5); never a structural edit to the frozen v4.2 artifact. A violation of this rule surfaces at Cora's block-mode hook + audit-trail regression tests.
 
+### The determinism-witness split — three co-resident pack roles (Arc-1a, 2026-06-18)
+
+The Tier-2 procedure above assumes a clean linear bump (v4.2 → v4.3 → v5). Arc-1a hit terrain that procedure didn't model and the resolution is now policy. **A pack file carries a ROLE, not just a sequence position.** After the pre-Trial-3 cleanup, three packs co-exist with three distinct roles — they are **NOT a version line**, and a sequential filename (e.g. a literal `v4.4`) is *forbidden* because it re-implies the false ordering that produced the dead-`v4.3`-stub / `v5`-jumps-the-line confusion. The machine-greppable registry of record is [`state/config/frozen-pack-shas.json`](../../state/config/frozen-pack-shas.json):
+
+| Role | File | `generated` | Guard | Mutability |
+|---|---|---|---|---|
+| `mapping-axis-frozen` | `production-prompt-pack-v4.2-…md` | true | SHA pin (L1 check 10 + `test_frozen_pack_shas.py`) | **never** regenerated in place |
+| `determinism-target` | `production-prompt-pack-v4.2-gen-…md` | true | regeneration-determinism (L1 check 9 + `test_33_3`) | regenerated **every** manifest change |
+| `production-canonical` | `production-prompt-pack-v5-…md` | **false** | SHA pin + `generated: false` sentinel | hand-authored; never machine-regenerated |
+
+**Why the split exists.** The lockstep determinism guard (check 9) validates *"the generator is deterministic against the manifest"* — it must point at the pack the manifest is supposed to generate. But v4.2 is ALSO the legacy authority the slab-7 mapping checklist maps against, so it must stay byte-frozen. Those two hats conflict the moment a manifest topology refinement (e.g. the Arc-1a voice/variant HIL gate split) changes the render. Resolution: mint a `-gen` **generated witness** that carries the determinism-target hat alone; leave v4.2 frozen for the mapping axis. No new generator sibling is created — the existing `v42/` generator renders the witness; only `DEFAULT_PACK_PATH` + the `test_33_3*` determinism targets repoint.
+
+**When a manifest topology change lands (the Arc-1a recipe):**
+1. Regenerate the `-gen` witness (`render_pack` → the `-gen` file); never touch the frozen `v4.2` file.
+2. Keep `pack_version` uniform across the manifest (do **not** half-flip node `pack_version` — the single-value filter `step.pack_version in (None, active)` would silently drop nodes). A topology refinement within a lineage is **not** a `pack_version` change.
+3. Confirm L1 check 9 (witness ↔ manifest) **and** check 10 (frozen SHAs intact) are green.
+4. If the production-canonical pack (v5) is hand-authored and diverges in *semantics* from the witness, that is an **accepted, tracked gap** (no manifest-coherence guard on v5) — it must be filed in `deferred-inventory.md` with a **pre-next-trial** reactivation trigger, not carried silently into a content trial.
+
+**Open reconciliation (deferred):** bringing v5 into the generator/lockstep loop is a generator rewrite (v5 has hand-authored content the `v42` generator cannot emit) — explicitly out of scope for a manifest edit. Tracked in `deferred-inventory.md`; direction may flip as v5 evolves.
+
 ---
 
 ## Concrete Examples

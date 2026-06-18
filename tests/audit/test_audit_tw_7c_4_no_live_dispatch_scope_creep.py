@@ -430,6 +430,38 @@ PERMITTED_PYTHON_DIFFS = {
     # folded/fixture behavior change). enrique/_act.py already allowlisted
     # above (dp-v1.2 audio batch); the new test file is added here.
     "tests/specialists/enrique/test_measured_durations.py",
+    # Arc 1a manifest gate-split 2026-06-18 (trial-4 fold-semantics, party-
+    # ratified spec-arc1a-manifest-gate-split): the 3 co-located voice/variant
+    # HIL gates (G2B@07B, G4A@11, G4B@11B) were split into [content specialist]
+    # + [content-free folded gate node] (07B-gate/11-gate/11B-gate) so a woken
+    # pause lands AFTER content rather than before it. schema.py (is_folded_gate
+    # / is_pack_excluded predicates), the v42 generator, and the L1 lockstep
+    # script are already rostered above (S4 + renderer/L1 story). The new
+    # touches are the router pass-through skip + the node-count pin bump + the
+    # new structural-invariant pin file. Manifest YAML + regenerated pack are
+    # not *.py (outside the fence). Bounded; freeze predicates remain in force.
+    "app/marcus/orchestrator/routing.py",
+    "tests/unit/manifest/test_compiler.py",
+    "tests/unit/manifest/test_folded_gate_split.py",
+    # Arc-1a A14 Tier-2 pack disposition (party-ratified Option A, Winston/
+    # Amelia/Murat unanimous 2026-06-18): the determinism guard was repointed
+    # from the now-frozen v4.2 mapping-axis anchor to the live generated witness
+    # (`-gen`); a frozen-pack SHA registry (state/config/frozen-pack-shas.json,
+    # not *.py) + its broad-suite mirror pin the v4.2 + v5 SHAs. These are the
+    # repointed determinism tests + the new pin test (test infra only; no
+    # live-dispatch surface). Pack .md / template .j2 / registry .json are
+    # outside the *.py fence. Bounded; freeze predicates remain in force.
+    "tests/contracts/test_33_3_no_hand_edits_to_v42.py",
+    "tests/contracts/test_frozen_pack_shas.py",
+    "tests/integration/lockstep/test_companion_assertion_per_path.py",
+    "tests/test_33_3_dc1_resolution.py",
+    "tests/test_33_3_dc2_resolution.py",
+    "tests/test_33_3_dc3_resolution.py",
+    # Arc-1a code-review remediation 2026-06-18 (3-lane bmad-code-review;
+    # Blind Spot + Edge Case MUST/SHOULD-FIX): router pass-through-skip
+    # regression tests + repointed the stale legacy `marcus/orchestrator/
+    # routing.py` guard path to `app/marcus/...` (was FileNotFound-inert).
+    "tests/unit/marcus/test_routing_manifest_driven.py",
 }
 
 

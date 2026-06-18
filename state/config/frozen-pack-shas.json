@@ -1,0 +1,30 @@
+{
+  "_doc": "Frozen-pack SHA registry + three-role pack model (Arc-1a, 2026-06-18; party-ratified Winston/Amelia/Murat). The pipeline manifest is the machine source of truth; prompt packs are operator-facing rendered/authored artifacts. Three co-resident packs serve THREE DISTINCT ROLES — they are NOT a version sequence. Guarded by check_pipeline_manifest_lockstep.py check 10 (L1, authoritative) + tests/contracts/test_frozen_pack_shas.py (broad-suite mirror).",
+  "roles": {
+    "determinism-target": "The live generated witness (`-gen`). Regenerated from the manifest on every change; guarded by L1 check 9 (regeneration-determinism). NOT SHA-frozen (it is supposed to move). Never hand-edited.",
+    "mapping-axis-frozen": "The legacy authority that slab-7-legacy-migrated-mapping-checklist.md maps its legacy axis against. SHA-frozen; never regenerated in place (Arc-1a split the determinism-witness role off it so topology refinements no longer disturb the frozen legacy axis).",
+    "production-canonical": "The hand-authored production narrative (`generated: false`). Runtime entrypoint app/marcus/cli/trial.py. SHA-frozen + `generated: false` sentinel = anti-regeneration tripwire (nothing should silently machine-overwrite hand-authored content)."
+  },
+  "frozen_packs": {
+    "docs/workflow/production-prompt-pack-v4.2-narrated-lesson-with-video-or-animation.md": {
+      "role": "mapping-axis-frozen",
+      "generated": true,
+      "sha256": "dcb8b85ed78433a9ac2fde15653902fc2f05c8d05ebcb235d3ca0d57bb0a7228",
+      "note": "Frozen at the pre-Arc-1a render (legacy M->O handoffs in the §0 crosswalk). Topology refinements go to the -gen witness, never here. Direction-may-flip caveat: which pack ultimately owns the mapping axis may change as v5 evolves (see deferred-inventory)."
+    },
+    "docs/workflow/production-prompt-pack-v5-narrated-lesson-with-video-or-animation.md": {
+      "role": "production-canonical",
+      "generated": false,
+      "sha256": "dde6df2599faba4a1d05bd04b994a47b3a3520a73fad2a4c7182439b8def9f96",
+      "note": "Hand-authored from v4.2 via deterministic mutation pass. Has NO manifest-coherence guard by design (Murat condition 3: acceptable deferred risk for Arc-1a; the v5<->manifest reconciliation is filed with a pre-next-trial reactivation trigger in deferred-inventory). If you change v5, re-pin this SHA in the SAME commit and keep `generated: false`."
+    }
+  },
+  "live_generated_witness": {
+    "docs/workflow/production-prompt-pack-v4.2-gen-narrated-lesson-with-video-or-animation.md": {
+      "role": "determinism-target",
+      "generated": true,
+      "sha256": null,
+      "note": "NOT SHA-frozen — regenerated each manifest change; guarded by L1 check 9 / test_33_3_no_hand_edits_to_v42.py. Recorded here only so the three-role model is greppable in one place."
+    }
+  }
+}
