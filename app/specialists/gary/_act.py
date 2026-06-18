@@ -15,8 +15,8 @@ from app.specialists.dispatch_errors import SpecialistDispatchError
 from app.specialists.gary.gamma_dispatch import GammaDispatchError, dispatch_to_gamma
 from scripts.api_clients.gamma_client import GammaClient
 from skills.gamma_api_mastery.scripts.gamma_operations import (
-    _materialize_exported_slide_paths,
     download_export,
+    materialize_exported_slide_paths_by_title,
 )
 
 REPO_ROOT = Path(__file__).resolve().parents[3]
@@ -129,52 +129,6 @@ def _input_text(slides: list[dict[str, Any]], payload: dict[str, Any]) -> str:
     return "\n---\n".join(chunks)
 
 
-def _paths_from_generation(
-    generation: dict[str, Any],
-    *,
-    slides: list[dict[str, Any]],
-    export_dir: Path,
-    label: str,
-) -> list[str]:
-    if isinstance(generation.get("exported_slide_paths"), list):
-        return [str(path) for path in generation["exported_slide_paths"]]
-    downloaded = generation.get("downloaded_path") or generation.get("export_path")
-    if downloaded:
-        return _materialize_exported_slide_paths(
-            Path(str(downloaded)),
-            requested_format="png",
-            expected_card_numbers=list(range(1, len(slides) + 1)),
-            module_lesson_part="gary",
-            export_dir=export_dir,
-            label=label,
-        )
-    # Pre-S5 recon gap (2026-06-12): generate_deck waits for completion but
-    # never downloads — completed generations carry only exportUrl, so every
-    # gary_slide_output row landed with file_path "" and Storyboard A at G2C
-    # would have had NO viewable slides (the kira-empty-URL class, on the
-    # acceptance path). Download + materialize here; the machinery existed
-    # in gamma_operations but was only wired into the standalone lane.
-    export_url = generation.get("exportUrl") or generation.get("export_url")
-    if isinstance(export_url, str) and export_url.strip():
-        downloaded_export = download_export(
-            export_url,
-            output_dir=export_dir,
-            filename=f"gary_{label}.png",
-        )
-        return _materialize_exported_slide_paths(
-            Path(str(downloaded_export)),
-            requested_format="png",
-            expected_card_numbers=list(range(1, len(slides) + 1)),
-            module_lesson_part="gary",
-            export_dir=export_dir,
-            label=label,
-        )
-    rows = generation.get("gary_slide_output")
-    if isinstance(rows, list):
-        return [str(row.get("file_path", "")) for row in rows if isinstance(row, dict)]
-    return []
-
-
 def build_vera_g3_invocation(slide_output: list[dict[str, Any]]) -> dict[str, Any]:
     paths = [row["file_path"] for row in slide_output if row.get("file_path")]
     return {"specialist_id": "vera", "gate_id": "G3", "artifact_paths": paths}
@@ -191,6 +145,7 @@ def generate_gamma_variants(
     variants = ("A", "B") if bool(payload.get("double_dispatch")) else ("A",)
     output: list[dict[str, Any]] = []
     calls: list[str] = []
+    dropped_pages: list[dict[str, Any]] = []
     for variant in variants:
         generation = client.generate_deck(
             _input_text(slides, payload),
@@ -219,17 +174,81 @@ def generate_gamma_variants(
             )
         generation_id = str(raw_generation_id)
         calls.append(generation_id)
-        paths = _paths_from_generation(
-            generation, slides=slides, export_dir=export_dir, label=variant
-        )
+        # Storyboard-correctness fix (party-ratified 2026-06-18): match the
+        # exported pages to briefed slide_ids by TITLE (deterministic bijective
+        # containment), NOT by position. Gamma injects a cover + merges/drops +
+        # rephrases titles, so the page order does not correspond to the brief
+        # order. The matcher surfaces the cover (dropped), a merged-away brief
+        # (brief-unmatched), a stray page (page-unmatched), and collisions
+        # (title-ambiguous) instead of silently shifting every slide.
+        expected_slots = [
+            (
+                str(slide.get("slide_id") or f"slide-{index:02d}"),
+                str(
+                    slide.get("title")
+                    or slide.get("prompt")
+                    or slide.get("visual_description")
+                    or ""
+                ),
+            )
+            for index, slide in enumerate(slides, start=1)
+        ]
+        export_url = generation.get("exportUrl") or generation.get("export_url")
+        if isinstance(export_url, str) and export_url.strip():
+            downloaded_export = download_export(
+                export_url, output_dir=export_dir, filename=f"gary_{variant}.png"
+            )
+            match = materialize_exported_slide_paths_by_title(
+                Path(str(downloaded_export)),
+                requested_format="png",
+                expected_slots=expected_slots,
+                module_lesson_part=variant,
+                export_dir=export_dir,
+                label=variant,
+            )
+            if match.ambiguous:
+                raise GammaDispatchError(
+                    f"gamma export title-ambiguous for variant {variant}: "
+                    f"{match.ambiguous}",
+                    tag="gamma.export.title-ambiguous",
+                )
+            if match.unmatched_keys:
+                raise GammaDispatchError(
+                    f"gamma export left briefed slide(s) unmatched for variant "
+                    f"{variant}: {match.unmatched_keys}; unmatched pages: "
+                    f"{[p.get('title') for p in match.unmatched_pages]}",
+                    tag="gamma.export.brief-unmatched",
+                )
+            if match.unmatched_pages:
+                raise GammaDispatchError(
+                    f"gamma export produced non-leading unmatched page(s) for "
+                    f"variant {variant}: {[p.get('title') for p in match.unmatched_pages]}",
+                    tag="gamma.export.page-unmatched",
+                )
+            slide_paths = dict(match.matched)
+            dropped_pages.extend({"variant": variant, **d} for d in match.dropped_pages)
+        else:
+            # Legacy fallback: generation already carries materialized rows
+            # keyed by slide_id (no export to title-match).
+            slide_paths = {}
+            rows = generation.get("gary_slide_output")
+            if isinstance(rows, list):
+                for row in rows:
+                    if isinstance(row, dict) and row.get("slide_id"):
+                        slide_paths[str(row["slide_id"])] = str(row.get("file_path", ""))
         for index, slide in enumerate(slides, start=1):
+            slide_id = str(slide.get("slide_id") or f"slide-{index:02d}")
             output.append(
                 {
-                    "slide_id": str(slide.get("slide_id") or f"slide-{index:02d}"),
+                    "slide_id": slide_id,
                     "card_number": index,
                     "dispatch_variant": variant,
-                    "file_path": paths[index - 1] if index - 1 < len(paths) else "",
+                    "file_path": slide_paths.get(slide_id, ""),
                     "generation_id": generation_id,
+                    # Observation A (folded in): the real slide title (original
+                    # casing, objective-free), so the storyboard surface can
+                    # stop showing the bare slide_id.
+                    "display_title": str(slide.get("title") or "").strip() or slide_id,
                     "visual_description": str(
                         slide.get("visual_description") or slide.get("prompt") or ""
                     ),
@@ -251,6 +270,9 @@ def generate_gamma_variants(
         "generation_mode": "double-dispatch" if len(variants) == 2 else "single-dispatch",
         "calls_made": len(calls),
         "gary_slide_output": output,
+        # Decision #1 provenance: engine cover pages dropped during title
+        # matching are recorded here, never silently vanished.
+        "dropped_pages": dropped_pages,
         "vera_g3_invocation": build_vera_g3_invocation(output),
     }
 

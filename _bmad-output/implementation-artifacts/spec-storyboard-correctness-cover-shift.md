@@ -2,7 +2,7 @@
 title: 'Storyboard correctness — Gary deck-export cover-shift + brief→page cardinality fix (title-based page→slide_id matching)'
 type: 'bugfix'
 created: '2026-06-17'
-status: 'ready-for-dev'
+status: 'done'
 baseline_commit: '98ffb58'
 checkpoint_1: 'RATIFIED 2026-06-18 — bmad-party-mode green-light, unanimous APPROVE-WITH-AMENDMENTS (Winston/Amelia/Murat/John). All 4 design decisions resolved; MVP line drawn by John; gating amendments folded below.'
 context:
@@ -49,7 +49,19 @@ This is a **production-walk behavior change by design** — unlike WAVE-0 tranch
 Exact-after-normalization match ONLY. Two jobs, applied in order:
 1. **Brief-side reduction (strip the objective):** take everything BEFORE the first em/en-dash-with-surrounding-spaces run (` — `, ` – `, ` -- `). Split on that delimiter token ONLY — NEVER split on a bare hyphen (a title may legitimately contain one).
 2. **Symmetric normalization** applied to BOTH the reduced brief title AND the page slug (after stripping the `{N}_` prefix): Unicode NFKC + strip accents/smart-quotes/em-dash; lowercase; word-substitutions enumerated explicitly (`&`/`&amp;`→`and`; decide+enumerate `+`, `@`, `%`); strip all punctuation; collapse whitespace AND hyphens to one canonical separator (Gamma slug uses `-`, brief uses spaces — both → the same token); trim.
-The normalization rules themselves are PINNED (the next silent bug hides here). Match is bijective + exact on the normalized form; ambiguity/duplicate → DECISION 6 fatal; no-match → DECISION 2 fail-loud.
+The normalization rules themselves are PINNED (the next silent bug hides here).
+
+## Matching algorithm (RATIFIED amendment 2026-06-18 — deterministic bijective containment)
+Replaces exact-after-normalization (T1 proved exact false-misses 2/5 on the real corpus). Steps:
+1. **Normalize** both brief titles and page slugs per the frozen Normalization contract above → normalized strings.
+2. **Tokenize + strip stopwords** (NEW frozen stopword list — enumerate explicitly, e.g. {the, a, an, and, or, of, for, to, in, on, with, case…}; pin it; NO library default). → distinctive token-set per brief and per page.
+3. **Candidate containment edges:** for each (brief, page), an edge exists iff `brief_tokens ⊆ page_tokens` OR `page_tokens ⊆ brief_tokens` (bidirectional) AND the **smaller (contained) side has ≥2 distinctive tokens** (the token floor). A single-distinctive-token containment is NOT an edge.
+4. **Compute ALL edges first** (no streaming/greedy/first-match). Then **bijective commit:** an edge (brief_i, page_j) is committed ONLY iff brief_i has exactly ONE candidate page AND page_j has exactly ONE candidate brief.
+5. **Ambiguity is fatal:** any brief with >1 candidate page, or any page with >1 candidate brief → raise `gamma.export.title-ambiguous` (error-pause); surface ALL colliding pairs; NEVER pick. No tie-break, no longest-containment, no "best."
+6. **After commit, classify the remainder (bijection assertion):** every brief is matched-once OR `gamma.export.brief-unmatched`; every page is matched OR leading-cover-dropped (DECISION 1) OR `gamma.export.page-unmatched` (DECISION 5, non-leading). No brief matched zero-or-twice; no page silently unaccounted. (This bijection assertion REPLACES the count-guard.)
+7. **Gamma nudge (non-load-bearing):** add to `additional_instructions` a request to title each card exactly as briefed, emit no cover/title card, and not merge topics. Best-effort dampener ONLY — the matcher is the contract; never weaken the matcher because of the nudge.
+
+Real-corpus proof (f8da20ae): slide-01→p2 (exact) · slide-02→p3 (page⊆brief: Gamma dropped "System") · slide-03→p4 · slide-04→p5 · slide-05→p6 (brief⊆page: Gamma appended merge text) · slide-06→unmatched (correctly; no page) · p1 cover→dropped. 5/5 renderable correct; bijective; no collisions.
 
 ## Boundaries & Constraints
 
@@ -117,7 +129,21 @@ The normalization rules themselves are PINNED (the next silent bug hides here). 
 - Full battery green (gary suite + gamma_operations + marcus integration + lockstep + lint-imports 13/13 + ruff), no new failures vs the ambient roster.
 
 ## Spec Change Log
+**2026-06-18 (T1) — EMPIRICAL FINDING invalidates the exact-match amendment; party re-consult opened.** T1 check on the real f8da20ae corpus: Gamma not only injects a cover + merges topics, it REPHRASES titles. Exact-after-normalization matches only 3/5 renderable content slides: slide-02 brief "The Human Cost: System Waste & Burnout" vs Gamma slug "The-Human-Cost-Waste-and-Burnout" (Gamma DROPPED "System") → exact=FALSE → would spuriously `brief-unmatched` fail-loud on a perfectly-rendered slide (John's Trial-A-blocker criterion). slide-05 "The Leadership Gap" vs merged "The-Leadership-Gap-and-the-Case-for-Change" → exact=FALSE. Deterministic BIJECTIVE CONTAINMENT matching (token-set subset, unique) = 5/5 correct (slide-01→p2, 02→p3, 03→p4, 04→p5, 05→p6, 06→unmatched), cover→dropped — NOT threshold-fuzzy; silent-wrong-match still barred by bijection + ambiguity-fatal. Proposed amendment to the matching rule routed to party-mode 2026-06-18 (see below).
+**RESOLVED 2026-06-18 — party-mode unanimous APPROVE-AMENDMENT (Winston/Amelia/Murat/John).** Matching rule changed from exact-after-normalization to **deterministic BIJECTIVE CONTAINMENT** (see "Matching algorithm" section). Convergent binding sub-amendments: (W1/A1) strip stopwords + **≥2-distinctive-token floor** on the contained side (a 1-distinctive-token containment is NOT a match — closes the "short brief supersets an unrelated page" hole; "the threshold barred, hidden in the word 'the'"); (A3/M3) bijection is **all-edges-then-uniqueness, NEVER greedy/max-matching** — commit an edge only if unique on BOTH sides; (W2/M3) **ties die loud** — multiplicity → `gamma.export.title-ambiguous` hard abort, NO longest-containment tie-break ("a tie-break is nearest-neighbor in a trenchcoat"; "if the implementation tie-breaks ambiguity even sensibly, automatic revert"); bidirectional containment (brief⊆page for Gamma-append, page⊆brief for Gamma-drop) is permitted, made safe by bijection+floor not by per-direction heuristic; normalization contract (above) stands UNDERNEATH unchanged; stopword list is a NEW frozen artifact (enumerate + pin, no library default). Gamma `additional_instructions` nudge (title-exactly/no-cover/no-merge) approved as an explicitly NON-LOAD-BEARING dampener (Gamma ignored num_cards=6; matcher carries 100% of correctness). John: in-scope (the pre-authorized conditional firing, not creep); Trial-A date holds; block any fuzzy/threshold riding in.
+
 **2026-06-18 — party-mode green-light RATIFIED (Winston/Amelia/Murat/John, unanimous APPROVE-WITH-AMENDMENTS).** 4 decisions resolved: #1 drop+record leading-only · #2 fail-loud · #3 shared materializer additive-signature + generic key-spec/MatchResult · #4 DEFERRED (post-Trial-A spike). Added DECISION 5 (non-leading unmatched page → fail-loud) + 6 (ambiguity fatal). Gating amendments folded: frozen Normalization contract (exact-after-normalization, NO fuzzy); bijection assertion REPLACING the count-guard; kill-the-mutant pin on real f8da20ae filenames; standalone-lane byte-identical gate pin + gary-only off-ramp. Riders: Obs A FOLD IN, Obs B DEFER. MVP line drawn (John). T1 conditional: long-title-truncation demonstrated-vs-speculative check. Status → ready-for-dev.
+
+## Review Findings (3-lane bmad-code-review, 2026-06-18)
+Acceptance Auditor: **PASS** (all 6 decisions + both riders + bijection-replaces-count-guard + content-keyed kill-the-mutant + ≥2-token floor + frozen stopwords + full named battery; no deferred item leaked). Blind + Edge convergent findings, all remediated:
+- [x] [MUST-FIX] Duplicate `page_index` silently dropped a page (dict last-wins keying). Fixed: `match_pages_to_slots` now keys pages by unique position, `page_index` retained only for leading-cover ordering; pinned `test_duplicate_page_index_does_not_silently_drop_a_page`.
+- [x] [SHOULD-FIX] Leading-cover heuristic could drop a genuine retitled leading content page. Fixed: cap leading-cover drops at ONE; additional leading-unmatched → `page-unmatched` fail-loud; pinned `test_only_first_leading_unmatched_page_drops_rest_fail_loud`.
+- [x] [SHOULD-FIX] gary integration tests near-vacuous on binding identity (identical fixture bytes + always-`_s1.png` name). Fixed: distinct per-page bytes + content-identity assertions; export-url test now uses REVERSE page order so a positional binder fails.
+- [x] [NIT] `dropped_pages` accumulated but not surfaced. Fixed: emitted into the gary receipt (`dropped_pages` key) per Decision #1 provenance.
+- Deferred NITs (loud/low-likelihood, not fixed): non-`{N}_`-prefixed cover sorts last → `page-unmatched` (loud, acceptable); all-unmatched cover mislabel (masked by `brief-unmatched`); `normalize_title` first-delimiter objective split (latent, slug convention strips dashes).
+- Verified clean (Edge): positional `_materialize_exported_slide_paths` byte-identical (228 insertions / 0 deletions — purely additive); both standalone callers unaffected; dead `_paths_from_generation` removal clean; degenerate paths (empty/non-png/single-image/over/under-count) all fail loud.
+
+Validation: 244 passed (gary + audit + marcus integration), 1 skipped; lockstep 0; lint-imports 13/13; ruff clean; kill-the-mutant verified (exact-only `_edge` revert reds the f8da20ae + bidirectional pins).
 
 ## Verification
 **Commands:**

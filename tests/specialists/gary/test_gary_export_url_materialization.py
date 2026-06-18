@@ -1,17 +1,18 @@
-"""Pin: §07 materializes local slide PNGs from a completed generation.
+"""Pin: §07 downloads the Gamma export and materializes per-slide PNGs.
 
-Pre-S5 recon gap (2026-06-12, found minutes after the operator's live Gamma
-micro-smoke): ``GammaClient.generate_deck`` waits for completion but never
-downloads, and ``_paths_from_generation`` had no ``exportUrl`` leg — every
-``gary_slide_output`` row landed with ``file_path: ""`` and Storyboard A at
-G2C would have had no viewable slides (the kira-empty-URL class, sitting on
-the S5 acceptance path). The download/materialize machinery existed in
-gamma_operations but was wired only into the standalone lane.
+Pre-S5 recon gap (2026-06-12): ``GammaClient.generate_deck`` waits for
+completion but never downloads; completed generations carry only ``exportUrl``.
+The download/materialize leg ensures every slide row lands with a real
+``file_path`` (no G2C no-viewable-slides gap).
+
+Re-blessed 2026-06-18 (storyboard-correctness fix): the export leg now binds
+exported pages to briefs by TITLE (``materialize_exported_slide_paths_by_title``)
+instead of positionally. ``_paths_from_generation`` was removed; this pins the
+download→title-match→per-slide-path guarantee through ``generate_gamma_variants``.
 """
 
 from __future__ import annotations
 
-import io
 import zipfile
 from pathlib import Path
 
@@ -20,52 +21,53 @@ from app.specialists.gary import _act
 _PNG_MAGIC = b"\x89PNG\r\n\x1a\n" + b"0" * 64
 
 
-def _fake_zip_bytes(card_count: int) -> bytes:
-    buffer = io.BytesIO()
-    with zipfile.ZipFile(buffer, "w") as archive:
-        for index in range(1, card_count + 1):
-            archive.writestr(f"slide-{index:02d}.png", _PNG_MAGIC)
-    return buffer.getvalue()
+def _titled_zip(path: Path, stems: list[str]) -> Path:
+    with zipfile.ZipFile(path, "w") as archive:
+        for stem in stems:
+            # Distinct per-page bytes so content identity proves WHICH page bound.
+            archive.writestr(f"{stem}.png", _PNG_MAGIC + stem.encode())
+    return path
+
+
+class _Client:
+    def __init__(self) -> None:
+        self.generate_calls: list[dict[str, object]] = []
+
+    def list_themes(self, limit: int = 20) -> list[dict[str, str]]:
+        return [{"id": "theme-clean-grid", "name": "Clean Grid"}]
+
+    def generate_deck(self, input_text: str, **kwargs: object) -> dict[str, object]:
+        self.generate_calls.append({"input_text": input_text, **kwargs})
+        return {"generationId": "gen-123", "status": "completed", "exportUrl": "https://x/fake.zip"}
 
 
 def test_export_url_leg_downloads_and_materializes_per_slide_paths(
     tmp_path: Path, monkeypatch
 ) -> None:
-    slides = [{"slide_id": "s1"}, {"slide_id": "s2"}]
-    export_dir = tmp_path / "exports"
-    export_dir.mkdir()
-
-    def _fake_download(export_url, output_dir=None, filename=None, *, run_id=None):
-        target = Path(output_dir) / (filename or "export.zip")
-        target.write_bytes(_fake_zip_bytes(len(slides)))
-        return target
-
-    monkeypatch.setattr(_act, "download_export", _fake_download)
-    generation = {
-        "generationId": "gen-123",
-        "status": "completed",
-        "exportUrl": "https://assets.api.gamma.app/export/image/fake.zip",
-    }
-
-    paths = _act._paths_from_generation(
-        generation, slides=slides, export_dir=export_dir, label="A"
+    # Pages in REVERSE order vs briefs: a positional binder would map s1 -> the
+    # System-Pressures page (wrong). Title matching must bind s1 -> Macro-Trends.
+    zpath = _titled_zip(tmp_path / "export.zip", ["1_System-Pressures", "2_Macro-Trends"])
+    monkeypatch.setattr(
+        _act, "download_export", lambda url, *, output_dir, filename: str(zpath)
     )
 
-    assert len(paths) == 2
-    for path in paths:
-        assert path, "empty file_path row — the G2C no-viewable-slides gap is back"
-        assert Path(path).is_file()
-        assert Path(path).suffix == ".png"
-
-
-def test_completed_generation_without_export_url_still_falls_through(
-    tmp_path: Path,
-) -> None:
-    """No exportUrl and no downloaded_path → legacy fallbacks unchanged."""
-    paths = _act._paths_from_generation(
-        {"generationId": "gen-456", "status": "completed"},
-        slides=[{"slide_id": "s1"}],
-        export_dir=tmp_path,
-        label="A",
+    result = _act.generate_gamma_variants(
+        {
+            "slides": [
+                {"slide_id": "s1", "title": "Macro Trends"},
+                {"slide_id": "s2", "title": "System Pressures"},
+            ],
+            "export_dir": str(tmp_path),
+        },
+        client=_Client(),
     )
-    assert paths == []
+
+    rows = {r["slide_id"]: r for r in result["gary_slide_output"]}
+    assert len(rows) == 2
+    for row in rows.values():
+        assert row["file_path"], "empty file_path row — the G2C no-viewable-slides gap is back"
+        assert Path(row["file_path"]).is_file()
+    # Content identity (NOT position): s1 bound to the Macro-Trends page even
+    # though it was page 2 in export order; s2 to System-Pressures (page 1).
+    assert Path(rows["s1"]["file_path"]).read_bytes() == _PNG_MAGIC + b"2_Macro-Trends"
+    assert Path(rows["s2"]["file_path"]).read_bytes() == _PNG_MAGIC + b"1_System-Pressures"

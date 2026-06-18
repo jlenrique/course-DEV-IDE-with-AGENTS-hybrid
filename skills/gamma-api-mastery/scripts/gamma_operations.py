@@ -10,11 +10,13 @@ from __future__ import annotations
 import base64
 import logging
 import os
+import re
 import shutil
 import subprocess
 import sys
 import tempfile
 import time
+import unicodedata
 import zipfile
 from pathlib import Path
 from typing import Any
@@ -1335,6 +1337,195 @@ def _gamma_export_sort_key(path: Path) -> tuple[int, str]:
     return 9999, path.stem
 
 
+# ---------------------------------------------------------------------------
+# Title-based page->slide matching (storyboard-correctness fix, party-ratified
+# 2026-06-18). Gamma owns the page-set independently of the briefs — it injects
+# a cover, merges/drops topics, and REPHRASES titles — so POSITION is not a key
+# Gamma honors. We match exported pages to briefed slots by TITLE, using
+# deterministic bijective containment. NO fuzzy/threshold matching anywhere:
+# a match is a structural set-containment relation that is unique on both
+# sides, or it is a loud failure. Ambiguity is fatal (never a tie-break/pick).
+# ---------------------------------------------------------------------------
+
+# Frozen stopword list (party-ratified; enumerated + pinned, NOT a library
+# default that could drift under us). Stripped before the containment test so
+# generic function words cannot carry a match.
+_TITLE_STOPWORDS: frozenset[str] = frozenset(
+    {
+        "a", "an", "the", "and", "or", "of", "for", "to", "in", "on",
+        "with", "at", "by", "from", "as", "into", "is", "are", "this", "that",
+    }
+)
+
+# Minimum distinctive (non-stopword) tokens the CONTAINED side must carry for a
+# containment edge to be admissible. Closes the "short brief accidentally
+# supersets an unrelated page" hole (Winston/Amelia). Tunable only by
+# party-mode, never by the matcher.
+_MIN_DISTINCTIVE_TOKENS = 2
+
+
+def normalize_title(text: str) -> str:
+    """Deterministic title normalization (frozen contract, party-ratified).
+
+    NFKC + strip accents; lowercase; ``&`` -> ``and``; strip the trailing
+    objective after an em/en-dash-with-spaces delimiter (brief titles carry
+    ``"Title — objective"``; page slugs do not, so this is a no-op on them);
+    replace every non-alphanumeric run (incl. hyphens — Gamma slug separators)
+    with a single space; collapse whitespace; trim.
+    """
+    s = unicodedata.normalize("NFKD", text or "")
+    s = "".join(ch for ch in s if not unicodedata.combining(ch))
+    # Strip objective: split on the FIRST em/en-dash (or ' -- ') with spaces.
+    s = re.split(r"\s+(?:—|–|--)\s+", s, maxsplit=1)[0]
+    s = s.lower().replace("&", " and ")
+    s = re.sub(r"[^a-z0-9]+", " ", s)
+    return re.sub(r"\s+", " ", s).strip()
+
+
+def title_from_export_stem(stem: str) -> str:
+    """Recover the title from a Gamma export filename stem ``{N}_{Title}``."""
+    m = re.match(r"^\d+_(.*)$", stem)
+    return m.group(1) if m else stem
+
+
+def _distinctive_tokens(normalized_title: str) -> frozenset[str]:
+    return frozenset(
+        t for t in normalized_title.split() if t and t not in _TITLE_STOPWORDS
+    )
+
+
+class SlideMatchResult:
+    """Outcome of matching exported pages to briefed slots.
+
+    The match POLICY lives here (shared layer); the consumer (gary, app-side)
+    translates the non-empty failure fields into the recoverable
+    ``GammaDispatchError`` family. ``matched`` is slide_id -> page path.
+
+    Plain class (NOT a dataclass): this module is loaded via an importlib
+    shim, so the module is not registered in ``sys.modules`` under a resolvable
+    name and ``@dataclass`` annotation resolution would crash.
+    """
+
+    def __init__(self) -> None:
+        self.matched: dict[str, str] = {}
+        self.dropped_pages: list[dict[str, Any]] = []
+        self.unmatched_keys: list[str] = []
+        self.unmatched_pages: list[dict[str, Any]] = []
+        self.ambiguous: list[dict[str, Any]] = []
+
+
+def match_pages_to_slots(
+    *,
+    pages: list[dict[str, Any]],
+    expected_slots: list[tuple[str, str]],
+) -> SlideMatchResult:
+    """Bijective deterministic containment match (party-ratified 2026-06-18).
+
+    ``pages``: ordered list of ``{"page_index": int, "title": str, "path": str}``
+    (title = raw, e.g. recovered via ``title_from_export_stem``).
+    ``expected_slots``: ordered ``(slide_id, raw_brief_title)``.
+
+    Edge rule: a (slot, page) edge exists iff one's distinctive-token set is a
+    subset of the other's (bidirectional — Gamma both drops and appends words)
+    AND the smaller (contained) side has >= _MIN_DISTINCTIVE_TOKENS tokens.
+    Commit only edges unique on BOTH sides; any multiplicity is ambiguity-fatal
+    (surfaced, never resolved). Compute ALL edges before committing — never
+    greedy/first-match.
+    """
+    slot_tokens = {
+        sid: _distinctive_tokens(normalize_title(title)) for sid, title in expected_slots
+    }
+    # Unique per-page id = position in the input list. Keying dicts by
+    # page_index would let two pages sharing a numeric prefix (or both falling
+    # back to the 9999 sort sentinel) silently OVERWRITE each other — a real
+    # page would vanish from the candidate graph entirely, defeating fail-loud
+    # (blind + edge review MUST-FIX). page_index is retained only as a sort key
+    # for leading-cover classification.
+    page_ids = list(range(len(pages)))
+    page_tokens = {
+        pid: _distinctive_tokens(normalize_title(pages[pid]["title"])) for pid in page_ids
+    }
+
+    def _edge(a: frozenset[str], b: frozenset[str]) -> bool:
+        if not a or not b:
+            return False
+        if a <= b:
+            return len(a) >= _MIN_DISTINCTIVE_TOKENS
+        if b <= a:
+            return len(b) >= _MIN_DISTINCTIVE_TOKENS
+        return False
+
+    # ALL candidate edges first (no streaming/greedy).
+    slot_candidates: dict[str, list[int]] = {sid: [] for sid, _ in expected_slots}
+    page_candidates: dict[int, list[str]] = {pid: [] for pid in page_ids}
+    for sid, _ in expected_slots:
+        for pid in page_ids:
+            if _edge(slot_tokens[sid], page_tokens[pid]):
+                slot_candidates[sid].append(pid)
+                page_candidates[pid].append(sid)
+
+    result = SlideMatchResult()
+    # Bijective commit: unique on BOTH sides.
+    for sid, _ in expected_slots:
+        cands = slot_candidates[sid]
+        if len(cands) == 1 and len(page_candidates[cands[0]]) == 1:
+            result.matched[sid] = str(pages[cands[0]]["path"])
+        elif len(cands) > 1:
+            result.ambiguous.append(
+                {
+                    "kind": "slot",
+                    "slide_id": sid,
+                    "candidate_pages": sorted(pages[pid].get("page_index") for pid in cands),
+                }
+            )
+        else:
+            result.unmatched_keys.append(sid)
+    for pid in page_ids:
+        if len(page_candidates[pid]) > 1:
+            result.ambiguous.append(
+                {
+                    "kind": "page",
+                    "page_index": pages[pid].get("page_index"),
+                    "candidate_slots": sorted(page_candidates[pid]),
+                }
+            )
+
+    # Classify unmatched pages by export order. Only the FIRST (lowest-index)
+    # leading unmatched page is the engine cover (drop+record); any ADDITIONAL
+    # leading unmatched page is fatal, NOT silently dropped (blind review: do
+    # not lose a genuine retitled leading content slide). Non-leading unmatched
+    # pages are fatal.
+    matched_pids = {
+        pid
+        for pid in page_ids
+        if len(page_candidates[pid]) == 1
+        and len(slot_candidates[page_candidates[pid][0]]) == 1
+    }
+    min_matched_index = (
+        min(pages[pid].get("page_index", 0) for pid in matched_pids) if matched_pids else None
+    )
+    cover_dropped = False
+    for pid in sorted(page_ids, key=lambda i: pages[i].get("page_index", 0)):
+        if pid in matched_pids or len(page_candidates[pid]) > 1:
+            continue
+        p = pages[pid]
+        record = {
+            "page_index": p.get("page_index"),
+            "title": p.get("title"),
+            "path": str(p.get("path", "")),
+        }
+        is_leading = (
+            min_matched_index is not None and p.get("page_index", 0) < min_matched_index
+        )
+        if is_leading and not cover_dropped:
+            record["reason"] = "unmatched-leading-page"
+            result.dropped_pages.append(record)
+            cover_dropped = True
+        else:
+            result.unmatched_pages.append(record)
+    return result
+
+
 def _materialize_exported_slide_paths(
     downloaded_path: Path,
     *,
@@ -1407,6 +1598,69 @@ def _materialize_exported_slide_paths(
         "Gamma PNG export artifact mismatch: unsupported export payload "
         f"{downloaded_path.name} for {label}."
     )
+
+
+def materialize_exported_slide_paths_by_title(
+    downloaded_path: Path,
+    *,
+    requested_format: str | None,
+    expected_slots: list[tuple[str, str]],
+    module_lesson_part: str,
+    export_dir: Path,
+    label: str,
+) -> SlideMatchResult:
+    """Title-matched materialization (storyboard-correctness fix, 2026-06-18).
+
+    Extracts the Gamma PNG export, recovers each page's title from its
+    ``{N}_{Title}`` filename, and matches pages to briefed slots by
+    deterministic bijective containment (``match_pages_to_slots``) — NOT by
+    position. Writes a per-slide PNG named by ``slide_id`` for each committed
+    match. Returns the ``SlideMatchResult``; the caller (gary) raises the
+    recoverable ``GammaDispatchError`` family on ``unmatched_keys`` /
+    ``unmatched_pages`` / ``ambiguous``.
+
+    The positional ``_materialize_exported_slide_paths`` is deliberately left
+    untouched for brief-less callers (standalone Gamma lane); this is a
+    separate, additive function (party DECISION 3 + the byte-identical gate).
+    """
+    image_extensions = {".png", ".jpg", ".jpeg", ".gif", ".webp", ".svg", ".avif", ".heic", ".heif"}
+    normalized_format = (requested_format or "").strip().lower() or None
+    result = SlideMatchResult()
+
+    if normalized_format != "png" or not zipfile.is_zipfile(downloaded_path):
+        # Title matching requires per-page images from the multi-card zip. A
+        # non-png or single-image export cannot be title-matched; fail loud
+        # (every slot unmatched) rather than positionally broadcasting — the
+        # caller raises brief-unmatched. Single-card decks do not reach the
+        # double-dispatch storyboard path.
+        result.unmatched_keys = [sid for sid, _ in expected_slots]
+        return result
+
+    extract_dir = export_dir / f"{module_lesson_part}_{label}_pages"
+    if extract_dir.exists():
+        shutil.rmtree(extract_dir)
+    extract_dir.mkdir(parents=True, exist_ok=True)
+    with zipfile.ZipFile(downloaded_path) as archive:
+        archive.extractall(extract_dir)
+    extracted = sorted(
+        (p for p in extract_dir.rglob("*") if p.is_file() and p.suffix.lower() in image_extensions),
+        key=_gamma_export_sort_key,
+    )
+    pages = [
+        {
+            "page_index": _gamma_export_sort_key(src)[0],
+            "title": title_from_export_stem(src.stem),
+            "path": str(src),
+        }
+        for src in extracted
+    ]
+    result = match_pages_to_slots(pages=pages, expected_slots=expected_slots)
+    # Commit matched source pages to stable per-slide artifact paths.
+    for slide_id, source in list(result.matched.items()):
+        target_path = export_dir / f"{module_lesson_part}_{slide_id}.png"
+        target_path.write_bytes(Path(source).read_bytes())
+        result.matched[slide_id] = str(target_path)
+    return result
 
 
 def generate_deck_mixed_fidelity(

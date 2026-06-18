@@ -408,6 +408,21 @@ PERMITTED_PYTHON_DIFFS = {
     "tests/composition/test_slab_7b_wave_1_opener_composition_smoke.py",
     # Story 34-6 structural orphan cleanup after deleting the legacy composer.
     "tests/structural/test_directive_io_uses_utf8_explicit.py",
+    # Storyboard-correctness fix 2026-06-18 (party-ratified spec-storyboard-
+    # correctness-cover-shift; cycle-6 operator review root cause): Gary mapped
+    # Gamma-exported pages to slide_ids POSITIONALLY, so the engine cover page
+    # consumed slide-01 and shifted every content image down one (operator
+    # Glitch #1 + #2 = one bug). Replaced with deterministic bijective
+    # CONTAINMENT title matching (≥2-distinctive-token floor, all-edges
+    # uniqueness, ambiguity-fatal) in the shared materializer; gary consumes the
+    # slide-keyed MatchResult by slide_id (both positional zips dead) and
+    # fail-louds brief-unmatched / page-unmatched / title-ambiguous. The
+    # positional `_materialize_exported_slide_paths` is left byte-identical for
+    # the brief-less standalone Gamma lane. Bounded extension; freeze predicates
+    # remain in force for all other paths.
+    "skills/gamma-api-mastery/scripts/gamma_operations.py",
+    "tests/specialists/gary/test_gamma_title_matching.py",
+    "tests/specialists/gary/test_gary_gamma_dispatch.py",
 }
 
 
