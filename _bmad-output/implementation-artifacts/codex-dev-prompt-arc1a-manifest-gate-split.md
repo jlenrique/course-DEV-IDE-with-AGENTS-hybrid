@@ -27,5 +27,9 @@ Decompose the THREE co-located voice/variant HIL gates so each becomes [content 
 ## Verification (T9/T10)
 `pytest tests/unit/manifest/ tests/integration/marcus/ tests/generators/ -q`; `check_pipeline_manifest_lockstep.py` (Tier-2 — pack-version-bump lockstep engages); `lint-imports`; `ruff check`. Retain the frozen prior-version pack (A14).
 
+## T1 RESOLVED + the one design sub-decision (read the spec's "Implementation execution plan")
+- **Manifest edit is mechanically specified** in the spec (node splits + exact edge reroutes; 07B/11/11B are single nodes — per-slide fan-out is the `0.6` subgraph's job, verified by a multi-slide run, NOT manifest replication).
+- **A13 generator: the bump WIDENS into the v4.2 generator/pack.** A `gate=True` node is not `is_orchestration_only`, and `pack.md.j2` includes `step.template_name` per step — so a missing template crashes the renderer + lockstep. The new gate node inherits the original `pack_section_anchor` + gate section template. **THE ONE DESIGN SUB-DECISION:** the SPLIT CONTENT node (e.g. 07B-content = quinn-r eval, now gate=false but specialist_id set → NOT orchestration-only → still demands a template) — decide how it renders: (a) give it its own minimal content section, (b) broaden the orchestration/skip classification for specialist gate-content nodes (changes the shared predicate + L1 — higher blast radius), or (c) another disposition. This is atomically coupled to the manifest edit (lockstep-gated) and is NOT mechanical — resolve it (party input if it touches `is_orchestration_only`) BEFORE landing the manifest split.
+
 ## Ordering
 Arc 1a ships + A5/A6/A9 green BEFORE Arc 1b (membership wake) opens. Arc 1b is a separate spec.

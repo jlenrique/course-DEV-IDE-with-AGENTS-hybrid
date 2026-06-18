@@ -71,5 +71,20 @@ D2 impasse (un-fold-on-wake vs deferred-pause) → impasse-resolution chain: Dr.
 - `.\.venv\Scripts\python.exe scripts/utilities/check_pipeline_manifest_lockstep.py` (Tier-2 — expect the pack-version-bump lockstep to engage)
 - `.\.venv\Scripts\lint-imports.exe` · `.\.venv\Scripts\ruff.exe check <touched>`
 
+## T1 FINDINGS (resolved this session — derived from code reads)
+**A13 generator disposition — RESOLVED: the bump WIDENS into the generator/pack (Amelia's flagged case).** `pack.md.j2` renders every step via `{% include step.template_name %}`; `is_orchestration_only` = `specialist_id is None AND gate is False AND hud_tracked is False`, so a `gate=True` content-free node is NOT skipped and DOES need a section template (a missing one crashes the renderer — the documented renderer/L1 failure mode). Splitting one node into [content] + [gate] therefore requires a template/anchor disposition for BOTH nodes. → Arc-1a is NOT a pure data bump; it touches the v4.2 generator/pack (frozen-at-ship discipline). Recommended disposition: the new gate node inherits the original `pack_section_anchor` + section template (it IS the operator-facing gate section); the content node either reuses an orchestration-style minimal template or is classified to render as the upstream content step — confirm against the section templates at implementation.
+
+## Implementation execution plan (mechanical — derived T1; edges are explicit `{from,to}` pairs)
+Structure facts: 07B/11/11B are SINGLE manifest nodes (per-slide fan-out is handled by the `per-slide-subgraph` node id `0.6`, NOT by replicating these nodes — so per-slide cardinality is verified by a multi-slide run [A11], not by manifest replication). Ordering uses explicit edges + `insertion_after` + `sub_phase_of`.
+
+**G2B split (node 07B = quinn-r variant eval):**
+- 07B content node: KEEP specialist_id quinn-r, scaffold_node act, `dependency_projections` (slides←gary), sub_phase_of "07", insertion_after "7.5"; REMOVE gate_code+fold_with; gate→false.
+- NEW `07B-gate`: content-free (specialist_id null), gate true, gate_code G2B, fold_with G2C, sub_phase_of "07", insertion_after "07B", hud_tracked true, pack_section_anchor "7B)" (inherits the gate section).
+- Edges: `{from:"7.5",to:"07B"}` (keep) · CHANGE `{from:"07B",to:"07C"}` → `{from:"07B",to:"07B-gate"}` + `{from:"07B-gate",to:"07C"}`.
+
+**G4A/G4B split (nodes 11/11B = elevenlabs voice):** mirror — 11 content (specialist elevenlabs, insertion_after "10", gate_code removed) → NEW `11-gate` (G4A, fold_with G4, insertion_after "11"); 11B content (insertion_after "11", sub_phase_of "11", gate_code removed) → NEW `11B-gate` (G4B, fold_with G4, insertion_after "11B", sub_phase_of "11"). Reroute the 10→11→11B→12 edge chain through the two new gate nodes (confirm the exact G4-region edges at implementation — same reroute pattern as G2B).
+
+**Then:** A2 structural positional pin; A6 folded-equivalence golden (content/decision-plane oracle per A5) + kill-the-mutant; A7 `production_gate_ids` byte-identical; A9 forced-membership fixture; A11 multi-slide equivalence; A12 consumer inventory; generator template disposition (A13); A14 pack-version bump + frozen prior pack.
+
 ## Spec Change Log
 **2026-06-18 — authored ready-for-dev** after unanimous Tier-2 pack-bump ratification (Winston C1–C5; Murat A–D incl. escalation-resolving structural positional pin; Amelia 1–3 incl. generator-disposition hard line). Consolidated as acceptance items A1–A14. Routing: Claude-direct (operator autonomous directive) with party-ratified-spec + 3-lane-review rigor.
