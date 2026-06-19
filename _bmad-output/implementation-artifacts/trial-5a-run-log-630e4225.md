@@ -39,5 +39,12 @@
 - **Fix locus (next iteration — "repair" then "rerun"):** thread the operator-selected voice from `run_state.cache_state.cache_prefix.voice_selection.selected_voice_id` into the post-G4A elevenlabs dispatch payload — either (a) a `runner_supplied_payload` elevenlabs branch in `_dispatch_specialist_at_node`/`_runner_payload_for_specialist` carrying the selected voice, or (b) enrique reads the operator selection from a durable per-trial location the dispatch preserves. Then RE-RUN T5a to re-validate live (synthesis emits Sarah). Filed `beta-t5a-voice-select-consumption-not-wired`.
 - **What T5a PROVED (high value):** the picker DATA path is complete end-to-end (candidates surfaced live, select verb accepted, merge correct, run completes); the only remaining gap is the synthesis CONSUMPTION of the merged selection — now precisely located by the live trial (the exact thing unit tests couldn't catch).
 
+## ✅✅ T5a RERUN (710684c0) — VOICE BINDING VALIDATED LIVE (repair `3b5eec0`)
+After the T5a-F3 repair, a fresh run with the SAME Sarah `select` at G4A:
+- **node 12 (audio synthesis) `selected_voice_id = EXAVITQu4vr4xnSDxMaL` = SARAH** (the operator's non-default pick) — vs first run's Roger default. **The picker binds end-to-end.** The BETA "big leap" (e/voice) is proven on the live path.
+- Run reached `status: completed`.
+- **🟡 T5a-F4 (cosmetic):** node 12 `operator_id` still reads `operator-defaulted-recommended` — the runner threads `selected_voice_id` but not `operator_id`; the audit label is stale though the voice is correct. Minor follow-up: thread `operator_id="operator-select"` too.
+- **🔴 T5a-F2 REINFORCED (dominant "error-free twice" blocker):** irene pass-2 `slide-join-failed` needed **3 recover attempts** this rerun (2 consecutive failures) — far beyond a ≤1 auto-retry budget. NOT mere variance; the pass-2 perception_source join needs **prompt/schema hardening** before any clean twice-run is achievable. This is now the #1 BETA-blocking item.
+
 ## Findings (live)
 _log as observed_
