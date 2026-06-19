@@ -814,6 +814,31 @@ def _runner_payload_for_specialist(
     return None
 
 
+def _effective_quinn_r_gate_code(node: NodeSpec, manifest: Any) -> str | None:
+    """Resolve the gate_code that selects Quinn-R's body at an evaluation node.
+
+    Quinn-R's _act picks its mode (variant/pre/g5/...) from the dispatched
+    gate_id, which is the node's ``gate_code``. Arc-1a (2026-06-18) split the
+    woken HIL gate_code off the Quinn-R evaluation node (G2B moved from 07B onto
+    the content-free ``07B-gate``) to keep the wake pack-neutral — which left
+    node 07B with no gate_id and crashed Quinn-R with ``ModeMismatchError('')``.
+    Recover it from the CONTENT-FREE gate node (``specialist_id is None``)
+    inserted immediately after this node — distinguishing ``07B-gate``/G2B from
+    a sibling CONTENT gate that also follows (``07C``/G2C). Nodes that still
+    carry their own gate_code (e.g. 07C) are returned unchanged.
+    """
+    if node.gate_code:
+        return node.gate_code
+    for candidate in manifest.nodes:
+        if (
+            candidate.gate_code
+            and candidate.specialist_id is None
+            and getattr(candidate, "insertion_after", None) == node.id
+        ):
+            return candidate.gate_code
+    return None
+
+
 def _should_invoke_pre_gate_marcus(*, allow_offline_cost_report: bool) -> bool:
     api_key = os.getenv("OPENAI_API_KEY")
     return bool(
@@ -1036,6 +1061,7 @@ def _dispatch_specialist_at_node(
     *,
     adapter: Any,
     node: NodeSpec,
+    manifest: Any,
     specialist_id: str,
     production_envelope: ProductionEnvelope,
     run_state: RunState,
@@ -1071,7 +1097,7 @@ def _dispatch_specialist_at_node(
         specialist_id=specialist_id,
         directive_path=directive_path,
         bundle_dir=bundle_dir,
-        gate_code=node.gate_code,
+        gate_code=_effective_quinn_r_gate_code(node, manifest),
         production_envelope=production_envelope,
         runs_root=runs_root,
         trial_id=trial_id,
@@ -1425,6 +1451,7 @@ def run_production_trial(
                         production_envelope, run_state = _dispatch_specialist_at_node(
                             adapter=adapter,
                             node=node,
+                            manifest=manifest,
                             specialist_id=specialist_id,
                             production_envelope=production_envelope,
                             run_state=run_state,
@@ -1892,6 +1919,7 @@ def _continue_production_walk(
                         production_envelope, run_state = _dispatch_specialist_at_node(
                             adapter=adapter,
                             node=node,
+                            manifest=manifest,
                             specialist_id=specialist_id,
                             production_envelope=production_envelope,
                             run_state=run_state,

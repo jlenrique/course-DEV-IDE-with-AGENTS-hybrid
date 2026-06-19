@@ -58,6 +58,22 @@ _populated as each gate is reached: card_id, decision_card_digest, pick_context 
 - **Validation:** ruff clean; 57 Gary tests pass (1 new: `test_gary_generation_pins_titles_and_card_split`); 26 package-builder/title-matching regression pass; lint-imports 13 kept. 3-lane self-review: Blind/Edge/Acceptance — 1 edge finding (load-bearing delimiter) applied.
 - Spec: `_bmad-output/implementation-artifacts/spec-gamma-title-pinning-card-split.md`.
 
+### ✅ Recover #2 (post-fix): Gary CLEARED — fix validated on live path
+- The title-pinning fix got the walk **past Gary node 07 for the first time** (advanced to node 07B quinn-r). The Gamma generation fix is confirmed working live. (Stale `error-pause.json`/`run.json` still show the old Gary message — the subsequent crash didn't overwrite them.)
+
+### ⛔ NEW BLOCKER #2 — node 07B quinn-r crash (`ModeMismatchError: gate_id ''`)
+- **Crash (NOT a recoverable error-pause):** `app/specialists/quinn_r/_act.py:72 ModeMismatchError: unknown Quinn-R gate_id/gate_phase: ''` at node 07B. `ModeMismatchError(ValueError)` is outside the `SpecialistDispatchError` family → it propagated as an uncaught exception (CLI exit 1), so the trial did NOT pause cleanly.
+- **🔴 FINDING T4-F4 (major; defect in THIS session's Arc-1a wake):** quinn-r's mode is selected from `payload["gate_id"]` (`GATE_MODES={...,"G2B":"variant",...}`). The dispatch derives that gate_id from the **node's `gate_code`** (`production_runner.py:808` `_runner_payload_for_specialist`). **Arc-1a (2026-06-18) MOVED `gate_code:"G2B"` off node 07B onto the separate `07B-gate` node** to make the wake pack-neutral — which stripped node 07B's quinn-r mode signal. So node 07B (the variant-eval quinn-r) dispatches with empty gate_id → `_mode()` can't resolve → crash. Offline tests missed it (live dispatch path; the structural guard checked template+shim existence, not that 07B passes a gate_id). Same class the Blind Spot lane warned about.
+- **Fix locus:** `production_runner.py` dispatch-side (NOT the manifest → not a `block_mode_trigger_paths` edit → same governance tier as the Gamma fix). Make node 07B's quinn-r dispatch resolve gate_id="G2B" (variant mode) — cleanest via deriving it from the associated woken gate (`07B-gate.gate_code`, `insertion_after: 07B`). Secondary hardening candidate: `ModeMismatchError` should arguably be in the recoverable family so a mode-miss error-pauses instead of crashing.
+- **Status:** HELD — reported to operator (2nd fix in a cascade; weed-clearing trial surfacing live-only gaps as designed).
+
+### 🔧 ENGINE FIX #2 (T4-F4 resolution) — node 07B Quinn-R variant gate_id
+- **File:** `app/marcus/orchestrator/production_runner.py` (+ `tests/unit/marcus/orchestrator/test_quinn_r_variant_gate_code.py`). **NOT a manifest edit** → outside `block_mode_trigger_paths` → same governance tier as the Gamma fix.
+- **Fix:** new `_effective_quinn_r_gate_code(node, manifest)` — returns `node.gate_code` when present, else resolves it from the **content-free** woken gate (`specialist_id is None`) inserted after the node. Distinguishes `07B-gate`/G2B from the sibling CONTENT gate `07C`/G2C (both have `insertion_after: 07B`). Threaded `manifest` into the shared `_dispatch_specialist_at_node` (both walkers); dispatch now passes `gate_code=_effective_quinn_r_gate_code(node, manifest)` instead of bare `node.gate_code`. → node 07B Quinn-R now dispatches with `gate_id="G2B"` (variant mode).
+- **Deferred hardening (harvest):** `ModeMismatchError(ValueError)` should join the `SpecialistDispatchError` family so a future mode-miss error-pauses recoverably instead of crashing. Not done now (changes quinn_r exception hierarchy; risk of test ripple) — filed as follow-on.
+- **Validation:** ruff clean; 23 targeted (new helper test pins 07B→G2B, 07C→G2C, no sibling-borrow) + 303 marcus/quinn_r/gary regression pass (1 skip); lint-imports 13 kept. 3-lane self-review done.
+- Spec: `_bmad-output/implementation-artifacts/spec-quinn-r-07b-variant-gate-id.md`.
+
 ### G2C — _pending_
 
 ### G3 — _pending_
