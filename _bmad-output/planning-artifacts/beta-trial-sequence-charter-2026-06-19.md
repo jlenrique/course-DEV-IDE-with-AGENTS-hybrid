@@ -1,5 +1,7 @@
 # BETA Trial-Sequence Charter (2026-06-19)
 
+> **⚠️ RECONCILIATION BANNER (2026-06-19 PM — post-session).** This charter's inline EXECUTION-STATUS notes are **partially stale**: code for T5a + the S0 foundation landed *after* the mid-session snapshot below (S0.1–S0.3 ✅, `select` verb ✅, T5a voice-binding live-proven `710684c0` ✅; S0.4 only auto-retry, full per-gate live-dispatch harness **incomplete**; T5b/T6/T8 **not started**). For the authoritative, reconciled status see [`docs/STATE-OF-THE-APP.md`](../../docs/STATE-OF-THE-APP.md) §4 (BETA §8 scorecard) + §5 (tracker drift). The "error-free twice" milestone is **engine-reliability-met on a reduced approve-path**, NOT §8-spec-met. Formal BMAD filing of the BETA remainder is a party-mode governance decision (STATE-OF-THE-APP §9).
+
 **Status:** Phase-3 deliverable. Breaks `beta-spec-2026-06-19.md` into a dependency-ordered sequence of stories + trials I execute autonomously toward the §2 "error-free twice" criterion. Governance: dispatch/specialist/runner-tier work = Claude-direct quick-dev + 3-lane self-review + push (Trial-4 cadence). **Manifest-touching work = pipeline-lockstep regime → party-mode green-light BEFORE dev** (flagged ⚠️ below). Each trial validates on the frozen corpus `tejal-apc-c1-m1-p2-trends`.
 
 ## Legend

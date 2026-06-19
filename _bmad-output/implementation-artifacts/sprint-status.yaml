@@ -61,6 +61,20 @@ tracking_system: file-system
 story_location: _bmad-output/implementation-artifacts
 migration-master-status: shipped  # Unqualified SHIP as of Slab 6.1 formal close 2026-04-27. All four M5 conditions are RESOLVED; Slab 6.0 substrate + Slab 6.1 production-graph runner completed condition #3 with operator-witnessed live gate-resume smoke evidence. Prior bounded-MVP qualifier is dropped; Slab-6.2 is the next sprint prerequisite before the Slab 6 trial-experience bundle.
 
+# RECONCILIATION NOTE (2026-06-19) — THIS TRACKER OMITS THE JUNE BETA PROGRAM.
+#   This file was last meaningfully updated 2026-05-22 (Epic-34 tombstone). It does
+#   NOT contain the June BETA work (S0.1-S0.4 foundation, T5a voice-binding, the
+#   `select` verb, engine error-free ×2, Marcus-SPOC error-free ×2), which ran
+#   Claude-direct quick-dev + trials, NOT via bmad-create-story → bmad-dev-story →
+#   sprint flip. Three sources drifted (charter says T5a/S0.4 pending; SESSION-HANDOFF
+#   says core gate MET; this tracker says nothing happened). Authoritative reconciled
+#   status: docs/STATE-OF-THE-APP.md (§4 BETA §8 scorecard, §5 tracker drift, §9 open
+#   governance Q). WHETHER to back-fill the BETA program here as a formal Epic-35 with
+#   retroactive stories, OR to ratify "BETA Phase 1 = engine-reliability" in writing and
+#   file only forward stories, is a FULLY-SPAWNED PARTY-MODE governance decision
+#   (STATE-OF-THE-APP §9) — deliberately NOT decided unilaterally. Until that round
+#   ratifies a shape, deferred-inventory.md is the live gap map, not this file.
+
 # =============================================================================
 # TRIPWIRE EVENTS LEDGER (designated audit slot)
 # =============================================================================

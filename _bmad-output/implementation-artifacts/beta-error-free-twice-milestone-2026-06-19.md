@@ -1,5 +1,7 @@
 # BETA Milestone — Error-Free Production Run ×2 (2026-06-19)
 
+> **⚠️ REBRAND (party-ratified 2026-06-19):** read "error-free" here as **"error-free (mechanics only — fidelity UNVERIFIED)."** These runs passed the G5 gate *as scoped*, which checks script/audio mechanics — NOT narration↔rendered-slide fidelity. The fidelity axis was uninstrumented; a disaster-level perception/reading-path regression was active and undetected (`fidelity-metric-blind-to-perception-regression`). This milestone certifies **engine reliability on a reduced approve-path**, NOT BETA §8 to-spec, and NOT product-quality fidelity. Authority: `_bmad-output/planning-artifacts/beta-phase-1-closure-ratification-2026-06-19.md`; full picture `docs/STATE-OF-THE-APP.md`.
+
 ## Result
 **Two consecutive error-free production-pipeline runs on the frozen BETA corpus, no substrate change between them.** Satisfies the `beta-spec-2026-06-19.md §2` "error-free twice" criterion for the production engine (the narrated-deck pipeline with operator HIL at all 6 gates).
 
