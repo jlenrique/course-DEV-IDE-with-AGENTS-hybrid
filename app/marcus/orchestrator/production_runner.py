@@ -974,6 +974,43 @@ def _runner_payload_for_specialist(
     return None
 
 
+# BETA S0.4 flake budget (T5a-F2): dispatch tags that represent LLM-output
+# VARIANCE (a re-roll plausibly succeeds), not deterministic substrate defects.
+# Only these auto-retry; everything else fails loud immediately. Tunable by
+# party-mode as new variance points are observed across trials.
+_RETRYABLE_DISPATCH_TAGS: frozenset[str] = frozenset({"irene.pass2.slide-join-failed"})
+_MAX_DISPATCH_RETRIES = 3  # total attempts = 1 + 3; irene needed 3 re-rolls in T5a-rerun
+
+
+def _invoke_specialist_with_retry(adapter: Any, invoke_kwargs: dict[str, Any], node_id: str) -> Any:
+    """Invoke a specialist with bounded AUTOMATIC retry for LLM-variance tags.
+
+    BETA S0.4 flake-budget (T5a-F2 fix): a known LLM-output-variance failure
+    (e.g. irene pass-2 perception_source join) is absorbed in-process by
+    re-asking the LLM, instead of forcing an operator-manual `trial recover`
+    (which fails the "error-free" criterion). Each retry re-dispatches fresh (a
+    raised attempt records no contribution). A non-retryable tag re-raises
+    immediately — fail-loud is preserved for deterministic substrate defects.
+    """
+    attempt = 0
+    while True:
+        try:
+            return adapter.invoke_specialist(**invoke_kwargs)
+        except SpecialistDispatchError as exc:
+            retryable = getattr(exc, "tag", None) in _RETRYABLE_DISPATCH_TAGS
+            if retryable and attempt < _MAX_DISPATCH_RETRIES:
+                attempt += 1
+                LOGGER.warning(
+                    "retryable dispatch variance [%s] at node %s — auto-retry %d/%d",
+                    exc.tag,
+                    node_id,
+                    attempt,
+                    _MAX_DISPATCH_RETRIES,
+                )
+                continue
+            raise
+
+
 def _operator_selected_voice(run_state: Any) -> str | None:
     """The operator's G4A-selected voice id from the run_state envelope, if any.
 
@@ -1298,7 +1335,7 @@ def _dispatch_specialist_at_node(
             runner_payload = {**(runner_payload or {}), "selected_voice_id": operator_voice}
     if runner_payload is not None:
         invoke_kwargs["runner_supplied_payload"] = runner_payload
-    production_envelope = adapter.invoke_specialist(**invoke_kwargs)
+    production_envelope = _invoke_specialist_with_retry(adapter, invoke_kwargs, node.id)
     run_state = run_state.model_copy(
         update={"production_envelope": production_envelope}
     )
