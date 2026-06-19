@@ -111,7 +111,7 @@ Verify Quinn-R activates correctly, reviews artifacts across 5 quality dimension
 **Trigger:** Marcus invokes review with `review_pass: "pre-composition"` + `segment_manifest_path`
 **Expected:**
 - [ ] Quinn-R runs pre-composition checks (AQ + CI dimensions) against assets
-- [ ] Validates narration WPM (130-170) from duration/word-count ratio
+- [ ] Validates narration WPM against the voice-agnostic intelligibility band [110, 200] (P1 2026-06-19; beta-phase-1-closure-ratification §5) from duration/word-count ratio
 - [ ] Validates VTT timestamp monotonicity
 - [ ] Validates segment narration coverage (>95% of script words)
 - [ ] Validates video duration vs narration duration (±0.5s tolerance)
@@ -129,9 +129,9 @@ Verify Quinn-R activates correctly, reviews artifacts across 5 quality dimension
 - [ ] `dimension_scores` includes all 7 dimensions
 
 ## Scenario 15: Audio Quality Dimension (AQ)
-**Trigger:** Provide narration MP3 with WPM outside 130-170 range (too fast at 200 WPM)
+**Trigger:** Provide narration MP3 with WPM outside the intelligibility band [110, 200] (e.g., runaway-fast at 240 WPM; note 200 is now in-band/inclusive)
 **Expected:**
 - [ ] AQ dimension FAIL
-- [ ] Finding: severity High — "Narration pace: 200 WPM (target: 130-170). Recommend regenerating with lower stability or adjusted pacing."
+- [ ] Finding: severity High — "Narration pace: 240 WPM (intelligibility band: 110-200). Recommend regenerating with lower stability or adjusted pacing."
 - [ ] Location: specific segment ID from manifest
 - [ ] Actionable fix suggestion included

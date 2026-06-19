@@ -31,6 +31,20 @@ from app.specialists.quinn_r.quality_control_dispatch import (
 )
 from app.specialists.quinn_r.sensory_bridges_dispatch import dispatch_to_sensory_bridges
 
+# G5 voice-agnostic intelligibility band (P1; beta-phase-1-closure-ratification-2026-06-19.md §5,
+# Murat ruling). The gate catches PATHOLOGICAL narration rate (runaway-fast/garbled TTS, or
+# broken-slow truncation/silence) — NOT a voice's natural cadence. It replaces the prior
+# deviation-from-target band (150 ± 20 → [130,170]) which asserted the wrong invariant: Sarah's
+# natural ~128 WPM is fully intelligible yet tripped the old floor.
+#   FLOOR = 110.0 — PROVISIONAL, n=1, INTERIM. = slowest measured natural voice (Sarah, ~128 WPM,
+#     run 710684c0, 2026-06-19) − a ~14% deliberate intelligibility buffer (NOT reverse-derived
+#     from a round number). Re-validate when a 2nd natural voice is measured < 130 WPM OR at the
+#     next perception-arc retrospective, whichever first.
+#   CEILING = 200.0 — no natural-voice datum; a runaway-detection ceiling, NOT a cadence target.
+#     Reuses the documented plausible-narration ceiling pinned at
+#     skills/bmad-agent-marcus/scripts/tests/test-narration-config-schemas.py:120 (100<=wpm<=200).
+WPM_INTELLIGIBILITY_FLOOR, WPM_INTELLIGIBILITY_CEILING = 110.0, 200.0
+
 REPO_ROOT = Path(__file__).resolve().parents[3]
 SCHEMA_PATH = REPO_ROOT / "state/config/schemas/authorized-storyboard.schema.json"
 # Finding #10 (2026-06-11) retired at dp-v1.1 (Trial-3 cycle-4 defect 2):
@@ -133,14 +147,15 @@ def _vtt_seconds(stamp: str) -> float:
 
 def run_g5_checks(payload: dict[str, Any]) -> dict[str, Any]:
     target_wpm = float(payload.get("narration_profile_controls", {}).get("target_wpm", 150))
-    tolerance = float(payload.get("wpm_tolerance", 20))
     segments = payload.get("narration_segments") or []
     text = " ".join(str(seg.get("text", "")) for seg in segments if isinstance(seg, dict))
     duration = sum(float(seg.get("duration_seconds", 0)) for seg in segments if isinstance(seg, dict))  # noqa: E501
     observed = (len(text.split()) / duration * 60) if duration else target_wpm
-    # Winston (audio-arc): WPM vs ESTIMATED durations is self-referential — advisory only.
-    if abs(observed - target_wpm) > tolerance and not payload.get("wpm_durations_estimated"):
-        raise WpmThresholdError(f"WPM {observed:.1f} outside target {target_wpm:.1f}")
+    breach = "floor" if observed < WPM_INTELLIGIBILITY_FLOOR else "ceiling" if observed > WPM_INTELLIGIBILITY_CEILING else ""  # noqa: E501
+    override = bool(breach and not payload.get("wpm_durations_estimated") and payload.get("wpm_breach_override"))  # noqa: E501
+    advisory: list[dict[str, Any]] = [{"reason": "wpm-breach-operator-override", "observed_wpm": round(observed, 1), "floor": WPM_INTELLIGIBILITY_FLOOR, "ceiling": WPM_INTELLIGIBILITY_CEILING}] if override else []  # noqa: E501
+    if breach and not payload.get("wpm_durations_estimated") and not override:
+        raise WpmThresholdError(f"WPM {observed:.1f} {'below' if breach == 'floor' else 'above'} intelligibility {breach} {WPM_INTELLIGIBILITY_FLOOR if breach == 'floor' else WPM_INTELLIGIBILITY_CEILING:.0f}")  # noqa: E501
     previous = -1.0
     for line in str(payload.get("vtt_text") or "").splitlines():
         if "-->" not in line:
@@ -154,7 +169,6 @@ def run_g5_checks(payload: dict[str, Any]) -> dict[str, Any]:
     missing = sorted(slide_ids - covered)
     if missing:
         raise CoverageGapError(f"missing narration coverage: {missing}")
-    advisory: list[dict[str, Any]] = []
     for seg in segments:
         declared = float(seg.get("duration_seconds", 0))
         motion = float(seg.get("motion_duration_seconds", declared))

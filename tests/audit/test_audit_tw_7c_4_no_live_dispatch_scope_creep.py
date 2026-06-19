@@ -130,6 +130,13 @@ PERMITTED_PYTHON_DIFFS = {
     # freeze predicates remain in force.
     "app/specialists/quinn_r/_act.py",
     "tests/specialists/quinn_r/test_quinn_r_g2b_g2f_gate_modes.py",
+    # P1 voice-agnostic WPM floor 2026-06-19 (spec-p1-voice-agnostic-wpm-floor.md;
+    # beta-phase-1-closure-ratification-2026-06-19.md §5, party-mode §2 green-light).
+    # G5 WPM check changed from deviation-from-target band to a voice-agnostic
+    # intelligibility band [110,200] so a non-default voice (Sarah, 128 WPM) is no
+    # longer falsely failed. quinn_r/_act.py already allowlisted above (finding #10);
+    # this adds only the G5 QA test surface. Bounded 1-path extension.
+    "tests/specialists/quinn_r/test_quinn_r_g5_qa_body.py",
     # LOC-budget guard bumped 150->160 for the two new gate bodies (same fix).
     "tests/specialists/quinn_r/test_quinn_r_act_node_dispatch.py",
     # SCP 2026-06-11 segment-data-plane S0 (party-mode 4-of-4 + operator-

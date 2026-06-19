@@ -134,4 +134,10 @@ def test_quinn_r_act_body_loc_budget() -> None:
     # (2026-06-19): ModeMismatchError dual-rebased onto SpecialistDispatchError
     # (+ keyword-only tag ctor) so a mode-miss error-pauses recoverably instead
     # of crashing the walk (the Trial-4 node-07B crash); +1 import line.
-    assert len(logical_lines) <= 186
+    # 186 -> 200 at P1 voice-agnostic WPM floor (2026-06-19; party-mode §2
+    # green-light, beta-phase-1-closure-ratification §5): band constants +
+    # break-glass branch (~6 logical lines) PLUS a party-mandated provenance
+    # comment block (Amendment 1: n=1/INTERIM floor + re-validation trigger +
+    # ceiling "no-natural-basis" disclosure). logical_lines counts comments,
+    # so the mandated documentation consumes budget by design here.
+    assert len(logical_lines) <= 200

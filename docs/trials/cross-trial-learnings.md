@@ -255,3 +255,22 @@ exceptional harvest — **9 findings, and the first live G1→G2C gate crossing 
   voices; the recommended default is pre-selected (`voice_selection.selected_voice_id`).
 - Verdict digest = decision-card top-level `digest` (embedded field is the all-zeros placeholder) —
   confirms the Trial-3 learning across all 6 Trial-4 gates.
+
+### P1 voice↔WPM — a gate asserting the wrong invariant (2026-06-19; from `beta-voice-select-wpm-qa-interaction`)
+
+- **Symptom:** a NON-default voice (Sarah, measured ~128 WPM) deterministically tripped G5
+  `quinn_r.g5.wpm-threshold`; the default (Roger) landed in-band so approve-path runs always
+  passed — masking the defect. **Root cause:** the check asserted "narration tracks the configured
+  `target_wpm` ± tolerance" (150 ± 20 → [130,170]) — *cadence conformance*, not *intelligibility*.
+  A voice's natural cadence is not a defect.
+- **Fix (party-mode §2 green-light + T11 3-lane PASS):** replace the deviation-from-target band
+  with a voice-agnostic **intelligibility band [110,200]** (catch runaway-fast/broken-slow, not
+  natural cadence). Floor = slowest measured natural voice (n=1, Sarah, run `710684c0`) − ~14%
+  buffer, flagged PROVISIONAL with a re-validation trigger; ceiling = runaway-detection only, no
+  natural-voice basis. Operator override retained as a **logged break-glass** (`wpm_breach_override`
+  → advisory witness), never default. Resolves deferred-inventory `beta-voice-select-wpm-qa-interaction`.
+- **Cross-trial pattern (bidirectional with §3 STATE-OF-THE-APP fidelity arc):** this is the
+  *small-dose* sibling of the P2 perception regression — both are **a gate enforcing an invariant
+  that doesn't match reality**. When a QA gate fires on a property that is legitimately variable
+  (voice cadence; briefed-vs-rendered visuals), the gate is the bug, not the input. Smell-test any
+  new gate: "does failing this mean the artifact is actually wrong, or just different from a default?"
