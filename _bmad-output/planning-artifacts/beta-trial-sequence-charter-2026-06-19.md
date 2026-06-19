@@ -15,8 +15,12 @@ The universal precondition + the quality bar that makes "error-free" falsifiable
 > **EXECUTION STATUS (2026-06-19, live):**
 > - ✅ **S0.1** crash-taxonomy guard — `5c9cbea` (ModeMismatchError→error-pause; closes `trial-4-modemismatch-recoverable-family`).
 > - ✅ **S0.2** ingestion-report integrity — `6497514` (summary artifacts wired to producer output; closes G1-false-reject half of T4-F1).
-> - ◐ **S0.3** structured-card-binding — `a0d85a8` lands the **candidate-population** half (G2B/G4A cards now carry real variant/voice candidates + structured pick_context; closes T4-F6). **Remaining S0.3:** the `selected_*_id` verdict read-path + downstream **re-route** node (binding the pick) — folds into T5a (voice) as the safe proof.
+> - ◐ **S0.3** structured-card-binding — `a0d85a8` lands the **candidate-population** half (G2B/G4A cards now carry real variant/voice candidates + structured pick_context; closes T4-F6).
+> - ✅ **T5b binding verb `select`** — `c1fc663` (party milestone #2 ratified Option B). The re-route MECHANISM: `_apply_verdict_to_run_state` surgically overlays a `select` verdict's pick onto the envelope (voice nests at voice_selection.selected_voice_id; per-slide variant map; fail-loud on unknown key/missing envelope); `edit` full-replace pins untouched. 7 binding pins + resume-roundtrip twin green.
+> - ☐ **T5a LIVE validation** — pending: a trial to G4A + operator `select` non-default voice → assert post-G4A synthesis emits the picked voice (the operator→Enrique→synthesis wiring is the only part the unit tests can't prove; needs a live trial).
 > - ☐ **S0.4** live-dispatch contract harness — not started.
+>
+> **Session note (2026-06-19):** Phases 1-3 complete; Phase 4 foundation + the core picker-binding mechanism landed + pushed (5 commits) across 2 party milestones. The goal gate (BETA error-free ×2 via Marcus SPOC) is a multi-arc build beyond a single session; remaining: T5a live validation, S0.4 harness, T6 review-lanes, T7 Marcus SPOC, T8 motion, dress-rehearsal ×2.
 
 | Story | Scope | Exit | Closes |
 |---|---|---|---|
