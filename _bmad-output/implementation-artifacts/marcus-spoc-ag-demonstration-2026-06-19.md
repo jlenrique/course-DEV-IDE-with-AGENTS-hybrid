@@ -58,5 +58,11 @@
 - The session used the **approve-path** (operator reviews + accepts what Marcus presents — a legitimate review/influence action). The **non-default voice binding** (operator picks Sarah → synthesis emits Sarah) is proven in T5a rerun `710684c0`; combining a non-default voice select with completion needs the open `beta-voice-select-wpm-qa-interaction` decision (G5 WPM is voice-agnostic).
 - (c) lesson-plan and (d) research narration are thin (surface "staged"/"none") — richer surfacing is a fast-follow; the conversational frame + the data are in place.
 
+## ✅ Error-free TWICE through the SPOC
+The Marcus SPOC drove a full a–g production run to error-free completion **twice**:
+- SPOC run #1: `e2291039-a16b-4928-9228-f6d1f5abc666` — `completed`, 0 error-pauses, a–g narrated.
+- SPOC run #2: `74f72a4c-052d-47dd-b56a-1394c53230b6` — `completed`, 0 error-pauses, a–g narrated.
+No substrate change between them; the S0.4 auto-retry kept LLM variance non-blocking in both. This satisfies the goal's core: *Marcus as conversational SPOC demonstrating a–g, error-free, twice.*
+
 ## Evidence
-Run dir `state/config/runs/e2291039-a16b-4928-9228-f6d1f5abc666/` (gitignored; preserve). Engine error-free ×2 separately: `b7919f65` + `bb76170c` (`beta-error-free-twice-milestone-2026-06-19.md`).
+Run dirs `state/config/runs/e2291039-.../` + `state/config/runs/74f72a4c-.../` (gitignored; preserve). Engine error-free ×2 separately: `b7919f65` + `bb76170c` (`beta-error-free-twice-milestone-2026-06-19.md`).
