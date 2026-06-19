@@ -1,3 +1,32 @@
+==================================================================
+LATEST STORYBOARD LINKS  (updated 2026-06-19 PM)
+==================================================================
+Most recent run: 74f72a4c (Marcus SPOC run #2 — completed error-free)
+
+  Storyboard A:
+  https://jlenrique.github.io/assets/storyboards/74f72a4c-052d-47dd-b56a-1394c53230b6/index.html
+
+  Storyboard B:
+  https://jlenrique.github.io/assets/storyboards/74f72a4c-052d-47dd-b56a-1394c53230b6-b/index.html
+
+------------------------------------------------------------------
+Other error-free runs this session (A / B each):
+
+  e2291039  (Marcus SPOC run #1)
+   A: https://jlenrique.github.io/assets/storyboards/e2291039-a16b-4928-9228-f6d1f5abc666/index.html
+   B: https://jlenrique.github.io/assets/storyboards/e2291039-a16b-4928-9228-f6d1f5abc666-b/index.html
+
+  bb76170c  (engine error-free run #2)
+   A: https://jlenrique.github.io/assets/storyboards/bb76170c-3a7a-479a-ab4f-b41792b96637/index.html
+   B: https://jlenrique.github.io/assets/storyboards/bb76170c-3a7a-479a-ab4f-b41792b96637-b/index.html
+
+  b7919f65  (engine error-free run #1)
+   A: https://jlenrique.github.io/assets/storyboards/b7919f65-75be-4479-b14a-2994f4fcfc8e/index.html
+   B: https://jlenrique.github.io/assets/storyboards/b7919f65-75be-4479-b14a-2994f4fcfc8e-b/index.html
+
+(GitHub Pages can take ~1 min to deploy after publish.)
+
+
 TRIAL 4 — REVIEW URLs & PATHS
 Trial ID: d7ad4dac-7e65-4bde-9cb2-88a13fed2adc
 STATUS: ✅ COMPLETED 2026-06-19 — full pipeline G0 -> completion. Cost $0.24.
