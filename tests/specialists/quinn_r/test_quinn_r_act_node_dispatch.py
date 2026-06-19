@@ -130,5 +130,8 @@ def test_quinn_r_act_body_loc_budget() -> None:
     # dp-v1.2 audio-arc (2026-06-12): G5 grounding wire + fabricated-default
     # kill (raise replaces the slide-1 roster) + duration-aware WPM raise;
     # the heavy lifting lives in quality_control_dispatch. Bounded headroom,
-    # not an open ceiling.
-    assert len(logical_lines) <= 180
+    # not an open ceiling. 180 -> 186 at BETA S0.1 crash-taxonomy guard
+    # (2026-06-19): ModeMismatchError dual-rebased onto SpecialistDispatchError
+    # (+ keyword-only tag ctor) so a mode-miss error-pauses recoverably instead
+    # of crashing the walk (the Trial-4 node-07B crash); +1 import line.
+    assert len(logical_lines) <= 186

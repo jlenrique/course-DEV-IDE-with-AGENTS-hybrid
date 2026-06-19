@@ -13,6 +13,7 @@ from app.models.state import specialist_summary_artifacts as summary_writer
 from app.models.state.model_resolution_entry import ModelResolutionEntry
 from app.models.state.run_state import RunState
 from app.runtime.economics import RUNS_ROOT
+from app.specialists.dispatch_errors import SpecialistDispatchError
 
 # Audio-arc taxonomy re-base (2026-06-12): the G5 content errors live in
 # quality_control_dispatch as SpecialistDispatchError+ValueError duals — the
@@ -39,8 +40,17 @@ SCHEMA_PATH = REPO_ROOT / "state/config/schemas/authorized-storyboard.schema.jso
 GATE_MODES = {"G2C": "pre", "G5": "g5", "G3B": "storyboard_b", "G2B": "variant", "G2F": "motion"}  # noqa: E501
 
 
-class ModeMismatchError(ValueError):
-    """Raised when Quinn-R is invoked for a gate/body mismatch."""
+class ModeMismatchError(SpecialistDispatchError, ValueError):
+    """Raised when Quinn-R is invoked for a gate/body mismatch.
+
+    Dual-based (BETA S0.1 crash-taxonomy guard 2026-06-19): SpecialistDispatchError
+    so an unresolved mode error-pauses recoverably — the bare-ValueError form CRASHED
+    Trial-4 at node 07B (empty gate_id) and lost the walk — and ValueError so existing
+    handlers/tests keep their semantics. Mirrors the audio-arc G5 content-error duals.
+    """
+
+    def __init__(self, message: str, *, tag: str = "quinn_r.mode.unresolved") -> None:
+        SpecialistDispatchError.__init__(self, message, tag=tag)
 
 
 def _trail(last: ModelResolutionEntry, reason: str) -> ModelResolutionEntry:

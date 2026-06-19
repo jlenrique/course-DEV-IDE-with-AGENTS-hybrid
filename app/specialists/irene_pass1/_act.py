@@ -10,6 +10,7 @@ from typing import Any
 
 from app.models.state.operator_verdict import OperatorVerdict
 from app.models.state.run_state import RunState
+from app.specialists.dispatch_errors import SpecialistDispatchError
 from app.specialists.source_bundle import SourceBundleError, read_extracted_source
 
 REPO_ROOT = Path(__file__).resolve().parents[3]
@@ -31,8 +32,16 @@ PASS1_MODES = {"pass-1", "irene-pass1", "irene_pass1"}
 PASS2_MODES = {"pass-2", "irene-pass2", "irene_pass2"}
 
 
-class ModeMismatchError(RuntimeError):
-    """Raised when Pass-1 receives a Pass-2 envelope."""
+class ModeMismatchError(SpecialistDispatchError):
+    """Raised when Pass-1 receives a Pass-2 envelope.
+
+    Re-based onto SpecialistDispatchError (BETA S0.1 crash-taxonomy guard
+    2026-06-19) so a mode mismatch error-pauses recoverably instead of crashing
+    the walk (sibling of the quinn_r 07B Trial-4 crash). Stays RuntimeError-derived.
+    """
+
+    def __init__(self, message: str, *, tag: str = "irene_pass1.mode.unresolved") -> None:
+        SpecialistDispatchError.__init__(self, message, tag=tag)
 
 
 class BulkRatificationError(RuntimeError):
