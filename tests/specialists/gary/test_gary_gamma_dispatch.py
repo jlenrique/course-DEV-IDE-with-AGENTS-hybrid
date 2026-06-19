@@ -95,6 +95,48 @@ def test_gary_double_dispatch_generates_per_slide_variants(tmp_path: Path, monke
     )
 
 
+def test_gary_generation_pins_titles_and_card_split(tmp_path: Path, monkeypatch) -> None:
+    """Storyboard-correctness follow-on (2026-06-19): the generation call must
+    (a) pass cardSplit=inputTextBreaks so Gamma cannot merge/split briefed
+    slides, and (b) lead every `\\n---\\n` chunk with the exact briefed title as
+    a heading so Gamma adopts it as the card title and the export title-matcher
+    binds bijectively (the slide-05/06 brief-unmatched failure)."""
+    zpath = _titled_zip(tmp_path, ["1_Economic-Reality", "2_Leadership-Gap"])
+    monkeypatch.setattr(
+        gary_act, "download_export", lambda url, *, output_dir, filename: str(zpath)
+    )
+    client = FakeGammaClient()
+    payload = {
+        "slides": [
+            {"slide_id": "s1", "title": "Economic Reality", "prompt": "Economic Reality — explain"},
+            {"slide_id": "s2", "title": "Leadership Gap", "prompt": "Leadership Gap — explain"},
+        ],
+        "additional_instructions": "Experience profile: balanced.",
+        "export_dir": str(tmp_path),
+    }
+
+    gary_act.generate_gamma_variants(payload, client=client)
+
+    call = client.generate_calls[0]
+    # (a) card count is pinned to the input-text breaks, not Gamma's discretion.
+    assert call["card_split"] == "inputTextBreaks"
+    # (b) each chunk leads with the exact briefed title as a heading, joined by
+    #     the `\n---\n` break inputTextBreaks splits on.
+    input_text = str(call["input_text"])
+    assert input_text.startswith("# Economic Reality")
+    assert "\n---\n# Leadership Gap" in input_text
+    assert input_text.count("\n---\n") == 1  # exactly N-1 breaks for N slides
+    # the title used as the heading is the SAME string the matcher keys on.
+    assert gary_act._slide_title(payload["slides"][0], 1) == "Economic Reality"
+    # builder instructions are preserved and the title-preservation guidance +
+    # variant marker are appended.
+    instructions = str(call["additional_instructions"])
+    assert "Experience profile: balanced." in instructions
+    assert "verbatim" in instructions
+    assert "do not merge or split" in instructions
+    assert instructions.rstrip().endswith("Variant A.")
+
+
 def test_gary_single_slide_deck_title_matches(tmp_path: Path, monkeypatch) -> None:
     zpath = _titled_zip(tmp_path, ["1_Only-Topic-Here"])
     monkeypatch.setattr(

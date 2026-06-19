@@ -119,13 +119,43 @@ def _theme_id(client: GammaClient, payload: dict[str, Any]) -> str | None:
     return None
 
 
+def _slide_title(slide: dict[str, Any], index: int) -> str:
+    """The briefed card title — the SINGLE source for both the Gamma card
+    heading (in `_input_text`) and the export title-match key (`expected_slots`).
+
+    Storyboard-correctness follow-on (2026-06-19): Gamma free-titles and merges
+    pages unless each input chunk leads with the exact briefed title under
+    `cardSplit=inputTextBreaks`. Sharing one helper guarantees the heading we
+    send and the key we match on cannot drift apart.
+    """
+    return str(
+        slide.get("title")
+        or slide.get("prompt")
+        or slide.get("visual_description")
+        or f"slide-{index:02d}"
+    )
+
+
 def _input_text(slides: list[dict[str, Any]], payload: dict[str, Any]) -> str:
     if payload.get("input_text"):
         return str(payload["input_text"])
     chunks = []
     for index, slide in enumerate(slides, start=1):
-        prompt = slide.get("prompt") or slide.get("brief") or slide.get("title") or f"Slide {index}"
-        chunks.append(str(prompt))
+        title = _slide_title(slide, index)
+        body = str(
+            slide.get("prompt") or slide.get("brief") or slide.get("visual_description") or ""
+        ).strip()
+        # The `\n---\n` break is load-bearing under cardSplit=inputTextBreaks
+        # (it delimits cards), so a body that embeds it would split a spurious
+        # extra card and fail the bijective match. Neutralize any embedded
+        # delimiter before it reaches the card splitter.
+        body = body.replace("\n---\n", " ")
+        # Lead every chunk with the exact briefed title as a heading so Gamma
+        # adopts it as the card title verbatim under cardSplit=inputTextBreaks;
+        # the export title-matcher (bijective containment) then resolves cleanly
+        # instead of fail-louding on Gamma's invented page titles.
+        chunk = f"# {title}" if not body or body == title else f"# {title}\n\n{body}"
+        chunks.append(chunk)
     return "\n---\n".join(chunks)
 
 
@@ -151,9 +181,18 @@ def generate_gamma_variants(
             _input_text(slides, payload),
             num_cards=len(slides),
             theme_id=theme_id,
-            additional_instructions=str(
-                payload.get("additional_instructions") or f"Variant {variant}"
-            ),
+            # cardSplit=inputTextBreaks pins one card per `\n---\n` chunk, so
+            # Gamma can no longer merge/split briefed slides (the 6->5 collapse
+            # that orphaned slide-05/06). With the title-led chunks above, each
+            # card is titled with the briefed title and binds bijectively.
+            card_split="inputTextBreaks",
+            additional_instructions=(
+                f"{str(payload.get('additional_instructions') or '').strip()} "
+                "Use each section's leading heading as that card's title "
+                "verbatim; produce exactly one card per section; do not add a "
+                "cover, agenda, divider, or summary card; do not merge or split "
+                f"sections. Variant {variant}."
+            ).strip(),
             export_as="png",
         )
         raw_generation_id = (
@@ -184,12 +223,7 @@ def generate_gamma_variants(
         expected_slots = [
             (
                 str(slide.get("slide_id") or f"slide-{index:02d}"),
-                str(
-                    slide.get("title")
-                    or slide.get("prompt")
-                    or slide.get("visual_description")
-                    or ""
-                ),
+                _slide_title(slide, index),
             )
             for index, slide in enumerate(slides, start=1)
         ]
