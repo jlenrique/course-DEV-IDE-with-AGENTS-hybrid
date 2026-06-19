@@ -110,6 +110,17 @@ def test_approve_noops_the_envelope() -> None:
     assert out.cache_state.cache_prefix == rs.cache_state.cache_prefix
 
 
+def test_operator_selected_voice_reads_top_level_mirror() -> None:
+    """T5a-F3 repair: the dispatch reads the operator pick from the run_state
+    envelope's top-level mirror (set by the select merge) to thread into the
+    synthesis; absent until a select happens."""
+    from app.marcus.orchestrator.production_runner import _operator_selected_voice
+
+    assert _operator_selected_voice(_run_state({"selected_voice_id": "vK"})) == "vK"
+    assert _operator_selected_voice(_run_state({"no_pick": 1})) is None
+    assert _operator_selected_voice(_run_state(None)) is None
+
+
 def test_select_pick_survives_serialize_roundtrip() -> None:
     """Resume twin (Murat): the bound pick must survive the cache round-trip."""
     out = _apply_verdict_to_run_state(

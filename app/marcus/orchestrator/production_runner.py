@@ -974,6 +974,26 @@ def _runner_payload_for_specialist(
     return None
 
 
+def _operator_selected_voice(run_state: Any) -> str | None:
+    """The operator's G4A-selected voice id from the run_state envelope, if any.
+
+    Set as a top-level mirror by the `select` verdict merge (T5b); absent until
+    the operator actually picks, so threading it (T5a-F3 repair) is a no-op for
+    runs/nodes where no voice was selected.
+    """
+    cache_state = getattr(run_state, "cache_state", None)
+    raw = getattr(cache_state, "cache_prefix", None) if cache_state is not None else None
+    if not raw:
+        return None
+    try:
+        env = json.loads(raw)
+    except (json.JSONDecodeError, TypeError):
+        return None
+    if isinstance(env, dict) and env.get("selected_voice_id"):
+        return str(env["selected_voice_id"])
+    return None
+
+
 def _effective_quinn_r_gate_code(node: NodeSpec, manifest: Any) -> str | None:
     """Resolve the gate_code that selects Quinn-R's body at an evaluation node.
 
@@ -1263,6 +1283,19 @@ def _dispatch_specialist_at_node(
         runs_root=runs_root,
         trial_id=trial_id,
     )
+    # T5a-F3 repair (BETA): thread the operator's G4A voice `select` into the
+    # post-G4A elevenlabs SYNTHESIS. The select-merge lands in
+    # run_state.cache_prefix, but a node that builds its payload from
+    # dependencies (the synthesis node) drops the base envelope (dispatch_adapter
+    # line 122), so the merged pick never reaches enrique. enrique reads
+    # payload['selected_voice_id'] as a fallback, so supplying it via
+    # runner_supplied_payload binds the pick. Gated to dependency-bearing
+    # elevenlabs nodes (the synthesis), NOT the voice-options node which relies
+    # on the base envelope; no-op until the operator actually selects.
+    if specialist_id in {"elevenlabs", "enrique"} and node.dependency_projections:
+        operator_voice = _operator_selected_voice(run_state)
+        if operator_voice:
+            runner_payload = {**(runner_payload or {}), "selected_voice_id": operator_voice}
     if runner_payload is not None:
         invoke_kwargs["runner_supplied_payload"] = runner_payload
     production_envelope = adapter.invoke_specialist(**invoke_kwargs)
