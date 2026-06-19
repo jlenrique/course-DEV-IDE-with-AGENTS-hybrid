@@ -74,11 +74,12 @@
       "type": "string"
     },
     "verb": {
-      "description": "Closed enum: approve | edit | reject.",
+      "description": "Closed enum: approve | edit | reject | select. `select` is the BETA picker verb (surgical overlay of a per-gate selection onto the existing envelope); `edit` remains full-replace (party-ratified Option B, T5b 2026-06-19).",
       "enum": [
         "approve",
         "edit",
-        "reject"
+        "reject",
+        "select"
       ],
       "title": "Verb",
       "type": "string"

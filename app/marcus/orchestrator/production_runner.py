@@ -785,21 +785,92 @@ def _ensure_decision_card_registered_from_disk(
         )
 
 
+# BETA T5b (party-ratified Option B, 2026-06-19): the `select` picker verb does a
+# SURGICAL OVERLAY of an operator selection onto the existing envelope, distinct
+# from `edit` (full-replace, contract preserved). Per-gate selectable-key
+# allowlist — a select carrying any other key fails loud (no partial write).
+_SELECTABLE_KEYS_BY_GATE: dict[str, frozenset[str]] = {
+    "G4A": frozenset({"selected_voice_id"}),
+    "G2B": frozenset({"selected_variant_id"}),
+}
+
+
+class SelectionBindingError(ValueError):  # noqa: N818
+    """A `select` verdict could not be bound (missing envelope or non-selectable key)."""
+
+
+class UnknownSelectionKeyError(SelectionBindingError):
+    """A `select` verdict carried a key outside the gate's selectable-key allowlist."""
+
+
+def _merge_selection_into_envelope(
+    existing: dict[str, Any], selection: dict[str, Any], gate_id: str
+) -> dict[str, Any]:
+    """Overlay an operator selection onto the existing envelope (leaf-merge).
+
+    Invariants (Winston/Amelia/Murat, T5b): additive — never drop a pre-existing
+    key; voice nests at ``voice_selection.selected_voice_id`` (siblings preserved);
+    unknown keys fail loud BEFORE any mutation.
+    """
+    allowed = _SELECTABLE_KEYS_BY_GATE.get(gate_id, frozenset())
+    unknown = sorted(set(selection) - allowed)
+    if unknown:
+        raise UnknownSelectionKeyError(
+            f"select verdict for {gate_id} carried non-selectable key(s) {unknown}; "
+            f"allowed: {sorted(allowed)}"
+        )
+    merged = dict(existing)
+    if "selected_voice_id" in selection:
+        voice_selection = dict(merged.get("voice_selection") or {})
+        voice_selection["selected_voice_id"] = selection["selected_voice_id"]
+        voice_selection.setdefault("operator_id", "operator-select")
+        merged["voice_selection"] = voice_selection
+        # top-level mirror (enrique falls back to payload['selected_voice_id'])
+        merged["selected_voice_id"] = selection["selected_voice_id"]
+    if "selected_variant_id" in selection:
+        merged["selected_variant_id"] = selection["selected_variant_id"]
+    return merged
+
+
 def _apply_verdict_to_run_state(
     run_state: RunState,
     verdict: OperatorVerdict,
 ) -> RunState:
-    if verdict.verb != "edit":
-        return run_state
-    return run_state.model_copy(
-        update={
-            "cache_state": CacheState(
-                cache_prefix=json.dumps(verdict.edit_payload, sort_keys=True),
-                entries_count=1,
-                last_invalidated_at=None,
+    if verdict.verb == "edit":
+        return run_state.model_copy(
+            update={
+                "cache_state": CacheState(
+                    cache_prefix=json.dumps(verdict.edit_payload, sort_keys=True),
+                    entries_count=1,
+                    last_invalidated_at=None,
+                )
+            }
+        )
+    if verdict.verb == "select":
+        raw = run_state.cache_state.cache_prefix if run_state.cache_state else None
+        try:
+            existing = json.loads(raw) if raw else None
+        except json.JSONDecodeError:
+            existing = None
+        if not isinstance(existing, dict):
+            raise SelectionBindingError(
+                f"select verdict for {verdict.gate_id} has no decodable envelope to "
+                f"overlay onto (cache_prefix missing/unparseable)"
             )
-        }
-    )
+        merged = _merge_selection_into_envelope(
+            existing, verdict.edit_payload or {}, verdict.gate_id
+        )
+        return run_state.model_copy(
+            update={
+                "cache_state": CacheState(
+                    cache_prefix=json.dumps(merged, sort_keys=True),
+                    entries_count=1,
+                    last_invalidated_at=None,
+                )
+            }
+        )
+    # approve / reject: envelope is a no-op (verdict drives run-state/gate status only)
+    return run_state
 
 
 def _record_cost(

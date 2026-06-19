@@ -73,7 +73,10 @@ def test_operator_verdict_schema_enum_excludes_tamper_verbs() -> None:
     schema = OperatorVerdict.model_json_schema()
     verb_field = schema["properties"]["verb"]
     enum_values = verb_field.get("enum", [])
-    assert sorted(enum_values) == sorted(["approve", "edit", "reject"]), (
+    # `select` added at BETA T5b (party-ratified Option B, 2026-06-19) — the
+    # picker overlay verb. FR34's load-bearing guarantee is the tamper-verb
+    # EXCLUSION below; the legitimate-verb set grows only by ratified addition.
+    assert sorted(enum_values) == sorted(["approve", "edit", "reject", "select"]), (
         f"OperatorVerdict.verb enum drifted from FR34 contract: {enum_values}"
     )
     assert "timeout" not in enum_values, "FR34 violation: tamper verb 'timeout' in schema enum"

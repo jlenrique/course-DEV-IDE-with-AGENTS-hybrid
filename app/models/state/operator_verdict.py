@@ -25,7 +25,7 @@ from app.models.state.validators.operator_verdict_validators import (
     enforce_verb_payload_consistency,
 )
 
-OperatorVerdictVerb = Literal["approve", "edit", "reject"]
+OperatorVerdictVerb = Literal["approve", "edit", "reject", "select"]
 SCHEMA_PATH = Path(__file__).resolve().parents[1] / "schemas" / "operator_verdict.schema.json"
 
 
@@ -49,7 +49,12 @@ class OperatorVerdict(BaseModel):
     )
     verb: OperatorVerdictVerb = Field(
         ...,
-        description="Closed enum: approve | edit | reject.",
+        description=(
+            "Closed enum: approve | edit | reject | select. `select` is the "
+            "BETA picker verb (surgical overlay of a per-gate selection onto the "
+            "existing envelope); `edit` remains full-replace (party-ratified "
+            "Option B, T5b 2026-06-19)."
+        ),
     )
     gate_id: str = Field(
         ...,

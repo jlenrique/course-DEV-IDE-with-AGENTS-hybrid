@@ -47,11 +47,12 @@ def enforce_verb_payload_consistency(
     """Raise ValueError if verb-payload pairing is inconsistent.
 
     - ``verb == "edit"`` ⇒ ``edit_payload`` MUST be non-None
+    - ``verb == "select"`` ⇒ ``edit_payload`` MUST be non-None (the selection)
     - ``verb == "reject"`` ⇒ ``reject_reason`` MUST be non-None
     - ``verb == "approve"`` ⇒ both payload fields MUST be None (typo guard)
     """
-    if verb == "edit" and edit_payload is None:
-        raise ValueError("OperatorVerdict.verb='edit' requires edit_payload to be set")
+    if verb in {"edit", "select"} and edit_payload is None:
+        raise ValueError(f"OperatorVerdict.verb={verb!r} requires edit_payload to be set")
     if verb == "reject" and reject_reason is None:
         raise ValueError("OperatorVerdict.verb='reject' requires reject_reason to be set")
     if verb == "approve" and (edit_payload is not None or reject_reason is not None):
