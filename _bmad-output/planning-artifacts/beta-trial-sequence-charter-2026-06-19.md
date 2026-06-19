@@ -77,6 +77,8 @@ Voice candidates already exist (`enrique.voice_preview.voices`) — prove `edit`
 ---
 
 ## BETA DRESS REHEARSAL ×2 (the goal gate; D4). Gov: light. Auto: yes.
+
+> **✅ ENGINE ERROR-FREE ×2 ACHIEVED (2026-06-19)** — runs `b7919f65` + `bb76170c`, frozen corpus, no substrate change between, 0 error-pauses / 0 manual recovers (auto-retry absorbed irene variance). Record: `beta-error-free-twice-milestone-2026-06-19.md`. SCOPE: this is the production *pipeline* error-free-twice with operator HIL at all gates + the picker-binding proven separately (T5a `710684c0`). It is NOT yet the full conversational Marcus SPOC (a–g surface) — that remains T6/T7/T8 + the SPOC Epic. Open: `beta-voice-select-wpm-qa-interaction` (non-default voice trips G5 WPM; party decision pending).
 - **Pre-req:** S0–T7 closed; S0.4 quality infra green; (d)/(f) present-or-carved.
 - **Run 1 + Run 2:** integrated run on the FROZEN corpus through Marcus-SPOC exercising a+b+c+e (sources, ingestion-review, lesson-plan-review, variant-set + per-slide bind + voice bind), d+f review-only-or-carved. Both must satisfy §2 `error-free` (zero Class-A; Class-B within budget; no substrate change between runs).
 - **Breadth (non-gating):** 1 cross-corpus run recorded as generalization evidence.
