@@ -1,0 +1,75 @@
+TRIAL 4 — REVIEW URLs & PATHS
+Trial ID: d7ad4dac-7e65-4bde-9cb2-88a13fed2adc
+STATUS: ✅ COMPLETED 2026-06-19 — full pipeline G0 -> completion. Cost $0.24.
+
+==================================================================
+COMPLETED — FINAL ARTIFACTS
+==================================================================
+LangSmith trace:
+https://smith.langchain.com/traces/d7ad4dac-7e65-4bde-9cb2-88a13fed2adc
+
+Narration MP3s (Roger voice, 6 segments):
+state/config/runs/d7ad4dac-7e65-4bde-9cb2-88a13fed2adc/enrique-narration/assembly-bundle/audio/seg-01.mp3  (... seg-02..06)
+
+Assembly bundle (compositor hand-off):
+state/config/runs/d7ad4dac-7e65-4bde-9cb2-88a13fed2adc/enrique-narration/assembly-bundle/
+
+Cost report:
+state/config/runs/d7ad4dac-7e65-4bde-9cb2-88a13fed2adc/cost-report.md
+
+Full run log / findings:
+_bmad-output/implementation-artifacts/trial-4-run-log-d7ad4dac.md
+
+
+==================================================================
+G4A — VOICE SELECTION (narration mp3)  [CURRENT GATE]
+3 ElevenLabs voice samples — click to listen:
+==================================================================
+
+[RECOMMENDED / current default]
+Roger - Laid-Back, Casual, Resonant  (american male, middle-aged, conversational)
+https://storage.googleapis.com/eleven-public-prod/premade/voices/CwhRBWXzGAHq8TQ4Fs17/58ee3ff5-f6f2-4628-93b8-e38eb31806b0.mp3
+
+Sarah - Mature, Reassuring, Confident  (american female, young, professional)
+https://storage.googleapis.com/eleven-public-prod/premade/voices/EXAVITQu4vr4xnSDxMaL/01a3e33c-6e99-4ee7-8543-ff2216a32186.mp3
+
+Laura - Enthusiast, Quirky Attitude  (american female, young, sassy)
+https://api.us.elevenlabs.io/v1/voices/FGY2WhTYpPnrIDTdsKH5/previews/audio?payload=eyJ2b2ljZV9zb3VyY2UiOiJwcmVtYWRlIiwiZmlsZW5hbWUiOiI2NzM0MTc1OS1hZDA4LTQxYTUtYmU2ZS1kZTEyZmU0NDg2MTgubXAzIiwidGltZXN0YW1wIjoxNzgxODQ4ODAwMDAwMDAwfQ%3D%3D
+
+==================================================================
+G2C — STORYBOARD A (interactive HTML deck)
+==================================================================
+
+ONLINE (GitHub Pages — may take ~1 min to deploy after publish):
+https://jlenrique.github.io/assets/storyboards/d7ad4dac-7e65-4bde-9cb2-88a13fed2adc/index.html
+
+LOCAL (open instantly in a browser):
+state/config/runs/d7ad4dac-7e65-4bde-9cb2-88a13fed2adc/exports/storyboard-A-pack/storyboard/index.html
+
+LOCAL SNAPSHOT (published copy + zip):
+exports/storyboard-d7ad4dac-7e65-4bde-9cb2-88a13fed2adc/
+exports/storyboard-d7ad4dac-7e65-4bde-9cb2-88a13fed2adc.zip
+
+==================================================================
+G3 — STORYBOARD B (narration script + slide/clip context)
+==================================================================
+
+ONLINE:
+https://jlenrique.github.io/assets/storyboards/d7ad4dac-7e65-4bde-9cb2-88a13fed2adc-b/index.html
+
+LOCAL:
+state/config/runs/d7ad4dac-7e65-4bde-9cb2-88a13fed2adc/exports/storyboard-B-pack/storyboard/index.html
+
+==================================================================
+SLIDE IMAGES (Gary, variant A — 6 slides)
+==================================================================
+state/config/runs/d7ad4dac-7e65-4bde-9cb2-88a13fed2adc/exports/gary/A_slide-01.png
+state/config/runs/d7ad4dac-7e65-4bde-9cb2-88a13fed2adc/exports/gary/A_slide-02.png
+state/config/runs/d7ad4dac-7e65-4bde-9cb2-88a13fed2adc/exports/gary/A_slide-03.png
+state/config/runs/d7ad4dac-7e65-4bde-9cb2-88a13fed2adc/exports/gary/A_slide-04.png
+state/config/runs/d7ad4dac-7e65-4bde-9cb2-88a13fed2adc/exports/gary/A_slide-05.png
+state/config/runs/d7ad4dac-7e65-4bde-9cb2-88a13fed2adc/exports/gary/A_slide-06.png
+
+==================================================================
+(Storyboard B + narration mp3 links will be appended as later gates land)
+==================================================================

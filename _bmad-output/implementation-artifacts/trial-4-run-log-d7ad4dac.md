@@ -74,7 +74,68 @@ _populated as each gate is reached: card_id, decision_card_digest, pick_context 
 - **Validation:** ruff clean; 23 targeted (new helper test pins 07B→G2B, 07C→G2C, no sibling-borrow) + 303 marcus/quinn_r/gary regression pass (1 skip); lint-imports 13 kept. 3-lane self-review done.
 - Spec: `_bmad-output/implementation-artifacts/spec-quinn-r-07b-variant-gate-id.md`.
 
-### G2C — _pending_
+### ✅ G2B — variant review (OPERATOR DECISION) → APPROVED
+- Reached cleanly after both fixes (`status: paused-at-gate, paused_gate: G2B`). **card_id** `5440307b-9caf-4801-8c7e-480ddfb0a3cc` · **digest** `f2ffc60c…c57c`.
+- **Deck validated:** 6/6 slides matched bijectively, correctly titled (incl. slide-05 "Leadership Gap" which orphaned twice pre-fix). Real, on-brief renders (operator + Claude viewed slide-01 + slide-05). `single-dispatch` (1 variant/slide; `variant_candidates: []`).
+- quinn-r variant-mode eval completed/approved (`qrr.parsed.ok`, gpt-5). Reporting nit (harvest): quinn-r summary "Emitted artifacts: none" (thin pick_context, sibling of T4-F1).
+- **Operator (Juan) verdict: `approve`** (2026-06-19) — deck good, nothing to reject, Storyboard-A visual review is at G2C. Verdict at `operator-verdict-G2B.json`.
+
+### ✅ G2C — Storyboard A publish + Gate-2 QA approval → APPROVED (operator-reviewed)
+- **card_id** `eeebca99-8998-41ff-935d-d49149a0943d` · **digest** `d5f05c5e…9b1a` · readiness `ready`, blocking_issues `[]`.
+- **Storyboard A PUBLISHED ONLINE:** https://jlenrique.github.io/assets/storyboards/d7ad4dac-7e65-4bde-9cb2-88a13fed2adc/index.html (8 files, publish receipt OK). Local: `exports/storyboard-A-pack/storyboard/index.html`. URLs posted to project-root `TRIAL-4-URLS.txt` per operator.
+- **Operator reviewed the published Storyboard A: "looks great; Script Notes align with slides."** Verdict `approve` (2026-06-19). `operator-verdict-G2C.json`.
+
+### ⛔ ERROR-PAUSE #3 at node 08 (irene pass-2) — `irene.pass2.slide-join-failed`
+- Recoverable error-pause (not a crash). Guard `_assert_narration_joins_roster` (`irene/graph.py:157`): a narration_script exists but its `segment_manifest_deltas[].visual_references[].perception_source` referenced **no** roster slide (`referenced` set empty; orphans `[]`). The prompt already mandates perception_source∈roster (graph.py:271) → looks like LLM-output variance, not a wiring bug.
+- **Finding T4-F5:** irene pass-2 (gpt-5.4) produced narration that didn't carry slide-join metadata. Recover-first (re-roll the LLM) is the right action — cycle-5/6 produced 6 conforming segments on this corpus. If recover fails identically → systematic → strengthen the pass-2 prompt/schema-enforcement.
+- **Action:** `trial recover` (re-roll node 08).
+
+### ✅ Recover #4 (irene re-roll): CLEARED — T4-F5 was LLM variance
+- One `trial recover` re-rolled node 08; irene pass-2 produced conforming narration (perception_source joins roster). Confirms T4-F5 = LLM-output variance, not a wiring bug (prompt already correct). **Storyboard B published:** https://jlenrique.github.io/assets/storyboards/d7ad4dac-7e65-4bde-9cb2-88a13fed2adc-b/index.html. No code fix needed.
+
+### ✅ G3 — motion-clip approval (Claude-driven) → APPROVED
+- **card_id** `9a89334d-d2e0-4684-bbdf-4b6b0b49d228` · **digest** `a4e47d46…d35e` · gate_focus `motion_clip_approval` · progress 50% · no blocking issues.
+- Narrated-deck deliverable → no motion expected (`motion_receipts: []` is the certified-correct state; motion leg structurally unproven per project-context 2026-06-13, out of scope here). **Claude verdict: `approve`.** `operator-verdict-G3.json`.
+- Pending nodes → 10, 11 (elevenlabs narration), 11-gate (**G4A voice**), 11B/11B-gate, 12-15.
+
+### ✅ G4 — fidelity gate (Claude-driven) → APPROVED
+- **card_id** `ab77fac7-bcd7-4700-85e0-96d71e8a78e9` · **digest** `9f4e263d…4973` · gate_focus `fidelity_gate` (Vera) · active node 10.
+- `final_status: "partial"` = run-completeness (mid-pipeline, audio not yet generated), NOT a fidelity defect. Vera ran real (`ftr.parsed.ok`), fidelity traces written under `fidelity/`; no blocking issues. **Claude verdict: `approve`.** `operator-verdict-G4.json`.
+- Resume runs node 11 (ElevenLabs narration) → next pause **G4A (voice)**.
+
+### ✅ G4A — voice selection (OPERATOR DECISION) → APPROVED
+- **card_id** `e9f7a534-4186-41d7-9b83-afed23346df4` · **digest** `d5c24f2c…3696` · gate_focus `voice_selection`.
+- Enrique (real, `elevenlabs.dispatch.ok`) produced **3 voice options with playable samples** — defaulted to recommended **Roger** (`CwhRBWXzGAHq8TQ4Fs17`, laid-back am. male). Alternates: Sarah, Laura. Sample URLs posted to `TRIAL-4-URLS.txt`. NOTE: unlike G2B, G4A surfaced REAL `voice_preview.voices` (3) with sample_audio_url — the card's `voice_candidates: []` is the structured-parsing gap, but the evidence carried the options (harvest: wire voice_preview.voices → card.voice_candidates).
+- **Operator (Juan) verdict: `approve`** (accept Roger). Same accept/review posture — alternate pick non-binding this trial (deferred picker). `operator-verdict-G4A.json`.
+
+### → DRIVE TO COMPLETION (compositor / assembly nodes 11B → 15)
+
+### 🏁 TRIAL 4 COMPLETE — `status: completed` (2026-06-19T06:08:40Z)
+- **Full pipeline G0 → completion**, no remaining pause, no error. `production_clone_launch_evidence: true`.
+- **Narration synthesized: 6/6 real ElevenLabs segments** (Roger voice): seg-01..06 = 37.0/42.7/43.1/37.3/34.5/34.3s, all OK. MP3s at `enrique-narration/assembly-bundle/audio/seg-0{1..6}.mp3`.
+- **Assembly bundle** built (`enrique-narration/assembly-bundle/`) + compositor hand-off summary.
+- **Cost: $0.240** total. LangSmith trace: https://smith.langchain.com/traces/d7ad4dac-7e65-4bde-9cb2-88a13fed2adc. Per-model: gpt-5.4 $0.130 (irene_pass1), gpt-5 $0.108, gpt-5-nano $0.003.
+- **6 gates crossed:** G1 → G2B → G2C → G3 → G4 → G4A. Operator owned G2B (variant) + G4A (voice); Claude drove G0/G1/G2C/G3/G4.
+
+## OUTCOME SUMMARY
+**First operator-in-the-loop Trial-4 run, full pipeline, completed.** Required **2 substrate fixes + 1 LLM re-roll** to get through (the trial did its weed-clearing job — surfaced live-only gaps that the offline suites hid).
+
+### Engine fixes landed + pushed (governance-light, dispatch/specialist tier; NOT manifest)
+1. **`10befac` Gamma title-pinning + card-split** (T4-F2) — `card_split=inputTextBreaks` + title-led chunks via shared `_slide_title`. Cleared Gary deck export (was failing `gamma.export.brief-unmatched` on slides 5/6).
+2. **`1b629f3` node-07B quinn-r variant gate_id** (T4-F4) — `_effective_quinn_r_gate_code` derives the mode-selecting gate_code from the content-free woken gate. Cleared the `ModeMismatchError('')` crash (a defect in this session's own Arc-1a wake).
+
+### Findings harvested (for postmortem → `docs/trials/cross-trial-learnings.md`)
+- **T4-F1** (nit): G1 drafted-`reject` is a false-negative driven by the Texas specialist-summary's "Emitted artifacts: none" (not wired to bundle manifest) + a double Texas dispatch (exit-10). Recurs for quinn-r/vera/enrique summaries (all say "Emitted artifacts: none"). Fix: wire specialist-summary artifact lists to the bundle/output manifest.
+- **T4-F2** ✅ fixed (Gamma title-pinning).
+- **T4-F3** (design): G2B variant pick is accept/review only (`variant_candidates: []`, `selected_*_id` write-only, edit non-binding). The operator's per-slide pick-from-N picker = the deferred "big leap" for the next trial. Also this run was single-dispatch (one variant/slide).
+- **T4-F4** ✅ fixed (07B gate_id). Deferred hardening: put `ModeMismatchError` in the `SpecialistDispatchError` family so a mode-miss error-pauses instead of crashing.
+- **T4-F5** (LLM variance): irene pass-2 `slide-join-failed` cleared on one re-roll. Prompt already correct; consider tightening output-schema enforcement of `perception_source` if it recurs.
+- **T4-F6** (harvest): G4A surfaced REAL voice options (`voice_preview.voices` ×3 with sample URLs) but `card.voice_candidates: []` — wire `voice_preview.voices` → `card.voice_candidates` so the picker has structured data (prereq for the binding voice picker).
+
+### Recommended next steps
+1. **The "big leap" (next trial):** build the binding pick-from-N variant + voice selectors (T4-F3 + T4-F6) so operator picks re-route downstream per slide.
+2. File T4-F1/F5/F6 + the two fixes to `docs/trials/cross-trial-learnings.md` and deferred-inventory per trial-postmortem governance.
+3. Land the `ModeMismatchError`→recoverable hardening (cheap, deferred from fix #2).
 
 ### G3 — _pending_
 
