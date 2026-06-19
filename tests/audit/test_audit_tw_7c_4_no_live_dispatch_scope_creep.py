@@ -130,6 +130,18 @@ PERMITTED_PYTHON_DIFFS = {
     # freeze predicates remain in force.
     "app/specialists/quinn_r/_act.py",
     "tests/specialists/quinn_r/test_quinn_r_g2b_g2f_gate_modes.py",
+    # P2-1 fidelity detector 2026-06-19 (spec-p2-1-fidelity-detector-red-first.md;
+    # epics-perception-reading-path-fidelity.md; Tier-3 party green-light 5/5).
+    # Fail-loud fidelity detector (RED-first) + shared PerceptionArtifact contract.
+    # Detector is pure/deterministic; G5 now requires perception_artifacts. P2-1
+    # is lockstep-clean (none of these are block_mode_trigger_paths). Bounded extension.
+    "app/models/perception/__init__.py",
+    "app/models/perception/perception_artifact.py",
+    "app/specialists/quinn_r/fidelity_detector.py",
+    "app/specialists/quinn_r/quality_control_dispatch.py",
+    "tests/specialists/quinn_r/test_fidelity_detector.py",
+    "tests/specialists/test_audio_segment_grounding.py",
+    "tests/parity/test_quinn_r_activation_contract.py",
     # P1 voice-agnostic WPM floor 2026-06-19 (spec-p1-voice-agnostic-wpm-floor.md;
     # beta-phase-1-closure-ratification-2026-06-19.md §5, party-mode §2 green-light).
     # G5 WPM check changed from deviation-from-target band to a voice-agnostic

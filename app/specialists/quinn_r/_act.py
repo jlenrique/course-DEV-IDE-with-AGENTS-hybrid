@@ -14,6 +14,7 @@ from app.models.state.model_resolution_entry import ModelResolutionEntry
 from app.models.state.run_state import RunState
 from app.runtime.economics import RUNS_ROOT
 from app.specialists.dispatch_errors import SpecialistDispatchError
+from app.specialists.quinn_r.fidelity_detector import detect_fidelity
 
 # Audio-arc taxonomy re-base (2026-06-12): the G5 content errors live in
 # quality_control_dispatch as SpecialistDispatchError+ValueError duals — the
@@ -21,6 +22,7 @@ from app.specialists.dispatch_errors import SpecialistDispatchError
 from app.specialists.quinn_r.quality_control_dispatch import (
     CoverageGapError,
     DurationCoherenceError,
+    FidelityError,
     StoryboardBInputError,
     VttMonotonicityError,
     WpmThresholdError,
@@ -169,12 +171,29 @@ def run_g5_checks(payload: dict[str, Any]) -> dict[str, Any]:
     missing = sorted(slide_ids - covered)
     if missing:
         raise CoverageGapError(f"missing narration coverage: {missing}")
+    # P2-1 Edge-1 ratified posture (party 2026-06-19, operator-ratified: Winston
+    # B+tripwire): perception is NOT wired into the production G5 projections until
+    # P2-2. Absent perception is a typed UNVERIFIED *dormant* status — NOT a Class-A
+    # fail — so trials keep running mechanics-only (the "fidelity unverified" rebrand),
+    # while the standing tripwire test flips the moment P2-2 wires perception. The
+    # detector ENFORCES (Class-A) only when perception is present (contradiction /
+    # low-confidence / per-slide-missing).
+    perception = payload.get("perception_artifacts")
+    if perception:
+        fidelity = detect_fidelity(segments, perception)
+    else:
+        fidelity = {
+            "status": "unverified",
+            "reason": "perception-not-wired",
+            "blocking": [],
+            "evaluated_segments": 0,
+        }
     for seg in segments:
         declared = float(seg.get("duration_seconds", 0))
         motion = float(seg.get("motion_duration_seconds", declared))
         if declared and abs(motion - declared) / declared > 0.10:
             advisory.append({"slide_id": seg.get("slide_id"), "reason": "duration-coherence"})
-    return {"blocking": [], "advisory": advisory, "checks": ["wpm", "vtt", "coverage", "duration", "partition"]}  # noqa: E501
+    return {"blocking": [], "advisory": advisory, "checks": ["wpm", "vtt", "coverage", "fidelity", "duration", "partition"], "fidelity": fidelity}  # noqa: E501
 
 
 def _summary(state: RunState, payload: dict[str, Any], gate_id: str, verdict: dict[str, Any]) -> Path:  # noqa: E501
@@ -229,4 +248,4 @@ def act(state: RunState) -> dict[str, Any]:
 
 from app.specialists.quinn_r.payload_contract import CONSUMED_PAYLOAD_KEYS  # noqa: E402
 
-__all__ = ["CONSUMED_PAYLOAD_KEYS", "CoverageGapError", "DurationCoherenceError", "ModeMismatchError", "VttMonotonicityError", "WpmThresholdError", "act", "run_g5_checks"]  # noqa: E501
+__all__ = ["CONSUMED_PAYLOAD_KEYS", "CoverageGapError", "DurationCoherenceError", "FidelityError", "ModeMismatchError", "VttMonotonicityError", "WpmThresholdError", "act", "run_g5_checks"]  # noqa: E501

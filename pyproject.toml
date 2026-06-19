@@ -305,6 +305,13 @@ source_modules = ["app"]
 forbidden_modules = ["marcus"]
 include_external_packages = false
 
+[[tool.importlinter.contracts]]
+name = "P2-1 - Quinn-R fidelity detector may not call sensory bridges"
+type = "forbidden"
+source_modules = ["app.specialists.quinn_r.fidelity_detector"]
+forbidden_modules = ["app.specialists.quinn_r.sensory_bridges_dispatch"]
+include_external_packages = false
+
 [build-system]
 requires = ["setuptools>=68"]
 build-backend = "setuptools.build_meta"

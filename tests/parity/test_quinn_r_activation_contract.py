@@ -36,6 +36,17 @@ def _payload(tmp_path: Path, gate_id: str) -> str:
             "gate_phase": "post-composition" if gate_id == "G3B" else "pre-composition",
             "runs_root": str(tmp_path),
             "slides": [{"slide_id": "s1", "title": "Intro"}],
+            # P2-1: G5 now requires perception_artifacts (fidelity detector);
+            # narration here is non-visual so it passes once perception is present.
+            "perception_artifacts": [
+                {
+                    "slide_id": "s1",
+                    "confidence": "HIGH",
+                    "coverage": "perceived",
+                    "slide_title": "Intro",
+                    "extracted_text": "Intro",
+                }
+            ],
             "narration_profile_controls": {"target_wpm": 120},
             "vtt_text": "WEBVTT\n\n00:00:00.000 --> 00:00:05.000\ncaption\n",
             "narration_segments": [

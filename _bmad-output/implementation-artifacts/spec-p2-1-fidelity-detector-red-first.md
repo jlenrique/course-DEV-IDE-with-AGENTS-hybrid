@@ -3,7 +3,7 @@ title: 'P2-1 — Fail-loud fidelity detector (RED-first vs the $5.2T evidence)'
 type: 'feature'
 created: '2026-06-19'
 baseline_commit: '057155c'
-status: 'ready-for-dev'
+status: 'done'
 governance:
   workflow: 'bmad-create-story → NEW CYCLE Codex dispatch'
   gate_mode: 'dual'
@@ -84,6 +84,8 @@ context:
 - [ ] Tests (see ACs) — all offline against frozen fixtures (no live vision; no untracked `runs/`).
 - [ ] §6 DoD (P2-1 scope): cross-trial-learnings harvest entry (construct-invalidity finding + RED fixture citations), bidirectionally linked to the grounding-leg deferred-inventory entry **WITHOUT striking it** (strike waits for P2-3; G4). sprint-status entry annotated `done (guard armed; real corpus intentionally RED until P2-3)` (G3).
 
+**Codex implementation note (2026-06-19):** T1-T10 implementation is complete and ready for Claude T11 review. The detailed completion/verification record is `_bmad-output/implementation-artifacts/_codex-handoff/p2-1-fidelity-detector-red-first.ready-for-review.md`.
+
 **Acceptance Criteria:**
 - **AC-1 (RED-first, BINDING):** on the un-repaired tree, the detector raises `FidelityError` (`quinn_r.g5.fidelity-orphan-reference`) against the committed $5.2T fixture, naming slide-01 + the orphan reference — demonstrated RED before P2-2/P2-3 land. (FR10, FR21)
 - **AC-2 (two-sided):** a known-good fixture + the sized real green corpus PASS with **FP rate 0**. (FR22, NFR3)
@@ -148,6 +150,24 @@ context:
 - `.\.venv\Scripts\lint-imports.exe` — expected: 14 kept (new single-source contract), 0 broken.
 - `.\.venv\Scripts\python.exe scripts/utilities/check_pipeline_manifest_lockstep.py` — exit 0 (if lockstep-touching).
 - `.\.venv\Scripts\ruff.exe check app/specialists/quinn_r/ tests/specialists/quinn_r/test_fidelity_detector.py` — clean.
+
+## T11 Review & Close (2026-06-19) — DONE
+
+**`bmad-code-review` 3-lane (Blind / Edge / Auditor) + Claude T11.** Acceptance Auditor: all 16 ACs PASS. Blind + Edge surfaced real bugs the AC tests didn't exercise; all remediated at T11:
+- **Blind #1 (CRITICAL) FIXED:** money normalization no longer force-casts bare `$5` onto `$5 trillion` (distinct `money-bare` class; billion→trillion conversion retained). +test.
+- **Blind #6 (MEDIUM) FIXED:** dropped idiom-risky bare visual terms (`bar`/`line`/`table`/`building`/`stat`); the blocking check no longer fires on "raise the bar"/"bottom line". +test.
+- **Edge #2 / Blind #7 (HIGH) FIXED:** `_artifact_map` wraps `ValidationError`→tagged `FidelityError` (error-pause-able); single-artifact-dict accepted. +test.
+- **Blind #3 / Edge #4 (HIGH) FIXED:** duplicate `slide_id` raises (no silent last-wins). +test.
+- **Regression caught (Codex missed `tests/parity/`): FIXED** — parity G5 payload given perception; TW-7c-4 allowlist extended for P2-1 paths.
+- Dismissed: Blind #5 (values-only stringify already correct), #2/#4/#10/#11 (Edge confirmed unfounded), #8/#9 (acceptable fail-on-first).
+
+**Edge #1 — posture RATIFIED (party 2026-06-19, operator-ratified): Winston B+tripwire.** This **reverses the green-lit AC-6 "absent ⇒ fail."** New posture: absent `perception_artifacts` is a typed **`UNVERIFIED (perception-not-wired)` dormant status — NOT a Class-A fail** — so live trials keep running mechanics-only (the "fidelity unverified" rebrand) through the P2 arc. The detector ENFORCES Class-A only when perception is **present** (contradiction / low-confidence / not-covered / per-slide-missing). A **standing tripwire test** (`test_tripwire_g5_manifest_does_not_yet_supply_perception`) asserts the production G5 node does not yet project `perception_artifacts`; it **fails the instant P2-2 wires perception**, forcing the flip from dormant-skip to enforce (dormancy cannot silently rot). Panel: Winston B+tripwire, John B, Murat synthesis(distinct-categorization) — 2:1 for non-blocking + unanimous on distinct-category + forcing-function.
+
+**Green-corpus sign-off — DISPOSITION (operator-ratified 2026-06-19):** the 8 green fixtures are **synthetic, dev-authored, internally-consistent** (faithful by construction) — they prove the detector's two-sided MECHANICS (FP=0 on internally-faithful pairs), NOT real-content fidelity. The operator faithful-label sign-off is **not a meaningful gate for synthetic data** and is **deferred to P2-3** (real-content faithful curation + slide/PNG review, where rendered slides exist). The RED case remains anchored in real committed evidence (slide-01 PNG). Manifest curator field records this.
+
+**§6 DoD:** cross-trial-learnings P2-1 harvest entry present (construct-invalidity finding + RED citations); grounding-leg deferred-inventory entry **NOT struck** (stays open through P2-2/P2-3). **Sprint annotation:** `P2-1 done (guard armed; real corpus intentionally RED/UNVERIFIED until P2-3)`.
+
+**Validation:** 107 in-scope passed (quinn_r + parity + audio + taxonomy + TW-7c-4) + integration 193/1-skip; ruff clean; lint-imports 14/0; lockstep exit 0.
 
 ## Spec Change Log
 

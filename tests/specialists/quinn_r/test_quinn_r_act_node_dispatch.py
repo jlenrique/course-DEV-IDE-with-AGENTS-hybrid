@@ -39,6 +39,20 @@ def _payload(tmp_path: Path, *, gate_id: str = "G2C") -> str:
                     "evidence_block": "fixture",
                 }
             ],
+            "perception_artifacts": [
+                {
+                    "artifact_path": "fixtures/s1.png",
+                    "card_number": 1,
+                    "confidence": "HIGH",
+                    "coverage": "perceived",
+                    "extracted_text": "Opening.",
+                    "layout_description": "Intro title slide.",
+                    "slide_id": "s1",
+                    "slide_title": "Intro",
+                    "text_blocks": [{"text": "Opening"}],
+                    "visual_elements": [{"kind": "title", "label": "intro title"}],
+                }
+            ],
             "narration_profile_controls": {"target_wpm": 120},
             "vtt_text": "WEBVTT\n\n00:00:00.000 --> 00:00:05.000\nhello\n",
             "narration_segments": [
@@ -95,7 +109,7 @@ def test_quinn_r_act_g5_runs_structured_qa(tmp_path: Path) -> None:
     state = make_state(_payload(tmp_path, gate_id="G5"))
     update = _act(state)
     verdict = json.loads(update["cache_state"]["cache_prefix"])["quinn_r_review"]
-    assert verdict["checks"] == ["wpm", "vtt", "coverage", "duration", "partition"]
+    assert verdict["checks"] == ["wpm", "vtt", "coverage", "fidelity", "duration", "partition"]
     assert verdict["blocking"] == []
     assert verdict["advisory"] == []
 
@@ -139,5 +153,9 @@ def test_quinn_r_act_body_loc_budget() -> None:
     # break-glass branch (~6 logical lines) PLUS a party-mandated provenance
     # comment block (Amendment 1: n=1/INTERIM floor + re-validation trigger +
     # ceiling "no-natural-basis" disclosure). logical_lines counts comments,
-    # so the mandated documentation consumes budget by design here.
-    assert len(logical_lines) <= 200
+    # so the mandated documentation consumes budget by design here. 200 -> 205
+    # at P2-1 (2026-06-19): one G5 fidelity-detector hook + re-export, with
+    # detector complexity isolated in fidelity_detector.py. 205 -> 220 at P2-1
+    # T11 (Edge-1 ratified tripwire posture): the absent-perception dormant
+    # branch + its party-ratified rationale comment (Winston B+tripwire).
+    assert len(logical_lines) <= 220

@@ -1,0 +1,8 @@
+{
+  "mutation": {
+    "from": "74%",
+    "to": "82%",
+    "type": "magnitude-drift"
+  },
+  "source_fixture": "green-01.json"
+}

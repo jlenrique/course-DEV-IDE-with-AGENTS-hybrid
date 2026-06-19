@@ -1,0 +1,36 @@
+{
+  "metadata": {
+    "basis": "P2-1 RED fixture from Trial-4 slide-01 evidence; visual shows a building photo plus $4.5T, 74%, and 3x stat callouts while narration invents a $5.2 trillion upward line and paired bars.",
+    "evidence_path": "_bmad-output/implementation-artifacts/evidence/narration-hallucinates-illustration-slide01-2026-06-19.png",
+    "source_run_path": "runs/d7ad4dac-7e65-4bde-9cb2-88a13fed2adc/irene-pass1.md"
+  },
+  "narration_segments": [
+    {
+      "slide_id": "slide-01",
+      "text": "On the left, the upward line toward $5.2 trillion in 2024 shows the cost curve. On the right, the paired bars contrast independent practice with hospital employment."
+    }
+  ],
+  "perception_artifacts": [
+    {
+      "artifact_path": "_bmad-output/implementation-artifacts/evidence/narration-hallucinates-illustration-slide01-2026-06-19.png",
+      "card_number": 1,
+      "confidence": "HIGH",
+      "coverage": "perceived",
+      "extracted_text": "$4.5T Annual U.S. Health Spend. 74% Physicians in Employment. 3x Admin Cost Growth.",
+      "layout_description": "Building photo on the left with three stat callouts on the right.",
+      "slide_id": "slide-01",
+      "slide_title": "The Economic & Structural Reality",
+      "text_blocks": [
+        {"text": "$4.5T Annual U.S. Health Spend"},
+        {"text": "74% Physicians in Employment"},
+        {"text": "3x Admin Cost Growth"}
+      ],
+      "visual_elements": [
+        {"kind": "photo", "label": "building photo"},
+        {"kind": "stat_callout", "text": "$4.5T"},
+        {"kind": "stat_callout", "text": "74%"},
+        {"kind": "stat_callout", "text": "3x"}
+      ]
+    }
+  ]
+}

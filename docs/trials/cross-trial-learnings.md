@@ -274,3 +274,17 @@ exceptional harvest — **9 findings, and the first live G1→G2C gate crossing 
   that doesn't match reality**. When a QA gate fires on a property that is legitimately variable
   (voice cadence; briefed-vs-rendered visuals), the gate is the bug, not the input. Smell-test any
   new gate: "does failing this mean the artifact is actually wrong, or just different from a default?"
+
+### P2-1 perception fidelity detector - construct-invalidity ratchet (2026-06-19)
+
+- **Symptom:** Trial-4 slide-01 narration described an upward $5.2 trillion line and paired bars
+  while the rendered slide perception showed a building photo plus $4.5T / 74% / 3x stat callouts.
+  G5 still passed because it checked narration mechanics, not narration-to-rendered-slide fidelity.
+- **Fix landed for the first leg only:** Quinn-R now owns a deterministic fail-loud detector over
+  `perception_artifacts`, with the exact slide-01 RED fixture, two-sided green corpus, seeded single
+  mutations, and Class-A tags for orphan visual references vs figure contradictions. This closes the
+  vacuous-pass gap for detector coverage but does not produce PNG perception and does not repair
+  Irene Pass-2 grounding.
+- **Bidirectional inventory link:** deferred-inventory
+  `fidelity-metric-blind-to-perception-regression` remains open for P2-2/P2-3/P2-4. P2-1 is the
+  detector ratchet attached to that row, not the grounding-leg closure.

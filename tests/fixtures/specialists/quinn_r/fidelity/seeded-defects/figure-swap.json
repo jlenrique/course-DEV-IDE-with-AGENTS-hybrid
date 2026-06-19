@@ -1,0 +1,8 @@
+{
+  "mutation": {
+    "from": "$4.5T",
+    "to": "$5.2 trillion",
+    "type": "figure-swap"
+  },
+  "source_fixture": "green-01.json"
+}

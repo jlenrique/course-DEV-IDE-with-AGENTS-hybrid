@@ -300,6 +300,7 @@ WpmThresholdError = _quinn_r_act_impl.WpmThresholdError
 VttMonotonicityError = _quinn_r_act_impl.VttMonotonicityError
 CoverageGapError = _quinn_r_act_impl.CoverageGapError
 DurationCoherenceError = _quinn_r_act_impl.DurationCoherenceError
+FidelityError = _quinn_r_act_impl.FidelityError
 run_g5_checks = _quinn_r_act_impl.run_g5_checks
 
 
@@ -366,6 +367,7 @@ def build_quinn_r_graph() -> StateGraph:
 
 __all__ = [
     "DIMENSION_IDS",
+    "FidelityError",
     "QUINN_R_REFERENCES",
     "QRRParseError",
     "TRANSITIONS",

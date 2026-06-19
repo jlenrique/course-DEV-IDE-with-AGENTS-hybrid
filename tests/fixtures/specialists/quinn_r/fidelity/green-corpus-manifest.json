@@ -1,0 +1,17 @@
+{
+  "metadata": {
+    "curator": "synthetic, dev-authored, internally-consistent fixtures (P2-1 T11, operator-ratified 2026-06-19) — they prove the detector's two-sided MECHANICS (no false-alarm on internally-faithful pairs); they are NOT real rendered slides. Real-content faithful-corpus curation + operator slide/PNG sign-off is deferred to P2-3 (regression-green on the real corpus).",
+    "frozen_at": "2026-06-19",
+    "purpose": "P2-1 synthetic two-sided detector corpus (FP=0 mechanics check). Real-content fidelity review = P2-3."
+  },
+  "fixtures": [
+    {"classification": "fidelity-bearing-faithful", "file": "green-01.json", "run_id": "fixture-p2-1", "sha256": "52efde8d98b9e6ac08deab71335706002dce5e784b4548e48bbe3afae4e6a0b3", "slide_id": "green-01"},
+    {"classification": "fidelity-bearing-faithful", "file": "green-02.json", "run_id": "fixture-p2-1", "sha256": "4f416fed124233b6397ee1368d9c3e14f9ea827879a8d4622373a3c2740b08d3", "slide_id": "green-02"},
+    {"classification": "fidelity-bearing-faithful", "file": "green-03.json", "run_id": "fixture-p2-1", "sha256": "7e18dac3fbcce2a65a0febe830034368c97b3819f315bf5285c03f00631464ad", "slide_id": "green-03"},
+    {"classification": "fidelity-bearing-faithful", "file": "green-04.json", "run_id": "fixture-p2-1", "sha256": "af438b4536e79fdea1747d3e902a2a642e0ee4c779d90ea5ee0cc5d33d6dcd81", "slide_id": "green-04"},
+    {"classification": "fidelity-bearing-faithful", "file": "green-05.json", "run_id": "fixture-p2-1", "sha256": "6be84362f52e02f8744c9e00cbc079053a4aa0c2a0a379ecb0c030c662090626", "slide_id": "green-05"},
+    {"classification": "non-visual", "file": "green-06.json", "run_id": "fixture-p2-1", "sha256": "0e2f570777ac3352bedae8e23e9b90af5ccd6fffb06378e6ebc85eb31e627981", "slide_id": "green-06"},
+    {"classification": "non-visual", "file": "green-07.json", "run_id": "fixture-p2-1", "sha256": "c4c7eba8363f1ca37ce3f96fe6391d69b8705f7a669f861f7c3ac52f67197018", "slide_id": "green-07"},
+    {"classification": "fidelity-bearing-faithful", "file": "green-08.json", "run_id": "fixture-p2-1", "sha256": "2b7e9e7bc288ce4beb8b92431f99e82c021477049af376bb8bf8d086b0dc39ad", "slide_id": "green-08"}
+  ]
+}

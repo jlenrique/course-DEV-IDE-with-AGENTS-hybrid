@@ -35,6 +35,32 @@ SLIDES = [
     {"slide_id": "s1", "file_path": "s1.png"},
     {"slide_id": "s2", "file_path": "s2.png"},
 ]
+PERCEPTION_ARTIFACTS = [
+    {
+        "artifact_path": "fixtures/s1.png",
+        "card_number": 1,
+        "confidence": "HIGH",
+        "coverage": "perceived",
+        "extracted_text": "Opening narration for slide one.",
+        "layout_description": "Slide one title.",
+        "slide_id": "s1",
+        "slide_title": "Slide one",
+        "text_blocks": [{"text": "Opening narration for slide one"}],
+        "visual_elements": [{"kind": "title", "label": "slide one title"}],
+    },
+    {
+        "artifact_path": "fixtures/s2.png",
+        "card_number": 2,
+        "confidence": "HIGH",
+        "coverage": "perceived",
+        "extracted_text": "Closing narration for slide two.",
+        "layout_description": "Slide two title.",
+        "slide_id": "s2",
+        "slide_title": "Slide two",
+        "text_blocks": [{"text": "Closing narration for slide two"}],
+        "visual_elements": [{"kind": "title", "label": "slide two title"}],
+    },
+]
 
 
 class _FakeElevenLabs:
@@ -169,6 +195,7 @@ def test_g5_grounding_builds_segments_with_enrique_durations(tmp_path: Path) -> 
     grounded = run_g5_grounding(
         {
             "slides": SLIDES,
+            "perception_artifacts": PERCEPTION_ARTIFACTS,
             "narration_script": NARRATION,
             "segment_manifest_deltas": DELTAS,
             "narration_outputs": [
@@ -200,6 +227,7 @@ def test_g5_phantom_delta_drops_to_coverage_gap(tmp_path: Path) -> None:
     grounded = run_g5_grounding(
         {
             "slides": SLIDES,
+            "perception_artifacts": PERCEPTION_ARTIFACTS,
             "narration_script": [NARRATION[0]],  # seg-2 is a phantom delta
             "segment_manifest_deltas": DELTAS,
             "narration_outputs": [

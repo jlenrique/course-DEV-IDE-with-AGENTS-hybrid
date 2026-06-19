@@ -33,6 +33,7 @@ CoverageGapError = _content_error("CoverageGapError", "quinn_r.g5.coverage-gap")
 DurationCoherenceError = _content_error(
     "DurationCoherenceError", "quinn_r.g5.duration-coherence"
 )
+FidelityError = _content_error("FidelityError", "quinn_r.g5.fidelity-orphan-reference")
 
 
 class StoryboardBInputError(SpecialistDispatchError):
@@ -322,6 +323,7 @@ def run_postcomposition_validators(*, artifact_path: str | None) -> dict[str, An
 __all__ = [
     "CoverageGapError",
     "DurationCoherenceError",
+    "FidelityError",
     "StoryboardBInputError",
     "VttMonotonicityError",
     "WpmThresholdError",

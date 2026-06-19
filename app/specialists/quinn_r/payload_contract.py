@@ -25,6 +25,7 @@ CONSUMED_PAYLOAD_KEYS: frozenset[str] = frozenset(
         "narration_profile_controls",
         "narration_script",
         "narration_segments",
+        "perception_artifacts",
         "runs_root",
         "segment_manifest_deltas",
         "slides",

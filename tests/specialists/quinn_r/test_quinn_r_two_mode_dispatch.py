@@ -18,6 +18,20 @@ def _payload(tmp_path: Path, gate_id: str) -> str:
             "gate_phase": "pre-composition",
             "runs_root": str(tmp_path),
             "slides": [{"slide_id": "s1", "title": "Intro"}],
+            "perception_artifacts": [
+                {
+                    "artifact_path": "fixtures/s1.png",
+                    "card_number": 1,
+                    "confidence": "HIGH",
+                    "coverage": "perceived",
+                    "extracted_text": "Intro",
+                    "layout_description": "Intro title slide.",
+                    "slide_id": "s1",
+                    "slide_title": "Intro",
+                    "text_blocks": [{"text": "Intro"}],
+                    "visual_elements": [{"kind": "title", "label": "intro title"}],
+                }
+            ],
             "narration_segments": [
                 {
                     "slide_id": "s1",

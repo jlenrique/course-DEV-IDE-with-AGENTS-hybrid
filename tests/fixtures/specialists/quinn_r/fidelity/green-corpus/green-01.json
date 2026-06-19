@@ -1,0 +1,20 @@
+{
+  "metadata": {"criterion": "faithful visual reference to stat callouts and photo"},
+  "narration_segments": [
+    {"slide_id": "green-01", "text": "The building photo sits beside stat callouts for $4.5T annual spend, 74% physician employment, and 3x administrative cost growth."}
+  ],
+  "perception_artifacts": [
+    {
+      "artifact_path": "fixtures/green-01.png",
+      "card_number": 1,
+      "confidence": "HIGH",
+      "coverage": "perceived",
+      "extracted_text": "$4.5T annual spend. 74% physician employment. 3x administrative cost growth.",
+      "layout_description": "Building photo with three stat callouts.",
+      "slide_id": "green-01",
+      "slide_title": "Economic Reality",
+      "text_blocks": [{"text": "$4.5T"}, {"text": "74%"}, {"text": "3x"}],
+      "visual_elements": [{"kind": "photo", "label": "building photo"}, {"kind": "stat_callout", "text": "$4.5T 74% 3x"}]
+    }
+  ]
+}

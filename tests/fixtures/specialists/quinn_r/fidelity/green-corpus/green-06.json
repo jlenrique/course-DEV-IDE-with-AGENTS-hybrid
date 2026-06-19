@@ -1,0 +1,20 @@
+{
+  "metadata": {"criterion": "non-visual narration over perceived slide"},
+  "narration_segments": [
+    {"slide_id": "green-06", "text": "This is the policy implication of the prior section and sets up the next decision."}
+  ],
+  "perception_artifacts": [
+    {
+      "artifact_path": "fixtures/green-06.png",
+      "card_number": 6,
+      "confidence": "HIGH",
+      "coverage": "perceived",
+      "extracted_text": "Decision context.",
+      "layout_description": "Title slide with decision context text.",
+      "slide_id": "green-06",
+      "slide_title": "Decision Context",
+      "text_blocks": [{"text": "Decision context"}],
+      "visual_elements": [{"kind": "title", "label": "decision context title"}]
+    }
+  ]
+}

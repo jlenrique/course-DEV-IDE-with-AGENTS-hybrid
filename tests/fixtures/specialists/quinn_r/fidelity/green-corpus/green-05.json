@@ -1,0 +1,20 @@
+{
+  "metadata": {"criterion": "faithful visual reference to process diagram"},
+  "narration_segments": [
+    {"slide_id": "green-05", "text": "The diagram connects intake, review, and publish as a three-step process."}
+  ],
+  "perception_artifacts": [
+    {
+      "artifact_path": "fixtures/green-05.png",
+      "card_number": 5,
+      "confidence": "HIGH",
+      "coverage": "perceived",
+      "extracted_text": "Intake. Review. Publish.",
+      "layout_description": "Process diagram with three connected boxes: intake, review, publish.",
+      "slide_id": "green-05",
+      "slide_title": "Workflow",
+      "text_blocks": [{"text": "intake"}, {"text": "review"}, {"text": "publish"}],
+      "visual_elements": [{"kind": "diagram", "label": "three-step process diagram"}]
+    }
+  ]
+}

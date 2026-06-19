@@ -1,0 +1,20 @@
+{
+  "metadata": {"criterion": "non-visual narration over perceived slide"},
+  "narration_segments": [
+    {"slide_id": "green-07", "text": "The lesson now shifts to administrative burden and why it changes planning priorities."}
+  ],
+  "perception_artifacts": [
+    {
+      "artifact_path": "fixtures/green-07.png",
+      "card_number": 7,
+      "confidence": "HIGH",
+      "coverage": "perceived",
+      "extracted_text": "Administrative burden.",
+      "layout_description": "Section divider slide.",
+      "slide_id": "green-07",
+      "slide_title": "Administrative Burden",
+      "text_blocks": [{"text": "Administrative burden"}],
+      "visual_elements": [{"kind": "divider", "label": "section divider"}]
+    }
+  ]
+}

@@ -1,0 +1,20 @@
+{
+  "metadata": {"criterion": "faithful visual reference to bar chart"},
+  "narration_segments": [
+    {"slide_id": "green-02", "text": "The bar chart shows 42% baseline completion beside 68% post-support completion."}
+  ],
+  "perception_artifacts": [
+    {
+      "artifact_path": "fixtures/green-02.png",
+      "card_number": 2,
+      "confidence": "HIGH",
+      "coverage": "perceived",
+      "extracted_text": "42% baseline completion. 68% post-support completion.",
+      "layout_description": "Two-column bar chart comparing baseline and post-support completion.",
+      "slide_id": "green-02",
+      "slide_title": "Completion Lift",
+      "text_blocks": [{"text": "42%"}, {"text": "68%"}],
+      "visual_elements": [{"kind": "bar_chart", "label": "completion bar chart"}]
+    }
+  ]
+}

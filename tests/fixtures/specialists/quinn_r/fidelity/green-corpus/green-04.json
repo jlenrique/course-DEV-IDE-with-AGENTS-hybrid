@@ -1,0 +1,20 @@
+{
+  "metadata": {"criterion": "faithful visual reference to table"},
+  "narration_segments": [
+    {"slide_id": "green-04", "text": "The table lists three review stages and marks each one complete."}
+  ],
+  "perception_artifacts": [
+    {
+      "artifact_path": "fixtures/green-04.png",
+      "card_number": 4,
+      "confidence": "HIGH",
+      "coverage": "perceived",
+      "extracted_text": "Review stage 1 complete. Review stage 2 complete. Review stage 3 complete.",
+      "layout_description": "Three-row table with complete status in each row.",
+      "slide_id": "green-04",
+      "slide_title": "Review Stages",
+      "text_blocks": [{"text": "stage 1 complete"}, {"text": "stage 2 complete"}, {"text": "stage 3 complete"}],
+      "visual_elements": [{"kind": "table", "label": "three-row review table"}]
+    }
+  ]
+}

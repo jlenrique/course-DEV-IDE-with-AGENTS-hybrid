@@ -1,0 +1,8 @@
+{
+  "mutation": {
+    "from": "building photo",
+    "to": "line chart",
+    "type": "element-drop"
+  },
+  "source_fixture": "green-01.json"
+}

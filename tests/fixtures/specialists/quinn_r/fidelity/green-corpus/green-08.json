@@ -1,0 +1,20 @@
+{
+  "metadata": {"criterion": "faithful visual reference to image and callout"},
+  "narration_segments": [
+    {"slide_id": "green-08", "text": "The clinic image is paired with a callout showing 12 months of implementation work."}
+  ],
+  "perception_artifacts": [
+    {
+      "artifact_path": "fixtures/green-08.png",
+      "card_number": 8,
+      "confidence": "HIGH",
+      "coverage": "perceived",
+      "extracted_text": "12 months implementation work.",
+      "layout_description": "Clinic image with a 12 months implementation callout.",
+      "slide_id": "green-08",
+      "slide_title": "Implementation Timeline",
+      "text_blocks": [{"text": "12 months"}],
+      "visual_elements": [{"kind": "image", "label": "clinic image"}, {"kind": "callout", "text": "12 months"}]
+    }
+  ]
+}

@@ -13,6 +13,32 @@ from app.specialists.quinn_r.graph import (
 def _payload() -> dict:
     return {
         "slides": [{"slide_id": "s1"}, {"slide_id": "s2"}],
+        "perception_artifacts": [
+            {
+                "artifact_path": "fixtures/s1.png",
+                "card_number": 1,
+                "confidence": "HIGH",
+                "coverage": "perceived",
+                "extracted_text": "Fixture text one.",
+                "layout_description": "Fixture slide one.",
+                "slide_id": "s1",
+                "slide_title": "Slide one",
+                "text_blocks": [{"text": "Fixture text one"}],
+                "visual_elements": [{"kind": "title", "label": "slide one"}],
+            },
+            {
+                "artifact_path": "fixtures/s2.png",
+                "card_number": 2,
+                "confidence": "HIGH",
+                "coverage": "perceived",
+                "extracted_text": "Fixture text two.",
+                "layout_description": "Fixture slide two.",
+                "slide_id": "s2",
+                "slide_title": "Slide two",
+                "text_blocks": [{"text": "Fixture text two"}],
+                "visual_elements": [{"kind": "title", "label": "slide two"}],
+            },
+        ],
         "narration_profile_controls": {"target_wpm": 120},
         "vtt_text": (
             "WEBVTT\n\n00:00:00.000 --> 00:00:05.000\none\n\n"
@@ -172,6 +198,20 @@ def test_g5_just_above_ceiling_raises() -> None:
 
     with pytest.raises(WpmThresholdError, match="above intelligibility ceiling 200"):
         run_g5_checks(payload)
+
+
+def test_g5_absent_perception_is_dormant_unverified_not_a_fail() -> None:
+    # P2-1 Edge-1 ratified posture: with no perception_artifacts the fidelity
+    # detector is dormant (UNVERIFIED), NOT a Class-A fail — the run still passes
+    # G5 mechanics-only (trials remain runnable until P2-2 wires perception).
+    payload = _payload()
+    payload.pop("perception_artifacts", None)
+
+    verdict = run_g5_checks(payload)
+
+    assert verdict["blocking"] == []
+    assert verdict["fidelity"]["status"] == "unverified"
+    assert verdict["fidelity"]["reason"] == "perception-not-wired"
 
 
 def test_g5_estimated_durations_suppress_breach_to_advisory() -> None:
