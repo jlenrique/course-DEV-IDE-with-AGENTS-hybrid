@@ -29,10 +29,12 @@ The universal precondition + the quality bar that makes "error-free" falsifiable
 
 ---
 
-## T5a — VOICE PICKER (safe proof of the binding pattern; D3). Gov: light. Auto: yes.
+## T5a — VOICE PICKER (safe proof of the binding pattern; D3). Gov: light → ⚠️escalated (see contract finding). Auto: yes-after-party.
 Voice candidates already exist (`enrique.voice_preview.voices`) — prove `edit`-binding on the easy lane first.
-- **Scope:** project `voice_preview.voices` → `G4ACard.voice_candidates`; operator `selected_voice_id` binds the chosen voice into narration synthesis downstream.
-- **Trial T5a:** run to completion; operator picks a NON-default voice; assert the synthesized mp3s use the picked voice (not the recommended default).
+- ✅ **Candidate surfacing done in S0.3** (`a0d85a8`): `voice_preview.voices` → `G4ACard.voice_candidates` + structured pick_context.
+- **Scope (remaining):** operator `selected_voice_id` binds the chosen voice into narration synthesis downstream.
+- **🔴 CONTRACT FINDING (2026-06-19, blocks the re-route):** the binding seam is `_apply_verdict_to_run_state` (production_runner.py:788). Today a `verb="edit"` verdict **destructively REPLACES** `cache_state.cache_prefix` with `edit_payload` — and this full-replace is **PINNED for G2B** by `test_production_runner_gate_pause_resume.py:382` (`{"slide_count":3}` → `cache_prefix == edit_payload`) and for G2C by `test_production_runner_resume_continues_execution.py:197`. A targeted voice/variant pick needs a **surgical merge** (overlay `selected_*_id` onto the existing envelope, nest `voice_selection.selected_voice_id`) — which CHANGES that pinned contract. **Per governance this is the T5b party-mode milestone (binding-design ratification), not a unilateral change.** Options for the party: (A) gate-scoped merge for G2B/G4A only + re-pin the two tests to the new semantics; (B) a dedicated `pick`/`select` verb distinct from `edit` (no contract change to `edit`); (C) a `selection`-typed edit_payload the runner merges. **Recommend (B)** — a new `select` verb keeps `edit` full-replace intact and makes the picker semantics explicit.
+- **Trial T5a (after party ratifies the binding verb/merge):** run to completion; operator picks a NON-default voice; assert the synthesized mp3s use the picked voice.
 - **Exit:** voice pick re-routes (Class-A-free); flake budget respected.
 
 ---
