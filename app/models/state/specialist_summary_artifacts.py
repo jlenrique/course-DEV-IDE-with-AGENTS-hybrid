@@ -163,11 +163,52 @@ def _decided_from_state(specialist_id: str, state: Any) -> str:
     return f"{specialist_id} emitted cache payload because its act node completed successfully."
 
 
-def _artifact_paths_from_state(state: Any) -> list[str]:
-    paths = getattr(state, "artifact_paths", None)
-    if not paths:
+def _artifacts_from_contribution(state: Any, specialist_id: str) -> list[str]:
+    """Derive emitted-artifact paths from the latest production-envelope
+    contribution for this specialist (T4-F1 fix, BETA S0.2).
+
+    The summary's 'Emitted artifacts' must reflect what the producer ACTUALLY
+    wrote (bundle manifest / artifact_path), not the empty top-level
+    ``state.artifact_paths``. A false 'none' drove G1's drafted-reject
+    (``artifact_paths_empty``) over genuinely-present content in Trial-4.
+    """
+    envelope = getattr(state, "production_envelope", None)
+    contributions = getattr(envelope, "contributions", None) or []
+    canonical = canonical_specialist_id(specialist_id)
+    latest_output: Any = None
+    for contrib in contributions:
+        cid = getattr(contrib, "specialist_id", None)
+        if cid is None and isinstance(contrib, dict):
+            cid = contrib.get("specialist_id")
+        if cid is None or canonical_specialist_id(str(cid)) != canonical:
+            continue
+        output = getattr(contrib, "output", None)
+        if output is None and isinstance(contrib, dict):
+            output = contrib.get("output")
+        if isinstance(output, dict):
+            latest_output = output  # append-order: keep the last match
+    if not isinstance(latest_output, dict):
         return []
-    return [Path(path).as_posix() for path in paths]
+    artifacts = latest_output.get("artifacts")
+    bundle_ref = latest_output.get("bundle_reference")
+    if isinstance(artifacts, list) and artifacts:
+        if bundle_ref:
+            base = Path(str(bundle_ref))
+            return [(base / str(name)).as_posix() for name in artifacts]
+        return [str(name) for name in artifacts]
+    single = latest_output.get("artifact_path")
+    if single:
+        return [Path(str(single)).as_posix()]
+    return []
+
+
+def _artifact_paths_from_state(state: Any, specialist_id: str) -> list[str]:
+    paths = getattr(state, "artifact_paths", None)
+    if paths:
+        return [Path(path).as_posix() for path in paths]
+    # T4-F1 (BETA S0.2): fall back to the producer's actually-emitted artifacts
+    # so the summary stops reporting 'none' over a real bundle.
+    return _artifacts_from_contribution(state, specialist_id)
 
 
 def _trail_from_state(state: Any) -> list[str]:
@@ -232,7 +273,7 @@ def emit_summary_for_state(
         runs_root=runs_root,
         received_keys=_received_keys_from_state(state),
         decided=_decided_from_state(specialist_id, state),
-        artifact_paths=_artifact_paths_from_state(state),
+        artifact_paths=_artifact_paths_from_state(state, specialist_id),
         resolution_trail=_trail_from_state(state),
     )
     return {}
