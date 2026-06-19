@@ -455,7 +455,6 @@ PERMITTED_PYTHON_DIFFS = {
     "tests/contracts/test_frozen_pack_shas.py",
     "tests/integration/lockstep/test_companion_assertion_per_path.py",
     "tests/test_33_3_dc1_resolution.py",
-    "tests/test_33_3_dc2_resolution.py",
     "tests/test_33_3_dc3_resolution.py",
     # Arc-1a code-review remediation 2026-06-18 (3-lane bmad-code-review;
     # Blind Spot + Edge Case MUST/SHOULD-FIX): router pass-through-skip
@@ -474,7 +473,7 @@ PERMITTED_PYTHON_DIFFS = {
     "app/models/decision_cards/g2b.py",
     "app/models/decision_cards/g4a.py",
     "app/models/decision_cards/__init__.py",
-    "app/models/runtime/production_trial_envelope.py",
+    # (production_trial_envelope.py already allowlisted above at the trial-3 block)
     # Arc 2 3-lane review remediation (Blind Spot BLOCKER #1 + MUST-FIX #2/#4):
     # the live-only paths the offline test posture hid — operator CLI shims for
     # the woken gates + the m3_trial divergence note. (Pre-gate-marcus templates
@@ -487,7 +486,6 @@ PERMITTED_PYTHON_DIFFS = {
     "tests/unit/marcus/cli/test_shim_parser_factory.py",
     "tests/trial/test_trial3_transcript_shape.py",
     "tests/integration/marcus/test_woken_gate_cards.py",
-    "tests/integration/marcus/test_production_runner_error_pause_recover.py",
     "tests/integration/marcus/test_marcus_duality_boundary.py",
     "tests/unit/manifest/test_manifest_fold_with_declarations.py",
     "tests/unit/manifest/test_gate_topology_cli.py",

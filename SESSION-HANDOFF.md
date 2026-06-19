@@ -1,3 +1,47 @@
+# Session Handoff — 2026-06-19 (Class S — Trial-4 feature readiness: Arc-1a A14 + Arc 2 woken HIL gates, all reviewed & shipped)
+
+**Final class:** S (declared S at open — substrate throughout: manifest, schema, runtime, decision-card models, CLI shims, ~46 files; no drift).
+**Branch:** `trial/4-2026-06-12`. **Session anchor:** `262101a` (pre-session origin was `d418ed7`) → 6 commits → **HEAD `016f654`** → WRAPUP docs-closeout commit. Origin in sync (pushed at every arc); master-merge SKIPPED (scoped trial branch); working-branch push satisfied per policy.
+
+## The headline
+Brought the long-awaited **variant-pick (G2B) + voice-pick (G4A) HIL gates online** for Trial 4, on top of completing **Arc-1a's A14 pack-version disposition**. Trial 4 is now **fully ready to RUN** (operator/HIL action) — the only remaining task-#14 item, "pin golden-run replay baseline," was analyzed and resolved as a post-trial / deferred concern (not a pre-trial blocker). Heavy review discipline throughout: party-mode green-lights, two 3-lane `bmad-code-review` passes, AND a final instantiated-agent (Winston/Amelia/Murat loaded from their real SKILL.md) read-only sign-off.
+
+## What was completed (6 commits)
+1. **Arc-1a A14 — three-role pack disposition (`3a92d15`).** The named "v4.3" Tier-2 target was invalid (dead stub; v5 is hand-authored canonical). Party re-ratified Option A (Winston/Amelia/Murat unanimous): minted a role-named generated **witness** (`production-prompt-pack-v4.2-gen-…md`) as the lockstep determinism target; left frozen v4.2 as mapping-axis-frozen; v5 production-canonical. Added `state/config/frozen-pack-shas.json` (3-role registry) + L1 **check 10** (frozen-SHA tripwire) + broad-suite mirror. NO pack_version flip. 3-lane review ACCEPT; remediated a router regression-test gap + a stale (FileNotFound-inert) routing guard.
+2. **Arc 2 — woke G2B + G4A (`ec8bc94`).** Cleared `fold_with` on 07B-gate/11-gate → they surface in `production_gate_ids`. New `is_content_free_gate` predicate keeps WOKEN content-free gates pack/HUD-invisible → **pack-neutral wake** (witness byte-identical, L1 green, no pack regen). New `G2BCard`/`G4ACard` + `_build_decision_card` branches (were `RuntimeError`). Pause order now `G1→G2B→G2C→G3→G4→G4A`. 3-lane review: 2 lanes ACCEPT; **Blind Spot caught 3 live-only gaps the offline test posture hid** (missing pre-gate `.j2` templates → live crash; no operator CLI shim; no pick content) — ALL remediated in the same commit (g2b.j2/g4a.j2, g2b_shim/g4a_shim + extended `ACTIVE_TERMINAL_GATES`, `pick_context` on the cards) + added structural guards so a future woken gate without a template/shim fails CI.
+3. **Trial-4 transcript sync (`505f45e`).** A sync-invariant test caught that `Trial3Transcript.GateId` excluded the woken gates; extended it + regenerated the v1 schema + re-pinned its sha256.
+4. **P2 test-hardening (`7dab8f1`).** From the instantiated architect/dev/tea sign-off: `ProductionGateId` derived-equality guard (the one gate-id literal with no drift tripwire); a `pick_context` real-evidence test (the bare truthiness assert passed on the always-present stub); a `g2b_shim` resume round-trip test (the operator's real entrypoint).
+5. **Deferred-inventory entry (`016f654`).** Filed `live-trial-replay-baseline` with the full golden-baseline analysis.
+6. **WRAPUP docs-closeout** (this commit): quality-gate ruff-fix (import-sort + 3 duplicate TW-7c-4 allowlist entries) + handoff docs.
+
+## What is next
+- **RUN TRIAL 4** (operator + HIL) — the immediate next-session action. Accept/review-posture trial: it pauses at the 6 gates, shows each specialist evaluation via `pick_context`, operator accepts/rejects. Start: `app/marcus/cli/trial.py::start_trial`; submit verdicts via `app/marcus/cli/gate_shims/<gate>_shim.py`.
+- After a blessed run: scope the `live-trial-replay-baseline` follow-on if live-path regression coverage is wanted (new infra — live trials aren't byte-replayable).
+- Deferred (post-Trial-4, all in `deferred-inventory.md`): `g4b-input-package-hil-wake`, `generalized-membership-wake-toggle`, `v5-manifest-coherence-reconciliation` (🟠 pre-next-trial trigger — v5 has no manifest-coherence guard by design), `pack-version-co-render-filter`.
+
+## Unresolved issues / risks
+- **G2B/G4A are accept/review pauses this trial, NOT binding pick-from-N selectors** (all three sign-off agents converged on this). `selected_*_id` is write-only; `edit` doesn't re-route downstream. Acceptable weed-clearing posture — but the operator must read them as "pause + review + accept/reject," not interactive pickers. Binding selection is a filed follow-on.
+- **v5 (production-canonical pack) has no manifest-coherence guard** by design (Murat condition 3, pre-next-trial deferred trigger) — highest-probability post-trial bite.
+- Ambient (pre-existing, NOT this session): `test_schema_pin` ×2-3 fail identically on clean HEAD; a `section_02a` DSL-registration cross-suite-pollution flake (passes in isolation; broad runs need `-p no:randomly`); ~repo-wide ruff debt (1816, untouched).
+
+## Key lessons (binding)
+- **Offline/fake-key tests structurally hide live-only crashes.** The Blind Spot lane caught a guaranteed live FileNotFoundError (missing pre-gate template) that every green integration test sailed past. The fix wasn't just the templates — it was *structural guards derived from `production_gate_ids`* so the class can't recur. Apply this pattern to any future gate wake.
+- **Hand-maintained closed literals are a latent fragility.** Four gate-id sets (`production_gate_ids` authority + `GateId` + `ProductionGateId` + `ACTIVE_TERMINAL_GATES`) had to be extended by hand; the wake surfaced each via a different test crash. The mitigation is derived-equality pins to the authority — now applied to 3 of 4 (`ProductionGateId` pin added this session).
+- **Pack-neutral wake** (the `is_content_free_gate` split) is the keystone that let the whole arc avoid touching the frozen pack / HUD — a woken HIL pause is a runtime pause point, not pack prose.
+- **Instantiating real agents (load SKILL.md) ≠ imitating them** — the operator-requested final sign-off produced sharper, discipline-specific findings than role-played descriptions would.
+
+## Validation summary
+Step 0 (Cora harmonize): SUBSTITUTED by the in-session two 3-lane reviews + the instantiated architect/dev/tea sign-off + green L1 deterministic sweep (lockstep exit 0, lint-imports 13/0, ruff clean on session files) — recorded as proceed-with-substitution. Step 1 quality gate: PASS (caught + fixed 4 cosmetic issues). Replay regression green. Zero genuine test regressions (stash-baseline verified).
+
+## Artifact update checklist
+- [x] SESSION-HANDOFF.md (this section) · [x] next-session-start-here.md (rewritten) · [x] deferred-inventory.md (4 new entries across the session) · [x] specs (spec-arc1a, spec-arc2 with completion notes) · [x] frozen-pack-shas.json · [x] regime doc (three-role model)
+- [ ] sprint-status.yaml — NOT edited (arcs tracked via session task-list, not formal sprint stories) · [ ] bmm-workflow-status.yaml — no phase transition · [~] project-context.md — woken-gate + three-role-pack changes are significant; RECOMMEND a refresh next session (deferred to keep WRAPUP scoped) · [~] knowledge-graph — ≥10 substrate files + manifest/schema changes: RECOMMEND `/understand` regen + ONBOARDING re-emit next session.
+
+## WRAPUP ceremony record (Class S, 2026-06-19)
+Steps 0(substituted)/1(pass)/2(done in-session)/7/8 engaged. Steps 3/4a/4b/6 SKIP (no workflow transition / sprint-ledger edit / agent-skill / content edits). Step 5 project-context + Step 9 KG: recommended-deferred (recorded above). Step 10: worktree clean except by-design untracked `runs/`. Step 11: class-drift check — declared S, diff is substrate → no drift. Step 12: push mandatory — satisfied (all arcs pushed; closeout commit pushed). Master-merge SKIPPED (scoped trial branch).
+
+---
+
 # Session Handoff — 2026-06-17 (Class S — WAVE 0 tranche 2 landed + cycle-6 storyboard-correctness operator review COMPLETE)
 
 **Final class:** S (declared S at open — substrate session: `production_runner.py` + `package_builders.py` + 3 test files edited & committed; no drift). 
