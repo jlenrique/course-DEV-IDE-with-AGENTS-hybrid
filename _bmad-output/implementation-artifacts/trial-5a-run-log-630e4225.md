@@ -46,5 +46,13 @@ After the T5a-F3 repair, a fresh run with the SAME Sarah `select` at G4A:
 - **🟡 T5a-F4 (cosmetic):** node 12 `operator_id` still reads `operator-defaulted-recommended` — the runner threads `selected_voice_id` but not `operator_id`; the audit label is stale though the voice is correct. Minor follow-up: thread `operator_id="operator-select"` too.
 - **🔴 T5a-F2 REINFORCED (dominant "error-free twice" blocker):** irene pass-2 `slide-join-failed` needed **3 recover attempts** this rerun (2 consecutive failures) — far beyond a ≤1 auto-retry budget. NOT mere variance; the pass-2 perception_source join needs **prompt/schema hardening** before any clean twice-run is achievable. This is now the #1 BETA-blocking item.
 
+## ✅ VALIDATION RUN (6026f743) — both fixes REPRODUCED; new voice↔WPM finding
+With S0.4 auto-retry + T5a-F3 voice-thread both landed:
+- **irene auto-retry VALIDATED:** G2C→G3 leg reached G3 with **ZERO error-pause / ZERO operator recover** — the irene pass-2 variance was absorbed IN-DISPATCH. The #1 "error-free twice" blocker is resolved.
+- **voice binding REPRODUCED:** node 12 synthesis = Sarah (EXAVITQu…), 6 mp3s.
+- **🟠 FINDING T5a-val-F5 (voice↔WPM interaction):** the run then error-paused at G5 `quinn_r.g5.wpm-threshold` — **WPM 128.0 vs target 150 (band 130–170)**, a 2-WPM near-miss BELOW the floor. Cause: Sarah's slower pace dropped measured WPM under the floor (the default Roger lands in-band; prior runs passed G5). G5 is correctly enforcing its contract, but the narration was authored for a generic 150-WPM target, not the *selected* voice's pace. This is deterministic (recover won't change synthesized durations) → the run cannot complete error-free with Sarah. **Resolution shape:** with operator voice-select, the WPM QA must either (a) re-target to the SELECTED voice's expected pace, (b) become operator-overridable post-select (a HIL accept), or (c) widen tolerance for voice variance. Filed `beta-voice-select-wpm-qa-interaction`. Sibling of the picker-completeness arc (selecting a voice has downstream QA consequences the contract must accommodate).
+
+**NET (this autonomous arc):** the two hardest novel pieces are PROVEN live — the picker binding (capability e/voice, the "big leap") and the irene flake auto-recovery (the #1 error-free blocker). A fully error-free *completion* with a non-default voice is now gated on the freshly-surfaced voice↔WPM interaction (T5a-val-F5) — the next "repair" — plus the remaining BETA capability surfaces (SPOC, review-lanes, motion).
+
 ## Findings (live)
 _log as observed_
