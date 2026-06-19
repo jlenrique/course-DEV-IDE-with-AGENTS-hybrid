@@ -12,6 +12,12 @@
 ## S0 — FOUNDATION (blocks everything; D2 + D6). Gov: light. Auto: yes.
 The universal precondition + the quality bar that makes "error-free" falsifiable. Land + green BEFORE any picker trial.
 
+> **EXECUTION STATUS (2026-06-19, live):**
+> - ✅ **S0.1** crash-taxonomy guard — `5c9cbea` (ModeMismatchError→error-pause; closes `trial-4-modemismatch-recoverable-family`).
+> - ✅ **S0.2** ingestion-report integrity — `6497514` (summary artifacts wired to producer output; closes G1-false-reject half of T4-F1).
+> - ◐ **S0.3** structured-card-binding — `a0d85a8` lands the **candidate-population** half (G2B/G4A cards now carry real variant/voice candidates + structured pick_context; closes T4-F6). **Remaining S0.3:** the `selected_*_id` verdict read-path + downstream **re-route** node (binding the pick) — folds into T5a (voice) as the safe proof.
+> - ☐ **S0.4** live-dispatch contract harness — not started.
+
 | Story | Scope | Exit | Closes |
 |---|---|---|---|
 | **S0.1 crash-taxonomy guard** | Re-base `ModeMismatchError` onto `SpecialistDispatchError` (tag `quinn_r.mode.unresolved`); add a test asserting all known failure families → error-pause, not crash. | mode-miss error-pauses + `trial recover`-able; guard test green | `trial-4-modemismatch-recoverable-family` |
