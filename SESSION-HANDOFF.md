@@ -1,3 +1,47 @@
+# Session Handoff — 2026-06-19 PM (Class S — BETA arc: error-free run ×2 + Marcus SPOC demonstrating a–g ×2)
+
+**Final class:** S (substrate throughout: runtime/specialist/schema/test edits + live content-production trials; no drift).
+**Branch:** `trial/4-2026-06-12`. **Anchor:** `e855d7d` (session-START) → **21 commits** → HEAD WRAPUP docs-closeout. Origin in sync (pushed every commit); master-merge SKIPPED (scoped trial branch); working-branch push satisfied per policy.
+
+## The headline
+Operator set a `/goal`: plan→spec→autonomously run trials to an **error-free BETA, twice**, demonstrating **Marcus as conversational SPOC** with operator capabilities a–g. Outcome: the goal's **core gate is met at MVP fidelity** — the **Marcus SPOC drove a full a–g production run to error-free completion TWICE** (`e2291039` + `74f72a4c`), backed by **engine error-free ×2** (`b7919f65` + `bb76170c`) and the **picker binding proven live** (operator voice `select` → synthesis emits the pick, T5a rerun `710684c0`).
+
+## What was completed
+- **Phases 1–3 (planning, party-reviewed):** 5-agent BETA-scoping party (8 decisions D1–D8) + a 3-agent binding-verb milestone (Option B ratified). `beta-scoping-brief` + `beta-spec-2026-06-19.md` + `beta-trial-sequence-charter-2026-06-19.md`.
+- **Phase 4 substrate (each tested / ruff / lint-imports 13 / pushed):** S0.1 crash-taxonomy `5c9cbea` · S0.2 ingestion-report `6497514` · S0.3 card candidates `a0d85a8` · **T5b `select` verb `c1fc663`** (surgical picker overlay; `edit` full-replace preserved) · T5a-F3 voice re-route `3b5eec0` · S0.4 ratchet `b87bc2d` · **S0.4 auto-retry `e9d20be`** (irene LLM-variance absorbed in-dispatch — the error-free keystone) · **Marcus SPOC `9ec7a40`** (`app/marcus/cli/marcus_spoc.py` narrating a–g).
+- **Trials run (run→repair→rerun loop):** Trial-4 completion (`d7ad4dac`, this session's separate Trial-4 run — see prior handoff for the readiness build) → T5a diagnose/repair/rerun → engine error-free ×2 → SPOC a–g error-free ×2.
+- **Postmortem filed** for Trial 4 (`docs/trials/trial-4/postmortem.md` + cross-trial-learnings §Trial-4 + deferred-inventory entries).
+
+## What is next
+- **Resolve `beta-voice-select-wpm-qa-interaction`** (party QA-semantics decision) → unblocks a non-default-voice run to error-free completion (G5 WPM is voice-agnostic; Sarah's 128 WPM trips the 130 floor).
+- **Deepen the Marcus SPOC** (richer c/d narration; optional free-form NL dialogue) and the remaining charter arcs: T6 review-lanes (Tracy), T8 motion synthesis.
+- Per-arc: `beta-trial-sequence-charter-2026-06-19.md` is the execution authority.
+
+## Unresolved issues / risks
+- **SPOC is MVP fidelity:** structured conversational surface (narration + per-gate decisions), NOT free-form NL/LLM dialogue (deferred per operator directive "defer sophisticated ML"). (c) lesson-plan + (d) research narration are thin.
+- **Non-default-voice-to-completion is gated** on `beta-voice-select-wpm-qa-interaction`. The two error-free SPOC runs use approve-path (operator reviews + accepts — legitimate influence); the non-default binding is proven separately.
+- **S0.2 residual:** summary-artifact wiring has a TIMING bug (emitted mid-node before contribution lands) → G1 softened reject→revise but still shows "Emitted artifacts: none". Fix: read bundle manifest at gate-build, or emit summary post-contribution.
+- **Motion (f)** is review-only (synthesis deferred). **Variant distinctness** still single-dispatch (mechanics done).
+- Ambient (pre-existing, NOT this session): `test_schema_pin[run_state]` fails on clean HEAD (stale WAVE-0 production-envelope.v2 pin); `desmond llm_live` flake; generator-c3 cross-test-isolation flake; repo-wide ruff debt untouched.
+
+## Key lessons (binding)
+- **Bounded auto-retry on known LLM-variance tags is the error-free keystone** for an LLM-in-the-loop pipeline — it converts operator-manual recovers into in-dispatch absorption (the BETA §2 "Class-B absorbed automatically" rule). Reserve it strictly for variance tags; deterministic substrate defects must still fail loud.
+- **A picker's merge is necessary but not sufficient** (Murat, T5b): the unit-tested `select` merge landed in run_state but the synthesis re-defaulted because dependency-bearing nodes rebuild their payload — the LIVE trial caught the consumption gap unit tests couldn't. Always live-validate a re-route.
+- **New verb over re-pinned contract** (party Option B): added `select` rather than overload `edit` (whose full-replace is pinned) — preserves the old contract by construction.
+- **Don't game a QA gate to force green** — the voice↔WPM breach was filed as a party decision, not unilaterally weakened.
+
+## Validation summary
+Step 0 (Cora/Audra): dissolved 2026-04-24 → SUBSTITUTED by per-commit ruff + lint-imports + targeted/regression suites + this WRAPUP quality gate (proceed-with-substitution). Step 1 quality gate: PASS (ruff clean on all touched files; lint-imports 13/0). New test suites green: crash-taxonomy, select-verb-binding, dispatch-retry, card-candidate-binding, picker-contract-ratchet, marcus-spoc-narration, gary title-pinning. Engine + SPOC error-free ×2 each (live).
+
+## Artifact update checklist
+- [x] SESSION-HANDOFF.md (this section) · [x] next-session-start-here.md (rewritten) · [x] project-context.md (2026-06-19 BETA entry) · [x] deferred-inventory.md (Trial-4 + BETA follow-ons) · [x] beta-spec + charter + scoping-brief · [x] trial-4 postmortem + cross-trial-learnings · [x] milestone + SPOC-demo records
+- [ ] sprint-status.yaml — NOT edited (BETA arc tracked via charter + session docs, not formal sprint stories) · [ ] bmm-workflow-status.yaml — no phase transition (4-implementation continues) · [~] knowledge-graph + ONBOARDING — ≥10 substrate files + new SPOC module: RECOMMEND `/understand` regen + ONBOARDING re-emit next session (deferred to keep WRAPUP scoped).
+
+## WRAPUP ceremony record (Class S, 2026-06-19 PM)
+Steps 0(substituted)/1(pass)/2(done in-session)/5/7/8 engaged. Steps 3/4a/4b/6 SKIP (no workflow transition / sprint-ledger edit / agent-skill-in-skills-dir / content-staging edits — trials write to gitignored runs/). Step 9 KG: recommended-deferred. Step 10: worktree clean except by-design untracked top-level `runs/` + gitignored `.tmp/`. Step 11: class-drift — declared S, diff is substrate → no drift. Step 12: push mandatory — satisfied (all commits pushed; closeout commit pushed). Master-merge SKIPPED (scoped trial branch).
+
+---
+
 # Session Handoff — 2026-06-19 (Class S — Trial-4 feature readiness: Arc-1a A14 + Arc 2 woken HIL gates, all reviewed & shipped)
 
 **Final class:** S (declared S at open — substrate throughout: manifest, schema, runtime, decision-card models, CLI shims, ~46 files; no drift).
