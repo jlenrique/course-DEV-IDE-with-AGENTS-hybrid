@@ -201,3 +201,57 @@ exceptional harvest — **9 findings, and the first live G1→G2C gate crossing 
   test + battery + tripwire-allowlist amendment + push → relaunch. 5-fix cap + party-mode
   consensus for the structural one. Cost per trial instance: cents (LLM) — instances are cheap,
   torn state is not.
+
+---
+
+## §Trial-4 (2026-06-19, run `d7ad4dac`) — first operator-in-the-loop FULL-PIPELINE COMPLETE
+
+> **Trial result: PASS** — G0 → completion (6 gates: G1/G2B/G2C/G3/G4/G4A), 6/6 real ElevenLabs
+> narration segments, assembly bundle, $0.24. Required 2 substrate fixes + 1 LLM re-roll; all
+> error-pauses recovered on the SAME trial (fix-and-continue, not relaunch). Postmortem:
+> `docs/trials/trial-4/postmortem.md`. Ledger: `_bmad-output/implementation-artifacts/trial-4-run-log-d7ad4dac.md`.
+
+### By gate / surface (symptoms, compact)
+
+- **G1 — Symptom: drafted-`reject`/halt-for-repair false-negative over genuinely-present content.**
+  Bundle on disk had 5 real artifacts (manifest) but Texas specialist-summary said "Emitted
+  artifacts: none" + double Texas dispatch (exit-10) drove `artifact_paths_empty` /
+  `duplicate_output_digest`. Recurs for quinn-r/vera/enrique summaries. FILED
+  `trial-4-specialist-summary-artifact-list-reporting-gap` (Q2). Q1 candidate: "specialist-summary
+  artifact list not wired to the on-disk bundle/output manifest."
+- **Gary §07 — Symptom: `gamma.export.brief-unmatched`; Gamma merged 6 briefs→5 pages + invented
+  titles; bijective title-matcher refused (2 rolls, 2nd worse).** Root cause UPSTREAM: generation
+  call under-constrained (no `card_split`, no title pinning). FIXED `10befac` (cardSplit=
+  inputTextBreaks + title-led chunks via shared `_slide_title`). Q1 candidate: "downstream
+  fail-loud guard hardened while upstream producer left under-constrained — cure is upstream."
+- **quinn-r §07B — Symptom: `ModeMismatchError: gate_id ''` CRASH (not error-pause) at the variant
+  eval.** Arc-1a moved `gate_code:G2B` off node 07B onto content-free `07B-gate`, stripping 07B's
+  quinn-r mode signal. FIXED `1b629f3` (`_effective_quinn_r_gate_code` derives mode from the
+  following content-free gate). Q1 candidate: "waking/splitting a HIL gate off a specialist
+  prep-node strips that specialist's mode-derivation; the wake must re-home it." Deferred hardening
+  FILED `trial-4-modemismatch-recoverable-family` (put ModeMismatchError in the dispatch-error family).
+- **irene §08 — Symptom: `irene.pass2.slide-join-failed` (perception_source referenced no roster
+  slide).** LLM-output variance; prompt already mandates it. Cleared by ONE `trial recover` re-roll.
+  Watch-item (tighten output-schema enforcement only if it recurs).
+- **G2B/G4A — Symptom: woken HIL gates are accept/review, NOT binding pick-from-N selectors.**
+  `variant_candidates`/`voice_candidates` empty on the card; `selected_*_id` write-only; `edit`
+  doesn't re-route. G4A DID carry real `voice_preview.voices` ×3 (with sample URLs) in the enrique
+  output, just not surfaced onto the card. FILED `trial-4-binding-variant-voice-picker` (Q2) — the
+  "big leap" for the next trial.
+
+### Run-shape learnings (Q4, this register)
+
+- **Recover-first triage works for error-pauses, but distinguish variance from systematic FAST.**
+  Gary brief-unmatched: 2 recovers both failed (2nd worse) → systematic → fix upstream. irene
+  slide-join: 1 recover cleared → variance. Rule of thumb: re-roll once; if it fails *differently
+  but same class*, it's systematic — stop re-rolling, fix.
+- **Each fix can reveal the next live-only gap (cascade).** Clearing Gary surfaced the 07B crash;
+  clearing 07B reached G2B. This is the weed-clearing trial working as intended — budget for a
+  cascade, not a single blocker. Offline suites hid all of these (the woken-gate structural guard
+  checked template+shim existence, not that 07B passes a gate_id live).
+- **Dispatch/specialist-tier fixes are governance-light** (not in `block_mode_trigger_paths`) — both
+  Trial-4 fixes landed Claude-direct + 3-lane self-review + push, no manifest edit, no pack bump.
+- **G4A surfaces real voice previews with playable `sample_audio_url`s** — operator can audition
+  voices; the recommended default is pre-selected (`voice_selection.selected_voice_id`).
+- Verdict digest = decision-card top-level `digest` (embedded field is the all-zeros placeholder) —
+  confirms the Trial-3 learning across all 6 Trial-4 gates.
