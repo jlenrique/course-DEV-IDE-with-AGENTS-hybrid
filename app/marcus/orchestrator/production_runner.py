@@ -390,6 +390,85 @@ def _base_card_meta(meta: DecisionCardMeta) -> DecisionCardBaseMeta:
     )
 
 
+def _latest_contribution_output(production_envelope: Any, specialist_id: str) -> dict[str, Any]:
+    """Latest production-envelope output dict for a specialist (S0.3 card binding)."""
+    contributions = getattr(production_envelope, "contributions", None) or []
+    latest: dict[str, Any] = {}
+    for contrib in contributions:
+        cid = getattr(contrib, "specialist_id", None)
+        if cid is None and isinstance(contrib, dict):
+            cid = contrib.get("specialist_id")
+        if str(cid or "") != specialist_id:
+            continue
+        output = getattr(contrib, "output", None)
+        if output is None and isinstance(contrib, dict):
+            output = contrib.get("output")
+        if isinstance(output, dict):
+            latest = output  # append-order: keep the last match
+    return latest
+
+
+def _voice_candidates(production_envelope: Any) -> tuple[list[str], list[dict[str, Any]]]:
+    """(voice_id list, structured options) from enrique voice_preview (S0.3 / T4-F6).
+
+    Surfaces the real voice options the producer already emitted onto the card —
+    Trial-4 had `voice_candidates: []` while enrique's voice_preview.voices held
+    3 real options with sample URLs.
+    """
+    output = _latest_contribution_output(production_envelope, "enrique")
+    preview = output.get("voice_preview") if isinstance(output, dict) else None
+    voices = preview.get("voices") if isinstance(preview, dict) else None
+    if not isinstance(voices, list):
+        return [], []
+    ids: list[str] = []
+    options: list[dict[str, Any]] = []
+    for voice in voices:
+        if not isinstance(voice, dict):
+            continue
+        vid = str(voice.get("voice_id") or "")
+        if not vid:
+            continue
+        ids.append(vid)
+        options.append(
+            {
+                "voice_id": vid,
+                "voice_name": voice.get("voice_name"),
+                "sample_audio_url": voice.get("sample_audio_url"),
+                "characteristics": voice.get("characteristics"),
+            }
+        )
+    return ids, options
+
+
+def _variant_candidates(production_envelope: Any) -> tuple[list[str], list[dict[str, Any]]]:
+    """(variant-id list, per-slide options) from gary_slide_output (S0.3).
+
+    Pre-N-dispatch this yields the single dispatch variant; once Gary
+    N-dispatches (charter T5b) it naturally becomes the N selectable variants.
+    """
+    output = _latest_contribution_output(production_envelope, "gary")
+    rows = output.get("gary_slide_output") if isinstance(output, dict) else None
+    if not isinstance(rows, list):
+        return [], []
+    per_slide: dict[str, list[dict[str, Any]]] = {}
+    variants: set[str] = set()
+    for row in rows:
+        if not isinstance(row, dict):
+            continue
+        slide_id = str(row.get("slide_id") or "")
+        variant = str(row.get("dispatch_variant") or "A")
+        variants.add(variant)
+        per_slide.setdefault(slide_id, []).append(
+            {
+                "variant": variant,
+                "file_path": row.get("file_path"),
+                "display_title": row.get("display_title"),
+            }
+        )
+    options = [{"slide_id": sid, "variants": rows} for sid, rows in per_slide.items()]
+    return sorted(variants), options
+
+
 def _build_decision_card(
     *,
     gate_id: str,
@@ -398,6 +477,7 @@ def _build_decision_card(
     operator_id: str,
     pending_nodes: list[str],
     artifact_paths: list[Path],
+    production_envelope: Any = None,
     pre_fill: PreFillProposal | None = None,
     runs_root: Path = RUNS_ROOT,
 ) -> Any:
@@ -495,6 +575,10 @@ def _build_decision_card(
         # selected_variant_id=None). Structured `variant_candidates` parsing is a
         # follow-on (weed-clearing posture: the pick must function + show the
         # evaluation; rich per-candidate parsing is a postmortem-harvest item).
+        variant_ids, variant_options = _variant_candidates(production_envelope)
+        g2b_context = list(evidence)
+        if variant_options:
+            g2b_context.append({"kind": "variant-options", "slides": variant_options})
         return G2BCard(
             card_id=common["card_id"],
             trial_id=common["trial_id"],
@@ -502,15 +586,20 @@ def _build_decision_card(
             decision_card_digest="0" * 64,
             meta=_base_card_meta(common["meta"]),
             verb=common["verb"],
-            variant_candidates=[],
+            variant_candidates=variant_ids,
             selected_variant_id=None,
-            pick_context=evidence,
+            pick_context=g2b_context,
             operator_prompt="Approve the proposed slide variants, or edit to select alternates.",
         )
     if gate_id == "G4A":
         # Arc 2 woken voice-pick HIL (11-gate, after node 11 elevenlabs voice
-        # options). Same shape as G2B — `pick_context` carries the adjacent
-        # elevenlabs evaluation for the operator.
+        # options). S0.3/T4-F6: project enrique's real voice_preview.voices onto
+        # `voice_candidates` (+ structured options into pick_context) so the card
+        # carries the choices, not just the summary text.
+        voice_ids, voice_options = _voice_candidates(production_envelope)
+        g4a_context = list(evidence)
+        if voice_options:
+            g4a_context.append({"kind": "voice-options", "voices": voice_options})
         return G4ACard(
             card_id=common["card_id"],
             trial_id=common["trial_id"],
@@ -518,9 +607,9 @@ def _build_decision_card(
             decision_card_digest="0" * 64,
             meta=_base_card_meta(common["meta"]),
             verb=common["verb"],
-            voice_candidates=[],
+            voice_candidates=voice_ids,
             selected_voice_id=None,
-            pick_context=evidence,
+            pick_context=g4a_context,
             operator_prompt="Approve the proposed voice, or edit to select an alternate.",
         )
     raise RuntimeError(f"unsupported production gate id: {gate_id}")
@@ -948,6 +1037,7 @@ def _pause_at_gate(
         operator_id=operator_id,
         pending_nodes=pending,
         artifact_paths=envelope.artifact_paths,
+        production_envelope=production_envelope,
         pre_fill=pre_fill,
         runs_root=runs_root,
     )
