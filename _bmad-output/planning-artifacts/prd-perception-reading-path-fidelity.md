@@ -1,5 +1,5 @@
 ---
-stepsCompleted: ['step-01-init', 'step-02-discovery', 'step-02b-vision', 'step-02c-executive-summary']
+stepsCompleted: ['step-01-init', 'step-02-discovery', 'step-02b-vision', 'step-02c-executive-summary', 'step-03-success', 'step-04-journeys', 'step-05-domain']
 classification:
   projectType: 'multi-agent LLM content-production pipeline (backend/AI)'
   domain: 'EdTech / online course-content production'
@@ -70,3 +70,136 @@ Conventional slide-narration tooling grounds on the author's brief. This product
 - **Domain:** EdTech / online course-content production.
 - **Complexity:** High — LLM + vision model in the loop; Pydantic-v2 schema-shape discipline; pipeline-manifest lockstep risk; an anti-correlated QA metric requiring RED-first detector discipline.
 - **Project Context:** Brownfield — regression repair (post-severance) + enhancement on a shipped pipeline.
+
+## Success Criteria
+
+> Refined by party-mode 2026-06-19 (Murat/John/Mary/Winston). The arc has **two legs of unequal evidentiary strength** — the perception leg is **render-proven** ($5.2T-vs-$4.5T evidence PNG), the reading-path leg is **severance-log-inferred** (operator complaint + the surviving worked-examples doc). Success metrics are scored separately so a presence-check cannot pass for a correctness-check.
+
+### User Success
+
+"Users" = the **operator** and the **specialist agents** (Irene, Gary, Vera, Quinn-R) on the production trial path.
+
+- **PRIMARY (measurable):** **no silent confident-wrong output** — a hallucinated *fidelity-bearing* visual reference produces a loud **Class-A** failure, never a clean pass.
+- **MVP scope of the claim (honest):** at MVP, "error-free" means **grounded to the rendered slide (no confident-wrong output)** — explicitly **NOT yet** "narrated in natural scan order." The founding operator complaint ("narration doesn't follow the natural scan") is a **reading-path / Growth** outcome, not MVP.
+- **Secondary (color, not a gate):** operator trust restored — an "error-free" run is read as grounding-verified without manual PNG cross-checking; the relief moment = detector green + slide-01 narrating the rendered `$4.5T stat callouts + photo` reality.
+
+### Business Success
+
+"Business" = the BETA program + governance integrity.
+
+- **Asterisk split (John):** the §6 rebrand `(mechanics only — fidelity unverified)` becomes `(grounding ✓ at MVP / reading-path ✓ at Growth)`. **MVP sheds the grounding asterisk only**; the last asterisk drops at Growth.
+- **Leg-gated inventory strike (John):** the **grounding** deferred-leg (`beta-narration-hallucinates-nonexistent-illustrations`) is struck when P2-1/P2-3 land; the **reading-path** leg (`reading-path-enforcement-machinery-not-absorbed-at-severance`) is struck only at Growth (P2-4); the **combined arc entry is fully struck at Growth**.
+- **§6 DoD-gate is first-class (Mary):** P2-3 merges **only when** the §6 DoD-gate passes (entries struck per leg + cross-trial-learnings harvested, bidirectional).
+- **Durable guardrail:** the fidelity detector remains in CI permanently — the defect class cannot silently recur.
+
+### Technical Success
+
+- **Detector:** RED-first, **two-sided**, **Class-A / no-retry**, its own **non-folded** story.
+  - **Two-sidedness pinned (Murat):** passes a **sized, real green corpus** — ≥20–30 *legitimately-faithful* slides drawn from committed runs, spanning the variation that trips naive matchers (paraphrase, rounding, synonymed visual elements, multi-figure slides).
+  - **Specificity (Murat):** **false-positive ceiling** — 0 false RED on the frozen green corpus (or a stated bound ≤1/N with per-FP triage). This is a **P2-3 merge gate**.
+  - **Sensitivity (Murat):** lands RED on a **seeded-defect set** (figure-swap, element-drop, magnitude-drift) — recall as a number, not the single $5.2T anecdote.
+- **PNG-grounded `PerceptionArtifact`** — the single fidelity authority; schema-shape (Pydantic-v2 14-idiom, scaffold, four-file lockstep). Per the panel it gains:
+  - **Provenance (Winston):** every visual claim carries `source ∈ {png-grounded, brief-expectation, not-covered}`. A brief-derived claim entering §08 unmarked / un-re-grounded is **test-detectable** — this is what makes "never silent brief-fallback" measurable.
+  - **Confidence/coverage (Winston):** each visual element is `perceived | low-confidence | not-covered`. **Uncertainty / not-covered NEVER scores as conformance.**
+- **Single perception source (Winston/Murat — replaces "zero inference"):** (a) **import-linter contract** — detector & Pass-2 do not import the vision provider; (b) **contradiction test** — detector verdict tracks the `PerceptionArtifact`, not a deliberately mismatched PNG; (c) **negative test** — injecting a second independent vision inference makes the invariant test go RED.
+- **Pass-2 grounding:** references ⊆ perceived `visual_elements`; narrated numerics == perceived figures (no $5.2T→$4.5T drift); **0 orphans among *fidelity-bearing* references** (figures / named visual elements / on-slide claims) via a **typed classifier** that excludes non-visual narration (prior-slide callbacks, abstract concepts) — with a **measured mis-type rate** for that classifier.
+- **Seam failure taxonomy (Winston):** the §07→vision→§08 seam enumerates failure classes — vision *raised/timeout*, *low-confidence* return, *schema-invalid* return — each mapped to a required outcome (hard-fail vs degraded-flagged), ratified at party green-light alongside the Tier-2 pack bump. Never a silent fallback to brief.
+- **Vision-step robustness (Winston):** pinned model id + deterministic decode settings + a **golden-image repeatability test** (stable artifact within tolerance); vision-step **retry policy stated explicitly** and distinct from the detector's no-retry; vision-step **cost/latency bounded and observed**.
+- **Reading-path conformance:** check lives in Irene's verify node; `reading_path` is **non-null AND drawn from the closed classification enum** (no out-of-vocab); conformance **fails loud**.
+- **Pipeline integrity:** the new vision step passes pipeline-lockstep; any pack/manifest touch goes through the regime + **party green-light before dev** (Tier-2).
+
+### Measurable Outcomes — Perception leg (RENDER-PROVEN)
+
+1. The detector **FAILS** on the committed **un-repaired $5.2T fixture** AND **PASSES** the sized real green corpus — both demonstrated **before P2-3 merges**.
+2. **Specificity + sensitivity:** 0 false RED on the green corpus (FP ceiling) AND RED on every seeded-defect fixture (recall).
+3. **After P2-3:** regression-green on slide-01; narrated figure == perceived figure; **0 orphans among fidelity-bearing references** on the frozen corpus.
+4. **Anti-overfit (John):** green also holds on **≥1 held-out slide/corpus** the detector was not tuned against.
+5. **Single-source invariant:** import contract + contradiction test pass; a second-inference injection goes RED.
+6. **§6 DoD-gate** passes (grounding-leg entry struck + cross-trial harvest) as a **merge gate** for P2-3.
+
+### Measurable Outcomes — Reading-path leg (INFERRED — weaker evidence)
+
+> **Named ground truth (Mary):** the operator complaint ("narration doesn't follow the natural scan") + the surviving worked-examples doc (`skills/bmad-agent-content-creator/references/pass-2-grammar-riders-examples.md`). **No render-grounded smoking gun exists for this leg** — on the record.
+
+7. **Correctness, not presence:** on a held-out set of N frozen-corpus slides with an expected scan order (worked-examples / human-derived), narration order matches the `reading_path` order on **≥80%** of slides *(placeholder — finalize in the P2-4 story spec)*. Non-null presence alone does **not** satisfy.
+8. **Anti-vacuity (Mary):** ≥1 fixture where the *naive-default* `reading_path` (DOM / top-to-bottom) is KNOWN-WRONG; the classifier must produce the correct **non-default** order — the reading-path analog of the un-repaired $5.2T fixture.
+9. **Disconfirmation (Mary):** "detector green but the operator's scan-order complaint reproduces on fresh narration" is an explicit **failing** observation — the leg is testable, not self-certifying.
+
+## Product Scope
+
+### MVP — Minimum Viable Product
+P2-1 detector (RED-first, two-sided over the sized green corpus, FP ceiling, seeded-defect recall) + P2-2 `PerceptionArtifact` (provenance + confidence/coverage) + P2-3 Pass-2 consumption → **regression-green on the frozen corpus PLUS ≥1 held-out slide**. **Closes the GROUNDING / confident-wrong leg only.** The founding scan-order complaint remains open by design.
+
+### Growth Features (Post-MVP)
+P2-4 reading-path native rewrite + verify-node conformance (the **correctness** bar above, not presence) + pattern-repertoire enhancement (triptych / image-dominant-first) + per-cluster narration cadence coupled to the scan pattern. **Closes the reading-path leg → drops the last asterisk; the combined arc entry is fully struck.**
+
+### Vision (Future)
+**Generality across corpora — *demonstrated* via a named multi-corpus eval** (not asserted); perception coupled to motion synthesis; perception-driven autonomous narrative focus (Epic 15/16 territory).
+
+## User Journeys
+
+### Journey 1 — Operator, happy path: a *fidelity-verified* run
+**Juan** runs the frozen corpus (`tejal-apc-c1-m1-p2-trends`). After §07 export, the new **vision pass** perceives each rendered PNG into a `PerceptionArtifact` (elements, positions, numbers, with provenance + confidence). Pass-2 narrates **from the perceived artifact**, in `reading_path` order. The **fidelity detector** compares each narration reference against the artifact and returns **GREEN**. G5 reports "error-free" — and now that word means *grounding-verified*. Juan accepts without manually diffing PNGs against narration.
+*Reveals:* vision-pass pipeline step · `PerceptionArtifact` schema · detector consuming the artifact · verdict surfaced at the gate.
+
+### Journey 2 — Operator, the catch: the detector fires on a hallucination
+A later content/template change reintroduces a briefed-but-unrendered figure. On the next run the detector fires **Class-A**, naming the offending slide and the orphan reference: *"narration references '$5.2T line + bars' — not present in perceived slide-01 (perceived: $4.5T callouts, building photo)."* The run **pauses**; nothing publishes. Juan sees exactly what's wrong and where — no silent confident-wrong output.
+*Reveals:* Class-A fail-loud + no-retry · orphan-reference naming · fidelity-bearing-reference classifier · error-pause surfacing.
+
+### Journey 3 — Irene (specialist), grounded authoring
+Irene's Pass-2 node receives the `PerceptionArtifact` as the **sole visual authority** (Vera's brief-derived perception is demoted to a secondary *expectation* signal she may diff but not assert). She writes narration to perceived elements and the slide's scan order; her **verify node** runs the `reading_path` conformance check before handoff. She cannot reference a visual the artifact does not carry.
+*Reveals:* Pass-2 consumption seam (`_assemble_pass_2_prompt`/`_slide_roster`, `pass_2_template.py`) · `reading_path` field + verify-node conformance · single-perception-authority.
+
+### Journey 4 — Builder/governance: the detector lands RED-first
+The team ships **P2-1 against the un-repaired $5.2T commit**. The detector goes **RED** (proving it catches the real failure) and **PASSES the sized real green corpus** (proving it isn't a stuck alarm); the seeded-defect set gives a recall number. Only then do P2-2/P2-3 land and turn it **regression-green**. The §6 DoD-gate (strike grounding entry + cross-trial harvest) is the merge gate for P2-3.
+*Reveals:* RED-first sequencing (non-folded story) · sized green corpus + FP ceiling + seeded-defect harness · DoD merge gate · dual-gate review.
+
+### Journey 5 — Troubleshooting: the vision step fails
+On one slide the vision model times out / returns low-confidence. The **seam failure taxonomy** routes it to its mapped outcome (hard-fail or degraded-flagged) — **never a silent fallback to the brief**. The `PerceptionArtifact` marks the region `not-covered`; the detector treats `not-covered`/`low-confidence` as **non-conformance, not a clean pass**. The vision step's stated retry policy (distinct from the detector's no-retry) applies.
+*Reveals:* seam failure taxonomy · per-claim provenance + confidence/coverage states · vision-step retry policy + robustness (pinned model, golden-image repeatability).
+
+### Journey Requirements Summary
+
+| Capability area | Journeys | Maps to |
+|---|---|---|
+| PNG vision pass (new pipeline step) | 1,5 | P2-2 |
+| `PerceptionArtifact` (provenance + confidence/coverage) | 1,3,5 | P2-2 |
+| Fail-loud fidelity detector (Class-A, two-sided, single-source) | 2,4 | P2-1 |
+| Pass-2 grounded on perceived visuals | 1,3 | P2-3 |
+| `reading_path` field + verify-node conformance | 3 | P2-4 |
+| Seam failure-semantics + vision-step robustness | 5 | P2-2 (+ regime/Tier-2) |
+| RED-first harness + DoD merge gate | 4 | P2-1 + §6 |
+
+## Domain-Specific Requirements
+
+> Refined by party-mode 2026-06-19 (Winston/Murat/Amelia). No external legal regime applies; the binding "domain" = internal governance regimes + the hazards of a **non-deterministic vision model feeding a deterministic Class-A gate.**
+
+### Compliance & Governance
+- **Pack/manifest change is Tier-3 (MAJOR), not Tier-2 (Winston, operator-ratified).** P2 births a new **artifact family** (`PerceptionArtifact`) + a new RED-capable gate + a non-deterministic model in the critical path — heavier than a "new step." Requires **party-mode consensus + major pack version bump BEFORE dev**, per `docs/dev-guide/pipeline-manifest-regime.md` + the pack-versioning policy. (If the green-light party explicitly waives to Tier-2, the rationale is recorded on the spec.)
+- **Pipeline-manifest lockstep regime** — the vision node is a new manifest node; all seven lockstep components apply.
+- **Schema-shape discipline** — `PerceptionArtifact` follows the Pydantic-v2 14-idiom checklist + the `docs/dev-guide/scaffolds/schema-story/` scaffold + four-file lockstep (see Technical Constraints for the P2-specific divergence).
+- **Migration sandbox-AC** — live vision round-trip dev-agent ACs invoke the provider **in-process via a shipped dep** (no `curl`/`wget`/CLI) AND carry `pytest.skip(...)` when the API key is absent / the service is unreachable (the established DB-unreachable precedent). Golden-image repeatability ACs run **offline against a recorded fixture** (no skip — they are the deterministic core).
+
+### Technical Constraints
+- **Single perception source — three-layer import-linter contract (Amelia):** (a) the detector & Pass-2 must not import the vision provider; (b) the provider is imported in **exactly one** module — the standalone vision node; (c) `perception/schema.py` (the `PerceptionArtifact` module) is itself **provider-free** so the contract holds transitively. Acyclic graph: `vision.node → {vision.provider, perception.schema}`; `{detector, irene.graph} → perception.schema`.
+- **Detector test-isolation (Murat — hard constraint):** detector unit/contract tests consume **only frozen, checked-in `PerceptionArtifact` fixtures**; live vision invocation from any detector test path is forbidden and import-linter-enforced (detector + detector-tests cannot import the vision client). The detector's Class-A determinism is unverifiable otherwise.
+- **Repeatability via a per-field comparator table (Murat):** replace "stable within tolerance" with a `PerceptionArtifact`-field × comparator × threshold table — e.g. bounding boxes → IoU ≥ θ; element-set → Jaccard = 1.0; figure/text transcription → normalized exact or edit-distance ≤ d. Each field declares its comparator; unnamed = untestable.
+- **Two-lane CI policy (Murat):** deterministic detector tests = **blocking**; live/golden vision repeatability = **quarantined, non-blocking, alert-only**. Relaxing the detector gate to absorb vision flake is explicitly forbidden.
+- **Vision-step robustness:** pinned model id + deterministic decode settings; a **silent-drift canary** (scheduled out-of-CI probe re-runs the golden image, diffs per the comparator table, alerts on drift **even when the model id is unchanged** — providers patch weights under a stable id); a named **re-golden protocol** (who re-blesses the baseline, where the new baseline + model-version provenance are recorded) + an explicit **flake budget / quarantine threshold**.
+- **Retry boundary (Murat):** the vision-step retry policy applies **only upstream of artifact emission**; the detector consuming a (possibly retried, then frozen) artifact is strictly **no-retry**. No retry semantics leak across the artifact seam.
+- **Cost/latency** — a vision pass per slide is a real per-run cost line; bounded and observed (surfaced pre-trial, not discovered in a postmortem).
+- **Boring-tech (Winston):** prefer a **thin pinned-endpoint client (httpx)** over a vendor SDK unless the SDK earns its weight; the golden-image repeatability test runs against the pinned client path so determinism is enforced at the dep boundary.
+
+### Integration Requirements
+- **Standalone manifest node (Winston):** the vision pass is its **own manifest node** between §07 (Gary PNG export) and §08 (Irene Pass-2) — NOT folded into Gary's export or Irene's Pass-2 — and is the sole owner of the vision-provider dependency.
+- **Envelope-contribution-as-sole-authority (Winston):** the `PerceptionArtifact` is a **production-envelope contribution threaded through ProjectionSpec / the dependency-projection (A-R3) seam** — the **canonical, authoritative source for downstream consumption** by Pass-2 and the detector. Any run-dir disk copy is **audit-only, non-authoritative** (closes the A23 ambiguity — no path-convention side channel).
+- **Per-slide addressability + explicit uncovered state (Amelia):** the artifact is **keyed by slide identity** (so `_slide_roster`/`_assemble_pass_2_prompt` join without an O(n) scan or silent-miss); slides the vision pass didn't/couldn't cover carry an explicit **"no-perception" coverage state — never a missing key** — so Pass-2 and the detector share one definition of "absent."
+- **Host nodes:** the `reading_path` conformance + fidelity checks live in the Quinn-R/Irene verify path (G5-class gate family). Runtime: LangChain/LangGraph; specialist dirs read from the hybrid working tree.
+
+### Risk Mitigations (domain-specific)
+- **Anti-correlated metric** (the arc's reason for being) → detector RED-first + two-sided + FP ceiling.
+- **A23 two-source-of-truth fork** → single authority enforced as **envelope-contribution-as-sole-authority** (disk copy audit-only) + per-claim provenance (`png-grounded | brief-expectation | not-covered`).
+- **Vision-model flake / non-determinism / silent provider drift** → comparator-table repeatability test + silent-drift canary + two-lane CI + **seam-attribution** (every vision-step failure is attributable to one of {our-regression, provider-drift, transient-flake} so a RED is never ambiguous).
+- **Vacuous-pass / tuned-to-buggy-output** → RED-first against committed evidence + anti-vacuity fixtures (perception *and* reading-path legs).
+- **Ungoverned pack/manifest scope-creep** → Tier-3 pipeline-lockstep regime + party green-light before dev.
+- **Four-file lockstep divergence trap (Amelia):** `provenance` is `Field(exclude=True) + SkipJsonSchema` (absent from the emitted JSON Schema); `confidence`/`coverage` are closed enums / bounded with triple-layer red-rejection. The lockstep test asserts this **deliberate model-vs-schema divergence on provenance** — NOT naive field-equality (which would falsely fail).
