@@ -1,3 +1,50 @@
+# Session Handoff — 2026-06-19 EVE (Class P — P2-2 NEW CYCLE prep: spec ready-for-dev + Tier-3 party green-light)
+
+**Final class:** P (planning/spec authoring + party-mode green-light; NO substrate files edited — app/manifest/tests were READ-only during substrate-grounding; no class drift).
+**Branch:** `fidelity-perception-arc-2026-06-19`. **Commits this session:** `2063686` (goal prompts) → `6afe824` (P2-2 spec + Codex prompt). Origin in sync (pushed); master-merge SKIPPED (scoped arc branch); working-branch push satisfied per policy.
+
+## The headline
+Continued the P2 perception/fidelity arc. **P2-1 was already DONE** (`43581d2`). This session ran the **NEW CYCLE Claude-orchestrator half (T1–T4) for P2-2** — substrate-ground → pre-author spec → **mandatory Tier-3 party-mode green-light** → Codex dev prompt — terminating at the Codex-ingestion boundary. **No production code written** (that is Codex T5 + Claude T11). Driven by a `/goal` the operator posted.
+
+## What was completed
+- **Authored the P2-2 spec** `_bmad-output/implementation-artifacts/spec-p2-2-perception-artifact-vision-node.md` — substrate-grounded with file:line edit sites, frozen Intent + 16 ACs (now +AC-17/AC-18 from amendments), `status: ready-for-dev`.
+- **Tier-3 party green-light (real subagents):** Winston/John/Murat/Mary/Amelia — **unanimous 5/5 GREEN-WITH-AMENDMENTS, zero blocks, no impasse** (Quinn→John tiebreaker chain NOT triggered). Full §Tier-3 Green-Light Disposition recorded in the spec.
+- **Authored the Codex driver** `codex-dev-prompt-p2-2-perception-artifact-vision-node.md` — self-contained T5 driver encoding every binding amendment, files-in-scope + do-NOT-modify list + full verification battery.
+- **Goal-prompt artifacts** committed (`claude-goal-prompt-p2-2-prep.md` + `.COMPACT.md`, `cursor-goal-prompt-p2-2.md`).
+
+## What is next (multi-session)
+- **NEXT SESSION = Class S: implement P2-2.** Operator runs **Codex (T5 dev T1–T10)** ingesting the spec + Codex prompt → Codex handoff at `_bmad-output/implementation-artifacts/_codex-handoff/p2-2-...ready-for-review.md`. Then **Claude T11**: bmad-code-review 3-lane + full battery (parity/integration-marcus/audit/lockstep/lint-imports) + verify tripwire-flip + additive-schema-keeps-P2-1-green + commit + flip P2-2 done + P2-2 DoD harvest + Mary-A1 RED-run annotation + push.
+- **Then P2-3** (Pass-2 consumes perceived visuals — the regression fix) via a fresh NEW CYCLE. **P2-3 prep is BLOCKED until Codex lands P2-2** (its substrate-grounding reads the real produced PerceptionArtifact at `irene/graph.py` + `pass_2_template.py`).
+- P2-4 (reading-path, Growth) last.
+
+## Locked decisions (binding on Codex — do NOT relitigate)
+- **No v4.3 / no `v43/` sibling** — the vision node is a topology refinement within the v4.2 lineage (W-A1: PerceptionArtifact is an internal envelope contribution, not a pack-lineage content deliverable). Bump `data_plane_vocabulary_version` dp-v1.2→dp-v1.3 + regenerate the `-gen` determinism witness; frozen v4.2 untouched.
+- **New thin pinned-endpoint httpx vision provider client** (not legacy `bridge_utils.perceive`); governed model-id/decode config; Pydantic response contract; no retry in the client.
+- **Vision = pack-rendered house-scaffold specialist** (reference `quinn_r`), inserted after manifest §07F (before §08).
+- **Tripwire flip** (test_fidelity_detector.py:182-202) → ONE two-sided enforce test (RED on produced $5.2T, GREEN on faithful); old test deleted, not skipped.
+- **`FIDELITY_GATE=warn` operator override** (default ENFORCE) so mechanics-only trials survive the legitimately-RED post-P2-2 state.
+- Vision-step retry = bounded 2-attempt transport-only; detector tag NEVER added to `_RETRYABLE_DISPATCH_TAGS` (standing guard test).
+
+## Unresolved issues / risks
+- **A real production run may legitimately FAIL fidelity after P2-2** — EXPECTED, not a bug (Pass-2 repair is P2-3). Mary-A1 mandates a one-line "RED-run is expected" annotation at P2-2 close so no one misreads it as a regression and re-blinds the gate. The `FIDELITY_GATE=warn` override (AC-17) is the operator escape hatch for mechanics-only trials in the interim.
+- **Grounding-leg deferred entry `fidelity-metric-blind-to-perception-regression` STAYS OPEN** — struck only at P2-3 (confirmed open at `deferred-inventory.md:46`).
+- **Comparator tolerances (θ/d) are placeholders** — calibration is a BLOCKING Codex sub-task against a held-out set with a negative control (M-3/M-4); do not ship vacuous tolerances.
+- `next-session-start-here.md` P2 annotation is local only (file is gitignored) — the canonical record is THIS section.
+
+## Key lessons (binding)
+- **Substrate-ground before spec-authoring catches stale framing:** T1 re-reading the manifest/regime revealed the goal's "pack-version bump" framing was wrong — the current doctrine is dual-axis (data_plane_vocabulary_version + `-gen` witness), no pack-version bump. Winston ratified. Authoring spec-as-paper would have shipped the wrong governance.
+- **The `specialist_id` overload (Winston A4 vs Amelia AM4) resolved cleanly once A1 decoupled pack-rendering from version-bumping** — a producer that also renders a section is how every node works; no new substrate predicate needed.
+- **Party amendments were complementary, not conflicting** — John's override (J1) + Murat's anti-vacuity (M5/M6) + Amelia's scaffold pin (AM4) reinforced each other; the one divergence resolved by orchestrator synthesis without invoking the impasse chain.
+
+## Validation summary
+Class P — Step 0 (Cora coherence) SKIPPED (no invariant/substrate files touched; planning-artifacts + gitignored hot-start only). Step 1 quality gate: PASS (`git diff --check` clean; working tree clean except ambient untracked `runs/`). No code/tests run (none authored — NEW CYCLE boundary stops before dev). sprint-status.yaml NOT edited (P2 tracked via spec + charter + this handoff). bmm-workflow-status.yaml — no phase transition.
+
+## Artifact update checklist
+- [x] SESSION-HANDOFF.md (this section) · [x] next-session-start-here.md (P2 arc banner; local/gitignored) · [x] spec-p2-2 (ready-for-dev + disposition) · [x] codex-dev-prompt-p2-2 · [x] goal-prompt docs · [x] deferred-inventory grounding-leg confirmed OPEN (no edit needed)
+- [ ] sprint-status.yaml — not edited (no formal sprint story rows for P2) · [ ] bmm-workflow-status.yaml — no transition · [ ] project-context.md — no rules/arch change · [ ] knowledge-graph/ONBOARDING — no substrate landed (prep-only; defer to P2-2 implementation close)
+
+---
+
 # Session Handoff — 2026-06-19 PM (Class S — BETA arc: error-free run ×2 + Marcus SPOC demonstrating a–g ×2)
 
 **Final class:** S (substrate throughout: runtime/specialist/schema/test edits + live content-production trials; no drift).
