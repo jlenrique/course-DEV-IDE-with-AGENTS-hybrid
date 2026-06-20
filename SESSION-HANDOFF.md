@@ -1,3 +1,33 @@
+# Session Handoff — 2026-06-20 PM-2 (Class S→P — P2-3 NEW CYCLE prep: spec ready-for-dev + Tier-3 party green-light 5/5; STOP at Codex-ingestion boundary)
+
+**Final class:** P (planning/spec authoring + party green-light; substrate READ-only — no app/manifest/test edits this phase). **Branch:** `fidelity-perception-arc-2026-06-19`. Commit: P2-3 prep docs-closeout. Origin pushed; master-merge SKIPPED (scoped arc branch).
+
+## The headline
+With P2-2 closed (real PerceptionArtifact on disk), ran the **P2-3 NEW CYCLE Claude half (T1–T4)**: substrate-ground → author spec → **fully-spawned Tier-3 party green-light (5/5 GREEN-WITH-AMENDMENTS, no impasse)** → Codex dev prompt. **Stopped at the Codex-ingestion boundary** (no dev code — that's Codex T1–T10 + Claude T11). P2-3 is the regression fix: Pass-2 grounds on perceived visuals, not the brief.
+
+## Substrate-grounding finding (changed the spec)
+Two `PerceptionArtifact` models exist — rich `app/models/perception` (vision-produced) vs minimal `irene/authoring/pass_2_template.py` (authoring-time, anticipates perception but was **unwired** to the runtime `_act_pass_2` path). The runtime grounds on Gary's `visual_description` (brief) via `_slide_roster`→`_assemble_pass_2_prompt`; node 08 (Pass-2) projects `gary_slide_output` but NOT `perception_artifacts`. So the fix = project perception to node 08 + ground the prompt on the rich perceived model + demote brief/Vera.
+
+## Tier-3 green-light (5/5, no impasse — Quinn→John chain not triggered)
+- **D1 (two-model fork):** ground on the RICH model; minimal model = subset projection or untouched, **never the grounding source**; don't unify (filed as deferred follow-on). 
+- **D2 (uncovered slides):** explicit detector-visible "UNVERIFIED" token; **no silent brief-fallback**, ever; corpus-synthesis deferred.
+- **D3:** keep `perception_source=slide_id` (element-reference → P2-4).
+- **D4:** dp-v1.3→dp-v1.4 additive + `-gen` regen; pack stays v4.2.
+- **Anti-vacuity gate (Murat):** contradiction fixture ($4.5T vs $5.2T) + section/region assertions (authority excludes brief figures) + two mutation runs (source-revert, section-collapse) RED with evidence; **AC-4 judge = P2-1 detector clean, not string match**.
+- **STRIKE gate (Mary):** strike grounding-leg only on detector-GREEN full corpus + ≥1 held-out slide + cited pre-fix RED baseline; bidirectional linkage.
+- **Process guard (Mary):** baseline-diff attestation in the Codex prompt (carry P2-2 Category-F forward).
+- **Cache-prefix (Amelia):** preserve NFR-I6 byte-stability; deliberate re-pin.
+
+## What is next
+- **NEXT = operator dispatches Codex** on `codex-dev-prompt-p2-3-pass2-consumes-perceived-visuals.md` (T1–T10), then **Claude T11**.
+- **P2-3 closes the grounding leg.** On close, strike `fidelity-metric-blind-to-perception-regression` per the A6 gate. Then **P2-4** (reading-path, Growth) is the last P2 story.
+- Deferred follow-ons filed: `perception-artifact-two-model-fork`, `perception-source-element-reference-promotion`, `pass2-uncovered-slide-conservative-corpus-narration`.
+
+## Records
+`spec-p2-3-pass2-consumes-perceived-visuals.md` (ready-for-dev + §Tier-3 Disposition A1–A9) · `codex-dev-prompt-p2-3-...md` · deferred-inventory §P2-3 green-light follow-ons.
+
+---
+
 # Session Handoff — 2026-06-20 PM (Class S — P2-2 re-T11 → PASS → CLOSED done; P2-3 prep UNBLOCKED)
 
 **Final class:** S (T11 substrate review + close; one Claude-side test-governance edit — the LOC-budget bump). **Branch:** `fidelity-perception-arc-2026-06-19`. Commits: `e107fcc` (hand-back docs) → P2-2 close commit (Codex implementation + my T11 close artifacts). Origin pushed; master-merge SKIPPED (scoped arc branch).
