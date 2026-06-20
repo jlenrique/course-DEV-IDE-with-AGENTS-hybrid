@@ -1,3 +1,35 @@
+# Session Handoff — 2026-06-20 (Class S — P2-2 T11 review → HAND BACK to Codex; party-mode 5/5, no impasse)
+
+**Final class:** S (declared S to implement P2-2; outcome is a T11 hand-back. NOTE: Claude authored NO substrate — all app/manifest/schema/test edits in the tree are Codex's uncommitted T1–T10 work, left in place for re-work. Claude's own diff is review/governance docs only.)
+**Branch:** `fidelity-perception-arc-2026-06-19`. **Anchor:** `4455c04`. Commit this session: WRAPUP docs-closeout (T11 record + Codex remediation prompt + deferred-inventory + handoff). Codex's P2-2 code stays UNCOMMITTED in the working tree. Origin pushed; master-merge SKIPPED (scoped arc branch).
+
+## The headline
+Ran **Claude T11 on P2-2** (Codex returned T1–T10). Independent full battery + a fully-spawned 3-lane code review (Blind/Edge/Acceptance) + a fully-spawned party-mode (Winston/John/Murat/Mary/Amelia, **5/5, no impasse**) → **P2-2 HANDED BACK to Codex** for one consolidated remediation cycle. T11 STOP condition (b). P2-2 did NOT flip done.
+
+## What T11 found (4 MUST-FIX, all self-validated)
+- **F1 — vacuous comparator calibration** (`repeatability.py`): tests are tautological (`compare_artifacts(X,X)`); only `element_jaccard_min=1.0` (exact-equality) is exercised; `bbox_iou=0.90` / `text_edit_distance=8.0` never hit a boundary; no held-out set. Violates binding M-3/M-4. Operator-designated MUST-FIX.
+- **F2 — 07G breaks `test_33_1a_verbatim_extraction`** (lockstep/`block_mode` pack contract): RED on the P2-2 tree, GREEN on clean HEAD `4455c04` (confirmed in isolation). 07G is net-new prose absent from the frozen v4.2 source. **Codex's handoff mislabeled it "unrelated pre-existing drift"** — caught only by a clean-HEAD baseline-diff worktree.
+- **M3 — `FIDELITY_GATE=warn` over-broad catch** (`quinn_r/_act.py:176-192`): wraps the whole `detect_fidelity` call → swallows STRUCTURAL failures (schema drift, duplicate/missing artifacts), not just narration mismatches. AC-17 scoped warn to narration only.
+- **MF1 — core detector `_FIGURE_RE` stray-capture** (`fidelity_detector.py:18-19`): `_figures("$5 to enroll")` → `money-trillion:5` (≡ "$5 trillion") → false-positive Class-A blocks. Validated live.
+- Plus SHOULD-FIX: cosmetic `quarantined` marker (repeatability runs blocking; two-lane CI not wired), self-compare drift-canary (can't detect drift), provider slide_id/model-id not validated, retry gaps (429/408/connection).
+- Battery GREEN otherwise: focused P2-2 328✅, lint-imports 15✅, lockstep 0✅, frozen-sha 4✅; no P2-2-introduced parity failures.
+
+## Party-mode consensus (5/5, no impasse — Quinn→John chain NOT triggered)
+- **D1: hand back to Codex**, one consolidated T1–T10 cycle, re-run T11. No bounded-Claude close (all 4 MUST-FIX are guard-defeating production dev code; NEW CYCLE reserves dev for Codex).
+- **D2: F2 via Option A** (register 07G as net-new-section exception; reject editing the frozen pack). Ownership resolved 4-to-1 → **Codex implements in-cycle**. Conditions: closed allowlist + Check-9-coverage meta-test (structural lock) + 07G presence assertion + formal rule amendment + party-mode gate on allowlist additions.
+- **Pass-bar (Murat, binding on re-T11):** held-out set, one negative control per threshold, per-threshold mutation table in Completion Notes; MF1 adversarial false-positive corpus green-silent.
+- **Process guards (Mary):** mandatory baseline-diff attestation in Codex handoffs (any "pre-existing" label needs pasted clean-HEAD RED evidence; burden flips to dev); green-light checklist question for net-new `-gen` sections; harvest `mislabeled-regression-as-preexisting-drift` anti-pattern.
+
+## What is next
+- **NEXT = operator dispatches Codex** on `_bmad-output/implementation-artifacts/codex-remediation-prompt-p2-2-t11.md` (T1–T10 remediation, building on the uncommitted tree). Codex re-delivers a handoff → **Claude re-runs T11** against the mutation table + false-positive corpus + baseline-diff attestation.
+- **P2-3 prep stays BLOCKED** until P2-2 closes on a real, reviewed PerceptionArtifact. Grounding-leg deferred entry `fidelity-metric-blind-to-perception-regression` stays OPEN.
+
+## Artifacts
+- [x] `p2-2-t11-code-review-2026-06-20.md` (full T11 record) · [x] `codex-remediation-prompt-p2-2-t11.md` (hand-back brief) · [x] `deferred-inventory.md` (§P2-2 T11 hand-back findings — 4 governance follow-ons) · [x] SESSION-HANDOFF (this) · [x] next-session-start-here (local/gitignored)
+- [ ] P2-2 NOT flipped done (handed back) · [ ] Codex's app/test/manifest/schema edits remain UNCOMMITTED (Codex re-work) · [ ] anti-pattern doc harvest deferred to P2-2 re-close
+
+---
+
 # Session Handoff — 2026-06-19 EVE (Class P — P2-2 NEW CYCLE prep: spec ready-for-dev + Tier-3 party green-light)
 
 **Final class:** P (planning/spec authoring + party-mode green-light; NO substrate files edited — app/manifest/tests were READ-only during substrate-grounding; no class drift).
