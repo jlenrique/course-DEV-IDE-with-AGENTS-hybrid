@@ -16,7 +16,8 @@ ORPHAN_TAG = "quinn_r.g5.fidelity-orphan-reference"
 FIGURE_TAG = "quinn_r.g5.fidelity-figure-contradiction"
 
 _FIGURE_RE = re.compile(
-    r"\$\s*\d+(?:\.\d+)?\s*(?:t|trillion|b|billion)?|\b\d+(?:\.\d+)?\s*%|\b\d+(?:\.\d+)?x\b",
+    r"\$\s*\d+(?:\.\d+)?(?:\s*(?:trillion|billion)\b|\s*[tb]\b)?"
+    r"|\b\d+(?:\.\d+)?\s*%|\b\d+(?:\.\d+)?x\b",
     re.IGNORECASE,
 )
 # Blind-Hunter MEDIUM (T11): bare single words ("bar", "line", "building", "stat",
@@ -69,6 +70,7 @@ def detect_fidelity(
             raise FidelityError(
                 f"missing perception artifact for slide {slide_id or '<unknown>'}",
                 tag=ORPHAN_TAG,
+                scope="structural",
             )
         _assert_perceived(artifact)
         evaluated += 1
@@ -83,12 +85,14 @@ def detect_fidelity(
                 "slide "
                 f"{slide_id} narration references unsupported visual elements: {missing_groups}",
                 tag=ORPHAN_TAG,
+                scope="narration",
             )
         missing_figures = sorted(_figures(text) - _figures(perceived))
         if missing_figures:
             raise FidelityError(
                 f"slide {slide_id} narration figures not present in perception: {missing_figures}",
                 tag=FIGURE_TAG,
+                scope="narration",
             )
     return {"blocking": [], "evaluated_segments": evaluated}
 
@@ -103,18 +107,26 @@ def _artifact_map(perception_artifacts: Any) -> dict[str, PerceptionArtifact]:
         else:  # slide_id -> artifact map
             raw = list(raw.values())
     if not isinstance(raw, list) or not raw:
-        raise FidelityError("G5 fidelity check requires perception_artifacts", tag=ORPHAN_TAG)
+        raise FidelityError(
+            "G5 fidelity check requires perception_artifacts",
+            tag=ORPHAN_TAG,
+            scope="structural",
+        )
     try:
         artifacts = [PerceptionArtifact.model_validate(item) for item in raw]
     except ValidationError as exc:  # schema drift surfaces as a tagged, error-pause-able fail
         raise FidelityError(
-            f"perception artifact failed validation: {exc}", tag=ORPHAN_TAG
+            f"perception artifact failed validation: {exc}",
+            tag=ORPHAN_TAG,
+            scope="structural",
         ) from exc
     mapping: dict[str, PerceptionArtifact] = {}
     for artifact in artifacts:
         if artifact.slide_id in mapping:  # silent last-wins would mask a real conflict
             raise FidelityError(
-                f"duplicate perception artifact for slide {artifact.slide_id}", tag=ORPHAN_TAG
+                f"duplicate perception artifact for slide {artifact.slide_id}",
+                tag=ORPHAN_TAG,
+                scope="structural",
             )
         mapping[artifact.slide_id] = artifact
     return mapping
@@ -125,6 +137,7 @@ def _assert_perceived(artifact: PerceptionArtifact) -> None:
         raise FidelityError(
             f"slide {artifact.slide_id} perception is not high-confidence perceived evidence",
             tag=ORPHAN_TAG,
+            scope="structural",
         )
 
 

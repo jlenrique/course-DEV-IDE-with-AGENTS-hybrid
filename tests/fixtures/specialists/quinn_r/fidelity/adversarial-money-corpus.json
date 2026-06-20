@@ -1,0 +1,54 @@
+{
+  "green_silent": [
+    {
+      "name": "bare-dollar-before-to",
+      "narration": "The fee is $5 to enroll.",
+      "perception": "Enrollment fee $5."
+    },
+    {
+      "name": "bare-dollar-before-tax",
+      "narration": "The example shows $4 tax.",
+      "perception": "Tax example $4."
+    },
+    {
+      "name": "bare-dollar-before-there",
+      "narration": "The label says $5 there.",
+      "perception": "Label $5."
+    },
+    {
+      "name": "ordinal-not-money",
+      "narration": "The 5th step is administrative review.",
+      "perception": "Administrative review step."
+    },
+    {
+      "name": "version-number-not-money",
+      "narration": "The workflow uses v5 of the intake checklist.",
+      "perception": "Workflow intake checklist."
+    },
+    {
+      "name": "page-reference-not-money",
+      "narration": "See page 5 for the intake example.",
+      "perception": "Intake example reference."
+    }
+  ],
+  "true_unit_cases": [
+    {
+      "name": "trillion-word-contradiction",
+      "narration": "The figure is $5 trillion.",
+      "perception": "The figure is $5.",
+      "tag": "quinn_r.g5.fidelity-figure-contradiction"
+    },
+    {
+      "name": "t-suffix-contradiction",
+      "narration": "The figure is $4.5T.",
+      "perception": "The figure is $4.5B.",
+      "tag": "quinn_r.g5.fidelity-figure-contradiction"
+    },
+    {
+      "name": "t-suffix-faithful",
+      "narration": "The figure is $4.5T.",
+      "perception": "The figure is $4.5T.",
+      "tag": null
+    }
+  ]
+}

@@ -39,7 +39,13 @@ frozen_graph_version: "v42"
 # dp-v1.2 (party consensus 2026-06-12, audio-segment arc): additive
 # projections onto nodes 12/13/14 (audio synthesis + G5 QA + compositor);
 # node 11's dead quarantined upstream_output←kira edge retired.
-data_plane_vocabulary_version: "dp-v1.2"
+# dp-v1.3 (P2-2, 2026-06-20): additive vision→G5 projection. Scenario A
+# does not fire — PerceptionArtifact is an internal envelope contribution
+# consumed by the detector, NOT a learner-facing pack-lineage content
+# deliverable; therefore this content node is a topology refinement within
+# the v4.2 lineage, not a new pack family. pack_version stays v4.2; the
+# v4.2-gen determinism witness regenerates.
+data_plane_vocabulary_version: "dp-v1.3"
 learning_events:
   schema_ref: "state/config/learning-event-schema.yaml"
 block_mode_trigger_paths:
@@ -528,6 +534,28 @@ nodes:
     pack_version: "v4.2"
     rationale: "Section 07F maintains manifest-driven pipeline contract."
 
+  - id: "07G"
+    label: "PNG-Grounded Vision Perception"
+    specialist_id: "vision"
+    scaffold_node: "act"
+    model_config_ref: "app/specialists/vision/model_config.yaml"
+    dependency_projections:
+      gary_slide_output:
+        from: gary
+        key: gary_slide_output
+    gate: false
+    sub_phase_of: "07"
+    insertion_after: "07F"
+    hud_tracked: true
+    pack_section_anchor: "7G)"
+    pack_version: "v4.2"
+    rationale: >-
+      P2-2 PNG-grounded PerceptionArtifact producer. Scenario A does not
+      fire: PerceptionArtifact is an internal envelope contribution consumed
+      by Quinn-R's detector, not a learner-facing pack-lineage content
+      deliverable, so this node is a topology refinement within the v4.2
+      lineage. The generated witness regenerates; frozen v4.2 is untouched.
+
   - id: "08"
     label: "Irene Pass 2 + Segment Manifest"
     specialist_id: "irene"
@@ -554,7 +582,7 @@ nodes:
         from: gary
         key: gary_slide_output
     gate: false
-    insertion_after: "07F"
+    insertion_after: "07G"
     hud_tracked: true
     pack_section_anchor: "8)"
     pack_version: "v4.2"
@@ -752,6 +780,9 @@ nodes:
       narration_outputs:
         from: elevenlabs
         key: narration_outputs
+      perception_artifacts:
+        from: vision
+        key: perception_artifacts
     gate: true
     gate_code: "G5"
     fold_with: "G4"
@@ -839,7 +870,8 @@ edges:
   - {from: "07C", to: "07D"}
   - {from: "07D", to: "07E"}
   - {from: "07E", to: "07F"}
-  - {from: "07F", to: "08"}
+  - {from: "07F", to: "07G"}
+  - {from: "07G", to: "08"}
   - {from: "08", to: "08B"}
   - {from: "08B", to: "09"}
   - {from: "09", to: "10"}

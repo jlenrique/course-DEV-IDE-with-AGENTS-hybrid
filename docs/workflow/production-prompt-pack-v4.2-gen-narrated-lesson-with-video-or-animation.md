@@ -43,6 +43,7 @@ generated: true
 | 07D | 07D | skills/bmad-agent-gary | M→O | Gate 2M Motion Designation |
 | 07E | 07E | skills/bmad-agent-gary | M→self | Motion Generation / Import |
 | 07F | 07F | skills/bmad-agent-gary | M→O | Motion Gate |
+| 07G | 07G | app/specialists/vision | M→self | PNG-Grounded Vision Perception |
 | 08 | 08 | scripts/utilities/run_hud.py | O→M | Irene Pass 2 + Segment Manifest |
 | 08B | 08B | scripts/utilities/run_hud.py | M→O | Storyboard B + HIL Review |
 | 09 | 09 | scripts/utilities/run_hud.py | M→O | Gate 3 - Lock Pass 2 Package |
@@ -968,6 +969,30 @@ Gate rule:
 
 ---
 
+## 07G) PNG-Grounded Vision Perception
+[M→self]
+
+
+Marcus, run the Vision specialist after approved slide PNG export and before Irene Pass 2.
+
+Inputs:
+- Gary's `gary_slide_output` rows with per-slide PNG file paths
+- slide identity fields (`slide_id`, `card_number`, title metadata where available)
+
+Required output:
+- `perception_artifacts`: one PNG-grounded artifact per slide
+- every slide is represented by `slide_id`; a slide that cannot be perceived is emitted as `coverage: not-covered`
+- provenance is owned by the vision node and remains an internal audit field
+
+Governance:
+- `PerceptionArtifact` is an internal envelope contribution consumed by Quinn-R's detector, not a learner-facing pack-lineage deliverable
+- this node keeps `pack_version: v4.2`; topology changes regenerate only the `v4.2-gen` determinism witness
+- no brief-derived fallback is allowed when vision fails
+
+Downstream:
+- Quinn-R G5 consumes `perception_artifacts` through `dependency_projections`
+- Irene Pass 2 continues to use the existing brief-grounded path until P2-3 rewires it
+
 ## 08) Irene Pass 2 + Segment Manifest
 [M→O]
 
@@ -1611,6 +1636,7 @@ Primary contract references:
 | 07D | Section 07D maintains manifest-driven pipeline contract. |
 | 07E | Section 07E maintains manifest-driven pipeline contract. |
 | 07F | Section 07F maintains manifest-driven pipeline contract. |
+| 07G | P2-2 PNG-grounded PerceptionArtifact producer. Scenario A does not fire: PerceptionArtifact is an internal envelope contribution consumed by Quinn-R's detector, not a learner-facing pack-lineage content deliverable, so this node is a topology refinement within the v4.2 lineage. The generated witness regenerates; frozen v4.2 is untouched. |
 | 08 | Section 08 maintains manifest-driven pipeline contract. |
 | 08B | Section 08B maintains manifest-driven pipeline contract. |
 | 09 | Section 09 maintains manifest-driven pipeline contract. |

@@ -142,6 +142,24 @@ PERMITTED_PYTHON_DIFFS = {
     "tests/specialists/quinn_r/test_fidelity_detector.py",
     "tests/specialists/test_audio_segment_grounding.py",
     "tests/parity/test_quinn_r_activation_contract.py",
+    # P2-2 PNG-grounded perception producer 2026-06-20. Adds the normal
+    # house-scaffold vision specialist, additive PerceptionArtifact fields,
+    # G5 projection/enforcement pins, and quarantined repeatability/canary
+    # tests. Bounded P2 perception arc extension; freeze predicates remain.
+    "app/specialists/vision/__init__.py",
+    "app/specialists/vision/_act.py",
+    "app/specialists/vision/graph.py",
+    "app/specialists/vision/payload_contract.py",
+    "app/specialists/vision/provider.py",
+    "app/specialists/vision/repeatability.py",
+    "app/specialists/vision/state.py",
+    "tests/models/perception/test_perception_artifact_schema_parity.py",
+    "tests/specialists/quinn_r/test_ac12_detector_red_on_produced_artifact.py",
+    "tests/specialists/quinn_r/test_quinn_r_g5_perception_enforcement.py",
+    "tests/specialists/vision/test_vision_live_roundtrip.py",
+    "tests/specialists/vision/test_vision_provider_and_act.py",
+    "tests/specialists/vision/test_vision_repeatability.py",
+    "tests/specialists/vision/test_vision_silent_drift_canary.py",
     # P1 voice-agnostic WPM floor 2026-06-19 (spec-p1-voice-agnostic-wpm-floor.md;
     # beta-phase-1-closure-ratification-2026-06-19.md §5, party-mode §2 green-light).
     # G5 WPM check changed from deviation-from-target band to a voice-agnostic
@@ -342,7 +360,6 @@ PERMITTED_PYTHON_DIFFS = {
     # Pass-2 narration overlay, published online per S5 criterion 7).
     "app/specialists/irene/graph.py",
     "app/specialists/irene/payload_contract.py",
-    "app/specialists/quinn_r/quality_control_dispatch.py",
     # dp-v1.2 — audio-segment arc (party consensus 2026-06-12, operator
     # full-delegation completion directive): enrique grounded via Pass-2
     # narration projections (cycle-5 ran §11-12 ungrounded → zero audio);
@@ -358,7 +375,6 @@ PERMITTED_PYTHON_DIFFS = {
     "app/specialists/compositor/payload_contract.py",
     "app/specialists/quinn_r/graph.py",
     "tests/specialists/test_narration_join_shared.py",
-    "tests/specialists/test_audio_segment_grounding.py",
     "tests/contracts/test_specialist_error_taxonomy.py",
     "tests/specialists/irene/conftest.py",
     "tests/specialists/irene/test_irene_pass2_grounding_fail_loud.py",

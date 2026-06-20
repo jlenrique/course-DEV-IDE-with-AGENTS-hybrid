@@ -1,0 +1,40 @@
+{
+  "artifact_path": "",
+  "card_number": 1,
+  "confidence": "HIGH",
+  "confidence_score": 0.98,
+  "coverage": "perceived",
+  "extracted_text": "$4.5T annual healthcare spend. 74%. 3x growth.",
+  "layout_description": "Three stat callouts beside a building photo.",
+  "provenance": "png-grounded",
+  "provider_model_id": "vision-fixture-v1",
+  "slide_id": "slide-01",
+  "slide_title": "The Economic Structural Reality",
+  "source_png_path": "course-content/courses/tejal-apc-c1-m1-p2-trends/slides/slide-1.png",
+  "text_blocks": [
+    {
+      "bbox": [0.08, 0.12, 0.44, 0.24],
+      "text": "$4.5T"
+    },
+    {
+      "bbox": [0.08, 0.28, 0.44, 0.38],
+      "text": "74%"
+    },
+    {
+      "bbox": [0.08, 0.42, 0.44, 0.52],
+      "text": "3x growth"
+    }
+  ],
+  "visual_elements": [
+    {
+      "bbox": [0.08, 0.12, 0.44, 0.52],
+      "kind": "callout-group",
+      "text": "$4.5T 74% 3x growth"
+    },
+    {
+      "bbox": [0.52, 0.14, 0.92, 0.82],
+      "kind": "photo",
+      "text": "building photo"
+    }
+  ]
+}

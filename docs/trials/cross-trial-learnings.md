@@ -288,3 +288,14 @@ exceptional harvest — **9 findings, and the first live G1→G2C gate crossing 
 - **Bidirectional inventory link:** deferred-inventory
   `fidelity-metric-blind-to-perception-regression` remains open for P2-2/P2-3/P2-4. P2-1 is the
   detector ratchet attached to that row, not the grounding-leg closure.
+
+### P2-2 PNG-grounded perception producer - honest RED state (2026-06-20)
+
+- **Fix landed for the producer leg:** the `vision` node now emits PNG-grounded
+  `PerceptionArtifact` rows, publishes them through `dependency_projections`, and
+  wires Quinn-R G5 to enforce on the produced artifact.
+- **Expected interim state:** real-run fidelity RED is the expected P2-2 outcome;
+  root-cause narration repair lands at P2-3, and the deferred entry stays open.
+- **Guardrail:** `FIDELITY_GATE=warn` is an opt-in mechanics-only override that
+  records `fidelity gate OVERRIDDEN by operator - narration unverified`; it is
+  not a clean pass and must be reconsidered at P2-3 close.

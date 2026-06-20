@@ -821,3 +821,27 @@ default `model_dump` or the published JSON Schema.
 
 Original extraction-report schema shipped with Epic 25 (Story 25-1, Texas runtime wrangling runner). See `skills/bmad-agent-texas/references/extraction-report-schema.md` (v1.0 block) for the baseline field set.
 
+## PerceptionArtifact v1.1 - 2026-06-20 - Story P2-2
+
+**Type:** Minor additive extension.
+
+**Reason for introduction:** P2-2 wires PNG-grounded perception into the
+production envelope so Quinn-R G5 can evaluate narration against produced
+visual perception instead of remaining dormant.
+
+**Fields introduced:**
+
+- `confidence_score` - optional numeric provider confidence.
+- `provider_model_id` - optional provider/model provenance.
+- `source_png_path` - optional source PNG locator.
+- `provenance` - internal audit field, `Field(exclude=True)` and excluded from
+  the emitted JSON Schema.
+
+**Migration:** N/A. Existing P2-1 fixtures remain valid because all new public
+fields are optional/defaulted and `extra="forbid"` remains unchanged.
+
+**Test surface:**
+
+- `tests/models/perception/test_perception_artifact_schema_parity.py`
+- `tests/specialists/quinn_r/test_fidelity_detector.py`
+- `tests/specialists/quinn_r/test_ac12_detector_red_on_produced_artifact.py`

@@ -540,7 +540,7 @@ Five entries surfaced when the operator asked the orchestrator to verify resourc
 
 ## P2-2 T11 hand-back findings (filed 2026-06-20; party-mode 5/5, no impasse)
 
-**Status:** P2-2 T11 review handed back to Codex for one consolidated T1–T10 remediation (4 MUST-FIX: F1 vacuous comparator calibration, F2 07G verbatim-extraction breach, M3 FIDELITY_GATE=warn over-broad catch, MF1 figure-regex false-positives). Full record: `_bmad-output/implementation-artifacts/p2-2-t11-code-review-2026-06-20.md`; remediation brief: `codex-remediation-prompt-p2-2-t11.md`. The follow-ons below are the **process/governance guards** the party ratified that outlive the single remediation cycle.
+**Status:** ✅ **RESOLVED at re-T11 (2026-06-20 PM) — P2-2 CLOSED `done`.** The 4 MUST-FIX (F1 vacuous comparator calibration, F2 07G verbatim-extraction breach, M3 FIDELITY_GATE=warn over-broad catch, MF1 figure-regex false-positives) were all independently verified resolved; Option A for F2 fully implemented (allowlist + Check-9 meta-test + presence assertion). Full record: `p2-2-t11-code-review-2026-06-20.md` §6. The follow-ons below are the **standing process/governance guards** the party ratified that OUTLIVE the cycle (anti-pattern Category F harvested to `dev-agent-anti-patterns.md`; baseline-diff attestation + net-new-gen green-light checklist remain binding for future cycles).
 
 | Entry | Filed | Trigger context | Resolution shape |
 |---|---|---|---|

@@ -158,4 +158,9 @@ def test_quinn_r_act_body_loc_budget() -> None:
     # detector complexity isolated in fidelity_detector.py. 205 -> 220 at P2-1
     # T11 (Edge-1 ratified tripwire posture): the absent-perception dormant
     # branch + its party-ratified rationale comment (Winston B+tripwire).
-    assert len(logical_lines) <= 220
+    # 220 -> 222 at P2-2 T11 (2026-06-20; party-mode 5/5 D1 ratified the M3
+    # remediation): FIDELITY_GATE=warn downgrade is now scoped to narration-only
+    # failures (`or exc.scope != "narration"` guard), so structural FidelityErrors
+    # still raise under warn. +2 logical lines = the honest cost of the M3 fix;
+    # bump matches the documented-evolving-budget pattern (cf. 205->220 at P2-1 T11).
+    assert len(logical_lines) <= 222

@@ -5,9 +5,11 @@ from __future__ import annotations
 from typing import Any, Literal
 
 from pydantic import BaseModel, ConfigDict, Field, field_validator
+from pydantic.json_schema import SkipJsonSchema
 
 CoverageState = Literal["perceived", "low-confidence", "not-covered"]
 Confidence = Literal["HIGH", "LOW"]
+PerceptionProvenance = Literal["png-grounded", "brief-expectation", "not-covered"]
 
 
 class PerceptionArtifact(BaseModel):
@@ -29,6 +31,14 @@ class PerceptionArtifact(BaseModel):
     slide_id: str
     card_number: int | str | None = None
     coverage: CoverageState = "perceived"
+    confidence_score: float | None = Field(default=None, ge=0.0, le=1.0)
+    provider_model_id: str = ""
+    source_png_path: str = ""
+    provenance: SkipJsonSchema[PerceptionProvenance] = Field(
+        default="png-grounded",
+        exclude=True,
+        description="Internal audit provenance; excluded from public schema/dumps.",
+    )
 
     @field_validator("slide_id")
     @classmethod
@@ -39,4 +49,4 @@ class PerceptionArtifact(BaseModel):
         return cleaned
 
 
-__all__ = ["Confidence", "CoverageState", "PerceptionArtifact"]
+__all__ = ["Confidence", "CoverageState", "PerceptionArtifact", "PerceptionProvenance"]

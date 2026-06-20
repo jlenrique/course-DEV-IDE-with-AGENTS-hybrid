@@ -1,0 +1,22 @@
+{{ audience("M→self") }}
+
+
+Marcus, run the Vision specialist after approved slide PNG export and before Irene Pass 2.
+
+Inputs:
+- Gary's `gary_slide_output` rows with per-slide PNG file paths
+- slide identity fields (`slide_id`, `card_number`, title metadata where available)
+
+Required output:
+- `perception_artifacts`: one PNG-grounded artifact per slide
+- every slide is represented by `slide_id`; a slide that cannot be perceived is emitted as `coverage: not-covered`
+- provenance is owned by the vision node and remains an internal audit field
+
+Governance:
+- `PerceptionArtifact` is an internal envelope contribution consumed by Quinn-R's detector, not a learner-facing pack-lineage deliverable
+- this node keeps `pack_version: v4.2`; topology changes regenerate only the `v4.2-gen` determinism witness
+- no brief-derived fallback is allowed when vision fails
+
+Downstream:
+- Quinn-R G5 consumes `perception_artifacts` through `dependency_projections`
+- Irene Pass 2 continues to use the existing brief-grounded path until P2-3 rewires it

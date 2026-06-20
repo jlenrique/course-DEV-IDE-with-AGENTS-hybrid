@@ -1,0 +1,15 @@
+# Level 1: per-call override (set via RunState.model_overrides at runtime)
+# Level 2: per-specialist default (this field)
+# Level 3: registry default (app/models/registry.py)
+specialist_id: "vision"
+default_model: "gpt-5"
+per_node_overrides:
+  act: "gpt-5"
+temperature_default: 0.0
+provider:
+  endpoint_env: "VISION_PROVIDER_ENDPOINT"
+  api_key_env: "VISION_PROVIDER_API_KEY"
+  model_id: "vision-fixture-v1"
+  temperature: 0.0
+  max_tokens: 2048
+  sampling: "greedy"

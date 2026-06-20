@@ -152,6 +152,27 @@ def test_bare_dollar_not_conflated_with_trillions() -> None:
     assert ok["blocking"] == []
 
 
+def test_money_figure_adversarial_corpus_pins_unit_boundaries() -> None:
+    corpus = _load(FIXTURES / "adversarial-money-corpus.json")
+    for row in corpus["green_silent"]:
+        verdict = detect_fidelity(
+            [{"slide_id": row["name"], "text": row["narration"]}],
+            [_hi(row["name"], extracted_text=row["perception"])],
+        )
+        assert verdict["blocking"] == [], row["name"]
+
+    for row in corpus["true_unit_cases"]:
+        segments = [{"slide_id": row["name"], "text": row["narration"]}]
+        artifacts = [_hi(row["name"], extracted_text=row["perception"])]
+        if row["tag"] is None:
+            verdict = detect_fidelity(segments, artifacts)
+            assert verdict["blocking"] == []
+        else:
+            with pytest.raises(FidelityError) as exc:
+                detect_fidelity(segments, artifacts)
+            assert exc.value.tag == row["tag"]
+
+
 def test_duplicate_slide_id_raises_not_last_wins() -> None:
     artifacts = [_hi("s1", extracted_text="bar chart"), _hi("s1", extracted_text="line chart")]
     with pytest.raises(FidelityError, match="duplicate perception artifact"):
@@ -179,13 +200,7 @@ def test_idioms_are_not_flagged_as_visual_references() -> None:
     assert ok["blocking"] == []
 
 
-def test_tripwire_g5_manifest_does_not_yet_supply_perception() -> None:
-    # Edge-1 ratified posture (party 2026-06-19): absent perception is a dormant
-    # UNVERIFIED status, NOT a fail, because the production G5 node does not yet
-    # project perception_artifacts. THIS TEST IS A TRIPWIRE: when P2-2 wires
-    # perception into the G5 node's dependency_projections, this assertion FAILS —
-    # at which point flip `run_g5_checks` from dormant-skip to enforce and delete
-    # this test. Dormancy cannot silently rot.
+def test_g5_manifest_supplies_perception_projection() -> None:
     import yaml
 
     manifest_path = (
@@ -196,10 +211,10 @@ def test_tripwire_g5_manifest_does_not_yet_supply_perception() -> None:
     assert g5_nodes, "expected a G5 node in the pipeline manifest"
     for node in g5_nodes:
         projections = node.get("dependency_projections") or {}
-        assert "perception_artifacts" not in projections, (
-            "P2-2 appears to have wired perception into the G5 node — flip "
-            "run_g5_checks from dormant-skip to enforce and delete this tripwire."
-        )
+        assert projections["perception_artifacts"] == {
+            "from": "vision",
+            "key": "perception_artifacts",
+        }
 
 
 def test_perception_artifact_shape_pins_legacy_fields_and_coverage_enum() -> None:
@@ -210,9 +225,12 @@ def test_perception_artifact_shape_pins_legacy_fields_and_coverage_enum() -> Non
         "artifact_path",
         "card_number",
         "confidence",
+        "confidence_score",
         "coverage",
         "extracted_text",
         "layout_description",
+        "provider_model_id",
+        "source_png_path",
         "slide_id",
         "slide_title",
         "text_blocks",
@@ -224,3 +242,6 @@ def test_perception_artifact_shape_pins_legacy_fields_and_coverage_enum() -> Non
 
     with pytest.raises(ValidationError):
         PerceptionArtifact.model_validate({**payload, "coverage": "maybe"})
+
+    with pytest.raises(ValidationError):
+        PerceptionArtifact.model_validate({**payload, "provenance": "maybe"})

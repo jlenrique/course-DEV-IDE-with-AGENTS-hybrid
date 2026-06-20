@@ -1,0 +1,116 @@
+{
+  "additionalProperties": false,
+  "description": "Legacy-compatible slide perception summary.\n\nField names intentionally match the pre-existing perception artifact shape\nused by producer scripts; P2-1 only closes the model and adds coverage.",
+  "properties": {
+    "artifact_path": {
+      "default": "",
+      "title": "Artifact Path",
+      "type": "string"
+    },
+    "card_number": {
+      "anyOf": [
+        {
+          "type": "integer"
+        },
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Card Number"
+    },
+    "confidence": {
+      "enum": [
+        "HIGH",
+        "LOW"
+      ],
+      "title": "Confidence",
+      "type": "string"
+    },
+    "confidence_score": {
+      "anyOf": [
+        {
+          "maximum": 1.0,
+          "minimum": 0.0,
+          "type": "number"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Confidence Score"
+    },
+    "coverage": {
+      "default": "perceived",
+      "enum": [
+        "perceived",
+        "low-confidence",
+        "not-covered"
+      ],
+      "title": "Coverage",
+      "type": "string"
+    },
+    "extracted_text": {
+      "default": "",
+      "title": "Extracted Text",
+      "type": "string"
+    },
+    "layout_description": {
+      "default": "",
+      "title": "Layout Description",
+      "type": "string"
+    },
+    "provider_model_id": {
+      "default": "",
+      "title": "Provider Model Id",
+      "type": "string"
+    },
+    "slide_id": {
+      "title": "Slide Id",
+      "type": "string"
+    },
+    "slide_title": {
+      "default": "",
+      "title": "Slide Title",
+      "type": "string"
+    },
+    "source_png_path": {
+      "default": "",
+      "title": "Source Png Path",
+      "type": "string"
+    },
+    "text_blocks": {
+      "items": {
+        "anyOf": [
+          {
+            "additionalProperties": true,
+            "type": "object"
+          },
+          {
+            "type": "string"
+          }
+        ]
+      },
+      "title": "Text Blocks",
+      "type": "array"
+    },
+    "visual_elements": {
+      "items": {
+        "additionalProperties": true,
+        "type": "object"
+      },
+      "title": "Visual Elements",
+      "type": "array"
+    }
+  },
+  "required": [
+    "confidence",
+    "slide_id"
+  ],
+  "title": "PerceptionArtifact",
+  "type": "object"
+}

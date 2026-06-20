@@ -32,6 +32,7 @@ from app.specialists.gary._act import CONSUMED_PAYLOAD_KEYS as GARY_KEYS
 from app.specialists.irene.graph import CONSUMED_PAYLOAD_KEYS as IRENE_KEYS
 from app.specialists.irene_pass1._act import CONSUMED_PAYLOAD_KEYS as IRENE_PASS1_KEYS
 from app.specialists.quinn_r._act import CONSUMED_PAYLOAD_KEYS as QUINN_R_KEYS
+from app.specialists.vision.graph import CONSUMED_PAYLOAD_KEYS as VISION_KEYS
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 MANIFEST_PATH = REPO_ROOT / "state" / "config" / "pipeline-manifest.yaml"
@@ -49,6 +50,7 @@ CONTRACTED_CONSUMERS: dict[str, frozenset[str]] = {
     # nodes 12/14 gained projections (cycle-5 ungrounded-audio defect).
     "enrique": ENRIQUE_KEYS,
     "compositor": COMPOSITOR_KEYS,
+    "vision": VISION_KEYS,
 }
 
 # Edges whose consumer has NOT yet published a contract. Raw manifest

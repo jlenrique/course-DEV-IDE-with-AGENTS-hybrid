@@ -1,3 +1,29 @@
+# Session Handoff — 2026-06-20 PM (Class S — P2-2 re-T11 → PASS → CLOSED done; P2-3 prep UNBLOCKED)
+
+**Final class:** S (T11 substrate review + close; one Claude-side test-governance edit — the LOC-budget bump). **Branch:** `fidelity-perception-arc-2026-06-19`. Commits: `e107fcc` (hand-back docs) → P2-2 close commit (Codex implementation + my T11 close artifacts). Origin pushed; master-merge SKIPPED (scoped arc branch).
+
+## The headline
+Codex re-delivered the remediated P2-2; **Claude re-ran T11 → PASS → P2-2 CLOSED `done`.** All 4 hand-back MUST-FIX independently verified resolved; one remediation-introduced regression caught and closed. P2-2's PerceptionArtifact substrate is now real + reviewed → **P2-3 NEW CYCLE prep is UNBLOCKED.**
+
+## Re-T11 verification (independent, not handoff-trusted)
+- **F1 (vacuous calibration) ✅** — held-out `-equivalent.json` (not self-compare) + per-threshold negatives (`-bbox/-element/-text-negative.json`); mutation table proves each threshold load-bearing.
+- **F2 (07G verbatim breach) ✅** — `test_33_1a` GREEN; Option A fully implemented: closed allowlist `=={04.55,02A,07G}` + Check-9 enrollment meta-test + 07G presence/ordinal assertion + `CHECK9_INVARIANT` rule.
+- **M3 (warn over-catch) ✅** — catch now requires warn AND `scope=="narration"`; dedicated test proves structural FidelityErrors still raise under warn.
+- **MF1 (figure regex) ✅** — verified live: "$5 to enroll" → `money-bare:5` (was `money-trillion:5`); adversarial corpus added.
+- **SHOULD-FIX ✅ folded** (quarantine deselect, real drift-canary, provider id fail-loud, model-id from config, retry covers 408/429/5xx/transport). **Baseline-diff attestation ✅ provided** by Codex.
+- **One remediation-introduced regression caught:** `test_quinn_r_act_body_loc_budget` (222>220) — M3 added 2 logical lines; undisclosed in handoff. **Resolved by a precedented T11 budget bump 220→222** with documented rationale (the guard's own history records bumps at T11, e.g. 205→220 at P2-1 T11). The single Claude-side edit beyond pure review.
+- **Battery:** focused P2-2+33_1a+budget **337 passed/1 skipped**; frozen-sha 4; lint-imports 15; lockstep 0; `git diff --check` clean; contracts+parity pre-existing only (no P2-2-introduced failure).
+
+## What is next
+- **P2-3 NEW CYCLE prep (Claude half) is UNBLOCKED.** Substrate-ground against the now-real PerceptionArtifact (`app/specialists/vision/`, the produced schema, `irene/graph.py _assemble_pass_2_prompt`/`_slide_roster`, `pass_2_template.py`) → author `spec-p2-3` ready-for-dev → fully-spawned Tier-3 party green-light → author Codex dev prompt → STOP at Codex-ingestion boundary.
+- **Mary-A1 (binding):** a real production run may now legitimately FAIL fidelity (G5 enforces vs perceived visuals; Pass-2 still grounds on the brief) — **this RED is EXPECTED**, not a regression; root-cause repair is P2-3. `FIDELITY_GATE=warn` is the interim break-glass.
+- Grounding-leg `fidelity-metric-blind-to-perception-regression` STAYS OPEN until P2-3.
+
+## Records
+`p2-2-t11-code-review-2026-06-20.md` §6 (re-T11 PASS) · Codex handoff §T11 Remediation Addendum · `dev-agent-anti-patterns.md` Category F (handoff-integrity: F1 mislabeled-regression, F2 net-new-gen vs verbatim) · deferred-inventory §P2-2-T11 (MUST-FIX resolved; process guards standing).
+
+---
+
 # Session Handoff — 2026-06-20 (Class S — P2-2 T11 review → HAND BACK to Codex; party-mode 5/5, no impasse)
 
 **Final class:** S (declared S to implement P2-2; outcome is a T11 hand-back. NOTE: Claude authored NO substrate — all app/manifest/schema/test edits in the tree are Codex's uncommitted T1–T10 work, left in place for re-work. Claude's own diff is review/governance docs only.)

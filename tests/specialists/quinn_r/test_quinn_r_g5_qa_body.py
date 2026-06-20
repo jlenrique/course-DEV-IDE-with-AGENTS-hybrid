@@ -8,6 +8,7 @@ from app.specialists.quinn_r.graph import (
     WpmThresholdError,
     run_g5_checks,
 )
+from app.specialists.quinn_r.quality_control_dispatch import FidelityError
 
 
 def _payload() -> dict:
@@ -200,18 +201,17 @@ def test_g5_just_above_ceiling_raises() -> None:
         run_g5_checks(payload)
 
 
-def test_g5_absent_perception_is_dormant_unverified_not_a_fail() -> None:
-    # P2-1 Edge-1 ratified posture: with no perception_artifacts the fidelity
-    # detector is dormant (UNVERIFIED), NOT a Class-A fail — the run still passes
-    # G5 mechanics-only (trials remain runnable until P2-2 wires perception).
+def test_g5_absent_perception_is_class_a_after_p2_2_wiring() -> None:
+    # P2-2 wires perception into G5; absent perception is no longer the P2-1
+    # dormant state and must stop fidelity-bearing narration as Class-A evidence.
     payload = _payload()
     payload.pop("perception_artifacts", None)
 
-    verdict = run_g5_checks(payload)
+    with pytest.raises(FidelityError) as exc_info:
+        run_g5_checks(payload)
 
-    assert verdict["blocking"] == []
-    assert verdict["fidelity"]["status"] == "unverified"
-    assert verdict["fidelity"]["reason"] == "perception-not-wired"
+    assert exc_info.value.tag == "quinn_r.g5.fidelity-orphan-reference"
+    assert "requires perception_artifacts" in str(exc_info.value)
 
 
 def test_g5_estimated_durations_suppress_breach_to_advisory() -> None:

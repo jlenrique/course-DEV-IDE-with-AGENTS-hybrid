@@ -151,6 +151,22 @@ Read this at T1 of every story. These are the traps dev agents have repeatedly w
 
 ---
 
+## Category F — Handoff-integrity traps (P2-2 T11, party-mode 2026-06-20)
+
+### F1. Mislabeling an in-scope regression as "pre-existing drift"
+
+**Trap:** The dev handoff lists a RED test under "N unrelated pre-existing failures" without proving it. P2-2's handoff bucketed `test_33_1a_verbatim_extraction` among "15 unrelated contract failures" — but it was RED only on the P2-2 tree and GREEN on clean HEAD (the new 07G section broke it). It surfaced ONLY because the reviewer ran a clean-HEAD baseline diff. A mislabeled regression is worse than a bug: it misdirects the reviewer away from the defect.
+
+**Fix (burden flips to dev):** any test the handoff labels "pre-existing / unrelated drift" MUST carry inline clean-HEAD evidence (`git stash`/checkout the baseline + run the node, showing RED there too). No attestation → the label is rejected and the failure is treated as in-scope by default. This is a T11-gate checklist item, not advisory. (Mirrors the Mary-A1 "annotate an exempted RED with proof, never assert it" discipline.)
+
+### F2. Net-new `-gen` prose section vs a verbatim-extraction contract
+
+**Trap:** Adding a brand-new generated section (07G) whose prose has no home in the frozen source pack silently breaks `test_33_1a_verbatim_extraction` (which requires every `-gen` section be verbatim-extractable from frozen v4.2). The green-light reasoned about schema-additivity and `-gen` regen but never asked "does this introduce a net-new `-gen` prose section?"
+
+**Fix (green-light checklist question):** "Does this story add a net-new `-gen` prose section? If yes, register it in the verbatim-extraction closed allowlist (with its substitute invariant — L1 Check-9 determinism) BEFORE dev opens." Exclusion-list additions are party-mode governance; a meta-test must assert every excluded section is enrolled in Check-9 (the structural lock against a coverage hole).
+
+---
+
 ## Meta-rule — Read this at T1, not at G6
 
 If you find yourself hitting one of these traps during bmad-code-review, look back at T1. Did you read this document? If yes, did the trap you hit fit one of the categories above? If no, this catalog needs a new entry — flag it during review closure so it gets added.
@@ -164,3 +180,4 @@ The catalog exists to stop re-learning. When 31-1 landed, every finding here had
 | Version | Date | Source |
 |---------|------|--------|
 | v1 | 2026-04-18 | Initial harvest from 27-0 / 27-2 / 31-1 Dev Notes + G6 layered-review findings |
+| v2 | 2026-06-20 | Category F (handoff-integrity) harvested from P2-2 T11 party-mode (F1 mislabeled-regression-as-preexisting-drift; F2 net-new-gen-section vs verbatim-extraction) |

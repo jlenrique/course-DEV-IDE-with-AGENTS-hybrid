@@ -253,14 +253,17 @@ def test_manifest_declares_projection_edges() -> None:
         )
     )
     nodes = {node["id"]: node for node in manifest["nodes"]}
-    # dp-v1 → dp-v1.1 (08/08B) → dp-v1.2 (audio-arc 12/13/14 projections).
-    # Deliberate pin bumps, party consensus 2026-06-12.
-    assert manifest["data_plane_vocabulary_version"] == "dp-v1.2"
+    # dp-v1 -> dp-v1.1 (08/08B) -> dp-v1.2 (audio arc) -> dp-v1.3 (P2-2 vision).
+    assert manifest["data_plane_vocabulary_version"] == "dp-v1.3"
     gary_projections = nodes["07"]["dependency_projections"]
     assert set(gary_projections) == {"slides", "prompt", "additional_instructions"}
     assert all(p["from"] == "package_builder" for p in gary_projections.values())
     quinn_projections = nodes["07B"]["dependency_projections"]
     assert quinn_projections == {"slides": {"from": "gary", "key": "gary_slide_output"}}
+    vision_projections = nodes["07G"]["dependency_projections"]
+    assert vision_projections == {
+        "gary_slide_output": {"from": "gary", "key": "gary_slide_output"}
+    }
     # dp-v1.1: Pass 2 grounds on corpus + latest refined plan + §06 briefs +
     # Gary's real slides; 08B reviews Pass-2 narration against the roster.
     assert set(nodes["08"]["dependency_projections"]) == {
@@ -268,6 +271,10 @@ def test_manifest_declares_projection_edges() -> None:
         "lesson_plan",
         "slide_briefs",
         "gary_slide_output",
+    }
+    assert nodes["13"]["dependency_projections"]["perception_artifacts"] == {
+        "from": "vision",
+        "key": "perception_artifacts",
     }
     assert set(nodes["08B"]["dependency_projections"]) == {
         "narration_script",

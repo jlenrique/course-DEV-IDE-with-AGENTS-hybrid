@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+import os
 from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
@@ -171,23 +172,27 @@ def run_g5_checks(payload: dict[str, Any]) -> dict[str, Any]:
     missing = sorted(slide_ids - covered)
     if missing:
         raise CoverageGapError(f"missing narration coverage: {missing}")
-    # P2-1 Edge-1 ratified posture (party 2026-06-19, operator-ratified: Winston
-    # B+tripwire): perception is NOT wired into the production G5 projections until
-    # P2-2. Absent perception is a typed UNVERIFIED *dormant* status — NOT a Class-A
-    # fail — so trials keep running mechanics-only (the "fidelity unverified" rebrand),
-    # while the standing tripwire test flips the moment P2-2 wires perception. The
-    # detector ENFORCES (Class-A) only when perception is present (contradiction /
-    # low-confidence / per-slide-missing).
     perception = payload.get("perception_artifacts")
-    if perception:
+    try:
         fidelity = detect_fidelity(segments, perception)
-    else:
+    except FidelityError as exc:
+        if (
+            os.getenv("FIDELITY_GATE", "").strip().lower() != "warn"
+            or getattr(exc, "scope", None) != "narration"
+        ):
+            raise
         fidelity = {
-            "status": "unverified",
-            "reason": "perception-not-wired",
-            "blocking": [],
-            "evaluated_segments": 0,
+            "status": "warn",
+            "reason": getattr(exc, "tag", "quinn_r.g5.fidelity"),
+            "blocking": [{"reason": str(exc), "tag": getattr(exc, "tag", "")}],
+            "annotation": "fidelity gate OVERRIDDEN by operator — narration unverified",
         }
+        advisory.append(
+            {
+                "reason": "fidelity-gate-operator-override",
+                "annotation": fidelity["annotation"],
+            }
+        )
     for seg in segments:
         declared = float(seg.get("duration_seconds", 0))
         motion = float(seg.get("motion_duration_seconds", declared))

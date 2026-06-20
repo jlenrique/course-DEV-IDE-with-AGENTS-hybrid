@@ -21,8 +21,15 @@ def _content_error(name: str, tag: str) -> type:
     lost walk progress), and ValueError so existing handlers/tests keep
     their semantics."""
 
-    def _init(self, message: str, *, tag: str = tag) -> None:  # noqa: ANN001
+    def _init(
+        self,
+        message: str,
+        *,
+        tag: str = tag,
+        scope: str = "content",
+    ) -> None:  # noqa: ANN001
         SpecialistDispatchError.__init__(self, message, tag=tag)
+        self.scope = scope
 
     return type(name, (SpecialistDispatchError, ValueError), {"__init__": _init})
 
