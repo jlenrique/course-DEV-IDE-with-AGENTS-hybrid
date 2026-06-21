@@ -38,7 +38,7 @@ import os
 import sys
 import traceback
 from collections import Counter, defaultdict
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
 
@@ -59,7 +59,7 @@ EVIDENCE_REPORT = OUT_DIR / "evidence-report.md"
 
 # Provenance constant — captured-at is fixed for the whole run (the scan is one
 # atomic evidence-production event; first-run-stands).
-CAPTURED_AT = datetime.now(timezone.utc).isoformat()
+CAPTURED_AT = datetime.now(UTC).isoformat()
 MODEL_ID = "gpt-5.5"
 
 # The 14 HELD-OUT slides (reading-path-holdout-split-2026-06-21.md). These are
@@ -498,10 +498,10 @@ def scan() -> dict[str, Any]:
         try:
             fitted_pattern = classify_reading_path(artifact)
             residue = False
-        except ReadingPathClassificationError as exc:
+        except ReadingPathClassificationError:
             fitted_pattern = "UNCLASSIFIABLE"
             residue = True
-            errors_note = str(exc)
+            # classification error is captured by fitted=UNCLASSIFIABLE + residue=True
             # still try the position-order default for the record
             scan_order = []
         # position-order / canonical scan order via the classifier helper
@@ -630,13 +630,13 @@ def write_report(result: dict[str, Any]) -> None:
     lines.append("")
     lines.append("All features derived from the PERCEIVER output ONLY, never the classifier label:")
     lines.append("")
-    lines.append("- **primary_anchor_position** — v-band/h-band (thirds) of the largest-area positioned element (dominant fixation target).")
+    lines.append("- **primary_anchor_position** — v-band/h-band (thirds) of the largest-area positioned element (dominant fixation target).")  # noqa: E501
     lines.append("- **anchor_count** — count of `visual_elements` carrying a usable bbox.")
-    lines.append("- **reading_vector** — `diagonal`/`vertical`/`horizontal`/`point` from the spatial spread of element centers (x_spread/y_spread vs 0.25).")
-    lines.append("- **text_density_band** — `low`(<120) / `medium`(<400) / `high` from `extracted_text` char count (Z-vs-F axis).")
-    lines.append("- **focal_singularity** — one element's area ≥0.45 of total AND ≥2× the next (single-hero signal).")
+    lines.append("- **reading_vector** — `diagonal`/`vertical`/`horizontal`/`point` from the spatial spread of element centers (x_spread/y_spread vs 0.25).")  # noqa: E501
+    lines.append("- **text_density_band** — `low`(<120) / `medium`(<400) / `high` from `extracted_text` char count (Z-vs-F axis).")  # noqa: E501
+    lines.append("- **focal_singularity** — one element's area ≥0.45 of total AND ≥2× the next (single-hero signal).")  # noqa: E501
     lines.append("- **cta_presence** — CTA token in text/kinds (content-genre TAG, not a path).")
-    lines.append("- **whitespace_dominance** — positioned elements cover <0.30 of slide area (sparsity signal).")
+    lines.append("- **whitespace_dominance** — positioned elements cover <0.30 of slide area (sparsity signal).")  # noqa: E501
     lines.append("")
 
     # Distribution summary
