@@ -1,0 +1,217 @@
+{
+  "captured_at": "2026-06-21T22:39:39.183721+00:00",
+  "model_id": "gpt-5.5",
+  "working_count": 54,
+  "perceived_count": 54,
+  "errors": [],
+  "distribution": {
+    "z_pattern": 43,
+    "top_down": 2,
+    "sequence_numbered": 5,
+    "center_out": 1,
+    "f_pattern": 3
+  },
+  "residue_count": 0,
+  "z_overclaim": [
+    "10_Youre-Already-an-Innovator",
+    "12_Value-Proposition-Canvas",
+    "14_What-Drives-Us-Toward-Opportunities",
+    "16_Motivation-in-Health-Interventions",
+    "18_The-future-of-population-health-needs-YOU",
+    "19_Your-Unique-Leadership-Qualities",
+    "1_",
+    "1_The-Modern-Clinicians-Dilemma",
+    "20_Resources-to-Enhance-Your-Journey",
+    "2_",
+    "2_An-Era-of-Unprecedented-Change",
+    "2_Structured-Approach-to-Population-Health",
+    "4_Leadership-and-Risk-Awareness",
+    "5_",
+    "5_Common-Obstacles",
+    "6_",
+    "6_Idea-vs-Opportunity",
+    "6_Ideas-vs-Opportunities-A-Crucial-Distinction",
+    "6_Your-Hidden-Superpower",
+    "7_Cognitive-Skills-in-Action",
+    "8_Our-Mission-Transform-Insights-Into-Impact",
+    "8_The-Science-Behind-the-Connection",
+    "9_Expected-Value-vs-Expected-Utility",
+    "9_The-Transformation"
+  ],
+  "clusters": [
+    {
+      "cluster_id": "RC01",
+      "signature": [
+        "diagonal",
+        "medium",
+        true,
+        false,
+        "4-6"
+      ],
+      "size": 11,
+      "members": [
+        "10_Youre-Already-an-Innovator",
+        "18_The-future-of-population-health-needs-YOU",
+        "1_",
+        "20_Resources-to-Enhance-Your-Journey",
+        "2_Structured-Approach-to-Population-Health",
+        "4_Leadership-and-Risk-Awareness",
+        "5_Common-Obstacles",
+        "6_Idea-vs-Opportunity",
+        "7_Cognitive-Skills-in-Action",
+        "8_Our-Mission-Transform-Insights-Into-Impact",
+        "9_Expected-Value-vs-Expected-Utility"
+      ],
+      "centroid": {
+        "reading_vector": "diagonal",
+        "text_density_band": "medium",
+        "focal_singularity": true,
+        "whitespace_dominance": false,
+        "anchor_count_bucket": "4-6",
+        "mean_anchor_count": 5.55,
+        "mean_char_count": 226.6,
+        "mean_coverage_area": 0.726,
+        "cta_fraction": 0.18
+      },
+      "rough_character": "single-focal-element, medium-text-density, diagonal-spread, ~5.55-anchors"
+    },
+    {
+      "cluster_id": "RC02",
+      "signature": [
+        "diagonal",
+        "medium",
+        true,
+        false,
+        "7+"
+      ],
+      "size": 7,
+      "members": [
+        "16_Motivation-in-Health-Interventions",
+        "19_Your-Unique-Leadership-Qualities",
+        "2_",
+        "2_An-Era-of-Unprecedented-Change",
+        "5_",
+        "6_",
+        "6_Your-Hidden-Superpower"
+      ],
+      "centroid": {
+        "reading_vector": "diagonal",
+        "text_density_band": "medium",
+        "focal_singularity": true,
+        "whitespace_dominance": false,
+        "anchor_count_bucket": "7+",
+        "mean_anchor_count": 8.71,
+        "mean_char_count": 271.4,
+        "mean_coverage_area": 0.977,
+        "cta_fraction": 0.14
+      },
+      "rough_character": "single-focal-element, medium-text-density, diagonal-spread, ~8.71-anchors"
+    },
+    {
+      "cluster_id": "RC03",
+      "signature": [
+        "diagonal",
+        "high",
+        true,
+        false,
+        "7+"
+      ],
+      "size": 3,
+      "members": [
+        "12_Value-Proposition-Canvas",
+        "14_What-Drives-Us-Toward-Opportunities",
+        "6_Ideas-vs-Opportunities-A-Crucial-Distinction"
+      ],
+      "centroid": {
+        "reading_vector": "diagonal",
+        "text_density_band": "high",
+        "focal_singularity": true,
+        "whitespace_dominance": false,
+        "anchor_count_bucket": "7+",
+        "mean_anchor_count": 7.33,
+        "mean_char_count": 788.0,
+        "mean_coverage_area": 0.558,
+        "cta_fraction": 0.67
+      },
+      "rough_character": "single-focal-element, high-text-density, diagonal-spread, ~7.33-anchors, CTA-prevalent"
+    },
+    {
+      "cluster_id": "RC04",
+      "signature": [
+        "diagonal",
+        "low",
+        true,
+        false,
+        "4-6"
+      ],
+      "size": 1,
+      "members": [
+        "1_The-Modern-Clinicians-Dilemma"
+      ],
+      "centroid": {
+        "reading_vector": "diagonal",
+        "text_density_band": "low",
+        "focal_singularity": true,
+        "whitespace_dominance": false,
+        "anchor_count_bucket": "4-6",
+        "mean_anchor_count": 6.0,
+        "mean_char_count": 103.0,
+        "mean_coverage_area": 0.737,
+        "cta_fraction": 0.0
+      },
+      "rough_character": "single-focal-element, low-text-density, diagonal-spread, ~6.0-anchors"
+    },
+    {
+      "cluster_id": "RC05",
+      "signature": [
+        "diagonal",
+        "low",
+        true,
+        false,
+        "7+"
+      ],
+      "size": 1,
+      "members": [
+        "9_The-Transformation"
+      ],
+      "centroid": {
+        "reading_vector": "diagonal",
+        "text_density_band": "low",
+        "focal_singularity": true,
+        "whitespace_dominance": false,
+        "anchor_count_bucket": "7+",
+        "mean_anchor_count": 8.0,
+        "mean_char_count": 90.0,
+        "mean_coverage_area": 0.642,
+        "cta_fraction": 0.0
+      },
+      "rough_character": "single-focal-element, low-text-density, diagonal-spread, ~8.0-anchors"
+    },
+    {
+      "cluster_id": "RC06",
+      "signature": [
+        "diagonal",
+        "medium",
+        true,
+        true,
+        "7+"
+      ],
+      "size": 1,
+      "members": [
+        "8_The-Science-Behind-the-Connection"
+      ],
+      "centroid": {
+        "reading_vector": "diagonal",
+        "text_density_band": "medium",
+        "focal_singularity": true,
+        "whitespace_dominance": true,
+        "anchor_count_bucket": "7+",
+        "mean_anchor_count": 7.0,
+        "mean_char_count": 271.0,
+        "mean_coverage_area": 0.294,
+        "cta_fraction": 0.0
+      },
+      "rough_character": "single-focal-element, sparse/whitespace-heavy, medium-text-density, diagonal-spread, ~7.0-anchors"
+    }
+  ]
+}

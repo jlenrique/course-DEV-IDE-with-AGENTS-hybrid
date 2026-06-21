@@ -1,0 +1,109 @@
+{
+  "provenance": {
+    "captured_at": "2026-06-21T22:40:45.375093+00:00",
+    "model_id": "gpt-5.5",
+    "source_png": "C:\\Users\\juanl\\OneDrive\\Desktop\\z-2026-06-21\\17_Leadership-Examples-in-Population-Health.png",
+    "scan_tool": "scripts/analysis/reading_path_corpus_scan.py"
+  },
+  "perception_artifact": {
+    "confidence": "HIGH",
+    "visual_elements": [
+      {
+        "id": "title",
+        "kind": "title",
+        "text": "Leadership Examples in Population Health",
+        "bbox": [
+          0.06,
+          0.18,
+          0.78,
+          0.26
+        ]
+      },
+      {
+        "id": "left_photo",
+        "kind": "photo",
+        "text": "",
+        "bbox": [
+          0.06,
+          0.34,
+          0.34,
+          0.66
+        ]
+      },
+      {
+        "id": "middle_photo",
+        "kind": "photo",
+        "text": "World Health Organization",
+        "bbox": [
+          0.36,
+          0.34,
+          0.64,
+          0.66
+        ]
+      },
+      {
+        "id": "right_vaccination_graphic",
+        "kind": "diagram",
+        "text": "VACCINATION DAY SATURDAY 28 MAY Additional clinics Free community transport Walk ins",
+        "bbox": [
+          0.66,
+          0.34,
+          0.94,
+          0.66
+        ]
+      },
+      {
+        "id": "left_caption",
+        "kind": "callout",
+        "text": "Global Leadership Dr. Fauci guided U.S. through COVID-19 pandemic",
+        "bbox": [
+          0.06,
+          0.7,
+          0.31,
+          0.85
+        ]
+      },
+      {
+        "id": "middle_caption",
+        "kind": "callout",
+        "text": "WHO Leadership Driving global health initiatives",
+        "bbox": [
+          0.36,
+          0.7,
+          0.6,
+          0.8
+        ]
+      },
+      {
+        "id": "right_caption",
+        "kind": "callout",
+        "text": "Local Impact Community-based health programs",
+        "bbox": [
+          0.66,
+          0.7,
+          0.91,
+          0.85
+        ]
+      }
+    ],
+    "extracted_text": "Leadership Examples in Population Health World Health Organization VACCINATION DAY SATURDAY 28 MAY Additional clinics Free community transport Walk ins Global Leadership Dr. Fauci guided U.S. through COVID-19 pandemic WHO Leadership Driving global health initiatives Local Impact Community-based health programs",
+    "layout_description": "A large title spans the top of the slide. Three horizontally aligned image panels sit across the middle, each with a teal heading and descriptive text underneath.",
+    "slide_title": "Leadership Examples in Population Health",
+    "text_blocks": [
+      "Leadership Examples in Population Health",
+      "World Health Organization",
+      "VACCINATION DAY SATURDAY 28 MAY Additional clinics Free community transport Walk ins",
+      "Global Leadership Dr. Fauci guided U.S. through COVID-19 pandemic",
+      "WHO Leadership Driving global health initiatives",
+      "Local Impact Community-based health programs"
+    ],
+    "artifact_path": "",
+    "slide_id": "17_Leadership-Examples-in-Population-Health",
+    "card_number": null,
+    "coverage": "perceived",
+    "confidence_score": 0.98,
+    "provider_model_id": "gpt-5.5",
+    "reading_path": null,
+    "source_png_path": "C:\\Users\\juanl\\OneDrive\\Desktop\\z-2026-06-21\\17_Leadership-Examples-in-Population-Health.png"
+  }
+}

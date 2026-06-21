@@ -1,0 +1,97 @@
+{
+  "provenance": {
+    "captured_at": "2026-06-21T22:40:45.375093+00:00",
+    "model_id": "gpt-5.5",
+    "source_png": "C:\\Users\\juanl\\OneDrive\\Desktop\\z-2026-06-21\\6_Idea-vs-Opportunity.png",
+    "scan_tool": "scripts/analysis/reading_path_corpus_scan.py"
+  },
+  "perception_artifact": {
+    "confidence": "HIGH",
+    "visual_elements": [
+      {
+        "id": "left_photo",
+        "kind": "photo",
+        "text": "",
+        "bbox": [
+          0.0,
+          0.0,
+          0.38,
+          1.0
+        ]
+      },
+      {
+        "id": "title",
+        "kind": "title",
+        "text": "Idea vs. Opportunity",
+        "bbox": [
+          0.43,
+          0.25,
+          0.82,
+          0.33
+        ]
+      },
+      {
+        "id": "idea_heading",
+        "kind": "callout",
+        "text": "Idea",
+        "bbox": [
+          0.43,
+          0.41,
+          0.48,
+          0.45
+        ]
+      },
+      {
+        "id": "idea_text",
+        "kind": "bullet",
+        "text": "Creative spark with potential May not be actionable Starting point for innovation",
+        "bbox": [
+          0.43,
+          0.48,
+          0.61,
+          0.71
+        ]
+      },
+      {
+        "id": "opportunity_heading",
+        "kind": "callout",
+        "text": "Opportunity",
+        "bbox": [
+          0.71,
+          0.41,
+          0.83,
+          0.45
+        ]
+      },
+      {
+        "id": "opportunity_text",
+        "kind": "bullet",
+        "text": "Evaluated for viability Real-world impact potential Drives progress in population health",
+        "bbox": [
+          0.71,
+          0.48,
+          0.93,
+          0.71
+        ]
+      }
+    ],
+    "extracted_text": "Idea vs. Opportunity Idea Creative spark with potential May not be actionable Starting point for innovation Opportunity Evaluated for viability Real-world impact potential Drives progress in population health",
+    "layout_description": "The slide is split with a large photo of a hanging light bulb on the left and a white content area on the right. The right side has a large title near the top and two comparison text columns labeled Idea and Opportunity below.",
+    "slide_title": "Idea vs. Opportunity",
+    "text_blocks": [
+      "Idea vs. Opportunity",
+      "Idea",
+      "Creative spark with potential May not be actionable Starting point for innovation",
+      "Opportunity",
+      "Evaluated for viability Real-world impact potential Drives progress in population health"
+    ],
+    "artifact_path": "",
+    "slide_id": "6_Idea-vs-Opportunity",
+    "card_number": null,
+    "coverage": "perceived",
+    "confidence_score": 0.98,
+    "provider_model_id": "gpt-5.5",
+    "reading_path": null,
+    "source_png_path": "C:\\Users\\juanl\\OneDrive\\Desktop\\z-2026-06-21\\6_Idea-vs-Opportunity.png"
+  }
+}

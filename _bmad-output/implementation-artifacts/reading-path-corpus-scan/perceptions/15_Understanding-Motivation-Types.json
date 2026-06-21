@@ -1,0 +1,96 @@
+{
+  "provenance": {
+    "captured_at": "2026-06-21T22:40:45.375093+00:00",
+    "model_id": "gpt-5.5",
+    "source_png": "C:\\Users\\juanl\\OneDrive\\Desktop\\z-2026-06-21\\15_Understanding-Motivation-Types.png",
+    "scan_tool": "scripts/analysis/reading_path_corpus_scan.py"
+  },
+  "perception_artifact": {
+    "confidence": "HIGH",
+    "visual_elements": [
+      {
+        "id": "title",
+        "kind": "title",
+        "text": "Understanding Motivation Types",
+        "bbox": [
+          0.06,
+          0.09,
+          0.55,
+          0.16
+        ]
+      },
+      {
+        "id": "left_card",
+        "kind": "callout",
+        "text": "Extrinsic Motivation Extrinsic motivation occurs when actions or tasks are performed to obtain external rewards or outcomes. This type of motivation is driven by tangible incentives such as monetary rewards, bonuses, or career advancements like promotions. Essentially, the motivation stems from the desire to achieve a specific external benefit.",
+        "bbox": [
+          0.06,
+          0.21,
+          0.46,
+          0.7
+        ]
+      },
+      {
+        "id": "left_icon",
+        "kind": "icon",
+        "text": "",
+        "bbox": [
+          0.07,
+          0.23,
+          0.12,
+          0.31
+        ]
+      },
+      {
+        "id": "right_card",
+        "kind": "callout",
+        "text": "Intrinsic Motivation In contrast, intrinsic motivation is generated when actions or tasks are undertaken for the internal satisfaction or enjoyment derived from the activity itself. This form of motivation is fueled by personal fulfillment, such as boosting self-esteem or experiencing a sense of belonging. Individuals engage in these activities because they find them inherently rewarding.",
+        "bbox": [
+          0.48,
+          0.21,
+          0.88,
+          0.7
+        ]
+      },
+      {
+        "id": "right_icon",
+        "kind": "icon",
+        "text": "",
+        "bbox": [
+          0.49,
+          0.23,
+          0.53,
+          0.31
+        ]
+      },
+      {
+        "id": "summary",
+        "kind": "callout",
+        "text": "In summary, understanding the differences between extrinsic and intrinsic motivation can help in designing effective strategies to encourage desired behaviors, whether through external incentives or fostering internal satisfaction. But why is this understanding particularly important in the context of public health interventions?",
+        "bbox": [
+          0.06,
+          0.74,
+          0.89,
+          0.84
+        ]
+      }
+    ],
+    "extracted_text": "Understanding Motivation Types Extrinsic Motivation Extrinsic motivation occurs when actions or tasks are performed to obtain external rewards or outcomes. This type of motivation is driven by tangible incentives such as monetary rewards, bonuses, or career advancements like promotions. Essentially, the motivation stems from the desire to achieve a specific external benefit. Intrinsic Motivation In contrast, intrinsic motivation is generated when actions or tasks are undertaken for the internal satisfaction or enjoyment derived from the activity itself. This form of motivation is fueled by personal fulfillment, such as boosting self-esteem or experiencing a sense of belonging. Individuals engage in these activities because they find them inherently rewarding. In summary, understanding the differences between extrinsic and intrinsic motivation can help in designing effective strategies to encourage desired behaviors, whether through external incentives or fostering internal satisfaction. But why is this understanding particularly important in the context of public health interventions?",
+    "layout_description": "A large dark-blue title appears at the top left. Below it are two large pale-green rounded cards side by side with olive circular icons near their upper-left corners and explanatory text, followed by a blue summary paragraph along the bottom.",
+    "slide_title": "Understanding Motivation Types",
+    "text_blocks": [
+      "Understanding Motivation Types",
+      "Extrinsic Motivation Extrinsic motivation occurs when actions or tasks are performed to obtain external rewards or outcomes. This type of motivation is driven by tangible incentives such as monetary rewards, bonuses, or career advancements like promotions. Essentially, the motivation stems from the desire to achieve a specific external benefit.",
+      "Intrinsic Motivation In contrast, intrinsic motivation is generated when actions or tasks are undertaken for the internal satisfaction or enjoyment derived from the activity itself. This form of motivation is fueled by personal fulfillment, such as boosting self-esteem or experiencing a sense of belonging. Individuals engage in these activities because they find them inherently rewarding.",
+      "In summary, understanding the differences between extrinsic and intrinsic motivation can help in designing effective strategies to encourage desired behaviors, whether through external incentives or fostering internal satisfaction. But why is this understanding particularly important in the context of public health interventions?"
+    ],
+    "artifact_path": "",
+    "slide_id": "15_Understanding-Motivation-Types",
+    "card_number": null,
+    "coverage": "perceived",
+    "confidence_score": 0.98,
+    "provider_model_id": "gpt-5.5",
+    "reading_path": null,
+    "source_png_path": "C:\\Users\\juanl\\OneDrive\\Desktop\\z-2026-06-21\\15_Understanding-Motivation-Types.png"
+  }
+}

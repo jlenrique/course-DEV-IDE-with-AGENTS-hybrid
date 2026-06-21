@@ -1,0 +1,118 @@
+{
+  "provenance": {
+    "captured_at": "2026-06-21T22:40:45.375093+00:00",
+    "model_id": "gpt-5.5",
+    "source_png": "C:\\Users\\juanl\\OneDrive\\Desktop\\z-2026-06-21\\13_Problem-Solving-Framework.png",
+    "scan_tool": "scripts/analysis/reading_path_corpus_scan.py"
+  },
+  "perception_artifact": {
+    "confidence": "HIGH",
+    "visual_elements": [
+      {
+        "id": "left_photo",
+        "kind": "photo",
+        "text": "",
+        "bbox": [
+          0.0,
+          0.0,
+          0.47,
+          1.0
+        ]
+      },
+      {
+        "id": "title",
+        "kind": "title",
+        "text": "Problem-Solving Framework",
+        "bbox": [
+          0.54,
+          0.12,
+          0.88,
+          0.27
+        ]
+      },
+      {
+        "id": "callout_effective_icon",
+        "kind": "icon",
+        "text": "",
+        "bbox": [
+          0.54,
+          0.33,
+          0.65,
+          0.5
+        ]
+      },
+      {
+        "id": "callout_effective_text",
+        "kind": "callout",
+        "text": "Effective Solution\nAddress issue at attractive cost",
+        "bbox": [
+          0.67,
+          0.36,
+          0.96,
+          0.45
+        ]
+      },
+      {
+        "id": "callout_benefits_icon",
+        "kind": "icon",
+        "text": "",
+        "bbox": [
+          0.54,
+          0.51,
+          0.65,
+          0.68
+        ]
+      },
+      {
+        "id": "callout_benefits_text",
+        "kind": "callout",
+        "text": "Additional Benefits\nExplore broader applications",
+        "bbox": [
+          0.67,
+          0.54,
+          0.96,
+          0.63
+        ]
+      },
+      {
+        "id": "callout_best_icon",
+        "kind": "icon",
+        "text": "",
+        "bbox": [
+          0.54,
+          0.69,
+          0.65,
+          0.86
+        ]
+      },
+      {
+        "id": "callout_best_text",
+        "kind": "callout",
+        "text": "Best Option\nCompare against alternatives",
+        "bbox": [
+          0.67,
+          0.72,
+          0.96,
+          0.81
+        ]
+      }
+    ],
+    "extracted_text": "Problem-Solving Framework Effective Solution Address issue at attractive cost Additional Benefits Explore broader applications Best Option Compare against alternatives",
+    "layout_description": "The slide is split vertically, with a large medical-themed photo occupying the left half and a white content area on the right. The right side has a large title at the top and three stacked chevron callouts with icons and explanatory text.",
+    "slide_title": "Problem-Solving Framework",
+    "text_blocks": [
+      "Problem-Solving Framework",
+      "Effective Solution\nAddress issue at attractive cost",
+      "Additional Benefits\nExplore broader applications",
+      "Best Option\nCompare against alternatives"
+    ],
+    "artifact_path": "",
+    "slide_id": "13_Problem-Solving-Framework",
+    "card_number": null,
+    "coverage": "perceived",
+    "confidence_score": 0.88,
+    "provider_model_id": "gpt-5.5",
+    "reading_path": null,
+    "source_png_path": "C:\\Users\\juanl\\OneDrive\\Desktop\\z-2026-06-21\\13_Problem-Solving-Framework.png"
+  }
+}

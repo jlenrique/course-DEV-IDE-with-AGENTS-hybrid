@@ -1,0 +1,118 @@
+{
+  "provenance": {
+    "captured_at": "2026-06-21T22:40:45.375093+00:00",
+    "model_id": "gpt-5.5",
+    "source_png": "C:\\Users\\juanl\\OneDrive\\Desktop\\z-2026-06-21\\2_An-Era-of-Unprecedented-Change.png",
+    "scan_tool": "scripts/analysis/reading_path_corpus_scan.py"
+  },
+  "perception_artifact": {
+    "confidence": "HIGH",
+    "visual_elements": [
+      {
+        "id": "top_medical_banner",
+        "kind": "diagram",
+        "text": "",
+        "bbox": [
+          0,
+          0,
+          1,
+          0.35
+        ]
+      },
+      {
+        "id": "slide_title",
+        "kind": "title",
+        "text": "An Era of Unprecedented Change",
+        "bbox": [
+          0.06,
+          0.43,
+          0.68,
+          0.51
+        ]
+      },
+      {
+        "id": "left_callout",
+        "kind": "callout",
+        "text": "Technological Advancement Rapid innovation transforming care delivery",
+        "bbox": [
+          0.06,
+          0.55,
+          0.34,
+          0.9
+        ]
+      },
+      {
+        "id": "left_icon",
+        "kind": "icon",
+        "text": "",
+        "bbox": [
+          0.08,
+          0.57,
+          0.13,
+          0.66
+        ]
+      },
+      {
+        "id": "middle_callout",
+        "kind": "callout",
+        "text": "Shifting Payment Models New reimbursement structures reshaping practice",
+        "bbox": [
+          0.36,
+          0.55,
+          0.64,
+          0.9
+        ]
+      },
+      {
+        "id": "middle_icon",
+        "kind": "icon",
+        "text": "",
+        "bbox": [
+          0.38,
+          0.57,
+          0.43,
+          0.66
+        ]
+      },
+      {
+        "id": "right_callout",
+        "kind": "callout",
+        "text": "System Complexity Increasingly intricate healthcare ecosystems",
+        "bbox": [
+          0.66,
+          0.55,
+          0.94,
+          0.9
+        ]
+      },
+      {
+        "id": "right_icon",
+        "kind": "icon",
+        "text": "",
+        "bbox": [
+          0.68,
+          0.57,
+          0.73,
+          0.66
+        ]
+      }
+    ],
+    "extracted_text": "An Era of Unprecedented Change Technological Advancement Rapid innovation transforming care delivery Shifting Payment Models New reimbursement structures reshaping practice System Complexity Increasingly intricate healthcare ecosystems",
+    "layout_description": "A wide medical technology-themed graphic banner spans the top third of the slide, followed by a large dark-blue title on a white background. Three pale green callout cards are arranged horizontally across the lower half, each with a circular icon near the top-left and bold heading with supporting text below.",
+    "slide_title": "An Era of Unprecedented Change",
+    "text_blocks": [
+      "An Era of Unprecedented Change",
+      "Technological Advancement Rapid innovation transforming care delivery",
+      "Shifting Payment Models New reimbursement structures reshaping practice",
+      "System Complexity Increasingly intricate healthcare ecosystems"
+    ],
+    "artifact_path": "",
+    "slide_id": "2_An-Era-of-Unprecedented-Change",
+    "card_number": null,
+    "coverage": "perceived",
+    "confidence_score": 0.98,
+    "provider_model_id": "gpt-5.5",
+    "reading_path": null,
+    "source_png_path": "C:\\Users\\juanl\\OneDrive\\Desktop\\z-2026-06-21\\2_An-Era-of-Unprecedented-Change.png"
+  }
+}

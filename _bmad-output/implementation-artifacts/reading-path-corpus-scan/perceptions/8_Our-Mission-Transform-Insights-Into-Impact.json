@@ -1,0 +1,85 @@
+{
+  "provenance": {
+    "captured_at": "2026-06-21T22:40:45.375093+00:00",
+    "model_id": "gpt-5.5",
+    "source_png": "C:\\Users\\juanl\\OneDrive\\Desktop\\z-2026-06-21\\8_Our-Mission-Transform-Insights-Into-Impact.png",
+    "scan_tool": "scripts/analysis/reading_path_corpus_scan.py"
+  },
+  "perception_artifact": {
+    "confidence": "HIGH",
+    "visual_elements": [
+      {
+        "id": "left_illustration",
+        "kind": "photo",
+        "text": "",
+        "bbox": [
+          0.0,
+          0.0,
+          0.37,
+          1.0
+        ]
+      },
+      {
+        "id": "title",
+        "kind": "title",
+        "text": "Our Mission: Transform Insights Into Impact",
+        "bbox": [
+          0.43,
+          0.15,
+          0.88,
+          0.31
+        ]
+      },
+      {
+        "id": "mission_01",
+        "kind": "callout",
+        "text": "01 Education Structured learning in innovation and leadership",
+        "bbox": [
+          0.43,
+          0.38,
+          0.67,
+          0.61
+        ]
+      },
+      {
+        "id": "mission_02",
+        "kind": "callout",
+        "text": "02 Community Network of like-minded change agents",
+        "bbox": [
+          0.69,
+          0.38,
+          0.93,
+          0.61
+        ]
+      },
+      {
+        "id": "mission_03",
+        "kind": "callout",
+        "text": "03 Targeted Experiences Real-world opportunities to create change",
+        "bbox": [
+          0.43,
+          0.67,
+          0.93,
+          0.86
+        ]
+      }
+    ],
+    "extracted_text": "Our Mission: Transform Insights Into Impact 01 Education Structured learning in innovation and leadership 02 Community Network of like-minded change agents 03 Targeted Experiences Real-world opportunities to create change",
+    "layout_description": "The slide is split vertically, with a large illustrated scene occupying the left third and a white text area on the right. The right side contains a large title at the top and three numbered mission items arranged in two columns for the first row and one full-width item below.",
+    "slide_title": "Our Mission: Transform Insights Into Impact",
+    "text_blocks": [
+      "Our Mission: Transform Insights Into Impact",
+      "01 Education Structured learning in innovation and leadership",
+      "02 Community Network of like-minded change agents",
+      "03 Targeted Experiences Real-world opportunities to create change"
+    ],
+    "artifact_path": "",
+    "slide_id": "8_Our-Mission-Transform-Insights-Into-Impact",
+    "card_number": null,
+    "coverage": "perceived",
+    "confidence_score": 0.99,
+    "provider_model_id": "gpt-5.5",
+    "reading_path": null,
+    "source_png_path": "C:\\Users\\juanl\\OneDrive\\Desktop\\z-2026-06-21\\8_Our-Mission-Transform-Insights-Into-Impact.png"
+  }
+}

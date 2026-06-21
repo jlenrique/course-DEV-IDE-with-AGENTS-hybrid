@@ -1,0 +1,97 @@
+{
+  "provenance": {
+    "captured_at": "2026-06-21T22:40:45.375093+00:00",
+    "model_id": "gpt-5.5",
+    "source_png": "C:\\Users\\juanl\\OneDrive\\Desktop\\z-2026-06-21\\1_.png",
+    "scan_tool": "scripts/analysis/reading_path_corpus_scan.py"
+  },
+  "perception_artifact": {
+    "confidence": "HIGH",
+    "visual_elements": [
+      {
+        "id": "logo_top_left",
+        "kind": "logo",
+        "text": "Jefferson. COLLEGE OF POPULATION HEALTH",
+        "bbox": [
+          0.03,
+          0.05,
+          0.23,
+          0.16
+        ]
+      },
+      {
+        "id": "main_title",
+        "kind": "title",
+        "text": "THE INFLECTION POINT",
+        "bbox": [
+          0.13,
+          0.26,
+          0.9,
+          0.39
+        ]
+      },
+      {
+        "id": "middle_callout",
+        "kind": "callout",
+        "text": "You don’t just work in the system.",
+        "bbox": [
+          0.19,
+          0.43,
+          0.81,
+          0.64
+        ]
+      },
+      {
+        "id": "bottom_callout",
+        "kind": "callout",
+        "text": "You’re a designer of it.",
+        "bbox": [
+          0.19,
+          0.68,
+          0.82,
+          0.8
+        ]
+      },
+      {
+        "id": "footer_course",
+        "kind": "footer",
+        "text": "APC in Health Innovation Leadership • Course 1",
+        "bbox": [
+          0.06,
+          0.92,
+          0.94,
+          0.96
+        ]
+      },
+      {
+        "id": "blueprint_background",
+        "kind": "diagram",
+        "text": "",
+        "bbox": [
+          0.0,
+          0.0,
+          1.0,
+          1.0
+        ]
+      }
+    ],
+    "extracted_text": "Jefferson. COLLEGE OF POPULATION HEALTH THE INFLECTION POINT You don’t just work in the system. You’re a designer of it. APC in Health Innovation Leadership • Course 1",
+    "layout_description": "A Jefferson College of Population Health logo sits in the upper left, with a large centered title and two centered statement lines beneath it. Pale blue blueprint-style line graphics frame the left and right edges, and a small footer course label runs along the bottom center between thin green lines.",
+    "slide_title": "THE INFLECTION POINT",
+    "text_blocks": [
+      "Jefferson. COLLEGE OF POPULATION HEALTH",
+      "THE INFLECTION POINT",
+      "You don’t just work in the system.",
+      "You’re a designer of it.",
+      "APC in Health Innovation Leadership • Course 1"
+    ],
+    "artifact_path": "",
+    "slide_id": "1_",
+    "card_number": null,
+    "coverage": "perceived",
+    "confidence_score": 0.98,
+    "provider_model_id": "gpt-5.5",
+    "reading_path": null,
+    "source_png_path": "C:\\Users\\juanl\\OneDrive\\Desktop\\z-2026-06-21\\1_.png"
+  }
+}

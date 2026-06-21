@@ -1,0 +1,109 @@
+{
+  "provenance": {
+    "captured_at": "2026-06-21T22:40:45.375093+00:00",
+    "model_id": "gpt-5.5",
+    "source_png": "C:\\Users\\juanl\\OneDrive\\Desktop\\z-2026-06-21\\5_.png",
+    "scan_tool": "scripts/analysis/reading_path_corpus_scan.py"
+  },
+  "perception_artifact": {
+    "confidence": "HIGH",
+    "visual_elements": [
+      {
+        "id": "brand_top_left",
+        "kind": "logo",
+        "text": "Jefferson. COLLEGE OF POPULATION HEALTH",
+        "bbox": [
+          0.12,
+          0.1,
+          0.34,
+          0.2
+        ]
+      },
+      {
+        "id": "course_label",
+        "kind": "callout",
+        "text": "COURSE 1",
+        "bbox": [
+          0.12,
+          0.25,
+          0.18,
+          0.31
+        ]
+      },
+      {
+        "id": "main_title",
+        "kind": "title",
+        "text": "Diagnose the system.",
+        "bbox": [
+          0.13,
+          0.33,
+          0.7,
+          0.72
+        ]
+      },
+      {
+        "id": "subtitle",
+        "kind": "callout",
+        "text": "Faculty leave with a board-ready clinical innovation brief — and a peer cohort that knows how to pressure-test it.",
+        "bbox": [
+          0.13,
+          0.76,
+          0.66,
+          0.86
+        ]
+      },
+      {
+        "id": "footer_details",
+        "kind": "stat",
+        "text": "Foundations of Innovation Leadership • 7 weeks • Asynchronous",
+        "bbox": [
+          0.13,
+          0.91,
+          0.62,
+          0.96
+        ]
+      },
+      {
+        "id": "clinical_note_form",
+        "kind": "diagram",
+        "text": "CLINICAL NOTE DATE __/__/____ PATIENT ID CHIEF COMPLAINT HISTORY OF PRESENT ILLNESS ASSESSMENT PLAN",
+        "bbox": [
+          0.76,
+          0.06,
+          1.0,
+          0.96
+        ]
+      },
+      {
+        "id": "blueprint_background",
+        "kind": "diagram",
+        "text": "",
+        "bbox": [
+          0.0,
+          0.0,
+          1.0,
+          1.0
+        ]
+      }
+    ],
+    "extracted_text": "Jefferson. COLLEGE OF POPULATION HEALTH COURSE 1 Diagnose the system. Faculty leave with a board-ready clinical innovation brief — and a peer cohort that knows how to pressure-test it. Foundations of Innovation Leadership • 7 weeks • Asynchronous CLINICAL NOTE DATE __/__/____ PATIENT ID CHIEF COMPLAINT HISTORY OF PRESENT ILLNESS ASSESSMENT PLAN",
+    "layout_description": "A large course title dominates the left-center of the slide, with Jefferson branding and course label above it, a descriptive sentence below, and course details along the bottom. The background uses pale blueprint-style grid lines, with a tilted clinical note form illustration cropped along the right side.",
+    "slide_title": "Diagnose the system.",
+    "text_blocks": [
+      "Jefferson. COLLEGE OF POPULATION HEALTH",
+      "COURSE 1",
+      "Diagnose the system.",
+      "Faculty leave with a board-ready clinical innovation brief — and a peer cohort that knows how to pressure-test it.",
+      "Foundations of Innovation Leadership • 7 weeks • Asynchronous",
+      "CLINICAL NOTE DATE __/__/____ PATIENT ID CHIEF COMPLAINT HISTORY OF PRESENT ILLNESS ASSESSMENT PLAN"
+    ],
+    "artifact_path": "",
+    "slide_id": "5_",
+    "card_number": null,
+    "coverage": "perceived",
+    "confidence_score": 0.98,
+    "provider_model_id": "gpt-5.5",
+    "reading_path": null,
+    "source_png_path": "C:\\Users\\juanl\\OneDrive\\Desktop\\z-2026-06-21\\5_.png"
+  }
+}

@@ -1,0 +1,61 @@
+{
+  "provenance": {
+    "captured_at": "2026-06-21T22:40:45.375093+00:00",
+    "model_id": "gpt-5.5",
+    "source_png": "C:\\Users\\juanl\\OneDrive\\Desktop\\z-2026-06-21\\4_The-Critical-Gap.png",
+    "scan_tool": "scripts/analysis/reading_path_corpus_scan.py"
+  },
+  "perception_artifact": {
+    "confidence": "HIGH",
+    "visual_elements": [
+      {
+        "id": "title_main",
+        "kind": "title",
+        "text": "The Critical Gap",
+        "bbox": [
+          0.06,
+          0.28,
+          0.49,
+          0.57
+        ]
+      },
+      {
+        "id": "subtitle",
+        "kind": "callout",
+        "text": "Brilliant problem-solvers feeling disempowered to fix the systems they work within",
+        "bbox": [
+          0.06,
+          0.63,
+          0.55,
+          0.72
+        ]
+      },
+      {
+        "id": "right_illustration",
+        "kind": "diagram",
+        "text": "",
+        "bbox": [
+          0.62,
+          0.0,
+          1.0,
+          1.0
+        ]
+      }
+    ],
+    "extracted_text": "The Critical Gap Brilliant problem-solvers feeling disempowered to fix the systems they work within",
+    "layout_description": "Large title text is placed on the left side over a white background, with a smaller subtitle beneath it. The right side contains an illustration of a tired healthcare worker at a laptop under a spotlight, surrounded by stacks of papers.",
+    "slide_title": "The Critical Gap",
+    "text_blocks": [
+      "The Critical Gap",
+      "Brilliant problem-solvers feeling disempowered to fix the systems they work within"
+    ],
+    "artifact_path": "",
+    "slide_id": "4_The-Critical-Gap",
+    "card_number": null,
+    "coverage": "perceived",
+    "confidence_score": 0.98,
+    "provider_model_id": "gpt-5.5",
+    "reading_path": null,
+    "source_png_path": "C:\\Users\\juanl\\OneDrive\\Desktop\\z-2026-06-21\\4_The-Critical-Gap.png"
+  }
+}

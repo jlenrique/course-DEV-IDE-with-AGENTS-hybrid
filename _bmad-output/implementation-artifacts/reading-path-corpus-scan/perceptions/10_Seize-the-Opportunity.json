@@ -1,0 +1,85 @@
+{
+  "provenance": {
+    "captured_at": "2026-06-21T22:40:45.375093+00:00",
+    "model_id": "gpt-5.5",
+    "source_png": "C:\\Users\\juanl\\OneDrive\\Desktop\\z-2026-06-21\\10_Seize-the-Opportunity.png",
+    "scan_tool": "scripts/analysis/reading_path_corpus_scan.py"
+  },
+  "perception_artifact": {
+    "confidence": "HIGH",
+    "visual_elements": [
+      {
+        "id": "title",
+        "kind": "title",
+        "text": "Seize the Opportunity",
+        "bbox": [
+          0.06,
+          0.22,
+          0.47,
+          0.29
+        ]
+      },
+      {
+        "id": "challenge_callout",
+        "kind": "callout",
+        "text": "The Challenge Healthcare needs transformational change",
+        "bbox": [
+          0.06,
+          0.34,
+          0.3,
+          0.55
+        ]
+      },
+      {
+        "id": "solution_callout",
+        "kind": "callout",
+        "text": "The Solution Empowered clinician innovators",
+        "bbox": [
+          0.32,
+          0.34,
+          0.56,
+          0.55
+        ]
+      },
+      {
+        "id": "time_callout",
+        "kind": "callout",
+        "text": "The Time Now—join us in shaping the future",
+        "bbox": [
+          0.06,
+          0.58,
+          0.56,
+          0.75
+        ]
+      },
+      {
+        "id": "right_hospital_illustration",
+        "kind": "photo",
+        "text": "",
+        "bbox": [
+          0.62,
+          0.0,
+          1.0,
+          1.0
+        ]
+      }
+    ],
+    "extracted_text": "Seize the Opportunity The Challenge Healthcare needs transformational change The Solution Empowered clinician innovators The Time Now—join us in shaping the future",
+    "layout_description": "A large title sits on the upper left over a white background. Below it are three rounded rectangular callout boxes on the left, while the right third of the slide is a full-height illustrated hospital-at-sunset image.",
+    "slide_title": "Seize the Opportunity",
+    "text_blocks": [
+      "Seize the Opportunity",
+      "The Challenge Healthcare needs transformational change",
+      "The Solution Empowered clinician innovators",
+      "The Time Now—join us in shaping the future"
+    ],
+    "artifact_path": "",
+    "slide_id": "10_Seize-the-Opportunity",
+    "card_number": null,
+    "coverage": "perceived",
+    "confidence_score": 0.97,
+    "provider_model_id": "gpt-5.5",
+    "reading_path": null,
+    "source_png_path": "C:\\Users\\juanl\\OneDrive\\Desktop\\z-2026-06-21\\10_Seize-the-Opportunity.png"
+  }
+}

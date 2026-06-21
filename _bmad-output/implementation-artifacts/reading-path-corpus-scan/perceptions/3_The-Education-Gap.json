@@ -1,0 +1,73 @@
+{
+  "provenance": {
+    "captured_at": "2026-06-21T22:40:45.375093+00:00",
+    "model_id": "gpt-5.5",
+    "source_png": "C:\\Users\\juanl\\OneDrive\\Desktop\\z-2026-06-21\\3_The-Education-Gap.png",
+    "scan_tool": "scripts/analysis/reading_path_corpus_scan.py"
+  },
+  "perception_artifact": {
+    "confidence": "HIGH",
+    "visual_elements": [
+      {
+        "id": "title",
+        "kind": "title",
+        "text": "The Education Gap",
+        "bbox": [
+          0.06,
+          0.24,
+          0.41,
+          0.33
+        ]
+      },
+      {
+        "id": "left_bullets",
+        "kind": "bullet",
+        "text": "What You're Taught • Clinical expertise • Evidence-based practice • Following established pathways",
+        "bbox": [
+          0.06,
+          0.4,
+          0.31,
+          0.75
+        ]
+      },
+      {
+        "id": "right_bullets",
+        "kind": "bullet",
+        "text": "What You Need • Leadership skills • Innovation mindset • Creating new pathways",
+        "bbox": [
+          0.33,
+          0.4,
+          0.56,
+          0.64
+        ]
+      },
+      {
+        "id": "classroom_illustration",
+        "kind": "diagram",
+        "text": "",
+        "bbox": [
+          0.62,
+          0.0,
+          1.0,
+          1.0
+        ]
+      }
+    ],
+    "extracted_text": "The Education Gap What You're Taught • Clinical expertise • Evidence-based practice • Following established pathways What You Need • Leadership skills • Innovation mindset • Creating new pathways",
+    "layout_description": "The slide has a large title on the left above two side-by-side text columns with bullet lists. The right side contains a large isometric classroom illustration with a teacher, students, desks, a whiteboard, and glass-like walls.",
+    "slide_title": "The Education Gap",
+    "text_blocks": [
+      "The Education Gap",
+      "What You're Taught • Clinical expertise • Evidence-based practice • Following established pathways",
+      "What You Need • Leadership skills • Innovation mindset • Creating new pathways"
+    ],
+    "artifact_path": "",
+    "slide_id": "3_The-Education-Gap",
+    "card_number": null,
+    "coverage": "perceived",
+    "confidence_score": 0.98,
+    "provider_model_id": "gpt-5.5",
+    "reading_path": null,
+    "source_png_path": "C:\\Users\\juanl\\OneDrive\\Desktop\\z-2026-06-21\\3_The-Education-Gap.png"
+  }
+}

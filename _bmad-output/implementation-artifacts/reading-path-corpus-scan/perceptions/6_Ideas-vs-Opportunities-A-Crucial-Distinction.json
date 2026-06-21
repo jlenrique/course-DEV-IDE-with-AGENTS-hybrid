@@ -1,0 +1,109 @@
+{
+  "provenance": {
+    "captured_at": "2026-06-21T22:40:45.375093+00:00",
+    "model_id": "gpt-5.5",
+    "source_png": "C:\\Users\\juanl\\OneDrive\\Desktop\\z-2026-06-21\\6_Ideas-vs-Opportunities-A-Crucial-Distinction.png",
+    "scan_tool": "scripts/analysis/reading_path_corpus_scan.py"
+  },
+  "perception_artifact": {
+    "confidence": "HIGH",
+    "visual_elements": [
+      {
+        "id": "title",
+        "kind": "title",
+        "text": "Ideas vs. Opportunities: A Crucial Distinction",
+        "bbox": [
+          0.07,
+          0.05,
+          0.91,
+          0.1
+        ]
+      },
+      {
+        "id": "idea_heading",
+        "kind": "callout",
+        "text": "Idea",
+        "bbox": [
+          0.07,
+          0.15,
+          0.18,
+          0.18
+        ]
+      },
+      {
+        "id": "idea_text",
+        "kind": "callout",
+        "text": "An idea is the spark of innovation, a creative thought that has the potential to address a public health challenge. However, not every idea is actionable or feasible.",
+        "bbox": [
+          0.07,
+          0.2,
+          0.52,
+          0.28
+        ]
+      },
+      {
+        "id": "opportunity_heading",
+        "kind": "callout",
+        "text": "Opportunity",
+        "bbox": [
+          0.6,
+          0.15,
+          0.78,
+          0.18
+        ]
+      },
+      {
+        "id": "opportunity_text",
+        "kind": "callout",
+        "text": "An opportunity is an idea that has been evaluated and deemed viable, with the potential for real-world impact. Understanding this distinction is crucial for aspiring public health leaders. It allows us to focus our efforts on initiatives that can truly make a difference, rather than getting lost in the myriad of possibilities that may not be practical or sustainable.",
+        "bbox": [
+          0.6,
+          0.2,
+          0.94,
+          0.41
+        ]
+      },
+      {
+        "id": "idea_photo",
+        "kind": "photo",
+        "text": "",
+        "bbox": [
+          0.07,
+          0.3,
+          0.56,
+          0.81
+        ]
+      },
+      {
+        "id": "bottom_paragraph",
+        "kind": "callout",
+        "text": "In essence, transforming ideas into opportunities is what drives progress in public health. As future leaders, your role will be to discern which ideas can be developed into impactful opportunities that advance the health and well-being of communities. Now, let's explore the framework that supports this transformation.",
+        "bbox": [
+          0.07,
+          0.86,
+          0.94,
+          0.94
+        ]
+      }
+    ],
+    "extracted_text": "Ideas vs. Opportunities: A Crucial Distinction Idea An idea is the spark of innovation, a creative thought that has the potential to address a public health challenge. However, not every idea is actionable or feasible. Opportunity An opportunity is an idea that has been evaluated and deemed viable, with the potential for real-world impact. Understanding this distinction is crucial for aspiring public health leaders. It allows us to focus our efforts on initiatives that can truly make a difference, rather than getting lost in the myriad of possibilities that may not be practical or sustainable. In essence, transforming ideas into opportunities is what drives progress in public health. As future leaders, your role will be to discern which ideas can be developed into impactful opportunities that advance the health and well-being of communities. Now, let's explore the framework that supports this transformation.",
+    "layout_description": "A large navy title spans the top of a white slide. Below it are two text columns: the left column has an Idea heading and paragraph above a large photo, while the right column contains an Opportunity heading and explanatory paragraphs; a full-width concluding paragraph sits near the bottom.",
+    "slide_title": "Ideas vs. Opportunities: A Crucial Distinction",
+    "text_blocks": [
+      "Ideas vs. Opportunities: A Crucial Distinction",
+      "Idea",
+      "An idea is the spark of innovation, a creative thought that has the potential to address a public health challenge. However, not every idea is actionable or feasible.",
+      "Opportunity",
+      "An opportunity is an idea that has been evaluated and deemed viable, with the potential for real-world impact. Understanding this distinction is crucial for aspiring public health leaders. It allows us to focus our efforts on initiatives that can truly make a difference, rather than getting lost in the myriad of possibilities that may not be practical or sustainable.",
+      "In essence, transforming ideas into opportunities is what drives progress in public health. As future leaders, your role will be to discern which ideas can be developed into impactful opportunities that advance the health and well-being of communities. Now, let's explore the framework that supports this transformation."
+    ],
+    "artifact_path": "",
+    "slide_id": "6_Ideas-vs-Opportunities-A-Crucial-Distinction",
+    "card_number": null,
+    "coverage": "perceived",
+    "confidence_score": 0.99,
+    "provider_model_id": "gpt-5.5",
+    "reading_path": null,
+    "source_png_path": "C:\\Users\\juanl\\OneDrive\\Desktop\\z-2026-06-21\\6_Ideas-vs-Opportunities-A-Crucial-Distinction.png"
+  }
+}

@@ -1,0 +1,142 @@
+{
+  "provenance": {
+    "captured_at": "2026-06-21T22:40:45.375093+00:00",
+    "model_id": "gpt-5.5",
+    "source_png": "C:\\Users\\juanl\\OneDrive\\Desktop\\z-2026-06-21\\12_Value-Proposition-Canvas-Aligning-Products-with-Customer-Needs.png",
+    "scan_tool": "scripts/analysis/reading_path_corpus_scan.py"
+  },
+  "perception_artifact": {
+    "confidence": "HIGH",
+    "visual_elements": [
+      {
+        "id": "title",
+        "kind": "title",
+        "text": "Value Proposition Canvas: Aligning Products with Customer Needs",
+        "bbox": [
+          0.06,
+          0.07,
+          0.86,
+          0.17
+        ]
+      },
+      {
+        "id": "card_template",
+        "kind": "callout",
+        "text": "Value Proposition Canvas Template Begin by downloading the official template to guide your analysis. This structured approach helps in aligning your product or service with customer expectations.",
+        "bbox": [
+          0.06,
+          0.22,
+          0.49,
+          0.51
+        ]
+      },
+      {
+        "id": "icon_template",
+        "kind": "icon",
+        "text": "",
+        "bbox": [
+          0.26,
+          0.23,
+          0.3,
+          0.28
+        ]
+      },
+      {
+        "id": "card_gain_creators",
+        "kind": "callout",
+        "text": "Gain Creators Identify how your product or service creates benefits or positive outcomes for the customer. Consider what makes your offering stand out and how it enhances the customer's experience or solves their problems.",
+        "bbox": [
+          0.51,
+          0.22,
+          0.94,
+          0.51
+        ]
+      },
+      {
+        "id": "icon_gain_creators",
+        "kind": "icon",
+        "text": "",
+        "bbox": [
+          0.71,
+          0.23,
+          0.75,
+          0.28
+        ]
+      },
+      {
+        "id": "card_jobs",
+        "kind": "callout",
+        "text": "Jobs-to-be-Done Understand the specific tasks or problems your customer is trying to address. This involves recognizing the functional, emotional, and social jobs that your product or service can fulfill.",
+        "bbox": [
+          0.06,
+          0.53,
+          0.49,
+          0.82
+        ]
+      },
+      {
+        "id": "icon_jobs",
+        "kind": "icon",
+        "text": "",
+        "bbox": [
+          0.26,
+          0.55,
+          0.3,
+          0.59
+        ]
+      },
+      {
+        "id": "card_cs_feedough",
+        "kind": "callout",
+        "text": "CS Feedough This might refer to a specific framework or tool used to further analyze customer segments and their needs, ensuring that your value proposition is well-targeted and effective.",
+        "bbox": [
+          0.51,
+          0.53,
+          0.94,
+          0.82
+        ]
+      },
+      {
+        "id": "icon_cs_feedough",
+        "kind": "icon",
+        "text": "",
+        "bbox": [
+          0.71,
+          0.54,
+          0.75,
+          0.59
+        ]
+      },
+      {
+        "id": "summary",
+        "kind": "callout",
+        "text": "In summary, the Value Proposition Canvas is a powerful tool for aligning your offerings with customer needs, ensuring that you deliver real value and stand out in the marketplace. But how do we apply this understanding to solve complex problems effectively?",
+        "bbox": [
+          0.06,
+          0.85,
+          0.91,
+          0.94
+        ]
+      }
+    ],
+    "extracted_text": "Value Proposition Canvas: Aligning Products with Customer Needs Value Proposition Canvas Template Begin by downloading the official template to guide your analysis. This structured approach helps in aligning your product or service with customer expectations. Gain Creators Identify how your product or service creates benefits or positive outcomes for the customer. Consider what makes your offering stand out and how it enhances the customer's experience or solves their problems. Jobs-to-be-Done Understand the specific tasks or problems your customer is trying to address. This involves recognizing the functional, emotional, and social jobs that your product or service can fulfill. CS Feedough This might refer to a specific framework or tool used to further analyze customer segments and their needs, ensuring that your value proposition is well-targeted and effective. In summary, the Value Proposition Canvas is a powerful tool for aligning your offerings with customer needs, ensuring that you deliver real value and stand out in the marketplace. But how do we apply this understanding to solve complex problems effectively?",
+    "layout_description": "A large dark-blue title sits at the top left. Below it are four bordered content cards arranged in a two-by-two grid, each with a pale header strip and small icon, followed by a concluding paragraph along the bottom.",
+    "slide_title": "Value Proposition Canvas: Aligning Products with Customer Needs",
+    "text_blocks": [
+      "Value Proposition Canvas: Aligning Products with Customer Needs",
+      "Value Proposition Canvas Template Begin by downloading the official template to guide your analysis. This structured approach helps in aligning your product or service with customer expectations.",
+      "Gain Creators Identify how your product or service creates benefits or positive outcomes for the customer. Consider what makes your offering stand out and how it enhances the customer's experience or solves their problems.",
+      "Jobs-to-be-Done Understand the specific tasks or problems your customer is trying to address. This involves recognizing the functional, emotional, and social jobs that your product or service can fulfill.",
+      "CS Feedough This might refer to a specific framework or tool used to further analyze customer segments and their needs, ensuring that your value proposition is well-targeted and effective.",
+      "In summary, the Value Proposition Canvas is a powerful tool for aligning your offerings with customer needs, ensuring that you deliver real value and stand out in the marketplace. But how do we apply this understanding to solve complex problems effectively?"
+    ],
+    "artifact_path": "",
+    "slide_id": "12_Value-Proposition-Canvas-Aligning-Products-with-Customer-Needs",
+    "card_number": null,
+    "coverage": "perceived",
+    "confidence_score": 0.98,
+    "provider_model_id": "gpt-5.5",
+    "reading_path": null,
+    "source_png_path": "C:\\Users\\juanl\\OneDrive\\Desktop\\z-2026-06-21\\12_Value-Proposition-Canvas-Aligning-Products-with-Customer-Needs.png"
+  }
+}

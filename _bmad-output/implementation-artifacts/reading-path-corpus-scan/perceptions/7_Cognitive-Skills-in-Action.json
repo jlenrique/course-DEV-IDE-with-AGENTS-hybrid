@@ -1,0 +1,84 @@
+{
+  "provenance": {
+    "captured_at": "2026-06-21T22:40:45.375093+00:00",
+    "model_id": "gpt-5.5",
+    "source_png": "C:\\Users\\juanl\\OneDrive\\Desktop\\z-2026-06-21\\7_Cognitive-Skills-in-Action.png",
+    "scan_tool": "scripts/analysis/reading_path_corpus_scan.py"
+  },
+  "perception_artifact": {
+    "confidence": "HIGH",
+    "visual_elements": [
+      {
+        "id": "left_photo",
+        "kind": "photo",
+        "text": "",
+        "bbox": [
+          0.0,
+          0.0,
+          0.47,
+          1.0
+        ]
+      },
+      {
+        "id": "title",
+        "kind": "title",
+        "text": "Cognitive Skills in Action",
+        "bbox": [
+          0.54,
+          0.25,
+          0.97,
+          0.31
+        ]
+      },
+      {
+        "id": "quote_accent_line",
+        "kind": "diagram",
+        "text": "",
+        "bbox": [
+          0.54,
+          0.36,
+          0.55,
+          0.62
+        ]
+      },
+      {
+        "id": "quote_block",
+        "kind": "callout",
+        "text": "\"Expert diagnosticians are masters of cognitive flexibility. The same mental agility required to avoid diagnostic fixation allows innovators to pivot from flawed solutions and find better ones.\"",
+        "bbox": [
+          0.57,
+          0.4,
+          0.96,
+          0.58
+        ]
+      },
+      {
+        "id": "source_citation",
+        "kind": "callout",
+        "text": "Research on clinical reasoning, New England Journal of Medicine",
+        "bbox": [
+          0.54,
+          0.67,
+          0.94,
+          0.75
+        ]
+      }
+    ],
+    "extracted_text": "Cognitive Skills in Action \"Expert diagnosticians are masters of cognitive flexibility. The same mental agility required to avoid diagnostic fixation allows innovators to pivot from flawed solutions and find better ones.\" Research on clinical reasoning, New England Journal of Medicine",
+    "layout_description": "The slide is split vertically with a large medical-themed photo occupying the left side and a white content area on the right. The right side contains a large title near the upper middle, a quote block beside a thin vertical green line, and a source citation below.",
+    "slide_title": "Cognitive Skills in Action",
+    "text_blocks": [
+      "Cognitive Skills in Action",
+      "\"Expert diagnosticians are masters of cognitive flexibility. The same mental agility required to avoid diagnostic fixation allows innovators to pivot from flawed solutions and find better ones.\"",
+      "Research on clinical reasoning, New England Journal of Medicine"
+    ],
+    "artifact_path": "",
+    "slide_id": "7_Cognitive-Skills-in-Action",
+    "card_number": null,
+    "coverage": "perceived",
+    "confidence_score": 0.98,
+    "provider_model_id": "gpt-5.5",
+    "reading_path": null,
+    "source_png_path": "C:\\Users\\juanl\\OneDrive\\Desktop\\z-2026-06-21\\7_Cognitive-Skills-in-Action.png"
+  }
+}

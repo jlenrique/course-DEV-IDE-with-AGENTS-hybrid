@@ -1,0 +1,133 @@
+{
+  "provenance": {
+    "captured_at": "2026-06-21T22:40:45.375093+00:00",
+    "model_id": "gpt-5.5",
+    "source_png": "C:\\Users\\juanl\\OneDrive\\Desktop\\z-2026-06-21\\8_Expected-Value-vs-Expected-Utility.png",
+    "scan_tool": "scripts/analysis/reading_path_corpus_scan.py"
+  },
+  "perception_artifact": {
+    "confidence": "HIGH",
+    "visual_elements": [
+      {
+        "id": "title_main",
+        "kind": "title",
+        "text": "Expected Value vs. Expected Utility",
+        "bbox": [
+          0.07,
+          0.04,
+          0.74,
+          0.09
+        ]
+      },
+      {
+        "id": "heading_expected_value",
+        "kind": "title",
+        "text": "Expected Value",
+        "bbox": [
+          0.07,
+          0.13,
+          0.25,
+          0.16
+        ]
+      },
+      {
+        "id": "body_expected_value",
+        "kind": "callout",
+        "text": "A statistical measure that calculates the average outcome when the same decision is made repeatedly. It's a straightforward calculation that helps us predict the most likely result by weighing all possible outcomes by their probabilities.",
+        "bbox": [
+          0.07,
+          0.18,
+          0.52,
+          0.31
+        ]
+      },
+      {
+        "id": "heading_expected_utility",
+        "kind": "title",
+        "text": "Expected Utility",
+        "bbox": [
+          0.61,
+          0.13,
+          0.79,
+          0.16
+        ]
+      },
+      {
+        "id": "body_expected_utility_1",
+        "kind": "callout",
+        "text": "Goes a step further by incorporating individual preferences and risk tolerance into the decision-making process. It recognizes that not all outcomes are valued equally by different stakeholders, even if they have the same expected value.",
+        "bbox": [
+          0.61,
+          0.18,
+          0.96,
+          0.31
+        ]
+      },
+      {
+        "id": "body_expected_utility_2",
+        "kind": "callout",
+        "text": "This concept is particularly relevant in public health, where decisions often impact diverse populations with varying needs and values.",
+        "bbox": [
+          0.61,
+          0.33,
+          0.94,
+          0.4
+        ]
+      },
+      {
+        "id": "photo_chart",
+        "kind": "photo",
+        "text": "Expected Value 67%",
+        "bbox": [
+          0.07,
+          0.26,
+          0.57,
+          0.63
+        ]
+      },
+      {
+        "id": "bottom_paragraph_1",
+        "kind": "callout",
+        "text": "Understanding these concepts allows leaders to make informed, nuanced decisions that consider both statistical probabilities and human factors. This approach ensures that public health strategies are not only effective but also equitable and responsive to the communities they serve.",
+        "bbox": [
+          0.07,
+          0.66,
+          0.96,
+          0.72
+        ]
+      },
+      {
+        "id": "bottom_paragraph_2",
+        "kind": "callout",
+        "text": "In essence, mastering expected value and expected utility equips future leaders to navigate complex challenges with both analytical rigor and empathy. Let's delve deeper into how these concepts differ and their applications.",
+        "bbox": [
+          0.07,
+          0.75,
+          0.98,
+          0.8
+        ]
+      }
+    ],
+    "extracted_text": "Expected Value vs. Expected Utility Expected Value A statistical measure that calculates the average outcome when the same decision is made repeatedly. It's a straightforward calculation that helps us predict the most likely result by weighing all possible outcomes by their probabilities. Expected Utility Goes a step further by incorporating individual preferences and risk tolerance into the decision-making process. It recognizes that not all outcomes are valued equally by different stakeholders, even if they have the same expected value. This concept is particularly relevant in public health, where decisions often impact diverse populations with varying needs and values. Expected Value 67% Understanding these concepts allows leaders to make informed, nuanced decisions that consider both statistical probabilities and human factors. This approach ensures that public health strategies are not only effective but also equitable and responsive to the communities they serve. In essence, mastering expected value and expected utility equips future leaders to navigate complex challenges with both analytical rigor and empathy. Let's delve deeper into how these concepts differ and their applications.",
+    "layout_description": "A large title spans the top, with two explanatory text columns beneath it: Expected Value on the left and Expected Utility on the right. A large illustrative photo occupies the lower-left middle area, while two wide concluding text blocks run across the bottom.",
+    "slide_title": "Expected Value vs. Expected Utility",
+    "text_blocks": [
+      "Expected Value vs. Expected Utility",
+      "Expected Value",
+      "A statistical measure that calculates the average outcome when the same decision is made repeatedly. It's a straightforward calculation that helps us predict the most likely result by weighing all possible outcomes by their probabilities.",
+      "Expected Utility",
+      "Goes a step further by incorporating individual preferences and risk tolerance into the decision-making process. It recognizes that not all outcomes are valued equally by different stakeholders, even if they have the same expected value.",
+      "This concept is particularly relevant in public health, where decisions often impact diverse populations with varying needs and values.",
+      "Understanding these concepts allows leaders to make informed, nuanced decisions that consider both statistical probabilities and human factors. This approach ensures that public health strategies are not only effective but also equitable and responsive to the communities they serve.",
+      "In essence, mastering expected value and expected utility equips future leaders to navigate complex challenges with both analytical rigor and empathy. Let's delve deeper into how these concepts differ and their applications."
+    ],
+    "artifact_path": "",
+    "slide_id": "8_Expected-Value-vs-Expected-Utility",
+    "card_number": null,
+    "coverage": "perceived",
+    "confidence_score": 0.96,
+    "provider_model_id": "gpt-5.5",
+    "reading_path": null,
+    "source_png_path": "C:\\Users\\juanl\\OneDrive\\Desktop\\z-2026-06-21\\8_Expected-Value-vs-Expected-Utility.png"
+  }
+}

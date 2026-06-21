@@ -1,0 +1,97 @@
+{
+  "provenance": {
+    "captured_at": "2026-06-21T22:40:45.375093+00:00",
+    "model_id": "gpt-5.5",
+    "source_png": "C:\\Users\\juanl\\OneDrive\\Desktop\\z-2026-06-21\\4_Leadership-and-Risk-Awareness-in-Public-Health.png",
+    "scan_tool": "scripts/analysis/reading_path_corpus_scan.py"
+  },
+  "perception_artifact": {
+    "confidence": "HIGH",
+    "visual_elements": [
+      {
+        "id": "title",
+        "kind": "title",
+        "text": "Leadership and Risk Awareness in Public Health",
+        "bbox": [
+          0.06,
+          0.07,
+          0.8,
+          0.14
+        ]
+      },
+      {
+        "id": "intro_paragraph",
+        "kind": "callout",
+        "text": "As we discuss the future of public health, it's crucial to emphasize the need for strong leadership in this space. Leaders who are not only visionary but also equipped to navigate the complexities of modern health challenges are essential.",
+        "bbox": [
+          0.06,
+          0.2,
+          0.53,
+          0.36
+        ]
+      },
+      {
+        "id": "risk_question",
+        "kind": "callout",
+        "text": "Are there any risks we should be aware of?",
+        "bbox": [
+          0.06,
+          0.38,
+          0.48,
+          0.43
+        ]
+      },
+      {
+        "id": "risk_answer",
+        "kind": "callout",
+        "text": "Absolutely. As we push for innovation and change, we must remain vigilant about the ethical implications, resource allocation, and the potential for unintended consequences. It's important to balance ambition with responsibility, ensuring that our efforts are sustainable and equitable.",
+        "bbox": [
+          0.06,
+          0.45,
+          0.54,
+          0.65
+        ]
+      },
+      {
+        "id": "road_photo",
+        "kind": "photo",
+        "text": "",
+        "bbox": [
+          0.57,
+          0.2,
+          0.88,
+          0.75
+        ]
+      },
+      {
+        "id": "summary_paragraph",
+        "kind": "callout",
+        "text": "In summary, while the path forward is filled with opportunities, it's equally important to be mindful of the risks. By fostering thoughtful leadership, we can steer the future of public health towards a more promising horizon. What obstacles might we encounter along the way?",
+        "bbox": [
+          0.06,
+          0.8,
+          0.88,
+          0.92
+        ]
+      }
+    ],
+    "extracted_text": "Leadership and Risk Awareness in Public Health As we discuss the future of public health, it's crucial to emphasize the need for strong leadership in this space. Leaders who are not only visionary but also equipped to navigate the complexities of modern health challenges are essential. Are there any risks we should be aware of? Absolutely. As we push for innovation and change, we must remain vigilant about the ethical implications, resource allocation, and the potential for unintended consequences. It's important to balance ambition with responsibility, ensuring that our efforts are sustainable and equitable. In summary, while the path forward is filled with opportunities, it's equally important to be mindful of the risks. By fostering thoughtful leadership, we can steer the future of public health towards a more promising horizon. What obstacles might we encounter along the way?",
+    "layout_description": "A large dark-blue title spans the top left across most of the slide. The main text is arranged in blocks on the left and bottom, with a large rounded-corner photo of a winding illuminated road and a standing figure on the right.",
+    "slide_title": "Leadership and Risk Awareness in Public Health",
+    "text_blocks": [
+      "Leadership and Risk Awareness in Public Health",
+      "As we discuss the future of public health, it's crucial to emphasize the need for strong leadership in this space. Leaders who are not only visionary but also equipped to navigate the complexities of modern health challenges are essential.",
+      "Are there any risks we should be aware of?",
+      "Absolutely. As we push for innovation and change, we must remain vigilant about the ethical implications, resource allocation, and the potential for unintended consequences. It's important to balance ambition with responsibility, ensuring that our efforts are sustainable and equitable.",
+      "In summary, while the path forward is filled with opportunities, it's equally important to be mindful of the risks. By fostering thoughtful leadership, we can steer the future of public health towards a more promising horizon. What obstacles might we encounter along the way?"
+    ],
+    "artifact_path": "",
+    "slide_id": "4_Leadership-and-Risk-Awareness-in-Public-Health",
+    "card_number": null,
+    "coverage": "perceived",
+    "confidence_score": 0.98,
+    "provider_model_id": "gpt-5.5",
+    "reading_path": null,
+    "source_png_path": "C:\\Users\\juanl\\OneDrive\\Desktop\\z-2026-06-21\\4_Leadership-and-Risk-Awareness-in-Public-Health.png"
+  }
+}

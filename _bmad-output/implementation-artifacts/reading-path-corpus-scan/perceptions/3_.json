@@ -1,0 +1,142 @@
+{
+  "provenance": {
+    "captured_at": "2026-06-21T22:40:45.375093+00:00",
+    "model_id": "gpt-5.5",
+    "source_png": "C:\\Users\\juanl\\OneDrive\\Desktop\\z-2026-06-21\\3_.png",
+    "scan_tool": "scripts/analysis/reading_path_corpus_scan.py"
+  },
+  "perception_artifact": {
+    "confidence": "HIGH",
+    "visual_elements": [
+      {
+        "id": "logo_top_left",
+        "kind": "logo",
+        "text": "Jefferson. COLLEGE OF POPULATION HEALTH",
+        "bbox": [
+          0.03,
+          0.04,
+          0.18,
+          0.14
+        ]
+      },
+      {
+        "id": "title_main",
+        "kind": "title",
+        "text": "ONE ARC. Three courses.",
+        "bbox": [
+          0.21,
+          0.07,
+          0.78,
+          0.31
+        ]
+      },
+      {
+        "id": "course1_spark",
+        "kind": "diagram",
+        "text": "SPARK Course 1 You start here.",
+        "bbox": [
+          0.09,
+          0.36,
+          0.3,
+          0.84
+        ]
+      },
+      {
+        "id": "arrow_spark_build",
+        "kind": "icon",
+        "text": "",
+        "bbox": [
+          0.32,
+          0.58,
+          0.39,
+          0.66
+        ]
+      },
+      {
+        "id": "course2_build",
+        "kind": "diagram",
+        "text": "BUILD Course 2",
+        "bbox": [
+          0.42,
+          0.36,
+          0.59,
+          0.78
+        ]
+      },
+      {
+        "id": "arrow_build_drive",
+        "kind": "icon",
+        "text": "",
+        "bbox": [
+          0.61,
+          0.58,
+          0.68,
+          0.66
+        ]
+      },
+      {
+        "id": "course3_drive",
+        "kind": "diagram",
+        "text": "DRIVE Course 3",
+        "bbox": [
+          0.71,
+          0.36,
+          0.89,
+          0.78
+        ]
+      },
+      {
+        "id": "footer",
+        "kind": "footer",
+        "text": "Office of Instructional Innovation and Effectiveness · College of Population Health",
+        "bbox": [
+          0.04,
+          0.92,
+          0.96,
+          0.97
+        ]
+      },
+      {
+        "id": "decor_top_right",
+        "kind": "diagram",
+        "text": "",
+        "bbox": [
+          0.72,
+          0.0,
+          1.0,
+          0.44
+        ]
+      },
+      {
+        "id": "decor_bottom_left",
+        "kind": "diagram",
+        "text": "",
+        "bbox": [
+          0.0,
+          0.57,
+          0.28,
+          1.0
+        ]
+      }
+    ],
+    "extracted_text": "Jefferson. COLLEGE OF POPULATION HEALTH ONE ARC. Three courses. SPARK Course 1 You start here. BUILD Course 2 DRIVE Course 3 Office of Instructional Innovation and Effectiveness · College of Population Health",
+    "layout_description": "The slide has a large centered title at the top, with the Jefferson College of Population Health logo in the upper left. Across the lower half, three course stages run left to right with icons and arrows: SPARK to BUILD to DRIVE, plus a footer line at the bottom.",
+    "slide_title": "ONE ARC. Three courses.",
+    "text_blocks": [
+      "Jefferson. COLLEGE OF POPULATION HEALTH",
+      "ONE ARC. Three courses.",
+      "SPARK Course 1 You start here.",
+      "BUILD Course 2",
+      "DRIVE Course 3",
+      "Office of Instructional Innovation and Effectiveness · College of Population Health"
+    ],
+    "artifact_path": "",
+    "slide_id": "3_",
+    "card_number": null,
+    "coverage": "perceived",
+    "confidence_score": 0.98,
+    "provider_model_id": "gpt-5.5",
+    "reading_path": null,
+    "source_png_path": "C:\\Users\\juanl\\OneDrive\\Desktop\\z-2026-06-21\\3_.png"
+  }
+}

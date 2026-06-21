@@ -1,0 +1,85 @@
+{
+  "provenance": {
+    "captured_at": "2026-06-21T22:40:45.375093+00:00",
+    "model_id": "gpt-5.5",
+    "source_png": "C:\\Users\\juanl\\OneDrive\\Desktop\\z-2026-06-21\\6_Your-Hidden-Superpower.png",
+    "scan_tool": "scripts/analysis/reading_path_corpus_scan.py"
+  },
+  "perception_artifact": {
+    "confidence": "HIGH",
+    "visual_elements": [
+      {
+        "id": "left_illustration",
+        "kind": "illustration",
+        "text": "",
+        "bbox": [
+          0.0,
+          0.0,
+          0.45,
+          1.0
+        ]
+      },
+      {
+        "id": "title",
+        "kind": "title",
+        "text": "Your Hidden Superpower",
+        "bbox": [
+          0.52,
+          0.13,
+          0.96,
+          0.23
+        ]
+      },
+      {
+        "id": "callout_patient_proximity",
+        "kind": "callout",
+        "text": "Patient Proximity Direct access to real problems and needs at the point of care",
+        "bbox": [
+          0.52,
+          0.26,
+          0.98,
+          0.42
+        ]
+      },
+      {
+        "id": "callout_domain_expertise",
+        "kind": "callout",
+        "text": "Deep Domain Expertise Years of specialized knowledge and clinical experience",
+        "bbox": [
+          0.52,
+          0.48,
+          0.98,
+          0.64
+        ]
+      },
+      {
+        "id": "callout_drive_to_heal",
+        "kind": "callout",
+        "text": "Intrinsic Drive to Heal Fundamental motivation to improve patient outcomes",
+        "bbox": [
+          0.52,
+          0.7,
+          0.98,
+          0.86
+        ]
+      }
+    ],
+    "extracted_text": "Your Hidden Superpower Patient Proximity Direct access to real problems and needs at the point of care Deep Domain Expertise Years of specialized knowledge and clinical experience Intrinsic Drive to Heal Fundamental motivation to improve patient outcomes",
+    "layout_description": "The slide is split with a large illustrated doctor-and-patient scene under a spotlight on the left and a white content area on the right. The right side contains a large title at the top and three vertically stacked icon-and-text callouts beneath it.",
+    "slide_title": "Your Hidden Superpower",
+    "text_blocks": [
+      "Your Hidden Superpower",
+      "Patient Proximity Direct access to real problems and needs at the point of care",
+      "Deep Domain Expertise Years of specialized knowledge and clinical experience",
+      "Intrinsic Drive to Heal Fundamental motivation to improve patient outcomes"
+    ],
+    "artifact_path": "",
+    "slide_id": "6_Your-Hidden-Superpower",
+    "card_number": null,
+    "coverage": "perceived",
+    "confidence_score": 0.97,
+    "provider_model_id": "gpt-5.5",
+    "reading_path": null,
+    "source_png_path": "C:\\Users\\juanl\\OneDrive\\Desktop\\z-2026-06-21\\6_Your-Hidden-Superpower.png"
+  }
+}

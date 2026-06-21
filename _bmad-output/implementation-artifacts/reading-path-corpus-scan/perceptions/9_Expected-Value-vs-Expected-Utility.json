@@ -1,0 +1,74 @@
+{
+  "provenance": {
+    "captured_at": "2026-06-21T22:40:45.375093+00:00",
+    "model_id": "gpt-5.5",
+    "source_png": "C:\\Users\\juanl\\OneDrive\\Desktop\\z-2026-06-21\\9_Expected-Value-vs-Expected-Utility.png",
+    "scan_tool": "scripts/analysis/reading_path_corpus_scan.py"
+  },
+  "perception_artifact": {
+    "confidence": "HIGH",
+    "visual_elements": [
+      {
+        "id": "title",
+        "kind": "title",
+        "text": "Expected Value vs. Expected Utility",
+        "bbox": [
+          0.06,
+          0.09,
+          0.42,
+          0.24
+        ]
+      },
+      {
+        "id": "expected_utility_box",
+        "kind": "callout",
+        "text": "Expected Utility • Subjective measure • Reflects personal satisfaction • Varies person to person",
+        "bbox": [
+          0.06,
+          0.3,
+          0.56,
+          0.59
+        ]
+      },
+      {
+        "id": "expected_value_box",
+        "kind": "callout",
+        "text": "Expected Value • Objective measure • Constant regardless of evaluator • Based on probabilities & outcomes",
+        "bbox": [
+          0.06,
+          0.62,
+          0.56,
+          0.91
+        ]
+      },
+      {
+        "id": "right_photo",
+        "kind": "photo",
+        "text": "DECISIONS",
+        "bbox": [
+          0.63,
+          0.0,
+          1.0,
+          1.0
+        ]
+      }
+    ],
+    "extracted_text": "Expected Value vs. Expected Utility Expected Utility • Subjective measure • Reflects personal satisfaction • Varies person to person Expected Value • Objective measure • Constant regardless of evaluator • Based on probabilities & outcomes DECISIONS",
+    "layout_description": "The slide is split with textual content on the left and a large illustrative photo on the right. A large blue title sits above two pale green rounded rectangles containing headings and bullet lists.",
+    "slide_title": "Expected Value vs. Expected Utility",
+    "text_blocks": [
+      "Expected Value vs. Expected Utility",
+      "Expected Utility • Subjective measure • Reflects personal satisfaction • Varies person to person",
+      "Expected Value • Objective measure • Constant regardless of evaluator • Based on probabilities & outcomes",
+      "DECISIONS"
+    ],
+    "artifact_path": "",
+    "slide_id": "9_Expected-Value-vs-Expected-Utility",
+    "card_number": null,
+    "coverage": "perceived",
+    "confidence_score": 0.98,
+    "provider_model_id": "gpt-5.5",
+    "reading_path": null,
+    "source_png_path": "C:\\Users\\juanl\\OneDrive\\Desktop\\z-2026-06-21\\9_Expected-Value-vs-Expected-Utility.png"
+  }
+}

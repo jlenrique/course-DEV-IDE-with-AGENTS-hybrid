@@ -1,0 +1,154 @@
+{
+  "provenance": {
+    "captured_at": "2026-06-21T22:40:45.375093+00:00",
+    "model_id": "gpt-5.5",
+    "source_png": "C:\\Users\\juanl\\OneDrive\\Desktop\\z-2026-06-21\\4_.png",
+    "scan_tool": "scripts/analysis/reading_path_corpus_scan.py"
+  },
+  "perception_artifact": {
+    "confidence": "HIGH",
+    "visual_elements": [
+      {
+        "id": "logo_top_left",
+        "kind": "logo",
+        "text": "Jefferson. COLLEGE OF POPULATION HEALTH",
+        "bbox": [
+          0.02,
+          0.04,
+          0.18,
+          0.15
+        ]
+      },
+      {
+        "id": "main_title",
+        "kind": "title",
+        "text": "9 credits. 12 months. Online.",
+        "bbox": [
+          0.21,
+          0.13,
+          0.84,
+          0.22
+        ]
+      },
+      {
+        "id": "courses_card",
+        "kind": "stat",
+        "text": "3 courses",
+        "bbox": [
+          0.15,
+          0.26,
+          0.49,
+          0.56
+        ]
+      },
+      {
+        "id": "courses_icon",
+        "kind": "icon",
+        "text": "",
+        "bbox": [
+          0.39,
+          0.38,
+          0.46,
+          0.49
+        ]
+      },
+      {
+        "id": "weeks_card",
+        "kind": "stat",
+        "text": "7 weeks each",
+        "bbox": [
+          0.51,
+          0.26,
+          0.86,
+          0.56
+        ]
+      },
+      {
+        "id": "calendar_icon",
+        "kind": "icon",
+        "text": "",
+        "bbox": [
+          0.76,
+          0.36,
+          0.83,
+          0.49
+        ]
+      },
+      {
+        "id": "md_card",
+        "kind": "callout",
+        "text": "MD by clinicians, for clinicians",
+        "bbox": [
+          0.15,
+          0.59,
+          0.49,
+          0.9
+        ]
+      },
+      {
+        "id": "medical_icon",
+        "kind": "icon",
+        "text": "",
+        "bbox": [
+          0.38,
+          0.67,
+          0.47,
+          0.83
+        ]
+      },
+      {
+        "id": "one_pager_card",
+        "kind": "stat",
+        "text": "1 executive one-pager",
+        "bbox": [
+          0.51,
+          0.59,
+          0.86,
+          0.9
+        ]
+      },
+      {
+        "id": "document_icon",
+        "kind": "icon",
+        "text": "",
+        "bbox": [
+          0.76,
+          0.66,
+          0.82,
+          0.82
+        ]
+      },
+      {
+        "id": "footer",
+        "kind": "callout",
+        "text": "Office of Instructional Innovation and Effectiveness · College of Population Health",
+        "bbox": [
+          0.05,
+          0.94,
+          0.95,
+          0.98
+        ]
+      }
+    ],
+    "extracted_text": "Jefferson. COLLEGE OF POPULATION HEALTH 9 credits. 12 months. Online. 3 courses 7 weeks each MD by clinicians, for clinicians 1 executive one-pager Office of Instructional Innovation and Effectiveness · College of Population Health",
+    "layout_description": "A Jefferson College of Population Health logo sits at the upper left, with a large centered title across the top. Four large bordered information cards are arranged in a two-by-two grid in the center, with a footer line and office/college text along the bottom.",
+    "slide_title": "9 credits. 12 months. Online.",
+    "text_blocks": [
+      "Jefferson. COLLEGE OF POPULATION HEALTH",
+      "9 credits. 12 months. Online.",
+      "3 courses",
+      "7 weeks each",
+      "MD by clinicians, for clinicians",
+      "1 executive one-pager",
+      "Office of Instructional Innovation and Effectiveness · College of Population Health"
+    ],
+    "artifact_path": "",
+    "slide_id": "4_",
+    "card_number": null,
+    "coverage": "perceived",
+    "confidence_score": 0.98,
+    "provider_model_id": "gpt-5.5",
+    "reading_path": null,
+    "source_png_path": "C:\\Users\\juanl\\OneDrive\\Desktop\\z-2026-06-21\\4_.png"
+  }
+}

@@ -1,0 +1,50 @@
+{
+  "provenance": {
+    "captured_at": "2026-06-21T22:40:45.375093+00:00",
+    "model_id": "gpt-5.5",
+    "source_png": "C:\\Users\\juanl\\OneDrive\\Desktop\\z-2026-06-21\\21_Summary-The-Journey-of-Public-Health-Leadership.png",
+    "scan_tool": "scripts/analysis/reading_path_corpus_scan.py"
+  },
+  "perception_artifact": {
+    "confidence": "HIGH",
+    "visual_elements": [
+      {
+        "id": "title",
+        "kind": "title",
+        "text": "Summary: The Journey of Public Health Leadership",
+        "bbox": [
+          0.06,
+          0.27,
+          0.88,
+          0.35
+        ]
+      },
+      {
+        "id": "body_text",
+        "kind": "callout",
+        "text": "Let's summarize: In this presentation, we've journeyed through the essential elements of leadership in public health, emphasizing the importance of developing and implementing innovative ideas to achieve an ideal state. We've explored the challenges and risks inherent in this process, the need for a robust framework, and the role of expected value and utility in decision-making. Understanding motivation and value creation has been highlighted as crucial for effective leadership and innovation. As we look to the future, the call is for leaders who are not only innovative and compassionate but also equipped to harness available resources to drive impactful change. Reflect on your unique qualities and take proactive steps to advance your career in this vital field. With the right mindset and tools, you can significantly contribute to the future of public health.",
+        "bbox": [
+          0.06,
+          0.39,
+          0.94,
+          0.73
+        ]
+      }
+    ],
+    "extracted_text": "Summary: The Journey of Public Health Leadership Let's summarize: In this presentation, we've journeyed through the essential elements of leadership in public health, emphasizing the importance of developing and implementing innovative ideas to achieve an ideal state. We've explored the challenges and risks inherent in this process, the need for a robust framework, and the role of expected value and utility in decision-making. Understanding motivation and value creation has been highlighted as crucial for effective leadership and innovation. As we look to the future, the call is for leaders who are not only innovative and compassionate but also equipped to harness available resources to drive impactful change. Reflect on your unique qualities and take proactive steps to advance your career in this vital field. With the right mindset and tools, you can significantly contribute to the future of public health.",
+    "layout_description": "A large dark blue title is positioned in the upper-left area of a mostly white slide. A multi-line teal paragraph sits below the title, left-aligned and spanning most of the slide width.",
+    "slide_title": "Summary: The Journey of Public Health Leadership",
+    "text_blocks": [
+      "Summary: The Journey of Public Health Leadership",
+      "Let's summarize: In this presentation, we've journeyed through the essential elements of leadership in public health, emphasizing the importance of developing and implementing innovative ideas to achieve an ideal state. We've explored the challenges and risks inherent in this process, the need for a robust framework, and the role of expected value and utility in decision-making. Understanding motivation and value creation has been highlighted as crucial for effective leadership and innovation. As we look to the future, the call is for leaders who are not only innovative and compassionate but also equipped to harness available resources to drive impactful change. Reflect on your unique qualities and take proactive steps to advance your career in this vital field. With the right mindset and tools, you can significantly contribute to the future of public health."
+    ],
+    "artifact_path": "",
+    "slide_id": "21_Summary-The-Journey-of-Public-Health-Leadership",
+    "card_number": null,
+    "coverage": "perceived",
+    "confidence_score": 0.98,
+    "provider_model_id": "gpt-5.5",
+    "reading_path": null,
+    "source_png_path": "C:\\Users\\juanl\\OneDrive\\Desktop\\z-2026-06-21\\21_Summary-The-Journey-of-Public-Health-Leadership.png"
+  }
+}

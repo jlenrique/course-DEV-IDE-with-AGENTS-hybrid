@@ -1,0 +1,61 @@
+{
+  "provenance": {
+    "captured_at": "2026-06-21T22:40:45.375093+00:00",
+    "model_id": "gpt-5.5",
+    "source_png": "C:\\Users\\juanl\\OneDrive\\Desktop\\z-2026-06-21\\1_From-Idea-to-Action-Population-Health-Leadership.png",
+    "scan_tool": "scripts/analysis/reading_path_corpus_scan.py"
+  },
+  "perception_artifact": {
+    "confidence": "HIGH",
+    "visual_elements": [
+      {
+        "id": "title_left",
+        "kind": "title",
+        "text": "From Idea to Action: Population Health Leadership",
+        "bbox": [
+          0.06,
+          0.33,
+          0.46,
+          0.55
+        ]
+      },
+      {
+        "id": "subtitle_left",
+        "kind": "callout",
+        "text": "Preparing for HII Meeting - October 28th",
+        "bbox": [
+          0.06,
+          0.62,
+          0.43,
+          0.66
+        ]
+      },
+      {
+        "id": "right_health_lightbulb_image",
+        "kind": "photo",
+        "text": "",
+        "bbox": [
+          0.65,
+          0.0,
+          1.0,
+          1.0
+        ]
+      }
+    ],
+    "extracted_text": "From Idea to Action: Population Health Leadership Preparing for HII Meeting - October 28th",
+    "layout_description": "The slide has a large white text area on the left with a bold navy title and smaller teal subtitle beneath it. The right third contains a full-height illustrative image of a light bulb with health, nutrition, exercise, and brain imagery inside.",
+    "slide_title": "From Idea to Action: Population Health Leadership",
+    "text_blocks": [
+      "From Idea to Action:\nPopulation Health\nLeadership",
+      "Preparing for HII Meeting - October 28th"
+    ],
+    "artifact_path": "",
+    "slide_id": "1_From-Idea-to-Action-Population-Health-Leadership",
+    "card_number": null,
+    "coverage": "perceived",
+    "confidence_score": 0.98,
+    "provider_model_id": "gpt-5.5",
+    "reading_path": null,
+    "source_png_path": "C:\\Users\\juanl\\OneDrive\\Desktop\\z-2026-06-21\\1_From-Idea-to-Action-Population-Health-Leadership.png"
+  }
+}

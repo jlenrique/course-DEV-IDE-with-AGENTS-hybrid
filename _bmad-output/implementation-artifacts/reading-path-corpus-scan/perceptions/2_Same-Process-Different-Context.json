@@ -1,0 +1,134 @@
+{
+  "provenance": {
+    "captured_at": "2026-06-21T22:40:45.375093+00:00",
+    "model_id": "gpt-5.5",
+    "source_png": "C:\\Users\\juanl\\OneDrive\\Desktop\\z-2026-06-21\\2_Same-Process-Different-Context.png",
+    "scan_tool": "scripts/analysis/reading_path_corpus_scan.py"
+  },
+  "perception_artifact": {
+    "confidence": "HIGH",
+    "visual_elements": [
+      {
+        "id": "title",
+        "kind": "title",
+        "text": "Same Process, Different Context",
+        "bbox": [
+          0.06,
+          0.06,
+          0.53,
+          0.1
+        ]
+      },
+      {
+        "id": "left_heading",
+        "kind": "title",
+        "text": "Clinical Differential Diagnosis",
+        "bbox": [
+          0.06,
+          0.16,
+          0.39,
+          0.2
+        ]
+      },
+      {
+        "id": "right_heading",
+        "kind": "title",
+        "text": "Innovation Design Thinking",
+        "bbox": [
+          0.51,
+          0.16,
+          0.86,
+          0.2
+        ]
+      },
+      {
+        "id": "left_photo",
+        "kind": "photo",
+        "text": "HX PE LABS AND PE DX IMAGING DX",
+        "bbox": [
+          0.06,
+          0.22,
+          0.47,
+          0.72
+        ]
+      },
+      {
+        "id": "right_photo",
+        "kind": "photo",
+        "text": "EMPATHIZE DEFINE IDEATE PROTOTYPE SOLUTION",
+        "bbox": [
+          0.51,
+          0.22,
+          0.93,
+          0.72
+        ]
+      },
+      {
+        "id": "left_process",
+        "kind": "callout",
+        "text": "History & Physical → Labs → Imaging → Diagnosis",
+        "bbox": [
+          0.06,
+          0.76,
+          0.42,
+          0.81
+        ]
+      },
+      {
+        "id": "right_process",
+        "kind": "callout",
+        "text": "Empathize → Define → Ideate → Prototype → Solution",
+        "bbox": [
+          0.51,
+          0.76,
+          0.9,
+          0.81
+        ]
+      },
+      {
+        "id": "left_description",
+        "kind": "bullet",
+        "text": "Systematic approach to narrow down possibilities and reach the correct diagnosis through evidence gathering and analysis.",
+        "bbox": [
+          0.06,
+          0.84,
+          0.43,
+          0.94
+        ]
+      },
+      {
+        "id": "right_description",
+        "kind": "bullet",
+        "text": "Human-centered approach to understand problems and create solutions through iterative testing and refinement.",
+        "bbox": [
+          0.51,
+          0.84,
+          0.92,
+          0.94
+        ]
+      }
+    ],
+    "extracted_text": "Same Process, Different Context Clinical Differential Diagnosis Innovation Design Thinking HX PE LABS AND PE DX IMAGING DX EMPATHIZE DEFINE IDEATE PROTOTYPE SOLUTION History & Physical → Labs → Imaging → Diagnosis Empathize → Define → Ideate → Prototype → Solution Systematic approach to narrow down possibilities and reach the correct diagnosis through evidence gathering and analysis. Human-centered approach to understand problems and create solutions through iterative testing and refinement.",
+    "layout_description": "A large title sits at the top, with two side-by-side columns beneath it. Each column has a heading, a large photo, a bold process line, and a short explanatory paragraph.",
+    "slide_title": "Same Process, Different Context",
+    "text_blocks": [
+      "Same Process, Different Context",
+      "Clinical Differential Diagnosis",
+      "Innovation Design Thinking",
+      "HX PE LABS AND PE DX IMAGING DX",
+      "EMPATHIZE DEFINE IDEATE PROTOTYPE SOLUTION",
+      "History & Physical → Labs → Imaging → Diagnosis",
+      "Empathize → Define → Ideate → Prototype → Solution",
+      "Systematic approach to narrow down possibilities and reach the correct diagnosis through evidence gathering and analysis.",
+      "Human-centered approach to understand problems and create solutions through iterative testing and refinement."
+    ],
+    "artifact_path": "",
+    "slide_id": "2_Same-Process-Different-Context",
+    "card_number": null,
+    "coverage": "perceived",
+    "confidence_score": 0.95,
+    "provider_model_id": "gpt-5.5",
+    "reading_path": null,
+    "source_png_path": "C:\\Users\\juanl\\OneDrive\\Desktop\\z-2026-06-21\\2_Same-Process-Different-Context.png"
+  }
+}

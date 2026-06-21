@@ -1,0 +1,153 @@
+{
+  "provenance": {
+    "captured_at": "2026-06-21T22:40:45.375093+00:00",
+    "model_id": "gpt-5.5",
+    "source_png": "C:\\Users\\juanl\\OneDrive\\Desktop\\z-2026-06-21\\3_The-Ideal-State-5-Step-Process.png",
+    "scan_tool": "scripts/analysis/reading_path_corpus_scan.py"
+  },
+  "perception_artifact": {
+    "confidence": "HIGH",
+    "visual_elements": [
+      {
+        "id": "title",
+        "kind": "title",
+        "text": "The Ideal State: 5-Step Process",
+        "bbox": [
+          0.07,
+          0.08,
+          0.75,
+          0.14
+        ]
+      },
+      {
+        "id": "build_icon_panel",
+        "kind": "icon",
+        "text": "",
+        "bbox": [
+          0.07,
+          0.19,
+          0.17,
+          0.34
+        ]
+      },
+      {
+        "id": "build_text",
+        "kind": "callout",
+        "text": "Build it Create robust framework",
+        "bbox": [
+          0.19,
+          0.22,
+          0.45,
+          0.31
+        ]
+      },
+      {
+        "id": "launch_icon_panel",
+        "kind": "icon",
+        "text": "",
+        "bbox": [
+          0.07,
+          0.34,
+          0.17,
+          0.49
+        ]
+      },
+      {
+        "id": "launch_text",
+        "kind": "callout",
+        "text": "Launch it Don't wait for perfection",
+        "bbox": [
+          0.19,
+          0.37,
+          0.43,
+          0.45
+        ]
+      },
+      {
+        "id": "iterate_icon_panel",
+        "kind": "icon",
+        "text": "",
+        "bbox": [
+          0.07,
+          0.49,
+          0.17,
+          0.64
+        ]
+      },
+      {
+        "id": "iterate_text",
+        "kind": "callout",
+        "text": "Iterate Refine continuously",
+        "bbox": [
+          0.19,
+          0.52,
+          0.39,
+          0.6
+        ]
+      },
+      {
+        "id": "measure_icon_panel",
+        "kind": "icon",
+        "text": "",
+        "bbox": [
+          0.07,
+          0.64,
+          0.17,
+          0.79
+        ]
+      },
+      {
+        "id": "measure_text",
+        "kind": "callout",
+        "text": "Measure it Assess impact & effectiveness",
+        "bbox": [
+          0.19,
+          0.67,
+          0.52,
+          0.75
+        ]
+      },
+      {
+        "id": "learn_icon_panel",
+        "kind": "icon",
+        "text": "",
+        "bbox": [
+          0.07,
+          0.79,
+          0.17,
+          0.94
+        ]
+      },
+      {
+        "id": "learn_text",
+        "kind": "callout",
+        "text": "Learn Use insights for growth",
+        "bbox": [
+          0.19,
+          0.82,
+          0.43,
+          0.9
+        ]
+      }
+    ],
+    "extracted_text": "The Ideal State: 5-Step Process Build it Create robust framework Launch it Don't wait for perfection Iterate Refine continuously Measure it Assess impact & effectiveness Learn Use insights for growth",
+    "layout_description": "A large title spans the upper left, with the final phrase highlighted in green. Down the left side is a vertical stack of five pale chevron panels with black line icons, each aligned with a two-line step description to the right.",
+    "slide_title": "The Ideal State: 5-Step Process",
+    "text_blocks": [
+      "The Ideal State: 5-Step Process",
+      "Build it Create robust framework",
+      "Launch it Don't wait for perfection",
+      "Iterate Refine continuously",
+      "Measure it Assess impact & effectiveness",
+      "Learn Use insights for growth"
+    ],
+    "artifact_path": "",
+    "slide_id": "3_The-Ideal-State-5-Step-Process",
+    "card_number": null,
+    "coverage": "perceived",
+    "confidence_score": 0.99,
+    "provider_model_id": "gpt-5.5",
+    "reading_path": null,
+    "source_png_path": "C:\\Users\\juanl\\OneDrive\\Desktop\\z-2026-06-21\\3_The-Ideal-State-5-Step-Process.png"
+  }
+}

@@ -1,0 +1,110 @@
+{
+  "provenance": {
+    "captured_at": "2026-06-21T22:40:45.375093+00:00",
+    "model_id": "gpt-5.5",
+    "source_png": "C:\\Users\\juanl\\OneDrive\\Desktop\\z-2026-06-21\\5_Obstacles-in-Building-the-Ideal-State.png",
+    "scan_tool": "scripts/analysis/reading_path_corpus_scan.py"
+  },
+  "perception_artifact": {
+    "confidence": "HIGH",
+    "visual_elements": [
+      {
+        "id": "title",
+        "kind": "title",
+        "text": "Obstacles in Building the Ideal State",
+        "bbox": [
+          0.06,
+          0.08,
+          0.64,
+          0.14
+        ]
+      },
+      {
+        "id": "callout_it_takes_forever",
+        "kind": "callout",
+        "text": "It Takes Forever Building the ideal state can be a lengthy and challenging process. It often feels like it takes forever to construct something truly effective.",
+        "bbox": [
+          0.06,
+          0.19,
+          0.34,
+          0.49
+        ]
+      },
+      {
+        "id": "callout_bad_idea",
+        "kind": "callout",
+        "text": "Starting with a Bad Idea One common obstacle is starting with a bad idea, which can set the entire project on the wrong path.",
+        "bbox": [
+          0.36,
+          0.19,
+          0.64,
+          0.49
+        ]
+      },
+      {
+        "id": "callout_no_going_back",
+        "kind": "callout",
+        "text": "No Going Back Once a project is underway, it can be difficult to pivot or make significant changes, as there's often no going back without considerable effort and resources.",
+        "bbox": [
+          0.66,
+          0.19,
+          0.94,
+          0.49
+        ]
+      },
+      {
+        "id": "callout_shiny_idea",
+        "kind": "callout",
+        "text": "Chasing the Next Shiny Idea Another challenge is the temptation to chase the next shiny idea. This can lead to a lack of focus and consistency, as teams may become distracted by new trends or technologies instead of sticking to their original plan.",
+        "bbox": [
+          0.06,
+          0.53,
+          0.49,
+          0.83
+        ]
+      },
+      {
+        "id": "callout_inconclusive_learning",
+        "kind": "callout",
+        "text": "Inconclusive Learning The learning process can be fraught with inconclusive results. This uncertainty can make it difficult to determine whether the current path is the right one or if adjustments are necessary.",
+        "bbox": [
+          0.51,
+          0.53,
+          0.94,
+          0.83
+        ]
+      },
+      {
+        "id": "summary_text",
+        "kind": "callout",
+        "text": "In summary, achieving the ideal state requires patience, focus, and the ability to learn from both successes and setbacks. With these challenges in mind, how do we distinguish between mere ideas and actionable opportunities?",
+        "bbox": [
+          0.06,
+          0.87,
+          0.92,
+          0.94
+        ]
+      }
+    ],
+    "extracted_text": "Obstacles in Building the Ideal State It Takes Forever Building the ideal state can be a lengthy and challenging process. It often feels like it takes forever to construct something truly effective. Starting with a Bad Idea One common obstacle is starting with a bad idea, which can set the entire project on the wrong path. No Going Back Once a project is underway, it can be difficult to pivot or make significant changes, as there's often no going back without considerable effort and resources. Chasing the Next Shiny Idea Another challenge is the temptation to chase the next shiny idea. This can lead to a lack of focus and consistency, as teams may become distracted by new trends or technologies instead of sticking to their original plan. Inconclusive Learning The learning process can be fraught with inconclusive results. This uncertainty can make it difficult to determine whether the current path is the right one or if adjustments are necessary. In summary, achieving the ideal state requires patience, focus, and the ability to learn from both successes and setbacks. With these challenges in mind, how do we distinguish between mere ideas and actionable opportunities?",
+    "layout_description": "A large dark-blue title sits at the top left. Five bordered callout cards are arranged in two rows, with three smaller cards across the upper row and two wider cards below, followed by a two-line summary at the bottom.",
+    "slide_title": "Obstacles in Building the Ideal State",
+    "text_blocks": [
+      "Obstacles in Building the Ideal State",
+      "It Takes Forever Building the ideal state can be a lengthy and challenging process. It often feels like it takes forever to construct something truly effective.",
+      "Starting with a Bad Idea One common obstacle is starting with a bad idea, which can set the entire project on the wrong path.",
+      "No Going Back Once a project is underway, it can be difficult to pivot or make significant changes, as there's often no going back without considerable effort and resources.",
+      "Chasing the Next Shiny Idea Another challenge is the temptation to chase the next shiny idea. This can lead to a lack of focus and consistency, as teams may become distracted by new trends or technologies instead of sticking to their original plan.",
+      "Inconclusive Learning The learning process can be fraught with inconclusive results. This uncertainty can make it difficult to determine whether the current path is the right one or if adjustments are necessary.",
+      "In summary, achieving the ideal state requires patience, focus, and the ability to learn from both successes and setbacks. With these challenges in mind, how do we distinguish between mere ideas and actionable opportunities?"
+    ],
+    "artifact_path": "",
+    "slide_id": "5_Obstacles-in-Building-the-Ideal-State",
+    "card_number": null,
+    "coverage": "perceived",
+    "confidence_score": 0.99,
+    "provider_model_id": "gpt-5.5",
+    "reading_path": null,
+    "source_png_path": "C:\\Users\\juanl\\OneDrive\\Desktop\\z-2026-06-21\\5_Obstacles-in-Building-the-Ideal-State.png"
+  }
+}

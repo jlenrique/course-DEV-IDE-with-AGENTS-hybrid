@@ -1,0 +1,109 @@
+{
+  "provenance": {
+    "captured_at": "2026-06-21T22:40:45.375093+00:00",
+    "model_id": "gpt-5.5",
+    "source_png": "C:\\Users\\juanl\\OneDrive\\Desktop\\z-2026-06-21\\8_The-Science-Behind-the-Connection.png",
+    "scan_tool": "scripts/analysis/reading_path_corpus_scan.py"
+  },
+  "perception_artifact": {
+    "confidence": "HIGH",
+    "visual_elements": [
+      {
+        "id": "title",
+        "kind": "title",
+        "text": "The Science Behind the Connection",
+        "bbox": [
+          0.06,
+          0.12,
+          0.57,
+          0.17
+        ]
+      },
+      {
+        "id": "intro_text",
+        "kind": "callout",
+        "text": "Studies on diagnostic reasoning reveal that expert clinicians excel at:",
+        "bbox": [
+          0.06,
+          0.26,
+          0.54,
+          0.33
+        ]
+      },
+      {
+        "id": "bullet_1",
+        "kind": "bullet",
+        "text": "• Pattern recognition under uncertainty",
+        "bbox": [
+          0.06,
+          0.38,
+          0.39,
+          0.42
+        ]
+      },
+      {
+        "id": "bullet_2",
+        "kind": "bullet",
+        "text": "• Rapid hypothesis generation and testing",
+        "bbox": [
+          0.06,
+          0.44,
+          0.44,
+          0.48
+        ]
+      },
+      {
+        "id": "bullet_3",
+        "kind": "bullet",
+        "text": "• Avoiding cognitive biases like anchoring",
+        "bbox": [
+          0.06,
+          0.5,
+          0.44,
+          0.54
+        ]
+      },
+      {
+        "id": "bullet_4",
+        "kind": "bullet",
+        "text": "• Adapting when initial assumptions fail",
+        "bbox": [
+          0.06,
+          0.56,
+          0.41,
+          0.6
+        ]
+      },
+      {
+        "id": "brain_image",
+        "kind": "photo",
+        "text": "",
+        "bbox": [
+          0.58,
+          0.26,
+          0.9,
+          0.82
+        ]
+      }
+    ],
+    "extracted_text": "The Science Behind the Connection Studies on diagnostic reasoning reveal that expert clinicians excel at: • Pattern recognition under uncertainty • Rapid hypothesis generation and testing • Avoiding cognitive biases like anchoring • Adapting when initial assumptions fail",
+    "layout_description": "A large dark-blue title sits at the upper left, with explanatory text and four bullet points beneath it. A large rounded-corner image of a glowing brain and neural connections occupies the right side of the slide.",
+    "slide_title": "The Science Behind the Connection",
+    "text_blocks": [
+      "The Science Behind the Connection",
+      "Studies on diagnostic reasoning reveal that expert clinicians excel at:",
+      "• Pattern recognition under uncertainty",
+      "• Rapid hypothesis generation and testing",
+      "• Avoiding cognitive biases like anchoring",
+      "• Adapting when initial assumptions fail"
+    ],
+    "artifact_path": "",
+    "slide_id": "8_The-Science-Behind-the-Connection",
+    "card_number": null,
+    "coverage": "perceived",
+    "confidence_score": 0.98,
+    "provider_model_id": "gpt-5.5",
+    "reading_path": null,
+    "source_png_path": "C:\\Users\\juanl\\OneDrive\\Desktop\\z-2026-06-21\\8_The-Science-Behind-the-Connection.png"
+  }
+}

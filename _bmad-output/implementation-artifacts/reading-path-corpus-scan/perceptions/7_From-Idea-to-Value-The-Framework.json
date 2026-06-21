@@ -1,0 +1,189 @@
+{
+  "provenance": {
+    "captured_at": "2026-06-21T22:40:45.375093+00:00",
+    "model_id": "gpt-5.5",
+    "source_png": "C:\\Users\\juanl\\OneDrive\\Desktop\\z-2026-06-21\\7_From-Idea-to-Value-The-Framework.png",
+    "scan_tool": "scripts/analysis/reading_path_corpus_scan.py"
+  },
+  "perception_artifact": {
+    "confidence": "HIGH",
+    "visual_elements": [
+      {
+        "id": "title",
+        "kind": "title",
+        "text": "From Idea to Value: The Framework",
+        "bbox": [
+          0.06,
+          0.05,
+          0.62,
+          0.09
+        ]
+      },
+      {
+        "id": "idea_block",
+        "kind": "callout",
+        "text": "Idea\nEvery impactful project begins with\na spark of an idea. This is the initial\nconcept that sets the stage for\neverything that follows. It's the seed\nfrom which all innovation grows.",
+        "bbox": [
+          0.06,
+          0.14,
+          0.33,
+          0.31
+        ]
+      },
+      {
+        "id": "central_framework_diagram",
+        "kind": "diagram",
+        "text": "",
+        "bbox": [
+          0.34,
+          0.15,
+          0.65,
+          0.51
+        ]
+      },
+      {
+        "id": "diagram_icon_lightbulb",
+        "kind": "icon",
+        "text": "",
+        "bbox": [
+          0.42,
+          0.22,
+          0.45,
+          0.25
+        ]
+      },
+      {
+        "id": "diagram_icon_door",
+        "kind": "icon",
+        "text": "",
+        "bbox": [
+          0.57,
+          0.25,
+          0.6,
+          0.28
+        ]
+      },
+      {
+        "id": "diagram_icon_clip",
+        "kind": "icon",
+        "text": "",
+        "bbox": [
+          0.4,
+          0.39,
+          0.42,
+          0.42
+        ]
+      },
+      {
+        "id": "diagram_icon_checklist",
+        "kind": "icon",
+        "text": "",
+        "bbox": [
+          0.54,
+          0.42,
+          0.57,
+          0.45
+        ]
+      },
+      {
+        "id": "opportunity_block",
+        "kind": "callout",
+        "text": "Opportunity\nOnce you have an idea, the next\nstep is to identify the opportunity.\nThis involves assessing the\nenvironment to determine if there's a\ngenuine need or gap that your idea\ncan fill.",
+        "bbox": [
+          0.67,
+          0.13,
+          0.94,
+          0.32
+        ]
+      },
+      {
+        "id": "value_zero_block",
+        "kind": "callout",
+        "text": "Value = ZERO\nAt this stage, the idea, while\npromising, hasn't yet created\ntangible value. It's still in its\nconceptual phase, waiting to be\ndeveloped further.",
+        "bbox": [
+          0.09,
+          0.36,
+          0.33,
+          0.53
+        ]
+      },
+      {
+        "id": "actionable_block",
+        "kind": "callout",
+        "text": "Actionable\nFor an idea to move forward, it must\nbe actionable. This means breaking\nit down into practical steps that can\nbe implemented. It's about\ntransforming abstract concepts into\nconcrete plans.",
+        "bbox": [
+          0.67,
+          0.35,
+          0.95,
+          0.55
+        ]
+      },
+      {
+        "id": "intrapreneurship_block",
+        "kind": "callout",
+        "text": "Intrapreneurship\nWithin organizations, intrapreneurship refers to fostering\nan entrepreneurial spirit among employees. It's about\nencouraging innovation and initiative within the existing\nstructure, allowing ideas to flourish internally.",
+        "bbox": [
+          0.06,
+          0.58,
+          0.46,
+          0.74
+        ]
+      },
+      {
+        "id": "entrepreneurship_block",
+        "kind": "callout",
+        "text": "Entrepreneurship\nOn the other hand, entrepreneurship involves taking the\nleap to build something new, often outside the confines of\nan existing organization. It's about creating new ventures\nand bringing fresh ideas to market.",
+        "bbox": [
+          0.52,
+          0.58,
+          0.94,
+          0.74
+        ]
+      },
+      {
+        "id": "execution_block",
+        "kind": "callout",
+        "text": "Execution → Value > ZERO\nSuccessful execution leads to the creation of value. This is when your idea starts to make a real impact, generating\nbenefits that exceed the initial input.",
+        "bbox": [
+          0.06,
+          0.78,
+          0.91,
+          0.89
+        ]
+      },
+      {
+        "id": "summary_block",
+        "kind": "callout",
+        "text": "In summary, transforming an idea into something valuable requires a journey through opportunity identification, actionable\nplanning, and effective execution, whether within an organization or as an independent venture. But how do we assess\nvalue in the context of decision-making?",
+        "bbox": [
+          0.06,
+          0.91,
+          0.94,
+          0.98
+        ]
+      }
+    ],
+    "extracted_text": "From Idea to Value: The Framework Idea Every impactful project begins with a spark of an idea. This is the initial concept that sets the stage for everything that follows. It's the seed from which all innovation grows. Opportunity Once you have an idea, the next step is to identify the opportunity. This involves assessing the environment to determine if there's a genuine need or gap that your idea can fill. Value = ZERO At this stage, the idea, while promising, hasn't yet created tangible value. It's still in its conceptual phase, waiting to be developed further. Actionable For an idea to move forward, it must be actionable. This means breaking it down into practical steps that can be implemented. It's about transforming abstract concepts into concrete plans. Intrapreneurship Within organizations, intrapreneurship refers to fostering an entrepreneurial spirit among employees. It's about encouraging innovation and initiative within the existing structure, allowing ideas to flourish internally. Entrepreneurship On the other hand, entrepreneurship involves taking the leap to build something new, often outside the confines of an existing organization. It's about creating new ventures and bringing fresh ideas to market. Execution → Value > ZERO Successful execution leads to the creation of value. This is when your idea starts to make a real impact, generating benefits that exceed the initial input. In summary, transforming an idea into something valuable requires a journey through opportunity identification, actionable planning, and effective execution, whether within an organization or as an independent venture. But how do we assess value in the context of decision-making?",
+    "layout_description": "A large title sits at the top left, with explanatory text blocks arranged around a central segmented circular process diagram. Additional two-column text appears in the middle-lower area, followed by a full-width execution section and summary at the bottom.",
+    "slide_title": "From Idea to Value: The Framework",
+    "text_blocks": [
+      "From Idea to Value: The Framework",
+      "Idea\nEvery impactful project begins with\na spark of an idea. This is the initial\nconcept that sets the stage for\neverything that follows. It's the seed\nfrom which all innovation grows.",
+      "Opportunity\nOnce you have an idea, the next\nstep is to identify the opportunity.\nThis involves assessing the\nenvironment to determine if there's a\ngenuine need or gap that your idea\ncan fill.",
+      "Value = ZERO\nAt this stage, the idea, while\npromising, hasn't yet created\ntangible value. It's still in its\nconceptual phase, waiting to be\ndeveloped further.",
+      "Actionable\nFor an idea to move forward, it must\nbe actionable. This means breaking\nit down into practical steps that can\nbe implemented. It's about\ntransforming abstract concepts into\nconcrete plans.",
+      "Intrapreneurship\nWithin organizations, intrapreneurship refers to fostering\nan entrepreneurial spirit among employees. It's about\nencouraging innovation and initiative within the existing\nstructure, allowing ideas to flourish internally.",
+      "Entrepreneurship\nOn the other hand, entrepreneurship involves taking the\nleap to build something new, often outside the confines of\nan existing organization. It's about creating new ventures\nand bringing fresh ideas to market.",
+      "Execution → Value > ZERO\nSuccessful execution leads to the creation of value. This is when your idea starts to make a real impact, generating\nbenefits that exceed the initial input.",
+      "In summary, transforming an idea into something valuable requires a journey through opportunity identification, actionable\nplanning, and effective execution, whether within an organization or as an independent venture. But how do we assess\nvalue in the context of decision-making?"
+    ],
+    "artifact_path": "",
+    "slide_id": "7_From-Idea-to-Value-The-Framework",
+    "card_number": null,
+    "coverage": "perceived",
+    "confidence_score": 0.98,
+    "provider_model_id": "gpt-5.5",
+    "reading_path": null,
+    "source_png_path": "C:\\Users\\juanl\\OneDrive\\Desktop\\z-2026-06-21\\7_From-Idea-to-Value-The-Framework.png"
+  }
+}

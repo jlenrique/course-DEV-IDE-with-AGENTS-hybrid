@@ -1,0 +1,112 @@
+{
+  "provenance": {
+    "captured_at": "2026-06-21T22:40:45.375093+00:00",
+    "model_id": "gpt-5.5",
+    "source_png": "C:\\Users\\juanl\\OneDrive\\Desktop\\z-2026-06-21\\6_.png",
+    "scan_tool": "scripts/analysis/reading_path_corpus_scan.py"
+  },
+  "perception_artifact": {
+    "confidence": "HIGH",
+    "visual_elements": [
+      {
+        "id": "logo_top_left",
+        "kind": "logo",
+        "text": "Jefferson. COLLEGE OF POPULATION HEALTH",
+        "bbox": [
+          0.03,
+          0.04,
+          0.17,
+          0.14
+        ]
+      },
+      {
+        "id": "top_instruction",
+        "kind": "callout",
+        "text": "POINT YOUR FACULTY HERE.",
+        "bbox": [
+          0.21,
+          0.08,
+          0.48,
+          0.11
+        ]
+      },
+      {
+        "id": "main_title",
+        "kind": "title",
+        "text": "Apply.",
+        "bbox": [
+          0.26,
+          0.21,
+          0.76,
+          0.49
+        ]
+      },
+      {
+        "id": "contact_block",
+        "kind": "callout",
+        "text": "Tejal Naik, MD Entrepreneur in Residence • Adjunct Faculty, College of Population Health Tejal.Naik@jefferson.edu",
+        "bbox": [
+          0.23,
+          0.55,
+          0.77,
+          0.71
+        ]
+      },
+      {
+        "id": "apply_link_block",
+        "kind": "callout",
+        "text": "APPLY jefferson.edu/health-innovation-leadership-APC",
+        "bbox": [
+          0.23,
+          0.79,
+          0.78,
+          0.86
+        ]
+      },
+      {
+        "id": "footer_bar",
+        "kind": "footer",
+        "text": "Office of Instructional Innovation and Effectiveness • College of Population Health",
+        "bbox": [
+          0.0,
+          0.91,
+          1.0,
+          1.0
+        ]
+      },
+      {
+        "id": "blueprint_background",
+        "kind": "diagram",
+        "text": "",
+        "bbox": [
+          0.0,
+          0.0,
+          1.0,
+          0.91
+        ]
+      }
+    ],
+    "extracted_text": "Jefferson. COLLEGE OF POPULATION HEALTH POINT YOUR FACULTY HERE. Apply. Tejal Naik, MD Entrepreneur in Residence • Adjunct Faculty, College of Population Health Tejal.Naik@jefferson.edu APPLY jefferson.edu/health-innovation-leadership-APC Office of Instructional Innovation and Effectiveness • College of Population Health",
+    "layout_description": "White slide with pale blueprint-style line art in the corners, a Jefferson College of Population Health logo at top left, and a small instruction line near the top. A large centered “Apply.” headline dominates the slide, with contact details below, an application URL section near the lower middle, and a blue footer bar along the bottom.",
+    "slide_title": "Apply.",
+    "text_blocks": [
+      "Jefferson. COLLEGE OF POPULATION HEALTH",
+      "POINT YOUR FACULTY HERE.",
+      "Apply.",
+      "Tejal Naik, MD",
+      "Entrepreneur in Residence • Adjunct Faculty, College of Population Health",
+      "Tejal.Naik@jefferson.edu",
+      "APPLY",
+      "jefferson.edu/health-innovation-leadership-APC",
+      "Office of Instructional Innovation and Effectiveness • College of Population Health"
+    ],
+    "artifact_path": "",
+    "slide_id": "6_",
+    "card_number": null,
+    "coverage": "perceived",
+    "confidence_score": 0.98,
+    "provider_model_id": "gpt-5.5",
+    "reading_path": null,
+    "source_png_path": "C:\\Users\\juanl\\OneDrive\\Desktop\\z-2026-06-21\\6_.png"
+  }
+}

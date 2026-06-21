@@ -1,0 +1,62 @@
+{
+  "provenance": {
+    "captured_at": "2026-06-21T22:40:45.375093+00:00",
+    "model_id": "gpt-5.5",
+    "source_png": "C:\\Users\\juanl\\OneDrive\\Desktop\\z-2026-06-21\\1_Turning-Ideas-into-Action-HII-Meeting-Preparation.png",
+    "scan_tool": "scripts/analysis/reading_path_corpus_scan.py"
+  },
+  "perception_artifact": {
+    "confidence": "HIGH",
+    "visual_elements": [
+      {
+        "id": "title",
+        "kind": "title",
+        "text": "Turning Ideas into Action: HII Meeting Preparation",
+        "bbox": [
+          0.05,
+          0.25,
+          0.86,
+          0.32
+        ]
+      },
+      {
+        "id": "body_paragraph_1",
+        "kind": "bullet",
+        "text": "When you have an idea, especially in public health, it's crucial to consider how to effectively develop and implement it. As we approach our HII Meeting on October 28th, think about the steps necessary to transform your concept into a tangible project. This involves understanding the needs of your target population, identifying resources, and planning strategically to ensure success. In preparation for the meeting, reflect on how your idea aligns with current public health priorities and how it can contribute to meaningful change. Consider the potential challenges and opportunities that may arise and be ready to discuss these aspects with your peers.",
+        "bbox": [
+          0.05,
+          0.38,
+          0.91,
+          0.62
+        ]
+      },
+      {
+        "id": "body_paragraph_2",
+        "kind": "bullet",
+        "text": "In summary, as you prepare for the HII Meeting, focus on refining your idea with a clear plan of action, ensuring it is both innovative and feasible. Now, how do you work through these ideas effectively?",
+        "bbox": [
+          0.05,
+          0.67,
+          0.87,
+          0.74
+        ]
+      }
+    ],
+    "extracted_text": "Turning Ideas into Action: HII Meeting Preparation When you have an idea, especially in public health, it's crucial to consider how to effectively develop and implement it. As we approach our HII Meeting on October 28th, think about the steps necessary to transform your concept into a tangible project. This involves understanding the needs of your target population, identifying resources, and planning strategically to ensure success. In preparation for the meeting, reflect on how your idea aligns with current public health priorities and how it can contribute to meaningful change. Consider the potential challenges and opportunities that may arise and be ready to discuss these aspects with your peers. In summary, as you prepare for the HII Meeting, focus on refining your idea with a clear plan of action, ensuring it is both innovative and feasible. Now, how do you work through these ideas effectively?",
+    "layout_description": "A large dark blue title sits near the upper left on a plain white slide. Below it are two left-aligned teal text paragraphs, with the second paragraph separated by extra vertical space.",
+    "slide_title": "Turning Ideas into Action: HII Meeting Preparation",
+    "text_blocks": [
+      "Turning Ideas into Action: HII Meeting Preparation",
+      "When you have an idea, especially in public health, it's crucial to consider how to effectively develop and implement it. As we approach our HII Meeting on October 28th, think about the steps necessary to transform your concept into a tangible project. This involves understanding the needs of your target population, identifying resources, and planning strategically to ensure success. In preparation for the meeting, reflect on how your idea aligns with current public health priorities and how it can contribute to meaningful change. Consider the potential challenges and opportunities that may arise and be ready to discuss these aspects with your peers.",
+      "In summary, as you prepare for the HII Meeting, focus on refining your idea with a clear plan of action, ensuring it is both innovative and feasible. Now, how do you work through these ideas effectively?"
+    ],
+    "artifact_path": "",
+    "slide_id": "1_Turning-Ideas-into-Action-HII-Meeting-Preparation",
+    "card_number": null,
+    "coverage": "perceived",
+    "confidence_score": 0.98,
+    "provider_model_id": "gpt-5.5",
+    "reading_path": null,
+    "source_png_path": "C:\\Users\\juanl\\OneDrive\\Desktop\\z-2026-06-21\\1_Turning-Ideas-into-Action-HII-Meeting-Preparation.png"
+  }
+}

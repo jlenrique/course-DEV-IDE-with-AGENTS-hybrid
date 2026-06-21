@@ -1,0 +1,146 @@
+{
+  "provenance": {
+    "captured_at": "2026-06-21T22:40:45.375093+00:00",
+    "model_id": "gpt-5.5",
+    "source_png": "C:\\Users\\juanl\\OneDrive\\Desktop\\z-2026-06-21\\2_A-Structured-Approach-to-Developing-Ideas.png",
+    "scan_tool": "scripts/analysis/reading_path_corpus_scan.py"
+  },
+  "perception_artifact": {
+    "confidence": "HIGH",
+    "visual_elements": [
+      {
+        "id": "title",
+        "kind": "title",
+        "text": "A Structured Approach to Developing Ideas",
+        "bbox": [
+          0.06,
+          0.05,
+          0.75,
+          0.1
+        ]
+      },
+      {
+        "id": "step_01",
+        "kind": "callout",
+        "text": "01 Identify the Problem Clearly define the public health issue you aim to address. Understanding the scope and impact is essential for developing a focused strategy.",
+        "bbox": [
+          0.06,
+          0.13,
+          0.49,
+          0.29
+        ]
+      },
+      {
+        "id": "step_02",
+        "kind": "callout",
+        "text": "02 Research and Gather Data Collect relevant data and evidence to support your idea. This step is critical for building a solid foundation and ensuring your approach is evidence-based.",
+        "bbox": [
+          0.51,
+          0.13,
+          0.94,
+          0.29
+        ]
+      },
+      {
+        "id": "step_03",
+        "kind": "callout",
+        "text": "03 Brainstorm Solutions Engage in creative thinking to generate potential solutions. Consider diverse perspectives and innovative approaches to tackle the problem effectively.",
+        "bbox": [
+          0.06,
+          0.32,
+          0.49,
+          0.48
+        ]
+      },
+      {
+        "id": "step_04",
+        "kind": "callout",
+        "text": "04 Evaluate Feasibility Assess the practicality of your ideas. Consider resources, time, and potential barriers to implementation. This helps in refining your approach to be realistic and achievable.",
+        "bbox": [
+          0.51,
+          0.32,
+          0.94,
+          0.48
+        ]
+      },
+      {
+        "id": "step_05",
+        "kind": "callout",
+        "text": "05 Develop a Plan Create a detailed action plan outlining steps, timelines, and responsibilities. A well-structured plan is vital for guiding your efforts and measuring progress.",
+        "bbox": [
+          0.06,
+          0.51,
+          0.49,
+          0.67
+        ]
+      },
+      {
+        "id": "step_06",
+        "kind": "callout",
+        "text": "06 Seek Feedback Share your ideas with peers, mentors, or stakeholders to gain insights and constructive criticism. Feedback is invaluable for refining and strengthening your approach.",
+        "bbox": [
+          0.51,
+          0.51,
+          0.94,
+          0.67
+        ]
+      },
+      {
+        "id": "step_07",
+        "kind": "callout",
+        "text": "07 Implement and Monitor Put your plan into action and continuously monitor its progress. Be prepared to adapt and make necessary adjustments based on real-world outcomes and feedback.",
+        "bbox": [
+          0.06,
+          0.7,
+          0.49,
+          0.87
+        ]
+      },
+      {
+        "id": "step_08",
+        "kind": "callout",
+        "text": "08 Reflect and Learn After implementation, reflect on the process and outcomes. Identify lessons learned and areas for improvement to enhance future initiatives.",
+        "bbox": [
+          0.51,
+          0.7,
+          0.94,
+          0.86
+        ]
+      },
+      {
+        "id": "summary",
+        "kind": "callout",
+        "text": "In summary, working through your ideas requires a thoughtful, systematic approach that combines creativity with practicality. By following these steps, you can effectively contribute to meaningful change in public health. But what does the ideal state look like, and how can we achieve it?",
+        "bbox": [
+          0.06,
+          0.89,
+          0.93,
+          0.97
+        ]
+      }
+    ],
+    "extracted_text": "A Structured Approach to Developing Ideas 01 Identify the Problem Clearly define the public health issue you aim to address. Understanding the scope and impact is essential for developing a focused strategy. 02 Research and Gather Data Collect relevant data and evidence to support your idea. This step is critical for building a solid foundation and ensuring your approach is evidence-based. 03 Brainstorm Solutions Engage in creative thinking to generate potential solutions. Consider diverse perspectives and innovative approaches to tackle the problem effectively. 04 Evaluate Feasibility Assess the practicality of your ideas. Consider resources, time, and potential barriers to implementation. This helps in refining your approach to be realistic and achievable. 05 Develop a Plan Create a detailed action plan outlining steps, timelines, and responsibilities. A well-structured plan is vital for guiding your efforts and measuring progress. 06 Seek Feedback Share your ideas with peers, mentors, or stakeholders to gain insights and constructive criticism. Feedback is invaluable for refining and strengthening your approach. 07 Implement and Monitor Put your plan into action and continuously monitor its progress. Be prepared to adapt and make necessary adjustments based on real-world outcomes and feedback. 08 Reflect and Learn After implementation, reflect on the process and outcomes. Identify lessons learned and areas for improvement to enhance future initiatives. In summary, working through your ideas requires a thoughtful, systematic approach that combines creativity with practicality. By following these steps, you can effectively contribute to meaningful change in public health. But what does the ideal state look like, and how can we achieve it?",
+    "layout_description": "A large dark-blue title spans the top. Below it are eight numbered text sections in a two-column, four-row grid with thin green divider lines, followed by a summary paragraph spanning the bottom.",
+    "slide_title": "A Structured Approach to Developing Ideas",
+    "text_blocks": [
+      "A Structured Approach to Developing Ideas",
+      "01 Identify the Problem Clearly define the public health issue you aim to address. Understanding the scope and impact is essential for developing a focused strategy.",
+      "02 Research and Gather Data Collect relevant data and evidence to support your idea. This step is critical for building a solid foundation and ensuring your approach is evidence-based.",
+      "03 Brainstorm Solutions Engage in creative thinking to generate potential solutions. Consider diverse perspectives and innovative approaches to tackle the problem effectively.",
+      "04 Evaluate Feasibility Assess the practicality of your ideas. Consider resources, time, and potential barriers to implementation. This helps in refining your approach to be realistic and achievable.",
+      "05 Develop a Plan Create a detailed action plan outlining steps, timelines, and responsibilities. A well-structured plan is vital for guiding your efforts and measuring progress.",
+      "06 Seek Feedback Share your ideas with peers, mentors, or stakeholders to gain insights and constructive criticism. Feedback is invaluable for refining and strengthening your approach.",
+      "07 Implement and Monitor Put your plan into action and continuously monitor its progress. Be prepared to adapt and make necessary adjustments based on real-world outcomes and feedback.",
+      "08 Reflect and Learn After implementation, reflect on the process and outcomes. Identify lessons learned and areas for improvement to enhance future initiatives.",
+      "In summary, working through your ideas requires a thoughtful, systematic approach that combines creativity with practicality. By following these steps, you can effectively contribute to meaningful change in public health. But what does the ideal state look like, and how can we achieve it?"
+    ],
+    "artifact_path": "",
+    "slide_id": "2_A-Structured-Approach-to-Developing-Ideas",
+    "card_number": null,
+    "coverage": "perceived",
+    "confidence_score": 0.98,
+    "provider_model_id": "gpt-5.5",
+    "reading_path": null,
+    "source_png_path": "C:\\Users\\juanl\\OneDrive\\Desktop\\z-2026-06-21\\2_A-Structured-Approach-to-Developing-Ideas.png"
+  }
+}

@@ -1,0 +1,83 @@
+{
+  "provenance": {
+    "captured_at": "2026-06-21T22:40:45.375093+00:00",
+    "model_id": "gpt-5.5",
+    "source_png": "C:\\Users\\juanl\\OneDrive\\Desktop\\z-2026-06-21\\1_The-Modern-Clinicians-Dilemma.png",
+    "scan_tool": "scripts/analysis/reading_path_corpus_scan.py"
+  },
+  "perception_artifact": {
+    "confidence": "HIGH",
+    "visual_elements": [
+      {
+        "id": "title",
+        "kind": "title",
+        "text": "The Modern Clinician's Dilemma",
+        "bbox": [
+          0.06,
+          0.36,
+          0.5,
+          0.5
+        ]
+      },
+      {
+        "id": "subtitle",
+        "kind": "callout",
+        "text": "Medicine is evolving faster than ever. Are you ready to lead the change?",
+        "bbox": [
+          0.06,
+          0.57,
+          0.52,
+          0.65
+        ]
+      },
+      {
+        "id": "right-medical-illustration",
+        "kind": "diagram",
+        "text": "",
+        "bbox": [
+          0.62,
+          0.0,
+          1.0,
+          1.0
+        ]
+      },
+      {
+        "id": "clinician",
+        "kind": "icon",
+        "text": "",
+        "bbox": [
+          0.68,
+          0.39,
+          0.77,
+          0.98
+        ]
+      },
+      {
+        "id": "medical-monitors-equipment",
+        "kind": "diagram",
+        "text": "",
+        "bbox": [
+          0.82,
+          0.38,
+          0.98,
+          0.94
+        ]
+      }
+    ],
+    "extracted_text": "The Modern Clinician's Dilemma Medicine is evolving faster than ever. Are you ready to lead the change?",
+    "layout_description": "A large title and subtitle are placed on a mostly white left side. The right side contains a full-height medical illustration showing a clinician looking toward monitors and equipment in a clinical room.",
+    "slide_title": "The Modern Clinician's Dilemma",
+    "text_blocks": [
+      "The Modern Clinician's Dilemma",
+      "Medicine is evolving faster than ever. Are you ready to lead the change?"
+    ],
+    "artifact_path": "",
+    "slide_id": "1_The-Modern-Clinicians-Dilemma",
+    "card_number": null,
+    "coverage": "perceived",
+    "confidence_score": 0.99,
+    "provider_model_id": "gpt-5.5",
+    "reading_path": null,
+    "source_png_path": "C:\\Users\\juanl\\OneDrive\\Desktop\\z-2026-06-21\\1_The-Modern-Clinicians-Dilemma.png"
+  }
+}

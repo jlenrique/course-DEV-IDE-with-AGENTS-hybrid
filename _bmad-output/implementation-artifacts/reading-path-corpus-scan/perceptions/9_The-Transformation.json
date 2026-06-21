@@ -1,0 +1,119 @@
+{
+  "provenance": {
+    "captured_at": "2026-06-21T22:39:39.183721+00:00",
+    "model_id": "gpt-5.5",
+    "source_png": "C:\\Users\\juanl\\OneDrive\\Desktop\\z-2026-06-21\\9_The-Transformation.png",
+    "scan_tool": "scripts/analysis/reading_path_corpus_scan.py"
+  },
+  "perception_artifact": {
+    "confidence": "HIGH",
+    "visual_elements": [
+      {
+        "id": "title",
+        "kind": "title",
+        "text": "The Transformation",
+        "bbox": [
+          0.06,
+          0.25,
+          0.43,
+          0.33
+        ]
+      },
+      {
+        "id": "step1_badge",
+        "kind": "icon",
+        "text": "1",
+        "bbox": [
+          0.06,
+          0.38,
+          0.15,
+          0.57
+        ]
+      },
+      {
+        "id": "step1_text",
+        "kind": "callout",
+        "text": "From Employee Working in the system",
+        "bbox": [
+          0.16,
+          0.42,
+          0.42,
+          0.52
+        ]
+      },
+      {
+        "id": "step2_badge",
+        "kind": "icon",
+        "text": "2",
+        "bbox": [
+          0.06,
+          0.56,
+          0.15,
+          0.75
+        ]
+      },
+      {
+        "id": "step2_text",
+        "kind": "callout",
+        "text": "To Innovator Shaping the system",
+        "bbox": [
+          0.16,
+          0.6,
+          0.4,
+          0.7
+        ]
+      },
+      {
+        "id": "clinician_illustration",
+        "kind": "photo",
+        "text": "",
+        "bbox": [
+          0.69,
+          0.17,
+          0.84,
+          0.94
+        ]
+      },
+      {
+        "id": "podium_illustration",
+        "kind": "diagram",
+        "text": "",
+        "bbox": [
+          0.8,
+          0.48,
+          0.92,
+          0.84
+        ]
+      },
+      {
+        "id": "geometric_background",
+        "kind": "diagram",
+        "text": "",
+        "bbox": [
+          0.63,
+          0.0,
+          1.0,
+          1.0
+        ]
+      }
+    ],
+    "extracted_text": "The Transformation 1 From Employee Working in the system 2 To Innovator Shaping the system",
+    "layout_description": "Large title on the left with two numbered chevron-shaped steps beneath it, each paired with a heading and subtitle. The right half contains a large illustration of a clinician pointing upward beside a podium, over a geometric patterned background.",
+    "slide_title": "The Transformation",
+    "text_blocks": [
+      "The Transformation",
+      "1",
+      "From Employee Working in the system",
+      "2",
+      "To Innovator Shaping the system"
+    ],
+    "artifact_path": "",
+    "slide_id": "9_The-Transformation",
+    "card_number": null,
+    "coverage": "perceived",
+    "confidence_score": 0.95,
+    "provider_model_id": "gpt-5.5",
+    "reading_path": null,
+    "source_png_path": "C:\\Users\\juanl\\OneDrive\\Desktop\\z-2026-06-21\\9_The-Transformation.png"
+  }
+}

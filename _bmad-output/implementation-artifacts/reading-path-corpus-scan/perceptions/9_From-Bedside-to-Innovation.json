@@ -1,0 +1,86 @@
+{
+  "provenance": {
+    "captured_at": "2026-06-21T22:40:45.375093+00:00",
+    "model_id": "gpt-5.5",
+    "source_png": "C:\\Users\\juanl\\OneDrive\\Desktop\\z-2026-06-21\\9_From-Bedside-to-Innovation.png",
+    "scan_tool": "scripts/analysis/reading_path_corpus_scan.py"
+  },
+  "perception_artifact": {
+    "confidence": "HIGH",
+    "visual_elements": [
+      {
+        "id": "title",
+        "kind": "title",
+        "text": "From Bedside to Innovation",
+        "bbox": [
+          0.05,
+          0.16,
+          0.45,
+          0.23
+        ]
+      },
+      {
+        "id": "callout_01",
+        "kind": "callout",
+        "text": "01 Recognize Your Skills You already possess the innovator's toolkit through clinical training",
+        "bbox": [
+          0.05,
+          0.3,
+          0.46,
+          0.53
+        ]
+      },
+      {
+        "id": "callout_02",
+        "kind": "callout",
+        "text": "02 Reframe Your Mindset See yourself as an innovator solving problems daily",
+        "bbox": [
+          0.47,
+          0.3,
+          0.89,
+          0.5
+        ]
+      },
+      {
+        "id": "callout_03",
+        "kind": "callout",
+        "text": "03 Apply to New Challenges Use your diagnostic approach to tackle healthcare system issues",
+        "bbox": [
+          0.05,
+          0.58,
+          0.46,
+          0.8
+        ]
+      },
+      {
+        "id": "callout_04",
+        "kind": "callout",
+        "text": "04 Lead Change Transform your practice and inspire colleagues through innovation",
+        "bbox": [
+          0.47,
+          0.58,
+          0.89,
+          0.8
+        ]
+      }
+    ],
+    "extracted_text": "From Bedside to Innovation 01 Recognize Your Skills You already possess the innovator's toolkit through clinical training 02 Reframe Your Mindset See yourself as an innovator solving problems daily 03 Apply to New Challenges Use your diagnostic approach to tackle healthcare system issues 04 Lead Change Transform your practice and inspire colleagues through innovation",
+    "layout_description": "A large title sits at the upper left on a white background. Below it are four numbered text callouts arranged in a two-by-two grid, each with a thin horizontal green divider line above a bold blue heading and supporting sentence.",
+    "slide_title": "From Bedside to Innovation",
+    "text_blocks": [
+      "From Bedside to Innovation",
+      "01 Recognize Your Skills You already possess the innovator's toolkit through clinical training",
+      "02 Reframe Your Mindset See yourself as an innovator solving problems daily",
+      "03 Apply to New Challenges Use your diagnostic approach to tackle healthcare system issues",
+      "04 Lead Change Transform your practice and inspire colleagues through innovation"
+    ],
+    "artifact_path": "",
+    "slide_id": "9_From-Bedside-to-Innovation",
+    "card_number": null,
+    "coverage": "perceived",
+    "confidence_score": 0.99,
+    "provider_model_id": "gpt-5.5",
+    "reading_path": null,
+    "source_png_path": "C:\\Users\\juanl\\OneDrive\\Desktop\\z-2026-06-21\\9_From-Bedside-to-Innovation.png"
+  }
+}

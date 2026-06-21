@@ -1,0 +1,98 @@
+{
+  "provenance": {
+    "captured_at": "2026-06-21T22:40:45.375093+00:00",
+    "model_id": "gpt-5.5",
+    "source_png": "C:\\Users\\juanl\\OneDrive\\Desktop\\z-2026-06-21\\20_Resources-to-Enhance-Your-Journey.png",
+    "scan_tool": "scripts/analysis/reading_path_corpus_scan.py"
+  },
+  "perception_artifact": {
+    "confidence": "HIGH",
+    "visual_elements": [
+      {
+        "id": "left_photo",
+        "kind": "photo",
+        "text": "Future Healthcare Leadership",
+        "bbox": [
+          0.0,
+          0.0,
+          0.38,
+          1.0
+        ]
+      },
+      {
+        "id": "slide_title",
+        "kind": "title",
+        "text": "Resources to Enhance Your Journey",
+        "bbox": [
+          0.43,
+          0.08,
+          0.95,
+          0.2
+        ]
+      },
+      {
+        "id": "resource_1",
+        "kind": "callout",
+        "text": "Wharton Online Comprehensive entrepreneurship course",
+        "bbox": [
+          0.43,
+          0.25,
+          0.94,
+          0.39
+        ]
+      },
+      {
+        "id": "resource_2",
+        "kind": "callout",
+        "text": "Value Proposition Canvas Tool for aligning offerings with customer needs",
+        "bbox": [
+          0.43,
+          0.42,
+          0.94,
+          0.56
+        ]
+      },
+      {
+        "id": "resource_3",
+        "kind": "callout",
+        "text": "AMIA CIBRE Informatics and population health insights",
+        "bbox": [
+          0.43,
+          0.59,
+          0.94,
+          0.74
+        ]
+      },
+      {
+        "id": "resource_4",
+        "kind": "callout",
+        "text": "Design Sprints Structured process for rapid problem-solving",
+        "bbox": [
+          0.43,
+          0.77,
+          0.94,
+          0.91
+        ]
+      }
+    ],
+    "extracted_text": "Resources to Enhance Your Journey Future Healthcare Leadership Wharton Online Comprehensive entrepreneurship course Value Proposition Canvas Tool for aligning offerings with customer needs AMIA CIBRE Informatics and population health insights Design Sprints Structured process for rapid problem-solving",
+    "layout_description": "The slide is split with a large photo panel on the left and a white content area on the right. The right side has a large title at the top and four stacked bordered resource callout boxes beneath it.",
+    "slide_title": "Resources to Enhance Your Journey",
+    "text_blocks": [
+      "Resources to Enhance Your Journey",
+      "Future Healthcare Leadership",
+      "Wharton Online Comprehensive entrepreneurship course",
+      "Value Proposition Canvas Tool for aligning offerings with customer needs",
+      "AMIA CIBRE Informatics and population health insights",
+      "Design Sprints Structured process for rapid problem-solving"
+    ],
+    "artifact_path": "",
+    "slide_id": "20_Resources-to-Enhance-Your-Journey",
+    "card_number": null,
+    "coverage": "perceived",
+    "confidence_score": 0.98,
+    "provider_model_id": "gpt-5.5",
+    "reading_path": null,
+    "source_png_path": "C:\\Users\\juanl\\OneDrive\\Desktop\\z-2026-06-21\\20_Resources-to-Enhance-Your-Journey.png"
+  }
+}

@@ -1,0 +1,121 @@
+{
+  "provenance": {
+    "captured_at": "2026-06-21T22:40:45.375093+00:00",
+    "model_id": "gpt-5.5",
+    "source_png": "C:\\Users\\juanl\\OneDrive\\Desktop\\z-2026-06-21\\19_You-as-the-Ideal-Public-Health-Leader.png",
+    "scan_tool": "scripts/analysis/reading_path_corpus_scan.py"
+  },
+  "perception_artifact": {
+    "confidence": "HIGH",
+    "visual_elements": [
+      {
+        "id": "title",
+        "kind": "title",
+        "text": "You as the Ideal Public Health Leader",
+        "bbox": [
+          0.06,
+          0.07,
+          0.65,
+          0.13
+        ]
+      },
+      {
+        "id": "callout_physicianship",
+        "kind": "callout",
+        "text": "Physicianship Leading with empathy, making informed decisions, and advocating for patient-centered care.",
+        "bbox": [
+          0.06,
+          0.19,
+          0.32,
+          0.36
+        ]
+      },
+      {
+        "id": "callout_unique_blend",
+        "kind": "callout",
+        "text": "Your Unique Blend Your background in public health equips you with a deep understanding of community needs and health systems, plus your ability to innovate and adapt.",
+        "bbox": [
+          0.06,
+          0.41,
+          0.32,
+          0.66
+        ]
+      },
+      {
+        "id": "central_segmented_ring",
+        "kind": "diagram",
+        "text": "",
+        "bbox": [
+          0.34,
+          0.18,
+          0.65,
+          0.68
+        ]
+      },
+      {
+        "id": "callout_intrapreneurship",
+        "kind": "callout",
+        "text": "Intrapreneurship Driving change from within an organization, leveraging existing resources and systems.",
+        "bbox": [
+          0.67,
+          0.19,
+          0.93,
+          0.36
+        ]
+      },
+      {
+        "id": "callout_entrepreneurship",
+        "kind": "callout",
+        "text": "Entrepreneurship Creating new solutions to meet emerging health challenges, building from the ground up.",
+        "bbox": [
+          0.67,
+          0.45,
+          0.94,
+          0.62
+        ]
+      },
+      {
+        "id": "bottom_paragraph_1",
+        "kind": "callout",
+        "text": "By harnessing these interconnected skills, you position yourself as a leader who can navigate complex health landscapes and implement impactful solutions. You are not just a participant in the field of public health; you are a catalyst for change.",
+        "bbox": [
+          0.06,
+          0.71,
+          0.94,
+          0.78
+        ]
+      },
+      {
+        "id": "bottom_paragraph_2",
+        "kind": "callout",
+        "text": "In summary, your unique combination of skills and mindset makes you an ideal candidate to lead and innovate in public health. Embrace this opportunity to make a meaningful difference. But where can you find the resources to enhance your journey in entrepreneurship and innovation within public health?",
+        "bbox": [
+          0.06,
+          0.82,
+          0.95,
+          0.93
+        ]
+      }
+    ],
+    "extracted_text": "You as the Ideal Public Health Leader Physicianship Leading with empathy, making informed decisions, and advocating for patient-centered care. Your Unique Blend Your background in public health equips you with a deep understanding of community needs and health systems, plus your ability to innovate and adapt. Intrapreneurship Driving change from within an organization, leveraging existing resources and systems. Entrepreneurship Creating new solutions to meet emerging health challenges, building from the ground up. By harnessing these interconnected skills, you position yourself as a leader who can navigate complex health landscapes and implement impactful solutions. You are not just a participant in the field of public health; you are a catalyst for change. In summary, your unique combination of skills and mindset makes you an ideal candidate to lead and innovate in public health. Embrace this opportunity to make a meaningful difference. But where can you find the resources to enhance your journey in entrepreneurship and innovation within public health?",
+    "layout_description": "A large navy title sits at the top left. The center contains a pale segmented circular ring diagram with small black icons, flanked by four blue text callouts, with two long explanatory paragraphs across the bottom.",
+    "slide_title": "You as the Ideal Public Health Leader",
+    "text_blocks": [
+      "You as the Ideal Public Health Leader",
+      "Physicianship Leading with empathy, making informed decisions, and advocating for patient-centered care.",
+      "Your Unique Blend Your background in public health equips you with a deep understanding of community needs and health systems, plus your ability to innovate and adapt.",
+      "Intrapreneurship Driving change from within an organization, leveraging existing resources and systems.",
+      "Entrepreneurship Creating new solutions to meet emerging health challenges, building from the ground up.",
+      "By harnessing these interconnected skills, you position yourself as a leader who can navigate complex health landscapes and implement impactful solutions. You are not just a participant in the field of public health; you are a catalyst for change.",
+      "In summary, your unique combination of skills and mindset makes you an ideal candidate to lead and innovate in public health. Embrace this opportunity to make a meaningful difference. But where can you find the resources to enhance your journey in entrepreneurship and innovation within public health?"
+    ],
+    "artifact_path": "",
+    "slide_id": "19_You-as-the-Ideal-Public-Health-Leader",
+    "card_number": null,
+    "coverage": "perceived",
+    "confidence_score": 0.98,
+    "provider_model_id": "gpt-5.5",
+    "reading_path": null,
+    "source_png_path": "C:\\Users\\juanl\\OneDrive\\Desktop\\z-2026-06-21\\19_You-as-the-Ideal-Public-Health-Leader.png"
+  }
+}

@@ -1,0 +1,121 @@
+{
+  "provenance": {
+    "captured_at": "2026-06-21T22:40:45.375093+00:00",
+    "model_id": "gpt-5.5",
+    "source_png": "C:\\Users\\juanl\\OneDrive\\Desktop\\z-2026-06-21\\14_What-Drives-Us-Toward-Opportunities.png",
+    "scan_tool": "scripts/analysis/reading_path_corpus_scan.py"
+  },
+  "perception_artifact": {
+    "confidence": "HIGH",
+    "visual_elements": [
+      {
+        "id": "title",
+        "kind": "title",
+        "text": "What Drives Us Toward Opportunities?",
+        "bbox": [
+          0.07,
+          0.05,
+          0.79,
+          0.1
+        ]
+      },
+      {
+        "id": "left_heading",
+        "kind": "callout",
+        "text": "Personal Motivation",
+        "bbox": [
+          0.07,
+          0.14,
+          0.3,
+          0.17
+        ]
+      },
+      {
+        "id": "left_body",
+        "kind": "callout",
+        "text": "Consider what ignites your passion. Is it the desire to make a tangible impact on community health? Perhaps it's the challenge of solving complex health issues or the opportunity to innovate and lead change.",
+        "bbox": [
+          0.07,
+          0.19,
+          0.57,
+          0.3
+        ]
+      },
+      {
+        "id": "right_heading",
+        "kind": "callout",
+        "text": "Motivating Others",
+        "bbox": [
+          0.6,
+          0.14,
+          0.8,
+          0.17
+        ]
+      },
+      {
+        "id": "right_body_1",
+        "kind": "callout",
+        "text": "Think about what motivates others around you. Is it recognition, the chance to collaborate with like-minded individuals, or the pursuit of knowledge and expertise?",
+        "bbox": [
+          0.6,
+          0.19,
+          0.95,
+          0.27
+        ]
+      },
+      {
+        "id": "right_body_2",
+        "kind": "callout",
+        "text": "By identifying these motivations, we can better align our goals with the opportunities that arise, ensuring that we not only pursue them with enthusiasm but also inspire others to join us on this journey.",
+        "bbox": [
+          0.6,
+          0.29,
+          0.96,
+          0.4
+        ]
+      },
+      {
+        "id": "photo_left",
+        "kind": "photo",
+        "text": "",
+        "bbox": [
+          0.07,
+          0.32,
+          0.56,
+          0.82
+        ]
+      },
+      {
+        "id": "bottom_paragraph",
+        "kind": "callout",
+        "text": "In essence, recognizing what drives us and those around us is pivotal in shaping effective leaders who can navigate and transform the public health landscape. So, how do we differentiate between the types of motivation that influence our actions?",
+        "bbox": [
+          0.07,
+          0.87,
+          0.95,
+          0.94
+        ]
+      }
+    ],
+    "extracted_text": "What Drives Us Toward Opportunities? Personal Motivation Consider what ignites your passion. Is it the desire to make a tangible impact on community health? Perhaps it's the challenge of solving complex health issues or the opportunity to innovate and lead change. Motivating Others Think about what motivates others around you. Is it recognition, the chance to collaborate with like-minded individuals, or the pursuit of knowledge and expertise? By identifying these motivations, we can better align our goals with the opportunities that arise, ensuring that we not only pursue them with enthusiasm but also inspire others to join us on this journey. In essence, recognizing what drives us and those around us is pivotal in shaping effective leaders who can navigate and transform the public health landscape. So, how do we differentiate between the types of motivation that influence our actions?",
+    "layout_description": "A large dark-blue title sits at the top on a white background. Below it are two text columns, with a large photo occupying the lower-left area and a concluding paragraph spanning the bottom.",
+    "slide_title": "What Drives Us Toward Opportunities?",
+    "text_blocks": [
+      "What Drives Us Toward Opportunities?",
+      "Personal Motivation",
+      "Consider what ignites your passion. Is it the desire to make a tangible impact on community health? Perhaps it's the challenge of solving complex health issues or the opportunity to innovate and lead change.",
+      "Motivating Others",
+      "Think about what motivates others around you. Is it recognition, the chance to collaborate with like-minded individuals, or the pursuit of knowledge and expertise?",
+      "By identifying these motivations, we can better align our goals with the opportunities that arise, ensuring that we not only pursue them with enthusiasm but also inspire others to join us on this journey.",
+      "In essence, recognizing what drives us and those around us is pivotal in shaping effective leaders who can navigate and transform the public health landscape. So, how do we differentiate between the types of motivation that influence our actions?"
+    ],
+    "artifact_path": "",
+    "slide_id": "14_What-Drives-Us-Toward-Opportunities",
+    "card_number": null,
+    "coverage": "perceived",
+    "confidence_score": 0.98,
+    "provider_model_id": "gpt-5.5",
+    "reading_path": null,
+    "source_png_path": "C:\\Users\\juanl\\OneDrive\\Desktop\\z-2026-06-21\\14_What-Drives-Us-Toward-Opportunities.png"
+  }
+}

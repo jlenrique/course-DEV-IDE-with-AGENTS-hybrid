@@ -1,0 +1,85 @@
+{
+  "provenance": {
+    "captured_at": "2026-06-21T22:40:45.375093+00:00",
+    "model_id": "gpt-5.5",
+    "source_png": "C:\\Users\\juanl\\OneDrive\\Desktop\\z-2026-06-21\\10_Youre-Already-an-Innovator.png",
+    "scan_tool": "scripts/analysis/reading_path_corpus_scan.py"
+  },
+  "perception_artifact": {
+    "confidence": "HIGH",
+    "visual_elements": [
+      {
+        "id": "left_photo",
+        "kind": "photo",
+        "text": "",
+        "bbox": [
+          0.0,
+          0.0,
+          0.4,
+          1.0
+        ]
+      },
+      {
+        "id": "title",
+        "kind": "title",
+        "text": "You're Already an Innovator",
+        "bbox": [
+          0.46,
+          0.17,
+          0.92,
+          0.23
+        ]
+      },
+      {
+        "id": "callout_training",
+        "kind": "callout",
+        "text": "Your Training Prepared You Clinical reasoning = Innovation thinking",
+        "bbox": [
+          0.46,
+          0.26,
+          0.72,
+          0.49
+        ]
+      },
+      {
+        "id": "callout_skills",
+        "kind": "callout",
+        "text": "Your Skills Transfer Diagnosis, experimentation, iteration",
+        "bbox": [
+          0.74,
+          0.26,
+          1.0,
+          0.49
+        ]
+      },
+      {
+        "id": "callout_impact",
+        "kind": "callout",
+        "text": "Your Impact Awaits Transform healthcare from within",
+        "bbox": [
+          0.46,
+          0.52,
+          1.0,
+          0.66
+        ]
+      }
+    ],
+    "extracted_text": "You're Already an Innovator Your Training Prepared You Clinical reasoning = Innovation thinking Your Skills Transfer Diagnosis, experimentation, iteration Your Impact Awaits Transform healthcare from within",
+    "layout_description": "A full-height healthcare-themed photo occupies the left side of the slide. The right side is a white content area with a large title at the top, two bordered callout boxes in the middle, and one wide bordered callout box below.",
+    "slide_title": "You're Already an Innovator",
+    "text_blocks": [
+      "You're Already an Innovator",
+      "Your Training Prepared You Clinical reasoning = Innovation thinking",
+      "Your Skills Transfer Diagnosis, experimentation, iteration",
+      "Your Impact Awaits Transform healthcare from within"
+    ],
+    "artifact_path": "",
+    "slide_id": "10_Youre-Already-an-Innovator",
+    "card_number": null,
+    "coverage": "perceived",
+    "confidence_score": 0.98,
+    "provider_model_id": "gpt-5.5",
+    "reading_path": null,
+    "source_png_path": "C:\\Users\\juanl\\OneDrive\\Desktop\\z-2026-06-21\\10_Youre-Already-an-Innovator.png"
+  }
+}

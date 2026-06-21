@@ -1,0 +1,61 @@
+{
+  "provenance": {
+    "captured_at": "2026-06-21T22:40:45.375093+00:00",
+    "model_id": "gpt-5.5",
+    "source_png": "C:\\Users\\juanl\\OneDrive\\Desktop\\z-2026-06-21\\7_Healthcares-Most-Valuable-Asset.png",
+    "scan_tool": "scripts/analysis/reading_path_corpus_scan.py"
+  },
+  "perception_artifact": {
+    "confidence": "HIGH",
+    "visual_elements": [
+      {
+        "id": "title_main",
+        "kind": "title",
+        "text": "Healthcare's Most Valuable Asset",
+        "bbox": [
+          0.055,
+          0.29,
+          0.53,
+          0.42
+        ]
+      },
+      {
+        "id": "callout_body",
+        "kind": "callout",
+        "text": "The solution to healthcare's biggest challenges lies dormant within its most valuable asset: you.",
+        "bbox": [
+          0.055,
+          0.47,
+          0.47,
+          0.63
+        ]
+      },
+      {
+        "id": "right_healthcare_workers_illustration",
+        "kind": "diagram",
+        "text": "",
+        "bbox": [
+          0.585,
+          0.0,
+          1.0,
+          1.0
+        ]
+      }
+    ],
+    "extracted_text": "Healthcare's Most Valuable Asset The solution to healthcare's biggest challenges lies dormant within its most valuable asset: you.",
+    "layout_description": "The slide has a large white text area on the left with a bold dark-blue title and a smaller callout beneath it. The right half contains a full-height illustration of healthcare workers over a warm background with decorative stars and geometric shapes at the bottom.",
+    "slide_title": "Healthcare's Most Valuable Asset",
+    "text_blocks": [
+      "Healthcare's Most Valuable Asset",
+      "The solution to healthcare's biggest challenges lies dormant within its most valuable asset: you."
+    ],
+    "artifact_path": "",
+    "slide_id": "7_Healthcares-Most-Valuable-Asset",
+    "card_number": null,
+    "coverage": "perceived",
+    "confidence_score": 0.98,
+    "provider_model_id": "gpt-5.5",
+    "reading_path": null,
+    "source_png_path": "C:\\Users\\juanl\\OneDrive\\Desktop\\z-2026-06-21\\7_Healthcares-Most-Valuable-Asset.png"
+  }
+}

@@ -1,0 +1,74 @@
+{
+  "provenance": {
+    "captured_at": "2026-06-21T22:40:45.375093+00:00",
+    "model_id": "gpt-5.5",
+    "source_png": "C:\\Users\\juanl\\OneDrive\\Desktop\\z-2026-06-21\\10_Delivering-Value-in-Public-Health.png",
+    "scan_tool": "scripts/analysis/reading_path_corpus_scan.py"
+  },
+  "perception_artifact": {
+    "confidence": "HIGH",
+    "visual_elements": [
+      {
+        "id": "title",
+        "kind": "title",
+        "text": "Delivering Value in Public Health",
+        "bbox": [
+          0.07,
+          0.21,
+          0.68,
+          0.29
+        ]
+      },
+      {
+        "id": "paragraph_1",
+        "kind": "bullet",
+        "text": "As we discuss the need for leaders in public health, it's crucial to focus on how we can deliver value in this field. Delivering value means making a tangible impact on communities, improving health outcomes, and ensuring that resources are used efficiently and effectively.",
+        "bbox": [
+          0.07,
+          0.33,
+          0.96,
+          0.51
+        ]
+      },
+      {
+        "id": "paragraph_2",
+        "kind": "bullet",
+        "text": "To achieve this, leaders must be innovative, adaptable, and committed to evidence-based practices. They should prioritize collaboration across sectors, engage with communities to understand their needs, and advocate for policies that promote health equity. Moreover, leaders should focus on building strong teams, fostering an environment of continuous learning, and leveraging technology to enhance public health initiatives. By doing so, they can create sustainable solutions that address both current and future health challenges.",
+        "bbox": [
+          0.07,
+          0.5,
+          0.96,
+          0.73
+        ]
+      },
+      {
+        "id": "paragraph_3",
+        "kind": "bullet",
+        "text": "In summary, delivering value in public health requires a multifaceted approach, driven by strong leadership and a commitment to making a positive difference. But how do we ensure that our innovations truly create value?",
+        "bbox": [
+          0.07,
+          0.75,
+          0.94,
+          0.84
+        ]
+      }
+    ],
+    "extracted_text": "Delivering Value in Public Health As we discuss the need for leaders in public health, it's crucial to focus on how we can deliver value in this field. Delivering value means making a tangible impact on communities, improving health outcomes, and ensuring that resources are used efficiently and effectively. To achieve this, leaders must be innovative, adaptable, and committed to evidence-based practices. They should prioritize collaboration across sectors, engage with communities to understand their needs, and advocate for policies that promote health equity. Moreover, leaders should focus on building strong teams, fostering an environment of continuous learning, and leveraging technology to enhance public health initiatives. By doing so, they can create sustainable solutions that address both current and future health challenges. In summary, delivering value in public health requires a multifaceted approach, driven by strong leadership and a commitment to making a positive difference. But how do we ensure that our innovations truly create value?",
+    "layout_description": "A large dark-blue title sits in the upper-left area on a white background. Three teal body-text paragraphs are left-aligned beneath the title with generous spacing and no images or charts.",
+    "slide_title": "Delivering Value in Public Health",
+    "text_blocks": [
+      "Delivering Value in Public Health",
+      "As we discuss the need for leaders in public health, it's crucial to focus on how we can deliver value in this field. Delivering value means making a tangible impact on communities, improving health outcomes, and ensuring that resources are used efficiently and effectively.",
+      "To achieve this, leaders must be innovative, adaptable, and committed to evidence-based practices. They should prioritize collaboration across sectors, engage with communities to understand their needs, and advocate for policies that promote health equity. Moreover, leaders should focus on building strong teams, fostering an environment of continuous learning, and leveraging technology to enhance public health initiatives. By doing so, they can create sustainable solutions that address both current and future health challenges.",
+      "In summary, delivering value in public health requires a multifaceted approach, driven by strong leadership and a commitment to making a positive difference. But how do we ensure that our innovations truly create value?"
+    ],
+    "artifact_path": "",
+    "slide_id": "10_Delivering-Value-in-Public-Health",
+    "card_number": null,
+    "coverage": "perceived",
+    "confidence_score": 0.99,
+    "provider_model_id": "gpt-5.5",
+    "reading_path": null,
+    "source_png_path": "C:\\Users\\juanl\\OneDrive\\Desktop\\z-2026-06-21\\10_Delivering-Value-in-Public-Health.png"
+  }
+}

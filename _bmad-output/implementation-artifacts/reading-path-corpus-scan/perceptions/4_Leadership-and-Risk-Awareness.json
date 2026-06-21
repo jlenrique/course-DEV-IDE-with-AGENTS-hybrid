@@ -1,0 +1,87 @@
+{
+  "provenance": {
+    "captured_at": "2026-06-21T22:40:45.375093+00:00",
+    "model_id": "gpt-5.5",
+    "source_png": "C:\\Users\\juanl\\OneDrive\\Desktop\\z-2026-06-21\\4_Leadership-and-Risk-Awareness.png",
+    "scan_tool": "scripts/analysis/reading_path_corpus_scan.py"
+  },
+  "perception_artifact": {
+    "confidence": "HIGH",
+    "visual_elements": [
+      {
+        "id": "left_photo",
+        "kind": "photo",
+        "text": "",
+        "bbox": [
+          0.0,
+          0.0,
+          0.44,
+          1.0
+        ]
+      },
+      {
+        "id": "caution_sign",
+        "kind": "icon",
+        "text": "CAUTION",
+        "bbox": [
+          0.26,
+          0.47,
+          0.37,
+          0.61
+        ]
+      },
+      {
+        "id": "title",
+        "kind": "title",
+        "text": "Leadership & Risk Awareness",
+        "bbox": [
+          0.51,
+          0.23,
+          0.89,
+          0.38
+        ]
+      },
+      {
+        "id": "leadership_needs_block",
+        "kind": "bullet",
+        "text": "Leadership Needs • Visionary thinking • Navigate complexities • Drive meaningful change",
+        "bbox": [
+          0.51,
+          0.48,
+          0.76,
+          0.75
+        ]
+      },
+      {
+        "id": "potential_risks_block",
+        "kind": "bullet",
+        "text": "Potential Risks • Ethical implications • Resource allocation • Unintended consequences",
+        "bbox": [
+          0.83,
+          0.48,
+          0.99,
+          0.75
+        ]
+      }
+    ],
+    "extracted_text": "Leadership & Risk Awareness Leadership Needs • Visionary thinking • Navigate complexities • Drive meaningful change Potential Risks • Ethical implications • Resource allocation • Unintended consequences CAUTION",
+    "layout_description": "The slide is split vertically, with a full-height photo on the left showing a spotlighted balance scale and caution sign. The right side has a large title near the top and two lower text columns for leadership needs and potential risks.",
+    "slide_title": "Leadership & Risk Awareness",
+    "text_blocks": [
+      "Leadership & Risk Awareness",
+      "Leadership Needs",
+      "• Visionary thinking\n• Navigate complexities\n• Drive meaningful change",
+      "Potential Risks",
+      "• Ethical implications\n• Resource allocation\n• Unintended consequences",
+      "CAUTION"
+    ],
+    "artifact_path": "",
+    "slide_id": "4_Leadership-and-Risk-Awareness",
+    "card_number": null,
+    "coverage": "perceived",
+    "confidence_score": 0.98,
+    "provider_model_id": "gpt-5.5",
+    "reading_path": null,
+    "source_png_path": "C:\\Users\\juanl\\OneDrive\\Desktop\\z-2026-06-21\\4_Leadership-and-Risk-Awareness.png"
+  }
+}

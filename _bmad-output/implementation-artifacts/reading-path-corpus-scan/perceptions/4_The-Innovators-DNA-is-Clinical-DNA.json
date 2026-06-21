@@ -1,0 +1,108 @@
+{
+  "provenance": {
+    "captured_at": "2026-06-21T22:40:45.375093+00:00",
+    "model_id": "gpt-5.5",
+    "source_png": "C:\\Users\\juanl\\OneDrive\\Desktop\\z-2026-06-21\\4_The-Innovators-DNA-is-Clinical-DNA.png",
+    "scan_tool": "scripts/analysis/reading_path_corpus_scan.py"
+  },
+  "perception_artifact": {
+    "confidence": "HIGH",
+    "visual_elements": [
+      {
+        "id": "title",
+        "kind": "title",
+        "text": "The Innovator's DNA is Clinical DNA",
+        "bbox": [
+          0.06,
+          0.16,
+          0.6,
+          0.25
+        ]
+      },
+      {
+        "id": "left_photo",
+        "kind": "photo",
+        "text": "",
+        "bbox": [
+          0.06,
+          0.34,
+          0.27,
+          0.76
+        ]
+      },
+      {
+        "id": "center_photo",
+        "kind": "photo",
+        "text": "CLINICAL TRIAL RESULTS",
+        "bbox": [
+          0.36,
+          0.34,
+          0.57,
+          0.76
+        ]
+      },
+      {
+        "id": "right_photo",
+        "kind": "photo",
+        "text": "",
+        "bbox": [
+          0.66,
+          0.34,
+          0.87,
+          0.76
+        ]
+      },
+      {
+        "id": "left_callout",
+        "kind": "callout",
+        "text": "Deep Empathy Understanding patient experience drives better diagnosis",
+        "bbox": [
+          0.06,
+          0.8,
+          0.33,
+          0.98
+        ]
+      },
+      {
+        "id": "center_callout",
+        "kind": "callout",
+        "text": "Intellectual Curiosity Staying current with latest research and evidence",
+        "bbox": [
+          0.37,
+          0.8,
+          0.62,
+          0.98
+        ]
+      },
+      {
+        "id": "right_callout",
+        "kind": "callout",
+        "text": "Resilience Under Pressure Making critical decisions in high- stakes environments",
+        "bbox": [
+          0.67,
+          0.8,
+          0.94,
+          0.98
+        ]
+      }
+    ],
+    "extracted_text": "The Innovator's DNA is Clinical DNA CLINICAL TRIAL RESULTS Deep Empathy Understanding patient experience drives better diagnosis Intellectual Curiosity Staying current with latest research and evidence Resilience Under Pressure Making critical decisions in high- stakes environments",
+    "layout_description": "A large dark-blue title sits near the top left on a white background. Three evenly spaced circular medical photos run across the middle, each with a blue heading and two-line explanatory text beneath it.",
+    "slide_title": "The Innovator's DNA is Clinical DNA",
+    "text_blocks": [
+      "The Innovator's DNA is Clinical DNA",
+      "CLINICAL TRIAL RESULTS",
+      "Deep Empathy Understanding patient experience drives better diagnosis",
+      "Intellectual Curiosity Staying current with latest research and evidence",
+      "Resilience Under Pressure Making critical decisions in high- stakes environments"
+    ],
+    "artifact_path": "",
+    "slide_id": "4_The-Innovators-DNA-is-Clinical-DNA",
+    "card_number": null,
+    "coverage": "perceived",
+    "confidence_score": 0.98,
+    "provider_model_id": "gpt-5.5",
+    "reading_path": null,
+    "source_png_path": "C:\\Users\\juanl\\OneDrive\\Desktop\\z-2026-06-21\\4_The-Innovators-DNA-is-Clinical-DNA.png"
+  }
+}

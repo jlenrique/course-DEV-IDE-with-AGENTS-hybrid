@@ -1,0 +1,85 @@
+{
+  "provenance": {
+    "captured_at": "2026-06-21T22:40:45.375093+00:00",
+    "model_id": "gpt-5.5",
+    "source_png": "C:\\Users\\juanl\\OneDrive\\Desktop\\z-2026-06-21\\12_Value-Proposition-Canvas.png",
+    "scan_tool": "scripts/analysis/reading_path_corpus_scan.py"
+  },
+  "perception_artifact": {
+    "confidence": "HIGH",
+    "visual_elements": [
+      {
+        "id": "bg_canvas_diagram",
+        "kind": "diagram",
+        "text": "",
+        "bbox": [
+          0.0,
+          0.0,
+          0.4,
+          1.0
+        ]
+      },
+      {
+        "id": "title",
+        "kind": "title",
+        "text": "Value Proposition Canvas",
+        "bbox": [
+          0.46,
+          0.12,
+          0.96,
+          0.21
+        ]
+      },
+      {
+        "id": "callout_canvas_template",
+        "kind": "callout",
+        "text": "Canvas Template Download official template to guide analysis",
+        "bbox": [
+          0.46,
+          0.25,
+          0.99,
+          0.43
+        ]
+      },
+      {
+        "id": "callout_gain_creators",
+        "kind": "callout",
+        "text": "Gain Creators Identify benefits & positive outcomes",
+        "bbox": [
+          0.46,
+          0.46,
+          0.99,
+          0.64
+        ]
+      },
+      {
+        "id": "callout_jobs_to_be_done",
+        "kind": "callout",
+        "text": "Jobs-to-be-Done Understand customer tasks & problems",
+        "bbox": [
+          0.46,
+          0.67,
+          0.99,
+          0.85
+        ]
+      }
+    ],
+    "extracted_text": "Value Proposition Canvas Canvas Template Download official template to guide analysis Gain Creators Identify benefits & positive outcomes Jobs-to-be-Done Understand customer tasks & problems",
+    "layout_description": "A large cropped grayscale value proposition canvas diagram fills the left side as a background image. The right side contains a large blue title at the top and three stacked bordered callout cards with pale icon panels on the left and blue text on the right.",
+    "slide_title": "Value Proposition Canvas",
+    "text_blocks": [
+      "Value Proposition Canvas",
+      "Canvas Template Download official template to guide analysis",
+      "Gain Creators Identify benefits & positive outcomes",
+      "Jobs-to-be-Done Understand customer tasks & problems"
+    ],
+    "artifact_path": "",
+    "slide_id": "12_Value-Proposition-Canvas",
+    "card_number": null,
+    "coverage": "perceived",
+    "confidence_score": 0.9,
+    "provider_model_id": "gpt-5.5",
+    "reading_path": null,
+    "source_png_path": "C:\\Users\\juanl\\OneDrive\\Desktop\\z-2026-06-21\\12_Value-Proposition-Canvas.png"
+  }
+}

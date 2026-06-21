@@ -1,0 +1,130 @@
+{
+  "provenance": {
+    "captured_at": "2026-06-21T22:40:45.375093+00:00",
+    "model_id": "gpt-5.5",
+    "source_png": "C:\\Users\\juanl\\OneDrive\\Desktop\\z-2026-06-21\\19_Your-Unique-Leadership-Qualities.png",
+    "scan_tool": "scripts/analysis/reading_path_corpus_scan.py"
+  },
+  "perception_artifact": {
+    "confidence": "HIGH",
+    "visual_elements": [
+      {
+        "id": "title",
+        "kind": "title",
+        "text": "Your Unique Leadership Qualities",
+        "bbox": [
+          0.07,
+          0.12,
+          0.79,
+          0.2
+        ]
+      },
+      {
+        "id": "left_callout_physicianship",
+        "kind": "callout",
+        "text": "Physicianship Clinical expertise, empathy, patient advocacy",
+        "bbox": [
+          0.1,
+          0.46,
+          0.37,
+          0.61
+        ]
+      },
+      {
+        "id": "center_donut_diagram",
+        "kind": "diagram",
+        "text": "",
+        "bbox": [
+          0.4,
+          0.25,
+          0.77,
+          0.82
+        ]
+      },
+      {
+        "id": "medical_book_icon",
+        "kind": "icon",
+        "text": "",
+        "bbox": [
+          0.44,
+          0.47,
+          0.48,
+          0.53
+        ]
+      },
+      {
+        "id": "clock_icon",
+        "kind": "icon",
+        "text": "",
+        "bbox": [
+          0.65,
+          0.36,
+          0.69,
+          0.42
+        ]
+      },
+      {
+        "id": "rocket_icon",
+        "kind": "icon",
+        "text": "",
+        "bbox": [
+          0.61,
+          0.69,
+          0.64,
+          0.75
+        ]
+      },
+      {
+        "id": "right_callout_intrapreneurship",
+        "kind": "callout",
+        "text": "Intrapreneurship Driving change within organizations",
+        "bbox": [
+          0.8,
+          0.32,
+          0.98,
+          0.49
+        ]
+      },
+      {
+        "id": "right_callout_entrepreneurship",
+        "kind": "callout",
+        "text": "Entrepreneurship Creating new health solutions",
+        "bbox": [
+          0.8,
+          0.64,
+          0.99,
+          0.75
+        ]
+      },
+      {
+        "id": "bottom_statement",
+        "kind": "callout",
+        "text": "You are a catalyst for change in population health",
+        "bbox": [
+          0.07,
+          0.84,
+          0.58,
+          0.91
+        ]
+      }
+    ],
+    "extracted_text": "Your Unique Leadership Qualities Physicianship Clinical expertise, empathy, patient advocacy Intrapreneurship Driving change within organizations Entrepreneurship Creating new health solutions You are a catalyst for change in population health",
+    "layout_description": "A large dark-blue title spans the upper left. A pale green segmented donut diagram with three black icons is centered, with callout text on the left and right and a concluding sentence along the lower left.",
+    "slide_title": "Your Unique Leadership Qualities",
+    "text_blocks": [
+      "Your Unique Leadership Qualities",
+      "Physicianship Clinical expertise, empathy, patient advocacy",
+      "Intrapreneurship Driving change within organizations",
+      "Entrepreneurship Creating new health solutions",
+      "You are a catalyst for change in population health"
+    ],
+    "artifact_path": "",
+    "slide_id": "19_Your-Unique-Leadership-Qualities",
+    "card_number": null,
+    "coverage": "perceived",
+    "confidence_score": 0.98,
+    "provider_model_id": "gpt-5.5",
+    "reading_path": null,
+    "source_png_path": "C:\\Users\\juanl\\OneDrive\\Desktop\\z-2026-06-21\\19_Your-Unique-Leadership-Qualities.png"
+  }
+}

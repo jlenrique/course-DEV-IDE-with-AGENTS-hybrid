@@ -1,0 +1,121 @@
+{
+  "provenance": {
+    "captured_at": "2026-06-21T22:40:45.375093+00:00",
+    "model_id": "gpt-5.5",
+    "source_png": "C:\\Users\\juanl\\OneDrive\\Desktop\\z-2026-06-21\\16_Motivation-in-Public-Health-Interventions.png",
+    "scan_tool": "scripts/analysis/reading_path_corpus_scan.py"
+  },
+  "perception_artifact": {
+    "confidence": "HIGH",
+    "visual_elements": [
+      {
+        "id": "title",
+        "kind": "title",
+        "text": "Motivation in Public Health Interventions",
+        "bbox": [
+          0.07,
+          0.07,
+          0.84,
+          0.13
+        ]
+      },
+      {
+        "id": "photo_health_workers",
+        "kind": "photo",
+        "text": "",
+        "bbox": [
+          0.07,
+          0.19,
+          0.46,
+          0.71
+        ]
+      },
+      {
+        "id": "heading_beyond_extrinsic",
+        "kind": "title",
+        "text": "Beyond Extrinsic Motivation",
+        "bbox": [
+          0.5,
+          0.19,
+          0.83,
+          0.23
+        ]
+      },
+      {
+        "id": "para_beyond_extrinsic",
+        "kind": "callout",
+        "text": "When designing interventions, it's crucial not to focus solely on extrinsic motivation. Relying too heavily on external rewards or pressures can lead to low trust among health workers and may even undermine their intrinsic motivation.",
+        "bbox": [
+          0.5,
+          0.26,
+          0.96,
+          0.4
+        ]
+      },
+      {
+        "id": "heading_intrinsic_value",
+        "kind": "title",
+        "text": "The Value of Intrinsic Motivation",
+        "bbox": [
+          0.5,
+          0.43,
+          0.85,
+          0.47
+        ]
+      },
+      {
+        "id": "para_intrinsic_value",
+        "kind": "callout",
+        "text": "Intrinsic motivation is incredibly valuable. It's closely linked to several positive outcomes, such as:",
+        "bbox": [
+          0.5,
+          0.5,
+          0.96,
+          0.56
+        ]
+      },
+      {
+        "id": "bullets_outcomes",
+        "kind": "bullet",
+        "text": "• Fostering positive health worker behaviors\n• Enhancing their enjoyment of the work\n• Improving the quality of work performed\n• Retaining health workers in their current positions",
+        "bbox": [
+          0.5,
+          0.59,
+          0.95,
+          0.75
+        ]
+      },
+      {
+        "id": "bottom_summary",
+        "kind": "callout",
+        "text": "In summary, while extrinsic motivators have their place, nurturing intrinsic motivation is essential for sustainable and effective public health outcomes. Can we see this principle in action through examples of effective leadership in public health?",
+        "bbox": [
+          0.07,
+          0.8,
+          0.98,
+          0.9
+        ]
+      }
+    ],
+    "extracted_text": "Motivation in Public Health Interventions Beyond Extrinsic Motivation When designing interventions, it's crucial not to focus solely on extrinsic motivation. Relying too heavily on external rewards or pressures can lead to low trust among health workers and may even undermine their intrinsic motivation. The Value of Intrinsic Motivation Intrinsic motivation is incredibly valuable. It's closely linked to several positive outcomes, such as: • Fostering positive health worker behaviors • Enhancing their enjoyment of the work • Improving the quality of work performed • Retaining health workers in their current positions In summary, while extrinsic motivators have their place, nurturing intrinsic motivation is essential for sustainable and effective public health outcomes. Can we see this principle in action through examples of effective leadership in public health?",
+    "layout_description": "A large title spans the top of the slide. A large photo of masked healthcare workers occupies the left side, while explanatory headings, paragraphs, and bullets are arranged on the right, with a summary sentence across the bottom.",
+    "slide_title": "Motivation in Public Health Interventions",
+    "text_blocks": [
+      "Motivation in Public Health Interventions",
+      "Beyond Extrinsic Motivation",
+      "When designing interventions, it's crucial not to focus solely on extrinsic motivation. Relying too heavily on external rewards or pressures can lead to low trust among health workers and may even undermine their intrinsic motivation.",
+      "The Value of Intrinsic Motivation",
+      "Intrinsic motivation is incredibly valuable. It's closely linked to several positive outcomes, such as:",
+      "• Fostering positive health worker behaviors\n• Enhancing their enjoyment of the work\n• Improving the quality of work performed\n• Retaining health workers in their current positions",
+      "In summary, while extrinsic motivators have their place, nurturing intrinsic motivation is essential for sustainable and effective public health outcomes. Can we see this principle in action through examples of effective leadership in public health?"
+    ],
+    "artifact_path": "",
+    "slide_id": "16_Motivation-in-Public-Health-Interventions",
+    "card_number": null,
+    "coverage": "perceived",
+    "confidence_score": 0.99,
+    "provider_model_id": "gpt-5.5",
+    "reading_path": null,
+    "source_png_path": "C:\\Users\\juanl\\OneDrive\\Desktop\\z-2026-06-21\\16_Motivation-in-Public-Health-Interventions.png"
+  }
+}

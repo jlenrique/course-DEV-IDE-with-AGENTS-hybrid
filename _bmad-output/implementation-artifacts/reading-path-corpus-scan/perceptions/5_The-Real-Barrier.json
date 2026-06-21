@@ -1,0 +1,140 @@
+{
+  "provenance": {
+    "captured_at": "2026-06-21T22:40:45.375093+00:00",
+    "model_id": "gpt-5.5",
+    "source_png": "C:\\Users\\juanl\\OneDrive\\Desktop\\z-2026-06-21\\5_The-Real-Barrier.png",
+    "scan_tool": "scripts/analysis/reading_path_corpus_scan.py"
+  },
+  "perception_artifact": {
+    "confidence": "HIGH",
+    "visual_elements": [
+      {
+        "id": "title",
+        "kind": "title",
+        "text": "The Real Barrier",
+        "bbox": [
+          0.06,
+          0.25,
+          0.36,
+          0.33
+        ]
+      },
+      {
+        "id": "left-chevron",
+        "kind": "diagram",
+        "text": "",
+        "bbox": [
+          0.06,
+          0.4,
+          0.36,
+          0.52
+        ]
+      },
+      {
+        "id": "left-icon",
+        "kind": "icon",
+        "text": "",
+        "bbox": [
+          0.2,
+          0.43,
+          0.22,
+          0.49
+        ]
+      },
+      {
+        "id": "left-text",
+        "kind": "callout",
+        "text": "Not Lack of Ideas\nClinicians have brilliant insights\ndaily",
+        "bbox": [
+          0.08,
+          0.56,
+          0.33,
+          0.7
+        ]
+      },
+      {
+        "id": "middle-chevron",
+        "kind": "diagram",
+        "text": "",
+        "bbox": [
+          0.36,
+          0.4,
+          0.66,
+          0.52
+        ]
+      },
+      {
+        "id": "middle-icon",
+        "kind": "icon",
+        "text": "",
+        "bbox": [
+          0.5,
+          0.43,
+          0.52,
+          0.49
+        ]
+      },
+      {
+        "id": "middle-text",
+        "kind": "callout",
+        "text": "Missing Structure\nNo clear process to pursue\ninnovation",
+        "bbox": [
+          0.38,
+          0.56,
+          0.62,
+          0.7
+        ]
+      },
+      {
+        "id": "right-chevron",
+        "kind": "diagram",
+        "text": "",
+        "bbox": [
+          0.66,
+          0.4,
+          0.96,
+          0.52
+        ]
+      },
+      {
+        "id": "right-icon",
+        "kind": "icon",
+        "text": "",
+        "bbox": [
+          0.8,
+          0.43,
+          0.82,
+          0.49
+        ]
+      },
+      {
+        "id": "right-text",
+        "kind": "callout",
+        "text": "Absent Safety\nNo psychological space to\nexperiment",
+        "bbox": [
+          0.68,
+          0.56,
+          0.92,
+          0.7
+        ]
+      }
+    ],
+    "extracted_text": "The Real Barrier Not Lack of Ideas Clinicians have brilliant insights daily Missing Structure No clear process to pursue innovation Absent Safety No psychological space to experiment",
+    "layout_description": "A large dark-blue title sits in the upper left on a white background. Across the middle are three pale green right-pointing chevron panels with simple black icons, each paired with a blue heading and short explanatory text beneath.",
+    "slide_title": "The Real Barrier",
+    "text_blocks": [
+      "The Real Barrier",
+      "Not Lack of Ideas\nClinicians have brilliant insights\ndaily",
+      "Missing Structure\nNo clear process to pursue\ninnovation",
+      "Absent Safety\nNo psychological space to\nexperiment"
+    ],
+    "artifact_path": "",
+    "slide_id": "5_The-Real-Barrier",
+    "card_number": null,
+    "coverage": "perceived",
+    "confidence_score": 0.98,
+    "provider_model_id": "gpt-5.5",
+    "reading_path": null,
+    "source_png_path": "C:\\Users\\juanl\\OneDrive\\Desktop\\z-2026-06-21\\5_The-Real-Barrier.png"
+  }
+}

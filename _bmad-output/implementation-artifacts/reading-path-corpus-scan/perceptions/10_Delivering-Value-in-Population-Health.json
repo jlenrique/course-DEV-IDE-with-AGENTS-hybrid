@@ -1,0 +1,86 @@
+{
+  "provenance": {
+    "captured_at": "2026-06-21T22:40:45.375093+00:00",
+    "model_id": "gpt-5.5",
+    "source_png": "C:\\Users\\juanl\\OneDrive\\Desktop\\z-2026-06-21\\10_Delivering-Value-in-Population-Health.png",
+    "scan_tool": "scripts/analysis/reading_path_corpus_scan.py"
+  },
+  "perception_artifact": {
+    "confidence": "HIGH",
+    "visual_elements": [
+      {
+        "id": "title",
+        "kind": "title",
+        "text": "Delivering Value in Population Health",
+        "bbox": [
+          0.07,
+          0.15,
+          0.84,
+          0.25
+        ]
+      },
+      {
+        "id": "innovation_callout",
+        "kind": "callout",
+        "text": "Innovation Develop creative solutions to complex health challenges",
+        "bbox": [
+          0.06,
+          0.29,
+          0.52,
+          0.65
+        ]
+      },
+      {
+        "id": "collaboration_callout",
+        "kind": "callout",
+        "text": "Collaboration Work across sectors to maximize impact",
+        "bbox": [
+          0.58,
+          0.29,
+          0.94,
+          0.6
+        ]
+      },
+      {
+        "id": "community_engagement_callout",
+        "kind": "callout",
+        "text": "Community Engagement Understand & address local needs",
+        "bbox": [
+          0.06,
+          0.62,
+          0.5,
+          0.91
+        ]
+      },
+      {
+        "id": "health_equity_callout",
+        "kind": "callout",
+        "text": "Health Equity Advocate for policies promoting fairness",
+        "bbox": [
+          0.58,
+          0.62,
+          0.95,
+          0.91
+        ]
+      }
+    ],
+    "extracted_text": "Delivering Value in Population Health Innovation Develop creative solutions to complex health challenges Collaboration Work across sectors to maximize impact Community Engagement Understand & address local needs Health Equity Advocate for policies promoting fairness",
+    "layout_description": "White slide with a large dark-blue title across the upper left. Four icon-and-text callouts are arranged in a two-column, two-row grid beneath the title.",
+    "slide_title": "Delivering Value in Population Health",
+    "text_blocks": [
+      "Delivering Value in Population Health",
+      "Innovation\nDevelop creative solutions to complex health\nchallenges",
+      "Collaboration\nWork across sectors to maximize impact",
+      "Community Engagement\nUnderstand & address local needs",
+      "Health Equity\nAdvocate for policies promoting fairness"
+    ],
+    "artifact_path": "",
+    "slide_id": "10_Delivering-Value-in-Population-Health",
+    "card_number": null,
+    "coverage": "perceived",
+    "confidence_score": 0.98,
+    "provider_model_id": "gpt-5.5",
+    "reading_path": null,
+    "source_png_path": "C:\\Users\\juanl\\OneDrive\\Desktop\\z-2026-06-21\\10_Delivering-Value-in-Population-Health.png"
+  }
+}

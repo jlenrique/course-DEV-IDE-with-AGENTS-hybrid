@@ -1,0 +1,156 @@
+{
+  "provenance": {
+    "captured_at": "2026-06-21T22:40:45.375093+00:00",
+    "model_id": "gpt-5.5",
+    "source_png": "C:\\Users\\juanl\\OneDrive\\Desktop\\z-2026-06-21\\16_Motivation-in-Health-Interventions.png",
+    "scan_tool": "scripts/analysis/reading_path_corpus_scan.py"
+  },
+  "perception_artifact": {
+    "confidence": "HIGH",
+    "visual_elements": [
+      {
+        "id": "title",
+        "kind": "title",
+        "text": "Motivation in Health Interventions",
+        "bbox": [
+          0.06,
+          0.16,
+          0.44,
+          0.31
+        ]
+      },
+      {
+        "id": "left_heading",
+        "kind": "callout",
+        "text": "Caution with Extrinsic Focus",
+        "bbox": [
+          0.06,
+          0.39,
+          0.27,
+          0.47
+        ]
+      },
+      {
+        "id": "left_bullet_1",
+        "kind": "bullet",
+        "text": "Can lead to low trust",
+        "bbox": [
+          0.06,
+          0.5,
+          0.28,
+          0.55
+        ]
+      },
+      {
+        "id": "left_bullet_2",
+        "kind": "bullet",
+        "text": "May undermine intrinsic motivation",
+        "bbox": [
+          0.06,
+          0.57,
+          0.31,
+          0.65
+        ]
+      },
+      {
+        "id": "right_heading",
+        "kind": "callout",
+        "text": "Value of Intrinsic Motivation",
+        "bbox": [
+          0.33,
+          0.39,
+          0.5,
+          0.47
+        ]
+      },
+      {
+        "id": "right_bullet_1",
+        "kind": "bullet",
+        "text": "Fosters positive behaviors",
+        "bbox": [
+          0.33,
+          0.5,
+          0.51,
+          0.59
+        ]
+      },
+      {
+        "id": "right_bullet_2",
+        "kind": "bullet",
+        "text": "Enhances work enjoyment",
+        "bbox": [
+          0.33,
+          0.61,
+          0.51,
+          0.7
+        ]
+      },
+      {
+        "id": "right_bullet_3",
+        "kind": "bullet",
+        "text": "Improves quality of work",
+        "bbox": [
+          0.33,
+          0.72,
+          0.58,
+          0.76
+        ]
+      },
+      {
+        "id": "right_bullet_4",
+        "kind": "bullet",
+        "text": "Aids worker retention",
+        "bbox": [
+          0.33,
+          0.78,
+          0.56,
+          0.82
+        ]
+      },
+      {
+        "id": "right_photo",
+        "kind": "photo",
+        "text": "",
+        "bbox": [
+          0.62,
+          0.0,
+          1.0,
+          0.89
+        ]
+      },
+      {
+        "id": "bottom_black_band",
+        "kind": "shape",
+        "text": "",
+        "bbox": [
+          0.62,
+          0.89,
+          1.0,
+          1.0
+        ]
+      }
+    ],
+    "extracted_text": "Motivation in Health Interventions Caution with Extrinsic Focus Can lead to low trust May undermine intrinsic motivation Value of Intrinsic Motivation Fosters positive behaviors Enhances work enjoyment Improves quality of work Aids worker retention",
+    "layout_description": "Large dark-blue title appears in the upper left on a white background. Below it are two text columns with headings and bullet lists, while the right third of the slide contains a large photo of a handshake between people in medical clothing with visible stock-image watermarks.",
+    "slide_title": "Motivation in Health Interventions",
+    "text_blocks": [
+      "Motivation in Health Interventions",
+      "Caution with Extrinsic Focus",
+      "Can lead to low trust",
+      "May undermine intrinsic motivation",
+      "Value of Intrinsic Motivation",
+      "Fosters positive behaviors",
+      "Enhances work enjoyment",
+      "Improves quality of work",
+      "Aids worker retention"
+    ],
+    "artifact_path": "",
+    "slide_id": "16_Motivation-in-Health-Interventions",
+    "card_number": null,
+    "coverage": "perceived",
+    "confidence_score": 0.95,
+    "provider_model_id": "gpt-5.5",
+    "reading_path": null,
+    "source_png_path": "C:\\Users\\juanl\\OneDrive\\Desktop\\z-2026-06-21\\16_Motivation-in-Health-Interventions.png"
+  }
+}
