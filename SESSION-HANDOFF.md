@@ -1,3 +1,30 @@
+# Session Handoff — 2026-06-21 (Class S — `vision-perceiver-real` enabler CLOSED: vision perception now GENUINELY LIVE on gpt-5.5; P2-4b unblocked pending operator validation slides)
+
+**Final class:** S (substrate: real gpt-5.5 multimodal perceiver replacing a fixture stub; registry/pricing/cascade gpt-5.5 add; 4 governance filings). **Branch:** `fidelity-perception-arc-2026-06-19`. **HEAD: `fde790f`; origin in sync; master-merge SKIPPED (scoped arc branch).**
+
+## The headline
+Building the P2-4b labeling kit surfaced that the "committed" vision perceiver was a **fixture-backed contract**, not live — `app/specialists/vision/provider.py` POSTed to an unconfigured `VISION_PROVIDER_ENDPOINT` (default `vision-fixture-v1`); only a hand-authored slide-01 golden on disk. P2-2 closed "real PerceptionArtifact" but no model was wired. Per operator directive (**no mocks — everything real, live, OpenAI 5.5**), shipped the **`vision-perceiver-real`** enabler: `perceive_png` now makes a genuine **gpt-5.5** multimodal call via the house `ChatOpenAI`/cascade. **Perception is now genuinely live** (live AC-8: all 6 frozen-corpus PNGs HIGH/perceived; slide-01 anchors $4.5T/74%/3x present).
+
+## BMAD flow executed (operator-directed: rapid-dev + fully-spawned party + dev agent)
+Party-mode **5/5 GREEN-WITH-AMENDMENTS** green-light → one-page spec (`spec-vision-perceiver-real-gpt55.md`) → `bmad-quick-dev` dev agent (RED-first) → T11 battery → **3-layer `bmad-code-review`** (Acceptance Auditor 10/10 PASS-WITH-NITS; Blind+Edge Hunters found defects) → triage → dev remediation **M1–M3 + S2–S6** → party-mode **4/4 CLOSE** (no impasse). Commit `fde790f`, pushed.
+
+## Code-review findings remediated
+- **M1** catalog-snapshot RED (gpt-5.5 + **pre-existing gpt-5.4** drift) → refreshed → PASS.
+- **M2** `make_chat_model`/`ModelResolutionError` escaped the retry/error-pause taxonomy → mapped to non-retryable `vision.provider.model-resolution` (RED-first).
+- **M3** slide_id mismatch was **silently overwritten** (masking regression) → now raises non-retryable `vision.provider.contract`; `provider_model_id`/`source_png_path` code-controlled (RED-first).
+- **S2** JSON-repair no-op at temp=0 → injects feedback message; **S4** assert→raise; **S5** RateLimitError reachable; **S3** source_png_path code-controlled + recordings normalized; **S6** live anchors variant-robust.
+
+## Evidence-integrity filings (Mary close-conditions, all landed in `fde790f`)
+Anti-pattern **G1** (fixture-backed contract mistaken for live capability); deferred-inventory **`believed-green-tracker-audit`** (two-strata sweep of all 14 specialists + config snapshots) + **N1** bbox-out-of-range-bucketing + **N2** empty-visual-elements-degradation + **normalize-on-write** follow-ons; cross-trial §A G5 bidirectional entry; STATE-OF-THE-APP §11 **legible dated correction** of the P2-2 "real" line.
+
+## What is next — BOUNDARY: awaiting operator validation slides
+P2-4b labeling kit now runs on a REAL perceiver. **Operator is creating a diverse, disjoint held-out slide set** (≥6–8 slides spanning layouts + ≥1 known-wrong-default) for downstream validation. When those land: build the labeling kit (render → live gpt-5.5 perceive → neutral fill-in template), operator labels scan order (~1h), then the P2-4b NEW CYCLE (calibration riders: ordinal-gate + conformance keying-contract). NOTE: live AC-8 classified all 6 frozen slides `z_pattern` — a calibration smell P2-4b must scrutinize.
+
+## Validation summary
+47 deterministic vision/perception/catalog tests green; cascade validate PASS (20 specialists); ruff clean; lint-imports 15/0; live AC-8 passed (gpt-5.5, 6/6 HIGH/perceived). Ambient orthogonal failure: `test_cleanup_threads` (psycopg/ProactorEventLoop Windows async) — not this change.
+
+---
+
 # Session Handoff — 2026-06-21 OVERNIGHT (Class S — P2 arc driven to machinery-complete: P2-3 closed + AC-6 strike + P2-4a closed; P2-4b plan memorialized)
 
 **Final class:** S (two full NEW CYCLE T11 closes with fully-spawned party-mode gates; an operator-authorized live AC-6 strike run; substrate patches to vision/classifier; canonical-doc updates). **Branch:** `fidelity-perception-arc-2026-06-19`. **HEAD: `1ed7e2a`; origin in sync; master-merge SKIPPED (scoped arc branch).** ~2.5h overnight session (2026-06-20 22:58 → 2026-06-21 ~01:30).
