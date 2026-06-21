@@ -1,3 +1,26 @@
+# Session Handoff — 2026-06-21 (Class S — Reading-path patterns: `/goal` v3 autonomous run reached the OPERATOR-REVIEW checkpoint; v0-draft catalog produced from a live gpt-5.5 scan of 54 slides)
+
+**Final class:** S. **Branch:** `fidelity-perception-arc-2026-06-19`. **HEAD: `6e61f26`** (+ handoff commit); origin in sync; master-merge SKIPPED.
+
+## Headline
+The `/goal` v3 charter (claude-goal.txt) ran autonomously through Phase 2a→2b→2c→Phase3-draft and **stopped at the intended operator-review checkpoint**. A live gpt-5.5 scan of the 54 working slides (0 errors, first-run-stands, held-out 14 untouched) produced the **v0-draft patterns catalog** for operator review round 1.
+
+## What the scan found (evidence: `_bmad-output/implementation-artifacts/reading-path-corpus-scan/`)
+- **`_looks_z` over-claims `z_pattern`: 43/54**, with **24 false-positives** (focal/visual-hero slides, no diagonal sweep). This is the #1 thing the hybrid (c) classifier must fix.
+- **Two patterns ADMITTED by the ratified rubric** (N≥4, ≥2 genres, narration-delta, non-overlap): **`image_dominant`** (15; photo/illustration hero) + **`diagram_driven`** (9; structured-visual). Split confirmed by dominant-element kind (14 photo + 1 illustration + 9 diagram).
+- **Caravaggio's predicted `two_up_comparison`/`triptych_3up`/`grid_quadrant`/`multi_column`: ZERO genuine fits** → NOT admitted (no quota; defined-but-deferred). Evidence overrode the prediction — exactly the data-determined discipline.
+- **`f_pattern` mis-calibrated** — fired on 3 LOW-density slides (opposite of dense-text). Flagged for review.
+- Genuine fits: z (~19), sequence_numbered (5), top_down (2), center_out (1).
+- **Default = `top_down` position-order** (operator-ratified; NOT Z).
+
+## Where this stopped (operator-review checkpoint — 5 open questions)
+The v0-draft catalog (`reading-path-patterns-catalog.md`) carries 5 open questions for round 1: (1) keep/fold `diagram_driven`; (2) re-examine `f_pattern` mis-calibration; (3) want a text-hero `headline_dominant` split out of image_dominant; (4) OK to leave the 4 unpopulated patterns deferred; (5) treat bare `N_.png` dividers as a sub-case. **AFTER review rounds:** party green-light the tuned catalog → dev agent builds the hybrid (c) classifier (LLM hint + tightened `_looks_z`; definitions-under-test; default-degradation RED-first) → bmad-code-review → P2-4b calibration (operator labels the held-out 14; top-1≥0.85 + ≥80% conformance).
+
+## Validation
+54/54 perceived live (gpt-5.5, 0 errors); held-out 14 hard-excluded (count==54 asserted); no production code modified (analysis-only); evidence committed.
+
+---
+
 # Session Handoff — 2026-06-21 (Class S — `vision-perceiver-real` enabler CLOSED: vision perception now GENUINELY LIVE on gpt-5.5; P2-4b unblocked pending operator validation slides)
 
 **Final class:** S (substrate: real gpt-5.5 multimodal perceiver replacing a fixture stub; registry/pricing/cascade gpt-5.5 add; 4 governance filings). **Branch:** `fidelity-perception-arc-2026-06-19`. **HEAD: `fde790f`; origin in sync; master-merge SKIPPED (scoped arc branch).**
