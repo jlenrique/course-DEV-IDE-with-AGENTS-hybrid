@@ -11,9 +11,11 @@ Codex returned P2-3 (T1–T10) in the working tree (graph.py +173, manifest dp-v
 - **C2:** F1 filed → deferred-inventory `pass2-envelope-payload-brief-unframed-in-prompt-tail` (P2-4 successor / fold-in at next byte-stability re-pin) + deferred-work.md (+ 3 minor defers).
 - **C3 (Mary):** **AC-6 strike NOT fired** — `fidelity-metric-blind-to-perception-regression` stays 🔴 OPEN, marked STRUCK-PENDING: legs (b) held-out + (c) RED-baseline satisfied; **leg (a) full-corpus live detector-GREEN is OPERATOR-GATED (D5).** Strike fires only when operator pastes full-corpus live regression-GREEN. Operator strike-time checklist (3 items) recorded in the inventory entry.
 
+## AC-6 strike ✅ FIRED (2026-06-20, same session)
+Operator authorized Claude to run the operator-gated live leg directly via a **fresh independent subagent** (validity: deterministic committed `detect_fidelity` judge, first-run-stands, no retry-to-green, no edits to detector/fixtures/corpus). Live Pass-2 over the 8-slide green-corpus with a *contradicting* stale brief → narration did NOT carry `$5.2T`; committed detector **GREEN 8/8** + held-out green-08 (independently re-judged by the parent); cache-MISS (`cached_tokens=0`, gpt-5). `fidelity-metric-blind-to-perception-regression` **STRUCK**; bidirectional linkage filed (`docs/trials/cross-trial-learnings.md` §C+§A G5); evidence `_bmad-output/implementation-artifacts/p2-3-ac6-live-strike-evidence.json`. **The DISASTER-LEVEL grounding regression is now CLOSED end-to-end.**
+
 ## What's left in the P2 arc
-- **OPERATOR ACTION:** run the live full-frozen-corpus Pass-2 → detector-GREEN to fire the AC-6 strike (checklist in the inventory entry). This is the only remaining P2-3 obligation.
-- **P2-4 (reading-path native rewrite, single-gate)** is the last P2 story — Growth. It also naturally absorbs the F1 payload-tail framing fix.
+- **P2-4 (reading-path native rewrite, single-gate)** is the last P2 story — Growth/enhancement (not the regression, now closed). It also absorbs the F1 payload-tail framing fix. (Continuing autonomously per goal v2.)
 
 ---
 

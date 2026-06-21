@@ -1,0 +1,128 @@
+{
+  "strike": "P2-3 AC-6 live independent verification",
+  "key_loaded": true,
+  "key_length": 164,
+  "model_id": "gpt-5",
+  "cache_miss_proof": {
+    "prompt_tokens": 12982,
+    "cached_tokens": 0,
+    "raw_usage_metadata": {
+      "input_token_details": {
+        "audio": 0,
+        "cache_read": 0
+      },
+      "input_tokens": 12982,
+      "output_token_details": {
+        "audio": 0,
+        "reasoning": 4800
+      },
+      "output_tokens": 7557,
+      "total_tokens": 20539
+    }
+  },
+  "green01_brief_stale_claim": "$5.2T line+bars market growth chart",
+  "green01_perceived_truth": "$4.5T building photo (perception_artifacts green-01)",
+  "narration_script": [
+    {
+      "card_number": 1,
+      "id": "seg-green-01",
+      "narration_text": "Let\u2019s start with the economic reality. The green stat callouts at the center foreground scale, consolidation, and overhead growth\u2014together, they set the operating envelope for every decision here. Against that backdrop, the building photo behind the numbers reinforces that these forces land in real systems, so our focus has to be on reducing administrative drag while protecting clinical capacity.",
+      "slide_id": "green-01"
+    },
+    {
+      "card_number": 2,
+      "id": "seg-green-02",
+      "narration_text": "Here\u2019s the \u201cyes, but.\u201d In the left bar, baseline completion sits low; the right bar jumps after support is added. The bar chart shows that enablement\u2014not just effort\u2014moves the metric from 42% to 68%, signaling that targeted support is a lever worth scaling.",
+      "slide_id": "green-02"
+    },
+    {
+      "card_number": 3,
+      "id": "seg-green-03",
+      "narration_text": "Now connect improvement to demand. Trace the upward line from January to March\u2014rising from 11 to 19 cases\u2014which signals volume growth. With cases climbing, pairing support with capacity planning is the pragmatic response.",
+      "slide_id": "green-03"
+    },
+    {
+      "card_number": 4,
+      "id": "seg-green-04",
+      "narration_text": "We\u2019ve moved from macro pressure to two actionable levers: support and capacity for rising cases. Now, shift to how work gets published\u2014governance. In the three-row table at center-left, each stage shows complete, indicating a functioning review pipeline that reduces rework and speeds safe release.",
+      "slide_id": "green-04"
+    },
+    {
+      "card_number": 5,
+      "id": "seg-green-05",
+      "narration_text": "Follow the connected boxes across the center: intake, review, then publish. This workflow operationalizes the three-stage process\u2014intake clarifies scope, review standardizes quality, and publish commits the decision\u2014so output is reliable, repeatable, and timely.",
+      "slide_id": "green-05"
+    },
+    {
+      "card_number": 6,
+      "id": "seg-green-06",
+      "narration_text": "With a governed workflow in place, let\u2019s anchor choices in context. The title at center names it: decision context. Frame every option against the constraints that matter here rather than preferences.",
+      "slide_id": "green-06"
+    },
+    {
+      "card_number": 7,
+      "id": "seg-green-07",
+      "narration_text": "Here\u2019s the constraint that turns the dial: administrative burden. The section divider across the middle elevates it to a first-order concern\u2014added steps without removing waste will backfire, especially on clinician time and support teams.",
+      "slide_id": "green-07"
+    },
+    {
+      "card_number": 8,
+      "id": "seg-green-08",
+      "narration_text": "Bring the plan inside the window shown: 12 months. The callout on the right fixes the horizon, and the clinic image behind it reminds us these changes must fit live workflows. Prioritize work that trims administrative friction and can be executed end-to-end within a year.",
+      "slide_id": "green-08"
+    }
+  ],
+  "normalized_narration_segments": [
+    {
+      "slide_id": "green-01",
+      "text": "Let\u2019s start with the economic reality. The green stat callouts at the center foreground scale, consolidation, and overhead growth\u2014together, they set the operating envelope for every decision here. Against that backdrop, the building photo behind the numbers reinforces that these forces land in real systems, so our focus has to be on reducing administrative drag while protecting clinical capacity."
+    },
+    {
+      "slide_id": "green-02",
+      "text": "Here\u2019s the \u201cyes, but.\u201d In the left bar, baseline completion sits low; the right bar jumps after support is added. The bar chart shows that enablement\u2014not just effort\u2014moves the metric from 42% to 68%, signaling that targeted support is a lever worth scaling."
+    },
+    {
+      "slide_id": "green-03",
+      "text": "Now connect improvement to demand. Trace the upward line from January to March\u2014rising from 11 to 19 cases\u2014which signals volume growth. With cases climbing, pairing support with capacity planning is the pragmatic response."
+    },
+    {
+      "slide_id": "green-04",
+      "text": "We\u2019ve moved from macro pressure to two actionable levers: support and capacity for rising cases. Now, shift to how work gets published\u2014governance. In the three-row table at center-left, each stage shows complete, indicating a functioning review pipeline that reduces rework and speeds safe release."
+    },
+    {
+      "slide_id": "green-05",
+      "text": "Follow the connected boxes across the center: intake, review, then publish. This workflow operationalizes the three-stage process\u2014intake clarifies scope, review standardizes quality, and publish commits the decision\u2014so output is reliable, repeatable, and timely."
+    },
+    {
+      "slide_id": "green-06",
+      "text": "With a governed workflow in place, let\u2019s anchor choices in context. The title at center names it: decision context. Frame every option against the constraints that matter here rather than preferences."
+    },
+    {
+      "slide_id": "green-07",
+      "text": "Here\u2019s the constraint that turns the dial: administrative burden. The section divider across the middle elevates it to a first-order concern\u2014added steps without removing waste will backfire, especially on clinician time and support teams."
+    },
+    {
+      "slide_id": "green-08",
+      "text": "Bring the plan inside the window shown: 12 months. The callout on the right fixes the horizon, and the clinic image behind it reminds us these changes must fit live workflows. Prioritize work that trims administrative friction and can be executed end-to-end within a year."
+    }
+  ],
+  "green01_narration_verbatim": "Let\u2019s start with the economic reality. The green stat callouts at the center foreground scale, consolidation, and overhead growth\u2014together, they set the operating envelope for every decision here. Against that backdrop, the building photo behind the numbers reinforces that these forces land in real systems, so our focus has to be on reducing administrative drag while protecting clinical capacity.",
+  "green01_contains_perceived_4_5T": false,
+  "green01_contains_stale_5_2T": false,
+  "green01_contains_stale_linebars": false,
+  "detector_full_corpus": {
+    "pass_result": {
+      "blocking": [],
+      "evaluated_segments": 8
+    },
+    "error": null
+  },
+  "detector_held_out_green08": {
+    "pass_result": {
+      "blocking": [],
+      "evaluated_segments": 1
+    },
+    "error": null
+  },
+  "verdict": "STRIKE-GREEN"
+}

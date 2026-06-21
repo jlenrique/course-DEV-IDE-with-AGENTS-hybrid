@@ -65,7 +65,7 @@ _(empty)_
 
 ### G5 (§15 final operator handoff / DESCRIPT bundle)
 
-_(empty)_
+- **P2-3 perception-grounding regression-green confirmed live (2026-06-20).** After P2-3 wired Irene Pass-2 to ground on the rich perceived `PerceptionArtifact` (not Gary's brief), a live Pass-2 over the 8-slide green-corpus — fed a deliberately *contradicting* stale brief (`$5.2T line+bars` vs perceived `$4.5T` + building photo) — produced narration that did **not** carry the stale brief figure; the committed `detect_fidelity` (P2-1) returned GREEN 8/8 + held-out green-08 clean (cache-MISS, gpt-5). The pre-fix regression ($5.2T leak) is **not reproduced**. Nuance recorded for future strengthening: green-01 narration grounded qualitatively (building photo / stat callouts) without restating `$4.5T`; the load-bearing signal is the absence of the brief's `$5.2T`/`line+bars` + positive perceived grounding elsewhere (green-08 emitted the perceived `12 months`). Evidence: `_bmad-output/implementation-artifacts/p2-3-ac6-live-strike-evidence.json`. Bidirectional → §C strike record.
 
 ---
 
@@ -86,7 +86,7 @@ These ARE valid cross-trial learnings; they refine the methodology over time.
 
 When a tracked trial fires a deferred-inventory reactivation trigger, record it here AND strikethrough the inventory entry with citation back here.
 
-_(Empty until first tracked trial — Trial-3 — fires triggers. Expected first firings include `Epic 15 reactivation` chain unlocked by `at least one tracked trial run completed` trigger.)_
+- **STRIKE (2026-06-20): `fidelity-metric-blind-to-perception-regression`** — the DISASTER-LEVEL grounding-leg coverage-debt is **STRUCK** after P2-3's live AC-6 regression-green leg cleared. A6 conjunctive gate satisfied: (a) detector-GREEN across the **full frozen corpus** (live Pass-2 over green-corpus 8/8, independently re-judged by the committed `detect_fidelity`); (b) detector-GREEN on **held-out** green-08; (c) cited **pre-fix RED baseline** (committed RED-first `test_irene_pass2_perceived_visual_authority.py` + Codex A7 `$5.2T→FidelityError`). Mary's 3 checklist items met: real prompt incl. un-framed payload tail; **cache-MISS** (`cached_tokens=0`, gpt-5) = true cold live call; held-out=green-08 recorded. Run executed by a fresh independent subagent under the V1–V4 validity protocol (deterministic committed judge; first-run-stands; no retry-to-green; no edits to detector/fixtures/corpus). NOT a full 40-node tracked trial — a targeted live Pass-2-over-corpus strike run (the manifest-projection leg AC-1 is separately covered by the committed manifest-payload contract test). Evidence: `_bmad-output/implementation-artifacts/p2-3-ac6-live-strike-evidence.json`. Bidirectional → inventory entry strikethrough cites this record; see also §A G5 (2026-06-20).
 
 ---
 
