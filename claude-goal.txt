@@ -1,0 +1,46 @@
+GOAL (v3, 2026-06-21) — Reading-path patterns catalog + hybrid (c) pattern-ID: scan, cluster, and draft the catalog + script-writer guidance autonomously, then STOP for operator review of the proposed identifications + guidance.
+
+Branch: fidelity-perception-arc-2026-06-19. Vision perception is now GENUINELY LIVE on gpt-5.5 (vision-perceiver-real enabler CLOSED at fde790f, pushed). Operator-confirmed: pursue HYBRID architecture (c) + the Z-default refinement. Cost is NOT a constraint — optimize for time, reliability, and minimal operator effort.
+
+AUTHORITY DOCS (read at T1, in order):
+  1. _bmad-output/implementation-artifacts/reading-path-patterns-design-decisions-2026-06-21.md  (RATIFIED design: architecture (c), catalog entry schema, taxonomy, anchored-clustering method, admission rubric, validation discipline, default refinement). This is binding.
+  2. _bmad-output/implementation-artifacts/reading-path-holdout-split-2026-06-21.md  (Phase 2a DONE — the 14 held-out slides are RESERVED; do NOT touch them during definition/clustering).
+  3. scripts/utilities/reading_path_classifier.py + app/specialists/vision/{provider,_act,payload_contract}.py + app/models/perception/perception_artifact.py  (the live perceiver + deterministic geometry classifier this work evolves).
+  4. CLAUDE.md (BMAD sprint governance; pipeline-lockstep; deferred-inventory governance; push-cadence). Memory: no-mocks-real-live-apis; bmad-workflows-party-and-dev-agent.
+
+MODE: Fully autonomous, BMAD-disciplined. Substantive dispositions (admitting a contested pattern; catalog v1 green-light; scope/sequencing; impasse) -> FULLY-SPAWNED bmad-party-mode (real subagents). All CODE manipulation -> a DEV AGENT (rapid-dev), never Claude-direct. bmad-code-review before any production code is "done". No mocks — perception + LLM pattern-ID are real live gpt-5.5 calls; test determinism via recorded-real responses behind a parse seam ONLY, never a fixture on the production path. Push at safety checkpoints + at stop (origin/fidelity-perception-arc-2026-06-19; no force-push; no hook bypass).
+
+CORPUS: C:\Users\juanl\OneDrive\Desktop\z-2026-06-21 (68 real production PNG slides). Working/discovery set = the 54 non-held-out slides (per the manifest). Render is not needed — they are already PNGs.
+
+PHASE 2a — DONE (held-out split committed before definition).
+
+PHASE 2b — PERCEIVE + FIT (dev agent; evidence-producing, no production-code changes yet):
+  - Run the LIVE gpt-5.5 perceiver over the 54 working slides -> real PerceptionArtifacts (elements + bboxes + text). First-run-stands; capture raw outputs to disk as evidence (provenance-stamped, like the AC-9 recordings).
+  - Compute the content-blind feature vector (design-decisions D4: ~6-8 perceiver-derived features — anchor position/count, reading-vector, text-density band, focal-singularity, CTA-presence, whitespace-dominance). Features come from the PERCEIVER, never from the classifier-under-test (two-source rule).
+  - Fit each working slide to the existing patterns + the top_down position-order default -> an EVIDENCE REPORT: per-slide {perceived summary, feature vector, fitted pattern + confidence, residue? y/n}. This demonstrates operator use #1 (matching) and quarantines the residue.
+
+PHASE 2c — CLUSTER THE RESIDUE (operator use #2; admission-gated):
+  - Cluster ONLY the residue on the fixed feature vector -> candidate emergent patterns.
+  - Apply the ADMISSION RUBRIC strictly (design-decisions): N>=4 exemplars across >=2 content genres + a stated narration-delta + behavioral non-overlap + stability under 2-3 perturbations. Candidates failing any bar go to the default bucket, NOT the catalog. Expect to REJECT some candidates (a run promoting 100% is a red flag). Count is DATA-DETERMINED (could be ~3 net-new or ~11 total — do not force a 2x quota).
+  - Caravaggio's taxonomy moves are pre-ratified (split multi_column -> two_up_comparison + triptych_3up; promote headline_dominant + image_dominant; fold hub-and-spoke -> center_out; CTA -> content tag) — confirm each against the corpus evidence; admit only what the rubric supports.
+
+PHASE 3 — DRAFT the catalog + guidance (the artifact for operator review):
+  - Write _bmad-output/implementation-artifacts/reading-path-patterns-catalog.md (v0-draft, v-stamped) using the ENRICHED ENTRY SCHEMA (design-decisions D2: structural_signature, perceptual_rationale, reading_direction, canonical_scan_order, entry_anchor + resolution_beat, dwell_profile, emphasis_targets, narration_delta, modifier_handling, exemplars + near_misses, confidence_and_fallback). Cover the existing patterns + admitted candidates + the explicit top_down position-order DEFAULT entry. Admission rubric as the governance header. Every entry cites exemplar slide IDs from the 54.
+  - Draft the SCRIPT-WRITER GUIDANCE (how each pattern instructs Irene Pass-2 narration: entry anchor, dwell/skip, emphasis, transitions, resolution beat).
+  - Produce the PROPOSED IDENTIFICATIONS table: per working slide -> proposed pattern + confidence + (for residue) candidate-cluster + narration-delta.
+
+>>> STOP HERE FOR OPERATOR REVIEW <<<
+This is the operator's review checkpoint. Present: (1) the proposed per-slide identifications, (2) the draft catalog (definitions + scan orders + dwell/emphasis), (3) the draft script-writer guidance. The operator will run SEVERAL ROUNDS of feedback to tune the hybrid (proposed identifications + guidance). Do NOT proceed to build the production hybrid classifier or run P2-4b calibration until the operator has reviewed + tuned the catalog + guidance.
+
+AFTER OPERATOR REVIEW ROUNDS (do NOT start before the operator engages):
+  - Party-mode green-light the tuned catalog v1.
+  - Dev agent builds the HYBRID (c) classifier: deterministic geometry stays the authoritative scan-order producer + default; perceiver emits an in-band pattern hint; a separate catalog-guided gpt-5.5 call escalates ONLY on low-confidence/disagreement; tighten _looks_z. Catalog definitions under test (golden exemplars); default-degradation RED-first (closes vision-perceiver-empty-visual-elements-degradation); vacuous-skip -> must-fail; hybrid-arbitration test. bmad-code-review before done.
+  - P2-4b calibration: operator labels the held-out 14 (independent scan order, >=1 known-wrong-default) -> committed classifier scored -> top-1 >=0.85 + confusion matrix + >=80% conformance gate.
+
+STOP CONDITIONS — whichever first:
+  (a) Phase 3 draft complete (proposed identifications + draft catalog + guidance) -> STOP for operator review (the intended stop); OR
+  (b) a documented party-mode impasse -> Dr. Quinn synthesis -> John PM tiebreaker -> operator; OR
+  (c) a blocking dependency that genuinely needs the operator.
+At any stop: update SESSION-HANDOFF + next-session-start-here + deferred-inventory (catalog backlinks + the vo-narration-layout-tracking-trained-patterns coupling); commit; push; post a one-screen summary.
+
+NEVER: touch the 14 held-out slides during definition/clustering; put a mock/fixture on the production return path; build the production classifier or run P2-4b calibration before operator review of the catalog+guidance; retry-to-green; force-push; bypass hooks.
