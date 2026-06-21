@@ -53,3 +53,15 @@ entries:
     cost_per_million_output_tokens: "10.00"
     tier: "reasoning"
     available: true
+  - id: "55555555-5555-4555-8555-555555555555"
+    # vision-perceiver-real (2026-06-21): live multimodal vision perceiver.
+    # Tier-2 add ratified by party-mode green-light 5/5. Pricing verified
+    # against OpenAI public pricing 2026-06-21 ($5/$30 per 1M tokens).
+    model_id: "gpt-5.5"
+    display_name: "GPT-5.5 (multimodal reasoning)"
+    provider: "openai"
+    context_window: 400000
+    cost_per_million_input_tokens: "5.00"
+    cost_per_million_output_tokens: "30.00"
+    tier: "reasoning"
+    available: true

@@ -1,0 +1,111 @@
+{
+  "_provenance": {
+    "captured_at": "2026-06-21T21:29:50.283258+00:00",
+    "harness": "tests/specialists/vision/test_vision_live_roundtrip.py",
+    "model_id": "gpt-5.5",
+    "prompt_sha256": "bc9b7c1c1dcbc7c729f759129ada19901a84da6753b44068dd7bc982b37300da",
+    "slide_id": "slide-01",
+    "source_png": "runs/compositor/assembly-bundle/visuals/slide-01.png"
+  },
+  "response": {
+    "artifact_path": "",
+    "card_number": null,
+    "confidence": "HIGH",
+    "confidence_score": 0.98,
+    "coverage": "perceived",
+    "extracted_text": "The Economic & Structural Reality U.S. national health expenditures now exceed $4.5 trillion annually\u2014nearly 17% of GDP\u2014yet outcomes remain stubbornly inconsistent. The system is consolidating rapidly, with independent physician practices shrinking as large health systems absorb clinical talent. $4.5T Annual U.S. Health Spend ~17% of GDP and rising 74% Physicians in Employment vs. independent practice 3x Admin Cost Growth outpacing clinical staffing since 2010 This structural consolidation shifts the physician role from autonomous practitioner to system-embedded clinician\u2014demanding new competencies in organizational strategy, operational stewardship, and enterprise leadership.",
+    "layout_description": "The slide is split vertically with a full-height aerial city/building photo on the left and a white content panel on the right. The right panel has a large title at top, an explanatory paragraph below, two side-by-side stats, a centered stat beneath them, and a concluding paragraph at the bottom.",
+    "provenance": "png-grounded",
+    "provider_model_id": "gpt-5.5",
+    "slide_id": "slide-01",
+    "slide_title": "The Economic & Structural Reality",
+    "source_png_path": "runs/compositor/assembly-bundle/visuals/slide-01.png",
+    "text_blocks": [
+      "The Economic & Structural Reality",
+      "U.S. national health expenditures now exceed $4.5 trillion annually\u2014nearly 17% of GDP\u2014yet outcomes remain stubbornly inconsistent. The system is consolidating rapidly, with independent physician practices shrinking as large health systems absorb clinical talent.",
+      "$4.5T Annual U.S. Health Spend ~17% of GDP and rising",
+      "74% Physicians in Employment vs. independent practice",
+      "3x Admin Cost Growth outpacing clinical staffing since 2010",
+      "This structural consolidation shifts the physician role from autonomous practitioner to system-embedded clinician\u2014demanding new competencies in organizational strategy, operational stewardship, and enterprise leadership."
+    ],
+    "visual_elements": [
+      {
+        "bbox": [
+          0,
+          0,
+          0.44,
+          1
+        ],
+        "id": "left-photo",
+        "kind": "photo",
+        "text": ""
+      },
+      {
+        "bbox": [
+          0.51,
+          0.06,
+          0.98,
+          0.16
+        ],
+        "id": "title",
+        "kind": "title",
+        "text": "The Economic & Structural Reality"
+      },
+      {
+        "bbox": [
+          0.51,
+          0.2,
+          0.97,
+          0.35
+        ],
+        "id": "intro-paragraph",
+        "kind": "callout",
+        "text": "U.S. national health expenditures now exceed $4.5 trillion annually\u2014nearly 17% of GDP\u2014yet outcomes remain stubbornly inconsistent. The system is consolidating rapidly, with independent physician practices shrinking as large health systems absorb clinical talent."
+      },
+      {
+        "bbox": [
+          0.51,
+          0.39,
+          0.72,
+          0.55
+        ],
+        "id": "stat-health-spend",
+        "kind": "stat",
+        "text": "$4.5T Annual U.S. Health Spend ~17% of GDP and rising"
+      },
+      {
+        "bbox": [
+          0.79,
+          0.39,
+          0.99,
+          0.54
+        ],
+        "id": "stat-physicians-employment",
+        "kind": "stat",
+        "text": "74% Physicians in Employment vs. independent practice"
+      },
+      {
+        "bbox": [
+          0.68,
+          0.62,
+          0.9,
+          0.8
+        ],
+        "id": "stat-admin-growth",
+        "kind": "stat",
+        "text": "3x Admin Cost Growth outpacing clinical staffing since 2010"
+      },
+      {
+        "bbox": [
+          0.51,
+          0.84,
+          0.99,
+          0.95
+        ],
+        "id": "bottom-paragraph",
+        "kind": "callout",
+        "text": "This structural consolidation shifts the physician role from autonomous practitioner to system-embedded clinician\u2014demanding new competencies in organizational strategy, operational stewardship, and enterprise leadership."
+      }
+    ]
+  }
+}

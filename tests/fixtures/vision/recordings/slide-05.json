@@ -1,0 +1,105 @@
+{
+  "_provenance": {
+    "captured_at": "2026-06-21T21:29:50.283258+00:00",
+    "harness": "tests/specialists/vision/test_vision_live_roundtrip.py",
+    "model_id": "gpt-5.5",
+    "prompt_sha256": "488f763dc42a2fed1e304fb9011ec783741fd8d22ffb712a0c074bf2daa29dc5",
+    "slide_id": "slide-05",
+    "source_png": "runs/compositor/assembly-bundle/visuals/slide-05.png"
+  },
+  "response": {
+    "artifact_path": "",
+    "card_number": null,
+    "confidence": "HIGH",
+    "confidence_score": 0.98,
+    "coverage": "perceived",
+    "extracted_text": "The Leadership Gap in Healthcare Interest in Leadership (%) Received Formal Training (%) Physician Group Early Career 72 12 Mid Career 68 18 Senior Physicians 61 24 0 20 40 60 80 Intent Without Infrastructure Surveys consistently show that 60\u201370% of physicians aspire to leadership roles\u2014yet fewer than 1 in 4 receive any formal executive or business training before stepping into those positions. The result: clinicians inherit authority without the frameworks to exercise it across finance, operations, and technology strategy. Bridging clinical expertise with business acumen and digital strategy is the defining leadership competency of this decade.",
+    "layout_description": "A large navy title spans the upper left. The left half contains a horizontal grouped bar chart, while the right half contains a bold heading, two explanatory text blocks, and a light-blue callout box near the bottom.",
+    "provenance": "png-grounded",
+    "provider_model_id": "gpt-5.5",
+    "slide_id": "slide-05",
+    "slide_title": "The Leadership Gap in Healthcare",
+    "source_png_path": "runs/compositor/assembly-bundle/visuals/slide-05.png",
+    "text_blocks": [
+      "The Leadership Gap in Healthcare",
+      "Interest in Leadership (%) Received Formal Training (%)",
+      "Physician Group",
+      "Early Career 72 12",
+      "Mid Career 68 18",
+      "Senior Physicians 61 24",
+      "0 20 40 60 80",
+      "Intent Without Infrastructure",
+      "Surveys consistently show that 60\u201370% of physicians aspire to leadership roles\u2014yet fewer than 1 in 4 receive any formal executive or business training before stepping into those positions.",
+      "The result: clinicians inherit authority without the frameworks to exercise it across finance, operations, and technology strategy.",
+      "Bridging clinical expertise with business acumen and digital strategy is the defining leadership competency of this decade."
+    ],
+    "visual_elements": [
+      {
+        "bbox": [
+          0.06,
+          0.08,
+          0.71,
+          0.14
+        ],
+        "id": "title",
+        "kind": "title",
+        "text": "The Leadership Gap in Healthcare"
+      },
+      {
+        "bbox": [
+          0.06,
+          0.22,
+          0.49,
+          0.66
+        ],
+        "id": "bar-chart",
+        "kind": "chart",
+        "text": "Interest in Leadership (%) Received Formal Training (%) Physician Group Early Career 72 12 Mid Career 68 18 Senior Physicians 61 24 0 20 40 60 80"
+      },
+      {
+        "bbox": [
+          0.54,
+          0.22,
+          0.84,
+          0.26
+        ],
+        "id": "right-heading",
+        "kind": "title",
+        "text": "Intent Without Infrastructure"
+      },
+      {
+        "bbox": [
+          0.54,
+          0.28,
+          0.93,
+          0.49
+        ],
+        "id": "right-paragraph-1",
+        "kind": "callout",
+        "text": "Surveys consistently show that 60\u201370% of physicians aspire to leadership roles\u2014yet fewer than 1 in 4 receive any formal executive or business training before stepping into those positions."
+      },
+      {
+        "bbox": [
+          0.54,
+          0.52,
+          0.96,
+          0.65
+        ],
+        "id": "right-paragraph-2",
+        "kind": "callout",
+        "text": "The result: clinicians inherit authority without the frameworks to exercise it across finance, operations, and technology strategy."
+      },
+      {
+        "bbox": [
+          0.54,
+          0.68,
+          0.98,
+          0.91
+        ],
+        "id": "bottom-callout",
+        "kind": "callout",
+        "text": "Bridging clinical expertise with business acumen and digital strategy is the defining leadership competency of this decade."
+      }
+    ]
+  }
+}

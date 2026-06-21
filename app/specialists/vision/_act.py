@@ -78,17 +78,26 @@ def _not_covered(slide_id: str, row: dict[str, Any]) -> PerceptionArtifact:
 
 
 def _provider_model_id() -> str:
+    """Resolve the live vision model id from model_config.yaml.
+
+    Reads `per_node_overrides.act` (the act-node override) first, then
+    `default_model`. The fixture `provider:` block was retired at
+    vision-perceiver-real (2026-06-21); the real model id (gpt-5.5) now flows
+    from here into `perceive_png` as the per-call override.
+    """
     try:
         config = yaml.safe_load(MODEL_CONFIG_PATH.read_text(encoding="utf-8")) or {}
     except OSError:
         return DEFAULT_MODEL_ID
     if not isinstance(config, dict):
         return DEFAULT_MODEL_ID
-    provider = config.get("provider")
-    if not isinstance(provider, dict):
-        return DEFAULT_MODEL_ID
-    model_id = provider.get("model_id")
-    return str(model_id).strip() or DEFAULT_MODEL_ID
+    overrides = config.get("per_node_overrides")
+    if isinstance(overrides, dict):
+        act_model = str(overrides.get("act") or "").strip()
+        if act_model:
+            return act_model
+    default_model = str(config.get("default_model") or "").strip()
+    return default_model or DEFAULT_MODEL_ID
 
 
 def _is_retryable_provider_error(exc: VisionProviderError) -> bool:

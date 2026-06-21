@@ -1,0 +1,99 @@
+{
+  "_provenance": {
+    "captured_at": "2026-06-21T21:29:50.283258+00:00",
+    "harness": "tests/specialists/vision/test_vision_live_roundtrip.py",
+    "model_id": "gpt-5.5",
+    "prompt_sha256": "c57248f2df2531ba7f03133f940501fb556cf01837b1487b51b0864fa987c88d",
+    "slide_id": "slide-03",
+    "source_png": "runs/compositor/assembly-bundle/visuals/slide-03.png"
+  },
+  "response": {
+    "artifact_path": "",
+    "card_number": null,
+    "confidence": "HIGH",
+    "confidence_score": 0.96,
+    "coverage": "perceived",
+    "extracted_text": "The Knowledge Explosion and Emerging Technologies Medical knowledge now doubles every 73 days. No clinician can absorb this volume through traditional learning alone\u2014 AI-assisted tools, clinical decision support, and continuous digital literacy are no longer optional. Knowledge Doubling From every 50 years to every 73 days\u2014an exponential curve demanding new learning infrastructure AI & Clinical Tools Diagnostics, predictive analytics, and ambient documentation are reshaping the point of care Innovation Leadership Clinicians must guide technology adoption\u2014not merely receive it\u2014to ensure safety and value",
+    "layout_description": "The slide is split vertically, with a large lab/technology photo occupying the left portion and a white content area on the right. The right side contains a large title at the top, a paragraph beneath it, and three stacked callout rows with pale chevron-shaped icon panels and blue text.",
+    "provenance": "png-grounded",
+    "provider_model_id": "gpt-5.5",
+    "slide_id": "slide-03",
+    "slide_title": "The Knowledge Explosion and Emerging Technologies",
+    "source_png_path": "runs/compositor/assembly-bundle/visuals/slide-03.png",
+    "text_blocks": [
+      "The Knowledge Explosion and Emerging Technologies",
+      "Medical knowledge now doubles every 73 days. No clinician can absorb this volume through traditional learning alone\u2014 AI-assisted tools, clinical decision support, and continuous digital literacy are no longer optional.",
+      "Knowledge Doubling From every 50 years to every 73 days\u2014an exponential curve demanding new learning infrastructure",
+      "AI & Clinical Tools Diagnostics, predictive analytics, and ambient documentation are reshaping the point of care",
+      "Innovation Leadership Clinicians must guide technology adoption\u2014not merely receive it\u2014to ensure safety and value"
+    ],
+    "visual_elements": [
+      {
+        "bbox": [
+          0,
+          0,
+          0.44,
+          1
+        ],
+        "id": "left-photo",
+        "kind": "photo",
+        "text": ""
+      },
+      {
+        "bbox": [
+          0.51,
+          0.06,
+          0.98,
+          0.23
+        ],
+        "id": "title",
+        "kind": "title",
+        "text": "The Knowledge Explosion and Emerging Technologies"
+      },
+      {
+        "bbox": [
+          0.51,
+          0.29,
+          0.98,
+          0.43
+        ],
+        "id": "intro-paragraph",
+        "kind": "callout",
+        "text": "Medical knowledge now doubles every 73 days. No clinician can absorb this volume through traditional learning alone\u2014 AI-assisted tools, clinical decision support, and continuous digital literacy are no longer optional."
+      },
+      {
+        "bbox": [
+          0.51,
+          0.44,
+          0.98,
+          0.62
+        ],
+        "id": "knowledge-doubling-callout",
+        "kind": "callout",
+        "text": "Knowledge Doubling From every 50 years to every 73 days\u2014an exponential curve demanding new learning infrastructure"
+      },
+      {
+        "bbox": [
+          0.51,
+          0.63,
+          0.98,
+          0.78
+        ],
+        "id": "ai-clinical-tools-callout",
+        "kind": "callout",
+        "text": "AI & Clinical Tools Diagnostics, predictive analytics, and ambient documentation are reshaping the point of care"
+      },
+      {
+        "bbox": [
+          0.51,
+          0.79,
+          0.98,
+          0.96
+        ],
+        "id": "innovation-leadership-callout",
+        "kind": "callout",
+        "text": "Innovation Leadership Clinicians must guide technology adoption\u2014not merely receive it\u2014to ensure safety and value"
+      }
+    ]
+  }
+}

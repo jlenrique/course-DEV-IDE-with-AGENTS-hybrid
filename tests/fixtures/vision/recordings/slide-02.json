@@ -1,0 +1,100 @@
+{
+  "_provenance": {
+    "captured_at": "2026-06-21T21:29:50.283258+00:00",
+    "harness": "tests/specialists/vision/test_vision_live_roundtrip.py",
+    "model_id": "gpt-5.5",
+    "prompt_sha256": "91e7645e59631fa9e6cba3d21327e4c4e04d84616a31a9077b3e09dfa211aee6",
+    "slide_id": "slide-02",
+    "source_png": "runs/compositor/assembly-bundle/visuals/slide-02.png"
+  },
+  "response": {
+    "artifact_path": "",
+    "card_number": null,
+    "confidence": "HIGH",
+    "confidence_score": 0.96,
+    "coverage": "perceived",
+    "extracted_text": "The Human Cost: Waste, Administrative Friction, and Burnout Waste Category Administrative Complexity 265 Pricing Failure 230 Care Delivery Failure 165 Overtreatment 100 Fraud & Abuse 85 0 50 100 150 200 250 Estimated Waste ($B) A Systemic\u2014Not Personal\u2014Crisis Over $760 billion in annual healthcare waste is attributable to administrative complexity and care delivery failures\u2014not patient volume or clinician stamina. Burnout is the downstream signal of a broken system. Physicians spend nearly 2 hours on administrative tasks for every 1 hour of direct patient care, eroding purpose, efficiency, and retention. Framing burnout as a resilience problem misses the structural root cause\u2014and forfeits the opportunity to fix it.",
+    "layout_description": "A large navy title spans the upper left/top of the slide. The lower left contains a horizontal bar chart, while the right side contains a bold heading, explanatory paragraphs, and a pink warning callout near the bottom.",
+    "provenance": "png-grounded",
+    "provider_model_id": "gpt-5.5",
+    "slide_id": "slide-02",
+    "slide_title": "The Human Cost: Waste, Administrative Friction, and Burnout",
+    "source_png_path": "runs/compositor/assembly-bundle/visuals/slide-02.png",
+    "text_blocks": [
+      "The Human Cost: Waste, Administrative Friction, and Burnout",
+      "Waste Category Administrative Complexity 265 Pricing Failure 230 Care Delivery Failure 165 Overtreatment 100 Fraud & Abuse 85 0 50 100 150 200 250 Estimated Waste ($B)",
+      "A Systemic\u2014Not Personal\u2014Crisis",
+      "Over $760 billion in annual healthcare waste is attributable to administrative complexity and care delivery failures\u2014not patient volume or clinician stamina.",
+      "Burnout is the downstream signal of a broken system. Physicians spend nearly 2 hours on administrative tasks for every 1 hour of direct patient care, eroding purpose, efficiency, and retention.",
+      "Framing burnout as a resilience problem misses the structural root cause\u2014and forfeits the opportunity to fix it."
+    ],
+    "visual_elements": [
+      {
+        "bbox": [
+          0.06,
+          0.07,
+          0.82,
+          0.2
+        ],
+        "id": "title",
+        "kind": "title",
+        "text": "The Human Cost: Waste, Administrative Friction, and Burnout"
+      },
+      {
+        "bbox": [
+          0.06,
+          0.27,
+          0.49,
+          0.7
+        ],
+        "id": "waste-chart",
+        "kind": "chart",
+        "text": "Waste Category Administrative Complexity 265 Pricing Failure 230 Care Delivery Failure 165 Overtreatment 100 Fraud & Abuse 85 0 50 100 150 200 250 Estimated Waste ($B)"
+      },
+      {
+        "bbox": [
+          0.54,
+          0.27,
+          0.87,
+          0.31
+        ],
+        "id": "right-heading",
+        "kind": "title",
+        "text": "A Systemic\u2014Not Personal\u2014Crisis"
+      },
+      {
+        "bbox": [
+          0.54,
+          0.33,
+          0.91,
+          0.69
+        ],
+        "id": "right-body-text",
+        "kind": "callout",
+        "text": "Over $760 billion in annual healthcare waste is attributable to administrative complexity and care delivery failures\u2014not patient volume or clinician stamina. Burnout is the downstream signal of a broken system. Physicians spend nearly 2 hours on administrative tasks for every 1 hour of direct patient care, eroding purpose, efficiency, and retention."
+      },
+      {
+        "bbox": [
+          0.54,
+          0.73,
+          0.98,
+          0.91
+        ],
+        "id": "warning-callout",
+        "kind": "callout",
+        "text": "Framing burnout as a resilience problem misses the structural root cause\u2014and forfeits the opportunity to fix it."
+      },
+      {
+        "bbox": [
+          0.56,
+          0.77,
+          0.58,
+          0.79
+        ],
+        "id": "warning-icon",
+        "kind": "icon",
+        "text": "\u00d7"
+      }
+    ]
+  }
+}

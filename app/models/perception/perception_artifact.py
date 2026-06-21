@@ -26,6 +26,13 @@ class PerceptionArtifact(BaseModel):
 
     Field names intentionally match the pre-existing perception artifact shape
     used by producer scripts; P2-1 only closes the model and adds coverage.
+
+    Bbox provenance (AC-5, vision-perceiver-real 2026-06-21): each
+    ``visual_elements[].bbox`` is an APPROXIMATE normalized ``[x1,y1,x2,y2]``
+    region estimate (0..1). These are LLM-estimated and coarse — the
+    deterministic reading-path classifier only buckets element centers into
+    thirds, so sub-third bbox precision is neither produced by the live gpt-5.5
+    perceiver nor relied upon downstream.
     """
 
     model_config = ConfigDict(extra="forbid", validate_assignment=True)

@@ -23,6 +23,13 @@ models:
     # https://developers.openai.com/api/docs/pricing on 2026-06-11.
     input_per_1m_tokens_usd: 2.5
     output_per_1m_tokens_usd: 15.0
+  gpt-5.5:
+    # Multimodal frontier tier. Resolved by the vision specialist for live
+    # PNG-grounded perception (vision-perceiver-real, 2026-06-21). Tier-2 add
+    # ratified by party-mode green-light 5/5. Verified against OpenAI public
+    # pricing on 2026-06-21.
+    input_per_1m_tokens_usd: 5.0
+    output_per_1m_tokens_usd: 30.0
   gpt-5-mini:
     # Mid-tier; not currently used in cascade but available as future optimization.
     input_per_1m_tokens_usd: 0.25

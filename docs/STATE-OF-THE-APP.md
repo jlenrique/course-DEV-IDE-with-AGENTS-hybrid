@@ -167,7 +167,7 @@ Both factual conflicts resolved against on-disk evidence, **in favor of the exte
 
 ### 11.1 You are here
 
-**P2 fidelity arc — machinery COMPLETE; only the operator-gated calibration leg (P2-4b) remains.** P2-1/2/3/4a are closed and the disaster-level grounding regression is **struck** (AC-6 live strike fired). The live frontier is **P2-4b**, blocked on an operator scan-order exemplar harvest. After P2 closes, the ratified path turns to the **BETA Phase-2 charter remainder** (T5b–T8), then the **aspirational epics**. Latest close: **P2-4a `done` at `38f2ba8`** (Codex T1–T10 → Claude T11 → party-mode 5/5).
+**P2 fidelity arc — machinery COMPLETE; only the operator-gated calibration leg (P2-4b) remains.** P2-1/2/3/4a are closed and the disaster-level grounding regression is **struck** (AC-6 live strike fired). The live frontier is **P2-4b**, blocked on an operator scan-order exemplar harvest. After P2 closes, the ratified path turns to the **BETA Phase-2 charter remainder** (T5b–T8), then the **aspirational epics**. Latest close: **`vision-perceiver-real`** (2026-06-21) — the live `gpt-5.5` vision perceiver enabler that replaced the fixture-backed contract P2-2 had shipped; perception is now genuinely live (party 5/5 → 3-layer review → 4/4 CLOSE). It PRECEDES P2-4b so the labeling kit perceives real slides. (Prior close: P2-4a `done` at `38f2ba8`.)
 
 ### 11.2 The ratified pathway (sequence)
 
@@ -182,9 +182,10 @@ Authority: `beta-phase-1-closure-ratification-2026-06-19.md` (forward path) + `e
 
 [P2 — Perception + reading-path fidelity arc]
   P2-1 Fidelity detector (RED-first) .............. ✅ done
-  P2-2 Vision node + PerceptionArtifact ........... ✅ done
+  P2-2 Vision node + PerceptionArtifact ........... ✅ done  (⚠ shipped FIXTURE-backed — corrected by vision-perceiver-real; see note ▼)
   P2-3 Pass-2 consumes perceived visuals .......... ✅ done  (+ AC-6 live regression-green strike FIRED → regression STRUCK)
   P2-4a Reading-path native machinery ............. ✅ done  (Codex T1–T10 → Claude T11 → 5/5 CLOSE, 38f2ba8)
+  vision-perceiver-real (live gpt-5.5 enabler) .... ✅ done  (party 5/5 → 3-layer review → 4/4 CLOSE; perception NOW genuinely live)
   P2-4b Repertoire growth + ≥80% real-slide corpus  ⏸ operator-gated (scan-order harvest) — LAST P2 item
   P2 epic retrospective + close ................... ❌ after P2-4b (machinery-only partial close possible sooner)
 
@@ -202,6 +203,8 @@ Authority: `beta-phase-1-closure-ratification-2026-06-19.md` (forward path) + `e
   Lesson Planner MVP (28–32) wired to trial path .. ◐ schema substrate landed; production-path orphaned
   Cross-corpus generality · motion synthesis · greenfield specialists … ❌ long tail
 ```
+
+> **Correction (2026-06-21) — legible, not silent.** The P2-2 line previously read as "real PerceptionArtifact." That described a **fixture-backed contract** (Pydantic models + a pinned `VISION_PROVIDER_ENDPOINT` that was never configured, default model `vision-fixture-v1`, a single hand-authored slide-01 golden), **not** a live perceiver — no model was wired to perceive an arbitrary PNG. As of the **`vision-perceiver-real`** enabler CLOSE (2026-06-21; party 5/5 green-light → 3-layer `bmad-code-review` → 4/4 CLOSE), perception is **genuinely live**: `app/specialists/vision/provider.py` makes a real `gpt-5.5` multimodal call; live AC-8 perceived all 6 frozen-corpus PNGs HIGH/perceived. Root cause logged as the **"believed-green tracker"** drift class (a green suite standing in for live capability / current config — the OpenAI catalog-snapshot test was also found already-RED for `gpt-5.4`); see deferred-inventory `believed-green-tracker-audit` + anti-pattern G1. This enabler PRECEDES the P2-4b labeling kit, which now consumes genuine perception.
 
 ### 11.3 Position-in-sequence
 

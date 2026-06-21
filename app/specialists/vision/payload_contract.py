@@ -23,7 +23,15 @@ CONSUMED_PAYLOAD_KEYS: frozenset[str] = frozenset(
 
 
 class VisionProviderResponse(BaseModel):
-    """Pinned provider response parsed before conversion to PerceptionArtifact."""
+    """Live gpt-5.5 perception response parsed before conversion to PerceptionArtifact.
+
+    Bbox provenance (AC-5, vision-perceiver-real 2026-06-21): each
+    ``visual_elements[].bbox`` is an APPROXIMATE normalized region estimate in
+    ``[x1, y1, x2, y2]`` form (each coordinate in ``0..1``). These are
+    LLM-estimated and coarse — the deterministic reading-path classifier only
+    buckets element centers into thirds, so sub-third precision is neither
+    produced by the perceiver nor relied upon downstream.
+    """
 
     model_config = ConfigDict(extra="forbid", validate_assignment=True)
 

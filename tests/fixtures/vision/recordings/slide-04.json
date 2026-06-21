@@ -1,0 +1,115 @@
+{
+  "_provenance": {
+    "captured_at": "2026-06-21T21:29:50.283258+00:00",
+    "harness": "tests/specialists/vision/test_vision_live_roundtrip.py",
+    "model_id": "gpt-5.5",
+    "prompt_sha256": "a90426e754b3876768f2f623817a253084b4ea555214f226850c5d0fedb8c894",
+    "slide_id": "slide-04",
+    "source_png": "runs/compositor/assembly-bundle/visuals/slide-04.png"
+  },
+  "response": {
+    "artifact_path": "",
+    "card_number": null,
+    "confidence": "HIGH",
+    "confidence_score": 0.98,
+    "coverage": "perceived",
+    "extracted_text": "The Consumer Shift and the Digital Front Door Discover Online search, reviews, and comparison Access Digital scheduling and telehealth entry Experience Real-time messaging and transparency Retain Follow-up, patient portals, and loyalty Today's patients research, compare, and select care the way they choose any consumer service\u2014with expectations shaped by Amazon, Apple, and Uber. What Patients Now Expect Price Transparency Upfront cost estimates before scheduling Digital Convenience On-demand scheduling, messaging, and telehealth Seamless Journeys Coordinated, frictionless transitions across care settings",
+    "layout_description": "A large title spans the top left. The left half contains a consumer journey wave diagram and a large explanatory sentence beneath it, while the right half contains a heading and three stacked bordered expectation cards.",
+    "provenance": "png-grounded",
+    "provider_model_id": "gpt-5.5",
+    "slide_id": "slide-04",
+    "slide_title": "The Consumer Shift and the Digital Front Door",
+    "source_png_path": "runs/compositor/assembly-bundle/visuals/slide-04.png",
+    "text_blocks": [
+      "The Consumer Shift and the Digital Front Door",
+      "Discover Online search, reviews, and comparison",
+      "Access Digital scheduling and telehealth entry",
+      "Experience Real-time messaging and transparency",
+      "Retain Follow-up, patient portals, and loyalty",
+      "Today's patients research, compare, and select care the way they choose any consumer service\u2014with expectations shaped by Amazon, Apple, and Uber.",
+      "What Patients Now Expect",
+      "Price Transparency Upfront cost estimates before scheduling",
+      "Digital Convenience On-demand scheduling, messaging, and telehealth",
+      "Seamless Journeys Coordinated, frictionless transitions across care settings"
+    ],
+    "visual_elements": [
+      {
+        "bbox": [
+          0.06,
+          0.07,
+          0.9,
+          0.13
+        ],
+        "id": "title",
+        "kind": "title",
+        "text": "The Consumer Shift and the Digital Front Door"
+      },
+      {
+        "bbox": [
+          0.07,
+          0.4,
+          0.53,
+          0.55
+        ],
+        "id": "journey-diagram",
+        "kind": "diagram",
+        "text": "Discover Online search, reviews, and comparison Access Digital scheduling and telehealth entry Experience Real-time messaging and transparency Retain Follow-up, patient portals, and loyalty"
+      },
+      {
+        "bbox": [
+          0.06,
+          0.6,
+          0.55,
+          0.72
+        ],
+        "id": "bottom-callout",
+        "kind": "callout",
+        "text": "Today's patients research, compare, and select care the way they choose any consumer service\u2014with expectations shaped by Amazon, Apple, and Uber."
+      },
+      {
+        "bbox": [
+          0.58,
+          0.2,
+          0.83,
+          0.23
+        ],
+        "id": "expectations-heading",
+        "kind": "title",
+        "text": "What Patients Now Expect"
+      },
+      {
+        "bbox": [
+          0.58,
+          0.26,
+          0.96,
+          0.45
+        ],
+        "id": "price-transparency-card",
+        "kind": "callout",
+        "text": "Price Transparency Upfront cost estimates before scheduling"
+      },
+      {
+        "bbox": [
+          0.58,
+          0.48,
+          0.96,
+          0.67
+        ],
+        "id": "digital-convenience-card",
+        "kind": "callout",
+        "text": "Digital Convenience On-demand scheduling, messaging, and telehealth"
+      },
+      {
+        "bbox": [
+          0.58,
+          0.7,
+          0.96,
+          0.89
+        ],
+        "id": "seamless-journeys-card",
+        "kind": "callout",
+        "text": "Seamless Journeys Coordinated, frictionless transitions across care settings"
+      }
+    ]
+  }
+}

@@ -167,6 +167,18 @@ Read this at T1 of every story. These are the traps dev agents have repeatedly w
 
 ---
 
+## Category G — Liveness / evidence-integrity traps (vision-perceiver-real CLOSE, party-mode 2026-06-21)
+
+### G1. Fixture-backed contract mistaken for live capability
+
+**Trap:** A specialist ships a *contract* (Pydantic models + a provider seam) plus golden fixtures and a green test suite, and the closure record claims the capability is "real" — but no live model was ever wired. The vision specialist (P2-2) POSTed to a pinned `VISION_PROVIDER_ENDPOINT` that was never configured, defaulted to model id `vision-fixture-v1`, and carried a single hand-authored slide-01 golden artifact; P2-2 closed as "real PerceptionArtifact on disk." The literal claim ("artifact on disk") was true while the implied claim ("live perception capability") was false. The same root cause hit a *config* surface: the OpenAI catalog-snapshot test (`test_cascade_ids_in_openai_published_catalog`) was already RED on clean HEAD because `gpt-5.4` was added to the runtime config but never to the snapshot — a passing-elsewhere suite masking a stale tracker.
+
+**Detection cue:** a passing test suite that never touches a live endpoint; a `-fixture-v*` model default; an unconfigured `_PROVIDER_ENDPOINT`/`_API_KEY` env var; golden-only on-disk artifacts cited as proof-of-live; a config/catalog snapshot that drifts from the runtime config it mirrors.
+
+**Fix:** a closure claim of "real X" requires EITHER a key-gated live invocation with the response captured to disk, OR explicit wording that scopes it honestly ("contract + fixture; `<perceiver>` not yet live"). Sweep siblings for the signature (filed as deferred-inventory `believed-green-tracker-audit`). Live-API tests gate on key presence (`pytest.skip` when unreachable) but the production path itself must be live (operator directive: no mocks).
+
+---
+
 ## Meta-rule — Read this at T1, not at G6
 
 If you find yourself hitting one of these traps during bmad-code-review, look back at T1. Did you read this document? If yes, did the trap you hit fit one of the categories above? If no, this catalog needs a new entry — flag it during review closure so it gets added.
@@ -181,3 +193,4 @@ The catalog exists to stop re-learning. When 31-1 landed, every finding here had
 |---------|------|--------|
 | v1 | 2026-04-18 | Initial harvest from 27-0 / 27-2 / 31-1 Dev Notes + G6 layered-review findings |
 | v2 | 2026-06-20 | Category F (handoff-integrity) harvested from P2-2 T11 party-mode (F1 mislabeled-regression-as-preexisting-drift; F2 net-new-gen-section vs verbatim-extraction) |
+| v3 | 2026-06-21 | Category G (liveness / evidence-integrity) harvested from vision-perceiver-real CLOSE party-mode (G1 fixture-backed-contract-mistaken-for-live-capability) |

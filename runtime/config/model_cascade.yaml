@@ -25,6 +25,9 @@ specialists:
     rationale: "Fidelity and verification gates need conservative higher-reasoning review."
     aliases:
       - fidelity-assessor
+  vision:
+    model: gpt-5.5
+    rationale: "Live multimodal PNG-grounded perception requires the frontier vision-capable tier (vision-perceiver-real, 2026-06-21)."
   irene:
     model: gpt-5
     rationale: "Lesson-plan and pass-authoring work needs longer-context editorial reasoning."
