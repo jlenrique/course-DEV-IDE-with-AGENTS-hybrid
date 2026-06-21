@@ -6,7 +6,7 @@
 > **⚡ 2026-06-21 UPDATE — the Layer-D "crippling" fidelity regression (§3) is CLOSED.** The P2 perception/reading-path arc landed: **P2-1** fail-loud fidelity detector (done) → **P2-2** PNG-grounded `PerceptionArtifact` (closed) → **P2-3** Pass-2 grounds on perceived visuals, the regression fix (closed) **+ its AC-6 live regression-green strike FIRED** (live Pass-2 over the frozen corpus → committed detector GREEN 8/8 + held-out, independently re-judged) → **P2-4a** reading-path native machinery (classifier + fail-loud verify-node + cadence, closed). The deferred entry `fidelity-metric-blind-to-perception-regression` is **STRUCK**. The reading-path **calibration** leg (**P2-4b** — repertoire growth + the held-out ≥80% real-slide conformance corpus) remains **operator-gated** on a scan-order exemplar harvest. Sections §3 / §4-row-(g) / §8-#2 / §9 below are annotated inline; the strikethrough/❌ framing in those sections is **historical** (pre-2026-06-21).
 **Provenance:** Synthesizes two independent assessments produced 2026-06-19 — (1) the live session assessment (triangulating `SESSION-HANDOFF.md`, `next-session-start-here.md`, `bmm-workflow-status.yaml`, `deferred-inventory.md`, the BETA spec/charter, and on-disk run evidence), and (2) an independent external analysis triangulating the same artifacts. Where the two diverged, the divergences were adjudicated against on-disk evidence (git history, `slab-7c-retrospective.md`, run directories); both factual conflicts resolved in favor of the external analysis (see §10). This doc exists so the plan does not have to be re-derived every session.
 
-> **Maintenance:** refresh at (a) each arc/epic close that materially changes validated scope, (b) any trial postmortem that moves a §4 scorecard row, (c) any governance ratification that changes how BETA or the forward arcs are tracked. Keep the §4 scorecard and §5 tracker-reality table honest — they are the load-bearing anti-drift surfaces.
+> **Maintenance:** refresh at (a) each arc/epic close that materially changes validated scope, (b) any trial postmortem that moves a §4 scorecard row, (c) any governance ratification that changes how BETA or the forward arcs are tracked, (d) **every story/arc close — update §11 (Project Pathway): the §11.1 "You are here", the §11.2 pathway-tree glyphs, and (at arc close) the §11.5 progress table.** Keep the §4 scorecard, §5 tracker-reality table, and §11 pathway honest — they are the load-bearing anti-drift surfaces.
 
 ---
 
@@ -111,7 +111,7 @@ Two parallel planning stacks coexist — the other big source of disorientation.
 - **Trial-3 findings still open:** `#7` pause-write atomicity; `#8` `max_specialist_calls` segment-cap semantics.
 - **Slab 6.1 substrate enhancements:** multi-pass envelope path X/Y; compiled-edge traversal (needed before non-linear manifests); trial-envelope lifecycle invariants; real LangSmith trace binding.
 - **Trial-4 follow-ons:** `live-trial-replay-baseline`; `g4b-input-package-hil-wake`; `generalized-membership-wake-toggle`.
-- **BETA carry-forward:** `beta-voice-select-wpm-qa-interaction`; `trial-4-binding-variant-voice-picker`; `beta-d-research-review-trial-path-attach`; `beta-motion-synthesis-data-plane`; `beta-generality-across-corpora`; `beta-marcus-namespace-collision-rename`; ~~the merged perception+reading-path arc~~ → **DONE 2026-06-21** (P2-1/2/3/4a closed + regression struck; only `p2-4b-reading-path-repertoire-and-conformance-corpus` remains, operator-gated).
+- **BETA carry-forward:** ~~`beta-voice-select-wpm-qa-interaction`~~ → **RESOLVED 2026-06-19 (P1)** (voice-agnostic WPM intelligibility band; `spec-p1-voice-agnostic-wpm-floor.md`); `trial-4-binding-variant-voice-picker`; `beta-d-research-review-trial-path-attach`; `beta-motion-synthesis-data-plane`; `beta-generality-across-corpora`; `beta-marcus-namespace-collision-rename`; ~~the merged perception+reading-path arc~~ → **DONE 2026-06-21** (P2-1/2/3/4a closed + regression struck; only `p2-4b-reading-path-repertoire-and-conformance-corpus` remains, operator-gated).
 - **Housekeeping:** Slab 7b/7c review NITs (digest-helper extraction, scanner staleness, sidecar cleanups); repo-wide ruff debt.
 
 **Counts:** ~30–31 backlog-epic stories (Epics 15/16/17/18 + greenfield specialists) + 4 deferred-stories-in-active-epics + a long named-follow-on tail.
@@ -132,7 +132,7 @@ Two parallel planning stacks coexist — the other big source of disorientation.
 
 ## 8. Forward priorities (factored into the post-harmonization arc)
 
-1. **Voice↔WPM quick win** (`beta-voice-select-wpm-qa-interaction`) — smallest honest unblock to take capability-(e) to completion on a non-default voice. Party QA-semantics decision (re-target / operator-overridable / widen tolerance), then a non-default-voice run completes error-free.
+1. ~~**Voice↔WPM quick win**~~ — **✅ DONE (P1, 2026-06-19).** Resolved via `spec-p1-voice-agnostic-wpm-floor.md`: G5's WPM check became a voice-agnostic intelligibility band (Murat §5 ruling), so a non-default voice (Sarah's 128 WPM) no longer trips the floor; break-glass `wpm_breach_override` retained. Party green-light + T11 3-lane PASS. Capability-(e) voice-binding now completes error-free on non-default voices.
 2. **Perception + reading-path REPAIR + ENHANCE** (the disaster arc) — **✅ DONE (2026-06-21), except the operator-gated calibration leg.** Shipped as the PRD-gated P2 arc: perception grounding restored (vision pass → `PerceptionArtifact` → Pass-2 narrates from perceived visuals; P2-2/P2-3), reading-path classification + fail-loud conformance restored (`reading_path` field + classifier + verify-node; P2-4a), and the **fail-loud fidelity detector shipped first as committed RED evidence** (P2-1). AC-6 live regression-green strike FIRED. **Remaining:** **P2-4b** (reading-path repertoire growth + held-out ≥80% real-slide conformance corpus) — operator-gated on a scan-order exemplar harvest.
 3. **Governance / spec ratification** — ratify in writing what "BETA" means (engine-reliability Phase 1 vs full §8), and file the BETA remainder as real epics/stories so charter, handoff, and sprint-status stop drifting (§5).
 
@@ -154,3 +154,85 @@ Both factual conflicts resolved against on-disk evidence, **in favor of the exte
 2. **sprint-status staleness.** External said "last meaningfully updated 2026-05-07"; actual last touch was **2026-05-22** (Epic-34 tombstone). Minor date error, but the substantive claim — that the tracker predates and omits all June BETA work — is **verified correct** (grep → 0 BETA entries).
 
 **The external analysis's sharpest, correct contribution** (which the session assessment underweighted): *the success metric is blind to the fidelity regression — "error-free" masks confident-wrong output* (§3). This doc adopts that framing as load-bearing.
+
+---
+
+## 11. Project Pathway — Current Progression & Completion Horizons
+
+> **PERMANENT, LOAD-BEARING SURFACE — keep updated.** This is the "where on the completion pathway are we" map. Refresh **§11.1 You-are-here** + the **§11.2 pathway tree** status glyphs at **every story/arc close**, and the **§11.5 progress table** at every arc close. Same anti-drift discipline as §4 (scorecard) and §5 (tracker reality). Status glyphs: ✅ done · 🔄 in flight · ⏸ operator/external-gated · ◐ partial · ❌ not started.
+>
+> **Execution model (NEW CYCLE):** substrate-impacting forward stories run **Codex T1–T10 (dev) → Claude T11 (`bmad-code-review` + party-mode close + commit + `done`-flip)**; party-mode green-light precedes dev on Tier-3 stories. Claude T11 may land small, party-ratified local hardenings but does not author the dev story. (Cleanup arcs run Claude-direct per CLAUDE.md.)
+
+**Last pathway update:** 2026-06-21 (P2-4a closed).
+
+### 11.1 You are here
+
+**P2 fidelity arc — machinery COMPLETE; only the operator-gated calibration leg (P2-4b) remains.** P2-1/2/3/4a are closed and the disaster-level grounding regression is **struck** (AC-6 live strike fired). The live frontier is **P2-4b**, blocked on an operator scan-order exemplar harvest. After P2 closes, the ratified path turns to the **BETA Phase-2 charter remainder** (T5b–T8), then the **aspirational epics**. Latest close: **P2-4a `done` at `38f2ba8`** (Codex T1–T10 → Claude T11 → party-mode 5/5).
+
+### 11.2 The ratified pathway (sequence)
+
+Authority: `beta-phase-1-closure-ratification-2026-06-19.md` (forward path) + `epics-perception-reading-path-fidelity.md` (P2) + the BETA charter.
+
+```text
+[PAST — CLOSED]
+  Migration Slabs 1–7c ............................ ✅ shipped
+  BETA Phase 1 (engine reliability + voice bind) .. ✅ ratified closed (Option B)
+  P3 (closure + tracker reconciliation) ........... ✅ done
+  P1 (voice-agnostic WPM floor) ................... ✅ resolved (spec-p1-…; deferred-inventory struck)
+
+[P2 — Perception + reading-path fidelity arc]
+  P2-1 Fidelity detector (RED-first) .............. ✅ done
+  P2-2 Vision node + PerceptionArtifact ........... ✅ done
+  P2-3 Pass-2 consumes perceived visuals .......... ✅ done  (+ AC-6 live regression-green strike FIRED → regression STRUCK)
+  P2-4a Reading-path native machinery ............. ✅ done  (Codex T1–T10 → Claude T11 → 5/5 CLOSE, 38f2ba8)
+  P2-4b Repertoire growth + ≥80% real-slide corpus  ⏸ operator-gated (scan-order harvest) — LAST P2 item
+  P2 epic retrospective + close ................... ❌ after P2-4b (machinery-only partial close possible sooner)
+
+[AFTER P2 — BETA Phase 2 / charter remainder]
+  T5b Variant N-dispatch + per-slide bind ......... ❌ not started
+  T6 Review lanes (ingestion / lesson-plan / Tracy)  ❌ not started
+  T7 Marcus SPOC deepen (beyond scripted approve) .. ◐ thin MVP exists; not full spec
+  T8 Motion plan (honest producer OR ratified carve) ❌ carved in practice, not ratified in writing
+  S0.4 Full per-gate live-dispatch harness ........ ◐ auto-retry only
+  Full BETA §8 dress rehearsal (a+b+c+e binding) .. ❌ not met (two qualifying runs used approve-path + default voice)
+
+[ASPIRATIONAL / SHELF]
+  Epic 15 Learning & Compound Intelligence ........ ❌ gate ("first tracked trial") now arguably met → most reactivation-ready
+  Epics 16–18 (autonomy / research / asset families) ❌ shelf
+  Lesson Planner MVP (28–32) wired to trial path .. ◐ schema substrate landed; production-path orphaned
+  Cross-corpus generality · motion synthesis · greenfield specialists … ❌ long tail
+```
+
+### 11.3 Position-in-sequence
+
+| Milestone | Status | Notes |
+|---|---|---|
+| P2-3 close + grounding strike | ✅ `485662e` | AC-6 live strike GREEN 8/8 + held-out |
+| P2-4 party green-light + spec | ✅ `da9e186` | 5/5 PARTIAL-SPEC-NOW (machinery vs calibration split) |
+| P2-4a dev (T1–T10) | ✅ Codex | handoff `_codex-handoff/p2-4a-…ready-for-review.md` |
+| P2-4a T11 review + close | ✅ `38f2ba8` | 3-layer review + party 5/5 CLOSE + 2 ratified hardenings |
+| **P2-4b operator harvest + story** | ⏸ **blocked on operator** | ≥8–10 labeled real slides + ≥1 known-wrong-default |
+| P2 epic close | ❌ after P2-4b | machinery-only partial close optional |
+| BETA Phase 2 (T5b–T8) | ❌ not started | after P2 |
+
+**You are here →** one operator input (the scan-order harvest) from unblocking the **final P2 story**; the machinery half of the top-priority fidelity arc is closed.
+
+### 11.4 Completion horizons
+
+**Horizon 1 — Product trust restored (P2 complete).** Narration grounds on the *rendered* slide (P2-3 ✅); a fail-loud detector catches hallucinations (P2-1/2/3 ✅); scan-order machinery live (P2-4a ✅); real-slide scan-order calibration (P2-4b ⏸). **Exit:** "error-free" means mechanics **and** fidelity — and reading order is verified on real slides. *(Grounding+detector exit already met 2026-06-21; reading-path-calibration exit pending P2-4b.)*
+
+**Horizon 2 — BETA spec as written (`beta-spec §8`).** Variant picker mechanics (T5b); Tracy on the trial path (T6d); dedicated lesson-plan / ingestion review surfaces (T6b/c); Marcus SPOC beyond scripted approve-path (T7); motion carve-out ratified or an honest producer (T8); two qualifying runs exercising **binding voice + variant picks** (not approve-path only). **Exit:** the conversational Marcus product on the frozen corpus, error-free twice **to spec**.
+
+**Horizon 3 — Full APP vision (epics on the shelf).** Learning/intelligence (Epic 15), bounded autonomy (16), full research (17), new asset families (18); Lesson Planner MVP integrated into production trials; cross-corpus generality, motion synthesis, greenfield specialists. **Exit:** a multi-corpus, multi-use-case platform — months beyond the current arc.
+
+### 11.5 Honest progress estimate
+
+| Universe | Approx. complete | Basis |
+|---|---|---|
+| LangGraph migration substrate | **~95%+** | shipped; Slabs 1–7c closed |
+| BETA Phase 1 (engine reliability + voice bind) | **100%** | ratified closed (Option B) |
+| P2 fidelity / perception arc | **~95%** | P2-1/2/3/4a closed + strike fired; only operator-gated P2-4b remains |
+| BETA Phase 2 / full §8 spec | **~25–35%** | voice mechanics + thin SPOC; variants/research/motion/full-path open |
+| Full APP (Epics 15–18 + LP integration) | **~15–20%** | substrate exists; not wired to the operator product |
+
+**Bottom line:** the project is **one review-and-close cycle past** the machinery of its top-priority fidelity arc — P2-1/2/3/4a done, the disaster regression struck. Total completion still needs **P2-4b (operator evidence)**, then the **BETA charter remainder (T5b–T8)**, then the **aspirational epics** — a long tail after P2 closes.
