@@ -1,3 +1,46 @@
+# Session Handoff — 2026-06-21 OVERNIGHT (Class S — P2 arc driven to machinery-complete: P2-3 closed + AC-6 strike + P2-4a closed; P2-4b plan memorialized)
+
+**Final class:** S (two full NEW CYCLE T11 closes with fully-spawned party-mode gates; an operator-authorized live AC-6 strike run; substrate patches to vision/classifier; canonical-doc updates). **Branch:** `fidelity-perception-arc-2026-06-19`. **HEAD: `1ed7e2a`; origin in sync; master-merge SKIPPED (scoped arc branch).** ~2.5h overnight session (2026-06-20 22:58 → 2026-06-21 ~01:30).
+
+## What was completed (summary)
+1. **Recovered the prior (auth-failure-ended) session** + filed the operator's VO-narration-layout-tracking follow-on to deferred-inventory.
+2. **P2-3 CLOSED `done`** (`43c16b5`) — Codex T1–T10 returned → Claude T11 (battery + 3-layer `bmad-code-review` + party-mode 5/5 ACCEPT). One split finding (F1, un-framed brief in payload tail) → DEFER + Murat C1 test-hardening landed.
+3. **AC-6 LIVE STRIKE FIRED → regression STRUCK** (`485662e`) — operator authorized Claude to run the operator-gated live leg via a **fresh independent subagent** (validity protocol: committed `detect_fidelity` as sole judge, first-run-stands, no retry-to-green). Live Pass-2 over the green-corpus with a contradicting brief → detector GREEN 8/8 + held-out, independently re-judged. `fidelity-metric-blind-to-perception-regression` **STRUCK**; bidirectional cross-trial linkage filed. **The DISASTER-LEVEL grounding regression is closed end-to-end.**
+4. **P2-4 party-mode 5/5 PARTIAL-SPEC-NOW** → split into **P2-4a (machinery, spec'd)** + **P2-4b (calibration, operator-gated)**; P2-4a spec + Codex prompt authored (`da9e186`).
+5. **P2-4a CLOSED `done`** (`38f2ba8`) — Codex T1–T10 returned → Claude T11 (battery + 3-layer review + party-mode 5/5 CLOSE). Two party-ratified Claude-local hardenings landed (3a vision classify-error → recoverable error-pause; 3b `_bbox` non-numeric → skip) + regression tests. Calibration findings deferred to P2-4b (incl. Murat **named dissent** on the conformance-skip timing, addressed via a mandatory RED-first P2-4b rider).
+6. **Canonical-doc maintenance:** `STATE-OF-THE-APP.md` updated — regression marked closed (§1/§2/§3/§4/§6/§8/§9, `cc7a535`); pre-existing **P1 staleness fixed** (P1 voice-WPM was resolved but still listed open); new **permanent §11 "Project Pathway — Current Progression & Completion Horizons"** added as a kept-current anti-drift surface (`1ed7e2a`).
+7. **P2-4b plan MEMORIALIZED** → `_bmad-output/implementation-artifacts/p2-4b-kickoff-plan.md` (next session enacts it).
+
+## What is next (broader context)
+- **P2-4b (LAST P2 story) — operator-gated.** See `p2-4b-kickoff-plan.md`. One operator artifact (8–10-slide labeled scan-order corpus + ≥1 known-wrong-default) + two decisions (deck; ≥80% bar + repertoire growth) unblock it. Next session: Claude builds the labeling kit FIRST (render slides + vision perception + fill-in template, order field never classifier-drafted), then operator spends ~1h on ordering judgment, then the P2-4b NEW CYCLE.
+- After P2-4b: P2 epic retrospective + close. Then the **BETA Phase-2 charter remainder (T5b–T8)** per §11.2 of STATE-OF-THE-APP.
+
+## Unresolved issues / risks
+- **P2-4b calibration riders (filed, RED-first-gated):** ordinal-gate over-trigger + label↔order degeneration; conformance vacuous-skip on key-vocab mismatch (Murat named dissent — must carry a RED-first fixture + keying-contract pin before the silent-skip→fail-loud flip, else risk false-positive Class-A "stuck-alarm").
+- **Flaky `llm_live` test:** `test_irene_act_node_real_llm_invocation_with_token_floor` intermittently fails on the KNOWN Irene slide-join LLM-variance (`Pass2GroundingError`) — auto-retry-absorbed in-dispatch but not in this direct-`_act` unit test. A7-attested orthogonal to the patches (numeric-bbox = no-op; ≈50% pass rate with patches present). Not a regression; candidate for a skip/quarantine decision in P2-4b scope.
+- **AC-6 strike posture:** the live strike is an isolated live-Pass-2-over-corpus run (manifest-projection leg covered by the committed contract test), NOT a full 40-node trial. Honest + recorded in the cross-trial §C entry.
+
+## Validation summary
+- P2-3 close: irene 38 / detector 20 / contracts 5 / lockstep 0 / lint-imports 15 / ruff / sandbox-AC — all green; one ambient cache-hit llm_live failure (A7-proven).
+- AC-6 strike: detector GREEN 8/8 + held-out green-08; independently re-judged GREEN; cache-MISS gpt-5.
+- P2-4a close: reading-path 20 / irene+vision+detector+builders 85 / post-patch deterministic 104+1-skip / lockstep 0 / lint-imports 15 / ruff / sandbox-AC — all green; flaky llm_live attested.
+
+## Artifact update checklist
+- ✅ deferred-inventory (VO note; F1; P2-4b entry + riders; fidelity-metric STRUCK; §52 struck by Codex)
+- ✅ cross-trial-learnings (§C strike record + §A G5)
+- ✅ specs (p2-3 Completion Notes; p2-4a spec + Completion Notes; codex-dev-prompts)
+- ✅ STATE-OF-THE-APP (regression-closed updates + §11 pathway + P1 fix)
+- ✅ p2-4b-kickoff-plan.md (NEW)
+- ✅ SESSION-HANDOFF + next-session-start-here
+- **SKIPPED (with rationale):** Step 0 Cora full harmonization sweep — substrate already went through two full T11 + party-mode + green-battery gates this session; everything committed + pushed + green; proceed-with-acknowledged-state (no `/harmonize` run). sprint-status.yaml — P2 arc is NOT tracked there (tracked via specs + handoff + deferred-inventory); not edited. bmm-workflow-status — no formal phase transition. project-context/agent-environment — no rules/MCP/tool changes.
+
+## Lessons learned
+- **Operator-gated validation can be run by Claude with validity intact** when the judge is deterministic + committed and a fresh independent subagent executes + reports raw (first-run-stands, no retry-to-green). The AC-6 strike is the precedent. (Memory: `feedback_operator_cost_not_constraint_run_gated_validation`.)
+- **The machinery-vs-calibration firewall** (P2-4a/P2-4b split) cleanly resolved a HIGH-tagged findings cluster at T11: corpus-independent machinery slivers patched now; accuracy/keying calibration deferred to the operator-corpus story. Avoids both shipping a defect and re-litigating the split.
+- **Cross-tracker drift is real:** the P1-resolved-but-still-listed-open drift surfaced only by cross-referencing the operator's external draft against deferred-inventory — reinforces §11 + §4/§5 as the kept-current surfaces.
+
+---
+
 # Session Handoff — 2026-06-20 PM-3 (Class S — P2-3 CLOSED: Codex T1–T10 returned → Claude T11 → party-mode 5/5 ACCEPT → `done`)
 
 **Final class:** S (NEW CYCLE T11: independent battery + 3-layer adversarial code review + fully-spawned party-mode close gate; one prod-adjacent test edit = C1 hardening). **Branch:** `fidelity-perception-arc-2026-06-19`. **P2-3 = `done`.** Origin pushed; master-merge SKIPPED (scoped arc branch).
