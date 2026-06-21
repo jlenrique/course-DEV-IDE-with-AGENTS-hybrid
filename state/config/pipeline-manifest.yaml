@@ -48,7 +48,10 @@ frozen_graph_version: "v42"
 # dp-v1.4 (P2-3, 2026-06-21): additive vision→Irene Pass-2 projection.
 # Irene grounds visual narration in perceived PNG evidence; Gary/brief
 # expectations remain demoted expected-plan context.
-data_plane_vocabulary_version: "dp-v1.4"
+# dp-v1.5 (P2-4a, 2026-06-21): additive reading_path vocabulary on rich
+# PerceptionArtifact plus native registry/schema/lint/classifier lockstep.
+# Classifier is vision-adjacent; pack_version remains v4.2.
+data_plane_vocabulary_version: "dp-v1.5"
 learning_events:
   schema_ref: "state/config/learning-event-schema.yaml"
 block_mode_trigger_paths:

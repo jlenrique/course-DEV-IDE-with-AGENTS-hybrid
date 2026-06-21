@@ -69,6 +69,28 @@
       "title": "Provider Model Id",
       "type": "string"
     },
+    "reading_path": {
+      "anyOf": [
+        {
+          "enum": [
+            "z_pattern",
+            "f_pattern",
+            "center_out",
+            "top_down",
+            "multi_column",
+            "grid_quadrant",
+            "sequence_numbered"
+          ],
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "description": "Deterministic reading-path classification derived from perceived geometry.",
+      "title": "Reading Path"
+    },
     "slide_id": {
       "title": "Slide Id",
       "type": "string"

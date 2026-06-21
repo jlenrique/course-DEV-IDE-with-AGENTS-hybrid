@@ -5,6 +5,13 @@ from app.models.perception.perception_artifact import (
     CoverageState,
     PerceptionArtifact,
     PerceptionProvenance,
+    ReadingPath,
 )
 
-__all__ = ["Confidence", "CoverageState", "PerceptionArtifact", "PerceptionProvenance"]
+__all__ = [
+    "Confidence",
+    "CoverageState",
+    "PerceptionArtifact",
+    "PerceptionProvenance",
+    "ReadingPath",
+]

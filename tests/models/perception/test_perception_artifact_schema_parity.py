@@ -6,7 +6,7 @@ from pathlib import Path
 import pytest
 from pydantic import TypeAdapter, ValidationError
 
-from app.models.perception.perception_artifact import PerceptionArtifact
+from app.models.perception.perception_artifact import PerceptionArtifact, ReadingPath
 
 SCHEMA_PATH = (
     Path(__file__).resolve().parents[3]
@@ -23,6 +23,7 @@ def _valid_payload() -> dict[str, object]:
         "confidence": "HIGH",
         "coverage": "perceived",
         "provenance": "png-grounded",
+        "reading_path": "top_down",
         "visual_elements": [{"kind": "callout", "text": "$4.5T"}],
         "extracted_text": "$4.5T spend. Building photo.",
     }
@@ -61,6 +62,7 @@ def test_emitted_schema_matches_live_schema_for_public_fields(
         ("confidence", "MEDIUM"),
         ("coverage", "maybe"),
         ("provenance", "screen-scrape"),
+        ("reading_path", "triptych"),
     ],
 )
 def test_closed_enums_reject_bad_values(field: str, bad_value: str) -> None:
@@ -73,10 +75,35 @@ def test_closed_enums_reject_bad_values(field: str, bad_value: str) -> None:
 
 def test_closed_enums_reject_bad_values_via_type_adapter() -> None:
     payload = _valid_payload()
-    payload["coverage"] = "maybe"
+    payload["reading_path"] = "image-dominant-first"
 
     with pytest.raises(ValidationError):
         TypeAdapter(PerceptionArtifact).validate_python(payload)
+
+
+def test_reading_path_literal_rejects_out_of_vocab() -> None:
+    with pytest.raises(ValidationError):
+        TypeAdapter(ReadingPath).validate_python("triptych")
+
+
+def test_reading_path_schema_enum_is_public_and_closed(
+    emitted_schema: dict[str, object],
+) -> None:
+    properties = emitted_schema["properties"]
+    reading_path = properties["reading_path"]
+    enum_branch = next(
+        branch for branch in reading_path["anyOf"] if branch.get("type") == "string"
+    )
+
+    assert enum_branch["enum"] == [
+        "z_pattern",
+        "f_pattern",
+        "center_out",
+        "top_down",
+        "multi_column",
+        "grid_quadrant",
+        "sequence_numbered",
+    ]
 
 
 def test_p2_1_fixture_still_validates_additively() -> None:
@@ -95,3 +122,4 @@ def test_p2_1_fixture_still_validates_additively() -> None:
 
     assert artifact.coverage == "perceived"
     assert artifact.provenance == "png-grounded"
+    assert artifact.reading_path is None

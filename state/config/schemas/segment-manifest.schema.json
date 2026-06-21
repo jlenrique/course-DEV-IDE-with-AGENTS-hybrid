@@ -1,0 +1,57 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": true,
+  "description": "Segment manifest contract fragment for Pass-2 reading-path metadata.",
+  "properties": {
+    "segments": {
+      "items": {
+        "additionalProperties": true,
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "reading_path": {
+            "additionalProperties": false,
+            "properties": {
+              "cadence_tokens": {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              "pattern": {
+                "enum": [
+                  "z_pattern",
+                  "f_pattern",
+                  "center_out",
+                  "top_down",
+                  "multi_column",
+                  "grid_quadrant",
+                  "sequence_numbered"
+                ],
+                "type": "string"
+              },
+              "scan_order": {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              }
+            },
+            "required": [
+              "pattern"
+            ],
+            "type": "object"
+          },
+          "slide_id": {
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "type": "array"
+    }
+  },
+  "title": "SegmentManifest",
+  "type": "object"
+}

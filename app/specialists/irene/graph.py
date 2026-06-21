@@ -42,6 +42,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+from copy import deepcopy
 from pathlib import Path
 from typing import Any
 
@@ -58,6 +59,10 @@ from app.specialists._scaffold.contract import SCAFFOLD_NODE_IDS
 from app.specialists.dispatch_errors import SpecialistDispatchError
 from app.specialists.irene.payload_contract import CONSUMED_PAYLOAD_KEYS
 from app.specialists.source_bundle import read_extracted_source
+from scripts.utilities.reading_path_classifier import (
+    cadence_tokens_for_pattern,
+    ordered_element_keys_for_reading_path,
+)
 
 REPO_ROOT: Path = Path(__file__).resolve().parents[3]
 SANCTUM_DIR: Path = REPO_ROOT / "_bmad" / "memory" / "bmad-agent-content-creator"
@@ -106,7 +111,11 @@ class Pass2GroundingError(SpecialistDispatchError):
     """
 
 
-def _slide_roster(envelope_payload: dict[str, Any]) -> list[dict[str, str]]:
+class Pass2ReadingPathError(SpecialistDispatchError):
+    """Pass-2 narration order does not conform to perceived reading path."""
+
+
+def _slide_roster(envelope_payload: dict[str, Any]) -> list[dict[str, Any]]:
     """Extract slide ids plus perceived authority and demoted expected plans.
 
     Fail-loud: Pass 2 narrates SLIDES; without Gary's node-07 contribution
@@ -120,7 +129,7 @@ def _slide_roster(envelope_payload: dict[str, Any]) -> list[dict[str, str]]:
             "payload; node 08 projections must deliver it",
             tag="irene.pass2.grounding-missing",
         )
-    roster: list[dict[str, str]] = []
+    roster: list[dict[str, Any]] = []
     for index, row in enumerate(rows, start=1):
         if not isinstance(row, dict):
             continue
@@ -143,12 +152,24 @@ def _slide_roster(envelope_payload: dict[str, Any]) -> list[dict[str, str]]:
     brief_by_slide = _slide_briefs_by_slide(envelope_payload)
     for entry in roster:
         slide_id = entry["slide_id"]
+        artifact = perception_by_slide.get(slide_id)
         entry["visual_authority"] = _visual_authority_for_slide(
-            slide_id, perception_by_slide.get(slide_id)
+            slide_id, artifact
         )
         entry["expected_visual_plan"] = _expected_visual_plan_for_slide(
             entry["visual_description"], brief_by_slide.get(slide_id)
         )
+        if (
+            artifact is not None
+            and artifact.coverage == "perceived"
+            and artifact.confidence == "HIGH"
+        ):
+            entry["reading_path"] = artifact.reading_path
+            entry["reading_path_order"] = (
+                ordered_element_keys_for_reading_path(artifact)
+                if artifact.reading_path
+                else []
+            )
     return roster
 
 
@@ -232,6 +253,8 @@ def _visual_authority_for_slide(
         lines.append(f"  - perceived_extracted_text: {artifact.extracted_text}")
     if artifact.layout_description:
         lines.append(f"  - perceived_layout: {artifact.layout_description}")
+    if artifact.reading_path:
+        lines.append(f"  - reading_path: {artifact.reading_path}")
     for block in _stable_json_items(artifact.text_blocks):
         lines.append(f"  - perceived_text_block: {block}")
     for element in _stable_json_items(artifact.visual_elements):
@@ -264,8 +287,84 @@ def _json_fragment(value: Any) -> str:
     return json.dumps(value, sort_keys=True, ensure_ascii=True, separators=(",", ":"))
 
 
+def _reading_path_guidance(slide_roster: list[dict[str, Any]]) -> str:
+    lines: list[str] = []
+    for entry in slide_roster:
+        pattern = entry.get("reading_path")
+        order = entry.get("reading_path_order") or []
+        if not pattern:
+            continue
+        tokens = ", ".join(cadence_tokens_for_pattern(str(pattern)))
+        order_text = " -> ".join(str(item) for item in order) if order else "<unavailable>"
+        lines.append(
+            f"- {entry['slide_id']}: reading_path={pattern}; "
+            f"scan_order={order_text}; cadence_tokens={tokens}"
+        )
+    return "\n".join(lines) if lines else "- <none supplied>"
+
+
+def _payload_section_for_prompt(
+    envelope_payload: dict[str, Any], slide_roster: list[dict[str, Any]]
+) -> str:
+    unverified = {
+        entry["slide_id"]
+        for entry in slide_roster
+        if UNVERIFIED_VISUAL_AUTHORITY in str(entry.get("visual_authority") or "")
+    }
+    payload = (
+        _redact_unverified_payload(envelope_payload, unverified)
+        if unverified
+        else envelope_payload
+    )
+    return json.dumps(
+        payload,
+        sort_keys=True,
+        ensure_ascii=True,
+        separators=(",", ":"),
+    )
+
+
+def _redact_unverified_payload(
+    envelope_payload: dict[str, Any], unverified_slide_ids: set[str]
+) -> dict[str, Any]:
+    redacted = deepcopy(envelope_payload)
+    for key in ("gary_slide_output", "slide_briefs"):
+        rows = redacted.get(key)
+        if not isinstance(rows, list):
+            continue
+        for row in rows:
+            if not isinstance(row, dict):
+                continue
+            slide_id = str(row.get("slide_id") or "").strip()
+            if slide_id in unverified_slide_ids:
+                _redact_slide_row(row, slide_id)
+    return redacted
+
+
+def _redact_slide_row(row: dict[str, Any], slide_id: str) -> None:
+    keep = {
+        "slide_id",
+        "id",
+        "card_number",
+        "file_path",
+        "png_path",
+        "artifact_path",
+        "source_ref",
+    }
+    token = f"[REDACTED: no perceived authority for {slide_id}]"
+    for key, value in list(row.items()):
+        if key in keep:
+            continue
+        if isinstance(value, str):
+            row[key] = token
+        elif isinstance(value, dict):
+            row[key] = {inner_key: token for inner_key in value}
+        elif isinstance(value, list):
+            row[key] = [token for _ in value]
+
+
 def _assert_narration_joins_roster(
-    parsed: dict[str, Any], roster: list[dict[str, str]]
+    parsed: dict[str, Any], roster: list[dict[str, Any]]
 ) -> None:
     """Winston post-check: narration must reference REAL slide ids only.
 
@@ -294,6 +393,68 @@ def _assert_narration_joins_roster(
             f"roster: {sorted(slide_ids)})",
             tag="irene.pass2.slide-join-failed",
         )
+
+
+def _assert_reading_path_conformance(
+    parsed: dict[str, Any], roster: list[dict[str, Any]]
+) -> None:
+    """Verify visual references follow each slide's classified scan order."""
+    by_slide = {entry["slide_id"]: entry for entry in roster}
+    last_seen_by_slide: dict[str, int] = {}
+    for delta in parsed.get("segment_manifest_deltas") or []:
+        if not isinstance(delta, dict):
+            continue
+        for ref in delta.get("visual_references") or []:
+            if not isinstance(ref, dict):
+                continue
+            slide_id = str(ref.get("perception_source") or "").strip()
+            if not slide_id or slide_id not in by_slide:
+                continue
+            entry = by_slide[slide_id]
+            pattern = entry.get("reading_path")
+            order = entry.get("reading_path_order") or []
+            if not pattern or not order:
+                raise Pass2ReadingPathError(
+                    f"slide {slide_id} is referenced but missing reading_path",
+                    tag="irene.pass2.reading-path-missing",
+                )
+            element_key = _visual_reference_key(ref)
+            if not element_key:
+                continue
+            index_by_key = {_norm_key(key): index for index, key in enumerate(order)}
+            normalized = _norm_key(element_key)
+            if normalized not in index_by_key:
+                continue
+            current = index_by_key[normalized]
+            previous = last_seen_by_slide.get(slide_id, -1)
+            if current < previous:
+                raise Pass2ReadingPathError(
+                    "Pass-2 narration visual reference order violates "
+                    f"{pattern} for {slide_id}: {element_key!r} appears after "
+                    f"scan index {previous}",
+                    tag="irene.pass2.reading-path-order-failed",
+                )
+            last_seen_by_slide[slide_id] = current
+
+
+def _visual_reference_key(ref: dict[str, Any]) -> str:
+    for field in (
+        "element_id",
+        "visual_element_id",
+        "visual_element",
+        "element",
+        "label",
+        "text",
+        "description",
+    ):
+        value = str(ref.get(field) or "").strip()
+        if value:
+            return value
+    return ""
+
+
+def _norm_key(value: Any) -> str:
+    return " ".join(str(value).strip().lower().split())
 
 
 TRANSITIONS: tuple[tuple[str, str], ...] = (
@@ -362,7 +523,7 @@ def _assemble_pass_2_prompt(
     envelope_payload: dict[str, Any],
     *,
     extracted_source: str,
-    slide_roster: list[dict[str, str]],
+    slide_roster: list[dict[str, Any]],
 ) -> tuple[str, str]:
     """Build (system_message, user_message) for Irene's Pass-2 invocation.
 
@@ -375,17 +536,13 @@ def _assemble_pass_2_prompt(
     """
     sanctum_section = _read_sanctum_digest()
     references_section = _read_pass_2_references()
-    payload_section = json.dumps(
-        envelope_payload,
-        sort_keys=True,
-        ensure_ascii=True,
-        separators=(",", ":"),
-    )
+    payload_section = _payload_section_for_prompt(envelope_payload, slide_roster)
     authority_lines = "\n".join(entry["visual_authority"] for entry in slide_roster)
     expected_lines = "\n".join(
         f"- {entry['slide_id']}: {entry['expected_visual_plan']}"
         for entry in slide_roster
     )
+    reading_path_guidance = _reading_path_guidance(slide_roster)
     user_message = (
         "## Source corpus (the ONLY content basis for narration)\n\n"
         f"{extracted_source}\n\n"
@@ -396,6 +553,11 @@ def _assemble_pass_2_prompt(
         "They may be stale. When they conflict with perceived slide evidence, "
         "use the perceived visual authority above and ignore the expected plan.\n\n"
         f"{expected_lines}\n\n"
+        "## Reading path cadence guidance\n\n"
+        "Follow each slide's classified scan order when sequencing visual "
+        "references. Use cadence tokens naturally; do not invent unseen "
+        "elements to satisfy a pattern.\n\n"
+        f"{reading_path_guidance}\n\n"
         "## Sanctum digest (sorted file listing + sha256)\n\n"
         f"{sanctum_section}\n\n"
         "## L5 references (fixed order — STRUCTURE AND FORMAT ONLY; any "
@@ -573,6 +735,7 @@ def _act_pass_2(
     raw_text = raw_content if isinstance(raw_content, str) else str(raw_content)
     parsed = _parse_pass_2_response(raw_text)
     _assert_narration_joins_roster(parsed, slide_roster)
+    _assert_reading_path_conformance(parsed, slide_roster)
     output_blob = json.dumps(
         {
             "narration_script": parsed["narration_script"],
@@ -739,9 +902,11 @@ __all__ = [
     "PASS_2_PROMPT_REFERENCES",
     "PASS_2_SYSTEM_MESSAGE",
     "Pass2GroundingError",
+    "Pass2ReadingPathError",
     "TRANSITIONS",
     "UNVERIFIED_VISUAL_AUTHORITY",
     "_act",
+    "_assert_reading_path_conformance",
     "_assemble_pass_2_prompt",
     "_decode_envelope_payload",
     "_act_pass_1",

@@ -1,7 +1,7 @@
 ---
 story_key: p2-4a-reading-path-native-machinery
 epic: P2 — Perception + Reading-Path Narrative-Grounding Restoration
-status: ready-for-dev
+status: done
 gate_mode: single
 tier: Tier-3 (party green-light required BEFORE dev — DONE 2026-06-20, 5/5 PARTIAL-SPEC-NOW)
 baseline_commit: 485662e
@@ -66,4 +66,22 @@ This closes the **machinery** half of P2-4. It does **NOT** grow the repertoire 
 - **`vo-narration-layout-tracking-trained-patterns`** — operator-led exemplar/training build; reactivate AFTER P2-4a lands + Z-path is trial-confirmed; do NOT fold into P2-4a.
 - **`pass2-envelope-payload-brief-unframed-in-prompt-tail`** — folded into P2-4a as AC-8 (the §52 rider); struck on close.
 
-**Status → ready-for-dev (P2-4a machinery leg).** Codex driver: `codex-dev-prompt-p2-4a-reading-path-native-machinery.md` (to follow).
+**Status → ready-for-dev (P2-4a machinery leg).** Codex driver: `codex-dev-prompt-p2-4a-reading-path-native-machinery.md`.
+
+## Completion Notes (T11 close — 2026-06-21)
+
+**Disposition: CLOSED `done` via NEW CYCLE T11 (Codex T1–T10 → Claude T11).** Fully-spawned party-mode (Winston/John/Murat/Mary/Amelia) **UNANIMOUS 5/5 (A) CLOSE**, no impasse; Quinn→John chain not triggered.
+
+**Independent battery (T11 reproduced, all green):** reading-path parity/classifier/conformance/schema-parity 20 · irene+vision+detector+package-builders 85 · deterministic re-run post-patch 104 passed/1 skipped · lockstep L1 exit 0 · ruff · lint-imports 15/0 · sandbox-AC PASS. 3-layer `bmad-code-review`: **Acceptance Auditor PASS-WITH-NITS** (all 11 ACs + amendments met; AC-9 ≥80% real-slide vacuity-trap correctly DEFERRED/unclaimed; AC-10 exactly 7 patterns, FR19 out; AC-4 anti-vacuity genuinely non-vacuous — M1 classifier-default + M2 conformance-collapse both hand-traced to go RED).
+
+**Two corpus-independent machinery hardenings PATCHED at T11 (Claude-local, party-ratified) + regression-tested:**
+- **3a (error-pause taxonomy):** `app/specialists/vision/_act.py` now catches `ReadingPathClassificationError` and converts it to a non-retryable `VisionProviderError` (tag `vision.reading-path.unclassifiable`) so a zero-bbox HIGH/perceived artifact routes through the error-pause contract instead of escaping as an uncaught `ValueError`. Test: `test_reading_path_classification_failure_converts_to_vision_provider_error`.
+- **3b (`_bbox` robustness):** `scripts/utilities/reading_path_classifier.py::_bbox` now SKIPs (returns `None`) on non-numeric coordinates instead of raising a raw `ValueError`, uniform with the structural-mismatch path. Test: `test_non_numeric_bbox_skips_to_controlled_failure_not_raw_valueerror`.
+
+**Deferred to P2-4b (filed as named riders in `p2-4b-reading-path-repertoire-and-conformance-corpus`):** (1) ordinal-gate over-trigger + label↔order degeneration; (2) conformance vacuous-skip on key-vocab mismatch + strict-`<` — **carries a MUST RED-first requirement**; (3) nits. These are classifier-ACCURACY/keying-CALIBRATION concerns that the operator-derived corpus is required to fix safely.
+
+**Murat named dissent (recorded):** Murat held finding #2 (conformance silent-skip) should be `continue`→`raise`-fixed at T11, not deferred. Party majority (4) + adopted synthesis: the literal raise-now would hard-fail a legitimate key-vocabulary mismatch → a false-positive Class-A failure (the "stuck-alarm" anti-pattern Murat's own fidelity principles reject); the keying contract must be pinned with corpus evidence first. Dissent addressed by the mandatory RED-first P2-4b rider (tracked, not evaporated).
+
+**Flaky-test attestation (A7):** `test_irene_act_node_real_llm_invocation_with_token_floor` (`@pytest.mark.llm_live`) intermittently fails with `Pass2GroundingError` (tag `irene.pass2.slide-join-failed`) — the **known Irene slide-join LLM-variance** (auto-retry-absorbed in-dispatch per STATE-OF-THE-APP, but this direct-`_act` unit test has no dispatch retry). Confirmed flaky + ORTHOGONAL to the T11 patches: the test feeds numeric bbox + pre-set `reading_path`, so the `_bbox` change is a provable no-op; observed pass/fail across rolls (≈50%) with patches present, and it passed with patches stashed. NOT a P2-4a regression.
+
+**Scope:** P2-4a machinery leg DONE. The P2 arc's last story (P2-4b — reading-path repertoire growth + held-out conformance corpus) remains OPERATOR-GATED on the scan-order harvest. The combined-arc last asterisk drops only when P2-4b lands.

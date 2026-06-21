@@ -41,19 +41,35 @@ def test_irene_act_node_real_llm_invocation_with_token_floor(tmp_path: Any) -> N
         lesson_slug="test-c1m1",
         perception_artifacts=[
             {
-                "slide_id": "s1",
-                "confidence": "HIGH",
-                "coverage": "perceived",
-                "visual_elements": [{"kind": "title", "label": "title banner"}],
-                "source_png_path": "bundle/s1.png",
-            },
-            {
-                "slide_id": "s2",
-                "confidence": "HIGH",
-                "coverage": "perceived",
-                "visual_elements": [{"kind": "diagram", "label": "process diagram"}],
-                "source_png_path": "bundle/s2.png",
-            },
+                    "slide_id": "s1",
+                    "confidence": "HIGH",
+                    "coverage": "perceived",
+                    "reading_path": "top_down",
+                    "visual_elements": [
+                        {
+                            "id": "title",
+                            "kind": "title",
+                            "label": "title banner",
+                            "bbox": [0.10, 0.10, 0.90, 0.22],
+                        }
+                    ],
+                    "source_png_path": "bundle/s1.png",
+                },
+                {
+                    "slide_id": "s2",
+                    "confidence": "HIGH",
+                    "coverage": "perceived",
+                    "reading_path": "top_down",
+                    "visual_elements": [
+                        {
+                            "id": "diagram",
+                            "kind": "diagram",
+                            "label": "process diagram",
+                            "bbox": [0.12, 0.20, 0.88, 0.82],
+                        }
+                    ],
+                    "source_png_path": "bundle/s2.png",
+                },
         ],
         narration_profile_controls={
             "bridge_cadence_minutes": 2,

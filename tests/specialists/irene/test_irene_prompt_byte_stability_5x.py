@@ -22,6 +22,8 @@ GROUNDING = {
                 "  - perceived_visual_element: {\"kind\":\"photo\",\"label\":\"building photo\"}"
             ),
             "expected_visual_plan": "gary_visual_description=$5.2T line+bars",
+            "reading_path": "top_down",
+            "reading_path_order": ["metric", "building"],
         },
         {
             "slide_id": "slide-02",
@@ -33,6 +35,8 @@ GROUNDING = {
                 "{\"kind\":\"infographic\",\"label\":\"burnout infographic\"}"
             ),
             "expected_visual_plan": "gary_visual_description=Burnout infographic",
+            "reading_path": "center_out",
+            "reading_path_order": ["burnout"],
         },
     ],
 }
@@ -83,10 +87,12 @@ def test_corpus_leads_perceived_authority_then_demoted_expected_plan() -> None:
         "## Expected visual plan - brief/Gary signals "
         "(subordinate; may be stale; defer to perceived)"
     )
+    cadence_at = user.index("## Reading path cadence guidance")
     references_at = user.index("## L5 references (fixed order")
     task_at = user.index("## Task")
-    assert corpus_at < authority_at < expected_at < references_at < task_at
+    assert corpus_at < authority_at < expected_at < cadence_at < references_at < task_at
     assert "Macro trends in healthcare." in user
     assert "perceived_extracted_text: $4.5T annual healthcare spend" in user
     assert "gary_visual_description=$5.2T line+bars" in user
+    assert "slide-01: reading_path=top_down" in user
     assert "perceived visual authority block" in user

@@ -10,6 +10,15 @@ from pydantic.json_schema import SkipJsonSchema
 CoverageState = Literal["perceived", "low-confidence", "not-covered"]
 Confidence = Literal["HIGH", "LOW"]
 PerceptionProvenance = Literal["png-grounded", "brief-expectation", "not-covered"]
+ReadingPath = Literal[
+    "z_pattern",
+    "f_pattern",
+    "center_out",
+    "top_down",
+    "multi_column",
+    "grid_quadrant",
+    "sequence_numbered",
+]
 
 
 class PerceptionArtifact(BaseModel):
@@ -33,6 +42,10 @@ class PerceptionArtifact(BaseModel):
     coverage: CoverageState = "perceived"
     confidence_score: float | None = Field(default=None, ge=0.0, le=1.0)
     provider_model_id: str = ""
+    reading_path: ReadingPath | None = Field(
+        default=None,
+        description="Deterministic reading-path classification derived from perceived geometry.",
+    )
     source_png_path: str = ""
     provenance: SkipJsonSchema[PerceptionProvenance] = Field(
         default="png-grounded",
@@ -49,4 +62,10 @@ class PerceptionArtifact(BaseModel):
         return cleaned
 
 
-__all__ = ["Confidence", "CoverageState", "PerceptionArtifact", "PerceptionProvenance"]
+__all__ = [
+    "Confidence",
+    "CoverageState",
+    "PerceptionArtifact",
+    "PerceptionProvenance",
+    "ReadingPath",
+]

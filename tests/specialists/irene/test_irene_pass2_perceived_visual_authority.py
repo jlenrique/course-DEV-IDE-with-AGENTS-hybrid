@@ -87,12 +87,16 @@ def test_missing_or_low_confidence_perception_never_falls_back_to_brief() -> Non
     assert UNVERIFIED_VISUAL_AUTHORITY in user
     assert authority.count("$5.2T") == 0
     assert expected.count("$5.2T") >= 1
+    assert user.count("$5.2T") == expected.count("$5.2T")
 
     payload.pop("perception_artifacts")
     missing_user, missing_authority, _ = _prompt_regions(payload)
     assert UNVERIFIED_VISUAL_AUTHORITY in missing_authority
     assert "$5.2T" not in missing_authority
     assert UNVERIFIED_VISUAL_AUTHORITY in missing_user
+    assert missing_user.count("$5.2T") == missing_user.split("## Envelope payload")[0].count(
+        "$5.2T"
+    )
 
 
 def test_detector_judges_post_fix_narration_green_and_prefix_hallucination_red() -> None:

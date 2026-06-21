@@ -1,0 +1,84 @@
+version: reading-path-v1
+patterns:
+  - id: z_pattern
+    canonical_scan: top-left -> top-right -> bottom-left -> bottom-right
+    cadence_tokens:
+      - headline
+      - body
+      - visual
+      - CTA
+      - top-left
+      - bottom-right
+    lint: warning
+  - id: f_pattern
+    canonical_scan: left-column top-down -> selective right-side evidence markers
+    cadence_tokens:
+      - evidence
+      - drill into
+      - as shown
+      - note the
+      - data shows
+      - callout
+    lint: warning
+  - id: center_out
+    canonical_scan: establish hero -> orbit annotations clockwise -> return to hero
+    cadence_tokens:
+      - returning to the center
+      - back to the hero
+      - circling back
+      - center again
+      - back to the main
+      - returning to the heart
+    lint: warning
+  - id: top_down
+    canonical_scan: single sweep top-to-bottom following the spine
+    cadence_tokens:
+      - next item
+      - continuing down
+      - further down
+      - proceeding through
+      - step by step
+      - in order
+    lint: warning
+  - id: multi_column
+    canonical_scan: column-major, each column top-to-bottom before advancing right
+    cadence_tokens:
+      - in the next column
+      - moving to the right
+      - the adjacent column
+      - the column beside
+      - moving rightward
+      - in the column to the right
+      - across the columns
+    lint: warning
+  - id: grid_quadrant
+    canonical_scan: declared sweep order; row-major default
+    cadence_tokens:
+      - compared to
+      - contrast
+      - whereas
+      - whilst
+      - on the other hand
+      - vs
+      - versus
+      - by contrast
+      - different from
+      - in comparison
+    lint: warning
+  - id: sequence_numbered
+    canonical_scan: follow ordinal order, ignore spatial layout
+    cadence_tokens:
+      - first
+      - second
+      - third
+      - fourth
+      - next
+      - then
+      - finally
+      - step 1
+      - step 2
+      - step 3
+      - step a
+      - step b
+      - step c
+    lint: fail-closed

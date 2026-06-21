@@ -32,18 +32,34 @@ def make_grounded_pass2_payload(tmp_path: Path, **extra: Any) -> dict[str, Any]:
                 "slide_id": "s1",
                 "confidence": "HIGH",
                 "coverage": "perceived",
+                "reading_path": "top_down",
                 "extracted_text": "Macro trends in healthcare delivery.",
                 "layout_description": "Dual-axis chart with labeled axes.",
-                "visual_elements": [{"kind": "chart", "label": "dual-axis chart"}],
+                "visual_elements": [
+                    {
+                        "id": "chart",
+                        "kind": "chart",
+                        "label": "dual-axis chart",
+                        "bbox": [0.12, 0.20, 0.88, 0.78],
+                    }
+                ],
                 "source_png_path": "bundle/s1.png",
             },
             {
                 "slide_id": "s2",
                 "confidence": "HIGH",
                 "coverage": "perceived",
+                "reading_path": "center_out",
                 "extracted_text": "Burnout affects care teams.",
                 "layout_description": "Infographic with icon callouts.",
-                "visual_elements": [{"kind": "infographic", "label": "burnout infographic"}],
+                "visual_elements": [
+                    {
+                        "id": "infographic",
+                        "kind": "infographic",
+                        "label": "burnout infographic",
+                        "bbox": [0.22, 0.18, 0.78, 0.82],
+                    }
+                ],
                 "source_png_path": "bundle/s2.png",
             },
         ],

@@ -18,6 +18,10 @@ from app.specialists.vision.provider import (
     VisionProviderTimeout,
     perceive_png,
 )
+from scripts.utilities.reading_path_classifier import (
+    ReadingPathClassificationError,
+    with_classified_reading_path,
+)
 
 VISION_RETRY_ATTEMPTS = 2
 RETRYABLE_STATUS_CODES = {408, 429}
@@ -102,7 +106,19 @@ def _perceive_with_retry(path: Path, *, slide_id: str) -> PerceptionArtifact:
     for attempt in range(1, VISION_RETRY_ATTEMPTS + 1):
         try:
             response = perceive_png(path, slide_id=slide_id, model_id=model_id)
-            return PerceptionArtifact.model_validate(response.model_dump())
+            artifact = PerceptionArtifact.model_validate(response.model_dump())
+            try:
+                return with_classified_reading_path(artifact)
+            except ReadingPathClassificationError as exc:
+                # P2-4a T11 (party-mode 5/5): a deterministic reading-path
+                # classification failure on a HIGH/perceived artifact must
+                # convert to a NON-retryable VisionProviderError so it routes
+                # through the vision node's error-pause contract — never escape
+                # as an uncaught ValueError past the retry boundary.
+                raise VisionProviderError(
+                    f"reading-path classification failed for slide {slide_id}: {exc}",
+                    tag="vision.reading-path.unclassifiable",
+                ) from exc
         except VisionProviderError as exc:
             last_error = exc
             if not _is_retryable_provider_error(exc):

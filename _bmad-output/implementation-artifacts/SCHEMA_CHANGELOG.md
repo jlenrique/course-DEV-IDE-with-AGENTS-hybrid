@@ -868,3 +868,59 @@ consumer contract and manifest projection now route it into Irene Pass 2.
 - `tests/contracts/test_manifest_payload_contracts.py`
 - `tests/integration/marcus/test_package_builders.py`
 - `tests/specialists/irene/test_irene_pass2_perceived_visual_authority.py`
+
+## PerceptionArtifact v1.2 - 2026-06-21 - Story P2-4a
+
+**Type:** Minor additive extension.
+
+**Reason for introduction:** P2-4a restores native reading-path machinery so
+Pass 2 narration can follow the perceived slide scan order instead of relying
+on worked-example prompt adherence alone.
+
+**Fields introduced:**
+
+- `reading_path` - optional public closed enum on the rich
+  `app.models.perception.PerceptionArtifact`, populated by deterministic
+  vision-adjacent classification. Allowed values:
+  `z_pattern`, `f_pattern`, `center_out`, `top_down`, `multi_column`,
+  `grid_quadrant`, `sequence_numbered`.
+
+**Migration:** Additive. Existing P2-1/P2-2 fixtures remain valid because the
+field defaults to `None`; Vision populates it for HIGH-confidence perceived
+artifacts, and Irene fails loud when referenced narration lacks a classified
+path.
+
+**Test surface:**
+
+- `tests/models/perception/test_perception_artifact_schema_parity.py`
+- `tests/specialists/vision/test_reading_path_classifier.py`
+- `tests/specialists/vision/test_vision_provider_and_act.py`
+- `tests/specialists/irene/test_irene_reading_path_conformance.py`
+
+## Data Plane Vocabulary dp-v1.5 - 2026-06-21 - Story P2-4a
+
+**Type:** Manifest vocabulary refinement; no new pipeline node.
+
+**Reason for introduction:** The rich perception data plane now carries a
+native `reading_path` classification consumed by Irene's prompt cadence block
+and post-parse conformance check. The classifier is vision-adjacent, so
+`pack_version` remains `v4.2` and the generated v4.2 witness is regenerated.
+
+**Vocabulary change:**
+
+- `data_plane_vocabulary_version` bumps `dp-v1.4` to `dp-v1.5`.
+- Native reading-path lockstep rebuilt:
+  `state/config/reading-path-patterns.yaml`,
+  `state/config/schemas/segment-manifest.schema.json`,
+  `scripts/validators/pass_2_emission_lint.py`,
+  `scripts/utilities/reading_path_classifier.py`,
+  `tests/contracts/test_reading_path_parity.py`.
+
+**Migration:** Additive. `triptych` and `image-dominant-first` remain out of
+scope until real-slide conformance evidence justifies widening the enum.
+
+**Test surface:**
+
+- `tests/contracts/test_reading_path_parity.py`
+- `tests/integration/marcus/test_package_builders.py`
+- `tests/specialists/irene/test_irene_prompt_byte_stability_5x.py`

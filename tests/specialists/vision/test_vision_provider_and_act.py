@@ -53,7 +53,20 @@ def _response(slide_id: str = "slide-01", coverage: str = "perceived") -> Vision
         provenance="png-grounded" if coverage == "perceived" else "not-covered",
         extracted_text="$4.5T spend. Building photo.",
         layout_description="Three stat callouts beside a building photo.",
-        visual_elements=[{"kind": "callout", "text": "$4.5T"}],
+        visual_elements=[
+            {
+                "id": "metric",
+                "kind": "callout",
+                "text": "$4.5T",
+                "bbox": [0.12, 0.12, 0.38, 0.26],
+            },
+            {
+                "id": "building",
+                "kind": "photo",
+                "label": "building photo",
+                "bbox": [0.50, 0.18, 0.90, 0.80],
+            },
+        ],
         source_png_path="slide-01.png",
         provider_model_id="vision-fixture-v1",
     )
@@ -86,7 +99,39 @@ def test_act_emits_per_slide_artifacts_and_not_covered_for_unreadable_slide(
         "slide-02",
     ]
     assert output["perception_artifacts"][0]["coverage"] == "perceived"
+    assert output["perception_artifacts"][0]["reading_path"] == "top_down"
     assert output["perception_artifacts"][1]["coverage"] == "not-covered"
+    assert output["perception_artifacts"][1]["reading_path"] is None
+
+
+def test_reading_path_classification_failure_converts_to_vision_provider_error(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    # P2-4a T11 (party-mode 5/5, Cluster 3a): a HIGH/perceived artifact whose
+    # elements carry no positioned geometry makes the deterministic classifier
+    # raise ReadingPathClassificationError (a ValueError). The vision node must
+    # convert that to a NON-retryable VisionProviderError routed through the
+    # error-pause contract — never let a bare ValueError escape the retry guard.
+    png = _png(tmp_path)
+
+    def fake_perceive(path: Path, *, slide_id: str, **_: Any) -> VisionProviderResponse:
+        return VisionProviderResponse(
+            slide_id=slide_id,
+            confidence="HIGH",
+            coverage="perceived",
+            provenance="png-grounded",
+            extracted_text="Building photo only.",
+            layout_description="A single building photo.",
+            visual_elements=[{"id": "building", "kind": "photo", "label": "building photo"}],
+            source_png_path="slide-01.png",
+            provider_model_id="vision-fixture-v1",
+        )
+
+    monkeypatch.setattr(_act, "perceive_png", fake_perceive)
+    payload = {"gary_slide_output": [{"slide_id": "slide-01", "file_path": str(png)}]}
+
+    with pytest.raises(VisionProviderError, match="reading-path classification failed"):
+        _act.act(_state(payload))
 
 
 @pytest.mark.parametrize(

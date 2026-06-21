@@ -230,6 +230,7 @@ def test_perception_artifact_shape_pins_legacy_fields_and_coverage_enum() -> Non
         "extracted_text",
         "layout_description",
         "provider_model_id",
+        "reading_path",
         "source_png_path",
         "slide_id",
         "slide_title",
