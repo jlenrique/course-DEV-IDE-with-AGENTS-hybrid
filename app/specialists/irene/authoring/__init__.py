@@ -13,6 +13,7 @@ from app.specialists.irene.authoring.pass_2_template import (
     SegmentManifestSegment,
     VisualDetailLoad,
     VisualReference,
+    project_rich_perception_for_authoring,
 )
 
 __all__ = [
@@ -28,4 +29,5 @@ __all__ = [
     "SegmentManifestSegment",
     "VisualDetailLoad",
     "VisualReference",
+    "project_rich_perception_for_authoring",
 ]

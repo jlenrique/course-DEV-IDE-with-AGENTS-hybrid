@@ -47,9 +47,11 @@ from typing import Any
 
 from langgraph.graph import END, START, StateGraph
 from langgraph.types import Command, interrupt
+from pydantic import ValidationError
 
 from app.gates.resume_api import resume_from_verdict as _resume_from_verdict
 from app.models.adapter import make_chat_model
+from app.models.perception import PerceptionArtifact as RichPerceptionArtifact
 from app.models.state import specialist_summary_artifacts as specialist_summary_writer
 from app.models.state.run_state import RunState
 from app.specialists._scaffold.contract import SCAFFOLD_NODE_IDS
@@ -84,6 +86,16 @@ PASS_2_SYSTEM_MESSAGE: str = (
     "well-structured prose with explicit visual references woven into the flow."
 )
 
+VISUAL_AUTHORITY_HEADER = (
+    "## Visual authority - perceived slide evidence (SOLE visual authority)"
+)
+EXPECTED_VISUAL_PLAN_HEADER = (
+    "## Expected visual plan - brief/Gary signals "
+    "(subordinate; may be stale; defer to perceived)"
+)
+UNVERIFIED_VISUAL_AUTHORITY = "UNVERIFIED — no perceived authority"
+
+
 class Pass2GroundingError(SpecialistDispatchError):
     """Pass-2 grounding input absent or output unjoined to the real slide roster.
 
@@ -95,10 +107,11 @@ class Pass2GroundingError(SpecialistDispatchError):
 
 
 def _slide_roster(envelope_payload: dict[str, Any]) -> list[dict[str, str]]:
-    """Extract the real slide roster (id + visual description) from Gary's output.
+    """Extract slide ids plus perceived authority and demoted expected plans.
 
     Fail-loud: Pass 2 narrates SLIDES; without Gary's node-07 contribution
-    there is nothing real to narrate.
+    there is nothing real to join. Visual authority, however, comes only from
+    the rich vision PerceptionArtifact projection.
     """
     rows = envelope_payload.get("gary_slide_output")
     if not isinstance(rows, list) or not rows:
@@ -117,18 +130,138 @@ def _slide_roster(envelope_payload: dict[str, Any]) -> list[dict[str, str]]:
                 f"gary_slide_output row {index} carries no slide_id",
                 tag="irene.pass2.grounding-missing",
             )
-        roster.append(
-            {
-                "slide_id": slide_id,
-                "visual_description": str(row.get("visual_description") or ""),
-            }
-        )
+        roster.append({"slide_id": slide_id, "visual_description": _expected_visual(row)})
     if not roster:
         raise Pass2GroundingError(
             "gary_slide_output contained no usable slide rows",
             tag="irene.pass2.grounding-missing",
         )
+    # P2-3 decoy note: the minimal authoring-envelope
+    # app.specialists.irene.authoring.pass_2_template.PerceptionArtifact is
+    # not a runtime grounding source. Pass 2 consumes the rich upstream model.
+    perception_by_slide = _perception_artifacts_by_slide(envelope_payload)
+    brief_by_slide = _slide_briefs_by_slide(envelope_payload)
+    for entry in roster:
+        slide_id = entry["slide_id"]
+        entry["visual_authority"] = _visual_authority_for_slide(
+            slide_id, perception_by_slide.get(slide_id)
+        )
+        entry["expected_visual_plan"] = _expected_visual_plan_for_slide(
+            entry["visual_description"], brief_by_slide.get(slide_id)
+        )
     return roster
+
+
+def _expected_visual(row: dict[str, Any]) -> str:
+    candidates = [
+        row.get("visual_description"),
+        row.get("prompt"),
+        row.get("title"),
+        row.get("slide_purpose"),
+    ]
+    return " | ".join(str(item).strip() for item in candidates if str(item or "").strip())
+
+
+def _perception_artifacts_by_slide(
+    envelope_payload: dict[str, Any],
+) -> dict[str, RichPerceptionArtifact]:
+    raw = envelope_payload.get("perception_artifacts")
+    if raw is None:
+        return {}
+    if isinstance(raw, dict):
+        if "perception_artifacts" in raw:
+            raw = raw["perception_artifacts"]
+        elif "slide_id" in raw:
+            raw = [raw]
+        else:
+            raw = list(raw.values())
+    if not isinstance(raw, list):
+        raise Pass2GroundingError(
+            "perception_artifacts must be a list or slide-id map when supplied",
+            tag="irene.pass2.perception-invalid",
+        )
+    try:
+        artifacts = [RichPerceptionArtifact.model_validate(item) for item in raw]
+    except ValidationError as exc:
+        raise Pass2GroundingError(
+            f"perception_artifacts failed rich model validation: {exc}",
+            tag="irene.pass2.perception-invalid",
+        ) from exc
+    mapping: dict[str, RichPerceptionArtifact] = {}
+    for artifact in artifacts:
+        if artifact.slide_id in mapping:
+            raise Pass2GroundingError(
+                f"duplicate perception artifact for slide {artifact.slide_id}",
+                tag="irene.pass2.perception-invalid",
+            )
+        mapping[artifact.slide_id] = artifact
+    return mapping
+
+
+def _slide_briefs_by_slide(envelope_payload: dict[str, Any]) -> dict[str, dict[str, Any]]:
+    raw = envelope_payload.get("slide_briefs")
+    if not isinstance(raw, list):
+        return {}
+    briefs: dict[str, dict[str, Any]] = {}
+    for item in raw:
+        if not isinstance(item, dict):
+            continue
+        slide_id = str(item.get("slide_id") or "").strip()
+        if slide_id and slide_id not in briefs:
+            briefs[slide_id] = item
+    return briefs
+
+
+def _visual_authority_for_slide(
+    slide_id: str, artifact: RichPerceptionArtifact | None
+) -> str:
+    if artifact is None:
+        return f"- {slide_id}: {UNVERIFIED_VISUAL_AUTHORITY}"
+    if artifact.coverage != "perceived" or artifact.confidence != "HIGH":
+        return (
+            f"- {slide_id}: {UNVERIFIED_VISUAL_AUTHORITY} "
+            f"(coverage={artifact.coverage}; confidence={artifact.confidence})"
+        )
+    lines = [
+        f"- {slide_id}: source=vision.perception_artifacts; "
+        f"coverage={artifact.coverage}; confidence={artifact.confidence}"
+    ]
+    if artifact.slide_title:
+        lines.append(f"  - perceived_slide_title: {artifact.slide_title}")
+    if artifact.extracted_text:
+        lines.append(f"  - perceived_extracted_text: {artifact.extracted_text}")
+    if artifact.layout_description:
+        lines.append(f"  - perceived_layout: {artifact.layout_description}")
+    for block in _stable_json_items(artifact.text_blocks):
+        lines.append(f"  - perceived_text_block: {block}")
+    for element in _stable_json_items(artifact.visual_elements):
+        lines.append(f"  - perceived_visual_element: {element}")
+    if artifact.source_png_path:
+        lines.append(f"  - perceived_source_png_path: {artifact.source_png_path}")
+    return "\n".join(lines)
+
+
+def _expected_visual_plan_for_slide(
+    gary_visual_description: str, slide_brief: dict[str, Any] | None
+) -> str:
+    parts = []
+    if gary_visual_description:
+        parts.append(f"gary_visual_description={gary_visual_description}")
+    if slide_brief:
+        parts.append(f"slide_brief={_json_fragment(slide_brief)}")
+    if not parts:
+        parts.append("<none supplied>")
+    return "; ".join(parts)
+
+
+def _stable_json_items(items: list[Any]) -> list[str]:
+    return sorted(_json_fragment(item) for item in items)
+
+
+def _json_fragment(value: Any) -> str:
+    if isinstance(value, str):
+        return value
+    return json.dumps(value, sort_keys=True, ensure_ascii=True, separators=(",", ":"))
 
 
 def _assert_narration_joins_roster(
@@ -248,15 +381,21 @@ def _assemble_pass_2_prompt(
         ensure_ascii=True,
         separators=(",", ":"),
     )
-    roster_lines = "\n".join(
-        f"- {entry['slide_id']}: {entry['visual_description']}"
+    authority_lines = "\n".join(entry["visual_authority"] for entry in slide_roster)
+    expected_lines = "\n".join(
+        f"- {entry['slide_id']}: {entry['expected_visual_plan']}"
         for entry in slide_roster
     )
     user_message = (
         "## Source corpus (the ONLY content basis for narration)\n\n"
         f"{extracted_source}\n\n"
-        "## Real slide roster (narrate THESE slides and no others)\n\n"
-        f"{roster_lines}\n\n"
+        f"{VISUAL_AUTHORITY_HEADER}\n\n"
+        f"{authority_lines}\n\n"
+        f"{EXPECTED_VISUAL_PLAN_HEADER}\n\n"
+        "These expected-plan signals are subordinate planning context only. "
+        "They may be stale. When they conflict with perceived slide evidence, "
+        "use the perceived visual authority above and ignore the expected plan.\n\n"
+        f"{expected_lines}\n\n"
         "## Sanctum digest (sorted file listing + sha256)\n\n"
         f"{sanctum_section}\n\n"
         "## L5 references (fixed order — STRUCTURE AND FORMAT ONLY; any "
@@ -267,8 +406,12 @@ def _assemble_pass_2_prompt(
         f"```json\n{payload_section}\n```\n\n"
         "## Task\n\n"
         "Author Pass 2 narration + segment manifest deltas per the procedure "
-        "above, grounded EXCLUSIVELY in the source corpus and the real slide "
-        "roster. Every visual_reference's `perception_source` MUST be one of "
+        "above, grounded EXCLUSIVELY in the source corpus and the perceived "
+        "visual authority block. Treat the expected visual plan as demoted, "
+        "possibly stale context; never use it as visual authority. If a slide "
+        f"is marked `{UNVERIFIED_VISUAL_AUTHORITY}`, say that exact token or "
+        "avoid visual claims for that slide. Every visual_reference's "
+        "`perception_source` MUST be one of "
         "the roster slide ids verbatim. Return your output as a JSON object "
         "with two top-level keys: `narration_script` (an array of segment "
         "objects) and `segment_manifest_deltas` (an array of manifest patch "
@@ -597,6 +740,7 @@ __all__ = [
     "PASS_2_SYSTEM_MESSAGE",
     "Pass2GroundingError",
     "TRANSITIONS",
+    "UNVERIFIED_VISUAL_AUTHORITY",
     "_act",
     "_assemble_pass_2_prompt",
     "_decode_envelope_payload",
@@ -604,6 +748,7 @@ __all__ = [
     "_act_pass_2",
     "_parse_pass_2_response",
     "_parse_pass_1_response",
+    "_slide_roster",
     "_plan",
     "_read_pass_2_references",
     "_read_sanctum_digest",

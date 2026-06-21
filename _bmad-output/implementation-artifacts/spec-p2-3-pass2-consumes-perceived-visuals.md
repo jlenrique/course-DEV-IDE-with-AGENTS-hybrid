@@ -1,7 +1,7 @@
 ---
 story_key: p2-3-pass2-consumes-perceived-visuals
 epic: P2 — Perception + Reading-Path Narrative-Grounding Restoration
-status: ready-for-dev
+status: done
 gate_mode: dual
 tier: Tier-3 (party green-light required BEFORE dev)
 baseline_commit: 3a0ad22
@@ -78,3 +78,26 @@ P2-3 changes the GROUNDING INPUT to Pass-2. The detector (P2-1) is the OUTPUT gu
 - **New AC-10 (cache-prefix):** A8 invariants honored; named stability fixture re-pinned deliberately.
 
 **Status → ready-for-dev.** Codex driver: `codex-dev-prompt-p2-3-pass2-consumes-perceived-visuals.md`.
+
+## Review Findings (T11 — bmad-code-review, 2026-06-20)
+
+Codex returned T1–T10 (handoff: `_codex-handoff/p2-3-pass2-consumes-perceived-visuals.ready-for-review.md`). Claude T11: independent battery + 3-layer adversarial review (Blind Hunter / Edge Case Hunter / Acceptance Auditor). Battery all green (irene 38, detector 20, manifest contracts 5, lockstep L1 exit 0, ruff, lint-imports 15/0, sandbox-AC PASS, diff-check clean); one failing test `test_irene_pass_2_cache_hit_rate_meets_60_percent_median` proven **ambient** (llm_live precondition: populated content-creator sanctum; fails identically with Codex's change stashed — A7 clean-HEAD evidence satisfied). Acceptance Auditor verdict: **PASS, no AC/amendment violations** (A3 anti-vacuity M1/M2 confirmed RED empirically; A1 sole-authority confirmed).
+
+- [x] **[Review][Decision→DEFER] Brief present in prompt via pre-existing `## Envelope payload` JSON dump** — `app/specialists/irene/graph.py:405-406`. Edge Case Hunter=HIGH; Acceptance Auditor=PASS. **RESOLVED by party-mode 5/5 → DEFER** (`pass2-envelope-payload-brief-unframed-in-prompt-tail`). Rationale: pre-existing Pass-2 structure (not introduced by P2-3, AC-7 cuts against fixing here); triple-guarded (Task "ground EXCLUSIVELY", double-demoted, G5 detector RED-guards output); scrubbing now would break the A8 byte-stability pin (Amelia). **C1 hardening LANDED this commit:** the UNVERIFIED-path test now pins `$5.2T` framed-only across the FULL prompt (`test_irene_pass2_perceived_visual_authority.py`, Murat A3). Reactivate at P2-4 or the next byte-stability re-pin.
+- [x] **[Review][Defer] Duplicate-handling asymmetry** [`graph.py:124-133`,`201-212`] — `_slide_briefs_by_slide` first-wins silently / Gary roster doubles on dup slide_id, vs `_perception_artifacts_by_slide` raises. Demoted path; upstream order deterministic. deferred, low-stakes.
+- [x] **[Review][Defer] Perception dict-map branch discards outer keys** [`graph.py:171-177`] — trusts inner `slide_id`; no map-key==inner validation. Defensive path; vision emits a list in production. deferred, not-production-path.
+- [x] **[Review][Defer] `project_rich_perception_for_authoring` brittle when both path fields empty** [`pass_2_template.py:108`] — raises ValidationError on a legit rich artifact with empty `source_png_path`+`artifact_path`. Non-runtime (tests/exports only). deferred, low-stakes.
+
+Dismissed as noise (5): tautological-prose claim (load-bearing exclusion asserts are positional), byte-stability "bypass" (projection covered by new test file), element sort-order (reading-path is P2-4/AC-7), `_expected_visual` str-asymmetry (cosmetic), json-import/missing-controls (false positive — tests pass).
+
+## Completion Notes (T11 close — 2026-06-20)
+
+**Disposition: CLOSED `done` via NEW CYCLE T11 (Codex T1–T10 → Claude T11).** Fully-spawned party-mode (Winston/John/Murat/Mary/Amelia) **UNANIMOUS 5/5**: Q1 = **(A) ACCEPT + DEFER** the F1 payload-tail finding; Q2 = **(i) commit + flip `done`**, offline leg = dev-DoD, AC-6 full-corpus strike operator-gated. No impasse; Quinn→John chain not triggered.
+
+**Independent battery (T11 reproduced, all green):** irene 38 · quinn-r detector 20 · manifest payload+projection-edge contracts 5 · pipeline lockstep L1 exit 0 (`reports/dev-coherence/2026-06-21-0305/...PASS.yaml`) · ruff clean · lint-imports 15 kept/0 broken · sandbox-AC PASS · `git diff --check` clean. C1 hardening added (Murat A3): UNVERIFIED-path test pins the brief figure framed-only across the FULL prompt — `test_irene_pass2_perceived_visual_authority.py` 5 passed.
+
+**Ambient-failure attestation (A7 clean-HEAD):** `tests/end_to_end/test_cache_hit_rate_baseline.py::test_irene_pass_2_cache_hit_rate_meets_60_percent_median` FAILS, but it is `@pytest.mark.llm_live` and fails on a **precondition** (`assert sanctum_count == 0`; the content-creator sanctum has populated files) — it fails **identically with Codex's diff stashed**, so it is **proven ambient / NOT a P2-3 regression**. Do not mistake it for a P2-3 failure at next session open. (Micro-follow-on: annotate this test's skip-reason so it can't rot into a false-green — Murat.)
+
+**AC-6 STRIKE PENDING (operator-gated — NOT fired at this commit):** legs (b) held-out + (c) cited RED baseline SATISFIED; leg (a) full-frozen-corpus live detector-GREEN remains operator-gated (D5). The deferred entry `fidelity-metric-blind-to-perception-regression` stays **🔴 OPEN, marked STRUCK-PENDING**. Strike fires only when the operator pastes full-corpus live regression-GREEN. **Operator strike-time checklist** (in the inventory entry): (1) GREEN asserted against the REAL prompt incl. the un-framed payload tail; (2) confirm cache-MISS / live call (not a cache-hit replay); (3) record the live held-out slide id.
+
+**A7 baseline-diff attestation (Codex):** pre-fix narration `$5.2T line+bars` → `FidelityError`; post-fix `$4.5T building photo` → `{blocking:[], evaluated_segments:1}`; held-out 74%-bar/80%-line leg green/RED as expected. Green assertion bound to perceived/rendered-PNG elements, not the brief. Full handoff: `_codex-handoff/p2-3-pass2-consumes-perceived-visuals.ready-for-review.md`.

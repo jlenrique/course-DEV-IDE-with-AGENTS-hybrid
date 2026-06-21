@@ -845,3 +845,26 @@ fields are optional/defaulted and `extra="forbid"` remains unchanged.
 - `tests/models/perception/test_perception_artifact_schema_parity.py`
 - `tests/specialists/quinn_r/test_fidelity_detector.py`
 - `tests/specialists/quinn_r/test_ac12_detector_red_on_produced_artifact.py`
+
+## Data Plane Vocabulary dp-v1.4 - 2026-06-21 - Story P2-3
+
+**Type:** Manifest vocabulary extension; no PerceptionArtifact schema field
+change.
+
+**Reason for introduction:** Irene Pass 2 must consume the rich
+vision-produced `PerceptionArtifact` as the sole visual authority. Gary and
+brief expectations remain available only as demoted expected-plan context.
+
+**Vocabulary change:**
+
+- Node `08` adds dependency projection:
+  `perception_artifacts: {from: vision, key: perception_artifacts}`.
+
+**Migration:** Additive. Existing producer output is unchanged from P2-2; the
+consumer contract and manifest projection now route it into Irene Pass 2.
+
+**Test surface:**
+
+- `tests/contracts/test_manifest_payload_contracts.py`
+- `tests/integration/marcus/test_package_builders.py`
+- `tests/specialists/irene/test_irene_pass2_perceived_visual_authority.py`

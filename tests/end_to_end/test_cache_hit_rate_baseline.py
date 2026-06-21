@@ -57,9 +57,27 @@ _PASS_2_ENVELOPE: dict[str, Any] = {
         {"slide_id": "s3", "slide_purpose": "synthesis", "title": "Summary"},
     ],
     "perception_artifacts": [
-        {"slide_id": "s1", "confidence": "HIGH", "elements": ["title-banner"]},
-        {"slide_id": "s2", "confidence": "HIGH", "elements": ["diagram", "labels"]},
-        {"slide_id": "s3", "confidence": "HIGH", "elements": ["bullet-list"]},
+        {
+            "slide_id": "s1",
+            "confidence": "HIGH",
+            "coverage": "perceived",
+            "visual_elements": [{"kind": "title", "label": "title banner"}],
+            "source_png_path": "bundle/s1.png",
+        },
+        {
+            "slide_id": "s2",
+            "confidence": "HIGH",
+            "coverage": "perceived",
+            "visual_elements": [{"kind": "diagram", "label": "cell membrane diagram"}],
+            "source_png_path": "bundle/s2.png",
+        },
+        {
+            "slide_id": "s3",
+            "confidence": "HIGH",
+            "coverage": "perceived",
+            "visual_elements": [{"kind": "title", "label": "summary title"}],
+            "source_png_path": "bundle/s3.png",
+        },
     ],
     "narration_profile_controls": {
         "bridge_cadence_minutes": 2,

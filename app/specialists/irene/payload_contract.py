@@ -21,6 +21,7 @@ CONSUMED_PAYLOAD_KEYS: frozenset[str] = frozenset(
         "gary_slide_output",
         "lesson_plan",
         "pass_phase",
+        "perception_artifacts",
         "slide_briefs",
     }
 )

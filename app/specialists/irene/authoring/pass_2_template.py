@@ -1,4 +1,11 @@
-"""Pydantic source of truth for Irene Pass 2 authoring guidance."""
+"""Pydantic source of truth for Irene Pass 2 authoring guidance.
+
+The PerceptionArtifact below is a minimal authoring-envelope projection. It is
+compatible with the rich upstream app.models.perception.PerceptionArtifact, but
+it is not a runtime grounding authority. Irene Pass 2 grounds on the rich
+vision-produced model and may project that evidence down only for template and
+validator compatibility.
+"""
 
 from __future__ import annotations
 
@@ -6,6 +13,8 @@ from datetime import UTC, datetime
 from typing import Literal
 
 from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
+
+from app.models.perception import PerceptionArtifact as RichPerceptionArtifact
 
 # Pattern is intentionally stricter than runtime Pydantic field validators:
 # Rust-regex (Pydantic v2) does not support negative lookahead, so URL schemes
@@ -87,6 +96,18 @@ class PerceptionArtifact(_StrictModel):
     @classmethod
     def _normalize_source_image_path(cls, value: str) -> str:
         return _normalized_path(value)
+
+
+def project_rich_perception_for_authoring(
+    artifact: RichPerceptionArtifact | dict[str, object],
+) -> PerceptionArtifact:
+    """Project rich vision evidence into the minimal authoring-envelope shape."""
+    rich = RichPerceptionArtifact.model_validate(artifact)
+    return PerceptionArtifact(
+        slide_id=rich.slide_id,
+        source_image_path=_normalized_path(rich.source_png_path or rich.artifact_path),
+        visual_elements=rich.visual_elements,
+    )
 
 
 class VisualReference(_StrictModel):

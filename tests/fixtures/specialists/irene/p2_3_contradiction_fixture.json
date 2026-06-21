@@ -1,0 +1,32 @@
+{
+  "bundle_reference": "bundle",
+  "lesson_plan": {"title": "Healthcare Trends", "objectives": ["ground visuals"]},
+  "gary_slide_output": [
+    {
+      "slide_id": "slide-01",
+      "visual_description": "$5.2T line+bars market growth chart"
+    }
+  ],
+  "slide_briefs": [
+    {
+      "slide_id": "slide-01",
+      "prompt": "Use a line+bars chart showing $5.2T healthcare spend."
+    }
+  ],
+  "perception_artifacts": [
+    {
+      "slide_id": "slide-01",
+      "confidence": "HIGH",
+      "coverage": "perceived",
+      "extracted_text": "$4.5T annual healthcare spend",
+      "layout_description": "Full-bleed building photo with a stat callout.",
+      "slide_title": "Healthcare's Scale",
+      "text_blocks": [{"text": "$4.5T", "role": "callout"}],
+      "visual_elements": [
+        {"kind": "photo", "label": "building photo"},
+        {"kind": "stat_callout", "text": "$4.5T"}
+      ],
+      "source_png_path": "bundle/slide-01.png"
+    }
+  ]
+}

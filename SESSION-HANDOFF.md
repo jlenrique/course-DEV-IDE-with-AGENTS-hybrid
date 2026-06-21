@@ -1,3 +1,22 @@
+# Session Handoff — 2026-06-20 PM-3 (Class S — P2-3 CLOSED: Codex T1–T10 returned → Claude T11 → party-mode 5/5 ACCEPT → `done`)
+
+**Final class:** S (NEW CYCLE T11: independent battery + 3-layer adversarial code review + fully-spawned party-mode close gate; one prod-adjacent test edit = C1 hardening). **Branch:** `fidelity-perception-arc-2026-06-19`. **P2-3 = `done`.** Origin pushed; master-merge SKIPPED (scoped arc branch).
+
+## The headline
+Codex returned P2-3 (T1–T10) in the working tree (graph.py +173, manifest dp-v1.3→v1.4 + node-08 perception projection, pass_2_template projection helper, new contradiction + held-out fixtures + `test_irene_pass2_perceived_visual_authority.py`, handoff doc with A3/A4/A7 evidence). Claude **T11**: independently reproduced the battery ALL-GREEN (irene 38 · detector 20 · manifest contracts 5 · lockstep L1 exit 0 · ruff · lint-imports 15/0 · sandbox-AC PASS · diff-check clean); proved the one red test (`test_irene_pass_2_cache_hit_rate_meets_60_percent_median`) **ambient** (llm_live empty-sanctum precondition; fails identically with Codex's change stashed). Ran `bmad-code-review` (Blind Hunter / Edge Case Hunter / Acceptance Auditor). Acceptance Auditor PASS on all AC-1..AC-10 + A1..A9; A3 anti-vacuity M1/M2 confirmed RED.
+
+## The one split finding → party-mode 5/5
+**F1:** the assembler dumps the FULL `envelope_payload` (incl. brief `$5.2T`) into the pre-existing `## Envelope payload` JSON tail — un-framed, present even for UNVERIFIED slides, but OUTSIDE the authority region. Edge Case Hunter=HIGH; Acceptance Auditor=PASS. **Fully-spawned party-mode (Winston/John/Murat/Mary/Amelia) UNANIMOUS 5/5: (A) ACCEPT + DEFER, (i) commit + flip `done`.** No impasse. Binding conditions all met:
+- **C1 (Murat A3):** hardening landed — UNVERIFIED-path test now pins `$5.2T` framed-only across the FULL prompt (A8-safe, no prod-code change). Scrubbing the payload now would break the A8 byte-stability pin (Amelia).
+- **C2:** F1 filed → deferred-inventory `pass2-envelope-payload-brief-unframed-in-prompt-tail` (P2-4 successor / fold-in at next byte-stability re-pin) + deferred-work.md (+ 3 minor defers).
+- **C3 (Mary):** **AC-6 strike NOT fired** — `fidelity-metric-blind-to-perception-regression` stays 🔴 OPEN, marked STRUCK-PENDING: legs (b) held-out + (c) RED-baseline satisfied; **leg (a) full-corpus live detector-GREEN is OPERATOR-GATED (D5).** Strike fires only when operator pastes full-corpus live regression-GREEN. Operator strike-time checklist (3 items) recorded in the inventory entry.
+
+## What's left in the P2 arc
+- **OPERATOR ACTION:** run the live full-frozen-corpus Pass-2 → detector-GREEN to fire the AC-6 strike (checklist in the inventory entry). This is the only remaining P2-3 obligation.
+- **P2-4 (reading-path native rewrite, single-gate)** is the last P2 story — Growth. It also naturally absorbs the F1 payload-tail framing fix.
+
+---
+
 # Session Handoff — 2026-06-20 PM-2 (Class S→P — P2-3 NEW CYCLE prep: spec ready-for-dev + Tier-3 party green-light 5/5; STOP at Codex-ingestion boundary)
 
 **Final class:** P (planning/spec authoring + party green-light; substrate READ-only — no app/manifest/test edits this phase). **Branch:** `fidelity-perception-arc-2026-06-19`. Commit: P2-3 prep docs-closeout. Origin pushed; master-merge SKIPPED (scoped arc branch).

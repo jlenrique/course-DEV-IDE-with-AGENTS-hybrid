@@ -45,7 +45,10 @@ frozen_graph_version: "v42"
 # deliverable; therefore this content node is a topology refinement within
 # the v4.2 lineage, not a new pack family. pack_version stays v4.2; the
 # v4.2-gen determinism witness regenerates.
-data_plane_vocabulary_version: "dp-v1.3"
+# dp-v1.4 (P2-3, 2026-06-21): additive vision→Irene Pass-2 projection.
+# Irene grounds visual narration in perceived PNG evidence; Gary/brief
+# expectations remain demoted expected-plan context.
+data_plane_vocabulary_version: "dp-v1.4"
 learning_events:
   schema_ref: "state/config/learning-event-schema.yaml"
 block_mode_trigger_paths:
@@ -581,6 +584,9 @@ nodes:
       gary_slide_output:
         from: gary
         key: gary_slide_output
+      perception_artifacts:
+        from: vision
+        key: perception_artifacts
     gate: false
     insertion_after: "07G"
     hud_tracked: true

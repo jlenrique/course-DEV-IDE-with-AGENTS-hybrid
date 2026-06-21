@@ -40,8 +40,20 @@ def test_irene_act_node_real_llm_invocation_with_token_floor(tmp_path: Any) -> N
         tmp_path,
         lesson_slug="test-c1m1",
         perception_artifacts=[
-            {"slide_id": "s1", "confidence": "HIGH", "elements": ["title-banner"]},
-            {"slide_id": "s2", "confidence": "HIGH", "elements": ["diagram", "labels"]},
+            {
+                "slide_id": "s1",
+                "confidence": "HIGH",
+                "coverage": "perceived",
+                "visual_elements": [{"kind": "title", "label": "title banner"}],
+                "source_png_path": "bundle/s1.png",
+            },
+            {
+                "slide_id": "s2",
+                "confidence": "HIGH",
+                "coverage": "perceived",
+                "visual_elements": [{"kind": "diagram", "label": "process diagram"}],
+                "source_png_path": "bundle/s2.png",
+            },
         ],
         narration_profile_controls={
             "bridge_cadence_minutes": 2,

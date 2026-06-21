@@ -1,0 +1,32 @@
+{
+  "bundle_reference": "bundle",
+  "lesson_plan": {"title": "Access Operations", "objectives": ["ground visuals"]},
+  "gary_slide_output": [
+    {
+      "slide_id": "slide-02",
+      "visual_description": "80% line chart of access improvements"
+    }
+  ],
+  "slide_briefs": [
+    {
+      "slide_id": "slide-02",
+      "prompt": "Show an 80% line chart for access improvements."
+    }
+  ],
+  "perception_artifacts": [
+    {
+      "slide_id": "slide-02",
+      "confidence": "HIGH",
+      "coverage": "perceived",
+      "extracted_text": "74% completion rate",
+      "layout_description": "Single bar chart with a percent callout.",
+      "slide_title": "Access Completion",
+      "text_blocks": [{"text": "74%", "role": "callout"}],
+      "visual_elements": [
+        {"kind": "bar_chart", "label": "completion bar chart"},
+        {"kind": "stat_callout", "text": "74%"}
+      ],
+      "source_png_path": "bundle/slide-02.png"
+    }
+  ]
+}

@@ -253,8 +253,9 @@ def test_manifest_declares_projection_edges() -> None:
         )
     )
     nodes = {node["id"]: node for node in manifest["nodes"]}
-    # dp-v1 -> dp-v1.1 (08/08B) -> dp-v1.2 (audio arc) -> dp-v1.3 (P2-2 vision).
-    assert manifest["data_plane_vocabulary_version"] == "dp-v1.3"
+    # dp-v1 -> dp-v1.1 (08/08B) -> dp-v1.2 (audio arc) ->
+    # dp-v1.3 (P2-2 vision) -> dp-v1.4 (P2-3 vision->Irene).
+    assert manifest["data_plane_vocabulary_version"] == "dp-v1.4"
     gary_projections = nodes["07"]["dependency_projections"]
     assert set(gary_projections) == {"slides", "prompt", "additional_instructions"}
     assert all(p["from"] == "package_builder" for p in gary_projections.values())
@@ -271,6 +272,11 @@ def test_manifest_declares_projection_edges() -> None:
         "lesson_plan",
         "slide_briefs",
         "gary_slide_output",
+        "perception_artifacts",
+    }
+    assert nodes["08"]["dependency_projections"]["perception_artifacts"] == {
+        "from": "vision",
+        "key": "perception_artifacts",
     }
     assert nodes["13"]["dependency_projections"]["perception_artifacts"] == {
         "from": "vision",
