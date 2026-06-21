@@ -1,7 +1,9 @@
 # State of the App — Canonical Status Synthesis
 
-**Date:** 2026-06-19
+**Date:** 2026-06-19 · **Last updated:** 2026-06-21 (P2 fidelity arc — grounding regression CLOSED)
 **Status:** Canonical orientation doc. Single source of truth for "where the development plan actually stands."
+
+> **⚡ 2026-06-21 UPDATE — the Layer-D "crippling" fidelity regression (§3) is CLOSED.** The P2 perception/reading-path arc landed: **P2-1** fail-loud fidelity detector (done) → **P2-2** PNG-grounded `PerceptionArtifact` (closed) → **P2-3** Pass-2 grounds on perceived visuals, the regression fix (closed) **+ its AC-6 live regression-green strike FIRED** (live Pass-2 over the frozen corpus → committed detector GREEN 8/8 + held-out, independently re-judged) → **P2-4a** reading-path native machinery (classifier + fail-loud verify-node + cadence, closed). The deferred entry `fidelity-metric-blind-to-perception-regression` is **STRUCK**. The reading-path **calibration** leg (**P2-4b** — repertoire growth + the held-out ≥80% real-slide conformance corpus) remains **operator-gated** on a scan-order exemplar harvest. Sections §3 / §4-row-(g) / §8-#2 / §9 below are annotated inline; the strikethrough/❌ framing in those sections is **historical** (pre-2026-06-21).
 **Provenance:** Synthesizes two independent assessments produced 2026-06-19 — (1) the live session assessment (triangulating `SESSION-HANDOFF.md`, `next-session-start-here.md`, `bmm-workflow-status.yaml`, `deferred-inventory.md`, the BETA spec/charter, and on-disk run evidence), and (2) an independent external analysis triangulating the same artifacts. Where the two diverged, the divergences were adjudicated against on-disk evidence (git history, `slab-7c-retrospective.md`, run directories); both factual conflicts resolved in favor of the external analysis (see §10). This doc exists so the plan does not have to be re-derived every session.
 
 > **Maintenance:** refresh at (a) each arc/epic close that materially changes validated scope, (b) any trial postmortem that moves a §4 scorecard row, (c) any governance ratification that changes how BETA or the forward arcs are tracked. Keep the §4 scorecard and §5 tracker-reality table honest — they are the load-bearing anti-drift surfaces.
@@ -17,9 +19,9 @@ The single biggest source of confusion is that **three different things each hav
 | **A. Migration substrate** (Slabs 1–7c) | BMAD stories closed in `sprint-status.yaml` | **Largely shipped & BMAD-closed.** `migration-master-status: shipped`. Slabs 1–6 done; 7a 8/8, 7b done, 7c 36/36 (closed 2026-05-07). |
 | **B. Production trial engine** (G0→completion) | The runtime actually produces a narrated-deck lesson end-to-end on a real corpus | **Validated.** Trial-4 PASS; engine error-free ×2 + Marcus-SPOC error-free ×2 on disk (2026-06-19). |
 | **C. BETA spec as written** (`beta-spec-2026-06-19.md §8`) | The full conversational product: a+b+c+e through Marcus-SPOC with binding picks, d+f present/carved, §5 quality infra green, error-free twice | **NOT met.** Partially demonstrated under narrow interpretations (see §4). |
-| **D. Product quality** (narration fidelity) | The narration describes what is actually on the slide, in scan order | **🔴 Regressed — disaster-level.** Pass-2 grounds on the slide *brief*, not the rendered slide. |
+| **D. Product quality** (narration fidelity) | The narration describes what is actually on the slide, in scan order | **🟢 Grounding leg FIXED (2026-06-21); reading-path calibration pending.** Pass-2 now grounds on the perceived rendered slide (`PerceptionArtifact`), guarded by a fail-loud G5 detector (P2-1/2/3 + AC-6 live strike). Reading-path **machinery** restored (P2-4a); reading-path **calibration accuracy on real slides** (P2-4b) is operator-gated. *(Was: "🔴 Regressed — disaster-level; Pass-2 grounds on the slide brief.")* |
 
-**The trap:** Layer A's "shipped" and Layer B's "validated" are real and earned. They do **not** imply Layer C ("BETA met") or Layer D ("quality good"). The recent BETA work is best described as **reliable pipeline mechanics with a thin Marcus wrapper**, on a path that does not yet exercise the full spec and actively masks a Layer-D regression.
+**The trap:** Layer A's "shipped" and Layer B's "validated" are real and earned. They do **not** imply Layer C ("BETA met"). **Layer D's grounding regression is now closed** (2026-06-21) — narration is perception-grounded and detector-guarded; the residual Layer-D gap is reading-path *scan-order calibration* (P2-4b, operator-gated), not the confident-wrong hallucination the BETA path used to mask.
 
 ---
 
@@ -34,14 +36,17 @@ Exercised against the live frozen corpus (`tejal-apc-c1-m1-p2-trends`), with rea
 - **Picker binding (`select` verb)** — operator voice pick re-routes to synthesis, proven live (run `710684c0`, Sarah at synthesis).
 - **Marcus conversational SPOC** — narrates capabilities **a–g** per gate, drove a full run to error-free completion **twice** (`e2291039` + `74f72a4c`).
 - **§02A→wrangler schema coherence** (Epic 34, 7/7) — producer/consumer vocabulary fork closed; integration ratchet installed.
+- **Perception-grounded narration fidelity** (P2 arc, 2026-06-21) — Pass-2 narrates from the perceived rendered slide (`PerceptionArtifact`), not the brief; a fail-loud G5 fidelity detector fails Class-A on unsupported visual claims. **Live-verified:** the AC-6 strike ran live Pass-2 over the frozen corpus → committed detector GREEN 8/8 + held-out (independently re-judged). Reading-path scan-order *machinery* shipped (P2-4a); scan-order *calibration accuracy* is P2-4b (operator-gated).
 
 **One-line reality:** *The platform reliably produces a narrated slide deck (text + visuals + audio + published storyboard) from a corpus, with operator review gates and recoverable errors, driven by a conversational Marcus.*
 
 ---
 
-## 3. 🔴 THE CRIPPLING — fidelity regression + a metric that cannot see it (Layer D)
+## 3. ✅ RESOLVED (2026-06-21) — was: THE CRIPPLING — fidelity regression + a metric that cannot see it (Layer D)
 
-This is what makes BETA feel "crippled," and it is **more dangerous than a flaky pipeline:**
+> **✅ RESOLVED via the P2 arc (2026-06-21).** All three failure modes below are closed: **(1)** perception grounding restored — Pass-2 grounds on the perceived rendered slide via the rich `PerceptionArtifact` (P2-2 vision node + P2-3 grounding fix), demoting the brief to subordinate context; the $4.5T/$5.2T drift no longer reproduces (AC-6 live strike: detector GREEN 8/8 + held-out). **(2)** reading-path grammar — the severed scan-order machinery (closed `reading_path` enum + classifier + verify-node + emission lint + parity) was natively rebuilt in **P2-4a**; the repertoire-growth + real-slide calibration leg is **P2-4b (operator-gated)**. **(3)** the blind metric — a **fail-loud G5-class fidelity detector (P2-1)** now fails Class-A when narration references a visual the perception layer does not see, so "error-free" can no longer rise with hallucination volume. The deferred entry `fidelity-metric-blind-to-perception-regression` is **STRUCK**. The historical description below is retained for provenance.
+
+This **was** what made BETA feel "crippled," and it **was more dangerous than a flaky pipeline:**
 
 1. **Perception grounding lost.** Pass-2 narration grounds on the slide **brief**, not the rendered PNG. Confirmed evidence: slide-01 narrates a "$5.2 trillion line + paired bars" dual-axis chart that was **never rendered** (the slide shows $4.5T / 74% / 3x stat callouts + a building photo), with a wrong figure ($5.2T vs $4.5T). Root cause: the perception layer was dropped at the 2026-04-24 upstream severance.
 2. **Reading-path grammar lost.** The scan-order classification machinery (Z/F/center-out/triptych enum + `reading_path` schema field + emission lint + heuristic classifier) was a 5-part lockstep upstream; at severance **only the worked-examples doc was absorbed**. The narration no longer keys to a slide's scan pattern. Standing operator complaint: "narration doesn't follow the natural scan of the slide."
@@ -68,7 +73,7 @@ Scored against `beta-spec-2026-06-19.md` §1–§3 + §8. **Literal engine crite
 | **(e) voice** (§4.4) | Voice candidates → bind | **Yes** (mechanics) | Voice select→synthesis **proven** (`710684c0`) | **PASS (mechanics)** — but exercised *separately*, not inside the twice-gate runs |
 | **(e) clustering/pace** (§4.4) | Read-only surface | Read-only present | Shown in SPOC | **PASS (read-only)** |
 | **(f) motion** (§4.6) | Honest motion-plan artifact OR written carve-out | Carved **in practice** | SPOC narrates "no motion clips" | **CARVED (implicit)** — no producer; carve-out **not party-ratified in writing** |
-| **(g) reading-path** (§6) | Suggest-level only for BETA | **Regressed** (see §3) | — | **FAIL** — perception + reading-path lost, below even suggest-level |
+| **(g) reading-path** (§6) | Suggest-level only for BETA | **Restored (machinery)** — perception grounding + `reading_path` classifier + fail-loud verify-node (P2-1/2/3/4a) | Grounding: AC-6 live strike GREEN 8/8 + held-out (2026-06-21). Reading-path accuracy: pending P2-4b corpus | **PASS (grounding) / PARTIAL (reading-path)** — perception + scan-order machinery shipped; real-slide scan-order *calibration* is P2-4b (operator-gated). *(Was: FAIL — perception + reading-path lost.)* |
 
 ### §2 "error-free twice" — literal vs spirit
 
@@ -106,7 +111,7 @@ Two parallel planning stacks coexist — the other big source of disorientation.
 - **Trial-3 findings still open:** `#7` pause-write atomicity; `#8` `max_specialist_calls` segment-cap semantics.
 - **Slab 6.1 substrate enhancements:** multi-pass envelope path X/Y; compiled-edge traversal (needed before non-linear manifests); trial-envelope lifecycle invariants; real LangSmith trace binding.
 - **Trial-4 follow-ons:** `live-trial-replay-baseline`; `g4b-input-package-hil-wake`; `generalized-membership-wake-toggle`.
-- **BETA carry-forward:** `beta-voice-select-wpm-qa-interaction`; `trial-4-binding-variant-voice-picker`; `beta-d-research-review-trial-path-attach`; `beta-motion-synthesis-data-plane`; `beta-generality-across-corpora`; `beta-marcus-namespace-collision-rename`; the merged perception+reading-path arc.
+- **BETA carry-forward:** `beta-voice-select-wpm-qa-interaction`; `trial-4-binding-variant-voice-picker`; `beta-d-research-review-trial-path-attach`; `beta-motion-synthesis-data-plane`; `beta-generality-across-corpora`; `beta-marcus-namespace-collision-rename`; ~~the merged perception+reading-path arc~~ → **DONE 2026-06-21** (P2-1/2/3/4a closed + regression struck; only `p2-4b-reading-path-repertoire-and-conformance-corpus` remains, operator-gated).
 - **Housekeeping:** Slab 7b/7c review NITs (digest-helper extraction, scanner staleness, sidecar cleanups); repo-wide ruff debt.
 
 **Counts:** ~30–31 backlog-epic stories (Epics 15/16/17/18 + greenfield specialists) + 4 deferred-stories-in-active-epics + a long named-follow-on tail.
@@ -128,7 +133,7 @@ Two parallel planning stacks coexist — the other big source of disorientation.
 ## 8. Forward priorities (factored into the post-harmonization arc)
 
 1. **Voice↔WPM quick win** (`beta-voice-select-wpm-qa-interaction`) — smallest honest unblock to take capability-(e) to completion on a non-default voice. Party QA-semantics decision (re-target / operator-overridable / widen tolerance), then a non-default-voice run completes error-free.
-2. **Perception + reading-path REPAIR + ENHANCE** (the disaster arc) — restore perception grounding (vision pass over rendered PNGs → `PerceptionArtifact` → Pass-2 narrates from perceived visuals); restore reading-path classification (`reading_path` field + conformance check); **and ship a fail-loud fidelity detector** (§3) as a co-equal deliverable. Likely a `bmad-create-prd`/architecture-scale arc; schema-shape discipline; any manifest/pack touch → pipeline-lockstep regime.
+2. **Perception + reading-path REPAIR + ENHANCE** (the disaster arc) — **✅ DONE (2026-06-21), except the operator-gated calibration leg.** Shipped as the PRD-gated P2 arc: perception grounding restored (vision pass → `PerceptionArtifact` → Pass-2 narrates from perceived visuals; P2-2/P2-3), reading-path classification + fail-loud conformance restored (`reading_path` field + classifier + verify-node; P2-4a), and the **fail-loud fidelity detector shipped first as committed RED evidence** (P2-1). AC-6 live regression-green strike FIRED. **Remaining:** **P2-4b** (reading-path repertoire growth + held-out ≥80% real-slide conformance corpus) — operator-gated on a scan-order exemplar harvest.
 3. **Governance / spec ratification** — ratify in writing what "BETA" means (engine-reliability Phase 1 vs full §8), and file the BETA remainder as real epics/stories so charter, handoff, and sprint-status stop drifting (§5).
 
 ---
@@ -137,7 +142,7 @@ Two parallel planning stacks coexist — the other big source of disorientation.
 
 **Question:** how should the June BETA program be formally represented in BMAD?
 
-**RESOLVED: Option B**, unanimous 5/5 in a fully-spawned party-mode round, operator-ratified. Ratify **"BETA Phase 1 = engine-reliability + voice-binding"** closed *in writing*; file only forward stories; **no retroactive Epic 35** (all five voices judged it audit-ledger fiction). `deferred-inventory.md` remains the single source of truth for gaps. Durable artifact: [`_bmad-output/planning-artifacts/beta-phase-1-closure-ratification-2026-06-19.md`](../_bmad-output/planning-artifacts/beta-phase-1-closure-ratification-2026-06-19.md) — which is also the **authority for the ratified forward path** (P3→P1→P2 structure in §8 above). Binding riders: "error-free" rebranded **"error-free (mechanics only — fidelity unverified)"** until the P2 detector lands; deferred-inventory + cross-trial-learnings updates promoted from consultation to a **DoD gate** on every forward story.
+**RESOLVED: Option B**, unanimous 5/5 in a fully-spawned party-mode round, operator-ratified. Ratify **"BETA Phase 1 = engine-reliability + voice-binding"** closed *in writing*; file only forward stories; **no retroactive Epic 35** (all five voices judged it audit-ledger fiction). `deferred-inventory.md` remains the single source of truth for gaps. Durable artifact: [`_bmad-output/planning-artifacts/beta-phase-1-closure-ratification-2026-06-19.md`](../_bmad-output/planning-artifacts/beta-phase-1-closure-ratification-2026-06-19.md) — which is also the **authority for the ratified forward path** (P3→P1→P2 structure in §8 above). Binding riders: "error-free" was rebranded **"error-free (mechanics only — fidelity unverified)"** until the P2 detector lands — **that condition is now MET (2026-06-21):** the P2-1 fail-loud fidelity detector shipped and the P2-3 grounding fix passed its AC-6 live regression-green strike, so fidelity is now *verified* (perception-grounded + detector-guarded), not merely mechanics. (The reading-path scan-order *accuracy* sub-claim still awaits P2-4b's operator corpus.) Deferred-inventory + cross-trial-learnings updates remain promoted from consultation to a **DoD gate** on every forward story.
 
 ---
 
