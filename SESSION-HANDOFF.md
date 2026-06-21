@@ -14,8 +14,14 @@ Codex returned P2-3 (T1–T10) in the working tree (graph.py +173, manifest dp-v
 ## AC-6 strike ✅ FIRED (2026-06-20, same session)
 Operator authorized Claude to run the operator-gated live leg directly via a **fresh independent subagent** (validity: deterministic committed `detect_fidelity` judge, first-run-stands, no retry-to-green, no edits to detector/fixtures/corpus). Live Pass-2 over the 8-slide green-corpus with a *contradicting* stale brief → narration did NOT carry `$5.2T`; committed detector **GREEN 8/8** + held-out green-08 (independently re-judged by the parent); cache-MISS (`cached_tokens=0`, gpt-5). `fidelity-metric-blind-to-perception-regression` **STRUCK**; bidirectional linkage filed (`docs/trials/cross-trial-learnings.md` §C+§A G5); evidence `_bmad-output/implementation-artifacts/p2-3-ac6-live-strike-evidence.json`. **The DISASTER-LEVEL grounding regression is now CLOSED end-to-end.**
 
-## What's left in the P2 arc
-- **P2-4 (reading-path native rewrite, single-gate)** is the last P2 story — Growth/enhancement (not the regression, now closed). It also absorbs the F1 payload-tail framing fix. (Continuing autonomously per goal v2.)
+## P2-4 prepped + SPLIT (party-mode 5/5 PARTIAL-SPEC-NOW, 2026-06-20)
+Substrate-grounded (reading-path machinery was severed 2026-04-24; only the 7-pattern worked-examples doc survived). Fully-spawned party (Winston/John/Murat/Mary/Amelia) ruled **PARTIAL-SPEC-NOW**, no impasse:
+- **P2-4a (machinery) — spec `ready-for-dev`** (`spec-p2-4a-reading-path-native-machinery.md` + `codex-dev-prompt-p2-4a-...md`): FR17 `reading_path` closed enum (7 patterns) + deterministic vision-node classifier onto the RICH PerceptionArtifact (`exclude=True`/`SkipJsonSchema`, no new model call); FR18 fail-loud verify-node (mirrors `_assert_narration_joins_roster`); FR20 cadence; native rebuild of the severed four-file lockstep; anti-vacuity contradiction fixture + M1/M2 RED-first; A8 re-pin; **§52 payload-tail rider folded in (ratified)**. dp-v1.4→1.5. **STOPPED at the Codex-ingestion boundary** (Codex T1–T10 → Claude T11).
+- **P2-4b (FR19 repertoire growth + held-out ≥80% real-slide corpus) — OPERATOR-GATED**, filed `p2-4b-reading-path-repertoire-and-conformance-corpus`. Needs the operator's scan-order harvest (≥8–10 labeled real slides + ≥1 known-wrong-default); self-labeling = vacuous. Couples to the operator's `vo-narration-layout-tracking-trained-patterns` exemplar build.
+
+## Operator decision needed
+- **Dispatch Codex on P2-4a** (`codex-dev-prompt-p2-4a-...md`, T1–T10) → then Claude T11. AND/OR
+- **P2-4b:** decide on the scan-order exemplar/harvest (you flagged wanting to build trained exemplars) — that unlocks FR19 + the ≥80% bar.
 
 ---
 
