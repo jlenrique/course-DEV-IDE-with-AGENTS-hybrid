@@ -1,3 +1,33 @@
+# Session Handoff — 2026-06-22 PM (Class P — `/goal` v4 autonomous: catalog v1 SYNTHESIZED + party-ratified GREEN-WITH-AMENDMENTS 6/6 + P2-4c spec ready-for-dev; STOP at the reliable Class-P boundary before the Class-S build)
+
+**Final class:** P (planning/review; NO substrate edits — catalog + spec + deferred-inventory + handoff only; class did NOT drift to S). **Branch:** `fidelity-perception-arc-2026-06-19`. **HEAD: `1a03a9b`** (+ this handoff commit); origin in sync; master-merge SKIPPED (scoped arc branch). Autonomous `/goal` v4 session.
+
+## Headline
+Ran the `/goal` v4 charter autonomously through the planning legs and **stopped at the furthest RELIABLE point (terminal state (b))**: catalog v1 + ready-for-dev spec, both committed + pushed. Did NOT start the Class-S classifier build — starting S1 (which touches `block_mode_trigger_paths`: manifest + the reading-path 4-file lockstep + the `-gen` witness) with the 2h cap approaching would risk a half-modified block-mode-dirty lockstep, the exact unreliable partial the goal forbids.
+
+## What landed (2 commits, pushed)
+1. **`reading-path-patterns-catalog.md` → v1** (`54afb27`) — synthesized the 26-slide round-1 evidence into the **COMPOSITIONAL TUPLE** `{macro_layout × image_role(1/2/2.5/3/4) × text_substructure × narration_cadence}` + 6 universal VO principles. Admitted `two_up_comparison`(5)+`text_hero_divider`(5); `multi_column` provisional@N=3; reassigned `f_pattern`; gated `diagram_driven`; demoted `z_pattern`.
+2. **`bmad-party-mode` GREEN-WITH-AMENDMENTS 6/6, NO impasse** (Winston/John/Murat/Mary/Amelia/Caravaggio; Quinn→John chain NOT triggered). Amendments **A1–A10** applied to the catalog (§10). Key rulings: **A1** schema = ADDITIVE (enum primary-name + optional tuple sibling fields, dp-v1.5→v1.6 minor, pinned derivation + shape-pin test — NOT a breaking widen); **A2** z_pattern DEMOTE not retire; **A3** multi_column admit provisional + **quarantined from the top-1 denominator** until N≥4; **A4** image-role tier 2.5 evidentiary (provisional); **A6** conformance contract; **A7** 5 RED-first fixtures; **A8** split S1/S2/S3; **A9** 3 impl gaps gating S2/S3; **A10** (John) secondary axes must not gate the headline metric (absorbed into A6).
+3. **`spec-p2-4c-reading-path-tuple-refactor.md` ready-for-dev (S1)** (`1a03a9b`) — grounded in a live substrate map (file:line edit sites: enum `app/models/perception/perception_artifact.py:13-21/52-55`; classifier `scripts/utilities/reading_path_classifier.py` predicates; vision `_act.py:112-138`; irene verify `graph.py:398-437`; 4-file lockstep + manifest dp-version). Encodes A1–A10; S1 = deterministic geometry + additive schema + 6 RED-first fixtures (no LLM); S2/S3 scoped + gated on the 3 gaps. P2-4b calibration RE-SEQUENCES after P2-4c (calibrates the tuple classifier).
+
+## What is next (forward sequence)
+1. **Open the P2-4c S1 build** — NEW dev cycle, **Claude dev-agent (RED-first), NO Codex** (operator directive), under `bmad-code-review` 3-layer. S1 first: the 6 RED-first fixtures land RED → geometry macro-layout detection + additive tuple fields + pinned derivation + tightened `_looks_z` + default-degradation counter → GREEN → lockstep regen (dp-v1.6, `-gen` witness, Check-9 SHA) → review → flip done. **This is Class S** (run the missed Step-1a Cora gate at open).
+2. **Resolve the 3 gaps** (G1 peer-vs-oppositional discriminant; G2 image-role tier rubric; G3 escalation predicate) at the S2/S3-open party, then S2 (image-role) + S3 (gpt-5.5 escalation, ≥floor, parse-seam).
+3. **P2-4b calibration** (operator-gated): operator labels held-out 14 independently → A6 conformance contract.
+
+## Validation
+Class P — no code/tests run (none authored; planning artifacts only). `git diff --check` clean; working tree clean except ambient untracked `runs/`. Step-0 Cora harmonization not run (no invariant/substrate files touched). sprint-status.yaml NOT edited (P2 arc tracked via specs + handoff + deferred-inventory). bmm-workflow-status — no phase transition.
+
+## Artifact checklist
+- ✅ `reading-path-patterns-catalog.md` v1 (party-ratified, A1–A10)
+- ✅ `spec-p2-4c-reading-path-tuple-refactor.md` (ready-for-dev S1)
+- ✅ `deferred-inventory.md` (p2-4b entry re-sequenced behind P2-4c + A6 contract + rider fold-ins)
+- ✅ SESSION-HANDOFF (this) + next-session-start-here (resume banner)
+- ✅ `claude-goal.txt` v4
+- SKIPPED (rationale): sprint-status/bmm-workflow (no tracked rows / no transition); project-context (no rules/arch change this session — the 2026-06-21 entry already covers the reading-path arc); Cora Step 0 (Class P, no substrate).
+
+---
+
 # Session Handoff — 2026-06-22 (Class P — Reading-path review round 1, operator-led slide-perception training: CLOSED at 26/54 by operator decision; major catalog-refactor findings; proceed to catalog-tuning)
 
 **Final class:** P (planning/review; no substrate edits — analysis + notes/handoff/memory only; class did not drift). **Branch:** `fidelity-perception-arc-2026-06-19`. HEAD pushed; origin in sync. Working tree clean except ambient untracked `runs/`. Master-merge SKIPPED (scoped arc branch).
