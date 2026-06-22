@@ -1,3 +1,34 @@
+# Session Handoff — 2026-06-22 EVE (`/goal` v6 — HELD-OUT 14 LABELED via catalog v1 + confirm/deny kit READY; STOP for operator confirm/deny)
+
+**Final class:** S-lite (added an analysis/evidence script + ran live gpt-5.5 over the 14 held-out PNGs + committed evidence; NO production runtime/schema/manifest/test/lockstep touched — P2-4a untouched; Step-0/1a Cora full gate not required, no invariant files touched). **Branch:** `fidelity-perception-arc-2026-06-19`. **HEAD: `5e3981b`** (+ this handoff commit); origin in sync; master-merge SKIPPED.
+
+## Headline — METHODOLOGY FLIP (operator-authorized) + kit delivered
+Operator changed the P2-4b validation design: the operator has already done extensive round-1 training, so the held-out reserve is **no longer kept naive**. **NEW: Claude labels the 14 held-out slides via the catalog v1 approach; the operator confirms/denies each** (was: operator-labels-independently-then-score). This **consumes the held-out reserve** (operator-accepted). **Flag to party at the next gate as a governance note (not blocking).** Executed the labeling autonomously to the completion gate: the confirm/deny kit is READY.
+
+## What landed (commit `5e3981b`, pushed)
+1. **`scripts/analysis/reading_path_holdout_perceive.py`** — live gpt-5.5 `perceive_png` over the 14 held-out PNGs (mirrors the corpus scan; no mocks; first-run-stands). **14/14 perceived, 0 errors.** Captures provenance-stamped perception JSONs + feature vectors + the current(pre-P2-4c) 7-enum classifier fit. Evidence: `reading-path-holdout-scan/`.
+2. **`holdout-confirm-deny-kit-2026-06-22.md`** (THE completion artifact) — per-slide proposed tuple `{macro_layout × image_role × text_substructure × narration_cadence}` + derived primary reading_path + scan order + 1-line rationale + confidence + top near-miss + a CONFIRM/DENY field. Labeled from PERCEIVED content, NOT filenames. First-pass honest, no retry-to-green.
+   - **Distribution:** two_up_comparison 4 (8_,9_,15_,17_) · enumerated_process 4 (3_,11_,13_,21_) · top_down 4 (5_,18_,20_,22_) · split_image_text 2 (1_,6_) · diagram_driven 0.
+   - **Gate held:** the 2 `kind:diagram` elements (8_ monitor, 13_ bars) ruled tier-1 decorative → NOT diagram_driven (the trap).
+   - **Known-wrong-default anchors:** 5_ + 8_ (geometric default leads with a decorative photo; VO must skip it).
+   - **Demote-z evidence:** the current 7-enum classifier called **8/14 z_pattern**; v1 maps none to z.
+   - **My lowest-confidence calls (operator scrutiny):** 13_ (enumerated vs multi_column), 17_ (oppositional vs 2-coordinate — possible catalog gap), 5_ (top_down vs option-row multi_column), 22_ (peer vs sequence), 15_ image-tier (1 vs 2).
+
+## What is next — STOP for operator confirm/deny
+Operator opens each held-out PNG by filename (`C:\Users\juanl\OneDrive\Desktop\z-2026-06-21`), marks CONFIRM/DENY per slide (~20–30 min). On return: Claude finalizes the A6 numbers (primary-key top-1, per-axis, full-tuple), folds corrections into catalog v1.1 + the P2-4c spec, then (operator's call) opens the P2-4c build (S1 first; Claude dev-agent, NO Codex). **P2-4b conformance is NOT finalized until verdicts return.** The P2-4c build (productization) was deliberately DEFERRED — the build is optional to this gate and a perception-driven kit doesn't need it; deferring kept the kit reliable.
+
+## Validation
+14/14 live gpt-5.5 perceptions, 0 errors. New script ruff-clean. No production substrate touched (P2-4a green, untouched). `git diff --check` clean; working tree clean except ambient untracked `runs/`.
+
+## Artifact checklist
+- ✅ `reading_path_holdout_perceive.py` + `reading-path-holdout-scan/` evidence (14 perception JSONs + summary)
+- ✅ `holdout-confirm-deny-kit-2026-06-22.md` (completion artifact)
+- ✅ SESSION-HANDOFF (this) + next-session-start-here (resume banner)
+- ✅ deferred-inventory (p2-4b methodology-flip note)
+- SKIPPED: P2-4c build (deferred, optional to gate); sprint-status/bmm-workflow (no tracked rows/transition); Cora Step-0 (no invariant files).
+
+---
+
 # Session Handoff — 2026-06-22 PM (Class P — `/goal` v4 autonomous: catalog v1 SYNTHESIZED + party-ratified GREEN-WITH-AMENDMENTS 6/6 + P2-4c spec ready-for-dev; STOP at the reliable Class-P boundary before the Class-S build)
 
 **Final class:** P (planning/review; NO substrate edits — catalog + spec + deferred-inventory + handoff only; class did NOT drift to S). **Branch:** `fidelity-perception-arc-2026-06-19`. **HEAD: `1a03a9b`** (+ this handoff commit); origin in sync; master-merge SKIPPED (scoped arc branch). Autonomous `/goal` v4 session.
