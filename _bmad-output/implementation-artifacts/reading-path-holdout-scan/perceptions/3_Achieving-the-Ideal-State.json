@@ -1,0 +1,165 @@
+{
+  "provenance": {
+    "captured_at": "2026-06-22T17:12:38.721272+00:00",
+    "model_id": "gpt-5.5",
+    "source_png": "C:\\Users\\juanl\\OneDrive\\Desktop\\z-2026-06-21\\3_Achieving-the-Ideal-State.png",
+    "scan_tool": "scripts/analysis/reading_path_holdout_perceive.py"
+  },
+  "perception_artifact": {
+    "confidence": "HIGH",
+    "visual_elements": [
+      {
+        "id": "title",
+        "kind": "title",
+        "text": "Achieving the Ideal State",
+        "bbox": [
+          0.07,
+          0.06,
+          0.55,
+          0.13
+        ]
+      },
+      {
+        "id": "icon_build",
+        "kind": "icon",
+        "text": "",
+        "bbox": [
+          0.07,
+          0.16,
+          0.16,
+          0.29
+        ]
+      },
+      {
+        "id": "text_build",
+        "kind": "callout",
+        "text": "Build it Create a robust framework or system that can support our goals and initiatives.",
+        "bbox": [
+          0.18,
+          0.18,
+          0.85,
+          0.26
+        ]
+      },
+      {
+        "id": "icon_launch",
+        "kind": "icon",
+        "text": "",
+        "bbox": [
+          0.07,
+          0.29,
+          0.16,
+          0.42
+        ]
+      },
+      {
+        "id": "text_launch",
+        "kind": "callout",
+        "text": "Launch it Don't wait for perfection; getting your idea out there is crucial for progress and feedback.",
+        "bbox": [
+          0.18,
+          0.31,
+          0.97,
+          0.39
+        ]
+      },
+      {
+        "id": "icon_iterate",
+        "kind": "icon",
+        "text": "",
+        "bbox": [
+          0.07,
+          0.42,
+          0.16,
+          0.54
+        ]
+      },
+      {
+        "id": "text_iterate",
+        "kind": "callout",
+        "text": "Iterate Use the feedback and data collected to refine and improve your idea continuously.",
+        "bbox": [
+          0.18,
+          0.44,
+          0.88,
+          0.52
+        ]
+      },
+      {
+        "id": "icon_measure",
+        "kind": "icon",
+        "text": "",
+        "bbox": [
+          0.07,
+          0.54,
+          0.16,
+          0.69
+        ]
+      },
+      {
+        "id": "text_measure",
+        "kind": "callout",
+        "text": "Measure it Assess the impact and effectiveness of your actions. Collect data and analyze results to understand what works and what doesn't.",
+        "bbox": [
+          0.18,
+          0.57,
+          0.99,
+          0.67
+        ]
+      },
+      {
+        "id": "icon_learn",
+        "kind": "icon",
+        "text": "",
+        "bbox": [
+          0.07,
+          0.69,
+          0.16,
+          0.85
+        ]
+      },
+      {
+        "id": "text_learn",
+        "kind": "callout",
+        "text": "Learn Use the insights gained from measurement to inform future decisions and strategies, ensuring continuous growth and improvement.",
+        "bbox": [
+          0.18,
+          0.72,
+          0.99,
+          0.82
+        ]
+      },
+      {
+        "id": "summary",
+        "kind": "callout",
+        "text": "In summary, by following these steps—building, launching, iterating, measuring, and learning—we can move closer to our ideal state, fostering innovation and success. Now, let's consider the potential risks and challenges in this journey.",
+        "bbox": [
+          0.07,
+          0.88,
+          0.98,
+          0.95
+        ]
+      }
+    ],
+    "extracted_text": "Achieving the Ideal State Build it Create a robust framework or system that can support our goals and initiatives. Launch it Don't wait for perfection; getting your idea out there is crucial for progress and feedback. Iterate Use the feedback and data collected to refine and improve your idea continuously. Measure it Assess the impact and effectiveness of your actions. Collect data and analyze results to understand what works and what doesn't. Learn Use the insights gained from measurement to inform future decisions and strategies, ensuring continuous growth and improvement. In summary, by following these steps—building, launching, iterating, measuring, and learning—we can move closer to our ideal state, fostering innovation and success. Now, let's consider the potential risks and challenges in this journey.",
+    "layout_description": "A large navy title sits at the top left. Below it, five vertically stacked pale chevron panels with black line icons appear on the left, each aligned with a blue heading and explanatory paragraph on the right, followed by a two-line summary paragraph near the bottom.",
+    "slide_title": "Achieving the Ideal State",
+    "text_blocks": [
+      "Achieving the Ideal State",
+      "Build it Create a robust framework or system that can support our goals and initiatives.",
+      "Launch it Don't wait for perfection; getting your idea out there is crucial for progress and feedback.",
+      "Iterate Use the feedback and data collected to refine and improve your idea continuously.",
+      "Measure it Assess the impact and effectiveness of your actions. Collect data and analyze results to understand what works and what doesn't.",
+      "Learn Use the insights gained from measurement to inform future decisions and strategies, ensuring continuous growth and improvement.",
+      "In summary, by following these steps—building, launching, iterating, measuring, and learning—we can move closer to our ideal state, fostering innovation and success. Now, let's consider the potential risks and challenges in this journey."
+    ],
+    "artifact_path": "",
+    "slide_id": "3_Achieving-the-Ideal-State",
+    "card_number": null,
+    "coverage": "perceived",
+    "confidence_score": 0.98,
+    "provider_model_id": "gpt-5.5",
+    "reading_path": null,
+    "source_png_path": "C:\\Users\\juanl\\OneDrive\\Desktop\\z-2026-06-21\\3_Achieving-the-Ideal-State.png"
+  }
+}

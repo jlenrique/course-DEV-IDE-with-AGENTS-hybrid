@@ -1,0 +1,61 @@
+{
+  "provenance": {
+    "captured_at": "2026-06-22T17:12:38.721272+00:00",
+    "model_id": "gpt-5.5",
+    "source_png": "C:\\Users\\juanl\\OneDrive\\Desktop\\z-2026-06-21\\1_Diagnosis-Innovation.png",
+    "scan_tool": "scripts/analysis/reading_path_holdout_perceive.py"
+  },
+  "perception_artifact": {
+    "confidence": "HIGH",
+    "visual_elements": [
+      {
+        "id": "photo_left_doctor_patient",
+        "kind": "photo",
+        "text": "",
+        "bbox": [
+          0.0,
+          0.0,
+          0.44,
+          1.0
+        ]
+      },
+      {
+        "id": "title_main",
+        "kind": "title",
+        "text": "Diagnosis = Innovation",
+        "bbox": [
+          0.51,
+          0.36,
+          0.97,
+          0.43
+        ]
+      },
+      {
+        "id": "body_text",
+        "kind": "callout",
+        "text": "Your clinical training has already prepared you to be an innovator. The process you use every day mirrors the innovation process exactly.",
+        "bbox": [
+          0.51,
+          0.49,
+          0.94,
+          0.62
+        ]
+      }
+    ],
+    "extracted_text": "Diagnosis = Innovation Your clinical training has already prepared you to be an innovator. The process you use every day mirrors the innovation process exactly.",
+    "layout_description": "A large vertical photo of a clinician examining a patient fills the left side of the slide. The right side is mostly white space with a large dark blue title centered vertically above a smaller blue paragraph.",
+    "slide_title": "Diagnosis = Innovation",
+    "text_blocks": [
+      "Diagnosis = Innovation",
+      "Your clinical training has already prepared you to be an innovator. The process you use every day mirrors the innovation process exactly."
+    ],
+    "artifact_path": "",
+    "slide_id": "1_Diagnosis-Innovation",
+    "card_number": null,
+    "coverage": "perceived",
+    "confidence_score": 0.98,
+    "provider_model_id": "gpt-5.5",
+    "reading_path": null,
+    "source_png_path": "C:\\Users\\juanl\\OneDrive\\Desktop\\z-2026-06-21\\1_Diagnosis-Innovation.png"
+  }
+}

@@ -1,0 +1,1365 @@
+{
+  "captured_at": "2026-06-22T17:12:38.721272+00:00",
+  "model_id": "gpt-5.5",
+  "heldout_count": 14,
+  "perceived_count": 14,
+  "errors": [],
+  "rows": [
+    {
+      "slide_id": "1_Diagnosis-Innovation",
+      "source_png": "C:\\Users\\juanl\\OneDrive\\Desktop\\z-2026-06-21\\1_Diagnosis-Innovation.png",
+      "perceived_title": "Diagnosis = Innovation",
+      "layout_description": "A large vertical photo of a clinician examining a patient fills the left side of the slide. The right side is mostly white space with a large dark blue title centered vertically above a smaller blue paragraph.",
+      "element_count": 3,
+      "elements": [
+        {
+          "id": "photo_left_doctor_patient",
+          "kind": "photo",
+          "text": "",
+          "bbox": [
+            0.0,
+            0.0,
+            0.44,
+            1.0
+          ]
+        },
+        {
+          "id": "title_main",
+          "kind": "title",
+          "text": "Diagnosis = Innovation",
+          "bbox": [
+            0.51,
+            0.36,
+            0.97,
+            0.43
+          ]
+        },
+        {
+          "id": "body_text",
+          "kind": "callout",
+          "text": "Your clinical training has already prepared you to be an innovator. The process you use ev",
+          "bbox": [
+            0.51,
+            0.49,
+            0.94,
+            0.62
+          ]
+        }
+      ],
+      "feature_vector": {
+        "primary_anchor_position": "middle-left",
+        "anchor_count": 3,
+        "reading_vector": "horizontal",
+        "text_density_band": "medium",
+        "focal_singularity": true,
+        "cta_presence": false,
+        "whitespace_dominance": false,
+        "_char_count": 160,
+        "_coverage_area": 0.5281
+      },
+      "current_classifier_fit": "top_down",
+      "current_scan_order": [
+        "photo_left_doctor_patient",
+        "title_main",
+        "body_text"
+      ],
+      "confidence_proxy": 0.98
+    },
+    {
+      "slide_id": "3_Achieving-the-Ideal-State",
+      "source_png": "C:\\Users\\juanl\\OneDrive\\Desktop\\z-2026-06-21\\3_Achieving-the-Ideal-State.png",
+      "perceived_title": "Achieving the Ideal State",
+      "layout_description": "A large navy title sits at the top left. Below it, five vertically stacked pale chevron panels with black line icons appear on the left, each aligned with a blue heading and explanatory paragraph on the right, followed by a two-line summary paragraph near the bottom.",
+      "element_count": 12,
+      "elements": [
+        {
+          "id": "title",
+          "kind": "title",
+          "text": "Achieving the Ideal State",
+          "bbox": [
+            0.07,
+            0.06,
+            0.55,
+            0.13
+          ]
+        },
+        {
+          "id": "icon_build",
+          "kind": "icon",
+          "text": "",
+          "bbox": [
+            0.07,
+            0.16,
+            0.16,
+            0.29
+          ]
+        },
+        {
+          "id": "text_build",
+          "kind": "callout",
+          "text": "Build it Create a robust framework or system that can support our goals and initiatives.",
+          "bbox": [
+            0.18,
+            0.18,
+            0.85,
+            0.26
+          ]
+        },
+        {
+          "id": "icon_launch",
+          "kind": "icon",
+          "text": "",
+          "bbox": [
+            0.07,
+            0.29,
+            0.16,
+            0.42
+          ]
+        },
+        {
+          "id": "text_launch",
+          "kind": "callout",
+          "text": "Launch it Don't wait for perfection; getting your idea out there is crucial for progress a",
+          "bbox": [
+            0.18,
+            0.31,
+            0.97,
+            0.39
+          ]
+        },
+        {
+          "id": "icon_iterate",
+          "kind": "icon",
+          "text": "",
+          "bbox": [
+            0.07,
+            0.42,
+            0.16,
+            0.54
+          ]
+        },
+        {
+          "id": "text_iterate",
+          "kind": "callout",
+          "text": "Iterate Use the feedback and data collected to refine and improve your idea continuously.",
+          "bbox": [
+            0.18,
+            0.44,
+            0.88,
+            0.52
+          ]
+        },
+        {
+          "id": "icon_measure",
+          "kind": "icon",
+          "text": "",
+          "bbox": [
+            0.07,
+            0.54,
+            0.16,
+            0.69
+          ]
+        },
+        {
+          "id": "text_measure",
+          "kind": "callout",
+          "text": "Measure it Assess the impact and effectiveness of your actions. Collect data and analyze r",
+          "bbox": [
+            0.18,
+            0.57,
+            0.99,
+            0.67
+          ]
+        },
+        {
+          "id": "icon_learn",
+          "kind": "icon",
+          "text": "",
+          "bbox": [
+            0.07,
+            0.69,
+            0.16,
+            0.85
+          ]
+        },
+        {
+          "id": "text_learn",
+          "kind": "callout",
+          "text": "Learn Use the insights gained from measurement to inform future decisions and strategies, ",
+          "bbox": [
+            0.18,
+            0.72,
+            0.99,
+            0.82
+          ]
+        },
+        {
+          "id": "summary",
+          "kind": "callout",
+          "text": "In summary, by following these steps—building, launching, iterating, measuring, and learni",
+          "bbox": [
+            0.07,
+            0.88,
+            0.98,
+            0.95
+          ]
+        }
+      ],
+      "feature_vector": {
+        "primary_anchor_position": "middle-center",
+        "anchor_count": 12,
+        "reading_vector": "diagonal",
+        "text_density_band": "high",
+        "focal_singularity": false,
+        "cta_presence": false,
+        "whitespace_dominance": false,
+        "_char_count": 819,
+        "_coverage_area": 0.4942
+      },
+      "current_classifier_fit": "z_pattern",
+      "current_scan_order": [
+        "icon_build",
+        "title",
+        "text_build",
+        "icon_launch",
+        "icon_iterate",
+        "icon_measure",
+        "text_iterate",
+        "text_launch",
+        "text_measure",
+        "icon_learn",
+        "summary",
+        "text_learn"
+      ],
+      "confidence_proxy": 0.98
+    },
+    {
+      "slide_id": "5_Check-Your-Understanding",
+      "source_png": "C:\\Users\\juanl\\OneDrive\\Desktop\\z-2026-06-21\\5_Check-Your-Understanding.png",
+      "perceived_title": "Check Your Understanding",
+      "layout_description": "A wide photo banner of people in a meeting spans the top portion of the slide. Below it on a white background are a large title, a question prompt, and three horizontally aligned colored rounded rectangles containing answer choices.",
+      "element_count": 6,
+      "elements": [
+        {
+          "id": "top_photo",
+          "kind": "photo",
+          "text": "",
+          "bbox": [
+            0,
+            0,
+            1,
+            0.36
+          ]
+        },
+        {
+          "id": "title",
+          "kind": "title",
+          "text": "Check Your Understanding",
+          "bbox": [
+            0.05,
+            0.52,
+            0.48,
+            0.61
+          ]
+        },
+        {
+          "id": "question_prompt",
+          "kind": "callout",
+          "text": "Which skills belong to clinical practice, innovation, or both?",
+          "bbox": [
+            0.05,
+            0.65,
+            0.58,
+            0.7
+          ]
+        },
+        {
+          "id": "active_listening_box",
+          "kind": "callout",
+          "text": "Active Listening",
+          "bbox": [
+            0.05,
+            0.72,
+            0.33,
+            0.82
+          ]
+        },
+        {
+          "id": "data_analysis_box",
+          "kind": "callout",
+          "text": "Data Analysis",
+          "bbox": [
+            0.35,
+            0.72,
+            0.63,
+            0.82
+          ]
+        },
+        {
+          "id": "experimentation_box",
+          "kind": "callout",
+          "text": "Experimentation",
+          "bbox": [
+            0.64,
+            0.72,
+            0.92,
+            0.82
+          ]
+        }
+      ],
+      "feature_vector": {
+        "primary_anchor_position": "top-center",
+        "anchor_count": 6,
+        "reading_vector": "diagonal",
+        "text_density_band": "medium",
+        "focal_singularity": true,
+        "cta_presence": true,
+        "whitespace_dominance": false,
+        "_char_count": 134,
+        "_coverage_area": 0.5092
+      },
+      "current_classifier_fit": "z_pattern",
+      "current_scan_order": [
+        "top_photo",
+        "title",
+        "active_listening_box",
+        "question_prompt",
+        "data_analysis_box",
+        "experimentation_box"
+      ],
+      "confidence_proxy": 0.98
+    },
+    {
+      "slide_id": "6_All-of-them-belong-to-BOTH",
+      "source_png": "C:\\Users\\juanl\\OneDrive\\Desktop\\z-2026-06-21\\6_All-of-them-belong-to-BOTH.png",
+      "perceived_title": "All of them belong to BOTH",
+      "layout_description": "The slide is split vertically, with a full-height photo of healthcare workers on the left and a white text area on the right. Large olive-green title text is centered in the right area, with a smaller blue explanatory sentence below it.",
+      "element_count": 3,
+      "elements": [
+        {
+          "id": "left_photo",
+          "kind": "photo",
+          "text": "",
+          "bbox": [
+            0,
+            0,
+            0.47,
+            1
+          ]
+        },
+        {
+          "id": "main_title",
+          "kind": "title",
+          "text": "All of them belong to BOTH",
+          "bbox": [
+            0.54,
+            0.19,
+            0.98,
+            0.64
+          ]
+        },
+        {
+          "id": "subtitle",
+          "kind": "callout",
+          "text": "Clinical skills and innovation skills are fundamentally the same cognitive capabilities ap",
+          "bbox": [
+            0.54,
+            0.72,
+            0.98,
+            0.82
+          ]
+        }
+      ],
+      "feature_vector": {
+        "primary_anchor_position": "middle-left",
+        "anchor_count": 3,
+        "reading_vector": "diagonal",
+        "text_density_band": "medium",
+        "focal_singularity": true,
+        "cta_presence": false,
+        "whitespace_dominance": false,
+        "_char_count": 145,
+        "_coverage_area": 0.712
+      },
+      "current_classifier_fit": "top_down",
+      "current_scan_order": [
+        "left_photo",
+        "main_title",
+        "subtitle"
+      ],
+      "confidence_proxy": 0.98
+    },
+    {
+      "slide_id": "8_Decision-Making-Foundations",
+      "source_png": "C:\\Users\\juanl\\OneDrive\\Desktop\\z-2026-06-21\\8_Decision-Making-Foundations.png",
+      "perceived_title": "Decision-Making Foundations",
+      "layout_description": "A large white content area occupies the left two-thirds with a two-line title and two side-by-side text columns below. The right third is a full-height photo of a medical office scene with a monitor displaying a branching chart.",
+      "element_count": 7,
+      "elements": [
+        {
+          "id": "title",
+          "kind": "title",
+          "text": "Decision-Making Foundations",
+          "bbox": [
+            0.06,
+            0.23,
+            0.38,
+            0.38
+          ]
+        },
+        {
+          "id": "left_column_header",
+          "kind": "callout",
+          "text": "Expected Value",
+          "bbox": [
+            0.06,
+            0.46,
+            0.28,
+            0.51
+          ]
+        },
+        {
+          "id": "left_column_points",
+          "kind": "bullet",
+          "text": "Statistical measure Average outcome prediction Objective calculation",
+          "bbox": [
+            0.06,
+            0.53,
+            0.32,
+            0.73
+          ]
+        },
+        {
+          "id": "right_column_header",
+          "kind": "callout",
+          "text": "Expected Utility",
+          "bbox": [
+            0.33,
+            0.46,
+            0.52,
+            0.51
+          ]
+        },
+        {
+          "id": "right_column_points",
+          "kind": "bullet",
+          "text": "Incorporates preferences Considers risk tolerance Accounts for human factors",
+          "bbox": [
+            0.33,
+            0.53,
+            0.56,
+            0.73
+          ]
+        },
+        {
+          "id": "medical_office_photo",
+          "kind": "photo",
+          "text": "",
+          "bbox": [
+            0.63,
+            0.0,
+            1.0,
+            1.0
+          ]
+        },
+        {
+          "id": "monitor_chart",
+          "kind": "diagram",
+          "text": "",
+          "bbox": [
+            0.74,
+            0.18,
+            0.99,
+            0.88
+          ]
+        }
+      ],
+      "feature_vector": {
+        "primary_anchor_position": "middle-right",
+        "anchor_count": 7,
+        "reading_vector": "diagonal",
+        "text_density_band": "medium",
+        "focal_singularity": true,
+        "cta_presence": false,
+        "whitespace_dominance": false,
+        "_char_count": 205,
+        "_coverage_area": 0.7115
+      },
+      "current_classifier_fit": "sequence_numbered",
+      "current_scan_order": [
+        "medical_office_photo",
+        "monitor_chart",
+        "title",
+        "left_column_header",
+        "right_column_header",
+        "left_column_points",
+        "right_column_points"
+      ],
+      "confidence_proxy": 0.95
+    },
+    {
+      "slide_id": "9_Comparing-Expected-Value-and-Expected-Utility",
+      "source_png": "C:\\Users\\juanl\\OneDrive\\Desktop\\z-2026-06-21\\9_Comparing-Expected-Value-and-Expected-Utility.png",
+      "perceived_title": "Comparing Expected Value and Expected Utility",
+      "layout_description": "A large dark-blue title spans the upper left. Below it are two pale green rounded rectangles side by side with bullet lists, and a blue summary sentence sits along the lower left beneath the boxes.",
+      "element_count": 4,
+      "elements": [
+        {
+          "id": "title",
+          "kind": "title",
+          "text": "Comparing Expected Value and Expected Utility",
+          "bbox": [
+            0.06,
+            0.12,
+            0.78,
+            0.18
+          ]
+        },
+        {
+          "id": "left_expected_utility_box",
+          "kind": "callout",
+          "text": "Expected Utility • A subjective measure • Reflects an individual's personal satisfaction a",
+          "bbox": [
+            0.06,
+            0.24,
+            0.46,
+            0.73
+          ]
+        },
+        {
+          "id": "right_expected_value_box",
+          "kind": "callout",
+          "text": "Expected Value • An objective measure • Remains constant regardless of who is evaluating i",
+          "bbox": [
+            0.48,
+            0.24,
+            0.88,
+            0.73
+          ]
+        },
+        {
+          "id": "bottom_summary",
+          "kind": "callout",
+          "text": "In summary, while expected value offers a stable, objective assessment, expected utility p",
+          "bbox": [
+            0.06,
+            0.77,
+            0.89,
+            0.88
+          ]
+        }
+      ],
+      "feature_vector": {
+        "primary_anchor_position": "middle-left",
+        "anchor_count": 4,
+        "reading_vector": "diagonal",
+        "text_density_band": "high",
+        "focal_singularity": false,
+        "cta_presence": true,
+        "whitespace_dominance": false,
+        "_char_count": 857,
+        "_coverage_area": 0.5265
+      },
+      "current_classifier_fit": "z_pattern",
+      "current_scan_order": [
+        "title",
+        "left_expected_utility_box",
+        "right_expected_value_box",
+        "bottom_summary"
+      ],
+      "confidence_proxy": 0.98
+    },
+    {
+      "slide_id": "11_Value-Creation-in-Innovation",
+      "source_png": "C:\\Users\\juanl\\OneDrive\\Desktop\\z-2026-06-21\\11_Value-Creation-in-Innovation.png",
+      "perceived_title": "Value Creation in Innovation",
+      "layout_description": "A large dark-blue title sits at the top left. Below it are three side-by-side text columns numbered 01, 02, and 03 with thin green horizontal rules, and a wide summary sentence spans the bottom.",
+      "element_count": 5,
+      "elements": [
+        {
+          "id": "title",
+          "kind": "title",
+          "text": "Value Creation in Innovation",
+          "bbox": [
+            0.05,
+            0.07,
+            0.48,
+            0.13
+          ]
+        },
+        {
+          "id": "column_01",
+          "kind": "callout",
+          "text": "01 Is the Need Real? The first step in value creation through innovation is to determine w",
+          "bbox": [
+            0.05,
+            0.18,
+            0.33,
+            0.68
+          ]
+        },
+        {
+          "id": "column_02",
+          "kind": "callout",
+          "text": "02 Does the Solution Meet the Need? Once a need is established, the next consideration is ",
+          "bbox": [
+            0.34,
+            0.18,
+            0.61,
+            0.65
+          ]
+        },
+        {
+          "id": "column_03",
+          "kind": "callout",
+          "text": "03 Is the \"Customer\" Willing to Pay More for the Solution Than It Costs to Deliver It? The",
+          "bbox": [
+            0.62,
+            0.18,
+            0.9,
+            0.84
+          ]
+        },
+        {
+          "id": "summary",
+          "kind": "callout",
+          "text": "In summary, successful innovation requires identifying a real need, creating a solution th",
+          "bbox": [
+            0.05,
+            0.87,
+            0.91,
+            0.94
+          ]
+        }
+      ],
+      "feature_vector": {
+        "primary_anchor_position": "middle-right",
+        "anchor_count": 5,
+        "reading_vector": "diagonal",
+        "text_density_band": "high",
+        "focal_singularity": false,
+        "cta_presence": false,
+        "whitespace_dominance": false,
+        "_char_count": 1516,
+        "_coverage_area": 0.5377
+      },
+      "current_classifier_fit": "sequence_numbered",
+      "current_scan_order": [
+        "column_01",
+        "title",
+        "column_02",
+        "column_03",
+        "summary"
+      ],
+      "confidence_proxy": 0.98
+    },
+    {
+      "slide_id": "13_Effective-Problem-Solving-Approach",
+      "source_png": "C:\\Users\\juanl\\OneDrive\\Desktop\\z-2026-06-21\\13_Effective-Problem-Solving-Approach.png",
+      "perceived_title": "Effective Problem-Solving Approach",
+      "layout_description": "A large title sits at the top left, with three evenly spaced vertical text columns across the middle of the slide, each topped by a pale rounded horizontal bar. A two-line summary sentence spans the lower portion of the slide.",
+      "element_count": 8,
+      "elements": [
+        {
+          "id": "title",
+          "kind": "title",
+          "text": "Effective Problem-Solving Approach",
+          "bbox": [
+            0.06,
+            0.07,
+            0.66,
+            0.15
+          ]
+        },
+        {
+          "id": "left_bar",
+          "kind": "diagram",
+          "text": "",
+          "bbox": [
+            0.06,
+            0.27,
+            0.34,
+            0.3
+          ]
+        },
+        {
+          "id": "middle_bar",
+          "kind": "diagram",
+          "text": "",
+          "bbox": [
+            0.36,
+            0.23,
+            0.64,
+            0.26
+          ]
+        },
+        {
+          "id": "right_bar",
+          "kind": "diagram",
+          "text": "",
+          "bbox": [
+            0.66,
+            0.19,
+            0.94,
+            0.22
+          ]
+        },
+        {
+          "id": "left_column",
+          "kind": "callout",
+          "text": "Determine the Best Solution First, we need to determine how we can solve this particular p",
+          "bbox": [
+            0.07,
+            0.33,
+            0.31,
+            0.78
+          ]
+        },
+        {
+          "id": "middle_column",
+          "kind": "callout",
+          "text": "Explore Additional Benefits Next, consider what additional benefits or applications our so",
+          "bbox": [
+            0.37,
+            0.29,
+            0.62,
+            0.62
+          ]
+        },
+        {
+          "id": "right_column",
+          "kind": "callout",
+          "text": "Evaluate Against Alternatives Finally, we must critically assess whether our solution is i",
+          "bbox": [
+            0.67,
+            0.25,
+            0.91,
+            0.58
+          ]
+        },
+        {
+          "id": "summary",
+          "kind": "callout",
+          "text": "In summary, solving this problem involves finding a cost-effective solution, exploring add",
+          "bbox": [
+            0.06,
+            0.85,
+            0.91,
+            0.92
+          ]
+        }
+      ],
+      "feature_vector": {
+        "primary_anchor_position": "middle-left",
+        "anchor_count": 8,
+        "reading_vector": "diagonal",
+        "text_density_band": "high",
+        "focal_singularity": false,
+        "cta_presence": false,
+        "whitespace_dominance": false,
+        "_char_count": 1017,
+        "_coverage_area": 0.4024
+      },
+      "current_classifier_fit": "sequence_numbered",
+      "current_scan_order": [
+        "left_column",
+        "title",
+        "right_bar",
+        "middle_bar",
+        "right_column",
+        "left_bar",
+        "middle_column",
+        "summary"
+      ],
+      "confidence_proxy": 0.98
+    },
+    {
+      "slide_id": "15_Types-of-Motivation",
+      "source_png": "C:\\Users\\juanl\\OneDrive\\Desktop\\z-2026-06-21\\15_Types-of-Motivation.png",
+      "perceived_title": "Types of Motivation",
+      "layout_description": "The slide is split vertically with a large photo on the left showing a balance scale with coins and a heart. The right side has a large title at the top and two pale green rounded rectangles containing motivation categories and bullet lists.",
+      "element_count": 4,
+      "elements": [
+        {
+          "id": "left_photo",
+          "kind": "photo",
+          "text": "",
+          "bbox": [
+            0.0,
+            0.0,
+            0.37,
+            1.0
+          ]
+        },
+        {
+          "id": "title",
+          "kind": "title",
+          "text": "Types of Motivation",
+          "bbox": [
+            0.42,
+            0.13,
+            0.81,
+            0.22
+          ]
+        },
+        {
+          "id": "extrinsic_box",
+          "kind": "callout",
+          "text": "Extrinsic Motivation • External rewards/outcomes • Monetary incentives • Career advancemen",
+          "bbox": [
+            0.42,
+            0.26,
+            0.92,
+            0.55
+          ]
+        },
+        {
+          "id": "intrinsic_box",
+          "kind": "callout",
+          "text": "Intrinsic Motivation • Internal satisfaction • Personal fulfillment • Inherent enjoyment",
+          "bbox": [
+            0.42,
+            0.58,
+            0.92,
+            0.87
+          ]
+        }
+      ],
+      "feature_vector": {
+        "primary_anchor_position": "middle-left",
+        "anchor_count": 4,
+        "reading_vector": "diagonal",
+        "text_density_band": "medium",
+        "focal_singularity": true,
+        "cta_presence": true,
+        "whitespace_dominance": false,
+        "_char_count": 200,
+        "_coverage_area": 0.6951
+      },
+      "current_classifier_fit": "z_pattern",
+      "current_scan_order": [
+        "title",
+        "left_photo",
+        "extrinsic_box",
+        "intrinsic_box"
+      ],
+      "confidence_proxy": 0.98
+    },
+    {
+      "slide_id": "17_Examples-of-Effective-Leadership-in-Public-Health",
+      "source_png": "C:\\Users\\juanl\\OneDrive\\Desktop\\z-2026-06-21\\17_Examples-of-Effective-Leadership-in-Public-Health.png",
+      "perceived_title": "Examples of Effective Leadership in Public Health",
+      "layout_description": "A large title spans the top. Below it are two side-by-side rounded rectangular photos with corresponding headings and paragraphs beneath, followed by two wide concluding text lines across the bottom.",
+      "element_count": 9,
+      "elements": [
+        {
+          "id": "title",
+          "kind": "title",
+          "text": "Examples of Effective Leadership in Public Health",
+          "bbox": [
+            0.05,
+            0.06,
+            0.82,
+            0.13
+          ]
+        },
+        {
+          "id": "left_photo",
+          "kind": "photo",
+          "text": "",
+          "bbox": [
+            0.06,
+            0.19,
+            0.46,
+            0.63
+          ]
+        },
+        {
+          "id": "right_photo",
+          "kind": "photo",
+          "text": "",
+          "bbox": [
+            0.48,
+            0.19,
+            0.88,
+            0.63
+          ]
+        },
+        {
+          "id": "global_heading",
+          "kind": "callout",
+          "text": "Global Leaders",
+          "bbox": [
+            0.06,
+            0.66,
+            0.23,
+            0.7
+          ]
+        },
+        {
+          "id": "global_text",
+          "kind": "bullet",
+          "text": "Leaders like Dr. Anthony Fauci, who guided the U.S. through the COVID-19 pandemic, or Dr. ",
+          "bbox": [
+            0.06,
+            0.71,
+            0.45,
+            0.9
+          ]
+        },
+        {
+          "id": "local_heading",
+          "kind": "callout",
+          "text": "Local Champions",
+          "bbox": [
+            0.48,
+            0.66,
+            0.68,
+            0.7
+          ]
+        },
+        {
+          "id": "local_text",
+          "kind": "bullet",
+          "text": "Think about local leaders who have transformed public health landscapes in their communiti",
+          "bbox": [
+            0.48,
+            0.71,
+            0.9,
+            0.86
+          ]
+        },
+        {
+          "id": "bottom_text_1",
+          "kind": "callout",
+          "text": "These examples highlight the diverse ways leadership can manifest in public health, from g",
+          "bbox": [
+            0.06,
+            0.81,
+            0.89,
+            0.85
+          ]
+        },
+        {
+          "id": "bottom_text_2",
+          "kind": "callout",
+          "text": "In summary, effective leadership in public health is multifaceted and can significantly in",
+          "bbox": [
+            0.06,
+            0.88,
+            0.92,
+            0.96
+          ]
+        }
+      ],
+      "feature_vector": {
+        "primary_anchor_position": "middle-left",
+        "anchor_count": 9,
+        "reading_vector": "diagonal",
+        "text_density_band": "high",
+        "focal_singularity": false,
+        "cta_presence": true,
+        "whitespace_dominance": false,
+        "_char_count": 866,
+        "_coverage_area": 0.6598
+      },
+      "current_classifier_fit": "z_pattern",
+      "current_scan_order": [
+        "title",
+        "left_photo",
+        "right_photo",
+        "global_heading",
+        "global_text",
+        "bottom_text_1",
+        "bottom_text_2",
+        "local_heading",
+        "local_text"
+      ],
+      "confidence_proxy": 0.98
+    },
+    {
+      "slide_id": "18_The-Future-of-Public-Health-Leadership",
+      "source_png": "C:\\Users\\juanl\\OneDrive\\Desktop\\z-2026-06-21\\18_The-Future-of-Public-Health-Leadership.png",
+      "perceived_title": "The Future of Public Health Leadership",
+      "layout_description": "A white slide with a large dark blue title near the upper left, followed by several blue paragraph text blocks. A centered olive-green “Questions?” callout appears between the upper and lower body text.",
+      "element_count": 5,
+      "elements": [
+        {
+          "id": "title",
+          "kind": "title",
+          "text": "The Future of Public Health Leadership",
+          "bbox": [
+            0.06,
+            0.19,
+            0.7,
+            0.29
+          ]
+        },
+        {
+          "id": "intro_paragraph",
+          "kind": "text",
+          "text": "As we look toward the future, it's clear that we need leaders in public health who are inn",
+          "bbox": [
+            0.06,
+            0.35,
+            0.94,
+            0.49
+          ]
+        },
+        {
+          "id": "questions_callout",
+          "kind": "callout",
+          "text": "Questions?",
+          "bbox": [
+            0.43,
+            0.54,
+            0.58,
+            0.6
+          ]
+        },
+        {
+          "id": "questions_paragraph",
+          "kind": "text",
+          "text": "Now, let's open the floor for any questions you might have. This is your opportunity to de",
+          "bbox": [
+            0.06,
+            0.65,
+            0.94,
+            0.75
+          ]
+        },
+        {
+          "id": "conclusion_paragraph",
+          "kind": "text",
+          "text": "In conclusion, remember that the future of public health is in your hands. Your leadership",
+          "bbox": [
+            0.06,
+            0.78,
+            0.96,
+            0.91
+          ]
+        }
+      ],
+      "feature_vector": {
+        "primary_anchor_position": "middle-center",
+        "anchor_count": 5,
+        "reading_vector": "vertical",
+        "text_density_band": "high",
+        "focal_singularity": false,
+        "cta_presence": true,
+        "whitespace_dominance": false,
+        "_char_count": 809,
+        "_coverage_area": 0.4012
+      },
+      "current_classifier_fit": "top_down",
+      "current_scan_order": [
+        "title",
+        "intro_paragraph",
+        "questions_callout",
+        "questions_paragraph",
+        "conclusion_paragraph"
+      ],
+      "confidence_proxy": 0.99
+    },
+    {
+      "slide_id": "20_Resources-for-Entrepreneurship-and-Innovation",
+      "source_png": "C:\\Users\\juanl\\OneDrive\\Desktop\\z-2026-06-21\\20_Resources-for-Entrepreneurship-and-Innovation.png",
+      "perceived_title": "Resources for Entrepreneurship and Innovation",
+      "layout_description": "A large dark-blue title spans the top. Four bordered resource callout cards are arranged in a two-by-two grid beneath it, with a summary paragraph across the bottom.",
+      "element_count": 6,
+      "elements": [
+        {
+          "id": "title",
+          "kind": "title",
+          "text": "Resources for Entrepreneurship and Innovation",
+          "bbox": [
+            0.06,
+            0.06,
+            0.82,
+            0.12
+          ]
+        },
+        {
+          "id": "card_wharton_online",
+          "kind": "callout",
+          "text": "Wharton Online Offers a comprehensive course on entrepreneurship that provides foundationa",
+          "bbox": [
+            0.06,
+            0.16,
+            0.49,
+            0.47
+          ]
+        },
+        {
+          "id": "card_value_proposition",
+          "kind": "callout",
+          "text": "Value Proposition Canvas by Strategyzer An essential tool for developing products and serv",
+          "bbox": [
+            0.51,
+            0.16,
+            0.94,
+            0.47
+          ]
+        },
+        {
+          "id": "card_amia_cibre",
+          "kind": "callout",
+          "text": "AMIA CIBRE The American Medical Informatics Association Clinical Informatics Board Review ",
+          "bbox": [
+            0.06,
+            0.49,
+            0.49,
+            0.79
+          ]
+        },
+        {
+          "id": "card_design_sprints",
+          "kind": "callout",
+          "text": "Design Sprints Pioneered by Google Ventures, offer a structured, time-constrained process ",
+          "bbox": [
+            0.51,
+            0.49,
+            0.94,
+            0.79
+          ]
+        },
+        {
+          "id": "summary",
+          "kind": "callout",
+          "text": "In summary, these resources collectively provide a robust framework for integrating entrep",
+          "bbox": [
+            0.06,
+            0.82,
+            0.95,
+            0.92
+          ]
+        }
+      ],
+      "feature_vector": {
+        "primary_anchor_position": "top-left",
+        "anchor_count": 6,
+        "reading_vector": "diagonal",
+        "text_density_band": "high",
+        "focal_singularity": false,
+        "cta_presence": false,
+        "whitespace_dominance": false,
+        "_char_count": 1427,
+        "_coverage_area": 0.6592
+      },
+      "current_classifier_fit": "z_pattern",
+      "current_scan_order": [
+        "card_wharton_online",
+        "title",
+        "card_value_proposition",
+        "card_amia_cibre",
+        "card_design_sprints",
+        "summary"
+      ],
+      "confidence_proxy": 0.98
+    },
+    {
+      "slide_id": "21_Key-Takeaways",
+      "source_png": "C:\\Users\\juanl\\OneDrive\\Desktop\\z-2026-06-21\\21_Key-Takeaways.png",
+      "perceived_title": "Key Takeaways",
+      "layout_description": "The slide has a large title and four numbered takeaway statements arranged vertically on the left against a white background. A full-height photo of a compass on a wooden surface occupies the right side.",
+      "element_count": 6,
+      "elements": [
+        {
+          "id": "title",
+          "kind": "title",
+          "text": "Key Takeaways",
+          "bbox": [
+            0.06,
+            0.2,
+            0.36,
+            0.28
+          ]
+        },
+        {
+          "id": "takeaway_1",
+          "kind": "bullet",
+          "text": "1 Develop innovative ideas with structured approach",
+          "bbox": [
+            0.06,
+            0.32,
+            0.52,
+            0.42
+          ]
+        },
+        {
+          "id": "takeaway_2",
+          "kind": "bullet",
+          "text": "2 Build, launch, iterate, measure, and learn",
+          "bbox": [
+            0.06,
+            0.48,
+            0.55,
+            0.55
+          ]
+        },
+        {
+          "id": "takeaway_3",
+          "kind": "bullet",
+          "text": "3 Understand value creation and motivation",
+          "bbox": [
+            0.06,
+            0.63,
+            0.55,
+            0.7
+          ]
+        },
+        {
+          "id": "takeaway_4",
+          "kind": "bullet",
+          "text": "4 Leverage resources to advance your leadership",
+          "bbox": [
+            0.06,
+            0.77,
+            0.56,
+            0.84
+          ]
+        },
+        {
+          "id": "right_photo",
+          "kind": "photo",
+          "text": "",
+          "bbox": [
+            0.63,
+            0.0,
+            1.0,
+            1.0
+          ]
+        }
+      ],
+      "feature_vector": {
+        "primary_anchor_position": "middle-right",
+        "anchor_count": 6,
+        "reading_vector": "diagonal",
+        "text_density_band": "medium",
+        "focal_singularity": true,
+        "cta_presence": false,
+        "whitespace_dominance": false,
+        "_char_count": 201,
+        "_coverage_area": 0.5436
+      },
+      "current_classifier_fit": "multi_column",
+      "current_scan_order": [
+        "title",
+        "takeaway_1",
+        "takeaway_2",
+        "takeaway_3",
+        "takeaway_4",
+        "right_photo"
+      ],
+      "confidence_proxy": 0.98
+    },
+    {
+      "slide_id": "22_Next-Steps-Your-Path-Forward",
+      "source_png": "C:\\Users\\juanl\\OneDrive\\Desktop\\z-2026-06-21\\22_Next-Steps-Your-Path-Forward.png",
+      "perceived_title": "Next Steps: Your Path Forward",
+      "layout_description": "A large dark-blue title sits at the upper left. Four two-column callout sections with pale horizontal bars and circular line icons appear across the middle, followed by two wide closing text blocks near the bottom.",
+      "element_count": 7,
+      "elements": [
+        {
+          "id": "title",
+          "kind": "title",
+          "text": "Next Steps: Your Path Forward",
+          "bbox": [
+            0.06,
+            0.07,
+            0.53,
+            0.12
+          ]
+        },
+        {
+          "id": "callout_strengths",
+          "kind": "callout",
+          "text": "Assess Your Strengths Take time to identify your unique skills, experiences, and passions ",
+          "bbox": [
+            0.06,
+            0.2,
+            0.48,
+            0.43
+          ]
+        },
+        {
+          "id": "callout_knowledge",
+          "kind": "callout",
+          "text": "Build Your Knowledge Utilize the resources mentioned to enhance your understanding of entr",
+          "bbox": [
+            0.49,
+            0.17,
+            0.91,
+            0.4
+          ]
+        },
+        {
+          "id": "callout_mentors",
+          "kind": "callout",
+          "text": "Connect with Mentors Seek guidance from established leaders in the field who can provide i",
+          "bbox": [
+            0.06,
+            0.51,
+            0.48,
+            0.72
+          ]
+        },
+        {
+          "id": "callout_action_plan",
+          "kind": "callout",
+          "text": "Develop an Action Plan Create a concrete strategy for how you'll apply your leadership ski",
+          "bbox": [
+            0.49,
+            0.48,
+            0.91,
+            0.72
+          ]
+        },
+        {
+          "id": "closing_remember",
+          "kind": "callout",
+          "text": "Remember, the journey to becoming an effective public health leader is ongoing. Continue t",
+          "bbox": [
+            0.06,
+            0.77,
+            0.91,
+            0.87
+          ]
+        },
+        {
+          "id": "closing_meeting",
+          "kind": "callout",
+          "text": "We look forward to seeing your contributions at the upcoming HII Meeting on October 28th a",
+          "bbox": [
+            0.06,
+            0.9,
+            0.84,
+            0.93
+          ]
+        }
+      ],
+      "feature_vector": {
+        "primary_anchor_position": "middle-right",
+        "anchor_count": 7,
+        "reading_vector": "diagonal",
+        "text_density_band": "high",
+        "focal_singularity": false,
+        "cta_presence": true,
+        "whitespace_dominance": false,
+        "_char_count": 918,
+        "_coverage_area": 0.5141
+      },
+      "current_classifier_fit": "z_pattern",
+      "current_scan_order": [
+        "callout_strengths",
+        "title",
+        "callout_knowledge",
+        "callout_mentors",
+        "callout_action_plan",
+        "closing_meeting",
+        "closing_remember"
+      ],
+      "confidence_proxy": 0.98
+    }
+  ]
+}

@@ -1,0 +1,112 @@
+{
+  "provenance": {
+    "captured_at": "2026-06-22T17:12:38.721272+00:00",
+    "model_id": "gpt-5.5",
+    "source_png": "C:\\Users\\juanl\\OneDrive\\Desktop\\z-2026-06-21\\8_Decision-Making-Foundations.png",
+    "scan_tool": "scripts/analysis/reading_path_holdout_perceive.py"
+  },
+  "perception_artifact": {
+    "confidence": "HIGH",
+    "visual_elements": [
+      {
+        "id": "title",
+        "kind": "title",
+        "text": "Decision-Making Foundations",
+        "bbox": [
+          0.06,
+          0.23,
+          0.38,
+          0.38
+        ]
+      },
+      {
+        "id": "left_column_header",
+        "kind": "callout",
+        "text": "Expected Value",
+        "bbox": [
+          0.06,
+          0.46,
+          0.28,
+          0.51
+        ]
+      },
+      {
+        "id": "left_column_points",
+        "kind": "bullet",
+        "text": "Statistical measure Average outcome prediction Objective calculation",
+        "bbox": [
+          0.06,
+          0.53,
+          0.32,
+          0.73
+        ]
+      },
+      {
+        "id": "right_column_header",
+        "kind": "callout",
+        "text": "Expected Utility",
+        "bbox": [
+          0.33,
+          0.46,
+          0.52,
+          0.51
+        ]
+      },
+      {
+        "id": "right_column_points",
+        "kind": "bullet",
+        "text": "Incorporates preferences Considers risk tolerance Accounts for human factors",
+        "bbox": [
+          0.33,
+          0.53,
+          0.56,
+          0.73
+        ]
+      },
+      {
+        "id": "medical_office_photo",
+        "kind": "photo",
+        "text": "",
+        "bbox": [
+          0.63,
+          0.0,
+          1.0,
+          1.0
+        ]
+      },
+      {
+        "id": "monitor_chart",
+        "kind": "diagram",
+        "text": "",
+        "bbox": [
+          0.74,
+          0.18,
+          0.99,
+          0.88
+        ]
+      }
+    ],
+    "extracted_text": "Decision-Making Foundations Expected Value Statistical measure Average outcome prediction Objective calculation Expected Utility Incorporates preferences Considers risk tolerance Accounts for human factors",
+    "layout_description": "A large white content area occupies the left two-thirds with a two-line title and two side-by-side text columns below. The right third is a full-height photo of a medical office scene with a monitor displaying a branching chart.",
+    "slide_title": "Decision-Making Foundations",
+    "text_blocks": [
+      "Decision-Making Foundations",
+      "Expected Value",
+      "Statistical measure",
+      "Average outcome prediction",
+      "Objective calculation",
+      "Expected Utility",
+      "Incorporates preferences",
+      "Considers risk tolerance",
+      "Accounts for human factors"
+    ],
+    "artifact_path": "",
+    "slide_id": "8_Decision-Making-Foundations",
+    "card_number": null,
+    "coverage": "perceived",
+    "confidence_score": 0.95,
+    "provider_model_id": "gpt-5.5",
+    "reading_path": null,
+    "source_png_path": "C:\\Users\\juanl\\OneDrive\\Desktop\\z-2026-06-21\\8_Decision-Making-Foundations.png"
+  }
+}

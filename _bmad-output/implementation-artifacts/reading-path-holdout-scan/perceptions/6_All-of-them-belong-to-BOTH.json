@@ -1,0 +1,61 @@
+{
+  "provenance": {
+    "captured_at": "2026-06-22T17:12:38.721272+00:00",
+    "model_id": "gpt-5.5",
+    "source_png": "C:\\Users\\juanl\\OneDrive\\Desktop\\z-2026-06-21\\6_All-of-them-belong-to-BOTH.png",
+    "scan_tool": "scripts/analysis/reading_path_holdout_perceive.py"
+  },
+  "perception_artifact": {
+    "confidence": "HIGH",
+    "visual_elements": [
+      {
+        "id": "left_photo",
+        "kind": "photo",
+        "text": "",
+        "bbox": [
+          0,
+          0,
+          0.47,
+          1
+        ]
+      },
+      {
+        "id": "main_title",
+        "kind": "title",
+        "text": "All of them belong to BOTH",
+        "bbox": [
+          0.54,
+          0.19,
+          0.98,
+          0.64
+        ]
+      },
+      {
+        "id": "subtitle",
+        "kind": "callout",
+        "text": "Clinical skills and innovation skills are fundamentally the same cognitive capabilities applied in different contexts.",
+        "bbox": [
+          0.54,
+          0.72,
+          0.98,
+          0.82
+        ]
+      }
+    ],
+    "extracted_text": "All of them belong to BOTH Clinical skills and innovation skills are fundamentally the same cognitive capabilities applied in different contexts.",
+    "layout_description": "The slide is split vertically, with a full-height photo of healthcare workers on the left and a white text area on the right. Large olive-green title text is centered in the right area, with a smaller blue explanatory sentence below it.",
+    "slide_title": "All of them belong to BOTH",
+    "text_blocks": [
+      "All of them belong to BOTH",
+      "Clinical skills and innovation skills are fundamentally the same cognitive capabilities applied in different contexts."
+    ],
+    "artifact_path": "",
+    "slide_id": "6_All-of-them-belong-to-BOTH",
+    "card_number": null,
+    "coverage": "perceived",
+    "confidence_score": 0.98,
+    "provider_model_id": "gpt-5.5",
+    "reading_path": null,
+    "source_png_path": "C:\\Users\\juanl\\OneDrive\\Desktop\\z-2026-06-21\\6_All-of-them-belong-to-BOTH.png"
+  }
+}

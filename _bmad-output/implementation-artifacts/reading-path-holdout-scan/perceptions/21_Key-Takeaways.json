@@ -1,0 +1,97 @@
+{
+  "provenance": {
+    "captured_at": "2026-06-22T17:12:38.721272+00:00",
+    "model_id": "gpt-5.5",
+    "source_png": "C:\\Users\\juanl\\OneDrive\\Desktop\\z-2026-06-21\\21_Key-Takeaways.png",
+    "scan_tool": "scripts/analysis/reading_path_holdout_perceive.py"
+  },
+  "perception_artifact": {
+    "confidence": "HIGH",
+    "visual_elements": [
+      {
+        "id": "title",
+        "kind": "title",
+        "text": "Key Takeaways",
+        "bbox": [
+          0.06,
+          0.2,
+          0.36,
+          0.28
+        ]
+      },
+      {
+        "id": "takeaway_1",
+        "kind": "bullet",
+        "text": "1 Develop innovative ideas with structured approach",
+        "bbox": [
+          0.06,
+          0.32,
+          0.52,
+          0.42
+        ]
+      },
+      {
+        "id": "takeaway_2",
+        "kind": "bullet",
+        "text": "2 Build, launch, iterate, measure, and learn",
+        "bbox": [
+          0.06,
+          0.48,
+          0.55,
+          0.55
+        ]
+      },
+      {
+        "id": "takeaway_3",
+        "kind": "bullet",
+        "text": "3 Understand value creation and motivation",
+        "bbox": [
+          0.06,
+          0.63,
+          0.55,
+          0.7
+        ]
+      },
+      {
+        "id": "takeaway_4",
+        "kind": "bullet",
+        "text": "4 Leverage resources to advance your leadership",
+        "bbox": [
+          0.06,
+          0.77,
+          0.56,
+          0.84
+        ]
+      },
+      {
+        "id": "right_photo",
+        "kind": "photo",
+        "text": "",
+        "bbox": [
+          0.63,
+          0.0,
+          1.0,
+          1.0
+        ]
+      }
+    ],
+    "extracted_text": "Key Takeaways 1 Develop innovative ideas with structured approach 2 Build, launch, iterate, measure, and learn 3 Understand value creation and motivation 4 Leverage resources to advance your leadership",
+    "layout_description": "The slide has a large title and four numbered takeaway statements arranged vertically on the left against a white background. A full-height photo of a compass on a wooden surface occupies the right side.",
+    "slide_title": "Key Takeaways",
+    "text_blocks": [
+      "Key Takeaways",
+      "1 Develop innovative ideas with structured approach",
+      "2 Build, launch, iterate, measure, and learn",
+      "3 Understand value creation and motivation",
+      "4 Leverage resources to advance your leadership"
+    ],
+    "artifact_path": "",
+    "slide_id": "21_Key-Takeaways",
+    "card_number": null,
+    "coverage": "perceived",
+    "confidence_score": 0.98,
+    "provider_model_id": "gpt-5.5",
+    "reading_path": null,
+    "source_png_path": "C:\\Users\\juanl\\OneDrive\\Desktop\\z-2026-06-21\\21_Key-Takeaways.png"
+  }
+}

@@ -1,0 +1,122 @@
+{
+  "provenance": {
+    "captured_at": "2026-06-22T17:12:38.721272+00:00",
+    "model_id": "gpt-5.5",
+    "source_png": "C:\\Users\\juanl\\OneDrive\\Desktop\\z-2026-06-21\\13_Effective-Problem-Solving-Approach.png",
+    "scan_tool": "scripts/analysis/reading_path_holdout_perceive.py"
+  },
+  "perception_artifact": {
+    "confidence": "HIGH",
+    "visual_elements": [
+      {
+        "id": "title",
+        "kind": "title",
+        "text": "Effective Problem-Solving Approach",
+        "bbox": [
+          0.06,
+          0.07,
+          0.66,
+          0.15
+        ]
+      },
+      {
+        "id": "left_bar",
+        "kind": "diagram",
+        "text": "",
+        "bbox": [
+          0.06,
+          0.27,
+          0.34,
+          0.3
+        ]
+      },
+      {
+        "id": "middle_bar",
+        "kind": "diagram",
+        "text": "",
+        "bbox": [
+          0.36,
+          0.23,
+          0.64,
+          0.26
+        ]
+      },
+      {
+        "id": "right_bar",
+        "kind": "diagram",
+        "text": "",
+        "bbox": [
+          0.66,
+          0.19,
+          0.94,
+          0.22
+        ]
+      },
+      {
+        "id": "left_column",
+        "kind": "callout",
+        "text": "Determine the Best Solution First, we need to determine how we can solve this particular problem. It's crucial to evaluate which solution not only addresses the issue but also does so at an attractive cost. This involves assessing the cost-effectiveness and feasibility of potential solutions.",
+        "bbox": [
+          0.07,
+          0.33,
+          0.31,
+          0.78
+        ]
+      },
+      {
+        "id": "middle_column",
+        "kind": "callout",
+        "text": "Explore Additional Benefits Next, consider what additional benefits or applications our solution might offer. This is about exploring the broader impact and potential uses of the solution beyond the immediate problem.",
+        "bbox": [
+          0.37,
+          0.29,
+          0.62,
+          0.62
+        ]
+      },
+      {
+        "id": "right_column",
+        "kind": "callout",
+        "text": "Evaluate Against Alternatives Finally, we must critically assess whether our solution is indeed the best possible option. This involves comparing it against other alternatives and ensuring it meets all necessary criteria.",
+        "bbox": [
+          0.67,
+          0.25,
+          0.91,
+          0.58
+        ]
+      },
+      {
+        "id": "summary",
+        "kind": "callout",
+        "text": "In summary, solving this problem involves finding a cost-effective solution, exploring additional applications, and ensuring it's the optimal choice. As we think about solutions, what motivates us and others to seize opportunities in public health?",
+        "bbox": [
+          0.06,
+          0.85,
+          0.91,
+          0.92
+        ]
+      }
+    ],
+    "extracted_text": "Effective Problem-Solving Approach Determine the Best Solution First, we need to determine how we can solve this particular problem. It's crucial to evaluate which solution not only addresses the issue but also does so at an attractive cost. This involves assessing the cost-effectiveness and feasibility of potential solutions. Explore Additional Benefits Next, consider what additional benefits or applications our solution might offer. This is about exploring the broader impact and potential uses of the solution beyond the immediate problem. Evaluate Against Alternatives Finally, we must critically assess whether our solution is indeed the best possible option. This involves comparing it against other alternatives and ensuring it meets all necessary criteria. In summary, solving this problem involves finding a cost-effective solution, exploring additional applications, and ensuring it's the optimal choice. As we think about solutions, what motivates us and others to seize opportunities in public health?",
+    "layout_description": "A large title sits at the top left, with three evenly spaced vertical text columns across the middle of the slide, each topped by a pale rounded horizontal bar. A two-line summary sentence spans the lower portion of the slide.",
+    "slide_title": "Effective Problem-Solving Approach",
+    "text_blocks": [
+      "Effective Problem-Solving Approach",
+      "Determine the Best Solution",
+      "First, we need to determine how we can solve this particular problem. It's crucial to evaluate which solution not only addresses the issue but also does so at an attractive cost. This involves assessing the cost-effectiveness and feasibility of potential solutions.",
+      "Explore Additional Benefits",
+      "Next, consider what additional benefits or applications our solution might offer. This is about exploring the broader impact and potential uses of the solution beyond the immediate problem.",
+      "Evaluate Against Alternatives",
+      "Finally, we must critically assess whether our solution is indeed the best possible option. This involves comparing it against other alternatives and ensuring it meets all necessary criteria.",
+      "In summary, solving this problem involves finding a cost-effective solution, exploring additional applications, and ensuring it's the optimal choice. As we think about solutions, what motivates us and others to seize opportunities in public health?"
+    ],
+    "artifact_path": "",
+    "slide_id": "13_Effective-Problem-Solving-Approach",
+    "card_number": null,
+    "coverage": "perceived",
+    "confidence_score": 0.98,
+    "provider_model_id": "gpt-5.5",
+    "reading_path": null,
+    "source_png_path": "C:\\Users\\juanl\\OneDrive\\Desktop\\z-2026-06-21\\13_Effective-Problem-Solving-Approach.png"
+  }
+}

@@ -1,0 +1,86 @@
+{
+  "provenance": {
+    "captured_at": "2026-06-22T17:12:38.721272+00:00",
+    "model_id": "gpt-5.5",
+    "source_png": "C:\\Users\\juanl\\OneDrive\\Desktop\\z-2026-06-21\\18_The-Future-of-Public-Health-Leadership.png",
+    "scan_tool": "scripts/analysis/reading_path_holdout_perceive.py"
+  },
+  "perception_artifact": {
+    "confidence": "HIGH",
+    "visual_elements": [
+      {
+        "id": "title",
+        "kind": "title",
+        "text": "The Future of Public Health Leadership",
+        "bbox": [
+          0.06,
+          0.19,
+          0.7,
+          0.29
+        ]
+      },
+      {
+        "id": "intro_paragraph",
+        "kind": "text",
+        "text": "As we look toward the future, it's clear that we need leaders in public health who are innovative, compassionate, and ready to tackle the challenges ahead. This is a call to action for each of you to consider how you can step into these roles and make a significant impact.",
+        "bbox": [
+          0.06,
+          0.35,
+          0.94,
+          0.49
+        ]
+      },
+      {
+        "id": "questions_callout",
+        "kind": "callout",
+        "text": "Questions?",
+        "bbox": [
+          0.43,
+          0.54,
+          0.58,
+          0.6
+        ]
+      },
+      {
+        "id": "questions_paragraph",
+        "kind": "text",
+        "text": "Now, let's open the floor for any questions you might have. This is your opportunity to delve deeper into any topics we've covered or explore new ideas that could shape your journey in public health leadership.",
+        "bbox": [
+          0.06,
+          0.65,
+          0.94,
+          0.75
+        ]
+      },
+      {
+        "id": "conclusion_paragraph",
+        "kind": "text",
+        "text": "In conclusion, remember that the future of public health is in your hands. Your leadership can drive meaningful change and improve health outcomes for communities worldwide. But what unique qualities and skills do you possess that make you an ideal candidate for such roles?",
+        "bbox": [
+          0.06,
+          0.78,
+          0.96,
+          0.91
+        ]
+      }
+    ],
+    "extracted_text": "The Future of Public Health Leadership As we look toward the future, it's clear that we need leaders in public health who are innovative, compassionate, and ready to tackle the challenges ahead. This is a call to action for each of you to consider how you can step into these roles and make a significant impact. Questions? Now, let's open the floor for any questions you might have. This is your opportunity to delve deeper into any topics we've covered or explore new ideas that could shape your journey in public health leadership. In conclusion, remember that the future of public health is in your hands. Your leadership can drive meaningful change and improve health outcomes for communities worldwide. But what unique qualities and skills do you possess that make you an ideal candidate for such roles?",
+    "layout_description": "A white slide with a large dark blue title near the upper left, followed by several blue paragraph text blocks. A centered olive-green “Questions?” callout appears between the upper and lower body text.",
+    "slide_title": "The Future of Public Health Leadership",
+    "text_blocks": [
+      "The Future of Public Health Leadership",
+      "As we look toward the future, it's clear that we need leaders in public health who are innovative, compassionate, and ready to tackle the challenges ahead. This is a call to action for each of you to consider how you can step into these roles and make a significant impact.",
+      "Questions?",
+      "Now, let's open the floor for any questions you might have. This is your opportunity to delve deeper into any topics we've covered or explore new ideas that could shape your journey in public health leadership.",
+      "In conclusion, remember that the future of public health is in your hands. Your leadership can drive meaningful change and improve health outcomes for communities worldwide. But what unique qualities and skills do you possess that make you an ideal candidate for such roles?"
+    ],
+    "artifact_path": "",
+    "slide_id": "18_The-Future-of-Public-Health-Leadership",
+    "card_number": null,
+    "coverage": "perceived",
+    "confidence_score": 0.99,
+    "provider_model_id": "gpt-5.5",
+    "reading_path": null,
+    "source_png_path": "C:\\Users\\juanl\\OneDrive\\Desktop\\z-2026-06-21\\18_The-Future-of-Public-Health-Leadership.png"
+  }
+}

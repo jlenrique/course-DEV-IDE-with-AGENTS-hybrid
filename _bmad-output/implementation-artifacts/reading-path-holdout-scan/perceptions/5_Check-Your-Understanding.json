@@ -1,0 +1,97 @@
+{
+  "provenance": {
+    "captured_at": "2026-06-22T17:12:38.721272+00:00",
+    "model_id": "gpt-5.5",
+    "source_png": "C:\\Users\\juanl\\OneDrive\\Desktop\\z-2026-06-21\\5_Check-Your-Understanding.png",
+    "scan_tool": "scripts/analysis/reading_path_holdout_perceive.py"
+  },
+  "perception_artifact": {
+    "confidence": "HIGH",
+    "visual_elements": [
+      {
+        "id": "top_photo",
+        "kind": "photo",
+        "text": "",
+        "bbox": [
+          0,
+          0,
+          1,
+          0.36
+        ]
+      },
+      {
+        "id": "title",
+        "kind": "title",
+        "text": "Check Your Understanding",
+        "bbox": [
+          0.05,
+          0.52,
+          0.48,
+          0.61
+        ]
+      },
+      {
+        "id": "question_prompt",
+        "kind": "callout",
+        "text": "Which skills belong to clinical practice, innovation, or both?",
+        "bbox": [
+          0.05,
+          0.65,
+          0.58,
+          0.7
+        ]
+      },
+      {
+        "id": "active_listening_box",
+        "kind": "callout",
+        "text": "Active Listening",
+        "bbox": [
+          0.05,
+          0.72,
+          0.33,
+          0.82
+        ]
+      },
+      {
+        "id": "data_analysis_box",
+        "kind": "callout",
+        "text": "Data Analysis",
+        "bbox": [
+          0.35,
+          0.72,
+          0.63,
+          0.82
+        ]
+      },
+      {
+        "id": "experimentation_box",
+        "kind": "callout",
+        "text": "Experimentation",
+        "bbox": [
+          0.64,
+          0.72,
+          0.92,
+          0.82
+        ]
+      }
+    ],
+    "extracted_text": "Check Your Understanding Which skills belong to clinical practice, innovation, or both? Active Listening Data Analysis Experimentation",
+    "layout_description": "A wide photo banner of people in a meeting spans the top portion of the slide. Below it on a white background are a large title, a question prompt, and three horizontally aligned colored rounded rectangles containing answer choices.",
+    "slide_title": "Check Your Understanding",
+    "text_blocks": [
+      "Check Your Understanding",
+      "Which skills belong to clinical practice, innovation, or both?",
+      "Active Listening",
+      "Data Analysis",
+      "Experimentation"
+    ],
+    "artifact_path": "",
+    "slide_id": "5_Check-Your-Understanding",
+    "card_number": null,
+    "coverage": "perceived",
+    "confidence_score": 0.98,
+    "provider_model_id": "gpt-5.5",
+    "reading_path": null,
+    "source_png_path": "C:\\Users\\juanl\\OneDrive\\Desktop\\z-2026-06-21\\5_Check-Your-Understanding.png"
+  }
+}

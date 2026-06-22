@@ -1,0 +1,86 @@
+{
+  "provenance": {
+    "captured_at": "2026-06-22T17:12:38.721272+00:00",
+    "model_id": "gpt-5.5",
+    "source_png": "C:\\Users\\juanl\\OneDrive\\Desktop\\z-2026-06-21\\11_Value-Creation-in-Innovation.png",
+    "scan_tool": "scripts/analysis/reading_path_holdout_perceive.py"
+  },
+  "perception_artifact": {
+    "confidence": "HIGH",
+    "visual_elements": [
+      {
+        "id": "title",
+        "kind": "title",
+        "text": "Value Creation in Innovation",
+        "bbox": [
+          0.05,
+          0.07,
+          0.48,
+          0.13
+        ]
+      },
+      {
+        "id": "column_01",
+        "kind": "callout",
+        "text": "01 Is the Need Real? The first step in value creation through innovation is to determine whether there is a genuine need for the proposed solution. This involves understanding the problem or gap that exists and assessing its significance to the target audience. Identifying a real need ensures that the innovation is relevant and has the potential to make a meaningful impact.",
+        "bbox": [
+          0.05,
+          0.18,
+          0.33,
+          0.68
+        ]
+      },
+      {
+        "id": "column_02",
+        "kind": "callout",
+        "text": "02 Does the Solution Meet the Need? Once a need is established, the next consideration is whether the proposed solution effectively addresses that need. This involves evaluating the solution's functionality, usability, and overall effectiveness in solving the problem. A solution that meets the need will likely be more successful and well-received by its intended users.",
+        "bbox": [
+          0.34,
+          0.18,
+          0.61,
+          0.65
+        ]
+      },
+      {
+        "id": "column_03",
+        "kind": "callout",
+        "text": "03 Is the \"Customer\" Willing to Pay More for the Solution Than It Costs to Deliver It? The final aspect of value creation is determining the economic viability of the solution. This involves assessing whether the customer perceives enough value in the solution to pay a price that exceeds the cost of delivering it. The equation Price - Cost > 0 must hold true for the innovation to be sustainable and profitable. This ensures that the solution not only meets a need but also generates financial value.",
+        "bbox": [
+          0.62,
+          0.18,
+          0.9,
+          0.84
+        ]
+      },
+      {
+        "id": "summary",
+        "kind": "callout",
+        "text": "In summary, successful innovation requires identifying a real need, creating a solution that effectively meets that need, and ensuring that the solution is economically viable. How can these principles guide us in our future endeavors?",
+        "bbox": [
+          0.05,
+          0.87,
+          0.91,
+          0.94
+        ]
+      }
+    ],
+    "extracted_text": "Value Creation in Innovation 01 Is the Need Real? The first step in value creation through innovation is to determine whether there is a genuine need for the proposed solution. This involves understanding the problem or gap that exists and assessing its significance to the target audience. Identifying a real need ensures that the innovation is relevant and has the potential to make a meaningful impact. 02 Does the Solution Meet the Need? Once a need is established, the next consideration is whether the proposed solution effectively addresses that need. This involves evaluating the solution's functionality, usability, and overall effectiveness in solving the problem. A solution that meets the need will likely be more successful and well-received by its intended users. 03 Is the \"Customer\" Willing to Pay More for the Solution Than It Costs to Deliver It? The final aspect of value creation is determining the economic viability of the solution. This involves assessing whether the customer perceives enough value in the solution to pay a price that exceeds the cost of delivering it. The equation Price - Cost > 0 must hold true for the innovation to be sustainable and profitable. This ensures that the solution not only meets a need but also generates financial value. In summary, successful innovation requires identifying a real need, creating a solution that effectively meets that need, and ensuring that the solution is economically viable. How can these principles guide us in our future endeavors?",
+    "layout_description": "A large dark-blue title sits at the top left. Below it are three side-by-side text columns numbered 01, 02, and 03 with thin green horizontal rules, and a wide summary sentence spans the bottom.",
+    "slide_title": "Value Creation in Innovation",
+    "text_blocks": [
+      "Value Creation in Innovation",
+      "01 Is the Need Real? The first step in value creation through innovation is to determine whether there is a genuine need for the proposed solution. This involves understanding the problem or gap that exists and assessing its significance to the target audience. Identifying a real need ensures that the innovation is relevant and has the potential to make a meaningful impact.",
+      "02 Does the Solution Meet the Need? Once a need is established, the next consideration is whether the proposed solution effectively addresses that need. This involves evaluating the solution's functionality, usability, and overall effectiveness in solving the problem. A solution that meets the need will likely be more successful and well-received by its intended users.",
+      "03 Is the \"Customer\" Willing to Pay More for the Solution Than It Costs to Deliver It? The final aspect of value creation is determining the economic viability of the solution. This involves assessing whether the customer perceives enough value in the solution to pay a price that exceeds the cost of delivering it. The equation Price - Cost > 0 must hold true for the innovation to be sustainable and profitable. This ensures that the solution not only meets a need but also generates financial value.",
+      "In summary, successful innovation requires identifying a real need, creating a solution that effectively meets that need, and ensuring that the solution is economically viable. How can these principles guide us in our future endeavors?"
+    ],
+    "artifact_path": "",
+    "slide_id": "11_Value-Creation-in-Innovation",
+    "card_number": null,
+    "coverage": "perceived",
+    "confidence_score": 0.98,
+    "provider_model_id": "gpt-5.5",
+    "reading_path": null,
+    "source_png_path": "C:\\Users\\juanl\\OneDrive\\Desktop\\z-2026-06-21\\11_Value-Creation-in-Innovation.png"
+  }
+}

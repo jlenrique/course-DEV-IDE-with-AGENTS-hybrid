@@ -1,0 +1,74 @@
+{
+  "provenance": {
+    "captured_at": "2026-06-22T17:12:38.721272+00:00",
+    "model_id": "gpt-5.5",
+    "source_png": "C:\\Users\\juanl\\OneDrive\\Desktop\\z-2026-06-21\\9_Comparing-Expected-Value-and-Expected-Utility.png",
+    "scan_tool": "scripts/analysis/reading_path_holdout_perceive.py"
+  },
+  "perception_artifact": {
+    "confidence": "HIGH",
+    "visual_elements": [
+      {
+        "id": "title",
+        "kind": "title",
+        "text": "Comparing Expected Value and Expected Utility",
+        "bbox": [
+          0.06,
+          0.12,
+          0.78,
+          0.18
+        ]
+      },
+      {
+        "id": "left_expected_utility_box",
+        "kind": "callout",
+        "text": "Expected Utility • A subjective measure • Reflects an individual's personal satisfaction and risk tolerance • Allows individuals to make decisions that align with their personal risk aversion and preferences • Can vary significantly from person to person • Incorporates personal judgments and feelings about risk and reward",
+        "bbox": [
+          0.06,
+          0.24,
+          0.46,
+          0.73
+        ]
+      },
+      {
+        "id": "right_expected_value_box",
+        "kind": "callout",
+        "text": "Expected Value • An objective measure • Remains constant regardless of who is evaluating it • Calculated based on probabilities and outcomes • Provides a consistent metric • Does not change with individual perceptions or preferences",
+        "bbox": [
+          0.48,
+          0.24,
+          0.88,
+          0.73
+        ]
+      },
+      {
+        "id": "bottom_summary",
+        "kind": "callout",
+        "text": "In summary, while expected value offers a stable, objective assessment, expected utility provides a personalized approach, incorporating individual risk preferences and satisfaction levels. Now, how can leaders effectively deliver value in public health?",
+        "bbox": [
+          0.06,
+          0.77,
+          0.89,
+          0.88
+        ]
+      }
+    ],
+    "extracted_text": "Comparing Expected Value and Expected Utility Expected Utility • A subjective measure • Reflects an individual's personal satisfaction and risk tolerance • Allows individuals to make decisions that align with their personal risk aversion and preferences • Can vary significantly from person to person • Incorporates personal judgments and feelings about risk and reward Expected Value • An objective measure • Remains constant regardless of who is evaluating it • Calculated based on probabilities and outcomes • Provides a consistent metric • Does not change with individual perceptions or preferences In summary, while expected value offers a stable, objective assessment, expected utility provides a personalized approach, incorporating individual risk preferences and satisfaction levels. Now, how can leaders effectively deliver value in public health?",
+    "layout_description": "A large dark-blue title spans the upper left. Below it are two pale green rounded rectangles side by side with bullet lists, and a blue summary sentence sits along the lower left beneath the boxes.",
+    "slide_title": "Comparing Expected Value and Expected Utility",
+    "text_blocks": [
+      "Comparing Expected Value and Expected Utility",
+      "Expected Utility • A subjective measure • Reflects an individual's personal satisfaction and risk tolerance • Allows individuals to make decisions that align with their personal risk aversion and preferences • Can vary significantly from person to person • Incorporates personal judgments and feelings about risk and reward",
+      "Expected Value • An objective measure • Remains constant regardless of who is evaluating it • Calculated based on probabilities and outcomes • Provides a consistent metric • Does not change with individual perceptions or preferences",
+      "In summary, while expected value offers a stable, objective assessment, expected utility provides a personalized approach, incorporating individual risk preferences and satisfaction levels. Now, how can leaders effectively deliver value in public health?"
+    ],
+    "artifact_path": "",
+    "slide_id": "9_Comparing-Expected-Value-and-Expected-Utility",
+    "card_number": null,
+    "coverage": "perceived",
+    "confidence_score": 0.98,
+    "provider_model_id": "gpt-5.5",
+    "reading_path": null,
+    "source_png_path": "C:\\Users\\juanl\\OneDrive\\Desktop\\z-2026-06-21\\9_Comparing-Expected-Value-and-Expected-Utility.png"
+  }
+}

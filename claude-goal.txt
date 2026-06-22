@@ -1,23 +1,25 @@
-GOAL (v4, 2026-06-22) — Reading-path catalog v1 → ratified classifier build (autonomous, BMAD-governed, ≤2h, Claude-direct dev; NO Codex)
+GOAL (v6, 2026-06-22) — Label the HELD-OUT 14 with our newly-synthesized reading-path approach; get 100% ready for the operator's confirm/deny pass. Claude dev-agent, NO Codex.
 
-CONTEXT: Branch fidelity-perception-arc-2026-06-19 (open as Class P, upgrade to S on first substrate touch). Operator-led slide-perception training ROUND 1 is CLOSED at 26/54 slides — sufficient to tune. Single source of truth: _bmad-output/implementation-artifacts/reading-path-operator-review-round1-notes.md (read the 🔑 tuple-synthesis, ⚙️ operationalization, 🔁 protocol blocks). v0-draft: reading-path-patterns-catalog.md. The flat 7-pattern enum was INVALIDATED. Held-out 14 slides were NEVER shown — keep it that way.
+PLAN CHANGE (operator-authorized): operator already did round-1 training (26 slides); the held-out reserve no longer stays naive. NEW design: Claude labels the 14 held-out slides via catalog v1, operator CONFIRMS/DENIES each. Flips old P2-4b (was operator-labels-first). Record the flip; flag to party (not blocking).
 
-OBJECTIVE: From the round-1 evidence, advance as far down the dev plan as is RELIABLE in ONE ≤2h session under BMAD governance. Partial progress with a clean handoff beats a rushed gate.
+CONTEXT: Branch fidelity-perception-arc-2026-06-19, HEAD bd283ff. Authority: reading-path-patterns-catalog.md v1 (party-ratified tuple {macro_layout × image_role(1/2/2.5/3/4) × text_substructure × narration_cadence} + 6 VO principles + A1–A10). Spec spec-p2-4c-reading-path-tuple-refactor.md ready-for-dev. Held-out 14 list + corpus path: reading-path-holdout-split-2026-06-21.md (PNGs in C:\Users\juanl\OneDrive\Desktop\z-2026-06-21).
 
-ARC (stop wherever 2h or reliability runs out):
-1. SYNTHESIZE → author reading-path-patterns-catalog.md v1 in COMPOSITIONAL-TUPLE form {macro_layout × image_role(1–4) × text_substructure × narration_cadence}. Bake in the operator-validated deltas: ADMIT two_up_comparison (4 fits) + multi_column (3 fits); REASSIGN f_pattern (2/3 flagged → message-led/decorative; keep 0 exemplars); GATE diagram_driven on foreground+opaque+load-bearing (kind:diagram ≠ instructional); encode the 4-TIER image-role axis {decorative·illustrative·instructional·pointer} + the 6 universal VO principles + per-pattern narration-cadence deltas. Default scan = top_down position-order (NOT Z).
-2. PARTY-MODE GREEN-LIGHT the v1 catalog: fully-spawned bmad-party-mode (Winston/John/Murat/Mary/Amelia; add Caravaggio for layout). Record consensus verbatim. On impasse, run the ratified Quinn→John chain BEFORE escalating to me.
-3. IF green-lit and time remains: author a ready-for-dev SPEC to refactor the P2-4a reading-path classifier (today: 7-pattern closed enum, dp-v1.5) toward the tuple repertoire. Schema-shape discipline; pipeline-lockstep regime on any manifest/pack touch.
-4. IF time remains: BUILD via bmad-quick-dev (or bmad-dev-story) with a fully-spawned party + a Claude DEV AGENT (Amelia, RED-first) — NOT Claude-direct edits. Then bmad-code-review (3-layer) BEFORE flipping any story done.
+OBJECTIVE: do everything possible without the operator, culminating in a confirm/deny-ready kit for the 14. Reliability governs depth; a complete kit beats a rushed build.
+
+ARC:
+1. PRODUCTIZE (optional, NOT the gate): build P2-4c per spec as far as reliable — S1 (RED-first geometry + ADDITIVE tuple schema + pinned derivation + tightened _looks_z + default counter; full lockstep regen dp-v1.5→v1.6 in-cycle; bmad-code-review 3-layer; party CLOSE; done), then if reliable G1/G2/G3 party → S2 (image-role tier) → S3 (gpt-5.5 escalation, ≥gpt-5.5, parse-seam). Class S — run the Step-1a Cora gate at open. Claude dev-agent RED-first under party.
+2. LABEL THE 14: run live gpt-5.5 perception over the 14 held-out PNGs → PerceptionArtifacts (capture raw outputs as provenance-stamped evidence). Assign the catalog v1 tuple via the BUILT classifier where it reaches; for axes not yet productized, apply catalog-guided live gpt-5.5 analysis, TAGGED as such. Label from PERCEIVED content, NOT filenames.
+3. ASSEMBLE THE KIT (completion artifact): per slide → filename + perceived-element summary + proposed full tuple + derived primary reading_path name + scan order + 1-line rationale + confidence + a CONFIRM/DENY field. Header: how-to-review (operator opens each PNG by filename), distribution, which slides invoke gated/provisional patterns (diagram_driven, multi_column, tier-2.5, f_pattern), low-confidence/known-wrong-default flagged. Structure so confirm/deny yields the A6 numbers (primary-key {macro×role} top-1 + per-axis + full-tuple rates).
+
+INTEGRITY: first-pass honest, NO retry-to-green (operator judges); record real confidence + top near-miss per slide; label from live perception, never retrofit to "fit"; NOTE this CONSUMES the held-out reserve (operator-accepted).
 
 HARD FENCES:
-- NO Codex. Dev runs Claude-direct through the dev agent under party governance.
-- P2-4b CALIBRATION is OPERATOR-GATED: it needs operator-labeled scan orders on the held-out 14. Do NOT self-label, do NOT touch the held-out set, do NOT run calibration. That leg is the natural STOP boundary.
-- No mocks — real, live gpt-5.5+ on any classifier escalation leg; test determinism via recorded-real responses behind a parse seam ONLY, never a fixture on the production path.
-- Run allowed tooling freely (.venv python, ruff, pytest, lint-imports, git) without per-command prompts. No force-push, no --no-verify.
+- NO Codex; dev = Claude dev-agent under party + bmad-code-review.
+- No mocks — real live gpt-5.5+; determinism via recorded-real parse-seam only, never a production-path fixture.
+- Additive non-regression: P2-4a stays GREEN; no enum value removed; JSON-schema enum widened not narrowed.
+- Never leave the 4-file lockstep/manifest half-modified: if S1 can't complete the full regen+parity reliably, STOP the build before the manifest edit and STILL reach the gate via catalog-guided live-perception labeling (build is optional to completion).
+- Tooling free (.venv, ruff, pytest, lint-imports, git). Push at safety checkpoints + completion. No force-push, no --no-verify. Quinn→John on impasse before escalating.
 
-WRAP-UP (mandatory at 2h regardless of where the arc lands): update SESSION-HANDOFF.md + next-session-start-here.md + deferred-inventory.md, write the resume banner, COMMIT + PUSH to origin per push-cadence policy.
+DONE (STOP + present): a review-ready artifact (holdout-confirm-deny-kit-2026-06-22.md) covers ALL 14 slides — each with proposed tuple + scan order + rationale + confidence + confirm/deny field — committed + pushed, + a one-screen how-to. Any build progress is committed/reviewed/lockstep-coherent. THEN STOP — do NOT finalize P2-4b conformance until verdicts return.
 
-FURTHEST RELIABLE POINT = last BMAD gate cleanly passed (green validation + committed + pushed). Acceptable terminal states, best→floor: (a) classifier refactored + code-reviewed + story done; (b) spec ready-for-dev + party-ratified catalog v1; (c) party-ratified catalog v1; (d) catalog v1 drafted + party round in progress.
-
-STOP & ASK ME ONLY ON: true impasse after the Quinn→John chain; a governance change (gate-mode/K-policy/pack-version Tier-2+); or needing the operator-gated held-out labels.
+STOP & ASK ONLY ON: true impasse after Quinn→John; a governance change beyond dp-v1.6 / this methodology flip; or a blocking dependency needing the operator before the kit can complete.
