@@ -1,3 +1,29 @@
+# Session Handoff — 2026-06-22 (Class P — Reading-path review round 1, operator-led slide-perception training: 26/54 working slides reviewed; major catalog-refactor findings; PAUSED mid-review)
+
+**Final class:** P (planning/review; no substrate edits — analysis + notes/handoff/memory only). **Branch:** `fidelity-perception-arc-2026-06-19`. Working tree clean except ambient untracked `runs/`. Master-merge SKIPPED (scoped arc branch).
+
+## Headline
+Ran operator review round 1 on the v0-draft reading-path catalog as a **one-slide-at-a-time "slide-perception training" session.** Reviewed **26 of 54 working slides** (prefixes 1–6); paused for time. The session **invalidated the catalog's flat 7-pattern enum** and produced a concrete refactor + operationalization design. Held-out 14 never shown.
+
+## What the operator's reads established (validated, not yet party-ratified)
+- **Refactor to a COMPOSITIONAL TUPLE:** `{macro_layout × image_role(1–4) × text_substructure × narration_cadence}` — the flat enum is WHY `_looks_z`/`image_dominant`/`diagram_driven` over-claim.
+- **ADMIT `two_up_comparison`** (4 fits: `2_`, `2_Same-Process`, `3_Two-Processes`, `6_Idea-vs-Opportunity`) — clears N≥4; comparison is a text-substructure that renders full-width OR nested in a split. **ADMIT `multi_column`** (`2_An-Era`, `4_Innovators-DNA`, + chevron `5_Real-Barrier`). Both were zero-fit in the catalog (bears on Q4).
+- **`f_pattern` reassign (Q2):** 2 of 3 flagged slides (`1_From-Idea-to-Action`, `4_The-Critical-Gap`) confirmed misfit → message-led/decorative; keep definition at 0 exemplars.
+- **`diagram_driven` over-claimed (Q1):** perceiver `kind:diagram` ≠ instructional — 4× it was a decorative/semi-transparent/background form (`4_Critical-Gap`, `7_`, `5_`, `6_`). Gate `diagram_driven` on foreground+opaque+load-bearing.
+- **Imagery is a 4-TIER SPECTRUM:** {1 decorative (no VO) · 2 illustrative (optional touch) · 3 instructional (walk through) · 4 pointer/iconographic (types the message unit)} — likely an orthogonal per-element ROLE tag, not a pattern.
+- **Universal VO principles banked:** title-anchor-then-synthesize; scaffold-before-detail (dense slides); callouts-always-get-VO; cue-don't-read-literal-strings (CTA/contact); cadence matches density (pacing>volume); peers may carry a light connective thread.
+- **Operator directive:** the production slide-analysis LLM must be **≥ gpt-5.5** (no downgrade on the classifier's escalation leg).
+
+## Artifacts
+- **`reading-path-operator-review-round1-notes.md`** (live notes; single source of truth) — per-slide reads, emerging-axes block, 🔑 compositional-tuple synthesis, 🔁 reusable training protocol, ⚙️ operationalization design, Progress block (26/54 + remaining queue).
+- Memory: `feedback_slide_perception_training_protocol` (how to run/resume these sessions).
+- next-session-start-here.md updated with resume banner.
+
+## What is next
+1. **Resume review round 1 (Claude-leads mode)** at the `7_` group → finish 54/54. 2. Synthesize → tune catalog into the tuple form. 3. **Party green-light** the tuned catalog. 4. **NEW CYCLE** hybrid-classifier build (Claude spec → Codex T1–T10 → Claude T11 + bmad-code-review). 5. **P2-4b calibration** on the held-out 14 (top-1 ≥0.85 + ≥80% conformance; operator labels independently). Expected next class: **P** (review), upgrading to **S** at classifier build.
+
+---
+
 # Session Handoff — 2026-06-21 (Class S — Reading-path patterns: `/goal` v3 autonomous run reached the OPERATOR-REVIEW checkpoint; v0-draft catalog produced from a live gpt-5.5 scan of 54 slides)
 
 **Final class:** S. **Branch:** `fidelity-perception-arc-2026-06-19`. **HEAD: `6e61f26`** (+ handoff commit); origin in sync; master-merge SKIPPED.
