@@ -164,10 +164,14 @@ The LLM invoked for reading-path/slide analysis during PRODUCTION runs must be *
 
 ---
 
-## Progress (round 1) — 26 / 54 working slides reviewed (≈48%), 2026-06-22
+## ✅ OPERATOR DECISION (2026-06-22) — REVIEW ROUND 1 CLOSED at 26/54; PROCEED with findings in hand
+The operator **closed slide-perception training at 26 slides** (already well beyond the originally-scoped review) and directed: **move forward in the development sequence with what we have.** The 26 reviewed slides span prefixes 1–6 across all genres seen so far and are **sufficient to tune the catalog**. The remaining 28 working slides are **NOT to be manually reviewed** — they will be handled by (a) the hybrid classifier's generalization and (b) P2-4b calibration on the held-out 14 (independent operator labels). This decision supersedes the earlier "resume at 7_" plan.
+**Forward sequence (authoritative):** synthesize the 26-slide evidence → **tune the v0-draft catalog into the compositional-tuple form** (per the 🔑/⚙️ synthesis blocks above) → **party green-light** the tuned catalog → **NEW CYCLE** hybrid-classifier build (Claude spec → Codex T1–T10 → Claude T11 + bmad-code-review) → **P2-4b calibration** on the held-out 14.
+
+## Progress (round 1) — 26 / 54 working slides reviewed (≈48%) — CLOSED by operator decision 2026-06-22
 **DONE (26):** all of prefixes 1–6 (1_, 1_From-Idea-to-Action, 1_The-Modern-Clinicians-Dilemma, 1_Turning-Ideas-into-Action · 2_, 2_A-Structured-Approach-to-Developing-Ideas, 2_An-Era, 2_Same-Process, 2_Structured-Approach-to-Population-Health · 3_, 3_The-Education-Gap, 3_The-Ideal-State-5-Step-Process, 3_Two-Processes-One-Mind · 4_, 4_Leadership-and-Risk-Awareness, 4_Leadership-and-Risk-Awareness-in-Public-Health, 4_The-Critical-Gap, 4_The-Innovators-DNA · 5_, 5_Common-Obstacles, 5_Obstacles-in-Building-the-Ideal-State, 5_The-Real-Barrier · 6_, 6_Idea-vs-Opportunity, 6_Ideas-vs-Opportunities-A-Crucial-Distinction, 6_Your-Hidden-Superpower).
 
-**REMAINING (28) — resume here next session, Claude-leads-then-operator-confirms mode:**
+**REMAINING (28) — NOT manually reviewed (operator-closed); handled by classifier generalization + P2-4b held-out calibration. Listed only for reference / optional future training rounds:**
 - **7_**: 7_, 7_Cognitive-Skills-in-Action, 7_From-Idea-to-Value-The-Framework, 7_Healthcares-Most-Valuable-Asset *(last of the 3 f_pattern-flagged)*
 - **8_**: 8_Expected-Value-vs-Expected-Utility, 8_Our-Mission-Transform-Insights-Into-Impact, 8_The-Science-Behind-the-Connection
 - **9_**: 9_Expected-Value-vs-Expected-Utility, 9_From-Bedside-to-Innovation, 9_The-Transformation

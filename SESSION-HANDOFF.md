@@ -1,9 +1,9 @@
-# Session Handoff — 2026-06-22 (Class P — Reading-path review round 1, operator-led slide-perception training: 26/54 working slides reviewed; major catalog-refactor findings; PAUSED mid-review)
+# Session Handoff — 2026-06-22 (Class P — Reading-path review round 1, operator-led slide-perception training: CLOSED at 26/54 by operator decision; major catalog-refactor findings; proceed to catalog-tuning)
 
-**Final class:** P (planning/review; no substrate edits — analysis + notes/handoff/memory only). **Branch:** `fidelity-perception-arc-2026-06-19`. Working tree clean except ambient untracked `runs/`. Master-merge SKIPPED (scoped arc branch).
+**Final class:** P (planning/review; no substrate edits — analysis + notes/handoff/memory only; class did not drift). **Branch:** `fidelity-perception-arc-2026-06-19`. HEAD pushed; origin in sync. Working tree clean except ambient untracked `runs/`. Master-merge SKIPPED (scoped arc branch).
 
 ## Headline
-Ran operator review round 1 on the v0-draft reading-path catalog as a **one-slide-at-a-time "slide-perception training" session.** Reviewed **26 of 54 working slides** (prefixes 1–6); paused for time. The session **invalidated the catalog's flat 7-pattern enum** and produced a concrete refactor + operationalization design. Held-out 14 never shown.
+Ran operator review round 1 on the v0-draft reading-path catalog as a **one-slide-at-a-time "slide-perception training" session.** Reviewed **26 of 54 working slides** (prefixes 1–6, all genres seen). **Operator CLOSED the review at 26 — sufficient to tune — and directed proceeding in the dev sequence with findings in hand** (remaining 28 → classifier generalization + P2-4b held-out calibration; NOT manually reviewed). The session **invalidated the catalog's flat 7-pattern enum** and produced a concrete refactor + operationalization design. Held-out 14 never shown.
 
 ## What the operator's reads established (validated, not yet party-ratified)
 - **Refactor to a COMPOSITIONAL TUPLE:** `{macro_layout × image_role(1–4) × text_substructure × narration_cadence}` — the flat enum is WHY `_looks_z`/`image_dominant`/`diagram_driven` over-claim.
@@ -19,8 +19,8 @@ Ran operator review round 1 on the v0-draft reading-path catalog as a **one-slid
 - Memory: `feedback_slide_perception_training_protocol` (how to run/resume these sessions).
 - next-session-start-here.md updated with resume banner.
 
-## What is next
-1. **Resume review round 1 (Claude-leads mode)** at the `7_` group → finish 54/54. 2. Synthesize → tune catalog into the tuple form. 3. **Party green-light** the tuned catalog. 4. **NEW CYCLE** hybrid-classifier build (Claude spec → Codex T1–T10 → Claude T11 + bmad-code-review). 5. **P2-4b calibration** on the held-out 14 (top-1 ≥0.85 + ≥80% conformance; operator labels independently). Expected next class: **P** (review), upgrading to **S** at classifier build.
+## What is next (review CLOSED — forward sequence)
+1. **Synthesize the 26-slide evidence → tune the v0-draft catalog into the COMPOSITIONAL-TUPLE form** (`reading-path-patterns-catalog.md` → v1): admit `two_up_comparison` + `multi_column`; reassign `f_pattern`; gate `diagram_driven`; encode the 4-tier image-role axis + the 6 universal VO principles + per-pattern narration deltas/cadence. 2. **`bmad-party-mode` green-light** the tuned catalog. 3. **NEW CYCLE** hybrid-classifier build (Claude spec → Codex T1–T10 → Claude T11 + bmad-code-review), ≥ gpt-5.5 on the escalation leg. 4. **P2-4b calibration** on the held-out 14 (top-1 ≥0.85 + ≥80% conformance; operator labels independently = anti-anchoring). Expected next class: **P** (synthesis + party), upgrading to **S** at classifier build.
 
 ---
 
