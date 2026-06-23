@@ -13,10 +13,16 @@ intentionally pin specific strings for behavior tests (per Murat's perturbation
 discipline), and migration story specs in `_bmad-output/` are records of what
 was decided at the time and must not be retroactively edited.
 
-Real OpenAI catalog (April 2026): `gpt-5`, `gpt-5-mini`, `gpt-5-nano`,
-`gpt-4.1`, `gpt-4.1-mini`, `gpt-4o`, `gpt-4o-mini`, `o3`, `o4-mini`. Refresh
-this list (and the live-OpenAI smoke test in `tests/live/`) when OpenAI
-publishes catalog changes.
+Real OpenAI catalog (as of 2026-06-23): `gpt-5`, `gpt-5.4`, `gpt-5.5`,
+`gpt-5-mini`, `gpt-5-nano`, `gpt-4.1`, `gpt-4.1-mini`, `gpt-4o`, `gpt-4o-mini`,
+`o3`, `o4-mini`. `gpt-5.4` (priced 2026-06-11) and `gpt-5.5` (vision-capable,
+released 2026-04-24, party-ratified Tier-2 add) are now registry-blessed and
+appear in `tests/fixtures/openai_catalog_snapshot.json` + pass the allowlist
+guard `test_cascade_ids_in_openai_published_catalog.py` — so they were removed
+from `FORBIDDEN_IDS` below (2026-06-23) to end the denylist-vs-allowlist
+contradiction. Refresh this list (and the live-OpenAI smoke test in
+`tests/live/`) — ideally derive the forbidden set from the catalog snapshot —
+when OpenAI publishes catalog changes.
 """
 
 from __future__ import annotations
@@ -27,15 +33,14 @@ import pytest
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
 
-# NOTE: this tuple intentionally lists the historical fictitious IDs that the
-# 2026-04-26 substrate-aware remediation purged. Do NOT replace these strings
-# with real IDs — they are the forbidden set the lint guard scans for. This
-# file is excluded from PRODUCTION_GLOBS so the strings here do not self-trip
-# the test.
+# NOTE: this tuple lists the genuinely-fictitious IDs the lint guard scans for.
+# `gpt-5.4` and `gpt-5.5` were removed 2026-06-23 — they graduated to REAL,
+# registry-blessed models (catalog snapshot + allowlist guard), so denylisting
+# them contradicted the allowlist and flagged every legitimate reference RED.
+# Do NOT add real IDs here. The strings are concatenated and this file is
+# excluded from PRODUCTION_GLOBS so they do not self-trip the test.
 FORBIDDEN_IDS = (
-    "gpt-5" + ".4",
     "gpt-5" + ".4-nano",
-    "gpt-5" + ".5",
     "gpt-5" + "-haiku",
     "gpt-5" + "-codex",
 )
@@ -88,8 +93,8 @@ def test_no_fictitious_model_ids_in_production_code() -> None:
         msg = (
             f"Fictitious OpenAI model IDs found in production code "
             f"({len(findings)} occurrence(s)). Use real catalog IDs only "
-            f"(gpt-5, gpt-5-mini, gpt-5-nano, gpt-4.1, gpt-4o-mini, o3, "
-            f"o4-mini). Forbidden set: "
+            f"(gpt-5, gpt-5.4, gpt-5.5, gpt-5-mini, gpt-5-nano, gpt-4.1, "
+            f"gpt-4o-mini, o3, o4-mini). Forbidden set: "
             f"{', '.join(repr(i) for i in FORBIDDEN_IDS)}.\n\n"
             + "\n".join(findings)
         )
