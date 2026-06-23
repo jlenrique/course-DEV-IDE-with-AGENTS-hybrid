@@ -110,7 +110,9 @@ def main() -> None:
         "captured_at": captured_at,
         "model_id": MODEL_ID,
         "subject": "built-classifier (S1/S2/S3)",
-        "substrate": "fresh@2026-06-23 (re-perceived under S2 role_tier; leg-3-only, no re-perception)",
+        "substrate": (
+            "fresh@2026-06-23 (re-perceived under S2 role_tier; leg-3-only, no re-perception)"
+        ),
         "perception_provenance_sample": dict(list(perception_provenance.items())[:3]),
         "classified_ok": len(classified),
         "load_errors": load_errors,
@@ -130,7 +132,7 @@ def main() -> None:
     REPORT.write_text(json.dumps(summary, indent=2, ensure_ascii=False), encoding="utf-8")
 
     print("\n=== HONEST BUILT-CLASSIFIER MEASUREMENT (leg-3 over frozen fresh perceptions) ===")
-    print(f"subject=built-classifier(S1/S2/S3)  substrate=fresh@2026-06-23")
+    print("subject=built-classifier(S1/S2/S3)  substrate=fresh@2026-06-23")
     print(f"classified OK: {len(classified)}/14  (load errors: {len(load_errors)})")
     print(f"scored slides: {len(rows)}/14")
     print(f"primary-key top-1 = {rep.primary_key_top1:.3f}  (>=0.85? {rep.passes_primary_key})")
@@ -141,7 +143,10 @@ def main() -> None:
         f"text={summary['per_axis']['text_substructure']:.3f} "
         f"cadence={summary['per_axis']['narration_cadence']:.3f}"
     )
-    print(f"escalation rate = {led.get('escalation_rate')}  fired={dict(fired)}  degraded={summary['degraded_rows']}")
+    print(
+        f"escalation rate = {led.get('escalation_rate')}  "
+        f"fired={dict(fired)}  degraded={summary['degraded_rows']}"
+    )
     for line in rep.confusion_lines():
         print(line)
     print(f"\nreport: {REPORT}")
