@@ -51,7 +51,10 @@ frozen_graph_version: "v42"
 # dp-v1.5 (P2-4a, 2026-06-21): additive reading_path vocabulary on rich
 # PerceptionArtifact plus native registry/schema/lint/classifier lockstep.
 # Classifier is vision-adjacent; pack_version remains v4.2.
-data_plane_vocabulary_version: "dp-v1.5"
+# dp-v1.6 (P2-4c S1, 2026-06-23): additive reading-path tuple sibling
+# fields and widened derived-primary names; deterministic geometry only.
+# Perceiver contract unchanged; pack_version remains v4.2.
+data_plane_vocabulary_version: "dp-v1.6"
 learning_events:
   schema_ref: "state/config/learning-event-schema.yaml"
 block_mode_trigger_paths:

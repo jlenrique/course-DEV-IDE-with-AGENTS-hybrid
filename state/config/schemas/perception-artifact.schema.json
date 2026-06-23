@@ -1,27 +1,7 @@
 {
   "additionalProperties": false,
-  "description": "Legacy-compatible slide perception summary.\n\nField names intentionally match the pre-existing perception artifact shape\nused by producer scripts; P2-1 only closes the model and adds coverage.",
+  "description": "Legacy-compatible slide perception summary.\n\nField names intentionally match the pre-existing perception artifact shape\nused by producer scripts; P2-1 only closes the model and adds coverage.\n\nBbox provenance (AC-5, vision-perceiver-real 2026-06-21): each\n``visual_elements[].bbox`` is an APPROXIMATE normalized ``[x1,y1,x2,y2]``\nregion estimate (0..1). These are LLM-estimated and coarse \u2014 the\ndeterministic reading-path classifier only buckets element centers into\nthirds, so sub-third bbox precision is neither produced by the live gpt-5.5\nperceiver nor relied upon downstream.",
   "properties": {
-    "artifact_path": {
-      "default": "",
-      "title": "Artifact Path",
-      "type": "string"
-    },
-    "card_number": {
-      "anyOf": [
-        {
-          "type": "integer"
-        },
-        {
-          "type": "string"
-        },
-        {
-          "type": "null"
-        }
-      ],
-      "default": null,
-      "title": "Card Number"
-    },
     "confidence": {
       "enum": [
         "HIGH",
@@ -30,29 +10,13 @@
       "title": "Confidence",
       "type": "string"
     },
-    "confidence_score": {
-      "anyOf": [
-        {
-          "maximum": 1.0,
-          "minimum": 0.0,
-          "type": "number"
-        },
-        {
-          "type": "null"
-        }
-      ],
-      "default": null,
-      "title": "Confidence Score"
-    },
-    "coverage": {
-      "default": "perceived",
-      "enum": [
-        "perceived",
-        "low-confidence",
-        "not-covered"
-      ],
-      "title": "Coverage",
-      "type": "string"
+    "visual_elements": {
+      "items": {
+        "additionalProperties": true,
+        "type": "object"
+      },
+      "title": "Visual Elements",
+      "type": "array"
     },
     "extracted_text": {
       "default": "",
@@ -64,45 +28,9 @@
       "title": "Layout Description",
       "type": "string"
     },
-    "provider_model_id": {
-      "default": "",
-      "title": "Provider Model Id",
-      "type": "string"
-    },
-    "reading_path": {
-      "anyOf": [
-        {
-          "enum": [
-            "z_pattern",
-            "f_pattern",
-            "center_out",
-            "top_down",
-            "multi_column",
-            "grid_quadrant",
-            "sequence_numbered"
-          ],
-          "type": "string"
-        },
-        {
-          "type": "null"
-        }
-      ],
-      "default": null,
-      "description": "Deterministic reading-path classification derived from perceived geometry.",
-      "title": "Reading Path"
-    },
-    "slide_id": {
-      "title": "Slide Id",
-      "type": "string"
-    },
     "slide_title": {
       "default": "",
       "title": "Slide Title",
-      "type": "string"
-    },
-    "source_png_path": {
-      "default": "",
-      "title": "Source Png Path",
       "type": "string"
     },
     "text_blocks": {
@@ -120,13 +48,209 @@
       "title": "Text Blocks",
       "type": "array"
     },
-    "visual_elements": {
-      "items": {
-        "additionalProperties": true,
-        "type": "object"
-      },
-      "title": "Visual Elements",
-      "type": "array"
+    "artifact_path": {
+      "default": "",
+      "title": "Artifact Path",
+      "type": "string"
+    },
+    "slide_id": {
+      "title": "Slide Id",
+      "type": "string"
+    },
+    "card_number": {
+      "anyOf": [
+        {
+          "type": "integer"
+        },
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Card Number"
+    },
+    "coverage": {
+      "default": "perceived",
+      "enum": [
+        "perceived",
+        "low-confidence",
+        "not-covered"
+      ],
+      "title": "Coverage",
+      "type": "string"
+    },
+    "confidence_score": {
+      "anyOf": [
+        {
+          "maximum": 1.0,
+          "minimum": 0.0,
+          "type": "number"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Confidence Score"
+    },
+    "provider_model_id": {
+      "default": "",
+      "title": "Provider Model Id",
+      "type": "string"
+    },
+    "reading_path": {
+      "anyOf": [
+        {
+          "enum": [
+            "z_pattern",
+            "f_pattern",
+            "center_out",
+            "top_down",
+            "multi_column",
+            "grid_quadrant",
+            "sequence_numbered",
+            "split_image_text",
+            "two_up_comparison",
+            "text_hero_divider",
+            "enumerated_process",
+            "diagram_driven"
+          ],
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "description": "Deterministic reading-path classification derived from perceived geometry.",
+      "title": "Reading Path"
+    },
+    "macro_layout": {
+      "anyOf": [
+        {
+          "enum": [
+            "split_image_text",
+            "text_hero_divider",
+            "multi_column",
+            "two_pane",
+            "card_grid",
+            "center_out",
+            "diagram_driven",
+            "single_text_block"
+          ],
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "description": "Geometry-derived macro-layout axis for the reading-path tuple.",
+      "title": "Macro Layout"
+    },
+    "image_roles": {
+      "anyOf": [
+        {
+          "items": {
+            "enum": [
+              "1",
+              "2",
+              "2_5",
+              "3",
+              "4"
+            ],
+            "type": "string"
+          },
+          "type": "array"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "description": "Per-element image role tiers; S1 leaves this unpopulated for S2.",
+      "title": "Image Roles"
+    },
+    "text_substructure": {
+      "anyOf": [
+        {
+          "enum": [
+            "enumerated_process",
+            "peer_boxes",
+            "comparison_pair",
+            "dense_exposition",
+            "hero_message"
+          ],
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "description": "Geometry-derived text-substructure axis for the reading-path tuple.",
+      "title": "Text Substructure"
+    },
+    "narration_cadence": {
+      "anyOf": [
+        {
+          "enum": [
+            "sparse_slow",
+            "moderate",
+            "dense"
+          ],
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "description": "Density-derived narration cadence axis for the reading-path tuple.",
+      "title": "Narration Cadence"
+    },
+    "callout_intent": {
+      "anyOf": [
+        {
+          "enum": [
+            "invite_response",
+            "challenge_quiz",
+            "directive_cta"
+          ],
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "description": "Optional callout speech-act axis; S1 leaves this unpopulated for S3.",
+      "title": "Callout Intent"
+    },
+    "reading_path_flags": {
+      "anyOf": [
+        {
+          "items": {
+            "const": "oppositional_cue",
+            "type": "string"
+          },
+          "type": "array"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "description": "Deterministic S1 side-channel flags for later reading-path escalation.",
+      "title": "Reading Path Flags"
+    },
+    "source_png_path": {
+      "default": "",
+      "title": "Source Png Path",
+      "type": "string"
     }
   },
   "required": [

@@ -255,8 +255,8 @@ def test_manifest_declares_projection_edges() -> None:
     nodes = {node["id"]: node for node in manifest["nodes"]}
     # dp-v1 -> dp-v1.1 (08/08B) -> dp-v1.2 (audio arc) ->
     # dp-v1.3 (P2-2 vision) -> dp-v1.4 (P2-3 vision->Irene)
-    # -> dp-v1.5 (P2-4a reading_path).
-    assert manifest["data_plane_vocabulary_version"] == "dp-v1.5"
+    # -> dp-v1.5 (P2-4a reading_path) -> dp-v1.6 (P2-4c tuple schema).
+    assert manifest["data_plane_vocabulary_version"] == "dp-v1.6"
     gary_projections = nodes["07"]["dependency_projections"]
     assert set(gary_projections) == {"slides", "prompt", "additional_instructions"}
     assert all(p["from"] == "package_builder" for p in gary_projections.values())

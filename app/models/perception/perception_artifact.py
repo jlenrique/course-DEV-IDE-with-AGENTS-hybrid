@@ -18,7 +18,33 @@ ReadingPath = Literal[
     "multi_column",
     "grid_quadrant",
     "sequence_numbered",
+    "split_image_text",
+    "two_up_comparison",
+    "text_hero_divider",
+    "enumerated_process",
+    "diagram_driven",
 ]
+MacroLayout = Literal[
+    "split_image_text",
+    "text_hero_divider",
+    "multi_column",
+    "two_pane",
+    "card_grid",
+    "center_out",
+    "diagram_driven",
+    "single_text_block",
+]
+ImageRoleTier = Literal["1", "2", "2_5", "3", "4"]
+TextSubstructure = Literal[
+    "enumerated_process",
+    "peer_boxes",
+    "comparison_pair",
+    "dense_exposition",
+    "hero_message",
+]
+NarrationCadence = Literal["sparse_slow", "moderate", "dense"]
+CalloutIntent = Literal["invite_response", "challenge_quiz", "directive_cta"]
+ReadingPathFlag = Literal["oppositional_cue"]
 
 
 class PerceptionArtifact(BaseModel):
@@ -53,6 +79,30 @@ class PerceptionArtifact(BaseModel):
         default=None,
         description="Deterministic reading-path classification derived from perceived geometry.",
     )
+    macro_layout: MacroLayout | None = Field(
+        default=None,
+        description="Geometry-derived macro-layout axis for the reading-path tuple.",
+    )
+    image_roles: list[ImageRoleTier] | None = Field(
+        default=None,
+        description="Per-element image role tiers; S1 leaves this unpopulated for S2.",
+    )
+    text_substructure: TextSubstructure | None = Field(
+        default=None,
+        description="Geometry-derived text-substructure axis for the reading-path tuple.",
+    )
+    narration_cadence: NarrationCadence | None = Field(
+        default=None,
+        description="Density-derived narration cadence axis for the reading-path tuple.",
+    )
+    callout_intent: CalloutIntent | None = Field(
+        default=None,
+        description="Optional callout speech-act axis; S1 leaves this unpopulated for S3.",
+    )
+    reading_path_flags: list[ReadingPathFlag] | None = Field(
+        default=None,
+        description="Deterministic S1 side-channel flags for later reading-path escalation.",
+    )
     source_png_path: str = ""
     provenance: SkipJsonSchema[PerceptionProvenance] = Field(
         default="png-grounded",
@@ -70,9 +120,15 @@ class PerceptionArtifact(BaseModel):
 
 
 __all__ = [
+    "CalloutIntent",
     "Confidence",
     "CoverageState",
+    "ImageRoleTier",
+    "MacroLayout",
+    "NarrationCadence",
     "PerceptionArtifact",
     "PerceptionProvenance",
+    "ReadingPathFlag",
     "ReadingPath",
+    "TextSubstructure",
 ]

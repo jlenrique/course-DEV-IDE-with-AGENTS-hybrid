@@ -29,6 +29,11 @@ EXPECTED_PATTERNS = (
     "multi_column",
     "grid_quadrant",
     "sequence_numbered",
+    "split_image_text",
+    "two_up_comparison",
+    "text_hero_divider",
+    "enumerated_process",
+    "diagram_driven",
 )
 
 

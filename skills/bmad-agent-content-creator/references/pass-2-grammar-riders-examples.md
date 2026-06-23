@@ -5,7 +5,7 @@ description: Per-pattern narration-grammar worked examples for the reading-path 
 
 # Pass 2 narration-grammar riders — examples
 
-This companion to [pass-2-authoring-template.md](./pass-2-authoring-template.md) carries one worked example per reading-path pattern in the v1 repertoire (7 patterns). Each example shows (a) the pattern's canonical scan order, (b) the expected narration cadence tokens, and (c) a sample `narration_text` that passes the `pass_2_emission_lint.py` pattern-aware shape check.
+This companion to [pass-2-authoring-template.md](./pass-2-authoring-template.md) carries one worked example per reading-path pattern in the v1.1 repertoire. Each example shows (a) the pattern's canonical scan order, (b) the expected narration cadence tokens, and (c) a sample `narration_text` that passes the `pass_2_emission_lint.py` pattern-aware shape check.
 
 **Three-way parity:** the pattern headings below must stay aligned with the enum in [state/config/reading-path-patterns.yaml](../../../state/config/reading-path-patterns.yaml) and the JSON Schema enum in [state/config/schemas/segment-manifest.schema.json](../../../state/config/schemas/segment-manifest.schema.json). A parity test asserts the three stay in lockstep.
 
@@ -168,6 +168,105 @@ response is inadequate, hold steady if the labs trend correctly.
 ```
 
 Cadence token hit: `step 1` + `step 2` + `step 3` + `finally` + `step 4`.
+
+---
+
+## Pattern: split_image_text
+
+**Canonical scan:** title-anchor on text side -> walk text structure -> reference image only by role
+**Cadence tokens (any of):** text side / image side / the main message / visual context
+**Lint:** warning
+
+**When to choose it:** side-by-side image and text where the message lives in the text and the image is contextual unless its role tier says otherwise.
+
+**Sample narration:**
+
+```text
+The text side carries the main message: clinicians already solve ambiguous
+problems every day. The image side is visual context, so we use it only to set
+the scene before returning to the claim.
+```
+
+Cadence token hit: `text side` + `image side` + `the main message` + `visual context`.
+
+---
+
+## Pattern: two_up_comparison
+
+**Canonical scan:** establish frame -> side A -> side B -> synthesis
+**Cadence tokens (any of):** compared with / by contrast / on one side / on the other side
+**Lint:** warning
+
+**When to choose it:** explicit oppositional panes or nested comparison pairs.
+
+**Sample narration:**
+
+```text
+On one side, clinical reasoning narrows uncertainty at the bedside. On the
+other side, design thinking tests a solution with users. Compared with a linear
+checklist, the contrast is the point: both loops learn from evidence.
+```
+
+Cadence token hit: `on one side` + `on the other side` + `compared with`.
+
+---
+
+## Pattern: text_hero_divider
+
+**Canonical scan:** single-impression headline or divider beat
+**Cadence tokens (any of):** pause on / single message / transition / section opener
+**Lint:** warning
+
+**When to choose it:** section openers, poster slides, and sparse CTA cards.
+
+**Sample narration:**
+
+```text
+Pause on the single message here: this is the inflection point. As a section
+opener, it gives the audience a transition before the next example.
+```
+
+Cadence token hit: `pause on` + `single message` + `section opener` + `transition`.
+
+---
+
+## Pattern: enumerated_process
+
+**Canonical scan:** transform-sequence in load-bearing order
+**Cadence tokens (any of):** first / then / produces / feeds / launch / iterate
+**Lint:** **FAIL-CLOSED** -- process-marker absence is a contract violation
+
+**When to choose it:** genuine process slides where the order changes meaning; numerals alone are not enough.
+
+**Sample narration:**
+
+```text
+First, the team frames the need. That feeds a small pilot, which produces
+evidence. Then the group can launch the stronger version and iterate from the
+data it just created.
+```
+
+Cadence token hit: `first` + `feeds` + `produces` + `then` + `launch` + `iterate`.
+
+---
+
+## Pattern: diagram_driven
+
+**Canonical scan:** establish framework -> walk load-bearing relationships -> return to claim
+**Cadence tokens (any of):** framework / diagram / flow / structure / canvas
+**Lint:** warning
+
+**When to choose it:** foreground, opaque, instructional diagrams that are structurally load-bearing.
+
+**Sample narration:**
+
+```text
+The framework starts with the learner need, moves through the canvas, and
+follows the flow into the course decision. The diagram matters because the
+structure shows how each choice constrains the next one.
+```
+
+Cadence token hit: `framework` + `canvas` + `flow` + `diagram` + `structure`.
 
 ---
 

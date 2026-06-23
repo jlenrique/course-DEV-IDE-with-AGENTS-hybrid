@@ -17,6 +17,11 @@ READING_PATH_PATTERNS: tuple[str, ...] = (
     "multi_column",
     "grid_quadrant",
     "sequence_numbered",
+    "split_image_text",
+    "two_up_comparison",
+    "text_hero_divider",
+    "enumerated_process",
+    "diagram_driven",
 )
 
 
@@ -48,11 +53,11 @@ def validate_segment_manifest(payload: dict[str, Any]) -> list[str]:
         except Pass2EmissionLintError as exc:
             errors.append(str(exc))
             continue
-        if pattern == "sequence_numbered":
+        if pattern in {"sequence_numbered", "enumerated_process"}:
             narration = str(segment.get("narration_text") or "").lower()
             if not any(token in narration for token in CADENCE_TOKENS[pattern]):
                 errors.append(
-                    f"segments[{index}] sequence_numbered lacks ordinal cadence token"
+                    f"segments[{index}] {pattern} lacks process cadence token"
                 )
     return errors
 

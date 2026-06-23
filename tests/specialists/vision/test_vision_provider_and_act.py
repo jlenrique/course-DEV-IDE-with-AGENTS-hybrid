@@ -143,7 +143,8 @@ def test_act_emits_per_slide_artifacts_and_not_covered_for_unreadable_slide(
         "slide-02",
     ]
     assert output["perception_artifacts"][0]["coverage"] == "perceived"
-    assert output["perception_artifacts"][0]["reading_path"] == "top_down"
+    assert output["perception_artifacts"][0]["reading_path"] == "split_image_text"
+    assert output["perception_artifacts"][0]["macro_layout"] == "split_image_text"
     assert output["perception_artifacts"][1]["coverage"] == "not-covered"
     assert output["perception_artifacts"][1]["reading_path"] is None
 

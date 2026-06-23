@@ -1,8 +1,8 @@
 # Spec — P2-4c: Reading-Path Tuple Refactor (additive, hybrid-(c) classifier)
 
-**Status:** `ready-for-dev` (S1). S2/S3 scoped, gated on the §Gaps closures.
+**Status:** **S1 DONE** (2026-06-23 — Codex T1–T10 → hand-back → remediation → Claude re-T11 → party-mode 5/5 CLOSE). S2/S3 `ready-for-dev` (gaps G1/G2/G3 resolved; Codex prompts authored).
 **Story family:** P2-4 (P2-4a machinery DONE `38f2ba8`; **P2-4c = this** tuple refactor; P2-4b calibration is OPERATOR-GATED and **re-sequences AFTER P2-4c** — it calibrates the refactored classifier).
-**Branch:** `fidelity-perception-arc-2026-06-19`. **Class:** S (substrate). **Dev:** Claude dev-agent (RED-first) under `bmad-code-review` — **NO Codex** (operator directive).
+**Branch:** `fidelity-perception-arc-2026-06-19`. **Class:** S (substrate). **Dev:** **Codex** (NEW CYCLE: Codex T1–T10 + Claude T11 review/close), per the v7 session directive (supersedes the earlier "NO Codex" note).
 **Authority:** `reading-path-patterns-catalog.md` v1 (party-ratified GREEN-WITH-AMENDMENTS 2026-06-22, amendments A1–A10) + `reading-path-patterns-design-decisions-2026-06-21.md`.
 **T1 readings (mandatory before code):** `docs/dev-guide/pipeline-manifest-regime.md` (this diff touches `block_mode_trigger_paths`); `docs/dev-guide/pydantic-v2-schema-checklist.md` (schema-shape); `docs/dev-guide/dev-agent-anti-patterns.md`; the catalog v1 §9 build contract.
 
@@ -58,7 +58,7 @@ Refactor the P2-4a reading-path classifier from a **flat closed 7-enum** into th
 
 **AC-S1-7 — default-degradation counter + ceiling (RED-first; party A7-1).** `top_down`/DEFAULT emission is **counted + reported** per classify-batch as an emitted artifact (not a log line), with a ceiling assertion (**DEFAULT ≤ 25%** of slides over a batch). A classifier that routes everything to DEFAULT must FAIL this test.
 
-**AC-S1-8 — `multi_column` quarantine enforced in code (A3).** `multi_column` is emittable but flagged `provisional` in the registry, and a code-level guard EXCLUDES it from the top-1 conformance denominator (consumed by P2-4b). RED-first test asserts the exclusion.
+**AC-S1-8 — `multi_column` D1 un-quarantine attestation.** Superseding the older A3 quarantine, operator-ratified D1 generalizes `multi_column` to N≥2 coordinate peers and confirms N≥4 evidence; `multi_column` is emittable and counted in the top-1 denominator. S1 only sets an oppositional-cue side-channel flag for S3; it does not upgrade `multi_column` to `two_pane`/`two_up_comparison`.
 
 **AC-S1-9 — fail-loud preserved.** `with_classified_reading_path` still raises `ReadingPathClassificationError` → `vision.reading-path.unclassifiable` when perceived geometry is absent (the P2-4a contract at `_act.py:120-130` and the non-numeric-bbox controlled-skip at classifier tests are preserved).
 

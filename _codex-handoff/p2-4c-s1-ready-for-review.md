@@ -4,6 +4,51 @@ Date: 2026-06-23
 Branch: `fidelity-perception-arc-2026-06-19`
 Codex scope: T1-T10 only. No commit, no status flip.
 
+## T11 remediation addendum
+
+Authority: `_bmad-output/implementation-artifacts/codex-remediation-prompt-p2-4c-s1-t11.md`.
+
+Remediation status: complete, no commit/status flip.
+
+Implemented hand-back items:
+- MF-A: `derive_primary_name` is now total for `card_grid`, `two_pane`, `center_out`, and `diagram_driven`; the bad `card_grid -> top_down` pin was corrected to `grid_quadrant`.
+- MF-B/SF-4: S1 no longer upgrades opposition cues to `comparison_pair`/`two_up_comparison`; it keeps coordinate peers at `multi_column` and emits `reading_path_flags=["oppositional_cue"]` as the S3 side-channel.
+- MF-C/SF-2: transform detection is structural; prose-only verbs like "then/produces/launch" in one text blob do not emit `enumerated_process`; process ordering is pinned by connector structure.
+- SF-1: `center_out` and `diagram_driven` are now macro-layout values and derive through `derive_primary_name`, removing the forced-primary bypass.
+- SF-3: `card_grid` is reachable before `multi_column` and has a precedence shape-pin.
+- NIT: dead `_looks_z`, `_looks_f_pattern`, `_has_ordinal`, and `_SCORERS` are removed; S1 None-ness for `image_roles` and `callout_intent` is pinned.
+- Governance: AC-S1-8 in the spec now explicitly records D1 un-quarantine of `multi_column`.
+
+Remediation RED-first evidence:
+- Tests added/changed first, then run before production fixes:
+  - `.\.venv\Scripts\python.exe -m pytest tests\utilities\test_reading_path_derivation.py tests\specialists\vision\test_reading_path_classifier.py -q -p no:randomly`
+  - Result before fixes: `12 failed, 23 passed`.
+  - Failures covered direct `two_pane`, `card_grid`, `center_out`, `diagram_driven` derivation; missing `reading_path_flags`; prose transform over-fire; grid shadowing; forced-primary drift.
+- After remediation fixes:
+  - Same slice: `35 passed in 3.59s`.
+  - Schema/model + classifier + derivation slice: `59 passed in 3.54s`.
+  - Expanded reading-path/vision/Irene slice: `110 passed in 6.79s`.
+
+Baseline-diff attestation:
+- Clean HEAD SHA: `829bc53`.
+- T11 review recorded stash-proof that `tests/contracts` had 14 ambient failures on clean HEAD.
+- Codex remediation reran a non-destructive detached clean worktree at `829bc53` and reproduced `14 failed, 278 passed, 1 skipped`.
+- Current remediated tree `tests/contracts`: `14 failed, 278 passed, 1 skipped`.
+- Failure names match the ambient set; remediation added zero new contract reds.
+
+Remediation validation:
+- `.\.venv\Scripts\python.exe -m pytest tests\contracts\test_reading_path_parity.py tests\models\perception\test_perception_artifact_schema_parity.py tests\utilities\test_reading_path_derivation.py tests\specialists\vision\test_reading_path_classifier.py tests\specialists\vision\test_vision_provider_and_act.py tests\specialists\vision\test_vision_unclassifiable_error_pause.py tests\specialists\vision\test_vision_recorded_real_replay.py tests\specialists\irene\test_irene_reading_path_conformance.py tests\unit\specialists\irene\test_pass_2_template_strict.py -q -p no:randomly`
+  - Result: `110 passed in 6.79s`.
+- `.\.venv\Scripts\python.exe scripts\utilities\check_pipeline_manifest_lockstep.py`
+  - Result: `lockstep-check exit=0`
+  - Trace: `reports/dev-coherence/2026-06-23-0130/check-pipeline-manifest-lockstep.PASS.yaml`.
+- `.\.venv\Scripts\ruff.exe check ...`
+  - Result: `All checks passed!`.
+- `.\.venv\Scripts\lint-imports.exe`
+  - Result: `15 kept, 0 broken`.
+- `git diff --check`
+  - Result: exit 0; warning only that `state/config/schemas/perception-artifact.schema.json` will normalize CRLF to LF.
+
 ## Baseline and dirty-worktree fence
 
 - Opening branch: `fidelity-perception-arc-2026-06-19`.

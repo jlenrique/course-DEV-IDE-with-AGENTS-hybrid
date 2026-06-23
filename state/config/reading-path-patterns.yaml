@@ -82,3 +82,46 @@ patterns:
       - step b
       - step c
     lint: fail-closed
+  - id: split_image_text
+    canonical_scan: title-anchor on text side -> walk text structure -> reference image only by role
+    cadence_tokens:
+      - text side
+      - image side
+      - the main message
+      - visual context
+    lint: warning
+  - id: two_up_comparison
+    canonical_scan: establish frame -> side A -> side B -> synthesis
+    cadence_tokens:
+      - compared with
+      - by contrast
+      - on one side
+      - on the other side
+    lint: warning
+  - id: text_hero_divider
+    canonical_scan: single-impression headline or divider beat
+    cadence_tokens:
+      - pause on
+      - single message
+      - transition
+      - section opener
+    lint: warning
+  - id: enumerated_process
+    canonical_scan: transform-sequence in load-bearing order
+    cadence_tokens:
+      - first
+      - then
+      - produces
+      - feeds
+      - launch
+      - iterate
+    lint: fail-closed
+  - id: diagram_driven
+    canonical_scan: establish framework -> walk load-bearing relationships -> return to claim
+    cadence_tokens:
+      - framework
+      - diagram
+      - flow
+      - structure
+      - canvas
+    lint: warning

@@ -6,7 +6,16 @@ from pathlib import Path
 import pytest
 from pydantic import TypeAdapter, ValidationError
 
-from app.models.perception.perception_artifact import PerceptionArtifact, ReadingPath
+from app.models.perception.perception_artifact import (
+    CalloutIntent,
+    ImageRoleTier,
+    MacroLayout,
+    NarrationCadence,
+    PerceptionArtifact,
+    ReadingPath,
+    ReadingPathFlag,
+    TextSubstructure,
+)
 
 SCHEMA_PATH = (
     Path(__file__).resolve().parents[3]
@@ -24,6 +33,12 @@ def _valid_payload() -> dict[str, object]:
         "coverage": "perceived",
         "provenance": "png-grounded",
         "reading_path": "top_down",
+        "macro_layout": "single_text_block",
+        "image_roles": None,
+        "text_substructure": "dense_exposition",
+        "narration_cadence": "dense",
+        "callout_intent": None,
+        "reading_path_flags": None,
         "visual_elements": [{"kind": "callout", "text": "$4.5T"}],
         "extracted_text": "$4.5T spend. Building photo.",
     }
@@ -63,6 +78,11 @@ def test_emitted_schema_matches_live_schema_for_public_fields(
         ("coverage", "maybe"),
         ("provenance", "screen-scrape"),
         ("reading_path", "triptych"),
+        ("macro_layout", "triptych"),
+        ("text_substructure", "ordered_list"),
+        ("narration_cadence", "fast"),
+        ("callout_intent", "takeaway_imperative"),
+        ("reading_path_flags", ["comparison_pair"]),
     ],
 )
 def test_closed_enums_reject_bad_values(field: str, bad_value: str) -> None:
@@ -86,6 +106,32 @@ def test_reading_path_literal_rejects_out_of_vocab() -> None:
         TypeAdapter(ReadingPath).validate_python("triptych")
 
 
+@pytest.mark.parametrize(
+    ("adapter", "bad_value"),
+    [
+        (MacroLayout, "triptych"),
+        (ImageRoleTier, "2.5"),
+        (TextSubstructure, "ordered_list"),
+        (NarrationCadence, "fast"),
+        (CalloutIntent, "takeaway_imperative"),
+        (ReadingPathFlag, "comparison_pair"),
+    ],
+)
+def test_tuple_axis_literals_reject_out_of_vocab(
+    adapter: object,
+    bad_value: str,
+) -> None:
+    with pytest.raises(ValidationError):
+        TypeAdapter(adapter).validate_python(bad_value)
+
+
+def test_tuple_axis_assignment_revalidates() -> None:
+    artifact = PerceptionArtifact.model_validate(_valid_payload())
+
+    with pytest.raises(ValidationError):
+        artifact.macro_layout = "triptych"  # type: ignore[assignment]
+
+
 def test_reading_path_schema_enum_is_public_and_closed(
     emitted_schema: dict[str, object],
 ) -> None:
@@ -96,14 +142,75 @@ def test_reading_path_schema_enum_is_public_and_closed(
     )
 
     assert enum_branch["enum"] == [
-        "z_pattern",
-        "f_pattern",
-        "center_out",
-        "top_down",
+            "z_pattern",
+            "f_pattern",
+            "center_out",
+            "top_down",
+            "multi_column",
+            "grid_quadrant",
+            "sequence_numbered",
+            "split_image_text",
+            "two_up_comparison",
+            "text_hero_divider",
+            "enumerated_process",
+            "diagram_driven",
+        ]
+
+
+def test_tuple_axis_schema_enums_are_public_and_closed(
+    emitted_schema: dict[str, object],
+) -> None:
+    properties = emitted_schema["properties"]
+
+    macro = next(
+        branch for branch in properties["macro_layout"]["anyOf"] if branch.get("type") == "string"
+    )
+    image_roles = properties["image_roles"]["anyOf"][0]["items"]
+    text = next(
+        branch
+        for branch in properties["text_substructure"]["anyOf"]
+        if branch.get("type") == "string"
+    )
+    cadence = next(
+        branch
+        for branch in properties["narration_cadence"]["anyOf"]
+        if branch.get("type") == "string"
+    )
+    callout = next(
+        branch
+        for branch in properties["callout_intent"]["anyOf"]
+        if branch.get("type") == "string"
+    )
+
+    assert macro["enum"] == [
+        "split_image_text",
+        "text_hero_divider",
         "multi_column",
-        "grid_quadrant",
-        "sequence_numbered",
+        "two_pane",
+        "card_grid",
+        "center_out",
+        "diagram_driven",
+        "single_text_block",
     ]
+    assert image_roles["enum"] == ["1", "2", "2_5", "3", "4"]
+    assert text["enum"] == [
+        "enumerated_process",
+        "peer_boxes",
+        "comparison_pair",
+        "dense_exposition",
+        "hero_message",
+    ]
+    assert cadence["enum"] == ["sparse_slow", "moderate", "dense"]
+    assert callout["enum"] == ["invite_response", "challenge_quiz", "directive_cta"]
+
+
+def test_reading_path_flags_schema_enum_is_public_and_closed(
+    emitted_schema: dict[str, object],
+) -> None:
+    properties = emitted_schema["properties"]
+    flags = properties["reading_path_flags"]["anyOf"][0]["items"]
+
+    assert flags["const"] == "oppositional_cue"
 
 
 def test_p2_1_fixture_still_validates_additively() -> None:

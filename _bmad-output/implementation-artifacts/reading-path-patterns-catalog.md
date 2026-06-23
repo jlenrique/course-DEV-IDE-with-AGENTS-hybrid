@@ -123,8 +123,9 @@ Each = a recurring tuple with N≥4 (or operator-admitted) + a distinct narratio
 - **guard:** prose "first…then…" WITHOUT per-element markers must NOT trigger this (`_has_ordinal` over-trigger).
 
 ### 4.6 `top_down` exposition *(ADMITTED + the DEFAULT)*
-- **tuple:** macro=`single_text_block`|`card_grid` · text=`dense_exposition`|`peer_boxes` · cadence=dense.
+- **tuple:** macro=`single_text_block` · text=`dense_exposition`|`peer_boxes` · cadence=dense.
 - **scan/narration:** plain physical reading order (top→bottom, row-major); title-anchor → scaffold-before-detail on dense slides.
+- **RECONCILIATION (P2-4c S1 close, impl-authoritative):** `macro=card_grid` derives to the **`grid_quadrant`** primary (NOT `top_down`) — a card grid is a 2D peer field whose detected layout must NOT collapse into the DEFAULT bucket (that was MF-A; collapsing polluted the anti-vacuity ceiling). `grid_quadrant` preserves the row-major peer reading while staying a non-default primary. The classifier `derive_primary_name` is authoritative; do NOT revert card_grid→top_down.
 - **exemplars:** `1_Turning-Ideas-into-Action-HII-Meeting-Preparation`, `4_Leadership-and-Risk-Awareness-in-Public-Health` (dense), `5_Obstacles-in-Building-the-Ideal-State` (card grid; semantics confirm order).
 
 ---

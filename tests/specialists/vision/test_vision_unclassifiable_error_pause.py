@@ -91,3 +91,32 @@ def test_unclassifiable_high_perceived_artifact_pauses_and_does_not_retry(
     assert not _act._is_retryable_provider_error(excinfo.value)
     # CRITICAL: the artifact was perceived once and the failure did NOT retry.
     assert calls == 1
+
+
+def test_empty_visual_elements_pauses_as_controlled_unclassifiable(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    """P2-4c S1 fold-in: empty visual_elements degrades through error-pause."""
+    png = _png(tmp_path)
+
+    def fake_perceive(path: Path, *, slide_id: str, **_: Any) -> VisionProviderResponse:
+        return VisionProviderResponse(
+            slide_id=slide_id,
+            confidence="HIGH",
+            coverage="perceived",
+            provenance="png-grounded",
+            extracted_text="No visible objects returned.",
+            layout_description="Empty perception result.",
+            visual_elements=[],
+            source_png_path="slide-01.png",
+            provider_model_id="gpt-5.5",
+        )
+
+    monkeypatch.setattr(_act, "perceive_png", fake_perceive)
+    payload = {"gary_slide_output": [{"slide_id": "slide-01", "file_path": str(png)}]}
+
+    with pytest.raises(VisionProviderError) as excinfo:
+        _act.act(_state(payload))
+
+    assert excinfo.value.tag == "vision.reading-path.unclassifiable"
+    assert not _act._is_retryable_provider_error(excinfo.value)

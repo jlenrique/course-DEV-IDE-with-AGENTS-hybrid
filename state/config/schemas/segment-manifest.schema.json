@@ -27,7 +27,12 @@
                   "top_down",
                   "multi_column",
                   "grid_quadrant",
-                  "sequence_numbered"
+                  "sequence_numbered",
+                  "split_image_text",
+                  "two_up_comparison",
+                  "text_hero_divider",
+                  "enumerated_process",
+                  "diagram_driven"
                 ],
                 "type": "string"
               },
