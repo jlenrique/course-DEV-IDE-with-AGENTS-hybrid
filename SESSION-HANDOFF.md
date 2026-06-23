@@ -6,9 +6,11 @@
 - **Fresh smoke `242b859f`: status=completed, 0 errors/0 hard-blocks** — drove G0→done live, exercising LLM-first perception + the NEW content-first voice + real ElevenLabs audio (6 segments) + fresh Storyboard A+B. Evidence `smoke-v9-result.json`.
 - **Party-mode 3/3 GREEN-WITH-CONDITIONS (John/Murat/Mary, no impasse)** — `trial-readiness-checklist-2026-06-23.md`. Binding: (1) VERIFICATION run not benchmark; (2) resubstitution stamp on every reading-path number — no "X% accurate" off the consumed-14 (sticky/inherited, H1–H4); (3) single-variant = accepted trial-1 fallback; (4) **fresh naive holdout = binding POST-trial gate** before any generalization claim (Mary's dissent satisfied-for-scope, stands as the scale tripwire); (5) narrated-deck scope fence (motion/WPM known-open).
 
-## Operator's next action (BEYOND the goal — both are valid)
-- **Launch TRIAL-1 now** (single-variant verification — party-certified ready), OR
-- **Dispatch Codex on `codex-dev-prompt-variant-arc.md`** first (party 3/3 green-lit) for genuine 2-up distinctness, then trial.
+## Variant arc — now BUILT + T11-closed (`45b7724`, post-goal continuation)
+Operator dispatched Codex on the variant arc; Claude T11 ACCEPTED. Per-variant `gamma_settings` flow CD-directive→runner→Gary→G2B card; A/B dispatch with distinct settings (DEFAULT_VARIANT_PAIR photographic/diagrammatic); all party amendments honored (keying-report, additive open-enum schema, N=A/B, no manifest/pack/lockstep touch); 82 deterministic tests green; diff clean. **Live Gamma reachability confirmed** (a Claude-run live call reached Gamma + generated); the clean **2-distinct-render proof + "distinct enough" eye-check is the OPERATOR-GATED leg at a real trial G2C** (party-designated; my minimal smoke fixture lacked the full-pipeline slide payload). Evidence: `variant-live-smoke-2026-06-23/`.
+
+## Operator's next action — the next trial can now use GENUINE 2-up distinctness
+**Launch a trial with per-variant Gamma settings** (the operator supplies the A/B settings at G2B; default pair is photographic vs diagrammatic) → 2 distinct renders per slide → pick at Storyboard A (G2C) — this is also where the operator-gated distinctness eye-check happens. Single-variant remains a valid fallback. Trial conditions C1–C5/H1–H4 still apply (verification run; resubstitution stamp on reading-path numbers; fresh-naive-holdout = binding post-trial generalization gate).
 
 ---
 
