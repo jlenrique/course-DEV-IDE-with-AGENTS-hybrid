@@ -179,6 +179,18 @@ Read this at T1 of every story. These are the traps dev agents have repeatedly w
 
 ---
 
+## Category H — Test-as-gate-integrity traps (P2-4c S1 T11, party-mode 2026-06-23)
+
+### H1. Green test certifies a bug (shape-pin locks the wrong value)
+
+**Trap:** A shape-pin / golden test that asserts the WRONG expected value is not a passing test — it is a *certified defect*. The suite goes green by encoding the bug as its own oracle, which inverts the purpose of the battery: green no longer means "correct," only "internally consistent with a wrong spec." Precedent: P2-4c S1 `derive_primary_name` collapsed `card_grid→top_down` (a correctly-detected layout silently becoming the DEFAULT, polluting the anti-vacuity ceiling) AND `test_reading_path_derivation.py` *pinned* `card_grid→top_down` as expected — so the bug was both shipped and test-locked.
+
+**Detection cue:** a shape-pin whose expected value you cannot independently justify from the spec; a "stop over-claiming X" story whose battery has NO negative control asserting X is not emitted from non-X input (P2-4c S1 shipped green while over-firing `two_up_comparison`/`enumerated_process` on filler words — the suite was never capable of failing on the exact defect class the story targets).
+
+**Fix:** HAND BACK — a compromised gate cannot certify its own repair (if the dev "just fixes the prod code," the fix either breaks the bad pin or is written to keep it green). Correct the assertion BUG-FIRST / RED-first: rewrite the pin to the correct value, prove it RED against the current tree, then fix the production code to green — this proves the pin has discriminating power and isn't re-locked to whatever the impl emits. For any "stop over-claiming" story, require negative-control fixtures as a binding pass-bar. A test that cannot fail on the bug it nominally guards is decorative.
+
+---
+
 ## Meta-rule — Read this at T1, not at G6
 
 If you find yourself hitting one of these traps during bmad-code-review, look back at T1. Did you read this document? If yes, did the trap you hit fit one of the categories above? If no, this catalog needs a new entry — flag it during review closure so it gets added.
@@ -194,3 +206,4 @@ The catalog exists to stop re-learning. When 31-1 landed, every finding here had
 | v1 | 2026-04-18 | Initial harvest from 27-0 / 27-2 / 31-1 Dev Notes + G6 layered-review findings |
 | v2 | 2026-06-20 | Category F (handoff-integrity) harvested from P2-2 T11 party-mode (F1 mislabeled-regression-as-preexisting-drift; F2 net-new-gen-section vs verbatim-extraction) |
 | v3 | 2026-06-21 | Category G (liveness / evidence-integrity) harvested from vision-perceiver-real CLOSE party-mode (G1 fixture-backed-contract-mistaken-for-live-capability) |
+| v4 | 2026-06-23 | Category H (test-as-gate-integrity) harvested from P2-4c S1 T11 HAND-BACK party-mode (H1 green-test-certifies-a-bug / shape-pin locks wrong value + missing negative controls) |

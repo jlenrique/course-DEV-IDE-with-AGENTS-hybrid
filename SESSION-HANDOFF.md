@@ -1,3 +1,24 @@
+# Session Handoff — 2026-06-23 (`/goal` v7 — P2-4c S1: Codex T1–T10 returned → Claude T11 → HAND BACK (party 5/5); + S2/S3 prep + G2/G3 resolved)
+
+**Final class:** S (T11 review/close of Codex's S1 substrate; no Claude production-code edits — S1 dev code stays UNCOMMITTED for Codex re-work; Claude's committed diff is review/governance docs only). **Branch:** `fidelity-perception-arc-2026-06-19`. **HEAD: `829bc53`** (+ this docs commit); origin in sync.
+
+## Headline — S1 HANDED BACK; S2/S3 fully pre-staged
+Two threads this session: (1) **Codex built P2-4c S1** (T1–T10) → **Claude T11 → HAND BACK** (party-mode 5/5, no impasse); (2) in parallel while S1 built, a 5-voice party **resolved gaps G2/G3** and I **pre-authored the S2 + S3 Codex prompts** (dispatch-ready).
+
+## T11 on S1 (record: `p2-4c-s1-t11-code-review-2026-06-23.md`)
+Battery GREEN + additive non-regression (enum widened 7→12, nothing removed; dp-v1.6; lockstep exit 0; ruff; lint-imports 15/0). **14 `tests/contracts/` failures baseline-diff-proven AMBIENT** (identical on clean HEAD `829bc53` with S1 stashed) — S1 added zero new reds. 3-layer review → **3 MUST-FIX (all production over-claim bugs)**: MF-A `derive_primary_name` missing card_grid/two_pane → collapse to top_down DEFAULT **+ a shape-pin that LOCKS the wrong value** (green battery partially vacuous as a gate); MF-B opposition-cue over-fires on bare before/after/pro/con → false two_up_comparison (S1 over-reaching into S3's D1 job); MF-C transform-verb over-fires on prose "then" → false enumerated_process (D3 violation). +4 SHOULD-FIX (forced_primary derivation drift; missing permutability fixture; card_grid shadowed; provisional-flag supersession unattested) +2 NIT. **Party 5/5 HAND BACK** (test-lock makes the gate vacuous — Murat; over-claim = the disease the story cures, not deferrable calibration — John; derive-don't-except — Amelia/Winston).
+
+## NEXT — operator dispatches Codex on the remediation
+`codex-remediation-prompt-p2-4c-s1-t11.md` (one consolidated cycle, RED-first, on the UNCOMMITTED S1 tree) → Claude re-T11. Binding re-T11 pass-bar = 6 RED-first fixtures (permutability pair; opposition-cue + transform-verb negative controls; card_grid/two_pane non-default derivation; forced_primary round-trip) + 3 process riders (mandatory baseline-diff attestation; harvested anti-pattern H1; 14-ambient filed). After S1 closes: dispatch S2 (`codex-dev-prompt-p2-4c-s2.md`) → T11 → S3 (`codex-dev-prompt-p2-4c-s3.md`) → T11 → P2-4b finalize.
+
+## Governance filings this session
+Anti-pattern **H1 "green test certifies a bug"** (`dev-agent-anti-patterns.md` v4); 14 ambient contract failures logged (deferred-inventory); G2/G3 resolution (`reading-path-gap-resolution-G2-G3-2026-06-22.md`); MF-C ownership ruled S1-code (structural over-fire) with fine cue-weight calibration deferred to P2-4b.
+
+## Validation
+T11 battery reproduced independently (66–77 passed focused; lockstep 0; ruff; lint-imports 15/0; enum additive; baseline-diff 14-ambient). Codex S1 code UNCOMMITTED (re-work). 6 vision recordings reverted (test-run rot). Working tree: S1 code unstaged + untracked new files; Claude docs committed.
+
+---
+
 # Session Handoff — 2026-06-22 EVE (`/goal` v6 — HELD-OUT 14 LABELED via catalog v1 + confirm/deny kit READY; STOP for operator confirm/deny)
 
 **Final class:** S-lite (added an analysis/evidence script + ran live gpt-5.5 over the 14 held-out PNGs + committed evidence; NO production runtime/schema/manifest/test/lockstep touched — P2-4a untouched; Step-0/1a Cora full gate not required, no invariant files touched). **Branch:** `fidelity-perception-arc-2026-06-19`. **HEAD: `5e3981b`** (+ this handoff commit); origin in sync; master-merge SKIPPED.
