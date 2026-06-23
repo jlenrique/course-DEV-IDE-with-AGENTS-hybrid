@@ -189,6 +189,14 @@ Read this at T1 of every story. These are the traps dev agents have repeatedly w
 
 **Fix:** HAND BACK — a compromised gate cannot certify its own repair (if the dev "just fixes the prod code," the fix either breaks the bad pin or is written to keep it green). Correct the assertion BUG-FIRST / RED-first: rewrite the pin to the correct value, prove it RED against the current tree, then fix the production code to green — this proves the pin has discriminating power and isn't re-locked to whatever the impl emits. For any "stop over-claiming" story, require negative-control fixtures as a binding pass-bar. A test that cannot fail on the bug it nominally guards is decorative.
 
+### H2. Agreement/scoring harness reports PASS on a silently-empty or excluded-everything scored set
+
+**Trap:** an agreement/conformance harness drops a category of pairs (e.g. quarantined values) from its scored set, and its underlying metric returns a perfect score on an empty input — so a run where the scored set collapses to empty (all-quarantined, or simply no data) reports the success value and PASSES the gate. The harness is **blind on the exact boundary it was commissioned to police**. Precedent: P2-4c S2's image-role κ harness dropped ALL tier-3 pairs (so a perceiver systematically over-calling tier-3 reported κ=1.0 with an all-zero confusion matrix — the AC's "3↔4 leak must be visible" was violated), and `_cohens_kappa` returned 1.0 when `total==0` (empty / all-quarantined → `passes=True`). Sibling to [[H1]] — both mistake *absence of measured signal* for *positive signal*.
+
+**Detection cue:** a metric helper with a `total==0 → return <success-value>` branch whose result flows into a `passes` boolean; a scored-pair filter that can empty the set; an acceptance harness with no "insufficient_data" / minimum-N state; a confusion matrix whose label set excludes a category that can still appear in the inputs.
+
+**Fix:** when the scored set is empty (or below a minimum N), return `passes=False` / a distinct `insufficient_data` status — never the success value. Surface excluded-category disagreement to a side-channel counter so the leak is visible. "Not yet wired to a live producer" does NOT make this deferrable — a false-green acceptance harness calcifies the moment a consumer trusts it; fix it in the story that ships the harness.
+
 ---
 
 ## Meta-rule — Read this at T1, not at G6
@@ -207,3 +215,4 @@ The catalog exists to stop re-learning. When 31-1 landed, every finding here had
 | v2 | 2026-06-20 | Category F (handoff-integrity) harvested from P2-2 T11 party-mode (F1 mislabeled-regression-as-preexisting-drift; F2 net-new-gen-section vs verbatim-extraction) |
 | v3 | 2026-06-21 | Category G (liveness / evidence-integrity) harvested from vision-perceiver-real CLOSE party-mode (G1 fixture-backed-contract-mistaken-for-live-capability) |
 | v4 | 2026-06-23 | Category H (test-as-gate-integrity) harvested from P2-4c S1 T11 HAND-BACK party-mode (H1 green-test-certifies-a-bug / shape-pin locks wrong value + missing negative controls) |
+| v5 | 2026-06-23 | H2 (agreement/scoring harness PASSes on silently-empty/excluded-everything scored set) harvested from P2-4c S2 T11 HAND-BACK party-mode |
