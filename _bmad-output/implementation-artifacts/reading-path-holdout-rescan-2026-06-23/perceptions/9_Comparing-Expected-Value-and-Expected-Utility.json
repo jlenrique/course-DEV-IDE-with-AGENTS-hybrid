@@ -1,0 +1,89 @@
+{
+  "provenance": {
+    "captured_at": "2026-06-23T04:03:42.344034+00:00",
+    "model_id": "gpt-5.5",
+    "source_png": "C:\\Users\\juanl\\OneDrive\\Desktop\\z-2026-06-21\\9_Comparing-Expected-Value-and-Expected-Utility.png",
+    "tool": "reading_path_holdout_rescan.py"
+  },
+  "perception_artifact": {
+    "confidence": "HIGH",
+    "visual_elements": [
+      {
+        "id": "title",
+        "kind": "title",
+        "text": "Comparing Expected Value and Expected Utility",
+        "role_tier": "4",
+        "role_tier_reason": "Large top heading labels the slide topic.",
+        "bbox": [
+          0.06,
+          0.12,
+          0.86,
+          0.21
+        ]
+      },
+      {
+        "id": "left_expected_utility_panel",
+        "kind": "bullet",
+        "text": "Expected Utility • A subjective measure • Reflects an individual's personal satisfaction and risk tolerance • Allows individuals to make decisions that align with their personal risk aversion and preferences • Can vary significantly from person to person • Incorporates personal judgments and feelings about risk and reward",
+        "role_tier": "2_5",
+        "role_tier_reason": "Main comparison text panel used for reading and confirming points.",
+        "bbox": [
+          0.06,
+          0.28,
+          0.51,
+          0.85
+        ]
+      },
+      {
+        "id": "right_expected_value_panel",
+        "kind": "bullet",
+        "text": "Expected Value • An objective measure • Remains constant regardless of who is evaluating it • Calculated based on probabilities and outcomes • Provides a consistent metric • Does not change with individual perceptions or preferences",
+        "role_tier": "2_5",
+        "role_tier_reason": "Main comparison text panel used for reading and confirming points.",
+        "bbox": [
+          0.53,
+          0.28,
+          0.98,
+          0.85
+        ]
+      },
+      {
+        "id": "summary_paragraph",
+        "kind": "callout",
+        "text": "In summary, while expected value offers a stable, objective assessment, expected utility provides a personalized approach, incorporating individual risk preferences and satisfaction levels. Now, how can leaders effectively deliver value in public health?",
+        "role_tier": "2_5",
+        "role_tier_reason": "Bottom concluding callout summarizes the comparison and transition question.",
+        "bbox": [
+          0.06,
+          0.9,
+          0.94,
+          0.99
+        ]
+      }
+    ],
+    "extracted_text": "Comparing Expected Value and Expected Utility Expected Utility • A subjective measure • Reflects an individual's personal satisfaction and risk tolerance • Allows individuals to make decisions that align with their personal risk aversion and preferences • Can vary significantly from person to person • Incorporates personal judgments and feelings about risk and reward Expected Value • An objective measure • Remains constant regardless of who is evaluating it • Calculated based on probabilities and outcomes • Provides a consistent metric • Does not change with individual perceptions or preferences In summary, while expected value offers a stable, objective assessment, expected utility provides a personalized approach, incorporating individual risk preferences and satisfaction levels. Now, how can leaders effectively deliver value in public health?",
+    "layout_description": "A large dark-blue title spans the top. Two pale green rounded rectangles sit side by side in the middle with comparison bullet lists, and a blue summary paragraph appears along the bottom left.",
+    "slide_title": "Comparing Expected Value and Expected Utility",
+    "text_blocks": [
+      "Comparing Expected Value and Expected Utility",
+      "Expected Utility\n• A subjective measure\n• Reflects an individual's personal satisfaction and\nrisk tolerance\n• Allows individuals to make decisions that align with\ntheir personal risk aversion and preferences\n• Can vary significantly from person to person\n• Incorporates personal judgments and feelings about\nrisk and reward",
+      "Expected Value\n• An objective measure\n• Remains constant regardless of who is evaluating it\n• Calculated based on probabilities and outcomes\n• Provides a consistent metric\n• Does not change with individual perceptions or\npreferences",
+      "In summary, while expected value offers a stable, objective assessment, expected utility provides a personalized approach,\nincorporating individual risk preferences and satisfaction levels. Now, how can leaders effectively deliver value in public\nhealth?"
+    ],
+    "artifact_path": "",
+    "slide_id": "9_Comparing-Expected-Value-and-Expected-Utility",
+    "card_number": null,
+    "coverage": "perceived",
+    "confidence_score": 0.98,
+    "provider_model_id": "gpt-5.5",
+    "reading_path": null,
+    "macro_layout": null,
+    "image_roles": null,
+    "image_role_flags": null,
+    "text_substructure": null,
+    "narration_cadence": null,
+    "callout_intent": null,
+    "reading_path_flags": null,
+    "source_png_path": "C:\\Users\\juanl\\OneDrive\\Desktop\\z-2026-06-21\\9_Comparing-Expected-Value-and-Expected-Utility.png"
+  }
+}

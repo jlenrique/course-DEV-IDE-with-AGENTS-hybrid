@@ -1,0 +1,103 @@
+{
+  "provenance": {
+    "captured_at": "2026-06-23T04:03:42.344034+00:00",
+    "model_id": "gpt-5.5",
+    "source_png": "C:\\Users\\juanl\\OneDrive\\Desktop\\z-2026-06-21\\18_The-Future-of-Public-Health-Leadership.png",
+    "tool": "reading_path_holdout_rescan.py"
+  },
+  "perception_artifact": {
+    "confidence": "HIGH",
+    "visual_elements": [
+      {
+        "id": "title",
+        "kind": "title",
+        "text": "The Future of Public Health Leadership",
+        "role_tier": "4",
+        "role_tier_reason": "Large prominent slide label at the top.",
+        "bbox": [
+          0.06,
+          0.18,
+          0.69,
+          0.25
+        ]
+      },
+      {
+        "id": "intro_paragraph",
+        "kind": "text",
+        "text": "As we look toward the future, it's clear that we need leaders in public health who are innovative, compassionate, and ready to tackle the challenges ahead. This is a call to action for each of you to consider how you can step into these roles and make a significant impact.",
+        "role_tier": "4",
+        "role_tier_reason": "Readable main text block carrying slide content.",
+        "bbox": [
+          0.06,
+          0.31,
+          0.94,
+          0.43
+        ]
+      },
+      {
+        "id": "questions_callout",
+        "kind": "callout",
+        "text": "Questions?",
+        "role_tier": "4",
+        "role_tier_reason": "Centered highlighted label-like prompt.",
+        "bbox": [
+          0.42,
+          0.48,
+          0.58,
+          0.53
+        ]
+      },
+      {
+        "id": "questions_paragraph",
+        "kind": "text",
+        "text": "Now, let's open the floor for any questions you might have. This is your opportunity to delve deeper into any topics we've covered or explore new ideas that could shape your journey in public health leadership.",
+        "role_tier": "4",
+        "role_tier_reason": "Readable supporting prompt text.",
+        "bbox": [
+          0.06,
+          0.58,
+          0.94,
+          0.65
+        ]
+      },
+      {
+        "id": "conclusion_paragraph",
+        "kind": "text",
+        "text": "In conclusion, remember that the future of public health is in your hands. Your leadership can drive meaningful change and improve health outcomes for communities worldwide. But what unique qualities and skills do you possess that make you an ideal candidate for such roles?",
+        "role_tier": "4",
+        "role_tier_reason": "Readable concluding text block.",
+        "bbox": [
+          0.06,
+          0.7,
+          0.94,
+          0.81
+        ]
+      }
+    ],
+    "extracted_text": "The Future of Public Health Leadership As we look toward the future, it's clear that we need leaders in public health who are innovative, compassionate, and ready to tackle the challenges ahead. This is a call to action for each of you to consider how you can step into these roles and make a significant impact. Questions? Now, let's open the floor for any questions you might have. This is your opportunity to delve deeper into any topics we've covered or explore new ideas that could shape your journey in public health leadership. In conclusion, remember that the future of public health is in your hands. Your leadership can drive meaningful change and improve health outcomes for communities worldwide. But what unique qualities and skills do you possess that make you an ideal candidate for such roles?",
+    "layout_description": "A clean white slide with a large dark-blue title at the upper left. Multiple teal paragraph text blocks are left-aligned beneath it, with a centered green “Questions?” callout between the upper and lower text sections.",
+    "slide_title": "The Future of Public Health Leadership",
+    "text_blocks": [
+      "The Future of Public Health Leadership",
+      "As we look toward the future, it's clear that we need leaders in public health who are innovative, compassionate, and ready to tackle the challenges ahead. This is a call to action for each of you to consider how you can step into these roles and make a significant impact.",
+      "Questions?",
+      "Now, let's open the floor for any questions you might have. This is your opportunity to delve deeper into any topics we've covered or explore new ideas that could shape your journey in public health leadership.",
+      "In conclusion, remember that the future of public health is in your hands. Your leadership can drive meaningful change and improve health outcomes for communities worldwide. But what unique qualities and skills do you possess that make you an ideal candidate for such roles?"
+    ],
+    "artifact_path": "",
+    "slide_id": "18_The-Future-of-Public-Health-Leadership",
+    "card_number": null,
+    "coverage": "perceived",
+    "confidence_score": 0.99,
+    "provider_model_id": "gpt-5.5",
+    "reading_path": null,
+    "macro_layout": null,
+    "image_roles": null,
+    "image_role_flags": null,
+    "text_substructure": null,
+    "narration_cadence": null,
+    "callout_intent": null,
+    "reading_path_flags": null,
+    "source_png_path": "C:\\Users\\juanl\\OneDrive\\Desktop\\z-2026-06-21\\18_The-Future-of-Public-Health-Leadership.png"
+  }
+}

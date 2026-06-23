@@ -1,0 +1,148 @@
+{
+  "provenance": {
+    "captured_at": "2026-06-23T04:03:42.344034+00:00",
+    "model_id": "gpt-5.5",
+    "source_png": "C:\\Users\\juanl\\OneDrive\\Desktop\\z-2026-06-21\\11_Value-Creation-in-Innovation.png",
+    "tool": "reading_path_holdout_rescan.py"
+  },
+  "perception_artifact": {
+    "confidence": "HIGH",
+    "visual_elements": [
+      {
+        "id": "title",
+        "kind": "title",
+        "text": "Value Creation in Innovation",
+        "role_tier": "4",
+        "role_tier_reason": "Large top heading labels the slide topic.",
+        "bbox": [
+          0.06,
+          0.07,
+          0.51,
+          0.13
+        ]
+      },
+      {
+        "id": "column_01",
+        "kind": "callout",
+        "text": "01 Is the Need Real? The first step in value creation through innovation is to determine whether there is a genuine need for the proposed solution. This involves understanding the problem or gap that exists and assessing its significance to the target audience. Identifying a real need ensures that the innovation is relevant and has the potential to make a meaningful impact.",
+        "role_tier": "2_5",
+        "role_tier_reason": "Main explanatory text block with numbered section and heading.",
+        "bbox": [
+          0.06,
+          0.18,
+          0.34,
+          0.66
+        ]
+      },
+      {
+        "id": "divider_01",
+        "kind": "diagram",
+        "text": "",
+        "role_tier": "1",
+        "role_tier_reason": "Thin horizontal line decorates and separates the first section.",
+        "bbox": [
+          0.06,
+          0.215,
+          0.34,
+          0.22
+        ]
+      },
+      {
+        "id": "column_02",
+        "kind": "callout",
+        "text": "02 Does the Solution Meet the Need? Once a need is established, the next consideration is whether the proposed solution effectively addresses that need. This involves evaluating the solution's functionality, usability, and overall effectiveness in solving the problem. A solution that meets the need will likely be more successful and well-received by its intended users.",
+        "role_tier": "2_5",
+        "role_tier_reason": "Main explanatory text block with numbered section and heading.",
+        "bbox": [
+          0.36,
+          0.18,
+          0.64,
+          0.62
+        ]
+      },
+      {
+        "id": "divider_02",
+        "kind": "diagram",
+        "text": "",
+        "role_tier": "1",
+        "role_tier_reason": "Thin horizontal line decorates and separates the second section.",
+        "bbox": [
+          0.36,
+          0.215,
+          0.64,
+          0.22
+        ]
+      },
+      {
+        "id": "column_03",
+        "kind": "callout",
+        "text": "03 Is the \"Customer\" Willing to Pay More for the Solution Than It Costs to Deliver It? The final aspect of value creation is determining the economic viability of the solution. This involves assessing whether the customer perceives enough value in the solution to pay a price that exceeds the cost of delivering it. The equation Price - Cost > 0 must hold true for the innovation to be sustainable and profitable. This ensures that the solution not only meets a need but also generates financial value.",
+        "role_tier": "2_5",
+        "role_tier_reason": "Main explanatory text block with numbered section and heading.",
+        "bbox": [
+          0.66,
+          0.18,
+          0.94,
+          0.82
+        ]
+      },
+      {
+        "id": "divider_03",
+        "kind": "diagram",
+        "text": "",
+        "role_tier": "1",
+        "role_tier_reason": "Thin horizontal line decorates and separates the third section.",
+        "bbox": [
+          0.66,
+          0.215,
+          0.94,
+          0.22
+        ]
+      },
+      {
+        "id": "summary",
+        "kind": "callout",
+        "text": "In summary, successful innovation requires identifying a real need, creating a solution that effectively meets that need, and ensuring that the solution is economically viable. How can these principles guide us in our future endeavors?",
+        "role_tier": "2_5",
+        "role_tier_reason": "Bottom summary text spans the slide width as concluding content.",
+        "bbox": [
+          0.06,
+          0.86,
+          0.94,
+          0.93
+        ]
+      }
+    ],
+    "extracted_text": "Value Creation in Innovation 01 Is the Need Real? The first step in value creation through innovation is to determine whether there is a genuine need for the proposed solution. This involves understanding the problem or gap that exists and assessing its significance to the target audience. Identifying a real need ensures that the innovation is relevant and has the potential to make a meaningful impact. 02 Does the Solution Meet the Need? Once a need is established, the next consideration is whether the proposed solution effectively addresses that need. This involves evaluating the solution's functionality, usability, and overall effectiveness in solving the problem. A solution that meets the need will likely be more successful and well-received by its intended users. 03 Is the \"Customer\" Willing to Pay More for the Solution Than It Costs to Deliver It? The final aspect of value creation is determining the economic viability of the solution. This involves assessing whether the customer perceives enough value in the solution to pay a price that exceeds the cost of delivering it. The equation Price - Cost > 0 must hold true for the innovation to be sustainable and profitable. This ensures that the solution not only meets a need but also generates financial value. In summary, successful innovation requires identifying a real need, creating a solution that effectively meets that need, and ensuring that the solution is economically viable. How can these principles guide us in our future endeavors?",
+    "layout_description": "A large title sits at the upper left on a white slide. Three evenly spaced vertical text columns occupy the middle, each with a small number, thin green horizontal divider, bold heading, and paragraph text; a summary sentence spans the bottom.",
+    "slide_title": "Value Creation in Innovation",
+    "text_blocks": [
+      "Value Creation in Innovation",
+      "01",
+      "Is the Need Real?",
+      "The first step in value creation through innovation is to determine whether there is a genuine need for the proposed solution. This involves understanding the problem or gap that exists and assessing its significance to the target audience. Identifying a real need ensures that the innovation is relevant and has the potential to make a meaningful impact.",
+      "02",
+      "Does the Solution Meet the Need?",
+      "Once a need is established, the next consideration is whether the proposed solution effectively addresses that need. This involves evaluating the solution's functionality, usability, and overall effectiveness in solving the problem. A solution that meets the need will likely be more successful and well-received by its intended users.",
+      "03",
+      "Is the \"Customer\" Willing to Pay More for the Solution Than It Costs to Deliver It?",
+      "The final aspect of value creation is determining the economic viability of the solution. This involves assessing whether the customer perceives enough value in the solution to pay a price that exceeds the cost of delivering it. The equation Price - Cost > 0 must hold true for the innovation to be sustainable and profitable. This ensures that the solution not only meets a need but also generates financial value.",
+      "In summary, successful innovation requires identifying a real need, creating a solution that effectively meets that need, and ensuring that the solution is economically viable. How can these principles guide us in our future endeavors?"
+    ],
+    "artifact_path": "",
+    "slide_id": "11_Value-Creation-in-Innovation",
+    "card_number": null,
+    "coverage": "perceived",
+    "confidence_score": 0.98,
+    "provider_model_id": "gpt-5.5",
+    "reading_path": null,
+    "macro_layout": null,
+    "image_roles": null,
+    "image_role_flags": null,
+    "text_substructure": null,
+    "narration_cadence": null,
+    "callout_intent": null,
+    "reading_path_flags": null,
+    "source_png_path": "C:\\Users\\juanl\\OneDrive\\Desktop\\z-2026-06-21\\11_Value-Creation-in-Innovation.png"
+  }
+}

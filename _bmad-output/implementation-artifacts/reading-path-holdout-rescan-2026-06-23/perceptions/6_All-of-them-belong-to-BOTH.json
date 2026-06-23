@@ -1,0 +1,74 @@
+{
+  "provenance": {
+    "captured_at": "2026-06-23T04:03:42.344034+00:00",
+    "model_id": "gpt-5.5",
+    "source_png": "C:\\Users\\juanl\\OneDrive\\Desktop\\z-2026-06-21\\6_All-of-them-belong-to-BOTH.png",
+    "tool": "reading_path_holdout_rescan.py"
+  },
+  "perception_artifact": {
+    "confidence": "HIGH",
+    "visual_elements": [
+      {
+        "id": "left_healthcare_photo",
+        "kind": "photo",
+        "text": "",
+        "role_tier": "2",
+        "role_tier_reason": "Large illustrative healthcare team photo supporting the topic; no internal labels.",
+        "bbox": [
+          0.0,
+          0.0,
+          0.44,
+          1.0
+        ]
+      },
+      {
+        "id": "main_title",
+        "kind": "title",
+        "text": "All of them belong to BOTH",
+        "role_tier": "4",
+        "role_tier_reason": "Large headline labels the main message of the slide.",
+        "bbox": [
+          0.51,
+          0.19,
+          0.97,
+          0.64
+        ]
+      },
+      {
+        "id": "bottom_statement",
+        "kind": "callout",
+        "text": "Clinical skills and innovation skills are fundamentally the same cognitive capabilities applied in different contexts.",
+        "role_tier": "2_5",
+        "role_tier_reason": "Supporting explanatory statement beneath the headline.",
+        "bbox": [
+          0.51,
+          0.73,
+          0.98,
+          0.82
+        ]
+      }
+    ],
+    "extracted_text": "All of them belong to BOTH Clinical skills and innovation skills are fundamentally the same cognitive capabilities applied in different contexts.",
+    "layout_description": "The slide is split vertically with a full-height photo of healthcare workers on the left and a white text area on the right. A large olive-green title dominates the upper right, with a smaller blue sentence below it near the lower right.",
+    "slide_title": "All of them belong to BOTH",
+    "text_blocks": [
+      "All of them belong to BOTH",
+      "Clinical skills and innovation skills are fundamentally the same cognitive capabilities applied in different contexts."
+    ],
+    "artifact_path": "",
+    "slide_id": "6_All-of-them-belong-to-BOTH",
+    "card_number": null,
+    "coverage": "perceived",
+    "confidence_score": 0.98,
+    "provider_model_id": "gpt-5.5",
+    "reading_path": null,
+    "macro_layout": null,
+    "image_roles": null,
+    "image_role_flags": null,
+    "text_substructure": null,
+    "narration_cadence": null,
+    "callout_intent": null,
+    "reading_path_flags": null,
+    "source_png_path": "C:\\Users\\juanl\\OneDrive\\Desktop\\z-2026-06-21\\6_All-of-them-belong-to-BOTH.png"
+  }
+}

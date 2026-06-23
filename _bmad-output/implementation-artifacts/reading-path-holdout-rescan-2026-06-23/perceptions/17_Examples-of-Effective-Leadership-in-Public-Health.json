@@ -1,0 +1,118 @@
+{
+  "provenance": {
+    "captured_at": "2026-06-23T04:03:42.344034+00:00",
+    "model_id": "gpt-5.5",
+    "source_png": "C:\\Users\\juanl\\OneDrive\\Desktop\\z-2026-06-21\\17_Examples-of-Effective-Leadership-in-Public-Health.png",
+    "tool": "reading_path_holdout_rescan.py"
+  },
+  "perception_artifact": {
+    "confidence": "HIGH",
+    "visual_elements": [
+      {
+        "id": "title",
+        "kind": "title",
+        "text": "Examples of Effective Leadership in Public Health",
+        "role_tier": "4",
+        "role_tier_reason": "Large top heading serves as the slide label.",
+        "bbox": [
+          0.06,
+          0.06,
+          0.89,
+          0.13
+        ]
+      },
+      {
+        "id": "photo_global_leader",
+        "kind": "photo",
+        "text": "",
+        "role_tier": "2",
+        "role_tier_reason": "Illustrative photo of a doctor at microphones supporting the global leaders section.",
+        "bbox": [
+          0.06,
+          0.17,
+          0.5,
+          0.55
+        ]
+      },
+      {
+        "id": "photo_local_champions",
+        "kind": "photo",
+        "text": "",
+        "role_tier": "2",
+        "role_tier_reason": "Illustrative photo of masked medical workers supporting the local champions section.",
+        "bbox": [
+          0.52,
+          0.17,
+          0.96,
+          0.55
+        ]
+      },
+      {
+        "id": "global_leaders_text",
+        "kind": "callout",
+        "text": "Global Leaders Leaders like Dr. Anthony Fauci, who guided the U.S. through the COVID-19 pandemic, or Dr. Tedros Adhanom Ghebreyesus, the Director-General of the World Health Organization, exemplify how strong leadership can drive global health initiatives forward.",
+        "role_tier": "4",
+        "role_tier_reason": "Section heading and explanatory text form a labeled content block.",
+        "bbox": [
+          0.06,
+          0.58,
+          0.49,
+          0.79
+        ]
+      },
+      {
+        "id": "local_champions_text",
+        "kind": "callout",
+        "text": "Local Champions Think about local leaders who have transformed public health landscapes in their communities. For instance, those who have spearheaded vaccination campaigns or implemented successful health education programs.",
+        "role_tier": "4",
+        "role_tier_reason": "Section heading and explanatory text form a labeled content block.",
+        "bbox": [
+          0.52,
+          0.58,
+          0.96,
+          0.75
+        ]
+      },
+      {
+        "id": "concluding_text",
+        "kind": "callout",
+        "text": "These examples highlight the diverse ways leadership can manifest in public health, from global to local scales. In summary, effective leadership in public health is multifaceted and can significantly influence health outcomes and policy advancements. So, what does the future hold for those who aspire to lead in this field?",
+        "role_tier": "4",
+        "role_tier_reason": "Wide bottom summary text provides final slide message.",
+        "bbox": [
+          0.06,
+          0.82,
+          0.96,
+          0.95
+        ]
+      }
+    ],
+    "extracted_text": "Examples of Effective Leadership in Public Health Global Leaders Leaders like Dr. Anthony Fauci, who guided the U.S. through the COVID-19 pandemic, or Dr. Tedros Adhanom Ghebreyesus, the Director-General of the World Health Organization, exemplify how strong leadership can drive global health initiatives forward. Local Champions Think about local leaders who have transformed public health landscapes in their communities. For instance, those who have spearheaded vaccination campaigns or implemented successful health education programs. These examples highlight the diverse ways leadership can manifest in public health, from global to local scales. In summary, effective leadership in public health is multifaceted and can significantly influence health outcomes and policy advancements. So, what does the future hold for those who aspire to lead in this field?",
+    "layout_description": "A large dark-blue title spans the top. Below it are two side-by-side rounded photos with corresponding section headings and paragraphs underneath, followed by two wide concluding text lines near the bottom.",
+    "slide_title": "Examples of Effective Leadership in Public Health",
+    "text_blocks": [
+      "Examples of Effective Leadership in Public Health",
+      "Global Leaders",
+      "Leaders like Dr. Anthony Fauci, who guided the U.S. through the COVID-19 pandemic, or Dr. Tedros Adhanom Ghebreyesus, the Director-General of the World Health Organization, exemplify how strong leadership can drive global health initiatives forward.",
+      "Local Champions",
+      "Think about local leaders who have transformed public health landscapes in their communities. For instance, those who have spearheaded vaccination campaigns or implemented successful health education programs.",
+      "These examples highlight the diverse ways leadership can manifest in public health, from global to local scales.",
+      "In summary, effective leadership in public health is multifaceted and can significantly influence health outcomes and policy advancements. So, what does the future hold for those who aspire to lead in this field?"
+    ],
+    "artifact_path": "",
+    "slide_id": "17_Examples-of-Effective-Leadership-in-Public-Health",
+    "card_number": null,
+    "coverage": "perceived",
+    "confidence_score": 0.97,
+    "provider_model_id": "gpt-5.5",
+    "reading_path": null,
+    "macro_layout": null,
+    "image_roles": null,
+    "image_role_flags": null,
+    "text_substructure": null,
+    "narration_cadence": null,
+    "callout_intent": null,
+    "reading_path_flags": null,
+    "source_png_path": "C:\\Users\\juanl\\OneDrive\\Desktop\\z-2026-06-21\\17_Examples-of-Effective-Leadership-in-Public-Health.png"
+  }
+}

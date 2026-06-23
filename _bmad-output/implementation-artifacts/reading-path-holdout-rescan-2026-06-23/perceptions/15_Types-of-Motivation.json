@@ -1,0 +1,88 @@
+{
+  "provenance": {
+    "captured_at": "2026-06-23T04:03:42.344034+00:00",
+    "model_id": "gpt-5.5",
+    "source_png": "C:\\Users\\juanl\\OneDrive\\Desktop\\z-2026-06-21\\15_Types-of-Motivation.png",
+    "tool": "reading_path_holdout_rescan.py"
+  },
+  "perception_artifact": {
+    "confidence": "HIGH",
+    "visual_elements": [
+      {
+        "id": "left_photo_scales",
+        "kind": "photo",
+        "text": "",
+        "role_tier": "2",
+        "role_tier_reason": "Large illustrative image of balance scales with coins and a heart supports the motivation theme.",
+        "bbox": [
+          0.0,
+          0.0,
+          0.39,
+          1.0
+        ]
+      },
+      {
+        "id": "title",
+        "kind": "title",
+        "text": "Types of Motivation",
+        "role_tier": "4",
+        "role_tier_reason": "Large top heading labels the slide topic.",
+        "bbox": [
+          0.45,
+          0.13,
+          0.83,
+          0.21
+        ]
+      },
+      {
+        "id": "extrinsic_callout",
+        "kind": "callout",
+        "text": "Extrinsic Motivation • External rewards/outcomes • Monetary incentives • Career advancement",
+        "role_tier": "4",
+        "role_tier_reason": "Rounded text panel labels and lists the extrinsic motivation category.",
+        "bbox": [
+          0.45,
+          0.27,
+          0.98,
+          0.55
+        ]
+      },
+      {
+        "id": "intrinsic_callout",
+        "kind": "callout",
+        "text": "Intrinsic Motivation • Internal satisfaction • Personal fulfillment • Inherent enjoyment",
+        "role_tier": "4",
+        "role_tier_reason": "Rounded text panel labels and lists the intrinsic motivation category.",
+        "bbox": [
+          0.45,
+          0.58,
+          0.98,
+          0.87
+        ]
+      }
+    ],
+    "extracted_text": "Types of Motivation Extrinsic Motivation • External rewards/outcomes • Monetary incentives • Career advancement Intrinsic Motivation • Internal satisfaction • Personal fulfillment • Inherent enjoyment",
+    "layout_description": "The slide is split vertically, with a large illustrative photo occupying the left portion and a white content area on the right. The right side has a large title near the top and two pale green rounded rectangles containing headings and bullet lists.",
+    "slide_title": "Types of Motivation",
+    "text_blocks": [
+      "Types of Motivation",
+      "Extrinsic Motivation • External rewards/outcomes • Monetary incentives • Career advancement",
+      "Intrinsic Motivation • Internal satisfaction • Personal fulfillment • Inherent enjoyment"
+    ],
+    "artifact_path": "",
+    "slide_id": "15_Types-of-Motivation",
+    "card_number": null,
+    "coverage": "perceived",
+    "confidence_score": 0.98,
+    "provider_model_id": "gpt-5.5",
+    "reading_path": null,
+    "macro_layout": null,
+    "image_roles": null,
+    "image_role_flags": null,
+    "text_substructure": null,
+    "narration_cadence": null,
+    "callout_intent": null,
+    "reading_path_flags": null,
+    "source_png_path": "C:\\Users\\juanl\\OneDrive\\Desktop\\z-2026-06-21\\15_Types-of-Motivation.png"
+  }
+}

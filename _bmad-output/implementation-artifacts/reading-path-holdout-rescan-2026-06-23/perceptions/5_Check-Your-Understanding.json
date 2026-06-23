@@ -1,0 +1,116 @@
+{
+  "provenance": {
+    "captured_at": "2026-06-23T04:03:42.344034+00:00",
+    "model_id": "gpt-5.5",
+    "source_png": "C:\\Users\\juanl\\OneDrive\\Desktop\\z-2026-06-21\\5_Check-Your-Understanding.png",
+    "tool": "reading_path_holdout_rescan.py"
+  },
+  "perception_artifact": {
+    "confidence": "HIGH",
+    "visual_elements": [
+      {
+        "id": "top_photo",
+        "kind": "photo",
+        "text": "",
+        "role_tier": "1",
+        "role_tier_reason": "edge-bleed meeting photo used as evocative header background with no readable internal labels",
+        "bbox": [
+          0,
+          0,
+          1,
+          0.38
+        ]
+      },
+      {
+        "id": "title",
+        "kind": "title",
+        "text": "Check Your Understanding",
+        "role_tier": "4",
+        "role_tier_reason": "large slide heading used as the main label",
+        "bbox": [
+          0.06,
+          0.54,
+          0.48,
+          0.61
+        ]
+      },
+      {
+        "id": "question",
+        "kind": "callout",
+        "text": "Which skills belong to clinical practice, innovation, or both?",
+        "role_tier": "4",
+        "role_tier_reason": "prompt text labels the task for the answer choices",
+        "bbox": [
+          0.06,
+          0.65,
+          0.57,
+          0.69
+        ]
+      },
+      {
+        "id": "choice_active_listening",
+        "kind": "callout",
+        "text": "Active Listening",
+        "role_tier": "4",
+        "role_tier_reason": "large labeled answer option",
+        "bbox": [
+          0.06,
+          0.72,
+          0.33,
+          0.82
+        ]
+      },
+      {
+        "id": "choice_data_analysis",
+        "kind": "callout",
+        "text": "Data Analysis",
+        "role_tier": "4",
+        "role_tier_reason": "large labeled answer option",
+        "bbox": [
+          0.36,
+          0.72,
+          0.63,
+          0.82
+        ]
+      },
+      {
+        "id": "choice_experimentation",
+        "kind": "callout",
+        "text": "Experimentation",
+        "role_tier": "4",
+        "role_tier_reason": "large labeled answer option",
+        "bbox": [
+          0.66,
+          0.72,
+          0.94,
+          0.82
+        ]
+      }
+    ],
+    "extracted_text": "Check Your Understanding Which skills belong to clinical practice, innovation, or both? Active Listening Data Analysis Experimentation",
+    "layout_description": "A wide photographic banner spans the top of the slide, with a large title and question below on a white background. Three large rounded rectangular answer choices are arranged horizontally across the lower portion.",
+    "slide_title": "Check Your Understanding",
+    "text_blocks": [
+      "Check Your Understanding",
+      "Which skills belong to clinical practice, innovation, or both?",
+      "Active Listening",
+      "Data Analysis",
+      "Experimentation"
+    ],
+    "artifact_path": "",
+    "slide_id": "5_Check-Your-Understanding",
+    "card_number": null,
+    "coverage": "perceived",
+    "confidence_score": 0.98,
+    "provider_model_id": "gpt-5.5",
+    "reading_path": null,
+    "macro_layout": null,
+    "image_roles": null,
+    "image_role_flags": null,
+    "text_substructure": null,
+    "narration_cadence": null,
+    "callout_intent": null,
+    "reading_path_flags": null,
+    "source_png_path": "C:\\Users\\juanl\\OneDrive\\Desktop\\z-2026-06-21\\5_Check-Your-Understanding.png"
+  }
+}

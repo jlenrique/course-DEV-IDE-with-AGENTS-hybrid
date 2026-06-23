@@ -1,0 +1,31 @@
+{
+  "captured_at": "2026-06-23T04:12:40.824463+00:00",
+  "model_id": "gpt-5.5",
+  "subject": "built-classifier (S1/S2/S3)",
+  "substrate": "fresh@2026-06-23 (re-perceived under S2 role_tier; leg-3-only, no re-perception)",
+  "perception_provenance_sample": {
+    "1_Diagnosis-Innovation": "2026-06-23T04:03:42.344034+00:00",
+    "3_Achieving-the-Ideal-State": "2026-06-23T04:03:42.344034+00:00",
+    "5_Check-Your-Understanding": "2026-06-23T04:03:42.344034+00:00"
+  },
+  "classified_ok": 14,
+  "load_errors": [],
+  "scored_slides": 14,
+  "primary_key_top1": 0.07142857142857142,
+  "full_tuple_rate": 0.0,
+  "per_axis": {
+    "macro_layout": 0.5,
+    "image_role": 0.21428571428571427,
+    "text_substructure": 0.21428571428571427,
+    "narration_cadence": 0.5714285714285714
+  },
+  "passes_primary_key_0_85": false,
+  "passes_full_tuple_0_80": false,
+  "escalation_rate": 0.9285714285714286,
+  "escalation_fired": {
+    "callout_kind_present": 13,
+    "tier_candidate_hit": 6,
+    "numbered_without_transform": 1
+  },
+  "degraded_rows": 0
+}

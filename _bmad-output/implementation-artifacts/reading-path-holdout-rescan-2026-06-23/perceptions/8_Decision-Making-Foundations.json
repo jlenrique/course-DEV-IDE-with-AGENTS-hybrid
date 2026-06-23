@@ -1,0 +1,94 @@
+{
+  "provenance": {
+    "captured_at": "2026-06-23T04:03:42.344034+00:00",
+    "model_id": "gpt-5.5",
+    "source_png": "C:\\Users\\juanl\\OneDrive\\Desktop\\z-2026-06-21\\8_Decision-Making-Foundations.png",
+    "tool": "reading_path_holdout_rescan.py"
+  },
+  "perception_artifact": {
+    "confidence": "HIGH",
+    "visual_elements": [
+      {
+        "id": "title_main",
+        "kind": "title",
+        "text": "Decision-Making Foundations",
+        "role_tier": "4",
+        "role_tier_reason": "Large primary heading labels the slide topic.",
+        "bbox": [
+          0.06,
+          0.25,
+          0.38,
+          0.42
+        ]
+      },
+      {
+        "id": "expected_value_block",
+        "kind": "callout",
+        "text": "Expected Value Statistical measure Average outcome prediction Objective calculation",
+        "role_tier": "2_5",
+        "role_tier_reason": "Left comparison text block provides key content to confirm.",
+        "bbox": [
+          0.06,
+          0.51,
+          0.33,
+          0.78
+        ]
+      },
+      {
+        "id": "expected_utility_block",
+        "kind": "callout",
+        "text": "Expected Utility Incorporates preferences Considers risk tolerance Accounts for human factors",
+        "role_tier": "2_5",
+        "role_tier_reason": "Right comparison text block provides key content to confirm.",
+        "bbox": [
+          0.33,
+          0.51,
+          0.58,
+          0.78
+        ]
+      },
+      {
+        "id": "medical_photo_right",
+        "kind": "photo",
+        "text": "DIAGNOSIS TREATMENT OPTIONS PROGNOSIS 33.9% PROGNOSIS 10.9% 75.0% 1,00%",
+        "role_tier": "2",
+        "role_tier_reason": "Full-height supporting illustrative photo glanced at for context, with some chart text visible on the monitor.",
+        "bbox": [
+          0.62,
+          0.0,
+          1.0,
+          1.0
+        ]
+      }
+    ],
+    "extracted_text": "Decision-Making Foundations Expected Value Statistical measure Average outcome prediction Objective calculation Expected Utility Incorporates preferences Considers risk tolerance Accounts for human factors DIAGNOSIS TREATMENT OPTIONS PROGNOSIS 33.9% PROGNOSIS 10.9% 75.0% 1,00%",
+    "layout_description": "The slide has a large white text area on the left with a two-line title and two comparison columns beneath it. The right third is occupied by a full-height medical office photo showing a monitor with a decision-tree-like chart.",
+    "slide_title": "Decision-Making Foundations",
+    "text_blocks": [
+      "Decision-Making Foundations",
+      "Expected Value\nStatistical measure\nAverage outcome prediction\nObjective calculation",
+      "Expected Utility\nIncorporates preferences\nConsiders risk tolerance\nAccounts for human factors",
+      "DIAGNOSIS",
+      "TREATMENT OPTIONS",
+      "PROGNOSIS 33.9%",
+      "PROGNOSIS 10.9%",
+      "75.0%",
+      "1,00%"
+    ],
+    "artifact_path": "",
+    "slide_id": "8_Decision-Making-Foundations",
+    "card_number": null,
+    "coverage": "perceived",
+    "confidence_score": 0.93,
+    "provider_model_id": "gpt-5.5",
+    "reading_path": null,
+    "macro_layout": null,
+    "image_roles": null,
+    "image_role_flags": null,
+    "text_substructure": null,
+    "narration_cadence": null,
+    "callout_intent": null,
+    "reading_path_flags": null,
+    "source_png_path": "C:\\Users\\juanl\\OneDrive\\Desktop\\z-2026-06-21\\8_Decision-Making-Foundations.png"
+  }
+}

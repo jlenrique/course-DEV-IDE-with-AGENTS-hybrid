@@ -1,0 +1,74 @@
+{
+  "provenance": {
+    "captured_at": "2026-06-23T04:03:42.344034+00:00",
+    "model_id": "gpt-5.5",
+    "source_png": "C:\\Users\\juanl\\OneDrive\\Desktop\\z-2026-06-21\\1_Diagnosis-Innovation.png",
+    "tool": "reading_path_holdout_rescan.py"
+  },
+  "perception_artifact": {
+    "confidence": "HIGH",
+    "visual_elements": [
+      {
+        "id": "photo_left_clinician_patient",
+        "kind": "photo",
+        "text": "",
+        "role_tier": "2",
+        "role_tier_reason": "Large illustrative clinical image supporting the topic; no internal labels.",
+        "bbox": [
+          0,
+          0,
+          0.44,
+          1
+        ]
+      },
+      {
+        "id": "title_diagnosis_innovation",
+        "kind": "title",
+        "text": "Diagnosis = Innovation",
+        "role_tier": "4",
+        "role_tier_reason": "Prominent title text serving as the slide label.",
+        "bbox": [
+          0.51,
+          0.36,
+          0.98,
+          0.45
+        ]
+      },
+      {
+        "id": "body_training_innovator",
+        "kind": "callout",
+        "text": "Your clinical training has already prepared you to be an innovator. The process you use every day mirrors the innovation process exactly.",
+        "role_tier": "4",
+        "role_tier_reason": "Main explanatory text block used as a verbal label/callout.",
+        "bbox": [
+          0.51,
+          0.49,
+          0.94,
+          0.62
+        ]
+      }
+    ],
+    "extracted_text": "Diagnosis = Innovation Your clinical training has already prepared you to be an innovator. The process you use every day mirrors the innovation process exactly.",
+    "layout_description": "The slide is split vertically with a large clinical photo filling the left portion and a white text area on the right. The right side contains a large dark-blue title centered vertically above a smaller blue paragraph.",
+    "slide_title": "Diagnosis = Innovation",
+    "text_blocks": [
+      "Diagnosis = Innovation",
+      "Your clinical training has already prepared you to be an innovator. The process you use every day mirrors the innovation process exactly."
+    ],
+    "artifact_path": "",
+    "slide_id": "1_Diagnosis-Innovation",
+    "card_number": null,
+    "coverage": "perceived",
+    "confidence_score": 0.98,
+    "provider_model_id": "gpt-5.5",
+    "reading_path": null,
+    "macro_layout": null,
+    "image_roles": null,
+    "image_role_flags": null,
+    "text_substructure": null,
+    "narration_cadence": null,
+    "callout_intent": null,
+    "reading_path_flags": null,
+    "source_png_path": "C:\\Users\\juanl\\OneDrive\\Desktop\\z-2026-06-21\\1_Diagnosis-Innovation.png"
+  }
+}

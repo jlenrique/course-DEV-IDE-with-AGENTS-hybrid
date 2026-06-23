@@ -1,0 +1,196 @@
+{
+  "provenance": {
+    "captured_at": "2026-06-23T04:03:42.344034+00:00",
+    "model_id": "gpt-5.5",
+    "source_png": "C:\\Users\\juanl\\OneDrive\\Desktop\\z-2026-06-21\\3_Achieving-the-Ideal-State.png",
+    "tool": "reading_path_holdout_rescan.py"
+  },
+  "perception_artifact": {
+    "confidence": "HIGH",
+    "visual_elements": [
+      {
+        "id": "title",
+        "kind": "title",
+        "text": "Achieving the Ideal State",
+        "role_tier": "4",
+        "role_tier_reason": "Large top heading labels the slide.",
+        "bbox": [
+          0.06,
+          0.06,
+          0.48,
+          0.12
+        ]
+      },
+      {
+        "id": "icon-build",
+        "kind": "icon",
+        "text": "",
+        "role_tier": "4",
+        "role_tier_reason": "Small icon marker inside a pale chevron panel.",
+        "bbox": [
+          0.06,
+          0.16,
+          0.16,
+          0.29
+        ]
+      },
+      {
+        "id": "step-build",
+        "kind": "callout",
+        "text": "Build it Create a robust framework or system that can support our goals and initiatives.",
+        "role_tier": "2",
+        "role_tier_reason": "Step heading and supporting sentence form a main content callout.",
+        "bbox": [
+          0.17,
+          0.18,
+          0.86,
+          0.26
+        ]
+      },
+      {
+        "id": "icon-launch",
+        "kind": "icon",
+        "text": "",
+        "role_tier": "4",
+        "role_tier_reason": "Small rocket icon marker inside a pale chevron panel.",
+        "bbox": [
+          0.06,
+          0.29,
+          0.16,
+          0.42
+        ]
+      },
+      {
+        "id": "step-launch",
+        "kind": "callout",
+        "text": "Launch it Don't wait for perfection; getting your idea out there is crucial for progress and feedback.",
+        "role_tier": "2",
+        "role_tier_reason": "Step heading and supporting sentence form a main content callout.",
+        "bbox": [
+          0.17,
+          0.31,
+          0.93,
+          0.39
+        ]
+      },
+      {
+        "id": "icon-iterate",
+        "kind": "icon",
+        "text": "",
+        "role_tier": "4",
+        "role_tier_reason": "Small gear icon marker inside a pale chevron panel.",
+        "bbox": [
+          0.06,
+          0.42,
+          0.16,
+          0.55
+        ]
+      },
+      {
+        "id": "step-iterate",
+        "kind": "callout",
+        "text": "Iterate Use the feedback and data collected to refine and improve your idea continuously.",
+        "role_tier": "2",
+        "role_tier_reason": "Step heading and supporting sentence form a main content callout.",
+        "bbox": [
+          0.17,
+          0.44,
+          0.78,
+          0.52
+        ]
+      },
+      {
+        "id": "icon-measure",
+        "kind": "icon",
+        "text": "",
+        "role_tier": "4",
+        "role_tier_reason": "Small ruler icon marker inside a pale chevron panel.",
+        "bbox": [
+          0.06,
+          0.54,
+          0.16,
+          0.7
+        ]
+      },
+      {
+        "id": "step-measure",
+        "kind": "callout",
+        "text": "Measure it Assess the impact and effectiveness of your actions. Collect data and analyze results to understand what works and what doesn't.",
+        "role_tier": "2",
+        "role_tier_reason": "Step heading with two-line explanatory paragraph is central slide content.",
+        "bbox": [
+          0.17,
+          0.57,
+          0.95,
+          0.67
+        ]
+      },
+      {
+        "id": "icon-learn",
+        "kind": "icon",
+        "text": "",
+        "role_tier": "4",
+        "role_tier_reason": "Small brain/lightbulb icon marker inside a pale chevron panel.",
+        "bbox": [
+          0.06,
+          0.7,
+          0.16,
+          0.85
+        ]
+      },
+      {
+        "id": "step-learn",
+        "kind": "callout",
+        "text": "Learn Use the insights gained from measurement to inform future decisions and strategies, ensuring continuous growth and improvement.",
+        "role_tier": "2",
+        "role_tier_reason": "Step heading with explanatory paragraph is central slide content.",
+        "bbox": [
+          0.17,
+          0.72,
+          0.91,
+          0.82
+        ]
+      },
+      {
+        "id": "summary",
+        "kind": "callout",
+        "text": "In summary, by following these steps—building, launching, iterating, measuring, and learning—we can move closer to our ideal state, fostering innovation and success. Now, let's consider the potential risks and challenges in this journey.",
+        "role_tier": "2",
+        "role_tier_reason": "Bottom paragraph summarizes the slide content.",
+        "bbox": [
+          0.06,
+          0.88,
+          0.96,
+          0.95
+        ]
+      }
+    ],
+    "extracted_text": "Achieving the Ideal State Build it Create a robust framework or system that can support our goals and initiatives. Launch it Don't wait for perfection; getting your idea out there is crucial for progress and feedback. Iterate Use the feedback and data collected to refine and improve your idea continuously. Measure it Assess the impact and effectiveness of your actions. Collect data and analyze results to understand what works and what doesn't. Learn Use the insights gained from measurement to inform future decisions and strategies, ensuring continuous growth and improvement. In summary, by following these steps—building, launching, iterating, measuring, and learning—we can move closer to our ideal state, fostering innovation and success. Now, let's consider the potential risks and challenges in this journey.",
+    "layout_description": "A large dark-blue title sits at the upper left. Down the left side is a vertical stack of five pale chevron panels with small black icons, each aligned with a step heading and explanatory paragraph to the right, followed by a wide summary paragraph near the bottom.",
+    "slide_title": "Achieving the Ideal State",
+    "text_blocks": [
+      "Achieving the Ideal State",
+      "Build it Create a robust framework or system that can support our goals and initiatives.",
+      "Launch it Don't wait for perfection; getting your idea out there is crucial for progress and feedback.",
+      "Iterate Use the feedback and data collected to refine and improve your idea continuously.",
+      "Measure it Assess the impact and effectiveness of your actions. Collect data and analyze results to understand what works and what doesn't.",
+      "Learn Use the insights gained from measurement to inform future decisions and strategies, ensuring continuous growth and improvement.",
+      "In summary, by following these steps—building, launching, iterating, measuring, and learning—we can move closer to our ideal state, fostering innovation and success. Now, let's consider the potential risks and challenges in this journey."
+    ],
+    "artifact_path": "",
+    "slide_id": "3_Achieving-the-Ideal-State",
+    "card_number": null,
+    "coverage": "perceived",
+    "confidence_score": 0.98,
+    "provider_model_id": "gpt-5.5",
+    "reading_path": null,
+    "macro_layout": null,
+    "image_roles": null,
+    "image_role_flags": null,
+    "text_substructure": null,
+    "narration_cadence": null,
+    "callout_intent": null,
+    "reading_path_flags": null,
+    "source_png_path": "C:\\Users\\juanl\\OneDrive\\Desktop\\z-2026-06-21\\3_Achieving-the-Ideal-State.png"
+  }
+}

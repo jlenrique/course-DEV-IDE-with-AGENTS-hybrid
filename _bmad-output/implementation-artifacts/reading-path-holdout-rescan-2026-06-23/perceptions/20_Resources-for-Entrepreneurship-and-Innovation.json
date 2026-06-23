@@ -1,0 +1,117 @@
+{
+  "provenance": {
+    "captured_at": "2026-06-23T04:03:42.344034+00:00",
+    "model_id": "gpt-5.5",
+    "source_png": "C:\\Users\\juanl\\OneDrive\\Desktop\\z-2026-06-21\\20_Resources-for-Entrepreneurship-and-Innovation.png",
+    "tool": "reading_path_holdout_rescan.py"
+  },
+  "perception_artifact": {
+    "confidence": "HIGH",
+    "visual_elements": [
+      {
+        "id": "title",
+        "kind": "title",
+        "text": "Resources for Entrepreneurship and Innovation",
+        "role_tier": "4",
+        "role_tier_reason": "Large heading labeling the slide topic at the top.",
+        "bbox": [
+          0.06,
+          0.07,
+          0.77,
+          0.13
+        ]
+      },
+      {
+        "id": "card_wharton_online",
+        "kind": "callout",
+        "text": "Wharton Online Offers a comprehensive course on entrepreneurship that provides foundational knowledge and practical insights into starting and managing successful ventures. This course is particularly beneficial for those looking to integrate entrepreneurial strategies into public health initiatives.",
+        "role_tier": "2_5",
+        "role_tier_reason": "Bordered text card presenting a resource and explanatory details for confirmation.",
+        "bbox": [
+          0.05,
+          0.17,
+          0.46,
+          0.47
+        ]
+      },
+      {
+        "id": "card_value_proposition_canvas",
+        "kind": "callout",
+        "text": "Value Proposition Canvas by Strategyzer An essential tool for developing products and services that meet the needs of your target audience. It helps you align your offerings with customer desires, ensuring that your innovations are both relevant and impactful.",
+        "role_tier": "2_5",
+        "role_tier_reason": "Bordered text card presenting a resource and explanatory details for confirmation.",
+        "bbox": [
+          0.47,
+          0.17,
+          0.88,
+          0.47
+        ]
+      },
+      {
+        "id": "card_amia_cibre",
+        "kind": "callout",
+        "text": "AMIA CIBRE The American Medical Informatics Association Clinical Informatics Board Review Exam is a valuable resource for those interested in the intersection of informatics and public health. It provides critical insights into how data and technology can be leveraged to improve health outcomes.",
+        "role_tier": "2_5",
+        "role_tier_reason": "Bordered text card presenting a resource and explanatory details for confirmation.",
+        "bbox": [
+          0.05,
+          0.5,
+          0.46,
+          0.8
+        ]
+      },
+      {
+        "id": "card_design_sprints",
+        "kind": "callout",
+        "text": "Design Sprints Pioneered by Google Ventures, offer a structured, time-constrained process for rapidly solving complex problems and testing new ideas. This method is particularly useful in public health for developing and iterating on solutions quickly and effectively.",
+        "role_tier": "2_5",
+        "role_tier_reason": "Bordered text card presenting a resource and explanatory details for confirmation.",
+        "bbox": [
+          0.47,
+          0.5,
+          0.88,
+          0.8
+        ]
+      },
+      {
+        "id": "summary_paragraph",
+        "kind": "callout",
+        "text": "In summary, these resources collectively provide a robust framework for integrating entrepreneurship, innovation, and technology into public health practices. What steps will you take to harness these resources and advance your career in public health?",
+        "role_tier": "2_5",
+        "role_tier_reason": "Bottom summary text synthesizes the resources and prompts the viewer.",
+        "bbox": [
+          0.06,
+          0.84,
+          0.9,
+          0.94
+        ]
+      }
+    ],
+    "extracted_text": "Resources for Entrepreneurship and Innovation Wharton Online Offers a comprehensive course on entrepreneurship that provides foundational knowledge and practical insights into starting and managing successful ventures. This course is particularly beneficial for those looking to integrate entrepreneurial strategies into public health initiatives. Value Proposition Canvas by Strategyzer An essential tool for developing products and services that meet the needs of your target audience. It helps you align your offerings with customer desires, ensuring that your innovations are both relevant and impactful. AMIA CIBRE The American Medical Informatics Association Clinical Informatics Board Review Exam is a valuable resource for those interested in the intersection of informatics and public health. It provides critical insights into how data and technology can be leveraged to improve health outcomes. Design Sprints Pioneered by Google Ventures, offer a structured, time-constrained process for rapidly solving complex problems and testing new ideas. This method is particularly useful in public health for developing and iterating on solutions quickly and effectively. In summary, these resources collectively provide a robust framework for integrating entrepreneurship, innovation, and technology into public health practices. What steps will you take to harness these resources and advance your career in public health?",
+    "layout_description": "A large dark-blue title sits across the upper left. Four bordered resource callout cards are arranged in a two-by-two grid, with a summary paragraph spanning the lower portion of the slide.",
+    "slide_title": "Resources for Entrepreneurship and Innovation",
+    "text_blocks": [
+      "Resources for Entrepreneurship and Innovation",
+      "Wharton Online Offers a comprehensive course on entrepreneurship that provides foundational knowledge and practical insights into starting and managing successful ventures. This course is particularly beneficial for those looking to integrate entrepreneurial strategies into public health initiatives.",
+      "Value Proposition Canvas by Strategyzer An essential tool for developing products and services that meet the needs of your target audience. It helps you align your offerings with customer desires, ensuring that your innovations are both relevant and impactful.",
+      "AMIA CIBRE The American Medical Informatics Association Clinical Informatics Board Review Exam is a valuable resource for those interested in the intersection of informatics and public health. It provides critical insights into how data and technology can be leveraged to improve health outcomes.",
+      "Design Sprints Pioneered by Google Ventures, offer a structured, time-constrained process for rapidly solving complex problems and testing new ideas. This method is particularly useful in public health for developing and iterating on solutions quickly and effectively.",
+      "In summary, these resources collectively provide a robust framework for integrating entrepreneurship, innovation, and technology into public health practices. What steps will you take to harness these resources and advance your career in public health?"
+    ],
+    "artifact_path": "",
+    "slide_id": "20_Resources-for-Entrepreneurship-and-Innovation",
+    "card_number": null,
+    "coverage": "perceived",
+    "confidence_score": 0.98,
+    "provider_model_id": "gpt-5.5",
+    "reading_path": null,
+    "macro_layout": null,
+    "image_roles": null,
+    "image_role_flags": null,
+    "text_substructure": null,
+    "narration_cadence": null,
+    "callout_intent": null,
+    "reading_path_flags": null,
+    "source_png_path": "C:\\Users\\juanl\\OneDrive\\Desktop\\z-2026-06-21\\20_Resources-for-Entrepreneurship-and-Innovation.png"
+  }
+}

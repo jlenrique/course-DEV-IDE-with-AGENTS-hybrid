@@ -1,0 +1,184 @@
+{
+  "provenance": {
+    "captured_at": "2026-06-23T04:03:42.344034+00:00",
+    "model_id": "gpt-5.5",
+    "source_png": "C:\\Users\\juanl\\OneDrive\\Desktop\\z-2026-06-21\\13_Effective-Problem-Solving-Approach.png",
+    "tool": "reading_path_holdout_rescan.py"
+  },
+  "perception_artifact": {
+    "confidence": "HIGH",
+    "visual_elements": [
+      {
+        "id": "title",
+        "kind": "title",
+        "text": "Effective Problem-Solving Approach",
+        "role_tier": "4",
+        "role_tier_reason": "large slide label at top",
+        "bbox": [
+          0.06,
+          0.08,
+          0.62,
+          0.14
+        ]
+      },
+      {
+        "id": "decor_bar_left",
+        "kind": "callout",
+        "text": "",
+        "role_tier": "1",
+        "role_tier_reason": "empty pale rounded divider above left column",
+        "bbox": [
+          0.06,
+          0.27,
+          0.33,
+          0.3
+        ]
+      },
+      {
+        "id": "left_heading",
+        "kind": "callout",
+        "text": "Determine the Best Solution",
+        "role_tier": "4",
+        "role_tier_reason": "column heading labeling the left text block",
+        "bbox": [
+          0.07,
+          0.33,
+          0.27,
+          0.4
+        ]
+      },
+      {
+        "id": "left_body",
+        "kind": "bullet",
+        "text": "First, we need to determine how we can solve this particular problem. It's crucial to evaluate which solution not only addresses the issue but also does so at an attractive cost. This involves assessing the cost-effectiveness and feasibility of potential solutions.",
+        "role_tier": "2_5",
+        "role_tier_reason": "main explanatory body text under a heading",
+        "bbox": [
+          0.07,
+          0.43,
+          0.31,
+          0.79
+        ]
+      },
+      {
+        "id": "decor_bar_middle",
+        "kind": "callout",
+        "text": "",
+        "role_tier": "1",
+        "role_tier_reason": "empty pale rounded divider above middle column",
+        "bbox": [
+          0.35,
+          0.23,
+          0.62,
+          0.26
+        ]
+      },
+      {
+        "id": "middle_heading",
+        "kind": "callout",
+        "text": "Explore Additional Benefits",
+        "role_tier": "4",
+        "role_tier_reason": "column heading labeling the middle text block",
+        "bbox": [
+          0.36,
+          0.29,
+          0.54,
+          0.36
+        ]
+      },
+      {
+        "id": "middle_body",
+        "kind": "bullet",
+        "text": "Next, consider what additional benefits or applications our solution might offer. This is about exploring the broader impact and potential uses of the solution beyond the immediate problem.",
+        "role_tier": "2_5",
+        "role_tier_reason": "main explanatory body text under a heading",
+        "bbox": [
+          0.36,
+          0.39,
+          0.58,
+          0.63
+        ]
+      },
+      {
+        "id": "decor_bar_right",
+        "kind": "callout",
+        "text": "",
+        "role_tier": "1",
+        "role_tier_reason": "empty pale rounded divider above right column",
+        "bbox": [
+          0.64,
+          0.19,
+          0.91,
+          0.22
+        ]
+      },
+      {
+        "id": "right_heading",
+        "kind": "callout",
+        "text": "Evaluate Against Alternatives",
+        "role_tier": "4",
+        "role_tier_reason": "column heading labeling the right text block",
+        "bbox": [
+          0.65,
+          0.25,
+          0.84,
+          0.32
+        ]
+      },
+      {
+        "id": "right_body",
+        "kind": "bullet",
+        "text": "Finally, we must critically assess whether our solution is indeed the best possible option. This involves comparing it against other alternatives and ensuring it meets all necessary criteria.",
+        "role_tier": "2_5",
+        "role_tier_reason": "main explanatory body text under a heading",
+        "bbox": [
+          0.65,
+          0.36,
+          0.91,
+          0.59
+        ]
+      },
+      {
+        "id": "bottom_summary",
+        "kind": "callout",
+        "text": "In summary, solving this problem involves finding a cost-effective solution, exploring additional applications, and ensuring it's the optimal choice. As we think about solutions, what motivates us and others to seize opportunities in public health?",
+        "role_tier": "2_5",
+        "role_tier_reason": "full-width concluding statement at bottom",
+        "bbox": [
+          0.06,
+          0.86,
+          0.88,
+          0.93
+        ]
+      }
+    ],
+    "extracted_text": "Effective Problem-Solving Approach Determine the Best Solution First, we need to determine how we can solve this particular problem. It's crucial to evaluate which solution not only addresses the issue but also does so at an attractive cost. This involves assessing the cost-effectiveness and feasibility of potential solutions. Explore Additional Benefits Next, consider what additional benefits or applications our solution might offer. This is about exploring the broader impact and potential uses of the solution beyond the immediate problem. Evaluate Against Alternatives Finally, we must critically assess whether our solution is indeed the best possible option. This involves comparing it against other alternatives and ensuring it meets all necessary criteria. In summary, solving this problem involves finding a cost-effective solution, exploring additional applications, and ensuring it's the optimal choice. As we think about solutions, what motivates us and others to seize opportunities in public health?",
+    "layout_description": "A large dark-blue title sits near the upper left on a white background. Three evenly spaced text columns occupy the middle of the slide with pale rounded horizontal bars above them, and a single summary sentence spans near the bottom.",
+    "slide_title": "Effective Problem-Solving Approach",
+    "text_blocks": [
+      "Effective Problem-Solving Approach",
+      "Determine the Best Solution",
+      "First, we need to determine how we can solve this particular problem. It's crucial to evaluate which solution not only addresses the issue but also does so at an attractive cost. This involves assessing the cost-effectiveness and feasibility of potential solutions.",
+      "Explore Additional Benefits",
+      "Next, consider what additional benefits or applications our solution might offer. This is about exploring the broader impact and potential uses of the solution beyond the immediate problem.",
+      "Evaluate Against Alternatives",
+      "Finally, we must critically assess whether our solution is indeed the best possible option. This involves comparing it against other alternatives and ensuring it meets all necessary criteria.",
+      "In summary, solving this problem involves finding a cost-effective solution, exploring additional applications, and ensuring it's the optimal choice. As we think about solutions, what motivates us and others to seize opportunities in public health?"
+    ],
+    "artifact_path": "",
+    "slide_id": "13_Effective-Problem-Solving-Approach",
+    "card_number": null,
+    "coverage": "perceived",
+    "confidence_score": 0.98,
+    "provider_model_id": "gpt-5.5",
+    "reading_path": null,
+    "macro_layout": null,
+    "image_roles": null,
+    "image_role_flags": null,
+    "text_substructure": null,
+    "narration_cadence": null,
+    "callout_intent": null,
+    "reading_path_flags": null,
+    "source_png_path": "C:\\Users\\juanl\\OneDrive\\Desktop\\z-2026-06-21\\13_Effective-Problem-Solving-Approach.png"
+  }
+}
