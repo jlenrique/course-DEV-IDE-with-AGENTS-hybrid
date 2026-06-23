@@ -69,5 +69,48 @@ One story, three coordinated work items (A geometry, B image-role dominant + tie
 
 **Governance:** party-mode green-light THIS scope before Codex opens (per goal). Codex T1–T10; Claude T11 (battery + bmad-code-review + re-measure). Contingent leg 1d (further macro/image lift) folds into the same cycle if the first pass still falls short.
 
+## 4.5. Party-mode green-light disposition (2026-06-23) — GREEN-WITH-AMENDMENTS
+
+Roundtable: Winston (architect), John (PM), Murat (test architect), Mary (analyst), Amelia (dev). **Verdict: unanimous GREEN-WITH-AMENDMENTS** (no BLOCK, no impasse → Quinn→John chain not triggered). Binding amendments, consolidated:
+
+### A. Scope & shape — keep ONE dual-gate NEW CYCLE story
+- 3 coordinated work items, **declared hard order A → B → C** (geometry is isolable and feeds nothing downstream; escalation C must be wired AFTER B's tiering is corrected, else re-opened). NOT split — the acceptance metric is a joint function of all three; splitting adds an integration seam without reducing reviewability.
+- **Three instrumented internal seams**: post-A geometry-only macro number, post-B image_role number, post-C escalation-rate number — recorded in Completion Notes BEFORE the joint re-run, plus a **per-axis before/after delta table** in T11 (attribution without re-running the arc).
+
+### B. The bar — TIERED, pre-registered behind a veil of ignorance (n=14 quantizes at 1/14 ≈ 0.071)
+- **SUCCESS bar (clean close, autonomous):** primary-key ≥0.857 (12/14) AND full-tuple ≥0.80 AND escalation ∈(0%,20%] AND per-axis floors **macro ≥0.85 + image_role ≥0.70** (all simultaneous, no trading — Murat) AND default ≤25% AND tripwires green.
+- **CONDITIONAL-PASS tier [0.70,0.85) primary-key WITH macro+image_role demonstrably fixed** → ratify the measured floor, decide close-at-bar vs one-more-cycle. **⚠️ This sub-0.85 tier is an OPERATOR-GATED governance decision** (goal stop-condition: "accepting a conformance bar below 0.85") — pre-registration requires operator sign-off; NOT taken autonomously.
+- **FAIL:** <0.70 primary-key OR a known-broken axis still broken → re-dispatch (no impasse-chain theater; "axis X didn't move, here's why, go again").
+- Bar stated in **slide-counts**, not deceptively-precise decimals; **CI caveat recorded** (Murat: at 12/14 the Wilson interval ≈ [0.60,0.96] — a *directional* pass, not a precision claim).
+
+### C. Overfit fences (the consumed-14 is now a DEV set the dev can see — binding)
+- **A1 blind-tuning / no-peeking:** dev tunes against AGGREGATE axis numbers, NOT per-slide gold; the final per-slide conformance score is computed ONCE by an independent party (Claude T11), first-run-stands.
+- **A2 per-axis floors (above) + perturbation guard:** re-perceive 3–4 slides a 2nd time under the same role_tier and/or reorder element lists → emitted tuple must be STABLE (catches knobs fit to surface noise).
+- **A3 logic-only audit:** NO `if slide_id == …`, no gold-keyed lookup tables, no counts tuned to 14; every fix must articulate a generalizable RULE (fix the mechanism, not the symptom on slide N).
+- **C1 gold content-hash** recorded in story §0, re-verified at T11 (immutability enforced, not promised).
+- **C2 classifier-logic-only diff fence:** the fix must not touch the perception layer, the gold, or the scoring harness denominator. T11 inspects the diff surface.
+- **C3 provenance label on every number:** `(built-classifier, frozen-fresh-14, gold-known-to-dev)` — never bare (direct H1/H2/H3 + H4 remediation).
+
+### D. T1 PRECONDITIONS (resolve before any tuning)
+- **Escalation-ledger wiring is a PRECONDITION, not a tripwire** (Murat): if the re-run still reads the scaffold ceiling rather than the real ledger, the escalation number is meaningless and the leg is invalid. Fix the wiring first.
+- **Dominant-image-role ground truth** (Murat + Winston): does the frozen gold encode an authoritative slide-level dominant role? **If YES** → promote the rule OUT of the analysis scaffold (`_dominant_image_role`) INTO `reading_path_classifier.py` substrate as an emitted field, **delete the scaffold** (no shadow second path), and fold the decorative-vs-illustrative rubric INTO that emission (Winston: the naive max-load-bearing fold is likely itself part of the 21% defect). **If NO** → the image_role fold is partly unmeasurable; mark it NOT-MEASURED rather than score against a scaffold, and adjust the floor. T1 must answer this yes/no before tuning.
+
+### E. Governance & evidence
+- **Consumed-reserve note RATIFIED** (4/5 + Amelia pending): labeling the 14 consumed their naivety → they are now a **consumed/non-naive DEV set**; any score on them is a **resubstitution (upper-bound) estimate**, labeled consumed/non-naive wherever cited. This cycle closes P2-4b **CONFORMANCE** (logic fixed + measured on the dev set), **NOT generalization / trial-readiness.**
+- **Tier-2 gate — FRESH naive holdout REQUIRED before any "ready for trial" claim** (John + Mary binding; **Mary plants a firm dissent against claiming trial-ready off the consumed-14**): operator labels ≥12–15 NEW slides, strictly naive (no confirm/deny exposure, no dev sight of gold until after scoring, first-run-stands), scored in a SEPARATE gate. Filed to deferred-inventory now (see below).
+- **Per-slide gold-ambiguity audit** recorded as evidence (Winston, no re-label) to keep the honest-partial tier defensible.
+- **Harvest anti-pattern H4 "inherited green"** (Mary): a passing number adopted from an adjacent artifact without re-deriving it on the artifact under test (the 0.93 belonged to the catalog-approach; it was transferred onto the built classifier because both said "escalation"). Guard: a conformance number is valid only for the exact artifact that produced it; run the artifact-under-test on fresh substrate before believing any number about it. → `docs/trials/cross-trial-learnings.md`, cross-ref H1/H2/H3.
+
+### F. Amelia (dev) additions + orchestrator resolutions of two divergences
+- **RED-first test scaffolding (binding, Amelia):** three per-axis fixtures (macro-only, image_role-only, escalation-only) extracted from the 14 frozen perceptions, authored RED before logic; the full 14-slide harness as the integration gate after each axis; **a pinned S1/S2/S3 regression snapshot** — capture what the current predicate/geometry emit on the existing green-test slides and assert the INTENDED deltas explicitly (a rewrite that passes the new bar but silently flips an S3-green slide is a T11 reject). Tripwires wired as harness assertions, not eyeballed.
+- **Divergence 1 — sequencing (RESOLVED by synthesis, no impasse):** Winston/John = A→B→C (escalation last; its disagreement-trigger depends on A/B being trustworthy); Amelia = C→A→B (escalation first as an orthogonal cheap confidence anchor). **Resolution:** **A → B → C**, BUT split C: the **orthogonal `callout_kind_present` predicate-narrowing may land early** as Amelia's confidence anchor (it doesn't depend on A/B), while the **ceiling-wiring-to-real-ledger + the geometry/role-disagreement escalation trigger land last**, after A/B are corrected. Image_role tiering + the authoritative-dominant fold is the genuinely-hard last sub-step of B (the fold consumes tier output). All five agree the coupled pair (A macro + B image_role) sequences with the **fold LAST**.
+- **Divergence 2 — fallback bar level (OPERATOR-GATED; spread recorded, NOT resolved autonomously):** Amelia 8/14 (0.57) + macro≥0.78 + image_role≥0.50; Winston 9/14 (0.643) + per-axis movement; John "axes-fixed" (macro≥0.80, image_role≥0.70) as the pass-bar; Murat accepts the 0.85 gate but with simultaneous per-axis floors (macro≥0.85, image_role≥0.70). **Amelia files a NAMED DISSENT against any 0.85-hard-or-FAIL framing** (on n=14 it pressures discriminator-overfitting). Since accepting any sub-0.85 bar is operator-gated (goal stop-condition), the exact fallback level is presented to the operator with this spread.
+
+### T1 precondition — RESOLVED (read-only check, 2026-06-23)
+**Does the frozen gold encode an authoritative per-slide dominant image_role?** → **YES** (the gold row carries an `image_role` field, e.g. `1`). The classifier currently emits only per-element `image_roles` + `image_role_flags` (NO slide-level dominant); the dominant is synthesized by the analysis-script scaffold `_dominant_image_role`. → **Item B is NOT blocked** (ground truth exists). The work = promote an authoritative slide-level `dominant_image_role` emission into `reading_path_classifier.py` substrate (deterministic, area/geometry-weighted, co-located with per-element role_tier so it's auditable + re-derivable without re-perception), delete the scaffold, fold the decorative-vs-illustrative rubric INTO that emission.
+
+### Operator-gated item (surfaced at wrap-up, NOT decided autonomously)
+Pre-registering the **sub-0.85 conditional-pass tier** = "accepting a conformance bar below 0.85" per the goal's stop conditions → requires operator sign-off. The Codex handoff is authored at the **≥0.857 (12/14) success bar + per-axis floors (macro≥0.85, image_role≥0.70) + all overfit fences**; the conditional-pass tier + its level (the spread above) is presented to the operator as a single decision at wrap-up. Default if the operator does not pre-register a fallback: hard ≥0.857 gate, with Amelia's dissent on record.
+
 ## 5. Authority chain
 `spec-p2-4b-conformance-finalize.md` §4 → this measurement+diagnosis → (party green-light) → Codex dev prompt → Claude T11 re-measure → P2-4b PASS/FAIL verdict → P2 epic close.
