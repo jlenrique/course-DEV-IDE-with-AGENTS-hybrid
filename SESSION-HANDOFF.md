@@ -1,4 +1,21 @@
-# Session Handoff — 2026-06-23 (`/goal` v8 — P2-4b: FIRST honest built-classifier measurement on fresh substrate (0.071 FAIL) → recalibration party-green-lit (5/5) → Codex handoff authored; STOP at Codex-ingestion boundary)
+# Session Handoff — 2026-06-23 (`/goal` v8 LATER — SHIP PIVOT: reading-path → LLM-FIRST; geometry recalibration FILED AWAY; pre-flight GREEN; trial next)
+
+**Final class:** P (decision/measurement/planning; no production substrate adopted on the arc branch — Codex's geometry delivery was FILED to a reference branch, not merged). **Branch:** `fidelity-perception-arc-2026-06-19`, HEAD `41a84e6`, origin in sync.
+
+## The pivot (operator-ratified, supersedes the geometry-recalibration scope below)
+The honest measurement (0.071, recorded below) + per-slide diagnosis showed deterministic geometry is **5/5 on `split_image_text` (spatial) but 0/6 on the `multi_column`/`card_grid`/`two_pane` family (semantic)** — a likely **capability ceiling**, not a tuning gap; the frontier-LLM catalog approach already hit **0.93**. **Operator decision: ship now at high quality — make the frontier LLM (gpt-5.5) the PRIMARY reading-path producer; geometry demoted to a cheap cross-check; safe-degrade so reading-path never hard-blocks a run; defer the cost-hybrid to scale-up.**
+
+## What changed this turn
+1. **Codex DELIVERED the (now-superseded) geometry recalibration** — reported 14/14 = 1.000 on the consumed dev-set, which is the **overfit signature** the party (Murat) warned about (visible gold + free knobs = memorization). **FILED AWAY** on `reference/codex-p2-4b-geometry-recal-2026-06-23` (pushed; overfit caveat in the commit). NOT adopted on the arc branch. Reusable bit: the authoritative `dominant_image_role` field + schema.
+2. **Production pre-flight GREEN: 9 ready / 0 failed** — Gamma/Canvas/Notion/ElevenLabs(45 voices)/Qualtrics/Wondercraft/Kling/Descript/Box all live. Tool layer is production-ready.
+3. **LLM-first Codex dispatch prompt authored** (`codex-dev-prompt-reading-path-llm-primary.md`, supersedes the geometry prompt) + redirect record (`reading-path-llm-primary-redirect-2026-06-23.md`).
+
+## What is next (the agreed flow)
+**Codex builds LLM-first → Claude T11 (re-measure 14 [expect ~0.85–0.93] + production-completion smoke + lightweight code-review + commit/flip) → LAUNCH the first production trial on the frozen corpus `tejal-apc-c1-m1-p2-trends` → fix-on-the-fly, repeat cycles until 100% done.** Trial command + watch-list pre-staged in `next-session-start-here.md`. Cleanup-arc fixes Claude-direct; substrate NEW CYCLE. Honesty discipline stands (no mocks; live gpt-5.5; every number subject/substrate-tagged; H1–H4). Deferred-not-lost: `reading-path-fresh-naive-holdout-pre-trial`; the abstaining-geometry cost-hybrid at scale-up.
+
+---
+
+# Session Handoff — 2026-06-23 (`/goal` v8 — P2-4b: FIRST honest built-classifier measurement on fresh substrate (0.071 FAIL) → recalibration party-green-lit (5/5) → Codex handoff authored; STOP at Codex-ingestion boundary) [SUPERSEDED by the SHIP PIVOT above]
 
 **Final class:** P (planning/measurement: ran the honest measurement via read-only analysis tooling; authored diagnosis/spec/Codex-prompt + party green-light; NO production classifier/runtime/schema/manifest/test edits — the only code added is `scripts/analysis/reading_path_p2_4b_measure_fresh.py`, a leg-3 measurement harness). **Branch:** `fidelity-perception-arc-2026-06-19`. **HEAD pushed; origin in sync.** Master-merge SKIPPED (scoped arc branch).
 
