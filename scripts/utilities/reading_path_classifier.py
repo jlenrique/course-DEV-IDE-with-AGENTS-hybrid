@@ -2,12 +2,19 @@
 
 from __future__ import annotations
 
+import json
 import re
 from collections import Counter
 from dataclasses import dataclass
+from pathlib import Path
 from typing import Any
 
+from langchain_core.messages import HumanMessage, SystemMessage
+from pydantic import BaseModel, ConfigDict, Field, ValidationError, field_validator
+
+from app.models.adapter import make_chat_model
 from app.models.perception.perception_artifact import (
+    CalloutIntent,
     ImageRoleFlag,
     ImageRoleTier,
     MacroLayout,
@@ -15,9 +22,22 @@ from app.models.perception.perception_artifact import (
     PerceptionArtifact,
     ReadingPath,
     ReadingPathFlag,
+    ReadingPathSource,
     TextSubstructure,
 )
 from scripts.utilities.reading_path_derivation import derive_primary_name
+
+REPO_ROOT = Path(__file__).resolve().parents[2]
+CATALOG_PATH = (
+    REPO_ROOT
+    / "_bmad-output"
+    / "implementation-artifacts"
+    / "reading-path-patterns-catalog.md"
+)
+LLM_PRIMARY_MODEL_ID = "gpt-5.5"
+LLM_PRIMARY_SPECIALIST_ID = "vision"
+LLM_PRIMARY_TIMEOUT_SECONDS = 60.0
+LLM_PRIMARY_ATTEMPTS = 2
 
 READING_PATH_PATTERNS: tuple[str, ...] = (
     "z_pattern",
@@ -144,6 +164,30 @@ _ORDINAL_RE = re.compile(
 
 class ReadingPathClassificationError(ValueError):
     """Raised when a perceived artifact cannot be deterministically classified."""
+
+
+class ReadingPathLLMPrimaryError(ValueError):
+    """Raised when the live LLM-primary tuple cannot be parsed."""
+
+
+class _LLMPrimaryTuple(BaseModel):
+    """Strict response shape for the live LLM-primary reading-path classifier."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    macro_layout: MacroLayout
+    image_role: ImageRoleTier | None = None
+    text_substructure: TextSubstructure
+    narration_cadence: NarrationCadence
+    callout_intent: CalloutIntent | None = None
+    rationale: dict[str, str] = Field(default_factory=dict)
+
+    @field_validator("callout_intent", mode="before")
+    @classmethod
+    def _default_callout_to_none(cls, value: object) -> object:
+        if value in ("inform", "none", "null", ""):
+            return None
+        return value
 
 
 @dataclass(frozen=True)
@@ -326,6 +370,292 @@ def with_classified_reading_path(artifact: PerceptionArtifact) -> PerceptionArti
             "reading_path_flags": classified.reading_path_flags,
         }
     )
+
+
+def with_llm_primary_reading_path(artifact: PerceptionArtifact) -> PerceptionArtifact:
+    """Populate the authoritative reading-path tuple from one live frontier LLM call.
+
+    Deterministic geometry is retained only as cross-check telemetry. Transport
+    and parse failures safe-degrade to the plain top_down tuple instead of
+    blocking a production run.
+    """
+    if artifact.coverage != "perceived" or artifact.confidence != "HIGH":
+        return artifact
+
+    geometry_artifact, geometry = _geometry_cross_check(artifact)
+    for attempt in range(1, LLM_PRIMARY_ATTEMPTS + 1):
+        try:
+            result = request_live_reading_path_tuple(geometry_artifact)
+            return _apply_llm_primary_tuple(
+                geometry_artifact,
+                result,
+                source="llm_primary",
+                degraded=False,
+                geometry=geometry,
+            )
+        except Exception as exc:  # noqa: BLE001 - safe-degrade is intentional.
+            if attempt >= LLM_PRIMARY_ATTEMPTS:
+                return _safe_default_reading_path(
+                    geometry_artifact,
+                    geometry=geometry,
+                    reason=str(exc),
+                )
+    return _safe_default_reading_path(
+        geometry_artifact,
+        geometry=geometry,
+        reason="reading-path LLM-primary retry loop exhausted",
+    )
+
+
+def request_live_reading_path_tuple(
+    artifact: PerceptionArtifact,
+    *,
+    model_id: str = LLM_PRIMARY_MODEL_ID,
+    timeout_seconds: float = LLM_PRIMARY_TIMEOUT_SECONDS,
+) -> _LLMPrimaryTuple:
+    """Make the single live gpt-5.5 reading-path tuple classification call."""
+    messages = [
+        SystemMessage(
+            content=(
+                "You are the authoritative reading-path classifier for narrated "
+                "slide production. Use the catalog definitions exactly. Return "
+                "only JSON matching the requested schema."
+            )
+        ),
+        HumanMessage(content=_llm_primary_prompt(artifact)),
+    ]
+    handle = make_chat_model(
+        LLM_PRIMARY_SPECIALIST_ID,
+        per_call_override=model_id,
+        temperature=0.0,
+    )
+    response = handle.chat.bind(timeout=timeout_seconds).invoke(messages)
+    return parse_live_reading_path_tuple(_decode_content(response))
+
+
+def parse_live_reading_path_tuple(raw: str) -> _LLMPrimaryTuple:
+    """Parse the strict LLM-primary JSON tuple response."""
+    try:
+        payload = json.loads(_strip_json(raw))
+    except ValueError as exc:
+        raise ReadingPathLLMPrimaryError(f"reading-path LLM returned non-JSON: {exc}") from exc
+    try:
+        return _LLMPrimaryTuple.model_validate(payload)
+    except ValidationError as exc:
+        raise ReadingPathLLMPrimaryError(
+            f"reading-path LLM tuple failed validation: {exc}"
+        ) from exc
+
+
+def _geometry_cross_check(
+    artifact: PerceptionArtifact,
+) -> tuple[PerceptionArtifact, dict[str, Any]]:
+    try:
+        geometry_artifact = with_classified_reading_path(artifact)
+    except ReadingPathClassificationError as exc:
+        return artifact, {"error": str(exc)}
+    return geometry_artifact, {
+        "reading_path": geometry_artifact.reading_path,
+        "macro_layout": geometry_artifact.macro_layout,
+        "image_roles": geometry_artifact.image_roles,
+        "image_role_flags": geometry_artifact.image_role_flags,
+        "text_substructure": geometry_artifact.text_substructure,
+        "narration_cadence": geometry_artifact.narration_cadence,
+        "callout_intent": geometry_artifact.callout_intent,
+        "reading_path_flags": geometry_artifact.reading_path_flags,
+    }
+
+
+def _apply_llm_primary_tuple(
+    artifact: PerceptionArtifact,
+    result: _LLMPrimaryTuple,
+    *,
+    source: ReadingPathSource,
+    degraded: bool,
+    geometry: dict[str, Any],
+) -> PerceptionArtifact:
+    dominant_image_role = result.image_role or _dominant_image_role_from_largest_image(artifact)
+    dominant_image_role = _apply_decorative_image_boundary(
+        artifact,
+        dominant_image_role,
+    )
+    return artifact.model_copy(
+        update={
+            "reading_path": derive_primary_name(
+                result.macro_layout,
+                result.text_substructure,
+            ),
+            "macro_layout": result.macro_layout,
+            "dominant_image_role": dominant_image_role,
+            "text_substructure": result.text_substructure,
+            "narration_cadence": result.narration_cadence,
+            "callout_intent": result.callout_intent,
+            "reading_path_source": source,
+            "reading_path_degraded": degraded,
+            "reading_path_rationale": result.rationale or None,
+            "reading_path_geometry": geometry,
+        }
+    )
+
+
+def _dominant_image_role_from_largest_image(
+    artifact: PerceptionArtifact,
+) -> ImageRoleTier | None:
+    elements = _elements(artifact)
+    image_elements = _image_like_elements(elements)
+    if not image_elements:
+        return None
+    largest = max(image_elements, key=lambda element: element.area)
+    return _image_role(largest, elements)
+
+
+def _apply_decorative_image_boundary(
+    artifact: PerceptionArtifact,
+    dominant_image_role: ImageRoleTier | None,
+) -> ImageRoleTier | None:
+    if dominant_image_role not in {"2", "2_5"}:
+        return dominant_image_role
+    elements = _elements(artifact)
+    image_elements = _image_like_elements(elements)
+    if not image_elements:
+        return dominant_image_role
+    largest = max(image_elements, key=lambda element: element.area)
+    if _is_plain_unreferenced_mood_image(largest, elements):
+        return "1"
+    return dominant_image_role
+
+
+def _image_like_elements(elements: list[_Element]) -> list[_Element]:
+    return [element for element in elements if _is_image_like(element)]
+
+
+def _is_plain_unreferenced_mood_image(
+    element: _Element,
+    elements: list[_Element],
+) -> bool:
+    if _is_chart_or_table(element) or _is_diagram(element) or _is_small_icon_or_logo(element):
+        return False
+    if not _is_photo_or_illustration(element):
+        return False
+    if _internal_label_count(element, elements) > 0:
+        return False
+    return not _has_caption(element, elements)
+
+
+def _safe_default_reading_path(
+    artifact: PerceptionArtifact,
+    *,
+    geometry: dict[str, Any],
+    reason: str,
+) -> PerceptionArtifact:
+    result = _LLMPrimaryTuple(
+        macro_layout="single_text_block",
+        image_role=None,
+        text_substructure="dense_exposition",
+        narration_cadence="moderate",
+        callout_intent=None,
+        rationale={"degraded": reason},
+    )
+    return _apply_llm_primary_tuple(
+        artifact,
+        result,
+        source="safe_default",
+        degraded=True,
+        geometry=geometry,
+    )
+
+
+def _llm_primary_prompt(artifact: PerceptionArtifact) -> str:
+    return (
+        "Classify this perceived slide into the reading-path catalog v1.1 tuple.\n\n"
+        "Return EXACTLY this JSON object, with no markdown fences and no prose:\n"
+        "{\n"
+        '  "macro_layout": "split_image_text|text_hero_divider|multi_column|two_pane|'
+        'card_grid|center_out|diagram_driven|single_text_block",\n'
+        '  "image_role": "1|2|2_5|3|4" or null,\n'
+        '  "text_substructure": "enumerated_process|peer_boxes|comparison_pair|'
+        'dense_exposition|hero_message",\n'
+        '  "narration_cadence": "sparse_slow|moderate|dense",\n'
+        '  "callout_intent": "invite_response|challenge_quiz|directive_cta" or null,\n'
+        '  "rationale": {\n'
+        '    "macro_layout": "short reason",\n'
+        '    "image_role": "short reason",\n'
+        '    "text_substructure": "short reason",\n'
+        '    "narration_cadence": "short reason",\n'
+        '    "callout_intent": "short reason"\n'
+        "  }\n"
+        "}\n\n"
+        "Rules:\n"
+        "- Use null for ordinary inform/no-op callout intent.\n"
+        "- Do not emit takeaway_imperative or contact; map real CTAs to directive_cta.\n"
+        "- image_role is the slide-level dominant role, not a per-element list.\n"
+        "- Tier 1 image_role means DECORATIVE or evocative: the image sets tone, "
+        "mood, or theme. A rich, prominent, full-bleed photo or illustration is "
+        "still tier 1 when it has no internal labels/text, is not a technical or "
+        "instructional graphic, and the slide text does not reference it as "
+        "content. The narrator should give a tier 1 image no comment.\n"
+        "- Tier 2 image_role means ILLUSTRATIVE: the image carries content the "
+        "narration may reference because it depicts a specific thing the slide "
+        "text or claim points at, but it is not a technical/instructional "
+        "diagram needing a walk-through. Do not promote a mood/subject photo to "
+        "tier 2 just because it is large. Return tier 2 only when the slide text "
+        "explicitly depends on what the image depicts, names it, compares against "
+        "it, or the image contains visible content that substantiates the claim. "
+        "If uncertain between tier 1 and tier 2, choose tier 1.\n"
+        "- Tier 3 image_role means INSTRUCTIONAL: a diagram, canvas, chart, or "
+        "framework with internal structure the narrator must walk through.\n"
+        "- Tier 4 image_role means POINTER/iconographic: small icons that type "
+        "or label a message unit; do not narrate them as images.\n"
+        "- When at least one image element exists, do not return null for "
+        "image_role; choose the dominant image tier.\n"
+        "- Do not use slide_id memorization; reason from the visible artifact and catalog.\n\n"
+        f"Catalog context:\n{_catalog_context()}\n\n"
+        f"PerceptionArtifact JSON:\n{artifact.model_dump_json()}\n"
+    )
+
+
+def _catalog_context() -> str:
+    text = CATALOG_PATH.read_text(encoding="utf-8")
+    start = text.find("## 2. THE COMPOSITIONAL TUPLE")
+    end = text.find("## 8. BUILD DIRECTIVE")
+    if start == -1 or end == -1 or end <= start:
+        return text[:12000]
+    decision_start = text.find("## 11. HELD-OUT CONFIRM/DENY")
+    decision_text = text[decision_start:] if decision_start != -1 else ""
+    return f"{text[start:end].strip()}\n\n{decision_text[:6000].strip()}"
+
+
+def _decode_content(response: object) -> str:
+    content = getattr(response, "content", response)
+    if isinstance(content, str):
+        return content
+    if isinstance(content, list):
+        parts: list[str] = []
+        for block in content:
+            if isinstance(block, str):
+                parts.append(block)
+            elif isinstance(block, dict):
+                value = block.get("text") or block.get("content")
+                if isinstance(value, str):
+                    parts.append(value)
+        return "".join(parts)
+    return str(content)
+
+
+def _strip_json(raw: str) -> str:
+    stripped = raw.strip()
+    if "```" in stripped:
+        fence = "```json" if "```json" in stripped else "```"
+        start = stripped.find(fence) + len(fence)
+        end = stripped.find("```", start)
+        if end > start:
+            stripped = stripped[start:end].strip()
+    if not stripped.startswith("{"):
+        first = stripped.find("{")
+        last = stripped.rfind("}")
+        if first != -1 and last > first:
+            stripped = stripped[first : last + 1]
+    return stripped
 
 
 def _elements(artifact: PerceptionArtifact) -> list[_Element]:
@@ -556,6 +886,14 @@ def _is_diagram(element: _Element) -> bool:
 
 def _is_photo(element: _Element) -> bool:
     return any(token in element.kind.lower() for token in ("photo", "image", "visual"))
+
+
+def _is_photo_or_illustration(element: _Element) -> bool:
+    content = f"{element.kind} {element.text}".lower()
+    return any(
+        token in content
+        for token in ("photo", "photograph", "image", "illustration", "picture")
+    )
 
 
 def _edge_bleed(element: _Element) -> bool:
@@ -812,6 +1150,23 @@ def _is_visual(element: _Element) -> bool:
     return any(
         token in element.kind.lower()
         for token in ("image", "visual", "photo", "diagram", "chart", "graphic")
+    )
+
+
+def _is_image_like(element: _Element) -> bool:
+    return any(
+        token in (element.kind + " " + element.text).lower()
+        for token in (
+            "image",
+            "visual",
+            "photo",
+            "illustration",
+            "picture",
+            "graphic",
+            "diagram",
+            "chart",
+            "figure",
+        )
     )
 
 

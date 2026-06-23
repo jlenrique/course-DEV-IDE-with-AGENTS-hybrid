@@ -15,6 +15,7 @@ from app.models.perception.perception_artifact import (
     PerceptionArtifact,
     ReadingPath,
     ReadingPathFlag,
+    ReadingPathSource,
     TextSubstructure,
 )
 
@@ -41,6 +42,11 @@ def _valid_payload() -> dict[str, object]:
         "narration_cadence": "dense",
         "callout_intent": None,
         "reading_path_flags": None,
+        "dominant_image_role": None,
+        "reading_path_source": "llm_primary",
+        "reading_path_degraded": False,
+        "reading_path_rationale": {"macro_layout": "plain text"},
+        "reading_path_geometry": {"macro_layout": "single_text_block"},
         "visual_elements": [{"kind": "callout", "text": "$4.5T"}],
         "extracted_text": "$4.5T spend. Building photo.",
     }
@@ -86,6 +92,8 @@ def test_emitted_schema_matches_live_schema_for_public_fields(
         ("callout_intent", "takeaway_imperative"),
         ("reading_path_flags", ["comparison_pair"]),
         ("image_role_flags", ["tier_3_scored"]),
+        ("dominant_image_role", "2.5"),
+        ("reading_path_source", "mock"),
     ],
 )
 def test_closed_enums_reject_bad_values(field: str, bad_value: str) -> None:
@@ -119,6 +127,7 @@ def test_reading_path_literal_rejects_out_of_vocab() -> None:
         (NarrationCadence, "fast"),
         (CalloutIntent, "takeaway_imperative"),
         (ReadingPathFlag, "comparison_pair"),
+        (ReadingPathSource, "mock"),
     ],
 )
 def test_tuple_axis_literals_reject_out_of_vocab(
@@ -189,6 +198,16 @@ def test_tuple_axis_schema_enums_are_public_and_closed(
         for branch in properties["callout_intent"]["anyOf"]
         if branch.get("type") == "string"
     )
+    dominant = next(
+        branch
+        for branch in properties["dominant_image_role"]["anyOf"]
+        if branch.get("type") == "string"
+    )
+    source = next(
+        branch
+        for branch in properties["reading_path_source"]["anyOf"]
+        if branch.get("type") == "string"
+    )
 
     assert macro["enum"] == [
         "split_image_text",
@@ -202,6 +221,7 @@ def test_tuple_axis_schema_enums_are_public_and_closed(
     ]
     assert image_role_tier["enum"] == ["1", "2", "2_5", "3", "4"]
     assert image_role_null == {"type": "null"}
+    assert dominant["enum"] == ["1", "2", "2_5", "3", "4"]
     assert text["enum"] == [
         "enumerated_process",
         "peer_boxes",
@@ -211,6 +231,7 @@ def test_tuple_axis_schema_enums_are_public_and_closed(
     ]
     assert cadence["enum"] == ["sparse_slow", "moderate", "dense"]
     assert callout["enum"] == ["invite_response", "challenge_quiz", "directive_cta"]
+    assert source["enum"] == ["deterministic", "llm_primary", "safe_default"]
 
 
 def test_reading_path_flags_schema_enum_is_public_and_closed(

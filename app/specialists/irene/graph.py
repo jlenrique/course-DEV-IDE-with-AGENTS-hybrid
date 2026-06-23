@@ -398,9 +398,10 @@ def _assert_narration_joins_roster(
 def _assert_reading_path_conformance(
     parsed: dict[str, Any], roster: list[dict[str, Any]]
 ) -> None:
-    """Verify visual references follow each slide's classified scan order."""
+    """Record, but do not hard-block on, classified scan-order drift."""
     by_slide = {entry["slide_id"]: entry for entry in roster}
     last_seen_by_slide: dict[str, int] = {}
+    warnings: list[dict[str, Any]] = []
     for delta in parsed.get("segment_manifest_deltas") or []:
         if not isinstance(delta, dict):
             continue
@@ -414,10 +415,14 @@ def _assert_reading_path_conformance(
             pattern = entry.get("reading_path")
             order = entry.get("reading_path_order") or []
             if not pattern or not order:
-                raise Pass2ReadingPathError(
-                    f"slide {slide_id} is referenced but missing reading_path",
-                    tag="irene.pass2.reading-path-missing",
+                warnings.append(
+                    {
+                        "tag": "irene.pass2.reading-path-missing",
+                        "slide_id": slide_id,
+                        "message": f"slide {slide_id} is referenced but missing reading_path",
+                    }
                 )
+                continue
             element_key = _visual_reference_key(ref)
             if not element_key:
                 continue
@@ -428,13 +433,24 @@ def _assert_reading_path_conformance(
             current = index_by_key[normalized]
             previous = last_seen_by_slide.get(slide_id, -1)
             if current < previous:
-                raise Pass2ReadingPathError(
-                    "Pass-2 narration visual reference order violates "
-                    f"{pattern} for {slide_id}: {element_key!r} appears after "
-                    f"scan index {previous}",
-                    tag="irene.pass2.reading-path-order-failed",
+                warnings.append(
+                    {
+                        "tag": "irene.pass2.reading-path-order-failed",
+                        "slide_id": slide_id,
+                        "reading_path": pattern,
+                        "element_key": element_key,
+                        "previous_scan_index": previous,
+                        "message": (
+                            "Pass-2 narration visual reference order violates "
+                            f"{pattern} for {slide_id}: {element_key!r} appears after "
+                            f"scan index {previous}"
+                        ),
+                    }
                 )
+                continue
             last_seen_by_slide[slide_id] = current
+    if warnings:
+        parsed["reading_path_conformance_warnings"] = warnings
 
 
 def _visual_reference_key(ref: dict[str, Any]) -> str:

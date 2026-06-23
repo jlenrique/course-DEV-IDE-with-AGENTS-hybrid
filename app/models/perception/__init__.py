@@ -12,6 +12,7 @@ from app.models.perception.perception_artifact import (
     PerceptionProvenance,
     ReadingPath,
     ReadingPathFlag,
+    ReadingPathSource,
     RoleTier,
     TextSubstructure,
 )
@@ -28,6 +29,7 @@ __all__ = [
     "PerceptionProvenance",
     "ReadingPath",
     "ReadingPathFlag",
+    "ReadingPathSource",
     "RoleTier",
     "TextSubstructure",
 ]

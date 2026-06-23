@@ -10,6 +10,7 @@ from pydantic.json_schema import SkipJsonSchema
 CoverageState = Literal["perceived", "low-confidence", "not-covered"]
 Confidence = Literal["HIGH", "LOW"]
 PerceptionProvenance = Literal["png-grounded", "brief-expectation", "not-covered"]
+ReadingPathSource = Literal["deterministic", "llm_primary", "safe_default"]
 ReadingPath = Literal[
     "z_pattern",
     "f_pattern",
@@ -89,6 +90,10 @@ class PerceptionArtifact(BaseModel):
         default=None,
         description="Per-element image role tiers emitted or deterministically backfilled in S2.",
     )
+    dominant_image_role: ImageRoleTier | None = Field(
+        default=None,
+        description="Authoritative slide-level image role tier for reading-path scoring.",
+    )
     image_role_flags: list[ImageRoleFlag] | None = Field(
         default=None,
         description=(
@@ -110,6 +115,22 @@ class PerceptionArtifact(BaseModel):
     reading_path_flags: list[ReadingPathFlag] | None = Field(
         default=None,
         description="Deterministic S1 side-channel flags for later reading-path escalation.",
+    )
+    reading_path_source: ReadingPathSource | None = Field(
+        default=None,
+        description="Producer of the authoritative reading-path tuple.",
+    )
+    reading_path_degraded: bool = Field(
+        default=False,
+        description="True when reading-path classification safe-degraded instead of blocking.",
+    )
+    reading_path_rationale: dict[str, str] | None = Field(
+        default=None,
+        description="Short LLM rationale per reading-path tuple axis.",
+    )
+    reading_path_geometry: dict[str, Any] | None = Field(
+        default=None,
+        description="Deterministic geometry cross-check telemetry; not authoritative.",
     )
     source_png_path: str = ""
     provenance: SkipJsonSchema[PerceptionProvenance] = Field(
@@ -139,6 +160,7 @@ __all__ = [
     "PerceptionProvenance",
     "ReadingPathFlag",
     "ReadingPath",
+    "ReadingPathSource",
     "RoleTier",
     "TextSubstructure",
 ]

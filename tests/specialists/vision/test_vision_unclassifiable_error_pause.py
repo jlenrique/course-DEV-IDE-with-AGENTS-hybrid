@@ -1,17 +1,4 @@
-"""AC-7 (RED-first per Murat #6) — unclassifiable HIGH/perceived → NON-retryable error-pause.
-
-A HIGH/perceived artifact whose perceived geometry cannot be deterministically
-classified by the reading-path classifier (e.g. visual_elements carry no
-positioned bbox) makes the classifier raise ``ReadingPathClassificationError``
-(a ValueError). The vision node MUST convert that into a NON-retryable
-``VisionProviderError`` tagged ``vision.reading-path.unclassifiable`` that
-routes through the error-pause contract and MUST NOT trigger the transport
-retry loop (call-count stays at exactly 1).
-
-This is the deterministic error-pause contract authored RED-first BEFORE the
-provider rewrite, so the retry/taxonomy semantics are pinned independently of
-the live gpt-5.5 wiring.
-"""
+"""Unclassifiable HIGH/perceived artifacts safe-degrade instead of hard-pausing."""
 
 from __future__ import annotations
 
@@ -28,7 +15,6 @@ from app.models.state.model_resolution_entry import ModelResolutionEntry
 from app.models.state.run_state import RunState
 from app.specialists.vision import _act
 from app.specialists.vision.payload_contract import VisionProviderResponse
-from app.specialists.vision.provider import VisionProviderError
 
 
 def _state(payload: dict[str, Any]) -> RunState:
@@ -55,19 +41,15 @@ def _png(tmp_path: Path) -> Path:
     return path
 
 
-def test_unclassifiable_high_perceived_artifact_pauses_and_does_not_retry(
+def test_unclassifiable_high_perceived_artifact_safe_defaults_and_does_not_retry(
     monkeypatch: pytest.MonkeyPatch, tmp_path: Path
 ) -> None:
-    """RED-first AC-7: unclassifiable → non-retryable error-pause, exactly one call."""
     png = _png(tmp_path)
     calls = 0
 
     def fake_perceive(path: Path, *, slide_id: str, **_: Any) -> VisionProviderResponse:
         nonlocal calls
         calls += 1
-        # HIGH/perceived but visual_elements carry NO positioned bbox and the
-        # text carries no ordinal cadence — the deterministic classifier cannot
-        # assign a reading_path and raises ReadingPathClassificationError.
         return VisionProviderResponse(
             slide_id=slide_id,
             confidence="HIGH",
@@ -81,22 +63,26 @@ def test_unclassifiable_high_perceived_artifact_pauses_and_does_not_retry(
         )
 
     monkeypatch.setattr(_act, "perceive_png", fake_perceive)
+    monkeypatch.setattr(
+        "scripts.utilities.reading_path_classifier.request_live_reading_path_tuple",
+        lambda *_a, **_k: (_ for _ in ()).throw(RuntimeError("transport down")),
+    )
     payload = {"gary_slide_output": [{"slide_id": "slide-01", "file_path": str(png)}]}
 
-    with pytest.raises(VisionProviderError) as excinfo:
-        _act.act(_state(payload))
+    result = _act.act(_state(payload))
+    artifact = json.loads(result["cache_state"]["cache_prefix"])["perception_artifacts"][0]
 
-    # The error-pause is tagged for routing and is NON-retryable.
-    assert excinfo.value.tag == "vision.reading-path.unclassifiable"
-    assert not _act._is_retryable_provider_error(excinfo.value)
-    # CRITICAL: the artifact was perceived once and the failure did NOT retry.
     assert calls == 1
+    assert artifact["reading_path"] == "top_down"
+    assert artifact["macro_layout"] == "single_text_block"
+    assert artifact["reading_path_source"] == "safe_default"
+    assert artifact["reading_path_degraded"] is True
+    assert artifact["reading_path_rationale"] == {"degraded": "transport down"}
 
 
 def test_empty_visual_elements_emit_controlled_empty_image_roles_without_pause(
     monkeypatch: pytest.MonkeyPatch, tmp_path: Path
 ) -> None:
-    """P2-4c S2 fold-in: empty visual_elements degrades to image_roles=[]."""
     png = _png(tmp_path)
 
     def fake_perceive(path: Path, *, slide_id: str, **_: Any) -> VisionProviderResponse:
@@ -113,6 +99,10 @@ def test_empty_visual_elements_emit_controlled_empty_image_roles_without_pause(
         )
 
     monkeypatch.setattr(_act, "perceive_png", fake_perceive)
+    monkeypatch.setattr(
+        "scripts.utilities.reading_path_classifier.request_live_reading_path_tuple",
+        lambda *_a, **_k: (_ for _ in ()).throw(RuntimeError("transport down")),
+    )
     payload = {"gary_slide_output": [{"slide_id": "slide-01", "file_path": str(png)}]}
 
     result = _act.act(_state(payload))
@@ -122,3 +112,4 @@ def test_empty_visual_elements_emit_controlled_empty_image_roles_without_pause(
     assert artifact["reading_path"] == "top_down"
     assert artifact["macro_layout"] == "single_text_block"
     assert artifact["image_roles"] == []
+    assert artifact["reading_path_source"] == "safe_default"

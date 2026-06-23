@@ -19,6 +19,7 @@ from app.specialists.vision.provider import (
     VisionProviderTimeout,
     perceive_png,
 )
+from scripts.utilities.reading_path_classifier import parse_live_reading_path_tuple
 
 
 class _StubChat:
@@ -127,6 +128,21 @@ def test_act_emits_per_slide_artifacts_and_not_covered_for_unreadable_slide(
         return _response(slide_id)
 
     monkeypatch.setattr(_act, "perceive_png", fake_perceive)
+    monkeypatch.setattr(
+        "scripts.utilities.reading_path_classifier.request_live_reading_path_tuple",
+        lambda *_a, **_k: parse_live_reading_path_tuple(
+            """
+            {
+              "macro_layout": "split_image_text",
+              "image_role": "3",
+              "text_substructure": "dense_exposition",
+              "narration_cadence": "moderate",
+              "callout_intent": null,
+              "rationale": {}
+            }
+            """
+        ),
+    )
     payload = {
         "gary_slide_output": [
             {"slide_id": "slide-01", "file_path": str(png)},
@@ -145,18 +161,16 @@ def test_act_emits_per_slide_artifacts_and_not_covered_for_unreadable_slide(
     assert output["perception_artifacts"][0]["coverage"] == "perceived"
     assert output["perception_artifacts"][0]["reading_path"] == "split_image_text"
     assert output["perception_artifacts"][0]["macro_layout"] == "split_image_text"
+    assert output["perception_artifacts"][0]["reading_path_source"] == "llm_primary"
     assert output["perception_artifacts"][1]["coverage"] == "not-covered"
     assert output["perception_artifacts"][1]["reading_path"] is None
 
 
-def test_reading_path_classification_failure_converts_to_vision_provider_error(
+def test_reading_path_classification_failure_safe_defaults_without_provider_error(
     monkeypatch: pytest.MonkeyPatch, tmp_path: Path
 ) -> None:
-    # P2-4a T11 (party-mode 5/5, Cluster 3a): a HIGH/perceived artifact whose
-    # elements carry no positioned geometry makes the deterministic classifier
-    # raise ReadingPathClassificationError (a ValueError). The vision node must
-    # convert that to a NON-retryable VisionProviderError routed through the
-    # error-pause contract — never let a bare ValueError escape the retry guard.
+    # LLM-primary reading path classification safe-degrades instead of turning
+    # deterministic geometry failure into a provider hard-block.
     png = _png(tmp_path)
 
     def fake_perceive(path: Path, *, slide_id: str, **_: Any) -> VisionProviderResponse:
@@ -173,10 +187,19 @@ def test_reading_path_classification_failure_converts_to_vision_provider_error(
         )
 
     monkeypatch.setattr(_act, "perceive_png", fake_perceive)
+    monkeypatch.setattr(
+        "scripts.utilities.reading_path_classifier.request_live_reading_path_tuple",
+        lambda *_a, **_k: (_ for _ in ()).throw(RuntimeError("transport down")),
+    )
     payload = {"gary_slide_output": [{"slide_id": "slide-01", "file_path": str(png)}]}
 
-    with pytest.raises(VisionProviderError, match="reading-path classification failed"):
-        _act.act(_state(payload))
+    result = _act.act(_state(payload))
+    artifact = json.loads(result["cache_state"]["cache_prefix"])["perception_artifacts"][0]
+
+    assert artifact["reading_path"] == "top_down"
+    assert artifact["macro_layout"] == "single_text_block"
+    assert artifact["reading_path_source"] == "safe_default"
+    assert artifact["reading_path_degraded"] is True
 
 
 @pytest.mark.parametrize(
@@ -421,7 +444,7 @@ def test_parse_response_raises_contract_on_slide_id_mismatch(
 ) -> None:
     # M3 (code-review remediation): a response echoing the WRONG slide_id is a
     # cross-wired image/response and must FAIL LOUD with a NON-retryable
-    # vision.provider.contract error — NOT be silently overwritten (the old
+    # vision.provider.contract error â€” NOT be silently overwritten (the old
     # masking regression). provider_model_id is code-controlled (overwritten).
     from app.specialists.vision.provider import _parse_response
 
@@ -454,7 +477,7 @@ def test_parse_response_raises_contract_on_slide_id_mismatch(
 def test_parse_response_overwrites_provider_model_id_with_code_controlled(
     tmp_path: Path,
 ) -> None:
-    # M3: a model-emitted provider_model_id is NOT trusted — code-controlled.
+    # M3: a model-emitted provider_model_id is NOT trusted â€” code-controlled.
     from app.specialists.vision.provider import _parse_response
 
     raw = json.dumps(

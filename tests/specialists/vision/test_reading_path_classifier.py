@@ -6,11 +6,15 @@ from app.models.perception import PerceptionArtifact
 from scripts.utilities.reading_path_classifier import (
     REQUIRED_PERCEPTION_FIELDS,
     ReadingPathClassificationError,
+    ReadingPathLLMPrimaryError,
+    _llm_primary_prompt,
     assert_default_ceiling,
     classify_reading_path,
     classify_reading_path_batch,
     ordered_element_keys_for_reading_path,
+    parse_live_reading_path_tuple,
     with_classified_reading_path,
+    with_llm_primary_reading_path,
 )
 
 
@@ -575,3 +579,215 @@ def test_non_numeric_bbox_skips_to_controlled_failure_not_raw_valueerror() -> No
 
     with pytest.raises(ReadingPathClassificationError):
         classify_reading_path(artifact)
+
+
+def test_llm_primary_parser_accepts_strict_json_and_normalizes_inform_callout() -> None:
+    result = parse_live_reading_path_tuple(
+        """
+        ```json
+        {
+          "macro_layout": "split_image_text",
+          "image_role": "3",
+          "text_substructure": "dense_exposition",
+          "narration_cadence": "moderate",
+          "callout_intent": "inform",
+          "rationale": {"macro_layout": "image plus text"}
+        }
+        ```
+        """
+    )
+
+    assert result.macro_layout == "split_image_text"
+    assert result.image_role == "3"
+    assert result.callout_intent is None
+
+
+def test_llm_primary_parser_rejects_out_of_contract_tuple() -> None:
+    with pytest.raises(ReadingPathLLMPrimaryError):
+        parse_live_reading_path_tuple(
+            """
+            {
+              "macro_layout": "triptych",
+              "image_role": "3",
+              "text_substructure": "dense_exposition",
+              "narration_cadence": "moderate",
+              "callout_intent": null,
+              "rationale": {}
+            }
+            """
+        )
+
+
+def test_llm_primary_transport_failure_safe_defaults_without_hard_block(monkeypatch) -> None:
+    artifact = _artifact(
+        [
+            {
+                "id": "body",
+                "kind": "text",
+                "label": "Plain paragraph text",
+                "bbox": [0.10, 0.10, 0.90, 0.40],
+            }
+        ]
+    )
+
+    def _raise(*args: object, **kwargs: object) -> None:
+        raise RuntimeError("transport down")
+
+    monkeypatch.setattr(
+        "scripts.utilities.reading_path_classifier.request_live_reading_path_tuple",
+        _raise,
+    )
+
+    classified = with_llm_primary_reading_path(artifact)
+
+    assert classified.reading_path == "top_down"
+    assert classified.macro_layout == "single_text_block"
+    assert classified.dominant_image_role is None
+    assert classified.reading_path_source == "safe_default"
+    assert classified.reading_path_degraded is True
+    assert classified.reading_path_rationale == {"degraded": "transport down"}
+    assert classified.reading_path_geometry is not None
+
+
+def test_llm_primary_prompt_sharpens_decorative_vs_illustrative_boundary() -> None:
+    prompt = _llm_primary_prompt(
+        _artifact(
+            [
+                {
+                    "id": "mood-photo",
+                    "kind": "photo",
+                    "label": "large unlabelled mood photo",
+                    "bbox": [0.52, 0.05, 0.96, 0.88],
+                }
+            ]
+        )
+    )
+
+    assert "Tier 1 image_role means DECORATIVE or evocative" in prompt
+    assert "full-bleed photo or illustration is still tier 1" in prompt
+    assert "Do not promote a mood/subject photo to tier 2 just because it is large" in prompt
+    assert "Return tier 2 only when the slide text explicitly depends" in prompt
+    assert "If uncertain between tier 1 and tier 2, choose tier 1" in prompt
+    assert "do not return null for image_role" in prompt
+
+
+def test_llm_primary_null_image_role_falls_back_to_largest_image_tier(monkeypatch) -> None:
+    artifact = _artifact(
+        [
+            {
+                "id": "copy",
+                "kind": "text",
+                "label": "Clinical leadership requires judgment.",
+                "bbox": [0.08, 0.18, 0.45, 0.62],
+            },
+            {
+                "id": "decor-photo",
+                "kind": "photo",
+                "label": "decorative full bleed photo",
+                "role_tier": "1",
+                "bbox": [0.52, 0.05, 0.96, 0.88],
+            },
+        ]
+    )
+
+    monkeypatch.setattr(
+        "scripts.utilities.reading_path_classifier.request_live_reading_path_tuple",
+        lambda *_a, **_k: parse_live_reading_path_tuple(
+            """
+            {
+              "macro_layout": "split_image_text",
+              "image_role": null,
+              "text_substructure": "dense_exposition",
+              "narration_cadence": "moderate",
+              "callout_intent": null,
+              "rationale": {}
+            }
+            """
+        ),
+    )
+
+    classified = with_llm_primary_reading_path(artifact)
+
+    assert classified.dominant_image_role == "1"
+    assert classified.reading_path_source == "llm_primary"
+    assert classified.reading_path_degraded is False
+
+
+def test_llm_primary_plain_photo_tier_two_is_demoted_to_decorative(monkeypatch) -> None:
+    artifact = _artifact(
+        [
+            {
+                "id": "copy",
+                "kind": "text",
+                "label": "Clinical leadership requires judgment.",
+                "bbox": [0.08, 0.18, 0.45, 0.62],
+            },
+            {
+                "id": "mood-photo",
+                "kind": "photo",
+                "label": "large mood photo",
+                "role_tier": "2",
+                "bbox": [0.52, 0.05, 0.96, 0.88],
+            },
+        ]
+    )
+
+    monkeypatch.setattr(
+        "scripts.utilities.reading_path_classifier.request_live_reading_path_tuple",
+        lambda *_a, **_k: parse_live_reading_path_tuple(
+            """
+            {
+              "macro_layout": "split_image_text",
+              "image_role": "2",
+              "text_substructure": "dense_exposition",
+              "narration_cadence": "moderate",
+              "callout_intent": null,
+              "rationale": {}
+            }
+            """
+        ),
+    )
+
+    classified = with_llm_primary_reading_path(artifact)
+
+    assert classified.dominant_image_role == "1"
+
+
+def test_llm_primary_chart_with_caption_keeps_evidentiary_role(monkeypatch) -> None:
+    artifact = _artifact(
+        [
+            {
+                "id": "chart",
+                "kind": "chart",
+                "label": "adoption by month",
+                "role_tier": "2_5",
+                "bbox": [0.18, 0.16, 0.78, 0.62],
+            },
+            {
+                "id": "caption",
+                "kind": "caption text",
+                "label": "Monthly adoption increased after training.",
+                "bbox": [0.20, 0.65, 0.76, 0.72],
+            },
+        ]
+    )
+
+    monkeypatch.setattr(
+        "scripts.utilities.reading_path_classifier.request_live_reading_path_tuple",
+        lambda *_a, **_k: parse_live_reading_path_tuple(
+            """
+            {
+              "macro_layout": "single_text_block",
+              "image_role": "2_5",
+              "text_substructure": "dense_exposition",
+              "narration_cadence": "moderate",
+              "callout_intent": null,
+              "rationale": {}
+            }
+            """
+        ),
+    )
+
+    classified = with_llm_primary_reading_path(artifact)
+
+    assert classified.dominant_image_role == "2_5"

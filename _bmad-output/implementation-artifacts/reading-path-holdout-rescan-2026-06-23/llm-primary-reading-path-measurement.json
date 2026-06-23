@@ -1,0 +1,58 @@
+{
+  "captured_at": "2026-06-23T06:46:57.704221+00:00",
+  "model_id": "gpt-5.5",
+  "subject": "llm-primary reading-path classifier",
+  "substrate": "frozen fresh@2026-06-23 role_tier-aware perceptions",
+  "perception_provenance_sample": {
+    "1_Diagnosis-Innovation": "2026-06-23T04:03:42.344034+00:00",
+    "3_Achieving-the-Ideal-State": "2026-06-23T04:03:42.344034+00:00",
+    "5_Check-Your-Understanding": "2026-06-23T04:03:42.344034+00:00"
+  },
+  "classified_ok": 14,
+  "load_errors": [],
+  "scored_slides": 14,
+  "primary_key_top1": 0.7142857142857143,
+  "full_tuple_rate": 0.42857142857142855,
+  "per_axis": {
+    "macro_layout": 0.8571428571428571,
+    "image_role": 0.8571428571428571,
+    "text_substructure": 0.9285714285714286,
+    "narration_cadence": 0.7857142857142857
+  },
+  "passes_primary_key_0_85": false,
+  "passes_full_tuple_0_80": false,
+  "degraded_rows": 0,
+  "hard_blocks": 0,
+  "sources_by_slide": {
+    "1_Diagnosis-Innovation": "llm_primary",
+    "3_Achieving-the-Ideal-State": "llm_primary",
+    "5_Check-Your-Understanding": "llm_primary",
+    "6_All-of-them-belong-to-BOTH": "llm_primary",
+    "8_Decision-Making-Foundations": "llm_primary",
+    "9_Comparing-Expected-Value-and-Expected-Utility": "llm_primary",
+    "11_Value-Creation-in-Innovation": "llm_primary",
+    "13_Effective-Problem-Solving-Approach": "llm_primary",
+    "15_Types-of-Motivation": "llm_primary",
+    "17_Examples-of-Effective-Leadership-in-Public-Health": "llm_primary",
+    "18_The-Future-of-Public-Health-Leadership": "llm_primary",
+    "20_Resources-for-Entrepreneurship-and-Innovation": "llm_primary",
+    "21_Key-Takeaways": "llm_primary",
+    "22_Next-Steps-Your-Path-Forward": "llm_primary"
+  },
+  "degraded_by_slide": {
+    "1_Diagnosis-Innovation": false,
+    "3_Achieving-the-Ideal-State": false,
+    "5_Check-Your-Understanding": false,
+    "6_All-of-them-belong-to-BOTH": false,
+    "8_Decision-Making-Foundations": false,
+    "9_Comparing-Expected-Value-and-Expected-Utility": false,
+    "11_Value-Creation-in-Innovation": false,
+    "13_Effective-Problem-Solving-Approach": false,
+    "15_Types-of-Motivation": false,
+    "17_Examples-of-Effective-Leadership-in-Public-Health": false,
+    "18_The-Future-of-Public-Health-Leadership": false,
+    "20_Resources-for-Entrepreneurship-and-Innovation": false,
+    "21_Key-Takeaways": false,
+    "22_Next-Steps-Your-Path-Forward": false
+  }
+}
