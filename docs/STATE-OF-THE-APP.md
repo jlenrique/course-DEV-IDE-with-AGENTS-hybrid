@@ -1,7 +1,9 @@
 # State of the App — Canonical Status Synthesis
 
-**Date:** 2026-06-19 · **Last updated:** 2026-06-21 (P2 fidelity arc — grounding regression CLOSED)
+**Date:** 2026-06-19 · **Last updated:** 2026-06-23 (reading-path tuple arc — catalog v1.1 ratified; P2-4c S1+S2 DONE; S3 in flight)
 **Status:** Canonical orientation doc. Single source of truth for "where the development plan actually stands."
+
+> **⚡ 2026-06-23 UPDATE — the reading-path leg advanced from "operator-gated" to an active, mostly-built sub-arc (P2-4c).** Three things changed the picture since 2026-06-21: **(1) the reading-path PATTERN CATALOG was tuned + ratified.** Operator slide-perception training (26/54 slides) → `reading-path-patterns-catalog.md` **v1** (a **compositional tuple** `{macro_layout × image_role(1–4) × text_substructure × narration_cadence}` replacing the flat 7-enum) → `bmad-party-mode` 6/6 → **v1.1** after a held-out confirm/deny round (decisions D1–D3). **(2) the P2-4b methodology FLIPPED** (operator-authorized): instead of operator-labels-then-score, **Claude labeled the 14 held-out slides via catalog v1, the operator confirmed/denied** — result **A6 primary-key top-1 13/14 = 0.93 (PASS)**; the held-out reserve is now CONSUMED. **(3) the catalog drove a classifier refactor, P2-4c** (additive tuple schema + hybrid-(c) classifier), built via NEW CYCLE Codex: **S1 DONE + S2 DONE** (each: Codex T1–T10 → Claude T11 HAND BACK → remediation → re-T11 → party 5/5 CLOSE — the T11 gate caught real over-claim / vacuous-gate / index-misalignment defects the green battery hid, twice); **S3 (gpt-5.5 escalation) is in flight**; **P2-4b finalize is fully pre-staged + self-tested** (`reading_path_p2_4b_run.run_live()` scores the built classifier vs the confirmed gold). Anti-patterns **H1** (green-test-certifies-a-bug) + **H2** (agreement-harness PASSes on empty/excluded scored set) harvested; a believed-green audit found the liveness stratum CLEAN (one filed config-red: `model-id-denylist-vs-allowlist-contradiction`). §11 below is refreshed; the 2026-06-21 banner's "P2-4b operator-gated on a harvest" framing is **SUPERSEDED** by the flip.
 
 > **⚡ 2026-06-21 UPDATE — the Layer-D "crippling" fidelity regression (§3) is CLOSED.** The P2 perception/reading-path arc landed: **P2-1** fail-loud fidelity detector (done) → **P2-2** PNG-grounded `PerceptionArtifact` (closed) → **P2-3** Pass-2 grounds on perceived visuals, the regression fix (closed) **+ its AC-6 live regression-green strike FIRED** (live Pass-2 over the frozen corpus → committed detector GREEN 8/8 + held-out, independently re-judged) → **P2-4a** reading-path native machinery (classifier + fail-loud verify-node + cadence, closed). The deferred entry `fidelity-metric-blind-to-perception-regression` is **STRUCK**. The reading-path **calibration** leg (**P2-4b** — repertoire growth + the held-out ≥80% real-slide conformance corpus) remains **operator-gated** on a scan-order exemplar harvest. Sections §3 / §4-row-(g) / §8-#2 / §9 below are annotated inline; the strikethrough/❌ framing in those sections is **historical** (pre-2026-06-21).
 **Provenance:** Synthesizes two independent assessments produced 2026-06-19 — (1) the live session assessment (triangulating `SESSION-HANDOFF.md`, `next-session-start-here.md`, `bmm-workflow-status.yaml`, `deferred-inventory.md`, the BETA spec/charter, and on-disk run evidence), and (2) an independent external analysis triangulating the same artifacts. Where the two diverged, the divergences were adjudicated against on-disk evidence (git history, `slab-7c-retrospective.md`, run directories); both factual conflicts resolved in favor of the external analysis (see §10). This doc exists so the plan does not have to be re-derived every session.
@@ -19,7 +21,7 @@ The single biggest source of confusion is that **three different things each hav
 | **A. Migration substrate** (Slabs 1–7c) | BMAD stories closed in `sprint-status.yaml` | **Largely shipped & BMAD-closed.** `migration-master-status: shipped`. Slabs 1–6 done; 7a 8/8, 7b done, 7c 36/36 (closed 2026-05-07). |
 | **B. Production trial engine** (G0→completion) | The runtime actually produces a narrated-deck lesson end-to-end on a real corpus | **Validated.** Trial-4 PASS; engine error-free ×2 + Marcus-SPOC error-free ×2 on disk (2026-06-19). |
 | **C. BETA spec as written** (`beta-spec-2026-06-19.md §8`) | The full conversational product: a+b+c+e through Marcus-SPOC with binding picks, d+f present/carved, §5 quality infra green, error-free twice | **NOT met.** Partially demonstrated under narrow interpretations (see §4). |
-| **D. Product quality** (narration fidelity) | The narration describes what is actually on the slide, in scan order | **🟢 Grounding leg FIXED (2026-06-21); reading-path calibration pending.** Pass-2 now grounds on the perceived rendered slide (`PerceptionArtifact`), guarded by a fail-loud G5 detector (P2-1/2/3 + AC-6 live strike). Reading-path **machinery** restored (P2-4a); reading-path **calibration accuracy on real slides** (P2-4b) is operator-gated. *(Was: "🔴 Regressed — disaster-level; Pass-2 grounds on the slide brief.")* |
+| **D. Product quality** (narration fidelity) | The narration describes what is actually on the slide, in scan order | **🟢 Grounding leg FIXED (2026-06-21); reading-path being productized (P2-4c, 2026-06-23).** Pass-2 grounds on the perceived rendered slide (`PerceptionArtifact`), fail-loud-G5-guarded (P2-1/2/3 + AC-6 live strike). Reading-path: catalog **v1.1** (compositional tuple) ratified; classifier being refactored to it (**P2-4c S1+S2 DONE, S3 in flight**); held-out conformance already **0.93 (A6 PASS)** on Claude-labeled/operator-confirmed gold. Final calibration (P2-4b) = run the built classifier vs that gold — pre-staged. *(Was: "🔴 Regressed — disaster-level; Pass-2 grounds on the slide brief.")* |
 
 **The trap:** Layer A's "shipped" and Layer B's "validated" are real and earned. They do **not** imply Layer C ("BETA met"). **Layer D's grounding regression is now closed** (2026-06-21) — narration is perception-grounded and detector-guarded; the residual Layer-D gap is reading-path *scan-order calibration* (P2-4b, operator-gated), not the confident-wrong hallucination the BETA path used to mask.
 
@@ -73,7 +75,7 @@ Scored against `beta-spec-2026-06-19.md` §1–§3 + §8. **Literal engine crite
 | **(e) voice** (§4.4) | Voice candidates → bind | **Yes** (mechanics) | Voice select→synthesis **proven** (`710684c0`) | **PASS (mechanics)** — but exercised *separately*, not inside the twice-gate runs |
 | **(e) clustering/pace** (§4.4) | Read-only surface | Read-only present | Shown in SPOC | **PASS (read-only)** |
 | **(f) motion** (§4.6) | Honest motion-plan artifact OR written carve-out | Carved **in practice** | SPOC narrates "no motion clips" | **CARVED (implicit)** — no producer; carve-out **not party-ratified in writing** |
-| **(g) reading-path** (§6) | Suggest-level only for BETA | **Restored (machinery)** — perception grounding + `reading_path` classifier + fail-loud verify-node (P2-1/2/3/4a) | Grounding: AC-6 live strike GREEN 8/8 + held-out (2026-06-21). Reading-path accuracy: pending P2-4b corpus | **PASS (grounding) / PARTIAL (reading-path)** — perception + scan-order machinery shipped; real-slide scan-order *calibration* is P2-4b (operator-gated). *(Was: FAIL — perception + reading-path lost.)* |
+| **(g) reading-path** (§6) | Suggest-level only for BETA | **Restored + being upgraded** — P2-4a machinery → catalog **v1.1** tuple + P2-4c hybrid classifier (S1+S2 done, S3 in flight) | Grounding: AC-6 strike GREEN 8/8 + held-out. Reading-path: held-out **A6 0.93 PASS** (Claude-labeled/operator-confirmed); P2-4b finalize pre-staged | **PASS (grounding) / ON-TRACK (reading-path)** — scan-order machinery shipped + the catalog-tuned tuple classifier is ~2/3 built; final conformance run (P2-4b) is one command post-S3. *(Was: PARTIAL — calibration operator-gated.)* |
 
 ### §2 "error-free twice" — literal vs spirit
 
@@ -133,7 +135,7 @@ Two parallel planning stacks coexist — the other big source of disorientation.
 ## 8. Forward priorities (factored into the post-harmonization arc)
 
 1. ~~**Voice↔WPM quick win**~~ — **✅ DONE (P1, 2026-06-19).** Resolved via `spec-p1-voice-agnostic-wpm-floor.md`: G5's WPM check became a voice-agnostic intelligibility band (Murat §5 ruling), so a non-default voice (Sarah's 128 WPM) no longer trips the floor; break-glass `wpm_breach_override` retained. Party green-light + T11 3-lane PASS. Capability-(e) voice-binding now completes error-free on non-default voices.
-2. **Perception + reading-path REPAIR + ENHANCE** (the disaster arc) — **✅ DONE (2026-06-21), except the operator-gated calibration leg.** Shipped as the PRD-gated P2 arc: perception grounding restored (vision pass → `PerceptionArtifact` → Pass-2 narrates from perceived visuals; P2-2/P2-3), reading-path classification + fail-loud conformance restored (`reading_path` field + classifier + verify-node; P2-4a), and the **fail-loud fidelity detector shipped first as committed RED evidence** (P2-1). AC-6 live regression-green strike FIRED. **Remaining:** **P2-4b** (reading-path repertoire growth + held-out ≥80% real-slide conformance corpus) — operator-gated on a scan-order exemplar harvest.
+2. **Perception + reading-path REPAIR + ENHANCE** (the disaster arc) — **✅ grounding DONE (2026-06-21); reading-path ENHANCE actively building (2026-06-23).** Perception grounding restored + detector-guarded (P2-1/2/3 + AC-6 strike); P2-4a machinery shipped. The ENHANCE leg then went deeper than "calibrate the 7-enum": operator training tuned the catalog to a **compositional tuple** (v1.1, party+operator-ratified D1–D3), the **P2-4b methodology flipped** (Claude-labels → operator-confirm/deny; held-out **A6 0.93 PASS**), and a classifier refactor **P2-4c** is building it via NEW CYCLE Codex (**S1+S2 DONE**, S3 in flight). **Remaining:** P2-4c S3 (gpt-5.5 escalation) → T11; then **P2-4b finalize** = `run_live()` the built classifier vs the confirmed gold (pre-staged + self-tested). Follow-ons on the register: `reading-path-icon-set-cue`, `callout-intent-speech-act-axis-harvest`, κ-harness-NOT-WIRED.
 3. **Governance / spec ratification** — ratify in writing what "BETA" means (engine-reliability Phase 1 vs full §8), and file the BETA remainder as real epics/stories so charter, handoff, and sprint-status stop drifting (§5).
 
 ---
@@ -163,11 +165,11 @@ Both factual conflicts resolved against on-disk evidence, **in favor of the exte
 >
 > **Execution model (NEW CYCLE):** substrate-impacting forward stories run **Codex T1–T10 (dev) → Claude T11 (`bmad-code-review` + party-mode close + commit + `done`-flip)**; party-mode green-light precedes dev on Tier-3 stories. Claude T11 may land small, party-ratified local hardenings but does not author the dev story. (Cleanup arcs run Claude-direct per CLAUDE.md.)
 
-**Last pathway update:** 2026-06-21 (P2-4a closed).
+**Last pathway update:** 2026-06-23 (catalog v1.1 ratified; P2-4c S1+S2 DONE; S3 in flight).
 
 ### 11.1 You are here
 
-**P2 fidelity arc — machinery COMPLETE; only the operator-gated calibration leg (P2-4b) remains.** P2-1/2/3/4a are closed and the disaster-level grounding regression is **struck** (AC-6 live strike fired). The live frontier is **P2-4b**, blocked on an operator scan-order exemplar harvest. After P2 closes, the ratified path turns to the **BETA Phase-2 charter remainder** (T5b–T8), then the **aspirational epics**. Latest close: **`vision-perceiver-real`** (2026-06-21) — the live `gpt-5.5` vision perceiver enabler that replaced the fixture-backed contract P2-2 had shipped; perception is now genuinely live (party 5/5 → 3-layer review → 4/4 CLOSE). It PRECEDES P2-4b so the labeling kit perceives real slides. (Prior close: P2-4a `done` at `38f2ba8`.)
+**P2 fidelity arc — grounding closed; reading-path being PRODUCTIZED via the P2-4c tuple-classifier refactor (S1+S2 done, S3 in flight).** The disaster-level grounding regression is **struck** (P2-1/2/3 + AC-6). The reading-path leg then deepened well past P2-4a: operator slide-perception training tuned the pattern catalog into a **compositional tuple** (`reading-path-patterns-catalog.md` **v1.1**, `bmad-party-mode` 6/6 + operator-ratified D1–D3); a **held-out confirm/deny round** (methodology flipped — Claude-labeled, operator-confirmed) scored **A6 primary-key top-1 13/14 = 0.93 (PASS)**; and that catalog is being built into the classifier as **P2-4c** (additive tuple schema + hybrid-(c) classifier). **P2-4c S1 (geometry+schema) and S2 (image-role tiers) are CLOSED** (each: Codex NEW CYCLE → Claude T11 HAND BACK → remediation → re-T11 → party 5/5 CLOSE). **The live frontier is P2-4c S3** (gpt-5.5 escalation tuple-delta) — in flight with Codex. After S3 closes (T11), **P2-4b finalize is one command** (`reading_path_p2_4b_run.run_live()` — harness + gold + runner all pre-staged + self-tested) → then P2 epic close. After P2: **BETA Phase-2 charter remainder** (T5b–T8) → **aspirational epics**. (Prior close: `vision-perceiver-real` 2026-06-21 made perception genuinely live on gpt-5.5.)
 
 ### 11.2 The ratified pathway (sequence)
 
@@ -184,10 +186,18 @@ Authority: `beta-phase-1-closure-ratification-2026-06-19.md` (forward path) + `e
   P2-1 Fidelity detector (RED-first) .............. ✅ done
   P2-2 Vision node + PerceptionArtifact ........... ✅ done  (⚠ shipped FIXTURE-backed — corrected by vision-perceiver-real; see note ▼)
   P2-3 Pass-2 consumes perceived visuals .......... ✅ done  (+ AC-6 live regression-green strike FIRED → regression STRUCK)
-  P2-4a Reading-path native machinery ............. ✅ done  (Codex T1–T10 → Claude T11 → 5/5 CLOSE, 38f2ba8)
-  vision-perceiver-real (live gpt-5.5 enabler) .... ✅ done  (party 5/5 → 3-layer review → 4/4 CLOSE; perception NOW genuinely live)
-  P2-4b Repertoire growth + ≥80% real-slide corpus  ⏸ operator-gated (scan-order harvest) — LAST P2 item
-  P2 epic retrospective + close ................... ❌ after P2-4b (machinery-only partial close possible sooner)
+  P2-4a Reading-path native machinery (7-enum) .... ✅ done  (Codex → Claude T11 → 5/5 CLOSE, 38f2ba8)
+  vision-perceiver-real (live gpt-5.5 enabler) .... ✅ done  (perception NOW genuinely live)
+  ── reading-path CATALOG arc (2026-06-22) ──
+  Catalog v1 (flat-7-enum → compositional tuple) .. ✅ done  (operator round-1 training 26/54 → party 6/6 GREEN-W-AMEND)
+  Held-out confirm/deny round (methodology FLIP) .. ✅ done  (Claude-labeled → operator-confirmed; A6 top-1 13/14 = 0.93 PASS)
+  Catalog v1.1 (D1–D3: multi_column N≥2 / callout_intent / permutability) ✅ done  (party 6/6 + operator-ratified)
+  ── P2-4c reading-path tuple-classifier refactor (2026-06-23) ──
+  P2-4c S1 geometry + additive tuple schema ....... ✅ done  (Codex → T11 HAND BACK → remediation → re-T11 → 5/5 CLOSE)
+  P2-4c S2 per-element image-role tiers ........... ✅ done  (Codex → T11 HAND BACK → remediation → re-T11 → 5/5 CLOSE)
+  P2-4c S3 gpt-5.5 escalation tuple-delta ......... 🔄 in flight (Codex T1–T10; grounded on built S1/S2 flags)
+  P2-4b finalize — score built classifier vs gold . ⏸ after S3 (one command: run_live(); harness+gold+runner pre-staged + self-tested)
+  P2 epic retrospective + close ................... ❌ after P2-4b
 
 [AFTER P2 — BETA Phase 2 / charter remainder]
   T5b Variant N-dispatch + per-slide bind ......... ❌ not started
@@ -210,19 +220,21 @@ Authority: `beta-phase-1-closure-ratification-2026-06-19.md` (forward path) + `e
 
 | Milestone | Status | Notes |
 |---|---|---|
-| P2-3 close + grounding strike | ✅ `485662e` | AC-6 live strike GREEN 8/8 + held-out |
-| P2-4 party green-light + spec | ✅ `da9e186` | 5/5 PARTIAL-SPEC-NOW (machinery vs calibration split) |
-| P2-4a dev (T1–T10) | ✅ Codex | handoff `_codex-handoff/p2-4a-…ready-for-review.md` |
-| P2-4a T11 review + close | ✅ `38f2ba8` | 3-layer review + party 5/5 CLOSE + 2 ratified hardenings |
-| **P2-4b operator harvest + story** | ⏸ **blocked on operator** | ≥8–10 labeled real slides + ≥1 known-wrong-default |
-| P2 epic close | ❌ after P2-4b | machinery-only partial close optional |
+| P2-4a reading-path machinery (7-enum) | ✅ `38f2ba8` | 3-layer review + party 5/5 CLOSE |
+| Catalog v1 (compositional tuple) | ✅ `54afb27` | operator round-1 training 26/54 → party 6/6 GREEN-W-AMEND |
+| Held-out confirm/deny round (A6 PASS) | ✅ `e647e93` | methodology flip; primary-key top-1 13/14 = 0.93; catalog → v1.1 (D1–D3) |
+| P2-4c S1 (geometry + tuple schema) | ✅ `2f6f123` | Codex → T11 hand-back → remediation → re-T11 → 5/5 CLOSE |
+| P2-4c S2 (image-role tiers) | ✅ `d4f2b2c` | Codex → T11 hand-back → remediation → re-T11 → 5/5 CLOSE |
+| **P2-4c S3 (gpt-5.5 escalation)** | 🔄 **in flight (Codex)** | `codex-dev-prompt-p2-4c-s3.md`; consumes built S1/S2 flags |
+| P2-4b finalize (built classifier vs gold) | ⏸ after S3 | `run_live()` — harness+gold+runner pre-staged + self-tested |
+| P2 epic close | ❌ after P2-4b | |
 | BETA Phase 2 (T5b–T8) | ❌ not started | after P2 |
 
-**You are here →** one operator input (the scan-order harvest) from unblocking the **final P2 story**; the machinery half of the top-priority fidelity arc is closed.
+**You are here →** P2-4c S3 is the **last build leg** (in flight with Codex); after its T11 close, P2-4b finalize is a single command and the whole reading-path arc closes. Two of three P2-4c slices are already done + reviewed; the catalog is ratified; conformance already reads 0.93 on confirmed gold.
 
 ### 11.4 Completion horizons
 
-**Horizon 1 — Product trust restored (P2 complete).** Narration grounds on the *rendered* slide (P2-3 ✅); a fail-loud detector catches hallucinations (P2-1/2/3 ✅); scan-order machinery live (P2-4a ✅); real-slide scan-order calibration (P2-4b ⏸). **Exit:** "error-free" means mechanics **and** fidelity — and reading order is verified on real slides. *(Grounding+detector exit already met 2026-06-21; reading-path-calibration exit pending P2-4b.)*
+**Horizon 1 — Product trust restored (P2 complete).** Narration grounds on the *rendered* slide (P2-3 ✅); a fail-loud detector catches hallucinations (P2-1/2/3 ✅); scan-order machinery live (P2-4a ✅) and being upgraded to the ratified compositional-tuple classifier (P2-4c S1+S2 ✅, S3 🔄); held-out conformance already 0.93 (A6 PASS). **Exit:** "error-free" means mechanics **and** fidelity — and reading order is classifier-verified on real slides. *(Grounding+detector exit met 2026-06-21; reading-path exit needs P2-4c S3 close → P2-4b finalize `run_live()`.)*
 
 **Horizon 2 — BETA spec as written (`beta-spec §8`).** Variant picker mechanics (T5b); Tracy on the trial path (T6d); dedicated lesson-plan / ingestion review surfaces (T6b/c); Marcus SPOC beyond scripted approve-path (T7); motion carve-out ratified or an honest producer (T8); two qualifying runs exercising **binding voice + variant picks** (not approve-path only). **Exit:** the conversational Marcus product on the frozen corpus, error-free twice **to spec**.
 
@@ -234,8 +246,8 @@ Authority: `beta-phase-1-closure-ratification-2026-06-19.md` (forward path) + `e
 |---|---|---|
 | LangGraph migration substrate | **~95%+** | shipped; Slabs 1–7c closed |
 | BETA Phase 1 (engine reliability + voice bind) | **100%** | ratified closed (Option B) |
-| P2 fidelity / perception arc | **~95%** | P2-1/2/3/4a closed + strike fired; only operator-gated P2-4b remains |
+| P2 fidelity / perception arc | **~90%** | grounding 100% (P2-1/2/3 + strike); reading-path: catalog v1.1 ratified + P2-4c S1+S2 done, S3 in flight, P2-4b finalize pre-staged (scope grew vs the old 7-enum-calibration plan) |
 | BETA Phase 2 / full §8 spec | **~25–35%** | voice mechanics + thin SPOC; variants/research/motion/full-path open |
 | Full APP (Epics 15–18 + LP integration) | **~15–20%** | substrate exists; not wired to the operator product |
 
-**Bottom line:** the project is **one review-and-close cycle past** the machinery of its top-priority fidelity arc — P2-1/2/3/4a done, the disaster regression struck. Total completion still needs **P2-4b (operator evidence)**, then the **BETA charter remainder (T5b–T8)**, then the **aspirational epics** — a long tail after P2 closes.
+**Bottom line:** the top-priority fidelity arc is **one build leg from done** — grounding closed + struck; reading-path catalog ratified to a compositional tuple; the tuple classifier is 2/3 built (P2-4c S1+S2 closed) with **S3 the last leg in flight**, and P2-4b finalize is a pre-staged one-command run against gold that already scores 0.93. After P2 closes: the **BETA charter remainder (T5b–T8)**, then the **aspirational epics** — the long tail. (The NEW CYCLE T11 gate has earned its keep: it caught real over-claim / vacuous-gate / index-misalignment defects on S1 and S2 that the green battery hid, each fixed via one Codex remediation round.)
