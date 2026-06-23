@@ -1,7 +1,7 @@
 # Reading-Path Patterns Catalog — v1 (compositional-tuple form)
 
-**Status:** v1 — TUNED from operator-led slide-perception training **round 1 (26/54 slides reviewed, operator-CLOSED 2026-06-22)** and **`bmad-party-mode` GREEN-WITH-AMENDMENTS (6/6, no impasse, 2026-06-22)**. Supersedes the v0-draft flat-7-enum (which was INVALIDATED: the flat enum is *why* `_looks_z` / `image_dominant` / `diagram_driven` over-claimed). Party amendments A1–A10 applied (see §10). **Ratified for the classifier-refactor spec.**
-**Version:** v1 2026-06-22 (party-ratified). **Design authority:** `reading-path-patterns-design-decisions-2026-06-21.md` (rubric + hybrid-(c) architecture) + `reading-path-operator-review-round1-notes.md` (the round-1 evidence; single source of truth). **Held-out:** the 14 reserved slides were NOT used here and must NOT be (P2-4b calibration only).
+**Status:** v1.1 — v1 was TUNED from operator slide-perception **round 1 (26/54, operator-CLOSED 2026-06-22)** + **`bmad-party-mode` GREEN-WITH-AMENDMENTS A1–A10**. **v1.1 adds the held-out confirm/deny round (2026-06-22): Claude labeled the 14 held-out slides via v1, operator confirmed 12 / denied 2; a 6/6 consensus round (no impasse) + operator ratification adopted decisions D1–D3 (see §11).** Supersedes the v0-draft flat-7-enum.
+**Version:** v1.1 2026-06-22 (operator-ratified D1–D3). **Design authority:** `reading-path-patterns-design-decisions-2026-06-21.md` + `reading-path-operator-review-round1-notes.md` (round-1) + `holdout-confirm-deny-kit-2026-06-22.md` (held-out round). **Held-out:** the 14 reserved slides were perceived + labeled in the held-out round (reserve CONSUMED, operator-accepted) — no longer naive for independent scoring.
 **Reading direction:** Western LTR (hard-coded assumption; revisit for RTL/CJK).
 
 ---
@@ -35,8 +35,8 @@ Failing any bar → the slide routes to the **DEFAULT** (`top_down` position-ord
 |---|---|---|
 | **`split_image_text`** | ≈half image \| half text; **side-agnostic** (image L, R, or top). THE MOST COMMON shape. | message-led: narrate the text side; image per its role tier. |
 | **`text_hero_divider`** | full-bleed, one dominant centered headline/poster; little/no body. | single-impression beat; sparse cadence. Sub-types: section-opener / CTA-contact. |
-| **`multi_column`** | N≥3 **parallel peer** columns (coordinate facets, no tension). | title-anchor → left-to-right, one beat per column. |
-| **`two_pane`** | 2 **oppositional** panes, vertically symmetric, per-side subheadings. | establish framing → walk side A vs side B (carries `comparison_pair`). |
+| **`multi_column`** | **N≥2** **parallel/coordinate** peer columns (coordinate facets, no tension) — *(D1: generalized from N≥3; absorbs 2-wide coordinate peers like 17_)*. | title-anchor → left-to-right, one beat per column. |
+| **`two_pane`** | 2 **oppositional** panes w/ per-side subheadings — **requires an explicit oppositional cue** (vs/versus, before/after, pro/con, ✓/✗, "Option A \| B"). Absent the cue → `multi_column` *(D1 falsifiable discriminator)*. | establish framing → walk side A vs side B (carries `comparison_pair`). |
 | **`card_grid`** | peer cards/boxes in a grid (e.g. 3+2), no imposed sequence. | row-major reading-order; bottom summary = resolution beat. |
 | **`single_text_block`** | vertically-stacked text, no focal hero. | top→bottom reading order; scaffold-before-detail if dense. |
 
@@ -55,14 +55,24 @@ Failing any bar → the slide routes to the **DEFAULT** (`top_down` position-ord
 ### AXIS 3 — `text_substructure` (independent of layout)
 | value | signature | narration-delta |
 |---|---|---|
-| **`enumerated_process`** | order load-bearing — imposed by **numerals OR arrows/flow/connectors**. | strict order walk; speak ordinals/step-verbs; one beat per step. |
-| **`peer_boxes`** | coordinate items (boxed or stacked), no imposed sequence. | natural reading-order; **semantics confirm order when geometry is neutral**; peers MAY carry a light connective thread. |
+| **`enumerated_process`** | **transform-SEQUENCE** — order is load-bearing because each step transforms a carried state *(D3 discriminator: PERMUTABILITY — if the items can be reordered without loss of meaning, it is NOT a process)*. Numerals alone do NOT qualify; numbered summary lists → `peer_boxes`. | strict order walk; speak ordinals/step-verbs with causal connective tissue ("first… which enables… then…"); one beat per step. |
+| **`peer_boxes`** | coordinate items (boxed/stacked), **permutable** — no imposed sequence (incl. numbered SUMMARY lists like "Key Takeaways 1–4" *(D3)*). | natural reading-order; **semantics confirm order when geometry is neutral**; even-handed parallel recitation; peers MAY carry a light connective thread. |
 | **`comparison_pair`** | 2 oppositional sides w/ per-side subheadings (admitted as `two_up_comparison`). | establish both sides → walk the contrast. **Composes with any macro** (full-width `two_pane` OR nested in `split_image_text`). |
 | **`dense_exposition`** | paragraphs / heavy copy. | title-anchor → **scaffold** (name the headings) → walk detail; summarize, don't recite. |
 | **`hero_message`** | one big headline / 1–3 bold messages. | single-impression beat; echo on-screen phrasing; sparse. |
 
 ### AXIS 4 — `narration_cadence` (pacing > word-volume)
 `sparse_slow` (poster/ad/divider — 1–2 sentences) ↔ `moderate` (split/peer) ↔ `dense` (exposition). Cadence is a first-class field; it matches slide density.
+
+### AXIS 5 — `callout_intent` (speech-act; ORTHOGONAL; PROVISIONAL) *(D2, operator-ratified 2026-06-22)*
+The communicative act a callout/slide performs — independent of layout, image, text-substructure. Composes with any macro (like `image_role`). Drives a **VO directness mandate**: convey the directed-action with directness + clarity.
+| value | trigger | VO mandate (one line) |
+|---|---|---|
+| `inform` *(default / null — no-op)* | no performative callout | narrate normally; no special directive. |
+| `invite_response` | "Questions?" / open-floor / discussion prompt | pose it as an invitation and **leave air**. |
+| `challenge_quiz` | a comprehension check / "which belongs to…?" | provoke — "so, which would you pick?" — then the options. |
+| `directive_cta` | an action demand / "next steps" / "apply now" | issue it plainly, second person, imperative punch. |
+**Governance (binding):** value-set is **PROVISIONAL** — only the **3 evidenced** values above (`invite_response`, `challenge_quiz`, `directive_cta`) are seeded (held-out 5_/18_/22_/21_). `takeaway_imperative` + `contact` are **harvest hypotheses, NOT shipped to the frozen enum** until a dedicated harvest clears N≥4/value across ≥2 genres. **PLACEMENT (Winston):** a separate OPTIONAL sibling field OUTSIDE the tuple→primary-name derivation — NOT a derivation axis, NOT per-element. **METRIC (Murat):** EXCLUDED from the primary-key top-1 AND the full-tuple top-1; reported as a **probationary separate per-axis vector** until it clears a **double-labeled agreement ≥0.80 / κ≥0.6** floor (RED-first). **DETECTION (Amelia):** LLM-resident in the existing S3 escalation call (no new round-trip); deterministic regex (contact/CTA cues) only pre-flags. The VO mandate is a *generation* directive, tested separately from the perception metric. **Watch:** `takeaway_imperative` vs `directive_cta` is the merge-risk pair (Caravaggio).
 
 ---
 
@@ -91,7 +101,8 @@ Each = a recurring tuple with N≥4 (or operator-admitted) + a distinct narratio
 - **discriminator:** 2 **oppositional** sides w/ subheadings (vs `multi_column`'s coordinate peers).
 - **exemplars:** `2_` (Clinical Reasoning/Design Thinking), `2_Same-Process-Different-Context`, `3_Two-Processes-One-Mind`, `6_Idea-vs-Opportunity` (nested), `6_Ideas-vs-Opportunities-A-Crucial-Distinction` (full-width prose + closing synthesis).
 
-### 4.3 `multi_column` *(ADMITTED PROVISIONAL at N=3, QUARANTINED from pass-bar; operator directive + party A3)*
+### 4.3 `multi_column` *(ADMITTED — D1 generalized to N≥2 coordinate peers; EXITS quarantine at N≥4)*
+> **v1.1 (D1):** generalized to **N≥2 coordinate peers** (was N≥3). Now **N≥4 across ≥2 genres** (reviewed 2_An-Era, 4_Innovators-DNA, 5_The-Real-Barrier + held-out 17_) → **EXITS the A3 quarantine** (un-provisional; counts toward the top-1 denominator; 17_ stays scored — no metric laundering). Discriminator vs `two_pane`: coordinate peers (no oppositional cue) → here; oppositional cue → `two_pane`.
 - **tuple:** macro=`multi_column` · text=`peer_boxes` (L→R) · image-role=1 or 4 · cadence=moderate.
 - **scan/narration:** title-anchor → left-to-right, one beat per column; may carry a light connective thread.
 - **discriminator:** N≥3 **parallel/coordinate** facets, no tension; chevron/arrow STYLING does NOT make it a process (gate `enumerated_process` on content being sequential, not on decorative chevron shape).
@@ -207,3 +218,18 @@ Fully-spawned `bmad-party-mode`: Winston (architect), John (PM), Murat (test arc
 | A10 | Scope: macro_layout + image_role + 6 VO principles are the value payload; cadence + text_substructure must NOT gate the headline metric | John | absorbed into §9.4 (secondary axes off top-1) |
 
 **Watch-item (not blocking, Caravaggio):** a possible third `text_hero_divider` sub-type — `title/cover` establishing-shot — distinct from section-opener; flag if it appears in the unreviewed 28, do not pre-build.
+
+---
+
+## 11. HELD-OUT CONFIRM/DENY ROUND + v1.1 DECISIONS (2026-06-22, operator-ratified)
+**Round:** Claude labeled the 14 held-out slides via v1 (live gpt-5.5, 14/14, 0 errors); operator confirmed 12 / denied 2 (17_, 21_). **A6 result PASSED:** primary-key `{macro_layout × image_role}` top-1 **13/14 = 0.93** (≥0.85); derived-name 12/14 = 0.857; per-axis image_role 14/14, cadence 14/14, macro 13/14, text_substructure 13/14. `diagram_driven` foreground-gate held (8_ monitor + 13_ bars ruled tier-1 decorative). Known-wrong-default anchors 5_/8_ confirmed. Evidence: `holdout-confirm-deny-kit-2026-06-22.md` + `reading-path-holdout-scan/`.
+
+**Consensus round (fully-spawned `bmad-party-mode`, 6/6 ADOPT, no impasse; Quinn→John NOT triggered): Winston/John/Murat/Mary/Amelia/Caravaggio. Operator-ratified all three as-shaped.**
+
+| ID | Decision | Binding riders | Where applied |
+|---|---|---|---|
+| D1 | `multi_column` generalized to **N≥2 coordinate peers**; `two_pane`/`two_up_comparison` reserved for **oppositional** (explicit-cue discriminator: vs/before-after/pro-con/✓✗/Option A\|B) | S1 geometry emits multi_column; oppositional = S3 upgrade (cue only flags); 17_ stays in top-1 denominator; multi_column EXITS quarantine at N≥4; back-check reviewed-26 multi_column are genuine peers | §2 AXIS 1, §4.3 |
+| D2 | New orthogonal **`callout_intent`** axis (speech-act) + VO directness mandate | separate optional sibling field OUTSIDE the tuple→name key (Winston); EXCLUDED from primary-key + full-tuple top-1, probationary per-axis vector, must clear double-labeled agreement ≥0.80/κ≥0.6 (Murat); LLM/S3, no new round-trip (Amelia); 3 evidenced values seeded, takeaway_imperative+contact held as hypotheses, inform/null=default (Mary+Caravaggio); one-line VO mandate per value tested as generation (John) | §2 AXIS 5 |
+| D3 | `enumerated_process` tightened to **transform-sequence (permutability test)**; numbered summary lists → `peer_boxes` | discriminator = order-dependence NOT numerals (Murat, RED-first fixture pair); S1 conservative downgrade, S3 confirms process (Amelia); back-check original enumerated_process exemplars + peer_boxes floor (Mary); bundle D1+D3 as ONE derivation re-baseline (Winston) | §2 AXIS 3, §4.5 |
+
+**Held-out re-labels under v1.1:** 17_ → `multi_column` (2-wide coordinate peers); 21_ → `peer_boxes` list + `callout_intent: takeaway_imperative`. **Build impact:** D1/D3 = zero-schema-diff derivation refinements; D2 = new optional sibling field, additive dp-v1.6 (only escalates if it ever feeds the derivation — do NOT). All fold into the P2-4c spec.

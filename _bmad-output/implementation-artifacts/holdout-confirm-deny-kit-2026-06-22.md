@@ -36,20 +36,20 @@
 ## Confirm/deny summary table
 | # | slide (filename, .png) | proposed primary | macro_layout | dominant image_role | text_substructure | cadence | conf | CONFIRM / DENY |
 |---|---|---|---|---|---|---|---|---|
-| 1 | `1_Diagnosis-Innovation` | split_image_text | split_image_text | 1 decorative | hero_message+sentence | moderate | high | ☐ / ☐ |
-| 2 | `3_Achieving-the-Ideal-State` | enumerated_process | single_text_block | 4 pointer (icons) | enumerated_process (5 steps) | dense | med-high | ☐ / ☐ |
-| 3 | `5_Check-Your-Understanding` 🚩 | top_down | single_text_block (+banner) | 1 decorative | hero question + 3 peer options | moderate | medium | ☐ / ☐ |
-| 4 | `6_All-of-them-belong-to-BOTH` | split_image_text | split_image_text | 1 decorative | hero_message+sentence | sparse-moderate | high | ☐ / ☐ |
-| 5 | `8_Decision-Making-Foundations` 🚩 | two_up_comparison | split_image_text | 1 decorative (photo+monitor) | comparison_pair (EV vs EU) | moderate | high | ☐ / ☐ |
-| 6 | `9_Comparing-Expected-Value-and-Expected-Utility` | two_up_comparison | two_pane | none | comparison_pair + synthesis | dense | high | ☐ / ☐ |
-| 7 | `11_Value-Creation-in-Innovation` | enumerated_process | multi_column | none | enumerated_process (01/02/03) | dense | high | ☐ / ☐ |
-| 8 | `13_Effective-Problem-Solving-Approach` 🚩 | enumerated_process | multi_column | 1 decorative (bars) | enumerated_process (3 steps) | dense | medium | ☐ / ☐ |
-| 9 | `15_Types-of-Motivation` | two_up_comparison | split_image_text | 2 illustrative | comparison_pair (extrinsic vs intrinsic) | moderate | high | ☐ / ☐ |
-| 10 | `17_Examples-of-Effective-Leadership-in-Public-Health` 🚩 | two_up_comparison | two_pane | 2 illustrative | two parallel panels (Global/Local) | dense | medium | ☐ / ☐ |
-| 11 | `18_The-Future-of-Public-Health-Leadership` | top_down | single_text_block | none | dense_exposition (+Questions? callout) | dense | high | ☐ / ☐ |
-| 12 | `20_Resources-for-Entrepreneurship-and-Innovation` | top_down | card_grid (2×2) | none | peer_boxes + summary | dense | high | ☐ / ☐ |
-| 13 | `21_Key-Takeaways` | enumerated_process | split_image_text | 1 decorative | enumerated_process (4 numbered) | moderate | med-high | ☐ / ☐ |
-| 14 | `22_Next-Steps-Your-Path-Forward` | top_down | card_grid (2×2) | 4 pointer (icons) | peer_boxes + closing | dense | medium | ☐ / ☐ |
+| 1 | `1_Diagnosis-Innovation` | split_image_text | split_image_text | 1 decorative | hero_message+sentence | moderate | high | ☐confirm / ☐ |
+| 2 | `3_Achieving-the-Ideal-State` | enumerated_process | single_text_block | 4 pointer (icons) | enumerated_process (5 steps) | dense | med-high | ☐confirm / ☐ |
+| 3 | `5_Check-Your-Understanding` 🚩 | top_down | single_text_block (+banner) | 1 decorative | hero question + 3 peer options | moderate | medium | ☐confirm / ☐ |
+| 4 | `6_All-of-them-belong-to-BOTH` | split_image_text | split_image_text | 1 decorative | hero_message+sentence | sparse-moderate | high | ☐ confirm/ ☐ |
+| 5 | `8_Decision-Making-Foundations` 🚩 | two_up_comparison | split_image_text | 1 decorative (photo+monitor) | comparison_pair (EV vs EU) | moderate | high | ☐confirm / ☐ |
+| 6 | `9_Comparing-Expected-Value-and-Expected-Utility` | two_up_comparison | two_pane | none | comparison_pair + synthesis | dense | high | ☐confirm / ☐ |
+| 7 | `11_Value-Creation-in-Innovation` | enumerated_process | multi_column | none | enumerated_process (01/02/03) | dense | high | ☐confirm / ☐ |
+| 8 | `13_Effective-Problem-Solving-Approach` 🚩 | enumerated_process | multi_column | 1 decorative (bars) | enumerated_process (3 steps) | dense | medium | ☐confirm / ☐ |
+| 9 | `15_Types-of-Motivation` | two_up_comparison | split_image_text | 2 illustrative | comparison_pair (extrinsic vs intrinsic) | moderate | high | ☐confirm / ☐ |
+| 10 | `17_Examples-of-Effective-Leadership-in-Public-Health` 🚩 | two_up_comparison | two_pane | 2 illustrative | two parallel panels (Global/Local) | dense | medium | ☐ / ☐deny |treat as new catalog type--two-wide multicolumn holding peers.
+| 11 | `18_The-Future-of-Public-Health-Leadership` | top_down | single_text_block | none | dense_exposition (+Questions? callout) | dense | high | ☐ confirm/ ☐ | Note that some slides carry performative language such as inviting questions or challenging user to produce an answer to a question.  Perahps these have macro features and in addition are categoriezed by type of invitation or request carried by the callout?  VO narration must convey the invitation/request/chellenge/directed action with directness and clarity.
+| 12 | `20_Resources-for-Entrepreneurship-and-Innovation` | top_down | card_grid (2×2) | none | peer_boxes + summary | dense | high | ☐ confirm/ ☐ |
+| 13 | `21_Key-Takeaways` | enumerated_process | split_image_text | 1 decorative | enumerated_process (4 numbered) | moderate | med-high | ☐ /DENY ☐ |this more a list than an enumerated process.  the "key takeaway" is perhaps another kind of callout that makes a demand or otherwise aims to direct the audience?
+| 14 | `22_Next-Steps-Your-Path-Forward` | top_down | card_grid (2×2) | 4 pointer (icons) | peer_boxes + closing | dense | medium | ☐ confirm/ ☐ | 'Next steps' also perhaps a type of callout suggesting action to the audience?
 
 ---
 
@@ -145,3 +145,15 @@
 - **DENY format:** for any DENY, note which axis is wrong (primary / macro / image_role / substructure / cadence / scan-order) and the correction — that pins the per-axis confirm rate and feeds the next tuning round.
 - **My lowest-confidence calls (look here first):** `13_` (enumerated vs multi_column), `17_` (oppositional vs 2-coordinate — possible catalog gap), `5_` (top_down vs multi_column option-row), `22_` (peer vs sequence), and the `15_` image-tier (1 vs 2).
 - **After your verdicts return:** I finalize the A6 numbers (primary-key top-1, per-axis, full-tuple), fold corrections into a catalog v1.1 + the P2-4c spec, and (if you want) proceed to the build. P2-4b conformance is NOT finalized until your verdicts land.
+
+---
+
+## RESULTS — operator verdicts + consensus + ratification (2026-06-22)
+**Verdicts:** 12 CONFIRM / 2 DENY (17_, 21_). **A6 (held-out):** primary-key `{macro_layout × image_role}` top-1 **13/14 = 0.93** (≥0.85 ✅); derived primary-name 12/14 = 0.857 (≥0.85 ✅); per-axis: image_role 14/14, cadence 14/14, macro 13/14, text_substructure 13/14. diagram_driven foreground-gate held (8_, 13_); known-wrong-default anchors 5_/8_ confirmed. `callout_intent` is excluded from the primary key (per D2), so it does not affect these numbers.
+
+**The 2 denials + operator notes → 3 decisions, consensus round (`bmad-party-mode` 6/6 ADOPT, no impasse) → OPERATOR-RATIFIED all three as-shaped:**
+- **D1** — `multi_column` generalized to N≥2 coordinate peers; `two_pane`/`two_up_comparison` reserved for oppositional (explicit-cue discriminator). **17_ → `multi_column`** (2-wide coordinate peers). multi_column exits quarantine (N≥4).
+- **D2** — new orthogonal `callout_intent` axis (provisional; 3 seeded values; out of the primary-key metric; LLM/S3; probation gate; one-line VO mandate per value).
+- **D3** — `enumerated_process` tightened to transform-sequence (permutability test); numbered lists → `peer_boxes`. **21_ → `peer_boxes` list + `callout_intent: takeaway_imperative`.**
+
+Folded into **catalog v1.1** (§2 AXIS 1/3/5, §4.3, §11) + the **P2-4c spec** (§0, §7). Full disposition: catalog §11.

@@ -8,6 +8,13 @@
 
 ---
 
+## 0. v1.1 AMENDMENTS — held-out round + D1–D3 (operator-ratified 2026-06-22; supersede where they conflict)
+The catalog advanced to **v1.1** after the held-out confirm/deny round (12/14 confirmed; A6 primary-key top-1 **13/14 = 0.93** PASS; diagram_driven gate held). A 6/6 consensus round (no impasse) + operator ratification adopted three decisions that amend this spec:
+- **D1 — `multi_column` = N≥2 coordinate peers** (was N≥3); `two_pane`/`two_up_comparison` reserved for **oppositional** with an **explicit-cue discriminator** (vs/before-after/pro-con/✓✗/Option A|B). **S1 geometry emits `multi_column`; the oppositional upgrade is an S3 call** (the cue may flag, never set). `multi_column` **EXITS the quarantine** (now N≥4) — it counts toward the top-1 denominator (held-out 17_ stays scored). Resolves Gap **G1** (peer-vs-oppositional = explicit-cue → S3).
+- **D2 — new orthogonal `callout_intent` axis** (speech-act): a **separate OPTIONAL sibling field** (`callout_intent: Optional[CalloutIntent]`), OUTSIDE the tuple→primary-name derivation (Winston). Seeded values `{invite_response, challenge_quiz, directive_cta}` (provisional; `takeaway_imperative`+`contact` are harvest hypotheses, not in the frozen enum; `inform`/null = default). **LLM-resident in the existing S3 call** as an added structured-output key (no new round-trip, no new sub-story; deterministic regex pre-flags only). **EXCLUDED from primary-key + full-tuple top-1; reported as a probationary per-axis vector** gated on a **double-labeled agreement ≥0.80 / κ≥0.6** RED-first floor. The VO directness mandate is a *generation* directive, tested separately.
+- **D3 — `enumerated_process` = transform-sequence (PERMUTABILITY test)**; numbered summary lists → `peer_boxes`. Discriminator = order-dependence, NOT numerals. **S1 conservatively downgrades** numbered peers to `peer_boxes`; S3 confirms genuine process. RED-first permutability fixture pair.
+- **Build sequencing (Winston):** D1+D3 are zero-schema-diff derivation refinements — land them as ONE derivation-module change with a single shape-pin re-baseline. D2 adds one optional field (additive dp-v1.6). Back-check (Mary): original `enumerated_process` exemplars still pass; `peer_boxes` clears its floor after absorbing lists; reviewed-26 `multi_column` are genuine peers.
+
 ## 1. Intent (frozen)
 Refactor the P2-4a reading-path classifier from a **flat closed 7-enum** into the party-ratified **compositional tuple** `{macro_layout × image_role(per-element) × text_substructure × narration_cadence}`, **ADDITIVELY** — `reading_path` stays a closed enum (the derived primary name); the tuple lands as optional sibling fields. Fix the `_looks_z` over-claim (v0: 43/54, 24 false-positives). Keep P2-4a green. Bump `data_plane_vocabulary_version` dp-v1.5 → dp-v1.6 (additive; pack stays v4.2). Party consensus on the dp bump is RECORDED (catalog §10 A1) — the pre-dev pipeline-regime gate is satisfied.
 
@@ -79,7 +86,8 @@ Refactor the P2-4a reading-path classifier from a **flat closed 7-enum** into th
 - `text_substructure` + `narration_cadence` reported as a **separate per-axis conformance vector** (never folded into top-1) — absorbs John's A10 (secondary axes do not gate the headline metric).
 - **≥80% conformance = full-tuple exact** across all axes.
 - Per-axis confusion matrix emitted as an artifact.
-- `multi_column` excluded from top-1 denominator until N≥4 (A3).
+- ~~`multi_column` excluded from top-1 denominator until N≥4 (A3).~~ **D1: `multi_column` now N≥4 → EXITS quarantine; it COUNTS toward the top-1 denominator (held-out 17_ stays scored — no metric laundering).**
+- **`callout_intent` (D2) is EXCLUDED from the primary-key AND full-tuple top-1** — reported as a **probationary separate per-axis vector**; it may influence NO scored number until a **double-labeled agreement ≥0.80 / κ≥0.6** floor is cleared (RED-first test pins the floor on double-labeled data; if it fails, collapse the value-set before shipping).
 - **Contamination check:** record per held-out slide whether its gold label invokes a gated/retired pattern; ≥2 of 14 ⇒ retirement overfit, 0.85 contaminated (recorded observable).
 
 ## 8. Governance + verification
