@@ -4,6 +4,14 @@
 **Prereq:** **S1 + S2 merged first.** **Class S.** Branch `fidelity-perception-arc-2026-06-19`.
 **Authority:** `spec-p2-4c-reading-path-tuple-refactor.md` (§0 v1.1, §5 S3, §6 G1/G3 [RESOLVED], §7) · `reading-path-patterns-catalog.md` v1.1 (§2 AXIS 5 callout_intent, §4.2 oppositional, §4.5 enumerated_process) · `reading-path-gap-resolution-G2-G3-2026-06-22.md` (BINDING) · memory `feedback_no_mocks_real_live_apis`, `feedback_operator_cost_not_constraint_run_gated_validation`.
 
+## 0. BUILT-SUBSTRATE GROUNDING (post-S1/S2 close, refreshed 2026-06-23) — CONSUME, don't re-derive
+S1 is DONE and S2 is finalizing; the escalation predicate must **consume the flags S1/S2 already emit on the `PerceptionArtifact`**, not re-implement detection:
+- **S1 emits `reading_path_flags: list[ReadingPathFlag] | None`** — already carries `"oppositional_cue"` when the explicit opposition cue is present (S1 FLAGS, never upgrades — D1). So the predicate's **`opposition_cue_hit` = `"oppositional_cue" in (artifact.reading_path_flags or [])`** — do NOT re-run the lexicon (S1 owns it). (Guard: None-check `reading_path_flags` — it's nullable; see follow-on `reading-path-flags-none-guard`.)
+- **S2 emits `image_role_flags: list[ImageRoleFlag] | None`** — carries `"tier_2_5_candidate"` and `"tier_3_quarantined"`. So the predicate's **tier-2.5/3 harvest-route hit = those flags present**; **`low_conf_role_elements`** = elements the S2 backfill left low-confidence / `role_tier is None` in the full-length `image_roles` (S2 MF-A fix makes `image_roles` index-aligned 1:1 with `visual_elements`, with `None` sentinels — consume positionally, None = unscored).
+- **`derive_primary_name(macro_layout, text_substructure)`** (S1, pinned module) is the projection; S3's `layout_delta` (`two_pane`) re-derives the primary via this same function — do NOT set the primary name directly.
+- **`image_role_scoring.py`** (S2) owns the κ/fold/quarantine; S3 does NOT re-score — it only emits `role_overrides` that S2's scoring later consumes.
+- Tuple-disagreement subpredicate = deterministic `macro_layout`/`text_substructure` vs the perceiver-emitted `role_tier`/cadence already on the artifact.
+
 ## G3 resolution (party-ratified — BINDING)
 **Default path needs NO third call:** S2 already emits `role_tier` + `callout_intent` on the perceiver's pixel call with the catalog inlined. **S3 is a TRIGGERED, single ≥gpt-5.5 catalog-guided call that returns a TUPLE-DELTA**, fired ONLY when the upstream predicate says the slide is ambiguous. It is NOT a standing per-slide call.
 

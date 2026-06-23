@@ -1,0 +1,26 @@
+{
+  "_provenance": {
+    "source": "reading-path-holdout-gold-labels-2026-06-23.md (operator-confirmed 2026-06-22 + D1-D3 ratified, catalog v1.1 section 11); QA-verified by Claude 2026-06-23",
+    "scored_primary_key": ["macro_layout", "image_role"],
+    "image_role_fold": {"2_5": "2", "3": null},
+    "out_of_top_1": ["callout_intent", "text_substructure", "narration_cadence"],
+    "thresholds": {"primary_key_top_1": 0.85, "full_tuple": 0.80},
+    "note": "image_role null = no scored image element. callout_intent 'inform' == default/null. takeaway_imperative is a harvest hypothesis (not in the frozen enum); does not affect scored numbers."
+  },
+  "gold": [
+    {"slide_id": "1_Diagnosis-Innovation", "macro_layout": "split_image_text", "image_role": "1", "text_substructure": "hero_message", "narration_cadence": "moderate", "callout_intent": "inform", "primary": "split_image_text"},
+    {"slide_id": "3_Achieving-the-Ideal-State", "macro_layout": "single_text_block", "image_role": "4", "text_substructure": "enumerated_process", "narration_cadence": "dense", "callout_intent": "inform", "primary": "enumerated_process"},
+    {"slide_id": "5_Check-Your-Understanding", "macro_layout": "single_text_block", "image_role": "1", "text_substructure": "peer_boxes", "narration_cadence": "moderate", "callout_intent": "challenge_quiz", "primary": "top_down"},
+    {"slide_id": "6_All-of-them-belong-to-BOTH", "macro_layout": "split_image_text", "image_role": "1", "text_substructure": "hero_message", "narration_cadence": "sparse_slow", "callout_intent": "inform", "primary": "split_image_text"},
+    {"slide_id": "8_Decision-Making-Foundations", "macro_layout": "split_image_text", "image_role": "1", "text_substructure": "comparison_pair", "narration_cadence": "moderate", "callout_intent": "inform", "primary": "two_up_comparison"},
+    {"slide_id": "9_Comparing-Expected-Value-and-Expected-Utility", "macro_layout": "two_pane", "image_role": null, "text_substructure": "comparison_pair", "narration_cadence": "dense", "callout_intent": "inform", "primary": "two_up_comparison"},
+    {"slide_id": "11_Value-Creation-in-Innovation", "macro_layout": "multi_column", "image_role": null, "text_substructure": "enumerated_process", "narration_cadence": "dense", "callout_intent": "inform", "primary": "enumerated_process"},
+    {"slide_id": "13_Effective-Problem-Solving-Approach", "macro_layout": "multi_column", "image_role": "1", "text_substructure": "enumerated_process", "narration_cadence": "dense", "callout_intent": "inform", "primary": "enumerated_process"},
+    {"slide_id": "15_Types-of-Motivation", "macro_layout": "split_image_text", "image_role": "2", "text_substructure": "comparison_pair", "narration_cadence": "moderate", "callout_intent": "inform", "primary": "two_up_comparison"},
+    {"slide_id": "17_Examples-of-Effective-Leadership-in-Public-Health", "macro_layout": "multi_column", "image_role": "2", "text_substructure": "peer_boxes", "narration_cadence": "dense", "callout_intent": "inform", "primary": "multi_column", "deny_correction": "D1"},
+    {"slide_id": "18_The-Future-of-Public-Health-Leadership", "macro_layout": "single_text_block", "image_role": null, "text_substructure": "dense_exposition", "narration_cadence": "dense", "callout_intent": "invite_response", "primary": "top_down"},
+    {"slide_id": "20_Resources-for-Entrepreneurship-and-Innovation", "macro_layout": "card_grid", "image_role": null, "text_substructure": "peer_boxes", "narration_cadence": "dense", "callout_intent": "inform", "primary": "grid_quadrant"},
+    {"slide_id": "21_Key-Takeaways", "macro_layout": "split_image_text", "image_role": "1", "text_substructure": "peer_boxes", "narration_cadence": "moderate", "callout_intent": "takeaway_imperative", "primary": "split_image_text", "deny_correction": "D3"},
+    {"slide_id": "22_Next-Steps-Your-Path-Forward", "macro_layout": "card_grid", "image_role": "4", "text_substructure": "peer_boxes", "narration_cadence": "dense", "callout_intent": "directive_cta", "primary": "grid_quadrant"}
+  ]
+}
