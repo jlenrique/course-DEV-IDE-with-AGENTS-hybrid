@@ -89,6 +89,13 @@ class PerceptionArtifact(BaseModel):
         default=None,
         description="Per-element image role tiers emitted or deterministically backfilled in S2.",
     )
+    dominant_image_role: ImageRoleTier | None = Field(
+        default=None,
+        description=(
+            "Authoritative slide-level dominant image role tier, derived from "
+            "geometry/area evidence over image_roles."
+        ),
+    )
     image_role_flags: list[ImageRoleFlag] | None = Field(
         default=None,
         description=(

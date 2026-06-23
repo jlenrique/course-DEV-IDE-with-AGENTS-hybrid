@@ -112,7 +112,10 @@ def _perception_prompt(slide_id: str) -> str:
         "uses as a label or navigation chip. Hard gates: kind icon/logo with area "
         "<0.05 is tier 4; tier 3 is forbidden when no internal labels are visible; "
         "edge-bleed image with overlapping text and no internal labels is a strong "
-        "tier 1 prior. "
+        "tier 1 prior. A tone, mood, hero, banner, or side-panel photo with no "
+        "internal labels and no explicit textual reference is tier 1 even when it "
+        "is photographic; do not promote it to tier 2 merely because it supports "
+        "the theme. "
         "If you cannot read the slide, set confidence to LOW and coverage to "
         "low-confidence."
     )

@@ -181,6 +181,26 @@
       "description": "Per-element image role tiers emitted or deterministically backfilled in S2.",
       "title": "Image Roles"
     },
+    "dominant_image_role": {
+      "anyOf": [
+        {
+          "enum": [
+            "1",
+            "2",
+            "2_5",
+            "3",
+            "4"
+          ],
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "description": "Authoritative slide-level dominant image role tier, derived from geometry/area evidence over image_roles.",
+      "title": "Dominant Image Role"
+    },
     "image_role_flags": {
       "anyOf": [
         {

@@ -123,11 +123,9 @@ def decide_escalation(
             macro_margin is not None and macro_margin < active_thresholds.macro_margin
         ),
         "opposition_cue_hit": "oppositional_cue" in (artifact.reading_path_flags or []),
-        "callout_kind_present": _has_any_token(
-            _element_kind_text(artifact), lexicons.callout_kinds
-        ),
+        "callout_kind_present": _has_genuine_callout_ambiguity(artifact, lexicons),
         "numbered_without_transform": (
-            bool(_ORDINAL_RE.search(text))
+            _has_numbered_sequence_without_transform(text)
             and not _has_any_token(text, lexicons.transform_verbs)
         ),
         "low_conf_role_elements": low_conf_role_count > 0,
@@ -139,10 +137,7 @@ def decide_escalation(
                 and artifact.confidence_score < active_thresholds.confidence_score
             )
         ),
-        "tier_candidate_hit": any(
-            flag in (artifact.image_role_flags or [])
-            for flag in ("tier_2_5_candidate", "tier_3_quarantined")
-        ),
+        "tier_candidate_hit": "tier_3_quarantined" in (artifact.image_role_flags or []),
     }
     fired = [name for name, value in subpredicates.items() if value]
     return EscalationDecision(
@@ -392,6 +387,38 @@ def _element_kind_text(artifact: PerceptionArtifact) -> str:
 def _has_any_token(text: str, tokens: tuple[str, ...]) -> bool:
     normalized = text.lower()
     return any(token in normalized for token in tokens)
+
+
+def _has_genuine_callout_ambiguity(
+    artifact: PerceptionArtifact,
+    lexicons: _Lexicons,
+) -> bool:
+    """Escalate only callouts whose speech act is genuinely ambiguous.
+
+    A body text block with kind ``callout`` is common in this corpus and is not
+    enough. We require question/quiz/CTA/contact language or compact imperative
+    wording that maps to the probationary callout-intent axis.
+    """
+    for raw in artifact.visual_elements:
+        text = " ".join(
+            str(raw.get(field) or "")
+            for field in ("id", "kind", "type", "label", "text", "title", "description")
+        ).lower()
+        if not _has_any_token(text, lexicons.callout_kinds):
+            continue
+        word_count = len(re.findall(r"\b\w+\b", text))
+        if re.search(r"\b(quiz|question|check your understanding)\b", text):
+            return True
+        if "?" in text and word_count <= 18:
+            return True
+        if re.search(r"\b(contact|register|sign up|next steps|path forward|join us)\b", text):
+            return True
+    return False
+
+
+def _has_numbered_sequence_without_transform(text: str) -> bool:
+    matches = _ORDINAL_RE.findall(text)
+    return len(matches) >= 2
 
 
 def _has_tuple_disagreement(artifact: PerceptionArtifact) -> bool:

@@ -258,6 +258,8 @@ def _classify_tuple(artifact: PerceptionArtifact) -> _TupleClassification:
         macro_layout = "diagram_driven"
     elif _looks_split_image_text(elements):
         macro_layout = "split_image_text"
+    elif _looks_two_pane(elements, kinds_text):
+        macro_layout = "two_pane"
     elif _looks_like_grid(kinds_text, elements):
         macro_layout = "card_grid"
     elif _looks_multi_column(elements):
@@ -314,6 +316,7 @@ def with_classified_reading_path(artifact: PerceptionArtifact) -> PerceptionArti
         return artifact
     classified = _classify_tuple(artifact)
     image_roles, image_role_flags = _image_roles(artifact)
+    elements = _elements(artifact)
     return artifact.model_copy(
         update={
             "reading_path": classified.reading_path,
@@ -321,6 +324,11 @@ def with_classified_reading_path(artifact: PerceptionArtifact) -> PerceptionArti
             "text_substructure": classified.text_substructure,
             "narration_cadence": classified.narration_cadence,
             "image_roles": image_roles,
+            "dominant_image_role": _dominant_image_role(
+                elements,
+                image_roles,
+                classified.macro_layout,
+            ),
             "image_role_flags": image_role_flags,
             "callout_intent": None,
             "reading_path_flags": classified.reading_path_flags,
@@ -483,6 +491,90 @@ def _image_roles(
     if "3" in roles:
         _append_unique(flags, "tier_3_quarantined")
     return roles, flags or None
+
+
+def _dominant_image_role(
+    elements: list[_Element],
+    roles: list[ImageRoleTier | None],
+    macro_layout: MacroLayout,
+) -> ImageRoleTier | None:
+    """Derive the authoritative slide-level image role from visual evidence.
+
+    Text panels are not image-role evidence. The fold prefers actual photos,
+    diagrams, charts, icons, and decorative bars, then applies layout-aware
+    dominance so a text-heavy slide is not scored as illustrative because its
+    body copy was tiered 2/2.5 by the perceiver.
+    """
+    role_by_source = {
+        element.source_index: roles[element.source_index]
+        for element in elements
+        if element.source_index < len(roles)
+    }
+    photos = [element for element in elements if _is_photo(element) and element.area >= 0.08]
+    icons = [
+        element
+        for element in elements
+        if _is_small_icon_or_logo(element) or "icon" in element.kind.lower()
+    ]
+    charts = [element for element in elements if _is_chart_or_table(element)]
+    diagrams = [
+        element
+        for element in elements
+        if _is_diagram(element) and not _looks_like_decorative_divider(element)
+    ]
+    decorative_bars = [
+        element
+        for element in elements
+        if _looks_like_decorative_bar(element) and role_by_source.get(element.source_index) == "1"
+    ]
+
+    if len(photos) >= 2:
+        return "2"
+    if photos:
+        photo = max(photos, key=lambda item: item.area)
+        role = role_by_source.get(photo.source_index) or photo.role_tier
+        if role == "1":
+            return "1"
+        if _is_conceptual_photo(photo):
+            return "2"
+        if macro_layout == "split_image_text" or _edge_bleed(photo):
+            return "1"
+        return role or "2"
+    if charts:
+        return "2_5"
+    if diagrams:
+        return max(
+            (role_by_source.get(element.source_index) or "2" for element in diagrams),
+            key=lambda role: {"3": 4, "2_5": 3, "2": 2, "1": 1, "4": 0}.get(role, 0),
+        )
+    if len(icons) >= 3:
+        return "4"
+    if decorative_bars and macro_layout == "multi_column":
+        return "1"
+    return None
+
+
+def _is_conceptual_photo(element: _Element) -> bool:
+    content = f"{element.key} {element.kind} {element.text}".lower()
+    return any(token in content for token in ("scale", "balance", "chart", "graph"))
+
+
+def _looks_like_decorative_divider(element: _Element) -> bool:
+    content = f"{element.key} {element.kind} {element.text}".lower()
+    return (
+        any(token in content for token in ("divider", "line", "decor"))
+        and (element.y2 - element.y1) <= 0.04
+    )
+
+
+def _looks_like_decorative_bar(element: _Element) -> bool:
+    content = f"{element.key} {element.kind} {element.text}".lower()
+    return (
+        not element.text.strip()
+        and "diagram" not in element.kind.lower()
+        and any(token in content for token in ("bar", "decor", "divider"))
+        and (element.y2 - element.y1) <= 0.08
+    )
 
 
 def _append_unique(flags: list[ImageRoleFlag], flag: ImageRoleFlag) -> None:
@@ -688,9 +780,19 @@ def _text_substructure(
 ) -> TextSubstructure:
     if _has_transform_sequence(elements):
         return "enumerated_process"
+    if macro_layout == "two_pane" or _has_comparison_pair(elements):
+        return "comparison_pair"
+    if _has_process_sequence(elements):
+        return "enumerated_process"
+    if _has_quiz_choices(elements):
+        return "peer_boxes"
+    if _has_numbered_peer_rows(elements):
+        return "peer_boxes"
     if macro_layout in {"multi_column", "card_grid"} or _has_element_ordinal(elements):
         return "peer_boxes"
-    if _text_word_count(text, elements) <= 12:
+    if macro_layout == "split_image_text" and len(_content_text_elements(elements)) <= 3:
+        return "hero_message"
+    if _text_word_count(text, elements) <= 18:
         return "hero_message"
     return "dense_exposition"
 
@@ -702,15 +804,52 @@ def _narration_cadence(
 ) -> NarrationCadence:
     if macro_layout == "text_hero_divider":
         return "sparse_slow"
+    if macro_layout == "split_image_text":
+        if _has_large_hero_text(elements) and len(_content_text_elements(elements)) <= 2:
+            return "sparse_slow"
+        return "moderate"
+    if _has_quiz_choices(elements):
+        return "moderate"
     if _text_word_count(text, elements) >= 45 or len(elements) >= 6:
         return "dense"
     return "moderate"
 
 
 def _looks_like_grid(kinds_text: str, elements: list[_Element]) -> bool:
-    return any(
-        token in kinds_text for token in ("grid", "matrix", "quadrant", "axis")
-    ) and _two_by_two(elements)
+    return (
+        any(token in kinds_text for token in ("grid", "matrix", "quadrant", "axis"))
+        and _two_by_two(elements)
+    ) or _has_card_grid_geometry(elements)
+
+
+def _looks_two_pane(elements: list[_Element], kinds_text: str) -> bool:
+    panes = [
+        element
+        for element in _content_text_elements(elements)
+        if element.area >= 0.18 and (element.x2 - element.x1) >= 0.35
+    ]
+    if len(panes) < 2:
+        return False
+    left = [element for element in panes if element.cx < 0.50]
+    right = [element for element in panes if element.cx >= 0.50]
+    if not left or not right:
+        return False
+    best_left = max(left, key=lambda item: item.area)
+    best_right = max(right, key=lambda item: item.area)
+    balanced_height = abs(best_left.cy - best_right.cy) <= 0.12
+    balanced_size = (
+        min(best_left.area, best_right.area) / max(best_left.area, best_right.area)
+    ) >= 0.55
+    cue_text = f"{kinds_text} {' '.join(element.text for element in panes)}"
+    comparison_cue = bool(
+        re.search(
+            r"\b(compare|comparing|comparison|versus|vs|whereas|expected\s+value|"
+            r"expected\s+utility|option\s+a|option\s+b)\b",
+            cue_text,
+            re.I,
+        )
+    )
+    return balanced_height and balanced_size and comparison_cue
 
 
 def _looks_center_out(elements: list[_Element], kinds_text: str) -> bool:
@@ -720,14 +859,190 @@ def _looks_center_out(elements: list[_Element], kinds_text: str) -> bool:
 
 
 def _looks_multi_column(elements: list[_Element]) -> bool:
-    if len(elements) < 2 or _has_large_visual(elements):
+    if len(elements) < 2:
         return False
-    if _has_element_ordinal(elements) and not _has_transform_sequence(elements):
+    if _looks_photo_pair_columns(elements):
+        return True
+    text_columns = _content_text_elements(elements)
+    if len(text_columns) < 2:
         return False
-    buckets: dict[int, int] = {}
-    for element in elements:
-        buckets[_bucket(element.cx)] = buckets.get(_bucket(element.cx), 0) + 1
-    return len(buckets) >= 2
+    if _all_simple_numbered_row(text_columns):
+        return False
+    lanes: dict[int, list[_Element]] = {}
+    for element in text_columns:
+        lanes.setdefault(_bucket(element.cx), []).append(element)
+    occupied = [items for items in lanes.values() if items]
+    if len(occupied) < 2:
+        return False
+    if len(occupied) == 2 and any(_lane_is_narrow_icon_strip(items) for items in occupied):
+        return False
+    return _has_peer_column_evidence(occupied)
+
+
+def _content_text_elements(elements: list[_Element]) -> list[_Element]:
+    return [
+        element
+        for element in elements
+        if _is_text(element)
+        and not _is_title_like(element)
+        and not _is_full_width_summary(element)
+        and element.area >= 0.01
+    ]
+
+
+def _is_title_like(element: _Element) -> bool:
+    content = f"{element.kind} {element.key} {element.text}".lower()
+    return any(token in content for token in ("title", "headline")) and element.y1 <= 0.25
+
+
+def _is_full_width_summary(element: _Element) -> bool:
+    content = f"{element.key} {element.text}".lower()
+    return (
+        (element.x2 - element.x1) >= 0.70
+        and element.y1 >= 0.72
+        and any(token in content for token in ("summary", "in summary", "remember", "conclusion"))
+    )
+
+
+def _has_card_grid_geometry(elements: list[_Element]) -> bool:
+    if _has_quiz_choices(elements):
+        return False
+    cards = [
+        element
+        for element in _content_text_elements(elements)
+        if 0.14 <= (element.x2 - element.x1) <= 0.50
+        and 0.06 <= (element.y2 - element.y1) <= 0.36
+    ]
+    if len(cards) < 4:
+        return False
+    x_buckets = {_bucket(element.cx) for element in cards}
+    ys = sorted(element.cy for element in cards)
+    row_gap = max(
+        (right - left for left, right in zip(ys, ys[1:], strict=False)),
+        default=0.0,
+    )
+    return len(x_buckets) == 2 and row_gap >= 0.16
+
+
+def _looks_photo_pair_columns(elements: list[_Element]) -> bool:
+    photos = [
+        element
+        for element in elements
+        if _is_photo(element) and element.area >= 0.12 and 0.15 <= element.cy <= 0.55
+    ]
+    if len(photos) < 2:
+        return False
+    left_photos = [element for element in photos if element.cx < 0.50]
+    right_photos = [element for element in photos if element.cx >= 0.50]
+    if not left_photos or not right_photos:
+        return False
+    texts = _content_text_elements(elements)
+    return all(
+        any(
+            _horizontal_overlap(photo, text) >= 0.45
+            and 0.0 <= text.y1 - photo.y2 <= 0.18
+            for text in texts
+        )
+        for photo in (
+            max(left_photos, key=lambda item: item.area),
+            max(right_photos, key=lambda item: item.area),
+        )
+    )
+
+
+def _lane_is_narrow_icon_strip(items: list[_Element]) -> bool:
+    return all((item.x2 - item.x1) <= 0.14 for item in items)
+
+
+def _has_peer_column_evidence(lanes: list[list[_Element]]) -> bool:
+    lane_tops = [min(item.y1 for item in lane) for lane in lanes]
+    lane_bottoms = [max(item.y2 for item in lane) for lane in lanes]
+    aligned_top = max(lane_tops) - min(lane_tops) <= 0.18
+    overlapping_band = min(lane_bottoms) - max(lane_tops) >= 0.10
+    return aligned_top and overlapping_band
+
+
+def _all_simple_numbered_row(elements: list[_Element]) -> bool:
+    if len(elements) < 2:
+        return False
+    same_row = (
+        max(element.cy for element in elements) - min(element.cy for element in elements)
+    ) <= 0.12
+    return same_row and all(
+        re.search(r"^\s*(?:[1-9]|[a-d])[\).:-]?\s+\w+", element.text, re.I)
+        and _text_word_count(element.text, []) <= 4
+        for element in elements
+    )
+
+
+def _has_comparison_pair(elements: list[_Element]) -> bool:
+    texts = _content_text_elements(elements)
+    if len(texts) < 2:
+        return False
+    joined = " ".join(element.text for element in texts).lower()
+    if re.search(r"\b(extrinsic|intrinsic)\b", joined):
+        return True
+    cue = bool(
+        re.search(
+            r"\b(compare|comparison|versus|vs|whereas|expected\s+value|expected\s+utility|"
+            r"extrinsic|intrinsic)\b",
+            joined,
+        )
+    )
+    if not cue:
+        return False
+    sorted_by_x = sorted(texts, key=lambda element: element.cx)
+    return sorted_by_x[-1].cx - sorted_by_x[0].cx >= 0.18
+
+
+def _has_process_sequence(elements: list[_Element]) -> bool:
+    texts = _content_text_elements(elements)
+    if len(texts) < 3:
+        return False
+    joined = " ".join(element.text for element in texts).lower()
+    process_ordinal_hits = len(
+        re.findall(r"\b(?:0[1-9]|first|second|third|fourth|next|finally)\b", joined)
+    )
+    process_hits = len(
+        re.findall(
+            r"\b(build|launch|iterate|measure|learn|determine|explore|evaluate|step|solution)\b",
+            joined,
+        )
+    )
+    vertical_stack = len({_bucket(element.cy) for element in texts}) >= 3
+    peer_columns = len({_bucket(element.cx) for element in texts}) >= 2
+    process_evidence = process_hits >= 3 or (
+        process_ordinal_hits >= 2 and process_hits >= 1
+    )
+    return process_evidence and (vertical_stack or peer_columns)
+
+
+def _has_quiz_choices(elements: list[_Element]) -> bool:
+    texts = _content_text_elements(elements)
+    choice_like = [
+        element
+        for element in texts
+        if any(token in f"{element.key} {element.kind}".lower() for token in ("choice", "answer"))
+    ]
+    question = any("?" in element.text for element in texts)
+    return question and len(choice_like) >= 2
+
+
+def _has_numbered_peer_rows(elements: list[_Element]) -> bool:
+    rows = [
+        element
+        for element in _content_text_elements(elements)
+        if re.search(r"^\s*(?:[1-9]|[a-d])\b", element.text, re.I)
+    ]
+    return len(rows) >= 3
+
+
+def _has_large_hero_text(elements: list[_Element]) -> bool:
+    text_elements = [element for element in elements if _is_text(element)]
+    return any(
+        element.area >= 0.18 and _text_word_count(element.text, []) <= 8
+        for element in text_elements
+    )
 
 
 def _is_connector(element: _Element) -> bool:
@@ -818,7 +1133,17 @@ def _is_visual(element: _Element) -> bool:
 def _is_text(element: _Element) -> bool:
     return any(
         token in (element.kind + " " + element.text).lower()
-        for token in ("text", "headline", "title", "copy", "callout", "step", "box", "caption")
+        for token in (
+            "text",
+            "headline",
+            "title",
+            "copy",
+            "callout",
+            "step",
+            "box",
+            "caption",
+            "bullet",
+        )
     )
 
 

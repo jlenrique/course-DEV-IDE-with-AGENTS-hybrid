@@ -115,29 +115,13 @@ def run_live(
         dump = classified.model_dump()
         emitted[slide_id] = ReadingPathTuple(
             macro_layout=dump.get("macro_layout"),
-            image_role=_dominant_image_role(dump.get("image_roles")),
+            image_role=dump.get("dominant_image_role"),
             text_substructure=dump.get("text_substructure"),
             narration_cadence=dump.get("narration_cadence"),
             callout_intent=dump.get("callout_intent"),
             derived_primary=dump.get("reading_path"),
         )
     return score_emitted(emitted, gold)
-
-
-def _dominant_image_role(image_roles: list | None) -> object:
-    """Slide-level dominant scored tier from a per-element image_roles list.
-
-    SCAFFOLD: pick the most-load-bearing present tier (3 > 2_5 > 2 > 4 > 1),
-    skipping None sentinels. Align with S2's authoritative dominant-tier rule at
-    integration time.
-    """
-    if not image_roles:
-        return None
-    priority = {"3": 5, "2_5": 4, "2": 3, "4": 2, "1": 1}
-    present = [r for r in image_roles if r is not None]
-    if not present:
-        return None
-    return max(present, key=lambda r: priority.get(str(r), 0))
 
 
 def main() -> None:  # pragma: no cover

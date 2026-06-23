@@ -58,10 +58,13 @@ def main() -> None:
         raise SystemExit("FATAL: OPENAI_API_KEY not set")
 
     from app.models.perception.perception_artifact import PerceptionArtifact
-    from scripts.analysis.reading_path_p2_4b_run import _dominant_image_role, load_gold
+    from scripts.analysis.reading_path_p2_4b_run import load_gold
     from scripts.analysis.reading_path_p2_4b_score import ReadingPathTuple, score
     from scripts.utilities.reading_path_classifier import with_classified_reading_path
-    from scripts.utilities.reading_path_escalation import run_s3_escalation
+    from scripts.utilities.reading_path_escalation import (
+        assert_escalation_rate_bounds,
+        run_s3_escalation,
+    )
 
     gold = load_gold()
     captured_at = datetime.now(UTC).isoformat()
@@ -90,7 +93,7 @@ def main() -> None:
         d = a.model_dump()
         return ReadingPathTuple(
             d.get("macro_layout"),
-            _dominant_image_role(d.get("image_roles")),
+            d.get("dominant_image_role"),
             d.get("text_substructure"),
             d.get("narration_cadence"),
             d.get("callout_intent"),
@@ -101,6 +104,7 @@ def main() -> None:
     rep = score(rows)
 
     led = res.ledger
+    assert_escalation_rate_bounds(led, known_ambiguous_present=True)
     fired: Counter = Counter()
     for s in led["slides"]:
         for f in s.get("fired", []):
