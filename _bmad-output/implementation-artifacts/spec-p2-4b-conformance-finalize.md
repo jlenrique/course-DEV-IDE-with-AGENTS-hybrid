@@ -18,7 +18,9 @@ The original P2-4b design (catalog §9.6) was **"operator labels the held-out 14
 
 **Consequence (operator-accepted):** labeling these 14 **CONSUMES the held-out reserve** — they are no longer naive for any future independent-label scoring. This supersedes the prior independent-label P2-4b design; flagged to party at the next gate (non-blocking, governance record).
 
-**Why this still measures conformance:** P2-4b (post-S2/S3) runs the *built classifier* over the 14 held-out perceptions to produce EMITTED tuples, then scores EMITTED-vs-GOLD via the harness. The classifier was NOT tuned on these gold labels (it is built from the catalog + S1/S2/S3 logic), so the emitted-vs-gold comparison is a legitimate conformance measurement — it is the catalog-as-implemented vs the operator-confirmed catalog-as-intended. The held-out confirm/deny round itself was the **dry run** of this same scoring, using Claude's v1 labels as the "emitted" set (→ 13/14 = 0.93).
+> **⚠️ CORRECTION (S3-T11, 2026-06-23) — the 0.93 is NOT the built classifier.** An earlier version of this spec implied "P2-4b is already at 0.93 / one command (`run_live`)." The S3-T11 live dry-run disproved that: **0.93 = the catalog-approach (Claude-in-loop labels) vs gold; the BUILT deterministic classifier scored primary-key 0.071** on the held-out (on STALE perceptions captured pre-S2-role_tier → geometry-backfill-only — an un-fair number, but far from 0.93), and the escalation predicate **over-fired at 93%** (vs the 20% ceiling). **The built classifier's honest accuracy is UNMEASURED.** P2-4b is therefore a **real 4-leg calibration milestone, NOT a rubber-stamp** (see §4). Every metric below carries `(subject, substrate-freshness)`.
+
+**Why this measures conformance:** P2-4b runs the *built classifier* over the 14 held-out perceptions → EMITTED tuples → scores EMITTED-vs-GOLD via the harness. The classifier was NOT tuned on these gold labels, so it is a legitimate conformance measurement (catalog-as-implemented vs operator-confirmed catalog-as-intended). **The held-out confirm/deny round was NOT this run** — it scored *Claude's catalog-guided labels* (subject=catalog-approach) as the "emitted" set (→ 0.93), which measures human/Claude labeling, not the deterministic predicate. Different subjects; do not equate them.
 
 ---
 
@@ -28,7 +30,7 @@ Per catalog v1.1 §9.4 + `reading-path-gap-resolution-G2-G3-2026-06-22.md`:
 
 ### IN the scored top-1 (the headline metric)
 - **PRIMARY-KEY top-1** = STRICT exact match on `macro_layout × image_role`, image_role folded to the live-scored set **{1, 2, 4}** (2.5 → 2; tier 3 quarantined/excluded). No partial credit.
-- **THRESHOLD: ≥ 0.85.** (Held-out dry run: 13/14 = 0.93 ✅.)
+- **THRESHOLD: ≥ 0.85.** (Catalog-approach/Claude-labels dry run: 0.93 ✅. **Built-classifier on stale perceptions: 0.071 ❌ — UNMEASURED-fair; needs fresh re-perception. The threshold has NOT been met by the built classifier.**)
 
 ### Full-tuple
 - **FULL-TUPLE exact match** = exact on `macro_layout × image_role × text_substructure × narration_cadence` (callout_intent + quarantined tiers excluded).
@@ -76,13 +78,18 @@ Per catalog v1.1 §9.4 + `reading-path-gap-resolution-G2-G3-2026-06-22.md`:
 
 ---
 
-## 4. The dry-run plan (already executed + reproducible)
+## 4. The REAL P2-4b — a 4-leg calibration milestone (NOT a rubber-stamp)
 
-The held-out confirm/deny round IS the dry run: it scored Claude's v1 labels (the "emitted") against the operator-confirmed gold and produced the headline numbers. The harness reproduces this exactly:
-
+The held-out confirm/deny round was the **catalog-approach** dry run (Claude's v1 labels vs gold → 0.93) — it measures human/Claude labeling, NOT the built classifier. The harness self-test reproduces *that* arithmetic with synthetic emitted tuples:
 ```
 .venv/Scripts/python.exe scripts/analysis/reading_path_p2_4b_score.py
 ```
+But the S3-T11 live dry-run of the **built** classifier (`reading_path_p2_4b_run.run_live()`) scored **0.071 on stale perceptions** + **93% escalation**. So the real P2-4b has **four legs** (ratified S3-T11 party 5/5):
+1. **Re-perceive** the 14 held-out PNGs under S2's `role_tier` prompt (kills the stale-substrate confound — the 0.071 was on pre-S2 perceptions with geometry-backfill-only image_roles).
+2. **Recalibrate** the escalation predicate (esp. the over-broad `callout_kind_present`; the threshold can't precede recalibration — chicken/egg) + wire the ≤20% ceiling to the REAL ledger.
+3. **Re-measure** the built classifier's honest primary-key/macro/image_role accuracy on fresh substrate via `run_live()`.
+4. **(contingent) Improve** macro (geometry ~50% — owned by S1-geometry, not S3) + image_role if the fair re-measure still falls short.
+**No "0.93 / one-command / already-passing" claim is valid for the built classifier until leg 3 produces a number on fresh perception.**
 
 → primary-key 13/14 = 0.929 (PASS ≥0.85); full-tuple 12/14 = 0.857 (PASS ≥0.80); macro 13/14; image_role 14/14; text_substructure 13/14; cadence 14/14; callout_intent 3/4 (probation, advisory); confusion: `multi_column → two_pane : 1` (the 17_ miss).
 

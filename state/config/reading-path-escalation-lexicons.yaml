@@ -1,0 +1,29 @@
+version: p2-4c-s3-v1
+opposition:
+  - vs
+  - versus
+  - before
+  - after
+  - pro
+  - con
+  - option a
+  - option b
+  - check
+  - cross
+transform_verbs:
+  - produces
+  - feeds
+  - enables
+  - routes
+  - launches
+  - transforms
+  - then
+  - next
+  - finally
+callout_kinds:
+  - callout
+  - cta
+  - contact
+  - question
+  - quiz
+  - check

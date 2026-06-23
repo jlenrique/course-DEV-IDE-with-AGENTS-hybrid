@@ -197,6 +197,14 @@ Read this at T1 of every story. These are the traps dev agents have repeatedly w
 
 **Fix:** when the scored set is empty (or below a minimum N), return `passes=False` / a distinct `insufficient_data` status — never the success value. Surface excluded-category disagreement to a side-channel counter so the leak is visible. "Not yet wired to a live producer" does NOT make this deferrable — a false-green acceptance harness calcifies the moment a consumer trusts it; fix it in the story that ships the harness.
 
+### H3. Validation metric measures the human/LLM-in-loop approach, not the built artifact
+
+**Trap:** a "PASS" number is produced under a workflow that includes human or LLM judgment in the loop, then gets attributed to the *built deterministic artifact* — which scores far lower when actually run. The green number is real; the **subject** it measures is not the thing shipping. Precedent: the reading-path held-out confirm/deny round scored **0.93** with *Claude labeling each slide via the catalog* (human/LLM-in-loop), and that 0.93 propagated into STATE-OF-THE-APP + the P2-4b spec as "the system is at 0.93 / P2-4b is one command." The S3-T11 live dry-run of the **built deterministic classifier** vs the same gold scored **0.071 primary-key** (on stale perceptions). The 0.93 measured *can-a-catalog-guided-labeler-label-correctly*; the product ships *the deterministic classifier*. Sibling to [[H1]]/[[H2]] — all three are a green that doesn't mean what the doc says it means.
+
+**Detection cue:** a headline accuracy/pass number whose generation involved a human or an LLM choosing labels; a harness self-test that reproduces the number with *synthetic/hand-authored* "emitted" data rather than the real producer; a "one command / already passing" claim for a milestone whose real input pipeline hasn't been run end-to-end. Ask: *what exactly produced the "emitted" set that was scored — the built artifact, or a person/LLM?*
+
+**Fix:** every metric carries `(subject = <built-artifact | human/LLM-in-loop-approach>, substrate-freshness = <fresh | stale@date>)`. A number is only the artifact's score if the artifact produced the emissions on current-contract inputs. Run the built pipeline end-to-end (live) before claiming its accuracy; a synthetic-harness self-test proves the *scoring arithmetic*, never the *artifact's accuracy*.
+
 ---
 
 ## Meta-rule — Read this at T1, not at G6
@@ -216,3 +224,4 @@ The catalog exists to stop re-learning. When 31-1 landed, every finding here had
 | v3 | 2026-06-21 | Category G (liveness / evidence-integrity) harvested from vision-perceiver-real CLOSE party-mode (G1 fixture-backed-contract-mistaken-for-live-capability) |
 | v4 | 2026-06-23 | Category H (test-as-gate-integrity) harvested from P2-4c S1 T11 HAND-BACK party-mode (H1 green-test-certifies-a-bug / shape-pin locks wrong value + missing negative controls) |
 | v5 | 2026-06-23 | H2 (agreement/scoring harness PASSes on silently-empty/excluded-everything scored set) harvested from P2-4c S2 T11 HAND-BACK party-mode |
+| v6 | 2026-06-23 | H3 (validation metric measures the human/LLM-in-loop approach, not the built artifact) harvested from P2-4c S3 T11 live-dry-run (0.93 catalog-approach vs 0.071 built-classifier) |

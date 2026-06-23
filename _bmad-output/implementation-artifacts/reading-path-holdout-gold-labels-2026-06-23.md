@@ -61,9 +61,11 @@ The operator denied **17_** and **21_**; both corrections are applied to the gol
 
 ---
 
-## A6 numbers these gold labels reproduce (held-out round, 2026-06-22)
+## A6 numbers — CATALOG-APPROACH ONLY (held-out round, 2026-06-22)
 
-Scoring emitted-vs-gold with this gold (the held-out confirm/deny round, which IS the P2-4b dry run on Claude's v1 labels as "emitted"):
+> **⚠️ SUBJECT (S3-T11 correction 2026-06-23): the numbers below are `subject=catalog-approach (Claude-in-loop labels), substrate=stale@2026-06-22`.** They are NOT the built deterministic classifier. A live dry-run of the BUILT classifier (`run_live`) over the same gold scored **primary-key 0.071** (on stale perceptions) — the built classifier's fair accuracy is UNMEASURED pending re-perception. Do NOT cite 0.93 as the system's/classifier's accuracy. See `spec-p2-4b-conformance-finalize.md §4` (the real 4-leg calibration).
+
+Scoring Claude's catalog-guided v1 labels (the "emitted") vs this gold — i.e. the human/Claude labeling round, NOT the deterministic predicate:
 
 - **primary-key `{macro_layout × image_role}` top-1 = 13/14 = 0.93** (≥0.85 ✅). The single miss is 17_ (macro flipped `two_pane`→`multi_column` under D1).
 - **derived-primary-name 12/14 = 0.857** (≥0.85 ✅) — the operator's 12-CONFIRM count (17_ + 21_ denied at the slide level).
