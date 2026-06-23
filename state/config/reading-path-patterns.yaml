@@ -3,12 +3,15 @@ patterns:
   - id: z_pattern
     canonical_scan: top-left -> top-right -> bottom-left -> bottom-right
     cadence_tokens:
+      - to begin
+      - the frame
+      - which leads to
+      - the upshot
+      - the takeaway
       - headline
       - body
       - visual
       - CTA
-      - top-left
-      - bottom-right
     lint: warning
   - id: f_pattern
     canonical_scan: left-column top-down -> selective right-side evidence markers
@@ -43,13 +46,13 @@ patterns:
   - id: multi_column
     canonical_scan: column-major, each column top-to-bottom before advancing right
     cadence_tokens:
-      - in the next column
-      - moving to the right
-      - the adjacent column
-      - the column beside
-      - moving rightward
-      - in the column to the right
-      - across the columns
+      - another facet
+      - a separate thread
+      - the next grouping
+      - in parallel
+      - a distinct angle
+      - turning next to
+      - separately
     lint: warning
   - id: grid_quadrant
     canonical_scan: declared sweep order; row-major default
@@ -85,9 +88,9 @@ patterns:
   - id: split_image_text
     canonical_scan: title-anchor on text side -> walk text structure -> reference image only by role
     cadence_tokens:
-      - text side
-      - image side
       - the main message
+      - the core claim
+      - the takeaway
       - visual context
     lint: warning
   - id: two_up_comparison

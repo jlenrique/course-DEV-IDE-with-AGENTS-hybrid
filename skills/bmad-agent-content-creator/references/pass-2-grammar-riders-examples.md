@@ -37,7 +37,7 @@ The per-pattern **cadence tokens** below name each pattern's *ordering signature
 ## Pattern: z_pattern
 
 **Canonical scan:** top-left → top-right → bottom-left → bottom-right
-**Cadence tokens (any of):** headline / body / visual / CTA / top-left / bottom-right
+**Cadence tokens (any of):** to begin / the frame / which leads to / the upshot / the takeaway / headline / body / visual
 **Lint:** warning
 
 **When to choose it:** quadrant-balanced slide with a headline, a body block, a supporting visual, and a call to action.
@@ -127,7 +127,7 @@ Cadence token hit: `continuing down` + `next item`.
 ## Pattern: multi_column
 
 **Canonical scan:** column-major — each column top-to-bottom before advancing right
-**Cadence tokens (any of):** in the next column / moving to the right / the adjacent column / the column beside / moving rightward / in the column to the right / across the columns
+**Cadence tokens (any of):** another facet / a separate thread / the next grouping / in parallel / a distinct angle / turning next to / separately
 **Lint:** warning
 
 **When to choose it:** 2-4 column layouts where each column is self-contained.
@@ -135,16 +135,15 @@ Cadence token hit: `continuing down` + `next item`.
 **Sample narration:**
 
 ```text
-The leftmost column summarizes the diagnostic reasoning: what the history
-suggests, what the exam confirmed, what the imaging narrowed. Moving to
-the right, the middle column walks through the treatment plan: the
-first-line intervention, the monitoring checkpoints, and the stop rules.
-In the column to the right of that, the safety-net plan closes the
-encounter: return precautions, the follow-up window, and the shared
-decision point for the patient and family.
+The diagnostic reasoning comes first: what the history suggests, what the
+exam confirmed, what the imaging narrowed. A separate thread is the
+treatment plan — the first-line intervention, the monitoring checkpoints,
+and the stop rules. A distinct angle closes the encounter: the safety-net
+plan, with return precautions, the follow-up window, and the shared
+decision the patient and family make together.
 ```
 
-Cadence token hit: `moving to the right` + `in the column to the right`.
+Cadence token hit: `a separate thread` + `a distinct angle`.
 
 ---
 
@@ -197,7 +196,7 @@ Cadence token hit: `step 1` + `step 2` + `step 3` + `finally` + `step 4`.
 ## Pattern: split_image_text
 
 **Canonical scan:** title-anchor on text side -> walk text structure -> reference image only by role
-**Cadence tokens (any of):** text side / image side / the main message / visual context
+**Cadence tokens (any of):** the main message / the core claim / the takeaway / visual context
 **Lint:** warning
 
 **When to choose it:** side-by-side image and text where the message lives in the text and the image is contextual unless its role tier says otherwise.
@@ -205,12 +204,12 @@ Cadence token hit: `step 1` + `step 2` + `step 3` + `finally` + `step 4`.
 **Sample narration:**
 
 ```text
-The text side carries the main message: clinicians already solve ambiguous
-problems every day. The image side is visual context, so we use it only to set
-the scene before returning to the claim.
+The main message is the claim itself: clinicians already solve ambiguous
+problems every day. The image is only visual context — it sets the scene,
+so we touch it lightly and return to the point.
 ```
 
-Cadence token hit: `text side` + `image side` + `the main message` + `visual context`.
+Cadence token hit: `the main message` + `visual context`.
 
 ---
 
