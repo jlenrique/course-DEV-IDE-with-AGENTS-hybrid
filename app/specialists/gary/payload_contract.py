@@ -15,6 +15,7 @@ CONSUMED_PAYLOAD_KEYS: frozenset[str] = frozenset(
         "directive_path",
         "double_dispatch",
         "export_dir",
+        "gamma_settings",
         "input_text",
         "per_slide_directives",
         "prompt",

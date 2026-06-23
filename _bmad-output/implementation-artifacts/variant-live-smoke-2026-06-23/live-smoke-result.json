@@ -1,0 +1,4 @@
+{
+  "ERROR": "gamma export left briefed slide(s) unmatched for variant A: ['s1']; unmatched pages: []",
+  "trace": "Traceback (most recent call last):\n  File \"C:\\Users\\juanl\\AppData\\Local\\Temp\\claude\\C--Users-juanl-Documents-GitHub-course-DEV-IDE-with-AGENTS-hybrid\\d6aaed53-3293-4bb3-aa13-a68f97639df2\\scratchpad\\variant_live_smoke.py\", line 29, in <module>\n    result = gary_act.generate_gamma_variants(payload, client=GammaClient())\n             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"C:\\Users\\juanl\\Documents\\GitHub\\course-DEV-IDE-with-AGENTS-hybrid\\app\\specialists\\gary\\_act.py\", line 368, in generate_gamma_variants\n    raise GammaDispatchError(\napp.specialists.gary.gamma_dispatch.GammaDispatchError: gamma export left briefed slide(s) unmatched for variant A: ['s1']; unmatched pages: []\n"
+}

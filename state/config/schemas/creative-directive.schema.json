@@ -159,6 +159,57 @@
     "creative_rationale": {
       "type": "string",
       "minLength": 1
+    },
+    "gamma_settings": {
+      "type": [
+        "array",
+        "null"
+      ],
+      "description": "Optional per-variant Gamma settings. Omit for legacy single-dispatch behavior. Known theme/image_style values are documented but intentionally open strings.",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "variant_id"
+        ],
+        "properties": {
+          "variant_id": {
+            "type": "string",
+            "enum": [
+              "A",
+              "B"
+            ]
+          },
+          "theme": {
+            "type": "string",
+            "description": "Open Gamma theme id/name. Known smoke value: default."
+          },
+          "template": {
+            "type": "string",
+            "description": "Open Gamma template id/name. Known smoke value: default."
+          },
+          "image_style": {
+            "type": "string",
+            "description": "Open image style. Known smoke values: photographic, diagrammatic, illustrative."
+          },
+          "density": {
+            "type": "string",
+            "enum": [
+              "lean",
+              "balanced",
+              "dense"
+            ]
+          },
+          "tone": {
+            "type": "string",
+            "enum": [
+              "professional",
+              "warm",
+              "technical"
+            ]
+          }
+        }
+      }
     }
   }
 }

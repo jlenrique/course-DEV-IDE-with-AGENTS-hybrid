@@ -85,3 +85,40 @@ narration_profile_controls:
       - neutral
       - warm
       - vivid
+
+gamma_settings:
+  optional: true
+  nullable: true
+  description: >
+    Optional per-variant Gamma settings. Omit the field for legacy
+    single-dispatch behavior. The operator may override these per run.
+  entry_required_keys:
+    - variant_id
+  variant_id:
+    allowed_values:
+      - A
+      - B
+  theme:
+    type: open-string
+    known_values:
+      - default
+  template:
+    type: open-string
+    known_values:
+      - default
+  image_style:
+    type: open-string
+    known_values:
+      - photographic
+      - diagrammatic
+      - illustrative
+  density:
+    allowed_values:
+      - lean
+      - balanced
+      - dense
+  tone:
+    allowed_values:
+      - professional
+      - warm
+      - technical

@@ -53,6 +53,24 @@ def test_yaml_schema_has_matching_required_top_level_fields() -> None:
     assert set(schema_yaml["required_top_level_fields"]) == set(schema_json["required"])
 
 
+def test_gamma_settings_are_optional_and_schema_parity_documented() -> None:
+    schema_json = _load_json_schema()
+    schema_yaml = _load_yaml_schema()
+
+    assert "gamma_settings" not in schema_json["required"]
+    gamma_json = schema_json["properties"]["gamma_settings"]
+    assert gamma_json["type"] == ["array", "null"]
+    props = gamma_json["items"]["properties"]
+    assert props["theme"]["type"] == "string"
+    assert "enum" not in props["theme"]
+    assert props["image_style"]["type"] == "string"
+    assert "enum" not in props["image_style"]
+    assert props["density"]["enum"] == ["lean", "balanced", "dense"]
+    assert schema_yaml["gamma_settings"]["optional"] is True
+    assert schema_yaml["gamma_settings"]["theme"]["type"] == "open-string"
+    assert schema_yaml["gamma_settings"]["image_style"]["type"] == "open-string"
+
+
 def test_slide_mode_required_keys_match_between_schemas() -> None:
     schema_json = _load_json_schema()
     schema_yaml = _load_yaml_schema()
@@ -96,6 +114,86 @@ def test_slide_mode_sum_rule_accepts_valid_distribution() -> None:
         "creative_rationale": "Emphasize visual motion for engagement.",
     }
     assert validate_creative_directive(directive) == []
+
+
+def test_gamma_settings_round_trip_without_injecting_absent_field() -> None:
+    directive = {
+        "schema_version": "1.0",
+        "experience_profile": "visual-led",
+        "slide_mode_proportions": {
+            "literal-text": 0.15,
+            "literal-visual": 0.25,
+            "creative": 0.60,
+        },
+        "narration_profile_controls": {
+            "narrator_source_authority": "source-grounded",
+            "slide_content_density": "adaptive",
+            "elaboration_budget": "medium",
+            "connective_weight": "balanced",
+            "callback_frequency": "moderate",
+            "visual_narration_coupling": "balanced",
+            "rhetorical_richness": "balanced",
+            "vocabulary_register": "professional",
+            "arc_awareness": "medium",
+            "narrative_tension": "medium",
+            "emotional_coloring": "neutral",
+        },
+        "creative_rationale": "Emphasize visual motion for engagement.",
+    }
+
+    round_tripped = json.loads(json.dumps(directive, sort_keys=True))
+
+    assert "gamma_settings" not in round_tripped
+    assert validate_creative_directive(round_tripped) == []
+
+
+def test_gamma_settings_round_trip_when_present() -> None:
+    directive = {
+        "schema_version": "1.0",
+        "experience_profile": "visual-led",
+        "slide_mode_proportions": {
+            "literal-text": 0.15,
+            "literal-visual": 0.25,
+            "creative": 0.60,
+        },
+        "narration_profile_controls": {
+            "narrator_source_authority": "source-grounded",
+            "slide_content_density": "adaptive",
+            "elaboration_budget": "medium",
+            "connective_weight": "balanced",
+            "callback_frequency": "moderate",
+            "visual_narration_coupling": "balanced",
+            "rhetorical_richness": "balanced",
+            "vocabulary_register": "professional",
+            "arc_awareness": "medium",
+            "narrative_tension": "medium",
+            "emotional_coloring": "neutral",
+        },
+        "creative_rationale": "Emphasize visual motion for engagement.",
+        "gamma_settings": [
+            {
+                "variant_id": "A",
+                "theme": "theme-clean",
+                "template": "template-default",
+                "image_style": "photographic",
+                "density": "balanced",
+                "tone": "professional",
+            },
+            {
+                "variant_id": "B",
+                "theme": "theme-clean",
+                "template": "template-default",
+                "image_style": "diagrammatic",
+                "density": "balanced",
+                "tone": "professional",
+            },
+        ],
+    }
+
+    round_tripped = json.loads(json.dumps(directive, sort_keys=True))
+
+    assert round_tripped["gamma_settings"][0]["image_style"] == "photographic"
+    assert validate_creative_directive(round_tripped) == []
 
 
 @pytest.mark.parametrize(

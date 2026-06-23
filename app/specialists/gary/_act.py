@@ -22,6 +22,24 @@ from skills.gamma_api_mastery.scripts.gamma_operations import (
 REPO_ROOT = Path(__file__).resolve().parents[3]
 SANCTUM_DIR = REPO_ROOT / "_bmad" / "memory" / "bmad-agent-gary"
 REFERENCES_DIR = REPO_ROOT / "skills" / "bmad-agent-gamma" / "references"
+DEFAULT_VARIANT_PAIR: tuple[dict[str, str], dict[str, str]] = (
+    {
+        "variant_id": "A",
+        "theme": "default",
+        "template": "default",
+        "image_style": "photographic",
+        "density": "balanced",
+        "tone": "professional",
+    },
+    {
+        "variant_id": "B",
+        "theme": "default",
+        "template": "default",
+        "image_style": "diagrammatic",
+        "density": "balanced",
+        "tone": "professional",
+    },
+)
 GARY_REFERENCES = (
     "content-type-mapping.md",
     "context-envelope-schema.md",
@@ -119,6 +137,89 @@ def _theme_id(client: GammaClient, payload: dict[str, Any]) -> str | None:
     return None
 
 
+def _normalized_gamma_settings(payload: dict[str, Any]) -> list[dict[str, str]]:
+    raw = payload.get("gamma_settings")
+    if raw is None:
+        return []
+    if not isinstance(raw, list):
+        raise GaryActError(
+            "gamma_settings must be a list when present",
+            tag="gamma.settings.invalid",
+        )
+    by_variant: dict[str, dict[str, str]] = {
+        item["variant_id"]: dict(item) for item in DEFAULT_VARIANT_PAIR
+    }
+    for item in raw:
+        if item is None:
+            continue
+        if not isinstance(item, dict):
+            raise GaryActError(
+                "gamma_settings entries must be objects",
+                tag="gamma.settings.invalid",
+            )
+        variant_id = str(item.get("variant_id") or "").strip().upper()
+        if variant_id not in {"A", "B"}:
+            raise GaryActError(
+                "gamma_settings variant_id must be A or B",
+                tag="gamma.settings.invalid",
+            )
+        merged = dict(by_variant[variant_id])
+        for key in ("theme", "template", "image_style", "density", "tone"):
+            value = item.get(key)
+            if value is not None and str(value).strip():
+                merged[key] = str(value).strip()
+        by_variant[variant_id] = merged
+    return [by_variant["A"], by_variant["B"]]
+
+
+def _theme_id_for_variant(base_theme_id: str | None, settings: dict[str, str]) -> str | None:
+    theme = str(settings.get("theme") or "").strip()
+    if theme and theme != "default":
+        return theme
+    return base_theme_id
+
+
+def _text_options_for_variant(settings: dict[str, str]) -> dict[str, str]:
+    density = str(settings.get("density") or "").strip()
+    tone = str(settings.get("tone") or "").strip()
+    options: dict[str, str] = {}
+    if density and density != "balanced":
+        options["amount"] = density
+    if tone and tone != "professional":
+        options["tone"] = tone
+    return options
+
+
+def _image_options_for_variant(settings: dict[str, str]) -> dict[str, str]:
+    style = str(settings.get("image_style") or "").strip()
+    if not style:
+        return {}
+    return {"style": style}
+
+
+def _instructions_for_variant(
+    payload: dict[str, Any],
+    *,
+    variant: str,
+    settings: dict[str, str] | None,
+) -> str:
+    parts = [
+        str(payload.get("additional_instructions") or "").strip(),
+        "Use each section's leading heading as that card's title verbatim; "
+        "produce exactly one card per section; do not add a cover, agenda, "
+        "divider, or summary card; do not merge or split sections.",
+    ]
+    if settings is not None:
+        parts.append(
+            "Apply this variant's Gamma settings: "
+            f"image_style={settings.get('image_style')}; "
+            f"density={settings.get('density')}; tone={settings.get('tone')}; "
+            f"template={settings.get('template')}."
+        )
+    parts.append(f"Variant {variant}.")
+    return " ".join(part for part in parts if part).strip()
+
+
 def _slide_title(slide: dict[str, Any], index: int) -> str:
     """The briefed card title — the SINGLE source for both the Gamma card
     heading (in `_input_text`) and the export title-match key (`expected_slots`).
@@ -172,28 +273,45 @@ def generate_gamma_variants(
     export_dir = Path(str(payload.get("export_dir") or REPO_ROOT / "runs" / "gary-gamma"))
     export_dir.mkdir(parents=True, exist_ok=True)
     theme_id = _theme_id(client, payload)
-    variants = ("A", "B") if bool(payload.get("double_dispatch")) else ("A",)
+    gamma_settings = _normalized_gamma_settings(payload)
+    variants = tuple(item["variant_id"] for item in gamma_settings) or (
+        ("A", "B") if bool(payload.get("double_dispatch")) else ("A",)
+    )
+    settings_by_variant = {item["variant_id"]: item for item in gamma_settings}
     output: list[dict[str, Any]] = []
     calls: list[str] = []
     dropped_pages: list[dict[str, Any]] = []
     for variant in variants:
-        generation = client.generate_deck(
-            _input_text(slides, payload),
-            num_cards=len(slides),
-            theme_id=theme_id,
+        variant_settings = settings_by_variant.get(variant)
+        generation_kwargs: dict[str, Any] = {
+            "num_cards": len(slides),
+            "theme_id": (
+                _theme_id_for_variant(theme_id, variant_settings)
+                if variant_settings is not None
+                else theme_id
+            ),
             # cardSplit=inputTextBreaks pins one card per `\n---\n` chunk, so
             # Gamma can no longer merge/split briefed slides (the 6->5 collapse
             # that orphaned slide-05/06). With the title-led chunks above, each
             # card is titled with the briefed title and binds bijectively.
-            card_split="inputTextBreaks",
-            additional_instructions=(
-                f"{str(payload.get('additional_instructions') or '').strip()} "
-                "Use each section's leading heading as that card's title "
-                "verbatim; produce exactly one card per section; do not add a "
-                "cover, agenda, divider, or summary card; do not merge or split "
-                f"sections. Variant {variant}."
-            ).strip(),
-            export_as="png",
+            "card_split": "inputTextBreaks",
+            "additional_instructions": _instructions_for_variant(
+                payload,
+                variant=variant,
+                settings=variant_settings,
+            ),
+            "export_as": "png",
+        }
+        if variant_settings is not None:
+            text_options = _text_options_for_variant(variant_settings)
+            image_options = _image_options_for_variant(variant_settings)
+            if text_options:
+                generation_kwargs["text_options"] = text_options
+            if image_options:
+                generation_kwargs["image_options"] = image_options
+        generation = client.generate_deck(
+            _input_text(slides, payload),
+            **generation_kwargs,
         )
         raw_generation_id = (
             generation.get("generation_id")
@@ -277,6 +395,8 @@ def generate_gamma_variants(
                     "slide_id": slide_id,
                     "card_number": index,
                     "dispatch_variant": variant,
+                    "variant_id": variant,
+                    "gamma_settings": variant_settings,
                     "file_path": slide_paths.get(slide_id, ""),
                     "generation_id": generation_id,
                     # Observation A (folded in): the real slide title (original
@@ -303,6 +423,7 @@ def generate_gamma_variants(
         "theme_resolution": {"theme_id": theme_id, "handshake": "list_themes"},
         "generation_mode": "double-dispatch" if len(variants) == 2 else "single-dispatch",
         "calls_made": len(calls),
+        "variant_gamma_settings": gamma_settings,
         "gary_slide_output": output,
         # Decision #1 provenance: engine cover pages dropped during title
         # matching are recorded here, never silently vanished.
@@ -354,6 +475,7 @@ from app.specialists.gary.payload_contract import CONSUMED_PAYLOAD_KEYS  # noqa:
 
 __all__ = [
     "CONSUMED_PAYLOAD_KEYS",
+    "DEFAULT_VARIANT_PAIR",
     "GARY_REFERENCES",
     "GaryActError",
     "SANCTUM_DIR",

@@ -95,6 +95,109 @@ def test_gary_double_dispatch_generates_per_slide_variants(tmp_path: Path, monke
     )
 
 
+def test_gary_variant_arc_dispatches_per_variant_gamma_settings(
+    tmp_path: Path, monkeypatch
+) -> None:
+    zpath = _titled_zip(tmp_path, ["1_Alpha-Topic", "2_Beta-Topic"])
+    monkeypatch.setattr(
+        gary_act, "download_export", lambda url, *, output_dir, filename: str(zpath)
+    )
+    client = FakeGammaClient()
+    payload = {
+        "slides": [
+            {"slide_id": "s1", "title": "Alpha Topic"},
+            {"slide_id": "s2", "title": "Beta Topic"},
+        ],
+        "export_dir": str(tmp_path),
+        "gamma_settings": [
+            {
+                "variant_id": "A",
+                "theme": "theme-photo",
+                "template": "template-smoke",
+                "image_style": "photographic",
+                "density": "balanced",
+                "tone": "professional",
+            },
+            {
+                "variant_id": "B",
+                "theme": "theme-diagram",
+                "template": "template-smoke",
+                "image_style": "diagrammatic",
+                "density": "dense",
+                "tone": "technical",
+            },
+        ],
+    }
+
+    result = gary_act.generate_gamma_variants(payload, client=client)
+
+    assert result["generation_mode"] == "double-dispatch"
+    assert result["calls_made"] == 2
+    assert result["variant_gamma_settings"] == payload["gamma_settings"]
+    assert client.generate_calls[0]["theme_id"] == "theme-photo"
+    assert client.generate_calls[0]["image_options"] == {"style": "photographic"}
+    assert client.generate_calls[1]["theme_id"] == "theme-diagram"
+    assert client.generate_calls[1]["image_options"] == {"style": "diagrammatic"}
+    assert client.generate_calls[1]["text_options"] == {
+        "amount": "dense",
+        "tone": "technical",
+    }
+    rows = result["gary_slide_output"]
+    assert {row["variant_id"] for row in rows} == {"A", "B"}
+    assert {
+        row["gamma_settings"]["image_style"]
+        for row in rows
+        if row["gamma_settings"] is not None
+    } == {"photographic", "diagrammatic"}
+
+
+def test_gary_variant_arc_partial_settings_fall_back_to_default_pair(
+    tmp_path: Path, monkeypatch
+) -> None:
+    zpath = _titled_zip(tmp_path, ["1_Alpha-Topic"])
+    monkeypatch.setattr(
+        gary_act, "download_export", lambda url, *, output_dir, filename: str(zpath)
+    )
+    client = FakeGammaClient()
+
+    result = gary_act.generate_gamma_variants(
+        {
+            "slides": [{"slide_id": "s1", "title": "Alpha Topic"}],
+            "export_dir": str(tmp_path),
+            "gamma_settings": [{"variant_id": "A", "image_style": "photographic"}],
+        },
+        client=client,
+    )
+
+    assert result["calls_made"] == 2
+    assert result["variant_gamma_settings"][0]["image_style"] == "photographic"
+    assert result["variant_gamma_settings"][1] == dict(gary_act.DEFAULT_VARIANT_PAIR[1])
+    assert client.generate_calls[1]["image_options"] == {"style": "diagrammatic"}
+
+
+def test_gary_no_gamma_settings_preserves_single_dispatch_shape(
+    tmp_path: Path, monkeypatch
+) -> None:
+    zpath = _titled_zip(tmp_path, ["1_Only-Topic-Here"])
+    monkeypatch.setattr(
+        gary_act, "download_export", lambda url, *, output_dir, filename: str(zpath)
+    )
+    client = FakeGammaClient()
+
+    result = gary_act.generate_gamma_variants(
+        {"slides": [{"slide_id": "s1", "title": "Only Topic Here"}], "export_dir": str(tmp_path)},
+        client=client,
+    )
+
+    assert result["generation_mode"] == "single-dispatch"
+    assert result["calls_made"] == 1
+    assert result["variant_gamma_settings"] == []
+    assert len(result["gary_slide_output"]) == 1
+    assert result["gary_slide_output"][0]["dispatch_variant"] == "A"
+    assert result["gary_slide_output"][0]["gamma_settings"] is None
+    assert "image_options" not in client.generate_calls[0]
+
+
 def test_gary_generation_pins_titles_and_card_split(tmp_path: Path, monkeypatch) -> None:
     """Storyboard-correctness follow-on (2026-06-19): the generation call must
     (a) pass cardSplit=inputTextBreaks so Gamma cannot merge/split briefed

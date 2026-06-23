@@ -463,10 +463,30 @@ def _variant_candidates(production_envelope: Any) -> tuple[list[str], list[dict[
                 "variant": variant,
                 "file_path": row.get("file_path"),
                 "display_title": row.get("display_title"),
+                "gamma_settings": row.get("gamma_settings"),
             }
         )
     options = [{"slide_id": sid, "variants": rows} for sid, rows in per_slide.items()]
     return sorted(variants), options
+
+
+def _variant_gamma_settings(production_envelope: Any) -> list[dict[str, Any]]:
+    output = _latest_contribution_output(production_envelope, "gary")
+    raw = output.get("variant_gamma_settings") if isinstance(output, dict) else None
+    if isinstance(raw, list) and all(isinstance(item, dict) for item in raw):
+        return [dict(item) for item in raw]
+    rows = output.get("gary_slide_output") if isinstance(output, dict) else None
+    if not isinstance(rows, list):
+        return []
+    by_variant: dict[str, dict[str, Any]] = {}
+    for row in rows:
+        if not isinstance(row, dict):
+            continue
+        settings = row.get("gamma_settings")
+        variant = str(row.get("dispatch_variant") or row.get("variant_id") or "")
+        if variant and isinstance(settings, dict):
+            by_variant.setdefault(variant, dict(settings))
+    return [by_variant[key] for key in sorted(by_variant)]
 
 
 def _build_decision_card(
@@ -576,9 +596,12 @@ def _build_decision_card(
         # follow-on (weed-clearing posture: the pick must function + show the
         # evaluation; rich per-candidate parsing is a postmortem-harvest item).
         variant_ids, variant_options = _variant_candidates(production_envelope)
+        gamma_settings = _variant_gamma_settings(production_envelope)
         g2b_context = list(evidence)
         if variant_options:
             g2b_context.append({"kind": "variant-options", "slides": variant_options})
+        if gamma_settings:
+            g2b_context.append({"kind": "gamma-settings", "settings": gamma_settings})
         return G2BCard(
             card_id=common["card_id"],
             trial_id=common["trial_id"],
@@ -588,6 +611,7 @@ def _build_decision_card(
             verb=common["verb"],
             variant_candidates=variant_ids,
             selected_variant_id=None,
+            gamma_settings=gamma_settings,
             pick_context=g2b_context,
             operator_prompt="Approve the proposed slide variants, or edit to select alternates.",
         )
@@ -968,10 +992,28 @@ def _runner_payload_for_specialist(
     if specialist_id in {"quinn_r", "quinn-r"} and gate_code:
         return {"gate_id": gate_code}
     if specialist_id == "gary" and runs_root is not None and trial_id is not None:
-        return {
+        payload: dict[str, Any] = {
             "export_dir": (runs_root / str(trial_id) / "exports" / "gary").as_posix()
         }
+        gamma_settings = _gamma_settings_from_directive(directive_path)
+        if gamma_settings is not None:
+            payload["gamma_settings"] = gamma_settings
+        return payload
     return None
+
+
+def _gamma_settings_from_directive(directive_path: Path | None) -> list[dict[str, Any]] | None:
+    if directive_path is None or not directive_path.is_file():
+        return None
+    loaded = yaml.safe_load(directive_path.read_text(encoding="utf-8")) or {}
+    if not isinstance(loaded, dict):
+        return None
+    raw = loaded.get("gamma_settings")
+    if raw is None:
+        return None
+    if not isinstance(raw, list):
+        return None
+    return [dict(item) for item in raw if isinstance(item, dict)]
 
 
 # BETA S0.4 flake budget (T5a-F2): dispatch tags that represent LLM-output

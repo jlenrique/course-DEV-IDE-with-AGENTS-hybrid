@@ -157,6 +157,59 @@ def validate_creative_directive(
     if not isinstance(rationale, str) or not rationale.strip():
         errors.append("creative_rationale must be a non-empty string")
 
+    gamma_settings = directive.get("gamma_settings")
+    gamma_schema = ((schema.get("properties") or {}).get("gamma_settings") or {})
+    if "gamma_settings" in directive and gamma_settings is not None:
+        if not isinstance(gamma_settings, list):
+            errors.append("gamma_settings must be a list or null when present")
+        else:
+            item_schema = gamma_schema.get("items") if isinstance(gamma_schema, dict) else {}
+            item_props = item_schema.get("properties", {}) if isinstance(item_schema, dict) else {}
+            allowed_keys = set(item_props.keys()) if isinstance(item_props, dict) else set()
+            required_item_keys = (
+                item_schema.get("required", []) if isinstance(item_schema, dict) else []
+            )
+            seen_variants: set[str] = set()
+            for index, item in enumerate(gamma_settings):
+                if not isinstance(item, dict):
+                    errors.append(f"gamma_settings[{index}] must be an object")
+                    continue
+                unknown = sorted(set(item) - allowed_keys)
+                if unknown:
+                    errors.append(f"gamma_settings[{index}] contains unknown keys: {unknown}")
+                for field in required_item_keys:
+                    if field not in item:
+                        errors.append(f"gamma_settings[{index}] missing required key: {field}")
+                variant_id = item.get("variant_id")
+                allowed_variants = (
+                    (item_props.get("variant_id") or {}).get("enum")
+                    if isinstance(item_props, dict)
+                    else None
+                )
+                if allowed_variants and variant_id not in allowed_variants:
+                    errors.append(
+                        f"gamma_settings[{index}].variant_id must be one of "
+                        f"{allowed_variants}; got {variant_id!r}"
+                    )
+                elif isinstance(variant_id, str):
+                    if variant_id in seen_variants:
+                        errors.append(f"gamma_settings duplicate variant_id: {variant_id}")
+                    seen_variants.add(variant_id)
+                for field in ("theme", "template", "image_style"):
+                    if field in item and not isinstance(item[field], str):
+                        errors.append(f"gamma_settings[{index}].{field} must be a string")
+                for field in ("density", "tone"):
+                    allowed = (
+                        (item_props.get(field) or {}).get("enum")
+                        if isinstance(item_props, dict)
+                        else None
+                    )
+                    if allowed and field in item and item[field] not in allowed:
+                        errors.append(
+                            f"gamma_settings[{index}].{field} must be one of "
+                            f"{allowed}; got {item[field]!r}"
+                        )
+
     # Enforce profile parity with configured targets.
     configured_profiles = profiles_data.get("profiles", {})
     if (

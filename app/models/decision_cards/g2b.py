@@ -55,6 +55,10 @@ class G2BCard(DecisionCardBase):
         default=None,
         description="Operator-selected variant id; None until the pick is made (default-accept).",
     )
+    gamma_settings: list[dict[str, Any]] = Field(
+        default_factory=list,
+        description="Optional per-variant Gamma settings surfaced for operator review/override.",
+    )
     pick_context: list[dict[str, Any]] = Field(
         default_factory=list,
         description=(

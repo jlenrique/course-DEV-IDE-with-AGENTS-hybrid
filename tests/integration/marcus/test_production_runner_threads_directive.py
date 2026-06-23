@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import json
 from pathlib import Path
+from uuid import uuid4
 
 import pytest
 
@@ -57,6 +58,58 @@ def test_runner_payload_uses_posix_paths_on_windows_inputs(tmp_path: Path) -> No
     assert payload is not None
     assert "\\" not in payload["directive_path"]
     assert "\\" not in payload["bundle_dir"]
+
+
+def test_runner_payload_threads_gamma_settings_from_directive_to_gary(tmp_path: Path) -> None:
+    trial_id = uuid4()
+    directive = tmp_path / "directive.yaml"
+    directive.write_text(
+        "\n".join(
+            [
+                "run_id: T1",
+                "gamma_settings:",
+                "  - variant_id: A",
+                "    image_style: photographic",
+                "  - variant_id: B",
+                "    image_style: diagrammatic",
+            ]
+        ),
+        encoding="utf-8",
+    )
+
+    payload = _runner_payload_for_specialist(
+        specialist_id="gary",
+        directive_path=directive,
+        bundle_dir=None,
+        runs_root=tmp_path,
+        trial_id=trial_id,
+    )
+
+    assert payload is not None
+    assert payload["export_dir"] == (tmp_path / str(trial_id) / "exports" / "gary").as_posix()
+    assert payload["gamma_settings"] == [
+        {"variant_id": "A", "image_style": "photographic"},
+        {"variant_id": "B", "image_style": "diagrammatic"},
+    ]
+
+
+def test_runner_payload_omits_gamma_settings_when_directive_omits_them(
+    tmp_path: Path,
+) -> None:
+    trial_id = uuid4()
+    directive = tmp_path / "directive.yaml"
+    directive.write_text("run_id: T1\n", encoding="utf-8")
+
+    payload = _runner_payload_for_specialist(
+        specialist_id="gary",
+        directive_path=directive,
+        bundle_dir=None,
+        runs_root=tmp_path,
+        trial_id=trial_id,
+    )
+
+    assert payload is not None
+    assert "gamma_settings" not in payload
 
 
 def test_dispatch_adapter_merges_runner_supplied_payload(tmp_path: Path) -> None:

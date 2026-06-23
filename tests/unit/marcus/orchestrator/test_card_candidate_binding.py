@@ -80,6 +80,53 @@ def test_g2b_card_projects_variant_candidates(tmp_path: Path) -> None:
     assert len(slides["slide-01"]["variants"]) == 2
 
 
+def test_g2b_card_surfaces_variant_gamma_settings(tmp_path: Path) -> None:
+    env = _envelope(
+        SimpleNamespace(
+            specialist_id="gary",
+            output={
+                "variant_gamma_settings": [
+                    {"variant_id": "A", "image_style": "photographic"},
+                    {"variant_id": "B", "image_style": "diagrammatic"},
+                ],
+                "gary_slide_output": [
+                    {
+                        "slide_id": "slide-01",
+                        "dispatch_variant": "A",
+                        "file_path": "a1.png",
+                        "gamma_settings": {"variant_id": "A", "image_style": "photographic"},
+                    },
+                    {
+                        "slide_id": "slide-01",
+                        "dispatch_variant": "B",
+                        "file_path": "b1.png",
+                        "gamma_settings": {"variant_id": "B", "image_style": "diagrammatic"},
+                    },
+                ],
+            },
+        )
+    )
+
+    card = pr._build_decision_card(
+        gate_id="G2B",
+        trial_id=uuid4(),
+        node_id="07B-gate",
+        operator_id="operator_test",
+        pending_nodes=[],
+        artifact_paths=[],
+        production_envelope=env,
+        runs_root=tmp_path,
+    )
+
+    assert card.gamma_settings == [
+        {"variant_id": "A", "image_style": "photographic"},
+        {"variant_id": "B", "image_style": "diagrammatic"},
+    ]
+    setting_context = [e for e in card.pick_context if e.get("kind") == "gamma-settings"]
+    assert setting_context
+    assert setting_context[0]["settings"][1]["image_style"] == "diagrammatic"
+
+
 def test_card_candidates_empty_without_producer_output(tmp_path: Path) -> None:
     card = pr._build_decision_card(
         gate_id="G4A",
