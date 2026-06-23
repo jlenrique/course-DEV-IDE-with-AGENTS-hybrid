@@ -286,6 +286,57 @@ def test_perceive_png_parses_valid_model_json_via_stubbed_chat(
     assert len(response.visual_elements) == 2
 
 
+def test_perception_prompt_demands_per_element_role_tier() -> None:
+    prompt = provider_mod._perception_prompt("slide-01")
+
+    assert '"role_tier": "1" | "2" | "2_5" | "3" | "4"' in prompt
+    assert "feel/glance/confirm/trace/tag" in prompt
+    assert "tier 3" in prompt
+
+
+def test_parse_response_accepts_role_tier_and_rejects_out_of_vocab_value() -> None:
+    from app.specialists.vision.provider import _parse_response
+
+    raw = json.dumps(
+        {
+            "slide_id": "slide-01",
+            "confidence": "HIGH",
+            "coverage": "perceived",
+            "confidence_score": 0.9,
+            "slide_title": "T",
+            "extracted_text": "text",
+            "layout_description": "layout",
+            "text_blocks": ["text"],
+            "visual_elements": [
+                {
+                    "id": "chart",
+                    "kind": "chart",
+                    "text": "",
+                    "bbox": [0.2, 0.2, 0.8, 0.6],
+                    "role_tier": "2_5",
+                }
+            ],
+        }
+    )
+
+    response = _parse_response(
+        raw, slide_id="slide-01", model_id="gpt-5.5", source_png_path="slide-01.png"
+    )
+    assert response.visual_elements[0]["role_tier"] == "2_5"
+
+    bad = json.loads(raw)
+    bad["visual_elements"][0]["role_tier"] = "2.5"
+    with pytest.raises(VisionProviderError) as excinfo:
+        _parse_response(
+            json.dumps(bad),
+            slide_id="slide-01",
+            model_id="gpt-5.5",
+            source_png_path="slide-01.png",
+        )
+
+    assert excinfo.value.tag == "vision.provider.malformed-json"
+
+
 def test_perceive_png_repairs_malformed_json_bounded_then_raises(
     monkeypatch: pytest.MonkeyPatch, tmp_path: Path
 ) -> None:

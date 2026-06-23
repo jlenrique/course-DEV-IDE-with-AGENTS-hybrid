@@ -8,6 +8,7 @@ from pydantic import TypeAdapter, ValidationError
 
 from app.models.perception.perception_artifact import (
     CalloutIntent,
+    ImageRoleFlag,
     ImageRoleTier,
     MacroLayout,
     NarrationCadence,
@@ -35,6 +36,7 @@ def _valid_payload() -> dict[str, object]:
         "reading_path": "top_down",
         "macro_layout": "single_text_block",
         "image_roles": None,
+        "image_role_flags": None,
         "text_substructure": "dense_exposition",
         "narration_cadence": "dense",
         "callout_intent": None,
@@ -83,6 +85,7 @@ def test_emitted_schema_matches_live_schema_for_public_fields(
         ("narration_cadence", "fast"),
         ("callout_intent", "takeaway_imperative"),
         ("reading_path_flags", ["comparison_pair"]),
+        ("image_role_flags", ["tier_3_scored"]),
     ],
 )
 def test_closed_enums_reject_bad_values(field: str, bad_value: str) -> None:
@@ -111,6 +114,7 @@ def test_reading_path_literal_rejects_out_of_vocab() -> None:
     [
         (MacroLayout, "triptych"),
         (ImageRoleTier, "2.5"),
+        (ImageRoleFlag, "tier_3_scored"),
         (TextSubstructure, "ordered_list"),
         (NarrationCadence, "fast"),
         (CalloutIntent, "takeaway_imperative"),
@@ -165,7 +169,11 @@ def test_tuple_axis_schema_enums_are_public_and_closed(
     macro = next(
         branch for branch in properties["macro_layout"]["anyOf"] if branch.get("type") == "string"
     )
-    image_roles = properties["image_roles"]["anyOf"][0]["items"]
+    image_roles = properties["image_roles"]["anyOf"][0]["items"]["anyOf"]
+    image_role_tier = next(
+        branch for branch in image_roles if branch.get("type") == "string"
+    )
+    image_role_null = next(branch for branch in image_roles if branch.get("type") == "null")
     text = next(
         branch
         for branch in properties["text_substructure"]["anyOf"]
@@ -192,7 +200,8 @@ def test_tuple_axis_schema_enums_are_public_and_closed(
         "diagram_driven",
         "single_text_block",
     ]
-    assert image_roles["enum"] == ["1", "2", "2_5", "3", "4"]
+    assert image_role_tier["enum"] == ["1", "2", "2_5", "3", "4"]
+    assert image_role_null == {"type": "null"}
     assert text["enum"] == [
         "enumerated_process",
         "peer_boxes",
@@ -211,6 +220,19 @@ def test_reading_path_flags_schema_enum_is_public_and_closed(
     flags = properties["reading_path_flags"]["anyOf"][0]["items"]
 
     assert flags["const"] == "oppositional_cue"
+
+
+def test_image_role_flags_schema_enum_is_public_and_closed(
+    emitted_schema: dict[str, object],
+) -> None:
+    properties = emitted_schema["properties"]
+    flags = properties["image_role_flags"]["anyOf"][0]["items"]
+
+    assert flags["enum"] == [
+        "dropped_invalid_tier",
+        "tier_2_5_candidate",
+        "tier_3_quarantined",
+    ]
 
 
 def test_p2_1_fixture_still_validates_additively() -> None:

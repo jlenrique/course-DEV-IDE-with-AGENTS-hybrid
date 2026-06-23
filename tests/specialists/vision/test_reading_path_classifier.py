@@ -409,7 +409,7 @@ def test_explicit_primary_names_are_derived_without_default_collapse() -> None:
     assert diagram_classified.reading_path == "diagram_driven"
 
 
-def test_s1_classification_leaves_image_roles_and_callout_intent_unpopulated() -> None:
+def test_s2_classification_populates_image_roles_but_leaves_callout_intent_unpopulated() -> None:
     artifact = _artifact(
         [
             {
@@ -429,7 +429,7 @@ def test_s1_classification_leaves_image_roles_and_callout_intent_unpopulated() -
 
     classified = with_classified_reading_path(artifact)
 
-    assert classified.image_roles is None
+    assert classified.image_roles == ["1", "1"]
     assert classified.callout_intent is None
 
 

@@ -155,12 +155,40 @@
       "anyOf": [
         {
           "items": {
+            "anyOf": [
+              {
+                "enum": [
+                  "1",
+                  "2",
+                  "2_5",
+                  "3",
+                  "4"
+                ],
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "type": "array"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "description": "Per-element image role tiers emitted or deterministically backfilled in S2.",
+      "title": "Image Roles"
+    },
+    "image_role_flags": {
+      "anyOf": [
+        {
+          "items": {
             "enum": [
-              "1",
-              "2",
-              "2_5",
-              "3",
-              "4"
+              "dropped_invalid_tier",
+              "tier_2_5_candidate",
+              "tier_3_quarantined"
             ],
             "type": "string"
           },
@@ -171,8 +199,8 @@
         }
       ],
       "default": null,
-      "description": "Per-element image role tiers; S1 leaves this unpopulated for S2.",
-      "title": "Image Roles"
+      "description": "S2 side-channel for provisional 2.5 candidates and tier-3 quarantine harvest.",
+      "title": "Image Role Flags"
     },
     "text_substructure": {
       "anyOf": [

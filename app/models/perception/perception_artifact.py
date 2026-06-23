@@ -35,6 +35,8 @@ MacroLayout = Literal[
     "single_text_block",
 ]
 ImageRoleTier = Literal["1", "2", "2_5", "3", "4"]
+RoleTier = ImageRoleTier
+ImageRoleFlag = Literal["dropped_invalid_tier", "tier_2_5_candidate", "tier_3_quarantined"]
 TextSubstructure = Literal[
     "enumerated_process",
     "peer_boxes",
@@ -83,9 +85,15 @@ class PerceptionArtifact(BaseModel):
         default=None,
         description="Geometry-derived macro-layout axis for the reading-path tuple.",
     )
-    image_roles: list[ImageRoleTier] | None = Field(
+    image_roles: list[ImageRoleTier | None] | None = Field(
         default=None,
-        description="Per-element image role tiers; S1 leaves this unpopulated for S2.",
+        description="Per-element image role tiers emitted or deterministically backfilled in S2.",
+    )
+    image_role_flags: list[ImageRoleFlag] | None = Field(
+        default=None,
+        description=(
+            "S2 side-channel for provisional 2.5 candidates and tier-3 quarantine harvest."
+        ),
     )
     text_substructure: TextSubstructure | None = Field(
         default=None,
@@ -123,6 +131,7 @@ __all__ = [
     "CalloutIntent",
     "Confidence",
     "CoverageState",
+    "ImageRoleFlag",
     "ImageRoleTier",
     "MacroLayout",
     "NarrationCadence",
@@ -130,5 +139,6 @@ __all__ = [
     "PerceptionProvenance",
     "ReadingPathFlag",
     "ReadingPath",
+    "RoleTier",
     "TextSubstructure",
 ]

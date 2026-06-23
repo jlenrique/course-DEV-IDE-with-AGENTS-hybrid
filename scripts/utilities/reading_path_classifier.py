@@ -8,6 +8,8 @@ from dataclasses import dataclass
 from typing import Any
 
 from app.models.perception.perception_artifact import (
+    ImageRoleFlag,
+    ImageRoleTier,
     MacroLayout,
     NarrationCadence,
     PerceptionArtifact,
@@ -165,6 +167,7 @@ class _TupleClassification:
 
 @dataclass(frozen=True)
 class _Element:
+    source_index: int
     key: str
     text: str
     kind: str
@@ -172,6 +175,8 @@ class _Element:
     y1: float
     x2: float
     y2: float
+    role_tier: ImageRoleTier | None = None
+    invalid_role_tier: bool = False
 
     @property
     def cx(self) -> float:
@@ -230,6 +235,16 @@ def _classify_tuple(artifact: PerceptionArtifact) -> _TupleClassification:
         )
     elements = _elements(artifact)
     if not elements:
+        if not artifact.visual_elements:
+            text = _artifact_text(artifact)
+            text_substructure = _text_substructure(text, [], "single_text_block")
+            return _TupleClassification(
+                reading_path=derive_primary_name("single_text_block", text_substructure),
+                macro_layout="single_text_block",
+                text_substructure=text_substructure,
+                narration_cadence=_narration_cadence(text, [], "single_text_block"),
+                reading_path_flags=None,
+            )
         raise ReadingPathClassificationError(
             f"slide {artifact.slide_id} has no positioned visual_elements for reading_path"
         )
@@ -298,13 +313,15 @@ def with_classified_reading_path(artifact: PerceptionArtifact) -> PerceptionArti
     if artifact.coverage != "perceived" or artifact.confidence != "HIGH":
         return artifact
     classified = _classify_tuple(artifact)
+    image_roles, image_role_flags = _image_roles(artifact)
     return artifact.model_copy(
         update={
             "reading_path": classified.reading_path,
             "macro_layout": classified.macro_layout,
             "text_substructure": classified.text_substructure,
             "narration_cadence": classified.narration_cadence,
-            "image_roles": None,
+            "image_roles": image_roles,
+            "image_role_flags": image_role_flags,
             "callout_intent": None,
             "reading_path_flags": classified.reading_path_flags,
         }
@@ -324,6 +341,7 @@ def _elements(artifact: PerceptionArtifact) -> list[_Element]:
         )
         parsed.append(
             _Element(
+                source_index=index,
                 key=key,
                 text=text.strip(),
                 kind=str(raw.get("kind") or raw.get("type") or "").strip(),
@@ -331,9 +349,26 @@ def _elements(artifact: PerceptionArtifact) -> list[_Element]:
                 y1=bbox[1],
                 x2=bbox[2],
                 y2=bbox[3],
+                role_tier=_role_tier(raw),
+                invalid_role_tier=_invalid_role_tier(raw),
             )
         )
     return parsed
+
+
+def _role_tier(raw: dict[str, Any]) -> ImageRoleTier | None:
+    value = raw.get("role_tier")
+    if value in {"1", "2", "2_5", "3", "4"}:
+        return value  # type: ignore[return-value]
+    return None
+
+
+def _invalid_role_tier(raw: dict[str, Any]) -> bool:
+    return (
+        "role_tier" in raw
+        and raw.get("role_tier") is not None
+        and raw.get("role_tier") not in {"1", "2", "2_5", "3", "4"}
+    )
 
 
 def _bbox(raw: dict[str, Any]) -> tuple[float, float, float, float] | None:
@@ -424,6 +459,175 @@ def _reading_path_flags(elements: list[_Element]) -> list[ReadingPathFlag] | Non
     if _has_structural_opposition_cue(elements):
         return ["oppositional_cue"]
     return None
+
+
+def _image_roles(
+    artifact: PerceptionArtifact,
+) -> tuple[list[ImageRoleTier | None], list[ImageRoleFlag] | None]:
+    elements = _elements(artifact)
+    elements_by_index = {element.source_index: element for element in elements}
+    roles: list[ImageRoleTier | None] = []
+    flags: list[ImageRoleFlag] = []
+    for index, raw in enumerate(artifact.visual_elements):
+        element = elements_by_index.get(index)
+        if element is None:
+            roles.append(None)
+            if _invalid_role_tier(raw):
+                _append_unique(flags, "dropped_invalid_tier")
+            continue
+        roles.append(_image_role(element, elements))
+        if element.invalid_role_tier:
+            _append_unique(flags, "dropped_invalid_tier")
+    if "2_5" in roles:
+        _append_unique(flags, "tier_2_5_candidate")
+    if "3" in roles:
+        _append_unique(flags, "tier_3_quarantined")
+    return roles, flags or None
+
+
+def _append_unique(flags: list[ImageRoleFlag], flag: ImageRoleFlag) -> None:
+    if flag not in flags:
+        flags.append(flag)
+
+
+def _image_role(element: _Element, elements: list[_Element]) -> ImageRoleTier:
+    internal_label_count = _internal_label_count(element, elements)
+    if _is_small_icon_or_logo(element):
+        return "4"
+    if element.role_tier == "3" and internal_label_count == 0:
+        return _backfill_image_role(element, elements, allow_tier_3=False)
+    if element.role_tier in {"1", "2", "2_5", "3", "4"}:
+        return element.role_tier
+    return _backfill_image_role(
+        element,
+        elements,
+        allow_tier_3=internal_label_count > 0,
+    )
+
+
+def _backfill_image_role(
+    element: _Element,
+    elements: list[_Element],
+    *,
+    allow_tier_3: bool,
+) -> ImageRoleTier:
+    if _is_text(element):
+        return "1"
+    if _is_decorative(element):
+        return "1"
+    if (
+        _edge_bleed(element)
+        and _text_overlaps_image(element, elements)
+        and _internal_label_count(element, elements) == 0
+    ):
+        return "1"
+    if element.area < 0.05 and not _has_caption(element, elements):
+        return "1"
+    if _is_chart_or_table(element) and _has_caption(element, elements):
+        return "2_5"
+    if (
+        allow_tier_3
+        and _is_diagram(element)
+        and element.area >= 0.25
+        and _centrality(element) >= 0.60
+    ):
+        return "3"
+    if _is_photo(element):
+        return "2"
+    return "2"
+
+
+def _is_small_icon_or_logo(element: _Element) -> bool:
+    return any(token in element.kind.lower() for token in ("icon", "logo")) and element.area < 0.05
+
+
+def _is_decorative(element: _Element) -> bool:
+    content = f"{element.kind} {element.text}".lower()
+    return any(token in content for token in ("decorative", "background", "evocative"))
+
+
+def _is_chart_or_table(element: _Element) -> bool:
+    return any(token in element.kind.lower() for token in ("chart", "table"))
+
+
+def _is_diagram(element: _Element) -> bool:
+    return "diagram" in element.kind.lower()
+
+
+def _is_photo(element: _Element) -> bool:
+    return any(token in element.kind.lower() for token in ("photo", "image", "visual"))
+
+
+def _edge_bleed(element: _Element) -> bool:
+    return (
+        element.x1 <= 0.02
+        or element.y1 <= 0.02
+        or element.x2 >= 0.98
+        or element.y2 >= 0.98
+    )
+
+
+def _text_overlaps_image(element: _Element, elements: list[_Element]) -> bool:
+    return any(
+        other is not element and _is_text(other) and _overlaps(element, other)
+        for other in elements
+    )
+
+
+def _has_caption(element: _Element, elements: list[_Element]) -> bool:
+    return any(
+        other is not element
+        and _is_text(other)
+        and _horizontal_overlap(element, other) >= 0.20
+        and 0.0 <= other.y1 - element.y2 <= 0.10
+        for other in elements
+    )
+
+
+def _internal_label_count(element: _Element, elements: list[_Element]) -> int:
+    if not (_is_diagram(element) or _is_chart_or_table(element)):
+        return 0
+    return sum(
+        1
+        for other in elements
+        if other is not element
+        and _is_text(other)
+        and _contains(element, other)
+        and not _looks_like_caption_for(element, other)
+    )
+
+
+def _looks_like_caption_for(element: _Element, text_element: _Element) -> bool:
+    return _horizontal_overlap(element, text_element) >= 0.20 and text_element.y1 >= element.y2
+
+
+def _contains(outer: _Element, inner: _Element) -> bool:
+    return (
+        outer.x1 <= inner.x1
+        and outer.y1 <= inner.y1
+        and outer.x2 >= inner.x2
+        and outer.y2 >= inner.y2
+    )
+
+
+def _overlaps(left: _Element, right: _Element) -> bool:
+    return not (
+        left.x2 <= right.x1
+        or right.x2 <= left.x1
+        or left.y2 <= right.y1
+        or right.y2 <= left.y1
+    )
+
+
+def _horizontal_overlap(left: _Element, right: _Element) -> float:
+    width = max(0.001, min(left.x2 - left.x1, right.x2 - right.x1))
+    overlap = max(0.0, min(left.x2, right.x2) - max(left.x1, right.x1))
+    return overlap / width
+
+
+def _centrality(element: _Element) -> float:
+    distance = ((element.cx - 0.5) ** 2 + (element.cy - 0.5) ** 2) ** 0.5
+    return max(0.0, 1.0 - (distance / 0.7072))
 
 
 def _has_structural_opposition_cue(elements: list[_Element]) -> bool:
@@ -614,7 +818,7 @@ def _is_visual(element: _Element) -> bool:
 def _is_text(element: _Element) -> bool:
     return any(
         token in (element.kind + " " + element.text).lower()
-        for token in ("text", "headline", "title", "copy", "callout", "step", "box")
+        for token in ("text", "headline", "title", "copy", "callout", "step", "box", "caption")
     )
 
 

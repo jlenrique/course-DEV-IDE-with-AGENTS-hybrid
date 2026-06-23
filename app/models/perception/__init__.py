@@ -4,6 +4,7 @@ from app.models.perception.perception_artifact import (
     CalloutIntent,
     Confidence,
     CoverageState,
+    ImageRoleFlag,
     ImageRoleTier,
     MacroLayout,
     NarrationCadence,
@@ -11,6 +12,7 @@ from app.models.perception.perception_artifact import (
     PerceptionProvenance,
     ReadingPath,
     ReadingPathFlag,
+    RoleTier,
     TextSubstructure,
 )
 
@@ -18,6 +20,7 @@ __all__ = [
     "CalloutIntent",
     "Confidence",
     "CoverageState",
+    "ImageRoleFlag",
     "ImageRoleTier",
     "MacroLayout",
     "NarrationCadence",
@@ -25,5 +28,6 @@ __all__ = [
     "PerceptionProvenance",
     "ReadingPath",
     "ReadingPathFlag",
+    "RoleTier",
     "TextSubstructure",
 ]

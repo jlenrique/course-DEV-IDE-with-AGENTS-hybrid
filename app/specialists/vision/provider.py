@@ -91,6 +91,8 @@ def _perception_prompt(slide_id: str) -> str:
         '      "id": "short stable id",\n'
         '      "kind": "title|callout|stat|photo|chart|diagram|icon|bullet|logo|...",\n'
         '      "text": "the text inside this element, or empty string",\n'
+        '      "role_tier": "1" | "2" | "2_5" | "3" | "4",\n'
+        '      "role_tier_reason": "short visual evidence for the tier",\n'
         '      "bbox": [x1, y1, x2, y2]\n'
         "    }\n"
         "  ]\n"
@@ -101,6 +103,16 @@ def _perception_prompt(slide_id: str) -> str:
         "x1<x2 and y1<y2. Coarse thirds-level accuracy is sufficient — do NOT "
         "fabricate false precision. Include one visual_element per distinct "
         "perceptible region (title, each stat/callout, each photo/chart, etc.). "
+        "For every visual_element, set role_tier using the eye-verb rubric "
+        "feel/glance/confirm/trace/tag: 1=decorative/evocative background the "
+        "viewer only feels; 2=illustrative supporting image the viewer glances at; "
+        "2_5=evidentiary chart/table/exhibit the viewer confirms against nearby "
+        "caption/text; 3=instructional technical diagram the viewer must trace, "
+        "only when internal labels are visible; 4=pointer/icon/logo/tag the viewer "
+        "uses as a label or navigation chip. Hard gates: kind icon/logo with area "
+        "<0.05 is tier 4; tier 3 is forbidden when no internal labels are visible; "
+        "edge-bleed image with overlapping text and no internal labels is a strong "
+        "tier 1 prior. "
         "If you cannot read the slide, set confidence to LOW and coverage to "
         "low-confidence."
     )

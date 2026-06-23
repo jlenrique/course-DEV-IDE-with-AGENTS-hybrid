@@ -4,11 +4,12 @@ from __future__ import annotations
 
 from typing import Any
 
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import BaseModel, ConfigDict, Field, TypeAdapter, field_validator
 
 from app.models.perception.perception_artifact import (
     Confidence,
     CoverageState,
+    ImageRoleTier,
     PerceptionProvenance,
 )
 
@@ -49,6 +50,19 @@ class VisionProviderResponse(BaseModel):
     confidence_score: float | None = Field(default=None, ge=0.0, le=1.0)
     provider_model_id: str = ""
     source_png_path: str = ""
+
+    @field_validator("visual_elements")
+    @classmethod
+    def _role_tier_values_are_closed(
+        cls, value: list[dict[str, Any]]
+    ) -> list[dict[str, Any]]:
+        adapter = TypeAdapter(ImageRoleTier)
+        for index, element in enumerate(value):
+            if not isinstance(element, dict):
+                raise ValueError(f"visual_elements[{index}] must be an object")
+            if "role_tier" in element and element["role_tier"] is not None:
+                adapter.validate_python(element["role_tier"])
+        return value
 
 
 __all__ = ["CONSUMED_PAYLOAD_KEYS", "VisionProviderResponse"]

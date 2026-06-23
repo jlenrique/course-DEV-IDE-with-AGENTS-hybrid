@@ -93,10 +93,10 @@ def test_unclassifiable_high_perceived_artifact_pauses_and_does_not_retry(
     assert calls == 1
 
 
-def test_empty_visual_elements_pauses_as_controlled_unclassifiable(
+def test_empty_visual_elements_emit_controlled_empty_image_roles_without_pause(
     monkeypatch: pytest.MonkeyPatch, tmp_path: Path
 ) -> None:
-    """P2-4c S1 fold-in: empty visual_elements degrades through error-pause."""
+    """P2-4c S2 fold-in: empty visual_elements degrades to image_roles=[]."""
     png = _png(tmp_path)
 
     def fake_perceive(path: Path, *, slide_id: str, **_: Any) -> VisionProviderResponse:
@@ -115,8 +115,10 @@ def test_empty_visual_elements_pauses_as_controlled_unclassifiable(
     monkeypatch.setattr(_act, "perceive_png", fake_perceive)
     payload = {"gary_slide_output": [{"slide_id": "slide-01", "file_path": str(png)}]}
 
-    with pytest.raises(VisionProviderError) as excinfo:
-        _act.act(_state(payload))
+    result = _act.act(_state(payload))
+    output = json.loads(result["cache_state"]["cache_prefix"])
 
-    assert excinfo.value.tag == "vision.reading-path.unclassifiable"
-    assert not _act._is_retryable_provider_error(excinfo.value)
+    artifact = output["perception_artifacts"][0]
+    assert artifact["reading_path"] == "top_down"
+    assert artifact["macro_layout"] == "single_text_block"
+    assert artifact["image_roles"] == []
