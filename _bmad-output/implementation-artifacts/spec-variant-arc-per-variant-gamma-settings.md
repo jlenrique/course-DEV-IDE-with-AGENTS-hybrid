@@ -26,5 +26,17 @@ Today the operator can choose a variant **count** at G2B and pick per-slide at S
 ## Governance / fences
 Party-mode green-light THIS scope before Codex opens (per goal). Codex T1–T10 → Claude T11. No mocks (live Gamma); additive non-regression; never leave the lockstep/manifest half-modified. Honesty: every "distinct" claim backed by the actual 2 renders in the smoke.
 
-## Open question for party
+## Party-mode green-light disposition (2026-06-23) — 3/3 GREEN-WITH-AMENDMENTS (no impasse)
+Winston (architect) / John (PM) / Amelia (dev). Binding amendments (folded into `codex-dev-prompt-variant-arc.md`):
+- **A3 VERIFIED (Winston, load-bearing):** `creative-directive.schema.json` is NOT in `pipeline-manifest.yaml::block_mode_trigger_paths` → confirmed **data-plane-only** (no pack/manifest lockstep). The spec's compat claim holds.
+- **Additive-only + open-enum (Winston A1/A2):** `gamma_settings` OPTIONAL; absent → byte-identical legacy path (pin test); theme/image_style = open string + documented known-values (NOT closed enum); density/tone may be closed.
+- **Keying is the real risk (Amelia A2/A3 + Winston A4):** artifact/run-dir keys MUST incorporate `variant_id` when settings present, byte-identical when absent (load-bearing backward-compat gate). T1 read-and-report on whether Gary keys on slide-id alone vs (slide-id, variant_id) BEFORE coding; per-variant fallback (A set, B default works).
+- **N fixed at 2 (Amelia A1):** no general N fan-out (follow-on).
+- **Default pair (Winston A5 / John C):** `DEFAULT_VARIANT_PAIR` = photographic(A) vs diagrammatic(B) on the **image-style axis** (highest perceptual distance, lowest layout/normalization perturbation); a SMOKE FIXTURE, not a product default.
+- **Distinctness assertion (John A / Amelia):** mechanical (different settings → different artifacts) in tests; "distinct ENOUGH" = operator-gated eye-check at G2C.
+- **Backward-compat explicit test (John B):** absent settings → today's behavior.
+- **John Q4 (key):** the variant arc is critical-path-**PREFERRED, NOT trial-blocking** — single-variant is an acceptable trial-1 fallback. Do not let it become a false trial blocker.
+- **Named dissent:** none. Codex T1–T10 → Claude T11. Operator supplies real settings at runtime; this cycle = mechanism + default pair + smoke.
+
+## Open question for party (RESOLVED above)
 - **Default distinct-pair policy:** what should the 2 default variants be when the operator doesn't specify (so distinctness is non-vacuous out of the box)? Proposal: A = photographic/literal-visual-leaning; B = diagrammatic/structured — operator-overridable. Party to ratify the default axis.
