@@ -1,4 +1,18 @@
-# Session Handoff — 2026-06-23 (`/goal` v9 — T11 close + cadence cleanup + variant-arc green-light; NEXT-TRIAL READINESS = operator fork)
+# Session Handoff — 2026-06-23 (`/goal` v9 SATISFIED — terminal (a): trial-readiness party-green 3/3 + fresh smoke COMPLETED; NEXT TRIAL is READY)
+
+**🎯 GOAL v9 COMPLETE at terminal state (a).** All 4 ARC steps done: T11 closed + cadence cleanup + variant-arc green-lit + **trial-readiness gate CLOSED** (a fresh full production smoke completed end-to-end + a unanimous 3/3 party green-light). The next trial run is **party-certified READY** (TRIAL-1, single-variant, narrated-deck verification).
+
+## Trial-readiness gate (the step-4 close)
+- **Fresh smoke `242b859f`: status=completed, 0 errors/0 hard-blocks** — drove G0→done live, exercising LLM-first perception + the NEW content-first voice + real ElevenLabs audio (6 segments) + fresh Storyboard A+B. Evidence `smoke-v9-result.json`.
+- **Party-mode 3/3 GREEN-WITH-CONDITIONS (John/Murat/Mary, no impasse)** — `trial-readiness-checklist-2026-06-23.md`. Binding: (1) VERIFICATION run not benchmark; (2) resubstitution stamp on every reading-path number — no "X% accurate" off the consumed-14 (sticky/inherited, H1–H4); (3) single-variant = accepted trial-1 fallback; (4) **fresh naive holdout = binding POST-trial gate** before any generalization claim (Mary's dissent satisfied-for-scope, stands as the scale tripwire); (5) narrated-deck scope fence (motion/WPM known-open).
+
+## Operator's next action (BEYOND the goal — both are valid)
+- **Launch TRIAL-1 now** (single-variant verification — party-certified ready), OR
+- **Dispatch Codex on `codex-dev-prompt-variant-arc.md`** first (party 3/3 green-lit) for genuine 2-up distinctness, then trial.
+
+---
+
+# Session Handoff — 2026-06-23 (`/goal` v9 — T11 close + cadence cleanup + variant-arc green-light; NEXT-TRIAL READINESS = operator fork) [SUPERSEDED — gate now CLOSED]
 
 **Final class:** S (substrate: reading-path/Irene/vision close, Pass-2 voice config, spec/party planning). **Branch:** `fidelity-perception-arc-2026-06-19`, HEAD `9d73ad8`+wrapup, origin in sync.
 

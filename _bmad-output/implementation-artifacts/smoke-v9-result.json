@@ -1,0 +1,37 @@
+{
+  "trial_id": "242b859f-024f-4458-be8d-a94a8c69c45e",
+  "final_status": "completed",
+  "paused_gate": null,
+  "paused_error": null,
+  "reading_path_sources": null,
+  "log": [
+    {
+      "step": "resume@G2C",
+      "rc": 0,
+      "tail": "runs\\\\242b859f-024f-4458-be8d-a94a8c69c45e\\\\run.json\", \"status\": \"paused-at-gate\", \"transport_kind\": \"cli\", \"trial_id\": \"242b859f-024f-4458-be8d-a94a8c69c45e\"}\n",
+      "err": ""
+    },
+    {
+      "step": "resume@G3",
+      "rc": 0,
+      "tail": "runs\\\\242b859f-024f-4458-be8d-a94a8c69c45e\\\\run.json\", \"status\": \"paused-at-gate\", \"transport_kind\": \"cli\", \"trial_id\": \"242b859f-024f-4458-be8d-a94a8c69c45e\"}\n",
+      "err": ""
+    },
+    {
+      "step": "resume@G4",
+      "rc": 0,
+      "tail": "runs\\\\242b859f-024f-4458-be8d-a94a8c69c45e\\\\run.json\", \"status\": \"paused-at-gate\", \"transport_kind\": \"cli\", \"trial_id\": \"242b859f-024f-4458-be8d-a94a8c69c45e\"}\n",
+      "err": ""
+    },
+    {
+      "step": "resume@G4A",
+      "rc": 0,
+      "tail": "fig\\\\runs\\\\242b859f-024f-4458-be8d-a94a8c69c45e\\\\run.json\", \"status\": \"completed\", \"transport_kind\": \"cli\", \"trial_id\": \"242b859f-024f-4458-be8d-a94a8c69c45e\"}\n",
+      "err": "OK | duration=40.2s | cost=0.1848\nEnrique segment seg-05 [5/6] OK | duration=43.9s | cost=0.1941\nEnrique segment seg-06 [6/6] OK | duration=40.9s | cost=0.1971\n"
+    },
+    {
+      "step": "DONE",
+      "status": "completed"
+    }
+  ]
+}
