@@ -283,8 +283,14 @@ def test_cancel_path_writes_cancellation_record_and_exits_2(
     # sk-fake sentinel 401s. This test pins the G0 CANCELLATION contract,
     # not composition — stub the composer at the trial-CLI seam.
     def _stub_compose_and_write(
-        corpus_dir: Path, run_dir: Path, *, run_id: Any, llm: Any = None
+        corpus_dir: Path,
+        run_dir: Path,
+        *,
+        run_id: Any,
+        llm: Any = None,
+        gamma_settings: Any = None,
     ) -> tuple[Path, str]:
+        assert gamma_settings is None
         run_dir.mkdir(parents=True, exist_ok=True)
         path = run_dir / "directive.yaml"
         path.write_text(

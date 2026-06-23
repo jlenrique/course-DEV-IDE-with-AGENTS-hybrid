@@ -96,3 +96,31 @@ def test_directive_top_level_shape_and_schema() -> None:
             sources=[_source()],
             composed_at=datetime(2026, 5, 5, 12, 0, 0),
         )
+
+
+def test_directive_accepts_optional_gamma_settings_and_omits_none() -> None:
+    directive = Directive(
+        run_id=uuid4(),
+        corpus_dir="C:/tmp/corpus",
+        sources=[_source()],
+        composed_at=datetime.now(tz=UTC),
+    )
+
+    dumped = directive.model_dump(mode="json")
+    assert "gamma_settings" not in dumped
+
+    with_settings = Directive.model_validate(
+        dumped
+        | {
+            "gamma_settings": [
+                {"variant_id": "A"},
+                {"variant_id": "B"},
+            ]
+        }
+    )
+
+    assert with_settings.gamma_settings == [{"variant_id": "A"}, {"variant_id": "B"}]
+    assert Directive.model_validate(with_settings.model_dump(mode="json")).gamma_settings == [
+        {"variant_id": "A"},
+        {"variant_id": "B"},
+    ]

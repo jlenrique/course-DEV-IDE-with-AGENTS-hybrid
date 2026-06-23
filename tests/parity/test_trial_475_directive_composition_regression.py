@@ -34,6 +34,7 @@ def _write_trial_475_directive(
     corpus_dir: Path,
     run_dir: Path,
     run_id: UUID,
+    gamma_settings: list[dict[str, Any]] | None = None,
 ) -> tuple[Path, str]:
     files = sorted(p.name for p in corpus_dir.iterdir() if p.is_file())
     payload = {
@@ -50,6 +51,8 @@ def _write_trial_475_directive(
             for index, name in enumerate(files, start=1)
         ],
     }
+    if gamma_settings is not None:
+        payload["gamma_settings"] = gamma_settings
     run_dir.mkdir(parents=True, exist_ok=True)
     directive_path = run_dir / "directive.yaml"
     directive_path.write_text(yaml.safe_dump(payload, sort_keys=False), encoding="utf-8")
@@ -330,11 +333,13 @@ def test_start_trial_threads_composed_directive_to_texas_dispatch(
         specialist_id: str,
         directive_path: Path | None,
         bundle_dir: Path | None,
+        **kwargs: Any,
     ) -> dict[str, str] | None:
         return original_payload_helper(
             specialist_id=specialist_id,
             directive_path=directive_path,
             bundle_dir=fixture_bundle if specialist_id == "texas" else bundle_dir,
+            **kwargs,
         )
 
     monkeypatch.setattr(

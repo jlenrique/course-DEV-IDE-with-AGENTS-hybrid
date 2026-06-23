@@ -19,6 +19,7 @@ from __future__ import annotations
 import hashlib
 import json
 from pathlib import Path
+from typing import Any
 from uuid import UUID
 
 from langchain_core.language_models import BaseChatModel
@@ -33,6 +34,7 @@ def compose_and_write(
     *,
     run_id: UUID,
     llm: BaseChatModel | None = None,
+    gamma_settings: list[dict[str, Any]] | None = None,
 ) -> tuple[Path, str]:
     """Compose a Section 02A directive for ``corpus_dir`` and write it.
 
@@ -59,6 +61,7 @@ def compose_and_write(
         )
 
     directive = compose(corpus_dir, llm=llm, cache=ComposerCache(), run_id=run_id)
+    directive.gamma_settings = gamma_settings
     directive_path = run_dir / "directive.yaml"
     write_directive_yaml(directive, directive_path)
     digest = hashlib.sha256(directive_path.read_bytes()).hexdigest()

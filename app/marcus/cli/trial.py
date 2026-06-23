@@ -15,6 +15,8 @@ from pathlib import Path
 from typing import Any, Literal
 from uuid import UUID, uuid4
 
+import yaml
+
 from app.composers.section_02a.cli_adapter import compose_and_write
 from app.marcus.orchestrator.production_runner import (
     recover_production_trial,
@@ -198,6 +200,17 @@ def _write_cancellation_record(
     return target
 
 
+def _load_gamma_settings_file(path: Path | None) -> list[dict[str, Any]] | None:
+    if path is None:
+        return None
+    data = yaml.safe_load(path.read_text(encoding="utf-8"))
+    if data is None:
+        return None
+    if not isinstance(data, list) or not all(isinstance(item, dict) for item in data):
+        raise ValueError("--gamma-settings-file must contain a YAML/JSON list of objects")
+    return [dict(item) for item in data]
+
+
 def start_trial(
     *,
     preset: Literal["production", "explore"],
@@ -209,6 +222,7 @@ def start_trial(
     auto_confirm_directive: bool = False,
     confirm_fn: Callable[..., Literal["confirmed", "saved-only"]] | None = None,
     max_specialist_calls: int | None = None,
+    gamma_settings_file: Path | None = None,
 ) -> dict[str, Any]:
     _ensure_utf8_io()
     _load_env_if_available()
@@ -225,6 +239,7 @@ def start_trial(
         )
     effective_trial_id = trial_id or uuid4()
     run_dir = runs_root / str(effective_trial_id)
+    gamma_settings = _load_gamma_settings_file(gamma_settings_file)
 
     # G0 directive composition (Story 7a.1, AC-7.1-A/B/C/J).
     # Composer activates for directory inputs (course-content corpora). File
@@ -248,6 +263,7 @@ def start_trial(
             corpus_dir=input_path,
             run_dir=run_dir,
             run_id=effective_trial_id,
+            gamma_settings=gamma_settings,
         )
 
         confirm = confirm_fn or _confirm_or_edit_directive
@@ -353,6 +369,11 @@ def start_trial_cli(args: argparse.Namespace) -> int:
             runs_root=Path(args.runs_root) if args.runs_root else RUNS_ROOT,
             auto_confirm_directive=getattr(args, "auto_confirm_directive", False),
             max_specialist_calls=getattr(args, "max_specialist_calls", None),
+            gamma_settings_file=(
+                Path(args.gamma_settings_file)
+                if getattr(args, "gamma_settings_file", None)
+                else None
+            ),
         )
     except DirectiveConfirmationRequiredError as exc:
         print(f"ERROR: {exc}", file=sys.stderr)
@@ -496,6 +517,14 @@ def build_trial_parser(parser: argparse.ArgumentParser) -> None:
             "first gate). Production starts should open the throttle: under "
             "per-node keying, resumes never revisit pre-checkpoint nodes, so "
             "a starved start cannot be repaired downstream."
+        ),
+    )
+    start.add_argument(
+        "--gamma-settings-file",
+        required=False,
+        help=(
+            "YAML/JSON list of per-variant Gamma settings to inject into the "
+            "composed directive before digesting."
         ),
     )
     resume = subparsers.add_parser("resume")

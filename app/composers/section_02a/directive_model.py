@@ -5,7 +5,7 @@ from __future__ import annotations
 from datetime import datetime
 from enum import StrEnum
 from pathlib import PurePosixPath
-from typing import Literal
+from typing import Any, Literal
 from uuid import UUID
 
 from pydantic import BaseModel, ConfigDict, Field, TypeAdapter, field_validator, model_validator
@@ -138,6 +138,13 @@ class Directive(BaseModel):
     sources: list[DirectiveSource] = Field(..., min_length=1)
     composed_at: datetime
     schema_version: int = Field(default=1, ge=1)
+    gamma_settings: list[dict[str, Any]] | None = Field(default=None)
+
+    def model_dump(self, *args: Any, **kwargs: Any) -> dict[str, Any]:
+        payload = super().model_dump(*args, **kwargs)
+        if self.gamma_settings is None:
+            payload.pop("gamma_settings", None)
+        return payload
 
     @field_validator("run_id")
     @classmethod

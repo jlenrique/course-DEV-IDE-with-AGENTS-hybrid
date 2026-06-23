@@ -13,12 +13,21 @@ exercising LangChain or the actual LLM.
 from __future__ import annotations
 
 import hashlib
+from datetime import UTC, datetime
 from pathlib import Path
 from types import SimpleNamespace
 from unittest.mock import MagicMock, patch
-from uuid import uuid4
+from uuid import UUID, uuid4
+
+import yaml
 
 from app.composers.section_02a import cli_adapter
+from app.composers.section_02a.composer import write_directive_yaml
+from app.composers.section_02a.directive_model import Directive, DirectiveRole, DirectiveSource
+from app.marcus.orchestrator.production_runner import (
+    _gamma_settings_from_directive,
+    _runner_payload_for_specialist,
+)
 
 
 def _entry_stub() -> SimpleNamespace:
@@ -166,3 +175,86 @@ def test_adapter_accepts_injected_llm_and_skips_make_chat_model(tmp_path: Path) 
     assert mock_compose.call_args.kwargs["llm"] is injected_llm
     assert mock_compose.call_args.kwargs["run_id"] == run_id
     assert not (run_dir / "model_resolution_trail.json").exists()
+
+
+def _deterministic_directive(run_id: UUID, corpus_dir: str = "C:/tmp/corpus") -> Directive:
+    return Directive(
+        run_id=run_id,
+        corpus_dir=corpus_dir,
+        sources=[
+            DirectiveSource(
+                ref_id="src-001",
+                locator="lesson.md",
+                role=DirectiveRole.PRIMARY,
+                expected_min_words=500,
+                description="Primary lesson source.",
+            )
+        ],
+        composed_at=datetime(2026, 6, 23, 12, 0, tzinfo=UTC),
+    )
+
+
+def test_write_directive_yaml_legacy_no_gamma_settings_bytes_stable(tmp_path: Path) -> None:
+    run_id = UUID("11111111-1111-4111-8111-111111111111")
+    directive = _deterministic_directive(run_id)
+    directive_path = tmp_path / "directive.yaml"
+
+    write_directive_yaml(directive, directive_path)
+
+    expected = (
+        "run_id: 11111111-1111-4111-8111-111111111111\n"
+        "corpus_dir: C:/tmp/corpus\n"
+        "sources:\n"
+        "- ref_id: src-001\n"
+        "  locator: lesson.md\n"
+        "  provider: local_file\n"
+        "  role: primary\n"
+        "  description: Primary lesson source.\n"
+        "  expected_min_words: 500\n"
+        "  excluded_reason: null\n"
+        "composed_at: '2026-06-23T12:00:00Z'\n"
+        "schema_version: 1\n"
+    )
+    actual = directive_path.read_text(encoding="utf-8")
+    assert actual == expected
+    assert "gamma_settings" not in actual
+    assert hashlib.sha256(directive_path.read_bytes()).hexdigest() == (
+        "06b587cc99b654967409b5170c5c532c6c7cb3d16d2ebb6b7e463afe173b5b57"
+    )
+
+
+def test_compose_and_write_injects_gamma_settings_before_digest_and_gary_payload(
+    tmp_path: Path,
+) -> None:
+    corpus_dir = tmp_path / "corpus"
+    corpus_dir.mkdir()
+    run_dir = tmp_path / "run"
+    run_id = uuid4()
+    gamma_settings = [{"variant_id": "A"}, {"variant_id": "B"}]
+
+    with patch.object(cli_adapter, "compose") as mock_compose:
+        mock_compose.return_value = _deterministic_directive(
+            run_id,
+            corpus_dir.resolve().as_posix(),
+        )
+        directive_path, digest = cli_adapter.compose_and_write(
+            corpus_dir=corpus_dir,
+            run_dir=run_dir,
+            run_id=run_id,
+            llm=MagicMock(name="llm"),
+            gamma_settings=gamma_settings,
+        )
+
+    payload = yaml.safe_load(directive_path.read_text(encoding="utf-8"))
+    assert payload["gamma_settings"] == gamma_settings
+    assert hashlib.sha256(directive_path.read_bytes()).hexdigest() == digest
+    assert _gamma_settings_from_directive(directive_path) == gamma_settings
+    gary_payload = _runner_payload_for_specialist(
+        specialist_id="gary",
+        directive_path=directive_path,
+        bundle_dir=None,
+        runs_root=tmp_path,
+        trial_id=run_id,
+    )
+    assert gary_payload is not None
+    assert gary_payload["gamma_settings"] == gamma_settings
