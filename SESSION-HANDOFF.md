@@ -9,8 +9,17 @@
 ## Variant arc — now BUILT + T11-closed (`45b7724`, post-goal continuation)
 Operator dispatched Codex on the variant arc; Claude T11 ACCEPTED. Per-variant `gamma_settings` flow CD-directive→runner→Gary→G2B card; A/B dispatch with distinct settings (DEFAULT_VARIANT_PAIR photographic/diagrammatic); all party amendments honored (keying-report, additive open-enum schema, N=A/B, no manifest/pack/lockstep touch); 82 deterministic tests green; diff clean. **Live Gamma reachability confirmed** (a Claude-run live call reached Gamma + generated); the clean **2-distinct-render proof + "distinct enough" eye-check is the OPERATOR-GATED leg at a real trial G2C** (party-designated; my minimal smoke fixture lacked the full-pipeline slide payload). Evidence: `variant-live-smoke-2026-06-23/`.
 
-## Operator's next action — the next trial can now use GENUINE 2-up distinctness
-**Launch a trial with per-variant Gamma settings** (the operator supplies the A/B settings at G2B; default pair is photographic vs diagrammatic) → 2 distinct renders per slide → pick at Storyboard A (G2C) — this is also where the operator-gated distinctness eye-check happens. Single-variant remains a valid fallback. Trial conditions C1–C5/H1–H4 still apply (verification run; resubstitution stamp on reading-path numbers; fresh-naive-holdout = binding post-trial generalization gate).
+## ⚠️ Q3 investigation — variant SELECTION is not consumed downstream (NEXT-SESSION WORK)
+Operator-requested deep-dive (`variant-selection-downstream-gap-2026-06-23.md`, commit `7eeafbc`) found a **HIGH-severity, 2-variant-trial blocker**: `selected_variant_id` is set at G2B but **read nowhere downstream**, and Irene `_slide_roster` (`graph.py:118`) iterates ALL `gary_slide_output` rows with no variant filter → 2 variants **double the deck** (12 roster rows for 6 slides); perception/reading-path/compositor assume 1 PNG/slide_id. Picking a variant does nothing; both flow through. **Latent — single-variant runs are unaffected** (the v9 smoke `242b859f` was clean because it was single-dispatch).
+**OPERATOR DECISION (2026-06-23): pursue the DECK-WIDE fix (Option 1).** Filter `gary_slide_output` to the single `selected_variant_id` immediately AFTER the G2B/G2C pick and BEFORE the vision-perception node (the chokepoint), so the chosen variant's PNG routes through perception → narration → composition; no-op for single-variant. NEW CYCLE (substrate; party green-light → Codex T1–T10 → Claude T11). **NEXT SESSION BEGINS HERE.** Also fold in the operator's wish to change the DEFAULT variant pair (`DEFAULT_VARIANT_PAIR`, `gary/_act.py:25`).
+
+## Trial options unchanged by the gap
+**A single-variant TRIAL-1** can run anytime (party-certified ready, conditions C1–C5/H1–H4: verification run; resubstitution stamp on reading-path numbers; fresh-naive-holdout = binding post-trial generalization gate). A **2-variant** trial must wait for the deck-wide fix above.
+
+## Known variant follow-ons (filed, not blocking single-variant)
+- `template` setting is **advisory-only** (echoed in additionalInstructions; not a real Gamma param — theming is `themeId`).
+- Gamma exposes `imageOptions.model` / `.source` + `textOptions.audience` / `.language` that Gary does **not** wire per-variant yet (only style/amount/tone/theme). Add if a new default pair needs the image model/source.
+- Arbitrary-N variants (beyond A/B) is a deferred follow-on (currently hard-fixed to A/B).
 
 ---
 
