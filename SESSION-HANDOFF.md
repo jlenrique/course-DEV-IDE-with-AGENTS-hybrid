@@ -1,3 +1,22 @@
+# Session Handoff — 2026-06-23 (`/goal` v9 — T11 close + cadence cleanup + variant-arc green-light; NEXT-TRIAL READINESS = operator fork)
+
+**Final class:** S (substrate: reading-path/Irene/vision close, Pass-2 voice config, spec/party planning). **Branch:** `fidelity-perception-arc-2026-06-19`, HEAD `9d73ad8`+wrapup, origin in sync.
+
+## Headline
+Drove `/goal` v9 (post-Codex) through 3 of 4 ARC steps autonomously; step 4 (trial-readiness) reaches an **operator fork**.
+1. **T11 CLOSED `done` (`e8e8c4e`)** — LLM-first reading-path + image_role rubric. Verified: gold SHA frozen; diff CLEAN (no slide-id special-casing); image_role 0.643→~0.79–0.86; macro 0.857 stable; tests assert the NEW advisory contract; 106 focused green; code-review clean; pipeline completes (`386912d6`). **Honest believed-green finding: n=14 has ±1-slide roll-noise per axis** (two rolls: image_role 0.786/0.857, cadence 0.857/0.786) — the Codex-flagged cadence "regression" is roll-noise; primary-key ~0.64–0.71 (below 0.78, ship-acceptable per posture).
+2. **Cadence cleanup `done` (`148fea9`)** — softened spatial cadence tokens → conceptual (z_pattern/multi_column/split_image_text) in the YAML registry + grammar-riders MD; completes the operator's "narrate content not geography" quibble. Lockstep-safe (token content not pinned; lint enforces only the 2 conceptual process patterns).
+3. **Variant arc party-green-lit (3/3, `9d73ad8`)** — per-variant Gamma settings → 2 distinct variants chosen at G2C. Winston/John/Amelia GREEN-WITH-AMENDMENTS (A3 verified data-plane-only; variant_id-in-keys is the load-bearing backward-compat gate; N=2; default photographic-vs-diagrammatic image-style smoke fixture; mechanical distinctness + operator-eye check). **Codex-prompt-ready** (`codex-dev-prompt-variant-arc.md`) — NOT built (Codex-gated). **John Q4: PREFERRED, NOT trial-blocking** (single-variant = acceptable trial-1 fallback).
+4. **Trial-readiness: VERDICT = ready on voice/perception axis; variant arc queued** (`trial-readiness-checklist-2026-06-23.md`).
+
+## OPERATOR FORK (the stop-and-ask)
+Two honest paths to the next trial: **(A) proceed to trial-1 NOW** with single-variant (variant arc → trial-2), or **(B) dispatch Codex on the variant arc first** (`codex-dev-prompt-variant-arc.md`) → Claude T11 → then trial with genuine 2-up distinctness. A fresh full smoke would also validate the *new* content-first voice (cadence cleanup landed after `386912d6`) + give a fresh Storyboard B.
+
+## Honest caveats (carried, not hidden)
+Reading-path numbers are on the CONSUMED-14 (resubstitution; ~image_role 0.82 / primary-key ~0.68, n=14 noisy) → a **fresh naive holdout** is the true generalization gate (`reading-path-fresh-naive-holdout-pre-trial`, Mary's dissent). Non-default-voice WPM + motion synthesis remain known queued items.
+
+---
+
 # Session Handoff — 2026-06-23 (`/goal` v8 LATER — SHIP PIVOT: reading-path → LLM-FIRST; geometry recalibration FILED AWAY; pre-flight GREEN; trial next)
 
 **Final class:** P (decision/measurement/planning; no production substrate adopted on the arc branch — Codex's geometry delivery was FILED to a reference branch, not merged). **Branch:** `fidelity-perception-arc-2026-06-19`, HEAD `41a84e6`, origin in sync.
