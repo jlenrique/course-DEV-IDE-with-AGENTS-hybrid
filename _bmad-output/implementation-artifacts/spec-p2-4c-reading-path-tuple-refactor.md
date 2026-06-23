@@ -76,10 +76,10 @@ Refactor the P2-4a reading-path classifier from a **flat closed 7-enum** into th
 - **S2 (image-role tier emission):** perceiver emits a per-element tier {1,2,2.5,3,4}. Gated on **G2** (tier-assignment rubric). Carries the tier-2.5 evidentiary band as `provisional, validate at P2-4b`.
 - **S3 (gpt-5.5 escalation arbitration):** escalates ONLY on the **G3** ambiguity predicate; returns the tuple + cited near-misses; ≥gpt-5.5 floor (catalog §8, no downgrade). Parse seam only; recorded-real responses never a production-path fixture. RED test: malformed/empty escalation → degrade-to-DEFAULT-counted, never crash/mislabel (A7-5).
 
-## 6. Gaps to close BEFORE S2/S3 open (party A9 — spec sub-tasks)
-- **G1 — `multi_column` peers vs `two_pane` oppositional discriminant.** Decide: deterministic geometry (column-count / gutter-symmetry / equal-vs-asymmetric width / parallel-vs-opposed content) OR route to S3 LLM. Caravaggio guard: `split_image_text` = ONE message + ONE image; two peer contents weighed ⇒ columns/comparison. **Spec must state which.**
-- **G2 — image-role tier-assignment rubric.** Map observable features (bbox area %, centrality, caption-adjacency, count, foreground/opacity) → tier {1,2,2.5,3,4}. Deterministic-vs-perceiver-judgment decided.
-- **G3 — ambiguity-escalation trigger predicate.** Measurable (top-2 macro-layout margin / `_looks_z` near-miss band) so escalation rate is observable + testable + cost-accountable.
+## 6. Gaps — ALL RESOLVED (party-mode 2026-06-22; see `reading-path-gap-resolution-G2-G3-2026-06-22.md`)
+- **G1 — peer vs oppositional → RESOLVED (D1):** explicit-cue discriminator (vs/before-after/pro-con/✓✗/Option A|B); S1 emits `multi_column`, S3 upgrades to `two_pane` on the cue. Cue may flag, never set, in S1.
+- **G2 — image-role tier → RESOLVED:** perceiver-primary (`role_tier` on the existing call, rubric inlined) + deterministic geometry gate/backfill (tier-4 size-lock; tier-3 ruled out when `internal_label_count==0`; Amelia prior table backfill). Scored tiers {1,2,4}; 2.5→2 fold; tier-3 quarantined; κ≥0.6 + confusion-matrix gate; provenance metadata. → **`codex-dev-prompt-p2-4c-s2.md`**.
+- **G3 — escalation predicate → RESOLVED:** inline-catalog default (no third call) + a triggered single ≥gpt-5.5 tuple-delta call on `escalate = macro_margin<θ ∨ opposition-cue ∨ callout-present ∨ numbered-without-transform-verb ∨ low-conf-role ∨ tuple-disagreement ∨ low-confidence ∨ 2.5/3-candidate-hit`; `escalation_ledger` observable; paired over-(≤20%)/zero-escalation tripwires; retry-to-green fence (upstream-frozen, single-shot, call-count assertion); permissive-start, calibrate after Trial-1. → **`codex-dev-prompt-p2-4c-s3.md`**.
 
 ## 7. Conformance-measurement contract (party A6 — binding, consumed by P2-4b)
 - **Top-1 ≥0.85 = STRICT exact match on primary key `{macro_layout × image_role}`** (no partial credit).
