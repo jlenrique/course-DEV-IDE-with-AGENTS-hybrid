@@ -11,6 +11,29 @@ This companion to [pass-2-authoring-template.md](./pass-2-authoring-template.md)
 
 ---
 
+## Narration voice (overarching — governs every pattern below)
+
+The reading-path pattern tells you the **order** and **emphasis** to speak in. Use that knowledge **invisibly**: narrate *about the content* like a teacher explaining the idea, in the pattern's scan order — do **not** recite the slide's geography or describe the act of looking. The listener should learn *what is true*, not *where it sits on the slide*.
+
+- ❌ **Spatial meta-commentary (avoid):** "At the title we see…", "On the right there's an image of…", "The leftmost column shows…", "In the top-left quadrant…", "The text side carries the message…". This narrates the *map*, not the *territory*, and breaks the conversational voice.
+- ✅ **Content-first voice (use):** say what the thing *means*, in the order the eye would take it, letting conceptual transitions carry the flow — "first… then…", "this builds on…", "by contrast…", "the takeaway is…". The geometry is the script writer's private guide, never spoken aloud.
+
+**Worked contrast (same left-to-right scan order; only the second speaks to the audience):**
+
+```text
+❌  At the title we see "The Real Barrier." Below it are three boxes. The box on
+    the left says clinicians have ideas; the middle box says they lack process;
+    the box on the right says they lack a safe space to experiment.
+
+✅  The real barrier isn't a shortage of ideas — clinicians generate those every
+    day. What's missing is the structure to pursue them, and the psychological
+    safety to experiment without fear.
+```
+
+The per-pattern **cadence tokens** below name each pattern's *ordering signature* — honor the order, but render it in this content-first voice, and **prefer the non-spatial token options** where a pattern lists them (e.g. "first/then", "by contrast", "this builds on") over the spatial ones ("the column to the right", "the text side"). Images obey their **role tier**: a *decorative* image is never narrated; an *illustrative* image is referenced only if it carries the claim; an *instructional* diagram is walked through by its **logic**, not its coordinates.
+
+---
+
 ## Pattern: z_pattern
 
 **Canonical scan:** top-left → top-right → bottom-left → bottom-right
