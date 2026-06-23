@@ -1,0 +1,5 @@
+# Demonstration trial — variant treatment pair (minimal; DEFAULT_VARIANT_PAIR fills the
+# full Tejal (A) + Blueprint Editorial (B) looks). Fed to `trial start --gamma-settings-file`.
+# This is the interim stand-in for the future Marcus-SPOC CD-curated treatment pick-list.
+- variant_id: A
+- variant_id: B

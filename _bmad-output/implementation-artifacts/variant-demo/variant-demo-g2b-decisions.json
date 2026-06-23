@@ -1,0 +1,6 @@
+{
+  "G2B": {
+    "verb": "select",
+    "edit_payload": { "selected_variant_id": "B" }
+  }
+}
