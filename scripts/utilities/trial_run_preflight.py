@@ -212,7 +212,7 @@ def _check_sanctums() -> CheckResult:
     """Verify Marcus + key specialist sanctums populated."""
     sanctum_dirs = [
         REPO_ROOT / "_bmad" / "memory" / "bmad-agent-marcus",
-        REPO_ROOT / "_bmad" / "memory" / "wanda-sidecar",
+        REPO_ROOT / "_bmad" / "memory" / "bmad-agent-wanda",
     ]
     missing = []
     empty = []
