@@ -1,5 +1,13 @@
 # Variant Selection — Deck-Wide Fix: Agreed Scope (NEW CYCLE prelude, 2026-06-23)
 
+> **✅ STATUS: CLOSED/done 2026-06-23.** Codex T1–T10 → Claude T11 HAND BACK → Codex remediation →
+> Claude re-T11 CLOSE (all findings verified in code + non-vacuous RED-first tests; battery green;
+> 14 ambient contracts). B-gate cleared (live-201 + operator eye-check). Record:
+> `variant-selection-deckwide-t11-code-review-2026-06-23.md`. NEXT: interim trial wiring (inject A/B
+> treatment pair into the `tejal-apc-c1-m1-p2-trends` directive + G2B select) → 2-variant demo trial.
+> Operator-design follow-on filed: `marcus-spoc-variant-treatment-template-picklist`.
+
+
 Builds on `variant-selection-downstream-gap-2026-06-23.md` (the forensic finding). Operator
 chose **Option 1 (deck-wide)** and, in this session, expanded the scope to make **theme the
 primary distinctness lever** with strict validation. This note captures the agreed decisions

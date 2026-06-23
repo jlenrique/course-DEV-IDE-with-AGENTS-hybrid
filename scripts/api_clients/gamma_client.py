@@ -12,13 +12,14 @@ import os
 import time
 from typing import Any
 
-from scripts.api_clients.base_client import BaseAPIClient
+from scripts.api_clients.base_client import AuthenticationError, BaseAPIClient
 
 logger = logging.getLogger(__name__)
 
 GAMMA_BASE_URL = "https://public-api.gamma.app/v1.0"
 POLL_INTERVAL = 3
 MAX_POLL_ATTEMPTS = 120
+GENERATION_401_BACKOFF_DELAYS = (10, 20, 30)
 
 
 class GammaClient(BaseAPIClient):
@@ -37,10 +38,12 @@ class GammaClient(BaseAPIClient):
             api_key=api_key,
             default_headers={"Content-Type": "application/json"},
         )
+        self._gamma_auth_validated = False
 
     def list_themes(self, limit: int = 20) -> list[dict[str, Any]]:
         """List available presentation themes."""
         data = self.get("/themes", params={"limit": limit})
+        self._gamma_auth_validated = True
         if isinstance(data, list):
             return data
         if isinstance(data, dict) and "data" in data:
@@ -114,7 +117,27 @@ class GammaClient(BaseAPIClient):
         if folder_ids:
             payload["folderIds"] = folder_ids
 
-        return self.post("/generations", json=payload)
+        return self._post_generation_with_warm_401_retry(payload)
+
+    def _post_generation_with_warm_401_retry(self, payload: dict[str, Any]) -> dict[str, Any]:
+        try:
+            return self.post("/generations", json=payload)
+        except AuthenticationError as exc:
+            if exc.status_code != 401 or not getattr(self, "_gamma_auth_validated", False):
+                raise
+            last_exc = exc
+            for delay in GENERATION_401_BACKOFF_DELAYS:
+                self._sleep(delay)
+                try:
+                    return self.post("/generations", json=payload)
+                except AuthenticationError as retry_exc:
+                    if retry_exc.status_code != 401:
+                        raise
+                    last_exc = retry_exc
+            raise last_exc from exc
+
+    def _sleep(self, seconds: int) -> None:
+        time.sleep(seconds)
 
     def generate_deck(
         self,

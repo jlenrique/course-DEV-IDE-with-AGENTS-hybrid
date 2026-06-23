@@ -3,6 +3,8 @@ from __future__ import annotations
 import zipfile
 from pathlib import Path
 
+import pytest
+
 from app.specialists.gary import _act as gary_act
 
 # Re-blessed 2026-06-18 (storyboard-correctness fix): these tests previously
@@ -29,7 +31,13 @@ class FakeGammaClient:
 
     def list_themes(self, limit: int = 20) -> list[dict[str, str]]:
         self.theme_calls += 1
-        return [{"id": "theme-clean-grid", "name": "Clean Grid"}]
+        return [
+            {"id": "theme-clean-grid", "name": "Clean Grid"},
+            {"id": "theme-photo", "name": "Photo"},
+            {"id": "theme-diagram", "name": "Diagram"},
+            {"id": "njim9kuhfnljvaa", "name": "2026 HIL APC (Nejal)"},
+            {"id": "e8tz1vxb9v1urqp", "name": "Blueprint Editorial"},
+        ]
 
     def generate_deck(self, input_text: str, **kwargs: object) -> dict[str, object]:
         self.generate_calls.append({"input_text": input_text, **kwargs})
@@ -133,13 +141,30 @@ def test_gary_variant_arc_dispatches_per_variant_gamma_settings(
 
     assert result["generation_mode"] == "double-dispatch"
     assert result["calls_made"] == 2
-    assert result["variant_gamma_settings"] == payload["gamma_settings"]
+    assert result["variant_gamma_settings"][0] | payload["gamma_settings"][0] == result[
+        "variant_gamma_settings"
+    ][0]
+    assert result["variant_gamma_settings"][1] | payload["gamma_settings"][1] == result[
+        "variant_gamma_settings"
+    ][1]
     assert client.generate_calls[0]["theme_id"] == "theme-photo"
-    assert client.generate_calls[0]["image_options"] == {"style": "photographic"}
+    assert client.generate_calls[0]["image_options"] == {
+        "source": "aiGenerated",
+        "stylePreset": "illustration",
+    }
     assert client.generate_calls[1]["theme_id"] == "theme-diagram"
-    assert client.generate_calls[1]["image_options"] == {"style": "diagrammatic"}
+    assert client.generate_calls[1]["image_options"] == {
+        "source": "aiGenerated",
+        "model": "recraft-v3-svg",
+        "stylePreset": "lineArt",
+    }
     assert client.generate_calls[1]["text_options"] == {
-        "amount": "dense",
+        "amount": "brief",
+        "audience": (
+            "Faculty and instructional designers familiar with Canvas and course "
+            "design, American English"
+        ),
+        "language": "en",
         "tone": "technical",
     }
     rows = result["gary_slide_output"]
@@ -172,7 +197,11 @@ def test_gary_variant_arc_partial_settings_fall_back_to_default_pair(
     assert result["calls_made"] == 2
     assert result["variant_gamma_settings"][0]["image_style"] == "photographic"
     assert result["variant_gamma_settings"][1] == dict(gary_act.DEFAULT_VARIANT_PAIR[1])
-    assert client.generate_calls[1]["image_options"] == {"style": "diagrammatic"}
+    assert client.generate_calls[1]["image_options"] == {
+        "source": "aiGenerated",
+        "model": "recraft-v3-svg",
+        "stylePreset": "lineArt",
+    }
 
 
 def test_gary_no_gamma_settings_preserves_single_dispatch_shape(
@@ -196,6 +225,226 @@ def test_gary_no_gamma_settings_preserves_single_dispatch_shape(
     assert result["gary_slide_output"][0]["dispatch_variant"] == "A"
     assert result["gary_slide_output"][0]["gamma_settings"] is None
     assert "image_options" not in client.generate_calls[0]
+    assert client.generate_calls[0] == {
+        "input_text": "# Only Topic Here",
+        "num_cards": 1,
+        "theme_id": "theme-clean-grid",
+        "card_split": "inputTextBreaks",
+        "additional_instructions": (
+            "Use each section's leading heading as that card's title verbatim; "
+            "produce exactly one card per section; do not add a cover, agenda, "
+            "divider, or summary card; do not merge or split sections. Variant A."
+        ),
+        "export_as": "png",
+    }
+
+
+def test_gary_theme_validation_resolves_name_before_generation(
+    tmp_path: Path, monkeypatch
+) -> None:
+    zpath = _titled_zip(tmp_path, ["1_Alpha-Topic"])
+    monkeypatch.setattr(
+        gary_act, "download_export", lambda url, *, output_dir, filename: str(zpath)
+    )
+    client = FakeGammaClient()
+
+    gary_act.generate_gamma_variants(
+        {
+            "slides": [{"slide_id": "s1", "title": "Alpha Topic"}],
+            "export_dir": str(tmp_path),
+            "gamma_settings": [{"variant_id": "A", "theme": "Photo"}],
+        },
+        client=client,
+    )
+
+    assert client.generate_calls[0]["theme_id"] == "theme-photo"
+
+
+def test_gary_theme_validation_blocks_bad_theme_before_generation(tmp_path: Path) -> None:
+    client = FakeGammaClient()
+
+    try:
+        gary_act.generate_gamma_variants(
+            {
+                "slides": [{"slide_id": "s1", "title": "Alpha Topic"}],
+                "export_dir": str(tmp_path),
+                "gamma_settings": [{"variant_id": "A", "theme": "theme-real-looking-absent"}],
+            },
+            client=client,
+        )
+    except gary_act.GaryActError as exc:
+        assert exc.tag == "gamma.theme.invalid"
+    else:  # pragma: no cover - assertion branch
+        raise AssertionError("bad theme must fail loud")
+
+    assert client.generate_calls == []
+
+
+def test_gary_enum_validation_blocks_bad_amount_before_generation(tmp_path: Path) -> None:
+    client = FakeGammaClient()
+
+    with pytest.raises(gary_act.GaryActError, match="amount"):
+        gary_act.generate_gamma_variants(
+            {
+                "slides": [{"slide_id": "s1", "title": "Alpha Topic"}],
+                "export_dir": str(tmp_path),
+                "gamma_settings": [{"variant_id": "A", "amount": "minimalish"}],
+            },
+            client=client,
+        )
+
+    assert client.generate_calls == []
+
+
+@pytest.mark.parametrize(
+    ("key", "value"),
+    [
+        ("amount", "minimalish"),
+        ("image_style_preset", "painterly"),
+        ("image_model", "balanced"),
+        ("image_source", "stockpile"),
+        ("dimensions", "auto"),
+        ("language", "balanced"),
+        ("text_mode", "auto"),
+    ],
+)
+def test_gary_enum_validation_blocks_bad_knobs_before_generation(
+    key: str, value: str, tmp_path: Path, monkeypatch
+) -> None:
+    zpath = _titled_zip(tmp_path, ["1_Alpha-Topic"])
+    monkeypatch.setattr(
+        gary_act, "download_export", lambda url, *, output_dir, filename: str(zpath)
+    )
+    client = FakeGammaClient()
+
+    with pytest.raises(gary_act.GaryActError) as exc_info:
+        gary_act.generate_gamma_variants(
+            {
+                "slides": [{"slide_id": "s1", "title": "Alpha Topic"}],
+                "export_dir": str(tmp_path),
+                "gamma_settings": [{"variant_id": "A", key: value}],
+            },
+            client=client,
+        )
+
+    assert exc_info.value.tag == "gamma.settings.invalid"
+    assert client.generate_calls == []
+
+
+def test_gary_custom_style_preset_requires_non_empty_style(tmp_path: Path, monkeypatch) -> None:
+    zpath = _titled_zip(tmp_path, ["1_Alpha-Topic"])
+    monkeypatch.setattr(
+        gary_act, "download_export", lambda url, *, output_dir, filename: str(zpath)
+    )
+    client = FakeGammaClient()
+
+    with pytest.raises(gary_act.GaryActError) as exc_info:
+        gary_act.generate_gamma_variants(
+            {
+                "slides": [{"slide_id": "s1", "title": "Alpha Topic"}],
+                "export_dir": str(tmp_path),
+                "gamma_settings": [{"variant_id": "A", "image_style_preset": "custom"}],
+            },
+            client=client,
+        )
+
+    assert exc_info.value.tag == "gamma.settings.invalid"
+    assert client.generate_calls == []
+
+
+def test_gary_keywords_must_be_a_list_before_generation(tmp_path: Path, monkeypatch) -> None:
+    zpath = _titled_zip(tmp_path, ["1_Alpha-Topic"])
+    monkeypatch.setattr(
+        gary_act, "download_export", lambda url, *, output_dir, filename: str(zpath)
+    )
+    client = FakeGammaClient()
+
+    with pytest.raises(gary_act.GaryActError) as exc_info:
+        gary_act.generate_gamma_variants(
+            {
+                "slides": [{"slide_id": "s1", "title": "Alpha Topic"}],
+                "export_dir": str(tmp_path),
+                "gamma_settings": [{"variant_id": "A", "keywords": "blueprint"}],
+            },
+            client=client,
+        )
+
+    assert exc_info.value.tag == "gamma.settings.invalid"
+    assert client.generate_calls == []
+
+
+def test_gary_control_layer_emits_named_style_preset_without_style(
+    tmp_path: Path, monkeypatch
+) -> None:
+    zpath = _titled_zip(tmp_path, ["1_Alpha-Topic"])
+    monkeypatch.setattr(
+        gary_act, "download_export", lambda url, *, output_dir, filename: str(zpath)
+    )
+    client = FakeGammaClient()
+
+    gary_act.generate_gamma_variants(
+        {
+            "slides": [{"slide_id": "s1", "title": "Alpha Topic"}],
+            "export_dir": str(tmp_path),
+            "gamma_settings": [
+                {
+                    "variant_id": "A",
+                    "image_style_preset": "illustration",
+                    "image_style": "ignored named tile prompt",
+                    "amount": "brief",
+                    "audience": "Faculty",
+                    "language": "en",
+                    "image_source": "aiGenerated",
+                    "dimensions": "16x9",
+                }
+            ],
+        },
+        client=client,
+    )
+
+    call = client.generate_calls[0]
+    assert call["image_options"] == {
+        "source": "aiGenerated",
+        "stylePreset": "illustration",
+    }
+    assert "style" not in call["image_options"]
+    assert call["text_options"] == {
+        "amount": "brief",
+        "audience": "Faculty",
+        "language": "en",
+        "tone": "Clear, professional, engaging in American English",
+    }
+    assert call["card_options"] == {"dimensions": "16x9"}
+
+
+def test_gary_control_layer_emits_custom_style_without_style_preset(
+    tmp_path: Path, monkeypatch
+) -> None:
+    zpath = _titled_zip(tmp_path, ["1_Alpha-Topic"])
+    monkeypatch.setattr(
+        gary_act, "download_export", lambda url, *, output_dir, filename: str(zpath)
+    )
+    client = FakeGammaClient()
+
+    gary_act.generate_gamma_variants(
+        {
+            "slides": [{"slide_id": "s1", "title": "Alpha Topic"}],
+            "export_dir": str(tmp_path),
+            "gamma_settings": [
+                {
+                    "variant_id": "A",
+                    "image_style_preset": "custom",
+                    "image_style": "Clean black ink blueprint lines.",
+                }
+            ],
+        },
+        client=client,
+    )
+
+    assert client.generate_calls[0]["image_options"]["stylePreset"] == "custom"
+    assert client.generate_calls[0]["image_options"]["style"] == (
+        "Clean black ink blueprint lines."
+    )
 
 
 def test_gary_generation_pins_titles_and_card_split(tmp_path: Path, monkeypatch) -> None:

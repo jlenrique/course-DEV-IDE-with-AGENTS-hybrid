@@ -192,6 +192,15 @@
             "type": "string",
             "description": "Open image style. Known smoke values: photographic, diagrammatic, illustrative."
           },
+          "amount": {
+            "type": "string",
+            "enum": [
+              "brief",
+              "medium",
+              "detailed",
+              "extensive"
+            ]
+          },
           "density": {
             "type": "string",
             "enum": [
@@ -201,12 +210,107 @@
             ]
           },
           "tone": {
+            "type": "string"
+          },
+          "audience": {
+            "type": "string"
+          },
+          "language": {
             "type": "string",
             "enum": [
-              "professional",
-              "warm",
-              "technical"
+              "en"
             ]
+          },
+          "text_mode": {
+            "type": "string",
+            "enum": [
+              "generate",
+              "condense",
+              "preserve"
+            ]
+          },
+          "image_style_preset": {
+            "type": "string",
+            "enum": [
+              "photorealistic",
+              "illustration",
+              "abstract",
+              "3D",
+              "lineArt",
+              "custom"
+            ]
+          },
+          "image_model": {
+            "type": "string",
+            "enum": [
+              "flux-2-klein",
+              "flux-kontext-fast",
+              "imagen-3-flash",
+              "luma-photon-flash-1",
+              "qwen-image-fast",
+              "qwen-image",
+              "flux-2-pro",
+              "ideogram-v3-turbo",
+              "imagen-4-fast",
+              "luma-photon-1",
+              "recraft-v4",
+              "leonardo-phoenix",
+              "flux-2-flex",
+              "flux-2-max",
+              "flux-kontext-pro",
+              "ideogram-v3",
+              "imagen-4-pro",
+              "recraft-v3",
+              "gemini-3-pro-image",
+              "gemini-2.5-flash-image",
+              "gpt-image-1-medium",
+              "dall-e-3",
+              "gemini-3.1-flash-image-mini",
+              "recraft-v3-svg",
+              "recraft-v4-svg",
+              "ideogram-v3-quality",
+              "gemini-3.1-flash-image",
+              "gemini-3-pro-image-hd",
+              "gemini-3.1-flash-image-hd",
+              "imagen-4-ultra",
+              "gpt-image-1-high",
+              "recraft-v4-pro"
+            ]
+          },
+          "image_source": {
+            "type": "string",
+            "enum": [
+              "aiGenerated",
+              "pexels",
+              "webFreeToUse",
+              "webFreeToUseCommercially",
+              "themeAccent",
+              "placeholder",
+              "noImages",
+              "pictographic",
+              "giphy",
+              "webAllImages"
+            ]
+          },
+          "dimensions": {
+            "type": "string",
+            "enum": [
+              "fluid",
+              "16x9",
+              "4x3",
+              "pageless",
+              "letter",
+              "a4",
+              "1x1",
+              "4x5",
+              "9x16"
+            ]
+          },
+          "keywords": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
           }
         }
       }

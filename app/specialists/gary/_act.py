@@ -22,22 +22,122 @@ from skills.gamma_api_mastery.scripts.gamma_operations import (
 REPO_ROOT = Path(__file__).resolve().parents[3]
 SANCTUM_DIR = REPO_ROOT / "_bmad" / "memory" / "bmad-agent-gary"
 REFERENCES_DIR = REPO_ROOT / "skills" / "bmad-agent-gamma" / "references"
-DEFAULT_VARIANT_PAIR: tuple[dict[str, str], dict[str, str]] = (
+TEXT_AMOUNT_VALUES = frozenset({"brief", "medium", "detailed", "extensive"})
+TEXT_LANGUAGE_VALUES = frozenset({"en"})
+TEXT_MODE_VALUES = frozenset({"generate", "condense", "preserve"})
+IMAGE_STYLE_PRESET_VALUES = frozenset(
+    {"photorealistic", "illustration", "abstract", "3D", "lineArt", "custom"}
+)
+IMAGE_SOURCE_VALUES = frozenset(
+    {
+        "aiGenerated",
+        "pexels",
+        "webFreeToUse",
+        "webFreeToUseCommercially",
+        "themeAccent",
+        "placeholder",
+        "noImages",
+        "pictographic",
+        "giphy",
+        "webAllImages",
+    }
+)
+IMAGE_MODEL_VALUES = frozenset(
+    {
+        "flux-2-klein",
+        "flux-kontext-fast",
+        "imagen-3-flash",
+        "luma-photon-flash-1",
+        "qwen-image-fast",
+        "qwen-image",
+        "flux-2-pro",
+        "ideogram-v3-turbo",
+        "imagen-4-fast",
+        "luma-photon-1",
+        "recraft-v4",
+        "leonardo-phoenix",
+        "flux-2-flex",
+        "flux-2-max",
+        "flux-kontext-pro",
+        "ideogram-v3",
+        "imagen-4-pro",
+        "recraft-v3",
+        "gemini-3-pro-image",
+        "gemini-2.5-flash-image",
+        "gpt-image-1-medium",
+        "dall-e-3",
+        "gemini-3.1-flash-image-mini",
+        "recraft-v3-svg",
+        "recraft-v4-svg",
+        "ideogram-v3-quality",
+        "gemini-3.1-flash-image",
+        "gemini-3-pro-image-hd",
+        "gemini-3.1-flash-image-hd",
+        "imagen-4-ultra",
+        "gpt-image-1-high",
+        "recraft-v4-pro",
+    }
+)
+CARD_DIMENSION_VALUES = frozenset(
+    {"fluid", "16x9", "4x3", "pageless", "letter", "a4", "1x1", "4x5", "9x16"}
+)
+GAMMA_SETTING_KEYS = frozenset(
+    {
+        "variant_id",
+        "theme",
+        "template",
+        "image_style",
+        "density",
+        "amount",
+        "tone",
+        "audience",
+        "language",
+        "text_mode",
+        "image_style_preset",
+        "image_model",
+        "image_source",
+        "dimensions",
+        "keywords",
+    }
+)
+DEFAULT_VARIANT_PAIR: tuple[dict[str, Any], dict[str, Any]] = (
     {
         "variant_id": "A",
-        "theme": "default",
+        "theme": "njim9kuhfnljvaa",
         "template": "default",
-        "image_style": "photographic",
-        "density": "balanced",
-        "tone": "professional",
+        "image_style_preset": "illustration",
+        "amount": "brief",
+        "audience": (
+            "Faculty and instructional designers familiar with Canvas and course "
+            "design, American English"
+        ),
+        "tone": "Clear, professional, engaging in American English",
+        "language": "en",
+        "image_source": "aiGenerated",
+        "dimensions": "16x9",
     },
     {
         "variant_id": "B",
-        "theme": "default",
+        "theme": "e8tz1vxb9v1urqp",
         "template": "default",
-        "image_style": "diagrammatic",
-        "density": "balanced",
-        "tone": "professional",
+        "image_style_preset": "lineArt",
+        "image_model": "recraft-v3-svg",
+        "keywords": [
+            "blueprint",
+            "technical line drawing",
+            "dotted construction lines",
+            "architectural",
+            "single-accent color",
+        ],
+        "amount": "brief",
+        "tone": "Confident, precise, lightly editorial - American English",
+        "audience": (
+            "Faculty and instructional designers familiar with Canvas and course "
+            "design, American English"
+        ),
+        "language": "en",
+        "image_source": "aiGenerated",
+        "dimensions": "16x9",
     },
 )
 GARY_REFERENCES = (
@@ -124,11 +224,17 @@ def _slides(payload: dict[str, Any]) -> list[dict[str, Any]]:
     return raw
 
 
-def _theme_id(client: GammaClient, payload: dict[str, Any]) -> str | None:
-    themes = client.list_themes(limit=int(payload.get("theme_limit", 20)))
+def _theme_id(
+    client: GammaClient,
+    payload: dict[str, Any],
+    *,
+    themes: list[dict[str, Any]] | None = None,
+) -> str | None:
+    theme_limit = int(payload.get("theme_limit", 20))
     requested = str(payload.get("theme_id") or "").strip()
+    themes = themes if themes is not None else client.list_themes(limit=theme_limit)
     if requested:
-        return requested
+        return _resolve_and_validate_theme(requested, themes)
     for theme in themes:
         if isinstance(theme, dict):
             value = theme.get("id") or theme.get("themeId") or theme.get("gammaId")
@@ -137,7 +243,49 @@ def _theme_id(client: GammaClient, payload: dict[str, Any]) -> str | None:
     return None
 
 
-def _normalized_gamma_settings(payload: dict[str, Any]) -> list[dict[str, str]]:
+def _resolve_and_validate_theme(
+    requested: str,
+    themes: list[dict[str, Any]],
+) -> str:
+    lookup: dict[str, str] = {}
+    for theme in themes:
+        if not isinstance(theme, dict):
+            continue
+        value = theme.get("id") or theme.get("themeId") or theme.get("gammaId")
+        if not value:
+            continue
+        theme_id = str(value)
+        lookup[theme_id] = theme_id
+        name = theme.get("name")
+        if name:
+            lookup[str(name)] = theme_id
+    if requested in lookup:
+        return lookup[requested]
+    raise GaryActError(
+        f"gamma theme {requested!r} not found in list_themes() window",
+        tag="gamma.theme.invalid",
+    )
+
+
+def _validate_enum_setting(
+    settings: dict[str, Any],
+    key: str,
+    allowed: frozenset[str],
+    *,
+    omit_sentinels: frozenset[str] = frozenset({"", "default"}),
+) -> None:
+    value = settings.get(key)
+    normalized = str(value).strip()
+    if value is None or normalized in omit_sentinels:
+        return
+    if normalized not in allowed:
+        raise GaryActError(
+            f"gamma_settings.{key} must be one of {sorted(allowed)}; got {value!r}",
+            tag="gamma.settings.invalid",
+        )
+
+
+def _normalized_gamma_settings(payload: dict[str, Any]) -> list[dict[str, Any]]:
     raw = payload.get("gamma_settings")
     if raw is None:
         return []
@@ -146,7 +294,7 @@ def _normalized_gamma_settings(payload: dict[str, Any]) -> list[dict[str, str]]:
             "gamma_settings must be a list when present",
             tag="gamma.settings.invalid",
         )
-    by_variant: dict[str, dict[str, str]] = {
+    by_variant: dict[str, dict[str, Any]] = {
         item["variant_id"]: dict(item) for item in DEFAULT_VARIANT_PAIR
     }
     for item in raw:
@@ -163,45 +311,119 @@ def _normalized_gamma_settings(payload: dict[str, Any]) -> list[dict[str, str]]:
                 "gamma_settings variant_id must be A or B",
                 tag="gamma.settings.invalid",
             )
+        unknown = sorted(set(item) - GAMMA_SETTING_KEYS)
+        if unknown:
+            raise GaryActError(
+                f"gamma_settings contains unknown key(s): {unknown}",
+                tag="gamma.settings.invalid",
+            )
         merged = dict(by_variant[variant_id])
-        for key in ("theme", "template", "image_style", "density", "tone"):
+        for key in GAMMA_SETTING_KEYS - {"variant_id"}:
             value = item.get(key)
-            if value is not None and str(value).strip():
+            if value is None:
+                continue
+            if key == "keywords":
+                if not isinstance(value, list):
+                    raise GaryActError(
+                        "gamma_settings.keywords must be a list of strings",
+                        tag="gamma.settings.invalid",
+                    )
+                merged[key] = [str(part).strip() for part in value if str(part).strip()]
+            elif str(value).strip():
                 merged[key] = str(value).strip()
+        if "amount" not in merged and merged.get("density") not in (None, "balanced"):
+            merged["amount"] = merged["density"]
+        _validate_enum_setting(
+            merged,
+            "amount",
+            TEXT_AMOUNT_VALUES,
+            omit_sentinels=frozenset({"", "default", "balanced"}),
+        )
+        _validate_enum_setting(merged, "language", TEXT_LANGUAGE_VALUES)
+        _validate_enum_setting(
+            merged,
+            "text_mode",
+            TEXT_MODE_VALUES,
+            omit_sentinels=frozenset({"", "default", "generate"}),
+        )
+        _validate_enum_setting(merged, "image_style_preset", IMAGE_STYLE_PRESET_VALUES)
+        _validate_enum_setting(
+            merged,
+            "image_model",
+            IMAGE_MODEL_VALUES,
+            omit_sentinels=frozenset({"", "default", "auto"}),
+        )
+        _validate_enum_setting(merged, "image_source", IMAGE_SOURCE_VALUES)
+        _validate_enum_setting(merged, "dimensions", CARD_DIMENSION_VALUES)
         by_variant[variant_id] = merged
     return [by_variant["A"], by_variant["B"]]
 
 
-def _theme_id_for_variant(base_theme_id: str | None, settings: dict[str, str]) -> str | None:
+def _theme_id_for_variant(
+    base_theme_id: str | None,
+    settings: dict[str, Any],
+    themes: list[dict[str, Any]],
+) -> str | None:
     theme = str(settings.get("theme") or "").strip()
     if theme and theme != "default":
-        return theme
+        return _resolve_and_validate_theme(theme, themes)
     return base_theme_id
 
 
-def _text_options_for_variant(settings: dict[str, str]) -> dict[str, str]:
-    density = str(settings.get("density") or "").strip()
+def _text_options_for_variant(settings: dict[str, Any]) -> dict[str, str]:
+    amount = str(settings.get("amount") or settings.get("density") or "").strip()
     tone = str(settings.get("tone") or "").strip()
+    audience = str(settings.get("audience") or "").strip()
+    language = str(settings.get("language") or "").strip()
     options: dict[str, str] = {}
-    if density and density != "balanced":
-        options["amount"] = density
-    if tone and tone != "professional":
+    if amount and amount not in {"balanced", "default"}:
+        options["amount"] = amount
+    if tone and tone not in {"professional", "default"}:
         options["tone"] = tone
+    if audience and audience != "default":
+        options["audience"] = audience
+    if language and language != "default":
+        options["language"] = language
     return options
 
 
-def _image_options_for_variant(settings: dict[str, str]) -> dict[str, str]:
+def _image_options_for_variant(settings: dict[str, Any]) -> dict[str, str]:
     style = str(settings.get("image_style") or "").strip()
-    if not style:
+    style_preset = str(settings.get("image_style_preset") or "").strip()
+    model = str(settings.get("image_model") or "").strip()
+    source = str(settings.get("image_source") or "").strip()
+    options: dict[str, str] = {}
+    if source and source != "default":
+        options["source"] = source
+    if model and model not in {"default", "auto"}:
+        options["model"] = model
+    if style_preset and style_preset != "default":
+        if style_preset == "custom" and not style:
+            raise GaryActError(
+                "gamma_settings.image_style is required when image_style_preset='custom'",
+                tag="gamma.settings.invalid",
+            )
+        options["stylePreset"] = style_preset
+        if style_preset == "custom" and style:
+            options["style"] = style
+        return options
+    if style:
+        options["style"] = style
+    return options
+
+
+def _card_options_for_variant(settings: dict[str, Any]) -> dict[str, str]:
+    dimensions = str(settings.get("dimensions") or "").strip()
+    if not dimensions or dimensions == "default":
         return {}
-    return {"style": style}
+    return {"dimensions": dimensions}
 
 
 def _instructions_for_variant(
     payload: dict[str, Any],
     *,
     variant: str,
-    settings: dict[str, str] | None,
+    settings: dict[str, Any] | None,
 ) -> str:
     parts = [
         str(payload.get("additional_instructions") or "").strip(),
@@ -210,10 +432,16 @@ def _instructions_for_variant(
         "divider, or summary card; do not merge or split sections.",
     ]
     if settings is not None:
+        keywords = settings.get("keywords")
+        keyword_text = ""
+        if isinstance(keywords, list) and keywords:
+            keyword_text = f" keywords={', '.join(str(item) for item in keywords)};"
         parts.append(
             "Apply this variant's Gamma settings: "
+            f"image_style_preset={settings.get('image_style_preset')}; "
             f"image_style={settings.get('image_style')}; "
-            f"density={settings.get('density')}; tone={settings.get('tone')}; "
+            f"amount={settings.get('amount') or settings.get('density')}; "
+            f"tone={settings.get('tone')};{keyword_text} "
             f"template={settings.get('template')}."
         )
     parts.append(f"Variant {variant}.")
@@ -272,7 +500,9 @@ def generate_gamma_variants(
     slides = _slides(payload)
     export_dir = Path(str(payload.get("export_dir") or REPO_ROOT / "runs" / "gary-gamma"))
     export_dir.mkdir(parents=True, exist_ok=True)
-    theme_id = _theme_id(client, payload)
+    theme_limit = int(payload.get("theme_limit", 20))
+    themes = client.list_themes(limit=theme_limit)
+    theme_id = _theme_id(client, payload, themes=themes)
     gamma_settings = _normalized_gamma_settings(payload)
     variants = tuple(item["variant_id"] for item in gamma_settings) or (
         ("A", "B") if bool(payload.get("double_dispatch")) else ("A",)
@@ -286,7 +516,7 @@ def generate_gamma_variants(
         generation_kwargs: dict[str, Any] = {
             "num_cards": len(slides),
             "theme_id": (
-                _theme_id_for_variant(theme_id, variant_settings)
+                _theme_id_for_variant(theme_id, variant_settings, themes)
                 if variant_settings is not None
                 else theme_id
             ),
@@ -305,10 +535,16 @@ def generate_gamma_variants(
         if variant_settings is not None:
             text_options = _text_options_for_variant(variant_settings)
             image_options = _image_options_for_variant(variant_settings)
+            card_options = _card_options_for_variant(variant_settings)
+            text_mode = str(variant_settings.get("text_mode") or "").strip()
+            if text_mode and text_mode not in {"default", "generate"}:
+                generation_kwargs["text_mode"] = text_mode
             if text_options:
                 generation_kwargs["text_options"] = text_options
             if image_options:
                 generation_kwargs["image_options"] = image_options
+            if card_options:
+                generation_kwargs["card_options"] = card_options
         generation = client.generate_deck(
             _input_text(slides, payload),
             **generation_kwargs,

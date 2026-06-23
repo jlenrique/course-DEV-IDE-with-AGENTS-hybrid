@@ -49,7 +49,11 @@ from app.models.decision_cards import (
     G4Card,
 )
 from app.models.decision_cards._base import DecisionCardMeta as DecisionCardBaseMeta
-from app.models.runtime.production_envelope import ProductionEnvelope, SpecialistContribution
+from app.models.runtime.production_envelope import (
+    ProductionEnvelope,
+    SpecialistContribution,
+    compute_output_digest,
+)
 from app.models.runtime.production_trial_envelope import ProductionTrialEnvelope
 from app.models.runtime.trial_economics_report import (
     AgentCostEntry,
@@ -827,6 +831,10 @@ class UnknownSelectionKeyError(SelectionBindingError):
     """A `select` verdict carried a key outside the gate's selectable-key allowlist."""
 
 
+class VariantSelectionError(RuntimeError):
+    """The deck-wide selected variant could not be applied to Gary's roster."""
+
+
 def _merge_selection_into_envelope(
     existing: dict[str, Any], selection: dict[str, Any], gate_id: str
 ) -> dict[str, Any]:
@@ -854,6 +862,89 @@ def _merge_selection_into_envelope(
     if "selected_variant_id" in selection:
         merged["selected_variant_id"] = selection["selected_variant_id"]
     return merged
+
+
+def _selected_variant_id_from_run_state(run_state: RunState) -> str | None:
+    raw = run_state.cache_state.cache_prefix if run_state.cache_state else None
+    if not raw:
+        return None
+    try:
+        envelope = json.loads(raw)
+    except json.JSONDecodeError:
+        return None
+    if not isinstance(envelope, dict):
+        raise VariantSelectionError("cache_prefix JSON envelope must be an object")
+    selected = envelope.get("selected_variant_id")
+    if selected is None:
+        return None
+    if not isinstance(selected, str) or not selected.strip():
+        raise VariantSelectionError(
+            "selected_variant_id must be a non-empty deck-wide string when present"
+        )
+    return selected.strip()
+
+
+def _apply_deckwide_variant_selection(
+    production_envelope: ProductionEnvelope,
+    run_state: RunState,
+) -> ProductionEnvelope:
+    selected_variant_id = _selected_variant_id_from_run_state(run_state)
+    if selected_variant_id is None:
+        return production_envelope
+    gary = production_envelope.latest_for_specialist("gary")
+    rows = gary.output.get("gary_slide_output") if gary is not None else None
+    if not isinstance(rows, list):
+        raise VariantSelectionError(
+            "selected_variant_id is set, but latest Gary output has no gary_slide_output"
+        )
+    original_slide_ids = {
+        slide_id
+        for row in rows
+        if isinstance(row, dict)
+        for slide_id in [str(row.get("slide_id") or "").strip()]
+        if slide_id
+    }
+    filtered = [
+        row
+        for row in rows
+        if isinstance(row, dict)
+        and str(row.get("dispatch_variant") or "A") == selected_variant_id
+    ]
+    if not filtered:
+        raise VariantSelectionError(
+            f"selected_variant_id={selected_variant_id!r} matched zero Gary rows"
+        )
+    by_slide: dict[str, int] = {}
+    for row in filtered:
+        slide_id = str(row.get("slide_id") or "").strip()
+        if not slide_id:
+            raise VariantSelectionError("selected Gary variant row has no slide_id")
+        by_slide[slide_id] = by_slide.get(slide_id, 0) + 1
+    missing = sorted(original_slide_ids - set(by_slide))
+    if missing:
+        raise VariantSelectionError(
+            "selected variant must retain exactly one row for every original slide_id; "
+            f"missing={missing}"
+        )
+    duplicates = sorted(slide_id for slide_id, count in by_slide.items() if count != 1)
+    if duplicates:
+        raise VariantSelectionError(
+            "selected variant must leave exactly one row per slide_id; "
+            f"violations={duplicates}"
+        )
+    output = dict(gary.output)
+    output["gary_slide_output"] = filtered
+    replacement = gary.model_copy(
+        update={
+            "output": output,
+            "output_digest": compute_output_digest(output),
+        }
+    )
+    contributions = tuple(
+        replacement if contribution is gary else contribution
+        for contribution in production_envelope.contributions
+    )
+    return production_envelope.model_copy(update={"contributions": contributions})
 
 
 def _apply_verdict_to_run_state(
@@ -2034,6 +2125,11 @@ def _continue_production_walk(
     specialist_calls = 0
     allow_offline_cost_report = bool(runner.get("allow_offline_cost_report", False))
     graph_step_completed = bool(production_envelope.contributions)
+    production_envelope = _apply_deckwide_variant_selection(
+        production_envelope,
+        run_state,
+    )
+    run_state = run_state.model_copy(update={"production_envelope": production_envelope})
 
     with _trial_trace_context(
         trial_id=trial_id,

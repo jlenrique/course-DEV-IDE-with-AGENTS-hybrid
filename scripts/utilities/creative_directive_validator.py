@@ -195,10 +195,24 @@ def validate_creative_directive(
                     if variant_id in seen_variants:
                         errors.append(f"gamma_settings duplicate variant_id: {variant_id}")
                     seen_variants.add(variant_id)
-                for field in ("theme", "template", "image_style"):
+                for field in ("theme", "template", "image_style", "tone", "audience"):
                     if field in item and not isinstance(item[field], str):
                         errors.append(f"gamma_settings[{index}].{field} must be a string")
-                for field in ("density", "tone"):
+                if "keywords" in item and (
+                    not isinstance(item["keywords"], list)
+                    or not all(isinstance(keyword, str) for keyword in item["keywords"])
+                ):
+                    errors.append(f"gamma_settings[{index}].keywords must be a string list")
+                for field in (
+                    "amount",
+                    "density",
+                    "language",
+                    "text_mode",
+                    "image_style_preset",
+                    "image_model",
+                    "image_source",
+                    "dimensions",
+                ):
                     allowed = (
                         (item_props.get(field) or {}).get("enum")
                         if isinstance(item_props, dict)
