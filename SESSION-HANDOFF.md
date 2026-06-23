@@ -1,3 +1,43 @@
+# Session Handoff — 2026-06-23 (`/goal` v8 — P2-4b: FIRST honest built-classifier measurement on fresh substrate (0.071 FAIL) → recalibration party-green-lit (5/5) → Codex handoff authored; STOP at Codex-ingestion boundary)
+
+**Final class:** P (planning/measurement: ran the honest measurement via read-only analysis tooling; authored diagnosis/spec/Codex-prompt + party green-light; NO production classifier/runtime/schema/manifest/test edits — the only code added is `scripts/analysis/reading_path_p2_4b_measure_fresh.py`, a leg-3 measurement harness). **Branch:** `fidelity-perception-arc-2026-06-19`. **HEAD pushed; origin in sync.** Master-merge SKIPPED (scoped arc branch).
+
+## Grounding note (important)
+This session opened via a stale earlier-line narrative (a "review round 1 / v0-draft catalog" framing on a superseded `4fce630` line). On `/goal` v8 I re-grounded against on-disk truth: **real HEAD = `b94911d`**, the reading-path tuple classifier is BUILT (P2-4c S1/S2/S3 done), catalog at v1.1. All work below is from `b94911d`.
+
+## Headline — terminal state (d) reached, plus the next gate teed up
+**The first FAIR built-classifier number is recorded** (subject/substrate-tagged, no mocks, first-run-stands): **subject=built-classifier(S1/S2/S3), substrate=fresh@2026-06-23 → primary-key 0.071 (1/14), full-tuple 0.0, macro 0.50, image_role 0.21, escalation 0.93. FAIL vs ≥0.85.** Legs: **1a** (re-perceive 14 held-out under S2 `role_tier`, live gpt-5.5 — already on disk from 00:03–00:07) + **1b/3** (`reading_path_p2_4b_measure_fresh.py` — S1/S2 classify + live S3 escalation over the FROZEN fresh perceptions, score vs frozen gold; leg-3-only, no re-roll of 1a). **CRITICAL: fresh re-perception did NOT move it vs the prior stale 0.071 → the defects are classifier LOGIC, not perception staleness.**
+
+## What was completed
+1. **Honest measurement** (legs 1a done + 3 done) → `reading-path-holdout-rescan-2026-06-23/honest-built-classifier-measurement.json` + per-slide diagnosis in `p2-4b-honest-measurement-and-recalibration-2026-06-23.md`. Committed `1722919` (+ ruff `5ef6eb9`).
+2. **3-axis root cause:** (A) S1 macro geometry 50% (over-predicts multi_column vs single_text_block/card_grid/two_pane); (B) image_role 21% (perceiver over-tiers decorative→illustrative + the dominant-fold is an analysis-script SCAFFOLD; gold DOES encode an authoritative per-slide dominant → promote into substrate, delete scaffold); (C) escalation 93% (`callout_kind_present` over-broad; ceiling unwired).
+3. **Party-mode 5/5 GREEN-WITH-AMENDMENTS** (Winston/John/Murat/Mary/Amelia, no impasse → Quinn→John not triggered) on ONE dual-gate recalibration NEW CYCLE: A→B→C (C split), RED-first per-axis fixtures + S1/S2/S3 regression snapshot, overfit fences (no-peeking, simultaneous per-axis floors macro≥0.85/image_role≥0.70, perturbation guard, logic-only audit, gold-hash), promote authoritative `dominant_image_role` into substrate. Full disposition: spec §4.5. **Codex prompt authored** (`codex-dev-prompt-p2-4b-recalibration.md`). Committed `7710f34`.
+4. **Anti-pattern H4 (inherited green)** harvested → `dev-agent-anti-patterns.md` v7. Deferred-inventory + STATE-OF-THE-APP §6 banner updated honestly.
+
+## What is next (the forward sequence)
+1. **OPERATOR DECISION (governance, blocks pre-registering the fallback):** approve a **sub-0.85 conditional-pass tier** for the recalibration cycle? Spread on the table — Amelia 8/14 (0.57) · Winston 9/14 (0.643) · John "axes-fixed" · Murat 0.85+per-axis-floors; **Amelia named dissent vs hard-0.85** (overfitting pressure at n=14). Default if no sign-off: hard ≥0.857 gate.
+2. **Dispatch Codex** on `codex-dev-prompt-p2-4b-recalibration.md` (T1–T10) → **Claude T11** (battery + 3-layer bmad-code-review + independent re-measure first-run-stands + logic-only diff audit + commit + flip).
+3. **P2 epic close** (bmad-retrospective + party) once P2-4b lands a measured honest conformance number at the agreed bar.
+4. **Pre-trial sweep** (goal §3) — incl. the binding new **`reading-path-fresh-naive-holdout-pre-trial`**: the consumed-14 is now a DEV set; a FRESH naive holdout (operator labels ≥12–15 NEW slides) is REQUIRED before any "ready for trial" generalization claim (Mary firm dissent against skipping). Then the trial-readiness party gate (goal §4).
+
+## Unresolved / risks
+- **The recalibration is Codex-gated** (NEW CYCLE) — I cannot run Codex; STOP at the ingestion boundary is correct.
+- **0.071→0.85 is a 12× jump on n=14** (1 slide ≈ 0.071) — overfitting-to-the-consumed-14 is the dominant risk; the overfit fences (party amendments) are binding, not optional.
+- **Sub-0.85 bar is operator-gated** and pre-registering it is a goal stop-condition — surfaced, not decided autonomously.
+- This cycle closes P2-4b **conformance**, NOT trial-generalization (consumed reserve).
+
+## Validation summary
+Leg-3 measurement ran live (gpt-5.5 S3 escalation), first-run-stands; ruff clean on the new harness; gold frozen + unmodified. No production substrate touched (no classifier/runtime/schema/manifest/test edits) → P2-1/2/3/4a/4c remain green by non-touch. Commits `1722919`/`5ef6eb9`/`7710f34` + this wrap-up, all pushed.
+
+## Artifact checklist
+- ✅ `reading_path_p2_4b_measure_fresh.py` (leg-3 harness, ruff-clean) + `honest-built-classifier-measurement.json` + 14 fresh perceptions (committed evidence)
+- ✅ `p2-4b-honest-measurement-and-recalibration-2026-06-23.md` (diagnosis + spec + §4.5 party disposition) · `codex-dev-prompt-p2-4b-recalibration.md`
+- ✅ `dev-agent-anti-patterns.md` v7 (H4) · deferred-inventory (honest-measurement update + `reading-path-fresh-naive-holdout-pre-trial`) · STATE-OF-THE-APP §6 banner
+- ✅ SESSION-HANDOFF (this) + next-session-start-here resume banner
+- **SKIPPED (rationale):** sprint-status.yaml (P2 not tracked there) · bmm-workflow-status (no phase transition) · project-context/agent-environment (no rules/MCP/tool change) · Step 0 Cora sweep (Class P, no invariant/substrate files touched).
+
+---
+
 # Session Handoff — 2026-06-23 (`/goal` v7 — P2-4c S1: Codex T1–T10 returned → Claude T11 → HAND BACK (party 5/5); + S2/S3 prep + G2/G3 resolved)
 
 **Final class:** S (T11 review/close of Codex's S1 substrate; no Claude production-code edits — S1 dev code stays UNCOMMITTED for Codex re-work; Claude's committed diff is review/governance docs only). **Branch:** `fidelity-perception-arc-2026-06-19`. **HEAD: `829bc53`** (+ this docs commit); origin in sync.

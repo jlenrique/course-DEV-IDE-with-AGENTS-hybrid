@@ -205,6 +205,14 @@ Read this at T1 of every story. These are the traps dev agents have repeatedly w
 
 **Fix:** every metric carries `(subject = <built-artifact | human/LLM-in-loop-approach>, substrate-freshness = <fresh | stale@date>)`. A number is only the artifact's score if the artifact produced the emissions on current-contract inputs. Run the built pipeline end-to-end (live) before claiming its accuracy; a synthetic-harness self-test proves the *scoring arithmetic*, never the *artifact's accuracy*.
 
+### H4. Inherited green — a sibling artifact's number adopted without re-deriving it on the artifact under test
+
+**Trap:** a passing number is *transferred* onto a different artifact because the two share a name, a concept, or a pipeline stage — without ever running the artifact-under-test to reproduce it. Sibling to [[H3]] but the failure is the *transfer mechanism*, not the in-loop subject: the reading-path **0.93** belonged to the catalog/Claude-in-loop approach and migrated onto the *built classifier* because both wore the word "escalation"/"reading-path"; it sat in STATE-OF-THE-APP + the P2-4b spec as the built system's score until someone actually ran the built classifier on fresh substrate (→ **0.071**, fresh@2026-06-23 — the fresh measurement did NOT move it vs stale, confirming a logic defect, not a data confound). The honest number surfaced the instant the artifact-under-test was run on fresh substrate.
+
+**Detection cue:** a headline number cited for artifact X whose evidence trail leads to artifact Y; a "we're already at N" claim with no run-log of X producing N; a number that has never been reproduced on *current* substrate. Ask: *which artifact's run produced this exact number, and can I reproduce it by running THAT artifact now?*
+
+**Fix (standing pre-flight on every conformance/readiness claim):** run the **artifact under test** on **fresh substrate** and reproduce the number *before believing it*. A score is valid only for the exact artifact that emitted it; never inherit a sibling's. Cross-ref [[H1]]/[[H2]]/[[H3]].
+
 ---
 
 ## Meta-rule — Read this at T1, not at G6
@@ -225,3 +233,4 @@ The catalog exists to stop re-learning. When 31-1 landed, every finding here had
 | v4 | 2026-06-23 | Category H (test-as-gate-integrity) harvested from P2-4c S1 T11 HAND-BACK party-mode (H1 green-test-certifies-a-bug / shape-pin locks wrong value + missing negative controls) |
 | v5 | 2026-06-23 | H2 (agreement/scoring harness PASSes on silently-empty/excluded-everything scored set) harvested from P2-4c S2 T11 HAND-BACK party-mode |
 | v6 | 2026-06-23 | H3 (validation metric measures the human/LLM-in-loop approach, not the built artifact) harvested from P2-4c S3 T11 live-dry-run (0.93 catalog-approach vs 0.071 built-classifier) |
+| v7 | 2026-06-23 | H4 (inherited green — a sibling artifact's number adopted without re-deriving it on the artifact under test) harvested from the P2-4b honest-measurement party-mode (the 0.93 transfer; fresh@2026-06-23 built-classifier = 0.071) |
