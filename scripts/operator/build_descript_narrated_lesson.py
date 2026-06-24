@@ -44,18 +44,26 @@ DEFAULT_AUDIO_DIR = (
 )
 DEFAULT_PROJECT_NAME = "APP Narrated Lesson - 6cb8eafd (2026-06-24)"
 
-ASSEMBLY_PROMPT = (
-    "Assemble a polished narrated slide lesson video from the media in this project. "
-    "There are 6 narration audio clips named narration-01.mp3 through narration-06.mp3 "
-    "and 6 slide images named slide-01.png through slide-06.png. "
-    "Build a single composition that plays the narration clips in order "
-    "(narration-01, then -02, ... through -06) as the soundtrack. While each narration "
-    "clip plays, display its matching slide full-screen for the entire duration of that "
-    "clip (slide-01 with narration-01, slide-02 with narration-02, and so on, 1:1 in "
-    "order). Scale each slide to fill the 1920x1080 frame. Add accurate captions "
-    "generated from the narration. Do not invent or add any new script, slides, or "
-    "B-roll — use only the provided media."
-)
+def build_assembly_prompt(n_segments: int) -> str:
+    """Count-aware Underlord assembly prompt (generalizes the original hardcoded-6).
+
+    A clustered deck expands to N sub-slides/segments (e.g. 13), so the prompt must
+    name the real count and last index, not a fixed 6.
+    """
+    last = f"{n_segments:02d}"
+    return (
+        "Assemble a polished narrated slide lesson video from the media in this project. "
+        f"There are {n_segments} narration audio clips named narration-01.mp3 through "
+        f"narration-{last}.mp3 and {n_segments} slide images named slide-01.png through "
+        f"slide-{last}.png. "
+        "Build a single composition that plays the narration clips in order "
+        f"(narration-01, then -02, ... through -{last}) as the soundtrack. While each "
+        "narration clip plays, display its matching slide full-screen for the entire "
+        "duration of that clip (slide-01 with narration-01, slide-02 with narration-02, "
+        "and so on, 1:1 in order). Scale each slide to fill the 1920x1080 frame. Add "
+        "accurate captions generated from the narration. Do not invent or add any new "
+        "script, slides, or B-roll — use only the provided media."
+    )
 
 
 def collect_media(slides_dir: Path, audio_dir: Path) -> dict[str, Path]:
@@ -141,8 +149,10 @@ def run(args: argparse.Namespace) -> int:
         return 0
 
     # 4) Underlord assembly
+    n_narration = sum(1 for k in media if k.startswith("narration"))
+    assembly_prompt = build_assembly_prompt(n_narration)
     print("\nInvoking Underlord to assemble the narrated slide video...")
-    agent = client.agent_edit(prompt=ASSEMBLY_PROMPT, project_id=project_id)
+    agent = client.agent_edit(prompt=assembly_prompt, project_id=project_id)
     agent_job = agent.get("job_id")
     print(f"  agent job_id={agent_job}")
     a_done = client.wait_for_job(
