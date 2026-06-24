@@ -1,3 +1,44 @@
+# Session Handoff — 2026-06-24 EVE (caveat fix DONE + dev-plan revisit + clustering Phase-1a GREEN-LIT; next session = operator launches the goal)
+
+**Final class:** S (substrate — the `pass2-figure-citation-gate` fix `5cf0684` shipped real code: new shared `figure_tokens` module + Irene/Quinn-R edits + tests). Heavy planning/party-mode layered on top.
+**Branch:** `fidelity-perception-arc-2026-06-19`, HEAD `89a3a10`, origin in sync (0/0). 8 commits this session, all pushed.
+
+## What was completed
+1. **Caveat `pass2-narration-must-ground-to-chosen-variant-figures` — FIX (a) DONE.** Full BMAD cycle: party-mode disposition (Murat/Winston/Amelia/Mary, consensus) → spec + Codex prompt → Codex T1–T10 → **Claude T11 → party-CLOSE 3/3** (`5cf0684`). Shipped: shared `figure_tokens` extractor (G5 + Irene share one definition, no drift; G5 byte-preserved) + input-side redaction of brief figures absent from the chosen-variant perceived set + output-side `_assert_figure_citations_within_perceived` raising `irene.pass2.figure-contradiction` (NOT in the retry net — option (b) deferred). RED-first vs `8553ab38`. Battery: focused 34 / Irene-offline 52 / Quinn-R 86+1xfail / ruff / lint-imports 15-0. Ambient shape-pin xfailed. 4 rider follow-ons filed.
+2. **Follow-along design arc → dev-plan revisit.** Party-mode brainstorm (Caravaggio/Sally/Winston/Quinn) on VO follow-along → **operator decided Approach A (chunk dense slides via the existing cluster/grouping model; keep synthesis dense; no Descript spotlight; `numCards` rejected).** Reuse-first map + **clustering-live verification** → **clustering is DORMANT** (ran for real in April = 74 cluster fields; LLM-first Pass-1 rebuild dropped cluster emission; downstream survives unexercised). Filed `forward-development-sequence-2026-06-24.md` + the autonomous goal `goal-clustering-followalong-trial.txt` (<4000 chars).
+3. **Phase-1a GREEN-LIGHT APPROVED 4/4** (Winston/John/Murat/Mary, GREEN-WITH-AMENDMENTS, no impasse) — 11 binding amendments (story split 1.1–1.4; T1 survival probe; 1.2 = three ARTIFACT gates not code-smoke; schema-additive; keep-dense as input-not-veto; A/B-at-cluster-head product call; measurable success — ghost-count=0 hard gate + VO-unit↔cluster alignment proxy, perceptual=logged-eye-read; raised bar 3-consecutive+1-cross-deck reset-on-failure; baseline=mirror runs `7d530d0a`/`6cb8eafd`; reading-path-holdout disclaimer). Recorded in forward-sequence §Phase-1a OUTCOME.
+4. **Descript API + asset-upload capability tucked away** (`5b3dab9`, parked for future Desmond skill integration; no secrets; imports/ruff clean). Desmond SKILL/sanctum edits left uncommitted (operator's future-integration layer).
+5. Session-START full-repo `/harmonize` (green-core, tripwire cleared) + STATE-OF-THE-APP big-picture refresh + §11 "you are here" advanced.
+
+## What is next
+**Operator launches `goal-clustering-followalong-trial.txt`** → Phase 1 clustering re-activation (Story 1.1 re-wire Pass-1 emission, gated on a T1 survival probe → 1.2 three artifact gates → 1.3 small adds → 1.4 clustering×A/B) → Phase 2 A/B proof runs to Descript (3-consecutive + 1-cross-deck, with clustering + tight VO + no ghost numbers). Then Phase 3 fresh-naive-holdout, Phase 4 conversational Marcus SPOC, Phase 5 Epic 15.
+
+## TWO operator-confirm items at goal-start
+1. **A/B at cluster-HEAD, not per sub-slide** (John PM call; the goal stops-and-asks on this — touches the just-shipped per-slide A/B substrate; John wants Marcus's read).
+2. **Raised success bar** (3 consecutive + 1 cross-deck, vs the operator's stated "prove twice"; scoped "on tejal" until the cross-deck run).
+
+## Unresolved risks / carry-forwards
+- **Clustering downstream bit-rot** (the Phase-1 schedule risk): the Gary→segment-manifest→Epic-23-bridge→timing chain hasn't run since April; the T1 survival probe + 1.2 artifact gates exist to catch it; failure → party re-scope from "reconnect" to "repair."
+- **Figure-gate residual:** the live N≥15 0-contradiction experiment is the pre-B-heavy-trial gate (single-variant unblocked). Phase 2 A/B runs ARE the B-heavy case → this folds into them.
+- **Reading-path generalization:** consumed-14 resubstitution only; fresh naive holdout still owed (this arc does NOT advance it — Mary, binding).
+- **Ambient:** 17 contract stale-pins + 4 caveat rider follow-ons (low-priority, batchable). 3 Desmond skill files uncommitted by design.
+
+## Key lessons
+- **Believed-green caught twice:** (a) the figure-leak root cause was the un-redacted brief tail for verified-B slides (not perception); (b) **clustering "Epics 19–23 done" did NOT mean live** — verified empirically on real run artifacts (Pass-1 emits no clusters) before re-sequencing. Gate on the witness (artifacts), never the green suite or a loaded reference doc.
+- Party-mode green-lights raised the bar honestly (measurable proxies for "tightness"; 3+1 over "twice"; cluster-head over per-sub-slide A/B to fence scope).
+
+## Validation summary
+lint-imports 15/0; git diff --check clean (line-endings only); figure-gate T11 battery green (independently reproduced, first-run-stands); ambient failures attested pre-existing. No block-mode trigger paths touched this session → no pack/manifest regen.
+
+## Artifact update checklist
+- Committed/pushed: `spec-pass2-figure-citation-gate.md`, `codex-dev-prompt-…`, figure-gate code+tests, `forward-development-sequence-2026-06-24.md`, `goal-clustering-followalong-trial.txt`, `deferred-inventory.md` (caveat close + clustering×A/B follow-on + rider filings), Descript capability.
+- Memories (cross-session): `vo-figure-grounding-bar`, `chunking-via-clustering-followalong` (+ MEMORY.md index).
+- WRAPUP: `next-session-start-here.md` (resume banner) + this SESSION-HANDOFF section + STATE-OF-THE-APP + project-context + Cora chronology.
+- Step 0 (Cora): START full-repo `/harmonize` covers the window; WRAPUP coherence = lint-imports 15/0 + figure-gate T11 + no-trigger-path diff. Logged in chronology.
+- Ambient (untouched): `claude-goal.txt` (M, operator v8), 3 Desmond skill files (M), untracked `runs/`.
+
+---
+
 # Session Handoff — 2026-06-24 (`/goal` per-slide A/B selection + presenter voice — SATISFIED: two live mirror runs, error-free to Descript)
 
 **Final class:** S (substrate — `gary/_act.py` + `production_runner.py` edits + live content-production runs).
