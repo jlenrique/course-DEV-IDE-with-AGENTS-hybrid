@@ -29,6 +29,7 @@ from app.manifest.compiler import (
 from app.manifest.loader import load as load_manifest
 from app.manifest.schema import NodeSpec
 from app.marcus.orchestrator import (
+    chooser_publisher,
     conversation_persistence,
     gate_runner,
     package_builders,
@@ -38,6 +39,10 @@ from app.marcus.orchestrator import (
 )
 from app.marcus.orchestrator.dispatch_adapter import ProductionDispatchAdapter
 from app.marcus.orchestrator.pre_gate_marcus import PreFillProposal
+from app.marcus.orchestrator.slide_variant_selection import (
+    SlideVariantSelectionError,
+    validate_selections,
+)
 from app.models.decision_cards import (
     AnyDecisionCardAdapter,
     DecisionCardMeta,
@@ -852,7 +857,7 @@ def _ensure_decision_card_registered_from_disk(
 # allowlist — a select carrying any other key fails loud (no partial write).
 _SELECTABLE_KEYS_BY_GATE: dict[str, frozenset[str]] = {
     "G4A": frozenset({"selected_voice_id"}),
-    "G2B": frozenset({"selected_variant_id"}),
+    "G2B": frozenset({"selected_variant_id", "slide_variant_selections"}),
 }
 
 
@@ -894,6 +899,8 @@ def _merge_selection_into_envelope(
         merged["selected_voice_id"] = selection["selected_voice_id"]
     if "selected_variant_id" in selection:
         merged["selected_variant_id"] = selection["selected_variant_id"]
+    if "slide_variant_selections" in selection:
+        merged["slide_variant_selections"] = selection["slide_variant_selections"]
     return merged
 
 
@@ -915,6 +922,100 @@ def _selected_variant_id_from_run_state(run_state: RunState) -> str | None:
             "selected_variant_id must be a non-empty deck-wide string when present"
         )
     return selected.strip()
+
+
+def _slide_variant_selections_from_run_state(run_state: RunState) -> dict[str, str] | None:
+    raw = run_state.cache_state.cache_prefix if run_state.cache_state else None
+    if not raw:
+        return None
+    try:
+        envelope = json.loads(raw)
+    except json.JSONDecodeError:
+        return None
+    if not isinstance(envelope, dict):
+        raise VariantSelectionError("cache_prefix JSON envelope must be an object")
+    selections = envelope.get("slide_variant_selections")
+    if selections is None:
+        return None
+    if not isinstance(selections, dict) or not selections:
+        raise VariantSelectionError(
+            "slide_variant_selections must be a non-empty {slide_id: variant} object"
+        )
+    return {str(key): str(value).strip().upper() for key, value in selections.items()}
+
+
+def _apply_per_slide_variant_selection(
+    production_envelope: ProductionEnvelope,
+    run_state: RunState,
+) -> ProductionEnvelope:
+    """Resolve the per-slide A/B picks (Storyboard A) to one row per slide before perception.
+
+    Fail-loud total-coverage (Winston/Murat): every original slide must keep exactly one row
+    matching the operator's per-slide pick; a missing/extra/unknown choice HALTS naming the
+    slide — never silently defaults. No-op when no per-slide map is set (legacy path).
+    """
+    selections = _slide_variant_selections_from_run_state(run_state)
+    if selections is None:
+        return production_envelope
+    gary = production_envelope.latest_for_specialist("gary")
+    rows = gary.output.get("gary_slide_output") if gary is not None else None
+    if not isinstance(rows, list):
+        raise VariantSelectionError(
+            "per-slide variant selection is set, but latest Gary output has no gary_slide_output"
+        )
+    variants_by_slide: dict[str, set[str]] = {}
+    for row in rows:
+        if not isinstance(row, dict):
+            continue
+        slide_id = str(row.get("slide_id") or "").strip()
+        if slide_id:
+            variants_by_slide.setdefault(slide_id, set()).add(
+                str(row.get("dispatch_variant") or "A")
+            )
+    try:
+        validate_selections(selections, variants_by_slide)
+    except SlideVariantSelectionError as exc:
+        raise VariantSelectionError(str(exc)) from exc
+    filtered = [
+        row
+        for row in rows
+        if isinstance(row, dict)
+        and str(row.get("dispatch_variant") or "A")
+        == selections.get(str(row.get("slide_id") or "").strip())
+    ]
+    by_slide: dict[str, int] = {}
+    for row in filtered:
+        slide_id = str(row.get("slide_id") or "").strip()
+        by_slide[slide_id] = by_slide.get(slide_id, 0) + 1
+    violations = sorted(slide_id for slide_id, count in by_slide.items() if count != 1)
+    if violations:
+        raise VariantSelectionError(
+            "per-slide selection must leave exactly one row per slide; "
+            f"violations={violations}"
+        )
+    missing = sorted(set(variants_by_slide) - set(by_slide))
+    if missing:
+        raise VariantSelectionError(f"per-slide selection dropped slide(s) entirely: {missing}")
+    output = dict(gary.output)
+    output["gary_slide_output"] = filtered
+    replacement = gary.model_copy(
+        update={"output": output, "output_digest": compute_output_digest(output)}
+    )
+    contributions = tuple(
+        replacement if contribution is gary else contribution
+        for contribution in production_envelope.contributions
+    )
+    return production_envelope.model_copy(update={"contributions": contributions})
+
+
+def _apply_variant_selection(
+    production_envelope: ProductionEnvelope,
+    run_state: RunState,
+) -> ProductionEnvelope:
+    """Per-slide selection (Storyboard A) takes precedence; deck-wide is the legacy fallback."""
+    if _slide_variant_selections_from_run_state(run_state) is not None:
+        return _apply_per_slide_variant_selection(production_envelope, run_state)
+    return _apply_deckwide_variant_selection(production_envelope, run_state)
 
 
 def _apply_deckwide_variant_selection(
@@ -1742,6 +1843,12 @@ def run_production_trial(
                         production_envelope=production_envelope,
                         runs_root=runs_root,
                     )
+                    chooser_publisher.publish_chooser_for_gate(
+                        gate_id=gate_id,
+                        trial_id=str(effective_trial_id),
+                        production_envelope=production_envelope,
+                        runs_root=runs_root,
+                    )
                 except SpecialistDispatchError as exc:
                     return _pause_at_error(
                         error=exc,
@@ -2182,7 +2289,7 @@ def _continue_production_walk(
     specialist_calls = 0
     allow_offline_cost_report = bool(runner.get("allow_offline_cost_report", False))
     graph_step_completed = bool(production_envelope.contributions)
-    production_envelope = _apply_deckwide_variant_selection(
+    production_envelope = _apply_variant_selection(
         production_envelope,
         run_state,
     )

@@ -126,10 +126,19 @@ def narrate_gate(gate_id: str, card: dict[str, Any], run_dir: Path) -> str:
                      "corpus-grounded. Tell me if you'd like supporting research (Tracy).")
     elif gate_id == "G2B":
         _narrate_treatment(card, lines)
+        chooser = _load(run_dir / "chooser-publish-G2B.json") or {}
+        chooser_url = chooser.get("publish_url")
+        if chooser_url:
+            lines.append(
+                f"{_M} Storyboard A is published - open it and CLICK your preferred variant "
+                "for each slide, then paste the selection code back to me:"
+            )
+            lines.append(f"  {chooser_url}")
     elif gate_id == "G2C":
         pub = _load(run_dir / "storyboard-publish-G2C.json") or {}
-        lines.append(f"{_M} Storyboard A is published for your review - pick the winning "
-                     "variant per slide:")
+        lines.append(
+            f"{_M} Here is the storyboard with your per-slide picks applied, for final review:"
+        )
         lines.append(f"  {pub.get('publish_url', '(local storyboard pack)')}")
     elif gate_id == "G3":
         lines.append(f"{_M} Motion plan (capability f) - this narrated-deck lesson plans no "
