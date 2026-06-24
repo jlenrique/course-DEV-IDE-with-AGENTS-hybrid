@@ -85,17 +85,54 @@ def test_ac_falsy_but_present_id_blocks_backfill() -> None:
     assert out["segment_manifest_deltas"][1].get("id") is None
 
 
-# T11 Edge: segment_id (not id) counts as present -> untouched ----------------
-def test_ac_segment_id_present_blocks_backfill() -> None:
+# The REAL 52890be7 bug: Pass-2 emits the id under `segment_id`, not `id` -----
+def test_ac_segment_id_aliased_to_id() -> None:
+    # The party-governed join keys on `id`; Pass-2 emitted it under `segment_id`.
+    # Alias is direct + always safe (same value), per-delta (no positional gate).
     parsed = {
         "narration_script": _narr(2),
         "segment_manifest_deltas": [
-            {"segment_id": "seg-01", "visual_references": []},
-            _delta(None, "s2"),
+            {"segment_id": "seg-01", "visual_references": [{"perception_source": "sl1"}]},
+            {"segment_id": "seg-02", "visual_references": [{"perception_source": "sl2"}]},
         ],
     }
     out = backfill_delta_ids(parsed)
-    assert out["segment_manifest_deltas"][1].get("id") is None
+    assert [d.get("id") for d in out["segment_manifest_deltas"]] == ["seg-01", "seg-02"]
+
+
+def test_ac_segment_id_alias_is_per_delta_not_positional() -> None:
+    # alias works even with a partial array (one already has id) — it is NOT gated
+    # on all-None like the positional fallback.
+    parsed = {
+        "narration_script": _narr(2),
+        "segment_manifest_deltas": [
+            {"id": "seg-09", "visual_references": []},
+            {"segment_id": "seg-02", "visual_references": []},
+        ],
+    }
+    out = backfill_delta_ids(parsed)
+    assert out["segment_manifest_deltas"][0]["id"] == "seg-09"  # preserved
+    assert out["segment_manifest_deltas"][1]["id"] == "seg-02"  # aliased, NOT positional
+
+
+def test_ac_real_52890be7_shape_segment_id_zero_dropped() -> None:
+    # Exact live shape: 13 deltas with segment_id seg-01..13 + slide_id + refs,
+    # id == None. Must alias -> the real join drops ZERO (the audio-leg unblock).
+    n = 13
+    parsed = {
+        "narration_script": _narr(n),
+        "segment_manifest_deltas": [
+            {"id": None, "segment_id": f"seg-{i:02d}", "slide_id": f"slide-{i:02d}",
+             "visual_references": [{"perception_source": f"slide-{i:02d}"}]}
+            for i in range(1, n + 1)
+        ],
+    }
+    out = backfill_delta_ids(parsed)
+    rows = join_narration_segments(out["narration_script"], out["segment_manifest_deltas"])
+    joined = {str(r.get("id") or "") for r in rows}
+    dropped = sorted(s["id"] for s in out["narration_script"] if s["id"] not in joined)
+    assert dropped == [], f"real clustered shape must join with zero dropped; got {dropped}"
+    assert all(str(r.get("narration_text") or "").strip() for r in rows)
 
 
 # existing ids fully present -> unchanged ------------------------------------

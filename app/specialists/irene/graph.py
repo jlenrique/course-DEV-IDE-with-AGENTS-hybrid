@@ -483,54 +483,69 @@ def _redact_text_for_unperceived_figures(
 
 
 def backfill_delta_ids(parsed: dict[str, Any]) -> dict[str, Any]:
-    """Story 1.2a: repair id-less segment_manifest_deltas at the Pass-2 boundary.
+    """Story 1.2a: ensure every segment_manifest_delta carries an ``id`` the
+    party-governed join can key on, at the Pass-2 output boundary.
 
-    The party-governed shared join (`app/specialists/narration_join.py`, the single
-    home of join POLICY) matches narration_script <-> deltas by ``id``. On a clustered
-    deck the Pass-2 LLM emitted N narration segments with ids (seg-01..seg-N) parallel
-    to N deltas with ``id == None`` (live trial 52890be7), so the id-keyed join dropped
-    every segment and enrique's pre-spend guard refused. This backfills the missing
-    delta ids from the narration array POSITIONALLY so the existing id-keyed policy
-    resolves — a data-completeness fix at the source, leaving join policy + G5 untouched.
+    The shared join (`app/specialists/narration_join.py`, the single home of join
+    POLICY) matches narration_script <-> deltas by ``id`` ONLY. On a clustered deck
+    (live trial 52890be7) Pass-2 emitted the delta id under ``segment_id`` (which the
+    sibling ``_segment_slide_id_from_deltas`` already accepts) but NOT ``id`` — so the
+    id-keyed join dropped every one of the 13 segments and enrique's pre-spend guard
+    refused. Two repairs, both at the source so join policy + G5 stay untouched:
 
-    PURE (no input mutation), idempotent. Fires ONLY when it is safe:
-      - narration_script and segment_manifest_deltas are both non-empty lists,
-      - of EQUAL length (cardinality assumption; else leave the asserts to fire),
-      - and EVERY delta lacks an id (the all-None case). A *partially* id'd array
-        signals out-of-order LLM emission where positional pairing would mis-attribute
-        narration to the wrong slide -> leave untouched (Winston green-light A1).
+    1. **segment_id -> id alias** (the real, confirmed 52890be7 bug): when a delta has
+       a usable ``segment_id`` but no ``id``, copy it. Always safe — same value,
+       canonical key; no positional assumption. Per-delta (partial arrays are fine).
+    2. **positional backfill** (defensive fallback, unobserved-but-possible): if after
+       step 1 the deltas STILL all lack an id AND len(deltas)==len(narr), assign ids
+       from the parallel narration_script by index. Gated to the all-None + equal-length
+       case ONLY — a *partially* id'd array signals out-of-order emission where positional
+       pairing would mis-attribute (Winston green-light A1).
 
-    LOAD-BEARING INVARIANT: backfill is only safe because Pass-2 emits these two arrays
-    positionally aligned from one authoring pass (see _assemble_pass_2_prompt). If that
-    invariant is ever unverified, do NOT relax the all-None / equal-length gates.
+    PURE (no input mutation), idempotent. LOAD-BEARING INVARIANT for step 2: Pass-2 emits
+    narration_script and deltas positionally aligned from one authoring pass; do not relax
+    the all-None / equal-length gates.
     """
     narr = parsed.get("narration_script")
     deltas = parsed.get("segment_manifest_deltas")
-    if not isinstance(narr, list) or not isinstance(deltas, list):
-        return parsed
-    if not deltas or len(deltas) != len(narr):
+    if not isinstance(narr, list) or not isinstance(deltas, list) or not deltas:
         return parsed
 
-    def _has_explicit_id(d: object) -> bool:
-        # An id is "present" if the key exists with a non-None value — even a
-        # falsy one (0/""/False). Truthiness must NOT decide presence here, or a
-        # partial array with a falsy-but-real id would be mis-treated as all-None
-        # and wrongly backfilled (T11 Edge finding: all-None vs all-falsy).
-        if not isinstance(d, dict):
-            return False
-        return d.get("id") is not None or d.get("segment_id") is not None
+    def _usable(value: object) -> str:
+        return str(value).strip() if value is not None else ""
 
-    if any(_has_explicit_id(d) for d in deltas):
-        return parsed  # partial/out-of-order ids -> untouched; asserts will fire
+    changed = False
+    work: list[Any] = []
+    # Step 1: per-delta segment_id -> id alias (always safe).
+    for delta in deltas:
+        if not isinstance(delta, dict):
+            work.append({})
+            changed = True
+            continue
+        copy = dict(delta)
+        if not _usable(copy.get("id")) and _usable(copy.get("segment_id")):
+            copy["id"] = copy["segment_id"]
+            changed = True
+        work.append(copy)
 
-    new_deltas: list[Any] = []
-    for nseg, delta in zip(narr, deltas, strict=False):
-        copy = dict(delta) if isinstance(delta, dict) else {}
-        nid = str(nseg.get("id") or "").strip() if isinstance(nseg, dict) else ""
-        if nid:
-            copy["id"] = nid
-        new_deltas.append(copy)
-    return {**parsed, "segment_manifest_deltas": new_deltas}
+    # Step 2: defensive positional backfill ONLY if still all id-less + len matches.
+    def _has_id(d: object) -> bool:
+        return isinstance(d, dict) and d.get("id") is not None
+
+    if len(work) == len(narr) and not any(_has_id(d) for d in work):
+        positional: list[Any] = []
+        for nseg, delta in zip(narr, work, strict=False):
+            copy = dict(delta) if isinstance(delta, dict) else {}
+            nid = _usable(nseg.get("id")) if isinstance(nseg, dict) else ""
+            if nid:
+                copy["id"] = nid
+                changed = True
+            positional.append(copy)
+        work = positional
+
+    if not changed:
+        return parsed
+    return {**parsed, "segment_manifest_deltas": work}
 
 
 def _assert_narration_joins_roster(
