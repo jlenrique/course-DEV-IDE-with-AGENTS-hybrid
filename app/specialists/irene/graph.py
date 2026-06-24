@@ -482,6 +482,57 @@ def _redact_text_for_unperceived_figures(
     )
 
 
+def backfill_delta_ids(parsed: dict[str, Any]) -> dict[str, Any]:
+    """Story 1.2a: repair id-less segment_manifest_deltas at the Pass-2 boundary.
+
+    The party-governed shared join (`app/specialists/narration_join.py`, the single
+    home of join POLICY) matches narration_script <-> deltas by ``id``. On a clustered
+    deck the Pass-2 LLM emitted N narration segments with ids (seg-01..seg-N) parallel
+    to N deltas with ``id == None`` (live trial 52890be7), so the id-keyed join dropped
+    every segment and enrique's pre-spend guard refused. This backfills the missing
+    delta ids from the narration array POSITIONALLY so the existing id-keyed policy
+    resolves — a data-completeness fix at the source, leaving join policy + G5 untouched.
+
+    PURE (no input mutation), idempotent. Fires ONLY when it is safe:
+      - narration_script and segment_manifest_deltas are both non-empty lists,
+      - of EQUAL length (cardinality assumption; else leave the asserts to fire),
+      - and EVERY delta lacks an id (the all-None case). A *partially* id'd array
+        signals out-of-order LLM emission where positional pairing would mis-attribute
+        narration to the wrong slide -> leave untouched (Winston green-light A1).
+
+    LOAD-BEARING INVARIANT: backfill is only safe because Pass-2 emits these two arrays
+    positionally aligned from one authoring pass (see _assemble_pass_2_prompt). If that
+    invariant is ever unverified, do NOT relax the all-None / equal-length gates.
+    """
+    narr = parsed.get("narration_script")
+    deltas = parsed.get("segment_manifest_deltas")
+    if not isinstance(narr, list) or not isinstance(deltas, list):
+        return parsed
+    if not deltas or len(deltas) != len(narr):
+        return parsed
+
+    def _has_explicit_id(d: object) -> bool:
+        # An id is "present" if the key exists with a non-None value — even a
+        # falsy one (0/""/False). Truthiness must NOT decide presence here, or a
+        # partial array with a falsy-but-real id would be mis-treated as all-None
+        # and wrongly backfilled (T11 Edge finding: all-None vs all-falsy).
+        if not isinstance(d, dict):
+            return False
+        return d.get("id") is not None or d.get("segment_id") is not None
+
+    if any(_has_explicit_id(d) for d in deltas):
+        return parsed  # partial/out-of-order ids -> untouched; asserts will fire
+
+    new_deltas: list[Any] = []
+    for nseg, delta in zip(narr, deltas, strict=False):
+        copy = dict(delta) if isinstance(delta, dict) else {}
+        nid = str(nseg.get("id") or "").strip() if isinstance(nseg, dict) else ""
+        if nid:
+            copy["id"] = nid
+        new_deltas.append(copy)
+    return {**parsed, "segment_manifest_deltas": new_deltas}
+
+
 def _assert_narration_joins_roster(
     parsed: dict[str, Any], roster: list[dict[str, Any]]
 ) -> None:
@@ -915,6 +966,10 @@ def _act_pass_2(
     raw_content = response.content if hasattr(response, "content") else str(response)
     raw_text = raw_content if isinstance(raw_content, str) else str(raw_content)
     parsed = _parse_pass_2_response(raw_text)
+    # Story 1.2a: backfill id-less deltas BEFORE the join-dependent asserts and
+    # before the deltas are serialized for enrique/publisher/G5 (clustered-deck
+    # LLM-variance repair; see backfill_delta_ids).
+    parsed = backfill_delta_ids(parsed)
     _assert_narration_joins_roster(parsed, slide_roster)
     _assert_reading_path_conformance(parsed, slide_roster)
     _assert_figure_citations_within_perceived(parsed, slide_roster)
