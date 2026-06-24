@@ -1,3 +1,22 @@
+# Session Handoff — 2026-06-24 (clustering re-activation goal RAN — Story 1.1 DONE, gate-A PROVEN LIVE, audio-leg fix committed-but-unverified)
+
+**Final class:** S (substrate). **Terminal: (d) LOCKED + gate-A live-proven; (c) NOT yet** (no clustered run green-to-Descript on a live smoke). **Branch:** `fidelity-perception-arc-2026-06-19`, HEAD `fedae26`, origin in sync. Commits this session: `f194b41` (survival probe), `5ef201a` (Story 1.1), `d94b634` (gate-A witness), `673f1b6`+`fedae26` (Story 1.2a). All pushed.
+
+**Arc executed (autonomous goal `goal-clustering-followalong-trial.txt`):**
+1. **Operator-confirm at start:** PER-SUB-SLIDE A/B (operator OVERRODE party cluster-head rec) + RAISED bar (3-consecutive-clean + 1-cross-deck). Memory `project-clustering-ab-granularity-decision`.
+2. **T1 survival probe GREEN** (`f194b41`): dormant April downstream executes on fresh cluster input (190 tests + 11 artifact checks) — no bit-rot; risk confined to Pass-1 seam.
+3. **Story 1.1 DONE** (`5ef201a`): NEW CYCLE — independent dev (T1–T10) + Claude T11 (battery + 3-layer bmad-code-review; root-cause MAJOR [cluster_id-vs-parent key confusion] remediated → parent-linkage-authoritative `normalize_clusters`; party-CLOSE 3/3 Winston/Murat/Amelia). G5/reading-path/pipeline untouched.
+4. **Gate A PROVEN LIVE** (`d94b634`, trial `52890be7`, gpt-5.5 on tejal): 6 flat → 13 plan_units; 3 dense slides CHUNKED (count 2/3/2) + 3 keep-dense singletons; arcs + positions present. Centerpiece works on real corpus.
+5. **Story 1.2a downstream repair** (`673f1b6`+`fedae26`): the live clustered run reached storyboard-publish + 13-segment Pass-2 narration but error-paused at the enrique audio leg (`elevenlabs.join.dropped-segments`). Root cause: clustered Pass-2 emits delta id under `segment_id` not `id`; party-governed join keys on `id` only. Fix `backfill_delta_ids` (graph.py) aliases segment_id→id; green-light Winston+Murat + Edge-Case T11 SOLID; unit-proven on the exact real shape. **LIVE end-to-end UNVERIFIED.**
+
+**Why 1.2a is unverified + immediate next action:** `trial recover` resumes at the error-paused enrique node and does NOT re-run node 08 (per-node checkpoint); enrique reads deltas from the irene node `cache_state.cache_prefix` (graph.py:993), runner validates `digest_mismatch` so hand-patching is fragile. **NEXT SESSION first action: a FRESH clustered trial on tejal** (node 08 applies the fix in-pipeline) → expect audio leg clears → Descript (terminal (c)). Memory `clustering-reactivation-2026-06-24`.
+
+**Open follow-ons (deferred-inventory):** `clustering-1.2a-live-verification`, `clustering-cluster-fields-carry-into-final-manifest` (cluster LABELS were None in the final manifest though count + narration propagated), `pass1-cluster-emission-hardening-nits`, `pass2-delta-backfill-duplicate-narration-id`. Stories 1.3 + 1.4 pending. Reading-path holdout gate NOT advanced (Mary's dissent stands).
+
+**Governance note:** dev leg fulfilled via independent subagents (dev T1–T10 + 3-layer review + party voices) since no external Codex dispatcher in an autonomous session — preserves the dev↔review separation. 1.2a implemented Claude-direct (proportional to a ~20-line pure backstop) under green-light + adversarial T11.
+
+---
+
 # Session Handoff — 2026-06-24 EVE (caveat fix DONE + dev-plan revisit + clustering Phase-1a GREEN-LIT; next session = operator launches the goal)
 
 **Final class:** S (substrate — the `pass2-figure-citation-gate` fix `5cf0684` shipped real code: new shared `figure_tokens` module + Irene/Quinn-R edits + tests). Heavy planning/party-mode layered on top.
