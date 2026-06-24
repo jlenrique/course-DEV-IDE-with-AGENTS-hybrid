@@ -1,6 +1,6 @@
 # Spec — Pass-2 Chosen-Variant Figure-Citation Gate (fix `pass2-narration-must-ground-to-chosen-variant-figures`, option (a))
 
-**Status:** ready-for-dev (NEW CYCLE — Codex T1–T10 → Claude T11)
+**Status:** ✅ DONE — Codex T1–T10 → Claude T11 → party-mode CLOSE 3/3 (Murat/Winston/Amelia, no impasse) 2026-06-24. Fix (a) landed; the live N≥15 0-contradiction experiment remains the pre-B-heavy-trial gate (deferred-inventory). 4 non-blocking rider follow-ons filed.
 **Story key:** `pass2-figure-citation-gate`
 **Author:** Claude (pre-author), 2026-06-24
 **Party-mode authority:** disposition recorded in `deferred-inventory.md` (Murat/Winston/Amelia/Mary, CONSENSUS green-with-named-dissent 2026-06-24).

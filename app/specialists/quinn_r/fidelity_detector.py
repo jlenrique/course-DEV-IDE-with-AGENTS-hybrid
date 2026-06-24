@@ -8,6 +8,7 @@ from typing import Any, Literal
 from pydantic import ValidationError
 
 from app.models.perception import PerceptionArtifact
+from app.specialists._shared.figure_tokens import _FIGURE_RE, _figures
 from app.specialists.quinn_r.quality_control_dispatch import FidelityError
 
 ReferenceClass = Literal["fidelity-bearing", "non-visual"]
@@ -15,11 +16,6 @@ ReferenceClass = Literal["fidelity-bearing", "non-visual"]
 ORPHAN_TAG = "quinn_r.g5.fidelity-orphan-reference"
 FIGURE_TAG = "quinn_r.g5.fidelity-figure-contradiction"
 
-_FIGURE_RE = re.compile(
-    r"\$\s*\d+(?:\.\d+)?(?:\s*(?:trillion|billion)\b|\s*[tb]\b)?"
-    r"|\b\d+(?:\.\d+)?\s*%|\b\d+(?:\.\d+)?x\b",
-    re.IGNORECASE,
-)
 # Blind-Hunter MEDIUM (T11): bare single words ("bar", "line", "building", "stat",
 # "image") trip a BLOCKING check on idioms ("raise the bar", "bottom line"). For a
 # Class-A gate, false positives are poison (Murat: stuck-alarm). Triggers are
@@ -175,27 +171,6 @@ def _group_present(group: str, perceived_text: str) -> bool:
     return any(pattern.search(perceived_text) for pattern in _TERM_RE[group])
 
 
-def _figures(text: str) -> set[str]:
-    return {_normalize_figure(match.group(0)) for match in _FIGURE_RE.finditer(text)}
-
-
-def _normalize_figure(value: str) -> str:
-    token = value.lower().replace(" ", "")
-    if token.startswith("$"):
-        number = float(re.search(r"\d+(?:\.\d+)?", token).group(0))  # type: ignore[union-attr]
-        # Blind-Hunter CRITICAL (T11): only normalize to trillions when a unit is
-        # PRESENT. A bare "$5" must NOT collapse onto "$5 trillion" — they are
-        # different magnitudes; conflating them is a silent wrong-answer.
-        if "trillion" in token or token.endswith("t"):
-            return f"money-trillion:{number:g}"
-        if "billion" in token or token.endswith("b"):
-            return f"money-trillion:{number / 1000.0:g}"
-        return f"money-bare:{number:g}"
-    if token.endswith("%"):
-        return f"percent:{float(token[:-1]):g}"
-    if token.endswith("x"):
-        return f"multiple:{float(token[:-1]):g}"
-    return token
 
 
 __all__ = ["classify_fidelity_reference", "detect_fidelity"]

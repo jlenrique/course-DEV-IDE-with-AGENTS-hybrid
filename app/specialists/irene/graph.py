@@ -56,6 +56,7 @@ from app.models.perception import PerceptionArtifact as RichPerceptionArtifact
 from app.models.state import specialist_summary_artifacts as specialist_summary_writer
 from app.models.state.run_state import RunState
 from app.specialists._scaffold.contract import SCAFFOLD_NODE_IDS
+from app.specialists._shared.figure_tokens import _FIGURE_RE, _figures, _normalize_figure
 from app.specialists.dispatch_errors import SpecialistDispatchError
 from app.specialists.irene.payload_contract import CONSUMED_PAYLOAD_KEYS
 from app.specialists.source_bundle import read_extracted_source
@@ -183,8 +184,13 @@ def _slide_roster(envelope_payload: dict[str, Any]) -> list[dict[str, Any]]:
         entry["visual_authority"] = _visual_authority_for_slide(
             slide_id, artifact
         )
-        entry["expected_visual_plan"] = _expected_visual_plan_for_slide(
+        perceived_figures = _perceived_figures(artifact)
+        entry["perceived_figures"] = sorted(perceived_figures)
+        expected_visual_plan = _expected_visual_plan_for_slide(
             entry["visual_description"], brief_by_slide.get(slide_id)
+        )
+        entry["expected_visual_plan"] = _redact_text_for_unperceived_figures(
+            expected_visual_plan, slide_id, perceived_figures
         )
         if (
             artifact is not None
@@ -314,6 +320,23 @@ def _json_fragment(value: Any) -> str:
     return json.dumps(value, sort_keys=True, ensure_ascii=True, separators=(",", ":"))
 
 
+def _perceived_figures(artifact: RichPerceptionArtifact | None) -> set[str]:
+    if (
+        artifact is None
+        or artifact.coverage != "perceived"
+        or artifact.confidence != "HIGH"
+    ):
+        return set()
+    values: list[str] = [
+        artifact.extracted_text,
+        artifact.layout_description,
+        artifact.slide_title,
+    ]
+    values.extend(_json_fragment(item) for item in artifact.text_blocks)
+    values.extend(_json_fragment(item) for item in artifact.visual_elements)
+    return _figures(" ".join(value for value in values if value))
+
+
 def _reading_path_guidance(slide_roster: list[dict[str, Any]]) -> str:
     lines: list[str] = []
     for entry in slide_roster:
@@ -338,10 +361,14 @@ def _payload_section_for_prompt(
         for entry in slide_roster
         if UNVERIFIED_VISUAL_AUTHORITY in str(entry.get("visual_authority") or "")
     }
-    payload = (
-        _redact_unverified_payload(envelope_payload, unverified)
-        if unverified
-        else envelope_payload
+    perceived_figures_by_slide = {
+        entry["slide_id"]: set(entry.get("perceived_figures") or [])
+        for entry in slide_roster
+    }
+    payload = _redact_payload_visual_leaks(
+        envelope_payload,
+        unverified_slide_ids=unverified,
+        perceived_figures_by_slide=perceived_figures_by_slide,
     )
     return json.dumps(
         payload,
@@ -349,6 +376,28 @@ def _payload_section_for_prompt(
         ensure_ascii=True,
         separators=(",", ":"),
     )
+
+
+def _redact_payload_visual_leaks(
+    envelope_payload: dict[str, Any],
+    *,
+    unverified_slide_ids: set[str],
+    perceived_figures_by_slide: dict[str, set[str]],
+) -> dict[str, Any]:
+    redacted = _redact_unverified_payload(envelope_payload, unverified_slide_ids)
+    for key in ("gary_slide_output", "slide_briefs"):
+        rows = redacted.get(key)
+        if not isinstance(rows, list):
+            continue
+        for row in rows:
+            if not isinstance(row, dict):
+                continue
+            slide_id = str(row.get("slide_id") or "").strip()
+            if not slide_id or slide_id in unverified_slide_ids:
+                continue
+            allowed = perceived_figures_by_slide.get(slide_id, set())
+            _redact_row_for_unperceived_figures(row, slide_id, allowed)
+    return redacted
 
 
 def _redact_unverified_payload(
@@ -390,6 +439,49 @@ def _redact_slide_row(row: dict[str, Any], slide_id: str) -> None:
             row[key] = [token for _ in value]
 
 
+def _redact_row_for_unperceived_figures(
+    row: dict[str, Any], slide_id: str, allowed_figures: set[str]
+) -> None:
+    for key, value in list(row.items()):
+        if key == "slide_id":
+            continue
+        row[key] = _redact_value_for_unperceived_figures(value, slide_id, allowed_figures)
+
+
+def _redact_value_for_unperceived_figures(
+    value: Any, slide_id: str, allowed_figures: set[str]
+) -> Any:
+    if isinstance(value, str):
+        return _redact_text_for_unperceived_figures(value, slide_id, allowed_figures)
+    if isinstance(value, dict):
+        return {
+            inner_key: _redact_value_for_unperceived_figures(
+                inner_value, slide_id, allowed_figures
+            )
+            for inner_key, inner_value in value.items()
+        }
+    if isinstance(value, list):
+        return [
+            _redact_value_for_unperceived_figures(item, slide_id, allowed_figures)
+            for item in value
+        ]
+    return value
+
+
+def _redact_text_for_unperceived_figures(
+    value: str, slide_id: str, allowed_figures: set[str]
+) -> str:
+    token = f"[REDACTED: figure absent from perceived authority for {slide_id}]"
+    return _FIGURE_RE.sub(
+        lambda match: (
+            match.group(0)
+            if _normalize_figure(match.group(0)) in allowed_figures
+            else token
+        ),
+        value,
+    )
+
+
 def _assert_narration_joins_roster(
     parsed: dict[str, Any], roster: list[dict[str, Any]]
 ) -> None:
@@ -420,6 +512,52 @@ def _assert_narration_joins_roster(
             f"roster: {sorted(slide_ids)})",
             tag="irene.pass2.slide-join-failed",
         )
+
+
+def _assert_figure_citations_within_perceived(
+    parsed: dict[str, Any], roster: list[dict[str, Any]]
+) -> None:
+    perceived_by_slide = {
+        entry["slide_id"]: set(entry.get("perceived_figures") or []) for entry in roster
+    }
+    for segment in parsed.get("narration_script") or []:
+        if not isinstance(segment, dict):
+            continue
+        slide_id = str(segment.get("slide_id") or segment.get("perception_source") or "")
+        if not slide_id:
+            slide_id = _segment_slide_id_from_deltas(segment, parsed)
+        if not slide_id:
+            continue
+        text = str(segment.get("text") or segment.get("narration_text") or "").strip()
+        if not text:
+            continue
+        figures = _figures(text)
+        offending = sorted(figures - perceived_by_slide.get(slide_id, set()))
+        if offending:
+            raise Pass2GroundingError(
+                f"scope=narration; slide {slide_id} narration figures not present in perceived "
+                f"authority: {offending}",
+                tag="irene.pass2.figure-contradiction",
+            )
+
+
+def _segment_slide_id_from_deltas(segment: dict[str, Any], parsed: dict[str, Any]) -> str:
+    segment_id = str(segment.get("id") or segment.get("segment_id") or "").strip()
+    if not segment_id:
+        return ""
+    for delta in parsed.get("segment_manifest_deltas") or []:
+        if not isinstance(delta, dict):
+            continue
+        delta_id = str(delta.get("id") or delta.get("segment_id") or "").strip()
+        if delta_id != segment_id:
+            continue
+        for ref in delta.get("visual_references") or []:
+            if not isinstance(ref, dict):
+                continue
+            slide_id = str(ref.get("perception_source") or "").strip()
+            if slide_id:
+                return slide_id
+    return ""
 
 
 def _assert_reading_path_conformance(
@@ -779,6 +917,7 @@ def _act_pass_2(
     parsed = _parse_pass_2_response(raw_text)
     _assert_narration_joins_roster(parsed, slide_roster)
     _assert_reading_path_conformance(parsed, slide_roster)
+    _assert_figure_citations_within_perceived(parsed, slide_roster)
     output_blob = json.dumps(
         {
             "narration_script": parsed["narration_script"],
@@ -954,6 +1093,7 @@ __all__ = [
     "_decode_envelope_payload",
     "_act_pass_1",
     "_act_pass_2",
+    "_assert_figure_citations_within_perceived",
     "_parse_pass_2_response",
     "_parse_pass_1_response",
     "_slide_roster",
