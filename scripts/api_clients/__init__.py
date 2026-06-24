@@ -12,6 +12,7 @@ from scripts.api_clients.base_client import (
 )
 from scripts.api_clients.botpress_client import BotpressClient
 from scripts.api_clients.canvas_client import CanvasClient
+from scripts.api_clients.descript_client import DescriptClient
 from scripts.api_clients.elevenlabs_client import ElevenLabsClient
 from scripts.api_clients.gamma_client import GammaClient
 from scripts.api_clients.notion_client import NotionClient
@@ -25,6 +26,7 @@ __all__ = [
     "BaseAPIClient",
     "BotpressClient",
     "CanvasClient",
+    "DescriptClient",
     "ElevenLabsClient",
     "GammaClient",
     "NotionClient",
