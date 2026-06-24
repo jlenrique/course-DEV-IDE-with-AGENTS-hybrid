@@ -1,4 +1,18 @@
-# Session Handoff — 2026-06-24 (clustering re-activation goal RAN — Story 1.1 DONE, gate-A PROVEN LIVE, audio-leg fix committed-but-unverified)
+# Session Handoff — 2026-06-24 (clustering goal — 🎉 TERMINAL (b) ACHIEVED: clustered + genuine per-sub-slide A/B run delivered to Descript, verified live)
+
+**Final class:** S (substrate). **Terminal: (b) ACHIEVED** — trial `c2c6dcbf` completed a full clustered + genuine per-sub-slide A/B run to Descript with no ghost numbers (witness `clustering-ab-descript-run-witness-2026-06-24.md`). (d)+(c) subsumed. **Branch:** `fidelity-perception-arc-2026-06-19`, HEAD `ce23933`, origin in sync. Commits: `f194b41` survival probe · `5ef201a` Story 1.1 (party-CLOSE 3/3) · `d94b634` gate-A witness · `673f1b6`+`fedae26` Story 1.2a · `df63b82` interim-wrapup (SUPERSEDED) · `ce23933` terminal-(b) witness. All pushed.
+
+**PROVEN LIVE (trial `c2c6dcbf`, real artifacts):** clustering active (6→13 sub-slides) · genuine per-sub-slide A/B via REAL Playwright gh-pages chooser clicks (A,B,A,B…) · **clustering × per-sub-slide A/B WORKS (no Story-1.4 gap)** · all 13 ElevenLabs segments synthesized (**Story 1.2a delta-id fix VERIFIED end-to-end** — vs all-13-dropped pre-fix) · **0 figure-contradiction (no ghost numbers)** · Descript delivery (storyboard published + zip). Operator banked the win + stopped (mirror for terminal (a) deferred).
+
+**Two live gotchas (handled, filed):** (1) `gamma.export.brief-unmatched` — per-render deterministic fuzzy title-miss; a FRESH render clears it; operator-raised LLM-matcher follow-on `gary-export-llm-brief-to-page-matcher` filed. (2) **Desmond delivery sanctum-lock** on the operator's uncommitted Desmond WIP — per-run set-aside/restore dance (operator will commit/baseline soon); restored byte-identical this run.
+
+**Reproduce an A/B run:** `--gamma-settings-file …/variant-demo-gamma-settings.yaml` (else single-variant) → advance G1→G2B (26 renders) → `PYTHONPATH=<repo> python …/drive_per_slide_trial.py <tid> "A,B,…"` → Desmond sanctum dance → completes. Full recipe in `next-session-start-here.md`.
+
+**Reading-path holdout gate NOT advanced (Mary's dissent stands); VO "tightness" = structural cluster-aligned proxy, perceptual = operator eye-read (not auto-claimed).** Memory: `clustering-reactivation-2026-06-24`, `project-clustering-ab-granularity-decision`.
+
+---
+
+# Session Handoff — 2026-06-24 (interim wrapup, SUPERSEDED — was the honest partial before the fresh A/B trial verified everything live)
 
 **Final class:** S (substrate). **Terminal: (d) LOCKED + gate-A live-proven; (c) NOT yet** (no clustered run green-to-Descript on a live smoke). **Branch:** `fidelity-perception-arc-2026-06-19`, HEAD `fedae26`, origin in sync. Commits this session: `f194b41` (survival probe), `5ef201a` (Story 1.1), `d94b634` (gate-A witness), `673f1b6`+`fedae26` (Story 1.2a). All pushed.
 
