@@ -1245,7 +1245,15 @@ def _gamma_settings_from_directive(directive_path: Path | None) -> list[dict[str
 # VARIANCE (a re-roll plausibly succeeds), not deterministic substrate defects.
 # Only these auto-retry; everything else fails loud immediately. Tunable by
 # party-mode as new variance points are observed across trials.
-_RETRYABLE_DISPATCH_TAGS: frozenset[str] = frozenset({"irene.pass2.slide-join-failed"})
+_RETRYABLE_DISPATCH_TAGS: frozenset[str] = frozenset(
+    {
+        "irene.pass2.slide-join-failed",
+        # Gamma text-mode=generate intermittently re-titles a slide so the bijective
+        # brief<->page title match fails for one variant; a re-roll matches (observed on
+        # variant B slide-06, 2026-06-24). LLM-variance class — auto-retry like Pass-2.
+        "gamma.export.brief-unmatched",
+    }
+)
 _MAX_DISPATCH_RETRIES = 3  # total attempts = 1 + 3; irene needed 3 re-rolls in T5a-rerun
 
 

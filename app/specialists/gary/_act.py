@@ -130,6 +130,13 @@ DEFAULT_VARIANT_PAIR: tuple[dict[str, Any], dict[str, Any]] = (
             "single-accent color",
         ],
         "amount": "brief",
+        # text_mode=condense (not the default `generate`) so Gamma keeps the briefed
+        # heading from the `# {title}` chunk lead verbatim and only condenses the body.
+        # Under `generate`, B's editorial tone re-titled slide-06 ("Deliberate physician
+        # leadership is the unifying answer"), breaking the bijective title-match
+        # (gamma.export.brief-unmatched, observed 2026-06-24). Visual A/B distinctness
+        # still comes from theme + lineArt/blueprint, so the chooser stays meaningful.
+        "text_mode": "condense",
         "tone": "Confident, precise, lightly editorial - American English",
         "audience": (
             "Faculty and instructional designers familiar with Canvas and course "
