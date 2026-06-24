@@ -130,13 +130,20 @@ DEFAULT_VARIANT_PAIR: tuple[dict[str, Any], dict[str, Any]] = (
             "single-accent color",
         ],
         "amount": "brief",
-        # text_mode=condense (not the default `generate`) so Gamma keeps the briefed
-        # heading from the `# {title}` chunk lead verbatim and only condenses the body.
-        # Under `generate`, B's editorial tone re-titled slide-06 ("Deliberate physician
-        # leadership is the unifying answer"), breaking the bijective title-match
-        # (gamma.export.brief-unmatched, observed 2026-06-24). Visual A/B distinctness
-        # still comes from theme + lineArt/blueprint, so the chooser stays meaningful.
-        "text_mode": "condense",
+        # text_mode=preserve (not the default `generate`, and NOT `condense`) keeps the
+        # briefed chunk text verbatim on the slide. This fixes TWO failure modes at once,
+        # both observed 2026-06-24 on variant B:
+        #  1. title-drift: under `generate`, B's editorial tone re-titled slide-06
+        #     ("Deliberate physician leadership is the unifying answer"), breaking the
+        #     bijective title-match (gamma.export.brief-unmatched). preserve keeps the
+        #     `# {title}` heading verbatim, so the match always resolves.
+        #  2. figure-loss: under `condense`, B re-rendered quantitative content as prose
+        #     ("training remains scarce" instead of "18% receive training"), dropping the
+        #     numbers the variant-agnostic narration cites -> G5 fidelity-figure-
+        #     contradiction whenever B was the picked variant. preserve keeps the source
+        #     figures on the slide, so perception sees them and fidelity passes.
+        # Visual A/B distinctness still comes from theme + lineArt/blueprint imagery.
+        "text_mode": "preserve",
         "tone": "Confident, precise, lightly editorial - American English",
         "audience": (
             "Faculty and instructional designers familiar with Canvas and course "
