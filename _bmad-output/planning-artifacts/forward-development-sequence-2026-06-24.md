@@ -14,6 +14,23 @@ Every trial is now a real production run. The **next** trial must demonstrably i
 
 ---
 
+## Phase 1a GREEN-LIGHT — OUTCOME (2026-06-24): APPROVED 4/4 GREEN-WITH-AMENDMENTS (Winston/John/Murat/Mary, no impasse)
+
+**Binding amendments (consolidated):**
+1. **Story split** (Winston+John): 1.1 re-wire Pass-1 emission (smallest, first) → 1.2 downstream integrity checkpoint → 1.3 three small adds (3 isolable commits) → 1.4 clustering×A/B reconciliation (gated, last). NOT one NEW CYCLE blob.
+2. **T1 survival probe** (John): before re-wiring Pass-1, hand-feed a cluster input through the dormant downstream to confirm the April machinery still EXECUTES (survival-in-code ≠ survival-in-execution). Bit-rot → re-scope 1.1 via party re-entry.
+3. **1.2 acceptance = three ARTIFACT gates** (Murat), not code-path smoke: (A) emission — pre-identified dense slide carries cluster fields count≥2 in the real Pass-1 artifact; (B) propagation — that slide → ≥2 segments in the segment manifest; (C) narration — VO partitioned along the cluster boundaries. Gate on the witness, never on a green unit suite.
+4. **Schema-additive** (Winston): cluster fields additive; flat slide = degenerate size-1 cluster; downstream tolerance-of-absence is an AC.
+5. **keep-dense as INPUT not veto** (Winston): a keep-dense unit is never a chunk candidate — stated in 1.1's cluster-decision spec, shipped in 1.3.
+6. **PRODUCT DECISION (John, PM): A/B at cluster-HEAD, not per sub-slide.** Chooser decides A/B once per original slide; chunk-expand the CHOSEN variant downstream. Keeps 1.4 from exploding (per-sub-slide A/B = render volume × chunk-factor for ~zero marginal value). Figure-gate still re-runs per sub-slide. **→ OPERATOR-CONFIRM (touches the just-shipped per-slide A/B substrate; John wants Marcus's read).**
+7. **Measurable success** (Murat+Mary): ghost-numbers = HARD gate (figure-contradiction count=0, pinned extraction, published count); "tightness" = deterministic structural proxy (VO-unit↔cluster alignment, no look-ahead leakage, violations=0) + perceptual tightness = logged operator/blind eye-read, NEVER auto-green.
+8. **Raised success bar** (Murat+Mary): 3 CONSECUTIVE clean runs (ghost=0 + propagation every run, reset-on-failure, first-run-stands) + 1 CROSS-DECK run. Claims scoped "on tejal" until the cross-deck run. **→ OPERATOR-CONFIRM (raises the operator's stated "prove twice" bar).**
+9. **Baseline anchoring** (John): frozen VO-follow-along baselines = the clean 2026-06-24 A/B mirror runs `7d530d0a` + `6cb8eafd` (un-clustered control, on disk). Phase 2 measures the delta against these.
+10. **Reading-path disclaimer** (Mary): close-out states explicitly "this arc does NOT advance the reading-path holdout gate; that gate remains open." No halo overclaim.
+11. **File 1.4/Phase-1.5 to deferred-inventory now** (Winston, per CLAUDE.md governance) — done.
+
+---
+
 ## Phase 1 — Clustering re-activation *(centerpiece; gates the next trial)*
 **Finding (verified 2026-06-24):** clustering is BUILT but DORMANT. Old pipeline genuinely ran it (April manifest `...20260419b-motion` = 74 cluster-field entries, real head+interstitial). Current LLM-first Pass-1 emits flat "one slide per unit" — no clusters; the rebuild dropped cluster emission. Downstream (Gary `CLUSTER_OUTPUT_FIELDS`, segment-manifest cluster carry in `pass_2_template.py`, Epic-23 bridges, density controls, `slide_count_runtime_estimator`) survives in code but unexercised since migration.
 
