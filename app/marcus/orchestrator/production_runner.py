@@ -2353,6 +2353,17 @@ def _continue_production_walk(
                         production_envelope=production_envelope,
                         runs_root=runs_root,
                     )
+                    # G2B is ALWAYS reached via this continuation walk (the start
+                    # walk stops at the first gate, G1), so the per-slide chooser
+                    # MUST publish here too — not only in the start walk. Without
+                    # this, the Storyboard-A chooser never auto-publishes and the
+                    # per-slide pick cannot be made (found 2026-06-24).
+                    chooser_publisher.publish_chooser_for_gate(
+                        gate_id=gate_id,
+                        trial_id=str(trial_id),
+                        production_envelope=production_envelope,
+                        runs_root=runs_root,
+                    )
                 except SpecialistDispatchError as exc:
                     return _pause_at_error(
                         error=exc,
