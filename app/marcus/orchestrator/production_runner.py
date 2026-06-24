@@ -758,6 +758,8 @@ def _write_checkpoint(
     manifest_path: Path,
     allow_offline_cost_report: bool,
     max_specialist_calls: int,
+    directive_path: Path | None,
+    bundle_dir: Path | None,
 ) -> Path:
     path = _run_dir(trial_id, runs_root) / "checkpoint.json"
     _write_json(
@@ -774,10 +776,41 @@ def _write_checkpoint(
                 "manifest_path": manifest_path.as_posix(),
                 "allow_offline_cost_report": allow_offline_cost_report,
                 "max_specialist_calls": max_specialist_calls,
+                "directive_path": directive_path.as_posix() if directive_path else None,
+                "bundle_dir": bundle_dir.as_posix() if bundle_dir else None,
             },
         },
     )
     return path
+
+
+def _canonical_directive_path(*, trial_id: UUID, runs_root: Path) -> Path:
+    return _run_dir(trial_id, runs_root) / "directive.yaml"
+
+
+def _resolve_resume_directive_path(
+    runner: dict[str, Any], *, trial_id: UUID, runs_root: Path
+) -> Path | None:
+    directive_path_raw = runner.get("directive_path")
+    if directive_path_raw:
+        return Path(directive_path_raw)
+    canonical = _canonical_directive_path(trial_id=trial_id, runs_root=runs_root)
+    return canonical if canonical.is_file() else None
+
+
+def _resolve_resume_bundle_dir(
+    runner: dict[str, Any],
+    *,
+    trial_id: UUID,
+    runs_root: Path,
+    directive_path: Path | None,
+) -> Path | None:
+    bundle_dir_raw = runner.get("bundle_dir")
+    if bundle_dir_raw:
+        return Path(bundle_dir_raw)
+    if directive_path is None:
+        return None
+    return _run_dir(trial_id, runs_root) / "bundle"
 
 
 def _ensure_decision_card_registered_from_disk(
@@ -1264,6 +1297,8 @@ def _pause_at_gate(
     runs_root: Path,
     allow_offline_cost_report: bool,
     max_specialist_calls: int,
+    directive_path: Path | None,
+    bundle_dir: Path | None,
 ) -> ProductionTrialEnvelope:
     """Pause the trial at ``gate_id``: draft, card, checkpoint, persist, return.
 
@@ -1320,6 +1355,8 @@ def _pause_at_gate(
         manifest_path=manifest_path,
         allow_offline_cost_report=allow_offline_cost_report,
         max_specialist_calls=max_specialist_calls,
+        directive_path=directive_path,
+        bundle_dir=bundle_dir,
     )
     decision_path = (
         _run_dir(trial_id, runs_root) / f"decision-card-{gate_id}.json"
@@ -1745,6 +1782,8 @@ def run_production_trial(
                     runs_root=runs_root,
                     allow_offline_cost_report=allow_offline_cost_report,
                     max_specialist_calls=max_specialist_calls,
+                    directive_path=directive_path,
+                    bundle_dir=bundle_dir,
                 )
 
             if (
@@ -1997,6 +2036,15 @@ def resume_production_trial(
         if max_specialist_calls is not None
         else int(runner.get("max_specialist_calls") or 1)
     )
+    directive_path = _resolve_resume_directive_path(
+        runner, trial_id=trial_id, runs_root=runs_root
+    )
+    bundle_dir = _resolve_resume_bundle_dir(
+        runner,
+        trial_id=trial_id,
+        runs_root=runs_root,
+        directive_path=directive_path,
+    )
     return _continue_production_walk(
         trial_id=trial_id,
         envelope=envelope,
@@ -2009,6 +2057,8 @@ def resume_production_trial(
         # further gates (offline mode); live mode pauses at the next gate.
         last_gate_crossed=verdict.gate_id,
         max_specialist_calls=resumed_max_specialist_calls,
+        directive_path=directive_path,
+        bundle_dir=bundle_dir,
         extra_artifacts=(run_dir / "resume-command.json",),
     )
 
@@ -2061,8 +2111,15 @@ def recover_production_trial(
     run_state = run_state.model_copy(
         update={"production_envelope": envelope.production_envelope}
     )
-    directive_path_raw = runner.get("directive_path")
-    bundle_dir_raw = runner.get("bundle_dir")
+    directive_path = _resolve_resume_directive_path(
+        runner, trial_id=trial_id, runs_root=runs_root
+    )
+    bundle_dir = _resolve_resume_bundle_dir(
+        runner,
+        trial_id=trial_id,
+        runs_root=runs_root,
+        directive_path=directive_path,
+    )
     return _continue_production_walk(
         trial_id=trial_id,
         envelope=envelope,
@@ -2078,8 +2135,8 @@ def recover_production_trial(
             if max_specialist_calls is not None
             else int(runner.get("max_specialist_calls") or 1)
         ),
-        directive_path=Path(directive_path_raw) if directive_path_raw else None,
-        bundle_dir=Path(bundle_dir_raw) if bundle_dir_raw else None,
+        directive_path=directive_path,
+        bundle_dir=bundle_dir,
         non_evidence_reason="recovered-after-error-pause",
     )
 
@@ -2221,6 +2278,8 @@ def _continue_production_walk(
                     runs_root=runs_root,
                     allow_offline_cost_report=allow_offline_cost_report,
                     max_specialist_calls=max_specialist_calls,
+                    directive_path=directive_path,
+                    bundle_dir=bundle_dir,
                 )
 
             if (
