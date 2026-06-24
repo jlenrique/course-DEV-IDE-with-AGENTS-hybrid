@@ -1,0 +1,92 @@
+{
+  "source": "root.run_state.production_envelope.contributions[5].output.lesson_plan",
+  "n_units": 13,
+  "clusters": {
+    "c-u01": {
+      "n": 1,
+      "roles": [
+        "head"
+      ],
+      "positions": [
+        "establish"
+      ],
+      "head_count": 0,
+      "arc": "From localized assumptions about practice change to enterprise-level awareness through paired economic and structural evidence."
+    },
+    "c-u02": {
+      "n": 3,
+      "roles": [
+        "head",
+        "interstitial",
+        "interstitial"
+      ],
+      "positions": [
+        "establish",
+        "tension",
+        "resolve"
+      ],
+      "head_count": 2,
+      "arc": "From seeing burnout as isolated distress to recognizing redesign opportunities through evidence linking waste, bureaucracy, and clinician harm."
+    },
+    "c-u03": {
+      "n": 4,
+      "roles": [
+        "head",
+        "interstitial",
+        "interstitial",
+        "interstitial"
+      ],
+      "positions": [
+        "establish",
+        "tension",
+        "develop",
+        "resolve"
+      ],
+      "head_count": 3,
+      "arc": "From awareness of accelerating complexity to readiness for safe clinical innovation through staged evidence about knowledge growth, AI adoption, and applied technologies."
+    },
+    "c-u04": {
+      "n": 1,
+      "roles": [
+        "head"
+      ],
+      "positions": [
+        "establish"
+      ],
+      "head_count": 0,
+      "arc": "From viewing patients as passive recipients to understanding consumer-driven access design through the digital front door journey."
+    },
+    "c-u05": {
+      "n": 3,
+      "roles": [
+        "head",
+        "interstitial",
+        "interstitial"
+      ],
+      "positions": [
+        "establish",
+        "tension",
+        "resolve"
+      ],
+      "head_count": 2,
+      "arc": "From latent physician interest in influence to a defined leadership mandate through evidence of training gaps and institutional need."
+    },
+    "c-u06": {
+      "n": 1,
+      "roles": [
+        "head"
+      ],
+      "positions": [
+        "establish"
+      ],
+      "head_count": 0,
+      "arc": "From fragmented pressures to a unified mandate for clinician leadership through summary synthesis and reflection."
+    }
+  },
+  "summary": {
+    "total_units": 13,
+    "distinct_clusters": 6,
+    "chunked_clusters": 3,
+    "singleton_clusters": 3
+  }
+}
