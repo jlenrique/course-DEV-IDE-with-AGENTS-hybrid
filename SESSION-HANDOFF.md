@@ -10,6 +10,8 @@
 
 **Reading-path holdout gate NOT advanced (Mary's dissent stands); VO "tightness" = structural cluster-aligned proxy, perceptual = operator eye-read (not auto-claimed).** Memory: `clustering-reactivation-2026-06-24`, `project-clustering-ab-granularity-decision`.
 
+**WRAPUP protocol ledger (Class S):** Step 1 quality gate GREEN (ruff clean · lint-imports 15/0 · 68 focused tests · `git diff --check` clean). Step 0 full Cora `/harmonize` sweep DEFERRED (proceed-with-acknowledged-gap) — deterministic core verified green via targeted gates throughout (T11 battery, survival probe, irene/enrique/quinn_r non-regression 182-pass, dormant cluster 94-pass) + Step 1; touched surface small + additive (2 app files: `irene_pass1/_act.py`, `irene/graph.py`; no pipeline-manifest/schema/pack/lockstep path); prior session ran green-core /harmonize so no two-consecutive-skip tripwire. Steps 2 (planning artifacts) + 7 + 8 DONE. SKIP w/ rationale: Step 3 (no workflow phase transition), 4a (sprint-status.yaml not edited — clustering Phase-1 stories tracked via forward-sequence + deferred-inventory, not the sprint ledger), 4b (no agent/skill created — variant-demo scripts are helpers), 5 (no rules/MCP/API/tool-tier change), 6 (trial artifacts ambient, not promoted to courses/). Step 9: recommend operator regenerate the knowledge graph (`/understand`) only if desired — substrate change was 2 files, below the ≥10-file threshold; no schema/manifest touch. Steps 10/11/12 DONE (worktree clean, origin in sync at `942ddff`, push mandatory satisfied). Class-drift: none (declared S, diff is S).
+
 ---
 
 # Session Handoff — 2026-06-24 (interim wrapup, SUPERSEDED — was the honest partial before the fresh A/B trial verified everything live)
