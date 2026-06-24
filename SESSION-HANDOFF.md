@@ -1,3 +1,48 @@
+# Session Handoff — 2026-06-24 (`/goal` per-slide A/B selection + presenter voice — SATISFIED: two live mirror runs, error-free to Descript)
+
+**Final class:** S (substrate — `gary/_act.py` + `production_runner.py` edits + live content-production runs).
+
+## Goal satisfied
+Operator goal: a repaired/enhanced trial with **per-slide A/B selection actuated via button clicks on the published Storyboard-A URL** (no faking — Playwright if needed), the picks propagating per-slide downstream, **two** successful live runs (one A/B mix and its exact mirror), each completing **error-free to Descript-ready delivery**, with the narrator in a **competent-presenter voice** (not slide-description) and no slide-tracking regression. **All conditions met.**
+
+| | Run 1 | Run 2 |
+|---|---|---|
+| Trial | `7d530d0a-63e3-4dfe-a25e-9d91e3c50c4a` | `6cb8eafd-4f66-4d8e-9b5f-848bd3b08b49` |
+| Picks (real gh-pages button clicks) | A,B,A,B,A,B | B,A,B,A,B,A (exact mirror) |
+| Selection code (from the real buttons) | `SBA-7d530d0a-1:A 2:B 3:A 4:B 5:A 6:B` | `SBA-6cb8eafd-1:B 2:A 3:B 4:A 5:B 6:A` |
+| Resolved deck (12→6 per-slide) | 01A 02B 03A 04B 05A 06B | 01B 02A 03B 04A 05B 06A |
+| End state | `completed`, 0 errors | `completed`, 0 errors |
+| Delivery | Descript segment-manifest + 6 ElevenLabs segments | same |
+
+Actuation is genuine: `drive_per_slide_trial.py` opened each published chooser URL, clicked the per-slide A/B buttons via Playwright (sync API, chromium), read the selection code off the page, parsed it to the `{slide_id: variant}` map, and submitted it as the G2B `select` verdict. Presenter voice verified on both (e.g. *"The takeaway for you is practical…"*, *"burnout is not a resilience problem—it's a design failure"*) — audience-addressed, argument-driven, grounded in slide stats.
+
+## What was built/fixed this session (all pushed; HEAD `da451b6`)
+- **`gary/_act.py` — variant B `text_mode=preserve`** (`2bfb6fd`). Default `generate` editorially re-titled slides → `gamma.export.brief-unmatched` title-match failure; an interim `condense` fixed titles but re-rendered quantitative content as prose, dropping figures → G5 fidelity contradiction. `preserve` keeps both the briefed heading AND the source figures verbatim; visual A/B distinctness still from theme + lineArt/blueprint.
+- **`production_runner.py` — chooser publish in the CONTINUATION walk** (`5955b12`). The per-slide chooser hook was only in the start walk (stops at G1); G2B is always reached via the continuation walk (every resume), so the chooser never auto-published. Both `resume` and `recover` use that walk — now publishes inline. (Memory `project-production-runner-two-walks`.)
+- **`gamma.export.brief-unmatched` → dispatch auto-retry net** (`2199776`) — LLM-variance class, like `irene.pass2.slide-join-failed`.
+- Per-slide selection substrate (parser/resolver/dispatcher/chooser emitter/chooser publisher/Irene presenter persona) was the BUILT base coming in; this session debugged it to live-green.
+
+## What is next
+**Real conversational Marcus SPOC** — the operator's standing dispositive commitment (the current `marcus_spoc.py` is a scripted one-pass narrator; the target is the stop-and-chat-each-turn LLM REPL). Deferred all session as "the next build." Class S; party green-light → NEW CYCLE → Claude T11. Reconfirm dev-agent posture at open (operator said NO Codex dev agent for the variant goal).
+
+## Unresolved risks / filed caveats
+- **`pass2-narration-must-ground-to-chosen-variant-figures`** (deferred-inventory §Named-But-Not-Filed). Variant B renders figures as prose; G5 quinn_r (P2-3 repaired detector, working correctly) requires narration figures ⊆ rendered-slide figures. When B is picked for a figure-bearing slide, Irene Pass-2 must ground to B's figure-free perception and not cite the source figure — reliable in Run 2 but NOT its first attempt (`8553ab38` cited "18%" → error-pause). The pass is partly grounding **variance**, not deterministic. **Blocks B-heavy NON-demo trials; needs a party-mode decision** (3 candidate fixes filed; none is gate-relaxation). Not a blocker for the demonstrated goal.
+
+## Validation summary
+- Quality gate: `ruff` clean on touched modules; 72 unit tests green (per-slide 22, gary 50, +chooser/persona).
+- Live: two full production runs `completed` end-to-end (Gary A+B → G2B Playwright select → G2C/G3/G4/G4A → ElevenLabs audio → Descript delivery), 0 errors.
+- The failed first mirror attempt `8553ab38` is preserved as the RED witness for the filed caveat.
+
+## Artifact update checklist
+- `_bmad-output/planning-artifacts/deferred-inventory.md` — new follow-on row (`da451b6`).
+- `_bmad-output/implementation-artifacts/variant-demo/drive_per_slide_trial.py` — reusable Playwright driver preserved (`da451b6`).
+- Memories: `project-production-runner-two-walks` (new), MEMORY.md index updated.
+- `next-session-start-here.md` + `SESSION-HANDOFF.md` — this close.
+- Ambient (untouched, not session-owned): `claude-goal.txt` (M), `RUNBOOK.md`, `variant-demo-g2b-decisions-A.json`, `goal-v9-next-trial-ready.txt`.
+- Step 0 (Cora `/harmonize`): not separately orchestrated — quality gate + focused regression run directly (Step 1); flag for next Class S sweep if the two-consecutive-skip tripwire fires.
+
+---
+
 # Session Handoff — 2026-06-23 (`/goal` v9 SATISFIED — terminal (a): trial-readiness party-green 3/3 + fresh smoke COMPLETED; NEXT TRIAL is READY)
 
 **🎯 GOAL v9 COMPLETE at terminal state (a).** All 4 ARC steps done: T11 closed + cadence cleanup + variant-arc green-lit + **trial-readiness gate CLOSED** (a fresh full production smoke completed end-to-end + a unanimous 3/3 party green-light). The next trial run is **party-certified READY** (TRIAL-1, single-variant, narrated-deck verification).
