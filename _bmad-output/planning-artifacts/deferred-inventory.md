@@ -175,6 +175,19 @@ _(Pre-S1 historical narrative preserved below for audit trail; counts therein ar
 
 ---
 
+## Braid green-light follow-ons (filed 2026-06-24 PM-2; party-mode 6/6 GREEN-WITH-AMENDMENTS)
+
+Named in the braid specs (S1–S4) + ratification `braid-green-light-ratification-2026-06-24.md`. Filed per governance §3.
+
+- 🟠 **`braid-workbook-semantic-claim-citation-audit`** — parent: S2 workbook producer (G1). v1 covers only **numeric** body fidelity (L2 in FAIL mode, `unsourced_numeric==0`) + a **named operator spot-check** for non-numeric prose claim↔source faithfulness. The general semantic claim→source audit is **net-new** (the L2 `SEMANTIC_TRIPWIRE` leg is an explicit stub). **Trigger:** after S2/S3 land + ≥3 workbook runs, OR before relying on auto-prose-fidelity for a non-demo client deliverable. Do NOT claim L2 covers this. **Direction-stable** (compose-freely-assert-only-sourced, same principle as the fidelity L1/L2 arc).
+- 🟡 **`braid-workbook-pdf-render-leg`** — parent: S2 (DP3). v1 = Markdown→**DOCX** only (python-docx present; **no PDF lib on disk**). **Trigger:** when a PDF deliverable is required AND an owner takes the pandoc/weasyprint/reportlab dependency decision (system-binary / wheel + font fragility). Interim: open the DOCX and Export-PDF.
+- 🟡 **`braid-workbook-worksheet-fill-in-affordances`** — parent: S2 (Irene A4-5). Answer blanks / lined response areas / "show-your-work" boxes (Markdown→DOCX renders these only crudely). **Trigger:** when richer worksheet pedagogy is needed beyond prompts+space. v1 = prompts + space.
+- 🟡 **`braid-capability-overlay-trial-log-wired-tightening`** — parent: S4 (DP1, v1.1). Tighten `wired` from "is it routed (static)" to "appeared in the most recent green trial-run's executed-node set" (`runs/` logs). **Trigger:** S4 v1 closes + trial-log executed-node schema is stable. Stronger honesty bar; not a v1 blocker.
+- 🔵 **`braid-open-ended-asset-design-pattern`** — parent: braid arc (DP5 v-next). The generative "state the asset's PURPOSE → Marcus/Irene design it → add to flow" pattern. v1 = **predefined** workbook spec. **Trigger:** after Slice 1 ships the predefined workbook and the producer/spec seam is proven.
+- 🔵 **`braid-research-epic-17-hypothesis-mode`** — parent: S3 (DP2 v-next). Full research (hypothesis-research, related-resources, citation injection beyond thin). Braid **S3 is the thin slice** (wire the existing Irene→Tracy→Texas bridge; cited entries). **Trigger:** after thin wiring proves out + an Epic-17 reactivation review. (Epic 17 already on the aspirational shelf.)
+- ↳ **Adopts `tracy-gap-fill-lane-not-adopted-by-production-runner`** (filed 2026-06-11, below): braid **S3** is the production-runner wire-through that closes that orphan. Strike it when S3 lands.
+- ℹ️ **S5 (real conversational Marcus SPOC / interlocution REPL)** is the braid **arc finale**, tracked as a story in the ratification (Slice 2), NOT a deferred follow-on — sequenced after Slice 1 + S4 (capability-overlay) land. Spec authored when S4 closes.
+
 ## Wave / Phase Deferreds (Epic-Group Gating)
 
 ### Cluster Intelligence Wave 2 (Epic 19-24 + 20c)

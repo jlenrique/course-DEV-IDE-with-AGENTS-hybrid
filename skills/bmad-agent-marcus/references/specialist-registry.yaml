@@ -131,7 +131,7 @@ personas:
     class: C+
     sanctum: _bmad/memory/bmad-agent-tracy/  # 4-file Class-C+ sidecar pattern (NFR-CG15)
     persona_skill: skills/bmad-agent-tracy/SKILL.md
-    role: typography + visual-design adjudication (§07B / §08B)
+    role: research-shaped intent enrichment for Texas retrieval; emits RetrievalIntent at the Pass-1→Pass-2 transition (per skills/bmad-agent-tracy/SKILL.md + docs/operator/specialists/tracy.md)  # corrected 2026-06-24: prior "typography + visual-design adjudication (§07B/§08B)" was a stale copy-paste; on-disk persona is research-intent (braid green-light DP2, ratification 2026-06-24)
     activated_at: slab-7b-5 (2026-05-01)
     sanctum_pattern: 4-file Class-C+ canonical (INDEX/PERSONA/access-boundaries/chronology)
 
