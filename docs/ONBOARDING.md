@@ -1,11 +1,11 @@
 # ONBOARDING — `course-dev-ide-with-agents`
 
-> **One-line elevator:** Collaborative intelligence infrastructure for course content production — a multi-agent orchestrator (**Marcus**) drives a roster of ~20 LangGraph specialist agents through gated, human-in-the-loop production of narrated lessons (with video/animation), with tamper-evident operator verdicts and a learning ledger.
+> **One-line elevator:** Collaborative intelligence infrastructure for course content production — a deterministic, manifest-compiled orchestrator (operator surface: **Marcus-SPOC**) drives a roster of ~20 LangGraph specialist agents through gated, human-in-the-loop production of narrated lessons (with video/animation), with tamper-evident operator verdicts and a learning ledger.
 
 **Languages:** Python (3.11+), Markdown, Jinja2, JSON, YAML, JavaScript, PowerShell, Shell, SQL
 **Core frameworks:** LangChain, LangGraph, Pydantic v2, FastAPI, Uvicorn, httpx, Pytest
 **Branch:** `fidelity-perception-arc-2026-06-19` (severed from `upstream/master` since 2026-04-24)
-**Status (2026-06-25):** Migration SHIPPED (commit `97842ac`, 2026-04-27); Slab 7 orchestrational arc CLOSED. **Braid arc COMPLETE:** Marcus conversational SPOC (stop-and-chat LLM REPL with a deterministic guard so the chatting model never drives the engine), the research-citation leg (live Scite OAuth → Texas retrieval → cited references), and the learner-workbook companion (Markdown→DOCX) are all proven live. The clustered + per-sub-slide A/B run has been published to Descript, and the **Vision** slide-perception specialist has landed for the fidelity-perception arc.
+**Status (2026-06-25):** Migration SHIPPED (commit `97842ac`, 2026-04-27); Slab 7 orchestrational arc CLOSED. **Braid arc COMPLETE:** the **Marcus-SPOC** conversational surface (stop-and-chat LLM REPL with a deterministic guard so the chatting model never drives the engine), the research-citation leg (live Scite OAuth → Texas retrieval → cited references), and the learner-workbook companion (Markdown→DOCX) are all proven live. The clustered + per-sub-slide A/B run has been published to Descript, and the **Vision** slide-perception specialist has landed for the fidelity-perception arc.
 
 ---
 
@@ -29,10 +29,10 @@ Before touching any code:
 ```
     operator
        │
-       │   conversational SPOC (LLM stop-and-chat REPL) · CLI · MCP/FastAPI
+       │   Marcus-SPOC (LLM stop-and-chat REPL) · CLI · MCP/FastAPI
        ▼
 ┌─────────────────┐      compile_run_graph()       ┌────────────────────────────┐
-│  Marcus runtime │ ──────────────────────────────▶│  pipeline-manifest.yaml    │
+│ runtime orch.   │ ──────────────────────────────▶│  pipeline-manifest.yaml    │
 │  (app/marcus/)  │                                │  → LangGraph StateGraph    │
 └────────┬────────┘                                └────────────┬───────────────┘
          │                                                      │
@@ -102,7 +102,7 @@ Shared helpers live in `app/specialists/_shared/` — notably `figure_tokens.py`
 
 Marcus is the runtime orchestrator process (*not* the BMAD persona — the production-runtime engine).
 
-- `app/marcus/cli/marcus_interlocutor.py` + `marcus_spoc.py` — **the conversational SPOC**: an LLM-driven stop-and-chat REPL that narrates each gate's DecisionCard and lets the operator converse, plus the scripted gate-by-gate production trial. A deterministic guard ensures the chatting model drives the engine zero times.
+- `app/marcus/cli/marcus_interlocutor.py` + `marcus_spoc.py` — **Marcus-SPOC**, the operator-facing conversational surface: an LLM-driven stop-and-chat REPL that (in the planned front-door) picks the workflow, then narrates each gate's DecisionCard and lets the operator converse, plus the scripted gate-by-gate production trial. A deterministic guard ensures the chatting model drives the engine zero times. (Operator-facing callsign only; the package, function names, and `"marcus"` model tier are unchanged.)
 - `app/marcus/cli/trial.py` + `gate_shims/` — CLI trial entry points and per-gate shims (G1–G4a).
 - `app/marcus/orchestrator/production_runner.py` — the trial engine that walks the compiled LangGraph, pauses at each gate, and resumes after the operator's verdict. ⚠️ **complex** (~2,700 lines; highest fan-out in the project). **Note the two distinct node walks** — the start walk and the resume/recover continuation — both of which must fire gate side-effects (storyboard/chooser publish), or G2B+ side-effects silently never fire.
 - `app/marcus/orchestrator/dispatch_adapter.py` — bridges `ProductionEnvelope` → specialist `RunState`; compiles per-specialist subgraphs. ⚠️ **complex**.
@@ -174,7 +174,7 @@ The recommended reading path the knowledge graph generated:
 9. **The Gated Workflow Substrate** — `app/gates/resume_api.py` + `verdict.py`. What makes a run pausable at G1/G2C/G3/G4 and resumable on operator verdict.
 10. **Manifest-Compiled Pipeline** — `app/manifest/compiler.py` + README. Where specialists and gates are assembled into the end-to-end production walk.
 11. **The Production Runner** — `app/marcus/orchestrator/production_runner.py` + `gate_runner.py`. The engine that drives a trial; mind the two node walks.
-12. **Conversational SPOC Interlocution** — `app/marcus/cli/marcus_interlocutor.py` + `marcus_spoc.py`. The stop-and-chat REPL + the deterministic guard.
+12. **Marcus-SPOC Interlocution** — `app/marcus/cli/marcus_interlocutor.py` + `marcus_spoc.py`. The operator-facing stop-and-chat REPL + the deterministic guard.
 13. **Research Citation & Workbook Producer** — `app/marcus/orchestrator/{research_wiring,research_citation}.py` + `app/marcus/lesson_plan/workbook_producer.py`. Auditable citations + the client-facing learner workbook.
 14. **Audit Ledger & Database Schema** — `app/ledger/emitter.py` + `schema.sql`. The system's durable, queryable memory in Postgres.
 15. **Runtime, MCP Server & Configuration** — `app/runtime/server.py` + `app/mcp_server/server.py` + `.env.example`. How the system is hosted, served, and configured.
@@ -195,7 +195,7 @@ The recommended reading path the knowledge graph generated:
 | **Figure-grounding bar is lenient by design** | `app/specialists/_shared/{figure_tokens,source_fidelity_audit}.py` | VO may speak any numeral present anywhere on the chosen slide; only a numeral nowhere on the slide is a violation. |
 | **Pack version bumps are governance, not technical** | CLAUDE.md "Pipeline lockstep regime" + `docs/dev-guide/pipeline-manifest-regime.md` | Tier-2/Tier-3 bumps need party-mode consensus BEFORE dev opens. |
 | **Verify via shipped deps, not operator CLIs** | `docs/dev-guide/migration-ac-sandbox-inventory.json` | Dev-agent tests use `psycopg` / `httpx`; only operator-gated ACs may call `docker` / `psql` / `gh`. |
-| **BMAD Marcus ≠ runtime Marcus** | `skills/bmad-agent-marcus/SKILL.md` vs `app/marcus/` | Same name, two systems that share no memory. **BMAD-persona Marcus** (skill + sanctum) plans and talks *about* the project with no connection to a live run. **Runtime/SPOC Marcus** (`app/marcus/cli/marcus_interlocutor.py`) converses *only inside a live trial*, backed by a runtime LLM grounded on the generated capability overlay (not the persona) — and the human's confirmed verdict, never the chatting LLM, advances the run. |
+| **BMAD-persona Marcus ≠ Marcus-SPOC** | `skills/bmad-agent-marcus/SKILL.md` vs `app/marcus/` | Two systems that share no memory. **BMAD-persona Marcus** (skill + sanctum) plans and talks *about* the project with no connection to a live run. **Marcus-SPOC** (`app/marcus/cli/marcus_interlocutor.py`) is the operator-facing surface of the runtime: it converses *only inside a live trial*, backed by a runtime LLM grounded on the generated capability overlay (not the persona) — and the human's confirmed verdict, never the chatting LLM, advances the run. The orchestration *engine* itself (`production_runner` + manifest compiler) is deterministic, not an agent. |
 
 ---
 

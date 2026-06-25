@@ -310,5 +310,5 @@ def test_acd6_transcript_persisted_with_content(tmp_path):
     path = run_dir / f"marcus-interlocution-{trial_id}.md"
     assert path.exists()
     body = path.read_text(encoding="utf-8")
-    assert "Operator:" in body and "Marcus:" in body and "Structured action:" in body
+    assert "Operator:" in body and "Marcus-SPOC:" in body and "Structured action:" in body
     assert "q?" in body  # operator turn captured verbatim

@@ -6,7 +6,9 @@ converses with Marcus, who at each gate NARRATES the relevant content in persona
 incl. #variants + voice, motion plan) and collects the operator's decision, then
 drives the underlying `production_runner` under the hood. This is the
 subprocess-narration-over-the-seam shape ratified at BETA scoping (Winston Q3):
-`production_runner` stays the runtime authority; Marcus is the operator surface.
+`production_runner` stays the runtime authority; Marcus-SPOC is the operator
+surface (operator-facing callsign for the runtime conversational layer — the
+deterministic orchestration engine is `production_runner`, not renamed).
 
 Sophisticated free-form NL dialogue / LLM-mediated turn-taking is deferred
 (operator directive: defer sophisticated ML); this MVP delivers the structured
@@ -28,7 +30,7 @@ from app.models.state.operator_verdict import OperatorVerdict
 from app.runtime.economics import RUNS_ROOT
 
 _RULE = "─" * 64
-_M = "🧑‍💼 **Marcus:**"
+_M = "🧑‍💼 **Marcus-SPOC:**"
 
 DEFAULT_OPERATOR_ID = "operator_juan"
 

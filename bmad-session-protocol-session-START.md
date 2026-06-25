@@ -12,7 +12,7 @@ If a user or older note refers to a literal "session xyz" document and no such f
 
 ## §0: Project purpose TL;DR (for unfamiliar agents)
 
-**Purpose:** Persistent collaborative intelligence infrastructure for systematically scaling creative expertise in online course content production. Marcus (the master orchestrator) coordinates ~20 LangGraph specialist agents that manipulate professional media tools through skills backed by Python scripts, and drives production conversationally as a stop-and-chat single point of contact (SPOC) at each human-in-the-loop gate; BMAD memory sidecars capture creative decision-making patterns for refinement and reuse.
+**Purpose:** Persistent collaborative intelligence infrastructure for systematically scaling creative expertise in online course content production. A deterministic, manifest-compiled runtime orchestrator coordinates a roster of LangGraph specialist agents (current roster + count: [`docs/ONBOARDING.md`](docs/ONBOARDING.md) §3.2) that manipulate professional media tools through skills backed by Python scripts; its operator-facing conversational surface — **Marcus-SPOC** — picks the workflow at the front door and narrates each human-in-the-loop gate, with the operator's confirmed verdict (never the chatting LLM) advancing the run. This is distinct from the BMAD-persona **Marcus** under `skills/bmad-agent-marcus/` (planning persona, has the sanctum; no connection to a live run). BMAD memory sidecars capture creative decision-making patterns for refinement and reuse.
 
 **Architecture:** See [`docs/ONBOARDING.md`](docs/ONBOARDING.md) for the structural mental model (8 layers, 15-step guided tour, derived from a knowledge-graph scan of the codebase). Read this once per fresh agent context.
 

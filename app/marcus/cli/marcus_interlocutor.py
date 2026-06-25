@@ -190,7 +190,7 @@ class TranscriptEntry:
 
 def _system_prompt(grounding: GroundingContext) -> str:
     return (
-        "You are Marcus, the operator's single point of contact for a course-"
+        "You are Marcus-SPOC, the operator's single point of contact for a course-"
         "production run. You converse honestly and drive the production engine on "
         "the operator's behalf. You may ONLY claim capabilities that the grounding "
         "block below asserts; never up-level a capability_state.\n\n"
@@ -414,11 +414,11 @@ class MarcusInterlocutor:
 
     def _persist_transcript(self) -> Path:
         path = self.run_dir / f"marcus-interlocution-{self.trial_id}.md"
-        lines = [f"# Marcus interlocution transcript — trial {self.trial_id}", ""]
+        lines = [f"# Marcus-SPOC interlocution transcript — trial {self.trial_id}", ""]
         for i, entry in enumerate(self.transcript, start=1):
             lines.append(f"## Turn {i} — gate {entry.gate_id}")
             lines.append(f"- **Operator:** {entry.operator_input}")
-            lines.append(f"- **Marcus:** {entry.marcus_response}")
+            lines.append(f"- **Marcus-SPOC:** {entry.marcus_response}")
             lines.append(f"- **Structured action:** `{json.dumps(entry.action)}`")
             lines.append("")
         self.run_dir.mkdir(parents=True, exist_ok=True)
