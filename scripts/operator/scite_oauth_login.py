@@ -22,6 +22,7 @@ Usage:
 from __future__ import annotations
 
 import base64
+import contextlib
 import hashlib
 import http.server
 import json
@@ -127,10 +128,8 @@ def main() -> int:
     print("open, paste this URL manually:\n")
     print(auth_url)
     print()
-    try:
+    with contextlib.suppress(Exception):
         webbrowser.open(auth_url)
-    except Exception:
-        pass
 
     deadline = time.time() + 300  # 5 min
     while time.time() < deadline and "code" not in _captured:
@@ -156,7 +155,10 @@ def main() -> int:
         timeout=30,
     )
     if token_resp.status_code != 200:
-        print(f"TOKEN EXCHANGE FAILED {token_resp.status_code}: {token_resp.text[:300]}", file=sys.stderr)
+        print(
+            f"TOKEN EXCHANGE FAILED {token_resp.status_code}: {token_resp.text[:300]}",
+            file=sys.stderr,
+        )
         return 4
 
     tok = token_resp.json()
