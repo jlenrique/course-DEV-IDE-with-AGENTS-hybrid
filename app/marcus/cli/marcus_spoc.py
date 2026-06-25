@@ -30,6 +30,38 @@ from app.runtime.economics import RUNS_ROOT
 _RULE = "─" * 64
 _M = "🧑‍💼 **Marcus:**"
 
+DEFAULT_OPERATOR_ID = "operator_juan"
+
+
+def build_operator_verdict_kwargs(
+    *,
+    trial_id: UUID,
+    gate_id: str,
+    card: dict[str, Any],
+    verb: str,
+    edit_payload: Any | None = None,
+    reject_reason: str | None = None,
+    operator_id: str = DEFAULT_OPERATOR_ID,
+) -> dict[str, Any]:
+    """Build the ``OperatorVerdict(**kwargs)`` dict shared by the scripted SPOC
+    and the interactive interlocutor (A3 — backward-compat is structural, not
+    coincidental). ``card`` is the persisted decision-card payload (the
+    ``{"card": {...}, "digest": ...}`` envelope on disk).
+    """
+    kwargs: dict[str, Any] = {
+        "trial_id": trial_id,
+        "gate_id": gate_id,
+        "card_id": UUID(card["card"]["card_id"]),
+        "operator_id": operator_id,
+        "decision_card_digest": card["digest"],
+        "verb": verb,
+    }
+    if verb in {"edit", "select"}:
+        kwargs["edit_payload"] = edit_payload
+    if verb == "reject":
+        kwargs["reject_reason"] = reject_reason or "operator-rejected"
+    return kwargs
+
 
 def _load(path: Path) -> Any:
     try:
@@ -185,18 +217,14 @@ def run_marcus_spoc(
         transcript.append(narrate_gate(gate, card, run_dir))
         decision = decisions.get(gate, {"verb": "approve"})
         verb = decision.get("verb", "approve")
-        kwargs: dict[str, Any] = {
-            "trial_id": trial_id,
-            "gate_id": gate,
-            "card_id": UUID(card["card"]["card_id"]),
-            "operator_id": "operator_juan",
-            "decision_card_digest": card["digest"],
-            "verb": verb,
-        }
-        if verb in {"edit", "select"}:
-            kwargs["edit_payload"] = decision.get("edit_payload")
-        if verb == "reject":
-            kwargs["reject_reason"] = decision.get("reject_reason", "operator-rejected")
+        kwargs = build_operator_verdict_kwargs(
+            trial_id=trial_id,
+            gate_id=gate,
+            card=card,
+            verb=verb,
+            edit_payload=decision.get("edit_payload"),
+            reject_reason=decision.get("reject_reason"),
+        )
         extra = f" {decision.get('edit_payload')}" if verb in {"edit", "select"} else ""
         transcript.append(f"👤 **Operator:** {verb}{extra}")
         env = resume_production_trial(
@@ -226,7 +254,13 @@ def main(argv: list[str] | None = None) -> int:
     return 0
 
 
-__all__ = ["narrate_gate", "run_marcus_spoc", "main"]
+__all__ = [
+    "DEFAULT_OPERATOR_ID",
+    "build_operator_verdict_kwargs",
+    "narrate_gate",
+    "run_marcus_spoc",
+    "main",
+]
 
 
 if __name__ == "__main__":
