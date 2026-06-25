@@ -505,3 +505,18 @@ def test_gary_single_slide_deck_title_matches(tmp_path: Path, monkeypatch) -> No
     materialized = Path(row["file_path"])
     assert materialized.name.endswith("_s1.png")
     assert materialized.read_bytes() == b"bytes::1_Only-Topic-Here"
+
+
+def test_variant_a_text_mode_preserve_l1_fidelity() -> None:
+    """Fidelity L1 (party 4/4 + Dr. Quinn synthesis 2026-06-24): variant A must use
+    text_mode=preserve so Gamma cannot re-mint source numbers ($5.2T->$4.5T). Both
+    variants now preserve source text; A/B distinctness is theme + imagery, not prose.
+    """
+    variant_a = dict(gary_act.DEFAULT_VARIANT_PAIR[0])
+    variant_b = dict(gary_act.DEFAULT_VARIANT_PAIR[1])
+    assert variant_a["variant_id"] == "A"
+    assert variant_a["text_mode"] == "preserve"
+    assert variant_b["text_mode"] == "preserve"
+    # A/B differentiation survives: different theme + image style.
+    assert variant_a["theme"] != variant_b["theme"]
+    assert variant_a["image_style_preset"] != variant_b["image_style_preset"]

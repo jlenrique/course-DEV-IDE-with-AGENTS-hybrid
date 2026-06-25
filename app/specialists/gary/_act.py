@@ -107,6 +107,22 @@ DEFAULT_VARIANT_PAIR: tuple[dict[str, Any], dict[str, Any]] = (
         "template": "default",
         "image_style_preset": "illustration",
         "amount": "brief",
+        # text_mode=preserve (Fidelity L1, 2026-06-24). Under the prior default
+        # `generate`, Gamma RE-MINTED source numbers on variant A — source
+        # "$5.2 trillion" rendered as "$4.5 trillion" (+ invented 60%/35%, $760B);
+        # the variant-faithful narration then read the WRONG figure to the learner
+        # (the figure-citation gate only checks narration ⊆ rendered slide, not the
+        # source). In a health-economics course a fabricated figure is a credibility
+        # defect, not a style nit. `generate`'s prose-reflow latitude IS the
+        # re-minting mechanism; `preserve` removes it deterministically while the
+        # theme/type/palette + imagery (the real A/B differentiation) survive intact.
+        # Party-mode 4/4 + Dr. Quinn synthesis (impasse chain): blanket preserve on A,
+        # reframed as removing an un-designed defect-causing behavior, not over-correction.
+        # Per-slide text_mode (preserve-numeric-slides-only) is a deferred enhancement
+        # (text_mode is per-variant, not per-slide; see deferred-inventory
+        # `fidelity-L1-per-slide-text-mode`). Downstream the L2 source-fidelity audit
+        # is the regression guard.
+        "text_mode": "preserve",
         "audience": (
             "Faculty and instructional designers familiar with Canvas and course "
             "design, American English"
