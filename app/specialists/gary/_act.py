@@ -98,8 +98,35 @@ GAMMA_SETTING_KEYS = frozenset(
         "image_source",
         "dimensions",
         "keywords",
+        # Studio production mode (party-ratified 2026-06-25). production_mode
+        # "studio" routes this variant to a per-slide Gamma create-from-template
+        # call (a single full-bleed image-card per slide) instead of the Classic
+        # generate path; "api" (default) is the unchanged Classic path.
+        "production_mode",
+        "studio_template_id",
     }
 )
+PRODUCTION_MODE_VALUES = frozenset({"api", "studio"})
+# Lock-and-replace prompt (n=2 live-verified 2026-06-25; see
+# _bmad-output/implementation-artifacts/studio-mode-evidence/). FROZEN: this string
+# is what makes Studio *be* Studio — a prose-heavy / restructuring prompt silently
+# regenerates the card to Classic typography (the demonstrated fallback). Edit only
+# deliberately; the studio guard below is the runtime backstop.
+_STUDIO_LOCK_WRAPPER = (
+    "LOCK THE DESIGN. Keep exactly ONE single full-bleed image card with the title "
+    "and key data embedded in the illustration. DO NOT convert the full-bleed image "
+    "card into Classic typography. DO NOT add, remove, or reorder cards, and DO NOT "
+    "change the card type or layout.\n\n"
+    "ONLY swap the image subject to this new topic, matching the template's existing "
+    "visual style:\n{slide_content}"
+)
+# Studio guard thresholds — a genuine Studio image-card is a dense, colorful
+# full-bleed illustration; a silently-fallen-back Classic card is mostly light
+# background with near-grayscale text. Calibrated against the real artifacts in
+# studio-mode-evidence/: Classic nonwhite=0.16/chroma=4.0 vs Studio
+# nonwhite=0.82-0.98/chroma=35-37. Thresholds sit in the wide gap between them.
+_STUDIO_MIN_NONWHITE = 0.45
+_STUDIO_MIN_CHROMA = 15.0
 DEFAULT_VARIANT_PAIR: tuple[dict[str, Any], dict[str, Any]] = (
     {
         "variant_id": "A",
@@ -385,6 +412,22 @@ def _normalized_gamma_settings(payload: dict[str, Any]) -> list[dict[str, Any]]:
         )
         _validate_enum_setting(merged, "image_source", IMAGE_SOURCE_VALUES)
         _validate_enum_setting(merged, "dimensions", CARD_DIMENSION_VALUES)
+        # Studio mode (party-ratified 2026-06-25): default "api" (Classic, unchanged);
+        # "studio" REQUIRES studio_template_id, validated here at config-read so a
+        # misconfigured studio variant fails loudly up-front, never mid-dispatch.
+        production_mode = str(merged.get("production_mode") or "api").strip().lower()
+        merged["production_mode"] = production_mode
+        if production_mode not in PRODUCTION_MODE_VALUES:
+            raise GaryActError(
+                f"gamma_settings.production_mode must be one of "
+                f"{sorted(PRODUCTION_MODE_VALUES)}; got {production_mode!r}",
+                tag="gamma.settings.invalid",
+            )
+        if production_mode == "studio" and not str(merged.get("studio_template_id") or "").strip():
+            raise GaryActError(
+                "gamma_settings.production_mode='studio' requires studio_template_id",
+                tag="gamma.settings.invalid",
+            )
         by_variant[variant_id] = merged
     return [by_variant["A"], by_variant["B"]]
 
@@ -523,6 +566,99 @@ def build_vera_g3_invocation(slide_output: list[dict[str, Any]]) -> dict[str, An
     return {"specialist_id": "vera", "gate_id": "G3", "artifact_paths": paths}
 
 
+def _studio_slide_content(slide: dict[str, Any], index: int) -> str:
+    """Subject text for one Studio card's lock-and-replace prompt (minimal directive;
+    the template is the style authority — we only swap the subject)."""
+    title = _slide_title(slide, index)
+    body = str(
+        slide.get("visual_description")
+        or slide.get("prompt")
+        or slide.get("body")
+        or slide.get("brief")
+        or ""
+    ).strip()
+    return f'Title: "{title}"\n{body}' if body else f'Title: "{title}"'
+
+
+def _assert_studio_image_card(png_path: Path, *, slide_id: str, generation_id: str) -> None:
+    """Fail loud if a studio generation silently returned a Classic card.
+
+    The REST get_generation response carries no card-type marker, so the guard
+    inspects the exported PNG: a Studio image-card is a dense, colorful full-bleed
+    illustration; a silent Classic fallback is mostly light background with
+    near-grayscale text. Thresholds calibrated against the real artifacts in
+    studio-mode-evidence/. Recoverable family (error-pause + trial recover).
+    """
+    from PIL import Image
+
+    with Image.open(png_path) as raw:
+        im = raw.convert("RGB")
+        im.thumbnail((400, 400))
+        pixels = list(im.getdata())
+    total = len(pixels) or 1
+    light = sum(1 for r, g, b in pixels if r >= 235 and g >= 235 and b >= 235)
+    nonwhite = 1.0 - light / total
+    chroma = sum(max(r, g, b) - min(r, g, b) for r, g, b in pixels) / total
+    if nonwhite < _STUDIO_MIN_NONWHITE or chroma < _STUDIO_MIN_CHROMA:
+        raise GammaDispatchError(
+            f"studio generation for slide {slide_id} returned a non-Studio "
+            f"(Classic-looking) card: nonwhite={nonwhite:.2f} (min {_STUDIO_MIN_NONWHITE}), "
+            f"chroma={chroma:.1f} (min {_STUDIO_MIN_CHROMA}); refusing silent fallback. "
+            f"generation_id={generation_id}",
+            tag="gamma.studio.classic-fallback",
+        )
+
+
+def _generate_studio_variant(
+    client: GammaClient,
+    slides: list[dict[str, Any]],
+    variant_settings: dict[str, Any],
+    export_dir: Path,
+    variant: str,
+    calls: list[str],
+) -> tuple[dict[str, str], dict[str, str]]:
+    """Per-slide Gamma create-from-template (Studio image-cards).
+
+    One template call per slide -> one full-bleed Studio PNG whose slide_id is known
+    by the caller (so no title-matching is needed). Returns ``{slide_id: file_path}``
+    and ``{slide_id: generation_id}``. Each PNG is guarded against silent Classic
+    fallback; the guard fails on the FIRST bad slide rather than after N paid cards.
+    """
+    template_id = str(variant_settings.get("studio_template_id") or "").strip()
+    slide_paths: dict[str, str] = {}
+    slide_gen_ids: dict[str, str] = {}
+    for index, slide in enumerate(slides, start=1):
+        slide_id = str(slide.get("slide_id") or f"slide-{index:02d}")
+        prompt = _STUDIO_LOCK_WRAPPER.format(slide_content=_studio_slide_content(slide, index))
+        ack = client.generate_from_template(template_id, prompt, export_as="png")
+        raw_id = ack.get("generationId") or ack.get("id") or ack.get("generation_id")
+        if not raw_id:
+            raise GammaDispatchError(
+                f"studio from-template returned no id for slide {slide_id}; keys={sorted(ack)}",
+                tag="gamma.generation.id-missing",
+            )
+        generation_id = str(raw_id)
+        calls.append(generation_id)
+        completed = client.wait_for_generation(generation_id)
+        export_url = completed.get("exportUrl") or completed.get("export_url")
+        if not (isinstance(export_url, str) and export_url.strip()):
+            raise GammaDispatchError(
+                f"studio generation for slide {slide_id} returned no exportUrl; "
+                f"generation_id={generation_id}",
+                tag="gamma.export.missing",
+            )
+        downloaded = download_export(
+            export_url,
+            output_dir=export_dir,
+            filename=f"gary_{variant}_studio_{slide_id}.png",
+        )
+        png_path = Path(str(downloaded))
+        _assert_studio_image_card(png_path, slide_id=slide_id, generation_id=generation_id)
+        slide_paths[slide_id] = str(png_path)
+        slide_gen_ids[slide_id] = generation_id
+    return slide_paths, slide_gen_ids
+
+
 def generate_gamma_variants(
     payload: dict[str, Any], *, client: GammaClient | None = None
 ) -> dict[str, Any]:
@@ -543,6 +679,33 @@ def generate_gamma_variants(
     dropped_pages: list[dict[str, Any]] = []
     for variant in variants:
         variant_settings = settings_by_variant.get(variant)
+        # Studio fork (party-ratified 2026-06-25). When this variant is configured
+        # production_mode="studio", produce per-slide Gamma create-from-template
+        # image-cards instead of the Classic generate path, then build the SAME
+        # row contract and continue. The Classic path below is byte-unchanged and
+        # is the default whenever production_mode is absent/"api".
+        if variant_settings is not None and variant_settings.get("production_mode") == "studio":
+            studio_paths, studio_gen_ids = _generate_studio_variant(
+                client, slides, variant_settings, export_dir, variant, calls
+            )
+            for index, slide in enumerate(slides, start=1):
+                slide_id = str(slide.get("slide_id") or f"slide-{index:02d}")
+                output.append(
+                    {
+                        "slide_id": slide_id,
+                        "card_number": index,
+                        "dispatch_variant": variant,
+                        "variant_id": variant,
+                        "gamma_settings": variant_settings,
+                        "file_path": studio_paths.get(slide_id, ""),
+                        "generation_id": studio_gen_ids.get(slide_id, ""),
+                        "display_title": str(slide.get("title") or "").strip() or slide_id,
+                        "visual_description": str(
+                            slide.get("visual_description") or slide.get("prompt") or ""
+                        ),
+                    }
+                )
+            continue
         generation_kwargs: dict[str, Any] = {
             "num_cards": len(slides),
             "theme_id": (

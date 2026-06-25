@@ -119,9 +119,11 @@ class GammaClient(BaseAPIClient):
 
         return self._post_generation_with_warm_401_retry(payload)
 
-    def _post_generation_with_warm_401_retry(self, payload: dict[str, Any]) -> dict[str, Any]:
+    def _post_generation_with_warm_401_retry(
+        self, payload: dict[str, Any], *, endpoint: str = "/generations"
+    ) -> dict[str, Any]:
         try:
-            return self.post("/generations", json=payload)
+            return self.post(endpoint, json=payload)
         except AuthenticationError as exc:
             if exc.status_code != 401 or not getattr(self, "_gamma_auth_validated", False):
                 raise
@@ -129,7 +131,7 @@ class GammaClient(BaseAPIClient):
             for delay in GENERATION_401_BACKOFF_DELAYS:
                 self._sleep(delay)
                 try:
-                    return self.post("/generations", json=payload)
+                    return self.post(endpoint, json=payload)
                 except AuthenticationError as retry_exc:
                     if retry_exc.status_code != 401:
                         raise
@@ -218,7 +220,9 @@ class GammaClient(BaseAPIClient):
         if sharing_options:
             payload["sharingOptions"] = sharing_options
 
-        return self.post("/generations/from-template", json=payload)
+        return self._post_generation_with_warm_401_retry(
+            payload, endpoint="/generations/from-template"
+        )
 
     def get_generation(self, generation_id: str) -> dict[str, Any]:
         """Get the current status of a generation."""
