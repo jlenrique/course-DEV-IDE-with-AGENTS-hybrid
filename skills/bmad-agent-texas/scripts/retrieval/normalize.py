@@ -33,7 +33,12 @@ def coerce_authors(raw: Any) -> list[str]:
                 if item.strip():
                     out.append(item.strip())
             elif isinstance(item, dict):
-                name = item.get("name") or item.get("full_name") or item.get("author")
+                name = (
+                    item.get("name")
+                    or item.get("full_name")
+                    or item.get("author")
+                    or item.get("authorName")  # scite live MCP shape
+                )
                 if isinstance(name, str) and name.strip():
                     out.append(name.strip())
         return out

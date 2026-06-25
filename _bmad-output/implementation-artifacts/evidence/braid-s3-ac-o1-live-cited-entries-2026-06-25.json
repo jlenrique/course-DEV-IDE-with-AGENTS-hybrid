@@ -1,0 +1,55 @@
+{
+  "intent": "physician practice consolidation hospital employment independent practice trends",
+  "provider": "scite",
+  "acceptance_met": true,
+  "row_count": 3,
+  "cited_entries": [
+    {
+      "n": 1,
+      "source_id (DOI)": "10.1111/1468-0009.12077",
+      "title": "The Dynamics of Community Health Care Consolidation: Acquisition of Physician Pr",
+      "authors": [
+        "Jon B. Christianson",
+        "Caroline Carlin",
+        "Louise H. Warrick"
+      ],
+      "date": "2014",
+      "authority_tier": null,
+      "supporting": 1,
+      "contradicting": 0,
+      "cited_by": 23,
+      "source_ref(provider:source_id)": "scite:10.1111/1468-0009.12077"
+    },
+    {
+      "n": 2,
+      "source_id (DOI)": "10.4172/2471-9781.100008",
+      "title": "Physician Group Practice Trends: A Comprehensive Review",
+      "authors": [
+        "Bita A. Kash",
+        "Debra Tan"
+      ],
+      "date": "2016",
+      "authority_tier": null,
+      "supporting": 0,
+      "contradicting": 0,
+      "cited_by": 27,
+      "source_ref(provider:source_id)": "scite:10.4172/2471-9781.100008"
+    },
+    {
+      "n": 3,
+      "source_id (DOI)": "10.1001/jamasurg.2013.1013",
+      "title": "The Employed Surgeon",
+      "authors": [
+        "Anthony Charles",
+        "Shiara Ortiz\u2010Pujols",
+        "Thomas C. Ricketts"
+      ],
+      "date": "2013",
+      "authority_tier": "peer-reviewed",
+      "supporting": 0,
+      "contradicting": 0,
+      "cited_by": 13,
+      "source_ref(provider:source_id)": "scite:10.1001/jamasurg.2013.1013"
+    }
+  ]
+}

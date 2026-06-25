@@ -133,11 +133,13 @@ def test_scite_execute_calls_correct_tool_name() -> None:
         assert len(rsps.calls) == 1
         body = json.loads(rsps.calls[0].request.body)
         assert body["method"] == "tools/call"
-        assert body["params"]["name"] == "search"
+        # Verified at first live run (2026-06-25): the live tool is `search_literature`.
+        assert body["params"]["name"] == "search_literature"
 
 
-def test_scite_execute_passes_args_verbatim() -> None:
-    """`execute` passes the formulated query to MCPClient with no key remapping."""
+def test_scite_execute_maps_args_to_live_tool_shape() -> None:
+    """`execute` maps the formulated query to the live `search_literature` args
+    (`term`/`limit`, + date_from/date_to from a date_range filter)."""
     provider = SciteProvider()
     intent = _intent_search(
         mechanical={"date_range": ["2020-01-01", "2026-12-31"], "min_results": 3}
@@ -148,9 +150,10 @@ def test_scite_execute_passes_args_verbatim() -> None:
         provider.execute(query)
         body = json.loads(rsps.calls[0].request.body)
         args = body["params"]["arguments"]
-        assert args["query"] == query["query"]
-        assert args["max_results"] == query["max_results"]
-        assert args["filters"] == query["filters"]
+        assert args["term"] == query["query"]
+        assert args["limit"] == query["max_results"]
+        assert args["date_from"] == "2020-01-01"
+        assert args["date_to"] == "2026-12-31"
 
 
 def test_scite_execute_returns_parsed_list() -> None:
@@ -171,6 +174,41 @@ def test_scite_execute_returns_parsed_list() -> None:
 # ---------------------------------------------------------------------------
 # AC-T.1 execute error path (1)
 # ---------------------------------------------------------------------------
+
+
+def test_scite_execute_and_normalize_real_mcp_shape() -> None:
+    """Live shape (verified 2026-06-25): tools/call returns the payload wrapped in
+    `content[0].text` under `hits`, with `journal`/`tally`/`authorName` fields."""
+    provider = SciteProvider()
+    intent = _intent_search(mechanical={"min_results": 1})
+    query = provider.formulate_query(intent)
+    real_payload = {
+        "hits": [
+            {
+                "doi": "10.1111/1468-0009.12077",
+                "title": "The Dynamics of Community Health Care Consolidation",
+                "authors": [{"authorName": "Jon B. Christianson"}],
+                "journal": "milbank quarterly",
+                "abstract": "Physician practice consolidation ...",
+                "year": 2014,
+                "isOa": True,
+                "tally": {"total": 23, "supporting": 1, "contrasting": 0, "mentioning": 22},
+            }
+        ]
+    }
+    mcp_result = {"content": [{"type": "text", "text": json.dumps(real_payload)}]}
+    with responses.RequestsMock() as rsps:
+        rsps.post(SCITE_MCP_URL, json=jsonrpc_response(result=mcp_result))
+        hits = provider.execute(query)
+    assert len(hits) == 1 and hits[0]["doi"] == "10.1111/1468-0009.12077"
+    rows = provider.normalize(hits)
+    assert len(rows) == 1
+    row = rows[0]
+    assert provider.identity_key(row) == "10.1111/1468-0009.12077"
+    assert row.authors == ["Jon B. Christianson"]
+    meta = row.provider_metadata["scite"]
+    assert meta["supporting_count"] == 1 and meta["cited_by_count"] == 23
+    assert meta["venue"] == "milbank quarterly"  # mapped from `journal`
 
 
 def test_scite_execute_auth_error_propagates() -> None:

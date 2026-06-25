@@ -17,6 +17,7 @@ Architectural guardrails (27-0 anti-patterns, enforced here):
 
 from __future__ import annotations
 
+import json
 import os
 from typing import Any, ClassVar
 
@@ -85,13 +86,38 @@ SCITE_REFINEMENT_KEY_ORDER: tuple[str, ...] = (
 )
 
 
-# MCP tool names (PDG-2 path B: inferred from scite.ai/api-docs + public MCP docs).
-# Exact shapes to be verified at first-live-run; see `27-2-live-cassette-refresh`
-# follow-on ticket. Fixture provenance documented at
-# `tests/fixtures/retrieval/scite/README.md`.
-_SCITE_TOOL_SEARCH = "search"
+# MCP tool names. VERIFIED AT FIRST LIVE RUN (2026-06-25, premium scite.ai OAuth):
+# `tools/list` on https://api.scite.ai/mcp exposes `search_literature` (+ patents,
+# clinical_trials, grants, device510k, mhra). The search tool returns its payload
+# wrapped in the MCP `content[0].text` JSON envelope under `hits` (see
+# `_extract_search_results`). Legacy fixture shape (`{papers:[...]}` at the result
+# top level) is still accepted for backward compatibility with the 27-2 fixtures.
+_SCITE_TOOL_SEARCH = "search_literature"
 _SCITE_TOOL_PAPER = "paper_metadata"
 _SCITE_TOOL_CITATIONS = "citation_contexts"
+
+
+def _extract_search_results(result: Any) -> list[dict[str, Any]]:
+    """Lift the paper list from a scite search result, real OR fixture shape.
+
+    Real MCP `tools/call` returns ``{"content": [{"type": "text", "text": "<json>"}]}``
+    where the decoded JSON carries ``hits``. The 27-2 fixtures put ``papers`` at the
+    result top level. Accept both; return ``[]`` on anything unexpected.
+    """
+    payload: Any = result
+    if isinstance(result, dict) and isinstance(result.get("content"), list):
+        for part in result["content"]:
+            if isinstance(part, dict) and isinstance(part.get("text"), str):
+                try:
+                    payload = json.loads(part["text"])
+                except (json.JSONDecodeError, TypeError):
+                    continue
+                break
+    if isinstance(payload, dict):
+        for key in ("hits", "papers", "results"):
+            if isinstance(payload.get(key), list):
+                return payload[key]
+    return []
 
 # Citation-context retention cap per classification (AC-B.2 § normalize).
 _CITATION_CONTEXT_RETAIN_PER_CLASS = 3
@@ -346,15 +372,19 @@ class SciteProvider(RetrievalAdapter):
             )
             contexts = result.get("contexts") if isinstance(result, dict) else None
             return list(contexts) if isinstance(contexts, list) else []
-        # Default: search mode.
-        args = {
-            "query": query["query"],
-            "max_results": query.get("max_results", 10),
-            "filters": dict(query.get("filters", {})),
+        # Default: search mode. The live `search_literature` tool takes `term` +
+        # `limit` (+ optional date_from/date_to); deterministic post-filters still
+        # run in apply_mechanical/apply_provider_scored on the returned rows.
+        args: dict[str, Any] = {
+            "term": query["query"],
+            "limit": int(query.get("max_results", 10)),
         }
+        filters = query.get("filters") or {}
+        date_range = filters.get("date_range")
+        if isinstance(date_range, list | tuple) and len(date_range) == 2:
+            args["date_from"], args["date_to"] = str(date_range[0]), str(date_range[1])
         result = client.call_tool(self.PROVIDER_INFO.id, _SCITE_TOOL_SEARCH, args)
-        papers = result.get("papers") if isinstance(result, dict) else None
-        return list(papers) if isinstance(papers, list) else []
+        return _extract_search_results(result)
 
     # ---- T5: apply_mechanical + apply_provider_scored ---------------------
 
@@ -446,11 +476,16 @@ class SciteProvider(RetrievalAdapter):
             authors = coerce_authors(result.get("authors"))
             year = result.get("year")
             date = str(year) if year else None
-            venue = result.get("venue")
+            # Live `search_literature` uses `journal`; 27-2 fixtures use `venue`.
+            venue = result.get("venue") or result.get("journal")
             authority_tier = _derive_authority_tier(venue)
+            # Live smart-citation counts live under `tally`; fixtures use flat keys.
+            tally = result.get("tally") if isinstance(result.get("tally"), dict) else {}
 
             # Body composition: full text if available, else abstract only.
-            full_text_available = bool(result.get("full_text_available", False))
+            full_text_available = bool(
+                result.get("full_text_available", result.get("isOa", False))
+            )
             abstract = str(result.get("abstract") or "")
             full_text = str(result.get("full_text") or "") if full_text_available else ""
             body = full_text if full_text else abstract
@@ -470,10 +505,18 @@ class SciteProvider(RetrievalAdapter):
                     "scite_paper_id": scite_paper_id or None,
                     "venue": venue,
                     "year": year,
-                    "supporting_count": int(result.get("supporting_count", 0) or 0),
-                    "contradicting_count": int(result.get("contradicting_count", 0) or 0),
-                    "mentioning_count": int(result.get("mentioning_count", 0) or 0),
-                    "cited_by_count": int(result.get("cited_by_count", 0) or 0),
+                    "supporting_count": int(
+                        result.get("supporting_count", tally.get("supporting", 0)) or 0
+                    ),
+                    "contradicting_count": int(
+                        result.get("contradicting_count", tally.get("contrasting", 0)) or 0
+                    ),
+                    "mentioning_count": int(
+                        result.get("mentioning_count", tally.get("mentioning", 0)) or 0
+                    ),
+                    "cited_by_count": int(
+                        result.get("cited_by_count", tally.get("total", 0)) or 0
+                    ),
                     "citation_context_snippets": citation_snippets,
                     "scite_report_url": result.get("scite_report_url"),
                     "known_losses": known_losses,
