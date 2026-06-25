@@ -871,7 +871,10 @@ def _expected_pages_for_source(src: dict[str, Any], body: str) -> dict[str, Any]
     # If the operator declared a page count in the directive, respect it.
     if "pages_total" in src:
         meta["pages_total"] = src["pages_total"]
-    if "expected_min_words" in src:
+    # A null expected_min_words (composer emits the key with `null` for binary/
+    # image sources) is NOT an override — guard so the later int() override does
+    # not crash with int(None) (TypeError, observed on tejal-APC-C1 PNG/JPG sources).
+    if src.get("expected_min_words") is not None:
         meta["expected_min_words_override"] = src["expected_min_words"]
     return meta
 
