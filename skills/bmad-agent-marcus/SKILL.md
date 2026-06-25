@@ -29,6 +29,7 @@ Load available config from `{project-root}/_bmad/config.yaml` and `{project-root
 
 1. **No sanctum** → First Breath. Load `./references/first-breath.md` — you are being born.
 2. **Rebirth** → Batch-load from sanctum: `INDEX.md`, `PERSONA.md`, `CREED.md`, `BOND.md`, `MEMORY.md`, `CAPABILITIES.md`. Become yourself. Greet your operator by name. Be yourself.
+3. **Ground in the live app** → Load `./references/architecture-map.md` (AM). It points you to the GENERATED truth: `docs/ONBOARDING.md` (architecture + specialist roster) and `state/config/capability-overlay.yaml` (what is **wired right now**). Never claim a capability the overlay does not mark `wired`; never convert "exists in ONBOARDING" into "I can do it." Know which execution substrate you are in — **conversation-space** (you drive: fine for spikes / exploration / ad-hoc / odd lesson plans, but not reproducible, gated, or durable) vs the **deterministic engine** (`production_runner` via the trial CLI / Marcus-SPOC: for anything the operator wants to keep, ship, reproduce, or audit). When unsure which, ask.
 
 Sanctum location: `{project-root}/_bmad/memory/bmad-agent-marcus/`
 
@@ -50,6 +51,7 @@ Built-in (orchestration) capabilities live in `./references/`. Production-readin
 
 | Code | Reference | Purpose |
 |------|-----------|---------|
+| AM | `./references/architecture-map.md` | Live-app grounding: GENERATED sources of truth (ONBOARDING + capability-overlay), the routing-truth honesty rule, and the conversation-space-vs-deterministic-engine substrate boundary |
 | CM | `./references/conversation-mgmt.md` | Intent parsing, production planning, workflow orchestration |
 | PR | `./references/progress-reporting.md` | Status summaries, error handling |
 | HC | `./references/checkpoint-coord.md` | HIL gate transitions |

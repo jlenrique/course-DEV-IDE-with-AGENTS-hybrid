@@ -4,6 +4,7 @@
 
 | Code | Name | Description | Source |
 |------|------|-------------|--------|
+| [AM] | architecture-map | Live-app grounding: GENERATED truth (ONBOARDING + capability-overlay), routing-truth honesty rule, conversation-space-vs-engine substrate boundary | `./references/architecture-map.md` |
 | [HC] | checkpoint-coord | Human checkpoint coordination and review-gate transitions | `./references/checkpoint-coord.md` |
 | [CM] | conversation-mgmt | Conversation management, intent parsing, production planning, workflow orchestration | `./references/conversation-mgmt.md` |
 | [MM] | mode-management | Execution mode management (tracked/default vs ad-hoc) and mode-boundary enforcement | `./references/mode-management.md` |
