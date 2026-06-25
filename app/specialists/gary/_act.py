@@ -120,13 +120,17 @@ _STUDIO_LOCK_WRAPPER = (
     "ONLY swap the image subject to this new topic, matching the template's existing "
     "visual style:\n{slide_content}"
 )
-# Studio guard thresholds — a genuine Studio image-card is a dense, colorful
-# full-bleed illustration; a silently-fallen-back Classic card is mostly light
-# background with near-grayscale text. Calibrated against the real artifacts in
-# studio-mode-evidence/: Classic nonwhite=0.16/chroma=4.0 vs Studio
-# nonwhite=0.82-0.98/chroma=35-37. Thresholds sit in the wide gap between them.
-_STUDIO_MIN_NONWHITE = 0.45
-_STUDIO_MIN_CHROMA = 15.0
+# Studio guard threshold — discriminate a genuine Studio image-card from a silently
+# fallen-back Classic card by ASPECT RATIO (content- and lightness-independent, and it
+# matches the actual fallback MECHANISM). A Studio image-card inherits the template's
+# 16:9 frame (w/h = 1.778); a Classic regen falls back to Gamma's default card
+# dimensions and exports near-square/tall. Calibrated on real artifacts: the documented
+# Classic fallback = 2400x2324 (ar 1.03); every genuine Studio card (dark goldens AND
+# light infographic trial-5 slides) = 2400x1350 (ar 1.778). Threshold sits in the gap.
+# (Color/brightness heuristics were tried first but false-positived on clean light-
+# infographic Studio cards — trial-5 slide-03 nonwhite 0.25, slide-09 only 418 colors,
+# both unmistakably Studio.)
+_STUDIO_MIN_ASPECT_RATIO = 1.4
 DEFAULT_VARIANT_PAIR: tuple[dict[str, Any], dict[str, Any]] = (
     {
         "variant_id": "A",
@@ -584,26 +588,23 @@ def _assert_studio_image_card(png_path: Path, *, slide_id: str, generation_id: s
     """Fail loud if a studio generation silently returned a Classic card.
 
     The REST get_generation response carries no card-type marker, so the guard
-    inspects the exported PNG: a Studio image-card is a dense, colorful full-bleed
-    illustration; a silent Classic fallback is mostly light background with
-    near-grayscale text. Thresholds calibrated against the real artifacts in
-    studio-mode-evidence/. Recoverable family (error-pause + trial recover).
+    inspects the exported PNG's ASPECT RATIO: a Studio image-card inherits the
+    template's 16:9 frame (w/h ~ 1.78), while a silent Classic fallback exports at
+    Gamma's default near-square/tall card dimensions. Content- and lightness-
+    independent. Calibrated against the real artifacts in studio-mode-evidence/.
+    Recoverable family (error-pause + trial recover).
     """
     from PIL import Image
 
     with Image.open(png_path) as raw:
-        im = raw.convert("RGB")
-        im.thumbnail((400, 400))
-        pixels = list(im.getdata())
-    total = len(pixels) or 1
-    light = sum(1 for r, g, b in pixels if r >= 235 and g >= 235 and b >= 235)
-    nonwhite = 1.0 - light / total
-    chroma = sum(max(r, g, b) - min(r, g, b) for r, g, b in pixels) / total
-    if nonwhite < _STUDIO_MIN_NONWHITE or chroma < _STUDIO_MIN_CHROMA:
+        width, height = raw.size
+    aspect = (width / height) if height else 0.0
+    if aspect < _STUDIO_MIN_ASPECT_RATIO:
         raise GammaDispatchError(
             f"studio generation for slide {slide_id} returned a non-Studio "
-            f"(Classic-looking) card: nonwhite={nonwhite:.2f} (min {_STUDIO_MIN_NONWHITE}), "
-            f"chroma={chroma:.1f} (min {_STUDIO_MIN_CHROMA}); refusing silent fallback. "
+            f"(Classic-looking) card: aspect_ratio={aspect:.3f} ({width}x{height}, "
+            f"min {_STUDIO_MIN_ASPECT_RATIO}); a Studio image-card is 16:9, a Classic "
+            f"fallback is near-square. Refusing silent fallback. "
             f"generation_id={generation_id}",
             tag="gamma.studio.classic-fallback",
         )
