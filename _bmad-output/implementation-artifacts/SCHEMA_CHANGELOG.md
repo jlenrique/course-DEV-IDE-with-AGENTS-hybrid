@@ -441,6 +441,79 @@ consumer path proves canonical `assert_plan_fresh(...)` usage.
 
 **Migration:** N/A (initial shape).
 
+## Modality Registry v1.1 — 2026-06-25 — Braid S2 Workbook Producer
+
+**Type:** Minor (additive). New closed-set enum value + a `ready` producer entry;
+v1.0-compatible (no field renamed, no type changed, no existing entry touched).
+
+**Reason for introduction:** Braid Slice 1 / Story S2 ships the `workbook`
+modality — the read-in-depth client deliverable paired with the narrated deck
+(transcript + fuller narrative + exercises + citations; the dual-coding partner
+to the tight VO). Adding `"workbook"` to the closed `MODALITY_REGISTRY` is a
+governed widening per AC-C.4 (closed-set drift requires schema-version bump +
+this changelog entry + the registry edit + tests) — NOT a free edit.
+
+**Shapes pinned (live in `app/marcus/lesson_plan/modality_registry.py`):**
+
+- `ModalityRef`: `Literal[..., "workbook"]` — the additive new value. The five
+  v1.0 entries (`slides`, `blueprint`, `leader-guide`, `handout`,
+  `classroom-exercise`) are UNCHANGED.
+- `MODALITY_REGISTRY["workbook"]`: `ModalityEntry(status="ready",
+  producer_class_path="app.marcus.lesson_plan.workbook_producer.WorkbookProducer")`.
+  `list_ready_modalities()` now includes `"workbook"`.
+- `ModalityRef` is single-sourced and imported by `produced_asset.py`, so
+  `ProducedAsset(modality_ref="workbook")` round-trips automatically.
+
+**Semantics pinned:**
+
+- The widening is additive only; old consumers reading the v1.0 set are
+  unaffected. Still a closed set — no runtime extension, no plugin discovery.
+- `MappingProxyType` immutability preserved; mutation still raises.
+
+**Migration:** None — additive. A consumer pinning the v1.0 5-entry set should
+update to expect 6 entries.
+
+**Consumer compatibility:** `produced_asset.py` (`ProducedAsset.modality_ref`),
+Marcus-Orchestrator routing, Irene `modality_ref` validity.
+
+**Honesty notes (do-NOT-over-claim discipline; producer gates are real but
+bounded):**
+
+- **L2 numeric gate is SYMBOL-ONLY (word-form numerals NOT gated).** The G1
+  FAIL-mode wrapper `audit_workbook_numeric_fidelity` calls the frozen-neck
+  `audit_numeric_provenance`, whose figure tokenizer (`figure_tokens._FIGURE_RE`)
+  recognizes only symbol-form figures (`42%`, `$7`). Word-form numerals
+  ("forty-two percent", "42 percent" without `%`) are invisible to the gate and
+  pass un-audited. This is a NAMED limitation, not a full-numeric-coverage
+  guarantee. Deferred follow-on: `braid-workbook-wordform-numeral-gap`. The
+  frozen neck stays UNMODIFIED (broadening it is governance per
+  `figure-tokens-frozen-neck-discipline`).
+- **Un-auditable zero-denominator is a gate FAILURE when the workbook asserts a
+  numeral.** The frozen neck returns `status="FAIL"` (with `unsourced_numeric`
+  count `0`) when either side has zero numeric tokens (zero-denominator guard
+  F2). The wrapper now RAISES on that FAIL **when the workbook body itself
+  carries numeric tokens** (an unverifiable numeral against a numeral-free
+  source) — closing the believed-green hole where a `999%` workbook claim cleared
+  against a numeral-free source as "0 unsourced". A genuinely numeral-free
+  workbook (nothing to gate) still passes; the gate does not over-claim a breach.
+
+**T11 RED-first hardening (2026-06-25, S2 review):** three believed-green seams
+were green for the wrong reason; each fixed RED-first (a test that failed on the
+prior code, then passed): (1) the L2 numeric gate above; (2) the AC-7 DOCX
+figure embed — the manifest `visual_file` is BUNDLE-relative and was resolved
+against the repo root (never existed → silently skipped), AND the test asserted
+any `image/*` part (vacuously satisfied by python-docx's default
+`/docProps/thumbnail.jpeg`). Now resolved against the bundle dir + the test
+counts real `word/media/*` parts (witness DOCX: 1 embedded slide PNG; literal
+`![…](…)` markdown no longer leaks as a visible paragraph when a figure embeds);
+(3) AC-8 dual-coding superset — was tokenized over the WHOLE rendered MD (chrome
+masked a verbatim-VO body) AND gated behind `if vo_script_text:` with a `""`
+default (never ran on the deliverable). Now compares the narrative/depth body
+only + always derives the VO from the transcript so the gate rides on every
+`produce()`. Also: AC-5 segment-coverage now raises in `produce()` (not just the
+test); containment uses `Path.resolve()` (symlink escapes caught, not just
+lexical `..`).
+
 ## Modality Registry v1.0 â€” 2026-04-18 â€” Story 31-3 Registries
 
 **Type:** Initial shape (no predecessor).

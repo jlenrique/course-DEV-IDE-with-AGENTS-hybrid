@@ -33,8 +33,12 @@ from typing import Final, Literal
 
 from pydantic import BaseModel, ConfigDict, Field, model_validator
 
-SCHEMA_VERSION: Final[str] = "1.0"
-"""Modality Registry schema version (AC-B.9); bump on closed-set drift (AC-C.4)."""
+SCHEMA_VERSION: Final[str] = "1.1"
+"""Modality Registry schema version (AC-B.9); bump on closed-set drift (AC-C.4).
+
+v1.1 (Braid S2): additive widening — ``"workbook"`` joins the closed
+``ModalityRef`` set with a ``ready`` producer. Minor bump (additive new enum
+value, v1.0-compatible). See SCHEMA_CHANGELOG.md."""
 
 
 # ---------------------------------------------------------------------------
@@ -47,8 +51,9 @@ ModalityRef = Literal[
     "leader-guide",
     "handout",
     "classroom-exercise",
+    "workbook",
 ]
-"""The five closed-set atomic producer targets at MVP.
+"""The closed-set atomic producer targets (5 at MVP; ``workbook`` added v1.1).
 
 Widening requires: (a) ruling amendment, (b) ``SCHEMA_VERSION`` bump,
 (c) ``SCHEMA_CHANGELOG.md`` entry, (d) update to :data:`MODALITY_REGISTRY` +
@@ -161,6 +166,17 @@ _MODALITY_REGISTRY_UNDERLYING: dict[str, ModalityEntry] = {
         producer_class_path=None,
         description=(
             "Classroom-exercise modality. Post-MVP; named here to pin the closed set."
+        ),
+    ),
+    "workbook": ModalityEntry(
+        modality_ref="workbook",
+        status="ready",
+        producer_class_path="app.marcus.lesson_plan.workbook_producer.WorkbookProducer",
+        description=(
+            "Workbook companion modality — the read-in-depth client deliverable "
+            "paired with the narrated deck (transcript + fuller narrative + "
+            "exercises + citations). Producer landed in Braid Slice 1 / S2 "
+            "(workbook-producer); added via the v1.1 additive widening (AC-C.4)."
         ),
     ),
 }
