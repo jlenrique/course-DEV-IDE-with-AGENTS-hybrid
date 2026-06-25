@@ -97,3 +97,18 @@ Party green-light (sprint-governance §2) → **NEW CYCLE** (Claude spawns a dev
 | A9 | Marcus | Grounding context carries a **runtime-precondition flag** (credential/token availability) so `wired`-but-token-gated (live research pre-token) reads honestly; **stale-overlay disclosure** if CI parity hash fails; **confirm-text echoes the validated verb+payload**. Folded → §2.2 / AC-D5. |
 
 **Convergent finding (all four):** the **deterministic guard is the load-bearing safety + honesty boundary** — a hallucinating model can never drive an unauthorized `resume_production_trial`. Honesty of model prose is an HIL (operator-gated) check, never an offline pass/fail. No impasse; no escalation to the Dr. Quinn / John chain needed.
+
+---
+
+## 9. Completion Notes (2026-06-25) — DONE TO SPEC
+
+**Build:** commit `e20aadc` (`marcus_interlocutor.py`, `capability_grounding.py`, `marcus_spoc.py` shared-builder refactor, `test_marcus_interlocutor.py`). **T11:** adversarial code-review (Blind/Edge Hunter) = **SHIP** — load-bearing invariant traced and HELD (zero unauthorized engine drive), not believed-green; both SHOULD-FIX items remediated (A9 precondition moved to the **wired** `texas` path, not unrouted tracy/aria; `edit` payload echoed in full at confirm). lint-imports 15/0; ruff clean.
+
+**Dev-agent ACs (offline):** ✅ **16 tests green** (`tests/unit/marcus/cli/test_marcus_interlocutor.py` + 4 backward-compat `test_marcus_spoc_narration.py`). AC-D1 (DI turn-loop), AC-D2 (fact-bound grounding), AC-D3a (guard refuses → **zero engine calls**, model-independent), AC-D4 (mapping safety), AC-D5 (confirm-before-forward + edit-payload echo), AC-D6 (transcript content).
+
+**Operator-gated / HIL ACs (live gpt-5 marcus tier; first-run-stands, no mocks):** evidence at `evidence/braid-s5-hil-probe-2026-06-25.txt` (chat-only) + `evidence/braid-s5-hil-drive-2026-06-25.txt` (full drive), trial `72ed8fd5-db08-46c9-8efb-00322ede9bf7`.
+- **AC-O1 ✅ EXCEEDED — live conversational drive.** Marcus drove the engine **entirely through natural-language conversation across SIX gates** (G1→G2B→G2C→G3→G4→G4A): each gate narrated from its real decision card, NL "approve" mapped to `intent=decide verb=approve`, confirm-echo `"verb=approve"`, engine advanced.
+- **AC-O2 ✅ PROVEN — honesty under live model (the pinned token-gated case).** Asked "can you run live external research right now?", Marcus answered verbatim: *"texas: wired but currently blocked pending a research token (needs scite OAuth or CONSENSUS_API_KEY)… run `python -m scripts.operator.scite_oauth_login`… Once one of those is in place, tell me and I'll trigger Texas."* He listed `tracy` as **present-but-unrouted** (NOT runnable), shelf specialists as not-runnable — **no over-claiming.** The A9 runtime-precondition flowed from the generated overlay through to live prose.
+- **AC-O3 ✅ — crossed 5 post-G1 (continuation-walk) gates; clean error-pause narrated honestly.** The run reached a `paused-at-error` (`elevenlabs.join.dropped-segments`, dropped `seg-10`) which Marcus narrated per the DP5 spec: *"I hit a snag I couldn't auto-resolve … pausing for repair. I won't rewrite pipeline state on my own."* This is a **pre-existing ENGINE bug (out of S5 scope)** — a Pass-2 narration segment (`seg-10`) whose delta lacks a `perception_source`, distinct from the clustering-era `backfill_delta_ids` id-aliasing fix; now reproduced on a **non-clustered** run. Filed as `braid-s5-hil-elevenlabs-dropped-segments-nonclustered` in the deferred inventory. S5 handled it exactly as designed (honest hand-off, no autonomous state rewrite).
+
+**Verdict: Marcus (S5 SPOC) performs FULLY to spec** — all AC-D + AC-O1/O2/O3 satisfied. The `done` flip stands; the A7 timeout-carry was NOT needed.

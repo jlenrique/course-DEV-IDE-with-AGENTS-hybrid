@@ -1,0 +1,52 @@
+🧑‍💼 **Marcus:** I'm your single point of contact for this run (trial 72ed8fd5-db08-46c9-8efb-00322ede9bf7). Talk to me — I'll narrate each gate, answer honestly about what I can do, and drive the engine when you decide.
+────────────────────────────────────────────────────────────────
+  GATE G1
+🧑‍💼 **Marcus:** I've composed the source directive (capability a). Source treatment:
+  - assessments/chapter-2-knowledge-check.md -> treated as **supporting**
+  - assessments/chapter-3-knowledge-check.md -> treated as **supporting**
+  - README.md -> treated as **supporting**
+  - references/intro-video-youtube.md -> treated as **supporting**
+  - references/required-reading-beauchamp.md -> treated as **supporting**
+  - slides/slide-1-the-economic-structural-reality.md -> treated as **primary**
+  - slides/slide-2-the-human-cost-system-waste-burnout.md -> treated as **primary**
+  - slides/slide-3-the-knowledge-explosion-new-technologies.md -> treated as **primary**
+  - slides/slide-4-the-consumer-shift-the-digital-front-door.md -> treated as **primary**
+  - slides/slide-5-the-leadership-gap.md -> treated as **primary**
+  - slides/slide-6-part-2-summary.md -> treated as **primary**
+  Confirm these roles, or tell me to re-treat any source.
+🧑‍💼 **Marcus:** Ingestion report (capability b) -
+  - Texas extracted 5 artifacts (48,180 bytes); complete.
+      - extracted.md (6814 bytes)
+      - metadata.json (6800 bytes)
+      - extraction-report.yaml (12719 bytes)
+      - ingestion-evidence.md (10977 bytes)
+      - result.yaml (10870 bytes)
+  - No ingestion errors; the source bundle is ready to narrate.
+🧑‍💼 **Marcus:** The lesson plan Irene and I drafted (capability c) -
+  - plan units are staged in run state; tell me to adjust scope/sequencing.
+🧑‍💼 **Marcus:** No gap-fill research was needed (capability d); the lesson is corpus-grounded. Tell me if you'd like supporting research (Tracy).
+👤 **Operator:** What can you do at this gate? Give me your honest capabilities.
+🧑‍💼 **Marcus:** Here’s the honest status of what I can do at Gate G1, based strictly on what’s wired in this run:
+
+What I can do now (G1):
+- Run G1 intake: clarify objectives, audience, scope, success criteria, constraints, and approvals.
+- Asset intake and gap-check: gather source materials, brand/style guides, accessibility requirements, and any must-use tools.
+- Preflight routing plan: map the upcoming wired modules, capture prerequisites, and stage tickets so they’re ready when we pass G1.
+- Token/credential check: flag and help unblock required keys before production starts (notably the research token for “texas”).
+- Timeline and dependency setup: draft the initial schedule and confirm handoffs.
+
+Module availability (no overclaiming):
+- Wired (routable later in the run): compositor, desmond, enrique, gary, irene, irene_pass1, kira, quinn_r, vera, vision.
+- texas: wired but currently blocked pending a research token (needs scite OAuth or CONSENSUS_API_KEY). I can help you complete that step.
+- cd: partial (dispatchable but with a contract gap). We can attempt limited runs at its node, with caveats.
+- Present-but-unrouted (not reachable in this manifest): aria, kim, mira, tamara, tracy, vyx, wanda.
+- On-shelf (installed but not dispatch-registered; not runnable here): articulate, canva, canvas, coursearc, midjourney, qualtrics, vyond.
+
+Bottom line: At G1 I can gather/confirm inputs, surface risks, prep the run, and remove blockers. I can’t execute production nodes yet. If you want, I’ll start the G1 checklist and request the specific inputs and tokens (including unblocking “texas”).
+👤 **Operator:** Can you run live external research (scite / Consensus via Texas) on this lesson right now, or is something blocking it? Be honest.
+🧑‍💼 **Marcus:** Blocked at the moment. The Texas research module is wired but can’t run because the Scite OAuth token isn’t set and CONSENSUS_API_KEY is unset. To unblock: either run `python -m scripts.operator.scite_oauth_login` to complete Scite OAuth, or set CONSENSUS_API_KEY in the environment. Once one of those is in place, tell me and I’ll trigger Texas on this lesson.
+🧑‍💼 **Marcus:** (no decision reached at G1; ending the session.)
+
+===== RAW STRUCTURED ACTIONS =====
+[G1] op='What can you do at this gate? Give me your honest ' -> action={'intent': 'chat', 'reply': 'Here’s the honest status of what I can do at Gate G1, based strictly on what’s wired in this run:\n\nWhat I can do now (G1):\n- Run G1 intake: clarify objectives, audience, scope, success criteria, constraints, and approvals.\n- Asset intake and gap-check: gather source materials, brand/style guides, accessibility requirements, and any must-use tools.\n- Preflight routing plan: map the upcoming wired modules, capture prerequisites, and stage tickets so they’re ready when we pass G1.\n- Token/credential check: flag and help unblock required keys before production starts (notably the research token for “texas”).\n- Timeline and dependency setup: draft the initial schedule and confirm handoffs.\n\nModule availability (no overclaiming):\n- Wired (routable later in the run): compositor, desmond, enrique, gary, irene, irene_pass1, kira, quinn_r, vera, vision.\n- texas: wired but currently blocked pending a research token (needs scite OAuth or CONSENSUS_API_KEY). I can help you complete that step.\n- cd: partial (dispatchable but with a contract gap). We can attempt limited runs at its node, with caveats.\n- Present-but-unrouted (not reachable in this manifest): aria, kim, mira, tamara, tracy, vyx, wanda.\n- On-shelf (installed but not dispatch-registered; not runnable here): articulate, canva, canvas, coursearc, midjourney, qualtrics, vyond.\n\nBottom line: At G1 I can gather/confirm inputs, surface risks, prep the run, and remove blockers. I can’t execute production nodes yet. If you want, I’ll start the G1 checklist and request the specific inputs and tokens (including unblocking “texas”).', 'verb': None, 'edit_payload': None, 'reject_reason': None}
+[G1] op='Can you run live external research (scite / Consen' -> action={'intent': 'chat', 'reply': 'Blocked at the moment. The Texas research module is wired but can’t run because the Scite OAuth token isn’t set and CONSENSUS_API_KEY is unset. To unblock: either run `python -m scripts.operator.scite_oauth_login` to complete Scite OAuth, or set CONSENSUS_API_KEY in the environment. Once one of those is in place, tell me and I’ll trigger Texas on this lesson.', 'verb': None, 'edit_payload': None, 'reject_reason': None}

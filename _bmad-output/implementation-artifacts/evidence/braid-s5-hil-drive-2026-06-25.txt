@@ -1,0 +1,117 @@
+🧑‍💼 **Marcus:** I'm your single point of contact for this run (trial 72ed8fd5-db08-46c9-8efb-00322ede9bf7). Talk to me — I'll narrate each gate, answer honestly about what I can do, and drive the engine when you decide.
+────────────────────────────────────────────────────────────────
+  GATE G1
+🧑‍💼 **Marcus:** I've composed the source directive (capability a). Source treatment:
+  - assessments/chapter-2-knowledge-check.md -> treated as **supporting**
+  - assessments/chapter-3-knowledge-check.md -> treated as **supporting**
+  - README.md -> treated as **supporting**
+  - references/intro-video-youtube.md -> treated as **supporting**
+  - references/required-reading-beauchamp.md -> treated as **supporting**
+  - slides/slide-1-the-economic-structural-reality.md -> treated as **primary**
+  - slides/slide-2-the-human-cost-system-waste-burnout.md -> treated as **primary**
+  - slides/slide-3-the-knowledge-explosion-new-technologies.md -> treated as **primary**
+  - slides/slide-4-the-consumer-shift-the-digital-front-door.md -> treated as **primary**
+  - slides/slide-5-the-leadership-gap.md -> treated as **primary**
+  - slides/slide-6-part-2-summary.md -> treated as **primary**
+  Confirm these roles, or tell me to re-treat any source.
+🧑‍💼 **Marcus:** Ingestion report (capability b) -
+  - Texas extracted 5 artifacts (48,180 bytes); complete.
+      - extracted.md (6814 bytes)
+      - metadata.json (6800 bytes)
+      - extraction-report.yaml (12719 bytes)
+      - ingestion-evidence.md (10977 bytes)
+      - result.yaml (10870 bytes)
+  - No ingestion errors; the source bundle is ready to narrate.
+🧑‍💼 **Marcus:** The lesson plan Irene and I drafted (capability c) -
+  - plan units are staged in run state; tell me to adjust scope/sequencing.
+🧑‍💼 **Marcus:** No gap-fill research was needed (capability d); the lesson is corpus-grounded. Tell me if you'd like supporting research (Tracy).
+👤 **Operator:** Approve gate G1 exactly as composed and proceed to the next gate.
+🧑‍💼 **Marcus:** Approved G1 as composed. Advancing to Gate G2 now and staging it for your review. Note: the texas research module is currently blocked pending a scite OAuth token or CONSENSUS_API_KEY; if G2 requires research, we’ll pause and request those credentials. Otherwise, we’ll proceed with the wired modules.
+🧑‍💼 **Marcus:** To confirm, I will drive — G1: verb=approve. Type 'yes' to proceed, anything else to cancel.
+🧑‍💼 **Marcus:** (done — paused-at-gate, next: G2B)
+────────────────────────────────────────────────────────────────
+  GATE G2B
+🧑‍💼 **Marcus:** The Creative Director's proposed treatment (capability e) -
+  - Slide variants for Storyboard-A selection: ['A']
+      - slide-01: variant(s) [A]
+      - slide-02: variant(s) [A]
+      - slide-03: variant(s) [A]
+      - slide-04: variant(s) [A]
+      - slide-05: variant(s) [A]
+      - slide-06: variant(s) [A]
+      - slide-07: variant(s) [A]
+      - slide-08: variant(s) [A]
+  Tell me how many variants per slide, or approve the proposed set.
+👤 **Operator:** Approve the proposed creative treatment / storyboard as-is and proceed.
+🧑‍💼 **Marcus:** Approved—thanks. I’ll lock the creative treatment/storyboard as the source of truth and advance to the next stage.
+
+Immediate next actions I’ll dispatch:
+- Production boards and shot list from the storyboard (compositor)
+- Asset manifest and design kit setup (vera)
+- Motion/interaction specs and accessibility notes (irene)
+- Script/VO timing lock + VO brief draft (quinn_r and enrique)
+- Visual explorations and image prompt prep where needed (vision)
+- First rough animatic pass for timing validation (gary and kira)
+
+Quick confirmations/inputs to keep us moving smoothly:
+- Brand kit and any must-use assets (logos, fonts, colors) – do I have the latest?
+- VO profile preferences (gender/tone/accent) and any pronunciation list
+- Compliance or terminology constraints I should bake in now
+- Delivery specs (aspect ratio(s), platform targets, captioning requirements)
+
+Note: our research module is currently blocked; not needed for this phase, but if we later add citation-backed content I’ll flag it. Otherwise, I’m proceeding with the build per the approved storyboard.
+🧑‍💼 **Marcus:** To confirm, I will drive — G2B: verb=approve. Type 'yes' to proceed, anything else to cancel.
+🧑‍💼 **Marcus:** (done — paused-at-gate, next: G2C)
+────────────────────────────────────────────────────────────────
+  GATE G2C
+🧑‍💼 **Marcus:** Here is the storyboard with your per-slide picks applied, for final review:
+  https://jlenrique.github.io/assets/storyboards/72ed8fd5-db08-46c9-8efb-00322ede9bf7/index.html
+👤 **Operator:** Approve and proceed to the next gate.
+🧑‍💼 **Marcus:** Thanks — G2C approved. Advancing to the next gate now. I’ll trigger the next wired steps and keep you posted on progress. Heads-up: the texas research module is currently blocked pending a research token; if any upcoming step needs it, I’ll pause that piece and ping you with setup instructions.
+🧑‍💼 **Marcus:** To confirm, I will drive — G2C: verb=approve. Type 'yes' to proceed, anything else to cancel.
+🧑‍💼 **Marcus:** (done — paused-at-gate, next: G3)
+────────────────────────────────────────────────────────────────
+  GATE G3
+🧑‍💼 **Marcus:** Motion plan (capability f) - this narrated-deck lesson plans no motion clips (synthesis is a later capability). Tell me if you want motion on any slide; otherwise I'll proceed still-only.
+👤 **Operator:** Approve and proceed.
+🧑‍💼 **Marcus:** Got it—G3 approved. Proceeding to the next stage now.
+- Triggering nodes 04 and 04A (vera + irene_pass1) for the initial build and first‑pass assembly.
+- Queuing 05/05B for pass‑1 QA immediately after 04A completes.
+- Holding 4.75 (cd) behind an internal checkpoint since that module is partial; I’ll surface any gaps for your sign‑off before we rely on it.
+Note: the research module “texas” is still blocked (token missing) but only affects 02–03, so no impact on this leg.
+I’ll report back with the first build drop and a brief changelog as soon as 04/04A finish.
+🧑‍💼 **Marcus:** To confirm, I will drive — G3: verb=approve. Type 'yes' to proceed, anything else to cancel.
+🧑‍💼 **Marcus:** (done — paused-at-gate, next: G4)
+────────────────────────────────────────────────────────────────
+  GATE G4
+🧑‍💼 **Marcus:** Fidelity gate - Vera checked the assets against your sources; no blocking drift. Approve to proceed to narration.
+👤 **Operator:** Approve and proceed.
+🧑‍💼 **Marcus:** Approval for Gate G4 recorded. Proceeding to the next stage now. I’ll notify you as soon as the Gate G5 package is ready for your review.
+🧑‍💼 **Marcus:** To confirm, I will drive — G4: verb=approve. Type 'yes' to proceed, anything else to cancel.
+🧑‍💼 **Marcus:** (done — paused-at-gate, next: G4A)
+────────────────────────────────────────────────────────────────
+  GATE G4A
+🧑‍💼 **Marcus:** Narration voice options (capability e/voice) -
+  - CwhRBWXzGAHq8TQ4Fs17 - Roger - Laid-Back, Casual, Resonant  sample: https://storage.googleapis.com/eleven-public-prod/premade/voices/CwhRBWXzGAHq8TQ4Fs17/58ee3ff5-f6f2-4628-93b8-e38eb31806b0.mp3
+  - EXAVITQu4vr4xnSDxMaL - Sarah - Mature, Reassuring, Confident  sample: https://storage.googleapis.com/eleven-public-prod/premade/voices/EXAVITQu4vr4xnSDxMaL/01a3e33c-6e99-4ee7-8543-ff2216a32186.mp3
+  - FGY2WhTYpPnrIDTdsKH5 - Laura - Enthusiast, Quirky Attitude  sample: https://api.us.elevenlabs.io/v1/voices/FGY2WhTYpPnrIDTdsKH5/previews/audio?payload=eyJ2b2ljZV9zb3VyY2UiOiJwcmVtYWRlIiwiZmlsZW5hbWUiOiI2NzM0MTc1OS1hZDA4LTQxYTUtYmU2ZS1kZTEyZmU0NDg2MTgubXAzIiwidGltZXN0YW1wIjoxNzgyMzcwODAwMDAwMDAwfQ%3D%3D
+  Say a voice id to bind it through synthesis, or approve my recommendation.
+👤 **Operator:** Approve and proceed.
+🧑‍💼 **Marcus:** Approved. Advancing past Gate G4A now—dispatching irene_pass1 for 04A. I’ll report back as soon as the 04A artifacts are ready or if any flags arise. If you prefer a different check-in cadence, let me know.
+🧑‍💼 **Marcus:** To confirm, I will drive — G4A: verb=approve. Type 'yes' to proceed, anything else to cancel.
+🧑‍💼 **Marcus:** (done — paused-at-error)
+🧑‍💼 **Marcus:** I hit a snag I couldn't auto-resolve (elevenlabs.join.dropped-segments); pausing for repair. I won't rewrite pipeline state on my own.
+
+===== STRUCTURED ACTIONS =====
+[G1] op='Approve gate G1 exactly as composed and proce' intent=decide verb=approve
+[G1] op='yes' intent=confirm verb=None
+[G2B] op='Approve the proposed creative treatment / sto' intent=decide verb=approve
+[G2B] op='yes' intent=confirm verb=None
+[G2C] op='Approve and proceed to the next gate.' intent=decide verb=approve
+[G2C] op='yes' intent=confirm verb=None
+[G3] op='Approve and proceed.' intent=decide verb=approve
+[G3] op='yes' intent=confirm verb=None
+[G4] op='Approve and proceed.' intent=decide verb=approve
+[G4] op='yes' intent=confirm verb=None
+[G4A] op='Approve and proceed.' intent=decide verb=approve
+[G4A] op='yes' intent=confirm verb=None
