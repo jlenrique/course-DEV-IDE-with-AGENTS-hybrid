@@ -30,6 +30,7 @@ from .contracts import (
 from .mcp_client import MCPClient, MCPServerConfig
 from .normalize import build_texas_row, coerce_authors
 from .refinement_registry import drop_filters_in_order
+from .scite_oauth_token import load_bearer_token as load_scite_bearer_token
 
 # ---------------------------------------------------------------------------
 # Module-level constants — data, not inference (AC-C.7 guardrail).
@@ -213,13 +214,30 @@ class SciteProvider(RetrievalAdapter):
     # ---- Lazy MCPClient wiring (AC-C.2 library-agnostic) ------------------
 
     def _client(self) -> MCPClient:
-        """Lazy MCPClient instantiation — env vars resolved at first call, not __init__."""
+        """Lazy MCPClient instantiation — auth resolved at first call, not __init__.
+
+        Scite's MCP endpoint requires OAuth 2.0 Bearer (no password grant). When
+        a token persisted by the one-time interactive sign-in is available
+        (`scite_oauth_token.load_bearer_token()`), use Bearer auth; the token is
+        injected via the `SCITE_MCP_BEARER` env var the MCPClient reads under
+        `auth_style="bearer"`. Otherwise fall back to HTTP Basic (legacy path,
+        kept for local/test servers that accept it).
+        """
         if self._mcp_client is None:
-            config = MCPServerConfig(
-                url=self._mcp_url,
-                auth_env=list(SCITE_AUTH_ENV_VARS),
-                auth_style="basic",
-            )
+            bearer = load_scite_bearer_token()
+            if bearer:
+                os.environ["SCITE_MCP_BEARER"] = bearer
+                config = MCPServerConfig(
+                    url=self._mcp_url,
+                    auth_env=["SCITE_MCP_BEARER"],
+                    auth_style="bearer",
+                )
+            else:
+                config = MCPServerConfig(
+                    url=self._mcp_url,
+                    auth_env=list(SCITE_AUTH_ENV_VARS),
+                    auth_style="basic",
+                )
             self._mcp_client = MCPClient({self.PROVIDER_INFO.id: config})
         return self._mcp_client
 
