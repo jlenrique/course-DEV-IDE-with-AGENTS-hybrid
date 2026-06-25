@@ -1,7 +1,7 @@
 {
   "version": "1.0.0",
-  "gitCommitHash": "ac3f16422eaa54d92a94b9af9add7843e59d1617",
-  "generatedAt": "2026-06-12T16:25:33.318Z",
+  "gitCommitHash": "cc396862438cf537d7b1ea030610d4612f36b01c",
+  "generatedAt": "2026-06-25T14:56:34.811Z",
   "files": {
     ".coverage": {
       "filePath": ".coverage",
@@ -330,7 +330,7 @@
     },
     "app/composers/section_02a/cli_adapter.py": {
       "filePath": "app/composers/section_02a/cli_adapter.py",
-      "contentHash": "c83e2f9eb81ba7bc11e64d940115bbdae85ba11b6157917d4e5c767ee203a180",
+      "contentHash": "d7057084667ce7b0b54b5999139f7b327967fb1915c4b451fa05e9822e20c633",
       "functions": [
         {
           "name": "compose_and_write",
@@ -338,11 +338,12 @@
             "corpus_dir",
             "run_dir",
             "run_id",
-            "llm"
+            "llm",
+            "gamma_settings"
           ],
           "returnType": "tuple[Path, str]",
           "exported": true,
-          "lineCount": 36
+          "lineCount": 38
         }
       ],
       "classes": [],
@@ -363,6 +364,12 @@
           "source": "pathlib",
           "specifiers": [
             "Path"
+          ]
+        },
+        {
+          "source": "typing",
+          "specifiers": [
+            "Any"
           ]
         },
         {
@@ -394,7 +401,7 @@
       "exports": [
         "compose_and_write"
       ],
-      "totalLines": 69,
+      "totalLines": 72,
       "hasStructuralAnalysis": true
     },
     "app/composers/section_02a/composer.py": {
@@ -590,7 +597,7 @@
     },
     "app/composers/section_02a/directive_model.py": {
       "filePath": "app/composers/section_02a/directive_model.py",
-      "contentHash": "4024a87f49ffa848162fe4fb2173e453161f86844be3ca62392f83088220fc9b",
+      "contentHash": "3a4083a1477cbafd42093782d22d6a0c2e7e05205584652ec073b721a88edebb",
       "functions": [],
       "classes": [
         {
@@ -630,6 +637,7 @@
         {
           "name": "Directive",
           "methods": [
+            "model_dump",
             "_require_uuid4",
             "_require_tz_aware"
           ],
@@ -638,10 +646,11 @@
             "corpus_dir",
             "sources",
             "composed_at",
-            "schema_version"
+            "schema_version",
+            "gamma_settings"
           ],
           "exported": true,
-          "lineCount": 20
+          "lineCount": 27
         }
       ],
       "imports": [
@@ -666,6 +675,7 @@
         {
           "source": "typing",
           "specifiers": [
+            "Any",
             "Literal"
           ]
         },
@@ -700,7 +710,7 @@
         "DirectiveSource",
         "Directive"
       ],
-      "totalLines": 163,
+      "totalLines": 170,
       "hasStructuralAnalysis": true
     },
     "app/cora/__init__.py": {
@@ -3240,6 +3250,82 @@
       "imports": [],
       "exports": [],
       "totalLines": 2,
+      "hasStructuralAnalysis": true
+    },
+    "app/gates/section_07c/chooser_html_emitter.py": {
+      "filePath": "app/gates/section_07c/chooser_html_emitter.py",
+      "contentHash": "fa18e2971a8e8ea0511131eae905200311cf794247918663ccc4b6c637f1d7f8",
+      "functions": [
+        {
+          "name": "_card",
+          "params": [
+            "slide_index",
+            "variant",
+            "image_url"
+          ],
+          "returnType": "str",
+          "exported": true,
+          "lineCount": 10
+        },
+        {
+          "name": "_row",
+          "params": [
+            "slide",
+            "total"
+          ],
+          "returnType": "list[str]",
+          "exported": true,
+          "lineCount": 16
+        },
+        {
+          "name": "_script",
+          "params": [
+            "total",
+            "run_tag"
+          ],
+          "returnType": "str",
+          "exported": true,
+          "lineCount": 66
+        },
+        {
+          "name": "render_chooser_html",
+          "params": [
+            "slides",
+            "run_tag"
+          ],
+          "returnType": "str",
+          "exported": true,
+          "lineCount": 44
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "json",
+          "specifiers": [
+            "json"
+          ]
+        },
+        {
+          "source": "html",
+          "specifiers": [
+            "escape"
+          ]
+        },
+        {
+          "source": "typing",
+          "specifiers": [
+            "Any"
+          ]
+        }
+      ],
+      "exports": [
+        "_card",
+        "_row",
+        "_script",
+        "render_chooser_html"
+      ],
+      "totalLines": 191,
       "hasStructuralAnalysis": true
     },
     "app/gates/section_07c/poll_surface.py": {
@@ -6082,7 +6168,7 @@
     },
     "app/manifest/schema.py": {
       "filePath": "app/manifest/schema.py",
-      "contentHash": "e3cc07e32c49ceb1889142b9329868735fc3fbdff583e37734366a1f9e9c5441",
+      "contentHash": "83ca1ef0d00f6753d2223d53cef6b39a7b54ef5c3a220834269f3c505b5886b8",
       "functions": [
         {
           "name": "is_orchestration_only",
@@ -6092,6 +6178,33 @@
           "returnType": "bool",
           "exported": true,
           "lineCount": 13
+        },
+        {
+          "name": "is_folded_gate",
+          "params": [
+            "node"
+          ],
+          "returnType": "bool",
+          "exported": true,
+          "lineCount": 23
+        },
+        {
+          "name": "is_content_free_gate",
+          "params": [
+            "node"
+          ],
+          "returnType": "bool",
+          "exported": true,
+          "lineCount": 18
+        },
+        {
+          "name": "is_pack_excluded",
+          "params": [
+            "node"
+          ],
+          "returnType": "bool",
+          "exported": true,
+          "lineCount": 8
         }
       ],
       "classes": [
@@ -6218,9 +6331,12 @@
         "ProjectionSpec",
         "EdgeSpec",
         "PipelineManifest",
-        "is_orchestration_only"
+        "is_orchestration_only",
+        "is_folded_gate",
+        "is_content_free_gate",
+        "is_pack_excluded"
       ],
-      "totalLines": 454,
+      "totalLines": 512,
       "hasStructuralAnalysis": true
     },
     "app/marcus/__init__.py": {
@@ -6445,6 +6561,135 @@
       "totalLines": 101,
       "hasStructuralAnalysis": true
     },
+    "app/marcus/cli/capability_grounding.py": {
+      "filePath": "app/marcus/cli/capability_grounding.py",
+      "contentHash": "de1728ba7e835e7b3ba95b9c7574bac5d7300519f89f2230f72870bb4b9f12db",
+      "functions": [
+        {
+          "name": "load_overlay",
+          "params": [
+            "path"
+          ],
+          "returnType": "dict[str, Any]",
+          "exported": true,
+          "lineCount": 6
+        },
+        {
+          "name": "research_token_precondition",
+          "params": [
+            "scite_token_path",
+            "consensus_api_key_env",
+            "env"
+          ],
+          "returnType": "RuntimePrecondition",
+          "exported": true,
+          "lineCount": 28
+        },
+        {
+          "name": "build_grounding_context",
+          "params": [
+            "overlay",
+            "stale",
+            "research_precondition"
+          ],
+          "returnType": "GroundingContext",
+          "exported": true,
+          "lineCount": 37
+        }
+      ],
+      "classes": [
+        {
+          "name": "RuntimePrecondition",
+          "methods": [],
+          "properties": [
+            "name",
+            "satisfied",
+            "detail"
+          ],
+          "exported": true,
+          "lineCount": 10
+        },
+        {
+          "name": "CapabilityFact",
+          "methods": [
+            "honest_summary"
+          ],
+          "properties": [
+            "specialist_id",
+            "capability_state",
+            "rationale",
+            "routed_at_nodes",
+            "runtime_precondition"
+          ],
+          "exported": true,
+          "lineCount": 19
+        },
+        {
+          "name": "GroundingContext",
+          "methods": [
+            "fact_for",
+            "render"
+          ],
+          "properties": [
+            "facts",
+            "stale",
+            "content_hash",
+            "extra_preconditions"
+          ],
+          "exported": true,
+          "lineCount": 26
+        }
+      ],
+      "imports": [
+        {
+          "source": "os",
+          "specifiers": [
+            "os"
+          ]
+        },
+        {
+          "source": "dataclasses",
+          "specifiers": [
+            "dataclass",
+            "field"
+          ]
+        },
+        {
+          "source": "pathlib",
+          "specifiers": [
+            "Path"
+          ]
+        },
+        {
+          "source": "typing",
+          "specifiers": [
+            "Any"
+          ]
+        },
+        {
+          "source": "yaml",
+          "specifiers": [
+            "yaml"
+          ]
+        },
+        {
+          "source": "app.runtime.economics",
+          "specifiers": [
+            "REPO_ROOT"
+          ]
+        }
+      ],
+      "exports": [
+        "RuntimePrecondition",
+        "CapabilityFact",
+        "GroundingContext",
+        "load_overlay",
+        "research_token_precondition",
+        "build_grounding_context"
+      ],
+      "totalLines": 203,
+      "hasStructuralAnalysis": true
+    },
     "app/marcus/cli/gate_cli.py": {
       "filePath": "app/marcus/cli/gate_cli.py",
       "contentHash": "1f1b7963af228445828762be4644cc11e733530360c820f756d5c3a837f8f23b",
@@ -6587,7 +6832,7 @@
     },
     "app/marcus/cli/gate_shims/_shim_parser.py": {
       "filePath": "app/marcus/cli/gate_shims/_shim_parser.py",
-      "contentHash": "6b386b9f204bf4bf3d5faeaaaf98b7facb0b6d7611d6063b15e41d3641a0b6f8",
+      "contentHash": "d8eaed0ad6f6fdf7d3988a5c6e6ceedcd0cda2208cd59e833d70c4b7b07a5252",
       "functions": [
         {
           "name": "build_shim_parser",
@@ -6623,12 +6868,93 @@
       "exports": [
         "build_shim_parser"
       ],
-      "totalLines": 87,
+      "totalLines": 91,
       "hasStructuralAnalysis": true
     },
     "app/marcus/cli/gate_shims/g1_shim.py": {
       "filePath": "app/marcus/cli/gate_shims/g1_shim.py",
       "contentHash": "e0dc4e86968a94b9ab503a3a17415325e30a80bb4d95d015a31b49a4ee7fc3ca",
+      "functions": [
+        {
+          "name": "shim_main",
+          "params": [
+            "args"
+          ],
+          "returnType": "int",
+          "exported": true,
+          "lineCount": 39
+        },
+        {
+          "name": "main",
+          "params": [
+            "argv"
+          ],
+          "returnType": "int",
+          "exported": true,
+          "lineCount": 4
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "argparse",
+          "specifiers": [
+            "argparse"
+          ]
+        },
+        {
+          "source": "json",
+          "specifiers": [
+            "json"
+          ]
+        },
+        {
+          "source": "sys",
+          "specifiers": [
+            "sys"
+          ]
+        },
+        {
+          "source": "pydantic",
+          "specifiers": [
+            "ValidationError"
+          ]
+        },
+        {
+          "source": "app.marcus.cli.gate_shims._shim_parser",
+          "specifiers": [
+            "build_shim_parser"
+          ]
+        },
+        {
+          "source": "app.marcus.orchestrator.production_runner",
+          "specifiers": [
+            "resume_production_trial"
+          ]
+        },
+        {
+          "source": "app.models.state.operator_verdict",
+          "specifiers": [
+            "OperatorVerdict"
+          ]
+        },
+        {
+          "source": "app.runtime.economics",
+          "specifiers": [
+            "RUNS_ROOT"
+          ]
+        }
+      ],
+      "exports": [
+        "shim_main",
+        "main"
+      ],
+      "totalLines": 68,
+      "hasStructuralAnalysis": true
+    },
+    "app/marcus/cli/gate_shims/g2b_shim.py": {
+      "filePath": "app/marcus/cli/gate_shims/g2b_shim.py",
+      "contentHash": "f7e3d2275bcf414bf23aa71aa3c69fb98d3dd0b0279ad8360b1e9a9cdf55ca9b",
       "functions": [
         {
           "name": "shim_main",
@@ -6950,9 +7276,521 @@
       "totalLines": 68,
       "hasStructuralAnalysis": true
     },
+    "app/marcus/cli/gate_shims/g4a_shim.py": {
+      "filePath": "app/marcus/cli/gate_shims/g4a_shim.py",
+      "contentHash": "3be2b6923e53a530bae3928b1b9378519686e0a1e6fb42ce2e8067e9312c71e3",
+      "functions": [
+        {
+          "name": "shim_main",
+          "params": [
+            "args"
+          ],
+          "returnType": "int",
+          "exported": true,
+          "lineCount": 39
+        },
+        {
+          "name": "main",
+          "params": [
+            "argv"
+          ],
+          "returnType": "int",
+          "exported": true,
+          "lineCount": 4
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "argparse",
+          "specifiers": [
+            "argparse"
+          ]
+        },
+        {
+          "source": "json",
+          "specifiers": [
+            "json"
+          ]
+        },
+        {
+          "source": "sys",
+          "specifiers": [
+            "sys"
+          ]
+        },
+        {
+          "source": "pydantic",
+          "specifiers": [
+            "ValidationError"
+          ]
+        },
+        {
+          "source": "app.marcus.cli.gate_shims._shim_parser",
+          "specifiers": [
+            "build_shim_parser"
+          ]
+        },
+        {
+          "source": "app.marcus.orchestrator.production_runner",
+          "specifiers": [
+            "resume_production_trial"
+          ]
+        },
+        {
+          "source": "app.models.state.operator_verdict",
+          "specifiers": [
+            "OperatorVerdict"
+          ]
+        },
+        {
+          "source": "app.runtime.economics",
+          "specifiers": [
+            "RUNS_ROOT"
+          ]
+        }
+      ],
+      "exports": [
+        "shim_main",
+        "main"
+      ],
+      "totalLines": 68,
+      "hasStructuralAnalysis": true
+    },
+    "app/marcus/cli/marcus_interlocutor.py": {
+      "filePath": "app/marcus/cli/marcus_interlocutor.py",
+      "contentHash": "f2f79daf5012150572b16eecff96d2af784c412ac62d2dc341b102ff92790160",
+      "functions": [
+        {
+          "name": "validate_action_against_gate",
+          "params": [
+            "action",
+            "gate_id"
+          ],
+          "returnType": "ValidatedDecision",
+          "exported": true,
+          "lineCount": 38
+        },
+        {
+          "name": "_system_prompt",
+          "params": [
+            "grounding"
+          ],
+          "returnType": "str",
+          "exported": true,
+          "lineCount": 13
+        },
+        {
+          "name": "_load",
+          "params": [
+            "path"
+          ],
+          "returnType": "Any",
+          "exported": true,
+          "lineCount": 5
+        },
+        {
+          "name": "run_marcus_interlocutor",
+          "params": [
+            "trial_id",
+            "chat_model",
+            "input_source",
+            "output_sink",
+            "runs_root",
+            "grounding",
+            "resume_fn",
+            "max_specialist_calls"
+          ],
+          "returnType": "list[TranscriptEntry]",
+          "exported": true,
+          "lineCount": 22
+        },
+        {
+          "name": "_action_dict",
+          "params": [
+            "action"
+          ],
+          "returnType": "dict[str, Any]",
+          "exported": true,
+          "lineCount": 8
+        },
+        {
+          "name": "_normalize_input_source",
+          "params": [
+            "source"
+          ],
+          "returnType": "Callable[[str], str]",
+          "exported": true,
+          "lineCount": 19
+        },
+        {
+          "name": "_overlay_is_stale",
+          "params": [],
+          "returnType": "bool",
+          "exported": true,
+          "lineCount": 8
+        },
+        {
+          "name": "main",
+          "params": [
+            "argv"
+          ],
+          "returnType": "int",
+          "exported": true,
+          "lineCount": 29
+        }
+      ],
+      "classes": [
+        {
+          "name": "GuardRefusal",
+          "methods": [],
+          "properties": [],
+          "exported": true,
+          "lineCount": 2
+        },
+        {
+          "name": "StructuredAction",
+          "methods": [
+            "parse"
+          ],
+          "properties": [
+            "intent",
+            "reply",
+            "verb",
+            "edit_payload",
+            "reject_reason",
+            "confirm_text"
+          ],
+          "exported": true,
+          "lineCount": 35
+        },
+        {
+          "name": "ValidatedDecision",
+          "methods": [
+            "confirm_echo"
+          ],
+          "properties": [
+            "gate_id",
+            "verb",
+            "edit_payload",
+            "reject_reason"
+          ],
+          "exported": true,
+          "lineCount": 16
+        },
+        {
+          "name": "TranscriptEntry",
+          "methods": [],
+          "properties": [
+            "gate_id",
+            "operator_input",
+            "marcus_response",
+            "action"
+          ],
+          "exported": true,
+          "lineCount": 7
+        },
+        {
+          "name": "MarcusInterlocutor",
+          "methods": [
+            "__init__",
+            "chat_model",
+            "grounding",
+            "_emit",
+            "_ask",
+            "_model_turn",
+            "_drive",
+            "_run_gate",
+            "_confirm",
+            "run",
+            "_persist_transcript"
+          ],
+          "properties": [],
+          "exported": true,
+          "lineCount": 214
+        }
+      ],
+      "imports": [
+        {
+          "source": "json",
+          "specifiers": [
+            "json"
+          ]
+        },
+        {
+          "source": "collections.abc",
+          "specifiers": [
+            "Callable",
+            "Iterable",
+            "Iterator"
+          ]
+        },
+        {
+          "source": "dataclasses",
+          "specifiers": [
+            "dataclass"
+          ]
+        },
+        {
+          "source": "pathlib",
+          "specifiers": [
+            "Path"
+          ]
+        },
+        {
+          "source": "typing",
+          "specifiers": [
+            "Any"
+          ]
+        },
+        {
+          "source": "uuid",
+          "specifiers": [
+            "UUID"
+          ]
+        },
+        {
+          "source": "langchain_core.language_models",
+          "specifiers": [
+            "BaseChatModel"
+          ]
+        },
+        {
+          "source": "app.marcus.cli.capability_grounding",
+          "specifiers": [
+            "GroundingContext",
+            "build_grounding_context",
+            "load_overlay",
+            "research_token_precondition"
+          ]
+        },
+        {
+          "source": "app.marcus.cli.marcus_spoc",
+          "specifiers": [
+            "_M",
+            "_RULE",
+            "DEFAULT_OPERATOR_ID",
+            "build_operator_verdict_kwargs",
+            "narrate_gate"
+          ]
+        },
+        {
+          "source": "app.marcus.orchestrator",
+          "specifiers": [
+            "production_runner"
+          ]
+        },
+        {
+          "source": "app.marcus.orchestrator.production_runner",
+          "specifiers": [
+            "UnknownSelectionKeyError",
+            "resume_production_trial"
+          ]
+        },
+        {
+          "source": "app.models.state.operator_verdict",
+          "specifiers": [
+            "OperatorVerdict"
+          ]
+        },
+        {
+          "source": "app.runtime.economics",
+          "specifiers": [
+            "RUNS_ROOT"
+          ]
+        }
+      ],
+      "exports": [
+        "GuardRefusal",
+        "StructuredAction",
+        "ValidatedDecision",
+        "validate_action_against_gate",
+        "TranscriptEntry",
+        "_system_prompt",
+        "_load",
+        "MarcusInterlocutor",
+        "run_marcus_interlocutor",
+        "_action_dict",
+        "_normalize_input_source",
+        "_overlay_is_stale",
+        "main"
+      ],
+      "totalLines": 542,
+      "hasStructuralAnalysis": true
+    },
+    "app/marcus/cli/marcus_spoc.py": {
+      "filePath": "app/marcus/cli/marcus_spoc.py",
+      "contentHash": "90f55f2775035eee948a80d05deae62e0536ce988a9585bad06a535c7a4a4746",
+      "functions": [
+        {
+          "name": "build_operator_verdict_kwargs",
+          "params": [
+            "trial_id",
+            "gate_id",
+            "card",
+            "verb",
+            "edit_payload",
+            "reject_reason",
+            "operator_id"
+          ],
+          "returnType": "dict[str, Any]",
+          "exported": true,
+          "lineCount": 28
+        },
+        {
+          "name": "_load",
+          "params": [
+            "path"
+          ],
+          "returnType": "Any",
+          "exported": true,
+          "lineCount": 5
+        },
+        {
+          "name": "_narrate_sources",
+          "params": [
+            "run_dir",
+            "lines"
+          ],
+          "returnType": "None",
+          "exported": true,
+          "lineCount": 18
+        },
+        {
+          "name": "_narrate_ingestion",
+          "params": [
+            "run_dir",
+            "lines"
+          ],
+          "returnType": "None",
+          "exported": true,
+          "lineCount": 14
+        },
+        {
+          "name": "_narrate_lesson_plan",
+          "params": [
+            "run_dir",
+            "lines"
+          ],
+          "returnType": "None",
+          "exported": true,
+          "lineCount": 11
+        },
+        {
+          "name": "_narrate_treatment",
+          "params": [
+            "card",
+            "lines"
+          ],
+          "returnType": "None",
+          "exported": true,
+          "lineCount": 12
+        },
+        {
+          "name": "_narrate_voice",
+          "params": [
+            "card",
+            "lines"
+          ],
+          "returnType": "None",
+          "exported": true,
+          "lineCount": 12
+        },
+        {
+          "name": "narrate_gate",
+          "params": [
+            "gate_id",
+            "card",
+            "run_dir"
+          ],
+          "returnType": "str",
+          "exported": true,
+          "lineCount": 37
+        },
+        {
+          "name": "run_marcus_spoc",
+          "params": [
+            "trial_id",
+            "decisions",
+            "runs_root"
+          ],
+          "returnType": "list[str]",
+          "exported": true,
+          "lineCount": 50
+        },
+        {
+          "name": "main",
+          "params": [
+            "argv"
+          ],
+          "returnType": "int",
+          "exported": true,
+          "lineCount": 14
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "json",
+          "specifiers": [
+            "json"
+          ]
+        },
+        {
+          "source": "pathlib",
+          "specifiers": [
+            "Path"
+          ]
+        },
+        {
+          "source": "typing",
+          "specifiers": [
+            "Any"
+          ]
+        },
+        {
+          "source": "uuid",
+          "specifiers": [
+            "UUID"
+          ]
+        },
+        {
+          "source": "app.marcus.orchestrator.production_runner",
+          "specifiers": [
+            "resume_production_trial"
+          ]
+        },
+        {
+          "source": "app.models.state.operator_verdict",
+          "specifiers": [
+            "OperatorVerdict"
+          ]
+        },
+        {
+          "source": "app.runtime.economics",
+          "specifiers": [
+            "RUNS_ROOT"
+          ]
+        }
+      ],
+      "exports": [
+        "build_operator_verdict_kwargs",
+        "_load",
+        "_narrate_sources",
+        "_narrate_ingestion",
+        "_narrate_lesson_plan",
+        "_narrate_treatment",
+        "_narrate_voice",
+        "narrate_gate",
+        "run_marcus_spoc",
+        "main"
+      ],
+      "totalLines": 268,
+      "hasStructuralAnalysis": true
+    },
     "app/marcus/cli/trial.py": {
       "filePath": "app/marcus/cli/trial.py",
-      "contentHash": "f85909c06c76f17818afad5697ca26a05ae5fc6535df4797a63c8a00721244d4",
+      "contentHash": "d269e2940dcf03a58fa497263e8b5b28f3130e761ed5d9deaa792ca77fb1ea6f",
       "functions": [
         {
           "name": "_load_env_if_available",
@@ -7036,6 +7874,15 @@
           "lineCount": 20
         },
         {
+          "name": "_load_gamma_settings_file",
+          "params": [
+            "path"
+          ],
+          "returnType": "list[dict[str, Any]] | None",
+          "exported": true,
+          "lineCount": 9
+        },
+        {
           "name": "start_trial",
           "params": [
             "preset",
@@ -7046,11 +7893,12 @@
             "runs_root",
             "auto_confirm_directive",
             "confirm_fn",
-            "max_specialist_calls"
+            "max_specialist_calls",
+            "gamma_settings_file"
           ],
           "returnType": "dict[str, Any]",
           "exported": true,
-          "lineCount": 142
+          "lineCount": 145
         },
         {
           "name": "start_trial_cli",
@@ -7059,7 +7907,7 @@
           ],
           "returnType": "int",
           "exported": true,
-          "lineCount": 22
+          "lineCount": 27
         },
         {
           "name": "resume_trial",
@@ -7109,7 +7957,7 @@
           ],
           "returnType": "None",
           "exported": true,
-          "lineCount": 66
+          "lineCount": 74
         }
       ],
       "classes": [
@@ -7212,6 +8060,12 @@
           ]
         },
         {
+          "source": "yaml",
+          "specifiers": [
+            "yaml"
+          ]
+        },
+        {
           "source": "app.composers.section_02a.cli_adapter",
           "specifiers": [
             "compose_and_write"
@@ -7251,6 +8105,7 @@
         "_utf8_safe_print",
         "_confirm_or_edit_directive",
         "_write_cancellation_record",
+        "_load_gamma_settings_file",
         "start_trial",
         "start_trial_cli",
         "resume_trial",
@@ -7259,7 +8114,7 @@
         "recover_trial_cli",
         "build_trial_parser"
       ],
-      "totalLines": 546,
+      "totalLines": 575,
       "hasStructuralAnalysis": true
     },
     "app/marcus/dispatch/__init__.py": {
@@ -8175,6 +9030,160 @@
         "BlueprintProducer"
       ],
       "totalLines": 192,
+      "hasStructuralAnalysis": true
+    },
+    "app/marcus/lesson_plan/collateral_spec.py": {
+      "filePath": "app/marcus/lesson_plan/collateral_spec.py",
+      "contentHash": "39d000af6608b5fb6b935c2c4e9329365cf193326ba48b81e2366847648953f3",
+      "functions": [
+        {
+          "name": "_looks_like_raw_fetch_query",
+          "params": [
+            "text"
+          ],
+          "returnType": "bool",
+          "exported": true,
+          "lineCount": 14
+        },
+        {
+          "name": "_validate_open_id",
+          "params": [
+            "value",
+            "field_label"
+          ],
+          "returnType": "str",
+          "exported": true,
+          "lineCount": 8
+        }
+      ],
+      "classes": [
+        {
+          "name": "DepthDeltaContract",
+          "methods": [
+            "_slide_is_open_id",
+            "_deferred_depth_non_empty"
+          ],
+          "properties": [
+            "deferred_from_slide",
+            "deferred_depth",
+            "retained_on_slide"
+          ],
+          "exported": true,
+          "lineCount": 52
+        },
+        {
+          "name": "Exercise",
+          "methods": [
+            "_exercise_id_open_id",
+            "_answer_key_source_ref_shape"
+          ],
+          "properties": [
+            "exercise_id",
+            "bloom_level",
+            "prompt_intent",
+            "answer_key_source_ref"
+          ],
+          "exported": true,
+          "lineCount": 54
+        },
+        {
+          "name": "WorkbookSection",
+          "methods": [
+            "_section_id_open_id",
+            "_objective_id_open_id"
+          ],
+          "properties": [
+            "section_id",
+            "learning_objective_id",
+            "title",
+            "depth_delta",
+            "exercises",
+            "narrative_intent"
+          ],
+          "exported": true,
+          "lineCount": 57
+        },
+        {
+          "name": "WorkbookSpec",
+          "methods": [],
+          "properties": [
+            "sections"
+          ],
+          "exported": true,
+          "lineCount": 9
+        },
+        {
+          "name": "ResearchEnrichmentGoal",
+          "methods": [
+            "_goal_id_open_id",
+            "_binds_open_id",
+            "_intent_not_raw_query"
+          ],
+          "properties": [
+            "goal_id",
+            "pedagogical_intent",
+            "binds_to_objective_id"
+          ],
+          "exported": true,
+          "lineCount": 52
+        },
+        {
+          "name": "CollateralSpec",
+          "methods": [
+            "_discriminant_matches_payload"
+          ],
+          "properties": [
+            "schema_version",
+            "declaration",
+            "workbook",
+            "research_goals"
+          ],
+          "exported": true,
+          "lineCount": 52
+        }
+      ],
+      "imports": [
+        {
+          "source": "re",
+          "specifiers": [
+            "re"
+          ]
+        },
+        {
+          "source": "typing",
+          "specifiers": [
+            "Final",
+            "Literal"
+          ]
+        },
+        {
+          "source": "pydantic",
+          "specifiers": [
+            "BaseModel",
+            "ConfigDict",
+            "Field",
+            "field_validator",
+            "model_validator"
+          ]
+        },
+        {
+          "source": "app.marcus.lesson_plan.event_type_registry",
+          "specifiers": [
+            "OPEN_ID_REGEX_PATTERN"
+          ]
+        }
+      ],
+      "exports": [
+        "_looks_like_raw_fetch_query",
+        "_validate_open_id",
+        "DepthDeltaContract",
+        "Exercise",
+        "WorkbookSection",
+        "WorkbookSpec",
+        "ResearchEnrichmentGoal",
+        "CollateralSpec"
+      ],
+      "totalLines": 463,
       "hasStructuralAnalysis": true
     },
     "app/marcus/lesson_plan/component_type_registry.py": {
@@ -9547,7 +10556,7 @@
     },
     "app/marcus/lesson_plan/modality_registry.py": {
       "filePath": "app/marcus/lesson_plan/modality_registry.py",
-      "contentHash": "3c66a82a6add9bd5b1e8a0bf60bfffbe06f9f9522d8c485ea32dded8f010b369",
+      "contentHash": "30f52cc515a26632ec3af917ed055333f03d064b29fe212a9ef33320c0644a03",
       "functions": [
         {
           "name": "get_modality_entry",
@@ -9625,7 +10634,7 @@
         "list_ready_modalities",
         "list_pending_modalities"
       ],
-      "totalLines": 219,
+      "totalLines": 235,
       "hasStructuralAnalysis": true
     },
     "app/marcus/lesson_plan/produced_asset.py": {
@@ -10220,6 +11229,16 @@
       "totalLines": 639,
       "hasStructuralAnalysis": true
     },
+    "app/marcus/lesson_plan/schema/collateral_spec.v1.schema.json": {
+      "filePath": "app/marcus/lesson_plan/schema/collateral_spec.v1.schema.json",
+      "contentHash": "0087a98a4c25b614e55baaf92e17f8bb3ea6be821e6ebfd3c066050ad7effdb4",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 227,
+      "hasStructuralAnalysis": true
+    },
     "app/marcus/lesson_plan/schema/coverage_manifest.v1.schema.json": {
       "filePath": "app/marcus/lesson_plan/schema/coverage_manifest.v1.schema.json",
       "contentHash": "3a8bee3d376745509855d3b456287fcec6a61b1e1033ff7312382127e6814de3",
@@ -10430,6 +11449,345 @@
       "totalLines": 39,
       "hasStructuralAnalysis": true
     },
+    "app/marcus/lesson_plan/workbook_producer.py": {
+      "filePath": "app/marcus/lesson_plan/workbook_producer.py",
+      "contentHash": "4390ebc7c354cd7e624cf6e4a8f0d23c46f13efe618388a10c855207c2b4efc2",
+      "functions": [
+        {
+          "name": "load_transcript_segments",
+          "params": [
+            "manifest_path"
+          ],
+          "returnType": "tuple[TranscriptSegment, ...]",
+          "exported": true,
+          "lineCount": 52
+        },
+        {
+          "name": "assert_unique_collateral_ids",
+          "params": [
+            "spec"
+          ],
+          "returnType": "None",
+          "exported": true,
+          "lineCount": 15
+        },
+        {
+          "name": "_reject_dupes",
+          "params": [
+            "ids",
+            "label"
+          ],
+          "returnType": "None",
+          "exported": true,
+          "lineCount": 8
+        },
+        {
+          "name": "audit_workbook_numeric_fidelity",
+          "params": [
+            "workbook_body_text",
+            "source_text",
+            "research_supplements"
+          ],
+          "returnType": "dict",
+          "exported": true,
+          "lineCount": 56
+        },
+        {
+          "name": "audit_citation_fidelity",
+          "params": [
+            "citations",
+            "source_ref_manifest"
+          ],
+          "returnType": "dict",
+          "exported": true,
+          "lineCount": 33
+        },
+        {
+          "name": "assert_exercise_fidelity",
+          "params": [
+            "spec"
+          ],
+          "returnType": "None",
+          "exported": true,
+          "lineCount": 13
+        },
+        {
+          "name": "default_prose_revoicer",
+          "params": [
+            "segment_id",
+            "narration_text"
+          ],
+          "returnType": "str",
+          "exported": true,
+          "lineCount": 14
+        },
+        {
+          "name": "_segment_anchor",
+          "params": [
+            "segment_id"
+          ],
+          "returnType": "str",
+          "exported": true,
+          "lineCount": 2
+        },
+        {
+          "name": "compose_workbook",
+          "params": [
+            "plan_unit",
+            "context",
+            "spec",
+            "segments",
+            "prose_revoicer"
+          ],
+          "returnType": "_ComposedDoc",
+          "exported": true,
+          "lineCount": 95
+        },
+        {
+          "name": "render_markdown",
+          "params": [
+            "doc"
+          ],
+          "returnType": "str",
+          "exported": true,
+          "lineCount": 14
+        },
+        {
+          "name": "render_docx_from_model",
+          "params": [
+            "doc",
+            "output_path"
+          ],
+          "returnType": "None",
+          "exported": true,
+          "lineCount": 28
+        },
+        {
+          "name": "_resolve_output_root",
+          "params": [
+            "output_root"
+          ],
+          "returnType": "Path",
+          "exported": true,
+          "lineCount": 20
+        },
+        {
+          "name": "_relative_asset_path",
+          "params": [
+            "path"
+          ],
+          "returnType": "str",
+          "exported": true,
+          "lineCount": 2
+        },
+        {
+          "name": "_narrative_body_text",
+          "params": [
+            "doc"
+          ],
+          "returnType": "str",
+          "exported": true,
+          "lineCount": 33
+        },
+        {
+          "name": "_tokenize",
+          "params": [
+            "text"
+          ],
+          "returnType": "list[str]",
+          "exported": true,
+          "lineCount": 2
+        }
+      ],
+      "classes": [
+        {
+          "name": "WorkbookScopeError",
+          "methods": [],
+          "properties": [],
+          "exported": true,
+          "lineCount": 2
+        },
+        {
+          "name": "WorkbookFidelityError",
+          "methods": [],
+          "properties": [],
+          "exported": true,
+          "lineCount": 2
+        },
+        {
+          "name": "DuplicateCollateralIdError",
+          "methods": [],
+          "properties": [],
+          "exported": true,
+          "lineCount": 6
+        },
+        {
+          "name": "TranscriptSegment",
+          "methods": [],
+          "properties": [
+            "segment_id",
+            "narration_text",
+            "visual_file",
+            "visual_references",
+            "source_ref",
+            "visual_file_abs"
+          ],
+          "exported": true,
+          "lineCount": 18
+        },
+        {
+          "name": "_ComposedDoc",
+          "methods": [],
+          "properties": [
+            "title",
+            "blocks",
+            "figures"
+          ],
+          "exported": true,
+          "lineCount": 13
+        },
+        {
+          "name": "WorkbookSidecar",
+          "methods": [],
+          "properties": [
+            "asset",
+            "markdown_path",
+            "docx_path",
+            "numeric_audit",
+            "citation_audit",
+            "segment_coverage",
+            "gamma_reuse_justified_by",
+            "deck_no_regression_eligible"
+          ],
+          "exported": true,
+          "lineCount": 16
+        },
+        {
+          "name": "WorkbookProducer",
+          "methods": [
+            "__init__",
+            "produce",
+            "_segment_coverage",
+            "_assert_workbook_superset_of_vo"
+          ],
+          "properties": [],
+          "exported": true,
+          "lineCount": 158
+        }
+      ],
+      "imports": [
+        {
+          "source": "re",
+          "specifiers": [
+            "re"
+          ]
+        },
+        {
+          "source": "collections.abc",
+          "specifiers": [
+            "Callable",
+            "Iterable",
+            "Sequence"
+          ]
+        },
+        {
+          "source": "dataclasses",
+          "specifiers": [
+            "dataclass",
+            "field"
+          ]
+        },
+        {
+          "source": "pathlib",
+          "specifiers": [
+            "Path"
+          ]
+        },
+        {
+          "source": "typing",
+          "specifiers": [
+            "Any",
+            "Final"
+          ]
+        },
+        {
+          "source": "yaml",
+          "specifiers": [
+            "yaml"
+          ]
+        },
+        {
+          "source": "docx",
+          "specifiers": [
+            "Document"
+          ]
+        },
+        {
+          "source": "app.marcus.lesson_plan.collateral_spec",
+          "specifiers": [
+            "WorkbookSpec"
+          ]
+        },
+        {
+          "source": "app.marcus.lesson_plan.modality_producer",
+          "specifiers": [
+            "ModalityProducer"
+          ]
+        },
+        {
+          "source": "app.marcus.lesson_plan.produced_asset",
+          "specifiers": [
+            "ProducedAsset",
+            "ProductionContext"
+          ]
+        },
+        {
+          "source": "app.marcus.lesson_plan.schema",
+          "specifiers": [
+            "PlanUnit"
+          ]
+        },
+        {
+          "source": "app.specialists._shared.source_fidelity_audit",
+          "specifiers": [
+            "audit_numeric_provenance"
+          ]
+        },
+        {
+          "source": "scripts.utilities.slide_production_gate",
+          "specifiers": [
+            "fresh_gamma_required",
+            "reuse_stamp"
+          ]
+        }
+      ],
+      "exports": [
+        "WorkbookScopeError",
+        "WorkbookFidelityError",
+        "DuplicateCollateralIdError",
+        "TranscriptSegment",
+        "load_transcript_segments",
+        "assert_unique_collateral_ids",
+        "_reject_dupes",
+        "audit_workbook_numeric_fidelity",
+        "audit_citation_fidelity",
+        "assert_exercise_fidelity",
+        "default_prose_revoicer",
+        "_ComposedDoc",
+        "_segment_anchor",
+        "compose_workbook",
+        "render_markdown",
+        "render_docx_from_model",
+        "_resolve_output_root",
+        "_relative_asset_path",
+        "WorkbookSidecar",
+        "WorkbookProducer",
+        "_narrative_body_text",
+        "_tokenize"
+      ],
+      "totalLines": 816,
+      "hasStructuralAnalysis": true
+    },
     "app/marcus/orchestrator/__init__.py": {
       "filePath": "app/marcus/orchestrator/__init__.py",
       "contentHash": "e950023187cf982e6ed52d8a413a254e204af2c8f5201970f4defa7df97ad7bd",
@@ -10484,6 +11842,135 @@
         "NegotiatorSeam"
       ],
       "totalLines": 121,
+      "hasStructuralAnalysis": true
+    },
+    "app/marcus/orchestrator/chooser_publisher.py": {
+      "filePath": "app/marcus/orchestrator/chooser_publisher.py",
+      "contentHash": "639ed333bc959ccaecff0fa2c2e7439a87a35abbf74e45c44fd188a7f441f41b",
+      "functions": [
+        {
+          "name": "_per_slide_options",
+          "params": [
+            "rows"
+          ],
+          "returnType": "list[dict[str, Any]]",
+          "exported": true,
+          "lineCount": 22
+        },
+        {
+          "name": "publish_chooser_for_gate",
+          "params": [
+            "gate_id",
+            "trial_id",
+            "production_envelope",
+            "runs_root"
+          ],
+          "returnType": "dict[str, Any] | None",
+          "exported": true,
+          "lineCount": 61
+        },
+        {
+          "name": "_git_publish_dir",
+          "params": [
+            "local_dir",
+            "site_repo",
+            "subdir",
+            "token"
+          ],
+          "returnType": "str",
+          "exported": true,
+          "lineCount": 25
+        },
+        {
+          "name": "_git",
+          "params": [
+            "args",
+            "cwd"
+          ],
+          "returnType": "str",
+          "exported": true,
+          "lineCount": 5
+        }
+      ],
+      "classes": [
+        {
+          "name": "ChooserPublishError",
+          "methods": [],
+          "properties": [],
+          "exported": true,
+          "lineCount": 2
+        }
+      ],
+      "imports": [
+        {
+          "source": "json",
+          "specifiers": [
+            "json"
+          ]
+        },
+        {
+          "source": "os",
+          "specifiers": [
+            "os"
+          ]
+        },
+        {
+          "source": "shutil",
+          "specifiers": [
+            "shutil"
+          ]
+        },
+        {
+          "source": "subprocess",
+          "specifiers": [
+            "subprocess"
+          ]
+        },
+        {
+          "source": "tempfile",
+          "specifiers": [
+            "tempfile"
+          ]
+        },
+        {
+          "source": "pathlib",
+          "specifiers": [
+            "Path"
+          ]
+        },
+        {
+          "source": "typing",
+          "specifiers": [
+            "Any"
+          ]
+        },
+        {
+          "source": "app.gates.section_07c.chooser_html_emitter",
+          "specifiers": [
+            "render_chooser_html"
+          ]
+        },
+        {
+          "source": "app.marcus.orchestrator.slide_variant_selection",
+          "specifiers": [
+            "run_tag_for_trial"
+          ]
+        },
+        {
+          "source": "app.specialists.dispatch_errors",
+          "specifiers": [
+            "SpecialistDispatchError"
+          ]
+        }
+      ],
+      "exports": [
+        "ChooserPublishError",
+        "_per_slide_options",
+        "publish_chooser_for_gate",
+        "_git_publish_dir",
+        "_git"
+      ],
+      "totalLines": 156,
       "hasStructuralAnalysis": true
     },
     "app/marcus/orchestrator/conversation_persistence.py": {
@@ -11776,7 +13263,7 @@
     },
     "app/marcus/orchestrator/m3_trial.py": {
       "filePath": "app/marcus/orchestrator/m3_trial.py",
-      "contentHash": "025fc89a75f8558610807f0c2fa76aa41391a35b8387f41e26ff93e75b44d829",
+      "contentHash": "e09845717a55ff25a0a0ffca9f140bc1ed78ddaa9f27ca7997ebc586fbaa6dd5",
       "functions": [
         {
           "name": "_stable_uuid",
@@ -11951,6 +13438,18 @@
           ]
         },
         {
+          "source": "app.marcus.facade",
+          "specifiers": [
+            "get_facade"
+          ]
+        },
+        {
+          "source": "app.marcus.orchestrator.supervisor",
+          "specifiers": [
+            "Supervisor"
+          ]
+        },
+        {
           "source": "app.models.decision_cards",
           "specifiers": [
             "DecisionCardMeta",
@@ -11986,18 +13485,6 @@
             "register_run_state",
             "submit_override"
           ]
-        },
-        {
-          "source": "app.marcus.facade",
-          "specifiers": [
-            "get_facade"
-          ]
-        },
-        {
-          "source": "app.marcus.orchestrator.supervisor",
-          "specifiers": [
-            "Supervisor"
-          ]
         }
       ],
       "exports": [
@@ -12013,7 +13500,7 @@
         "_verdict_for_gate",
         "run_local_m3_trial"
       ],
-      "totalLines": 360,
+      "totalLines": 366,
       "hasStructuralAnalysis": true
     },
     "app/marcus/orchestrator/maya_walkthrough.py": {
@@ -12315,7 +13802,7 @@
     },
     "app/marcus/orchestrator/package_builders.py": {
       "filePath": "app/marcus/orchestrator/package_builders.py",
-      "contentHash": "ba1af48b602739da8b64dacd962ba3aef9ddaea7e12b23747e4e21902b7f9b25",
+      "contentHash": "cbabdfa0d563ed18c45ff73721d79141745230a9325832d29d2a2a4256ba2a9d",
       "functions": [
         {
           "name": "_unit_included",
@@ -12350,12 +13837,10 @@
       "classes": [
         {
           "name": "BuilderInputError",
-          "methods": [
-            "__init__"
-          ],
+          "methods": [],
           "properties": [],
           "exported": true,
-          "lineCount": 10
+          "lineCount": 28
         }
       ],
       "imports": [
@@ -12373,6 +13858,12 @@
           ]
         },
         {
+          "source": "app.specialists.dispatch_errors",
+          "specifiers": [
+            "SpecialistDispatchError"
+          ]
+        },
+        {
           "source": "app.specialists.gary.payload_contract",
           "specifiers": [
             "GARY_CONSUMED_PAYLOAD_KEYS"
@@ -12385,7 +13876,7 @@
         "build_gary_briefs",
         "run_builder_node"
       ],
-      "totalLines": 193,
+      "totalLines": 212,
       "hasStructuralAnalysis": true
     },
     "app/marcus/orchestrator/per_slide_subgraph.py": {
@@ -12654,8 +14145,15 @@
     },
     "app/marcus/orchestrator/production_runner.py": {
       "filePath": "app/marcus/orchestrator/production_runner.py",
-      "contentHash": "bd5812f3484e26558f1306ce7a92a1af634be351ad7fe7f4364527ba30a8f293",
+      "contentHash": "63e5f4cab5a68a40b22c6ac298e8fbeebf6ddc33ac28289e694ec7714f5b3e62",
       "functions": [
+        {
+          "name": "_research_dispatch_live",
+          "params": [],
+          "returnType": "bool",
+          "exported": true,
+          "lineCount": 12
+        },
         {
           "name": "_has_live_openai",
           "params": [],
@@ -12851,6 +14349,43 @@
           "lineCount": 6
         },
         {
+          "name": "_latest_contribution_output",
+          "params": [
+            "production_envelope",
+            "specialist_id"
+          ],
+          "returnType": "dict[str, Any]",
+          "exported": true,
+          "lineCount": 16
+        },
+        {
+          "name": "_voice_candidates",
+          "params": [
+            "production_envelope"
+          ],
+          "returnType": "tuple[list[str], list[dict[str, Any]]]",
+          "exported": true,
+          "lineCount": 30
+        },
+        {
+          "name": "_variant_candidates",
+          "params": [
+            "production_envelope"
+          ],
+          "returnType": "tuple[list[str], list[dict[str, Any]]]",
+          "exported": true,
+          "lineCount": 28
+        },
+        {
+          "name": "_variant_gamma_settings",
+          "params": [
+            "production_envelope"
+          ],
+          "returnType": "list[dict[str, Any]]",
+          "exported": true,
+          "lineCount": 17
+        },
+        {
           "name": "_build_decision_card",
           "params": [
             "gate_id",
@@ -12859,12 +14394,13 @@
             "operator_id",
             "pending_nodes",
             "artifact_paths",
+            "production_envelope",
             "pre_fill",
             "runs_root"
           ],
           "returnType": "Any",
           "exported": true,
-          "lineCount": 98
+          "lineCount": 148
         },
         {
           "name": "_persist_conversation_turn_if_possible",
@@ -12942,11 +14478,46 @@
             "envelope",
             "manifest_path",
             "allow_offline_cost_report",
-            "max_specialist_calls"
+            "max_specialist_calls",
+            "directive_path",
+            "bundle_dir"
           ],
           "returnType": "Path",
           "exported": true,
-          "lineCount": 31
+          "lineCount": 35
+        },
+        {
+          "name": "_canonical_directive_path",
+          "params": [
+            "trial_id",
+            "runs_root"
+          ],
+          "returnType": "Path",
+          "exported": true,
+          "lineCount": 2
+        },
+        {
+          "name": "_resolve_resume_directive_path",
+          "params": [
+            "runner",
+            "trial_id",
+            "runs_root"
+          ],
+          "returnType": "Path | None",
+          "exported": true,
+          "lineCount": 8
+        },
+        {
+          "name": "_resolve_resume_bundle_dir",
+          "params": [
+            "runner",
+            "trial_id",
+            "runs_root",
+            "directive_path"
+          ],
+          "returnType": "Path | None",
+          "exported": true,
+          "lineCount": 13
         },
         {
           "name": "_ensure_decision_card_registered_from_disk",
@@ -12960,6 +14531,65 @@
           "lineCount": 31
         },
         {
+          "name": "_merge_selection_into_envelope",
+          "params": [
+            "existing",
+            "selection",
+            "gate_id"
+          ],
+          "returnType": "dict[str, Any]",
+          "exported": true,
+          "lineCount": 29
+        },
+        {
+          "name": "_selected_variant_id_from_run_state",
+          "params": [
+            "run_state"
+          ],
+          "returnType": "str | None",
+          "exported": true,
+          "lineCount": 18
+        },
+        {
+          "name": "_slide_variant_selections_from_run_state",
+          "params": [
+            "run_state"
+          ],
+          "returnType": "dict[str, str] | None",
+          "exported": true,
+          "lineCount": 18
+        },
+        {
+          "name": "_apply_per_slide_variant_selection",
+          "params": [
+            "production_envelope",
+            "run_state"
+          ],
+          "returnType": "ProductionEnvelope",
+          "exported": true,
+          "lineCount": 62
+        },
+        {
+          "name": "_apply_variant_selection",
+          "params": [
+            "production_envelope",
+            "run_state"
+          ],
+          "returnType": "ProductionEnvelope",
+          "exported": true,
+          "lineCount": 8
+        },
+        {
+          "name": "_apply_deckwide_variant_selection",
+          "params": [
+            "production_envelope",
+            "run_state"
+          ],
+          "returnType": "ProductionEnvelope",
+          "exported": true,
+          "lineCount": 61
+        },
+        {
           "name": "_apply_verdict_to_run_state",
           "params": [
             "run_state",
@@ -12967,7 +14597,7 @@
           ],
           "returnType": "RunState",
           "exported": true,
-          "lineCount": 15
+          "lineCount": 39
         },
         {
           "name": "_record_cost",
@@ -13024,7 +14654,46 @@
           ],
           "returnType": "dict[str, Any] | None",
           "exported": true,
-          "lineCount": 45
+          "lineCount": 49
+        },
+        {
+          "name": "_gamma_settings_from_directive",
+          "params": [
+            "directive_path"
+          ],
+          "returnType": "list[dict[str, Any]] | None",
+          "exported": true,
+          "lineCount": 12
+        },
+        {
+          "name": "_invoke_specialist_with_retry",
+          "params": [
+            "adapter",
+            "invoke_kwargs",
+            "node_id"
+          ],
+          "returnType": "Any",
+          "exported": true,
+          "lineCount": 27
+        },
+        {
+          "name": "_operator_selected_voice",
+          "params": [
+            "run_state"
+          ],
+          "returnType": "str | None",
+          "exported": true,
+          "lineCount": 18
+        },
+        {
+          "name": "_effective_quinn_r_gate_code",
+          "params": [
+            "node",
+            "manifest"
+          ],
+          "returnType": "str | None",
+          "exported": true,
+          "lineCount": 23
         },
         {
           "name": "_should_invoke_pre_gate_marcus",
@@ -13081,17 +14750,20 @@
             "manifest_path",
             "runs_root",
             "allow_offline_cost_report",
-            "max_specialist_calls"
+            "max_specialist_calls",
+            "directive_path",
+            "bundle_dir"
           ],
           "returnType": "ProductionTrialEnvelope",
           "exported": true,
-          "lineCount": 160
+          "lineCount": 165
         },
         {
           "name": "_dispatch_specialist_at_node",
           "params": [
             "adapter",
             "node",
+            "manifest",
             "specialist_id",
             "production_envelope",
             "run_state",
@@ -13103,7 +14775,7 @@
           ],
           "returnType": "tuple[ProductionEnvelope, RunState]",
           "exported": true,
-          "lineCount": 59
+          "lineCount": 73
         },
         {
           "name": "_pause_at_error",
@@ -13148,7 +14820,7 @@
           ],
           "returnType": "ProductionTrialEnvelope",
           "exported": true,
-          "lineCount": 278
+          "lineCount": 369
         },
         {
           "name": "resume_production_trial",
@@ -13160,7 +14832,7 @@
           ],
           "returnType": "ProductionTrialEnvelope",
           "exported": true,
-          "lineCount": 100
+          "lineCount": 111
         },
         {
           "name": "recover_production_trial",
@@ -13171,7 +14843,7 @@
           ],
           "returnType": "ProductionTrialEnvelope",
           "exported": true,
-          "lineCount": 69
+          "lineCount": 76
         },
         {
           "name": "_continue_production_walk",
@@ -13192,7 +14864,7 @@
           ],
           "returnType": "ProductionTrialEnvelope",
           "exported": true,
-          "lineCount": 271
+          "lineCount": 371
         }
       ],
       "classes": [
@@ -13214,6 +14886,27 @@
         },
         {
           "name": "GateBypassError",
+          "methods": [],
+          "properties": [],
+          "exported": true,
+          "lineCount": 2
+        },
+        {
+          "name": "SelectionBindingError",
+          "methods": [],
+          "properties": [],
+          "exported": true,
+          "lineCount": 2
+        },
+        {
+          "name": "UnknownSelectionKeyError",
+          "methods": [],
+          "properties": [],
+          "exported": true,
+          "lineCount": 2
+        },
+        {
+          "name": "VariantSelectionError",
           "methods": [],
           "properties": [],
           "exported": true,
@@ -13327,10 +15020,12 @@
         {
           "source": "app.marcus.orchestrator",
           "specifiers": [
+            "chooser_publisher",
             "conversation_persistence",
             "gate_runner",
             "package_builders",
             "pre_gate_marcus",
+            "research_wiring",
             "specialist_summary_writer",
             "storyboard_publisher"
           ]
@@ -13348,13 +15043,28 @@
           ]
         },
         {
+          "source": "app.marcus.orchestrator.research_citation",
+          "specifiers": [
+            "CitationFidelityError"
+          ]
+        },
+        {
+          "source": "app.marcus.orchestrator.slide_variant_selection",
+          "specifiers": [
+            "SlideVariantSelectionError",
+            "validate_selections"
+          ]
+        },
+        {
           "source": "app.models.decision_cards",
           "specifiers": [
             "AnyDecisionCardAdapter",
             "DecisionCardMeta",
             "G1Card",
+            "G2BCard",
             "G2CCard",
             "G3Card",
+            "G4ACard",
             "G4Card"
           ]
         },
@@ -13368,7 +15078,8 @@
           "source": "app.models.runtime.production_envelope",
           "specifiers": [
             "ProductionEnvelope",
-            "SpecialistContribution"
+            "SpecialistContribution",
+            "compute_output_digest"
           ]
         },
         {
@@ -13427,6 +15138,7 @@
         }
       ],
       "exports": [
+        "_research_dispatch_live",
         "MissingUpstreamContributionError",
         "LegacyEnvelopeSchemaError",
         "GateBypassError",
@@ -13450,6 +15162,10 @@
         "_resolve_dependency_map",
         "_card_meta",
         "_base_card_meta",
+        "_latest_contribution_output",
+        "_voice_candidates",
+        "_variant_candidates",
+        "_variant_gamma_settings",
         "_build_decision_card",
         "_persist_conversation_turn_if_possible",
         "_pack_hash_binding",
@@ -13458,13 +15174,29 @@
         "_quartile_engagement_counts",
         "_emit_engagement_decay_report",
         "_write_checkpoint",
+        "_canonical_directive_path",
+        "_resolve_resume_directive_path",
+        "_resolve_resume_bundle_dir",
         "_ensure_decision_card_registered_from_disk",
+        "SelectionBindingError",
+        "UnknownSelectionKeyError",
+        "VariantSelectionError",
+        "_merge_selection_into_envelope",
+        "_selected_variant_id_from_run_state",
+        "_slide_variant_selections_from_run_state",
+        "_apply_per_slide_variant_selection",
+        "_apply_variant_selection",
+        "_apply_deckwide_variant_selection",
         "_apply_verdict_to_run_state",
         "_record_cost",
         "_merge_artifact_paths",
         "_has_production_evidence",
         "_active_node_handler",
         "_runner_payload_for_specialist",
+        "_gamma_settings_from_directive",
+        "_invoke_specialist_with_retry",
+        "_operator_selected_voice",
+        "_effective_quinn_r_gate_code",
         "_should_invoke_pre_gate_marcus",
         "_pre_gate_slot_values",
         "_invoke_pre_gate_marcus_for_gate",
@@ -13476,12 +15208,379 @@
         "recover_production_trial",
         "_continue_production_walk"
       ],
-      "totalLines": 1911,
+      "totalLines": 2716,
+      "hasStructuralAnalysis": true
+    },
+    "app/marcus/orchestrator/research_citation.py": {
+      "filePath": "app/marcus/orchestrator/research_citation.py",
+      "contentHash": "a35004ec251e58c223ca0197ec768aa95abc76042765ebd98726be4a2082631b",
+      "functions": [
+        {
+          "name": "derive_source_ref",
+          "params": [
+            "provider",
+            "source_id"
+          ],
+          "returnType": "str",
+          "exported": true,
+          "lineCount": 7
+        },
+        {
+          "name": "compute_source_hash",
+          "params": [
+            "row"
+          ],
+          "returnType": "str",
+          "exported": true,
+          "lineCount": 13
+        },
+        {
+          "name": "mint_cited_entry",
+          "params": [
+            "row",
+            "citation_index"
+          ],
+          "returnType": "CitedResearchEntry",
+          "exported": true,
+          "lineCount": 12
+        },
+        {
+          "name": "build_retrieval_source_refs",
+          "params": [
+            "rows"
+          ],
+          "returnType": "set[str]",
+          "exported": true,
+          "lineCount": 6
+        },
+        {
+          "name": "count_unsourced_citations",
+          "params": [
+            "citations",
+            "resolvable_source_refs"
+          ],
+          "returnType": "int",
+          "exported": true,
+          "lineCount": 18
+        },
+        {
+          "name": "gate_citation_fidelity",
+          "params": [
+            "citations",
+            "resolvable_source_refs"
+          ],
+          "returnType": "int",
+          "exported": true,
+          "lineCount": 20
+        },
+        {
+          "name": "audit_research_supplements",
+          "params": [
+            "narration_text",
+            "source_text",
+            "retrieved_figures"
+          ],
+          "returnType": "dict",
+          "exported": true,
+          "lineCount": 17
+        },
+        {
+          "name": "build_citation_manifest",
+          "params": [
+            "entries"
+          ],
+          "returnType": "list[dict[str, str]]",
+          "exported": true,
+          "lineCount": 12
+        },
+        {
+          "name": "assemble_l2_citation_report",
+          "params": [
+            "entries",
+            "resolvable_source_refs",
+            "l2_numeric_report"
+          ],
+          "returnType": "dict[str, Any]",
+          "exported": true,
+          "lineCount": 42
+        },
+        {
+          "name": "find_duplicate_citations",
+          "params": [
+            "entries"
+          ],
+          "returnType": "list[tuple[str, str]]",
+          "exported": true,
+          "lineCount": 18
+        },
+        {
+          "name": "dedupe_cited_entries",
+          "params": [
+            "entries"
+          ],
+          "returnType": "list[CitedResearchEntry]",
+          "exported": true,
+          "lineCount": 17
+        }
+      ],
+      "classes": [
+        {
+          "name": "CitationFidelityError",
+          "methods": [
+            "__init__"
+          ],
+          "properties": [],
+          "exported": true,
+          "lineCount": 6
+        },
+        {
+          "name": "CitedResearchEntry",
+          "methods": [],
+          "properties": [
+            "citation_id",
+            "source_ref",
+            "provider",
+            "source_id",
+            "title",
+            "source_hash"
+          ],
+          "exported": true,
+          "lineCount": 11
+        }
+      ],
+      "imports": [
+        {
+          "source": "hashlib",
+          "specifiers": [
+            "hashlib"
+          ]
+        },
+        {
+          "source": "logging",
+          "specifiers": [
+            "logging"
+          ]
+        },
+        {
+          "source": "typing",
+          "specifiers": [
+            "Any"
+          ]
+        },
+        {
+          "source": "pydantic",
+          "specifiers": [
+            "BaseModel",
+            "ConfigDict",
+            "Field"
+          ]
+        },
+        {
+          "source": "app.specialists._shared.source_fidelity_audit",
+          "specifiers": [
+            "audit_numeric_provenance"
+          ]
+        }
+      ],
+      "exports": [
+        "CitationFidelityError",
+        "CitedResearchEntry",
+        "derive_source_ref",
+        "compute_source_hash",
+        "mint_cited_entry",
+        "build_retrieval_source_refs",
+        "count_unsourced_citations",
+        "gate_citation_fidelity",
+        "audit_research_supplements",
+        "build_citation_manifest",
+        "assemble_l2_citation_report",
+        "find_duplicate_citations",
+        "dedupe_cited_entries"
+      ],
+      "totalLines": 283,
+      "hasStructuralAnalysis": true
+    },
+    "app/marcus/orchestrator/research_wiring.py": {
+      "filePath": "app/marcus/orchestrator/research_wiring.py",
+      "contentHash": "e7d36899f31a86013530a36c31fe7a61757618d6c58518aa7e94d6e92471f2cd",
+      "functions": [
+        {
+          "name": "_import_retrieval",
+          "params": [],
+          "returnType": "tuple[Any, Any, Any]",
+          "exported": true,
+          "lineCount": 13
+        },
+        {
+          "name": "_locked_plan_dict",
+          "params": [
+            "production_envelope"
+          ],
+          "returnType": "dict[str, Any] | None",
+          "exported": true,
+          "lineCount": 13
+        },
+        {
+          "name": "_plan_dict_for_bridge_from_raw",
+          "params": [
+            "lesson_plan"
+          ],
+          "returnType": "dict[str, Any]",
+          "exported": true,
+          "lineCount": 42
+        },
+        {
+          "name": "has_research_goals",
+          "params": [
+            "production_envelope"
+          ],
+          "returnType": "bool",
+          "exported": true,
+          "lineCount": 9
+        },
+        {
+          "name": "_dispatch_intents_to_texas",
+          "params": [
+            "intents"
+          ],
+          "returnType": "list[Any]",
+          "exported": true,
+          "lineCount": 30
+        },
+        {
+          "name": "run_research_wiring",
+          "params": [
+            "node_id",
+            "production_envelope",
+            "posture_selector",
+            "dispatch_live",
+            "injected_cited_entries",
+            "injected_resolvable_source_refs"
+          ],
+          "returnType": "ProductionEnvelope",
+          "exported": true,
+          "lineCount": 131
+        },
+        {
+          "name": "build_retrieval_source_refs_for_entries",
+          "params": [
+            "entries"
+          ],
+          "returnType": "set[str]",
+          "exported": true,
+          "lineCount": 11
+        },
+        {
+          "name": "_describe_dropped_result",
+          "params": [
+            "result"
+          ],
+          "returnType": "dict[str, Any]",
+          "exported": true,
+          "lineCount": 8
+        },
+        {
+          "name": "_is_retrieval_intent",
+          "params": [
+            "candidate"
+          ],
+          "returnType": "bool",
+          "exported": true,
+          "lineCount": 4
+        },
+        {
+          "name": "research_entries_from_envelope",
+          "params": [
+            "production_envelope"
+          ],
+          "returnType": "list[dict[str, Any]]",
+          "exported": true,
+          "lineCount": 11
+        }
+      ],
+      "classes": [
+        {
+          "name": "DeterministicPostureSelector",
+          "methods": [
+            "select_posture"
+          ],
+          "properties": [],
+          "exported": true,
+          "lineCount": 52
+        },
+        {
+          "name": "RetrievalProviderUnavailableError",
+          "methods": [],
+          "properties": [],
+          "exported": true,
+          "lineCount": 2
+        }
+      ],
+      "imports": [
+        {
+          "source": "logging",
+          "specifiers": [
+            "logging"
+          ]
+        },
+        {
+          "source": "sys",
+          "specifiers": [
+            "sys"
+          ]
+        },
+        {
+          "source": "pathlib",
+          "specifiers": [
+            "Path"
+          ]
+        },
+        {
+          "source": "typing",
+          "specifiers": [
+            "Any"
+          ]
+        },
+        {
+          "source": "app.marcus.orchestrator.research_citation",
+          "specifiers": [
+            "CitedResearchEntry",
+            "assemble_l2_citation_report",
+            "audit_research_supplements",
+            "build_citation_manifest",
+            "dedupe_cited_entries",
+            "gate_citation_fidelity",
+            "mint_cited_entry"
+          ]
+        },
+        {
+          "source": "app.models.runtime.production_envelope",
+          "specifiers": [
+            "ProductionEnvelope",
+            "SpecialistContribution"
+          ]
+        }
+      ],
+      "exports": [
+        "DeterministicPostureSelector",
+        "RetrievalProviderUnavailableError",
+        "_import_retrieval",
+        "_locked_plan_dict",
+        "_plan_dict_for_bridge_from_raw",
+        "has_research_goals",
+        "_dispatch_intents_to_texas",
+        "run_research_wiring",
+        "build_retrieval_source_refs_for_entries",
+        "_describe_dropped_result",
+        "_is_retrieval_intent",
+        "research_entries_from_envelope"
+      ],
+      "totalLines": 474,
       "hasStructuralAnalysis": true
     },
     "app/marcus/orchestrator/routing.py": {
       "filePath": "app/marcus/orchestrator/routing.py",
-      "contentHash": "4c09a769a8e22f1ae5847878cc7a03beb330372b17fc5b3aae18fe0d06d3f825",
+      "contentHash": "e07630c6e3511c4d269e8717daf37758c7faf9994c95e8e5849cf0b105b7b24e",
       "functions": [
         {
           "name": "route_step",
@@ -13491,7 +15590,7 @@
           ],
           "returnType": "RoutingDecision",
           "exported": true,
-          "lineCount": 25
+          "lineCount": 35
         }
       ],
       "classes": [
@@ -13535,7 +15634,7 @@
         "RoutingDecision",
         "route_step"
       ],
-      "totalLines": 52,
+      "totalLines": 62,
       "hasStructuralAnalysis": true
     },
     "app/marcus/orchestrator/section_09_lock.py": {
@@ -13765,6 +15864,66 @@
       "totalLines": 338,
       "hasStructuralAnalysis": true
     },
+    "app/marcus/orchestrator/slide_variant_selection.py": {
+      "filePath": "app/marcus/orchestrator/slide_variant_selection.py",
+      "contentHash": "d2369c39eca03507f1f98db5392a4ee35628fb6975a9b9def68998bd1b9da835",
+      "functions": [
+        {
+          "name": "parse_selection_code",
+          "params": [
+            "code",
+            "slide_ids_in_order"
+          ],
+          "returnType": "dict[str, str]",
+          "exported": true,
+          "lineCount": 32
+        },
+        {
+          "name": "validate_selections",
+          "params": [
+            "selections",
+            "variants_by_slide"
+          ],
+          "returnType": "None",
+          "exported": true,
+          "lineCount": 28
+        },
+        {
+          "name": "run_tag_for_trial",
+          "params": [
+            "trial_id"
+          ],
+          "returnType": "str",
+          "exported": true,
+          "lineCount": 4
+        }
+      ],
+      "classes": [
+        {
+          "name": "SlideVariantSelectionError",
+          "methods": [],
+          "properties": [],
+          "exported": true,
+          "lineCount": 2
+        }
+      ],
+      "imports": [
+        {
+          "source": "re",
+          "specifiers": [
+            "re"
+          ]
+        }
+      ],
+      "exports": [
+        "SlideVariantSelectionError",
+        "parse_selection_code",
+        "validate_selections",
+        "run_tag_for_trial"
+      ],
+      "totalLines": 98,
+      "hasStructuralAnalysis": true
+    },
     "app/marcus/orchestrator/specialist_summary_writer.py": {
       "filePath": "app/marcus/orchestrator/specialist_summary_writer.py",
       "contentHash": "7b58b8c50c836b39afb48980072b860e5db42b44357a4403a04b004f0c3f2349",
@@ -13793,7 +15952,7 @@
     },
     "app/marcus/orchestrator/storyboard_publisher.py": {
       "filePath": "app/marcus/orchestrator/storyboard_publisher.py",
-      "contentHash": "882d781d197d6de3dd0e026141e45268dc3ba23eeaee350118ae598c31c13c73",
+      "contentHash": "442cfde0c844adf1490c32ddd3c03a63eeacde8c5980eeb8fff871736a650456",
       "functions": [
         {
           "name": "_publisher_config",
@@ -13813,11 +15972,21 @@
           "name": "_write_segment_manifest_for_b",
           "params": [
             "run_dir",
-            "irene_output"
+            "irene_output",
+            "cluster_arc_by_id"
           ],
           "returnType": "Path",
           "exported": true,
-          "lineCount": 35
+          "lineCount": 64
+        },
+        {
+          "name": "_cluster_arc_by_id",
+          "params": [
+            "production_envelope"
+          ],
+          "returnType": "dict[str, str] | None",
+          "exported": true,
+          "lineCount": 32
         },
         {
           "name": "publish_storyboard_for_gate",
@@ -13829,7 +15998,7 @@
           ],
           "returnType": "dict[str, Any] | None",
           "exported": true,
-          "lineCount": 136
+          "lineCount": 144
         }
       ],
       "classes": [
@@ -13908,9 +16077,10 @@
         "StoryboardPublishError",
         "_load_generator_module",
         "_write_segment_manifest_for_b",
+        "_cluster_arc_by_id",
         "publish_storyboard_for_gate"
       ],
-      "totalLines": 267,
+      "totalLines": 338,
       "hasStructuralAnalysis": true
     },
     "app/marcus/orchestrator/stub_dials.py": {
@@ -15674,7 +17844,7 @@
     },
     "app/models/decision_cards/__init__.py": {
       "filePath": "app/models/decision_cards/__init__.py",
-      "contentHash": "eb4caa6d012fd39a5ea01e63e21055f9126335b6c52f0d0d5601cf19f44620af",
+      "contentHash": "6c8b24b2d68b99c9d66759b42d415f36cbafbe5fb3e00f034f85acbe0c4430de",
       "functions": [],
       "classes": [],
       "imports": [
@@ -15727,6 +17897,12 @@
           ]
         },
         {
+          "source": "app.models.decision_cards.g2b",
+          "specifiers": [
+            "G2BCard"
+          ]
+        },
+        {
           "source": "app.models.decision_cards.g2c",
           "specifiers": [
             "G2CCard"
@@ -15742,6 +17918,12 @@
           "source": "app.models.decision_cards.g4",
           "specifiers": [
             "G4Card"
+          ]
+        },
+        {
+          "source": "app.models.decision_cards.g4a",
+          "specifiers": [
+            "G4ACard"
           ]
         },
         {
@@ -15779,7 +17961,7 @@
         }
       ],
       "exports": [],
-      "totalLines": 76,
+      "totalLines": 80,
       "hasStructuralAnalysis": true
     },
     "app/models/decision_cards/__main__.py": {
@@ -16231,6 +18413,79 @@
       "totalLines": 102,
       "hasStructuralAnalysis": true
     },
+    "app/models/decision_cards/g2b.py": {
+      "filePath": "app/models/decision_cards/g2b.py",
+      "contentHash": "86dfa71c31878e8dcc584df498c016864933de6c5f3656e5ab631f49a8f096ae",
+      "functions": [],
+      "classes": [
+        {
+          "name": "G2BCard",
+          "methods": [
+            "_enforce_uuid4",
+            "_enforce_created_at_tz",
+            "_reject_blank_operator_prompt"
+          ],
+          "properties": [
+            "schema_version",
+            "card_id",
+            "trial_id",
+            "gate_id",
+            "gate_focus",
+            "created_at",
+            "variant_candidates",
+            "selected_variant_id",
+            "gamma_settings",
+            "pick_context",
+            "operator_prompt",
+            "verb"
+          ],
+          "exported": true,
+          "lineCount": 72
+        }
+      ],
+      "imports": [
+        {
+          "source": "datetime",
+          "specifiers": [
+            "UTC",
+            "datetime"
+          ]
+        },
+        {
+          "source": "typing",
+          "specifiers": [
+            "Any",
+            "Literal"
+          ]
+        },
+        {
+          "source": "pydantic",
+          "specifiers": [
+            "UUID4",
+            "Field",
+            "field_validator"
+          ]
+        },
+        {
+          "source": "app.models.decision_cards._base",
+          "specifiers": [
+            "DecisionCardBase"
+          ]
+        },
+        {
+          "source": "app.models.state._base",
+          "specifiers": [
+            "enforce_tz_aware",
+            "enforce_uuid4_version"
+          ]
+        }
+      ],
+      "exports": [
+        "G2BCard"
+      ],
+      "totalLines": 98,
+      "hasStructuralAnalysis": true
+    },
     "app/models/decision_cards/g2c.py": {
       "filePath": "app/models/decision_cards/g2c.py",
       "contentHash": "ec98404f77f7139672158719a208dda5149e9387cd4ab7ba423bc08eca4f6e60",
@@ -16440,6 +18695,78 @@
         "G4Card"
       ],
       "totalLines": 80,
+      "hasStructuralAnalysis": true
+    },
+    "app/models/decision_cards/g4a.py": {
+      "filePath": "app/models/decision_cards/g4a.py",
+      "contentHash": "6b6c40869cc277a6e68d3b1d19148301ef9ee3474dea129ef561e7e0f61ef709",
+      "functions": [],
+      "classes": [
+        {
+          "name": "G4ACard",
+          "methods": [
+            "_enforce_uuid4",
+            "_enforce_created_at_tz",
+            "_reject_blank_operator_prompt"
+          ],
+          "properties": [
+            "schema_version",
+            "card_id",
+            "trial_id",
+            "gate_id",
+            "gate_focus",
+            "created_at",
+            "voice_candidates",
+            "selected_voice_id",
+            "pick_context",
+            "operator_prompt",
+            "verb"
+          ],
+          "exported": true,
+          "lineCount": 68
+        }
+      ],
+      "imports": [
+        {
+          "source": "datetime",
+          "specifiers": [
+            "UTC",
+            "datetime"
+          ]
+        },
+        {
+          "source": "typing",
+          "specifiers": [
+            "Any",
+            "Literal"
+          ]
+        },
+        {
+          "source": "pydantic",
+          "specifiers": [
+            "UUID4",
+            "Field",
+            "field_validator"
+          ]
+        },
+        {
+          "source": "app.models.decision_cards._base",
+          "specifiers": [
+            "DecisionCardBase"
+          ]
+        },
+        {
+          "source": "app.models.state._base",
+          "specifiers": [
+            "enforce_tz_aware",
+            "enforce_uuid4_version"
+          ]
+        }
+      ],
+      "exports": [
+        "G4ACard"
+      ],
+      "totalLines": 94,
       "hasStructuralAnalysis": true
     },
     "app/models/decision_cards/g5.py": {
@@ -20882,6 +23209,109 @@
       "totalLines": 107,
       "hasStructuralAnalysis": true
     },
+    "app/models/perception/__init__.py": {
+      "filePath": "app/models/perception/__init__.py",
+      "contentHash": "9c04a652741d49fc73a9b533266d216a5cc7c7d3f7a4dd7fee8d36f43f268551",
+      "functions": [],
+      "classes": [],
+      "imports": [
+        {
+          "source": "app.models.perception.perception_artifact",
+          "specifiers": [
+            "CalloutIntent",
+            "Confidence",
+            "CoverageState",
+            "ImageRoleFlag",
+            "ImageRoleTier",
+            "MacroLayout",
+            "NarrationCadence",
+            "PerceptionArtifact",
+            "PerceptionProvenance",
+            "ReadingPath",
+            "ReadingPathFlag",
+            "ReadingPathSource",
+            "RoleTier",
+            "TextSubstructure"
+          ]
+        }
+      ],
+      "exports": [],
+      "totalLines": 36,
+      "hasStructuralAnalysis": true
+    },
+    "app/models/perception/perception_artifact.py": {
+      "filePath": "app/models/perception/perception_artifact.py",
+      "contentHash": "a2ea28472a1928c62065c9a9af9e271fbc2674f8394694d9cd0d23136a029e13",
+      "functions": [],
+      "classes": [
+        {
+          "name": "PerceptionArtifact",
+          "methods": [
+            "_slide_id_nonblank"
+          ],
+          "properties": [
+            "confidence",
+            "visual_elements",
+            "extracted_text",
+            "layout_description",
+            "slide_title",
+            "text_blocks",
+            "artifact_path",
+            "slide_id",
+            "card_number",
+            "coverage",
+            "confidence_score",
+            "provider_model_id",
+            "reading_path",
+            "macro_layout",
+            "image_roles",
+            "dominant_image_role",
+            "image_role_flags",
+            "text_substructure",
+            "narration_cadence",
+            "callout_intent",
+            "reading_path_flags",
+            "reading_path_source",
+            "reading_path_degraded",
+            "reading_path_rationale",
+            "reading_path_geometry",
+            "source_png_path",
+            "provenance"
+          ],
+          "exported": true,
+          "lineCount": 96
+        }
+      ],
+      "imports": [
+        {
+          "source": "typing",
+          "specifiers": [
+            "Any",
+            "Literal"
+          ]
+        },
+        {
+          "source": "pydantic",
+          "specifiers": [
+            "BaseModel",
+            "ConfigDict",
+            "Field",
+            "field_validator"
+          ]
+        },
+        {
+          "source": "pydantic.json_schema",
+          "specifiers": [
+            "SkipJsonSchema"
+          ]
+        }
+      ],
+      "exports": [
+        "PerceptionArtifact"
+      ],
+      "totalLines": 167,
+      "hasStructuralAnalysis": true
+    },
     "app/models/README.md": {
       "filePath": "app/models/README.md",
       "contentHash": "75d6500d18048ba9af4cf5ac914250a2e697d5d0fdc1d3e22b8b321699d4a6f0",
@@ -21041,12 +23471,12 @@
     },
     "app/models/registry.yaml": {
       "filePath": "app/models/registry.yaml",
-      "contentHash": "b7798336c8da1026a39fee60a5d449ebba77b8a6de1c24f2a8cf3a1df3f1bae4",
+      "contentHash": "2183d6013b9fe432d30306f5a17149217725ff297823de7efe72ea5f53c4bda2",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 56,
+      "totalLines": 68,
       "hasStructuralAnalysis": true
     },
     "app/models/runtime/__init__.py": {
@@ -21268,7 +23698,7 @@
     },
     "app/models/runtime/production_trial_envelope.py": {
       "filePath": "app/models/runtime/production_trial_envelope.py",
-      "contentHash": "78aad6e1a53a17a1b129067f70710e60c3cf2b4579be642299569435c06aff0c",
+      "contentHash": "d3f9e2eae424a9e8e2e6f51562c2278fb31ffe0e5ea24ce9cc43c84300804b7a",
       "functions": [],
       "classes": [
         {
@@ -21367,7 +23797,7 @@
       "exports": [
         "ProductionTrialEnvelope"
       ],
-      "totalLines": 140,
+      "totalLines": 146,
       "hasStructuralAnalysis": true
     },
     "app/models/runtime/trial_economics_report.py": {
@@ -21483,12 +23913,12 @@
     },
     "app/models/schemas/operator_verdict.schema.json": {
       "filePath": "app/models/schemas/operator_verdict.schema.json",
-      "contentHash": "8f095aedc95a0973150cc8aa1e65cc5650ca7aadc0d8ed305e7ff177c40d315b",
+      "contentHash": "42a67cc603c108fd6a5f681f94360d1c4dc4639fbe516c6a8d91d5aa40e443fd",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 104,
+      "totalLines": 105,
       "hasStructuralAnalysis": true
     },
     "app/models/schemas/specialist_state.schema.json": {
@@ -22106,7 +24536,7 @@
     },
     "app/models/state/operator_verdict.py": {
       "filePath": "app/models/state/operator_verdict.py",
-      "contentHash": "a38ea4c4a35050c3e85b43801143a04e67d9798a05c8945b6da78a2bbfd65919",
+      "contentHash": "3adc8991c5aad778637c347e1e72ab5de5e1b969a29230c036f8fa534b1ff95b",
       "functions": [
         {
           "name": "operator_verdict_schema_text",
@@ -22158,7 +24588,7 @@
             "revise_count"
           ],
           "exported": true,
-          "lineCount": 93
+          "lineCount": 98
         }
       ],
       "imports": [
@@ -22239,7 +24669,7 @@
         "emit_operator_verdict_schema",
         "main"
       ],
-      "totalLines": 157,
+      "totalLines": 162,
       "hasStructuralAnalysis": true
     },
     "app/models/state/README.md": {
@@ -22658,7 +25088,7 @@
     },
     "app/models/state/specialist_summary_artifacts.py": {
       "filePath": "app/models/state/specialist_summary_artifacts.py",
-      "contentHash": "96b8d1bcd512d32134c2be3b7ead02e23264334c79756f62d19d8b513284ab8a",
+      "contentHash": "9163eae2ca71da66117ad452cd117ecc81dbea411de59798038402784b9db0e5",
       "functions": [
         {
           "name": "canonical_specialist_id",
@@ -22760,13 +25190,24 @@
           "lineCount": 5
         },
         {
-          "name": "_artifact_paths_from_state",
+          "name": "_artifacts_from_contribution",
           "params": [
-            "state"
+            "state",
+            "specialist_id"
           ],
           "returnType": "list[str]",
           "exported": true,
-          "lineCount": 5
+          "lineCount": 37
+        },
+        {
+          "name": "_artifact_paths_from_state",
+          "params": [
+            "state",
+            "specialist_id"
+          ],
+          "returnType": "list[str]",
+          "exported": true,
+          "lineCount": 7
         },
         {
           "name": "_trail_from_state",
@@ -22912,6 +25353,7 @@
         "build_summary_text",
         "_received_keys_from_state",
         "_decided_from_state",
+        "_artifacts_from_contribution",
         "_artifact_paths_from_state",
         "_trail_from_state",
         "emit_summary",
@@ -22919,7 +25361,7 @@
         "_timestamp_from_summary",
         "load_most_recent_summary"
       ],
-      "totalLines": 287,
+      "totalLines": 330,
       "hasStructuralAnalysis": true
     },
     "app/models/state/story_state.py": {
@@ -23039,7 +25481,7 @@
     },
     "app/models/state/validators/operator_verdict_validators.py": {
       "filePath": "app/models/state/validators/operator_verdict_validators.py",
-      "contentHash": "b953edea4a697583701196af798a0e780acddd7d10514b8b97251cf4ae5f748f",
+      "contentHash": "342d1e6ab013d1ec83b35d806b07091b01fe6674c2e17b868d2dcfb02929a3d7",
       "functions": [
         {
           "name": "enforce_no_tamper_verbs",
@@ -23059,7 +25501,7 @@
           ],
           "returnType": "None",
           "exported": true,
-          "lineCount": 21
+          "lineCount": 22
         }
       ],
       "classes": [],
@@ -23075,7 +25517,7 @@
         "enforce_no_tamper_verbs",
         "enforce_verb_payload_consistency"
       ],
-      "totalLines": 62,
+      "totalLines": 63,
       "hasStructuralAnalysis": true
     },
     "app/models/state/validators/run_state_validators.py": {
@@ -23171,7 +25613,7 @@
     },
     "app/models/trial3_transcript.py": {
       "filePath": "app/models/trial3_transcript.py",
-      "contentHash": "529b22d608a3d55fa9eda1d96d9c5cdb4f0fd5abb2fb94a36fa936bea9429697",
+      "contentHash": "c48a86a37966e02f86e30e6da00884cb6f4bcfa5bc78fe4596715ebd6c4b0e0f",
       "functions": [
         {
           "name": "_strip_non_empty",
@@ -23263,17 +25705,17 @@
         "TrialEvent",
         "Trial3Transcript"
       ],
-      "totalLines": 98,
+      "totalLines": 100,
       "hasStructuralAnalysis": true
     },
     "app/models/trial3_transcript.v1.schema.json": {
       "filePath": "app/models/trial3_transcript.v1.schema.json",
-      "contentHash": "818b740594a7fe95c62a5c8d27399ea6e8a0b77336c2900bdbb5f7cc0ab24491",
+      "contentHash": "40de12a6a257e8b387d4b665a5b579067593ef59c24f43f99bf8e1485203950b",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 108,
+      "totalLines": 110,
       "hasStructuralAnalysis": true
     },
     "app/models/tripwire_ledger.py": {
@@ -27080,6 +29522,144 @@
       "totalLines": 47,
       "hasStructuralAnalysis": true
     },
+    "app/specialists/_shared/__init__.py": {
+      "filePath": "app/specialists/_shared/__init__.py",
+      "contentHash": "e4fadd2ebd568017cfee7a3765a28a81dd420b228820794a089c35abde3c61c9",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 3,
+      "hasStructuralAnalysis": true
+    },
+    "app/specialists/_shared/figure_tokens.py": {
+      "filePath": "app/specialists/_shared/figure_tokens.py",
+      "contentHash": "f4e0a686e8d6140c0eafcfc128d2700d2104ef232d160bbbd3bb225e841ed5ca",
+      "functions": [
+        {
+          "name": "_figures",
+          "params": [
+            "text"
+          ],
+          "returnType": "set[str]",
+          "exported": true,
+          "lineCount": 2
+        },
+        {
+          "name": "_normalize_figure",
+          "params": [
+            "value"
+          ],
+          "returnType": "str",
+          "exported": true,
+          "lineCount": 14
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "re",
+          "specifiers": [
+            "re"
+          ]
+        }
+      ],
+      "exports": [
+        "_figures",
+        "_normalize_figure"
+      ],
+      "totalLines": 35,
+      "hasStructuralAnalysis": true
+    },
+    "app/specialists/_shared/source_fidelity_audit.py": {
+      "filePath": "app/specialists/_shared/source_fidelity_audit.py",
+      "contentHash": "3ef0a5d296fe21ff0ff9eafe543a2cffb222214d653fcf4793242ae839ff6078",
+      "functions": [
+        {
+          "name": "_normalized_token_map",
+          "params": [
+            "text"
+          ],
+          "returnType": "dict[str, set[str]]",
+          "exported": true,
+          "lineCount": 21
+        },
+        {
+          "name": "_normalize_supplements",
+          "params": [
+            "research_supplements"
+          ],
+          "returnType": "dict[str, str]",
+          "exported": true,
+          "lineCount": 13
+        },
+        {
+          "name": "audit_numeric_provenance",
+          "params": [
+            "narration_text",
+            "source_text",
+            "research_supplements"
+          ],
+          "returnType": "dict",
+          "exported": true,
+          "lineCount": 165
+        },
+        {
+          "name": "_nearest_source_token",
+          "params": [
+            "narration_norm",
+            "source_map"
+          ],
+          "returnType": "str | None",
+          "exported": true,
+          "lineCount": 28
+        },
+        {
+          "name": "_kind_of",
+          "params": [
+            "norm"
+          ],
+          "returnType": "str | None",
+          "exported": true,
+          "lineCount": 3
+        },
+        {
+          "name": "_value_of",
+          "params": [
+            "norm"
+          ],
+          "returnType": "float | None",
+          "exported": true,
+          "lineCount": 8
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "re",
+          "specifiers": [
+            "re"
+          ]
+        },
+        {
+          "source": "app.specialists._shared.figure_tokens",
+          "specifiers": [
+            "_figures",
+            "_normalize_figure"
+          ]
+        }
+      ],
+      "exports": [
+        "_normalized_token_map",
+        "_normalize_supplements",
+        "audit_numeric_provenance",
+        "_nearest_source_token",
+        "_kind_of",
+        "_value_of"
+      ],
+      "totalLines": 303,
+      "hasStructuralAnalysis": true
+    },
     "app/specialists/_stub/__init__.py": {
       "filePath": "app/specialists/_stub/__init__.py",
       "contentHash": "9bff545c3cf77e240ce5fd095be096d6ecd4365914eb939a2a80523749c7ab4b",
@@ -28960,7 +31540,7 @@
     },
     "app/specialists/desmond/graph.py": {
       "filePath": "app/specialists/desmond/graph.py",
-      "contentHash": "456dce867a77e461cf369fe7490e6e056305587904c68ac2932e344ccfdb1aec",
+      "contentHash": "66e4d462d2c223e7845d97f3a3975033526759992f3ab29825e08da1ec56833a",
       "functions": [
         {
           "name": "_new_dispatch_trail_entry",
@@ -28979,7 +31559,7 @@
           ],
           "returnType": "str",
           "exported": true,
-          "lineCount": 17
+          "lineCount": 28
         },
         {
           "name": "_current_sanctum_manifest",
@@ -29215,15 +31795,15 @@
           ]
         },
         {
-          "source": "app.specialists.texas.graph",
-          "specifiers": [
-            "_SanctumLockViolation"
-          ]
-        },
-        {
           "source": "app.specialists._scaffold.contract",
           "specifiers": [
             "SCAFFOLD_NODE_IDS"
+          ]
+        },
+        {
+          "source": "app.specialists.texas.graph",
+          "specifiers": [
+            "_SanctumLockViolation"
           ]
         }
       ],
@@ -29248,7 +31828,7 @@
         "_handoff",
         "build_desmond_graph"
       ],
-      "totalLines": 430,
+      "totalLines": 441,
       "hasStructuralAnalysis": true
     },
     "app/specialists/desmond/model_config.yaml": {
@@ -29381,8 +31961,17 @@
     },
     "app/specialists/enrique/_act.py": {
       "filePath": "app/specialists/enrique/_act.py",
-      "contentHash": "286cb466a645f38ad137500f624dd7344453f189faca688cd7d65f77b0561f1f",
+      "contentHash": "478552ae24eefebd98a651c118bb49efd823e1a6f4b4f767d538a8cd2054acd9",
       "functions": [
+        {
+          "name": "_require_bundle_path",
+          "params": [
+            "payload"
+          ],
+          "returnType": "Path",
+          "exported": true,
+          "lineCount": 12
+        },
         {
           "name": "_json_dumps",
           "params": [
@@ -29496,7 +32085,7 @@
           ],
           "returnType": "list[dict[str, Any]]",
           "exported": true,
-          "lineCount": 42
+          "lineCount": 53
         },
         {
           "name": "_segment_text",
@@ -29518,6 +32107,15 @@
           "lineCount": 2
         },
         {
+          "name": "_mp3_duration_seconds",
+          "params": [
+            "data"
+          ],
+          "returnType": "float | None",
+          "exported": true,
+          "lineCount": 36
+        },
+        {
           "name": "_write_vtt",
           "params": [
             "path",
@@ -29537,7 +32135,7 @@
           ],
           "returnType": "dict[str, Any]",
           "exported": true,
-          "lineCount": 57
+          "lineCount": 69
         },
         {
           "name": "build_compositor_invocation",
@@ -29655,7 +32253,8 @@
         {
           "source": "app.specialists.narration_join",
           "specifiers": [
-            "join_narration_segments"
+            "join_narration_segments",
+            "phantom_segment_ids"
           ]
         },
         {
@@ -29673,6 +32272,7 @@
       ],
       "exports": [
         "EnriqueActError",
+        "_require_bundle_path",
         "_json_dumps",
         "_trail_entry",
         "decode_envelope_payload",
@@ -29687,13 +32287,14 @@
         "_segments",
         "_segment_text",
         "_segment_id",
+        "_mp3_duration_seconds",
         "_write_vtt",
         "build_assembly_bundle",
         "build_compositor_invocation",
         "generate_enrique_outputs",
         "act"
       ],
-      "totalLines": 365,
+      "totalLines": 452,
       "hasStructuralAnalysis": true
     },
     "app/specialists/enrique/config.yaml": {
@@ -30136,7 +32737,7 @@
     },
     "app/specialists/gary/_act.py": {
       "filePath": "app/specialists/gary/_act.py",
-      "contentHash": "a8e0cb55a8be86d0a0d6207df101170d46565c7bc263e22eb0830531d5607db7",
+      "contentHash": "95ac5dd335d29ce3105cd04c682f132a6132a97b030b142ffe525631722ec226",
       "functions": [
         {
           "name": "_json_dumps",
@@ -30191,17 +32792,108 @@
           ],
           "returnType": "list[dict[str, Any]]",
           "exported": true,
-          "lineCount": 12
+          "lineCount": 14
         },
         {
           "name": "_theme_id",
           "params": [
             "client",
-            "payload"
+            "payload",
+            "themes"
           ],
           "returnType": "str | None",
           "exported": true,
-          "lineCount": 11
+          "lineCount": 17
+        },
+        {
+          "name": "_resolve_and_validate_theme",
+          "params": [
+            "requested",
+            "themes"
+          ],
+          "returnType": "str",
+          "exported": true,
+          "lineCount": 22
+        },
+        {
+          "name": "_validate_enum_setting",
+          "params": [
+            "settings",
+            "key",
+            "allowed",
+            "omit_sentinels"
+          ],
+          "returnType": "None",
+          "exported": true,
+          "lineCount": 16
+        },
+        {
+          "name": "_normalized_gamma_settings",
+          "params": [
+            "payload"
+          ],
+          "returnType": "list[dict[str, Any]]",
+          "exported": true,
+          "lineCount": 72
+        },
+        {
+          "name": "_theme_id_for_variant",
+          "params": [
+            "base_theme_id",
+            "settings",
+            "themes"
+          ],
+          "returnType": "str | None",
+          "exported": true,
+          "lineCount": 9
+        },
+        {
+          "name": "_text_options_for_variant",
+          "params": [
+            "settings"
+          ],
+          "returnType": "dict[str, str]",
+          "exported": true,
+          "lineCount": 15
+        },
+        {
+          "name": "_image_options_for_variant",
+          "params": [
+            "settings"
+          ],
+          "returnType": "dict[str, str]",
+          "exported": true,
+          "lineCount": 23
+        },
+        {
+          "name": "_card_options_for_variant",
+          "params": [
+            "settings"
+          ],
+          "returnType": "dict[str, str]",
+          "exported": true,
+          "lineCount": 5
+        },
+        {
+          "name": "_instructions_for_variant",
+          "params": [
+            "payload",
+            "variant",
+            "settings"
+          ],
+          "returnType": "str",
+          "exported": true,
+          "lineCount": 27
+        },
+        {
+          "name": "_slide_title",
+          "params": [
+            "slide",
+            "index"
+          ],
+          "returnType": "str",
+          "exported": true,
+          "lineCount": 15
         },
         {
           "name": "_input_text",
@@ -30211,19 +32903,7 @@
           ],
           "returnType": "str",
           "exported": true,
-          "lineCount": 8
-        },
-        {
-          "name": "_paths_from_generation",
-          "params": [
-            "generation",
-            "slides",
-            "export_dir",
-            "label"
-          ],
-          "returnType": "list[str]",
-          "exported": true,
-          "lineCount": 44
+          "lineCount": 21
         },
         {
           "name": "build_vera_g3_invocation",
@@ -30242,7 +32922,7 @@
           ],
           "returnType": "dict[str, Any]",
           "exported": true,
-          "lineCount": 73
+          "lineCount": 173
         },
         {
           "name": "act",
@@ -30258,9 +32938,7 @@
       "classes": [
         {
           "name": "GaryActError",
-          "methods": [
-            "__init__"
-          ],
+          "methods": [],
           "properties": [],
           "exported": true,
           "lineCount": 6
@@ -30317,6 +32995,12 @@
           ]
         },
         {
+          "source": "app.specialists.dispatch_errors",
+          "specifiers": [
+            "SpecialistDispatchError"
+          ]
+        },
+        {
           "source": "app.specialists.gary.gamma_dispatch",
           "specifiers": [
             "GammaDispatchError",
@@ -30332,8 +33016,8 @@
         {
           "source": "skills.gamma_api_mastery.scripts.gamma_operations",
           "specifiers": [
-            "_materialize_exported_slide_paths",
-            "download_export"
+            "download_export",
+            "materialize_exported_slide_paths_by_title"
           ]
         },
         {
@@ -30352,13 +33036,21 @@
         "_trail_entry",
         "_slides",
         "_theme_id",
+        "_resolve_and_validate_theme",
+        "_validate_enum_setting",
+        "_normalized_gamma_settings",
+        "_theme_id_for_variant",
+        "_text_options_for_variant",
+        "_image_options_for_variant",
+        "_card_options_for_variant",
+        "_instructions_for_variant",
+        "_slide_title",
         "_input_text",
-        "_paths_from_generation",
         "build_vera_g3_invocation",
         "generate_gamma_variants",
         "act"
       ],
-      "totalLines": 308,
+      "totalLines": 755,
       "hasStructuralAnalysis": true
     },
     "app/specialists/gary/config.yaml": {
@@ -30457,7 +33149,7 @@
     },
     "app/specialists/gary/graph.py": {
       "filePath": "app/specialists/gary/graph.py",
-      "contentHash": "2c06716c73ed8598706f14bc0aa062294d4ced698dac1cd1d9f3fcc455ea8d0d",
+      "contentHash": "ebd1b78a1744f2eb7167605d13ad4a9faaabc46ccbf529d80853bfdc9e314db4",
       "functions": [
         {
           "name": "_new_dispatch_trail_entry",
@@ -30598,9 +33290,7 @@
       "classes": [
         {
           "name": "ReceiptParseError",
-          "methods": [
-            "__init__"
-          ],
+          "methods": [],
           "properties": [],
           "exported": true,
           "lineCount": 6
@@ -30684,6 +33374,18 @@
           ]
         },
         {
+          "source": "app.specialists._scaffold.contract",
+          "specifiers": [
+            "SCAFFOLD_NODE_IDS"
+          ]
+        },
+        {
+          "source": "app.specialists.dispatch_errors",
+          "specifiers": [
+            "SpecialistDispatchError"
+          ]
+        },
+        {
           "source": "app.specialists.gary",
           "specifiers": [
             "_gary_act_impl"
@@ -30693,12 +33395,6 @@
           "source": "app.specialists.gary.gamma_dispatch",
           "specifiers": [
             "dispatch_to_gamma"
-          ]
-        },
-        {
-          "source": "app.specialists._scaffold.contract",
-          "specifiers": [
-            "SCAFFOLD_NODE_IDS"
           ]
         }
       ],
@@ -30720,7 +33416,7 @@
         "_handoff",
         "build_gary_graph"
       ],
-      "totalLines": 258,
+      "totalLines": 259,
       "hasStructuralAnalysis": true
     },
     "app/specialists/gary/model_config.yaml": {
@@ -30735,12 +33431,12 @@
     },
     "app/specialists/gary/payload_contract.py": {
       "filePath": "app/specialists/gary/payload_contract.py",
-      "contentHash": "61d9f9019668449d6642ab9650a63c4e7a5455c7177bff0dba9547f5b09843a5",
+      "contentHash": "4d7f5e75ce5e62bca637897d701643baca47f043abb5c428749ff8baea546c76",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 28,
+      "totalLines": 29,
       "hasStructuralAnalysis": true
     },
     "app/specialists/gary/state.py": {
@@ -30841,7 +33537,7 @@
     },
     "app/specialists/irene_pass1/_act.py": {
       "filePath": "app/specialists/irene_pass1/_act.py",
-      "contentHash": "102a0433614d0fd0730162e1f08a4acfb3649074c83232447fa5f3fd4b97c9a5",
+      "contentHash": "f24041b8329f3f8f5a24a9853e69a3bd700cf0ff55452c66f15922f1ca614015",
       "functions": [
         {
           "name": "_json_dumps",
@@ -30896,7 +33592,48 @@
           ],
           "returnType": "tuple[str, str]",
           "exported": true,
-          "lineCount": 34
+          "lineCount": 33
+        },
+        {
+          "name": "_cluster_emission_instructions",
+          "params": [],
+          "returnType": "str",
+          "exported": true,
+          "lineCount": 41
+        },
+        {
+          "name": "_collateral_emission_instructions",
+          "params": [],
+          "returnType": "str",
+          "exported": true,
+          "lineCount": 52
+        },
+        {
+          "name": "_singleton_cluster_id",
+          "params": [
+            "unit_id"
+          ],
+          "returnType": "str",
+          "exported": true,
+          "lineCount": 4
+        },
+        {
+          "name": "normalize_clusters",
+          "params": [
+            "plan"
+          ],
+          "returnType": "dict[str, Any]",
+          "exported": true,
+          "lineCount": 135
+        },
+        {
+          "name": "normalize_collateral",
+          "params": [
+            "plan"
+          ],
+          "returnType": "dict[str, Any]",
+          "exported": true,
+          "lineCount": 61
         },
         {
           "name": "parse_pass1_response",
@@ -30905,7 +33642,7 @@
           ],
           "returnType": "dict[str, Any]",
           "exported": true,
-          "lineCount": 26
+          "lineCount": 35
         },
         {
           "name": "write_lesson_plan",
@@ -30916,7 +33653,25 @@
           ],
           "returnType": "Path",
           "exported": true,
-          "lineCount": 20
+          "lineCount": 39
+        },
+        {
+          "name": "_oneline",
+          "params": [
+            "value"
+          ],
+          "returnType": "str",
+          "exported": true,
+          "lineCount": 10
+        },
+        {
+          "name": "_collateral_artifact_lines",
+          "params": [
+            "collateral"
+          ],
+          "returnType": "list[str]",
+          "exported": true,
+          "lineCount": 55
         },
         {
           "name": "confirm_plan_units",
@@ -30953,10 +33708,12 @@
       "classes": [
         {
           "name": "ModeMismatchError",
-          "methods": [],
+          "methods": [
+            "__init__"
+          ],
           "properties": [],
           "exported": true,
-          "lineCount": 2
+          "lineCount": 10
         },
         {
           "name": "BulkRatificationError",
@@ -30987,6 +33744,12 @@
           ]
         },
         {
+          "source": "logging",
+          "specifiers": [
+            "logging"
+          ]
+        },
+        {
           "source": "datetime",
           "specifiers": [
             "UTC",
@@ -31006,6 +33769,12 @@
           ]
         },
         {
+          "source": "app.marcus.lesson_plan.collateral_spec",
+          "specifiers": [
+            "CollateralSpec"
+          ]
+        },
+        {
           "source": "app.models.state.operator_verdict",
           "specifiers": [
             "OperatorVerdict"
@@ -31015,6 +33784,12 @@
           "source": "app.models.state.run_state",
           "specifiers": [
             "RunState"
+          ]
+        },
+        {
+          "source": "app.specialists.dispatch_errors",
+          "specifiers": [
+            "SpecialistDispatchError"
           ]
         },
         {
@@ -31041,13 +33816,20 @@
         "read_sanctum_digest",
         "read_references",
         "assemble_pass1_prompt",
+        "_cluster_emission_instructions",
+        "_collateral_emission_instructions",
+        "_singleton_cluster_id",
+        "normalize_clusters",
+        "normalize_collateral",
         "parse_pass1_response",
         "write_lesson_plan",
+        "_oneline",
+        "_collateral_artifact_lines",
         "confirm_plan_units",
         "build_learning_events",
         "act"
       ],
-      "totalLines": 278,
+      "totalLines": 712,
       "hasStructuralAnalysis": true
     },
     "app/specialists/irene_pass1/expertise/README.md": {
@@ -31343,7 +34125,7 @@
     },
     "app/specialists/irene/authoring/__init__.py": {
       "filePath": "app/specialists/irene/authoring/__init__.py",
-      "contentHash": "27705d750b65968bf34b81e905f3c974d5f84d6eae0c289c92766462ffa72ca1",
+      "contentHash": "5224ec2156ffc200ed988ad5fb277d86b47442ff6482838e8f5bf1ecfdef5af9",
       "functions": [],
       "classes": [],
       "imports": [
@@ -31361,17 +34143,18 @@
             "SegmentManifest",
             "SegmentManifestSegment",
             "VisualDetailLoad",
-            "VisualReference"
+            "VisualReference",
+            "project_rich_perception_for_authoring"
           ]
         }
       ],
       "exports": [],
-      "totalLines": 32,
+      "totalLines": 34,
       "hasStructuralAnalysis": true
     },
     "app/specialists/irene/authoring/pass_2_template.py": {
       "filePath": "app/specialists/irene/authoring/pass_2_template.py",
-      "contentHash": "b3addb5b1f012821e290a768580eb6f634969919acb8b021fa4b287c92f828ca",
+      "contentHash": "4b42592733219c7b683aeb9dc98e6227eacd93fe4aeff8cdadd1b7fd0b95a9e8",
       "functions": [
         {
           "name": "_ensure_utc_aware",
@@ -31390,6 +34173,15 @@
           "returnType": "str",
           "exported": true,
           "lineCount": 2
+        },
+        {
+          "name": "project_rich_perception_for_authoring",
+          "params": [
+            "artifact"
+          ],
+          "returnType": "PerceptionArtifact",
+          "exported": true,
+          "lineCount": 10
         }
       ],
       "classes": [
@@ -31520,6 +34312,12 @@
             "field_validator",
             "model_validator"
           ]
+        },
+        {
+          "source": "app.models.perception",
+          "specifiers": [
+            "RichPerceptionArtifact"
+          ]
         }
       ],
       "exports": [
@@ -31528,12 +34326,13 @@
         "_StrictModel",
         "GarySlideOutput",
         "PerceptionArtifact",
+        "project_rich_perception_for_authoring",
         "VisualReference",
         "SegmentManifestSegment",
         "SegmentManifest",
         "IrenePass2AuthoringEnvelope"
       ],
-      "totalLines": 254,
+      "totalLines": 275,
       "hasStructuralAnalysis": true
     },
     "app/specialists/irene/expertise/README.md": {
@@ -31548,16 +34347,201 @@
     },
     "app/specialists/irene/graph.py": {
       "filePath": "app/specialists/irene/graph.py",
-      "contentHash": "e210a141fcf937f0291b0ff0d6f8d48d7bda39262c8c54e109047678aa4f68e2",
+      "contentHash": "7f1944f969c7d91c52a1f373437243283a859ccbeee733131c2979845e453103",
       "functions": [
         {
           "name": "_slide_roster",
           "params": [
             "envelope_payload"
           ],
-          "returnType": "list[dict[str, str]]",
+          "returnType": "list[dict[str, Any]]",
           "exported": true,
-          "lineCount": 35
+          "lineCount": 61
+        },
+        {
+          "name": "_expected_visual",
+          "params": [
+            "row"
+          ],
+          "returnType": "str",
+          "exported": true,
+          "lineCount": 8
+        },
+        {
+          "name": "_perception_artifacts_by_slide",
+          "params": [
+            "envelope_payload"
+          ],
+          "returnType": "dict[str, RichPerceptionArtifact]",
+          "exported": true,
+          "lineCount": 34
+        },
+        {
+          "name": "_slide_briefs_by_slide",
+          "params": [
+            "envelope_payload"
+          ],
+          "returnType": "dict[str, dict[str, Any]]",
+          "exported": true,
+          "lineCount": 12
+        },
+        {
+          "name": "_visual_authority_for_slide",
+          "params": [
+            "slide_id",
+            "artifact"
+          ],
+          "returnType": "str",
+          "exported": true,
+          "lineCount": 29
+        },
+        {
+          "name": "_expected_visual_plan_for_slide",
+          "params": [
+            "gary_visual_description",
+            "slide_brief"
+          ],
+          "returnType": "str",
+          "exported": true,
+          "lineCount": 11
+        },
+        {
+          "name": "_stable_json_items",
+          "params": [
+            "items"
+          ],
+          "returnType": "list[str]",
+          "exported": true,
+          "lineCount": 2
+        },
+        {
+          "name": "_json_fragment",
+          "params": [
+            "value"
+          ],
+          "returnType": "str",
+          "exported": true,
+          "lineCount": 4
+        },
+        {
+          "name": "_perceived_figures",
+          "params": [
+            "artifact"
+          ],
+          "returnType": "set[str]",
+          "exported": true,
+          "lineCount": 15
+        },
+        {
+          "name": "_reading_path_guidance",
+          "params": [
+            "slide_roster"
+          ],
+          "returnType": "str",
+          "exported": true,
+          "lineCount": 14
+        },
+        {
+          "name": "_payload_section_for_prompt",
+          "params": [
+            "envelope_payload",
+            "slide_roster"
+          ],
+          "returnType": "str",
+          "exported": true,
+          "lineCount": 23
+        },
+        {
+          "name": "_redact_payload_visual_leaks",
+          "params": [
+            "envelope_payload",
+            "unverified_slide_ids",
+            "perceived_figures_by_slide"
+          ],
+          "returnType": "dict[str, Any]",
+          "exported": true,
+          "lineCount": 20
+        },
+        {
+          "name": "_redact_unverified_payload",
+          "params": [
+            "envelope_payload",
+            "unverified_slide_ids"
+          ],
+          "returnType": "dict[str, Any]",
+          "exported": true,
+          "lineCount": 15
+        },
+        {
+          "name": "_redact_slide_row",
+          "params": [
+            "row",
+            "slide_id"
+          ],
+          "returnType": "None",
+          "exported": true,
+          "lineCount": 20
+        },
+        {
+          "name": "_redact_row_for_unperceived_figures",
+          "params": [
+            "row",
+            "slide_id",
+            "allowed_figures"
+          ],
+          "returnType": "None",
+          "exported": true,
+          "lineCount": 7
+        },
+        {
+          "name": "_redact_value_for_unperceived_figures",
+          "params": [
+            "value",
+            "slide_id",
+            "allowed_figures"
+          ],
+          "returnType": "Any",
+          "exported": true,
+          "lineCount": 18
+        },
+        {
+          "name": "_redact_text_for_unperceived_figures",
+          "params": [
+            "value",
+            "slide_id",
+            "allowed_figures"
+          ],
+          "returnType": "str",
+          "exported": true,
+          "lineCount": 12
+        },
+        {
+          "name": "backfill_delta_ids",
+          "params": [
+            "parsed"
+          ],
+          "returnType": "dict[str, Any]",
+          "exported": true,
+          "lineCount": 64
+        },
+        {
+          "name": "_first_perception_source",
+          "params": [
+            "delta"
+          ],
+          "returnType": "str",
+          "exported": true,
+          "lineCount": 10
+        },
+        {
+          "name": "backfill_delta_perception_sources",
+          "params": [
+            "parsed",
+            "roster"
+          ],
+          "returnType": "dict[str, Any]",
+          "exported": true,
+          "lineCount": 59
         },
         {
           "name": "_assert_narration_joins_roster",
@@ -31568,6 +34552,54 @@
           "returnType": "None",
           "exported": true,
           "lineCount": 30
+        },
+        {
+          "name": "_assert_figure_citations_within_perceived",
+          "params": [
+            "parsed",
+            "roster"
+          ],
+          "returnType": "None",
+          "exported": true,
+          "lineCount": 25
+        },
+        {
+          "name": "_segment_slide_id_from_deltas",
+          "params": [
+            "segment",
+            "parsed"
+          ],
+          "returnType": "str",
+          "exported": true,
+          "lineCount": 17
+        },
+        {
+          "name": "_assert_reading_path_conformance",
+          "params": [
+            "parsed",
+            "roster"
+          ],
+          "returnType": "None",
+          "exported": true,
+          "lineCount": 56
+        },
+        {
+          "name": "_visual_reference_key",
+          "params": [
+            "ref"
+          ],
+          "returnType": "str",
+          "exported": true,
+          "lineCount": 14
+        },
+        {
+          "name": "_norm_key",
+          "params": [
+            "value"
+          ],
+          "returnType": "str",
+          "exported": true,
+          "lineCount": 2
         },
         {
           "name": "_read_sanctum_digest",
@@ -31597,7 +34629,7 @@
           ],
           "returnType": "tuple[str, str]",
           "exported": true,
-          "lineCount": 51
+          "lineCount": 62
         },
         {
           "name": "_parse_pass_2_response",
@@ -31648,7 +34680,7 @@
           ],
           "returnType": "dict[str, Any]",
           "exported": true,
-          "lineCount": 58
+          "lineCount": 68
         },
         {
           "name": "_receive",
@@ -31746,6 +34778,13 @@
           "properties": [],
           "exported": true,
           "lineCount": 8
+        },
+        {
+          "name": "Pass2ReadingPathError",
+          "methods": [],
+          "properties": [],
+          "exported": true,
+          "lineCount": 2
         }
       ],
       "imports": [
@@ -31759,6 +34798,12 @@
           "source": "json",
           "specifiers": [
             "json"
+          ]
+        },
+        {
+          "source": "copy",
+          "specifiers": [
+            "deepcopy"
           ]
         },
         {
@@ -31789,6 +34834,12 @@
           ]
         },
         {
+          "source": "pydantic",
+          "specifiers": [
+            "ValidationError"
+          ]
+        },
+        {
           "source": "app.gates.resume_api",
           "specifiers": [
             "_resume_from_verdict"
@@ -31798,6 +34849,12 @@
           "source": "app.models.adapter",
           "specifiers": [
             "make_chat_model"
+          ]
+        },
+        {
+          "source": "app.models.perception",
+          "specifiers": [
+            "RichPerceptionArtifact"
           ]
         },
         {
@@ -31819,6 +34876,14 @@
           ]
         },
         {
+          "source": "app.specialists._shared.figure_tokens",
+          "specifiers": [
+            "_FIGURE_RE",
+            "_figures",
+            "_normalize_figure"
+          ]
+        },
+        {
           "source": "app.specialists.dispatch_errors",
           "specifiers": [
             "SpecialistDispatchError"
@@ -31835,12 +34900,44 @@
           "specifiers": [
             "read_extracted_source"
           ]
+        },
+        {
+          "source": "scripts.utilities.reading_path_classifier",
+          "specifiers": [
+            "cadence_tokens_for_pattern",
+            "ordered_element_keys_for_reading_path"
+          ]
         }
       ],
       "exports": [
         "Pass2GroundingError",
+        "Pass2ReadingPathError",
         "_slide_roster",
+        "_expected_visual",
+        "_perception_artifacts_by_slide",
+        "_slide_briefs_by_slide",
+        "_visual_authority_for_slide",
+        "_expected_visual_plan_for_slide",
+        "_stable_json_items",
+        "_json_fragment",
+        "_perceived_figures",
+        "_reading_path_guidance",
+        "_payload_section_for_prompt",
+        "_redact_payload_visual_leaks",
+        "_redact_unverified_payload",
+        "_redact_slide_row",
+        "_redact_row_for_unperceived_figures",
+        "_redact_value_for_unperceived_figures",
+        "_redact_text_for_unperceived_figures",
+        "backfill_delta_ids",
+        "_first_perception_source",
+        "backfill_delta_perception_sources",
         "_assert_narration_joins_roster",
+        "_assert_figure_citations_within_perceived",
+        "_segment_slide_id_from_deltas",
+        "_assert_reading_path_conformance",
+        "_visual_reference_key",
+        "_norm_key",
         "_read_sanctum_digest",
         "_read_pass_2_references",
         "_assemble_pass_2_prompt",
@@ -31860,7 +34957,7 @@
         "_handoff",
         "build_irene_graph"
       ],
-      "totalLines": 612,
+      "totalLines": 1252,
       "hasStructuralAnalysis": true
     },
     "app/specialists/irene/model_config.yaml": {
@@ -31875,12 +34972,12 @@
     },
     "app/specialists/irene/payload_contract.py": {
       "filePath": "app/specialists/irene/payload_contract.py",
-      "contentHash": "0272d4cb2642d9f090711652a9124f8731d46e9f1ead7a676c76912accb1dc6e",
+      "contentHash": "6257fa94d5eaebbfc275c0a72a275f132d87b30727ad07e2f5034acc66e1d3c3",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 29,
+      "totalLines": 30,
       "hasStructuralAnalysis": true
     },
     "app/specialists/irene/state.py": {
@@ -32325,7 +35422,7 @@
     },
     "app/specialists/kira/_act.py": {
       "filePath": "app/specialists/kira/_act.py",
-      "contentHash": "7dc85a0ca47b4f6dc74c0bfb6232bc04e3f7a94dca537c530bb387f1a1a099ef",
+      "contentHash": "46dafdc6565e5d3e75d2ba8d6718205387618faa607bee8844bd8fae23b43a5b",
       "functions": [
         {
           "name": "_json_dumps",
@@ -32485,12 +35582,10 @@
       "classes": [
         {
           "name": "KiraActError",
-          "methods": [
-            "__init__"
-          ],
+          "methods": [],
           "properties": [],
           "exported": true,
-          "lineCount": 6
+          "lineCount": 8
         }
       ],
       "imports": [
@@ -32544,6 +35639,12 @@
           ]
         },
         {
+          "source": "app.specialists.dispatch_errors",
+          "specifiers": [
+            "SpecialistDispatchError"
+          ]
+        },
+        {
           "source": "scripts.api_clients.kling_client",
           "specifiers": [
             "KlingClient"
@@ -32569,7 +35670,7 @@
         "build_compositor_invocation",
         "act"
       ],
-      "totalLines": 286,
+      "totalLines": 289,
       "hasStructuralAnalysis": true
     },
     "app/specialists/kira/config.yaml": {
@@ -33290,7 +36391,7 @@
     },
     "app/specialists/narration_join.py": {
       "filePath": "app/specialists/narration_join.py",
-      "contentHash": "8375e2718646b6fe3933659d71391ae9749ba7ee2224494062e3840ed30e918b",
+      "contentHash": "dfa8c81674c49faf3a7758a9c0c23737536c23152270d72af231320af8f6d8cb",
       "functions": [
         {
           "name": "join_narration_segments",
@@ -33301,6 +36402,15 @@
           "returnType": "list[dict[str, Any]]",
           "exported": true,
           "lineCount": 43
+        },
+        {
+          "name": "phantom_segment_ids",
+          "params": [
+            "rows"
+          ],
+          "returnType": "list[str]",
+          "exported": true,
+          "lineCount": 15
         }
       ],
       "classes": [],
@@ -33313,9 +36423,10 @@
         }
       ],
       "exports": [
-        "join_narration_segments"
+        "join_narration_segments",
+        "phantom_segment_ids"
       ],
-      "totalLines": 66,
+      "totalLines": 83,
       "hasStructuralAnalysis": true
     },
     "app/specialists/quinn_r/__init__.py": {
@@ -33344,7 +36455,7 @@
     },
     "app/specialists/quinn_r/_act.py": {
       "filePath": "app/specialists/quinn_r/_act.py",
-      "contentHash": "d76756c4476ee41c370ccc629001e1ac591c50423b86d5a6a5b61f59f1ecf3b6",
+      "contentHash": "cac7bdd7a211d65cb2a594e761bf04ccb7f3712725bc90d4797b773211e1b8a6",
       "functions": [
         {
           "name": "_trail",
@@ -33419,7 +36530,7 @@
           ],
           "returnType": "dict[str, Any]",
           "exported": true,
-          "lineCount": 30
+          "lineCount": 51
         },
         {
           "name": "_summary",
@@ -33446,10 +36557,12 @@
       "classes": [
         {
           "name": "ModeMismatchError",
-          "methods": [],
+          "methods": [
+            "__init__"
+          ],
           "properties": [],
           "exported": true,
-          "lineCount": 2
+          "lineCount": 11
         }
       ],
       "imports": [
@@ -33457,6 +36570,12 @@
           "source": "json",
           "specifiers": [
             "json"
+          ]
+        },
+        {
+          "source": "os",
+          "specifiers": [
+            "os"
           ]
         },
         {
@@ -33509,10 +36628,23 @@
           ]
         },
         {
+          "source": "app.specialists.dispatch_errors",
+          "specifiers": [
+            "SpecialistDispatchError"
+          ]
+        },
+        {
+          "source": "app.specialists.quinn_r.fidelity_detector",
+          "specifiers": [
+            "detect_fidelity"
+          ]
+        },
+        {
           "source": "app.specialists.quinn_r.quality_control_dispatch",
           "specifiers": [
             "CoverageGapError",
             "DurationCoherenceError",
+            "FidelityError",
             "StoryboardBInputError",
             "VttMonotonicityError",
             "WpmThresholdError",
@@ -33548,7 +36680,7 @@
         "_summary",
         "act"
       ],
-      "totalLines": 209,
+      "totalLines": 257,
       "hasStructuralAnalysis": true
     },
     "app/specialists/quinn_r/expertise/README.md": {
@@ -33561,20 +36693,143 @@
       "totalLines": 11,
       "hasStructuralAnalysis": true
     },
-    "app/specialists/quinn_r/graph.py": {
-      "filePath": "app/specialists/quinn_r/graph.py",
-      "contentHash": "304607964f7a2d82491b1e3a682f6de2cf675c0fd83931b6ed9302509024c038",
+    "app/specialists/quinn_r/fidelity_detector.py": {
+      "filePath": "app/specialists/quinn_r/fidelity_detector.py",
+      "contentHash": "f69a35694bba112284ff31bd57ddc9159544b57384ab6d38041d71400c51ae2e",
       "functions": [
         {
-          "name": "_new_dispatch_trail_entry",
+          "name": "classify_fidelity_reference",
           "params": [
-            "last_entry",
-            "tag"
+            "text"
           ],
-          "returnType": "ModelResolutionEntry",
+          "returnType": "ReferenceClass",
           "exported": true,
-          "lineCount": 11
+          "lineCount": 7
         },
+        {
+          "name": "detect_fidelity",
+          "params": [
+            "narration_segments",
+            "perception_artifacts"
+          ],
+          "returnType": "dict[str, Any]",
+          "exported": true,
+          "lineCount": 44
+        },
+        {
+          "name": "_artifact_map",
+          "params": [
+            "perception_artifacts"
+          ],
+          "returnType": "dict[str, PerceptionArtifact]",
+          "exported": true,
+          "lineCount": 33
+        },
+        {
+          "name": "_assert_perceived",
+          "params": [
+            "artifact"
+          ],
+          "returnType": "None",
+          "exported": true,
+          "lineCount": 7
+        },
+        {
+          "name": "_artifact_text",
+          "params": [
+            "artifact"
+          ],
+          "returnType": "str",
+          "exported": true,
+          "lineCount": 12
+        },
+        {
+          "name": "_stringify",
+          "params": [
+            "value"
+          ],
+          "returnType": "str",
+          "exported": true,
+          "lineCount": 6
+        },
+        {
+          "name": "_referenced_visual_groups",
+          "params": [
+            "text"
+          ],
+          "returnType": "set[str]",
+          "exported": true,
+          "lineCount": 6
+        },
+        {
+          "name": "_group_present",
+          "params": [
+            "group",
+            "perceived_text"
+          ],
+          "returnType": "bool",
+          "exported": true,
+          "lineCount": 2
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "re",
+          "specifiers": [
+            "re"
+          ]
+        },
+        {
+          "source": "typing",
+          "specifiers": [
+            "Any",
+            "Literal"
+          ]
+        },
+        {
+          "source": "pydantic",
+          "specifiers": [
+            "ValidationError"
+          ]
+        },
+        {
+          "source": "app.models.perception",
+          "specifiers": [
+            "PerceptionArtifact"
+          ]
+        },
+        {
+          "source": "app.specialists._shared.figure_tokens",
+          "specifiers": [
+            "_FIGURE_RE",
+            "_figures"
+          ]
+        },
+        {
+          "source": "app.specialists.quinn_r.quality_control_dispatch",
+          "specifiers": [
+            "FidelityError"
+          ]
+        }
+      ],
+      "exports": [
+        "classify_fidelity_reference",
+        "detect_fidelity",
+        "_artifact_map",
+        "_assert_perceived",
+        "_artifact_text",
+        "_stringify",
+        "_referenced_visual_groups",
+        "_group_present"
+      ],
+      "totalLines": 177,
+      "hasStructuralAnalysis": true
+    },
+    "app/specialists/quinn_r/graph.py": {
+      "filePath": "app/specialists/quinn_r/graph.py",
+      "contentHash": "50124c1009e8ea2b2e6dbe605f350bb4fef2833d1c99b522a1cde53e1d8cb722",
+      "functions": [
         {
           "name": "_read_sanctum_digest",
           "params": [
@@ -33593,15 +36848,6 @@
           "returnType": "str",
           "exported": true,
           "lineCount": 11
-        },
-        {
-          "name": "_decode_envelope_payload",
-          "params": [
-            "state"
-          ],
-          "returnType": "dict[str, Any]",
-          "exported": true,
-          "lineCount": 16
         },
         {
           "name": "_assemble_quinn_r_prompt",
@@ -33655,35 +36901,6 @@
           "returnType": "dict[str, Any]",
           "exported": true,
           "lineCount": 25
-        },
-        {
-          "name": "_run_gate_phase",
-          "params": [
-            "state",
-            "payload"
-          ],
-          "returnType": "dict[str, Any]",
-          "exported": true,
-          "lineCount": 7
-        },
-        {
-          "name": "_require_planned_state",
-          "params": [
-            "state"
-          ],
-          "returnType": "ModelResolutionEntry",
-          "exported": true,
-          "lineCount": 9
-        },
-        {
-          "name": "_act_with_trail",
-          "params": [
-            "state",
-            "last_entry"
-          ],
-          "returnType": "dict[str, Any]",
-          "exported": true,
-          "lineCount": 42
         },
         {
           "name": "_receive",
@@ -33797,13 +37014,6 @@
           ]
         },
         {
-          "source": "datetime",
-          "specifiers": [
-            "UTC",
-            "datetime"
-          ]
-        },
-        {
           "source": "pathlib",
           "specifiers": [
             "Path"
@@ -33900,18 +37110,13 @@
       ],
       "exports": [
         "QRRParseError",
-        "_new_dispatch_trail_entry",
         "_read_sanctum_digest",
         "_read_quinn_r_references",
-        "_decode_envelope_payload",
         "_assemble_quinn_r_prompt",
         "_parse_qrr",
         "_invoke_quinn_r_llm",
         "_act_precomposition",
         "_act_postcomposition",
-        "_run_gate_phase",
-        "_require_planned_state",
-        "_act_with_trail",
         "_receive",
         "_plan",
         "_act",
@@ -33923,7 +37128,7 @@
         "_handoff",
         "build_quinn_r_graph"
       ],
-      "totalLines": 477,
+      "totalLines": 383,
       "hasStructuralAnalysis": true
     },
     "app/specialists/quinn_r/model_config.yaml": {
@@ -33938,17 +37143,17 @@
     },
     "app/specialists/quinn_r/payload_contract.py": {
       "filePath": "app/specialists/quinn_r/payload_contract.py",
-      "contentHash": "14872df1b7d34cfb0cfa73d5cd0143a1fd88fa80beafaaeaa9ff88af8aec41fa",
+      "contentHash": "98221be31841aab4f4e17d7adb747fbca10481e71789ce3459d717e2010f2db1",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 38,
+      "totalLines": 39,
       "hasStructuralAnalysis": true
     },
     "app/specialists/quinn_r/quality_control_dispatch.py": {
       "filePath": "app/specialists/quinn_r/quality_control_dispatch.py",
-      "contentHash": "74a1dac8f21302cd751ad777a3daab77ed6eca896e2789b45a3971878b4af3e4",
+      "contentHash": "5d8c6ee158d03156e4d959c2358283cc162eaec9aeb515362bd72710cb1b3e47",
       "functions": [
         {
           "name": "_content_error",
@@ -33958,7 +37163,7 @@
           ],
           "returnType": "type",
           "exported": true,
-          "lineCount": 11
+          "lineCount": 18
         },
         {
           "name": "run_g5_grounding",
@@ -33967,7 +37172,7 @@
           ],
           "returnType": "dict[str, Any]",
           "exported": true,
-          "lineCount": 66
+          "lineCount": 82
         },
         {
           "name": "run_storyboard_b_review",
@@ -34081,7 +37286,7 @@
         "run_precomposition_validators",
         "run_postcomposition_validators"
       ],
-      "totalLines": 317,
+      "totalLines": 342,
       "hasStructuralAnalysis": true
     },
     "app/specialists/quinn_r/sensory_bridges_dispatch.py": {
@@ -34672,7 +37877,7 @@
     },
     "app/specialists/texas/_act.py": {
       "filePath": "app/specialists/texas/_act.py",
-      "contentHash": "c58df74afe9d28d81c5c669e1e0c2031cb86ff2021d8d7a81e84a8e8b65767c1",
+      "contentHash": "b0b24e028a81ada0f85ff6c7b879a7b7b12af5dea01bd68111d163e5916e1882",
       "functions": [
         {
           "name": "_new_dispatch_trail_entry",
@@ -34792,9 +37997,7 @@
       "classes": [
         {
           "name": "BundleParseError",
-          "methods": [
-            "__init__"
-          ],
+          "methods": [],
           "properties": [],
           "exported": true,
           "lineCount": 6
@@ -35944,7 +39147,7 @@
     },
     "app/specialists/vera/_act.py": {
       "filePath": "app/specialists/vera/_act.py",
-      "contentHash": "670fed5dfc65767b5848ad1e99ee8ae8c2679ead8d996fa805b10129d89575c1",
+      "contentHash": "acfe85cc0aa39c380f2fc2046f8f145f7caff0165997c98e018039bd1642a45e",
       "functions": [
         {
           "name": "_trail",
@@ -36088,9 +39291,7 @@
       "classes": [
         {
           "name": "FTRParseError",
-          "methods": [
-            "__init__"
-          ],
+          "methods": [],
           "properties": [],
           "exported": true,
           "lineCount": 6
@@ -36157,6 +39358,12 @@
           "specifiers": [
             "RUNS_ROOT"
           ]
+        },
+        {
+          "source": "app.specialists.dispatch_errors",
+          "specifiers": [
+            "SpecialistDispatchError"
+          ]
         }
       ],
       "exports": [
@@ -36176,7 +39383,7 @@
         "_summary",
         "act"
       ],
-      "totalLines": 353,
+      "totalLines": 354,
       "hasStructuralAnalysis": true
     },
     "app/specialists/vera/expertise/README.md": {
@@ -36633,6 +39840,806 @@
       "exports": [
         "VeraEnvelope",
         "VeraReturn"
+      ],
+      "totalLines": 51,
+      "hasStructuralAnalysis": true
+    },
+    "app/specialists/vision/__init__.py": {
+      "filePath": "app/specialists/vision/__init__.py",
+      "contentHash": "e77d86583eb9c7a87307d067695e47cc276566d37468a8e89795ee790e659502",
+      "functions": [],
+      "classes": [],
+      "imports": [
+        {
+          "source": "app.specialists.vision.graph",
+          "specifiers": [
+            "build_vision_graph"
+          ]
+        },
+        {
+          "source": "app.specialists.vision.state",
+          "specifiers": [
+            "VisionEnvelope",
+            "VisionReturn"
+          ]
+        }
+      ],
+      "exports": [],
+      "totalLines": 7,
+      "hasStructuralAnalysis": true
+    },
+    "app/specialists/vision/_act.py": {
+      "filePath": "app/specialists/vision/_act.py",
+      "contentHash": "61c2a4a2e22a363125dc4f6698fb5ffdd56bb8046bcebe4c32b49a5b1d326d66",
+      "functions": [
+        {
+          "name": "_payload",
+          "params": [
+            "state"
+          ],
+          "returnType": "dict[str, Any]",
+          "exported": true,
+          "lineCount": 6
+        },
+        {
+          "name": "_trail",
+          "params": [
+            "last",
+            "reason"
+          ],
+          "returnType": "ModelResolutionEntry",
+          "exported": true,
+          "lineCount": 9
+        },
+        {
+          "name": "_slide_rows",
+          "params": [
+            "payload"
+          ],
+          "returnType": "list[dict[str, Any]]",
+          "exported": true,
+          "lineCount": 5
+        },
+        {
+          "name": "_slide_id",
+          "params": [
+            "row",
+            "index"
+          ],
+          "returnType": "str",
+          "exported": true,
+          "lineCount": 2
+        },
+        {
+          "name": "_file_path",
+          "params": [
+            "row"
+          ],
+          "returnType": "Path | None",
+          "exported": true,
+          "lineCount": 6
+        },
+        {
+          "name": "_not_covered",
+          "params": [
+            "slide_id",
+            "row"
+          ],
+          "returnType": "PerceptionArtifact",
+          "exported": true,
+          "lineCount": 9
+        },
+        {
+          "name": "_provider_model_id",
+          "params": [],
+          "returnType": "str",
+          "exported": true,
+          "lineCount": 21
+        },
+        {
+          "name": "_is_retryable_provider_error",
+          "params": [
+            "exc"
+          ],
+          "returnType": "bool",
+          "exported": true,
+          "lineCount": 7
+        },
+        {
+          "name": "_perceive_with_retry",
+          "params": [
+            "path",
+            "slide_id"
+          ],
+          "returnType": "PerceptionArtifact",
+          "exported": true,
+          "lineCount": 16
+        },
+        {
+          "name": "act",
+          "params": [
+            "state"
+          ],
+          "returnType": "dict[str, Any]",
+          "exported": true,
+          "lineCount": 29
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "json",
+          "specifiers": [
+            "json"
+          ]
+        },
+        {
+          "source": "pathlib",
+          "specifiers": [
+            "Path"
+          ]
+        },
+        {
+          "source": "typing",
+          "specifiers": [
+            "Any"
+          ]
+        },
+        {
+          "source": "yaml",
+          "specifiers": [
+            "yaml"
+          ]
+        },
+        {
+          "source": "app.models.perception.perception_artifact",
+          "specifiers": [
+            "PerceptionArtifact"
+          ]
+        },
+        {
+          "source": "app.models.state.cache_state",
+          "specifiers": [
+            "CacheState"
+          ]
+        },
+        {
+          "source": "app.models.state.model_resolution_entry",
+          "specifiers": [
+            "ModelResolutionEntry"
+          ]
+        },
+        {
+          "source": "app.models.state.run_state",
+          "specifiers": [
+            "RunState"
+          ]
+        },
+        {
+          "source": "app.specialists.vision.provider",
+          "specifiers": [
+            "DEFAULT_MODEL_ID",
+            "VisionProviderError",
+            "VisionProviderTimeout",
+            "perceive_png"
+          ]
+        },
+        {
+          "source": "scripts.utilities.reading_path_classifier",
+          "specifiers": [
+            "with_llm_primary_reading_path"
+          ]
+        }
+      ],
+      "exports": [
+        "_payload",
+        "_trail",
+        "_slide_rows",
+        "_slide_id",
+        "_file_path",
+        "_not_covered",
+        "_provider_model_id",
+        "_is_retryable_provider_error",
+        "_perceive_with_retry",
+        "act"
+      ],
+      "totalLines": 159,
+      "hasStructuralAnalysis": true
+    },
+    "app/specialists/vision/expertise/README.md": {
+      "filePath": "app/specialists/vision/expertise/README.md",
+      "contentHash": "e45d243039583964bcb94de013e2947f0187eaf3bd161a9e7ac1f401297aa4c3",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 6,
+      "hasStructuralAnalysis": true
+    },
+    "app/specialists/vision/graph.py": {
+      "filePath": "app/specialists/vision/graph.py",
+      "contentHash": "e2200495f460a21a1b4b7e7ecf196cfe2e297bd67fdac104a041bf0c7b8047b7",
+      "functions": [
+        {
+          "name": "_receive",
+          "params": [
+            "state"
+          ],
+          "returnType": "dict[str, Any]",
+          "exported": true,
+          "lineCount": 3
+        },
+        {
+          "name": "_plan",
+          "params": [
+            "state"
+          ],
+          "returnType": "dict[str, Any]",
+          "exported": true,
+          "lineCount": 7
+        },
+        {
+          "name": "_act",
+          "params": [
+            "state"
+          ],
+          "returnType": "dict[str, Any]",
+          "exported": true,
+          "lineCount": 2
+        },
+        {
+          "name": "_verify",
+          "params": [
+            "state"
+          ],
+          "returnType": "dict[str, Any]",
+          "exported": true,
+          "lineCount": 3
+        },
+        {
+          "name": "_reflect",
+          "params": [
+            "state"
+          ],
+          "returnType": "dict[str, Any]",
+          "exported": true,
+          "lineCount": 3
+        },
+        {
+          "name": "_emit_spans",
+          "params": [
+            "state"
+          ],
+          "returnType": "dict[str, Any]",
+          "exported": true,
+          "lineCount": 2
+        },
+        {
+          "name": "_gate_decision",
+          "params": [
+            "state"
+          ],
+          "returnType": "dict[str, Any]",
+          "exported": true,
+          "lineCount": 5
+        },
+        {
+          "name": "_finalize",
+          "params": [
+            "state"
+          ],
+          "returnType": "dict[str, Any]",
+          "exported": true,
+          "lineCount": 3
+        },
+        {
+          "name": "_handoff",
+          "params": [
+            "state"
+          ],
+          "returnType": "Command",
+          "exported": true,
+          "lineCount": 3
+        },
+        {
+          "name": "build_vision_graph",
+          "params": [],
+          "returnType": "StateGraph",
+          "exported": true,
+          "lineCount": 22
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "typing",
+          "specifiers": [
+            "Any"
+          ]
+        },
+        {
+          "source": "langgraph.graph",
+          "specifiers": [
+            "END",
+            "START",
+            "StateGraph"
+          ]
+        },
+        {
+          "source": "langgraph.types",
+          "specifiers": [
+            "Command",
+            "interrupt"
+          ]
+        },
+        {
+          "source": "app.gates.resume_api",
+          "specifiers": [
+            "_resume_from_verdict"
+          ]
+        },
+        {
+          "source": "app.models.adapter",
+          "specifiers": [
+            "make_chat_model"
+          ]
+        },
+        {
+          "source": "app.models.state",
+          "specifiers": [
+            "specialist_summary_writer"
+          ]
+        },
+        {
+          "source": "app.models.state.run_state",
+          "specifiers": [
+            "RunState"
+          ]
+        },
+        {
+          "source": "app.specialists._scaffold.contract",
+          "specifiers": [
+            "SCAFFOLD_NODE_IDS"
+          ]
+        },
+        {
+          "source": "app.specialists.vision",
+          "specifiers": [
+            "_vision_act_impl"
+          ]
+        },
+        {
+          "source": "app.specialists.vision.payload_contract",
+          "specifiers": [
+            "CONSUMED_PAYLOAD_KEYS"
+          ]
+        }
+      ],
+      "exports": [
+        "_receive",
+        "_plan",
+        "_act",
+        "_verify",
+        "_reflect",
+        "_emit_spans",
+        "_gate_decision",
+        "_finalize",
+        "_handoff",
+        "build_vision_graph"
+      ],
+      "totalLines": 104,
+      "hasStructuralAnalysis": true
+    },
+    "app/specialists/vision/model_config.yaml": {
+      "filePath": "app/specialists/vision/model_config.yaml",
+      "contentHash": "e17ae3edde49479f65ce5d9c3bf30fe2cae8efc5dce03c7b35b1fd5d5040dcdf",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 15,
+      "hasStructuralAnalysis": true
+    },
+    "app/specialists/vision/payload_contract.py": {
+      "filePath": "app/specialists/vision/payload_contract.py",
+      "contentHash": "b1dc0f7ba5409b1ecf1d81da9ad4c86ba593cae0108c7d1ebf1baa22c0e30c8d",
+      "functions": [],
+      "classes": [
+        {
+          "name": "VisionProviderResponse",
+          "methods": [
+            "_role_tier_values_are_closed"
+          ],
+          "properties": [
+            "slide_id",
+            "confidence",
+            "coverage",
+            "provenance",
+            "visual_elements",
+            "extracted_text",
+            "layout_description",
+            "slide_title",
+            "text_blocks",
+            "artifact_path",
+            "card_number",
+            "confidence_score",
+            "provider_model_id",
+            "source_png_path"
+          ],
+          "exported": true,
+          "lineCount": 40
+        }
+      ],
+      "imports": [
+        {
+          "source": "typing",
+          "specifiers": [
+            "Any"
+          ]
+        },
+        {
+          "source": "pydantic",
+          "specifiers": [
+            "BaseModel",
+            "ConfigDict",
+            "Field",
+            "TypeAdapter",
+            "field_validator"
+          ]
+        },
+        {
+          "source": "app.models.perception.perception_artifact",
+          "specifiers": [
+            "Confidence",
+            "CoverageState",
+            "ImageRoleTier",
+            "PerceptionProvenance"
+          ]
+        }
+      ],
+      "exports": [
+        "VisionProviderResponse"
+      ],
+      "totalLines": 69,
+      "hasStructuralAnalysis": true
+    },
+    "app/specialists/vision/provider.py": {
+      "filePath": "app/specialists/vision/provider.py",
+      "contentHash": "b202218f9be9653bcd166607dcd2407b3b4b282f9bff85dae0f51ba7cf5e0f2a",
+      "functions": [
+        {
+          "name": "_perception_prompt",
+          "params": [
+            "slide_id"
+          ],
+          "returnType": "str",
+          "exported": true,
+          "lineCount": 45
+        },
+        {
+          "name": "_decode_content",
+          "params": [
+            "response"
+          ],
+          "returnType": "str",
+          "exported": true,
+          "lineCount": 17
+        },
+        {
+          "name": "_strip_json",
+          "params": [
+            "raw"
+          ],
+          "returnType": "str",
+          "exported": true,
+          "lineCount": 16
+        },
+        {
+          "name": "_parse_response",
+          "params": [
+            "raw",
+            "slide_id",
+            "model_id",
+            "source_png_path"
+          ],
+          "returnType": "VisionProviderResponse",
+          "exported": true,
+          "lineCount": 42
+        },
+        {
+          "name": "_map_sdk_exception",
+          "params": [
+            "exc"
+          ],
+          "returnType": "VisionProviderError",
+          "exported": true,
+          "lineCount": 22
+        },
+        {
+          "name": "perceive_png",
+          "params": [
+            "png_path",
+            "slide_id",
+            "model_id",
+            "timeout_seconds"
+          ],
+          "returnType": "VisionProviderResponse",
+          "exported": true,
+          "lineCount": 102
+        }
+      ],
+      "classes": [
+        {
+          "name": "VisionProviderError",
+          "methods": [
+            "__init__"
+          ],
+          "properties": [],
+          "exported": true,
+          "lineCount": 12
+        },
+        {
+          "name": "VisionProviderTimeout",
+          "methods": [
+            "__init__"
+          ],
+          "properties": [],
+          "exported": true,
+          "lineCount": 5
+        }
+      ],
+      "imports": [
+        {
+          "source": "base64",
+          "specifiers": [
+            "base64"
+          ]
+        },
+        {
+          "source": "json",
+          "specifiers": [
+            "json"
+          ]
+        },
+        {
+          "source": "pathlib",
+          "specifiers": [
+            "Path"
+          ]
+        },
+        {
+          "source": "typing",
+          "specifiers": [
+            "Any"
+          ]
+        },
+        {
+          "source": "httpx",
+          "specifiers": [
+            "httpx"
+          ]
+        },
+        {
+          "source": "openai",
+          "specifiers": [
+            "openai"
+          ]
+        },
+        {
+          "source": "langchain_core.messages",
+          "specifiers": [
+            "HumanMessage",
+            "SystemMessage"
+          ]
+        },
+        {
+          "source": "pydantic",
+          "specifiers": [
+            "ValidationError"
+          ]
+        },
+        {
+          "source": "app.models.adapter",
+          "specifiers": [
+            "make_chat_model"
+          ]
+        },
+        {
+          "source": "app.specialists.dispatch_errors",
+          "specifiers": [
+            "SpecialistDispatchError"
+          ]
+        },
+        {
+          "source": "app.specialists.vision.payload_contract",
+          "specifiers": [
+            "VisionProviderResponse"
+          ]
+        }
+      ],
+      "exports": [
+        "VisionProviderError",
+        "VisionProviderTimeout",
+        "_perception_prompt",
+        "_decode_content",
+        "_strip_json",
+        "_parse_response",
+        "_map_sdk_exception",
+        "perceive_png"
+      ],
+      "totalLines": 338,
+      "hasStructuralAnalysis": true
+    },
+    "app/specialists/vision/repeatability.py": {
+      "filePath": "app/specialists/vision/repeatability.py",
+      "contentHash": "f4a9dfc286b484e8ee7053d4911a17912da3b3c84f0210f632286814c455c6be",
+      "functions": [
+        {
+          "name": "compare_artifacts",
+          "params": [
+            "left",
+            "right"
+          ],
+          "returnType": "RepeatabilityVerdict",
+          "exported": true,
+          "lineCount": 24
+        },
+        {
+          "name": "_element_set",
+          "params": [
+            "payload"
+          ],
+          "returnType": "set[tuple[str, str]]",
+          "exported": true,
+          "lineCount": 6
+        },
+        {
+          "name": "_jaccard",
+          "params": [
+            "left",
+            "right"
+          ],
+          "returnType": "float",
+          "exported": true,
+          "lineCount": 4
+        },
+        {
+          "name": "_bboxes",
+          "params": [
+            "payload"
+          ],
+          "returnType": "list[tuple[float, float, float, float]]",
+          "exported": true,
+          "lineCount": 6
+        },
+        {
+          "name": "_iou",
+          "params": [
+            "left",
+            "right"
+          ],
+          "returnType": "float",
+          "exported": true,
+          "lineCount": 13
+        },
+        {
+          "name": "_levenshtein",
+          "params": [
+            "left",
+            "right"
+          ],
+          "returnType": "int",
+          "exported": true,
+          "lineCount": 14
+        }
+      ],
+      "classes": [
+        {
+          "name": "RepeatabilityVerdict",
+          "methods": [],
+          "properties": [
+            "stable",
+            "reasons",
+            "thresholds"
+          ],
+          "exported": true,
+          "lineCount": 4
+        }
+      ],
+      "imports": [
+        {
+          "source": "dataclasses",
+          "specifiers": [
+            "dataclass"
+          ]
+        },
+        {
+          "source": "typing",
+          "specifiers": [
+            "Any"
+          ]
+        }
+      ],
+      "exports": [
+        "RepeatabilityVerdict",
+        "compare_artifacts",
+        "_element_set",
+        "_jaccard",
+        "_bboxes",
+        "_iou",
+        "_levenshtein"
+      ],
+      "totalLines": 102,
+      "hasStructuralAnalysis": true
+    },
+    "app/specialists/vision/state.py": {
+      "filePath": "app/specialists/vision/state.py",
+      "contentHash": "36225ff0b19be7953e3fdc046a323847063ab4a08870d3c8c2b5499759ed6438",
+      "functions": [],
+      "classes": [
+        {
+          "name": "VisionEnvelope",
+          "methods": [
+            "_pin_specialist_id"
+          ],
+          "properties": [
+            "_SPECIALIST_ID",
+            "schema_version"
+          ],
+          "exported": true,
+          "lineCount": 16
+        },
+        {
+          "name": "VisionReturn",
+          "methods": [
+            "_pin_specialist_id"
+          ],
+          "properties": [
+            "_SPECIALIST_ID",
+            "perception_artifacts"
+          ],
+          "exported": true,
+          "lineCount": 16
+        }
+      ],
+      "imports": [
+        {
+          "source": "json",
+          "specifiers": [
+            "json"
+          ]
+        },
+        {
+          "source": "typing",
+          "specifiers": [
+            "Any",
+            "ClassVar",
+            "Literal"
+          ]
+        },
+        {
+          "source": "pydantic",
+          "specifiers": [
+            "Field",
+            "model_validator"
+          ]
+        },
+        {
+          "source": "app.models.state.specialist_envelope",
+          "specifiers": [
+            "SpecialistEnvelope"
+          ]
+        },
+        {
+          "source": "app.models.state.specialist_return",
+          "specifiers": [
+            "SpecialistReturn"
+          ]
+        }
+      ],
+      "exports": [
+        "VisionEnvelope",
+        "VisionReturn"
       ],
       "totalLines": 51,
       "hasStructuralAnalysis": true
@@ -37668,9 +41675,635 @@
       "totalLines": 1,
       "hasStructuralAnalysis": false
     },
+    "scripts/analysis/reading_path_corpus_scan.py": {
+      "filePath": "scripts/analysis/reading_path_corpus_scan.py",
+      "contentHash": "626662cc56e3a96ec21350b988bddd1b29712acfd9f4a97efd625d5090c6bc76",
+      "functions": [
+        {
+          "name": "_load_dotenv",
+          "params": [],
+          "returnType": "None",
+          "exported": true,
+          "lineCount": 14
+        },
+        {
+          "name": "_parse_bbox",
+          "params": [
+            "raw"
+          ],
+          "returnType": "tuple[float, float, float, float] | None",
+          "exported": true,
+          "lineCount": 17
+        },
+        {
+          "name": "_positioned_elements",
+          "params": [
+            "artifact_dump"
+          ],
+          "returnType": "list[dict[str, Any]]",
+          "exported": true,
+          "lineCount": 25
+        },
+        {
+          "name": "_h_band",
+          "params": [
+            "cx"
+          ],
+          "returnType": "str",
+          "exported": true,
+          "lineCount": 3
+        },
+        {
+          "name": "_v_band",
+          "params": [
+            "cy"
+          ],
+          "returnType": "str",
+          "exported": true,
+          "lineCount": 3
+        },
+        {
+          "name": "compute_feature_vector",
+          "params": [
+            "artifact_dump"
+          ],
+          "returnType": "dict[str, Any]",
+          "exported": true,
+          "lineCount": 109
+        },
+        {
+          "name": "_feature_signature",
+          "params": [
+            "fv"
+          ],
+          "returnType": "tuple",
+          "exported": true,
+          "lineCount": 23
+        },
+        {
+          "name": "cluster_residue",
+          "params": [
+            "residue"
+          ],
+          "returnType": "list[dict[str, Any]]",
+          "exported": true,
+          "lineCount": 44
+        },
+        {
+          "name": "_rough_character",
+          "params": [
+            "centroid"
+          ],
+          "returnType": "str",
+          "exported": true,
+          "lineCount": 13
+        },
+        {
+          "name": "enumerate_working_slides",
+          "params": [],
+          "returnType": "list[Path]",
+          "exported": true,
+          "lineCount": 24
+        },
+        {
+          "name": "scan",
+          "params": [],
+          "returnType": "dict[str, Any]",
+          "exported": true,
+          "lineCount": 164
+        },
+        {
+          "name": "_fv_brief",
+          "params": [
+            "fv"
+          ],
+          "returnType": "str",
+          "exported": true,
+          "lineCount": 15
+        },
+        {
+          "name": "write_report",
+          "params": [
+            "result"
+          ],
+          "returnType": "None",
+          "exported": true,
+          "lineCount": 140
+        },
+        {
+          "name": "main",
+          "params": [],
+          "returnType": "None",
+          "exported": true,
+          "lineCount": 31
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "json",
+          "specifiers": [
+            "json"
+          ]
+        },
+        {
+          "source": "os",
+          "specifiers": [
+            "os"
+          ]
+        },
+        {
+          "source": "sys",
+          "specifiers": [
+            "sys"
+          ]
+        },
+        {
+          "source": "traceback",
+          "specifiers": [
+            "traceback"
+          ]
+        },
+        {
+          "source": "collections",
+          "specifiers": [
+            "Counter",
+            "defaultdict"
+          ]
+        },
+        {
+          "source": "datetime",
+          "specifiers": [
+            "UTC",
+            "datetime"
+          ]
+        },
+        {
+          "source": "pathlib",
+          "specifiers": [
+            "Path"
+          ]
+        },
+        {
+          "source": "typing",
+          "specifiers": [
+            "Any"
+          ]
+        }
+      ],
+      "exports": [
+        "_load_dotenv",
+        "_parse_bbox",
+        "_positioned_elements",
+        "_h_band",
+        "_v_band",
+        "compute_feature_vector",
+        "_feature_signature",
+        "cluster_residue",
+        "_rough_character",
+        "enumerate_working_slides",
+        "scan",
+        "_fv_brief",
+        "write_report",
+        "main"
+      ],
+      "totalLines": 772,
+      "hasStructuralAnalysis": true
+    },
+    "scripts/analysis/reading_path_holdout_perceive.py": {
+      "filePath": "scripts/analysis/reading_path_holdout_perceive.py",
+      "contentHash": "b88736829126ba9dc031bc631be18ab8a1b61ab42aae78e9057ff7600f1b1925",
+      "functions": [
+        {
+          "name": "_load_dotenv",
+          "params": [],
+          "returnType": "None",
+          "exported": true,
+          "lineCount": 13
+        },
+        {
+          "name": "enumerate_heldout_slides",
+          "params": [],
+          "returnType": "list[Path]",
+          "exported": true,
+          "lineCount": 11
+        },
+        {
+          "name": "scan",
+          "params": [],
+          "returnType": "dict[str, Any]",
+          "exported": true,
+          "lineCount": 100
+        },
+        {
+          "name": "main",
+          "params": [],
+          "returnType": "None",
+          "exported": true,
+          "lineCount": 19
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "json",
+          "specifiers": [
+            "json"
+          ]
+        },
+        {
+          "source": "os",
+          "specifiers": [
+            "os"
+          ]
+        },
+        {
+          "source": "sys",
+          "specifiers": [
+            "sys"
+          ]
+        },
+        {
+          "source": "traceback",
+          "specifiers": [
+            "traceback"
+          ]
+        },
+        {
+          "source": "datetime",
+          "specifiers": [
+            "UTC",
+            "datetime"
+          ]
+        },
+        {
+          "source": "pathlib",
+          "specifiers": [
+            "Path"
+          ]
+        },
+        {
+          "source": "typing",
+          "specifiers": [
+            "Any"
+          ]
+        }
+      ],
+      "exports": [
+        "_load_dotenv",
+        "enumerate_heldout_slides",
+        "scan",
+        "main"
+      ],
+      "totalLines": 225,
+      "hasStructuralAnalysis": true
+    },
+    "scripts/analysis/reading_path_p2_4b_measure_fresh.py": {
+      "filePath": "scripts/analysis/reading_path_p2_4b_measure_fresh.py",
+      "contentHash": "74cecd0f634b23c592db61b0961cf39dc404e9db5944e1867649abd22835ccc7",
+      "functions": [
+        {
+          "name": "_load_dotenv",
+          "params": [],
+          "returnType": "None",
+          "exported": true,
+          "lineCount": 13
+        },
+        {
+          "name": "main",
+          "params": [],
+          "returnType": "None",
+          "exported": true,
+          "lineCount": 86
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "json",
+          "specifiers": [
+            "json"
+          ]
+        },
+        {
+          "source": "os",
+          "specifiers": [
+            "os"
+          ]
+        },
+        {
+          "source": "sys",
+          "specifiers": [
+            "sys"
+          ]
+        },
+        {
+          "source": "datetime",
+          "specifiers": [
+            "UTC",
+            "datetime"
+          ]
+        },
+        {
+          "source": "pathlib",
+          "specifiers": [
+            "Path"
+          ]
+        }
+      ],
+      "exports": [
+        "_load_dotenv",
+        "main"
+      ],
+      "totalLines": 138,
+      "hasStructuralAnalysis": true
+    },
+    "scripts/analysis/reading_path_p2_4b_run.py": {
+      "filePath": "scripts/analysis/reading_path_p2_4b_run.py",
+      "contentHash": "d6adb74b77bcdad546f1b95547e389c3eea621dd1e1fde93b7e13a05271c0286",
+      "functions": [
+        {
+          "name": "load_gold",
+          "params": [
+            "json_path"
+          ],
+          "returnType": "dict[str, ReadingPathTuple]",
+          "exported": true,
+          "lineCount": 14
+        },
+        {
+          "name": "score_emitted",
+          "params": [
+            "emitted_by_slide",
+            "gold"
+          ],
+          "returnType": "ScoreReport",
+          "exported": true,
+          "lineCount": 11
+        },
+        {
+          "name": "run_live",
+          "params": [
+            "perceptions_summary",
+            "gold_json"
+          ],
+          "returnType": "ScoreReport",
+          "exported": true,
+          "lineCount": 32
+        },
+        {
+          "name": "main",
+          "params": [],
+          "returnType": "None",
+          "exported": true,
+          "lineCount": 4
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "json",
+          "specifiers": [
+            "json"
+          ]
+        },
+        {
+          "source": "sys",
+          "specifiers": [
+            "sys"
+          ]
+        },
+        {
+          "source": "pathlib",
+          "specifiers": [
+            "Path"
+          ]
+        },
+        {
+          "source": "scripts.analysis.reading_path_p2_4b_score",
+          "specifiers": [
+            "ReadingPathTuple",
+            "ScoreReport",
+            "score"
+          ]
+        }
+      ],
+      "exports": [
+        "load_gold",
+        "score_emitted",
+        "run_live",
+        "main"
+      ],
+      "totalLines": 116,
+      "hasStructuralAnalysis": true
+    },
+    "scripts/analysis/reading_path_p2_4b_score.py": {
+      "filePath": "scripts/analysis/reading_path_p2_4b_score.py",
+      "contentHash": "758b2c73e2f3ae4b0a0ff5f78e44117904a113d43ce7334f8e0f7af206781f4a",
+      "functions": [
+        {
+          "name": "fold_image_role",
+          "params": [
+            "role"
+          ],
+          "returnType": "object",
+          "exported": true,
+          "lineCount": 20
+        },
+        {
+          "name": "_is_inform",
+          "params": [
+            "value"
+          ],
+          "returnType": "bool",
+          "exported": true,
+          "lineCount": 3
+        },
+        {
+          "name": "score",
+          "params": [
+            "rows"
+          ],
+          "returnType": "ScoreReport",
+          "exported": true,
+          "lineCount": 88
+        },
+        {
+          "name": "build_demo_rows",
+          "params": [],
+          "returnType": "list",
+          "exported": true,
+          "lineCount": 30
+        },
+        {
+          "name": "main",
+          "params": [],
+          "returnType": "None",
+          "exported": true,
+          "lineCount": 12
+        }
+      ],
+      "classes": [
+        {
+          "name": "ReadingPathTuple",
+          "methods": [
+            "primary_key",
+            "full_tuple_key"
+          ],
+          "properties": [
+            "macro_layout",
+            "image_role",
+            "text_substructure",
+            "narration_cadence",
+            "callout_intent",
+            "derived_primary"
+          ],
+          "exported": true,
+          "lineCount": 30
+        },
+        {
+          "name": "ScoreReport",
+          "methods": [
+            "primary_key_top1",
+            "full_tuple_rate",
+            "callout_intent_agreement",
+            "per_axis_rate",
+            "passes_primary_key",
+            "passes_full_tuple",
+            "summary_lines",
+            "confusion_lines"
+          ],
+          "properties": [
+            "n",
+            "primary_key_hits",
+            "full_tuple_hits",
+            "per_axis_hits",
+            "callout_intent_hits",
+            "callout_intent_scorable",
+            "macro_confusion",
+            "quarantined_rows",
+            "per_slide"
+          ],
+          "exported": true,
+          "lineCount": 84
+        }
+      ],
+      "imports": [
+        {
+          "source": "collections",
+          "specifiers": [
+            "Counter"
+          ]
+        },
+        {
+          "source": "dataclasses",
+          "specifiers": [
+            "dataclass"
+          ]
+        }
+      ],
+      "exports": [
+        "fold_image_role",
+        "ReadingPathTuple",
+        "ScoreReport",
+        "_is_inform",
+        "score",
+        "build_demo_rows",
+        "main"
+      ],
+      "totalLines": 384,
+      "hasStructuralAnalysis": true
+    },
+    "scripts/analysis/source_fidelity_report.py": {
+      "filePath": "scripts/analysis/source_fidelity_report.py",
+      "contentHash": "03c8861f5d16f080f897d158dc530fde1b0f2ca0a7635627c4b4d13318879c03",
+      "functions": [
+        {
+          "name": "_runs_dir",
+          "params": [],
+          "returnType": "Path",
+          "exported": true,
+          "lineCount": 2
+        },
+        {
+          "name": "load_narration",
+          "params": [
+            "trial_id"
+          ],
+          "returnType": "str",
+          "exported": true,
+          "lineCount": 18
+        },
+        {
+          "name": "load_source_corpus",
+          "params": [
+            "corpus_dir"
+          ],
+          "returnType": "str",
+          "exported": true,
+          "lineCount": 8
+        },
+        {
+          "name": "main",
+          "params": [
+            "argv"
+          ],
+          "returnType": "int",
+          "exported": true,
+          "lineCount": 32
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "argparse",
+          "specifiers": [
+            "argparse"
+          ]
+        },
+        {
+          "source": "json",
+          "specifiers": [
+            "json"
+          ]
+        },
+        {
+          "source": "sys",
+          "specifiers": [
+            "sys"
+          ]
+        },
+        {
+          "source": "pathlib",
+          "specifiers": [
+            "Path"
+          ]
+        },
+        {
+          "source": "yaml",
+          "specifiers": [
+            "yaml"
+          ]
+        },
+        {
+          "source": "app.specialists._shared.source_fidelity_audit",
+          "specifiers": [
+            "audit_numeric_provenance"
+          ]
+        }
+      ],
+      "exports": [
+        "_runs_dir",
+        "load_narration",
+        "load_source_corpus",
+        "main"
+      ],
+      "totalLines": 121,
+      "hasStructuralAnalysis": true
+    },
     "scripts/api_clients/__init__.py": {
       "filePath": "scripts/api_clients/__init__.py",
-      "contentHash": "19458bc19b5aa0fb4ec916fd874e564d13cc2ea0917ec8a190ad5ffe8caf8165",
+      "contentHash": "d884a0e4c884778e5df97195d4a325f80c5612124539a34935a86f53443ffdbe",
       "functions": [],
       "classes": [],
       "imports": [
@@ -37693,6 +42326,12 @@
           "source": "scripts.api_clients.canvas_client",
           "specifiers": [
             "CanvasClient"
+          ]
+        },
+        {
+          "source": "scripts.api_clients.descript_client",
+          "specifiers": [
+            "DescriptClient"
           ]
         },
         {
@@ -37733,7 +42372,7 @@
         }
       ],
       "exports": [],
-      "totalLines": 36,
+      "totalLines": 38,
       "hasStructuralAnalysis": true
     },
     "scripts/api_clients/base_client.py": {
@@ -37963,6 +42602,92 @@
       "totalLines": 278,
       "hasStructuralAnalysis": true
     },
+    "scripts/api_clients/descript_client.py": {
+      "filePath": "scripts/api_clients/descript_client.py",
+      "contentHash": "46ca44df1347eddac7a04f1a25906de6600ca9ff0f9588c1f5c6b58bd317dfdd",
+      "functions": [
+        {
+          "name": "content_type_for",
+          "params": [
+            "path"
+          ],
+          "returnType": "str",
+          "exported": true,
+          "lineCount": 3
+        }
+      ],
+      "classes": [
+        {
+          "name": "DescriptClient",
+          "methods": [
+            "__init__",
+            "status",
+            "list_projects",
+            "get_project",
+            "get_job",
+            "wait_for_job",
+            "import_media",
+            "upload_to_signed_url",
+            "agent_edit",
+            "publish"
+          ],
+          "properties": [],
+          "exported": true,
+          "lineCount": 187
+        }
+      ],
+      "imports": [
+        {
+          "source": "logging",
+          "specifiers": [
+            "logging"
+          ]
+        },
+        {
+          "source": "os",
+          "specifiers": [
+            "os"
+          ]
+        },
+        {
+          "source": "time",
+          "specifiers": [
+            "time"
+          ]
+        },
+        {
+          "source": "pathlib",
+          "specifiers": [
+            "Path"
+          ]
+        },
+        {
+          "source": "typing",
+          "specifiers": [
+            "Any"
+          ]
+        },
+        {
+          "source": "requests",
+          "specifiers": [
+            "requests"
+          ]
+        },
+        {
+          "source": "scripts.api_clients.base_client",
+          "specifiers": [
+            "APIError",
+            "BaseAPIClient"
+          ]
+        }
+      ],
+      "exports": [
+        "content_type_for",
+        "DescriptClient"
+      ],
+      "totalLines": 236,
+      "hasStructuralAnalysis": true
+    },
     "scripts/api_clients/elevenlabs_client.py": {
       "filePath": "scripts/api_clients/elevenlabs_client.py",
       "contentHash": "e4a6e97930707d59e1d1e83eef2ba4b944f094f460ef3b5ff3eee81a632727e9",
@@ -38045,7 +42770,7 @@
     },
     "scripts/api_clients/gamma_client.py": {
       "filePath": "scripts/api_clients/gamma_client.py",
-      "contentHash": "a24336a02d8f09b9da2f9c81fc3059be8f4d98bb6de24d53ab27c9f2bdfaa1ed",
+      "contentHash": "36dc5b92c8c79a22c7d385a8f088cc33f2177440c8892c665e5bf74be75d6667",
       "functions": [],
       "classes": [
         {
@@ -38054,6 +42779,8 @@
             "__init__",
             "list_themes",
             "generate",
+            "_post_generation_with_warm_401_retry",
+            "_sleep",
             "generate_deck",
             "generate_from_template",
             "get_generation",
@@ -38061,7 +42788,7 @@
           ],
           "properties": [],
           "exported": true,
-          "lineCount": 220
+          "lineCount": 242
         }
       ],
       "imports": [
@@ -38092,6 +42819,7 @@
         {
           "source": "scripts.api_clients.base_client",
           "specifiers": [
+            "AuthenticationError",
             "BaseAPIClient"
           ]
         }
@@ -38099,7 +42827,7 @@
       "exports": [
         "GammaClient"
       ],
-      "totalLines": 244,
+      "totalLines": 267,
       "hasStructuralAnalysis": true
     },
     "scripts/api_clients/kling_client.py": {
@@ -39218,7 +43946,7 @@
     },
     "scripts/generators/v42/manifest.py": {
       "filePath": "scripts/generators/v42/manifest.py",
-      "contentHash": "2005fac89e6b177adffa9effbfdc8fcbb3fa4b69745f2a638df26fc1c11bc309",
+      "contentHash": "6cf3882aeb2a3ff95101bacb15269f97876946cb55150a95cc6bebba27fb31ef",
       "functions": [
         {
           "name": "_slugify",
@@ -39246,7 +43974,7 @@
           ],
           "returnType": "str",
           "exported": true,
-          "lineCount": 13
+          "lineCount": 15
         },
         {
           "name": "_audience",
@@ -39264,7 +43992,7 @@
           ],
           "returnType": "frozenset[str]",
           "exported": true,
-          "lineCount": 22
+          "lineCount": 24
         },
         {
           "name": "load_generator_manifest",
@@ -39349,12 +44077,12 @@
         "_orchestration_only_ids",
         "load_generator_manifest"
       ],
-      "totalLines": 142,
+      "totalLines": 146,
       "hasStructuralAnalysis": true
     },
     "scripts/generators/v42/render.py": {
       "filePath": "scripts/generators/v42/render.py",
-      "contentHash": "588021ed36ba8293d298a11140ab3d46591df656a0ff21d49e1dec7cecbe2f58",
+      "contentHash": "03b082fab569e7b395012840cb6a220138afc6e19c6fb32ec8edd7407c14df57",
       "functions": [
         {
           "name": "render_pack",
@@ -39445,12 +44173,12 @@
     },
     "scripts/generators/v42/templates/partials/pack_header.md.j2": {
       "filePath": "scripts/generators/v42/templates/partials/pack_header.md.j2",
-      "contentHash": "e4bc76e59c80f082a0946472b040b12da98913b2d0c84d9ef455f453b48b3d24",
+      "contentHash": "eb1cb4ddf2dd0ec441f8719eeaa7ee2657f53e6e628616ef3a5cd968e89a6676",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 13,
+      "totalLines": 20,
       "hasStructuralAnalysis": false
     },
     "scripts/generators/v42/templates/partials/pre_run_launchpad.md.j2": {
@@ -39515,7 +44243,7 @@
     },
     "scripts/generators/v42/templates/sections/03-ingestion-evidence-log.md.j2": {
       "filePath": "scripts/generators/v42/templates/sections/03-ingestion-evidence-log.md.j2",
-      "contentHash": "dd68f99eefeb6e2f55c1602cd7772f5788986968731291c1cec1a55dae41e9fc",
+      "contentHash": "cd9a2d7bee3edea4ef80688e7c45512f57fac477a196a4b5967c990950478680",
       "functions": [],
       "classes": [],
       "imports": [],
@@ -39663,6 +44391,16 @@
       "totalLines": 19,
       "hasStructuralAnalysis": false
     },
+    "scripts/generators/v42/templates/sections/07G-png-grounded-vision-perception.md.j2": {
+      "filePath": "scripts/generators/v42/templates/sections/07G-png-grounded-vision-perception.md.j2",
+      "contentHash": "1cc722afb7c82302db27f96507412c569015f35a410054a156a5169759f73c2c",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 23,
+      "hasStructuralAnalysis": false
+    },
     "scripts/generators/v42/templates/sections/08-irene-pass-2-segment-manifest.md.j2": {
       "filePath": "scripts/generators/v42/templates/sections/08-irene-pass-2-segment-manifest.md.j2",
       "contentHash": "f14e732e17a0e05a146a938dbf69acd6f76687d27237c67021df95c537f4af16",
@@ -39685,7 +44423,7 @@
     },
     "scripts/generators/v42/templates/sections/09-gate-3-lock-pass-2-package.md.j2": {
       "filePath": "scripts/generators/v42/templates/sections/09-gate-3-lock-pass-2-package.md.j2",
-      "contentHash": "6efcc48000547d6fcb4d61b38631ff05368619c5aee406f53ae324814ea0d28c",
+      "contentHash": "4ca11a1c385de934a038ef6f1621d548ab7e7a0af95e77f1eb3554d438640e82",
       "functions": [],
       "classes": [],
       "imports": [],
@@ -40800,6 +45538,130 @@
       "totalLines": 425,
       "hasStructuralAnalysis": true
     },
+    "scripts/operator/build_descript_narrated_lesson.py": {
+      "filePath": "scripts/operator/build_descript_narrated_lesson.py",
+      "contentHash": "88610b079a14c60c4368ada16976c76033cfddb1973ed1850925e7d55582a4d2",
+      "functions": [
+        {
+          "name": "build_assembly_prompt",
+          "params": [
+            "n_segments"
+          ],
+          "returnType": "str",
+          "exported": true,
+          "lineCount": 20
+        },
+        {
+          "name": "collect_media",
+          "params": [
+            "slides_dir",
+            "audio_dir"
+          ],
+          "returnType": "dict[str, Path]",
+          "exported": true,
+          "lineCount": 14
+        },
+        {
+          "name": "build_add_media",
+          "params": [
+            "media"
+          ],
+          "returnType": "dict[str, dict[str, object]]",
+          "exported": true,
+          "lineCount": 9
+        },
+        {
+          "name": "publish_project",
+          "params": [
+            "client",
+            "project_id",
+            "resolution",
+            "composition_id"
+          ],
+          "returnType": "dict[str, object]",
+          "exported": true,
+          "lineCount": 35
+        },
+        {
+          "name": "run",
+          "params": [
+            "args"
+          ],
+          "returnType": "int",
+          "exported": true,
+          "lineCount": 104
+        },
+        {
+          "name": "parse_args",
+          "params": [
+            "argv"
+          ],
+          "returnType": "argparse.Namespace",
+          "exported": true,
+          "lineCount": 16
+        },
+        {
+          "name": "main",
+          "params": [
+            "argv"
+          ],
+          "returnType": "int",
+          "exported": true,
+          "lineCount": 8
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "argparse",
+          "specifiers": [
+            "argparse"
+          ]
+        },
+        {
+          "source": "contextlib",
+          "specifiers": [
+            "contextlib"
+          ]
+        },
+        {
+          "source": "logging",
+          "specifiers": [
+            "logging"
+          ]
+        },
+        {
+          "source": "sys",
+          "specifiers": [
+            "sys"
+          ]
+        },
+        {
+          "source": "pathlib",
+          "specifiers": [
+            "Path"
+          ]
+        },
+        {
+          "source": "scripts.api_clients.descript_client",
+          "specifiers": [
+            "DescriptClient",
+            "content_type_for"
+          ]
+        }
+      ],
+      "exports": [
+        "build_assembly_prompt",
+        "collect_media",
+        "build_add_media",
+        "publish_project",
+        "run",
+        "parse_args",
+        "main"
+      ],
+      "totalLines": 269,
+      "hasStructuralAnalysis": true
+    },
     "scripts/operator/bundle_health_check.py": {
       "filePath": "scripts/operator/bundle_health_check.py",
       "contentHash": "f015f3f82f532210b2fccfb7587941893d1a78c891d487915d700f8a4b11940b",
@@ -41790,6 +46652,252 @@
       "totalLines": 267,
       "hasStructuralAnalysis": true
     },
+    "scripts/operator/scite_oauth_login_auto.py": {
+      "filePath": "scripts/operator/scite_oauth_login_auto.py",
+      "contentHash": "2aab8136f3f042ed278c344414ceb42be5eec02580feb191ae5b31e716b6f6fb",
+      "functions": [
+        {
+          "name": "_pkce",
+          "params": [],
+          "returnType": "tuple[str, str]",
+          "exported": true,
+          "lineCount": 4
+        },
+        {
+          "name": "main",
+          "params": [],
+          "returnType": "int",
+          "exported": true,
+          "lineCount": 136
+        }
+      ],
+      "classes": [
+        {
+          "name": "_Handler",
+          "methods": [
+            "do_GET",
+            "log_message"
+          ],
+          "properties": [],
+          "exported": true,
+          "lineCount": 14
+        }
+      ],
+      "imports": [
+        {
+          "source": "base64",
+          "specifiers": [
+            "base64"
+          ]
+        },
+        {
+          "source": "contextlib",
+          "specifiers": [
+            "contextlib"
+          ]
+        },
+        {
+          "source": "hashlib",
+          "specifiers": [
+            "hashlib"
+          ]
+        },
+        {
+          "source": "http.server",
+          "specifiers": [
+            "http.server"
+          ]
+        },
+        {
+          "source": "json",
+          "specifiers": [
+            "json"
+          ]
+        },
+        {
+          "source": "os",
+          "specifiers": [
+            "os"
+          ]
+        },
+        {
+          "source": "secrets",
+          "specifiers": [
+            "secrets"
+          ]
+        },
+        {
+          "source": "sys",
+          "specifiers": [
+            "sys"
+          ]
+        },
+        {
+          "source": "threading",
+          "specifiers": [
+            "threading"
+          ]
+        },
+        {
+          "source": "time",
+          "specifiers": [
+            "time"
+          ]
+        },
+        {
+          "source": "urllib.parse",
+          "specifiers": [
+            "urllib.parse"
+          ]
+        },
+        {
+          "source": "pathlib",
+          "specifiers": [
+            "Path"
+          ]
+        },
+        {
+          "source": "httpx",
+          "specifiers": [
+            "httpx"
+          ]
+        }
+      ],
+      "exports": [
+        "_Handler",
+        "_pkce",
+        "main"
+      ],
+      "totalLines": 206,
+      "hasStructuralAnalysis": true
+    },
+    "scripts/operator/scite_oauth_login.py": {
+      "filePath": "scripts/operator/scite_oauth_login.py",
+      "contentHash": "f0fcd2a98c9f4ed350573bdfe28c10bef12c6488ffb14cadeb144837a96c734f",
+      "functions": [
+        {
+          "name": "_pkce",
+          "params": [],
+          "returnType": "tuple[str, str]",
+          "exported": true,
+          "lineCount": 8
+        },
+        {
+          "name": "_register_client",
+          "params": [],
+          "returnType": "str",
+          "exported": true,
+          "lineCount": 12
+        },
+        {
+          "name": "main",
+          "params": [],
+          "returnType": "int",
+          "exported": true,
+          "lineCount": 78
+        }
+      ],
+      "classes": [
+        {
+          "name": "_CallbackHandler",
+          "methods": [
+            "do_GET",
+            "log_message"
+          ],
+          "properties": [],
+          "exported": true,
+          "lineCount": 23
+        }
+      ],
+      "imports": [
+        {
+          "source": "base64",
+          "specifiers": [
+            "base64"
+          ]
+        },
+        {
+          "source": "contextlib",
+          "specifiers": [
+            "contextlib"
+          ]
+        },
+        {
+          "source": "hashlib",
+          "specifiers": [
+            "hashlib"
+          ]
+        },
+        {
+          "source": "http.server",
+          "specifiers": [
+            "http.server"
+          ]
+        },
+        {
+          "source": "json",
+          "specifiers": [
+            "json"
+          ]
+        },
+        {
+          "source": "secrets",
+          "specifiers": [
+            "secrets"
+          ]
+        },
+        {
+          "source": "sys",
+          "specifiers": [
+            "sys"
+          ]
+        },
+        {
+          "source": "threading",
+          "specifiers": [
+            "threading"
+          ]
+        },
+        {
+          "source": "time",
+          "specifiers": [
+            "time"
+          ]
+        },
+        {
+          "source": "urllib.parse",
+          "specifiers": [
+            "urllib.parse"
+          ]
+        },
+        {
+          "source": "webbrowser",
+          "specifiers": [
+            "webbrowser"
+          ]
+        },
+        {
+          "source": "pathlib",
+          "specifiers": [
+            "Path"
+          ]
+        },
+        {
+          "source": "httpx",
+          "specifiers": [
+            "httpx"
+          ]
+        }
+      ],
+      "exports": [
+        "_CallbackHandler",
+        "_pkce",
+        "_register_client",
+        "main"
+      ],
+      "totalLines": 184,
+      "hasStructuralAnalysis": true
+    },
     "scripts/resolve_source_ref.py": {
       "filePath": "scripts/resolve_source_ref.py",
       "contentHash": "d61f416fc96936545c06bb7fce83e103475083a9fab06d6de1e58ecc276ba6aa",
@@ -42234,6 +47342,86 @@
       "totalLines": 263,
       "hasStructuralAnalysis": true
     },
+    "scripts/validators/pass_2_emission_lint.py": {
+      "filePath": "scripts/validators/pass_2_emission_lint.py",
+      "contentHash": "69f45dc3eee681b798da71cb3bcca9898199422a0939c1335e6291a13a1dee7c",
+      "functions": [
+        {
+          "name": "_check_reading_path_pattern",
+          "params": [
+            "pattern"
+          ],
+          "returnType": "None",
+          "exported": true,
+          "lineCount": 3
+        },
+        {
+          "name": "validate_segment_manifest",
+          "params": [
+            "payload"
+          ],
+          "returnType": "list[str]",
+          "exported": true,
+          "lineCount": 26
+        },
+        {
+          "name": "main",
+          "params": [],
+          "returnType": "int",
+          "exported": true,
+          "lineCount": 11
+        }
+      ],
+      "classes": [
+        {
+          "name": "Pass2EmissionLintError",
+          "methods": [],
+          "properties": [],
+          "exported": true,
+          "lineCount": 2
+        }
+      ],
+      "imports": [
+        {
+          "source": "argparse",
+          "specifiers": [
+            "argparse"
+          ]
+        },
+        {
+          "source": "json",
+          "specifiers": [
+            "json"
+          ]
+        },
+        {
+          "source": "pathlib",
+          "specifiers": [
+            "Path"
+          ]
+        },
+        {
+          "source": "typing",
+          "specifiers": [
+            "Any"
+          ]
+        },
+        {
+          "source": "scripts.utilities.reading_path_classifier",
+          "specifiers": [
+            "CADENCE_TOKENS"
+          ]
+        }
+      ],
+      "exports": [
+        "Pass2EmissionLintError",
+        "_check_reading_path_pattern",
+        "validate_segment_manifest",
+        "main"
+      ],
+      "totalLines": 80,
+      "hasStructuralAnalysis": true
+    },
     "skills/__init__.py": {
       "filePath": "skills/__init__.py",
       "contentHash": "4f603fb0c3d5bbfafe1b4b2c88a94ed64f7d32f4d001c0eccbd97bb4de8809d8",
@@ -42486,7 +47674,7 @@
     },
     "skills/bmad-agent-desmond/SKILL.md": {
       "filePath": "skills/bmad-agent-desmond/SKILL.md",
-      "contentHash": "ae8830bf205ab995201592737505b856b531cd98550f7d4f475af9cac2d0a9b3",
+      "contentHash": "01ca3c692025426d3790e609e27229687db06edeb8395eef7bbe65a71e5f2fc0",
       "functions": [],
       "classes": [],
       "imports": [],
