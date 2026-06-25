@@ -548,6 +548,79 @@ def backfill_delta_ids(parsed: dict[str, Any]) -> dict[str, Any]:
     return {**parsed, "segment_manifest_deltas": work}
 
 
+def _first_perception_source(delta: object) -> str:
+    """The first non-empty visual_reference perception_source on a delta, or ''."""
+    if not isinstance(delta, dict):
+        return ""
+    for ref in delta.get("visual_references") or []:
+        if isinstance(ref, dict):
+            source = str(ref.get("perception_source") or "").strip()
+            if source:
+                return source
+    return ""
+
+
+def backfill_delta_perception_sources(
+    parsed: dict[str, Any], roster: list[dict[str, Any]]
+) -> dict[str, Any]:
+    """Backfill a delta's MISSING ``perception_source`` from the slide roster.
+
+    Live trial 72ed8fd5 (non-clustered) error-paused at the enrique audio leg:
+    Pass-2 emitted 13 narration segments + 13 deltas with matching ids, but one
+    cluster-head delta (``seg-10``) carried an EMPTY ``visual_references`` list.
+    The shared join drops a delta with no perception_source, so its narration
+    segment is "dropped" and enrique's pre-spend guard refuses
+    (``elevenlabs.join.dropped-segments``). This is a DISTINCT failure mode from
+    :func:`backfill_delta_ids` (which repairs a missing ``id``, not a missing
+    ``perception_source``).
+
+    Repair at the Pass-2 output boundary (join policy + G5 stay untouched),
+    mirroring backfill_delta_ids' discipline:
+
+    - **Roster-grounded, not invented.** The backfilled slide id comes from the
+      authoritative ``roster`` (the same one ``_assert_narration_joins_roster``
+      validates against) by positional index — never a guess.
+    - **Alignment-gated.** Only backfill when ``len(deltas) == len(roster)`` AND
+      every delta that ALREADY has a perception_source matches its
+      positionally-aligned roster slide_id (confirming the deltas are emitted in
+      roster order). A single misalignment ⇒ skip entirely (positional inference
+      would mis-attribute — same caution as backfill_delta_ids step-2).
+
+    PURE (no input mutation), idempotent.
+    """
+    deltas = parsed.get("segment_manifest_deltas")
+    if not isinstance(deltas, list) or not deltas:
+        return parsed
+    if not isinstance(roster, list) or len(roster) != len(deltas):
+        return parsed
+    roster_ids = [str(entry.get("slide_id") or "").strip() for entry in roster]
+    if not all(roster_ids):
+        return parsed
+
+    present = [(i, _first_perception_source(d)) for i, d in enumerate(deltas)]
+    aligned = all(src == roster_ids[i] for i, src in present if src)
+    has_gap = any(not src for _, src in present)
+    if not aligned or not has_gap:
+        return parsed
+
+    work: list[Any] = []
+    changed = False
+    for i, delta in enumerate(deltas):
+        if not isinstance(delta, dict) or _first_perception_source(delta):
+            work.append(delta)
+            continue
+        copy = dict(delta)
+        copy["visual_references"] = [
+            *(copy.get("visual_references") or []),
+            {"perception_source": roster_ids[i]},
+        ]
+        work.append(copy)
+        changed = True
+    if not changed:
+        return parsed
+    return {**parsed, "segment_manifest_deltas": work}
+
+
 def _assert_narration_joins_roster(
     parsed: dict[str, Any], roster: list[dict[str, Any]]
 ) -> None:
@@ -985,6 +1058,10 @@ def _act_pass_2(
     # before the deltas are serialized for enrique/publisher/G5 (clustered-deck
     # LLM-variance repair; see backfill_delta_ids).
     parsed = backfill_delta_ids(parsed)
+    # Live trial 72ed8fd5 (non-clustered): a cluster-head delta lost its
+    # perception_source (empty visual_references) → the join drops its narration
+    # → enrique refuses pre-spend. Roster-grounded, alignment-gated backfill.
+    parsed = backfill_delta_perception_sources(parsed, slide_roster)
     _assert_narration_joins_roster(parsed, slide_roster)
     _assert_reading_path_conformance(parsed, slide_roster)
     _assert_figure_citations_within_perceived(parsed, slide_roster)
