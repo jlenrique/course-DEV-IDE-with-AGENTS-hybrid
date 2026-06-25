@@ -34,5 +34,17 @@ Carry the cluster LABELS into the final segment manifest. Today count + narratio
 ## Governance / fences
 Additive. Don't regress the organic chunk/keep-dense behavior. No G5/reading-path/figure-gate touch. `narration_join` untouched. NEW CYCLE per substrate story; the carry fix likely touches the Pass-2 → storyboard-export path (verify no block-mode trigger).
 
-## Open question for operator
-Confirm the reframe (carry-first, control-low, timing-deferred) vs. the original equal-weight three-add framing. Default if no objection: build **1.3-carry** first as its own NEW CYCLE; file 1.3-control + 1.3-timing to deferred-inventory.
+## Party-mode GREEN-LIGHT (2026-06-24) — 4/4 GREEN, no impasse
+John / Winston / Murat / Mary all GREEN on the carry-first reframe. Binding amendments folded:
+- **A1 (John):** build **1.3-carry as its own NEW CYCLE**; 1.3-control + 1.3-timing → deferred-inventory with reactivation triggers (NOT bundled).
+- **A2 (Murat):** witness must assert **all four cluster fields (`cluster_id`/`cluster_role`/`cluster_position`/`narrative_arc`) non-degenerate on the head AND the interstitial**, AND singletons carry the **declared degenerate/None sentinel** (not silently absent) — full-field + negative case, traced to the Pass-1 emission. ("≥1 head + ≥1 interstitial" was too weak — a partial drop passes vacuously.)
+- **A3 (Winston):** fix at the **single discovered drop point in the Pass-2 → storyboard-export projection** (likely Gary's slide-row build dropping fields on segment expansion) — widen the projection to copy the four labels through, **NOT** re-derive clusters at export. The trace-task MUST produce the exact file/line **+ a block-mode-trigger check BEFORE any edit**.
+- **A4 (Mary):** 1.3-control is the **fallback if organic chunk/keep-dense proves unstable across the next 2–3 trials** — file it with that trigger; "low priority" must not become "dropped."
+
+**Status: 1.3-carry ready-for-dev (own NEW CYCLE). 1.3-control + 1.3-timing → deferred-inventory.**
+
+## Trace-task result (2026-06-24, pre-edit per Winston A3)
+The drop is **two points**, both confirmed on the real `c2c6dcbf` checkpoint (block-mode check: `storyboard_publisher.py` + `narration_join.py` are NOT in `block_mode_trigger_paths` — safe):
+1. **`cluster_id`/`cluster_role`/`cluster_position`** ARE present on the Pass-2 `segment_manifest_deltas` (e.g. `c-u01`/`head`/`establish`), but `join_narration_segments` (the party-governed neck) builds an output row that **omits them**. → Fix in the EXPORT projection `app/marcus/orchestrator/storyboard_publisher.py::_write_segment_manifest_for_b`: after the join, re-attach the three fields from the matching delta (by segment `id`). **Do NOT widen `narration_join` (governed).**
+2. **`narrative_arc`** is non-null on the **Pass-1 plan_units** (`output.lesson_plan.plan_units[*].narrative_arc`, keyed by `cluster_id`) but **absent from the Pass-2 deltas**. → In the caller `publish_storyboard_for_gate` (storyboard-B branch, which has `production_envelope`), build a `cluster_id → narrative_arc` map from the irene_pass1 plan_units and pass it into `_write_segment_manifest_for_b`; set each segment's `narrative_arc` from the map by `cluster_id`. **Deterministic lookup, not re-derive.**
+Singletons: degenerate cluster (cluster_id=`c-<unit>`, role=head, position=establish, narrative_arc may be its own) — carry the declared values, never silently absent (Murat A2).

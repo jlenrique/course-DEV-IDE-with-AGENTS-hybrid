@@ -54,5 +54,12 @@ After Pass-2, classify every narration assertion's provenance against the **sour
 - **G5 figure detector + the chosen-variant figure-citation gate UNTOUCHED** (this is a NEW, source-facing layer, orthogonal to the slide-facing gate).
 - NEW CYCLE per substrate story; party green-light the scope (it's a new QA layer + a Gamma-brief change).
 
-## Open (operator)
-Confirm: ship L1 + L2-numeric-audit + L2-semantic-signal now as **warn/report** (not blocking), provenance model with the empty research channel — yes? And does research plug in via a directive field on the lesson plan / a Tracy artifact (your call, when it lands)?
+## Party-mode GREEN-LIGHT (2026-06-24) — 4/4 GREEN-WITH-AMENDMENTS, no impasse
+John / Winston / Murat / Mary all GREEN-with-amendments. Binding amendments folded:
+- **F1 (John+Murat):** committed scope = **L1 (Gamma numeric-preserve) + L2-numeric audit (WARN) + empty provenance-channel stub.** L2-semantic = **measurement-only, explicitly NON-GATING, labeled experimental**; NO tripwire thresholds tuned until **≥3 runs** exist; the threshold + run-baseline are **written down now** or "trends up" is unfalsifiable. "Warn" must not creep to "gate" without a measured drift rate.
+- **F2 (Murat):** the fidelity report MUST be a real witness — (1) **non-zero numeric-token denominators** from narration AND source (else **FAIL, not PASS**), (2) per-token classification with the **offending value pairs** ($4.5T vs $5.2T), (3) computed **drift rate**, (4) the **three buckets explicitly counted** incl. an **empty-but-present** research-supplement section.
+- **F3 (Mary) — KEY:** split `unsourced-elaboration` into **`unsourced-numeric/named-entity`** (the credibility risk) vs **`unsourced-framing/structure`** (sanctioned composition) **from day one** — else the empty research channel makes the audit read coherent prose (Speaker-7 taxonomy, Speaker-11 dimensions) as drift beside real errors ($4.5T), and the rate is uninterpretable.
+- **F4 (Winston):** the L2 numeric leg is a **pure read-only caller of `figure_tokens._figures`/`_normalize_figure`** — **no signature change, no new state, ZERO edits to `figure_tokens.py`** (frozen neck, now 3 readers). Source-corpus-extraction extras go in the **new L2 module**, never by mutating the neck.
+- **F5 (Winston):** source-facing layer, **orthogonal to** the slide-facing G5 / chosen-variant figure-citation gate (different referent: source corpus vs rendered slide; different lifecycle: warn-first). **G5 + the figure-citation gate UNTOUCHED.**
+
+**Status: ready-for-dev (own NEW CYCLE).** Research-supplement channel = stub now; plug-in mechanism (lesson-plan directive field vs Tracy artifact) deferred until research lands.

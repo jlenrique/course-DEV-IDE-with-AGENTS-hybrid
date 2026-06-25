@@ -85,7 +85,10 @@ def _load_generator_module() -> Any:
 
 
 def _write_segment_manifest_for_b(
-    *, run_dir: Path, irene_output: dict[str, Any]
+    *,
+    run_dir: Path,
+    irene_output: dict[str, Any],
+    cluster_arc_by_id: dict[str, str] | None = None,
 ) -> Path:
     """Transform Irene's Pass-2 contribution into the legacy segment-manifest YAML.
 
@@ -94,6 +97,19 @@ def _write_segment_manifest_for_b(
     Pass 2 emits ``narration_script`` (id + narration_text) and
     ``segment_manifest_deltas`` (id + metadata + visual_references whose
     ``perception_source`` names the real slide id) — joined here by segment id.
+
+    Story 1.3-carry: the frozen ``join_narration_segments`` neck (governed,
+    NOT widened here) drops the cluster labels, so cluster structure is not
+    verifiable in the shipped manifest. This EXPORT projection re-attaches them
+    AFTER the join, copying values through (never re-deriving clusters):
+
+    * ``cluster_id`` / ``cluster_role`` / ``cluster_position`` come from the
+      matching Pass-2 delta (by segment id);
+    * ``narrative_arc`` is threaded from ``cluster_arc_by_id`` (built by the
+      caller from the Pass-1 plan_units) keyed by the segment's ``cluster_id``.
+
+    Cluster-absent / non-clustered runs degrade gracefully: every field
+    defaults to ``None`` and the manifest still writes.
     """
     narration = irene_output.get("narration_script")
     if not isinstance(narration, list) or not narration:
@@ -101,17 +117,30 @@ def _write_segment_manifest_for_b(
             "storyboard-B publish requires Irene Pass-2 narration_script",
             tag="storyboard.input.missing-irene",
         )
+    deltas = irene_output.get("segment_manifest_deltas")
     # Audio-segment arc: the join policy lives ONLY in narration_join (the
     # publisher, enrique synthesis, and G5 QA must agree byte-for-byte).
-    segments = join_narration_segments(
-        narration, irene_output.get("segment_manifest_deltas")
-    )
+    segments = join_narration_segments(narration, deltas)
     if not segments:
         raise StoryboardPublishError(
             "Irene Pass-2 deltas joined to zero slides; storyboard-B has no "
             "narration overlay to publish",
             tag="storyboard.input.missing-irene",
         )
+    # Re-attach the cluster labels the frozen join neck omits (1.3-carry).
+    # Build a delta-by-id index, then enrich each joined row in place.
+    delta_by_id: dict[str, dict[str, Any]] = {}
+    for delta in deltas if isinstance(deltas, list) else []:
+        if isinstance(delta, dict):
+            delta_by_id[str(delta.get("id") or "")] = delta
+    arc_map = cluster_arc_by_id or {}
+    for segment in segments:
+        delta = delta_by_id.get(str(segment.get("id") or segment.get("segment_id") or ""))
+        cluster_id = delta.get("cluster_id") if delta else None
+        segment["cluster_id"] = cluster_id
+        segment["cluster_role"] = delta.get("cluster_role") if delta else None
+        segment["cluster_position"] = delta.get("cluster_position") if delta else None
+        segment["narrative_arc"] = arc_map.get(cluster_id) if cluster_id else None
     manifest_path = run_dir / "exports" / "segment-manifest-storyboard-b.yaml"
     manifest_path.parent.mkdir(parents=True, exist_ok=True)
     manifest_path.write_text(
@@ -119,6 +148,40 @@ def _write_segment_manifest_for_b(
         encoding="utf-8",
     )
     return manifest_path
+
+
+def _cluster_arc_by_id(production_envelope: Any) -> dict[str, str] | None:
+    """Build ``{cluster_id: narrative_arc}`` from the irene_pass1 plan_units.
+
+    narrative_arc is emitted on the Pass-1 plan_units (Story 1.1), keyed by
+    ``cluster_id``, but is absent from the Pass-2 deltas — so the export
+    projection needs this lookup to thread it through (1.3-carry). Returns
+    ``None`` when the irene_pass1 contribution or its plan_units are
+    unavailable (degrade gracefully: narrative_arc stays None; the other three
+    cluster fields still carry from the deltas).
+    """
+    contribution = production_envelope.latest_for_specialist("irene_pass1")
+    if contribution is None:
+        return None
+    output = contribution.output if isinstance(contribution.output, dict) else {}
+    lesson_plan = output.get("lesson_plan")
+    plan_units = lesson_plan.get("plan_units") if isinstance(lesson_plan, dict) else None
+    if not isinstance(plan_units, list):
+        locked_scope = output.get("locked_scope")
+        plan_units = (
+            locked_scope.get("plan_units") if isinstance(locked_scope, dict) else None
+        )
+    if not isinstance(plan_units, list):
+        return None
+    arc_by_id: dict[str, str] = {}
+    for unit in plan_units:
+        if not isinstance(unit, dict):
+            continue
+        cluster_id = unit.get("cluster_id")
+        narrative_arc = unit.get("narrative_arc")
+        if cluster_id and narrative_arc:
+            arc_by_id[str(cluster_id)] = str(narrative_arc)
+    return arc_by_id or None
 
 
 def publish_storyboard_for_gate(
@@ -172,8 +235,16 @@ def publish_storyboard_for_gate(
                 "storyboard-B has no narration overlay",
                 tag="storyboard.input.missing-irene",
             )
+        # 1.3-carry: narrative_arc lives on the Pass-1 plan_units (keyed by
+        # cluster_id), NOT on the Pass-2 deltas. Build the cluster_id ->
+        # narrative_arc map and thread it into the export projection. Degrade
+        # gracefully (None) when irene_pass1 / plan_units are unavailable — the
+        # other three cluster fields still carry from the Pass-2 deltas.
+        cluster_arc_by_id = _cluster_arc_by_id(production_envelope)
         segment_manifest_path = _write_segment_manifest_for_b(
-            run_dir=run_dir, irene_output=irene.output
+            run_dir=run_dir,
+            irene_output=irene.output,
+            cluster_arc_by_id=cluster_arc_by_id,
         )
 
     module = _load_generator_module()
