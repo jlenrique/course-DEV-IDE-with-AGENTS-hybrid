@@ -77,6 +77,9 @@ select = ["E", "F", "W", "I", "N", "UP", "B", "SIM"]
 "scripts/utilities/run_hud.py" = ["E501"]
 # Dense validation / handoff messages; wrapping harms grep-ability of operator-facing errors.
 "skills/bmad-agent-marcus/scripts/prepare-irene-pass2-handoff.py" = ["E501"]
+# Gamma Studio spike harness: long operator-facing instruction prompts + the recipe
+# block read off the config screenshot; wrapping harms readability of the at-keyboard guidance.
+"scripts/ui_clients/gamma_studio_spike.py" = ["E501"]
 
 [tool.pytest.ini_options]
 addopts = "-p no:randomly -n auto --dist loadfile -m 'not live and not serial and not quarantined'"
