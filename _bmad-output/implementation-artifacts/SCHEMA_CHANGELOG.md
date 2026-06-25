@@ -924,3 +924,66 @@ scope until real-slide conformance evidence justifies widening the enum.
 - `tests/contracts/test_reading_path_parity.py`
 - `tests/integration/marcus/test_package_builders.py`
 - `tests/specialists/irene/test_irene_prompt_byte_stability_5x.py`
+
+## CollateralSpec v1.0 - 2026-06-24 - Braid S1 Lesson-plan collateral + research spec
+
+**Type:** Initial shape (no predecessor family).
+
+**Family:** CollateralSpec (+ WorkbookSpec, WorkbookSection, DepthDeltaContract,
+Exercise, ResearchEnrichmentGoal, BloomLevel).
+
+**Reason for introduction:** Braid DP4 — Irene Pass-1 additively emits a
+workbook content model + a research-enrichment goals block alongside the slide
+brief / plan-units. This is the spec the client's workbook is built from
+(producer is the S2 follow-on; thin research wiring is S3). Schema-shape story:
+the deliverable is a Pydantic-v2 model family + an emitted JSON Schema witness +
+shape-pin / parity / no-leak tests + the Pass-1 emission + pure post-parse
+normalization.
+
+**Shapes and contracts pinned:**
+
+- `app/marcus/lesson_plan/collateral_spec.py`:
+  `CollateralSpec`, `WorkbookSpec`, `WorkbookSection`, `DepthDeltaContract`,
+  `Exercise`, `ResearchEnrichmentGoal`, `BloomLevel`, `SCHEMA_VERSION`.
+- `app/marcus/lesson_plan/schema/collateral_spec.v1.schema.json`:
+  emitted JSON Schema witness (byte-current vs `model_json_schema()`).
+- `app/specialists/irene_pass1/_act.py`:
+  additive collateral-emission prompt block, pure `normalize_collateral(plan)`
+  backstop, additive `irene-pass1.md` collateral lines. The emitted
+  `lesson_plan` dict gains a `collateral` key.
+
+**Semantics pinned:**
+
+- `declaration` is the explicit empty-case discriminant: `"none"` is the
+  on-record deck-only decision (NOT an absent key); `"present"` requires a
+  workbook with >=1 section (bypass-guard `model_validator`).
+- Every `WorkbookSection` binds a `learning_objective_id` (open-id regex reused
+  from the single-source registry — the asset-lesson pairing invariant) and
+  carries a required `depth_delta` (the load-bearing dual-coding field).
+- `Exercise` carries a closed `BloomLevel` enum (three red-rejection surfaces) +
+  a source-grounded `answer_key_source_ref` slot (honesty-gate G3: a structural
+  reference, not a fabricated citation; S3 resolves it).
+- `ResearchEnrichmentGoal.pedagogical_intent` is pedagogical intent, not a raw
+  fetch query — a conservative, false-positive-averse validator rejects URLs and
+  boolean-operator query soup so S1 never pre-empts S3's fetch translation.
+
+**Digest:** deferred to the `collateral-spec-digest` named follow-on (per the
+spec's checklist §10 note); reactivation contract is the four §10 determinism
+edge-case tests. Not silently omitted.
+
+**Honesty gates:** G3 (exercise fidelity) is encoded as the structural
+`answer_key_source_ref` slot. G4 (no reading-path halo): this family advances NO
+reading-path / fresh-naive-holdout generalization claim — collateral emission is
+orthogonal to the perception / reading-path arc. No `dp-vN` bump, no manifest /
+pack touch (`irene_pass1` + `lesson_plan` are not `block_mode_trigger_paths`).
+
+**Migration:** N/A (new family). Additive on the Pass-1 output plan dict; no new
+consumed payload key (`CONSUMED_PAYLOAD_KEYS` unchanged).
+
+**Test surface:**
+
+- `tests/marcus/lesson_plan/test_collateral_spec_shape_stable.py`
+- `tests/marcus/lesson_plan/test_collateral_spec_invariants.py`
+- `tests/marcus/lesson_plan/test_collateral_spec_json_schema_parity.py`
+- `tests/marcus/lesson_plan/test_no_intake_orchestrator_leak_collateral_spec.py`
+- `tests/specialists/irene_pass1/test_irene_pass1_collateral_emission.py`

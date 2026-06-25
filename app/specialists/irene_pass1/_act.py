@@ -4,14 +4,18 @@ from __future__ import annotations
 
 import hashlib
 import json
+import logging
 from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
 
+from app.marcus.lesson_plan.collateral_spec import CollateralSpec
 from app.models.state.operator_verdict import OperatorVerdict
 from app.models.state.run_state import RunState
 from app.specialists.dispatch_errors import SpecialistDispatchError
 from app.specialists.source_bundle import SourceBundleError, read_extracted_source
+
+logger = logging.getLogger(__name__)
 
 REPO_ROOT = Path(__file__).resolve().parents[3]
 SANCTUM_DIR = REPO_ROOT / "_bmad" / "memory" / "bmad-agent-content-creator"
@@ -149,7 +153,8 @@ def assemble_pass1_prompt(
         f"{read_references()}\n\n"
         "## Envelope payload\n\n"
         f"```json\n{_json_dumps(payload)}\n```\n\n"
-        f"{_cluster_emission_instructions()}",
+        f"{_cluster_emission_instructions()}\n\n"
+        f"{_collateral_emission_instructions()}",
     )
 
 
@@ -193,6 +198,60 @@ def _cluster_emission_instructions() -> str:
         "cluster_interstitial_count:0. keep-dense is an INPUT to the decision, "
         "never a veto applied after.\n"
         "- Singletons still carry a cluster_id (degenerate size-1 cluster)."
+    )
+
+
+def _collateral_emission_instructions() -> str:
+    """Braid S1: the additive collateral content-model emission contract (DP4).
+
+    Sibling of :func:`_cluster_emission_instructions`. Requests a WORKBOOK
+    CONTENT MODEL + a research-enrichment goals block on a top-level
+    ``collateral`` key, alongside (never replacing) the plan_units / cluster
+    emission. The empty case is the explicit ``declaration:"none"`` decision —
+    a decision on record, not an absent key. The shapes mirror
+    ``app/marcus/lesson_plan/collateral_spec.py`` (the single source of truth).
+    """
+    return (
+        "## Workbook collateral content model (additive top-level key)\n"
+        "ALSO return a top-level \"collateral\" object — the spec the client's "
+        "workbook is built from. It is the read-in-depth dual-coding partner to "
+        "the glance-deck: it carries the depth deferred OFF the slides so the "
+        "slide voiceover can stay tight. Shape:\n"
+        "{\"collateral\":{\n"
+        "  \"declaration\":\"present|none\", // \"none\" = on-record decision to "
+        "ship deck-only (NOT an omitted key)\n"
+        "  \"workbook\":{ // present iff declaration==\"present\"\n"
+        "    \"sections\":[{\n"
+        "      \"section_id\":\"sec-...\",\n"
+        "      \"learning_objective_id\":\"<a real plan_unit id>\", // REQUIRED; "
+        "binds the section to a learning objective\n"
+        "      \"title\":\"...\",\n"
+        "      \"depth_delta\":{ // REQUIRED; what depth moves off the slide\n"
+        "        \"deferred_from_slide\":\"<plan_unit id>\",\n"
+        "        \"deferred_depth\":\"<what depth the workbook carries>\",\n"
+        "        \"retained_on_slide\":\"<what stays at glance altitude>\" // optional\n"
+        "      },\n"
+        "      \"exercises\":[{ // may be empty for a pure-narrative section\n"
+        "        \"exercise_id\":\"ex-...\",\n"
+        "        \"bloom_level\":\"remember|understand|apply|analyze|evaluate|create\",\n"
+        "        \"prompt_intent\":\"<pedagogical intent, not the worked prompt>\",\n"
+        "        \"answer_key_source_ref\":\"<a source reference slot>\" // grounded; "
+        "not a fabricated citation\n"
+        "      }],\n"
+        "      \"narrative_intent\":\"<the fuller-narrative brief>\"\n"
+        "    }]\n"
+        "  },\n"
+        "  \"research_goals\":[{ // pedagogical INTENT, never a raw fetch query/URL\n"
+        "    \"goal_id\":\"rg-...\",\n"
+        "    \"pedagogical_intent\":\"learner needs the primary-source basis for "
+        "the 23% figure\",\n"
+        "    \"binds_to_objective_id\":\"<objective id>\" // optional\n"
+        "  }]\n"
+        "}}.\n"
+        "- Express research as pedagogical INTENT, not a search query — the "
+        "research wiring translates intent to fetch downstream.\n"
+        "- If the lesson genuinely ships deck-only, emit "
+        "{\"collateral\":{\"declaration\":\"none\"}} explicitly."
     )
 
 
@@ -339,6 +398,69 @@ def normalize_clusters(plan: dict[str, Any]) -> dict[str, Any]:
     return {**plan, "plan_units": units}
 
 
+def normalize_collateral(plan: dict[str, Any]) -> dict[str, Any]:
+    """Pure post-parse backstop guaranteeing a well-formed ``collateral`` block.
+
+    Braid S1 (Scope item 3). Mirrors :func:`normalize_clusters`: PURE (returns a
+    new dict, never mutates the input), idempotent, never crashes. Guarantees
+    ``plan["collateral"]`` validates as a :class:`CollateralSpec` shape on BOTH
+    the LLM-output path and the fallback-unit path:
+
+    - missing / non-dict / unparseable collateral -> the explicit
+      ``{"declaration": "none"}`` decision-on-record (degenerate-empty), NOT an
+      absent key
+    - a collateral block that fails ``CollateralSpec`` validation (e.g. a
+      ``declaration:"present"`` with no usable workbook, or a malformed section)
+      degrades to the ``"none"`` declaration rather than crashing the walk —
+      the additive/no-regression invariant holds even on sloppy model output
+    - a well-formed block is canonicalized through ``CollateralSpec`` so the
+      emitted block is exactly the validated shape (sorted, defaulted)
+
+    The producer (S2) and research wiring (S3) read the validated shape; S1's
+    job is to make a well-formed instance always present.
+
+    ``CollateralSpec`` is imported at module level (the import-anchor discipline,
+    mirror Amelia-a.2) so the schema family is statically reachable in the
+    import graph and cannot rot as an orphan module. Marcus Contract M3 forbids
+    app.specialists importing only marcus.facade / marcus.intake /
+    marcus.orchestrator — not app.marcus.lesson_plan — so this edge is allowed.
+    """
+    none_block = {"declaration": "none"}
+    if not isinstance(plan, dict):
+        return {"collateral": dict(none_block)}
+
+    raw = plan.get("collateral")
+    if not isinstance(raw, dict):
+        return {**plan, "collateral": dict(none_block)}
+
+    try:
+        spec = CollateralSpec.model_validate(raw)
+    except Exception as exc:
+        # Never-crash backstop: degrade a malformed block to the on-record
+        # deck-only declaration rather than propagating a validation error.
+        # FIX-1: make the degrade OBSERVABLE. A genuine declaration:"none"
+        # (or absent / non-dict, handled above) is a legitimate decision and
+        # must NOT warn; but a block that *intended* a workbook — declaration
+        # "present" OR a non-empty workbook payload — losing the whole workbook
+        # silently collapses DP4's decision-on-record distinction. Warn (once)
+        # capturing the validation error before returning the none decision.
+        declared_present = raw.get("declaration") == "present"
+        workbook = raw.get("workbook")
+        has_workbook_payload = bool(workbook) and isinstance(workbook, dict)
+        if declared_present or has_workbook_payload:
+            logger.warning(
+                "irene-pass1 collateral degraded to declaration:'none' — a "
+                "present/workbook block failed CollateralSpec validation and "
+                "was dropped: %s",
+                exc,
+            )
+        return {**plan, "collateral": dict(none_block)}
+
+    # Canonicalize to the validated shape (mode="json" so it round-trips through
+    # CacheState's JSON cache_prefix without datetime/enum surprises).
+    return {**plan, "collateral": spec.model_dump(mode="json")}
+
+
 def parse_pass1_response(raw_text: str) -> dict[str, Any]:
     stripped = raw_text.strip()
     if "```json" in stripped:
@@ -370,6 +492,9 @@ def parse_pass1_response(raw_text: str) -> dict[str, Any]:
         ]
         # The fallback unit is itself a degenerate size-1 cluster.
         parsed = normalize_clusters(parsed)
+    # Braid S1: guarantee a well-formed collateral block on BOTH the LLM-output
+    # path and the fallback-unit path (additive; degenerate-empty -> "none").
+    parsed = normalize_collateral(parsed)
     return parsed
 
 
@@ -405,8 +530,82 @@ def write_lesson_plan(plan: dict[str, Any], *, run_id: str, runs_root: Path | No
                 f"- Cluster interstitial count: {unit['cluster_interstitial_count']}"
             )
         lines.append("")
+    # Braid S1: additive collateral content-model section. Appended AFTER all
+    # plan-unit / cluster lines so the cluster-section lines stay byte-unchanged
+    # (the no-regression invariant). Absent/none collateral emits the explicit
+    # deck-only declaration line; never an absent section.
+    lines.extend(_collateral_artifact_lines(plan.get("collateral")))
     path.write_text("\n".join(lines), encoding="utf-8", newline="\n")
     return path
+
+
+def _oneline(value: Any) -> str:
+    """Collapse CR/LF in a free-text field to single spaces for flat rendering.
+
+    FIX-3 (S1->S2 seam robustness): the collateral artifact section interpolates
+    free-text fields (title, narrative_intent, prompt_intent, pedagogical_intent,
+    deferred_depth) into flat ``- `` / ``### `` lines that S2 parses back. A
+    field carrying a newline would inject fake markdown lines. This sanitizes at
+    the RENDERING SITE ONLY — the stored schema values stay verbatim.
+    """
+    return str(value).replace("\r\n", " ").replace("\r", " ").replace("\n", " ")
+
+
+def _collateral_artifact_lines(collateral: Any) -> list[str]:
+    """Render the additive ``## Workbook collateral`` artifact section.
+
+    Pure helper. A missing or ``declaration:"none"`` block renders the explicit
+    deck-only line (the decision-on-record); a ``present`` block renders the
+    workbook sections + research goals as flat, additive lines.
+    """
+    block = collateral if isinstance(collateral, dict) else {}
+    declaration = block.get("declaration", "none")
+    out: list[str] = ["## Workbook collateral", f"- Declaration: {declaration}"]
+    if declaration != "present":
+        out.append("- Workbook: none (lesson ships deck-only)")
+        out.append("")
+        return out
+
+    workbook = block.get("workbook") or {}
+    sections = workbook.get("sections") if isinstance(workbook, dict) else None
+    for section in sections or []:
+        if not isinstance(section, dict):
+            continue
+        out.append(
+            f"### {section.get('section_id', 'section')}: "
+            f"{_oneline(section.get('title', 'Untitled'))}"
+        )
+        out.append(
+            f"- Learning objective id: {section.get('learning_objective_id', '')}"
+        )
+        depth = section.get("depth_delta") or {}
+        if isinstance(depth, dict):
+            out.append(
+                f"- Depth deferred from: {depth.get('deferred_from_slide', '')}"
+            )
+            out.append(f"- Depth deferred: {_oneline(depth.get('deferred_depth', ''))}")
+            if depth.get("retained_on_slide"):
+                out.append(f"- Retained on slide: {depth['retained_on_slide']}")
+        if section.get("narrative_intent"):
+            out.append(f"- Narrative intent: {_oneline(section['narrative_intent'])}")
+        for exercise in section.get("exercises") or []:
+            if not isinstance(exercise, dict):
+                continue
+            out.append(
+                f"- Exercise {exercise.get('exercise_id', '')} "
+                f"[{exercise.get('bloom_level', '')}]: "
+                f"{_oneline(exercise.get('prompt_intent', ''))} "
+                f"(answer key source: {exercise.get('answer_key_source_ref', '')})"
+            )
+    for goal in block.get("research_goals") or []:
+        if not isinstance(goal, dict):
+            continue
+        out.append(
+            f"- Research goal {goal.get('goal_id', '')}: "
+            f"{_oneline(goal.get('pedagogical_intent', ''))}"
+        )
+    out.append("")
+    return out
 
 
 def confirm_plan_units(
@@ -505,6 +704,7 @@ __all__ = [
     "decode_envelope_payload",
     "enforce_pass1_mode",
     "normalize_clusters",
+    "normalize_collateral",
     "parse_pass1_response",
     "read_sanctum_digest",
     "write_lesson_plan",
