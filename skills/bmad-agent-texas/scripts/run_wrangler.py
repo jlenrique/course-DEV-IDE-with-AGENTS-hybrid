@@ -358,6 +358,30 @@ def _load_directive(path: Path) -> dict[str, Any]:
     if not isinstance(sources, list) or not sources:
         raise DirectiveError("Directive.sources must be a non-empty list")
 
+    # Resolve relative local_file locators against the directive's corpus_dir.
+    # The composer emits bare filenames (e.g. "lesson.docx") with the absolute
+    # corpus_dir at the top of the directive; _fetch_source does Path(locator)
+    # against the *process* cwd, so a production trial (cwd=repo root, not the
+    # corpus) hits "File not found" for every source — the long-standing Texas
+    # directive-composition gap. Guarded + behavior-preserving: only rewrite a
+    # relative locator that does NOT resolve as-is but DOES resolve under
+    # corpus_dir; absolute/cwd-resolvable locators are untouched.
+    corpus_dir = data.get("corpus_dir")
+    if isinstance(corpus_dir, str) and corpus_dir.strip():
+        corpus_root = Path(corpus_dir)
+        for src in sources:
+            if not isinstance(src, dict):
+                continue
+            loc = src.get("locator")
+            if not isinstance(loc, str) or not loc.strip():
+                continue
+            loc_path = Path(loc)
+            if loc_path.is_absolute() or loc_path.is_file():
+                continue
+            candidate = corpus_root / loc
+            if candidate.is_file():
+                src["locator"] = str(candidate)
+
     # Per-row shape classification (Story 27-2 AC-B.6).
     per_row_shapes: list[str] = []
     for i, src in enumerate(sources):
