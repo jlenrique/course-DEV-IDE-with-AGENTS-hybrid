@@ -34,11 +34,13 @@ from app.marcus.orchestrator import (
     gate_runner,
     package_builders,
     pre_gate_marcus,
+    research_wiring,
     specialist_summary_writer,
     storyboard_publisher,
 )
 from app.marcus.orchestrator.dispatch_adapter import ProductionDispatchAdapter
 from app.marcus.orchestrator.pre_gate_marcus import PreFillProposal
+from app.marcus.orchestrator.research_citation import CitationFidelityError
 from app.marcus.orchestrator.slide_variant_selection import (
     SlideVariantSelectionError,
     validate_selections,
@@ -76,6 +78,26 @@ REPO_ROOT = Path(__file__).resolve().parents[3]
 DEFAULT_MANIFEST_PATH = REPO_ROOT / "state" / "config" / "pipeline-manifest.yaml"
 DEFAULT_GRAPH_VERSION = "v42"
 LOGGER = logging.getLogger(__name__)
+
+# Braid S3 (M1): operator-gated live-research toggle. Default OFF so no live
+# Texas/Scite/Consensus call fires without creds; flip ON to dispatch research
+# on a real trial (AC-O1). Read at BOTH walk sites (start + continuation) so the
+# two-walk discipline holds — §04.55 is only reached on the continuation walk.
+RESEARCH_DISPATCH_LIVE_ENV = "MARCUS_RESEARCH_DISPATCH_LIVE"
+
+
+def _research_dispatch_live() -> bool:
+    """Return True iff the operator-gated live-research toggle is enabled.
+
+    Accepts the usual truthy spellings (``1``/``true``/``yes``/``on``,
+    case-insensitive); anything else (incl. unset) is OFF.
+    """
+    return os.environ.get(RESEARCH_DISPATCH_LIVE_ENV, "").strip().lower() in {
+        "1",
+        "true",
+        "yes",
+        "on",
+    }
 
 
 class MissingUpstreamContributionError(RuntimeError):
@@ -1949,6 +1971,60 @@ def run_production_trial(
                 graph_step_completed = True
                 continue
 
+            if (
+                node_kind == "orchestration"
+                and node.id in research_wiring.RESEARCH_WIRING_NODE_IDS
+            ):
+                # Braid S3 (option A): the Irene→Tracy→Texas research-wiring hook
+                # fires at the §04.55 plan-lock fanout node. TWO-WALK PARITY
+                # (memory project_production_runner_two_walks): §04.55 sits AFTER
+                # G1, so on the trial path this only ever fires via the
+                # CONTINUATION walk — but the side-effect is present in BOTH walk
+                # bodies (storyboard/chooser-publisher precedent). Bridge dispatch
+                # is local; the live Texas fetch is operator-gated via the
+                # MARCUS_RESEARCH_DISPATCH_LIVE toggle (default OFF — no live call
+                # without creds; flipped ON only for the operator-gated live run).
+                try:
+                    production_envelope = research_wiring.run_research_wiring(
+                        node_id=node.id,
+                        production_envelope=production_envelope,
+                        posture_selector=research_wiring.DeterministicPostureSelector(),
+                        dispatch_live=_research_dispatch_live(),
+                    )
+                except CitationFidelityError as exc:
+                    # G2 FAIL mode (spec §3.4): an unsourced citation error-pauses
+                    # the trial (recoverable) rather than killing the walk.
+                    return _pause_at_error(
+                        error=SpecialistDispatchError(
+                            f"G2 citation-fidelity FAIL: {exc} "
+                            f"(unsourced_citations={exc.unsourced_citations})",
+                            tag="citation_fidelity_fail",
+                        ),
+                        node_id=node.id,
+                        node_index=index,
+                        specialist_id=research_wiring.RESEARCH_WIRING_SPECIALIST_ID,
+                        trial_id=effective_trial_id,
+                        envelope=envelope,
+                        production_envelope=production_envelope,
+                        run_state=run_state,
+                        child_runs=child_runs,
+                        trace_metadata=trace_metadata,
+                        last_gate_crossed=last_gate_crossed,
+                        graph_step_completed=graph_step_completed,
+                        specialist_calls=specialist_calls,
+                        manifest_path=manifest_path,
+                        runs_root=runs_root,
+                        allow_offline_cost_report=allow_offline_cost_report,
+                        max_specialist_calls=max_specialist_calls,
+                        directive_path=directive_path,
+                        bundle_dir=bundle_dir,
+                    )
+                run_state = run_state.model_copy(
+                    update={"production_envelope": production_envelope}
+                )
+                graph_step_completed = True
+                continue
+
             if node_kind == "specialist" and specialist_calls < max_specialist_calls:
                 specialist_id = handler.__production_specialist_id__
                 # S2 per-node keying (SCP 2026-06-11): the skip rule guards
@@ -2430,6 +2506,60 @@ def _continue_production_walk(
                         node_id=node.id,
                         node_index=index,
                         specialist_id=package_builders.BUILDER_SPECIALIST_ID,
+                        trial_id=trial_id,
+                        envelope=envelope,
+                        production_envelope=production_envelope,
+                        run_state=run_state,
+                        child_runs=child_runs,
+                        trace_metadata=trace_metadata,
+                        last_gate_crossed=last_gate_crossed,
+                        graph_step_completed=graph_step_completed,
+                        specialist_calls=specialist_calls,
+                        manifest_path=manifest_path,
+                        runs_root=runs_root,
+                        allow_offline_cost_report=allow_offline_cost_report,
+                        max_specialist_calls=max_specialist_calls,
+                        directive_path=directive_path,
+                        bundle_dir=bundle_dir,
+                    )
+                run_state = run_state.model_copy(
+                    update={"production_envelope": production_envelope}
+                )
+                graph_step_completed = True
+                continue
+
+            if (
+                node_kind == "orchestration"
+                and node.id in research_wiring.RESEARCH_WIRING_NODE_IDS
+            ):
+                # Braid S3 (option A) — CONTINUATION WALK leg. §04.55 plan-lock is
+                # ALWAYS reached via this continuation walk (the start walk stops
+                # at G1, which precedes §04.55), so the research-wiring side-effect
+                # MUST fire here too — not only in the start walk. Mirrors the
+                # storyboard/chooser-publisher both-walks parity. AC-D2 executes a
+                # real continuation (resume) walk to prove this fires. The live
+                # Texas fetch is operator-gated via the MARCUS_RESEARCH_DISPATCH_LIVE
+                # toggle, read here too so the continuation walk honors it (two-walk
+                # parity — §04.55 is ONLY reached on this walk on the trial path).
+                try:
+                    production_envelope = research_wiring.run_research_wiring(
+                        node_id=node.id,
+                        production_envelope=production_envelope,
+                        posture_selector=research_wiring.DeterministicPostureSelector(),
+                        dispatch_live=_research_dispatch_live(),
+                    )
+                except CitationFidelityError as exc:
+                    # G2 FAIL mode (spec §3.4): unsourced citation error-pauses
+                    # the continuation walk (recoverable) rather than crashing it.
+                    return _pause_at_error(
+                        error=SpecialistDispatchError(
+                            f"G2 citation-fidelity FAIL: {exc} "
+                            f"(unsourced_citations={exc.unsourced_citations})",
+                            tag="citation_fidelity_fail",
+                        ),
+                        node_id=node.id,
+                        node_index=index,
+                        specialist_id=research_wiring.RESEARCH_WIRING_SPECIALIST_ID,
                         trial_id=trial_id,
                         envelope=envelope,
                         production_envelope=production_envelope,

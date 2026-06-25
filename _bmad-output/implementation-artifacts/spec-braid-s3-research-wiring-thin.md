@@ -84,7 +84,9 @@ This story does **NOT** change the warn-only numeric engine. Instead it adds a *
 
 ### 3.5 Frozen-Gamma reuse (DP6)
 
-Research wiring is **slide-independent** (DP6: ratification §2). The dev-agent and the live run operate under the DP6 path-intersection gate: `fresh_gamma_required := (git diff --name-only <base>..<head>) ∩ slide_production_paths ≠ ∅`. This story touches `production_runner.py`, `fanout.py`-adjacent wiring, and the retrieval/L2 modules — **none in `slide_production_paths`** (v4.2 pack, generator, Pass-1 clustering, per-sub-slide A/B chooser, VO figure-grounding gate, Gamma adapter, numCards/text_mode). Therefore **frozen-Gamma reuse on `tejal-apc-c1-m1-p2-trends` is permitted**; the run record stamps `gamma: frozen, reuse_justified_by: empty-intersection@<sha>`. **Frozen-reuse runs are ineligible to assert deck no-regression** (recorded by construction). If T1 discovers the chosen attach mechanic touches a `slide_production_paths` file, DP6 flips to fresh-required — re-validate at T1.
+Research wiring is **slide-independent** (DP6: ratification §2). The dev-agent and the live run operate under the DP6 path-intersection gate: `fresh_gamma_required := (git diff --name-only <base>..<head>) ∩ slide_production_paths ≠ ∅`.
+
+**T1 CORRECTION (2026-06-25, overrides the original "none in `slide_production_paths`" assumption):** the REAL `slide_production_paths.yaml` lists `app/marcus/orchestrator/production_runner.py` (Class 6 chooser path), which this story's diff touches. The diff∩`slide_production_paths` is therefore **NON-empty**, so **DP6 FLIPS to fresh-required** — conservatively correct. The live AC-O1 run mints a **fresh** Gamma render (not a frozen reuse); the run record stamps fresh accordingly (no `empty-intersection@<sha>` stamp). Pinned by `test_ac_d9_dp6_flips_fresh_because_production_runner_is_slide_path`. (Frozen-reuse runs would be ineligible to assert deck no-regression; that consideration is moot now that DP6 is fresh-required for the S3 diff.)
 
 ---
 
