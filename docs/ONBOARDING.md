@@ -1,6 +1,6 @@
 # ONBOARDING — `course-dev-ide-with-agents`
 
-> **One-line elevator:** Collaborative intelligence infrastructure for course content production — a multi-agent orchestrator (**Marcus**) drives a roster of ~18 LangGraph specialist agents through gated, human-in-the-loop production of narrated lessons (with video/animation), with tamper-evident operator verdicts and a learning ledger.
+> **One-line elevator:** Collaborative intelligence infrastructure for course content production — a multi-agent orchestrator (**Marcus**) drives a roster of ~20 LangGraph specialist agents through gated, human-in-the-loop production of narrated lessons (with video/animation), with tamper-evident operator verdicts and a learning ledger.
 
 **Languages:** Python (3.11+), Markdown, Jinja2, JSON, YAML, JavaScript, PowerShell, Shell, SQL
 **Core frameworks:** LangChain, LangGraph, Pydantic v2, FastAPI, Uvicorn, httpx, Pytest
@@ -39,7 +39,7 @@ Before touching any code:
          │ ProductionDispatchAdapter.invoke_specialist(...)     │
          ▼                                                      ▼
 ┌──────────────────────────────────────────────────────────────────────────┐
-│  ~18 specialists, each a 9-node LangGraph subgraph                        │
+│  ~20 specialists, each a 9-node LangGraph subgraph                        │
 │  receive → plan → act → verify → reflect → emit_spans →                   │
 │  gate_decision (LangGraph interrupt) → finalize → handoff                 │
 └────────────────────────────┬─────────────────────────────────────────────┘
@@ -195,7 +195,7 @@ The recommended reading path the knowledge graph generated:
 | **Figure-grounding bar is lenient by design** | `app/specialists/_shared/{figure_tokens,source_fidelity_audit}.py` | VO may speak any numeral present anywhere on the chosen slide; only a numeral nowhere on the slide is a violation. |
 | **Pack version bumps are governance, not technical** | CLAUDE.md "Pipeline lockstep regime" + `docs/dev-guide/pipeline-manifest-regime.md` | Tier-2/Tier-3 bumps need party-mode consensus BEFORE dev opens. |
 | **Verify via shipped deps, not operator CLIs** | `docs/dev-guide/migration-ac-sandbox-inventory.json` | Dev-agent tests use `psycopg` / `httpx`; only operator-gated ACs may call `docker` / `psql` / `gh`. |
-| **BMAD Marcus ≠ runtime Marcus** | `skills/bmad-agent-marcus/SKILL.md` vs `app/marcus/` | Same name, two systems. The BMAD persona plans; the runtime dispatches. |
+| **BMAD Marcus ≠ runtime Marcus** | `skills/bmad-agent-marcus/SKILL.md` vs `app/marcus/` | Same name, two systems that share no memory. **BMAD-persona Marcus** (skill + sanctum) plans and talks *about* the project with no connection to a live run. **Runtime/SPOC Marcus** (`app/marcus/cli/marcus_interlocutor.py`) converses *only inside a live trial*, backed by a runtime LLM grounded on the generated capability overlay (not the persona) — and the human's confirmed verdict, never the chatting LLM, advances the run. |
 
 ---
 

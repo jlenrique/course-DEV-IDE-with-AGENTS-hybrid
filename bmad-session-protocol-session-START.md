@@ -12,9 +12,9 @@ If a user or older note refers to a literal "session xyz" document and no such f
 
 ## §0: Project purpose TL;DR (for unfamiliar agents)
 
-**Purpose:** Persistent collaborative intelligence infrastructure for systematically scaling creative expertise in online course content production. Marcus (the master orchestrator) coordinates ~14 LangGraph specialist agents that manipulate professional media tools through skills backed by Python scripts; BMAD memory sidecars capture creative decision-making patterns for refinement and reuse.
+**Purpose:** Persistent collaborative intelligence infrastructure for systematically scaling creative expertise in online course content production. Marcus (the master orchestrator) coordinates ~20 LangGraph specialist agents that manipulate professional media tools through skills backed by Python scripts, and drives production conversationally as a stop-and-chat single point of contact (SPOC) at each human-in-the-loop gate; BMAD memory sidecars capture creative decision-making patterns for refinement and reuse.
 
-**Architecture:** See [`docs/ONBOARDING.md`](docs/ONBOARDING.md) for the structural mental model (8 layers, 12-step guided tour, derived from a knowledge-graph scan of the codebase). Read this once per fresh agent context.
+**Architecture:** See [`docs/ONBOARDING.md`](docs/ONBOARDING.md) for the structural mental model (8 layers, 15-step guided tour, derived from a knowledge-graph scan of the codebase). Read this once per fresh agent context.
 
 **Repo contract:**
 ```
@@ -51,7 +51,7 @@ The startup protocol **reads** certain files; the WRAPUP protocol **writes** the
 Use this the first time you open this BMAD project in a new tool context. Once confirmed, proceed directly to the Start-of-Session sequence below for all subsequent sessions.
 
 1. Confirm root paths exist: `_bmad/`, `_bmad-output/`, `docs/`, `course-content/staging/`, `course-content/courses/`, `config/content-standards.yaml`, `.env`, and the IDE skill folder (`.cursor/skills/` or `.claude/skills/`). If any path is missing, install or initialize BMAD before continuing.
-2. Read [`docs/ONBOARDING.md`](docs/ONBOARDING.md) (~280 lines) for the architectural mental model + complexity hotspots + 12-step guided tour. This is the fastest cold-start ramp asset; the knowledge-graph scan it derives from is at `.understand-anything/knowledge-graph.json`.
+2. Read [`docs/ONBOARDING.md`](docs/ONBOARDING.md) (~285 lines) for the architectural mental model + complexity hotspots + 15-step guided tour. This is the fastest cold-start ramp asset; the knowledge-graph scan it derives from is at `.understand-anything/knowledge-graph.json`.
 3. If the session involves production orchestration, content production, or APP runs: read [`skills/bmad-agent-marcus/SKILL.md`](skills/bmad-agent-marcus/SKILL.md) and follow its activation sequence (sanctum batch under `_bmad/memory/bmad-agent-marcus/`) before any specialist invocation. Per CLAUDE.md "Marcus first" cold-start rule.
 4. Skim [`docs/agent-environment.md`](docs/agent-environment.md) for the MCP/API/skill inventory, and [`CLAUDE.md`](CLAUDE.md) for project rules (sprint governance, push cadence, deferred-inventory governance).
 
@@ -94,7 +94,7 @@ Execute these steps in order at the beginning of every session.
 - `docs/agent-environment.md`
 
 **Read once per fresh agent context** (new chat / new Claude or Cursor session in this project for the first time):
-- `docs/ONBOARDING.md` — architectural mental model. Check freshness: if `.understand-anything/meta.json::commit_sha` is significantly behind HEAD, the doc may be stale; flag at WRAPUP Step 9.
+- `docs/ONBOARDING.md` — architectural mental model. Check freshness: compare `.understand-anything/meta.json::gitCommitHash` against HEAD; if it is behind by the WRAPUP Step 9 regeneration threshold (≥10 files changed in `app/`/`scripts/`/`skills/`, or pipeline-manifest/schema/manifest changes, or an Epic close), treat the doc as stale and flag at WRAPUP Step 9.
 
 ### 1a. Outstanding-findings gate
 
