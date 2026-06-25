@@ -1,0 +1,122 @@
+# slide-production-paths.yaml — the DP6 frozen-Gamma-reuse operand
+# =================================================================
+# Authority: _bmad-output/planning-artifacts/braid-green-light-ratification-2026-06-24.md
+#            §DP6 + §6 carried-NIT 2 (Story-0b DP6-enablement).
+#
+# WHAT THIS IS
+# ------------
+# A version-controlled list of repo-relative path GLOBS for every file whose
+# change can alter the *pixel / card / cluster / A-B / VO-numeral* slide output
+# of the production pipeline. It is the right-hand operand of the DP6 reuse gate:
+#
+#     fresh_gamma_required := (git diff --name-only <base>..<head>)
+#                              ∩ slide_production_paths ≠ ∅
+#
+# Non-empty intersection  -> frozen-Gamma reuse BLOCKED (run must mint fresh +
+#                            pass the deck no-regression suite).
+# Empty intersection      -> reuse permitted; run record stamps
+#                            `gamma: frozen, reuse_justified_by: empty-intersection@<sha>`.
+#
+# WHY A STANDALONE FILE (not a key in pipeline-manifest.yaml)
+# ----------------------------------------------------------
+# Both the legacy `PipelineManifest` model (scripts/utilities/pipeline_manifest.py)
+# AND the upstream graph manifest (app/manifest/schema.py) declare
+# `model_config = ConfigDict(extra="forbid", ...)`. Adding a `slide_production_paths`
+# key to state/config/pipeline-manifest.yaml would therefore require a coordinated
+# two-model schema extension touching core app/manifest — disproportionate for an
+# operand that is only consumed by the standalone DP6 helper. A separate config +
+# a pure helper (scripts/utilities/slide_production_gate.py) keeps the blast radius
+# at zero. (Design constraint pre-determined in the Story-0b brief.)
+#
+# CONSERVATIVE / OVER-INCLUSIVE BY DESIGN
+# ---------------------------------------
+# A false "fresh required" only costs one extra (cheap, deterministic) Gamma mint.
+# A false "reuse OK" ships a silent slide regression on a frozen deck. So when in
+# doubt, INCLUDE. The `paths` set is intentionally broad. Reviewer: see the
+# `# REVIEWER:` lines flagging over-inclusion judgement calls.
+#
+# Each glob is matched with fnmatch against forward-slash git-diff paths.
+
+# Current v4.2 pack version. The stale-pack rule (see slide_production_gate.py)
+# treats a frozen deck minted by a pack_version OLDER than this as non-empty /
+# fresh-required even when the path intersection is empty. Bump in lockstep with
+# the pack-versioning policy (docs/dev-guide/pipeline-manifest-regime.md).
+current_pack_version: "v4.2"
+
+paths:
+  # --- Class 1: v4.2 production-prompt pack (frozen + generated witnesses) -----
+  # The pack prose drives every dispatch decision (slide count, card split,
+  # cluster plan, text_mode). A pack edit can change emitted slides without any
+  # code change. Mirrors the manifest `block_mode_trigger_paths` v4.2 entry.
+  - "docs/workflow/production-prompt-pack-v4.2-*.md"
+
+  # --- Class 2: v4.2 generator package -----------------------------------------
+  # scripts/generators/v42/ RENDERS the `-gen` pack from templates. A template or
+  # renderer change re-mints the pack the pipeline reads → slide-affecting.
+  # REVIEWER: included whole package incl. j2 templates (the section templates
+  # 05B/6.2/6.3/7.5 ARE the cluster-plan + variant-gate prose). Over-inclusive on
+  # purpose — env.py/manifest.py changes that only touch metadata would also trip
+  # this, which is the safe direction.
+  - "scripts/generators/v42/**"
+  - "scripts/generators/v42/*"
+
+  # --- Class 3: Pass-1 clustering / chunking emission --------------------------
+  # irene_pass1 emits the chunk/cluster plan that sets how dense slides are split
+  # (gate A: gpt-5.5 chunks dense slides 6→13). Directly determines card count.
+  - "app/specialists/irene_pass1/**"
+  - "app/specialists/irene_pass1/*"
+
+  # --- Class 4: Gary slide dispatch + Gamma adapter/client ---------------------
+  # Gary builds the dispatch directive (incl. text_mode=preserve, image style,
+  # amount) and dispatches to Gamma. The gamma_client + skill-side gamma_operations
+  # are the actual API adapter (numCards / cardSplit / textMode payload assembly).
+  - "app/specialists/gary/**"
+  - "app/specialists/gary/*"
+  - "scripts/api_clients/gamma_client.py"
+  - "skills/gamma-api-mastery/scripts/gamma_operations.py"
+  # REVIEWER: gamma_evaluator/run_woodshed are evaluator/QA-side, not dispatch.
+  # Excluded — they observe slides, they do not produce them. Flagging in case the
+  # reviewer prefers the over-inclusive call here too.
+
+  # --- Class 5: text_mode / numCards logic -------------------------------------
+  # Covered by the Class-4 globs (gary/_act.py sets text_mode; gamma_client.py
+  # assembles numCards/cardSplit/textMode). Listed explicitly for traceability;
+  # the creative-directive validator can also gate text-related directive fields.
+  - "scripts/utilities/creative_directive_validator.py"
+
+  # --- Class 6: per-sub-slide A/B chooser + publish path -----------------------
+  # The chooser publishes both A/B variants per sub-slide and applies the operator
+  # pick on resume. A change here alters which variant pixels ship.
+  - "app/marcus/orchestrator/production_runner.py"
+  - "app/marcus/orchestrator/chooser_publisher.py"
+  - "app/marcus/orchestrator/slide_variant_selection.py"
+  - "app/gates/section_07c/**"
+  - "app/gates/section_07c/*"
+  # REVIEWER: production_runner.py is large and orchestrates much more than the
+  # chooser. Including it whole is over-inclusive — a non-slide edit to it trips
+  # the gate. Safe direction (false fresh-required), but flagging as the single
+  # biggest over-inclusion judgement call in this set.
+
+  # --- Class 7: VO figure-grounding gate ---------------------------------------
+  # The figure-grounding bar governs which numerals VO may speak per slide; the
+  # pass-2 template and source-fidelity audit shape numeral citation on the slide;
+  # quinn_r fidelity detection is the G5 numeral/figure quality gate. A change to
+  # any of these can alter the VO-numeral surface of a slide.
+  - "app/specialists/_shared/figure_tokens.py"
+  - "app/specialists/_shared/source_fidelity_audit.py"
+  - "app/specialists/irene/authoring/pass_2_template.py"
+  # The Pass-2 figure-citation gate proper: _assert_figure_citations_within_perceived
+  # redacts numerals not grounded on the perceived slide → directly shapes the
+  # VO-numeral surface. (Confirmed via app/specialists/irene/graph.py.)
+  - "app/specialists/irene/graph.py"
+  - "app/specialists/quinn_r/fidelity_detector.py"
+  - "app/specialists/quinn_r/quality_control_dispatch.py"
+  # REVIEWER: g5.py is the G5 decision-card MODEL (figure-contradiction schema).
+  # Included on the conservative bias since a schema change can alter which
+  # numerals the G5 gate flags. Borderline (model vs producer) — flag for review.
+  - "app/models/decision_cards/g5.py"
+  # REVIEWER: quinn_r and source_fidelity_audit are QA/gate-side (they detect, they
+  # don't mint pixels). But the DP6 brief explicitly names "VO figure-grounding
+  # gate" as a slide-production concern (a change to the gate changes which
+  # numerals are allowed to ship), so they are IN. Flagging the gate-vs-producer
+  # judgement for the reviewer.
