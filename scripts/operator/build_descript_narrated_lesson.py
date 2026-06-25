@@ -93,7 +93,60 @@ def build_add_media(media: dict[str, Path]) -> dict[str, dict[str, object]]:
     return add_media
 
 
+def publish_project(
+    client: DescriptClient,
+    project_id: str,
+    *,
+    resolution: str,
+    composition_id: str | None = None,
+) -> dict[str, object]:
+    """Render + publish a composition; return {share_url, download_url, status}.
+
+    Post-composition only — wraps the existing DescriptClient.publish(). Honors the
+    capability-doc contract: a correct publish returns a share_url and a time-limited
+    download_url. Errors 402 (out of credits) / 429 (rate limit) surface from the client.
+    """
+    print(f"\nPublishing project {project_id} (resolution={resolution})...")
+    job = client.publish(
+        project_id, composition_id=composition_id, resolution=resolution
+    )
+    job_id = job.get("job_id")
+    print(f"  publish job_id={job_id}")
+    done = client.wait_for_job(
+        job_id,
+        on_progress=lambda i, d: print(f"  [{i:>3}] publish job_state={d.get('job_state')}")
+        if i % 6 == 0 else None,
+    )
+    result = done.get("result") or {}
+    share_url = result.get("share_url") or result.get("published_url") or done.get("share_url")
+    download_url = (
+        result.get("download_url") or result.get("export_url") or done.get("download_url")
+    )
+    print(f"  publish result.status={result.get('status')}")
+    print(f"  share_url={share_url}")
+    print(f"  download_url={download_url}")
+    if not (share_url or download_url):
+        print(f"  WARNING: no share/download url returned. Full result keys: {sorted(result)}")
+    return {"status": result.get("status"), "share_url": share_url, "download_url": download_url}
+
+
 def run(args: argparse.Namespace) -> int:
+    # Publish-only mode: publish an existing project (skip build).
+    if args.project_id:
+        if not args.publish:
+            print("--project-id requires --publish (publish-only mode).")
+            return 2
+        if args.dry_run:
+            print(f"[dry-run] Would publish existing project {args.project_id} "
+                  f"at {args.resolution}.")
+            return 0
+        client = DescriptClient()
+        status = client.status()
+        print(f"Auth OK — drive_id={status.get('drive_id')} "
+              f"api_version={status.get('api_version')}")
+        publish_project(client, args.project_id, resolution=args.resolution)
+        return 0
+
     slides_dir = Path(args.slides_dir)
     audio_dir = Path(args.audio_dir)
     media = collect_media(slides_dir, audio_dir)
@@ -175,6 +228,11 @@ def run(args: argparse.Namespace) -> int:
         print(f"  - {c.get('name')!r} dur={c.get('duration')} "
               f"media_type={c.get('media_type')} id={c.get('id')}")
     print(f"\nOpen your narrated lesson: {project_url}")
+
+    # 6) Publish (optional) — render a shareable MP4 + link.
+    if args.publish:
+        comp_id = comps[0].get("id") if comps else None
+        publish_project(client, project_id, resolution=args.resolution, composition_id=comp_id)
     return 0
 
 
@@ -185,6 +243,12 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     p.add_argument("--project-name", default=DEFAULT_PROJECT_NAME)
     p.add_argument("--skip-agent", action="store_true",
                    help="Import + upload only; do not run the Underlord assembly.")
+    p.add_argument("--publish", action="store_true",
+                   help="After assembly, render + publish the composition (MP4 + share link).")
+    p.add_argument("--project-id", default=None,
+                   help="Publish an EXISTING project (skip build); requires --publish.")
+    p.add_argument("--resolution", default="1080p",
+                   help="Publish resolution (default 1080p). Used only with --publish.")
     p.add_argument("--dry-run", action="store_true",
                    help="Print the planned payload without calling the API.")
     return p.parse_args(argv)
