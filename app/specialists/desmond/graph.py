@@ -16,8 +16,8 @@ from app.gates.resume_api import resume_from_verdict as _resume_from_verdict
 from app.models.adapter import make_chat_model
 from app.models.state.model_resolution_entry import ModelResolutionEntry
 from app.models.state.run_state import RunState
-from app.specialists.texas.graph import SanctumLockViolation as _SanctumLockViolation
 from app.specialists._scaffold.contract import SCAFFOLD_NODE_IDS
+from app.specialists.texas.graph import SanctumLockViolation as _SanctumLockViolation
 
 REPO_ROOT = Path(__file__).resolve().parents[3]
 SANCTUM_DIR = REPO_ROOT / "_bmad" / "memory" / "bmad-agent-desmond"
@@ -35,11 +35,11 @@ DESMOND_REFERENCES: tuple[str, ...] = (
 
 DESMOND_SANCTUM_LOCK_BASELINE: dict[str, str] = {
     "BOND.md": "58a422e1d150ec201a3c14f7fd98372d96bd4865cf2fb769ad6deb8a7f9c69a3",
-    "CAPABILITIES.md": "1eec672ff737046f438972ba972e3b359d7fd9406af2beb2905951b55b3898aa",
+    "CAPABILITIES.md": "a89b94efb081f84106bb9fcebc6cf76258916dc710a48b299d06b79bd8fc79df",
     "CLONE-FORK-NOTICE.md": "3f217dda8cb9f251277c9cba647c6331c1da166abf43931979da7e75366423aa",
     "CREED.md": "b645f321f63690767c0f77e0e812b610f8f15bd774433e2ae57a70326205790c",
     "INDEX.md": "407930e35a1f599a1f617d96121a0695f621cb04873c64deffd9a4bd2ee81631",
-    "MEMORY.md": "a65ece0c4c75aaaa35b7aa87eedf31b2b72bd5470866c5939c5304aa90f91bcb",
+    "MEMORY.md": "494b9fdc67a634b27a60a40cfb0ce7e0df14d850c482d869fccb0db3ad21b3b4",
     "PERSONA.md": "86357df3733bba50042b8ce87ccf1b3c274b18668b8fd78f28a524f3e34b8ce7",
 }
 
@@ -84,8 +84,19 @@ def _new_dispatch_trail_entry(
 def _read_sanctum_digest(sanctum_dir: Path = SANCTUM_DIR) -> str:
     if not sanctum_dir.exists() or not sanctum_dir.is_dir():
         return ""
+    # `sessions/` holds append-only operational logs — Desmond writes one
+    # `sessions/YYYY-MM-DD.md` per session (Session Close protocol), so every
+    # new session would drift the sanctum lock and force a set-aside/restore
+    # dance before each Descript delivery. The lock protects the PERSONA/
+    # continuity baseline, not the logs; exclude `sessions/` so it stays stable
+    # across sessions (2026-06-24 — operator-directed baseline of Desmond WIP).
     files = sorted(
-        (p for p in sanctum_dir.rglob("*") if p.is_file()),
+        (
+            p
+            for p in sanctum_dir.rglob("*")
+            if p.is_file()
+            and not p.relative_to(sanctum_dir).as_posix().startswith("sessions/")
+        ),
         key=lambda p: p.relative_to(sanctum_dir).as_posix(),
     )
     if not files:

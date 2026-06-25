@@ -42,3 +42,20 @@ def test_desmond_sanctum_lock_violation_raises_named_exception(tmp_path) -> None
     target.write_text(target.read_text(encoding="utf-8") + "\nmutation", encoding="utf-8")
     with pytest.raises(SanctumLockViolation):
         assert_sanctum_lock(sanctum_dir=mutated)
+
+
+def test_desmond_sanctum_digest_excludes_sessions_logs(tmp_path) -> None:
+    """sessions/ are append-only operational logs, not persona baseline — adding a
+    new session file must NOT drift the digest/lock (else every Desmond session would
+    force a set-aside/restore dance before Descript delivery). 2026-06-24 fix.
+    """
+    base = tmp_path / "desmond_sanctum_sessions"
+    shutil.copytree(SANCTUM_DIR, base)
+    digest_before = _read_sanctum_digest(base)
+    sessions = base / "sessions"
+    sessions.mkdir(exist_ok=True)
+    (sessions / "2099-12-31.md").write_text("a brand new session log\n", encoding="utf-8")
+    # A new session log does NOT change the digest...
+    assert _read_sanctum_digest(base) == digest_before
+    # ...and the lock still passes against the real baseline with the log present.
+    assert_sanctum_lock(sanctum_dir=base)

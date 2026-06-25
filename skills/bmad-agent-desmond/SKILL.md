@@ -31,7 +31,7 @@ Load available config from `{project-root}/_bmad/config.yaml` and `{project-root
 
 Sanctum location: `{project-root}/_bmad/memory/bmad-agent-desmond/`
 
-**Internal references:** `references/pipeline-bridge.md` (APP → Descript mapping), `references/assembly-handoff.md`, `references/automation-advisory.md` (mandatory advisory block), `references/doc-research.md`, `references/capability-authoring.md`. **Compositor output contract:** `skills/compositor/references/assembly-guide-format.md`.
+**Internal references:** `references/pipeline-bridge.md` (APP → Descript mapping), `references/assembly-handoff.md` (manual operator steps), `references/capability-api-narrated-lesson-build.md` (**automated** API build — proven recipe + tools + gotchas), `references/descript-api-reference.md` (endpoint surface + OpenAPI cache), `references/automation-advisory.md` (mandatory advisory block), `references/doc-research.md`, `references/capability-authoring.md`. **API tooling:** `scripts/api_clients/descript_client.py` (`DescriptClient`), `scripts/operator/build_descript_narrated_lesson.py`. **Compositor output contract:** `skills/compositor/references/assembly-guide-format.md`.
 
 ## Session Close
 
