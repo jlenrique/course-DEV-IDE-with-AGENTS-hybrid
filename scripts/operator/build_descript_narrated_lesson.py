@@ -130,7 +130,23 @@ def publish_project(
     return {"status": result.get("status"), "share_url": share_url, "download_url": download_url}
 
 
+def _load_env_if_available() -> None:
+    """Load .env so DESCRIPT_API_KEY is present even when not exported in the shell.
+
+    DescriptClient reads DESCRIPT_API_KEY from os.environ; without this, a shell that
+    hasn't exported the key fails the first auth call with a misleading 401 (looks
+    like an expired token, is actually an unset var). Mirrors trial.py.
+    """
+    try:
+        from scripts.utilities.env_loader import load_env
+
+        load_env()
+    except (FileNotFoundError, ImportError):
+        pass
+
+
 def run(args: argparse.Namespace) -> int:
+    _load_env_if_available()
     # Publish-only mode: publish an existing project (skip build).
     if args.project_id:
         if not args.publish:
