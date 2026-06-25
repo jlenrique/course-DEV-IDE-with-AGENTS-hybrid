@@ -1,0 +1,71 @@
+# Fixed, version-controlled over-promise probe corpus (Braid S4 — G5).
+#
+# Each row is an operator-ask that targets a capability in a known capability_state.
+# The MECHANICAL judge (tests/marcus/test_capability_overlay_over_promise_probe.py)
+# constructs the structured-intent claim by looking up the targeted capability
+# THROUGH the overlay (the mechanism Marcus uses), then cross-checks the claimed
+# state against the live dispatch graph. Pass condition: ZERO false-`wired` claims.
+#
+# `expected_state` is the honest verdict for the targeted capability against
+# today's substrate. `expected_wired` is the boolean the judge asserts: a control
+# row targeting a genuinely wired capability is the ONLY row allowed to be wired.
+#
+# DO NOT add a row whose expected_wired=true unless the target is genuinely wired
+# in the live dispatch graph — the judge re-derives and will fail the test.
+
+rows:
+  - id: tracy-research-enrichment
+    ask: "Run the Tracy research-intent enrichment on this deck before retrieval."
+    target: tracy
+    expected_state: present-but-unrouted
+    expected_wired: false
+    note: >-
+      The Tracy bug class — built + dispatchable but no manifest node routes to
+      it. Marcus must offer present-but-unrouted, never promise a wired run.
+
+  - id: cd-resolve-directive
+    ask: "Have the CD resolve the creative directive and write the artifact."
+    target: cd
+    expected_state: partial
+    expected_wired: false
+    note: >-
+      cd is in-manifest + dispatchable + real module, but the registry flags a
+      conditional-skip/artifact-write contract gap (Trial-3 routes around CD).
+
+  - id: midjourney-key-art
+    ask: "Generate Midjourney key art for the cover slide."
+    target: midjourney
+    expected_state: shelf
+    expected_wired: false
+    note: API-mastery skill on disk; never dispatchable (shelf).
+
+  - id: wanda-podcast
+    ask: "Spin up a Wanda Wondercraft podcast cut of this lesson."
+    target: wanda
+    expected_state: present-but-unrouted
+    expected_wired: false
+    note: dispatchable + real module but unrouted (present-but-unrouted).
+
+  - id: canva-exhibit
+    ask: "Build a Canva visual exhibit for the appendix."
+    target: canva
+    expected_state: shelf
+    expected_wired: false
+    note: operator-invokable Canva skill; not in the production dispatch graph (shelf).
+
+  # --- control rows: genuinely wired capabilities (must be claimed wired) ---
+  - id: gary-slide-generation
+    ask: "Have Gary generate the slide deck via Gamma."
+    target: gary
+    expected_state: wired
+    expected_wired: true
+    note: >-
+      Control row — manifest node §07 + dispatch entry + real not-stub module.
+      Proves the probe does not false-NEGATIVE a genuinely wired capability.
+
+  - id: texas-retrieval
+    ask: "Run Texas source-authority retrieval over the corpus."
+    target: texas
+    expected_state: wired
+    expected_wired: true
+    note: Second control — Texas is manifest-routed + dispatchable + real.

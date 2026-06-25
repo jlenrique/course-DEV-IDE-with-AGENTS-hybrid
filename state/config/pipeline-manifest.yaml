@@ -69,6 +69,12 @@ block_mode_trigger_paths:
   - state/config/learning-event-schema.yaml
   - scripts/utilities/learning_event_capture.py
   - skills/bmad-agent-marcus/scripts/validate-literal-visual-pre-dispatch.py
+  # Braid Story S4 (capability-overlay generated honesty map): the generator and
+  # its derived artifact join the lockstep regime so any manifest/registry change
+  # that would stale the overlay is caught by the block-mode hook (additive only;
+  # no pack/HUD/schema bump).
+  - scripts/utilities/generate_capability_overlay.py
+  - state/config/capability-overlay.yaml
 
 nodes:
   - id: "directive-composer"

@@ -52,6 +52,18 @@ COMPANION_RULES: dict[str, tuple[str, ...]] = {
 }
 
 
+# Capability-overlay (Braid S4) honesty map: inputs whose change can stale
+# state/config/capability-overlay.yaml. Checked locally via content comparison
+# (generate_capability_overlay.is_stale) so the "caught locally AND in CI" claim
+# holds without a false positive on a routing-neutral edit.
+_CAPABILITY_OVERLAY_INPUTS: tuple[str, ...] = (
+    "state/config/pipeline-manifest.yaml",
+    "state/config/dispatch-registry.yaml",
+    "scripts/utilities/generate_capability_overlay.py",
+    "skills/bmad-agent-marcus/references/specialist-registry.yaml",
+)
+
+
 class LockstepError(RuntimeError):
     """Base error for graph-compile-time lockstep failures."""
 
@@ -62,6 +74,10 @@ class ManifestDriftError(LockstepError):
 
 class CompileError(LockstepError):
     """Raised when graph compilation fails validation."""
+
+
+class CapabilityOverlayStaleError(LockstepError):
+    """Raised when a capability-overlay input changed but the overlay is stale."""
 
 
 def _normalize(path: str) -> str:
@@ -140,6 +156,35 @@ def _assert_companion_updates(
         )
 
 
+def _assert_capability_overlay_fresh(diff_files: list[str]) -> None:
+    """If a capability-overlay input changed, the overlay must not be stale.
+
+    Uses content comparison (``generate_capability_overlay.is_stale``) rather than
+    a companion-touched check, so a routing-neutral edit that regenerates to a
+    byte-identical overlay does NOT false-fail. This is the LOCAL half of the
+    capability-overlay "caught two ways (locally + CI)" protection (the CI parity
+    test is the other half).
+    """
+    changed = {_normalize(path) for path in diff_files}
+    triggered = any(
+        fnmatch.fnmatch(changed_path, pattern)
+        for changed_path in changed
+        for pattern in _CAPABILITY_OVERLAY_INPUTS
+    )
+    if not triggered:
+        return
+    try:
+        from scripts.utilities.generate_capability_overlay import is_stale
+    except ImportError:  # generator absent (defensive); CI parity remains the backstop
+        return
+    if is_stale():
+        raise CapabilityOverlayStaleError(
+            "a capability-overlay input changed but "
+            "state/config/capability-overlay.yaml is stale; run "
+            "`python -m scripts.utilities.generate_capability_overlay` to regenerate."
+        )
+
+
 def _compile_dev_graph_if_available(dev_manifest_path: Path) -> dict[str, Any]:
     if not dev_manifest_path.exists():
         return {"compiled": False, "skipped": True, "reason": "dev manifest absent"}
@@ -178,6 +223,7 @@ def check_lockstep(
 
     changed_files = list(diff_files) if diff_files is not None else _discover_diff_files(diff_from)
     _assert_companion_updates(changed_files, tuple(manifest.block_mode_trigger_paths))
+    _assert_capability_overlay_fresh(changed_files)
 
     return {
         "manifest_path": str(manifest_path),

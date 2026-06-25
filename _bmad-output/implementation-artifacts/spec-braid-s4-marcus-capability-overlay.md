@@ -113,7 +113,7 @@ Mirror the existing `tests/parity/test_skill_md_sanctum_alignment.py` / `_sanctu
         run: uv run pytest tests/parity/test_capability_overlay_parity.py --tb=short -q
 ```
 
-**Lockstep regime:** because the manifest is a `block_mode_trigger_paths` member, and this story appends the two new trigger paths (`scripts/utilities/generate_capability_overlay.py`, `state/config/capability-overlay.yaml`) to that list, any future manifest/registry change that would stale the overlay is caught two ways: locally by the lockstep block-mode hook and in CI by the parity test. The dev agent reads `docs/dev-guide/pipeline-manifest-regime.md` at T1 (see Readiness).
+**Lockstep regime:** because the manifest is a `block_mode_trigger_paths` member, any future manifest/registry change that would stale the overlay is caught **two ways**: (1) **locally** by `check_manifest_lockstep.py::_assert_capability_overlay_fresh` — a **content comparison** via `generate_capability_overlay.is_stale()` that fires when a capability-overlay input (`pipeline-manifest.yaml` / `dispatch-registry.yaml` / the generator / `specialist-registry.yaml`) is in the diff, so a stale overlay FAILS locally with no false-positive on a routing-neutral edit (the rejected alternative — a `COMPANION_RULES` path-co-occurrence pairing — would false-fail routing-neutral edits, per party-close 2026-06-25); and (2) **in CI** by the parity test. The dev agent reads `docs/dev-guide/pipeline-manifest-regime.md` at T1 (see Readiness).
 
 ---
 
@@ -144,7 +144,7 @@ Per ratification G5 + Murat #1/#3. **Mechanical judge on the intent payload, cro
 
 **Out of scope (explicit):**
 - No edit to any live pipeline node, no `production_runner.py` change, no Marcus runtime wiring change (S5 owns the elicitor that *consumes* the overlay).
-- No schema-version bump to the pipeline-manifest *body* (only an additive `block_mode_trigger_paths` append — pack/HUD untouched, Tier-1 connective-tissue per the regime).
+- No schema-version bump to the pipeline-manifest *body* (only an additive `block_mode_trigger_paths` append — pack/HUD untouched). **Governance:** a new `block_mode_trigger_paths` entry is **Tier-2** per `pipeline-manifest-regime.md` (requires party-mode pre-clearance); that pre-clearance IS the braid green-light ratification (DP1 + §6 concurrence, 2026-06-24/25) — not Tier-1 dev authority.
 - No change to `specialist-registry.yaml` content (Story 0 already corrected Tracy; this story READS it).
 - No LLM judge anywhere in the gate (mechanical only).
 
@@ -169,7 +169,7 @@ Per ratification G5 + Murat #1/#3. **Mechanical judge on the intent payload, cro
 
 ## T1 Readiness (dev agent reads BEFORE any code)
 
-- **Block-mode/lockstep:** this story's diff touches `state/config/pipeline-manifest.yaml` (a `block_mode_trigger_paths` member). Per CLAUDE.md "Pipeline lockstep regime," read [`docs/dev-guide/pipeline-manifest-regime.md`](../../docs/dev-guide/pipeline-manifest-regime.md) at T1 before code. The change here is **additive `block_mode_trigger_paths` only** (Tier-1 connective-tissue; no pack version bump; pack/HUD byte-invariant) — confirm the lockstep checker (`scripts/utilities/check_pipeline_manifest_lockstep.py`) stays green after the append.
+- **Block-mode/lockstep:** this story's diff touches `state/config/pipeline-manifest.yaml` (a `block_mode_trigger_paths` member). Per CLAUDE.md "Pipeline lockstep regime," read [`docs/dev-guide/pipeline-manifest-regime.md`](../../docs/dev-guide/pipeline-manifest-regime.md) at T1 before code. The change here is **additive `block_mode_trigger_paths` only** (**Tier-2** per the regime — new trigger-path entry; pre-cleared by the braid green-light ratification, NOT Tier-1 dev authority; no pack version bump; pack/HUD byte-invariant) — confirm the lockstep checker (`scripts/utilities/check_pipeline_manifest_lockstep.py`) stays green after the append.
 - **Parity pattern to mirror:** `tests/parity/test_skill_md_sanctum_alignment.py` + `tests/parity/_sanctum_parity_base.py` (REPO_ROOT-rooted, filesystem-fact assertions, no mocks/LLM) and the CI shape in `.github/workflows/specialist-parity.yml`.
 - **Substrate readings:** `state/config/dispatch-registry.yaml` (19 dispatchable specialists), `state/config/pipeline-manifest.yaml` (`nodes[].specialist_id`), `scripts/utilities/pipeline_manifest.py::load_manifest`, `app/specialists/_stub/passthrough_specialist.py` (stub sentinel), `app/manifest/compiler.py::SPECIALIST_ALIASES` (canonicalization), `skills/bmad-agent-marcus/references/specialist-registry.yaml` (status fields; Story 0's corrected Tracy line at 130-136), `skills/bmad-agent-marcus/capabilities/registry.yaml` (PR-HC/PR-RS stubs — confirm OUT of scope).
 - **No mocks; real files; first-run-stands.**
