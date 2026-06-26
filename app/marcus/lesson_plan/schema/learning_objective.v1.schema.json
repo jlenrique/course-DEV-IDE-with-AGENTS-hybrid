@@ -1,0 +1,183 @@
+{
+  "$defs": {
+    "SourceAdequacy": {
+      "additionalProperties": false,
+      "description": "Irene's source-adequacy assessment for one LO. ADVISORY (ratification 3.1).\n\nThe ``verdict`` is an ALERT, never a gate: a ``thin``/``gap`` verdict does\nnot halt the pipeline, force a drop, or block a status transition. Final\nadequacy determination is the operator + off-world SME, not this app.\n\nInternal well-formedness (ratification 1, distinct from any pipeline gate):\n``missing`` must NAME a concrete gap whenever the verdict is ``thin`` or\n``gap`` (you cannot flag a gap without saying what is missing); it may be\nempty only on ``adequate``. This is data integrity of the adequacy object,\nNOT a verdict-driven pipeline gate, and is wholly independent of the\n:class:`LearningObjective` status invariants (which assert adequacy PRESENCE\nonly, never its verdict value).",
+      "properties": {
+        "verdict": {
+          "description": "Adequacy alert: adequate | thin | gap. Advisory, never gating.",
+          "enum": [
+            "adequate",
+            "thin",
+            "gap"
+          ],
+          "title": "Verdict",
+          "type": "string"
+        },
+        "rationale": {
+          "description": "Free text, verbatim: quotes the supporting or missing span.",
+          "title": "Rationale",
+          "type": "string"
+        },
+        "missing": {
+          "description": "Concrete named gaps. Non-empty on a thin/gap verdict; may be empty only on adequate. Object well-formedness, not a pipeline gate.",
+          "items": {
+            "type": "string"
+          },
+          "title": "Missing",
+          "type": "array"
+        },
+        "suggested_followups": {
+          "description": "Advisory hint a thin/gap flag MAY suggest (e.g. a research run or special artifact-creation guidance). Never an action.",
+          "items": {
+            "enum": [
+              "research-run",
+              "external-content-expected",
+              "special-artifact-guidance"
+            ],
+            "type": "string"
+          },
+          "title": "Suggested Followups",
+          "type": "array"
+        }
+      },
+      "required": [
+        "verdict",
+        "rationale"
+      ],
+      "title": "SourceAdequacy",
+      "type": "object"
+    },
+    "SourceRef": {
+      "additionalProperties": false,
+      "description": "A structured provenance locator (NOT a bare string).\n\nThe ``source_id`` MUST belong to the deterministically-enumerated source set\nat runtime (a fabricated id is a RED at the G0 enumeration boundary, S2); at\nthe schema layer it is a non-empty reference string. ``quoted_span`` is a\nVERBATIM substring of the resolved source text (the deterministic\ncontainment check is an S2 runtime concern).",
+      "properties": {
+        "source_id": {
+          "description": "Identifier of the resolved source this reference points at.",
+          "title": "Source Id",
+          "type": "string"
+        },
+        "locator": {
+          "description": "Page / heading / char-span within the source. Verbatim.",
+          "title": "Locator",
+          "type": "string"
+        },
+        "quoted_span": {
+          "description": "Verbatim substring of the resolved source text.",
+          "title": "Quoted Span",
+          "type": "string"
+        }
+      },
+      "required": [
+        "source_id",
+        "locator",
+        "quoted_span"
+      ],
+      "title": "SourceRef",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "description": "The canonical, provenance-anchored, lifecycle-aware learning objective.\n\nStatus-conditional invariant table (ratification 1), enforced by\n:meth:`_enforce_status_invariants`:\n\n| field         | provisional | refined        | ratified |\n|---------------|-------------|----------------|----------|\n| ``statement`` | required    | required       | required |\n| ``source_refs``| >=0        | **>=1**        | >=1      |\n| ``bloom_level``| optional   | optional       | **required** |\n| ``adequacy``  | optional*   | **present**    | present  |\n| ``confidence``| required    | required       | required |\n\n(*) ``provisional`` places NO positive requirement on ``adequacy``: it may\nbe absent (the common case) OR present (the recommend-drop channel holds an\nLO at ``provisional`` with ``adequacy.verdict=\"gap\"`` +\n``recommendation=\"drop\"`` per ratification 3). The advisory rule (3.1) means\nonly adequacy PRESENCE is asserted at refined+; its verdict VALUE is never\npart of any LO invariant.",
+  "properties": {
+    "objective_id": {
+      "description": "Canonical open-id; immutable once minted at G0. Reuses the single-source open-id regex (no fork).",
+      "title": "Objective Id",
+      "type": "string"
+    },
+    "statement": {
+      "description": "Free text, verbatim: the objective statement.",
+      "title": "Statement",
+      "type": "string"
+    },
+    "status": {
+      "description": "Lifecycle status; transitions are gated by advance_lo only.",
+      "enum": [
+        "provisional",
+        "refined",
+        "ratified"
+      ],
+      "title": "Status",
+      "type": "string"
+    },
+    "confidence": {
+      "description": "Advisory confidence band; gates nothing.",
+      "enum": [
+        "high",
+        "medium",
+        "low"
+      ],
+      "title": "Confidence",
+      "type": "string"
+    },
+    "bloom_level": {
+      "anyOf": [
+        {
+          "enum": [
+            "remember",
+            "understand",
+            "apply",
+            "analyze",
+            "evaluate",
+            "create"
+          ],
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "description": "Revised-Bloom level; populated at refine, required at ratified.",
+      "title": "Bloom Level"
+    },
+    "source_refs": {
+      "description": "Provenance locators; >=1 required at refined+.",
+      "items": {
+        "$ref": "#/$defs/SourceRef"
+      },
+      "title": "Source Refs",
+      "type": "array"
+    },
+    "adequacy": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/SourceAdequacy"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "description": "Advisory source-adequacy alert; present (any verdict) at refined+."
+    },
+    "origin": {
+      "default": "g0",
+      "description": "Provenance marker: g0-minted or an Irene-proposed new LO.",
+      "enum": [
+        "g0",
+        "irene-proposed"
+      ],
+      "title": "Origin",
+      "type": "string"
+    },
+    "recommendation": {
+      "default": "keep",
+      "description": "Advice only: Irene may recommend a drop; she never deletes.",
+      "enum": [
+        "keep",
+        "drop"
+      ],
+      "title": "Recommendation",
+      "type": "string"
+    }
+  },
+  "required": [
+    "objective_id",
+    "statement",
+    "status",
+    "confidence"
+  ],
+  "title": "LearningObjective",
+  "type": "object"
+}

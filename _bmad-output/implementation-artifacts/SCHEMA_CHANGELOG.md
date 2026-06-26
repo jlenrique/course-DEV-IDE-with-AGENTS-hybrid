@@ -7,6 +7,37 @@ Per semver-for-schemas:
 - **Minor (1.X)** â€” additive only: new optional fields with v1.0-compatible defaults, new enum values that don't break old consumers.
 - **Patch (1.0.X)** â€” docs / clarifications / typo fixes; no machine-readable change.
 
+## LearningObjective v1.0 - 2026-06-26 - Story G0-S1 LO canonical schema
+
+**Type:** Initial shape (no predecessor family). Additive: REPLACES (via adapter
+bridge, not deletion) the 3 legacy in-code LO representations.
+
+**Family:** LearningObjective (+ SourceRef, SourceAdequacy) and the closed enums
+BloomLevel, LOStatus, Confidence, AdequacyVerdict, AdequacyFollowup.
+
+**Reason for introduction:** unify the LO schema (closes A7) into one canonical,
+provenance-anchored, lifecycle-aware entity that keys the `learning_objective_map`
+DB table by `objective_id`. Authority: `lo-schema-ratification-2026-06-26.md` 1-5.
+
+**Shapes and contracts pinned:**
+
+- `app/marcus/lesson_plan/learning_objective.py`: `LearningObjective`, `SourceRef`,
+  `SourceAdequacy`, the 5 closed enums, `IllegalTransition`, and the `advance_lo()`
+  transition guard (closed (from,to,actor) edge map; idempotent replay).
+- `app/marcus/lesson_plan/schema/learning_objective.v1.schema.json`: emitted
+  JSON-Schema witness (byte-current vs live).
+- `app/marcus/lesson_plan/learning_objective_adapters.py`: back-compat bridge
+  functions `from_irene_statement`, `from_workbook_brief`, `to_workbook_brief`,
+  `section_binds_objective` (deleted in S3 when consumers are rewired).
+
+**Status-conditional invariants:** `refined`+ requires source_refs>=1 AND adequacy
+present; `ratified` also requires bloom_level. Adequacy is ADVISORY (3.1) — only
+adequacy PRESENCE is asserted; its verdict value never gates a transition.
+
+**Behavior change:** none. `LearningObjectiveBrief` is retained (S1 additive);
+`produce_tejal_workbook.py` swaps its inline string->brief mapping for the adapter,
+byte-identical brief output.
+
 ## Ledger Verdict Event v1.0 - 2026-04-26 - Story 4.4 Learning Ledger
 
 **Type:** Initial shape (no predecessor family).

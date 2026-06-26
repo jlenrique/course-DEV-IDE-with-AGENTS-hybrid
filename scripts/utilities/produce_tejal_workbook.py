@@ -49,6 +49,10 @@ from app.marcus.lesson_plan.collateral_spec import (
     WorkbookSection,
     WorkbookSpec,
 )
+from app.marcus.lesson_plan.learning_objective_adapters import (
+    from_irene_statement,
+    to_workbook_brief,
+)
 from app.marcus.lesson_plan.produced_asset import ProductionContext
 from app.marcus.lesson_plan.schema import PlanUnit
 from app.marcus.lesson_plan.workbook_producer import (
@@ -68,6 +72,31 @@ CORPUS_DIR = REPO_ROOT / "course-content" / "courses" / "tejal-apc-c1-m1-p2-tren
 
 UNIT_ID = "tejal-apc-c1-m1-p2-trends"
 LESSON_PLAN_REVISION = 1
+
+# The three Part-2 learning objectives (objective_id, bloom, statement). Hoisted
+# to module scope (was an inline local) so the AC-S1-7 behavior-identity test can
+# import the REAL seeds and guard against drift instead of re-declaring a copy.
+TEJAL_OBJECTIVE_SEEDS: tuple[tuple[str, str, str], ...] = (
+    (
+        "obj-lo2-analyze-trends",
+        "analyze",
+        "Analyze the macro-economic and structural trends — administrative "
+        "burnout, healthcare consumerism, and technological acceleration — "
+        "that necessitate intrapreneurial physician leadership.",
+    ),
+    (
+        "obj-lo3-idea-opportunity",
+        "analyze",
+        "Differentiate between a superficial idea and a rigorously vetted "
+        "opportunity using the core tenets of the Intrapreneurship Formula.",
+    ),
+    (
+        "obj-lo4-root-cause",
+        "evaluate",
+        "Evaluate systemic operational failures through root-cause analysis "
+        "and defend the findings against the structural evidence.",
+    ),
+)
 
 
 @dataclass(frozen=True)
@@ -497,26 +526,16 @@ def build_tejal_workbook_inputs() -> TejalWorkbookInputs:
         ]
     )
 
-    learning_objectives = (
-        LearningObjectiveBrief(
-            "obj-lo2-analyze-trends",
-            "analyze",
-            "Analyze the macro-economic and structural trends — administrative "
-            "burnout, healthcare consumerism, and technological acceleration — "
-            "that necessitate intrapreneurial physician leadership.",
-        ),
-        LearningObjectiveBrief(
-            "obj-lo3-idea-opportunity",
-            "analyze",
-            "Differentiate between a superficial idea and a rigorously vetted "
-            "opportunity using the core tenets of the Intrapreneurship Formula.",
-        ),
-        LearningObjectiveBrief(
-            "obj-lo4-root-cause",
-            "evaluate",
-            "Evaluate systemic operational failures through root-cause analysis "
-            "and defend the findings against the structural evidence.",
-        ),
+    # AC-S1-5: the inline string->brief mapping is now bridged through the
+    # canonical LearningObjective entity via the S1 adapter functions
+    # (from_irene_statement -> to_workbook_brief). Behavior-identical: the
+    # resulting LearningObjectiveBrief tuple is byte-for-byte unchanged. The
+    # legacy adapter is deleted in S3 when the workbook consumes the entity.
+    learning_objectives = tuple(
+        to_workbook_brief(
+            from_irene_statement(statement, objective_id=objective_id, bloom_level=bloom)
+        )
+        for objective_id, bloom, statement in TEJAL_OBJECTIVE_SEEDS
     )
 
     # G2 citation manifest: every rendered citation resolves to a real source_ref
