@@ -442,12 +442,18 @@ def build_refinement_result(
     corpus_fingerprint: str,
     dispatch_live: bool = False,
     chat_model_factory: Any | None = None,
+    source_context: str = "",
 ) -> IreneRefinementResult:
     """Refine the gate-#1-confirmed provisional LOs + assemble the frozen result.
 
     Pure of run-dir/cache side effects (those live in the wiring) so the assembly
     is unit-testable in isolation. The OFFLINE path is deterministic; the live path
     (operator-gated) refines via the corpus-keyed LLM pre-pass seam.
+
+    ``source_context`` is the live source material (component excerpts / corpus
+    text) Irene assesses adequacy AGAINST — without it she judges adequacy BLIND
+    and defaults every verdict to ``gap`` (the live-test defect). Optional so the
+    deterministic offline path (which does not call the model) is unaffected.
     """
     for lo in provisional_los:
         if lo.status != "provisional":
@@ -458,7 +464,7 @@ def build_refinement_result(
 
     model_id = REFINEMENT_LIVE_MODEL_ID if dispatch_live else REFINEMENT_MODEL_MARKER
     if dispatch_live:  # pragma: no cover - live leg (orchestrator AC-S3-7)
-        refined_los, entries = _live_refine(provisional_los, chat_model_factory)
+        refined_los, entries = _live_refine(provisional_los, chat_model_factory, source_context)
     else:
         refined_los = []
         entries = []
@@ -487,12 +493,15 @@ def build_refinement_result(
 def _live_refine(
     provisional_los: list[LearningObjective],
     chat_model_factory: Any | None,
+    source_context: str = "",
 ) -> tuple[list[LearningObjective], list[LODeltaEntry]]:  # pragma: no cover - live leg
     """REAL Irene refinement pre-pass via make_chat_model + irene-refinement.j2.
 
     Off the deterministic critical path. Exercised by the operator-gated live
     segment proof (AC-S3-7), not the offline suite. Reconciles the model payload
     deterministically against the confirmed provisional set (no silent drops).
+    ``source_context`` is the live source Irene assesses adequacy against (without
+    it she judges blind and returns all-``gap``).
     """
     import json
 
@@ -505,7 +514,11 @@ def _live_refine(
     )
     prompt = render_pre_fill_prompt(
         gate_id="irene-refinement",
-        slot_values={"provisional_los": lo_summary, "lo_count": len(provisional_los)},
+        slot_values={
+            "provisional_los": lo_summary,
+            "lo_count": len(provisional_los),
+            "source_context": source_context or "(source context not supplied)",
+        },
     )
     if chat_model_factory is None:
         from app.models.adapter import make_chat_model

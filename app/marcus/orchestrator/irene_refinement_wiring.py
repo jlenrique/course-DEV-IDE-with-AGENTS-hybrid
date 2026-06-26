@@ -96,13 +96,20 @@ def _cache_path(run_dir: Path, fingerprint: str) -> Path:
     return run_dir / _CACHE_DIRNAME / f"{fingerprint}.json"
 
 
-def _load_confirmed_provisional_los(run_dir: Path) -> tuple[list[LearningObjective], str]:
-    """Read the gate-#1-confirmed provisional LOs + corpus fingerprint from disk.
+def _load_confirmed_provisional_los(
+    run_dir: Path,
+) -> tuple[list[LearningObjective], str, str]:
+    """Read the gate-#1-confirmed provisional LOs + corpus fingerprint + source context.
 
     Irene reads the FROZEN, operator-confirmed S2 enrichment result
     (``<run_dir>/g0-enrichment.json``); the provisional LOs there are the
     refinement input. A1: a missing/empty enrichment artifact is RED (refinement
     cannot run before gate #1 produced its result).
+
+    The ``source_context`` is assembled from the typed components (label + locator
+    + verbatim excerpt) so Irene assesses adequacy AGAINST the real extracted
+    source — without it she judges blind and returns all-``gap`` (the live-test
+    defect that motivated this).
     """
     payload = g0_enrichment_wiring.load_enrichment_result(run_dir)
     if not payload:
@@ -113,7 +120,12 @@ def _load_confirmed_provisional_los(run_dir: Path) -> tuple[list[LearningObjecti
         )
     los = [LearningObjective.model_validate(row) for row in payload.get("provisional_los", [])]
     fingerprint = str(payload.get("corpus_fingerprint", "")) or "unknown"
-    return los, fingerprint
+    source_context = "\n".join(
+        f"[{c.get('source_type', '?')}] {c.get('label', '')} @ {c.get('locator', '')}: "
+        f"{c.get('excerpt', '')}"
+        for c in payload.get("typed_components", [])
+    )
+    return los, fingerprint, source_context
 
 
 def build_result_for_run(
@@ -123,12 +135,13 @@ def build_result_for_run(
     chat_model_factory: Any | None = None,
 ) -> IreneRefinementResult:
     """Assemble the frozen refinement result from the on-disk gate-#1 provisional LOs."""
-    provisional_los, fingerprint = _load_confirmed_provisional_los(run_dir)
+    provisional_los, fingerprint, source_context = _load_confirmed_provisional_los(run_dir)
     return build_refinement_result(
         provisional_los=provisional_los,
         corpus_fingerprint=fingerprint,
         dispatch_live=dispatch_live,
         chat_model_factory=chat_model_factory,
+        source_context=source_context,
     )
 
 
@@ -163,7 +176,7 @@ def run_irene_refinement(
     run_dir = runs_root / str(trial_id)
     run_dir.mkdir(parents=True, exist_ok=True)
 
-    provisional_los, fingerprint = _load_confirmed_provisional_los(run_dir)
+    provisional_los, fingerprint, source_context = _load_confirmed_provisional_los(run_dir)
     cache_path = _cache_path(run_dir, fingerprint)
 
     if cache_path.is_file():
@@ -175,6 +188,7 @@ def run_irene_refinement(
             corpus_fingerprint=fingerprint,
             dispatch_live=dispatch_live,
             chat_model_factory=chat_model_factory,
+            source_context=source_context,
         )
         cache_path.parent.mkdir(parents=True, exist_ok=True)
         cache_path.write_text(
