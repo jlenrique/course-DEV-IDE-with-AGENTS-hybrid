@@ -509,3 +509,32 @@ def test_parse_live_payload_reconciles_under_dup_and_fabricated(tmp_path: Path) 
     rv = ReconcileView(n_in=len(enumerated), n_typed=len(typed), n_ignored=0,
                         n_flagged=sum(1 for t in typed if t.flagged_unconsumed))
     assert rv.n_in == rv.n_typed
+
+
+# --------------------------------------------------------------------------- #
+# AC-S2-3 / T11 live-prompt groundedness — the live prompt feeds VERBATIM       #
+# content excerpts (not just paths) so typing + quoted_spans are grounded.       #
+# --------------------------------------------------------------------------- #
+def test_source_excerpt_is_verbatim_and_bounded(tmp_path: Path) -> None:
+    p = tmp_path / "big.md"
+    body = "# Heading\n" + ("lorem ipsum dolor sit amet " * 1000)
+    p.write_text(body, encoding="utf-8")
+    excerpt = gw._source_excerpt(p, max_chars=200)
+    assert excerpt.startswith("# Heading")  # verbatim prefix
+    assert "[excerpt truncated]" in excerpt
+    assert len(excerpt) <= 200 + len("\n…[excerpt truncated]")
+    # short file returned whole (verbatim), no truncation marker
+    short = tmp_path / "s.md"
+    short.write_text("just one line", encoding="utf-8")
+    assert gw._source_excerpt(short) == "just one line"
+
+
+def test_live_corpus_summary_includes_id_path_and_content(tmp_path: Path) -> None:
+    (tmp_path / "a.md").write_text("alpha content line", encoding="utf-8")
+    (tmp_path / "b.md").write_text("beta content line", encoding="utf-8")
+    enumerated = [("src-001", tmp_path / "a.md"), ("src-002", tmp_path / "b.md")]
+    summary = gw._live_corpus_summary(enumerated, tmp_path)
+    assert "### src-001: a.md" in summary
+    assert "alpha content line" in summary  # the model SEES content, not just the path
+    assert "### src-002: b.md" in summary
+    assert "beta content line" in summary

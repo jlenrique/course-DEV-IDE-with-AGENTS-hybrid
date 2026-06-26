@@ -186,6 +186,38 @@ def _first_text_span(path: Path) -> str | None:
     return None
 
 
+# Per-source content budget fed to the LIVE pre-pass prompt. The model must SEE
+# the source text to type it accurately AND to emit VERBATIM quoted_spans (a
+# path-only summary makes the LO extraction hollow/ungrounded — the gap the live
+# run surfaced). Bounded so a large corpus stays within context.
+_LIVE_EXCERPT_MAX_CHARS = 6000
+
+
+def _source_excerpt(path: Path, max_chars: int = _LIVE_EXCERPT_MAX_CHARS) -> str:
+    """A bounded, verbatim content excerpt of a text source for the live prompt."""
+    try:
+        text = path.read_text(encoding="utf-8")
+    except (UnicodeDecodeError, OSError):
+        return "[binary or unreadable source — type from filename only]"
+    text = text.strip()
+    if len(text) <= max_chars:
+        return text
+    return text[:max_chars] + "\n…[excerpt truncated]"
+
+
+def _live_corpus_summary(enumerated: list[tuple[str, Path]], corpus_dir: Path) -> str:
+    """Corpus block for the live prompt: id + path + VERBATIM content excerpt.
+
+    Verbatim so the model's required ``quoted_span`` substrings actually resolve
+    against text it was shown (A9 groundedness).
+    """
+    blocks = []
+    for sid, path in enumerated:
+        rel = path.relative_to(corpus_dir).as_posix()
+        blocks.append(f"### {sid}: {rel}\n{_source_excerpt(path)}")
+    return "\n\n".join(blocks)
+
+
 # ---------------------------------------------------------------------------
 # Offline deterministic pre-pass (corpus-derived; reproducible)
 # ---------------------------------------------------------------------------
@@ -313,9 +345,9 @@ def _live_pre_pass(
     """
     from app.marcus.orchestrator.pre_gate_marcus import render_pre_fill_prompt
 
-    corpus_summary = "\n".join(
-        f"- {sid}: {path.relative_to(corpus_dir).as_posix()}" for sid, path in enumerated
-    )
+    # Feed VERBATIM per-source content excerpts (not just paths) so the model can
+    # type accurately + ground its LOs + emit resolvable quoted_spans.
+    corpus_summary = _live_corpus_summary(enumerated, corpus_dir)
     prompt = render_pre_fill_prompt(
         gate_id="g0-enrichment",
         slot_values={
