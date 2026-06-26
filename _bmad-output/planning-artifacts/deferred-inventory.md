@@ -785,6 +785,20 @@ Each row carries its original close-marker (`~~strikethrough~~` / `**CLOSED 2026
 | 🟡 **`variant-gamma-knobs-unwired`** | 2026-06-23 variant-arc T11 | `template` setting is advisory-only (echoed in additionalInstructions, not a real Gamma param — theming is `themeId`); Gamma's `imageOptions.model`/`.source` + `textOptions.audience`/`.language` are NOT wired per-variant (only style/amount/tone/theme). | Wire the missing Gamma knobs if a new default pair / distinctness axis needs the image model/source or audience. Small additive change to `gary/_act.py` `_image_options_for_variant` / `_text_options_for_variant`. |
 | 🟡 **`variant-arbitrary-N`** | 2026-06-23 variant-arc (Amelia A1) | Variant production is hard-fixed to A/B (`_normalized_gamma_settings` rejects non-A/B). | Arbitrary-N variants with unique per-variant params — deferred; reactivate if >2 variants/slide is wanted (code change, party-scoped). |
 
+## Composition-catalog arc — motion S1 findings (filed 2026-06-25; NEW CYCLE S1 dev)
+
+S1 motion-restore landed the FAIL-LOUD half (`6dc46b7`: kira `_load_motion_plan` raises `kira.motion-plan.missing/.empty` instead of the silent `{"slides":[]}`; `payload_contract.py` consumer half; 4 RED-first tests; deck render byte-identical). The dev surfaced a material re-sequencing finding (did NOT fabricate around it):
+
+| Item | What | Disposition |
+|---|---|---|
+| 🔴 **`motion-plan-producer-substrate-missing` (Tier-2)** | No migrated node emits per-slide motion designation: CD has no slides, marcus 07D/G2M is a dispatch no-op, gary rows lack a motion field, Irene Pass-1 has no `motion_brief` (April's came from the old skill-Irene). A `dependency_projection` can only copy an existing key, not synthesize a plan. Restoring the G2M producer (a deterministic `motion_planner` at 07D emitting `motion_plan`) is a **Tier-2 dispatched-node change** (renders in pack → version bump + party round). | **S2-coupled.** Build the producer alongside the composer; wire `dependency_projection {motion_plan: from motion_planner}` into 07E + add kira to Ratchet-D `CONTRACTED_CONSUMERS` (the `payload_contract.py` consumer half is staged). Tier-2 party consensus before dev. |
+| 🟠 **`motion-failloud-couples-to-deck-runs`** | 07E is walked every run; post-fail-loud a deck-only run error-pauses at 07E until 07E is gated out of non-motion bundles OR a producer feeds a plan. | **Composer is the unblocker** — conditional inclusion gates 07E out of B1 (deck-only). Confirms composer = keystone, on the critical path for ANY clean run (even B1). Accepted between-trials (engine is between trials). |
+| 🟡 **`kling-429-rate-limit-blocks-live-mp4`** | Live 1-slide Kling render reached the provider but got HTTP 429 (plan rate-limit); auth PROVEN (429 not 401/403; full path exercised). Not faked. | Re-run the live `.mp4` proof when the Kling quota window clears (`KLING_LIVE_STRICT=1` to hard-fail). External/transient. |
+
+**Re-sequencing consequence:** "motion-first ALONE" (a real in-pipeline `.mp4` with zero engine work) is NOT achievable — motion's in-pipeline restore requires the composer (gating) + a Tier-2 producer. The composer (S2) is the keystone and moves to the critical path. The isolated `.mp4` proof is only reachable via direct-drive (kira + hand-supplied plan + live Kling), currently 429-blocked. **6h cannot deliver the full 3-bundle live proof** (it is ~3 epics per the party scope finding); operator owns the DONE-bar.
+
+---
+
 ## Studio-B code-review defers (filed 2026-06-25; `bmad-code-review` of the Studio-B diff, G6 gate)
 
 3 `defer` findings from the Blind Hunter + Edge Case Hunter adversarial review of commit range `24c2d39..e5ce85c`. (4 `patch` findings were applied same-session: guard hardening for unreadable/degenerate PNG → recoverable `gamma.studio.export-unreadable`; duplicate-`slide_id` detection + index-in-filename + drop silent empty-default; broaden `.env` best-effort except; corpus_dir `.resolve()`. 1 dismissed: `expected_min_words==0` is a safe no-op.)
