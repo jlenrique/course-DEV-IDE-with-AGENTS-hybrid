@@ -1,0 +1,25 @@
+GOAL: Deliver lesson-component composition via a curated bundle catalog, end-to-end through Marcus-SPOC. Repair the motion-video capability, build OUT a real workbook capability, and pre-wire 3 curated bundles that Marcus helps the operator/HIL choose at the front door AFTER co-developing a lesson plan that recommends one bundle. DONE when you (as HIL) have had full end-to-end Marcus-SPOC conversations that perfectly produce ALL artifacts for EACH of the 3 bundles. Run autonomously until met OR 6 hours elapse, whichever first.
+
+ARCHITECTURE (LOCKED — do not relitigate; party refines specifics only):
+- Composition is COMPILE-TIME, pre-freeze. The settled lesson plan selects components -> a composer assembles the selected fragments into ONE graph -> freeze it per run (reuse app/runtime/compiled_graph_digest.py; add the component-selection to the digest for exact replay). Freeze-after-assembly preserves the proven single-frozen-graph + tamper-evident replay invariant.
+- NOT maximal-superset (no produce-everything-then-discard) and NOT a free-form Lego assembler. Target = a SMALL CURATED CATALOG of blessed bundles (~3), each producing ONLY its components.
+- The frozen-graph ceremony shifts from "one blessed graph per version" to "blessed components + deterministic composer; each run freezes its composition." Invariant change -> party governance ratification BEFORE dev.
+- Each component is a uniform "brick" declaring its nodes, spine join-points, dependency projections, produced assets, under the existing (ORPHANED) ModalityProducer ABC / component_type_registry / modality_registry (app/marcus/lesson_plan/). Motion is the first brick.
+
+DELIVERABLES:
+1. MOTION repair (RESTORE known-good). The Kira 07E -> Kling clip leg is proven; the migration starved its input. Add a motion-plan PRODUCER node + dependency_projection feeding 07E in state/config/pipeline-manifest.yaml; make kira/_act.py _load_motion_plan FAIL-LOUD (kill the silent {"slides":[]} default); honor the folded G2F gate. Verify a REAL .mp4 via live Kling.
+2. WORKBOOK (DESIGN + build OUT — a producer mechanism exists but we have NEVER produced a real one). Design what the companion workbook IS (sections, exercises, depth, transcript, cited research); produce a real DOCX artifact.
+3. CATALOG of 3 curated bundles composing {deck, motion, workbook} (party ratifies the exact 3; candidates: B1 narrated-deck; B2 deck+motion; B3 deck+motion+workbook).
+4. FRONT DOOR via Marcus-SPOC: Marcus + Irene + you(HIL) converse about learning goals / sources / audience -> draft + refine a lesson plan -> settle components -> Marcus CONFIRMS the set is realistic vs PROVEN capabilities (capability-overlay S4 tiers) -> RECOMMENDS one bundle -> the deterministic run follows the settled plan.
+
+METHOD (BMAD, mandatory):
+- Epics/stories via BMAD workflows (create-epics-and-stories / create-story / quick-dev).
+- GREEN-LIGHT + initial review via fully-spawned tailored bmad-party-mode teams (real subagents). Deadlock -> impasse chain: Dr. Quinn synthesis -> John (PM) tiebreak -> operator.
+- Implement via BMAD dev agents, NEW CYCLE: Claude-spawned dev T1-T10 -> Claude T11 (bmad-code-review, 3-lane). bmad-code-review before any story -> done.
+- LOCKSTEP: manifest/compiler/run_state/digest edits trip block_mode_trigger_paths -> read docs/dev-guide/pipeline-manifest-regime.md at T1; Tier-2 pack bump -> party consensus BEFORE dev opens.
+- NO MOCKS — real live APIs (Kling, Gamma deck, ElevenLabs, DOCX). First-run-stands. Frozen corpus course-content/courses/tejal-apc-c1-m1-p2-trends. PYTHONIOENCODING=utf-8.
+- Commit + push at every safety checkpoint.
+
+DONE WHEN: 3 end-to-end Marcus-SPOC conversations (one/bundle) each settle a plan, pick the bundle, and produce ALL its artifacts error-free (deck; motion .mp4 + workbook DOCX where in-bundle; narration; compositor/Descript bundle) + per-run evidence.
+
+STOP: goal met, OR 6h elapsed, OR true party impasse after the full chain -> escalate to operator.
