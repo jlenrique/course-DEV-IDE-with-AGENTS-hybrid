@@ -1,3 +1,22 @@
+# Session Handoff — 2026-06-26 PM-3 (G0-enrichment → pre-planning/content-prep pipeline: S1/S2/S3/P1 committed; core LLM ops LIVE-PROVEN + REFINED; gate-flow live to G0E; E2E in progress)
+
+**Final class:** S. **Branch:** `fidelity-perception-arc-2026-06-19`. **Commits this session:** `fcd1a73` (S1) · S2 brick · S3 brick · `9ef3fc7` (P1 component extraction) · `0c5326a` (S3 source-context refine) · `4af29b7` (marcus pricing) + planning/charter commits. (NOTE the PM-2 entry below was written under a WRONG 4h-ceiling estimate — the session in fact had budget and continued; this PM-3 entry supersedes it.)
+
+**Arc (operator-expanded mid-session):** what began as the "G0-enrichment cycle" grew — operator-directed — into a full **pre-planning analysis + content-preparation pipeline**. Party-mode (Winston/Marcus/Irene/Texas) ratified it 4/4: charter `_bmad-output/planning-artifacts/preplanning-content-preparation-charter-2026-06-26.md`. Pipeline: intra-doc **component extraction** → **Texas pass-0** (provenance-normalize + resolve citations, lossless) → **Irene pass-1** (pedagogical annotation overlay) → **deterministic materializer** (pure writer) → **Marcus gate** (one gate + materialize sub-knob; manifest=ledger, materialization=operator-directed projection + coverage receipt). Ownership split by LAYER.
+
+**LIVE-PROVEN + REFINED (operator's binding rule: live-test + refine EACH sub-routine BEFORE E2E; E2E = confirmation, not first contact). Each live test caught a REAL defect, fixed-forward:**
+1. **P1 intra-document component extraction** (`9ef3fc7`) — replaced S2 file-level typing (whole outline → `other`) with LLM-Instructional-Designer component extraction. Live on the real 150KB tejal outline: first run found only **25/188** components → root-caused to a **6000-char excerpt truncation** → refined `_LIVE_EXCERPT_MAX_CHARS` to full-document (240K) → re-run extracts **97 components across all 10 types** (33 slide / 22 ref_citation / 8 narration / 6 motion / 6 discussion / 5 assignment / 5 quiz / 1 workbook / 1 rubric / 10 other) + 20 provisional LOs, hierarchy locators + grounded verbatim excerpts.
+2. **S3 Irene refinement** (`0c5326a`) — live test showed Irene assessing adequacy **BLIND** (`irene-refinement.j2` fed only the LO list, not source) → all-`gap`. Refined: thread `source_context` (built from typed components) through `build_refinement_result`→`_live_refine`→prompt + both wiring call sites → re-run: **grounded adequacy** (all-`adequate` against the source the LOs were extracted from) with sharpened statements + populated bloom.
+3. **production_runner gate-flow** — a real live trial **paused at G0E clean** (the node-in-runner integration works end-to-end). Driving past it surfaced a real **`KeyError: pricing missing model_id='marcus'`** at the G0R cost-report (the nodes record the `marcus` alias; cascade resolves it to `gpt-5`) → fixed (`4af29b7` priced the alias; proper follow-on = record the resolved id). A full fresh G0E→G0R→hand-off drive was in progress at wrap.
+
+**What is next:** finish the live E2E (fresh trial via `scratchpad/e2e_full.py` — a prior drive corrupted one trial's checkpoint post-crash; use a FRESH trial) to clean completion ×2; then build **P2 (Texas pass-0) / P3 (Irene pass-1) / P4 (materializer + gate knob)** per the charter; 3-layer T11 on S2/S3/P1 (owed, batched).
+
+**Live-key recipe (critical):** the adapter falls back to a placeholder sentinel — `unset OPENAI_API_KEY` + explicitly load the real `.env` `sk-proj-…` key (`[[reference_live_openai_key_dotenv_override]]`). Memories added: incremental-live-testing + E2E-readiness rule; live-key gotcha.
+
+**Validation:** S1 275 / S2 28 / S3 53 / P1 63 brick tests green; ruff clean; lint-imports only pre-existing C3; 5 baseline reds independently stash-verified pre-existing (no new break). NO MOCKS — the three core operations proven by REAL live runs on the real corpus. **⚠️ Operator-mandated after this arc: branch consolidation to a clean master.**
+
+---
+
 # Session Handoff — 2026-06-26 PM-2 (G0-enrichment cycle: DESIGN + S1 + S2-offline DONE; S3 + 2 LIVE E2E runs carried; 4h goal-ceiling reached)
 
 **Final class:** S (substrate — LO schema unification + G0-enrichment brick + gate; 2 new specialist-ish modules + manifest gate + two-walk wiring; planning artifacts). **Branch:** `fidelity-perception-arc-2026-06-19`. **Commits:** S1 `fcd1a73` (pushed) + S2 (committed this wrapup; **push pending** — credential dialog).
