@@ -499,10 +499,23 @@ def _coerce_component_row(row: dict[str, Any], pid: str, parent_rel: str) -> dic
     label = str(row.get("label") or source_type).strip() or str(source_type)
     locator = str(row.get("locator") or parent_rel).strip() or parent_rel
     excerpt = str(row.get("excerpt") or row.get("quoted_span") or label).strip() or label
+    # Normalize the `other` escape hatch: the OtherSourceType.kind is the fixed
+    # literal "other" with the real label in `label`, but the live model often
+    # puts the actual type name in `kind` (e.g. kind="learning_objectives") — that
+    # tripped TypedComponent validation in a live E2E. Force kind="other", keep the
+    # model's value as the label; non-`other` types carry no other_type.
+    other_type: dict[str, Any] | None = None
+    if source_type == "other":
+        raw = row.get("other_type") if isinstance(row.get("other_type"), dict) else {}
+        other_type = {
+            "kind": "other",
+            "label": str(raw.get("label") or raw.get("kind") or label),
+            "provenance": str(raw.get("provenance") or "fell outside the closed 10-type set"),
+        }
     return {
         "parent_source_id": pid,
         "source_type": source_type,
-        "other_type": row.get("other_type"),
+        "other_type": other_type,
         "label": label,
         "locator": locator,
         "excerpt": excerpt,
