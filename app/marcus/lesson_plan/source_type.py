@@ -48,6 +48,24 @@ free string folded into this enum (that would silently widen the closed set)."""
 
 SOURCE_TYPE_ADAPTER: TypeAdapter[SourceTypeLiteral] = TypeAdapter(SourceTypeLiteral)
 
+# The closed 10-type set widened by the structured ``other`` escape-hatch
+# discriminator — the value space for an assigned TYPE on a span/component. Shared
+# by :class:`TypedSource` and :class:`TypedComponent` so the assignable taxonomy
+# is single-sourced (a member added to the closed enum widens both by construction).
+SourceTypeOrOtherLiteral = Literal[
+    "slide",
+    "quiz",
+    "workbook",
+    "narration",
+    "reference_citation",
+    "rubric",
+    "exercise_lab",
+    "motion_script_storyboard",
+    "discussion_forum",
+    "assignment_instructions",
+    "other",
+]
+
 SOURCE_TYPES: Final[frozenset[str]] = frozenset(SOURCE_TYPE_ADAPTER.json_schema()["enum"])
 """Surface 2: the JSON-Schema ``enum`` array (derived, not hand-maintained — a
 drift between the Literal and this set is impossible by construction)."""
@@ -191,6 +209,100 @@ class TypedSource(BaseModel):
         return self
 
 
+# ---------------------------------------------------------------------------
+# A typed intra-document COMPONENT (the unit a file is segmented INTO)
+# ---------------------------------------------------------------------------
+
+
+class TypedComponent(BaseModel):
+    """One typed instructional COMPONENT extracted from WITHIN a source file.
+
+    A single enumerated FILE (the A6 unit) yields N ``TypedComponent`` rows — the
+    LLM Instructional-Designer pass segments the document into the typed
+    components embedded inline (slides, narration, quiz, motion, discussion,
+    learning objectives, ...), each anchored by a document-hierarchy ``locator``
+    (``Course > Module > Part > Page/Slide`` path) and a VERBATIM ``excerpt``.
+    This REPLACES the prior file-level typing (one whole file → one type); a
+    150KB outline that is all 'other' under file-typing becomes 188 typed
+    components under component extraction (charter P1).
+
+    ``source_type`` is exactly one of the closed 10 types OR ``"other"`` paired
+    with a populated ``other_type`` escape-hatch object (orthogonal to the
+    operator PRIMARY/SUPPORTING/IGNORED directive role, charter D1).
+    ``flagged_unconsumed`` is DERIVED (A10): True whenever the assigned type has
+    no generator today OR is the ``other`` escape hatch.
+    """
+
+    model_config = ConfigDict(extra="forbid", validate_assignment=True)
+
+    component_id: str = Field(
+        ...,
+        min_length=1,
+        description="Stable component id, unique within a run (e.g. 'src-001-c003').",
+    )
+    parent_source_id: str = Field(
+        ...,
+        min_length=1,
+        description="Enumerated FILE id (A6 set) this component was extracted from.",
+    )
+    source_type: SourceTypeOrOtherLiteral = Field(
+        ...,
+        description="Closed 10-type assignment, or 'other' (escape hatch).",
+    )
+    other_type: OtherSourceType | None = Field(
+        default=None,
+        description="Populated escape-hatch object iff source_type == 'other'.",
+    )
+    label: str = Field(
+        ...,
+        min_length=1,
+        description="Short, human-readable label for the component (verbatim heading/intent).",
+    )
+    locator: str = Field(
+        ...,
+        min_length=1,
+        description="Document-hierarchy path (Course > Module > Part > Page/Slide).",
+    )
+    excerpt: str = Field(
+        ...,
+        min_length=1,
+        description="VERBATIM excerpt of the component drawn from the parent document.",
+    )
+    flagged_unconsumed: bool = Field(
+        default=False,
+        description="True iff this type has no generator today (A10) or is 'other'.",
+    )
+
+    @field_validator("source_type", mode="before")
+    @classmethod
+    def _reject_unknown_type(cls, value: object) -> object:
+        # 'other' is the only non-enum value accepted; everything else validates
+        # against the closed Literal (TypeAdapter round-trip, surface 3).
+        if value == "other":
+            return value
+        return SOURCE_TYPE_ADAPTER.validate_python(value)
+
+    @model_validator(mode="after")
+    def _enforce_escape_hatch_and_flag(self) -> TypedComponent:
+        if self.source_type == "other":
+            if self.other_type is None:
+                raise ValueError(
+                    "source_type='other' requires a populated other_type "
+                    "(structured {kind:'other', label, provenance})"
+                )
+        elif self.other_type is not None:
+            raise ValueError(
+                "other_type is only valid when source_type=='other' "
+                f"(got source_type={self.source_type!r})"
+            )
+        # A10: the flag is a DERIVED truth — recompute so a hand-set flag can never
+        # disagree with the consumer-map (no silently-mis-flagged component).
+        should_flag = self.source_type == "other" or is_classification_only(self.source_type)
+        if self.flagged_unconsumed != should_flag:
+            object.__setattr__(self, "flagged_unconsumed", should_flag)
+        return self
+
+
 __all__ = [
     "CLASSIFICATION_ONLY_TYPES",
     "CONSUMED_TYPES",
@@ -198,6 +310,8 @@ __all__ = [
     "SOURCE_TYPE_ADAPTER",
     "OtherSourceType",
     "SourceTypeLiteral",
+    "SourceTypeOrOtherLiteral",
+    "TypedComponent",
     "TypedSource",
     "is_classification_only",
 ]

@@ -691,7 +691,7 @@ def _build_decision_card(
             decision_card_digest="0" * 64,
             meta=_base_card_meta(common["meta"]),
             verb=common["verb"],
-            typed_manifest=enrichment.get("typed_sources", []),
+            typed_components=enrichment.get("typed_components", []),
             provisional_los=enrichment.get("provisional_los", []),
             traversal_roots=enrichment.get("traversal_roots", []),
             enumeration_provenance=enrichment.get("enumeration_provenance", []),
@@ -1273,10 +1273,13 @@ def _apply_g0r_ratification(*, run_dir: Path) -> Path | None:
     surviving = [lo for lo in result.refined_los if lo.status == "refined"]
     # ACCESS + ASSESSMENT-PRESENCE assert (per the enumerated/typed source set).
     enrichment = g0_enrichment_wiring.load_enrichment_result(run_dir) or {}
+    # Provisional-LO source_refs point at the enumerated FILE id (a component's
+    # parent_source_id), which is what the ACCESS check resolves against. Components
+    # are the typed deliverables; their parent files are the A6 enumeration unit.
     enumerated_source_ids = {
-        str(ts.get("source_id"))
-        for ts in enrichment.get("typed_sources", [])
-        if ts.get("source_id")
+        str(comp.get("parent_source_id"))
+        for comp in enrichment.get("typed_components", [])
+        if comp.get("parent_source_id")
     }
     assert_completeness(
         refined_los=surviving,

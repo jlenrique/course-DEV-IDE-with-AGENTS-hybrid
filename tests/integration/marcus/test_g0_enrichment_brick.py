@@ -27,6 +27,7 @@ from app.marcus.lesson_plan.source_type import (
     CLASSIFICATION_ONLY_TYPES,
     SOURCE_TYPES,
     OtherSourceType,
+    TypedComponent,
     TypedSource,
     is_classification_only,
 )
@@ -105,6 +106,70 @@ def test_ac_s2_1_type_is_orthogonal_to_directive_role() -> None:
 
 
 # =========================================================================== #
+# AC-P1-1 — TypedComponent (intra-document component; a file yields N of these)
+# =========================================================================== #
+
+
+def _component(**overrides: object) -> dict[str, object]:
+    base = {
+        "component_id": "src-001-c001",
+        "parent_source_id": "src-001",
+        "source_type": "slide",
+        "label": "Why Physician Leadership Matters",
+        "locator": "Doc Title > Why Physician Leadership Matters",
+        "excerpt": "Physicians who step into organizational decisions shape quality.",
+    }
+    base.update(overrides)
+    return base
+
+
+def test_ac_p1_1_typed_component_carries_parent_locator_excerpt() -> None:
+    comp = TypedComponent(**_component())  # type: ignore[arg-type]
+    assert comp.parent_source_id == "src-001"
+    assert comp.component_id == "src-001-c001"
+    assert comp.locator  # document-hierarchy path
+    assert comp.excerpt  # verbatim excerpt
+    assert comp.flagged_unconsumed is False  # slide has a generator
+
+
+def test_ac_p1_1_component_unknown_type_red_rejected_three_surfaces() -> None:
+    with pytest.raises(ValidationError):
+        TypedComponent(**_component(source_type="podcast"))  # type: ignore[arg-type]
+    schema = TypedComponent.model_json_schema()
+    enum_values = schema["properties"]["source_type"]["enum"]
+    assert "podcast" not in enum_values
+    assert "other" in enum_values
+
+
+def test_ac_p1_1_component_other_escape_hatch_is_structured_and_flagged() -> None:
+    other = OtherSourceType(label="podcast-episode", provenance="audio block, no enum fit")
+    comp = TypedComponent(**_component(source_type="other", other_type=other))  # type: ignore[arg-type]
+    assert comp.flagged_unconsumed is True
+    restored = TypedComponent.model_validate_json(comp.model_dump_json())
+    assert restored.other_type is not None
+    assert restored.other_type.label == "podcast-episode"
+    # other_type without source_type='other' is rejected (and vice-versa).
+    with pytest.raises(ValidationError):
+        TypedComponent(**_component(source_type="slide", other_type=other))  # type: ignore[arg-type]
+    with pytest.raises(ValidationError):
+        TypedComponent(**_component(source_type="other"))  # type: ignore[arg-type]
+
+
+def test_ac_p1_1_component_flag_is_derived_not_overridable() -> None:
+    for t in CLASSIFICATION_ONLY_TYPES:
+        comp = TypedComponent(**_component(source_type=t, flagged_unconsumed=False))  # type: ignore[arg-type]
+        assert comp.flagged_unconsumed is True, f"{t} must be flagged classification-only"
+    slide = TypedComponent(**_component(source_type="slide", flagged_unconsumed=True))  # type: ignore[arg-type]
+    assert slide.flagged_unconsumed is False
+
+
+def test_ac_p1_1_component_requires_nonempty_label_locator_excerpt() -> None:
+    for blank_field in ("label", "locator", "excerpt", "component_id", "parent_source_id"):
+        with pytest.raises(ValidationError):
+            TypedComponent(**_component(**{blank_field: ""}))  # type: ignore[arg-type]
+
+
+# =========================================================================== #
 # AC-S2-2 — provisional LO extraction with resolvable provenance
 # =========================================================================== #
 
@@ -143,6 +208,61 @@ def test_ac_s2_2_provisional_lo_with_zero_refs_is_allowed() -> None:
     )
     assert lo.source_refs == ()
     gw._assert_refs_enumerated([lo], {"src-001"})  # no refs → nothing to reject
+
+
+# =========================================================================== #
+# AC-P1-2 — intra-document COMPONENT extraction (a file yields N components)
+# =========================================================================== #
+
+
+def test_ac_p1_2_offline_pre_pass_extracts_many_components_per_file() -> None:
+    # studio-smoke-min/lesson.md is ONE file with 1 H1 + 3 H2 sections → the
+    # file-level typing (one whole file → one type) becomes >=4 typed components.
+    result = gw.build_enrichment_result(corpus_dir=CORPUS, dispatch_live=False)
+    comps = result.typed_components
+    assert len(comps) >= 4, "the lone outline file must segment into MANY components"
+    # Every component is anchored to its parent FILE + a hierarchy locator + excerpt.
+    enumerated_files = {p.source_id for p in result.enumeration_provenance}
+    for comp in comps:
+        assert comp.parent_source_id in enumerated_files
+        assert comp.component_id
+        assert comp.locator
+        assert comp.excerpt
+    # The component ids are unique within the run.
+    ids = [c.component_id for c in comps]
+    assert len(ids) == len(set(ids))
+
+
+def test_ac_p1_2_offline_split_is_by_heading_with_hierarchy_locator() -> None:
+    text = (
+        "# Doc Title\n\n"
+        "## First Section\nAlpha body line.\n\n"
+        "## Second Section\nBeta body line.\n"
+    )
+    sections = gw._split_components(text, "doc")
+    labels = [s["label"] for s in sections]
+    assert labels == ["Doc Title", "First Section", "Second Section"]
+    # The locator is the breadcrumb of ancestor heading titles.
+    locators = {s["label"]: s["locator"] for s in sections}
+    assert locators["First Section"] == "Doc Title > First Section"
+    # The excerpt is a VERBATIM body line (or the heading label when bodyless).
+    excerpts = {s["label"]: s["excerpt"] for s in sections}
+    assert excerpts["First Section"] == "Alpha body line."
+    assert excerpts["Doc Title"] == "Doc Title"  # H1 has no body → label as excerpt
+
+
+def test_ac_p1_2_offline_split_is_deterministic() -> None:
+    text = "# A\nx\n## B\ny\n"
+    assert gw._split_components(text, "doc") == gw._split_components(text, "doc")
+
+
+def test_ac_p1_2_headingless_file_yields_one_whole_file_component(tmp_path: Path) -> None:
+    p = tmp_path / "flat.md"
+    p.write_text("just a flat paragraph with no headings at all", encoding="utf-8")
+    comps = gw._file_components("src-001", p, tmp_path)
+    assert len(comps) == 1
+    assert comps[0].parent_source_id == "src-001"
+    assert comps[0].excerpt.startswith("just a flat paragraph")
 
 
 # =========================================================================== #
@@ -285,18 +405,41 @@ def test_ac_s2_6_traversal_roots_and_enumeration_provenance_present() -> None:
     result = gw.build_enrichment_result(corpus_dir=CORPUS, dispatch_live=False)
     assert result.traversal_roots, "A10: the roots the operator pointed the run at"
     assert result.traversal_roots[0].kind == "corpus_dir"
-    assert len(result.enumeration_provenance) == result.reconcile.n_in
+    # enumeration provenance is per-FILE (the A6 unit); reconcile counts files in.
+    assert len(result.enumeration_provenance) == result.reconcile.n_files_in
     for prov in result.enumeration_provenance:
         assert prov.root_id  # how it entered the set (which root)
         assert prov.locator
 
 
-def test_ac_s2_6_reconcile_partition_must_balance() -> None:
-    # n_in == n_typed + n_ignored or the artifact is rejected (a source vanished).
+def test_ac_s2_6_reconcile_file_coverage_must_balance() -> None:
+    # n_files_in == n_files_covered + n_files_ignored or the artifact is rejected
+    # (a FILE silently dropped from coverage).
     with pytest.raises(ValidationError, match="reconcile mismatch"):
-        ReconcileView(n_in=5, n_typed=3, n_ignored=1, n_flagged=0)
-    ok = ReconcileView(n_in=4, n_typed=3, n_ignored=1, n_flagged=2)
-    assert ok.n_in == ok.n_typed + ok.n_ignored
+        ReconcileView(
+            n_files_in=5, n_files_covered=3, n_files_ignored=1, n_components=8, n_flagged=0
+        )
+    # A covered file owes >=1 component (n_files_covered <= n_components).
+    with pytest.raises(ValidationError, match="cannot exceed n_components"):
+        ReconcileView(
+            n_files_in=4, n_files_covered=4, n_files_ignored=0, n_components=3, n_flagged=0
+        )
+    ok = ReconcileView(
+        n_files_in=4, n_files_covered=3, n_files_ignored=1, n_components=12, n_flagged=2
+    )
+    assert ok.n_files_in == ok.n_files_covered + ok.n_files_ignored
+    assert ok.n_components >= ok.n_files_covered
+
+
+def test_ac_s2_6_offline_reconcile_covers_every_file() -> None:
+    # Offline: every enumerated file is covered by >=1 component (the coverage
+    # fallback guarantees it); n_files_ignored is 0 until the operator ignores one.
+    result = gw.build_enrichment_result(corpus_dir=CORPUS, dispatch_live=False)
+    rv = result.reconcile
+    assert rv.n_files_covered == rv.n_files_in
+    assert rv.n_files_ignored == 0
+    assert rv.n_components == len(result.typed_components)
+    assert rv.n_components >= rv.n_files_in
 
 
 def test_ac_s2_6_unreachable_corpus_is_red(tmp_path: Path) -> None:
@@ -383,11 +526,13 @@ def test_ac_s2_5_woken_pauses_at_g0e_with_real_card(tmp_path: Path, monkeypatch)
 
     card = json.loads(card_path.read_text(encoding="utf-8"))["card"]
     assert card["gate_id"] == "G0E"
-    assert card["typed_manifest"], "card surfaces the typed manifest"
+    assert card["typed_components"], "card surfaces the typed components"
     assert card["traversal_roots"], "card surfaces A10 traversal roots"
-    assert (
-        card["reconcile"]["n_in"] == card["reconcile"]["n_typed"] + card["reconcile"]["n_ignored"]
-    )
+    rec = card["reconcile"]
+    assert rec["n_files_in"] == rec["n_files_covered"] + rec["n_files_ignored"]
+    # The card groups components by parent file (a file yields N components).
+    parents = {c["parent_source_id"] for c in card["typed_components"]}
+    assert parents, "components are anchored to their parent files"
 
 
 def test_ac_s2_5_operator_verdict_advances_model_never_auto_advances(
@@ -486,35 +631,78 @@ def test_g0e_is_a_production_gate_and_node_registered() -> None:
 # --------------------------------------------------------------------------- #
 # AC-S2-6 / T11 MUST-FIX — live-payload reconciliation (no crash on under-typing) #
 # --------------------------------------------------------------------------- #
-def test_parse_live_payload_reconciles_under_dup_and_fabricated(tmp_path: Path) -> None:
-    # The live model under-types (only src-001), DUPLICATES src-001, and
-    # FABRICATES src-999. The reconcile must produce EXACTLY one TypedSource per
-    # enumerated id (coverage == count), never crash, and drop the fabricated id.
+def test_parse_live_payload_reconciles_components_dup_fabricated_and_zero(
+    tmp_path: Path,
+) -> None:
+    # The live model: returns 2 components for src-001 (one a DUPLICATE), FABRICATES
+    # a component for src-999 (unknown parent), and returns ZERO components for
+    # src-002 and src-003. The reconcile must: drop the fabricated parent, dedup,
+    # mint deterministic ids, and add a coverage fallback for the zero-component
+    # files so EVERY file is covered (file-coverage, never crash).
     for i in (1, 2, 3):
-        (tmp_path / f"f{i}.md").write_text(f"# file {i}\n", encoding="utf-8")
+        (tmp_path / f"f{i}.md").write_text(f"# file {i}\nbody {i}\n", encoding="utf-8")
     enumerated = [
         ("src-001", tmp_path / "f1.md"),
         ("src-002", tmp_path / "f2.md"),
         ("src-003", tmp_path / "f3.md"),
     ]
     payload = {
-        "typed_sources": [
-            {"source_id": "src-001", "source_type": "quiz", "flagged_unconsumed": True},
-            {"source_id": "src-001", "source_type": "slide", "flagged_unconsumed": False},
-            {"source_id": "src-999", "source_type": "slide", "flagged_unconsumed": False},
+        "components": [
+            {
+                "parent_source_id": "src-001",
+                "type": "quiz",
+                "label": "Q1",
+                "locator": "file 1 > Q1",
+                "excerpt": "what is leadership?",
+            },
+            {
+                "parent_source_id": "src-001",
+                "type": "quiz",
+                "label": "Q1",
+                "locator": "file 1 > Q1",
+                "excerpt": "what is leadership?",
+            },  # exact duplicate
+            {
+                "parent_source_id": "src-001",
+                "type": "slide",
+                "label": "S1",
+                "locator": "file 1 > S1",
+                "excerpt": "leadership matters",
+            },
+            {
+                "parent_source_id": "src-999",  # fabricated parent
+                "type": "slide",
+                "label": "ghost",
+                "locator": "x",
+                "excerpt": "y",
+            },
         ],
         "provisional_los": [],
     }
     typed, los, provenance = gw._parse_live_payload(payload, enumerated, tmp_path)
-    ids = [t.source_id for t in typed]
-    assert ids == ["src-001", "src-002", "src-003"]  # exactly one per enumerated id
-    assert typed[0].source_type == "quiz"  # first occurrence wins (dedup)
-    assert "src-999" not in ids  # fabricated dropped
+    parents = {t.parent_source_id for t in typed}
+    assert parents == {"src-001", "src-002", "src-003"}  # fabricated parent dropped
+    # src-001 keeps 2 components (dup collapsed); src-002/003 get a coverage fallback.
+    s1 = [t for t in typed if t.parent_source_id == "src-001"]
+    assert len(s1) == 2, "duplicate component collapsed to one"
+    assert {t.source_type for t in s1} == {"quiz", "slide"}
+    assert all(t.parent_source_id != "src-999" for t in typed)
+    assert [t for t in typed if t.parent_source_id == "src-002"], "zero-component file covered"
+    # component ids are unique + deterministic within a parent.
+    ids = [t.component_id for t in typed]
+    assert len(ids) == len(set(ids))
+    assert s1[0].component_id == "src-001-c001"
     assert len(provenance) == 3
-    # The ReconcileView count is correct BY CONSTRUCTION (no double-count balance).
-    rv = ReconcileView(n_in=len(enumerated), n_typed=len(typed), n_ignored=0,
-                        n_flagged=sum(1 for t in typed if t.flagged_unconsumed))
-    assert rv.n_in == rv.n_typed
+    # File-coverage reconcile holds BY CONSTRUCTION.
+    covered = {t.parent_source_id for t in typed}
+    rv = ReconcileView(
+        n_files_in=len(enumerated),
+        n_files_covered=len(covered),
+        n_files_ignored=len(enumerated) - len(covered),
+        n_components=len(typed),
+        n_flagged=sum(1 for t in typed if t.flagged_unconsumed),
+    )
+    assert rv.n_files_covered == rv.n_files_in
 
 
 # --------------------------------------------------------------------------- #

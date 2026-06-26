@@ -150,10 +150,10 @@ def _narrate_voice(card: dict[str, Any], lines: list[str]) -> None:
 
 
 def _narrate_g0_enrichment(card: dict[str, Any], run_dir: Path, lines: list[str]) -> None:
-    """Confirm-gate #1 (G0E): typed manifest + provisional LOs + A10 roots + dissent."""
+    """Confirm-gate #1 (G0E): typed COMPONENTS grouped by file + LOs + roots + dissent."""
     enrichment = _load(run_dir / "g0-enrichment.json") or {}
     inner = card.get("card", {})
-    typed = inner.get("typed_manifest") or enrichment.get("typed_sources") or []
+    components = inner.get("typed_components") or enrichment.get("typed_components") or []
     los = inner.get("provisional_los") or enrichment.get("provisional_los") or []
     roots = inner.get("traversal_roots") or enrichment.get("traversal_roots") or []
     reconcile = inner.get("reconcile") or enrichment.get("reconcile") or {}
@@ -162,17 +162,31 @@ def _narrate_g0_enrichment(card: dict[str, Any], run_dir: Path, lines: list[str]
     lines.append(f"  Traversal roots I walked ({len(roots)}):")
     for root in roots[:5]:
         lines.append(f"    - {root.get('kind')}: {root.get('root_id')}")
-    lines.append(f"  Source TYPE manifest ({len(typed)} spans):")
-    for src in typed[:12]:
-        flag = "  [flagged: no generator today]" if src.get("flagged_unconsumed") else ""
-        lines.append(f"    - {src.get('source_id')} -> {src.get('source_type')}{flag}")
+    # Group the typed components by their parent FILE (a file yields N components).
+    by_file: dict[str, list[dict[str, Any]]] = {}
+    for comp in components:
+        by_file.setdefault(str(comp.get("parent_source_id")), []).append(comp)
+    lines.append(
+        f"  Typed COMPONENTS ({len(components)} across {len(by_file)} files):"
+    )
+    for parent, comps in list(by_file.items())[:8]:
+        lines.append(f"    {parent} ({len(comps)} components):")
+        for comp in comps[:6]:
+            flag = "  [flagged: no generator today]" if comp.get("flagged_unconsumed") else ""
+            label = str(comp.get("label", ""))[:48]
+            lines.append(
+                f"      - {comp.get('source_type')}: {label} @ "
+                f"{comp.get('locator')}{flag}"
+            )
     lines.append(f"  Candidate provisional LOs ({len(los)}):")
     for lo in los[:8]:
         lines.append(f"    - {lo.get('objective_id')}: {lo.get('statement', '')[:80]}")
     if reconcile:
         lines.append(
-            f"  Reconcile: {reconcile.get('n_in')} in == "
-            f"{reconcile.get('n_typed')} typed + {reconcile.get('n_ignored')} ignored "
+            f"  Reconcile: {reconcile.get('n_files_in')} files in == "
+            f"{reconcile.get('n_files_covered')} covered + "
+            f"{reconcile.get('n_files_ignored')} ignored; "
+            f"{reconcile.get('n_components')} components "
             f"({reconcile.get('n_flagged')} flagged classification-only)."
         )
     if dissents:
@@ -180,7 +194,7 @@ def _narrate_g0_enrichment(card: dict[str, Any], run_dir: Path, lines: list[str]
         lines.append(
             f"  My recorded dissent (A3): on {d.get('against')} — {d.get('marcus_position')}"
         )
-    lines.append("  Confirm the typing + LOs, or tell me to re-type a span / drop an LO.")
+    lines.append("  Confirm the typing + LOs, or tell me to re-type a component / drop an LO.")
 
 
 def narrate_gate(gate_id: str, card: dict[str, Any], run_dir: Path) -> str:

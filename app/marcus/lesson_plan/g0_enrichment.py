@@ -35,7 +35,7 @@ from pydantic import (
 from pydantic.json_schema import SkipJsonSchema
 
 from app.marcus.lesson_plan.learning_objective import LearningObjective
-from app.marcus.lesson_plan.source_type import TypedSource
+from app.marcus.lesson_plan.source_type import TypedComponent
 from app.models.state._base import enforce_tz_aware
 
 # ---------------------------------------------------------------------------
@@ -162,40 +162,62 @@ class Dissent(BaseModel):
 
 
 # ---------------------------------------------------------------------------
-# Reconcilable count view (D2 — N-in == typed + ignored + flagged)
+# Reconcilable count view (file-coverage — every FILE covered by >=1 component)
 # ---------------------------------------------------------------------------
 
 
 class ReconcileView(BaseModel):
-    """The operator-facing reconciliation: every enumerated source is accounted for.
+    """The operator-facing reconciliation: every enumerated FILE is accounted for.
 
-    ``n_in`` (the A6 deterministic enumeration count) MUST equal
-    ``n_typed + n_ignored`` — every source is either typed (one of the 10 / other)
-    or operator-confirmed ``ignored``. ``n_flagged`` is a NON-PARTITION view (a
-    subset of ``n_typed``: the classification-only / escape-hatch typings) carried
-    so the operator sees how many typings have no generator today.
+    Component extraction (charter P1) makes FILES the A6 enumeration unit and
+    COMPONENTS the typed deliverables (a file yields N components). The
+    reconciliation is therefore FILE-COVERAGE, not a 1:1 typed-per-source count:
+    ``n_files_in`` (the A6 deterministic file-enumeration count) MUST equal
+    ``n_files_covered + n_files_ignored`` — every enumerated file is either
+    covered by >=1 extracted component or operator-confirmed ``ignored``. No file
+    is silently dropped. ``n_components`` is the total typed deliverable count
+    (>= n_files_covered, since one file → many components); ``n_flagged`` is a
+    NON-PARTITION view (a subset of ``n_components``: the classification-only /
+    escape-hatch components) so the operator sees how many have no generator today.
     """
 
     model_config = ConfigDict(extra="forbid", validate_assignment=True, frozen=True)
 
-    n_in: int = Field(..., ge=0, description="Deterministically-enumerated source count (A6).")
-    n_typed: int = Field(..., ge=0, description="Sources assigned a type (10-type or 'other').")
-    n_ignored: int = Field(..., ge=0, description="Operator-confirmed ignored sources.")
+    n_files_in: int = Field(
+        ..., ge=0, description="Deterministically-enumerated FILE count (A6 unit)."
+    )
+    n_files_covered: int = Field(
+        ..., ge=0, description="Enumerated files covered by >=1 extracted component."
+    )
+    n_files_ignored: int = Field(
+        ..., ge=0, description="Operator-confirmed ignored files (no component extracted)."
+    )
+    n_components: int = Field(
+        ..., ge=0, description="Total typed components extracted across all covered files."
+    )
     n_flagged: int = Field(
-        ..., ge=0, description="Classification-only/escape-hatch typings (subset of n_typed)."
+        ...,
+        ge=0,
+        description="Classification-only/escape-hatch components (subset of n_components).",
     )
 
     @model_validator(mode="after")
     def _enforce_reconciliation(self) -> ReconcileView:
-        if self.n_in != self.n_typed + self.n_ignored:
+        if self.n_files_in != self.n_files_covered + self.n_files_ignored:
             raise ValueError(
-                f"reconcile mismatch: n_in={self.n_in} != n_typed={self.n_typed} "
-                f"+ n_ignored={self.n_ignored} (a source vanished from the partition)"
+                f"reconcile mismatch: n_files_in={self.n_files_in} != "
+                f"n_files_covered={self.n_files_covered} + "
+                f"n_files_ignored={self.n_files_ignored} (a file vanished from coverage)"
             )
-        if self.n_flagged > self.n_typed:
+        if self.n_files_covered > self.n_components:
             raise ValueError(
-                f"n_flagged={self.n_flagged} cannot exceed n_typed={self.n_typed} "
-                "(flagged is a subset of typed)"
+                f"n_files_covered={self.n_files_covered} cannot exceed "
+                f"n_components={self.n_components} (a covered file owes >=1 component)"
+            )
+        if self.n_flagged > self.n_components:
+            raise ValueError(
+                f"n_flagged={self.n_flagged} cannot exceed n_components={self.n_components} "
+                "(flagged is a subset of the components)"
             )
         return self
 
@@ -228,9 +250,9 @@ class G0EnrichmentResult(BaseModel):
         min_length=1,
         description="LLM model id that produced the typing/LO pre-pass (or the offline marker).",
     )
-    typed_sources: list[TypedSource] = Field(
+    typed_components: list[TypedComponent] = Field(
         default_factory=list,
-        description="Per-source TYPE assignments (orthogonal to directive role).",
+        description="Per-COMPONENT TYPE assignments (N per file; orthogonal to directive role).",
     )
     provisional_los: list[LearningObjective] = Field(
         default_factory=list,

@@ -52,9 +52,9 @@ class G0ECard(DecisionCardBase):
         default_factory=lambda: datetime.now(UTC),
         description="Timezone-aware creation timestamp for the emitted DecisionCard.",
     )
-    typed_manifest: list[dict[str, Any]] = Field(
+    typed_components: list[dict[str, Any]] = Field(
         default_factory=list,
-        description="Per-source TYPE assignments (orthogonal to directive role).",
+        description="Per-COMPONENT TYPE assignments (N per file; orthogonal to directive role).",
     )
     provisional_los: list[dict[str, Any]] = Field(
         default_factory=list,
@@ -70,7 +70,10 @@ class G0ECard(DecisionCardBase):
     )
     reconcile: dict[str, Any] = Field(
         default_factory=dict,
-        description="D2 reconcilable count view (n_in == n_typed + n_ignored).",
+        description=(
+            "File-coverage reconcile view "
+            "(n_files_in == n_files_covered + n_files_ignored)."
+        ),
     )
     dissents: list[dict[str, Any]] = Field(
         default_factory=list,

@@ -1,11 +1,15 @@
 """G0-enrichment runner-wired orchestration hook (Story G0-S2).
 
-The Marcus-SPOC G0 pre-pass that (1) TYPES every enumerated source span into the
-closed 10-type taxonomy (+ ``other:<label>`` escape hatch) and (2) extracts
+The Marcus-SPOC G0 pre-pass that (1) segments every enumerated source FILE into N
+typed COMPONENTS (the closed 10-type taxonomy + ``other:<label>`` escape hatch),
+each with a document-hierarchy locator + verbatim excerpt, and (2) extracts
 candidate Learning Objectives at ``status=provisional`` with resolvable
 ``SourceRef`` provenance — both OFF the deterministic critical path (an LLM
 pre-pass, result frozen + cached keyed to a CORPUS FINGERPRINT for replay
-determinism). The frozen result feeds operator confirm-gate #1 (``G0E``).
+determinism). Replaces the prior file-level typing (one whole file → one type):
+a 150KB outline that is all 'other' under file-typing becomes 188 typed
+components under intra-document extraction (charter P1). The frozen result feeds
+operator confirm-gate #1 (``G0E``).
 
 ATTACH MECHANIC
 ---------------
@@ -38,6 +42,7 @@ from __future__ import annotations
 import json
 import logging
 import os
+import re
 from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
@@ -56,7 +61,7 @@ from app.marcus.lesson_plan.g0_enrichment import (
     file_content_hash,
 )
 from app.marcus.lesson_plan.learning_objective import LearningObjective, SourceRef, advance_lo
-from app.marcus.lesson_plan.source_type import TypedSource, is_classification_only
+from app.marcus.lesson_plan.source_type import TypedComponent
 from app.models.runtime.production_envelope import ProductionEnvelope, SpecialistContribution
 
 logger = logging.getLogger(__name__)
@@ -173,24 +178,136 @@ def _heuristic_type(path: Path) -> str:
     return _DEFAULT_TYPE
 
 
-def _first_text_span(path: Path) -> str | None:
-    """First non-empty line of a text source (verbatim quoted_span), or None."""
+def _component_type(label: str, body: str) -> str:
+    """Heuristic component TYPE from heading-label + body text (offline only).
+
+    The LIVE LLM does the real instructional-designer typing; this keeps the
+    OFFLINE component split deterministic + reproducible.
+    """
+    haystack = f"{label}\n{body}".lower()
+    for keyword, source_type in _TYPE_KEYWORDS:
+        if keyword in haystack:
+            return source_type
+    return _DEFAULT_TYPE
+
+
+# Excerpt cap for one offline component (verbatim prefix of the section body).
+_COMPONENT_EXCERPT_MAX_CHARS = 200
+_HEADING_RE = re.compile(r"^(#{1,6})\s+(.*)$")
+
+
+def _split_components(text: str, file_label: str) -> list[dict[str, str]]:
+    """Deterministically segment ONE document into components by markdown heading.
+
+    Each heading-delimited section becomes one component with a document-hierarchy
+    ``locator`` (the breadcrumb of ancestor heading titles, e.g.
+    ``"Doc Title > Section > Sub-section"``), a verbatim ``excerpt`` (the first
+    non-empty body line, or the heading label when the section has no body), and a
+    keyword-heuristic ``source_type``. Preamble text before the first heading
+    becomes a leading component rooted at ``file_label``. A document with NO
+    headings returns a single whole-file component; an empty document returns
+    ``[]`` (the caller adds a coverage fallback so no FILE is silently dropped).
+
+    Pure + reproducible (same bytes → same components), no LLM.
+    """
+    lines = text.splitlines()
+    stack: list[tuple[int, str]] = []
+    sections: list[dict[str, list[str]]] = []
+    preamble: list[str] = []
+    current: dict[str, list[str]] | None = None
+
+    for line in lines:
+        match = _HEADING_RE.match(line)
+        if match:
+            level = len(match.group(1))
+            title = match.group(2).strip() or "(untitled)"
+            while stack and stack[-1][0] >= level:
+                stack.pop()
+            stack.append((level, title))
+            current = {"titles": [t for _, t in stack], "body": []}
+            sections.append(current)
+        elif current is None:
+            preamble.append(line)
+        else:
+            current["body"].append(line)
+
+    ordered: list[dict[str, list[str]]] = []
+    if any(line.strip() for line in preamble):
+        ordered.append({"titles": [file_label], "body": preamble})
+    ordered.extend(sections)
+
+    out: list[dict[str, str]] = []
+    for sec in ordered:
+        titles = sec["titles"] or [file_label]
+        body_lines = [line for line in sec["body"] if line.strip()]
+        label = titles[-1]
+        locator = " > ".join(titles)
+        excerpt = (body_lines[0].strip() if body_lines else label)[:_COMPONENT_EXCERPT_MAX_CHARS]
+        excerpt = excerpt or label or file_label
+        source_type = _component_type(label, "\n".join(sec["body"]))
+        out.append(
+            {"label": label, "locator": locator, "excerpt": excerpt, "source_type": source_type}
+        )
+    return out
+
+
+def _file_components(source_id: str, path: Path, corpus_dir: Path) -> list[TypedComponent]:
+    """Segment ONE enumerated file into >=1 TypedComponent (coverage guaranteed).
+
+    A readable text file is split by heading (``_split_components``); an empty file
+    or a binary/unreadable source yields a single whole-file fallback component so
+    EVERY enumerated file is covered by >=1 component (no file silently dropped —
+    the file-coverage reconcile invariant).
+    """
+    rel = path.relative_to(corpus_dir).as_posix()
+    file_label = path.stem or rel
     try:
         text = path.read_text(encoding="utf-8")
     except (UnicodeDecodeError, OSError):
-        return None
-    for line in text.splitlines():
-        stripped = line.strip()
-        if stripped:
-            return stripped[:200]
-    return None
+        sections: list[dict[str, str]] = []
+        fallback_type = _heuristic_type(path)
+        sections.append(
+            {
+                "label": file_label,
+                "locator": file_label,
+                "excerpt": "[binary or unreadable source — typed from filename]",
+                "source_type": fallback_type,
+            }
+        )
+    else:
+        sections = _split_components(text, file_label)
+        if not sections:
+            sections = [
+                {
+                    "label": file_label,
+                    "locator": file_label,
+                    "excerpt": f"[empty source: {rel}]",
+                    "source_type": _heuristic_type(path),
+                }
+            ]
+    return [
+        TypedComponent(
+            component_id=f"{source_id}-c{idx:03d}",
+            parent_source_id=source_id,
+            source_type=sec["source_type"],  # type: ignore[arg-type]
+            label=sec["label"],
+            locator=sec["locator"],
+            excerpt=sec["excerpt"],
+        )
+        for idx, sec in enumerate(sections, start=1)
+    ]
 
 
 # Per-source content budget fed to the LIVE pre-pass prompt. The model must SEE
-# the source text to type it accurately AND to emit VERBATIM quoted_spans (a
-# path-only summary makes the LO extraction hollow/ungrounded — the gap the live
-# run surfaced). Bounded so a large corpus stays within context.
-_LIVE_EXCERPT_MAX_CHARS = 6000
+# the WHOLE source document to extract ALL its embedded components — a small cap
+# truncates the doc and the extraction collapses (a live run on the 150KB outline
+# with a 6000-char cap found only 25 of ~188 components: it saw the first 4%).
+# Sized to hold a full richly-annotated course-outline document (~150KB ≈ 40K
+# tokens) with headroom; a frontier model's context easily fits one such file.
+# FOLLOW-ON (huge multi-file corpora): if total corpus text would exceed the
+# model context, chunk per-file / per-Part rather than lowering this cap — never
+# silently truncate a document (that drops components). See charter P1.
+_LIVE_EXCERPT_MAX_CHARS = 240_000
 
 
 def _source_excerpt(path: Path, max_chars: int = _LIVE_EXCERPT_MAX_CHARS) -> str:
@@ -226,53 +343,55 @@ def _live_corpus_summary(enumerated: list[tuple[str, Path]], corpus_dir: Path) -
 def _offline_pre_pass(
     enumerated: list[tuple[str, Path]],
     corpus_dir: Path,
-) -> tuple[list[TypedSource], list[LearningObjective], list[EnumerationProvenance]]:
-    typed: list[TypedSource] = []
+) -> tuple[list[TypedComponent], list[LearningObjective], list[EnumerationProvenance]]:
+    """Deterministically extract typed COMPONENTS (N per file) + provisional LOs.
+
+    Replaces the prior file-level typing (one whole file → one type): each
+    enumerated FILE is structurally split into >=1 typed component
+    (``_file_components``), so a multi-section document yields many components.
+    Reproducible (same bytes → same components), no LLM.
+    """
+    typed: list[TypedComponent] = []
     provenance: list[EnumerationProvenance] = []
     los: list[LearningObjective] = []
-    lo_index = 0
     enumerated_ids = {sid for sid, _ in enumerated}
 
-    for source_id, path in enumerated:
-        source_type = _heuristic_type(path)
-        typed.append(
-            TypedSource(
-                source_id=source_id,
-                source_type=source_type,  # type: ignore[arg-type]
-                flagged_unconsumed=is_classification_only(source_type),
-            )
-        )
+    for lo_index, (source_id, path) in enumerate(enumerated, start=1):
+        rel = path.relative_to(corpus_dir).as_posix()
         provenance.append(
             EnumerationProvenance(
                 source_id=source_id,
                 root_id=corpus_dir.resolve().as_posix(),
                 connector="local_file",
-                locator=path.relative_to(corpus_dir).as_posix(),
+                locator=rel,
             )
         )
-        # Candidate LO: one provisional LO per text-extractable source span. A
-        # provisional LO MAY carry 0 refs, but a populated ref MUST point at an
-        # enumerated source_id with a verbatim quoted_span (A9).
-        span = _first_text_span(path)
-        if span is not None:
-            lo_index += 1
-            refs = (
-                SourceRef(
-                    source_id=source_id,
-                    locator=path.relative_to(corpus_dir).as_posix(),
-                    quoted_span=span,
-                ),
-            )
-            lo = LearningObjective(
-                objective_id=f"lo-g0-{lo_index:03d}",
-                statement=f"Understand the material introduced by {source_id} ({span[:60]}).",
-                status="provisional",
-                confidence="low",
-                source_refs=refs,
-            )
-            # Surface the g0 mint edge (idempotent (provisional, provisional, g0)).
-            lo = advance_lo(lo, "provisional", actor="g0")
-            los.append(lo)
+        components = _file_components(source_id, path, corpus_dir)
+        typed.extend(components)
+        # Candidate LO: one provisional LO per file, GROUNDED in the file's first
+        # extracted component (its locator + verbatim excerpt). A populated ref
+        # points at the enumerated FILE id (A6) with the component locator (A9).
+        first = components[0]
+        refs = (
+            SourceRef(
+                source_id=source_id,
+                locator=first.locator,
+                quoted_span=first.excerpt,
+            ),
+        )
+        lo = LearningObjective(
+            objective_id=f"lo-g0-{lo_index:03d}",
+            statement=(
+                f"Understand the material introduced by {source_id} "
+                f"({first.excerpt[:60]})."
+            ),
+            status="provisional",
+            confidence="low",
+            source_refs=refs,
+        )
+        # Surface the g0 mint edge (idempotent (provisional, provisional, g0)).
+        lo = advance_lo(lo, "provisional", actor="g0")
+        los.append(lo)
 
     _assert_refs_enumerated(los, enumerated_ids)
     return typed, los, provenance
@@ -290,20 +409,20 @@ def _assert_refs_enumerated(los: list[LearningObjective], enumerated_ids: set[st
                 )
 
 
-def _build_dissent(typed: list[TypedSource], fingerprint: str) -> Dissent:
+def _build_dissent(typed: list[TypedComponent], fingerprint: str) -> Dissent:
     """Derive ONE real, corpus-varying dissent (A3/A11 — never theater).
 
-    The target + alternative type are a deterministic function of the corpus
-    fingerprint, so the dissent VARIES run-to-run across different corpora (a
-    never-varying dissent carries no information). Independent-parse-sourced:
-    Marcus's position is his own heuristic typing.
+    The target component + alternative type are a deterministic function of the
+    corpus fingerprint, so the dissent VARIES run-to-run across different corpora
+    (a never-varying dissent carries no information). Independent-parse-sourced:
+    Marcus's position is his own heuristic typing of the segmented component.
     """
     if not typed:
-        # A typed-source-less corpus still owes a real dissent: dissent the empty
+        # A component-less corpus still owes a real dissent: dissent the empty
         # enumeration itself (operator confirms there were genuinely no spans).
         return Dissent(
             against="corpus",
-            marcus_position="independent parse found zero typeable spans",
+            marcus_position="independent parse found zero typeable components",
             operator_position="",
             disposition="upheld",
         )
@@ -316,10 +435,10 @@ def _build_dissent(typed: list[TypedSource], fingerprint: str) -> Dissent:
     ]
     alt = alternatives[int(fingerprint[8:16], 16) % len(alternatives)]
     return Dissent(
-        against=target.source_id,
+        against=target.component_id,
         marcus_position=(
-            f"typed {target.source_id} as {target.source_type}; a defensible "
-            f"alternative reading is {alt}"
+            f"typed {target.component_id} ({target.locator}) as "
+            f"{target.source_type}; a defensible alternative reading is {alt}"
         ),
         operator_position="",
         disposition="upheld",
@@ -336,17 +455,21 @@ def _live_pre_pass(
     corpus_dir: Path,
     chat_model_factory: Any,
 ) -> tuple[
-    list[TypedSource], list[LearningObjective], list[EnumerationProvenance]
+    list[TypedComponent], list[LearningObjective], list[EnumerationProvenance]
 ]:  # pragma: no cover - live leg
-    """REAL Marcus-SPOC typing/LO pre-pass via make_chat_model + g0-enrichment.j2.
+    """REAL Marcus-SPOC COMPONENT-extraction pre-pass via make_chat_model + j2.
 
-    Off the deterministic critical path. Exercised by the operator-gated live
-    segment proof (AC-S2-8), not the offline suite.
+    Mirrors the proven ``id_extract2`` Instructional-Designer prompt (188
+    components from one 150KB outline): each enumerated FILE is shown with its id
+    + VERBATIM content, and the model segments EACH document into the typed
+    components embedded inline (type / label / locator / verbatim excerpt). Off
+    the deterministic critical path; exercised by the operator-gated live-segment
+    proof, not the offline suite.
     """
     from app.marcus.orchestrator.pre_gate_marcus import render_pre_fill_prompt
 
     # Feed VERBATIM per-source content excerpts (not just paths) so the model can
-    # type accurately + ground its LOs + emit resolvable quoted_spans.
+    # segment + type accurately + ground its components/LOs in shown text.
     corpus_summary = _live_corpus_summary(enumerated, corpus_dir)
     prompt = render_pre_fill_prompt(
         gate_id="g0-enrichment",
@@ -365,71 +488,104 @@ def _live_pre_pass(
     return _parse_live_payload(payload, enumerated, corpus_dir)
 
 
+def _coerce_component_row(row: dict[str, Any], pid: str, parent_rel: str) -> dict[str, Any]:
+    """Normalize one LLM component row to the TypedComponent kwargs shape.
+
+    Tolerant of the proven ``id_extract2`` shape (``type``/``excerpt``) and minor
+    drift; missing label/locator/excerpt are defensively filled so the reconcile
+    never crashes on a sparse row (the operator confirms/corrects at gate #1).
+    """
+    source_type = row.get("source_type") or row.get("type") or _DEFAULT_TYPE
+    label = str(row.get("label") or source_type).strip() or str(source_type)
+    locator = str(row.get("locator") or parent_rel).strip() or parent_rel
+    excerpt = str(row.get("excerpt") or row.get("quoted_span") or label).strip() or label
+    return {
+        "parent_source_id": pid,
+        "source_type": source_type,
+        "other_type": row.get("other_type"),
+        "label": label,
+        "locator": locator,
+        "excerpt": excerpt,
+    }
+
+
 def _parse_live_payload(
     payload: dict[str, Any],
     enumerated: list[tuple[str, Path]],
     corpus_dir: Path,
-) -> tuple[list[TypedSource], list[LearningObjective], list[EnumerationProvenance]]:
-    """Reconcile an LLM typing/LO payload against the enumerated corpus (A6).
+) -> tuple[list[TypedComponent], list[LearningObjective], list[EnumerationProvenance]]:
+    """Reconcile an LLM COMPONENT-extraction payload against enumerated files (A6).
 
-    The live model will not reliably type EXACTLY the enumerated set once per id
-    (it under-types, over-types, duplicates, or fabricates ids). A naive
-    ``len(typed_sources)`` pass both (a) crashes the run on the normal
-    under-typing case and (b) lets a double-typed id + a dropped id "balance" a
-    count-only reconcile while silently corrupting the partition. So we reconcile
-    deterministically to EXACTLY one TypedSource per enumerated id:
+    The live model will not reliably segment EXACTLY the enumerated file set (it
+    cites fabricated parent files, duplicates components, or returns zero
+    components for a file). FILES are the A6 unit and COMPONENTS the deliverables,
+    so the reconcile guarantees FILE-COVERAGE, not a 1:1 count:
 
-      * dedup the LLM rows by ``source_id`` (first occurrence wins);
-      * DROP rows whose ``source_id`` is not in the enumerated set (fabricated —
-        A1/A9: the LLM cannot invent a source) with a loud log;
-      * FILL any enumerated id the LLM left untyped with the deterministic
-        heuristic type (the operator confirms/corrects every span at gate #1
-        per D2, so a defaulted type is operator-correctable, never silent).
+      * DROP component rows whose ``parent_source_id`` is not an enumerated file
+        (fabricated — A1/A9: the LLM cannot invent a source) with a loud log;
+      * dedup a parent's components by ``(locator, label, excerpt)`` (first wins);
+      * mint deterministic ``component_id`` = ``"{pid}-c{idx:03d}"`` per parent;
+      * for any enumerated FILE the model returned ZERO components for, add ONE
+        whole-file COVERAGE FALLBACK component (heuristic type) so no file is
+        silently dropped (the file-coverage reconcile invariant).
 
-    The result has ``len == len(enumerated)`` with each id present exactly once,
-    so the ReconcileView count is correct BY CONSTRUCTION (coverage == count).
+    Components are emitted GROUPED BY enumerated file in enumeration order (so the
+    decision card groups by parent file). ``n_files_covered == n_files_in`` by
+    construction (every file owes >=1 component via the fallback).
     """
     enumerated_ids = [sid for sid, _ in enumerated]
     enumerated_id_set = set(enumerated_ids)
     by_id = {sid: path for sid, path in enumerated}
 
-    llm_typed: dict[str, TypedSource] = {}
-    for row in payload.get("typed_sources", []):
-        ts = TypedSource.model_validate(row)
-        if ts.source_id not in enumerated_id_set:
+    rows = (
+        payload.get("components")
+        or payload.get("typed_components")
+        or payload.get("typed_sources")
+        or []
+    )
+    per_parent: dict[str, list[dict[str, Any]]] = {sid: [] for sid in enumerated_ids}
+    for row in rows:
+        pid = str(row.get("parent_source_id") or row.get("source_id") or "")
+        if pid not in enumerated_id_set:
             logger.warning(
-                "g0-enrichment live: dropping typed source for unknown id %r "
+                "g0-enrichment live: dropping component for unknown parent id %r "
                 "(not in enumerated corpus — fabricated)",
-                ts.source_id,
+                pid,
             )
             continue
-        if ts.source_id in llm_typed:
-            logger.warning(
-                "g0-enrichment live: duplicate typing for %r; keeping first",
-                ts.source_id,
-            )
-            continue
-        llm_typed[ts.source_id] = ts
+        per_parent[pid].append(row)
 
-    typed: list[TypedSource] = []
+    typed: list[TypedComponent] = []
     for sid in enumerated_ids:
-        if sid in llm_typed:
-            typed.append(llm_typed[sid])
-        else:
-            heuristic = _heuristic_type(by_id[sid])
-            logger.info(
-                "g0-enrichment live: id %r left untyped by the model; filled with "
-                "heuristic %r (operator confirms at gate #1)",
-                sid,
-                heuristic,
-            )
-            typed.append(
-                TypedSource(
-                    source_id=sid,
-                    source_type=heuristic,  # type: ignore[arg-type]
-                    flagged_unconsumed=is_classification_only(heuristic),
+        path = by_id[sid]
+        parent_rel = path.relative_to(corpus_dir).as_posix()
+        seen: set[tuple[str, str, str]] = set()
+        components: list[TypedComponent] = []
+        for row in per_parent[sid]:
+            kwargs = _coerce_component_row(row, sid, parent_rel)
+            dedup_key = (kwargs["locator"], kwargs["label"], kwargs["excerpt"])
+            if dedup_key in seen:
+                logger.warning(
+                    "g0-enrichment live: duplicate component %r for %r; keeping first",
+                    kwargs["label"],
+                    sid,
+                )
+                continue
+            seen.add(dedup_key)
+            components.append(
+                TypedComponent(
+                    component_id=f"{sid}-c{len(components) + 1:03d}",
+                    **kwargs,
                 )
             )
+        if not components:
+            logger.info(
+                "g0-enrichment live: file %r returned zero components; adding a "
+                "whole-file coverage fallback (operator confirms at gate #1)",
+                sid,
+            )
+            components = _file_components(sid, path, corpus_dir)
+        typed.extend(components)
 
     provenance = [
         EnumerationProvenance(
@@ -481,18 +637,23 @@ def build_enrichment_result(
 
     independent_parse = IndependentParse(
         proposal={
-            "typed_sources": [t.model_dump(mode="json") for t in typed],
+            "typed_components": [t.model_dump(mode="json") for t in typed],
             "provisional_los": [lo.objective_id for lo in los],
         },
         ts=independent_ts,
     )
     dissent = _build_dissent(typed, fingerprint)
-    n_typed = len(typed)
+    n_files_in = len(enumerated)
+    covered_files = {c.parent_source_id for c in typed}
+    n_files_covered = len(covered_files)
     n_flagged = sum(1 for t in typed if t.flagged_unconsumed)
     reconcile = ReconcileView(
-        n_in=len(enumerated),
-        n_typed=n_typed,
-        n_ignored=0,  # offline: nothing operator-confirmed-ignored yet (composer owns ignored)
+        n_files_in=n_files_in,
+        n_files_covered=n_files_covered,
+        # offline: every enumerated file is covered by >=1 component (the coverage
+        # fallback guarantees it); operator-confirmed file-ignore happens at gate #1.
+        n_files_ignored=n_files_in - n_files_covered,
+        n_components=len(typed),
         n_flagged=n_flagged,
     )
     roots = [
@@ -501,7 +662,7 @@ def build_enrichment_result(
     result = G0EnrichmentResult(
         corpus_fingerprint=fingerprint,
         model_id=model_id,
-        typed_sources=typed,
+        typed_components=typed,
         provisional_los=los,
         traversal_roots=roots,
         enumeration_provenance=provenance,
