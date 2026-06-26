@@ -31,9 +31,10 @@ ProductionPreset = Literal["production", "explore"]
 # G2B → G2C → G3 → G4 → G4A (G4 = the mid-pipeline fidelity gate at node "10"
 # pauses BEFORE the voice pick G4A at node "11-gate"). G0E (G0-S2 source-
 # enrichment confirm-gate #1) is the front-door pause when the brick is woken
-# (MARCUS_G0_ENRICHMENT_ACTIVE); asleep by default so it is traversed. Literal
-# member order is validation-irrelevant; this is the node-walk order, for the reader.
-ProductionGateId = Literal["G0E", "G1", "G2B", "G2C", "G3", "G4", "G4A"]
+# (MARCUS_G0_ENRICHMENT_ACTIVE); asleep by default so it is traversed. G0R (G0-S3
+# Irene LO ratify-gate #2) follows G0E under the SAME wake flag. Literal member
+# order is validation-irrelevant; this is the node-walk order, for the reader.
+ProductionGateId = Literal["G0E", "G0R", "G1", "G2B", "G2C", "G3", "G4", "G4A"]
 
 
 class ProductionTrialEnvelope(BaseModel):

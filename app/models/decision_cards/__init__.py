@@ -18,6 +18,7 @@ from app.models.decision_cards.base import (
 )
 from app.models.decision_cards.g0 import G0Card
 from app.models.decision_cards.g0e import G0ECard
+from app.models.decision_cards.g0r import G0RCard
 from app.models.decision_cards.g1 import G1Card
 from app.models.decision_cards.g2a import G2ACard
 from app.models.decision_cards.g2b import G2BCard
@@ -44,6 +45,7 @@ from app.models.decision_cards.vocabulary import (
 AnyDecisionCard: TypeAlias = Annotated[
     G0Card
     | G0ECard
+    | G0RCard
     | G1Card
     | G2ACard
     | G2BCard
@@ -71,6 +73,7 @@ __all__ = [
     "GateDirectiveToken",
     "G0Card",
     "G0ECard",
+    "G0RCard",
     "G1Card",
     "G2ACard",
     "G2BCard",

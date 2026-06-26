@@ -34,6 +34,7 @@ from app.marcus.orchestrator import (
     conversation_persistence,
     g0_enrichment_wiring,
     gate_runner,
+    irene_refinement_wiring,
     package_builders,
     pre_gate_marcus,
     research_wiring,
@@ -51,6 +52,7 @@ from app.models.decision_cards import (
     AnyDecisionCardAdapter,
     DecisionCardMeta,
     G0ECard,
+    G0RCard,
     G1Card,
     G2BCard,
     G2CCard,
@@ -700,6 +702,34 @@ def _build_decision_card(
                 "(or edit/reject). Marcus proposes; you decide."
             ),
         )
+    if gate_id == "G0R":
+        # Operator ratify-gate #2 (G0-S3). The irene-refinement orchestration node
+        # refined the gate-#1 provisional LOs in place and froze the refined plan +
+        # signed LO-delta ledger + per-LO adequacy + count reconciliation to
+        # run_dir/irene-refinement.json; surface that as the ratify card.
+        # Deterministic guard: the model NEVER auto-ratifies — the operator verdict
+        # advances refined->ratified.
+        refinement = (
+            irene_refinement_wiring.load_refinement_result(_run_dir(trial_id, runs_root))
+            or {}
+        )
+        return G0RCard(
+            card_id=common["card_id"],
+            trial_id=common["trial_id"],
+            created_at=common["created_at"],
+            decision_card_digest="0" * 64,
+            meta=_base_card_meta(common["meta"]),
+            verb=common["verb"],
+            refined_los=refinement.get("refined_los", []),
+            lo_delta=refinement.get("lo_delta", []),
+            reconcile=refinement.get("reconcile", {}),
+            flagged_for_operator=refinement.get("flagged_for_operator", []),
+            operator_prompt=(
+                "Ratify the refined learning objectives + signed LO-delta (or "
+                "edit/reject). Adequacy alerts are advisory; rule on any "
+                "recommend-drop / proposed-new. Marcus proposes; you decide."
+            ),
+        )
     raise RuntimeError(f"unsupported production gate id: {gate_id}")
 
 
@@ -1221,6 +1251,45 @@ def _apply_verdict_to_run_state(
         )
     # approve / reject: envelope is a no-op (verdict drives run-state/gate status only)
     return run_state
+
+
+def _apply_g0r_ratification(*, run_dir: Path) -> Path | None:
+    """G0-S3 ratify-gate #2 side-effect: advance refined->ratified + completeness assert.
+
+    Runs ONLY from the operator-verdict path (G0R, non-reject). The model NEVER
+    auto-ratifies. Advances each refined LO to ``ratified`` (``actor="operator"``),
+    runs the AC-S3-5 completeness hard-assert (ACCESS + ASSESSMENT-PRESENCE — a
+    thin/gap verdict PASSES; an unreachable source or absent adequacy is RED), and
+    writes the ratified LOs to ``<run_dir>/ratified-los.json`` as evidence.
+    """
+    from app.marcus.lesson_plan.irene_refinement import assert_completeness, ratify_refined_los
+
+    result = irene_refinement_wiring.load_refinement_full(run_dir)
+    if result is None:
+        # No frozen refinement on disk — nothing to ratify (the brick produced no
+        # refined set; e.g. an asleep-brick continuation). No-op, not an error.
+        return None
+
+    surviving = [lo for lo in result.refined_los if lo.status == "refined"]
+    # ACCESS + ASSESSMENT-PRESENCE assert (per the enumerated/typed source set).
+    enrichment = g0_enrichment_wiring.load_enrichment_result(run_dir) or {}
+    enumerated_source_ids = {
+        str(ts.get("source_id"))
+        for ts in enrichment.get("typed_sources", [])
+        if ts.get("source_id")
+    }
+    assert_completeness(
+        refined_los=surviving,
+        ledger=result.ledger,
+        enumerated_source_ids=enumerated_source_ids,
+    )
+    ratified = ratify_refined_los(surviving)
+    ratified_path = run_dir / "ratified-los.json"
+    _write_json(
+        ratified_path,
+        {"ratified_los": [lo.model_dump(mode="json") for lo in ratified]},
+    )
+    return ratified_path
 
 
 def _record_cost(
@@ -1967,6 +2036,16 @@ def run_production_trial(
                     last_gate_crossed = gate_id
                     graph_step_completed = True
                     continue
+                if (
+                    gate_id == irene_refinement_wiring.IRENE_REFINEMENT_GATE_CODE
+                    and not irene_refinement_wiring.irene_refinement_active()
+                ):
+                    # AC-S3-4 (start-walk leg): with the brick asleep, ratify-gate #2
+                    # is traversed (no pause) so deck-default flow is byte-identical
+                    # (feature-flag parity with G0E). Woken via MARCUS_G0_ENRICHMENT_ACTIVE.
+                    last_gate_crossed = gate_id
+                    graph_step_completed = True
+                    continue
                 if not pause_at_gates:
                     if gate_id in active_gate_ids and not allow_offline_cost_report:
                         raise GateBypassError(
@@ -2195,6 +2274,59 @@ def run_production_trial(
                 graph_step_completed = True
                 continue
 
+            if (
+                node_kind == "orchestration"
+                and node.id in irene_refinement_wiring.IRENE_REFINEMENT_NODE_IDS
+                and irene_refinement_wiring.irene_refinement_active()
+            ):
+                # G0-S3 brick (START WALK leg): Irene refines the gate-#1-confirmed
+                # provisional LOs in place (provisional->refined), produces the
+                # advisory per-LO adequacy + the signed LO-delta ledger, frozen +
+                # corpus-fingerprint-cached, feeding operator ratify-gate #2 (G0R,
+                # the next gate node). TWO-WALK PARITY: the SAME side-effect is
+                # mirrored into the continuation walk (resume/recover re-entry before
+                # G0R). Idempotent: a node already carrying its contribution is not
+                # re-run.
+                try:
+                    production_envelope = irene_refinement_wiring.run_irene_refinement(
+                        node_id=node.id,
+                        production_envelope=production_envelope,
+                        trial_id=effective_trial_id,
+                        runs_root=runs_root,
+                        dispatch_live=(
+                            irene_refinement_wiring.ir_dispatch_live()
+                            and _has_live_openai()
+                            and not allow_offline_cost_report
+                        ),
+                    )
+                except SpecialistDispatchError as exc:
+                    return _pause_at_error(
+                        error=exc,
+                        node_id=node.id,
+                        node_index=index,
+                        specialist_id=irene_refinement_wiring.IRENE_REFINEMENT_SPECIALIST_ID,
+                        trial_id=effective_trial_id,
+                        envelope=envelope,
+                        production_envelope=production_envelope,
+                        run_state=run_state,
+                        child_runs=child_runs,
+                        trace_metadata=trace_metadata,
+                        last_gate_crossed=last_gate_crossed,
+                        graph_step_completed=graph_step_completed,
+                        specialist_calls=specialist_calls,
+                        manifest_path=manifest_path,
+                        runs_root=runs_root,
+                        allow_offline_cost_report=allow_offline_cost_report,
+                        max_specialist_calls=max_specialist_calls,
+                        directive_path=directive_path,
+                        bundle_dir=bundle_dir,
+                    )
+                run_state = run_state.model_copy(
+                    update={"production_envelope": production_envelope}
+                )
+                graph_step_completed = True
+                continue
+
             if node_kind == "specialist" and specialist_calls < max_specialist_calls:
                 specialist_id = handler.__production_specialist_id__
                 # S2 per-node keying (SCP 2026-06-11): the skip rule guards
@@ -2364,6 +2496,16 @@ def resume_production_trial(
         update={"production_envelope": envelope.production_envelope}
     )
     run_state = _apply_verdict_to_run_state(run_state, verdict)
+    if (
+        verdict.gate_id == irene_refinement_wiring.IRENE_REFINEMENT_GATE_CODE
+        and verdict.verb != "reject"
+    ):
+        # AC-S3-4/AC-S3-5: the operator verdict (never the model) advances the
+        # refined LOs refined->ratified, then the completeness hard-assert (ACCESS
+        # + ASSESSMENT-PRESENCE, NOT adequacy outcome) gates hand-off-to-Gary. A
+        # thin/gap verdict PASSES (§3.1); an unreachable source or a silently-absent
+        # adequacy is RED.
+        _apply_g0r_ratification(run_dir=run_dir)
     _write_json(
         run_dir / "resume-command.json",
         {
@@ -2576,6 +2718,16 @@ def _continue_production_walk(
                 ):
                     # AC-S2-7 (continuation-walk leg): traverse the asleep G0E gate
                     # so a resume/recover flow is byte-identical too (two-walk parity).
+                    last_gate_crossed = gate_id
+                    graph_step_completed = True
+                    continue
+                if (
+                    gate_id == irene_refinement_wiring.IRENE_REFINEMENT_GATE_CODE
+                    and not irene_refinement_wiring.irene_refinement_active()
+                ):
+                    # AC-S3-4 (continuation-walk leg): traverse the asleep G0R ratify
+                    # gate so a resume/recover flow is byte-identical too (two-walk
+                    # parity, feature-flag parity with G0E).
                     last_gate_crossed = gate_id
                     graph_step_completed = True
                     continue
@@ -2802,6 +2954,56 @@ def _continue_production_walk(
                         node_id=node.id,
                         node_index=index,
                         specialist_id=g0_enrichment_wiring.G0_ENRICHMENT_SPECIALIST_ID,
+                        trial_id=trial_id,
+                        envelope=envelope,
+                        production_envelope=production_envelope,
+                        run_state=run_state,
+                        child_runs=child_runs,
+                        trace_metadata=trace_metadata,
+                        last_gate_crossed=last_gate_crossed,
+                        graph_step_completed=graph_step_completed,
+                        specialist_calls=specialist_calls,
+                        manifest_path=manifest_path,
+                        runs_root=runs_root,
+                        allow_offline_cost_report=allow_offline_cost_report,
+                        max_specialist_calls=max_specialist_calls,
+                        directive_path=directive_path,
+                        bundle_dir=bundle_dir,
+                    )
+                run_state = run_state.model_copy(
+                    update={"production_envelope": production_envelope}
+                )
+                graph_step_completed = True
+                continue
+
+            if (
+                node_kind == "orchestration"
+                and node.id in irene_refinement_wiring.IRENE_REFINEMENT_NODE_IDS
+                and irene_refinement_wiring.irene_refinement_active()
+            ):
+                # G0-S3 brick — CONTINUATION WALK leg (two-walk parity). The
+                # irene-refinement node sits before node 01 (after G0E), so on the
+                # trial path it fires on the START walk; this mirror covers a
+                # resume/recover that re-enters the node before the G0R gate.
+                # Idempotent: a node already carrying its contribution is not re-run.
+                try:
+                    production_envelope = irene_refinement_wiring.run_irene_refinement(
+                        node_id=node.id,
+                        production_envelope=production_envelope,
+                        trial_id=trial_id,
+                        runs_root=runs_root,
+                        dispatch_live=(
+                            irene_refinement_wiring.ir_dispatch_live()
+                            and _has_live_openai()
+                            and not allow_offline_cost_report
+                        ),
+                    )
+                except SpecialistDispatchError as exc:
+                    return _pause_at_error(
+                        error=exc,
+                        node_id=node.id,
+                        node_index=index,
+                        specialist_id=irene_refinement_wiring.IRENE_REFINEMENT_SPECIALIST_ID,
                         trial_id=trial_id,
                         envelope=envelope,
                         production_envelope=production_envelope,

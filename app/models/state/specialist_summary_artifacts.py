@@ -50,6 +50,11 @@ CANONICAL_SPECIALIST_IDS: tuple[str, ...] = (
     # the same way irene_pass1 / motion_planner / workbook_producer did on first
     # live dispatch.
     "g0_enrichment",
+    # G0-S3 Irene-refinement brick (app/marcus/orchestrator/irene_refinement_wiring.py):
+    # a runner-wired orchestration node ("irene-refinement", specialist_id null) that
+    # canonicalizes to "irene_refinement". Registered here for the same emit_spans /
+    # specialist-summary attribution reason as g0_enrichment above.
+    "irene_refinement",
 )
 DEFERRED_SPECIALIST_IDS = frozenset()
 
@@ -70,6 +75,7 @@ DISPLAY_NAMES: dict[str, str] = {
     "motion_planner": "Motion-Planner",
     "workbook_producer": "Workbook Producer",
     "g0_enrichment": "G0-Enrichment",
+    "irene_refinement": "Irene-Refinement",
 }
 
 

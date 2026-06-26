@@ -210,6 +210,56 @@ nodes:
       the run. Pack/HUD-invisible — a runtime pause point, not pack prose (mirrors
       07B-gate / 11-gate). Emits a G0ECard at the pause.
 
+  - id: "irene-refinement"
+    label: "Irene Refinement Loop (Story G0-S3)"
+    specialist_id: null
+    scaffold_node: null
+    model_config_ref: null
+    dependencies: {}
+    gate: false
+    gate_code: null
+    sub_phase_of: null
+    insertion_after: "g0-enrichment-gate"
+    hud_tracked: false
+    pack_section_anchor: "0.9)"
+    pack_version: "v4.2"
+    fold_with: null
+    fold_target: null
+    rationale: >-
+      Runner-wired orchestration node (G0-S3 brick). AFTER operator confirm-gate #1
+      (G0E) confirms the typed manifest + provisional LOs, Irene refines each LO IN
+      PLACE (provisional->refined; same immutable objective_id) with a populated
+      bloom_level + an ADVISORY SourceAdequacy alert, and emits the signed LO-delta
+      contract (all channels + count reconciliation, NO silent drops) frozen +
+      cached keyed to the upstream corpus fingerprint. Pack/HUD-invisible
+      (is_orchestration_only) — a runtime pre-pass, not pack prose; topology
+      refinement within the v4.2 lineage (mirrors g0-enrichment / 07D.5 / 07W).
+      Feeds operator ratify-gate #2 (G0R).
+
+  - id: "g0-ratify-gate"
+    label: "Operator LO Ratify Gate"
+    specialist_id: null
+    scaffold_node: null
+    model_config_ref: null
+    gate: true
+    gate_code: "G0R"
+    fold_with: null
+    fold_target: null
+    sub_phase_of: null
+    insertion_after: "irene-refinement"
+    hud_tracked: false
+    pack_section_anchor: "0.9-gate)"
+    pack_version: "v4.2"
+    rationale: >-
+      Operator ratify-gate #2 (G0-S3). Content-free HIL pause (is_content_free_gate)
+      AFTER the irene-refinement pre-pass: Marcus-SPOC re-presents the refined plan +
+      the signed LO-delta ledger + the per-LO adequacy report + the count
+      reconciliation (recommend-drop/proposed-new flagged for the operator). The
+      operator verdict (never the model) advances refined->ratified. A completeness
+      hard-assert (ACCESS + ASSESSMENT-PRESENCE, NOT adequacy outcome) gates progress
+      to lesson-planning / hand-off-to-Gary. Pack/HUD-invisible (mirrors
+      07B-gate / 11-gate / G0E). Emits a G0RCard at the pause.
+
   - id: "01"
     label: "Activation + Preflight"
     specialist_id: "marcus"
@@ -979,7 +1029,12 @@ edges:
   # order is manifest.nodes LIST order, so this edge is the compiled-graph
   # topology only; the gate pauses ONLY when MARCUS_G0_ENRICHMENT_ACTIVE.
   - {from: __start__, to: "g0-enrichment-gate"}
-  - {from: "g0-enrichment-gate", to: "01"}
+  # G0-S3 (2026-06-26): the content-free G0R ratify-gate threads into the linear
+  # chain AFTER G0E (the 07B-gate/11-gate/G0E convention). The irene-refinement
+  # ORCHESTRATION node stays unchained (runner-invoked by list order). Both pause
+  # ONLY when MARCUS_G0_ENRICHMENT_ACTIVE (feature-flag parity with S2).
+  - {from: "g0-enrichment-gate", to: "g0-ratify-gate"}
+  - {from: "g0-ratify-gate", to: "01"}
   - {from: "01", to: "02"}
   - {from: "02", to: "02A"}
   - {from: "02A", to: "03"}

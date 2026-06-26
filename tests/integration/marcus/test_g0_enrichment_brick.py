@@ -416,6 +416,12 @@ def test_ac_s2_5_operator_verdict_advances_model_never_auto_advances(
             return updated
 
     monkeypatch.setattr(production_runner, "ProductionDispatchAdapter", _Adapter)
+    # G0-S3 (2026-06-26): with the brick woken, the continuation from G0E now lands
+    # at the NEW ratify-gate #2 (G0R) immediately after the offline irene-refinement
+    # node (no billable LLM spans accrue between the two gates offline — the LIVE
+    # leg does). Neutralize the non-SUT trace-cost emission so this S2 "advance past
+    # gate #1" assertion still holds (it now advances to G0R, still != G0E).
+    monkeypatch.setattr(production_runner, "_record_cost", lambda **kwargs: None)
 
     trial_id = UUID("62345678-1234-4234-8234-123456789abc")
     started = production_runner.run_production_trial(
