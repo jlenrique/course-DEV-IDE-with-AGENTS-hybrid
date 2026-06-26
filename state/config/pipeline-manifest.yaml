@@ -75,6 +75,14 @@ block_mode_trigger_paths:
   # no pack/HUD/schema bump).
   - scripts/utilities/generate_capability_overlay.py
   - state/config/capability-overlay.yaml
+  # Composition-catalog S2 (compile-time component composer + two-part
+  # content-addressed digest, party GREEN-WITH-AMENDMENTS 2026-06-25): the
+  # composer, the digest, and the selection model join the lockstep regime so any
+  # change to compile-time composition / the frozen-graph ceremony is caught by
+  # the block-mode hook (digest_schema_version bump + ceremony change = Tier-2).
+  - app/marcus/lesson_plan/composition.py
+  - app/runtime/compiled_graph_digest.py
+  - app/models/state/component_selection.py
 
 nodes:
   - id: "directive-composer"

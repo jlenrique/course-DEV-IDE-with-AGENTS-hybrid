@@ -28,6 +28,7 @@ from app.manifest.compiler import (
 )
 from app.manifest.loader import load as load_manifest
 from app.manifest.schema import NodeSpec
+from app.marcus.lesson_plan.composition import compose_manifest
 from app.marcus.orchestrator import (
     chooser_publisher,
     conversation_persistence,
@@ -68,6 +69,7 @@ from app.models.runtime.trial_economics_report import (
     TrialEconomicsReport,
 )
 from app.models.state.cache_state import CacheState
+from app.models.state.component_selection import ComponentSelection
 from app.models.state.operator_verdict import OperatorVerdict
 from app.models.state.run_state import RunState
 from app.runtime.cascade_config import ensure_pricing_covers_cascade, load_cascade, load_pricing
@@ -1782,6 +1784,7 @@ def run_production_trial(
     max_specialist_calls: int = 1,
     pause_at_gates: bool = True,
     directive_path: Path | None = None,
+    component_selection: ComponentSelection | None = None,
 ) -> ProductionTrialEnvelope:
     """Register, compose, and start a production trial.
 
@@ -1814,7 +1817,13 @@ def run_production_trial(
     )
     _persist_envelope(envelope, runs_root)
 
-    manifest = load_manifest(manifest_path)
+    # Compile-time composition (S2): assemble ONLY the selected components' nodes,
+    # then freeze. The default (deck+motion) reproduces today's full graph
+    # byte-identically, so this is a no-op until the front door (S5) narrows the
+    # selection. The selection is persisted on RunState so the continuation walk
+    # rehydrates it and never re-defaults (two-walk trap).
+    selection = component_selection or ComponentSelection.production_default()
+    manifest = compose_manifest(load_manifest(manifest_path), selection)
     active_gate_ids = production_gate_ids(manifest)
     graph = compile_run_graph(manifest)
     adapter = ProductionDispatchAdapter()
@@ -1822,6 +1831,7 @@ def run_production_trial(
         run_id=effective_trial_id,
         status="running",
         graph_version=DEFAULT_GRAPH_VERSION,
+        component_selection=selection,
         cache_state=CacheState(
             cache_prefix=json.dumps(
                 {
@@ -2357,7 +2367,12 @@ def _continue_production_walk(
     Winston d.2).
     """
     run_dir = _run_dir(trial_id, runs_root)
-    manifest = load_manifest(manifest_path)
+    # Two-walk trap: REHYDRATE the frozen component_selection from the run record
+    # and recompose the SAME graph — never re-default. run_state was loaded from
+    # the persisted checkpoint/error-pause by the caller, so its component_selection
+    # is the selection the start walk froze.
+    selection = run_state.component_selection or ComponentSelection.production_default()
+    manifest = compose_manifest(load_manifest(manifest_path), selection)
     graph = compile_run_graph(manifest)
     adapter = ProductionDispatchAdapter()
     production_envelope = envelope.production_envelope

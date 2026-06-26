@@ -28,5 +28,6 @@
     "entries_count": 0,
     "last_invalidated_at": null
   },
-  "production_envelope": null
+  "production_envelope": null,
+  "component_selection": null
 }

@@ -26,6 +26,7 @@ from pydantic import BaseModel, ConfigDict, Field, field_validator, model_valida
 from app.models.runtime.production_envelope import ProductionEnvelope
 from app.models.state._base import enforce_tz_aware, enforce_uuid4_version
 from app.models.state.cache_state import CacheState
+from app.models.state.component_selection import ComponentSelection
 from app.models.state.model_resolution_entry import ModelResolutionEntry
 from app.models.state.sanctum_fingerprint import SanctumFingerprint
 from app.models.state.story_state import StoryState
@@ -111,6 +112,15 @@ class RunState(BaseModel):
             "which remains per-specialist scratch."
         ),
     )
+    component_selection: ComponentSelection | None = Field(
+        default=None,
+        description=(
+            "Compile-time component selection this run composed + froze (S2). "
+            "Persisted in the run record so the resume/recover walk REHYDRATES it "
+            "and recomposes the SAME graph — never re-defaults (two-walk trap). "
+            "None on legacy runs predating composition."
+        ),
+    )
 
     @field_validator("run_id")
     @classmethod
@@ -157,4 +167,4 @@ class RunState(BaseModel):
         return self
 
 
-__all__ = ["ALLOWED_GRAPH_VERSIONS", "RunState", "RunStatus"]
+__all__ = ["ALLOWED_GRAPH_VERSIONS", "ComponentSelection", "RunState", "RunStatus"]
