@@ -13,6 +13,7 @@ from app.models.state.cache_state import CacheState
 from app.models.state.model_resolution_entry import ModelResolutionEntry
 from app.models.state.run_state import RunState
 from app.specialists.dispatch_errors import SpecialistDispatchError
+from app.specialists.kira.payload_contract import CONSUMED_PAYLOAD_KEYS
 from scripts.api_clients.kling_client import KlingClient
 
 REPO_ROOT = Path(__file__).resolve().parents[3]
@@ -70,6 +71,18 @@ def _load_budget(config_path: Path = CONFIG_PATH) -> dict[str, float]:
 
 
 def _load_motion_plan(payload: dict[str, Any]) -> dict[str, Any]:
+    """Resolve the motion plan from the dispatched payload, FAILING LOUD.
+
+    S1 motion-restore (2026-06-25): the former silent ``return {"slides": []}``
+    default converted a starved 07E dispatch into a vacuous zero-iteration
+    success (``motion_receipts: []`` with ``provenance: real``) — the four-layer
+    silence diagnosed in investigations/motion-receipts-cycle-5-6-investigation.md
+    (Finding 3). Absence of a motion plan is a CONTRACT VIOLATION, never an
+    empty-motion mode switch (S0 doctrine). The legitimate delivery shapes are
+    preserved: an explicit ``motion_plan`` dict, a ``motion_plan_path`` file, or
+    a non-empty top-level ``slides`` list. Anything else raises a tagged
+    ``KiraActError`` (dispatch-family -> recoverable error-pause).
+    """
     if isinstance(payload.get("motion_plan"), dict):
         return dict(payload["motion_plan"])
     plan_path = payload.get("motion_plan_path")
@@ -77,7 +90,19 @@ def _load_motion_plan(payload: dict[str, Any]) -> dict[str, Any]:
         data = yaml.safe_load(Path(str(plan_path)).read_text(encoding="utf-8"))
         if isinstance(data, dict):
             return data
-    return {"slides": payload.get("slides") or []}
+        raise KiraActError(
+            f"motion_plan_path {plan_path!r} did not load a mapping",
+            tag="kira.motion-plan.missing",
+        )
+    top_slides = payload.get("slides")
+    if isinstance(top_slides, list) and top_slides:
+        return {"slides": top_slides}
+    raise KiraActError(
+        "kira received no motion plan (no motion_plan, no motion_plan_path, no "
+        "slides); absence of a motion plan is a contract violation, not an "
+        "empty-motion mode switch",
+        tag="kira.motion-plan.missing",
+    )
 
 
 def _slides_from_plan(plan: dict[str, Any]) -> list[dict[str, Any]]:
@@ -165,6 +190,15 @@ def generate_motion_from_plan(
     budget = _load_budget()
     plan = _load_motion_plan(payload)
     slides = _slides_from_plan(plan)
+    if not slides:
+        # An explicitly delivered plan with zero slides is still a starvation:
+        # nothing for Kling to render. Fail loud rather than emit empty receipts
+        # that downstream gates/compositor would tolerate (the original silence).
+        raise KiraActError(
+            "motion_plan delivered zero slides; an empty plan is a starvation, "
+            "not a no-op",
+            tag="kira.motion-plan.empty",
+        )
     cumulative_cost = 0.0
     receipts: list[dict[str, Any]] = []
     for index, slide in enumerate(slides, start=1):
@@ -279,6 +313,7 @@ def act(state: RunState, *, client: KlingClient | None = None) -> dict[str, Any]
 
 __all__ = [
     "CONFIG_PATH",
+    "CONSUMED_PAYLOAD_KEYS",
     "KiraActError",
     "SANCTUM_DIR",
     "act",
