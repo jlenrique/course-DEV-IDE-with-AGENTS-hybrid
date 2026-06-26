@@ -69,6 +69,8 @@ def _module_path(step: StepEntry) -> str:
         return "app/specialists/vision"
     if step.id == "07D.5":
         return "app/specialists/motion_planner"
+    if step.id == "07W":
+        return "app/specialists/workbook_producer"
     if step.id.startswith("11") or step.id == "12":
         # PP-1 (S1 P0-5 cleanup 2026-05-07): ElevenLabs lane is Enrique;
         # the Audra value predated the Slab-7b roster and was hand-fixed in

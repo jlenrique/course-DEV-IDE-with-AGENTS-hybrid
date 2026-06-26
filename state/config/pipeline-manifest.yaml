@@ -897,6 +897,33 @@ nodes:
     pack_version: "v4.2"
     rationale: "Section 15 maintains manifest-driven pipeline contract."
 
+  - id: "07W"
+    label: "Companion Workbook Producer"
+    specialist_id: "workbook_producer"
+    scaffold_node: "act"
+    model_config_ref: null            # deterministic, NO LLM
+    # 07W self-resolves its inputs from the RUN DIR (segment manifest, corpus,
+    # assessments are on disk by node 15) via state.run_id — so it needs only a
+    # resolvable TRIGGER dependency, not data projections. The former
+    # `segment_manifest from irene` etc. projections failed live: irene emits no
+    # such STATE key (the manifest is written to disk, not projected). Mirror the
+    # motion brick: a whole-dict upstream dependency on the nearest upstream
+    # producer (compositor, node 14) that the _act ignores.
+    dependencies:
+      upstream_output: "compositor"
+    gate: false
+    sub_phase_of: "07"
+    insertion_after: "15"             # terminal sidecar, after operator handoff
+    hud_tracked: true
+    pack_section_anchor: "7W)"
+    pack_version: "v4.2"
+    rationale: >-
+      In-graph companion-workbook producer (braid S2). Deterministic (no LLM):
+      reads the run's segment manifest + lesson plan + corpus, runs WorkbookProducer
+      to emit the DOCX + canonical MD as a terminal sidecar (does not feed
+      downstream). Internal producer->sidecar; topology refinement within the v4.2
+      lineage (witness regenerates; frozen v4.2 untouched) — mirrors 07D.5/07G.
+
 edges:
   - {from: __start__, to: "01"}
   - {from: "01", to: "02"}
@@ -936,4 +963,5 @@ edges:
   - {from: "13", to: "14"}
   - {from: "14", to: "14.5"}
   - {from: "14.5", to: "15"}
-  - {from: "15", to: __end__}
+  - {from: "15", to: "07W"}
+  - {from: "07W", to: __end__}

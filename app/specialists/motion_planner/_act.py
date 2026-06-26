@@ -23,6 +23,7 @@ from __future__ import annotations
 
 import importlib.util
 import json
+import os
 from pathlib import Path
 from types import ModuleType
 from typing import Any
@@ -156,19 +157,62 @@ def _resolve_authorized_storyboard(payload: dict[str, Any]) -> dict[str, Any]:
     if isinstance(explicit, dict):
         candidates.append(explicit)
     candidates.append(payload)
+
+    def _normalize(doc: Any) -> dict[str, Any] | None:
+        """Accept either the Epic-14 ``authorized_slides`` shape OR quinn_r's G2C
+        authorized-doc shape (key ``slides`` — ``_authorized_doc`` emits
+        ``{schema_version, slides:[...]}``). Normalize ``slides`` -> the
+        ``authorized_slides`` key the Epic-14 engine reads."""
+        if not isinstance(doc, dict):
+            return None
+        if isinstance(doc.get("authorized_slides"), list) and doc["authorized_slides"]:
+            return doc
+        if isinstance(doc.get("slides"), list) and doc["slides"]:
+            return {**doc, "authorized_slides": doc["slides"]}
+        # quinn_r review/variant-selection shape: selections carry slide_ids (the
+        # live G2B dependency). Build a minimal authorized deck (slide_id only) —
+        # the explicit Gate-2M designation supplies the motion details; the
+        # Epic-14 engine only strictly requires slide_id.
+        review = doc.get("quinn_r_review")
+        selections = (
+            review.get("selections") if isinstance(review, dict) else doc.get("selections")
+        )
+        if isinstance(selections, list) and selections:
+            slides = [
+                {"slide_id": str(sel.get("slide_id"))}
+                for sel in selections
+                if isinstance(sel, dict) and sel.get("slide_id")
+            ]
+            if slides:
+                return {"authorized_slides": slides}
+        return None
+
     for candidate in candidates:
         if not isinstance(candidate, dict):
             continue
-        nested = candidate.get("authorized_storyboard")
-        if isinstance(nested, dict) and isinstance(nested.get("authorized_slides"), list):
-            return nested
-        if isinstance(candidate.get("authorized_slides"), list) and candidate["authorized_slides"]:
-            return candidate
+        normalized = _normalize(candidate.get("authorized_storyboard"))
+        if normalized is not None:
+            return normalized
+        normalized = _normalize(candidate)
+        if normalized is not None:
+            return normalized
     raise MotionPlannerActError(
-        "motion_planner received no authorized storyboard (no authorized_slides under "
+        "motion_planner received no authorized storyboard (no authorized_slides/slides under "
         "upstream_output / authorized_storyboard); the producer cannot fabricate a deck",
         tag="motion-planner.storyboard.missing",
     )
+
+
+def _env_designations() -> dict[str, dict[str, Any]] | None:
+    """Dev/replay seam: a partial Gate-2M designation map from a JSON file named by
+    ``MOTION_DESIGNATIONS_PATH``. Overlaid on the auto map (so only override slides
+    need listing). Env-gated — the real path is the live G2M HIL gate; production
+    never sets this. Mirrors kira's ``motion_plan_path`` replay affordance."""
+    path = os.environ.get("MOTION_DESIGNATIONS_PATH")
+    if not path or not Path(path).is_file():
+        return None
+    data = json.loads(Path(path).read_text(encoding="utf-8"))
+    return data if isinstance(data, dict) and data else None
 
 
 def _max_credits(payload: dict[str, Any], config: dict[str, Any]) -> float:
@@ -351,6 +395,20 @@ def _project_slides(
 def build_motion_plan(payload: dict[str, Any]) -> dict[str, Any]:
     """Deterministically build kira's motion_plan from the dispatched payload."""
     config = _load_config()
+    if os.environ.get("MOTION_PLANNER_DEBUG"):
+        try:
+            up = payload.get("upstream_output")
+            dbg = {
+                "payload_keys": sorted(payload.keys()),
+                "upstream_type": type(up).__name__,
+                "upstream_keys": sorted(up.keys()) if isinstance(up, dict) else None,
+                "sample": {k: str(v)[:240] for k, v in payload.items()},
+            }
+            Path(".tmp/producer_payload_debug.json").write_text(
+                json.dumps(dbg, indent=2, default=str), encoding="utf-8"
+            )
+        except Exception:  # pragma: no cover - debug only
+            pass
     storyboard = _resolve_authorized_storyboard(payload)
     engine = _engine()
     budget = {
@@ -361,11 +419,18 @@ def build_motion_plan(payload: dict[str, Any]) -> dict[str, Any]:
         plan = engine.build_motion_plan_from_authorized_storyboard(
             storyboard, motion_enabled=True, motion_budget=budget
         )
-        designations = (
+        # Auto map (each slide -> its Epic-14 recommendation) is the COMPLETE base;
+        # an explicit partial designation (payload or replay-env) overlays it, so a
+        # caller only lists the slides they override (apply_motion_designations
+        # requires a complete map).
+        explicit = (
             payload.get("motion_designations")
             or payload.get("designations")
-            or _auto_designations(plan)
+            or _env_designations()
         )
+        designations = _auto_designations(plan)
+        if isinstance(explicit, dict):
+            designations = {**designations, **explicit}
         applied = engine.apply_motion_designations(plan, designations)
     except engine.MotionPlanError as exc:
         raise MotionPlannerActError(

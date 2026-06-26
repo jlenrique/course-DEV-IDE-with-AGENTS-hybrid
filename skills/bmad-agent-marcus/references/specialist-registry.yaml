@@ -161,6 +161,16 @@ personas:
       Produces manifest node 07D.5; consumed by kira at §07E via dependency_projections.
       No persona sanctum/SKILL.md (mirrors the composer-style deterministic producer).
 
+  workbook_producer:
+    class: D2
+    role: deterministic in-graph companion-workbook producer (§07W); reads the run's segment manifest + lesson plan + corpus and runs WorkbookProducer to emit the DOCX + canonical MD as a terminal sidecar
+    activated_at: composition-catalog-B3 (2026-06-26)
+    note: |
+      Deterministic ADAPTER (no API; no LLM in the critical path). Ports the proven
+      tejal/corpus-assessment assembly re-pointed to the running run.
+      Produces manifest node 07W (terminal leaf; feeds nothing downstream).
+      No persona sanctum/SKILL.md (mirrors the composer-style deterministic producer).
+
   enrique:
     class: C
     sanctum: _bmad/memory/bmad-agent-enrique/

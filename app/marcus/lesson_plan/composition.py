@@ -70,10 +70,11 @@ projection/dependency input key NOT in this set whose producer is absent from th
 composition is treated as REQUIRED and FAILS CLOSED (``CompositionError`` before
 compile). Widening this set is a governance act, not a runtime convenience."""
 
-WORKBOOK_STUB_NODE_ID = "07W"
-"""Stub graph node the workbook fragment contributes until the real producer is
-wired as a brick (S3). Lets the composer prove select/exclude-by-registry with a
-stub per the S2 scope note."""
+WORKBOOK_NODE_ID = "07W"
+"""The REAL manifest node the workbook fragment owns (07W in-graph producer
+brick, composition-catalog B3). Replaces the prior synthetic stub: 07W is now a
+first-class manifest node (specialist_id=workbook_producer) so dispatch routes to
+it; the fragment owns it so deck-only / deck+motion compositions prune it."""
 
 _SENTINELS = frozenset({"__start__", "__end__"})
 
@@ -107,22 +108,6 @@ class ComponentFragment:
     attach_after: str | None = None
 
 
-def _workbook_stub_node() -> NodeSpec:
-    return NodeSpec(
-        id=WORKBOOK_STUB_NODE_ID,
-        specialist_id=None,
-        gate=False,
-        hud_tracked=False,
-        pack_version="v4.2",
-        rationale=(
-            "S2 workbook stub node. The workbook companion is produced by "
-            "WorkbookProducer out of band (DOCX); this stub gives the composer a "
-            "registry-selectable graph node so deck+motion+workbook is "
-            "topologically distinct until the real brick lands (S3)."
-        ),
-    )
-
-
 COMPONENT_FRAGMENTS: dict[str, ComponentFragment] = {
     "deck": ComponentFragment(
         component="deck",
@@ -142,11 +127,12 @@ COMPONENT_FRAGMENTS: dict[str, ComponentFragment] = {
     "workbook": ComponentFragment(
         component="workbook",
         modality_refs=("workbook",),
-        manifest_node_ids=frozenset(),
+        manifest_node_ids=frozenset({WORKBOOK_NODE_ID}),
         depends_on=("deck",),
         version="workbook-v1",
-        synthetic_nodes=(_workbook_stub_node(),),
-        attach_after="15",
+        # 07W is now a REAL manifest node owned by this fragment (no synthetic
+        # stub). insertion/edges live in the manifest (15 -> 07W -> __end__);
+        # deselecting workbook prunes 07W as a unit and bridges 15 -> __end__.
     ),
 }
 
@@ -571,7 +557,7 @@ __all__ = [
     "COMPONENT_FRAGMENTS",
     "COMPOSER_VERSION",
     "OPTIONAL_PROJECTION_KEYS",
-    "WORKBOOK_STUB_NODE_ID",
+    "WORKBOOK_NODE_ID",
     "ComponentFragment",
     "CompositionError",
     "CompositionReplayError",

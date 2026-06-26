@@ -35,6 +35,9 @@ from app.specialists.kira._act import CONSUMED_PAYLOAD_KEYS as KIRA_KEYS
 from app.specialists.motion_planner._act import CONSUMED_PAYLOAD_KEYS as MOTION_PLANNER_KEYS
 from app.specialists.quinn_r._act import CONSUMED_PAYLOAD_KEYS as QUINN_R_KEYS
 from app.specialists.vision.graph import CONSUMED_PAYLOAD_KEYS as VISION_KEYS
+from app.specialists.workbook_producer._act import (
+    CONSUMED_PAYLOAD_KEYS as WORKBOOK_PRODUCER_KEYS,
+)
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 MANIFEST_PATH = REPO_ROOT / "state" / "config" / "pipeline-manifest.yaml"
@@ -59,6 +62,11 @@ CONTRACTED_CONSUMERS: dict[str, frozenset[str]] = {
     # single motion_plan projection from the producer (amendment C, fail-closed).
     "motion_planner": MOTION_PLANNER_KEYS,
     "kira": KIRA_KEYS,
+    # 07W in-graph companion-workbook producer (composition-catalog B3,
+    # 2026-06-26): the terminal-sidecar producer reads the run's segment manifest
+    # (irene Pass-2), lesson plan (irene-pass1), and corpus (texas bundle_reference)
+    # via dependency_projections; it published CONSUMED_PAYLOAD_KEYS.
+    "workbook_producer": WORKBOOK_PRODUCER_KEYS,
 }
 
 # Edges whose consumer has NOT yet published a contract. Raw manifest

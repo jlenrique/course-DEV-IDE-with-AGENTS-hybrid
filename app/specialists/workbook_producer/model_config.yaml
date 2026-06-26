@@ -1,0 +1,20 @@
+# workbook_producer model cascade — 07W deterministic-producer port-shape.
+#
+# Framework-over-epic drift lock:
+# - Canonical node is `plan` (records a model-resolution trail entry for FR16
+#   uniformity); `act` is PURE DETERMINISTIC and NEVER invokes an LLM.
+# - Tier request is `fast` for resolution-trail continuity (mirrors motion_planner).
+# - Current policy maps `fast` -> `gpt-5-nano`.
+#
+# Runtime discipline (mirrors the 07D.5 motion brick, party amendment A analog):
+# - The producer is a deterministic ADAPTER over WorkbookProducer.produce(). The
+#   `_plan` node records a model-resolution trail entry for trail uniformity, but
+#   `_act` reads the run's segment manifest + corpus + lesson plan and composes the
+#   workbook with NO model client touched. The recorded default model is never
+#   invoked.
+# - `temperature_default: 0.0` is retained for resolution-trail consistency.
+specialist_id: "workbook_producer"
+default_model: "gpt-5-nano"
+per_node_overrides:
+  act: "gpt-5-nano"
+temperature_default: 0.0

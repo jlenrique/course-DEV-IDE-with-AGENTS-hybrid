@@ -27,10 +27,16 @@ def _graph_edges(manifest) -> set[tuple[str, str]]:
     return {(str(s), str(t)) for s, t in graph.edges}
 
 
-def test_deck_plus_motion_reproduces_today_graph_byte_identically() -> None:
-    """The refactor is a no-op when every component present today is selected."""
+def test_full_selection_reproduces_today_graph_byte_identically() -> None:
+    """The composer is a no-op when every component present today is selected.
+
+    Composition-catalog B3 (2026-06-26): 07W is now a REAL manifest node owned by
+    the ``workbook`` component, so the full graph today is deck+motion+workbook
+    (production_default = deck+motion prunes 07W — see the prune test below)."""
     manifest = _live_manifest()
-    composed = compose_manifest(manifest, ComponentSelection.production_default())
+    composed = compose_manifest(
+        manifest, ComponentSelection(deck=True, motion=True, workbook=True)
+    )
 
     assert _graph_node_ids(composed) == _graph_node_ids(manifest)
     assert _graph_edges(composed) == _graph_edges(manifest)
@@ -50,7 +56,11 @@ def test_deck_only_bridges_the_motion_chain_and_keeps_deck_subset_identical() ->
     to a single bridge 07C->07G; every other deck edge is byte-unchanged vs today."""
     manifest = _live_manifest()
     today_edges = _graph_edges(manifest)
-    composed = compose_manifest(manifest, ComponentSelection(deck=True, motion=False))
+    # Keep workbook selected so 07W stays in the graph and this test isolates the
+    # MOTION-chain bridging concern (07W pruning has its own test).
+    composed = compose_manifest(
+        manifest, ComponentSelection(deck=True, motion=False, workbook=True)
+    )
     deck_edges = _graph_edges(composed)
 
     # The bridge appears.
@@ -79,7 +89,8 @@ def test_motion_selected_contains_07e_deck_only_does_not() -> None:
     assert "07E" not in without
 
 
-def test_workbook_adds_a_stub_node_distinct_from_deck_plus_motion() -> None:
+def test_workbook_adds_the_real_07w_node_distinct_from_deck_plus_motion() -> None:
+    """Selecting workbook adds the REAL 07W producer node (no longer a stub)."""
     manifest = _live_manifest()
     dm = _graph_node_ids(
         compose_manifest(manifest, ComponentSelection(deck=True, motion=True))
@@ -90,7 +101,12 @@ def test_workbook_adds_a_stub_node_distinct_from_deck_plus_motion() -> None:
         )
     )
     assert dmw != dm
-    assert dmw - dm == {composition.WORKBOOK_STUB_NODE_ID}
+    assert dmw - dm == {composition.WORKBOOK_NODE_ID}
+    # 07W carries the real producer specialist (dispatch routes to it).
+    node_07w = next(n for n in compose_manifest(
+        manifest, ComponentSelection(deck=True, motion=True, workbook=True)
+    ).nodes if n.id == composition.WORKBOOK_NODE_ID)
+    assert node_07w.specialist_id == "workbook_producer"
 
 
 def test_fail_closed_on_unresolved_dependency() -> None:

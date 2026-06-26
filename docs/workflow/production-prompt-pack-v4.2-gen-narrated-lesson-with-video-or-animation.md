@@ -56,6 +56,7 @@ generated: true
 | 14 | 14 | skills/bmad-agent-desmond | O→M | Compositor Assembly Bundle |
 | 14.5 | 14.5 | skills/bmad-agent-desmond | M→self | Desmond Run-Scoped Operator Brief |
 | 15 | 15 | skills/bmad-agent-desmond | O→M | Operator Handoff - Descript Ready |
+| 07W | 07W | app/specialists/workbook_producer | M→self | Companion Workbook Producer |
 
 ---
 
@@ -1636,6 +1637,33 @@ Primary contract references:
 - **v4.2d (2026-04-15)** — Pre-Run Checklist added for visual-led profile. Run Constants updated with concrete C1-M1-PRES-20260415 values, experience profile mapping rule, and CLUSTER_DENSITY. Initialization Instructions expanded with step-by-step bundle setup. Artifact verification protocol added to Execution Rules.
 - **v4.2** — Added Epic 14 motion controls (`motion_enabled`, Gate 2M, motion generation/import, Motion Gate, motion-aware Irene Pass 2) while preserving the Epic 12 `DOUBLE_DISPATCH` branch inside the same document. Canonical generators for preflight receipts, operator directives, Irene packets.
 
+## 07W) Companion Workbook Producer
+[M→self]
+
+
+Marcus, run the deterministic Companion-Workbook producer as the terminal sidecar (after the operator handoff at 15) when the composed selection includes the `workbook` component.
+
+Inputs (read from the CURRENTLY-RUNNING run, not out-of-band):
+- the run's storyboard-B segment manifest (irene Pass-2 / node 08) — the transcript-of-record segments, each mapped to its Gary deck export for the figure embed when present
+- the refined lesson plan (irene-pass1) — grounds the WorkbookSpec / learning objectives / exercises (v1 reuses the proven tejal/corpus-assessment assembly)
+- the corpus locator (texas `bundle_reference`) — `bundle/extracted.md` is the G1 numeric source set
+
+Required output:
+- a `WorkbookSidecar` with a `ProducedAsset` on RunState plus the canonical MD + the client DOCX written under `_bmad-output/artifacts/workbooks/`
+- the G1 symbol-only numeric audit (FAIL-mode), the G2 citation audit, and the AC-5 segment-coverage map all pass at the workbook boundary
+
+Governance:
+- the producer is DETERMINISTIC — no model client is touched; the `plan` node records a resolution-trail entry only
+- it REUSES `WorkbookProducer.produce()` (`compose_workbook` + the honesty-gate audits) rather than reinventing; the node only assembles its inputs from the run
+- the emitted artifacts are an internal producer→sidecar deliverable, not a new learner-facing pack-lineage step, so this node keeps `pack_version: v4.2`; topology changes regenerate only the `v4.2-gen` determinism witness
+
+Downstream:
+- NONE — 07W is a terminal leaf (edges 15 → 07W → __end__). It feeds nothing downstream; deselecting the `workbook` component prunes 07W as a unit and bridges 15 → __end__
+
+Honesty boundary (do NOT over-claim):
+- G1 numeric fidelity is symbol-only (`$`/`%`/`x` tokens); word-form numerals are NOT gated — named gap `braid-workbook-wordform-numeral-gap`
+- general arbitrary-corpus spec authoring is a named follow-on; v1 reuses the proven tejal/corpus-assessment assembly
+
 ## Provenance Appendix
 
 | Section | Rationale |
@@ -1675,3 +1703,4 @@ Primary contract references:
 | 14 | Section 14 maintains manifest-driven pipeline contract. |
 | 14.5 | Section 14.5 maintains manifest-driven pipeline contract. |
 | 15 | Section 15 maintains manifest-driven pipeline contract. |
+| 07W | In-graph companion-workbook producer (braid S2). Deterministic (no LLM): reads the run's segment manifest + lesson plan + corpus, runs WorkbookProducer to emit the DOCX + canonical MD as a terminal sidecar (does not feed downstream). Internal producer->sidecar; topology refinement within the v4.2 lineage (witness regenerates; frozen v4.2 untouched) — mirrors 07D.5/07G. |

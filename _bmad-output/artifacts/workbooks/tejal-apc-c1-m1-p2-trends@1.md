@@ -20,67 +20,92 @@ How to use this workbook with the deck: watch the glance-deck for the perception
 <!-- segment:seg-01 -->
 #### seg-01
 <!-- REVOICE-REQUIRED: writer (Paige/Sophia) -> self-contained read-prose; Irene validates -->
-> The main message: two structural forces now define your operating reality. U.S. national health expenditures have surpassed $4.5 trillion — nearly 17% of GDP, putting constant pressure on margins and care models. At the same time, consolidation has shifted authority — over 74% of physicians now employed by hospitals or corporate entities, while independent practice keeps declining. You feel that in autonomy and decision rights. To shape care today, it’s not enough to perfect one clinic; you need the skills to influence a large, complex enterprise — visual context for why this capability becomes non‑optional.
+> The main message is this: the economics and the structure of U.S. healthcare have shifted the ground under your feet. National health expenditures now exceed $4.5 trillion, and that scale changes how choices are made. At the same time, the profession has migrated from small, autonomous practices into large, integrated systems—over 70% of physicians are now employed rather than independent. That combination means influence no longer comes from optimizing a single clinic; it comes from understanding how big enterprises set priorities and how to work through them.
 
 <!-- segment:seg-02 -->
 #### seg-02
 <!-- REVOICE-REQUIRED: writer (Paige/Sophia) -> self-contained read-prose; Irene validates -->
-> A system under strain shows up at the bedside as exhaustion. More than 50% of U.S. physicians report at least one burnout symptom — not because medicine is hard, but because administrative burden consumes the time meant for care. Prior authorization alone can absorb a full workday every week, and the EHR burden means 2 hours of documentation for every 1 hour of patient contact. It’s no surprise 1 in 5 physicians intend to leave practice within 2 years. Bureaucratic friction isn’t background noise; it’s a targetable inefficiency at the center of the cost crisis. The human takeaway: burnout is not a resilience failure — it’s a system design problem you can redesign.
+> Here’s the pivot: the environment feels different because practice now lives inside enterprise pressures. Physicians trained for clinical mastery are operating amid financial targets, regulatory mandates, and system-wide strategy. Market consolidation centralizes decisions, payer complexity shifts risk onto care teams, and workforce strain amplifies the pressure you carry. The takeaway is that your clinical instincts are necessary—but on their own, no longer sufficient to move the system.
 
 <!-- segment:seg-03 -->
 #### seg-03
 <!-- REVOICE-REQUIRED: writer (Paige/Sophia) -> self-contained read-prose; Irene validates -->
-> The main message is scale: the U.S. wastes an estimated $760 to $935 billion annually — roughly 25 cents of every healthcare dollar. Administrative complexity is the single largest category, dwarfing clinical inefficiencies. That is time, money, and attention pulled away from patient care. Every dollar of administrative waste is a concrete innovation target — not an inevitability. Visual context, then, becomes a mandate: if you can remove friction, you recover resources and reduce burnout at the same time.
+> Consolidation doesn’t just change payroll—it changes who sets the agenda. Protocols, staffing ratios, technology adoption, and care pathways are determined at the system level. When you know how to influence budgets, governance committees, and strategic initiatives, you protect patients and your professional voice. The takeaway: enterprise navigation is not optional if you intend to lead change.
 
 <!-- segment:seg-04 -->
 #### seg-04
 <!-- REVOICE-REQUIRED: writer (Paige/Sophia) -> self-contained read-prose; Irene validates -->
-> First, broken workflow — redundant handoffs, paper-based approvals, fragmented communication. Then EHR workarounds — physicians build shadow systems to compensate for interface failures. That produces risk, rework, and lost clinical time. Each pain point feeds an innovation opportunity where redesign, automation, or AI can restore time and quality. Launch something small and iterate. Reframing burnout as a signal, not a sentence is the first act of clinical leadership.
+> We’ve just located practice inside large, complex systems; now let’s face the human cost of that complexity. Administrative waste does not merely consume dollars—it consumes physicians. Excess documentation, prior authorization, and bureaucratic overhead map directly onto emotional exhaustion, depersonalization, and reduced efficacy. If you’ve felt yourself pulled away from patients to feed the system, you’re not alone—and that pattern is a design signal, not a personal failing.
 
 <!-- segment:seg-05 -->
 #### seg-05
 <!-- REVOICE-REQUIRED: writer (Paige/Sophia) -> self-contained read-prose; Irene validates -->
-> Closing the loop on burnout and waste: the friction you mapped is exactly where innovation must land. Now, the knowledge and technology curve demands you lead that change. Medical knowledge is estimated to double every 73 days — compared to every 50 years in 1950. AI, wearables, genomics, and remote diagnostics are compressing the gap between research and clinical application. FDA-cleared AI tools surpassed 500 in 2023. Precision medicine is moving from research to routine care, and continuous biosensors are enabling proactive, real-time intervention. Clinicians who can evaluate, adopt, and govern these tools are no longer optional — they are essential.
+> Here’s the evidence behind that strain: the National Academy of Medicine estimates $760 billion to over $1 trillion in annual spending is waste. The single largest share is administrative complexity—resources absorbed by documentation, billing, and compliance instead of patient care. This isn’t inefficiency at the margins; it’s structural—and that makes it a prime target for clinician-led redesign.
 
 <!-- segment:seg-06 -->
 #### seg-06
 <!-- REVOICE-REQUIRED: writer (Paige/Sophia) -> self-contained read-prose; Irene validates -->
-> Here’s the tension in the framework: static training cannot keep pace with a landscape where knowledge doubles fast. The diagram traces a familiar flow — Medical School with a fixed 4‑year curriculum, Residency bound to a single era’s protocols, and Practice Reality where AI and new standards keep arriving. Clinical knowledge has a shrinking shelf life; guidelines updated in 2020 may be obsolete by 2025. Curriculum lag means content cycles take 3–5 years to update, and protocol drift means evidence changes faster than CME can deliver. The structure is mismatched to the speed of change — which is why continuous learning infrastructure is now a safety issue, not a luxury.
+> Burnout is a design problem, not a resilience failure. Rates track with EHR documentation burden, after‑hours inbox volume, and the ratio of administrative work to clinical work—all system variables. Compared with an individual framing that prescribes coping, a system framing calls for organizational redesign. That reframe puts improvement squarely in the domain you can influence as a team.
 
 <!-- segment:seg-07 -->
 #### seg-07
 <!-- REVOICE-REQUIRED: writer (Paige/Sophia) -> self-contained read-prose; Irene validates -->
-> Adoption is already ahead of oversight. Thirty‑eight percent of physicians are using AI‑assisted tools in clinical decision support, yet fewer than 1 in 10 have received formal preparation on governance, bias, or clinical validation. There are 500+ FDA‑cleared AI tools across specialties. Physicians are adopting tools faster than institutions are training them to oversee those tools — a governance gap with real patient safety implications. Your role is to close that gap.
+> First, spot the friction—those recurring workarounds, delays, and complaints are data. Then, diagnose the root cause with clinical rigor—ask why five times before proposing anything. That produces clarity you can translate into a targeted intervention, which feeds measurable process or technology improvements you can iterate over time.
 
 <!-- segment:seg-08 -->
 #### seg-08
 <!-- REVOICE-REQUIRED: writer (Paige/Sophia) -> self-contained read-prose; Irene validates -->
-> The upside is real when clinicians lead. Continuous remote monitoring enables proactive intervention before hospitalization — reducing readmissions by up to 38% in heart failure populations when clinically guided. In training, VR surgical simulation reduces operating room errors and compresses learning curves — but only when physician educators design, validate, and oversee curricula. The common thread: technology succeeds when clinicians lead its implementation, not merely adopt it.
+> From system friction, shift now to the pace of what we must master and govern. Medical knowledge now doubles in roughly 73 days by some estimates, making static training obsolete before it lands. Meanwhile, AI, digital diagnostics, and remote monitoring are arriving faster than governance frameworks can evaluate them. The core claim is that your role expands: not only to know medicine, but to know which tools to trust, which algorithms to question, and how to integrate technology safely into care.
 
 <!-- segment:seg-09 -->
 #### seg-09
 <!-- REVOICE-REQUIRED: writer (Paige/Sophia) -> self-contained read-prose; Irene validates -->
-> We just saw that technology can shift care proactively and safely when clinicians lead it. Now bring the same discipline to access: patients now expect Amazon‑level access and rate digital convenience alongside clinical quality when choosing providers. Scheduling frictions, portal failures, and slow responses drive silent attrition — patients simply leave without complaint. Same‑day digital booking and transparent wait times are baseline expectations. Patients move fluidly between telehealth, in‑person, and messaging and still expect continuity. MyChart access alone is no longer sufficient — proactive outreach and personalization are required. This is service design, not a portal feature.
+> First, training was static—medical school and residency set you up for a career. Then, knowledge acceleration compressed the doubling cycle from years to months. Finally, continuous adaptation becomes the professional standard—lifelong learning, CME, and real‑time evidence as a structured practice. The upshot: a one‑time credential can’t keep pace.
 
 <!-- segment:seg-10 -->
 #### seg-10
 <!-- REVOICE-REQUIRED: writer (Paige/Sophia) -> self-contained read-prose; Irene validates -->
-> In a consumer‑driven system with accelerating tech, great design still fails without clinical leadership in the room. Health systems are complex adaptive organizations. Strategy, finance, operations, and technology decisions made without physician input routinely produce solutions that fail at the bedside. Clinical Expertise Alone Is Insufficient. The system needs clinicians who speak both languages: medicine and management — across Practice, Business, and Technology, including AI governance, digital health, and implementation science.
+> A dangerous gap has opened: about two‑thirds of physicians use AI‑assisted tools, but fewer than one in five have formal training in oversight, and under a third feel confident supervising these systems. That gap isn’t theoretical—unvalidated algorithms, biased data, and hallucinated recommendations are real safety risks without clinician governance built on structured knowledge.
 
 <!-- segment:seg-11 -->
 #### seg-11
 <!-- REVOICE-REQUIRED: writer (Paige/Sophia) -> self-contained read-prose; Irene validates -->
-> Here’s the mismatch: nearly 70% of physicians report wanting greater influence over organizational strategy — yet fewer than 1 in 5 have received any formal business or executive preparation. That gap explains the day‑to‑day frustration you’ve felt trying to move ideas forward. This is not a motivation deficit. It is a training infrastructure gap that programs like this one are designed to close.
+> Technology improves care when clinicians guide it. Remote monitoring extends oversight beyond the hospital to enable earlier intervention and reduce readmissions. VR simulation compresses skill acquisition in zero‑risk environments. And when validated and clinician‑governed, AI decision support augments diagnostic accuracy and frees bandwidth for judgment. The throughline is clinical governance.
 
 <!-- segment:seg-12 -->
 #### seg-12
 <!-- REVOICE-REQUIRED: writer (Paige/Sophia) -> self-contained read-prose; Irene validates -->
-> Bridge leaders translate across domains. Management fluency — strategy, finance, operations — pairs with clinical credibility trusted by frontline teams. Systems thinking keeps the whole in view, and technology governance guides safe AI adoption. Returning to the center, academic health centers sit at the intersection of patient care, education, and research — environments where siloed expertise fails. Leaders who integrate these capabilities turn expertise into scalable, lasting organizational improvement.
+> Having considered the tools, turn now to the people they must serve. Patients arrive with consumer expectations shaped by Amazon, Uber, and Netflix: on‑demand access, transparent pricing, seamless scheduling, and digital communication—and they choose providers who deliver it. A basic portal is not enough. The guidance is to build a coherent, frictionless digital journey from discovery through follow‑up, designed as intentionally as any consumer product.
 
 <!-- segment:seg-13 -->
 #### seg-13
 <!-- REVOICE-REQUIRED: writer (Paige/Sophia) -> self-contained read-prose; Irene validates -->
-> We’ve named the leadership gap and the bridge capabilities institutions need. Now synthesize the case for change. System complexity — consolidation and rising expenditures — demands leaders who understand business and policy, not just care delivery. Technology acceleration requires clinicians who can evaluate, govern, and scale innovation. Consumer expectations insist on frictionless digital access and omnichannel continuity. The physician leader who bridges practice, business, and technology is the most scarce and most needed figure in modern healthcare. Awareness of these forces is the starting point. Choosing to act on them — to lead — is the defining move from awareness to agency.
+> By contrast with legacy assumptions about access, today’s baseline is clear: 80% of patients research online before their first appointment, 73% want cost estimates up front, portal use has doubled, and 60% would switch providers for a better digital experience. These aren’t fringe preferences—they decide where patients seek care and whether they return.
+
+<!-- segment:seg-14 -->
+#### seg-14
+<!-- REVOICE-REQUIRED: writer (Paige/Sophia) -> self-contained read-prose; Irene validates -->
+> First, help patients discover you—search, reviews, a credible online presence. Then, make access effortless with scheduling, insurance verification, and intake. Next, engage through telehealth, messaging, and care coordination. Finally, retain with clear follow‑up, billing, and chronic care management. The principle is simple: a portal is a feature; a digital front door is an end‑to‑end experience strategy clinicians help design.
+
+<!-- segment:seg-15 -->
+#### seg-15
+<!-- REVOICE-REQUIRED: writer (Paige/Sophia) -> self-contained read-prose; Irene validates -->
+> Designing frictionless care is necessary—so who leads it? Physicians hold the deepest clinical insight in any system, yet are systematically underprepared for organizational leadership. That creates a gap between clinical credibility and institutional influence. Interest is high, preparation is low, and support is inconsistent—precisely where leadership development should live.
+
+<!-- segment:seg-16 -->
+#### seg-16
+<!-- REVOICE-REQUIRED: writer (Paige/Sophia) -> self-contained read-prose; Irene validates -->
+> Consider the numbers: 67% are interested in leadership, yet only 16% report executive training, 11% business education, and 6% no formal preparation at all. That widening preparation gap leaves many to navigate complex organizations on clinical instinct alone—good for bedside care, but insufficient for enterprise change.
+
+<!-- segment:seg-17 -->
+#### seg-17
+<!-- REVOICE-REQUIRED: writer (Paige/Sophia) -> self-contained read-prose; Irene validates -->
+> Healthcare needs clinician leaders who bridge practice, business, and technology. Clinical expertise anchors patient safety and quality. Business acumen translates priorities into operational action. Technology literacy evaluates, governs, and champions digital and AI tools so implementation serves patients without displacing judgment. That blend is the leverage point for change.
+
+<!-- segment:seg-18 -->
+#### seg-18
+<!-- REVOICE-REQUIRED: writer (Paige/Sophia) -> self-contained read-prose; Irene validates -->
+> Let’s pull the threads together. These forces aren’t isolated—they interlock to define the environment you lead in: system complexity that demands organizational literacy and design thinking; technology acceleration that requires continuous learning and clinical oversight; consumer expectations for frictionless digital journeys; and a leadership imperative for clinicians who bridge practice, business, and technology. Reflection for you: where in your current role is the biggest gap between clinical insight and organizational influence—and what would it take to close it?
 
 ## Depth-delta narrative
 
@@ -102,97 +127,132 @@ Close Part 2 by introducing the idea-versus-opportunity discipline: awareness of
 ## Transcript of Record
 
 #### seg-01 (verbatim)
-> The main message: two structural forces now define your operating reality. U.S. national health expenditures have surpassed $4.5 trillion — nearly 17% of GDP, putting constant pressure on margins and care models. At the same time, consolidation has shifted authority — over 74% of physicians now employed by hospitals or corporate entities, while independent practice keeps declining. You feel that in autonomy and decision rights. To shape care today, it’s not enough to perfect one clinic; you need the skills to influence a large, complex enterprise — visual context for why this capability becomes non‑optional.
+> The main message is this: the economics and the structure of U.S. healthcare have shifted the ground under your feet. National health expenditures now exceed $4.5 trillion, and that scale changes how choices are made. At the same time, the profession has migrated from small, autonomous practices into large, integrated systems—over 70% of physicians are now employed rather than independent. That combination means influence no longer comes from optimizing a single clinic; it comes from understanding how big enterprises set priorities and how to work through them.
 
 #### seg-02 (verbatim)
-> A system under strain shows up at the bedside as exhaustion. More than 50% of U.S. physicians report at least one burnout symptom — not because medicine is hard, but because administrative burden consumes the time meant for care. Prior authorization alone can absorb a full workday every week, and the EHR burden means 2 hours of documentation for every 1 hour of patient contact. It’s no surprise 1 in 5 physicians intend to leave practice within 2 years. Bureaucratic friction isn’t background noise; it’s a targetable inefficiency at the center of the cost crisis. The human takeaway: burnout is not a resilience failure — it’s a system design problem you can redesign.
+> Here’s the pivot: the environment feels different because practice now lives inside enterprise pressures. Physicians trained for clinical mastery are operating amid financial targets, regulatory mandates, and system-wide strategy. Market consolidation centralizes decisions, payer complexity shifts risk onto care teams, and workforce strain amplifies the pressure you carry. The takeaway is that your clinical instincts are necessary—but on their own, no longer sufficient to move the system.
 
 #### seg-03 (verbatim)
-> The main message is scale: the U.S. wastes an estimated $760 to $935 billion annually — roughly 25 cents of every healthcare dollar. Administrative complexity is the single largest category, dwarfing clinical inefficiencies. That is time, money, and attention pulled away from patient care. Every dollar of administrative waste is a concrete innovation target — not an inevitability. Visual context, then, becomes a mandate: if you can remove friction, you recover resources and reduce burnout at the same time.
+> Consolidation doesn’t just change payroll—it changes who sets the agenda. Protocols, staffing ratios, technology adoption, and care pathways are determined at the system level. When you know how to influence budgets, governance committees, and strategic initiatives, you protect patients and your professional voice. The takeaway: enterprise navigation is not optional if you intend to lead change.
 
 #### seg-04 (verbatim)
-> First, broken workflow — redundant handoffs, paper-based approvals, fragmented communication. Then EHR workarounds — physicians build shadow systems to compensate for interface failures. That produces risk, rework, and lost clinical time. Each pain point feeds an innovation opportunity where redesign, automation, or AI can restore time and quality. Launch something small and iterate. Reframing burnout as a signal, not a sentence is the first act of clinical leadership.
+> We’ve just located practice inside large, complex systems; now let’s face the human cost of that complexity. Administrative waste does not merely consume dollars—it consumes physicians. Excess documentation, prior authorization, and bureaucratic overhead map directly onto emotional exhaustion, depersonalization, and reduced efficacy. If you’ve felt yourself pulled away from patients to feed the system, you’re not alone—and that pattern is a design signal, not a personal failing.
 
 #### seg-05 (verbatim)
-> Closing the loop on burnout and waste: the friction you mapped is exactly where innovation must land. Now, the knowledge and technology curve demands you lead that change. Medical knowledge is estimated to double every 73 days — compared to every 50 years in 1950. AI, wearables, genomics, and remote diagnostics are compressing the gap between research and clinical application. FDA-cleared AI tools surpassed 500 in 2023. Precision medicine is moving from research to routine care, and continuous biosensors are enabling proactive, real-time intervention. Clinicians who can evaluate, adopt, and govern these tools are no longer optional — they are essential.
+> Here’s the evidence behind that strain: the National Academy of Medicine estimates $760 billion to over $1 trillion in annual spending is waste. The single largest share is administrative complexity—resources absorbed by documentation, billing, and compliance instead of patient care. This isn’t inefficiency at the margins; it’s structural—and that makes it a prime target for clinician-led redesign.
 
 #### seg-06 (verbatim)
-> Here’s the tension in the framework: static training cannot keep pace with a landscape where knowledge doubles fast. The diagram traces a familiar flow — Medical School with a fixed 4‑year curriculum, Residency bound to a single era’s protocols, and Practice Reality where AI and new standards keep arriving. Clinical knowledge has a shrinking shelf life; guidelines updated in 2020 may be obsolete by 2025. Curriculum lag means content cycles take 3–5 years to update, and protocol drift means evidence changes faster than CME can deliver. The structure is mismatched to the speed of change — which is why continuous learning infrastructure is now a safety issue, not a luxury.
+> Burnout is a design problem, not a resilience failure. Rates track with EHR documentation burden, after‑hours inbox volume, and the ratio of administrative work to clinical work—all system variables. Compared with an individual framing that prescribes coping, a system framing calls for organizational redesign. That reframe puts improvement squarely in the domain you can influence as a team.
 
 #### seg-07 (verbatim)
-> Adoption is already ahead of oversight. Thirty‑eight percent of physicians are using AI‑assisted tools in clinical decision support, yet fewer than 1 in 10 have received formal preparation on governance, bias, or clinical validation. There are 500+ FDA‑cleared AI tools across specialties. Physicians are adopting tools faster than institutions are training them to oversee those tools — a governance gap with real patient safety implications. Your role is to close that gap.
+> First, spot the friction—those recurring workarounds, delays, and complaints are data. Then, diagnose the root cause with clinical rigor—ask why five times before proposing anything. That produces clarity you can translate into a targeted intervention, which feeds measurable process or technology improvements you can iterate over time.
 
 #### seg-08 (verbatim)
-> The upside is real when clinicians lead. Continuous remote monitoring enables proactive intervention before hospitalization — reducing readmissions by up to 38% in heart failure populations when clinically guided. In training, VR surgical simulation reduces operating room errors and compresses learning curves — but only when physician educators design, validate, and oversee curricula. The common thread: technology succeeds when clinicians lead its implementation, not merely adopt it.
+> From system friction, shift now to the pace of what we must master and govern. Medical knowledge now doubles in roughly 73 days by some estimates, making static training obsolete before it lands. Meanwhile, AI, digital diagnostics, and remote monitoring are arriving faster than governance frameworks can evaluate them. The core claim is that your role expands: not only to know medicine, but to know which tools to trust, which algorithms to question, and how to integrate technology safely into care.
 
 #### seg-09 (verbatim)
-> We just saw that technology can shift care proactively and safely when clinicians lead it. Now bring the same discipline to access: patients now expect Amazon‑level access and rate digital convenience alongside clinical quality when choosing providers. Scheduling frictions, portal failures, and slow responses drive silent attrition — patients simply leave without complaint. Same‑day digital booking and transparent wait times are baseline expectations. Patients move fluidly between telehealth, in‑person, and messaging and still expect continuity. MyChart access alone is no longer sufficient — proactive outreach and personalization are required. This is service design, not a portal feature.
+> First, training was static—medical school and residency set you up for a career. Then, knowledge acceleration compressed the doubling cycle from years to months. Finally, continuous adaptation becomes the professional standard—lifelong learning, CME, and real‑time evidence as a structured practice. The upshot: a one‑time credential can’t keep pace.
 
 #### seg-10 (verbatim)
-> In a consumer‑driven system with accelerating tech, great design still fails without clinical leadership in the room. Health systems are complex adaptive organizations. Strategy, finance, operations, and technology decisions made without physician input routinely produce solutions that fail at the bedside. Clinical Expertise Alone Is Insufficient. The system needs clinicians who speak both languages: medicine and management — across Practice, Business, and Technology, including AI governance, digital health, and implementation science.
+> A dangerous gap has opened: about two‑thirds of physicians use AI‑assisted tools, but fewer than one in five have formal training in oversight, and under a third feel confident supervising these systems. That gap isn’t theoretical—unvalidated algorithms, biased data, and hallucinated recommendations are real safety risks without clinician governance built on structured knowledge.
 
 #### seg-11 (verbatim)
-> Here’s the mismatch: nearly 70% of physicians report wanting greater influence over organizational strategy — yet fewer than 1 in 5 have received any formal business or executive preparation. That gap explains the day‑to‑day frustration you’ve felt trying to move ideas forward. This is not a motivation deficit. It is a training infrastructure gap that programs like this one are designed to close.
+> Technology improves care when clinicians guide it. Remote monitoring extends oversight beyond the hospital to enable earlier intervention and reduce readmissions. VR simulation compresses skill acquisition in zero‑risk environments. And when validated and clinician‑governed, AI decision support augments diagnostic accuracy and frees bandwidth for judgment. The throughline is clinical governance.
 
 #### seg-12 (verbatim)
-> Bridge leaders translate across domains. Management fluency — strategy, finance, operations — pairs with clinical credibility trusted by frontline teams. Systems thinking keeps the whole in view, and technology governance guides safe AI adoption. Returning to the center, academic health centers sit at the intersection of patient care, education, and research — environments where siloed expertise fails. Leaders who integrate these capabilities turn expertise into scalable, lasting organizational improvement.
+> Having considered the tools, turn now to the people they must serve. Patients arrive with consumer expectations shaped by Amazon, Uber, and Netflix: on‑demand access, transparent pricing, seamless scheduling, and digital communication—and they choose providers who deliver it. A basic portal is not enough. The guidance is to build a coherent, frictionless digital journey from discovery through follow‑up, designed as intentionally as any consumer product.
 
 #### seg-13 (verbatim)
-> We’ve named the leadership gap and the bridge capabilities institutions need. Now synthesize the case for change. System complexity — consolidation and rising expenditures — demands leaders who understand business and policy, not just care delivery. Technology acceleration requires clinicians who can evaluate, govern, and scale innovation. Consumer expectations insist on frictionless digital access and omnichannel continuity. The physician leader who bridges practice, business, and technology is the most scarce and most needed figure in modern healthcare. Awareness of these forces is the starting point. Choosing to act on them — to lead — is the defining move from awareness to agency.
+> By contrast with legacy assumptions about access, today’s baseline is clear: 80% of patients research online before their first appointment, 73% want cost estimates up front, portal use has doubled, and 60% would switch providers for a better digital experience. These aren’t fringe preferences—they decide where patients seek care and whether they return.
+
+#### seg-14 (verbatim)
+> First, help patients discover you—search, reviews, a credible online presence. Then, make access effortless with scheduling, insurance verification, and intake. Next, engage through telehealth, messaging, and care coordination. Finally, retain with clear follow‑up, billing, and chronic care management. The principle is simple: a portal is a feature; a digital front door is an end‑to‑end experience strategy clinicians help design.
+
+#### seg-15 (verbatim)
+> Designing frictionless care is necessary—so who leads it? Physicians hold the deepest clinical insight in any system, yet are systematically underprepared for organizational leadership. That creates a gap between clinical credibility and institutional influence. Interest is high, preparation is low, and support is inconsistent—precisely where leadership development should live.
+
+#### seg-16 (verbatim)
+> Consider the numbers: 67% are interested in leadership, yet only 16% report executive training, 11% business education, and 6% no formal preparation at all. That widening preparation gap leaves many to navigate complex organizations on clinical instinct alone—good for bedside care, but insufficient for enterprise change.
+
+#### seg-17 (verbatim)
+> Healthcare needs clinician leaders who bridge practice, business, and technology. Clinical expertise anchors patient safety and quality. Business acumen translates priorities into operational action. Technology literacy evaluates, governs, and champions digital and AI tools so implementation serves patients without displacing judgment. That blend is the leverage point for change.
+
+#### seg-18 (verbatim)
+> Let’s pull the threads together. These forces aren’t isolated—they interlock to define the environment you lead in: system complexity that demands organizational literacy and design thinking; technology acceleration that requires continuous learning and clinical oversight; consumer expectations for frictionless digital journeys; and a leadership imperative for clinicians who bridge practice, business, and technology. Reflection for you: where in your current role is the biggest gap between clinical insight and organizational influence—and what would it take to close it?
 
 ## Figures
 
 <!-- segment:seg-01 -->
-![The Economic and Structural Reality](state/config/runs/6a103b6c-943f-4e53-90e1-95c915c7194c/exports/gary/A_slide-01.png)
+![The Economic and Structural Reality](state/config/runs/a17632c6-c040-44ba-b894-b40e6a38bb82/exports/gary/A_slide-01.png)
 *Figure — The Economic and Structural Reality* (source_ref: `src-slide-01`)
 
 <!-- segment:seg-02 -->
-![The Human Cost System Waste and Burnout](state/config/runs/6a103b6c-943f-4e53-90e1-95c915c7194c/exports/gary/A_slide-02.png)
-*Figure — The Human Cost System Waste and Burnout* (source_ref: `src-slide-02`)
+![Why the Environment Feels Different Now](state/config/runs/a17632c6-c040-44ba-b894-b40e6a38bb82/exports/gary/A_slide-02.png)
+*Figure — Why the Environment Feels Different Now* (source_ref: `src-slide-02`)
 
 <!-- segment:seg-03 -->
-![Waste and Administrative Bloat as System Inefficiency](state/config/runs/6a103b6c-943f-4e53-90e1-95c915c7194c/exports/gary/A_slide-03.png)
-*Figure — Waste and Administrative Bloat as System Inefficiency* (source_ref: `src-slide-03`)
+![Why Enterprise Navigation Now Matters](state/config/runs/a17632c6-c040-44ba-b894-b40e6a38bb82/exports/gary/A_slide-03.png)
+*Figure — Why Enterprise Navigation Now Matters* (source_ref: `src-slide-03`)
 
 <!-- segment:seg-04 -->
-![From Burnout Symptoms to Innovation Targets](state/config/runs/6a103b6c-943f-4e53-90e1-95c915c7194c/exports/gary/A_slide-04.png)
-*Figure — From Burnout Symptoms to Innovation Targets* (source_ref: `src-slide-04`)
+![The Human Cost System Waste and Burnout](state/config/runs/a17632c6-c040-44ba-b894-b40e6a38bb82/exports/gary/A_slide-04.png)
+*Figure — The Human Cost System Waste and Burnout* (source_ref: `src-slide-04`)
 
 <!-- segment:seg-05 -->
-![The Knowledge Explosion and New Technologies](state/config/runs/6a103b6c-943f-4e53-90e1-95c915c7194c/exports/gary/A_slide-05.png)
-*Figure — The Knowledge Explosion and New Technologies* (source_ref: `src-slide-05`)
+![The Scale of Waste](state/config/runs/a17632c6-c040-44ba-b894-b40e6a38bb82/exports/gary/A_slide-05.png)
+*Figure — The Scale of Waste* (source_ref: `src-slide-05`)
 
 <!-- segment:seg-06 -->
-![Why Static Training No Longer Keeps Up](state/config/runs/6a103b6c-943f-4e53-90e1-95c915c7194c/exports/gary/A_slide-06.png)
-*Figure — Why Static Training No Longer Keeps Up* (source_ref: `src-slide-06`)
+![Burnout Is a Design Problem Not a Resilience Failure](state/config/runs/a17632c6-c040-44ba-b894-b40e6a38bb82/exports/gary/A_slide-06.png)
+*Figure — Burnout Is a Design Problem Not a Resilience Failure* (source_ref: `src-slide-06`)
 
 <!-- segment:seg-07 -->
-![AI Use Is Rising Faster Than Oversight Training](state/config/runs/6a103b6c-943f-4e53-90e1-95c915c7194c/exports/gary/A_slide-07.png)
-*Figure — AI Use Is Rising Faster Than Oversight Training* (source_ref: `src-slide-07`)
+![Daily Friction as Innovation Signal](state/config/runs/a17632c6-c040-44ba-b894-b40e6a38bb82/exports/gary/A_slide-07.png)
+*Figure — Daily Friction as Innovation Signal* (source_ref: `src-slide-07`)
 
 <!-- segment:seg-08 -->
-![Technology Can Shift Care Proactively and Safely](state/config/runs/6a103b6c-943f-4e53-90e1-95c915c7194c/exports/gary/A_slide-08.png)
-*Figure — Technology Can Shift Care Proactively and Safely* (source_ref: `src-slide-08`)
+![The Knowledge Explosion and New Technologies](state/config/runs/a17632c6-c040-44ba-b894-b40e6a38bb82/exports/gary/A_slide-08.png)
+*Figure — The Knowledge Explosion and New Technologies* (source_ref: `src-slide-08`)
 
 <!-- segment:seg-09 -->
-![The Consumer Shift and The Digital Front Door](state/config/runs/6a103b6c-943f-4e53-90e1-95c915c7194c/exports/gary/A_slide-09.png)
-*Figure — The Consumer Shift and The Digital Front Door* (source_ref: `src-slide-09`)
+![Knowledge Now Changes Faster Than Training](state/config/runs/a17632c6-c040-44ba-b894-b40e6a38bb82/exports/gary/A_slide-09.png)
+*Figure — Knowledge Now Changes Faster Than Training* (source_ref: `src-slide-09`)
 
 <!-- segment:seg-10 -->
-![The Leadership Gap](state/config/runs/6a103b6c-943f-4e53-90e1-95c915c7194c/exports/gary/A_slide-10.png)
-*Figure — The Leadership Gap* (source_ref: `src-slide-10`)
+![AI Adoption Outpaces Formal Oversight Training](state/config/runs/a17632c6-c040-44ba-b894-b40e6a38bb82/exports/gary/A_slide-10.png)
+*Figure — AI Adoption Outpaces Formal Oversight Training* (source_ref: `src-slide-10`)
 
 <!-- segment:seg-11 -->
-![Many Physicians Want Influence but Lack Training](state/config/runs/6a103b6c-943f-4e53-90e1-95c915c7194c/exports/gary/A_slide-11.png)
-*Figure — Many Physicians Want Influence but Lack Training* (source_ref: `src-slide-11`)
+![Technology Can Improve Care When Clinically Guided](state/config/runs/a17632c6-c040-44ba-b894-b40e6a38bb82/exports/gary/A_slide-11.png)
+*Figure — Technology Can Improve Care When Clinically Guided* (source_ref: `src-slide-11`)
 
 <!-- segment:seg-12 -->
-![Why Academic Health Centers Need Bridge Leaders](state/config/runs/6a103b6c-943f-4e53-90e1-95c915c7194c/exports/gary/A_slide-12.png)
-*Figure — Why Academic Health Centers Need Bridge Leaders* (source_ref: `src-slide-12`)
+![The Consumer Shift and The Digital Front Door](state/config/runs/a17632c6-c040-44ba-b894-b40e6a38bb82/exports/gary/A_slide-12.png)
+*Figure — The Consumer Shift and The Digital Front Door* (source_ref: `src-slide-12`)
 
 <!-- segment:seg-13 -->
-![Part 2 Summary From Awareness to Agency](state/config/runs/6a103b6c-943f-4e53-90e1-95c915c7194c/exports/gary/A_slide-13.png)
-*Figure — Part 2 Summary From Awareness to Agency* (source_ref: `src-slide-13`)
+![Patients Now Expect Digital Convenience and Transparency](state/config/runs/a17632c6-c040-44ba-b894-b40e6a38bb82/exports/gary/A_slide-13.png)
+*Figure — Patients Now Expect Digital Convenience and Transparency* (source_ref: `src-slide-13`)
+
+<!-- segment:seg-14 -->
+![A True Digital Front Door Is a Designed Journey](state/config/runs/a17632c6-c040-44ba-b894-b40e6a38bb82/exports/gary/A_slide-14.png)
+*Figure — A True Digital Front Door Is a Designed Journey* (source_ref: `src-slide-14`)
+
+<!-- segment:seg-15 -->
+![The Leadership Gap](state/config/runs/a17632c6-c040-44ba-b894-b40e6a38bb82/exports/gary/A_slide-15.png)
+*Figure — The Leadership Gap* (source_ref: `src-slide-15`)
+
+<!-- segment:seg-16 -->
+![Physicians Want Influence but Rarely Receive Training](state/config/runs/a17632c6-c040-44ba-b894-b40e6a38bb82/exports/gary/A_slide-16.png)
+*Figure — Physicians Want Influence but Rarely Receive Training* (source_ref: `src-slide-16`)
+
+<!-- segment:seg-17 -->
+![Healthcare Needs Clinician Leaders Who Bridge Practice Business and Technology](state/config/runs/a17632c6-c040-44ba-b894-b40e6a38bb82/exports/gary/A_slide-17.png)
+*Figure — Healthcare Needs Clinician Leaders Who Bridge Practice Business and Technology* (source_ref: `src-slide-17`)
+
+<!-- segment:seg-18 -->
+![Part 2 Summary and Knowledge Check](state/config/runs/a17632c6-c040-44ba-b894-b40e6a38bb82/exports/gary/A_slide-18.png)
+*Figure — Part 2 Summary and Knowledge Check* (source_ref: `src-slide-18`)
 
 ## Exercises
 
@@ -304,6 +364,11 @@ Answer key source_ref: `src-slide-05`
 - `seg-11` -> source_ref `src-slide-11`
 - `seg-12` -> source_ref `src-slide-12`
 - `seg-13` -> source_ref `src-slide-13`
+- `seg-14` -> source_ref `src-slide-14`
+- `seg-15` -> source_ref `src-slide-15`
+- `seg-16` -> source_ref `src-slide-16`
+- `seg-17` -> source_ref `src-slide-17`
+- `seg-18` -> source_ref `src-slide-18`
 
 #### Cited references & further reading
 - [CMS National Health Expenditure (NHE) Fact Sheet](https://www.cms.gov/data-research/statistics-trends-and-reports/national-health-expenditure-data/nhe-fact-sheet) (source_ref: `src-slide-01`) — supports `seg-01`

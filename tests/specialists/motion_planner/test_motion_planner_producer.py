@@ -254,8 +254,12 @@ def test_motion_deselected_prunes_all_four_and_keeps_deck_byte_identical() -> No
 
     manifest = load(DEFAULT_RUN_MANIFEST_PATH)
 
-    # Full/default selection is a byte-identical no-op (deck-default baseline).
-    default_composed = compose_manifest(manifest, ComponentSelection.production_default())
+    # Full selection (deck+motion+workbook) is the byte-identical no-op. Composition
+    # -catalog B3 (2026-06-26): 07W is now a real workbook-owned manifest node, so
+    # production_default (deck+motion) prunes 07W and is NO LONGER a no-op.
+    default_composed = compose_manifest(
+        manifest, ComponentSelection(deck=True, motion=True, workbook=True)
+    )
     assert default_composed is manifest or default_composed == manifest
 
     deck_only = compose_manifest(manifest, ComponentSelection(deck=True, motion=False))
@@ -263,8 +267,9 @@ def test_motion_deselected_prunes_all_four_and_keeps_deck_byte_identical() -> No
     # All four motion nodes are absent as a unit.
     assert MOTION_NODE_IDS.isdisjoint(deck_ids)
     # Deck-default is byte-identical to the B1 baseline (every non-motion node
-    # survives unchanged; deck-only composition is deterministic on repeat).
-    expected_ids = {n.id for n in manifest.nodes} - MOTION_NODE_IDS
+    # survives unchanged; deck-only composition is deterministic on repeat). 07W is
+    # also pruned because the workbook component is deselected here.
+    expected_ids = {n.id for n in manifest.nodes} - MOTION_NODE_IDS - {"07W"}
     assert deck_ids == expected_ids
     deck_only_again = compose_manifest(manifest, ComponentSelection(deck=True, motion=False))
     assert [n.model_dump() for n in deck_only.nodes] == [

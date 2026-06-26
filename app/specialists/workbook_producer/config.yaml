@@ -1,0 +1,12 @@
+# workbook_producer run-scoped configuration (07W deterministic producer).
+#
+# The producer is deterministic and touches no provider; these knobs only shape
+# where it reads the running run from and where it writes the artifacts.
+# - segment_manifest_relpath: the storyboard-B segment manifest under the run dir.
+# - corpus_relpath: the extracted corpus the G1 numeric source set reads.
+# - output_root: repo-contained workbook artifact root (DOCX + canonical MD).
+segment_manifest_relpath: "exports/segment-manifest-storyboard-b.yaml"
+corpus_relpath: "bundle/extracted.md"
+output_root: "_bmad-output/artifacts/workbooks"
+unit_id: "tejal-apc-c1-m1-p2-trends"
+lesson_plan_revision: 1

@@ -2,7 +2,7 @@
 # Regenerate after any change to the manifest, dispatch-registry, app/specialists/,
 # or specialist-registry.yaml status fields. CI parity test (tests/parity/test_capability_overlay_parity.py)
 # fails if this file is stale. Spec: _bmad-output/implementation-artifacts/spec-braid-s4-marcus-capability-overlay.md
-content_hash: 3fb05b90c917dd89f146308b7a93fdb7bf94428a9eca15526e245cfc2aa6a18a
+content_hash: c2e796682cc3bffb784ac0b3cf317931059f0132c420f73b6165c7f16a60396c
 generated_from:
   dispatch_registry: state/config/dispatch-registry.yaml
   pipeline_manifest: state/config/pipeline-manifest.yaml
@@ -263,3 +263,12 @@ specialists:
     real_module: true
     registry_status: active
     routed_at_nodes: []
+  workbook_producer:
+    capability_state: wired
+    in_dispatch: true
+    in_manifest: true
+    rationale: manifest node + dispatch entry + real not-stub module.
+    real_module: true
+    registry_status: active
+    routed_at_nodes:
+    - 07W

@@ -34,6 +34,15 @@ CANONICAL_SPECIALIST_IDS: tuple[str, ...] = (
     "compositor",
     "quinn_r",
     "vera",
+    # 07D.5 motion-plan producer (app/specialists/motion_planner/) dispatched at
+    # §07D.5; same emit_spans roster gap as irene_pass1 above — the first live
+    # B2 dispatch crashed with "unknown specialist_id 'motion_planner'".
+    "motion_planner",
+    # 07W in-graph companion-workbook producer (app/specialists/workbook_producer/)
+    # dispatched at §07W (terminal sidecar). Same emit_spans roster gap as
+    # motion_planner above — emit_spans would crash the first live B3 dispatch
+    # with "unknown specialist_id 'workbook_producer'" if it were omitted.
+    "workbook_producer",
 )
 DEFERRED_SPECIALIST_IDS = frozenset()
 
@@ -51,6 +60,8 @@ DISPLAY_NAMES: dict[str, str] = {
     "compositor": "Compositor",
     "quinn_r": "Quinn-R",
     "vera": "Vera",
+    "motion_planner": "Motion-Planner",
+    "workbook_producer": "Workbook Producer",
 }
 
 

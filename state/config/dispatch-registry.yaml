@@ -23,4 +23,5 @@ specialists:
   irene_pass1: app.specialists.irene_pass1.graph:build_irene_pass1_graph
   vision: app.specialists.vision.graph:build_vision_graph
   motion_planner: app.specialists.motion_planner.graph:build_motion_planner_graph
+  workbook_producer: app.specialists.workbook_producer.graph:build_workbook_producer_graph
   compositor: app.specialists.compositor.graph:build_compositor_graph
