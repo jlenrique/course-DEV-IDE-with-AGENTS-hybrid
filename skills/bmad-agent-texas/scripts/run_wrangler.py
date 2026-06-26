@@ -380,7 +380,10 @@ def _load_directive(path: Path) -> dict[str, Any]:
                 continue
             candidate = corpus_root / loc
             if candidate.is_file():
-                src["locator"] = str(candidate)
+                # Store the resolved absolute path so the rewrite is robust even
+                # when corpus_dir itself is relative (otherwise the locator stays
+                # cwd-dependent — the very failure mode this rewrite fixes).
+                src["locator"] = str(candidate.resolve())
 
     # Per-row shape classification (Story 27-2 AC-B.6).
     per_row_shapes: list[str] = []

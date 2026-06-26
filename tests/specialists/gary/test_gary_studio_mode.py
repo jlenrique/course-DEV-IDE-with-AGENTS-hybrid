@@ -42,6 +42,18 @@ def test_guard_passes_on_real_studio_cards(png: Path) -> None:
     _assert_studio_image_card(png, slide_id="slide-01", generation_id="gen-studio")
 
 
+def test_guard_raises_recoverable_on_unreadable_export(tmp_path: Path) -> None:
+    # A zero-byte / truncated / non-PNG export must surface as a recoverable
+    # GammaDispatchError (export-unreadable), NOT a bare PIL OSError that would
+    # escape the dispatch error family and kill the trial (review finding EC1).
+    bad = tmp_path / "zero-byte.png"
+    bad.write_bytes(b"")
+    with pytest.raises(GammaDispatchError) as exc:
+        _assert_studio_image_card(bad, slide_id="slide-07", generation_id="gen-bad")
+    assert exc.value.tag == "gamma.studio.export-unreadable"
+    assert "slide-07" in str(exc.value)
+
+
 # --- Normalizer: studio requires a template id; default is api (Classic) --------
 
 def _settings(**b: object) -> dict[str, object]:

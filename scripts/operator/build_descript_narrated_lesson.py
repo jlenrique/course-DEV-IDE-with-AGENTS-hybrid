@@ -141,7 +141,10 @@ def _load_env_if_available() -> None:
         from scripts.utilities.env_loader import load_env
 
         load_env()
-    except (FileNotFoundError, ImportError):
+    except (OSError, UnicodeDecodeError, ImportError):
+        # Best-effort: a missing/unreadable/non-UTF-8 .env must not abort the
+        # build. OSError covers FileNotFoundError + PermissionError; load_env's
+        # read_text(encoding="utf-8") can raise UnicodeDecodeError (not an OSError).
         pass
 
 

@@ -570,6 +570,16 @@ def build_vera_g3_invocation(slide_output: list[dict[str, Any]]) -> dict[str, An
     return {"specialist_id": "vera", "gate_id": "G3", "artifact_paths": paths}
 
 
+def _safe_slug(value: str) -> str:
+    """Filesystem-safe token for a slide_id used inside an export filename.
+
+    Stops a caller-supplied slide_id that contains path separators or OS-illegal
+    characters from steering ``download_export`` outside ``export_dir``.
+    """
+    slug = "".join(c if (c.isalnum() or c in "._-") else "-" for c in value).strip("-")
+    return slug or "slide"
+
+
 def _studio_slide_content(slide: dict[str, Any], index: int) -> str:
     """Subject text for one Studio card's lock-and-replace prompt (minimal directive;
     the template is the style authority — we only swap the subject)."""
@@ -594,11 +604,28 @@ def _assert_studio_image_card(png_path: Path, *, slide_id: str, generation_id: s
     independent. Calibrated against the real artifacts in studio-mode-evidence/.
     Recoverable family (error-pause + trial recover).
     """
-    from PIL import Image
+    from PIL import Image, UnidentifiedImageError
 
-    with Image.open(png_path) as raw:
-        width, height = raw.size
-    aspect = (width / height) if height else 0.0
+    try:
+        with Image.open(png_path) as raw:
+            width, height = raw.size
+    except (UnidentifiedImageError, OSError) as exc:
+        # A zero-byte / truncated / non-PNG export must NOT escape as a bare
+        # PIL OSError (which is not a SpecialistDispatchError and would kill the
+        # trial) — re-raise into the recoverable family this guard promises.
+        raise GammaDispatchError(
+            f"studio generation for slide {slide_id} produced an unreadable "
+            f"export ({png_path}): {exc}. generation_id={generation_id}",
+            tag="gamma.studio.export-unreadable",
+        ) from exc
+    if width <= 0 or height <= 0:
+        raise GammaDispatchError(
+            f"studio generation for slide {slide_id} produced a degenerate image "
+            f"({width}x{height}); the export is corrupt, not a Classic fallback. "
+            f"generation_id={generation_id}",
+            tag="gamma.studio.export-unreadable",
+        )
+    aspect = width / height
     if aspect < _STUDIO_MIN_ASPECT_RATIO:
         raise GammaDispatchError(
             f"studio generation for slide {slide_id} returned a non-Studio "
@@ -630,6 +657,15 @@ def _generate_studio_variant(
     slide_gen_ids: dict[str, str] = {}
     for index, slide in enumerate(slides, start=1):
         slide_id = str(slide.get("slide_id") or f"slide-{index:02d}")
+        if slide_id in slide_paths:
+            # Two slides sharing a slide_id would overwrite each other's PNG on
+            # disk (same filename) and mis-bind storyboard rows to the wrong
+            # card while silently losing a paid generation. Fail loud instead.
+            raise GammaDispatchError(
+                f"duplicate slide_id {slide_id!r} in studio variant {variant}: "
+                f"per-slide cards must have unique slide_ids.",
+                tag="gamma.slides.invalid",
+            )
         prompt = _STUDIO_LOCK_WRAPPER.format(slide_content=_studio_slide_content(slide, index))
         ack = client.generate_from_template(template_id, prompt, export_as="png")
         raw_id = ack.get("generationId") or ack.get("id") or ack.get("generation_id")
@@ -651,7 +687,7 @@ def _generate_studio_variant(
         downloaded = download_export(
             export_url,
             output_dir=export_dir,
-            filename=f"gary_{variant}_studio_{slide_id}.png",
+            filename=f"gary_{variant}_studio_{index:02d}_{_safe_slug(slide_id)}.png",
         )
         png_path = Path(str(downloaded))
         _assert_studio_image_card(png_path, slide_id=slide_id, generation_id=generation_id)
@@ -698,8 +734,11 @@ def generate_gamma_variants(
                         "dispatch_variant": variant,
                         "variant_id": variant,
                         "gamma_settings": variant_settings,
-                        "file_path": studio_paths.get(slide_id, ""),
-                        "generation_id": studio_gen_ids.get(slide_id, ""),
+                        # Index directly (not .get(..., "")) so a slide_id that
+                        # diverges from the generator's keys fails loud rather
+                        # than emitting a silent empty file_path downstream.
+                        "file_path": studio_paths[slide_id],
+                        "generation_id": studio_gen_ids[slide_id],
                         "display_title": str(slide.get("title") or "").strip() or slide_id,
                         "visual_description": str(
                             slide.get("visual_description") or slide.get("prompt") or ""
