@@ -1,3 +1,28 @@
+# Session Handoff — 2026-06-26 PM (composition-catalog goal ✅ DONE — 3 in-graph bundles, party unanimous; + G0-enrichment cycle PREPPED)
+
+**Final class:** S (substrate — two new in-graph specialist bricks + manifest/composer/registration/witness + live production runs + planning prep). **Branch:** `fidelity-perception-arc-2026-06-19`, HEAD `b914bb9` (pushed). Continuation of the composition-catalog arc.
+
+**GOAL ACCOMPLISHED:** the 3-bundle composition-catalog goal is DONE. B1 (deck), B2 (deck+motion), B3 (deck+motion+workbook) — all THREE produced **in-graph** via live Marcus-SPOC production runs; a fully-spawned party-mode team (Winston/Murat/John/Marcus) **concurred DONE** (Winston/John clean; Murat/Marcus DONE + named non-blocking follow-ons).
+
+**What completed (each NEW CYCLE: spec → dev → Claude T11 → LIVE run → party):**
+1. **07D.5 motion-plan producer** (`d96ff3c`) — deterministic in-graph node between 07D and 07E; self-feeds kira a motion_plan (adapter over the Epic-14 engine + kling-video library). Live B2 surfaced + fixed real-shape gaps (quinn_r `quinn_r_review.selections` shape; `MOTION_DESIGNATIONS_PATH` Gate-2M replay-seam since the conservative engine scored tejal all-static; motion_planner emit_spans roster). **B2 completed live** with a real in-graph Kling .mp4.
+2. **07W workbook producer** (`b914bb9`) — composer no-op stub → a real `workbook_producer` terminal-sidecar node running the proven `WorkbookProducer.produce()` from the run's state, emitting the DOCX **in-graph**. Live B3 surfaced the predicted real-shape gap (07W projected `segment_manifest from irene` — a non-existent STATE key; the manifest is a DISK artifact) → fixed to `upstream_output: compositor` trigger + self-resolve from the run dir. **Fresh B3 `a17632c6` completed**; 07W `produced.ok`; real 15.4MB DOCX (18 images) written in-graph.
+3. **G0-enrichment ("source-content injection") cycle PREPPED** — party green-light round (Mary/Winston/John/Marcus) → charter `_bmad-output/planning-artifacts/g0-enrichment-cycle-charter-2026-06-26.md`.
+
+**What is next (operator-directed):** complete the design + dev of the new **content-ingestion** capabilities (the G0-enrichment cycle). Per the charter: LLM-assisted content-TYPE parse + LO identification ahead of the kept primary/supporting/ignore; **Marcus-SPOC OWNS source+LOs** (custodial+gate-bearing; LLM SPOC-side, NOT in the deterministic composer); **Irene refinement loop — refined LOs + source-content-ADEQUACY assessment — is NON-NEGOTIABLE for the next trial** (build-then-trial). Operator decisions pending: D1 type taxonomy, D2 "complete source" definition, D4 Irene LO-delta sign. Binding build discipline: **live-trial each implicated segment, NO mocks**; modular/DRY/existing-patterns. Governing principle: **source content + LOs are KING — complete + reliably accessed.** Next session re-convenes party WITH Irene → `bmad-create-epics-and-stories`.
+
+**Unresolved / follow-ons (→ deferred-inventory):** C1 organic-G2M-motion-designation path (vs the replay-seam used); C3 per-run motion artifact isolation (B2/B3 share `runs/kira-motion/.../slide-02.mp4`); C2-r 07W emit_spans artifact-path provenance (summary reports `none` while the DOCX is real); a live-human-operator-gated run (these runs were agent-driven). **Pre-existing baseline reds (NOT this work):** `test_texas_to_cd_chain` (Texas `directive_path` dispatch gap); `test_slab_7a_opener_composition_smoke` (imports Epic-34-deleted `app.marcus.orchestrator.directive_composer`).
+
+**Key lessons:** (1) An authentic live run is the only thing that surfaces real run-state-shape gaps — both bricks' offline tests were green but each live run found a projection/shape mismatch (no-mocks discipline is load-bearing, not ceremony). (2) The brick pattern generalizes cleanly (07D.5 → 07W): real node + composer-fragment ownership + prune-byte-identity + registration (incl. the emit_spans CANONICAL_SPECIALIST_IDS roster — both bricks hit it) + within-lineage witness. (3) A `completed` run status ≠ a complete deliverable when a node is a stub (the workbook-stub caveat the party held firm on).
+
+**Validation summary:** workbook brick 15 tests + motion brick 17 + kira 28 + composition green; ruff clean; L1 lockstep 9+10 green; witness regenerated; byte-identical prune (deck-only + deck+motion) test-proven. 2 pre-existing baseline reds attested above. NO MOCKS — every brick proven by a live production run (B2/B3) to a real artifact.
+
+**Content creation summary:** B2 + B3 live tejal production runs (deck + real Kling motion + 13 ElevenLabs segments + compositor + in-graph workbook DOCX). Fresh corpus staged: `course-content/courses/tejal-c1m1-fresh-outline/` (current Notion C1M1 outline, 149KB, via the BMAD-Agentic-Course-Content-DEV integration) for the operator's next trial; 10-Conceptual-Pillars-in-workbook requirement recorded.
+
+**Artifact checklist:** ✅ commit `b914bb9` (27 files: 07W brick + motion fixes + manifest/composer/registration/witness + charter + spec + corpus + in-graph DOCX) pushed · ✅ next-session-start-here (G0-enrichment anchor) · ✅ this SESSION-HANDOFF · ✅ memories (07d5-producer, text2video-critical, agents-coach-access, source+LOs-KING/G0-cycle, material-partition) · deferred-inventory follow-ons (to file next open) · KG/ONBOARDING regen RECOMMENDED (>10 substrate files: 2 new specialists + manifest). Ambient untouched: operator files + `runs/<uuid>/`.
+
+---
+
 # Session Handoff — 2026-06-26 (autonomous /goal: lesson-component composition catalog — substrate spine S1→S5 BUILT + COMMITTED; 1 of 3 bundles LIVE; remaining unblocked)
 
 > **▶ WRAPUP FINAL STATE (supersedes the stale lines below — read this first):**
