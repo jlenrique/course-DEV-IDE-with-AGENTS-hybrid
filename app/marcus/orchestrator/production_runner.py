@@ -706,8 +706,48 @@ def _persist_conversation_turn_if_possible(
     )
 
 
-def _pack_hash_binding(manifest_path: Path) -> str:
-    return hashlib.sha256(manifest_path.read_bytes()).hexdigest()
+def _pack_hash_binding(
+    manifest_path: Path,
+    *,
+    selection: ComponentSelection | None = None,
+    composed_manifest: Any | None = None,
+) -> str:
+    """Bind the run-summary to the graph that ACTUALLY ran.
+
+    For the default selection (``production_default`` — today's full deck+motion
+    graph, a composition NO-OP) this returns the raw manifest-file sha256, exactly
+    as before S5 (byte-identical regression pin). For a NON-default selection
+    (e.g. a B1 deck-only run) it binds the COMPOSED graph's node set instead of the
+    raw manifest file, so the audit trail of a deck-only run does not silently
+    claim the full pack ran (the raw-manifest leak the S2 dev flagged).
+
+    No-op detection is STRUCTURAL — the composed graph's node set is compared to
+    the raw manifest's node set — rather than ``selection == production_default()``,
+    so it does not depend on (and cannot be tripped by) the default classmethod
+    (the two-walk re-default poison guard monkeypatches that method)."""
+    raw = hashlib.sha256(manifest_path.read_bytes()).hexdigest()
+    if selection is None:
+        return raw
+    raw_manifest = load_manifest(manifest_path)
+    composed = (
+        composed_manifest
+        if composed_manifest is not None
+        else compose_manifest(raw_manifest, selection)
+    )
+    raw_node_ids = sorted(node.id for node in raw_manifest.nodes)
+    composed_node_ids = sorted(node.id for node in composed.nodes)
+    if composed_node_ids == raw_node_ids:
+        return raw  # composition was a no-op for this manifest -> byte-identical
+    payload = json.dumps(
+        {
+            "manifest_file_sha256": raw,
+            "component_selection": selection.as_map(),
+            "composed_node_ids": composed_node_ids,
+        },
+        sort_keys=True,
+        separators=(",", ":"),
+    ).encode("utf-8")
+    return hashlib.sha256(payload).hexdigest()
 
 
 def _conversation_chain_digest(*, trial_id: UUID, runs_root: Path) -> str:
@@ -728,6 +768,8 @@ def _emit_run_summary_yaml(
     manifest_path: Path,
     langsmith_trace_id: str | None,
     silent_bypass_events: int = 0,
+    selection: ComponentSelection | None = None,
+    composed_manifest: Any | None = None,
 ) -> Path:
     if silent_bypass_events != 0:
         LOGGER.debug(
@@ -738,7 +780,11 @@ def _emit_run_summary_yaml(
         "terminal_gate": terminal_gate,
         "silent_bypass_events": silent_bypass_events,
         "specialist_roster_count": len(specialist_summary_writer.CANONICAL_SPECIALIST_IDS),
-        "pack_hash_binding": _pack_hash_binding(manifest_path),
+        "pack_hash_binding": _pack_hash_binding(
+            manifest_path,
+            selection=selection,
+            composed_manifest=composed_manifest,
+        ),
         "conversation_chain_digest": _conversation_chain_digest(
             trial_id=trial_id,
             runs_root=runs_root,
@@ -1541,6 +1587,10 @@ def _pause_at_gate(
         runs_root=runs_root,
         manifest_path=manifest_path,
         langsmith_trace_id=langsmith_trace_id,
+        # S5: bind the COMPOSED graph (the one in hand), not the raw manifest, so a
+        # non-default selection is honored in the run summary across both walks.
+        selection=run_state.component_selection,
+        composed_manifest=manifest,
     )
     evidence = (
         _has_production_evidence(
@@ -2115,6 +2165,8 @@ def run_production_trial(
         runs_root=runs_root,
         manifest_path=manifest_path,
         langsmith_trace_id=langsmith_trace_id,
+        selection=run_state.component_selection,
+        composed_manifest=manifest,
     )
     engagement_report_path = _emit_engagement_decay_report(
         trial_id=effective_trial_id,
@@ -2217,6 +2269,10 @@ def resume_production_trial(
             runs_root=runs_root,
             manifest_path=manifest_path,
             langsmith_trace_id=envelope.langsmith_trace_id,
+            # No composed manifest in hand on the early-reject path; pass the
+            # rehydrated selection so the binding still reflects the composed
+            # graph (recomputed inside _pack_hash_binding) for a non-default run.
+            selection=run_state.component_selection,
         )
         updated = envelope.model_copy(
             update={
@@ -2684,6 +2740,8 @@ def _continue_production_walk(
         runs_root=runs_root,
         manifest_path=manifest_path,
         langsmith_trace_id=langsmith_trace_id,
+        selection=run_state.component_selection,
+        composed_manifest=manifest,
     )
     engagement_report_path = _emit_engagement_decay_report(
         trial_id=trial_id,

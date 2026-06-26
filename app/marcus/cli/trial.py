@@ -18,11 +18,13 @@ from uuid import UUID, uuid4
 import yaml
 
 from app.composers.section_02a.cli_adapter import compose_and_write
+from app.marcus.cli.front_door import FrontDoorError, front_door_select
 from app.marcus.orchestrator.production_runner import (
     recover_production_trial,
     resume_production_trial,
     run_production_trial,
 )
+from app.models.state.component_selection import ComponentSelection
 from app.models.state.operator_verdict import OperatorVerdict
 from app.runtime.economics import RUNS_ROOT
 
@@ -223,6 +225,7 @@ def start_trial(
     confirm_fn: Callable[..., Literal["confirmed", "saved-only"]] | None = None,
     max_specialist_calls: int | None = None,
     gamma_settings_file: Path | None = None,
+    component_selection: ComponentSelection | None = None,
 ) -> dict[str, Any]:
     _ensure_utf8_io()
     _load_env_if_available()
@@ -319,6 +322,10 @@ def start_trial(
         allow_offline_cost_report=allow_offline_cost_report,
         pause_at_gates=not allow_offline_cost_report,
         directive_path=directive_path,
+        # S5 front door: thread the chosen bundle's ComponentSelection through to
+        # the composer + both walks. None preserves today's behavior byte-
+        # identically (the runner defaults to ComponentSelection.production_default).
+        component_selection=component_selection,
         **runner_kwargs,
     )
 
@@ -358,8 +365,27 @@ def start_trial(
     return result
 
 
+def _resolve_bundle_selection(args: argparse.Namespace) -> ComponentSelection | None:
+    """Resolve an optional ``--bundle`` pick to a ComponentSelection via the front
+    door (readiness-guarded). A bundle id on the command line IS the operator's
+    explicit pick, so it is treated as confirmed; a flagged (non-fully-proven)
+    bundle is refused unless ``--allow-unproven-bundle`` is set. No ``--bundle``
+    means None (today's default graph)."""
+    bundle = getattr(args, "bundle", None)
+    if not bundle:
+        return None
+    selection = front_door_select(
+        operator_pick=bundle,
+        confirmed=True,
+        seeds={"corpus_path": args.input},
+        allow_unproven=getattr(args, "allow_unproven_bundle", False),
+    )
+    return selection.selection
+
+
 def start_trial_cli(args: argparse.Namespace) -> int:
     try:
+        component_selection = _resolve_bundle_selection(args)
         payload = start_trial(
             preset=args.preset,
             input_path=Path(args.input),
@@ -374,7 +400,11 @@ def start_trial_cli(args: argparse.Namespace) -> int:
                 if getattr(args, "gamma_settings_file", None)
                 else None
             ),
+            component_selection=component_selection,
         )
+    except FrontDoorError as exc:
+        print(f"ERROR: {exc}", file=sys.stderr)
+        return 1
     except DirectiveConfirmationRequiredError as exc:
         print(f"ERROR: {exc}", file=sys.stderr)
         return 1
@@ -525,6 +555,23 @@ def build_trial_parser(parser: argparse.ArgumentParser) -> None:
         help=(
             "YAML/JSON list of per-variant Gamma settings to inject into the "
             "composed directive before digesting."
+        ),
+    )
+    start.add_argument(
+        "--bundle",
+        required=False,
+        help=(
+            "Front-door bundle id to compose (e.g. 'narrated-deck'). Omit for "
+            "today's default graph (deck+motion). Flagged (not-fully-proven) "
+            "bundles are refused unless --allow-unproven-bundle is set."
+        ),
+    )
+    start.add_argument(
+        "--allow-unproven-bundle",
+        action="store_true",
+        help=(
+            "Permit a flagged (partial / not-yet) front-door bundle to run "
+            "knowing its honest readiness status. Off by default."
         ),
     )
     resume = subparsers.add_parser("resume")
