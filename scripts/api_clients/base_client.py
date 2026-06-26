@@ -7,6 +7,7 @@ error diagnostics.
 
 from __future__ import annotations
 
+import json
 import logging
 import time
 from collections.abc import Iterator
@@ -18,6 +19,7 @@ logger = logging.getLogger(__name__)
 
 RETRYABLE_STATUS_CODES = frozenset({429, 500, 502, 503, 504})
 DEFAULT_BACKOFF_DELAYS = (2, 4, 8)
+ERROR_BODY_MAX_CHARS = 500
 
 
 class APIError(Exception):
@@ -185,6 +187,7 @@ class BaseAPIClient:
         kwargs.setdefault("timeout", self.timeout)
 
         last_exception: Exception | None = None
+        last_error_detail: str = ""
 
         for attempt in range(self.max_retries):
             try:
@@ -212,26 +215,33 @@ class BaseAPIClient:
                         response_body=self._safe_json(response),
                     )
 
+                body = self._safe_json(response)
+                detail = self._format_error_body(body, response)
+
                 if response.status_code in RETRYABLE_STATUS_CODES:
                     delay = self._get_retry_delay(attempt, response)
+                    last_error_detail = detail
                     logger.warning(
-                        "%s %s returned %d — retrying in %ds "
+                        "%s %s returned %d%s — retrying in %ds "
                         "(attempt %d/%d)",
                         method, url, response.status_code,
+                        f" ({detail})" if detail else "",
                         delay, attempt + 1, self.max_retries,
                     )
                     last_exception = APIError(
-                        f"HTTP {response.status_code}: {response.reason}",
+                        self._compose_error_message(response, detail),
                         status_code=response.status_code,
-                        response_body=self._safe_json(response),
+                        response_body=body,
                     )
                     time.sleep(delay)
                     continue
 
+                message = self._compose_error_message(response, detail)
+                logger.error("%s %s failed: %s", method, url, message)
                 raise APIError(
-                    f"HTTP {response.status_code}: {response.reason}",
+                    message,
                     status_code=response.status_code,
-                    response_body=self._safe_json(response),
+                    response_body=body,
                 )
 
             except requests.ConnectionError as exc:
@@ -268,10 +278,16 @@ class BaseAPIClient:
             and last_exception.status_code == 429
         )
         if is_rate_limited:
-            raise RateLimitError(
+            message = (
                 f"Rate limit exceeded for {url} after "
                 f"{self.max_retries} attempts. "
-                "Wait before retrying or check your plan's rate limits.",
+                "Wait before retrying or check your plan's rate limits."
+            )
+            if last_error_detail:
+                message += f" Provider response: {last_error_detail}"
+            logger.error(message)
+            raise RateLimitError(
+                message,
                 status_code=429,
                 response_body=last_exception.response_body,
             )
@@ -344,3 +360,47 @@ class BaseAPIClient:
             return response.json()
         except (ValueError, RuntimeError):
             return None
+
+    @staticmethod
+    def _format_error_body(body: Any, response: requests.Response) -> str:
+        """Build a short, human-readable detail string from a provider's error
+        response body.
+
+        Prefers the conventional ``{code, message, request_id}`` JSON shape
+        (so signals like Kling's ``{"code":1102,"message":"Account balance not
+        enough"}`` survive instead of being masked as a generic throttle).
+        Falls back to a compact JSON dump for other dicts, then to raw text.
+        Truncated to ``ERROR_BODY_MAX_CHARS``.
+        """
+        detail = ""
+        if isinstance(body, dict):
+            parts = [
+                f"{field}={body[field]}"
+                for field in ("code", "message", "request_id")
+                if body.get(field) not in (None, "")
+            ]
+            if parts:
+                detail = " | ".join(parts)
+            else:
+                try:
+                    detail = json.dumps(body, default=str)
+                except (TypeError, ValueError):
+                    detail = str(body)
+        elif body is not None:
+            detail = str(body)
+        else:
+            raw_text = getattr(response, "text", "")
+            detail = raw_text if isinstance(raw_text, str) else ""
+
+        detail = detail.strip()
+        if len(detail) > ERROR_BODY_MAX_CHARS:
+            detail = detail[:ERROR_BODY_MAX_CHARS] + "…"
+        return detail
+
+    @staticmethod
+    def _compose_error_message(response: requests.Response, detail: str) -> str:
+        """Compose an HTTP error message, appending the provider detail."""
+        message = f"HTTP {response.status_code}: {response.reason}"
+        if detail:
+            message += f" — {detail}"
+        return message

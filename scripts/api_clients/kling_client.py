@@ -1,7 +1,12 @@
 """Kling AI API client for video generation.
 
 API Docs: https://klingapi.com/docs
-Auth: JWT token from access_key + secret_key (HS256)
+Auth: two supported schemes, selected automatically:
+  1. Static API token (newer single-token auth). If ``KLING_API_TOKEN`` is
+     set (env or ctor arg), it is sent verbatim as ``Authorization: Bearer
+     <token>`` and no JWT is built or refreshed.
+  2. Legacy JWT (HS256) minted from ``KLING_ACCESS_KEY`` + ``KLING_SECRET_KEY``
+     and refreshed before each request. Used only when no API token is set.
 Capabilities: text-to-video, image-to-video, lip-sync, video extension
 """
 
@@ -49,19 +54,29 @@ def generate_jwt_token(access_key: str, secret_key: str) -> str:
 class KlingClient(BaseAPIClient):
     """Client for Kling AI video generation API.
 
-    Uses JWT authentication with access_key and secret_key. Tokens are
-    regenerated automatically when they expire.
+    Selects one of two auth schemes automatically:
+
+      - **Static API token** (newer single-token auth): if ``api_token`` is
+        provided (or ``KLING_API_TOKEN`` is set), it is used verbatim as the
+        ``Authorization: Bearer`` value and JWT generation/refresh is skipped
+        entirely.
+      - **Legacy JWT**: otherwise, a JWT is minted from ``access_key`` +
+        ``secret_key`` (HS256) and refreshed before each request.
 
     Args:
         access_key: Kling access key. Defaults to ``KLING_ACCESS_KEY`` env var.
         secret_key: Kling secret key. Defaults to ``KLING_SECRET_KEY`` env var.
+        api_token: Ready-made API token. Defaults to ``KLING_API_TOKEN`` env
+            var. When present, takes precedence over the AK/SK JWT path.
     """
 
     def __init__(
         self,
         access_key: str | None = None,
         secret_key: str | None = None,
+        api_token: str | None = None,
     ) -> None:
+        self._api_token = api_token or os.environ.get("KLING_API_TOKEN", "")
         self._access_key = access_key or os.environ.get("KLING_ACCESS_KEY", "")
         self._secret_key = secret_key or os.environ.get("KLING_SECRET_KEY", "")
         self._token_expiry = 0
@@ -77,7 +92,14 @@ class KlingClient(BaseAPIClient):
         )
 
     def _ensure_token(self) -> str:
-        """Regenerate JWT token if expired or nearly expired."""
+        """Return the current auth token, refreshing the JWT if needed.
+
+        When a static API token is configured this is a no-op that returns the
+        token unchanged (no JWT is generated). Otherwise the legacy JWT is
+        regenerated if expired or nearly expired.
+        """
+        if self._api_token:
+            return self._api_token
         now = int(time.time())
         if now >= self._token_expiry - 60:
             token = generate_jwt_token(self._access_key, self._secret_key)
