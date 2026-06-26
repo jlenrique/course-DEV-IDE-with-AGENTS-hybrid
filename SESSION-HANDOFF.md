@@ -1,4 +1,11 @@
-# Session Handoff — 2026-06-26 (autonomous /goal: lesson-component composition catalog — substrate spine S1→S5 BUILT + COMMITTED; 3-bundle live DONE NOT met)
+# Session Handoff — 2026-06-26 (autonomous /goal: lesson-component composition catalog — substrate spine S1→S5 BUILT + COMMITTED; 1 of 3 bundles LIVE; remaining unblocked)
+
+> **▶ WRAPUP FINAL STATE (supersedes the stale lines below — read this first):**
+> - **B1 (deck-only) is COMPLETE, live** — trial `6a103b6c` status=`completed` (2026-06-26T06:14:44Z): real Gamma deck + real ElevenLabs narration + compositor/Descript bundle; motion excluded; via the new front-door→composer path. (Earlier "paused-at-error" lines below are SUPERSEDED — it was driven to completion after the figure-token fix.)
+> - **The slide-03 block was a FALSE POSITIVE, fixed** (`figure_tokens.py` range-aware unit inheritance; gate NOT loosened — only the unit is inherited, never the number; guard test proves absent figures still trip it). Committed.
+> - **KLING IS RESOLVED — NOT a billing block.** The `1102 "Account balance not enough"` was **expired tokens**; after the operator refreshed them the legacy AK/SK call returns `code:0 SUCCEED` (real task ids). Motion is **fully unblocked**. (`base_client` was masking Kling's real `{code,message}` as a generic rate-limit — that's the in-flight fix below.) Operator also added `KLING_API_TOKEN` (newer single-token) to `.env` for optional Bearer migration.
+> - **IN-FLIGHT at wrapup (commit on return):** (a) **workbook brick build** → real DOCX (deliverable #2); (b) **`kling_client.py` Bearer-preferred `KLING_API_TOKEN`** support + **`base_client` real-error-body** surfacing (operator-directed).
+> - **REMAINING to the 3-bundle DONE (now FULLY unblocked, no external dependency):** build the **motion producer** (Tier-2 G2M `motion_planner` — party round + build, then wire to 07E; Kling now live) → run **B2** (deck+motion) → run **B3** (deck+motion+workbook). Then the goal's 3 live bundle runs are met.
 
 **Final class:** S (substrate — engine compiler/digest, manifest, kira, Marcus-CLI, lesson_plan registries). **Branch:** `fidelity-perception-arc-2026-06-19`. Autonomous `/goal` (`goal-composition-catalog-2026-06-25.txt`): build lesson-component composition via a curated 3-bundle catalog, end-to-end through Marcus-SPOC; DONE = 3 live bundle runs. **Goal NOT met** — it is genuinely ~3 epics and partly externally blocked; the full *substrate spine* was built, committed, and T11-gated, and one live deck run is in flight.
 
