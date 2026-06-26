@@ -29,7 +29,11 @@ def test_production_gate_ids_from_live_manifest() -> None:
     manifest = load(LIVE_MANIFEST)
 
     # Arc 2 (2026-06-18): G2B (variant) + G4A (voice) woken into the surfaced set.
-    assert production_gate_ids(manifest) == frozenset({"G1", "G2B", "G2C", "G3", "G4A", "G4"})
+    # G0-S2 (2026-06-26): G0E source-enrichment confirm-gate #1 added (surfaced;
+    # runtime-traversed when the brick is asleep, MARCUS_G0_ENRICHMENT_ACTIVE).
+    assert production_gate_ids(manifest) == frozenset(
+        {"G0E", "G1", "G2B", "G2C", "G3", "G4A", "G4"}
+    )
 
 
 def test_production_gate_id_literal_stays_in_sync_with_manifest() -> None:
@@ -83,7 +87,7 @@ def test_resolve_production_handler_preserves_active_pause_points() -> None:
     manifest = load(LIVE_MANIFEST)
     by_code = {node.gate_code: node for node in manifest.nodes if node.gate_code}
 
-    for gate_code in ("G1", "G2B", "G2C", "G3", "G4A", "G4"):
+    for gate_code in ("G0E", "G1", "G2B", "G2C", "G3", "G4A", "G4"):
         handler = _resolve_production_handler(
             by_code[gate_code],
             dispatch_registry={},

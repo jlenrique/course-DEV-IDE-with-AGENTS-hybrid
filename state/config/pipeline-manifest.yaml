@@ -163,6 +163,53 @@ nodes:
     fold_target: null
     rationale: "Emits runs/<trial_id>/gates/<gate>-review-pack.html before per-slide-array gates."
 
+  - id: "g0-enrichment"
+    label: "G0 Source-Content Enrichment (Story G0-S2)"
+    specialist_id: null
+    scaffold_node: null
+    model_config_ref: null
+    dependencies: {}
+    gate: false
+    gate_code: null
+    sub_phase_of: null
+    insertion_after: null
+    hud_tracked: false
+    pack_section_anchor: "0.8)"
+    pack_version: "v4.2"
+    fold_with: null
+    fold_target: null
+    rationale: >-
+      Runner-wired orchestration node (G0-S2 brick). Marcus-SPOC LLM pre-pass OFF
+      the deterministic critical path: types every enumerated source span (closed
+      10-type taxonomy + other:<label> escape hatch) and extracts candidate
+      provisional Learning Objectives with resolvable SourceRef provenance, frozen
+      + cached keyed to a corpus fingerprint for replay determinism. Pack/HUD-
+      invisible (is_orchestration_only) — a runtime pre-pass, not pack prose;
+      topology refinement within the v4.2 lineage (mirrors directive-composer /
+      07D.5 / 07W). Feeds operator confirm-gate #1 (G0E).
+
+  - id: "g0-enrichment-gate"
+    label: "G0 Source-Enrichment Confirm Gate"
+    specialist_id: null
+    scaffold_node: null
+    model_config_ref: null
+    gate: true
+    gate_code: "G0E"
+    fold_with: null
+    fold_target: null
+    sub_phase_of: null
+    insertion_after: "g0-enrichment"
+    hud_tracked: false
+    pack_section_anchor: "0.8-gate)"
+    pack_version: "v4.2"
+    rationale: >-
+      Operator confirm-gate #1 (G0-S2). Content-free HIL pause (is_content_free_gate)
+      AFTER the g0-enrichment pre-pass: Marcus-SPOC narrates the typed manifest +
+      provisional LOs + A10 enumeration-provenance/traversal-roots + the
+      reconcilable count view, and the operator verdict (never the model) advances
+      the run. Pack/HUD-invisible — a runtime pause point, not pack prose (mirrors
+      07B-gate / 11-gate). Emits a G0ECard at the pause.
+
   - id: "01"
     label: "Activation + Preflight"
     specialist_id: "marcus"
@@ -925,7 +972,14 @@ nodes:
       lineage (witness regenerates; frozen v4.2 untouched) — mirrors 07D.5/07G.
 
 edges:
-  - {from: __start__, to: "01"}
+  # G0-S2 (2026-06-26): the content-free G0E confirm-gate threads into the
+  # renderable linear chain (the 07B-gate/11-gate convention — content-free gate
+  # nodes are edge-chained). The g0-enrichment ORCHESTRATION node stays unchained
+  # (runner-invoked by list order, like directive-composer). The runtime walk
+  # order is manifest.nodes LIST order, so this edge is the compiled-graph
+  # topology only; the gate pauses ONLY when MARCUS_G0_ENRICHMENT_ACTIVE.
+  - {from: __start__, to: "g0-enrichment-gate"}
+  - {from: "g0-enrichment-gate", to: "01"}
   - {from: "01", to: "02"}
   - {from: "02", to: "02A"}
   - {from: "02A", to: "03"}

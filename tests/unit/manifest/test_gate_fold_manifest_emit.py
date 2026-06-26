@@ -15,6 +15,7 @@ EXPECTED = {
     "G0": ("fold_with", "G1"),
     "G0A": ("fold_with", "G1"),
     "G0B": ("fold_with", "G1"),
+    "G0E": ("pause_point", None),  # G0-S2 (2026-06-26): confirm-gate #1 (surfaced)
     "G1": ("pause_point", None),
     "G1A": ("fold_with", "G2C"),
     "G2": ("fold_with", "G2C"),
@@ -62,7 +63,7 @@ def test_emit_lists_all_declared_gate_codes(tmp_path: Path) -> None:
     emit_gate_fold_manifest(DEFAULT_MANIFEST_PATH, output)
     text = output.read_text(encoding="utf-8")
 
-    assert text.count("- code:") == 18
+    assert text.count("- code:") == 19  # +G0E (G0-S2 confirm-gate #1)
 
 
 def test_gate_fold_entries_have_non_null_mechanisms() -> None:

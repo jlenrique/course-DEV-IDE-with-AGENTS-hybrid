@@ -6,7 +6,7 @@ from app.manifest import gate_topology
 def test_unfolded_topology_lists_all_declared_gates() -> None:
     output = gate_topology.render_topology(unfolded=True)
 
-    assert output.count("|") == 18
+    assert output.count("|") == 19  # +G0E (G0-S2 confirm-gate #1)
     assert "G0    | fold_with: G1" in output
     assert "G5    | fold_with: G4" in output
 
@@ -15,8 +15,9 @@ def test_folded_topology_lists_active_pause_points_only() -> None:
     output = gate_topology.render_topology(unfolded=False)
 
     # Arc 2 (2026-06-18): G2B (variant) + G4A (voice) woken → 6 active pause
-    # points (was 4: G1/G2C/G3/G4).
-    assert output.count("|") == 6
+    # points (was 4: G1/G2C/G3/G4). G0-S2 (2026-06-26): +G0E → 7.
+    assert output.count("|") == 7
+    assert "G0E   | pause_point" in output
     assert "G1    | pause_point" in output
     assert "G2B   | pause_point" in output
     assert "G2C   | pause_point" in output

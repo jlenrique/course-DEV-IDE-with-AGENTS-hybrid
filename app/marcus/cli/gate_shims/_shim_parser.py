@@ -19,7 +19,10 @@ from uuid import UUID
 # mid-pipeline HIL pause points rather than terminal gates, but the shim
 # mechanism is gate-agnostic (load verdict → resume_production_trial), so they
 # share the same single-decision shim surface the operator drives at a pause.
-ACTIVE_TERMINAL_GATES: tuple[str, ...] = ("G1", "G2B", "G2C", "G3", "G4A", "G4")
+# G0E (G0-S2 source-enrichment confirm-gate #1, 2026-06-26) is the front-door
+# pause when the brick is woken (MARCUS_G0_ENRICHMENT_ACTIVE); same gate-agnostic
+# shim surface.
+ACTIVE_TERMINAL_GATES: tuple[str, ...] = ("G0E", "G1", "G2B", "G2C", "G3", "G4A", "G4")
 
 _HELP_TEMPLATE = """\
 OPERATOR

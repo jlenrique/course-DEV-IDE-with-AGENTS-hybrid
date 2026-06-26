@@ -172,8 +172,10 @@ def test_compile_real_repo_root_with_migrated_v42_manifest() -> None:
     assert isinstance(g, StateGraph)
     # 37 → 40: Arc 1a (2026-06-18) split the 3 co-located voice/variant HIL
     # gates into content node + content-free folded gate node (07B-gate,
-    # 11-gate, 11B-gate).
-    assert len(m.nodes) == 40
+    # 11-gate, 11B-gate). 40 → 43: 07G PNG-vision + 07D.5 motion-planner + 07W
+    # workbook bricks (this pin had drifted stale at 40). 43 → 45: G0-S2
+    # (2026-06-26) g0-enrichment node + g0-enrichment-gate (confirm-gate #1).
+    assert len(m.nodes) == 45
 
 
 def _prepare_runtime_graphs_dir(root: Path) -> None:

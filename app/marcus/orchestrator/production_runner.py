@@ -32,6 +32,7 @@ from app.marcus.lesson_plan.composition import compose_manifest
 from app.marcus.orchestrator import (
     chooser_publisher,
     conversation_persistence,
+    g0_enrichment_wiring,
     gate_runner,
     package_builders,
     pre_gate_marcus,
@@ -49,6 +50,7 @@ from app.marcus.orchestrator.slide_variant_selection import (
 from app.models.decision_cards import (
     AnyDecisionCardAdapter,
     DecisionCardMeta,
+    G0ECard,
     G1Card,
     G2BCard,
     G2CCard,
@@ -668,6 +670,35 @@ def _build_decision_card(
             selected_voice_id=None,
             pick_context=g4a_context,
             operator_prompt="Approve the proposed voice, or edit to select an alternate.",
+        )
+    if gate_id == "G0E":
+        # Operator confirm-gate #1 (G0-S2). The g0-enrichment orchestration node
+        # froze the typed manifest + provisional LOs + A10 provenance/roots to
+        # run_dir/g0-enrichment.json; surface that as the confirm card. Deterministic
+        # guard: the model's typing/LO proposal NEVER auto-advances — this card is a
+        # PROPOSAL the operator confirms (verb defaults to approve only as the
+        # operator's own default-accept, decided by the verdict, not the model).
+        enrichment = (
+            g0_enrichment_wiring.load_enrichment_result(_run_dir(trial_id, runs_root))
+            or {}
+        )
+        return G0ECard(
+            card_id=common["card_id"],
+            trial_id=common["trial_id"],
+            created_at=common["created_at"],
+            decision_card_digest="0" * 64,
+            meta=_base_card_meta(common["meta"]),
+            verb=common["verb"],
+            typed_manifest=enrichment.get("typed_sources", []),
+            provisional_los=enrichment.get("provisional_los", []),
+            traversal_roots=enrichment.get("traversal_roots", []),
+            enumeration_provenance=enrichment.get("enumeration_provenance", []),
+            reconcile=enrichment.get("reconcile", {}),
+            dissents=enrichment.get("dissents", []),
+            operator_prompt=(
+                "Confirm the source TYPE manifest + candidate provisional LOs "
+                "(or edit/reject). Marcus proposes; you decide."
+            ),
         )
     raise RuntimeError(f"unsupported production gate id: {gate_id}")
 
@@ -1926,6 +1957,16 @@ def run_production_trial(
             node_kind = getattr(handler, "__production_node_kind__", None)
             if node_kind == "gate":
                 gate_id = handler.__production_gate_id__
+                if (
+                    gate_id == g0_enrichment_wiring.G0_ENRICHMENT_GATE_CODE
+                    and not g0_enrichment_wiring.g0_enrichment_active()
+                ):
+                    # AC-S2-7: with the G0-enrichment brick asleep, confirm-gate #1
+                    # is traversed (no pause) so deck-default flow is byte-identical
+                    # (the first pause stays G1). Woken via MARCUS_G0_ENRICHMENT_ACTIVE.
+                    last_gate_crossed = gate_id
+                    graph_step_completed = True
+                    continue
                 if not pause_at_gates:
                     if gate_id in active_gate_ids and not allow_offline_cost_report:
                         raise GateBypassError(
@@ -2076,6 +2117,62 @@ def run_production_trial(
                         node_id=node.id,
                         node_index=index,
                         specialist_id=research_wiring.RESEARCH_WIRING_SPECIALIST_ID,
+                        trial_id=effective_trial_id,
+                        envelope=envelope,
+                        production_envelope=production_envelope,
+                        run_state=run_state,
+                        child_runs=child_runs,
+                        trace_metadata=trace_metadata,
+                        last_gate_crossed=last_gate_crossed,
+                        graph_step_completed=graph_step_completed,
+                        specialist_calls=specialist_calls,
+                        manifest_path=manifest_path,
+                        runs_root=runs_root,
+                        allow_offline_cost_report=allow_offline_cost_report,
+                        max_specialist_calls=max_specialist_calls,
+                        directive_path=directive_path,
+                        bundle_dir=bundle_dir,
+                    )
+                run_state = run_state.model_copy(
+                    update={"production_envelope": production_envelope}
+                )
+                graph_step_completed = True
+                continue
+
+            if (
+                node_kind == "orchestration"
+                and node.id in g0_enrichment_wiring.G0_ENRICHMENT_NODE_IDS
+                and g0_enrichment_wiring.g0_enrichment_active()
+            ):
+                # G0-S2 brick: the Marcus-SPOC G0 pre-pass (typing + provisional-LO
+                # extraction) OFF the deterministic critical path, frozen + corpus-
+                # fingerprint-cached, feeding operator confirm-gate #1 (G0E, the next
+                # node). TWO-WALK PARITY: this node sits BEFORE node 01, so it fires
+                # on the START walk here; the SAME side-effect is mirrored into the
+                # continuation walk (resume/recover re-entry before G0E). The live
+                # LLM is operator-gated via _research_dispatch_live()'s sibling
+                # offline guard (_has_live_openai): offline runs use the deterministic
+                # recorded pre-pass; the live-segment proof (AC-S2-8) exercises the
+                # real model.
+                try:
+                    production_envelope = g0_enrichment_wiring.run_g0_enrichment(
+                        node_id=node.id,
+                        production_envelope=production_envelope,
+                        corpus_dir=corpus_path,
+                        trial_id=effective_trial_id,
+                        runs_root=runs_root,
+                        dispatch_live=(
+                            g0_enrichment_wiring.g0_dispatch_live()
+                            and _has_live_openai()
+                            and not allow_offline_cost_report
+                        ),
+                    )
+                except SpecialistDispatchError as exc:
+                    return _pause_at_error(
+                        error=exc,
+                        node_id=node.id,
+                        node_index=index,
+                        specialist_id=g0_enrichment_wiring.G0_ENRICHMENT_SPECIALIST_ID,
                         trial_id=effective_trial_id,
                         envelope=envelope,
                         production_envelope=production_envelope,
@@ -2473,6 +2570,15 @@ def _continue_production_walk(
             node_kind = getattr(handler, "__production_node_kind__", None)
             if node_kind == "gate":
                 gate_id = handler.__production_gate_id__
+                if (
+                    gate_id == g0_enrichment_wiring.G0_ENRICHMENT_GATE_CODE
+                    and not g0_enrichment_wiring.g0_enrichment_active()
+                ):
+                    # AC-S2-7 (continuation-walk leg): traverse the asleep G0E gate
+                    # so a resume/recover flow is byte-identical too (two-walk parity).
+                    last_gate_crossed = gate_id
+                    graph_step_completed = True
+                    continue
                 if allow_offline_cost_report:
                     # Offline runs traverse gates without pausing (existing
                     # contract); keep the pre-gate draft + trace append the
@@ -2644,6 +2750,58 @@ def _continue_production_walk(
                         node_id=node.id,
                         node_index=index,
                         specialist_id=research_wiring.RESEARCH_WIRING_SPECIALIST_ID,
+                        trial_id=trial_id,
+                        envelope=envelope,
+                        production_envelope=production_envelope,
+                        run_state=run_state,
+                        child_runs=child_runs,
+                        trace_metadata=trace_metadata,
+                        last_gate_crossed=last_gate_crossed,
+                        graph_step_completed=graph_step_completed,
+                        specialist_calls=specialist_calls,
+                        manifest_path=manifest_path,
+                        runs_root=runs_root,
+                        allow_offline_cost_report=allow_offline_cost_report,
+                        max_specialist_calls=max_specialist_calls,
+                        directive_path=directive_path,
+                        bundle_dir=bundle_dir,
+                    )
+                run_state = run_state.model_copy(
+                    update={"production_envelope": production_envelope}
+                )
+                graph_step_completed = True
+                continue
+
+            if (
+                node_kind == "orchestration"
+                and node.id in g0_enrichment_wiring.G0_ENRICHMENT_NODE_IDS
+                and g0_enrichment_wiring.g0_enrichment_active()
+            ):
+                # G0-S2 brick — CONTINUATION WALK leg (two-walk parity). The
+                # g0-enrichment node sits before node 01, so on the trial path it
+                # fires on the START walk; this mirror covers a resume/recover that
+                # re-enters the node before the G0E gate (the storyboard/chooser +
+                # research-wiring both-walks discipline). Idempotent: a node already
+                # carrying its contribution is not re-run.
+                try:
+                    production_envelope = g0_enrichment_wiring.run_g0_enrichment(
+                        node_id=node.id,
+                        production_envelope=production_envelope,
+                        corpus_dir=Path(envelope.corpus_path),
+                        trial_id=trial_id,
+                        runs_root=runs_root,
+                        dispatch_live=(
+                            g0_enrichment_wiring.g0_dispatch_live()
+                            and _has_live_openai()
+                            and not allow_offline_cost_report
+                        ),
+                    )
+                except SpecialistDispatchError as exc:
+                    return _pause_at_error(
+                        error=exc,
+                        node_id=node.id,
+                        node_index=index,
+                        specialist_id=g0_enrichment_wiring.G0_ENRICHMENT_SPECIALIST_ID,
                         trial_id=trial_id,
                         envelope=envelope,
                         production_envelope=production_envelope,

@@ -49,6 +49,7 @@ RUNTIME_GATE_IDS: frozenset[str] = frozenset(
         "G0",
         "G0A",
         "G0B",
+        "G0E",
         "G1",
         "G1A",
         "G1.5",

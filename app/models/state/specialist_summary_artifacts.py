@@ -43,6 +43,13 @@ CANONICAL_SPECIALIST_IDS: tuple[str, ...] = (
     # motion_planner above — emit_spans would crash the first live B3 dispatch
     # with "unknown specialist_id 'workbook_producer'" if it were omitted.
     "workbook_producer",
+    # G0-S2 G0-enrichment brick (app/marcus/orchestrator/g0_enrichment_wiring.py):
+    # a runner-wired orchestration node ("g0-enrichment", specialist_id null) that
+    # canonicalizes to "g0_enrichment". Registered here so emit_spans / specialist-
+    # summary attribution never crashes with "unknown specialist_id 'g0_enrichment'"
+    # the same way irene_pass1 / motion_planner / workbook_producer did on first
+    # live dispatch.
+    "g0_enrichment",
 )
 DEFERRED_SPECIALIST_IDS = frozenset()
 
@@ -62,6 +69,7 @@ DISPLAY_NAMES: dict[str, str] = {
     "vera": "Vera",
     "motion_planner": "Motion-Planner",
     "workbook_producer": "Workbook Producer",
+    "g0_enrichment": "G0-Enrichment",
 }
 
 

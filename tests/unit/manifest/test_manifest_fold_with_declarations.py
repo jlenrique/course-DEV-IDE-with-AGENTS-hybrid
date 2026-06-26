@@ -11,6 +11,7 @@ EXPECTED_FOLD_WITH = {
     "G0": "G1",
     "G0A": "G1",
     "G0B": "G1",
+    "G0E": None,  # G0-S2 (2026-06-26): source-enrichment confirm-gate #1 (surfaced)
     "G1": None,
     "G1A": "G2C",
     "G2": "G2C",

@@ -17,6 +17,7 @@ from app.models.decision_cards.base import (
     DecisionCardVerb,
 )
 from app.models.decision_cards.g0 import G0Card
+from app.models.decision_cards.g0e import G0ECard
 from app.models.decision_cards.g1 import G1Card
 from app.models.decision_cards.g2a import G2ACard
 from app.models.decision_cards.g2b import G2BCard
@@ -41,7 +42,17 @@ from app.models.decision_cards.vocabulary import (
 )
 
 AnyDecisionCard: TypeAlias = Annotated[
-    G0Card | G1Card | G2ACard | G2BCard | G2CCard | G3Card | G4Card | G4ACard | G5Card | G6Card,
+    G0Card
+    | G0ECard
+    | G1Card
+    | G2ACard
+    | G2BCard
+    | G2CCard
+    | G3Card
+    | G4Card
+    | G4ACard
+    | G5Card
+    | G6Card,
     Field(discriminator="gate_id"),
 ]
 AnyDecisionCardAdapter = TypeAdapter(AnyDecisionCard)
@@ -59,6 +70,7 @@ __all__ = [
     "GateDecisionToken",
     "GateDirectiveToken",
     "G0Card",
+    "G0ECard",
     "G1Card",
     "G2ACard",
     "G2BCard",

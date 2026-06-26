@@ -149,10 +149,46 @@ def _narrate_voice(card: dict[str, Any], lines: list[str]) -> None:
     lines.append("  Say a voice id to bind it through synthesis, or approve my recommendation.")
 
 
+def _narrate_g0_enrichment(card: dict[str, Any], run_dir: Path, lines: list[str]) -> None:
+    """Confirm-gate #1 (G0E): typed manifest + provisional LOs + A10 roots + dissent."""
+    enrichment = _load(run_dir / "g0-enrichment.json") or {}
+    inner = card.get("card", {})
+    typed = inner.get("typed_manifest") or enrichment.get("typed_sources") or []
+    los = inner.get("provisional_los") or enrichment.get("provisional_los") or []
+    roots = inner.get("traversal_roots") or enrichment.get("traversal_roots") or []
+    reconcile = inner.get("reconcile") or enrichment.get("reconcile") or {}
+    dissents = inner.get("dissents") or enrichment.get("dissents") or []
+    lines.append(f"{_M} G0 source-enrichment manifest for your confirmation (gate #1):")
+    lines.append(f"  Traversal roots I walked ({len(roots)}):")
+    for root in roots[:5]:
+        lines.append(f"    - {root.get('kind')}: {root.get('root_id')}")
+    lines.append(f"  Source TYPE manifest ({len(typed)} spans):")
+    for src in typed[:12]:
+        flag = "  [flagged: no generator today]" if src.get("flagged_unconsumed") else ""
+        lines.append(f"    - {src.get('source_id')} -> {src.get('source_type')}{flag}")
+    lines.append(f"  Candidate provisional LOs ({len(los)}):")
+    for lo in los[:8]:
+        lines.append(f"    - {lo.get('objective_id')}: {lo.get('statement', '')[:80]}")
+    if reconcile:
+        lines.append(
+            f"  Reconcile: {reconcile.get('n_in')} in == "
+            f"{reconcile.get('n_typed')} typed + {reconcile.get('n_ignored')} ignored "
+            f"({reconcile.get('n_flagged')} flagged classification-only)."
+        )
+    if dissents:
+        d = dissents[0]
+        lines.append(
+            f"  My recorded dissent (A3): on {d.get('against')} — {d.get('marcus_position')}"
+        )
+    lines.append("  Confirm the typing + LOs, or tell me to re-type a span / drop an LO.")
+
+
 def narrate_gate(gate_id: str, card: dict[str, Any], run_dir: Path) -> str:
     """Marcus-voiced narration of a gate, surfacing the relevant a-g capability."""
     lines: list[str] = [_RULE, f"  GATE {gate_id}"]
-    if gate_id == "G1":
+    if gate_id == "G0E":
+        _narrate_g0_enrichment(card, run_dir, lines)
+    elif gate_id == "G1":
         _narrate_sources(run_dir, lines)
         _narrate_ingestion(run_dir, lines)
         _narrate_lesson_plan(run_dir, lines)
