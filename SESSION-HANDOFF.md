@@ -1,3 +1,24 @@
+# Session Handoff — 2026-06-26 PM-2 (G0-enrichment cycle: DESIGN + S1 + S2-offline DONE; S3 + 2 LIVE E2E runs carried; 4h goal-ceiling reached)
+
+**Final class:** S (substrate — LO schema unification + G0-enrichment brick + gate; 2 new specialist-ish modules + manifest gate + two-walk wiring; planning artifacts). **Branch:** `fidelity-perception-arc-2026-06-19`. **Commits:** S1 `fcd1a73` (pushed) + S2 (committed this wrapup; **push pending** — credential dialog).
+
+**Goal (autonomous, 4h ceiling):** "design → implement → test as freely-executable modules → run E2E from real trial-production start through hand-off-to-Gary, error-free, TWICE." **Outcome: PARTIAL — design + S1 + S2-offline DONE; the two live E2E runs (terminal DoD) + S3 NOT reached before the ceiling.** Honest: the goal was ~3 substantial stories + two live runs; ~3.5h delivered the full design spine + 2 of 3 stories T11-closed, no half-committed work.
+
+**What completed (each: spec → dev → 3-layer T11 → remediate → commit):**
+1. **Party-ratified canonical LO schema + signed LO-delta contract** (Winston/John/Marcus/Mary + **Irene signed**; unanimous GREEN-WITH-AMENDMENTS, no impasse): `lo-schema-ratification-2026-06-26.md`. Charter D1–D4 operator-resolved (10-type enum + `other:` escape hatch; operator-confirms-manifest; Irene in; TYPE⟂ROLE) + **adequacy-is-ADVISORY** (operator+SME decide; never a blocker; may suggest research/artifact-guidance).
+2. **S1** (`fcd1a73`): canonical `LearningObjective` + `SourceRef` + `SourceAdequacy` + `advance_lo` guard (irene can never reach ratified) + adapter; T11 clean (Auditor) + 7 SHOULD-FIX/NIT remediated RED-first; 275 tests.
+3. **S2** (committed): the G0-enrichment brick — typing + provisional-LO extraction via a Marcus-SPOC LLM pre-pass OFF the deterministic critical path (corpus-fingerprint cache), operator confirm-gate #1 (G0E) wired into BOTH `production_runner` walks (two-walk parity PASS, verified), A3/A4/A10 audit artifacts; feature-flagged OFF by default (deck-default byte-identical — woken-gate precedent). T11 3-layer: 7/7 offline ACs PASS; **1 MUST-FIX remediated** (live-path reconcile = one TypedSource per enumerated id, dedup/drop-fabricated/fill-missing → no crash on LLM under-typing); 26 tests. S3 spec authored (`g0-s3-irene-refinement-loop.md`).
+
+**What is next (CARRIED — see next-session-start-here for the ordered playbook):** push S2 → AC-S2-8 LIVE proof (`MARCUS_G0_ENRICHMENT_ACTIVE=1 MARCUS_G0_DISPATCH_LIVE=1`) → dev S3 → **two LIVE E2E runs G0→Gary error-free twice** → close S2 carried SHOULD-FIX (G0E edit-verb no-op; 2 test-quality; file the flip-default+migrate-~47-tests follow-on).
+
+**Regression integrity (operator's vigilant-guard mandate):** every S2 regression failure independently verified PRE-EXISTING via stash-baseline (2× `test_schema_pin`, `test_run_summary_yaml_emit`, `test_front_door::pack_hash`, `test_marcus_import_linter_contract`/C3). S1+S2 add NO new break. Deferred follow-ons filed (deferred-inventory §G0-Enrichment): shared-validator hoist, collateral_spec `\n` gap, the pre-existing 07W C3 import break, A8-reconfirm→S3.
+
+**⚠️ Operator-mandated, AFTER this arc:** branch-consolidation pass — review all branches + update master to a clean consolidated state before branching next session (`fidelity-perception-arc-2026-06-19` has run long). Memory `[[project_branch_consolidation_owed]]`.
+
+**Key lesson:** a 4h ceiling on a 3-story-plus-2-live-runs goal is genuinely tight; the right call under the ceiling was to land 2 stories fully T11-closed + committed with an exact resume point, not to rush S3 + live runs into a half-state. No mocks; the live legs are honestly carried, not faked.
+
+---
+
 # Session Handoff — 2026-06-26 PM (composition-catalog goal ✅ DONE — 3 in-graph bundles, party unanimous; + G0-enrichment cycle PREPPED)
 
 **Final class:** S (substrate — two new in-graph specialist bricks + manifest/composer/registration/witness + live production runs + planning prep). **Branch:** `fidelity-perception-arc-2026-06-19`, HEAD `b914bb9` (pushed). Continuation of the composition-catalog arc.
