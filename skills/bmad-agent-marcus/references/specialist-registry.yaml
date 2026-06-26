@@ -149,8 +149,17 @@ personas:
     sanctum: _bmad/memory/bmad-agent-kira/
     persona_skill: skills/bmad-agent-kira/SKILL.md
     api_mastery_skill: skills/bmad-agent-kling/SKILL.md
-    role: motion-plan + Kling video generation (§07D / §07E)
+    role: Kling video generation (§07E)
     activated_at: slab-7b-7 (2026-05-01)
+
+  motion_planner:
+    class: D2
+    role: deterministic motion-plan producer (§07D.5); adapts the Epic-14 motion engine + kling-video library into kira's motion_plan
+    activated_at: composition-catalog-B2 (2026-06-26)
+    note: |
+      Deterministic ADAPTER (no API; no LLM in the critical path — party amendment A).
+      Produces manifest node 07D.5; consumed by kira at §07E via dependency_projections.
+      No persona sanctum/SKILL.md (mirrors the composer-style deterministic producer).
 
   enrique:
     class: C

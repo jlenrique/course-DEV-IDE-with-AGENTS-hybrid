@@ -74,8 +74,9 @@ def test_kira_act_error_pauses_on_starved_envelope() -> None:
     assert state.model_resolution_trail[-1].reason == "kira.motion-plan.missing"
 
 
-def test_kira_real_plan_still_dispatches() -> None:
+def test_kira_real_plan_still_dispatches(tmp_path: object) -> None:
     """A real, non-empty plan is unaffected by the fail-loud change (GREEN guard)."""
+    from pathlib import Path
 
     class _RecordingClient:
         def __init__(self) -> None:
@@ -91,15 +92,26 @@ def test_kira_real_plan_still_dispatches() -> None:
                 }
             }
 
+        def download_video(self, video_url: object, output_path: object) -> Path:
+            p = Path(str(output_path))
+            p.parent.mkdir(parents=True, exist_ok=True)
+            p.write_bytes(b"\x00\x00\x00\x18ftypmp42moovmdat")
+            return p
+
     client = _RecordingClient()
     payload = {
+        "bundle_path": str(tmp_path),
         "motion_plan": {
             "slides": [
                 {"slide_id": "slide-01", "kling_prompt": "slow push-in", "estimated_cost_usd": 0.0}
             ]
-        }
+        },
     }
     verdict = kira_act.generate_motion_from_plan(payload, client=client)  # type: ignore[arg-type]
     assert len(client.calls) == 1
-    assert verdict["motion_receipts"][0]["status"] == "success"
-    assert verdict["motion_receipts"][0]["motion_asset_path"] == "https://cdn.test/s1.mp4"
+    receipt = verdict["motion_receipts"][0]
+    assert receipt["status"] == "success"
+    # The CDN url is recorded as the source; the asset is the materialized local file.
+    assert receipt["motion_source_url"] == "https://cdn.test/s1.mp4"
+    expected_asset = str((Path(str(tmp_path)) / "motion" / "slide-01.mp4").resolve())
+    assert receipt["motion_asset_path"] == expected_asset

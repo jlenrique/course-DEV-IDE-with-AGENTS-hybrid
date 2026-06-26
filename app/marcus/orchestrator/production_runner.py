@@ -1294,6 +1294,19 @@ def _runner_payload_for_specialist(
         if gamma_settings is not None:
             payload["gamma_settings"] = gamma_settings
         return payload
+    # Motion data-plane SEED (B2 composed-run drive, 2026-06-26): until the real
+    # in-graph motion-plan producer lands, kira's 07E is fed a seeded motion plan
+    # via the run/seed path. KIRA_MOTION_PLAN_PATH names a real motion_plan.yaml;
+    # bundle_path roots kira's motion/ receipts + downloaded .mp4 under the run
+    # dir. Neither key collides with 07E's dependency (upstream_output<-quinn_r).
+    if specialist_id == "kira":
+        plan_path = os.environ.get("KIRA_MOTION_PLAN_PATH")
+        if plan_path and runs_root is not None and trial_id is not None:
+            return {
+                "motion_plan_path": plan_path,
+                "bundle_path": (runs_root / str(trial_id)).as_posix(),
+            }
+        return None
     return None
 
 

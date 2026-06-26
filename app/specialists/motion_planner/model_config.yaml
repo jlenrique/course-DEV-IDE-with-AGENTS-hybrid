@@ -1,0 +1,19 @@
+# motion_planner model cascade — 07D.5 deterministic-producer port-shape.
+#
+# Framework-over-epic drift lock:
+# - Canonical node is `plan` (records a model-resolution trail entry for FR16
+#   uniformity); `act` is PURE DETERMINISTIC and NEVER invokes an LLM.
+# - Tier request is `fast` for resolution-trail continuity (mirrors kira).
+# - Current policy maps `fast` -> `gpt-5-nano`.
+#
+# Runtime discipline (binding amendment A, party 2026-06-26):
+# - The producer is a deterministic ADAPTER over the Epic-14 motion-plan engine.
+#   The `_plan` node records a model-resolution trail entry for trail uniformity,
+#   but `_act` builds the plan from the authorized storyboard + library SSOT with
+#   NO model client touched. The recorded default model is never invoked.
+# - `temperature_default: 0.0` is retained for resolution-trail consistency.
+specialist_id: "motion_planner"
+default_model: "gpt-5-nano"
+per_node_overrides:
+  act: "gpt-5-nano"
+temperature_default: 0.0

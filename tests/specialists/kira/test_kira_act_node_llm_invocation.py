@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+from pathlib import Path
 from typing import Any
 
 from app.models.state.cache_state import CacheState
@@ -24,6 +25,12 @@ class FakeKlingClient:
                 },
             }
         }
+
+    def download_video(self, video_url: object, output_path: object) -> Path:
+        p = Path(str(output_path))
+        p.parent.mkdir(parents=True, exist_ok=True)
+        p.write_bytes(b"\x00\x00\x00\x18ftypmp42moovmdat")
+        return p
 
 
 def test_kira_act_node_uses_api_bound_motion_generation(tmp_path, monkeypatch) -> None:

@@ -164,14 +164,22 @@ def _call_generate_motion(
     client: KlingClient, slide: dict[str, Any], *, prompt: str
 ) -> dict[str, Any]:
     generate_motion = getattr(client, "generate_motion", None)
+    # `sound` is only sent when a slide explicitly enables native audio. The
+    # former unconditional ``bool(...)`` sent ``"sound": false`` on every call,
+    # which Kling rejects with HTTP 400 code=1201 "Failed to resolve the request
+    # body" — that silently broke EVERY text2video/image2video dispatch through
+    # this segment. Omitting the field (None) is semantically identical to "no
+    # native audio" and is accepted (verified live 2026-06-26). text2video is a
+    # product-critical path; keep the body minimal.
+    sound = True if slide.get("sound") else None
     kwargs = {
         "prompt": prompt,
-        "model_name": str(slide.get("model_name") or "kling-v2-6"),
+        "model_name": str(slide.get("model_name") or "kling-v1-6"),
         "duration": str(slide.get("duration") or "5"),
         "aspect_ratio": str(slide.get("aspect_ratio") or "16:9"),
         "mode": str(slide.get("mode") or "std"),
         "negative_prompt": slide.get("negative_prompt"),
-        "sound": bool(slide.get("sound", False)),
+        "sound": sound,
     }
     image_url = slide.get("image_url") or slide.get("visual_file")
     if callable(generate_motion):
@@ -247,12 +255,29 @@ def generate_motion_from_plan(
         actual_cost = float(slide.get("actual_cost_usd", estimated_cost))
         cumulative_cost += actual_cost
         motion_asset_path = ""
+        motion_source_url = ""
         if status == "success":
-            motion_asset_path = _video_url(final_response) or ""
+            motion_source_url = _video_url(final_response) or ""
+            # Materialize the rendered clip IN-PIPELINE: the downstream compositor
+            # copies motion_asset_path from disk (fail-loud on a non-file), so a
+            # bare CDN URL is not a deliverable. Download the live Kling render to
+            # the run bundle's motion/ dir and hand the compositor a real .mp4.
+            if motion_source_url:
+                local_mp4 = motion_dir / f"{sid}.mp4"
+                try:
+                    client.download_video(motion_source_url, local_mp4)
+                    motion_asset_path = str(local_mp4.resolve())
+                except Exception as exc:  # pragma: no cover - live download failure
+                    status = "failure"
+                    final_response = {
+                        "error": f"motion download failed: {exc}",
+                        "video_url": motion_source_url,
+                    }
         receipt = {
             "slide_id": sid,
             "status": status,
             "motion_asset_path": motion_asset_path,
+            "motion_source_url": motion_source_url,
             "cost_tracking": {
                 "estimated_cost_usd": estimated_cost,
                 "actual_cost_usd": actual_cost,

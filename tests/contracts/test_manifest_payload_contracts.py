@@ -31,6 +31,8 @@ from app.specialists.enrique._act import CONSUMED_PAYLOAD_KEYS as ENRIQUE_KEYS
 from app.specialists.gary._act import CONSUMED_PAYLOAD_KEYS as GARY_KEYS
 from app.specialists.irene.graph import CONSUMED_PAYLOAD_KEYS as IRENE_KEYS
 from app.specialists.irene_pass1._act import CONSUMED_PAYLOAD_KEYS as IRENE_PASS1_KEYS
+from app.specialists.kira._act import CONSUMED_PAYLOAD_KEYS as KIRA_KEYS
+from app.specialists.motion_planner._act import CONSUMED_PAYLOAD_KEYS as MOTION_PLANNER_KEYS
 from app.specialists.quinn_r._act import CONSUMED_PAYLOAD_KEYS as QUINN_R_KEYS
 from app.specialists.vision.graph import CONSUMED_PAYLOAD_KEYS as VISION_KEYS
 
@@ -51,6 +53,12 @@ CONTRACTED_CONSUMERS: dict[str, frozenset[str]] = {
     "enrique": ENRIQUE_KEYS,
     "compositor": COMPOSITOR_KEYS,
     "vision": VISION_KEYS,
+    # 07D.5 motion-plan producer (composition-catalog B2, 2026-06-26): the
+    # deterministic producer reads the quinn_r winner deck under upstream_output;
+    # kira's 07E edge was rewired from the tolerated quinn_r upstream_output to a
+    # single motion_plan projection from the producer (amendment C, fail-closed).
+    "motion_planner": MOTION_PLANNER_KEYS,
+    "kira": KIRA_KEYS,
 }
 
 # Edges whose consumer has NOT yet published a contract. Raw manifest
@@ -65,7 +73,10 @@ QUARANTINED_EDGES: frozenset[tuple[str, str, str]] = frozenset(
         # edge produced cycle-2's confabulated lesson plan.
         ("4.75", "source_bundle", "cd"),
         ("7.5", "upstream_output", "vera"),
-        ("07E", "upstream_output", "kira"),
+        # ("07E","upstream_output","kira") RETIRED 2026-06-26 (composition-catalog
+        # B2): the tolerated quinn_r edge was REMOVED; 07E now consumes a single
+        # motion_plan projection from the motion_planner producer (07D.5). kira
+        # published CONSUMED_PAYLOAD_KEYS and joined CONTRACTED_CONSUMERS.
         # ("11","upstream_output","elevenlabs") RETIRED at dp-v1.2
         # (2026-06-12): the edge delivered kira's whole output dict to the
         # voice-selection leg, which reads none of it — edge deleted from

@@ -1,5 +1,18 @@
-version: 1
-last_reviewed: 2026-04-07
+version: 2
+last_reviewed: 2026-06-26
+# Production model-id SSOT (composition-catalog B2, 2026-06-26). The 07D.5
+# motion-plan producer reads these to emit a CURRENTLY-VALID model_name.
+# kling-v1-6 is the live-proven native id. The stale kling-v2-6 default
+# returned "model is not supported" on the account (live-found 2026-06-26),
+# so it is deprecated; the model block below is retained for audit with
+# deprecated: true.
+production_valid_model_ids:
+  - kling-v1-6
+  - kling-v2-1-master
+  - kling-v2-master
+  - kling-v1
+deprecated_model_ids:
+  - kling-v2-6
 api_surface:
   current_repo_client:
     base_url: https://api.klingai.com
@@ -42,6 +55,7 @@ models:
       - use only for cheap validation or low-stakes motion
   kling-v2-6:
     repo_client_status: native
+    deprecated: true  # 2026-06-26: "model is not supported" on the account; use kling-v1-6
     best_for:
       - approved-slide image-to-video
       - production motion clips

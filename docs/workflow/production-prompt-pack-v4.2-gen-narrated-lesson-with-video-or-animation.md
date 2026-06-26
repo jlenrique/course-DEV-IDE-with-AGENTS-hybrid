@@ -41,6 +41,7 @@ generated: true
 | 07B | 07B | skills/bmad-agent-gary | M→self | Variant Selection Gate |
 | 07C | 07C | skills/bmad-agent-gary | M→O | Storyboard A + Gate 2 Approval + Winner Authorization |
 | 07D | 07D | skills/bmad-agent-gary | M→O | Gate 2M Motion Designation |
+| 07D.5 | 07D.5 | app/specialists/motion_planner | M→self | Motion Planning |
 | 07E | 07E | skills/bmad-agent-gary | M→self | Motion Generation / Import |
 | 07F | 07F | skills/bmad-agent-gary | M→O | Motion Gate |
 | 07G | 07G | app/specialists/vision | M→self | PNG-Grounded Vision Perception |
@@ -898,6 +899,31 @@ Gate rules:
 
 ---
 
+## 07D.5) Motion Planning
+[M→self]
+
+
+Marcus, run the deterministic Motion-Plan producer after Gate 2M designation and before kira (07E).
+
+Inputs:
+- the authorized winner deck (quinn-r `upstream_output`) — the authorized storyboard with per-slide `authorized_slides`
+- the Gate 2M designation when present (`motion_designations`); otherwise the producer auto-designates from the Epic-14 recommendation engine
+- optional per-slide perception and approved slide PNGs for image2video
+
+Required output:
+- `motion_plan`: kira's consumed shape `{slides: [{slide_id, model_name, duration, aspect_ratio, mode, motion_prompt, estimated_cost_usd, style_id, image_url?}]}`
+- ONLY video/animation-designated slides are emitted, sorted by `slide_id`
+- `model_name` is a CURRENTLY-VALID kling id sourced from `model-capabilities.yaml` (kling-v1-6 proven; never the deprecated kling-v2-6)
+- `motion_prompt` fuses the Epic-14 `motion_brief`/`guidance_notes` with a proven `video-style-catalog.yaml` `prompt_template`
+
+Governance:
+- the producer is DETERMINISTIC — no model client is touched (binding amendment A); the `plan` node records a resolution-trail entry only
+- it REUSES the Epic-14 engine (`build_motion_plan_from_authorized_storyboard` + `apply_motion_designations`) and the kling-video library SSOT rather than reinventing
+- the emitted `motion_plan` is an internal producer→consumer envelope consumed by kira (07E), not a learner-facing pack-lineage deliverable, so this node keeps `pack_version: v4.2`; topology changes regenerate only the `v4.2-gen` determinism witness
+
+Downstream:
+- kira (07E) consumes `motion_plan` through `dependency_projections` ({from: motion_planner, key: motion_plan}) — the single declared motion source; the legacy quinn-r tolerated edge is removed (fail-closed)
+
 ## 07E) Motion Generation / Import
 [M→O]
 
@@ -1634,6 +1660,7 @@ Primary contract references:
 | 07B | Section 07B maintains manifest-driven pipeline contract. Data-plane history: the original edge (upstream_output: vera) was the wrong key AND wrong producer — quinn_r approved content it never received in Trial-3 attempt-4 (S1 corrected vocabulary; party review 2026-06-12 ruled whole-dict dependency delivery the wrong SHAPE). S4 edge-level key projection (dp-v1): variant selection receives Gary's gary_slide_output rows under quinn_r's declared "slides" key — the manifest now tells the truth about the 07→07B data plane. |
 | 07C | Section 07C maintains manifest-driven pipeline contract. |
 | 07D | Section 07D maintains manifest-driven pipeline contract. |
+| 07D.5 | Deterministic motion-plan producer. The motion_plan it emits is an internal producer->consumer envelope consumed by kira (07E), not a learner-facing pack-lineage deliverable, so this is a topology refinement within the v4.2 lineage (mirrors 07G). The generated -gen witness regenerates; frozen v4.2 is untouched. |
 | 07E | Section 07E maintains manifest-driven pipeline contract. |
 | 07F | Section 07F maintains manifest-driven pipeline contract. |
 | 07G | P2-2 PNG-grounded PerceptionArtifact producer. Scenario A does not fire: PerceptionArtifact is an internal envelope contribution consumed by Quinn-R's detector, not a learner-facing pack-lineage content deliverable, so this node is a topology refinement within the v4.2 lineage. The generated witness regenerates; frozen v4.2 is untouched. |

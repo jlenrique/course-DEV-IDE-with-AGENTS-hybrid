@@ -135,7 +135,7 @@ COMPONENT_FRAGMENTS: dict[str, ComponentFragment] = {
     "motion": ComponentFragment(
         component="motion",
         modality_refs=("motion",),  # stub binding (see _STUB_MODALITIES)
-        manifest_node_ids=frozenset({"07D", "07E", "07F"}),
+        manifest_node_ids=frozenset({"07D", "07D.5", "07E", "07F"}),
         depends_on=("deck",),
         version="motion-v1",
     ),

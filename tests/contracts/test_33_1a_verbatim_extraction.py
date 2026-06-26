@@ -62,6 +62,15 @@ _VERBATIM_EXCLUDED_SECTIONS = {
         reason="net-new-prose",
         substitute_invariant=CHECK9_INVARIANT,
     ),
+    # 07D.5 motion-plan producer (composition-catalog B2, 2026-06-26): net-new
+    # `-gen` section authored at this story (no frozen v4.2 source-pack origin),
+    # exactly like 07G. Determinism is governed by L1 check 9, not byte-identity
+    # to the frozen mapping-axis pack.
+    "07D.5": SectionVerbatimExclusion(
+        section_id="07D.5",
+        reason="net-new-prose",
+        substitute_invariant=CHECK9_INVARIANT,
+    ),
 }
 
 
@@ -83,7 +92,7 @@ def test_verbatim_exclusions_are_closed_and_check9_governed() -> None:
     gm = load_generator_manifest(MANIFEST)
     determinism_sections = {step.id for step in gm.steps}
 
-    assert set(_VERBATIM_EXCLUDED_SECTIONS) == {"04.55", "02A", "07G"}
+    assert set(_VERBATIM_EXCLUDED_SECTIONS) == {"04.55", "02A", "07G", "07D.5"}
     for section_id, exclusion in _VERBATIM_EXCLUDED_SECTIONS.items():
         assert exclusion.section_id == section_id
         assert exclusion.reason in {"value-substituting", "net-new-prose"}

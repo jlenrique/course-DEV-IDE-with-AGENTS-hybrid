@@ -527,16 +527,41 @@ nodes:
     pack_version: "v4.2"
     rationale: "Section 07D maintains manifest-driven pipeline contract."
 
+  - id: "07D.5"
+    label: "Motion Planning"
+    specialist_id: "motion_planner"
+    scaffold_node: "act"
+    model_config_ref: null               # deterministic, NO LLM (amendment A)
+    dependencies:
+      upstream_output: "quinn_r"          # reads the authorized winner deck (the
+                                          # storyboard) — exactly what kira's old
+                                          # tolerated edge pointed at; it moves UP
+                                          # one level to the producer.
+    gate: false
+    sub_phase_of: "07"
+    insertion_after: "07D"
+    hud_tracked: true
+    pack_section_anchor: "7D5)"
+    pack_version: "v4.2"
+    rationale: >-
+      Deterministic motion-plan producer. The motion_plan it emits is an internal
+      producer->consumer envelope consumed by kira (07E), not a learner-facing
+      pack-lineage deliverable, so this is a topology refinement within the v4.2
+      lineage (mirrors 07G). The generated -gen witness regenerates; frozen v4.2
+      is untouched.
+
   - id: "07E"
     label: "Motion Generation / Import"
     specialist_id: "kira"
     scaffold_node: "act"
     model_config_ref: null
-    dependencies:
-      upstream_output: "quinn_r"
+    dependency_projections:
+      motion_plan:
+        from: motion_planner          # single declared source; legacy tolerated
+        key: motion_plan              # quinn_r edge REMOVED (amendment C; fail-closed)
     gate: false
     sub_phase_of: "07"
-    insertion_after: "07D"
+    insertion_after: "07D.5"
     hud_tracked: true
     pack_section_anchor: "7E)"
     pack_version: "v4.2"
@@ -894,7 +919,8 @@ edges:
   - {from: "07B", to: "07B-gate"}
   - {from: "07B-gate", to: "07C"}
   - {from: "07C", to: "07D"}
-  - {from: "07D", to: "07E"}
+  - {from: "07D", to: "07D.5"}
+  - {from: "07D.5", to: "07E"}
   - {from: "07E", to: "07F"}
   - {from: "07F", to: "07G"}
   - {from: "07G", to: "08"}

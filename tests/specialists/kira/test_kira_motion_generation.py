@@ -6,6 +6,19 @@ from pathlib import Path
 from app.specialists.kira import _act as kira_act
 
 
+def _write_fake_mp4(output_path: object) -> Path:
+    """Simulate KlingClient.download_video: materialize a real local file.
+
+    kira now downloads the rendered clip in-pipeline (the compositor copies
+    motion_asset_path from disk, fail-loud on a non-file), so a fake client must
+    materialize a file for the success path to hold.
+    """
+    p = Path(str(output_path))
+    p.parent.mkdir(parents=True, exist_ok=True)
+    p.write_bytes(b"\x00\x00\x00\x18ftypmp42" + b"\x00" * 64 + b"moovmdat")
+    return p
+
+
 class FakeKlingClient:
     def __init__(self) -> None:
         self.calls: list[dict[str, object]] = []
@@ -27,6 +40,9 @@ class FakeKlingClient:
                 },
             }
         }
+
+    def download_video(self, video_url: object, output_path: object) -> Path:
+        return _write_fake_mp4(output_path)
 
 
 def test_kira_motion_generation_writes_progress_and_terminal_receipts(tmp_path: Path) -> None:
@@ -75,6 +91,9 @@ def test_kira_real_client_path_records_terminal_kling_result(tmp_path: Path) -> 
                 }
             }
 
+        def download_video(self, video_url: object, output_path: object) -> Path:
+            return _write_fake_mp4(output_path)
+
     client = TerminalKlingClient()
     payload = {
         "bundle_path": str(tmp_path),
@@ -93,6 +112,9 @@ def test_kira_real_client_path_records_terminal_kling_result(tmp_path: Path) -> 
     verdict = kira_act.generate_motion_from_plan(payload, client=client)  # type: ignore[arg-type]
 
     assert client.submitted[0]["image_url"] == "https://cdn.test/still.png"
-    assert verdict["motion_receipts"][0]["motion_asset_path"] == (
-        "https://cdn.kling.test/slide-01.mp4"
-    )
+    # kira materializes the render to disk: the CDN url is recorded as
+    # motion_source_url, and motion_asset_path is the local downloaded .mp4.
+    receipt = verdict["motion_receipts"][0]
+    assert receipt["motion_source_url"] == "https://cdn.kling.test/slide-01.mp4"
+    assert receipt["motion_asset_path"] == str((tmp_path / "motion" / "slide-01.mp4").resolve())
+    assert (tmp_path / "motion" / "slide-01.mp4").is_file()

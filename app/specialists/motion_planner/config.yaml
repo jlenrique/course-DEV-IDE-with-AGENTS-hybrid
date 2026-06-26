@@ -1,0 +1,10 @@
+# motion_planner run-scoped configuration (07D.5 deterministic producer).
+#
+# The producer is deterministic and touches no provider; these knobs only shape
+# the motion-plan projection. The default motion budget keeps the Epic-14 engine
+# free to recommend video/animation across a full winner deck (a high max_credits
+# cap so recommendations are content-driven, not budget-starved). Per-clip USD is
+# derived deterministically from motion_budgeting credits at usd_per_credit.
+default_motion_budget_max_credits: 10000.0
+default_motion_budget_model_preference: "std"
+usd_per_credit: 0.03
