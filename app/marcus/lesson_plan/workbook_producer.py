@@ -40,7 +40,7 @@ Discipline notes:
 from __future__ import annotations
 
 import re
-from collections.abc import Callable, Iterable, Sequence
+from collections.abc import Callable, Iterable, Mapping, Sequence
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any, Final
@@ -181,6 +181,69 @@ def load_transcript_segments(manifest_path: str | Path) -> tuple[TranscriptSegme
             )
         )
     return tuple(out)
+
+
+# ---------------------------------------------------------------------------
+# S1 / S6 produce-time content briefs (production inputs, NOT spec schema)
+# ---------------------------------------------------------------------------
+#
+# These are the SOURCE content the producer composes into the deliverable —
+# siblings of ``segments`` / ``source_text`` / ``citations`` (all already
+# produce-time inputs, not ``WorkbookSpec`` fields). The spec carries the
+# STRUCTURE + bindings + intent (section -> learning_objective_id, exercise ->
+# answer_key_source_ref); the run supplies the lesson CONTENT (the objective
+# statements, the worked answers, the bibliography) that the producer renders.
+# Keeping them here avoids a CollateralSpec schema bump for a producer-only
+# composition story (design §7 gaps 1/4/5 = composition, not new substrate).
+
+
+@dataclass(frozen=True)
+class LearningObjectiveBrief:
+    """One learning objective surfaced in the workbook's S1 section.
+
+    ``objective_id`` MUST match a section's ``learning_objective_id`` (the
+    asset->objective binding). The producer asserts no-orphan / no-phantom
+    against the section bindings when objectives are supplied.
+    """
+
+    objective_id: str
+    bloom_level: str
+    statement: str
+
+
+@dataclass(frozen=True)
+class FurtherReadingEntry:
+    """A corpus-native / required-reading citation rendered into S6.
+
+    Deck-traceable references (CMS, JAMA, the required-reading article, the
+    intro video). ``source_ref`` is the traceable reference the G2 citation
+    audit resolves against this run's manifest; ``locator`` is the human-facing
+    URL / publication string.
+    """
+
+    citation_id: str
+    title: str
+    source_ref: str
+    locator: str | None = None
+    supports_segment_id: str | None = None
+
+
+@dataclass(frozen=True)
+class ResearchEntry:
+    """A live-research cited entry (braid S3 Texas/Scite leg) rendered into S6.
+
+    Each carries a real ``source_id`` DOI; the producer renders the link as
+    ``https://doi.org/{source_id}``. Empty in a v1 artifact whose research leg
+    is not yet live (rendered as an explicit "deferred" note, never fabricated).
+    """
+
+    citation_id: str
+    title: str
+    source_ref: str
+    provider: str
+    source_id: str
+    source_hash: str | None = None
+    supports_segment_id: str | None = None
 
 
 # ---------------------------------------------------------------------------
@@ -333,6 +396,38 @@ def assert_exercise_fidelity(spec: WorkbookSpec) -> None:
                 )
 
 
+def assert_learning_objective_bindings(
+    spec: WorkbookSpec,
+    learning_objectives: Sequence[LearningObjectiveBrief],
+) -> None:
+    """S1 fidelity: no orphan objective, no phantom objective.
+
+    When the run surfaces ``learning_objectives`` (the S1 render input), every
+    listed objective MUST be bound by >=1 section's ``learning_objective_id``
+    (no ORPHAN objective listed that nothing serves) AND every section's
+    ``learning_objective_id`` MUST appear in the listed objectives (no PHANTOM
+    binding pointing at an objective the workbook never states). When no
+    objectives are supplied the check is a no-op (non-regression: the producer
+    then renders a thin id-only objectives list derived from the bindings).
+    """
+    if not learning_objectives:
+        return
+    bound_ids = {section.learning_objective_id for section in spec.sections}
+    listed_ids = {obj.objective_id for obj in learning_objectives}
+    orphans = sorted(listed_ids - bound_ids)
+    if orphans:
+        raise WorkbookFidelityError(
+            "S1: orphan learning objective(s) listed but bound by no section: "
+            f"{orphans!r}"
+        )
+    phantoms = sorted(bound_ids - listed_ids)
+    if phantoms:
+        raise WorkbookFidelityError(
+            "S1: section(s) bind a learning_objective_id with no stated "
+            f"objective (phantom binding): {phantoms!r}"
+        )
+
+
 # ---------------------------------------------------------------------------
 # Default prose revoicer (deterministic; honesty marker, no silent passthrough)
 # ---------------------------------------------------------------------------
@@ -386,11 +481,23 @@ def compose_workbook(
     segments: Sequence[TranscriptSegment],
     *,
     prose_revoicer: ProseRevoicer,
+    learning_objectives: Sequence[LearningObjectiveBrief] = (),
+    answer_keys: Mapping[str, str] | None = None,
+    further_reading: Sequence[FurtherReadingEntry] = (),
+    research_entries: Sequence[ResearchEntry] = (),
 ) -> _ComposedDoc:
-    """Compose the canonical workbook model from the spec + transcript backbone."""
+    """Compose the canonical workbook model from the spec + transcript backbone.
+
+    Sections composed (design §2 v1 cut S0-S7):
+      S0 Overview, S1 Learning Objectives, S2 Transcript-narrative (re-voiced
+      deferred depth) + Depth-delta narrative, S3 Transcript of Record (literal
+      verbatim), S4 Figures, S5 Exercises + Answer Key, S6 References /
+      further-reading, S7 Human Review footer (added by the renderers).
+    """
+    answer_keys = dict(answer_keys or {})
     doc = _ComposedDoc(title=f"Workbook: {plan_unit.event_type}")
 
-    # --- Overview ---
+    # --- S0 Overview ---
     doc.blocks.append(
         (
             2,
@@ -404,12 +511,53 @@ def compose_workbook(
                     "This workbook is the read-in-depth companion to the narrated "
                     "deck: it carries the transcript, the fuller narrative deferred "
                     "off the glance-slides, the exercises, and the citations.",
+                    "",
+                    "How to use this workbook with the deck: watch the glance-deck "
+                    "for the perception-tuned claim per card, then read here for the "
+                    "deferred depth, check the figures against their sources, work "
+                    "the self-check exercises, and follow the further reading into "
+                    "primary sources. The deck carries the *glance* channel; this "
+                    "workbook carries the *read* channel (dual-coding partners).",
                 ]
             ),
         )
     )
 
-    # --- Transcript-narrative (the prose-delegation seam + segment backbone) ---
+    # --- S1 Learning Objectives (render the bindings; never surfaced before) ---
+    objective_lines: list[str] = []
+    if learning_objectives:
+        for obj in learning_objectives:
+            serving = sorted(
+                section.section_id
+                for section in spec.sections
+                if section.learning_objective_id == obj.objective_id
+            )
+            serving_note = (
+                f" (served by section(s): {', '.join(f'`{s}`' for s in serving)})"
+                if serving
+                else ""
+            )
+            objective_lines.append(
+                f"- **`{obj.objective_id}`** — _{obj.bloom_level}_: "
+                f"{obj.statement}{serving_note}"
+            )
+    else:
+        # Non-regression thin render: derive the distinct objective ids bound by
+        # sections (the bindings exist even when no statements are supplied).
+        seen: set[str] = set()
+        for section in spec.sections:
+            oid = section.learning_objective_id
+            if oid in seen:
+                continue
+            seen.add(oid)
+            objective_lines.append(
+                f"- `{oid}` (served by section `{section.section_id}`)"
+            )
+    doc.blocks.append(
+        (2, "Learning Objectives", "\n".join(objective_lines).rstrip())
+    )
+
+    # --- S2 Transcript-narrative (the prose-delegation seam + segment backbone) ---
     transcript_lines: list[str] = []
     for seg in segments:
         transcript_lines.append(_segment_anchor(seg.segment_id))
@@ -433,6 +581,21 @@ def compose_workbook(
             section_lines.append(section.narrative_intent)
         section_lines.append("")
     doc.blocks.append((2, "Depth-delta narrative", "\n".join(section_lines).rstrip()))
+
+    # --- S3 Transcript of Record (literal verbatim; distinct from the re-voiced
+    # S2 explainer above). The clean record of what was heard, segment by
+    # segment — NO REVOICE-REQUIRED marker, NO depth framing. This separates the
+    # verbatim transcript (record) from the re-voiced read-prose (S2), the
+    # design's S2/S3 split (§7 gap 2). Excluded from the AC-8 superset (it IS
+    # the VO of record, not depth beyond it).
+    record_lines: list[str] = []
+    for seg in segments:
+        record_lines.append(f"#### {seg.segment_id} (verbatim)")
+        record_lines.append(f"> {seg.narration_text.strip()}")
+        record_lines.append("")
+    doc.blocks.append(
+        (2, "Transcript of Record", "\n".join(record_lines).rstrip())
+    )
 
     # --- Figures (image + caption + source_ref) ---
     figure_lines: list[str] = []
@@ -467,10 +630,82 @@ def compose_workbook(
             exercise_lines.append("")
     doc.blocks.append((2, "Exercises", "\n".join(exercise_lines).rstrip()))
 
-    # --- References (citation substrate; thin in S2, S3 fills it) ---
-    reference_lines: list[str] = []
+    # --- S5b Answer Key (worked answers, source-grounded; G1/G3). The worked
+    # answer prose is a produce-time input (the corpus "Correct Answer" line);
+    # the spec carries only the answer_key_source_ref slot. When no worked answer
+    # is supplied the producer emits an explicit pending note + the source_ref
+    # (never a fabricated answer). ---
+    answer_lines: list[str] = []
+    for section in spec.sections:
+        for exercise in section.exercises:
+            answer_lines.append(f"### Answer — `{exercise.exercise_id}`")
+            worked = answer_keys.get(exercise.exercise_id, "").strip()
+            if worked:
+                answer_lines.append(worked)
+            else:
+                answer_lines.append(
+                    "*(worked answer pending writer; grounded by the "
+                    f"source_ref below — source_ref: `{exercise.answer_key_source_ref}`)*"
+                )
+            answer_lines.append(
+                f"Answer key source_ref: `{exercise.answer_key_source_ref}`"
+            )
+            answer_lines.append("")
+    doc.blocks.append((2, "Answer Key", "\n".join(answer_lines).rstrip()))
+
+    # --- S6 References / Further reading (rendered bibliography). Three tiers:
+    # (a) per-segment source_ref traceability lines (the thin substrate),
+    # (b) corpus-native + required-reading citations, (c) live-research DOI'd
+    # entries (https://doi.org/{source_id}); an empty research set renders an
+    # explicit deferred note, never a fabricated DOI (design §4). ---
+    reference_lines = []
+    reference_lines.append("#### Segment source-ref trace")
     for seg in segments:
-        reference_lines.append(f"- `{seg.segment_id}` -> source_ref `{seg.source_ref}`")
+        reference_lines.append(
+            f"- `{seg.segment_id}` -> source_ref `{seg.source_ref}`"
+        )
+    reference_lines.append("")
+    reference_lines.append("#### Cited references & further reading")
+    if further_reading:
+        for entry in further_reading:
+            supports = (
+                f" — supports `{entry.supports_segment_id}`"
+                if entry.supports_segment_id
+                else ""
+            )
+            if entry.locator:
+                reference_lines.append(
+                    f"- [{entry.title}]({entry.locator}) "
+                    f"(source_ref: `{entry.source_ref}`){supports}"
+                )
+            else:
+                reference_lines.append(
+                    f"- {entry.title} (source_ref: `{entry.source_ref}`){supports}"
+                )
+    else:
+        reference_lines.append(
+            "- *(no corpus-native references supplied for this artifact)*"
+        )
+    reference_lines.append("")
+    reference_lines.append("#### Live-research cited entries (DOI)")
+    if research_entries:
+        for entry in research_entries:
+            supports = (
+                f" — supports `{entry.supports_segment_id}`"
+                if entry.supports_segment_id
+                else ""
+            )
+            reference_lines.append(
+                f"- {entry.title}. https://doi.org/{entry.source_id} "
+                f"(provider: {entry.provider}, source_ref: `{entry.source_ref}`)"
+                f"{supports}"
+            )
+    else:
+        reference_lines.append(
+            "- *(live-research leg deferred for this v1 artifact; no DOI'd "
+            "entries injected — corpus-native references above carry the "
+            "citations)*"
+        )
     doc.blocks.append((2, "References", "\n".join(reference_lines).rstrip()))
 
     return doc
@@ -608,6 +843,11 @@ class WorkbookProducer(ModalityProducer):
         citations: Iterable[dict[str, str]] | None = None,
         source_ref_manifest: dict[str, str] | None = None,
         vo_script_text: str = "",
+        learning_objectives: Sequence[LearningObjectiveBrief] = (),
+        answer_keys: Mapping[str, str] | None = None,
+        further_reading: Sequence[FurtherReadingEntry] = (),
+        research_entries: Sequence[ResearchEntry] = (),
+        research_supplements: set[str] | None = None,
         diff_files: Iterable[str] | None = None,
         reuse_sha: str = "WORKING",
     ) -> WorkbookSidecar:
@@ -621,6 +861,8 @@ class WorkbookProducer(ModalityProducer):
         assert_unique_collateral_ids(spec)
         # G3 exercise fidelity.
         assert_exercise_fidelity(spec)
+        # S1 objective-binding fidelity (no orphan / no phantom objective).
+        assert_learning_objective_bindings(spec, learning_objectives)
 
         # Compose the canonical model (one source of truth).
         doc = compose_workbook(
@@ -629,11 +871,22 @@ class WorkbookProducer(ModalityProducer):
             spec,
             segments,
             prose_revoicer=self._prose_revoicer,
+            learning_objectives=learning_objectives,
+            answer_keys=answer_keys,
+            further_reading=further_reading,
+            research_entries=research_entries,
         )
         markdown = render_markdown(doc)
 
         # --- G1: L2 numeric audit FAIL-mode over the workbook body. ---
-        numeric_audit = audit_workbook_numeric_fidelity(markdown, source_text)
+        # HONESTY BOUNDARY (do NOT over-claim): symbol-only numeric coverage in
+        # FAIL-mode (word-form numerals are NOT gated — named gap
+        # ``braid-workbook-wordform-numeral-gap``). ``research_supplements``
+        # declares numerals sourced from the run's research leg (beyond the base
+        # corpus) so they clear without inflating the source text.
+        numeric_audit = audit_workbook_numeric_fidelity(
+            markdown, source_text, research_supplements=research_supplements
+        )
 
         # --- G2: citation-fidelity wiring (thin S2 set; path is the deliverable). ---
         citation_audit = audit_citation_fidelity(
@@ -797,13 +1050,17 @@ __all__ = [
     "NO_READING_PATH_HALO_NOTE",
     "REVOICE_REQUIRED_MARKER",
     "DuplicateCollateralIdError",
+    "FurtherReadingEntry",
+    "LearningObjectiveBrief",
     "ProseRevoicer",
+    "ResearchEntry",
     "TranscriptSegment",
     "WorkbookFidelityError",
     "WorkbookProducer",
     "WorkbookScopeError",
     "WorkbookSidecar",
     "assert_exercise_fidelity",
+    "assert_learning_objective_bindings",
     "assert_unique_collateral_ids",
     "audit_citation_fidelity",
     "audit_workbook_numeric_fidelity",
