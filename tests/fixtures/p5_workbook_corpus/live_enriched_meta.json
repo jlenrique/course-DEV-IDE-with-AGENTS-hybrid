@@ -1,0 +1,14 @@
+{
+  "captured_utc": "2026-06-27T05:20:25.343375+00:00",
+  "elapsed_s": 199.187031,
+  "model_id": "marcus",
+  "corpus": "tejal-c1m1-3slide-slice",
+  "card_has_citation_resolutions": true,
+  "card_has_pedagogy_annotations": true,
+  "n_citations": 7,
+  "n_resolved": 1,
+  "n_pedagogy_annotations": 9,
+  "resolved_access_urls": {
+    "src-001-c007": "https://doi.org/10.1001/jama.2019.13978"
+  }
+}

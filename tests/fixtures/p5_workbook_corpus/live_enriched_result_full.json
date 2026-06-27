@@ -1,0 +1,784 @@
+{
+  "corpus_fingerprint": "ff1bc965ce63eb30e61a1a71211598e6fee453cc3493955c208fd06b3d674053",
+  "model_id": "marcus",
+  "typed_components": [
+    {
+      "component_id": "src-001-c001",
+      "parent_source_id": "src-001",
+      "source_type": "other",
+      "other_type": {
+        "kind": "other",
+        "label": "learning_objectives_list",
+        "provenance": "Explicit module learning objectives block"
+      },
+      "label": "Module 1 Learning Objectives",
+      "locator": "Course 1 > Module 1 > Introduction",
+      "excerpt": "***By the end of this module, the learner will be able to:***\n\t\t\t- ***MO 1.1:** Definition of the innovation mindset, why it is important and common misconceptions.*",
+      "flagged_unconsumed": true,
+      "flagged_ungrounded": false
+    },
+    {
+      "component_id": "src-001-c002",
+      "parent_source_id": "src-001",
+      "source_type": "other",
+      "other_type": {
+        "kind": "other",
+        "label": "course_goal",
+        "provenance": "Explicit course goal statement"
+      },
+      "label": "Course 1 Goal",
+      "locator": "Course 1 > Module 1 > Introduction",
+      "excerpt": "To equip learners with the foundational mindsets and skills to identify, validate, and articulate a compelling opportunity for innovation within their clinical environment.",
+      "flagged_unconsumed": true,
+      "flagged_ungrounded": false
+    },
+    {
+      "component_id": "src-001-c003",
+      "parent_source_id": "src-001",
+      "source_type": "narration",
+      "other_type": null,
+      "label": "Case for Change - Chapter Intro",
+      "locator": "Course 1 > Module 1 > Part 1 > Page 3",
+      "excerpt": "Introduction: Healthcare is undergoing structural transformation. Physician roles, practice models, and organizational expectations are shifting rapidly, yet professional preparation has not evolved at the same pace.",
+      "flagged_unconsumed": false,
+      "flagged_ungrounded": false
+    },
+    {
+      "component_id": "src-001-c004",
+      "parent_source_id": "src-001",
+      "source_type": "reference_citation",
+      "other_type": null,
+      "label": "YouTube: Healthcare - Supply and Demand",
+      "locator": "Course 1 > Module 1 > Part 1 > Page 3",
+      "excerpt": "- [Healthcare - Supply and Demand.  Why do healthcare markets fail?](https://www.youtube.com/watch?v=GjRAHuHIOD0)",
+      "flagged_unconsumed": true,
+      "flagged_ungrounded": false
+    },
+    {
+      "component_id": "src-001-c005",
+      "parent_source_id": "src-001",
+      "source_type": "slide",
+      "other_type": null,
+      "label": "Slide 1 - Healthcare Waste",
+      "locator": "Slide 1",
+      "excerpt": "- Slide 1: Healthcare Waste:",
+      "flagged_unconsumed": false,
+      "flagged_ungrounded": false
+    },
+    {
+      "component_id": "src-001-c006",
+      "parent_source_id": "src-001",
+      "source_type": "narration",
+      "other_type": null,
+      "label": "Slide 1 Narration - JAMA waste estimate",
+      "locator": "Slide 1",
+      "excerpt": "- estimated cost of waste in the US health care system ranged from $760 billion to $935 billion, accounting for approximately 25% of total health care spending, and the projected potential savings",
+      "flagged_unconsumed": false,
+      "flagged_ungrounded": false
+    },
+    {
+      "component_id": "src-001-c007",
+      "parent_source_id": "src-001",
+      "source_type": "reference_citation",
+      "other_type": null,
+      "label": "JAMA 2019 Waste in US Health Care System",
+      "locator": "Slide 1",
+      "excerpt": "(Shrank WH, Rogstad TL, Parekh N. Waste in the US Health Care System: Estimated Costs and Potential for Savings. JAMA. 2019;322(15):1501\u20131509. doi:10.1001/jama.2019.13978)",
+      "flagged_unconsumed": true,
+      "flagged_ungrounded": false
+    },
+    {
+      "component_id": "src-001-c008",
+      "parent_source_id": "src-001",
+      "source_type": "reference_citation",
+      "other_type": null,
+      "label": "PubMed link - JAMA waste paper",
+      "locator": "Slide 1",
+      "excerpt": "- <span color=\"green_bg\">[https://pubmed.ncbi.nlm.nih.gov/31589283/](https://pubmed.ncbi.nlm.nih.gov/31589283/)</span>",
+      "flagged_unconsumed": true,
+      "flagged_ungrounded": false
+    },
+    {
+      "component_id": "src-001-c009",
+      "parent_source_id": "src-001",
+      "source_type": "reference_citation",
+      "other_type": null,
+      "label": "Commonwealth Fund / McKinsey - Mirror, Mirror (2024)",
+      "locator": "Slide 1",
+      "excerpt": "Approximately 25% of total U.S. healthcare spending (nearly $1 trillion) goes toward administrative costs\u2014not patient care. The U.S. healthcare system currently ranks last among high-income nations",
+      "flagged_unconsumed": true,
+      "flagged_ungrounded": false
+    },
+    {
+      "component_id": "src-001-c010",
+      "parent_source_id": "src-001",
+      "source_type": "other",
+      "other_type": {
+        "kind": "other",
+        "label": "image_asset_placeholder",
+        "provenance": "Inline image asset reference trimmed"
+      },
+      "label": "Slide 1 image placeholder",
+      "locator": "Slide 1",
+      "excerpt": "[image trimmed: Waste_in_the_US_Health_Care_System_Estimated_Costs_and_Potential_for_Savings.pdf]",
+      "flagged_unconsumed": true,
+      "flagged_ungrounded": false
+    },
+    {
+      "component_id": "src-001-c011",
+      "parent_source_id": "src-001",
+      "source_type": "slide",
+      "other_type": null,
+      "label": "Slide 3 - Rising Burden of Burnout",
+      "locator": "Slide 3",
+      "excerpt": "- Slide 3: The Rising Burden of Burnout",
+      "flagged_unconsumed": false,
+      "flagged_ungrounded": false
+    },
+    {
+      "component_id": "src-001-c012",
+      "parent_source_id": "src-001",
+      "source_type": "narration",
+      "other_type": null,
+      "label": "Slide 3 Narration - framing quote",
+      "locator": "Slide 3",
+      "excerpt": "\"Let's look at the data. Reports like the Medscape National Physician Burnout & Suicide Report show rising levels of burnout. CMS data shows healthcare spending approaching 20% of GDP.",
+      "flagged_unconsumed": false,
+      "flagged_ungrounded": false
+    },
+    {
+      "component_id": "src-001-c013",
+      "parent_source_id": "src-001",
+      "source_type": "narration",
+      "other_type": null,
+      "label": "Slide 3 Narration - burnout rates and drivers",
+      "locator": "Slide 3",
+      "excerpt": "In 2024, 49% to 54.5% of physicians reported symptoms of burnout. Crucially, the top driver is not \"too many patients,\" but \"bureaucratic tasks\" (charting/paperwork), which consistently rank as the #1 stressor.",
+      "flagged_unconsumed": false,
+      "flagged_ungrounded": false
+    },
+    {
+      "component_id": "src-001-c014",
+      "parent_source_id": "src-001",
+      "source_type": "reference_citation",
+      "other_type": null,
+      "label": "Medscape/AMA burnout reports",
+      "locator": "Slide 3",
+      "excerpt": "(Medscape Physician Burnout & Depression Report (2024) / AMA National Physician Comparison Report)",
+      "flagged_unconsumed": true,
+      "flagged_ungrounded": false
+    },
+    {
+      "component_id": "src-001-c015",
+      "parent_source_id": "src-001",
+      "source_type": "other",
+      "other_type": {
+        "kind": "other",
+        "label": "production_note",
+        "provenance": "Instruction to use an external slide asset"
+      },
+      "label": "Use HII Source slide 10",
+      "locator": "Slide 3",
+      "excerpt": "Use slide 10 from **HII Source**",
+      "flagged_unconsumed": true,
+      "flagged_ungrounded": false
+    },
+    {
+      "component_id": "src-001-c016",
+      "parent_source_id": "src-001",
+      "source_type": "other",
+      "other_type": {
+        "kind": "other",
+        "label": "image_asset_placeholder",
+        "provenance": "Inline image asset reference trimmed"
+      },
+      "label": "HII Source slide 10 image placeholder",
+      "locator": "Slide 3",
+      "excerpt": "[image trimmed: HII Source slide 10 burnout]",
+      "flagged_unconsumed": true,
+      "flagged_ungrounded": false
+    },
+    {
+      "component_id": "src-001-c017",
+      "parent_source_id": "src-001",
+      "source_type": "slide",
+      "other_type": null,
+      "label": "Slide 6 - Transition from Sickcare to Healthcare",
+      "locator": "Slide 6",
+      "excerpt": "- Slide 6: The Push To Transition from Sickcare to Healthcare",
+      "flagged_unconsumed": false,
+      "flagged_ungrounded": false
+    },
+    {
+      "component_id": "src-001-c018",
+      "parent_source_id": "src-001",
+      "source_type": "reference_citation",
+      "other_type": null,
+      "label": "CMS NHE Fact Sheet citation",
+      "locator": "Slide 6",
+      "excerpt": "\u201cIn 2024, the United States spent $5.3 trillion on healthcare, which is 18% of the GDP. This spending reflects a 7.2% increase from the previous year",
+      "flagged_unconsumed": true,
+      "flagged_ungrounded": false
+    },
+    {
+      "component_id": "src-001-c019",
+      "parent_source_id": "src-001",
+      "source_type": "narration",
+      "other_type": null,
+      "label": "Slide 6 Narration - shift to proactive models",
+      "locator": "Slide 6",
+      "excerpt": "narration: U.S. healthcare spending continues to rise, now accounting for nearly one-fifth of the nation\u2019s economy. Much of this spending still goes toward treating illness rather than preventing it.",
+      "flagged_unconsumed": false,
+      "flagged_ungrounded": false
+    },
+    {
+      "component_id": "src-001-c020",
+      "parent_source_id": "src-001",
+      "source_type": "reference_citation",
+      "other_type": null,
+      "label": "Deliberate fail-probe citation",
+      "locator": "Slide 6",
+      "excerpt": "[TEST-ONLY FAIL-PROBE \u2014 deliberate guaranteed-fail citation so P2's resolution-FAILURE path is exercised; NOT real source content]: \"Verbruggen Q, Inkwell T. Phantom Determinants of Sickcare Drift",
+      "flagged_unconsumed": true,
+      "flagged_ungrounded": false
+    },
+    {
+      "component_id": "src-001-c021",
+      "parent_source_id": "src-001",
+      "source_type": "quiz",
+      "other_type": null,
+      "label": "Knowledge Check \u2014 MO 1.1",
+      "locator": "Course 1 > Module 1 > Part 1 > Page 3 > Knowledge Check (Quiz) \u2014 MO 1.1",
+      "excerpt": "Stem: Which statement best captures the \"innovation mindset\" as introduced in MO 1.1?\n- A) An innate talent only a few clinicians are born with.\n- B) A learnable orientation toward identifying, valid",
+      "flagged_unconsumed": true,
+      "flagged_ungrounded": false
+    },
+    {
+      "component_id": "src-001-c022",
+      "parent_source_id": "src-001",
+      "source_type": "other",
+      "other_type": {
+        "kind": "other",
+        "label": "section_heading",
+        "provenance": "Structural heading within page"
+      },
+      "label": "Chapter 3 heading",
+      "locator": "Course 1 > Module 1 > Part 1 > Page 3",
+      "excerpt": "**Chapter 3: Case for Change**",
+      "flagged_unconsumed": true,
+      "flagged_ungrounded": false
+    }
+  ],
+  "provisional_los": [
+    {
+      "objective_id": "lo-g0-001",
+      "statement": "Define the innovation mindset and identify common misconceptions about it.",
+      "status": "provisional",
+      "confidence": "high",
+      "bloom_level": null,
+      "source_refs": [
+        {
+          "source_id": "src-001",
+          "locator": "Introduction > Learning Objectives",
+          "quoted_span": "- ***MO 1.1:** Definition of the innovation mindset, why it is important and common misconceptions.*"
+        }
+      ],
+      "adequacy": null,
+      "origin": "g0",
+      "recommendation": "keep"
+    },
+    {
+      "objective_id": "lo-g0-002",
+      "statement": "Analyze how psychological safety and fixed/growth mindsets affect team performance, patient safety, and innovation.",
+      "status": "provisional",
+      "confidence": "high",
+      "bloom_level": null,
+      "source_refs": [
+        {
+          "source_id": "src-001",
+          "locator": "Introduction > Learning Objectives",
+          "quoted_span": "- ***MO 1.2:** Analyze the impact of psychological safety and fixed/growth mindsets on clinical team performance, patient safety, and innovation.*"
+        }
+      ],
+      "adequacy": null,
+      "origin": "g0",
+      "recommendation": "keep"
+    },
+    {
+      "objective_id": "lo-g0-003",
+      "statement": "Apply the Intelligent Failure framework to distinguish between blameworthy and praiseworthy failures in clinical settings.",
+      "status": "provisional",
+      "confidence": "high",
+      "bloom_level": null,
+      "source_refs": [
+        {
+          "source_id": "src-001",
+          "locator": "Introduction > Learning Objectives",
+          "quoted_span": "- ***MO 1.3:** Apply the \"Intelligent Failure\" framework to distinguish between blameworthy and praiseworthy failures in a clinical setting.*"
+        }
+      ],
+      "adequacy": null,
+      "origin": "g0",
+      "recommendation": "keep"
+    },
+    {
+      "objective_id": "lo-g0-004",
+      "statement": "Evaluate your personal innovation mindset, goals, and environment using a structured SWOT analysis.",
+      "status": "provisional",
+      "confidence": "high",
+      "bloom_level": null,
+      "source_refs": [
+        {
+          "source_id": "src-001",
+          "locator": "Introduction > Learning Objectives",
+          "quoted_span": "- ***MO 1.4:** Evaluate one's personal innovation mindset, goals, and professional environment through a structured SWOT analysis.*"
+        }
+      ],
+      "adequacy": null,
+      "origin": "g0",
+      "recommendation": "keep"
+    },
+    {
+      "objective_id": "lo-g0-005",
+      "statement": "Create an initial innovation portfolio sourced from experience, goals, and daily clinical observation.",
+      "status": "provisional",
+      "confidence": "high",
+      "bloom_level": null,
+      "source_refs": [
+        {
+          "source_id": "src-001",
+          "locator": "Introduction > Learning Objectives",
+          "quoted_span": "- ***MO 1.5:** Create an initial innovation portfolio by sourcing ideas from experience, future goals, and daily clinical observation.*"
+        }
+      ],
+      "adequacy": null,
+      "origin": "g0",
+      "recommendation": "keep"
+    },
+    {
+      "objective_id": "lo-g0-006",
+      "statement": "Quantify the estimated cost and proportion of waste in the US health care system using published data.",
+      "status": "provisional",
+      "confidence": "medium",
+      "bloom_level": null,
+      "source_refs": [
+        {
+          "source_id": "src-001",
+          "locator": "Slide 1",
+          "quoted_span": "estimated cost of waste in the US health care system ranged from $760 billion to $935 billion, accounting for approximately 25% of total health care spending"
+        }
+      ],
+      "adequacy": null,
+      "origin": "g0",
+      "recommendation": "keep"
+    },
+    {
+      "objective_id": "lo-g0-007",
+      "statement": "Identify bureaucratic tasks as a leading driver of physician burnout based on recent reports.",
+      "status": "provisional",
+      "confidence": "medium",
+      "bloom_level": null,
+      "source_refs": [
+        {
+          "source_id": "src-001",
+          "locator": "Slide 3",
+          "quoted_span": "the top driver is not \"too many patients,\" but \"bureaucratic tasks\" (charting/paperwork), which consistently rank as the #1 stressor."
+        }
+      ],
+      "adequacy": null,
+      "origin": "g0",
+      "recommendation": "keep"
+    },
+    {
+      "objective_id": "lo-g0-008",
+      "statement": "Describe the shift from sickcare to proactive, population-focused healthcare models and its economic drivers.",
+      "status": "provisional",
+      "confidence": "medium",
+      "bloom_level": null,
+      "source_refs": [
+        {
+          "source_id": "src-001",
+          "locator": "Slide 6",
+          "quoted_span": "pushing healthcare toward more proactive, population-focused models."
+        }
+      ],
+      "adequacy": null,
+      "origin": "g0",
+      "recommendation": "keep"
+    },
+    {
+      "objective_id": "lo-g0-009",
+      "statement": "Articulate why healthcare is at an inflection point requiring new models of leadership and innovation.",
+      "status": "provisional",
+      "confidence": "medium",
+      "bloom_level": null,
+      "source_refs": [
+        {
+          "source_id": "src-001",
+          "locator": "Part 1 > Page 3",
+          "quoted_span": "healthcare is not simply changing, but positioned at an inflection point that requires new models of leadership and innovation."
+        }
+      ],
+      "adequacy": null,
+      "origin": "g0",
+      "recommendation": "keep"
+    },
+    {
+      "objective_id": "lo-g0-010",
+      "statement": "Describe the scale of US administrative health care costs and their impact on efficiency and equity rankings.",
+      "status": "provisional",
+      "confidence": "medium",
+      "bloom_level": null,
+      "source_refs": [
+        {
+          "source_id": "src-001",
+          "locator": "Slide 1",
+          "quoted_span": "Approximately 25% of total U.S. healthcare spending (nearly $1 trillion) goes toward administrative costs\u2014not patient care."
+        }
+      ],
+      "adequacy": null,
+      "origin": "g0",
+      "recommendation": "keep"
+    }
+  ],
+  "traversal_roots": [
+    {
+      "root_id": "C:/Users/juanl/Documents/GitHub/course-DEV-IDE-with-AGENTS-hybrid/course-content/courses/tejal-c1m1-3slide-slice",
+      "kind": "corpus_dir"
+    }
+  ],
+  "enumeration_provenance": [
+    {
+      "source_id": "src-001",
+      "root_id": "C:/Users/juanl/Documents/GitHub/course-DEV-IDE-with-AGENTS-hybrid/course-content/courses/tejal-c1m1-3slide-slice",
+      "connector": "local_file",
+      "locator": "source-outline.md"
+    }
+  ],
+  "reconcile": {
+    "n_files_in": 1,
+    "n_files_covered": 1,
+    "n_files_ignored": 0,
+    "n_components": 22,
+    "n_flagged": 14,
+    "n_ungrounded": 0
+  },
+  "dissents": [
+    {
+      "against": "src-001-c012",
+      "marcus_position": "typed src-001-c012 (Slide 3) as narration; a defensible alternative reading is slide",
+      "operator_position": "",
+      "disposition": "upheld"
+    }
+  ],
+  "citation_resolutions": [
+    {
+      "component_id": "src-001-c004",
+      "doi": null,
+      "resolution_status": "failed",
+      "resolved_ref": null,
+      "reason": "no_doi_in_excerpt",
+      "resolver_provider": "scite",
+      "normalization_version": "tex-norm-v1"
+    },
+    {
+      "component_id": "src-001-c007",
+      "doi": "10.1001/jama.2019.13978",
+      "resolution_status": "resolved",
+      "resolved_ref": {
+        "title": "Waste in the US Health Care System",
+        "doi": "10.1001/jama.2019.13978",
+        "access_url": "https://doi.org/10.1001/jama.2019.13978",
+        "journal": "jama",
+        "authors": [
+          "William H. Shrank",
+          "Teresa L. Rogstad",
+          "Natasha Parekh"
+        ],
+        "year": "2019"
+      },
+      "reason": null,
+      "resolver_provider": "scite",
+      "normalization_version": "tex-norm-v1"
+    },
+    {
+      "component_id": "src-001-c008",
+      "doi": null,
+      "resolution_status": "failed",
+      "resolved_ref": null,
+      "reason": "no_doi_in_excerpt",
+      "resolver_provider": "scite",
+      "normalization_version": "tex-norm-v1"
+    },
+    {
+      "component_id": "src-001-c009",
+      "doi": null,
+      "resolution_status": "failed",
+      "resolved_ref": null,
+      "reason": "no_doi_in_excerpt",
+      "resolver_provider": "scite",
+      "normalization_version": "tex-norm-v1"
+    },
+    {
+      "component_id": "src-001-c014",
+      "doi": null,
+      "resolution_status": "failed",
+      "resolved_ref": null,
+      "reason": "no_doi_in_excerpt",
+      "resolver_provider": "scite",
+      "normalization_version": "tex-norm-v1"
+    },
+    {
+      "component_id": "src-001-c018",
+      "doi": null,
+      "resolution_status": "failed",
+      "resolved_ref": null,
+      "reason": "no_doi_in_excerpt",
+      "resolver_provider": "scite",
+      "normalization_version": "tex-norm-v1"
+    },
+    {
+      "component_id": "src-001-c020",
+      "doi": null,
+      "resolution_status": "failed",
+      "resolved_ref": null,
+      "reason": "no_doi_in_excerpt",
+      "resolver_provider": "scite",
+      "normalization_version": "tex-norm-v1"
+    }
+  ],
+  "pedagogy_annotations": [
+    {
+      "component_id": "src-001-c003",
+      "lo_refs": [
+        "lo-g0-009"
+      ],
+      "bloom": "understand",
+      "pedagogical_role": "motivation",
+      "teaches_after": [],
+      "prerequisite_concepts": [
+        "healthcare change drivers",
+        "innovation vs. improvement"
+      ],
+      "assessment_link": "src-001-c021",
+      "teachable": true,
+      "rationale": "Motivates need for innovation by explaining the sector\u2019s inflection point (lo-g0-009), priming learners to understand why new models are required.",
+      "transform_model": "marcus",
+      "transform_version": "ped-v1",
+      "generated_at": "2026-06-27T05:19:26.487412Z"
+    },
+    {
+      "component_id": "src-001-c005",
+      "lo_refs": [
+        "lo-g0-006",
+        "lo-g0-010",
+        "lo-g0-007"
+      ],
+      "bloom": "remember",
+      "pedagogical_role": "definition",
+      "teaches_after": [
+        "src-001-c003"
+      ],
+      "prerequisite_concepts": [
+        "basic health economics",
+        "percentages",
+        "US healthcare overview"
+      ],
+      "assessment_link": "src-001-c021",
+      "teachable": true,
+      "rationale": "Introduces key figures on waste, administrative costs, and burnout for recall, supporting quantification and recognition (lo-g0-006, lo-g0-010, lo-g0-007).",
+      "transform_model": "marcus",
+      "transform_version": "ped-v1",
+      "generated_at": "2026-06-27T05:19:26.487412Z"
+    },
+    {
+      "component_id": "src-001-c006",
+      "lo_refs": [
+        "lo-g0-010",
+        "lo-g0-007",
+        "lo-g0-006"
+      ],
+      "bloom": "analyze",
+      "pedagogical_role": "synthesis",
+      "teaches_after": [
+        "src-001-c003",
+        "src-001-c005"
+      ],
+      "prerequisite_concepts": [
+        "interpreting charts",
+        "cause\u2013effect reasoning"
+      ],
+      "assessment_link": "src-001-c021",
+      "teachable": true,
+      "rationale": "Synthesizes and analyzes how admin burden and waste contribute to inefficiency and burnout, aligning with lo-g0-010, lo-g0-007, and lo-g0-006.",
+      "transform_model": "marcus",
+      "transform_version": "ped-v1",
+      "generated_at": "2026-06-27T05:19:26.487412Z"
+    },
+    {
+      "component_id": "src-001-c011",
+      "lo_refs": [
+        "lo-g0-008",
+        "lo-g0-009"
+      ],
+      "bloom": "understand",
+      "pedagogical_role": "definition",
+      "teaches_after": [
+        "src-001-c003",
+        "src-001-c005",
+        "src-001-c006"
+      ],
+      "prerequisite_concepts": [
+        "value-based care basics",
+        "population health concepts"
+      ],
+      "assessment_link": "src-001-c021",
+      "teachable": true,
+      "rationale": "Defines the shift from sickcare to proactive, population-focused care and frames the inflection point (lo-g0-008, lo-g0-009).",
+      "transform_model": "marcus",
+      "transform_version": "ped-v1",
+      "generated_at": "2026-06-27T05:19:26.487412Z"
+    },
+    {
+      "component_id": "src-001-c012",
+      "lo_refs": [
+        "lo-g0-009"
+      ],
+      "bloom": "analyze",
+      "pedagogical_role": "synthesis",
+      "teaches_after": [
+        "src-001-c003",
+        "src-001-c005",
+        "src-001-c006",
+        "src-001-c011"
+      ],
+      "prerequisite_concepts": [
+        "healthcare market trends",
+        "policy incentives"
+      ],
+      "assessment_link": "src-001-c021",
+      "teachable": true,
+      "rationale": "Analyzes economic and policy drivers to synthesize why healthcare is at an inflection point (lo-g0-009).",
+      "transform_model": "marcus",
+      "transform_version": "ped-v1",
+      "generated_at": "2026-06-27T05:19:26.487412Z"
+    },
+    {
+      "component_id": "src-001-c013",
+      "lo_refs": [
+        "lo-g0-008"
+      ],
+      "bloom": "apply",
+      "pedagogical_role": "worked_example",
+      "teaches_after": [
+        "src-001-c003",
+        "src-001-c005",
+        "src-001-c006",
+        "src-001-c011",
+        "src-001-c012"
+      ],
+      "prerequisite_concepts": [
+        "care delivery models",
+        "risk stratification basics"
+      ],
+      "assessment_link": "src-001-c021",
+      "teachable": true,
+      "rationale": "Applies the proactive-care model in a concrete example to show how the shift operates in practice (lo-g0-008).",
+      "transform_model": "marcus",
+      "transform_version": "ped-v1",
+      "generated_at": "2026-06-27T05:19:26.487412Z"
+    },
+    {
+      "component_id": "src-001-c017",
+      "lo_refs": [
+        "lo-g0-001",
+        "lo-g0-002",
+        "lo-g0-003"
+      ],
+      "bloom": "understand",
+      "pedagogical_role": "definition",
+      "teaches_after": [
+        "src-001-c003",
+        "src-001-c005",
+        "src-001-c006",
+        "src-001-c011",
+        "src-001-c012",
+        "src-001-c013"
+      ],
+      "prerequisite_concepts": [
+        "team dynamics",
+        "growth vs fixed mindset basics",
+        "failure types basics"
+      ],
+      "assessment_link": "src-001-c021",
+      "teachable": true,
+      "rationale": "Defines innovation mindset, psychological safety, and intelligent failure distinctions to build foundational understanding (lo-g0-001, lo-g0-002, lo-g0-003).",
+      "transform_model": "marcus",
+      "transform_version": "ped-v1",
+      "generated_at": "2026-06-27T05:19:26.487412Z"
+    },
+    {
+      "component_id": "src-001-c019",
+      "lo_refs": [
+        "lo-g0-003",
+        "lo-g0-002",
+        "lo-g0-001"
+      ],
+      "bloom": "apply",
+      "pedagogical_role": "worked_example",
+      "teaches_after": [
+        "src-001-c003",
+        "src-001-c005",
+        "src-001-c006",
+        "src-001-c011",
+        "src-001-c012",
+        "src-001-c013",
+        "src-001-c017"
+      ],
+      "prerequisite_concepts": [
+        "clinical scenarios",
+        "root cause analysis basics"
+      ],
+      "assessment_link": "src-001-c021",
+      "teachable": true,
+      "rationale": "Applies concepts through clinical examples to distinguish praiseworthy vs blameworthy failures and team impacts (lo-g0-003, lo-g0-002, lo-g0-001).",
+      "transform_model": "marcus",
+      "transform_version": "ped-v1",
+      "generated_at": "2026-06-27T05:19:26.487412Z"
+    },
+    {
+      "component_id": "src-001-c021",
+      "lo_refs": [
+        "lo-g0-006",
+        "lo-g0-010",
+        "lo-g0-007",
+        "lo-g0-008",
+        "lo-g0-009",
+        "lo-g0-001",
+        "lo-g0-002",
+        "lo-g0-003"
+      ],
+      "bloom": "analyze",
+      "pedagogical_role": "assessment",
+      "teaches_after": [
+        "src-001-c003",
+        "src-001-c005",
+        "src-001-c006",
+        "src-001-c011",
+        "src-001-c012",
+        "src-001-c013",
+        "src-001-c017",
+        "src-001-c019"
+      ],
+      "prerequisite_concepts": [
+        "prior content mastery"
+      ],
+      "assessment_link": null,
+      "teachable": true,
+      "rationale": "Assesses learners\u2019 ability to analyze and recall data and concepts across waste/admin costs, proactive care, inflection point, and mindset/failure frameworks.",
+      "transform_model": "marcus",
+      "transform_version": "ped-v1",
+      "generated_at": "2026-06-27T05:19:26.487412Z"
+    }
+  ]
+}
