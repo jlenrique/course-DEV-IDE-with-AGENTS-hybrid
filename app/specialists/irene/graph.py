@@ -57,7 +57,11 @@ from app.models.state import specialist_summary_artifacts as specialist_summary_
 from app.models.state.run_state import RunState
 from app.specialists._scaffold.contract import SCAFFOLD_NODE_IDS
 from app.specialists._shared.figure_tokens import _FIGURE_RE, _figures, _normalize_figure
+from app.specialists._shared.voice_direction_map import voice_direction_active
 from app.specialists.dispatch_errors import SpecialistDispatchError
+from app.specialists.irene.authoring.voice_direction_annotation import (
+    annotate_segments_with_voice_direction,
+)
 from app.specialists.irene.payload_contract import CONSUMED_PAYLOAD_KEYS
 from app.specialists.source_bundle import read_extracted_source
 from scripts.utilities.reading_path_classifier import (
@@ -1017,6 +1021,47 @@ def _act_pass_1(
     }
 
 
+def _attach_voice_direction(
+    parsed: dict[str, Any], envelope_payload: dict[str, Any]
+) -> dict[str, Any]:
+    """Attach per-segment `voice_direction` to the frozen manifest (P5 Step 2).
+
+    IR-1 seam: runs post-freeze + post-figure-gate. Delegates to the PURE
+    annotation leaf (``annotate_segments_with_voice_direction``) which only ADDS
+    delivery metadata and never mutates a grounded field. Gated by
+    ``voice_direction_active()`` (``MARCUS_NARRATION_VOICE_DIRECTION_ACTIVE``,
+    default OFF): when the flag is OFF the parsed dict is returned UNCHANGED, so
+    non-directed runs are byte-identical to the pre-Step-2 baseline.
+
+    Direction inputs are read from the envelope payload (both optional): CD/Pass-2
+    ``voice_direction_defaults`` and per-segment ``voice_direction_overrides``.
+    The Step-6 G0-enrichment ``role_derived_seeds`` hook exists on the leaf but is
+    intentionally NOT wired here yet.
+
+    Two-walk determinism (Winston W-A4): the flag is read live here, but the
+    production runner's S2 per-node idempotency contract skips re-dispatch on the
+    resume/continuation walk (this node does not re-execute; the captured
+    ProductionEnvelope contribution — the baked annotated deltas — is reused).
+    There is therefore no cross-walk divergence as long as
+    ``MARCUS_NARRATION_VOICE_DIRECTION_ACTIVE`` does not flip mid-run (standing
+    constraint; a capture-the-flag-once-into-state hardening is filed as a
+    cross-walk follow-on). Fail-loud (UDAC): an out-of-contract or unmatched
+    override raises ``VoiceDirectionError`` (a ``SpecialistDispatchError`` ⇒
+    recoverable error-pause), never a silent drop.
+    """
+    if not voice_direction_active():
+        return parsed
+    deltas = parsed.get("segment_manifest_deltas") or []
+    if not deltas:
+        return parsed
+    annotated = annotate_segments_with_voice_direction(
+        deltas,
+        defaults=envelope_payload.get("voice_direction_defaults"),
+        per_segment_overrides=envelope_payload.get("voice_direction_overrides"),
+    )
+    return {**parsed, "segment_manifest_deltas": annotated}
+
+
 def _act_pass_2(
     state: RunState,
     *,
@@ -1065,6 +1110,12 @@ def _act_pass_2(
     _assert_narration_joins_roster(parsed, slide_roster)
     _assert_reading_path_conformance(parsed, slide_roster)
     _assert_figure_citations_within_perceived(parsed, slide_roster)
+    # P5 directed-voice Step 2 (IR-1): the SEPARATE, pure, deterministic voice-
+    # direction annotation pass runs ONLY here — AFTER the manifest is frozen and
+    # AFTER the figure-citation gate has passed — and ONLY attaches delivery
+    # metadata. It never re-generates the script and never touches a grounded
+    # field. Flag OFF (default) ⇒ byte-identical (no voice_direction emitted).
+    parsed = _attach_voice_direction(parsed, envelope_payload)
     output_blob = json.dumps(
         {
             "narration_script": parsed["narration_script"],

@@ -23,6 +23,12 @@ CONSUMED_PAYLOAD_KEYS: frozenset[str] = frozenset(
         "pass_phase",
         "perception_artifacts",
         "slide_briefs",
+        # P5 directed-voice arc Step 2 (2026-06-27): optional delivery-metadata
+        # inputs consumed by the post-freeze voice-direction annotation pass.
+        # Both are read ONLY when MARCUS_NARRATION_VOICE_DIRECTION_ACTIVE is set;
+        # absent ⇒ conservative built-in default (flag OFF ⇒ not read at all).
+        "voice_direction_defaults",
+        "voice_direction_overrides",
     }
 )
 

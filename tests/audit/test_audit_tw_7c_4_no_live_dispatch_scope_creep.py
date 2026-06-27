@@ -360,6 +360,17 @@ PERMITTED_PYTHON_DIFFS = {
     # Pass-2 narration overlay, published online per S5 criterion 7).
     "app/specialists/irene/graph.py",
     "app/specialists/irene/payload_contract.py",
+    # P5 directed-voice arc Step 2 (2026-06-27): the SEPARATE, pure, post-freeze
+    # voice-direction annotation pass (IR-1) wired into graph.py's Pass-2 seam
+    # AFTER the figure-citation gate. Pure leaf, no live dispatch; flag-gated
+    # (MARCUS_NARRATION_VOICE_DIRECTION_ACTIVE, default OFF ⇒ byte-identical).
+    "app/specialists/irene/authoring/voice_direction_annotation.py",
+    # P5 directed-voice Step-2 RED-first proof: pure-pass grounding-non-regression
+    # (MUR-2 byte-identity) + precedence/provenance/determinism pins, and the
+    # emission-wiring pins (flag OFF byte-identical / flag ON attaches / figure-
+    # gate firewall stays clean). Offline/deterministic; no live dispatch.
+    "tests/specialists/irene/test_voice_direction_annotation.py",
+    "tests/specialists/irene/test_voice_direction_emission_wiring.py",
     # dp-v1.2 — audio-segment arc (party consensus 2026-06-12, operator
     # full-delegation completion directive): enrique grounded via Pass-2
     # narration projections (cycle-5 ran §11-12 ungrounded → zero audio);
