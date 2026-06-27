@@ -1,3 +1,25 @@
+# Session Handoff — 2026-06-27 (P5 downstream-consumption arc, autonomous /goal: P1 ✅ + P2 ✅ SIGNED OFF live + party-CLOSED; P3 + final integration DEFERRED to fresh session — context budget)
+
+**Final class:** S (substrate — P1 hardening + P2 Texas pass-0 citation-resolution brick + universal-md preamble + live proofs + party governance artifacts). **Branch:** `dev/p5-downstream-consumption-2026-06-26` (fresh from master `38c5357`). **Commits:** `bc405e0` (P1, pushed) · `8abc533` (P2, ⚠️ PUSH PENDING credential dialog — 1 ahead). **Marcus-orchestrated; party-mode every major step (party voices = independently-spawned persona subagents, autonomous-session pattern).**
+
+**Goal (still active):** BMAD workflows + tailored party teams; design→implement→LIVE-test→iterate until a BMAD team signs off on live runs of **P1, then P2, then P3**; live-test incrementally; push downstream; reuse assets; final test = Desmond aggregates a deck+motion+workbook bundle → Descript project (P4/P5 if posting needs them, else defer). **Outcome: P1 + P2 (2 of 3 dev stages) SIGNED OFF live + committed; P3 + final integration cleanly DEFERRED to a fresh session per the operator's "wrap cleanly + signal for a fresh chat" directive (context budget reached).**
+
+**Completed (each: party design/green-light → dev RED-first → 3-layer T11 → remediate → party CLOSE):**
+1. **Party R1** (Winston+Murat) GREEN-WITH-AMENDMENTS — arc + P1 approach + curated 3-slide slice; 11 binding amendments. SSOT: `_bmad-output/planning-artifacts/p5-arc-party-record-2026-06-26.md`.
+2. **P1** (`bc405e0`) — component extraction LIVE-proven (real gpt-5, 26 components + 9 LOs, 0 fabrication, fail-probe captured) + hardened RED-first (per-row LO guard, payload-shape guard, markdown-normalized A4 groundedness flag, cp1252). 8 tests + brick 46 green. Unanimous CLOSE.
+3. **Party R2** (Texas lead + Irene consumer-shape → Winston+Murat ratify) GREEN-TO-BUILD — P2 design DD1–DD8 + Irene 7 shapes; A5=scite-only-v1 (pubmed→v2 deferred); Texas proved critical path live pre-build.
+4. **P2** (`8abc533`) — `skills/bmad-agent-texas/scripts/pass0/` (citation_resolver via in-process dispatcher + scite `search_literature(dois=)`; universal_md + exported `emit_front_matter`) + additive `CitationResolution` on `G0EnrichmentResult` (closed `TypedComponent` untouched) wired inside `build_enrichment_result` (existing node/cache/G0E gate; A4 RED at fingerprint freeze) + DD8 scite fix. LIVE all paths (resolved/failed/no_doi, 0 fabrication); wiring test feeds a REAL captured scite response (Murat no-mock contingency met). T11 SHIP-WITH-FOLLOWONS → 3 SHOULD-FIX remediated. 71 + suites green; lint-imports no new break. Unanimous CLOSE.
+
+**⚠️ BINDING carried to the FINAL E2E (else P2 retroactively NOT-closed — Murat):** (1) one-process live `build_enrichment_result(dispatch_live=True)` showing BOTH `resolved` and `failed` in one output; (2) live A4 `ungrounded`. Blocked at P2 ONLY by P1 gpt-5 extraction variable latency (>9min ×2 today; OpenAI ping 2.9s; resolver non-hanging). Final-integration E2E runs it live anyway → close there.
+
+**Next (fresh session — see next-session-start-here):** push P2 → **R3 P3 Irene pass-1** (strawman `p3-irene-pass1-design-strawman-2026-06-26.md` ready) → build P3 RED-first + live → T11 → CLOSE → **final integration** (B3 deck+motion+workbook → Desmond → Descript; close P2 carried conditions; P4/P5 if needed else defer).
+
+**Key lessons:** (1) **P1 gpt-5 extraction has variable HIGH latency — run live extractions FOREGROUND with a hard timeout + FLUSHED logging, NOT background+monitor** (the build-subagent's detached-run+monitor pattern looped/hung 3×; orphans cleared via TaskStop+taskkill; no work lost, cost wall-clock). (2) Hang isolation (OpenAI ping 2.9s + scite sub-second + non-DOI 0.0s) exonerated P2 — latency is P1's. (3) No-mocks is load-bearing: the real-captured-scite fixture closed a contingency a synthetic row couldn't. (4) A deliberate fail-probe DOI in the slice guaranteed P2's failure path ran live.
+
+**Validation:** P1 8 + brick 46; P2 71 + post-remediation; ruff clean; lint-imports no new break (pre-existing C3 `workbook_producer.graph→resume_api` unrelated); pipeline-manifest untouched. NO MOCKS. **Push: P1 pushed; P2 `8abc533` push PENDING credential dialog — operator run `git push origin dev/p5-downstream-consumption-2026-06-26`.**
+
+---
+
 # Session Handoff — 2026-06-26 PM-3 (G0-enrichment → pre-planning/content-prep pipeline: S1/S2/S3/P1 committed; core LLM ops LIVE-PROVEN + REFINED; ✅ E2E REACHED HAND-OFF-TO-GARY ERROR-FREE)
 
 **Final class:** S (substrate — schema + bricks + manifest + runner + economics + live E2E + planning charter).
