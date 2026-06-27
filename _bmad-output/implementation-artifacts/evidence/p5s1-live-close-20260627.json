@@ -1,0 +1,26 @@
+{
+  "test": "P5-S1 LIVE close (LC1-LC4) \u2014 real workbook node renders from captured live-enriched corpus",
+  "timestamp_utc": "2026-06-27T05:38:27.285026+00:00",
+  "byte_exact_jama_access_url": "https://doi.org/10.1001/jama.2019.13978",
+  "enriched_render_has_jama": true,
+  "enriched_further_reading_urls": [
+    "https://doi.org/10.1001/jama.2019.13978"
+  ],
+  "enriched_exercise_blooms": [
+    "analyze"
+  ],
+  "annotation_blooms": [
+    "analyze",
+    "apply",
+    "remember",
+    "understand"
+  ],
+  "blooms_subset_of_annotations": true,
+  "constant_baseline_has_enrichment_jama": true,
+  "constant_marker_in_enriched": false,
+  "renders_differ": true,
+  "enriched_displaced_constants": true,
+  "enriched_md_len": 16110,
+  "constant_md_len": 18227,
+  "verdict": "PASS"
+}

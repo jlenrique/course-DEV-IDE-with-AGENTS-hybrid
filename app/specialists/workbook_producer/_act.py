@@ -46,6 +46,10 @@ from app.marcus.lesson_plan.collateral_spec import (
 )
 from app.marcus.lesson_plan.produced_asset import ProductionContext
 from app.marcus.lesson_plan.schema import PlanUnit
+from app.marcus.lesson_plan.workbook_enrichment import (
+    load_enrichment_card,
+    project_enrichment_to_workbook_inputs,
+)
 from app.marcus.lesson_plan.workbook_producer import (
     DEFAULT_WORKBOOK_OUTPUT_ROOT,
     FurtherReadingEntry,
@@ -480,6 +484,64 @@ class WorkbookInputs:
     vo_script_text: str
 
 
+def _plan_unit_and_context(
+    run_dir: Path, run_id: str | None, unit_id: str, revision: int
+) -> tuple[PlanUnit, ProductionContext]:
+    """The shared (enriched + constant) plan_unit / context construction."""
+    digest_seed = str(run_id) if run_id else run_dir.name
+    plan_unit = PlanUnit(
+        unit_id=unit_id,
+        event_type="present-trends",
+        source_fitness_diagnosis=(
+            f"in-graph composed run {digest_seed} — macro-trends deck (read-only)"
+        ),
+        weather_band="green",
+        modality_ref="workbook",
+    )
+    context = ProductionContext(
+        lesson_plan_revision=revision,
+        lesson_plan_digest=digest_seed[:8],
+    )
+    return plan_unit, context
+
+
+def _build_enriched_inputs(
+    card: dict[str, Any],
+    *,
+    run_dir: Path,
+    run_id: str | None,
+    unit_id: str,
+    revision: int,
+    segments: tuple[TranscriptSegment, ...],
+    source_text: str,
+    vo_script_text: str,
+) -> WorkbookInputs:
+    """Author the produce() inputs FROM the frozen G0 enriched card payload (P5-S1).
+
+    The enriched corpus SHAPES the deliverable: sections + Bloom-leveled
+    exercises, learning objectives + per-LO Bloom, and gated byte-exact
+    further-reading all come from the projection. The run-DATA (segments,
+    figures, source set) still rides from ``run_dir`` — the enriched corpus does
+    not displace the transcript backbone.
+    """
+    projection = project_enrichment_to_workbook_inputs(card)
+    plan_unit, context = _plan_unit_and_context(run_dir, run_id, unit_id, revision)
+    return WorkbookInputs(
+        plan_unit=plan_unit,
+        context=context,
+        spec=projection.spec,
+        segments=segments,
+        source_text=source_text,
+        learning_objectives=projection.learning_objectives,
+        answer_keys=projection.answer_keys,
+        further_reading=projection.further_reading,
+        research_entries=(),
+        citations=projection.citations,
+        source_ref_manifest=projection.source_ref_manifest,
+        vo_script_text=vo_script_text,
+    )
+
+
 def build_workbook_inputs(
     run_dir: Path,
     *,
@@ -505,6 +567,26 @@ def build_workbook_inputs(
     segments = _load_segments(run_dir, manifest_relpath)
     source_text = _build_source_text(run_dir, corpus_relpath, segments)
     vo_script_text = "\n".join(seg.narration_text for seg in segments)
+
+    # P5-S1 consumption: when the run carries the frozen G0 enriched card payload
+    # (``<run_dir>/g0-enrichment.json``), the enriched corpus DISPLACES the
+    # hardcoded constants for the slots it covers (sections + Bloom-leveled
+    # exercises, learning objectives + per-LO Bloom, gated byte-exact
+    # further-reading). Absent the artifact, fall back to the proven constant
+    # assembly (backward-compatible non-enrichment runs). READ-ONLY: no network,
+    # no model — the frozen verdict is the single source of truth.
+    enriched_card = load_enrichment_card(run_dir)
+    if enriched_card is not None:
+        return _build_enriched_inputs(
+            enriched_card,
+            run_dir=run_dir,
+            run_id=run_id,
+            unit_id=unit_id,
+            revision=revision,
+            segments=segments,
+            source_text=source_text,
+            vo_script_text=vo_script_text,
+        )
 
     ch2_exercises, ch2_answers = _exercises(_CH2_KC, "src-slide-02")
     ch3_exercises, ch3_answers = _exercises(_CH3_KC, "src-slide-05")
@@ -636,20 +718,7 @@ def build_workbook_inputs(
         source_ref_manifest[entry.source_ref] = _hash(entry.title)
         citations.append({"source_ref": entry.source_ref})
 
-    digest_seed = str(run_id) if run_id else run_dir.name
-    plan_unit = PlanUnit(
-        unit_id=unit_id,
-        event_type="present-trends",
-        source_fitness_diagnosis=(
-            f"in-graph composed run {digest_seed} — macro-trends deck (read-only)"
-        ),
-        weather_band="green",
-        modality_ref="workbook",
-    )
-    context = ProductionContext(
-        lesson_plan_revision=revision,
-        lesson_plan_digest=digest_seed[:8],
-    )
+    plan_unit, context = _plan_unit_and_context(run_dir, run_id, unit_id, revision)
 
     return WorkbookInputs(
         plan_unit=plan_unit,
