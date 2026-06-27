@@ -272,6 +272,16 @@ class TypedComponent(BaseModel):
         default=False,
         description="True iff this type has no generator today (A10) or is 'other'.",
     )
+    flagged_ungrounded: bool = Field(
+        default=False,
+        description=(
+            "ADVISORY (P1): True iff the excerpt could NOT be found in the parent "
+            "source after markdown normalization (a possible fabrication). Set by "
+            "the post-extraction groundedness check, never gating — the operator "
+            "confirms at gate #1. Distinct from the DERIVED flagged_unconsumed: "
+            "this flag is set externally and is NOT recomputed by the validator."
+        ),
+    )
 
     @field_validator("source_type", mode="before")
     @classmethod

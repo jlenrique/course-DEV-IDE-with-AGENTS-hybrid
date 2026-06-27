@@ -48,6 +48,8 @@ from pathlib import Path
 from typing import Any
 from uuid import UUID
 
+from pydantic import ValidationError
+
 from app.composers.section_02a.composer import _walk_corpus_files
 from app.marcus.lesson_plan.g0_enrichment import (
     Dissent,
@@ -170,6 +172,38 @@ def _fingerprint(enumerated: list[tuple[str, Path]], model_id: str) -> str:
     return corpus_fingerprint(hashes, model_id)
 
 
+# Encoding ladder for reading a text source: utf-8 → cp1252 → latin-1, then a
+# lossy replace as a last resort. A cp1252-only outline (e.g. a Windows smart
+# quote 0x92) must still decode to text + segment into intra-document components
+# rather than collapse to one whole-file binary fallback. Mirrors the Texas
+# cp1252 Windows-portability fix (migration 7c-2).
+_TEXT_ENCODINGS: tuple[str, ...] = ("utf-8", "cp1252", "latin-1")
+
+
+def _read_text_resilient(path: Path) -> str | None:
+    """Read a text source over the encoding ladder; ``None`` only on real binary/OSError.
+
+    Tries utf-8, then cp1252, then latin-1, then a lossy ``errors="replace"``
+    decode BEFORE giving up. Returns ``None`` (→ the binary fallback component)
+    only when the file is unreadable (``OSError``) or genuinely binary (contains a
+    NUL byte — text, including cp1252, does not). This keeps a cp1252 outline
+    yielding real components while a true binary (image/pdf) still gets the
+    whole-file fallback.
+    """
+    try:
+        raw = path.read_bytes()
+    except OSError:
+        return None
+    if b"\x00" in raw:
+        return None  # genuine binary (NUL byte) → whole-file fallback
+    for encoding in _TEXT_ENCODINGS:
+        try:
+            return raw.decode(encoding)
+        except UnicodeDecodeError:
+            continue
+    return raw.decode("utf-8", errors="replace")
+
+
 def _heuristic_type(path: Path) -> str:
     name = path.name.lower()
     for keyword, source_type in _TYPE_KEYWORDS:
@@ -261,9 +295,8 @@ def _file_components(source_id: str, path: Path, corpus_dir: Path) -> list[Typed
     """
     rel = path.relative_to(corpus_dir).as_posix()
     file_label = path.stem or rel
-    try:
-        text = path.read_text(encoding="utf-8")
-    except (UnicodeDecodeError, OSError):
+    text = _read_text_resilient(path)
+    if text is None:
         sections: list[dict[str, str]] = []
         fallback_type = _heuristic_type(path)
         sections.append(
@@ -312,9 +345,8 @@ _LIVE_EXCERPT_MAX_CHARS = 240_000
 
 def _source_excerpt(path: Path, max_chars: int = _LIVE_EXCERPT_MAX_CHARS) -> str:
     """A bounded, verbatim content excerpt of a text source for the live prompt."""
-    try:
-        text = path.read_text(encoding="utf-8")
-    except (UnicodeDecodeError, OSError):
+    text = _read_text_resilient(path)
+    if text is None:
         return "[binary or unreadable source — type from filename only]"
     text = text.strip()
     if len(text) <= max_chars:
@@ -333,6 +365,96 @@ def _live_corpus_summary(enumerated: list[tuple[str, Path]], corpus_dir: Path) -
         rel = path.relative_to(corpus_dir).as_posix()
         blocks.append(f"### {sid}: {rel}\n{_source_excerpt(path)}")
     return "\n\n".join(blocks)
+
+
+# ---------------------------------------------------------------------------
+# Excerpt groundedness (ADVISORY at P1 — flag, never crash)
+# ---------------------------------------------------------------------------
+
+# Backslash-escaped markdown punctuation the model routinely un-escapes when it
+# quotes a span (e.g. source ``\$760`` → excerpt ``$760``). Unescaped on BOTH
+# sides before the substring check so a benign markdown rewrite is NOT mistaken
+# for a fabrication. Set per the P1 live finding (2026-06-27): a strict byte
+# check false-rejected ~27% (4/26) of FAITHFUL extractions that diverged from the
+# source ONLY by ``\$``/``> ``/whitespace.
+_MD_PUNCT_UNESCAPE_RE = re.compile(r"\\([$#*\[\]()\-.])")
+_WS_RUN_RE = re.compile(r"\s+")
+
+
+def _strip_blockquote_prefix(line: str) -> str:
+    """Strip leading blockquote ``>`` / ``> `` prefixes from one line (repeatable)."""
+    stripped = line.lstrip()
+    while stripped.startswith(">"):
+        stripped = stripped[1:]
+        if stripped.startswith(" "):
+            stripped = stripped[1:]
+    return stripped
+
+
+def _normalize_for_groundedness(text: str) -> str:
+    """Markdown-normalize text for an excerpt-vs-source substring comparison.
+
+    Applied to BOTH the excerpt and the parent-source text before comparing:
+      1. strip leading blockquote ``>``/``> `` prefixes per line;
+      2. unescape backslash-escaped markdown punctuation (``\\$``→``$`` etc.);
+      3. collapse every whitespace run (incl. newlines) to a single space.
+
+    A strict byte check would false-reject faithful extractions that diverge only
+    by these benign markdown artifacts (P1 live finding) — normalizing is the
+    whole point.
+    """
+    lines = [_strip_blockquote_prefix(line) for line in text.splitlines()]
+    joined = "\n".join(lines)
+    joined = _MD_PUNCT_UNESCAPE_RE.sub(r"\1", joined)
+    return _WS_RUN_RE.sub(" ", joined).strip()
+
+
+def _is_excerpt_grounded(excerpt: str, source_text: str) -> bool:
+    """True iff ``excerpt`` is a substring of ``source_text`` after md-normalization.
+
+    An excerpt that normalizes to empty is treated as grounded (nothing to
+    ground); otherwise a markdown-normalized substring containment decides it.
+    """
+    norm_excerpt = _normalize_for_groundedness(excerpt)
+    if not norm_excerpt:
+        return True
+    return norm_excerpt in _normalize_for_groundedness(source_text)
+
+
+def flag_ungrounded_components(
+    typed: list[TypedComponent],
+    source_by_id: dict[str, str],
+) -> int:
+    """ADVISORY (P1): flag components whose excerpt is not grounded in its parent.
+
+    Mutates ``flagged_ungrounded=True`` + logs a warning for each component whose
+    markdown-normalized excerpt is NOT a substring of its (md-normalized) parent
+    source. NEVER raises and NEVER drops a component — the operator confirms at
+    gate #1. Returns the number of components flagged.
+    """
+    normalized_sources = {
+        sid: _normalize_for_groundedness(text) for sid, text in source_by_id.items()
+    }
+    n_flagged = 0
+    for comp in typed:
+        norm_source = normalized_sources.get(comp.parent_source_id)
+        if norm_source is None:
+            # No parent text available (e.g. binary/unreadable) — cannot judge
+            # groundedness; leave unflagged rather than false-flag.
+            continue
+        norm_excerpt = _normalize_for_groundedness(comp.excerpt)
+        if not norm_excerpt or norm_excerpt in norm_source:
+            continue
+        comp.flagged_ungrounded = True
+        n_flagged += 1
+        logger.warning(
+            "g0-enrichment: component %r excerpt is NOT grounded in parent %r after "
+            "markdown normalization (advisory flag; operator confirms at gate #1): %.80s",
+            comp.component_id,
+            comp.parent_source_id,
+            comp.excerpt,
+        )
+    return n_flagged
 
 
 # ---------------------------------------------------------------------------
@@ -550,14 +672,37 @@ def _parse_live_payload(
     enumerated_id_set = set(enumerated_ids)
     by_id = {sid: path for sid, path in enumerated}
 
+    # MUST-2: guard the live payload shape. A non-dict payload (top-level list,
+    # bare string, ...) or a non-list ``components`` (e.g. components-as-dict) is
+    # treated as ZERO component rows — the file-coverage fallback below still
+    # covers every enumerated file, so the reconcile never crashes on drift.
+    if not isinstance(payload, dict):
+        logger.warning(
+            "g0-enrichment live: payload is %s, not a dict; treating as zero "
+            "component rows (the file-coverage fallback covers every file)",
+            type(payload).__name__,
+        )
+        payload = {}
     rows = (
         payload.get("components")
         or payload.get("typed_components")
         or payload.get("typed_sources")
         or []
     )
+    if not isinstance(rows, list):
+        logger.warning(
+            "g0-enrichment live: components payload is %s, not a list; treating as "
+            "zero component rows (file-coverage fallback covers every file)",
+            type(rows).__name__,
+        )
+        rows = []
     per_parent: dict[str, list[dict[str, Any]]] = {sid: [] for sid in enumerated_ids}
     for row in rows:
+        if not isinstance(row, dict):
+            logger.warning(
+                "g0-enrichment live: skipping non-dict component row %r", row
+            )
+            continue
         pid = str(row.get("parent_source_id") or row.get("source_id") or "")
         if pid not in enumerated_id_set:
             logger.warning(
@@ -609,10 +754,30 @@ def _parse_live_payload(
         )
         for sid, path in enumerated
     ]
+    # MUST-1: guard EACH live LO row. One malformed/under-specified row must NOT
+    # abort the whole pre-pass (which would also discard every already-extracted
+    # component); skip the bad row + log + continue.
+    raw_los = payload.get("provisional_los", [])
+    if not isinstance(raw_los, list):
+        logger.warning(
+            "g0-enrichment live: provisional_los is %s, not a list; treating as none",
+            type(raw_los).__name__,
+        )
+        raw_los = []
     los: list[LearningObjective] = []
-    for row in payload.get("provisional_los", []):
-        lo = LearningObjective.model_validate({**row, "status": "provisional"})
-        lo = advance_lo(lo, "provisional", actor="g0")
+    for row in raw_los:
+        try:
+            if not isinstance(row, dict):
+                raise TypeError(f"LO row is {type(row).__name__}, not a dict")
+            lo = LearningObjective.model_validate({**row, "status": "provisional"})
+            lo = advance_lo(lo, "provisional", actor="g0")
+        except (ValidationError, ValueError, TypeError) as exc:
+            logger.warning(
+                "g0-enrichment live: dropping malformed provisional LO row (%s); "
+                "keeping the already-extracted components + the valid LOs",
+                exc,
+            )
+            continue
         los.append(lo)
     _assert_refs_enumerated(los, enumerated_id_set)
     return typed, los, provenance
@@ -648,6 +813,12 @@ def build_enrichment_result(
     else:
         typed, los, provenance = _offline_pre_pass(enumerated, corpus_dir)
 
+    # SHOULD-A4 (advisory): flag any component whose excerpt is not grounded in
+    # its parent source after markdown normalization (offline excerpts are
+    # verbatim-by-construction → 0; the live leg is where this earns its keep).
+    source_by_id = {sid: (_read_text_resilient(path) or "") for sid, path in enumerated}
+    n_ungrounded = flag_ungrounded_components(typed, source_by_id)
+
     independent_parse = IndependentParse(
         proposal={
             "typed_components": [t.model_dump(mode="json") for t in typed],
@@ -668,6 +839,7 @@ def build_enrichment_result(
         n_files_ignored=n_files_in - n_files_covered,
         n_components=len(typed),
         n_flagged=n_flagged,
+        n_ungrounded=n_ungrounded,
     )
     roots = [
         TraversalRoot(root_id=corpus_dir.resolve().as_posix(), kind="corpus_dir"),
@@ -798,6 +970,7 @@ __all__ = [
     "G0_ENRICHMENT_ACTIVE_ENV",
     "G0_DISPATCH_LIVE_ENV",
     "build_enrichment_result",
+    "flag_ungrounded_components",
     "g0_dispatch_live",
     "g0_enrichment_active",
     "load_enrichment_result",

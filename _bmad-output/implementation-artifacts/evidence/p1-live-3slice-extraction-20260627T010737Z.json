@@ -1,0 +1,358 @@
+{
+  "test": "P1 LLM Instructional-Designer component-extraction LIVE sign-off",
+  "timestamp_utc": "2026-06-27T01:07:37.420776+00:00",
+  "branch": "dev/p5-downstream-consumption-2026-06-26",
+  "corpus": "course-content/courses/tejal-c1m1-3slide-slice/source-outline.md",
+  "corpus_fingerprint": "37ae14fb9d2d9d23b278c10d1139504c6041949b8563fe0f7d345c1e6a157823",
+  "cache_bust": "build_enrichment_result has no cache read/write path (cache lives only in run_g0_enrichment); calling it directly forces a fresh live model invocation",
+  "receipt": {
+    "result_model_id": "marcus",
+    "resolved_model_id": "gpt-5",
+    "requested": null,
+    "resolution_level": "registry_default",
+    "offline_marker": "deterministic-g0-enrichment-offline",
+    "usage_metadata": {
+      "input_tokens": 2164,
+      "output_tokens": 9677,
+      "total_tokens": 11841,
+      "input_token_details": {
+        "audio": 0,
+        "cache_read": 0
+      },
+      "output_token_details": {
+        "audio": 0,
+        "reasoning": 5696
+      }
+    },
+    "total_tokens": 11841,
+    "response_model_name": "gpt-5-2025-08-07"
+  },
+  "component_histogram": {
+    "other": 13,
+    "reference_citation": 7,
+    "slide": 3,
+    "narration": 3
+  },
+  "component_count": 26,
+  "groundedness": {
+    "grounded_raw_substring": 19,
+    "grounded_whitespace_normalized": 22,
+    "total": 26,
+    "non_grounded": [
+      {
+        "component_id": "src-001-c002",
+        "type": "other",
+        "excerpt": "> NOTE: This is a COST-BOUNDED 3-slide slice carved verbatim from `course-content/courses/tejal-c1m1-fresh-outline/source-outline.md` for live pipeline testing (P1 extraction -> P2 Texas pass-0 -> P3 Irene pass-1)."
+      },
+      {
+        "component_id": "src-001-c012",
+        "type": "narration",
+        "excerpt": "Narration:\n- estimated cost of waste in the US health care system ranged from $760 billion to $935 billion, accounting for approximately 25% of total health care spending, and the projected potential sa"
+      },
+      {
+        "component_id": "src-001-c016",
+        "type": "reference_citation",
+        "excerpt": "Approximately 25% of total U.S. healthcare spending (nearly $1 trillion) goes toward administrative costs\u2014not patient care. The U.S. healthcare system currently ranks last among high-income nations in e"
+      },
+      {
+        "component_id": "src-001-c024",
+        "type": "reference_citation",
+        "excerpt": "\u201cIn 2024, the United States spent $5.3 trillion on healthcare, which is 18% of the GDP. This spending reflects a 7.2% increase from the previous year, driven by rising demand for medical services and i"
+      }
+    ],
+    "grounded_markdown_normalized": 26,
+    "rootcause": "the 4 excerpts failing whitespace-only normalization are SEMANTICALLY grounded: they diverge from raw source bytes ONLY by markdown syntax the model stripped -- escaped dollar signs (source backslash-dollar 760 -> model dollar 760) and blockquote prefixes (> ). After also normalizing those markdown artifacts, 26/26 are grounded. No fabrication/hallucination observed."
+  },
+  "reconcile": {
+    "n_files_in": 1,
+    "n_files_covered": 1,
+    "n_files_ignored": 0,
+    "n_components": 26,
+    "n_flagged": 20
+  },
+  "enumerated_source_ids": [
+    "src-001"
+  ],
+  "bad_parent_components": [],
+  "component_ids_unique": true,
+  "fail_probe": {
+    "extracted": true,
+    "as_reference_citation": true,
+    "matches": [
+      {
+        "component_id": "src-001-c026",
+        "type": "reference_citation",
+        "excerpt": "[TEST-ONLY FAIL-PROBE \u2014 deliberate guaranteed-fail citation so P2's resolution-FAILURE path is exercised; NOT real source content]: \"Verbruggen Q, Inkwell T. Phantom Determinants of Sickcare Drift in No"
+      }
+    ]
+  },
+  "components": [
+    {
+      "id": "src-001-c001",
+      "type": "other",
+      "parent": "src-001",
+      "locator": "Course 1, Module 1",
+      "excerpt_head": "# **Course 1, Module 1: Foundations of the Innovation Mindset** {toggle=\"true\"}",
+      "flagged_unconsumed": true
+    },
+    {
+      "id": "src-001-c002",
+      "type": "other",
+      "parent": "src-001",
+      "locator": "Preamble",
+      "excerpt_head": "> NOTE: This is a COST-BOUNDED 3-slide slice carved verbatim from `course-conten",
+      "flagged_unconsumed": true
+    },
+    {
+      "id": "src-001-c003",
+      "type": "other",
+      "parent": "src-001",
+      "locator": "Introduction",
+      "excerpt_head": "## Introduction {toggle=\"true\"}",
+      "flagged_unconsumed": true
+    },
+    {
+      "id": "src-001-c004",
+      "type": "other",
+      "parent": "src-001",
+      "locator": "Introduction > Learning Objectives",
+      "excerpt_head": "### **Learning Objectives** {toggle=\"true\"}",
+      "flagged_unconsumed": true
+    },
+    {
+      "id": "src-001-c005",
+      "type": "other",
+      "parent": "src-001",
+      "locator": "Introduction > Learning Objectives",
+      "excerpt_head": "**This module directly supports the following Course 1 Goal:** To equip learners",
+      "flagged_unconsumed": true
+    },
+    {
+      "id": "src-001-c006",
+      "type": "other",
+      "parent": "src-001",
+      "locator": "Introduction > Learning Objectives",
+      "excerpt_head": "***By the end of this module, the learner will be able to:***\n- ***MO 1.1:** Def",
+      "flagged_unconsumed": true
+    },
+    {
+      "id": "src-001-c007",
+      "type": "other",
+      "parent": "src-001",
+      "locator": "Part 1",
+      "excerpt_head": "## **Part 1: The Call - Setting the Stage** {toggle=\"true\"}",
+      "flagged_unconsumed": true
+    },
+    {
+      "id": "src-001-c008",
+      "type": "other",
+      "parent": "src-001",
+      "locator": "Part 1 > Page 3",
+      "excerpt_head": "### Page 3:** Case for Change** {toggle=\"true\"}",
+      "flagged_unconsumed": true
+    },
+    {
+      "id": "src-001-c009",
+      "type": "other",
+      "parent": "src-001",
+      "locator": "Part 1 > Page 3",
+      "excerpt_head": "**Chapter 3: Case for Change**\n- Introduction: Healthcare is undergoing structur",
+      "flagged_unconsumed": true
+    },
+    {
+      "id": "src-001-c010",
+      "type": "reference_citation",
+      "parent": "src-001",
+      "locator": "Part 1 > Page 3",
+      "excerpt_head": "- [Healthcare - Supply and Demand.  Why do healthcare markets fail?](https://www",
+      "flagged_unconsumed": true
+    },
+    {
+      "id": "src-001-c011",
+      "type": "slide",
+      "parent": "src-001",
+      "locator": "Part 1 > Page 3 > Slide 1",
+      "excerpt_head": "- Slide 1: Healthcare Waste:",
+      "flagged_unconsumed": false
+    },
+    {
+      "id": "src-001-c012",
+      "type": "narration",
+      "parent": "src-001",
+      "locator": "Part 1 > Page 3 > Slide 1",
+      "excerpt_head": "Narration:\n- estimated cost of waste in the US health care system ranged from $7",
+      "flagged_unconsumed": false
+    },
+    {
+      "id": "src-001-c013",
+      "type": "reference_citation",
+      "parent": "src-001",
+      "locator": "Part 1 > Page 3 > Slide 1",
+      "excerpt_head": "(Shrank WH, Rogstad TL, Parekh N. Waste in the US Health Care System: Estimated ",
+      "flagged_unconsumed": true
+    },
+    {
+      "id": "src-001-c014",
+      "type": "reference_citation",
+      "parent": "src-001",
+      "locator": "Part 1 > Page 3 > Slide 1",
+      "excerpt_head": "- <span color=\"green_bg\">[https://pubmed.ncbi.nlm.nih.gov/31589283/](https://pub",
+      "flagged_unconsumed": true
+    },
+    {
+      "id": "src-001-c015",
+      "type": "other",
+      "parent": "src-001",
+      "locator": "Part 1 > Page 3 > Slide 1",
+      "excerpt_head": "[image trimmed: Waste_in_the_US_Health_Care_System_Estimated_Costs_and_Potential",
+      "flagged_unconsumed": true
+    },
+    {
+      "id": "src-001-c016",
+      "type": "reference_citation",
+      "parent": "src-001",
+      "locator": "Part 1 > Page 3 > Slide 1",
+      "excerpt_head": "Approximately 25% of total U.S. healthcare spending (nearly $1 trillion) goes to",
+      "flagged_unconsumed": true
+    },
+    {
+      "id": "src-001-c017",
+      "type": "other",
+      "parent": "src-001",
+      "locator": "Part 1 > Page 3 > Slide 1",
+      "excerpt_head": "[image trimmed: Screenshot_2026-02-09 Mirror Mirror efficiency chart]",
+      "flagged_unconsumed": true
+    },
+    {
+      "id": "src-001-c018",
+      "type": "slide",
+      "parent": "src-001",
+      "locator": "Part 1 > Page 3 > Slide 3",
+      "excerpt_head": "- Slide 3: The Rising Burden of Burnout",
+      "flagged_unconsumed": false
+    },
+    {
+      "id": "src-001-c019",
+      "type": "narration",
+      "parent": "src-001",
+      "locator": "Part 1 > Page 3 > Slide 3",
+      "excerpt_head": "- \"Let's look at the data. Reports like the Medscape National Physician Burnout ",
+      "flagged_unconsumed": false
+    },
+    {
+      "id": "src-001-c020",
+      "type": "reference_citation",
+      "parent": "src-001",
+      "locator": "Part 1 > Page 3 > Slide 3",
+      "excerpt_head": "In 2024, 49% to 54.5% of physicians reported symptoms of burnout. Crucially, the",
+      "flagged_unconsumed": true
+    },
+    {
+      "id": "src-001-c021",
+      "type": "other",
+      "parent": "src-001",
+      "locator": "Part 1 > Page 3 > Slide 3",
+      "excerpt_head": "- Use slide 10 from **HII Source**",
+      "flagged_unconsumed": true
+    },
+    {
+      "id": "src-001-c022",
+      "type": "other",
+      "parent": "src-001",
+      "locator": "Part 1 > Page 3 > Slide 3",
+      "excerpt_head": "[image trimmed: HII Source slide 10 burnout]",
+      "flagged_unconsumed": true
+    },
+    {
+      "id": "src-001-c023",
+      "type": "slide",
+      "parent": "src-001",
+      "locator": "Part 1 > Page 3 > Slide 6",
+      "excerpt_head": "- Slide 6: The Push To Transition from Sickcare to Healthcare",
+      "flagged_unconsumed": false
+    },
+    {
+      "id": "src-001-c024",
+      "type": "reference_citation",
+      "parent": "src-001",
+      "locator": "Part 1 > Page 3 > Slide 6",
+      "excerpt_head": "\u201cIn 2024, the United States spent $5.3 trillion on healthcare, which is 18% of t",
+      "flagged_unconsumed": true
+    },
+    {
+      "id": "src-001-c025",
+      "type": "narration",
+      "parent": "src-001",
+      "locator": "Part 1 > Page 3 > Slide 6",
+      "excerpt_head": "narration: U.S. healthcare spending continues to rise, now accounting for nearly",
+      "flagged_unconsumed": false
+    },
+    {
+      "id": "src-001-c026",
+      "type": "reference_citation",
+      "parent": "src-001",
+      "locator": "Part 1 > Page 3 > Slide 6",
+      "excerpt_head": "[TEST-ONLY FAIL-PROBE \u2014 deliberate guaranteed-fail citation so P2's resolution-F",
+      "flagged_unconsumed": true
+    }
+  ],
+  "provisional_los": [
+    {
+      "id": "lo-g0-001",
+      "statement": "Define the innovation mindset, describe why it is important, and identify common misconceptions.",
+      "status": "provisional"
+    },
+    {
+      "id": "lo-g0-002",
+      "statement": "Analyze how psychological safety and fixed/growth mindsets impact team performance, patient safety, and innovation.",
+      "status": "provisional"
+    },
+    {
+      "id": "lo-g0-003",
+      "statement": "Apply the Intelligent Failure framework to distinguish between blameworthy and praiseworthy failures in clinical setting",
+      "status": "provisional"
+    },
+    {
+      "id": "lo-g0-004",
+      "statement": "Evaluate your personal innovation mindset, goals, and environment using a structured SWOT analysis.",
+      "status": "provisional"
+    },
+    {
+      "id": "lo-g0-005",
+      "statement": "Create an initial innovation portfolio by sourcing ideas from experience, future goals, and daily clinical observation.",
+      "status": "provisional"
+    },
+    {
+      "id": "lo-g0-006",
+      "statement": "Interpret estimates of waste in the US health care system and discuss potential savings from waste-reduction interventio",
+      "status": "provisional"
+    },
+    {
+      "id": "lo-g0-007",
+      "statement": "Summarize 2024 physician burnout prevalence and identify the top contributing driver.",
+      "status": "provisional"
+    },
+    {
+      "id": "lo-g0-008",
+      "statement": "Explain the share of US healthcare spending relative to GDP and articulate the shift toward proactive, population-focuse",
+      "status": "provisional"
+    },
+    {
+      "id": "lo-g0-009",
+      "statement": "Articulate why healthcare is at an inflection point that requires new models of leadership and innovation.",
+      "status": "provisional"
+    }
+  ],
+  "assertions": {
+    "a_receipt": true,
+    "b_components": true,
+    "c_groundedness": false,
+    "d_enumerated_parent": true,
+    "e_reconcile": true,
+    "f_fail_probe_extracted": true,
+    "f_fail_probe_as_citation": true,
+    "c_groundedness_semantic_markdown_normalized": true
+  },
+  "overall_pass": false,
+  "notes": "first-run-stands; live gpt-5; assertion (c) recorded FAIL at strict/whitespace bar, PASS at markdown-normalized (semantic) bar. P1 production code does NOT machine-enforce excerpt groundedness (_coerce_component_row trusts the model)."
+}

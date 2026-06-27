@@ -732,3 +732,179 @@ def test_live_corpus_summary_includes_id_path_and_content(tmp_path: Path) -> Non
     assert "alpha content line" in summary  # the model SEES content, not just the path
     assert "### src-002: b.md" in summary
     assert "beta content line" in summary
+
+
+# =========================================================================== #
+# T11 SHIP-WITH-FOLLOWONS remediation (P1 component-extraction leg, 2026-06-27) #
+# =========================================================================== #
+
+
+# --------------------------------------------------------------------------- #
+# MUST-1 — one malformed live LO row must NOT abort the whole pre-pass          #
+# --------------------------------------------------------------------------- #
+def test_must1_malformed_live_lo_row_is_skipped_not_aborting(tmp_path: Path) -> None:
+    (tmp_path / "f1.md").write_text("# File 1\nbody one\n", encoding="utf-8")
+    enumerated = [("src-001", tmp_path / "f1.md")]
+    payload = {
+        "components": [
+            {
+                "parent_source_id": "src-001",
+                "type": "slide",
+                "label": "S1",
+                "locator": "File 1 > S1",
+                "excerpt": "body one",
+            },
+        ],
+        "provisional_los": [
+            {  # valid
+                "objective_id": "lo-g0-001",
+                "statement": "Understand file one.",
+                "confidence": "low",
+                "source_refs": [
+                    {"source_id": "src-001", "locator": "File 1", "quoted_span": "body one"}
+                ],
+            },
+            {"confidence": "low"},  # malformed: missing objective_id + statement
+        ],
+    }
+    typed, los, provenance = gw._parse_live_payload(payload, enumerated, tmp_path)
+    # The valid LO survives; the bad row is dropped (not an abort).
+    assert len(los) == 1
+    assert los[0].objective_id == "lo-g0-001"
+    assert los[0].status == "provisional"
+    # ALL already-extracted components survive the bad LO row.
+    assert any(
+        t.source_type == "slide" and t.parent_source_id == "src-001" for t in typed
+    ), "the extracted component must not be discarded by a malformed LO row"
+
+
+# --------------------------------------------------------------------------- #
+# MUST-2 — a malformed live payload/rows shape falls back to coverage (no crash)#
+# --------------------------------------------------------------------------- #
+@pytest.mark.parametrize(
+    "payload",
+    [
+        ["not", "a", "dict"],  # top-level list
+        "a bare string",  # bare string
+        {"components": {"parent_source_id": "src-001"}},  # components-as-dict (not a list)
+    ],
+)
+def test_must2_malformed_payload_shape_falls_back_to_coverage(
+    tmp_path: Path, payload: object
+) -> None:
+    (tmp_path / "f1.md").write_text("# File 1\nbody one\n", encoding="utf-8")
+    (tmp_path / "f2.md").write_text("# File 2\nbody two\n", encoding="utf-8")
+    enumerated = [("src-001", tmp_path / "f1.md"), ("src-002", tmp_path / "f2.md")]
+    typed, los, provenance = gw._parse_live_payload(payload, enumerated, tmp_path)  # type: ignore[arg-type]
+    # Treated as ZERO component rows → every enumerated FILE gets a coverage fallback.
+    parents = {t.parent_source_id for t in typed}
+    assert parents == {"src-001", "src-002"}
+    assert los == []
+    assert len(provenance) == 2
+
+
+# --------------------------------------------------------------------------- #
+# SHOULD-A4 — markdown-normalized excerpt-groundedness FLAG (advisory at P1)     #
+# --------------------------------------------------------------------------- #
+def test_should_a4_groundedness_flags_fabricated_excerpt() -> None:
+    # Murat M5 executable RED gate: a truly fabricated excerpt (absent even after
+    # markdown normalization) MUST be flagged ungrounded.
+    source = "# Heading\nthe quick brown fox jumps over the lazy dog\n"
+    fabricated = TypedComponent(
+        component_id="src-001-c001",
+        parent_source_id="src-001",
+        source_type="slide",
+        label="Fabricated",
+        locator="Heading",
+        excerpt="this sentence is absolutely not present in the source xyzzy",
+    )
+    n = gw.flag_ungrounded_components([fabricated], {"src-001": source})
+    assert n == 1
+    assert fabricated.flagged_ungrounded is True
+
+
+def test_should_a4_groundedness_no_false_reject_on_md_artifacts() -> None:
+    # Excerpts that differ from source ONLY by blockquote '> ', escaped '\$', and
+    # whitespace must NOT be flagged (the whole point of normalization).
+    source = (
+        "# Heading\n"
+        "> NOTE: carved verbatim from the outline for testing.\n"
+        "- estimated cost ranged from \\$760 billion to \\$935 billion total.\n"
+    )
+    comps = [
+        TypedComponent(  # differs only by stripped blockquote '> ' + whitespace
+            component_id="src-001-c001",
+            parent_source_id="src-001",
+            source_type="other",
+            other_type=OtherSourceType(label="note", provenance="preamble note"),
+            label="note",
+            locator="Preamble",
+            excerpt="NOTE: carved verbatim from the outline for testing.",
+        ),
+        TypedComponent(  # differs only by \$ -> $ unescape
+            component_id="src-001-c002",
+            parent_source_id="src-001",
+            source_type="narration",
+            label="cost",
+            locator="Heading",
+            excerpt="estimated cost ranged from $760 billion to $935 billion total.",
+        ),
+    ]
+    n = gw.flag_ungrounded_components(comps, {"src-001": source})
+    assert n == 0
+    assert all(c.flagged_ungrounded is False for c in comps)
+
+
+def test_should_a4_offline_evidence_groundedness_is_26_of_26() -> None:
+    # Offline validation against the captured P1 LIVE evidence (no re-spend): all
+    # 26 components are grounded in the source AFTER markdown normalization.
+    import json
+
+    evidence = json.loads(
+        (
+            REPO_ROOT
+            / "_bmad-output"
+            / "implementation-artifacts"
+            / "evidence"
+            / "p1-live-3slice-extraction-20260627T010737Z.json"
+        ).read_text(encoding="utf-8")
+    )
+    source_text = (
+        REPO_ROOT
+        / "course-content"
+        / "courses"
+        / "tejal-c1m1-3slide-slice"
+        / "source-outline.md"
+    ).read_text(encoding="utf-8")
+    # Use the fullest excerpt available per component: the longer excerpt recorded
+    # in the non_grounded list where present, else the recorded excerpt_head.
+    longer = {
+        nf["component_id"]: nf["excerpt"]
+        for nf in evidence["groundedness"]["non_grounded"]
+    }
+    comps = evidence["components"]
+    assert len(comps) == 26
+    ungrounded = [
+        c["id"]
+        for c in comps
+        if not gw._is_excerpt_grounded(longer.get(c["id"], c["excerpt_head"]), source_text)
+    ]
+    assert not ungrounded, (
+        f"markdown-normalized groundedness must be 26/26; ungrounded={ungrounded}"
+    )
+
+
+# --------------------------------------------------------------------------- #
+# SHOULD — cp1252 encoding fallback before the binary whole-file fallback        #
+# --------------------------------------------------------------------------- #
+def test_should_cp1252_outline_splits_into_components_not_binary(tmp_path: Path) -> None:
+    p = tmp_path / "cp1252.md"
+    # 0x92 is a Windows-1252 smart right single-quote; invalid as standalone utf-8.
+    p.write_bytes(
+        b"# Heading One\nIt\x92s a cp1252 smart quote.\n## Section Two\nmore body.\n"
+    )
+    comps = gw._file_components("src-001", p, tmp_path)
+    assert len(comps) >= 2, "a cp1252 outline must segment, not collapse to one binary component"
+    assert all("binary or unreadable" not in c.excerpt for c in comps)
+    # The cp1252 0x92 byte decoded to U+2019 (RIGHT SINGLE QUOTATION MARK).
+    assert any("’" in c.excerpt for c in comps)

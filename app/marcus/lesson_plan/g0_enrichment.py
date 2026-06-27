@@ -200,6 +200,15 @@ class ReconcileView(BaseModel):
         ge=0,
         description="Classification-only/escape-hatch components (subset of n_components).",
     )
+    n_ungrounded: int = Field(
+        default=0,
+        ge=0,
+        description=(
+            "ADVISORY (P1): components whose excerpt could not be grounded in the "
+            "parent source after markdown normalization (subset of n_components; "
+            "never gating)."
+        ),
+    )
 
     @model_validator(mode="after")
     def _enforce_reconciliation(self) -> ReconcileView:
@@ -218,6 +227,11 @@ class ReconcileView(BaseModel):
             raise ValueError(
                 f"n_flagged={self.n_flagged} cannot exceed n_components={self.n_components} "
                 "(flagged is a subset of the components)"
+            )
+        if self.n_ungrounded > self.n_components:
+            raise ValueError(
+                f"n_ungrounded={self.n_ungrounded} cannot exceed "
+                f"n_components={self.n_components} (ungrounded is a subset of the components)"
             )
         return self
 
