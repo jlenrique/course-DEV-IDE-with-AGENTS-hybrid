@@ -12,11 +12,25 @@ import base64
 import logging
 import os
 from pathlib import Path
-from typing import Any
+from typing import Any, NamedTuple
 
 from scripts.api_clients.base_client import BaseAPIClient
 
 logger = logging.getLogger(__name__)
+
+
+class TtsResult(NamedTuple):
+    """Audio bytes plus the surfaced ElevenLabs ``request-id`` (ENRIQUE-A2).
+
+    The bare :meth:`ElevenLabsClient.text_to_speech` returns audio bytes only
+    and discards the response headers. Directed-voice receipts (P5 Step 4) must
+    record the REAL ``request_id`` the provider returned, so the synthesis seam
+    Enrique drives returns this structurally-tiny result instead. Any test
+    double Enrique injects only needs to expose ``audio`` and ``request_id``.
+    """
+
+    audio: bytes
+    request_id: str | None
 
 ELEVENLABS_BASE_URL = "https://api.elevenlabs.io/v1"
 DEFAULT_TTS_MODEL = "eleven_multilingual_v2"
@@ -147,6 +161,60 @@ class ElevenLabsClient(BaseAPIClient):
         Returns:
             Raw audio bytes in the requested format.
         """
+        return self.text_to_speech_with_request_id(
+            text,
+            voice_id,
+            model_id=model_id,
+            stability=stability,
+            similarity_boost=similarity_boost,
+            style=style,
+            speed=speed,
+            use_speaker_boost=use_speaker_boost,
+            output_format=output_format,
+            language_code=language_code,
+            pronunciation_dictionary_locators=pronunciation_dictionary_locators,
+            seed=seed,
+            previous_text=previous_text,
+            next_text=next_text,
+            previous_request_ids=previous_request_ids,
+            next_request_ids=next_request_ids,
+            use_pvc_as_ivc=use_pvc_as_ivc,
+            apply_text_normalization=apply_text_normalization,
+            apply_language_text_normalization=apply_language_text_normalization,
+        ).audio
+
+    def text_to_speech_with_request_id(
+        self,
+        text: str,
+        voice_id: str,
+        *,
+        model_id: str = DEFAULT_TTS_MODEL,
+        stability: float | None = None,
+        similarity_boost: float | None = None,
+        style: float | None = None,
+        speed: float | None = None,
+        use_speaker_boost: bool | None = None,
+        output_format: str = "mp3_44100_128",
+        language_code: str | None = None,
+        pronunciation_dictionary_locators: list[dict[str, str]] | None = None,
+        seed: int | None = None,
+        previous_text: str | None = None,
+        next_text: str | None = None,
+        previous_request_ids: list[str] | None = None,
+        next_request_ids: list[str] | None = None,
+        use_pvc_as_ivc: bool | None = None,
+        apply_text_normalization: str | None = None,
+        apply_language_text_normalization: bool | None = None,
+    ) -> TtsResult:
+        """Generate speech and surface the provider ``request-id`` (ENRIQUE-A2).
+
+        This is the settings-bearing synthesis seam the directed-voice path
+        (P5 Step 4) drives so receipts can record the REAL request id. The
+        settings default to ``None`` (omitted via ``_clean_payload``) rather
+        than to the legacy ``text_to_speech`` defaults, so the per-segment
+        resolved settings flow through verbatim. Existing ``text_to_speech``
+        callers keep their old defaults by passing them explicitly.
+        """
         payload = self._clean_payload(
             {
                 "text": text,
@@ -177,7 +245,10 @@ class ElevenLabsClient(BaseAPIClient):
             json=payload,
             params={"output_format": output_format},
         )
-        return response.content
+        return TtsResult(
+            audio=response.content,
+            request_id=self._extract_request_id(response),
+        )
 
     def text_to_speech_with_timestamps(
         self,

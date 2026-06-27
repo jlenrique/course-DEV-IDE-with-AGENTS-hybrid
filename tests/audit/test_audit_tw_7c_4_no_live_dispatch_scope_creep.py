@@ -382,6 +382,24 @@ PERMITTED_PYTHON_DIFFS = {
     "app/specialists/narration_join.py",
     "app/specialists/enrique/_act.py",
     "app/specialists/enrique/payload_contract.py",
+    # P5 directed-voice arc Step 4 (2026-06-27): Enrique consumes per-segment
+    # voice_direction. The shared 5-tier mapper gained the tier-4/5 default
+    # loaders (load_style_guide_tts_defaults / voice_selection_default_tier /
+    # normalize_optional_str); the ElevenLabs client surfaces the request-id
+    # header (ENRIQUE-A2, additive method, no new live-dispatch call site — the
+    # TW-7c-4 semantic detector stays GREEN); Storyboard B's generator gains the
+    # effective-voice-source line + honest tier-3/4/5 header (carry). enrique/
+    # _act.py + payload_contract.py already rostered above. Bounded, flag-gated
+    # (MARCUS_NARRATION_VOICE_DIRECTION_ACTIVE, default OFF ⇒ byte-identical).
+    "app/specialists/_shared/voice_direction_map.py",
+    "scripts/api_clients/elevenlabs_client.py",
+    "skills/bmad-agent-marcus/scripts/generate-storyboard.py",
+    "tests/specialists/enrique/test_enrique_directed_voice.py",
+    "tests/specialists/enrique/test_enrique_directed_voice_remediation.py",
+    "tests/specialists/enrique/_fake_elevenlabs.py",
+    "tests/specialists/_shared/test_voice_direction_tier_defaults.py",
+    "tests/test_elevenlabs_client.py",
+    "tests/integration/marcus/test_storyboard_voice_direction_display.py",
     "app/specialists/compositor/_act.py",
     "app/specialists/compositor/payload_contract.py",
     "app/specialists/quinn_r/graph.py",

@@ -6,7 +6,7 @@ import base64
 from pathlib import Path
 from unittest.mock import MagicMock, patch
 
-from scripts.api_clients.elevenlabs_client import ElevenLabsClient
+from scripts.api_clients.elevenlabs_client import ElevenLabsClient, TtsResult
 
 
 class TestElevenLabsClientTimestamps:
@@ -57,6 +57,60 @@ class TestElevenLabsClientTimestamps:
         assert kwargs["json"]["pronunciation_dictionary_locators"][0][
             "pronunciation_dictionary_id"
         ] == "dict-1"
+
+
+class TestTextToSpeechRequestId:
+    """P5 Step 4 / ENRIQUE-A2 — surface the provider request-id."""
+
+    def test_with_request_id_surfaces_header(self) -> None:
+        client = ElevenLabsClient(api_key="test-key")
+        response = MagicMock()
+        response.content = b"directed-audio"
+        response.headers = {"request-id": "req-abc-789"}
+
+        with patch.object(client, "post_raw", return_value=response):
+            result = client.text_to_speech_with_request_id(
+                "Reflective line.",
+                "voice-1",
+                stability=0.62,
+                style=0.22,
+                speed=0.94,
+            )
+
+        assert isinstance(result, TtsResult)
+        assert result.audio == b"directed-audio"
+        assert result.request_id == "req-abc-789"
+
+    def test_with_request_id_omits_unset_settings(self) -> None:
+        client = ElevenLabsClient(api_key="test-key")
+        response = MagicMock()
+        response.content = b"x"
+        response.headers = {}
+
+        with patch.object(client, "post_raw", return_value=response) as mocked:
+            client.text_to_speech_with_request_id("Hi", "voice-1", stability=0.3)
+
+        _, kwargs = mocked.call_args
+        # Only the explicitly-passed setting is sent; defaults are NOT injected.
+        assert kwargs["json"]["voice_settings"] == {"stability": 0.3}
+
+    def test_legacy_text_to_speech_preserves_default_settings(self) -> None:
+        """Backward-compat: bytes-only path keeps its historic 0.5/0.75/0.0."""
+        client = ElevenLabsClient(api_key="test-key")
+        response = MagicMock()
+        response.content = b"legacy"
+        response.headers = {"request-id": "ignored"}
+
+        with patch.object(client, "post_raw", return_value=response) as mocked:
+            audio = client.text_to_speech("Hello", "voice-9")
+
+        assert audio == b"legacy"  # still returns bytes only
+        _, kwargs = mocked.call_args
+        assert kwargs["json"]["voice_settings"] == {
+            "stability": 0.5,
+            "similarity_boost": 0.75,
+            "style": 0.0,
+        }
 
 
 class TestPronunciationDictionaryHelpers:

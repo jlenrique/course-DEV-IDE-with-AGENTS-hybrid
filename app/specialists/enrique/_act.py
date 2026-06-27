@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import hashlib
 import json
 import sys
 from datetime import UTC, datetime
@@ -14,10 +15,22 @@ from app.models.state.cache_state import CacheState
 from app.models.state.model_resolution_entry import ModelResolutionEntry
 from app.models.state.run_state import RunState
 from app.runtime.economics import RUNS_ROOT
+from app.specialists._shared.voice_direction_map import (
+    SUPPORTED_RENDER_STRATEGIES,
+    VoiceDirectionMapError,
+    clean_default_tier,
+    load_style_guide_tts_defaults,
+    map_voice_direction_to_tts,
+    normalize_optional_str,
+    resolve_voice_id_with_source,
+    voice_direction_active,
+    voice_selection_default_tier,
+)
 from app.specialists.dispatch_errors import SpecialistDispatchError
 from app.specialists.enrique.elevenlabs_dispatch import dispatch_to_elevenlabs
+from app.specialists.irene.authoring.pass_2_template import VoiceDirection
 from app.specialists.narration_join import join_narration_segments, phantom_segment_ids
-from scripts.api_clients.elevenlabs_client import ElevenLabsClient
+from scripts.api_clients.elevenlabs_client import DEFAULT_TTS_MODEL, ElevenLabsClient
 
 REPO_ROOT = Path(__file__).resolve().parents[3]
 SANCTUM_DIR = REPO_ROOT / "_bmad" / "memory" / "bmad-agent-enrique"
@@ -312,6 +325,190 @@ def _write_vtt(path: Path, text: str, duration: float) -> None:
     )
 
 
+# Settings keys the resolved TTS dict carries (mirrors the shared mapper output).
+_TTS_SETTING_KEYS = ("model_id", "stability", "similarity_boost", "style", "speed")
+
+
+class _DirectedPlan:
+    """A fully-resolved-and-validated directed segment, computed in the PRE-FLIGHT
+    pass BEFORE any synthesis call (S1) so a bad segment N never bills 1..N-1."""
+
+    __slots__ = (
+        "index",
+        "sid",
+        "segment",
+        "text",
+        "direction",
+        "resolved",
+        "voice_id",
+        "effective_voice_source",
+        "effective_model",
+        "effective_settings",
+    )
+
+    def __init__(
+        self,
+        *,
+        index: int,
+        sid: str,
+        segment: dict[str, Any],
+        text: str,
+        direction: VoiceDirection | None,
+        resolved: dict[str, Any],
+        voice_id: str,
+        effective_voice_source: str,
+        effective_model: str,
+    ) -> None:
+        self.index = index
+        self.sid = sid
+        self.segment = segment
+        self.text = text
+        self.direction = direction
+        self.resolved = resolved
+        self.voice_id = voice_id
+        self.effective_voice_source = effective_voice_source
+        self.effective_model = effective_model
+        # effective_elevenlabs_settings records the EFFECTIVE model actually used
+        # (M2): resolved model_id is None when no tier supplies one, but the real
+        # call/receipt must show the concrete default the client applies.
+        self.effective_settings = {
+            "voice_id": voice_id,
+            "model_id": effective_model,
+            "stability": resolved.get("stability"),
+            "similarity_boost": resolved.get("similarity_boost"),
+            "style": resolved.get("style"),
+            "speed": resolved.get("speed"),
+        }
+
+
+def _resolve_directed_plan(
+    index: int,
+    segment: dict[str, Any],
+    text: str,
+    *,
+    pass2_defaults: dict[str, Any],
+    voice_selection_default: dict[str, Any],
+    style_guide_defaults: dict[str, Any],
+) -> _DirectedPlan:
+    """Validate + resolve ONE directed segment (PRE-FLIGHT; no synthesis here).
+
+    FAILS LOUD (tagged, recoverable) on a non-mapping / contract-invalid direction
+    (`elevenlabs.voice-direction.invalid`), an unsupported ``render_strategy``
+    (`elevenlabs.render-strategy.unsupported` — Card 3), or an unresolvable
+    voice_id (`elevenlabs.voice-id.unresolved`). The empty-string ``voice_id`` is
+    normalized at this call site (empty-voice-id guard). The voice_id AND its
+    provenance label come from the SAME shared resolver (S6) so they cannot
+    diverge from ``resolved["voice_id"]``.
+    """
+    from pydantic import ValidationError
+
+    sid = _segment_id(segment, index)
+    segment_voice_id = normalize_optional_str(segment.get("voice_id"))
+    raw_direction = segment.get("voice_direction")
+    direction: VoiceDirection | None
+    if raw_direction is None:
+        direction = None
+        mapper_input = VoiceDirection()
+    else:
+        if not isinstance(raw_direction, dict):
+            raise EnriqueActError(
+                f"segment {sid} voice_direction must be a mapping",
+                tag="elevenlabs.voice-direction.invalid",
+            )
+        try:
+            direction = VoiceDirection.model_validate(raw_direction)
+        except ValidationError as exc:
+            raise EnriqueActError(
+                f"segment {sid} voice_direction failed contract validation: {exc}",
+                tag="elevenlabs.voice-direction.invalid",
+            ) from exc
+        if direction.render_strategy not in SUPPORTED_RENDER_STRATEGIES:
+            # `dialogue` is modeled-not-consumed in v1; consuming it as
+            # single-voice TTS would be silently-wrong output.
+            raise EnriqueActError(
+                f"segment {sid} unsupported render_strategy "
+                f"{direction.render_strategy!r} (supported: "
+                f"{sorted(SUPPORTED_RENDER_STRATEGIES)}); refusing to silently "
+                "render single-voice",
+                tag="elevenlabs.render-strategy.unsupported",
+            )
+        mapper_input = direction
+
+    resolved = map_voice_direction_to_tts(
+        mapper_input,
+        segment_voice_id=segment_voice_id,
+        pass2_voice_direction_defaults=pass2_defaults,
+        voice_selection_default=voice_selection_default,
+        style_guide_defaults=style_guide_defaults,
+    )
+    # Single-source voice_id + provenance (S6): same walk that produced
+    # resolved["voice_id"], so they can never disagree.
+    voice_id_raw, effective_voice_source = resolve_voice_id_with_source(
+        mapper_input,
+        segment_voice_id=segment_voice_id,
+        pass2_voice_direction_defaults=pass2_defaults,
+        voice_selection_default=voice_selection_default,
+        style_guide_defaults=style_guide_defaults,
+    )
+    voice_id = normalize_optional_str(voice_id_raw)
+    if voice_id is None:
+        raise EnriqueActError(
+            f"segment {sid} resolved no voice_id across all 5 precedence tiers; "
+            "refusing to dispatch an empty voice",
+            tag="elevenlabs.voice-id.unresolved",
+        )
+    # M2: the EFFECTIVE model is the resolved one, or the client default the call
+    # will actually apply when no tier supplies model_id.
+    effective_model = normalize_optional_str(resolved.get("model_id")) or DEFAULT_TTS_MODEL
+    return _DirectedPlan(
+        index=index,
+        sid=sid,
+        segment=segment,
+        text=text,
+        direction=direction,
+        resolved=resolved,
+        voice_id=voice_id,
+        effective_voice_source=effective_voice_source,
+        effective_model=effective_model,
+    )
+
+
+def _measure_duration(
+    audio_bytes: bytes, segment: dict[str, Any], text: str
+) -> tuple[float, str]:
+    # Arc 3 (measured-durations): probe the REAL synthesized mp3. A valid
+    # probe is the only thing that earns the "measured" label that arms
+    # G5's WPM raise; otherwise fall back to payload/estimate (unchanged).
+    measured = _mp3_duration_seconds(audio_bytes)
+    if measured is not None:
+        return measured, "measured"
+    if segment.get("duration_seconds"):
+        return float(segment["duration_seconds"]), "provided"
+    return max(1.0, len(text) / 14.0), "estimated-chars"
+
+
+def _reusable_receipt(
+    receipt_path: Path, audio_path: Path, plan: _DirectedPlan
+) -> dict[str, Any] | None:
+    """Skip-if-exists guard (S2): return a prior receipt to REUSE iff a matching
+    paid mp3 already exists, so a mid-loop-error resume/re-run does not re-bill
+    a segment already synthesized at the SAME resolved settings. Any mismatch
+    (settings changed, mp3 missing, receipt unreadable) -> re-synthesize."""
+    if not (receipt_path.is_file() and audio_path.is_file()):
+        return None
+    try:
+        prior = json.loads(receipt_path.read_text(encoding="utf-8"))
+    except (json.JSONDecodeError, OSError):
+        return None
+    if not isinstance(prior, dict):
+        return None
+    if prior.get("effective_elevenlabs_settings") != plan.effective_settings:
+        return None
+    if prior.get("voice_id") != plan.voice_id:
+        return None
+    return prior
+
+
 def build_assembly_bundle(
     payload: dict[str, Any], *, selection: dict[str, Any], client: ElevenLabsClient | None = None
 ) -> dict[str, Any]:
@@ -319,67 +516,253 @@ def build_assembly_bundle(
     bundle_path = _require_bundle_path(payload)
     audio_dir = bundle_path / "assembly-bundle" / "audio"
     captions_dir = bundle_path / "assembly-bundle" / "captions"
+    receipts_dir = bundle_path / "assembly-bundle" / "receipts"
     segments = _segments(payload)
     outputs: list[dict[str, Any]] = []
+    receipts: list[dict[str, Any]] = []
     cost_per_1k = float(
         payload.get("cost_per_1k_chars")
         or _load_config().get("default_cost_per_1k_chars_usd", 0.30)
     )
-    for index, segment in enumerate(segments, start=1):
-        sid = _segment_id(segment, index)
-        text = _segment_text(segment)
-        if not text:
-            continue
+
+    # P5 directed-voice (Step 4). Flag OFF ⇒ byte-identical to legacy: global
+    # voice, no per-segment settings, no receipts. Flag ON ⇒ per-segment
+    # resolution via the SAME shared mapper Storyboard B displays (no drift), the
+    # tier-4/5 file reads wired here, and per-segment receipts written.
+    directed = voice_direction_active()
+
+    # Only segments that carry narration text are synthesized (blank-text rows are
+    # skipped exactly as legacy did via the in-loop `continue`).
+    synth_segments = [
+        (index, segment)
+        for index, segment in enumerate(segments, start=1)
+        if _segment_text(segment)
+    ]
+
+    # S7: a zero-segment / all-blank payload returns the empty bundle WITHOUT
+    # touching selection["selected_voice_id"] (legacy never did when there was no
+    # work — a `selection` lacking that key must not KeyError here).
+    if not synth_segments:
+        return {
+            "bundle_path": str(bundle_path),
+            "narration_outputs": outputs,
+            "compositor_invocation": build_compositor_invocation(outputs),
+            **({"narration_receipts": receipts} if directed else {}),
+        }
+
+    selected_voice_id = selection["selected_voice_id"]
+
+    if not directed:
+        for index, segment in synth_segments:
+            sid = _segment_id(segment, index)
+            text = _segment_text(segment)
+            audio_path = audio_dir / f"{sid}.mp3"
+            audio_path.parent.mkdir(parents=True, exist_ok=True)
+            audio = client.text_to_speech(text, selected_voice_id)
+            audio_bytes = audio if isinstance(audio, bytes) else bytes(str(audio), "utf-8")
+            audio_path.write_bytes(audio_bytes)
+            duration, duration_source = _measure_duration(audio_bytes, segment, text)
+            caption_path = captions_dir / f"{sid}.vtt"
+            _write_vtt(caption_path, text, duration)
+            cost = round((len(text) / 1000.0) * cost_per_1k, 4)
+            print(
+                f"Enrique segment {sid} [{index}/{len(segments)}] OK | "
+                f"duration={duration:.1f}s | cost={cost:.4f}",
+                file=sys.stderr,
+                flush=True,
+            )
+            outputs.append(
+                {
+                    "segment_id": sid,
+                    "slide_id": str(segment.get("slide_id") or ""),
+                    "audio_path": str(audio_path),
+                    "caption_path": str(caption_path),
+                    "duration_seconds": duration,
+                    # Winston (audio-arc + review MUST-FIX 2): "measured" is
+                    # RESERVED for a real mp3 probe — now satisfied by Arc 3's
+                    # frame-duration parser. "provided"/"estimated-chars" remain
+                    # PLANNED numbers; only "measured" arms G5's WPM raise.
+                    "duration_source": duration_source,
+                    "cost_usd": cost,
+                }
+            )
+        return {
+            "bundle_path": str(bundle_path),
+            "narration_outputs": outputs,
+            "compositor_invocation": build_compositor_invocation(outputs),
+        }
+
+    # --- directed path (flag ON) ---
+    voice_selection_default = voice_selection_default_tier(selected_voice_id)
+    # M1: tier-3 (voice_direction_defaults) arrives RAW from the payload — clean
+    # it the SAME way as tiers 4/5 so a blank "" cannot mask a lower tier or flow
+    # to the API. S4: a corrupt tier-5 style_guide.yaml becomes a tagged,
+    # recoverable error-pause instead of a bare YAMLError escaping act().
+    pass2_defaults = clean_default_tier(
+        payload.get("voice_direction_defaults")
+        if isinstance(payload.get("voice_direction_defaults"), dict)
+        else {}
+    )
+    try:
+        style_guide_defaults = load_style_guide_tts_defaults()
+    except VoiceDirectionMapError as exc:
+        raise EnriqueActError(str(exc), tag=exc.tag) from exc
+
+    # PRE-FLIGHT (S1): validate + resolve EVERY segment BEFORE the first
+    # synthesis call, so a bad segment N never bills segments 1..N-1.
+    plans = [
+        _resolve_directed_plan(
+            index,
+            segment,
+            _segment_text(segment),
+            pass2_defaults=pass2_defaults,
+            voice_selection_default=voice_selection_default,
+            style_guide_defaults=style_guide_defaults,
+        )
+        for index, segment in synth_segments
+    ]
+
+    total = len(segments)
+    for plan in plans:
+        sid = plan.sid
+        text = plan.text
         audio_path = audio_dir / f"{sid}.mp3"
-        audio = client.text_to_speech(text, selection["selected_voice_id"])
-        audio_bytes = audio if isinstance(audio, bytes) else bytes(str(audio), "utf-8")
-        audio_path.parent.mkdir(parents=True, exist_ok=True)
-        audio_path.write_bytes(audio_bytes)
-        # Arc 3 (measured-durations): probe the REAL synthesized mp3. A valid
-        # probe is the only thing that earns the "measured" label that arms
-        # G5's WPM raise; otherwise fall back to payload/estimate (unchanged).
-        measured = _mp3_duration_seconds(audio_bytes)
-        if measured is not None:
-            duration = measured
-            duration_source = "measured"
-        elif segment.get("duration_seconds"):
-            duration = float(segment["duration_seconds"])
-            duration_source = "provided"
-        else:
-            duration = max(1.0, len(text) / 14.0)
-            duration_source = "estimated-chars"
         caption_path = captions_dir / f"{sid}.vtt"
+        receipt_path = receipts_dir / f"{sid}.json"
+        audio_path.parent.mkdir(parents=True, exist_ok=True)
+
+        # S2 skip-if-exists: reuse a prior paid mp3 at the SAME resolved settings
+        # rather than re-billing on a resume/re-run.
+        reusable = _reusable_receipt(receipt_path, audio_path, plan)
+        if reusable is not None:
+            print(
+                f"Enrique segment {sid} [{plan.index}/{total}] REUSED (directed) | "
+                f"voice={plan.voice_id} | req={reusable.get('request_id')} | "
+                "skip-if-exists (no re-spend)",
+                file=sys.stderr,
+                flush=True,
+            )
+            receipts.append(reusable)
+            outputs.append(
+                {
+                    "segment_id": sid,
+                    "slide_id": str(plan.segment.get("slide_id") or ""),
+                    "audio_path": str(audio_path),
+                    "caption_path": str(caption_path),
+                    "duration_seconds": reusable.get("narration_duration"),
+                    "duration_source": "reused",
+                    "cost_usd": 0.0,
+                    "voice_id": plan.voice_id,
+                    "request_id": reusable.get("request_id"),
+                    "request_id_present": reusable.get("request_id_present"),
+                    "audio_sha256": reusable.get("audio_sha256"),
+                    "effective_elevenlabs_settings": plan.effective_settings,
+                    "effective_voice_source": plan.effective_voice_source,
+                    "pause_before_seconds": reusable.get("pause_before_seconds"),
+                    "pause_after_seconds": reusable.get("pause_after_seconds"),
+                    "assembled_duration_seconds": reusable.get("assembled_duration_seconds"),
+                }
+            )
+            continue
+
+        # ENRIQUE-A5 firewall: the text sent to TTS is the figure-gated narration
+        # verbatim. `delivery_tag` is NEVER injected (generation-text and the
+        # displayed/gated narration are the SAME single channel here, so the tag
+        # is not cleanly isolable — Card 3 conservative posture); recorded in the
+        # receipt only. model_id is passed explicitly (M2) so the SENT model ==
+        # the recorded effective model.
+        call_kwargs: dict[str, Any] = {"model_id": plan.effective_model}
+        for field in ("stability", "similarity_boost", "style", "speed"):
+            value = plan.resolved.get(field)
+            if value is not None:
+                call_kwargs[field] = value
+        tts_result = client.text_to_speech_with_request_id(text, plan.voice_id, **call_kwargs)
+        audio_bytes = (
+            tts_result.audio
+            if isinstance(tts_result.audio, bytes)
+            else bytes(str(tts_result.audio), "utf-8")
+        )
+        audio_path.write_bytes(audio_bytes)
+        # S3: an always-present content digest + explicit flag prove a billed
+        # call even when the provider returns NO request-id header (None would
+        # otherwise be indistinguishable from "no call ever happened").
+        audio_sha256 = hashlib.sha256(audio_bytes).hexdigest()
+        request_id_present = tts_result.request_id is not None
+        duration, duration_source = _measure_duration(audio_bytes, plan.segment, text)
         _write_vtt(caption_path, text, duration)
         cost = round((len(text) / 1000.0) * cost_per_1k, 4)
-        progress = (
-            f"Enrique segment {sid} [{index}/{len(segments)}] OK | "
-            f"duration={duration:.1f}s | cost={cost:.4f}"
+
+        # pause_before/after -> recorded silence-padding metadata (compositor
+        # wiring pending — see follow-on; NOT yet applied to the played audio).
+        pause_before = float(plan.direction.pause_before_seconds or 0.0) if plan.direction else 0.0
+        pause_after = float(plan.direction.pause_after_seconds or 0.0) if plan.direction else 0.0
+        assembled_duration = round(pause_before + duration + pause_after, 3)
+
+        effective_voice_direction = (
+            plan.direction.model_dump(mode="json") if plan.direction is not None else None
         )
+
         print(
-            progress,
+            f"Enrique segment {sid} [{plan.index}/{total}] OK (directed) | "
+            f"voice={plan.voice_id} | model={plan.effective_model} | "
+            f"duration={duration:.1f}s | cost={cost:.4f} | "
+            f"req={tts_result.request_id} | sha={audio_sha256[:12]}",
             file=sys.stderr,
             flush=True,
         )
+
+        receipt = {
+            "segment_id": sid,
+            "voice_id": plan.voice_id,
+            "render_strategy": (
+                plan.direction.render_strategy if plan.direction is not None else "tts"
+            ),
+            "effective_voice_direction": effective_voice_direction,
+            "effective_elevenlabs_settings": plan.effective_settings,
+            "effective_voice_source": plan.effective_voice_source,
+            "request_id": tts_result.request_id,
+            "request_id_present": request_id_present,
+            "audio_sha256": audio_sha256,
+            "model_id": plan.effective_model,
+            "char_count": len(text),
+            "cost_usd": cost,
+            "narration_file": str(audio_path),
+            "narration_vtt": str(caption_path),
+            "narration_duration": duration,
+            "pause_before_seconds": pause_before,
+            "pause_after_seconds": pause_after,
+            "assembled_duration_seconds": assembled_duration,
+        }
+        _write_json(receipt_path, receipt)
+        receipts.append(receipt)
+
         outputs.append(
             {
                 "segment_id": sid,
-                "slide_id": str(segment.get("slide_id") or ""),
+                "slide_id": str(plan.segment.get("slide_id") or ""),
                 "audio_path": str(audio_path),
                 "caption_path": str(caption_path),
                 "duration_seconds": duration,
-                # Winston (audio-arc + review MUST-FIX 2): "measured" is
-                # RESERVED for a real mp3 probe — now satisfied by Arc 3's
-                # frame-duration parser. "provided"/"estimated-chars" remain
-                # PLANNED numbers; only "measured" arms G5's WPM raise against
-                # reality.
                 "duration_source": duration_source,
                 "cost_usd": cost,
+                # additive directed keys (flag-ON only).
+                "voice_id": plan.voice_id,
+                "request_id": tts_result.request_id,
+                "request_id_present": request_id_present,
+                "audio_sha256": audio_sha256,
+                "effective_elevenlabs_settings": plan.effective_settings,
+                "effective_voice_source": plan.effective_voice_source,
+                "pause_before_seconds": pause_before,
+                "pause_after_seconds": pause_after,
+                "assembled_duration_seconds": assembled_duration,
             }
         )
+
     return {
         "bundle_path": str(bundle_path),
         "narration_outputs": outputs,
         "compositor_invocation": build_compositor_invocation(outputs),
+        "narration_receipts": receipts,
     }
 
 

@@ -1,0 +1,52 @@
+{
+  "generated_at_utc": "20260627T230440Z",
+  "flag": "MARCUS_NARRATION_VOICE_DIRECTION_ACTIVE=1",
+  "real_voice_id": "CwhRBWXzGAHq8TQ4Fs17",
+  "bundle_path": "C:\\Users\\juanl\\Documents\\GitHub\\course-DEV-IDE-with-AGENTS-hybrid\\_bmad-output\\implementation-artifacts\\evidence\\p5-s4-live-enrique-20260627T230440Z",
+  "segments": [
+    {
+      "segment_id": "seg-01-reflective",
+      "request_id": "VAUuakU9yaMrqmLrcz1a",
+      "request_id_present": true,
+      "audio_sha256": "0aa674e30c0033e8647367c4601e92e661cc67882b5bbbfdaec1b358440eabc9",
+      "model_id": "eleven_multilingual_v2",
+      "voice_id": "CwhRBWXzGAHq8TQ4Fs17",
+      "effective_elevenlabs_settings": {
+        "voice_id": "CwhRBWXzGAHq8TQ4Fs17",
+        "model_id": "eleven_multilingual_v2",
+        "stability": 0.75,
+        "similarity_boost": 0.75,
+        "style": 0.1,
+        "speed": 0.94
+      },
+      "effective_voice_source": "voice-selection.json",
+      "narration_duration": 3.396,
+      "narration_file": "C:\\Users\\juanl\\Documents\\GitHub\\course-DEV-IDE-with-AGENTS-hybrid\\_bmad-output\\implementation-artifacts\\evidence\\p5-s4-live-enrique-20260627T230440Z\\assembly-bundle\\audio\\seg-01-reflective.mp3",
+      "narration_vtt": "C:\\Users\\juanl\\Documents\\GitHub\\course-DEV-IDE-with-AGENTS-hybrid\\_bmad-output\\implementation-artifacts\\evidence\\p5-s4-live-enrique-20260627T230440Z\\assembly-bundle\\captions\\seg-01-reflective.vtt",
+      "char_count": 65,
+      "cost_usd": 0.0195
+    },
+    {
+      "segment_id": "seg-02-urgent",
+      "request_id": "cLIZF5tykK3TkLD3RxOY",
+      "request_id_present": true,
+      "audio_sha256": "f398b6c1c69cd1d78540cc217d7ed76c01102a165bae2e126dffe5268f34cf52",
+      "model_id": "eleven_multilingual_v2",
+      "voice_id": "CwhRBWXzGAHq8TQ4Fs17",
+      "effective_elevenlabs_settings": {
+        "voice_id": "CwhRBWXzGAHq8TQ4Fs17",
+        "model_id": "eleven_multilingual_v2",
+        "stability": 0.3,
+        "similarity_boost": 0.75,
+        "style": 0.65,
+        "speed": 1.1
+      },
+      "effective_voice_source": "voice-selection.json",
+      "narration_duration": 3.37,
+      "narration_file": "C:\\Users\\juanl\\Documents\\GitHub\\course-DEV-IDE-with-AGENTS-hybrid\\_bmad-output\\implementation-artifacts\\evidence\\p5-s4-live-enrique-20260627T230440Z\\assembly-bundle\\audio\\seg-02-urgent.mp3",
+      "narration_vtt": "C:\\Users\\juanl\\Documents\\GitHub\\course-DEV-IDE-with-AGENTS-hybrid\\_bmad-output\\implementation-artifacts\\evidence\\p5-s4-live-enrique-20260627T230440Z\\assembly-bundle\\captions\\seg-02-urgent.vtt",
+      "char_count": 62,
+      "cost_usd": 0.0186
+    }
+  ]
+}

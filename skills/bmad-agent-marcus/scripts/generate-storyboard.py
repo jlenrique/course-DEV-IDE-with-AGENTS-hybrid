@@ -637,6 +637,27 @@ def _render_voice_direction_panel(
             f'<code>{html.escape(str(delivery_tag))}</code></div>'
         )
 
+    # Effective voice source line (Card 2 Must-Show; carry
+    # `directed-voice-storyboardb-display-dispatch-header-tier345`). The panel
+    # sees the per-segment direction only, so it names the explicit
+    # `elevenlabs.voice_id` when present; otherwise the voice resolves from the
+    # segment voice_id / voice-selection.json default at synthesis (tier 2/4).
+    eleven_voice_id = eleven.get("voice_id") if isinstance(eleven, dict) else None
+    if eleven_voice_id:
+        voice_source_line = (
+            f"segment voice_direction.elevenlabs.voice_id ({eleven_voice_id})"
+        )
+    else:
+        voice_source_line = (
+            "segment voice_id / voice-selection.json selected default "
+            "(resolved at synthesis)"
+        )
+    effective_source_markup = (
+        '<div class="voice-direction-effective-source" '
+        'data-role="effective-voice-source"><dt>Effective voice source</dt>'
+        f'<dd>{html.escape(voice_source_line)}</dd></div>'
+    )
+
     status, resolved, reason = _resolve_voice_direction(voice_direction)
     if status == "ok" and resolved:
         resolved_rows = "".join(
@@ -646,8 +667,15 @@ def _render_voice_direction_panel(
         )
         resolved_markup = (
             '<div class="voice-direction-resolved" data-role="resolved-tts">'
-            '<h4>Resolved TTS settings — what Enrique will send (display matches dispatch)</h4>'
-            f'<dl class="voice-direction-resolved-list">{resolved_rows}</dl></div>'
+            # Tier-1/2 (explicit + direction-derived) are EXACT; tier-3/4/5
+            # (pass-2 defaults / voice-selection.json / style_guide.yaml) are
+            # resolved by Enrique at synthesis, shown per-field as
+            # "global/default (resolved at synthesis)". The claim stays literally
+            # true (carry tier-3/4/5).
+            '<h4>Resolved TTS settings — what Enrique will send '
+            '(tier-1/2 exact; lower tiers resolved at synthesis)</h4>'
+            f'<dl class="voice-direction-resolved-list">{effective_source_markup}'
+            f'{resolved_rows}</dl></div>'
         )
         vd_state = "directed"
     elif status == "invalid":

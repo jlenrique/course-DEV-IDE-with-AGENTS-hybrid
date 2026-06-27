@@ -23,6 +23,11 @@ CONSUMED_PAYLOAD_KEYS: frozenset[str] = frozenset(
         "segment_manifest_deltas",
         "segments",
         "selected_voice_id",
+        # P5 directed-voice (Step 4): tier-3 default settings consumed from the
+        # Pass-2 envelope when the directed-voice flag is ON. Per-segment
+        # `voice_direction` rides INSIDE each `segments` row (already declared),
+        # so the only NEW top-level key Enrique reads is this defaults block.
+        "voice_direction_defaults",
         "voice_preview_candidate_count",
         "voice_selection",
     }

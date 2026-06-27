@@ -231,6 +231,49 @@ def test_directed_segment_renders_resolved_parity_settings(tmp_path: Path) -> No
 
 
 # --------------------------------------------------------------------------- #
+# Step-4 carry: effective-voice-source line + honest tier-3/4/5 header.
+# --------------------------------------------------------------------------- #
+def test_effective_voice_source_line_present_for_explicit_voice_id() -> None:
+    panel = MODULE._render_voice_direction_panel(
+        {
+            "schema_version": "voice-direction.v1",
+            "render_strategy": "tts",
+            "emotional_tone": "reflective",
+            "elevenlabs": {"voice_id": "explicit-voice-9"},
+        }
+    )
+    assert 'data-role="effective-voice-source"' in panel
+    assert "Effective voice source" in panel
+    assert "explicit-voice-9" in panel
+
+
+def test_effective_voice_source_line_present_for_default_voice() -> None:
+    panel = MODULE._render_voice_direction_panel(
+        {
+            "schema_version": "voice-direction.v1",
+            "render_strategy": "tts",
+            "emotional_tone": "warm",
+        }
+    )
+    assert 'data-role="effective-voice-source"' in panel
+    # No explicit override -> names the lower-tier resolution honestly.
+    assert "voice-selection.json selected default" in panel
+
+
+def test_resolved_header_qualifies_lower_tier_resolution() -> None:
+    panel = MODULE._render_voice_direction_panel(
+        {
+            "schema_version": "voice-direction.v1",
+            "render_strategy": "tts",
+            "emotional_tone": "reflective",
+        }
+    )
+    # The strong "display matches dispatch" claim is now qualified so it stays
+    # literally true once Enrique applies tier-3/4/5 defaults at synthesis.
+    assert "tier-1/2 exact; lower tiers resolved at synthesis" in panel
+
+
+# --------------------------------------------------------------------------- #
 # delivery_tag is a DISTINCT generation cue, NEVER inside the narration block.
 # --------------------------------------------------------------------------- #
 def test_delivery_tag_rendered_distinct_not_in_narration(tmp_path: Path) -> None:
