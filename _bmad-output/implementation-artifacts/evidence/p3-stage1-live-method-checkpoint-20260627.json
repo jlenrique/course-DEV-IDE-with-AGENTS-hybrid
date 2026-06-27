@@ -1,0 +1,91 @@
+{
+  "test": "P3 Stage-1 LIVE method checkpoint (M4/M1/M9)",
+  "timestamp_utc": "2026-06-27T04:50:44.972188+00:00",
+  "model_name": "gpt-5-2025-08-07",
+  "elapsed_s": 20.121164,
+  "usage": {
+    "input_tokens": 508,
+    "output_tokens": 1613,
+    "total_tokens": 2121,
+    "input_token_details": {
+      "audio": 0,
+      "cache_read": 0
+    },
+    "output_token_details": {
+      "audio": 0,
+      "reasoning": 1088
+    }
+  },
+  "n_components_in": 6,
+  "n_rows_parsed": 6,
+  "n_annotations": 6,
+  "referential_integrity": "PASS",
+  "annotations": [
+    {
+      "component_id": "src-001-c011",
+      "bloom": "understand",
+      "role": "definition",
+      "lo_refs": [
+        "lo-g0-001"
+      ],
+      "teachable": true,
+      "assessment_link": null,
+      "rationale": "Introduces what the innovation mindset is, why it matters, and common myths, supporting conceptual understanding aligned to lo-g0-001."
+    },
+    {
+      "component_id": "src-001-c012",
+      "bloom": "understand",
+      "role": "motivation",
+      "lo_refs": [
+        "lo-g0-001"
+      ],
+      "teachable": true,
+      "assessment_link": null,
+      "rationale": "Narration builds relevance and addresses misconceptions to deepen buy\u2011in for defining the innovation mindset per lo-g0-001."
+    },
+    {
+      "component_id": "src-001-c018",
+      "bloom": "analyze",
+      "role": "synthesis",
+      "lo_refs": [
+        "lo-g0-002"
+      ],
+      "teachable": true,
+      "assessment_link": null,
+      "rationale": "Synthesizes links between mindsets, psychological safety, and clinical outcomes, enabling analysis as required by lo-g0-002."
+    },
+    {
+      "component_id": "src-001-c019",
+      "bloom": "analyze",
+      "role": "worked_example",
+      "lo_refs": [
+        "lo-g0-002"
+      ],
+      "teachable": true,
+      "assessment_link": null,
+      "rationale": "Walks through a clinical case to analyze how safety and mindsets affect performance and patient safety, directly targeting lo-g0-002."
+    },
+    {
+      "component_id": "src-001-c023",
+      "bloom": "apply",
+      "role": "worked_example",
+      "lo_refs": [
+        "lo-g0-003"
+      ],
+      "teachable": true,
+      "assessment_link": null,
+      "rationale": "Provides examples distinguishing praiseworthy vs blameworthy failures, modeling application of the Intelligent Failure framework for lo-g0-003."
+    },
+    {
+      "component_id": "src-001-c025",
+      "bloom": "apply",
+      "role": "practice",
+      "lo_refs": [
+        "lo-g0-003"
+      ],
+      "teachable": true,
+      "assessment_link": null,
+      "rationale": "Guides learners to classify failures in a clinical scenario using the framework, giving practice applying criteria aligned to lo-g0-003."
+    }
+  ]
+}

@@ -66,6 +66,13 @@ from app.marcus.lesson_plan.g0_enrichment import (
     file_content_hash,
 )
 from app.marcus.lesson_plan.learning_objective import LearningObjective, SourceRef, advance_lo
+from app.marcus.lesson_plan.pedagogy_annotation import (
+    PEDAGOGY_TRANSFORM_VERSION,
+    PedagogyAnnotation,
+    assert_pedagogy_referential_invariant,
+    assert_pedagogy_teachable_consistency,
+    build_pedagogy_annotations,
+)
 from app.marcus.lesson_plan.source_type import TypedComponent
 from app.models.runtime.production_envelope import ProductionEnvelope, SpecialistContribution
 
@@ -180,6 +187,86 @@ def _resolve_citation_resolutions(
     )
     return tuple(CitationResolution.model_validate(row) for row in raw)
 
+
+def _build_pedagogy_frontmatter(
+    typed: list[TypedComponent],
+    citation_resolutions: tuple[CitationResolution, ...],
+    los: list[LearningObjective],
+) -> list[dict[str, Any]]:
+    """Project typed components into the universal-md FRONT-MATTER P3 consumes.
+
+    P3 reads the DD5 universal-md front matter (``component_id`` / ``type`` /
+    ``doc_ordinal`` / ``resolution_status`` / ``locator`` / ``provisional_los``).
+    The front-matter ``resolution_status`` is AUTHORITATIVE for the teachable
+    derivation (M8 — front matter wins over ``citation_resolutions``):
+
+      1. a ``flagged_ungrounded`` component is ``ungrounded`` (A4 hard rule);
+      2. else a citation verdict for that component (if any) applies;
+      3. else ``resolved``.
+
+    ``doc_ordinal`` is the DOCUMENT-total position (1-based enumeration order;
+    components arrive grouped-by-file in enumeration order). ``provisional_los``
+    is the per-component LO id list (LOs whose provenance points at the parent
+    file).
+    """
+    citation_status_by_id = {c.component_id: c.resolution_status for c in citation_resolutions}
+    los_by_parent: dict[str, list[str]] = {}
+    for lo in los:
+        for ref in lo.source_refs:
+            bucket = los_by_parent.setdefault(ref.source_id, [])
+            if lo.objective_id not in bucket:
+                bucket.append(lo.objective_id)
+
+    records: list[dict[str, Any]] = []
+    for ordinal, comp in enumerate(typed, start=1):
+        if comp.flagged_ungrounded:
+            status = "ungrounded"
+        else:
+            status = citation_status_by_id.get(comp.component_id, "resolved")
+        records.append(
+            {
+                "component_id": comp.component_id,
+                "type": comp.source_type,
+                "doc_ordinal": ordinal,
+                "resolution_status": status,
+                "locator": comp.locator,
+                "provisional_los": list(los_by_parent.get(comp.parent_source_id, [])),
+            }
+        )
+    return records
+
+
+def _attach_pedagogy_annotations(
+    typed: list[TypedComponent],
+    source_by_id: dict[str, str],
+    citation_resolutions: tuple[CitationResolution, ...],
+    los: list[LearningObjective],
+    *,
+    dispatch_live: bool,
+    chat_model_factory: Any | None = None,
+) -> tuple[PedagogyAnnotation, ...]:
+    """P3 attach: build per-component pedagogy annotations (thin delegation).
+
+    Projects the wiring-available data into the universal-md front matter P3
+    reads, then delegates ALL annotation logic to
+    ``pedagogy_annotation.build_pedagogy_annotations`` (W7/W11 — no business logic
+    in the wiring). Gated by ``dispatch_live`` exactly like the citation resolver:
+    offline → the deterministic pass; live → the pre_gate_marcus seam. The
+    teachable-consistency guard runs on the assembled set before it rides the
+    result.
+    """
+    del source_by_id  # P3 reads resolution_status from the front matter, not source text
+    records = _build_pedagogy_frontmatter(typed, citation_resolutions, los)
+    annotations = build_pedagogy_annotations(
+        records,
+        los,
+        dispatch_live=dispatch_live,
+        chat_model_factory=chat_model_factory,
+    )
+    assert_pedagogy_teachable_consistency(annotations, records)
+    return annotations
+
+
 # Filename-keyword → source-type heuristic for the OFFLINE deterministic pre-pass.
 # (The LIVE LLM does the real typing; this keeps the offline surface reproducible.)
 _TYPE_KEYWORDS: tuple[tuple[str, str], ...] = (
@@ -224,7 +311,13 @@ def _fingerprint(enumerated: list[tuple[str, Path]], model_id: str) -> str:
     # A1: file_content_hash reads bytes — an unreadable/unextractable source
     # raises here (RED), never silently absent.
     hashes = [file_content_hash(path) for _, path in enumerated]
-    return corpus_fingerprint(hashes, model_id)
+    # W9: P3 rides the SAME corpus-fingerprint freeze key — no second cache
+    # namespace. `model_id` already subsumes the LLM model id (live "marcus" vs the
+    # offline marker); pin the P3 transform VERSION alongside it so a P3 transform
+    # bump invalidates the frozen result (and the pedagogy transform_model tracks
+    # `model_id` 1:1 via the same live/offline split).
+    seed = f"{model_id}|ped:{PEDAGOGY_TRANSFORM_VERSION}"
+    return corpus_fingerprint(hashes, seed)
 
 
 # Encoding ladder for reading a text source: utf-8 → cp1252 → latin-1, then a
@@ -892,6 +985,20 @@ def build_enrichment_result(
         resolve_dispatch=resolve_dispatch,
     )
 
+    # P3 attach: AFTER citation resolution, BEFORE result construction — layer the
+    # per-component pedagogy annotations (bloom / role / teaches_after / teachable /
+    # rationale) on the P2 universal-md front matter. Rides this existing
+    # g0-enrichment node + the existing fingerprint cache (W9) + the existing G0E
+    # gate; no new gate/side-effect. Gated by dispatch_live like the resolver.
+    pedagogy_annotations = _attach_pedagogy_annotations(
+        typed,
+        source_by_id,
+        citation_resolutions,
+        los,
+        dispatch_live=dispatch_live,
+        chat_model_factory=chat_model_factory,
+    )
+
     independent_parse = IndependentParse(
         proposal={
             "typed_components": [t.model_dump(mode="json") for t in typed],
@@ -927,9 +1034,11 @@ def build_enrichment_result(
         reconcile=reconcile,
         dissents=[dissent],
         citation_resolutions=citation_resolutions,
+        pedagogy_annotations=pedagogy_annotations,
         independent_parse=independent_parse,
     )
     assert_run_dissent_invariant(result)
+    assert_pedagogy_referential_invariant(result)
     return result
 
 

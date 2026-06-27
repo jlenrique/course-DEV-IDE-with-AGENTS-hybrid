@@ -1,0 +1,170 @@
+{
+  "test": "P3 Stage-2 LIVE integration (M6/M7) + P2 discharge",
+  "timestamp_utc": "2026-06-27T04:56:31.751927+00:00",
+  "elapsed_s": 154.551029,
+  "model_id": "marcus",
+  "n_typed": 36,
+  "n_citations": 8,
+  "citation_status": {
+    "src-001-c012": "failed",
+    "src-001-c015": "resolved",
+    "src-001-c016": "failed",
+    "src-001-c019": "failed",
+    "src-001-c024": "failed",
+    "src-001-c028": "ungrounded",
+    "src-001-c030": "failed",
+    "src-001-c031": "failed"
+  },
+  "n_flagged_ungrounded": 1,
+  "n_annotations": 13,
+  "referential_integrity": "PASS",
+  "coverage_ok": true,
+  "p2_cond1_resolved_and_failed": true,
+  "m7_nonresolved_annotatable": [],
+  "m7_all_teachable_false": null,
+  "annotations": [
+    {
+      "component_id": "src-001-c011",
+      "bloom": "understand",
+      "role": "motivation",
+      "lo_refs": [
+        "lo-g0-009"
+      ],
+      "teachable": true,
+      "assessment_link": "src-001-c035",
+      "rationale": "Introduces why healthcare is at an inflection point, motivating need for new models (lo-g0-009). Bloom=understand to grasp context; role=motivation to prime learners; linked to quiz c035."
+    },
+    {
+      "component_id": "src-001-c013",
+      "bloom": "understand",
+      "role": "definition",
+      "lo_refs": [
+        "lo-g0-001"
+      ],
+      "teachable": true,
+      "assessment_link": "src-001-c032",
+      "rationale": "Defines innovation mindset and clarifies meaning (lo-g0-001). Bloom=understand; role=definition; assessed in c032."
+    },
+    {
+      "component_id": "src-001-c014",
+      "bloom": "understand",
+      "role": "worked_example",
+      "lo_refs": [
+        "lo-g0-001"
+      ],
+      "teachable": true,
+      "assessment_link": "src-001-c032",
+      "rationale": "Expands definition with examples/misconceptions to deepen understanding of innovation mindset (lo-g0-001). Bloom=understand; role=worked_example; assessed in c032."
+    },
+    {
+      "component_id": "src-001-c018",
+      "bloom": "understand",
+      "role": "motivation",
+      "lo_refs": [
+        "lo-g0-001"
+      ],
+      "teachable": true,
+      "assessment_link": "src-001-c032",
+      "rationale": "Motivates importance of the innovation mindset by connecting to practice (lo-g0-001). Bloom=understand; role=motivation; assessed in c032."
+    },
+    {
+      "component_id": "src-001-c021",
+      "bloom": "analyze",
+      "role": "synthesis",
+      "lo_refs": [
+        "lo-g0-002"
+      ],
+      "teachable": true,
+      "assessment_link": "src-001-c033",
+      "rationale": "Synthesizes how psychological safety and mindsets relate to outcomes (lo-g0-002). Bloom=analyze; role=synthesis; assessed in c033."
+    },
+    {
+      "component_id": "src-001-c022",
+      "bloom": "analyze",
+      "role": "worked_example",
+      "lo_refs": [
+        "lo-g0-002"
+      ],
+      "teachable": true,
+      "assessment_link": "src-001-c033",
+      "rationale": "Uses a case to analyze effects of safety and mindsets on performance and safety (lo-g0-002). Bloom=analyze; role=worked_example; assessed in c033."
+    },
+    {
+      "component_id": "src-001-c023",
+      "bloom": "analyze",
+      "role": "practice",
+      "lo_refs": [
+        "lo-g0-002"
+      ],
+      "teachable": true,
+      "assessment_link": "src-001-c033",
+      "rationale": "Prompts applied analysis of team scenarios linking safety/mindset to outcomes (lo-g0-002). Bloom=analyze; role=practice; assessed in c033."
+    },
+    {
+      "component_id": "src-001-c027",
+      "bloom": "analyze",
+      "role": "synthesis",
+      "lo_refs": [
+        "lo-g0-008"
+      ],
+      "teachable": true,
+      "assessment_link": "src-001-c034",
+      "rationale": "Analyzes NHE trends to justify shift from sickcare to proactive systems (lo-g0-008). Bloom=analyze; role=synthesis; assessed in c034."
+    },
+    {
+      "component_id": "src-001-c029",
+      "bloom": "apply",
+      "role": "worked_example",
+      "lo_refs": [
+        "lo-g0-006"
+      ],
+      "teachable": true,
+      "assessment_link": null,
+      "rationale": "Applies data to quantify waste and potential savings (lo-g0-006). Bloom=apply; role=worked_example; no dedicated quiz."
+    },
+    {
+      "component_id": "src-001-c032",
+      "bloom": "understand",
+      "role": "assessment",
+      "lo_refs": [
+        "lo-g0-001"
+      ],
+      "teachable": true,
+      "assessment_link": null,
+      "rationale": "Assesses ability to define and correct misconceptions about innovation mindset (lo-g0-001). Bloom=understand; role=assessment."
+    },
+    {
+      "component_id": "src-001-c033",
+      "bloom": "analyze",
+      "role": "assessment",
+      "lo_refs": [
+        "lo-g0-002"
+      ],
+      "teachable": true,
+      "assessment_link": null,
+      "rationale": "Assesses analysis of how safety and mindsets affect outcomes (lo-g0-002). Bloom=analyze; role=assessment."
+    },
+    {
+      "component_id": "src-001-c034",
+      "bloom": "analyze",
+      "role": "assessment",
+      "lo_refs": [
+        "lo-g0-008"
+      ],
+      "teachable": true,
+      "assessment_link": null,
+      "rationale": "Assesses interpretation of NHE trends and justification for proactive care (lo-g0-008). Bloom=analyze; role=assessment."
+    },
+    {
+      "component_id": "src-001-c035",
+      "bloom": "evaluate",
+      "role": "assessment",
+      "lo_refs": [
+        "lo-g0-009"
+      ],
+      "teachable": true,
+      "assessment_link": null,
+      "rationale": "Assesses evaluation of the inflection point and need for new leadership/innovation (lo-g0-009). Bloom=evaluate; role=assessment."
+    }
+  ]
+}

@@ -41,3 +41,12 @@
 				-  “In 2024, the United States spent \$5.3 trillion on healthcare, which is 18% of the GDP. This spending reflects a 7.2% increase from the previous year, driven by rising demand for medical services and increased utilization of healthcare goods and services” ([https://www.cms.gov/data-research/statistics-trends-and-reports/national-health-expenditure-data/nhe-fact-sheet](https://www.cms.gov/data-research/statistics-trends-and-reports/national-health-expenditure-data/nhe-fact-sheet))
 				- narration: U.S. healthcare spending continues to rise, now accounting for nearly one-fifth of the nation’s economy. Much of this spending still goes toward treating illness rather than preventing it. This financial and structural pressure is pushing healthcare toward more proactive, population-focused models. Clinicians who can innovate across systems — not just treat individual diseases — will be key drivers of this transformation.
 				- [TEST-ONLY FAIL-PROBE — deliberate guaranteed-fail citation so P2's resolution-FAILURE path is exercised; NOT real source content]: "Verbruggen Q, Inkwell T. Phantom Determinants of Sickcare Drift in Non-Existent Cohorts. Journal of Imaginary Health Systems. 2099;404(1):1–2. doi:10.9999/jihs.2099.deadbeef" (https://pubmed.ncbi.nlm.nih.gov/99999999/)
+			- Knowledge Check (Quiz) — MO 1.1:
+				Stem: Which statement best captures the "innovation mindset" as introduced in MO 1.1?
+				- A) An innate talent only a few clinicians are born with.
+				- B) A learnable orientation toward identifying, validating, and articulating a compelling opportunity for innovation within one's clinical environment. [CORRECT]
+				- C) The adoption of the newest available medical technology regardless of clinical need.
+				- D) A formal leadership title granted after completing an executive degree.
+				Correct answer: B
+				Rationale: MO 1.1 defines the innovation mindset as a cultivated, learnable orientation — not an innate talent (A), not technology adoption (C), and not a credential (D) — directly correcting the common misconceptions the objective names.
+				[A8: real quiz item assessing MO 1.1 — added for P3 assessment_link live-exercise; pending Irene eye-review]

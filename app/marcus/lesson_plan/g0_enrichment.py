@@ -36,6 +36,7 @@ from pydantic import (
 from pydantic.json_schema import SkipJsonSchema
 
 from app.marcus.lesson_plan.learning_objective import LearningObjective
+from app.marcus.lesson_plan.pedagogy_annotation import PedagogyAnnotation
 from app.marcus.lesson_plan.source_type import TypedComponent
 from app.models.state._base import enforce_tz_aware
 
@@ -396,6 +397,14 @@ class G0EnrichmentResult(BaseModel):
             "components: resolved | failed | ungrounded. Additive; never gating."
         ),
     )
+    pedagogy_annotations: tuple[PedagogyAnnotation, ...] = Field(
+        default=(),
+        description=(
+            "P3 (Irene pass-1) per-component pedagogical annotations layered on the "
+            "P2 universal-md corpus: bloom / role / teaches_after / teachable / "
+            "rationale. Additive; never gating."
+        ),
+    )
 
     # --- Internal audit sidecar (A4) — excluded from default dump + JSON Schema ---
     independent_parse: SkipJsonSchema[IndependentParse] = Field(
@@ -488,6 +497,7 @@ __all__ = [
     "G0EnrichmentResult",
     "IndependentParse",
     "OperatorMerge",
+    "PedagogyAnnotation",
     "ReconcileView",
     "TraversalRoot",
     "TraversalRootKind",
