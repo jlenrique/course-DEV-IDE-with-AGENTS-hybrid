@@ -29,6 +29,7 @@ from pydantic import (
     BaseModel,
     ConfigDict,
     Field,
+    TypeAdapter,
     field_validator,
     model_validator,
 )
@@ -237,6 +238,109 @@ class ReconcileView(BaseModel):
 
 
 # ---------------------------------------------------------------------------
+# DD4 — live citation resolution (P2 Texas pass-0; additive, never gating)
+# ---------------------------------------------------------------------------
+
+CitationResolutionStatus = Literal["resolved", "failed", "ungrounded"]
+"""How a component's embedded citation resolved. ``resolved``: a real reference
+was dereferenced; ``failed``: no real reference (no DOI / not-in-index /
+dispatch error) — NEVER a fabricated DOI; ``ungrounded``: the excerpt could not
+be grounded in its parent source (A4), so no DOI was resolved off it."""
+
+CitationResolutionReason = Literal["no_doi_in_excerpt", "not_in_index", "dispatch_error"]
+"""Why a citation ``failed`` (closed set). ``None`` on ``resolved``/``ungrounded``."""
+
+# 3-surface red-rejection (checklist §4): the Literal validator (surface 1), the
+# JSON-Schema ``enum`` array (surface 2, derived — never hand-maintained), and a
+# ``TypeAdapter`` round-trip (surface 3). A value outside the set is rejected at
+# all three.
+CITATION_STATUS_ADAPTER: TypeAdapter[CitationResolutionStatus] = TypeAdapter(
+    CitationResolutionStatus
+)
+CITATION_REASON_ADAPTER: TypeAdapter[CitationResolutionReason] = TypeAdapter(
+    CitationResolutionReason
+)
+CITATION_RESOLUTION_STATUSES: Final[frozenset[str]] = frozenset(
+    CITATION_STATUS_ADAPTER.json_schema()["enum"]
+)
+CITATION_RESOLUTION_REASONS: Final[frozenset[str]] = frozenset(
+    CITATION_REASON_ADAPTER.json_schema()["enum"]
+)
+
+
+class CitationResolution(BaseModel):
+    """One component's live-resolved citation (DD4). Additive; never gates.
+
+    Produced by the Texas pass-0 resolver (``skills/bmad-agent-texas/scripts/
+    pass0/citation_resolver.py``) over the typed reference_citation (and
+    DOI-bearing) components, then attached to :class:`G0EnrichmentResult`. The
+    resolver returns plain dicts (Texas-side, no ``app.marcus`` import); the
+    ``g0_enrichment_wiring`` brick maps them into this model.
+
+    Coherence invariants (data integrity, not a pipeline gate):
+      - ``resolved`` ⇒ ``resolved_ref`` present AND ``reason`` is None;
+      - ``failed`` ⇒ ``resolved_ref`` is None AND ``reason`` is one of the closed
+        reasons (a failure must say WHY);
+      - ``ungrounded`` ⇒ ``resolved_ref`` is None AND ``reason`` is None.
+    """
+
+    model_config = ConfigDict(extra="forbid", validate_assignment=True, frozen=True)
+
+    component_id: str = Field(
+        ..., min_length=1, description="The TypedComponent this resolution is about."
+    )
+    doi: str | None = Field(
+        default=None, description="The DOI extracted from the excerpt (None when absent)."
+    )
+    resolution_status: CitationResolutionStatus = Field(
+        ..., description="resolved | failed | ungrounded (closed)."
+    )
+    resolved_ref: dict[str, Any] | None = Field(
+        default=None,
+        description=(
+            "The dereferenced reference {title, doi, access_url, journal?, "
+            "authors?, year?} on resolved; None otherwise (never fabricated)."
+        ),
+    )
+    reason: CitationResolutionReason | None = Field(
+        default=None,
+        description="Why it failed: no_doi_in_excerpt | not_in_index | dispatch_error.",
+    )
+    resolver_provider: Literal["scite"] = Field(
+        default="scite", description="The provider that resolved (scite-only for v1)."
+    )
+    normalization_version: Literal["tex-norm-v1"] = Field(
+        default="tex-norm-v1", description="The tex-norm version used for the A4 gate."
+    )
+
+    @field_validator("resolution_status", mode="before")
+    @classmethod
+    def _round_trip_status(cls, value: object) -> object:
+        # Surface 3: TypeAdapter round-trip — a value outside the closed set is
+        # rejected here as well as by the Literal annotation.
+        return CITATION_STATUS_ADAPTER.validate_python(value)
+
+    @model_validator(mode="after")
+    def _enforce_coherence(self) -> CitationResolution:
+        if self.resolution_status == "resolved":
+            if self.resolved_ref is None:
+                raise ValueError("resolved citation must carry a resolved_ref")
+            if self.reason is not None:
+                raise ValueError("resolved citation must not carry a failure reason")
+        elif self.resolution_status == "failed":
+            if self.resolved_ref is not None:
+                raise ValueError("failed citation must not carry a resolved_ref")
+            if self.reason is None:
+                raise ValueError("failed citation must name a reason (no silent fail)")
+        else:  # ungrounded
+            if self.resolved_ref is not None:
+                raise ValueError("ungrounded citation must not carry a resolved_ref")
+            if self.reason is not None:
+                raise ValueError("ungrounded citation must not carry a failure reason")
+        return self
+
+
+# ---------------------------------------------------------------------------
 # The frozen enrichment result
 # ---------------------------------------------------------------------------
 
@@ -284,6 +388,13 @@ class G0EnrichmentResult(BaseModel):
     dissents: list[Dissent] = Field(
         default_factory=list,
         description="A3 dissent ledger; the run-level invariant requires >=1 real dissent.",
+    )
+    citation_resolutions: tuple[CitationResolution, ...] = Field(
+        default=(),
+        description=(
+            "DD4 live citation resolutions (P2 Texas pass-0) for citation-bearing "
+            "components: resolved | failed | ungrounded. Additive; never gating."
+        ),
     )
 
     # --- Internal audit sidecar (A4) — excluded from default dump + JSON Schema ---
@@ -365,7 +476,12 @@ def file_content_hash(path: Path) -> str:
 
 
 __all__ = [
+    "CITATION_RESOLUTION_REASONS",
+    "CITATION_RESOLUTION_STATUSES",
     "SCHEMA_VERSION",
+    "CitationResolution",
+    "CitationResolutionReason",
+    "CitationResolutionStatus",
     "Dissent",
     "DissentDisposition",
     "EnumerationProvenance",

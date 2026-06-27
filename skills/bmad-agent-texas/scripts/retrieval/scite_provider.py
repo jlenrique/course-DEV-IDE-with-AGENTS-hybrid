@@ -315,6 +315,13 @@ class SciteProvider(RetrievalAdapter):
         # Operator-hint overrides (e.g., explicit max_results cap).
         if "max_results" in params:
             query["max_results"] = int(params["max_results"])
+        # DD8 (P2 pass-0): DOI-dereference rides the VERIFIED search_literature
+        # tool via its `dois` filter (the `paper_metadata` tool is unverified —
+        # not used). When the hint carries `dois`, execute() sends
+        # {"dois":[...], "limit":...} with NO `term` (a DOI dereference, not a
+        # topical term search).
+        if "dois" in params and params["dois"]:
+            query["dois"] = [str(d) for d in params["dois"]]
         return query
 
     def _build_query_paper(
@@ -375,6 +382,16 @@ class SciteProvider(RetrievalAdapter):
         # Default: search mode. The live `search_literature` tool takes `term` +
         # `limit` (+ optional date_from/date_to); deterministic post-filters still
         # run in apply_mechanical/apply_provider_scored on the returned rows.
+        # DD8: when the query carries `dois`, this is a DOI dereference —
+        # search_literature accepts `dois` (preferred over `term`); we send
+        # {"dois":[...], "limit":...} with NO `term` per the verified tool shape.
+        if query.get("dois"):
+            args = {
+                "dois": list(query["dois"]),
+                "limit": int(query.get("max_results", 1)),
+            }
+            result = client.call_tool(self.PROVIDER_INFO.id, _SCITE_TOOL_SEARCH, args)
+            return _extract_search_results(result)
         args: dict[str, Any] = {
             "term": query["query"],
             "limit": int(query.get("max_results", 10)),

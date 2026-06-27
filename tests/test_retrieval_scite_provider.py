@@ -156,6 +156,33 @@ def test_scite_execute_maps_args_to_live_tool_shape() -> None:
         assert args["date_to"] == "2026-12-31"
 
 
+def test_scite_execute_dois_hint_routes_search_literature_with_dois_no_term() -> None:
+    """FIX 2 / DD8: a `dois` provider-hint dereferences via `search_literature`
+    with args `{dois:[...], limit:...}` and NO `term` key (a DOI dereference,
+    not a topical term search). Offline: the MCP HTTP layer is faked by
+    `responses`, the network is never touched."""
+    provider = SciteProvider()
+    intent = _intent_search(
+        params={"mode": "search", "dois": ["10.1001/jama.2019.13978"], "max_results": 1}
+    )
+    query = provider.formulate_query(intent)
+    # formulate_query carries the dois hint through onto the query dict.
+    assert query.get("dois") == ["10.1001/jama.2019.13978"]
+    with responses.RequestsMock() as rsps:
+        rsps.post(
+            SCITE_MCP_URL,
+            json=jsonrpc_response(result=_load_fixture("search_happy.json")),
+        )
+        provider.execute(query)
+        body = json.loads(rsps.calls[0].request.body)
+        assert body["method"] == "tools/call"
+        assert body["params"]["name"] == "search_literature"
+        args = body["params"]["arguments"]
+        assert args["dois"] == ["10.1001/jama.2019.13978"]
+        assert args["limit"] == 1
+        assert "term" not in args
+
+
 def test_scite_execute_returns_parsed_list() -> None:
     """`execute` returns a list of paper dicts with the expected scite fields."""
     provider = SciteProvider()

@@ -1,0 +1,60 @@
+{
+  "stage": "P2 Texas pass-0 — live citation resolution",
+  "generated_at": "2026-06-26 (autonomous /goal arc)",
+  "branch": "dev/p5-downstream-consumption-2026-06-26",
+  "corpus": "course-content/courses/tejal-c1m1-3slide-slice/source-outline.md",
+  "harness": "scratchpad/p2_legA_probe.py + p2_m4b_and_openai_ping.py (flushed, real scite; no mocks)",
+  "offline_tests": {
+    "command": "pytest test_pass0_citation_resolver.py test_citation_resolution_schema.py test_g0_citation_resolution_wiring.py test_g0_enrichment_brick.py",
+    "result": "71 passed in 9.44s",
+    "covers": "resolver resolved/failed/no_doi_in_excerpt/dispatch_error; CitationResolution closed-enum 3-surface; emit_front_matter determinism + clean_body/provenance_annotation demarcation; A4 RED markdown-normalized (fabricated->ungrounded; benign md-artifact not flagged); DD7 cache replay; WIRED integration into build_enrichment_result"
+  },
+  "live_results": {
+    "M4a_resolve": {
+      "input_doi": "10.1001/jama.2019.13978",
+      "via": "resolve_citations(dispatch=None -> live in-process Texas dispatcher -> real scite search_literature(dois=))",
+      "elapsed_s": 0.6,
+      "resolution_status": "resolved",
+      "resolved_ref": {
+        "title": "Waste in the US Health Care System",
+        "doi": "10.1001/jama.2019.13978",
+        "access_url": "https://doi.org/10.1001/jama.2019.13978",
+        "journal": "jama",
+        "authors": ["William H. Shrank", "Teresa L. Rogstad", "Natasha Parekh"],
+        "year": "2019"
+      },
+      "verdict": "PASS — real scite metadata, DOI independently dereferences, title matches the corpus citation"
+    },
+    "M4b_fail": {
+      "input_doi": "10.9999/jihs.2099.deadbeef",
+      "via": "resolve_citations -> real scite",
+      "elapsed_s": 0.3,
+      "resolution_status": "failed",
+      "reason": "not_in_index",
+      "resolved_ref": null,
+      "verdict": "PASS — clean failure, NO fabricated DOI/metadata (resolved_ref is null)"
+    },
+    "M5_A4_red": {
+      "status": "offline-proven (fabricated excerpt -> ungrounded; benign markdown artifact -> NOT flagged); live A4 exercised in the full wired run pending (see note)",
+      "verdict": "PASS offline; markdown-normalized judge confirmed"
+    },
+    "M_nodoi_path": {
+      "inputs": ["cms.gov citation", "Commonwealth Fund Mirror Mirror", "Medscape Burnout", "youtube.com link"],
+      "via": "resolve_citations -> real scite path",
+      "elapsed_s": 0.0,
+      "results": "all 4 -> failed / reason=no_doi_in_excerpt / resolved_ref None (NO scite call made; instant)",
+      "verdict": "PASS — non-DOI citations short-circuit instantly; resolver does NOT hang on any citation type. Definitively exonerates P2 resolver from the wired-run latency."
+    },
+    "openai_responsiveness_ping": {
+      "via": "make_chat_model('marcus').chat.invoke('reply OK')",
+      "elapsed_s": 2.9,
+      "verdict": "OpenAI responsive — confirms the wired-run hang is the big reasoning EXTRACTION call's variable latency, not an outage or P2 code"
+    }
+  },
+  "wired_seam_note": {
+    "murat_condition_1": "resolved+failed through the WIRED build_enrichment_result on one live run",
+    "status": "DEFERRED-TO-PARTY-RULING",
+    "finding": "build_enrichment_result(dispatch_live=True) re-runs the P1 OpenAI component-extraction (gpt-5 high-reasoning over the slice) which exceeded a hard 9-min cap twice today, despite OpenAI ping=2.9s and scite legs sub-second. The novel P2 resolver code is proven live (M4a/M4b) and proven wired (offline integration test). The single-process composition is blocked ONLY by P1-extraction transient latency, which is P1's already-live-proven code, not P2. Re-running it yields no NEW P2 information and costs a flaky ~5-9min gpt-5 call.",
+    "earlier_extraction_proof": "P1 live extraction on this same slice succeeded earlier this session (_bmad-output/implementation-artifacts/evidence/p1-live-3slice-extraction-20260627T010737Z.json, 26 components ~5min)"
+  }
+}

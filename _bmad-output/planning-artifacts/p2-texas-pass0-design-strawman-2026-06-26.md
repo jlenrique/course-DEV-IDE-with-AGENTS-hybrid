@@ -24,8 +24,27 @@ Input = the P1 captured components for the 3-slice slice (7 reference_citation r
 - **Lossless:** front-matter `content_fingerprint` matches frozen P1 excerpt sha; body verbatim == source.
 - Cache-busted + receipt-bearing; first-run-stands; deterministic judge (DOI dereferences / no-DOI-on-failed / sha match), not LLM eyeball.
 
-## Open questions for R2 (Texas leads; Winston/Irene/Murat)
-1. A5 (a) vs (b) — scite-only-for-v1 vs add pubmed adapter. Confirm scite dereferences a bare DOI.
-2. Where exactly does the thin runner brick attach so it enriches the frozen G0EnrichmentResult without minting a new gate/side-effect (A2)? (Likely inside/after `run_g0_enrichment`, before G0E freeze.)
-3. Does universal-md materialize to DISK at P2, or stay in-graph until P4 materializer? (Charter: manifest=ledger always; materialization is P4's operator-directed projection. Strawman: P2 produces the enriched in-graph representation + front-matter; DISK writing is P4.)
-4. `normalization_version` = `tex-norm-v1`; what canonical-normalization rules (whitespace, markdown unescape) — reuse `retrieval/normalize.py`?
+## R2 Phase A — SYNTHESIZED DESIGN (Texas DD1–DD8 + Irene required-shapes + reconciliation)
+Texas proved the critical path LIVE this session (scite `search_literature(dois=["10.1001/jama.2019.13978"])` → real JAMA paper dereferenced; fail-probe `doi:10.9999/jihs.2099.deadbeef` → `total:0` not-in-index, no fabrication).
+
+**A5 RESOLVED → scite-only for v1; drop PubMed.** File `p2-pubmed-adapter-v2` in deferred-inventory (trigger: scite index-coverage gap marks real biomedical DOIs + bare-PubMed-URL citations `failed`; PubMed offers bare-id→metadata scite's search-index lacks).
+
+**Buildable design:**
+- **DD1 (seam correction — overrides strawman A1):** citation resolution routes through the IN-PROCESS `skills/bmad-agent-texas/scripts/retrieval/dispatcher.py::dispatch(RetrievalIntent(kind="direct_ref", ...))` (the OAuth-proven SciteProvider path `research_wiring` already uses) — NOT `retrieval_dispatch.py::dispatch_retrieval` (that's a subprocess shell-out for locator bundles; leave untouched).
+- **DD2 module layout:** new Texas-side `skills/bmad-agent-texas/scripts/pass0/`: `citation_resolver.py`, `universal_md.py`, `universal_markdown_preamble.py` (EXPORTED `emit_front_matter(fields)->str`, shared with run_wrangler + workbook). Thin brick = EXTEND `app/marcus/orchestrator/g0_enrichment_wiring.py` via late-import (no new file/node). Dep arrow app/marcus→texas only; verify `lint-imports`.
+- **DD3 attach (A2):** inside `build_enrichment_result(...)`, AFTER `flag_ungrounded_components`, BEFORE `G0EnrichmentResult(...)` construction → call `pass0.resolve_citations(typed, source_by_id, dispatch_live=...)`. Rides existing g0-enrichment node + existing fingerprint cache + existing G0E gate (two-walk parity inherited; no new side-effect). G0E card gains a resolution column.
+- **DD4 schema (additive):** new `CitationResolution{component_id, doi|None, resolution_status: resolved|failed|ungrounded, resolved_ref:{title,doi,access_url,journal?,authors?,year?}|None, reason(no_doi_in_excerpt|not_in_index|dispatch_error), resolver_provider:"scite", normalization_version:"tex-norm-v1"}` + `citation_resolutions: tuple[...]` on `G0EnrichmentResult`. Do NOT add fields to the closed `TypedComponent`.
+- **DD5 universal-md front-matter:** `emit_front_matter` writes component_id, type, part, locator, source_ref, verbatim_excerpt, content_fingerprint(sha256), extraction_provenance, resolution_status, resolved_ref, normalization_version + **doc_ordinal (Irene #3)**. Body = **demarcated** `<<<CLEAN_BODY>>>` (normalized verbatim span P3/P5 consume) + `<<<PROVENANCE_ANNOTATION>>>` (Irene #5) — NO paraphrase. DRY (A6): reuse `learning_objective.SourceRef`, `g0_enrichment` hashing, `retrieval/normalize.py`.
+- **DD6 A4 RED (HARD):** reuse `g0_enrichment_wiring._normalize_for_groundedness` (blockquote-strip + `\$`→`$` + whitespace); at content_fingerprint freeze `verbatim_excerpt ⊆ md-normalized(parent_source)` else `resolution_status: ungrounded`/hard-fail — never a silent sha. Scope = excerpt-vs-source ONLY (never resolved-metadata-vs-source).
+- **DD7 cache:** no separate cache — resolution serializes into the existing `<run_dir>/g0-enrichment-cache/<fp>.json`. One fingerprint, one freeze, replay-deterministic.
+- **DD8 SciteProvider fix:** DOI-dereference via `search_literature({"dois":[doi],"limit":1})` (no term); `paper_metadata` tool is unverified — do not use.
+
+**Irene required-shapes folded in (P2 must guarantee):** (1) stable `component_id` 1:1 with P1 (no silent re-split; emit P1→P2 map if ever split); (2) `provisional_los[]` carried through P2 untouched with verbatim ids (P3 validates `lo_refs ⊆ {provisional_los ids}`); (3) numeric `doc_ordinal` per component (string locator lexically mis-sorts); (4) `type` surfaced verbatim; (5) `clean_body` vs `provenance_annotation` demarcation; (6) `resolution_status`/groundedness readable (ungrounded/failed → P3 sets `teachable:false`); (7) co-locator linkage citation↔slide via shared locator/doc_ordinal.
+**P3 load-bearing types (for P3 spec):** annotate slide/narration/quiz/workbook/assignment_instructions/discussion_forum/motion_script_storyboard; skip reference_citation/other/learning_objective.
+
+**Live test plan (method-level, Murat M4):** M4a resolve JAMA DOI live (DONE this session — receipt: title echo) → `resolved`; M4b fail-probe → `failed`/`resolved_ref None`/`not_in_index` (DONE); M5 inject hash mismatch → hard-fail/ungrounded; lossless pin (front-matter fingerprint == frozen P1 excerpt sha; body byte-equals source span post tex-norm-v1); cache-busted + receipt-bearing + first-run-stands + deterministic judge.
+
+**Open items (fix-forward, non-blocking):** DD8 SciteProvider reroute; disk materialization deferred to P4 (P2 stays in-graph).
+
+## Resolved open questions
+1. A5 → scite-only v1 (live-proven). 2. Attach = inside build_enrichment_result (DD3). 3. In-graph at P2; disk = P4. 4. tex-norm-v1 reuses `_normalize_for_groundedness` + `retrieval/normalize.py`.

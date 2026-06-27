@@ -51,6 +51,31 @@ Independent confirmation of Winston A4: the verbatim-substring groundedness chec
 **Carried P1 follow-ons (batched, non-blocking):** default-OFF byte-identity baseline assertion; multi-file/huge-doc context-budget chunking; DRY the two type-model validators (`source_type.py`); `TypedSource` dead-code disposition (relates to pre-existing C3); de-tautologize AC-S2-4 variance + AC-S2-5 two-walk tests.
 **Pre-registered P2 entry conditions (Murat):** (1) the SHIPPED groundedness judge is the markdown-NORMALIZED one (strict substring is not the judge); (2) markdown-normalization is mandatory before P2's groundedness check runs against resolved-citation bodies; (3) P2 must prove BOTH resolve and fail paths on ONE live run (failed→no-DOI; resolved→DOI independently dereferences).
 
+## Round 2 — P2 Texas pass-0 design green-light (RATIFIED ✅ GREEN-TO-BUILD)
+**Team:** Texas (owner/lead, design), Irene (P3 consumer-shape), Winston (architecture), Murat (test bar). Phase A (Texas+Irene) → Phase B (Winston+Murat ratify). Full design: `p2-texas-pass0-design-strawman-2026-06-26.md §"R2 Phase A — SYNTHESIZED DESIGN"`.
+**Outcome:** GREEN-TO-BUILD, no impasse. Texas proved the critical path LIVE pre-build (JAMA DOI dereferences via scite; fail-probe clean `total:0`). Winston adopted the DD1 seam correction into A1. Irene GREEN-WITH-REQUIRED-SHAPE (7 shapes folded). Murat GREEN-TO-BUILD + 3 CLOSE conditions.
+**Key decisions:** A5→scite-only v1 (pubmed→v2 deferred, filed); DD1 seam = in-process `retrieval/dispatcher.py::dispatch`; DD3 attach inside `build_enrichment_result` (existing node/cache/G0E gate); DD4 additive `CitationResolution`; DD6 A4 RED markdown-normalized HARD at fingerprint freeze (excerpt-vs-source only); DD8 scite `search_literature(dois=)`.
+**Murat P2 CLOSE conditions (binding):** (1) reproduce resolved+failed through the WIRED seam, cache-busted, first-run-stands; (2) resolve on known-in-index JAMA DOI, fail distinct reason codes; (3) A4 RED seen-red on live output.
+
+## P2 — Build + Live + T11
+**Build:** 3 `pass0/` modules + additive `CitationResolution` + wiring in `build_enrichment_result` + DD8 scite fix + 3 test files. Offline: 71 green (resolver all branches, schema 3-surface, emit_front_matter, A4 markdown-normalized RED, DD7 cache, WIRED integration test).
+**Live (real scite, no mocks):** M4a JAMA `10.1001/jama.2019.13978` → resolved (real metadata, 0.6s); M4b fail-probe → failed/not_in_index/ref None (0.3s, no fabrication); non-DOI ×4 → no_doi_in_excerpt (0.0s, no hang). Evidence: `evidence/p2-live-citation-resolution-2026-06-26.json`.
+**Latency finding:** the one-process `build_enrichment_result(dispatch_live=True)` hung >9min ×2 on the P1 gpt-5 EXTRACTION step (OpenAI ping 2.9s; resolver non-DOI 0.0s) — P1 latency, NOT P2. T11 + probes exonerate the resolver (iteration_budget=1, 30s MCP timeout, try/except→dispatch_error).
+**T11 verdict: SHIP-WITH-FOLLOWONS** (no MUST-FIX). Follow-ons: (1) DOI-regex paren handling [doing], (2) offline test for SciteProvider dois branch [doing], (3) multi-DOI per-excerpt [batched], (4) `provisional_los` in FRONT_MATTER_KEYS [doing — P3 dep], (5) one-process wired live run = Murat condition-1 [party ruling/defer to final E2E], (6) body-marker collision guard + lowercase-venue cosmetic [batched].
+**Remediating #1/#2/#4 RED-first before CLOSE.** Murat condition-1 → CLOSE ruling.
+
+## P2 — PARTY CLOSE (SIGNED OFF ✅)
+**Verdicts:** Texas **GREEN-CLOSE**, Winston **GREEN-CLOSE**, Murat **GREEN-CLOSE** (contingency satisfied). No impasse.
+**Murat's load-bearing contingency — SATISFIED:** the DD3/DD7 wiring test now feeds a REAL captured scite response (`tests/fixtures/pass0_citation_corpus/scite_jama_real_response.json`; real-only metadata supporting_count/cited_by_count/venue) through resolver→attach→cache (3 passed). No synthetic CitationResolution.
+**Remediation:** 3 SHOULD-FIX (DOI-paren recall, scite-dois offline test, provisional_los front-matter) + the real-scite fixture, all RED-first green.
+
+### ⚠️ BINDING CARRIED CONDITIONS — must be verified at the FINAL E2E or P2 is RETROACTIVELY NOT-CLOSED (Murat):
+1. **Condition #1:** one-process live `build_enrichment_result(dispatch_live=True)` must show BOTH `resolved` and `failed` in a single live output (blocked today only by P1 gpt-5 extraction latency; resolver proven non-hanging). = T11 follow-on #5.
+2. **Condition #3 live-half:** A4 `ungrounded` exercised on LIVE output (offline seen-red is in).
+These ride the final-integration E2E (which runs build_enrichment_result live anyway). Record kept here so they cannot quietly lapse.
+
+### P2 batched follow-ons (non-blocking): multi-DOI per-excerpt resolution; body-marker collision guard (P5 body parser); lowercase-venue cosmetic. **Deferred-inventory:** `p2-pubmed-adapter-v2` (scite index-gap → real biomedical DOIs/bare-PubMed-URLs mark failed; PubMed bare-id→metadata path).
+
 ## Status
-- Round 1 CLOSED green; **P1 SIGNED OFF** (T11 SHIP-CONFIRMED + Winston/Murat GREEN-CLOSE). Next: commit P1 checkpoint + push; open **R2** (P2 Texas pass-0 design green-light, add Texas + Irene) per `p2-texas-pass0-design-strawman-2026-06-26.md`.
+- R1 CLOSED; **P1 SIGNED OFF** (`bc405e0`). R2 RATIFIED. **P2 SIGNED OFF** (Texas/Winston/Murat GREEN-CLOSE; condition-1 + live-A4 carried-binding to final E2E). Next: commit/push P2 + file pubmed-v2 deferred → session-WRAPUP + signal operator (context budget) → fresh session: R3 (P3 Irene pass-1, strawman ready) → final integration.
 - Next party rounds: **R2** = P2 Texas pass-0 DESIGN green-light (add Texas + Irene) — Tier-2 pack bump requires party consensus before dev. **R3** = P3 Irene pass-1 DESIGN. **R-close** per stage = party CLOSE on the live run.

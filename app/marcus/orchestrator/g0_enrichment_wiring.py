@@ -43,6 +43,8 @@ import json
 import logging
 import os
 import re
+import sys
+from collections.abc import Callable
 from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
@@ -52,6 +54,7 @@ from pydantic import ValidationError
 
 from app.composers.section_02a.composer import _walk_corpus_files
 from app.marcus.lesson_plan.g0_enrichment import (
+    CitationResolution,
     Dissent,
     EnumerationProvenance,
     G0EnrichmentResult,
@@ -124,6 +127,58 @@ def g0_dispatch_live() -> bool:
 
 _DECISION_ARTIFACT_BASENAME = "g0-enrichment.json"
 _CACHE_DIRNAME = "g0-enrichment-cache"
+
+# DD2 — the Texas-side pass-0 package (citation_resolver / universal_md /
+# universal_markdown_preamble) lives under the texas scripts dir, imported via
+# sys.path injection. The dependency arrow is app/marcus -> skills/bmad-agent-texas
+# ONLY (mirrors research_wiring's _import_retrieval / _TEXAS_SCRIPTS_DIR pattern).
+_TEXAS_SCRIPTS_DIR = (
+    Path(__file__).resolve().parents[3] / "skills" / "bmad-agent-texas" / "scripts"
+)
+
+
+def _import_pass0_resolver() -> Callable[..., list[dict[str, Any]]]:
+    """Late-import the Texas pass-0 ``resolve_citations`` (DD1/DD2 seam).
+
+    Late import keeps module-load cheap and avoids a hard dependency on the Texas
+    scripts dir being on ``sys.path`` at import time (mirrors research_wiring).
+    """
+    if str(_TEXAS_SCRIPTS_DIR) not in sys.path:
+        sys.path.insert(0, str(_TEXAS_SCRIPTS_DIR))
+    from pass0.citation_resolver import resolve_citations  # noqa: PLC0415
+
+    return resolve_citations
+
+
+def _resolve_citation_resolutions(
+    typed: list[TypedComponent],
+    source_by_id: dict[str, str],
+    *,
+    dispatch_live: bool,
+    resolve_dispatch: Callable[[Any], Any] | None,
+) -> tuple[CitationResolution, ...]:
+    """DD3 attach: resolve citation-bearing components → CitationResolution rows.
+
+    Runs ONLY when a real dispatch is available: ``dispatch_live`` (live scite via
+    the default in-process Texas dispatcher) OR an explicitly injected
+    ``resolve_dispatch`` (the offline-test seam). Otherwise returns ``()`` so the
+    offline deterministic path stays network-free and byte-stable.
+
+    The canonical markdown normalizer (``_normalize_for_groundedness``) is INJECTED
+    into the Texas resolver (DD6 reuse without a back-arrow import). The resolver
+    returns plain dicts; we map them into the ``CitationResolution`` model here
+    (the app/marcus side owns the model — DD2 one-way arrow).
+    """
+    if not dispatch_live and resolve_dispatch is None:
+        return ()
+    resolve_citations = _import_pass0_resolver()
+    raw = resolve_citations(
+        typed,
+        source_by_id,
+        dispatch=resolve_dispatch,  # None -> resolver uses its live default
+        normalize_fn=_normalize_for_groundedness,
+    )
+    return tuple(CitationResolution.model_validate(row) for row in raw)
 
 # Filename-keyword → source-type heuristic for the OFFLINE deterministic pre-pass.
 # (The LIVE LLM does the real typing; this keeps the offline surface reproducible.)
@@ -797,11 +852,18 @@ def build_enrichment_result(
     corpus_dir: Path,
     dispatch_live: bool,
     chat_model_factory: Any | None = None,
+    resolve_dispatch: Callable[[Any], Any] | None = None,
 ) -> G0EnrichmentResult:
     """Run the pre-pass (offline OR live) and assemble the frozen result.
 
     Pure of run-dir/cache side effects (those live in ``run_g0_enrichment``) so
     the assembly is unit-testable in isolation.
+
+    ``resolve_dispatch`` is the DD3 citation-resolution dispatch seam: when
+    supplied (offline tests) OR ``dispatch_live`` is True (live scite), the Texas
+    pass-0 resolver runs over the citation-bearing components and the verdicts
+    ride ``citation_resolutions``. Otherwise resolution is skipped (network-free
+    offline path).
     """
     enumerated = _enumerate(corpus_dir)
     model_id = G0_ENRICHMENT_LIVE_MODEL_ID if dispatch_live else G0_ENRICHMENT_MODEL_MARKER
@@ -818,6 +880,17 @@ def build_enrichment_result(
     # verbatim-by-construction → 0; the live leg is where this earns its keep).
     source_by_id = {sid: (_read_text_resilient(path) or "") for sid, path in enumerated}
     n_ungrounded = flag_ungrounded_components(typed, source_by_id)
+
+    # DD3 attach: AFTER groundedness flagging, BEFORE result construction —
+    # resolve the citation-bearing components live (scite) into CitationResolution
+    # rows. Rides this existing g0-enrichment node + the existing fingerprint cache
+    # (DD7) + the existing G0E gate; no new gate/side-effect.
+    citation_resolutions = _resolve_citation_resolutions(
+        typed,
+        source_by_id,
+        dispatch_live=dispatch_live,
+        resolve_dispatch=resolve_dispatch,
+    )
 
     independent_parse = IndependentParse(
         proposal={
@@ -853,6 +926,7 @@ def build_enrichment_result(
         enumeration_provenance=provenance,
         reconcile=reconcile,
         dissents=[dissent],
+        citation_resolutions=citation_resolutions,
         independent_parse=independent_parse,
     )
     assert_run_dissent_invariant(result)
@@ -868,6 +942,7 @@ def run_g0_enrichment(
     runs_root: Path,
     dispatch_live: bool = False,
     chat_model_factory: Any | None = None,
+    resolve_dispatch: Callable[[Any], Any] | None = None,
 ) -> ProductionEnvelope:
     """Execute the G0-enrichment hook at ``node_id``; idempotent + corpus-cached.
 
@@ -906,6 +981,7 @@ def run_g0_enrichment(
             corpus_dir=corpus_dir,
             dispatch_live=dispatch_live,
             chat_model_factory=chat_model_factory,
+            resolve_dispatch=resolve_dispatch,
         )
         cache_path.parent.mkdir(parents=True, exist_ok=True)
         # Cache the FULL shape (audit sidecar included) so a replay rehydrates the

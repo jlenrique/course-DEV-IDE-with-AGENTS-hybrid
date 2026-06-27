@@ -1,0 +1,30 @@
+{
+  "_note": "REAL captured scite dispatch response for DOI 10.1001/jama.2019.13978",
+  "provider": "scite",
+  "acceptance_met": true,
+  "iterations_used": 1,
+  "rows": [
+    {
+      "source_id": "10.1001/jama.2019.13978",
+      "title": "Waste in the US Health Care System",
+      "provider": "scite",
+      "provider_metadata": {
+        "scite": {
+          "doi": "10.1001/jama.2019.13978",
+          "scite_paper_id": null,
+          "venue": "jama",
+          "year": 2019,
+          "supporting_count": 6,
+          "contradicting_count": 0,
+          "mentioning_count": 534,
+          "cited_by_count": 542,
+          "citation_context_snippets": [],
+          "scite_report_url": null,
+          "known_losses": [
+            "full_text_paywalled"
+          ]
+        }
+      }
+    }
+  ]
+}
