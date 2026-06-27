@@ -1,0 +1,55 @@
+# voice_direction_map.yaml — directed-voice tone/pace/energy -> TTS settings table.
+#
+# TOUCHING THIS IS GOVERNANCE, NOT REFACTOR.
+# Authority: p5-directed-voice-arc-strawman-2026-06-27.md §G-RECONCILED (Marcus
+# control-card override) + §F.1 OQ-B1. This table is loaded ONCE at import into a
+# frozen module constant (app/specialists/_shared/voice_direction_map.py::
+# VOICE_DIRECTION_MAP). The mapper map_voice_direction_to_tts(...) is a PURE
+# function over that constant. A shape-pin test
+# (tests/specialists/_shared/test_voice_direction_map.py) pins the exact float
+# outputs, so the table cannot drift silently. CD may TUNE these course-default
+# numbers without a code change, but any edit bumps map_version and must keep
+# every value within the ElevenLabsSettings bounds:
+#   stability / style in [0.0, 1.0]; speed in [0.7, 1.2].
+map_version: voice-direction-map.v1
+
+# pace -> ElevenLabs speed (control-card spellings).
+pace:
+  slower: 0.94
+  neutral: 1.0
+  faster: 1.1
+
+# energy -> coupled {style up, stability down}, bounded.
+energy:
+  low:
+    stability: 0.75
+    style: 0.10
+  medium:
+    stability: 0.50
+    style: 0.35
+  high:
+    stability: 0.30
+    style: 0.65
+
+# emotional_tone -> coarse {stability, style} preset (control-card enum; ceiling
+# is coarse only; energy overrides tone on the shared stability/style fields —
+# see mapper).
+emotional_tone:
+  neutral:
+    stability: 0.50
+    style: 0.30
+  warm:
+    stability: 0.55
+    style: 0.40
+  concerned:
+    stability: 0.60
+    style: 0.25
+  urgent:
+    stability: 0.30
+    style: 0.55
+  reflective:
+    stability: 0.62
+    style: 0.22
+  encouraging:
+    stability: 0.45
+    style: 0.50

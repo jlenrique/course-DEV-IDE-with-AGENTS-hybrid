@@ -1,5 +1,130 @@
 {
   "$defs": {
+    "DialogueTurn": {
+      "additionalProperties": false,
+      "description": "A single speaker turn (MODELED in v1, NOT consumed in v1).",
+      "properties": {
+        "speaker": {
+          "minLength": 1,
+          "title": "Speaker",
+          "type": "string"
+        },
+        "text": {
+          "description": "When consumed (Text-to-Dialogue follow-on, NOT v1), the concatenation of turn texts MUST be a partition/derivation of the segment's already-figure-gated narration_text; no turn may introduce speech that bypasses the figure-citation gate.",
+          "minLength": 1,
+          "title": "Text",
+          "type": "string"
+        },
+        "voice_id": {
+          "anyOf": [
+            {
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Voice Id"
+        }
+      },
+      "required": [
+        "speaker",
+        "text"
+      ],
+      "title": "DialogueTurn",
+      "type": "object"
+    },
+    "ElevenLabsSettings": {
+      "additionalProperties": false,
+      "description": "Optional explicit per-field ElevenLabs override.\n\nMirrors `scripts/api_clients/elevenlabs_client.text_to_speech()` params. Any\nfield set here wins over a direction-derived value at mapping time (per-field\nprecedence; see voice_direction_map.map_voice_direction_to_tts).",
+      "properties": {
+        "voice_id": {
+          "anyOf": [
+            {
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Voice Id"
+        },
+        "stability": {
+          "anyOf": [
+            {
+              "maximum": 1.0,
+              "minimum": 0.0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Stability"
+        },
+        "similarity_boost": {
+          "anyOf": [
+            {
+              "maximum": 1.0,
+              "minimum": 0.0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Similarity Boost"
+        },
+        "style": {
+          "anyOf": [
+            {
+              "maximum": 1.0,
+              "minimum": 0.0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Style"
+        },
+        "model_id": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Model Id"
+        },
+        "speed": {
+          "anyOf": [
+            {
+              "maximum": 1.2,
+              "minimum": 0.7,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Speed"
+        }
+      },
+      "title": "ElevenLabsSettings",
+      "type": "object"
+    },
     "GarySlideOutput": {
       "additionalProperties": false,
       "properties": {
@@ -213,6 +338,17 @@
           ],
           "default": null,
           "title": "Cluster Position"
+        },
+        "voice_direction": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/VoiceDirection"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
         }
       },
       "required": [
@@ -263,6 +399,180 @@
         "perception_source"
       ],
       "title": "VisualReference",
+      "type": "object"
+    },
+    "VoiceDirection": {
+      "additionalProperties": false,
+      "description": "Per-segment delivery direction (FROZEN STEP-1 CONTRACT, \u00a7G-RECONCILED).",
+      "properties": {
+        "schema_version": {
+          "const": "voice-direction.v1",
+          "default": "voice-direction.v1",
+          "title": "Schema Version",
+          "type": "string"
+        },
+        "render_strategy": {
+          "default": "tts",
+          "enum": [
+            "tts",
+            "dialogue"
+          ],
+          "title": "Render Strategy",
+          "type": "string"
+        },
+        "delivery_intent": {
+          "anyOf": [
+            {
+              "maxLength": 500,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Delivery Intent"
+        },
+        "emotional_tone": {
+          "anyOf": [
+            {
+              "enum": [
+                "neutral",
+                "warm",
+                "concerned",
+                "urgent",
+                "reflective",
+                "encouraging"
+              ],
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Emotional Tone"
+        },
+        "pace": {
+          "anyOf": [
+            {
+              "enum": [
+                "slower",
+                "neutral",
+                "faster"
+              ],
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Pace"
+        },
+        "energy": {
+          "anyOf": [
+            {
+              "enum": [
+                "low",
+                "medium",
+                "high"
+              ],
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Energy"
+        },
+        "delivery_tag": {
+          "anyOf": [
+            {
+              "maxLength": 120,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Delivery Tag"
+        },
+        "pause_before_seconds": {
+          "anyOf": [
+            {
+              "maximum": 5.0,
+              "minimum": 0.0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Pause Before Seconds"
+        },
+        "pause_after_seconds": {
+          "anyOf": [
+            {
+              "maximum": 5.0,
+              "minimum": 0.0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Pause After Seconds"
+        },
+        "elevenlabs": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/ElevenLabsSettings"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "dialogue_turns": {
+          "anyOf": [
+            {
+              "items": {
+                "$ref": "#/$defs/DialogueTurn"
+              },
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Dialogue Turns"
+        },
+        "source": {
+          "anyOf": [
+            {
+              "enum": [
+                "role-derived",
+                "cd-authored",
+                "operator-override"
+              ],
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Source"
+        }
+      },
+      "title": "VoiceDirection",
       "type": "object"
     }
   },
