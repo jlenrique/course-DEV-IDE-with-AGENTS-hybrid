@@ -1,0 +1,169 @@
+segments:
+- segment_id: seg-01
+  id: seg-01
+  slide_id: slide-01
+  narration_text: To orient us, look to the left panel’s upward line—national health
+    expenditures climbing to $5.2 trillion and approaching one‑fifth of the economy.
+    That growth concentrates scrutiny and shifts decisions to the enterprise level.
+    On the right, the side‑by‑side bars—independent practice contracting while hospital
+    employment expands—show where decision rights are migrating. As more of us work
+    inside large systems, influence depends less on personal autonomy and more on
+    knowing how to navigate and shape the enterprise. That is the operating context
+    for any change you hope to make.
+  timing_role: concept-build
+  content_density: medium
+  visual_detail_load: heavy
+  duration_rationale: Two visuals (line + bars) require guided interpretation without
+    numeration repeat.
+  bridge_type: intro
+  behavioral_intent: credible
+  cluster_id: null
+  cluster_role: null
+  cluster_position: null
+  narrative_arc: null
+  voice_direction:
+    schema_version: voice-direction.v1
+    render_strategy: tts
+    emotional_tone: neutral
+    pace: neutral
+    energy: medium
+    source: operator-override
+- segment_id: seg-02
+  id: seg-02
+  slide_id: slide-02
+  narration_text: 'Now shift from structure to people: the left statistic—about a
+    quarter of total spend lost to administration and waste—signals the scale of inefficiency.
+    The right figure—over half of physicians reporting burnout—locates the harm. Crucially,
+    the top driver isn’t patient volume; it’s bureaucratic tasks and administrative
+    bloat. Read through that lens, burnout is a system design problem, not a resilience
+    deficit—and the daily EHR workarounds and admission bottlenecks become prime targets
+    for innovation.'
+  timing_role: concept-build
+  content_density: medium
+  visual_detail_load: medium
+  duration_rationale: Two headline stats warrant concise interpretation and reframing
+    burnout as a design problem.
+  bridge_type: none
+  behavioral_intent: alarming
+  cluster_id: null
+  cluster_role: null
+  cluster_position: null
+  narrative_arc: null
+  voice_direction:
+    schema_version: voice-direction.v1
+    render_strategy: tts
+    delivery_intent: let the synthesis land
+    emotional_tone: reflective
+    pace: slower
+    energy: low
+    delivery_tag: '[thoughtfully]'
+    source: operator-override
+- segment_id: seg-03
+  id: seg-03
+  slide_id: slide-03
+  narration_text: 'Building on that, focus on the central timeline: where medical
+    knowledge once doubled over decades, it’s now projected to double in about 73
+    days—static training can’t keep pace. To the right, the AI adoption callout—around
+    66% of physicians—highlights both opportunity and oversight risk, as formal training
+    on safe supervision lags practice. The upside is real: digital programs like SMART
+    remote monitoring have reduced ER visits for COPD and heart failure by shifting
+    care from reactive to proactive, and virtual reality lets teams rehearse complex
+    procedures without patient risk. Technology will reshape care—but it needs clinical
+    leadership to guide safe, effective use.'
+  timing_role: concept-build
+  content_density: medium
+  visual_detail_load: medium
+  duration_rationale: Timeline + AI callout invite insight on velocity and oversight
+    with two concrete examples.
+  bridge_type: none
+  behavioral_intent: credible
+  cluster_id: null
+  cluster_role: null
+  cluster_position: null
+  narrative_arc: null
+  voice_direction:
+    schema_version: voice-direction.v1
+    render_strategy: tts
+    emotional_tone: warm
+    pace: neutral
+    energy: medium
+    source: operator-override
+- segment_id: seg-04
+  id: seg-04
+  slide_id: slide-04
+  narration_text: 'From tools to expectations, trace the journey from the smartphone
+    at left to the provider end points at right. A true digital front door makes that
+    path seamless—beyond a basic portal—to triage, scheduling, and guidance that feel
+    intuitive. Jefferson Health’s example shows the direction: AI‑driven triage helping
+    patients navigate to the right care setting without friction. In a consumer environment,
+    intentional design is the difference between a frustrating experience and a world‑class
+    one.'
+  timing_role: concept-build
+  content_density: medium
+  visual_detail_load: medium
+  duration_rationale: Patient-journey visual carries structure; narration supplies
+    the design principle and example.
+  bridge_type: none
+  behavioral_intent: credible
+  cluster_id: null
+  cluster_role: null
+  cluster_position: null
+  narrative_arc: null
+  voice_direction:
+    schema_version: voice-direction.v1
+    render_strategy: tts
+    emotional_tone: concerned
+    pace: slower
+    energy: medium
+    elevenlabs:
+      similarity_boost: 0.8
+    source: operator-override
+- segment_id: seg-05
+  id: seg-05
+  slide_id: slide-05
+  narration_text: 'Turning to capability, the bar chart lays out the gap: the taller
+    bar—67% of physicians interested in leadership—towers over the shorter bar—only
+    18% with executive or business training. The pandemic underscored that management
+    and systems thinking aren’t ‘soft’ extras; they’re critical to outcomes and well‑being.
+    Academic Health Centers often have the clinical expertise but lack the cultural
+    incentives and interdisciplinary integration to scale good ideas. Clinicians who
+    can bridge practice with technology and organizational strategy are now essential.'
+  timing_role: concept-build
+  content_density: medium
+  visual_detail_load: medium
+  duration_rationale: Simple two-bar comparison; narration emphasizes implications
+    and the bridging role.
+  bridge_type: none
+  behavioral_intent: clear-guidance
+  cluster_id: null
+  cluster_role: null
+  cluster_position: null
+  narrative_arc: null
+  voice_direction:
+    schema_version: voice-direction.v1
+    render_strategy: tts
+    emotional_tone: warm
+    pace: neutral
+    energy: medium
+    source: cd-authored
+    pause_after_seconds: 9.0
+- segment_id: seg-06
+  id: seg-06
+  slide_id: slide-06
+  narration_text: In closing, pull the threads together. As the bullets recap, care
+    is becoming data‑driven, consumer‑responsive, and operationally complex, while
+    administrative friction fuels burnout and technology accelerates faster than training.
+    Incremental tweaks aren’t enough. You already solve uncertainty at the bedside;
+    now translate that expertise into deliberate leadership so innovation reliably
+    improves outcomes and restores clinician well‑being.
+  timing_role: synthesis
+  content_density: light
+  visual_detail_load: light
+  duration_rationale: Close with a concise synthesis linking bullets to the bold call
+    to lead.
+  bridge_type: outro
+  behavioral_intent: clear-guidance
+  cluster_id: null
+  cluster_role: null
+  cluster_position: null
+  narrative_arc: null

@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>Storyboard B review</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --bg: #f5f6f8;
+      --panel: #ffffff;
+      --ink: #111827;
+      --muted: #5b6472;
+      --line: #d8dee8;
+      --accent: #143b5d;
+      --accent-soft: #dce8f4;
+      --warning: #8a5300;
+      --warning-soft: #fff3d6;
+      --danger: #9b1c1c;
+      --success-soft: #dff6e8;
+      --shadow: 0 10px 25px rgba(17, 24, 39, 0.08);
+    }
+    * { box-sizing: border-box; }
+    body { margin: 0; font-family: "Segoe UI", system-ui, sans-serif; background: var(--bg); color: var(--ink); line-height: 1.5; }
+    a { color: var(--accent); }
+    .page { max-width: 1440px; margin: 0 auto; padding: 24px; }
+    .summary-banner { background: linear-gradient(135deg, #0f2740, #1b4e73); color: #fff; border-radius: 20px; padding: 24px; box-shadow: var(--shadow); margin-bottom: 18px; }
+    .summary-banner h1 { margin: 0 0 8px 0; font-size: 1.9rem; }
+    .summary-banner p { margin: 0 0 14px 0; color: rgba(255,255,255,0.82); }
+    .meta-pill-row, .badge-row { display: flex; flex-wrap: wrap; gap: 10px; }
+    .meta-pill, .badge { display: inline-flex; align-items: center; gap: 6px; border-radius: 999px; padding: 6px 12px; font-size: 0.86rem; font-weight: 600; }
+    .meta-pill { background: rgba(255,255,255,0.14); color: #fff; }
+    .summary-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin-top: 14px; }
+    .summary-details { margin-top: 10px; }
+    .summary-details > summary { cursor: pointer; list-style: none; display: inline-flex; align-items: center; gap: 8px; font-size: 0.88rem; color: rgba(255,255,255,0.7); font-weight: 600; padding: 4px 0; }
+    .summary-details > summary::after { content: " [collapse]"; font-size: 0.78rem; }
+    .summary-details:not([open]) > summary::after { content: " [expand]"; }
+    .summary-panel { background: rgba(255,255,255,0.12); border: 1px solid rgba(255,255,255,0.14); border-radius: 16px; padding: 14px; }
+    .summary-panel h2 { margin: 0 0 8px 0; font-size: 0.95rem; }
+    .summary-panel p { margin: 0; color: rgba(255,255,255,0.88); font-size: 0.9rem; }
+    .summary-panel dl { margin: 0; display: grid; grid-template-columns: auto 1fr; gap: 6px 10px; }
+    .summary-panel dt { color: rgba(255,255,255,0.7); font-weight: 600; font-size: 0.88rem; }
+    .summary-panel dd { margin: 0; overflow-wrap: anywhere; font-size: 0.88rem; }
+    .toolbar { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; background: var(--panel); border: 1px solid var(--line); border-radius: 16px; padding: 14px 16px; margin-bottom: 18px; box-shadow: var(--shadow); }
+    .toolbar input[type="search"] { min-width: 260px; padding: 10px 12px; border-radius: 10px; border: 1px solid var(--line); font: inherit; }
+    .toolbar label { display: inline-flex; align-items: center; gap: 8px; font-size: 0.92rem; color: var(--muted); }
+    .toolbar button { padding: 9px 12px; border-radius: 10px; border: 1px solid var(--line); background: #fff; cursor: pointer; font: inherit; }
+    .toolbar button.active { background: var(--accent); color: #fff; border-color: var(--accent); }
+    .toolbar .disabled, .toolbar button:disabled, .toolbar input:disabled { opacity: 0.5; cursor: not-allowed; }
+    .slides-section { display: grid; gap: 18px; }
+    .slide-card, .related-card, .variant-section, .selected-preview-section, .related-assets-section { background: var(--panel); border: 1px solid var(--line); border-radius: 18px; box-shadow: var(--shadow); }
+    .slide-card { overflow: hidden; }
+    .slide-card[hidden] { display: none !important; }
+    .slide-card-header { display: flex; justify-content: space-between; gap: 16px; padding: 18px 20px 12px; border-bottom: 1px solid var(--line); align-items: flex-start; }
+    .slide-card-title-group { display: flex; gap: 14px; align-items: flex-start; }
+    .sequence-pill { min-width: 50px; height: 50px; display: grid; place-items: center; background: var(--accent-soft); color: var(--accent); border-radius: 14px; font-weight: 800; font-size: 1rem; }
+    .slide-card-title { margin: 0; font-size: 1.12rem; }
+    .slide-card-subtitle { color: var(--muted); margin-top: 4px; font-size: 0.92rem; }
+    .badge { background: #eef2f7; color: #27313f; }
+    .badge-fidelity { background: var(--accent-soft); color: var(--accent); }
+    .badge-motion { background: rgba(14, 116, 144, 0.14); color: #155e75; }
+    .badge-selected { background: var(--success-soft); color: #14532d; }
+    .badge-issue { background: var(--warning-soft); color: var(--warning); }
+    .badge-cluster-role { background: rgba(20, 59, 93, 0.12); color: var(--accent); }
+    .badge-coherence-pass { background: #dff6e8; color: #166534; }
+    .badge-coherence-warn { background: #fff3d6; color: #8a5300; }
+    .badge-coherence-fail { background: #fde2e2; color: #9b1c1c; }
+    .badge-coherence-missing { background: #eef2f7; color: #475569; }
+    .slide-card-body { display: grid; grid-template-columns: minmax(280px, 420px) minmax(0, 1fr); gap: 18px; padding: 18px 20px 20px; }
+    .cluster-group { background: var(--panel); border: 1px solid var(--line); border-radius: 18px; box-shadow: var(--shadow); overflow: hidden; }
+    .cluster-group + .cluster-group { margin-top: 28px; }
+    .cluster-summary { list-style: none; cursor: pointer; display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 18px; align-items: center; padding: 18px 20px; background: linear-gradient(135deg, #f8fbfd, #eef5fb); }
+    .cluster-summary::-webkit-details-marker { display: none; }
+    .cluster-summary::after { content: "[expand]"; color: var(--muted); font-size: 0.82rem; font-weight: 700; }
+    .cluster-group[open] .cluster-summary::after { content: "[collapse]"; }
+    .cluster-summary-main { min-width: 0; }
+    .cluster-kicker { color: var(--muted); font-size: 0.84rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em; }
+    .cluster-title { margin: 4px 0 6px; font-size: 1.12rem; }
+    .cluster-arc { margin: 0; color: var(--muted); }
+    .cluster-summary-meta { display: flex; flex-wrap: wrap; gap: 8px; justify-content: flex-end; }
+    .cluster-group-body { display: grid; gap: 12px; padding: 16px; border-top: 1px solid var(--line); background: #f8fafc; }
+    .cluster-storyboard-b-summary { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
+    .cluster-storyboard-b-panel { background: #fff; border: 1px solid var(--line); border-radius: 14px; padding: 14px; }
+    .cluster-storyboard-b-panel h3 { margin: 0 0 8px 0; font-size: 0.96rem; }
+    .cluster-storyboard-b-panel p { margin: 0; color: var(--ink); }
+    .cluster-breakdown-list { margin: 12px 0 0 18px; padding: 0; display: grid; gap: 8px; }
+    .cluster-breakdown-list li { color: var(--ink); }
+    .cluster-breakdown-meta { color: var(--muted); font-size: 0.88rem; }
+    .cluster-storyboard-b-facts { margin: 0; display: grid; gap: 10px; }
+    .cluster-storyboard-b-facts div { padding: 10px 12px; background: #f8fafc; border: 1px solid var(--line); border-radius: 12px; }
+    .cluster-storyboard-b-facts dt { color: var(--muted); font-size: 0.8rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.03em; }
+    .cluster-storyboard-b-facts dd { margin: 4px 0 0; font-size: 0.95rem; overflow-wrap: anywhere; }
+    .slide-card--cluster-head .sequence-pill { background: #d6e8f8; }
+    .slide-card--cluster-interstitial { margin-left: 28px; border-left: 4px solid #c7d7e6; }
+    .slide-card--coherence-pass { border-left: 4px solid #16a34a; }
+    .slide-card--coherence-warn { border-left: 4px solid #d97706; }
+    .slide-card--coherence-fail { border-left: 4px solid #dc2626; }
+    .cluster-slide-meta { margin-top: 10px; display: flex; flex-wrap: wrap; gap: 8px 12px; color: var(--muted); font-size: 0.88rem; }
+    .cluster-slide-meta span { display: inline-flex; gap: 4px; }
+    .script-metadata-row { display: flex; flex-wrap: wrap; gap: 8px; margin: 0 0 12px 0; }
+    .badge-intent-aligned { background: #dff6e8; color: #166534; }
+    .badge-intent-mismatch { background: #fde2e2; color: #9b1c1c; }
+    .voice-direction-panel { margin: 14px 0; padding: 14px; background: #f3f0fb; border: 1px solid #d8cdf0; border-left: 4px solid #6d28d9; border-radius: 14px; }
+    .voice-direction-panel h3 { margin: 0 0 8px 0; font-size: 0.98rem; color: #4c1d95; }
+    .voice-direction-panel h4 { margin: 10px 0 6px 0; font-size: 0.9rem; color: #4c1d95; }
+    .voice-direction-default { color: var(--muted); font-style: italic; }
+    .voice-direction-source { margin-bottom: 8px; }
+    .vd-source-badge { background: #ede9fe; color: #5b21b6; }
+    .voice-direction-list, .voice-direction-resolved-list { margin: 0; display: grid; grid-template-columns: auto 1fr; gap: 4px 12px; }
+    .voice-direction-list dt, .voice-direction-resolved-list dt { color: var(--muted); font-weight: 600; font-size: 0.86rem; }
+    .voice-direction-list dd, .voice-direction-resolved-list dd { margin: 0; overflow-wrap: anywhere; font-size: 0.88rem; }
+    .voice-direction-resolved { margin-top: 10px; padding-top: 8px; border-top: 1px dashed #c4b5fd; }
+    .voice-direction-tag { margin-top: 10px; padding: 8px 10px; background: #fff7ed; border: 1px dashed #fb923c; border-radius: 10px; color: #9a3412; font-size: 0.86rem; }
+    .voice-direction-tag code { background: #ffedd5; padding: 1px 6px; border-radius: 6px; }
+    .vd-inert { color: var(--muted); font-style: italic; }
+    .vd-meta-tag { display: inline-block; margin-left: 6px; padding: 0 6px; background: #ede9fe; color: #5b21b6; border-radius: 6px; font-size: 0.72rem; font-weight: 600; }
+    .voice-direction-seg { font-size: 0.78rem; font-weight: 700; color: #6d28d9; text-transform: uppercase; letter-spacing: 0.03em; margin-bottom: 6px; }
+    .voice-direction-panel + .voice-direction-panel { margin-top: 10px; }
+    .voice-direction-invalid { margin-top: 10px; padding: 10px 12px; background: #fde2e2; border: 1px solid #f5a3a3; border-left: 4px solid #dc2626; border-radius: 10px; color: #9b1c1c; font-weight: 600; }
+    .vd-invalid-reason { font-weight: 400; font-style: italic; }
+    .voice-direction-resolved-unavailable { margin-top: 10px; padding: 8px 10px; background: #fff3d6; border: 1px dashed #d9a13a; border-radius: 10px; color: #8a5300; font-size: 0.86rem; }
+    .voice-direction-banner { margin: 0 0 14px 0; padding: 10px 14px; background: rgba(255,243,214,0.92); border: 1px solid #d9a13a; border-radius: 12px; color: #6b3f00; font-weight: 600; }
+    .voice-direction-panel[data-vd-state="invalid"] { border-left-color: #dc2626; background: #fdeded; }
+    .panel-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; margin-bottom: 14px; }
+    .panel, .summary-panel, .related-card { min-width: 0; }
+    .panel { background: #fafbfd; border: 1px solid var(--line); border-radius: 14px; padding: 14px; }
+    .panel-label, .panel h3, .evidence-panel summary, .variant-section h2, .selected-preview-section h2, .related-assets-section h2 { font-size: 0.98rem; font-weight: 700; margin: 0 0 10px 0; }
+    .slide-thumbnail, .variant-thumbnail { width: 100%; border-radius: 14px; border: 1px solid var(--line); background: #fff; box-shadow: 0 6px 18px rgba(17, 24, 39, 0.08); }
+    .slide-thumbnail { max-height: 280px; object-fit: contain; background: #f8fafc; }
+    .variant-thumbnail { max-width: 260px; max-height: 150px; object-fit: contain; }
+    .motion-preview-panel { margin-top: 14px; }
+    .slide-card-body--motion .slide-preview-panel { grid-column: 1; grid-row: 1; }
+    .slide-card-body--motion .motion-preview-panel { grid-column: 1; grid-row: 2; margin-top: 0; }
+    .slide-card-body--motion .slide-script-panel { grid-column: 2; grid-row: 1 / -1; }
+    .motion-preview-wrap { display: grid; gap: 8px; }
+    .motion-preview { width: 100%; max-height: 280px; border-radius: 14px; border: 1px solid var(--line); background: #020617; box-shadow: 0 6px 18px rgba(17, 24, 39, 0.12); }
+    .motion-link { font-size: 0.9rem; color: var(--accent); text-decoration: none; font-weight: 600; }
+    .preview-link { display: block; text-decoration: none; position: relative; }
+    .preview-link-text { display: inline-flex; align-items: center; justify-content: center; min-height: 120px; width: 100%; border: 1px dashed var(--line); border-radius: 14px; background: #fafafa; color: var(--accent); font-weight: 600; }
+    .expand-cue { position: absolute; top: 10px; right: 10px; background: rgba(15, 23, 42, 0.78); color: #fff; border-radius: 999px; padding: 4px 8px; font-size: 0.78rem; font-weight: 700; letter-spacing: 0.02em; box-shadow: 0 4px 12px rgba(15, 23, 42, 0.22); }
+    .preview-caption, .script-status, .related-stage, .related-source { color: var(--muted); font-size: 0.9rem; margin-top: 8px; }
+    .script-text, .script-notes { white-space: pre-wrap; margin: 0; font: inherit; line-height: 1.55; }
+    .script-text--cluster-head { background: linear-gradient(180deg, #f8fbfd 0%, #eef5fb 100%); border: 1px solid #d6e8f8; border-radius: 14px; padding: 14px; }
+    .script-text--cluster-interstitial { background: #fcfdff; border-left: 4px solid #bfd3e6; padding: 12px 14px; border-radius: 0 14px 14px 0; }
+    .script-warning { margin-bottom: 10px; padding: 10px 12px; border-radius: 10px; background: var(--warning-soft); color: var(--warning); font-size: 0.92rem; font-weight: 600; }
+    .behavioral-intent-warning { margin-bottom: 10px; padding: 10px 12px; border-radius: 12px; border: 1px solid #f5c2c7; background: #fff5f5; color: #9b1c1c; font-size: 0.92rem; }
+    .transition-divider { display: grid; gap: 4px; margin: 0 0 12px 0; padding: 10px 12px; border-radius: 12px; }
+    .transition-divider strong { font-size: 0.86rem; text-transform: uppercase; letter-spacing: 0.03em; }
+    .transition-divider span { color: var(--muted); font-size: 0.88rem; }
+    .transition-divider--within { background: #f8fafc; border: 1px dashed #cbd5e1; }
+    .transition-divider--boundary { background: linear-gradient(135deg, #fff7ed, #ffedd5); border: 1px solid #fdba74; }
+    .transition-bridge-text { color: var(--ink); font-size: 0.92rem; }
+    .script-state, .empty-state { color: var(--muted); font-style: italic; }
+    .evidence-panel { border: 1px solid var(--line); border-radius: 14px; padding: 12px 14px; background: #fff; }
+    .evidence-panel summary { cursor: pointer; list-style: none; display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+    .evidence-panel summary::after { content: "[+]"; color: var(--muted); font-size: 0.85rem; font-weight: 700; }
+    .evidence-panel[open] summary::after { content: "[-]"; }
+    .evidence-list { margin: 12px 0 0; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px 16px; }
+    .evidence-list dt { color: var(--muted); font-size: 0.85rem; font-weight: 700; }
+    .evidence-list dd { margin: 4px 0 0; font-size: 0.92rem; overflow-wrap: anywhere; }
+    .findings-block { margin-top: 14px; }
+    .finding-list { margin: 8px 0 0 18px; padding: 0; }
+    .variant-section, .selected-preview-section, .related-assets-section { padding: 18px 20px; margin-bottom: 18px; }
+    .variant-table { width: 100%; border-collapse: collapse; margin-top: 12px; }
+    .variant-table th, .variant-table td { border-top: 1px solid var(--line); padding: 10px; text-align: left; vertical-align: top; }
+    .selected-preview-grid, .related-assets-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 14px; }
+    .selected-card, .related-card { padding: 14px; }
+    .selected-card-meta, .related-meta { color: var(--muted); font-size: 0.86rem; margin-bottom: 8px; }
+    .preview-missing { display: grid; place-items: center; min-height: 140px; border-radius: 14px; border: 1px dashed var(--line); background: #fafafa; color: var(--danger); font-weight: 700; }
+    dialog.preview-dialog { width: min(96vw, 1400px); border: none; border-radius: 18px; padding: 0; box-shadow: 0 24px 50px rgba(17, 24, 39, 0.35); }
+    dialog::backdrop { background: rgba(17, 24, 39, 0.72); }
+    .dialog-body { background: #0f172a; color: #fff; padding: 16px; }
+    .dialog-toolbar { display: flex; justify-content: space-between; align-items: center; gap: 12px; margin-bottom: 12px; }
+    .dialog-toolbar button { background: rgba(255,255,255,0.12); color: #fff; border: none; border-radius: 10px; padding: 8px 12px; cursor: pointer; }
+    .dialog-preview { width: 100%; max-height: 82vh; object-fit: contain; background: #020617; border-radius: 14px; }
+    .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0; }
+    @media (max-width: 980px) {
+      .summary-grid, .slide-card-body, .panel-grid { grid-template-columns: 1fr; }
+      .slide-card-header { flex-direction: column; }
+      .cluster-summary { grid-template-columns: 1fr; }
+      .cluster-summary-meta { justify-content: flex-start; }
+      .cluster-storyboard-b-summary { grid-template-columns: 1fr; }
+      .slide-card--cluster-interstitial { margin-left: 0; }
+      .slide-card-body--motion .slide-preview-panel,
+      .slide-card-body--motion .motion-preview-panel,
+      .slide-card-body--motion .slide-script-panel { grid-column: auto; grid-row: auto; }
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <section class="summary-banner">
+      <h1>Storyboard B Review</h1>
+      <p>Static storyboard review surface for human approval. The JSON manifest remains the source of truth; this page is a reviewer-friendly projection.</p>
+      
+      <div class="meta-pill-row"><span class="meta-pill">Run 036e7ff8-b079-4051-bb78-0f739ad62125-b-live-r2</span><span class="meta-pill">Storyboard B</span><span class="meta-pill">View slides_with_script</span><span class="meta-pill">Slides 6</span><span class="meta-pill">Narrated 6</span><span class="meta-pill">Missing assets 0</span><span class="meta-pill">Target total n/a min</span><span class="meta-pill">Avg slide n/as</span><span class="meta-pill">Runtime variability n/a</span><span class="meta-pill">Emotional variability n/a</span><span class="meta-pill">Pace variability n/a</span><span class="meta-pill">WPM 150 +/- pace n/a</span><span class="meta-pill">Double dispatch</span></div>
+      <details class="summary-details" open>
+        <summary>Run details</summary>
+        <div class="summary-grid">
+        <div class="summary-panel">
+          <h2>Run summary</h2>
+          <p>Generated at 2026-06-27T22:11:06.308202+00:00. Fidelity mix: creative: 6.</p>
+        </div>
+        <div class="summary-panel">
+          <h2>Orientation data</h2>
+          <dl>
+            <div><dt>First slide</dt><dd>slide-01</dd></div>
+            <div><dt>Last slide</dt><dd>slide-06</dd></div>
+            <div><dt>Pending narration</dt><dd>0</dd></div>
+            <div><dt>Slides with findings</dt><dd>0</dd></div>
+          </dl>
+        </div>
+        <div class="summary-panel">
+          <h2>Runtime and script policy</h2>
+          <dl>
+            <div><dt>Narration density target</dt><dd>150</dd></div>
+            <div><dt>Engagement stance</dt><dd>collegial_guide</dd></div>
+            <div><dt>Policy source</dt><dd>n/a</dd></div>
+          </dl>
+        </div>
+        <div class="summary-panel" data-role="voice-direction-defaults">
+          <h2>Voice direction defaults</h2>
+          <dl>
+            <div><dt>Render strategy</dt><dd>tts</dd></div>
+            <div><dt>Emotional tone (baseline)</dt><dd>neutral</dd></div>
+            <div><dt>Pace (baseline)</dt><dd>neutral</dd></div>
+            <div><dt>Energy (baseline)</dt><dd>medium</dd></div>
+            <div><dt>Emotional variability</dt><dd>n/a</dd></div>
+            <div><dt>Pace variability</dt><dd>n/a</dd></div>
+          </dl>
+        </div>
+        </div>
+      </details>
+    </section>
+
+    
+    
+
+    <section class="toolbar" aria-label="Storyboard controls">
+      <label>
+        <span class="sr-only">Search slides</span>
+        <input id="search-box" type="search" placeholder="Search slide id, title, source ref" data-role="search" />
+      </label>
+      <button type="button" class="active" data-role="filter" data-filter="all">All</button>
+      <button type="button" data-role="filter" data-filter="creative">Creative</button>
+      <button type="button" data-role="filter" data-filter="literal-text">Literal-text</button>
+      <button type="button" data-role="filter" data-filter="literal-visual">Literal-visual</button>
+      <label class="toolbar-label disabled"><input type="checkbox" id="issues-only" data-role="issues-only" disabled aria-disabled="true" /> Show issues only</label>
+      <button type="button" data-role="jump-next-issue" disabled aria-disabled="true">No issues</button>
+      
+    </section>
+
+    <section class="slides-section" aria-label="Storyboard slides">
+      <article class="slide-card" id="slide-slide-01-a" data-role="slide-card" data-slide-id="slide-01" data-fidelity="creative" data-orientation="landscape" data-issues=""><header class="slide-card-header"><div class="slide-card-title-group"><div class="sequence-pill">#1</div><div><h2 class="slide-card-title">slide-01</h2><div class="slide-card-subtitle">slide-01</div></div></div><div class="badge-row"><span class="badge badge-fidelity">creative</span><span class="badge">variant A</span><span class="badge">card 1</span><span class="badge">orientation landscape</span></div></header><div class="slide-card-body"><section class="slide-preview-panel"><div class="panel-label">Approved slide</div><a class="preview-link" data-role="preview-link" data-row-id="slide-slide-01-a" data-preview-src="../../../../../../../Documents/GitHub/course-DEV-IDE-with-AGENTS-hybrid/state/config/runs/036e7ff8-b079-4051-bb78-0f739ad62125/exports/gary/gary_slide_01.png" href="../../../../../../../Documents/GitHub/course-DEV-IDE-with-AGENTS-hybrid/state/config/runs/036e7ff8-b079-4051-bb78-0f739ad62125/exports/gary/gary_slide_01.png" target="_blank" rel="noopener noreferrer"><img class="slide-thumbnail" src="../../../../../../../Documents/GitHub/course-DEV-IDE-with-AGENTS-hybrid/state/config/runs/036e7ff8-b079-4051-bb78-0f739ad62125/exports/gary/gary_slide_01.png" alt="slide-01 preview" loading="lazy" /><span class="expand-cue" aria-hidden="true">[+]</span></a><div class="preview-caption">Asset status: <strong>present</strong> | Dimensions: <strong>2400×1350</strong></div><div class="preview-caption">Motion review: <strong>Motion: static | n/a</strong></div></section><section class="slide-script-panel"><div class="panel-grid"><div class="panel"><h3>Script</h3><div class="script-status">Status: Attached</div><pre class="script-text">To orient us, look to the left panel’s upward line—national health expenditures climbing to $5.2 trillion and approaching one‑fifth of the economy. That growth concentrates scrutiny and shifts decisions to the enterprise level. On the right, the side‑by‑side bars—independent practice contracting while hospital employment expands—show where decision rights are migrating. As more of us work inside large systems, influence depends less on personal autonomy and more on knowing how to navigate and shape the enterprise. That is the operating context for any change you hope to make.</pre></div><div class="panel"><h3>Script notes</h3><pre class="script-notes">The Economic and Structural Reality of Modern Healthcare — Explain how rising national health expenditures and the shift from independent practice to large-system employment change the context in which physicians must operate and influence care delivery.</pre></div></div><section class="voice-direction-panel" data-role="voice-direction" data-vd-state="directed"><h3>Voice direction</h3><div class="voice-direction-source"><span class="badge vd-source-badge">source: operator-override</span></div><dl class="voice-direction-list"><div><dt>Render strategy</dt><dd>tts</dd></div><div><dt>Emotional tone</dt><dd>neutral</dd></div><div><dt>Pace</dt><dd>neutral</dd></div><div><dt>Energy</dt><dd>medium</dd></div></dl><div class="voice-direction-resolved" data-role="resolved-tts"><h4>Resolved TTS settings — what Enrique will send (display matches dispatch)</h4><dl class="voice-direction-resolved-list"><div><dt>voice_id</dt><dd>global/default (resolved at synthesis)</dd></div><div><dt>model_id</dt><dd>global/default (resolved at synthesis)</dd></div><div><dt>stability</dt><dd>0.5</dd></div><div><dt>similarity_boost</dt><dd>global/default (resolved at synthesis)</dd></div><div><dt>style</dt><dd>0.35</dd></div><div><dt>speed</dt><dd>1.0</dd></div></dl></div></section><details class="evidence-panel"><summary>Evidence & provenance</summary><dl class="evidence-list"><div><dt>Source ref</dt><dd>n/a</dd></div><div><dt>File path</dt><dd>C:\Users\juanl\Documents\GitHub\course-DEV-IDE-with-AGENTS-hybrid\state\config\runs\036e7ff8-b079-4051-bb78-0f739ad62125\exports\gary\gary_slide_01.png</dd></div><div><dt>Created</dt><dd>2026-06-27T22:11:06.308202+00:00</dd></div><div><dt>Literal-visual source</dt><dd>n/a</dd></div><div><dt>Matched segments</dt><dd>seg-01</dd></div><div><dt>Narration refs</dt><dd>n/a</dd></div><div><dt>Visual refs</dt><dd>0</dd></div><div><dt>Visual mode</dt><dd>n/a</dd></div><div><dt>Visual file</dt><dd>n/a</dd></div><div><dt>Motion type</dt><dd>static</dd></div><div><dt>Motion status</dt><dd>n/a</dd></div><div><dt>Motion source</dt><dd>n/a</dd></div><div><dt>Motion duration</dt><dd>n/a</dd></div><div><dt>Runtime target (s)</dt><dd>n/a</dd></div><div><dt>Motion asset</dt><dd>n/a</dd></div><div><dt>Timing role</dt><dd>concept-build</dd></div><div><dt>Content density</dt><dd>medium</dd></div><div><dt>Visual detail load</dt><dd>heavy</dd></div><div><dt>Bridge type</dt><dd>intro</dd></div><div><dt>Behavioral intent</dt><dd>credible</dd></div><div><dt>Duration rationale</dt><dd>Two visuals (line + bars) require guided interpretation without numeration repeat.</dd></div><div><dt>Cluster position</dt><dd>n/a</dd></div><div><dt>Interstitial type</dt><dd>n/a</dd></div><div><dt>Isolation target</dt><dd>n/a</dd></div><div><dt>Quality</dt><dd>Vera None | Quinn None</dd></div></dl><div class="findings-block"><h4>Findings</h4><p class="empty-state">No findings attached.</p></div></details></section></div></article>
+<article class="slide-card" id="slide-slide-02-a" data-role="slide-card" data-slide-id="slide-02" data-fidelity="creative" data-orientation="landscape" data-issues=""><header class="slide-card-header"><div class="slide-card-title-group"><div class="sequence-pill">#2</div><div><h2 class="slide-card-title">slide-02</h2><div class="slide-card-subtitle">slide-02</div></div></div><div class="badge-row"><span class="badge badge-fidelity">creative</span><span class="badge">variant A</span><span class="badge">card 2</span><span class="badge">orientation landscape</span></div></header><div class="slide-card-body"><section class="slide-preview-panel"><div class="panel-label">Approved slide</div><a class="preview-link" data-role="preview-link" data-row-id="slide-slide-02-a" data-preview-src="../../../../../../../Documents/GitHub/course-DEV-IDE-with-AGENTS-hybrid/state/config/runs/036e7ff8-b079-4051-bb78-0f739ad62125/exports/gary/gary_slide_02.png" href="../../../../../../../Documents/GitHub/course-DEV-IDE-with-AGENTS-hybrid/state/config/runs/036e7ff8-b079-4051-bb78-0f739ad62125/exports/gary/gary_slide_02.png" target="_blank" rel="noopener noreferrer"><img class="slide-thumbnail" src="../../../../../../../Documents/GitHub/course-DEV-IDE-with-AGENTS-hybrid/state/config/runs/036e7ff8-b079-4051-bb78-0f739ad62125/exports/gary/gary_slide_02.png" alt="slide-02 preview" loading="lazy" /><span class="expand-cue" aria-hidden="true">[+]</span></a><div class="preview-caption">Asset status: <strong>present</strong> | Dimensions: <strong>2400×1512</strong></div><div class="preview-caption">Motion review: <strong>Motion: static | n/a</strong></div></section><section class="slide-script-panel"><div class="panel-grid"><div class="panel"><h3>Script</h3><div class="script-status">Status: Attached</div><pre class="script-text">Now shift from structure to people: the left statistic—about a quarter of total spend lost to administration and waste—signals the scale of inefficiency. The right figure—over half of physicians reporting burnout—locates the harm. Crucially, the top driver isn’t patient volume; it’s bureaucratic tasks and administrative bloat. Read through that lens, burnout is a system design problem, not a resilience deficit—and the daily EHR workarounds and admission bottlenecks become prime targets for innovation.</pre></div><div class="panel"><h3>Script notes</h3><pre class="script-notes">The Human Cost of System Waste and Administrative Burden — Describe how administrative waste and bureaucratic friction contribute to physician burnout, and interpret burnout as a system design problem rather than an individual resilience failure.</pre></div></div><section class="voice-direction-panel" data-role="voice-direction" data-vd-state="directed"><h3>Voice direction</h3><div class="voice-direction-source"><span class="badge vd-source-badge">source: operator-override</span></div><dl class="voice-direction-list"><div><dt>Render strategy</dt><dd>tts</dd></div><div><dt>Emotional tone</dt><dd>reflective</dd></div><div><dt>Pace</dt><dd>slower</dd></div><div><dt>Energy</dt><dd>low</dd></div><div><dt>Delivery intent <span class="vd-meta-tag">review metadata, not script</span></dt><dd>let the synthesis land</dd></div></dl><div class="voice-direction-tag" data-role="delivery-tag">Generation-only cue (NOT narrated, never captioned): <code>[thoughtfully]</code></div><div class="voice-direction-resolved" data-role="resolved-tts"><h4>Resolved TTS settings — what Enrique will send (display matches dispatch)</h4><dl class="voice-direction-resolved-list"><div><dt>voice_id</dt><dd>global/default (resolved at synthesis)</dd></div><div><dt>model_id</dt><dd>global/default (resolved at synthesis)</dd></div><div><dt>stability</dt><dd>0.75</dd></div><div><dt>similarity_boost</dt><dd>global/default (resolved at synthesis)</dd></div><div><dt>style</dt><dd>0.1</dd></div><div><dt>speed</dt><dd>0.94</dd></div></dl></div></section><details class="evidence-panel"><summary>Evidence & provenance</summary><dl class="evidence-list"><div><dt>Source ref</dt><dd>n/a</dd></div><div><dt>File path</dt><dd>C:\Users\juanl\Documents\GitHub\course-DEV-IDE-with-AGENTS-hybrid\state\config\runs\036e7ff8-b079-4051-bb78-0f739ad62125\exports\gary\gary_slide_02.png</dd></div><div><dt>Created</dt><dd>2026-06-27T22:11:06.308202+00:00</dd></div><div><dt>Literal-visual source</dt><dd>n/a</dd></div><div><dt>Matched segments</dt><dd>seg-02</dd></div><div><dt>Narration refs</dt><dd>n/a</dd></div><div><dt>Visual refs</dt><dd>0</dd></div><div><dt>Visual mode</dt><dd>n/a</dd></div><div><dt>Visual file</dt><dd>n/a</dd></div><div><dt>Motion type</dt><dd>static</dd></div><div><dt>Motion status</dt><dd>n/a</dd></div><div><dt>Motion source</dt><dd>n/a</dd></div><div><dt>Motion duration</dt><dd>n/a</dd></div><div><dt>Runtime target (s)</dt><dd>n/a</dd></div><div><dt>Motion asset</dt><dd>n/a</dd></div><div><dt>Timing role</dt><dd>concept-build</dd></div><div><dt>Content density</dt><dd>medium</dd></div><div><dt>Visual detail load</dt><dd>medium</dd></div><div><dt>Bridge type</dt><dd>none</dd></div><div><dt>Behavioral intent</dt><dd>alarming</dd></div><div><dt>Duration rationale</dt><dd>Two headline stats warrant concise interpretation and reframing burnout as a design problem.</dd></div><div><dt>Cluster position</dt><dd>n/a</dd></div><div><dt>Interstitial type</dt><dd>n/a</dd></div><div><dt>Isolation target</dt><dd>n/a</dd></div><div><dt>Quality</dt><dd>Vera None | Quinn None</dd></div></dl><div class="findings-block"><h4>Findings</h4><p class="empty-state">No findings attached.</p></div></details></section></div></article>
+<article class="slide-card" id="slide-slide-03-a" data-role="slide-card" data-slide-id="slide-03" data-fidelity="creative" data-orientation="landscape" data-issues=""><header class="slide-card-header"><div class="slide-card-title-group"><div class="sequence-pill">#3</div><div><h2 class="slide-card-title">slide-03</h2><div class="slide-card-subtitle">slide-03</div></div></div><div class="badge-row"><span class="badge badge-fidelity">creative</span><span class="badge">variant A</span><span class="badge">card 3</span><span class="badge">orientation landscape</span></div></header><div class="slide-card-body"><section class="slide-preview-panel"><div class="panel-label">Approved slide</div><a class="preview-link" data-role="preview-link" data-row-id="slide-slide-03-a" data-preview-src="../../../../../../../Documents/GitHub/course-DEV-IDE-with-AGENTS-hybrid/state/config/runs/036e7ff8-b079-4051-bb78-0f739ad62125/exports/gary/gary_slide_03.png" href="../../../../../../../Documents/GitHub/course-DEV-IDE-with-AGENTS-hybrid/state/config/runs/036e7ff8-b079-4051-bb78-0f739ad62125/exports/gary/gary_slide_03.png" target="_blank" rel="noopener noreferrer"><img class="slide-thumbnail" src="../../../../../../../Documents/GitHub/course-DEV-IDE-with-AGENTS-hybrid/state/config/runs/036e7ff8-b079-4051-bb78-0f739ad62125/exports/gary/gary_slide_03.png" alt="slide-03 preview" loading="lazy" /><span class="expand-cue" aria-hidden="true">[+]</span></a><div class="preview-caption">Asset status: <strong>present</strong> | Dimensions: <strong>2400×1758</strong></div><div class="preview-caption">Motion review: <strong>Motion: static | n/a</strong></div></section><section class="slide-script-panel"><div class="panel-grid"><div class="panel"><h3>Script</h3><div class="script-status">Status: Attached</div><pre class="script-text">Building on that, focus on the central timeline: where medical knowledge once doubled over decades, it’s now projected to double in about 73 days—static training can’t keep pace. To the right, the AI adoption callout—around 66% of physicians—highlights both opportunity and oversight risk, as formal training on safe supervision lags practice. The upside is real: digital programs like SMART remote monitoring have reduced ER visits for COPD and heart failure by shifting care from reactive to proactive, and virtual reality lets teams rehearse complex procedures without patient risk. Technology will reshape care—but it needs clinical leadership to guide safe, effective use.</pre></div><div class="panel"><h3>Script notes</h3><pre class="script-notes">Knowledge Acceleration and the Safe Adoption of New Technologies — Summarize how rapid medical knowledge growth and expanding AI and digital tool use create both opportunity and oversight challenges for clinicians, with examples of proactive care and simulation-based training.</pre></div></div><section class="voice-direction-panel" data-role="voice-direction" data-vd-state="directed"><h3>Voice direction</h3><div class="voice-direction-source"><span class="badge vd-source-badge">source: operator-override</span></div><dl class="voice-direction-list"><div><dt>Render strategy</dt><dd>tts</dd></div><div><dt>Emotional tone</dt><dd>warm</dd></div><div><dt>Pace</dt><dd>neutral</dd></div><div><dt>Energy</dt><dd>medium</dd></div></dl><div class="voice-direction-resolved" data-role="resolved-tts"><h4>Resolved TTS settings — what Enrique will send (display matches dispatch)</h4><dl class="voice-direction-resolved-list"><div><dt>voice_id</dt><dd>global/default (resolved at synthesis)</dd></div><div><dt>model_id</dt><dd>global/default (resolved at synthesis)</dd></div><div><dt>stability</dt><dd>0.5</dd></div><div><dt>similarity_boost</dt><dd>global/default (resolved at synthesis)</dd></div><div><dt>style</dt><dd>0.35</dd></div><div><dt>speed</dt><dd>1.0</dd></div></dl></div></section><details class="evidence-panel"><summary>Evidence & provenance</summary><dl class="evidence-list"><div><dt>Source ref</dt><dd>n/a</dd></div><div><dt>File path</dt><dd>C:\Users\juanl\Documents\GitHub\course-DEV-IDE-with-AGENTS-hybrid\state\config\runs\036e7ff8-b079-4051-bb78-0f739ad62125\exports\gary\gary_slide_03.png</dd></div><div><dt>Created</dt><dd>2026-06-27T22:11:06.308202+00:00</dd></div><div><dt>Literal-visual source</dt><dd>n/a</dd></div><div><dt>Matched segments</dt><dd>seg-03</dd></div><div><dt>Narration refs</dt><dd>n/a</dd></div><div><dt>Visual refs</dt><dd>0</dd></div><div><dt>Visual mode</dt><dd>n/a</dd></div><div><dt>Visual file</dt><dd>n/a</dd></div><div><dt>Motion type</dt><dd>static</dd></div><div><dt>Motion status</dt><dd>n/a</dd></div><div><dt>Motion source</dt><dd>n/a</dd></div><div><dt>Motion duration</dt><dd>n/a</dd></div><div><dt>Runtime target (s)</dt><dd>n/a</dd></div><div><dt>Motion asset</dt><dd>n/a</dd></div><div><dt>Timing role</dt><dd>concept-build</dd></div><div><dt>Content density</dt><dd>medium</dd></div><div><dt>Visual detail load</dt><dd>medium</dd></div><div><dt>Bridge type</dt><dd>none</dd></div><div><dt>Behavioral intent</dt><dd>credible</dd></div><div><dt>Duration rationale</dt><dd>Timeline + AI callout invite insight on velocity and oversight with two concrete examples.</dd></div><div><dt>Cluster position</dt><dd>n/a</dd></div><div><dt>Interstitial type</dt><dd>n/a</dd></div><div><dt>Isolation target</dt><dd>n/a</dd></div><div><dt>Quality</dt><dd>Vera None | Quinn None</dd></div></dl><div class="findings-block"><h4>Findings</h4><p class="empty-state">No findings attached.</p></div></details></section></div></article>
+<article class="slide-card" id="slide-slide-04-a" data-role="slide-card" data-slide-id="slide-04" data-fidelity="creative" data-orientation="landscape" data-issues=""><header class="slide-card-header"><div class="slide-card-title-group"><div class="sequence-pill">#4</div><div><h2 class="slide-card-title">slide-04</h2><div class="slide-card-subtitle">slide-04</div></div></div><div class="badge-row"><span class="badge badge-fidelity">creative</span><span class="badge">variant A</span><span class="badge">card 4</span><span class="badge">orientation landscape</span></div></header><div class="slide-card-body"><section class="slide-preview-panel"><div class="panel-label">Approved slide</div><a class="preview-link" data-role="preview-link" data-row-id="slide-slide-04-a" data-preview-src="../../../../../../../Documents/GitHub/course-DEV-IDE-with-AGENTS-hybrid/state/config/runs/036e7ff8-b079-4051-bb78-0f739ad62125/exports/gary/gary_slide_04.png" href="../../../../../../../Documents/GitHub/course-DEV-IDE-with-AGENTS-hybrid/state/config/runs/036e7ff8-b079-4051-bb78-0f739ad62125/exports/gary/gary_slide_04.png" target="_blank" rel="noopener noreferrer"><img class="slide-thumbnail" src="../../../../../../../Documents/GitHub/course-DEV-IDE-with-AGENTS-hybrid/state/config/runs/036e7ff8-b079-4051-bb78-0f739ad62125/exports/gary/gary_slide_04.png" alt="slide-04 preview" loading="lazy" /><span class="expand-cue" aria-hidden="true">[+]</span></a><div class="preview-caption">Asset status: <strong>present</strong> | Dimensions: <strong>2400×2168</strong></div><div class="preview-caption">Motion review: <strong>Motion: static | n/a</strong></div></section><section class="slide-script-panel"><div class="panel-grid"><div class="panel"><h3>Script</h3><div class="script-status">Status: Attached</div><pre class="script-text">From tools to expectations, trace the journey from the smartphone at left to the provider end points at right. A true digital front door makes that path seamless—beyond a basic portal—to triage, scheduling, and guidance that feel intuitive. Jefferson Health’s example shows the direction: AI‑driven triage helping patients navigate to the right care setting without friction. In a consumer environment, intentional design is the difference between a frustrating experience and a world‑class one.</pre></div><div class="panel"><h3>Script notes</h3><pre class="script-notes">The Consumer Shift and the Digital Front Door — Explain how changing patient expectations for convenience, transparency, and digital access require intentional design of a frictionless care journey through a digital front door.</pre></div></div><section class="voice-direction-panel" data-role="voice-direction" data-vd-state="directed"><h3>Voice direction</h3><div class="voice-direction-source"><span class="badge vd-source-badge">source: operator-override</span></div><dl class="voice-direction-list"><div><dt>Render strategy</dt><dd>tts</dd></div><div><dt>Emotional tone</dt><dd>concerned</dd></div><div><dt>Pace</dt><dd>slower</dd></div><div><dt>Energy</dt><dd>medium</dd></div><div><dt>ElevenLabs override · similarity_boost</dt><dd>0.8</dd></div></dl><div class="voice-direction-resolved" data-role="resolved-tts"><h4>Resolved TTS settings — what Enrique will send (display matches dispatch)</h4><dl class="voice-direction-resolved-list"><div><dt>voice_id</dt><dd>global/default (resolved at synthesis)</dd></div><div><dt>model_id</dt><dd>global/default (resolved at synthesis)</dd></div><div><dt>stability</dt><dd>0.5</dd></div><div><dt>similarity_boost</dt><dd>0.8</dd></div><div><dt>style</dt><dd>0.35</dd></div><div><dt>speed</dt><dd>0.94</dd></div></dl></div></section><details class="evidence-panel"><summary>Evidence & provenance</summary><dl class="evidence-list"><div><dt>Source ref</dt><dd>n/a</dd></div><div><dt>File path</dt><dd>C:\Users\juanl\Documents\GitHub\course-DEV-IDE-with-AGENTS-hybrid\state\config\runs\036e7ff8-b079-4051-bb78-0f739ad62125\exports\gary\gary_slide_04.png</dd></div><div><dt>Created</dt><dd>2026-06-27T22:11:06.308202+00:00</dd></div><div><dt>Literal-visual source</dt><dd>n/a</dd></div><div><dt>Matched segments</dt><dd>seg-04</dd></div><div><dt>Narration refs</dt><dd>n/a</dd></div><div><dt>Visual refs</dt><dd>0</dd></div><div><dt>Visual mode</dt><dd>n/a</dd></div><div><dt>Visual file</dt><dd>n/a</dd></div><div><dt>Motion type</dt><dd>static</dd></div><div><dt>Motion status</dt><dd>n/a</dd></div><div><dt>Motion source</dt><dd>n/a</dd></div><div><dt>Motion duration</dt><dd>n/a</dd></div><div><dt>Runtime target (s)</dt><dd>n/a</dd></div><div><dt>Motion asset</dt><dd>n/a</dd></div><div><dt>Timing role</dt><dd>concept-build</dd></div><div><dt>Content density</dt><dd>medium</dd></div><div><dt>Visual detail load</dt><dd>medium</dd></div><div><dt>Bridge type</dt><dd>none</dd></div><div><dt>Behavioral intent</dt><dd>credible</dd></div><div><dt>Duration rationale</dt><dd>Patient-journey visual carries structure; narration supplies the design principle and example.</dd></div><div><dt>Cluster position</dt><dd>n/a</dd></div><div><dt>Interstitial type</dt><dd>n/a</dd></div><div><dt>Isolation target</dt><dd>n/a</dd></div><div><dt>Quality</dt><dd>Vera None | Quinn None</dd></div></dl><div class="findings-block"><h4>Findings</h4><p class="empty-state">No findings attached.</p></div></details></section></div></article>
+<article class="slide-card" id="slide-slide-05-a" data-role="slide-card" data-slide-id="slide-05" data-fidelity="creative" data-orientation="landscape" data-issues=""><header class="slide-card-header"><div class="slide-card-title-group"><div class="sequence-pill">#5</div><div><h2 class="slide-card-title">slide-05</h2><div class="slide-card-subtitle">slide-05</div></div></div><div class="badge-row"><span class="badge badge-fidelity">creative</span><span class="badge">variant A</span><span class="badge">card 5</span><span class="badge">orientation landscape</span></div></header><div class="slide-card-body"><section class="slide-preview-panel"><div class="panel-label">Approved slide</div><a class="preview-link" data-role="preview-link" data-row-id="slide-slide-05-a" data-preview-src="../../../../../../../Documents/GitHub/course-DEV-IDE-with-AGENTS-hybrid/state/config/runs/036e7ff8-b079-4051-bb78-0f739ad62125/exports/gary/gary_slide_05.png" href="../../../../../../../Documents/GitHub/course-DEV-IDE-with-AGENTS-hybrid/state/config/runs/036e7ff8-b079-4051-bb78-0f739ad62125/exports/gary/gary_slide_05.png" target="_blank" rel="noopener noreferrer"><img class="slide-thumbnail" src="../../../../../../../Documents/GitHub/course-DEV-IDE-with-AGENTS-hybrid/state/config/runs/036e7ff8-b079-4051-bb78-0f739ad62125/exports/gary/gary_slide_05.png" alt="slide-05 preview" loading="lazy" /><span class="expand-cue" aria-hidden="true">[+]</span></a><div class="preview-caption">Asset status: <strong>present</strong> | Dimensions: <strong>2400×1484</strong></div><div class="preview-caption">Motion review: <strong>Motion: static | n/a</strong></div></section><section class="slide-script-panel"><div class="panel-grid"><div class="panel"><h3>Script</h3><div class="script-status">Status: Attached</div><pre class="script-text">Turning to capability, the bar chart lays out the gap: the taller bar—67% of physicians interested in leadership—towers over the shorter bar—only 18% with executive or business training. The pandemic underscored that management and systems thinking aren’t ‘soft’ extras; they’re critical to outcomes and well‑being. Academic Health Centers often have the clinical expertise but lack the cultural incentives and interdisciplinary integration to scale good ideas. Clinicians who can bridge practice with technology and organizational strategy are now essential.</pre></div><div class="panel"><h3>Script notes</h3><pre class="script-notes">The Leadership Gap and the Need for Clinical Innovators — Identify the gap between physician interest in leadership and the limited availability of formal business or executive training, and explain why clinicians must bridge practice, technology, and organizational strategy.</pre></div></div><section class="voice-direction-panel" data-role="voice-direction" data-vd-state="invalid"><h3>Voice direction</h3><div class="voice-direction-source"><span class="badge vd-source-badge">source: cd-authored</span></div><dl class="voice-direction-list"><div><dt>Render strategy</dt><dd>tts</dd></div><div><dt>Emotional tone</dt><dd>warm</dd></div><div><dt>Pace</dt><dd>neutral</dd></div><div><dt>Energy</dt><dd>medium</dd></div><div><dt>Pause after (s)</dt><dd>9.0</dd></div></dl><div class="voice-direction-invalid" data-role="invalid-direction">⚠ INVALID voice direction — will fail synthesis (Enrique applies the same strict contract). <span class="vd-invalid-reason">(pause_after_seconds: Input should be less than or equal to 5)</span></div></section><details class="evidence-panel"><summary>Evidence & provenance</summary><dl class="evidence-list"><div><dt>Source ref</dt><dd>n/a</dd></div><div><dt>File path</dt><dd>C:\Users\juanl\Documents\GitHub\course-DEV-IDE-with-AGENTS-hybrid\state\config\runs\036e7ff8-b079-4051-bb78-0f739ad62125\exports\gary\gary_slide_05.png</dd></div><div><dt>Created</dt><dd>2026-06-27T22:11:06.308202+00:00</dd></div><div><dt>Literal-visual source</dt><dd>n/a</dd></div><div><dt>Matched segments</dt><dd>seg-05</dd></div><div><dt>Narration refs</dt><dd>n/a</dd></div><div><dt>Visual refs</dt><dd>0</dd></div><div><dt>Visual mode</dt><dd>n/a</dd></div><div><dt>Visual file</dt><dd>n/a</dd></div><div><dt>Motion type</dt><dd>static</dd></div><div><dt>Motion status</dt><dd>n/a</dd></div><div><dt>Motion source</dt><dd>n/a</dd></div><div><dt>Motion duration</dt><dd>n/a</dd></div><div><dt>Runtime target (s)</dt><dd>n/a</dd></div><div><dt>Motion asset</dt><dd>n/a</dd></div><div><dt>Timing role</dt><dd>concept-build</dd></div><div><dt>Content density</dt><dd>medium</dd></div><div><dt>Visual detail load</dt><dd>medium</dd></div><div><dt>Bridge type</dt><dd>none</dd></div><div><dt>Behavioral intent</dt><dd>clear-guidance</dd></div><div><dt>Duration rationale</dt><dd>Simple two-bar comparison; narration emphasizes implications and the bridging role.</dd></div><div><dt>Cluster position</dt><dd>n/a</dd></div><div><dt>Interstitial type</dt><dd>n/a</dd></div><div><dt>Isolation target</dt><dd>n/a</dd></div><div><dt>Quality</dt><dd>Vera None | Quinn None</dd></div></dl><div class="findings-block"><h4>Findings</h4><p class="empty-state">No findings attached.</p></div></details></section></div></article>
+<article class="slide-card" id="slide-slide-06-a" data-role="slide-card" data-slide-id="slide-06" data-fidelity="creative" data-orientation="landscape" data-issues=""><header class="slide-card-header"><div class="slide-card-title-group"><div class="sequence-pill">#6</div><div><h2 class="slide-card-title">slide-06</h2><div class="slide-card-subtitle">slide-06</div></div></div><div class="badge-row"><span class="badge badge-fidelity">creative</span><span class="badge">variant A</span><span class="badge">card 6</span><span class="badge">orientation landscape</span></div></header><div class="slide-card-body"><section class="slide-preview-panel"><div class="panel-label">Approved slide</div><a class="preview-link" data-role="preview-link" data-row-id="slide-slide-06-a" data-preview-src="../../../../../../../Documents/GitHub/course-DEV-IDE-with-AGENTS-hybrid/state/config/runs/036e7ff8-b079-4051-bb78-0f739ad62125/exports/gary/gary_slide_06.png" href="../../../../../../../Documents/GitHub/course-DEV-IDE-with-AGENTS-hybrid/state/config/runs/036e7ff8-b079-4051-bb78-0f739ad62125/exports/gary/gary_slide_06.png" target="_blank" rel="noopener noreferrer"><img class="slide-thumbnail" src="../../../../../../../Documents/GitHub/course-DEV-IDE-with-AGENTS-hybrid/state/config/runs/036e7ff8-b079-4051-bb78-0f739ad62125/exports/gary/gary_slide_06.png" alt="slide-06 preview" loading="lazy" /><span class="expand-cue" aria-hidden="true">[+]</span></a><div class="preview-caption">Asset status: <strong>present</strong> | Dimensions: <strong>2400×1886</strong></div><div class="preview-caption">Motion review: <strong>Motion: static | n/a</strong></div></section><section class="slide-script-panel"><div class="panel-grid"><div class="panel"><h3>Script</h3><div class="script-status">Status: Attached</div><pre class="script-text">In closing, pull the threads together. As the bullets recap, care is becoming data‑driven, consumer‑responsive, and operationally complex, while administrative friction fuels burnout and technology accelerates faster than training. Incremental tweaks aren’t enough. You already solve uncertainty at the bedside; now translate that expertise into deliberate leadership so innovation reliably improves outcomes and restores clinician well‑being.</pre></div><div class="panel"><h3>Script notes</h3><pre class="script-notes">Synthesis: Why Incremental Adaptation Is No Longer Enough — Integrate the lesson&#x27;s major forces—system complexity, burnout, technological change, consumer expectations, and leadership need—into a concise case for deliberate physician leadership in shaping the future of care.</pre></div></div><section class="voice-direction-panel" data-role="voice-direction" data-vd-state="default"><h3>Voice direction</h3><div class="voice-direction-default">Voice direction: using global/default settings</div></section><details class="evidence-panel"><summary>Evidence & provenance</summary><dl class="evidence-list"><div><dt>Source ref</dt><dd>n/a</dd></div><div><dt>File path</dt><dd>C:\Users\juanl\Documents\GitHub\course-DEV-IDE-with-AGENTS-hybrid\state\config\runs\036e7ff8-b079-4051-bb78-0f739ad62125\exports\gary\gary_slide_06.png</dd></div><div><dt>Created</dt><dd>2026-06-27T22:11:06.308202+00:00</dd></div><div><dt>Literal-visual source</dt><dd>n/a</dd></div><div><dt>Matched segments</dt><dd>seg-06</dd></div><div><dt>Narration refs</dt><dd>n/a</dd></div><div><dt>Visual refs</dt><dd>0</dd></div><div><dt>Visual mode</dt><dd>n/a</dd></div><div><dt>Visual file</dt><dd>n/a</dd></div><div><dt>Motion type</dt><dd>static</dd></div><div><dt>Motion status</dt><dd>n/a</dd></div><div><dt>Motion source</dt><dd>n/a</dd></div><div><dt>Motion duration</dt><dd>n/a</dd></div><div><dt>Runtime target (s)</dt><dd>n/a</dd></div><div><dt>Motion asset</dt><dd>n/a</dd></div><div><dt>Timing role</dt><dd>synthesis</dd></div><div><dt>Content density</dt><dd>light</dd></div><div><dt>Visual detail load</dt><dd>light</dd></div><div><dt>Bridge type</dt><dd>outro</dd></div><div><dt>Behavioral intent</dt><dd>clear-guidance</dd></div><div><dt>Duration rationale</dt><dd>Close with a concise synthesis linking bullets to the bold call to lead.</dd></div><div><dt>Cluster position</dt><dd>n/a</dd></div><div><dt>Interstitial type</dt><dd>n/a</dd></div><div><dt>Isolation target</dt><dd>n/a</dd></div><div><dt>Quality</dt><dd>Vera None | Quinn None</dd></div></dl><div class="findings-block"><h4>Findings</h4><p class="empty-state">No findings attached.</p></div></details></section></div></article>
+    </section>
+
+    
+  </div>
+
+  <dialog class="preview-dialog" id="preview-dialog">
+    <div class="dialog-body">
+      <div class="dialog-toolbar">
+        <strong id="dialog-title">Preview</strong>
+        <div>
+          <a id="dialog-open" href="#" target="_blank" rel="noopener noreferrer">Open in new tab</a>
+          <button type="button" id="dialog-close">Close</button>
+        </div>
+      </div>
+      <img id="dialog-image" class="dialog-preview" alt="" />
+    </div>
+  </dialog>
+
+  <script>
+    (() => {
+      const cards = Array.from(document.querySelectorAll('[data-role="slide-card"]'));
+      const filters = Array.from(document.querySelectorAll('[data-role="filter"]'));
+      const searchBox = document.querySelector('[data-role="search"]');
+      const issuesOnly = document.querySelector('[data-role="issues-only"]');
+      const nextIssueBtn = document.querySelector('[data-role="jump-next-issue"]');
+      const expandClustersBtn = document.querySelector('[data-role="clusters-expand"]');
+      const collapseClustersBtn = document.querySelector('[data-role="clusters-collapse"]');
+      const clusterGroups = Array.from(document.querySelectorAll('[data-role="cluster-group"]'));
+      const dialog = document.getElementById('preview-dialog');
+      const dialogImage = document.getElementById('dialog-image');
+      const dialogTitle = document.getElementById('dialog-title');
+      const dialogOpen = document.getElementById('dialog-open');
+      const dialogClose = document.getElementById('dialog-close');
+      const actionableIssueCards = cards.filter(card => Boolean((card.getAttribute('data-issues') || '').trim()));
+      let activeFilter = 'all';
+
+      function applyFilters() {
+        const query = (searchBox?.value || '').toLowerCase().trim();
+        const issues = Boolean(issuesOnly?.checked);
+        for (const card of cards) {
+          const haystack = card.textContent.toLowerCase();
+          const fidelity = card.getAttribute('data-fidelity') || '';
+          const cardIssues = (card.getAttribute('data-issues') || '').trim();
+          const matchesFilter = activeFilter === 'all' || fidelity === activeFilter;
+          const matchesQuery = !query || haystack.includes(query);
+          const matchesIssues = !issues || Boolean(cardIssues);
+          card.hidden = !(matchesFilter && matchesQuery && matchesIssues);
+        }
+      }
+
+      for (const button of filters) {
+        button.addEventListener('click', () => {
+          activeFilter = button.getAttribute('data-filter') || 'all';
+          for (const peer of filters) peer.classList.toggle('active', peer === button);
+          applyFilters();
+        });
+      }
+      searchBox?.addEventListener('input', applyFilters);
+      if (issuesOnly && actionableIssueCards.length === 0) {
+        issuesOnly.checked = false;
+      }
+      issuesOnly?.addEventListener('change', applyFilters);
+      expandClustersBtn?.addEventListener('click', () => {
+        clusterGroups.forEach(group => group.setAttribute('open', 'open'));
+      });
+      collapseClustersBtn?.addEventListener('click', () => {
+        clusterGroups.forEach(group => group.removeAttribute('open'));
+      });
+      nextIssueBtn?.addEventListener('click', () => {
+        if (actionableIssueCards.length === 0) return;
+        const next = cards.find(card => !card.hidden && (card.getAttribute('data-issues') || '').trim());
+        if (next) next.scrollIntoView({behavior: 'smooth', block: 'center'});
+      });
+
+      for (const link of document.querySelectorAll('[data-role="preview-link"]')) {
+        link.addEventListener('click', (event) => {
+          const href = link.getAttribute('data-preview-src');
+          if (!href || !dialog || typeof dialog.showModal !== 'function') return;
+          event.preventDefault();
+          dialogImage.src = href;
+          dialogImage.alt = link.getAttribute('data-row-id') || 'Preview';
+          dialogTitle.textContent = link.closest('[data-role="slide-card"]')?.getAttribute('data-slide-id') || 'Preview';
+          dialogOpen.href = href;
+          dialog.showModal();
+        });
+      }
+      dialogClose?.addEventListener('click', () => dialog?.close());
+      dialog?.addEventListener('click', (event) => {
+        const rect = dialog.getBoundingClientRect();
+        const inBounds = rect.top <= event.clientY && event.clientY <= rect.top + rect.height &&
+          rect.left <= event.clientX && event.clientX <= rect.left + rect.width;
+        if (!inBounds) dialog.close();
+      });
+
+      if (window.location.hash) {
+        const target = document.getElementById(window.location.hash.slice(1));
+        if (target) target.scrollIntoView();
+      }
+      applyFilters();
+    })();
+  </script>
+</body>
+</html>

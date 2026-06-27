@@ -422,6 +422,270 @@ def _excerpt_text(text: str, *, limit: int = 160) -> str:
     return normalized[: max(0, limit - 3)].rstrip() + "..."
 
 
+def _voice_direction_app_importable() -> bool:
+    """True iff the shared mapper + Step-1 contract import (app on path).
+
+    A generator run OUTSIDE the app env (e.g. the standalone ``# /// script``
+    invocation) cannot compute display↔dispatch parity; callers surface that
+    state with an explicit banner rather than silently dropping every resolved
+    block (Edge #2)."""
+    try:
+        import app.specialists._shared.voice_direction_map  # noqa: F401
+        import app.specialists.irene.authoring.pass_2_template  # noqa: F401
+    except Exception:
+        return False
+    return True
+
+
+def _voice_direction_invalid_reason(exc: Exception) -> str:
+    """Short, operator-readable reason from a VoiceDirection/mapper failure."""
+    errors = getattr(exc, "errors", None)
+    if callable(errors):
+        try:
+            parts = []
+            for err in exc.errors():  # type: ignore[attr-defined]
+                loc = ".".join(str(p) for p in err.get("loc", ())) or "<root>"
+                parts.append(f"{loc}: {err.get('msg', 'invalid')}")
+            if parts:
+                return "; ".join(parts[:3])
+        except Exception:
+            pass
+    text = str(exc).strip()
+    return text[:160] if text else exc.__class__.__name__
+
+
+def _resolve_voice_direction(
+    voice_direction: Any,
+) -> tuple[str, dict[str, Any] | None, str | None]:
+    """Resolve a per-segment ``voice_direction`` dict; return (status, settings,
+    reason).
+
+    status:
+      * ``"empty"``         — no/empty direction (settings None).
+      * ``"app-unavailable"`` — shared mapper / Step-1 contract not importable.
+      * ``"invalid"``       — a NON-EMPTY direction that the strict
+        ``VoiceDirection`` model (or the mapper) REJECTS. This is the
+        spend-gate signal: Enrique runs the SAME strict model at dispatch, so a
+        silent omission here would let the operator approve a direction that
+        then fails synthesis (Edge #1). ``reason`` names the offending field(s).
+      * ``"ok"``            — settings is the resolved TTS dict.
+
+    The mapper call is wrapped too: a mapper raise must DEGRADE the panel, never
+    crash the operator's whole review render."""
+    if not isinstance(voice_direction, dict) or not voice_direction:
+        return ("empty", None, None)
+    try:
+        from app.specialists._shared.voice_direction_map import (
+            map_voice_direction_to_tts,
+        )
+        from app.specialists.irene.authoring.pass_2_template import VoiceDirection
+    except Exception:
+        return ("app-unavailable", None, None)
+    try:
+        direction = VoiceDirection.model_validate(voice_direction)
+    except Exception as exc:
+        return ("invalid", None, _voice_direction_invalid_reason(exc))
+    try:
+        return ("ok", map_voice_direction_to_tts(direction), None)
+    except Exception as exc:
+        return ("invalid", None, _voice_direction_invalid_reason(exc))
+
+
+def resolve_voice_direction_settings(voice_direction: Any) -> dict[str, Any] | None:
+    """Resolve a per-segment ``voice_direction`` dict to the EXACT TTS settings
+    Enrique will dispatch, via the SHARED frozen mapper (P5 MUR-3 display↔dispatch
+    parity — strawman §F). This is the single source feeding the Storyboard-B
+    resolved-settings display, so what the operator sees == what gets dispatched.
+
+    Returns the resolved settings dict on success, else ``None`` (no/empty
+    direction, app not importable, or an invalid direction). Callers that must
+    DISTINGUISH those failure modes (the review panel) use
+    ``_resolve_voice_direction``; this wrapper is the pure success-or-None
+    accessor (MUR-3 parity oracle). Step 3 passes no tier-3/4/5 defaults: the
+    per-segment direction already encodes the merged CD/role/override intent
+    (Step-2); the voice-selection.json / style_guide reads are wired at Step 4."""
+    status, settings, _reason = _resolve_voice_direction(voice_direction)
+    return settings if status == "ok" else None
+
+
+def _render_voice_direction_section(voice_directions: Any) -> str:
+    """Render the Storyboard-B voice-direction review surface for ONE slide.
+
+    ``voice_directions`` is the per-slide list of ``{segment_id, voice_direction}``
+    (additive; absent on undirected/flag-OFF slides). A multi-segment slide
+    renders ONE panel PER segment (Edge #3) so the operator reviews EVERY
+    direction that will incur spend — never just segment-A's while Enrique
+    synthesizes segment-B's unseen. An absent/empty list renders the single
+    explicit global/default panel."""
+    if not isinstance(voice_directions, list) or not voice_directions:
+        return _render_voice_direction_panel(None)
+    multi = len(voice_directions) > 1
+    panels: list[str] = []
+    for entry in voice_directions:
+        if isinstance(entry, dict) and "voice_direction" in entry:
+            seg_id = entry.get("segment_id")
+            vd = entry.get("voice_direction")
+        else:
+            seg_id = None
+            vd = entry
+        panels.append(
+            _render_voice_direction_panel(vd, segment_id=seg_id if multi else None)
+        )
+    return "".join(panels)
+
+
+def _render_voice_direction_panel(
+    voice_direction: Any, *, segment_id: str | None = None
+) -> str:
+    """Render the Storyboard-B per-segment directed-voice review panel (rubric
+    §8 + control-card 2 Must-Show).
+
+    Kept VISUALLY SEPARATE from the learner-facing narration text block;
+    ``delivery_tag`` renders as a distinct generation-only cue that NEVER appears
+    inside the narration. Missing direction is shown EXPLICITLY (never blank). An
+    INVALID (operator-edited, out-of-contract) direction renders a visually
+    distinct "⚠ INVALID" note with the offending field — never a silent omission
+    that would defeat the pre-spend gate (Edge #1). The resolved TTS settings come
+    from the SAME shared mapper Enrique uses (MUR-3 parity)."""
+    seg_label = (
+        f'<div class="voice-direction-seg">Segment {html.escape(str(segment_id))}</div>'
+        if segment_id
+        else ""
+    )
+    if not isinstance(voice_direction, dict) or not voice_direction:
+        return (
+            '<section class="voice-direction-panel" data-role="voice-direction" '
+            'data-vd-state="default">'
+            '<h3>Voice direction</h3>'
+            f'{seg_label}'
+            '<div class="voice-direction-default">Voice direction: using '
+            'global/default settings</div>'
+            '</section>'
+        )
+
+    rows: list[str] = []
+    render_strategy = str(voice_direction.get("render_strategy") or "tts")
+    rs_note = (
+        ""
+        if render_strategy == "tts"
+        else ' <span class="vd-inert">(modeled / not dispatched in v1)</span>'
+    )
+    rows.append(
+        f'<div><dt>Render strategy</dt><dd>{html.escape(render_strategy)}{rs_note}</dd></div>'
+    )
+    for label, key in (
+        ("Emotional tone", "emotional_tone"),
+        ("Pace", "pace"),
+        ("Energy", "energy"),
+    ):
+        value = voice_direction.get(key)
+        rows.append(
+            f'<div><dt>{label}</dt><dd>{html.escape(str(value)) if value else ""}</dd></div>'
+        )
+    delivery_intent = voice_direction.get("delivery_intent")
+    if delivery_intent:
+        rows.append(
+            '<div><dt>Delivery intent <span class="vd-meta-tag">review metadata, '
+            'not script</span></dt>'
+            f'<dd>{html.escape(str(delivery_intent))}</dd></div>'
+        )
+    for label, key in (
+        ("Pause before (s)", "pause_before_seconds"),
+        ("Pause after (s)", "pause_after_seconds"),
+    ):
+        value = voice_direction.get(key)
+        if value is not None:
+            rows.append(f'<div><dt>{label}</dt><dd>{html.escape(str(value))}</dd></div>')
+    eleven = voice_direction.get("elevenlabs")
+    if isinstance(eleven, dict):
+        for key, value in eleven.items():
+            if value is not None:
+                rows.append(
+                    f'<div><dt>ElevenLabs override · {html.escape(str(key))}</dt>'
+                    f'<dd>{html.escape(str(value))}</dd></div>'
+                )
+
+    # Provenance badge with baseline-vs-deliberate disambiguation (CD watch-item
+    # from the Step-2 CLOSE): an all-neutral cd-authored direction is the
+    # conservative built-in BASELINE, not a deliberate authored choice.
+    source = str(voice_direction.get("source") or "")
+    is_baseline = (
+        voice_direction.get("emotional_tone") in (None, "neutral")
+        and voice_direction.get("pace") in (None, "neutral")
+        and voice_direction.get("energy") in (None, "medium")
+        and not voice_direction.get("elevenlabs")
+        and not voice_direction.get("delivery_tag")
+        and voice_direction.get("delivery_intent") in (None, "")
+    )
+    if source == "cd-authored" and is_baseline:
+        source_label = "baseline default (conservative built-in)"
+    elif source:
+        source_label = f"source: {source}"
+    else:
+        source_label = "source: unspecified"
+    source_markup = (
+        '<div class="voice-direction-source">'
+        f'<span class="badge vd-source-badge">{html.escape(source_label)}</span></div>'
+    )
+
+    delivery_tag = voice_direction.get("delivery_tag")
+    tag_markup = ""
+    if delivery_tag:
+        tag_markup = (
+            '<div class="voice-direction-tag" data-role="delivery-tag">'
+            'Generation-only cue (NOT narrated, never captioned): '
+            f'<code>{html.escape(str(delivery_tag))}</code></div>'
+        )
+
+    status, resolved, reason = _resolve_voice_direction(voice_direction)
+    if status == "ok" and resolved:
+        resolved_rows = "".join(
+            f'<div><dt>{html.escape(str(key))}</dt>'
+            f'<dd>{html.escape(str(value)) if value is not None else "global/default (resolved at synthesis)"}</dd></div>'
+            for key, value in resolved.items()
+        )
+        resolved_markup = (
+            '<div class="voice-direction-resolved" data-role="resolved-tts">'
+            '<h4>Resolved TTS settings — what Enrique will send (display matches dispatch)</h4>'
+            f'<dl class="voice-direction-resolved-list">{resolved_rows}</dl></div>'
+        )
+        vd_state = "directed"
+    elif status == "invalid":
+        # Spend-gate signal (Edge #1): the operator must SEE that this direction
+        # will fail synthesis, not silently lose the resolved block.
+        reason_markup = (
+            f' <span class="vd-invalid-reason">({html.escape(str(reason))})</span>'
+            if reason
+            else ""
+        )
+        resolved_markup = (
+            '<div class="voice-direction-invalid" data-role="invalid-direction">'
+            '⚠ INVALID voice direction — will fail synthesis (Enrique applies the '
+            f'same strict contract).{reason_markup}</div>'
+        )
+        vd_state = "invalid"
+    else:  # status == "app-unavailable"
+        resolved_markup = (
+            '<div class="voice-direction-resolved-unavailable" '
+            'data-role="resolved-unavailable">'
+            'Resolved TTS settings unavailable (app not importable) — '
+            'display↔dispatch parity not shown; see notice above.</div>'
+        )
+        vd_state = "app-unavailable"
+
+    return (
+        '<section class="voice-direction-panel" data-role="voice-direction" '
+        f'data-vd-state="{vd_state}">'
+        '<h3>Voice direction</h3>'
+        f'{seg_label}'
+        f'{source_markup}'
+        f'<dl class="voice-direction-list">{"".join(rows)}</dl>'
+        f'{tag_markup}'
+        f'{resolved_markup}'
+        '</section>'
+    )
+
+
 def load_narration_by_slide_id(path: Path) -> dict[str, dict[str, Any]]:
     """Load segment manifest YAML; map gary_slide_id/slide_id to review attachments.
 
@@ -477,6 +741,12 @@ def load_narration_by_slide_id(path: Path) -> dict[str, dict[str, Any]]:
                     seg.get("master_behavioral_intent")
                 ),
                 "cluster_interstitial_count": seg.get("cluster_interstitial_count"),
+                # P5 Step 3: per-segment directed-voice metadata (a
+                # VoiceDirection model_dump dict, attached by the Step-2
+                # annotation pass). Carried verbatim for Storyboard B display.
+                "voice_direction": seg.get("voice_direction")
+                if isinstance(seg.get("voice_direction"), dict)
+                else None,
                 "visual_references": seg.get("visual_references")
                 if isinstance(seg.get("visual_references"), list)
                 else [],
@@ -539,6 +809,25 @@ def load_narration_by_slide_id(path: Path) -> dict[str, dict[str, Any]]:
             ),
             "cluster_interstitial_count": _coalesce_attachment_value(
                 [entry.get("cluster_interstitial_count") for entry in entries]
+            ),
+            # P5 Step 3: carry EVERY segment's directed-voice metadata for this
+            # slide (Edge #3 — a multi-segment slide must surface each segment's
+            # direction, not just the first, so the operator reviews every
+            # direction that incurs spend). Additive: emitted only when at least
+            # one segment on the slide carries a voice_direction (flag-OFF /
+            # undirected slides keep the key absent — additive-only discipline).
+            "voice_directions": (
+                [
+                    {
+                        "segment_id": entry.get("segment_id"),
+                        "voice_direction": entry.get("voice_direction"),
+                    }
+                    for entry in entries
+                ]
+                if any(
+                    isinstance(entry.get("voice_direction"), dict) for entry in entries
+                )
+                else None
             ),
             "visual_references": visual_references,
         }
@@ -1044,6 +1333,7 @@ def build_manifest(
         master_behavioral_intent = _normalize_optional_string(raw.get("master_behavioral_intent"))
         cluster_interstitial_count = raw.get("cluster_interstitial_count")
         selected_template_id = _normalize_optional_string(raw.get("selected_template_id"))
+        voice_directions = None
         if narration_by_slide_id:
             matched = narration_by_slide_id.get(slide_id)
             if isinstance(matched, dict):
@@ -1098,6 +1388,10 @@ def build_manifest(
                     _normalize_optional_string(matched.get("selected_template_id"))
                     or selected_template_id
                 )
+                if isinstance(matched.get("voice_directions"), list) and matched.get(
+                    "voice_directions"
+                ):
+                    voice_directions = matched.get("voice_directions")
                 if segment_match_count > 1:
                     narration_status = "multi_match"
                 elif narration_text:
@@ -1141,8 +1435,7 @@ def build_manifest(
         if runtime_target_seconds in (None, ""):
             runtime_target_seconds = per_slide_runtime_targets_by_card.get(str(card_number))
 
-        slides_out.append(
-            {
+        slide_record = {
                 "sequence": idx,
                 "row_id": row_id,
                 "row_kind": "slide",
@@ -1205,7 +1498,13 @@ def build_manifest(
                 "script_notes": script_notes,
                 "issue_flags": issue_flags,
             }
-        )
+        # P5 Step 3: additive-only — emit voice_directions ONLY when at least one
+        # segment on this slide carries a direction (Blind #7; matches the
+        # publisher's "missing stays missing" discipline so flag-OFF
+        # storyboard.json carries no voice-direction key at all).
+        if voice_directions:
+            slide_record["voice_directions"] = voice_directions
+        slides_out.append(slide_record)
 
         if dispatch_variant:
             pair_key = str(card_number if card_number is not None else slide_id)
@@ -2131,6 +2430,13 @@ def render_index_html_v2(manifest: dict[str, Any]) -> str:
         elif cluster_role_raw == "interstitial":
             cluster_role_class = " slide-card--cluster-interstitial"
 
+        # P5 Step 3: directed-voice review surface (rubric §8), rendered VISUALLY
+        # SEPARATE from the narration <pre> above. One panel per segment on a
+        # multi-segment slide so every spend-incurring direction is reviewable.
+        voice_direction_panel_markup = _render_voice_direction_section(
+            slide.get("voice_directions")
+        )
+
         slide_cards.append(
             f'<article class="slide-card{cluster_role_class}{coherence_class}" id="{row_id}" data-role="slide-card" data-slide-id="{slide_id}" '
             f'data-fidelity="{fidelity}" data-orientation="{orientation}" data-issues="{issue_attr}">'
@@ -2172,6 +2478,7 @@ def render_index_html_v2(manifest: dict[str, Any]) -> str:
             f'{script_notes_markup}'
             '</div>'
             '</div>'
+            f'{voice_direction_panel_markup}'
             '<details class="evidence-panel"><summary>Evidence & provenance</summary>'
             '<dl class="evidence-list">'
             f'<div><dt>Source ref</dt><dd>{source_ref or "n/a"}</dd></div>'
@@ -2300,6 +2607,28 @@ def render_index_html_v2(manifest: dict[str, Any]) -> str:
         script_engagement_stance = html.escape(str(script_policy.get("engagement_stance") or "n/a"))
     emotional_variability = html.escape(str(voice_direction_defaults.get("emotional_variability") or "n/a"))
     pace_variability = html.escape(str(voice_direction_defaults.get("pace_variability") or "n/a"))
+    # P5 Step 3: global/lesson directed-voice defaults header. Falls back to the
+    # conservative built-in baseline (neutral / neutral / medium / tts) that the
+    # Step-2 annotation applies when no CD default or override is set — so the
+    # operator always sees the global defaults beside each segment's direction.
+    vd_default_tone = html.escape(str(voice_direction_defaults.get("emotional_tone") or "neutral"))
+    vd_default_pace = html.escape(str(voice_direction_defaults.get("pace") or "neutral"))
+    vd_default_energy = html.escape(str(voice_direction_defaults.get("energy") or "medium"))
+    # P5 Step 3 (Edge #2): if any slide is directed but the shared mapper / Step-1
+    # contract is not importable (generator run outside the app env), the resolved
+    # TTS settings cannot be shown anywhere. Surface that ONCE as an explicit
+    # banner instead of silently dropping every resolved block.
+    any_directed_slide = any(
+        isinstance(slide, dict) and slide.get("voice_directions")
+        for slide in slides
+    )
+    voice_direction_parity_banner = ""
+    if any_directed_slide and not _voice_direction_app_importable():
+        voice_direction_parity_banner = (
+            '<div class="voice-direction-banner" data-role="vd-parity-banner">'
+            '⚠ Resolved TTS settings unavailable (app not importable) — '
+            'display↔dispatch parity is not shown on the panels below.</div>'
+        )
     wpm_pace_coupling = html.escape(f"{target_wpm} wpm +/- pace {pace_variability}")
     policy_source = html.escape(str(storyboard_policy.get("envelope_source") or "n/a"))
     meta_badges = [
@@ -2510,6 +2839,27 @@ def render_index_html_v2(manifest: dict[str, Any]) -> str:
     .script-metadata-row {{ display: flex; flex-wrap: wrap; gap: 8px; margin: 0 0 12px 0; }}
     .badge-intent-aligned {{ background: #dff6e8; color: #166534; }}
     .badge-intent-mismatch {{ background: #fde2e2; color: #9b1c1c; }}
+    .voice-direction-panel {{ margin: 14px 0; padding: 14px; background: #f3f0fb; border: 1px solid #d8cdf0; border-left: 4px solid #6d28d9; border-radius: 14px; }}
+    .voice-direction-panel h3 {{ margin: 0 0 8px 0; font-size: 0.98rem; color: #4c1d95; }}
+    .voice-direction-panel h4 {{ margin: 10px 0 6px 0; font-size: 0.9rem; color: #4c1d95; }}
+    .voice-direction-default {{ color: var(--muted); font-style: italic; }}
+    .voice-direction-source {{ margin-bottom: 8px; }}
+    .vd-source-badge {{ background: #ede9fe; color: #5b21b6; }}
+    .voice-direction-list, .voice-direction-resolved-list {{ margin: 0; display: grid; grid-template-columns: auto 1fr; gap: 4px 12px; }}
+    .voice-direction-list dt, .voice-direction-resolved-list dt {{ color: var(--muted); font-weight: 600; font-size: 0.86rem; }}
+    .voice-direction-list dd, .voice-direction-resolved-list dd {{ margin: 0; overflow-wrap: anywhere; font-size: 0.88rem; }}
+    .voice-direction-resolved {{ margin-top: 10px; padding-top: 8px; border-top: 1px dashed #c4b5fd; }}
+    .voice-direction-tag {{ margin-top: 10px; padding: 8px 10px; background: #fff7ed; border: 1px dashed #fb923c; border-radius: 10px; color: #9a3412; font-size: 0.86rem; }}
+    .voice-direction-tag code {{ background: #ffedd5; padding: 1px 6px; border-radius: 6px; }}
+    .vd-inert {{ color: var(--muted); font-style: italic; }}
+    .vd-meta-tag {{ display: inline-block; margin-left: 6px; padding: 0 6px; background: #ede9fe; color: #5b21b6; border-radius: 6px; font-size: 0.72rem; font-weight: 600; }}
+    .voice-direction-seg {{ font-size: 0.78rem; font-weight: 700; color: #6d28d9; text-transform: uppercase; letter-spacing: 0.03em; margin-bottom: 6px; }}
+    .voice-direction-panel + .voice-direction-panel {{ margin-top: 10px; }}
+    .voice-direction-invalid {{ margin-top: 10px; padding: 10px 12px; background: #fde2e2; border: 1px solid #f5a3a3; border-left: 4px solid #dc2626; border-radius: 10px; color: #9b1c1c; font-weight: 600; }}
+    .vd-invalid-reason {{ font-weight: 400; font-style: italic; }}
+    .voice-direction-resolved-unavailable {{ margin-top: 10px; padding: 8px 10px; background: #fff3d6; border: 1px dashed #d9a13a; border-radius: 10px; color: #8a5300; font-size: 0.86rem; }}
+    .voice-direction-banner {{ margin: 0 0 14px 0; padding: 10px 14px; background: rgba(255,243,214,0.92); border: 1px solid #d9a13a; border-radius: 12px; color: #6b3f00; font-weight: 600; }}
+    .voice-direction-panel[data-vd-state="invalid"] {{ border-left-color: #dc2626; background: #fdeded; }}
     .panel-grid {{ display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; margin-bottom: 14px; }}
     .panel, .summary-panel, .related-card {{ min-width: 0; }}
     .panel {{ background: #fafbfd; border: 1px solid var(--line); border-radius: 14px; padding: 14px; }}
@@ -2581,6 +2931,7 @@ def render_index_html_v2(manifest: dict[str, Any]) -> str:
     <section class="summary-banner">
       <h1>{checkpoint_label} Review</h1>
       <p>Static storyboard review surface for human approval. The JSON manifest remains the source of truth; this page is a reviewer-friendly projection.</p>
+      {voice_direction_parity_banner}
       <div class="meta-pill-row">{''.join(meta_badges)}</div>
       <details class="summary-details" open>
         <summary>Run details</summary>
@@ -2604,6 +2955,17 @@ def render_index_html_v2(manifest: dict[str, Any]) -> str:
             <div><dt>Narration density target</dt><dd>{script_narration_density}</dd></div>
             <div><dt>Engagement stance</dt><dd>{script_engagement_stance}</dd></div>
             <div><dt>Policy source</dt><dd>{policy_source}</dd></div>
+          </dl>
+        </div>
+        <div class="summary-panel" data-role="voice-direction-defaults">
+          <h2>Voice direction defaults</h2>
+          <dl>
+            <div><dt>Render strategy</dt><dd>tts</dd></div>
+            <div><dt>Emotional tone (baseline)</dt><dd>{vd_default_tone}</dd></div>
+            <div><dt>Pace (baseline)</dt><dd>{vd_default_pace}</dd></div>
+            <div><dt>Energy (baseline)</dt><dd>{vd_default_energy}</dd></div>
+            <div><dt>Emotional variability</dt><dd>{emotional_variability}</dd></div>
+            <div><dt>Pace variability</dt><dd>{pace_variability}</dd></div>
           </dl>
         </div>
         </div>
