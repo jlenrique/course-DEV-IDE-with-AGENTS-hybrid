@@ -17,7 +17,7 @@
 
 **Live-key recipe (critical):** the adapter falls back to a placeholder sentinel — `unset OPENAI_API_KEY` + explicitly load the real `.env` `sk-proj-…` key (`[[reference_live_openai_key_dotenv_override]]`). Memories added: incremental-live-testing + E2E-readiness rule; live-key gotcha.
 
-**Validation:** S1 275 / S2 28 / S3 53 / P1 63 brick tests green; ruff clean; lint-imports only pre-existing C3; 5 baseline reds independently stash-verified pre-existing (no new break). NO MOCKS — the three core operations proven by REAL live runs on the real corpus. **⚠️ Operator-mandated after this arc: branch consolidation to a clean master.**
+**Validation:** S1 275 / S2 28 / S3 53 / P1 63 brick tests green; ruff clean; lint-imports only pre-existing C3; 5 baseline reds independently stash-verified pre-existing (no new break). NO MOCKS — the three core operations proven by REAL live runs on the real corpus. **✅ Branch consolidation DONE (2026-06-26): `origin/master` fast-forwarded to `3140fd1` (the full 171-commit current line); next session branches FRESH from master (`git checkout master && git pull && git checkout -b <new-arc>`). All old branches kept as historical markers.**
 
 ---
 
