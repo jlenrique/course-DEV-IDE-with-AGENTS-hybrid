@@ -1,7 +1,7 @@
 {
   "version": "1.0.0",
-  "gitCommitHash": "cc396862438cf537d7b1ea030610d4612f36b01c",
-  "generatedAt": "2026-06-25T14:56:34.811Z",
+  "gitCommitHash": "0a9fc95f14b369227fb5c269224d05878aa3b990",
+  "generatedAt": "2026-06-27T18:30:53.999Z",
   "files": {
     ".coverage": {
       "filePath": ".coverage",
@@ -5355,7 +5355,7 @@
     },
     "app/manifest/compiler.py": {
       "filePath": "app/manifest/compiler.py",
-      "contentHash": "fc6acf0d6b29c4eb98f4cf5184834c05dcab1666c5145db122fc1e743056295f",
+      "contentHash": "18c46d83afbd321408ac9fa5a717ffccf40abce6ffbf69627710c21103a2c6ee",
       "functions": [
         {
           "name": "_repo_root",
@@ -5676,7 +5676,7 @@
         "compile",
         "compile_run_graph"
       ],
-      "totalLines": 487,
+      "totalLines": 489,
       "hasStructuralAnalysis": true
     },
     "app/manifest/conditions.py": {
@@ -6690,6 +6690,171 @@
       "totalLines": 203,
       "hasStructuralAnalysis": true
     },
+    "app/marcus/cli/front_door.py": {
+      "filePath": "app/marcus/cli/front_door.py",
+      "contentHash": "f41ea1e93a92c80044a5f9dd070c716d6249449fcceb7b487132199a8787174b",
+      "functions": [
+        {
+          "name": "present_catalog",
+          "params": [],
+          "returnType": "tuple[BundleOption, ...]",
+          "exported": true,
+          "lineCount": 23
+        },
+        {
+          "name": "render_catalog",
+          "params": [
+            "options"
+          ],
+          "returnType": "str",
+          "exported": true,
+          "lineCount": 16
+        },
+        {
+          "name": "front_door_select",
+          "params": [
+            "operator_pick",
+            "confirmed",
+            "seeds",
+            "recommendation",
+            "allow_unproven"
+          ],
+          "returnType": "FrontDoorSelection",
+          "exported": true,
+          "lineCount": 59
+        },
+        {
+          "name": "run_front_door",
+          "params": [
+            "input_fn",
+            "output_sink",
+            "seeds",
+            "recommend_fn",
+            "max_attempts"
+          ],
+          "returnType": "FrontDoorSelection",
+          "exported": true,
+          "lineCount": 54
+        }
+      ],
+      "classes": [
+        {
+          "name": "FrontDoorError",
+          "methods": [],
+          "properties": [],
+          "exported": true,
+          "lineCount": 2
+        },
+        {
+          "name": "UnknownBundleError",
+          "methods": [],
+          "properties": [],
+          "exported": true,
+          "lineCount": 2
+        },
+        {
+          "name": "BundleNotRunnableError",
+          "methods": [],
+          "properties": [],
+          "exported": true,
+          "lineCount": 2
+        },
+        {
+          "name": "SelectionNotConfirmedError",
+          "methods": [],
+          "properties": [],
+          "exported": true,
+          "lineCount": 2
+        },
+        {
+          "name": "MissingRequiredInputError",
+          "methods": [],
+          "properties": [],
+          "exported": true,
+          "lineCount": 2
+        },
+        {
+          "name": "BundleOption",
+          "methods": [],
+          "properties": [
+            "bundle_id",
+            "display_name",
+            "description",
+            "readiness",
+            "selectable",
+            "flag",
+            "required_inputs"
+          ],
+          "exported": true,
+          "lineCount": 10
+        },
+        {
+          "name": "FrontDoorSelection",
+          "methods": [],
+          "properties": [
+            "bundle_id",
+            "selection",
+            "seeds"
+          ],
+          "exported": true,
+          "lineCount": 7
+        }
+      ],
+      "imports": [
+        {
+          "source": "collections.abc",
+          "specifiers": [
+            "Callable",
+            "Mapping",
+            "Sequence"
+          ]
+        },
+        {
+          "source": "dataclasses",
+          "specifiers": [
+            "dataclass",
+            "field"
+          ]
+        },
+        {
+          "source": "app.marcus.cli.marcus_spoc",
+          "specifiers": [
+            "_M",
+            "_RULE"
+          ]
+        },
+        {
+          "source": "app.marcus.lesson_plan.bundle_catalog",
+          "specifiers": [
+            "BUNDLE_CATALOG",
+            "BundleReadiness",
+            "bundle_readiness",
+            "get_bundle"
+          ]
+        },
+        {
+          "source": "app.models.state.component_selection",
+          "specifiers": [
+            "ComponentSelection"
+          ]
+        }
+      ],
+      "exports": [
+        "FrontDoorError",
+        "UnknownBundleError",
+        "BundleNotRunnableError",
+        "SelectionNotConfirmedError",
+        "MissingRequiredInputError",
+        "BundleOption",
+        "FrontDoorSelection",
+        "present_catalog",
+        "render_catalog",
+        "front_door_select",
+        "run_front_door"
+      ],
+      "totalLines": 266,
+      "hasStructuralAnalysis": true
+    },
     "app/marcus/cli/gate_cli.py": {
       "filePath": "app/marcus/cli/gate_cli.py",
       "contentHash": "1f1b7963af228445828762be4644cc11e733530360c820f756d5c3a837f8f23b",
@@ -6832,7 +6997,7 @@
     },
     "app/marcus/cli/gate_shims/_shim_parser.py": {
       "filePath": "app/marcus/cli/gate_shims/_shim_parser.py",
-      "contentHash": "d8eaed0ad6f6fdf7d3988a5c6e6ceedcd0cda2208cd59e833d70c4b7b07a5252",
+      "contentHash": "b7417bcdceab93f68412992bfdcaa42818ab6633cf6a9e41357a78216efe68f3",
       "functions": [
         {
           "name": "build_shim_parser",
@@ -6868,7 +7033,7 @@
       "exports": [
         "build_shim_parser"
       ],
-      "totalLines": 91,
+      "totalLines": 97,
       "hasStructuralAnalysis": true
     },
     "app/marcus/cli/gate_shims/g1_shim.py": {
@@ -7359,7 +7524,7 @@
     },
     "app/marcus/cli/marcus_interlocutor.py": {
       "filePath": "app/marcus/cli/marcus_interlocutor.py",
-      "contentHash": "f2f79daf5012150572b16eecff96d2af784c412ac62d2dc341b102ff92790160",
+      "contentHash": "3ddacc99ea480d6a73088ca509dfdca8fe0d6353b2ae6a368e68ae513504b65f",
       "functions": [
         {
           "name": "validate_action_against_gate",
@@ -7620,7 +7785,7 @@
     },
     "app/marcus/cli/marcus_spoc.py": {
       "filePath": "app/marcus/cli/marcus_spoc.py",
-      "contentHash": "90f55f2775035eee948a80d05deae62e0536ce988a9585bad06a535c7a4a4746",
+      "contentHash": "3d2e3fab5f14e77d8f8ca62a0020b4faf81521f3ef9f4efb03bfa2dc797e05f0",
       "functions": [
         {
           "name": "build_operator_verdict_kwargs",
@@ -7697,6 +7862,17 @@
           "lineCount": 12
         },
         {
+          "name": "_narrate_g0_enrichment",
+          "params": [
+            "card",
+            "run_dir",
+            "lines"
+          ],
+          "returnType": "None",
+          "exported": true,
+          "lineCount": 46
+        },
+        {
           "name": "narrate_gate",
           "params": [
             "gate_id",
@@ -7705,7 +7881,7 @@
           ],
           "returnType": "str",
           "exported": true,
-          "lineCount": 37
+          "lineCount": 39
         },
         {
           "name": "run_marcus_spoc",
@@ -7781,16 +7957,17 @@
         "_narrate_lesson_plan",
         "_narrate_treatment",
         "_narrate_voice",
+        "_narrate_g0_enrichment",
         "narrate_gate",
         "run_marcus_spoc",
         "main"
       ],
-      "totalLines": 268,
+      "totalLines": 320,
       "hasStructuralAnalysis": true
     },
     "app/marcus/cli/trial.py": {
       "filePath": "app/marcus/cli/trial.py",
-      "contentHash": "d269e2940dcf03a58fa497263e8b5b28f3130e761ed5d9deaa792ca77fb1ea6f",
+      "contentHash": "6eb40835428f5fdac83ca3857f0adbaec7f111d424b958f8ade999850f02a89a",
       "functions": [
         {
           "name": "_load_env_if_available",
@@ -7894,11 +8071,21 @@
             "auto_confirm_directive",
             "confirm_fn",
             "max_specialist_calls",
-            "gamma_settings_file"
+            "gamma_settings_file",
+            "component_selection"
           ],
           "returnType": "dict[str, Any]",
           "exported": true,
-          "lineCount": 145
+          "lineCount": 150
+        },
+        {
+          "name": "_resolve_bundle_selection",
+          "params": [
+            "args"
+          ],
+          "returnType": "ComponentSelection | None",
+          "exported": true,
+          "lineCount": 16
         },
         {
           "name": "start_trial_cli",
@@ -7907,7 +8094,7 @@
           ],
           "returnType": "int",
           "exported": true,
-          "lineCount": 27
+          "lineCount": 32
         },
         {
           "name": "resume_trial",
@@ -7957,7 +8144,7 @@
           ],
           "returnType": "None",
           "exported": true,
-          "lineCount": 74
+          "lineCount": 91
         }
       ],
       "classes": [
@@ -8072,11 +8259,24 @@
           ]
         },
         {
+          "source": "app.marcus.cli.front_door",
+          "specifiers": [
+            "FrontDoorError",
+            "front_door_select"
+          ]
+        },
+        {
           "source": "app.marcus.orchestrator.production_runner",
           "specifiers": [
             "recover_production_trial",
             "resume_production_trial",
             "run_production_trial"
+          ]
+        },
+        {
+          "source": "app.models.state.component_selection",
+          "specifiers": [
+            "ComponentSelection"
           ]
         },
         {
@@ -8107,6 +8307,7 @@
         "_write_cancellation_record",
         "_load_gamma_settings_file",
         "start_trial",
+        "_resolve_bundle_selection",
         "start_trial_cli",
         "resume_trial",
         "resume_trial_cli",
@@ -8114,7 +8315,7 @@
         "recover_trial_cli",
         "build_trial_parser"
       ],
-      "totalLines": 575,
+      "totalLines": 622,
       "hasStructuralAnalysis": true
     },
     "app/marcus/dispatch/__init__.py": {
@@ -9032,6 +9233,132 @@
       "totalLines": 192,
       "hasStructuralAnalysis": true
     },
+    "app/marcus/lesson_plan/bundle_catalog.py": {
+      "filePath": "app/marcus/lesson_plan/bundle_catalog.py",
+      "contentHash": "614ef1fc6df87e5dbac102cf599113116c2aae97063f826a05a87818a03efa09",
+      "functions": [
+        {
+          "name": "get_bundle",
+          "params": [
+            "bundle_id"
+          ],
+          "returnType": "BundleRecord | None",
+          "exported": true,
+          "lineCount": 4
+        },
+        {
+          "name": "component_capability",
+          "params": [
+            "component"
+          ],
+          "returnType": "ComponentCapability | None",
+          "exported": true,
+          "lineCount": 3
+        },
+        {
+          "name": "_resolve",
+          "params": [
+            "bundle"
+          ],
+          "returnType": "BundleRecord",
+          "exported": true,
+          "lineCount": 7
+        },
+        {
+          "name": "min_capability_tier",
+          "params": [
+            "bundle"
+          ],
+          "returnType": "CapabilityTier",
+          "exported": true,
+          "lineCount": 11
+        },
+        {
+          "name": "bundle_readiness",
+          "params": [
+            "bundle"
+          ],
+          "returnType": "BundleReadiness",
+          "exported": true,
+          "lineCount": 6
+        }
+      ],
+      "classes": [
+        {
+          "name": "ComponentCapability",
+          "methods": [],
+          "properties": [
+            "component",
+            "tier",
+            "note"
+          ],
+          "exported": true,
+          "lineCount": 21
+        },
+        {
+          "name": "BundleRecord",
+          "methods": [
+            "_selected_components_have_capability_tiers"
+          ],
+          "properties": [
+            "id",
+            "display_name",
+            "selection",
+            "required_inputs",
+            "description"
+          ],
+          "exported": true,
+          "lineCount": 38
+        }
+      ],
+      "imports": [
+        {
+          "source": "collections.abc",
+          "specifiers": [
+            "Mapping"
+          ]
+        },
+        {
+          "source": "types",
+          "specifiers": [
+            "MappingProxyType"
+          ]
+        },
+        {
+          "source": "typing",
+          "specifiers": [
+            "Final",
+            "Literal"
+          ]
+        },
+        {
+          "source": "pydantic",
+          "specifiers": [
+            "BaseModel",
+            "ConfigDict",
+            "Field",
+            "model_validator"
+          ]
+        },
+        {
+          "source": "app.models.state.component_selection",
+          "specifiers": [
+            "ComponentSelection"
+          ]
+        }
+      ],
+      "exports": [
+        "ComponentCapability",
+        "BundleRecord",
+        "get_bundle",
+        "component_capability",
+        "_resolve",
+        "min_capability_tier",
+        "bundle_readiness"
+      ],
+      "totalLines": 321,
+      "hasStructuralAnalysis": true
+    },
     "app/marcus/lesson_plan/collateral_spec.py": {
       "filePath": "app/marcus/lesson_plan/collateral_spec.py",
       "contentHash": "39d000af6608b5fb6b935c2c4e9329365cf193326ba48b81e2366847648953f3",
@@ -9257,6 +9584,285 @@
         "get_component_type_entry"
       ],
       "totalLines": 161,
+      "hasStructuralAnalysis": true
+    },
+    "app/marcus/lesson_plan/composition.py": {
+      "filePath": "app/marcus/lesson_plan/composition.py",
+      "contentHash": "78b2a20bdea11b7bc09f46a25431628aad718087180a47917da26b3cfe2bbfb0",
+      "functions": [
+        {
+          "name": "_validate_fragment_registry_bindings",
+          "params": [],
+          "returnType": "None",
+          "exported": true,
+          "lineCount": 15
+        },
+        {
+          "name": "_repo_root",
+          "params": [
+            "repo_root"
+          ],
+          "returnType": "Path",
+          "exported": true,
+          "lineCount": 2
+        },
+        {
+          "name": "_resolve_order",
+          "params": [
+            "selection"
+          ],
+          "returnType": "tuple[str, ...]",
+          "exported": true,
+          "lineCount": 37
+        },
+        {
+          "name": "_component_owned_ids",
+          "params": [
+            "component",
+            "all_ids"
+          ],
+          "returnType": "set[str]",
+          "exported": true,
+          "lineCount": 9
+        },
+        {
+          "name": "_resolve_excluded_target",
+          "params": [
+            "excluded",
+            "adj",
+            "kept",
+            "path"
+          ],
+          "returnType": "list[str]",
+          "exported": true,
+          "lineCount": 16
+        },
+        {
+          "name": "_bridge_edges",
+          "params": [
+            "edges",
+            "included"
+          ],
+          "returnType": "list[EdgeSpec]",
+          "exported": true,
+          "lineCount": 27
+        },
+        {
+          "name": "_apply_synthetic_attachments",
+          "params": [
+            "edges",
+            "attachments"
+          ],
+          "returnType": "list[EdgeSpec]",
+          "exported": true,
+          "lineCount": 13
+        },
+        {
+          "name": "_prune_absent_optional_inputs",
+          "params": [
+            "node",
+            "removed_specialists"
+          ],
+          "returnType": "NodeSpec",
+          "exported": true,
+          "lineCount": 64
+        },
+        {
+          "name": "compose_manifest",
+          "params": [
+            "manifest",
+            "selection"
+          ],
+          "returnType": "PipelineManifest",
+          "exported": true,
+          "lineCount": 68
+        },
+        {
+          "name": "component_content_hash",
+          "params": [
+            "component",
+            "manifest",
+            "repo_root"
+          ],
+          "returnType": "str",
+          "exported": true,
+          "lineCount": 33
+        },
+        {
+          "name": "_model_config_closure",
+          "params": [
+            "manifest",
+            "included_ids",
+            "repo_root"
+          ],
+          "returnType": "list[list[str]]",
+          "exported": true,
+          "lineCount": 9
+        },
+        {
+          "name": "_load_dispatch_for_digest",
+          "params": [
+            "repo_root",
+            "dispatch_snapshot"
+          ],
+          "returnType": "dict[str, Any]",
+          "exported": true,
+          "lineCount": 6
+        },
+        {
+          "name": "compose_and_digest",
+          "params": [
+            "selection",
+            "manifest",
+            "dispatch_snapshot",
+            "repo_root",
+            "composer_version"
+          ],
+          "returnType": "TwoPartDigest",
+          "exported": true,
+          "lineCount": 60
+        },
+        {
+          "name": "verify_composition_replay",
+          "params": [
+            "record",
+            "manifest",
+            "dispatch_snapshot",
+            "repo_root"
+          ],
+          "returnType": "None",
+          "exported": true,
+          "lineCount": 26
+        }
+      ],
+      "classes": [
+        {
+          "name": "CompositionError",
+          "methods": [],
+          "properties": [],
+          "exported": true,
+          "lineCount": 3
+        },
+        {
+          "name": "CompositionReplayError",
+          "methods": [],
+          "properties": [],
+          "exported": true,
+          "lineCount": 2
+        },
+        {
+          "name": "ComponentFragment",
+          "methods": [],
+          "properties": [
+            "component",
+            "modality_refs",
+            "manifest_node_ids",
+            "depends_on",
+            "version",
+            "is_base",
+            "synthetic_nodes",
+            "attach_after"
+          ],
+          "exported": true,
+          "lineCount": 12
+        }
+      ],
+      "imports": [
+        {
+          "source": "hashlib",
+          "specifiers": [
+            "hashlib"
+          ]
+        },
+        {
+          "source": "dataclasses",
+          "specifiers": [
+            "dataclass"
+          ]
+        },
+        {
+          "source": "pathlib",
+          "specifiers": [
+            "Path"
+          ]
+        },
+        {
+          "source": "typing",
+          "specifiers": [
+            "Any"
+          ]
+        },
+        {
+          "source": "app.manifest",
+          "specifiers": [
+            "compiler",
+            "load"
+          ]
+        },
+        {
+          "source": "app.manifest.lanes",
+          "specifiers": [
+            "DEFAULT_RUN_MANIFEST_PATH"
+          ]
+        },
+        {
+          "source": "app.manifest.schema",
+          "specifiers": [
+            "EdgeSpec",
+            "NodeSpec",
+            "PipelineManifest",
+            "ProjectionSpec"
+          ]
+        },
+        {
+          "source": "app.marcus.lesson_plan.component_type_registry",
+          "specifiers": [
+            "COMPONENT_TYPE_REGISTRY"
+          ]
+        },
+        {
+          "source": "app.marcus.lesson_plan.modality_registry",
+          "specifiers": [
+            "MODALITY_REGISTRY"
+          ]
+        },
+        {
+          "source": "app.models.state.component_selection",
+          "specifiers": [
+            "ComponentSelection"
+          ]
+        },
+        {
+          "source": "app.runtime.compiled_graph_digest",
+          "specifiers": [
+            "DIGEST_SCHEMA_VERSION",
+            "TwoPartDigest",
+            "TwoPartDigestMismatchError",
+            "assert_two_part_digests_match",
+            "canonical_sha256"
+          ]
+        }
+      ],
+      "exports": [
+        "CompositionError",
+        "CompositionReplayError",
+        "ComponentFragment",
+        "_validate_fragment_registry_bindings",
+        "_repo_root",
+        "_resolve_order",
+        "_component_owned_ids",
+        "_resolve_excluded_target",
+        "_bridge_edges",
+        "_apply_synthetic_attachments",
+        "_prune_absent_optional_inputs",
+        "compose_manifest",
+        "component_content_hash",
+        "_model_config_closure",
+        "_load_dispatch_for_digest",
+        "compose_and_digest",
+        "verify_composition_replay"
+      ],
+      "totalLines": 569,
       "hasStructuralAnalysis": true
     },
     "app/marcus/lesson_plan/coverage_manifest.py": {
@@ -10069,6 +10675,244 @@
       "totalLines": 313,
       "hasStructuralAnalysis": true
     },
+    "app/marcus/lesson_plan/g0_enrichment.py": {
+      "filePath": "app/marcus/lesson_plan/g0_enrichment.py",
+      "contentHash": "20aa00c9d1a5160e271c99f72efb7d49def16a2397adf743741ffa351756a6d0",
+      "functions": [
+        {
+          "name": "assert_run_dissent_invariant",
+          "params": [
+            "result"
+          ],
+          "returnType": "None",
+          "exported": true,
+          "lineCount": 14
+        },
+        {
+          "name": "corpus_fingerprint",
+          "params": [
+            "per_file_hashes",
+            "model_id"
+          ],
+          "returnType": "str",
+          "exported": true,
+          "lineCount": 9
+        },
+        {
+          "name": "file_content_hash",
+          "params": [
+            "path"
+          ],
+          "returnType": "str",
+          "exported": true,
+          "lineCount": 3
+        }
+      ],
+      "classes": [
+        {
+          "name": "TraversalRoot",
+          "methods": [],
+          "properties": [
+            "root_id",
+            "kind"
+          ],
+          "exported": true,
+          "lineCount": 16
+        },
+        {
+          "name": "EnumerationProvenance",
+          "methods": [],
+          "properties": [
+            "source_id",
+            "root_id",
+            "connector",
+            "locator"
+          ],
+          "exported": true,
+          "lineCount": 13
+        },
+        {
+          "name": "IndependentParse",
+          "methods": [
+            "_tz"
+          ],
+          "properties": [
+            "proposal",
+            "ts"
+          ],
+          "exported": true,
+          "lineCount": 15
+        },
+        {
+          "name": "OperatorMerge",
+          "methods": [
+            "_tz"
+          ],
+          "properties": [
+            "suggestion",
+            "ts"
+          ],
+          "exported": true,
+          "lineCount": 14
+        },
+        {
+          "name": "Dissent",
+          "methods": [
+            "_reject_blank"
+          ],
+          "properties": [
+            "against",
+            "marcus_position",
+            "operator_position",
+            "disposition"
+          ],
+          "exported": true,
+          "lineCount": 35
+        },
+        {
+          "name": "ReconcileView",
+          "methods": [
+            "_enforce_reconciliation"
+          ],
+          "properties": [
+            "n_files_in",
+            "n_files_covered",
+            "n_files_ignored",
+            "n_components",
+            "n_flagged",
+            "n_ungrounded"
+          ],
+          "exported": true,
+          "lineCount": 68
+        },
+        {
+          "name": "CitationResolution",
+          "methods": [
+            "_round_trip_status",
+            "_enforce_coherence"
+          ],
+          "properties": [
+            "component_id",
+            "doi",
+            "resolution_status",
+            "resolved_ref",
+            "reason",
+            "resolver_provider",
+            "normalization_version"
+          ],
+          "exported": true,
+          "lineCount": 70
+        },
+        {
+          "name": "G0EnrichmentResult",
+          "methods": [
+            "_enforce_a4_ts_order",
+            "_enforce_provisional_only",
+            "to_card_payload"
+          ],
+          "properties": [
+            "corpus_fingerprint",
+            "model_id",
+            "typed_components",
+            "provisional_los",
+            "traversal_roots",
+            "enumeration_provenance",
+            "reconcile",
+            "dissents",
+            "citation_resolutions",
+            "pedagogy_annotations",
+            "independent_parse",
+            "operator_merge"
+          ],
+          "exported": true,
+          "lineCount": 102
+        }
+      ],
+      "imports": [
+        {
+          "source": "hashlib",
+          "specifiers": [
+            "hashlib"
+          ]
+        },
+        {
+          "source": "datetime",
+          "specifiers": [
+            "datetime"
+          ]
+        },
+        {
+          "source": "pathlib",
+          "specifiers": [
+            "Path"
+          ]
+        },
+        {
+          "source": "typing",
+          "specifiers": [
+            "Any",
+            "Final",
+            "Literal"
+          ]
+        },
+        {
+          "source": "pydantic",
+          "specifiers": [
+            "BaseModel",
+            "ConfigDict",
+            "Field",
+            "TypeAdapter",
+            "field_validator",
+            "model_validator"
+          ]
+        },
+        {
+          "source": "pydantic.json_schema",
+          "specifiers": [
+            "SkipJsonSchema"
+          ]
+        },
+        {
+          "source": "app.marcus.lesson_plan.learning_objective",
+          "specifiers": [
+            "LearningObjective"
+          ]
+        },
+        {
+          "source": "app.marcus.lesson_plan.pedagogy_annotation",
+          "specifiers": [
+            "PedagogyAnnotation"
+          ]
+        },
+        {
+          "source": "app.marcus.lesson_plan.source_type",
+          "specifiers": [
+            "TypedComponent"
+          ]
+        },
+        {
+          "source": "app.models.state._base",
+          "specifiers": [
+            "enforce_tz_aware"
+          ]
+        }
+      ],
+      "exports": [
+        "TraversalRoot",
+        "EnumerationProvenance",
+        "IndependentParse",
+        "OperatorMerge",
+        "Dissent",
+        "ReconcileView",
+        "CitationResolution",
+        "G0EnrichmentResult",
+        "assert_run_dissent_invariant",
+        "corpus_fingerprint",
+        "file_content_hash"
+      ],
+      "totalLines": 508,
+      "hasStructuralAnalysis": true
+    },
     "app/marcus/lesson_plan/gagne_diagnostician.py": {
       "filePath": "app/marcus/lesson_plan/gagne_diagnostician.py",
       "contentHash": "2a226e7338d7bc2ef21565c08038ba826cd8667091bdaf16350dfd9369ce6da0",
@@ -10280,6 +11124,426 @@
         "diagnose_lesson_plan"
       ],
       "totalLines": 337,
+      "hasStructuralAnalysis": true
+    },
+    "app/marcus/lesson_plan/irene_refinement.py": {
+      "filePath": "app/marcus/lesson_plan/irene_refinement.py",
+      "contentHash": "36d083643a07d37baeaee8c7d60875ae64d4a45dd16184fa84d5a11a307be124",
+      "functions": [
+        {
+          "name": "_deterministic_bloom",
+          "params": [
+            "objective_id"
+          ],
+          "returnType": "BloomLevel",
+          "exported": true,
+          "lineCount": 4
+        },
+        {
+          "name": "_deterministic_adequacy",
+          "params": [
+            "lo"
+          ],
+          "returnType": "SourceAdequacy",
+          "exported": true,
+          "lineCount": 27
+        },
+        {
+          "name": "refine_one",
+          "params": [
+            "lo"
+          ],
+          "returnType": "tuple[LearningObjective, LODeltaEntry]",
+          "exported": true,
+          "lineCount": 27
+        },
+        {
+          "name": "build_refinement_result",
+          "params": [
+            "provisional_los",
+            "corpus_fingerprint",
+            "dispatch_live",
+            "chat_model_factory",
+            "source_context"
+          ],
+          "returnType": "IreneRefinementResult",
+          "exported": true,
+          "lineCount": 47
+        },
+        {
+          "name": "_live_refine",
+          "params": [
+            "provisional_los",
+            "chat_model_factory",
+            "source_context"
+          ],
+          "returnType": "tuple[list[LearningObjective], list[LODeltaEntry]]",
+          "exported": true,
+          "lineCount": 38
+        },
+        {
+          "name": "_parse_live_refinement",
+          "params": [
+            "payload",
+            "provisional_los"
+          ],
+          "returnType": "tuple[list[LearningObjective], list[LODeltaEntry]]",
+          "exported": true,
+          "lineCount": 45
+        },
+        {
+          "name": "assert_completeness",
+          "params": [
+            "refined_los",
+            "ledger",
+            "enumerated_source_ids"
+          ],
+          "returnType": "None",
+          "exported": true,
+          "lineCount": 44
+        },
+        {
+          "name": "ratify_refined_los",
+          "params": [
+            "refined_los",
+            "prior_ratified",
+            "reconfirmed_ids"
+          ],
+          "returnType": "list[LearningObjective]",
+          "exported": true,
+          "lineCount": 34
+        }
+      ],
+      "classes": [
+        {
+          "name": "LODeltaEntry",
+          "methods": [
+            "_enforce_channel_wellformedness",
+            "is_dropped"
+          ],
+          "properties": [
+            "objective_id",
+            "disposition",
+            "lo",
+            "transition",
+            "rationale_diff",
+            "split_into",
+            "merged_from"
+          ],
+          "exported": true,
+          "lineCount": 120
+        },
+        {
+          "name": "LODeltaLedger",
+          "methods": [
+            "_enforce_no_silent_drops_and_reconciliation",
+            "g0_count",
+            "irene_count",
+            "reconcile_summary",
+            "flagged_for_operator"
+          ],
+          "properties": [
+            "g0_objective_ids",
+            "entries"
+          ],
+          "exported": true,
+          "lineCount": 108
+        },
+        {
+          "name": "IreneRefinementResult",
+          "methods": [
+            "_enforce_irene_never_ratifies",
+            "to_card_payload"
+          ],
+          "properties": [
+            "corpus_fingerprint",
+            "model_id",
+            "refined_los",
+            "ledger"
+          ],
+          "exported": true,
+          "lineCount": 44
+        },
+        {
+          "name": "CompletenessError",
+          "methods": [],
+          "properties": [],
+          "exported": true,
+          "lineCount": 2
+        }
+      ],
+      "imports": [
+        {
+          "source": "hashlib",
+          "specifiers": [
+            "hashlib"
+          ]
+        },
+        {
+          "source": "typing",
+          "specifiers": [
+            "Any",
+            "Final",
+            "Literal",
+            "get_args"
+          ]
+        },
+        {
+          "source": "pydantic",
+          "specifiers": [
+            "BaseModel",
+            "ConfigDict",
+            "Field",
+            "model_validator"
+          ]
+        },
+        {
+          "source": "app.marcus.lesson_plan.learning_objective",
+          "specifiers": [
+            "BloomLevel",
+            "LearningObjective",
+            "SourceAdequacy",
+            "advance_lo"
+          ]
+        }
+      ],
+      "exports": [
+        "LODeltaEntry",
+        "LODeltaLedger",
+        "IreneRefinementResult",
+        "_deterministic_bloom",
+        "_deterministic_adequacy",
+        "refine_one",
+        "build_refinement_result",
+        "_live_refine",
+        "_parse_live_refinement",
+        "CompletenessError",
+        "assert_completeness",
+        "ratify_refined_los"
+      ],
+      "totalLines": 690,
+      "hasStructuralAnalysis": true
+    },
+    "app/marcus/lesson_plan/learning_objective_adapters.py": {
+      "filePath": "app/marcus/lesson_plan/learning_objective_adapters.py",
+      "contentHash": "d81a6f2e90b0f83035af188ff762caba5593d3bae115d19dfcbdc635bf677091",
+      "functions": [
+        {
+          "name": "_coerce_bloom",
+          "params": [
+            "raw"
+          ],
+          "returnType": "BloomLevel | None",
+          "exported": true,
+          "lineCount": 23
+        },
+        {
+          "name": "from_irene_statement",
+          "params": [
+            "statement",
+            "objective_id",
+            "source_refs",
+            "bloom_level",
+            "confidence"
+          ],
+          "returnType": "LearningObjective",
+          "exported": true,
+          "lineCount": 24
+        },
+        {
+          "name": "from_workbook_brief",
+          "params": [
+            "brief"
+          ],
+          "returnType": "LearningObjective",
+          "exported": true,
+          "lineCount": 11
+        },
+        {
+          "name": "to_workbook_brief",
+          "params": [
+            "lo"
+          ],
+          "returnType": "LearningObjectiveBrief",
+          "exported": true,
+          "lineCount": 17
+        },
+        {
+          "name": "section_binds_objective",
+          "params": [
+            "section",
+            "lo"
+          ],
+          "returnType": "bool",
+          "exported": true,
+          "lineCount": 7
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "collections.abc",
+          "specifiers": [
+            "Sequence"
+          ]
+        },
+        {
+          "source": "typing",
+          "specifiers": [
+            "get_args"
+          ]
+        },
+        {
+          "source": "app.marcus.lesson_plan.collateral_spec",
+          "specifiers": [
+            "WorkbookSection"
+          ]
+        },
+        {
+          "source": "app.marcus.lesson_plan.learning_objective",
+          "specifiers": [
+            "BloomLevel",
+            "Confidence",
+            "LearningObjective",
+            "SourceRef"
+          ]
+        },
+        {
+          "source": "app.marcus.lesson_plan.workbook_producer",
+          "specifiers": [
+            "LearningObjectiveBrief"
+          ]
+        }
+      ],
+      "exports": [
+        "_coerce_bloom",
+        "from_irene_statement",
+        "from_workbook_brief",
+        "to_workbook_brief",
+        "section_binds_objective"
+      ],
+      "totalLines": 132,
+      "hasStructuralAnalysis": true
+    },
+    "app/marcus/lesson_plan/learning_objective.py": {
+      "filePath": "app/marcus/lesson_plan/learning_objective.py",
+      "contentHash": "d430aafcae012ee98ed7e4fbf81344d9e7c7e50670401f4b5036402cc986b459",
+      "functions": [
+        {
+          "name": "advance_lo",
+          "params": [
+            "lo",
+            "target",
+            "actor"
+          ],
+          "returnType": "LearningObjective",
+          "exported": true,
+          "lineCount": 53
+        },
+        {
+          "name": "learning_objective_json_schema",
+          "params": [],
+          "returnType": "dict",
+          "exported": true,
+          "lineCount": 8
+        }
+      ],
+      "classes": [
+        {
+          "name": "IllegalTransition",
+          "methods": [],
+          "properties": [],
+          "exported": true,
+          "lineCount": 2
+        },
+        {
+          "name": "SourceRef",
+          "methods": [
+            "_reject_empty"
+          ],
+          "properties": [
+            "source_id",
+            "locator",
+            "quoted_span"
+          ],
+          "exported": true,
+          "lineCount": 39
+        },
+        {
+          "name": "SourceAdequacy",
+          "methods": [
+            "_enforce_missing_cardinality"
+          ],
+          "properties": [
+            "verdict",
+            "rationale",
+            "missing",
+            "suggested_followups"
+          ],
+          "exported": true,
+          "lineCount": 51
+        },
+        {
+          "name": "LearningObjective",
+          "methods": [
+            "_validate_objective_id",
+            "_enforce_status_invariants"
+          ],
+          "properties": [
+            "objective_id",
+            "statement",
+            "status",
+            "confidence",
+            "bloom_level",
+            "source_refs",
+            "adequacy",
+            "origin",
+            "recommendation"
+          ],
+          "exported": true,
+          "lineCount": 103
+        }
+      ],
+      "imports": [
+        {
+          "source": "re",
+          "specifiers": [
+            "re"
+          ]
+        },
+        {
+          "source": "typing",
+          "specifiers": [
+            "Final",
+            "Literal"
+          ]
+        },
+        {
+          "source": "pydantic",
+          "specifiers": [
+            "BaseModel",
+            "ConfigDict",
+            "Field",
+            "field_validator",
+            "model_validator"
+          ]
+        },
+        {
+          "source": "app.marcus.lesson_plan.event_type_registry",
+          "specifiers": [
+            "OPEN_ID_REGEX_PATTERN"
+          ]
+        }
+      ],
+      "exports": [
+        "IllegalTransition",
+        "SourceRef",
+        "SourceAdequacy",
+        "LearningObjective",
+        "advance_lo",
+        "learning_objective_json_schema"
+      ],
+      "totalLines": 447,
       "hasStructuralAnalysis": true
     },
     "app/marcus/lesson_plan/log.py": {
@@ -10635,6 +11899,365 @@
         "list_pending_modalities"
       ],
       "totalLines": 235,
+      "hasStructuralAnalysis": true
+    },
+    "app/marcus/lesson_plan/pedagogy_annotation.py": {
+      "filePath": "app/marcus/lesson_plan/pedagogy_annotation.py",
+      "contentHash": "794fa1eb8ca1bd9b49bb5a5cd4e0c915f36528408af22518f6fc42f5e56dd19e",
+      "functions": [
+        {
+          "name": "is_annotatable",
+          "params": [
+            "component_type"
+          ],
+          "returnType": "bool",
+          "exported": true,
+          "lineCount": 7
+        },
+        {
+          "name": "pedagogy_annotation_json_schema",
+          "params": [],
+          "returnType": "dict[str, Any]",
+          "exported": true,
+          "lineCount": 3
+        },
+        {
+          "name": "load_pedagogy_annotation",
+          "params": [
+            "payload"
+          ],
+          "returnType": "PedagogyAnnotation",
+          "exported": true,
+          "lineCount": 8
+        },
+        {
+          "name": "_rec_id",
+          "params": [
+            "rec"
+          ],
+          "returnType": "str | None",
+          "exported": true,
+          "lineCount": 2
+        },
+        {
+          "name": "_rec_type",
+          "params": [
+            "rec"
+          ],
+          "returnType": "str | None",
+          "exported": true,
+          "lineCount": 2
+        },
+        {
+          "name": "_rec_ordinal",
+          "params": [
+            "rec"
+          ],
+          "returnType": "Any",
+          "exported": true,
+          "lineCount": 2
+        },
+        {
+          "name": "_rec_locator",
+          "params": [
+            "rec"
+          ],
+          "returnType": "str",
+          "exported": true,
+          "lineCount": 2
+        },
+        {
+          "name": "_rec_status",
+          "params": [
+            "rec"
+          ],
+          "returnType": "Any",
+          "exported": true,
+          "lineCount": 2
+        },
+        {
+          "name": "_rec_los",
+          "params": [
+            "rec"
+          ],
+          "returnType": "list[str]",
+          "exported": true,
+          "lineCount": 3
+        },
+        {
+          "name": "_lo_objective_id",
+          "params": [
+            "lo"
+          ],
+          "returnType": "str | None",
+          "exported": true,
+          "lineCount": 5
+        },
+        {
+          "name": "_sort_key",
+          "params": [
+            "rec"
+          ],
+          "returnType": "tuple[int, str, str]",
+          "exported": true,
+          "lineCount": 13
+        },
+        {
+          "name": "compute_teaches_after",
+          "params": [
+            "component",
+            "all_components_in_doc_order"
+          ],
+          "returnType": "tuple[str, ...]",
+          "exported": true,
+          "lineCount": 20
+        },
+        {
+          "name": "derive_teachable",
+          "params": [
+            "resolution_status"
+          ],
+          "returnType": "bool",
+          "exported": true,
+          "lineCount": 13
+        },
+        {
+          "name": "assert_p2_frontmatter_present",
+          "params": [
+            "components",
+            "provisional_los"
+          ],
+          "returnType": "None",
+          "exported": true,
+          "lineCount": 34
+        },
+        {
+          "name": "assert_pedagogy_referential_invariant",
+          "params": [
+            "result"
+          ],
+          "returnType": "None",
+          "exported": true,
+          "lineCount": 32
+        },
+        {
+          "name": "assert_pedagogy_teachable_consistency",
+          "params": [
+            "annotations",
+            "components"
+          ],
+          "returnType": "None",
+          "exported": true,
+          "lineCount": 22
+        },
+        {
+          "name": "_offline_pedagogy_pass",
+          "params": [
+            "components",
+            "provisional_los",
+            "transform_version",
+            "generated_at"
+          ],
+          "returnType": "tuple[PedagogyAnnotation, ...]",
+          "exported": true,
+          "lineCount": 48
+        },
+        {
+          "name": "_content_to_text",
+          "params": [
+            "content"
+          ],
+          "returnType": "str",
+          "exported": true,
+          "lineCount": 19
+        },
+        {
+          "name": "_extract_pedagogy_rows",
+          "params": [
+            "content"
+          ],
+          "returnType": "list[Any]",
+          "exported": true,
+          "lineCount": 43
+        },
+        {
+          "name": "_normalize_enum_value",
+          "params": [
+            "value",
+            "valid"
+          ],
+          "returnType": "str | None",
+          "exported": true,
+          "lineCount": 11
+        },
+        {
+          "name": "_build_live_annotations",
+          "params": [
+            "rows",
+            "by_id",
+            "valid_lo_ids",
+            "component_ids",
+            "components",
+            "transform_version",
+            "when"
+          ],
+          "returnType": "tuple[PedagogyAnnotation, ...]",
+          "exported": true,
+          "lineCount": 119
+        },
+        {
+          "name": "_live_pedagogy_pass",
+          "params": [
+            "components",
+            "provisional_los",
+            "chat_model_factory",
+            "transform_version",
+            "generated_at"
+          ],
+          "returnType": "tuple[PedagogyAnnotation, ...]",
+          "exported": true,
+          "lineCount": 46
+        },
+        {
+          "name": "_render_live_pedagogy_prompt",
+          "params": [
+            "annotatable",
+            "provisional_los"
+          ],
+          "returnType": "str",
+          "exported": true,
+          "lineCount": 43
+        },
+        {
+          "name": "build_pedagogy_annotations",
+          "params": [
+            "components",
+            "provisional_los",
+            "dispatch_live",
+            "chat_model_factory",
+            "transform_version",
+            "generated_at"
+          ],
+          "returnType": "tuple[PedagogyAnnotation, ...]",
+          "exported": true,
+          "lineCount": 31
+        }
+      ],
+      "classes": [
+        {
+          "name": "PedagogyAnnotation",
+          "methods": [
+            "_round_trip_bloom",
+            "_round_trip_role",
+            "_validate_lo_ref_format",
+            "_validate_rationale",
+            "_enforce_tz"
+          ],
+          "properties": [
+            "component_id",
+            "lo_refs",
+            "bloom",
+            "pedagogical_role",
+            "teaches_after",
+            "prerequisite_concepts",
+            "assessment_link",
+            "teachable",
+            "rationale",
+            "transform_model",
+            "transform_version",
+            "generated_at"
+          ],
+          "exported": true,
+          "lineCount": 109
+        }
+      ],
+      "imports": [
+        {
+          "source": "logging",
+          "specifiers": [
+            "logging"
+          ]
+        },
+        {
+          "source": "re",
+          "specifiers": [
+            "re"
+          ]
+        },
+        {
+          "source": "datetime",
+          "specifiers": [
+            "UTC",
+            "datetime"
+          ]
+        },
+        {
+          "source": "typing",
+          "specifiers": [
+            "TYPE_CHECKING",
+            "Any",
+            "Final",
+            "Literal"
+          ]
+        },
+        {
+          "source": "pydantic",
+          "specifiers": [
+            "BaseModel",
+            "ConfigDict",
+            "Field",
+            "TypeAdapter",
+            "ValidationError",
+            "field_validator"
+          ]
+        },
+        {
+          "source": "app.marcus.lesson_plan.learning_objective",
+          "specifiers": [
+            "BloomLevel"
+          ]
+        },
+        {
+          "source": "app.marcus.lesson_plan.source_type",
+          "specifiers": [
+            "SOURCE_TYPES"
+          ]
+        },
+        {
+          "source": "app.models.state._base",
+          "specifiers": [
+            "enforce_tz_aware"
+          ]
+        }
+      ],
+      "exports": [
+        "is_annotatable",
+        "PedagogyAnnotation",
+        "pedagogy_annotation_json_schema",
+        "load_pedagogy_annotation",
+        "_rec_id",
+        "_rec_type",
+        "_rec_ordinal",
+        "_rec_locator",
+        "_rec_status",
+        "_rec_los",
+        "_lo_objective_id",
+        "_sort_key",
+        "compute_teaches_after",
+        "derive_teachable",
+        "assert_p2_frontmatter_present",
+        "assert_pedagogy_referential_invariant",
+        "assert_pedagogy_teachable_consistency",
+        "_offline_pedagogy_pass",
+        "_content_to_text",
+        "_extract_pedagogy_rows",
+        "_normalize_enum_value",
+        "_build_live_annotations",
+        "_live_pedagogy_pass",
+        "_render_live_pedagogy_prompt",
+        "build_pedagogy_annotations"
+      ],
+      "totalLines": 918,
       "hasStructuralAnalysis": true
     },
     "app/marcus/lesson_plan/produced_asset.py": {
@@ -11259,6 +12882,16 @@
       "totalLines": 140,
       "hasStructuralAnalysis": true
     },
+    "app/marcus/lesson_plan/schema/learning_objective.v1.schema.json": {
+      "filePath": "app/marcus/lesson_plan/schema/learning_objective.v1.schema.json",
+      "contentHash": "9ecc3b90a322768ca1207b134c50e3ed35ad8070926aab6954cd3b8a040abf3e",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 184,
+      "hasStructuralAnalysis": true
+    },
     "app/marcus/lesson_plan/schema/lesson_plan.v1.schema.json": {
       "filePath": "app/marcus/lesson_plan/schema/lesson_plan.v1.schema.json",
       "contentHash": "04f9e2e616ba0a255b1b2f7400c0921ac4b4739ab9d2916e2149f24ae79cb459",
@@ -11267,6 +12900,99 @@
       "imports": [],
       "exports": [],
       "totalLines": 363,
+      "hasStructuralAnalysis": true
+    },
+    "app/marcus/lesson_plan/source_type.py": {
+      "filePath": "app/marcus/lesson_plan/source_type.py",
+      "contentHash": "e10eedb2181d5205dbce4ce07cef962d22e2788e6e6c48dc8df633808d2b3ee6",
+      "functions": [
+        {
+          "name": "is_classification_only",
+          "params": [
+            "source_type"
+          ],
+          "returnType": "bool",
+          "exported": true,
+          "lineCount": 3
+        }
+      ],
+      "classes": [
+        {
+          "name": "OtherSourceType",
+          "methods": [
+            "_reject_blank"
+          ],
+          "properties": [
+            "kind",
+            "label",
+            "provenance"
+          ],
+          "exported": true,
+          "lineCount": 31
+        },
+        {
+          "name": "TypedSource",
+          "methods": [
+            "_reject_unknown_type",
+            "_enforce_escape_hatch_and_flag"
+          ],
+          "properties": [
+            "source_id",
+            "source_type",
+            "other_type",
+            "flagged_unconsumed"
+          ],
+          "exported": true,
+          "lineCount": 70
+        },
+        {
+          "name": "TypedComponent",
+          "methods": [
+            "_reject_unknown_type",
+            "_enforce_escape_hatch_and_flag"
+          ],
+          "properties": [
+            "component_id",
+            "parent_source_id",
+            "source_type",
+            "other_type",
+            "label",
+            "locator",
+            "excerpt",
+            "flagged_unconsumed",
+            "flagged_ungrounded"
+          ],
+          "exported": true,
+          "lineCount": 97
+        }
+      ],
+      "imports": [
+        {
+          "source": "typing",
+          "specifiers": [
+            "Final",
+            "Literal"
+          ]
+        },
+        {
+          "source": "pydantic",
+          "specifiers": [
+            "BaseModel",
+            "ConfigDict",
+            "Field",
+            "TypeAdapter",
+            "field_validator",
+            "model_validator"
+          ]
+        }
+      ],
+      "exports": [
+        "is_classification_only",
+        "OtherSourceType",
+        "TypedSource",
+        "TypedComponent"
+      ],
+      "totalLines": 328,
       "hasStructuralAnalysis": true
     },
     "app/marcus/lesson_plan/step_05_pre_packet_handoff.py": {
@@ -11449,9 +13175,192 @@
       "totalLines": 39,
       "hasStructuralAnalysis": true
     },
+    "app/marcus/lesson_plan/workbook_enrichment.py": {
+      "filePath": "app/marcus/lesson_plan/workbook_enrichment.py",
+      "contentHash": "32d6cc0bb139d92c93927a1286451921fa65dce8b3c84b96f2f90cf357ea0557",
+      "functions": [
+        {
+          "name": "load_enrichment_card",
+          "params": [
+            "run_dir"
+          ],
+          "returnType": "dict[str, Any] | None",
+          "exported": true,
+          "lineCount": 17
+        },
+        {
+          "name": "citation_renders_authoritative",
+          "params": [
+            "teachable",
+            "resolution_status",
+            "resolved_ref"
+          ],
+          "returnType": "bool",
+          "exported": true,
+          "lineCount": 17
+        },
+        {
+          "name": "_teachable_for",
+          "params": [
+            "component_id",
+            "annotation_by_id"
+          ],
+          "returnType": "bool",
+          "exported": true,
+          "lineCount": 13
+        },
+        {
+          "name": "_as_card_payload",
+          "params": [
+            "card"
+          ],
+          "returnType": "dict[str, Any]",
+          "exported": true,
+          "lineCount": 10
+        },
+        {
+          "name": "_hash",
+          "params": [
+            "text"
+          ],
+          "returnType": "str",
+          "exported": true,
+          "lineCount": 2
+        },
+        {
+          "name": "_project_further_reading",
+          "params": [
+            "citation_resolutions",
+            "annotation_by_id"
+          ],
+          "returnType": "tuple[FurtherReadingEntry, ...]",
+          "exported": true,
+          "lineCount": 56
+        },
+        {
+          "name": "_lo_bloom_map",
+          "params": [
+            "annotations"
+          ],
+          "returnType": "dict[str, str]",
+          "exported": true,
+          "lineCount": 10
+        },
+        {
+          "name": "_project_exercises",
+          "params": [
+            "typed_components",
+            "annotation_by_id",
+            "surfaced_ids"
+          ],
+          "returnType": "tuple[dict[str, list[Exercise]], dict[str, str]]",
+          "exported": true,
+          "lineCount": 45
+        },
+        {
+          "name": "project_enrichment_to_workbook_inputs",
+          "params": [
+            "card"
+          ],
+          "returnType": "WorkbookEnrichmentProjection",
+          "exported": true,
+          "lineCount": 78
+        }
+      ],
+      "classes": [
+        {
+          "name": "WorkbookEnrichmentProjection",
+          "methods": [],
+          "properties": [
+            "spec",
+            "learning_objectives",
+            "further_reading",
+            "answer_keys",
+            "citations",
+            "source_ref_manifest"
+          ],
+          "exported": true,
+          "lineCount": 17
+        }
+      ],
+      "imports": [
+        {
+          "source": "hashlib",
+          "specifiers": [
+            "hashlib"
+          ]
+        },
+        {
+          "source": "json",
+          "specifiers": [
+            "json"
+          ]
+        },
+        {
+          "source": "logging",
+          "specifiers": [
+            "logging"
+          ]
+        },
+        {
+          "source": "collections",
+          "specifiers": [
+            "defaultdict"
+          ]
+        },
+        {
+          "source": "dataclasses",
+          "specifiers": [
+            "dataclass"
+          ]
+        },
+        {
+          "source": "pathlib",
+          "specifiers": [
+            "Path"
+          ]
+        },
+        {
+          "source": "typing",
+          "specifiers": [
+            "Any"
+          ]
+        },
+        {
+          "source": "app.marcus.lesson_plan.collateral_spec",
+          "specifiers": [
+            "DepthDeltaContract",
+            "Exercise",
+            "WorkbookSection",
+            "WorkbookSpec"
+          ]
+        },
+        {
+          "source": "app.marcus.lesson_plan.workbook_producer",
+          "specifiers": [
+            "FurtherReadingEntry",
+            "LearningObjectiveBrief"
+          ]
+        }
+      ],
+      "exports": [
+        "WorkbookEnrichmentProjection",
+        "load_enrichment_card",
+        "citation_renders_authoritative",
+        "_teachable_for",
+        "_as_card_payload",
+        "_hash",
+        "_project_further_reading",
+        "_lo_bloom_map",
+        "_project_exercises",
+        "project_enrichment_to_workbook_inputs"
+      ],
+      "totalLines": 378,
+      "hasStructuralAnalysis": true
+    },
     "app/marcus/lesson_plan/workbook_producer.py": {
       "filePath": "app/marcus/lesson_plan/workbook_producer.py",
-      "contentHash": "4390ebc7c354cd7e624cf6e4a8f0d23c46f13efe618388a10c855207c2b4efc2",
+      "contentHash": "91b1b37778ee20441eae79bc52ff519a82b0f8d80130f2312ecc51b71ecd5a4c",
       "functions": [
         {
           "name": "load_transcript_segments",
@@ -11512,6 +13421,16 @@
           "lineCount": 13
         },
         {
+          "name": "assert_learning_objective_bindings",
+          "params": [
+            "spec",
+            "learning_objectives"
+          ],
+          "returnType": "None",
+          "exported": true,
+          "lineCount": 30
+        },
+        {
           "name": "default_prose_revoicer",
           "params": [
             "segment_id",
@@ -11537,11 +13456,15 @@
             "context",
             "spec",
             "segments",
-            "prose_revoicer"
+            "prose_revoicer",
+            "learning_objectives",
+            "answer_keys",
+            "further_reading",
+            "research_entries"
           ],
           "returnType": "_ComposedDoc",
           "exported": true,
-          "lineCount": 95
+          "lineCount": 235
         },
         {
           "name": "render_markdown",
@@ -11636,6 +13559,45 @@
           "lineCount": 18
         },
         {
+          "name": "LearningObjectiveBrief",
+          "methods": [],
+          "properties": [
+            "objective_id",
+            "bloom_level",
+            "statement"
+          ],
+          "exported": true,
+          "lineCount": 11
+        },
+        {
+          "name": "FurtherReadingEntry",
+          "methods": [],
+          "properties": [
+            "citation_id",
+            "title",
+            "source_ref",
+            "locator",
+            "supports_segment_id"
+          ],
+          "exported": true,
+          "lineCount": 14
+        },
+        {
+          "name": "ResearchEntry",
+          "methods": [],
+          "properties": [
+            "citation_id",
+            "title",
+            "source_ref",
+            "provider",
+            "source_id",
+            "source_hash",
+            "supports_segment_id"
+          ],
+          "exported": true,
+          "lineCount": 15
+        },
+        {
           "name": "_ComposedDoc",
           "methods": [],
           "properties": [
@@ -11672,7 +13634,7 @@
           ],
           "properties": [],
           "exported": true,
-          "lineCount": 158
+          "lineCount": 176
         }
       ],
       "imports": [
@@ -11687,6 +13649,7 @@
           "specifiers": [
             "Callable",
             "Iterable",
+            "Mapping",
             "Sequence"
           ]
         },
@@ -11767,11 +13730,15 @@
         "DuplicateCollateralIdError",
         "TranscriptSegment",
         "load_transcript_segments",
+        "LearningObjectiveBrief",
+        "FurtherReadingEntry",
+        "ResearchEntry",
         "assert_unique_collateral_ids",
         "_reject_dupes",
         "audit_workbook_numeric_fidelity",
         "audit_citation_fidelity",
         "assert_exercise_fidelity",
+        "assert_learning_objective_bindings",
         "default_prose_revoicer",
         "_ComposedDoc",
         "_segment_anchor",
@@ -11785,7 +13752,7 @@
         "_narrative_body_text",
         "_tokenize"
       ],
-      "totalLines": 816,
+      "totalLines": 1073,
       "hasStructuralAnalysis": true
     },
     "app/marcus/orchestrator/__init__.py": {
@@ -12534,6 +14501,471 @@
       "totalLines": 215,
       "hasStructuralAnalysis": true
     },
+    "app/marcus/orchestrator/g0_enrichment_wiring.py": {
+      "filePath": "app/marcus/orchestrator/g0_enrichment_wiring.py",
+      "contentHash": "580e98a0adf4ea2e74a348cf21d86886a0ff0a1c052edd888712cbc41a92aa4a",
+      "functions": [
+        {
+          "name": "g0_enrichment_active",
+          "params": [],
+          "returnType": "bool",
+          "exported": true,
+          "lineCount": 8
+        },
+        {
+          "name": "g0_dispatch_live",
+          "params": [],
+          "returnType": "bool",
+          "exported": true,
+          "lineCount": 8
+        },
+        {
+          "name": "_import_pass0_resolver",
+          "params": [],
+          "returnType": "Callable[..., list[dict[str, Any]]]",
+          "exported": true,
+          "lineCount": 11
+        },
+        {
+          "name": "_resolve_citation_resolutions",
+          "params": [
+            "typed",
+            "source_by_id",
+            "dispatch_live",
+            "resolve_dispatch"
+          ],
+          "returnType": "tuple[CitationResolution, ...]",
+          "exported": true,
+          "lineCount": 29
+        },
+        {
+          "name": "_build_pedagogy_frontmatter",
+          "params": [
+            "typed",
+            "citation_resolutions",
+            "los"
+          ],
+          "returnType": "list[dict[str, Any]]",
+          "exported": true,
+          "lineCount": 46
+        },
+        {
+          "name": "_attach_pedagogy_annotations",
+          "params": [
+            "typed",
+            "source_by_id",
+            "citation_resolutions",
+            "los",
+            "dispatch_live",
+            "chat_model_factory"
+          ],
+          "returnType": "tuple[PedagogyAnnotation, ...]",
+          "exported": true,
+          "lineCount": 29
+        },
+        {
+          "name": "_enumerate",
+          "params": [
+            "corpus_dir"
+          ],
+          "returnType": "list[tuple[str, Path]]",
+          "exported": true,
+          "lineCount": 10
+        },
+        {
+          "name": "_fingerprint",
+          "params": [
+            "enumerated",
+            "model_id"
+          ],
+          "returnType": "str",
+          "exported": true,
+          "lineCount": 11
+        },
+        {
+          "name": "_read_text_resilient",
+          "params": [
+            "path"
+          ],
+          "returnType": "str | None",
+          "exported": true,
+          "lineCount": 22
+        },
+        {
+          "name": "_heuristic_type",
+          "params": [
+            "path"
+          ],
+          "returnType": "str",
+          "exported": true,
+          "lineCount": 6
+        },
+        {
+          "name": "_component_type",
+          "params": [
+            "label",
+            "body"
+          ],
+          "returnType": "str",
+          "exported": true,
+          "lineCount": 11
+        },
+        {
+          "name": "_split_components",
+          "params": [
+            "text",
+            "file_label"
+          ],
+          "returnType": "list[dict[str, str]]",
+          "exported": true,
+          "lineCount": 53
+        },
+        {
+          "name": "_file_components",
+          "params": [
+            "source_id",
+            "path",
+            "corpus_dir"
+          ],
+          "returnType": "list[TypedComponent]",
+          "exported": true,
+          "lineCount": 44
+        },
+        {
+          "name": "_source_excerpt",
+          "params": [
+            "path",
+            "max_chars"
+          ],
+          "returnType": "str",
+          "exported": true,
+          "lineCount": 9
+        },
+        {
+          "name": "_live_corpus_summary",
+          "params": [
+            "enumerated",
+            "corpus_dir"
+          ],
+          "returnType": "str",
+          "exported": true,
+          "lineCount": 11
+        },
+        {
+          "name": "_strip_blockquote_prefix",
+          "params": [
+            "line"
+          ],
+          "returnType": "str",
+          "exported": true,
+          "lineCount": 8
+        },
+        {
+          "name": "_normalize_for_groundedness",
+          "params": [
+            "text"
+          ],
+          "returnType": "str",
+          "exported": true,
+          "lineCount": 16
+        },
+        {
+          "name": "_is_excerpt_grounded",
+          "params": [
+            "excerpt",
+            "source_text"
+          ],
+          "returnType": "bool",
+          "exported": true,
+          "lineCount": 10
+        },
+        {
+          "name": "flag_ungrounded_components",
+          "params": [
+            "typed",
+            "source_by_id"
+          ],
+          "returnType": "int",
+          "exported": true,
+          "lineCount": 34
+        },
+        {
+          "name": "_offline_pre_pass",
+          "params": [
+            "enumerated",
+            "corpus_dir"
+          ],
+          "returnType": "tuple[list[TypedComponent], list[LearningObjective], list[EnumerationProvenance]]",
+          "exported": true,
+          "lineCount": 55
+        },
+        {
+          "name": "_assert_refs_enumerated",
+          "params": [
+            "los",
+            "enumerated_ids"
+          ],
+          "returnType": "None",
+          "exported": true,
+          "lineCount": 10
+        },
+        {
+          "name": "_build_dissent",
+          "params": [
+            "typed",
+            "fingerprint"
+          ],
+          "returnType": "Dissent",
+          "exported": true,
+          "lineCount": 34
+        },
+        {
+          "name": "_live_pre_pass",
+          "params": [
+            "enumerated",
+            "corpus_dir",
+            "chat_model_factory"
+          ],
+          "returnType": "tuple[\n    list[TypedComponent], list[LearningObjective], list[EnumerationProvenance]\n]",
+          "exported": true,
+          "lineCount": 36
+        },
+        {
+          "name": "_coerce_component_row",
+          "params": [
+            "row",
+            "pid",
+            "parent_rel"
+          ],
+          "returnType": "dict[str, Any]",
+          "exported": true,
+          "lineCount": 32
+        },
+        {
+          "name": "_parse_live_payload",
+          "params": [
+            "payload",
+            "enumerated",
+            "corpus_dir"
+          ],
+          "returnType": "tuple[list[TypedComponent], list[LearningObjective], list[EnumerationProvenance]]",
+          "exported": true,
+          "lineCount": 137
+        },
+        {
+          "name": "_cache_path",
+          "params": [
+            "run_dir",
+            "fingerprint"
+          ],
+          "returnType": "Path",
+          "exported": true,
+          "lineCount": 2
+        },
+        {
+          "name": "build_enrichment_result",
+          "params": [
+            "corpus_dir",
+            "dispatch_live",
+            "chat_model_factory",
+            "resolve_dispatch"
+          ],
+          "returnType": "G0EnrichmentResult",
+          "exported": true,
+          "lineCount": 100
+        },
+        {
+          "name": "run_g0_enrichment",
+          "params": [
+            "node_id",
+            "production_envelope",
+            "corpus_dir",
+            "trial_id",
+            "runs_root",
+            "dispatch_live",
+            "chat_model_factory",
+            "resolve_dispatch"
+          ],
+          "returnType": "ProductionEnvelope",
+          "exported": true,
+          "lineCount": 79
+        },
+        {
+          "name": "_full_dump",
+          "params": [
+            "result"
+          ],
+          "returnType": "dict[str, Any]",
+          "exported": true,
+          "lineCount": 8
+        },
+        {
+          "name": "load_enrichment_result",
+          "params": [
+            "run_dir"
+          ],
+          "returnType": "dict[str, Any] | None",
+          "exported": true,
+          "lineCount": 9
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "json",
+          "specifiers": [
+            "json"
+          ]
+        },
+        {
+          "source": "logging",
+          "specifiers": [
+            "logging"
+          ]
+        },
+        {
+          "source": "os",
+          "specifiers": [
+            "os"
+          ]
+        },
+        {
+          "source": "re",
+          "specifiers": [
+            "re"
+          ]
+        },
+        {
+          "source": "sys",
+          "specifiers": [
+            "sys"
+          ]
+        },
+        {
+          "source": "collections.abc",
+          "specifiers": [
+            "Callable"
+          ]
+        },
+        {
+          "source": "datetime",
+          "specifiers": [
+            "UTC",
+            "datetime"
+          ]
+        },
+        {
+          "source": "pathlib",
+          "specifiers": [
+            "Path"
+          ]
+        },
+        {
+          "source": "typing",
+          "specifiers": [
+            "Any"
+          ]
+        },
+        {
+          "source": "uuid",
+          "specifiers": [
+            "UUID"
+          ]
+        },
+        {
+          "source": "pydantic",
+          "specifiers": [
+            "ValidationError"
+          ]
+        },
+        {
+          "source": "app.composers.section_02a.composer",
+          "specifiers": [
+            "_walk_corpus_files"
+          ]
+        },
+        {
+          "source": "app.marcus.lesson_plan.g0_enrichment",
+          "specifiers": [
+            "CitationResolution",
+            "Dissent",
+            "EnumerationProvenance",
+            "G0EnrichmentResult",
+            "IndependentParse",
+            "ReconcileView",
+            "TraversalRoot",
+            "assert_run_dissent_invariant",
+            "corpus_fingerprint",
+            "file_content_hash"
+          ]
+        },
+        {
+          "source": "app.marcus.lesson_plan.learning_objective",
+          "specifiers": [
+            "LearningObjective",
+            "SourceRef",
+            "advance_lo"
+          ]
+        },
+        {
+          "source": "app.marcus.lesson_plan.pedagogy_annotation",
+          "specifiers": [
+            "PEDAGOGY_TRANSFORM_VERSION",
+            "PedagogyAnnotation",
+            "assert_pedagogy_referential_invariant",
+            "assert_pedagogy_teachable_consistency",
+            "build_pedagogy_annotations"
+          ]
+        },
+        {
+          "source": "app.marcus.lesson_plan.source_type",
+          "specifiers": [
+            "TypedComponent"
+          ]
+        },
+        {
+          "source": "app.models.runtime.production_envelope",
+          "specifiers": [
+            "ProductionEnvelope",
+            "SpecialistContribution"
+          ]
+        }
+      ],
+      "exports": [
+        "g0_enrichment_active",
+        "g0_dispatch_live",
+        "_import_pass0_resolver",
+        "_resolve_citation_resolutions",
+        "_build_pedagogy_frontmatter",
+        "_attach_pedagogy_annotations",
+        "_enumerate",
+        "_fingerprint",
+        "_read_text_resilient",
+        "_heuristic_type",
+        "_component_type",
+        "_split_components",
+        "_file_components",
+        "_source_excerpt",
+        "_live_corpus_summary",
+        "_strip_blockquote_prefix",
+        "_normalize_for_groundedness",
+        "_is_excerpt_grounded",
+        "flag_ungrounded_components",
+        "_offline_pre_pass",
+        "_assert_refs_enumerated",
+        "_build_dissent",
+        "_live_pre_pass",
+        "_coerce_component_row",
+        "_parse_live_payload",
+        "_cache_path",
+        "build_enrichment_result",
+        "run_g0_enrichment",
+        "_full_dump",
+        "load_enrichment_result"
+      ],
+      "totalLines": 1164,
+      "hasStructuralAnalysis": true
+    },
     "app/marcus/orchestrator/gate_runner.py": {
       "filePath": "app/marcus/orchestrator/gate_runner.py",
       "contentHash": "44e59f6dabe3a6e3d760ccad826bd2b989364041df200e086019e62e6775ecf0",
@@ -12976,6 +15408,161 @@
         "_radio"
       ],
       "totalLines": 193,
+      "hasStructuralAnalysis": true
+    },
+    "app/marcus/orchestrator/irene_refinement_wiring.py": {
+      "filePath": "app/marcus/orchestrator/irene_refinement_wiring.py",
+      "contentHash": "a3b477a73fa4fcd0739b52f9048bd8df49e4d8e025c79b9f758083a67dade285",
+      "functions": [
+        {
+          "name": "irene_refinement_active",
+          "params": [],
+          "returnType": "bool",
+          "exported": true,
+          "lineCount": 8
+        },
+        {
+          "name": "ir_dispatch_live",
+          "params": [],
+          "returnType": "bool",
+          "exported": true,
+          "lineCount": 3
+        },
+        {
+          "name": "_cache_path",
+          "params": [
+            "run_dir",
+            "fingerprint"
+          ],
+          "returnType": "Path",
+          "exported": true,
+          "lineCount": 2
+        },
+        {
+          "name": "_load_confirmed_provisional_los",
+          "params": [
+            "run_dir"
+          ],
+          "returnType": "tuple[list[LearningObjective], str, str]",
+          "exported": true,
+          "lineCount": 30
+        },
+        {
+          "name": "build_result_for_run",
+          "params": [
+            "run_dir",
+            "dispatch_live",
+            "chat_model_factory"
+          ],
+          "returnType": "IreneRefinementResult",
+          "exported": true,
+          "lineCount": 15
+        },
+        {
+          "name": "run_irene_refinement",
+          "params": [
+            "node_id",
+            "production_envelope",
+            "trial_id",
+            "runs_root",
+            "dispatch_live",
+            "chat_model_factory"
+          ],
+          "returnType": "ProductionEnvelope",
+          "exported": true,
+          "lineCount": 72
+        },
+        {
+          "name": "load_refinement_result",
+          "params": [
+            "run_dir"
+          ],
+          "returnType": "dict[str, Any] | None",
+          "exported": true,
+          "lineCount": 9
+        },
+        {
+          "name": "load_refinement_full",
+          "params": [
+            "run_dir"
+          ],
+          "returnType": "IreneRefinementResult | None",
+          "exported": true,
+          "lineCount": 18
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "json",
+          "specifiers": [
+            "json"
+          ]
+        },
+        {
+          "source": "logging",
+          "specifiers": [
+            "logging"
+          ]
+        },
+        {
+          "source": "pathlib",
+          "specifiers": [
+            "Path"
+          ]
+        },
+        {
+          "source": "typing",
+          "specifiers": [
+            "Any"
+          ]
+        },
+        {
+          "source": "uuid",
+          "specifiers": [
+            "UUID"
+          ]
+        },
+        {
+          "source": "app.marcus.lesson_plan.irene_refinement",
+          "specifiers": [
+            "REFINEMENT_LIVE_MODEL_ID",
+            "REFINEMENT_MODEL_MARKER",
+            "IreneRefinementResult",
+            "build_refinement_result"
+          ]
+        },
+        {
+          "source": "app.marcus.lesson_plan.learning_objective",
+          "specifiers": [
+            "LearningObjective"
+          ]
+        },
+        {
+          "source": "app.marcus.orchestrator",
+          "specifiers": [
+            "g0_enrichment_wiring"
+          ]
+        },
+        {
+          "source": "app.models.runtime.production_envelope",
+          "specifiers": [
+            "ProductionEnvelope",
+            "SpecialistContribution"
+          ]
+        }
+      ],
+      "exports": [
+        "irene_refinement_active",
+        "ir_dispatch_live",
+        "_cache_path",
+        "_load_confirmed_provisional_los",
+        "build_result_for_run",
+        "run_irene_refinement",
+        "load_refinement_result",
+        "load_refinement_full"
+      ],
+      "totalLines": 268,
       "hasStructuralAnalysis": true
     },
     "app/marcus/orchestrator/learning_event_wiring.py": {
@@ -14145,7 +16732,7 @@
     },
     "app/marcus/orchestrator/production_runner.py": {
       "filePath": "app/marcus/orchestrator/production_runner.py",
-      "contentHash": "63e5f4cab5a68a40b22c6ac298e8fbeebf6ddc33ac28289e694ec7714f5b3e62",
+      "contentHash": "0fe8a0d30bd628914a707ddb1f9a04333c9846725d1f1b26779e84574dd8293f",
       "functions": [
         {
           "name": "_research_dispatch_live",
@@ -14400,7 +16987,7 @@
           ],
           "returnType": "Any",
           "exported": true,
-          "lineCount": 148
+          "lineCount": 205
         },
         {
           "name": "_persist_conversation_turn_if_possible",
@@ -14418,11 +17005,13 @@
         {
           "name": "_pack_hash_binding",
           "params": [
-            "manifest_path"
+            "manifest_path",
+            "selection",
+            "composed_manifest"
           ],
           "returnType": "str",
           "exported": true,
-          "lineCount": 2
+          "lineCount": 42
         },
         {
           "name": "_conversation_chain_digest",
@@ -14442,11 +17031,13 @@
             "runs_root",
             "manifest_path",
             "langsmith_trace_id",
-            "silent_bypass_events"
+            "silent_bypass_events",
+            "selection",
+            "composed_manifest"
           ],
           "returnType": "Path",
           "exported": true,
-          "lineCount": 33
+          "lineCount": 39
         },
         {
           "name": "_quartile_engagement_counts",
@@ -14600,6 +17191,15 @@
           "lineCount": 39
         },
         {
+          "name": "_apply_g0r_ratification",
+          "params": [
+            "run_dir"
+          ],
+          "returnType": "Path | None",
+          "exported": true,
+          "lineCount": 40
+        },
+        {
           "name": "_record_cost",
           "params": [
             "trial_id",
@@ -14654,7 +17254,7 @@
           ],
           "returnType": "dict[str, Any] | None",
           "exported": true,
-          "lineCount": 49
+          "lineCount": 62
         },
         {
           "name": "_gamma_settings_from_directive",
@@ -14756,7 +17356,7 @@
           ],
           "returnType": "ProductionTrialEnvelope",
           "exported": true,
-          "lineCount": 165
+          "lineCount": 169
         },
         {
           "name": "_dispatch_specialist_at_node",
@@ -14816,11 +17416,12 @@
             "manifest_path",
             "max_specialist_calls",
             "pause_at_gates",
-            "directive_path"
+            "directive_path",
+            "component_selection"
           ],
           "returnType": "ProductionTrialEnvelope",
           "exported": true,
-          "lineCount": 369
+          "lineCount": 508
         },
         {
           "name": "resume_production_trial",
@@ -14832,7 +17433,7 @@
           ],
           "returnType": "ProductionTrialEnvelope",
           "exported": true,
-          "lineCount": 111
+          "lineCount": 125
         },
         {
           "name": "recover_production_trial",
@@ -14864,7 +17465,7 @@
           ],
           "returnType": "ProductionTrialEnvelope",
           "exported": true,
-          "lineCount": 371
+          "lineCount": 499
         }
       ],
       "classes": [
@@ -15018,11 +17619,19 @@
           ]
         },
         {
+          "source": "app.marcus.lesson_plan.composition",
+          "specifiers": [
+            "compose_manifest"
+          ]
+        },
+        {
           "source": "app.marcus.orchestrator",
           "specifiers": [
             "chooser_publisher",
             "conversation_persistence",
+            "g0_enrichment_wiring",
             "gate_runner",
+            "irene_refinement_wiring",
             "package_builders",
             "pre_gate_marcus",
             "research_wiring",
@@ -15060,6 +17669,8 @@
           "specifiers": [
             "AnyDecisionCardAdapter",
             "DecisionCardMeta",
+            "G0ECard",
+            "G0RCard",
             "G1Card",
             "G2BCard",
             "G2CCard",
@@ -15100,6 +17711,12 @@
           "source": "app.models.state.cache_state",
           "specifiers": [
             "CacheState"
+          ]
+        },
+        {
+          "source": "app.models.state.component_selection",
+          "specifiers": [
+            "ComponentSelection"
           ]
         },
         {
@@ -15188,6 +17805,7 @@
         "_apply_variant_selection",
         "_apply_deckwide_variant_selection",
         "_apply_verdict_to_run_state",
+        "_apply_g0r_ratification",
         "_record_cost",
         "_merge_artifact_paths",
         "_has_production_evidence",
@@ -15208,7 +17826,7 @@
         "recover_production_trial",
         "_continue_production_walk"
       ],
-      "totalLines": 2716,
+      "totalLines": 3165,
       "hasStructuralAnalysis": true
     },
     "app/marcus/orchestrator/research_citation.py": {
@@ -17844,7 +20462,7 @@
     },
     "app/models/decision_cards/__init__.py": {
       "filePath": "app/models/decision_cards/__init__.py",
-      "contentHash": "6c8b24b2d68b99c9d66759b42d415f36cbafbe5fb3e00f034f85acbe0c4430de",
+      "contentHash": "a34e583e7f38d76cbc4f66a5f9de07e9340fa40ae224fe4f76aa6cf5258be1ad",
       "functions": [],
       "classes": [],
       "imports": [
@@ -17882,6 +20500,18 @@
           "source": "app.models.decision_cards.g0",
           "specifiers": [
             "G0Card"
+          ]
+        },
+        {
+          "source": "app.models.decision_cards.g0e",
+          "specifiers": [
+            "G0ECard"
+          ]
+        },
+        {
+          "source": "app.models.decision_cards.g0r",
+          "specifiers": [
+            "G0RCard"
           ]
         },
         {
@@ -17961,7 +20591,7 @@
         }
       ],
       "exports": [],
-      "totalLines": 80,
+      "totalLines": 95,
       "hasStructuralAnalysis": true
     },
     "app/models/decision_cards/__main__.py": {
@@ -18263,6 +20893,154 @@
         "G0Card"
       ],
       "totalLines": 92,
+      "hasStructuralAnalysis": true
+    },
+    "app/models/decision_cards/g0e.py": {
+      "filePath": "app/models/decision_cards/g0e.py",
+      "contentHash": "f61ff83aca361cb473919733f6447196d183da4ce2a1ca24474a5d632bb39f72",
+      "functions": [],
+      "classes": [
+        {
+          "name": "G0ECard",
+          "methods": [
+            "_enforce_uuid4",
+            "_enforce_created_at_tz",
+            "_reject_blank_operator_prompt"
+          ],
+          "properties": [
+            "schema_version",
+            "card_id",
+            "trial_id",
+            "gate_id",
+            "gate_focus",
+            "created_at",
+            "typed_components",
+            "provisional_los",
+            "traversal_roots",
+            "enumeration_provenance",
+            "reconcile",
+            "dissents",
+            "operator_prompt",
+            "verb"
+          ],
+          "exported": true,
+          "lineCount": 80
+        }
+      ],
+      "imports": [
+        {
+          "source": "datetime",
+          "specifiers": [
+            "UTC",
+            "datetime"
+          ]
+        },
+        {
+          "source": "typing",
+          "specifiers": [
+            "Any",
+            "Literal"
+          ]
+        },
+        {
+          "source": "pydantic",
+          "specifiers": [
+            "UUID4",
+            "Field",
+            "field_validator"
+          ]
+        },
+        {
+          "source": "app.models.decision_cards._base",
+          "specifiers": [
+            "DecisionCardBase"
+          ]
+        },
+        {
+          "source": "app.models.state._base",
+          "specifiers": [
+            "enforce_tz_aware",
+            "enforce_uuid4_version"
+          ]
+        }
+      ],
+      "exports": [
+        "G0ECard"
+      ],
+      "totalLines": 111,
+      "hasStructuralAnalysis": true
+    },
+    "app/models/decision_cards/g0r.py": {
+      "filePath": "app/models/decision_cards/g0r.py",
+      "contentHash": "64080243670ab351a09363807e8a41e1fe1ff8fa7e12fcab04d13ab5ff4e3f88",
+      "functions": [],
+      "classes": [
+        {
+          "name": "G0RCard",
+          "methods": [
+            "_enforce_uuid4",
+            "_enforce_created_at_tz",
+            "_reject_blank_operator_prompt"
+          ],
+          "properties": [
+            "schema_version",
+            "card_id",
+            "trial_id",
+            "gate_id",
+            "gate_focus",
+            "created_at",
+            "refined_los",
+            "lo_delta",
+            "reconcile",
+            "flagged_for_operator",
+            "operator_prompt",
+            "verb"
+          ],
+          "exported": true,
+          "lineCount": 69
+        }
+      ],
+      "imports": [
+        {
+          "source": "datetime",
+          "specifiers": [
+            "UTC",
+            "datetime"
+          ]
+        },
+        {
+          "source": "typing",
+          "specifiers": [
+            "Any",
+            "Literal"
+          ]
+        },
+        {
+          "source": "pydantic",
+          "specifiers": [
+            "UUID4",
+            "Field",
+            "field_validator"
+          ]
+        },
+        {
+          "source": "app.models.decision_cards._base",
+          "specifiers": [
+            "DecisionCardBase"
+          ]
+        },
+        {
+          "source": "app.models.state._base",
+          "specifiers": [
+            "enforce_tz_aware",
+            "enforce_uuid4_version"
+          ]
+        }
+      ],
+      "exports": [
+        "G0RCard"
+      ],
+      "totalLines": 99,
       "hasStructuralAnalysis": true
     },
     "app/models/decision_cards/g1.py": {
@@ -23698,7 +26476,7 @@
     },
     "app/models/runtime/production_trial_envelope.py": {
       "filePath": "app/models/runtime/production_trial_envelope.py",
-      "contentHash": "d3f9e2eae424a9e8e2e6f51562c2278fb31ffe0e5ea24ce9cc43c84300804b7a",
+      "contentHash": "8676976285f01f02bcdd15c2dce9dd8d253b48218a6f8ec6df74c77c3f3493e0",
       "functions": [],
       "classes": [
         {
@@ -23797,7 +26575,7 @@
       "exports": [
         "ProductionTrialEnvelope"
       ],
-      "totalLines": 146,
+      "totalLines": 149,
       "hasStructuralAnalysis": true
     },
     "app/models/runtime/trial_economics_report.py": {
@@ -24404,6 +27182,57 @@
       "totalLines": 48,
       "hasStructuralAnalysis": true
     },
+    "app/models/state/component_selection.py": {
+      "filePath": "app/models/state/component_selection.py",
+      "contentHash": "afa39e8f1cbad360b01096009ca6464a2e3c047a581499f50f41a3ad2fd8cfe4",
+      "functions": [],
+      "classes": [
+        {
+          "name": "ComponentSelection",
+          "methods": [
+            "production_default",
+            "as_map",
+            "selected_components",
+            "canonical_bytes"
+          ],
+          "properties": [
+            "deck",
+            "motion",
+            "workbook",
+            "COMPONENTS"
+          ],
+          "exported": true,
+          "lineCount": 43
+        }
+      ],
+      "imports": [
+        {
+          "source": "json",
+          "specifiers": [
+            "json"
+          ]
+        },
+        {
+          "source": "typing",
+          "specifiers": [
+            "ClassVar"
+          ]
+        },
+        {
+          "source": "pydantic",
+          "specifiers": [
+            "BaseModel",
+            "ConfigDict",
+            "Field"
+          ]
+        }
+      ],
+      "exports": [
+        "ComponentSelection"
+      ],
+      "totalLines": 70,
+      "hasStructuralAnalysis": true
+    },
     "app/models/state/model_resolution_entry.py": {
       "filePath": "app/models/state/model_resolution_entry.py",
       "contentHash": "5b9e223005ed18812786de17d99715b016158751e399b751c05e60a1f2fb1974",
@@ -24684,7 +27513,7 @@
     },
     "app/models/state/run_state.py": {
       "filePath": "app/models/state/run_state.py",
-      "contentHash": "277e503e3dd068142d5331004ed948d007e5ae07a6de2a20dc99b9425fd37452",
+      "contentHash": "eaf15007d7e1f3900e521c60e13bb94bc48cdd375aad7cd4c789a414af46b37f",
       "functions": [],
       "classes": [
         {
@@ -24710,10 +27539,11 @@
             "marcus_fingerprint",
             "story_states",
             "cache_state",
-            "production_envelope"
+            "production_envelope",
+            "component_selection"
           ],
           "exported": true,
-          "lineCount": 115
+          "lineCount": 124
         }
       ],
       "imports": [
@@ -24767,6 +27597,12 @@
           ]
         },
         {
+          "source": "app.models.state.component_selection",
+          "specifiers": [
+            "ComponentSelection"
+          ]
+        },
+        {
           "source": "app.models.state.model_resolution_entry",
           "specifiers": [
             "ModelResolutionEntry"
@@ -24794,7 +27630,7 @@
       "exports": [
         "RunState"
       ],
-      "totalLines": 161,
+      "totalLines": 171,
       "hasStructuralAnalysis": true
     },
     "app/models/state/sanctum_fingerprint.py": {
@@ -25088,7 +27924,7 @@
     },
     "app/models/state/specialist_summary_artifacts.py": {
       "filePath": "app/models/state/specialist_summary_artifacts.py",
-      "contentHash": "9163eae2ca71da66117ad452cd117ecc81dbea411de59798038402784b9db0e5",
+      "contentHash": "ef404acb9450f1341a0249a04b1d2f838374c7a5f56d7fb6cc35e2d2cbecbb6a",
       "functions": [
         {
           "name": "canonical_specialist_id",
@@ -25361,7 +28197,7 @@
         "_timestamp_from_summary",
         "load_most_recent_summary"
       ],
-      "totalLines": 330,
+      "totalLines": 355,
       "hasStructuralAnalysis": true
     },
     "app/models/state/story_state.py": {
@@ -27681,7 +30517,7 @@
     },
     "app/runtime/compiled_graph_digest.py": {
       "filePath": "app/runtime/compiled_graph_digest.py",
-      "contentHash": "cd508bb6e5435029d1325e311b744f0a884185ead0cb1c007023793c9d66393e",
+      "contentHash": "a95e4bf7f155bdbfc86566c5e1fcf9fa92ac73d3d85bd58ab388739d9d10fa6d",
       "functions": [
         {
           "name": "_normalize_json_value",
@@ -27700,6 +30536,15 @@
           "returnType": "bytes",
           "exported": true,
           "lineCount": 7
+        },
+        {
+          "name": "canonical_sha256",
+          "params": [
+            "payload"
+          ],
+          "returnType": "str",
+          "exported": true,
+          "lineCount": 3
         },
         {
           "name": "_load_manifest_snapshot",
@@ -27729,9 +30574,48 @@
           "returnType": "str",
           "exported": true,
           "lineCount": 22
+        },
+        {
+          "name": "assert_two_part_digests_match",
+          "params": [
+            "recorded",
+            "recomputed"
+          ],
+          "returnType": "None",
+          "exported": true,
+          "lineCount": 23
         }
       ],
-      "classes": [],
+      "classes": [
+        {
+          "name": "TwoPartDigestMismatchError",
+          "methods": [],
+          "properties": [],
+          "exported": true,
+          "lineCount": 7
+        },
+        {
+          "name": "TwoPartDigest",
+          "methods": [],
+          "properties": [
+            "digest_schema_version",
+            "composer_version",
+            "component_selection",
+            "component_content_hashes",
+            "component_versions",
+            "model_config_closure",
+            "frozen_graph_version",
+            "pack_version",
+            "input_closure_digest",
+            "composed_graph_digest",
+            "composed_node_ids",
+            "composed_edge_tuples",
+            "composed_node_versions"
+          ],
+          "exported": true,
+          "lineCount": 25
+        }
+      ],
       "imports": [
         {
           "source": "hashlib",
@@ -27771,6 +30655,14 @@
           ]
         },
         {
+          "source": "pydantic",
+          "specifiers": [
+            "BaseModel",
+            "ConfigDict",
+            "Field"
+          ]
+        },
+        {
           "source": "app.manifest",
           "specifiers": [
             "compile_run_graph",
@@ -27787,11 +30679,15 @@
       "exports": [
         "_normalize_json_value",
         "_canonical_json_bytes",
+        "canonical_sha256",
         "_load_manifest_snapshot",
         "_load_dispatch_snapshot",
-        "compute_compiled_graph_digest"
+        "compute_compiled_graph_digest",
+        "TwoPartDigestMismatchError",
+        "TwoPartDigest",
+        "assert_two_part_digests_match"
       ],
-      "totalLines": 105,
+      "totalLines": 202,
       "hasStructuralAnalysis": true
     },
     "app/runtime/economics.py": {
@@ -29534,7 +32430,7 @@
     },
     "app/specialists/_shared/figure_tokens.py": {
       "filePath": "app/specialists/_shared/figure_tokens.py",
-      "contentHash": "f4e0a686e8d6140c0eafcfc128d2700d2104ef232d160bbbd3bb225e841ed5ca",
+      "contentHash": "00110449aecdddd50cc1786f62a7b2d6951e239974ff95e67d39c497847c6105",
       "functions": [
         {
           "name": "_figures",
@@ -29543,7 +32439,17 @@
           ],
           "returnType": "set[str]",
           "exported": true,
-          "lineCount": 2
+          "lineCount": 13
+        },
+        {
+          "name": "_normalize_money",
+          "params": [
+            "number",
+            "unit"
+          ],
+          "returnType": "str",
+          "exported": true,
+          "lineCount": 6
         },
         {
           "name": "_normalize_figure",
@@ -29552,7 +32458,7 @@
           ],
           "returnType": "str",
           "exported": true,
-          "lineCount": 14
+          "lineCount": 16
         }
       ],
       "classes": [],
@@ -29566,9 +32472,10 @@
       ],
       "exports": [
         "_figures",
+        "_normalize_money",
         "_normalize_figure"
       ],
-      "totalLines": 35,
+      "totalLines": 70,
       "hasStructuralAnalysis": true
     },
     "app/specialists/_shared/source_fidelity_audit.py": {
@@ -32737,7 +35644,7 @@
     },
     "app/specialists/gary/_act.py": {
       "filePath": "app/specialists/gary/_act.py",
-      "contentHash": "95ac5dd335d29ce3105cd04c682f132a6132a97b030b142ffe525631722ec226",
+      "contentHash": "56a8676ceaf9a4c0f3846127a06727153e1dc8ba3d7b039d12fed1cb6582bc30",
       "functions": [
         {
           "name": "_json_dumps",
@@ -32834,7 +35741,7 @@
           ],
           "returnType": "list[dict[str, Any]]",
           "exported": true,
-          "lineCount": 72
+          "lineCount": 88
         },
         {
           "name": "_theme_id_for_variant",
@@ -32915,6 +35822,50 @@
           "lineCount": 3
         },
         {
+          "name": "_safe_slug",
+          "params": [
+            "value"
+          ],
+          "returnType": "str",
+          "exported": true,
+          "lineCount": 8
+        },
+        {
+          "name": "_studio_slide_content",
+          "params": [
+            "slide",
+            "index"
+          ],
+          "returnType": "str",
+          "exported": true,
+          "lineCount": 12
+        },
+        {
+          "name": "_assert_studio_image_card",
+          "params": [
+            "png_path",
+            "slide_id",
+            "generation_id"
+          ],
+          "returnType": "None",
+          "exported": true,
+          "lineCount": 41
+        },
+        {
+          "name": "_generate_studio_variant",
+          "params": [
+            "client",
+            "slides",
+            "variant_settings",
+            "export_dir",
+            "variant",
+            "calls"
+          ],
+          "returnType": "tuple[dict[str, str], dict[str, str]]",
+          "exported": true,
+          "lineCount": 57
+        },
+        {
           "name": "generate_gamma_variants",
           "params": [
             "payload",
@@ -32922,7 +35873,7 @@
           ],
           "returnType": "dict[str, Any]",
           "exported": true,
-          "lineCount": 173
+          "lineCount": 203
         },
         {
           "name": "act",
@@ -33047,10 +35998,14 @@
         "_slide_title",
         "_input_text",
         "build_vera_g3_invocation",
+        "_safe_slug",
+        "_studio_slide_content",
+        "_assert_studio_image_card",
+        "_generate_studio_variant",
         "generate_gamma_variants",
         "act"
       ],
-      "totalLines": 755,
+      "totalLines": 958,
       "hasStructuralAnalysis": true
     },
     "app/specialists/gary/config.yaml": {
@@ -35422,7 +38377,7 @@
     },
     "app/specialists/kira/_act.py": {
       "filePath": "app/specialists/kira/_act.py",
-      "contentHash": "46dafdc6565e5d3e75d2ba8d6718205387618faa607bee8844bd8fae23b43a5b",
+      "contentHash": "87c2e515968461394573b25e0df759b621533e4eb95d8e3bdd84e8dba7e6b28e",
       "functions": [
         {
           "name": "_json_dumps",
@@ -35468,7 +38423,7 @@
           ],
           "returnType": "dict[str, Any]",
           "exported": true,
-          "lineCount": 9
+          "lineCount": 33
         },
         {
           "name": "_slides_from_plan",
@@ -35547,7 +38502,7 @@
           ],
           "returnType": "dict[str, Any]",
           "exported": true,
-          "lineCount": 19
+          "lineCount": 27
         },
         {
           "name": "generate_motion_from_plan",
@@ -35557,7 +38512,7 @@
           ],
           "returnType": "dict[str, Any]",
           "exported": true,
-          "lineCount": 85
+          "lineCount": 111
         },
         {
           "name": "build_compositor_invocation",
@@ -35645,6 +38600,12 @@
           ]
         },
         {
+          "source": "app.specialists.kira.payload_contract",
+          "specifiers": [
+            "CONSUMED_PAYLOAD_KEYS"
+          ]
+        },
+        {
           "source": "scripts.api_clients.kling_client",
           "specifiers": [
             "KlingClient"
@@ -35670,7 +38631,7 @@
         "build_compositor_invocation",
         "act"
       ],
-      "totalLines": 289,
+      "totalLines": 349,
       "hasStructuralAnalysis": true
     },
     "app/specialists/kira/config.yaml": {
@@ -35973,6 +38934,16 @@
       "imports": [],
       "exports": [],
       "totalLines": 18,
+      "hasStructuralAnalysis": true
+    },
+    "app/specialists/kira/payload_contract.py": {
+      "filePath": "app/specialists/kira/payload_contract.py",
+      "contentHash": "420a97a32321fad8d06b20f1bebddc516c13b813cc551d2f5c76f71611dedd42",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 35,
       "hasStructuralAnalysis": true
     },
     "app/specialists/kira/state.py": {
@@ -36387,6 +39358,575 @@
         "MiraReturn"
       ],
       "totalLines": 48,
+      "hasStructuralAnalysis": true
+    },
+    "app/specialists/motion_planner/__init__.py": {
+      "filePath": "app/specialists/motion_planner/__init__.py",
+      "contentHash": "7c73610c617834ff8134a2b394174616fb3ff9162be92b2a7fd04e555c61b0e7",
+      "functions": [],
+      "classes": [],
+      "imports": [
+        {
+          "source": "app.specialists.motion_planner.graph",
+          "specifiers": [
+            "build_motion_planner_graph"
+          ]
+        },
+        {
+          "source": "app.specialists.motion_planner.state",
+          "specifiers": [
+            "MotionPlannerEnvelope",
+            "MotionPlannerReturn"
+          ]
+        }
+      ],
+      "exports": [],
+      "totalLines": 14,
+      "hasStructuralAnalysis": true
+    },
+    "app/specialists/motion_planner/_act.py": {
+      "filePath": "app/specialists/motion_planner/_act.py",
+      "contentHash": "06b21620751bf3d1ae2823a85dcc2cdcad8aa52b5d454a8d00d3d3d15948f27a",
+      "functions": [
+        {
+          "name": "_engine",
+          "params": [],
+          "returnType": "ModuleType",
+          "exported": true,
+          "lineCount": 22
+        },
+        {
+          "name": "_trail_entry",
+          "params": [
+            "last_entry",
+            "tag"
+          ],
+          "returnType": "ModelResolutionEntry",
+          "exported": true,
+          "lineCount": 9
+        },
+        {
+          "name": "decode_envelope_payload",
+          "params": [
+            "state"
+          ],
+          "returnType": "dict[str, Any]",
+          "exported": true,
+          "lineCount": 16
+        },
+        {
+          "name": "_load_config",
+          "params": [],
+          "returnType": "dict[str, Any]",
+          "exported": true,
+          "lineCount": 5
+        },
+        {
+          "name": "_resolve_authorized_storyboard",
+          "params": [
+            "payload"
+          ],
+          "returnType": "dict[str, Any]",
+          "exported": true,
+          "lineCount": 58
+        },
+        {
+          "name": "_env_designations",
+          "params": [],
+          "returnType": "dict[str, dict[str, Any]] | None",
+          "exported": true,
+          "lineCount": 10
+        },
+        {
+          "name": "_max_credits",
+          "params": [
+            "payload",
+            "config"
+          ],
+          "returnType": "float",
+          "exported": true,
+          "lineCount": 5
+        },
+        {
+          "name": "_model_preference",
+          "params": [
+            "payload",
+            "config"
+          ],
+          "returnType": "str",
+          "exported": true,
+          "lineCount": 5
+        },
+        {
+          "name": "_auto_designations",
+          "params": [
+            "plan"
+          ],
+          "returnType": "dict[str, dict[str, Any]]",
+          "exported": true,
+          "lineCount": 23
+        },
+        {
+          "name": "_slide_images",
+          "params": [
+            "storyboard",
+            "payload"
+          ],
+          "returnType": "dict[str, str]",
+          "exported": true,
+          "lineCount": 26
+        },
+        {
+          "name": "_load_style_catalog",
+          "params": [],
+          "returnType": "dict[str, dict[str, Any]]",
+          "exported": true,
+          "lineCount": 9
+        },
+        {
+          "name": "_select_style",
+          "params": [
+            "catalog",
+            "operation"
+          ],
+          "returnType": "dict[str, Any]",
+          "exported": true,
+          "lineCount": 10
+        },
+        {
+          "name": "_fuse_prompt",
+          "params": [
+            "brief",
+            "prompt_template"
+          ],
+          "returnType": "str",
+          "exported": true,
+          "lineCount": 11
+        },
+        {
+          "name": "_valid_model_id",
+          "params": [],
+          "returnType": "str",
+          "exported": true,
+          "lineCount": 24
+        },
+        {
+          "name": "_project_slides",
+          "params": [
+            "applied_plan",
+            "storyboard",
+            "payload",
+            "config"
+          ],
+          "returnType": "list[dict[str, Any]]",
+          "exported": true,
+          "lineCount": 46
+        },
+        {
+          "name": "build_motion_plan",
+          "params": [
+            "payload"
+          ],
+          "returnType": "dict[str, Any]",
+          "exported": true,
+          "lineCount": 47
+        },
+        {
+          "name": "act",
+          "params": [
+            "state"
+          ],
+          "returnType": "dict[str, Any]",
+          "exported": true,
+          "lineCount": 32
+        }
+      ],
+      "classes": [
+        {
+          "name": "MotionPlannerActError",
+          "methods": [],
+          "properties": [],
+          "exported": true,
+          "lineCount": 6
+        }
+      ],
+      "imports": [
+        {
+          "source": "importlib.util",
+          "specifiers": [
+            "importlib.util"
+          ]
+        },
+        {
+          "source": "json",
+          "specifiers": [
+            "json"
+          ]
+        },
+        {
+          "source": "os",
+          "specifiers": [
+            "os"
+          ]
+        },
+        {
+          "source": "pathlib",
+          "specifiers": [
+            "Path"
+          ]
+        },
+        {
+          "source": "types",
+          "specifiers": [
+            "ModuleType"
+          ]
+        },
+        {
+          "source": "typing",
+          "specifiers": [
+            "Any"
+          ]
+        },
+        {
+          "source": "yaml",
+          "specifiers": [
+            "yaml"
+          ]
+        },
+        {
+          "source": "app.models.state.cache_state",
+          "specifiers": [
+            "CacheState"
+          ]
+        },
+        {
+          "source": "app.models.state.model_resolution_entry",
+          "specifiers": [
+            "ModelResolutionEntry"
+          ]
+        },
+        {
+          "source": "app.models.state.run_state",
+          "specifiers": [
+            "RunState"
+          ]
+        },
+        {
+          "source": "app.specialists.dispatch_errors",
+          "specifiers": [
+            "SpecialistDispatchError"
+          ]
+        },
+        {
+          "source": "app.specialists.motion_planner.payload_contract",
+          "specifiers": [
+            "CONSUMED_PAYLOAD_KEYS"
+          ]
+        },
+        {
+          "source": "scripts.utilities.motion_budgeting",
+          "specifiers": [
+            "estimate_motion_credits"
+          ]
+        }
+      ],
+      "exports": [
+        "MotionPlannerActError",
+        "_engine",
+        "_trail_entry",
+        "decode_envelope_payload",
+        "_load_config",
+        "_resolve_authorized_storyboard",
+        "_env_designations",
+        "_max_credits",
+        "_model_preference",
+        "_auto_designations",
+        "_slide_images",
+        "_load_style_catalog",
+        "_select_style",
+        "_fuse_prompt",
+        "_valid_model_id",
+        "_project_slides",
+        "build_motion_plan",
+        "act"
+      ],
+      "totalLines": 487,
+      "hasStructuralAnalysis": true
+    },
+    "app/specialists/motion_planner/config.yaml": {
+      "filePath": "app/specialists/motion_planner/config.yaml",
+      "contentHash": "1d8a278b3a4d07c6b20be2c042b1df714a6fb720b12bcc822136e72e3268948f",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 11,
+      "hasStructuralAnalysis": true
+    },
+    "app/specialists/motion_planner/graph.py": {
+      "filePath": "app/specialists/motion_planner/graph.py",
+      "contentHash": "361d20a6ab88e7a7d437305e9efc62b3a74bc771f014fab1bf5bbc8099be600a",
+      "functions": [
+        {
+          "name": "_receive",
+          "params": [
+            "state"
+          ],
+          "returnType": "dict[str, Any]",
+          "exported": true,
+          "lineCount": 3
+        },
+        {
+          "name": "_plan",
+          "params": [
+            "state"
+          ],
+          "returnType": "dict[str, Any]",
+          "exported": true,
+          "lineCount": 9
+        },
+        {
+          "name": "_act",
+          "params": [
+            "state"
+          ],
+          "returnType": "dict[str, Any]",
+          "exported": true,
+          "lineCount": 2
+        },
+        {
+          "name": "_verify",
+          "params": [
+            "state"
+          ],
+          "returnType": "dict[str, Any]",
+          "exported": true,
+          "lineCount": 3
+        },
+        {
+          "name": "_reflect",
+          "params": [
+            "state"
+          ],
+          "returnType": "dict[str, Any]",
+          "exported": true,
+          "lineCount": 3
+        },
+        {
+          "name": "_emit_spans",
+          "params": [
+            "state"
+          ],
+          "returnType": "dict[str, Any]",
+          "exported": true,
+          "lineCount": 2
+        },
+        {
+          "name": "_gate_decision",
+          "params": [
+            "state"
+          ],
+          "returnType": "dict[str, Any]",
+          "exported": true,
+          "lineCount": 5
+        },
+        {
+          "name": "_finalize",
+          "params": [
+            "state"
+          ],
+          "returnType": "dict[str, Any]",
+          "exported": true,
+          "lineCount": 3
+        },
+        {
+          "name": "_handoff",
+          "params": [
+            "state"
+          ],
+          "returnType": "Command",
+          "exported": true,
+          "lineCount": 3
+        },
+        {
+          "name": "build_motion_planner_graph",
+          "params": [],
+          "returnType": "StateGraph",
+          "exported": true,
+          "lineCount": 24
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "typing",
+          "specifiers": [
+            "Any"
+          ]
+        },
+        {
+          "source": "langgraph.graph",
+          "specifiers": [
+            "END",
+            "START",
+            "StateGraph"
+          ]
+        },
+        {
+          "source": "langgraph.types",
+          "specifiers": [
+            "Command",
+            "interrupt"
+          ]
+        },
+        {
+          "source": "app.gates.resume_api",
+          "specifiers": [
+            "_resume_from_verdict"
+          ]
+        },
+        {
+          "source": "app.models.adapter",
+          "specifiers": [
+            "make_chat_model"
+          ]
+        },
+        {
+          "source": "app.models.state",
+          "specifiers": [
+            "specialist_summary_writer"
+          ]
+        },
+        {
+          "source": "app.models.state.run_state",
+          "specifiers": [
+            "RunState"
+          ]
+        },
+        {
+          "source": "app.specialists._scaffold.contract",
+          "specifiers": [
+            "SCAFFOLD_NODE_IDS"
+          ]
+        },
+        {
+          "source": "app.specialists.motion_planner",
+          "specifiers": [
+            "_motion_planner_act_impl"
+          ]
+        },
+        {
+          "source": "app.specialists.motion_planner.payload_contract",
+          "specifiers": [
+            "CONSUMED_PAYLOAD_KEYS"
+          ]
+        }
+      ],
+      "exports": [
+        "_receive",
+        "_plan",
+        "_act",
+        "_verify",
+        "_reflect",
+        "_emit_spans",
+        "_gate_decision",
+        "_finalize",
+        "_handoff",
+        "build_motion_planner_graph"
+      ],
+      "totalLines": 114,
+      "hasStructuralAnalysis": true
+    },
+    "app/specialists/motion_planner/model_config.yaml": {
+      "filePath": "app/specialists/motion_planner/model_config.yaml",
+      "contentHash": "df3b4dcc34376feee2290a5a1bfb6b276401bd699789b6587a37da0e14cad97b",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 20,
+      "hasStructuralAnalysis": true
+    },
+    "app/specialists/motion_planner/payload_contract.py": {
+      "filePath": "app/specialists/motion_planner/payload_contract.py",
+      "contentHash": "bcb2d4d9f02fc06cf3e2b2dc3dc34103c21a481249cc3a1e914326e13e4047da",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 36,
+      "hasStructuralAnalysis": true
+    },
+    "app/specialists/motion_planner/state.py": {
+      "filePath": "app/specialists/motion_planner/state.py",
+      "contentHash": "89bff0df6216533788fd6c213b6fa5a12e471f4e5495c30253d5b5eb25236091",
+      "functions": [],
+      "classes": [
+        {
+          "name": "MotionPlannerEnvelope",
+          "methods": [
+            "_pin_specialist_id"
+          ],
+          "properties": [
+            "_SPECIALIST_ID",
+            "schema_version"
+          ],
+          "exported": true,
+          "lineCount": 16
+        },
+        {
+          "name": "MotionPlannerReturn",
+          "methods": [
+            "_pin_specialist_id"
+          ],
+          "properties": [
+            "_SPECIALIST_ID",
+            "motion_plan"
+          ],
+          "exported": true,
+          "lineCount": 16
+        }
+      ],
+      "imports": [
+        {
+          "source": "json",
+          "specifiers": [
+            "json"
+          ]
+        },
+        {
+          "source": "typing",
+          "specifiers": [
+            "Any",
+            "ClassVar",
+            "Literal"
+          ]
+        },
+        {
+          "source": "pydantic",
+          "specifiers": [
+            "Field",
+            "model_validator"
+          ]
+        },
+        {
+          "source": "app.models.state.specialist_envelope",
+          "specifiers": [
+            "SpecialistEnvelope"
+          ]
+        },
+        {
+          "source": "app.models.state.specialist_return",
+          "specifiers": [
+            "SpecialistReturn"
+          ]
+        }
+      ],
+      "exports": [
+        "MotionPlannerEnvelope",
+        "MotionPlannerReturn"
+      ],
+      "totalLines": 51,
       "hasStructuralAnalysis": true
     },
     "app/specialists/narration_join.py": {
@@ -41655,6 +45195,634 @@
       "totalLines": 210,
       "hasStructuralAnalysis": true
     },
+    "app/specialists/workbook_producer/__init__.py": {
+      "filePath": "app/specialists/workbook_producer/__init__.py",
+      "contentHash": "c2c95f12120b746dd584074f52f7ce73f6f1097a29ceea807664fadf2171bf4d",
+      "functions": [],
+      "classes": [],
+      "imports": [
+        {
+          "source": "app.specialists.workbook_producer.graph",
+          "specifiers": [
+            "build_workbook_producer_graph"
+          ]
+        },
+        {
+          "source": "app.specialists.workbook_producer.state",
+          "specifiers": [
+            "WorkbookProducerEnvelope",
+            "WorkbookProducerReturn"
+          ]
+        }
+      ],
+      "exports": [],
+      "totalLines": 14,
+      "hasStructuralAnalysis": true
+    },
+    "app/specialists/workbook_producer/_act.py": {
+      "filePath": "app/specialists/workbook_producer/_act.py",
+      "contentHash": "e2dc13f2838278ea5f8fd3df9cd0ff234f403fb8fd3bd7443789624a354f7a07",
+      "functions": [
+        {
+          "name": "_trail_entry",
+          "params": [
+            "last_entry",
+            "tag"
+          ],
+          "returnType": "ModelResolutionEntry",
+          "exported": true,
+          "lineCount": 9
+        },
+        {
+          "name": "decode_envelope_payload",
+          "params": [
+            "state"
+          ],
+          "returnType": "dict[str, Any]",
+          "exported": true,
+          "lineCount": 16
+        },
+        {
+          "name": "_load_config",
+          "params": [],
+          "returnType": "dict[str, Any]",
+          "exported": true,
+          "lineCount": 5
+        },
+        {
+          "name": "_resolve_run_dir",
+          "params": [
+            "state",
+            "payload"
+          ],
+          "returnType": "Path",
+          "exported": true,
+          "lineCount": 23
+        },
+        {
+          "name": "_figure_captions",
+          "params": [
+            "run_dir"
+          ],
+          "returnType": "dict[int, str]",
+          "exported": true,
+          "lineCount": 15
+        },
+        {
+          "name": "_load_segments",
+          "params": [
+            "run_dir",
+            "manifest_relpath"
+          ],
+          "returnType": "tuple[TranscriptSegment, ...]",
+          "exported": true,
+          "lineCount": 62
+        },
+        {
+          "name": "_build_source_text",
+          "params": [
+            "run_dir",
+            "corpus_relpath",
+            "segments"
+          ],
+          "returnType": "str",
+          "exported": true,
+          "lineCount": 20
+        },
+        {
+          "name": "_exercises",
+          "params": [
+            "kc",
+            "answer_key_source_ref"
+          ],
+          "returnType": "tuple[list[Exercise], dict[str, str]]",
+          "exported": true,
+          "lineCount": 16
+        },
+        {
+          "name": "_hash",
+          "params": [
+            "text"
+          ],
+          "returnType": "str",
+          "exported": true,
+          "lineCount": 2
+        },
+        {
+          "name": "_plan_unit_and_context",
+          "params": [
+            "run_dir",
+            "run_id",
+            "unit_id",
+            "revision"
+          ],
+          "returnType": "tuple[PlanUnit, ProductionContext]",
+          "exported": true,
+          "lineCount": 19
+        },
+        {
+          "name": "_build_enriched_inputs",
+          "params": [
+            "card",
+            "run_dir",
+            "run_id",
+            "unit_id",
+            "revision",
+            "segments",
+            "source_text",
+            "vo_script_text"
+          ],
+          "returnType": "WorkbookInputs",
+          "exported": true,
+          "lineCount": 35
+        },
+        {
+          "name": "build_workbook_inputs",
+          "params": [
+            "run_dir",
+            "config",
+            "run_id"
+          ],
+          "returnType": "WorkbookInputs",
+          "exported": true,
+          "lineCount": 192
+        },
+        {
+          "name": "produce_workbook",
+          "params": [
+            "state",
+            "payload"
+          ],
+          "returnType": "WorkbookSidecar",
+          "exported": true,
+          "lineCount": 37
+        },
+        {
+          "name": "_sidecar_refs",
+          "params": [
+            "sidecar"
+          ],
+          "returnType": "dict[str, Any]",
+          "exported": true,
+          "lineCount": 16
+        },
+        {
+          "name": "act",
+          "params": [
+            "state"
+          ],
+          "returnType": "dict[str, Any]",
+          "exported": true,
+          "lineCount": 33
+        }
+      ],
+      "classes": [
+        {
+          "name": "WorkbookProducerActError",
+          "methods": [],
+          "properties": [],
+          "exported": true,
+          "lineCount": 6
+        },
+        {
+          "name": "WorkbookInputs",
+          "methods": [],
+          "properties": [
+            "plan_unit",
+            "context",
+            "spec",
+            "segments",
+            "source_text",
+            "learning_objectives",
+            "answer_keys",
+            "further_reading",
+            "research_entries",
+            "citations",
+            "source_ref_manifest",
+            "vo_script_text"
+          ],
+          "exported": true,
+          "lineCount": 15
+        }
+      ],
+      "imports": [
+        {
+          "source": "hashlib",
+          "specifiers": [
+            "hashlib"
+          ]
+        },
+        {
+          "source": "json",
+          "specifiers": [
+            "json"
+          ]
+        },
+        {
+          "source": "os",
+          "specifiers": [
+            "os"
+          ]
+        },
+        {
+          "source": "dataclasses",
+          "specifiers": [
+            "dataclass"
+          ]
+        },
+        {
+          "source": "pathlib",
+          "specifiers": [
+            "Path"
+          ]
+        },
+        {
+          "source": "typing",
+          "specifiers": [
+            "Any"
+          ]
+        },
+        {
+          "source": "yaml",
+          "specifiers": [
+            "yaml"
+          ]
+        },
+        {
+          "source": "app.marcus.lesson_plan.collateral_spec",
+          "specifiers": [
+            "DepthDeltaContract",
+            "Exercise",
+            "WorkbookSection",
+            "WorkbookSpec"
+          ]
+        },
+        {
+          "source": "app.marcus.lesson_plan.produced_asset",
+          "specifiers": [
+            "ProductionContext"
+          ]
+        },
+        {
+          "source": "app.marcus.lesson_plan.schema",
+          "specifiers": [
+            "PlanUnit"
+          ]
+        },
+        {
+          "source": "app.marcus.lesson_plan.workbook_enrichment",
+          "specifiers": [
+            "load_enrichment_card",
+            "project_enrichment_to_workbook_inputs"
+          ]
+        },
+        {
+          "source": "app.marcus.lesson_plan.workbook_producer",
+          "specifiers": [
+            "DEFAULT_WORKBOOK_OUTPUT_ROOT",
+            "FurtherReadingEntry",
+            "LearningObjectiveBrief",
+            "ResearchEntry",
+            "TranscriptSegment",
+            "WorkbookProducer",
+            "WorkbookSidecar"
+          ]
+        },
+        {
+          "source": "app.models.state.cache_state",
+          "specifiers": [
+            "CacheState"
+          ]
+        },
+        {
+          "source": "app.models.state.model_resolution_entry",
+          "specifiers": [
+            "ModelResolutionEntry"
+          ]
+        },
+        {
+          "source": "app.models.state.run_state",
+          "specifiers": [
+            "RunState"
+          ]
+        },
+        {
+          "source": "app.runtime.economics",
+          "specifiers": [
+            "RUNS_ROOT"
+          ]
+        },
+        {
+          "source": "app.specialists.dispatch_errors",
+          "specifiers": [
+            "SpecialistDispatchError"
+          ]
+        },
+        {
+          "source": "app.specialists.workbook_producer.payload_contract",
+          "specifiers": [
+            "CONSUMED_PAYLOAD_KEYS"
+          ]
+        }
+      ],
+      "exports": [
+        "WorkbookProducerActError",
+        "_trail_entry",
+        "decode_envelope_payload",
+        "_load_config",
+        "_resolve_run_dir",
+        "_figure_captions",
+        "_load_segments",
+        "_build_source_text",
+        "_exercises",
+        "_hash",
+        "WorkbookInputs",
+        "_plan_unit_and_context",
+        "_build_enriched_inputs",
+        "build_workbook_inputs",
+        "produce_workbook",
+        "_sidecar_refs",
+        "act"
+      ],
+      "totalLines": 841,
+      "hasStructuralAnalysis": true
+    },
+    "app/specialists/workbook_producer/config.yaml": {
+      "filePath": "app/specialists/workbook_producer/config.yaml",
+      "contentHash": "fe4a8784ab8ebb85bee550291bdf82c33642125e3a1d1d9c85983915aa6c0e8e",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 13,
+      "hasStructuralAnalysis": true
+    },
+    "app/specialists/workbook_producer/graph.py": {
+      "filePath": "app/specialists/workbook_producer/graph.py",
+      "contentHash": "9bfef375863b7d32eb7c3d7970a7257b3b0b4c0dc21f773535a64d179e86b698",
+      "functions": [
+        {
+          "name": "_receive",
+          "params": [
+            "state"
+          ],
+          "returnType": "dict[str, Any]",
+          "exported": true,
+          "lineCount": 3
+        },
+        {
+          "name": "_plan",
+          "params": [
+            "state"
+          ],
+          "returnType": "dict[str, Any]",
+          "exported": true,
+          "lineCount": 9
+        },
+        {
+          "name": "_act",
+          "params": [
+            "state"
+          ],
+          "returnType": "dict[str, Any]",
+          "exported": true,
+          "lineCount": 2
+        },
+        {
+          "name": "_verify",
+          "params": [
+            "state"
+          ],
+          "returnType": "dict[str, Any]",
+          "exported": true,
+          "lineCount": 3
+        },
+        {
+          "name": "_reflect",
+          "params": [
+            "state"
+          ],
+          "returnType": "dict[str, Any]",
+          "exported": true,
+          "lineCount": 3
+        },
+        {
+          "name": "_emit_spans",
+          "params": [
+            "state"
+          ],
+          "returnType": "dict[str, Any]",
+          "exported": true,
+          "lineCount": 2
+        },
+        {
+          "name": "_gate_decision",
+          "params": [
+            "state"
+          ],
+          "returnType": "dict[str, Any]",
+          "exported": true,
+          "lineCount": 5
+        },
+        {
+          "name": "_finalize",
+          "params": [
+            "state"
+          ],
+          "returnType": "dict[str, Any]",
+          "exported": true,
+          "lineCount": 3
+        },
+        {
+          "name": "_handoff",
+          "params": [
+            "state"
+          ],
+          "returnType": "Command",
+          "exported": true,
+          "lineCount": 3
+        },
+        {
+          "name": "build_workbook_producer_graph",
+          "params": [],
+          "returnType": "StateGraph",
+          "exported": true,
+          "lineCount": 25
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "typing",
+          "specifiers": [
+            "Any"
+          ]
+        },
+        {
+          "source": "langgraph.graph",
+          "specifiers": [
+            "END",
+            "START",
+            "StateGraph"
+          ]
+        },
+        {
+          "source": "langgraph.types",
+          "specifiers": [
+            "Command",
+            "interrupt"
+          ]
+        },
+        {
+          "source": "app.gates.resume_api",
+          "specifiers": [
+            "_resume_from_verdict"
+          ]
+        },
+        {
+          "source": "app.models.adapter",
+          "specifiers": [
+            "make_chat_model"
+          ]
+        },
+        {
+          "source": "app.models.state",
+          "specifiers": [
+            "specialist_summary_writer"
+          ]
+        },
+        {
+          "source": "app.models.state.run_state",
+          "specifiers": [
+            "RunState"
+          ]
+        },
+        {
+          "source": "app.specialists._scaffold.contract",
+          "specifiers": [
+            "SCAFFOLD_NODE_IDS"
+          ]
+        },
+        {
+          "source": "app.specialists.workbook_producer",
+          "specifiers": [
+            "_workbook_producer_act_impl"
+          ]
+        },
+        {
+          "source": "app.specialists.workbook_producer.payload_contract",
+          "specifiers": [
+            "CONSUMED_PAYLOAD_KEYS"
+          ]
+        }
+      ],
+      "exports": [
+        "_receive",
+        "_plan",
+        "_act",
+        "_verify",
+        "_reflect",
+        "_emit_spans",
+        "_gate_decision",
+        "_finalize",
+        "_handoff",
+        "build_workbook_producer_graph"
+      ],
+      "totalLines": 117,
+      "hasStructuralAnalysis": true
+    },
+    "app/specialists/workbook_producer/model_config.yaml": {
+      "filePath": "app/specialists/workbook_producer/model_config.yaml",
+      "contentHash": "37c21ff6472b1031c35952d493a334ea8d45cdaa6255a4808f7807c6d6b62d8c",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 21,
+      "hasStructuralAnalysis": true
+    },
+    "app/specialists/workbook_producer/payload_contract.py": {
+      "filePath": "app/specialists/workbook_producer/payload_contract.py",
+      "contentHash": "ee6f244bd7325479c3a5970f96a12a3a489f54f52f3f0540c791c86efbac731c",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 37,
+      "hasStructuralAnalysis": true
+    },
+    "app/specialists/workbook_producer/state.py": {
+      "filePath": "app/specialists/workbook_producer/state.py",
+      "contentHash": "19a4bd7176e459f87b80c1bb633e2ba554d75f3db6e1e145f2b2ace08428a664",
+      "functions": [],
+      "classes": [
+        {
+          "name": "WorkbookProducerEnvelope",
+          "methods": [
+            "_pin_specialist_id"
+          ],
+          "properties": [
+            "_SPECIALIST_ID",
+            "schema_version"
+          ],
+          "exported": true,
+          "lineCount": 17
+        },
+        {
+          "name": "WorkbookProducerReturn",
+          "methods": [
+            "_pin_specialist_id"
+          ],
+          "properties": [
+            "_SPECIALIST_ID",
+            "workbook"
+          ],
+          "exported": true,
+          "lineCount": 17
+        }
+      ],
+      "imports": [
+        {
+          "source": "json",
+          "specifiers": [
+            "json"
+          ]
+        },
+        {
+          "source": "typing",
+          "specifiers": [
+            "Any",
+            "ClassVar",
+            "Literal"
+          ]
+        },
+        {
+          "source": "pydantic",
+          "specifiers": [
+            "Field",
+            "model_validator"
+          ]
+        },
+        {
+          "source": "app.models.state.specialist_envelope",
+          "specifiers": [
+            "SpecialistEnvelope"
+          ]
+        },
+        {
+          "source": "app.models.state.specialist_return",
+          "specifiers": [
+            "SpecialistReturn"
+          ]
+        }
+      ],
+      "exports": [
+        "WorkbookProducerEnvelope",
+        "WorkbookProducerReturn"
+      ],
+      "totalLines": 53,
+      "hasStructuralAnalysis": true
+    },
     "scripts/__init__.py": {
       "filePath": "scripts/__init__.py",
       "contentHash": "38f80e8a319c456d407792fa3c422db88669ac7a3fc88a68466ed072fe4576f1",
@@ -42377,7 +46545,7 @@
     },
     "scripts/api_clients/base_client.py": {
       "filePath": "scripts/api_clients/base_client.py",
-      "contentHash": "a56621e17a7ab386e548a31cc004cfe74f46f2c31c52ccdd68e55f9d2b369eda",
+      "contentHash": "be6ff7317cb0321b6744c050fc039afa6f088b638cb9e01dcdc99e83c77a3700",
       "functions": [],
       "classes": [
         {
@@ -42422,14 +46590,22 @@
             "_extract_next_link",
             "_get_retry_delay",
             "_parse_response",
-            "_safe_json"
+            "_safe_json",
+            "_format_error_body",
+            "_compose_error_message"
           ],
           "properties": [],
           "exported": true,
-          "lineCount": 302
+          "lineCount": 360
         }
       ],
       "imports": [
+        {
+          "source": "json",
+          "specifiers": [
+            "json"
+          ]
+        },
         {
           "source": "logging",
           "specifiers": [
@@ -42467,7 +46643,7 @@
         "RateLimitError",
         "BaseAPIClient"
       ],
-      "totalLines": 347,
+      "totalLines": 407,
       "hasStructuralAnalysis": true
     },
     "scripts/api_clients/botpress_client.py": {
@@ -42770,7 +46946,7 @@
     },
     "scripts/api_clients/gamma_client.py": {
       "filePath": "scripts/api_clients/gamma_client.py",
-      "contentHash": "36dc5b92c8c79a22c7d385a8f088cc33f2177440c8892c665e5bf74be75d6667",
+      "contentHash": "6e1b0bd04730d265e2a0d02945a9666ce055cc9aa18ffea80106714893c46ab0",
       "functions": [],
       "classes": [
         {
@@ -42788,7 +46964,7 @@
           ],
           "properties": [],
           "exported": true,
-          "lineCount": 242
+          "lineCount": 246
         }
       ],
       "imports": [
@@ -42827,12 +47003,12 @@
       "exports": [
         "GammaClient"
       ],
-      "totalLines": 267,
+      "totalLines": 271,
       "hasStructuralAnalysis": true
     },
     "scripts/api_clients/kling_client.py": {
       "filePath": "scripts/api_clients/kling_client.py",
-      "contentHash": "7c4a22191db65eff4376aa2ac25a43599ea882062263198238086c6c37d3b79a",
+      "contentHash": "ce30b68d55f89e65a85606c052f55a7d034c68e262d780649b4734e7873c9943",
       "functions": [
         {
           "name": "generate_jwt_token",
@@ -42864,7 +47040,7 @@
           ],
           "properties": [],
           "exported": true,
-          "lineCount": 357
+          "lineCount": 374
         }
       ],
       "imports": [
@@ -42921,7 +47097,7 @@
         "generate_jwt_token",
         "KlingClient"
       ],
-      "totalLines": 406,
+      "totalLines": 428,
       "hasStructuralAnalysis": true
     },
     "scripts/api_clients/kling_public_client.py": {
@@ -43946,7 +48122,7 @@
     },
     "scripts/generators/v42/manifest.py": {
       "filePath": "scripts/generators/v42/manifest.py",
-      "contentHash": "6cf3882aeb2a3ff95101bacb15269f97876946cb55150a95cc6bebba27fb31ef",
+      "contentHash": "01ed0eb5af5ea06791be2b7a0828aa2a6ad46d902862d8f6e297202b48fb744e",
       "functions": [
         {
           "name": "_slugify",
@@ -43974,7 +48150,7 @@
           ],
           "returnType": "str",
           "exported": true,
-          "lineCount": 15
+          "lineCount": 19
         },
         {
           "name": "_audience",
@@ -44077,7 +48253,7 @@
         "_orchestration_only_ids",
         "load_generator_manifest"
       ],
-      "totalLines": 146,
+      "totalLines": 150,
       "hasStructuralAnalysis": true
     },
     "scripts/generators/v42/render.py": {
@@ -44371,6 +48547,16 @@
       "totalLines": 60,
       "hasStructuralAnalysis": false
     },
+    "scripts/generators/v42/templates/sections/07D.5-motion-planning.md.j2": {
+      "filePath": "scripts/generators/v42/templates/sections/07D.5-motion-planning.md.j2",
+      "contentHash": "08f0294235a011c0454bb27baa1f0ac2e464aaac821c0a520b80704dde1fd876",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 24,
+      "hasStructuralAnalysis": false
+    },
     "scripts/generators/v42/templates/sections/07E-motion-generation-import.md.j2": {
       "filePath": "scripts/generators/v42/templates/sections/07E-motion-generation-import.md.j2",
       "contentHash": "eb65f2ea1f6129f06c1719f95e634ef2acb5c7c679f003e32d2e0624669f6f69",
@@ -44399,6 +48585,16 @@
       "imports": [],
       "exports": [],
       "totalLines": 23,
+      "hasStructuralAnalysis": false
+    },
+    "scripts/generators/v42/templates/sections/07W-companion-workbook-producer.md.j2": {
+      "filePath": "scripts/generators/v42/templates/sections/07W-companion-workbook-producer.md.j2",
+      "contentHash": "2d2bc2a35c3c5f689ef7295d29dc39f3cec6a1b5f98df0699868db0eb50a960c",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 26,
       "hasStructuralAnalysis": false
     },
     "scripts/generators/v42/templates/sections/08-irene-pass-2-segment-manifest.md.j2": {
@@ -45540,7 +49736,7 @@
     },
     "scripts/operator/build_descript_narrated_lesson.py": {
       "filePath": "scripts/operator/build_descript_narrated_lesson.py",
-      "contentHash": "88610b079a14c60c4368ada16976c76033cfddb1973ed1850925e7d55582a4d2",
+      "contentHash": "0192b552f0249bb9a9ee8eff2b753d88ff849f7fd39c06bd63fc5d767fae5ce3",
       "functions": [
         {
           "name": "build_assembly_prompt",
@@ -45583,13 +49779,20 @@
           "lineCount": 35
         },
         {
+          "name": "_load_env_if_available",
+          "params": [],
+          "returnType": "None",
+          "exported": true,
+          "lineCount": 16
+        },
+        {
           "name": "run",
           "params": [
             "args"
           ],
           "returnType": "int",
           "exported": true,
-          "lineCount": 104
+          "lineCount": 105
         },
         {
           "name": "parse_args",
@@ -45655,11 +49858,12 @@
         "collect_media",
         "build_add_media",
         "publish_project",
+        "_load_env_if_available",
         "run",
         "parse_args",
         "main"
       ],
-      "totalLines": 269,
+      "totalLines": 288,
       "hasStructuralAnalysis": true
     },
     "scripts/operator/bundle_health_check.py": {
@@ -47904,12 +52108,12 @@
     },
     "skills/bmad-agent-marcus/SKILL.md": {
       "filePath": "skills/bmad-agent-marcus/SKILL.md",
-      "contentHash": "8a9d1b02d3282c6802171ff80767125bc16df6867abd83979ab4a34afa02aed5",
+      "contentHash": "b25d41e20a6be2896ecee55991f7b7df3cc5df55963124678e1d89d4bc1591bb",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 86,
+      "totalLines": 88,
       "hasStructuralAnalysis": true
     },
     "skills/bmad-agent-midjourney/SKILL.md": {
