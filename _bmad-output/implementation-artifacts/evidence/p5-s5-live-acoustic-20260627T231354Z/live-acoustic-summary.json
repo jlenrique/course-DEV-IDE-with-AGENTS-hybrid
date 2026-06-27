@@ -1,0 +1,120 @@
+{
+  "generated_at_utc": "20260627T231354Z",
+  "flag": "MARCUS_NARRATION_VOICE_DIRECTION_ACTIVE=1",
+  "k": 3,
+  "real_voice_id": "CwhRBWXzGAHq8TQ4Fs17",
+  "real_voice_name": "Roger - Laid-Back, Casual, Resonant",
+  "text": "Let me walk you through this idea so it really lands for you today.",
+  "bundle_path": "C:\\Users\\juanl\\Documents\\GitHub\\course-DEV-IDE-with-AGENTS-hybrid\\_bmad-output\\implementation-artifacts\\evidence\\p5-s5-live-acoustic-20260627T231354Z",
+  "distinct_request_ids": true,
+  "request_ids": {
+    "ctl-a": "8Yv8MXyAx31ULeXrglWf",
+    "ctl-b": "H9uNQaXjCxxV6rhJe6f9",
+    "neutral": "HoJKWNwkytwjwPXWTN7s",
+    "reflective": "tCqAqkFtwigQXmbrz9uX",
+    "urgent": "V5ccs13RFcjT6FbIicyF"
+  },
+  "measured_acoustics": {
+    "ctl-a": {
+      "duration_s": 3.3436734693877552,
+      "rms": 0.06616728545251639,
+      "peak": 0.46484375,
+      "n_samples": 147456
+    },
+    "ctl-b": {
+      "duration_s": 3.3901133786848074,
+      "rms": 0.06283794808062293,
+      "peak": 0.393646240234375,
+      "n_samples": 149504
+    },
+    "neutral": {
+      "duration_s": 3.3901133786848074,
+      "rms": 0.07050745340300292,
+      "peak": 0.493377685546875,
+      "n_samples": 149504
+    },
+    "reflective": {
+      "duration_s": 3.3901133786848074,
+      "rms": 0.06714481261108508,
+      "peak": 0.540252685546875,
+      "n_samples": 149504
+    },
+    "urgent": {
+      "duration_s": 3.2043537414965986,
+      "rms": 0.06896484576547898,
+      "peak": 0.43780517578125,
+      "n_samples": 141312
+    }
+  },
+  "effective_settings": {
+    "ctl-a": {
+      "voice_id": "CwhRBWXzGAHq8TQ4Fs17",
+      "model_id": "eleven_multilingual_v2",
+      "stability": 0.5,
+      "similarity_boost": 0.75,
+      "style": 0.35,
+      "speed": 1.0
+    },
+    "ctl-b": {
+      "voice_id": "CwhRBWXzGAHq8TQ4Fs17",
+      "model_id": "eleven_multilingual_v2",
+      "stability": 0.5,
+      "similarity_boost": 0.75,
+      "style": 0.35,
+      "speed": 1.0
+    },
+    "neutral": {
+      "voice_id": "CwhRBWXzGAHq8TQ4Fs17",
+      "model_id": "eleven_multilingual_v2",
+      "stability": 0.5,
+      "similarity_boost": 0.75,
+      "style": 0.35,
+      "speed": 1.0
+    },
+    "reflective": {
+      "voice_id": "CwhRBWXzGAHq8TQ4Fs17",
+      "model_id": "eleven_multilingual_v2",
+      "stability": 0.75,
+      "similarity_boost": 0.75,
+      "style": 0.1,
+      "speed": 0.94
+    },
+    "urgent": {
+      "voice_id": "CwhRBWXzGAHq8TQ4Fs17",
+      "model_id": "eleven_multilingual_v2",
+      "stability": 0.3,
+      "similarity_boost": 0.75,
+      "style": 0.65,
+      "speed": 1.1
+    }
+  },
+  "F_duration": 0.04643990929705222,
+  "F_rms": 0.003329337371893462,
+  "duration_verdict": {
+    "scalar": "duration_s",
+    "k": 3,
+    "floor": 0.04643990929705222,
+    "threshold": 0.13931972789115665,
+    "control_a": 3.3436734693877552,
+    "control_a_prime": 3.3901133786848074,
+    "treatment_a": 3.2043537414965986,
+    "treatment_b": 3.3901133786848074,
+    "delta": 0.18575963718820887,
+    "passed": true
+  },
+  "rms_verdict": {
+    "scalar": "rms",
+    "k": 3,
+    "floor": 0.003329337371893462,
+    "threshold": 0.009988012115680386,
+    "control_a": 0.06616728545251639,
+    "control_a_prime": 0.06283794808062293,
+    "treatment_a": 0.06896484576547898,
+    "treatment_b": 0.06714481261108508,
+    "delta": 0.0018200331543938991,
+    "passed": false
+  },
+  "pace_pass": true,
+  "energy_pass": false,
+  "mur4_pass": true
+}

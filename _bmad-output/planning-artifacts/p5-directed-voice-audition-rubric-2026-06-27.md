@@ -307,3 +307,14 @@ Recommended P5 completion bar for the directed-voice slice:
 ## 11. Claude Handoff Sentence
 
 Advisory handoff to Claude: Load `_bmad-output/planning-artifacts/p5-directed-voice-audition-rubric-2026-06-27.md` as Marcus's complementary grounded palette/rubric addendum. Consider its listed v1 fields, enum values, YAML settings, mapper precedence, and API-supported local client behavior during BMAD review, but let Claude's active BMAD workflow and party-mode decisions govern final implementation choices.
+
+## 12. STEP-5 PARTY RULING (2026-06-27) — §10 item 8 RESOLVED
+
+Step-5 close party (Murat 🧪 / Quinn-R 🔎 / CD 🎬 / Enrique 🎙️, unanimous CLOSE, no impasse) ruled on §10 item 8 (production-credible vs narrower palette), against the deterministic acoustic proof (`evidence/p5-directed-voice-s5-live-acoustic-proof-20260627T231354Z.md`):
+
+- **RULING: production-credible AS-IS — keep the full §4 palette, with a TIERED, HONESTLY-LABELED product promise.** Do NOT narrow to pace-only.
+- **`pace` = the GUARANTEED, reliably-perceptible directed dial** (pace→duration cleared 3×floor cleanly: Δ0.186s on a ~3.3s clip, ~4× the nondeterminism floor; pedagogically-correct direction). Specialists MAY set it by pedagogical role.
+- **`emotional_tone` + `energy` = BEST-EFFORT / aspirational expressive nuance — auditioned, NOT promised.** The settings ARE sent (receipts), but ElevenLabs spends `stability`/`style` on timbre/prosody, not broadband loudness (energy→RMS sat at the nondeterminism floor — a measurement-PROXY finding, honestly reported, NOT a defect or a pipeline failure). Do NOT advertise "energy/intensity control" to specialist agents or in any product copy until the LUFS/F0 follow-on confirms a perceptible scalar.
+- **Binding labeling (CD/Quinn-R):** mark this tiering in the contract/Storyboard-B/rubric framing — pace guaranteed, tone/energy best-effort. (This §12 + the strawman §G-RECONCILED note are the authoritative record; the Storyboard-B panel best-effort label rides the `directed-voice-energy-scalar-and-best-effort-labeling` follow-on.)
+- **Keep `urgent`/`faster`/`high` sparing** (Quinn-R / §4), never stacked with an aggressive `delivery_tag` on ordinary explanatory content.
+- **§10 item 5 (full API exploration sweep) remains OUTSTANDING** — a distinct §6A lane that must close before the directed-voice product's expressive ceiling is claimed. Does not block this learner-facing verification close.
