@@ -16,7 +16,7 @@
 
 **Key lessons:** (1) **P1 gpt-5 extraction has variable HIGH latency — run live extractions FOREGROUND with a hard timeout + FLUSHED logging, NOT background+monitor** (the build-subagent's detached-run+monitor pattern looped/hung 3×; orphans cleared via TaskStop+taskkill; no work lost, cost wall-clock). (2) Hang isolation (OpenAI ping 2.9s + scite sub-second + non-DOI 0.0s) exonerated P2 — latency is P1's. (3) No-mocks is load-bearing: the real-captured-scite fixture closed a contingency a synthetic row couldn't. (4) A deliberate fail-probe DOI in the slice guaranteed P2's failure path ran live.
 
-**Validation:** P1 8 + brick 46; P2 71 + post-remediation; ruff clean; lint-imports no new break (pre-existing C3 `workbook_producer.graph→resume_api` unrelated); pipeline-manifest untouched. NO MOCKS. **Push: P1 pushed; P2 `8abc533` push PENDING credential dialog — operator run `git push origin dev/p5-downstream-consumption-2026-06-26`.**
+**Validation:** P1 8 + brick 46; P2 71 + post-remediation; ruff clean; lint-imports no new break (pre-existing C3 `workbook_producer.graph→resume_api` unrelated); pipeline-manifest untouched. NO MOCKS. **Push: ALL SYNCED — origin/dev/p5-downstream-consumption-2026-06-26 @ `0b5ee11` (P1 `bc405e0` + P2 `8abc533` + wrapup `0b5ee11`); ahead/behind 0/0. The credential dialog blocked autonomous pushes mid-session but cleared on its own at close — no push action owed.**
 
 ---
 
