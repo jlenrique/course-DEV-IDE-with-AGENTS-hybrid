@@ -41,6 +41,7 @@ from app.marcus.orchestrator import (
     research_wiring,
     specialist_summary_writer,
     storyboard_publisher,
+    udac_wiring,
 )
 from app.marcus.orchestrator.dispatch_adapter import ProductionDispatchAdapter
 from app.marcus.orchestrator.pre_gate_marcus import PreFillProposal
@@ -158,6 +159,23 @@ def _now() -> datetime:
 
 def _run_dir(trial_id: UUID | str, runs_root: Path) -> Path:
     return runs_root / str(trial_id)
+
+
+def _udac_ratify_gate(gate_code: str | None, trial_id: UUID | str, runs_root: Path) -> None:
+    """UDAC v1 gate-crossing ratification side-effect, fired on EVERY gate-crossing
+    branch in BOTH walks (review F3, M-5 parity).
+
+    Guarded so that NOTHING new — not even ``_run_dir(...)`` — evaluates when UDAC is
+    OFF (Blind-F3), keeping the flag-OFF path provably byte-identical regardless of
+    ``_run_dir`` purity. ``record_gate_ratification`` is crash-proof + a harmless
+    no-op on a branch whose mapped asset never landed on disk, so calling it on the
+    asleep-gate / offline branches closes the walk-dependence gap without risk.
+    """
+    if not udac_wiring.udac_active():
+        return
+    udac_wiring.record_gate_ratification(
+        gate_code=gate_code, run_dir=_run_dir(trial_id, runs_root)
+    )
 
 
 def _write_json(path: Path, payload: dict[str, Any]) -> None:
@@ -1798,6 +1816,19 @@ def _dispatch_specialist_at_node(
     broke one copy or the other (finding #10; the projection_map fake
     breakage). One call site means dispatch semantics evolve in one place.
     """
+    # UDAC v1 (M-4 / MT-3) — fail-loud dispatch guard, walk-invariant (the single
+    # shared dispatch site). For each asset this consumer declares as `used` that
+    # the RAI marks RATIFIED, resolve_asset recomputes the digest FROM DISK and
+    # RAISES AssetResolutionError (a SpecialistDispatchError) on a missing/stale
+    # ratified asset — caught by BOTH walkers' `except SpecialistDispatchError`
+    # and routed through `_pause_at_error` (no parallel channel). Gated on
+    # udac_active() so NOTHING (not even _run_dir) evaluates when OFF (Blind-F3) →
+    # byte-identical; also a no-op when no RAI exists yet (provisional window).
+    if udac_wiring.udac_active():
+        udac_wiring.resolve_consumed_assets(
+            specialist_id=specialist_id,
+            run_dir=_run_dir(trial_id, runs_root),
+        )
     dependency_map = _resolve_dependency_map(
         node=node,
         specialist_id=specialist_id,
@@ -2070,6 +2101,7 @@ def run_production_trial(
                     # is traversed (no pause) so deck-default flow is byte-identical
                     # (the first pause stays G1). Woken via MARCUS_G0_ENRICHMENT_ACTIVE.
                     last_gate_crossed = gate_id
+                    _udac_ratify_gate(gate_id, effective_trial_id, runs_root)  # F3
                     graph_step_completed = True
                     continue
                 if (
@@ -2080,6 +2112,7 @@ def run_production_trial(
                     # is traversed (no pause) so deck-default flow is byte-identical
                     # (feature-flag parity with G0E). Woken via MARCUS_G0_ENRICHMENT_ACTIVE.
                     last_gate_crossed = gate_id
+                    _udac_ratify_gate(gate_id, effective_trial_id, runs_root)  # F3
                     graph_step_completed = True
                     continue
                 if not pause_at_gates:
@@ -2088,6 +2121,11 @@ def run_production_trial(
                             f"refused silent bypass of gate {gate_id} at manifest node {node.id}"
                         )
                     last_gate_crossed = gate_id
+                    # UDAC v1 (M-1 / M-5): a start-walk gate crossing (the
+                    # bypass/offline path) ratifies the gate's assets too, so
+                    # ratified_at is identical whether a gate clears on the start
+                    # or continuation walk. No-op when UDAC is OFF / no asset landed.
+                    _udac_ratify_gate(gate_id, effective_trial_id, runs_root)
                     graph_step_completed = True
                     continue
                 # S5 criterion 7 (operator-ratified 2026-06-12): storyboard
@@ -2740,6 +2778,15 @@ def _continue_production_walk(
     )
     run_state = run_state.model_copy(update={"production_envelope": production_envelope})
 
+    # UDAC v1 (M-1): the continuation walk is entered with `last_gate_crossed` set
+    # to the gate the operator just cleared (resume) / the error-pause gate
+    # (recover). Marking that gate's ratified assets is a gate-crossing side-effect
+    # that fires here in the continuation body (the start walk pauses at the first
+    # active gate, so asset-bearing gates clear on THIS walk across the per-gate
+    # resume loop). Disk-primary + rehydrate-reconcile-monotonic → both-walks parity
+    # (M-5); a no-op when UDAC is OFF. Idempotent re-cross preserves ratified_at.
+    _udac_ratify_gate(last_gate_crossed, trial_id, runs_root)
+
     with _trial_trace_context(
         trial_id=trial_id,
         preset=runner.get("preset") or envelope.preset,
@@ -2757,6 +2804,7 @@ def _continue_production_walk(
                     # AC-S2-7 (continuation-walk leg): traverse the asleep G0E gate
                     # so a resume/recover flow is byte-identical too (two-walk parity).
                     last_gate_crossed = gate_id
+                    _udac_ratify_gate(gate_id, trial_id, runs_root)  # F3
                     graph_step_completed = True
                     continue
                 if (
@@ -2767,6 +2815,7 @@ def _continue_production_walk(
                     # gate so a resume/recover flow is byte-identical too (two-walk
                     # parity, feature-flag parity with G0E).
                     last_gate_crossed = gate_id
+                    _udac_ratify_gate(gate_id, trial_id, runs_root)  # F3
                     graph_step_completed = True
                     continue
                 if allow_offline_cost_report:
@@ -2791,6 +2840,7 @@ def _continue_production_walk(
                             )
                         )
                     last_gate_crossed = gate_id
+                    _udac_ratify_gate(gate_id, trial_id, runs_root)  # F3 (offline branch)
                     graph_step_completed = True
                     continue
                 # Trial-3 attempt-3 fix (2026-06-11): live resume previously

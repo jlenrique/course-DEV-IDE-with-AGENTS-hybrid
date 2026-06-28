@@ -20,4 +20,16 @@ class SpecialistDispatchError(RuntimeError):  # noqa: N818
         self.tag = tag
 
 
-__all__ = ["SpecialistDispatchError"]
+class AssetResolutionError(SpecialistDispatchError):  # noqa: N818
+    """UDAC v1 fail-loud: a ratified run-asset is missing, stale, or unresolvable.
+
+    Re-bases the dispatch-error family (per the S0 fail-loud convention in this
+    module) so the production runner's existing ``except SpecialistDispatchError``
+    at the shared dispatch site routes a UDAC resolution failure through the
+    recoverable ``_pause_at_error`` channel — NO parallel error channel (Marcus
+    M-4 / Murat MT-3). Raised by ``app.marcus.lesson_plan.run_asset_index``
+    (the neutral resolver) and the orchestrator's UDAC dispatch guard.
+    """
+
+
+__all__ = ["AssetResolutionError", "SpecialistDispatchError"]

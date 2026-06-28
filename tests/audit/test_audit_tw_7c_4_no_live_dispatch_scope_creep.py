@@ -570,6 +570,19 @@ PERMITTED_PYTHON_DIFFS = {
     "tests/marcus/orchestrator/test_enrichment_consumption.py",
     "tests/specialists/irene/test_role_derived_seed_wiring.py",
     "tests/integration/marcus/test_gary_deck_enrichment_hint.py",
+    # UDAC v1 — Universal Downstream Asset Contract (Step 8.5), ratified green-light
+    # party 2026-06-28 (udac-...-strawman §F). The neutral RAI module + resolver, the
+    # gate-writer/dispatch-reader orchestrator wiring, the AssetResolutionError family
+    # member, and the production_runner gate/dispatch hooks. NO new live-dispatch call
+    # site — UDAC v1 is offline/deterministic and flag-gated (MARCUS_UDAC_ACTIVE,
+    # default OFF ⇒ existing pipeline byte-identical). production_runner.py already
+    # rostered above.
+    "app/marcus/lesson_plan/run_asset_index.py",
+    "app/marcus/orchestrator/udac_wiring.py",
+    # NB: app/specialists/dispatch_errors.py (AssetResolutionError added) is already
+    # rostered above (line ~267) — not re-listed here to avoid a duplicate set item.
+    "tests/marcus/lesson_plan/test_run_asset_index.py",
+    "tests/marcus/orchestrator/test_udac_consumer_contract.py",
 }
 
 
