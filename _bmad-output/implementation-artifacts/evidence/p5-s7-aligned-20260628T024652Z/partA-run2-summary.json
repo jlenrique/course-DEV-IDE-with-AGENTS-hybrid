@@ -1,0 +1,49 @@
+{
+  "held_text_chars": 212,
+  "voice_id": "CwhRBWXzGAHq8TQ4Fs17",
+  "durations": {
+    "seg-01_synthesis_slower": 11.888616780045352,
+    "seg-02_definition_neutral": 11.795736961451247,
+    "seg-03_worked_example_slower": 11.331337868480725,
+    "neutral_floor": 11.377777777777778
+  },
+  "receipts": {
+    "seg-01": {
+      "request_id": "I3DZ3iMdCcTIeXmXqIYQ",
+      "speed": 0.94,
+      "pace": "slower",
+      "source": "role-derived",
+      "audio_sha256": "0a95f5a011948036"
+    },
+    "seg-02": {
+      "request_id": "549Lv7UwYGDnilywfdGY",
+      "speed": 1.0,
+      "pace": "neutral",
+      "source": "role-derived",
+      "audio_sha256": "a95a7a338f1c280a"
+    },
+    "seg-03": {
+      "request_id": "qTrkczTdS9gXaqusxdUC",
+      "speed": 0.94,
+      "pace": "slower",
+      "source": "role-derived",
+      "audio_sha256": "cdd0c11fecb8e8fb"
+    },
+    "floor": {
+      "request_id": "fkcCweURTooiRw3pXAnw",
+      "speed": 1.0,
+      "pace": "neutral",
+      "source": "cd-authored",
+      "audio_sha256": "4568c92d3d1c68ce"
+    }
+  },
+  "judge": {
+    "floor_F": 0.41795918367346907,
+    "bar_3F": 1.2538775510204072,
+    "synthesis_delta": 0.09287981859410444,
+    "synthesis_pass": false,
+    "worked_example_delta": 0.4643990929705222,
+    "worked_example_pass": false,
+    "verdict": "FAIL"
+  }
+}

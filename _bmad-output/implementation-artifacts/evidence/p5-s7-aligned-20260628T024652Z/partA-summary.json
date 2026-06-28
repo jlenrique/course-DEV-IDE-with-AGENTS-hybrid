@@ -1,0 +1,264 @@
+{
+  "ts": "20260628T024652Z",
+  "voice_id": "CwhRBWXzGAHq8TQ4Fs17",
+  "text": "Let me walk you through this idea so it really lands for you today.",
+  "orchestrator": {
+    "by_slide": {
+      "1": {
+        "emotional_tone": "reflective",
+        "pace": "slower",
+        "energy": "low"
+      },
+      "2": {
+        "emotional_tone": "neutral",
+        "pace": "neutral",
+        "energy": "medium"
+      },
+      "3": {
+        "emotional_tone": "neutral",
+        "pace": "slower",
+        "energy": "medium"
+      }
+    },
+    "source_slide_ordinals": [
+      1,
+      2,
+      3
+    ]
+  },
+  "applied_seeds": {
+    "seg-01": {
+      "source": "role-derived",
+      "pace": "slower",
+      "emotional_tone": "reflective",
+      "energy": "low"
+    },
+    "seg-02": {
+      "source": "role-derived",
+      "pace": "neutral",
+      "emotional_tone": "neutral",
+      "energy": "medium"
+    },
+    "seg-03": {
+      "source": "role-derived",
+      "pace": "slower",
+      "emotional_tone": "neutral",
+      "energy": "medium"
+    }
+  },
+  "enriched": {
+    "durations": {
+      "seg-01": {
+        "duration_s": 3.3436734693877552,
+        "rms": 0.0698817942366466,
+        "peak": 0.641845703125
+      },
+      "seg-02": {
+        "duration_s": 3.4829931972789114,
+        "rms": 0.06660475949708179,
+        "peak": 0.559906005859375
+      },
+      "seg-03": {
+        "duration_s": 3.436553287981859,
+        "rms": 0.06175347387788935,
+        "peak": 0.510040283203125
+      }
+    },
+    "receipts": {
+      "seg-01": {
+        "request_id": "l1iYUlsswU9Vts7Ge1wW",
+        "request_id_present": true,
+        "audio_sha256": "b7fdc1a4531b3af8",
+        "effective_elevenlabs_settings": {
+          "model_id": "eleven_multilingual_v2",
+          "similarity_boost": 0.75,
+          "speed": 0.94,
+          "stability": 0.75,
+          "style": 0.1,
+          "voice_id": "CwhRBWXzGAHq8TQ4Fs17"
+        },
+        "effective_voice_direction": {
+          "delivery_intent": null,
+          "delivery_tag": null,
+          "dialogue_turns": null,
+          "elevenlabs": null,
+          "emotional_tone": "reflective",
+          "energy": "low",
+          "pace": "slower",
+          "pause_after_seconds": null,
+          "pause_before_seconds": null,
+          "render_strategy": "tts",
+          "schema_version": "voice-direction.v1",
+          "source": "role-derived"
+        }
+      },
+      "seg-02": {
+        "request_id": "nAzNOI8W3UoY7tRfIw7V",
+        "request_id_present": true,
+        "audio_sha256": "e59fe58f4160ad80",
+        "effective_elevenlabs_settings": {
+          "model_id": "eleven_multilingual_v2",
+          "similarity_boost": 0.75,
+          "speed": 1.0,
+          "stability": 0.5,
+          "style": 0.35,
+          "voice_id": "CwhRBWXzGAHq8TQ4Fs17"
+        },
+        "effective_voice_direction": {
+          "delivery_intent": null,
+          "delivery_tag": null,
+          "dialogue_turns": null,
+          "elevenlabs": null,
+          "emotional_tone": "neutral",
+          "energy": "medium",
+          "pace": "neutral",
+          "pause_after_seconds": null,
+          "pause_before_seconds": null,
+          "render_strategy": "tts",
+          "schema_version": "voice-direction.v1",
+          "source": "role-derived"
+        }
+      },
+      "seg-03": {
+        "request_id": "QKd0BHYEndTDqAh0Lgaw",
+        "request_id_present": true,
+        "audio_sha256": "ced198de27c6480a",
+        "effective_elevenlabs_settings": {
+          "model_id": "eleven_multilingual_v2",
+          "similarity_boost": 0.75,
+          "speed": 0.94,
+          "stability": 0.5,
+          "style": 0.35,
+          "voice_id": "CwhRBWXzGAHq8TQ4Fs17"
+        },
+        "effective_voice_direction": {
+          "delivery_intent": null,
+          "delivery_tag": null,
+          "dialogue_turns": null,
+          "elevenlabs": null,
+          "emotional_tone": "neutral",
+          "energy": "medium",
+          "pace": "slower",
+          "pause_after_seconds": null,
+          "pause_before_seconds": null,
+          "render_strategy": "tts",
+          "schema_version": "voice-direction.v1",
+          "source": "role-derived"
+        }
+      }
+    }
+  },
+  "control": {
+    "durations": {
+      "seg-01": {
+        "duration_s": 3.3901133786848074,
+        "rms": 0.06076280214148908,
+        "peak": 0.423553466796875
+      },
+      "seg-02": {
+        "duration_s": 3.436553287981859,
+        "rms": 0.06356634902757496,
+        "peak": 0.43475341796875
+      },
+      "seg-03": {
+        "duration_s": 3.3436734693877552,
+        "rms": 0.06807468650965731,
+        "peak": 0.4852294921875
+      }
+    },
+    "receipts": {
+      "seg-01": {
+        "request_id": "HoWvVsvlbJg1weIh99TS",
+        "request_id_present": true,
+        "audio_sha256": "a3e88ef4d33c730a",
+        "effective_elevenlabs_settings": {
+          "model_id": "eleven_multilingual_v2",
+          "similarity_boost": 0.75,
+          "speed": 1.0,
+          "stability": 0.5,
+          "style": 0.35,
+          "voice_id": "CwhRBWXzGAHq8TQ4Fs17"
+        },
+        "effective_voice_direction": {
+          "delivery_intent": null,
+          "delivery_tag": null,
+          "dialogue_turns": null,
+          "elevenlabs": null,
+          "emotional_tone": "neutral",
+          "energy": "medium",
+          "pace": "neutral",
+          "pause_after_seconds": null,
+          "pause_before_seconds": null,
+          "render_strategy": "tts",
+          "schema_version": "voice-direction.v1",
+          "source": "cd-authored"
+        }
+      },
+      "seg-02": {
+        "request_id": "6EA9bwcGliJwpp78vS4g",
+        "request_id_present": true,
+        "audio_sha256": "cf206dfd959a07dd",
+        "effective_elevenlabs_settings": {
+          "model_id": "eleven_multilingual_v2",
+          "similarity_boost": 0.75,
+          "speed": 1.0,
+          "stability": 0.5,
+          "style": 0.35,
+          "voice_id": "CwhRBWXzGAHq8TQ4Fs17"
+        },
+        "effective_voice_direction": {
+          "delivery_intent": null,
+          "delivery_tag": null,
+          "dialogue_turns": null,
+          "elevenlabs": null,
+          "emotional_tone": "neutral",
+          "energy": "medium",
+          "pace": "neutral",
+          "pause_after_seconds": null,
+          "pause_before_seconds": null,
+          "render_strategy": "tts",
+          "schema_version": "voice-direction.v1",
+          "source": "cd-authored"
+        }
+      },
+      "seg-03": {
+        "request_id": "BkS4SnANt2ZNnxjcxSfo",
+        "request_id_present": true,
+        "audio_sha256": "a339756cbb01865e",
+        "effective_elevenlabs_settings": {
+          "model_id": "eleven_multilingual_v2",
+          "similarity_boost": 0.75,
+          "speed": 1.0,
+          "stability": 0.5,
+          "style": 0.35,
+          "voice_id": "CwhRBWXzGAHq8TQ4Fs17"
+        },
+        "effective_voice_direction": {
+          "delivery_intent": null,
+          "delivery_tag": null,
+          "dialogue_turns": null,
+          "elevenlabs": null,
+          "emotional_tone": "neutral",
+          "energy": "medium",
+          "pace": "neutral",
+          "pause_after_seconds": null,
+          "pause_before_seconds": null,
+          "render_strategy": "tts",
+          "schema_version": "voice-direction.v1",
+          "source": "cd-authored"
+        }
+      }
+    }
+  },
+  "judge": {
+    "floor_F": 0.04643990929705222,
+    "k": 3,
+    "bar_3F": 0.13931972789115665,
+    "synthesis_delta": 0.1393197278911562,
+    "synthesis_pass": false,
+    "worked_example_delta": 0.04643990929705222,
+    "worked_example_pass": false,
+    "verdict": "FAIL",
+    "control_spread": 0.09287981859410399
+  }
+}
