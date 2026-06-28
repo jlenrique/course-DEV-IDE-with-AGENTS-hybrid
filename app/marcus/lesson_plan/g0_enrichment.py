@@ -41,6 +41,23 @@ from app.marcus.lesson_plan.source_type import TypedComponent
 from app.models.state._base import enforce_tz_aware
 
 # ---------------------------------------------------------------------------
+# Shared on-disk artifact basename (A2 — single source of truth)
+# ---------------------------------------------------------------------------
+
+ENRICHMENT_CARD_BASENAME: Final[str] = "g0-enrichment.json"
+"""The frozen public G0-enrichment card payload basename, written at
+``<run_dir>/g0-enrichment.json``.
+
+SINGLE SOURCE OF TRUTH (P5-S2 / Winston A2): both the orchestrator loader
+(``g0_enrichment_wiring.load_enrichment_result``) and the lesson_plan-internal
+loader (``workbook_enrichment.load_enrichment_card``) read this same basename.
+It lives here — in the lesson_plan-level model module both sides already import —
+so the workbook loader (which must NOT import ``app.marcus.orchestrator``,
+Contract M3) and the orchestrator wiring single-source it without a back-arrow.
+"""
+
+
+# ---------------------------------------------------------------------------
 # A10 — enumeration provenance + traversal roots
 # ---------------------------------------------------------------------------
 
@@ -487,6 +504,7 @@ def file_content_hash(path: Path) -> str:
 __all__ = [
     "CITATION_RESOLUTION_REASONS",
     "CITATION_RESOLUTION_STATUSES",
+    "ENRICHMENT_CARD_BASENAME",
     "SCHEMA_VERSION",
     "CitationResolution",
     "CitationResolutionReason",

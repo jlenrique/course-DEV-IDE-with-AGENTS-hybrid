@@ -21,8 +21,11 @@ G0→G2C data plane.
 
 from __future__ import annotations
 
+from pathlib import Path
 from typing import Any
+from uuid import UUID
 
+from app.marcus.orchestrator import enrichment_consumption, g0_enrichment_wiring
 from app.models.runtime.production_envelope import (
     ProductionEnvelope,
     SpecialistContribution,
@@ -87,13 +90,26 @@ def _unit_included(unit: dict[str, Any]) -> bool:
 
 
 def build_gary_briefs(
-    lesson_plan: dict[str, Any], cd_directive: dict[str, Any]
+    lesson_plan: dict[str, Any],
+    cd_directive: dict[str, Any],
+    *,
+    enrichment_hint: str | None = None,
 ) -> dict[str, Any]:
     """Project a ratified lesson plan + creative directive into Gary's vocabulary.
 
     Output keys are a strict subset of gary's CONSUMED_PAYLOAD_KEYS (S1
     contract regime); the subset relation is both asserted here (belt) and
     pinned by the package-builder ratchet (suspenders).
+
+    P5-S2 Consumer B (Step 6): when ``enrichment_hint`` is supplied (the
+    orchestrator-projected short structured G0 role/LO token, gated upstream by the
+    deck flag + card presence), it is appended to ``additional_instructions`` ONLY
+    — so the directive SENT to Gamma is enrichment-shaped, byte-deterministically.
+    The hint NEVER enters ``slides`` / ``prompt`` (the ``text_mode="preserve"`` card
+    body) nor the Studio lock (GARY-A1 content-channel firewall). ``None`` ⇒ the
+    package is byte-identical to the non-enriched build. No NEW payload key is added
+    (the hint rides the existing ``additional_instructions``), so the gary contract
+    + Ratchet-D are unchanged.
     """
     plan_units = lesson_plan.get("plan_units") if isinstance(lesson_plan, dict) else None
     if not isinstance(plan_units, list) or not plan_units:
@@ -139,6 +155,10 @@ def build_gary_briefs(
     if isinstance(proportions, dict) and proportions:
         rendered = ", ".join(f"{key}={value}" for key, value in sorted(proportions.items()))
         instruction_parts.append(f"Slide mode proportions: {rendered}.")
+    # P5-S2 Consumer B: append the enrichment hint to the deck-level instructions
+    # ONLY (firewall — never the card body / Studio lock). Absent ⇒ byte-identical.
+    if enrichment_hint:
+        instruction_parts.append(enrichment_hint)
 
     package: dict[str, Any] = {
         "slides": slides,
@@ -154,14 +174,40 @@ def build_gary_briefs(
     return package
 
 
+def _deck_enrichment_hint(runs_root: Path | None, trial_id: UUID | str | None) -> str | None:
+    """Project the deck enrichment hint from the frozen card (or ``None``).
+
+    ORCHESTRATOR-SIDE projection (Winston A1): the frozen card is read via the
+    existing ``g0_enrichment_wiring.load_enrichment_result`` (no third loader). The
+    card lives at ``<run_dir>/g0-enrichment.json``, written on the START walk before
+    node 01; node 06 (this builder) runs on the continuation walk POST-G1, so the
+    artifact is already on disk on whichever walk reaches here (Winston A6). AND-gated
+    by the deck flag + card presence; OFF / absent ⇒ ``None`` ⇒ byte-identical deck.
+    """
+    if runs_root is None or trial_id is None:
+        return None
+    if not enrichment_consumption.deck_enrichment_active():
+        return None
+    card = g0_enrichment_wiring.load_enrichment_result(runs_root / str(trial_id))
+    return enrichment_consumption.project_deck_enrichment_hint(card)
+
+
 def run_builder_node(
-    *, node_id: str, production_envelope: ProductionEnvelope
+    *,
+    node_id: str,
+    production_envelope: ProductionEnvelope,
+    runs_root: Path | None = None,
+    trial_id: UUID | str | None = None,
 ) -> ProductionEnvelope:
     """Execute the builder registered at ``node_id``; idempotent per node.
 
     Mirrors the walkers' per-node skip rule: a node that already carries
     its contribution is not rebuilt (resume-safe). Missing upstream
     contributions fail loud with the offending specialist named.
+
+    ``runs_root`` + ``trial_id`` (P5-S2): when supplied, the §06 Gary package picks
+    up the orchestrator-projected deck enrichment hint from the frozen G0 card. Both
+    default ``None`` for backward compatibility (the non-enriched build is unchanged).
     """
     if node_id not in BUILDER_NODE_IDS:
         raise BuilderInputError(
@@ -187,6 +233,7 @@ def run_builder_node(
     package = build_gary_briefs(
         irene.output.get("lesson_plan") or {},
         cd.output.get("cd_directive") or {},
+        enrichment_hint=_deck_enrichment_hint(runs_root, trial_id),
     )
     updated = production_envelope.model_copy(deep=True)
     updated.add_contribution(

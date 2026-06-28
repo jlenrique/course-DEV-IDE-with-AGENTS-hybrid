@@ -617,15 +617,34 @@ def _render_voice_direction_panel(
         and not voice_direction.get("delivery_tag")
         and voice_direction.get("delivery_intent") in (None, "")
     )
+    # P5-S2 (CD amendment 3): a role-derived direction is an AUTO/DEFAULT projected
+    # from the G0 pedagogical role — visibly distinct from a cd-authored or
+    # operator-override choice — and carries an explicit reliability-tier note (pace
+    # is GUARANTEED; emotional tone + energy are best-effort, never advertised
+    # audible — Step-5 §12). Small additive label; never replaces the audited values.
+    tier_markup = ""
     if source == "cd-authored" and is_baseline:
         source_label = "baseline default (conservative built-in)"
+        source_kind = "baseline"
+    elif source == "role-derived":
+        source_label = "auto/default — role-derived (G0 pedagogical role)"
+        source_kind = "role-derived"
+        tier_markup = (
+            '<div class="voice-direction-tier vd-source-tier">'
+            'Reliability tier: pace = guaranteed; emotional tone &amp; energy = '
+            'best-effort (not advertised audible)</div>'
+        )
     elif source:
         source_label = f"source: {source}"
+        source_kind = source
     else:
         source_label = "source: unspecified"
+        source_kind = "unspecified"
     source_markup = (
-        '<div class="voice-direction-source">'
-        f'<span class="badge vd-source-badge">{html.escape(source_label)}</span></div>'
+        f'<div class="voice-direction-source" data-vd-source="{html.escape(source_kind)}">'
+        f'<span class="badge vd-source-badge vd-source-{html.escape(source_kind)}">'
+        f'{html.escape(source_label)}</span></div>'
+        f'{tier_markup}'
     )
 
     delivery_tag = voice_direction.get("delivery_tag")

@@ -290,6 +290,62 @@ def test_manifest_declares_projection_edges() -> None:
     }
 
 
+def test_blind1_irene_runner_payload_byte_identical_flag_off_vs_card_absent(
+    tmp_path: Path, monkeypatch
+) -> None:
+    # P5-S2 BLIND-1: the irene narration runner-payload branch is additive — there
+    # was no prior irene branch, so flag-OFF and flag-ON-but-card-absent must BOTH
+    # yield None (byte-identical irene cache_prefix to today). Pinned so a future
+    # baseline irene payload can't silently regress byte-identity.
+    monkeypatch.delenv("MARCUS_NARRATION_VOICE_DIRECTION_ACTIVE", raising=False)
+    off = production_runner._runner_payload_for_specialist(
+        specialist_id="irene",
+        directive_path=None,
+        bundle_dir=None,
+        runs_root=tmp_path,
+        trial_id=TRIAL_ID,
+    )
+    monkeypatch.setenv("MARCUS_NARRATION_VOICE_DIRECTION_ACTIVE", "1")
+    on_card_absent = production_runner._runner_payload_for_specialist(
+        specialist_id="irene",
+        directive_path=None,
+        bundle_dir=None,
+        runs_root=tmp_path,  # no g0-enrichment.json on disk
+        trial_id=TRIAL_ID,
+    )
+    assert off is None
+    assert on_card_absent == off
+
+
+def test_blind1_irene_runner_payload_threads_bundle_when_card_present(
+    tmp_path: Path, monkeypatch
+) -> None:
+    # Flag ON + an aligned card present ⇒ the bundled seed table is threaded.
+    monkeypatch.setenv("MARCUS_NARRATION_VOICE_DIRECTION_ACTIVE", "1")
+    card_fixture = (
+        REPO_ROOT / "tests" / "fixtures" / "p5_workbook_corpus" / "live_enriched_result_card.json"
+    )
+    run_dir = tmp_path / str(TRIAL_ID)
+    run_dir.mkdir(parents=True, exist_ok=True)
+    (run_dir / "g0-enrichment.json").write_text(
+        card_fixture.read_text(encoding="utf-8"), encoding="utf-8"
+    )
+    payload = production_runner._runner_payload_for_specialist(
+        specialist_id="irene",
+        directive_path=None,
+        bundle_dir=None,
+        runs_root=tmp_path,
+        trial_id=TRIAL_ID,
+    )
+    assert payload is not None
+    bundle = payload["role_derived_voice_by_slide"]
+    assert set(bundle) == {"by_slide", "source_slide_ordinals"}
+    # Fixture: narration roles on slides 1 (synthesis) + 6 (worked_example); slide 3
+    # ambiguous (no seed). Source deck slides {1,3,6}.
+    assert set(bundle["by_slide"]) == {"1", "6"}
+    assert bundle["source_slide_ordinals"] == [1, 3, 6]
+
+
 def test_runner_payload_for_quinn_r_is_gate_context_only() -> None:
     # S4: gary_slide_output reaches quinn_r via the 07B manifest projection;
     # the seam carries only the gate context.

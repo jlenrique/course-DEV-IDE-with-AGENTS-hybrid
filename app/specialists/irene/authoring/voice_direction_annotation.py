@@ -26,8 +26,8 @@ Precedence for the ATTACHED direction (NOT the TTS-settings mapping — that is 
 Step-1 pure leaf `app.specialists._shared.voice_direction_map`):
 
     explicit per-segment override  >  CD/Pass-2 `voice_direction_defaults`
-    >  role-derived seed (Step-6 G0-enrichment hook; param present, NOT wired
-       to enrichment here)  >  conservative built-in default
+    >  role-derived seed (Step-6 G0-enrichment, WIRED via graph._attach_voice_direction)
+    >  conservative built-in default
 
 Built-in default: `emotional_tone=neutral`, `pace=neutral`, `energy=medium`,
 `render_strategy=tts`.
@@ -150,9 +150,12 @@ def annotate_segments_with_voice_direction(
         defaults: lesson/Pass-2 ``voice_direction_defaults`` (CD-authored).
         per_segment_overrides: explicit per-segment direction, keyed by segment
             id (``operator-override``).
-        role_derived_seeds: STEP-6 HOOK — per-segment seeds derived from G0
-            enrichment (``role-derived``). The param exists now for the Step-6
-            seam; it is NOT wired to enrichment in ``graph.py`` yet.
+        role_derived_seeds: per-segment seeds derived from G0 enrichment
+            (``role-derived``). WIRED at the Step-6 seam: ``graph._attach_voice_direction``
+            re-keys the orchestrator's per-slide role→voice table onto this pass's
+            segment ids (guarded by the source↔final ordinal-space divergence check)
+            and passes the result here. Seeds carry VALUES only; this leaf stamps
+            ``source="role-derived"`` when the seed tier drove the merged values.
 
     Returns:
         A NEW list of NEW segment dicts, each carrying a validated

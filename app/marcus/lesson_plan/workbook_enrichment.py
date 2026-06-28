@@ -51,6 +51,9 @@ from app.marcus.lesson_plan.collateral_spec import (
     WorkbookSection,
     WorkbookSpec,
 )
+from app.marcus.lesson_plan.g0_enrichment import (
+    ENRICHMENT_CARD_BASENAME as _SHARED_ENRICHMENT_CARD_BASENAME,
+)
 from app.marcus.lesson_plan.workbook_producer import (
     FurtherReadingEntry,
     LearningObjectiveBrief,
@@ -58,10 +61,12 @@ from app.marcus.lesson_plan.workbook_producer import (
 
 logger = logging.getLogger(__name__)
 
-# The frozen public card payload the G0E decision card reads (mirrors the
-# orchestrator's ``_DECISION_ARTIFACT_BASENAME``; replicated to avoid an
-# app.specialists -> app.marcus.orchestrator import edge — Contract M3).
-ENRICHMENT_CARD_BASENAME = "g0-enrichment.json"
+# The frozen public card payload the G0E decision card reads. SINGLE-SOURCED
+# (Winston A2) from ``app.marcus.lesson_plan.g0_enrichment`` — the same basename
+# the orchestrator loader uses — re-exported here so existing importers of
+# ``workbook_enrichment.ENRICHMENT_CARD_BASENAME`` are unchanged. Sourced from the
+# lesson_plan model module (NOT app.marcus.orchestrator) to honor Contract M3.
+ENRICHMENT_CARD_BASENAME = _SHARED_ENRICHMENT_CARD_BASENAME
 
 _DEFAULT_BLOOM = "understand"
 _TITLE_MAX_CHARS = 160

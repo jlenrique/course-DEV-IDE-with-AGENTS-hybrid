@@ -29,6 +29,13 @@ CONSUMED_PAYLOAD_KEYS: frozenset[str] = frozenset(
         # absent ⇒ conservative built-in default (flag OFF ⇒ not read at all).
         "voice_direction_defaults",
         "voice_direction_overrides",
+        # P5-S2 (Step 6, 2026-06-27): the orchestrator-projected per-SLIDE
+        # role-derived voice seed table (slide-ordinal → voice_direction). Threaded
+        # via runner_supplied_payload (NOT a manifest projection); read ONLY when
+        # MARCUS_NARRATION_VOICE_DIRECTION_ACTIVE is set + an enrichment card is
+        # present. Aligned to this pass's segment ids by the pinned slide-ordinal
+        # join; absent ⇒ conservative built-in default (byte-identical).
+        "role_derived_voice_by_slide",
     }
 )
 

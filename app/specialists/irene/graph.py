@@ -42,6 +42,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import re
 from copy import deepcopy
 from pathlib import Path
 from typing import Any
@@ -1033,10 +1034,18 @@ def _attach_voice_direction(
     default OFF): when the flag is OFF the parsed dict is returned UNCHANGED, so
     non-directed runs are byte-identical to the pre-Step-2 baseline.
 
-    Direction inputs are read from the envelope payload (both optional): CD/Pass-2
-    ``voice_direction_defaults`` and per-segment ``voice_direction_overrides``.
-    The Step-6 G0-enrichment ``role_derived_seeds`` hook exists on the leaf but is
-    intentionally NOT wired here yet.
+    Direction inputs are read from the envelope payload (all optional): CD/Pass-2
+    ``voice_direction_defaults``, per-segment ``voice_direction_overrides``, and
+    the Step-6 G0-enrichment ``role_derived_voice_by_slide`` map (a per-SLIDE seed
+    table the orchestrator projected from the frozen enrichment card). The
+    component matching + role→voice mapping + ambiguity resolution all happened
+    ORCHESTRATOR-SIDE (Winston A3); here we only ALIGN that per-slide table to THIS
+    pass's frozen segment ids by the PINNED join (segment ``slide_id`` ordinal ↔
+    component ``Slide N`` locator ordinal — Winston A4). The orchestrator cannot key
+    by segment id because the segment manifest does not exist until AFTER Pass-2, so
+    this thin, deterministic delta-id re-key (no ``app.marcus`` import — Contract M3)
+    is the unavoidable specialist-side step. Precedence: explicit override > CD
+    defaults > role-derived seed > built-in.
 
     Two-walk determinism (Winston W-A4): the flag is read live here, but the
     production runner's S2 per-node idempotency contract skips re-dispatch on the
@@ -1054,12 +1063,100 @@ def _attach_voice_direction(
     deltas = parsed.get("segment_manifest_deltas") or []
     if not deltas:
         return parsed
+    role_derived_seeds = _role_derived_seeds_for_deltas(
+        deltas, envelope_payload.get("role_derived_voice_by_slide")
+    )
     annotated = annotate_segments_with_voice_direction(
         deltas,
         defaults=envelope_payload.get("voice_direction_defaults"),
         per_segment_overrides=envelope_payload.get("voice_direction_overrides"),
+        role_derived_seeds=role_derived_seeds,
     )
     return {**parsed, "segment_manifest_deltas": annotated}
+
+
+# Segment ``slide_id`` ordinal parser — the PINNED join's segment side (Winston A4).
+# ANCHORED on the TRAILING digit run (EDGE-4): a numeric-PREFIXED slide_id such as
+# ``"c1m1-slide-03"`` / ``"module-1-slide-03"`` must read ordinal 3, not the prefix
+# "1". This mirrors the orchestrator's anchored ``Slide N`` locator parse so both
+# sides of the join agree. Duplicated here (a one-line regex) rather than imported
+# from the orchestrator projector to honor Contract M3 (``app.specialists`` ↛
+# ``app.marcus.orchestrator``), mirroring the workbook_enrichment loader-replication.
+_SLIDE_ID_ORDINAL_RE = re.compile(r"(\d+)\s*$")
+
+
+def _slide_id_ordinal(slide_id: Any) -> int | None:
+    """The 1-based ordinal from a segment ``slide_id`` (trailing digit run)."""
+    match = _SLIDE_ID_ORDINAL_RE.search(str(slide_id or ""))
+    return int(match.group(1)) if match else None
+
+
+def _role_derived_seeds_for_deltas(
+    deltas: list[dict[str, Any]],
+    role_derived_voice_by_slide: Any,
+) -> dict[str, dict[str, Any]] | None:
+    """Re-key the orchestrator's per-slide seed table onto THIS pass's segment ids.
+
+    The orchestrator threads ``{"by_slide": {ordinal: voice}, "source_slide_ordinals":
+    [...]}``: ``by_slide`` is the seed table keyed by SOURCE-deck slide ordinal (the
+    segment manifest does not exist at dispatch time, so it cannot key by segment id);
+    ``source_slide_ordinals`` is the source deck's slide-ordinal universe.
+
+    EDGE-1 DIVERGENCE GUARD (the production-correctness fix): the source-card slide
+    numbering and the FINAL-deck slide numbering are TWO DIFFERENT ordinal spaces —
+    Pass-1 clustering / sub-slide split / ignore-drop / reorder renumbers the final
+    deck (a 6-source-slide deck becomes ``slide-01..slide-11``). Applying a source
+    ordinal to a final ``slide-NN`` of a different value would MIS-PACE a real learner
+    segment, silently. So we only apply seeds when the source and final slide-ordinal
+    SETS COINCIDE 1:1 (cardinality + membership); on ANY divergence we FAIL OPEN —
+    emit NO seeds (neutral built-in), never a wrong-role seed. Voice is delivery-only,
+    so a fail-open neutral is harmless; a mis-seed is not. The durable content-grounded
+    join is filed as ``p5-s2-role-seed-robust-source-to-final-slide-linkage``.
+
+    Each surviving delta's seed is keyed by its (stripped) ``id`` — pre-filtered to
+    the ids present in THIS manifest (IR-A2; never lean on the leaf's fail-loud
+    unmatched-id raise). Returns ``None`` when nothing is seeded (no table, guard
+    tripped, or no delta matched) so the pass is byte-identical to the non-enriched
+    directed-voice run.
+    """
+    if not isinstance(role_derived_voice_by_slide, dict):
+        return None
+    by_slide = role_derived_voice_by_slide.get("by_slide")
+    source_ordinals = role_derived_voice_by_slide.get("source_slide_ordinals")
+    if not isinstance(by_slide, dict) or not by_slide:
+        return None
+    if not isinstance(source_ordinals, list):
+        return None
+
+    # Final-deck distinct slide ordinals + the per-delta ordinal map.
+    final_ordinals: set[int] = set()
+    delta_ordinal: dict[str, int] = {}
+    for delta in deltas:
+        if not isinstance(delta, dict):
+            continue
+        sid = delta.get("id")
+        if not (isinstance(sid, str) and sid.strip()):
+            continue
+        ordinal = _slide_id_ordinal(delta.get("slide_id"))
+        if ordinal is None:
+            continue
+        final_ordinals.add(ordinal)
+        delta_ordinal[sid.strip()] = ordinal
+
+    # EDGE-1 guard: source↔final ordinal spaces must coincide exactly, else fail open.
+    try:
+        source_set = {int(o) for o in source_ordinals}
+    except (TypeError, ValueError):
+        return None
+    if not source_set or source_set != final_ordinals:
+        return None
+
+    seeds: dict[str, dict[str, Any]] = {}
+    for sid, ordinal in delta_ordinal.items():
+        seed = by_slide.get(str(ordinal))
+        if isinstance(seed, dict) and seed:
+            seeds[sid] = dict(seed)
+    return seeds or None
 
 
 def _act_pass_2(

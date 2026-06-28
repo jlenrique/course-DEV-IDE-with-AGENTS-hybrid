@@ -555,6 +555,21 @@ PERMITTED_PYTHON_DIFFS = {
     "tests/unit/manifest/test_gate_topology_cli.py",
     "tests/unit/manifest/test_production_gate_ids_derived.py",
     "tests/unit/manifest/test_gate_fold_manifest_emit.py",
+    # P5-S2 (directed-voice arc Step 6, 2026-06-27): deck + narration consume the
+    # frozen G0 enrichment card. NEW orchestrator-side projector + the consumption
+    # wiring on the two proven producers. NO NEW live-dispatch call site — the deck
+    # render rides the already-allowlisted Gary dispatch; the narration role seed is
+    # delivery-metadata only. Flag-gated (MARCUS_NARRATION_VOICE_DIRECTION_ACTIVE /
+    # MARCUS_DECK_ENRICHMENT_ACTIVE, default OFF ⇒ byte-identical). irene/graph.py,
+    # irene/payload_contract.py, package_builders.py, production_runner.py,
+    # generate-storyboard.py + test_package_builders.py already rostered above.
+    "app/marcus/orchestrator/enrichment_consumption.py",
+    "app/marcus/lesson_plan/g0_enrichment.py",
+    "app/marcus/lesson_plan/workbook_enrichment.py",
+    "app/marcus/orchestrator/g0_enrichment_wiring.py",
+    "tests/marcus/orchestrator/test_enrichment_consumption.py",
+    "tests/specialists/irene/test_role_derived_seed_wiring.py",
+    "tests/integration/marcus/test_gary_deck_enrichment_hint.py",
 }
 
 

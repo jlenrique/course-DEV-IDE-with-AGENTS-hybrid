@@ -54,6 +54,7 @@ from pydantic import ValidationError
 
 from app.composers.section_02a.composer import _walk_corpus_files
 from app.marcus.lesson_plan.g0_enrichment import (
+    ENRICHMENT_CARD_BASENAME,
     CitationResolution,
     Dissent,
     EnumerationProvenance,
@@ -132,7 +133,10 @@ def g0_dispatch_live() -> bool:
     }
 
 
-_DECISION_ARTIFACT_BASENAME = "g0-enrichment.json"
+# Single-sourced (Winston A2) from the lesson_plan model module — the SAME
+# basename ``workbook_enrichment.ENRICHMENT_CARD_BASENAME`` resolves to. The
+# orchestrator-local name is kept as an alias so existing references are unchanged.
+_DECISION_ARTIFACT_BASENAME = ENRICHMENT_CARD_BASENAME
 _CACHE_DIRNAME = "g0-enrichment-cache"
 
 # DD2 — the Texas-side pass-0 package (citation_resolver / universal_md /

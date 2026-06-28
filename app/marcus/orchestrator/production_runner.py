@@ -32,6 +32,7 @@ from app.marcus.lesson_plan.composition import compose_manifest
 from app.marcus.orchestrator import (
     chooser_publisher,
     conversation_persistence,
+    enrichment_consumption,
     g0_enrichment_wiring,
     gate_runner,
     irene_refinement_wiring,
@@ -78,6 +79,7 @@ from app.models.state.operator_verdict import OperatorVerdict
 from app.models.state.run_state import RunState
 from app.runtime.cascade_config import ensure_pricing_covers_cascade, load_cascade, load_pricing
 from app.runtime.economics import RUNS_ROOT, measure_trial_cost, record_trial_cost_report
+from app.specialists._shared.voice_direction_map import voice_direction_active
 from app.specialists.dispatch_errors import SpecialistDispatchError
 
 REPO_ROOT = Path(__file__).resolve().parents[3]
@@ -1397,6 +1399,37 @@ def _runner_payload_for_specialist(
         if gamma_settings is not None:
             payload["gamma_settings"] = gamma_settings
         return payload
+    # P5-S2 Consumer A (Step 6): the narration node ("irene" == Pass-2; Pass-1 is
+    # the separate "irene-pass1" specialist) gets the orchestrator-projected
+    # per-SLIDE role-derived voice seed table. ORCHESTRATOR-SIDE projection (Winston
+    # A1/A3): load the frozen card via the existing load_enrichment_result (no third
+    # loader), match narration components → roles → the frozen voice map. AND-gated
+    # by the narration flag + card presence; flag-OFF / card-absent ⇒ None ⇒ the
+    # runner adds no key ⇒ the irene cache_prefix is byte-identical to today. The
+    # specialist re-keys this per-slide table onto its own segment ids (the segment
+    # manifest does not exist until after Pass-2, so the orchestrator cannot key by
+    # segment id — pinned slide-ordinal join, Winston A4).
+    if (
+        specialist_id == "irene"
+        and runs_root is not None
+        and trial_id is not None
+        and voice_direction_active()
+    ):
+        card = g0_enrichment_wiring.load_enrichment_result(runs_root / str(trial_id))
+        seeds_by_slide = enrichment_consumption.project_role_derived_voice_by_slide(card)
+        if seeds_by_slide:
+            # Thread the seed table PLUS the source-deck slide-ordinal universe so the
+            # specialist can run the EDGE-1 divergence guard (source↔final ordinal-
+            # space alignment) BEFORE applying any seed — never mis-seed a clustered /
+            # dropped / renumbered deck. NOTE: if irene ever gains a baseline runner
+            # payload, MERGE this key rather than returning a fresh dict.
+            return {
+                "role_derived_voice_by_slide": {
+                    "by_slide": seeds_by_slide,
+                    "source_slide_ordinals": enrichment_consumption.source_slide_ordinals(card),
+                }
+            }
+        return None
     # Motion data-plane SEED (B2 composed-run drive, 2026-06-26): until the real
     # in-graph motion-plan producer lands, kira's 07E is fed a seeded motion plan
     # via the run/seed path. KIRA_MOTION_PLAN_PATH names a real motion_plan.yaml;
@@ -2138,6 +2171,8 @@ def run_production_trial(
                     production_envelope = package_builders.run_builder_node(
                         node_id=node.id,
                         production_envelope=production_envelope,
+                        runs_root=runs_root,
+                        trial_id=effective_trial_id,
                     )
                 except SpecialistDispatchError as exc:
                     return _pause_at_error(
@@ -2844,6 +2879,8 @@ def _continue_production_walk(
                     production_envelope = package_builders.run_builder_node(
                         node_id=node.id,
                         production_envelope=production_envelope,
+                        runs_root=runs_root,
+                        trial_id=trial_id,
                     )
                 except SpecialistDispatchError as exc:
                     return _pause_at_error(
