@@ -16,7 +16,7 @@ import json
 import os
 import sys
 import time
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
 
 from dotenv import load_dotenv
@@ -31,7 +31,7 @@ sys.path.insert(0, str(REPO))
 from scripts.api_clients.base_client import APIError, AuthenticationError  # noqa: E402
 from scripts.api_clients.elevenlabs_client import ElevenLabsClient  # noqa: E402
 
-UTCSTAMP = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ")
+UTCSTAMP = datetime.now(UTC).strftime("%Y%m%dT%H%M%SZ")
 EVID = REPO / "_bmad-output/implementation-artifacts/evidence"
 AUDIO_DIR = EVID / "elevenlabs-sweep-audio"
 AUDIO_DIR.mkdir(parents=True, exist_ok=True)
