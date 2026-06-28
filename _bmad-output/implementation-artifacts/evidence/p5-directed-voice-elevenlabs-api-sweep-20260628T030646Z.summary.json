@@ -1,0 +1,30 @@
+{
+  "utcstamp": "20260628T030646Z",
+  "tier": null,
+  "char_before": null,
+  "char_limit": null,
+  "char_after": null,
+  "consumed": null,
+  "get_user": {
+    "outcome": "UNAVAILABLE",
+    "status": 401,
+    "note": "HTTP 401: {\"detail\": {\"status\": \"missing_permissions\", \"message\": \"The API key you used is missing the permission user_read to execute this operation.\"}}"
+  },
+  "voice": {
+    "id": "CwhRBWXzGAHq8TQ4Fs17",
+    "name": "Roger - Laid-Back, Casual, Resonant"
+  },
+  "models_can_do_tts": [
+    "eleven_v3",
+    "eleven_multilingual_v2",
+    "eleven_flash_v2_5",
+    "eleven_turbo_v2_5",
+    "eleven_turbo_v2",
+    "eleven_flash_v2",
+    "eleven_monolingual_v1",
+    "eleven_multilingual_v1"
+  ],
+  "alt_model": "eleven_turbo_v2_5",
+  "base_request_id": "nrH0cerR1P0KSJM9ufz4",
+  "n_calls": 28
+}

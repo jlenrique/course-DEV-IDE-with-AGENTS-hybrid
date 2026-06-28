@@ -1,0 +1,357 @@
+[
+  {
+    "label": "get_user",
+    "params": {},
+    "outcome": "UNAVAILABLE",
+    "status": 401,
+    "request_id": null,
+    "bytes": 0,
+    "note": "HTTP 401: {\"detail\": {\"status\": \"missing_permissions\", \"message\": \"The API key you used is missing the permission user_read to execute this operation.\"}}"
+  },
+  {
+    "label": "list_models",
+    "params": {},
+    "outcome": "ACCEPTED",
+    "status": 200,
+    "request_id": null,
+    "bytes": 0,
+    "note": "can_do_tts=['eleven_v3', 'eleven_multilingual_v2', 'eleven_flash_v2_5', 'eleven_turbo_v2_5', 'eleven_turbo_v2', 'eleven_flash_v2', 'eleven_monolingual_v1', 'eleven_multilingual_v1']"
+  },
+  {
+    "label": "list_voices/get_voice",
+    "params": {
+      "voice_id": "CwhRBWXzGAHq8TQ4Fs17"
+    },
+    "outcome": "ACCEPTED",
+    "status": 200,
+    "request_id": null,
+    "bytes": 0,
+    "note": "using Roger - Laid-Back, Casual, Resonant; 45 voices total"
+  },
+  {
+    "label": "baseline_default",
+    "params": {},
+    "outcome": "ACCEPTED",
+    "status": 200,
+    "request_id": "nrH0cerR1P0KSJM9ufz4",
+    "bytes": 22613,
+    "md5": "598bd47fb168aa58e8b05e5d0b8274e9",
+    "seconds": 0.9,
+    "note": "22613 bytes, request_id=nrH0cerR1P0KSJM9ufz4"
+  },
+  {
+    "label": "model_id=eleven_turbo_v2_5",
+    "params": {
+      "model_id": "eleven_turbo_v2_5"
+    },
+    "outcome": "ACCEPTED",
+    "status": 200,
+    "request_id": "ERRAL1aop75pUfdhJ0b8",
+    "bytes": 24285,
+    "md5": "c39d81222db8a2b2515ad1fd8204a072",
+    "seconds": 0.2,
+    "note": "24285 bytes, request_id=ERRAL1aop75pUfdhJ0b8"
+  },
+  {
+    "label": "stability=0.3",
+    "params": {
+      "stability": 0.3
+    },
+    "outcome": "ACCEPTED",
+    "status": 200,
+    "request_id": "0c8RuxCL9iyHhfDkF7o6",
+    "bytes": 24285,
+    "md5": "d9fc55cd8ba8f0389a6aee4fcdb2fac4",
+    "seconds": 0.9,
+    "note": "24285 bytes, request_id=0c8RuxCL9iyHhfDkF7o6"
+  },
+  {
+    "label": "similarity_boost=0.9",
+    "params": {
+      "similarity_boost": 0.9
+    },
+    "outcome": "ACCEPTED",
+    "status": 200,
+    "request_id": "jWpuLXUbyAOXF58Gh9DX",
+    "bytes": 23449,
+    "md5": "d3f1bcb209070554d57c033263444603",
+    "seconds": 0.9,
+    "note": "23449 bytes, request_id=jWpuLXUbyAOXF58Gh9DX"
+  },
+  {
+    "label": "style=0.6",
+    "params": {
+      "style": 0.6
+    },
+    "outcome": "ACCEPTED",
+    "status": 200,
+    "request_id": "Y19rPRpkPqTazIKfBBJD",
+    "bytes": 23449,
+    "md5": "0e2c5cb43c36058301db60b461435559",
+    "seconds": 0.9,
+    "note": "23449 bytes, request_id=Y19rPRpkPqTazIKfBBJD"
+  },
+  {
+    "label": "speed=1.15",
+    "params": {
+      "speed": 1.15
+    },
+    "outcome": "ACCEPTED",
+    "status": 200,
+    "request_id": "BwpADDS1Baa5VY2Uhj6j",
+    "bytes": 19688,
+    "md5": "35eb562130f36d945fb1cf0b4263698b",
+    "seconds": 0.8,
+    "note": "19688 bytes, request_id=BwpADDS1Baa5VY2Uhj6j"
+  },
+  {
+    "label": "use_speaker_boost=True",
+    "params": {
+      "use_speaker_boost": true
+    },
+    "outcome": "ACCEPTED",
+    "status": 200,
+    "request_id": "FyZ0LAqlQg2ScgwDnzsI",
+    "bytes": 22613,
+    "md5": "226627e1518862e72f39c1a3ed1dfcc1",
+    "seconds": 0.9,
+    "note": "22613 bytes, request_id=FyZ0LAqlQg2ScgwDnzsI"
+  },
+  {
+    "label": "output_format=mp3_44100_128",
+    "params": {
+      "output_format": "mp3_44100_128"
+    },
+    "outcome": "ACCEPTED",
+    "status": 200,
+    "request_id": "f6ddKlQx64cnzaYAf7mB",
+    "bytes": 24285,
+    "md5": "3a0213f0c63325f92ee40d30c229bc2e",
+    "seconds": 0.9,
+    "note": "24285 bytes, request_id=f6ddKlQx64cnzaYAf7mB"
+  },
+  {
+    "label": "output_format=mp3_44100_64",
+    "params": {
+      "output_format": "mp3_44100_64"
+    },
+    "outcome": "ACCEPTED",
+    "status": 200,
+    "request_id": "NqVx8kpKq9W6JL0T1A4m",
+    "bytes": 11328,
+    "md5": "e94e896988288ade3e8923f83e1f8a73",
+    "seconds": 0.9,
+    "note": "11328 bytes, request_id=NqVx8kpKq9W6JL0T1A4m"
+  },
+  {
+    "label": "output_format=pcm_16000",
+    "params": {
+      "output_format": "pcm_16000"
+    },
+    "outcome": "ACCEPTED",
+    "status": 200,
+    "request_id": "ULvtfs1TMTBPy0Fpl20b",
+    "bytes": 46068,
+    "md5": "1adae88efd70816ef90daacbccf5fef6",
+    "seconds": 0.9,
+    "note": "46068 bytes, request_id=ULvtfs1TMTBPy0Fpl20b"
+  },
+  {
+    "label": "language_code=en (alt model)",
+    "params": {
+      "model_id": "eleven_turbo_v2_5",
+      "language_code": "en"
+    },
+    "outcome": "ACCEPTED",
+    "status": 200,
+    "request_id": "ur68ab9yKDLJ8KwoGcCI",
+    "bytes": 23449,
+    "md5": "93d2686667529c4fb8c52164e09fccf9",
+    "seconds": 0.2,
+    "note": "23449 bytes, request_id=ur68ab9yKDLJ8KwoGcCI"
+  },
+  {
+    "label": "seed=12345 (call A)",
+    "params": {
+      "seed": 12345
+    },
+    "outcome": "ACCEPTED",
+    "status": 200,
+    "request_id": "HdYlqWv7oqIm4MDPjvNx",
+    "bytes": 22613,
+    "md5": "c856bac21ef087b21cfdc03662b915c0",
+    "seconds": 0.9,
+    "note": "22613 bytes, request_id=HdYlqWv7oqIm4MDPjvNx"
+  },
+  {
+    "label": "seed=12345 (call B)",
+    "params": {
+      "seed": 12345
+    },
+    "outcome": "ACCEPTED",
+    "status": 200,
+    "request_id": "3qUy7U6EbAUmISZKfZDL",
+    "bytes": 22613,
+    "md5": "c856bac21ef087b21cfdc03662b915c0",
+    "seconds": 0.8,
+    "note": "22613 bytes, request_id=3qUy7U6EbAUmISZKfZDL"
+  },
+  {
+    "label": "seed determinism check",
+    "params": {
+      "seed": 12345
+    },
+    "outcome": "INFO",
+    "status": 200,
+    "request_id": null,
+    "bytes": 0,
+    "note": "two identical seed calls -> BYTE-IDENTICAL"
+  },
+  {
+    "label": "previous_text",
+    "params": {
+      "previous_text": "This is the prior sentence."
+    },
+    "outcome": "ACCEPTED",
+    "status": 200,
+    "request_id": "oB9Gb8rHjaGcI3UpuuXZ",
+    "bytes": 24285,
+    "md5": "a3656a66c3d556f07a41dbd7ac365d0b",
+    "seconds": 1.0,
+    "note": "24285 bytes, request_id=oB9Gb8rHjaGcI3UpuuXZ"
+  },
+  {
+    "label": "next_text",
+    "params": {
+      "next_text": "And this follows after."
+    },
+    "outcome": "ACCEPTED",
+    "status": 200,
+    "request_id": "C08KkeDy2Lb9f64CTsJN",
+    "bytes": 25539,
+    "md5": "183f44859d83394e24a8f6678f69cf3e",
+    "seconds": 1.0,
+    "note": "25539 bytes, request_id=C08KkeDy2Lb9f64CTsJN"
+  },
+  {
+    "label": "previous_request_ids",
+    "params": {
+      "previous_request_ids": [
+        "nrH0cerR1P0KSJM9ufz4"
+      ]
+    },
+    "outcome": "ACCEPTED",
+    "status": 200,
+    "request_id": "oJ1oKhHwRfTv9I4k8TeG",
+    "bytes": 22613,
+    "md5": "4c417ba16b3d36e892102654539dc835",
+    "seconds": 0.9,
+    "note": "22613 bytes, request_id=oJ1oKhHwRfTv9I4k8TeG"
+  },
+  {
+    "label": "next_request_ids",
+    "params": {
+      "next_request_ids": [
+        "nrH0cerR1P0KSJM9ufz4"
+      ]
+    },
+    "outcome": "ACCEPTED",
+    "status": 200,
+    "request_id": "NiK0OxmZgI3qoVrGK36M",
+    "bytes": 18016,
+    "md5": "90c0aa345d7408827678a4be92ff4273",
+    "seconds": 0.9,
+    "note": "18016 bytes, request_id=NiK0OxmZgI3qoVrGK36M"
+  },
+  {
+    "label": "use_pvc_as_ivc=True",
+    "params": {
+      "use_pvc_as_ivc": true
+    },
+    "outcome": "ACCEPTED",
+    "status": 200,
+    "request_id": "mkKMTN7u26O3rp2eApCe",
+    "bytes": 21777,
+    "md5": "608be165330cc0c6f84dc9a7a3e66a14",
+    "seconds": 0.6,
+    "note": "21777 bytes, request_id=mkKMTN7u26O3rp2eApCe"
+  },
+  {
+    "label": "apply_text_normalization=auto",
+    "params": {
+      "apply_text_normalization": "auto"
+    },
+    "outcome": "ACCEPTED",
+    "status": 200,
+    "request_id": "l0wzROipPTCzQxzwKOOl",
+    "bytes": 24285,
+    "md5": "3bd17d7e5eae9f38aa198f158c3920c8",
+    "seconds": 0.9,
+    "note": "24285 bytes, request_id=l0wzROipPTCzQxzwKOOl"
+  },
+  {
+    "label": "apply_text_normalization=on",
+    "params": {
+      "apply_text_normalization": "on"
+    },
+    "outcome": "ACCEPTED",
+    "status": 200,
+    "request_id": "psBeB09TcURSnT9qt4vC",
+    "bytes": 22613,
+    "md5": "a5ff242c3f5469e08dc92b26d5eeab7f",
+    "seconds": 0.9,
+    "note": "22613 bytes, request_id=psBeB09TcURSnT9qt4vC"
+  },
+  {
+    "label": "apply_text_normalization=off",
+    "params": {
+      "apply_text_normalization": "off"
+    },
+    "outcome": "ACCEPTED",
+    "status": 200,
+    "request_id": "A73W73W3c4650LDSPyqi",
+    "bytes": 24703,
+    "md5": "fa7892c2ef590f56e3a45c9983db52a3",
+    "seconds": 0.9,
+    "note": "24703 bytes, request_id=A73W73W3c4650LDSPyqi"
+  },
+  {
+    "label": "apply_language_text_normalization=True",
+    "params": {
+      "apply_language_text_normalization": true
+    },
+    "outcome": "REJECTED",
+    "status": 400,
+    "request_id": null,
+    "bytes": 0,
+    "seconds": 0.1,
+    "note": "HTTP 400: {\"detail\": {\"type\": \"validation_error\", \"code\": \"invalid_parameters\", \"message\": \"Language text normalization is not supported for language code 'None'.\", \"status\": \"language_text_normalization_not_supported\", \"request_id\": \"825223dd5f81d127493f6ff7ae7f3f37\", \"param\": \"language_code\"}}"
+  },
+  {
+    "label": "pronunciation_dictionary_locators (real)",
+    "params": {
+      "pronunciation_dictionary_locators": [
+        {
+          "pronunciation_dictionary_id": "S9kBtj1zC1Y4JhZ7sX8p",
+          "version_id": "azkfwg2CGGfczBEaS9nd"
+        }
+      ]
+    },
+    "outcome": "ACCEPTED",
+    "status": 200,
+    "request_id": "ySrScCe6zdSh2iJ4LFYq",
+    "bytes": 22613,
+    "md5": "a5a16898384165cb981dce8a3a138bf5",
+    "seconds": 0.9,
+    "note": "22613 bytes, request_id=ySrScCe6zdSh2iJ4LFYq"
+  },
+  {
+    "label": "text_to_speech_with_timestamps",
+    "params": {},
+    "outcome": "ACCEPTED",
+    "status": 200,
+    "request_id": "f44gVEdbctdfPpG261rq",
+    "bytes": 24285,
+    "note": "21 char timestamps; sample=['H', 'e', 'l', 'l', 'o', ' ', 'f', 'r']"
+  }
+]
