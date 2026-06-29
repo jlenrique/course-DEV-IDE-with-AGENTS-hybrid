@@ -140,9 +140,18 @@ def _candidate_voice(voice: dict[str, Any], index: int, *, cost: float) -> dict[
     }
 
 
+def _recommended_voice_id(voices: list[dict[str, Any]], config: dict[str, Any]) -> str:
+    configured = normalize_optional_str(config.get("default_recommended_voice_id"))
+    voice_ids = {str(voice.get("voice_id") or "") for voice in voices}
+    if configured and configured in voice_ids:
+        return configured
+    return str(voices[0]["voice_id"])
+
+
 def build_voice_selection_contract(
     payload: dict[str, Any], *, client: ElevenLabsClient | None = None
 ) -> dict[str, Any]:
+    client_was_supplied = client is not None
     client = client or ElevenLabsClient()
     config = _load_config()
     bundle_path = _require_bundle_path(payload)
@@ -154,14 +163,23 @@ def build_voice_selection_contract(
     )
     raw_voices = payload.get("candidate_voices")
     if not isinstance(raw_voices, list):
-        raw_voices = client.list_voices()
+        configured_voices = config.get("default_candidate_voices")
+        if not client_was_supplied and isinstance(configured_voices, list):
+            raw_voices = configured_voices
+        else:
+            raw_voices = client.list_voices()
     cost = float(config.get("default_cost_per_1k_chars_usd", 0.30))
     voices = [_candidate_voice(v, i, cost=cost) for i, v in enumerate(raw_voices[:count], start=1)]
     if not voices:
         raise EnriqueActError(
             "voice preview requires at least one candidate", tag="elevenlabs.voice-preview.empty"
         )
-    preview = {"voices": voices, "recommended_voice_id": voices[0]["voice_id"]}
+    recommended_voice_id = (
+        _recommended_voice_id(voices, config)
+        if not client_was_supplied and not isinstance(payload.get("candidate_voices"), list)
+        else str(voices[0]["voice_id"])
+    )
+    preview = {"voices": voices, "recommended_voice_id": recommended_voice_id}
     _write_json(selection_dir / "voice-preview-options.json", preview)
     lines = ["# Voice Selection Review", ""]
     for voice in voices:

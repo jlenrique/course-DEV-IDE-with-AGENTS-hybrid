@@ -66,3 +66,66 @@ def test_voice_selection_hil_artifacts(
     assert "[recommended]" in review_path.read_text(encoding="utf-8")
     assert selected["selected_voice_id"] == expected_voice
     assert result["voice_selection"]["selected_voice_id"] == expected_voice
+
+
+def test_voice_selection_uses_configured_default_slate(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    class ClientThatMustNotList:
+        def list_voices(self) -> list[dict[str, object]]:
+            raise AssertionError("configured default voice slate should avoid provider list order")
+
+    monkeypatch.setattr(enrique_act, "ElevenLabsClient", ClientThatMustNotList)
+    monkeypatch.setattr(
+        enrique_act,
+        "_load_config",
+        lambda: {
+            "voice_preview_candidate_count": 4,
+            "default_cost_per_1k_chars_usd": 0.3,
+            "default_recommended_voice_id": "EXAVITQu4vr4xnSDxMaL",
+            "default_candidate_voices": [
+                {
+                    "voice_id": "EXAVITQu4vr4xnSDxMaL",
+                    "voice_name": "Sarah - Mature, Reassuring, Confident",
+                    "sample_audio_url": "https://cdn.eleven.test/sarah.mp3",
+                    "characteristics": {"gender": "female", "descriptive": "professional"},
+                },
+                {
+                    "voice_id": "0GoLoBHogFMTLhDROxLD",
+                    "voice_name": "Shannon - Modern Professional American Woman",
+                    "sample_audio_url": "https://cdn.eleven.test/shannon.mp3",
+                    "characteristics": {"gender": "female", "descriptive": "professional"},
+                },
+                {
+                    "voice_id": "W6zuQRTYRBdAK8ypjo5V",
+                    "voice_name": "Stark - Classic American Voice",
+                    "sample_audio_url": "https://cdn.eleven.test/stark.mp3",
+                    "characteristics": {"gender": "male", "descriptive": "casual"},
+                },
+                {
+                    "voice_id": "1SM7GgM6IMuvQlz2BwM3",
+                    "voice_name": "Mark - ConvoAI",
+                    "sample_audio_url": "https://cdn.eleven.test/mark.mp3",
+                    "characteristics": {"gender": "male", "descriptive": "casual"},
+                },
+            ],
+        },
+    )
+
+    result = enrique_act.build_voice_selection_contract({"bundle_path": str(tmp_path)})
+
+    assert result["voice_preview"]["recommended_voice_id"] == "EXAVITQu4vr4xnSDxMaL"
+    assert [voice["voice_id"] for voice in result["voice_preview"]["voices"]] == [
+        "EXAVITQu4vr4xnSDxMaL",
+        "0GoLoBHogFMTLhDROxLD",
+        "W6zuQRTYRBdAK8ypjo5V",
+        "1SM7GgM6IMuvQlz2BwM3",
+    ]
+    assert result["voice_selection"]["selected_voice_id"] == "EXAVITQu4vr4xnSDxMaL"
+    review_text = (tmp_path / "voice-selection" / "voice-selection-review.md").read_text(
+        encoding="utf-8"
+    )
+    assert (
+        "EXAVITQu4vr4xnSDxMaL | Sarah - Mature, Reassuring, Confident | "
+        "https://cdn.eleven.test/sarah.mp3 [recommended]"
+    ) in review_text

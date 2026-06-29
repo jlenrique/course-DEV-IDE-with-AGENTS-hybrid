@@ -1,5 +1,47 @@
 rate_limit_per_minute: 10
 daily_budget_usd: 5.00
 per_invocation_cap_usd: 0.40
-voice_preview_candidate_count: 3
+voice_preview_candidate_count: 4
 default_cost_per_1k_chars_usd: 0.30
+default_recommended_voice_id: EXAVITQu4vr4xnSDxMaL
+default_candidate_voices:
+  - voice_id: EXAVITQu4vr4xnSDxMaL
+    voice_name: Sarah - Mature, Reassuring, Confident
+    sample_audio_url: https://storage.googleapis.com/eleven-public-prod/premade/voices/EXAVITQu4vr4xnSDxMaL/01a3e33c-6e99-4ee7-8543-ff2216a32186.mp3
+    characteristics:
+      accent: american
+      age: young
+      descriptive: professional
+      gender: female
+      language: en
+      use_case: entertainment_tv
+  - voice_id: 0GoLoBHogFMTLhDROxLD
+    voice_name: Shannon - Modern Professional American Woman
+    sample_audio_url: https://api.us.elevenlabs.io/v1/voices/0GoLoBHogFMTLhDROxLD/previews/audio?payload=eyJ2b2ljZV9zb3VyY2UiOiJjdXN0b20iLCJ3b3Jrc3BhY2VfaWQiOiJkMGNkODQ5YWQ1ZWY0ODQ4OGY5NjliZmY4MTBkNDlmNyIsImZpbGVuYW1lIjoiRHYyMEFkOFpYY2EyOXJ0QUNFemsubXAzIiwidGltZXN0YW1wIjoxNzgyNzQ4ODAwMDAwMDAwfQ%3D%3D
+    characteristics:
+      accent: american
+      age: middle_aged
+      descriptive: professional
+      gender: female
+      language: en
+      use_case: informative_educational
+  - voice_id: W6zuQRTYRBdAK8ypjo5V
+    voice_name: Stark - Classic American Voice
+    sample_audio_url: https://storage.googleapis.com/eleven-public-prod/database/user/dw99Ah475cYNfLo7yaoSxyWlMpQ2/voices/W6zuQRTYRBdAK8ypjo5V/AVYpEqe4TvOl322NqHPf.mp3
+    characteristics:
+      accent: american
+      age: young
+      descriptive: casual
+      gender: male
+      language: en
+      use_case: social_media
+  - voice_id: 1SM7GgM6IMuvQlz2BwM3
+    voice_name: Mark - ConvoAI
+    sample_audio_url: https://api.us.elevenlabs.io/v1/voices/1SM7GgM6IMuvQlz2BwM3/previews/audio?payload=eyJ2b2ljZV9zb3VyY2UiOiJjdXN0b20iLCJ3b3Jrc3BhY2VfaWQiOiJmOTRlMjYwMjAwNzY0Njc4YmFiYzgwN2I5MzViZmIwYiIsImZpbGVuYW1lIjoieTk0RzFyR2l4YXFMMkZ2UDNUdGUubXAzIiwidGltZXN0YW1wIjoxNzgyNzQ4ODAwMDAwMDAwfQ%3D%3D
+    characteristics:
+      accent: american
+      age: middle_aged
+      descriptive: casual
+      gender: male
+      language: en
+      use_case: conversational
