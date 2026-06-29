@@ -1,0 +1,36 @@
+{
+  "experiment": "enhanced-vo AC-B11 isolated-tag blind A/B",
+  "role": "contrast_emphasis",
+  "tag": "[slow]",
+  "voice": "Sarah",
+  "voice_id": "EXAVITQu4vr4xnSDxMaL",
+  "model_id": "eleven_v3",
+  "seed": 73219,
+  "compiler_version": "voice-provider-text.v1",
+  "canonical_text": "Access can improve, cost can rise, and continuity can fracture. When all three move at once, the next decision changes the patient's path.",
+  "provider_text": "[slow] Access can improve, cost can rise, and continuity can fracture. When all three move at once, the next decision changes the patient's path.",
+  "canonical_text_sha256": "d5ea07c4fdedecde3c5ad5283b9d233a2f33cecc04912b4d8b9f52d70f4f44c4",
+  "provider_text_sha256": "443e3c81de7a4ea3fc386abbd557eaa9ba4aae2d2f59cdb8c75dd3ec28d278d0",
+  "captions_text": "Access can improve, cost can rise, and continuity can fracture. When all three move at once, the next decision changes the patient's path.",
+  "firewall_strip_eq_canonical": true,
+  "arms": [
+    {
+      "arm": "A-no-tag",
+      "text_sent": "Access can improve, cost can rise, and continuity can fracture. When all three move at once, the next decision changes the patient's path.",
+      "request_id": "YZtPNO2O6tuNXDycP4uM",
+      "audio_sha256": "c6dba26d7b9fbd35e53b07e54cabc08f9746c937cc7301eaa9500a3c70325da5",
+      "bytes": 166391,
+      "file": "arm-A-no-tag.mp3",
+      "synth_seconds": 2.52
+    },
+    {
+      "arm": "B-slow-tag",
+      "text_sent": "[slow] Access can improve, cost can rise, and continuity can fracture. When all three move at once, the next decision changes the patient's path.",
+      "request_id": "KmlU972zmZbyWCg7OcDZ",
+      "audio_sha256": "f366737e9eff2bdfd892c703da5234e3a8823564245d6a632b16f924c2e91d2c",
+      "bytes": 166391,
+      "file": "arm-B-slow-tag.mp3",
+      "synth_seconds": 2.95
+    }
+  ]
+}

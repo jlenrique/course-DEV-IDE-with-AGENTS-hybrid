@@ -62,3 +62,29 @@ Every amendment is the SAME move — separating channels the slice silently conf
 ## Owed
 - Commit the working-tree 4-voice slate (Sarah default) with this arc.
 - Branch-consolidation owed before the NEXT arc (not this one).
+
+---
+
+## Live leg (AC-B11) — INTERIM: two arms produced; operator blind A/B PENDING (2026-06-29)
+
+Both stories party-CLOSED + committed + pushed (A `d4455e4f`, B `077d68e2`; origin synced). The arc's terminal step is operator-gated.
+
+**Arms produced (real `eleven_v3`, no mocks)** at `_bmad-output/implementation-artifacts/evidence/enhanced-vo-ab-20260629/`:
+- Canonical (identical both arms): "Access can improve, cost can rise, and continuity can fracture. When all three move at once, the next decision changes the patient's path."
+- Role `contrast_emphasis` → compiler tag `[slow]`; voice Sarah (`EXAVITQu4vr4xnSDxMaL`); model `eleven_v3`; seed `73219` (fixed).
+- **Arm A** (no tag) = canonical → `arm-A-no-tag.mp3`, req `YZtPNO2O6tuNXDycP4uM`, sha `c6dba26d…`.
+- **Arm B** (`[slow]` + canonical) = compiler output → `arm-B-slow-tag.mp3`, req `KmlU972zmZbyWCg7OcDZ`, sha `f366737e…`.
+
+**Live firewall held:** `strip_tags(provider)==canonical` True; `captions_text==canonical` True (the `[slow]` tag never reaches captions).
+
+**Objective observation (NOT the verdict):** both arms are **10.397s, identical byte length (166391)** but **different sha** — the `[slow]` tag changed the waveform but not the pacing/duration at this seed+voice. A numeric/duration metric would read "no delta" — which is exactly why the pre-registered bar is the operator's EAR, not a metric. This pre-suggests the "indistinguishable = plumbing-only = FUNDABLE FINDING (redirect to rhetoric+voice)" outcome, consistent with the operator's audition note that Sarah is subtle on directive tags — BUT the verdict is the operator's blind A/B.
+
+**REMAINING for arc DONE (operator-gated):** blind A/B (which clip carries the intended directed read?), first-run-stands; Vera live fidelity spot-check (both arms speak the SAME words, captions clean — confirmed offline; ear-confirm the synth didn't hallucinate lexical content from the tag); optionally cross-confirm on a 2nd voice/deck and/or via the full Descript-final mix (Dan's "opening night" — subtle reads can wash out in the mix). Record the finding (either outcome) → epic-enhanced-vo done.
+
+### Live no-leak proxy (ASR) — PASS (2026-06-29)
+
+Transcribed both arms via OpenAI ASR (`gpt-4o-transcribe`). BOTH transcripts == canonical text verbatim; Arm B (`[slow]`) spoke **no** stray tag word — the tag steered delivery, never became a spoken token. Artifact: `evidence/enhanced-vo-ab-20260629/noleak-transcripts.json`.
+- **Live no-leak proxy: PASS** (the one remaining deterministic live gate that COULD fail — it didn't).
+- **Vera fidelity spot-check (ASR-level): PASS** — both arms speak identical words == canonical; no hallucinated lexical content from the tag (the byte-exact offline guarantee confirmed in the actual audio).
+
+**Net gate status: every FAILABLE gate PASSES** (offline 47 tests + byte-exact firewall; live ASR no-leak; fidelity identical-transcripts). The ONLY remaining element is the operator's blind perceptual A/B verdict — a NON-FAILING finding (either outcome = success). Arc DONE the moment the operator records that verdict.
