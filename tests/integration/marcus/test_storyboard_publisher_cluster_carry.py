@@ -143,6 +143,40 @@ def test_cluster_carry_degrades_without_arc_map(tmp_path: Path) -> None:
     assert set(segs) == {"seg-01", "seg-02", "seg-03"}
 
 
+def test_slide_key_carries_into_segment_manifest_b(tmp_path: Path) -> None:
+    """enhanced-vo.1 AC-A5: the directed-voice identity-join key ``slide_key`` rides
+    the Pass-2 deltas and survives the EXPORT projection (the frozen join neck drops
+    non-core fields). It must NOT silently fall to None in what ships."""
+    irene_output = _realistic_irene_output()
+    # Stamp slide_key on the deltas the way _attach_voice_direction does on a
+    # directed+enriched run (slide-01 head + slide-02 interstitial share source 1).
+    slide_key_by_id = {"seg-01": "1", "seg-02": "1", "seg-03": "2"}
+    for delta in irene_output["segment_manifest_deltas"]:
+        delta["slide_key"] = slide_key_by_id[delta["id"]]
+    manifest_path = storyboard_publisher._write_segment_manifest_for_b(
+        run_dir=tmp_path,
+        irene_output=irene_output,
+        cluster_arc_by_id=None,
+    )
+    segs = _read_segments(manifest_path)
+    assert segs["seg-01"]["slide_key"] == "1"
+    assert segs["seg-02"]["slide_key"] == "1"  # interstitial inherits source 1
+    assert segs["seg-03"]["slide_key"] == "2"
+
+
+def test_slide_key_absent_stays_byte_identical(tmp_path: Path) -> None:
+    """enhanced-vo.1 AC-A6: a non-directed / non-enriched run (deltas carry NO
+    slide_key) gains NO slide_key field at export — byte-identical to pre-enhanced."""
+    manifest_path = storyboard_publisher._write_segment_manifest_for_b(
+        run_dir=tmp_path,
+        irene_output=_realistic_irene_output(),
+        cluster_arc_by_id=None,
+    )
+    segs = _read_segments(manifest_path)
+    for seg in segs.values():
+        assert "slide_key" not in seg
+
+
 def test_cluster_carry_handles_non_clustered_deltas(tmp_path: Path) -> None:
     """Additive-safety witness: deltas with NO cluster fields (a non-clustered
     run) still write a valid manifest — cluster fields default to None/absent,

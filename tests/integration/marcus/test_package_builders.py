@@ -339,11 +339,13 @@ def test_blind1_irene_runner_payload_threads_bundle_when_card_present(
     )
     assert payload is not None
     bundle = payload["role_derived_voice_by_slide"]
-    assert set(bundle) == {"by_slide", "source_slide_ordinals"}
+    # enhanced-vo.1 (Slice 0): the legacy ``source_slide_ordinals`` EDGE-1 guard
+    # universe is retired (the specialist joins by slide_key IDENTITY now), so only
+    # the seed table is threaded — keyed by SOURCE ordinal == the specialist's slide_key.
+    assert set(bundle) == {"by_slide"}
     # Fixture: narration roles on slides 1 (synthesis) + 6 (worked_example); slide 3
     # ambiguous (no seed). Source deck slides {1,3,6}.
     assert set(bundle["by_slide"]) == {"1", "6"}
-    assert bundle["source_slide_ordinals"] == [1, 3, 6]
 
 
 def test_runner_payload_for_quinn_r_is_gate_context_only() -> None:

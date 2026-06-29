@@ -1,0 +1,21 @@
+Enhanced VO arc: make the directed voice REAL (v3 text-driven). Branch dev/p5-downstream-consumption-2026-06-26. Class S. Epic key: enhanced-vo. Party CONSENSUS 2026-06-29 (Dr. Quinn).
+
+WHY: directed-voice fires inert/inaudible on real decks; 27 eleven_v3 clips proved expressive control is TEXT-driven (tags + phrasing), not v2 numerics.
+
+STORY A — enhanced-vo-1-role-slide-linkage (ZERO live spend; GATES B). Emit a stable slide_key as DATA on the manifest at Irene's clustering output (M3 fence: consumers READ it from the shared contract, NEVER import clustering code). Deterministic source->final slide-map fixture on a REAL clustered Gary deck. Identity join via slide_key — RED-first, build-breaking, NO fuzzy-ordinal fallback. Stability: same source slide -> same key across two clustering runs.
+
+STORY B — enhanced-vo-2-v3-provider-text-compiler (after A green). REUSE proven code scripts/api_clients/elevenlabs_client.py::text_to_speech_with_request_id (v3 model_id, tags-via-text, seed, request-ids, normalization) — do NOT reinvent the ElevenLabs call. Four sha256'd text channels: canonical/provider/display/captions. TAG-ONLY pure compiler in app/specialists/_shared/: strip_tags(provider)==canonical BYTE-EXACT ASSERTED, keyed to a CLOSED enumerated eleven_v3 tag allowlist (not enumerable -> HAND-BACK). render_strategy:v3 + rhetorical_role additive (no version bump; v2 mapper stays frozen, byte-identical off). Captions zero-tag-leak HARD assert + cross-channel tag-bleed MUTATION test (absent -> HAND-BACK). skip-if-exists re-keyed on provider sha. Fidelity firewall + Vera R7: Irene-authored wording source-contained vs original narration (numerals/clinical-terms/negations/comparators ZERO-tolerance). Storyboard B shows literal provider bytes + captions BEFORE any live spend. Roles: warm_callback (STRUCTURAL, A/B=rhetoric-vs-tag) + contrast_emphasis (TONAL, the tag-channel probe). Voice: Sarah. seed=test-hygiene.
+
+SUCCESS BAR (pre-registered, BOTH outcomes valued): blind A/B on the DESCRIPT FINAL video, tonal-role slide, IDENTICAL words both arms (A=no tag, B=[tag]); operator judge; first-run-stands; 2nd-deck cross-confirm. "Indistinguishable" = tag is plumbing-only = a FUNDABLE FINDING (redirect to rhetoric+voice), not a failure. NO numeric expressiveness metric (rebuilds energy->rms honest-fail). Only offline gates + live no-leak proxy can FAIL; the A/B is a finding, not a gate.
+
+HOW — BMAD spine per story: party GREEN-LIGHT -> bmad-create-story(+validate) -> opt testarch-atdd -> bmad-dev-story (RED-first) -> bmad-code-review -> party CLOSE. Retrospective at arc close. Author B only after A green. Update sprint-status (epic enhanced-vo) FIRST, next-session-start-here SECOND. Push >= every 2h.
+
+PARTY MODE (binding): CORE = canonical agents for the workflow: John/PM, Winston/arch, Amelia/dev, Murat/test. THEN <=2 specialty agents (bmad-agent-marcus planning persona [NOT the langGraph Marcus-SPOC], Vera, CD-Dan). Dr. Quinn SYNTHESIZES; John/PM final call ONLY at impasse (Quinn->John->human).
+
+LIVE-TEST-AS-YOU-GO: LIVE-test each component AS IT LANDS; the Descript E2E is CONFIRMATION, not first contact. NO mocks (real eleven_v3, real Descript). Run live FOREGROUND + hard timeout + flushed logging; reuse captured audition assets, don't re-spend. PYTHONIOENCODING=utf-8; .venv/Scripts/python.exe.
+
+GOTCHAS: enrique reads irene deltas from cache_prefix (graph.py:993), NOT contributions[] — name the analogous slide_key read site. eleven_v3 ~5000-char max, workspace-voice-scoped. block_mode_trigger_paths -> read the regime doc at T1. Commit the working-tree 4-voice slate (Sarah default) with this arc.
+
+SSOT: brief claude-code-brief-enhanced-vo-v3-generation-2026-06-29.md; strawman p5-directed-voice-arc-strawman-2026-06-27.md §S. Branch-consolidation owed before the NEXT arc.
+
+DONE = both stories party-CLOSED, live-proven incrementally, the isolated-tag A/B finding recorded (either outcome), sprint-status + handoff updated, pushed.

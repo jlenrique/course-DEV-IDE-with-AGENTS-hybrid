@@ -50,6 +50,10 @@
           },
           "slide_id": {
             "type": "string"
+          },
+          "slide_key": {
+            "description": "Story enhanced-vo.1: the stable source-slide identity (source-deck slide ordinal as a string) each final segment descends from; the directed-voice role->slide identity-join key. NOT the final segment ordinal. Present only on directed+enriched runs.",
+            "type": "string"
           }
         },
         "type": "object"

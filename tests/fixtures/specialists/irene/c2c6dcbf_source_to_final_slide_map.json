@@ -1,0 +1,64 @@
+{
+  "_provenance": {
+    "trial_id": "c2c6dcbf-5734-42d0-b525-2ea3212aa3f0",
+    "description": "REAL clustered Gary deck (Story enhanced-vo.1, AC-A2). Six SOURCE slides (slide-1..slide-6, Pass-1 cluster heads c-u01..c-u06) exploded into THIRTEEN final slides (slide-01..slide-13) by Pass-1 clustering. The source-ordinal set {1..6} != the final-ordinal set {1..13}, so the legacy source/final ORDINAL-SET join (EDGE-1 guard) FAILS OPEN. The deterministic source->final lineage carrier is: slide_briefs.source_ref (final slide_id -> Pass-1 unit_id) + lesson_plan.plan_units (interstitial unit -> parent_slide_id head). slide_key = the SOURCE-deck slide ordinal each final segment descends from (a STABLE source identity, NOT the final ordinal).",
+    "sources": [
+      "runs/c2c6dcbf-.../irene-pass1.md (cluster structure c-u01..c-u06, parent_slide_id)",
+      "state/config/runs/c2c6dcbf-.../exports/gary-dispatch-payload.json (gary_slide_output display_titles confirm the 13-slide expansion order)",
+      "state/config/runs/c2c6dcbf-.../exports/segment-manifest-storyboard-b.yaml (13 final segments slide-01..slide-13)"
+    ]
+  },
+  "lesson_plan": {
+    "plan_units": [
+      {"unit_id": "slide-1", "title": "The Economic & Structural Reality", "cluster_id": "c-u01", "cluster_role": "head", "cluster_position": "establish"},
+      {"unit_id": "slide-2", "title": "The Human Cost: System Waste & Burnout", "cluster_id": "c-u02", "cluster_role": "head", "cluster_position": "establish"},
+      {"unit_id": "slide-2-i1", "title": "System Waste as the Operational Burden", "cluster_id": "c-u02", "cluster_role": "interstitial", "cluster_position": "tension", "parent_slide_id": "slide-2"},
+      {"unit_id": "slide-2-i2", "title": "Burnout as a Design Signal", "cluster_id": "c-u02", "cluster_role": "interstitial", "cluster_position": "develop", "parent_slide_id": "slide-2"},
+      {"unit_id": "slide-3", "title": "The Knowledge Explosion & New Technologies", "cluster_id": "c-u03", "cluster_role": "head", "cluster_position": "establish"},
+      {"unit_id": "slide-3-i1", "title": "Why Static Training No Longer Holds", "cluster_id": "c-u03", "cluster_role": "interstitial", "cluster_position": "tension", "parent_slide_id": "slide-3"},
+      {"unit_id": "slide-3-i2", "title": "AI Adoption Without Matching Oversight Training", "cluster_id": "c-u03", "cluster_role": "interstitial", "cluster_position": "develop", "parent_slide_id": "slide-3"},
+      {"unit_id": "slide-3-i3", "title": "What Good Technology-Enabled Care Looks Like", "cluster_id": "c-u03", "cluster_role": "interstitial", "cluster_position": "resolve", "parent_slide_id": "slide-3"},
+      {"unit_id": "slide-4", "title": "The Consumer Shift & The Digital Front Door", "cluster_id": "c-u04", "cluster_role": "head", "cluster_position": "establish"},
+      {"unit_id": "slide-5", "title": "The Leadership Gap", "cluster_id": "c-u05", "cluster_role": "head", "cluster_position": "establish"},
+      {"unit_id": "slide-5-i1", "title": "Physicians Want a Voice but Lack Training", "cluster_id": "c-u05", "cluster_role": "interstitial", "cluster_position": "tension", "parent_slide_id": "slide-5"},
+      {"unit_id": "slide-5-i2", "title": "Why Health Systems Need Clinical-Strategic Bridges", "cluster_id": "c-u05", "cluster_role": "interstitial", "cluster_position": "resolve", "parent_slide_id": "slide-5"},
+      {"unit_id": "slide-6", "title": "Part 2 Summary & Knowledge Check", "cluster_id": "c-u06", "cluster_role": "head", "cluster_position": "establish"}
+    ]
+  },
+  "slide_briefs": [
+    {"slide_id": "slide-01", "source_ref": "slide-1", "title": "The Economic & Structural Reality"},
+    {"slide_id": "slide-02", "source_ref": "slide-2", "title": "The Human Cost: System Waste & Burnout"},
+    {"slide_id": "slide-03", "source_ref": "slide-2-i1", "title": "System Waste as the Operational Burden"},
+    {"slide_id": "slide-04", "source_ref": "slide-2-i2", "title": "Burnout as a Design Signal"},
+    {"slide_id": "slide-05", "source_ref": "slide-3", "title": "The Knowledge Explosion & New Technologies"},
+    {"slide_id": "slide-06", "source_ref": "slide-3-i1", "title": "Why Static Training No Longer Holds"},
+    {"slide_id": "slide-07", "source_ref": "slide-3-i2", "title": "AI Adoption Without Matching Oversight Training"},
+    {"slide_id": "slide-08", "source_ref": "slide-3-i3", "title": "What Good Technology-Enabled Care Looks Like"},
+    {"slide_id": "slide-09", "source_ref": "slide-4", "title": "The Consumer Shift & The Digital Front Door"},
+    {"slide_id": "slide-10", "source_ref": "slide-5", "title": "The Leadership Gap"},
+    {"slide_id": "slide-11", "source_ref": "slide-5-i1", "title": "Physicians Want a Voice but Lack Training"},
+    {"slide_id": "slide-12", "source_ref": "slide-5-i2", "title": "Why Health Systems Need Clinical-Strategic Bridges"},
+    {"slide_id": "slide-13", "source_ref": "slide-6", "title": "Part 2 Summary & Knowledge Check"}
+  ],
+  "final_segment_ids": [
+    "slide-01", "slide-02", "slide-03", "slide-04", "slide-05", "slide-06",
+    "slide-07", "slide-08", "slide-09", "slide-10", "slide-11", "slide-12", "slide-13"
+  ],
+  "source_slide_ordinals": [1, 2, 3, 4, 5, 6],
+  "final_slide_ordinals": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13],
+  "expected_slide_key_by_final": {
+    "slide-01": "1",
+    "slide-02": "2",
+    "slide-03": "2",
+    "slide-04": "2",
+    "slide-05": "3",
+    "slide-06": "3",
+    "slide-07": "3",
+    "slide-08": "3",
+    "slide-09": "4",
+    "slide-10": "5",
+    "slide-11": "5",
+    "slide-12": "5",
+    "slide-13": "6"
+  }
+}

@@ -61,6 +61,7 @@ from app.specialists._shared.figure_tokens import _FIGURE_RE, _figures, _normali
 from app.specialists._shared.voice_direction_map import voice_direction_active
 from app.specialists.dispatch_errors import SpecialistDispatchError
 from app.specialists.irene.authoring.voice_direction_annotation import (
+    VoiceDirectionError,
     annotate_segments_with_voice_direction,
 )
 from app.specialists.irene.payload_contract import CONSUMED_PAYLOAD_KEYS
@@ -1063,11 +1064,63 @@ def _attach_voice_direction(
     deltas = parsed.get("segment_manifest_deltas") or []
     if not deltas:
         return parsed
-    role_derived_seeds = _role_derived_seeds_for_deltas(
-        deltas, envelope_payload.get("role_derived_voice_by_slide")
-    )
+    # Story enhanced-vo.1 (Slice 0): the role->slide linkage is a DETERMINISTIC
+    # IDENTITY JOIN on a stable ``slide_key`` (the source-deck slide ordinal each
+    # final segment descends from), replacing the fail-open source/final ordinal-
+    # SET comparison. Only a directed+ENRICHED run (a non-empty role-seed table)
+    # threads the lineage and stamps slide_key; a card-absent run skips it and is
+    # byte-identical to the non-enriched directed-voice run (A5).
+    role_table = envelope_payload.get("role_derived_voice_by_slide")
+    by_slide = role_table.get("by_slide") if isinstance(role_table, dict) else None
+    role_derived_seeds: dict[str, dict[str, Any]] | None = None
+    work_deltas = deltas
+    if isinstance(by_slide, dict) and by_slide:
+        # Authoritative final-slide universe: the grounding-asserted roster
+        # (gary_slide_output); fall back to the deltas' own slide_ids (which are
+        # grounded to that roster by _assert_narration_joins_roster upstream).
+        roster_slide_ids = _roster_slide_ids(envelope_payload, deltas)
+        # Resolve final->source slide_key from the explicit carrier
+        # (slide_briefs.source_ref), with a deterministic lesson_plan+roster
+        # fallback for finals slide_briefs cannot cover (M1: absent/variant-drift
+        # slide_briefs is reconstructable; it is NOT a hard-stop).
+        slide_key_by_final = _resolve_slide_key_map(
+            envelope_payload.get("lesson_plan"),
+            envelope_payload.get("slide_briefs"),
+            roster_slide_ids,
+        )
+        # GROUNDING ASSERT (M1): every delta's final slide_id MUST resolve to a
+        # source slide_key. A TRUE lineage break fails LOUD with ONE diagnostic
+        # naming ALL uncovered slide_ids — never a per-delta first-failure abort,
+        # never a fuzzy/ordinal fallback, never degrade-to-neutral (party-binding:
+        # a wrong/mis-seed is worse than no run).
+        uncovered = sorted(
+            {
+                str(d.get("slide_id") or "").strip()
+                for d in deltas
+                if isinstance(d, dict) and str(d.get("slide_id") or "").strip()
+            }
+            - set(slide_key_by_final)
+        )
+        if uncovered:
+            _lp = envelope_payload.get("lesson_plan")
+            has_plan_units = bool(isinstance(_lp, dict) and _lp.get("plan_units"))
+            has_briefs = bool(envelope_payload.get("slide_briefs"))
+            raise VoiceDirectionError(
+                "directed-voice role->slide identity join could not resolve a "
+                f"source slide_key for final segment(s) {uncovered}; the source->"
+                "final lineage is broken "
+                f"(slide_briefs present={has_briefs}, lesson_plan plan_units "
+                f"present={has_plan_units}, roster size={len(roster_slide_ids)}). "
+                "Fail loud — NO fuzzy/ordinal fallback, NO degrade-to-neutral.",
+                tag="irene.voice_direction.slide-key-unresolved",
+            )
+        # Stamp slide_key on every delta so it rides the segment_manifest_deltas
+        # blob to every join consumer (enrique decode + the seed join), then join
+        # by slide_key identity.
+        work_deltas = _stamp_slide_keys(deltas, slide_key_by_final)
+        role_derived_seeds = _role_derived_seeds_for_deltas(work_deltas, by_slide)
     annotated = annotate_segments_with_voice_direction(
-        deltas,
+        work_deltas,
         defaults=envelope_payload.get("voice_direction_defaults"),
         per_segment_overrides=envelope_payload.get("voice_direction_overrides"),
         role_derived_seeds=role_derived_seeds,
@@ -1091,71 +1144,300 @@ def _slide_id_ordinal(slide_id: Any) -> int | None:
     return int(match.group(1)) if match else None
 
 
+def _roster_slide_ids(
+    envelope_payload: dict[str, Any], deltas: list[dict[str, Any]]
+) -> list[str]:
+    """The ordered FINAL-deck slide ids — the authoritative universe for the join.
+
+    Prefers the grounding-asserted ``gary_slide_output`` roster (post-variant-filter:
+    one row per slide_id); falls back to the deltas' own slide_ids (which are grounded
+    to that roster by ``_assert_narration_joins_roster``). Order + first-seen dedup.
+    """
+    rows = envelope_payload.get("gary_slide_output")
+    source: list[Any] = rows if isinstance(rows, list) and rows else deltas
+    ordered: list[str] = []
+    seen: set[str] = set()
+    for row in source:
+        if not isinstance(row, dict):
+            continue
+        slide_id = str(row.get("slide_id") or "").strip()
+        if slide_id and slide_id not in seen:
+            seen.add(slide_id)
+            ordered.append(slide_id)
+    return ordered
+
+
+def _unit_in_scope(unit: dict[str, Any]) -> bool:
+    """Include a plan_unit unless it is explicitly ratified out-of-scope.
+
+    Replicates ``app.marcus.orchestrator.package_builders._unit_included`` (the
+    same predicate ``build_gary_briefs`` uses to expand in-scope units into the
+    final ``slide-NN`` deck), duplicated here to honor Contract M3
+    (``app.specialists`` ↛ ``app.marcus``), mirroring the ``_slide_id_ordinal``
+    loader-replication. ``scope_decision`` is a bare string or a ``{"scope": ...}``
+    mapping; absence keeps the unit IN (conservative).
+    """
+    decision: Any = unit.get("scope_decision")
+    if isinstance(decision, dict):
+        decision = decision.get("scope")
+    return decision != "out-of-scope"
+
+
+def _source_slide_id_for_unit(unit: dict[str, Any]) -> str:
+    """The SOURCE-deck slide id a plan_unit descends from (FAIL-LOUD; S1).
+
+    A head IS its own source slide (``unit_id``); an interstitial borrows its
+    head's ``parent_slide_id``. An interstitial with NO resolvable parent is a
+    ``normalize_clusters`` invariant violation: we must NOT fall through to the
+    interstitial's own id (``"slide-2-i1"`` whose trailing ordinal is ``1`` not
+    ``2``) — that is exactly the silent mis-seed this story exists to kill. Raise
+    instead (a wrong seed is worse than no run; party-binding).
+    """
+    unit_id = str(unit.get("unit_id") or "").strip()
+    if unit.get("cluster_role") == "interstitial":
+        parent = str(unit.get("parent_slide_id") or "").strip()
+        if not parent:
+            raise VoiceDirectionError(
+                f"interstitial plan_unit unit_id={unit_id!r} carries no resolvable "
+                "parent_slide_id; its source slide_key cannot be derived without "
+                "mis-keying on its own ordinal (the normalize_clusters invariant is "
+                "violated). Fail loud — never silently mis-seed.",
+                tag="irene.voice_direction.interstitial-no-parent",
+            )
+        return parent
+    return unit_id
+
+
+def _source_slide_key_by_final(
+    lesson_plan: Any, slide_briefs: Any
+) -> dict[str, str]:
+    """PRIMARY ``{final_slide_id: slide_key}`` from the explicit lineage carrier.
+
+    Story enhanced-vo.1 (Slice 0). ``slide_key`` is the SOURCE-deck slide ordinal
+    (a stable source-slide identity) each FINAL segment descends from — NOT the
+    final segment ordinal (which Pass-1 clustering renumbers and which made the
+    legacy join fail open). The carrier rides Irene's Pass-2 envelope:
+
+    * ``slide_briefs`` (node 08 projection of ``package_builder.slides`` =
+      ``build_gary_briefs`` output) maps each FINAL ``slide_id`` -> its source
+      ``source_ref`` (the Pass-1 ``unit_id``);
+    * ``lesson_plan.plan_units`` (irene_pass1, deterministically normalized by
+      ``normalize_clusters``) resolves a unit to its SOURCE slide via
+      :func:`_source_slide_id_for_unit`.
+
+    N sub-slides of one clustered source slide share one slide_key and all inherit
+    the source slide's role seed. PURE / offline. Reads DATA only (Contract M3).
+    Dedup is FIRST-WINS on both plan_units and briefs (matches
+    ``_slide_briefs_by_slide``). FAIL-LOUD on a parentless interstitial (S1); a
+    brief whose ``source_ref`` is not in the plan (re-refinement drift) is OMITTED
+    — the CALLER's grounding assert turns an uncovered final slide into a loud,
+    aggregated lineage-break error.
+    """
+    plan_units = lesson_plan.get("plan_units") if isinstance(lesson_plan, dict) else None
+    if not isinstance(plan_units, list):
+        plan_units = []
+    unit_by_id: dict[str, dict[str, Any]] = {}
+    for unit in plan_units:
+        if not isinstance(unit, dict):
+            continue
+        unit_id = str(unit.get("unit_id") or "").strip()
+        if unit_id and unit_id not in unit_by_id:  # first-wins
+            unit_by_id[unit_id] = unit
+
+    briefs = slide_briefs if isinstance(slide_briefs, list) else []
+    slide_key_by_final: dict[str, str] = {}
+    for brief in briefs:
+        if not isinstance(brief, dict):
+            continue
+        final_slide_id = str(brief.get("slide_id") or "").strip()
+        source_ref = str(brief.get("source_ref") or "").strip()
+        if not final_slide_id or not source_ref:
+            continue
+        if final_slide_id in slide_key_by_final:  # first-wins
+            continue
+        unit = unit_by_id.get(source_ref)
+        if unit is None:
+            continue  # re-refinement drift -> caller's grounding assert fails loud
+        ordinal = _slide_id_ordinal(_source_slide_id_for_unit(unit))
+        if ordinal is None:
+            continue
+        slide_key_by_final[final_slide_id] = str(ordinal)
+    return slide_key_by_final
+
+
+def _fallback_slide_key_by_final(
+    lesson_plan: Any, roster_slide_ids: list[str]
+) -> dict[str, str]:
+    """FALLBACK ``{final_slide_id: slide_key}`` reconstructed from lesson_plan + roster.
+
+    When ``slide_briefs`` is absent/incomplete (an OPTIONAL, non-grounding-asserted
+    envelope key), reconstruct the SAME deterministic expansion ``build_gary_briefs``
+    performed: the in-scope ``plan_units`` (in order) map 1:1 onto the final deck
+    ``slide-01..slide-NN``. For each final ``slide-NN`` the source identity is the
+    N-th in-scope plan_unit's source slide (:func:`_source_slide_id_for_unit`).
+
+    LOAD-BEARING INVARIANT (Winston, CLOSE condition) — the positional
+    reconstruction is sound ONLY under three assumptions that MUST hold together;
+    this gate is a contract, not an implementation detail. A future editor who
+    weakens any of them MUST update this gate or the reconstruction silently
+    mis-seeds:
+      1. LENGTH-EQUALITY: ``len(in_scope_units) == len(roster)`` (one final slide
+         per in-scope unit — exactly the ``build_gary_briefs`` expansion).
+      2. CONTIGUITY: the final ``slide-NN`` ordinals are 1..len(in_scope), so
+         ``slide-NN`` indexes ``in_scope[N-1]``.
+      3. ROSTER ⊆ BRIEFS / ORDER-COUPLING: the roster's slide order is locked to
+         the in-scope unit order. Confirmed by investigation (enhanced-vo.1):
+         (a) ``gary_slide_output`` carries NO source lineage — only ``slide_id`` —
+         so position is the only available link; (b) variant filtering
+         (production_runner ``_apply_*_variant_selection``) is slide_id-PRESERVING
+         (every original slide_id retained, one row each), so it cannot drop or
+         reorder the roster relative to the brief expansion.
+    On a shape mismatch (length/contiguity) this returns ``{}`` so the caller's
+    grounding assert fails loud rather than risk an off-by-one mis-seed. A same-
+    length, same-contiguity RE-ORDERING (assumption 3 broken) is BLIND to this gate
+    alone — it is caught by the cross-consistency guard in
+    :func:`_resolve_slide_key_map` (the explicit ``source_ref`` carrier vs this
+    positional map MUST agree). ``gary_slide_output`` IS grounding-asserted upstream,
+    so this carrier is at least as trustworthy as ``slide_briefs``. PURE / offline /
+    DATA-only (M3).
+    """
+    plan_units = lesson_plan.get("plan_units") if isinstance(lesson_plan, dict) else None
+    if not isinstance(plan_units, list):
+        return {}
+    in_scope = [u for u in plan_units if isinstance(u, dict) and _unit_in_scope(u)]
+    roster = [str(s or "").strip() for s in roster_slide_ids if str(s or "").strip()]
+    if not in_scope or not roster or len(in_scope) != len(roster):
+        return {}
+    mapping: dict[str, str] = {}
+    for final_slide_id in roster:
+        index = _slide_id_ordinal(final_slide_id)
+        if index is None or not (1 <= index <= len(in_scope)):
+            return {}  # non-contiguous / unexpected numbering -> let the assert fail loud
+        ordinal = _slide_id_ordinal(_source_slide_id_for_unit(in_scope[index - 1]))
+        if ordinal is None:
+            return {}
+        mapping[final_slide_id] = str(ordinal)
+    return mapping
+
+
+def _resolve_slide_key_map(
+    lesson_plan: Any, slide_briefs: Any, roster_slide_ids: list[str]
+) -> dict[str, str]:
+    """The DETERMINISTIC ``{final_slide_id: slide_key}`` map: primary + cross-checked fallback.
+
+    Primary = the explicit ``slide_briefs.source_ref`` carrier (identity lookup,
+    re-refinement-drift-detecting). Fallback = the positional lesson_plan+roster
+    reconstruction (:func:`_fallback_slide_key_by_final`).
+
+    CROSS-CONSISTENCY GUARD (Murat, CLOSE condition — order-invariant): the two
+    derivations are INDEPENDENT (one keys on ``source_ref`` identity, the other on
+    position). On a consistent envelope they are identical by construction
+    (``build_gary_briefs`` sets ``source_ref = in_scope_units[N-1].unit_id`` for
+    final ``slide-N``). Where BOTH resolve the same final they MUST AGREE; a
+    disagreement means the positional order-coupling the fallback relies on is
+    broken (a future roster-construction change, or a corrupt carrier) — FAIL LOUD
+    (a wrong/mis-seed is worse than no run; party-binding). This surfaces the
+    coupling break on every NORMAL briefs-present run, BEFORE it can silently
+    mis-seed a later briefs-absent run. The positional fallback's blindness to a
+    same-length/same-contiguity re-ordering is therefore covered here, not left to
+    the length+contiguity gate alone.
+
+    Merge: the explicit carrier WINS; the fallback fills only finals the primary
+    could not cover (e.g. ``slide_briefs`` absent). Both fail loud on a parentless
+    interstitial. Neither degrades to neutral — a final neither can cover is
+    surfaced by the caller's aggregated grounding assert.
+    """
+    primary = _source_slide_key_by_final(lesson_plan, slide_briefs)
+    fallback = _fallback_slide_key_by_final(lesson_plan, roster_slide_ids)
+    conflicts = sorted(
+        final_id
+        for final_id in primary
+        if final_id in fallback and primary[final_id] != fallback[final_id]
+    )
+    if conflicts:
+        detail = ", ".join(
+            f"{f}: source_ref->{primary[f]} vs positional->{fallback[f]}"
+            for f in conflicts
+        )
+        raise VoiceDirectionError(
+            "directed-voice slide_key lineage is INCONSISTENT: the explicit "
+            "slide_briefs.source_ref carrier and the positional lesson_plan+roster "
+            f"reconstruction DISAGREE on final segment(s) [{detail}]. The roster<->"
+            "in-scope-unit order coupling is broken (a roster-construction change or "
+            "a corrupt lineage carrier). Fail loud — never silently mis-seed.",
+            tag="irene.voice_direction.slide-key-order-mismatch",
+        )
+    merged = dict(fallback)
+    merged.update(primary)  # explicit carrier wins; fallback fills gaps
+    return merged
+
+
+def _stamp_slide_keys(
+    deltas: list[dict[str, Any]], slide_key_by_final: dict[str, str]
+) -> list[dict[str, Any]]:
+    """Return NEW deltas each carrying its ``slide_key`` (PURE; never mutates input).
+
+    AC-A3 no-fuzzy-fallback: a delta whose final ``slide_id`` does not resolve to a
+    source ``slide_key`` is a lineage break — raise ``VoiceDirectionError`` (build-
+    breaking), never silently fall back to ordinal matching. Called ONLY when a
+    role-seed table is present (a directed+enriched run).
+    """
+    stamped: list[dict[str, Any]] = []
+    for delta in deltas:
+        if not isinstance(delta, dict):
+            stamped.append(delta)
+            continue
+        final_slide_id = str(delta.get("slide_id") or "").strip()
+        slide_key = slide_key_by_final.get(final_slide_id)
+        if slide_key is None:
+            raise VoiceDirectionError(
+                "directed-voice role->slide identity join could not resolve a "
+                f"slide_key for final segment slide_id={final_slide_id!r} "
+                f"(delta id={delta.get('id')!r}); the source->final lineage "
+                "(slide_briefs.source_ref + lesson_plan.plan_units) is broken. "
+                "Fail loud — NO fuzzy/ordinal fallback.",
+                tag="irene.voice_direction.slide-key-unresolved",
+            )
+        new_delta = dict(delta)
+        new_delta["slide_key"] = slide_key
+        stamped.append(new_delta)
+    return stamped
+
+
 def _role_derived_seeds_for_deltas(
     deltas: list[dict[str, Any]],
-    role_derived_voice_by_slide: Any,
+    by_slide: Any,
 ) -> dict[str, dict[str, Any]] | None:
     """Re-key the orchestrator's per-slide seed table onto THIS pass's segment ids.
 
-    The orchestrator threads ``{"by_slide": {ordinal: voice}, "source_slide_ordinals":
-    [...]}``: ``by_slide`` is the seed table keyed by SOURCE-deck slide ordinal (the
-    segment manifest does not exist at dispatch time, so it cannot key by segment id);
-    ``source_slide_ordinals`` is the source deck's slide-ordinal universe.
+    Story enhanced-vo.1 (Slice 0) — DETERMINISTIC IDENTITY JOIN. ``by_slide`` is the
+    orchestrator's seed table keyed by SOURCE-deck slide ordinal (the slide_key). Each
+    delta already carries its ``slide_key`` (stamped by :func:`_stamp_slide_keys` from
+    the source lineage). The join is a direct identity lookup ``by_slide[slide_key]`` —
+    there is NO source/final ordinal-SET comparison and NO fail-open path: a clustered
+    final deck (where the final ordinals diverge from the source ordinals) now FIRES the
+    correct seed on the correct final segment. A source slide with no seed leaves its
+    segments on the conservative built-in (IR-A2 no-seed fail-safe).
 
-    EDGE-1 DIVERGENCE GUARD (the production-correctness fix): the source-card slide
-    numbering and the FINAL-deck slide numbering are TWO DIFFERENT ordinal spaces —
-    Pass-1 clustering / sub-slide split / ignore-drop / reorder renumbers the final
-    deck (a 6-source-slide deck becomes ``slide-01..slide-11``). Applying a source
-    ordinal to a final ``slide-NN`` of a different value would MIS-PACE a real learner
-    segment, silently. So we only apply seeds when the source and final slide-ordinal
-    SETS COINCIDE 1:1 (cardinality + membership); on ANY divergence we FAIL OPEN —
-    emit NO seeds (neutral built-in), never a wrong-role seed. Voice is delivery-only,
-    so a fail-open neutral is harmless; a mis-seed is not. The durable content-grounded
-    join is filed as ``p5-s2-role-seed-robust-source-to-final-slide-linkage``.
-
-    Each surviving delta's seed is keyed by its (stripped) ``id`` — pre-filtered to
-    the ids present in THIS manifest (IR-A2; never lean on the leaf's fail-loud
-    unmatched-id raise). Returns ``None`` when nothing is seeded (no table, guard
-    tripped, or no delta matched) so the pass is byte-identical to the non-enriched
-    directed-voice run.
+    Each seed is keyed by the delta's (stripped) ``id`` — pre-filtered to the ids
+    present in THIS manifest. Returns ``None`` when nothing is seeded so the pass is
+    byte-identical to the non-enriched directed-voice run.
     """
-    if not isinstance(role_derived_voice_by_slide, dict):
-        return None
-    by_slide = role_derived_voice_by_slide.get("by_slide")
-    source_ordinals = role_derived_voice_by_slide.get("source_slide_ordinals")
     if not isinstance(by_slide, dict) or not by_slide:
         return None
-    if not isinstance(source_ordinals, list):
-        return None
-
-    # Final-deck distinct slide ordinals + the per-delta ordinal map.
-    final_ordinals: set[int] = set()
-    delta_ordinal: dict[str, int] = {}
+    seeds: dict[str, dict[str, Any]] = {}
     for delta in deltas:
         if not isinstance(delta, dict):
             continue
         sid = delta.get("id")
         if not (isinstance(sid, str) and sid.strip()):
             continue
-        ordinal = _slide_id_ordinal(delta.get("slide_id"))
-        if ordinal is None:
+        slide_key = delta.get("slide_key")
+        if slide_key is None:
             continue
-        final_ordinals.add(ordinal)
-        delta_ordinal[sid.strip()] = ordinal
-
-    # EDGE-1 guard: source↔final ordinal spaces must coincide exactly, else fail open.
-    try:
-        source_set = {int(o) for o in source_ordinals}
-    except (TypeError, ValueError):
-        return None
-    if not source_set or source_set != final_ordinals:
-        return None
-
-    seeds: dict[str, dict[str, Any]] = {}
-    for sid, ordinal in delta_ordinal.items():
-        seed = by_slide.get(str(ordinal))
+        seed = by_slide.get(str(slide_key))
         if isinstance(seed, dict) and seed:
-            seeds[sid] = dict(seed)
+            seeds[sid.strip()] = dict(seed)
     return seeds or None
 
 

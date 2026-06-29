@@ -163,6 +163,15 @@ def _write_segment_manifest_for_b(
             voice_direction = delta.get("voice_direction")
             if voice_direction is not None:
                 segment["voice_direction"] = voice_direction
+            # Story enhanced-vo.1 (Slice 0): re-attach the directed-voice identity-
+            # join key the frozen neck drops, so it does not silently fall to None in
+            # what ships (AC-A5). CONDITIONAL on presence (mirrors voice_direction,
+            # NOT the unconditional cluster labels): a delta with no slide_key (flag
+            # OFF / non-enriched run) gains NO key, so the manifest stays
+            # byte-identical to the pre-enhanced-vo output.
+            slide_key = delta.get("slide_key")
+            if slide_key is not None:
+                segment["slide_key"] = slide_key
     manifest_path = run_dir / "exports" / "segment-manifest-storyboard-b.yaml"
     manifest_path.parent.mkdir(parents=True, exist_ok=True)
     manifest_path.write_text(

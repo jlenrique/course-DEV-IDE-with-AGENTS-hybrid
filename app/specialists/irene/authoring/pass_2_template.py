@@ -227,6 +227,15 @@ class SegmentManifestSegment(_StrictModel):
     cluster_id: str | None = None
     cluster_role: ClusterRole | None = None
     cluster_position: ClusterPosition | None = None
+    # Story enhanced-vo.1 (Slice 0): the STABLE source-slide identity each final
+    # segment descends from (the source-deck slide ordinal as a string), threaded
+    # so the directed-voice role->slide linkage is a deterministic IDENTITY join
+    # on this key instead of the fail-open source/final ORDINAL-SET comparison.
+    # Optional (default None) so a directed-voice-OFF / non-enriched run stays
+    # byte-identical (the model is ``extra="forbid"``, so the field MUST be
+    # declared to be carried at all). Populated by ``_attach_voice_direction`` on
+    # a directed+enriched run; NEVER the final segment ordinal.
+    slide_key: str | None = None
     voice_direction: VoiceDirection | None = None
 
     @field_validator("visual_file")

@@ -339,6 +339,18 @@
           "default": null,
           "title": "Cluster Position"
         },
+        "slide_key": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Slide Key"
+        },
         "voice_direction": {
           "anyOf": [
             {

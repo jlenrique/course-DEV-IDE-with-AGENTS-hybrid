@@ -162,11 +162,15 @@ def source_slide_ordinals(card_payload: dict[str, Any] | None) -> list[int]:
     """The DISTINCT source-deck slide ordinals the card enumerates (sorted).
 
     Every component whose locator terminates in ``Slide N`` contributes ordinal N.
-    This is the source side of the EDGE-1 divergence guard: the narration specialist
-    compares this set against the FINAL deck's slide ordinals; if they differ (the
-    final deck has been clustered / sub-split / dropped / renumbered relative to the
-    source's slide numbering), the ordinal join is untrustworthy and the specialist
-    FAILS OPEN (no role seeds). Pure + offline + deterministic.
+
+    LEGACY (Story enhanced-vo.1, Slice 0): this was the source side of the EDGE-1
+    divergence guard — the narration specialist compared this set against the FINAL
+    deck's slide ordinals and FAILED OPEN whenever they differed (i.e. on EVERY
+    clustered / sub-split / dropped / renumbered deck). That guard is retired: the
+    specialist now resolves each final segment to its TRUE source slide via the
+    deterministic lineage and joins by ``slide_key`` identity, so this universe is
+    NO LONGER threaded to the specialist. The function is retained (pure + offline +
+    deterministic) for diagnostics / back-compat callers.
     """
     if not isinstance(card_payload, dict):
         return []
@@ -198,17 +202,18 @@ def project_role_derived_voice_by_slide(
     FAIL-SAFE (IR-A2, no-silent-anything): a slide whose ``Slide N`` ordinal has
     NO eligible narration component, or MORE THAN ONE (ambiguous-multi-match), gets
     NO seed — that slide's segments take the conservative built-in default. Keyed
-    by the ordinal as a STRING (the narration specialist re-keys to its own segment
-    ids by the same ordinal, GUARDED by the EDGE-1 source↔final ordinal-space check).
+    by the SOURCE-deck slide ordinal as a STRING — this IS the specialist's
+    ``slide_key``: the narration specialist resolves each FINAL segment to its TRUE
+    source slide via the deterministic lineage (slide_briefs.source_ref +
+    lesson_plan plan_units) and joins ``by_slide[slide_key]`` by IDENTITY.
     A ``None``/empty card returns ``{}`` (caller no-ops → byte-identical).
 
-    NOTE (EDGE-1, 1:1-ordinal-only join): this maps the card's SOURCE slide ordinal
-    to the FINAL deck slide ordinal by VALUE. That is only sound when the source and
-    final slide enumerations coincide 1:1 (no Pass-1 clustering / sub-slide split /
-    ignore-drop / reorder-renumber). The narration specialist enforces that with the
-    ``source_slide_ordinals`` divergence guard and FAILS OPEN otherwise. The durable
-    content-grounded join is filed as ``p5-s2-role-seed-robust-source-to-final-slide-
-    linkage`` in the deferred inventory.
+    NOTE (Story enhanced-vo.1, Slice 0 — DETERMINISTIC IDENTITY JOIN): this maps the
+    card's SOURCE slide ordinal to its role-derived voice seed. The legacy 1:1
+    source==final ordinal coincidence requirement (and its fail-open EDGE-1 guard,
+    which fired on EVERY clustered deck) is RETIRED: N sub-slides of one clustered
+    source slide now share that source slide's ``slide_key`` and all inherit this
+    seed. Discharges ``p5-s2-role-seed-robust-source-to-final-slide-linkage``.
 
     Pure + offline + deterministic (READ-ONLY over the frozen verdict).
     """

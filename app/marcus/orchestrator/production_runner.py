@@ -1436,15 +1436,18 @@ def _runner_payload_for_specialist(
         card = g0_enrichment_wiring.load_enrichment_result(runs_root / str(trial_id))
         seeds_by_slide = enrichment_consumption.project_role_derived_voice_by_slide(card)
         if seeds_by_slide:
-            # Thread the seed table PLUS the source-deck slide-ordinal universe so the
-            # specialist can run the EDGE-1 divergence guard (source↔final ordinal-
-            # space alignment) BEFORE applying any seed — never mis-seed a clustered /
-            # dropped / renumbered deck. NOTE: if irene ever gains a baseline runner
-            # payload, MERGE this key rather than returning a fresh dict.
+            # Story enhanced-vo.1 (Slice 0): thread ONLY the seed table, keyed by
+            # SOURCE-deck slide ordinal (== the specialist's ``slide_key``). The
+            # specialist now resolves each FINAL segment to its TRUE source slide via
+            # the deterministic lineage (slide_briefs.source_ref + lesson_plan
+            # plan_units) and joins by slide_key IDENTITY — so the legacy
+            # ``source_slide_ordinals`` EDGE-1 divergence guard (which FAILED OPEN on
+            # every clustered deck) is retired and no longer threaded. NOTE: if irene
+            # ever gains a baseline runner payload, MERGE this key rather than
+            # returning a fresh dict.
             return {
                 "role_derived_voice_by_slide": {
                     "by_slide": seeds_by_slide,
-                    "source_slide_ordinals": enrichment_consumption.source_slide_ordinals(card),
                 }
             }
         return None

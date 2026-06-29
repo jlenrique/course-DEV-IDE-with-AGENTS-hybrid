@@ -1,10 +1,13 @@
-"""P5-S2 (Step 6) RED-first floors: Irene narration consumes the role-derived seed.
+"""P5-S2 (Step 6) + Story enhanced-vo.1 (Slice 0): Irene narration consumes the
+role-derived seed via a DETERMINISTIC IDENTITY JOIN on ``slide_key``.
 
 These pin the SPECIALIST-SIDE wiring (``graph._attach_voice_direction`` +
-``graph._role_derived_seeds_for_deltas``): the orchestrator threads
-``{"by_slide": {ordinal: voice}, "source_slide_ordinals": [...]}``; the specialist
-aligns it to THIS pass's frozen segment deltas — GUARDED by the EDGE-1 source↔final
-ordinal-space divergence check — then threads it into the pure annotation leaf.
+``graph._source_slide_key_by_final`` + ``graph._role_derived_seeds_for_deltas``):
+the orchestrator threads ``{"by_slide": {slide_key: voice}}`` (keyed by the
+SOURCE-deck slide ordinal); the specialist resolves each FINAL segment to its TRUE
+source slide via the deterministic lineage (``slide_briefs.source_ref`` +
+``lesson_plan.plan_units``), stamps the resulting ``slide_key`` on every delta, and
+joins ``by_slide[slide_key]`` by IDENTITY.
 
 The blocking guarantees:
   * A4 — flag-OFF ⇒ byte-identical (the seed table is not even read);
@@ -12,10 +15,11 @@ The blocking guarantees:
   * A3 — an explicit per-segment override BEATS the role seed (precedence preserved);
   * IR-A1 (FIREWALL, BLOCKING) — ``narration_text`` is byte-identical with/without the
     role seed; the seed only ever lands under ``voice_direction``;
-  * IR-A2 — a segment whose slide has no seed takes the conservative built-in default;
-  * EDGE-1 — a clustered / dropped / shifted final deck (source↔final ordinal sets
-    diverge) ⇒ NO role-derived seeds applied (FAIL OPEN to neutral), never a mis-seed;
-  * EDGE-4 — a numeric-PREFIXED slide_id (``c1m1-slide-06``) keys on the TRAILING ordinal;
+  * IR-A2 — a segment whose SOURCE slide has no seed takes the conservative built-in;
+  * enhanced-vo.1 IDENTITY JOIN — a clustered final deck (source↔final ordinal sets
+    diverge) now FIRES: N sub-slides of one clustered source slide inherit that
+    source slide's seed (replaces the retired EDGE-1 fail-open);
+  * enhanced-vo.1 NO-FUZZY-FALLBACK — an unresolvable ``slide_key`` fails LOUD;
   * BLIND-2 — CD ``voice_direction_defaults`` BEATS the role seed.
 
 OFFLINE ONLY: the annotation pass is pure (no LLM/network).
@@ -30,12 +34,20 @@ import pytest
 
 from app.specialists.irene import graph
 from app.specialists.irene.authoring.pass_2_template import VoiceDirection
+from app.specialists.irene.authoring.voice_direction_annotation import (
+    VoiceDirectionError,
+)
 
 NARRATION_FLAG = "MARCUS_NARRATION_VOICE_DIRECTION_ACTIVE"
 
 
 def _parsed() -> dict[str, Any]:
-    """A frozen Pass-2 parse with four slide-bound narration deltas (grounded)."""
+    """A frozen Pass-2 parse with four slide-bound narration deltas (grounded).
+
+    Final slides slide-02 and slide-03 are a CLUSTER: both descend from SOURCE
+    slide 2 (slide-03 is the interstitial slide-2-i1). slide-01 -> source 1,
+    slide-06 -> source 6.
+    """
     return {
         "narration_script": "full script text",
         "segment_manifest_deltas": [
@@ -55,22 +67,47 @@ def _parsed() -> dict[str, Any]:
     }
 
 
-# Orchestrator-projected seed table (VALUES only — the leaf stamps source).
+# The deterministic source->final lineage carrier (rides Irene's Pass-2 envelope).
+_LESSON_PLAN: dict[str, Any] = {
+    "plan_units": [
+        {"unit_id": "slide-1", "cluster_id": "c-u01", "cluster_role": "head"},
+        {"unit_id": "slide-2", "cluster_id": "c-u02", "cluster_role": "head"},
+        {"unit_id": "slide-2-i1", "cluster_id": "c-u02", "cluster_role": "interstitial",
+         "parent_slide_id": "slide-2"},
+        {"unit_id": "slide-6", "cluster_id": "c-u06", "cluster_role": "head"},
+    ]
+}
+_SLIDE_BRIEFS: list[dict[str, Any]] = [
+    {"slide_id": "slide-01", "source_ref": "slide-1"},
+    {"slide_id": "slide-02", "source_ref": "slide-2"},
+    {"slide_id": "slide-03", "source_ref": "slide-2-i1"},
+    {"slide_id": "slide-06", "source_ref": "slide-6"},
+]
+
+# Orchestrator-projected seed table keyed by SOURCE ordinal (the slide_key).
 _BY_SLIDE = {
     "1": {"emotional_tone": "reflective", "pace": "slower", "energy": "low"},
     "6": {"emotional_tone": "neutral", "pace": "slower", "energy": "medium"},
 }
-# The four deltas above span source slide ordinals {1, 2, 3, 6}; an ALIGNED run
-# threads exactly that set so the EDGE-1 divergence guard passes.
-_SOURCE_ORDS = [1, 2, 3, 6]
 
 
-def _threaded(by_slide: dict[str, Any], source_ordinals: list[int]) -> dict[str, Any]:
-    return {"by_slide": by_slide, "source_slide_ordinals": source_ordinals}
+def _envelope(
+    by_slide: dict[str, Any] | None = None,
+    *,
+    lesson_plan: dict[str, Any] | None = None,
+    slide_briefs: list[dict[str, Any]] | None = None,
+    **extra: Any,
+) -> dict[str, Any]:
+    env: dict[str, Any] = dict(extra)
+    if by_slide is not None:
+        env["role_derived_voice_by_slide"] = {"by_slide": by_slide}
+    env["lesson_plan"] = _LESSON_PLAN if lesson_plan is None else lesson_plan
+    env["slide_briefs"] = _SLIDE_BRIEFS if slide_briefs is None else slide_briefs
+    return env
 
 
 def _aligned() -> dict[str, Any]:
-    return {"role_derived_voice_by_slide": _threaded(_BY_SLIDE, _SOURCE_ORDS)}
+    return _envelope(_BY_SLIDE)
 
 
 @pytest.fixture
@@ -96,23 +133,25 @@ def test_a4_flag_off_byte_identical(flag_off: None) -> None:
     result = graph._attach_voice_direction(parsed, _aligned())
     assert json.dumps(result, sort_keys=True) == before
     assert all("voice_direction" not in d for d in result["segment_manifest_deltas"])
+    # AC-A6: no slide_key leaks onto the deltas when directed voice is OFF.
+    assert all("slide_key" not in d for d in result["segment_manifest_deltas"])
 
 
 # --------------------------------------------------------------------------- #
 # A5 — flag ON but card ABSENT (no seed table) ⇒ identical to the non-enriched run.
 # --------------------------------------------------------------------------- #
 def test_a5_card_absent_identical_to_non_enriched(flag_on: None) -> None:
-    baseline = graph._attach_voice_direction(_parsed(), {})
-    with_empty = graph._attach_voice_direction(
-        _parsed(), {"role_derived_voice_by_slide": _threaded({}, [])}
-    )
+    baseline = graph._attach_voice_direction(_parsed(), _envelope(None))
+    with_empty = graph._attach_voice_direction(_parsed(), _envelope({}))
     assert json.dumps(baseline, sort_keys=True) == json.dumps(with_empty, sort_keys=True)
     for d in baseline["segment_manifest_deltas"]:
         assert d["voice_direction"]["source"] == "cd-authored"
+        # No seed table ⇒ no join ⇒ no slide_key stamped (byte-identical).
+        assert "slide_key" not in d
 
 
 # --------------------------------------------------------------------------- #
-# Role seed applied: matched slides get the mapped role-derived direction.
+# Role seed applied: matched SOURCE slides get the mapped role-derived direction.
 # --------------------------------------------------------------------------- #
 def test_role_seed_applied_to_matched_segments(flag_on: None) -> None:
     result = graph._attach_voice_direction(_parsed(), _aligned())
@@ -122,18 +161,61 @@ def test_role_seed_applied_to_matched_segments(flag_on: None) -> None:
     assert seg1.emotional_tone == "reflective"
     seg6 = VoiceDirection.model_validate(by_id["seg-06"]["voice_direction"])
     assert seg6.source == "role-derived" and seg6.pace == "slower"
-    # Unseeded slides (2, 3) take the built-in.
+    # Source slide 2 (finals slide-02/03) is unseeded ⇒ built-in.
     assert by_id["seg-02"]["voice_direction"]["source"] == "cd-authored"
+    assert by_id["seg-03"]["voice_direction"]["source"] == "cd-authored"
+
+
+# --------------------------------------------------------------------------- #
+# IDENTITY JOIN (enhanced-vo.1) — a clustered deck FIRES: both sub-slides of one
+# clustered SOURCE slide inherit that source slide's seed (replaces the retired
+# EDGE-1 fail-open). slide-02 (head) + slide-03 (interstitial) share source 2.
+# --------------------------------------------------------------------------- #
+def test_clustered_subslides_inherit_source_seed(flag_on: None) -> None:
+    by_slide = {"2": {"emotional_tone": "warm", "pace": "neutral", "energy": "high"}}
+    result = graph._attach_voice_direction(_parsed(), _envelope(by_slide))
+    by_id = _by_id(result)
+    for seg in ("seg-02", "seg-03"):
+        assert by_id[seg]["voice_direction"]["source"] == "role-derived"
+        assert by_id[seg]["voice_direction"]["emotional_tone"] == "warm"
+    # Sources 1 and 6 are unseeded here ⇒ built-in.
+    assert by_id["seg-01"]["voice_direction"]["source"] == "cd-authored"
+    assert by_id["seg-06"]["voice_direction"]["source"] == "cd-authored"
+
+
+# --------------------------------------------------------------------------- #
+# AC-A1 — slide_key is stamped on EVERY delta of a directed+enriched run.
+# --------------------------------------------------------------------------- #
+def test_slide_key_stamped_on_every_delta(flag_on: None) -> None:
+    result = graph._attach_voice_direction(_parsed(), _aligned())
+    by_id = _by_id(result)
+    assert by_id["seg-01"]["slide_key"] == "1"
+    assert by_id["seg-02"]["slide_key"] == "2"
+    assert by_id["seg-03"]["slide_key"] == "2"  # interstitial -> parent source 2
+    assert by_id["seg-06"]["slide_key"] == "6"
+
+
+# --------------------------------------------------------------------------- #
+# NO-FUZZY-FALLBACK (enhanced-vo.1) — an unresolvable slide_key fails LOUD.
+# --------------------------------------------------------------------------- #
+def test_unresolvable_slide_key_fails_loud(flag_on: None) -> None:
+    parsed = _parsed()
+    parsed["segment_manifest_deltas"].append(
+        {"id": "seg-99", "slide_id": "slide-99", "narration_text": "orphan",
+         "behavioral_intent": "credible", "visual_references": [{"perception_source": "s99"}]}
+    )
+    with pytest.raises(VoiceDirectionError):
+        graph._attach_voice_direction(parsed, _aligned())
 
 
 # --------------------------------------------------------------------------- #
 # A3 — explicit per-segment override BEATS the role seed.
 # --------------------------------------------------------------------------- #
 def test_a3_override_beats_role_seed(flag_on: None) -> None:
-    payload = {
-        **_aligned(),
-        "voice_direction_overrides": {"seg-01": {"emotional_tone": "urgent", "pace": "faster"}},
-    }
+    payload = _envelope(
+        _BY_SLIDE,
+        voice_direction_overrides={"seg-01": {"emotional_tone": "urgent", "pace": "faster"}},
+    )
     result = graph._attach_voice_direction(_parsed(), payload)
     seg1 = VoiceDirection.model_validate(_by_id(result)["seg-01"]["voice_direction"])
     assert seg1.source == "operator-override"
@@ -144,7 +226,7 @@ def test_a3_override_beats_role_seed(flag_on: None) -> None:
 # BLIND-2 — CD voice_direction_defaults BEATS the role seed.
 # --------------------------------------------------------------------------- #
 def test_blind2_defaults_beat_role_seed(flag_on: None) -> None:
-    payload = {**_aligned(), "voice_direction_defaults": {"pace": "faster"}}
+    payload = _envelope(_BY_SLIDE, voice_direction_defaults={"pace": "faster"})
     result = graph._attach_voice_direction(_parsed(), payload)
     seg1 = VoiceDirection.model_validate(_by_id(result)["seg-01"]["voice_direction"])
     assert seg1.source == "cd-authored"
@@ -155,7 +237,7 @@ def test_blind2_defaults_beat_role_seed(flag_on: None) -> None:
 # IR-A1 (FIREWALL, BLOCKING) — narration_text byte-identical with/without the seed.
 # --------------------------------------------------------------------------- #
 def test_ir_a1_firewall_narration_text_byte_identical(flag_on: None) -> None:
-    without = graph._attach_voice_direction(_parsed(), {})
+    without = graph._attach_voice_direction(_parsed(), _envelope(None))
     with_seed = graph._attach_voice_direction(_parsed(), _aligned())
     wo, ws = _by_id(without), _by_id(with_seed)
     for sid in ("seg-01", "seg-06"):
@@ -167,12 +249,10 @@ def test_ir_a1_firewall_narration_text_byte_identical(flag_on: None) -> None:
 
 
 # --------------------------------------------------------------------------- #
-# IR-A2 — a slide with no seed takes the built-in default (never role-derived).
+# IR-A2 — a SOURCE slide with no seed takes the built-in (never role-derived).
 # --------------------------------------------------------------------------- #
 def test_ir_a2_unmatched_slide_takes_builtin(flag_on: None) -> None:
-    result = graph._attach_voice_direction(
-        _parsed(), {"role_derived_voice_by_slide": _threaded({"1": _BY_SLIDE["1"]}, _SOURCE_ORDS)}
-    )
+    result = graph._attach_voice_direction(_parsed(), _envelope({"1": _BY_SLIDE["1"]}))
     by_id = _by_id(result)
     assert by_id["seg-01"]["voice_direction"]["source"] == "role-derived"
     seg6 = by_id["seg-06"]["voice_direction"]
@@ -180,86 +260,37 @@ def test_ir_a2_unmatched_slide_takes_builtin(flag_on: None) -> None:
 
 
 # --------------------------------------------------------------------------- #
-# EDGE-1 — divergence guard: clustered / shifted final deck ⇒ FAIL OPEN.
+# The source-lineage map + the identity-join re-key helper (unit level).
 # --------------------------------------------------------------------------- #
-def test_edge1_clustered_deck_fails_open(flag_on: None) -> None:
-    # Pass-1 clustering renumbered a 4-source-slide deck into SEVEN final slides.
-    parsed = {
-        "narration_script": "x",
-        "segment_manifest_deltas": [
-            {"id": f"seg-0{n}", "slide_id": f"slide-0{n}",
-             "narration_text": f"Slide {n}.", "behavioral_intent": "x", "visual_references": []}
-            for n in range(1, 8)
-        ],
-    }
-    result = graph._attach_voice_direction(parsed, _aligned())  # source {1,2,3,6} != {1..7}
-    # FAIL OPEN: no role-derived source anywhere — every segment is the built-in.
-    for d in result["segment_manifest_deltas"]:
-        assert d["voice_direction"]["source"] == "cd-authored"
+def test_source_slide_key_by_final_resolves_cluster_lineage() -> None:
+    mapping = graph._source_slide_key_by_final(_LESSON_PLAN, _SLIDE_BRIEFS)
+    assert mapping == {"slide-01": "1", "slide-02": "2", "slide-03": "2", "slide-06": "6"}
 
 
-def test_edge1_shifted_ordinal_fails_open(flag_on: None) -> None:
-    # A drop+renumber shifts source slide 6 to final slide 5: same count, different set.
-    parsed = {
-        "narration_script": "x",
-        "segment_manifest_deltas": [
-            {"id": "seg-01", "slide_id": "slide-01", "narration_text": "a",
-             "behavioral_intent": "x", "visual_references": []},
-            {"id": "seg-02", "slide_id": "slide-02", "narration_text": "b",
-             "behavioral_intent": "x", "visual_references": []},
-            {"id": "seg-03", "slide_id": "slide-03", "narration_text": "c",
-             "behavioral_intent": "x", "visual_references": []},
-            {"id": "seg-05", "slide_id": "slide-05", "narration_text": "d",
-             "behavioral_intent": "x", "visual_references": []},
-        ],
-    }
-    result = graph._attach_voice_direction(parsed, _aligned())  # {1,2,3,6} != {1,2,3,5}
-    for d in result["segment_manifest_deltas"]:
-        assert d["voice_direction"]["source"] == "cd-authored"
-
-
-def test_edge1_aligned_deck_applies_seeds(flag_on: None) -> None:
-    # The aligned base case still works (the guard does not over-fire).
-    result = graph._attach_voice_direction(_parsed(), _aligned())
-    assert _by_id(result)["seg-01"]["voice_direction"]["source"] == "role-derived"
-
-
-# --------------------------------------------------------------------------- #
-# The re-key helper itself (guard + EDGE-4 anchored trailing parser).
-# --------------------------------------------------------------------------- #
-def test_rekey_helper_applies_on_alignment() -> None:
+def test_rekey_helper_joins_by_slide_key_identity() -> None:
     deltas = [
-        {"id": "seg-01", "slide_id": "slide-01"},
-        {"id": "seg-06", "slide_id": "slide-06"},
+        {"id": "seg-01", "slide_id": "slide-01", "slide_key": "1"},
+        {"id": "seg-02", "slide_id": "slide-02", "slide_key": "2"},
+        {"id": "seg-06", "slide_id": "slide-06", "slide_key": "6"},
     ]
-    seeds = graph._role_derived_seeds_for_deltas(deltas, _threaded(_BY_SLIDE, [1, 6]))
-    assert set(seeds) == {"seg-01", "seg-06"}
+    seeds = graph._role_derived_seeds_for_deltas(deltas, _BY_SLIDE)
+    assert set(seeds) == {"seg-01", "seg-06"}  # source 2 unseeded
     assert seeds["seg-01"]["pace"] == "slower"
 
 
-def test_rekey_helper_fails_open_on_divergence() -> None:
-    deltas = [
-        {"id": "seg-01", "slide_id": "slide-01"},
-        {"id": "seg-06", "slide_id": "slide-06"},
-    ]
-    # source ords {1,2,3,6} but the deck only has {1,6} -> divergence -> None.
-    assert graph._role_derived_seeds_for_deltas(deltas, _threaded(_BY_SLIDE, [1, 2, 3, 6])) is None
-    # Malformed / missing pieces -> None (byte-identical).
-    assert graph._role_derived_seeds_for_deltas(deltas, None) is None
+def test_rekey_helper_none_when_nothing_seeded() -> None:
+    deltas = [{"id": "seg-02", "slide_id": "slide-02", "slide_key": "2"}]
+    assert graph._role_derived_seeds_for_deltas(deltas, _BY_SLIDE) is None  # source 2 unseeded
     assert graph._role_derived_seeds_for_deltas(deltas, {}) is None
-    assert graph._role_derived_seeds_for_deltas(deltas, {"by_slide": {}}) is None
-    assert graph._role_derived_seeds_for_deltas(deltas, {"by_slide": _BY_SLIDE}) is None  # no ords
+    assert graph._role_derived_seeds_for_deltas(deltas, None) is None
+    # A delta with no slide_key contributes no seed (never an ordinal fallback).
+    assert graph._role_derived_seeds_for_deltas(
+        [{"id": "seg-01", "slide_id": "slide-01"}], _BY_SLIDE
+    ) is None
 
 
-def test_edge4_numeric_prefixed_slide_id_keys_on_trailing_ordinal() -> None:
-    # A numeric-PREFIXED slide_id must read the TRAILING ordinal, not the prefix.
-    deltas = [
-        {"id": "seg-01", "slide_id": "c1m1-slide-01"},
-        {"id": "seg-06", "slide_id": "module-1-slide-06"},
-    ]
-    seeds = graph._role_derived_seeds_for_deltas(deltas, _threaded(_BY_SLIDE, [1, 6]))
-    assert set(seeds) == {"seg-01", "seg-06"}
-    assert seeds["seg-06"]["pace"] == "slower"
-    # Helper-level: trailing digit run wins.
+def test_slide_id_ordinal_reads_trailing_run() -> None:
+    # The source-slide-id ordinal parser anchors on the TRAILING digit run.
+    assert graph._slide_id_ordinal("slide-3") == 3
     assert graph._slide_id_ordinal("c1m1-slide-03") == 3
     assert graph._slide_id_ordinal("module-12-slide-07") == 7
