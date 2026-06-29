@@ -491,6 +491,95 @@ def _resolve_voice_direction(
         return ("invalid", None, _voice_direction_invalid_reason(exc))
 
 
+def _resolve_v3_provider_text(
+    voice_direction: Any, narration_text: str | None
+) -> dict[str, Any] | None:
+    """Compute the Storyboard-B v3 provider preview status (AC-B9 + S2).
+
+    Returns:
+      * ``None`` — the segment is NOT on the v3 dispatch branch (effective model
+        != ``eleven_v3`` via the SAME resolved tier Enrique uses, OR no
+        ``rhetorical_role``, OR app not importable / no narration). The panel shows
+        no provider block — mirroring Enrique, which dispatches plain v2.
+      * ``{"status": "ok", "channels": {...}, "role": ...}`` — the compiler produced
+        the four channels (display<->dispatch parity).
+      * ``{"status": "fail", "reason": ...}`` — the segment WILL FAIL at Enrique
+        dispatch (a deferred/unpopulated role per S1, or a compile/firewall error).
+        The panel surfaces this so the operator does NOT approve a segment that then
+        crashes the PAID run (S2 — never swallow the failure).
+    """
+    if not isinstance(voice_direction, dict) or not narration_text:
+        return None
+    try:
+        from app.specialists._shared.voice_provider_text import (
+            POPULATED_RHETORICAL_ROLES,
+            VoiceProviderTextError,
+            build_text_channels,
+            compile_provider_text,
+        )
+    except Exception:
+        return None
+    # S2 (i): the is-v3 decision uses the SAME resolved tier Enrique uses — the
+    # effective model from the shared mapper, NOT a raw vd["elevenlabs"]["model_id"]
+    # literal (so display and dispatch agree on which branch fires).
+    resolved = resolve_voice_direction_settings(voice_direction)
+    model_id = resolved.get("model_id") if isinstance(resolved, dict) else None
+    if model_id != "eleven_v3":
+        return None
+    role = voice_direction.get("rhetorical_role")
+    if role is None:
+        return None  # v3 model but no role -> plain v2 at dispatch; nothing to preview.
+    # S2 (ii): a DEFERRED role will fail loud at Enrique (S1) — surface it.
+    if role not in POPULATED_RHETORICAL_ROLES:
+        return {
+            "status": "fail",
+            "reason": (
+                f"rhetorical_role '{role}' is not populated by the v3 compiler "
+                "(deferred this slice) — Enrique dispatch fails loud"
+            ),
+        }
+    try:
+        provider_text = compile_provider_text(narration_text, rhetorical_role=role)
+        channels = build_text_channels(canonical_text=narration_text, provider_text=provider_text)
+        return {"status": "ok", "channels": channels, "role": role}
+    except VoiceProviderTextError as exc:
+        return {"status": "fail", "reason": str(exc)}
+    except Exception as exc:  # never swallow into a clean panel (S2)
+        return {"status": "fail", "reason": f"unexpected compile error: {exc}"}
+
+
+def _render_v3_provider_markup(channels: dict[str, str], role: str) -> str:
+    """Render the side-by-side provider_text + captions (zero-leak) review block."""
+    return (
+        '<div class="voice-direction-v3" data-role="v3-provider-text">'
+        '<h4>v3 provider text — exactly what goes to ElevenLabs '
+        '(eleven_v3, tags inline)</h4>'
+        '<dl class="voice-direction-v3-list">'
+        f'<div><dt>Rhetorical role</dt><dd>{html.escape(str(role))}</dd></div>'
+        '<div class="v3-provider" data-role="provider-text">'
+        '<dt>Provider text (sent to TTS)</dt>'
+        f'<dd><pre><code>{html.escape(channels["provider_text"])}</code></pre></dd></div>'
+        '<div class="v3-captions" data-role="captions-text">'
+        '<dt>Captions channel (learner-facing) — zero tag-leak</dt>'
+        f'<dd><pre>{html.escape(channels["captions_text"])}</pre></dd></div>'
+        '</dl>'
+        '</div>'
+    )
+
+
+def _render_v3_failure_markup(reason: str) -> str:
+    """Render the explicit pre-spend dispatch-failure marker (S2).
+
+    The operator SEES exactly the segment that will break before any cent is spent,
+    rather than a clean-looking panel that crashes the paid run on approval.
+    """
+    return (
+        '<div class="voice-direction-v3-failure" data-role="v3-dispatch-failure">'
+        '<strong>WILL FAIL AT DISPATCH:</strong> '
+        f'<span class="v3-failure-reason">{html.escape(str(reason))}</span></div>'
+    )
+
+
 def resolve_voice_direction_settings(voice_direction: Any) -> dict[str, Any] | None:
     """Resolve a per-segment ``voice_direction`` dict to the EXACT TTS settings
     Enrique will dispatch, via the SHARED frozen mapper (P5 MUR-3 display↔dispatch
@@ -522,20 +611,29 @@ def _render_voice_direction_section(voice_directions: Any) -> str:
     multi = len(voice_directions) > 1
     panels: list[str] = []
     for entry in voice_directions:
+        narration_text = None
         if isinstance(entry, dict) and "voice_direction" in entry:
             seg_id = entry.get("segment_id")
             vd = entry.get("voice_direction")
+            # enhanced-vo.2 (AC-B9): the per-segment canonical narration is threaded
+            # in so the panel can show the v3 provider_text + captions channels.
+            narration_text = entry.get("narration_text")
         else:
             seg_id = None
             vd = entry
         panels.append(
-            _render_voice_direction_panel(vd, segment_id=seg_id if multi else None)
+            _render_voice_direction_panel(
+                vd, segment_id=seg_id if multi else None, narration_text=narration_text
+            )
         )
     return "".join(panels)
 
 
 def _render_voice_direction_panel(
-    voice_direction: Any, *, segment_id: str | None = None
+    voice_direction: Any,
+    *,
+    segment_id: str | None = None,
+    narration_text: str | None = None,
 ) -> str:
     """Render the Storyboard-B per-segment directed-voice review panel (rubric
     §8 + control-card 2 Must-Show).
@@ -720,6 +818,20 @@ def _render_voice_direction_panel(
         )
         vd_state = "app-unavailable"
 
+    # enhanced-vo.2 (AC-B9): when the segment is on the active v3 branch (populated
+    # rhetorical_role + eleven_v3), show the literal provider_text bytes (tags inline)
+    # alongside the captions channel proving zero tag-leak — computed by the SAME
+    # compiler Enrique drives, so the operator SEES exactly what goes to ElevenLabs
+    # (and that captions stay canonical) BEFORE any cent is spent.
+    v3_result = _resolve_v3_provider_text(voice_direction, narration_text)
+    if v3_result is None:
+        v3_markup = ""
+    elif v3_result.get("status") == "ok":
+        v3_markup = _render_v3_provider_markup(v3_result["channels"], v3_result["role"])
+    else:
+        # S2: a segment that will fail at dispatch is shown explicitly, never blank.
+        v3_markup = _render_v3_failure_markup(v3_result.get("reason", ""))
+
     return (
         '<section class="voice-direction-panel" data-role="voice-direction" '
         f'data-vd-state="{vd_state}">'
@@ -729,6 +841,7 @@ def _render_voice_direction_panel(
         f'<dl class="voice-direction-list">{"".join(rows)}</dl>'
         f'{tag_markup}'
         f'{resolved_markup}'
+        f'{v3_markup}'
         '</section>'
     )
 
@@ -868,6 +981,10 @@ def load_narration_by_slide_id(path: Path) -> dict[str, dict[str, Any]]:
                     {
                         "segment_id": entry.get("segment_id"),
                         "voice_direction": entry.get("voice_direction"),
+                        # enhanced-vo.2 (AC-B9): carry the per-segment canonical
+                        # narration so the panel can show the v3 provider_text +
+                        # captions channels (display<->dispatch parity).
+                        "narration_text": entry.get("narration_text"),
                     }
                     for entry in entries
                 ]

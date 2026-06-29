@@ -26,11 +26,30 @@ from app.specialists._shared.voice_direction_map import (
     voice_direction_active,
     voice_selection_default_tier,
 )
+from app.specialists._shared.voice_provider_text import (
+    COMPILER_VERSION as PROVIDER_TEXT_COMPILER_VERSION,
+)
+from app.specialists._shared.voice_provider_text import (
+    POPULATED_RHETORICAL_ROLES,
+    VoiceProviderTextError,
+    build_text_channels,
+    compile_provider_text,
+    extract_tags,
+)
 from app.specialists.dispatch_errors import SpecialistDispatchError
 from app.specialists.enrique.elevenlabs_dispatch import dispatch_to_elevenlabs
 from app.specialists.irene.authoring.pass_2_template import VoiceDirection
 from app.specialists.narration_join import join_narration_segments, phantom_segment_ids
-from scripts.api_clients.elevenlabs_client import DEFAULT_TTS_MODEL, ElevenLabsClient
+from scripts.api_clients.elevenlabs_client import (
+    DEFAULT_DIALOGUE_MODEL,
+    DEFAULT_TTS_MODEL,
+    ElevenLabsClient,
+)
+
+# Story enhanced-vo.2 (Slice 1): a FIXED seed graduated into the directed v3 call
+# (AC-B10 test-hygiene) so a blind strip-vs-tag A/B differs by direction, not render
+# noise. v2/non-v3 path is unchanged (no seed).
+DIRECTED_V3_SEED = 73219
 
 REPO_ROOT = Path(__file__).resolve().parents[3]
 SANCTUM_DIR = REPO_ROOT / "_bmad" / "memory" / "bmad-agent-enrique"
@@ -362,6 +381,15 @@ class _DirectedPlan:
         "effective_voice_source",
         "effective_model",
         "effective_settings",
+        # Story enhanced-vo.2 (Slice 1): v3 provider-text channels (pre-flight,
+        # offline). render_mode is "v3_provider_text" iff the compiler actually
+        # ran (effective model == eleven_v3 AND a POPULATED rhetorical_role);
+        # otherwise "v2_settings" and the provider channel == canonical (sent text
+        # unchanged, receipt byte-identical to today — AC-B12).
+        "render_mode",
+        "rhetorical_role",
+        "channels",
+        "sent_text",
     )
 
     def __init__(
@@ -376,6 +404,10 @@ class _DirectedPlan:
         voice_id: str,
         effective_voice_source: str,
         effective_model: str,
+        render_mode: str,
+        rhetorical_role: str | None,
+        channels: dict[str, str] | None,
+        sent_text: str,
     ) -> None:
         self.index = index
         self.sid = sid
@@ -386,6 +418,10 @@ class _DirectedPlan:
         self.voice_id = voice_id
         self.effective_voice_source = effective_voice_source
         self.effective_model = effective_model
+        self.render_mode = render_mode
+        self.rhetorical_role = rhetorical_role
+        self.channels = channels
+        self.sent_text = sent_text
         # effective_elevenlabs_settings records the EFFECTIVE model actually used
         # (M2): resolved model_id is None when no tier supplies one, but the real
         # call/receipt must show the concrete default the client applies.
@@ -478,6 +514,48 @@ def _resolve_directed_plan(
     # M2: the EFFECTIVE model is the resolved one, or the client default the call
     # will actually apply when no tier supplies model_id.
     effective_model = normalize_optional_str(resolved.get("model_id")) or DEFAULT_TTS_MODEL
+
+    # Story enhanced-vo.2 (Slice 1): MODEL-AWARE v3 branch (AC-B4). DESIGN DECISION:
+    # branch on the EFFECTIVE MODEL (== eleven_v3), NOT on render_strategy. The
+    # frozen `render_strategy: Literal["tts","dialogue"]` is the synthesis MODE, a
+    # different axis from the MODEL; overloading it with "v3" would conflate the two
+    # and break the existing fail-loud on unsupported render_strategy. The v2 numeric
+    # mapper stays FROZEN; this is its sibling. The compiler runs ONLY when the model
+    # is eleven_v3 AND the segment carries a POPULATED rhetorical_role; otherwise the
+    # provider channel == canonical and the sent text / receipt are byte-identical to
+    # today (AC-B12). The compile is pure/offline, so it belongs in PRE-FLIGHT (S1):
+    # a tag/firewall failure refuses BEFORE any segment bills.
+    rhetorical_role = getattr(direction, "rhetorical_role", None) if direction is not None else None
+    is_v3 = effective_model == DEFAULT_DIALOGUE_MODEL
+    channels: dict[str, str] | None = None
+    if is_v3 and rhetorical_role is not None:
+        # S1 fail-loud: a v3 segment whose rhetorical_role the compiler does NOT
+        # populate must REFUSE, never silently downgrade to neutral v2 (a dropped
+        # delivery the operator never sees). Pre-flight, so nothing bills.
+        if rhetorical_role not in POPULATED_RHETORICAL_ROLES:
+            raise EnriqueActError(
+                f"segment {sid} rhetorical_role {rhetorical_role!r} is not populated by "
+                f"the v3 compiler (populated: {sorted(POPULATED_RHETORICAL_ROLES)}); "
+                "refusing to silently render neutral v2",
+                tag="elevenlabs.v3.role.unpopulated",
+            )
+        # M1: channel construction + the captions tag-leak gate are a v3-ONLY concern.
+        # On the v2/non-v3 path NO channels are built, so a canonical that legitimately
+        # contains brackets ([1]/[Figure 2]/[CO2]/[Na+]) synthesizes BYTE-IDENTICAL to
+        # today (AC-B12) — the gates never see arbitrary canonical brackets.
+        try:
+            provider_text = compile_provider_text(text, rhetorical_role=rhetorical_role)
+            channels = build_text_channels(canonical_text=text, provider_text=provider_text)
+        except VoiceProviderTextError as exc:
+            raise EnriqueActError(
+                f"segment {sid} v3 provider-text compile failed: {exc}", tag=exc.tag
+            ) from exc
+        render_mode = "v3_provider_text"
+        sent_text = channels["provider_text"]
+    else:
+        render_mode = "v2_settings"
+        sent_text = text
+
     return _DirectedPlan(
         index=index,
         sid=sid,
@@ -488,6 +566,10 @@ def _resolve_directed_plan(
         voice_id=voice_id,
         effective_voice_source=effective_voice_source,
         effective_model=effective_model,
+        render_mode=render_mode,
+        rhetorical_role=rhetorical_role,
+        channels=channels,
+        sent_text=sent_text,
     )
 
 
@@ -524,6 +606,25 @@ def _reusable_receipt(
         return None
     if prior.get("voice_id") != plan.voice_id:
         return None
+    # S3: a v3 receipt's audio was rendered from [tag] PROVIDER text; a current
+    # NON-v3 plan (or vice versa) must NEVER reuse it. The persisted render_mode is
+    # present only on v3 receipts (None on v2 — byte-identical), so compare against
+    # the current plan's persisted form. This is defense-in-depth over the settings
+    # check (model_id differs between v2/v3), and catches any future case where the
+    # other resolved settings happen to coincide across modes.
+    current_persisted_mode = (
+        "v3_provider_text" if plan.render_mode == "v3_provider_text" else None
+    )
+    if prior.get("render_mode") != current_persisted_mode:
+        return None
+    # Story enhanced-vo.2 (AC-B6): on the v3 branch, ALSO compare the canonical +
+    # provider text shas so a provider-text change (e.g. a different rhetorical_role
+    # / tag, or edited narration) FORCES re-synthesis instead of reusing stale audio.
+    if plan.render_mode == "v3_provider_text" and plan.channels is not None:
+        if prior.get("provider_text_sha256") != plan.channels["provider_text_sha256"]:
+            return None
+        if prior.get("canonical_text_sha256") != plan.channels["canonical_text_sha256"]:
+            return None
     return prior
 
 
@@ -683,18 +784,24 @@ def build_assembly_bundle(
             )
             continue
 
-        # ENRIQUE-A5 firewall: the text sent to TTS is the figure-gated narration
-        # verbatim. `delivery_tag` is NEVER injected (generation-text and the
-        # displayed/gated narration are the SAME single channel here, so the tag
-        # is not cleanly isolable — Card 3 conservative posture); recorded in the
-        # receipt only. model_id is passed explicitly (M2) so the SENT model ==
-        # the recorded effective model.
+        # ENRIQUE-A5 firewall: on the v2/non-v3 path the text sent to TTS is the
+        # figure-gated narration verbatim (`delivery_tag` is NEVER injected — Card 3
+        # conservative posture). On the v3 branch (Story enhanced-vo.2, AC-B7) the
+        # SENT text is the compiler's PROVIDER text (canonical + allowlisted [tag]),
+        # which the TAG-ONLY firewall guarantees strips byte-exact back to canonical;
+        # a fixed seed is graduated in (AC-B10 test-hygiene). REUSES the same proven
+        # `text_to_speech_with_request_id` call. model_id is passed explicitly (M2)
+        # so the SENT model == the recorded effective model.
         call_kwargs: dict[str, Any] = {"model_id": plan.effective_model}
         for field in ("stability", "similarity_boost", "style", "speed"):
             value = plan.resolved.get(field)
             if value is not None:
                 call_kwargs[field] = value
-        tts_result = client.text_to_speech_with_request_id(text, plan.voice_id, **call_kwargs)
+        if plan.render_mode == "v3_provider_text":
+            call_kwargs["seed"] = DIRECTED_V3_SEED
+        tts_result = client.text_to_speech_with_request_id(
+            plan.sent_text, plan.voice_id, **call_kwargs
+        )
         audio_bytes = (
             tts_result.audio
             if isinstance(tts_result.audio, bytes)
@@ -707,8 +814,20 @@ def build_assembly_bundle(
         audio_sha256 = hashlib.sha256(audio_bytes).hexdigest()
         request_id_present = tts_result.request_id is not None
         duration, duration_source = _measure_duration(audio_bytes, plan.segment, text)
-        _write_vtt(caption_path, text, duration)
-        cost = round((len(text) / 1000.0) * cost_per_1k, 4)
+        # AC-B5 captions HARD gate: on the v3 branch the VTT receives the CANONICAL
+        # captions channel (already passed the zero-tag-leak gate in pre-flight). On
+        # the v2/non-v3 path there are no channels and the caption is the canonical
+        # text VERBATIM — byte-identical to today, even when it contains brackets
+        # ([1]/[Figure 2]/[CO2]) (AC-B12 / M1).
+        caption_text = (
+            plan.channels["captions_text"]
+            if plan.render_mode == "v3_provider_text" and plan.channels is not None
+            else text
+        )
+        _write_vtt(caption_path, caption_text, duration)
+        # NIT: bill over the text actually SENT (provider on v3 is longer by the tag);
+        # on v2 sent_text == text so the cost is byte-identical.
+        cost = round((len(plan.sent_text) / 1000.0) * cost_per_1k, 4)
 
         # pause_before/after -> recorded silence-padding metadata (compositor
         # wiring pending — see follow-on; NOT yet applied to the played audio).
@@ -751,6 +870,21 @@ def build_assembly_bundle(
             "pause_after_seconds": pause_after,
             "assembled_duration_seconds": assembled_duration,
         }
+        # Story enhanced-vo.2 (AC-B7): the provider-text block is added ONLY on the
+        # active v3 branch (render_mode == v3_provider_text). On the v2/non-v3 path
+        # the receipt stays byte-identical to today (AC-B12) — these keys are absent.
+        if plan.render_mode == "v3_provider_text":
+            receipt.update(
+                {
+                    "render_mode": plan.render_mode,
+                    "canonical_text_sha256": plan.channels["canonical_text_sha256"],
+                    "provider_text": plan.channels["provider_text"],
+                    "provider_text_sha256": plan.channels["provider_text_sha256"],
+                    "provider_text_strategy": plan.rhetorical_role,
+                    "provider_text_tags": extract_tags(plan.channels["provider_text"]),
+                    "provider_text_compiler_version": PROVIDER_TEXT_COMPILER_VERSION,
+                }
+            )
         _write_json(receipt_path, receipt)
         receipts.append(receipt)
 

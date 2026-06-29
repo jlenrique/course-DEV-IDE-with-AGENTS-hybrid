@@ -137,6 +137,23 @@ EmotionalTone = Literal[
 Pace = Literal["slower", "neutral", "faster"]
 Energy = Literal["low", "medium", "high"]
 VoiceDirectionSource = Literal["role-derived", "cd-authored", "operator-override"]
+# Story enhanced-vo.2 (Slice 1): closed rhetorical-role taxonomy for the v3
+# provider-text compiler. ADDITIVE optional field (NOT a schema_version bump). The
+# model ACCEPTS the full taxonomy; the compiler
+# (app/specialists/_shared/voice_provider_text.py) POPULATES only `warm_callback`
+# (STRUCTURAL) + `contrast_emphasis` (TONAL) this slice — the rest are
+# accepted-but-deferred (compiler fails loud if asked to render them). Mirrors the
+# audition variant slugs (manifest variants), minus the no-role neutral baseline.
+RhetoricalRole = Literal[
+    "warm_callback",
+    "contrast_emphasis",
+    "curious_pivot",
+    "clinical_seriousness",
+    "breakthrough_moment",
+    "confidential_aside",
+    "restrained_urgency",
+    "slow_reflective",
+]
 
 
 class ElevenLabsSettings(_StrictModel):
@@ -192,6 +209,11 @@ class VoiceDirection(_StrictModel):
     emotional_tone: EmotionalTone | None = None
     pace: Pace | None = None
     energy: Energy | None = None
+    # Story enhanced-vo.2 (Slice 1): per-segment rhetorical role consumed by the v3
+    # provider-text compiler at synthesis (effective model == eleven_v3). Additive,
+    # optional, default None -> directed-voice-OFF / non-v3 runs stay byte-identical
+    # (the model is extra="forbid", so the field MUST be declared to be carried).
+    rhetorical_role: RhetoricalRole | None = None
     # Generation-text-only delivery cue (e.g. "[thoughtfully]"). ISOLATED from
     # the figure-gated displayed narration (Card 3 + ENRIQUE-A5): it is NEVER
     # injected into the learner-facing/gated narration_text and never reaches
