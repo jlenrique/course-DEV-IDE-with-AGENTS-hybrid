@@ -32,7 +32,7 @@ _Patterns about which specialist handles which content family best, when to use 
 
 _Promoted from BOND when they stabilize into patterns._
 
-- (empty)
+- **2026-06-29 BMAD planning governance:** For future Claude Code/BMAD implementation briefs, confirm the BMAD workflow spine before story planning starts. Party-mode teams should be built around canonical BMAD agents tied to the workflow first (architect, PM/PO, dev, test/QA, etc.); project-specific agents such as Marcus, Marcus-SPOC, Creative Director, or app specialists are optional adjuncts, not the core deliberative body. Use Dr. Quinn to synthesize party-mode consensus, with John the PM making final product calls when consensus needs a decision owner.
 
 ## Open Questions
 
@@ -44,6 +44,7 @@ _Things the operator hasn't resolved that affect future runs. Date-stamped so st
 
 _Windows/encoding quirks, tool-version pitfalls, API rate-limit patterns — anything I learned the hard way and future-me needs to know._
 
+- **2026-06-29**: ElevenLabs voice availability appears scoped to the current API key's accessible library. In live tests, operator-supplied voice IDs visible during browsing failed with `voice_not_found` until/except when the voice was available to this account/API key. For future voice-curation consults, ask the operator to use IDs from the ElevenLabs **My Voices** listing, or to add a browsed/discovered voice to My Voices before asking Marcus/Enrique to sample or preload it. Treat this as an observed current-client constraint, not an ElevenLabs-wide guarantee.
 - **2026-04-17**: Windows cp1252 stdio encoding crashes on `↔` characters in some CLI help output. Use `PYTHONIOENCODING=utf-8` when invoking Python subprocesses that may print Unicode. Discovered via Texas runner `--help` crash.
 - **2026-04-17**: `pyproject.toml` build-backend is broken (`setuptools.backends._legacy:_Backend` not a real module). Pre-existing; fix is one-liner to `setuptools.build_meta`. Out of scope for my orchestration work.
 
