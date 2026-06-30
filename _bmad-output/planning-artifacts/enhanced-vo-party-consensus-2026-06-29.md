@@ -88,3 +88,23 @@ Transcribed both arms via OpenAI ASR (`gpt-4o-transcribe`). BOTH transcripts == 
 - **Vera fidelity spot-check (ASR-level): PASS** — both arms speak identical words == canonical; no hallucinated lexical content from the tag (the byte-exact offline guarantee confirmed in the actual audio).
 
 **Net gate status: every FAILABLE gate PASSES** (offline 47 tests + byte-exact firewall; live ASR no-leak; fidelity identical-transcripts). The ONLY remaining element is the operator's blind perceptual A/B verdict — a NON-FAILING finding (either outcome = success). Arc DONE the moment the operator records that verdict.
+
+### Descript publish (operator-authorized "Descript" path) — 2026-06-29
+
+Both arms published to Descript (project `1385ad93-1023-4deb-8777-498d46c3dca4`, audio publish, unlisted):
+- **Arm A (no tag):** https://share.descript.com/view/0PmSgd69J4L  (composition `3d984e3c…`)
+- **Arm B (`[slow]`):** https://share.descript.com/view/0h01lMrCaOi  (composition `ccfac860…`)
+
+NOTE (honest scope): these are the two AUDIO arms rendered in Descript's player — NOT a full assembled-lesson mix with slides + bed music (Dan's "opening night"). They put the identical-words A vs B reads in a consistent player for the blind A/B. If the clip-level call is inconclusive, the stricter follow-up is a full assembled video (slides+music) — heavier, deferred unless needed.
+
+**AWAITING:** operator blind A/B verdict on these two finals (which carries the directed/[slow] read — A, B, or indistinguishable; first-run-stands). Recording the verdict here completes arc DONE.
+
+### ✅ OPERATOR BLIND A/B VERDICT — RECORDED 2026-06-29: **B (distinguishable; directed read lands)**
+
+**Operator judge, first-run-stands: verdict = B.** The operator hears Arm B (the `[slow]` / `contrast_emphasis` read, https://share.descript.com/view/0h01lMrCaOi) as the audibly more deliberate / directed read vs the plain Arm A (https://share.descript.com/view/0PmSgd69J4L), identical words both arms.
+
+**FINDING: the v3 tag channel DELIVERS perceptible directed value → PROMOTE.** The `[slow]` audio tag produces an ear-distinguishable directed delivery on Sarah even though the render was byte-identical in DURATION (10.397s both) — vindicating the pre-registered "operator ear, NOT a numeric metric" bar: a duration/energy metric would have falsely scored this "indistinguishable"; the operator's ear correctly detected the prosodic delivery shift.
+
+**Implications (next increments):** v3 render_strategy + the rhetorical-role tag channel are promoted as a real expressive lever. Forward work: widen the populated role taxonomy beyond {warm_callback, contrast_emphasis}; cross-confirm on a 2nd deck + the full assembled-lesson Descript mix (Dan's "opening night"); wire Irene to EMIT rhetorical_role on real clustered decks (currently set via override for the probe); Shannon for the grave/reflective roles. Vera R7 clinical-lexicon follow-on remains gated (directed-voice-vera-r7-wire-clinical-lexicon).
+
+**ARC DONE:** both stories party-CLOSED; live-proven incrementally; isolated-tag A/B finding recorded (B/distinguishable); all failable gates PASS.
