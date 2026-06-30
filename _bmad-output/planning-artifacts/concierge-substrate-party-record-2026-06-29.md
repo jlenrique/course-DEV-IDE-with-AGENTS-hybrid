@@ -66,8 +66,29 @@ Evidence: offline 91 passed (touched) + 406 regression; ruff clean; lint-imports
 - **Irene:** keep the `contrast_emphasis` vocabulary honest as the map grows (the tag behaves as intrinsic *measured emphasis*, not relational cross-slide contrast). And **`clinical-caveat` carries a containment obligation** — when the next roles (`definitional_anchor`/`clinical-caveat`/`enumeration`) open, clinical-caveat travels with Vera, NOT on the synthesis (zero-new-words) precedent.
 - **Winston:** if an operator-facing "what will actually render" view is ever needed, it is a *projection over* the faithful receipt computed at the read site with model-awareness — never a mutation of the authored record.
 
+## Round 3 — Topic-Coverage-Assurance Interlock amendment (2026-06-30)
+
+**Trigger:** operator deferred Leg-1b to insert a coverage-assurance interlock first (briefing `claude-code-brief-topic-coverage-assurance-before-leg1b-2026-06-29.md`). Required deliverable: an operator-facing PRODUCTION REPORT accounting for ALL points in the course SOURCE NOTES (= per-slide presentation/speaker notes), each mapped to slide screen OR narration (or signed exclusion).
+
+**Voices:** John (PM), Winston (Architect), Murat (Test), Irene (Pedagogy), Vera (Fidelity); **Dr. Quinn synthesized.** Grounded in a reuse-first scout (CONTAINMENT exists everywhere; source→deliverable COVERAGE genuinely ABSENT; `TypedComponent.component_id` ≈ a source point; P5 consumption already wired but emits no back-receipt; UDAC RAI is the receipt infra; presentation notes = a markdown convention extracted as ONE narration component per block, NOT atomized; Storyboard-B HTML is the report surface).
+
+**Core contradiction (granularity/ingest):** Winston (ride `component_id` 1:1, no new id space) vs Irene (the honest unit is the teaching ASSERTION, ~2–4 per block, needs re-segmentation + first-class notes ingest, NON-NEGOTIABLE).
+
+**Dr. Quinn synthesis (dissolved the fault line, 5/5 ACCEPT, NO impasse → no PM tiebreak):** separate *identity space* from *unit of accounting*. `source_point_id = component_id#ordinal` — a CHILD sub-locator inside the existing id space (no new namespace, no new source_type → Winston satisfied), while the denominator iterates over assertion-level children (→ Irene satisfied). Segmentation staged behind a T0 spike with a `segmentation` provenance stamp as the honesty fuse.
+
+**OPERATOR RULING (overrides Quinn's staged-fallback):** **assertion-level required FIRST.** `block_level_v1` is a diagnostic only, NOT an acceptable v1 ship state; if assertion-level re-segmentation proves unbounded in the T0 spike, ESCALATE — do not ship coarse.
+
+**Ratified v1 contract** (full detail: `coverage-assurance-interlock-design-2026-06-30.md`): child-id identity; coverage-intent as a SET (derived-first, LLM-refine-at-ambiguity, operator-signed exclusions; slides=gist/narration=detail default, BOTH for LO-load-bearing/safety/organizing-claim); two orthogonal axes (coverage × containment) joined never merged; risk taxonomy → deterministic verbatim floor + R7 binding; per-cell `vouch_level` honesty fuse; deterministic locator anchor FIRST (no anchor → forced `missing`); fail-loud-before-audio on `must-cover ∧ missing ∧ no-planned-surface` at the both-walks UDAC seam; receipt DERIVED from existing joins (no producer self-report, no parallel ledger) on the RAI; rendered to Storyboard-B HTML; additive → out of block-mode. R7 binds in THIS interlock at report-gen time (its first reporting caller).
+
+**Three binding AC caveats:** (Winston) child-id is NEVER a join key; (Vera) render-time assertion — no cell renders `verified` without a `vouch_level`; (Irene) the provenance stamp is load-bearing, not droppable.
+
+**Leg-1b amendment dispositions:** #1 structural gate (callback cites anchors, referential-integrity), #4 gate (+ negative-case demo), #5 keystone hard gate; #2 → WARN field; #3 split (numeric/term introduction gates, comparator/negation flip WARN).
+
+**Deferred (named):** deterministic corpus matcher; full Leg-4 UDAC; workbook gating; hard verbatim enforcement; ≥3-run-calibrated WARN→gate promotion; span-aware negation/comparator detector (Vera-R7 hard-gate triad).
+
 ## Status
 - **Leg-1a: ✅ DONE — party-CLOSED 2026-06-30, live-proven.**
-- Leg-1b (warm_callback authoring + Vera-R7): queued; **DUAL-GATE** per Murat. Party GREEN-LIGHT required before dev opens.
+- **Coverage-assurance interlock: party-RATIFIED (5/5, no impasse) + operator granularity ruling applied; design record written; awaiting operator sign-off to open `bmad-create-story`.** Sequenced AHEAD of Leg-1b.
+- Leg-1b (warm_callback authoring + Vera-R7): queued BEHIND the interlock (consumes its source-point anchors); **DUAL-GATE** per Murat. Needs its own party GREEN-LIGHT before dev.
 - Leg-3 confirm spike: queued (read-only, anytime before Leg-3 green-light).
 - Legs 2 / 4: queued.
