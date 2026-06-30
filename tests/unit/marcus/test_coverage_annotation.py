@@ -424,3 +424,69 @@ def test_fix6_make_chat_model_binds_request_timeout_and_no_retries() -> None:
 def test_annotation_round_trip_load() -> None:
     ann = build_coverage_annotations([_narration_rec()], generated_at=_TS)[0]
     assert load_coverage_annotation(ann.model_dump(mode="json")) == ann
+
+
+# ---------------------------------------------------------------------------
+# R5-A8 — F-012 NonVerbatimSpan ledger surfaces from the LIVE pass into the sink
+# ---------------------------------------------------------------------------
+
+
+def test_live_pass_populates_non_verbatim_out_sink() -> None:
+    """The live pass appends F-012 dropped paraphrases to a supplied sink (R5-A8).
+
+    A fake chat model returns one VERBATIM span (survives) + one PARAPHRASE (dropped);
+    ``non_verbatim_out`` collects the dropped span so the G0E build site can persist it
+    into g0-enrichment.json for the G3 marshaller to surface ledger-only.
+    """
+    from app.marcus.lesson_plan.coverage_annotation import build_coverage_annotations
+
+    components = [
+        {
+            "component_id": "src-001-c001",
+            "type": "narration",
+            "locator": "Slide 1",
+            "excerpt": "Dose is 5 mg daily. Titrate slowly.",
+        }
+    ]
+    response_json = json.dumps(
+        {
+            "blocks": [
+                {
+                    "component_id": "src-001-c001",
+                    "assertions": [
+                        "Dose is 5 mg daily.",  # verbatim -> survives
+                        "Administer a hefty bolus immediately",  # paraphrase -> dropped
+                    ],
+                }
+            ]
+        }
+    )
+
+    class _Resp:
+        def __init__(self, content: str) -> None:
+            self.content = content
+
+    class _Chat:
+        def __init__(self, content: str) -> None:
+            self._content = content
+
+        def invoke(self, _messages: object) -> _Resp:
+            return _Resp(self._content)
+
+    class _Handle:
+        def __init__(self, content: str) -> None:
+            self.chat = _Chat(content)
+
+    sink: list = []
+    annotations = build_coverage_annotations(
+        components,
+        dispatch_live=True,
+        chat_model_factory=lambda _model_id: _Handle(response_json),
+        non_verbatim_out=sink,
+    )
+    # the verbatim span built a real annotation; the paraphrase was dropped into the sink.
+    assert len(annotations) == 1
+    assert len(sink) == 1
+    assert sink[0].component_id == "src-001-c001"
+    assert sink[0].slide_key == "Slide 1"
+    assert "hefty bolus" in sink[0].span

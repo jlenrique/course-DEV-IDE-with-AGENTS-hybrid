@@ -1,0 +1,47 @@
+{
+  "specialist_id": "gary",
+  "status": "ok",
+  "generation_mode": "from-template",
+  "gary_slide_output": [
+    {
+      "card_number": "1",
+      "dispatch_variant": "A",
+      "display_title": "The Economic and Structural Reality",
+      "slide_id": "slide-01",
+      "variant_id": "A",
+      "visual_description": "The Economic and Structural Reality - healthcare is consolidating rapidly across the country."
+    },
+    {
+      "card_number": "2",
+      "dispatch_variant": "A",
+      "display_title": "Rising Expenditures as the Constraint",
+      "slide_id": "slide-02",
+      "variant_id": "A",
+      "visual_description": "Rising Expenditures - national health spending rose 9 percent last year."
+    },
+    {
+      "card_number": "3",
+      "dispatch_variant": "A",
+      "display_title": "Employment Consolidation",
+      "slide_id": "slide-03",
+      "variant_id": "A",
+      "visual_description": "Employment Consolidation and reduced clinician autonomy across systems."
+    },
+    {
+      "card_number": "4",
+      "dispatch_variant": "A",
+      "display_title": "The Human Cost",
+      "slide_id": "slide-04",
+      "variant_id": "A",
+      "visual_description": "The Human Cost - administrative burden drives burnout and waste."
+    },
+    {
+      "card_number": "5",
+      "dispatch_variant": "A",
+      "display_title": "A Path Forward",
+      "slide_id": "slide-05",
+      "variant_id": "A",
+      "visual_description": "A Path Forward - do not exceed the safe staffing ratio of 4 to 1."
+    }
+  ]
+}

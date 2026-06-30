@@ -317,6 +317,7 @@ def _attach_coverage_annotations(
     *,
     dispatch_live: bool,
     chat_model_factory: Any | None = None,
+    non_verbatim_out: list[Any] | None = None,
 ) -> tuple[CoverageAnnotation, ...]:
     """Coverage attach (Step 1): per-component source-point annotations (thin delegation).
 
@@ -326,6 +327,9 @@ def _attach_coverage_annotations(
     delegates ALL segmentation to ``build_coverage_annotations`` (offline default; the
     gpt-5 live leg gated by ``dispatch_live`` exactly like P3). The receipt is DERIVED
     at the G3 seam from these authored annotations × the run's deck/narration surfaces.
+
+    R5-A8: ``non_verbatim_out`` (when supplied) collects the F-012 dropped-paraphrase
+    ledger from the live pass so the build site can persist it into g0-enrichment.json.
     """
     if not coverage_pass_active():
         return ()
@@ -334,6 +338,7 @@ def _attach_coverage_annotations(
         records,
         dispatch_live=dispatch_live,
         chat_model_factory=chat_model_factory,
+        non_verbatim_out=non_verbatim_out,
     )
 
 
@@ -1016,11 +1021,16 @@ def build_enrichment_result(
     dispatch_live: bool,
     chat_model_factory: Any | None = None,
     resolve_dispatch: Callable[[Any], Any] | None = None,
+    non_verbatim_out: list[Any] | None = None,
 ) -> G0EnrichmentResult:
     """Run the pre-pass (offline OR live) and assemble the frozen result.
 
     Pure of run-dir/cache side effects (those live in ``run_g0_enrichment``) so
     the assembly is unit-testable in isolation.
+
+    R5-A8: ``non_verbatim_out`` (when supplied) collects the F-012 dropped-paraphrase
+    ledger from the live coverage pass; ``run_g0_enrichment`` persists it additively
+    into g0-enrichment.json for the G3 marshaller to surface ledger-only.
 
     ``resolve_dispatch`` is the DD3 citation-resolution dispatch seam: when
     supplied (offline tests) OR ``dispatch_live`` is True (live scite), the Texas
@@ -1079,6 +1089,7 @@ def build_enrichment_result(
         los,
         dispatch_live=dispatch_live,
         chat_model_factory=chat_model_factory,
+        non_verbatim_out=non_verbatim_out,
     )
 
     independent_parse = IndependentParse(
@@ -1164,6 +1175,11 @@ def run_g0_enrichment(
     fingerprint = _fingerprint(enumerated, model_id)
     cache_path = _cache_path(run_dir, fingerprint)
 
+    # R5-A8: collect the F-012 dropped-paraphrase ledger from the live coverage pass so
+    # it can be persisted additively into g0-enrichment.json (the G3 marshaller surfaces
+    # it ledger-only). A cache HIT does not re-run the pass, so the ledger stays empty
+    # there (the live re-prove writes fresh, not via replay).
+    non_verbatim_spans: list[Any] = []
     if cache_path.is_file():
         # Corpus-keyed replay: read the frozen, operator-confirmed result.
         result = G0EnrichmentResult.model_validate_json(cache_path.read_text(encoding="utf-8"))
@@ -1174,6 +1190,7 @@ def run_g0_enrichment(
             dispatch_live=dispatch_live,
             chat_model_factory=chat_model_factory,
             resolve_dispatch=resolve_dispatch,
+            non_verbatim_out=non_verbatim_spans,
         )
         cache_path.parent.mkdir(parents=True, exist_ok=True)
         # Cache the FULL shape (audit sidecar included) so a replay rehydrates the
@@ -1184,8 +1201,17 @@ def run_g0_enrichment(
         )
 
     artifact_path = run_dir / _DECISION_ARTIFACT_BASENAME
+    card_payload = result.to_card_payload()
+    if non_verbatim_spans:
+        # Additive top-level ledger key (R5-A8) — read by the G3 marshaller's
+        # ``_load_non_verbatim_diagnostics``; absent when no live drop occurred so the
+        # byte-identical firewall holds for offline / no-drop runs.
+        card_payload["non_verbatim_spans"] = [
+            span.model_dump(mode="json") if hasattr(span, "model_dump") else span
+            for span in non_verbatim_spans
+        ]
     artifact_path.write_text(
-        json.dumps(result.to_card_payload(), indent=2, default=str),
+        json.dumps(card_payload, indent=2, default=str),
         encoding="utf-8",
     )
 

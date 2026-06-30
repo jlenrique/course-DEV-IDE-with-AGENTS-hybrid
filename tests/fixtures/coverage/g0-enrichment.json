@@ -1,0 +1,58 @@
+{
+  "coverage_annotations": [
+    {
+      "component_id": "src-001",
+      "slide_key": "Slide 1",
+      "segmentation": "assertion_level",
+      "source_points": [
+        {
+          "source_point_id": "src-001#1",
+          "component_id": "src-001",
+          "ordinal": 1,
+          "slide_key": "Slide 1",
+          "verbatim_text": "healthcare is consolidating rapidly across the country",
+          "risk_flags": [],
+          "coverage_intents": ["gist_on_slide"],
+          "segmentation": "assertion_level",
+          "operator_signed_exclusion": false
+        }
+      ]
+    },
+    {
+      "component_id": "src-002",
+      "slide_key": "Slide 2",
+      "segmentation": "assertion_level",
+      "source_points": [
+        {
+          "source_point_id": "src-002#1",
+          "component_id": "src-002",
+          "ordinal": 1,
+          "slide_key": "Slide 2",
+          "verbatim_text": "national health spending rose 9 percent last year",
+          "risk_flags": ["numeric", "comparator"],
+          "coverage_intents": ["detail_in_narration", "gist_on_slide"],
+          "segmentation": "assertion_level",
+          "operator_signed_exclusion": false
+        }
+      ]
+    },
+    {
+      "component_id": "src-005",
+      "slide_key": "Slide 5",
+      "segmentation": "assertion_level",
+      "source_points": [
+        {
+          "source_point_id": "src-005#1",
+          "component_id": "src-005",
+          "ordinal": 1,
+          "slide_key": "Slide 5",
+          "verbatim_text": "do not exceed the safe staffing ratio of 4 to 1",
+          "risk_flags": ["negation", "numeric"],
+          "coverage_intents": ["gist_on_slide"],
+          "segmentation": "assertion_level",
+          "operator_signed_exclusion": false
+        }
+      ]
+    }
+  ]
+}

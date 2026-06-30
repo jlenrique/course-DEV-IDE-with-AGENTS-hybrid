@@ -752,6 +752,7 @@ def _live_coverage_pass(
     *,
     generated_at: datetime | None,
     clinical_terms: frozenset[str] | None,
+    non_verbatim_out: list[NonVerbatimSpan] | None = None,
 ) -> tuple[CoverageAnnotation, ...]:  # pragma: no cover - live leg
     """REAL gpt-5 segmentation via the P3 chat-model seam (single pass, no resample).
 
@@ -782,6 +783,11 @@ def _live_coverage_pass(
     prompt = render_live_segmentation_prompt(note_bearing)
     response = handle.chat.invoke([{"role": "user", "content": prompt}])
     rows = extract_coverage_rows(response.content)
+    # R5-A8: surface the F-012 NonVerbatimSpan ledger here (rows + components in hand)
+    # so the G0E build site can persist it additively into g0-enrichment.json; the G3
+    # marshaller reads it back as a ledger-only diagnostic (never a hard missing).
+    if non_verbatim_out is not None:
+        non_verbatim_out.extend(detect_non_verbatim_spans(rows, components))
     return build_coverage_from_rows(
         rows, components, generated_at=generated_at, clinical_terms=clinical_terms
     )
@@ -794,6 +800,7 @@ def build_coverage_annotations(
     chat_model_factory: Any | None = None,
     generated_at: datetime | None = None,
     clinical_terms: frozenset[str] | None = None,
+    non_verbatim_out: list[NonVerbatimSpan] | None = None,
 ) -> tuple[CoverageAnnotation, ...]:
     """Build per-component coverage annotations over the universal-md front matter.
 
@@ -801,10 +808,16 @@ def build_coverage_annotations(
     (``dispatch_live=True``; gated exactly like the P3 resolver). Only note-bearing
     (``narration``) components are segmented. Freeze-once: the result rides
     ``G0EnrichmentResult`` via ``repin_additive`` (AC9).
+
+    R5-A8: when ``non_verbatim_out`` is supplied AND the LIVE pass runs, the F-012
+    dropped-paraphrase ledger is appended to it (the OFFLINE pass cuts spans verbatim
+    from the excerpt by construction → none). Additive; ``None`` keeps every existing
+    caller byte-identical.
     """
     if dispatch_live:
         return _live_coverage_pass(
-            components, chat_model_factory, generated_at=generated_at, clinical_terms=clinical_terms
+            components, chat_model_factory, generated_at=generated_at,
+            clinical_terms=clinical_terms, non_verbatim_out=non_verbatim_out,
         )
     return _offline_coverage_pass(
         components, generated_at=generated_at, clinical_terms=clinical_terms

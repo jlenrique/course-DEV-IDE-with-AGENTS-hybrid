@@ -22,15 +22,19 @@ import os
 from pathlib import Path
 from typing import Final
 
+from app.marcus.lesson_plan.coverage_annotation import NOTE_BEARING_TYPES
 from app.marcus.lesson_plan.coverage_gate import (
     CoverageAssuranceError,
     assert_coverage_gate,
+    assert_receipt_not_vacuous,
 )
 from app.marcus.lesson_plan.coverage_receipt import (
     COVERAGE_RECEIPT_BASENAME,
     CoverageReceipt,
     load_coverage_receipt,
 )
+
+G0_ENRICHMENT_BASENAME: Final[str] = "g0-enrichment.json"
 
 logger = logging.getLogger(__name__)
 
@@ -133,6 +137,42 @@ def load_coverage_receipt_from_disk(run_dir: Path) -> CoverageReceipt | None:
     return load_coverage_receipt(json.loads(path.read_text(encoding="utf-8")))
 
 
+def note_bearing_content_exists(run_dir: Path) -> bool:
+    """True iff the run's ``g0-enrichment.json`` carries note-bearing source content.
+
+    The MF2 discriminator for the VACUOUS-RECEIPT GUARD: "did note-bearing source
+    content exist?", NOT "is the receipt empty?". A run with ANY ``narration``-typed
+    typed-component (the only note-bearing type) had coverage content; an empty
+    receipt against it is a broken/dropped pass, not a legitimately-empty run.
+    Coverage annotations on the card are an even more direct signal (the pass DID
+    produce authored points). Defensive: absent/unreadable enrichment → ``False`` (no
+    spurious block — the legitimately-empty / coverage-off path).
+    """
+    path = run_dir / G0_ENRICHMENT_BASENAME
+    if not path.is_file():
+        return False
+    try:
+        payload = json.loads(path.read_text(encoding="utf-8"))
+    except (OSError, ValueError):
+        return False
+    if not isinstance(payload, dict):
+        return False
+    # Direct signal: the coverage pass authored points for this run.
+    annotations = payload.get("coverage_annotations")
+    if isinstance(annotations, list) and annotations:
+        return True
+    # Proxy signal: a note-bearing (narration-typed) component was extracted.
+    typed = payload.get("typed_components")
+    if isinstance(typed, list):
+        for comp in typed:
+            if not isinstance(comp, dict):
+                continue
+            comp_type = comp.get("source_type") or comp.get("type")
+            if comp_type in NOTE_BEARING_TYPES:
+                return True
+    return False
+
+
 def enforce_coverage_gate_before_audio(*, specialist_id: str, run_dir: Path) -> None:
     """Fail-loud coverage guard at the both-walks dispatch seam (AC8).
 
@@ -172,7 +212,19 @@ def enforce_coverage_gate_before_audio(*, specialist_id: str, run_dir: Path) -> 
             specialist_id,
         )
         return
+    # The must-cover gate runs FIRST: a must-cover hole is the more specific, actionable
+    # failure (its own tag + blocking rows), and such a receipt is often ALSO vacuous.
     assert_coverage_gate(receipt)  # raises CoverageAssuranceError on a must-cover hole
+    # MF1+MF2 — VACUOUS-RECEIPT GUARD: a receipt with rows but ZERO joined anchors
+    # (broken/empty bridge), OR an empty receipt when note-bearing content existed
+    # (the pass did not run / was cache-dropped), is NOT a clean pass — even when NO
+    # point is must_cover (the headline false-PASS the must-cover gate is blind to).
+    # Fail loud BEFORE audio spend; the dev provisional flag downgrades it to a no-op
+    # for intermediate shippability (shipped default = loud).
+    if not coverage_gate_provisional_ok():
+        assert_receipt_not_vacuous(
+            receipt, note_bearing_content_exists=note_bearing_content_exists(run_dir)
+        )
 
 
 __all__ = [
@@ -191,5 +243,6 @@ __all__ = [
     "enforce_coverage_gate_before_audio",
     "load_coverage_receipt_from_disk",
     "mark_coverage_receipt_expected",
+    "note_bearing_content_exists",
     "write_coverage_receipt",
 ]

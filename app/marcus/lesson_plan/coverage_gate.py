@@ -24,6 +24,7 @@ from app.marcus.lesson_plan.coverage_receipt import CoverageReceipt, CoverageRec
 from app.specialists.dispatch_errors import SpecialistDispatchError
 
 COVERAGE_GATE_TAG: str = "marcus.coverage.must-cover-uncovered"
+COVERAGE_VACUOUS_TAG: str = "marcus.coverage.vacuous-receipt"
 
 
 class CoverageAssuranceError(SpecialistDispatchError):  # noqa: N818
@@ -92,6 +93,62 @@ def coverage_warnings(receipt: CoverageReceipt) -> tuple[CoverageReceiptRow, ...
     )
 
 
+def evaluate_vacuous_receipt(
+    receipt: CoverageReceipt, *, note_bearing_content_exists: bool
+) -> str | None:
+    """The VACUOUS-RECEIPT GUARD predicate (MF1+MF2): a BLOCK reason or ``None``.
+
+    A run with real authored notes but a broken/empty bridge would otherwise PASS to
+    audio spend whenever no point happened to be ``must_cover`` (the regular gate is
+    silent). This deterministic guard catches the two false-PASS vectors WITHOUT
+    blocking the legitimately-empty case:
+
+      * **vacuous-with-content** — ``receipt.rows`` non-empty AND
+        ``joined_row_count() == 0`` (source points exist but NOTHING joined/covered);
+      * **empty-when-content-exists** — note-bearing (``narration``-typed) source
+        content existed for the run but the receipt has ZERO rows (the pass did not
+        run / produced nothing / a cache-replay dropped it).
+
+    PASS (returns ``None``) for: an empty receipt when NO note-bearing content
+    existed (Round-4 empty-coverage-never-blocks contract); and an
+    all-``deliberately_excluded`` receipt (SF2 — legitimate nothing-to-cover, folded
+    into ``is_vacuous``). The discriminator is "did note-bearing source content
+    exist?", NOT merely "is the receipt empty?".
+    """
+    if receipt.all_deliberately_excluded():
+        return None  # SF2: fully operator-signed exclusions — legitimate nothing-to-cover
+    if receipt.is_vacuous():
+        return (
+            f"coverage receipt is VACUOUS before audio spend: {len(receipt.rows)} authored "
+            "source point(s) but ZERO joined anchors — every span missed this run's own "
+            "deck+narration (a broken/empty bridge crediting NO real coverage). A vacuous "
+            "receipt is NOT a clean pass (R5-A5)."
+        )
+    if note_bearing_content_exists and not receipt.rows:
+        return (
+            "coverage receipt is EMPTY before audio spend but the run carries note-bearing "
+            "(narration-typed) source content — the coverage pass did not run / produced "
+            "nothing / was dropped on cache-replay. An empty receipt against existing "
+            "note-bearing content is NOT a clean pass (MF2)."
+        )
+    return None
+
+
+def assert_receipt_not_vacuous(
+    receipt: CoverageReceipt, *, note_bearing_content_exists: bool
+) -> None:
+    """Raise :class:`CoverageAssuranceError` on a vacuous / empty-with-content receipt.
+
+    The fail-loud half of the VACUOUS-RECEIPT GUARD (MF1+MF2). Returns ``None`` for a
+    legitimately-empty or all-excluded receipt (no false-BLOCK).
+    """
+    reason = evaluate_vacuous_receipt(
+        receipt, note_bearing_content_exists=note_bearing_content_exists
+    )
+    if reason is not None:
+        raise CoverageAssuranceError(reason, tag=COVERAGE_VACUOUS_TAG, blocking_rows=())
+
+
 def assert_coverage_gate(receipt: CoverageReceipt) -> None:
     """Raise :class:`CoverageAssuranceError` iff any must-cover point is uncovered (AC8).
 
@@ -113,8 +170,11 @@ def assert_coverage_gate(receipt: CoverageReceipt) -> None:
 
 __all__ = [
     "COVERAGE_GATE_TAG",
+    "COVERAGE_VACUOUS_TAG",
     "CoverageAssuranceError",
     "assert_coverage_gate",
+    "assert_receipt_not_vacuous",
     "coverage_warnings",
     "evaluate_coverage_gate",
+    "evaluate_vacuous_receipt",
 ]

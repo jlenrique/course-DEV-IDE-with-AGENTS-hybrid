@@ -62,13 +62,25 @@ CoverageStatus = Literal[
 ContainmentVerdict = Literal["verbatim_preserved", "altered", "risky"]
 VouchLevel = Literal["verified", "advisory_caveat", "not_assessed"]
 
+# R5-A4 — join provenance: WHY a row's anchor resolved (or did not). Distinguishes a
+# namespace-bridge miss (``unresolved_locator`` — the breadcrumb could not be bridged
+# onto the canonical source-ordinal namespace) from a genuine coverage gap (the anchor
+# resolved but the span was not carried). ``literal`` = the point's ``slide_key`` keyed
+# an anchor directly (no bridging); ``ordinal_bridged`` = it was canonicalized to a
+# source ordinal that the marshaller passed in. Both an ``ordinal_bridged`` and an
+# ``unresolved_locator`` row can still BLOCK (forced ``missing``); the receipt FACE now
+# tells the operator which, so a bridge miss is not muted as a real coverage hole.
+JoinProvenance = Literal["literal", "ordinal_bridged", "unresolved_locator"]
+
 _COVERAGE_STATUS_ADAPTER: TypeAdapter[CoverageStatus] = TypeAdapter(CoverageStatus)
 _CONTAINMENT_ADAPTER: TypeAdapter[ContainmentVerdict] = TypeAdapter(ContainmentVerdict)
 _VOUCH_ADAPTER: TypeAdapter[VouchLevel] = TypeAdapter(VouchLevel)
+_JOIN_PROVENANCE_ADAPTER: TypeAdapter[JoinProvenance] = TypeAdapter(JoinProvenance)
 
 COVERAGE_STATUSES: Final[frozenset[str]] = frozenset(_COVERAGE_STATUS_ADAPTER.json_schema()["enum"])
 CONTAINMENT_VERDICTS: Final[frozenset[str]] = frozenset(_CONTAINMENT_ADAPTER.json_schema()["enum"])
 VOUCH_LEVELS: Final[frozenset[str]] = frozenset(_VOUCH_ADAPTER.json_schema()["enum"])
+JOIN_PROVENANCES: Final[frozenset[str]] = frozenset(_JOIN_PROVENANCE_ADAPTER.json_schema()["enum"])
 
 # Risk flags whose semantic check is a disclosed bag-of-words false-negative (Vera):
 # they can NEVER carry a green `verified` vouch.
@@ -159,6 +171,14 @@ class CoverageReceiptRow(BaseModel):
     anchor_resolved: bool = Field(
         ..., description="A deterministic locator anchor resolved (AC7)."
     )
+    join_provenance: JoinProvenance = Field(
+        default="literal",
+        description=(
+            "WHY the anchor resolved/missed (R5-A4): literal | ordinal_bridged | "
+            "unresolved_locator. Faithful record — never a join authority; the "
+            "human_label keeps the literal breadcrumb."
+        ),
+    )
     verbatim_absent: bool = Field(
         default=False,
         description="A verbatim_required span failed deterministic presence at anchor.",
@@ -196,6 +216,11 @@ class CoverageReceiptRow(BaseModel):
     @classmethod
     def _rt_verdict(cls, v: object) -> object:
         return None if v is None else _CONTAINMENT_ADAPTER.validate_python(v)
+
+    @field_validator("join_provenance", mode="before")
+    @classmethod
+    def _rt_provenance(cls, v: object) -> object:
+        return _JOIN_PROVENANCE_ADAPTER.validate_python(v)
 
     @model_validator(mode="after")
     def _enforce_render_gate(self) -> CoverageReceiptRow:
@@ -276,6 +301,50 @@ class CoverageReceipt(BaseModel):
     def missing_must_cover(self) -> tuple[CoverageReceiptRow, ...]:
         return tuple(r for r in self.rows if r.must_cover and r.coverage_status == "missing")
 
+    # -- R5-A5 vacuous detection (Murat: all-missing-against-nonempty is NOT a pass) --
+    _JOINED_STATUSES: ClassVar[frozenset[str]] = frozenset(
+        {"both", "covered_on_slide", "covered_in_narration"}
+    )
+
+    def joined_row_count(self) -> int:
+        """Rows whose anchor resolved AND landed a real coverage carriage (Murat, R5-A5).
+
+        The non-vacuous numerator: a row counts ONLY when it both resolved a
+        deterministic anchor and reached a covered status — a ``missing`` /
+        ``unresolved_locator`` / ``deliberately_excluded`` row is NOT a join.
+        """
+        return sum(
+            1
+            for r in self.rows
+            if r.anchor_resolved and r.coverage_status in self._JOINED_STATUSES
+        )
+
+    def all_deliberately_excluded(self) -> bool:
+        """True iff the receipt has rows and EVERY row is operator-signed-excluded.
+
+        SF2: an all-``deliberately_excluded`` receipt joins ZERO anchors (an excluded
+        point is never a join) yet is a LEGITIMATE "nothing to cover" — it must NOT
+        read as ``vacuous`` (that would false-BLOCK a fully-signed-off run).
+        """
+        return bool(self.rows) and all(
+            r.coverage_status == "deliberately_excluded" for r in self.rows
+        )
+
+    def is_vacuous(self) -> bool:
+        """A receipt with rows but ZERO joined anchors is a DISTINCT non-green state.
+
+        R5-A5: ``n_rows > 0 AND joined_row_count() == 0`` against a non-empty
+        source-point set is ``vacuous`` / ``no-clean-join`` — NOT "0 holes". The
+        gate's close logic must treat this as not-a-clean-pass (every span missed its
+        own run's surfaces). An EMPTY receipt (no source points) is PASS-vacuous, not
+        this state, so it returns ``False``. SF2: an all-``deliberately_excluded``
+        receipt is NON-vacuous (legitimate nothing-to-cover), so it also returns
+        ``False``.
+        """
+        if not self.rows or self.all_deliberately_excluded():
+            return False
+        return self.joined_row_count() == 0
+
     # -- canonical / idempotent projection (Winston + Murat; Round-4 SHA stability) --
     # The RAI pins this receipt with CANONICAL_SHA256 (canonical-JSON of the on-disk
     # file). For the SHA to survive the resume/recover G3 crossing, the HASHED
@@ -337,6 +406,7 @@ def _derive_row(
     anchor: AnchorResolution | None,
     *,
     clinical_terms: frozenset[str] | None,
+    provenance: JoinProvenance = "literal",
 ) -> CoverageReceiptRow:
     must_cover = _derive_must_cover(point)
     common = dict(
@@ -356,6 +426,7 @@ def _derive_row(
         return CoverageReceiptRow(
             **common, coverage_status="deliberately_excluded", containment_verdict=None,
             vouch_level="not_assessed", anchor_resolved=anchor is not None,
+            join_provenance=provenance,
             planned_on_slide=bool(anchor and anchor.slide_present),
             planned_in_narration=bool(anchor and anchor.narration_present),
         )
@@ -365,6 +436,7 @@ def _derive_row(
         return CoverageReceiptRow(
             **common, coverage_status="missing", containment_verdict=None,
             vouch_level="not_assessed", anchor_resolved=anchor is not None,
+            join_provenance=provenance,
             planned_on_slide=False, planned_in_narration=False,
         )
 
@@ -413,6 +485,7 @@ def _derive_row(
         return CoverageReceiptRow(
             **common, coverage_status="missing", containment_verdict=None,
             vouch_level="not_assessed", anchor_resolved=True,
+            join_provenance=provenance,
             planned_on_slide=planned_on_slide, planned_in_narration=planned_in_narration,
             verbatim_absent=point.verbatim_required,
             narration_obligation_unmet=narration_obligation_unmet,
@@ -423,7 +496,7 @@ def _derive_row(
     )
     return CoverageReceiptRow(
         **common, coverage_status=status, containment_verdict=verdict, vouch_level=vouch,
-        anchor_resolved=True, planned_on_slide=planned_on_slide,
+        anchor_resolved=True, join_provenance=provenance, planned_on_slide=planned_on_slide,
         planned_in_narration=planned_in_narration, verbatim_absent=verbatim_absent,
         narration_obligation_unmet=narration_obligation_unmet,
         r7_report=r7_report,
@@ -475,6 +548,44 @@ def _derive_containment(
     return verdict, "advisory_caveat", report, False
 
 
+# Sentinel: a slide_key the bridge never saw (vs a bridge entry of explicit ``None``).
+_BRIDGE_ABSENT: Final[object] = object()
+
+
+def _resolve_anchor_for_point(
+    point: SourcePoint,
+    anchors: dict[str, AnchorResolution],
+    key_bridge: dict[str, str | None] | None,
+) -> tuple[AnchorResolution | None, JoinProvenance]:
+    """Resolve a point's anchor + the WHY (R5-A1/A4 bilateral source-ordinal bridge).
+
+    The annotation ``point.slide_key`` lives in the breadcrumb namespace ("Slide 1" /
+    "Slide 4.5" / section titles); the ``anchors`` are keyed in the canonical
+    source-ordinal namespace the marshaller normalized deck + narration onto. The
+    ``key_bridge`` (built marshaller-side with full collision/lineage knowledge) maps
+    each breadcrumb to its canonical ordinal — or to ``None`` when it cannot be safely
+    bridged (a section title, a collision-omitted ordinal, or an unresolvable
+    fractional). Provenance:
+
+      * ``literal`` — the breadcrumb keyed an anchor directly, or no bridge was supplied
+        (the offline/legacy path: ``anchors.get(point.slide_key)`` unchanged).
+      * ``ordinal_bridged`` — bridged to a canonical ordinal (the anchor may still be
+        ``None`` ⇒ a GENUINE coverage gap, the slide simply was not produced).
+      * ``unresolved_locator`` — the breadcrumb could not be bridged ⇒ forced ``missing``
+        but DISTINGUISHED from a real gap on the receipt face.
+    """
+    raw = point.slide_key
+    # A direct literal hit always wins (anchors keyed by the breadcrumb itself).
+    if raw in anchors:
+        return anchors[raw], "literal"
+    if key_bridge is None:
+        return None, "literal"
+    canon = key_bridge.get(raw, _BRIDGE_ABSENT)
+    if canon is _BRIDGE_ABSENT or canon is None:
+        return None, "unresolved_locator"
+    return anchors.get(str(canon)), "ordinal_bridged"
+
+
 def derive_coverage_receipt(
     coverage_annotations: tuple[CoverageAnnotation, ...] | list[CoverageAnnotation],
     anchors: dict[str, AnchorResolution],
@@ -482,6 +593,7 @@ def derive_coverage_receipt(
     segmentation: SegmentationGrain = "assertion_level",
     clinical_terms: frozenset[str] | None = None,
     diagnostics: tuple[str, ...] | list[str] | None = None,
+    key_bridge: dict[str, str | None] | None = None,
     generated_at: datetime | None = None,
 ) -> CoverageReceipt:
     """Project the authored source points + existing joins into the OBSERVED receipt.
@@ -493,12 +605,21 @@ def derive_coverage_receipt(
     (never appends), so re-derives over identical surfaces yield an identical
     canonical projection. ``diagnostics`` carry unresolved-join notes from the live
     marshaller onto the receipt face (never a crash).
+
+    ``key_bridge`` (R5-A1/A4): the marshaller-built ``{breadcrumb_slide_key:
+    canonical_ordinal | None}`` map that normalizes the annotation namespace onto the
+    canonical source-ordinal namespace the ``anchors`` are keyed in. ``None`` keeps the
+    legacy literal lookup (offline pure tests) byte-identical.
     """
     rows: list[CoverageReceiptRow] = []
     for ann in coverage_annotations:
         for point in ann.source_points:
-            anchor = anchors.get(point.slide_key)
-            rows.append(_derive_row(point, anchor, clinical_terms=clinical_terms))
+            anchor, provenance = _resolve_anchor_for_point(point, anchors, key_bridge)
+            rows.append(
+                _derive_row(
+                    point, anchor, clinical_terms=clinical_terms, provenance=provenance
+                )
+            )
     return CoverageReceipt(
         segmentation=segmentation,
         rows=tuple(rows),
@@ -561,11 +682,13 @@ __all__ = [
     "COVERAGE_STATUSES",
     "CONTAINMENT_VERDICTS",
     "VOUCH_LEVELS",
+    "JOIN_PROVENANCES",
     "AnchorResolution",
     "ContainmentVerdict",
     "CoverageReceipt",
     "CoverageReceiptRow",
     "CoverageStatus",
+    "JoinProvenance",
     "VouchLevel",
     "coverage_plan_view",
     "coverage_plan_view_from_dicts",

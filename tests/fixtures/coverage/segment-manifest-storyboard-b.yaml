@@ -1,0 +1,26 @@
+segments:
+  - segment_id: seg-01
+    id: seg-01
+    slide_id: slide-01
+    narration_text: "The main message is simple and consequential: healthcare is consolidating rapidly across the country."
+    cluster_role: head
+  - segment_id: seg-02
+    id: seg-02
+    slide_id: slide-02
+    narration_text: "Here is the pivot: national health spending rose 9 percent last year and that pressure is structural."
+    cluster_role: interstitial
+  - segment_id: seg-03
+    id: seg-03
+    slide_id: slide-03
+    narration_text: "On one side, independent practice was the norm; consolidation reduced clinician autonomy across systems."
+    cluster_role: interstitial
+  - segment_id: seg-04
+    id: seg-04
+    slide_id: slide-04
+    narration_text: "Administrative burden drives burnout and waste throughout the delivery system."
+    cluster_role: head
+  - segment_id: seg-05
+    id: seg-05
+    slide_id: slide-05
+    narration_text: "Closing thought on safe staffing as a path forward for the team."
+    cluster_role: interstitial

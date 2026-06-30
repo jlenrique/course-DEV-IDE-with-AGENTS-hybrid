@@ -2168,15 +2168,17 @@ def run_production_trial(
                         production_envelope=production_envelope,
                         runs_root=runs_root,
                     )
-                    # Coverage interlock (Step 4 SCAFFOLD): at the G3 storyboard-publish
+                    # Coverage interlock (Step 4, R5-A7): at the G3 storyboard-publish
                     # seam, DERIVE + WRITE + RENDER the coverage receipt (no-op off-G3 /
-                    # coverage-OFF). Walk-parity: same call on the continuation walk. The
-                    # helper is defensive (never raises); the orchestrator finalizes the
-                    # live marshalling shapes.
+                    # coverage-OFF). Walk-parity: the IDENTICAL call on the continuation
+                    # walk. ``run_state`` is a RunState MODEL → pass its json model_dump so
+                    # the marshaller reads plan_units/slide_briefs lineage (the never-true
+                    # ``isinstance(run_state, dict)`` guard marshalled NOTHING). Defensive
+                    # (never raises); deck+narration are read from the run-dir exports SSOT.
                     coverage_runner._derive_and_write_coverage_receipt(
                         _run_dir(effective_trial_id, runs_root),
                         gate_id,
-                        run_state if isinstance(run_state, dict) else None,
+                        run_state.model_dump(mode="json") if run_state is not None else None,
                     )
                 except SpecialistDispatchError as exc:
                     return _pause_at_error(
@@ -2902,13 +2904,15 @@ def _continue_production_walk(
                         production_envelope=production_envelope,
                         runs_root=runs_root,
                     )
-                    # Coverage interlock (Step 4 SCAFFOLD) — continuation/recover walk
-                    # leg (the LIVE path; the start walk stops at G1). Same shared helper
-                    # as the start walk (both-walks parity); no-op off-G3 / coverage-OFF.
+                    # Coverage interlock (Step 4, R5-A7) — continuation/recover walk leg
+                    # (the LIVE path; the start walk stops at G1). The IDENTICAL shared
+                    # helper as the start walk (both-walks parity); no-op off-G3 /
+                    # coverage-OFF. ``run_state`` is a RunState MODEL → pass its json
+                    # model_dump so the marshaller reads plan_units/slide_briefs lineage.
                     coverage_runner._derive_and_write_coverage_receipt(
                         _run_dir(trial_id, runs_root),
                         gate_id,
-                        run_state if isinstance(run_state, dict) else None,
+                        run_state.model_dump(mode="json") if run_state is not None else None,
                     )
                 except SpecialistDispatchError as exc:
                     return _pause_at_error(

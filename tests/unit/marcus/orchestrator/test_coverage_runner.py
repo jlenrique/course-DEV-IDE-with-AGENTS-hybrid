@@ -47,6 +47,43 @@ def _write_enrichment(run_dir: Path) -> None:
     (run_dir / "g0-enrichment.json").write_text(json.dumps(_ENRICHMENT), encoding="utf-8")
 
 
+def _write_real_exports(run_dir: Path, span: str) -> dict:
+    """Write the REAL run-dir export shapes (R5-A7) + return a model_dump-shaped run_state.
+
+    Deck rows carry ``display_title`` / ``visual_description`` (no ``slide_index``);
+    narration segments carry ``slide_id`` / ``narration_text``; plan_units ride
+    ``production_envelope.contributions[*].output.lesson_plan.plan_units``.
+    """
+    import yaml
+
+    exports = run_dir / "exports"
+    exports.mkdir(parents=True, exist_ok=True)
+    (exports / "gary-dispatch-payload.json").write_text(
+        json.dumps(
+            {
+                "gary_slide_output": [
+                    {"card_number": "1", "slide_id": "slide-01",
+                     "display_title": "Trends", "visual_description": span}
+                ]
+            }
+        ),
+        encoding="utf-8",
+    )
+    (exports / "segment-manifest-storyboard-b.yaml").write_text(
+        yaml.safe_dump({"segments": [{"slide_id": "slide-01", "narration_text": span}]}),
+        encoding="utf-8",
+    )
+    return {
+        "production_envelope": {
+            "contributions": [
+                {"output": {"lesson_plan": {"plan_units": [
+                    {"unit_id": "u01", "cluster_role": "head", "scope_decision": "in-scope"}
+                ]}}}
+            ]
+        }
+    }
+
+
 def test_noop_off_g3(tmp_path: Path, monkeypatch) -> None:
     monkeypatch.setenv(cgw.COVERAGE_GATE_ACTIVE_ENV, "1")
     assert cr._derive_and_write_coverage_receipt(tmp_path, "G2B", {}) is None
@@ -64,19 +101,16 @@ def test_g3_marks_expected_and_writes_receipt_and_html(tmp_path: Path, monkeypat
     monkeypatch.setenv(cgw.COVERAGE_GATE_ACTIVE_ENV, "1")
     _write_enrichment(tmp_path)
     span = "Dose is 5 mg daily."
-    run_state = {
-        "gary_slide_content": [{"slide_index": 1, "title": "Trends", "body": span}],
-        "joined_narration": [{"slide_key": "Slide 1", "narration_text": span}],
-        "slide_key_map": {"1": "Slide 1"},
-    }
+    run_state = _write_real_exports(tmp_path, span)
     path = cr._derive_and_write_coverage_receipt(tmp_path, "G3", run_state)
     assert path is not None and path.name == "coverage-receipt.json"
     assert cgw.coverage_receipt_expected(tmp_path)  # marker dropped
     receipt = load_coverage_receipt(json.loads(path.read_text(encoding="utf-8")))
     assert len(receipt.rows) == 1
     row = receipt.rows[0]
-    # the span reaches BOTH the deck slide and the narration -> covered
+    # the span reaches BOTH the deck slide and the narration (bridged "Slide 1" -> "1")
     assert row.coverage_status in {"both", "covered_in_narration", "covered_on_slide"}
+    assert row.join_provenance == "ordinal_bridged"
     # the standalone html report is rendered next to the receipt
     html = (tmp_path / cr.COVERAGE_REPORT_BASENAME).read_text(encoding="utf-8")
     assert "Source-note coverage" in html and "Slide 1" in html
