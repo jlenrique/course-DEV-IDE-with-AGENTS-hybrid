@@ -76,6 +76,7 @@ def make_chat_model(
     system_prompt_hash: str = "",
     request_timeout: float | None = None,
     max_retries: int | None = None,
+    max_completion_tokens: int | None = None,
 ) -> ChatModelHandle:
     """Resolve via the cascade + construct a `ChatOpenAI` with span metadata.
 
@@ -91,6 +92,16 @@ def make_chat_model(
     (gpt-5) can guarantee a single slow call cannot hang indefinitely. With both
     ``None`` the langchain/openai defaults apply (no hard per-request timeout; SDK
     default retries) — i.e. the legacy behaviour is unchanged.
+
+    ``max_completion_tokens`` (additive; default ``None`` preserves the prior
+    behaviour) binds a GENEROUS output-token ceiling at construction. langchain-openai
+    1.x exposes this as the ``max_tokens`` field (its serialization alias IS
+    ``max_completion_tokens``, the OpenAI reasoning-model param), so the value is bound
+    via ``max_tokens=`` and surfaces on ``chat.max_tokens``. Reasoning models (gpt-5)
+    spend output budget on hidden reasoning FIRST, then emit the visible response; a too-
+    small (or unset, SDK-default-capped) ceiling truncates the visible JSON mid-structure
+    — the 2026-06-29 live G0-extraction crash. Setting a generous ceiling prevents that.
+    With ``None`` no ceiling is bound (legacy behaviour).
     """
     result = selector.resolve(
         specialist_id,
@@ -110,6 +121,10 @@ def make_chat_model(
         extra["timeout"] = request_timeout
     if max_retries is not None:
         extra["max_retries"] = max_retries
+    if max_completion_tokens is not None:
+        # langchain-openai 1.x field name is ``max_tokens`` (alias ``max_completion_tokens``);
+        # binds the output ceiling and surfaces on ``chat.max_tokens``.
+        extra["max_tokens"] = max_completion_tokens
     chat = ChatOpenAI(
         model=result.model_id,
         temperature=temperature,

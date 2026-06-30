@@ -96,6 +96,15 @@ G0_ENRICHMENT_SPECIALIST_ID = "g0_enrichment"
 G0_ENRICHMENT_MODEL_MARKER = "deterministic-g0-enrichment-offline"
 G0_ENRICHMENT_LIVE_MODEL_ID = "marcus"
 
+# Live-extraction output budget + per-request hardening (root-cause fix for the
+# 2026-06-29 gpt-5 truncation crash at G0E: the keystone component-extraction
+# response was a well-formed JSON PREFIX truncated mid-structure because no
+# generous output ceiling was bound — reasoning models spend budget on hidden
+# reasoning first, then truncate the visible JSON). The DEFAULT (None-fallback)
+# chat-model factory binds these; an injected harness factory may bind its own.
+G0_EXTRACTION_MAX_COMPLETION_TOKENS = 32000
+G0_EXTRACTION_REQUEST_TIMEOUT_S = 180.0
+
 # Thin contract key (the frozen enrichment result on the contribution output).
 ENRICHMENT_RESULT_KEY = "g0_enrichment_result"
 
@@ -842,6 +851,63 @@ def _live_response_to_text(content: Any) -> str:
 
 _JSON_FENCE_RE = re.compile(r"```(?:json)?\s*(.*?)```", re.DOTALL)
 
+# Provenance keys stamped on a SALVAGED (truncated) payload so a PARTIAL extraction
+# is surfaced downstream + at the decision card, never silently treated as complete.
+_TRUNCATION_FLAG_KEY = "_g0_extraction_truncated"
+_RECOVERED_COUNT_KEY = "_g0_extraction_recovered_components"
+
+
+def _salvage_array(text: str, key: str) -> list[Any] | None:
+    """Recover the longest valid PREFIX of a top-level JSON array ``"key": [ ... ]``.
+
+    Parses as many COMPLETE element objects as possible from a possibly-TRUNCATED
+    array, discarding a trailing partial element. Returns the recovered list
+    (possibly empty) when the ``"key": [`` opener is found, else ``None``. Uses
+    ``JSONDecoder.raw_decode`` (``strict=False`` — same control-char tolerance) to
+    walk element-by-element so a truncated final object stops the walk cleanly.
+    """
+    opener = re.search(r'"' + re.escape(key) + r'"\s*:\s*\[', text)
+    if not opener:
+        return None
+    decoder = json.JSONDecoder(strict=False)
+    idx = opener.end()
+    n = len(text)
+    items: list[Any] = []
+    while idx < n:
+        while idx < n and text[idx] in " \t\r\n,":
+            idx += 1
+        if idx >= n or text[idx] == "]":
+            break
+        try:
+            obj, idx = decoder.raw_decode(text, idx)
+        except (ValueError, TypeError):
+            break  # truncated / partial final element — stop, keep the prefix
+        items.append(obj)
+    return items
+
+
+def _salvage_truncated_payload(text: str) -> dict[str, Any] | None:
+    """Best-effort salvage of a TRUNCATED extraction payload (gpt-5 hit its output
+    ceiling mid-JSON — the 2026-06-29 line-196 crash).
+
+    Recovers the complete-object prefix of the ``components`` array (and
+    ``learning_objectives`` if present). Returns a dict carrying the recovered
+    arrays + a provenance flag when >=1 complete component is recovered, else
+    ``None`` (the caller then raises — zero-recovery is total failure, never silent).
+    """
+    components = _salvage_array(text, "components")
+    if not components:
+        return None
+    salvaged: dict[str, Any] = {
+        "components": components,
+        _TRUNCATION_FLAG_KEY: True,
+        _RECOVERED_COUNT_KEY: len(components),
+    }
+    los = _salvage_array(text, "learning_objectives")
+    if los:
+        salvaged["learning_objectives"] = los
+    return salvaged
+
 
 def _parse_live_extraction_response(content: Any) -> Any:
     """Tolerant parse of the live COMPONENT-extraction response into a JSON payload.
@@ -883,18 +949,68 @@ def _parse_live_extraction_response(content: Any) -> Any:
                 return json.loads(text[start : end + 1], strict=False)
             except (ValueError, TypeError):
                 pass
-        snippet = text[:240]
+        # SALVAGE (defense): the response is a well-formed JSON PREFIX truncated
+        # mid-structure (gpt-5 spent its output budget on hidden reasoning then
+        # truncated the visible JSON — the 2026-06-29 line-196 crash). Recover the
+        # longest complete-object prefix of the components array. LOUD, never silent:
+        # warn + stamp a provenance flag so a PARTIAL extraction is surfaced downstream
+        # (operator confirms/corrects at gate #1), never treated as complete.
+        salvaged = _salvage_truncated_payload(text)
+        if salvaged is not None:
+            n_recovered = salvaged[_RECOVERED_COUNT_KEY]
+            logger.warning(
+                "g0-enrichment live: extraction response was TRUNCATED mid-JSON "
+                "(%s: %s) — SALVAGED %d complete component(s) from the valid prefix "
+                "(of an UNKNOWN total; the model hit its output-token ceiling). This is "
+                "a PARTIAL extraction surfaced for operator confirmation at gate #1, NOT "
+                "a complete one. Raise G0_EXTRACTION_MAX_COMPLETION_TOKENS (currently "
+                "%d) if truncation recurs.",
+                type(exc).__name__,
+                exc,
+                n_recovered,
+                G0_EXTRACTION_MAX_COMPLETION_TOKENS,
+            )
+            return salvaged
+        # TOTAL failure (zero complete objects recovered): fail LOUD. Surface BOTH the
+        # head AND the tail of the offending text — for a truncation the failure is at
+        # the END, so the tail is the most diagnostic part (no live re-run needed).
+        head = text[:400]
+        tail = text[-400:] if len(text) > 800 else ""
+        snippet = head + (f" […{len(text) - 800} chars elided…] {tail}" if tail else "")
         raise G0EnrichmentParseError(
             "live G0 pre-pass response is not parseable as JSON even with "
             "control-character-tolerant parsing (strict=False) + first-{...}-span "
-            f"extraction ({type(exc).__name__}: {exc}); offending text (first 240 "
-            f"chars): {snippet!r}"
+            "extraction + truncated-prefix salvage (zero complete components recovered) "
+            f"({type(exc).__name__}: {exc}); offending text (head+tail): {snippet!r}"
         ) from exc
 
 
 # ---------------------------------------------------------------------------
 # Live LLM pre-pass (exercised by AC-S2-8; reuses the pre_gate_marcus seam)
 # ---------------------------------------------------------------------------
+
+
+def _default_extraction_chat_factory() -> Callable[[str], Any]:
+    """Build the DEFAULT (None-fallback) chat-model factory for the live extraction.
+
+    Binds a HARD per-request timeout, ``max_retries=0``, AND a GENEROUS
+    ``max_completion_tokens`` output budget so the keystone gpt-5 extraction does not
+    truncate mid-JSON (the 2026-06-29 live crash root cause). Mirrors the proven
+    coverage-leg pattern (``coverage_annotation._live_coverage_pass``). ``make_chat_model``
+    binds NEITHER a timeout NOR an output ceiling by default, so the None-fallback MUST
+    set them explicitly or the default path can hang AND/OR truncate.
+    """
+    from app.models.adapter import make_chat_model
+
+    def factory(model_id: str) -> Any:
+        return make_chat_model(
+            model_id,
+            request_timeout=G0_EXTRACTION_REQUEST_TIMEOUT_S,
+            max_retries=0,
+            max_completion_tokens=G0_EXTRACTION_MAX_COMPLETION_TOKENS,
+        )
+
+    return factory
 
 
 def _live_pre_pass(
@@ -926,9 +1042,10 @@ def _live_pre_pass(
         },
     )
     if chat_model_factory is None:
-        from app.models.adapter import make_chat_model
-
-        chat_model_factory = make_chat_model
+        # Default path MUST bind the generous output budget + hard timeout (root-cause
+        # fix for the 2026-06-29 truncation crash); a passed-in harness factory is used
+        # as-is (it binds its own budget per the T8 contract).
+        chat_model_factory = _default_extraction_chat_factory()
     handle = chat_model_factory("marcus")
     response = handle.chat.invoke([{"role": "user", "content": prompt}])
     # Control-character-tolerant parse (strict=False) of the live response — a bare

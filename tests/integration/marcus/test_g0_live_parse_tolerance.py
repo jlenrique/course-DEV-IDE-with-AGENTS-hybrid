@@ -17,6 +17,7 @@ These specs pin the tolerant parse (mirrors the proven
 from __future__ import annotations
 
 import json
+import logging
 
 import pytest
 
@@ -87,3 +88,73 @@ def test_g0_enrichment_parse_error_is_value_error() -> None:
     # Subclasses ValueError so existing `except (ValueError, TypeError)` guards
     # can catch it, but it is a DISTINCT, named domain error (clear at the top).
     assert issubclass(gw.G0EnrichmentParseError, ValueError)
+
+
+# --------------------------------------------------------------------------- #
+# TRUNCATION salvage: a valid JSON PREFIX cut off mid-structure (gpt-5 hit its  #
+# output-token ceiling). Found LIVE 2026-06-29: JSONDecodeError "Expecting ','  #
+# delimiter: line 196 column 8". Recover the longest complete-object prefix.    #
+# --------------------------------------------------------------------------- #
+_TRUNCATED_COMPONENTS = (
+    '{"components": [\n'
+    '  {"parent_source_id": "s1", "type": "slide", "excerpt": "first"},\n'
+    '  {"parent_source_id": "s1", "type": "slide", "excerpt": "second"},\n'
+    '  {"parent_source_id": "s1", "type": "sl'
+)
+
+
+def test_truncated_components_array_raises_today_then_salvages() -> None:
+    # Sanity: the truncated prefix is NOT parseable by strict OR tolerant full parse
+    # (this is the live crash class — a well-formed prefix cut mid-final-object).
+    with pytest.raises(json.JSONDecodeError):
+        json.loads(_TRUNCATED_COMPONENTS)
+    # After Fix B the tolerant helper SALVAGES the complete-object prefix.
+    payload = gw._parse_live_extraction_response(_TRUNCATED_COMPONENTS)
+    assert isinstance(payload, dict)
+    assert len(payload["components"]) == 2  # 2 complete; trailing partial discarded
+    assert payload["components"][0]["excerpt"] == "first"
+    assert payload["components"][1]["excerpt"] == "second"
+
+
+def test_truncation_salvage_is_loud(caplog: pytest.LogCaptureFixture) -> None:
+    # LOUD never silent: a truncated salvage MUST log a WARNING that surfaces the
+    # truncation + the recovered count (a PARTIAL extraction is never treated as complete).
+    with caplog.at_level(logging.WARNING, logger="app.marcus.orchestrator.g0_enrichment_wiring"):
+        payload = gw._parse_live_extraction_response(_TRUNCATED_COMPONENTS)
+    warned = "\n".join(r.getMessage() for r in caplog.records if r.levelno >= logging.WARNING)
+    assert "TRUNCAT" in warned.upper()
+    assert "2" in warned  # recovered-count surfaced
+    # provenance flag stamped on the payload so downstream can see it was partial
+    assert payload.get("_g0_extraction_truncated") is True
+    assert payload.get("_g0_extraction_recovered_components") == 2
+
+
+def test_truncated_salvage_also_recovers_learning_objectives() -> None:
+    raw = (
+        '{"learning_objectives": [{"id": "lo1", "text": "alpha"}, {"id": "lo2", "text": "beta"}], '
+        '"components": [{"parent_source_id": "s1", "excerpt": "one"}, '
+        '{"parent_source_id": "s1", "excerpt": "tw'
+    )
+    payload = gw._parse_live_extraction_response(raw)
+    assert len(payload["components"]) == 1
+    assert len(payload["learning_objectives"]) == 2
+
+
+def test_salvage_recovering_zero_complete_objects_raises_clear_error() -> None:
+    # A truncation so severe the FIRST component object is itself incomplete →
+    # zero complete objects recovered → total failure, raise the clear domain error.
+    raw = '{"components": [\n  {"parent_source_id": "s1", "type": "sl'
+    with pytest.raises(gw.G0EnrichmentParseError):
+        gw._parse_live_extraction_response(raw)
+
+
+# --------------------------------------------------------------------------- #
+# Fix A: the None-fallback chat-model factory binds a GENEROUS output budget so #
+# the keystone extraction does not truncate (root cause of the live crash).     #
+# --------------------------------------------------------------------------- #
+def test_default_extraction_factory_binds_generous_budget_and_timeout() -> None:
+    handle = gw._default_extraction_chat_factory()("marcus")
+    assert handle.chat.max_tokens == gw.G0_EXTRACTION_MAX_COMPLETION_TOKENS
+    assert gw.G0_EXTRACTION_MAX_COMPLETION_TOKENS >= 32000
+    assert handle.chat.request_timeout == gw.G0_EXTRACTION_REQUEST_TIMEOUT_S
+    assert handle.chat.max_retries == 0

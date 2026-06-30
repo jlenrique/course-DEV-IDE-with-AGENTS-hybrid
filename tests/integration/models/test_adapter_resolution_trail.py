@@ -71,6 +71,19 @@ def test_caller_can_append_resolution_entry_to_run_state_trail() -> None:
     assert rs.model_resolution_trail[0].cache_prefix_hash == handle.entry.cache_prefix_hash
 
 
+def test_max_completion_tokens_binds_output_ceiling_on_chat_model() -> None:
+    # Additive output-budget param (root-cause fix for the 2026-06-29 gpt-5
+    # truncation crash): when set it binds the ChatOpenAI output ceiling.
+    handle = make_chat_model("marcus", max_completion_tokens=123)
+    assert handle.chat.max_tokens == 123
+
+
+def test_max_completion_tokens_default_none_leaves_ceiling_unset() -> None:
+    # Default None preserves legacy behaviour (no output ceiling bound).
+    handle = make_chat_model("marcus")
+    assert handle.chat.max_tokens is None
+
+
 @pytest.mark.live_api
 def test_langsmith_span_carries_resolution_metadata_when_key_set() -> None:
     """Live-tier assertion: LangSmith span has the resolution tag set on it.
