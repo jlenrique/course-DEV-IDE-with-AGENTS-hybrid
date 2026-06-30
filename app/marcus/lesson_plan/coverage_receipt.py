@@ -35,6 +35,7 @@ from typing import Any, ClassVar, Final, Literal
 from pydantic import BaseModel, ConfigDict, Field, TypeAdapter, field_validator, model_validator
 
 from app.marcus.lesson_plan.coverage_annotation import (
+    _DOSE_RE,  # READ-ONLY reuse of the deterministic dose-unit matcher (no neck edit).
     CoverageAnnotation,
     load_coverage_annotation,
 )
@@ -45,6 +46,7 @@ from app.marcus.lesson_plan.source_point import (
     SourcePoint,
 )
 from app.models.state._base import enforce_tz_aware
+from app.specialists._shared.figure_tokens import _figures
 from app.specialists._shared.voice_provider_text import audit_rhetorical_source_containment
 
 logger = logging.getLogger(__name__)
@@ -98,6 +100,32 @@ def _span_present(span: str, surface_text: str | None) -> bool:
     if not surface_text:
         return False
     return _normalize(span) in _normalize(surface_text)
+
+
+def _figure_token_set(text: str | None) -> set[str]:
+    """Figure tokens on a surface: the FROZEN figure_tokens neck ∪ dose-unit tokens.
+
+    The shared neck (``figure_tokens._figures``) tokenizes ``$``/``%``/``×`` figures;
+    ``_DOSE_RE`` adds mass/volume dose units (``mg``/``mcg``/``g``/``ml``/…) the neck
+    does not tokenize. BOTH are READ-ONLY reuse — no edit to the neck regex (a neck
+    change is a Leg-4 governance lockstep, not an inline fix). ``%`` matches are left
+    to the neck (more spacing-robust), so a dose token is only minted for the
+    non-percent units the neck misses.
+    """
+    if not text:
+        return set()
+    figs = set(_figures(text))
+    for match in _DOSE_RE.finditer(text):
+        token = match.group(0)
+        if token.rstrip().endswith("%"):
+            continue  # already tokenized by the figure neck (`percent:` token)
+        figs.add("dose:" + _WS_RE.sub("", token).lower())
+    return figs
+
+
+def _source_figures(point: SourcePoint) -> set[str]:
+    """The load-bearing figure tokens of a point's VERBATIM span (identity-critical)."""
+    return _figure_token_set(point.verbatim_text)
 
 
 # ---------------------------------------------------------------------------
@@ -452,6 +480,29 @@ def _derive_row(
     planned_on_slide = anchor.slide_present
     planned_in_narration = narration_usable
 
+    # NUMERAL-FACET refinement (party-ratified): a point whose verbatim span yields ≥1
+    # figure token carries must-cover iff every SOURCE figure token reaches the point's
+    # RESOLVED ANCHOR surface (token carriage), NOT iff the verbatim sentence is quoted
+    # (the pipeline GENERATES paraphrased narration, so a full-span check over-blocks
+    # every real run). negation/comparator ("advisory risk") DOMINATES the figure facet:
+    # those are NEVER greened off a token subset (flipped-negation false-green) — they
+    # keep the full-span path below. clinical_claim (lexicon deferred) also falls
+    # through to the existing path (Leg-4 wires the clinical lexicon).
+    source_figs = _source_figures(point)
+    advisory_risk = bool(set(point.risk_flags) & _ADVISORY_RISK)
+    if source_figs and not advisory_risk:
+        return _derive_figure_facet_row(
+            point,
+            anchor,
+            common=common,
+            provenance=provenance,
+            narration_usable=narration_usable,
+            source_figs=source_figs,
+            planned_on_slide=planned_on_slide,
+            planned_in_narration=planned_in_narration,
+            clinical_terms=clinical_terms,
+        )
+
     on_slide = anchor.slide_present and _span_present(point.verbatim_text, anchor.slide_text)
     in_narration = narration_usable and _span_present(point.verbatim_text, anchor.narration_text)
 
@@ -500,6 +551,127 @@ def _derive_row(
         planned_in_narration=planned_in_narration, verbatim_absent=verbatim_absent,
         narration_obligation_unmet=narration_obligation_unmet,
         r7_report=r7_report,
+    )
+
+
+def _derive_figure_facet_row(
+    point: SourcePoint,
+    anchor: AnchorResolution,
+    *,
+    common: dict[str, Any],
+    provenance: JoinProvenance,
+    narration_usable: bool,
+    source_figs: set[str],
+    planned_on_slide: bool,
+    planned_in_narration: bool,
+    clinical_terms: frozenset[str] | None,
+) -> CoverageReceiptRow:
+    """Carriage for a figure-bearing point: SOURCE figure tokens ⊆ ANCHOR-surface tokens.
+
+    The must-cover obligation is "every load-bearing figure token reaches THE POINT'S
+    resolved anchor surface" (anchor-scoped — never a deck-wide search).
+
+      * NARRATION is text-verifiable: ``source_figs ⊆ figures(narration_text)`` →
+        carried; an absent source figure → ``missing`` → BLOCK (the real
+        ``$5.3 trillion → one-fifth`` drop). A carried-but-R7-Axis-B-dirty surface
+        (an UNSOURCED figure introduced) → ``advisory_caveat`` (disclosed, never a
+        silent green); a clean carry → ``verified``.
+      * The DECK is "surface present, not text-verifiable" (the deck row carries only
+        framing ``visual_description``; the real figure lives in the Gamma PNG). A
+        rendered slide is therefore a present surface but is stamped ``not_assessed`` —
+        NEVER a false ``missing`` purely from deck text absence, NEVER a silent green.
+        Deck OCR is a future upgrade; the gate does NOT block on it. Narration
+        figure-token carriage is what satisfies must-cover.
+
+    The token sets (``source_figs`` / ``surface_figs`` / ``dropped_figs``) are stamped
+    into ``r7_report`` (the canonical/hashed projection) so a dropped figure is legible
+    on the receipt face and Leg-4 inherits the mismatch list.
+    """
+    narration_figs = _figure_token_set(anchor.narration_text) if narration_usable else set()
+    slide_figs = _figure_token_set(anchor.slide_text) if anchor.slide_present else set()
+
+    in_narration = narration_usable and source_figs <= narration_figs
+    slide_text_verified = anchor.slide_present and source_figs <= slide_figs
+    # A rendered deck slide is a PRESENT surface (the figure rides in the PNG); it is
+    # text-verifiable only when slide_text literally carries the figure token.
+    on_slide = anchor.slide_present
+
+    narration_obligation_unmet = (
+        "detail_in_narration" in point.coverage_intents and not in_narration
+    )
+
+    # Pick the containment surface + whether it is figure-text-verifiable.
+    if in_narration:
+        # narration is the strongest (text-verified) surface — prefer it for the verdict.
+        status: CoverageStatus = "both" if on_slide else "covered_in_narration"
+        surface_text = anchor.narration_text
+        surface_figs = narration_figs
+        surface_verifiable = True
+    elif on_slide:
+        status = "covered_on_slide"
+        surface_text = anchor.slide_text
+        surface_figs = slide_figs
+        surface_verifiable = slide_text_verified
+    else:
+        # No surface carried the figure: a real coverage hole at this anchor.
+        status = "missing"
+        surface_text = anchor.narration_text if narration_usable else None
+        surface_figs = narration_figs
+        surface_verifiable = False
+
+    report = audit_rhetorical_source_containment(
+        surface_text or "", point.verbatim_text, clinical_terms=clinical_terms
+    )
+    report = {
+        **report,
+        "figure_facet": True,
+        "source_figs": sorted(source_figs),
+        "surface_figs": sorted(surface_figs),
+        "dropped_figs": sorted(source_figs - surface_figs),
+        "figure_surface_verifiable": surface_verifiable,
+    }
+
+    if status == "missing":
+        return CoverageReceiptRow(
+            **common,
+            coverage_status="missing",
+            containment_verdict=None,
+            vouch_level="not_assessed",
+            anchor_resolved=True,
+            join_provenance=provenance,
+            planned_on_slide=planned_on_slide,
+            planned_in_narration=planned_in_narration,
+            verbatim_absent=point.verbatim_required,
+            narration_obligation_unmet=narration_obligation_unmet,
+            r7_report=report,
+        )
+
+    if not surface_verifiable:
+        # Deck rendered but the figure is not text-verifiable (PNG): disclosed, not green.
+        verdict: ContainmentVerdict | None = None
+        vouch: VouchLevel = "not_assessed"
+    elif report["status"] == "FAIL":
+        # Source figures ARE carried, but an unsourced figure/term was introduced
+        # (reworded/altered context) → DISCLOSED advisory, never a green vouch.
+        verdict = "verbatim_preserved"
+        vouch = "advisory_caveat"
+    else:
+        # Every source figure present + R7 Axis-B clean → deterministic figure carriage.
+        verdict = "verbatim_preserved"
+        vouch = "verified" if point.verbatim_required else "advisory_caveat"
+
+    return CoverageReceiptRow(
+        **common,
+        coverage_status=status,
+        containment_verdict=verdict,
+        vouch_level=vouch,
+        anchor_resolved=True,
+        join_provenance=provenance,
+        planned_on_slide=planned_on_slide,
+        planned_in_narration=planned_in_narration,
+        verbatim_absent=False,
+        narration_obligation_unmet=narration_obligation_unmet,
+        r7_report=report,
     )
 
 
