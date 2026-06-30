@@ -48,15 +48,15 @@ The substrate has deep **CONTAINMENT** (deliverable→source: Vera-R7, figure-gr
 
 ## Tasks / Subtasks
 
-- [ ] **T1 Readiness + block-mode check** (AC: 9) — read the design record + party record Round 3 + this story. Confirm the seam touches NO `block_mode_trigger_paths` (additive `G0EnrichmentResult` field + a new `lesson_plan` pass + an RAI asset + a `section_07c` render; no node/edge, no digest bump). If any of that changes, read `docs/dev-guide/pipeline-manifest-regime.md` first. DEEP-READ each reused module before coding (non-negotiable): `g0_enrichment.py` (repin_additive + ReconcileView validator), `pedagogy_annotation.py` (the P3 pass + its gpt-5 binding to mirror), `source_type.py` (TypedComponent parent), `run_asset_index.py` + `udac_wiring.py` (RAI + both-walks fail-loud seam), `enrichment_consumption.py` (the joins + the :335 silent drop), `storyboard_html_emitter.py` (render surface), `voice_provider_text.py:267-350` (R7 to bind as reporting caller).
+- [x] **T1 Readiness + block-mode check** (AC: 9) — read the design record + party record Round 3 + this story. Confirm the seam touches NO `block_mode_trigger_paths` (additive `G0EnrichmentResult` field + a new `lesson_plan` pass + an RAI asset + a `section_07c` render; no node/edge, no digest bump). If any of that changes, read `docs/dev-guide/pipeline-manifest-regime.md` first. DEEP-READ each reused module before coding (non-negotiable): `g0_enrichment.py` (repin_additive + ReconcileView validator), `pedagogy_annotation.py` (the P3 pass + its gpt-5 binding to mirror), `source_type.py` (TypedComponent parent), `run_asset_index.py` + `udac_wiring.py` (RAI + both-walks fail-loud seam), `enrichment_consumption.py` (the joins + the :335 silent drop), `storyboard_html_emitter.py` (render surface), `voice_provider_text.py:267-350` (R7 to bind as reporting caller).
 - [x] **T0/T2 INGEST-SEGMENTATION SPIKE — DONE 2026-06-30, verdict GO** (AC: OP1, OP2, OP2-DET, 2). Live gpt-5 on the real `**Narration (Speaker Notes):**` deck (`course-content/courses/tejal-apc-c1-m1-p2-trends/slides/*.md`): **bounded + faithful** — slide-1 11/11, slide-2 10/10, slide-3 13/11 assertions (max 13 ≤ 15 ceiling), latency 11–53s under a 60s per-request timeout, assertions genuinely atomic + source-faithful. **Not seed-reproducible cross-run** (the operational risk the spike caught) → resolved by the **operator ruling AC-OP2-DET (freeze-once-per-run + span-anchored identity)**, NOT escalation-to-abandon. Evidence: `_bmad-output/implementation-artifacts/evidence/coverage-t0-spike-controlled.json`; harness `scratchpad/coverage_spike_controlled.py`. Threshold to keep in code: ≤15 assertions/block (else investigate over-segmentation), 60s per-request timeout, max_retries=0.
-- [ ] **T3 RED — `source_point` + coverage_intent model** (AC: 1, 2, 3, 5) — child-id (`component_id#ordinal`, never a join key), assertion unit, intent-as-set (derived-first + ambiguity-only LLM + operator-signed exclusions), risk taxonomy + deterministic verbatim floor, `segmentation` stamp. Closed enums + import-time exhaustiveness guards (mirror `PedagogicalRole`/`SourceTypeLiteral` idiom).
-- [ ] **T4 Segmentation + intent pass (gpt-5)** (AC: OP2, 2, 3) — a P3-style `coverage_annotation.py` sibling pass mirroring `build_pedagogy_annotations` (offline + live legs; reuse its gpt-5 binding; determinism via seed/pinned-model/prompt-hash, NOT temp-0). Additive tuple onto `G0EnrichmentResult` via `repin_additive`.
-- [ ] **T5 RED — derived receipt + two axes + vouch_level** (AC: 4, 6, 7, 9) — `coverage-receipt.json` as a `RunAssetEntry`; coverage axis DERIVED by projecting existing joins (component→slide locator, LO→section, narration role-seed; the :335 silent drop → logged `missing`); containment axis via R7 at report-gen with the `vouch_level` render-time gate. Deterministic anchor FIRST (no anchor → `missing`).
-- [ ] **T6 RED — fail-loud gate** (AC: 8) — set-difference `must_cover ∧ (missing ∨ verbatim_absent) ∧ no_planned_surface` at the both-walks UDAC seam → `_pause_at_error` before audio spend; fuzzy = WARN/ledger-only. Test BOTH walks.
-- [ ] **T7 RED — the production report render** (AC: 10) — plan on G0E card; receipt → Storyboard-B HTML per-slide; ledger persisted; `segmentation` grain shown.
+- [x] **T3 RED — `source_point` + coverage_intent model** (AC: 1, 2, 3, 5) — child-id (`component_id#ordinal`, never a join key), assertion unit, intent-as-set (derived-first + ambiguity-only LLM + operator-signed exclusions), risk taxonomy + deterministic verbatim floor, `segmentation` stamp. Closed enums + import-time exhaustiveness guards (mirror `PedagogicalRole`/`SourceTypeLiteral` idiom).
+- [x] **T4 Segmentation + intent pass (gpt-5)** (AC: OP2, 2, 3) — a P3-style `coverage_annotation.py` sibling pass mirroring `build_pedagogy_annotations` (offline + live legs; reuse its gpt-5 binding; determinism via seed/pinned-model/prompt-hash, NOT temp-0). Additive tuple onto `G0EnrichmentResult` via `repin_additive`.
+- [x] **T5 RED — derived receipt + two axes + vouch_level** (AC: 4, 6, 7, 9) — `coverage-receipt.json` as a `RunAssetEntry`; coverage axis DERIVED by projecting existing joins (component→slide locator, LO→section, narration role-seed; the :335 silent drop → logged `missing`); containment axis via R7 at report-gen with the `vouch_level` render-time gate. Deterministic anchor FIRST (no anchor → `missing`).
+- [x] **T6 RED — fail-loud gate** (AC: 8) — set-difference `must_cover ∧ (missing ∨ verbatim_absent) ∧ no_planned_surface` at the both-walks UDAC seam → `_pause_at_error` before audio spend; fuzzy = WARN/ledger-only. Test BOTH walks.
+- [x] **T7 RED — the production report render** (AC: 10) — plan on G0E card; receipt → Storyboard-B HTML per-slide; ledger persisted; `segmentation` grain shown.
 - [ ] **T8 LIVE slice + negative case** (AC: 11) — real gpt-5 run on a real notes deck; assert full accounting + ≥1 covered_on_slide + ≥1 covered_in_narration with asserted anchors; **ablate a must-cover point → confirm block fires before audio spend** (captured evidence). FOREGROUND + hard timeout + flushed; live-key recipe.
-- [ ] **T9 Regression + hygiene** (AC: 11) — flag-OFF byte-identical (additive); full marcus/lesson_plan + orchestrator + section_07c suites green; ruff + lint-imports (only pre-existing C3).
+- [x] **T9 Regression + hygiene** (AC: 11) — flag-OFF byte-identical (additive); full marcus/lesson_plan + orchestrator + section_07c suites green; ruff + lint-imports (only pre-existing C3).
 
 ## Dev Notes
 
@@ -94,6 +94,52 @@ LLM-backed judgment over scholarly/clinical content + a NEW fail-loud gate + fid
 
 ## Dev Agent Record
 ### Agent Model Used
+Amelia (BMAD dev agent) on claude-opus-4-8[1m]. OFFLINE RED-first foundation only; ZERO live gpt-5/network calls (T8 live slice is the orchestrator's job).
+
 ### Debug Log References
+- T1 deep-read of every reused module (findings below) — non-negotiable, done before any code.
+- Offline segmenter fix: naive sentence regex split "$5.2" and "U.S." mid-span (losing the `numeric` floor on a fragment) → replaced with a boundary regex that splits only at `terminator + whitespace + capital/digit/quote`, protecting decimals + dotted abbreviations. RED captured at `test_offline_pass_segments_only_narration` / `test_offline_points_carry_derived_risk_and_verbatim_floor`, green after fix.
+- Keystone RED→green: `tests/unit/marcus/orchestrator/test_coverage_gate_wiring.py` failed RED with `ImportError: cannot import name 'coverage_gate_wiring'`, then green (7 passed) after implementing the wiring module + the both-walks seam call.
+- Regression-firewall judgment call: adding `coverage_annotations` to `G0EnrichmentResult` (AC9) would, like P2/P3, change the card payload even when empty. To honor the explicit AC11 byte-identical firewall, `to_card_payload` PRUNES the key when the tuple is empty (so a flag-OFF run's `g0-enrichment.json` + RAI digest are unchanged from baseline) and emits it normally when the pass ran. Documented as a deliberate refinement over P3's always-emit.
+
+### T1 findings (file:line — current-state / what-changed / what-preserved)
+- `source_type.py:217-313` `TypedComponent` (component_id / parent_source_id / source_type / locator / excerpt / flagged_*). CHANGE: none (read-only parent). PRESERVE: `source_point_id = component_id#ordinal` is a CHILD; no new id namespace, no new `source_type` value.
+- `g0_enrichment.py:368-469` `G0EnrichmentResult` + `repin_additive` pattern + `ReconcileView:188-255`. CHANGE: added additive `coverage_annotations: tuple[CoverageAnnotation,...]=()` field (mirror P2/P3) + prune-when-empty in `to_card_payload`. PRESERVE: the A4 sidecar excludes, the provisional-only + A4-ts validators, byte-identical card when no coverage pass ran.
+- `pedagogy_annotation.py:865/72/749/801` `build_pedagogy_annotations` offline/live split + `PEDAGOGY_LIVE_MODEL="marcus"` gpt-5 binding + import-time exhaustiveness guard + per-row resilient parse. CHANGE: none (mirrored, not edited). PRESERVE: the offline-default/live-gated structure; the parse/build helpers are offline-tested.
+- `run_asset_index.py` `RunAssetEntry`/`RunAssetIndex`/`repin_additive`/`resolve_asset`/`GATE_ASSET_MAP`/`CONSUMER_REGISTRY`. CHANGE: none. PRESERVE: digest-from-disk discipline; the receipt is a derived `RunAssetEntry` payload (no parallel store).
+- `udac_wiring.py` `record_gate_ratification` (both walks) + `resolve_consumed_assets`→fail-loud. CHANGE: none (the coverage gate is a SIBLING reader at the same shared seam). PRESERVE: flag-gated byte-identical-when-off pattern (copied for `MARCUS_COVERAGE_GATE_ACTIVE`).
+- `production_runner.py:164` `_udac_ratify_gate` + `:1830` shared dispatch seam. CHANGE: added a flag-gated `coverage_gate_wiring.enforce_coverage_gate_before_audio(...)` call right after the UDAC guard at the single shared dispatch site (walk-invariant ⇒ both walks). PRESERVE: nothing evaluates when the flag is OFF (`if coverage_gate_active():` first).
+- `enrichment_consumption.py:227/335` `slide_ordinal_from_locator` + the silent 0/>1 role-seed drop. CHANGE: none in that file; the `:335` drop is carried forward as the explicit `AnchorResolution.narration_ambiguous` signal that the receipt logs as `missing`.
+- `storyboard_html_emitter.py` per-slide render. CHANGE: added additive `render_coverage_section(receipt_dict)` (empty/None ⇒ `""`, existing render byte-identical). PRESERVE: deterministic LF output; no `app.marcus` import (takes a plain dict — lane isolation).
+- `voice_provider_text.py:267-350` R7 `audit_rhetorical_source_containment` (PROVIDED-BUT-UNWIRED). CHANGE: wired ONLY as the REPORTING caller in `coverage_receipt._derive_containment`. PRESERVE: the documented bag-of-words negation/comparator FN is DISCLOSED as `advisory_caveat`, never a green vouch.
+- Block-mode confirmed: NONE of these paths are in `pipeline-manifest.yaml::block_mode_trigger_paths`; NO node/edge added; NO `digest_schema_version` bump. Stays out of the block-mode regime (AC9).
+
 ### Completion Notes List
+- T1, T3, T4, T5, T6, T7, T9 landed GREEN + offline. T8 (live gpt-5 slice + ablated negative case) intentionally LEFT for the orchestrator (no live calls made here).
+- Test results: 71 new offline tests pass across 5 suites (`test_source_point.py` 24, `test_coverage_annotation.py` 17, `test_coverage_receipt_and_gate.py` 18, `test_coverage_gate_wiring.py` 7, `test_coverage_report_and_regression.py` 6). Pre-existing `test_pedagogy_annotation.py` (46) + the g0/storyboard/udac slice (120) stay green — the additive G0EnrichmentResult field + the prune firewall break nothing.
+- Keystone RED→green captured for the fail-loud gate wiring (ImportError → 7 passed) and for the offline segmenter (risk-floor RED → green).
+- ruff: clean on all changed files. lint-imports: 14 kept / 1 broken — the only broken contract is the PRE-EXISTING C3 `app.specialists.workbook_producer.graph -> app.gates.resume_api` (unrelated to coverage; the "only pre-existing C3 permitted" allowance). Verified pre-existing via `git stash`.
+- The 4 failures seen only in a wide `-k` batch (`test_fit_report_*`, `test_coverage_manifest_json_schema_parity`, `test_g0_poll_surface_dsl_registration`) were confirmed PRE-EXISTING on the clean stashed baseline (3 are FileNotFoundError on a missing top-level `marcus/lesson_plan/schema/*.json`; 1 is an xdist import-ordering-sensitive self-registration audit that also fails in the baseline batch). None touch coverage code.
+- Spec ambiguity / judgment calls: (a) the byte-identical firewall vs the "rides G0EnrichmentResult like P2/P3" instruction — resolved by the prune-when-empty `to_card_payload` (above). (b) The coverage pass attach into `build_enrichment_result` is intentionally NOT wired yet — the FIELD exists (AC9) so the layer CAN ride; the orchestrator flips a pass flag at T8 to populate it, keeping flag-OFF byte-identical. (c) `must_cover` derived deterministically as `verbatim_required ∨ detail_in_narration-intent` (and never for an operator-signed exclusion) — the AC8 gate input.
+- ZERO live/network calls confirmed: every live leg is `# pragma: no cover - live leg`; only offline + canned-fixture paths exercised. Working tree left DIRTY + GREEN for orchestrator review + the T8 live slice. Status NOT set to review; NOT committed.
+
 ### File List
+New (source):
+- `app/marcus/lesson_plan/source_point.py` (T3 models + child-id helpers + derived intents + verbatim floor)
+- `app/marcus/lesson_plan/coverage_annotation.py` (T4 segmentation + intent pass; offline + gpt-5 live leg + canned-fixture parse/build)
+- `app/marcus/lesson_plan/coverage_receipt.py` (T5 derived two-axis receipt + vouch render-gate + R7 reporting caller + plan view)
+- `app/marcus/lesson_plan/coverage_gate.py` (T6 pure fail-loud gate + `CoverageAssuranceError`)
+- `app/marcus/orchestrator/coverage_gate_wiring.py` (T6 env flag + disk-primary receipt I/O + both-walks seam-callable)
+
+Modified (source):
+- `app/marcus/lesson_plan/g0_enrichment.py` (AC9 additive `coverage_annotations` field + byte-identical-firewall prune in `to_card_payload`)
+- `app/marcus/orchestrator/production_runner.py` (T6 flag-gated coverage-gate call at the shared dispatch seam)
+- `app/gates/section_07c/storyboard_html_emitter.py` (T7 additive `render_coverage_section`)
+
+New (tests + fixture):
+- `tests/unit/marcus/test_source_point.py`
+- `tests/unit/marcus/test_coverage_annotation.py`
+- `tests/unit/marcus/test_coverage_receipt_and_gate.py`
+- `tests/unit/marcus/orchestrator/test_coverage_gate_wiring.py`
+- `tests/unit/marcus/test_coverage_report_and_regression.py`
+- `tests/fixtures/coverage/live_segmentation_response.json` (canned gpt-5 response for the offline live-parse test)

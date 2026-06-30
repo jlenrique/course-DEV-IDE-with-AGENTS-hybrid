@@ -35,6 +35,7 @@ from pydantic import (
 )
 from pydantic.json_schema import SkipJsonSchema
 
+from app.marcus.lesson_plan.coverage_annotation import CoverageAnnotation
 from app.marcus.lesson_plan.learning_objective import LearningObjective
 from app.marcus.lesson_plan.pedagogy_annotation import PedagogyAnnotation
 from app.marcus.lesson_plan.source_type import TypedComponent
@@ -422,6 +423,15 @@ class G0EnrichmentResult(BaseModel):
             "rationale. Additive; never gating."
         ),
     )
+    coverage_annotations: tuple[CoverageAnnotation, ...] = Field(
+        default=(),
+        description=(
+            "AUTHORED coverage source-point sets (concierge-coverage-assurance-interlock): "
+            "per note-bearing component, the re-segmented teaching assertions + derived "
+            "intents. Additive; rides via repin_additive like P2 citations / P3 pedagogy. "
+            "Omitted from the card payload entirely when empty (byte-identical firewall)."
+        ),
+    )
 
     # --- Internal audit sidecar (A4) — excluded from default dump + JSON Schema ---
     independent_parse: SkipJsonSchema[IndependentParse] = Field(
@@ -465,8 +475,18 @@ class G0EnrichmentResult(BaseModel):
         return self
 
     def to_card_payload(self) -> dict[str, Any]:
-        """Project the public (audit-excluded) shape for the decision card."""
-        return self.model_dump(mode="json")
+        """Project the public (audit-excluded) shape for the decision card.
+
+        Byte-identical firewall (concierge-coverage-assurance-interlock AC11): the
+        ``coverage_annotations`` layer is omitted ENTIRELY when no coverage pass ran,
+        so a flag-OFF run's ``g0-enrichment.json`` (and therefore its RAI digest)
+        is unchanged from the pre-interlock baseline. When the pass DID run the layer
+        rides the card normally (mirror P2/P3, additive).
+        """
+        payload = self.model_dump(mode="json")
+        if not self.coverage_annotations:
+            payload.pop("coverage_annotations", None)
+        return payload
 
 
 def assert_run_dissent_invariant(result: G0EnrichmentResult) -> None:
@@ -509,6 +529,7 @@ __all__ = [
     "CitationResolution",
     "CitationResolutionReason",
     "CitationResolutionStatus",
+    "CoverageAnnotation",
     "Dissent",
     "DissentDisposition",
     "EnumerationProvenance",

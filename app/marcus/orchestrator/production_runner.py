@@ -32,6 +32,7 @@ from app.marcus.lesson_plan.composition import compose_manifest
 from app.marcus.orchestrator import (
     chooser_publisher,
     conversation_persistence,
+    coverage_gate_wiring,
     enrichment_consumption,
     g0_enrichment_wiring,
     gate_runner,
@@ -1829,6 +1830,19 @@ def _dispatch_specialist_at_node(
     # byte-identical; also a no-op when no RAI exists yet (provisional window).
     if udac_wiring.udac_active():
         udac_wiring.resolve_consumed_assets(
+            specialist_id=specialist_id,
+            run_dir=_run_dir(trial_id, runs_root),
+        )
+    # Coverage fail-loud gate (AC8) — walk-invariant (this shared dispatch site is
+    # taken by BOTH walkers). Before the audio-spending specialist dispatches, a
+    # must-cover source point uncovered with no planned surface raises
+    # CoverageAssuranceError (a SpecialistDispatchError) — caught by BOTH walkers'
+    # `except SpecialistDispatchError` and routed through `_pause_at_error` BEFORE
+    # any ElevenLabs/Descript spend. Gated on coverage_gate_active() so NOTHING (not
+    # even _run_dir) evaluates when OFF (byte-identical firewall); no-op when no
+    # receipt exists yet (provisional window).
+    if coverage_gate_wiring.coverage_gate_active():
+        coverage_gate_wiring.enforce_coverage_gate_before_audio(
             specialist_id=specialist_id,
             run_dir=_run_dir(trial_id, runs_root),
         )

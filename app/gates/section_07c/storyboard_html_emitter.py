@@ -50,6 +50,53 @@ def render_storyboard_html(
     return "\n".join(lines)
 
 
+def render_coverage_section(receipt: dict[str, Any]) -> str:
+    """Render the operator-facing COVERAGE RECEIPT section (per-slide, pre-spend).
+
+    Additive (concierge-coverage-assurance-interlock AC10): a deterministic HTML
+    block appended to the Storyboard-B review surface. Columns: source-point
+    (slide_key + human label) · intent-set · coverage status · containment verdict +
+    ``vouch_level``. The report DECLARES its ``segmentation`` grain on its face
+    (Irene caveat — load-bearing, never dropped). Passing an empty/None receipt
+    yields ``""`` so the existing render is byte-identical when coverage is off.
+
+    Accepts the receipt as a plain dict (``CoverageReceipt.model_dump``) to keep
+    this gate module free of an ``app.marcus`` import (lane isolation).
+    """
+    if not receipt:
+        return ""
+    rows = receipt.get("rows") or []
+    grain = escape(str(receipt.get("segmentation", "")))
+    lines = [
+        '<section class="coverage-receipt">',
+        "  <h2>Source-note coverage receipt</h2>",
+        f'  <p class="coverage-grain">Segmentation grain: <strong>{grain}</strong> '
+        f"({len(rows)} source point(s))</p>",
+        '  <table class="coverage-table">',
+        "    <thead><tr>"
+        "<th>Source point</th><th>Intent</th><th>Coverage</th>"
+        "<th>Containment</th><th>Vouch</th>"
+        "</tr></thead>",
+        "    <tbody>",
+    ]
+    for row in sorted(rows, key=lambda r: str(r.get("source_point_id", ""))):
+        label = escape(str(row.get("human_label", row.get("slide_key", ""))))
+        point_id = escape(str(row.get("source_point_id", "")))
+        intents = escape(", ".join(row.get("intent_set", []) or []))
+        status = escape(str(row.get("coverage_status", "")))
+        verdict = row.get("containment_verdict")
+        verdict_txt = escape(str(verdict)) if verdict is not None else "&mdash;"
+        vouch = escape(str(row.get("vouch_level", "")))
+        flag = ' class="must-cover"' if row.get("must_cover") else ""
+        lines.append(
+            f"      <tr{flag}><td>{label} <code>{point_id}</code></td>"
+            f"<td>{intents}</td><td>{status}</td>"
+            f"<td>{verdict_txt}</td><td>{vouch}</td></tr>"
+        )
+    lines.extend(["    </tbody>", "  </table>", "</section>"])
+    return "\n".join(lines)
+
+
 def emit_storyboard_html(
     payload: StoryboardBuildPayload,
     output_path: Path,
@@ -72,4 +119,4 @@ def emit_storyboard_html(
     return output_path
 
 
-__all__ = ["emit_storyboard_html", "render_storyboard_html"]
+__all__ = ["emit_storyboard_html", "render_coverage_section", "render_storyboard_html"]
