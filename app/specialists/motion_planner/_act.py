@@ -438,6 +438,56 @@ def build_motion_plan(payload: dict[str, Any]) -> dict[str, Any]:
             tag="motion-planner.engine.invalid",
         ) from exc
     slides = _project_slides(applied, storyboard, payload, config)
+    if not slides:
+        # MOTION FLOOR (conservative, deterministic, 0-credit). The winner deck
+        # reached the producer carrying NO motion cues (real quinn_r selections are
+        # slide_id-only), so the Epic-14 recommender scored every slide ``static``
+        # and the projection is empty. But motion was PROMISED: node 07D.5 is only
+        # composed into the manifest when ``component_selection.motion`` is true and
+        # the planner ALWAYS invokes the engine with ``motion_enabled=True`` -- so
+        # the planner running at all == motion enabled. An empty plan would dead-end
+        # node 07E (kira.motion-plan.empty). Promote the FIRST authorized slide to a
+        # MANUAL ``animation`` (0 engine credits, source "manual" -- NEVER a paid
+        # Kling ``video``) with a synthesized override_reason so the promised motion
+        # bundle is non-empty. Legitimately motion-less runs (motion deselected ->
+        # 07D.5 pruned, planner never runs) are unaffected.
+        authorized_slides = storyboard.get("authorized_slides")
+        first_slide = (
+            authorized_slides[0]
+            if isinstance(authorized_slides, list) and authorized_slides
+            else None
+        )
+        floor_slide_id = (
+            str(first_slide.get("slide_id") or "").strip()
+            if isinstance(first_slide, dict)
+            else ""
+        )
+        if floor_slide_id:
+            designations[floor_slide_id] = {
+                "motion_type": "animation",
+                "override_reason": (
+                    "motion floor: deck carried no motion cues; promoting first "
+                    "slide to a 0-credit animation so the promised motion bundle "
+                    "is non-empty"
+                ),
+                "guidance_notes": (
+                    "Apply restrained, slide-preserving motion to the approved "
+                    "still; manual / 0-credit (no Kling video generation)."
+                ),
+            }
+            try:
+                applied = engine.apply_motion_designations(plan, designations)
+            except engine.MotionPlanError as exc:  # pragma: no cover - defensive
+                raise MotionPlannerActError(
+                    f"motion floor could not promote a 0-credit animation: {exc}",
+                    tag="motion-planner.floor.invalid",
+                ) from exc
+            slides = _project_slides(applied, storyboard, payload, config)
+            for slide in slides:
+                if slide.get("slide_id") == floor_slide_id:
+                    # A manual animation consumes no Kling credits; pin the projected
+                    # per-clip cost to 0.0 to mirror the engine's 0-credit account.
+                    slide["estimated_cost_usd"] = 0.0
     return {"slides": slides}
 
 

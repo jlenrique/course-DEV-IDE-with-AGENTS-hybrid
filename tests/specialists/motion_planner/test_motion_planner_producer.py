@@ -389,3 +389,83 @@ def test_fail_closed_on_missing_winner_deck() -> None:
     with pytest.raises(mp_act.MotionPlannerActError) as exc_info2:
         mp_act.build_motion_plan({})
     assert exc_info2.value.tag == "motion-planner.storyboard.missing"
+
+
+# --- Motion floor: non-empty plan when motion was PROMISED but the deck has no
+# --- motion cues (live dead-end 8d819b8d / 30ac2cce, tejal-apc-c1-m1-p2-trends)
+
+
+# A cue-less winner deck: slide_id-only rows exactly like real quinn_r winner-deck
+# selections (no fidelity / source_ref / visual_description). The Epic-14
+# recommender has nothing to score so every slide reads ``static`` -> the
+# projection is empty -> kira fail-louds (kira.motion-plan.empty). The first slide
+# carries the approved PNG so the floor animation projects as slide-preserving
+# image2video (a manual animation of the existing card).
+_CUELESS_STORYBOARD: dict[str, Any] = {
+    "run_id": "trial-cueless",
+    "authorized_slides": [
+        {"slide_id": "card-01", "image_url": "https://cdn.example/card01.png"},
+        {"slide_id": "card-02"},
+        {"slide_id": "card-03"},
+    ],
+}
+
+
+def _cueless_payload() -> dict[str, Any]:
+    return {"upstream_output": json.loads(json.dumps(_CUELESS_STORYBOARD))}
+
+
+def test_motion_floor_promotes_first_slide_when_projection_empty() -> None:
+    """RED-first regression for the live 07E dead-end: a cue-less winner deck makes
+    the Epic-14 recommender score every slide ``static`` so the projection is empty
+    and kira fail-louds (kira.motion-plan.empty), even though motion was EXPLICITLY
+    selected. When motion was promised the producer must FLOOR the plan to >=1
+    slide by promoting the FIRST authorized slide to a 0-credit MANUAL animation.
+
+    RED today: ``build_motion_plan`` returns ``{"slides": []}`` for this deck.
+    GREEN after the floor lands."""
+    out = mp_act.build_motion_plan(_cueless_payload())
+    slides = out["slides"]
+    # >=1 slide => node 07E clears instead of dead-ending at kira.motion-plan.empty.
+    assert len(slides) >= 1
+    floor = slides[0]
+    # Deterministically the FIRST authorized slide is the promoted candidate.
+    assert floor["slide_id"] == "card-01"
+    # 0-credit guarantee: a MANUAL animation, never a paid Kling ``video`` (a video
+    # designation would carry the standard ~0.12 per-clip projected cost).
+    assert floor["estimated_cost_usd"] == 0.0
+    # The approved still is carried as slide-preserving image2video (manual
+    # animation of the existing card), not a fresh text2video generation.
+    assert floor["image_url"] == "https://cdn.example/card01.png"
+    assert floor["style_id"] == "K05-slide-preserving-motion-card-std-silent"
+    # Still a valid kira-renderable row with a currently-valid model id.
+    assert floor["model_name"] == "kling-v1-6"
+    assert floor["motion_prompt"].strip()
+    # Deterministic (no LLM, no clock-dependent projection).
+    assert out == mp_act.build_motion_plan(_cueless_payload())
+    # kira accepts the floored plan: its non-empty invariant is satisfied (the
+    # producer never relaxes that invariant; it feeds it a real slide instead).
+    loaded = kira_act._load_motion_plan({"motion_plan": out})
+    assert len(kira_act._slides_from_plan(loaded)) == len(slides)
+
+
+def test_motion_floor_does_not_fire_for_a_cued_deck() -> None:
+    """The floor only fires when the projection is EMPTY. A normal cue-rich deck is
+    unchanged by the floor (the branch is not taken): the same three real
+    video/animation designations, each carrying the standard non-zero per-clip
+    cost rather than the 0-credit floor marker."""
+    out = mp_act.build_motion_plan(_payload())
+    slides = out["slides"]
+    assert [s["slide_id"] for s in slides] == ["slide-00", "slide-01", "slide-02"]
+    # None of these is the 0-credit floor promotion: real Epic-14 designations.
+    assert all(s["estimated_cost_usd"] > 0.0 for s in slides)
+
+
+def test_motion_floor_no_spurious_promotion_without_authorized_slides() -> None:
+    """Guard: the floor never fabricates motion when there is no authorized deck.
+    A payload with no resolvable storyboard fails closed (storyboard.missing) and
+    emits no floor slide — the floor is strictly a non-empty-deck affordance, so a
+    legitimately motion-less / deckless invocation is unaffected."""
+    with pytest.raises(mp_act.MotionPlannerActError) as exc_info:
+        mp_act.build_motion_plan({"upstream_output": {"not_a_storyboard": True}})
+    assert exc_info.value.tag == "motion-planner.storyboard.missing"
