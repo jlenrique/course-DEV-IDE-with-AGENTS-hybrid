@@ -1,0 +1,22 @@
+{
+  "completed_keys": [
+    "credits",
+    "exportUrl",
+    "gammaId",
+    "gammaUrl",
+    "generationId",
+    "generation_id",
+    "status"
+  ],
+  "status": "completed",
+  "png_urls": [
+    "https://assets.api.gamma.app/export/image/08j0qmnbr4ljlgc/76ca7b6b69faed99a81af147d99e8238/Clinical-Leadership-in-One-Slide.png"
+  ],
+  "png_url": "https://assets.api.gamma.app/export/image/08j0qmnbr4ljlgc/76ca7b6b69faed99a81af147d99e8238/Clinical-Leadership-in-One-Slide.png",
+  "width": 2400,
+  "height": 1350,
+  "aspect": 1.7778,
+  "is_16x9": true,
+  "PASS": true,
+  "total_seconds": 19.6
+}

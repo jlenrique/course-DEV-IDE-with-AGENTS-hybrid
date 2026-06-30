@@ -768,7 +768,6 @@ def generate_gamma_variants(
         if variant_settings is not None:
             text_options = _text_options_for_variant(variant_settings)
             image_options = _image_options_for_variant(variant_settings)
-            card_options = _card_options_for_variant(variant_settings)
             text_mode = str(variant_settings.get("text_mode") or "").strip()
             if text_mode and text_mode not in {"default", "generate"}:
                 generation_kwargs["text_mode"] = text_mode
@@ -776,8 +775,18 @@ def generate_gamma_variants(
                 generation_kwargs["text_options"] = text_options
             if image_options:
                 generation_kwargs["image_options"] = image_options
-            if card_options:
-                generation_kwargs["card_options"] = card_options
+        # 16:9 down-payment (party-ratified — Gamma Styleguide Library consensus,
+        # "lands NOW, independently"): EVERY Classic dispatch carries
+        # cardOptions.dimensions, defaulting to "16x9" when no per-variant override
+        # is present. Before this, a default orchestrator run (build_gary_briefs
+        # emits no gamma_settings key) sent NO cardOptions and Gamma fell back to
+        # its non-16:9 default, title-cropping slides in Descript. A per-variant
+        # `dimensions` setting still wins (it fills card_options below).
+        # superseded by the future CD-owned styleguide default-guide (gamma-style-guides.yaml)
+        card_options = (
+            _card_options_for_variant(variant_settings) if variant_settings is not None else {}
+        )
+        generation_kwargs["card_options"] = {"dimensions": "16x9", **card_options}
         generation = client.generate_deck(
             _input_text(slides, payload),
             **generation_kwargs,

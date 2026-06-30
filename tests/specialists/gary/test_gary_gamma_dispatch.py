@@ -225,6 +225,9 @@ def test_gary_no_gamma_settings_preserves_single_dispatch_shape(
     assert result["gary_slide_output"][0]["dispatch_variant"] == "A"
     assert result["gary_slide_output"][0]["gamma_settings"] is None
     assert "image_options" not in client.generate_calls[0]
+    # 16:9 down-payment: even a default Classic run (no gamma_settings) now carries
+    # cardOptions.dimensions="16x9" so Gamma stops falling back to its non-16:9
+    # default (the Descript title-crop bug).
     assert client.generate_calls[0] == {
         "input_text": "# Only Topic Here",
         "num_cards": 1,
@@ -236,6 +239,7 @@ def test_gary_no_gamma_settings_preserves_single_dispatch_shape(
             "divider, or summary card; do not merge or split sections. Variant A."
         ),
         "export_as": "png",
+        "card_options": {"dimensions": "16x9"},
     }
 
 
@@ -505,6 +509,126 @@ def test_gary_single_slide_deck_title_matches(tmp_path: Path, monkeypatch) -> No
     materialized = Path(row["file_path"])
     assert materialized.name.endswith("_s1.png")
     assert materialized.read_bytes() == b"bytes::1_Only-Topic-Here"
+
+
+# --- 16:9 down-payment (party-ratified: Gamma Styleguide Library consensus) -----
+# Bug (root cause, verified): build_gary_briefs never emits a `gamma_settings`
+# key, so `_normalized_gamma_settings` returns [] and a DEFAULT orchestrator run
+# sent NO cardOptions -> Gamma fell back to its non-16:9 default -> slides reached
+# Descript title-cropped. Fix: EVERY Classic dispatch carries
+# cardOptions.dimensions, defaulting to "16x9" unless a variant overrides it.
+
+
+def test_gary_default_classic_dispatch_carries_16x9_dimensions(
+    tmp_path: Path, monkeypatch
+) -> None:
+    """Bug-closer: a DEFAULT Classic run (no gamma_settings in payload) must send
+    cardOptions={"dimensions": "16x9"}. Pre-fix the call carried NO card_options
+    (this assertion KeyErrors), letting Gamma fall back to its non-16:9 default."""
+    zpath = _titled_zip(tmp_path, ["1_Only-Topic-Here"])
+    monkeypatch.setattr(
+        gary_act, "download_export", lambda url, *, output_dir, filename: str(zpath)
+    )
+    client = FakeGammaClient()
+
+    gary_act.generate_gamma_variants(
+        {"slides": [{"slide_id": "s1", "title": "Only Topic Here"}], "export_dir": str(tmp_path)},
+        client=client,
+    )
+
+    assert client.generate_calls[0]["card_options"] == {"dimensions": "16x9"}
+
+
+def test_gary_per_variant_dimensions_override_wins_over_16x9_default(
+    tmp_path: Path, monkeypatch
+) -> None:
+    """An explicit per-variant `dimensions` still wins; the unconditional 16:9
+    default only fills the gap (it must not clobber an explicit setting)."""
+    zpath = _titled_zip(tmp_path, ["1_Alpha-Topic"])
+    monkeypatch.setattr(
+        gary_act, "download_export", lambda url, *, output_dir, filename: str(zpath)
+    )
+    client = FakeGammaClient()
+
+    gary_act.generate_gamma_variants(
+        {
+            "slides": [{"slide_id": "s1", "title": "Alpha Topic"}],
+            "export_dir": str(tmp_path),
+            "gamma_settings": [{"variant_id": "A", "dimensions": "4x3"}],
+        },
+        client=client,
+    )
+
+    # Variant A's explicit 4x3 override survives the default-fill.
+    assert client.generate_calls[0]["card_options"] == {"dimensions": "4x3"}
+    # Variant B (default pair) keeps its 16x9.
+    assert client.generate_calls[1]["card_options"] == {"dimensions": "16x9"}
+
+
+def test_gary_studio_path_unchanged_no_card_options(tmp_path: Path, monkeypatch) -> None:
+    """Regression: the Studio (from-template) path is untouched by the 16:9
+    down-payment — it dispatches via generate_from_template with NO cardOptions
+    (Studio 16:9 stays enforced by the template + the aspect guard), and never
+    touches the Classic generate_deck path."""
+    repo = Path(__file__).resolve().parents[3]
+    studio_png = (
+        repo
+        / "_bmad-output"
+        / "implementation-artifacts"
+        / "studio-mode-evidence"
+        / "STUDIO-success-1-innovators-mindset.png"
+    )
+    assert studio_png.exists(), "real Studio fixture missing"
+    monkeypatch.setattr(
+        gary_act, "download_export", lambda url, *, output_dir, filename: str(studio_png)
+    )
+
+    class FakeStudioGammaClient(FakeGammaClient):
+        def __init__(self) -> None:
+            super().__init__()
+            self.template_calls: list[dict[str, object]] = []
+
+        def generate_from_template(
+            self, template_id: str, prompt: str, export_as: str = "png"
+        ) -> dict[str, object]:
+            self.template_calls.append(
+                {"template_id": template_id, "prompt": prompt, "export_as": export_as}
+            )
+            return {"generationId": f"studio-{len(self.template_calls)}"}
+
+        def wait_for_generation(self, generation_id: str) -> dict[str, object]:
+            return {"exportUrl": "https://example.invalid/studio.png"}
+
+    client = FakeStudioGammaClient()
+
+    gary_act.generate_gamma_variants(
+        {
+            "slides": [{"slide_id": "s1", "title": "Only Topic Here"}],
+            "export_dir": str(tmp_path),
+            # Both variants studio so no Classic deck dispatch occurs at all;
+            # the assertion below then cleanly proves the Studio path carries
+            # no cardOptions (a Classic B variant would itself carry 16x9).
+            "gamma_settings": [
+                {
+                    "variant_id": "A",
+                    "production_mode": "studio",
+                    "studio_template_id": "g_nv5q4da69qiiu8q",
+                },
+                {
+                    "variant_id": "B",
+                    "production_mode": "studio",
+                    "studio_template_id": "g_nv5q4da69qiiu8q",
+                },
+            ],
+        },
+        client=client,
+    )
+
+    # Studio dispatched via from-template (one per variant), NOT the Classic deck.
+    assert len(client.template_calls) == 2
+    # The Classic generate_deck (the only carrier of card_options) was never called
+    # for the studio variant -> no cardOptions on the Studio path.
+    assert client.generate_calls == []
 
 
 def test_variant_a_text_mode_preserve_l1_fidelity() -> None:
