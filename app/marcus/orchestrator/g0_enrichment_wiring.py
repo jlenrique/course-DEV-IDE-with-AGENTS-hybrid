@@ -39,6 +39,7 @@ story's live-segment proof (AC-S2-8) exercises the REAL LLM on real corpus.
 
 from __future__ import annotations
 
+import fnmatch
 import json
 import logging
 import os
@@ -586,15 +587,90 @@ def _source_excerpt(path: Path, max_chars: int = _LIVE_EXCERPT_MAX_CHARS) -> str
     return text[:max_chars] + "\n…[excerpt truncated]"
 
 
+# Operational / non-content file exclusion (real production-trust defect found by
+# the 2026-06-30 live re-prove: a corpus ``README.md`` whose body is the
+# trial-launch powershell command got fed VERBATIM to gpt-5, which latched onto it
+# and RETURNED the run command instead of extraction JSON → the whole production
+# walk died at G0E). A file is OPERATIONAL / non-content if EITHER its name matches
+# an operational glob OR its body carries a strong run-instruction signature. The
+# heuristic stands ALONE (it does NOT depend on the directive composer's
+# primary/supporting/ignore role assignment, which project history records as
+# UNRELIABLE; the directive role is also not threaded into this enumeration layer —
+# ``build_enrichment_result`` receives only ``corpus_dir``). Conservative + LOUD:
+# every exclusion is logged, never a silent drop.
+_OPERATIONAL_NAME_GLOBS: tuple[str, ...] = (
+    "readme*",
+    "runbook*",
+    "license*",
+    "changelog*",
+    ".gitkeep",
+    "urls.txt",
+    "*.lock",
+)
+# Strong run-instruction content signatures (lowercased substring match). These
+# catch an operational file that escaped the name globs (e.g. ``setup-notes.md``
+# whose body is a launch command). Plain prose that merely mentions the word
+# "readme" carries NONE of these, so a genuine content file is not false-excluded.
+_RUN_INSTRUCTION_SIGNATURES: tuple[str, ...] = (
+    "trial start",
+    "pythonioencoding",
+    ".venv\\scripts",
+    ".venv/scripts",
+    "```powershell",
+    "```bash",
+    "python -m app.marcus",
+)
+
+
+def _is_operational_noncontent_file(name: str, content: str) -> bool:
+    """True iff ``name``/``content`` look OPERATIONAL (run instructions, license, …).
+
+    A CONSERVATIVE predicate: a file is non-content if EITHER its name matches an
+    operational glob (``README*``/``RUNBOOK*``/``LICENSE*``/``CHANGELOG*``/
+    ``.gitkeep``/``urls.txt``/``*.lock``, case-insensitive) OR its body carries a
+    strong run-instruction signature (a ``trial start`` / ``PYTHONIOENCODING`` /
+    ``.venv\\Scripts`` / ```` ```powershell ```` / ```` ```bash ```` /
+    ``python -m app.marcus`` fragment). Name globs use ``fnmatch`` so ``README*``
+    matches only a file that STARTS with "readme" (``slide-readme-context.md`` does
+    NOT match — guarding genuine content from a false exclusion). Used to drop a
+    file from the EXTRACTION ``corpus_summary`` ONLY — directive composition and
+    every other consumer are untouched.
+    """
+    lname = name.strip().lower()
+    if any(fnmatch.fnmatch(lname, glob) for glob in _OPERATIONAL_NAME_GLOBS):
+        return True
+    lcontent = content.lower()
+    return any(sig in lcontent for sig in _RUN_INSTRUCTION_SIGNATURES)
+
+
 def _live_corpus_summary(enumerated: list[tuple[str, Path]], corpus_dir: Path) -> str:
     """Corpus block for the live prompt: id + path + VERBATIM content excerpt.
 
     Verbatim so the model's required ``quoted_span`` substrings actually resolve
-    against text it was shown (A9 groundedness).
+    against text it was shown (A9 groundedness). OPERATIONAL / non-content files
+    (README / RUNBOOK / run-instruction files) are EXCLUDED from what the
+    extraction model ingests (the 2026-06-30 live-crash fix) via a conservative,
+    LOUD-logged heuristic — they corrupt pedagogical-component extraction (the
+    model latches onto a fenced run command and returns IT instead of JSON). The
+    enumeration / directive composition is unchanged; only the model's input is.
     """
     blocks = []
     for sid, path in enumerated:
         rel = path.relative_to(corpus_dir).as_posix()
+        content = _read_text_resilient(path) or ""
+        if _is_operational_noncontent_file(path.name, content):
+            logger.warning(
+                "g0-enrichment: EXCLUDING %r (id %s) from the live extraction "
+                "corpus_summary as a SUSPECTED OPERATIONAL / non-content file "
+                "(README/RUNBOOK/LICENSE/run-instruction signature). It is NOT fed to "
+                "the component-extraction model — this prevents the model latching onto "
+                "run instructions and returning them instead of extraction JSON (the "
+                "2026-06-29/30 G0E live-crash class). If this file IS course content, "
+                "rename it or remove the run-command/operational block.",
+                rel,
+                sid,
+            )
+            continue
         blocks.append(f"### {sid}: {rel}\n{_source_excerpt(path)}")
     return "\n\n".join(blocks)
 

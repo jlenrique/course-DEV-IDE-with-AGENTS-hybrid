@@ -735,6 +735,100 @@ def test_live_corpus_summary_includes_id_path_and_content(tmp_path: Path) -> Non
 
 
 # =========================================================================== #
+# Operational / non-content file exclusion from the EXTRACTION corpus_summary  #
+# (real production-trust defect found by the 2026-06-30 live re-prove: a corpus #
+# README whose body is the trial-launch powershell command got fed VERBATIM to  #
+# gpt-5, which latched onto it and RETURNED the run command instead of          #
+# extraction JSON → the whole production walk died at G0E). The fix excludes     #
+# obvious operational files from what the model ingests, via a conservative,     #
+# LOUD-LOGGED heuristic.                                                         #
+# =========================================================================== #
+# The exact README body shape that crashed the live tejal trial.
+_TRIAL_README_BODY = (
+    "# Corpus — tejal-apc-c1-m1-p2-trends\n\n"
+    "## Trial-3 launch command (from repo root)\n\n"
+    "```powershell\n"
+    '$env:PYTHONIOENCODING="utf-8"\n'
+    ".\\.venv\\Scripts\\python.exe -m app.marcus.cli trial start "
+    "--preset production --input course-content/courses/tejal-apc-c1-m1-p2-trends/\n"
+    "```\n"
+)
+
+
+def test_live_corpus_summary_excludes_operational_readme(tmp_path: Path, caplog) -> None:
+    # A real content slide (Slide 1 + a numeric narration claim) AND a README whose
+    # body is the trial-launch powershell command (the live-crash shape).
+    slide = tmp_path / "slides" / "slide-01.md"
+    slide.parent.mkdir(parents=True, exist_ok=True)
+    slide.write_text(
+        "# Slide 1\n\nNarration: adoption grew 47% year over year.\n",
+        encoding="utf-8",
+    )
+    readme = tmp_path / "README.md"
+    readme.write_text(_TRIAL_README_BODY, encoding="utf-8")
+    enumerated = [("src-001", readme), ("src-002", slide)]
+
+    with caplog.at_level("WARNING"):
+        summary = gw._live_corpus_summary(enumerated, tmp_path)
+
+    # The slide (real content) IS fed to the model …
+    assert "Slide 1" in summary
+    assert "adoption grew 47% year over year" in summary
+    assert "### src-002: slides/slide-01.md" in summary
+    # … but the README run-instruction content is NOT (this is the defect fix).
+    assert "trial start" not in summary
+    assert "PYTHONIOENCODING" not in summary
+    assert "### src-001: README.md" not in summary
+    # And the exclusion is LOUD / auditable (never a silent drop).
+    assert any(
+        "README.md" in rec.getMessage() and rec.levelname == "WARNING"
+        for rec in caplog.records
+    )
+
+
+def test_is_operational_noncontent_file_name_patterns() -> None:
+    # Operational filenames are excluded by name (content irrelevant).
+    for name in (
+        "README.md",
+        "readme.txt",
+        "RUNBOOK.md",
+        "LICENSE",
+        "CHANGELOG.md",
+        ".gitkeep",
+        "urls.txt",
+        "poetry.lock",
+        "uv.lock",
+    ):
+        assert gw._is_operational_noncontent_file(name, "arbitrary body"), name
+
+
+def test_is_operational_noncontent_file_content_signature() -> None:
+    # A NON-operational filename but a strong run-instruction content signature → excluded.
+    assert gw._is_operational_noncontent_file(
+        "setup-notes.md",
+        "```powershell\n$env:PYTHONIOENCODING='utf-8'\npython -m app.marcus.cli trial start\n```",
+    )
+    assert gw._is_operational_noncontent_file(
+        "ops.md", "run `.venv\\Scripts\\python.exe -m app.marcus.cli trial start`"
+    )
+
+
+def test_is_operational_noncontent_file_does_not_false_exclude_real_content() -> None:
+    # GUARD: a genuine course-content file whose NAME merely CONTAINS "readme" (not a
+    # README* prefix) and whose body is real pedagogy must NOT be excluded.
+    name = "slide-readme-context.md"
+    body = (
+        "# Slide 3 — How to read the adoption curve\n\n"
+        "Narration: the readme metaphor helps learners; adoption reached 62% by Q3.\n"
+    )
+    assert not gw._is_operational_noncontent_file(name, body)
+    # And a plain content slide is never excluded.
+    assert not gw._is_operational_noncontent_file(
+        "slide-01.md", "# Slide 1\n\nNarration: revenue grew 12%.\n"
+    )
+
+
+# =========================================================================== #
 # T11 SHIP-WITH-FOLLOWONS remediation (P1 component-extraction leg, 2026-06-27) #
 # =========================================================================== #
 
