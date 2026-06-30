@@ -2,6 +2,10 @@
 
 This file is the **VS Code equivalent** of always-on AI rules: it mirrors [`.cursor/rules/bmad-sprint-governance.mdc`](../.cursor/rules/bmad-sprint-governance.mdc) (Cursor) so GitHub Copilot Chat in VS Code picks up the same charter. VS Code loads [`.github/copilot-instructions.md`](https://code.visualstudio.com/docs/copilot/customization/custom-instructions) automatically for every chat in the workspace. See also [`AGENTS.md`](../AGENTS.md) and [`CLAUDE.md`](../CLAUDE.md).
 
+## ⛔ Critical design guardrail — the goal is the Marcus-SPOC PRODUCT, not the proofing vehicle (operator 2026-06-30)
+
+The only product goal is the **Marcus-SPOC runtime orchestrator** (the operator-facing surface that drives a real *instance of the APP and its production runtime*). The BMAD-persona Marcus's **"concierge"/exploratory/trial/proofing runs are off-the-books discovery vehicles, NOT a design target** — they may surface real production-codebase defects, but **do NOT design, shape, or add to the production codebase merely to make those runs work.** Fix what a proofing run finds only because it improves the SPOC product, never to "make the concierge run pass." Full statement: [`CLAUDE.md`](../CLAUDE.md) §CRITICAL DESIGN GUARDRAIL + [`docs/STATE-OF-THE-APP.md`](../docs/STATE-OF-THE-APP.md) FRAMING PRINCIPLE.
+
 ## Charter
 
 1. **Epics and stories** must be produced with BMAD workflows only (for example `bmad-create-epics-and-stories`, `bmad-create-story`, `bmad-create-prd` / architecture / UX chains as appropriate, or `bmad-quick-dev` when that is the right path). If unsure which variant to use, read **`bmad-help`**, run **`bmad --help`**, or convene **`bmad-party-mode`** and ask the team to recommend full planning vs quick-dev vs another module skill.

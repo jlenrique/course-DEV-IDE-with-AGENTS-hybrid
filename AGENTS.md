@@ -1,5 +1,7 @@
 # Agent instructions
 
+> **⛔ CRITICAL DESIGN GUARDRAIL — the goal is the Marcus-SPOC PRODUCT, not the proofing vehicle (operator 2026-06-30).** The only product goal is the **Marcus-SPOC runtime orchestrator** (the operator-facing surface that drives a real *instance of the APP and its production runtime*). The BMAD-persona Marcus's **"concierge"/exploratory/trial/proofing runs are off-the-books discovery vehicles, NOT a design target** — they may surface real production-codebase defects, but **never design, shape, or add to the production codebase merely to make those runs work.** Fix what a proofing run finds only because it improves the SPOC product. Full statement: [`CLAUDE.md`](CLAUDE.md) §CRITICAL DESIGN GUARDRAIL + [`docs/STATE-OF-THE-APP.md`](docs/STATE-OF-THE-APP.md) FRAMING PRINCIPLE + [`bmad-session-protocol-session-START.md`](bmad-session-protocol-session-START.md) §0.
+
 **Sprint governance:** Multi-story BMAD work in this repo follows the same BMAD sprint run charter everywhere it applies:
 
 | Environment | Mechanism |

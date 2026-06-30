@@ -2,6 +2,15 @@
 
 This repository uses BMAD methodology. For sprint-style runs, follow the **BMAD sprint governance** checklist below (mirrors `.cursor/rules/bmad-sprint-governance.mdc` and `.github/copilot-instructions.md` for VS Code / GitHub Copilot).
 
+## ⛔ CRITICAL DESIGN GUARDRAIL — the goal is the Marcus-SPOC PRODUCT, not the proofing vehicle (operator-stated 2026-06-30)
+
+Two distinct "Marcus" entities exist and must never be conflated when deciding what to build:
+
+- **Marcus-SPOC** = the **runtime orchestrator** — the operator-facing conversational surface that drives an actual *instance of the APP and its production runtime* (`app/marcus/cli/marcus_spoc.py` and the production runner it sits on). **This is the ONLY product goal.** The production codebase exists to make the SPOC-orchestrated runtime correct and trustworthy.
+- **BMAD-persona Marcus** (the planning/dev/exploratory persona under `skills/bmad-agent-marcus/`, the one with the sanctum) running **"concierge"-style exploratory / trial / proofing runs** is a fundamentally different thing. Those runs happen **off the books** — they are a **means of discovery, not an end.** They exercise the pipeline and can surface real production-codebase defects worth fixing on their own merits.
+
+**The binding rule:** **Do NOT design, shape, or add to the production codebase merely to make those off-the-books concierge/proofing runs work.** When a proofing run finds something, fix it **only because it is a genuine production-codebase problem that improves the product (the SPOC runtime)** — never to "make the concierge run pass." Every change must earn its place by improving the real product. "Concierge … arc/run/substrate" names in artifacts (e.g. the `dev/concierge-production-substrate-*` branch, the STATE-OF-THE-APP "Concierge Production Substrate arc") denote **production-codebase hardening that proofing runs helped surface and prioritize** — *not* a design target of their own. Read every such name through this lens, and challenge any proposed change whose only justification is "the concierge/proofing run needs it." (Mirrors the FRAMING PRINCIPLE banner in [`docs/STATE-OF-THE-APP.md`](docs/STATE-OF-THE-APP.md) and §0 of [`bmad-session-protocol-session-START.md`](bmad-session-protocol-session-START.md).)
+
 ## Operator preference: run shell commands autonomously (minimal permission prompts)
 
 **The operator strongly prefers that you execute bash/shell/PowerShell commands without stopping to ask for approval on every invocation.** Per-command permission dialogs are disruptive during BMAD sprints, migration work, and test loops. Default to **proceeding**: run `pytest`, `ruff`, `uv`, `python`, `git` (read-only and normal workflow: status, diff, add, commit when asked), `npm`/`npx` when the task requires it, linters, formatters, and one-off diagnostics **as the story or task requires**, and **batch** related commands (`&&` or a small script) when that reduces round-trips.
