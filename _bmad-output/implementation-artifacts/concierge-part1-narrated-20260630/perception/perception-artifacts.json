@@ -1,0 +1,1447 @@
+{
+  "perception_artifacts": [
+    {
+      "artifact_path": "",
+      "callout_intent": null,
+      "card_number": 1,
+      "confidence": "HIGH",
+      "confidence_score": 0.97,
+      "coverage": "perceived",
+      "dominant_image_role": "1",
+      "extracted_text": "Welcome & The Modern Clinician's Dilemma TEJAL NAIK, M.D. — HOSPITALIST & ENTREPRENEUR-IN-RESIDENCE You were trained to follow evidence-based pathways — not to create them. The barrier to change is rarely a lack of ideas. It is the absence of a structured process and the psychological safety to pursue them. An innovation mindset is the internal conviction that you are not just an employee within a healthcare system, but a designer of it — empowered to bridge the gap between current limitations and future possibilities. Today's journey begins with a fundamental reframe: from Clinical Reactor to Systemic Innovator. National Academy of Medicine (2019): Taking Action Against Clinician Burnout.",
+      "image_role_flags": null,
+      "image_roles": [
+        "2",
+        "4",
+        "4",
+        "4",
+        "4",
+        "4"
+      ],
+      "layout_description": "The slide is split with a large teal medical hallway and blueprint-style illustration on the left, and text content arranged in stacked blocks on the right. A large bold title sits at the top right, followed by a highlighted speaker tag, explanatory paragraph, emphasized callout, and bottom citation-style reframing statement.",
+      "macro_layout": "split_image_text",
+      "narration_cadence": "dense",
+      "provider_model_id": "gpt-5.5",
+      "reading_path": "split_image_text",
+      "reading_path_degraded": false,
+      "reading_path_flags": null,
+      "reading_path_geometry": {
+        "callout_intent": null,
+        "image_role_flags": null,
+        "image_roles": [
+          "2",
+          "4",
+          "4",
+          "4",
+          "4",
+          "4"
+        ],
+        "macro_layout": "split_image_text",
+        "narration_cadence": "dense",
+        "reading_path": "split_image_text",
+        "reading_path_flags": null,
+        "text_substructure": "peer_boxes"
+      },
+      "reading_path_rationale": {
+        "callout_intent": "No question, quiz, or action-demand CTA is present.",
+        "image_role": "The illustration sets clinical tone but has no labels and is not referenced as content.",
+        "macro_layout": "Large illustration occupies the left half while stacked text occupies the right half.",
+        "narration_cadence": "Text is relatively copy-heavy and needs scaffolded narration.",
+        "text_substructure": "Right side contains multiple explanatory paragraph-style blocks and a quoted emphasis block."
+      },
+      "reading_path_source": "llm_primary",
+      "slide_id": "c1m1-p1-s01",
+      "slide_title": "Welcome & The Modern Clinician's Dilemma",
+      "source_png_path": "C:\\Users\\juanl\\Documents\\GitHub\\course-DEV-IDE-with-AGENTS-hybrid\\_bmad-output\\implementation-artifacts\\concierge-part1-narrated-20260630\\deck-final\\c1m1-p1-final_slide_01.png",
+      "text_blocks": [
+        "Welcome & The Modern Clinician's Dilemma",
+        "TEJAL NAIK, M.D. — HOSPITALIST & ENTREPRENEUR-IN-RESIDENCE",
+        "You were trained to follow evidence-based pathways — not to create them. The barrier to change is rarely a lack of ideas. It is the absence of a structured process and the psychological safety to pursue them.",
+        "An innovation mindset is the internal conviction that you are not just an employee within a healthcare system, but a designer of it — empowered to bridge the gap between current limitations and future possibilities.",
+        "Today's journey begins with a fundamental reframe: from Clinical Reactor to Systemic Innovator. National Academy of Medicine (2019): Taking Action Against Clinician Burnout."
+      ],
+      "text_substructure": "dense_exposition",
+      "visual_elements": [
+        {
+          "bbox": [
+            0.0,
+            0.05,
+            0.43,
+            0.93
+          ],
+          "id": "left_medical_illustration",
+          "kind": "diagram",
+          "role_tier": "2",
+          "role_tier_reason": "Large supporting illustration of a clinician facing a blueprint in a hospital corridor; mostly illustrative with no readable explanatory labels.",
+          "text": ""
+        },
+        {
+          "bbox": [
+            0.5,
+            0.12,
+            0.92,
+            0.27
+          ],
+          "id": "main_title",
+          "kind": "title",
+          "role_tier": "4",
+          "role_tier_reason": "Large dominant heading labels the slide topic.",
+          "text": "Welcome & The Modern Clinician's Dilemma"
+        },
+        {
+          "bbox": [
+            0.5,
+            0.31,
+            0.97,
+            0.36
+          ],
+          "id": "speaker_tag",
+          "kind": "callout",
+          "role_tier": "4",
+          "role_tier_reason": "Small highlighted pill-shaped text acts as an identifying label.",
+          "text": "TEJAL NAIK, M.D. — HOSPITALIST & ENTREPRENEUR-IN-RESIDENCE"
+        },
+        {
+          "bbox": [
+            0.5,
+            0.39,
+            0.98,
+            0.5
+          ],
+          "id": "intro_paragraph",
+          "kind": "bullet",
+          "role_tier": "4",
+          "role_tier_reason": "Readable explanatory text block conveying the slide message.",
+          "text": "You were trained to follow evidence-based pathways — not to create them. The barrier to change is rarely a lack of ideas. It is the absence of a structured process and the psychological safety to pursue them."
+        },
+        {
+          "bbox": [
+            0.5,
+            0.52,
+            0.96,
+            0.73
+          ],
+          "id": "innovation_callout",
+          "kind": "callout",
+          "role_tier": "4",
+          "role_tier_reason": "Indented emphasized quote-style block with a vertical line and bold opening sentence.",
+          "text": "An innovation mindset is the internal conviction that you are not just an employee within a healthcare system, but a designer of it — empowered to bridge the gap between current limitations and future possibilities."
+        },
+        {
+          "bbox": [
+            0.5,
+            0.76,
+            0.97,
+            0.87
+          ],
+          "id": "bottom_reframe_citation",
+          "kind": "bullet",
+          "role_tier": "4",
+          "role_tier_reason": "Bottom text block provides a key reframing statement and source reference.",
+          "text": "Today's journey begins with a fundamental reframe: from Clinical Reactor to Systemic Innovator. National Academy of Medicine (2019): Taking Action Against Clinician Burnout."
+        }
+      ]
+    },
+    {
+      "artifact_path": "",
+      "callout_intent": null,
+      "card_number": 2,
+      "confidence": "HIGH",
+      "confidence_score": 0.96,
+      "coverage": "perceived",
+      "dominant_image_role": "3",
+      "extracted_text": "The Innovator's \"Hero's Journey\" This certificate unlocks a skill set you already possess as clinicians — reframed as a personal and professional quest. Three waypoints mark your path from insight to lasting impact. Executive One-Pager & Playbook Sparking Innovation: From Insight to Opportunity Building the Solution: Design, Plan, and Pitch Driving Impact: From Project to Lasting Change By journey's end, you will hold a tangible innovation playbook and the foundation for an executive one-pager — real deliverables that demonstrate systemic leadership. You are here: Waypoint 1.",
+      "image_role_flags": null,
+      "image_roles": [
+        "4",
+        "4",
+        "2",
+        "4",
+        "4",
+        "4",
+        "4",
+        "4",
+        "4",
+        "4",
+        "4"
+      ],
+      "layout_description": "A white slide with a blue title and subtitle at the upper left. The center contains a winding journey line with three circular waypoint icons and a star-shaped endpoint on the right, with large bold waypoint labels beneath and a small footer sentence along the bottom.",
+      "macro_layout": "diagram_driven",
+      "narration_cadence": "moderate",
+      "provider_model_id": "gpt-5.5",
+      "reading_path": "enumerated_process",
+      "reading_path_degraded": false,
+      "reading_path_flags": null,
+      "reading_path_geometry": {
+        "callout_intent": null,
+        "image_role_flags": null,
+        "image_roles": [
+          "4",
+          "4",
+          "2",
+          "4",
+          "4",
+          "4",
+          "4",
+          "4",
+          "4",
+          "4",
+          "4"
+        ],
+        "macro_layout": "center_out",
+        "narration_cadence": "dense",
+        "reading_path": "center_out",
+        "reading_path_flags": null,
+        "text_substructure": "peer_boxes"
+      },
+      "reading_path_rationale": {
+        "callout_intent": "No response prompt, quiz, or action-demand CTA is present.",
+        "image_role": "Foreground path-and-waypoint graphic is load-bearing and should be walked through as the course journey.",
+        "macro_layout": "Central journey diagram dominates the slide and organizes the reading path through waypoints.",
+        "narration_cadence": "Moderate density with title, framing copy, three waypoints, endpoint, and footer note.",
+        "text_substructure": "Three waypoints form an ordered path from insight to solution to impact, ending in deliverables."
+      },
+      "reading_path_source": "llm_primary",
+      "slide_id": "c1m1-p1-s02",
+      "slide_title": "The Innovator's \"Hero's Journey\"",
+      "source_png_path": "C:\\Users\\juanl\\Documents\\GitHub\\course-DEV-IDE-with-AGENTS-hybrid\\_bmad-output\\implementation-artifacts\\concierge-part1-narrated-20260630\\deck-final\\c1m1-p1-final_slide_02.png",
+      "text_blocks": [
+        "The Innovator's \"Hero's Journey\"",
+        "This certificate unlocks a skill set you already possess as clinicians — reframed as a personal and professional quest. Three waypoints mark your path from insight to lasting impact.",
+        "Executive One-Pager & Playbook",
+        "Sparking Innovation: From Insight to Opportunity",
+        "Building the Solution: Design, Plan, and Pitch",
+        "Driving Impact: From Project to Lasting Change",
+        "By journey's end, you will hold a tangible innovation playbook and the foundation for an executive one-pager — real deliverables that demonstrate systemic leadership. You are here: Waypoint 1."
+      ],
+      "text_substructure": "enumerated_process",
+      "visual_elements": [
+        {
+          "bbox": [
+            0.12,
+            0.08,
+            0.41,
+            0.12
+          ],
+          "id": "title",
+          "kind": "title",
+          "role_tier": "4",
+          "role_tier_reason": "Large heading labels the slide topic.",
+          "text": "The Innovator's \"Hero's Journey\""
+        },
+        {
+          "bbox": [
+            0.12,
+            0.13,
+            0.77,
+            0.16
+          ],
+          "id": "subtitle",
+          "kind": "callout",
+          "role_tier": "4",
+          "role_tier_reason": "Explanatory text directly frames the journey concept.",
+          "text": "This certificate unlocks a skill set you already possess as clinicians — reframed as a personal and professional quest. Three waypoints mark your path from insight to lasting impact."
+        },
+        {
+          "bbox": [
+            0.12,
+            0.25,
+            0.86,
+            0.61
+          ],
+          "id": "journey-path",
+          "kind": "diagram",
+          "role_tier": "2",
+          "role_tier_reason": "Illustrative winding path supports the journey metaphor; no internal labels to trace.",
+          "text": ""
+        },
+        {
+          "bbox": [
+            0.2,
+            0.36,
+            0.3,
+            0.61
+          ],
+          "id": "waypoint-1-icon",
+          "kind": "icon",
+          "role_tier": "4",
+          "role_tier_reason": "Small lightbulb and flag icon marks the first waypoint.",
+          "text": ""
+        },
+        {
+          "bbox": [
+            0.38,
+            0.45,
+            0.47,
+            0.59
+          ],
+          "id": "waypoint-2-icon",
+          "kind": "icon",
+          "role_tier": "4",
+          "role_tier_reason": "Small plan/blueprint icon marks the second waypoint.",
+          "text": ""
+        },
+        {
+          "bbox": [
+            0.55,
+            0.46,
+            0.64,
+            0.6
+          ],
+          "id": "waypoint-3-icon",
+          "kind": "icon",
+          "role_tier": "4",
+          "role_tier_reason": "Small rocket icon marks the third waypoint.",
+          "text": ""
+        },
+        {
+          "bbox": [
+            0.66,
+            0.25,
+            0.86,
+            0.59
+          ],
+          "id": "endpoint-star",
+          "kind": "callout",
+          "role_tier": "4",
+          "role_tier_reason": "Star-shaped endpoint contains a bold destination label.",
+          "text": "Executive One-Pager & Playbook"
+        },
+        {
+          "bbox": [
+            0.16,
+            0.63,
+            0.34,
+            0.81
+          ],
+          "id": "waypoint-1-label",
+          "kind": "callout",
+          "role_tier": "4",
+          "role_tier_reason": "Large bold label identifies the first waypoint.",
+          "text": "Sparking Innovation: From Insight to Opportunity"
+        },
+        {
+          "bbox": [
+            0.35,
+            0.63,
+            0.5,
+            0.81
+          ],
+          "id": "waypoint-2-label",
+          "kind": "callout",
+          "role_tier": "4",
+          "role_tier_reason": "Large bold label identifies the second waypoint.",
+          "text": "Building the Solution: Design, Plan, and Pitch"
+        },
+        {
+          "bbox": [
+            0.53,
+            0.63,
+            0.7,
+            0.81
+          ],
+          "id": "waypoint-3-label",
+          "kind": "callout",
+          "role_tier": "4",
+          "role_tier_reason": "Large bold label identifies the third waypoint.",
+          "text": "Driving Impact: From Project to Lasting Change"
+        },
+        {
+          "bbox": [
+            0.12,
+            0.94,
+            0.78,
+            0.97
+          ],
+          "id": "footer-note",
+          "kind": "callout",
+          "role_tier": "4",
+          "role_tier_reason": "Small footer provides final explanatory note and current location tag.",
+          "text": "By journey's end, you will hold a tangible innovation playbook and the foundation for an executive one-pager — real deliverables that demonstrate systemic leadership. You are here: Waypoint 1."
+        }
+      ]
+    },
+    {
+      "artifact_path": "",
+      "callout_intent": null,
+      "card_number": 3,
+      "confidence": "HIGH",
+      "confidence_score": 0.98,
+      "coverage": "perceived",
+      "dominant_image_role": null,
+      "extracted_text": "The Lineage of Physician Innovators Physicians have always been architects of change. These five exemplars demonstrate that innovation in healthcare spans care delivery, informatics, system redesign, process science, and digital health. Emergency Physicians CARE-DELIVERY REDESIGN During the pandemic, ED physicians rapidly deployed tele-triage to evaluate patients remotely, cutting exposure and preserving capacity. (ACEP, May 2020) Clinical Informatics & Abridge INFORMATICS Physician-led EMR adoption and Abridge AI conversation summarization improved documentation efficiency, reduced burnout, and enhanced patient communication. Glenn Steele — Geisinger SYSTEM REDESIGN ProvenCare (warranty-based surgical care) and ProvenHealth Navigator (advanced medical home) backed by data infrastructure and dedicated innovation teams. (PMC4106555) Dr. Atul Gawande PROCESS INNOVATION Adapted aviation's Checklist Manifesto for the OR — a process innovation, not a drug or device, that measurably reduced surgical mortality. (PMC3960713) Dr. Michelle Longmire — Medable DIGITAL HEALTH A dermatologist who built a platform for decentralized clinical trials, removing the brick-and-mortar bottleneck to make research faster and more equitable.",
+      "image_role_flags": [
+        "tier_2_5_candidate"
+      ],
+      "image_roles": [
+        "4",
+        "2",
+        "2_5",
+        "2_5",
+        "2_5",
+        "2_5",
+        "2_5"
+      ],
+      "layout_description": "A large dark-blue title sits at the top left with a blue explanatory subtitle beneath it. Below are five pale green rounded rectangular callout cards arranged in a three-column top row and two wider cards on the bottom row.",
+      "macro_layout": "card_grid",
+      "narration_cadence": "dense",
+      "provider_model_id": "gpt-5.5",
+      "reading_path": "grid_quadrant",
+      "reading_path_degraded": false,
+      "reading_path_flags": null,
+      "reading_path_geometry": {
+        "callout_intent": null,
+        "image_role_flags": [
+          "tier_2_5_candidate"
+        ],
+        "image_roles": [
+          "4",
+          "2",
+          "2_5",
+          "2_5",
+          "2_5",
+          "2_5",
+          "2_5"
+        ],
+        "macro_layout": "multi_column",
+        "narration_cadence": "dense",
+        "reading_path": "multi_column",
+        "reading_path_flags": null,
+        "text_substructure": "peer_boxes"
+      },
+      "reading_path_rationale": {
+        "callout_intent": "Informational exemplars only; no question, quiz, or action demand.",
+        "image_role": "No image elements are present; the slide is text cards only.",
+        "macro_layout": "Five peer cards arranged as a 3+2 grid beneath the title/subtitle.",
+        "narration_cadence": "Each card contains substantial explanatory copy and citations, requiring denser narration.",
+        "text_substructure": "The five physician innovator examples are coordinate, permutable peer cards, not a sequence."
+      },
+      "reading_path_source": "llm_primary",
+      "slide_id": "c1m1-p1-s03",
+      "slide_title": "The Lineage of Physician Innovators",
+      "source_png_path": "C:\\Users\\juanl\\Documents\\GitHub\\course-DEV-IDE-with-AGENTS-hybrid\\_bmad-output\\implementation-artifacts\\concierge-part1-narrated-20260630\\deck-final\\c1m1-p1-final_slide_03.png",
+      "text_blocks": [
+        "The Lineage of Physician Innovators",
+        "Physicians have always been architects of change. These five exemplars demonstrate that innovation in healthcare spans care delivery, informatics, system redesign, process science, and digital health.",
+        "Emergency Physicians CARE-DELIVERY REDESIGN During the pandemic, ED physicians rapidly deployed tele-triage to evaluate patients remotely, cutting exposure and preserving capacity. (ACEP, May 2020)",
+        "Clinical Informatics & Abridge INFORMATICS Physician-led EMR adoption and Abridge AI conversation summarization improved documentation efficiency, reduced burnout, and enhanced patient communication.",
+        "Glenn Steele — Geisinger SYSTEM REDESIGN ProvenCare (warranty-based surgical care) and ProvenHealth Navigator (advanced medical home) backed by data infrastructure and dedicated innovation teams. (PMC4106555)",
+        "Dr. Atul Gawande PROCESS INNOVATION Adapted aviation's Checklist Manifesto for the OR — a process innovation, not a drug or device, that measurably reduced surgical mortality. (PMC3960713)",
+        "Dr. Michelle Longmire — Medable DIGITAL HEALTH A dermatologist who built a platform for decentralized clinical trials, removing the brick-and-mortar bottleneck to make research faster and more equitable."
+      ],
+      "text_substructure": "peer_boxes",
+      "visual_elements": [
+        {
+          "bbox": [
+            0.06,
+            0.1,
+            0.64,
+            0.18
+          ],
+          "id": "title",
+          "kind": "title",
+          "role_tier": "4",
+          "role_tier_reason": "Large heading text labels the slide topic.",
+          "text": "The Lineage of Physician Innovators"
+        },
+        {
+          "bbox": [
+            0.06,
+            0.23,
+            0.88,
+            0.31
+          ],
+          "id": "subtitle",
+          "kind": "callout",
+          "role_tier": "2",
+          "role_tier_reason": "Explanatory text supports the main title.",
+          "text": "Physicians have always been architects of change. These five exemplars demonstrate that innovation in healthcare spans care delivery, informatics, system redesign, process science, and digital health."
+        },
+        {
+          "bbox": [
+            0.06,
+            0.34,
+            0.34,
+            0.73
+          ],
+          "id": "card_emergency_physicians",
+          "kind": "callout",
+          "role_tier": "2_5",
+          "role_tier_reason": "Boxed exemplar with category tag and supporting evidence text.",
+          "text": "Emergency Physicians CARE-DELIVERY REDESIGN During the pandemic, ED physicians rapidly deployed tele-triage to evaluate patients remotely, cutting exposure and preserving capacity. (ACEP, May 2020)"
+        },
+        {
+          "bbox": [
+            0.35,
+            0.34,
+            0.63,
+            0.73
+          ],
+          "id": "card_clinical_informatics",
+          "kind": "callout",
+          "role_tier": "2_5",
+          "role_tier_reason": "Boxed exemplar with category tag and explanatory evidence text.",
+          "text": "Clinical Informatics & Abridge INFORMATICS Physician-led EMR adoption and Abridge AI conversation summarization improved documentation efficiency, reduced burnout, and enhanced patient communication."
+        },
+        {
+          "bbox": [
+            0.64,
+            0.34,
+            0.92,
+            0.73
+          ],
+          "id": "card_glenn_steele",
+          "kind": "callout",
+          "role_tier": "2_5",
+          "role_tier_reason": "Boxed exemplar with category tag and citation-like support.",
+          "text": "Glenn Steele — Geisinger SYSTEM REDESIGN ProvenCare (warranty-based surgical care) and ProvenHealth Navigator (advanced medical home) backed by data infrastructure and dedicated innovation teams. (PMC4106555)"
+        },
+        {
+          "bbox": [
+            0.06,
+            0.75,
+            0.49,
+            0.94
+          ],
+          "id": "card_atul_gawande",
+          "kind": "callout",
+          "role_tier": "2_5",
+          "role_tier_reason": "Boxed exemplar with category tag and citation-like support.",
+          "text": "Dr. Atul Gawande PROCESS INNOVATION Adapted aviation's Checklist Manifesto for the OR — a process innovation, not a drug or device, that measurably reduced surgical mortality. (PMC3960713)"
+        },
+        {
+          "bbox": [
+            0.5,
+            0.75,
+            0.92,
+            0.94
+          ],
+          "id": "card_michelle_longmire",
+          "kind": "callout",
+          "role_tier": "2_5",
+          "role_tier_reason": "Boxed exemplar with category tag and supporting description.",
+          "text": "Dr. Michelle Longmire — Medable DIGITAL HEALTH A dermatologist who built a platform for decentralized clinical trials, removing the brick-and-mortar bottleneck to make research faster and more equitable."
+        }
+      ]
+    },
+    {
+      "artifact_path": "",
+      "callout_intent": "directive_cta",
+      "card_number": 4,
+      "confidence": "HIGH",
+      "confidence_score": 0.98,
+      "coverage": "perceived",
+      "dominant_image_role": "2",
+      "extracted_text": "Expectations & Mental Frameworks Two foundational concepts underpin everything in this course. Internalizing them is not optional — they are the psychological infrastructure that makes innovation possible. MENTAL STRENGTH PERSONAL GROWTH Growth Mindset — Carol Dweck The belief that abilities and intelligence are developed through effort, effective strategies, and learning from mistakes — not fixed traits. Your capacity to innovate is a muscle, not a ceiling. Failure is data, not verdict. Psychological Safety — Amy Edmondson A shared belief that a team is safe for interpersonal risk-taking — speaking up, admitting mistakes, offering dissenting ideas — without fear of embarrassment or retaliation. Safety is the prerequisite, not the reward. Course contract: We collectively commit to psychological safety in all discussion boards and peer reviews. Share half-baked ideas. Critique systems, not people. Expose flaws without fear.",
+      "image_role_flags": null,
+      "image_roles": [
+        "4",
+        "2",
+        "2",
+        "2",
+        "2",
+        "2",
+        "2",
+        "4"
+      ],
+      "layout_description": "A large title and subtitle sit at the top on a white background. The middle uses two side-by-side concept sections with illustrations above headings and explanatory text, followed by a wide pale-green course contract callout across the bottom.",
+      "macro_layout": "multi_column",
+      "narration_cadence": "dense",
+      "provider_model_id": "gpt-5.5",
+      "reading_path": "multi_column",
+      "reading_path_degraded": false,
+      "reading_path_flags": null,
+      "reading_path_geometry": {
+        "callout_intent": null,
+        "image_role_flags": null,
+        "image_roles": [
+          "4",
+          "2",
+          "2",
+          "2",
+          "2",
+          "2",
+          "2",
+          "4"
+        ],
+        "macro_layout": "diagram_driven",
+        "narration_cadence": "dense",
+        "reading_path": "diagram_driven",
+        "reading_path_flags": null,
+        "text_substructure": "dense_exposition"
+      },
+      "reading_path_rationale": {
+        "callout_intent": "The course contract uses commitment and imperative language directing learner behavior.",
+        "image_role": "Illustrations depict the two concepts the text names, but do not require a technical walk-through.",
+        "macro_layout": "Two side-by-side coordinate concept sections dominate the slide, with no oppositional cue.",
+        "narration_cadence": "The slide contains multiple explanatory paragraphs plus a bottom contract callout, making narration relatively dense.",
+        "text_substructure": "Growth Mindset and Psychological Safety are peer concepts, followed by a related course-contract box."
+      },
+      "reading_path_source": "llm_primary",
+      "slide_id": "c1m1-p1-s04",
+      "slide_title": "Expectations & Mental Frameworks",
+      "source_png_path": "C:\\Users\\juanl\\Documents\\GitHub\\course-DEV-IDE-with-AGENTS-hybrid\\_bmad-output\\implementation-artifacts\\concierge-part1-narrated-20260630\\deck-final\\c1m1-p1-final_slide_04.png",
+      "text_blocks": [
+        "Expectations & Mental Frameworks",
+        "Two foundational concepts underpin everything in this course. Internalizing them is not optional — they are the psychological infrastructure that makes innovation possible.",
+        "MENTAL STRENGTH PERSONAL GROWTH",
+        "Growth Mindset — Carol Dweck",
+        "The belief that abilities and intelligence are developed through effort, effective strategies, and learning from mistakes — not fixed traits. Your capacity to innovate is a muscle, not a ceiling. Failure is data, not verdict.",
+        "Psychological Safety — Amy Edmondson",
+        "A shared belief that a team is safe for interpersonal risk-taking — speaking up, admitting mistakes, offering dissenting ideas — without fear of embarrassment or retaliation. Safety is the prerequisite, not the reward.",
+        "Course contract: We collectively commit to psychological safety in all discussion boards and peer reviews. Share half-baked ideas. Critique systems, not people. Expose flaws without fear."
+      ],
+      "text_substructure": "peer_boxes",
+      "visual_elements": [
+        {
+          "bbox": [
+            0.06,
+            0.11,
+            0.72,
+            0.18
+          ],
+          "id": "title",
+          "kind": "title",
+          "role_tier": "4",
+          "role_tier_reason": "Large top heading functions as the slide label.",
+          "text": "Expectations & Mental Frameworks"
+        },
+        {
+          "bbox": [
+            0.06,
+            0.22,
+            0.84,
+            0.29
+          ],
+          "id": "subtitle",
+          "kind": "callout",
+          "role_tier": "2",
+          "role_tier_reason": "Prominent explanatory text frames the slide content.",
+          "text": "Two foundational concepts underpin everything in this course. Internalizing them is not optional — they are the psychological infrastructure that makes innovation possible."
+        },
+        {
+          "bbox": [
+            0.06,
+            0.31,
+            0.25,
+            0.53
+          ],
+          "id": "growth_illustration",
+          "kind": "diagram",
+          "role_tier": "2",
+          "role_tier_reason": "Illustrative image supports the growth mindset section; small internal labels are visible but not a technical diagram to trace.",
+          "text": "MENTAL STRENGTH PERSONAL GROWTH"
+        },
+        {
+          "bbox": [
+            0.49,
+            0.31,
+            0.69,
+            0.53
+          ],
+          "id": "safety_illustration",
+          "kind": "photo",
+          "role_tier": "2",
+          "role_tier_reason": "Illustrative group image supports the psychological safety section.",
+          "text": ""
+        },
+        {
+          "bbox": [
+            0.06,
+            0.56,
+            0.46,
+            0.74
+          ],
+          "id": "growth_section_text",
+          "kind": "callout",
+          "role_tier": "2",
+          "role_tier_reason": "Left concept section contains heading and explanatory body text.",
+          "text": "Growth Mindset — Carol Dweck The belief that abilities and intelligence are developed through effort, effective strategies, and learning from mistakes — not fixed traits. Your capacity to innovate is a muscle, not a ceiling. Failure is data, not verdict."
+        },
+        {
+          "bbox": [
+            0.49,
+            0.56,
+            0.88,
+            0.74
+          ],
+          "id": "safety_section_text",
+          "kind": "callout",
+          "role_tier": "2",
+          "role_tier_reason": "Right concept section contains heading and explanatory body text.",
+          "text": "Psychological Safety — Amy Edmondson A shared belief that a team is safe for interpersonal risk-taking — speaking up, admitting mistakes, offering dissenting ideas — without fear of embarrassment or retaliation. Safety is the prerequisite, not the reward."
+        },
+        {
+          "bbox": [
+            0.06,
+            0.77,
+            0.91,
+            0.89
+          ],
+          "id": "course_contract_callout",
+          "kind": "callout",
+          "role_tier": "2",
+          "role_tier_reason": "Wide highlighted box emphasizes a key course agreement.",
+          "text": "Course contract: We collectively commit to psychological safety in all discussion boards and peer reviews. Share half-baked ideas. Critique systems, not people. Expose flaws without fear."
+        },
+        {
+          "bbox": [
+            0.075,
+            0.805,
+            0.09,
+            0.827
+          ],
+          "id": "checkbox_icon",
+          "kind": "icon",
+          "role_tier": "4",
+          "role_tier_reason": "Small icon inside the callout acts as a label marker.",
+          "text": ""
+        }
+      ]
+    },
+    {
+      "artifact_path": "",
+      "callout_intent": null,
+      "card_number": 5,
+      "confidence": "HIGH",
+      "confidence_score": 0.98,
+      "coverage": "perceived",
+      "dominant_image_role": null,
+      "extracted_text": "The Innovation Lexicon A shared vocabulary is the foundation of shared understanding. These eight definitions form the conceptual bedrock of this course — return to them often. Term Definition Innovation Creating new value that is adopted by the market or system — not just inventing a new gadget. Intrapreneurship Acting like an entrepreneur but driving innovation from within an established organization (e.g., a hospital system) while navigating legacy constraints. Systemic Friction Chronic, recurring operational or clinical pain points that drain time, money, and morale across the system. Root Cause vs. Symptom The symptom is the visible pain (e.g., high nursing turnover); the root cause is the invisible system failure creating it (e.g., a broken EHR triage workflow). Functional Flexibility The ability to adapt your skills and borrow concepts from outside your specialty to solve ambiguous, complex problems. First Principles Thinking Breaking a complex systemic problem into its most basic foundational truths and building up from there — not reasoning by analogy or \"how we've always done it.\" Psychological Safety The shared belief that a team is safe for interpersonal risk-taking — report errors, ask questions, propose unconventional ideas without fear of humiliation or retaliation. Growth Mindset The belief that clinical and leadership capabilities are built through dedication and iteration — shifting failure response from \"I am not equipped\" to \"What did this failure teach us?\"",
+      "image_role_flags": [
+        "tier_2_5_candidate"
+      ],
+      "image_roles": [
+        "4",
+        "2",
+        "2_5"
+      ],
+      "layout_description": "A large dark-blue title sits at the upper left with a short explanatory sentence below it. Most of the slide is occupied by a two-column lexicon table with a dark navy header and eight definition rows.",
+      "macro_layout": "single_text_block",
+      "narration_cadence": "dense",
+      "provider_model_id": "gpt-5.5",
+      "reading_path": "top_down",
+      "reading_path_degraded": false,
+      "reading_path_flags": null,
+      "reading_path_geometry": {
+        "callout_intent": null,
+        "image_role_flags": [
+          "tier_2_5_candidate"
+        ],
+        "image_roles": [
+          "4",
+          "2",
+          "2_5"
+        ],
+        "macro_layout": "single_text_block",
+        "narration_cadence": "dense",
+        "reading_path": "top_down",
+        "reading_path_flags": null,
+        "text_substructure": "peer_boxes"
+      },
+      "reading_path_rationale": {
+        "callout_intent": "The intro frames the vocabulary purpose; it is not a distinct quiz, invitation, or CTA.",
+        "image_role": "No separate image element is present; the table is the primary textual content rather than an image to narrate.",
+        "macro_layout": "Title, intro sentence, and the large lexicon table stack vertically in a top-down text layout.",
+        "narration_cadence": "The slide contains many dense definitions requiring a slower scaffolded walkthrough.",
+        "text_substructure": "The eight term-definition rows are coordinate lexicon entries and can be referenced as peer items, not a sequence."
+      },
+      "reading_path_source": "llm_primary",
+      "slide_id": "c1m1-p1-s05",
+      "slide_title": "The Innovation Lexicon",
+      "source_png_path": "C:\\Users\\juanl\\Documents\\GitHub\\course-DEV-IDE-with-AGENTS-hybrid\\_bmad-output\\implementation-artifacts\\concierge-part1-narrated-20260630\\deck-final\\c1m1-p1-final_slide_05.png",
+      "text_blocks": [
+        "The Innovation Lexicon",
+        "A shared vocabulary is the foundation of shared understanding. These eight definitions form the conceptual bedrock of this course — return to them often.",
+        "Term Definition",
+        "Innovation Creating new value that is adopted by the market or system — not just inventing a new gadget.",
+        "Intrapreneurship Acting like an entrepreneur but driving innovation from within an established organization (e.g., a hospital system) while navigating legacy constraints.",
+        "Systemic Friction Chronic, recurring operational or clinical pain points that drain time, money, and morale across the system.",
+        "Root Cause vs. Symptom The symptom is the visible pain (e.g., high nursing turnover); the root cause is the invisible system failure creating it (e.g., a broken EHR triage workflow).",
+        "Functional Flexibility The ability to adapt your skills and borrow concepts from outside your specialty to solve ambiguous, complex problems.",
+        "First Principles Thinking Breaking a complex systemic problem into its most basic foundational truths and building up from there — not reasoning by analogy or \"how we've always done it.\"",
+        "Psychological Safety The shared belief that a team is safe for interpersonal risk-taking — report errors, ask questions, propose unconventional ideas without fear of humiliation or retaliation.",
+        "Growth Mindset The belief that clinical and leadership capabilities are built through dedication and iteration — shifting failure response from \"I am not equipped\" to \"What did this failure teach us?\""
+      ],
+      "text_substructure": "peer_boxes",
+      "visual_elements": [
+        {
+          "bbox": [
+            0.06,
+            0.08,
+            0.39,
+            0.16
+          ],
+          "id": "title",
+          "kind": "title",
+          "role_tier": "4",
+          "role_tier_reason": "Large heading labels the slide topic.",
+          "text": "The Innovation Lexicon"
+        },
+        {
+          "bbox": [
+            0.06,
+            0.19,
+            0.9,
+            0.28
+          ],
+          "id": "intro",
+          "kind": "callout",
+          "role_tier": "2",
+          "role_tier_reason": "Supporting explanatory sentence below the title.",
+          "text": "A shared vocabulary is the foundation of shared understanding. These eight definitions form the conceptual bedrock of this course — return to them often."
+        },
+        {
+          "bbox": [
+            0.06,
+            0.26,
+            0.88,
+            0.91
+          ],
+          "id": "lexicon-table",
+          "kind": "table",
+          "role_tier": "2_5",
+          "role_tier_reason": "Main exhibit table containing the definitions to read and confirm.",
+          "text": "Term Definition Innovation Creating new value that is adopted by the market or system — not just inventing a new gadget. Intrapreneurship Acting like an entrepreneur but driving innovation from within an established organization (e.g., a hospital system) while navigating legacy constraints. Systemic Friction Chronic, recurring operational or clinical pain points that drain time, money, and morale across the system. Root Cause vs. Symptom The symptom is the visible pain (e.g., high nursing turnover); the root cause is the invisible system failure creating it (e.g., a broken EHR triage workflow). Functional Flexibility The ability to adapt your skills and borrow concepts from outside your specialty to solve ambiguous, complex problems. First Principles Thinking Breaking a complex systemic problem into its most basic foundational truths and building up from there — not reasoning by analogy or \"how we've always done it.\" Psychological Safety The shared belief that a team is safe for interpersonal risk-taking — report errors, ask questions, propose unconventional ideas without fear of humiliation or retaliation. Growth Mindset The belief that clinical and leadership capabilities are built through dedication and iteration — shifting failure response from \"I am not equipped\" to \"What did this failure teach us?\""
+        }
+      ]
+    },
+    {
+      "artifact_path": "",
+      "callout_intent": null,
+      "card_number": 6,
+      "confidence": "HIGH",
+      "confidence_score": 0.98,
+      "coverage": "perceived",
+      "dominant_image_role": "1",
+      "extracted_text": "The Tightrope & The Net You cannot expect clinical staff to take the interpersonal risks that innovation requires if there is no safety net for failure. Safety precedes innovation. No Safety Net: Compliance & Fear When teams fear judgment or retaliation, they default to rigid compliance. Every misstep feels catastrophic. Innovation dies before it can be spoken aloud. Psychological Safety: Innovation & Risk-Taking When a net exists, clinicians attempt bold moves — proposing new workflows, flagging failures early, and piloting unconventional solutions. The net is the precondition for flight.",
+      "image_role_flags": null,
+      "image_roles": [
+        "4",
+        "4",
+        "4",
+        "4",
+        "4",
+        "4",
+        "2",
+        "2"
+      ],
+      "layout_description": "The slide has a large white text area on the left with a title, an introductory statement, and two lower text columns. The right side is a full-height split illustration contrasting a dark clinical setting with a bright acrobatic tightrope-and-net scene.",
+      "macro_layout": "split_image_text",
+      "narration_cadence": "dense",
+      "provider_model_id": "gpt-5.5",
+      "reading_path": "two_up_comparison",
+      "reading_path_degraded": false,
+      "reading_path_flags": null,
+      "reading_path_geometry": {
+        "callout_intent": null,
+        "image_role_flags": null,
+        "image_roles": [
+          "4",
+          "4",
+          "4",
+          "4",
+          "4",
+          "4",
+          "2",
+          "2"
+        ],
+        "macro_layout": "split_image_text",
+        "narration_cadence": "dense",
+        "reading_path": "split_image_text",
+        "reading_path_flags": null,
+        "text_substructure": "dense_exposition"
+      },
+      "reading_path_rationale": {
+        "callout_intent": "No question, quiz, or action-demand CTA is present.",
+        "image_role": "Photos illustrate the clinical fear versus safety-net metaphor referenced by the text, but are not instructional.",
+        "macro_layout": "Left text block is paired with a full-height image area on the right.",
+        "narration_cadence": "Substantial intro plus two paragraph-style comparison blocks require a denser walk-through.",
+        "text_substructure": "Two labeled opposing sides contrast no safety net with psychological safety."
+      },
+      "reading_path_source": "llm_primary",
+      "slide_id": "c1m1-p1-s06",
+      "slide_title": "The Tightrope & The Net",
+      "source_png_path": "C:\\Users\\juanl\\Documents\\GitHub\\course-DEV-IDE-with-AGENTS-hybrid\\_bmad-output\\implementation-artifacts\\concierge-part1-narrated-20260630\\deck-final\\c1m1-p1-final_slide_06.png",
+      "text_blocks": [
+        "The Tightrope & The Net",
+        "You cannot expect clinical staff to take the interpersonal risks that innovation requires if there is no safety net for failure. Safety precedes innovation.",
+        "No Safety Net: Compliance & Fear",
+        "When teams fear judgment or retaliation, they default to rigid compliance. Every misstep feels catastrophic. Innovation dies before it can be spoken aloud.",
+        "Psychological Safety: Innovation & Risk-Taking",
+        "When a net exists, clinicians attempt bold moves — proposing new workflows, flagging failures early, and piloting unconventional solutions. The net is the precondition for flight."
+      ],
+      "text_substructure": "comparison_pair",
+      "visual_elements": [
+        {
+          "bbox": [
+            0.06,
+            0.12,
+            0.5,
+            0.18
+          ],
+          "id": "title",
+          "kind": "title",
+          "role_tier": "4",
+          "role_tier_reason": "large primary slide label at top left",
+          "text": "The Tightrope & The Net"
+        },
+        {
+          "bbox": [
+            0.06,
+            0.24,
+            0.55,
+            0.36
+          ],
+          "id": "intro_callout",
+          "kind": "callout",
+          "role_tier": "4",
+          "role_tier_reason": "prominent explanatory message below title",
+          "text": "You cannot expect clinical staff to take the interpersonal risks that innovation requires if there is no safety net for failure. Safety precedes innovation."
+        },
+        {
+          "bbox": [
+            0.06,
+            0.43,
+            0.29,
+            0.5
+          ],
+          "id": "left_column_heading",
+          "kind": "callout",
+          "role_tier": "4",
+          "role_tier_reason": "bold column label",
+          "text": "No Safety Net: Compliance & Fear"
+        },
+        {
+          "bbox": [
+            0.06,
+            0.54,
+            0.32,
+            0.8
+          ],
+          "id": "left_column_body",
+          "kind": "bullet",
+          "role_tier": "4",
+          "role_tier_reason": "main readable explanatory text block",
+          "text": "When teams fear judgment or retaliation, they default to rigid compliance. Every misstep feels catastrophic. Innovation dies before it can be spoken aloud."
+        },
+        {
+          "bbox": [
+            0.33,
+            0.43,
+            0.59,
+            0.5
+          ],
+          "id": "right_column_heading",
+          "kind": "callout",
+          "role_tier": "4",
+          "role_tier_reason": "bold column label",
+          "text": "Psychological Safety: Innovation & Risk-Taking"
+        },
+        {
+          "bbox": [
+            0.33,
+            0.54,
+            0.61,
+            0.85
+          ],
+          "id": "right_column_body",
+          "kind": "bullet",
+          "role_tier": "4",
+          "role_tier_reason": "main readable explanatory text block",
+          "text": "When a net exists, clinicians attempt bold moves — proposing new workflows, flagging failures early, and piloting unconventional solutions. The net is the precondition for flight."
+        },
+        {
+          "bbox": [
+            0.63,
+            0.0,
+            0.82,
+            1.0
+          ],
+          "id": "dark_clinician_panel",
+          "kind": "photo",
+          "role_tier": "2",
+          "role_tier_reason": "supporting illustration of a worried clinician in a dark setting",
+          "text": ""
+        },
+        {
+          "bbox": [
+            0.82,
+            0.0,
+            1.0,
+            1.0
+          ],
+          "id": "bright_net_panel",
+          "kind": "photo",
+          "role_tier": "2",
+          "role_tier_reason": "supporting illustration of a person above a safety net",
+          "text": ""
+        }
+      ]
+    },
+    {
+      "artifact_path": "",
+      "callout_intent": "directive_cta",
+      "card_number": 7,
+      "confidence": "HIGH",
+      "confidence_score": 0.98,
+      "coverage": "perceived",
+      "dominant_image_role": "2_5",
+      "extracted_text": "The \"Wicked\" World of Innovation You have been rewarded for hyper-specialization — mastering Kind learning environments where patterns repeat and rules are clear. But healthcare's systemic problems are Wicked environments. Solving them demands functional flexibility and interdisciplinary range. Featured: David Epstein \"Why the Most Experienced People Fail First\" — on why generalists who borrow tools across domains triumph in complex systems. Watch on YouTube Post-video takeaway: To be an effective healthcare intrapreneur, you must have \"Range\" — the humility to set aside the specific tools that made you a great clinician and adopt the broad, interdisciplinary tools needed to redesign a broken system. Kind Environments (Clinical) Patterns repeat reliably Rules are clear and stable Feedback is immediate Specialization is rewarded Wicked Environments (Innovation) Patterns are ambiguous Rules shift with context Feedback is delayed or absent Range and flexibility win",
+      "image_role_flags": [
+        "tier_2_5_candidate"
+      ],
+      "image_roles": [
+        "4",
+        "2",
+        "2",
+        "4",
+        "2",
+        "2_5"
+      ],
+      "layout_description": "Large title and explanatory text are aligned on the left, followed by a featured-speaker section, a green YouTube-style button, and a post-video takeaway paragraph. A pale green bordered two-column comparison table occupies the lower-right portion of the slide.",
+      "macro_layout": "split_image_text",
+      "narration_cadence": "dense",
+      "provider_model_id": "gpt-5.5",
+      "reading_path": "two_up_comparison",
+      "reading_path_degraded": false,
+      "reading_path_flags": null,
+      "reading_path_geometry": {
+        "callout_intent": null,
+        "image_role_flags": [
+          "tier_2_5_candidate"
+        ],
+        "image_roles": [
+          "4",
+          "2",
+          "2",
+          "4",
+          "2",
+          "2_5"
+        ],
+        "macro_layout": "split_image_text",
+        "narration_cadence": "dense",
+        "reading_path": "split_image_text",
+        "reading_path_flags": null,
+        "text_substructure": "peer_boxes"
+      },
+      "reading_path_rationale": {
+        "callout_intent": "The 'Watch on YouTube' button is an action-oriented CTA.",
+        "image_role": "The comparison table functions as a visible exhibit supporting the claim, while the YouTube icon is secondary.",
+        "macro_layout": "Left-side explanatory text stack is paired with a dominant right-side comparison exhibit.",
+        "narration_cadence": "Multiple paragraphs plus a bullet comparison require a denser walkthrough.",
+        "text_substructure": "The central structure contrasts Kind Environments with Wicked Environments using paired headings and bullets."
+      },
+      "reading_path_source": "llm_primary",
+      "slide_id": "c1m1-p1-s07",
+      "slide_title": "The \"Wicked\" World of Innovation",
+      "source_png_path": "C:\\Users\\juanl\\Documents\\GitHub\\course-DEV-IDE-with-AGENTS-hybrid\\_bmad-output\\implementation-artifacts\\concierge-part1-narrated-20260630\\deck-final\\c1m1-p1-final_slide_07.png",
+      "text_blocks": [
+        "The \"Wicked\" World of Innovation",
+        "You have been rewarded for hyper-specialization — mastering Kind learning environments where patterns repeat and rules are clear. But healthcare's systemic problems are Wicked environments. Solving them demands functional flexibility and interdisciplinary range.",
+        "Featured: David Epstein",
+        "\"Why the Most Experienced People Fail First\" — on why generalists who borrow tools across domains triumph in complex systems.",
+        "Watch on YouTube",
+        "Post-video takeaway: To be an effective healthcare intrapreneur, you must have \"Range\" — the humility to set aside the specific tools that made you a great clinician and adopt the broad, interdisciplinary tools needed to redesign a broken system.",
+        "Kind Environments (Clinical) • Patterns repeat reliably • Rules are clear and stable • Feedback is immediate • Specialization is rewarded",
+        "Wicked Environments (Innovation) • Patterns are ambiguous • Rules shift with context • Feedback is delayed or absent • Range and flexibility win"
+      ],
+      "text_substructure": "comparison_pair",
+      "visual_elements": [
+        {
+          "bbox": [
+            0.06,
+            0.11,
+            0.66,
+            0.18
+          ],
+          "id": "title",
+          "kind": "title",
+          "role_tier": "4",
+          "role_tier_reason": "Large top heading labels the slide topic.",
+          "text": "The \"Wicked\" World of Innovation"
+        },
+        {
+          "bbox": [
+            0.06,
+            0.22,
+            0.9,
+            0.32
+          ],
+          "id": "intro_callout",
+          "kind": "callout",
+          "role_tier": "2",
+          "role_tier_reason": "Prominent explanatory paragraph supporting the title.",
+          "text": "You have been rewarded for hyper-specialization — mastering Kind learning environments where patterns repeat and rules are clear. But healthcare's systemic problems are Wicked environments. Solving them demands functional flexibility and interdisciplinary range."
+        },
+        {
+          "bbox": [
+            0.06,
+            0.37,
+            0.52,
+            0.5
+          ],
+          "id": "featured_block",
+          "kind": "callout",
+          "role_tier": "2",
+          "role_tier_reason": "Supporting featured-speaker text block on the left.",
+          "text": "Featured: David Epstein \"Why the Most Experienced People Fail First\" — on why generalists who borrow tools across domains triumph in complex systems."
+        },
+        {
+          "bbox": [
+            0.06,
+            0.53,
+            0.23,
+            0.6
+          ],
+          "id": "youtube_button",
+          "kind": "icon",
+          "role_tier": "4",
+          "role_tier_reason": "Small button with play icon functions as an action label.",
+          "text": "Watch on YouTube"
+        },
+        {
+          "bbox": [
+            0.06,
+            0.62,
+            0.51,
+            0.7
+          ],
+          "id": "takeaway_block",
+          "kind": "callout",
+          "role_tier": "2",
+          "role_tier_reason": "Text takeaway callout summarizing the lesson.",
+          "text": "Post-video takeaway: To be an effective healthcare intrapreneur, you must have \"Range\" — the humility to set aside the specific tools that made you a great clinician and adopt the broad, interdisciplinary tools needed to redesign a broken system."
+        },
+        {
+          "bbox": [
+            0.55,
+            0.38,
+            0.92,
+            0.88
+          ],
+          "id": "comparison_table",
+          "kind": "chart",
+          "role_tier": "2_5",
+          "role_tier_reason": "Two-column comparison exhibit with headings and bullet evidence.",
+          "text": "Kind Environments (Clinical) • Patterns repeat reliably • Rules are clear and stable • Feedback is immediate • Specialization is rewarded Wicked Environments (Innovation) • Patterns are ambiguous • Rules shift with context • Feedback is delayed or absent • Range and flexibility win"
+        }
+      ]
+    },
+    {
+      "artifact_path": "",
+      "callout_intent": null,
+      "card_number": 8,
+      "confidence": "HIGH",
+      "confidence_score": 0.98,
+      "coverage": "perceived",
+      "dominant_image_role": "1",
+      "extracted_text": "The Track vs. The Jungle Clinical training prepares you to excel in a predictable, well-marked environment. System innovation requires an entirely different toolkit — one built for ambiguity, uncharted territory, and improvisation under pressure. Kind Learning Environment (Clinical Specialization) Clear lanes. Defined rules. Measurable outcomes. Repetition builds mastery. The expert runner knows every hurdle. Wicked Learning Environment (Functional Flexibility) No map. No prescribed path. Success demands adaptability, a diverse toolkit, and the courage to move forward without a clear trail.",
+      "image_role_flags": null,
+      "image_roles": [
+        "4",
+        "4",
+        "4",
+        "4",
+        "2",
+        "2"
+      ],
+      "layout_description": "The slide has a large title and explanatory text on a white left area, with two lower comparison blocks: a green rounded callout on the left and blue text on the center. The right third is a full-height illustration split between a red track with hurdles and a dense jungle with an explorer.",
+      "macro_layout": "split_image_text",
+      "narration_cadence": "moderate",
+      "provider_model_id": "gpt-5.5",
+      "reading_path": "two_up_comparison",
+      "reading_path_degraded": false,
+      "reading_path_flags": null,
+      "reading_path_geometry": {
+        "callout_intent": null,
+        "image_role_flags": null,
+        "image_roles": [
+          "4",
+          "4",
+          "4",
+          "4",
+          "2",
+          "2"
+        ],
+        "macro_layout": "multi_column",
+        "narration_cadence": "dense",
+        "reading_path": "multi_column",
+        "reading_path_flags": null,
+        "text_substructure": "peer_boxes"
+      },
+      "reading_path_rationale": {
+        "callout_intent": "No prompt, quiz, or directive action is present.",
+        "image_role": "The track and jungle illustrations directly depict the named metaphor in the title and comparison, but are not technical diagrams.",
+        "macro_layout": "Text-heavy comparison occupies the left with a full-height illustrative image area on the right, making the dominant geometry split image and text.",
+        "narration_cadence": "There is substantial text but it is organized into a comparison rather than dense exposition, supporting a moderate paced walk-through.",
+        "text_substructure": "The slide explicitly contrasts the track/kind learning environment with the jungle/wicked learning environment."
+      },
+      "reading_path_source": "llm_primary",
+      "slide_id": "c1m1-p1-s08",
+      "slide_title": "The Track vs. The Jungle",
+      "source_png_path": "C:\\Users\\juanl\\Documents\\GitHub\\course-DEV-IDE-with-AGENTS-hybrid\\_bmad-output\\implementation-artifacts\\concierge-part1-narrated-20260630\\deck-final\\c1m1-p1-final_slide_08.png",
+      "text_blocks": [
+        "The Track vs. The Jungle",
+        "Clinical training prepares you to excel in a predictable, well-marked environment. System innovation requires an entirely different toolkit — one built for ambiguity, uncharted territory, and improvisation under pressure.",
+        "Kind Learning Environment (Clinical Specialization)\n\nClear lanes. Defined rules.\nMeasurable outcomes.\nRepetition builds mastery.\nThe expert runner knows\nevery hurdle.",
+        "Wicked Learning Environment\n(Functional Flexibility)\n\nNo map. No prescribed path.\nSuccess demands adaptability,\na diverse toolkit, and the\ncourage to move forward\nwithout a clear trail."
+      ],
+      "text_substructure": "comparison_pair",
+      "visual_elements": [
+        {
+          "bbox": [
+            0.06,
+            0.13,
+            0.56,
+            0.22
+          ],
+          "id": "title_main",
+          "kind": "title",
+          "role_tier": "4",
+          "role_tier_reason": "Large heading labels the slide topic.",
+          "text": "The Track vs. The Jungle"
+        },
+        {
+          "bbox": [
+            0.06,
+            0.26,
+            0.57,
+            0.42
+          ],
+          "id": "intro_paragraph",
+          "kind": "callout",
+          "role_tier": "4",
+          "role_tier_reason": "Prominent explanatory text sets up the comparison.",
+          "text": "Clinical training prepares you to excel in a predictable, well-marked environment. System innovation requires an entirely different toolkit — one built for ambiguity, uncharted territory, and improvisation under pressure."
+        },
+        {
+          "bbox": [
+            0.05,
+            0.45,
+            0.31,
+            0.87
+          ],
+          "id": "kind_learning_box",
+          "kind": "callout",
+          "role_tier": "4",
+          "role_tier_reason": "Colored rounded box highlights one side of the comparison.",
+          "text": "Kind Learning Environment (Clinical Specialization)\n\nClear lanes. Defined rules.\nMeasurable outcomes.\nRepetition builds mastery.\nThe expert runner knows\nevery hurdle."
+        },
+        {
+          "bbox": [
+            0.33,
+            0.48,
+            0.53,
+            0.84
+          ],
+          "id": "wicked_learning_block",
+          "kind": "callout",
+          "role_tier": "4",
+          "role_tier_reason": "Bold heading and paragraph define the contrasting concept.",
+          "text": "Wicked Learning Environment\n(Functional Flexibility)\n\nNo map. No prescribed path.\nSuccess demands adaptability,\na diverse toolkit, and the\ncourage to move forward\nwithout a clear trail."
+        },
+        {
+          "bbox": [
+            0.63,
+            0.0,
+            0.81,
+            1.0
+          ],
+          "id": "track_illustration",
+          "kind": "illustration",
+          "role_tier": "2",
+          "role_tier_reason": "Supporting metaphor image of a runner and hurdles on a marked track.",
+          "text": ""
+        },
+        {
+          "bbox": [
+            0.81,
+            0.0,
+            1.0,
+            1.0
+          ],
+          "id": "jungle_illustration",
+          "kind": "illustration",
+          "role_tier": "2",
+          "role_tier_reason": "Supporting metaphor image of dense jungle and an explorer with gear.",
+          "text": ""
+        }
+      ]
+    },
+    {
+      "artifact_path": "",
+      "callout_intent": "directive_cta",
+      "card_number": 9,
+      "confidence": "HIGH",
+      "confidence_score": 0.98,
+      "coverage": "perceived",
+      "dominant_image_role": "4",
+      "extracted_text": "Part 1 Summary Before moving to Part 2 — Building the Solution — lock in the four pillars of Part 1. These are the lens through which every future module is interpreted. The Gap Traditional clinical training creates expert practitioners — but not necessarily system innovators. The skills that make a great clinician are not identical to those that redesign broken systems. The Mission Move from being an employee within the system to an innovation leader shaping the system — a designer who bridges the gap between current limitations and future possibilities. The Journey A three-waypoint progression: identifying opportunities → designing and pitching solutions → driving lasting, measurable impact. Your deliverable: a tangible playbook and executive one-pager. The Mindset Success requires agility, first principles thinking, psychological safety, and the willingness to embrace intelligent failure — treating every setback as signal, not verdict. Up Next — Part 2: Building the Solution: Design, Plan, and Pitch. Bring your identified friction points and unmet needs.",
+      "image_role_flags": null,
+      "image_roles": [
+        "4",
+        "2",
+        "2",
+        "2",
+        "2",
+        "2",
+        "2",
+        "4"
+      ],
+      "layout_description": "A large title sits at the top left, followed by a two-line introductory sentence. Four bordered summary cards are arranged in a two-by-two grid, and a wide pale green callout bar spans the bottom.",
+      "macro_layout": "card_grid",
+      "narration_cadence": "dense",
+      "provider_model_id": "gpt-5.5",
+      "reading_path": "grid_quadrant",
+      "reading_path_degraded": false,
+      "reading_path_flags": null,
+      "reading_path_geometry": {
+        "callout_intent": null,
+        "image_role_flags": null,
+        "image_roles": [
+          "4",
+          "2",
+          "2",
+          "2",
+          "2",
+          "2",
+          "2",
+          "4"
+        ],
+        "macro_layout": "single_text_block",
+        "narration_cadence": "dense",
+        "reading_path": "top_down",
+        "reading_path_flags": null,
+        "text_substructure": "peer_boxes"
+      },
+      "reading_path_rationale": {
+        "callout_intent": "The bottom callout gives a next-step instruction to bring friction points and unmet needs.",
+        "image_role": "Only image-like element is a small icon marking the bottom callout, so it is pointer/iconographic.",
+        "macro_layout": "Four bordered summary cards form a two-by-two peer grid with a bottom callout bar.",
+        "narration_cadence": "Multiple cards contain substantial explanatory copy plus intro and next-step text.",
+        "text_substructure": "The four pillars are coordinate summary boxes, not a required transform sequence."
+      },
+      "reading_path_source": "llm_primary",
+      "slide_id": "c1m1-p1-s09",
+      "slide_title": "Part 1 Summary",
+      "source_png_path": "C:\\Users\\juanl\\Documents\\GitHub\\course-DEV-IDE-with-AGENTS-hybrid\\_bmad-output\\implementation-artifacts\\concierge-part1-narrated-20260630\\deck-final\\c1m1-p1-final_slide_09.png",
+      "text_blocks": [
+        "Part 1 Summary",
+        "Before moving to Part 2 — Building the Solution — lock in the four pillars of Part 1. These are the lens through which every future module is interpreted.",
+        "The Gap\nTraditional clinical training creates expert practitioners — but not necessarily system innovators. The skills that make a great clinician are not identical to those that redesign broken systems.",
+        "The Mission\nMove from being an employee within the system to an innovation leader shaping the system — a designer who bridges the gap between current limitations and future possibilities.",
+        "The Journey\nA three-waypoint progression: identifying opportunities → designing and pitching solutions → driving lasting, measurable impact. Your deliverable: a tangible playbook and executive one-pager.",
+        "The Mindset\nSuccess requires agility, first principles thinking, psychological safety, and the willingness to embrace intelligent failure — treating every setback as signal, not verdict.",
+        "Up Next — Part 2: Building the Solution: Design, Plan, and Pitch. Bring your identified friction points and unmet needs."
+      ],
+      "text_substructure": "peer_boxes",
+      "visual_elements": [
+        {
+          "bbox": [
+            0.06,
+            0.09,
+            0.31,
+            0.15
+          ],
+          "id": "title",
+          "kind": "title",
+          "role_tier": "4",
+          "role_tier_reason": "Large heading labels the slide section.",
+          "text": "Part 1 Summary"
+        },
+        {
+          "bbox": [
+            0.06,
+            0.2,
+            0.88,
+            0.27
+          ],
+          "id": "intro",
+          "kind": "callout",
+          "role_tier": "2",
+          "role_tier_reason": "Introductory explanatory text supports the main summary.",
+          "text": "Before moving to Part 2 — Building the Solution — lock in the four pillars of Part 1. These are the lens through which every future module is interpreted."
+        },
+        {
+          "bbox": [
+            0.06,
+            0.3,
+            0.48,
+            0.55
+          ],
+          "id": "gap_card",
+          "kind": "callout",
+          "role_tier": "2",
+          "role_tier_reason": "Summary card with supporting explanatory text.",
+          "text": "The Gap Traditional clinical training creates expert practitioners — but not necessarily system innovators. The skills that make a great clinician are not identical to those that redesign broken systems."
+        },
+        {
+          "bbox": [
+            0.49,
+            0.3,
+            0.91,
+            0.55
+          ],
+          "id": "mission_card",
+          "kind": "callout",
+          "role_tier": "2",
+          "role_tier_reason": "Summary card with supporting explanatory text.",
+          "text": "The Mission Move from being an employee within the system to an innovation leader shaping the system — a designer who bridges the gap between current limitations and future possibilities."
+        },
+        {
+          "bbox": [
+            0.06,
+            0.57,
+            0.48,
+            0.82
+          ],
+          "id": "journey_card",
+          "kind": "callout",
+          "role_tier": "2",
+          "role_tier_reason": "Summary card with supporting explanatory text.",
+          "text": "The Journey A three-waypoint progression: identifying opportunities → designing and pitching solutions → driving lasting, measurable impact. Your deliverable: a tangible playbook and executive one-pager."
+        },
+        {
+          "bbox": [
+            0.49,
+            0.57,
+            0.91,
+            0.82
+          ],
+          "id": "mindset_card",
+          "kind": "callout",
+          "role_tier": "2",
+          "role_tier_reason": "Summary card with supporting explanatory text.",
+          "text": "The Mindset Success requires agility, first principles thinking, psychological safety, and the willingness to embrace intelligent failure — treating every setback as signal, not verdict."
+        },
+        {
+          "bbox": [
+            0.06,
+            0.84,
+            0.91,
+            0.93
+          ],
+          "id": "bottom_up_next",
+          "kind": "callout",
+          "role_tier": "2",
+          "role_tier_reason": "Wide bottom callout directs attention to the next part.",
+          "text": "Up Next — Part 2: Building the Solution: Design, Plan, and Pitch. Bring your identified friction points and unmet needs."
+        },
+        {
+          "bbox": [
+            0.075,
+            0.875,
+            0.09,
+            0.902
+          ],
+          "id": "bottom_icon",
+          "kind": "icon",
+          "role_tier": "4",
+          "role_tier_reason": "Small outline icon at the start of the bottom callout acts as a label marker.",
+          "text": ""
+        }
+      ]
+    }
+  ]
+}

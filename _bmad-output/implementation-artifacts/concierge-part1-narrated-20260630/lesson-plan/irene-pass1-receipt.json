@@ -1,0 +1,99 @@
+{
+  "artifact": "Irene Pass-1 lesson plan + slide briefs",
+  "run": "concierge-part1-narrated-20260630",
+  "part": "C1M1 Part 1 — The Call: Setting the Stage & Chapter 1",
+  "authored_by": "Irene (Instructional Architect), delegated by Marcus",
+  "authored_at": "2026-06-30",
+  "pass": "Pass-1 (pre-Gary): lesson plan, Gary-ready slide briefs, de-dupe recommendation, special-format handling, clustering appendix (deferred). Narration = 1-line anchors only; full narration is Pass-2.",
+  "deck_target": "Narrated Gamma deck (CLASSIC mode, A/B per-card) -> Descript",
+  "inputs_read": [
+    "skills/bmad-agent-content-creator/SKILL.md (persona/method)",
+    ".../source-bundle/learning-objectives.md",
+    ".../source-bundle/slide-roster.md",
+    ".../source-bundle/source-bundle-receipt.json",
+    ".../source-bundle/slides/slide-01-welcome-the-modern-clinicians-dilemma.md",
+    ".../source-bundle/slides/slide-02-the-innovators-heros-journey.md",
+    ".../source-bundle/slides/slide-03-the-lineage-of-physician-innovators.md",
+    ".../source-bundle/slides/slide-04-expectations-and-mental-frameworks.md",
+    ".../source-bundle/slides/slide-05-the-innovation-lexicon.md",
+    ".../source-bundle/slides/slide-06-the-tightrope-and-the-net.md",
+    ".../source-bundle/slides/slide-07-the-wicked-world-of-innovation.md",
+    ".../source-bundle/slides/slide-08-the-track-vs-the-jungle.md",
+    ".../source-bundle/slides/slide-09-part-1-summary.md",
+    ".../RUN-MANIFEST.md"
+  ],
+  "authoritative_lo_set": {
+    "source": "learning-objectives.md 'Authoritative' section — 5 numbered Bloom-tagged objectives",
+    "los": {
+      "LO1": "Define 'innovation mindset' + correlate clinical competencies to innovation frameworks (Design Thinking). (Understand/Apply)",
+      "LO2": "Analyze macro/structural trends (admin burnout, healthcare consumerism, technological acceleration) necessitating intrapreneurial physician leadership. (Analyze)",
+      "LO3": "Differentiate 'idea' vs 'opportunity' using Sandra Lam's Intrapreneurship Formula. (Analyze/Evaluate)",
+      "LO4": "Evaluate systemic operational failures via root-cause analysis defended in a peer-reviewed forum ('M&M of Innovation'). (Evaluate)",
+      "LO5": "Create a personal innovation baseline (SWOT) + 'Opportunity Radar'. (Create)"
+    }
+  },
+  "lo_coverage": {
+    "per_slide": {
+      "s01": {"lo_refs": ["LO1", "LO2"], "role": "Gain attention + inform objective", "note": "LO1 primary (keystone innovation-mindset definition); LO2 seeded (tech acceleration, system complexity, burnout via NAM 2019)"},
+      "s02": {"lo_refs": ["LO1"], "role": "Inform objective / program orientation", "note": "WEAKEST content-LO tie — program/expectation orientation, not a content objective; flagged honestly, not forced"},
+      "s03": {"lo_refs": ["LO1"], "role": "Present content (worked exemplars)", "note": "5 physician-innovator exemplars; correlates clinical competence to innovation frameworks/types"},
+      "s04": {"lo_refs": ["LO1"], "role": "Present content + learning guidance", "note": "Mindset components (Growth Mindset/Dweck, Psychological Safety/Edmondson)"},
+      "s05": {"lo_refs": ["LO1"], "role": "Present content / reference anchor", "note": "Defines Innovation+Intrapreneurship; seeds LO3/LO4 (Systemic Friction, Root Cause vs Symptom) for later Parts"},
+      "s06": {"lo_refs": ["LO1"], "role": "Learning guidance / retention (visual metaphor)", "note": "Dramatizes Psychological Safety"},
+      "s07": {"lo_refs": ["LO1"], "role": "Present content + stimulus (embedded video)", "note": "Functional flexibility / Range / Kind-vs-Wicked"},
+      "s08": {"lo_refs": ["LO1"], "role": "Learning guidance / transfer (visual metaphor)", "note": "Dramatizes Functional Flexibility"},
+      "s09": {"lo_refs": ["LO1"], "role": "Retention + bridge", "note": "Recap; forward-points to LO2/LO3 (Part 2 problem diagnosis)"}
+    },
+    "per_lo": {
+      "LO1": {"served_by": ["s01", "s02", "s03", "s04", "s05", "s06", "s07", "s08", "s09"], "status": "FULLY SERVED — this is Part 1's core objective"},
+      "LO2": {"served_by": ["s01"], "status": "PARTIALLY SEEDED — full macro-trend Analyze is downstream-Part material"},
+      "LO3": {"served_by": [], "status": "NOT SERVED in Part 1 — downstream-Part objective (Sandra Lam Intrapreneurship Formula); seeded only via Lexicon terms; forward-pointed by s09"},
+      "LO4": {"served_by": [], "status": "NOT SERVED in Part 1 — downstream-Part objective (M&M of Innovation, root-cause defense)"},
+      "LO5": {"served_by": [], "status": "NOT SERVED in Part 1 — downstream-Part objective (SWOT, Opportunity Radar)"}
+    },
+    "every_slide_mapped": true,
+    "unmapped_slides": [],
+    "unserved_los_in_part1": ["LO3", "LO4", "LO5"],
+    "unserved_los_interpretation": "EXPECTED, NOT A DEFECT. Part 1 is the opening framing of a multi-part module; it lands LO1 in full and seeds LO2. LO3/LO4/LO5 are served in later Parts; Slide 9 explicitly forward-points to them. No slide is unmapped; no Part-1 LO is left unserved."
+  },
+  "sequencing": {
+    "verdict": "Keep SME source order 1->9. No reorder performed.",
+    "observation_non_blocking": "Lexicon (s05) follows the frameworks (s04) and exemplars (s03) rather than preceding them; SME uses a valid motivation-first sequence and the Lexicon functions as a returnable reference anchor, so placement is fine. Flagged for transparency only; no sequencing problem rises to the reorder bar."
+  },
+  "dedupe_recommendation": {
+    "decision_item": 1,
+    "summary": "KEEP BOTH, DIFFERENTIATE BY FRAMING + CROSS-REFERENCE, RELOCATE First Principles. Slide 4 = the two scholarly-attributed contracted frameworks its narration names (Growth Mindset/Dweck, Psychological Safety/Edmondson); Slide 5 Lexicon = the broader 8-term operational reference. (a) First Principles (identical wording) -> remove from Slide 4, keep only on Lexicon (aligns with narration + newer rendering; zero content lost). (b) Psychological Safety + Growth Mindset (different wording) -> keep both as deliberate cross-register reinforcement; cross-reference Lexicon entries to Slide 4's formal defs. Operator confirms before Gary renders.",
+    "content_dropped": "none — First Principles is relocated verbatim, not deleted; wording unchanged in the move"
+  },
+  "operator_review_decision_items": [
+    {"id": 1, "item": "Lexicon (s05) <-> Slide 4 (s04) de-dupe: keep both + differentiate framing + cross-reference + relocate First Principles to Lexicon-only. Confirm.", "where": "lesson-plan.md §C; slide-briefs Brief 4 & 5"},
+    {"id": 2, "item": "Slide 1 'Welcome Video (Talking Head + B-Roll)' -> render as a NARRATED welcome card this run; talking-head video production deferred (storyboard + video prompt carried as future-pass metadata). Confirm.", "where": "lesson-plan.md §E.1; slide-briefs Brief 1"},
+    {"id": 3, "item": "Slide 7 embedded YouTube (Epstein) -> embed/link as focal card asset framed by pre/post narration beats; confirm Gamma+Descript embed behavior (inline-play vs click vs dedicated Descript segment).", "where": "lesson-plan.md §E.2; slide-briefs Brief 7"},
+    {"id": 4, "item": "Slide 3 WHO Surgical Safety Checklist PDF is an UNRESOLVED Notion attachment -> ship Slide 3 with resolvable citations only (ACEP, PMC4106555, PMC3960713); Gary must not invent/substitute. Confirm ship-without or supply asset.", "where": "lesson-plan.md §E.4; slide-briefs Brief 3"}
+  ],
+  "operator_review_decision_item_count": 4,
+  "informational_flags_non_blocking": [
+    "Slide 2 has the weakest content-LO tie (program orientation); kept, not force-mapped.",
+    "LO3/LO4/LO5 not served in Part 1 — downstream-Part objectives, expected.",
+    "Sequencing: Lexicon placement observation only, no reorder.",
+    "Slides 6 & 8 are source-labeled 'Design Brief' visual-metaphor units; their split-screen metaphor is the instructional payload; render as single indivisible visuals (no operator decision required)."
+  ],
+  "clustering": {
+    "status": "PROPOSED BUT DEFERRED — this run ships 9 cards",
+    "natural_split_points": {
+      "s03_lineage": "STRONGEST candidate — 5 cited exemplars each with own narration; split into ~1 intro + 5 per-exemplar cards",
+      "s05_lexicon": "candidate WITH caveat — 8 terms; keep as ONE reference artifact or split only into 3 thematic groups (never lose the single screenshot/download affordance)",
+      "s04_expectations": "low-priority — two-column could split into 2 cards",
+      "s06_s08_visual_briefs": "do NOT cluster — split-screen is one indivisible gestalt",
+      "s01_s02_s07_s09": "keep single"
+    },
+    "location": "lesson-plan.md Appendix F (labeled, non-active)"
+  },
+  "fabrication": "none",
+  "fabrication_attestation": "All on-card bodies, exemplar descriptions, definitions, citations, and visual directions are faithful to the LOCKED source slides at the cited provenance. SME prose was condensed into card-appropriate bullets WITHOUT adding facts, changing figures, or dropping citations: the keystone innovation-mindset definition (s01), the 5 exemplars + their references (s03), the Dweck/Edmondson attributions (s04), the 8 Lexicon terms (s05), the required verbatim split-screen text labels (s06/s08), the Epstein YouTube link (s07), and the 4 verbatim summary bullets (s09) are all preserved. Narration is intentionally NOT authored here — only 1-line anchors capturing the spoken thrust (full narration = Pass-2). The ONLY structural change vs. raw source is a RECOMMENDED, operator-gated de-dupe relocation of the 'First Principles Thinking' definition from Slide 4 to the Slide 5 Lexicon (its wording unchanged, present on both in source) — flagged as Decision Item 1, not silently applied. The unresolved WHO Surgical Safety Checklist PDF was carried as a flagged-unresolved reference, NOT invented or substituted. LO mapping uses only the authoritative 5-LO set; no LO was invented, and unserved LOs (LO3/4/5) are reported as out-of-Part-1-scope rather than force-fitted.",
+  "deliverables": {
+    "lesson_plan": "C:/Users/juanl/Documents/GitHub/course-DEV-IDE-with-AGENTS-hybrid/_bmad-output/implementation-artifacts/concierge-part1-narrated-20260630/lesson-plan/lesson-plan.md",
+    "slide_briefs": "C:/Users/juanl/Documents/GitHub/course-DEV-IDE-with-AGENTS-hybrid/_bmad-output/implementation-artifacts/concierge-part1-narrated-20260630/lesson-plan/slide-briefs.md",
+    "receipt": "C:/Users/juanl/Documents/GitHub/course-DEV-IDE-with-AGENTS-hybrid/_bmad-output/implementation-artifacts/concierge-part1-narrated-20260630/lesson-plan/irene-pass1-receipt.json"
+  }
+}

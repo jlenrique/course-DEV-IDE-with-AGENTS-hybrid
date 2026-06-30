@@ -1,0 +1,418 @@
+{
+  "agent": "Quinn-R",
+  "review_pass": "pre-composition",
+  "gate": "v42-s13-precomposition-qa",
+  "run_id": "concierge-part1-narrated-20260630",
+  "checks": {
+    "1_asset_counts_9_9_9": {
+      "slides_count": 9,
+      "audio_count": 9,
+      "caption_count": 9,
+      "expected": 9,
+      "status": "PASS"
+    },
+    "2_pairing": {
+      "table": [
+        {
+          "ordinal": 1,
+          "slide": "c1m1-p1-final_slide_01.png",
+          "audio": "c1m1-p1-seg-01.mp3",
+          "caption": "c1m1-p1-seg-01.vtt",
+          "manifest_slide_id": "c1m1-p1-s01",
+          "manifest_image_path": "deck-final/c1m1-p1-final_slide_01.png",
+          "receipt_slide_id": "c1m1-p1-s01",
+          "manifest_image_matches_slide": true,
+          "slide_id_consistent": true,
+          "row_status": "PASS"
+        },
+        {
+          "ordinal": 2,
+          "slide": "c1m1-p1-final_slide_02.png",
+          "audio": "c1m1-p1-seg-02.mp3",
+          "caption": "c1m1-p1-seg-02.vtt",
+          "manifest_slide_id": "c1m1-p1-s02",
+          "manifest_image_path": "deck-final/c1m1-p1-final_slide_02.png",
+          "receipt_slide_id": "c1m1-p1-s02",
+          "manifest_image_matches_slide": true,
+          "slide_id_consistent": true,
+          "row_status": "PASS"
+        },
+        {
+          "ordinal": 3,
+          "slide": "c1m1-p1-final_slide_03.png",
+          "audio": "c1m1-p1-seg-03.mp3",
+          "caption": "c1m1-p1-seg-03.vtt",
+          "manifest_slide_id": "c1m1-p1-s03",
+          "manifest_image_path": "deck-final/c1m1-p1-final_slide_03.png",
+          "receipt_slide_id": "c1m1-p1-s03",
+          "manifest_image_matches_slide": true,
+          "slide_id_consistent": true,
+          "row_status": "PASS"
+        },
+        {
+          "ordinal": 4,
+          "slide": "c1m1-p1-final_slide_04.png",
+          "audio": "c1m1-p1-seg-04.mp3",
+          "caption": "c1m1-p1-seg-04.vtt",
+          "manifest_slide_id": "c1m1-p1-s04",
+          "manifest_image_path": "deck-final/c1m1-p1-final_slide_04.png",
+          "receipt_slide_id": "c1m1-p1-s04",
+          "manifest_image_matches_slide": true,
+          "slide_id_consistent": true,
+          "row_status": "PASS"
+        },
+        {
+          "ordinal": 5,
+          "slide": "c1m1-p1-final_slide_05.png",
+          "audio": "c1m1-p1-seg-05.mp3",
+          "caption": "c1m1-p1-seg-05.vtt",
+          "manifest_slide_id": "c1m1-p1-s05",
+          "manifest_image_path": "deck-final/c1m1-p1-final_slide_05.png",
+          "receipt_slide_id": "c1m1-p1-s05",
+          "manifest_image_matches_slide": true,
+          "slide_id_consistent": true,
+          "row_status": "PASS"
+        },
+        {
+          "ordinal": 6,
+          "slide": "c1m1-p1-final_slide_06.png",
+          "audio": "c1m1-p1-seg-06.mp3",
+          "caption": "c1m1-p1-seg-06.vtt",
+          "manifest_slide_id": "c1m1-p1-s06",
+          "manifest_image_path": "deck-final/c1m1-p1-final_slide_06.png",
+          "receipt_slide_id": "c1m1-p1-s06",
+          "manifest_image_matches_slide": true,
+          "slide_id_consistent": true,
+          "row_status": "PASS"
+        },
+        {
+          "ordinal": 7,
+          "slide": "c1m1-p1-final_slide_07.png",
+          "audio": "c1m1-p1-seg-07.mp3",
+          "caption": "c1m1-p1-seg-07.vtt",
+          "manifest_slide_id": "c1m1-p1-s07",
+          "manifest_image_path": "deck-final/c1m1-p1-final_slide_07.png",
+          "receipt_slide_id": "c1m1-p1-s07",
+          "manifest_image_matches_slide": true,
+          "slide_id_consistent": true,
+          "row_status": "PASS"
+        },
+        {
+          "ordinal": 8,
+          "slide": "c1m1-p1-final_slide_08.png",
+          "audio": "c1m1-p1-seg-08.mp3",
+          "caption": "c1m1-p1-seg-08.vtt",
+          "manifest_slide_id": "c1m1-p1-s08",
+          "manifest_image_path": "deck-final/c1m1-p1-final_slide_08.png",
+          "receipt_slide_id": "c1m1-p1-s08",
+          "manifest_image_matches_slide": true,
+          "slide_id_consistent": true,
+          "row_status": "PASS"
+        },
+        {
+          "ordinal": 9,
+          "slide": "c1m1-p1-final_slide_09.png",
+          "audio": "c1m1-p1-seg-09.mp3",
+          "caption": "c1m1-p1-seg-09.vtt",
+          "manifest_slide_id": "c1m1-p1-s09",
+          "manifest_image_path": "deck-final/c1m1-p1-final_slide_09.png",
+          "receipt_slide_id": "c1m1-p1-s09",
+          "manifest_image_matches_slide": true,
+          "slide_id_consistent": true,
+          "row_status": "PASS"
+        }
+      ],
+      "orphans_or_extras": [],
+      "status": "PASS"
+    },
+    "3_slide_dimensions": {
+      "expected": "2400x1350",
+      "slides": [
+        {
+          "ordinal": 1,
+          "width": 2400,
+          "height": 1350,
+          "is_2400x1350": true
+        },
+        {
+          "ordinal": 2,
+          "width": 2400,
+          "height": 1350,
+          "is_2400x1350": true
+        },
+        {
+          "ordinal": 3,
+          "width": 2400,
+          "height": 1350,
+          "is_2400x1350": true
+        },
+        {
+          "ordinal": 4,
+          "width": 2400,
+          "height": 1350,
+          "is_2400x1350": true
+        },
+        {
+          "ordinal": 5,
+          "width": 2400,
+          "height": 1350,
+          "is_2400x1350": true
+        },
+        {
+          "ordinal": 6,
+          "width": 2400,
+          "height": 1350,
+          "is_2400x1350": true
+        },
+        {
+          "ordinal": 7,
+          "width": 2400,
+          "height": 1350,
+          "is_2400x1350": true
+        },
+        {
+          "ordinal": 8,
+          "width": 2400,
+          "height": 1350,
+          "is_2400x1350": true
+        },
+        {
+          "ordinal": 9,
+          "width": 2400,
+          "height": 1350,
+          "is_2400x1350": true
+        }
+      ],
+      "status": "PASS"
+    },
+    "4_audio_integrity": {
+      "per_segment": [
+        {
+          "ordinal": 1,
+          "bytes": 782045,
+          "valid_mp3_header": true,
+          "frames": 1871,
+          "samplerate": 44100,
+          "measured_duration_s": 48.875,
+          "receipt_duration_s": 48.875,
+          "delta_s": 0.0
+        },
+        {
+          "ordinal": 2,
+          "bytes": 748608,
+          "valid_mp3_header": true,
+          "frames": 1791,
+          "samplerate": 44100,
+          "measured_duration_s": 46.785,
+          "receipt_duration_s": 46.785,
+          "delta_s": 0.0
+        },
+        {
+          "ordinal": 3,
+          "bytes": 1456631,
+          "valid_mp3_header": true,
+          "frames": 3485,
+          "samplerate": 44100,
+          "measured_duration_s": 91.037,
+          "receipt_duration_s": 91.037,
+          "delta_s": -0.0
+        },
+        {
+          "ordinal": 4,
+          "bytes": 794584,
+          "valid_mp3_header": true,
+          "frames": 1901,
+          "samplerate": 44100,
+          "measured_duration_s": 49.659,
+          "receipt_duration_s": 49.659,
+          "delta_s": -0.0
+        },
+        {
+          "ordinal": 5,
+          "bytes": 847247,
+          "valid_mp3_header": true,
+          "frames": 2027,
+          "samplerate": 44100,
+          "measured_duration_s": 52.95,
+          "receipt_duration_s": 52.95,
+          "delta_s": 0.0
+        },
+        {
+          "ordinal": 6,
+          "bytes": 552586,
+          "valid_mp3_header": true,
+          "frames": 1322,
+          "samplerate": 44100,
+          "measured_duration_s": 34.534,
+          "receipt_duration_s": 34.534,
+          "delta_s": -0.0
+        },
+        {
+          "ordinal": 7,
+          "bytes": 830528,
+          "valid_mp3_header": true,
+          "frames": 1987,
+          "samplerate": 44100,
+          "measured_duration_s": 51.905,
+          "receipt_duration_s": 51.905,
+          "delta_s": 0.0
+        },
+        {
+          "ordinal": 8,
+          "bytes": 465650,
+          "valid_mp3_header": true,
+          "frames": 1114,
+          "samplerate": 44100,
+          "measured_duration_s": 29.1,
+          "receipt_duration_s": 29.1,
+          "delta_s": 0.0
+        },
+        {
+          "ordinal": 9,
+          "bytes": 1299061,
+          "valid_mp3_header": true,
+          "frames": 3108,
+          "samplerate": 44100,
+          "measured_duration_s": 81.189,
+          "receipt_duration_s": 81.189,
+          "delta_s": -0.0
+        }
+      ],
+      "measured_total_s": 486.034,
+      "receipt_total_s": 486.034,
+      "total_delta_s": 0.0,
+      "total_within_1s": true,
+      "status": "PASS"
+    },
+    "5_caption_consistency": {
+      "per_segment": [
+        {
+          "ordinal": 1,
+          "bytes": 807,
+          "nonempty": true,
+          "caption_eq_narration_exact": true,
+          "token_overlap_ratio": 1.0,
+          "caption_chars": 764,
+          "narration_chars": 764
+        },
+        {
+          "ordinal": 2,
+          "bytes": 741,
+          "nonempty": true,
+          "caption_eq_narration_exact": true,
+          "token_overlap_ratio": 1.0,
+          "caption_chars": 698,
+          "narration_chars": 698
+        },
+        {
+          "ordinal": 3,
+          "bytes": 1435,
+          "nonempty": true,
+          "caption_eq_narration_exact": true,
+          "token_overlap_ratio": 1.0,
+          "caption_chars": 1388,
+          "narration_chars": 1388
+        },
+        {
+          "ordinal": 4,
+          "bytes": 794,
+          "nonempty": true,
+          "caption_eq_narration_exact": true,
+          "token_overlap_ratio": 1.0,
+          "caption_chars": 753,
+          "narration_chars": 753
+        },
+        {
+          "ordinal": 5,
+          "bytes": 916,
+          "nonempty": true,
+          "caption_eq_narration_exact": true,
+          "token_overlap_ratio": 1.0,
+          "caption_chars": 867,
+          "narration_chars": 867
+        },
+        {
+          "ordinal": 6,
+          "bytes": 599,
+          "nonempty": true,
+          "caption_eq_narration_exact": true,
+          "token_overlap_ratio": 1.0,
+          "caption_chars": 554,
+          "narration_chars": 554
+        },
+        {
+          "ordinal": 7,
+          "bytes": 850,
+          "nonempty": true,
+          "caption_eq_narration_exact": true,
+          "token_overlap_ratio": 1.0,
+          "caption_chars": 805,
+          "narration_chars": 805
+        },
+        {
+          "ordinal": 8,
+          "bytes": 528,
+          "nonempty": true,
+          "caption_eq_narration_exact": true,
+          "token_overlap_ratio": 1.0,
+          "caption_chars": 485,
+          "narration_chars": 485
+        },
+        {
+          "ordinal": 9,
+          "bytes": 1261,
+          "nonempty": true,
+          "caption_eq_narration_exact": true,
+          "token_overlap_ratio": 1.0,
+          "caption_chars": 1208,
+          "narration_chars": 1208
+        }
+      ],
+      "note": "caption canonical text compared to segment-manifest narration",
+      "status": "PASS"
+    },
+    "6_receipt_integrity": {
+      "attestation_model": "eleven_v3",
+      "attestation_render_mode": "v3_provider_text",
+      "attestation_voice": "Sarah",
+      "voice_id": "EXAVITQu4vr4xnSDxMaL",
+      "live": true,
+      "request_ids": [
+        "YGjoH8DgnXtMqrtM7eaH",
+        "DtvzuBzW70QD16c1oGzn",
+        "Syth2TiDS7eGRzwlEz8H",
+        "QNpqt8cqtzD8HRHpDCrE",
+        "8Sk7NUeKHxOEqMFlTgrS",
+        "wwLtA7gW0uMn6LLsSg60",
+        "fNBXYWvfaUiWBiXpic7I",
+        "DFie2de8282y7UKlWDFJ",
+        "o7z7HWKMPsT5oX9CFiXr"
+      ],
+      "request_ids_distinct_count": 9,
+      "all_request_ids_present": true,
+      "per_segment_voice_set": [
+        "Sarah"
+      ],
+      "per_segment_model_set": [
+        "eleven_v3"
+      ],
+      "per_segment_render_mode_set": [
+        "v3_provider_text"
+      ],
+      "status": "PASS"
+    }
+  },
+  "overall": {
+    "verdict": "READY-FOR-DESCRIPT",
+    "blocking_gaps": [],
+    "advisory_notes": [],
+    "check_statuses": {
+      "1_asset_counts_9_9_9": "PASS",
+      "2_pairing": "PASS",
+      "3_slide_dimensions": "PASS",
+      "4_audio_integrity": "PASS",
+      "5_caption_consistency": "PASS",
+      "6_receipt_integrity": "PASS"
+    }
+  }
+}

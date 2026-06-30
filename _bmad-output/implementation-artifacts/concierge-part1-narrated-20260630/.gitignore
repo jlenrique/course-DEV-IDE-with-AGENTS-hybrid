@@ -1,0 +1,8 @@
+# Heavy reproducible media — the deliverable is live in Gamma + Descript; the
+# auditable record (receipts/manifests/scripts/narration/plans) IS committed.
+# Exclude binaries to keep the repo lean (run dir was ~71MB raw).
+*.png
+*.mp3
+*.jpg
+*.jpeg
+# Keep small text captions tracked (.vtt are tiny + human-auditable) — do NOT ignore them.

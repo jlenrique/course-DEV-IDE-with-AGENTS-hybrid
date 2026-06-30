@@ -1,3 +1,17 @@
+# Session Handoff — 2026-06-30 (PARALLEL conversation-space run: Concierge **Part-1** narrated lesson → Descript — ✅ COMPLETE)
+
+**Final class:** S (content production; conversation-space SPOC, NOT the engine — edited ZERO code). **Separate thread from the coverage-interlock substrate arc below (other Marcus owns Part 2).** Operator: Juanl. Branch `dev/concierge-production-substrate-2026-06-29`.
+
+**Completed:** a live Descript narrated lesson for **C1M1 Part 1** — https://web.descript.com/d4c69938-751c-458f-be93-036874eaa81b (composition 486.025s, 9 scenes, native 16:9, no crop). Full pipeline, every gate honored: Texas source (9 Part-1 slides; expansion slides folded in + Slide-3 cited-exemplar swap) → Irene Pass-1 briefs → Gary **live A/B Gamma** (themes A `njim9kuhfnljvaa` / B `e8tz1vxb9v1urqp`, Classic, strict 16:9) → **Storyboard A published** (jlenrique.github.io) → operator picks **B,A,B,B,B,A,B,B,A** → **07G perception** (real gpt-5.5 vision; caught s09 read-path mismatch) → **Irene Pass-2 REDO** (VO↔on-screen) → **Vera fidelity PASS** → **Quinn-R quality CLEAR** → **Enrique ElevenLabs v3/Sarah** (real `eleven_v3`, 9 request-ids) → **Quinn-R pre-comp QA READY** → **Descript assembled + API-verified**.
+
+**For the next DEV session (the harvest):** `_bmad-output/implementation-artifacts/concierge-part1-narrated-20260630/next-session-development-plan.md` — a merged production-hardening backlog from BOTH concierge runs (Part-1 + Part-2): publication-target ratio contract (PNGs must be destination-canvas-conformant pre-assembly); perception-as-required-gate; fidelity severity + explicit-waiver ledger; + NEW Part-1 findings — Gamma `double_dispatch` crash on all-illustrated decks; single-variant Storyboard-A emitter; narration snapshotting for redo byte-diff; Descript build detaches Underlord assembly → composition reads duration-0 mid-assembly (receipt must assert `composition.duration ≈ expected` before "published"). Author as BMAD stories via the spine.
+
+**Unresolved/risks (this thread):** none blocking — deliverable shipped. Heavy media gitignored (live in Gamma/Descript). MP4 share-export NOT rendered (out of directive; offered).
+
+**Record:** `concierge-part1-narrated-20260630/RUN-MANIFEST.md` (14-gate log) + the dev-plan + Marcus sanctum session log `_bmad/memory/bmad-agent-marcus/sessions/2026-06-30.md`. **Isolation held:** other Marcus's Part-2 (`concierge-production-2026-06-30/` + run `30ac2cce`) never written (read-only when operator directed me to study their lessons). **Step 0 Cora SW sweep:** SKIPPED — this thread touched no app/scripts/skills/schema/pipeline files (artifacts only); the prior-session Cora deferral (below) still stands for the coverage arc.
+
+---
+
 # Session Handoff — 2026-06-30(c) (Coverage-assurance interlock: BLOCK arm PROVEN live; COVERED arm reveals a real narration-fidelity gap; close-scope deferred by operator → consolidate + restart)
 
 **Final class:** S (substrate — coverage gate refinements + 6 pipeline reliability fixes + live runner re-proves; opened S, stayed S). **Branch:** `dev/concierge-production-substrate-2026-06-29` (origin SYNCED 0/0, HEAD `5ba2716d`). **14 commits this session (`6161cab0..5ba2716d`), all pushed.**

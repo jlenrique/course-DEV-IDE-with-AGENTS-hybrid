@@ -1,0 +1,129 @@
+{
+  "bundle": "concierge-part1-narrated-20260630 / source-bundle",
+  "part": "C1M1 Part 1 — The Call: Setting the Stage & Chapter 1",
+  "assembled_by": "Texas (source-extraction specialist)",
+  "assembled_at": "2026-06-30",
+  "revision": "rev2 — 4 Gemini-Updated expansion slides folded in (roster renumbered 5->9); Slide 3 exemplars swapped to the newer cited set; per operator decisions 2026-06-30.",
+  "scope": "Clearly-identified, verbatim, SLIDES-ONLY source package for Part 1; locked source-of-truth for a downstream narrated-slide-deck production.",
+  "authoritative_rendering": {
+    "decision": "Spine = the production rendering in course-content/courses/tejal-APC-C1/C1M1Part01.md ('Part 1: The Call - Setting the Stage & Chapter 1') for Slides 1, 2, 4, and the Summary. Slide 3 and Slides 5-8 carry content from the newer 'C1M1: Gemini Updated' rendering inside tejal-c1m1-fresh-outline/source-outline.md per operator decisions. Final roster = 9 slides.",
+    "primary_source_paths": [
+      "course-content/courses/tejal-APC-C1/C1M1Part01.md (lines 1-194; Part-1 spine)",
+      "course-content/courses/tejal-c1m1-fresh-outline/source-outline.md ('C1M1: Gemini Updated' rendering, lines 323-433; module nav structure lines 33-218)"
+    ],
+    "cross_validation_and_enrichment_sources": [
+      "source-outline.md 'C1M1: Gemini Updated' (lines 323-433) — newer pass of the same opening slides; narration byte-identical to spine for Slides 1-4; source of the 4 expansion slides (5-8) and the Slide 5 transition narration",
+      "source-outline.md module page/navigation structure (Pages 1-7, lines 33-218) — source of the Slide 3 exemplar swap (Examples of Physician Innovators, lines 160-175) and Slide 4 formal definitions (lines 183-184)"
+    ],
+    "why": "Operator (via Marcus calibration) set Part 1 = a small SOURCE roster, then explicitly OVERRODE the 5-7 cap on 2026-06-30 to fold in the 4 richer Gemini-Updated expansion units. The sprawling multi-page 'Part 1' in source-outline.md remains the CourseArc module nav structure (out of scope as standalone slides) but is mined for the Slide 3 exemplars and Slide 4 definitions.",
+    "renderings_relationship": "COMPLEMENTARY / lineage. (a) source-outline.md Pages 1-7 = module nav structure (whole-module scope; mined for enrichment + Slide 3 swap). (b) C1M1Part01.md = lean Part-1 spine. (c) source-outline.md 'Gemini Updated' Part 1 = newer expanded pass of (b): identical Slide 1-4 narration plus 4 expansion slides + a Part-2 transition. The expansion slides and the Slide 3 swap are now MERGED into the built roster per operator."
+  },
+  "totals": {
+    "slide_count_authoritative": 9,
+    "prior_count": 5,
+    "scope_override": "Operator consciously overrode the earlier 5-7 source-slide cap on 2026-06-30 to integrate the 4 expansion units. Recorded as a deliberate decision, not scope creep.",
+    "by_status": {
+      "FULLY-SPECIFIED": 9,
+      "EXTERNAL-UNRESOLVED": 0,
+      "PARTIAL": 0
+    },
+    "roster_order": [
+      "1 c1m1-p1-s01 Welcome & The Modern Clinician's Dilemma",
+      "2 c1m1-p1-s02 The Innovator's 'Hero's Journey'",
+      "3 c1m1-p1-s03 The Lineage of Physician Innovators (exemplars swapped)",
+      "4 c1m1-p1-s04 Expectations & Mental Frameworks",
+      "5 c1m1-p1-s05 The Innovation Lexicon (Definition Box)",
+      "6 c1m1-p1-s06 The Tightrope & The Net (Psychological Safety)",
+      "7 c1m1-p1-s07 The 'Wicked' World of Innovation (David Epstein)",
+      "8 c1m1-p1-s08 The Track vs. The Jungle (Functional Flexibility)",
+      "9 c1m1-p1-s09 Part 1 Summary"
+    ]
+  },
+  "expansion_slides_folded_in": {
+    "decision": "Operator 2026-06-30 — integrate the 4 'Gemini Updated' expansion units IN SOURCE ORDER (after Slide 4, before the Summary) and renumber sequentially.",
+    "units": [
+      "Slide 5 — The Innovation Lexicon (Definition Box) — source-outline.md 353-365",
+      "Slide 6 — Design Brief: The Tightrope & The Net (Psychological Safety) — source-outline.md 366-374",
+      "Slide 7 — The 'Wicked' World of Innovation (David Epstein) [embedded YouTube https://www.youtube.com/watch?v=3qiDR8nNpqc + pre/post narration] — source-outline.md 375-378",
+      "Slide 8 — Design Brief: The Track vs. The Jungle (Functional Flexibility) — source-outline.md 379-389"
+    ],
+    "design_brief_handling": "Slides 6 and 8 are source-labeled 'Design Brief' (visual-metaphor treatments), not 'Slide N'. Each is kept as its own numbered slide per operator; the conceptual tie is noted in-file (S6 -> Psychological Safety on S4/S5; S8 -> Functional Flexibility on S7).",
+    "embedded_video_handling": "Slide 7's YouTube video is integral (framed by pre/post narration) so it is retained as a slide asset, not excluded as a standalone embedded-video component.",
+    "full_detail_preserved": true
+  },
+  "slide_03_exemplar_swap": {
+    "decision": "Operator 2026-06-30 — SWAP Slide 3 exemplars from the spine set (Fogarty/Pronovost/Bath, no citations) to the newer cited 'Examples of Physician Innovators' set (most recent SME intention).",
+    "new_exemplars": ["ED tele-triage", "clinical informatics / Abridge", "Glenn Steele (Geisinger / ProvenCare / ProvenHealth Navigator)", "Dr. Atul Gawande (Checklist / process innovation)", "Dr. Michelle Longmire (Medable / decentralized trials)"],
+    "source": "source-outline.md lines 160-175 (Examples of Physician Innovators block)",
+    "citations_now_shipping": [
+      "ACEP ED tele-triage information paper (May 2020) — URL preserved verbatim",
+      "Geisinger / Glenn Steele — https://pmc.ncbi.nlm.nih.gov/articles/PMC4106555/",
+      "The Checklist Manifesto: How to Get Things Right — https://pmc.ncbi.nlm.nih.gov/articles/PMC3960713/",
+      "WHO Surgical Safety Checklist PDF — Notion file attachment, UNRESOLVED in corpus (flagged, not invented)"
+    ],
+    "visual_format": "Left as 'Layout TBD — derive at deck stage (Gary/Irene)' per operator; the old four-quadrant (Process/Device/System/Organizational) layout was NOT imposed.",
+    "narration": "Per-exemplar narration preserved verbatim; innovation-type framing kept where source gives it (e.g., Gawande = 'process innovation').",
+    "replaces": "Prior 'enrichment available (not merged)' note and the spine narration from C1M1Part01.md lines 87-93."
+  },
+  "learning_objectives": {
+    "authoritative_set": "5 numbered Bloom-tagged objectives (Define/Analyze/Differentiate/Evaluate/Create)",
+    "authoritative_source": "C1M1Part01.md lines 9-21 (byte-identical in source-outline.md lines 326-331)",
+    "also_captured_verbatim": "Older module-introduction 'MO 1.1-1.5' list (source-outline.md lines 16-23) plus the Course 1 Goal statement (line 17)",
+    "count": 5,
+    "reconciliation": "None performed — both LO sets preserved verbatim; merging would be authoring, not extraction."
+  },
+  "lexicon_vs_slide4_overlap": {
+    "finding": "Slide 5 (Innovation Lexicon) is a broader 8-term vocabulary set; 5 terms are UNIQUE to it (Innovation, Intrapreneurship, Systemic Friction, Root Cause vs. Symptom, Functional Flexibility). 3 terms OVERLAP Slide 4's staged definitions.",
+    "overlapping_terms": {
+      "First Principles Thinking": "IDENTICAL wording (Slide 4's enrichment was itself sourced from the Lexicon, line 361).",
+      "Psychological Safety": "DIFFERENT wording — Slide 4 = Edmondson formal definition; Lexicon = course-restated version.",
+      "Growth Mindset": "DIFFERENT wording — Slide 4 = Dweck formal definition; Lexicon = course-restated, clinical-leadership-framed version."
+    },
+    "disposition": "Operator confirmed Slide 4 definitions SHIP. Both versions kept verbatim and cross-flagged in slide-04, slide-05, and the roster for de-dupe at DECK time (a deck-assembly decision, not an extraction drop).",
+    "is_lexicon_a_different_vocab_set": "Partly. It is NOT the QI/Innovation/Disruption concentric-circle vocabulary (that lives elsewhere in the module nav structure). It is a problem-framing + mindset lexicon that supersets Slide 4's three mindset terms."
+  },
+  "excluded_non_slide_components": [
+    "Discussion Post 1: Self-Reflection & Bias Awareness (Ungraded) — discussion post (source-outline.md 342-344)",
+    "Multimedia Integration: The Freakonomics Podcast — standalone embedded audio (source-outline.md 390-393; C1M1Part01.md 113-121)",
+    "Chapter 1 Knowledge Check (5 Questions) — assessment quiz (source-outline.md 403-433; C1M1Part01.md 143-193); KC questions DIFFER between the two renderings (multiple-choice vs open-ended)",
+    "Module Introduction prose, Welcome Video section, Expectations intro prose, Personal Welcome discussion prompt (source-outline.md 8-32) — pre-Part-1 intro / nav",
+    "Assessments & Deliverables, Discussion Forums, Innovation Leader Playbook, Bridge to Module 2 (source-outline.md 219-322) — out of Part-1 scope"
+  ],
+  "external_pptx_flags": {
+    "count_in_authoritative_package": 0,
+    "note": "The 9-slide roster contains NO 'Slide N from HII Source PPT' pointers. Such pointers exist ONLY in the module nav structure (source-outline.md Pages 1-7), which is out of scope. HII_Source_(1).pptx is referenced at source-outline.md line 3 but its rendered content is NOT available in this corpus."
+  },
+  "expired_image_flags": {
+    "count_in_authoritative_package": 0,
+    "unresolved_notion_attachments_in_package": 1,
+    "note": "No AWS S3 presigned image URLs in the 9-slide roster. ONE unresolved Notion file:// attachment now appears in the package: the WHO Surgical Safety Checklist PDF cited on Slide 3 (swapped-in exemplar). It is flagged [UNRESOLVED-NOTION-FILE-ATTACHMENT], not reconstructed. The module nav structure (out of scope) contains ~11 expired prod-files-secure.s3 presigned URLs plus other Notion attachments not part of this package."
+  },
+  "cross_validation_notes": {
+    "agreements": [
+      "Slide 1 (Welcome & Modern Clinician's Dilemma): storyboard, video prompt, narration, NAM 2019 reference byte-identical (C1M1Part01.md 25-49 vs source-outline.md 332-335).",
+      "Slide 2 (Hero's Journey): image prompt + narration byte-identical (53-73 vs 336-340).",
+      "Slide 4 (Expectations & Mental Frameworks): narration byte-identical (97-109 vs 348-352).",
+      "Slide 9 (Part 1 Summary): summary bullet text byte-identical (125-139 vs 394-400).",
+      "Learning objectives: 5 numbered Bloom-tagged objectives byte-identical (C1M1Part01.md 9-21 vs source-outline.md 326-331)."
+    ],
+    "discrepancies": [
+      "Slide 3: spine narration (Fogarty/Pronovost/Bath) was REPLACED by operator with the newer cited Examples set (Gawande/Steele/Longmire/tele-triage/Abridge). Now reconciled by decision, not left open.",
+      "Slide 4 visual format: C1M1Part01.md lists THREE definition labels (incl. First principles); source-outline.md 'Gemini Updated' lists only TWO. Spine (3-label) retained; delta noted on slide.",
+      "Slide 9: source-outline.md adds a 'Transition to Part 2' narration (line 402) absent from C1M1Part01.md; captured as labeled enrichment.",
+      "Slide 5 Lexicon vs Slide 4: 3 overlapping mindset terms (see lexicon_vs_slide4_overlap).",
+      "Chapter 1 Knowledge Check questions differ between renderings (multiple-choice vs open-ended) — excluded regardless."
+    ]
+  },
+  "open_items_for_operator": [
+    "Lexicon (Slide 5) vs Slide 4 overlap: decide at deck time whether to collapse the 3 shared mindset terms or keep both with cross-reference. Default here: both shipped, flagged.",
+    "Slide 4 'Gemini Updated' rendering omits the 'First principles' definition label that the spine includes; spine version retained. Confirm if undesired."
+  ],
+  "deliverables": {
+    "slides_dir": "_bmad-output/implementation-artifacts/concierge-part1-narrated-20260630/source-bundle/slides/ (9 files: slide-01..slide-09)",
+    "learning_objectives": "_bmad-output/implementation-artifacts/concierge-part1-narrated-20260630/source-bundle/learning-objectives.md",
+    "slide_roster": "_bmad-output/implementation-artifacts/concierge-part1-narrated-20260630/source-bundle/slide-roster.md",
+    "receipt": "_bmad-output/implementation-artifacts/concierge-part1-narrated-20260630/source-bundle/source-bundle-receipt.json"
+  },
+  "fabrication": "none",
+  "fabrication_attestation": "All slide bodies, narration, references, definitions, exemplar descriptions, and learning objectives are copied verbatim from the cited source files at the cited line ranges. No content was summarized, paraphrased, invented, or 'improved'. The ONLY normalization applied: markdown-escape backslashes and stray list-marker artifacts from the raw Notion/Gemini export were removed (e.g. '\\$' -> '$', '\\*\\*' -> '**', '\\&' -> '&', '\\#' -> '#') so the text renders cleanly; no words were added, removed, or reordered. The 4 expansion slides (5-8) were folded in IN SOURCE ORDER per operator and the roster renumbered; no expansion content was compressed. The Slide 3 exemplar swap moved verbatim source content (source-outline.md 160-175) into the slot and shipped its real citations; the spine narration it replaced was removed by operator decision, not lost (it remains in C1M1Part01.md). Where the spine left a field empty (Slide 4 definition boxes) or lacked content present in a sibling rendering (Slide 9 transition narration), that content was pulled verbatim and EXPLICITLY LABELED as enrichment with provenance. Where renderings disagreed (Slide 4 def-label count; KC questions; Lexicon vs Slide 4 wording) the disagreement was reported, not guessed. External PPTX content (HII_Source.pptx) and the WHO Surgical Safety Checklist PDF attachment were NOT reconstructed — they are flagged unresolved."
+}

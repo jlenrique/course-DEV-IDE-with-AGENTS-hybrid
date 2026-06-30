@@ -1,0 +1,66 @@
+{
+  "agent": "Desmond (Descript compositor)",
+  "run_id": "concierge-part1-narrated-20260630",
+  "deck": "C1M1 Part 1 — Sparking Innovation",
+  "stage": "final-descript-assembly",
+  "published": true,
+  "published_mode": "descript_project_assembled_live",
+  "published_note": "9-scene narrated-lesson timeline assembled by Underlord and live/viewable+editable in Descript at project_url. A separate render-to-MP4 share-export (publish --publish job) was NOT requested in this run and was not performed; the deliverable is the assembled Descript composition.",
+
+  "project_url": "https://web.descript.com/d4c69938-751c-458f-be93-036874eaa81b",
+  "project_id": "d4c69938-751c-458f-be93-036874eaa81b",
+  "project_name": "C1M1 Part 1 — Sparking Innovation (Narrated Lesson, 2026-06-30)",
+  "composition_id": "e4a0d038-f16a-424b-a39c-51ea62b1ba75",
+  "composition_name": "Narrated Slide Lesson",
+  "composition_media_type": "video",
+  "canvas": "1920x1080 (16:9)",
+
+  "composition_duration_s": 486.024693,
+  "expected_audio_total_s": 486.034,
+  "duration_delta_s": -0.009307,
+  "duration_within_1s": true,
+
+  "scene_count": 9,
+  "slide_count": 9,
+  "audio_count": 9,
+  "media_files_imported": 18,
+  "pairing_1to1": "ordinal N -> slide-0N.png (full-frame) + narration-0N.mp3 (scene audio), scenes in order 1..9",
+
+  "captions": "generated from narration transcripts by Underlord (Classic style), overlaid bottom",
+  "visual_repair_policy": "none — native 2400x1350 16:9",
+  "slide_fit_or_crop": "none — Underlord attestation: each slide fills the 1920x1080 frame with no gaps, no crop/cover/letterbox",
+  "waivers": [],
+
+  "underlord_attestation": "The composition is assembled and looking great. Each slide fills the frame, different slides show in different scenes, and captions are overlaid at the bottom. 9 scenes, each with its matching slide displayed full-screen over the corresponding narration clip. Total duration ~8 minutes 6 seconds. All slides fill the 1920x1080 frame with no gaps.",
+
+  "jobs": {
+    "import_job_id": "project-media-import-6abd858e-1753-44fc-9782-1a4f7b5a5fb8",
+    "import_job_status": "stopped / success (9 slide PNGs + 9 narration MP3s)",
+    "agent_job_id": "project-agent-edit-d4c69938-751c-458f-be93-036874eaa81b-aa1db5e2-a700-44d8-a979-07f8fca97461",
+    "agent_job_status": "stopped / success",
+    "duplicate_agent_jobs_dispatched": 0
+  },
+
+  "drive_id": "c661f101-b1e1-4552-9ccb-a950d91507c8",
+  "api_version": "v1",
+  "api_base": "https://descriptapi.com/v1",
+
+  "source_dirs": {
+    "slides": "_bmad-output/implementation-artifacts/concierge-part1-narrated-20260630/deck-final/ (c1m1-p1-final_slide_01..09.png, 2400x1350)",
+    "audio": "_bmad-output/implementation-artifacts/concierge-part1-narrated-20260630/audio/ (c1m1-p1-seg-01..09.mp3, Sarah/v3, 486.034s total)",
+    "captions": "_bmad-output/implementation-artifacts/concierge-part1-narrated-20260630/audio/ (c1m1-p1-seg-01..09.vtt)",
+    "segment_manifest": "_bmad-output/implementation-artifacts/concierge-part1-narrated-20260630/narration/segment-manifest.yaml",
+    "qa_receipt": "_bmad-output/implementation-artifacts/concierge-part1-narrated-20260630/quality/quinn-r-precomp-qa-receipt.json (verdict READY-FOR-DESCRIPT)",
+    "assembly_bundle": "_bmad-output/implementation-artifacts/concierge-part1-narrated-20260630/descript/assembly-bundle/ (visuals/slide-0N.png + audio/seg-0N.mp3 + captions/seg-0N.vtt + segment-manifest.yaml)"
+  },
+
+  "build_path": "scripts/operator/build_descript_narrated_lesson.py + scripts/api_clients/descript_client.py (proven operator path; direct-upload import + Underlord /jobs/agent assembly). NOTE: descript_client lives under scripts/api_clients/ (not scripts/operator/descript_client.py as the brief stated).",
+
+  "build_exit_code_observation": "Part-1 run did NOT reproduce the Part-2 Story C nonzero-despite-success anomaly. The build script (scripts/operator/build_descript_narrated_lesson.py) ran to completion in a backgrounded Bash invocation and exited cleanly: tail of descript-build.log shows 'agent result.status=success', the assembled composition (dur 486.0247s), the project URL, and a final 'EXIT_CODE=0'. The shell reported exit 0 — no spurious nonzero exit from stderr capture was seen here. SECONDARY OBSERVATION (process-detach false alarm): the coordinator briefly believed the build had detached after media import with the composition empty (duration 0); in fact the server-side Underlord agent job was still assembling. A foreground wait_for_job on the EXISTING agent job (project-agent-edit-...-aa1db5e2-...) confirmed it reached stopped/success, and the backgrounded build process itself also completed exit 0. No duplicate agent/import job was dispatched; no re-import occurred.",
+
+  "authoritative_success_signal": "Descript get_project: composition e4a0d038 duration 486.024693s (delta -0.009s vs 486.034) + Underlord agent_job result.status=success; treated as authoritative over shell exit code per Part-2 Story C lesson (shell exit code also = 0 here).",
+
+  "log": "descript-build.log (in this directory)",
+  "timestamp_utc": "2026-06-30",
+  "published_attestation": true
+}

@@ -1,0 +1,76 @@
+Package: 18 assets (9 slides + 9 narration)
+  slide-01.png       image/png        993314 bytes  <- _bmad-output\implementation-artifacts\concierge-part1-narrated-20260630\descript\assembly-bundle\visuals\slide-01.png
+  slide-02.png       image/png        732877 bytes  <- _bmad-output\implementation-artifacts\concierge-part1-narrated-20260630\descript\assembly-bundle\visuals\slide-02.png
+  slide-03.png       image/png        292963 bytes  <- _bmad-output\implementation-artifacts\concierge-part1-narrated-20260630\descript\assembly-bundle\visuals\slide-03.png
+  slide-04.png       image/png        568750 bytes  <- _bmad-output\implementation-artifacts\concierge-part1-narrated-20260630\descript\assembly-bundle\visuals\slide-04.png
+  slide-05.png       image/png        287157 bytes  <- _bmad-output\implementation-artifacts\concierge-part1-narrated-20260630\descript\assembly-bundle\visuals\slide-05.png
+  slide-06.png       image/png       1202874 bytes  <- _bmad-output\implementation-artifacts\concierge-part1-narrated-20260630\descript\assembly-bundle\visuals\slide-06.png
+  slide-07.png       image/png        263971 bytes  <- _bmad-output\implementation-artifacts\concierge-part1-narrated-20260630\descript\assembly-bundle\visuals\slide-07.png
+  slide-08.png       image/png       1773452 bytes  <- _bmad-output\implementation-artifacts\concierge-part1-narrated-20260630\descript\assembly-bundle\visuals\slide-08.png
+  slide-09.png       image/png        255457 bytes  <- _bmad-output\implementation-artifacts\concierge-part1-narrated-20260630\descript\assembly-bundle\visuals\slide-09.png
+  narration-01.mp3   audio/mpeg       782045 bytes  <- _bmad-output\implementation-artifacts\concierge-part1-narrated-20260630\descript\assembly-bundle\audio\seg-01.mp3
+  narration-02.mp3   audio/mpeg       748608 bytes  <- _bmad-output\implementation-artifacts\concierge-part1-narrated-20260630\descript\assembly-bundle\audio\seg-02.mp3
+  narration-03.mp3   audio/mpeg      1456631 bytes  <- _bmad-output\implementation-artifacts\concierge-part1-narrated-20260630\descript\assembly-bundle\audio\seg-03.mp3
+  narration-04.mp3   audio/mpeg       794584 bytes  <- _bmad-output\implementation-artifacts\concierge-part1-narrated-20260630\descript\assembly-bundle\audio\seg-04.mp3
+  narration-05.mp3   audio/mpeg       847247 bytes  <- _bmad-output\implementation-artifacts\concierge-part1-narrated-20260630\descript\assembly-bundle\audio\seg-05.mp3
+  narration-06.mp3   audio/mpeg       552586 bytes  <- _bmad-output\implementation-artifacts\concierge-part1-narrated-20260630\descript\assembly-bundle\audio\seg-06.mp3
+  narration-07.mp3   audio/mpeg       830528 bytes  <- _bmad-output\implementation-artifacts\concierge-part1-narrated-20260630\descript\assembly-bundle\audio\seg-07.mp3
+  narration-08.mp3   audio/mpeg       465650 bytes  <- _bmad-output\implementation-artifacts\concierge-part1-narrated-20260630\descript\assembly-bundle\audio\seg-08.mp3
+  narration-09.mp3   audio/mpeg      1299061 bytes  <- _bmad-output\implementation-artifacts\concierge-part1-narrated-20260630\descript\assembly-bundle\audio\seg-09.mp3
+
+Auth OK — drive_id=c661f101-b1e1-4552-9ccb-a950d91507c8 api_version=v1
+
+Creating project 'C1M1 Part 1 — Sparking Innovation (Narrated Lesson, 2026-06-30)' and requesting upload URLs...
+  project_id=d4c69938-751c-458f-be93-036874eaa81b
+  project_url=https://web.descript.com/d4c69938-751c-458f-be93-036874eaa81b
+  import job_id=project-media-import-6abd858e-1753-44fc-9782-1a4f7b5a5fb8  upload_urls=18
+  uploaded slide-01.png       -> HTTP 200
+  uploaded slide-02.png       -> HTTP 200
+  uploaded slide-03.png       -> HTTP 200
+  uploaded slide-04.png       -> HTTP 200
+  uploaded slide-05.png       -> HTTP 200
+  uploaded slide-06.png       -> HTTP 200
+  uploaded slide-07.png       -> HTTP 200
+  uploaded slide-08.png       -> HTTP 200
+  uploaded slide-09.png       -> HTTP 200
+  uploaded narration-01.mp3   -> HTTP 200
+  uploaded narration-02.mp3   -> HTTP 200
+  uploaded narration-03.mp3   -> HTTP 200
+  uploaded narration-04.mp3   -> HTTP 200
+  uploaded narration-05.mp3   -> HTTP 200
+  uploaded narration-06.mp3   -> HTTP 200
+  uploaded narration-07.mp3   -> HTTP 200
+  uploaded narration-08.mp3   -> HTTP 200
+  uploaded narration-09.mp3   -> HTTP 200
+
+Waiting for import job to finish processing/transcription...
+  [  0] import job_state=running
+  [  6] import job_state=running
+  [ 12] import job_state=stopped
+INFO Job project-media-import-6abd858e-1753-44fc-9782-1a4f7b5a5fb8 stopped after 13 polls
+  import result.status=success
+
+Invoking Underlord to assemble the narrated slide video...
+  agent job_id=project-agent-edit-d4c69938-751c-458f-be93-036874eaa81b-aa1db5e2-a700-44d8-a979-07f8fca97461
+  [  0] agent job_state=running 
+  [  6] agent job_state=running Updating composition…
+  [ 12] agent job_state=running Inserting narration-06.mp3 into script track…
+  [ 18] agent job_state=running Inserting narration-09.mp3 into script track…
+  [ 24] agent job_state=running Adding slide-09.png to range…
+  [ 30] agent job_state=running Adding tracks…
+INFO Job project-agent-edit-d4c69938-751c-458f-be93-036874eaa81b-aa1db5e2-a700-44d8-a979-07f8fca97461 stopped after 34 polls
+  agent result.status=success
+  Underlord: The composition is assembled and looking great. Each slide fills the frame, different slides show in different scenes, and captions are overlaid at the bottom.
+
+Your narrated slide lesson video is ready:
+
+- **9 scenes**, each with its matching slide displayed full-screen over the corresponding narration clip
+- **Total duration**: ~8 minutes 6 seconds
+- **Captions** generated from the narration transcripts (Classic style)
+- All slides fill the 1920×1080 frame with no gaps
+
+Done. Compositions (1):
+  - 'Narrated Slide Lesson' dur=486.02469299999996 media_type=video id=e4a0d038-f16a-424b-a39c-51ea62b1ba75
+
+Open your narrated lesson: https://web.descript.com/d4c69938-751c-458f-be93-036874eaa81b
+EXIT_CODE=0

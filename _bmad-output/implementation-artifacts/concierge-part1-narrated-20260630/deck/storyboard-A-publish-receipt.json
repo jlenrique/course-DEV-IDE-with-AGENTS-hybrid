@@ -1,0 +1,33 @@
+{
+  "published": true,
+  "public_url": "https://jlenrique.github.io/assets/storyboards/concierge-part1-narrated-20260630/index.html",
+  "pages_repo": "https://github.com/jlenrique/jlenrique.github.io",
+  "pages_branch": "main",
+  "commit_sha": "8be608e435acd90de9b6cd62cbe27ccff1bafe7e",
+  "changed": true,
+  "target_subdir": "assets/storyboards/concierge-part1-narrated-20260630",
+  "surface": "simulated",
+  "surface_reason": "Real section_07c storyboard_html_emitter renders a single-variant review page (_slide_block has no A-vs-B slot) and cannot represent A/B-per-card selection; purpose-built deterministic A/B HTML used instead. Publish push mirrors the real storyboard_publisher/generate-storyboard cmd_publish steps via the same git primitives (_git_auth_env/_github_pages_base_url/_run_git_command in gamma_operations).",
+  "card_count": 9,
+  "png_count_pushed": 18,
+  "flagged_overtall_cards": [
+    {
+      "variant": "A",
+      "card": 2,
+      "dimensions": "2400x1558"
+    },
+    {
+      "variant": "A",
+      "card": 4,
+      "dimensions": "2400x1510"
+    },
+    {
+      "variant": "B",
+      "card": 2,
+      "dimensions": "2400x1592"
+    }
+  ],
+  "local_html": "C:\\Users\\juanl\\Documents\\GitHub\\course-DEV-IDE-with-AGENTS-hybrid\\_bmad-output\\implementation-artifacts\\concierge-part1-narrated-20260630\\deck\\storyboard-A.html",
+  "deploy_caveat": "GitHub Pages may take ~1 minute to deploy after push.",
+  "generated_at_utc": "20260630T164738Z"
+}

@@ -1,0 +1,79 @@
+# C1M1 Part 1 — Pass-2 Segment Manifest (Irene -> Enrique / ElevenLabs)
+# Run: concierge-part1-narrated-20260630
+# PERCEPTION-INFORMED PASS-2 REDO (supersedes the prior Pass-2 manifest).
+# One segment per CARD ORDINAL (1-9). narration = exact spoken text (plain prose, no SSML/tags).
+# image_path = the LOCKED deck-final PNG that each segment narrates.
+# Redo basis: 07G gpt-5.5 vision read-path review (perception/narration-script-review.md):
+#   - s09 MISMATCH fixed (walk the four pillars in grid order, land on Up Next).
+#   - s05 soft-polish bridge added (acknowledge the three middle lexicon rows).
+#   - The other 7 cards FOLLOW the eye-path cleanly and are kept intact (no churn).
+
+run_id: concierge-part1-narrated-20260630
+deck: C1M1 Part 1
+segment_count: 9
+narration_basis: verbatim-spine (SME speaker notes), lightly smoothed for spoken delivery; perception-informed alignment to on-screen reading-path on s05 + s09
+fabrication: none
+
+segments:
+  - ordinal: 1
+    slide_id: c1m1-p1-s01
+    title: "Welcome & The Modern Clinician's Dilemma"
+    image_path: deck-final/c1m1-p1-final_slide_01.png
+    narration: |
+      Welcome. I'm Dr. Tejal Naik. You're practicing in an era of immense technological advancement and increasing system complexity. You've been expertly trained to follow evidence-based pathways, but likely not taught how to create the pathways of the future. The primary barrier to change is rarely a lack of ideas — it's the absence of a structured process, and the psychological safety to pursue them. So our first goal is to establish a new baseline. An innovation mindset is the internal conviction that you are not just an employee within a healthcare system, but a designer of it — empowered to bridge the gap between current limitations and future possibilities. The solution to healthcare's biggest challenges lies dormant within its most valuable asset: you.
+
+  - ordinal: 2
+    slide_id: c1m1-p1-s02
+    title: "The Innovator's \"Hero's Journey\""
+    image_path: deck-final/c1m1-p1-final_slide_02.png
+    narration: |
+      This certificate is designed to unlock a skill set you already possess as clinicians. We'll treat this program as a personal and professional quest — an adaptation of the classic Hero's Journey. Course 1, which you're starting now, is 'Sparking Innovation: From Insight to Opportunity,' where you'll learn to see your daily clinical world differently. Course 2 is 'Building the Solution: Design, Plan, and Pitch.' And finally, Course 3 is 'Driving Impact: From Project to Lasting Change,' where you bring your vision to life. By the end of this journey, you won't just have new knowledge — you'll have a tangible playbook, and the foundation for an executive one-pager to make your ideas a reality.
+
+  - ordinal: 3
+    slide_id: c1m1-p1-s03
+    title: "The Lineage of Physician Innovators"
+    image_path: deck-final/c1m1-p1-final_slide_03.png
+    narration: |
+      Physicians have always been architects of change — and innovation in healthcare spans care delivery, informatics, system redesign, process science, and digital health. Consider five examples. During the pandemic, emergency physicians rapidly implemented tele-triage to evaluate patients remotely, reduce exposure risk, and preserve hospital capacity — innovation in real time. Clinicians are also innovating through informatics: the expansion of electronic medical records, and tools like Abridge, which uses AI to summarize clinical conversations — improving documentation efficiency, reducing burnout, and enhancing patient communication. Under Glenn Steele, Geisinger Health System became a model for system-level innovation: ProvenCare bundled evidence-based protocols with outcome guarantees, while ProvenHealth Navigator embedded nurse care managers into primary care. Atul Gawande recognized that even highly skilled surgeons make preventable errors in complex systems; by adapting an aviation-style checklist for surgery, he led a process innovation that reduced complications and mortality worldwide. And Michelle Longmire, a dermatologist, saw how traditional clinical trials excluded patients due to geographic and logistical barriers — so she founded Medable to support decentralized trials, bringing research into patients' homes and making studies faster and more inclusive.
+
+  - ordinal: 4
+    slide_id: c1m1-p1-s04
+    title: "Expectations & Mental Frameworks"
+    image_path: deck-final/c1m1-p1-final_slide_04.png
+    narration: |
+      To navigate this lineage, you must cultivate two foundational elements: a Growth Mindset, and Psychological Safety. A growth mindset, coined by Carol Dweck, is the belief that your capacity to innovate is not fixed — it's a muscle, built through effort and critique. But a growth mindset can't survive without psychological safety. Amy Edmondson defines this as a shared belief that the environment is safe for interpersonal risk-taking. As you progress through this certificate, you'll be asked to share half-baked ideas, critique your peers, and expose systemic flaws. We must collectively commit to maintaining psychological safety in our discussion boards and peer reviews. If we can't be vulnerable about what's broken, we can't design what's next.
+
+  - ordinal: 5
+    slide_id: c1m1-p1-s05
+    title: "The Innovation Lexicon"
+    image_path: deck-final/c1m1-p1-final_slide_05.png
+    narration: |
+      Before we dive into problem framing, we need to establish a shared language — because in this program, words have very specific meanings. 'Innovation' isn't just a buzzword; it's the creation of adopted value. And we're not teaching you to be rogue entrepreneurs — we're teaching you to be intrapreneurs, leading change from within your own hospitals. The three middle terms — systemic friction, root cause versus symptom, and functional flexibility — are the problem-framing vocabulary we'll lean on as we move forward. And the last three definitions here are the psychological engine of this course: you can't innovate using first principles if your team lacks psychological safety, and you won't survive the inevitable setbacks without a growth mindset. Take a moment to review this lexicon — these eight definitions are the guardrails for the rest of the program.
+
+  - ordinal: 6
+    slide_id: c1m1-p1-s06
+    title: "The Tightrope & The Net (Psychological Safety)"
+    image_path: deck-final/c1m1-p1-final_slide_06.png
+    narration: |
+      We defined psychological safety as a prerequisite for innovation — but let's visualize why. Imagine asking your clinical team to walk a tightrope: to speak up against a senior attending, or propose a radical new workflow. If there's no safety net, they'll stick to the script. They'll walk rigidly, because a single fall means professional ruin. But if you, as the leader, build a massive safety net — where failure is treated as data, not a punishable offense — your team will suddenly feel empowered to take the creative risks that innovation requires.
+
+  - ordinal: 7
+    slide_id: c1m1-p1-s07
+    title: "The \"Wicked\" World of Innovation (David Epstein)"
+    image_path: deck-final/c1m1-p1-final_slide_07.png
+    narration: |
+      As clinical professionals, you've been rewarded for hyper-specialization. You've mastered 'Kind' learning environments, where patterns repeat and the rules are clear. But the systemic problems in healthcare are 'Wicked' environments — and to solve them, you must embrace functional flexibility. Watch this breakdown by David Epstein, 'Why the Most Experienced People Fail First,' on why generalists — those who can borrow tools from multiple domains — triumph in complex systems. The takeaway is this: to be an effective healthcare intrapreneur, you can't just be a hammer looking for a nail. You must have 'Range.' Functional flexibility means having the humility to drop the specific tools that made you a great clinician, and adopt the broad, interdisciplinary tools needed to redesign a broken system.
+
+  - ordinal: 8
+    slide_id: c1m1-p1-s08
+    title: "The Track vs. The Jungle (Functional Flexibility)"
+    image_path: deck-final/c1m1-p1-final_slide_08.png
+    narration: |
+      To survive the hospital blueprint, you must develop 'Range.' As a clinician, you were trained on the track — a 'Kind' environment, where the rules are clear and the hurdles are visible. But system innovation is the jungle. It's a 'Wicked' environment, where the variables constantly change. You can't bring track shoes to a jungle. You must be functionally flexible — willing to drop your specialized clinical tools and pick up a machete, or a compass, when the environment demands it.
+
+  - ordinal: 9
+    slide_id: c1m1-p1-s09
+    title: "Part 1 Summary"
+    image_path: deck-final/c1m1-p1-final_slide_09.png
+    narration: |
+      Let's lock in the four pillars of Part 1. First, the Gap: traditional clinical training creates expert practitioners, but not necessarily system innovators — the skills that make a great clinician aren't the same ones that redesign a broken system. Second, the Mission: to move from being an employee within the system to an innovation leader who shapes it — a designer who bridges the gap between current limitations and future possibilities. Third, the Journey: a three-waypoint progression — identifying opportunities, then designing and pitching solutions, then driving lasting, measurable impact — and your deliverables are a tangible playbook and an executive one-pager. And fourth, the Mindset: success takes agility, first-principles thinking, psychological safety, and the willingness to embrace intelligent failure — treating every setback as signal, not verdict. With that, you're ready to transition from a clinical tactician to a systemic intrapreneur. Up next, in Part 2 — Building the Solution: Design, Plan, and Pitch — we'll put this mindset to work and learn how to properly diagnose and frame the root cause of a problem. Bring the real-world clinical frictions you've identified with you.

@@ -1,0 +1,171 @@
+{
+  "live": true,
+  "spend_attestation": "Real Gamma API generations (textMode generate, aiGenerated images). No mocks/fixtures.",
+  "generated_at_utc": "20260630T163444Z",
+  "module_lesson_part": "c1m1-p1",
+  "card_count_requested": 9,
+  "real_code_path": "generate_slide() per variant from skills/gamma-api-mastery/scripts/gamma_operations.py, then download_export() + _materialize_exported_slide_paths() (same module). double_dispatch wrapper bypassed: its per-card download path only runs through the mixed-fidelity router which would force noImages on a card; for an all-illustrated deck it returns raw generate_slide and crashes in validate_theme_mapping_handshake.",
+  "base_params": {
+    "input_text_card_count": 9,
+    "textMode": "generate",
+    "format": "presentation",
+    "formatVariant": "classic",
+    "numCards": 9,
+    "cardSplit": "inputTextBreaks",
+    "cardOptions": {
+      "dimensions": "16x9"
+    },
+    "imageOptions": {
+      "source": "aiGenerated",
+      "model": "gemini-3.1-flash-image-mini",
+      "stylePreset": "illustration"
+    },
+    "textOptions": {
+      "amount": "detailed",
+      "language": "en"
+    },
+    "additionalInstructions": "Keep the style of all the images uniform. Visual keyword cues: vector, minimalist, flat-color, linework, bold. Honor each card's required verbatim header labels exactly. Render split-screen metaphor cards as a single indivisible 50/50 image.",
+    "export_as": "png",
+    "style_preset_base": "hil-2026-apc-nejal-A"
+  },
+  "variant_strategies": {
+    "A": {
+      "theme_id": "njim9kuhfnljvaa"
+    },
+    "B": {
+      "theme_id": "e8tz1vxb9v1urqp"
+    }
+  },
+  "variants": {
+    "A": {
+      "theme_id": "njim9kuhfnljvaa",
+      "theme_name": "2026 HIL APC (Nejal)",
+      "generation_id": "Xf2c1qBhEyVtrNaton9So",
+      "public_url": "https://gamma.app/docs/ybe73zv0075z4ov",
+      "export_url_present": true,
+      "export_dir": "C:\\Users\\juanl\\Documents\\GitHub\\course-DEV-IDE-with-AGENTS-hybrid\\_bmad-output\\implementation-artifacts\\concierge-part1-narrated-20260630\\deck",
+      "png_paths": [
+        "C:\\Users\\juanl\\Documents\\GitHub\\course-DEV-IDE-with-AGENTS-hybrid\\_bmad-output\\implementation-artifacts\\concierge-part1-narrated-20260630\\deck\\c1m1-p1-A_slide_01.png",
+        "C:\\Users\\juanl\\Documents\\GitHub\\course-DEV-IDE-with-AGENTS-hybrid\\_bmad-output\\implementation-artifacts\\concierge-part1-narrated-20260630\\deck\\c1m1-p1-A_slide_02.png",
+        "C:\\Users\\juanl\\Documents\\GitHub\\course-DEV-IDE-with-AGENTS-hybrid\\_bmad-output\\implementation-artifacts\\concierge-part1-narrated-20260630\\deck\\c1m1-p1-A_slide_03.png",
+        "C:\\Users\\juanl\\Documents\\GitHub\\course-DEV-IDE-with-AGENTS-hybrid\\_bmad-output\\implementation-artifacts\\concierge-part1-narrated-20260630\\deck\\c1m1-p1-A_slide_04.png",
+        "C:\\Users\\juanl\\Documents\\GitHub\\course-DEV-IDE-with-AGENTS-hybrid\\_bmad-output\\implementation-artifacts\\concierge-part1-narrated-20260630\\deck\\c1m1-p1-A_slide_05.png",
+        "C:\\Users\\juanl\\Documents\\GitHub\\course-DEV-IDE-with-AGENTS-hybrid\\_bmad-output\\implementation-artifacts\\concierge-part1-narrated-20260630\\deck\\c1m1-p1-A_slide_06.png",
+        "C:\\Users\\juanl\\Documents\\GitHub\\course-DEV-IDE-with-AGENTS-hybrid\\_bmad-output\\implementation-artifacts\\concierge-part1-narrated-20260630\\deck\\c1m1-p1-A_slide_07.png",
+        "C:\\Users\\juanl\\Documents\\GitHub\\course-DEV-IDE-with-AGENTS-hybrid\\_bmad-output\\implementation-artifacts\\concierge-part1-narrated-20260630\\deck\\c1m1-p1-A_slide_08.png",
+        "C:\\Users\\juanl\\Documents\\GitHub\\course-DEV-IDE-with-AGENTS-hybrid\\_bmad-output\\implementation-artifacts\\concierge-part1-narrated-20260630\\deck\\c1m1-p1-A_slide_09.png"
+      ],
+      "png_dimensions": {
+        "c1m1-p1-A_slide_01.png": [
+          2400,
+          1350
+        ],
+        "c1m1-p1-A_slide_02.png": [
+          2400,
+          1558
+        ],
+        "c1m1-p1-A_slide_03.png": [
+          2400,
+          1350
+        ],
+        "c1m1-p1-A_slide_04.png": [
+          2400,
+          1510
+        ],
+        "c1m1-p1-A_slide_05.png": [
+          2400,
+          1350
+        ],
+        "c1m1-p1-A_slide_06.png": [
+          2400,
+          1350
+        ],
+        "c1m1-p1-A_slide_07.png": [
+          2400,
+          1350
+        ],
+        "c1m1-p1-A_slide_08.png": [
+          2400,
+          1350
+        ],
+        "c1m1-p1-A_slide_09.png": [
+          2400,
+          1350
+        ]
+      },
+      "card_count": 9,
+      "all_2400x1350": false,
+      "distinct_ratios": [
+        1.5404,
+        1.5894,
+        1.7778
+      ],
+      "sixteen_nine_verdict": "FAIL"
+    },
+    "B": {
+      "theme_id": "e8tz1vxb9v1urqp",
+      "theme_name": "2026 HIL APC (Nejal) (B variant)",
+      "generation_id": "FCoUqWsTEgiyyTezmpriB",
+      "public_url": "https://gamma.app/docs/me7xktka2ya09z2",
+      "export_url_present": true,
+      "export_dir": "C:\\Users\\juanl\\Documents\\GitHub\\course-DEV-IDE-with-AGENTS-hybrid\\_bmad-output\\implementation-artifacts\\concierge-part1-narrated-20260630\\deck-B",
+      "png_paths": [
+        "C:\\Users\\juanl\\Documents\\GitHub\\course-DEV-IDE-with-AGENTS-hybrid\\_bmad-output\\implementation-artifacts\\concierge-part1-narrated-20260630\\deck-B\\c1m1-p1-B_slide_01.png",
+        "C:\\Users\\juanl\\Documents\\GitHub\\course-DEV-IDE-with-AGENTS-hybrid\\_bmad-output\\implementation-artifacts\\concierge-part1-narrated-20260630\\deck-B\\c1m1-p1-B_slide_02.png",
+        "C:\\Users\\juanl\\Documents\\GitHub\\course-DEV-IDE-with-AGENTS-hybrid\\_bmad-output\\implementation-artifacts\\concierge-part1-narrated-20260630\\deck-B\\c1m1-p1-B_slide_03.png",
+        "C:\\Users\\juanl\\Documents\\GitHub\\course-DEV-IDE-with-AGENTS-hybrid\\_bmad-output\\implementation-artifacts\\concierge-part1-narrated-20260630\\deck-B\\c1m1-p1-B_slide_04.png",
+        "C:\\Users\\juanl\\Documents\\GitHub\\course-DEV-IDE-with-AGENTS-hybrid\\_bmad-output\\implementation-artifacts\\concierge-part1-narrated-20260630\\deck-B\\c1m1-p1-B_slide_05.png",
+        "C:\\Users\\juanl\\Documents\\GitHub\\course-DEV-IDE-with-AGENTS-hybrid\\_bmad-output\\implementation-artifacts\\concierge-part1-narrated-20260630\\deck-B\\c1m1-p1-B_slide_06.png",
+        "C:\\Users\\juanl\\Documents\\GitHub\\course-DEV-IDE-with-AGENTS-hybrid\\_bmad-output\\implementation-artifacts\\concierge-part1-narrated-20260630\\deck-B\\c1m1-p1-B_slide_07.png",
+        "C:\\Users\\juanl\\Documents\\GitHub\\course-DEV-IDE-with-AGENTS-hybrid\\_bmad-output\\implementation-artifacts\\concierge-part1-narrated-20260630\\deck-B\\c1m1-p1-B_slide_08.png",
+        "C:\\Users\\juanl\\Documents\\GitHub\\course-DEV-IDE-with-AGENTS-hybrid\\_bmad-output\\implementation-artifacts\\concierge-part1-narrated-20260630\\deck-B\\c1m1-p1-B_slide_09.png"
+      ],
+      "png_dimensions": {
+        "c1m1-p1-B_slide_01.png": [
+          2400,
+          1350
+        ],
+        "c1m1-p1-B_slide_02.png": [
+          2400,
+          1592
+        ],
+        "c1m1-p1-B_slide_03.png": [
+          2400,
+          1350
+        ],
+        "c1m1-p1-B_slide_04.png": [
+          2400,
+          1350
+        ],
+        "c1m1-p1-B_slide_05.png": [
+          2400,
+          1350
+        ],
+        "c1m1-p1-B_slide_06.png": [
+          2400,
+          1350
+        ],
+        "c1m1-p1-B_slide_07.png": [
+          2400,
+          1350
+        ],
+        "c1m1-p1-B_slide_08.png": [
+          2400,
+          1350
+        ],
+        "c1m1-p1-B_slide_09.png": [
+          2400,
+          1350
+        ]
+      },
+      "card_count": 9,
+      "all_2400x1350": false,
+      "distinct_ratios": [
+        1.5075,
+        1.7778
+      ],
+      "sixteen_nine_verdict": "FAIL"
+    }
+  },
+  "errors": []
+}

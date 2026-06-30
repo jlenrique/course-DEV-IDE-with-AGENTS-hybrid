@@ -1,0 +1,120 @@
+{
+  "artifact": "irene-pass2-redo-receipt",
+  "run_id": "concierge-part1-narrated-20260630",
+  "agent": "Irene (bmad-agent-content-creator)",
+  "pass": "Pass-2 narration REDO (perception-informed)",
+  "supersedes": "narration/irene-pass2-receipt.json (prior Pass-2 narration draft)",
+  "deck": "C1M1 Part 1 (9 cards, LOCKED, operator A/B selections applied)",
+  "consumer": "Enrique (ElevenLabs)",
+  "segment_count": 9,
+  "fabrication": "none",
+  "redo_basis": "07G gpt-5.5 vision read-path review (perception/narration-script-review.md) correlated with per-slide on-screen extracted_text (perception/perception-artifacts.json). Goal: make the spoken VO walk each slide's perceived reading-path and voice the key on-screen elements, while staying strictly within SME source fidelity.",
+  "authoring_posture": "Verbatim-spine on all 9 cards; light smoothing for spoken delivery only. Where on-screen Gamma text diverged from SME source, the source-grounded wording was preferred. No facts/figures/citations added or altered. No SSML/voice tags (deferred to the v3 layer).",
+  "summary": {
+    "cards_changed": 2,
+    "cards_unchanged": 7,
+    "changed_ordinals": [5, 9],
+    "unchanged_ordinals": [1, 2, 3, 4, 6, 7, 8]
+  },
+  "cards": [
+    {
+      "ordinal": 1,
+      "slide_id": "c1m1-p1-s01",
+      "changed": false,
+      "perception_finding": "FOLLOWS (split_image_text; narration walks the right-column top-down order; decorative left image correctly given no airtime).",
+      "what_changed": "None — already follows the eye-path.",
+      "fidelity": "grounded"
+    },
+    {
+      "ordinal": 2,
+      "slide_id": "c1m1-p1-s02",
+      "changed": false,
+      "perception_finding": "FOLLOWS (enumerated_process; spoken order IS the diagram's waypoint path Course 1 -> 2 -> 3 -> deliverables).",
+      "what_changed": "None.",
+      "fidelity": "grounded"
+    },
+    {
+      "ordinal": 3,
+      "slide_id": "c1m1-p1-s03",
+      "changed": false,
+      "perception_finding": "FOLLOWS (grid_quadrant/peer cards; voice imposes the layout's left-to-right, top-to-bottom sweep across the five exemplars).",
+      "what_changed": "None.",
+      "fidelity": "grounded"
+    },
+    {
+      "ordinal": 4,
+      "slide_id": "c1m1-p1-s04",
+      "changed": false,
+      "perception_finding": "FOLLOWS (multi_column + directive callout; left column -> right column -> bottom course-contract, honoring both the scan and the directive).",
+      "what_changed": "None.",
+      "fidelity": "grounded"
+    },
+    {
+      "ordinal": 5,
+      "slide_id": "c1m1-p1-s05",
+      "changed": true,
+      "perception_finding": "FOLLOWS — with note: the dense 8-row lexicon is read top (Innovation, Intrapreneurship) then jumps to the last three rows; the three MIDDLE rows the eye scans (Systemic Friction, Root Cause vs. Symptom, Functional Flexibility) were never voiced. Advisory: add a one-clause bridge naming the middle rows.",
+      "what_changed": "Inserted ONE bridging sentence between the intrapreneur beat and the 'last three definitions' beat: 'The three middle terms - systemic friction, root cause versus symptom, and functional flexibility - are the problem-framing vocabulary we'll lean on as we move forward.' The spoken cadence now covers the same top-to-bottom span the eye traverses. Top and last-three beats kept verbatim from the prior draft.",
+      "s05_bridge": "added (names the three middle lexicon rows; one sentence)",
+      "fidelity": "grounded",
+      "grounding": "All three named middle terms are on-card lexicon rows AND verbatim SME lexicon entries (slide-05 Key Text). 'problem-framing vocabulary' echoes the card's own intro framing ('Before we dive into problem framing'). No new facts/numerals."
+    },
+    {
+      "ordinal": 6,
+      "slide_id": "c1m1-p1-s06",
+      "changed": false,
+      "perception_finding": "FOLLOWS (two_up_comparison; narrated no-net -> net, perceived left-to-right contrast order; leans on the tightrope/net metaphor the image depicts).",
+      "what_changed": "None.",
+      "fidelity": "grounded"
+    },
+    {
+      "ordinal": 7,
+      "slide_id": "c1m1-p1-s07",
+      "changed": false,
+      "perception_finding": "FOLLOWS (two_up_comparison + directive CTA; Kind -> Wicked -> David Epstein video CTA -> 'Range' takeaway matches both the contrast and the mid-slide CTA placement).",
+      "what_changed": "None.",
+      "fidelity": "grounded"
+    },
+    {
+      "ordinal": 8,
+      "slide_id": "c1m1-p1-s08",
+      "changed": false,
+      "perception_finding": "FOLLOWS (two_up_comparison; track/Kind -> jungle/Wicked -> functional flexibility; moderate pacing fits the lighter panel; intentional reinforcement of s07's Kind/Wicked axis, not redundant).",
+      "what_changed": "None.",
+      "fidelity": "grounded"
+    },
+    {
+      "ordinal": 9,
+      "slide_id": "c1m1-p1-s09",
+      "changed": true,
+      "perception_finding": "MISMATCH: four titled pillar cards (The Gap / The Mission / The Journey / The Mindset) in a 2x2 grid + bottom 'Up Next - Part 2 ... Bring your identified friction points and unmet needs' directive. The prior compressed recap mapped only loosely to the pillars, never named/walked them in grid order, left The Journey untouched, and dropped the Up Next directive. Advisory: walk the four pillars in grid order one beat each, then land on Up Next.",
+      "what_changed": "Re-authored the summary to walk the four on-screen pillars in perceived grid order - The Gap -> The Mission -> The Journey -> The Mindset - one beat each (The Journey now fully covered: three-waypoint progression + playbook/one-pager deliverables), then land on the on-card 'Up Next / Part 2: Building the Solution: Design, Plan, and Pitch' directive. SME transition beats preserved ('clinical tactician to a systemic intrapreneur'; 'diagnose and frame the root cause of a problem').",
+      "s09_resolution": {
+        "reordered_to_four_pillars": true,
+        "grid_order_walked": "The Gap -> The Mission -> The Journey -> The Mindset",
+        "journey_pillar_now_covered": true,
+        "landed_on_up_next_directive": true,
+        "on_card_directive_disposition": "PARTIAL RESTORE (source-grounded half voiced; ungrounded half dropped + flagged)",
+        "friction_points_voiced": true,
+        "friction_points_grounding": "GROUNDED — learning-objectives.md LO5: 'an Opportunity Radar that captures and categorizes real-world clinical frictions for future project development'; plus 'Systemic Friction' lexicon term (slide-05) and s09 transition narration 'solving systemic friction requires functional flexibility.' Voiced as 'Bring the real-world clinical frictions you've identified with you.'",
+        "unmet_needs_voiced": false,
+        "unmet_needs_disposition": "DROPPED + FLAGGED — 'unmet needs' appears nowhere in the Part-1 source bundle (grep across source-bundle returned zero hits); it is Gamma-generated on-card prose with NO source grounding. Per the fidelity guardrail (fidelity beats display-match; prefer source-grounded wording), it was not voiced."
+      },
+      "fidelity": "grounded",
+      "grounding": "All four pillar beats are source-grounded: The Gap and The Mission verbatim-paraphrase slide-09 Summary Text bullets; The Mission 'designer who bridges the gap between current limitations and future possibilities' also echoes slide-01 keystone; The Journey three-waypoint + playbook/one-pager grounded on slide-02 and slide-09 'three-part progression'; The Mindset (agility, first-principles, intelligent failure, 'setback as signal not verdict') grounded on slide-09 + slide-04 ('Failure is data, not verdict'). 'four pillars' and 'three-waypoint' are on-card phrasings."
+    }
+  ],
+  "fidelity_attestation": "Every numeral, named study, named person, and product/program name spoken across the 9 segments is present in that card's SME source speaker notes AND on the LOCKED deck-final PNG (or is an on-card footnote citation deliberately NOT voiced). No figure was rounded, invented, or imported across cards. On s09, the on-card 'unmet needs' phrase was deliberately NOT voiced because it has no Part-1 source grounding (Gamma-only); the source-grounded 'real-world clinical frictions' instruction was voiced in its place. The WHO Surgical Safety Checklist PDF (UNRESOLVED Notion attachment on s03) remains neither rendered on-card nor spoken. No SSML / voice-direction tags were added.",
+  "fabrication": "none",
+  "fidelity_flags_for_vera": [
+    "s09: 'unmet needs' (on-card) was DROPPED as ungrounded Gamma text; verify the grep finding (zero Part-1 source hits for 'unmet'). Source-grounded 'real-world clinical frictions you've identified' was voiced instead (LO5 + Systemic Friction lexicon).",
+    "s09: confirm the four-pillar reorder introduced no new claims — all four pillar beats trace to slide-09 Summary Text bullets and supporting deck cards (s01/s02/s04). 'psychological safety' added to The Mindset beat is on-card (s09 Mindset card) and grounded across the deck.",
+    "s05: one-clause bridge names three on-card lexicon rows only; no new facts. 'problem-framing vocabulary' echoes the card's own intro.",
+    "Cards 1/2/3/4/6/7/8 unchanged from the prior Pass-2 (already FOLLOWS); their prior fidelity disposition stands."
+  ],
+  "deliverables": [
+    "_bmad-output/implementation-artifacts/concierge-part1-narrated-20260630/narration/segment-manifest.yaml",
+    "_bmad-output/implementation-artifacts/concierge-part1-narrated-20260630/narration/narration-script.md",
+    "_bmad-output/implementation-artifacts/concierge-part1-narrated-20260630/narration/irene-pass2-redo-receipt.json"
+  ]
+}

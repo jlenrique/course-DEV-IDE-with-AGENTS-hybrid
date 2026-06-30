@@ -1,0 +1,81 @@
+{
+  "gate": "v42-section10-quality-half (pre-spend QUALITY review of narrated-deck package, BEFORE paid ElevenLabs synthesis)",
+  "reviewer": "Quinn-R (bmad-agent-quality-reviewer)",
+  "run_id": "concierge-part1-narrated-20260630",
+  "deck": "C1M1 Part 1 (9 cards, LOCKED, operator A/B selections applied)",
+  "review_pass": "pre-composition / pre-synthesis (script + manifest stage; no audio yet)",
+  "evaluated_at": "2026-06-30",
+  "lane": "QUALITY ONLY (clarity, coherence, pedagogy, pacing, slide<->VO fit). Fidelity NOT re-litigated — Vera PASS (narration/vera-fidelity-receipt-redo.json, clear_to_synthesize=true) is the source-containment authority and is accepted as cleared.",
+  "inputs_consumed": [
+    "narration/segment-manifest.yaml (9 segments)",
+    "narration/narration-script.md (perception-informed Pass-2 redo)",
+    "perception/perception-artifacts.json (on-screen extracted_text, reading_path, narration_cadence — HIGH confidence, gpt-5.5 llm_primary on all 9)",
+    "perception/narration-script-review.md (07G read-path review)",
+    "deck-final/c1m1-p1-final_slide_01..09.png (rendered slides; 03/05/09 viewed directly to confirm slide<->VO fit on density-risk cards)",
+    "lesson-plan/slide-briefs.md (Irene Pass-1 LO/instructional context)",
+    "source-bundle/learning-objectives.md (5 Bloom LOs + MO 1.x set)",
+    "narration/irene-pass2-redo-receipt.json (authoring rationale)",
+    "narration/vera-fidelity-receipt-redo.json (fidelity-cleared context, awareness only)"
+  ],
+  "overall_verdict": "CLEAR-WITH-NOTES",
+  "clear_to_synthesize_quality": true,
+  "rationale": "The 9-card package is well-crafted, perception-informed, and pedagogically coherent. Narration is contraction-smoothed for natural single-voice delivery with no run-ons or tongue-twisters; spoken order follows each slide's perceived reading-path on all 9 cards (the redo resolved the only two read-path flags — s09 four-pillar reorder and the s05 middle-row bridge); the instructional arc (intro -> lineage -> frameworks -> metaphors -> summary) services the Part-1 LOs cleanly with intentional, well-handled overlaps. No genuine learner-experience defect was found, so this is not CONCERNS. Three non-blocking notes are raised for pre-spend awareness (duration outliers on cards 3 & 9, proper-noun pronunciation risk on card 3, and a deliberate fidelity-driven voice/slide divergence on card 9's closing directive). None require a script edit before audio.",
+  "dimension_scores": {
+    "narration_quality": {"verdict": "PASS", "confidence": 0.92, "note": "Clear, spoken-ready prose; contractions + em-dash phrasing give natural breath points; no run-ons or tongue-twisters. Two long single-paragraph cards (3, 9) are the heaviest reads but remain well-formed."},
+    "slide_vo_coherence": {"verdict": "PASS", "confidence": 0.95, "note": "Voice teaches what each slide shows; spoken emphasis/order matches on-screen extracted_text on all 9. One minor divergence: s09 voice omits on-card 'unmet needs' (deliberate, Vera-cleared)."},
+    "reading_path_pacing_fit": {"verdict": "PASS", "confidence": 0.97, "note": "Cadence suits density on every card — dense slides (3,5,9) get the most time and are not rushed; comparison slides (6,7,8) walked in perceived left->right / no-net->net order; dense 8-term lexicon (5) sampled rather than read aloud (sound treatment)."},
+    "pedagogical_arc": {"verdict": "PASS", "confidence": 0.95, "note": "Coherent intro->frameworks->metaphors->summary flow; no orphaned content. Lexicon<->Slide-4 overlap (Psych Safety, Growth Mindset) intentionally kept and explicitly cross-referenced; 7<->8 Kind/Wicked reinforcement is concept+video then metaphor, not verbatim redundancy. Part-1 correctly covers foundational LO1/MO1.2 and sets up LO5 frictions; create-level LOs (SWOT/Opportunity Radar/Sandra Lam formula) belong to later parts and are correctly absent."},
+    "per_card_duration_balance": {"verdict": "PASS_WITH_NOTES", "confidence": 0.85, "note": "Range 80-179 words (~32s-72s @150wpm). Cards 3 and 9 (~72s) are ~2x the shortest cards 6/8 (~33s) — a real spread but defensible: they are the densest content (5 exemplars; 4-pillar recap) and the two outliers are well-separated in the deck. Natural pacing variation, not a defect."}
+  },
+  "per_card_notes": [
+    {"ordinal": 1, "words": 121, "est_sec_150wpm": 48, "cadence": "dense", "read_path": "FOLLOWS", "quality": "Strong opener. Keystone innovation-mindset definition lands verbatim; decorative left image correctly given no airtime. Clear.", "flag": null},
+    {"ordinal": 2, "words": 116, "est_sec_150wpm": 46, "cadence": "moderate", "read_path": "FOLLOWS", "quality": "Walks the three course-title waypoints in diagram order -> deliverables endpoint. Clean enumerated delivery.", "flag": null},
+    {"ordinal": 3, "words": 179, "est_sec_150wpm": 72, "cadence": "dense", "read_path": "FOLLOWS", "quality": "Densest card; 5 exemplars enumerated in grid order matching the 3+2 layout. Coherent but the heaviest listening load.", "flag": "DURATION_OUTLIER + PROPER_NOUN_DENSITY: longest card; carries Geisinger / ProvenCare / ProvenHealth Navigator / Glenn Steele / Atul Gawande / Michelle Longmire / Medable / Abridge / tele-triage. Recommend spot-checking ElevenLabs pronunciation of these proper nouns after synthesis (the one audio-quality risk in the deck)."},
+    {"ordinal": 4, "words": 115, "est_sec_150wpm": 46, "cadence": "dense", "read_path": "FOLLOWS", "quality": "Left col (Dweck) -> right col (Edmondson) -> bottom course-contract honors both the multi-column scan and the directive callout. Strong close line ('If we can't be vulnerable about what's broken, we can't design what's next.').", "flag": null},
+    {"ordinal": 5, "words": 134, "est_sec_150wpm": 54, "cadence": "dense", "read_path": "FOLLOWS (with note, now resolved)", "quality": "8-term lexicon handled well: voice anchors top (Innovation, Intrapreneurship), names the three middle rows via the new bridge, then the last three as the 'psychological engine', and hands the rest to the learner ('take a moment to review'). All 8 rows acknowledged without reading all 8 aloud — good pedagogy for a reference table.", "flag": null},
+    {"ordinal": 6, "words": 90, "est_sec_150wpm": 36, "cadence": "dense", "read_path": "FOLLOWS", "quality": "Tight no-net -> net contrast in perceived order; leans on the tightrope/net metaphor the image depicts. Crisp.", "flag": null},
+    {"ordinal": 7, "words": 122, "est_sec_150wpm": 49, "cadence": "dense", "read_path": "FOLLOWS", "quality": "Kind -> Wicked -> David Epstein video CTA -> 'Range' takeaway matches the two-up contrast and mid-slide CTA placement. 'hammer looking for a nail' is vivid and clear.", "flag": "MINOR: card embeds an external video CTA — narration correctly wraps it pre/post; ensure the Descript assembly leaves room for the video beat (composition concern, not script)."},
+    {"ordinal": 8, "words": 80, "est_sec_150wpm": 32, "cadence": "moderate", "read_path": "FOLLOWS", "quality": "Shortest card; track/Kind -> jungle/Wicked -> machete/compass. Intentional reinforcement of s07's axis (metaphor form), not redundant. Moderate pace fits the lighter panel.", "flag": null},
+    {"ordinal": 9, "words": 179, "est_sec_150wpm": 72, "cadence": "dense", "read_path": "MISMATCH (now FIXED in redo)", "quality": "Re-authored to walk the four on-screen pillars in grid order (Gap -> Mission -> Journey -> Mindset, one beat each, Journey now fully covered), landing on the Up Next / Part 2 directive. Strong, faithful close.", "flag": "DURATION_OUTLIER + SLIDE_VO_DIVERGENCE: tied-longest card. Voice says 'the real-world clinical frictions you've identified' but the on-card callout reads 'friction points and unmet needs' — 'unmet needs' is deliberately not voiced (no Part-1 source grounding; Vera-cleared conservative omission). Minor voice/slide divergence on the closing directive; acceptable, not a learner-experience problem."}
+  ],
+  "duration_balance_summary": {
+    "method": "word counts from narration text; runtime estimate @150wpm (conservative single-voice rate). Actual durations unknown pre-synthesis.",
+    "total_words": 1136,
+    "est_total_runtime_min_at_150wpm": 7.6,
+    "shortest_card": {"ordinal": 8, "words": 80, "est_sec": 32},
+    "longest_cards": [{"ordinal": 3, "words": 179, "est_sec": 72}, {"ordinal": 9, "words": 179, "est_sec": 72}],
+    "spread_ratio_longest_to_shortest": 2.24,
+    "assessment": "Uneven but defensible. The two 72s outliers (3, 9) are the legitimately densest cards (5 exemplars; 4-pillar recap) and are well-separated in the deck (positions 3 and 9). Deck rhythm alternates long/short acceptably. No rebalancing required pre-spend; flagged for awareness only."
+  },
+  "top_3_observations": [
+    "Cards 3 and 9 are duration outliers (~72s / 179 words each vs ~32-48s for cards 1/6/8) — defensible (densest content, well-separated), no fix needed.",
+    "Card 3 carries a heavy proper-noun load for a single-voice read (Geisinger, ProvenCare, ProvenHealth Navigator, Gawande, Longmire, Medable, Abridge) — recommend spot-checking ElevenLabs pronunciation of these after synthesis; this is the single audio-quality risk in the package.",
+    "Card 9 voice omits the on-screen 'unmet needs' phrase (says only 'friction points') — deliberate fidelity-driven omission (Vera-cleared); a minor slide<->VO divergence on the closing directive, acceptable."
+  ],
+  "concerns": [],
+  "findings": [
+    {"severity": "low", "dimension": "per_card_duration_balance", "location": "Cards 3 and 9", "description": "Two cards run ~72s (179 words) vs ~32s shortest; ~2.2x spread.", "fix_suggestion": "No edit required — content density justifies the length and the outliers are well-separated. If the operator wants a flatter cadence in a future pass, card 3's five exemplars are the only realistic split candidate (already flagged upstream as the strongest clustering candidate, lesson-plan Appendix F)."},
+    {"severity": "low", "dimension": "audio_quality_preflight", "location": "Card 3 narration (proper nouns)", "description": "Single-voice read of Geisinger / ProvenCare / ProvenHealth Navigator / Gawande / Longmire / Medable / Abridge / tele-triage risks TTS mispronunciation.", "fix_suggestion": "After ElevenLabs synthesis, spot-listen to card 3 specifically for these names; if any mispronounce, apply phonetic spelling / SSML in the v3 tag layer for that segment only (no script change)."},
+    {"severity": "low", "dimension": "slide_vo_coherence", "location": "Card 9 closing directive", "description": "On-card 'Bring your identified friction points and unmet needs' vs voiced 'Bring the real-world clinical frictions you've identified with you' — 'unmet needs' not voiced.", "fix_suggestion": "Accept as-is (fidelity-driven, Vera-cleared). No action unless the operator wants display-match parity, which would be a fidelity decision outside the quality lane."}
+  ],
+  "medical_accuracy_flags": [],
+  "pattern_alerts": [
+    "Perception-informed redo loop worked as intended: the two 07G read-path flags (s09 MISMATCH, s05 middle-row skip) were both surfaced upstream and resolved in the script before this quality gate — quality found no residual read-path defects. Positive process signal."
+  ],
+  "calibration_notes": [
+    "Applied weed-clearing/pre-spend posture: aggressively dismissed cosmetic nits; raised only learner-experience-relevant notes. The only note with an actionable pre-spend hook is the card-3 pronunciation spot-check.",
+    "Duration balance assessed on word-count proxy (no audio yet); will be re-confirmable in the post-synthesis composition-integrity pass."
+  ],
+  "logging_status": "suppressed (ad-hoc pre-spend quality consult; not persisted to SQLite)",
+  "return_to_marcus": {
+    "overall_verdict": "CLEAR-WITH-NOTES — quality clears the package to proceed to paid ElevenLabs synthesis; no script edit required before spend.",
+    "blocking_concerns": "none",
+    "non_blocking_notes": [
+      "Cards 3 & 9 are ~72s duration outliers — defensible (densest content), no fix.",
+      "Card 3 proper-noun pronunciation — spot-check the synthesized audio for Geisinger/ProvenCare/ProvenHealth Navigator/Gawande/Longmire/Medable/Abridge; apply SSML in the v3 tag layer only if any mispronounce.",
+      "Card 9 voice drops on-card 'unmet needs' — deliberate, Vera-cleared; minor slide<->VO divergence, accept."
+    ],
+    "duration_flag": "Cards 3 and 9 tied-longest at ~72s/179 words; shortest card 8 at ~32s/80w; ~2.2x spread, well-separated, no rebalancing needed.",
+    "receipt_path": "_bmad-output/implementation-artifacts/concierge-part1-narrated-20260630/quality/quinn-r-quality-receipt.json"
+  }
+}

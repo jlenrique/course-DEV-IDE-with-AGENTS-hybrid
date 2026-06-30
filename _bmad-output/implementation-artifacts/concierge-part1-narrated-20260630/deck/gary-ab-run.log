@@ -1,0 +1,50 @@
+[pre-flight] GAMMA_API_KEY present (len=52, prefix=sk-g...)
+[load] real module: C:\Users\juanl\Documents\GitHub\course-DEV-IDE-with-AGENTS-hybrid\skills\gamma-api-mastery\scripts\gamma_operations.py
+
+===== VARIANT A | theme_id=njim9kuhfnljvaa | export_dir=C:\Users\juanl\Documents\GitHub\course-DEV-IDE-with-AGENTS-hybrid\_bmad-output\implementation-artifacts\concierge-part1-narrated-20260630\deck =====
+[A] dispatching generate_slide() — REAL live Gamma call...
+[A] completed: generation_id=Xf2c1qBhEyVtrNaton9So gammaUrl=https://gamma.app/docs/ybe73zv0075z4ov exportUrl=yes
+[A] downloaded export -> C:\Users\juanl\Documents\GitHub\course-DEV-IDE-with-AGENTS-hybrid\_bmad-output\implementation-artifacts\concierge-part1-narrated-20260630\deck\c1m1-p1_A.png
+[A] materialized 9 per-card PNGs
+    c1m1-p1-A_slide_01.png: [2400, 1350]
+    c1m1-p1-A_slide_02.png: [2400, 1558]
+    c1m1-p1-A_slide_03.png: [2400, 1350]
+    c1m1-p1-A_slide_04.png: [2400, 1510]
+    c1m1-p1-A_slide_05.png: [2400, 1350]
+    c1m1-p1-A_slide_06.png: [2400, 1350]
+    c1m1-p1-A_slide_07.png: [2400, 1350]
+    c1m1-p1-A_slide_08.png: [2400, 1350]
+    c1m1-p1-A_slide_09.png: [2400, 1350]
+
+===== VARIANT B | theme_id=e8tz1vxb9v1urqp | export_dir=C:\Users\juanl\Documents\GitHub\course-DEV-IDE-with-AGENTS-hybrid\_bmad-output\implementation-artifacts\concierge-part1-narrated-20260630\deck-B =====
+[B] dispatching generate_slide() — REAL live Gamma call...
+[B] completed: generation_id=FCoUqWsTEgiyyTezmpriB gammaUrl=https://gamma.app/docs/me7xktka2ya09z2 exportUrl=yes
+[B] downloaded export -> C:\Users\juanl\Documents\GitHub\course-DEV-IDE-with-AGENTS-hybrid\_bmad-output\implementation-artifacts\concierge-part1-narrated-20260630\deck-B\c1m1-p1_B.png
+[B] materialized 9 per-card PNGs
+    c1m1-p1-B_slide_01.png: [2400, 1350]
+    c1m1-p1-B_slide_02.png: [2400, 1592]
+    c1m1-p1-B_slide_03.png: [2400, 1350]
+    c1m1-p1-B_slide_04.png: [2400, 1350]
+    c1m1-p1-B_slide_05.png: [2400, 1350]
+    c1m1-p1-B_slide_06.png: [2400, 1350]
+    c1m1-p1-B_slide_07.png: [2400, 1350]
+    c1m1-p1-B_slide_08.png: [2400, 1350]
+    c1m1-p1-B_slide_09.png: [2400, 1350]
+
+[receipt] written -> C:\Users\juanl\Documents\GitHub\course-DEV-IDE-with-AGENTS-hybrid\_bmad-output\implementation-artifacts\concierge-part1-narrated-20260630\deck\gary-ab-generation-receipt.json
+{
+  "live": true,
+  "A": {
+    "generation_id": "Xf2c1qBhEyVtrNaton9So",
+    "public_url": "https://gamma.app/docs/ybe73zv0075z4ov",
+    "card_count": 9,
+    "sixteen_nine_verdict": "FAIL"
+  },
+  "B": {
+    "generation_id": "FCoUqWsTEgiyyTezmpriB",
+    "public_url": "https://gamma.app/docs/me7xktka2ya09z2",
+    "card_count": 9,
+    "sixteen_nine_verdict": "FAIL"
+  },
+  "errors": []
+}

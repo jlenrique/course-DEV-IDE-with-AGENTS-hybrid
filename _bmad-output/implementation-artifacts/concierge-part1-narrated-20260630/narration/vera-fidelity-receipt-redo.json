@@ -1,0 +1,77 @@
+{
+  "gate": "G5-pre-synthesis (narration -> paid ElevenLabs audio) — REDO RE-RUN",
+  "assessor": "Vera (bmad-agent-fidelity-assessor)",
+  "run_id": "concierge-part1-narrated-20260630",
+  "supersedes": "narration/vera-fidelity-receipt.json (prior G5 fidelity PASS) — THIS receipt is authoritative for the gate",
+  "artifact_under_test": "narration/segment-manifest.yaml (9 segments) + narration/narration-script.md (PERCEPTION-INFORMED PASS-2 REDO)",
+  "producing_agent": "Irene (bmad-agent-content-creator); redo receipt narration/irene-pass2-redo-receipt.json",
+  "source_of_truth": "source-bundle/slides/slide-01..09.md (SME verbatim speaker notes + references); source-bundle/learning-objectives.md (LO5)",
+  "supplementary_perception": "perception/perception-artifacts.json (07G gpt-5.5 on-screen extracted_text for the LOCKED deck-final PNGs, esp. slide-09); image bridge HIGH confidence",
+  "evaluated_at": "2026-06-30",
+  "lens": "source-containment (HARD gate): every spoken numeral, named entity, and factual claim must be present in that card's SME source slide/LOs OR on the rendered slide; no invented specificity; lenient figure-grounding bar (present anywhere on the slide or its source = grounded); citations stay unvoiced; WHO PDF not voiced/asserted.",
+  "scope_note": "Re-run of the narration fidelity gate after a perception-informed Pass-2 redo. Irene reports 7 of 9 segments (cards 1,2,3,4,6,7,8) unchanged from the prior PASSed text, with only cards 5 and 9 edited. Scrutiny concentrated on the two changed segments; the 7 unchanged were independently re-verified against SME source.",
+  "byte_identity_method_caveat": "The prior Pass-2 narration text was overwritten IN PLACE by the redo, and narration/ is git-untracked (no prior blob to diff). A literal byte-for-byte diff against the prior PASSed text is therefore not reconstructable. Compensating verification used instead: (a) all 7 'unchanged' segments were INDEPENDENTLY re-derived against the SME source slides — the actual gate test — and each is verbatim-spine with only spoken-delivery contraction smoothing, no facts/figures/names added or altered; (b) each of the 7 was confirmed consistent with the documented spoken-inventory in the prior Vera receipt (vera-fidelity-receipt.json). Conclusion: no silent drift detected in the 7 unchanged segments. (Confidence: HIGH on source-containment; the byte-identity claim itself rests on Irene's attestation + source-consistency rather than a recoverable diff.)",
+  "methodology_note": "Independent re-derivation, did NOT trust the authoring agent. Read all 9 new narration segments + all 9 SME source slides + learning-objectives.md verbatim, and read the perception/perception-artifacts.json on-screen extracted_text for slide-09. Built a per-segment inventory of every spoken numeral / named person / named study/program/company / factual claim and located each in the card's SME source OR on the rendered slide. Ran grep across source-bundle/ for the redo's risk tokens: 'unmet' (ZERO hits), 'measurable' (ZERO hits in source — but present verbatim on rendered slide-09), 'verdict' (ZERO hits in source — but present verbatim on rendered slide-09). Citations on cards (NAM 2019, ACEP May 2020, PMC4106555, PMC3960713) are correctly NOT voiced. The UNRESOLVED WHO Surgical Safety Checklist PDF is correctly NOT voiced and NOT asserted present.",
+  "scrutiny_points": [
+    {
+      "id": 1,
+      "point": "s09 'unmet needs' DROP",
+      "finding": "CORRECT — DROPPED. grep across source-bundle/ returns ZERO hits for 'unmet'; the phrase 'Bring your identified friction points and unmet needs' appears ONLY in perception/perception-artifacts.json (it is Gamma-generated on-card prose on rendered slide-09), with no SME-source grounding. The new s09 narration ends 'Bring the real-world clinical frictions you've identified with you.' — 'unmet needs' is NOT voiced. Verified Irene's grep claim independently. Note: under the lenient figure-grounding bar the on-card 'unmet needs' could have been voiced (it is on-slide), so dropping it is a conservative omission, not a requirement; an omission of an on-card phrase is not a source-containment violation. Disposition correct.",
+      "verdict": "PASS"
+    },
+    {
+      "id": 2,
+      "point": "s09 'friction points' RESTORE",
+      "finding": "GROUNDED — ACCEPTABLE. 'Bring the real-world clinical frictions you've identified with you.' is grounded by learning-objectives.md LO5 verbatim ('an Opportunity Radar that captures and categorizes real-world clinical frictions for future project development') PLUS the 'Systemic Friction' lexicon row (slide-05) and the slide-09 transition narration theme ('solving systemic friction requires functional flexibility'). 'friction points' is also on the rendered slide-09 card. No invented specificity.",
+      "verdict": "PASS"
+    },
+    {
+      "id": 3,
+      "point": "s09 four-pillar reorder (Gap / Mission / Journey / Mindset) — no new claims",
+      "finding": "GROUNDED — NO NEW CLAIMS. The four-pillar walk essentially voices the rendered slide-09 on-card text (perception/perception-artifacts.json slide-09 extracted_text contains, verbatim or near-verbatim, every beat): (a) The Gap incl. 'the skills that make a great clinician aren't the same ones that redesign a broken system' = on-card 'The skills that make a great clinician are not identical to those that redesign broken systems'; (b) The Mission incl. 'a designer who bridges the gap between current limitations and future possibilities' = on-card AND slide-01 keystone; (c) The Journey 'three-waypoint progression — identifying opportunities, then designing and pitching solutions, then driving lasting, measurable impact' = on-card AND maps 1:1 to slide-02 Course1/2/3 titles; 'tangible playbook and an executive one-pager' grounded slide-02; (d) The Mindset 'agility, first-principles thinking, psychological safety, ... intelligent failure — treating every setback as signal, not verdict' = on-card slide-09 verbatim. 'psychological safety' is on the rendered slide-09 Mindset card AND a deck-wide Part-1 source term (slide-04/05/06) — grounded. SME transition beats 'clinical tactician to a systemic intrapreneur' and 'diagnose and frame the root cause' are verbatim from slide-09 Transition narration. Note: 'measurable' and 'verdict' are NOT in the SME source text, but BOTH are present verbatim on the rendered slide-09 card (perception) — satisfies the lenient figure-grounding bar (on-slide presence). No fabricated fact, no sharpened numeral, no cross-card import.",
+      "verdict": "PASS"
+    },
+    {
+      "id": 4,
+      "point": "s05 bridge — three named middle terms on-card lexicon; no new facts",
+      "finding": "GROUNDED. The inserted sentence 'The three middle terms — systemic friction, root cause versus symptom, and functional flexibility — are the problem-framing vocabulary we'll lean on as we move forward.' names exactly the three MIDDLE rows of the 8-term lexicon on slide-05 (rows 3/4/5: Systemic Friction; Root Cause vs. Symptom; Functional Flexibility) — all verbatim SME lexicon entries (slide-05 Key Text). 'problem-framing vocabulary' echoes the card's own intro ('Before we dive into problem framing'). No new numerals or facts. Rest of s05 is verbatim-spine of slide-05 Narration (incl. 'last three definitions' = source 'bottom three definitions' = First Principles/Psychological Safety/Growth Mindset; 'eight definitions' = the 8 lexicon rows, also on-slide). Only contraction smoothing otherwise.",
+      "verdict": "PASS"
+    },
+    {
+      "id": 5,
+      "point": "7 unchanged segments (cards 1,2,3,4,6,7,8) — no silent drift",
+      "finding": "CLEAN. Each independently re-verified against its SME source slide and found verbatim-spine with only spoken-delivery contraction smoothing (e.g. 'I am'->'I'm', 'you are'->'you're', 'it is'->'it's', 'cannot'->'can't', 'you will'->'you'll'). No facts, figures, names, or citations added/altered/dropped. Card 1: Dr. Tejal Naik + keystone definition verbatim; NAM 2019 not voiced. Card 2: three course titles + playbook/executive one-pager verbatim. Card 3: five exemplars (tele-triage / Abridge / Glenn Steele+Geisinger+ProvenCare+ProvenHealth Navigator / Atul Gawande aviation-style checklist / Michelle Longmire+Medable) all verbatim from per-exemplar source narration; Checklist Manifesto + WHO PDF not voiced; ACEP/PMC citations not voiced. Card 4: Carol Dweck + Amy Edmondson + 'two foundational elements' verbatim. Card 6: tightrope/net + 'failure treated as data, not a punishable offense' verbatim. Card 7: David Epstein + video title 'Why the Most Experienced People Fail First' (on-card + frontmatter) + Kind/Wicked + 'Range' verbatim. Card 8: track/jungle + machete/compass + 'Range' verbatim. All consistent with the prior Vera receipt inventories. (Byte-identity caveat per byte_identity_method_caveat above; source-containment is fully re-confirmed.)",
+      "verdict": "PASS"
+    }
+  ],
+  "segments": [
+    {"ordinal": 1, "slide_id": "c1m1-p1-s01", "changed": false, "verdict": "PASS", "violation": null, "note": "verbatim-spine of slide-01 Narration; contraction smoothing only; NAM 2019 not voiced."},
+    {"ordinal": 2, "slide_id": "c1m1-p1-s02", "changed": false, "verdict": "PASS", "violation": null, "note": "three course titles + playbook/executive one-pager verbatim from slide-02 Narration."},
+    {"ordinal": 3, "slide_id": "c1m1-p1-s03", "changed": false, "verdict": "PASS", "violation": null, "note": "five exemplars verbatim from per-exemplar source narration; 'five' grounded by 5 source blocks + on-slide; WHO PDF + citations not voiced; no invented specificity."},
+    {"ordinal": 4, "slide_id": "c1m1-p1-s04", "changed": false, "verdict": "PASS", "violation": null, "note": "Dweck + Edmondson attributions + 'two foundational elements' verbatim from slide-04 Narration."},
+    {"ordinal": 5, "slide_id": "c1m1-p1-s05", "changed": true, "verdict": "PASS", "violation": null, "note": "one bridge sentence naming the three MIDDLE lexicon rows (systemic friction / root cause vs. symptom / functional flexibility) — all on-card SME lexicon entries; no new facts. 'eight definitions' + 'last three' grounded."},
+    {"ordinal": 6, "slide_id": "c1m1-p1-s06", "changed": false, "verdict": "PASS", "violation": null, "note": "tightrope/net metaphor + 'failure treated as data, not a punishable offense' verbatim from slide-06 Speaker Notes."},
+    {"ordinal": 7, "slide_id": "c1m1-p1-s07", "changed": false, "verdict": "PASS", "violation": null, "note": "David Epstein + video title (on-card + frontmatter) + Kind/Wicked + 'Range' + functional flexibility verbatim from slide-07 pre/post-video narration."},
+    {"ordinal": 8, "slide_id": "c1m1-p1-s08", "changed": false, "verdict": "PASS", "violation": null, "note": "track/jungle + machete/compass + 'Range' verbatim from slide-08 Speaker Notes."},
+    {"ordinal": 9, "slide_id": "c1m1-p1-s09", "changed": true, "verdict": "PASS", "violation": null, "note": "RE-AUTHORED four-pillar walk; every beat traces to rendered slide-09 on-card text (perception) and/or SME source (slide-01/02/09 + LO5); 'unmet needs' correctly dropped (zero source grounding); 'friction points' correctly restored (LO5 verbatim). No new claims."}
+  ],
+  "overall_verdict": "PASS",
+  "clear_to_synthesize": true,
+  "segments_pass": 9,
+  "segments_violation": 0,
+  "blocking_violations": [],
+  "soft_notes": [
+    "s09: 'measurable' (in 'driving lasting, measurable impact') and 'verdict' (in 'setback as signal, not verdict') are NOT in the SME source text but ARE present verbatim on the rendered slide-09 card — grounded under the lenient figure-grounding bar (on-slide presence). Noted for transparency; not a block.",
+    "s09: the four-pillar narration is, by design, a near-verbatim spoken rendering of the on-card pillar prose plus the SME transition beats — this is the strongest possible grounding (on-slide + source), not authored specificity.",
+    "Byte-identity to the prior PASSed text for the 7 unchanged segments could not be diffed (prior text overwritten in place; narration/ git-untracked). Source-containment for all 7 was independently re-confirmed and is consistent with the prior Vera receipt; no drift detected. Recommend future redos snapshot the prior narration before overwrite to enable a literal byte-diff."
+  ],
+  "return_to_marcus": {
+    "overall_verdict": "PASS — clear to synthesize paid ElevenLabs audio",
+    "unchanged_7_clean": true,
+    "s09_unmet_needs_drop": "CORRECT (zero Part-1 source grounding; not voiced)",
+    "s09_friction_points_restore": "GROUNDED (LO5 verbatim 'real-world clinical frictions' + Systemic Friction lexicon)",
+    "s09_four_pillar_reorder": "GROUNDED, no new claims (beats = rendered slide-09 on-card text + slide-01/02/09 + LO5)",
+    "s05_bridge": "GROUNDED (names three on-card middle lexicon rows; no new facts)",
+    "blocking_violation": "none"
+  }
+}

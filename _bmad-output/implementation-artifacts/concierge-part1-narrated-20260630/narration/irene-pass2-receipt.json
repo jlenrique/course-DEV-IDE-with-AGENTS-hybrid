@@ -1,0 +1,113 @@
+{
+  "artifact": "irene-pass2-receipt",
+  "run_id": "concierge-part1-narrated-20260630",
+  "agent": "Irene (bmad-agent-content-creator)",
+  "pass": "Pass-2 narration authoring",
+  "deck": "C1M1 Part 1 (9 cards, LOCKED, operator A/B selections applied)",
+  "consumer": "Enrique (ElevenLabs)",
+  "segment_count": 9,
+  "fabrication": "none",
+  "authoring_posture": "Verbatim-spine on all 9 cards: SME speaker notes are the gold source, lightly smoothed for spoken delivery only (contractions, sentence flow). No facts, figures, names, or citations added, altered, or dropped. Grounded against the LOCKED deck-final PNGs.",
+  "classification_note": "Cards 5, 6, and 8 were briefed as 'thin / author-from-card,' but the source bundle carries full SME speaker notes for all three (slide-05 Narration, slide-06 Speaker Notes, slide-08 Speaker Notes). I used those verbatim notes as the spine rather than authoring from on-card content — the more fidelity-faithful choice. Result: zero cards required author-from-scratch narration.",
+  "cards": [
+    {
+      "ordinal": 1,
+      "slide_id": "c1m1-p1-s01",
+      "source_type": "verbatim-spine",
+      "source_ref": "source-bundle/slides/slide-01 Narration (Speaker Notes); spine C1M1Part01.md lines 25-49",
+      "key_figures_and_attributions_spoken": ["Dr. Tejal Naik (speaker)", "keystone definition: 'innovation mindset ... a designer of it' (verbatim)"],
+      "grounding": "Byline 'TEJAL NAIK, M.D.' on card; keystone definition rendered verbatim on card; NAM (2019) is an on-card footer reference and is NOT spoken (so nothing ungrounded is voiced).",
+      "fidelity": "grounded"
+    },
+    {
+      "ordinal": 2,
+      "slide_id": "c1m1-p1-s02",
+      "source_type": "verbatim-spine",
+      "source_ref": "source-bundle/slides/slide-02 Narration (Speaker Notes); spine C1M1Part01.md lines 53-73",
+      "key_figures_and_attributions_spoken": ["Course 1 'Sparking Innovation: From Insight to Opportunity'", "Course 2 'Building the Solution: Design, Plan, and Pitch'", "Course 3 'Driving Impact: From Project to Lasting Change'", "tangible playbook + executive one-pager"],
+      "grounding": "All three course titles, 'Executive One-Pager & Playbook,' and 'You are here: Waypoint 1' appear on card.",
+      "fidelity": "grounded"
+    },
+    {
+      "ordinal": 3,
+      "slide_id": "c1m1-p1-s03",
+      "source_type": "verbatim-spine",
+      "source_ref": "source-bundle/slides/slide-03 per-exemplar narration; source-outline.md lines 160-175 (exemplar swap, operator 2026-06-30)",
+      "key_figures_and_attributions_spoken": ["five exemplars", "Emergency physicians — tele-triage", "Abridge (AI clinical-conversation summarization)", "Glenn Steele / Geisinger — ProvenCare, ProvenHealth Navigator", "Atul Gawande — aviation-style checklist / process innovation", "Michelle Longmire — Medable / decentralized clinical trials"],
+      "grounding": "Card subtitle says 'These five exemplars ... care delivery, informatics, system redesign, process science, and digital health.' All five names, ProvenCare/ProvenHealth Navigator, Abridge, Medable on card. Citations (ACEP May 2020, PMC4106555, PMC3960713) are on-card footnotes, not spoken. The WHO Surgical Safety Checklist PDF (UNRESOLVED Notion attachment) is NOT cited on card and NOT spoken.",
+      "fidelity": "grounded",
+      "notes": "Longest segment (~5 named exemplars). Length is pedagogically earned (densest card; flagged in Pass-1 as strongest clustering candidate). No numerals beyond 'five' (grounded)."
+    },
+    {
+      "ordinal": 4,
+      "slide_id": "c1m1-p1-s04",
+      "source_type": "verbatim-spine",
+      "source_ref": "source-bundle/slides/slide-04 Narration (Speaker Notes); spine C1M1Part01.md lines 97-109",
+      "key_figures_and_attributions_spoken": ["two foundational elements", "Growth Mindset — Carol Dweck", "Psychological Safety — Amy Edmondson"],
+      "grounding": "Card headers 'Growth Mindset — Carol Dweck' and 'Psychological Safety — Amy Edmondson'; two-column layout; course-contract beat on card.",
+      "fidelity": "grounded"
+    },
+    {
+      "ordinal": 5,
+      "slide_id": "c1m1-p1-s05",
+      "source_type": "verbatim-spine",
+      "source_ref": "source-bundle/slides/slide-05 Narration (Speaker Notes); source-outline.md lines 353-365",
+      "key_figures_and_attributions_spoken": ["eight definitions", "Innovation = creation of adopted value", "Intrapreneurs (lead change from within)", "last three terms: First Principles, Psychological Safety, Growth Mindset"],
+      "grounding": "Card subtitle 'These eight definitions form the conceptual bedrock'; the bottom three table rows are First Principles Thinking, Psychological Safety, Growth Mindset (matches 'last three definitions'). All terms present in the 8-row table.",
+      "fidelity": "grounded",
+      "notes": "Briefed as 'author-from-card,' but full SME speaker notes exist and were used verbatim-spine. The SME deliberately does not read all 8 terms aloud ('take a moment to review this lexicon'); narration honors that rather than over-reading the table."
+    },
+    {
+      "ordinal": 6,
+      "slide_id": "c1m1-p1-s06",
+      "source_type": "verbatim-spine",
+      "source_ref": "source-bundle/slides/slide-06 Speaker Notes (Narration); source-outline.md lines 366-374",
+      "key_figures_and_attributions_spoken": ["tightrope / safety-net metaphor", "failure treated as data, not a punishable offense"],
+      "grounding": "Card headers 'No Safety Net: Compliance & Fear' / 'Psychological Safety: Innovation & Risk-Taking'; 'Safety precedes innovation' on card; tightrope-and-net visual.",
+      "fidelity": "grounded",
+      "notes": "Briefed as 'author-from-card metaphor,' but source carries full Speaker Notes — used verbatim-spine. No new facts/numerals introduced."
+    },
+    {
+      "ordinal": 7,
+      "slide_id": "c1m1-p1-s07",
+      "source_type": "verbatim-spine",
+      "source_ref": "source-bundle/slides/slide-07 Pre-Video + Post-Video Narration; source-outline.md lines 375-378",
+      "key_figures_and_attributions_spoken": ["David Epstein", "'Why the Most Experienced People Fail First'", "Kind vs. Wicked environments", "'Range' / functional flexibility"],
+      "grounding": "Card 'Featured: David Epstein,' video title verbatim, 'Watch on YouTube,' Kind/Wicked split, 'Range' on card. YouTube link preserved verbatim in source slide.",
+      "fidelity": "grounded",
+      "notes": "Two SME beats (pre-video framing + post-video takeaway) combined into ONE segment around the featured video (manifest is one segment per ordinal). Both beats kept faithfully; joined with a spoken bridge that does not assume inline-play timing."
+    },
+    {
+      "ordinal": 8,
+      "slide_id": "c1m1-p1-s08",
+      "source_type": "verbatim-spine",
+      "source_ref": "source-bundle/slides/slide-08 Speaker Notes (Narration); source-outline.md lines 379-389",
+      "key_figures_and_attributions_spoken": ["track vs. jungle metaphor", "Kind vs. Wicked environment", "'Range' / functional flexibility", "machete / compass"],
+      "grounding": "Card headers 'Kind Learning Environment (Clinical Specialization)' / 'Wicked Learning Environment (Functional Flexibility)'; track + jungle imagery; compass and machete visible in the jungle illustration.",
+      "fidelity": "grounded",
+      "notes": "Briefed as 'author-from-card metaphor,' but source carries full Speaker Notes — used verbatim-spine."
+    },
+    {
+      "ordinal": 9,
+      "slide_id": "c1m1-p1-s09",
+      "source_type": "verbatim-spine",
+      "source_ref": "source-bundle/slides/slide-09 Transition-to-Part-2 Narration; source-outline.md line 402 (enrichment); summary text spine C1M1Part01.md lines 125-139",
+      "key_figures_and_attributions_spoken": ["recap of mental framework + 'Range'", "functional flexibility for systemic friction", "transition to Part 2: diagnose and frame the root cause"],
+      "grounding": "Card four pillars (Gap/Mission/Journey/Mindset) + 'Up Next — Part 2: Building the Solution ... Bring your identified friction points and unmet needs.' Transition narration is the SME 'Gemini Updated' enrichment (source line 402).",
+      "fidelity": "grounded",
+      "notes": "Carries the Part-2 transition beat per the run spec."
+    }
+  ],
+  "fidelity_attestation": "Every numeral, named study, named person, and product/program name spoken in the 9 segments is present in that card's source speaker notes AND on the LOCKED deck-final PNG (or is an on-card footnote citation deliberately NOT voiced). No figure was rounded, invented, or imported across cards. The WHO Surgical Safety Checklist PDF (an UNRESOLVED Notion attachment on s03) is neither rendered on the card nor spoken. No SSML / voice-direction tags were added (deferred to a later pass).",
+  "fidelity_flags": [
+    "No ungroundable figure encountered; nothing was dropped or invented.",
+    "Classification deviation (fidelity-positive): cards 5/6/8 carried full SME speaker notes despite being briefed as thin/author-from-card; used verbatim-spine. Zero cards required author-from-scratch narration.",
+    "Card 3 is the longest segment (~70-75s spoken) because it carries five named exemplars; length is pedagogically earned, not padded. Operator may approve as-is or request a tighter cut at pre-spend review.",
+    "Card 7 merges the SME pre-video and post-video beats into a single segment around the featured David Epstein video (one segment per ordinal)."
+  ],
+  "deliverables": [
+    "_bmad-output/implementation-artifacts/concierge-part1-narrated-20260630/narration/narration-script.md",
+    "_bmad-output/implementation-artifacts/concierge-part1-narrated-20260630/narration/segment-manifest.yaml",
+    "_bmad-output/implementation-artifacts/concierge-part1-narrated-20260630/narration/irene-pass2-receipt.json"
+  ]
+}

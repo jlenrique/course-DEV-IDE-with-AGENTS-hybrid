@@ -1,0 +1,131 @@
+{
+  "gate": "G5-pre-synthesis (narration -> paid ElevenLabs audio)",
+  "assessor": "Vera (bmad-agent-fidelity-assessor)",
+  "run_id": "concierge-part1-narrated-20260630",
+  "artifact_under_test": "narration/segment-manifest.yaml (9 segments) + narration/narration-script.md",
+  "source_of_truth": "source-bundle/slides/slide-01..09.md (SME verbatim speaker notes + references)",
+  "supplementary_perception": "deck-final/c1m1-p1-final_slide_03.png, _05.png, _07.png (image bridge, HIGH confidence) — confirmed on-slide presence for the figure-grounding bar",
+  "evaluated_at": "2026-06-30",
+  "lens": "source-containment (HARD gate): every spoken numeral, named entity, and factual claim must be present in that card's SME source slide OR on the rendered slide; no invented specificity",
+  "methodology_note": "Independent re-derivation. Read all 9 narration segments and all 9 SME source slides verbatim; built a per-segment inventory of every spoken numeral / named person / named study/program/company / factual claim and located each in the card's source speaker notes. Did NOT consult or copy Irene's pass-2 receipt. For the three segments carrying countable figures or named third-party media (seg 3 'five examples' + 5 named innovators; seg 5 'eight definitions'; seg 7 David Epstein video title), additionally opened the rendered deck-final PNGs to confirm on-slide presence. Citations on cards (NAM 2019, ACEP May 2020, PMC4106555, PMC3960713) are correctly NOT voiced. The UNRESOLVED WHO Surgical Safety Checklist PDF is correctly NOT voiced and NOT asserted present.",
+  "segments": [
+    {
+      "ordinal": 1,
+      "slide_id": "c1m1-p1-s01",
+      "verdict": "PASS",
+      "spoken_inventory": [
+        {"item": "Dr. Tejal Naik (presenter name)", "grounding": "slide-01 Narration (Speaker Notes): 'I am Dr. Tejal Naik' — verbatim"},
+        {"item": "claim: barrier to change is absence of structured process + psychological safety", "grounding": "slide-01 speaker notes — verbatim spine"},
+        {"item": "claim: innovation mindset = conviction you are a designer of the system, not just an employee", "grounding": "slide-01 speaker notes (bolded sentence) — verbatim"}
+      ],
+      "numerals": "none (only the ordinal 'first goal', present in source)",
+      "violation": null
+    },
+    {
+      "ordinal": 2,
+      "slide_id": "c1m1-p1-s02",
+      "verdict": "PASS",
+      "spoken_inventory": [
+        {"item": "Hero's Journey (framing)", "grounding": "slide-02 speaker notes — verbatim"},
+        {"item": "Course 1 'Sparking Innovation: From Insight to Opportunity'", "grounding": "slide-02 speaker notes — verbatim title"},
+        {"item": "Course 2 'Building the Solution: Design, Plan, and Pitch'", "grounding": "slide-02 speaker notes — verbatim title"},
+        {"item": "Course 3 'Driving Impact: From Project to Lasting Change'", "grounding": "slide-02 speaker notes — verbatim title"},
+        {"item": "executive one-pager / tangible playbook", "grounding": "slide-02 speaker notes — verbatim"}
+      ],
+      "numerals": "Course 1/2/3 — three course ordinals, all present in source",
+      "violation": null
+    },
+    {
+      "ordinal": 3,
+      "slide_id": "c1m1-p1-s03",
+      "verdict": "PASS",
+      "spoken_inventory": [
+        {"item": "'Consider five examples' (count = 5)", "grounding": "slide-03 carries exactly 5 innovator blocks (tele-triage, informatics/Abridge, Steele, Gawande, Longmire); rendered slide-03 PNG voices 'These five exemplars'"},
+        {"item": "framing: innovation spans 'care delivery, informatics, system redesign, process science, and digital health'", "grounding": "rendered slide-03 PNG sub-headline is this exact sentence; each domain maps to a source block (care-delivery=tele-triage, informatics=Abridge, system redesign=Steele, process=Gawande, digital health=Longmire)"},
+        {"item": "emergency physicians / tele-triage / pandemic / reduce exposure / preserve capacity", "grounding": "slide-03 tele-triage narration — verbatim spine"},
+        {"item": "electronic medical records + Abridge (AI summarize clinical conversations; documentation efficiency, burnout, patient communication)", "grounding": "slide-03 clinical-informatics narration — verbatim"},
+        {"item": "Glenn Steele / Geisinger Health System / ProvenCare (evidence-based protocols + outcome guarantees) / ProvenHealth Navigator (nurse care managers into primary care)", "grounding": "slide-03 Glenn Steele narration — verbatim"},
+        {"item": "Atul Gawande / aviation-style checklist / process innovation / reduced complications and mortality worldwide", "grounding": "slide-03 Gawande narration (sub-bullet) — verbatim spine"},
+        {"item": "Michelle Longmire / dermatologist / Medable / decentralized trials / geographic + logistical barriers", "grounding": "slide-03 Longmire narration — verbatim"}
+      ],
+      "numerals": "'five' — grounded by source count of 5 innovator blocks AND on rendered slide ('These five exemplars')",
+      "violation": null,
+      "notes": "Checklist Manifesto and WHO Surgical Safety Checklist PDF are NOT voiced (correct — the unresolved attachment is not asserted). No invented specificity: no dosage, percentage, or sharpened figure appears."
+    },
+    {
+      "ordinal": 4,
+      "slide_id": "c1m1-p1-s04",
+      "verdict": "PASS",
+      "spoken_inventory": [
+        {"item": "Growth Mindset 'coined by Carol Dweck'", "grounding": "slide-04 speaker notes: 'A growth mindset, coined by Carol Dweck' — verbatim attribution"},
+        {"item": "Amy Edmondson / psychological safety = shared belief environment is safe for interpersonal risk-taking", "grounding": "slide-04 speaker notes — verbatim attribution + definition"}
+      ],
+      "numerals": "'two foundational elements' — present in source ('two foundational elements')",
+      "violation": null
+    },
+    {
+      "ordinal": 5,
+      "slide_id": "c1m1-p1-s05",
+      "verdict": "PASS",
+      "spoken_inventory": [
+        {"item": "Innovation = creation of adopted value", "grounding": "slide-05 narration + lexicon term — verbatim"},
+        {"item": "intrapreneurs (not rogue entrepreneurs); leading change from within hospitals", "grounding": "slide-05 narration — verbatim"},
+        {"item": "'last three definitions = psychological engine' = First Principles + Psychological Safety + Growth Mindset", "grounding": "slide-05 narration: 'the bottom three definitions represent the psychological engine ... First Principles ... Psychological Safety ... Growth Mindset'. The 3 named are the last 3 of the 8-term list."},
+        {"item": "'eight definitions'", "grounding": "slide-05 Key Text lists exactly 8 terms; rendered slide-05 PNG header voices 'These eight definitions'"}
+      ],
+      "numerals": "'last three' (= bottom three, source-grounded) and 'eight definitions' (= 8 lexicon terms, source + on-slide grounded)",
+      "violation": null
+    },
+    {
+      "ordinal": 6,
+      "slide_id": "c1m1-p1-s06",
+      "verdict": "PASS",
+      "spoken_inventory": [
+        {"item": "tightrope / no safety net / senior attending / failure treated as data not a punishable offense", "grounding": "slide-06 Speaker Notes (Narration) — verbatim"}
+      ],
+      "numerals": "none",
+      "violation": null
+    },
+    {
+      "ordinal": 7,
+      "slide_id": "c1m1-p1-s07",
+      "verdict": "PASS",
+      "spoken_inventory": [
+        {"item": "David Epstein (attribution)", "grounding": "slide-07 pre-video narration names David Epstein; rendered slide-07 PNG 'Featured: David Epstein'"},
+        {"item": "video title 'Why the Most Experienced People Fail First'", "grounding": "slide-07 frontmatter embedded_video + visual_format carry this exact title; rendered slide-07 PNG displays the title verbatim. (Not in the spoken speaker-notes string itself, but present in the card source AND on-slide — satisfies the figure-grounding bar.)"},
+        {"item": "Kind vs Wicked environments / functional flexibility / 'Range' / hammer looking for a nail", "grounding": "slide-07 pre + post-video narration — verbatim"}
+      ],
+      "numerals": "none",
+      "violation": null
+    },
+    {
+      "ordinal": 8,
+      "slide_id": "c1m1-p1-s08",
+      "verdict": "PASS",
+      "spoken_inventory": [
+        {"item": "'Range' / track (Kind) vs jungle (Wicked) / machete / compass / track shoes / drop specialized clinical tools", "grounding": "slide-08 Speaker Notes (Narration) — verbatim"}
+      ],
+      "numerals": "none",
+      "violation": null
+    },
+    {
+      "ordinal": 9,
+      "slide_id": "c1m1-p1-s09",
+      "verdict": "PASS",
+      "spoken_inventory": [
+        {"item": "'Range' / clinical specialization a strength / systemic friction requires functional flexibility / clinical tactician -> systemic intrapreneur / Part 2 = diagnose and frame root cause", "grounding": "slide-09 Transition-to-Part-2 Narration (enrichment line, source-outline line 402) — verbatim"}
+      ],
+      "numerals": "'Part 2' — present in source transition narration",
+      "violation": null
+    }
+  ],
+  "overall_verdict": "PASS",
+  "segments_pass": 9,
+  "segments_violation": 0,
+  "blocking_violations": [],
+  "soft_notes": [
+    "Segment 3: the topic-framing sentence 'innovation in healthcare spans care delivery, informatics, system redesign, process science, and digital health' is light SME-synthesis connective tissue (each domain maps 1:1 to a source innovator block). It is NOT a fabricated fact and is rendered verbatim on slide-03 — fully grounded, noted only for transparency.",
+    "Segment 7: the video title 'Why the Most Experienced People Fail First' is grounded in the card's source frontmatter and on the rendered slide, but is not in the spoken speaker-notes paragraph itself. Acceptable under the figure-grounding bar (source/on-slide presence). Follow-along note, not a block."
+  ],
+  "clear_to_synthesize": true
+}
