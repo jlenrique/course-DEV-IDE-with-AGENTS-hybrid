@@ -75,11 +75,13 @@ def test_map_shape_pin() -> None:
 # --------------------------------------------------------------------------- #
 def test_a1_role_to_voice_byte_map() -> None:
     # VALUES only — the annotation leaf auto-stamps source="role-derived" so an
-    # explicit source in the seed cannot clobber override precedence.
+    # explicit source in the seed cannot clobber override precedence. Story
+    # concierge-leg1a: synthesis ADDITIVELY carries rhetorical_role=contrast_emphasis.
     assert ec.role_to_voice_direction("synthesis") == {
         "emotional_tone": "reflective",
         "pace": "slower",
         "energy": "low",
+        "rhetorical_role": "contrast_emphasis",
     }
     # A role outside the closed map is the no-seed fail-safe.
     assert ec.role_to_voice_direction("other:teaser") is None
@@ -110,11 +112,13 @@ def test_a2_two_role_pace_differential() -> None:
 # --------------------------------------------------------------------------- #
 def test_matcher_on_fixture_role_diverse_slice() -> None:
     seeds = ec.project_role_derived_voice_by_slide(_load_card())
-    # Slide 1: unique narration c006 (synthesis) -> slower/reflective.
+    # Slide 1: unique narration c006 (synthesis) -> slower/reflective + the
+    # Story concierge-leg1a rhetorical_role=contrast_emphasis emission.
     assert seeds["1"] == {
         "emotional_tone": "reflective",
         "pace": "slower",
         "energy": "low",
+        "rhetorical_role": "contrast_emphasis",
     }
     # Slide 6: unique narration c019 (worked_example) -> slower/neutral.
     assert seeds["6"]["pace"] == "slower"
@@ -237,6 +241,67 @@ def test_source_slide_ordinals_from_fixture() -> None:
     assert ec.source_slide_ordinals(_load_card()) == [1, 3, 6]
     assert ec.source_slide_ordinals(None) == []
     assert ec.source_slide_ordinals({}) == []
+
+
+# --------------------------------------------------------------------------- #
+# Story concierge-leg1a — deterministic rhetorical_role EMISSION (producer half).
+# The CONSUMER (Enrique v3 branch + voice_provider_text compiler) already shipped;
+# this pins the NEW producer: pedagogical_role -> rhetorical_role on the seed.
+# --------------------------------------------------------------------------- #
+def test_leg1a_rhetorical_map_shape_pin() -> None:
+    # CLOSED table: EXACTLY one role -> contrast_emphasis (synthesis); the rest None.
+    assert ec.PEDAGOGICAL_ROLE_TO_RHETORICAL == {
+        "definition": None,
+        "motivation": None,
+        "worked_example": None,
+        "synthesis": "contrast_emphasis",
+        "assessment": None,
+        "practice": None,
+    }
+    # warm_callback is NOT produced here — Leg-1b owns structural authoring + Vera-R7.
+    assert "warm_callback" not in set(ec.PEDAGOGICAL_ROLE_TO_RHETORICAL.values())
+
+
+def test_leg1a_rhetorical_map_is_exhaustive_over_pedagogical_role_enum() -> None:
+    # The import-time guard would raise if not exhaustive; pin it as a test too.
+    assert set(ec.PEDAGOGICAL_ROLE_TO_RHETORICAL) == set(PEDAGOGY_ROLES)
+
+
+def test_leg1a_rhetorical_accessor_fail_safe() -> None:
+    assert ec.rhetorical_role_for_pedagogical_role("synthesis") == "contrast_emphasis"
+    # Mapped-but-unrhetorical, outside-the-map, and None all fail safe to None.
+    assert ec.rhetorical_role_for_pedagogical_role("worked_example") is None
+    assert ec.rhetorical_role_for_pedagogical_role("definition") is None
+    assert ec.rhetorical_role_for_pedagogical_role("other:teaser") is None
+    assert ec.rhetorical_role_for_pedagogical_role(None) is None
+
+
+def test_leg1a_seed_emits_rhetorical_role_for_synthesis() -> None:
+    # role_to_voice_direction threads the rhetorical_role onto the synthesis seed.
+    seed = ec.role_to_voice_direction("synthesis")
+    assert seed is not None
+    assert seed["rhetorical_role"] == "contrast_emphasis"
+    # Still VALUES only — NO source key (override precedence preserved per
+    # ROLE_DERIVED_SOURCE).
+    assert "source" not in seed
+
+
+def test_leg1a_unmapped_role_seed_omits_rhetorical_role_key() -> None:
+    # A pedagogical_role with no rhetorical mapping emits NO rhetorical_role key —
+    # the seed is byte-identical to today (additive only; AC6).
+    seed = ec.role_to_voice_direction("worked_example")
+    assert seed == {"emotional_tone": "neutral", "pace": "slower", "energy": "medium"}
+    assert "rhetorical_role" not in seed
+
+
+def test_leg1a_projector_emits_rhetorical_role_on_synthesis_slide() -> None:
+    # End-to-end producer: a synthesis narration slide's projected seed carries
+    # rhetorical_role; a worked_example slide's does NOT (no override involved).
+    c1, a1 = _narration_component("src-001-c001", "Slide 1", "synthesis")
+    c2, a2 = _narration_component("src-001-c002", "Slide 2", "worked_example")
+    seeds = ec.project_role_derived_voice_by_slide(_card([c1, c2], [a1, a2]))
+    assert seeds["1"]["rhetorical_role"] == "contrast_emphasis"
+    assert "rhetorical_role" not in seeds["2"]
 
 
 # --------------------------------------------------------------------------- #

@@ -48,7 +48,26 @@ Opened 2026-06-29. This file is the SSOT for agreed decisions across the arc.
 
 **Dissent noted (not an impasse):** Dan framed it as "one leg, don't split the emit/author/contain triangle" — reconciled, because the split keeps author+contain together in 1b and 1a takes only the tonal role that authors nothing.
 
+## Round 2 — Leg-1a CLOSE (2026-06-30)
+
+**Voices:** Murat (Test Architect), Winston (Architect), Irene (Instructional Architect). **Outcome: UNANIMOUS CLOSE, no conditions, no impasse.**
+
+What shipped: closed `PEDAGOGICAL_ROLE_TO_RHETORICAL` table (`synthesis → contrast_emphasis`; all other pedagogical_roles → `None`) + import-time exhaustiveness guard + fail-safe accessor in `app/marcus/orchestrator/enrichment_consumption.py`, threaded additively onto the role-derived seed in `role_to_voice_direction`. De-inerts the already-shipped (enhanced-vo-2) Enrique v3 consumer + compiler.
+
+Evidence: offline 91 passed (touched) + 406 regression; ruff clean; lint-imports only pre-existing C3 (M3 KEPT). **LIVE gate PASS** (real ElevenLabs ~$0.052, first-run-stands): both segments `render_mode=v3_provider_text`, effective model `eleven_v3`, `provider_text_tags==["[slow]"]`, distinct real request_ids `YFOlLfEgaezZuZ0uCVbj`/`9erzIMO53zxtlqH9rK8S`, captions==canonical. Evidence `evidence/concierge-leg1a-live-gate-20260630T021715Z.json` + harness `evidence/concierge-leg1a-live-gate.py`.
+
+3-layer adversarial review (Blind Hunter / Edge Case Hunter / Acceptance Auditor): **0 MUST-FIX.** Triage:
+- **SHOULD-FIX, remediated:** (Auditor NIT-1) unpopulated-role list now pinned == `RhetoricalRole` taxonomy minus populated (self-guards drift). (Edge #1) on a v2 directed run a synthesis segment's receipt `effective_voice_direction` records `rhetorical_role` (model_dump not v3-gated, `_act.py:838-839`) while audio/cost/provider-block stay byte-identical — **RULED faithful-record** (Murat + Winston + Irene): the receipt honestly records authored intent; the v3 gate stays solely in the consumer; pinned by `test_leg1a_v2_directed_synthesis_records_rhetorical_role_but_sends_canonical`.
+- **Follow-on (ratified):** Edge #2 `directed-voice-override-cannot-suppress-rhetorical-role` — `_overlay` skips `None` so an override can't suppress a role-derived role to `None`; consistent with the existing tone-field limitation; narrow scope; filed in deferred-inventory.
+- **NITs (no action):** Blind Hunter accessor unknown-vs-None distinction; live-harness reproducibility (harness committed).
+
+**Binding forward rulings (for the record):**
+- **Murat:** **Leg-1b is DUAL-GATE.** The moment a role authors NEW lexical content, "faithful-record" stops being a receipt question and becomes a content-fidelity question — his warm_callback/Vera-R7 teeth bar binds there.
+- **Irene:** keep the `contrast_emphasis` vocabulary honest as the map grows (the tag behaves as intrinsic *measured emphasis*, not relational cross-slide contrast). And **`clinical-caveat` carries a containment obligation** — when the next roles (`definitional_anchor`/`clinical-caveat`/`enumeration`) open, clinical-caveat travels with Vera, NOT on the synthesis (zero-new-words) precedent.
+- **Winston:** if an operator-facing "what will actually render" view is ever needed, it is a *projection over* the faithful receipt computed at the read site with model-awareness — never a mutation of the authored record.
+
 ## Status
-- Leg-1a: scope ratified → bmad-create-story IN PROGRESS.
-- Leg-1b: queued behind 1a.
+- **Leg-1a: ✅ DONE — party-CLOSED 2026-06-30, live-proven.**
+- Leg-1b (warm_callback authoring + Vera-R7): queued; **DUAL-GATE** per Murat. Party GREEN-LIGHT required before dev opens.
 - Leg-3 confirm spike: queued (read-only, anytime before Leg-3 green-light).
+- Legs 2 / 4: queued.

@@ -1,0 +1,47 @@
+{
+  "story": "concierge-leg1a-rhetorical-role-emission",
+  "leg": "Leg-1a live gate (T6)",
+  "timestamp_utc": "20260630T021715Z",
+  "model": "eleven_v3",
+  "voice_id": "EXAVITQu4vr4xnSDxMaL",
+  "rhetorical_role": "contrast_emphasis",
+  "tag": "[slow]",
+  "real_api": true,
+  "segments": [
+    {
+      "segment_id": "seg-01",
+      "render_mode": "v3_provider_text",
+      "effective_model_id": "eleven_v3",
+      "provider_text_tags": [
+        "[slow]"
+      ],
+      "request_id": "YFOlLfEgaezZuZ0uCVbj",
+      "provider_text_sha256": "fe2a2446dfb23ec61b4dc714d249302f9e7cc2ff406d7dd5b5d8efa0abcc8a70",
+      "expected_provider_sha256": "fe2a2446dfb23ec61b4dc714d249302f9e7cc2ff406d7dd5b5d8efa0abcc8a70",
+      "captions_eq_canonical": true
+    },
+    {
+      "segment_id": "seg-02",
+      "render_mode": "v3_provider_text",
+      "effective_model_id": "eleven_v3",
+      "provider_text_tags": [
+        "[slow]"
+      ],
+      "request_id": "9erzIMO53zxtlqH9rK8S",
+      "provider_text_sha256": "51e58d7cd6e49d9b2de1c6b7e5ca3a0804a11c9951683ab527fcd5acde96d355",
+      "expected_provider_sha256": "51e58d7cd6e49d9b2de1c6b7e5ca3a0804a11c9951683ab527fcd5acde96d355",
+      "captions_eq_canonical": true
+    }
+  ],
+  "distinct_request_ids": [
+    "YFOlLfEgaezZuZ0uCVbj",
+    "9erzIMO53zxtlqH9rK8S"
+  ],
+  "checks": {
+    "AC2_render_mode_and_effective_model_v3": true,
+    "AC3_provider_tags_exact_slow": true,
+    "AC4_distinct_real_request_ids": true,
+    "AC5_captions_canonical_no_leak": true
+  },
+  "verdict": "PASS"
+}

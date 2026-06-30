@@ -114,21 +114,101 @@ if set(PEDAGOGICAL_ROLE_TO_VOICE) != set(PEDAGOGY_ROLES):  # pragma: no cover - 
 ROLE_DERIVED_SOURCE = "role-derived"
 
 
+# ---------------------------------------------------------------------------
+# The closed pedagogical_role → rhetorical_role table (Story concierge-leg1a)
+# ---------------------------------------------------------------------------
+
+#: ``pedagogical_role`` -> the deterministic ``rhetorical_role`` Irene EMITS on the
+#: role-derived voice-direction seed. This is the PRODUCER half of the v3
+#: directed-voice tag channel whose CONSUMER (the Enrique v3 branch + the TAG-ONLY
+#: ``app.specialists._shared.voice_provider_text`` compiler) already shipped and
+#: party-closed (enhanced-vo-2). Before this table the seed carried only tone
+#: (``PEDAGOGICAL_ROLE_TO_VOICE``), so ``rhetorical_role`` was always ``None`` on a
+#: real run and the ``[slow]`` tag channel was INERT; this de-inerts it.
+#:
+#: Mirrors the ``PEDAGOGICAL_ROLE_TO_VOICE`` idiom EXACTLY: a module-level CLOSED
+#: table, an import-time exhaustiveness guard over the closed ``PedagogicalRole`` set,
+#: and a fail-safe accessor returning ``None`` for an unmapped role. FROZEN: shape-
+#: pinned by a test; a bump is a governance change, not a silent edit.
+#:
+#: This slice maps EXACTLY ONE role to ``contrast_emphasis`` (the ``[slow]`` TONAL
+#: tag): ``synthesis``. Rationale: synthesis is the lesson's "pull it together —
+#: here's the key insight" beat; its existing voice row (``emotional_tone=reflective``,
+#: ``energy=low``, ``pace=slower``) is already the measured/weighty delivery signature
+#: that ``contrast_emphasis``'s ``[slow]`` reinforces, and it authors ZERO new words
+#: (no source-containment risk -> no Vera-R7 dependency). ``warm_callback`` is
+#: DELIBERATELY NOT mapped here — it requires structural callback authoring + Vera-R7
+#: source-containment, which Leg-1b owns. Every other role maps to ``None`` -> NO
+#: ``rhetorical_role`` emitted -> the v2 path, byte-identical to today (AC6).
+#:
+#: The VALUE is kept a plain ``str`` (it MUST be a member of the ``RhetoricalRole``
+#: taxonomy declared in ``app.specialists.irene.authoring.pass_2_template`` and is
+#: validated downstream by the ``VoiceDirection`` contract) so this orchestrator-side
+#: DATA table never imports the specialist authoring tree — preserving the M3 fence,
+#: exactly as the consumer leaf ``voice_provider_text.py`` treats ``rhetorical_role``
+#: as a plain ``str`` riding in.
+PEDAGOGICAL_ROLE_TO_RHETORICAL: dict[str, str | None] = {
+    "definition": None,
+    "motivation": None,
+    "worked_example": None,
+    "synthesis": "contrast_emphasis",
+    "assessment": None,
+    "practice": None,
+}
+
+# EXHAUSTIVENESS guard (mirrors the PEDAGOGICAL_ROLE_TO_VOICE guard above): the
+# role→rhetorical map MUST cover the ENTIRE closed ``PedagogicalRole`` set, so a
+# future enum member added in pedagogy_annotation.py fails this guard at IMPORT
+# until a rhetorical mapping (a role or an explicit ``None``) is assigned — a new
+# role can never silently get an undefined rhetorical mapping. Raised explicitly
+# (not ``assert``) so it holds under ``python -O``.
+if set(PEDAGOGICAL_ROLE_TO_RHETORICAL) != set(PEDAGOGY_ROLES):  # pragma: no cover - import-time
+    raise RuntimeError(
+        "PEDAGOGICAL_ROLE_TO_RHETORICAL is not exhaustive over the closed "
+        "PedagogicalRole set: "
+        f"missing={sorted(set(PEDAGOGY_ROLES) - set(PEDAGOGICAL_ROLE_TO_RHETORICAL))}, "
+        f"phantom={sorted(set(PEDAGOGICAL_ROLE_TO_RHETORICAL) - set(PEDAGOGY_ROLES))}"
+    )
+
+
+def rhetorical_role_for_pedagogical_role(role: Any) -> str | None:
+    """Map ONE ``pedagogical_role`` to its emitted ``rhetorical_role`` (or ``None``).
+
+    Fail-safe (mirrors ``role_to_voice_direction``'s no-seed fail-safe): a role
+    OUTSIDE the closed map (an ``other`` escape-hatch role, or a typo) returns
+    ``None`` via ``dict.get`` — no ``rhetorical_role`` is emitted, so that segment
+    stays on the v2 path (byte-identical). A mapped-but-unrhetorical role (e.g.
+    ``definition``/``worked_example``) also returns ``None`` by table value. Only
+    ``synthesis`` currently returns a role (``contrast_emphasis``).
+    """
+    return PEDAGOGICAL_ROLE_TO_RHETORICAL.get(str(role) if role is not None else "")
+
+
 def role_to_voice_direction(role: Any) -> dict[str, str] | None:
     """Map ONE ``pedagogical_role`` to a ``voice_direction`` seed dict (or ``None``).
 
     Returns a NEW COPY of the frozen map row (VALUES only — ``emotional_tone`` /
-    ``pace`` / ``energy``; NO ``source``, so override precedence is preserved) so the
-    caller can never mutate the table. A role outside the closed map (e.g. an
-    ``other`` escape-hatch role, or a typo) returns ``None`` — the no-seed fail-safe
-    (IR-A2): the segment falls back to the conservative built-in. When this seed is
-    the highest-priority contributing tier, the annotation leaf stamps
-    ``source="role-derived"``.
+    ``pace`` / ``energy``, PLUS ``rhetorical_role`` when the role maps to one;
+    NO ``source``, so override precedence is preserved) so the caller can never
+    mutate the table. A role outside the closed map (e.g. an ``other`` escape-hatch
+    role, or a typo) returns ``None`` — the no-seed fail-safe (IR-A2): the segment
+    falls back to the conservative built-in. When this seed is the highest-priority
+    contributing tier, the annotation leaf stamps ``source="role-derived"``.
+
+    Story concierge-leg1a: the deterministic ``rhetorical_role`` (from the closed
+    ``PEDAGOGICAL_ROLE_TO_RHETORICAL`` table) is threaded onto the seed ADDITIVELY so
+    it rides ``_overlay`` into ``VoiceDirection.rhetorical_role`` with ZERO contract
+    change. The key is ADDED ONLY when the role actually maps to a rhetorical role —
+    an unmapped role's seed stays BYTE-IDENTICAL to today (AC6).
     """
     row = PEDAGOGICAL_ROLE_TO_VOICE.get(str(role) if role is not None else "")
     if row is None:
         return None
-    return dict(row)
+    seed = dict(row)
+    rhetorical = rhetorical_role_for_pedagogical_role(role)
+    if rhetorical is not None:
+        seed["rhetorical_role"] = rhetorical
+    return seed
 
 
 # ---------------------------------------------------------------------------

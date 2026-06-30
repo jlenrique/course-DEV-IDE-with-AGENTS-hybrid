@@ -32,6 +32,7 @@ from typing import Any
 
 import pytest
 
+from app.marcus.orchestrator import enrichment_consumption as ec
 from app.specialists.irene import graph
 from app.specialists.irene.authoring.pass_2_template import VoiceDirection
 from app.specialists.irene.authoring.voice_direction_annotation import (
@@ -294,3 +295,59 @@ def test_slide_id_ordinal_reads_trailing_run() -> None:
     assert graph._slide_id_ordinal("slide-3") == 3
     assert graph._slide_id_ordinal("c1m1-slide-03") == 3
     assert graph._slide_id_ordinal("module-12-slide-07") == 7
+
+
+# --------------------------------------------------------------------------- #
+# Story concierge-leg1a (AC1) — END-TO-END, REAL producer: a synthesis narration
+# slide makes the REAL orchestrator projector emit rhetorical_role on the seed,
+# which rides _overlay into VoiceDirection.rhetorical_role — with NO override and
+# NO default supplying it (proves de-inertion, not an A/B-probe injection).
+# --------------------------------------------------------------------------- #
+def _role_card() -> dict[str, Any]:
+    """A frozen card whose SOURCE slide 1 = synthesis (-> contrast_emphasis) and
+    SOURCE slide 6 = worked_example (-> no rhetorical emission)."""
+    return {
+        "typed_components": [
+            {"component_id": "c1", "source_type": "narration", "locator": "Slide 1",
+             "label": "x", "excerpt": "x"},
+            {"component_id": "c6", "source_type": "narration", "locator": "Slide 6",
+             "label": "x", "excerpt": "x"},
+        ],
+        "pedagogy_annotations": [
+            {"component_id": "c1", "pedagogical_role": "synthesis", "teachable": True},
+            {"component_id": "c6", "pedagogical_role": "worked_example", "teachable": True},
+        ],
+    }
+
+
+def test_leg1a_real_producer_emits_rhetorical_role_end_to_end(flag_on: None) -> None:
+    by_slide = ec.project_role_derived_voice_by_slide(_role_card())
+    # NO voice_direction_overrides / voice_direction_defaults supply rhetorical_role.
+    result = graph._attach_voice_direction(_parsed(), _envelope(by_slide))
+    by_id = _by_id(result)
+    seg1 = VoiceDirection.model_validate(by_id["seg-01"]["voice_direction"])
+    assert seg1.rhetorical_role == "contrast_emphasis"
+    # Sourced from the role-derived seed, not an override.
+    assert seg1.source == "role-derived"
+    # A SOURCE slide mapped to no rhetorical role emits NO rhetorical_role (its
+    # tone/pace seed still applies).
+    seg6 = VoiceDirection.model_validate(by_id["seg-06"]["voice_direction"])
+    assert seg6.rhetorical_role is None
+    assert seg6.source == "role-derived"
+
+
+# --------------------------------------------------------------------------- #
+# Story concierge-leg1a (AC6) — flag OFF ⇒ byte-identical even with a
+# rhetorical-bearing seed table present (the seed table is not even read; no
+# rhetorical_role is emitted into any byte-changing path).
+# --------------------------------------------------------------------------- #
+def test_leg1a_flag_off_byte_identical_with_rhetorical_seed(flag_off: None) -> None:
+    by_slide = {
+        "1": {"emotional_tone": "reflective", "pace": "slower", "energy": "low",
+              "rhetorical_role": "contrast_emphasis"},
+    }
+    parsed = _parsed()
+    before = json.dumps(parsed, sort_keys=True)
+    result = graph._attach_voice_direction(parsed, _envelope(by_slide))
+    assert json.dumps(result, sort_keys=True) == before
+    assert all("voice_direction" not in d for d in result["segment_manifest_deltas"])

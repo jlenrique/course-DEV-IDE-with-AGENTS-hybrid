@@ -152,6 +152,56 @@ def test_non_v3_directed_run_has_no_provider_text_fields(tmp_path: Path, monkeyp
     assert "provider_text_sha256" not in receipt
 
 
+def test_leg1a_v2_directed_synthesis_records_rhetorical_role_but_sends_canonical(
+    tmp_path: Path, monkeypatch
+) -> None:
+    """Review remediation (Edge Case Hunter Finding #1): PIN the faithful-record
+    behavior of a v2-model directed run that carries ``rhetorical_role``.
+
+    Leg-1a makes the producer emit ``rhetorical_role=contrast_emphasis`` on every
+    synthesis segment's VoiceDirection whenever the directed-voice flag is ON —
+    model-agnostically (the v3 branch lives only in Enrique, keyed on the effective
+    model). So on a v2-model directed run the receipt's ``effective_voice_direction``
+    (``plan.direction.model_dump`` — NOT v3-gated) FAITHFULLY records the authored
+    ``rhetorical_role``, while the v3-gated provider block is correctly ABSENT and
+    the audio/sent-text/captions stay canonical (no ``[slow]`` tag). This is intended
+    faithful-record behavior; pin it so a future regression that either leaks the tag
+    into audio/captions OR silently drops the authored role from the receipt is caught.
+    """
+    monkeypatch.setenv(FLAG, "1")
+    client = FakeElevenLabsClient()
+    seg = {
+        "segment_id": "seg-01",
+        "slide_id": "slide-01",
+        "text": CANONICAL,
+        # rhetorical_role present, but NO elevenlabs.model_id=eleven_v3 -> effective
+        # model is the v2 default -> v3 branch NOT taken (provider block absent).
+        "voice_direction": {
+            "emotional_tone": "reflective",
+            "rhetorical_role": "contrast_emphasis",
+        },
+    }
+    result = _build(tmp_path, [seg], client=client)
+
+    # Canonical sent (no [slow] tag) — the v3 compile branch was not taken.
+    assert client.calls[0].text == CANONICAL
+    assert "[slow]" not in client.calls[0].text
+
+    receipt = result["narration_receipts"][0]
+    # AC-B12 audio/provider byte-identity preserved: NO provider block on the receipt.
+    assert "render_mode" not in receipt
+    assert "provider_text" not in receipt
+    assert "provider_text_sha256" not in receipt
+    # BUT the receipt faithfully records the authored direction.
+    assert receipt["effective_voice_direction"]["rhetorical_role"] == "contrast_emphasis"
+
+    # Captions == canonical, with no [slow] leak.
+    vtt = (tmp_path / "assembly-bundle" / "captions" / "seg-01.vtt").read_text(encoding="utf-8")
+    assert CANONICAL in vtt
+    assert "[slow]" not in vtt
+    vpt.assert_no_tag_leak(vtt, channel="captions")
+
+
 def test_v3_model_with_no_role_sends_canonical_byte_identical(tmp_path: Path, monkeypatch) -> None:
     monkeypatch.setenv(FLAG, "1")
     client = FakeElevenLabsClient()

@@ -233,3 +233,71 @@ def test_vera_r7_comparator_present_in_source_is_clean() -> None:
     callback = "Cost is greater than access. The decision changes the path."
     report = vpt.audit_rhetorical_source_containment(callback, source)
     assert report["status"] == "PASS", report
+
+
+# --------------------------------------------------------------------------- #
+# Story concierge-leg1a (AC3/AC5) — the contrast_emphasis -> [slow] path that the
+# NEW producer (Irene's synthesis seed) now drives, exercised on the SHIPPED
+# compiler (the real guard, not a constant).
+# --------------------------------------------------------------------------- #
+def test_leg1a_contrast_emphasis_compiles_to_exactly_slow() -> None:
+    # AC3: EXACT equality (not "contains") — the only v3 tag is [slow].
+    provider = vpt.compile_provider_text(CANONICAL, rhetorical_role="contrast_emphasis")
+    assert vpt.extract_tags(provider) == ["[slow]"]
+    # Firewall invariant: strip recovers the canonical byte-for-byte.
+    assert vpt.strip_tags(provider) == CANONICAL
+
+
+# Every one of the 6 RhetoricalRole values the compiler does NOT populate this arc.
+_UNPOPULATED_RHETORICAL_ROLES = [
+    "curious_pivot",
+    "clinical_seriousness",
+    "breakthrough_moment",
+    "confidential_aside",
+    "restrained_urgency",
+    "slow_reflective",
+]
+
+
+@pytest.mark.parametrize("unpopulated_role", _UNPOPULATED_RHETORICAL_ROLES)
+def test_leg1a_each_unpopulated_role_fails_loud(unpopulated_role: str) -> None:
+    # AC3: exercise the REAL guard (not a constant) for every unpopulated role.
+    with pytest.raises(vpt.VoiceProviderTextError) as ei:
+        vpt.compile_provider_text(CANONICAL, rhetorical_role=unpopulated_role)
+    assert ei.value.tag == "elevenlabs.v3.role.unpopulated"
+
+
+def test_leg1a_unpopulated_role_list_is_exactly_taxonomy_minus_populated() -> None:
+    # Review remediation (Acceptance Auditor NIT-1): the hand-written
+    # ``_UNPOPULATED_RHETORICAL_ROLES`` parametrize list is a SELF-GUARD against
+    # silent drift. Pin it against the real source-of-truth taxonomy — the
+    # ``RhetoricalRole`` Literal in pass_2_template — so that adding a 9th role (or
+    # promoting one to populated) FAILS this test until the unpopulated list is
+    # updated in lockstep.
+    from typing import get_args
+
+    from app.specialists.irene.authoring.pass_2_template import RhetoricalRole
+
+    taxonomy = set(get_args(RhetoricalRole))
+    unpopulated = set(_UNPOPULATED_RHETORICAL_ROLES)
+    populated = set(vpt.POPULATED_RHETORICAL_ROLES)
+    # The two sets PARTITION the full taxonomy: union covers it, intersection empty.
+    assert unpopulated | populated == taxonomy
+    assert unpopulated.isdisjoint(populated)
+
+
+def test_leg1a_contrast_emphasis_captions_canonical_byte_level() -> None:
+    # AC5: captions == canonical byte-level on the contrast_emphasis channel; no leak.
+    provider = vpt.compile_provider_text(CANONICAL, rhetorical_role="contrast_emphasis")
+    channels = vpt.build_text_channels(canonical_text=CANONICAL, provider_text=provider)
+    assert channels["captions_text"] == CANONICAL
+    vpt.assert_no_tag_leak(channels["captions_text"], channel="captions")
+
+
+def test_leg1a_slow_tag_leaking_into_captions_turns_red() -> None:
+    # AC5 deliberately-leaking fixture: a captions string carrying [slow] MUST turn
+    # the no-leak gate red (proves the gate has teeth for the contrast_emphasis tag).
+    leaking_captions = "[slow] " + CANONICAL
+    with pytest.raises(vpt.VoiceProviderTextError) as ei:
+        vpt.assert_no_tag_leak(leaking_captions, channel="captions")
+    assert ei.value.tag == "elevenlabs.v3.captions.tag-leak"
