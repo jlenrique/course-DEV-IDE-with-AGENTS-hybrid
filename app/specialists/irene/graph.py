@@ -45,13 +45,14 @@ import json
 import re
 from copy import deepcopy
 from pathlib import Path
-from typing import Any
+from typing import Any, get_args
 
 from langgraph.graph import END, START, StateGraph
 from langgraph.types import Command, interrupt
 from pydantic import ValidationError
 
 from app.gates.resume_api import resume_from_verdict as _resume_from_verdict
+from app.marcus.lesson_plan.pedagogy_annotation import build_pedagogy_annotations
 from app.models.adapter import make_chat_model
 from app.models.perception import PerceptionArtifact as RichPerceptionArtifact
 from app.models.state import specialist_summary_artifacts as specialist_summary_writer
@@ -59,10 +60,20 @@ from app.models.state.run_state import RunState
 from app.specialists._scaffold.contract import SCAFFOLD_NODE_IDS
 from app.specialists._shared.figure_tokens import _FIGURE_RE, _figures, _normalize_figure
 from app.specialists._shared.voice_direction_map import voice_direction_active
+from app.specialists._shared.voice_provider_text import extract_tags
 from app.specialists.dispatch_errors import SpecialistDispatchError
+from app.specialists.irene.authoring.pass_2_template import RhetoricalRole
 from app.specialists.irene.authoring.voice_direction_annotation import (
     VoiceDirectionError,
     annotate_segments_with_voice_direction,
+)
+from app.specialists.irene.authoring.warm_callback import (
+    gate_warm_callback,
+    select_grounded_callback_anchors,
+)
+from app.specialists.irene.authoring.warm_callback_authoring import (
+    render_warm_callback,
+    warm_callback_authoring_active,
 )
 from app.specialists.irene.payload_contract import CONSUMED_PAYLOAD_KEYS
 from app.specialists.source_bundle import read_extracted_source
@@ -761,6 +772,413 @@ def _assert_reading_path_conformance(
             last_seen_by_slide[slide_id] = current
     if warnings:
         parsed["reading_path_conformance_warnings"] = warnings
+
+
+def assert_callback_reading_path(
+    parsed: dict[str, Any], roster: list[dict[str, Any]]
+) -> None:
+    """07G read-path teeth for a FIRED warm_callback line (close-bar #4).
+
+    Runs the SAME monotonic scan-order logic as
+    :func:`_assert_reading_path_conformance` (which is RECORD-ONLY for normal
+    narration) on the callback-bearing host segment, then RAISES
+    :class:`Pass2ReadingPathError` ONLY on a real scan-order BREACH
+    (``irene.pass2.reading-path-order-failed``) — i.e. the host segment's
+    on-screen references appear out of the perceived display order. This proves
+    the callback-bearing segment still conforms to the read path; it does NOT
+    raise on ``reading-path-missing`` (a low-confidence / un-perceived slide that
+    carries no reading_path is NOT a VO↔on-screen breach — the caller drops the
+    callback silently rather than aborting the whole run). The record-only
+    behaviour of ``_assert_reading_path_conformance`` for ordinary narration is
+    unchanged, as is its pre-existing record-only treatment of missing patterns.
+    """
+    _assert_reading_path_conformance(parsed=parsed, roster=roster)
+    warnings = parsed.get("reading_path_conformance_warnings") or []
+    order_failed = [
+        w for w in warnings
+        if str(w.get("tag")) == "irene.pass2.reading-path-order-failed"
+    ]
+    if order_failed:
+        raise Pass2ReadingPathError(
+            "Fired warm_callback violates the perceived reading path "
+            f"(07G read-path teeth): {order_failed}",
+            tag="irene.pass2.reading-path-order-failed",
+        )
+
+
+_RHETORICAL_ROLE_VALUES: frozenset[str] = frozenset(get_args(RhetoricalRole))
+
+
+def assert_pass2_surfaces_validatable(parsed: dict[str, Any]) -> None:
+    """AC1 (finding-d): the emitted Pass-2 package is DIRECTLY validatable.
+
+    A focused, additive assertion that the reading-path / cue / timing-role
+    surfaces — ``SegmentManifestSegment.{timing_role, bridge_type,
+    visual_references}``, ``VisualReference.{narration_cue, perception_source}``,
+    and ``VoiceDirection.rhetorical_role`` — conform WHEN PRESENT, so handoff-
+    validation + the 07G gate bind a firm in-band target instead of the out-of-
+    band concierge normalization step (``concierge-production-2026-06-30/
+    pass2-validation-package/normalization-receipt.json``). It is TOLERANT of the
+    minimal delta shape (absent fields are not required here — full package-
+    contract formalization is Leg-4), so it never breaks the existing manifest
+    shape; it only fails LOUD on a malformed surface that IS emitted.
+    """
+    for delta in parsed.get("segment_manifest_deltas") or []:
+        if not isinstance(delta, dict):
+            continue
+        for field in ("timing_role", "bridge_type"):
+            value = delta.get(field)
+            if value is not None and not (isinstance(value, str) and value.strip()):
+                raise Pass2GroundingError(
+                    f"Pass-2 package surface {field!r} is present but not a "
+                    f"non-empty string: {value!r}",
+                    tag="irene.pass2.surface-invalid",
+                )
+        refs = delta.get("visual_references")
+        if refs is not None:
+            for ref in refs if isinstance(refs, list) else []:
+                if not isinstance(ref, dict):
+                    continue
+                for ref_field in ("narration_cue", "perception_source"):
+                    value = ref.get(ref_field)
+                    if value is not None and not (
+                        isinstance(value, str) and value.strip()
+                    ):
+                        raise Pass2GroundingError(
+                            f"Pass-2 visual_reference surface {ref_field!r} is "
+                            f"present but not a non-empty string: {value!r}",
+                            tag="irene.pass2.surface-invalid",
+                        )
+        direction = delta.get("voice_direction")
+        if isinstance(direction, dict):
+            role = direction.get("rhetorical_role")
+            if role is not None and role not in _RHETORICAL_ROLE_VALUES:
+                raise Pass2GroundingError(
+                    f"Pass-2 voice_direction.rhetorical_role {role!r} is not a "
+                    f"member of the RhetoricalRole taxonomy {sorted(_RHETORICAL_ROLE_VALUES)}",
+                    tag="irene.pass2.surface-invalid",
+                )
+
+
+def _warm_callback_delta_for_segment(
+    segment: dict[str, Any], parsed: dict[str, Any]
+) -> dict[str, Any] | None:
+    """Resolve the segment_manifest delta that carries a narration segment.
+
+    Matches by ``id`` first (the figure-gate join key), then by a UNIQUE
+    ``slide_id``. Returns ``None`` when no unambiguous delta exists (caller then
+    skips the segment — fail-safe SILENT).
+    """
+    seg_id = str(segment.get("id") or segment.get("segment_id") or "").strip()
+    deltas = [d for d in (parsed.get("segment_manifest_deltas") or []) if isinstance(d, dict)]
+    if seg_id:
+        for delta in deltas:
+            if str(delta.get("id") or delta.get("segment_id") or "").strip() == seg_id:
+                return delta
+    seg_slide = str(segment.get("slide_id") or "").strip()
+    if seg_slide:
+        matches = [d for d in deltas if str(d.get("slide_id") or "").strip() == seg_slide]
+        if len(matches) == 1:
+            return matches[0]
+    return None
+
+
+def _gate_canonical_field(segment: dict[str, Any]) -> str | None:
+    """The narration field the FIGURE GATE actually reads (``text`` THEN
+    ``narration_text``, mirroring ``_assert_figure_citations_within_perceived``).
+
+    Returns the name of the first gate-read field that carries non-empty prose, or
+    ``None`` when neither is present (the gate skips an empty segment). Sharing this
+    resolver between injection and the gate closes M2a: a callback can NEVER be
+    written to a field the gate does not read while still reaching TTS via the
+    narration join.
+    """
+    for field in ("text", "narration_text"):
+        value = segment.get(field)
+        if isinstance(value, str) and value.strip():
+            return field
+    return None
+
+
+def _inject_warm_callback_into_canonical(segment: dict[str, Any], callback_text: str) -> None:
+    """Prepend the kept callback to the EXACT field the figure gate reads.
+
+    Writes the SAME field as :func:`_gate_canonical_field` (``text`` first, then
+    ``narration_text``) so the authored callback ALSO flows
+    ``_assert_figure_citations_within_perceived``. The callback leads (a
+    re-orienting bridge) the existing narration. When neither gate-read field is
+    present yet, seed ``narration_text`` (gate-visible as the ``text``-or-
+    ``narration_text`` fallback, and the canonical downstream field).
+    """
+    field = _gate_canonical_field(segment)
+    if field is not None:
+        segment[field] = f"{callback_text} {str(segment[field]).strip()}".strip()
+        return
+    segment["narration_text"] = callback_text
+
+
+def _set_warm_callback_role(delta: dict[str, Any]) -> None:
+    """Stamp ``voice_direction.rhetorical_role = 'warm_callback'`` on the delta."""
+    direction = delta.get("voice_direction")
+    if not isinstance(direction, dict):
+        direction = {}
+    direction["rhetorical_role"] = "warm_callback"
+    delta["voice_direction"] = direction
+
+
+def _warm_callback_role_keys(parsed: dict[str, Any]) -> list[tuple[str, str]]:
+    """Snapshot (id, slide_id) of every delta currently bearing the warm_callback
+    role, so the role can be RE-STAMPED after ``_attach_voice_direction`` rebuilds
+    ``voice_direction`` from scratch (M3 — both-flags precedence)."""
+    keys: list[tuple[str, str]] = []
+    for delta in parsed.get("segment_manifest_deltas") or []:
+        if not isinstance(delta, dict):
+            continue
+        direction = delta.get("voice_direction")
+        if isinstance(direction, dict) and direction.get("rhetorical_role") == "warm_callback":
+            keys.append(
+                (
+                    str(delta.get("id") or delta.get("segment_id") or "").strip(),
+                    str(delta.get("slide_id") or "").strip(),
+                )
+            )
+    return keys
+
+
+def _restamp_warm_callback_roles(
+    parsed: dict[str, Any], keys: list[tuple[str, str]]
+) -> None:
+    """Re-apply ``rhetorical_role='warm_callback'`` to the deltas in ``keys`` after
+    the voice-direction annotation pass rebuilt their ``voice_direction`` (which
+    drops the role). Matches by ``id`` first, then a UNIQUE ``slide_id`` (M3)."""
+    if not keys:
+        return
+    deltas = [d for d in (parsed.get("segment_manifest_deltas") or []) if isinstance(d, dict)]
+    for did, dslide in keys:
+        target: dict[str, Any] | None = None
+        if did:
+            for delta in deltas:
+                if str(delta.get("id") or delta.get("segment_id") or "").strip() == did:
+                    target = delta
+                    break
+        if target is None and dslide:
+            matches = [d for d in deltas if str(d.get("slide_id") or "").strip() == dslide]
+            if len(matches) == 1:
+                target = matches[0]
+        if target is not None:
+            _set_warm_callback_role(target)
+
+
+def _attach_warm_callbacks(
+    parsed: dict[str, Any],
+    envelope_payload: dict[str, Any],
+    roster: list[dict[str, Any]],
+    *,
+    model_invoke: Any,
+) -> dict[str, Any]:
+    """Author + R7-gate warm_callback narration in Pass-2 (Slice-2 attach-point).
+
+    Runs between ``backfill_delta_perception_sources`` and the join/reading-path/
+    figure asserts, so a KEPT callback's canonical prose flows ALL three gates.
+    Gated by ``warm_callback_authoring_active()`` (default OFF ⇒ ``parsed``
+    returned UNCHANGED ⇒ byte-identical baseline). Per eligible segment:
+
+      (a) ``select_grounded_callback_anchors`` → empty ⇒ NO callback (silent);
+      (b) ``render_warm_callback`` via the injected ``model_invoke`` (real gpt-5
+          by default; a deterministic fake in unit tests);
+      (c) ``gate_warm_callback`` against the FULL strictly-prior teachable corpus
+          (AC7). ``kept=False`` ⇒ DROP the callback (silent) + a loud audit
+          record; STRIP is forbidden;
+      (d) on KEEP: inject into CANONICAL narration, stamp
+          ``rhetorical_role='warm_callback'`` on the delta, and run
+          ``assert_callback_reading_path`` (07G teeth) on the fired line.
+
+    Eligibility: a narration segment carrying a ``component_id`` resolvable in the
+    ``warm_callback_grounding.components`` corpus; everything else is skipped
+    (fail-safe SILENT). The audit list lands under ``parsed['warm_callback_audit']``.
+    """
+    if not warm_callback_authoring_active():
+        return parsed
+    grounding = envelope_payload.get("warm_callback_grounding")
+    if not isinstance(grounding, dict):
+        return parsed
+    components = grounding.get("components")
+    if not isinstance(components, list) or not components:
+        return parsed
+    audit_records: list[dict[str, Any]] = []
+    # M1 exception containment: the P3 pre-flight raises (e.g. a component missing
+    # doc_ordinal) on malformed grounding. An ADDITIVE feature must NEVER crash a
+    # green Pass-2 — skip ALL callbacks (silent) + a loud audit record, then return.
+    try:
+        annotations = build_pedagogy_annotations(components, [])
+    except Exception as exc:  # noqa: BLE001 — contain infra error, never crash Pass-2
+        parsed["warm_callback_audit"] = [
+            {
+                "decision": "skipped",
+                "scope": "pedagogy_annotations",
+                "reason": f"pedagogy-annotation-error: {exc}",
+            }
+        ]
+        return parsed
+    source_text_by_id = {
+        str(c.get("component_id")): str(c.get("source_text") or "")
+        for c in components
+        if isinstance(c, dict) and c.get("component_id")
+    }
+    # M2b: the SAME perceived-figure authority the figure gate consumes, keyed by
+    # slide_id, so a callback figure absent from the CURRENT slide is blocked by
+    # OMISSION here instead of aborting the whole run at the global figure gate.
+    perceived_by_slide = {
+        entry["slide_id"]: set(entry.get("perceived_figures") or []) for entry in roster
+    }
+    for segment in parsed.get("narration_script") or []:
+        if not isinstance(segment, dict):
+            continue
+        target_cid = str(segment.get("component_id") or "").strip()
+        if not target_cid or target_cid not in source_text_by_id:
+            continue
+        anchors = select_grounded_callback_anchors(target_cid, components, annotations)
+        # S2: drop blank-source_text anchors (a vacuous denominator would let any
+        # wording through R7 and produce a content-free callback).
+        anchors = tuple(a for a in anchors if source_text_by_id.get(a, "").strip())
+        if not anchors:
+            # AC4 fail-safe SILENT: no grounded strictly-prior teachable anchor.
+            continue
+        # AC7: render off the primary anchor; gate against the FULL strictly-prior
+        # teachable corpus (the source-containment denominator).
+        anchor_text = source_text_by_id.get(anchors[0], "")
+        corpus = "\n".join(source_text_by_id.get(a, "") for a in anchors).strip()
+        # M1: contain a renderer (gpt-5) fault — skip THIS callback + audit, never
+        # crash. The downstream gates (R7, figure, read-path) still propagate.
+        try:
+            callback_text = render_warm_callback(
+                anchor_text=anchor_text,
+                segment_context=str(
+                    segment.get("text") or segment.get("narration_text") or ""
+                ),
+                model_invoke=model_invoke,
+            )
+        except Exception as exc:  # noqa: BLE001 — contain renderer error, skip + audit
+            audit_records.append(
+                {
+                    "decision": "skipped",
+                    "target_component_id": target_cid,
+                    "anchor_component_ids": list(anchors),
+                    "reason": f"renderer-error: {exc}",
+                }
+            )
+            continue
+        if not callback_text:
+            # AC4: renderer produced nothing usable ⇒ no callback (silent).
+            continue
+        # S3: a v3 audio tag in canonical narration breaks the PROTECTED tag-free
+        # invariant — DROP (block-by-omission) before it can be injected.
+        leaked_tags = extract_tags(callback_text)
+        if leaked_tags:
+            audit_records.append(
+                {
+                    "decision": "dropped",
+                    "target_component_id": target_cid,
+                    "anchor_component_ids": list(anchors),
+                    "callback_text": callback_text,
+                    "reason": f"v3-tag-leak: {leaked_tags}",
+                }
+            )
+            continue
+        gate = gate_warm_callback(callback_text, source_text=corpus)
+        if not gate.kept:
+            # AC5 block-by-omission: DROP the whole callback (never strip) + a
+            # loud audit record. The dropped text never enters canonical, so it
+            # can never reach the Enrique compiler.
+            audit_records.append(
+                {
+                    "decision": "dropped",
+                    "target_component_id": target_cid,
+                    "anchor_component_ids": list(anchors),
+                    "callback_text": callback_text,
+                    "reason": gate.reason,
+                    "audit": gate.audit,
+                }
+            )
+            continue
+        # M4: a KEPT callback with no joinable delta can be neither role-stamped
+        # nor 07G-teethed ⇒ never ship it; DROP (silent) + audit.
+        delta = _warm_callback_delta_for_segment(segment, parsed)
+        if delta is None:
+            audit_records.append(
+                {
+                    "decision": "dropped",
+                    "target_component_id": target_cid,
+                    "anchor_component_ids": list(anchors),
+                    "callback_text": callback_text,
+                    "reason": "no-joinable-delta",
+                }
+            )
+            continue
+        # AC3 / close-bar #4: 07G read-path teeth on the FIRED callback's HOST
+        # segment (visual_reference order is independent of the not-yet-injected
+        # narration text, so run it BEFORE injecting). A real scan-order BREACH
+        # raises (abort); a low-confidence slide with NO reading_path is not a
+        # breach (S1) ⇒ DROP the callback silently + audit.
+        fired = {"narration_script": [segment], "segment_manifest_deltas": [delta]}
+        assert_callback_reading_path(parsed=fired, roster=roster)
+        read_path_warnings = fired.get("reading_path_conformance_warnings") or []
+        if any(
+            str(w.get("tag")) == "irene.pass2.reading-path-missing"
+            for w in read_path_warnings
+        ):
+            audit_records.append(
+                {
+                    "decision": "dropped",
+                    "target_component_id": target_cid,
+                    "anchor_component_ids": list(anchors),
+                    "callback_text": callback_text,
+                    "reason": "reading-path-missing",
+                }
+            )
+            continue
+        # M2b: block-by-omission for a callback figure present in the prior anchor
+        # but ABSENT from the current slide's perceived authority (would otherwise
+        # ABORT the whole run at the global figure gate). Reuses the FROZEN
+        # figure_tokens neck READ-ONLY.
+        current_slide = _segment_current_slide_id(segment, parsed)
+        offending = sorted(
+            _figures(callback_text) - perceived_by_slide.get(current_slide, set())
+        )
+        if offending:
+            audit_records.append(
+                {
+                    "decision": "dropped",
+                    "target_component_id": target_cid,
+                    "anchor_component_ids": list(anchors),
+                    "callback_text": callback_text,
+                    "reason": f"figure-absent-from-current-slide: {offending}",
+                }
+            )
+            continue
+        # KEEP: inject into the EXACT gate-read canonical field (M2a) + stamp role.
+        _inject_warm_callback_into_canonical(segment, callback_text)
+        _set_warm_callback_role(delta)
+        audit_records.append(
+            {
+                "decision": "kept",
+                "target_component_id": target_cid,
+                "anchor_component_ids": list(anchors),
+                "callback_text": callback_text,
+                "audit": gate.audit,
+            }
+        )
+    if audit_records:
+        parsed["warm_callback_audit"] = audit_records
+    return parsed
+
+
+def _segment_current_slide_id(segment: dict[str, Any], parsed: dict[str, Any]) -> str:
+    """The segment's slide id by the SAME rule the figure gate uses (M2b)."""
+    slide_id = str(segment.get("slide_id") or segment.get("perception_source") or "").strip()
+    if not slide_id:
+        slide_id = _segment_slide_id_from_deltas(segment, parsed)
+    return slide_id
 
 
 def _visual_reference_key(ref: dict[str, Any]) -> str:
@@ -1486,22 +1904,50 @@ def _act_pass_2(
     # perception_source (empty visual_references) → the join drops its narration
     # → enrique refuses pre-spend. Roster-grounded, alignment-gated backfill.
     parsed = backfill_delta_perception_sources(parsed, slide_roster)
+    # Story concierge-leg1b (Slice 2): author + Vera-R7-gate warm_callback
+    # narration HERE — after perception backfill, BEFORE the join/reading-path/
+    # figure asserts — so a KEPT callback's canonical prose ALSO flows all three
+    # gates. The renderer is the real gpt-5 chat-invoke by default (injectable
+    # seam; a deterministic fake in unit tests). Flag OFF (default) ⇒ unchanged.
+    parsed = _attach_warm_callbacks(
+        parsed,
+        envelope_payload,
+        slide_roster,
+        model_invoke=handle.chat.invoke,
+    )
     _assert_narration_joins_roster(parsed, slide_roster)
     _assert_reading_path_conformance(parsed, slide_roster)
     _assert_figure_citations_within_perceived(parsed, slide_roster)
+    # AC1 (finding-d): the emitted Pass-2 package is directly validatable in-band
+    # (retires the out-of-band concierge normalization step).
+    assert_pass2_surfaces_validatable(parsed)
     # P5 directed-voice Step 2 (IR-1): the SEPARATE, pure, deterministic voice-
     # direction annotation pass runs ONLY here — AFTER the manifest is frozen and
     # AFTER the figure-citation gate has passed — and ONLY attaches delivery
     # metadata. It never re-generates the script and never touches a grounded
     # field. Flag OFF (default) ⇒ byte-identical (no voice_direction emitted).
+    # M3 (both-flags precedence): snapshot the warm_callback roles, then re-stamp
+    # them AFTER _attach_voice_direction — which rebuilds voice_direction from
+    # scratch and would otherwise drop rhetorical_role='warm_callback'.
+    warm_callback_role_keys = _warm_callback_role_keys(parsed)
     parsed = _attach_voice_direction(parsed, envelope_payload)
+    _restamp_warm_callback_roles(parsed, warm_callback_role_keys)
+    output_payload: dict[str, Any] = {
+        "narration_script": parsed["narration_script"],
+        "segment_manifest_deltas": parsed["segment_manifest_deltas"],
+        "model_id": model_id,
+        "usage": getattr(response, "usage_metadata", None),
+    }
+    # Story concierge-leg1b (Slice 2 / T11 carrier-robustness): the warm_callback
+    # decision audit — BOTH kept and block-by-omission DROPPED records — must
+    # survive into the persisted carrier (the bundle/envelope side-car carries
+    # current state of EVERYTHING; AC5 requires a LOUD, durable audit). Added ONLY
+    # when non-empty, so a flag-OFF / no-callback run stays byte-identical.
+    warm_callback_audit = parsed.get("warm_callback_audit")
+    if warm_callback_audit:
+        output_payload["warm_callback_audit"] = warm_callback_audit
     output_blob = json.dumps(
-        {
-            "narration_script": parsed["narration_script"],
-            "segment_manifest_deltas": parsed["segment_manifest_deltas"],
-            "model_id": model_id,
-            "usage": getattr(response, "usage_metadata", None),
-        },
+        output_payload,
         sort_keys=True,
         ensure_ascii=True,
         separators=(",", ":"),

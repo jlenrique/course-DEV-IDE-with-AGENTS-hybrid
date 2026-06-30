@@ -1,0 +1,30 @@
+{
+  "arms": {
+    "1_positive": {
+      "fired": true,
+      "anchor": [
+        "c1"
+      ],
+      "callback_prefix": "Recall how we established the homeostasis framework and its guiding principles. The membrane reshapes as conditions change.",
+      "PASS": true
+    },
+    "2_real_unsafe": {
+      "callback": "As we discussed earlier, 70% of your progress comes from consistent practice.",
+      "kept": false,
+      "unsourced_figs": [
+        "percent:70"
+      ],
+      "PASS": true
+    },
+    "3_structural": {
+      "silent": true,
+      "PASS": true
+    },
+    "4_07g": {
+      "raised": true,
+      "PASS": true
+    }
+  },
+  "ALL_PASS": true,
+  "total_seconds": 30.9
+}

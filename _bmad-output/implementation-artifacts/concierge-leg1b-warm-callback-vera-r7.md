@@ -1,6 +1,9 @@
 # Story concierge-leg1b-warm-callback: warm_callback Pass-2 authoring + Vera-R7 source-containment with teeth
 
-Status: ready-for-dev
+Status: done
+
+<!-- CLOSED 2026-06-30 — DUAL-GATE party CLOSE 5/5 CONCUR (Murat structural/receipt 6/6 + Vera content-fidelity 6/6 + Irene content-fidelity 5/5 + Winston architect 5/5 + John PM 5/5; no impasse). Dev: slice 1 (grounding + R7 gate-with-teeth + 07G teeth) + slice 2 (wire authoring + injectable real-gpt-5 renderer + AC1 surfaces) + T11 hand-back (audit serialized into the production-envelope carrier) + 3-lane bmad-code-review remediation (4 MUST-FIX + 3 SHOULD-FIX, all RED-first). LIVE close-bar (real gpt-5, foreground, first-run-stands) ALL_PASS TWICE (pre + post remediation): positive grounded callback fires (anchor c1, R7 PASS); real gpt-5-authored "70%" unsafe callback detected+omitted (block-by-omission); structural silent; 07G teeth raise. 285 tests; frozen figure_tokens neck untouched; flag-OFF byte-identical. CLOSE-NOTE (Irene, binding): "Leg-1b ships the numeral/figure-token facet ONLY, FLAG-OFF by default; clinical-lexicon, span/dep negation, clustered-deck scale, and production activation (warm_callback_grounding orchestrator projection + both-flags-on) remain documented Leg-3/Leg-4 follow-ons — no VO↔on-screen regression." Evidence: evidence/leg1b-warm-callback-live-close-20260630T231935Z/. Follow-ons filed in deferred-inventory. -->
+
 
 <!-- Arc: Concierge Production Substrate (branch dev/concierge-production-substrate-2026-06-29, Class S). Sequenced AFTER Leg-1 (coverage interlock CLOSED path A, 53eb4a85). GATE MODE: DUAL-GATE (Murat — warm_callback authors NEW lexical content ⇒ content-fidelity, not just receipt). Green-light: fully-spawned party 5/5 ENDORSE-WITH-AMENDMENTS (John/Winston/Murat/Irene/Vera, 2026-06-30, no impasse) — the amendments ARE this story's acceptance contract. SSOT: concierge-substrate-party-record-2026-06-29.md (Round 8 + the Leg-1b review). Consumes Leg-1's source_point anchors. Do NOT expand into clustering (Leg-3 owns clustered-deck callback scale-up). -->
 
