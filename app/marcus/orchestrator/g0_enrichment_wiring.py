@@ -103,7 +103,7 @@ G0_ENRICHMENT_LIVE_MODEL_ID = "marcus"
 # generous output ceiling was bound — reasoning models spend budget on hidden
 # reasoning first, then truncate the visible JSON). The DEFAULT (None-fallback)
 # chat-model factory binds these; an injected harness factory may bind its own.
-G0_EXTRACTION_MAX_COMPLETION_TOKENS = 64000
+G0_EXTRACTION_MAX_COMPLETION_TOKENS = 32000
 G0_EXTRACTION_REQUEST_TIMEOUT_S = 300.0
 
 # Thin contract key (the frozen enrichment result on the contribution output).
