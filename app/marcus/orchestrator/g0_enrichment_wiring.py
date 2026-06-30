@@ -104,7 +104,7 @@ G0_ENRICHMENT_LIVE_MODEL_ID = "marcus"
 # reasoning first, then truncate the visible JSON). The DEFAULT (None-fallback)
 # chat-model factory binds these; an injected harness factory may bind its own.
 G0_EXTRACTION_MAX_COMPLETION_TOKENS = 64000
-G0_EXTRACTION_REQUEST_TIMEOUT_S = 180.0
+G0_EXTRACTION_REQUEST_TIMEOUT_S = 300.0
 
 # Thin contract key (the frozen enrichment result on the contribution output).
 ENRICHMENT_RESULT_KEY = "g0_enrichment_result"
