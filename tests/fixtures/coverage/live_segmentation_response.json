@@ -3,17 +3,15 @@
     {
       "component_id": "src-001-c001",
       "assertions": [
-        "U.S. healthcare spending continues to rise exponentially, now accounting for nearly one-fifth of the nation's economy and reaching $5.2 trillion in 2024.",
-        "Between 2012 and 2022, independent private practice fell drastically, while the share of physicians employed by large health systems surged.",
-        "We are increasingly working within massive, complex organizations, which fundamentally changes our autonomy and decision-making authority.",
-        "To effect change now, you cannot just optimize your own clinic; you must know how to navigate and influence a large enterprise."
+        "U.S. healthcare spending reached $5.2 trillion in 2024.",
+        "Independent practice fell drastically while hospital employment surged."
       ]
     },
     {
       "component_id": "src-001-c002",
       "assertions": [
         "Physician burnout is not a personal failing but a system-level problem.",
-        "Administrative burden has increased sharply over the past decade."
+        "Administrative burden increased sharply over the past decade."
       ]
     }
   ]

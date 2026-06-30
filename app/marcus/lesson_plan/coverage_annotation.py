@@ -338,6 +338,126 @@ def assert_segmentation_complete(
 
 
 # ---------------------------------------------------------------------------
+# Verbatim re-anchor guard (F-012) — the LIVE path must NEVER mint a SourcePoint
+# from a model paraphrase. Identity keys on the VERBATIM SOURCE SPAN (AC-OP2-DET),
+# so a model assertion must be recoverable as a byte-exact slice of the parent
+# component's source excerpt (exact, or after whitespace/quote drift) — else DROP.
+# The OFFLINE pass is substring-safe by construction (it cuts spans FROM the
+# excerpt); only this live guard re-anchors model-supplied spans.
+# ---------------------------------------------------------------------------
+
+# Curly quotes/apostrophes → straight ASCII. ``str.maketrans`` maps single code
+# point → single code point, so the translation is LENGTH-PRESERVING: byte offsets
+# into the straightened string map 1:1 back onto the ORIGINAL, letting us recover the
+# byte-exact source slice (curly quote intact) after matching on the straightened text.
+_CURLY_QUOTE_TRANSLATION: Final[dict[int, str]] = str.maketrans(
+    {"’": "'", "‘": "'", "“": '"', "”": '"'}
+)
+
+
+def _straighten_quotes(text: str) -> str:
+    """Straighten curly quotes/apostrophes (length-preserving; offsets unchanged)."""
+    return text.translate(_CURLY_QUOTE_TRANSLATION)
+
+
+def reanchor_verbatim_span(span: str, excerpt: str) -> str | None:
+    """Recover the BYTE-EXACT source slice a model span was cut from, else ``None``.
+
+    AC-OP2-DET: identity keys on the verbatim source span, never an LLM paraphrase.
+
+    1. **Exact byte-substring (fast path):** the raw span is already a byte-exact slice
+       → return it unchanged.
+    2. **Whitespace/quote-normalized re-anchor:** straighten curly quotes in BOTH sides,
+       split the span on whitespace, and search the straightened excerpt with a
+       ``\\s+``-joined case-sensitive regex of the escaped tokens. A match means the span
+       differs from the source ONLY by whitespace/quote drift → return the byte-exact
+       ORIGINAL slice (``excerpt[start:end]``; curly quotes + the source's own whitespace
+       preserved), NOT the model's normalized string. Tolerates drift, never paraphrase.
+    3. **No match:** a paraphrase/fabrication → ``None`` (DROP; never mint a SourcePoint).
+    """
+    if not span:
+        return None
+    if span in excerpt:
+        return span
+    straight_excerpt = _straighten_quotes(excerpt)
+    tokens = _straighten_quotes(span).split()
+    if not tokens:
+        return None
+    pattern = r"\s+".join(re.escape(tok) for tok in tokens)
+    match = re.search(pattern, straight_excerpt)
+    if match is None:
+        return None
+    # Length-preserving straighten → match offsets index the ORIGINAL excerpt directly.
+    return excerpt[match.start() : match.end()]
+
+
+def _anchor_spans(excerpt: str, spans: list[str]) -> tuple[list[str], list[str]]:
+    """Partition model spans into (byte-exact accepted slices, dropped non-verbatim)."""
+    accepted: list[str] = []
+    dropped: list[str] = []
+    for span in spans:
+        anchored = reanchor_verbatim_span(span, excerpt)
+        if anchored is None:
+            dropped.append(span)
+        else:
+            accepted.append(anchored)
+    return accepted, dropped
+
+
+class NonVerbatimSpan(BaseModel):
+    """A model assertion span DROPPED because it is neither a verbatim nor a
+    whitespace/quote-normalized substring of its component's source excerpt (F-012).
+
+    A paraphrase/fabrication must NEVER become a :class:`SourcePoint.verbatim_text`
+    (the identity anchor, AC-OP2-DET). Mirrors the FIX-3 :class:`IncompleteSegment`
+    marker: surfaced as an explicit, structured signal, never swallowed.
+    """
+
+    model_config = ConfigDict(extra="forbid", frozen=True)
+
+    component_id: str = Field(..., min_length=1)
+    slide_key: str = Field(..., min_length=1)
+    span: str = Field(..., min_length=1, description="The dropped model-supplied span.")
+    reason: str = Field(
+        default=(
+            "model span is not a verbatim or whitespace/quote-normalized substring of "
+            "the source excerpt (AC-OP2-DET: identity keys on the verbatim source span)"
+        )
+    )
+
+
+def detect_non_verbatim_spans(
+    rows: list[dict[str, Any]],
+    components: list[dict[str, Any]],
+) -> tuple[NonVerbatimSpan, ...]:
+    """Pure projection (no LLM, no I/O): which model spans WOULD be dropped as non-verbatim.
+
+    The orchestrator-readable mirror of :func:`build_coverage_from_rows`' inline guard —
+    re-runs the same anchor logic so a downstream (G3) caller can surface every dropped
+    paraphrase/fabrication without re-reading the build's internals. A dropped span is a
+    DIAGNOSTIC (the surviving verbatim spans still build), not by itself a halt condition;
+    a component whose EVERY span drops is caught by the FIX-3 incomplete signal.
+    """
+    by_id = {_rec_id(rec): rec for rec in components if is_note_bearing(_rec_type(rec))}
+    out: list[NonVerbatimSpan] = []
+    for row in rows:
+        if not isinstance(row, dict):
+            continue
+        cid = str(row.get("component_id") or "").strip()
+        rec = by_id.get(cid)
+        if not cid or rec is None:
+            continue
+        raw = row.get("assertions")
+        spans = [str(s).strip() for s in raw if str(s).strip()] if isinstance(raw, list) else []
+        excerpt = _rec_excerpt(rec)
+        slide_key = _rec_slide_key(rec)
+        for span in spans:
+            if reanchor_verbatim_span(span, excerpt) is None:
+                out.append(NonVerbatimSpan(component_id=cid, slide_key=slide_key, span=span))
+    return tuple(out)
+
+
+# ---------------------------------------------------------------------------
 # Front-matter accessors (mirror P3 — read the universal-md front matter)
 # ---------------------------------------------------------------------------
 
@@ -539,6 +659,13 @@ def build_coverage_from_rows(
     trusted for the floor). Over-segmentation past :data:`MAX_ASSERTIONS_PER_BLOCK`
     is clamped + logged (AC-OP1 ceiling). One malformed row is skipped, never
     aborting the pass.
+
+    F-012 GUARD: every model span is re-anchored against its component's source excerpt
+    (:func:`reanchor_verbatim_span`) BEFORE it can become a :class:`SourcePoint`. A span
+    that is neither a byte-exact nor a whitespace/quote-normalized substring is a model
+    PARAPHRASE — it is DROPPED (never minted as an identity anchor, AC-OP2-DET) and
+    surfaced as a structured :class:`NonVerbatimSpan` diagnostic + a ``logger.warning``.
+    A normalized match RE-ANCHORS to the byte-exact source slice, not the model wording.
     """
     when = generated_at or datetime.now(tz=UTC)
     by_id = {_rec_id(rec): rec for rec in components if is_note_bearing(_rec_type(rec))}
@@ -559,6 +686,16 @@ def build_coverage_from_rows(
                 cid, len(spans), MAX_ASSERTIONS_PER_BLOCK,
             )
             spans = spans[:MAX_ASSERTIONS_PER_BLOCK]
+        # F-012: re-anchor each model span to a byte-exact source slice; DROP paraphrases
+        # so a model wording can never become a SourcePoint identity anchor (AC-OP2-DET).
+        spans, dropped = _anchor_spans(_rec_excerpt(rec), spans)
+        for bad in dropped:
+            logger.warning(
+                "coverage live: DROPPING non-verbatim span for %r — not a verbatim or "
+                "whitespace/quote-normalized substring of the source excerpt (would have "
+                "become a SourcePoint identity anchor; AC-OP2-DET): %r",
+                cid, bad,
+            )
         try:
             ann = _annotation_from_spans(
                 rec, spans, transform_model=COVERAGE_LIVE_MODEL, when=when,
@@ -686,15 +823,18 @@ __all__ = [
     "CoverageIncompleteError",
     "CoverageNotShippableError",
     "IncompleteSegment",
+    "NonVerbatimSpan",
     "assert_segmentation_complete",
     "assert_v1_shippable",
     "build_coverage_annotations",
     "build_coverage_from_rows",
     "coverage_annotation_json_schema",
     "detect_incomplete_segmentation",
+    "detect_non_verbatim_spans",
     "detect_risk_flags",
     "extract_coverage_rows",
     "is_note_bearing",
     "load_coverage_annotation",
+    "reanchor_verbatim_span",
     "render_live_segmentation_prompt",
 ]

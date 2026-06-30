@@ -23,14 +23,17 @@ from app.marcus.lesson_plan.coverage_annotation import (
     CoverageAnnotation,
     CoverageIncompleteError,
     CoverageNotShippableError,
+    NonVerbatimSpan,
     assert_segmentation_complete,
     assert_v1_shippable,
     build_coverage_annotations,
     build_coverage_from_rows,
     detect_incomplete_segmentation,
+    detect_non_verbatim_spans,
     detect_risk_flags,
     extract_coverage_rows,
     load_coverage_annotation,
+    reanchor_verbatim_span,
 )
 from app.marcus.lesson_plan.source_point import SourcePoint
 
@@ -42,6 +45,14 @@ _NOTES_1 = (
     "U.S. healthcare spending reached $5.2 trillion in 2024. "
     "Independent practice fell drastically while hospital employment surged. "
     "You cannot just optimize your own clinic."
+)
+
+# c002's source notes — the fixture's c002 assertions are EXACT copied spans of this
+# block (no paraphrase). The first sentence carries a negation ("is not a personal
+# failing") → negation risk + verbatim floor (preserves the offending test's intent).
+_NOTES_2 = (
+    "Physician burnout is not a personal failing but a system-level problem. "
+    "Administrative burden increased sharply over the past decade."
 )
 
 
@@ -162,7 +173,13 @@ def test_extract_rows_degrades_on_garbage() -> None:
 
 def test_build_from_rows_assigns_deterministic_risk_and_live_model() -> None:
     rows = json.loads(_FIXTURE.read_text(encoding="utf-8"))["blocks"]
-    components = [_narration_rec("src-001-c001"), _narration_rec("src-001-c002", notes="ignored")]
+    # The component excerpts CONTAIN the fixture assertions VERBATIM (F-012: the live
+    # guard re-anchors against the source excerpt, so this now proves the happy path —
+    # substring → accepted — instead of accepting a paraphrase against notes="ignored").
+    components = [
+        _narration_rec("src-001-c001", notes=_NOTES_1),
+        _narration_rec("src-001-c002", notes=_NOTES_2),
+    ]
     anns = build_coverage_from_rows(rows, components, generated_at=_TS, clinical_terms=None)
     by_id = {a.component_id: a for a in anns}
     assert set(by_id) == {"src-001-c001", "src-001-c002"}
@@ -171,12 +188,26 @@ def test_build_from_rows_assigns_deterministic_risk_and_live_model() -> None:
     neg_point = by_id["src-001-c002"].source_points[0]
     assert "negation" in neg_point.risk_flags
     assert neg_point.verbatim_required is True
+    # every accepted point is genuinely verbatim against its source excerpt (no paraphrase)
+    for sp in by_id["src-001-c001"].source_points:
+        assert sp.verbatim_text in _NOTES_1
+    for sp in by_id["src-001-c002"].source_points:
+        assert sp.verbatim_text in _NOTES_2
+    # nothing was dropped — the fixture is now all exact substrings
+    assert detect_non_verbatim_spans(rows, components) == ()
 
 
 def test_build_from_rows_clamps_over_segmentation() -> None:
-    over = [{"component_id": "src-001-c001", "assertions": [f"s{i}." for i in range(30)]}]
+    # Spans must be VERBATIM substrings of the excerpt (F-012 guard) so the test
+    # isolates the over-segmentation clamp, not the verbatim drop.
+    spans = [f"s{i}." for i in range(30)]
+    excerpt = " ".join(spans)
+    over = [{"component_id": "src-001-c001", "assertions": spans}]
     anns = build_coverage_from_rows(
-        over, [_narration_rec("src-001-c001")], generated_at=_TS, clinical_terms=None
+        over,
+        [_narration_rec("src-001-c001", notes=excerpt)],
+        generated_at=_TS,
+        clinical_terms=None,
     )
     assert len(anns[0].source_points) == MAX_ASSERTIONS_PER_BLOCK
 
@@ -187,6 +218,97 @@ def test_build_from_rows_skips_unknown_component() -> None:
         rows, [_narration_rec("src-001-c001")], generated_at=_TS, clinical_terms=None
     )
     assert out == ()
+
+
+# --------------------------------------------------------------------------- #
+# F-012 — the LIVE path must REFUSE a model paraphrase as a verbatim identity
+# anchor. The verbatim source span (AC-OP2-DET), never an LLM paraphrase, keys
+# identity. Exact substring → accept; whitespace/quote drift → re-anchor to the
+# byte-exact source slice; paraphrase/fabrication → DROP + structured diagnostic.
+# --------------------------------------------------------------------------- #
+
+
+def test_build_from_rows_accepts_exact_substring_verbatim() -> None:
+    span = "Independent practice fell drastically while hospital employment surged."
+    rows = [{"component_id": "src-001-c001", "assertions": [span]}]
+    components = [_narration_rec("src-001-c001", notes=_NOTES_1)]
+    anns = build_coverage_from_rows(rows, components, generated_at=_TS, clinical_terms=None)
+    sp = anns[0].source_points[0]
+    assert sp.verbatim_text == span  # byte-identical to the source slice
+    assert sp.verbatim_text in _NOTES_1
+    assert detect_non_verbatim_spans(rows, components) == ()
+
+
+def test_build_from_rows_drops_non_verbatim_paraphrase_keeps_verbatim() -> None:
+    verbatim = "Independent practice fell drastically while hospital employment surged."
+    paraphrase = "Doctors increasingly work for large hospital systems rather than alone."
+    rows = [{"component_id": "src-001-c001", "assertions": [verbatim, paraphrase]}]
+    components = [_narration_rec("src-001-c001", notes=_NOTES_1)]
+    anns = build_coverage_from_rows(rows, components, generated_at=_TS, clinical_terms=None)
+    vts = [sp.verbatim_text for a in anns for sp in a.source_points]
+    assert verbatim in vts  # the genuine span survives
+    assert paraphrase not in vts  # the paraphrase is DROPPED, never minted
+    # ordinals are contiguous over ACCEPTED spans only (the drop leaves no gap)
+    assert [sp.ordinal for sp in anns[0].source_points] == [1]
+    # the structured non-verbatim diagnostic surfaces the dropped paraphrase
+    dropped = detect_non_verbatim_spans(rows, components)
+    assert [d.span for d in dropped] == [paraphrase]
+    assert isinstance(dropped[0], NonVerbatimSpan)
+    assert dropped[0].component_id == "src-001-c001"
+
+
+def test_build_from_rows_reanchors_whitespace_and_quote_normalized() -> None:
+    # The source excerpt carries a curly apostrophe (U+2019) and an internal line
+    # break; the model normalized both away (straight ' + collapsed whitespace). The
+    # span must RE-ANCHOR to the BYTE-EXACT source slice, NOT the model's normalized
+    # string — identity keys on the verbatim source span.
+    excerpt = "You can’t just optimize your\nown clinic."
+    model_span = "You can't just optimize your own clinic."
+    rows = [{"component_id": "src-001-c001", "assertions": [model_span]}]
+    components = [_narration_rec("src-001-c001", notes=excerpt)]
+    anns = build_coverage_from_rows(rows, components, generated_at=_TS, clinical_terms=None)
+    sp = anns[0].source_points[0]
+    assert sp.verbatim_text == excerpt  # byte-exact source slice
+    assert sp.verbatim_text != model_span  # NOT the model's normalized wording
+    assert "’" in sp.verbatim_text  # curly apostrophe preserved
+    assert "\n" in sp.verbatim_text  # source line break preserved
+    assert detect_non_verbatim_spans(rows, components) == ()
+
+
+def test_build_from_rows_all_spans_non_verbatim_flags_fix3_incomplete() -> None:
+    # A component whose EVERY span is non-verbatim drops to zero accepted points; the
+    # existing FIX-3 incomplete-segmentation signal must still catch it (non-empty
+    # notes, zero produced) so the ledger can't be silently emptied.
+    rows = [
+        {
+            "component_id": "src-001-c001",
+            "assertions": [
+                "This is a complete fabrication about something unrelated entirely.",
+                "Another paraphrase that shares no verbatim span with the notes.",
+            ],
+        }
+    ]
+    components = [_narration_rec("src-001-c001", notes=_NOTES_1)]
+    anns = build_coverage_from_rows(rows, components, generated_at=_TS, clinical_terms=None)
+    assert anns == ()  # all spans dropped → no annotation minted
+    dropped = detect_non_verbatim_spans(rows, components)
+    assert len(dropped) == 2
+    # FIX-3 still fires: non-empty notes, zero produced points
+    incomplete = detect_incomplete_segmentation(components, anns)
+    assert len(incomplete) == 1
+    assert incomplete[0].component_id == "src-001-c001"
+    with pytest.raises(CoverageIncompleteError, match="src-001-c001"):
+        assert_segmentation_complete(components, anns)
+
+
+def test_reanchor_verbatim_span_unit() -> None:
+    # exact substring → returned unchanged
+    assert reanchor_verbatim_span("fell drastically", _NOTES_1) == "fell drastically"
+    # whitespace/quote drift → byte-exact ORIGINAL slice (curly apostrophe preserved)
+    excerpt = "We can’t\nignore it."
+    assert reanchor_verbatim_span("We can't ignore it.", excerpt) == excerpt
+    # paraphrase/fabrication → None (dropped)
+    assert reanchor_verbatim_span("totally invented sentence", _NOTES_1) is None
 
 
 # --------------------------------------------------------------------------- #
