@@ -1671,3 +1671,11 @@ Operator opens `_bmad-output/implementation-artifacts/trial-3-operator-guide-att
 - Step 0 dev-coherence report: not generated (Cora sweep deferred).
 
 **Push:** all session commits pushed in-session (push-cadence); origin/dev/concierge-production-substrate-2026-06-29 == HEAD `52c70299`. WRAPUP commit (briefing + this appendix) is the only new push.
+
+### Carried concerns for next session (Marcus shadow monitor F-012/013/014 + operator ruling 2026-06-30)
+Monitor: `_bmad-output/implementation-artifacts/marcus-claude-shadow-monitor-2026-06-29.md` (READ Polls 49-54 at open). **Do NOT start Leg-1b callback implementation until the interlock is LIVE-PROVEN or formally accepted as a known open risk (owner/date/risk-accepted).**
+- **F-012 (FIX EARLY, operator preference):** live segmentation stores model-returned `assertions` as `SourcePoint.verbatim_text` with NO exact-substring validation vs the source excerpt (fixture even accepts a non-substring row). Fix RED-first (whitespace-normalized exact-substring; fail-safe re-anchor-or-drop, never silent-accept; fix fixture). Load-bearing for callback anchoring.
+- **F-013:** offline marker-backed fail-loud landed; finalize the live G3 marshaller + prove on the real runner path (`write_coverage_receipt`/`enforce_coverage_gate_before_audio`/`MARCUS_COVERAGE_GATE_ACTIVE`/`_pause_at_error`), not a harness.
+- **F-014 (close blocker):** prove the real runner chain G0E coverage_annotations → G3 receipt → RAI entry → gate → recoverable pause BEFORE Enrique/ElevenLabs; zero ElevenLabs on the block path; covered-only path to real audio.
+- **Vacuous-receipt guard:** the live proof must assert the receipt is NON-VACUOUS + derived from real `coverage_annotations` (absent g0-enrichment.json / empty annotations when note-bearing components exist = FALSE PASS).
+Opening order (operator-specified): read shadow-monitor → fix F-012 → finalize `_marshal_coverage_surfaces` vs real captured run-state → integrated `studio-smoke-min` re-prove (Murat bar) → confirm $0 ElevenLabs on block → covered-only to real audio → party-close → unblock Leg-1b.
