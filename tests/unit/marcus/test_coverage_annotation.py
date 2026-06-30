@@ -24,6 +24,7 @@ from app.marcus.lesson_plan.coverage_annotation import (
     CoverageIncompleteError,
     CoverageNotShippableError,
     NonVerbatimSpan,
+    _rec_slide_key,
     assert_segmentation_complete,
     assert_v1_shippable,
     build_coverage_annotations,
@@ -147,6 +148,60 @@ def test_offline_pass_byte_stable_across_runs() -> None:
     a = build_coverage_annotations([_narration_rec()], generated_at=_TS)
     b = build_coverage_annotations([_narration_rec()], generated_at=_TS)
     assert [x.model_dump(mode="json") for x in a] == [y.model_dump(mode="json") for y in b]
+
+
+# --------------------------------------------------------------------------- #
+# slide_key resolution — narration locators nest under a sub-section breadcrumb
+# ("Slide 1 > Narration"); slide_key MUST resolve the SLIDE-LEVEL segment, not the
+# trailing sub-section, or the coverage bridge (_SLIDE_INT_RE wants "Slide N"/bare
+# int) can NEVER resolve "Narration" → every point forced `missing` → over-block.
+# --------------------------------------------------------------------------- #
+
+
+def test_rec_slide_key_skips_trailing_narration_subsection() -> None:
+    # Real g0-enrichment narration locator: the slide-level breadcrumb is "Slide 1",
+    # the "Narration" tail is the sub-section the speaker notes live in.
+    assert _rec_slide_key({"locator": "Slide 1 > Narration"}) == "Slide 1"
+
+
+def test_rec_slide_key_skips_subsection_with_deeper_breadcrumb() -> None:
+    # Walking from the END, skip the "Narration" sub-section and return the FIRST
+    # non-sub-section segment ("Part 2 Summary"), not the module root.
+    assert (
+        _rec_slide_key({"locator": "Module 1 > Part 2 Summary > Narration"})
+        == "Part 2 Summary"
+    )
+
+
+def test_rec_slide_key_skips_speaker_notes_subsection() -> None:
+    assert _rec_slide_key({"locator": "Slide 3 > Speaker Notes"}) == "Slide 3"
+
+
+def test_rec_slide_key_plain_slide_locator_unchanged() -> None:
+    # No sub-section tail → trailing behavior is unchanged ("Slide 1").
+    assert _rec_slide_key({"locator": "Module 1 > Slide 1"}) == "Slide 1"
+
+
+def test_rec_slide_key_degenerate_only_subsection_falls_back() -> None:
+    # A single sub-section-only segment cannot resolve a slide; fall back to the
+    # trailing behavior (never crash, never empty).
+    assert _rec_slide_key({"locator": "Narration"}) == "Narration"
+
+
+def test_rec_slide_key_subsection_match_is_case_insensitive() -> None:
+    assert _rec_slide_key({"locator": "Slide 2 > NARRATION"}) == "Slide 2"
+    assert _rec_slide_key({"locator": "Slide 4 > voiceover"}) == "Slide 4"
+
+
+def test_offline_annotation_slide_key_resolves_slide_for_narration_locator() -> None:
+    # End-to-end through build_coverage_annotations: a narration component whose
+    # locator nests under "> Narration" yields slide_key "Slide 1" (not "Narration"),
+    # and every source point carries that slide_key so the G3 bridge can resolve an
+    # ordinal ("Slide 1" → "1"). Proves the fix flows through _offline_coverage_pass.
+    rec = _narration_rec("src-001-c001", notes=_NOTES_1, locator="Slide 1 > Narration")
+    ann = build_coverage_annotations([rec], generated_at=_TS)[0]
+    assert ann.slide_key == "Slide 1"
+    assert all(sp.slide_key == "Slide 1" for sp in ann.source_points)
 
 
 # --------------------------------------------------------------------------- #

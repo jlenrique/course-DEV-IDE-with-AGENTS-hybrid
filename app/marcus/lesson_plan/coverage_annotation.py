@@ -478,10 +478,46 @@ def _rec_excerpt(rec: dict[str, Any]) -> str:
     return rec.get("excerpt") or rec.get("notes_text") or ""
 
 
+# Non-slide sub-section breadcrumb labels (case-insensitive exact match). Real
+# narration components live in a `Narration`/`Speaker Notes` sub-section nested UNDER
+# the slide, so their locator trails the slide breadcrumb (e.g. "Slide 1 > Narration").
+# The coverage bridge (`coverage_runner._SLIDE_INT_RE`) needs the SLIDE-level segment
+# ("Slide N"/bare int); a trailing "Narration" can NEVER resolve → every source point
+# is forced `missing` and the gate over-blocks every real run. _rec_slide_key skips
+# these to recover the slide-level breadcrumb.
+_NON_SLIDE_SUBSECTION_LABELS: Final[frozenset[str]] = frozenset(
+    {
+        "narration",
+        "speaker notes",
+        "speaker note",
+        "notes",
+        "voiceover",
+        "voice over",
+        "script",
+    }
+)
+
+
 def _rec_slide_key(rec: dict[str, Any]) -> str:
-    """The 'Slide N' locator key (trailing breadcrumb), else the whole locator."""
+    """Resolve the SLIDE-level locator breadcrumb, skipping note sub-sections.
+
+    Real narration locators nest the speaker-note text in a sub-section UNDER the
+    slide (``"Slide 1 > Narration"``, ``"Part 2 Summary > Narration"``,
+    ``"Slide 3 > Speaker Notes"``). The trailing breadcrumb is therefore the
+    sub-section label, not the slide; returning it ("Narration") makes the coverage
+    bridge unable to resolve an ordinal, forcing every point ``missing`` and
+    over-blocking the gate. Walk the breadcrumb segments from the END, skip any that
+    are known non-slide sub-section labels (case-insensitive exact match), and return
+    the first non-skipped (slide-level) segment. If ALL segments are sub-section
+    labels (or there is only one), fall back to the trailing behavior — never crash,
+    never return empty.
+    """
     locator = _rec_locator(rec)
-    last = locator.split(">")[-1].strip()
+    segments = [seg.strip() for seg in locator.split(">")]
+    last = segments[-1] if segments else ""
+    for seg in reversed(segments):
+        if seg and seg.lower() not in _NON_SLIDE_SUBSECTION_LABELS:
+            return seg
     return last or locator
 
 
