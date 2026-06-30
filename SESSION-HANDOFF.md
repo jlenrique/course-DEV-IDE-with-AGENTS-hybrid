@@ -1632,3 +1632,42 @@ Operator opens `_bmad-output/implementation-artifacts/trial-3-operator-guide-att
 - **Step 12 push-cadence:** Both session commits already pushed in-session at safety-checkpoint trigger (Mon May 25 ~22:01). HEAD = origin HEAD at `94d5810`. WRAPUP-finalization commit (this appendix) will be the only new push.
 
 **End of SESSION-HANDOFF appendix for interim 2026-05-25 (docs/tooling side-quest: ONBOARDING.md + knowledge-graph artifacts; Trial-3 attempt-3 launch posture unchanged).**
+
+---
+
+## Session close — 2026-06-30 (Concierge Production Substrate arc; Leg-1a + Coverage-Assurance Interlock)
+
+**Final class:** S (substrate — extensive code across Leg-1a directed-voice emission + a new coverage-assurance interlock subsystem). Branch `dev/concierge-production-substrate-2026-06-29`; HEAD `52c70299`; origin synced 0/0.
+
+### What was completed
+- **Leg-1a (`concierge-leg1a-rhetorical-role-emission`) — DONE, party-CLOSED, live-proven.** Closed `PEDAGOGICAL_ROLE_TO_RHETORICAL` map (`synthesis → contrast_emphasis`; others → None) threaded additively onto Irene's role-derived seed → de-inerts the already-shipped (enhanced-vo-2) Enrique v3 `[slow]` channel (additive, ZERO contract change, M3 KEPT). Offline 91 + 406 regression green; **LIVE ElevenLabs gate PASS** (~$0.05; render_mode=v3_provider_text, effective model eleven_v3, tags `["[slow]"]`, distinct request_ids, captions clean). 3-layer review 0 MUST-FIX; 2 SHOULD-FIX pinned; Edge#2 (override can't suppress role) filed as follow-on. Unanimous party CLOSE (Murat/Winston/Irene). Commits `af301d4c` → `faf1fbbe`.
+- **Coverage-Assurance Interlock (`concierge-coverage-assurance-interlock`) — ~90%: offline-COMPLETE + party-ratified runner integration; ONLY the integrated live re-prove remains.** Operator-inserted BEFORE Leg-1b (briefing `claude-code-brief-topic-coverage-assurance-before-leg1b-2026-06-29.md`): an operator-facing production report accounting for ALL per-slide presentation-note points → slide/narration, fail-loud before audio spend. Journey: party amendment (Quinn synthesis 5/5) → story → T0 gpt-5 spike (GO; bounded/faithful) → offline build → isolated live slice → **3-layer adversarial review CAUGHT A REAL FAIL-OPEN** (gate inert in a real run + dead `verbatim_absent` predicate term) → operator ruled remediate-now-then-close → contained fixes (`ca4438fa`) → 4-voice integration party 4/4 no impasse (`ddf58943`, party-record Round 4) → offline integration core (`01e806a8`, 220 tests). Ratified design (Round 4): PASS-attach mirror-P3; derive+write+gate at the G3 publish seam via ONE both-walks helper; gate FAIL-LOUD on missing-receipt-at-audio (Marcus keystone); PURE `build_coverage_anchors` (M3-clean `resolve_slide_key_map` reuse); :335 accessor; canonical/idempotent receipt SHA (survives resume); standalone `coverage-report.html` (B1); RAI `GATE_ASSET_MAP["G3"]`.
+
+### What is next
+1. **FINISH the interlock:** finalize `_marshal_coverage_surfaces` in `app/marcus/orchestrator/coverage_runner.py` vs pre-captured real run-state shapes (inspect an existing run's `exports/gary-slide-content.json` + `segment-manifest-storyboard-b.yaml` + `lesson_plan.plan_units` + `slide_briefs`), then the integrated `studio-smoke-min` re-prove per **Murat's close bar**: ONE runner-emitted A→B→C→D chain with **ZERO ElevenLabs spend on the block path**, a discriminating pair (genuinely-uncovered block via UPSTREAM ablation, never a hand-edited receipt; + a covered-only run to real audio), the continuation-walk read proven across a REAL pause/resume, fuzzy axis ledger-only → dual-gate party CLOSE.
+2. **Leg-1b** (warm_callback authoring + Vera-R7) — DUAL-GATE (Murat); consumes the interlock's source_point anchors; own party GREEN-LIGHT before dev.
+3. Leg-2 (motion bundle) → Leg-3 (callback+clustering; +read-only confirm spike) → Leg-4 (asset/fidelity ledgers; folds in the Vera-R7 clinical-lexicon follow-on).
+
+### Unresolved issues / risks
+- **The interlock gate is NOT yet proven in a real integrated run** (the isolated live slice tested logic via a harness; the runner wiring's marshaller body is stubbed). Leg-1b MUST NOT bind to source_point anchors until the integrated re-prove passes. This is the binding gate.
+- **Honest note:** the early "live slice pass" was over-stated as end-to-end; adversarial review corrected it. Lesson banked (Step: live tests must exercise the integrated path, not a harness stand-in).
+- Pre-existing UNRELATED baseline reds (NOT this work): C3 lint-imports (`workbook_producer.graph → resume_api`); `marcus_interlocutor.py:253` single-call-site structural test (from `e20aadc` 2026-06-25); `test_dispatch_retry::non_retryable_tag` + 2 replay sanctum/budget drift tests.
+- Carried follow-ons (deferred-inventory): `directed-voice-override-cannot-suppress-rhetorical-role` (Leg-1a Edge#2); `directed-voice-vera-r7-wire-clinical-lexicon` (Leg-1b/Leg-4); coverage v1-deferred: narration verified vs published segments, deterministic corpus matcher, hard verbatim enforcement, workbook gating, ≥3-run-calibrated WARN→gate promotion.
+
+### Key lessons
+- **gpt-5 harness discipline (banked to memory `reference_live_llm_extraction_foreground`):** a MISSING per-request `OpenAI(timeout=…, max_retries=0)` HANGS indefinitely (it hung a spike ~8 min; `make_chat_model` bound NO timeout until this session's adapter fix); gpt-5 rejects temp=0 (bind at construction); generous max_completion_tokens (empty output otherwise); `seed` does NOT bind cross-run → determinism = freeze-once-per-run + span-anchored identity. Capability was never in doubt — the risk is always operational.
+- **Adversarial review before downstream binds** caught a fail-open the isolated live slice missed.
+- **Governance amendment (operator, 2026-06-30, binding — memory `feedback_autonomous_party_consensus_escalate_only_if_blocked`):** decisions/reviews/approvals via fully-spawned party consensus (Quinn synth, John tiebreak); escalate ONLY if truly blocked. Applied this session (granularity/determinism/integration forks went to the party).
+
+### Validation summary
+- Step 0 (Cora full /harmonize sweep): NOT run this session — proceed-with-acknowledged-gap (continuous independent re-verification of each dev-agent output + a 3-layer adversarial code review substituted; recommend a Cora sweep at the interlock CLOSE). Cora two-consecutive-skip tripwire noted.
+- Step 1 quality gate: ruff clean on all session app files; lint-imports 14 kept / 1 broken (pre-existing C3 only). Leg-1a 91+406 green; coverage 220 offline green; sprint-status yaml test 2 passed.
+- Live: Leg-1a ElevenLabs gate PASS; coverage T0 gpt-5 spike GO; coverage isolated live slice PASS (logic). Integrated coverage re-prove: OWED (next session).
+
+### Artifact checklist
+- Story files: `concierge-leg1a-rhetorical-role-emission.md` (done) + `concierge-coverage-assurance-interlock.md` (review). ✓
+- Planning: `concierge-substrate-party-record-2026-06-29.md` (Rounds 1-4) + `coverage-assurance-interlock-design-2026-06-30.md`. ✓
+- sprint-status.yaml ✓ ; next-session-start-here.md ✓ (gitignored, local) ; arc memory + 1 new feedback memory ✓ ; deferred-inventory ✓.
+- Step 0 dev-coherence report: not generated (Cora sweep deferred).
+
+**Push:** all session commits pushed in-session (push-cadence); origin/dev/concierge-production-substrate-2026-06-29 == HEAD `52c70299`. WRAPUP commit (briefing + this appendix) is the only new push.
