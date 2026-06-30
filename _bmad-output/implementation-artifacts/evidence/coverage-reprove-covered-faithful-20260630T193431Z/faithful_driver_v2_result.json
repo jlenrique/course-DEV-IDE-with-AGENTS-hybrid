@@ -1,0 +1,36 @@
+{
+  "trial_id": "38e91d16-8049-499d-b74d-9b2fa00ca0ea",
+  "corpus": "C:\\Users\\juanl\\Documents\\GitHub\\course-DEV-IDE-with-AGENTS-hybrid\\course-content\\courses\\coverage-faithful-probe",
+  "directive_path": "C:\\Users\\juanl\\AppData\\Local\\Temp\\claude\\c--Users-juanl-Documents-GitHub-course-DEV-IDE-with-AGENTS-hybrid\\66e04979-ad46-4e61-9d29-46400703dd22\\scratchpad\\directive-faithful-38e91d16-8049-499d-b74d-9b2fa00ca0ea.yaml",
+  "version": "v2-directive-fix",
+  "walk_outcome": "paused-at-error-before-G3",
+  "paused_error_tag": "gamma.export.brief-unmatched",
+  "gate_sequence": [
+    {
+      "gate": "G0E",
+      "verb": "approve",
+      "next_status": "paused-at-gate",
+      "next_gate": "G0R",
+      "seg_s": 56.4
+    },
+    {
+      "gate": "G0R",
+      "verb": "approve",
+      "next_status": "paused-at-gate",
+      "next_gate": "G1",
+      "seg_s": 25.4
+    },
+    {
+      "gate": "G1",
+      "verb": "approve",
+      "next_status": "paused-at-error",
+      "next_gate": null,
+      "seg_s": 118.3
+    }
+  ],
+  "total_seconds_walk": 329.8,
+  "receipt_present": false,
+  "VERDICT": "NOT-CONVERGED",
+  "run_dir": "C:\\Users\\juanl\\Documents\\GitHub\\course-DEV-IDE-with-AGENTS-hybrid\\state\\config\\runs\\38e91d16-8049-499d-b74d-9b2fa00ca0ea",
+  "total_seconds": 329.8
+}

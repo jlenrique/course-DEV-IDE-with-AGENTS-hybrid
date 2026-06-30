@@ -1,0 +1,353 @@
+{
+  "card": {
+    "card_id": "a66a5fc8-c27d-414d-addc-956e2592ec1c",
+    "coverage_plan": {
+      "n_points": 6,
+      "points": [
+        {
+          "component_id": "src-001-c003",
+          "human_label": "Slide 1 / note",
+          "intent_set": [
+            "detail_in_narration",
+            "gist_on_slide"
+          ],
+          "must_cover": true,
+          "risk_flags": [],
+          "slide_key": "Slide 1",
+          "source_point_id": "src-001-c003#1",
+          "verbatim_required": false
+        },
+        {
+          "component_id": "src-001-c003",
+          "human_label": "Slide 1 / note",
+          "intent_set": [
+            "detail_in_narration",
+            "gist_on_slide"
+          ],
+          "must_cover": true,
+          "risk_flags": [],
+          "slide_key": "Slide 1",
+          "source_point_id": "src-001-c003#2",
+          "verbatim_required": false
+        },
+        {
+          "component_id": "src-001-c003",
+          "human_label": "Slide 1 / note",
+          "intent_set": [
+            "detail_in_narration",
+            "gist_on_slide"
+          ],
+          "must_cover": true,
+          "risk_flags": [
+            "comparator"
+          ],
+          "slide_key": "Slide 1",
+          "source_point_id": "src-001-c003#3",
+          "verbatim_required": true
+        },
+        {
+          "component_id": "src-002-c004",
+          "human_label": "Slide 2 / note",
+          "intent_set": [
+            "detail_in_narration",
+            "gist_on_slide"
+          ],
+          "must_cover": true,
+          "risk_flags": [
+            "comparator",
+            "numeric"
+          ],
+          "slide_key": "Slide 2",
+          "source_point_id": "src-002-c004#1",
+          "verbatim_required": true
+        },
+        {
+          "component_id": "src-002-c004",
+          "human_label": "Slide 2 / note",
+          "intent_set": [
+            "detail_in_narration",
+            "gist_on_slide"
+          ],
+          "must_cover": true,
+          "risk_flags": [
+            "numeric"
+          ],
+          "slide_key": "Slide 2",
+          "source_point_id": "src-002-c004#2",
+          "verbatim_required": true
+        },
+        {
+          "component_id": "src-002-c004",
+          "human_label": "Slide 2 / note",
+          "intent_set": [
+            "detail_in_narration",
+            "gist_on_slide"
+          ],
+          "must_cover": true,
+          "risk_flags": [
+            "numeric"
+          ],
+          "slide_key": "Slide 2",
+          "source_point_id": "src-002-c004#3",
+          "verbatim_required": true
+        }
+      ],
+      "segmentation": "assertion_level"
+    },
+    "created_at": "2026-06-30T19:31:04.514176Z",
+    "decision_card_digest": "0000000000000000000000000000000000000000000000000000000000000000",
+    "dissents": [
+      {
+        "against": "src-001-c002",
+        "disposition": "upheld",
+        "marcus_position": "typed src-001-c002 (Slide 1) as other; a defensible alternative reading is narration",
+        "operator_position": ""
+      }
+    ],
+    "enumeration_provenance": [
+      {
+        "connector": "local_file",
+        "locator": "slides/slide-1-why-one-number.md",
+        "root_id": "C:/Users/juanl/Documents/GitHub/course-DEV-IDE-with-AGENTS-hybrid/course-content/courses/coverage-faithful-probe",
+        "source_id": "src-001"
+      },
+      {
+        "connector": "local_file",
+        "locator": "slides/slide-2-the-70-percent-burnout-figure.md",
+        "root_id": "C:/Users/juanl/Documents/GitHub/course-DEV-IDE-with-AGENTS-hybrid/course-content/courses/coverage-faithful-probe",
+        "source_id": "src-002"
+      }
+    ],
+    "gate_focus": "source_enrichment",
+    "gate_id": "G0E",
+    "meta": {
+      "affected_nodes": [
+        "g0-enrichment-gate"
+      ],
+      "cache_state": "mixed",
+      "override_trail": []
+    },
+    "operator_prompt": "Confirm the source TYPE manifest + candidate provisional LOs (or edit/reject). Marcus proposes; you decide.",
+    "provisional_los": [
+      {
+        "adequacy": null,
+        "bloom_level": null,
+        "confidence": "high",
+        "objective_id": "lo-g0-001",
+        "origin": "g0",
+        "recommendation": "keep",
+        "source_refs": [
+          {
+            "locator": "Slide 2",
+            "quoted_span": "Recall and explain this lesson's single headline figure \u2014 that 70% of frontline clinicians report at least one symptom of professional burnout.",
+            "source_id": "src-002"
+          }
+        ],
+        "statement": "Recall and explain the lesson's headline figure: 70% of frontline clinicians report at least one symptom of professional burnout.",
+        "status": "provisional"
+      },
+      {
+        "adequacy": null,
+        "bloom_level": null,
+        "confidence": "high",
+        "objective_id": "lo-g0-002",
+        "origin": "g0",
+        "recommendation": "keep",
+        "source_refs": [
+          {
+            "locator": "Slide 1",
+            "quoted_span": "we anchor everything to one decisive workforce number and what it means for clinical leadership.",
+            "source_id": "src-001"
+          }
+        ],
+        "statement": "Describe how leadership decisions in this lesson are anchored to one decisive workforce number.",
+        "status": "provisional"
+      },
+      {
+        "adequacy": null,
+        "bloom_level": null,
+        "confidence": "high",
+        "objective_id": "lo-g0-003",
+        "origin": "g0",
+        "recommendation": "keep",
+        "source_refs": [
+          {
+            "locator": "Slide 2",
+            "quoted_span": "every downstream decision about staffing and workflow is framed by that 70% finding.",
+            "source_id": "src-002"
+          }
+        ],
+        "statement": "Frame staffing and workflow decisions using the 70% burnout finding.",
+        "status": "provisional"
+      },
+      {
+        "adequacy": null,
+        "bloom_level": null,
+        "confidence": "high",
+        "objective_id": "lo-g0-004",
+        "origin": "g0",
+        "recommendation": "keep",
+        "source_refs": [
+          {
+            "locator": "Slide 1",
+            "quoted_span": "Keep your attention on that one figure; it carries the whole argument.",
+            "source_id": "src-001"
+          }
+        ],
+        "statement": "Maintain focus on the single statistic throughout the lesson to support decision-making.",
+        "status": "provisional"
+      },
+      {
+        "adequacy": null,
+        "bloom_level": null,
+        "confidence": "high",
+        "objective_id": "lo-g0-005",
+        "origin": "g0",
+        "recommendation": "keep",
+        "source_refs": [
+          {
+            "locator": "Slide 2",
+            "quoted_span": "When you explain this lesson to a colleague, lead with the 70%.",
+            "source_id": "src-002"
+          }
+        ],
+        "statement": "Lead with the 70% statistic when explaining the lesson to colleagues.",
+        "status": "provisional"
+      }
+    ],
+    "reconcile": {
+      "n_components": 9,
+      "n_files_covered": 2,
+      "n_files_ignored": 0,
+      "n_files_in": 2,
+      "n_flagged": 5,
+      "n_ungrounded": 2
+    },
+    "schema_version": "v1",
+    "traversal_roots": [
+      {
+        "kind": "corpus_dir",
+        "root_id": "C:/Users/juanl/Documents/GitHub/course-DEV-IDE-with-AGENTS-hybrid/course-content/courses/coverage-faithful-probe"
+      }
+    ],
+    "trial_id": "825136d0-c035-4410-a6e6-64a09f10ca64",
+    "typed_components": [
+      {
+        "component_id": "src-001-c001",
+        "excerpt": "# **Slide 1: Why One Number Frames This Lesson**",
+        "flagged_unconsumed": false,
+        "flagged_ungrounded": false,
+        "label": "Slide 1 title",
+        "locator": "Slide 1",
+        "other_type": null,
+        "parent_source_id": "src-001",
+        "source_type": "slide"
+      },
+      {
+        "component_id": "src-001-c002",
+        "excerpt": "- **Visual Format:** Title card with a single clean focal area; no charts, no statistics on this slide.",
+        "flagged_unconsumed": true,
+        "flagged_ungrounded": false,
+        "label": "Slide 1 visual format",
+        "locator": "Slide 1",
+        "other_type": {
+          "kind": "other",
+          "label": "visual_format",
+          "provenance": "Visual design spec for a slide, not one of the defined component types."
+        },
+        "parent_source_id": "src-001",
+        "source_type": "other"
+      },
+      {
+        "component_id": "src-001-c003",
+        "excerpt": "\"Welcome. This short lesson is deliberately narrow. Rather than survey many trends, we anchor everything to one decisive workforce number and what it means for clinical leadership.\"",
+        "flagged_unconsumed": false,
+        "flagged_ungrounded": true,
+        "label": "Slide 1 narration",
+        "locator": "Slide 1",
+        "other_type": null,
+        "parent_source_id": "src-001",
+        "source_type": "narration"
+      },
+      {
+        "component_id": "src-001-c004",
+        "excerpt": "**References:** Course framing note (internal).",
+        "flagged_unconsumed": true,
+        "flagged_ungrounded": false,
+        "label": "Slide 1 references",
+        "locator": "Slide 1",
+        "other_type": null,
+        "parent_source_id": "src-001",
+        "source_type": "reference_citation"
+      },
+      {
+        "component_id": "src-002-c001",
+        "excerpt": "# **Slide 2: The 70% Clinician Burnout Figure**",
+        "flagged_unconsumed": false,
+        "flagged_ungrounded": false,
+        "label": "Slide 2 title",
+        "locator": "Slide 2",
+        "other_type": null,
+        "parent_source_id": "src-002",
+        "source_type": "slide"
+      },
+      {
+        "component_id": "src-002-c002",
+        "excerpt": "- **Visual Format:** Large single-number callout reading \"70%\" centered on the slide, with a one-line caption. No other statistics appear anywhere on this slide.",
+        "flagged_unconsumed": true,
+        "flagged_ungrounded": false,
+        "label": "Slide 2 visual format",
+        "locator": "Slide 2",
+        "other_type": {
+          "kind": "other",
+          "label": "visual_format",
+          "provenance": "Visual design spec for a slide, not one of the defined component types."
+        },
+        "parent_source_id": "src-002",
+        "source_type": "other"
+      },
+      {
+        "component_id": "src-002-c003",
+        "excerpt": "- **Learning Objective:** Recall and explain this lesson's single headline figure \u2014 that 70% of frontline clinicians report at least one symptom of professional burnout.",
+        "flagged_unconsumed": true,
+        "flagged_ungrounded": false,
+        "label": "Slide 2 learning objective",
+        "locator": "Slide 2",
+        "other_type": {
+          "kind": "other",
+          "label": "learning_objective",
+          "provenance": "Explicit learning objective text in source; no dedicated type in provided list."
+        },
+        "parent_source_id": "src-002",
+        "source_type": "other"
+      },
+      {
+        "component_id": "src-002-c004",
+        "excerpt": "\"70% of frontline clinicians report at least one symptom of professional burnout. Say it plainly: 70%. This 70% figure is the single headline statistic of the entire lesson.\"",
+        "flagged_unconsumed": false,
+        "flagged_ungrounded": true,
+        "label": "Slide 2 narration",
+        "locator": "Slide 2",
+        "other_type": null,
+        "parent_source_id": "src-002",
+        "source_type": "narration"
+      },
+      {
+        "component_id": "src-002-c005",
+        "excerpt": "**References:** Internal workforce briefing (single-statistic teaching example).",
+        "flagged_unconsumed": true,
+        "flagged_ungrounded": false,
+        "label": "Slide 2 references",
+        "locator": "Slide 2",
+        "other_type": null,
+        "parent_source_id": "src-002",
+        "source_type": "reference_citation"
+      }
+    ],
+    "verb": "approve"
+  },
+  "checkpoint_path": "C:/Users/juanl/Documents/GitHub/course-DEV-IDE-with-AGENTS-hybrid/state/config/runs/825136d0-c035-4410-a6e6-64a09f10ca64/checkpoint.json",
+  "digest": "3aa57039a1d7d01ab5b4eeb130a1678557bca7364d9094cd7d4af5cb47ba86fd",
+  "issued_at": "2026-06-30T19:31:04.515202Z",
+  "server_nonce": "534b78e6a96c4cb7a4b00f2e5ba83042"
+}

@@ -1,0 +1,478 @@
+{
+  "corpus_fingerprint": "a6a307e83e9d328b287b1d921b0b0db0a007cdd2e3724e249682ca5af2b3ce36",
+  "model_id": "marcus",
+  "typed_components": [
+    {
+      "component_id": "src-001-c001",
+      "parent_source_id": "src-001",
+      "source_type": "slide",
+      "other_type": null,
+      "label": "Slide 1: Why One Number Frames This Lesson",
+      "locator": "Slide 1",
+      "excerpt": "# **Slide 1: Why One Number Frames This Lesson**",
+      "flagged_unconsumed": false,
+      "flagged_ungrounded": false
+    },
+    {
+      "component_id": "src-001-c002",
+      "parent_source_id": "src-001",
+      "source_type": "other",
+      "other_type": {
+        "kind": "other",
+        "label": "visual format directives",
+        "provenance": "Slide visual design guidance not covered by listed component types"
+      },
+      "label": "Visual Format",
+      "locator": "Slide 1",
+      "excerpt": "- **Visual Format:** Title card with a single clean focal area; no charts, no statistics on this slide.",
+      "flagged_unconsumed": true,
+      "flagged_ungrounded": false
+    },
+    {
+      "component_id": "src-001-c003",
+      "parent_source_id": "src-001",
+      "source_type": "narration",
+      "other_type": null,
+      "label": "Narration (Speaker Notes)",
+      "locator": "Slide 1",
+      "excerpt": "- **Narration (Speaker Notes):** \"Welcome. This short lesson is deliberately narrow. Rather than survey many trends, we anchor everything to one decisive workforce number and what it means for clinical leadership.\"",
+      "flagged_unconsumed": false,
+      "flagged_ungrounded": true
+    },
+    {
+      "component_id": "src-001-c004",
+      "parent_source_id": "src-001",
+      "source_type": "reference_citation",
+      "other_type": null,
+      "label": "References",
+      "locator": "Slide 1",
+      "excerpt": "**References:** Course framing note (internal).",
+      "flagged_unconsumed": true,
+      "flagged_ungrounded": false
+    },
+    {
+      "component_id": "src-002-c001",
+      "parent_source_id": "src-002",
+      "source_type": "slide",
+      "other_type": null,
+      "label": "Slide 2: The 70% Clinician Burnout Figure",
+      "locator": "Slide 2",
+      "excerpt": "# **Slide 2: The 70% Clinician Burnout Figure**",
+      "flagged_unconsumed": false,
+      "flagged_ungrounded": false
+    },
+    {
+      "component_id": "src-002-c002",
+      "parent_source_id": "src-002",
+      "source_type": "other",
+      "other_type": {
+        "kind": "other",
+        "label": "visual format directives",
+        "provenance": "Slide visual design guidance not covered by listed component types"
+      },
+      "label": "Visual Format",
+      "locator": "Slide 2",
+      "excerpt": "- **Visual Format:** Large single-number callout reading \"70%\" centered on the slide, with a one-line caption. No other statistics appear anywhere on this slide.",
+      "flagged_unconsumed": true,
+      "flagged_ungrounded": false
+    },
+    {
+      "component_id": "src-002-c003",
+      "parent_source_id": "src-002",
+      "source_type": "other",
+      "other_type": {
+        "kind": "other",
+        "label": "learning objective literal",
+        "provenance": "Explicit LO text in source; no dedicated 'learning_objective' type in schema"
+      },
+      "label": "Learning Objective",
+      "locator": "Slide 2",
+      "excerpt": "- **Learning Objective:** Recall and explain this lesson's single headline figure \u2014 that 70% of frontline clinicians report at least one symptom of professional burnout.",
+      "flagged_unconsumed": true,
+      "flagged_ungrounded": false
+    },
+    {
+      "component_id": "src-002-c004",
+      "parent_source_id": "src-002",
+      "source_type": "narration",
+      "other_type": null,
+      "label": "Narration (Speaker Notes)",
+      "locator": "Slide 2",
+      "excerpt": "- **Narration (Speaker Notes):** \"70% of frontline clinicians report at least one symptom of professional burnout. Say it plainly: 70%.\"",
+      "flagged_unconsumed": false,
+      "flagged_ungrounded": true
+    },
+    {
+      "component_id": "src-002-c005",
+      "parent_source_id": "src-002",
+      "source_type": "reference_citation",
+      "other_type": null,
+      "label": "References",
+      "locator": "Slide 2",
+      "excerpt": "**References:** Internal workforce briefing (single-statistic teaching example).",
+      "flagged_unconsumed": true,
+      "flagged_ungrounded": false
+    }
+  ],
+  "provisional_los": [
+    {
+      "objective_id": "lo-g0-001",
+      "statement": "Recall and correctly state the headline statistic: 70% of frontline clinicians report at least one symptom of professional burnout.",
+      "status": "provisional",
+      "confidence": "high",
+      "bloom_level": null,
+      "source_refs": [
+        {
+          "source_id": "src-002",
+          "locator": "Slide 2",
+          "quoted_span": "70% of frontline clinicians report at least one symptom of professional burnout."
+        }
+      ],
+      "adequacy": null,
+      "origin": "g0",
+      "recommendation": "keep"
+    },
+    {
+      "objective_id": "lo-g0-002",
+      "statement": "Explain why the lesson anchors to a single decisive workforce number and how it relates to clinical leadership.",
+      "status": "provisional",
+      "confidence": "high",
+      "bloom_level": null,
+      "source_refs": [
+        {
+          "source_id": "src-001",
+          "locator": "Slide 1",
+          "quoted_span": "Rather than survey many trends, we anchor everything to one decisive workforce number and what it means for clinical leadership."
+        }
+      ],
+      "adequacy": null,
+      "origin": "g0",
+      "recommendation": "keep"
+    },
+    {
+      "objective_id": "lo-g0-003",
+      "statement": "Use the 70% finding to frame downstream staffing and workflow decisions.",
+      "status": "provisional",
+      "confidence": "high",
+      "bloom_level": null,
+      "source_refs": [
+        {
+          "source_id": "src-002",
+          "locator": "Slide 2",
+          "quoted_span": "every downstream decision about staffing and workflow is framed by that 70% finding."
+        }
+      ],
+      "adequacy": null,
+      "origin": "g0",
+      "recommendation": "keep"
+    },
+    {
+      "objective_id": "lo-g0-004",
+      "statement": "Lead with the 70% statistic when communicating this lesson to a colleague.",
+      "status": "provisional",
+      "confidence": "high",
+      "bloom_level": null,
+      "source_refs": [
+        {
+          "source_id": "src-002",
+          "locator": "Slide 2",
+          "quoted_span": "When you explain this lesson to a colleague, lead with the 70%."
+        }
+      ],
+      "adequacy": null,
+      "origin": "g0",
+      "recommendation": "keep"
+    },
+    {
+      "objective_id": "lo-g0-005",
+      "statement": "Maintain focus on the single figure as the organizing argument of the lesson.",
+      "status": "provisional",
+      "confidence": "high",
+      "bloom_level": null,
+      "source_refs": [
+        {
+          "source_id": "src-001",
+          "locator": "Slide 1",
+          "quoted_span": "Keep your attention on that one figure; it carries the whole argument."
+        }
+      ],
+      "adequacy": null,
+      "origin": "g0",
+      "recommendation": "keep"
+    },
+    {
+      "objective_id": "lo-g0-006",
+      "statement": "Introduce the single statistic and explain how to read it before applying it to leadership decisions.",
+      "status": "provisional",
+      "confidence": "high",
+      "bloom_level": null,
+      "source_refs": [
+        {
+          "source_id": "src-001",
+          "locator": "Slide 1",
+          "quoted_span": "In the next slide we introduce that single statistic, explain how to read it, and use it to frame every leadership decision that follows."
+        }
+      ],
+      "adequacy": null,
+      "origin": "g0",
+      "recommendation": "keep"
+    }
+  ],
+  "traversal_roots": [
+    {
+      "root_id": "C:/Users/juanl/Documents/GitHub/course-DEV-IDE-with-AGENTS-hybrid/course-content/courses/coverage-faithful-probe",
+      "kind": "corpus_dir"
+    }
+  ],
+  "enumeration_provenance": [
+    {
+      "source_id": "src-001",
+      "root_id": "C:/Users/juanl/Documents/GitHub/course-DEV-IDE-with-AGENTS-hybrid/course-content/courses/coverage-faithful-probe",
+      "connector": "local_file",
+      "locator": "slides/slide-1-why-one-number.md"
+    },
+    {
+      "source_id": "src-002",
+      "root_id": "C:/Users/juanl/Documents/GitHub/course-DEV-IDE-with-AGENTS-hybrid/course-content/courses/coverage-faithful-probe",
+      "connector": "local_file",
+      "locator": "slides/slide-2-the-70-percent-burnout-figure.md"
+    }
+  ],
+  "reconcile": {
+    "n_files_in": 2,
+    "n_files_covered": 2,
+    "n_files_ignored": 0,
+    "n_components": 9,
+    "n_flagged": 5,
+    "n_ungrounded": 2
+  },
+  "dissents": [
+    {
+      "against": "src-001-c002",
+      "marcus_position": "typed src-001-c002 (Slide 1) as other; a defensible alternative reading is narration",
+      "operator_position": "",
+      "disposition": "upheld"
+    }
+  ],
+  "citation_resolutions": [
+    {
+      "component_id": "src-001-c004",
+      "doi": null,
+      "resolution_status": "failed",
+      "resolved_ref": null,
+      "reason": "no_doi_in_excerpt",
+      "resolver_provider": "scite",
+      "normalization_version": "tex-norm-v1"
+    },
+    {
+      "component_id": "src-002-c005",
+      "doi": null,
+      "resolution_status": "failed",
+      "resolved_ref": null,
+      "reason": "no_doi_in_excerpt",
+      "resolver_provider": "scite",
+      "normalization_version": "tex-norm-v1"
+    }
+  ],
+  "pedagogy_annotations": [
+    {
+      "component_id": "src-001-c001",
+      "lo_refs": [
+        "lo-g0-001",
+        "lo-g0-006"
+      ],
+      "bloom": "remember",
+      "pedagogical_role": "definition",
+      "teaches_after": [],
+      "prerequisite_concepts": [
+        "burnout definition",
+        "frontline clinicians",
+        "percent prevalence"
+      ],
+      "assessment_link": null,
+      "teachable": true,
+      "rationale": "Displays the headline 70% burnout prevalence to be memorized; as a definition slide it introduces the single figure students must recall and know how to read (lo-g0-001, lo-g0-006).",
+      "transform_model": "marcus",
+      "transform_version": "ped-v1",
+      "generated_at": "2026-06-30T19:42:51.976762Z"
+    },
+    {
+      "component_id": "src-001-c003",
+      "lo_refs": [
+        "lo-g0-002",
+        "lo-g0-005",
+        "lo-g0-006"
+      ],
+      "bloom": "understand",
+      "pedagogical_role": "motivation",
+      "teaches_after": [
+        "src-001-c001"
+      ],
+      "prerequisite_concepts": [
+        "single-metric framing",
+        "leadership context",
+        "reading percentages"
+      ],
+      "assessment_link": null,
+      "teachable": false,
+      "rationale": "Narration motivates anchoring on one decisive workforce number, ties 70% to leadership relevance, and clarifies interpretation, building understanding (lo-g0-002, lo-g0-005, lo-g0-006).",
+      "transform_model": "marcus",
+      "transform_version": "ped-v1",
+      "generated_at": "2026-06-30T19:42:51.976762Z"
+    },
+    {
+      "component_id": "src-002-c001",
+      "lo_refs": [
+        "lo-g0-003",
+        "lo-g0-004"
+      ],
+      "bloom": "apply",
+      "pedagogical_role": "worked_example",
+      "teaches_after": [
+        "src-001-c001",
+        "src-001-c003"
+      ],
+      "prerequisite_concepts": [
+        "staffing models",
+        "workflow planning",
+        "communication framing"
+      ],
+      "assessment_link": null,
+      "teachable": true,
+      "rationale": "Shows example decisions and messaging that start with the 70% figure, modeling application to staffing/workflow and leading in communication (lo-g0-003, lo-g0-004).",
+      "transform_model": "marcus",
+      "transform_version": "ped-v1",
+      "generated_at": "2026-06-30T19:42:51.976762Z"
+    },
+    {
+      "component_id": "src-002-c004",
+      "lo_refs": [
+        "lo-g0-003",
+        "lo-g0-004",
+        "lo-g0-005"
+      ],
+      "bloom": "apply",
+      "pedagogical_role": "synthesis",
+      "teaches_after": [
+        "src-001-c001",
+        "src-001-c003",
+        "src-002-c001"
+      ],
+      "prerequisite_concepts": [
+        "prioritization",
+        "decision criteria",
+        "message discipline"
+      ],
+      "assessment_link": null,
+      "teachable": false,
+      "rationale": "Narration integrates the 70% anchor into staffing/workflow decisions and models leading with it in comms while keeping focus on the single figure (lo-g0-003, lo-g0-004, lo-g0-005).",
+      "transform_model": "marcus",
+      "transform_version": "ped-v1",
+      "generated_at": "2026-06-30T19:42:51.976762Z"
+    }
+  ],
+  "coverage_annotations": [
+    {
+      "component_id": "src-001-c003",
+      "slide_key": "Slide 1",
+      "source_points": [
+        {
+          "source_point_id": "src-001-c003#1",
+          "component_id": "src-001-c003",
+          "ordinal": 1,
+          "slide_key": "Slide 1",
+          "verbatim_text": "Welcome.",
+          "risk_flags": [],
+          "coverage_intents": [
+            "detail_in_narration",
+            "gist_on_slide"
+          ],
+          "segmentation": "assertion_level",
+          "verbatim_required": false,
+          "operator_signed_exclusion": false
+        },
+        {
+          "source_point_id": "src-001-c003#2",
+          "component_id": "src-001-c003",
+          "ordinal": 2,
+          "slide_key": "Slide 1",
+          "verbatim_text": "This short lesson is deliberately narrow.",
+          "risk_flags": [],
+          "coverage_intents": [
+            "detail_in_narration",
+            "gist_on_slide"
+          ],
+          "segmentation": "assertion_level",
+          "verbatim_required": false,
+          "operator_signed_exclusion": false
+        },
+        {
+          "source_point_id": "src-001-c003#3",
+          "component_id": "src-001-c003",
+          "ordinal": 3,
+          "slide_key": "Slide 1",
+          "verbatim_text": "Rather than survey many trends, we anchor everything to one decisive workforce number and what it means for clinical leadership.",
+          "risk_flags": [
+            "comparator"
+          ],
+          "coverage_intents": [
+            "detail_in_narration",
+            "gist_on_slide"
+          ],
+          "segmentation": "assertion_level",
+          "verbatim_required": true,
+          "operator_signed_exclusion": false
+        }
+      ],
+      "segmentation": "assertion_level",
+      "transform_model": "marcus",
+      "transform_version": "cov-v1",
+      "generated_at": "2026-06-30T19:43:37.530311Z"
+    },
+    {
+      "component_id": "src-002-c004",
+      "slide_key": "Slide 2",
+      "source_points": [
+        {
+          "source_point_id": "src-002-c004#1",
+          "component_id": "src-002-c004",
+          "ordinal": 1,
+          "slide_key": "Slide 2",
+          "verbatim_text": "70% of frontline clinicians report at least one symptom of professional burnout.",
+          "risk_flags": [
+            "comparator",
+            "numeric"
+          ],
+          "coverage_intents": [
+            "detail_in_narration",
+            "gist_on_slide"
+          ],
+          "segmentation": "assertion_level",
+          "verbatim_required": true,
+          "operator_signed_exclusion": false
+        },
+        {
+          "source_point_id": "src-002-c004#2",
+          "component_id": "src-002-c004",
+          "ordinal": 2,
+          "slide_key": "Slide 2",
+          "verbatim_text": "Say it plainly: 70%.",
+          "risk_flags": [
+            "numeric"
+          ],
+          "coverage_intents": [
+            "detail_in_narration",
+            "gist_on_slide"
+          ],
+          "segmentation": "assertion_level",
+          "verbatim_required": true,
+          "operator_signed_exclusion": false
+        }
+      ],
+      "segmentation": "assertion_level",
+      "transform_model": "marcus",
+      "transform_version": "cov-v1",
+      "generated_at": "2026-06-30T19:43:37.530311Z"
+    }
+  ]
+}

@@ -1,0 +1,16 @@
+[15:28:43] patched adapter.ChatOpenAI -> timeout=900 max_retries=0 max_tokens=64000
+[15:28:43] TRIAL_ID=825136d0-c035-4410-a6e6-64a09f10ca64
+[15:28:43] CORPUS=C:\Users\juanl\Documents\GitHub\course-DEV-IDE-with-AGENTS-hybrid\course-content\courses\coverage-faithful-probe  exists=True
+[15:28:43] START run_production_trial (deck-only, motion/workbook off)...
+g0-enrichment: component 'src-001-c003' excerpt is NOT grounded in parent 'src-001' after markdown normalization (advisory flag; operator confirms at gate #1): "Welcome. This short lesson is deliberately narrow. Rather than survey many tren
+g0-enrichment: component 'src-002-c004' excerpt is NOT grounded in parent 'src-002' after markdown normalization (advisory flag; operator confirms at gate #1): "70% of frontline clinicians report at least one symptom of professional burnout
+[15:31:04]   -> status=paused-at-gate gate=G0E [140.7s]
+[15:31:04] STATE status=paused-at-gate gate=G0E err=None [140.7s]
+[15:32:32]   approved G0E -> status=paused-at-gate next=G0R [228.4s]
+[15:32:32] STATE status=paused-at-gate gate=G0R err=None [228.4s]
+dispatch error at manifest node 02 (specialist texas): [bundle.dispatch.input-missing] dispatch_retrieval missing required input: directive_path — pausing trial 825136d0-c035-4410-a6e6-64a09f10ca64 for recovery
+[15:32:33]   approved G0R -> status=paused-at-error next=None [229.1s]
+[15:32:33] STATE status=paused-at-error gate=None err=bundle.dispatch.input-missing [229.1s]
+[15:32:33] NO RECEIPT on disk -> cannot evaluate gate
+[15:32:33] WROTE C:\Users\juanl\Documents\GitHub\course-DEV-IDE-with-AGENTS-hybrid\_bmad-output\implementation-artifacts\evidence\_faithful_driver_result.json
+[15:32:33] DONE total=229.1s VERDICT=None

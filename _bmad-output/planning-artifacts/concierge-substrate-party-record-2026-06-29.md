@@ -165,3 +165,27 @@ Evidence: offline 91 passed (touched) + 406 regression; ruff clean; lint-imports
 - Leg-1b (warm_callback authoring + Vera-R7): queued BEHIND the interlock (consumes its source-point anchors); **DUAL-GATE** per Murat. Needs its own party GREEN-LIGHT before dev.
 - Leg-3 confirm spike: queued (read-only, anytime before Leg-3 green-light).
 - Legs 2 / 4: queued.
+
+## Round 8 — Close-scope decision (2026-06-30, session START, fully-spawned party)
+
+**Trigger:** Round-7's binding close-bar item (3) "covered arm to a real PASS (≥1 figure-token-verified cover, real run, first-run-stands)" was NOT met on the live covered-arm re-prove (`evidence/coverage-reprove-covered-recover-20260630T140840Z/`: 1 joined-covered but 0 figure-token-VERIFIED — the production narration substitutes source figures). Operator deferred among 3 close options (A/B/C) → resolved by fully-spawned party consensus (governance: Quinn synth / John tiebreak; escalate only if truly blocked).
+
+**Voices (independent subagents):** Murat=A (+optional non-gating C strengthener, fallback-A), Winston=A, Vera=A (+C as named follow-on), Irene=C, John(PM,tiebreak)=C (+condition-6 hard fallback-to-A). Raw split A=3 / C=2; **NO impasse** — a single synthesis is endorsed by all five.
+
+**RATIFIED (Round 8): "C-attempt, bounded, fallback-to-A."**
+- Attempt option C: build/find a SMALL **faithful positive-control** corpus; run the **REAL runner ONCE** through the live coverage gate to land a real-run figure-token-VERIFIED **COVERED green** — first-run-stands, deterministic judge, **no retry-to-green, no hand-doctored narration** (carriage must arise from a real generation path).
+- **If C converges in one bounded sitting →** CLOSE on C (BLOCK arm proven-LIVE + COVERED arm proven-LIVE on the faithful corpus + COVERED proven-OFFLINE drift/clean fixtures + dual-gate ceremony).
+- **If C does NOT converge in one bounded sitting →** fall back to **A** (BLOCK-live + COVERED-offline + dual-gate), and ESCALATE the fallback in the close-note (do NOT slide into B).
+- **UNANIMOUS non-waivable, either way:** (i) honest close-note — "numeral/figure-token facet ONLY; NOT 'fidelity-firewall done'; production narration is NOT proven figure-faithful and is OPEN in Leg-4"; (ii) route to Leg-4 with named owners — narration-figure-fidelity gap (Vera/Irene), `figure_tokens` neck under-extraction ($-prefix/formatting), changed-numeral zero-tolerance + clinical/negation/comparator; (iii) FROZEN `figure_tokens` neck NOT edited under Leg-1 (any change = Leg-4 lockstep governance); (iv) offline GREEN fixture is a checked-in regression asset with both arms asserted, provenance pinned to REAL captured export shapes (cite source run + slide); (v) run the close-note through the 07G perception read-path-match gate per the PROTECTED VO↔on-screen invariant before flipping closed.
+- **Charter basis (John, decisive):** the gate's PASS arm has touched the real runner ZERO times; closing past a half-live-tested component on offline-only would violate the arc's HARD per-component live-test gate + the operator's emphatic incremental-live-testing invariant. Hence attempt C live; Murat/John bounded fallback protects the schedule.
+- Leg-1b unblocks on the close (consumes source_point anchors); Legs 2/3/4 undisplaced.
+
+### Round 8 — DUAL-GATE CLOSE ratification (2026-06-30)
+
+After the C-attempt returned NOT-CONVERGED (two bounded fresh-walk attempts both error-paused on INFRASTRUCTURE flakiness before the G3 coverage seam — v1 Texas `directive_path` launch omission [fixed], v2 `gamma.export.brief-unmatched` Gamma export flake after walking G0E→G0R→G1; neither rendered a coverage outcome; $0 ElevenLabs), the close fell back to **path A** per Round-8 + John condition-6 + operator authorization ("one bounded re-attempt; fail/block again → close A").
+
+**DUAL-GATE CLOSE — both gates CLOSE (no impasse; Quinn/John not needed):**
+- **STRUCTURAL/RECEIPT gate (Murat): CLOSE 5/5.** BLOCK arm live-proven ($0 ElevenLabs, runner-emitted `marcus.coverage.must-cover-uncovered` at the enrique dispatch); offline both-arms fixture `test_coverage_figure_facet.py` 8 passed (real `$5.3T→one-fifth` drift BLOCKS / `18%` paraphrase COVERS-verified + vacuous guard); 129 coverage tests green, no new breakage; frozen `figure_tokens` neck untouched (empty git diff); no false real-run-PASS claimed.
+- **CONTENT-FIDELITY gate (Vera/Irene): CLOSE 5/5.** Honest naming present verbatim-in-spirit in both close artifacts (numeral-facet-only; production narration NOT proven figure-faithful; OPEN in Leg-4); narration-fidelity gap routed to Leg-4 with named owners; no silent green; C-fallback transparently recorded; frozen neck not edited to force any outcome (clinical/negation/comparator correctly deferred). Required follow-through (landed at close): the Leg-4 deferred-inventory entries.
+
+**VERDICT: Leg-1 coverage-assurance interlock CLOSED (path A). Leg-1b UNBLOCKED** (consumes the source_point anchors). Legs 2/3/4 undisplaced. Leg-4 inherits the narration-figure-fidelity enforcement + figure_tokens neck hardening + non-figure semantic coverage + the deferred real-run COVERED-PASS confirmation.

@@ -1,0 +1,339 @@
+{
+  "card": {
+    "card_id": "acc6ca18-1118-47b8-8322-0536e9ad0e57",
+    "created_at": "2026-06-30T19:32:32.253410Z",
+    "decision_card_digest": "0000000000000000000000000000000000000000000000000000000000000000",
+    "flagged_for_operator": [],
+    "gate_focus": "lo_ratification",
+    "gate_id": "G0R",
+    "lo_delta": [
+      {
+        "disposition": "refined-in-place",
+        "lo": {
+          "adequacy": {
+            "missing": [],
+            "rationale": "Supported directly by Slide 2 LO and narration: \"Recall and explain... 70% of frontline clinicians report at least one symptom of professional burnout.\" and \"This 70% figure is the single headline statistic of the entire lesson.\"",
+            "suggested_followups": [],
+            "verdict": "adequate"
+          },
+          "bloom_level": "understand",
+          "confidence": "high",
+          "objective_id": "lo-g0-001",
+          "origin": "g0",
+          "recommendation": "keep",
+          "source_refs": [
+            {
+              "locator": "Slide 2",
+              "quoted_span": "Recall and explain this lesson's single headline figure \u2014 that 70% of frontline clinicians report at least one symptom of professional burnout.",
+              "source_id": "src-002"
+            }
+          ],
+          "statement": "Recall and explain the lesson's headline figure: 70% of frontline clinicians report at least one symptom of professional burnout.",
+          "status": "refined"
+        },
+        "merged_from": [],
+        "objective_id": "lo-g0-001",
+        "rationale_diff": "Sharpened to an assessable action (state + explain) and anchored the exact figure to the source wording: Slide 2 LO line (\"Recall and explain this lesson's single headline figure \u2014 that 70% of frontline clinicians report at least one symptom of professional burnout.\") and Slide 2 narration (\"70% of frontline clinicians report at least one symptom of professional burnout... This 70% figure is the single headline statistic of the entire lesson.\").",
+        "split_into": [],
+        "transition": "provisional->refined"
+      },
+      {
+        "disposition": "refined-in-place",
+        "lo": {
+          "adequacy": {
+            "missing": [
+              "Concrete examples showing leadership decisions anchored to the single number",
+              "Stepwise description of how to anchor decisions to the number",
+              "Assessment prompts or criteria for a correct description"
+            ],
+            "rationale": "Slide 1 asserts the anchoring principle (\"we anchor everything to one decisive workforce number\"), but does not explain how decisions are operationally anchored.",
+            "suggested_followups": [
+              "external-content-expected",
+              "special-artifact-guidance"
+            ],
+            "verdict": "thin"
+          },
+          "bloom_level": "understand",
+          "confidence": "high",
+          "objective_id": "lo-g0-002",
+          "origin": "g0",
+          "recommendation": "keep",
+          "source_refs": [
+            {
+              "locator": "Slide 1",
+              "quoted_span": "we anchor everything to one decisive workforce number and what it means for clinical leadership.",
+              "source_id": "src-001"
+            }
+          ],
+          "statement": "Describe how leadership decisions in this lesson are anchored to one decisive workforce number.",
+          "status": "refined"
+        },
+        "merged_from": [],
+        "objective_id": "lo-g0-002",
+        "rationale_diff": "Narrowed \"how\" to a clear descriptive claim aligned with the source and made it assessable as a description, citing Slide 1 narration: \"we anchor everything to one decisive workforce number and what it means for clinical leadership.\"",
+        "split_into": [],
+        "transition": "provisional->refined"
+      },
+      {
+        "disposition": "refined-in-place",
+        "lo": {
+          "adequacy": {
+            "missing": [
+              "Guidance connecting the 70% figure to staffing or workflow framing decisions",
+              "Examples or scenarios demonstrating application to staffing/workflow",
+              "Assessment rubric or model responses for applied decisions"
+            ],
+            "rationale": "Slide 2 provides only the statistic (\"70% of frontline clinicians report at least one symptom of professional burnout\") and its prominence (\"single headline statistic\"), but offers no guidance or examples on staffing/workflow framing.",
+            "suggested_followups": [
+              "research-run",
+              "external-content-expected",
+              "special-artifact-guidance"
+            ],
+            "verdict": "gap"
+          },
+          "bloom_level": "apply",
+          "confidence": "high",
+          "objective_id": "lo-g0-003",
+          "origin": "g0",
+          "recommendation": "keep",
+          "source_refs": [
+            {
+              "locator": "Slide 2",
+              "quoted_span": "every downstream decision about staffing and workflow is framed by that 70% finding.",
+              "source_id": "src-002"
+            }
+          ],
+          "statement": "Frame staffing and workflow decisions using the 70% burnout finding.",
+          "status": "refined"
+        },
+        "merged_from": [],
+        "objective_id": "lo-g0-003",
+        "rationale_diff": "Made the objective action-oriented (apply) while retaining the specific 70% figure from Slide 2 narration (\"70% of frontline clinicians report at least one symptom of professional burnout.\").",
+        "split_into": [],
+        "transition": "provisional->refined"
+      },
+      {
+        "disposition": "refined-in-place",
+        "lo": {
+          "adequacy": {
+            "missing": [
+              "Operational behaviors or prompts for maintaining focus on the statistic during decision-making",
+              "Criteria to assess sustained reference to the statistic",
+              "Examples contrasting loss of focus vs. proper anchoring"
+            ],
+            "rationale": "Slide 1 states the focus principle (\"we anchor everything to one decisive workforce number\") but lacks process guidance for maintaining that focus across decisions.",
+            "suggested_followups": [
+              "special-artifact-guidance"
+            ],
+            "verdict": "thin"
+          },
+          "bloom_level": "apply",
+          "confidence": "high",
+          "objective_id": "lo-g0-004",
+          "origin": "g0",
+          "recommendation": "keep",
+          "source_refs": [
+            {
+              "locator": "Slide 1",
+              "quoted_span": "Keep your attention on that one figure; it carries the whole argument.",
+              "source_id": "src-001"
+            }
+          ],
+          "statement": "Maintain focus on the single statistic throughout the lesson to support decision-making.",
+          "status": "refined"
+        },
+        "merged_from": [],
+        "objective_id": "lo-g0-004",
+        "rationale_diff": "Converted a general focus directive into an observable behavior (consistently reference) aligned with Slide 1\u2019s emphasis: \"we anchor everything to one decisive workforce number.\"",
+        "split_into": [],
+        "transition": "provisional->refined"
+      },
+      {
+        "disposition": "refined-in-place",
+        "lo": {
+          "adequacy": {
+            "missing": [],
+            "rationale": "Slide 2 narration supports leading with the stat: \"Say it plainly: 70%. This 70% figure is the single headline statistic of the entire lesson.\"",
+            "suggested_followups": [],
+            "verdict": "adequate"
+          },
+          "bloom_level": "apply",
+          "confidence": "high",
+          "objective_id": "lo-g0-005",
+          "origin": "g0",
+          "recommendation": "keep",
+          "source_refs": [
+            {
+              "locator": "Slide 2",
+              "quoted_span": "When you explain this lesson to a colleague, lead with the 70%.",
+              "source_id": "src-002"
+            }
+          ],
+          "statement": "Lead with the 70% statistic when explaining the lesson to colleagues.",
+          "status": "refined"
+        },
+        "merged_from": [],
+        "objective_id": "lo-g0-005",
+        "rationale_diff": "Specified a concrete communication action (lead by stating) and used the exact headline figure from Slide 2 narration: \"Say it plainly: 70%... This 70% figure is the single headline statistic of the entire lesson.\"",
+        "split_into": [],
+        "transition": "provisional->refined"
+      }
+    ],
+    "meta": {
+      "affected_nodes": [
+        "g0-ratify-gate"
+      ],
+      "cache_state": "mixed",
+      "override_trail": []
+    },
+    "operator_prompt": "Ratify the refined learning objectives + signed LO-delta (or edit/reject). Adequacy alerts are advisory; rule on any recommend-drop / proposed-new. Marcus proposes; you decide.",
+    "reconcile": {
+      "changed": 5,
+      "flagged_thin_or_gap": 3,
+      "g0_count": 5,
+      "irene_count": 5,
+      "proposed_new": 0,
+      "recommend_drop": 0
+    },
+    "refined_los": [
+      {
+        "adequacy": {
+          "missing": [],
+          "rationale": "Supported directly by Slide 2 LO and narration: \"Recall and explain... 70% of frontline clinicians report at least one symptom of professional burnout.\" and \"This 70% figure is the single headline statistic of the entire lesson.\"",
+          "suggested_followups": [],
+          "verdict": "adequate"
+        },
+        "bloom_level": "understand",
+        "confidence": "high",
+        "objective_id": "lo-g0-001",
+        "origin": "g0",
+        "recommendation": "keep",
+        "source_refs": [
+          {
+            "locator": "Slide 2",
+            "quoted_span": "Recall and explain this lesson's single headline figure \u2014 that 70% of frontline clinicians report at least one symptom of professional burnout.",
+            "source_id": "src-002"
+          }
+        ],
+        "statement": "Recall and explain the lesson's headline figure: 70% of frontline clinicians report at least one symptom of professional burnout.",
+        "status": "refined"
+      },
+      {
+        "adequacy": {
+          "missing": [
+            "Concrete examples showing leadership decisions anchored to the single number",
+            "Stepwise description of how to anchor decisions to the number",
+            "Assessment prompts or criteria for a correct description"
+          ],
+          "rationale": "Slide 1 asserts the anchoring principle (\"we anchor everything to one decisive workforce number\"), but does not explain how decisions are operationally anchored.",
+          "suggested_followups": [
+            "external-content-expected",
+            "special-artifact-guidance"
+          ],
+          "verdict": "thin"
+        },
+        "bloom_level": "understand",
+        "confidence": "high",
+        "objective_id": "lo-g0-002",
+        "origin": "g0",
+        "recommendation": "keep",
+        "source_refs": [
+          {
+            "locator": "Slide 1",
+            "quoted_span": "we anchor everything to one decisive workforce number and what it means for clinical leadership.",
+            "source_id": "src-001"
+          }
+        ],
+        "statement": "Describe how leadership decisions in this lesson are anchored to one decisive workforce number.",
+        "status": "refined"
+      },
+      {
+        "adequacy": {
+          "missing": [
+            "Guidance connecting the 70% figure to staffing or workflow framing decisions",
+            "Examples or scenarios demonstrating application to staffing/workflow",
+            "Assessment rubric or model responses for applied decisions"
+          ],
+          "rationale": "Slide 2 provides only the statistic (\"70% of frontline clinicians report at least one symptom of professional burnout\") and its prominence (\"single headline statistic\"), but offers no guidance or examples on staffing/workflow framing.",
+          "suggested_followups": [
+            "research-run",
+            "external-content-expected",
+            "special-artifact-guidance"
+          ],
+          "verdict": "gap"
+        },
+        "bloom_level": "apply",
+        "confidence": "high",
+        "objective_id": "lo-g0-003",
+        "origin": "g0",
+        "recommendation": "keep",
+        "source_refs": [
+          {
+            "locator": "Slide 2",
+            "quoted_span": "every downstream decision about staffing and workflow is framed by that 70% finding.",
+            "source_id": "src-002"
+          }
+        ],
+        "statement": "Frame staffing and workflow decisions using the 70% burnout finding.",
+        "status": "refined"
+      },
+      {
+        "adequacy": {
+          "missing": [
+            "Operational behaviors or prompts for maintaining focus on the statistic during decision-making",
+            "Criteria to assess sustained reference to the statistic",
+            "Examples contrasting loss of focus vs. proper anchoring"
+          ],
+          "rationale": "Slide 1 states the focus principle (\"we anchor everything to one decisive workforce number\") but lacks process guidance for maintaining that focus across decisions.",
+          "suggested_followups": [
+            "special-artifact-guidance"
+          ],
+          "verdict": "thin"
+        },
+        "bloom_level": "apply",
+        "confidence": "high",
+        "objective_id": "lo-g0-004",
+        "origin": "g0",
+        "recommendation": "keep",
+        "source_refs": [
+          {
+            "locator": "Slide 1",
+            "quoted_span": "Keep your attention on that one figure; it carries the whole argument.",
+            "source_id": "src-001"
+          }
+        ],
+        "statement": "Maintain focus on the single statistic throughout the lesson to support decision-making.",
+        "status": "refined"
+      },
+      {
+        "adequacy": {
+          "missing": [],
+          "rationale": "Slide 2 narration supports leading with the stat: \"Say it plainly: 70%. This 70% figure is the single headline statistic of the entire lesson.\"",
+          "suggested_followups": [],
+          "verdict": "adequate"
+        },
+        "bloom_level": "apply",
+        "confidence": "high",
+        "objective_id": "lo-g0-005",
+        "origin": "g0",
+        "recommendation": "keep",
+        "source_refs": [
+          {
+            "locator": "Slide 2",
+            "quoted_span": "When you explain this lesson to a colleague, lead with the 70%.",
+            "source_id": "src-002"
+          }
+        ],
+        "statement": "Lead with the 70% statistic when explaining the lesson to colleagues.",
+        "status": "refined"
+      }
+    ],
+    "schema_version": "v1",
+    "trial_id": "825136d0-c035-4410-a6e6-64a09f10ca64",
+    "verb": "approve"
+  },
+  "checkpoint_path": "C:/Users/juanl/Documents/GitHub/course-DEV-IDE-with-AGENTS-hybrid/state/config/runs/825136d0-c035-4410-a6e6-64a09f10ca64/checkpoint.json",
+  "digest": "e5d8f0f33468d7a54c2acd73ce0b45c6c98f386a2ecde37a040c98581a69a41b",
+  "issued_at": "2026-06-30T19:32:32.254414Z",
+  "server_nonce": "29b2732f4bc94b4dbc51348b8e25267d"
+}

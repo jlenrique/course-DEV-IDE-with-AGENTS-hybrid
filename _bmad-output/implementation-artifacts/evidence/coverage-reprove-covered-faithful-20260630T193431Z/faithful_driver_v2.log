@@ -1,0 +1,16 @@
+[15:41:55] patched adapter.ChatOpenAI -> timeout=900 max_retries=0 max_tokens=64000
+[15:41:55] wrote directive C:\Users\juanl\AppData\Local\Temp\claude\c--Users-juanl-Documents-GitHub-course-DEV-IDE-with-AGENTS-hybrid\66e04979-ad46-4e61-9d29-46400703dd22\scratchpad\directive-faithful-38e91d16-8049-499d-b74d-9b2fa00ca0ea.yaml
+[15:41:55] TRIAL_ID=38e91d16-8049-499d-b74d-9b2fa00ca0ea
+[15:41:55] CORPUS=C:\Users\juanl\Documents\GitHub\course-DEV-IDE-with-AGENTS-hybrid\course-content\courses\coverage-faithful-probe  exists=True
+[15:41:55] START run_production_trial (deck-only, directive_path SET)...
+[15:44:05]   -> status=paused-at-gate gate=G0E [129.7s]
+[15:44:05] STATE status=paused-at-gate gate=G0E err=None [129.7s]
+[15:45:02]   approved G0E -> status=paused-at-gate next=G0R [186.1s]
+[15:45:02] STATE status=paused-at-gate gate=G0R err=None [186.1s]
+[15:45:27]   approved G0R -> status=paused-at-gate next=G1 [211.5s]
+[15:45:27] STATE status=paused-at-gate gate=G1 err=None [211.5s]
+[15:47:25]   approved G1 -> status=paused-at-error next=None [329.8s]
+[15:47:25] STATE status=paused-at-error gate=None err=gamma.export.brief-unmatched [329.8s]
+[15:47:25] NO RECEIPT on disk -> cannot evaluate gate
+[15:47:25] WROTE C:\Users\juanl\AppData\Local\Temp\claude\c--Users-juanl-Documents-GitHub-course-DEV-IDE-with-AGENTS-hybrid\66e04979-ad46-4e61-9d29-46400703dd22\scratchpad\faithful_driver_v2_result.json
+[15:47:25] DONE total=329.8s VERDICT=NOT-CONVERGED

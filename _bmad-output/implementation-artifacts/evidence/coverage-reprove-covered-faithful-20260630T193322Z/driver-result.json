@@ -1,0 +1,32 @@
+{
+  "trial_id": "825136d0-c035-4410-a6e6-64a09f10ca64",
+  "corpus": "C:\\Users\\juanl\\Documents\\GitHub\\course-DEV-IDE-with-AGENTS-hybrid\\course-content\\courses\\coverage-faithful-probe",
+  "flags": {
+    "MARCUS_G0_ENRICHMENT_ACTIVE": "1",
+    "MARCUS_G0_DISPATCH_LIVE": "1",
+    "MARCUS_COVERAGE_PASS_ACTIVE": "1",
+    "MARCUS_COVERAGE_GATE_ACTIVE": "1"
+  },
+  "walk_outcome": "paused-at-error-before-G3",
+  "paused_error_tag": "bundle.dispatch.input-missing",
+  "gate_sequence": [
+    {
+      "gate": "G0E",
+      "verb": "approve",
+      "next_status": "paused-at-gate",
+      "next_gate": "G0R",
+      "seg_s": 87.7
+    },
+    {
+      "gate": "G0R",
+      "verb": "approve",
+      "next_status": "paused-at-error",
+      "next_gate": null,
+      "seg_s": 0.7
+    }
+  ],
+  "total_seconds_walk": 229.1,
+  "receipt_present": false,
+  "run_dir": "C:\\Users\\juanl\\Documents\\GitHub\\course-DEV-IDE-with-AGENTS-hybrid\\state\\config\\runs\\825136d0-c035-4410-a6e6-64a09f10ca64",
+  "total_seconds": 229.1
+}
