@@ -212,12 +212,62 @@ USE_ANTI_TAUTOLOGY_TESTS = {
     "workbook": "test_use_workbook_consumes_g0_enrichment",
     "gary": "test_use_gary_consumes_g0_enrichment",
     "irene": "test_use_irene_consumes_g0_enrichment",
+    # enrique USES the coverage-receipt: the fail-loud gate reads it before enrique's
+    # audio dispatch and BLOCKS on a must-cover hole (concierge-coverage-interlock).
+    "enrique": "test_use_enrique_consumes_coverage_receipt",
 }
 BYTE_IDENTICAL_TESTS = {
-    "enrique": "test_tripwire_non_consumer_payload_byte_identical",
     "compositor": "test_tripwire_non_consumer_payload_byte_identical",
     "kira": "test_tripwire_non_consumer_payload_byte_identical",
 }
+
+
+def test_use_enrique_consumes_coverage_receipt(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """enrique (USED): the coverage-receipt CONTENT drives enrique's gate outcome.
+
+    Anti-tautology — a BLOCKING receipt raises before audio spend; a CLEAR receipt
+    over the same surfaces passes. Swapping the receipt flips the outcome, so the gate
+    genuinely consumes the receipt (it is not a tautological always-pass)."""
+    from datetime import UTC, datetime
+
+    from app.marcus.lesson_plan.coverage_annotation import CoverageAnnotation
+    from app.marcus.lesson_plan.coverage_gate import CoverageAssuranceError
+    from app.marcus.lesson_plan.coverage_receipt import (
+        AnchorResolution,
+        derive_coverage_receipt,
+    )
+    from app.marcus.lesson_plan.source_point import SourcePoint
+    from app.marcus.orchestrator import coverage_gate_wiring as cgw
+
+    monkeypatch.setenv(cgw.COVERAGE_GATE_ACTIVE_ENV, "1")
+    ts = datetime(2026, 6, 30, tzinfo=UTC)
+    span = "Dose is 5 mg daily."
+    pt = SourcePoint(
+        source_point_id="src-001#1", component_id="src-001", ordinal=1, slide_key="Slide 1",
+        verbatim_text=span, risk_flags=("numeric", "dosing"),
+        coverage_intents=("detail_in_narration",), segmentation="assertion_level",
+    )
+    ann = CoverageAnnotation(
+        component_id="src-001", slide_key="Slide 1", source_points=(pt,),
+        segmentation="assertion_level", generated_at=ts,
+    )
+
+    cgw.write_coverage_receipt(
+        tmp_path, derive_coverage_receipt([ann], anchors={}, generated_at=ts)
+    )
+    with pytest.raises(CoverageAssuranceError):  # blocking receipt → enrique blocked
+        cgw.enforce_coverage_gate_before_audio(specialist_id="enrique", run_dir=tmp_path)
+
+    clear = {"Slide 1": AnchorResolution(
+        slide_key="Slide 1", narration_present=True, narration_text=span
+    )}
+    cgw.write_coverage_receipt(
+        tmp_path, derive_coverage_receipt([ann], anchors=clear, generated_at=ts)
+    )
+    # clear receipt over the SAME point → passes (the pre-mutation BLOCK is absent)
+    assert cgw.enforce_coverage_gate_before_audio(specialist_id="enrique", run_dir=tmp_path) is None
 
 
 def test_mt4_earned_used_coverage_parity() -> None:

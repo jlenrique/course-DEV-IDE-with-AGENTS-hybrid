@@ -137,6 +137,23 @@ A 3-layer adversarial review found defects in the offline foundation. Remediated
 
 Test deltas: 9 new offline tests across the two affected suites (`test_coverage_annotation.py` 17→23, `test_coverage_receipt_and_gate.py` 18→20). Reconciled `test_warnings_are_ledger_only_not_blocking` to a genuinely-fuzzy case (an R7 `risky` verdict on a covered, non-must-cover point) since its prior scenario (verbatim-required span dropped off a planned slide) is now correctly BLOCKING under FIX 1. All five coverage suites: 80 passed (was 71). Adapter + storyboard regression: clean. ruff clean on all changed files; lint-imports 14 kept / 1 broken (pre-existing C3 only). ZERO live/network calls.
 
+### Runner integration — offline core (Round-4 approach; Amelia, OFFLINE, RED-first, ZERO live calls)
+Built Steps 0–3 + the ratified gate/SHA changes + the Step-4 both-walks SCAFFOLD (the live marshalling BODY at the G3 publish seam is left stubbed for the orchestrator to finalize against pre-captured live shapes). Each piece RED-first.
+
+- **Step 0.1+0.3 — pure core** [`app/marcus/orchestrator/coverage_anchors.py` NEW]. `resolve_slide_key_map(plan_units, slide_briefs)` REPLICATES the enhanced-vo.1 PRIMARY lineage (`source_ref`→plan_units→source-ordinal) ORCHESTRATOR-side, M3-clean (no `app.specialists` import; `_slide_id_ordinal`/`_source_slide_id_for_unit` copied per Irene's loader-replication discipline; interstitial-no-parent degrades to omit rather than the loud `VoiceDirectionError` — coverage is additive, never a lineage authority). `build_coverage_anchors(...)` is the PURE reconciliation core (reconciliation passed IN) → `{slide_key: AnchorResolution}`; deck side `slide_index→slide_key via map`, narration side reads the row's own `slide_key` (falls back to `slide_id` flag-OFF), `narration_ambiguous = slide_key in ambiguous_ordinals`. Adversarial joins fixtured (off-by-one 1/0-based shown faithful-to-the-passed-map, missing-key→slide_id fallback, ambiguous collision, deck-row-unresolved→skipped, empty). 10 tests.
+- **Step 0.2 — FORK C** [`enrichment_consumption.py`]. Extracted the `:313-333` candidate block into `_candidate_narration_seeds_by_ordinal(card)` shared by BOTH `project_role_derived_voice_by_slide` (keeps len==1) AND new `project_ambiguous_narration_ordinals(card)→set[str]` (surfaces the >1 collisions the `:336-340` matcher drops). No duplication. 3 tests + existing role-seed tests still green.
+- **Gate FAIL-LOUD on missing-receipt-at-audio (Marcus keystone)** [`coverage_gate_wiring.py`]. Past-G3 detection = a `coverage-receipt-expected.marker` dropped by the G3 seam (the conservative receipt-expected proxy; self-contained — marker-without-receipt ⇒ derive ran but didn't land ⇒ fire). `enforce_coverage_gate_before_audio`: receipt-None + marker-present + not-provisional → RAISE `CoverageAssuranceError(tag=marcus.coverage.receipt-missing-at-audio)`; `MARCUS_COVERAGE_GATE_PROVISIONAL_OK` downgrades to no-op; NO marker = legit pre-G3 provisional window → no-op (prior `test_gate_noop_when_no_receipt` stays green). RED→green captured.
+- **Canonical/idempotent receipt body (Winston+Murat)** [`coverage_receipt.py`]. `CoverageReceipt.canonical_hash_payload()` drops volatile `generated_at`; `canonical_sha256()`; `derive_coverage_receipt` is idempotent (recompute, never append) + threads a `diagnostics` tuple. `write_coverage_receipt` now persists the volatile-free canonical projection so the RAI CANONICAL_SHA256 pin is STABLE across the resume/recover G3 crossing (proven: two derives at different wall-clock → identical on-disk `recompute_digest_from_disk`). `test_persist_and_load_round_trip` reconciled to canonical-payload equality (deliberate: generated_at no longer persisted). RED→green captured.
+- **Empty-coverage → PASS-vacuous** — zero source points → empty receipt, gate passes, never crash/block. Tested.
+- **Step 1 — PASS attach** [`g0_enrichment_wiring.py`]. `_attach_coverage_annotations(typed, pedagogy_annotations, los, dispatch_live, chat_model_factory)` + `_build_coverage_frontmatter` (carries the verbatim `excerpt` + P3 `pedagogical_role` + `lo_refs`); mirrors `_attach_pedagogy_annotations`; threaded into the `G0EnrichmentResult(...)` constructor. Gated by `coverage_pass_active()` (`MARCUS_COVERAGE_PASS_ACTIVE`, default OFF → empty → card firewall prunes → byte-identical). 3 tests (incl. offline full-build flag-OFF byte-identical).
+- **Step 2 — RAI register** [`run_asset_index.py`]. `GATE_ASSET_MAP["G3"] = AssetSpec(coverage-receipt, coverage-receipt.json, CANONICAL_SHA256)` + `CONSUMER_REGISTRY["enrique"]` gains `(coverage-receipt, USED)`. enrique becoming a real USED consumer required a parity-ledger entry — added the anti-tautology `test_use_enrique_consumes_coverage_receipt` (blocking-vs-clear receipt flips enrique's gate outcome) to `test_udac_consumer_contract.py`; enrique dropped from the available-only byte-identical ledger. 2 register tests + the parity contract green. (`resolve_consumed_assets` only enforces RATIFIED assets, so existing flows stay byte-identical.)
+- **Step 3 — render** [`coverage_runner.py` + `g0e.py` + `production_runner.py`]. Standalone `coverage-report.html` via the built `render_coverage_section(receipt_dict)` wrapped in a minimal doc with a `run_summary.yaml` back-link (best-effort YAML link; never crashes); `coverage_plan` field added to `G0ECard` (default `{}` → byte-identical) + populated at `production_runner.py:697-725` via `coverage_receipt.coverage_plan_view_from_dicts(...)`. Legacy `generate-storyboard.py` UNTOUCHED (FORK B→B1). 
+- **Step 4 — SCAFFOLD only** [`coverage_runner.py` + `production_runner.py`]. The ONE shared `_derive_and_write_coverage_receipt(run_dir, gate_id, run_state)` guarded `gate_id=="G3"`, called at BOTH walk sites (start `~:2160` + continuation `~:2890`, after the chooser publish). Inside: drop the marker FIRST, load authored annotations from `g0-enrichment.json`, `_marshal_coverage_surfaces(run_state)` (DEFENSIVE stub — reads obvious keys, records unresolved joins as receipt diagnostics, NEVER raises), `build_coverage_anchors → derive → write → render`. Wrapped in a catch-all so a G3 derivation failure logs + leaves the marker standing (gate still fires) — never crashes the runner. Clear `# ORCHESTRATOR: finalize marshalling against live shapes` marker left. 5 tests.
+
+**Run-state keys the Step-4 marshaller stub reads (for the orchestrator to confirm/finalize live):** deck rows ← `run_state["gary_slide_content" | "gary_slide_output" | "slide_content"]` (row: `slide_index|slide_id`+`title`+`body`); narration rows ← `["joined_narration" | "narration_deltas" | "voice_direction_deltas"]` (row: `slide_key|slide_id`+`narration_text`); deck→coverage map ← `["slide_key_map"]` if pre-built ELSE `resolve_slide_key_map(plan_units, slide_briefs)` (the bridge from source-ordinal to the coverage `Slide N` namespace is the live detail to finalize); `plan_units` ← `["plan_units"]`|`["lesson_plan"]["plan_units"]`; `slide_briefs` ← `["slide_briefs"]`; card payload ← `["g0_card" | "card_payload"]` (ambiguous ordinals). GUESSED: the source-ordinal↔"Slide N" namespace bridge (left to the live marshaller) and which exact run-state object the runner threads in (the scaffold passes `run_state` when it is a dict, else `None`).
+
+**Tests (offline, new):** `test_coverage_anchors.py` (10), `test_ambiguous_narration_ordinals.py` (3), `test_coverage_runner_integration.py` (6), `test_coverage_rai_register.py` (2), `test_coverage_pass_attach.py` (3), `test_coverage_runner.py` (5), + 1 in `test_udac_consumer_contract.py` = 30 new. All five prior coverage suites stay green (80). pytest: 220 passed across coverage + udac-contract + pedagogy + g0-brick regression; ruff clean on all changed files; lint-imports 14 kept / 1 broken (PRE-EXISTING C3 `workbook_producer.graph -> resume_api` only). Pre-existing-unrelated reds (confirmed on the stashed baseline): `test_dispatch_retry.py::test_non_retryable_tag_fails_immediately` + 2 replay sanctum/budget drift tests. ZERO live/network calls (every live leg stays `# pragma: no cover`; only offline + fixtured paths exercised). Working tree DIRTY + GREEN; NOT committed.
+
 ### File List
 New (source):
 - `app/marcus/lesson_plan/source_point.py` (T3 models + child-id helpers + derived intents + verbatim floor)
@@ -145,10 +162,22 @@ New (source):
 - `app/marcus/lesson_plan/coverage_gate.py` (T6 pure fail-loud gate + `CoverageAssuranceError`)
 - `app/marcus/orchestrator/coverage_gate_wiring.py` (T6 env flag + disk-primary receipt I/O + both-walks seam-callable)
 
+New (source) — Round-4 runner integration (Amelia, offline):
+- `app/marcus/orchestrator/coverage_anchors.py` (Step 0 pure core: `resolve_slide_key_map` + `build_coverage_anchors`)
+- `app/marcus/orchestrator/coverage_runner.py` (Step 3 html + Step 4 G3 derive/write SCAFFOLD + DEFENSIVE marshaller stub)
+
 Modified (source):
 - `app/marcus/lesson_plan/g0_enrichment.py` (AC9 additive `coverage_annotations` field + byte-identical-firewall prune in `to_card_payload`)
-- `app/marcus/orchestrator/production_runner.py` (T6 flag-gated coverage-gate call at the shared dispatch seam)
+- `app/marcus/orchestrator/production_runner.py` (T6 flag-gated coverage-gate call at the shared dispatch seam; Round-4: G0E card `coverage_plan` population + the both-walks G3 derive/write scaffold call)
 - `app/gates/section_07c/storyboard_html_emitter.py` (T7 additive `render_coverage_section`)
+
+Modified (source) — Round-4 runner integration (Amelia, offline):
+- `app/marcus/lesson_plan/coverage_receipt.py` (canonical/idempotent `canonical_hash_payload`/`canonical_sha256` + `diagnostics` field threaded through `derive_coverage_receipt`; `coverage_plan_view_from_dicts`)
+- `app/marcus/orchestrator/coverage_gate_wiring.py` (FAIL-LOUD on missing-receipt-past-G3 + receipt-expected marker helpers + `coverage_gate_provisional_ok`/`coverage_pass_active`; canonical on-disk write)
+- `app/marcus/orchestrator/enrichment_consumption.py` (FORK C: extracted shared candidate helper + `project_ambiguous_narration_ordinals`)
+- `app/marcus/orchestrator/g0_enrichment_wiring.py` (Step 1: `_attach_coverage_annotations` + `_build_coverage_frontmatter` threaded into the `G0EnrichmentResult` constructor)
+- `app/marcus/lesson_plan/run_asset_index.py` (Step 2: `GATE_ASSET_MAP["G3"]` coverage-receipt row + enrique `coverage-receipt` USED)
+- `app/models/decision_cards/g0e.py` (Step 3: additive `coverage_plan` field, default `{}`)
 
 Modified (source) — review remediation 2026-06-30 (contained fixes):
 - `app/marcus/lesson_plan/coverage_gate.py` (FIX 1 + incidental `coverage_warnings` hashing bug)
@@ -163,3 +192,15 @@ New (tests + fixture):
 - `tests/unit/marcus/orchestrator/test_coverage_gate_wiring.py`
 - `tests/unit/marcus/test_coverage_report_and_regression.py`
 - `tests/fixtures/coverage/live_segmentation_response.json` (canned gpt-5 response for the offline live-parse test)
+
+New (tests) — Round-4 runner integration (Amelia, offline):
+- `tests/unit/marcus/orchestrator/test_coverage_anchors.py`
+- `tests/unit/marcus/orchestrator/test_ambiguous_narration_ordinals.py`
+- `tests/unit/marcus/orchestrator/test_coverage_pass_attach.py`
+- `tests/unit/marcus/orchestrator/test_coverage_runner.py`
+- `tests/unit/marcus/test_coverage_runner_integration.py`
+- `tests/unit/marcus/test_coverage_rai_register.py`
+
+Modified (tests) — Round-4:
+- `tests/marcus/orchestrator/test_udac_consumer_contract.py` (enrique anti-tautology test + parity ledger update)
+- `tests/unit/marcus/orchestrator/test_coverage_gate_wiring.py` (round-trip reconciled to canonical-payload equality)

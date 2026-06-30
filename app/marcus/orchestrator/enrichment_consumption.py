@@ -297,6 +297,28 @@ def project_role_derived_voice_by_slide(
 
     Pure + offline + deterministic (READ-ONLY over the frozen verdict).
     """
+    # Shared candidate block (FORK C — one extracted helper, no duplication).
+    candidates_by_ordinal = _candidate_narration_seeds_by_ordinal(card_payload)
+
+    # Exactly-one-eligible-narration-per-slide wins; 0 or >1 ⇒ fail-safe no seed.
+    seeds: dict[str, dict[str, str]] = {}
+    for ordinal, seed_list in candidates_by_ordinal.items():
+        if len(seed_list) == 1:
+            seeds[str(ordinal)] = seed_list[0]
+    return seeds
+
+
+def _candidate_narration_seeds_by_ordinal(
+    card_payload: dict[str, Any] | None,
+) -> dict[int, list[dict[str, str]]]:
+    """Collect eligible (teachable, role-bearing, Slide-N, narration) seeds per ordinal.
+
+    The SHARED candidate-collection block behind BOTH
+    :func:`project_role_derived_voice_by_slide` (which keeps the EXACTLY-one-eligible
+    ordinals) AND :func:`project_ambiguous_narration_ordinals` (which surfaces the
+    >1-eligible collisions the role-seed matcher silently drops). Extracted so the two
+    consumers cannot drift (Winston — no duplication). Pure / offline / READ-ONLY.
+    """
     if not isinstance(card_payload, dict):
         return {}
     components = card_payload.get("typed_components")
@@ -310,7 +332,6 @@ def project_role_derived_voice_by_slide(
         if isinstance(a, dict) and a.get("component_id")
     }
 
-    # Collect eligible (teachable, role-bearing, Slide-N, narration) seeds per ordinal.
     candidates_by_ordinal: dict[int, list[dict[str, str]]] = {}
     for comp in components:
         if not isinstance(comp, dict):
@@ -331,13 +352,26 @@ def project_role_derived_voice_by_slide(
         if seed is None:
             continue
         candidates_by_ordinal.setdefault(ordinal, []).append(seed)
+    return candidates_by_ordinal
 
-    # Exactly-one-eligible-narration-per-slide wins; 0 or >1 ⇒ fail-safe no seed.
-    seeds: dict[str, dict[str, str]] = {}
-    for ordinal, seed_list in candidates_by_ordinal.items():
-        if len(seed_list) == 1:
-            seeds[str(ordinal)] = seed_list[0]
-    return seeds
+
+def project_ambiguous_narration_ordinals(card_payload: dict[str, Any] | None) -> set[str]:
+    """The Slide-N ordinals (as strings) the role-seed matcher DROPS as >1-ambiguous (FORK C).
+
+    A slide with MORE THAN ONE eligible narration component is an ambiguous-multi-match:
+    ``project_role_derived_voice_by_slide`` gives it NO seed (``enrichment_consumption``
+    :336-340 fail-safe drop). This accessor surfaces those dropped ordinals so the
+    coverage receipt logs the narration surface as ``missing``
+    (``AnchorResolution.narration_ambiguous``) rather than trust an ambiguous join.
+
+    The 0-eligible case (a Slide-N narration component that is not teachable / carries no
+    mapped role) is NOT "ambiguous" — it simply yields no narration surface
+    (``narration_present == False``), which the receipt already treats as uncovered.
+    Keyed by the SOURCE-deck slide ordinal as a STRING (the role-seed ``slide_key``
+    namespace). Pure / offline / READ-ONLY over the frozen card.
+    """
+    candidates_by_ordinal = _candidate_narration_seeds_by_ordinal(card_payload)
+    return {str(ordinal) for ordinal, seeds in candidates_by_ordinal.items() if len(seeds) > 1}
 
 
 # ---------------------------------------------------------------------------

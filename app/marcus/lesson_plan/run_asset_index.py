@@ -534,6 +534,19 @@ GATE_ASSET_MAP: Final[dict[str, tuple[AssetSpec, ...]]] = {
             digest_algo=DigestAlgo.CANONICAL_SHA256,
         ),
     ),
+    # Story concierge-coverage-assurance-interlock (Round-4 integration): the DERIVED
+    # coverage receipt is a gate-G3 RunAssetEntry pinned with CANONICAL_SHA256. Its
+    # on-disk projection is volatile-free (no generated_at) so the SHA survives the
+    # resume/recover G3 crossing. The gate writer no-ops harmlessly when the file is
+    # absent (the pre-integration provisional window), so this row is side-effect-free
+    # until the G3 derive seam lands the receipt.
+    "G3": (
+        AssetSpec(
+            asset_id="coverage-receipt",
+            rel_path="coverage-receipt.json",
+            digest_algo=DigestAlgo.CANONICAL_SHA256,
+        ),
+    ),
 }
 
 
@@ -575,7 +588,13 @@ CONSUMER_REGISTRY: Final[dict[str, ConsumerDeclaration]] = {
     "workbook": _decl("workbook", ("g0-enrichment", AssetUsage.USED)),
     "gary": _decl("gary", ("g0-enrichment", AssetUsage.USED)),
     "irene": _decl("irene", ("g0-enrichment", AssetUsage.USED)),
-    "enrique": _decl("enrique", ("g0-enrichment", AssetUsage.AVAILABLE_ONLY)),
+    "enrique": _decl(
+        "enrique",
+        ("g0-enrichment", AssetUsage.AVAILABLE_ONLY),
+        # The audio-spend consumer USES the coverage receipt (the fail-loud gate reads
+        # it before enrique dispatches) — concierge-coverage-assurance-interlock.
+        ("coverage-receipt", AssetUsage.USED),
+    ),
     "compositor": _decl("compositor", ("g0-enrichment", AssetUsage.AVAILABLE_ONLY)),
     "kira": _decl("kira", ("g0-enrichment", AssetUsage.AVAILABLE_ONLY)),
 }

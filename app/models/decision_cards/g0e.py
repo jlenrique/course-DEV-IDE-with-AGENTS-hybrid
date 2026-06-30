@@ -79,6 +79,14 @@ class G0ECard(DecisionCardBase):
         default_factory=list,
         description="A3 dissent ledger surfaced for operator confirmation.",
     )
+    coverage_plan: dict[str, Any] = Field(
+        default_factory=dict,
+        description=(
+            "Source-note COVERAGE PLAN view (pre-authoring, AC10): per source point's "
+            "intent-set + must-cover + verbatim floor, declaring its segmentation grain. "
+            "Empty {} when no coverage pass ran (byte-identical firewall)."
+        ),
+    )
     operator_prompt: str = Field(
         ...,
         min_length=1,

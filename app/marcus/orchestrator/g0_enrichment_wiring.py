@@ -53,6 +53,10 @@ from uuid import UUID
 from pydantic import ValidationError
 
 from app.composers.section_02a.composer import _walk_corpus_files
+from app.marcus.lesson_plan.coverage_annotation import (
+    CoverageAnnotation,
+    build_coverage_annotations,
+)
 from app.marcus.lesson_plan.g0_enrichment import (
     ENRICHMENT_CARD_BASENAME,
     CitationResolution,
@@ -75,6 +79,7 @@ from app.marcus.lesson_plan.pedagogy_annotation import (
     build_pedagogy_annotations,
 )
 from app.marcus.lesson_plan.source_type import TypedComponent
+from app.marcus.orchestrator.coverage_gate_wiring import coverage_pass_active
 from app.models.runtime.production_envelope import ProductionEnvelope, SpecialistContribution
 
 logger = logging.getLogger(__name__)
@@ -269,6 +274,67 @@ def _attach_pedagogy_annotations(
     )
     assert_pedagogy_teachable_consistency(annotations, records)
     return annotations
+
+
+def _build_coverage_frontmatter(
+    typed: list[TypedComponent],
+    pedagogy_annotations: tuple[PedagogyAnnotation, ...],
+    los: list[LearningObjective],
+) -> list[dict[str, Any]]:
+    """Project typed components into the front matter the COVERAGE pass consumes.
+
+    The coverage segmenter reads ``component_id`` / ``type`` / ``locator`` / the
+    verbatim notes ``excerpt`` + the per-component ``pedagogical_role`` (from P3) and
+    ``lo_refs`` (derived-first intent inputs). Only ``narration``-typed components are
+    note-bearing; the coverage pass self-filters. Mirrors ``_build_pedagogy_frontmatter``.
+    """
+    role_by_component = {a.component_id: a.pedagogical_role for a in pedagogy_annotations}
+    los_by_parent: dict[str, list[str]] = {}
+    for lo in los:
+        for ref in lo.source_refs:
+            bucket = los_by_parent.setdefault(ref.source_id, [])
+            if lo.objective_id not in bucket:
+                bucket.append(lo.objective_id)
+    records: list[dict[str, Any]] = []
+    for comp in typed:
+        records.append(
+            {
+                "component_id": comp.component_id,
+                "type": comp.source_type,
+                "locator": comp.locator,
+                "excerpt": comp.excerpt,
+                "pedagogical_role": role_by_component.get(comp.component_id),
+                "lo_refs": list(los_by_parent.get(comp.parent_source_id, [])),
+            }
+        )
+    return records
+
+
+def _attach_coverage_annotations(
+    typed: list[TypedComponent],
+    pedagogy_annotations: tuple[PedagogyAnnotation, ...],
+    los: list[LearningObjective],
+    *,
+    dispatch_live: bool,
+    chat_model_factory: Any | None = None,
+) -> tuple[CoverageAnnotation, ...]:
+    """Coverage attach (Step 1): per-component source-point annotations (thin delegation).
+
+    Gated by ``coverage_pass_active()`` (default OFF) so an unflagged run attaches
+    NOTHING -> the card firewall prunes the empty layer -> byte-identical. When woken,
+    projects the coverage front matter (incl. the verbatim ``excerpt`` + P3 role) and
+    delegates ALL segmentation to ``build_coverage_annotations`` (offline default; the
+    gpt-5 live leg gated by ``dispatch_live`` exactly like P3). The receipt is DERIVED
+    at the G3 seam from these authored annotations × the run's deck/narration surfaces.
+    """
+    if not coverage_pass_active():
+        return ()
+    records = _build_coverage_frontmatter(typed, pedagogy_annotations, los)
+    return build_coverage_annotations(
+        records,
+        dispatch_live=dispatch_live,
+        chat_model_factory=chat_model_factory,
+    )
 
 
 # Filename-keyword → source-type heuristic for the OFFLINE deterministic pre-pass.
@@ -1003,6 +1069,18 @@ def build_enrichment_result(
         chat_model_factory=chat_model_factory,
     )
 
+    # Coverage attach (Step 1): AFTER pedagogy (it reads the per-component role) — layer
+    # the authored source-point annotations onto the same g0-enrichment node + cache +
+    # G0E gate. Gated by coverage_pass_active() (default OFF → empty → card pruned →
+    # byte-identical). The G3 seam DERIVES the receipt from these × the run surfaces.
+    coverage_annotations = _attach_coverage_annotations(
+        typed,
+        pedagogy_annotations,
+        los,
+        dispatch_live=dispatch_live,
+        chat_model_factory=chat_model_factory,
+    )
+
     independent_parse = IndependentParse(
         proposal={
             "typed_components": [t.model_dump(mode="json") for t in typed],
@@ -1039,6 +1117,7 @@ def build_enrichment_result(
         dissents=[dissent],
         citation_resolutions=citation_resolutions,
         pedagogy_annotations=pedagogy_annotations,
+        coverage_annotations=coverage_annotations,
         independent_parse=independent_parse,
     )
     assert_run_dissent_invariant(result)

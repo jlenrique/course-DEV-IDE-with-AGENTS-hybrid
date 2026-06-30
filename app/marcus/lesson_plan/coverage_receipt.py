@@ -25,14 +25,19 @@ containment verdict (AC4).
 
 from __future__ import annotations
 
+import hashlib
+import json
 import logging
 import re
 from datetime import UTC, datetime
-from typing import Any, Final, Literal
+from typing import Any, ClassVar, Final, Literal
 
 from pydantic import BaseModel, ConfigDict, Field, TypeAdapter, field_validator, model_validator
 
-from app.marcus.lesson_plan.coverage_annotation import CoverageAnnotation
+from app.marcus.lesson_plan.coverage_annotation import (
+    CoverageAnnotation,
+    load_coverage_annotation,
+)
 from app.marcus.lesson_plan.source_point import (
     CoverageIntentLiteral,
     RiskFlagLiteral,
@@ -243,6 +248,14 @@ class CoverageReceipt(BaseModel):
         ..., description="The grain the whole receipt accounts at (declared, AC10)."
     )
     rows: tuple[CoverageReceiptRow, ...] = Field(default=())
+    diagnostics: tuple[str, ...] = Field(
+        default=(),
+        description=(
+            "Deterministic marshalling diagnostics (e.g. unresolved deck/narration joins) "
+            "— additive, surfaced on the receipt rather than crashing. Derived from the "
+            "surfaces, so it is part of the canonical (hashed) projection, NOT volatile."
+        ),
+    )
     generated_at: datetime = Field(default_factory=lambda: datetime.now(tz=UTC))
 
     @field_validator("generated_at")
@@ -262,6 +275,32 @@ class CoverageReceipt(BaseModel):
 
     def missing_must_cover(self) -> tuple[CoverageReceiptRow, ...]:
         return tuple(r for r in self.rows if r.must_cover and r.coverage_status == "missing")
+
+    # -- canonical / idempotent projection (Winston + Murat; Round-4 SHA stability) --
+    # The RAI pins this receipt with CANONICAL_SHA256 (canonical-JSON of the on-disk
+    # file). For the SHA to survive the resume/recover G3 crossing, the HASHED
+    # projection MUST exclude volatile fields (``generated_at`` and any future
+    # timestamp/run_id) so the SAME surfaces -> the SAME SHA. ``derive_coverage_receipt``
+    # is already idempotent (it recomputes the rows from scratch, never appends), so the
+    # only volatility is the wall-clock stamp, dropped here.
+    _VOLATILE_FIELDS: ClassVar[frozenset[str]] = frozenset({"generated_at"})
+
+    def canonical_hash_payload(self) -> dict[str, Any]:
+        """The deterministic, volatile-free projection the RAI SHA pins (Round-4)."""
+        payload = self.model_dump(mode="json")
+        for field in self._VOLATILE_FIELDS:
+            payload.pop(field, None)
+        return payload
+
+    def canonical_sha256(self) -> str:
+        """Canonical SHA-256 of the volatile-free projection (sorted keys, stable form)."""
+        canonical = json.dumps(
+            self.canonical_hash_payload(),
+            sort_keys=True,
+            ensure_ascii=False,
+            separators=(",", ":"),
+        )
+        return hashlib.sha256(canonical.encode("utf-8")).hexdigest()
 
 
 def coverage_receipt_json_schema() -> dict[str, Any]:
@@ -442,6 +481,7 @@ def derive_coverage_receipt(
     *,
     segmentation: SegmentationGrain = "assertion_level",
     clinical_terms: frozenset[str] | None = None,
+    diagnostics: tuple[str, ...] | list[str] | None = None,
     generated_at: datetime | None = None,
 ) -> CoverageReceipt:
     """Project the authored source points + existing joins into the OBSERVED receipt.
@@ -449,7 +489,10 @@ def derive_coverage_receipt(
     NO producer self-report: every row is derived from the frozen source points
     (authored side) × the ``anchors`` (the joins that already exist at the dispatch
     site). Deterministic anchor resolves FIRST (AC7). The receipt declares its
-    ``segmentation`` grain (AC10).
+    ``segmentation`` grain (AC10). IDEMPOTENT: recomputes every row from the surfaces
+    (never appends), so re-derives over identical surfaces yield an identical
+    canonical projection. ``diagnostics`` carry unresolved-join notes from the live
+    marshaller onto the receipt face (never a crash).
     """
     rows: list[CoverageReceiptRow] = []
     for ann in coverage_annotations:
@@ -459,6 +502,7 @@ def derive_coverage_receipt(
     return CoverageReceipt(
         segmentation=segmentation,
         rows=tuple(rows),
+        diagnostics=tuple(diagnostics or ()),
         generated_at=generated_at or datetime.now(tz=UTC),
     )
 
@@ -496,6 +540,21 @@ def coverage_plan_view(
     }
 
 
+def coverage_plan_view_from_dicts(
+    annotation_payloads: list[dict[str, Any]] | tuple[dict[str, Any], ...] | None,
+) -> dict[str, Any]:
+    """Plan view from the RAW annotation dicts carried on the G0E card payload (AC10).
+
+    Rehydrates each ``CoverageAnnotation`` dict (closed-enum-validated) then projects
+    :func:`coverage_plan_view`. Returns ``{}`` for an empty/absent layer so the G0E
+    card stays byte-identical when no coverage pass ran.
+    """
+    if not annotation_payloads:
+        return {}
+    anns = [load_coverage_annotation(a) for a in annotation_payloads]
+    return coverage_plan_view(anns)
+
+
 __all__ = [
     "COVERAGE_RECEIPT_ASSET_ID",
     "COVERAGE_RECEIPT_BASENAME",
@@ -509,6 +568,7 @@ __all__ = [
     "CoverageStatus",
     "VouchLevel",
     "coverage_plan_view",
+    "coverage_plan_view_from_dicts",
     "coverage_receipt_json_schema",
     "derive_coverage_receipt",
     "load_coverage_receipt",

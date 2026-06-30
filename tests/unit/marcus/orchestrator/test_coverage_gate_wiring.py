@@ -72,7 +72,11 @@ def test_persist_and_load_round_trip(tmp_path: Path) -> None:
     path = cgw.write_coverage_receipt(tmp_path, receipt)
     assert path.name == "coverage-receipt.json"
     loaded = cgw.load_coverage_receipt_from_disk(tmp_path)
-    assert loaded == receipt
+    # The on-disk artifact is the VOLATILE-FREE canonical projection (Round-4 SHA
+    # stability — generated_at is intentionally NOT persisted), so equality holds on
+    # the canonical payload (rows + segmentation + diagnostics), not on generated_at.
+    assert loaded.canonical_hash_payload() == receipt.canonical_hash_payload()
+    assert loaded.rows == receipt.rows
 
 
 def test_gate_noop_when_flag_off(tmp_path: Path, monkeypatch) -> None:
