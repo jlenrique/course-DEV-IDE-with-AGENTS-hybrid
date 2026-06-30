@@ -1,6 +1,6 @@
 # Story concierge-coverage-assurance-interlock: source-note topic coverage assurance + production report
 
-Status: ready-for-dev
+Status: review
 
 <!-- Arc: Concierge Production Substrate (branch dev/concierge-production-substrate-2026-06-29, Class S). Sequenced AHEAD of Leg-1b (which consumes this story's source_point anchors). Party-RATIFIED amendment 2026-06-30 (John/Winston/Murat/Irene/Vera; Dr. Quinn synthesis; 5/5 ACCEPT, no impasse) + operator rulings. AUTHORITATIVE DESIGN: _bmad-output/planning-artifacts/coverage-assurance-interlock-design-2026-06-30.md. SSOT party record: concierge-substrate-party-record-2026-06-29.md (Round 3). GATE MODE: DUAL-GATE. -->
 
@@ -55,7 +55,7 @@ The substrate has deep **CONTAINMENT** (deliverable→source: Vera-R7, figure-gr
 - [x] **T5 RED — derived receipt + two axes + vouch_level** (AC: 4, 6, 7, 9) — `coverage-receipt.json` as a `RunAssetEntry`; coverage axis DERIVED by projecting existing joins (component→slide locator, LO→section, narration role-seed; the :335 silent drop → logged `missing`); containment axis via R7 at report-gen with the `vouch_level` render-time gate. Deterministic anchor FIRST (no anchor → `missing`).
 - [x] **T6 RED — fail-loud gate** (AC: 8) — set-difference `must_cover ∧ (missing ∨ verbatim_absent) ∧ no_planned_surface` at the both-walks UDAC seam → `_pause_at_error` before audio spend; fuzzy = WARN/ledger-only. Test BOTH walks.
 - [x] **T7 RED — the production report render** (AC: 10) — plan on G0E card; receipt → Storyboard-B HTML per-slide; ledger persisted; `segmentation` grain shown.
-- [ ] **T8 LIVE slice + negative case** (AC: 11) — real gpt-5 run on a real notes deck; assert full accounting + ≥1 covered_on_slide + ≥1 covered_in_narration with asserted anchors; **ablate a must-cover point → confirm block fires before audio spend** (captured evidence). FOREGROUND + hard timeout + flushed; live-key recipe.
+- [x] **T8 LIVE slice + negative case** (AC: 11) — DONE 2026-06-30, orchestrator-run, real gpt-5 (timeout-bound client injected via `chat_model_factory`; no hang). 3 real note-bearing components → **22 atomic source points** (6/8/8; all `assertion_level` + v1-shippable); risk flags numeric/negation/comparator → `verbatim_required` → must-cover, deterministic. **COVERED receipt** 22 rows `{both:6, covered_in_narration:16}` → gate 0 blocking (≥1 on-slide + ≥1 in-narration). **ABLATED** (slide-3 dropped) → 8 must-cover rows → `assert_coverage_gate` RAISED `CoverageAssuranceError(marcus.coverage.must-cover-uncovered)` BEFORE audio spend (`src-c03#1..8`). Gate has teeth (fires on the hole, silent when covered). Evidence `evidence/coverage-live-slice-20260630T042108Z.json`; harness `evidence/coverage-live-slice.py`.
 - [x] **T9 Regression + hygiene** (AC: 11) — flag-OFF byte-identical (additive); full marcus/lesson_plan + orchestrator + section_07c suites green; ruff + lint-imports (only pre-existing C3).
 
 ## Dev Notes

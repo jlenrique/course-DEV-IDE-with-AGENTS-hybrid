@@ -1,0 +1,30 @@
+{
+  "story": "concierge-coverage-assurance-interlock",
+  "leg": "T8 live slice",
+  "timestamp_utc": "20260630T042108Z",
+  "model": "gpt-5",
+  "real_api": true,
+  "n_components": 3,
+  "n_source_points": 22,
+  "segmentation": "assertion_level",
+  "covered_status_histogram": {
+    "both": 6,
+    "covered_in_narration": 16
+  },
+  "covered_on_slide_or_both": 6,
+  "covered_in_narration_or_both": 22,
+  "covered_receipt_blocking": 0,
+  "ablated_blocking_rows": [
+    "src-c03#1",
+    "src-c03#2",
+    "src-c03#3",
+    "src-c03#4",
+    "src-c03#5",
+    "src-c03#6",
+    "src-c03#7",
+    "src-c03#8"
+  ],
+  "gate_raised_before_audio": true,
+  "plan_view_n_points": 22,
+  "verdict": "PASS"
+}
