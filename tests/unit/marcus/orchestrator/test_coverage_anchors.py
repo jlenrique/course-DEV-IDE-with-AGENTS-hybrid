@@ -122,3 +122,33 @@ def test_build_anchors_deck_row_unresolved_in_map_is_skipped() -> None:
 
 def test_build_anchors_empty_inputs() -> None:
     assert build_coverage_anchors([], [], {}, set()) == {}
+
+
+# ---------------------------------------------------------------------------
+# SF1 — clustered sub-slide text UNION (false-BLOCK that mutes the gate)
+# ---------------------------------------------------------------------------
+
+
+def test_build_anchors_unions_clustered_subslide_slide_text() -> None:
+    # Two FINAL sub-slides share ONE source ordinal (clustered deck). A span on the
+    # FIRST sub-slide must NOT be lost to last-write-wins (which kept only the LAST
+    # sub-slide's text -> spurious `missing` -> false-BLOCK on a legit clustered deck).
+    deck = [
+        {"slide_id": "slide-01", "title": "", "body": "alpha span on first sub-slide"},
+        {"slide_id": "slide-02", "title": "", "body": "beta span on second sub-slide"},
+    ]
+    key_map = {"slide-01": "1", "slide-02": "1"}  # both share ordinal 1 (clustered)
+    anchors = build_coverage_anchors(deck, [], key_map, set())
+    text = anchors["1"].slide_text or ""
+    assert "alpha span" in text  # the EARLIER sub-slide's text is retained
+    assert "beta span" in text  # AND the later one (union, not last-write-wins)
+
+
+def test_build_anchors_unions_clustered_subslide_narration_text() -> None:
+    narration = [
+        {"slide_key": "1", "narration_text": "spoken on first sub-slide"},
+        {"slide_key": "1", "narration_text": "spoken on second sub-slide"},
+    ]
+    anchors = build_coverage_anchors([], narration, {}, set())
+    text = anchors["1"].narration_text or ""
+    assert "first sub-slide" in text and "second sub-slide" in text
