@@ -1,0 +1,73 @@
+# Story concierge-leg1b-warm-callback: warm_callback Pass-2 authoring + Vera-R7 source-containment with teeth
+
+Status: ready-for-dev
+
+<!-- Arc: Concierge Production Substrate (branch dev/concierge-production-substrate-2026-06-29, Class S). Sequenced AFTER Leg-1 (coverage interlock CLOSED path A, 53eb4a85). GATE MODE: DUAL-GATE (Murat — warm_callback authors NEW lexical content ⇒ content-fidelity, not just receipt). Green-light: fully-spawned party 5/5 ENDORSE-WITH-AMENDMENTS (John/Winston/Murat/Irene/Vera, 2026-06-30, no impasse) — the amendments ARE this story's acceptance contract. SSOT: concierge-substrate-party-record-2026-06-29.md (Round 8 + the Leg-1b review). Consumes Leg-1's source_point anchors. Do NOT expand into clustering (Leg-3 owns clustered-deck callback scale-up). -->
+
+## Story
+
+As the production system,
+I want Irene's Pass-2 to author **warm_callback** narration (a structural, connective "recall what we established earlier" line) **grounded to strictly-prior teachable material**, with **Vera-R7 source-containment wired as a real runtime gate with teeth**,
+so that a callback can re-orient the learner without ever introducing a new numeral/figure/claim or referencing un-taught material — and an unsafe callback is **omitted, not shipped** — making the rhetorical-role channel (Leg-1a) carry real authored content safely.
+
+## Why this story exists
+
+Leg-1a wired `rhetorical_role` EMISSION (the role-derived seed that de-inerts the v3 `[slow]` voice channel). `warm_callback` is the first role that AUTHORS NEW lexical content (a callback sentence) rather than only tagging existing words — so it must carry source-containment teeth. Vera-R7's `audit_rhetorical_source_containment` / `assert_rhetorical_source_containment` are **PROVIDED-BUT-UNWIRED** (no runtime callers); this story wires them as the gate on generative callback authorship. Per the shadow-monitor callback grounding contract (Watchpoint 2 / F-002): `teaches_after` alone is insufficient — a callback may reference a prior component only when it is strictly-before AND `teachable==True` AND it passes the narration/figure grounding gate; else fail-safe SILENT.
+
+## Binding scope + honest naming
+
+- **Numeral/figure-token facet only.** No-new-numeral/figure is enforced as a READ-ONLY consumer of the FROZEN `figure_tokens` neck (shared G5/pass2/quinn_r/coverage) — **the neck is NOT edited here** (any change = lockstep governance → Leg-4). The full zero-tolerance fidelity surface (clinical lexicon, span-aware negation/comparator) stays Leg-4.
+- **"warm" is a writer-rendered surface quality, NOT Irene's prose.** Irene owns callback **intent + anchor + handoff-validation**; the callback sentence is rendered (a delegated/separable generative step); **Irene's handoff-validation RE-RUNS against the RENDERED prose** before it lands (close the open loop). The tonal `[warm]` tag lives in the v3 tag channel and never reorders canonical text (PROTECTED VO↔on-screen invariant).
+- **No clustering.** Leg-1b consumes Leg-1's `source_point` anchors using the EXISTING ordering primitive; Leg-3 owns clustered-deck callback scale-up.
+- **Do NOT overclaim at close:** (a) don't claim "callbacks work" from the negative arm alone; (b) don't claim clustered-deck scale; (c) don't claim VO↔on-screen protected-for-callbacks unless 07G ran on a FIRED callback; (d) "no new clinical claim" is enforced only TRANSITIVELY (clinical leg `deferred (no lexicon)` surfaced in evidence); "no unsupported-concept" is NOT R7-enforced (Leg-4).
+
+## Acceptance Criteria (the ratified contract)
+
+**AC1 — Pass-2 surface precondition (finding-d minimal slice).** Irene Pass-2 producer output exposes reading-path / cue / timing-role surfaces in a **validatable** form, so handoff-validation and the 07G gate have a firm binding target. (Full Pass-2 package-contract formalization → Leg-4.)
+
+**AC2 — Callback intent + anchor (Irene-authored).** Irene emits a callback **intent** + a bound **anchor** = a strictly-prior teachable component reference. The grounding denominator is computed from the EXISTING pure helpers (no new ordering model): the strictly-prior set = `compute_teaches_after(target, all)` (`pedagogy_annotation.py:357-376`; ordering primitive `_sort_key = (doc_ordinal, locator, component_id)`, `:342-354`) **intersected** with the subset where `derive_teachable(status) == True` (`:379-391`, i.e. `resolution_status == "resolved"`). NOTE: `source_point.ordinal` is a within-note-block sub-locator, NOT the cross-deck order key — do not use it for "strictly-prior." The anchor binds to the parent `component_id` (source_point `join_key()`), never the `#ordinal` child id.
+
+**AC3 — Handoff-validation re-runs against RENDERED prose.** The rendered callback sentence is re-validated by Irene's handoff-validation before landing: it introduces **no new numeral/figure** (read-only `figure_tokens` neck diff against the strictly-prior teachable corpus) and references only the prior CONCEPT/PATTERN — it must NOT voice a prior slide's numeral/figure onto the current screen (that trips both no-new-numeral AND the current-slide read-path bar).
+
+**AC4 — Fail-safe SILENT.** If no grounded strictly-prior `teachable==True` segment matches, OR grounding/handoff-validation fails → **no callback is emitted** (silent; no partial/dangling/speculative callback).
+
+**AC5 — Vera-R7 wired as a runtime gate with teeth (block-by-omission).** `assert_rhetorical_source_containment` (`voice_provider_text.py:331-350`, raises `VoiceProviderTextError(tag="elevenlabs.v3.vera-r7.source-containment")` on FAIL) is invoked by a REAL runtime caller at the Irene Pass-2 callback-authoring attach-point — inside `_act_pass_2` AFTER `backfill_delta_perception_sources` (`graph.py:1488`) and BEFORE `_assert_figure_citations_within_perceived` (`graph.py:1491`) — on every generatively-authored warm_callback BEFORE it is committed to `narration_script`/`segment_manifest_deltas` (so it can never reach the Enrique compiler). Today the gating wrapper has NO runtime callers (only `__all__:361` + tests); the reporting `audit_*` is called REPORTING-ONLY in `coverage_receipt.py:622,692` and never blocks — this AC gives R7 its first teeth. **R7 FAIL ⇒ catch the error and OMIT the entire warm_callback (fail-safe SILENT) + emit a loud audit record.** STRIP is FORBIDDEN (silent alteration + VO↔on-screen drift; destroys the audit trail). The no-new-numeral check is the set-difference `_figures(callback) − _figures(source)` already at `voice_provider_text.py:300-305` — REUSES `figure_tokens._figures` READ-ONLY. (This makes Leg-1b a genuine dual gate: R7 source-containment AND the existing `_assert_figure_citations_within_perceived` figure gate both apply to authored callback text.)
+
+**AC6 — Negation/comparator precondition (choose + record, no silent deferral).** Either (i) upgrade negation/comparator detection from bag-of-words to span/dependency-aware in this story, OR (ii) defer it behind a POSITIVE structural contract that makes polarity-reversal UNREACHABLE in an authored callback, WITH a captured live proof it holds. (Today the detector is bag-of-words with a documented flipped-negation false-negative — `voice_provider_text.py` ~291-295 — which must NEVER be the live guard on generative clinical-adjacent text.)
+
+**AC7 — Grounding corpus pinned.** "New" is diffed against the `teaches_after`-closed `teachable==True` set as of the current slide (the denominator); the R7 audit grounds the callback `source_text` against the FULL strictly-prior teachable corpus.
+
+## CLOSE BAR (DUAL-GATE — all LIVE, first-run-stands, no-retry-to-green, real gpt-5, NO MOCKS)
+
+Content-fidelity gate (the binding teeth) + receipt gate; close only when BOTH pass on the same live run:
+1. **POSITIVE live:** ≥1 grounded callback FIRES on real Irene Pass-2 substrate, resolves to the CORRECT strictly-prior teachable anchor, connective-not-teaching, with a token-diff showing ZERO new numeral/figure.
+2. **REAL unsafe live (not a mock):** a genuinely-unsafe callback (carries a new numeral/claim absent from prior material) is DETECTED by the wired R7 and **OMITTED**, with the audit record written. Assert DETECTION, not a pre-flagged structural mock.
+3. **Structural negative:** `teaches_after` → a `teachable==False` component ⇒ NO callback.
+4. **07G VO↔on-screen read-path-match gate runs on a FIRED (positive-arm) callback** — `_assert_reading_path_conformance` (`graph.py:708-763`; monotonic scan-index conformance over `ordered_element_keys_for_reading_path`) run on the callback-bearing narration (1-row roster via `_slide_roster` + 1-segment parsed dict, test pattern `test_irene_reading_path_conformance.py:55-88`), confirming the callback VO tracks on-screen display order and pulls no off-screen figure into the read path. **The gate is currently RECORD-ONLY** (stashes `reading_path_conformance_warnings`, `:762-763`); for the close it must have TEETH — raise the existing `Pass2ReadingPathError` (`graph.py:148`) on non-empty warnings for a fired callback. Non-waivable per the PROTECTED INVARIANT.
+5. **Receipt gate:** the run emits a Pass-2 package conforming to AC1 + a verifiable audit/decision record; exits clean. (Receipt necessary but NOT sufficient — content-fidelity gate is binding.)
+6. **Evidence surfaces** `clinical_terms_leg: "deferred (no lexicon)"` so PASS is not misread as clinical/concept-clean.
+
+## Dev Notes (T1 — RESOLVED from the two scout reports; file:line verified)
+
+**Authoring attach-point.** `_act_pass_2` in `app/specialists/irene/graph.py:1444-1517`. Post-parse gate chain (`:1484-1497`): `backfill_delta_ids` → `backfill_delta_perception_sources` (`:1488`) → **[INSERT callback authoring + R7 gate HERE]** → `_assert_narration_joins_roster` (`:1489`) → `_assert_reading_path_conformance` (`:1490`) → `_assert_figure_citations_within_perceived` (`:1491`) → `_attach_voice_direction` (`:1497`). Authored callback prose must enter the **canonical** narration here so it ALSO flows the existing figure-citation gate (`graph.py:662-687`, raises `irene.pass2.figure-contradiction`). Voice-direction is a leaf that "never re-generates the script" (`graph.py:1492-1496`) — callback PROSE authoring sits upstream of it, not in the annotation leaf.
+
+**warm_callback is deliberately unmapped pending this leg.** `enrichment_consumption.py:139-142` comments warm_callback "requires structural callback authoring + Vera-R7 source-containment, which Leg-1b owns" (the role table `PEDAGOGICAL_ROLE_TO_RHETORICAL:150-157` only maps `synthesis→contrast_emphasis`). Leg-1b OWNS the authoring DECISION (author a callback when a grounded strictly-prior teachable anchor exists), then sets `voice_direction.rhetorical_role = "warm_callback"` on that segment. Taxonomy: `RhetoricalRole` (`pass_2_template.py:147-156`, warm_callback = first member); compiler tag `RHETORICAL_ROLE_TAGS["warm_callback"]=("[warm]",)` (`voice_provider_text.py:78-83`); structural-role semantics `:73-77` (Irene authors words into canonical; compiler adds only `[warm]`; byte-exact firewall `:194-200`).
+
+**Grounding (AC2/AC7).** `compute_teaches_after` (`pedagogy_annotation.py:357-376`, sort key `_sort_key=(doc_ordinal,locator,component_id)` `:342-354`) ∩ `derive_teachable` (`:379-391`, `resolution_status=="resolved"`); tamper guard `assert_pedagogy_teachable_consistency:493-514`; referential-integrity `assert_pedagogy_referential_invariant:459-490`. source_point parent join via `join_key()` (`source_point.py:172-194`); `#ordinal` is within-block only.
+
+**R7 wiring (AC5).** `assert_rhetorical_source_containment(rhetorical_text, source_text=<referenced component verbatim/source span>, clinical_terms=None)` (`voice_provider_text.py:331-350`). FAIL ⇒ `VoiceProviderTextError(tag="elevenlabs.v3.vera-r7.source-containment")` → catch → drop callback (silent) + audit record. Audit shape: `audit_rhetorical_source_containment:267-328` returns `{status, unsourced:{numerals_units,negations,comparators,clinical_terms}, clinical_terms_leg}`. Negation/comparator bag-of-words: `_NEGATION_LEXICON:236-238`, `_COMPARATOR_LEXICON:239-259`, flipped-negation false-negative `:291-295` (AC6 — span/dep upgrade OR positive-structural-unreachability + live proof). clinical default-None → `clinical_terms_leg:"deferred (no lexicon)"` (`:308-310,327`).
+
+**Frozen neck.** `figure_tokens._figures`/`_FIGURE_RE` (`figure_tokens.py:28-40`, `__all__:69`) — READ-ONLY; shared (graph.py:60/343/481/679, coverage_receipt.py, voice_provider_text.py:38/300-301). No-new-figure = `_figures(callback) − _figures(source)`. Zero neck edits.
+
+**07G read-path gate (close-bar #4).** `_assert_reading_path_conformance` (`graph.py:708-763`) over `ordered_element_keys_for_reading_path` (`reading_path_classifier.py:325-353`) from `PerceptionArtifact.reading_path` (`perception_artifact.py:81`; node 07G `pipeline-manifest.yaml:682-702`). Currently RECORD-ONLY (`:762-763`); blocking type `Pass2ReadingPathError` exists (`graph.py:148`). Run on one callback via 1-row roster + 1-segment parsed (`test_irene_reading_path_conformance.py:55-88`).
+
+**Pass-2 package surfaces (AC1, finding-d).** Emit DIRECTLY from `_act_pass_2` in validatable form: `SegmentManifestSegment.{timing_role:244, bridge_type:247, visual_references:248}`, `VisualReference.{narration_cue:116, perception_source:117}`, `VoiceDirection.rhetorical_role:212-216` (`pass_2_template.py`). The concierge run normalized these OUT-OF-BAND (`concierge-production-2026-06-30/pass2-validation-package/normalization-receipt.json`) — finding-d retires that out-of-band step.
+
+**Channels/consumer (no edits expected):** `build_text_channels` (`voice_provider_text.py:204-224`, captions=canonical, display=provider, `assert_no_tag_leak`); Enrique v3 branch `enrique/_act.py:528-551` (compiles only when `is_v3 and rhetorical_role is not None`).
+
+**Live discipline:** real gpt-5 FOREGROUND, timeout-bound, flushed (never background+monitor); live-key `os.environ.pop("OPENAI_API_KEY",None); load_dotenv(REPO/.env, override=True)`. Live-test each component AS IT LANDS.
+
+**Pre-existing baseline reds (NOT this work):** C3 lint-imports; `test_active_terminal_gates_canonical_inventory` (G0R/G4 drift); `test_non_retryable_tag_fails_immediately`.
+
+## Out of scope (→ Leg-4)
+Clinical lexicon wiring (`directed-voice-vera-r7-wire-clinical-lexicon`); figure_tokens neck under-extraction; non-figure semantic coverage; changed-numeral zero-tolerance enforcement; full Pass-2 package-contract formalization.

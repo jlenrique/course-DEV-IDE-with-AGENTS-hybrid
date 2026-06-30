@@ -1,0 +1,24 @@
+GOAL — Concierge substrate: Leg-1b + decoupled hardening down-payments (~6h, live-tested, BMAD-governed)
+
+Branch dev/concierge-production-substrate-2026-06-29. Work the tasks below IN ORDER.
+
+HOW WE WORK (every task):
+- BMAD spine: fully-spawned party GREEN-LIGHT → bmad-create-story (or bmad-quick-dev) → RED-first dev → bmad-code-review → fully-spawned party CLOSE.
+- Party teams = canonical core (Winston/John/Amelia/Murat) + ≤2 specialty add-ons (Irene/Vera/Dan/Gary as the task needs). Dr. Quinn synthesizes; John (PM) tiebreaks; escalate to the operator ONLY if truly blocked.
+- NO MOCKS — real APIs, intended models (gpt-5 class, etc.).
+- INDISPENSABLE — LIVE TESTING AS COMPONENTS LAND: every component is live-tested AS IT IS AUTHORED OR EDITED — never deferred to a final E2E. Live testing is a non-waivable part of each component's validation; the workstream does not advance past a new/edited component until its live test passes (or an honest live-FAIL is recorded as a finding). Live gpt-5 calls run FOREGROUND, timeout-bound, flushed (never background+monitor).
+
+TASK 1 (centerpiece) — LEG-1b: warm_callback Pass-2 authoring + Vera-R7 source-containment WITH TEETH. DUAL-GATE. Per the ratified consensus:
+- Precondition: Pass-2 producer exposes reading-path/cue/timing-role surfaces in validatable form.
+- Irene emits callback INTENT + anchor + handoff-validation (writer renders the prose; Irene RE-VALIDATES the rendered prose). Callback references only strictly-prior teachable material (teaches_after ∧ teachable==True); adds no new numeral/figure/clinical-claim (checked as a READ-ONLY consumer of the FROZEN figure_tokens neck — never edit it); fail-safe SILENT on grounding failure.
+- R7 wired as a real runtime caller (non-waivable). R7 FAIL ⇒ OMIT the whole callback + loud audit record (block-by-omission; NEVER strip).
+- CLOSE BAR (all LIVE, first-run-stands, no retry-to-green): a POSITIVE grounded callback FIRES (correct prior anchor, zero new tokens); a REAL unsafe callback is DETECTED+omitted; the structural negative (teachable==False ⇒ no callback); the 07G VO↔on-screen read-path gate runs on a fired callback.
+- Do NOT expand into clustering (Leg-3 owns that). Honest naming — numeral/figure-token facet only; no overclaim.
+
+TASK 2 — 16:9 down-payment (also Leg-4 finding a): unconditional Classic-branch cardOptions.dimensions=16x9 in generate_gamma_variants, closing the default-run cropping bug (comment it as superseded by the future styleguide default-guide). Live-prove the exported PNG aspect ≈1.778. Studio path unchanged (template + aspect guard).
+
+TASK 3 (stretch, if time) — Descript publication-receipt: a structured final receipt asserting composition.duration ≈ expected before "published" (concierge finding c, receipt-half ONLY; DROP the PowerShell/Tee-Object exit-code item — harness-specific, not codebase debt). Live-prove on a real publish.
+
+GUARDRAIL: each fix hardens the production codebase in service of the Marcus-SPOC runtime product; the concierge run is a discovery vehicle, never the design target.
+
+COMPLETION: the goal is complete when a BMAD party-mode team, fully spawned for the purpose, CONCURS that the FINAL task attempted is accomplished and validated (live-tested + party-CLOSED). Push at each close and at wrap-up.
