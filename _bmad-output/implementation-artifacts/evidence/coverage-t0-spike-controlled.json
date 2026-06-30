@@ -1,0 +1,33 @@
+{
+  "model": "gpt-5",
+  "seed": 7,
+  "blocks": [
+    {
+      "slide": "slide-1-the-economic-structural-reality.md",
+      "n1": 11,
+      "n2": 11,
+      "det": false,
+      "lat1": 11.2,
+      "lat2": 46.3
+    },
+    {
+      "slide": "slide-2-the-human-cost-system-waste-burnout.md",
+      "n1": 10,
+      "n2": 10,
+      "det": false,
+      "lat1": 12.1,
+      "lat2": 17.5
+    },
+    {
+      "slide": "slide-3-the-knowledge-explosion-new-technologies.md",
+      "n1": 13,
+      "n2": 11,
+      "det": false,
+      "lat1": 23.7,
+      "lat2": 52.6
+    }
+  ],
+  "bounded": true,
+  "deterministic": false,
+  "fast": true
+}
