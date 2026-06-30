@@ -610,13 +610,17 @@ def _extract_pedagogy_rows(content: Any) -> list[Any]:
     if fence:
         text = fence.group(1).strip()
     payload: Any = None
+    # strict=False permits LITERAL control characters (unescaped newline/tab) inside
+    # a string value — gpt-5 routinely emits them; a strict parse would silently empty
+    # this additive overlay (same defect that CRASHED the keystone G0 pre-pass live
+    # 2026-06-29). Pedagogy degrades to [] on a true failure (additive, never gating).
     try:
-        payload = json.loads(text)
+        payload = json.loads(text, strict=False)
     except (ValueError, TypeError):
         start, end = text.find("{"), text.rfind("}")
         if start != -1 and end != -1 and end > start:
             try:
-                payload = json.loads(text[start : end + 1])
+                payload = json.loads(text[start : end + 1], strict=False)
             except (ValueError, TypeError):
                 payload = None
     if not isinstance(payload, dict):

@@ -791,6 +791,108 @@ def _build_dissent(typed: list[TypedComponent], fingerprint: str) -> Dissent:
 
 
 # ---------------------------------------------------------------------------
+# Live-response tolerant parse (the targeted reliability fix; UNIT-TESTABLE).
+#
+# Found LIVE (2026-06-29 tejal trial, real gpt-5): the bare ``json.loads(
+# response.content)`` below crashed the whole production walk at G0E with
+# ``JSONDecodeError: Invalid control character`` — gpt-5 returned a large JSON
+# object carrying a LITERAL control character (unescaped newline/tab) INSIDE a
+# string value, which strict ``json.loads`` rejects, before any gate. Extracted
+# out of the ``# pragma: no cover`` live leg so it is unit-testable; mirrors the
+# proven tolerant pattern (coverage ``extract_coverage_rows`` / pedagogy
+# ``_extract_pedagogy_rows``) + the targeted ``strict=False`` fix.
+# ---------------------------------------------------------------------------
+
+
+class G0EnrichmentParseError(ValueError):
+    """The live Marcus-SPOC pre-pass response could not be parsed as JSON.
+
+    Raised by :func:`_parse_live_extraction_response` when a real gpt-5
+    component-extraction response is not recoverable as JSON even after
+    control-character-tolerant parsing (``strict=False``) and first-``{...}``-span
+    extraction. Carries a snippet of the offending text + the underlying decoder
+    reason so the operator sees WHY the keystone pre-pass failed. Subclasses
+    ``ValueError`` (so existing ``except (ValueError, TypeError)`` guards catch it)
+    but is a DISTINCT, named domain error — never a bare ``JSONDecodeError`` and
+    never a silently-empty extraction (an empty keystone pre-pass would hide a
+    broken live pass; this fails LOUD instead).
+    """
+
+
+def _live_response_to_text(content: Any) -> str:
+    """Coerce a chat-model ``response.content`` to text (str or content-block list).
+
+    Mirrors ``coverage_annotation._content_to_text`` /
+    ``pedagogy_annotation._content_to_text``: a bare ``str`` passes through; a
+    content-block list (``[{"text": "..."}, ...]``) is concatenated; anything else
+    degrades to ``""``.
+    """
+    if isinstance(content, str):
+        return content
+    if isinstance(content, list):
+        parts: list[str] = []
+        for block in content:
+            if isinstance(block, str):
+                parts.append(block)
+            elif isinstance(block, dict) and isinstance(block.get("text"), str):
+                parts.append(block["text"])
+        return "".join(parts)
+    return ""
+
+
+_JSON_FENCE_RE = re.compile(r"```(?:json)?\s*(.*?)```", re.DOTALL)
+
+
+def _parse_live_extraction_response(content: Any) -> Any:
+    """Tolerant parse of the live COMPONENT-extraction response into a JSON payload.
+
+    The targeted fix for the 2026-06-29 live crash (strict ``json.loads`` rejecting
+    a literal control character inside a gpt-5 string value). Mirrors the proven
+    tolerant pattern:
+
+      1. normalize ``content`` (str OR content-block list) to text;
+      2. strip a ```json ... ``` fence when the body is fenced;
+      3. ``json.loads(text, strict=False)`` — ``strict=False`` permits control
+         characters within strings (the exact crash class);
+      4. on failure, extract the first ``{...}`` span and retry with ``strict=False``;
+      5. on TOTAL failure raise :class:`G0EnrichmentParseError` (snippet + reason) —
+         NOT a bare ``JSONDecodeError`` and NOT a silent ``{}``.
+
+    Returns the parsed JSON value. The contract is a JSON OBJECT, but a
+    successfully-parsed NON-dict is passed through unchanged so
+    :func:`_parse_live_payload`'s MUST-2 file-coverage fallback can absorb shape
+    drift (top-level list / bare value) without crashing — only a genuinely
+    UNPARSEABLE (or empty) response raises.
+    """
+    text = _live_response_to_text(content).strip()
+    if not text:
+        raise G0EnrichmentParseError(
+            "live G0 pre-pass returned EMPTY response content (no JSON to parse); the "
+            "keystone component-extraction produced nothing — fail loud, do not ship an "
+            "empty enrichment (strict=False parse not attempted: no text)."
+        )
+    fence = _JSON_FENCE_RE.search(text)
+    if fence:
+        text = fence.group(1).strip()
+    try:
+        return json.loads(text, strict=False)
+    except (ValueError, TypeError) as exc:
+        start, end = text.find("{"), text.rfind("}")
+        if start != -1 and end != -1 and end > start:
+            try:
+                return json.loads(text[start : end + 1], strict=False)
+            except (ValueError, TypeError):
+                pass
+        snippet = text[:240]
+        raise G0EnrichmentParseError(
+            "live G0 pre-pass response is not parseable as JSON even with "
+            "control-character-tolerant parsing (strict=False) + first-{...}-span "
+            f"extraction ({type(exc).__name__}: {exc}); offending text (first 240 "
+            f"chars): {snippet!r}"
+        ) from exc
+
+
+# ---------------------------------------------------------------------------
 # Live LLM pre-pass (exercised by AC-S2-8; reuses the pre_gate_marcus seam)
 # ---------------------------------------------------------------------------
 
@@ -829,7 +931,11 @@ def _live_pre_pass(
         chat_model_factory = make_chat_model
     handle = chat_model_factory("marcus")
     response = handle.chat.invoke([{"role": "user", "content": prompt}])
-    payload = json.loads(response.content)
+    # Control-character-tolerant parse (strict=False) of the live response — a bare
+    # strict json.loads here crashed the whole walk at G0E on a gpt-5 string value
+    # carrying a literal control char (2026-06-29). Raises a CLEAR G0EnrichmentParseError
+    # (never a bare JSONDecodeError, never a silent {}) on a truly-unparseable response.
+    payload = _parse_live_extraction_response(response.content)
     return _parse_live_payload(payload, enumerated, corpus_dir)
 
 
