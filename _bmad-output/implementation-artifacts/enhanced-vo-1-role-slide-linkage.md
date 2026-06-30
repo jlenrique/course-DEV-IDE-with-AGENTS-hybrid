@@ -1,6 +1,6 @@
 # Story enhanced-vo.1: directed-voice role→slide identity linkage (Slice 0)
 
-Status: in-progress
+Status: done
 
 <!-- Epic: enhanced-vo (Enhanced VO Generation — directed voice made REAL, v3 text-driven). Story key: enhanced-vo-1-role-slide-linkage. Party GREEN-LIGHT CONSENSUS 2026-06-29 (Dr. Quinn). SSOT: _bmad-output/planning-artifacts/enhanced-vo-party-consensus-2026-06-29.md. This is the SLICE-0 SEAM and GATES Story B (enhanced-vo-2-v3-provider-text-compiler). ZERO live TTS spend in this story. -->
 
@@ -42,14 +42,14 @@ On real clustered decks the role→slide read **fails open to neutral**: a 6-sou
 
 ## Tasks / Subtasks
 
-- [ ] T1 Readiness (AC: all) — read the SSOT consensus record + this story; confirm block-mode NOT triggered (a pure data-field add on deltas/schema/model does NOT touch `state/config/pipeline-manifest.yaml::block_mode_trigger_paths`; only an edit to `pipeline-manifest.yaml` itself would — see Dev Notes §8). If you end up adding a node/edge, read `docs/dev-guide/pipeline-manifest-regime.md` first.
-- [ ] T2 RED fixture (AC: A2) — build the deterministic source→final slide-map fixture from the real `c2c6dcbf` clustered deck (source identities ↔ final `slide_key` ↔ final slide_id/ordinal). Capture a paired clustered-vs-flat case if useful (`_bmad-output/test-artifacts/cluster-tolerance-test/` has a ready pair).
-- [ ] T3 RED join test (AC: A3) — assert OLD ordinal join fails open on the clustered fixture; assert NEW identity join fires. Build-breaking.
-- [ ] T4 Declare `slide_key` (AC: A1) — add optional/backward-compatible field to `SegmentManifestSegment` (pass_2_template.py:214) + `segment-manifest.schema.json`; populate every newly emitted Story-A Pass-2 delta in `_act_pass_2` from the final slide's `source_ref` -> Pass-1 `plan_units` -> source-head identity.
-- [ ] T5 Identity join (AC: A3) — rewrite the role→slide linkage on both sides (graph.py:1094-1159 + enrichment_consumption.py:144-255) to key on `slide_key`; remove the ordinal fail-open path; fail loud if `slide_key` missing.
-- [ ] T6 Stability test (AC: A4) — same source slide → same key across two clustering runs/fixtures.
-- [ ] T7 Carry-survival test (AC: A5) — `slide_key` reaches every join consumer; re-project at export if any consumer reads a post-join row.
-- [ ] T8 Regression (AC: A6) — directed-OFF byte-identical; full irene/enrique/storyboard suites green; ruff + import-linter (only the pre-existing C3 break permitted).
+- [x] T1 Readiness (AC: all) — read the SSOT consensus record + this story; confirm block-mode NOT triggered (a pure data-field add on deltas/schema/model does NOT touch `state/config/pipeline-manifest.yaml::block_mode_trigger_paths`; only an edit to `pipeline-manifest.yaml` itself would — see Dev Notes §8). If you end up adding a node/edge, read `docs/dev-guide/pipeline-manifest-regime.md` first.
+- [x] T2 RED fixture (AC: A2) — build the deterministic source→final slide-map fixture from the real `c2c6dcbf` clustered deck (source identities ↔ final `slide_key` ↔ final slide_id/ordinal). Capture a paired clustered-vs-flat case if useful (`_bmad-output/test-artifacts/cluster-tolerance-test/` has a ready pair).
+- [x] T3 RED join test (AC: A3) — assert OLD ordinal join fails open on the clustered fixture; assert NEW identity join fires. Build-breaking.
+- [x] T4 Declare `slide_key` (AC: A1) — add optional/backward-compatible field to `SegmentManifestSegment` (pass_2_template.py:214) + `segment-manifest.schema.json`; populate every newly emitted Story-A Pass-2 delta in `_act_pass_2` from the final slide's `source_ref` -> Pass-1 `plan_units` -> source-head identity.
+- [x] T5 Identity join (AC: A3) — rewrite the role→slide linkage on both sides (graph.py:1094-1159 + enrichment_consumption.py:144-255) to key on `slide_key`; remove the ordinal fail-open path; fail loud if `slide_key` missing.
+- [x] T6 Stability test (AC: A4) — same source slide → same key across two clustering runs/fixtures.
+- [x] T7 Carry-survival test (AC: A5) — `slide_key` reaches every join consumer; re-project at export if any consumer reads a post-join row.
+- [x] T8 Regression (AC: A6) — directed-OFF byte-identical; full irene/enrique/storyboard suites green; ruff + import-linter (only the pre-existing C3 break permitted).
 
 ## Dev Notes
 
@@ -99,6 +99,29 @@ These were confirmed against the live tree and change the *internals* of how `sl
 
 ## Dev Agent Record
 ### Agent Model Used
+Claude Code BMAD dev lane; Codex independent review/hygiene lane.
+
 ### Debug Log References
+- Local close commit: `d4455e4f feat(irene): enhanced-vo-1 slide_key role->slide identity join (Slice 0)`.
+- Sprint status close record: `_bmad-output/implementation-artifacts/sprint-status.yaml` entry `enhanced-vo-1-role-slide-linkage: done`.
+- Review-lane verification: `107 passed` for the focused Story A bundle; ruff clean on touched Story A files.
+
 ### Completion Notes List
+- `slide_key` is now emitted as data on the manifest/deltas and used for role-to-slide identity joins.
+- The old clustered-deck ordinal fail-open path is replaced by fail-loud identity linkage; no fuzzy ordinal fallback is accepted when `slide_key` is required.
+- The real `c2c6dcbf` clustered deck fixture pins source-to-final lineage and stability.
+- Story B concerns stayed out of this slice: no provider-text compiler, live v3 synthesis, `rhetorical_role`, caption tag-leak gate, or Descript A/B landed here.
+
 ### File List
+- `app/specialists/irene/graph.py`
+- `app/specialists/irene/authoring/pass_2_template.py`
+- `app/marcus/orchestrator/enrichment_consumption.py`
+- `app/marcus/orchestrator/production_runner.py`
+- `app/marcus/orchestrator/storyboard_publisher.py`
+- `schema/irene_pass_2_authoring.v1.schema.json`
+- `state/config/schemas/segment-manifest.schema.json`
+- `tests/fixtures/specialists/irene/c2c6dcbf_source_to_final_slide_map.json`
+- `tests/specialists/irene/test_slide_key_identity_join.py`
+- `tests/specialists/irene/test_role_derived_seed_wiring.py`
+- `tests/integration/marcus/test_storyboard_publisher_cluster_carry.py`
+- `tests/integration/marcus/test_package_builders.py`

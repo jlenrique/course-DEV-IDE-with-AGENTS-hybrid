@@ -5,7 +5,7 @@
 ## What shipped
 - **enhanced-vo-1** (`d4455e4f`) — `slide_key` role→slide **identity join** replacing the fail-open ordinal-set join; deterministic primary(`slide_briefs`)+fallback(`lesson_plan`+roster) with cross-consistency fail-loud guard; M3-clean; byte-identical OFF; live-proven on real `c2c6dcbf`.
 - **enhanced-vo-2** (`077d68e2`) — TAG-ONLY v3 provider-text compiler (`app/specialists/_shared/voice_provider_text.py`), frozen 8-tag allowlist, byte-exact `strip_tags(provider)==canonical` firewall, four sha256'd channels (canonical/provider/display/captions), captions zero-leak + cross-channel mutation gate, skip-if-exists on provider sha, model-aware branch on `effective_model==eleven_v3`, deferred-role fail-loud, Storyboard-B "WILL FAIL AT DISPATCH" surfacing.
-- **Live A/B** (`0eac3a12` + Descript `1385ad93…`) — two arms via real eleven_v3 (Sarah, seed 73219), ASR no-leak PASS, published to Descript; operator verdict **B**.
+- **Live A/B** (`0eac3a12`) — two arms via real eleven_v3 (Sarah, seed 73219), ASR no-leak PASS; operator verdict **B (slightly preferable; difference = intonation, not pace; SUBTLE — well below the audition "confidential-tone" effect size)**. ⚠️ The Descript publish (`1385ad93…`) FAILED (import transcode error; unplayable) — the A/B was judged on the LOCAL clips. Strict Descript-final/full-mix bar NOT met (follow-on `enhanced-vo-descript-final-mix-cross-confirm`).
 
 ## What went well
 1. **The pre-registered "operator ear, NOT a numeric metric" bar was vindicated** — the two arms were byte-identical in duration (10.397s); a numeric/duration metric would have falsely scored "indistinguishable," but the operator's ear detected the directed prosody (B). This is the single most important methodological win and confirms Murat's "no energy→rms proxy" insistence.
@@ -24,4 +24,4 @@
 - **Branch-consolidation owed** before the NEXT arc ([[project_branch_consolidation_owed]]) — review all branches + update master; we've stayed on `dev/p5-downstream-consumption-2026-06-26` across multiple arcs.
 
 ## Validation
-Story A 65 tests; Story B 47 tests; consolidated 672 green; ruff clean; import-linter M3 KEPT (only pre-existing C3). Live: real eleven_v3 (2 arms), real Descript publish, ASR no-leak PASS. NO MOCKS for any production claim.
+Story A 65 tests; Story B 47 tests; consolidated 672 green; **ruff clean on all changed lines** (2 pre-existing `F841` in `generate-storyboard.py` — `storyboard_policy`, `wpm_pace_coupling` — predate this arc, introduced 2026-04-15 `9e35cd3b`/`aa1e540c`, untouched by Story B); import-linter M3 KEPT (only pre-existing C3). Live: real eleven_v3 (2 arms) + ASR no-leak PASS; **Descript publish FAILED (clip-level A/B only; full-mix cross-confirm owed).** NO MOCKS for any production claim.

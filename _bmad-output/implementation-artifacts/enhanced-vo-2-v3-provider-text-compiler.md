@@ -1,6 +1,6 @@
 # Story enhanced-vo.2: v3 provider-text compiler (TAG-ONLY) + four-channel separation (Slice 1)
 
-Status: ready-for-dev
+Status: done (offline) — AC-B1..B10/B12 party-CLOSED + committed 077d68e2; AC-B11 live A/B done at CLIP level (operator verdict B, SUBTLE — intonation>pace); Descript-final/full-mix cross-confirm OWED (Descript publish failed; follow-on enhanced-vo-descript-final-mix-cross-confirm)
 
 <!-- Epic: enhanced-vo. Depends on enhanced-vo-1 (slide_key identity join) being green — it is (party-CLOSED 2026-06-29, commit d4455e4f). Party GREEN-LIGHT CONSENSUS 2026-06-29 (Dr. Quinn). SSOT: _bmad-output/planning-artifacts/enhanced-vo-party-consensus-2026-06-29.md. -->
 
