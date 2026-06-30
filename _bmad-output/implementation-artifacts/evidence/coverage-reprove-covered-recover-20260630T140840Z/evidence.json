@@ -1,0 +1,271 @@
+{
+  "story": "concierge-coverage-assurance-interlock",
+  "leg": "COVERED arm \u2014 REWIND-RECOVER of a copied real run (07D.5 re-run, NO ablation)",
+  "arm": "covered",
+  "method": "rewind-recover",
+  "bar": "Murat Round-7 revised: NON-VACUOUS receipt with >=1 genuinely-joined-COVERED must-cover point",
+  "timestamp_utc": "20260630T140840Z",
+  "trial_id": "a62187ec-e1bd-40fe-a656-d51dd170aba7",
+  "golden_source_trial_id": "8d819b8d-01dd-4ed5-a07d-12c31d764d9b",
+  "run_dir": "C:\\Users\\juanl\\Documents\\GitHub\\course-DEV-IDE-with-AGENTS-hybrid\\state\\config\\runs\\a62187ec-e1bd-40fe-a656-d51dd170aba7",
+  "figure_token_fix_commit": "5ba2716d (figure-token must-cover carriage; in tree at HEAD)",
+  "real_api": true,
+  "ablation_applied": false,
+  "rewind_mechanism": {
+    "reentry_node": "07D.5",
+    "reentry_node_index": 29,
+    "dropped_contribution": "motion_planner@07D.5 (empty motion_plan)",
+    "first_wins_skip_site": "production_runner.py:~3169"
+  },
+  "flags": {
+    "MARCUS_COVERAGE_PASS_ACTIVE": "1",
+    "MARCUS_COVERAGE_GATE_ACTIVE": "1",
+    "MARCUS_G0_ENRICHMENT_ACTIVE": "1",
+    "MARCUS_G0_DISPATCH_LIVE": "1"
+  },
+  "provisional_ok_set": false,
+  "timeout_patch": {
+    "make_chat_model": true,
+    "ChatOpenAI": true,
+    "bound_timeout": 900.0,
+    "per_request_timeout_s": 900.0
+  },
+  "no_fresh_gpt5_extraction": "g0-enrichment.json reused from the copy; extraction never re-ran",
+  "gate_sequence": [
+    {
+      "gate": "G3",
+      "verb": "approve",
+      "next_status": "paused-at-gate",
+      "next_gate": "G4",
+      "next_error_tag": null,
+      "segment_seconds": 57.0
+    },
+    {
+      "gate": "G4",
+      "verb": "approve",
+      "next_status": "paused-at-error",
+      "next_gate": null,
+      "next_error_tag": "marcus.coverage.must-cover-uncovered",
+      "segment_seconds": 0.1
+    }
+  ],
+  "final_status": "paused-at-error",
+  "paused_error_tag": "marcus.coverage.must-cover-uncovered",
+  "walk_error": null,
+  "total_seconds": 1157.0,
+  "receipt_present": true,
+  "receipt_row_count": 13,
+  "receipt_is_vacuous_flag": [],
+  "status_counts": {
+    "missing": 12,
+    "covered_on_slide": 1
+  },
+  "vouch_counts": {
+    "not_assessed": 13
+  },
+  "joined_covered_count": 1,
+  "missing_must_cover_count": 12,
+  "covered_rows_detail": [
+    {
+      "source_point_id": "src-010-c003#2",
+      "slide_key": "Slide 5",
+      "human_label": "Slide 5 / note",
+      "coverage_status": "covered_on_slide",
+      "vouch_level": "not_assessed",
+      "must_cover": true,
+      "anchor_resolved": true,
+      "join_provenance": "ordinal_bridged",
+      "source_figs": [
+        "percent:67"
+      ],
+      "surface_figs": [],
+      "dropped_figs": [
+        "percent:67"
+      ]
+    }
+  ],
+  "missing_must_cover_rows_detail": [
+    {
+      "source_point_id": "src-006-c004#1",
+      "slide_key": "Slide 1",
+      "human_label": "Slide 1 / note",
+      "coverage_status": "missing",
+      "must_cover": true,
+      "verbatim_required": false,
+      "planned_on_slide": true,
+      "planned_in_narration": true,
+      "join_provenance": "ordinal_bridged",
+      "source_figs": null,
+      "surface_figs": null,
+      "dropped_figs": null
+    },
+    {
+      "source_point_id": "src-006-c004#2",
+      "slide_key": "Slide 1",
+      "human_label": "Slide 1 / note",
+      "coverage_status": "missing",
+      "must_cover": true,
+      "verbatim_required": false,
+      "planned_on_slide": true,
+      "planned_in_narration": true,
+      "join_provenance": "ordinal_bridged",
+      "source_figs": null,
+      "surface_figs": null,
+      "dropped_figs": null
+    },
+    {
+      "source_point_id": "src-007-c003#1",
+      "slide_key": "Slide 2",
+      "human_label": "Slide 2 / note",
+      "coverage_status": "missing",
+      "must_cover": true,
+      "verbatim_required": false,
+      "planned_on_slide": true,
+      "planned_in_narration": true,
+      "join_provenance": "ordinal_bridged",
+      "source_figs": null,
+      "surface_figs": null,
+      "dropped_figs": null
+    },
+    {
+      "source_point_id": "src-007-c003#2",
+      "slide_key": "Slide 2",
+      "human_label": "Slide 2 / note",
+      "coverage_status": "missing",
+      "must_cover": true,
+      "verbatim_required": true,
+      "planned_on_slide": true,
+      "planned_in_narration": true,
+      "join_provenance": "ordinal_bridged",
+      "source_figs": null,
+      "surface_figs": null,
+      "dropped_figs": null
+    },
+    {
+      "source_point_id": "src-008-c003#1",
+      "slide_key": "Slide 3",
+      "human_label": "Slide 3 / note",
+      "coverage_status": "missing",
+      "must_cover": true,
+      "verbatim_required": true,
+      "planned_on_slide": true,
+      "planned_in_narration": true,
+      "join_provenance": "ordinal_bridged",
+      "source_figs": null,
+      "surface_figs": null,
+      "dropped_figs": null
+    },
+    {
+      "source_point_id": "src-008-c003#2",
+      "slide_key": "Slide 3",
+      "human_label": "Slide 3 / note",
+      "coverage_status": "missing",
+      "must_cover": true,
+      "verbatim_required": true,
+      "planned_on_slide": true,
+      "planned_in_narration": true,
+      "join_provenance": "ordinal_bridged",
+      "source_figs": null,
+      "surface_figs": null,
+      "dropped_figs": null
+    },
+    {
+      "source_point_id": "src-009-c003#1",
+      "slide_key": "Slide 4",
+      "human_label": "Slide 4 / note",
+      "coverage_status": "missing",
+      "must_cover": true,
+      "verbatim_required": true,
+      "planned_on_slide": true,
+      "planned_in_narration": true,
+      "join_provenance": "ordinal_bridged",
+      "source_figs": null,
+      "surface_figs": null,
+      "dropped_figs": null
+    },
+    {
+      "source_point_id": "src-009-c003#2",
+      "slide_key": "Slide 4",
+      "human_label": "Slide 4 / note",
+      "coverage_status": "missing",
+      "must_cover": true,
+      "verbatim_required": false,
+      "planned_on_slide": true,
+      "planned_in_narration": true,
+      "join_provenance": "ordinal_bridged",
+      "source_figs": null,
+      "surface_figs": null,
+      "dropped_figs": null
+    },
+    {
+      "source_point_id": "src-010-c003#1",
+      "slide_key": "Slide 5",
+      "human_label": "Slide 5 / note",
+      "coverage_status": "missing",
+      "must_cover": true,
+      "verbatim_required": false,
+      "planned_on_slide": true,
+      "planned_in_narration": true,
+      "join_provenance": "ordinal_bridged",
+      "source_figs": null,
+      "surface_figs": null,
+      "dropped_figs": null
+    },
+    {
+      "source_point_id": "src-011-c004#1",
+      "slide_key": "Slide 6",
+      "human_label": "Slide 6 / note",
+      "coverage_status": "missing",
+      "must_cover": true,
+      "verbatim_required": false,
+      "planned_on_slide": true,
+      "planned_in_narration": true,
+      "join_provenance": "ordinal_bridged",
+      "source_figs": null,
+      "surface_figs": null,
+      "dropped_figs": null
+    },
+    {
+      "source_point_id": "src-011-c004#2",
+      "slide_key": "Slide 6",
+      "human_label": "Slide 6 / note",
+      "coverage_status": "missing",
+      "must_cover": true,
+      "verbatim_required": false,
+      "planned_on_slide": true,
+      "planned_in_narration": true,
+      "join_provenance": "ordinal_bridged",
+      "source_figs": null,
+      "surface_figs": null,
+      "dropped_figs": null
+    },
+    {
+      "source_point_id": "src-011-c004#3",
+      "slide_key": "Slide 6",
+      "human_label": "Slide 6 / note",
+      "coverage_status": "missing",
+      "must_cover": true,
+      "verbatim_required": false,
+      "planned_on_slide": true,
+      "planned_in_narration": true,
+      "join_provenance": "ordinal_bridged",
+      "source_figs": null,
+      "surface_figs": null,
+      "dropped_figs": null
+    }
+  ],
+  "gate_blocked_on_coverage": true,
+  "gate_outcome": "BLOCK (>=1 must-cover figure dropped -> blocked before enrique/audio)",
+  "mp3_files": [],
+  "real_audio_count": 0,
+  "error_pause_tag": "marcus.coverage.must-cover-uncovered",
+  "error_pause_message": "coverage gate BLOCK before audio spend: 13 must-cover source point(s) uncovered with no planned surface [src-006-c004#1, src-006-c004#2, src-007-c003#1, src-007-c003#2, src-008-c003#1, src-008-c003#2, src-009-c003#1, src-009-c003#2, src-010-c003#1, src-010-c003#2, src-011-c004#1, src-011-c004#2, src-011-c004#3] \u2014 resolve coverage or sign a deliberate exclusion before incurring ElevenLabs/Descript spend (AC8).",
+  "error_pause_node_id": "11",
+  "checks": {
+    "receipt_exists": true,
+    "receipt_non_vacuous_n_rows>0": true,
+    "has_joined_covered_row": true,
+    "no_walk_error": true
+  },
+  "verdict": "PASS"
+}

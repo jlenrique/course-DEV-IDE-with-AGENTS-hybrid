@@ -1,0 +1,342 @@
+{
+  "diagnostics": [],
+  "rows": [
+    {
+      "anchor_resolved": true,
+      "component_id": "src-006-c004",
+      "containment_verdict": null,
+      "coverage_status": "missing",
+      "human_label": "Slide 1 / note",
+      "intent_set": [
+        "detail_in_narration",
+        "gist_on_slide"
+      ],
+      "join_provenance": "ordinal_bridged",
+      "must_cover": true,
+      "narration_obligation_unmet": true,
+      "planned_in_narration": true,
+      "planned_on_slide": true,
+      "r7_report": null,
+      "risk_flags": [],
+      "segmentation": "assertion_level",
+      "slide_key": "Slide 1",
+      "source_point_id": "src-006-c004#1",
+      "verbatim_absent": false,
+      "verbatim_required": false,
+      "vouch_level": "not_assessed"
+    },
+    {
+      "anchor_resolved": true,
+      "component_id": "src-006-c004",
+      "containment_verdict": null,
+      "coverage_status": "missing",
+      "human_label": "Slide 1 / note",
+      "intent_set": [
+        "detail_in_narration"
+      ],
+      "join_provenance": "ordinal_bridged",
+      "must_cover": true,
+      "narration_obligation_unmet": true,
+      "planned_in_narration": true,
+      "planned_on_slide": true,
+      "r7_report": null,
+      "risk_flags": [],
+      "segmentation": "assertion_level",
+      "slide_key": "Slide 1",
+      "source_point_id": "src-006-c004#2",
+      "verbatim_absent": false,
+      "verbatim_required": false,
+      "vouch_level": "not_assessed"
+    },
+    {
+      "anchor_resolved": true,
+      "component_id": "src-007-c003",
+      "containment_verdict": null,
+      "coverage_status": "missing",
+      "human_label": "Slide 2 / note",
+      "intent_set": [
+        "detail_in_narration",
+        "gist_on_slide"
+      ],
+      "join_provenance": "ordinal_bridged",
+      "must_cover": true,
+      "narration_obligation_unmet": true,
+      "planned_in_narration": true,
+      "planned_on_slide": true,
+      "r7_report": null,
+      "risk_flags": [],
+      "segmentation": "assertion_level",
+      "slide_key": "Slide 2",
+      "source_point_id": "src-007-c003#1",
+      "verbatim_absent": false,
+      "verbatim_required": false,
+      "vouch_level": "not_assessed"
+    },
+    {
+      "anchor_resolved": true,
+      "component_id": "src-007-c003",
+      "containment_verdict": null,
+      "coverage_status": "missing",
+      "human_label": "Slide 2 / note",
+      "intent_set": [
+        "detail_in_narration",
+        "gist_on_slide"
+      ],
+      "join_provenance": "ordinal_bridged",
+      "must_cover": true,
+      "narration_obligation_unmet": true,
+      "planned_in_narration": true,
+      "planned_on_slide": true,
+      "r7_report": null,
+      "risk_flags": [
+        "negation",
+        "numeric"
+      ],
+      "segmentation": "assertion_level",
+      "slide_key": "Slide 2",
+      "source_point_id": "src-007-c003#2",
+      "verbatim_absent": true,
+      "verbatim_required": true,
+      "vouch_level": "not_assessed"
+    },
+    {
+      "anchor_resolved": true,
+      "component_id": "src-008-c003",
+      "containment_verdict": null,
+      "coverage_status": "missing",
+      "human_label": "Slide 3 / note",
+      "intent_set": [
+        "detail_in_narration",
+        "gist_on_slide"
+      ],
+      "join_provenance": "ordinal_bridged",
+      "must_cover": true,
+      "narration_obligation_unmet": true,
+      "planned_in_narration": true,
+      "planned_on_slide": true,
+      "r7_report": null,
+      "risk_flags": [
+        "comparator"
+      ],
+      "segmentation": "assertion_level",
+      "slide_key": "Slide 3",
+      "source_point_id": "src-008-c003#1",
+      "verbatim_absent": true,
+      "verbatim_required": true,
+      "vouch_level": "not_assessed"
+    },
+    {
+      "anchor_resolved": true,
+      "component_id": "src-008-c003",
+      "containment_verdict": null,
+      "coverage_status": "missing",
+      "human_label": "Slide 3 / note",
+      "intent_set": [
+        "detail_in_narration"
+      ],
+      "join_provenance": "ordinal_bridged",
+      "must_cover": true,
+      "narration_obligation_unmet": true,
+      "planned_in_narration": true,
+      "planned_on_slide": true,
+      "r7_report": null,
+      "risk_flags": [
+        "numeric"
+      ],
+      "segmentation": "assertion_level",
+      "slide_key": "Slide 3",
+      "source_point_id": "src-008-c003#2",
+      "verbatim_absent": true,
+      "verbatim_required": true,
+      "vouch_level": "not_assessed"
+    },
+    {
+      "anchor_resolved": true,
+      "component_id": "src-009-c003",
+      "containment_verdict": null,
+      "coverage_status": "missing",
+      "human_label": "Slide 4 / note",
+      "intent_set": [
+        "detail_in_narration",
+        "gist_on_slide"
+      ],
+      "join_provenance": "ordinal_bridged",
+      "must_cover": true,
+      "narration_obligation_unmet": true,
+      "planned_in_narration": true,
+      "planned_on_slide": true,
+      "r7_report": null,
+      "risk_flags": [
+        "negation"
+      ],
+      "segmentation": "assertion_level",
+      "slide_key": "Slide 4",
+      "source_point_id": "src-009-c003#1",
+      "verbatim_absent": true,
+      "verbatim_required": true,
+      "vouch_level": "not_assessed"
+    },
+    {
+      "anchor_resolved": true,
+      "component_id": "src-009-c003",
+      "containment_verdict": null,
+      "coverage_status": "missing",
+      "human_label": "Slide 4 / note",
+      "intent_set": [
+        "detail_in_narration"
+      ],
+      "join_provenance": "ordinal_bridged",
+      "must_cover": true,
+      "narration_obligation_unmet": true,
+      "planned_in_narration": true,
+      "planned_on_slide": true,
+      "r7_report": null,
+      "risk_flags": [],
+      "segmentation": "assertion_level",
+      "slide_key": "Slide 4",
+      "source_point_id": "src-009-c003#2",
+      "verbatim_absent": false,
+      "verbatim_required": false,
+      "vouch_level": "not_assessed"
+    },
+    {
+      "anchor_resolved": true,
+      "component_id": "src-010-c003",
+      "containment_verdict": null,
+      "coverage_status": "missing",
+      "human_label": "Slide 5 / note",
+      "intent_set": [
+        "detail_in_narration",
+        "gist_on_slide"
+      ],
+      "join_provenance": "ordinal_bridged",
+      "must_cover": true,
+      "narration_obligation_unmet": true,
+      "planned_in_narration": true,
+      "planned_on_slide": true,
+      "r7_report": null,
+      "risk_flags": [],
+      "segmentation": "assertion_level",
+      "slide_key": "Slide 5",
+      "source_point_id": "src-010-c003#1",
+      "verbatim_absent": false,
+      "verbatim_required": false,
+      "vouch_level": "not_assessed"
+    },
+    {
+      "anchor_resolved": true,
+      "component_id": "src-010-c003",
+      "containment_verdict": null,
+      "coverage_status": "covered_on_slide",
+      "human_label": "Slide 5 / note",
+      "intent_set": [
+        "detail_in_narration"
+      ],
+      "join_provenance": "ordinal_bridged",
+      "must_cover": true,
+      "narration_obligation_unmet": true,
+      "planned_in_narration": true,
+      "planned_on_slide": true,
+      "r7_report": {
+        "clinical_terms_leg": "deferred (no lexicon)",
+        "dropped_figs": [
+          "percent:67"
+        ],
+        "figure_facet": true,
+        "figure_surface_verifiable": false,
+        "gate": "vera-r7-source-containment",
+        "source_figs": [
+          "percent:67"
+        ],
+        "status": "PASS",
+        "surface_figs": [],
+        "unsourced": {
+          "clinical_terms": [],
+          "comparators": [],
+          "negations": [],
+          "numerals_units": []
+        }
+      },
+      "risk_flags": [
+        "numeric"
+      ],
+      "segmentation": "assertion_level",
+      "slide_key": "Slide 5",
+      "source_point_id": "src-010-c003#2",
+      "verbatim_absent": false,
+      "verbatim_required": true,
+      "vouch_level": "not_assessed"
+    },
+    {
+      "anchor_resolved": true,
+      "component_id": "src-011-c004",
+      "containment_verdict": null,
+      "coverage_status": "missing",
+      "human_label": "Slide 6 / note",
+      "intent_set": [
+        "detail_in_narration",
+        "gist_on_slide"
+      ],
+      "join_provenance": "ordinal_bridged",
+      "must_cover": true,
+      "narration_obligation_unmet": true,
+      "planned_in_narration": true,
+      "planned_on_slide": true,
+      "r7_report": null,
+      "risk_flags": [],
+      "segmentation": "assertion_level",
+      "slide_key": "Slide 6",
+      "source_point_id": "src-011-c004#1",
+      "verbatim_absent": false,
+      "verbatim_required": false,
+      "vouch_level": "not_assessed"
+    },
+    {
+      "anchor_resolved": true,
+      "component_id": "src-011-c004",
+      "containment_verdict": null,
+      "coverage_status": "missing",
+      "human_label": "Slide 6 / note",
+      "intent_set": [
+        "detail_in_narration"
+      ],
+      "join_provenance": "ordinal_bridged",
+      "must_cover": true,
+      "narration_obligation_unmet": true,
+      "planned_in_narration": true,
+      "planned_on_slide": true,
+      "r7_report": null,
+      "risk_flags": [],
+      "segmentation": "assertion_level",
+      "slide_key": "Slide 6",
+      "source_point_id": "src-011-c004#2",
+      "verbatim_absent": false,
+      "verbatim_required": false,
+      "vouch_level": "not_assessed"
+    },
+    {
+      "anchor_resolved": true,
+      "component_id": "src-011-c004",
+      "containment_verdict": null,
+      "coverage_status": "missing",
+      "human_label": "Slide 6 / note",
+      "intent_set": [
+        "detail_in_narration"
+      ],
+      "join_provenance": "ordinal_bridged",
+      "must_cover": true,
+      "narration_obligation_unmet": true,
+      "planned_in_narration": true,
+      "planned_on_slide": true,
+      "r7_report": null,
+      "risk_flags": [],
+      "segmentation": "assertion_level",
+      "slide_key": "Slide 6",
+      "source_point_id": "src-011-c004#3",
+      "verbatim_absent": false,
+      "verbatim_required": false,
+      "vouch_level": "not_assessed"
+    }
+  ],
+  "segmentation": "assertion_level"
+}
