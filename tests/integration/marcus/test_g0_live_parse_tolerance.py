@@ -157,4 +157,6 @@ def test_default_extraction_factory_binds_generous_budget_and_timeout() -> None:
     assert handle.chat.max_tokens == gw.G0_EXTRACTION_MAX_COMPLETION_TOKENS
     assert gw.G0_EXTRACTION_MAX_COMPLETION_TOKENS >= 32000
     assert handle.chat.request_timeout == gw.G0_EXTRACTION_REQUEST_TIMEOUT_S
-    assert handle.chat.max_retries == 0
+    # max_retries=2 absorbs gpt-5's per-call latency variance (a timed-out attempt
+    # retries into a faster response); each attempt stays hard-bounded by the timeout.
+    assert handle.chat.max_retries == 2

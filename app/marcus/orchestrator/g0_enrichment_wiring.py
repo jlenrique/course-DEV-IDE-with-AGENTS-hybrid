@@ -1082,7 +1082,11 @@ def _default_extraction_chat_factory() -> Callable[[str], Any]:
         return make_chat_model(
             model_id,
             request_timeout=G0_EXTRACTION_REQUEST_TIMEOUT_S,
-            max_retries=0,
+            # gpt-5 extraction latency is per-call VARIABLE (18-42s typical, occasional
+            # >300s spike on the SAME prompt). max_retries=2 lets a timed-out attempt
+            # retry into a faster response rather than aborting the walk; each attempt is
+            # still hard-bounded by request_timeout, so worst case is bounded (3x300s).
+            max_retries=2,
             max_completion_tokens=G0_EXTRACTION_MAX_COMPLETION_TOKENS,
         )
 
