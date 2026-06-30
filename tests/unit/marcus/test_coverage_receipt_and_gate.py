@@ -278,18 +278,74 @@ def test_gate_verbatim_absent_blocks_even_with_slide_present_but_no_planned_surf
     assert len(evaluate_coverage_gate(receipt)) == 1
 
 
-def test_warnings_are_ledger_only_not_blocking() -> None:
-    # an altered (verbatim_required span missing) point but WITH a planned slide
-    # surface → not blocking, but a WARN.
-    span_src = "Exactly 5.2 trillion dollars."
-    pt = _point(1, span_src, risk_flags=("numeric",), intents=("gist_on_slide",))
+def test_fix1_verbatim_absent_blocks_even_with_planned_slide_surface() -> None:
+    # FIX 1: a must-cover, verbatim-required point whose span is DROPPED off a
+    # rendered slide (slide surface present, span absent) with NO narration must
+    # BLOCK — verbatim_absent is an INDEPENDENT blocking condition, not gated behind
+    # no_planned_surface (the dead-term fail-open). intent=detail_in_narration so the
+    # slide is not a planned surface for the obligation, but a slide DOES render.
+    span = "Exactly 5.2 trillion dollars."
+    pt = _point(1, span, risk_flags=("numeric",), intents=("detail_in_narration",))
     anchors = {
         "Slide 1": AnchorResolution(
             slide_key="Slide 1", slide_present=True, slide_text="a different figure entirely",
+            narration_present=False,
         )
     }
     receipt = derive_coverage_receipt([_ann([pt])], anchors=anchors, generated_at=_TS)
-    # slide present (planned surface) but span absent → not blocking
+    row = receipt.rows[0]
+    assert row.verbatim_absent is True
+    assert row.planned_on_slide is True  # a slide DID render (the dead-term trap)
+    # money-on-the-line: span lost off the rendered slide, no narration → BLOCK
+    assert len(evaluate_coverage_gate(receipt)) == 1
+    with pytest.raises(CoverageAssuranceError):
+        assert_coverage_gate(receipt)
+
+
+def test_fix2_detail_in_narration_covered_only_on_slide_blocks() -> None:
+    # FIX 2: a must-cover point carrying a detail_in_narration intent that is covered
+    # ONLY on the slide (its span renders on the slide but never reaches the
+    # narration) has an UNMET narration obligation → must be treated as uncovered for
+    # its intent → BLOCK. Non-verbatim so verbatim_absent is NOT the trigger (isolate
+    # the narration-obligation term).
+    span = "You must navigate a large enterprise."
+    pt = _point(1, span, risk_flags=(), intents=("detail_in_narration",))
+    anchors = {
+        "Slide 1": AnchorResolution(
+            slide_key="Slide 1", slide_present=True, slide_text=span,
+            narration_present=False,
+        )
+    }
+    receipt = derive_coverage_receipt([_ann([pt])], anchors=anchors, generated_at=_TS)
+    row = receipt.rows[0]
+    assert row.coverage_status == "covered_on_slide"
+    assert row.must_cover is True  # detail_in_narration → must_cover
+    assert row.narration_obligation_unmet is True
+    assert row.verbatim_absent is False  # isolate: the trigger is the narration miss
+    assert len(evaluate_coverage_gate(receipt)) == 1
+    with pytest.raises(CoverageAssuranceError):
+        assert_coverage_gate(receipt)
+
+
+def test_warnings_are_ledger_only_not_blocking() -> None:
+    # A genuinely FUZZY verdict: a non-verbatim, non-must-cover point COVERED on the
+    # slide, but R7 flags an unsourced comparator the surface introduces → 'risky'.
+    # This is WARN / ledger-only (no deterministic, money-on-the-line failure), and
+    # the fuzzy WARN routing must stay intact after FIX 1 / FIX 2 tightened the gate.
+    span = "burnout is a problem"
+    pt = _point(1, span, risk_flags=(), intents=("gist_on_slide",))
+    anchors = {
+        "Slide 1": AnchorResolution(
+            slide_key="Slide 1", slide_present=True,
+            slide_text="burnout is a problem and rates increased dramatically",
+        )
+    }
+    receipt = derive_coverage_receipt([_ann([pt])], anchors=anchors, generated_at=_TS)
+    row = receipt.rows[0]
+    assert row.coverage_status == "covered_on_slide"
+    assert row.containment_verdict == "risky"  # R7 unsourced comparator → fuzzy
+    assert row.must_cover is False
+    # fuzzy verdict, not money-on-the-line → not blocking, but a WARN
     assert evaluate_coverage_gate(receipt) == ()
     assert len(coverage_warnings(receipt)) >= 1
 

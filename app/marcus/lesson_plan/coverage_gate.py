@@ -43,14 +43,28 @@ class CoverageAssuranceError(SpecialistDispatchError):  # noqa: N818
 def _is_blocking(row: CoverageReceiptRow) -> bool:
     """The deterministic, money-on-the-line BLOCK predicate (AC8).
 
-    ``must_cover ∧ (missing ∨ verbatim_absent) ∧ no_planned_surface``. Fuzzy
-    verdicts (altered/risky/advisory) are NOT blocking — WARN / ledger-only.
+    ``must_cover ∧ ( (coverage_status == missing ∧ no_planned_surface)
+    ∨ verbatim_absent ∨ narration_obligation_unmet )``.
+
+    FIX 1: ``verbatim_absent`` is an INDEPENDENT blocking condition, NOT gated behind
+    ``no_planned_surface``. Previously ``(missing ∨ verbatim_absent) ∧
+    no_planned_surface`` made ``verbatim_absent`` a DEAD term — it is only ever set
+    when a surface EXISTS (so ``no_planned_surface`` was always False there), meaning a
+    must-cover verbatim-required span DROPPED off a rendered slide failed OPEN. It is
+    deterministic + money-on-the-line, so it blocks on its own.
+
+    FIX 2: ``narration_obligation_unmet`` (a ``detail_in_narration`` point covered
+    ONLY on the slide) is likewise an independent block term — a slide carriage does
+    not satisfy a narration obligation (AC3).
+
+    Fuzzy verdicts (altered/risky/advisory semantics where the span IS present) are
+    NOT blocking — WARN / ledger-only until the ≥3-run calibration window.
     """
     if not row.must_cover:
         return False
-    uncovered = row.coverage_status == "missing" or row.verbatim_absent
     no_planned_surface = not (row.planned_on_slide or row.planned_in_narration)
-    return uncovered and no_planned_surface
+    missing_unsurfaced = row.coverage_status == "missing" and no_planned_surface
+    return missing_unsurfaced or row.verbatim_absent or row.narration_obligation_unmet
 
 
 def evaluate_coverage_gate(receipt: CoverageReceipt) -> tuple[CoverageReceiptRow, ...]:
@@ -59,12 +73,18 @@ def evaluate_coverage_gate(receipt: CoverageReceipt) -> tuple[CoverageReceiptRow
 
 
 def coverage_warnings(receipt: CoverageReceipt) -> tuple[CoverageReceiptRow, ...]:
-    """The fuzzy WARN/ledger-only rows (altered/risky/advisory; never blocking)."""
-    blocking = set(evaluate_coverage_gate(receipt))
+    """The fuzzy WARN/ledger-only rows (altered/risky/advisory; never blocking).
+
+    Exclusion of the blocking rows keys on ``source_point_id`` (NOT a row-identity
+    set): a :class:`CoverageReceiptRow` carries a ``r7_report`` dict, so it is not
+    hashable and cannot go into a ``set`` — building one raised ``TypeError`` whenever
+    a row carried an R7 report.
+    """
+    blocking_ids = {r.source_point_id for r in evaluate_coverage_gate(receipt)}
     return tuple(
         row
         for row in receipt.rows
-        if row not in blocking
+        if row.source_point_id not in blocking_ids
         and (
             row.containment_verdict in {"altered", "risky"}
             or (row.must_cover and row.coverage_status == "missing")

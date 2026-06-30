@@ -82,9 +82,21 @@ _DOSE_RE: Final[re.Pattern[str]] = re.compile(
     r"\b\d+(?:\.\d+)?\s*(?:mg|mcg|µg|ug|g|kg|ml|l|units?|iu|mmol|mg/dl|mmhg|%)\b",
     re.IGNORECASE,
 )
+# FIX 5: negative CONTRACTIONS escaped the floor — "don't exceed 5 mg" carried no
+# `negation` flag, so a safety/dosing prohibition was not verbatim_required → not
+# must_cover. The word tokenizer keeps the apostrophe (``[A-Za-z][A-Za-z'-]*``), so a
+# contraction surfaces as a single token; we list the common ones (curly apostrophes
+# are normalized to straight in ``_words`` so both "don't" and "don’t" match).
+_NEGATION_CONTRACTIONS: Final[frozenset[str]] = frozenset(
+    {
+        "don't", "doesn't", "didn't", "isn't", "aren't", "wasn't", "weren't",
+        "won't", "wouldn't", "can't", "couldn't", "shouldn't", "mustn't",
+        "needn't", "haven't", "hasn't", "hadn't", "ain't", "shan't", "mightn't",
+    }
+)
 _NEGATION_LEXICON: Final[frozenset[str]] = frozenset(
     {"no", "not", "never", "none", "nor", "neither", "without", "cannot", "nothing"}
-)
+) | _NEGATION_CONTRACTIONS
 _COMPARATOR_LEXICON: Final[frozenset[str]] = frozenset(
     {
         "more", "less", "fewer", "greater", "lower", "higher", "than", "most",
@@ -99,7 +111,10 @@ _WORD_RE: Final[re.Pattern[str]] = re.compile(r"[A-Za-z][A-Za-z'-]*")
 
 
 def _words(text: str) -> set[str]:
-    return {m.group(0).lower() for m in _WORD_RE.finditer(text)}
+    # Normalize curly apostrophes (U+2019 / U+2018) to a straight ' so a contraction
+    # ("don't" vs "don’t") tokenizes identically and hits the negation lexicon (FIX 5).
+    normalized = text.replace("’", "'").replace("‘", "'")
+    return {m.group(0).lower() for m in _WORD_RE.finditer(normalized)}
 
 
 def detect_risk_flags(
@@ -213,6 +228,113 @@ def coverage_annotation_json_schema() -> dict[str, Any]:
 
 def load_coverage_annotation(payload: dict[str, Any]) -> CoverageAnnotation:
     return CoverageAnnotation.model_validate(payload)
+
+
+# ---------------------------------------------------------------------------
+# Ship gate (FIX 4 / AC-OP1) — block_level_v1 is NEVER a v1 ship state
+# ---------------------------------------------------------------------------
+
+
+class CoverageNotShippableError(ValueError):
+    """A coverage annotation set carries a non-``assertion_level`` grain (AC-OP1).
+
+    ``block_level_v1`` is a DIAGNOSTIC-only provenance value; v1 ships ONLY when every
+    annotation is at ``assertion_level``. Orchestrator-callable ship gate (raised
+    before the receipt ships).
+    """
+
+
+def assert_v1_shippable(annotations: tuple[CoverageAnnotation, ...]) -> None:
+    """Raise :class:`CoverageNotShippableError` if any annotation is not v1-shippable.
+
+    AC-OP1: ``block_level_v1`` is never an acceptable v1 ship state. The orchestrator
+    calls this before the receipt ships — there is NO coarse-ship fallback (the spike
+    proved assertion-level bounded; a ``block_level_v1`` stamp means re-segmentation
+    failed and the run must STOP/ESCALATE, not ship a coarse receipt).
+    """
+    bad = [a for a in annotations if not a.is_v1_shippable()]
+    if bad:
+        offenders = ", ".join(f"{a.component_id}({a.segmentation})" for a in bad)
+        raise CoverageNotShippableError(
+            f"AC-OP1: {len(bad)} coverage annotation(s) carry a non-'assertion_level' grain "
+            f"[{offenders}] — 'block_level_v1' is NEVER a v1 ship state; STOP and escalate "
+            "(no coarse-ship fallback)."
+        )
+
+
+# ---------------------------------------------------------------------------
+# Incompleteness signal (FIX 3) — a non-empty note block that yields zero spans
+# must NOT silently empty the ledger (indistinguishable from "0 holes").
+# ---------------------------------------------------------------------------
+
+
+class IncompleteSegment(BaseModel):
+    """A note-bearing component whose non-empty notes produced ZERO source points.
+
+    The explicit, structured ``coverage_incomplete`` marker (FIX 3): segmentation
+    that yields nothing for a note-bearing block is surfaced, never swallowed.
+    """
+
+    model_config = ConfigDict(extra="forbid", frozen=True)
+
+    component_id: str = Field(..., min_length=1)
+    slide_key: str = Field(..., min_length=1)
+    reason: str = Field(default="non-empty note block produced zero teaching assertions")
+
+
+class CoverageIncompleteError(ValueError):
+    """Segmentation produced nothing for one or more non-empty note blocks (FIX 3).
+
+    Carries the offending :class:`IncompleteSegment` markers so the orchestrator can
+    surface the holes rather than ship an empty (toothless) ledger.
+    """
+
+    def __init__(self, message: str, *, incomplete: tuple[IncompleteSegment, ...]):
+        super().__init__(message)
+        self.incomplete = incomplete
+
+
+def detect_incomplete_segmentation(
+    components: list[dict[str, Any]],
+    annotations: tuple[CoverageAnnotation, ...],
+) -> tuple[IncompleteSegment, ...]:
+    """Find note-bearing components with non-empty notes but ZERO produced points (FIX 3).
+
+    A genuinely empty note block is NOT incompleteness; a non-empty one that yielded
+    no assertions IS (a malformed/empty live response, a parse failure, or all-empty
+    assertions). Pure projection — no LLM, no I/O.
+    """
+    produced = {a.component_id for a in annotations if a.source_points}
+    out: list[IncompleteSegment] = []
+    for rec in components:
+        if not is_note_bearing(_rec_type(rec)):
+            continue
+        cid = _rec_id(rec)
+        if not cid or not _rec_excerpt(rec).strip():
+            continue  # no id, or genuinely empty notes → not a hole
+        if cid not in produced:
+            out.append(IncompleteSegment(component_id=str(cid), slide_key=_rec_slide_key(rec)))
+    return tuple(out)
+
+
+def assert_segmentation_complete(
+    components: list[dict[str, Any]],
+    annotations: tuple[CoverageAnnotation, ...],
+) -> None:
+    """Raise :class:`CoverageIncompleteError` if any non-empty note block produced nothing.
+
+    Orchestrator-callable (FIX 3): the live pass must DISTINGUISH "segmentation
+    produced nothing for a note-bearing component" from "no must-cover holes".
+    """
+    incomplete = detect_incomplete_segmentation(components, annotations)
+    if incomplete:
+        ids = ", ".join(seg.component_id for seg in incomplete)
+        raise CoverageIncompleteError(
+            f"coverage segmentation produced ZERO assertions for {len(incomplete)} non-empty "
+            f"note-bearing component(s) [{ids}] — the ledger would be silently empty "
+            "(indistinguishable from '0 holes'); surface + investigate, do not ship.",
+            incomplete=incomplete,
+        )
 
 
 # ---------------------------------------------------------------------------
@@ -447,7 +569,17 @@ def build_coverage_from_rows(
             continue
         if ann is not None:
             out.append(ann)
-    return tuple(out)
+    annotations = tuple(out)
+    # FIX 3: never silently empty the ledger — a non-empty note block that produced
+    # zero assertions is a structured `coverage_incomplete` marker, logged here so the
+    # signal survives even if the orchestrator does not call `assert_segmentation_complete`.
+    for seg in detect_incomplete_segmentation(components, annotations):
+        logger.warning(
+            "coverage live: component %r produced ZERO assertions from a non-empty note block "
+            "(coverage_incomplete) — surfaced, not swallowed (FIX 3)",
+            seg.component_id,
+        )
+    return annotations
 
 
 def render_live_segmentation_prompt(  # pragma: no cover - live leg
@@ -497,7 +629,18 @@ def _live_coverage_pass(
     if chat_model_factory is None:
         from app.models.adapter import make_chat_model
 
-        chat_model_factory = make_chat_model
+        # FIX 6: the DEFAULT fallback path must bind the SAME hard per-request timeout
+        # + max_retries=0 the injected T8 harness factory binds (AC-OP2). `make_chat_model`
+        # does NOT bind a timeout by default (verified: request_timeout=None → the openai
+        # SDK's ~600s default, which can hang a slow gpt-5 reasoning call). Pass them
+        # explicitly so the default path can't hang.
+        def chat_model_factory(model_id: str) -> Any:
+            return make_chat_model(
+                model_id,
+                request_timeout=COVERAGE_REQUEST_TIMEOUT_S,
+                max_retries=0,
+            )
+
     handle = chat_model_factory(COVERAGE_LIVE_MODEL)
     prompt = render_live_segmentation_prompt(note_bearing)
     response = handle.chat.invoke([{"role": "user", "content": prompt}])
@@ -540,9 +683,15 @@ __all__ = [
     "MAX_ASSERTIONS_PER_BLOCK",
     "NOTE_BEARING_TYPES",
     "CoverageAnnotation",
+    "CoverageIncompleteError",
+    "CoverageNotShippableError",
+    "IncompleteSegment",
+    "assert_segmentation_complete",
+    "assert_v1_shippable",
     "build_coverage_annotations",
     "build_coverage_from_rows",
     "coverage_annotation_json_schema",
+    "detect_incomplete_segmentation",
     "detect_risk_flags",
     "extract_coverage_rows",
     "is_note_bearing",

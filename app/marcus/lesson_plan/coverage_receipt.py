@@ -158,6 +158,14 @@ class CoverageReceiptRow(BaseModel):
         default=False,
         description="A verbatim_required span failed deterministic presence at anchor.",
     )
+    narration_obligation_unmet: bool = Field(
+        default=False,
+        description=(
+            "A 'detail_in_narration' point whose span reached ONLY the slide (never the "
+            "narration) — covered-on-slide does NOT satisfy a narration obligation (AC3). "
+            "An independent BLOCK term (FIX 2): money-on-the-line for a must-cover point."
+        ),
+    )
     planned_on_slide: bool = Field(default=False)
     planned_in_narration: bool = Field(default=False)
     must_cover: bool = Field(
@@ -336,6 +344,14 @@ def _derive_row(
     on_slide = anchor.slide_present and _span_present(point.verbatim_text, anchor.slide_text)
     in_narration = narration_usable and _span_present(point.verbatim_text, anchor.narration_text)
 
+    # FIX 2: a 'detail_in_narration' obligation is NOT satisfied by slide carriage
+    # alone. If the point intends narration detail but its span never reaches the
+    # narration surface, the narration obligation is UNMET (a must-cover hole the gate
+    # blocks on independently of verbatim_absent).
+    narration_obligation_unmet = (
+        "detail_in_narration" in point.coverage_intents and not in_narration
+    )
+
     # If a surface EXISTS but the span isn't found there, the point is still
     # "planned" for that surface (a coverage attempt) — coverage_status reflects
     # ACTUAL carriage; verbatim_absent flags the deterministic miss for the gate.
@@ -360,6 +376,7 @@ def _derive_row(
             vouch_level="not_assessed", anchor_resolved=True,
             planned_on_slide=planned_on_slide, planned_in_narration=planned_in_narration,
             verbatim_absent=point.verbatim_required,
+            narration_obligation_unmet=narration_obligation_unmet,
         )
 
     verdict, vouch, r7_report, verbatim_absent = _derive_containment(
@@ -369,6 +386,7 @@ def _derive_row(
         **common, coverage_status=status, containment_verdict=verdict, vouch_level=vouch,
         anchor_resolved=True, planned_on_slide=planned_on_slide,
         planned_in_narration=planned_in_narration, verbatim_absent=verbatim_absent,
+        narration_obligation_unmet=narration_obligation_unmet,
         r7_report=r7_report,
     )
 
@@ -400,7 +418,15 @@ def _derive_containment(
             # the span is present but its polarity/comparison can't be deterministically
             # vouched (bag-of-words FN) → DISCLOSED advisory, never a green vouch.
             return "verbatim_preserved", "advisory_caveat", report, False
-        # required span not deterministically present → altered + flag for the gate.
+        # FIX 7 (dead-branch resolution): this `span_present is False` path is
+        # UNREACHABLE from `_derive_row` — `_derive_containment` is only ever called
+        # with `surface_for_containment` set to the surface on which the span WAS found
+        # (the `on_slide`/`in_narration` branches guarantee `_span_present == True`).
+        # The verbatim-absent case is routed earlier, via the `status == "missing"`
+        # branch in `_derive_row` (which stamps `verbatim_absent=point.verbatim_required`
+        # and never reaches here). This return is retained as a defensive guard only so
+        # the function is total over its signature; the gate's verbatim_absent teeth do
+        # NOT depend on it.
         return "altered", "advisory_caveat", report, True
 
     # Not verbatim-required: a semantic-fidelity judgment, never deterministic.

@@ -74,6 +74,8 @@ def make_chat_model(
     temperature: float = 0.0,
     tier_request: str | None = None,
     system_prompt_hash: str = "",
+    request_timeout: float | None = None,
+    max_retries: int | None = None,
 ) -> ChatModelHandle:
     """Resolve via the cascade + construct a `ChatOpenAI` with span metadata.
 
@@ -81,6 +83,14 @@ def make_chat_model(
     SDK reads `OPENAI_API_KEY` from env at invocation time. Slab 1 substrate
     does not exercise `.invoke(...)`; the integration test asserts construction
     + metadata only.
+
+    ``request_timeout`` / ``max_retries`` (additive; default ``None`` preserves the
+    prior behaviour) bind a HARD per-request client timeout + retry budget at
+    construction. They propagate into the underlying OpenAI client (built in a
+    langchain validator at construction time), so a caller on a reasoning model
+    (gpt-5) can guarantee a single slow call cannot hang indefinitely. With both
+    ``None`` the langchain/openai defaults apply (no hard per-request timeout; SDK
+    default retries) — i.e. the legacy behaviour is unchanged.
     """
     result = selector.resolve(
         specialist_id,
@@ -95,12 +105,18 @@ def make_chat_model(
         model_id=result.model_id,
     )
     api_key = os.getenv("OPENAI_API_KEY") or _PLACEHOLDER_API_KEY
+    extra: dict[str, object] = {}
+    if request_timeout is not None:
+        extra["timeout"] = request_timeout
+    if max_retries is not None:
+        extra["max_retries"] = max_retries
     chat = ChatOpenAI(
         model=result.model_id,
         temperature=temperature,
         metadata=metadata,
         tags=[f"specialist:{specialist_id}", f"resolution_level:{result.entry.level}"],
         api_key=api_key,
+        **extra,
     )
     return ChatModelHandle(chat=chat, entry=result.entry)
 

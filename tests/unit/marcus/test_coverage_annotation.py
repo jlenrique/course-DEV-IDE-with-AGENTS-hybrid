@@ -18,10 +18,16 @@ from pydantic import ValidationError
 from app.marcus.lesson_plan.coverage_annotation import (
     COVERAGE_LIVE_MODEL,
     COVERAGE_OFFLINE_MODEL,
+    COVERAGE_REQUEST_TIMEOUT_S,
     MAX_ASSERTIONS_PER_BLOCK,
     CoverageAnnotation,
+    CoverageIncompleteError,
+    CoverageNotShippableError,
+    assert_segmentation_complete,
+    assert_v1_shippable,
     build_coverage_annotations,
     build_coverage_from_rows,
+    detect_incomplete_segmentation,
     detect_risk_flags,
     extract_coverage_rows,
     load_coverage_annotation,
@@ -61,6 +67,20 @@ def test_detect_numeric_and_dosing() -> None:
 def test_detect_negation_and_comparator() -> None:
     assert "negation" in detect_risk_flags("this is not a personal failing")
     assert "comparator" in detect_risk_flags("burden increased more than before")
+
+
+def test_fix5_contraction_negations_caught() -> None:
+    # FIX 5: negative contractions ("don't", "isn't", "won't", "doesn't", "can't",
+    # "shouldn't", …) must trip the `negation` flag → verbatim_required floor. A
+    # "don't exceed 5 mg" safety claim previously escaped (no flag → not must_cover).
+    assert "negation" in detect_risk_flags("don't exceed 5 mg")
+    for phrase in (
+        "isn't safe", "won't help", "doesn't apply", "can't reuse", "shouldn't dose",
+        "didn't improve", "wasn't tested",
+    ):
+        assert "negation" in detect_risk_flags(phrase), phrase
+    # curly-apostrophe variant normalizes to the same floor
+    assert "negation" in detect_risk_flags("don’t exceed the dose")
 
 
 def test_detect_exemplary_and_clinical_gated() -> None:
@@ -197,6 +217,86 @@ def test_annotation_rejects_segmentation_grain_mismatch() -> None:
             component_id="src-001-c001", slide_key="Slide 1",
             source_points=(point,), segmentation="block_level_v1",
         )
+
+
+# --------------------------------------------------------------------------- #
+# FIX 3 — segmentation that yields nothing for a non-empty note block is SURFACED
+# --------------------------------------------------------------------------- #
+
+
+def test_fix3_incomplete_segmentation_is_surfaced_not_swallowed() -> None:
+    # A non-empty note-bearing component whose live segmentation yields ZERO
+    # assertions (parse failure / empty/malformed response) must NOT silently vanish
+    # into an empty ledger — that is indistinguishable from "0 holes" and is
+    # toothless. The incompleteness is an explicit, structured signal.
+    components = [_narration_rec("src-001-c001", notes=_NOTES_1)]
+    # rows == [] models extract_coverage_rows() degrading on a malformed response
+    anns = build_coverage_from_rows([], components, generated_at=_TS, clinical_terms=None)
+    assert anns == ()  # nothing produced
+    incomplete = detect_incomplete_segmentation(components, anns)
+    assert len(incomplete) == 1
+    assert incomplete[0].component_id == "src-001-c001"
+    # and the orchestrator-callable assert raises a typed error it can surface
+    with pytest.raises(CoverageIncompleteError, match="src-001-c001"):
+        assert_segmentation_complete(components, anns)
+
+
+def test_fix3_empty_note_block_is_not_incomplete() -> None:
+    # A genuinely empty note block producing zero assertions is NOT incompleteness.
+    components = [_narration_rec("src-001-c001", notes="   ")]
+    anns = build_coverage_annotations(components, generated_at=_TS)
+    assert detect_incomplete_segmentation(components, anns) == ()
+    assert_segmentation_complete(components, anns)  # does not raise
+
+
+def test_fix3_complete_segmentation_passes() -> None:
+    components = [_narration_rec("src-001-c001", notes=_NOTES_1)]
+    anns = build_coverage_annotations(components, generated_at=_TS)
+    assert detect_incomplete_segmentation(components, anns) == ()
+    assert_segmentation_complete(components, anns)
+
+
+# --------------------------------------------------------------------------- #
+# FIX 4 — assertion_level is enforced; block_level_v1 is never a v1 ship state
+# --------------------------------------------------------------------------- #
+
+
+def test_fix4_block_level_v1_is_rejected_by_ship_gate() -> None:
+    point = SourcePoint(
+        source_point_id="src-001-c001#1", component_id="src-001-c001", ordinal=1,
+        slide_key="Slide 1", verbatim_text="x", coverage_intents=("gist_on_slide",),
+        segmentation="block_level_v1",
+    )
+    block_ann = CoverageAnnotation(
+        component_id="src-001-c001", slide_key="Slide 1", source_points=(point,),
+        segmentation="block_level_v1", generated_at=_TS,
+    )
+    assert block_ann.is_v1_shippable() is False
+    with pytest.raises(CoverageNotShippableError, match="block_level_v1"):
+        assert_v1_shippable((block_ann,))
+
+
+def test_fix4_assertion_level_passes_ship_gate() -> None:
+    anns = build_coverage_annotations([_narration_rec()], generated_at=_TS)
+    assert_v1_shippable(anns)  # does not raise
+
+
+# --------------------------------------------------------------------------- #
+# FIX 6 — the default live-leg chat model binds a hard per-request timeout
+# --------------------------------------------------------------------------- #
+
+
+def test_fix6_make_chat_model_binds_request_timeout_and_no_retries() -> None:
+    # FIX 6: the default fallback path must bind a hard per-request timeout +
+    # max_retries=0 (AC-OP2), else a slow gpt-5 reasoning call hangs. Construction
+    # only — NO live/network call (mirrors the adapter's own construction-only tests).
+    from app.models.adapter import make_chat_model
+
+    handle = make_chat_model(
+        COVERAGE_LIVE_MODEL, request_timeout=COVERAGE_REQUEST_TIMEOUT_S, max_retries=0
+    )
+    assert handle.chat.request_timeout == COVERAGE_REQUEST_TIMEOUT_S
+    assert handle.chat.max_retries == 0
 
 
 def test_annotation_round_trip_load() -> None:
