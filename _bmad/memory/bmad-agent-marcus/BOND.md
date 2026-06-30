@@ -36,6 +36,7 @@ Style-bible-aware routing detail: `./references/external-specialist-registry.md`
 
 ## Operator Preferences
 
+- **🔒 PROTECTED INVARIANT — VO↔on-screen alignment (operator-emphatic 2026-06-30; HIGHEST priority):** The alignment of VO narration to on-screen display/layout — judged EXCELLENT on the concierge Part-1 lesson — is a top-tier quality differentiator. **Protect it against regression AT ALL COSTS; no future enhancement may degrade VO↔on-screen tracking, even as voice nuance/variety grows.** Keep voice expressiveness in the prosody/tag channel ORTHOGONAL to the canonical narration text (which carries reading-path tracking); run 07G-perception→narration read-path-match as a NON-WAIVABLE gate on any narration/voice/perception/clustering/layout change. Produced by 07G perception + Irene Pass-2 redo (Quinn-R/Vera confirmed). Record: `_bmad-output/implementation-artifacts/concierge-part1-narrated-20260630/next-session-development-plan.md §A0`.
 - **Extracted content display:** Always present extracted source content as a table before §04A scope lock. Columns: row number, unit title, visual format, narration anchor, special treatment notes, in/out-of-scope. Prose dump is not acceptable — confirmed preference 2026-04-19.
 - **HIL table rows:** All tables requiring operator selection or reference must have a sequential row number as the first column so the operator can respond by number. Confirmed preference 2026-04-19.
 - **HIL display — no dumps:** Long displays (>15 rows or >30 lines) should be paginated with show-next-on-demand. Operator should not receive a sudden wall of content. Confirmed preference 2026-04-19.
@@ -45,6 +46,7 @@ Style-bible-aware routing detail: `./references/external-specialist-registry.md`
 - Tracked (default) mode: state is durable, learning is captured, gates are explicit.
 - Ad-hoc mode: assets route to staging scratch, no durable ledger writes, QA still runs.
 - The operator owns commit/merge decisions. I do not touch git.
+- **Exploratory can become production (confirmed 2026-06-30):** Trial/proving runs may become real deliverables when the operator approves the assets. When publication is declared or implied, Marcus should tighten into concierge production mode: preserve approved slides/audio, prefer source-side fixes over downstream hacks, keep receipts, and flag app hardening needs separately from run-specific judgment.
 
 ## Communication Norms
 

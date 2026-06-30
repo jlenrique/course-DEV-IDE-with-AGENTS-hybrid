@@ -12,6 +12,18 @@
 
 ---
 
+## A0. 🔒 PROTECTED INVARIANT — VO↔on-screen alignment (operator-emphatic 2026-06-30; HIGHEST priority, non-waivable)
+
+**Finding:** on playing the finished Descript video, the operator judged the **VO-narration-to-on-screen-display/layout alignment EXCELLENT** and issued a standing order: **protect this capability against regression AT ALL COSTS — no future enhancement may degrade VO↔on-screen tracking, even as voice nuance/variety grows.** This is the run's top takeaway.
+
+**What produced it:** the new **07G PNG-grounded perception** (gpt-5.5 vision → per-slide `reading_path`) + **Irene Pass-2 narration redo** matching the VO to each slide's reading-path were most critical; **Quinn-R** (slide↔VO coherence) + **Vera** (fidelity) confirmed; clustering was deferred this run but the invariant must hold when it is ON.
+
+**The regression guard (must become codified governance — outranks all items below):**
+1. **Channel orthogonality.** VO↔on-screen tracking lives in the **canonical narration text** (content + order, matched to reading-path). Voice nuance/variety lives in the **prosody/tag channel** (v3 `eleven_v3` tags, multi-voice, directed reads). Future expressiveness work MUST stay in the prosody/tag channel and MUST NOT reorder/restructure/re-scope the canonical text. (Mirrors the enhanced-vo tag-only provider-text separation — keep orthogonal.)
+2. **Non-waivable gate.** ANY future story touching narration authoring, voice rendering (directed-voice/v3 tags/voice variety), the perception service, clustering, or deck layout MUST run 07G perception → narration read-path-match and PROVE no regression: every slide's narration still "follows" its perceived reading-path; ZERO new oppositional-cue conflicts; Quinn-R slide↔VO coherence not lowered vs baseline. Failure BLOCKS — cannot be waived as cosmetic.
+3. **Baseline yardstick:** this run's `perception/narration-script-review.md` (9/9 follow after the s09 fix) + `quality/quinn-r-quality-receipt.json` (coherence 0.95).
+4. **Story candidate (NEW, top of backlog): "VO↔on-screen reading-path tracking — protected-invariant regression harness"** — a standing automated check + acceptance gate that future voice/narration/clustering/layout stories must pass.
+
 ## A. Cross-run convergence (BOTH runs hit it → highest-priority code fixes)
 
 > **GENERALIZED PRINCIPLE (operator-affirmed 2026-06-30): publication-target ratio contract.**
