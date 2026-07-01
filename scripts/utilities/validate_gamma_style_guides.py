@@ -72,10 +72,18 @@ def _triad_rationale(record: dict[str, Any]) -> Any:
     return ((record.get("presentation") or {}).get("narrative") or {}).get("triad_rationale")
 
 
-def _validate_one(name: str, record: dict[str, Any]) -> list[str]:
+def _validate_one(name: str, record: dict[str, Any]) -> tuple[list[str], list[str]]:
+    """Validate one styleguide record.
+
+    Returns ``(errors, warnings)``. Errors fail the exit code; warnings surface
+    loudly but only fail the exit code under ``--strict`` (see ``main``). WARN rules
+    are for valid-but-subordinated configs Gary's Gamma-truth flags as merges, not
+    invalid states — never hard-block a valid styleguide (green-light Decision 2).
+    """
     errors: list[str] = []
+    warnings: list[str] = []
     if not isinstance(record, dict):
-        return [f"{name}: styleguide record must be a mapping"]
+        return ([f"{name}: styleguide record must be a mapping"], warnings)
 
     production_mode = str(record.get("production_mode") or "").strip().lower()
     if production_mode not in PRODUCTION_MODE_VALUES:
@@ -84,7 +92,7 @@ def _validate_one(name: str, record: dict[str, Any]) -> list[str]:
             f"got {record.get('production_mode')!r}"
         )
         # Without a valid discriminant the rest of the checks are undefined.
-        return errors
+        return (errors, warnings)
 
     # --- Discriminated-union surface + expansion (shares Gary's resolver) ---------
     try:
@@ -138,6 +146,36 @@ def _validate_one(name: str, record: dict[str, Any]) -> list[str]:
             f"(visuals.custom_style) or Gary crashes at dispatch"
         )
 
+    # --- Rule 2 (ERROR): image_model honored only under image_source=aiGenerated ----
+    # On the RESOLVED surface: a model string is a silent no-op under unsplash/
+    # webAllImages/giphy/pictographic/etc. Fail loud at write time (Gary's Gamma-truth).
+    if _is_present(resolved.get("image_model")) and (
+        str(resolved.get("image_source") or "").strip() != "aiGenerated"
+    ):
+        errors.append(
+            f"{name}: image_model={resolved.get('image_model')!r} is set but "
+            f"image_source={resolved.get('image_source')!r} != 'aiGenerated'; the "
+            f"model string is a silent no-op under non-aiGenerated sources "
+            f"[gamma.dep.image-model-source]"
+        )
+
+    # --- Rule 3 (WARN, RAW record): named preset subordinates a set image_style -----
+    # Evaluated on the RAW record (the resolver keeps both, but the raw fields are the
+    # CD-authored intent). A named preset dominates the card theme while a set
+    # image_style (visuals.custom_style) may be silently subordinated. WARN (a merge,
+    # not invalid — never hard-block), surfaced LOUD/visible, never a silent drop.
+    visuals = (record.get("prompt_configuration") or {}).get("visuals") or {}
+    raw_preset = str(visuals.get("style_preset") or "").strip()
+    if raw_preset and raw_preset != "custom" and _is_present(visuals.get("custom_style")):
+        warnings.append(
+            f"{name}: image_style_preset={raw_preset!r} is a named preset AND "
+            f"image_style (visuals.custom_style) is also set; the preset dominates the "
+            f"card theme and the top-level image_style may be silently subordinated. "
+            f"To let the custom style dominate, set image_style_preset='custom' — do NOT "
+            f"drop the source-derived custom_style (protected source-detail conveyance) "
+            f"[gamma.dep.preset-style-subordinated]"
+        )
+
     # --- Coherence-triad: theme + art-style/keywords + dimensions + prose ----------
     if not _is_present(_triad_rationale(record)):
         errors.append(
@@ -154,29 +192,36 @@ def _validate_one(name: str, record: dict[str, Any]) -> list[str]:
                 f"{name}: coherence-triad art axis empty (needs keywords or a "
                 f"style_preset/custom_style to agree with theme + dimensions)"
             )
-    return errors
+    return (errors, warnings)
 
 
-def validate_style_guides(
+def validate_style_guides_full(
     data: dict[str, Any],
     *,
     check_existence: bool = False,
-) -> list[str]:
-    """Return a list of validation errors for the styleguide library payload.
+) -> tuple[list[str], list[str]]:
+    """Return ``(errors, warnings)`` for the styleguide library payload.
+
+    Errors are hard-blocking (fail the exit code). Warnings surface loudly but only
+    fail the exit code under ``--strict`` (see ``main``). This is the full/pinned
+    output shape; ``validate_style_guides`` is the back-compatible errors-only view.
 
     ``check_existence`` is the ONLY network path (theme/template live existence). It
     is OFF by default so the CI/hermetic run never touches the network.
     """
     errors: list[str] = []
+    warnings: list[str] = []
     guides = data.get("style_guides")
     if not isinstance(guides, dict) or not guides:
-        return ["style_guides mapping is missing or empty"]
+        return (["style_guides mapping is missing or empty"], warnings)
 
     classic_count = 0
     studio_count = 0
     for name in sorted(guides):
         record = guides[name]
-        errors.extend(_validate_one(name, record))
+        rec_errors, rec_warnings = _validate_one(name, record)
+        errors.extend(rec_errors)
+        warnings.extend(rec_warnings)
         if isinstance(record, dict):
             mode = str(record.get("production_mode") or "").strip().lower()
             if mode == "api":
@@ -192,6 +237,24 @@ def validate_style_guides(
 
     if check_existence:
         errors.extend(_check_existence(guides))
+    return (errors, warnings)
+
+
+def validate_style_guides(
+    data: dict[str, Any],
+    *,
+    check_existence: bool = False,
+    strict: bool = False,
+) -> list[str]:
+    """Back-compatible errors-only view over :func:`validate_style_guides_full`.
+
+    Default behavior is unchanged (existing callers see the same error list). Under
+    ``strict=True`` the warnings are folded into the returned list so a warning also
+    fails the exit code.
+    """
+    errors, warnings = validate_style_guides_full(data, check_existence=check_existence)
+    if strict:
+        return errors + warnings
     return errors
 
 
@@ -229,14 +292,32 @@ def main(argv: list[str] | None = None) -> int:
         action="store_true",
         help="ALSO live-verify theme/template ids against the Gamma API (network).",
     )
+    parser.add_argument(
+        "--strict",
+        action="store_true",
+        help="treat WARNINGS as failures too (they are surfaced but non-fatal by default).",
+    )
     args = parser.parse_args(argv)
 
     data = load_style_guides(args.path)
-    errors = validate_style_guides(data, check_existence=args.check_existence)
+    errors, warnings = validate_style_guides_full(
+        data, check_existence=args.check_existence
+    )
+
+    # Warnings surface LOUD/visible even when non-fatal (green-light Decision 2 —
+    # never a silent drop).
+    if warnings:
+        print(f"WARN: {len(warnings)} styleguide warning(s):")
+        for warn in warnings:
+            print(f"  ! {warn}")
+
     if errors:
         print(f"FAIL: {len(errors)} styleguide validation error(s):")
         for err in errors:
             print(f"  - {err}")
+        return 1
+    if warnings and args.strict:
+        print("FAIL(--strict): warnings present and --strict is set")
         return 1
     print(f"OK: {args.path} is copacetic ({len(data.get('style_guides', {}))} styleguide(s))")
     return 0

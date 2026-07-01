@@ -173,3 +173,168 @@ def test_custom_style_preset_without_custom_style_fails() -> None:
     visuals["custom_style"] = None
     errors = validate_style_guides(broken)
     assert any("custom" in e.lower() for e in errors), errors
+
+
+# ---------------------------------------------------------------------------
+# Leg-B1 — documented dependency rules (warnings channel + Rules 2/3; dedup 6/theme)
+# RED-first: these assert the new warnings channel, Rule 2 (ERROR), Rule 3 (WARN),
+# and the dedup membership of the studio-surface rules. Diagnostic id/string is
+# asserted, not just exit code. NO network in any test.
+# ---------------------------------------------------------------------------
+
+
+def test_warnings_channel_shape_and_backcompat() -> None:
+    # AC#1: the full API returns a (errors, warnings) tuple; the default
+    # validate_style_guides is unchanged (errors-only list); strict folds warnings
+    # into the failing list. Seeds are clean on BOTH channels.
+    from scripts.utilities.validate_gamma_style_guides import validate_style_guides_full
+
+    data = _runtime_data()
+    result = validate_style_guides_full(data)
+    assert isinstance(result, tuple) and len(result) == 2, result
+    errors, warnings = result
+    assert isinstance(errors, list) and isinstance(warnings, list)
+    assert errors == [], errors
+    assert warnings == [], warnings
+    # Back-compat: default call still returns the errors list only.
+    assert validate_style_guides(data) == []
+
+
+def test_rule2_image_model_without_aigenerated_errors() -> None:
+    # AC#2 / AC#9 teeth: image_model set + image_source != aiGenerated -> ERROR
+    # (the model string is a silent no-op under non-aiGenerated sources).
+    data = _runtime_data()
+    broken = copy.deepcopy(data)
+    visuals = broken["style_guides"]["hil-2026-apc-blueprint-classic"][
+        "prompt_configuration"
+    ]["visuals"]
+    # blueprint already carries image_model=recraft-v3-svg; flip source off aiGenerated.
+    visuals["image_source"] = "pexels"
+    errors = validate_style_guides(broken)
+    assert any("gamma.dep.image-model-source" in e for e in errors), errors
+
+
+def test_rule2_image_model_with_aigenerated_passes() -> None:
+    # AC#7 good: image_model + aiGenerated is the valid pairing (no false error).
+    data = _runtime_data()
+    errors = validate_style_guides(data)
+    assert not any("gamma.dep.image-model-source" in e for e in errors), errors
+
+
+def test_rule3_named_preset_plus_image_style_warns_not_errors() -> None:
+    # AC#3 / AC#9 teeth: a named preset + a set image_style (visuals.custom_style)
+    # -> WARN gamma.dep.preset-style-subordinated, NOT an error. Evaluated on the
+    # RAW record. Warning does not fail the default exit; --strict folds it in.
+    from scripts.utilities.validate_gamma_style_guides import validate_style_guides_full
+
+    data = _runtime_data()
+    broken = copy.deepcopy(data)
+    visuals = broken["style_guides"]["classic-freeform-x-cards"][
+        "prompt_configuration"
+    ]["visuals"]
+    # style_preset is 'illustration' (a named preset); add a conflicting image_style.
+    visuals["custom_style"] = "loose watercolor washes"
+    errors, warnings = validate_style_guides_full(broken)
+    assert any("gamma.dep.preset-style-subordinated" in w for w in warnings), warnings
+    assert not any("gamma.dep.preset-style-subordinated" in e for e in errors), errors
+    # Non-strict exit is unaffected by a warning:
+    assert not any(
+        "gamma.dep.preset-style-subordinated" in e
+        for e in validate_style_guides(broken)
+    )
+    # --strict folds the warning into the failing set:
+    assert any(
+        "gamma.dep.preset-style-subordinated" in e
+        for e in validate_style_guides(broken, strict=True)
+    )
+
+
+def test_rule3_named_preset_alone_no_warning() -> None:
+    # AC#7 good: a named preset WITHOUT an image_style -> no subordination warning.
+    from scripts.utilities.validate_gamma_style_guides import validate_style_guides_full
+
+    data = _runtime_data()  # classic seed: illustration + custom_style null
+    _errors, warnings = validate_style_guides_full(data)
+    assert not any(
+        "gamma.dep.preset-style-subordinated" in w for w in warnings
+    ), warnings
+
+
+def test_rule3_custom_preset_with_style_no_subordination_warning() -> None:
+    # AC#7 good: 'custom' preset + custom_style is the REQUIRED pairing (Leg-A rule),
+    # never a subordination conflict -> no warning.
+    from scripts.utilities.validate_gamma_style_guides import validate_style_guides_full
+
+    data = _runtime_data()
+    good = copy.deepcopy(data)
+    visuals = good["style_guides"]["classic-freeform-x-cards"]["prompt_configuration"][
+        "visuals"
+    ]
+    visuals["style_preset"] = "custom"
+    visuals["custom_style"] = "loose watercolor washes"
+    _errors, warnings = validate_style_guides_full(good)
+    assert not any(
+        "gamma.dep.preset-style-subordinated" in w for w in warnings
+    ), warnings
+
+
+def test_rule6_studio_dimensions_single_surface_violation_no_double_fire() -> None:
+    # AC#4 dedup: dimensions on a studio record is ALREADY rejected by the
+    # discriminated-union surface check; assert single-fire, no gamma.dep dup.
+    data = _runtime_data()
+    broken = copy.deepcopy(data)
+    studio = broken["style_guides"]["hil-2026-apc-studio-image-card"]
+    studio.setdefault("page_settings", {}).setdefault("card_options", {})[
+        "dimensions"
+    ] = "16x9"
+    errors = validate_style_guides(broken)
+    surface = [e for e in errors if "surface-violation" in e]
+    assert len(surface) == 1, surface
+    assert not any("gamma.dep" in e for e in errors), errors
+
+
+def test_studio_theme_id_already_caught_by_surface_violation_no_double_fire() -> None:
+    # AC#5 dedup: from-template + theme.id is ALREADY rejected by the surface union
+    # ('theme' in STYLEGUIDE_CLASSIC_ONLY_KEYS). One surface-violation, no dup, and
+    # no separate gamma.dep.studio-theme-conflict double-fire.
+    data = _runtime_data()
+    broken = copy.deepcopy(data)
+    studio = broken["style_guides"]["hil-2026-apc-studio-image-card"]
+    studio["theme"] = {"id": "njim9kuhfnljvaa", "name": "leaked theme"}
+    errors = validate_style_guides(broken)
+    surface = [e for e in errors if "surface-violation" in e and "theme" in e]
+    assert len(surface) == 1, surface
+    assert not any("gamma.dep.studio-theme-conflict" in e for e in errors), errors
+
+
+def test_good_studio_no_theme_and_good_api_theme_pass() -> None:
+    # AC#5 good: a clean studio (template, no theme) and a clean api (theme, no
+    # template) both pass with zero errors (covered by the shipped seeds).
+    data = _runtime_data()
+    assert validate_style_guides(data) == []
+
+
+def test_three_seeds_zero_errors_and_zero_warnings() -> None:
+    # AC#7: the shipped seeds stay copacetic on BOTH channels after all rules land.
+    from scripts.utilities.validate_gamma_style_guides import validate_style_guides_full
+
+    errors, warnings = validate_style_guides_full(_runtime_data())
+    assert errors == [], errors
+    assert warnings == [], warnings
+
+
+def test_default_validation_makes_no_network_call(monkeypatch) -> None:
+    # AC#8 hermetic guard: the default path must not open a network socket. The load
+    # (local disk) happens before the guard is armed; validation itself must be inert.
+    import socket
+
+    data = _runtime_data()
+
+    def _boom(*_a, **_k):
+        raise AssertionError("validate_style_guides opened a network socket")
+
+    monkeypatch.setattr(socket, "socket", _boom)
+    from scripts.utilities.validate_gamma_style_guides import validate_style_guides_full
+
+    assert validate_style_guides(data) == []
+    assert validate_style_guides_full(data) == ([], [])
