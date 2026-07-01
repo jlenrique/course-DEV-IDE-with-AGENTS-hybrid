@@ -1,0 +1,66 @@
+[22:54:06] MODE=halt  LIVE=True
+[22:54:06] env load: {'dotenv_loaded': 'yes'} OPENAI_API_KEY: present(len=164, sk-pro…oc0A)
+[22:54:06] copy C:\Users\juanl\Documents\GitHub\course-DEV-IDE-with-AGENTS-hybrid\state\config\runs\8d819b8d-01dd-4ed5-a07d-12c31d764d9b  ->  C:\Users\juanl\Documents\GitHub\course-DEV-IDE-with-AGENTS-hybrid\state\config\runs\08b5ff0f-a84c-4bd8-bd6c-3d0ca66cef64
+[22:54:08] run.json rewritten: trial_id=08b5ff0f-a84c-4bd8-bd6c-3d0ca66cef64; dropped 1 gary@07 contribution(s) (remaining=13)
+[22:54:08] error-pause.json repositioned: node_index=23 node_id=07 specialist_id=gary last_gate_crossed=G2C
+[22:54:08] directive.yaml run_id retargeted to new trial
+[22:54:08] RAI minted: run-asset-index.json pins g0-enrichment status=ratified digest=c23a37c5e56f… (disk=c23a37c5e56f…) produced_by=G0E
+[22:54:08] CORRUPTED g0-enrichment.json: c23a37c5e56f… -> a8fd457155ae… (valid JSON, digest mismatch)
+[22:54:08] LIVE recover_production_trial(max_specialist_calls=1) — expect a UDAC halt BEFORE any gpt call…
+dispatch error at manifest node 07 (specialist gary): [udac.asset-stale] ratified asset 'g0-enrichment' is STALE: on-disk digest a8fd457155ae… != RAI digest c23a37c5e56f… (revision 0) — pausing trial 08b5ff0f-a84c-4bd8-bd6c-3d0ca66cef64 for recovery
+[22:54:08]   -> status=paused-at-error tag=udac.asset-stale node=07 specialist=gary HALT_PROVEN=True
+
+===== RESULT =====
+{
+  "mode": "halt",
+  "live": true,
+  "prepare": {
+    "new_trial": "08b5ff0f-a84c-4bd8-bd6c-3d0ca66cef64",
+    "new_dir": "C:\\Users\\juanl\\Documents\\GitHub\\course-DEV-IDE-with-AGENTS-hybrid\\state\\config\\runs\\08b5ff0f-a84c-4bd8-bd6c-3d0ca66cef64",
+    "consumer_node_index": 23,
+    "consumer_node_id": "07",
+    "consumer_specialist_id": "gary",
+    "rai_path": "C:\\Users\\juanl\\Documents\\GitHub\\course-DEV-IDE-with-AGENTS-hybrid\\state\\config\\runs\\08b5ff0f-a84c-4bd8-bd6c-3d0ca66cef64\\run-asset-index.json",
+    "rai_ratified_digest": "c23a37c5e56f764f9b42b40a396535b51a9af99650c4d68215af1bb4933667ce",
+    "clean_disk_digest": "c23a37c5e56f764f9b42b40a396535b51a9af99650c4d68215af1bb4933667ce",
+    "asset_authority_status": "ratified",
+    "asset_produced_by": "G0E",
+    "directive_path": "C:/Users/juanl/Documents/GitHub/course-DEV-IDE-with-AGENTS-hybrid/state/config/runs/08b5ff0f-a84c-4bd8-bd6c-3d0ca66cef64/directive.yaml",
+    "bundle_dir": "C:/Users/juanl/Documents/GitHub/course-DEV-IDE-with-AGENTS-hybrid/state/config/runs/08b5ff0f-a84c-4bd8-bd6c-3d0ca66cef64/bundle",
+    "last_gate_crossed": "G2C"
+  },
+  "live_halt": {
+    "corruption": {
+      "digest_before": "c23a37c5e56f764f9b42b40a396535b51a9af99650c4d68215af1bb4933667ce",
+      "digest_after": "a8fd457155aed77d8f147f5fbccdf981d5fd86a5b4302e011923bb49fbf47bab",
+      "still_valid_json": true
+    },
+    "walk_status": "paused-at-error",
+    "error_pause_tag": "udac.asset-stale",
+    "error_pause_node_id": "07",
+    "error_pause_specialist_id": "gary",
+    "error_pause_message": "ratified asset 'g0-enrichment' is STALE: on-disk digest a8fd457155ae\u2026 != RAI digest c23a37c5e56f\u2026 (revision 0)",
+    "consumer_contribution_present": false,
+    "audio_before": {
+      "mp3_count": 0,
+      "wav_count": 0,
+      "mp3": [],
+      "wav": []
+    },
+    "audio_after": {
+      "mp3_count": 0,
+      "wav_count": 0,
+      "mp3": [],
+      "wav": []
+    },
+    "status_is_paused_at_error": true,
+    "tag_is_udac_stale": true,
+    "halt_at_consumer": true,
+    "paid_call_prevented": true,
+    "zero_mp3": true,
+    "zero_wav": true,
+    "no_new_audio": true,
+    "HALT_PROVEN": true
+  },
+  "VERDICT": "LIVE-HALT-OK"
+}

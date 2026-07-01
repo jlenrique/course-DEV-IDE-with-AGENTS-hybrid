@@ -1,0 +1,43 @@
+[22:54:16] MODE=control  LIVE=True
+[22:54:16] env load: {'dotenv_loaded': 'yes'} OPENAI_API_KEY: present(len=164, sk-pro…oc0A)
+[22:54:16] copy C:\Users\juanl\Documents\GitHub\course-DEV-IDE-with-AGENTS-hybrid\state\config\runs\8d819b8d-01dd-4ed5-a07d-12c31d764d9b  ->  C:\Users\juanl\Documents\GitHub\course-DEV-IDE-with-AGENTS-hybrid\state\config\runs\938e1680-c182-421c-8a00-33b626310295
+[22:54:18] run.json rewritten: trial_id=938e1680-c182-421c-8a00-33b626310295; dropped 1 gary@07 contribution(s) (remaining=13)
+[22:54:18] error-pause.json repositioned: node_index=23 node_id=07 specialist_id=gary last_gate_crossed=G2C
+[22:54:18] directive.yaml run_id retargeted to new trial
+[22:54:18] RAI minted: run-asset-index.json pins g0-enrichment status=ratified digest=c23a37c5e56f… (disk=c23a37c5e56f…) produced_by=G0E
+[22:54:18] LIVE recover_production_trial(max_specialist_calls=1) — CLEAN asset, expect the guard to PASS and gary to re-dispatch (paid Gamma) / walk to advance…
+[22:56:03]   -> status=paused-at-gate paused_error_tag=None paused_gate=G2B gary07_present=True CONTROL_PROVEN=True
+
+===== RESULT =====
+{
+  "mode": "control",
+  "live": true,
+  "prepare": {
+    "new_trial": "938e1680-c182-421c-8a00-33b626310295",
+    "new_dir": "C:\\Users\\juanl\\Documents\\GitHub\\course-DEV-IDE-with-AGENTS-hybrid\\state\\config\\runs\\938e1680-c182-421c-8a00-33b626310295",
+    "consumer_node_index": 23,
+    "consumer_node_id": "07",
+    "consumer_specialist_id": "gary",
+    "rai_path": "C:\\Users\\juanl\\Documents\\GitHub\\course-DEV-IDE-with-AGENTS-hybrid\\state\\config\\runs\\938e1680-c182-421c-8a00-33b626310295\\run-asset-index.json",
+    "rai_ratified_digest": "c23a37c5e56f764f9b42b40a396535b51a9af99650c4d68215af1bb4933667ce",
+    "clean_disk_digest": "c23a37c5e56f764f9b42b40a396535b51a9af99650c4d68215af1bb4933667ce",
+    "asset_authority_status": "ratified",
+    "asset_produced_by": "G0E",
+    "directive_path": "C:/Users/juanl/Documents/GitHub/course-DEV-IDE-with-AGENTS-hybrid/state/config/runs/938e1680-c182-421c-8a00-33b626310295/directive.yaml",
+    "bundle_dir": "C:/Users/juanl/Documents/GitHub/course-DEV-IDE-with-AGENTS-hybrid/state/config/runs/938e1680-c182-421c-8a00-33b626310295/bundle",
+    "last_gate_crossed": "G2C"
+  },
+  "live_control": {
+    "walk_status": "paused-at-gate",
+    "paused_gate": "G2B",
+    "paused_error_tag": null,
+    "error_pause_tag_on_disk": "leg4.udac-proof.repositioned-to-gary-consumer",
+    "error_pause_node_on_disk": "07",
+    "consumer_contribution_present": true,
+    "is_udac_stale_halt": false,
+    "sailed_past_guard": true,
+    "consumer_redispatched": true,
+    "CONTROL_PROVEN": true
+  },
+  "VERDICT": "LIVE-CONTROL-OK"
+}

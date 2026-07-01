@@ -1,0 +1,17 @@
+{
+  "entries": {
+    "g0-enrichment": {
+      "asset_id": "g0-enrichment",
+      "authority_status": "ratified",
+      "derived_from": "f1d35112b63232343acee8e98f3436d5ae460e6cb64f8b1727edde02f9dea90d",
+      "digest": "c23a37c5e56f764f9b42b40a396535b51a9af99650c4d68215af1bb4933667ce",
+      "digest_algo": "canonical_sha256",
+      "digest_schema_version": "1.0",
+      "path": "g0-enrichment.json",
+      "produced_by_node": "G0E",
+      "ratified_at": "2026-07-01T02:54:08.086605Z",
+      "revision": 0
+    }
+  },
+  "rai_schema_version": "1.0"
+}
