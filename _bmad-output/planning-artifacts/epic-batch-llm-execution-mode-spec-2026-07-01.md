@@ -8,9 +8,9 @@
 **Batch is TRANSPORT, not SEMANTICS.** A run-start `execution_mode` switch (`realtime | batch`) changes transport + timing for *eligible request sites only*; node inputs and outputs stay **contract-equivalent** to realtime. Downstream nodes must not know or care which transport produced an artifact — same schema, same validation. This clean adapter seam (zero downstream contract change) is precisely why the lift is "not especially heavy but must be surgical."
 
 ## The planning insight — TWO tranches by dependency + timing
-The brief bundles 7 stories. They split cleanly into a **foundational, Fable-coupled tranche to pull forward** and the **async batch machinery to run at a clean runtime boundary**. This split is the whole "optimal juncture" answer.
+The brief bundles 7 stories. They split cleanly into a **foundational tranche (node model/profile registry + eval harness)** and the **async batch machinery** — both deferred to the clean runtime boundary, Tranche A landing first as Tranche B's prerequisite. This split is the whole "optimal juncture" answer. *(The earlier "Fable-coupled, pull forward" framing of Tranche A is retracted per the 2026-07-01 operator correction — no pull-forward; Fable 5 is the agent model, not a pipeline model.)*
 
-### TRANCHE A — Node-level model/profile registry + quality-eval harness (FOUNDATIONAL; pull forward; Fable-coupled)
+### TRANCHE A — Node-level model/profile registry + quality-eval harness (FOUNDATIONAL; first within the deferred epic)
 Decoupled from the async machinery — small, surgical, no pause/resume risk. It is the **foundational substrate the batch feature needs before Tranche B** — per-node PRODUCTION-model selection + a way to compare candidate PRODUCTION perception models before choosing a batch default. **⛔ NB (operator-corrected 2026-07-01): this is about PRODUCTION models (the gpt-5 family) — it is NOT a "Fable-5 adoption vehicle." Fable 5 is the IDE/AGENT model (powers Claude Code + spawned agents), NEVER wired into the app pipeline** [[project_fable5_regained_opportunity_scan]]. Tranche A is NOT coupled to the immediate Leg-C/Fable work; it travels WITH the batch epic (see juncture). The Leg-C D1 fix is the Pass-1 output-contract extension, not a production-model swap.
 
 - **A1 — Node-level model/profile registry.** Each LLM node declares `provider/model/reasoning_effort/text_verbosity/max_output_tokens` via a profile (`llm_execution.nodes.<node>`), `default_mode: realtime`. Registers PRODUCTION candidate models per node (gpt-5 family; other production providers as desired) — **mirror the existing `gpt-5.5` `vision-perceiver-real` wiring** (registry/pricing/cascade rows + config). AC: a node's PRODUCTION model/profile is declaratively selectable; default behavior byte-preserved. Surgical; no runtime-orchestration change. (NOT for Fable 5 — that is the agent model, not a pipeline node model.)
@@ -31,7 +31,7 @@ Heavier only because it touches the runtime orchestrator (pause/resume, cost rep
 - **Why this juncture:** the async/pause-resume + cost machinery touches the runtime orchestrator currently mid-Gamma-arc — an arc boundary keeps the surgery focused and reuses the proven pause substrate. The operator holds the GO.
 
 ## Dependencies / sequencing
-`A1 (registry)` → prerequisite for `B1/B2/B6` and for Fable-5 wiring anywhere. `A2 (harness)` is independent + immediately useful (P1 Fable eval + D1). `B3` reuses the existing pause/resume substrate. `B4/B5` are additive. `B6` is the product-surface capstone, gated on B3+B4.
+`A1 (registry)` → prerequisite for `B1/B2/B6`. `A2 (harness)` is independent + immediately useful (production perception-model comparison — gpt-5 vs mini/nano — ahead of the batch default choice). `B3` reuses the existing pause/resume substrate. `B4/B5` are additive. `B6` is the product-surface capstone, gated on B3+B4.
 
 ## Guardrails / binding invariants
 - **SPOC-is-the-goal** (the brief's own boundary) — every element earns its place by improving the SPOC runtime.
