@@ -1,3 +1,24 @@
+# Session Handoff — 2026-07-01(f) (Gamma Styleguide Library arc — Leg-B COMPLETE: `leg-b2-learned-store-scaffold` DUAL-GATE CLOSED)
+
+**Final class:** S. **Branch:** `dev/gamma-styleguide-library-2026-07-01` (code `2391974e` + this WRAPUP docs commit; push at close). Fifth close this session; **Leg-B complete** (B1 + B2). Governance: full BMAD spine, dual-gate on the ratified Leg-B green-light; hermetic (no DB/network); SPOC-is-the-goal guardrail.
+
+**Leg-B2 CLOSED — the hermetic learned-store SCAFFOLD:**
+- NEW `app/specialists/gary/learned_dependencies.py` (no psycopg, no `app.ledger` — the existing `app/ledger` is Postgres-backed, wrong tool for a hermetic offline gate): declarative interpreter `apply_learned_rules` (closed predicate ops {present,absent,equals,not_equals,in}; fail-loud on unknown op — no eval/exec); `predicate_hash` (sha256); digest-idempotent append-only JSONL observations ledger (`append_observation`/`read_observations`); identity-manifest pin `check_manifest_pin` (id-set SUPERSET + per-entry predicate_hash + fixture-existence — a swap/drop/in-place-mutation all go RED; **NO count comparison**, tag `gamma.learned.pin-violation`); honesty-disclaimer docstring.
+- Wired into `validate_style_guides_full` (manifest-pin + per-record apply of ACTIVE rules; absent block + empty manifest = clean no-op). `validate_style_guides` back-compat untouched.
+- Ships `state/config/gamma-learned-rules.lock` (EMPTY manifest by design) + `gamma-learned-observations.jsonl` (3 `status:candidate` OBSERVATIONS: model UI-name≠API-string churn / burst-throttle 401≠429 / parallel-task cap — non-enforcing). `gamma-style-guides.yaml` untouched (no `learned_dependencies:` block ships).
+- **Two-store split real in code** (observations never reach the styleguide YAML; ledger = SSOT; manifest = write-gate pin, not an author surface). Promotion machinery (automation-proposes/CD-ratifies-via-envelope) + live CD envelope-authoring ceremony + memory-sidecar projection DEFERRED + **honestly disclaimed** (validated-by-fixture, NOT exercised-live — explicitly refuses Leg-A's AC#6 over-claim).
+- Spine: dev RED-first (20 failed pre-fix) → Murat structural CLOSE 8/8 (zero conditions; verified the pin is id-set+predicate_hash+fixture, NOT count → the anti-vacuous hole is provably plugged) + Dan CD content CLOSE-WITH-CONDITIONS (Dan-C1 discharged: 2 follow-ons filed). 47 tests green (22 B2 + 25 B1), 3 seeds clean, hermetic (no DB/network guard test), ruff clean. Committed `2391974e`.
+
+**Follow-ons filed (deferred-inventory §Leg-B2):** `gamma-learned-store-promotion-path` (the automation-proposes/CD-ratifies-via-envelope live path; folds with `styleguide-cd-envelope-authoring-ceremony`; reactivation trigger = Leg-E produces real observations), `gamma-learned-observations-memory-sidecar-projection`.
+
+**What is next:** **Leg-C** (`min_cluster_floor` `scripted`→Irene Pass-1, non-waivable 07G perception gate) [operator feature #3] → Leg-D (HTML picker) → Leg-E (live-doc audit — the learned-store observations ledger gets its first real writes here; the promotion-path + non-contradiction follow-ons reactivate) → Phase-2 roster growth.
+
+**Key lessons:** (a) For a "learned store," the honest scaffold ships ZERO active rules with an EMPTY manifest — the machinery is proven by a synthetic fixture, and the anti-vacuous guard (fixture-existence per active rule) makes non-empty-without-scaffolding impossible. (b) The identity-manifest pin must be id-set + predicate-hash, never a count — a count lets a swap slip through; Murat verified the shipped code has no count comparison at all. (c) Reusing the wrong existing ledger (`app/ledger` Postgres) would have broken the hermetic requirement — a hermetic offline gate needs a file store, not a DB.
+
+**Validation:** 47 tests (22 B2 + 25 B1); 3 seeds copacetic; hermetic no-network/no-DB guard; ruff clean. No live Gamma (hermetic leg). **Push: this WRAPUP.**
+
+---
+
 # Session Handoff — 2026-07-01(e) (Gamma Styleguide Library arc — Leg-B GREEN-LIT (SPLIT B1/B2) + Leg-B1 documented dependency rules DUAL-GATE CLOSED)
 
 **Final class:** S. **Branch:** `dev/gamma-styleguide-library-2026-07-01` (code `d7ec3207` + this WRAPUP docs commit; push at close). Fourth close this session. Governance: full BMAD spine; fully-spawned Leg-B green-light (6/6) + B1 dual-gate CLOSE (Murat structural + Gary/Dan content); hermetic (no live fetch); SPOC-is-the-goal guardrail.
