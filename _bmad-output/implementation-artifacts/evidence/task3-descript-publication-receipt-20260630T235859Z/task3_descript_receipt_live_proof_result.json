@@ -1,0 +1,18 @@
+{
+  "real_duration": 486.02469299999996,
+  "receipt": {
+    "project_id": "d4c69938-751c-458f-be93-036874eaa81b",
+    "composition_id": "e4a0d038-f16a-424b-a39c-51ea62b1ba75",
+    "composition_duration_s": 486.02469299999996,
+    "expected_audio_total_s": 486.034,
+    "duration_delta_s": -0.00930700000003526,
+    "duration_within_1s": true,
+    "published": true,
+    "published_attestation": true
+  },
+  "published_ok": true,
+  "raised_on_zero": true,
+  "raised_on_drift": true,
+  "PASS": true,
+  "total_seconds": 0.7
+}

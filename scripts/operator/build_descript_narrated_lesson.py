@@ -19,8 +19,10 @@ from __future__ import annotations
 
 import argparse
 import contextlib
+import json
 import logging
 import sys
+from datetime import UTC, datetime
 from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
@@ -30,6 +32,10 @@ if str(REPO_ROOT) not in sys.path:
 from scripts.api_clients.descript_client import (  # noqa: E402
     DescriptClient,
     content_type_for,
+)
+from scripts.operator.descript_publication_receipt import (  # noqa: E402
+    DescriptPublicationError,
+    build_publication_receipt,
 )
 
 logger = logging.getLogger("build_descript_narrated_lesson")
@@ -91,6 +97,42 @@ def build_add_media(media: dict[str, Path]) -> dict[str, dict[str, object]]:
             "file_size": path.stat().st_size,
         }
     return add_media
+
+
+def resolve_expected_audio_total_s(audio_dir: Path) -> float | None:
+    """Find the synthesized-audio total (seconds) for the assembly bundle.
+
+    Locates ``enrique-synthesis-receipt.json`` in ``audio_dir`` or any ancestor
+    directory and returns its declared total. Prefers
+    ``attestation.total_audio_duration_seconds`` (the authoritative measured
+    total); falls back to a top-level ``total_audio_duration_seconds`` and then
+    to summing the per-segment ``duration_seconds``. Returns None if no receipt
+    is found — the verify gate decides how to treat a missing expected total.
+    """
+    receipt_path: Path | None = None
+    for d in (audio_dir, *audio_dir.parents):
+        candidate = d / "enrique-synthesis-receipt.json"
+        if candidate.is_file():
+            receipt_path = candidate
+            break
+    if receipt_path is None:
+        return None
+    try:
+        data = json.loads(receipt_path.read_text(encoding="utf-8"))
+    except (OSError, UnicodeDecodeError, json.JSONDecodeError):
+        return None
+    attestation = data.get("attestation") or {}
+    total = attestation.get("total_audio_duration_seconds")
+    if total is None:
+        total = data.get("total_audio_duration_seconds")
+    if total is None:
+        segs = data.get("segments") or []
+        per = [s.get("duration_seconds") for s in segs if s.get("duration_seconds") is not None]
+        total = sum(per) if per else None
+    if total is None:
+        return None
+    print(f"  expected_audio_total_s={total} (from {receipt_path})")
+    return float(total)
 
 
 def publish_project(
@@ -239,18 +281,54 @@ def run(args: argparse.Namespace) -> int:
     if result.get("agent_response"):
         print(f"  Underlord: {result['agent_response']}")
 
-    # 5) Verify
+    # 5) Verify — fail loud on the duration-0-mid-assembly detachment case.
     project = client.get_project(project_id)
     comps = project.get("compositions") or []
-    print(f"\nDone. Compositions ({len(comps)}):")
+    print(f"\nCompositions ({len(comps)}):")
     for c in comps:
         print(f"  - {c.get('name')!r} dur={c.get('duration')} "
               f"media_type={c.get('media_type')} id={c.get('id')}")
-    print(f"\nOpen your narrated lesson: {project_url}")
+
+    if not comps:
+        raise DescriptPublicationError(
+            f"No compositions on project {project_id} after assembly — "
+            "Underlord did not produce a timeline. NOT declaring published."
+        )
+
+    comp0 = comps[0]
+    actual_duration = comp0.get("duration")
+    expected_audio_total_s = resolve_expected_audio_total_s(audio_dir)
+    if expected_audio_total_s is None:
+        raise DescriptPublicationError(
+            f"Could not resolve expected_audio_total_s (no synthesis receipt "
+            f"found at/above {audio_dir}). Cannot attest publication; NOT "
+            "declaring published."
+        )
+
+    receipt = build_publication_receipt(
+        project_id=project_id,
+        composition_id=comp0.get("id"),
+        composition_duration_s=actual_duration,
+        expected_audio_total_s=expected_audio_total_s,
+        attested_at_utc=datetime.now(UTC).isoformat(),
+    )
+    receipt["project_url"] = project_url
+    receipt["composition_name"] = comp0.get("name")
+    receipt["composition_media_type"] = comp0.get("media_type")
+
+    receipt_path = Path(args.audio_dir).parent / "descript-publication-receipt.json"
+    receipt_path.write_text(json.dumps(receipt, indent=2), encoding="utf-8")
+    print(f"\nPUBLISHED (attested). Receipt written: {receipt_path}")
+    print(f"  composition_duration_s={receipt['composition_duration_s']} "
+          f"expected={receipt['expected_audio_total_s']} "
+          f"delta={receipt['duration_delta_s']:+.3f}s")
+    print(f"\nDone. Open your narrated lesson: {project_url}")
 
     # 6) Publish (optional) — render a shareable MP4 + link.
+    #    Gated behind the passed assertion above: we only reach here if the
+    #    composition was durably assembled (no detachment / drift).
     if args.publish:
-        comp_id = comps[0].get("id") if comps else None
+        comp_id = comp0.get("id")
         publish_project(client, project_id, resolution=args.resolution, composition_id=comp_id)
     return 0
 
