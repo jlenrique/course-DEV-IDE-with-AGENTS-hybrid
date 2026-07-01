@@ -1,0 +1,7 @@
+HEAD=c-u03-persubslide-probe-card-01 figs=['percent:66']
+INJECTED head-only token percent:66 (66%) into interstitial c-u03-persubslide-probe-card-02 narration text
+Traceback (most recent call last):
+  File "<string>", line 22, in <module>
+  File "C:\Users\juanl\Documents\GitHub\course-DEV-IDE-with-AGENTS-hybrid\app\specialists\irene\graph.py", line 693, in _assert_figure_citations_within_perceived
+    raise Pass2GroundingError(
+app.specialists.irene.graph.Pass2GroundingError: scope=narration; slide c-u03-persubslide-probe-card-02 narration figures not present in perceived authority: ['percent:66']

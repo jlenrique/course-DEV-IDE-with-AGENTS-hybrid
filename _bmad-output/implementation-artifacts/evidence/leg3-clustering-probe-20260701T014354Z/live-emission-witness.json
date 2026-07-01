@@ -1,0 +1,169 @@
+{
+  "probe": "leg3-live-pass1-cluster-emission",
+  "timestamp_utc": "20260701T014354Z",
+  "model_resolved": "gpt-5.4",
+  "temperature_bound": 0.3,
+  "duration_seconds": 25.8,
+  "corpus": "tejal-apc-c1-m1-p2-trends (6 source slides)",
+  "source_slide_count": 6,
+  "plan_unit_count": 8,
+  "cluster_count": 6,
+  "multi_member_clusters": [
+    {
+      "cluster_id": "c-u03",
+      "size": 3,
+      "n_head": 1,
+      "n_interstitial": 2,
+      "narrative_arc": "From technology overwhelm to innovation stewardship through staged evidence about knowledge acceleration, AI adoption, and care-delivery tools",
+      "head_title": "The Knowledge Explosion & New Technologies",
+      "member_titles": [
+        "The Knowledge Explosion & New Technologies",
+        "Technology Tension: Adoption Is Outpacing Oversight",
+        "Technology in Practice: From Reactive Care to Safer Learning"
+      ]
+    }
+  ],
+  "kept_dense_singletons": [
+    {
+      "cluster_id": "c-u01",
+      "size": 1,
+      "n_head": 1,
+      "n_interstitial": 0,
+      "narrative_arc": "From isolated clinic thinking to enterprise-level awareness through paired economic and structural trend evidence",
+      "head_title": "The Economic & Structural Reality",
+      "member_titles": [
+        "The Economic & Structural Reality"
+      ]
+    },
+    {
+      "cluster_id": "c-u02",
+      "size": 1,
+      "n_head": 1,
+      "n_interstitial": 0,
+      "narrative_arc": "From seeing inefficiency as financial waste to recognizing it as a human systems-design crisis through linking administrative bloat to burnout",
+      "head_title": "The Human Cost: System Waste & Burnout",
+      "member_titles": [
+        "The Human Cost: System Waste & Burnout"
+      ]
+    },
+    {
+      "cluster_id": "c-u04",
+      "size": 1,
+      "n_head": 1,
+      "n_interstitial": 0,
+      "narrative_arc": "From passive patient assumptions to consumer-centered system design through the digital front door journey",
+      "head_title": "The Consumer Shift & The Digital Front Door",
+      "member_titles": [
+        "The Consumer Shift & The Digital Front Door"
+      ]
+    },
+    {
+      "cluster_id": "c-u05",
+      "size": 1,
+      "n_head": 1,
+      "n_interstitial": 0,
+      "narrative_arc": "From desire for influence to recognition of a capability gap through contrasting physician leadership interest with limited formal training",
+      "head_title": "The Leadership Gap",
+      "member_titles": [
+        "The Leadership Gap"
+      ]
+    },
+    {
+      "cluster_id": "c-u06",
+      "size": 1,
+      "n_head": 1,
+      "n_interstitial": 0,
+      "narrative_arc": "From fragmented trend awareness to a coherent case for change through synthesis of structural, human, technological, consumer, and leadership pressures",
+      "head_title": "Part 2 Summary & Knowledge Check",
+      "member_titles": [
+        "Part 2 Summary & Knowledge Check"
+      ]
+    }
+  ],
+  "all_clusters": [
+    {
+      "cluster_id": "c-u03",
+      "size": 3,
+      "n_head": 1,
+      "n_interstitial": 2,
+      "narrative_arc": "From technology overwhelm to innovation stewardship through staged evidence about knowledge acceleration, AI adoption, and care-delivery tools",
+      "head_title": "The Knowledge Explosion & New Technologies",
+      "member_titles": [
+        "The Knowledge Explosion & New Technologies",
+        "Technology Tension: Adoption Is Outpacing Oversight",
+        "Technology in Practice: From Reactive Care to Safer Learning"
+      ]
+    },
+    {
+      "cluster_id": "c-u01",
+      "size": 1,
+      "n_head": 1,
+      "n_interstitial": 0,
+      "narrative_arc": "From isolated clinic thinking to enterprise-level awareness through paired economic and structural trend evidence",
+      "head_title": "The Economic & Structural Reality",
+      "member_titles": [
+        "The Economic & Structural Reality"
+      ]
+    },
+    {
+      "cluster_id": "c-u02",
+      "size": 1,
+      "n_head": 1,
+      "n_interstitial": 0,
+      "narrative_arc": "From seeing inefficiency as financial waste to recognizing it as a human systems-design crisis through linking administrative bloat to burnout",
+      "head_title": "The Human Cost: System Waste & Burnout",
+      "member_titles": [
+        "The Human Cost: System Waste & Burnout"
+      ]
+    },
+    {
+      "cluster_id": "c-u04",
+      "size": 1,
+      "n_head": 1,
+      "n_interstitial": 0,
+      "narrative_arc": "From passive patient assumptions to consumer-centered system design through the digital front door journey",
+      "head_title": "The Consumer Shift & The Digital Front Door",
+      "member_titles": [
+        "The Consumer Shift & The Digital Front Door"
+      ]
+    },
+    {
+      "cluster_id": "c-u05",
+      "size": 1,
+      "n_head": 1,
+      "n_interstitial": 0,
+      "narrative_arc": "From desire for influence to recognition of a capability gap through contrasting physician leadership interest with limited formal training",
+      "head_title": "The Leadership Gap",
+      "member_titles": [
+        "The Leadership Gap"
+      ]
+    },
+    {
+      "cluster_id": "c-u06",
+      "size": 1,
+      "n_head": 1,
+      "n_interstitial": 0,
+      "narrative_arc": "From fragmented trend awareness to a coherent case for change through synthesis of structural, human, technological, consumer, and leadership pressures",
+      "head_title": "Part 2 Summary & Knowledge Check",
+      "member_titles": [
+        "Part 2 Summary & Knowledge Check"
+      ]
+    }
+  ],
+  "arm1_multi_member_pass": true,
+  "arm2_kept_dense_singleton_pass": true,
+  "usage_metadata": {
+    "input_token_details": {
+      "audio": 0,
+      "cache_read": 0
+    },
+    "input_tokens": 11825,
+    "output_token_details": {
+      "audio": 0,
+      "reasoning": 0
+    },
+    "output_tokens": 3322,
+    "total_tokens": 15147
+  },
+  "artifact_path": "C:\\Users\\juanl\\AppData\\Local\\Temp\\claude\\c--Users-juanl-Documents-GitHub-course-DEV-IDE-with-AGENTS-hybrid\\7e623da3-1db1-42ee-a43b-69c5f2c14ca6\\scratchpad\\leg3-runs-20260701T014354Z\\leg3-probe-20260701T014354Z\\irene-pass1.md"
+}

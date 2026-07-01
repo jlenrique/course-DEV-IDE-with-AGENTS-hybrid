@@ -1,0 +1,185 @@
+{
+  "model_id": "gpt-5.5",
+  "narration_script": [
+    {
+      "behavioral_intent": "clear-guidance",
+      "bridge_type": "none",
+      "card_number": 1,
+      "cluster_id": "c-u03",
+      "cluster_position": "establish",
+      "cluster_role": "head",
+      "content_density": "heavy",
+      "duration_rationale": "Dense claims with critical figures and three capability pillars require paced explanation to set the cluster frame.",
+      "id": "seg-c-u03-01",
+      "narration_text": "The main message is urgency: medical knowledge that once took 50 years to double now doubles in just 73 days. You cannot keep patients safe with static training or yesterday\u2019s playbook. At the same time, adoption is already here\u201466% of physicians report using some form of AI\u2014while formal oversight training remains limited. That\u2019s why stewardship becomes part of your role. Concretely, three capabilities move to the foreground: AI oversight\u2014understanding model limits, bias, and accountability in decision support; remote monitoring\u2014using continuous data streams to shift care from reactive to proactive; and virtual reality\u2014rehearsing procedures to build fluency without patient risk. As visual context, the exponential growth in technology and medicine is the backdrop; the opportunity is real, but it needs clinical innovators willing to guide these tools safely, not just adopt them.",
+      "slide_id": "c-u03-persubslide-probe-card-01",
+      "timing_role": "concept-build",
+      "visual_detail_load": "medium",
+      "visual_file": "C:\\Users\\juanl\\Documents\\GitHub\\course-DEV-IDE-with-AGENTS-hybrid\\scratchpad\\leg3-c-u03-persubslide-bundle\\gamma-export\\c-u03-persubslide-probe_slide_01.png",
+      "visual_references": [
+        {
+          "element": "paragraph_left",
+          "location_on_slide": "text column",
+          "narration_cue": "once took 50 years to double now doubles in just 73 days",
+          "perception_source": "c-u03-persubslide-probe-card-01"
+        },
+        {
+          "element": "card_ai_oversight",
+          "location_on_slide": "supporting callout",
+          "narration_cue": "AI oversight\u2014understanding model limits, bias, and accountability",
+          "perception_source": "c-u03-persubslide-probe-card-01"
+        },
+        {
+          "element": "right_infographic",
+          "location_on_slide": "exhibit area",
+          "narration_cue": "As visual context, the exponential growth in technology and medicine is the backdrop",
+          "perception_source": "c-u03-persubslide-probe-card-01"
+        }
+      ]
+    },
+    {
+      "behavioral_intent": "clear-guidance",
+      "bridge_type": "pivot",
+      "card_number": 2,
+      "cluster_id": "c-u03",
+      "cluster_position": "tension",
+      "cluster_role": "interstitial",
+      "content_density": "medium",
+      "duration_rationale": "Contrast-driven pivot clarifies the core risk in a concise beat without re-teaching the head slide.",
+      "id": "seg-c-u03-02",
+      "narration_text": "Here\u2019s the catch: adoption is racing while oversight is not. On one side, AI tools are entering workflows at unprecedented speed\u2014about two-thirds of physicians report active use, and algorithms for diagnosis, prediction, and documentation are now routine, with or without structured training. On the other side, formal training in governance, error detection, and accountability lags; few curricula teach clinicians how to interrogate, validate, and safely supervise the tools they rely on. Compared with the pace of deployment, this stewardship gap is the core risk signal. The risk is not the technology itself\u2014it is capability outrunning our ability to supervise it safely.",
+      "slide_id": "c-u03-persubslide-probe-card-02",
+      "timing_role": "tension-beat",
+      "visual_detail_load": "medium",
+      "visual_file": "C:\\Users\\juanl\\Documents\\GitHub\\course-DEV-IDE-with-AGENTS-hybrid\\scratchpad\\leg3-c-u03-persubslide-bundle\\gamma-export\\c-u03-persubslide-probe_slide_02.png",
+      "visual_references": [
+        {
+          "element": "adoption_callout",
+          "location_on_slide": "adoption text block",
+          "narration_cue": "two-thirds of physicians report active use",
+          "perception_source": "c-u03-persubslide-probe-card-02"
+        },
+        {
+          "element": "oversight_text",
+          "location_on_slide": "oversight text block",
+          "narration_cue": "formal training in governance, error detection, and accountability lags",
+          "perception_source": "c-u03-persubslide-probe-card-02"
+        },
+        {
+          "element": "bottom_risk_callout",
+          "location_on_slide": "bottom takeaway",
+          "narration_cue": "The risk is not the technology itself\u2014it is capability outrunning our ability to supervise it safely",
+          "perception_source": "c-u03-persubslide-probe-card-02"
+        }
+      ]
+    },
+    {
+      "behavioral_intent": "clear-guidance",
+      "bridge_type": "none",
+      "card_number": 3,
+      "cluster_id": "c-u03",
+      "cluster_position": "develop",
+      "cluster_role": "interstitial",
+      "content_density": "medium",
+      "duration_rationale": "Two concrete exemplars land the upside with minimal setup, reinforcing stewardship with practice-level detail.",
+      "id": "seg-c-u03-03",
+      "narration_text": "First, SMART remote monitoring shows the upside of proactive care: continuous physiologic tracking for COPD and heart failure patients surfaces early warning signals so teams can intervene sooner\u2014reducing avoidable emergency visits, hospitalizations, and disease progression before crises occur. Turning next to virtual reality simulation, immersive rehearsal of complex, high\u2011stakes procedures builds procedural fluency, pattern recognition, and confidence\u2014with zero patient risk\u2014so performance at the bedside is safer and more competent. Clinical innovators who engage thoughtfully with these tools, rather than passively adopt them, will define the next standard of care.",
+      "slide_id": "c-u03-persubslide-probe-card-03",
+      "timing_role": "exemplify",
+      "visual_detail_load": "medium",
+      "visual_file": "C:\\Users\\juanl\\Documents\\GitHub\\course-DEV-IDE-with-AGENTS-hybrid\\scratchpad\\leg3-c-u03-persubslide-bundle\\gamma-export\\c-u03-persubslide-probe_slide_03.png",
+      "visual_references": [
+        {
+          "element": "remote_monitoring_dashboard",
+          "location_on_slide": "exhibit panel",
+          "narration_cue": "SMART remote monitoring shows the upside of proactive care",
+          "perception_source": "c-u03-persubslide-probe-card-03"
+        },
+        {
+          "element": "vr_simulation_text",
+          "location_on_slide": "VR explanation",
+          "narration_cue": "immersive rehearsal of complex, high\u2011stakes procedures builds procedural fluency, pattern recognition, and confidence",
+          "perception_source": "c-u03-persubslide-probe-card-03"
+        },
+        {
+          "element": "takeaway_callout",
+          "location_on_slide": "bottom takeaway",
+          "narration_cue": "will define the next standard of care",
+          "perception_source": "c-u03-persubslide-probe-card-03"
+        }
+      ]
+    }
+  ],
+  "segment_manifest_deltas": [
+    {
+      "behavioral_intent": "clear-guidance",
+      "bridge_type": "none",
+      "card_number": 1,
+      "cluster_id": "c-u03",
+      "cluster_position": "establish",
+      "cluster_role": "head",
+      "content_density": "heavy",
+      "id": "seg-c-u03-01",
+      "slide_id": "c-u03-persubslide-probe-card-01",
+      "timing_role": "concept-build",
+      "visual_detail_load": "medium",
+      "visual_file": "C:\\Users\\juanl\\Documents\\GitHub\\course-DEV-IDE-with-AGENTS-hybrid\\scratchpad\\leg3-c-u03-persubslide-bundle\\gamma-export\\c-u03-persubslide-probe_slide_01.png",
+      "visual_references": [
+        {
+          "perception_source": "c-u03-persubslide-probe-card-01"
+        }
+      ]
+    },
+    {
+      "behavioral_intent": "clear-guidance",
+      "bridge_type": "pivot",
+      "card_number": 2,
+      "cluster_id": "c-u03",
+      "cluster_position": "tension",
+      "cluster_role": "interstitial",
+      "content_density": "medium",
+      "id": "seg-c-u03-02",
+      "slide_id": "c-u03-persubslide-probe-card-02",
+      "timing_role": "tension-beat",
+      "visual_detail_load": "medium",
+      "visual_file": "C:\\Users\\juanl\\Documents\\GitHub\\course-DEV-IDE-with-AGENTS-hybrid\\scratchpad\\leg3-c-u03-persubslide-bundle\\gamma-export\\c-u03-persubslide-probe_slide_02.png",
+      "visual_references": [
+        {
+          "perception_source": "c-u03-persubslide-probe-card-02"
+        }
+      ]
+    },
+    {
+      "behavioral_intent": "clear-guidance",
+      "bridge_type": "none",
+      "card_number": 3,
+      "cluster_id": "c-u03",
+      "cluster_position": "develop",
+      "cluster_role": "interstitial",
+      "content_density": "medium",
+      "id": "seg-c-u03-03",
+      "slide_id": "c-u03-persubslide-probe-card-03",
+      "timing_role": "exemplify",
+      "visual_detail_load": "medium",
+      "visual_file": "C:\\Users\\juanl\\Documents\\GitHub\\course-DEV-IDE-with-AGENTS-hybrid\\scratchpad\\leg3-c-u03-persubslide-bundle\\gamma-export\\c-u03-persubslide-probe_slide_03.png",
+      "visual_references": [
+        {
+          "perception_source": "c-u03-persubslide-probe-card-03"
+        }
+      ]
+    }
+  ],
+  "usage": {
+    "input_token_details": {
+      "audio": 0,
+      "cache_read": 0
+    },
+    "input_tokens": 22838,
+    "output_token_details": {
+      "audio": 0,
+      "reasoning": 3648
+    },
+    "output_tokens": 5881,
+    "total_tokens": 28719
+  }
+}

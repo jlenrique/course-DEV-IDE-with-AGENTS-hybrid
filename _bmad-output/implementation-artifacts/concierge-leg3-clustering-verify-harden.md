@@ -1,7 +1,9 @@
 # Leg-3 — CLUSTERING verify + harden (NARROW-SCOPE)
 
 **Arc:** Concierge Production Substrate (branch `dev/concierge-production-substrate-2026-06-29`).
-**Class:** S. **Status:** ready-for-dev (party GREEN-LIGHT 6/6 NARROW-SCOPE, 2026-07-01; Winston/John/Amelia/Murat + Irene/Vera).
+**Class:** S. **Status:** **done** (party GREEN-LIGHT 6/6 NARROW-SCOPE → CLOSE 4/4 verify-only [John/Vera/Murat/Irene], 2026-07-01). ZERO production-code change (substrate already correct — guardrail-faithful). Evidence: `evidence/leg3-clustering-probe-20260701T014354Z/` + `evidence/leg3-cu03-subslide-invariant-20260701T021037Z/`.
+
+> **CLOSE RECORD (party CLOSE 4/4, verify-only):** *Leg-3 CLOSED verify-only: clustering proven e2e on current substrate (downstream survives clean — 216 cluster tests green; emission fires live BOTH heuristic arms — real multi-member cluster c-u03 + kept-dense synthesis singleton c-u06) and the non-waivable 07G VO↔on-screen per-sub-slide invariant proven live on clustered witness c-u03 (all 4 assertions PASS, first-run-stands, non-vacuous — head "66%" verified absent from interstitial card-02's own perception which renders "two-thirds"; trip-wire raised on the REAL production gate graph.py:693 for the correct reason); ZERO production-code changes (no manufactured fixes); deferred items filed.* **⚠️ callback-on-cluster remains OPEN, blocked on the deferred Leg-1b production-activation follow-ons (warm_callback ships flag-OFF; needs the orchestrator grounding-projection), with NO live callback evidence on a clustered witness and therefore NO claim of callback online (L3-W4 honored).**
 **Gate mode:** single-gate structural (Murat) + the NON-WAIVABLE 07G VO↔on-screen fidelity check (Vera) on any chunked slide.
 
 ## Reframe (confirm-spike + party)

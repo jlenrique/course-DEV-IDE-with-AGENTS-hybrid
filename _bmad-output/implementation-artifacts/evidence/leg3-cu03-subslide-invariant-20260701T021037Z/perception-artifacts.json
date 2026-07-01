@@ -1,0 +1,453 @@
+[
+  {
+    "artifact_path": "",
+    "callout_intent": null,
+    "card_number": null,
+    "confidence": "HIGH",
+    "confidence_score": 0.96,
+    "coverage": "perceived",
+    "dominant_image_role": "2_5",
+    "extracted_text": "Medical Knowledge Is Accelerating Beyond Human Capacity Medical knowledge that once took 50 years to double now doubles in just 73 days. This exponential acceleration is rewriting the rules of clinical practice \u2014 and 66% of physicians are already using some form of AI in their work. Yet formal oversight training remains strikingly limited. Technology will reshape how care is delivered, diagnosed, and managed. What medicine needs now are clinical innovators willing to steward these tools safely \u2014 not just adopt them. AI Oversight Understanding model limitations, bias, and accountability in clinical decision support. Remote Monitoring Continuous patient data streams enabling proactive, preventive intervention at scale. Virtual Reality Immersive simulation environments for rehearsing procedures without patient risk. RESEARCH INNOVATION DIAGNOSTICS TREATMENT FUTURE EXPONENTIAL GROWTH: TECHNOLOGY & MEDICINE RESEARCH INNOVATION DIAGNOSTICS TREATMENT FUTURE",
+    "image_role_flags": [
+      "tier_2_5_candidate"
+    ],
+    "image_roles": [
+      "4",
+      "2_5",
+      "2_5",
+      "2_5",
+      "2_5",
+      "2_5"
+    ],
+    "layout_description": "The slide has a large text-heavy content column on the left with a title, paragraph, and three pale callout cards. A tall medical-technology growth infographic occupies the right side with icons, an upward arrow, category labels, and a large caption near the bottom.",
+    "macro_layout": "split_image_text",
+    "narration_cadence": "dense",
+    "provider_model_id": "gpt-5.5",
+    "reading_path": "split_image_text",
+    "reading_path_degraded": false,
+    "reading_path_flags": null,
+    "reading_path_geometry": {
+      "callout_intent": null,
+      "image_role_flags": [
+        "tier_2_5_candidate"
+      ],
+      "image_roles": [
+        "4",
+        "2_5",
+        "2_5",
+        "2_5",
+        "2_5",
+        "2_5"
+      ],
+      "macro_layout": "split_image_text",
+      "narration_cadence": "dense",
+      "reading_path": "split_image_text",
+      "reading_path_flags": null,
+      "text_substructure": "dense_exposition"
+    },
+    "reading_path_rationale": {
+      "callout_intent": "No explicit question, quiz, or action-demand CTA is present.",
+      "image_role": "The right-side labeled growth infographic acts as an exhibit supporting the acceleration claim, not a walkthrough diagram.",
+      "macro_layout": "Large text-heavy column on the left and a tall infographic occupying the right side.",
+      "narration_cadence": "High text density and multiple supporting points require a denser narration pace.",
+      "text_substructure": "The slide is anchored by a substantial explanatory paragraph with supporting cards."
+    },
+    "reading_path_source": "llm_primary",
+    "slide_id": "c-u03-persubslide-probe-card-01",
+    "slide_title": "Medical Knowledge Is Accelerating Beyond Human Capacity",
+    "source_png_path": "C:\\Users\\juanl\\Documents\\GitHub\\course-DEV-IDE-with-AGENTS-hybrid\\scratchpad\\leg3-c-u03-persubslide-bundle\\gamma-export\\c-u03-persubslide-probe_slide_01.png",
+    "text_blocks": [
+      "Medical Knowledge Is Accelerating Beyond Human Capacity",
+      "Medical knowledge that once took 50 years to double now doubles in just 73 days. This exponential acceleration is rewriting the rules of clinical practice \u2014 and 66% of physicians are already using some form of AI in their work. Yet formal oversight training remains strikingly limited. Technology will reshape how care is delivered, diagnosed, and managed. What medicine needs now are clinical innovators willing to steward these tools safely \u2014 not just adopt them.",
+      "AI Oversight Understanding model limitations, bias, and accountability in clinical decision support.",
+      "Remote Monitoring Continuous patient data streams enabling proactive, preventive intervention at scale.",
+      "Virtual Reality Immersive simulation environments for rehearsing procedures without patient risk.",
+      "RESEARCH INNOVATION DIAGNOSTICS TREATMENT FUTURE EXPONENTIAL GROWTH: TECHNOLOGY & MEDICINE RESEARCH INNOVATION DIAGNOSTICS TREATMENT FUTURE"
+    ],
+    "text_substructure": "dense_exposition",
+    "visual_elements": [
+      {
+        "bbox": [
+          0.06,
+          0.13,
+          0.56,
+          0.25
+        ],
+        "id": "title_left",
+        "kind": "title",
+        "role_tier": "4",
+        "role_tier_reason": "Large primary heading labeling the slide topic.",
+        "text": "Medical Knowledge Is Accelerating Beyond Human Capacity"
+      },
+      {
+        "bbox": [
+          0.06,
+          0.29,
+          0.56,
+          0.48
+        ],
+        "id": "paragraph_left",
+        "kind": "callout",
+        "role_tier": "2_5",
+        "role_tier_reason": "Main explanatory evidence text with emphasized figures and phrase.",
+        "text": "Medical knowledge that once took 50 years to double now doubles in just 73 days. This exponential acceleration is rewriting the rules of clinical practice \u2014 and 66% of physicians are already using some form of AI in their work. Yet formal oversight training remains strikingly limited. Technology will reshape how care is delivered, diagnosed, and managed. What medicine needs now are clinical innovators willing to steward these tools safely \u2014 not just adopt them."
+      },
+      {
+        "bbox": [
+          0.06,
+          0.51,
+          0.31,
+          0.69
+        ],
+        "id": "card_ai_oversight",
+        "kind": "callout",
+        "role_tier": "2_5",
+        "role_tier_reason": "Distinct content card presenting a supporting capability/need.",
+        "text": "AI Oversight Understanding model limitations, bias, and accountability in clinical decision support."
+      },
+      {
+        "bbox": [
+          0.32,
+          0.51,
+          0.56,
+          0.69
+        ],
+        "id": "card_remote_monitoring",
+        "kind": "callout",
+        "role_tier": "2_5",
+        "role_tier_reason": "Distinct content card presenting a supporting capability/need.",
+        "text": "Remote Monitoring Continuous patient data streams enabling proactive, preventive intervention at scale."
+      },
+      {
+        "bbox": [
+          0.06,
+          0.71,
+          0.56,
+          0.87
+        ],
+        "id": "card_virtual_reality",
+        "kind": "callout",
+        "role_tier": "2_5",
+        "role_tier_reason": "Wide content card presenting a supporting capability/need.",
+        "text": "Virtual Reality Immersive simulation environments for rehearsing procedures without patient risk."
+      },
+      {
+        "bbox": [
+          0.62,
+          0.03,
+          0.98,
+          0.97
+        ],
+        "id": "right_infographic",
+        "kind": "chart",
+        "role_tier": "2_5",
+        "role_tier_reason": "Large labeled infographic with upward growth arrow and medical/technology icons supporting the slide message.",
+        "text": "RESEARCH INNOVATION DIAGNOSTICS TREATMENT FUTURE EXPONENTIAL GROWTH: TECHNOLOGY & MEDICINE RESEARCH INNOVATION DIAGNOSTICS TREATMENT FUTURE"
+      }
+    ]
+  },
+  {
+    "artifact_path": "",
+    "callout_intent": null,
+    "card_number": null,
+    "confidence": "HIGH",
+    "confidence_score": 0.98,
+    "coverage": "perceived",
+    "dominant_image_role": "1",
+    "extracted_text": "Adoption Is Racing. Oversight Is Not. Adoption \u2191 AI tools are entering clinical workflows at unprecedented speed. Two-thirds of physicians report active use. Diagnostic algorithms, predictive models, and automated documentation are now embedded in daily practice \u2014 with or without structured training. Oversight \u2192 Formal training in AI governance, error detection, and accountability lags far behind deployment. Few curricula teach clinicians how to interrogate, validate, or safely supervise the tools they rely on. The gap between capability and stewardship is the core risk signal of our moment. The risk is not the technology itself \u2014 it is capability outrunning our ability to supervise it safely.",
+    "image_role_flags": null,
+    "image_roles": [
+      "1",
+      "4",
+      "2",
+      "2",
+      "2"
+    ],
+    "layout_description": "The slide is split with a full-height abstract angular illustration on the left and a clean white content area on the right. The right side has a large title at top, a blue rounded adoption callout below-left, an oversight text block to its right, and a bottom emphasized risk statement with a thin vertical line.",
+    "macro_layout": "split_image_text",
+    "narration_cadence": "dense",
+    "provider_model_id": "gpt-5.5",
+    "reading_path": "two_up_comparison",
+    "reading_path_degraded": false,
+    "reading_path_flags": null,
+    "reading_path_geometry": {
+      "callout_intent": null,
+      "image_role_flags": null,
+      "image_roles": [
+        "1",
+        "4",
+        "2",
+        "2",
+        "2"
+      ],
+      "macro_layout": "split_image_text",
+      "narration_cadence": "dense",
+      "reading_path": "split_image_text",
+      "reading_path_flags": null,
+      "text_substructure": "dense_exposition"
+    },
+    "reading_path_rationale": {
+      "callout_intent": "No question, quiz, or action-demand CTA is present.",
+      "image_role": "The abstract left image has no labels or load-bearing content and only sets tone.",
+      "macro_layout": "Full-height decorative image on the left with the substantive text area on the right.",
+      "narration_cadence": "Multiple paragraph-length blocks and a concluding risk statement require a denser narration.",
+      "text_substructure": "The text contrasts Adoption and Oversight as paired, oppositional concepts with a bottom synthesis."
+    },
+    "reading_path_source": "llm_primary",
+    "slide_id": "c-u03-persubslide-probe-card-02",
+    "slide_title": "Adoption Is Racing. Oversight Is Not.",
+    "source_png_path": "C:\\Users\\juanl\\Documents\\GitHub\\course-DEV-IDE-with-AGENTS-hybrid\\scratchpad\\leg3-c-u03-persubslide-bundle\\gamma-export\\c-u03-persubslide-probe_slide_02.png",
+    "text_blocks": [
+      "Adoption Is Racing. Oversight Is Not.",
+      "Adoption \u2191 AI tools are entering clinical workflows at unprecedented speed. Two-thirds of physicians report active use. Diagnostic algorithms, predictive models, and automated documentation are now embedded in daily practice \u2014 with or without structured training.",
+      "Oversight \u2192 Formal training in AI governance, error detection, and accountability lags far behind deployment. Few curricula teach clinicians how to interrogate, validate, or safely supervise the tools they rely on. The gap between capability and stewardship is the core risk signal of our moment.",
+      "The risk is not the technology itself \u2014 it is capability outrunning our ability to supervise it safely."
+    ],
+    "text_substructure": "comparison_pair",
+    "visual_elements": [
+      {
+        "bbox": [
+          0.0,
+          0.0,
+          0.44,
+          1.0
+        ],
+        "id": "left_abstract_image",
+        "kind": "photo",
+        "role_tier": "1",
+        "role_tier_reason": "Edge-bleed abstract background image with no internal labels; decorative/evocative.",
+        "text": ""
+      },
+      {
+        "bbox": [
+          0.51,
+          0.09,
+          0.98,
+          0.23
+        ],
+        "id": "main_title",
+        "kind": "title",
+        "role_tier": "4",
+        "role_tier_reason": "Large top heading functions as the primary slide label.",
+        "text": "Adoption Is Racing. Oversight Is Not."
+      },
+      {
+        "bbox": [
+          0.5,
+          0.26,
+          0.8,
+          0.75
+        ],
+        "id": "adoption_callout",
+        "kind": "callout",
+        "role_tier": "2",
+        "role_tier_reason": "Prominent explanatory text block supporting the main message.",
+        "text": "Adoption \u2191 AI tools are entering clinical workflows at unprecedented speed. Two-thirds of physicians report active use. Diagnostic algorithms, predictive models, and automated documentation are now embedded in daily practice \u2014 with or without structured training."
+      },
+      {
+        "bbox": [
+          0.83,
+          0.29,
+          0.99,
+          0.75
+        ],
+        "id": "oversight_text",
+        "kind": "callout",
+        "role_tier": "2",
+        "role_tier_reason": "Right-side explanatory text block paired with the adoption callout.",
+        "text": "Oversight \u2192 Formal training in AI governance, error detection, and accountability lags far behind deployment. Few curricula teach clinicians how to interrogate, validate, or safely supervise the tools they rely on. The gap between capability and stewardship is the core risk signal of our moment."
+      },
+      {
+        "bbox": [
+          0.51,
+          0.78,
+          0.97,
+          0.91
+        ],
+        "id": "bottom_risk_callout",
+        "kind": "callout",
+        "role_tier": "2",
+        "role_tier_reason": "Bottom emphasized takeaway statement with a vertical accent line.",
+        "text": "The risk is not the technology itself \u2014 it is capability outrunning our ability to supervise it safely."
+      }
+    ]
+  },
+  {
+    "artifact_path": "",
+    "callout_intent": null,
+    "card_number": null,
+    "confidence": "HIGH",
+    "confidence_score": 0.94,
+    "coverage": "perceived",
+    "dominant_image_role": "2_5",
+    "extracted_text": "When Used Thoughtfully, Technology Delivers Real Upside The case for engagement is compelling. Two emerging modalities \u2014 SMART remote monitoring and virtual reality simulation \u2014 illustrate how technology, properly stewarded, transforms both patient outcomes and clinical education. REMOTEMED | PATIENT MONITORING STATUS: 1 ACTIVE ALERT VITALS SUMMARY HEART RATE 74 bpm NORMAL OXYGEN LEVEL (SpO2) 92% FAIR BREATHING STATUS RESP. RATE 18 bpm NORMAL PEAK FLOW (PEF) 340 L/min MODERATE HEART HEALTH BLOOD PRESSURE 128/82 mmHg NORMAL WEIGHT TREND 71.5 kg STABLE PATIENT OVERVIEW DAVID CHEN Age: 68 DIAGNOSES: COPD, CHF RECENT ALERT SpO2: 91% Nov 22, 09:15 AM ACTIVITY 3,125 steps MEDICATION 4/4 taken SMART Remote Monitoring Continuous physiologic tracking shifts care for COPD and heart failure patients from reactive to proactive. Early warning signals trigger timely interventions \u2014 reducing avoidable emergency visits, hospitalizations, and disease progression before crises occur. VR TRAINING | SECTION B MED-VR SYSTEM Virtual Reality Simulation Immersive VR environments allow learners to rehearse complex, high-stakes procedures with zero patient risk. Repetition builds procedural fluency, pattern recognition, and confidence \u2014 translating directly into safer, more competent bedside performance. Clinical innovators who engage thoughtfully with these tools \u2014 rather than passively adopt them \u2014 will define the next standard of care.",
+    "image_role_flags": [
+      "tier_2_5_candidate"
+    ],
+    "image_roles": [
+      "4",
+      "4",
+      "2_5",
+      "4",
+      "2",
+      "4",
+      "4",
+      "4"
+    ],
+    "layout_description": "A large title and introductory sentence span the top, followed by two side-by-side modality sections with an illustration above each explanatory text block. A wide pale-green takeaway callout with a small icon runs along the bottom.",
+    "macro_layout": "multi_column",
+    "narration_cadence": "dense",
+    "provider_model_id": "gpt-5.5",
+    "reading_path": "multi_column",
+    "reading_path_degraded": false,
+    "reading_path_flags": null,
+    "reading_path_geometry": {
+      "callout_intent": null,
+      "image_role_flags": [
+        "tier_2_5_candidate"
+      ],
+      "image_roles": [
+        "4",
+        "4",
+        "2_5",
+        "4",
+        "2",
+        "4",
+        "4",
+        "4"
+      ],
+      "macro_layout": "multi_column",
+      "narration_cadence": "dense",
+      "reading_path": "multi_column",
+      "reading_path_flags": null,
+      "text_substructure": "peer_boxes"
+    },
+    "reading_path_rationale": {
+      "callout_intent": "The bottom callout is an ordinary takeaway statement, not a question, quiz, or explicit CTA.",
+      "image_role": "The monitoring dashboard is a readable exhibit supporting the claim, outweighing the illustrative VR photo and small icon.",
+      "macro_layout": "Two side-by-side coordinate modality sections under a shared title and intro, with no oppositional cue.",
+      "narration_cadence": "Substantial intro, two explanatory paragraphs, exhibit text, and bottom takeaway require a denser narration pass.",
+      "text_substructure": "The SMART monitoring and VR simulation sections are parallel, permutable topic boxes plus a summary takeaway, not a sequence."
+    },
+    "reading_path_source": "llm_primary",
+    "slide_id": "c-u03-persubslide-probe-card-03",
+    "slide_title": "When Used Thoughtfully, Technology Delivers Real Upside",
+    "source_png_path": "C:\\Users\\juanl\\Documents\\GitHub\\course-DEV-IDE-with-AGENTS-hybrid\\scratchpad\\leg3-c-u03-persubslide-bundle\\gamma-export\\c-u03-persubslide-probe_slide_03.png",
+    "text_blocks": [
+      "When Used Thoughtfully, Technology Delivers Real Upside",
+      "The case for engagement is compelling. Two emerging modalities \u2014 SMART remote monitoring and virtual reality simulation \u2014 illustrate how technology, properly stewarded, transforms both patient outcomes and clinical education.",
+      "REMOTEMED | PATIENT MONITORING STATUS: 1 ACTIVE ALERT VITALS SUMMARY HEART RATE 74 bpm NORMAL OXYGEN LEVEL (SpO2) 92% FAIR BREATHING STATUS RESP. RATE 18 bpm NORMAL PEAK FLOW (PEF) 340 L/min MODERATE HEART HEALTH BLOOD PRESSURE 128/82 mmHg NORMAL WEIGHT TREND 71.5 kg STABLE PATIENT OVERVIEW DAVID CHEN Age: 68 DIAGNOSES: COPD, CHF RECENT ALERT SpO2: 91% Nov 22, 09:15 AM ACTIVITY 3,125 steps MEDICATION 4/4 taken",
+      "SMART Remote Monitoring Continuous physiologic tracking shifts care for COPD and heart failure patients from reactive to proactive. Early warning signals trigger timely interventions \u2014 reducing avoidable emergency visits, hospitalizations, and disease progression before crises occur.",
+      "VR TRAINING | SECTION B MED-VR SYSTEM",
+      "Virtual Reality Simulation Immersive VR environments allow learners to rehearse complex, high-stakes procedures with zero patient risk. Repetition builds procedural fluency, pattern recognition, and confidence \u2014 translating directly into safer, more competent bedside performance.",
+      "Clinical innovators who engage thoughtfully with these tools \u2014 rather than passively adopt them \u2014 will define the next standard of care."
+    ],
+    "text_substructure": "peer_boxes",
+    "visual_elements": [
+      {
+        "bbox": [
+          0.06,
+          0.1,
+          0.91,
+          0.15
+        ],
+        "id": "title_main",
+        "kind": "title",
+        "role_tier": "4",
+        "role_tier_reason": "Large top heading functions as the primary slide label.",
+        "text": "When Used Thoughtfully, Technology Delivers Real Upside"
+      },
+      {
+        "bbox": [
+          0.06,
+          0.2,
+          0.86,
+          0.27
+        ],
+        "id": "intro_statement",
+        "kind": "callout",
+        "role_tier": "4",
+        "role_tier_reason": "Introductory text labels the two topics and frames the slide.",
+        "text": "The case for engagement is compelling. Two emerging modalities \u2014 SMART remote monitoring and virtual reality simulation \u2014 illustrate how technology, properly stewarded, transforms both patient outcomes and clinical education."
+      },
+      {
+        "bbox": [
+          0.06,
+          0.29,
+          0.26,
+          0.52
+        ],
+        "id": "remote_monitoring_dashboard",
+        "kind": "chart",
+        "role_tier": "2_5",
+        "role_tier_reason": "Readable dashboard metrics and alerts serve as an evidentiary exhibit for the adjacent monitoring section.",
+        "text": "REMOTEMED | PATIENT MONITORING STATUS: 1 ACTIVE ALERT VITALS SUMMARY HEART RATE 74 bpm NORMAL OXYGEN LEVEL (SpO2) 92% FAIR BREATHING STATUS RESP. RATE 18 bpm NORMAL PEAK FLOW (PEF) 340 L/min MODERATE HEART HEALTH BLOOD PRESSURE 128/82 mmHg NORMAL WEIGHT TREND 71.5 kg STABLE PATIENT OVERVIEW DAVID CHEN Age: 68 DIAGNOSES: COPD, CHF RECENT ALERT SpO2: 91% Nov 22, 09:15 AM ACTIVITY 3,125 steps MEDICATION 4/4 taken"
+      },
+      {
+        "bbox": [
+          0.06,
+          0.54,
+          0.47,
+          0.76
+        ],
+        "id": "smart_remote_text",
+        "kind": "callout",
+        "role_tier": "4",
+        "role_tier_reason": "Section heading and paragraph label and explain the left modality.",
+        "text": "SMART Remote Monitoring Continuous physiologic tracking shifts care for COPD and heart failure patients from reactive to proactive. Early warning signals trigger timely interventions \u2014 reducing avoidable emergency visits, hospitalizations, and disease progression before crises occur."
+      },
+      {
+        "bbox": [
+          0.51,
+          0.29,
+          0.71,
+          0.52
+        ],
+        "id": "vr_simulation_illustration",
+        "kind": "photo",
+        "role_tier": "2",
+        "role_tier_reason": "Illustrative VR training scene supports the adjacent text without requiring technical tracing.",
+        "text": "VR TRAINING | SECTION B MED-VR SYSTEM"
+      },
+      {
+        "bbox": [
+          0.51,
+          0.54,
+          0.84,
+          0.76
+        ],
+        "id": "vr_simulation_text",
+        "kind": "callout",
+        "role_tier": "4",
+        "role_tier_reason": "Section heading and paragraph label and explain the right modality.",
+        "text": "Virtual Reality Simulation Immersive VR environments allow learners to rehearse complex, high-stakes procedures with zero patient risk. Repetition builds procedural fluency, pattern recognition, and confidence \u2014 translating directly into safer, more competent bedside performance."
+      },
+      {
+        "bbox": [
+          0.06,
+          0.79,
+          0.94,
+          0.91
+        ],
+        "id": "takeaway_callout",
+        "kind": "callout",
+        "role_tier": "4",
+        "role_tier_reason": "Highlighted bottom summary callout functions as the final takeaway label.",
+        "text": "Clinical innovators who engage thoughtfully with these tools \u2014 rather than passively adopt them \u2014 will define the next standard of care."
+      },
+      {
+        "bbox": [
+          0.078,
+          0.821,
+          0.091,
+          0.845
+        ],
+        "id": "takeaway_icon",
+        "kind": "icon",
+        "role_tier": "4",
+        "role_tier_reason": "Small icon inside the bottom callout acts as a visual tag.",
+        "text": ""
+      }
+    ]
+  }
+]
