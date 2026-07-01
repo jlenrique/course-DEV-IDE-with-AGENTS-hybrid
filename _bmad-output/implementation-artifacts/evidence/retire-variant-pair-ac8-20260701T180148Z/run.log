@@ -1,0 +1,15 @@
+[18:01:48] EVIDENCE DIR: C:\Users\juanl\Documents\GitHub\course-DEV-IDE-with-AGENTS-hybrid\_bmad-output\implementation-artifacts\evidence\retire-variant-pair-ac8-20260701T180148Z
+[18:01:48] --- DETERMINISTIC cardinality/fail-loud block (no dispatch) ---
+[18:01:48]   {"ab_len": 2, "ab_order": ["A", "B"], "dup_raises": true, "empty_len": 0, "none_list_raises": true, "none_list_tag": "gamma.settings.invalid", "single_bind_len": 1, "single_bind_variant": "A"}
+[18:01:48]   deterministic block PASS: True
+[18:01:48] --- LIVE single-binding dispatch (real Gamma, styleguide=classic-freeform-x-cards) ---
+[18:01:49]   >>> REAL generate_deck call #1
+[18:02:31]   {"generate_deck_calls_real": 1, "n_on_disk_pngs": 7, "n_output_rows": 3, "on_disk_png_files": ["1_From-Ideas-to-Opportunities.png", "2_Physicianship-and-Innovation-Leadership.png", "3_The-Intrapreneur-Maze.png", "A_p3-high-maze.png", "A_p3-low-summary.png", "A_p3-med-physicianship.png", "gary_A.png"], "per_slide_png": [{"bytes": 472612, "exists": true, "file": "A_p3-low-summary.png", "sha256": "96b6b399ecdb6602"}, {"bytes": 603892, "exists": true, "file": "A_p3-med-physicianship.png", "sha256": "bcc17bfa926d4bf6"}, {"bytes": 611377, "exists": true, "file": "A_p3-high-maze.png", "sha256": "82c6a036e35aae55"}], "result_calls_made": 1, "result_generation_mode": "single-dispatch", "server_generation_ids": ["dc3wcCxQttkyUwr3MvNlL"], "variant_ids_in_output": ["A"]}
+[18:02:31]   live block PASS: False
+[18:02:31] === AC#8 SUMMARY ===
+[18:02:31]   deterministic cardinality/fail-loud: True
+[18:02:31]   live real generate_deck calls: 1 (expect 1)
+[18:02:31]   live output variants: ['A'] (expect ['A'])
+[18:02:31]   live on-disk PNGs: 7 (expect == 3)
+[18:02:31]   AC#8 PASS: False
+[18:02:31] RESULT JSON: C:\Users\juanl\Documents\GitHub\course-DEV-IDE-with-AGENTS-hybrid\_bmad-output\implementation-artifacts\evidence\retire-variant-pair-ac8-20260701T180148Z\result.json

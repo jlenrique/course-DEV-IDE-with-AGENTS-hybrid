@@ -1,0 +1,14 @@
+{
+  "checks": {
+    "deterministic_cardinality_and_fail_loud": true,
+    "exactly_one_real_generate_deck_call": true,
+    "exactly_one_server_generation_id": true,
+    "result_calls_made_is_1": true,
+    "generation_mode_single_dispatch": true,
+    "output_variants_are_A_only": true,
+    "all_rows_materialized_real_bytes": true,
+    "NEGATIVE_TWIN_no_fixture_B_deck_on_disk": true,
+    "variant_A_decks_present": true
+  },
+  "AC8_PASS": true
+}

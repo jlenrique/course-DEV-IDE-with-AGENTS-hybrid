@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import logging
 from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
@@ -25,6 +26,8 @@ from skills.gamma_api_mastery.scripts.gamma_operations import (
     download_export,
     materialize_exported_slide_paths_by_title,
 )
+
+_LOGGER = logging.getLogger(__name__)
 
 REPO_ROOT = Path(__file__).resolve().parents[3]
 SANCTUM_DIR = REPO_ROOT / "_bmad" / "memory" / "bmad-agent-gary"
@@ -396,9 +399,15 @@ def _normalized_gamma_settings(payload: dict[str, Any]) -> list[dict[str, Any]]:
             "gamma_settings must be a list when present",
             tag="gamma.settings.invalid",
         )
+    # DEFAULT_VARIANT_PAIR is the per-variant BASE SEED only (styleguide-less path,
+    # the ``else`` branch below); it is NOT a dispatch roster. The return projects
+    # ONLY the variants actually named in ``raw`` (``present_ids``, payload order), so
+    # a seed here can never re-introduce an unrequested variant into the returned list.
+    # (base-seed only; superseded once cd-envelope-authoring lands.)
     by_variant: dict[str, dict[str, Any]] = {
         item["variant_id"]: dict(item) for item in DEFAULT_VARIANT_PAIR
     }
+    present_ids: dict[str, None] = {}  # ordered set — payload order, determinism (AC#3)
     for item in raw:
         if item is None:
             continue
@@ -413,6 +422,16 @@ def _normalized_gamma_settings(payload: dict[str, Any]) -> list[dict[str, Any]]:
                 "gamma_settings variant_id must be A or B",
                 tag="gamma.settings.invalid",
             )
+        # A payload naming the SAME variant twice would silently merge-accumulate
+        # (order-dependent, non-obvious) into a single projected entry. Fail loud so
+        # a duplicated variant surfaces up-front, consistent with the fail-loud
+        # philosophy of the surrounding guards (Blind Hunter SHOULD-FIX).
+        if variant_id in present_ids:
+            raise GaryActError(
+                f"gamma_settings names variant {variant_id} more than once",
+                tag="gamma.settings.invalid",
+            )
+        present_ids[variant_id] = None
         unknown = sorted(set(item) - GAMMA_SETTING_KEYS)
         if unknown:
             raise GaryActError(
@@ -442,6 +461,15 @@ def _normalized_gamma_settings(payload: dict[str, Any]) -> list[dict[str, Any]]:
                 raise GaryActError(str(exc), tag=exc.tag) from exc
             merged = {"variant_id": variant_id, **resolved_base}
         else:
+            # Honesty WARN (AC#7): a present variant with no bound styleguide seeds
+            # from the DEFAULT_VARIANT_PAIR smoke fixture — a hidden default that the
+            # CD-owned styleguide library is meant to supersede. Observability only
+            # (no output change); the fail-loud flip is deferred to cd-envelope-authoring.
+            _LOGGER.warning(
+                "variant %s present with no bound styleguide; seeding from "
+                "DEFAULT_VARIANT_PAIR base — fail-loud deferred to cd-envelope-authoring",
+                variant_id,
+            )
             merged = dict(by_variant[variant_id])
         for key in GAMMA_SETTING_KEYS - {"variant_id", "styleguide"}:
             value = item.get(key)
@@ -520,7 +548,20 @@ def _normalized_gamma_settings(payload: dict[str, Any]) -> list[dict[str, Any]]:
                     tag=SURFACE_VIOLATION_TAG,
                 )
         by_variant[variant_id] = merged
-    return [by_variant["A"], by_variant["B"]]
+    # A NON-EMPTY gamma_settings whose entries are all skipped (e.g. ``[None]``)
+    # yields an empty ``present_ids`` → an empty return → the CONSUMER's ``or (...)``
+    # fallback re-dispatches the default A/B fixture, silently re-introducing the
+    # exact unbound-fixture dispatch this story retired. Fail loud instead. AC#4 is
+    # preserved: an EMPTY ``raw`` (and ``raw is None``, handled above) still returns
+    # ``[]`` — only a NON-EMPTY raw that names zero valid variants raises here.
+    if raw and not present_ids:
+        raise GaryActError(
+            "gamma_settings has entries but names no valid variant",
+            tag="gamma.settings.invalid",
+        )
+    # Project ONLY the payload-present variants, in payload order — retire the
+    # hardcoded ``[A, B]`` padding that paid-dispatched an unbound fixture deck.
+    return [by_variant[variant_id] for variant_id in present_ids]
 
 
 def _theme_id_for_variant(
@@ -801,6 +842,18 @@ def generate_gamma_variants(
     variants = tuple(item["variant_id"] for item in gamma_settings) or (
         ("A", "B") if bool(payload.get("double_dispatch")) else ("A",)
     )
+    # double_dispatch vs explicit single-variant contradiction (Edge Case Hunter
+    # SHOULD-FIX): when double_dispatch is requested BUT an EXPLICIT gamma_settings
+    # names <2 variants, the explicit list correctly WINS (single-variant-binds-one
+    # is the story intent) — but the contradiction must be surfaced, not silent.
+    # WARN only; dispatch behavior (explicit list wins) is unchanged.
+    if bool(payload.get("double_dispatch")) and gamma_settings and len(variants) < 2:
+        _LOGGER.warning(
+            "double_dispatch requested but explicit gamma_settings names %d variant(s) "
+            "(%s); only the named variant(s) dispatch",
+            len(variants),
+            ", ".join(variants),
+        )
     settings_by_variant = {item["variant_id"]: item for item in gamma_settings}
     output: list[dict[str, Any]] = []
     calls: list[str] = []

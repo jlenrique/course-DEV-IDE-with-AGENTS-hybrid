@@ -176,9 +176,12 @@ def test_gary_variant_arc_dispatches_per_variant_gamma_settings(
     } == {"photographic", "diagrammatic"}
 
 
-def test_gary_variant_arc_partial_settings_fall_back_to_default_pair(
+def test_gary_variant_arc_single_named_variant_dispatches_one(
     tmp_path: Path, monkeypatch
 ) -> None:
+    # Retired the ``[A,B]`` padding (styleguide-retire-default-variant-pair 2026-07-01):
+    # a payload naming ONE variant dispatches exactly that variant. Previously this
+    # padded an unbound fixture-B deck from DEFAULT_VARIANT_PAIR (a phantom PAID deck).
     zpath = _titled_zip(tmp_path, ["1_Alpha-Topic"])
     monkeypatch.setattr(
         gary_act, "download_export", lambda url, *, output_dir, filename: str(zpath)
@@ -194,14 +197,11 @@ def test_gary_variant_arc_partial_settings_fall_back_to_default_pair(
         client=client,
     )
 
-    assert result["calls_made"] == 2
+    assert result["calls_made"] == 1
+    assert len(result["variant_gamma_settings"]) == 1
+    assert result["variant_gamma_settings"][0]["variant_id"] == "A"
     assert result["variant_gamma_settings"][0]["image_style"] == "photographic"
-    assert result["variant_gamma_settings"][1] == dict(gary_act.DEFAULT_VARIANT_PAIR[1])
-    assert client.generate_calls[1]["image_options"] == {
-        "source": "aiGenerated",
-        "model": "recraft-v3-svg",
-        "stylePreset": "lineArt",
-    }
+    assert len(client.generate_calls) == 1  # no fixture-seeded B deck
 
 
 def test_gary_no_gamma_settings_preserves_single_dispatch_shape(
@@ -545,9 +545,8 @@ def test_gary_per_variant_dimensions_override_wins_over_16x9_default(
     tmp_path: Path, monkeypatch
 ) -> None:
     """An explicit per-variant `dimensions` drives cardOptions directly (A -> 4x3),
-    and variant B's DEFAULT_VARIANT_PAIR seed (now `fluid`, code-review item #5)
-    drives its own — the library/seed value is authoritative now that the baked-in
-    16:9 override is gone."""
+    now that the baked-in 16:9 override is gone. Only the named variant dispatches
+    (styleguide-retire-default-variant-pair 2026-07-01) — no fixture-seeded B deck."""
     zpath = _titled_zip(tmp_path, ["1_Alpha-Topic"])
     monkeypatch.setattr(
         gary_act, "download_export", lambda url, *, output_dir, filename: str(zpath)
@@ -565,8 +564,8 @@ def test_gary_per_variant_dimensions_override_wins_over_16x9_default(
 
     # Variant A's explicit 4x3 override survives the default-fill.
     assert client.generate_calls[0]["card_options"] == {"dimensions": "4x3"}
-    # Variant B (default pair) now carries its `fluid` seed value (item #5).
-    assert client.generate_calls[1]["card_options"] == {"dimensions": "fluid"}
+    # Padding retired: naming only A dispatches only A.
+    assert len(client.generate_calls) == 1
 
 
 def test_gary_studio_path_unchanged_no_card_options(tmp_path: Path, monkeypatch) -> None:
@@ -633,6 +632,73 @@ def test_gary_studio_path_unchanged_no_card_options(tmp_path: Path, monkeypatch)
     # The Classic generate_deck (the only carrier of card_options) was never called
     # for the studio variant -> no cardOptions on the Studio path.
     assert client.generate_calls == []
+
+
+def test_double_dispatch_with_single_named_variant_warns_but_dispatches_one(
+    tmp_path: Path, monkeypatch, caplog
+) -> None:
+    """R3 (Edge Case Hunter SHOULD-FIX) [RED before fix]. When double_dispatch is
+    requested BUT the explicit gamma_settings names <2 variants, the explicit list
+    WINS (single-variant-binds-one is the story intent) — dispatch behavior is
+    unchanged (exactly 1 call). But the contradiction must be SURFACED, not silent:
+    a WARNING is emitted noting double_dispatch was requested yet only the named
+    variant(s) dispatch."""
+    import logging
+
+    zpath = _titled_zip(tmp_path, ["1_Alpha-Topic"])
+    monkeypatch.setattr(
+        gary_act, "download_export", lambda url, *, output_dir, filename: str(zpath)
+    )
+    client = FakeGammaClient()
+
+    with caplog.at_level(logging.WARNING, logger="app.specialists.gary._act"):
+        result = gary_act.generate_gamma_variants(
+            {
+                "slides": [{"slide_id": "s1", "title": "Alpha Topic"}],
+                "export_dir": str(tmp_path),
+                "double_dispatch": True,
+                "gamma_settings": [{"variant_id": "A", "image_style": "photographic"}],
+            },
+            client=client,
+        )
+
+    # Dispatch behavior UNCHANGED: explicit single-variant list wins, one call.
+    assert result["calls_made"] == 1
+    assert len(client.generate_calls) == 1
+    # Contradiction surfaced.
+    warnings = [r for r in caplog.records if r.levelno == logging.WARNING]
+    assert any(
+        "double_dispatch" in r.getMessage() for r in warnings
+    ), "double_dispatch vs single-variant contradiction must WARN"
+
+
+def test_double_dispatch_with_empty_gamma_settings_falls_to_ab_fallback(
+    tmp_path: Path, monkeypatch
+) -> None:
+    """R4 (Acceptance Auditor) consumer companion — an EXPLICIT-EMPTY gamma_settings
+    with double_dispatch=True composes with the A/B fallback (2 dispatches), proving
+    explicit-empty is documented compose-with-fallback behavior, NOT zero-dispatch."""
+    zpath = _titled_zip(tmp_path, ["1_Alpha-Topic", "2_Beta-Topic"])
+    monkeypatch.setattr(
+        gary_act, "download_export", lambda url, *, output_dir, filename: str(zpath)
+    )
+    client = FakeGammaClient()
+
+    result = gary_act.generate_gamma_variants(
+        {
+            "slides": [
+                {"slide_id": "s1", "title": "Alpha Topic"},
+                {"slide_id": "s2", "title": "Beta Topic"},
+            ],
+            "export_dir": str(tmp_path),
+            "gamma_settings": [],
+            "double_dispatch": True,
+        },
+        client=client,
+    )
+
+    assert result["calls_made"] == 2
+    assert {row["dispatch_variant"] for row in result["gary_slide_output"]} == {"A", "B"}
 
 
 def test_variant_a_text_mode_preserve_l1_fidelity() -> None:

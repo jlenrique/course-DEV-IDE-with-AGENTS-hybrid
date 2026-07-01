@@ -1,0 +1,53 @@
+# styleguide-retire-default-variant-pair — retire the `[A,B]` dispatch padding (single-variant-binds-one)
+
+**Arc:** Gamma Styleguide Library (branch `dev/gamma-styleguide-library-2026-07-01`).
+**Class:** S. **Status:** **done** (single-gate structural CLOSE 2026-07-01 — Murat all 6 bars PASS: RED-first proven, regression pin holds, tests honest-not-weakened, 3-lane fail-loud remediation R1–R4 applied, AC#8 live real-Gamma 1-dispatch, scope honesty). 3-lane `bmad-code-review` (Blind/Edge/Acceptance) → 0 correctness MUST-FIX + RED-first remediation of a fail-loud cluster (R1 dup-raise / R2 non-empty-zero-raise / R3 double_dispatch WARN / R4 test hardening). 200 gary/styleguide tests green, ruff clean. **AC#8 PASS** (evidence `evidence/retire-variant-pair-ac8-20260701T180148Z/AC8-SUMMARY.md` — exactly 1 real `generate_deck` call, variant A only, negative twin: zero fixture-B deck). **Phase:** 4-implementation. **Parent:** RIPE Leg-A follow-on (filed at Leg-A dual-gate CLOSE; Murat "RIPE NOW, next dev item not backlog drift").
+**Gate mode:** **SINGLE-GATE — Murat structural, PLUS a spend/dispatch-count assertion** (party-ratified; pure dispatch-count representation, no authored words / no source-detail→Gamma conveyance touched → Dan's content-fidelity gate adds no signal). Live-proof real Gamma, no mocks, first-run-stands.
+**GREEN-LIGHT:** 6/6 RATIFY-WITH-AMENDMENTS 2026-07-01 [Winston/John/Murat/Amelia/Gary/Dan] — party record `_bmad-output/planning-artifacts/retire-default-variant-pair-greenlight-party-record-2026-07-01.md`.
+
+## Why (product value / guardrail)
+
+`app/specialists/gary/_act.py::_normalized_gamma_settings` ends with a hardcoded `return [by_variant["A"], by_variant["B"]]` (`:523`) — it emits **both** variants regardless of what the payload's `gamma_settings` list named, seeding the unnamed variant from the `DEFAULT_VARIANT_PAIR` **smoke fixture**. So a single-styleguide binding still **paid-dispatches an unbound fixture-B deck to real Gamma** (Edge#8/Blind#2, reproduced live in the Leg-A AC#5 differential — the extra `A_*`/`B_*` decks). This is a real Marcus-SPOC-runtime defect on TWO counts: (1) a **paid Gamma generation for a deck nobody bound**, and (2) a **hidden default masking the CD-owned styleguide library** — violating the operator's binding directive that the library be the *sole determinant* of Gamma output. Pre-authorization to retire the smoke fixture "after one green live differential" is **SATISFIED** (AC#5 proven 2026-07-01). PRODUCT-VALID (real SPOC exports, not a proofing run — [[feedback_spoc_is_goal_not_concierge_proofing_runs]]).
+
+## Scout ground truth (SOLID — confirmed in code)
+
+- **The defect seam:** `_normalized_gamma_settings` (`_act.py:390`) seeds `by_variant = {item["variant_id"]: dict(item) for item in DEFAULT_VARIANT_PAIR}` (both A and B, `:399`), iterates the payload `raw = payload["gamma_settings"]` list merging present variants (`:402–522`), and returns the hardcoded 2-tuple `[by_variant["A"], by_variant["B"]]` (`:523`).
+- **✅ CONSUMER AUDIT CLEARED (Amelia #1-risk).** The ONLY runtime consumer is `generate_gamma_variants` (`_act.py:790`). It is **already fully iteration-based** — NO fixed `[0]`/`[1]` indexing, NO `a, b =` destructuring, NO `len(...)==2` assumption:
+  ```python
+  gamma_settings = _normalized_gamma_settings(payload)                     # :800
+  variants = tuple(item["variant_id"] for item in gamma_settings) or (     # :801  — iterates
+      ("A", "B") if bool(payload.get("double_dispatch")) else ("A",))      # :802  — fallback ONLY when empty
+  settings_by_variant = {item["variant_id"]: item for item in gamma_settings}  # :804 — dict keyed
+  for variant in variants: ...                                            # :808  — iterates present variants
+  ```
+  The consumer dispatches exactly one Gamma call per variant present. The padding lives entirely in the normalizer. **⇒ The fix is a localized return-projection change; the consumer needs ZERO edits.** (No storyboard-emitter / compose-manifest consumer of this return exists in `app/`; the only other reference is a `styleguide_library.py` docstring.)
+- **Empty-input reality (corrects the green-light Decision-3 framing):** today `raw is None → []` (`:392`) but `raw == []` → falls through to the padded `return [A,B]`. After the fix both `None` and `[]` return `[]`, and the **consumer's existing `or (...)` fallback** (`:801–802`) then supplies the double_dispatch default — so explicit-empty becomes **identical to a missing key** (NOT "zero dispatch"). This is the honest tight-scope behavior; the double_dispatch fallback semantics are unchanged and separately owned.
+- **Unknown variant_id already fails loud** (`:411`, `variant_id not in {"A","B"} → GaryActError tag="gamma.settings.invalid"`) — keep + pin.
+- **DEFAULT_VARIANT_PAIR** (`:171`) remains the per-variant base seed for a variant that is present-but-names-no-styleguide (`else: merged = dict(by_variant[variant_id])`, `:445`) — the legacy concierge A/B default path relies on it. Retained as-is (no output change); see AC#7 for the honesty WARN + deferred fail-loud flip.
+
+## The build (ratified)
+
+1. **Retire the `[A,B]` padding** — track the variant_ids **actually present** in the payload `raw` list in **payload order** (use `dict.fromkeys(...)` / ordered-set idiom, NOT `set()` — order determinism), and `return [by_variant[v] for v in present_ids]`. "Present" = named as an entry in the payload `gamma_settings` list.
+2. **Empty-input contract** — `raw == []` returns `[]` (identical to `raw is None`); remove the special-case that padded explicit-empty to `[A,B]`. No consumer change (the `:801` fallback owns the downstream default).
+3. **Retain `DEFAULT_VARIANT_PAIR` as base seed** (no deletion, no output-behavior change to the styleguide-less path) — but the seed must NEVER re-introduce an unrequested variant into the returned list (guarded by AC#6). Add a code comment marking it "base-seed only; superseded once cd-envelope-authoring lands."
+4. **Honesty WARN (AC#7)** — when a *present* variant seeds from `DEFAULT_VARIANT_PAIR` without a bound `styleguide`, emit a WARN log ("variant present with no bound styleguide; seeding from DEFAULT_VARIANT_PAIR — fail-loud deferred to cd-envelope-authoring"). Observability only; no output change.
+
+## Acceptance criteria (RED-first; Murat's 7 + amendments)
+
+- **AC#1 [RED before fix] — single-variant-binds-one.** A payload whose `gamma_settings` names ONE variant (e.g. `[{"variant_id":"A", ...}]`) → `_normalized_gamma_settings` returns `len==1` and `result[0]["variant_id"]=="A"`. (Fails today: returns 2.)
+- **AC#2 [regression pin — must stay GREEN throughout] — two-variant path preserved.** A payload naming both A and B → returns `len==2`, both present, **A before B** (payload order). Protects the legacy concierge A/B default flow.
+- **AC#3 — variant-order determinism.** Output order == payload list order; asserted, not incidental (e.g. `[{B},{A}] → [B,A]`). Implemented via `dict.fromkeys`, not `set`.
+- **AC#4 — empty-list contract.** `gamma_settings == []` → `[]` (parity with `None`); shape-pin test so a future refactor can't resurrect the pair on empty input. Companion assertion: at the consumer, an empty normalizer return falls to the `:801` `or (...)` fallback (double_dispatch default) — documented, not "zero dispatch."
+- **AC#5 — unknown variant_id fails loud.** A present-but-unknown `variant_id` (e.g. `"C"`) raises `GaryActError` (not silently dropped, not padded to A/B). Pins the existing `:411` guard.
+- **AC#6 — base seed does not resurrect padding.** A present-but-styleguide-less variant (single entry, no `styleguide` key) → `len==1` (the DEFAULT_VARIANT_PAIR seed fills fields for the requested variant only; it must not re-add the sibling). Guards the Decision-2 retain choice.
+- **AC#7 — honesty WARN + deferred flip.** Seeding a present variant from `DEFAULT_VARIANT_PAIR` without a bound styleguide emits the WARN (test asserts the log record). File `styleguide-retire-default-variant-pair-fail-loud-flip` (fold into `cd-envelope-authoring-ceremony`) as the teeth-arming successor in `deferred-inventory.md` with a reactivation trigger on cd-envelope-authoring open.
+- **AC#8 [LIVE, single-gate-PLUS] — discriminating live-proof, real Gamma, no mocks.** Deterministic driver; a single-styleguide binding → **exactly ONE deck** dispatched. **Discriminating:** prove the same binding would have dispatched **2 before / 1 after** (frozen pre-fix count or a count-only replay of the old path — the 2→1 delta proven, not asserted). **Arbiter = on-disk manifest/PNGs; the driver's inline judge is BANNED** (Leg-A row-parse gotcha). Assert **Gamma `generate` call-count == 1** (the defect is a phantom PAID dispatch — witness the dispatch count, not just the artifact) AND **no second fixture-seeded deck on disk** (Dan's negative twin) AND the one deck's on-disk settings carry the bound styleguide's field-set intact (Dan/John conveyance-unchanged check). Run the single-variant path **end-to-end through `generate_gamma_variants`** (Amelia — exercise the real consumer, not the normalizer in isolation).
+
+## T1 Readiness
+- **Required reads at T1:** this spec; the green-light party record; `_act.py` `:390–523` (normalizer) + `:790–884` (consumer); [[feedback_source_detail_to_gamma_conveyance_protected]] (protected invariant — untouched here, confirm no regression); pipeline-manifest check — is `app/specialists/gary/_act.py` in `state/config/pipeline-manifest.yaml::block_mode_trigger_paths`? If yes, read `docs/dev-guide/pipeline-manifest-regime.md` before code.
+- **Dev vehicle:** spawned dev agent, RED-first ([[feedback_bmad_workflows_party_and_dev_agent]]). AC#1 demonstrated RED before code; AC#2 never goes red.
+- **No mocks** on the live proof ([[feedback_no_mocks_real_live_apis]]); real Gamma key `GAMMA_API_KEY` (X-API-KEY), `load_dotenv(override=True)`, `list_themes(limit)` capped at 50.
+- **Scope fence:** normalizer return projection + empty contract + WARN only. Do NOT strip fixture theme/imagery from the base seed (that's the deferred fail-loud flip). Do NOT touch the 16:9 publication-boundary follow-on.
+
+## Follow-ons to file (deferred-inventory §Gamma Styleguide Library Leg-A)
+- `styleguide-retire-default-variant-pair-fail-loud-flip` — when `cd-envelope-authoring-ceremony` lands (library fully authoritative), flip the styleguide-less-present-variant path from WARN-seed to FAIL-LOUD ("present variant without a bound styleguide is a governance error"). Reactivation trigger: cd-envelope-authoring open. (Absorbs Gary's strip-to-neutral-seed proposal.)

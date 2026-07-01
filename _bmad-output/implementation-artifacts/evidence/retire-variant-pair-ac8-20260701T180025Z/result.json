@@ -1,0 +1,20 @@
+{
+  "ts": "20260701T180025Z",
+  "style": "classic-freeform-x-cards",
+  "claim": "single styleguide binding -> exactly 1 paid Gamma deck",
+  "deterministic": {
+    "single_bind_len": 1,
+    "single_bind_variant": "A",
+    "ab_len": 2,
+    "ab_order": [
+      "A",
+      "B"
+    ],
+    "none_list_raises": true,
+    "none_list_tag": "gamma.settings.invalid",
+    "dup_raises": true,
+    "empty_len": 0,
+    "PASS": true
+  },
+  "live_error": "GammaDispatchError: gamma export left briefed slide(s) unmatched for variant A: ['ac8-single']; unmatched pages: []"
+}

@@ -1,0 +1,63 @@
+{
+  "ts": "20260701T180148Z",
+  "style": "classic-freeform-x-cards",
+  "claim": "single styleguide binding -> exactly 1 paid Gamma deck",
+  "deterministic": {
+    "single_bind_len": 1,
+    "single_bind_variant": "A",
+    "ab_len": 2,
+    "ab_order": [
+      "A",
+      "B"
+    ],
+    "none_list_raises": true,
+    "none_list_tag": "gamma.settings.invalid",
+    "dup_raises": true,
+    "empty_len": 0,
+    "PASS": true
+  },
+  "live": {
+    "generate_deck_calls_real": 1,
+    "server_generation_ids": [
+      "dc3wcCxQttkyUwr3MvNlL"
+    ],
+    "result_calls_made": 1,
+    "result_generation_mode": "single-dispatch",
+    "variant_ids_in_output": [
+      "A"
+    ],
+    "n_output_rows": 3,
+    "per_slide_png": [
+      {
+        "file": "A_p3-low-summary.png",
+        "exists": true,
+        "bytes": 472612,
+        "sha256": "96b6b399ecdb6602"
+      },
+      {
+        "file": "A_p3-med-physicianship.png",
+        "exists": true,
+        "bytes": 603892,
+        "sha256": "bcc17bfa926d4bf6"
+      },
+      {
+        "file": "A_p3-high-maze.png",
+        "exists": true,
+        "bytes": 611377,
+        "sha256": "82c6a036e35aae55"
+      }
+    ],
+    "on_disk_png_files": [
+      "1_From-Ideas-to-Opportunities.png",
+      "2_Physicianship-and-Innovation-Leadership.png",
+      "3_The-Intrapreneur-Maze.png",
+      "A_p3-high-maze.png",
+      "A_p3-low-summary.png",
+      "A_p3-med-physicianship.png",
+      "gary_A.png"
+    ],
+    "n_on_disk_pngs": 7,
+    "PASS": false
+  },
+  "AC8_PASS": false
+}

@@ -1,0 +1,7 @@
+[18:00:25] EVIDENCE DIR: C:\Users\juanl\Documents\GitHub\course-DEV-IDE-with-AGENTS-hybrid\_bmad-output\implementation-artifacts\evidence\retire-variant-pair-ac8-20260701T180025Z
+[18:00:25] --- DETERMINISTIC cardinality/fail-loud block (no dispatch) ---
+[18:00:25]   {"ab_len": 2, "ab_order": ["A", "B"], "dup_raises": true, "empty_len": 0, "none_list_raises": true, "none_list_tag": "gamma.settings.invalid", "single_bind_len": 1, "single_bind_variant": "A"}
+[18:00:25]   deterministic block PASS: True
+[18:00:25] --- LIVE single-binding dispatch (real Gamma, styleguide=classic-freeform-x-cards) ---
+[18:00:26]   >>> REAL generate_deck call #1
+[18:00:42] LIVE BLOCK FAILED (fatal — no proof without it): GammaDispatchError: gamma export left briefed slide(s) unmatched for variant A: ['ac8-single']; unmatched pages: []
