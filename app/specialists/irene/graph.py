@@ -42,6 +42,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import os
 import re
 from copy import deepcopy
 from pathlib import Path
@@ -144,6 +145,37 @@ EXPECTED_VISUAL_PLAN_HEADER = (
     "(subordinate; may be stale; defer to perceived)"
 )
 UNVERIFIED_VISUAL_AUTHORITY = "UNVERIFIED — no perceived authority"
+
+# Leg-4 narration-fidelity down-payment (SOURCE-direction figure gate + reground).
+# Env toggle, default OFF -> byte-identical prompt + inert gate (mirrors the
+# MARCUS_NARRATION_VOICE_DIRECTION_ACTIVE / g0_enrichment_wiring flag idiom). Flag
+# ON wakes (a) the source-figure reground block in the Pass-2 prompt and (b) the
+# additive SOURCE-direction fail-loud gate in _act_pass_2. This is a real product
+# defect fix (Irene faithfully narrating Gamma-confabulated numerals over source
+# truth on EVERY run); it is not shaped to make any proofing run pass.
+FIGURE_FIDELITY_ACTIVE_ENV = "MARCUS_NARRATION_FIGURE_FIDELITY_ACTIVE"
+
+SOURCE_FIGURE_AUTHORITY_HEADER = (
+    "## Source figure authority - authoritative SOURCE numerals "
+    "(outrank perceived deck numerals on conflict)"
+)
+
+
+def narration_figure_fidelity_active() -> bool:
+    """Return True iff the Leg-4 narration figure-fidelity gate is woken (default OFF).
+
+    The underlying DEFECT is every-run (Irene faithfully narrates
+    Gamma-confabulated numerals over source truth on EVERY production run); the
+    FIX, however, ships opt-in — this gate is flag-gated and NOT yet default-on, so
+    it stays inert / byte-identical until ``MARCUS_NARRATION_FIGURE_FIDELITY_ACTIVE``
+    is set.
+    """
+    return os.environ.get(FIGURE_FIDELITY_ACTIVE_ENV, "").strip().lower() in {
+        "1",
+        "true",
+        "yes",
+        "on",
+    }
 
 
 class Pass2GroundingError(SpecialistDispatchError):
@@ -694,6 +726,92 @@ def _assert_figure_citations_within_perceived(
                 f"scope=narration; slide {slide_id} narration figures not present in perceived "
                 f"authority: {offending}",
                 tag="irene.pass2.figure-contradiction",
+            )
+
+
+def _assert_narration_figures_sourced(
+    parsed: dict[str, Any],
+    roster: list[dict[str, Any]],
+    *,
+    source_text: str,
+) -> None:
+    """Leg-4 SOURCE-direction narration figure gate (flag-gated; ADDITIVE).
+
+    ``_assert_figure_citations_within_perceived`` enforces the DECK-direction
+    invariant (narration ⊆ deck). This gate enforces the orthogonal
+    SOURCE-direction invariant and stays additive — both must hold when the flag
+    is ON; the deck-direction gate is untouched.
+
+    Root cause it closes: Pass-2 grounds on the DECK as sole visual authority, so
+    when Gamma confabulates a chart numeral Irene faithfully narrates the invented
+    value over source truth. The one in-graph figure gate only checks
+    narration ⊆ deck, so a deck-invented figure PASSES today.
+
+    Two fail-loud conditions (flag ON):
+      * ``irene.pass2.figure-unsourced`` — a narrated digit-form figure is absent
+        from the SOURCE corpus (unsourced / confabulated introduction).
+      * ``irene.pass2.figure-source-deck-conflict`` — 🔒 BINDING VO-PROTECTION:
+        the deck rendered a value that CONTRADICTS a same-kind source numeral
+        (source 67%, deck 60%, narration 60%). Fail loud as an upstream
+        deck-confabulation defect and route the repair to Gamma. The gate MUST
+        NOT rewrite/reorder narration (that would itself risk the protected
+        VO↔on-screen invariant) — it only BLOCKS; VO is never desynced from
+        on-screen.
+
+    Declared scope: digit-form ``$N`` / ``N%`` / ``Nx`` only (the frozen
+    ``_FIGURE_RE`` neck, same extractor the WARN-only source_fidelity_audit uses).
+    Word-form + bare-integer figures are explicitly OUT — do NOT widen
+    ``_FIGURE_RE`` (frozen-neck governance).
+    """
+    if not narration_figure_fidelity_active():
+        return
+    source_figures = _figures(source_text)
+    source_kinds = {_figure_kind(fig) for fig in source_figures}
+    perceived_by_slide = {
+        entry["slide_id"]: set(entry.get("perceived_figures") or []) for entry in roster
+    }
+    for segment in parsed.get("narration_script") or []:
+        if not isinstance(segment, dict):
+            continue
+        slide_id = str(segment.get("slide_id") or segment.get("perception_source") or "")
+        if not slide_id:
+            slide_id = _segment_slide_id_from_deltas(segment, parsed)
+        text = str(segment.get("text") or segment.get("narration_text") or "").strip()
+        if not text:
+            continue
+        # Edge-2: the SOURCE-provenance check (figure in source_figures) is GLOBAL
+        # and needs NO slide_id — it must run for EVERY narrated segment, keyed or
+        # not, so a confabulated digit-form figure in an unkeyed segment can never
+        # escape the source gate. Only the deck-CONFLICT sub-check needs the
+        # per-slide key; when the segment is unkeyed/unresolvable we DEGRADE that
+        # classification (perceived unavailable -> empty set) and the figure falls
+        # through to the plain figure-unsourced raise.
+        perceived = perceived_by_slide.get(slide_id, set()) if slide_id else set()
+        slide_label = slide_id or "<unkeyed>"
+        for figure in sorted(_figures(text)):
+            if figure in source_figures:
+                continue  # sourced — clean
+            # Source-vs-deck CONFLICT: the deck rendered this figure AND the source
+            # carries a same-KIND numeral it contradicts (e.g. source 67%, deck
+            # 60%). Fail loud as an upstream Gamma deck-confabulation defect; never
+            # silently narrate either value (VO↔on-screen protection). Requires a
+            # resolvable slide_id (perceived authority); unkeyed segments degrade to
+            # figure-unsourced below.
+            if figure in perceived and _figure_kind(figure) in source_kinds:
+                raise Pass2GroundingError(
+                    f"scope=narration; slide {slide_label} narration figure {figure} "
+                    "conflicts with the SOURCE (deck-rendered value contradicts a "
+                    "same-kind source numeral) — route the repair to Gamma; do NOT "
+                    "desync VO from on-screen",
+                    tag="irene.pass2.figure-source-deck-conflict",
+                )
+            # Unsourced/confabulated introduction: a narrated figure with no source
+            # provenance at all (whether or not the deck also invented it).
+            raise Pass2GroundingError(
+                f"scope=narration; slide {slide_label} narration figure {figure} is "
+                "not present in the SOURCE corpus (unsourced/confabulated "
+                "introduction)",
+                tag="irene.pass2.figure-unsourced",
             )
 
 
@@ -1263,6 +1381,49 @@ def _read_pass_2_references(
     return "\n\n".join(parts)
 
 
+def _source_figure_surfaces(source_text: str) -> list[str]:
+    """Raw digit-form figure surfaces present in the SOURCE corpus (sorted, deduped).
+
+    Read-only caller of the frozen-neck ``_FIGURE_RE`` (figure_tokens neck is
+    untouched — no signature change, no widening). Declared scope is digit-form
+    ``$N`` / ``N%`` / ``Nx`` ONLY; word-form + bare-integer numerals are OUT by
+    frozen-neck governance and MUST NOT motivate a ``_FIGURE_RE`` change.
+    """
+    surfaces = {match.group(0).strip() for match in _FIGURE_RE.finditer(source_text)}
+    return sorted(surfaces)
+
+
+def _source_figure_authority_block(source_text: str) -> str:
+    """Leg-4 reground block: authoritative SOURCE numerals (flag ON only, else "").
+
+    When the flag is OFF this returns "" so the Pass-2 prompt is byte-identical.
+    """
+    if not narration_figure_fidelity_active():
+        return ""
+    surfaces = _source_figure_surfaces(source_text)
+    figures_line = ", ".join(surfaces) if surfaces else "<none present in source>"
+    return (
+        f"{SOURCE_FIGURE_AUTHORITY_HEADER}\n\n"
+        "These are the ONLY numerals with SOURCE provenance. On ANY conflict "
+        "between a source numeral and a perceived deck numeral, the SOURCE "
+        "numeral WINS — narrate the source value, and NEVER narrate a deck "
+        "numeral that contradicts it. Do NOT introduce a numeral absent from "
+        "this source set (scope: digit-form $N / N% / Nx). A slide whose "
+        "rendered numeral disagrees with the source is an upstream deck defect "
+        "to be repaired at Gamma, not narrated.\n\n"
+        f"{figures_line}\n\n"
+    )
+
+
+def _figure_kind(normalized_figure: str) -> str:
+    """Kind prefix of a normalized figure token (money-trillion/percent/multiple/...)."""
+    return (
+        normalized_figure.split(":", 1)[0]
+        if ":" in normalized_figure
+        else normalized_figure
+    )
+
+
 def _assemble_pass_2_prompt(
     envelope_payload: dict[str, Any],
     *,
@@ -1287,9 +1448,14 @@ def _assemble_pass_2_prompt(
         for entry in slide_roster
     )
     reading_path_guidance = _reading_path_guidance(slide_roster)
+    # Leg-4 reground (flag ON only). Inject an authoritative SOURCE-figure block
+    # instructing that source numerals OUTRANK perceived deck numerals on conflict.
+    # Pure prompt construction; when the flag is OFF this is "" -> byte-identical.
+    source_figure_block = _source_figure_authority_block(extracted_source)
     user_message = (
         "## Source corpus (the ONLY content basis for narration)\n\n"
         f"{extracted_source}\n\n"
+        f"{source_figure_block}"
         f"{VISUAL_AUTHORITY_HEADER}\n\n"
         f"{authority_lines}\n\n"
         f"{EXPECTED_VISUAL_PLAN_HEADER}\n\n"
@@ -1918,6 +2084,14 @@ def _act_pass_2(
     _assert_narration_joins_roster(parsed, slide_roster)
     _assert_reading_path_conformance(parsed, slide_roster)
     _assert_figure_citations_within_perceived(parsed, slide_roster)
+    # Leg-4 SOURCE-direction figure-fidelity gate (flag-gated; ADDITIVE to the
+    # deck-direction gate above — both hold when the flag is ON). Self-guards on
+    # MARCUS_NARRATION_FIGURE_FIDELITY_ACTIVE, so flag OFF (default) ⇒ inert / no
+    # state change ⇒ byte-identical. Runs AFTER the deck-direction gate so that
+    # gate's behavior is unchanged.
+    _assert_narration_figures_sourced(
+        parsed, slide_roster, source_text=extracted_source
+    )
     # AC1 (finding-d): the emitted Pass-2 package is directly validatable in-band
     # (retires the out-of-band concierge normalization step).
     assert_pass2_surfaces_validatable(parsed)
@@ -2104,10 +2278,12 @@ def build_irene_graph() -> StateGraph:
 
 __all__ = [
     "CONSUMED_PAYLOAD_KEYS",
+    "FIGURE_FIDELITY_ACTIVE_ENV",
     "PASS_2_PROMPT_REFERENCES",
     "PASS_2_SYSTEM_MESSAGE",
     "Pass2GroundingError",
     "Pass2ReadingPathError",
+    "SOURCE_FIGURE_AUTHORITY_HEADER",
     "TRANSITIONS",
     "UNVERIFIED_VISUAL_AUTHORITY",
     "_act",
@@ -2117,6 +2293,8 @@ __all__ = [
     "_act_pass_1",
     "_act_pass_2",
     "_assert_figure_citations_within_perceived",
+    "_assert_narration_figures_sourced",
+    "narration_figure_fidelity_active",
     "_parse_pass_2_response",
     "_parse_pass_1_response",
     "_slide_roster",

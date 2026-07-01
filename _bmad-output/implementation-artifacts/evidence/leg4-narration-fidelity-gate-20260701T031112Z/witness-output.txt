@@ -1,0 +1,15 @@
+flag active: True
+SOURCE in-scope digit figures: ['percent:66']
+  deck perceived[c-u03-persubslide-probe-card-01] = ['percent:66']
+  deck perceived[c-u03-persubslide-probe-card-02] = []
+  deck perceived[c-u03-persubslide-probe-card-03] = ['percent:91', 'percent:92']
+REAL narration in-scope digit figures: ['percent:66']
+
+(i)   REAL narration as-authored: SAILS both deck- and source-direction gates. OK
+(ii-a) injected $4.6B -> RAISED tag=irene.pass2.figure-unsourced: scope=narration; slide c-u03-persubslide-probe-card-01 narration figure money-trillion:0.0046 is not present in the SOURCE corpus (unsourced/confabulated introduction)
+(ii-b) deck 60% vs source 66% -> RAISED tag=irene.pass2.figure-source-deck-conflict: scope=narration; slide c-u03-persubslide-probe-card-01 narration figure percent:60 conflicts with the SOURCE (deck-rendered value contradicts a same-kind source numeral) — route the repair to Gamma; do NOT desync VO from on-screen
+flag OFF firewall: injected-defect narration INERT (active=False). OK
+
+VERDICT: PASS — gate SAILS on real narration and REJECTS both an unsourced
+confabulation and a source-vs-deck conflict injected into the REAL artifacts;
+flag-OFF firewall holds. The gate has teeth on real production output.
