@@ -13,6 +13,7 @@ from app.marcus.lesson_plan.collateral_spec import CollateralSpec
 from app.models.state.operator_verdict import OperatorVerdict
 from app.models.state.run_state import RunState
 from app.specialists.dispatch_errors import SpecialistDispatchError
+from app.specialists.gary.styleguide_library import SCRIPTED_ENUM_CLASSES
 from app.specialists.source_bundle import SourceBundleError, read_extracted_source
 
 logger = logging.getLogger(__name__)
@@ -54,6 +55,14 @@ PASS_1_SYSTEM_MESSAGE = (
 )
 PASS1_MODES = {"pass-1", "irene-pass1", "irene_pass1"}
 PASS2_MODES = {"pass-2", "irene-pass2", "irene_pass2"}
+
+# Leg-C R3 AC#15 (D-0): scripted-derived payload keys the deterministic post-hoc
+# honoring reads but the LLM must NEVER see. Keyed off the scripted NAMESPACE
+# (the sealed registry in the CD-owned styleguide spine), never a hand-list —
+# a future 2nd scripted class is auto-hidden. Stripping keeps the model input
+# BYTE-IDENTICAL with and without a bound floor ("never re-parameterize the
+# LLM clustering objective"); the FULL payload stays available post-hoc.
+_LLM_HIDDEN_PAYLOAD_KEYS: frozenset[str] = frozenset(SCRIPTED_ENUM_CLASSES)
 
 
 class ModeMismatchError(SpecialistDispatchError):
@@ -144,6 +153,12 @@ def assemble_pass1_prompt(
         "the envelope payload below is the planning basis; stay on ITS "
         "topic.\n\n"
     )
+    # Leg-C R3 AC#15 (D-0 strip): scripted-derived keys never reach the model's
+    # view of the payload; the caller's payload dict is untouched (post-hoc
+    # consumers read the floor from the FULL payload).
+    model_visible_payload = {
+        k: v for k, v in payload.items() if k not in _LLM_HIDDEN_PAYLOAD_KEYS
+    }
     return (
         PASS_1_SYSTEM_MESSAGE,
         f"{corpus_section}"
@@ -152,7 +167,7 @@ def assemble_pass1_prompt(
         "## Irene Pass-1 references\n\n"
         f"{read_references()}\n\n"
         "## Envelope payload\n\n"
-        f"```json\n{_json_dumps(payload)}\n```\n\n"
+        f"```json\n{_json_dumps(model_visible_payload)}\n```\n\n"
         f"{_cluster_emission_instructions()}\n\n"
         f"{_collateral_emission_instructions()}",
     )
