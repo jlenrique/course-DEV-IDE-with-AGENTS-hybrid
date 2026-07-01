@@ -152,3 +152,38 @@ Fully-spawned team: **Winston (architect) / John (PM, tiebreak) / Murat (test)**
 - **Roster:** ≥4 named coherent styleguides spanning ≥1 Classic + ≥1 Studio; the SMOKE FIXTURE pair = seed #1/#2.
 
 **Disposition:** ratified design memorialized; this is its **own future party-greenlit CD-substrate arc** (only the 16:9 down-payment is shared with Leg-4 finding (a)). The active arc's next dev remains **Leg-1b**.
+
+---
+
+## 8. Seed exemplar registry — draft artifacts folded in (operator directive, 2026-07-01)
+
+**Operator directive (2026-07-01):** *fold the Gamma styleguide registry exemplars into the upcoming styleguide registry spec.* Two draft artifacts are the seed for the formal registry schema/spec (**seed, not runtime-active config yet** — the runtime target `state/config/gamma-style-guides.yaml` is not written; these live under `_bmad-output/planning-artifacts/`):
+
+| Artifact | Role |
+|---|---|
+| [`gamma-style-guides-v1-draft-2026-07-01.yaml`](gamma-style-guides-v1-draft-2026-07-01.yaml) | **Compact registry / data artifact** — selected values per style only (one schema-validated record per named guide across the §4 three categories). `schema_version: 0.1-draft`, `status: draft`, `registry_owner: cd`. |
+| [`gamma-style-guides-v1-field-control-companion-2026-07-01.md`](gamma-style-guides-v1-field-control-companion-2026-07-01.md) | **Field-control reference** — the control dictionary: value choices, UI↔API mapping, implementation status, and current unknowns. The YAML stores selected values; this companion explains what each field means and how (or whether) the repo wires it. |
+
+### 8a. Seed exemplar styles (captured)
+
+These promote the §4a "SMOKE FIXTURE pair = seed #1/#2" intent into real, independently-selectable named exemplars, plus a second Classic look that tests registry generality:
+
+- **`classic-freeform-x-cards`** — display `Classic-Freeform_X-Cards`; live example `https://the-modern-clinicians-di-a6j7emh.gamma.site/`. Classic · Freeform · Default/Fluid · Classic card mode · Tejal theme (`njim9kuhfnljvaa`) · AI-generated illustrated visuals · minimal/condensed screen text. (Seed from `DEFAULT_VARIANT_PAIR[0]`.)
+- **`classic-cards-fluid-visuals-magazine-ai-direction-detailed`** — display `Classic-Cards_Fluid-Visuals_Magazine+AI-Direction_Detailed`; live example `https://the-economic-structural--1t485b6.gamma.site/`. Classic · Card-by-card · Default/Fluid · Magazine art direction · AI images · auto-selected model · detailed visual-led additional instructions. (Captured 2026-07-01 to test registry generality; `Magazine` is a UI art style with no documented named `stylePreset` → compiled via `custom_style`.)
+
+(The draft YAML also carries `hil-2026-apc-blueprint-classic` [seed #2, B look], `hil-2026-apc-studio-image-card` [the Studio-template seed satisfying the ≥1-Studio roster rule], and a `proposed_new` `hil-2026-apc-data-clean-classic` candidate toward the ≥4 roster.)
+
+### 8b. Binding design decision — exemplars capture SELECTED values, not runtime overrides
+
+**A clean style exemplar records the style's actual selected values, not publication/runtime overrides.** Canonical case: a Default/Fluid style keeps `cardOptions.dimensions: fluid` in the exemplar **even if** Descript-bound production later applies a **16:9 publication safety override** (Leg-4 finding (a) / §3 aspect-ratio defect). The 16:9 forcing is **runtime policy**, not this style's selected value — encoding it into the exemplar would corrupt the style's identity. (Recorded on the YAML `dimensions` field note; both seed exemplars are `dimensions: fluid` accordingly.) This preserves the strangler-fig migration (§7) — the library records what each style *is*, while publication safety overrides stay in the runtime layer.
+
+### 8c. Field-control categorization (companion legend → future schema)
+
+Every field is classified by **how it reaches Gamma, if at all** — the seed for the formal registry schema's per-field control model:
+- **API-wired** (`documented+wired`) — documented by Gamma AND wired through local Gary/client today.
+- **Client-only** (`documented+client-only`) — passable by the raw client but not exposed by Gary normalization/dispatch (e.g. `sharingOptions`, `folderIds`).
+- **UI-only / unknown** (`ui-or-unknown`) — visible in the Gamma UI or operator-desired, no documented per-request API mapping (e.g. reference image, `formatVariant`, card width/alignment/font-size). Carried `enforced:false` / manual-finish, **excluded from the completeness claim** (§7 decision #5).
+- **Theme/template-owned** — controlled by the selected theme or template design, not a per-request field (the entire Studio look).
+- **Runtime policy** — controls which API path or runtime behavior fires (`generation_method`, `num_cards_policy`, and the 16:9 publication override above); plus `compiled` (transformed into ≥1 API field, e.g. `keywords`→`additionalInstructions`) and `metadata` (registry/provenance, not sent to Gamma).
+
+**Status:** this remains a **draft seed for the formal registry schema/spec, NOT runtime-active config.** Promotion (create `state/config/gamma-style-guides.yaml` + `validate_gamma_style_guides.py` + Gary consumption seam) is the §7-ratified, party-greenlit CD-substrate arc — see the YAML's `promotion_work_items`.

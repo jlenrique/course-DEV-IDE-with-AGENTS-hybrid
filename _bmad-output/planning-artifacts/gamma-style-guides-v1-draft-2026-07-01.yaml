@@ -1,0 +1,898 @@
+schema_version: 0.1-draft
+status: draft
+registry_owner: cd
+runtime_target_path: state/config/gamma-style-guides.yaml
+source_design:
+  briefing: _bmad-output/planning-artifacts/gamma-styleguide-library-briefing-2026-06-30.md
+  seed_sources:
+  - state/config/gamma-style-presets.yaml
+  - app/specialists/gary/_act.py::DEFAULT_VARIANT_PAIR
+  - runs/studio-trial/studio-b-gamma-settings.yaml
+validation_policy:
+  required_roster:
+    min_style_guides: 4
+    min_classic_api_guides: 1
+    min_studio_guides: 1
+  completeness:
+    null_or_default_fails_required_fields: true
+    required_fields_are_surface_relative: true
+  api_surface:
+    allowed_generation_methods:
+    - classic_generation
+    - template_generation
+    api_requires:
+    - theme
+    - prompt_configuration
+    - page_settings
+    studio_requires:
+    - studio_template
+    - studio_prompt_lock
+    - export
+    studio_forbids_classic_only_fields:
+    - prompt_configuration.text_content
+    - prompt_configuration.generation.num_cards
+    - page_settings.card_options
+  provenance:
+    require_brand_binding: true
+    require_styleguide_version: true
+    require_origin_notes: true
+  live_proof:
+    require_theme_or_template_existence_check: true
+    require_differential_no_vacuous_green: true
+    require_operator_eye_look_verdict: true
+implementation_status_keywords:
+  in_use: Currently wired and active in the local production path.
+  available: Documented or locally passable programmatic control exists, but this specific registry field/value is not necessarily active.
+  format_limited: Programmatic control exists only for compatible Gamma formats, not necessarily for presentation decks.
+  template: Control should be supplied by Gamma theme/template design unless future API proof says otherwise.
+  TBD: No confirmed programmatic control path yet.
+column_model:
+  note: Flat row view for operator/CD review. Each column is classified by how it reaches Gamma, if at all.
+  field_types:
+    api_field: Passed directly to the Gamma API for the applicable generation method.
+    api_documented_unwired: Documented by Gamma and passable in principle, but not exposed by the current Gary normalization/dispatch layer.
+    compiled_field: Transformed by Gary/Marcus into one or more API fields.
+    runtime_policy: Controls which Gamma API path or runtime behavior is used.
+    metadata: Registry/provenance/design context; not sent to Gamma.
+    theme_or_template_owned: Controlled by the selected Gamma theme/template or by template prompt design, not by a documented per-request API field.
+    manual_or_ui_only: Recorded for human/UI parity but not enforceable through the current API client or current documented Gamma API.
+  columns:
+    style_guide_id:
+      field_type: metadata
+      gamma_mapping: null
+    display_name:
+      field_type: metadata
+      gamma_mapping: null
+    status:
+      field_type: metadata
+      gamma_mapping: null
+    version:
+      field_type: metadata
+      gamma_mapping: null
+    generation_method:
+      field_type: runtime_policy
+      gamma_mapping: classic_generation -> POST /generations; template_generation -> POST /generations/from-template
+    intended_use:
+      field_type: metadata
+      gamma_mapping: null
+    theme_id:
+      field_type: api_field
+      gamma_mapping: themeId
+      applies_to:
+      - classic_generation
+      - template_generation
+    theme_name:
+      field_type: metadata
+      gamma_mapping: null
+    template_id:
+      field_type: api_field
+      gamma_mapping: gammaId
+      applies_to:
+      - template_generation
+    template_name:
+      field_type: metadata
+      gamma_mapping: null
+    live_example_url:
+      field_type: metadata
+      gamma_mapping: null
+      note: Published Gamma URL or similar live exemplar for human review and CD/Gary calibration; not sent to Gamma.
+    text_mode:
+      field_type: api_field
+      gamma_mapping: textMode
+      applies_to:
+      - classic_generation
+    text_amount:
+      field_type: api_field
+      gamma_mapping: textOptions.amount
+      applies_to:
+      - classic_generation
+      note: Primarily meaningful when textMode is generate or condense.
+    audience:
+      field_type: api_field
+      gamma_mapping: textOptions.audience
+      applies_to:
+      - classic_generation
+      note: Primarily meaningful when textMode is generate.
+    tone:
+      field_type: api_field
+      gamma_mapping: textOptions.tone
+      applies_to:
+      - classic_generation
+      note: Primarily meaningful when textMode is generate.
+    language:
+      field_type: api_field
+      gamma_mapping: textOptions.language
+      applies_to:
+      - classic_generation
+    image_source:
+      field_type: api_field
+      gamma_mapping: imageOptions.source
+      applies_to:
+      - classic_generation
+      - template_generation
+    image_model:
+      field_type: api_field
+      gamma_mapping: imageOptions.model
+      applies_to:
+      - classic_generation
+      - template_generation
+    image_style_preset:
+      field_type: api_field
+      gamma_mapping: imageOptions.stylePreset
+      applies_to:
+      - classic_generation
+      note: Template generation currently exposes imageOptions but not the full Classic text/card surface.
+    custom_style_prompt:
+      field_type: api_field
+      gamma_mapping: imageOptions.style
+      applies_to:
+      - classic_generation
+      - template_generation
+      note: Only respected when stylePreset is custom or unset.
+    keywords:
+      field_type: compiled_field
+      gamma_mapping: additionalInstructions, or imageOptions.style when stylePreset=custom
+    format_type:
+      field_type: api_field
+      gamma_mapping: format
+      applies_to:
+      - classic_generation
+    format_variant:
+      field_type: manual_or_ui_only
+      gamma_mapping: null
+      note: Gamma UI concept; not a current generate kwarg in scripts/api_clients/gamma_client.py.
+    card_split:
+      field_type: api_field
+      gamma_mapping: cardSplit
+      applies_to:
+      - classic_generation
+    num_cards_policy:
+      field_type: runtime_policy
+      gamma_mapping: numCards
+      note: Runtime usually derives numCards from len(slides), not from a fixed styleguide value.
+    additional_instructions:
+      field_type: api_field
+      gamma_mapping: additionalInstructions
+      applies_to:
+      - classic_generation
+      note: For template_generation, instructions are normally part of the template prompt/lock wrapper, not this Classic field.
+    page_shape:
+      field_type: compiled_field
+      gamma_mapping: cardOptions.dimensions
+      applies_to:
+      - classic_generation
+      note: Operator-facing Page setup preset. default_fluid -> fluid; traditional_16x9 -> 16x9; tall_4x3 -> 4x3; custom -> custom_aspect_ratio.
+    custom_full_bleed:
+      field_type: manual_or_ui_only
+      gamma_mapping: null
+      note: Visible under Custom per operator report; no current local Gamma API/Gary mapping.
+    aspect_ratio:
+      field_type: api_field
+      gamma_mapping: cardOptions.dimensions
+      applies_to:
+      - classic_generation
+      note: Normalized API value. Local Gary currently allows fluid, 16x9, 4x3, pageless, letter, a4, 1x1, 4x5, and 9x16.
+    card_width:
+      field_type: manual_or_ui_only
+      gamma_mapping: null
+      note: Gamma UI Page setup value M/L; no current local Gamma API/Gary mapping.
+    content_alignment:
+      field_type: manual_or_ui_only
+      gamma_mapping: null
+      note: Gamma UI Page setup value top/middle/bottom; no current local Gamma API/Gary mapping.
+    font_size:
+      field_type: manual_or_ui_only
+      gamma_mapping: null
+      note: Gamma UI Page setup value S/M/L; no current local Gamma API/Gary mapping.
+    show_card_backdrops:
+      field_type: manual_or_ui_only
+      gamma_mapping: null
+      note: Gamma UI toggle; no current local Gamma API/Gary mapping.
+    animations:
+      field_type: manual_or_ui_only
+      gamma_mapping: null
+      note: Gamma UI toggle; no current local Gamma API/Gary mapping.
+    dimensions:
+      field_type: api_field
+      gamma_mapping: cardOptions.dimensions
+      applies_to:
+      - classic_generation
+      note: Style-exemplar value should reflect the selected Gamma style/page setup. Publication safety overrides such as Descript-bound 16x9 belong in runtime policy, not in the exemplar.
+    header_footer:
+      field_type: compiled_field
+      gamma_mapping: cardOptions.headerFooter
+      applies_to:
+      - classic_generation
+      note: Current draft boolean is not the final API shape; Gamma expects a structured header/footer object.
+    export_as:
+      field_type: api_field
+      gamma_mapping: exportAs
+      applies_to:
+      - classic_generation
+      - template_generation
+    brand_binding:
+      field_type: metadata
+      gamma_mapping: null
+      note: Future compiler may translate brand constraints into additionalInstructions or theme checks.
+    coherence_rules:
+      field_type: metadata
+      gamma_mapping: null
+      note: Authoring-time validation rule for Dan/CD and the styleguide validator.
+    provenance_source:
+      field_type: metadata
+      gamma_mapping: null
+    provenance_notes:
+      field_type: metadata
+      gamma_mapping: null
+draft_rows:
+- style_guide_id: classic-freeform-x-cards
+  display_name: Classic-Freeform_X-Cards
+  status: seed_from_existing
+  version: 1
+  generation_method: classic_generation
+  intended_use: Current typical Gamma production for an A-screen candidate.
+  theme_id: njim9kuhfnljvaa
+  theme_name: 2026 HIL APC Tejal
+  template_id: null
+  template_name: null
+  live_example_url: "https://the-modern-clinicians-di-a6j7emh.gamma.site/"
+  prompt_editor:
+    content_mode: freeform
+    text_content_mode: condense
+    amount_of_text: minimal
+    output_language: en-US
+    theme_id: njim9kuhfnljvaa
+    theme_name: 2026 HIL APC Tejal
+    image_source: aiGenerated
+    format: presentation
+    format_variant: default
+    card_design_mode: classic
+    requested_card_count: 10
+    additional_instructions: ''
+  text_mode: condense
+  text_amount:
+    value: minimal
+    gamma_value: brief
+  audience: Faculty and instructional designers familiar with Canvas and course design, American English
+  tone: Clear, professional, engaging in American English
+  language: en
+  image_source: aiGenerated
+  image_model: null
+  image_style_preset: illustration
+  custom_style_prompt: null
+  keywords: []
+  format_type: presentation
+  format_variant:
+    value: default
+    enforced: false
+    note: UI-level value; not currently sent as a generate kwarg.
+  card_split: inputTextBreaks
+  num_cards_policy:
+    value: explicit_card_count
+    count: 10
+  additional_instructions: []
+  page_shape: default_fluid
+  custom_full_bleed:
+    value: null
+    observed: false
+    note: Custom section not expanded in screenshot.
+  aspect_ratio: fluid
+  card_width: L
+  content_alignment: middle
+  font_size: M
+  show_card_backdrops: false
+  animations: true
+  dimensions: fluid
+  header_footer:
+    value: false
+    enforced: false
+    confidence: inferred
+    note: Card headers & footers section is visible but not expanded in screenshot; current draft keeps false until directly inspected.
+  export_as: png
+  brand_binding: master-style-bible
+  coherence_rules: Tejal theme + AI-generated illustration visuals + Classic freeform condense + minimal text + 10-card public deck output.
+  provenance_source: app/specialists/gary/_act.py::DEFAULT_VARIANT_PAIR[0]
+  source_witnesses:
+    prompt_editor: operator_screenshot_prompt_editor_classic_a_2026_07_01
+    page_setup: operator_screenshot_classic_a_2026_07_01
+    live_example_url: "https://the-modern-clinicians-di-a6j7emh.gamma.site/"
+  provenance_notes: This row reflects the live Gamma exemplar and UI screenshots, with the Image source normalized to the API/runtime value aiGenerated despite the UI screenshot label Automatic. Earlier production hardening used preserve for figure fidelity; this screenshot witness shows Condense + Minimal. Publication-time 16:9 forcing is intentionally not encoded as this style exemplar's dimensions.
+style_guides:
+  classic-freeform-x-cards:
+    status: seed_from_existing
+    version: 1
+    generation_method: classic_generation
+    display_name: Classic-Freeform_X-Cards
+    intended_use: Classic Gamma freeform prompt-to-X-card production for HIL APC narrated lesson screens.
+    style_description: >-
+      A clean clinical-education presentation style that turns freeform source prose into a sequence of
+      spacious, white-background cards with navy headings, teal body text, muted olive accents, and soft
+      vector/illustration panels. The style favors concise on-screen gist over dense transcription: titles,
+      two-column contrasts, three-part icon rows, numbered steps, and quote/key-message cards carry the
+      visible structure while narration is expected to hold the fuller explanation. Minimal additional
+      prompt guidance leaves the Tejal theme, Classic card design, AI-generated illustrated visuals, and
+      freeform-to-10-card condensation to do most of the shaping. The resulting deck feels professional,
+      calm, approachable, and APC/clinical-leadership oriented, with enough visual variety for a narrated
+      lesson but not enough density to substitute for the voiceover.
+    style_tradeoffs:
+      pros:
+      - Clean, calm, clinician-appropriate look with strong readability.
+      - Good default for narrated lessons because the screen carries gist while VO carries detail.
+      - Low prompt burden; theme and Classic layout do much of the visual shaping.
+      - More visually consistent than auto-selected Magazine imagery because it leans on illustration/vector cues.
+      cons:
+      - Less dramatic and less editorial than the Magazine visual-led style.
+      - Freeform condensation can flatten carefully planned per-card structure.
+      - Default/Fluid page setup may require a separate publication-time 16:9 export policy for Descript/video workflows.
+      - Sparse instructions may under-specify image/content treatment for unusually complex or data-heavy source material.
+    theme:
+      id: njim9kuhfnljvaa
+      name: 2026 HIL APC Tejal
+    live_example_url: "https://the-modern-clinicians-di-a6j7emh.gamma.site/"
+    studio_template: null
+    prompt_editor:
+      content_mode: freeform
+      text_content:
+        mode: condense
+        amount: minimal
+        output_language: en-US
+      visuals:
+        theme_id: njim9kuhfnljvaa
+        theme_name: 2026 HIL APC Tejal
+        image_source: aiGenerated
+      format:
+        type: presentation
+        variant: default
+        card_design_mode: classic
+        requested_card_count: 10
+      additional_instructions: ''
+    prompt_configuration:
+      text_content:
+        mode: condense
+        amount: brief
+        audience: Faculty and instructional designers familiar with Canvas and course design, American English
+        tone: Clear, professional, engaging in American English
+        language: en
+      visuals:
+        image_source: aiGenerated
+        image_model: null
+        style_preset: illustration
+        custom_style: null
+        keywords:
+        - vector
+        - minimalist
+        - flat-color
+        - linework
+        - bold
+      format:
+        type: presentation
+        variant:
+          value: default
+          enforced: false
+          note: Gamma UI format variant; not currently a live generate kwarg.
+        card_split: inputTextBreaks
+      generation:
+        num_cards:
+          value: 10
+          note: Prompt editor screenshot shows explicit 10-card request for this freeform exemplar.
+      additional_instructions: []
+    api_parameters:
+      endpoint: /generations
+      payload_shape:
+        inputText: runtime_supplied
+        textMode: condense
+        format: presentation
+        numCards: 10
+        cardSplit: inputTextBreaks
+        themeId: njim9kuhfnljvaa
+        additionalInstructions: ''
+        textOptions:
+          amount: brief
+          tone: Clear, professional, engaging in American English
+          audience: Faculty and instructional designers familiar with Canvas and course design, American English
+          language: en
+        imageOptions:
+          source: aiGenerated
+          model: null
+          stylePreset: illustration
+          style: null
+        cardOptions:
+          dimensions: fluid
+          headerFooter: null
+        sharingOptions: null
+        exportAs: png
+        folderIds: []
+      local_runtime:
+        gamma_settings_keys:
+        - theme
+        - image_style
+        - amount
+        - tone
+        - audience
+        - language
+        - text_mode
+        - image_style_preset
+        - image_model
+        - image_source
+        - dimensions
+        - keywords
+        - production_mode
+        - studio_template_id
+        notes: "These are the Gary-normalized per-variant style fields currently accepted by app/specialists/gary/_act.py; client-level fields such as sharingOptions/folderIds exist but are not yet exposed by Gary style settings."
+    page_settings:
+      page_setup:
+        shape_preset: default_fluid
+        custom:
+          full_bleed: null
+          aspect_ratio: null
+        aspect_ratio: fluid
+        card_width: L
+        content_alignment: middle
+        font_size: M
+        show_card_backdrops: false
+        animations: true
+        card_headers_footers: false
+      card_options:
+        dimensions: fluid
+        header_footer:
+          value: false
+          implementation_status: available
+          enforced: false
+          confidence: inferred
+          note: Catalogued page setting; raw client supports headerFooter but Gary does not wire it today.
+      sharing_options:
+        access: null
+        enforced: false
+      folder_ids:
+        value: []
+        enforced: false
+      export:
+        export_as: png
+    brand_binding:
+      id: master-style-bible
+      path: resources/style-bible/master-style-bible.md
+      auto_translation: deferred
+    coherence_rules:
+      theme_art_keywords_dimensions: professional clinical APC look; Tejal theme + AI-generated illustration/vector-minimalist cues; Default/Fluid page setup.
+    provenance:
+      source: default_variant_pair
+      established: '2026-06-24'
+      source_witnesses:
+        prompt_editor: operator_screenshot_prompt_editor_classic_a_2026_07_01
+        page_setup: operator_screenshot_classic_a_2026_07_01
+        live_example_url: "https://the-modern-clinicians-di-a6j7emh.gamma.site/"
+      notes: "Reflects the live Prompt editor/Page setup exemplar for Classic-Freeform_X-Cards: Condense + Minimal, Freeform, Classic, 10 cards, Tejal theme, AI-generated illustration visuals, and Default/Fluid page setup. The prompt editor screenshot label Automatic is normalized here to aiGenerated based on the API/runtime behavior and the actual generated Gamma. Earlier preserve-mode fidelity rationale and later 16:9 publication forcing remain production hardening notes, not this style's selected exemplar values."
+  hil-2026-apc-blueprint-classic:
+    status: seed_from_existing
+    version: 1
+    generation_method: classic_generation
+    display_name: HIL 2026 APC Blueprint Classic
+    intended_use: Technical/editorial contrast variant for A/B slide selection.
+    theme:
+      id: e8tz1vxb9v1urqp
+      name: Blueprint Editorial
+    studio_template: null
+    prompt_configuration:
+      text_content:
+        mode: preserve
+        amount: brief
+        audience: Faculty and instructional designers familiar with Canvas and course design, American English
+        tone: Confident, precise, lightly editorial - American English
+        language: en
+      visuals:
+        image_source: aiGenerated
+        image_model: recraft-v3-svg
+        style_preset: lineArt
+        custom_style: null
+        keywords:
+        - blueprint
+        - technical line drawing
+        - dotted construction lines
+        - architectural
+        - single-accent color
+      format:
+        type: presentation
+        variant:
+          value: traditional
+          enforced: false
+          note: Gamma UI format variant; not currently a live generate kwarg.
+        card_split: inputTextBreaks
+      generation:
+        num_cards:
+          value: input_slide_count
+      additional_instructions:
+      - Keep the style of all the images uniform.
+    page_settings:
+      card_options:
+        dimensions: 16x9
+        header_footer:
+          value: false
+          enforced: false
+      sharing_options:
+        access: null
+        enforced: false
+      folder_ids:
+        value: []
+        enforced: false
+      export:
+        export_as: png
+    brand_binding:
+      id: master-style-bible
+      path: resources/style-bible/master-style-bible.md
+      auto_translation: deferred
+    coherence_rules:
+      theme_art_keywords_dimensions: blueprint theme + lineArt + construction keywords must remain together; 16:9 deck output.
+    provenance:
+      source: default_variant_pair
+      established: '2026-06-24'
+      notes: Promotes current DEFAULT_VARIANT_PAIR B out of smoke-fixture status. Preserve mode protects titles and figures.
+  classic-cards-fluid-visuals-magazine-ai-direction-detailed:
+    status: captured_from_live_exemplar
+    version: 1
+    generation_method: classic_generation
+    display_name: Classic-Cards_Fluid-Visuals_Magazine+AI-Direction_Detailed
+    intended_use: Card-by-card Classic Gamma production for visual-led, data-and-structure-heavy narrated lesson screens.
+    style_description: >-
+      A high-density, editorial clinical strategy style that uses explicit card-by-card prompts and
+      detailed visual-led instructions to make the slide visuals carry more of the explanatory load.
+      Compared with Classic-Freeform_X-Cards, this style produces larger, more varied cards with a
+      magazine-like mix of realistic healthcare photography, aerial/system imagery, chart panels,
+      process diagrams, and infographic composites. Navy headings and teal body copy still preserve
+      the HIL APC clinical tone, while muted olive callout cards, chart bars, and icons organize the
+      analytic argument. Because the AI image model is left on auto-select, visual texture varies by
+      card: some cards look photographic or cinematic, some become diagrammatic, and others become
+      hybrid editorial infographics. That variety is a feature of this style when the lesson needs
+      data, system structure, and human stakes to alternate without crowding the page.
+    style_tradeoffs:
+      pros:
+      - Strong visual-led treatment for complex system arguments, charts, timelines, and structural healthcare themes.
+      - Card-by-card partitioning preserves intentional content sequencing better than freeform condensation.
+      - Magazine/editorial imagery gives the deck more client-ready presence and emotional range.
+      - Auto-selected image model allows Gamma to choose different visual treatments for photos, charts, diagrams, and hybrid infographics.
+      - Detailed additional instructions help align slide density, visual emphasis, and narration expectations.
+      cons:
+      - Auto-selected image model and Magazine art direction can create useful variety, but also less visual uniformity across cards.
+      - Some generated/downloaded PNGs from this style were not 16:9, which caused downstream Descript composition/cropping problems in the concierge run.
+      - More text and more complex layouts raise fidelity/perception burden; each card needs stronger visual inspection before publication.
+      - Magazine/photo realism can introduce plausibility or artifact risks that are less common in simpler vector styles.
+      - Detailed instructions are powerful but more brittle: conflicting or stale guidance can materially steer the output.
+    theme:
+      id: njim9kuhfnljvaa
+      name: 2026 HIL APC Tejal
+    live_example_url: "https://the-economic-structural--1t485b6.gamma.site/"
+    studio_template: null
+    prompt_editor:
+      content_mode: card_by_card
+      text_content:
+        mode: generate
+        amount: concise
+        output_language: en-US
+        write_for: ''
+        tone: ''
+      visuals:
+        theme_id: njim9kuhfnljvaa
+        theme_name: 2026 HIL APC Tejal
+        image_source: aiGenerated
+        art_style:
+          ui_value: Magazine
+          api_interpretation: custom_style_prompt
+          note: Magazine is visible in the Gamma UI screenshot, but it is not one of the currently documented named API stylePreset values.
+        image_model:
+          ui_value: Auto-select model
+          api_value: null
+      format:
+        type: presentation
+        variant: default
+        card_design_mode: classic
+        requested_card_count: 18
+      additional_instructions: >-
+        Experience profile: visual-led. Creative rationale: This module's argument is carried
+        by charts, infographics, and a timeline--data and structure are the protagonists across
+        Slides 1-5, with a concise recap on 6. A visual-led profile lets the high-contrast
+        visuals do the heavy lift while reserving a larger creative budget to humanize the story
+        (burnout, consumer expectations) and connect system forces to leadership action without
+        crowding slides. Source-grounded authority and a professional register match a clinician
+        audience, and adaptive slide density with balanced coupling ensures voiceover can translate
+        implications and enterprise navigation while the visuals anchor attention and retention.
+      additional_instructions_capture:
+        completeness: visible_screenshot_excerpt_plus_run_pattern
+        note: The screenshot's Additional instructions field is taller than the visible capture; preserve exact full text from a future prompt-export receipt if available.
+    prompt_configuration:
+      text_content:
+        mode: generate
+        amount: medium
+        audience: Clinician learners and clinical faculty evaluating health-system strategy and enterprise navigation, American English
+        tone: Professional, source-grounded, visually analytical, clinician-facing
+        language: en
+      visuals:
+        image_source: aiGenerated
+        image_model: null
+        style_preset: custom
+        custom_style: Magazine editorial healthcare visuals; mix of realistic clinical photography, charts, diagrams, and polished infographic compositions.
+        keywords:
+        - magazine
+        - editorial
+        - clinical strategy
+        - charts
+        - infographics
+        - professional healthcare photography
+      format:
+        type: presentation
+        variant:
+          value: default
+          enforced: false
+          note: Gamma UI format variant; not currently a live generate kwarg.
+        card_split: inputTextBreaks
+      generation:
+        num_cards:
+          value: 18
+          note: Prompt editor screenshot shows 18 cards total with explicit card-by-card content.
+      additional_instructions:
+      - Experience profile: visual-led; let charts, infographics, and timeline/data structures carry the argument.
+      - Use source-grounded authority and a professional clinician-facing register.
+      - Preserve adaptive slide density: visuals anchor attention while voiceover translates implications and enterprise navigation.
+    api_parameters:
+      endpoint: /generations
+      payload_provenance:
+        exact_request_receipt_found: false
+        note: >-
+          No local receipt was found for the exact published URL
+          https://the-economic-structural--1t485b6.gamma.site/. API fields below
+          are compiled from the Prompt editor/Page setup screenshots plus current
+          documented Gamma/Gary mappings. Nearby receipts exist for other Gamma
+          generations and should not be treated as this exemplar's original
+          request payload.
+      payload_shape:
+        inputText: card_by_card_runtime_supplied
+        textMode: generate
+        format: presentation
+        numCards: 18
+        cardSplit: inputTextBreaks
+        themeId: njim9kuhfnljvaa
+        additionalInstructions: runtime_supplied_high_detail_visual_led_prompt
+        textOptions:
+          amount: medium
+          tone: Professional, source-grounded, visually analytical, clinician-facing
+          audience: Clinician learners and clinical faculty evaluating health-system strategy and enterprise navigation, American English
+          language: en
+        imageOptions:
+          source: aiGenerated
+          model: null
+          stylePreset: custom
+          style: Magazine editorial healthcare visuals; mix of realistic clinical photography, charts, diagrams, and polished infographic compositions.
+        cardOptions:
+          dimensions: fluid
+          headerFooter: null
+        sharingOptions: null
+        exportAs: png
+        folderIds: []
+      local_runtime:
+        gamma_settings_keys:
+        - theme
+        - image_style
+        - amount
+        - tone
+        - audience
+        - language
+        - text_mode
+        - image_style_preset
+        - image_model
+        - image_source
+        - dimensions
+        - keywords
+        - production_mode
+        - studio_template_id
+        notes: "Current Gary validator does not list Magazine as a named stylePreset; this style should compile Magazine through custom image_style text, or Gary must be updated if Gamma exposes Magazine as a stable API preset."
+    page_settings:
+      page_setup:
+        source: operator_page_setup_screenshot_classic_cards_fluid_visuals_magazine_ai_direction_detailed_2026_07_01
+        active_tab: cards
+        format: presentation
+        shape_preset: default_fluid
+        custom:
+          full_bleed: null
+          aspect_ratio: null
+        aspect_ratio: fluid
+        card_width: L
+        content_alignment: middle
+        font_size: M
+        show_card_backdrops: false
+        animations: true
+        card_headers_footers: false
+        background_tab: not_observed
+        observed_from: published_gamma_plus_prompt_editor_and_page_setup_screenshots
+      card_options:
+        dimensions: fluid
+        header_footer:
+          value: false
+          implementation_status: available
+          enforced: false
+          confidence: observed_section_no_elements
+          note: Page setup shows the Card headers & footers section with an empty Add elements area; record false as the style value, while the raw API still expects a structured headerFooter object if wired.
+      sharing_options:
+        access: null
+        enforced: false
+      folder_ids:
+        value: []
+        enforced: false
+      export:
+        export_as: png
+    brand_binding:
+      id: master-style-bible
+      path: resources/style-bible/master-style-bible.md
+      auto_translation: deferred
+    coherence_rules:
+      theme_art_keywords_dimensions: Tejal theme + card-by-card content + AI images + Magazine/editorial custom style + auto-selected model + detailed visual-led instructions.
+    provenance:
+      source: operator_prompt_editor_screenshot_and_live_gamma
+      established: '2026-07-01'
+      source_witnesses:
+        prompt_editor: operator_screenshot_prompt_editor_classic_cards_fluid_visuals_magazine_ai_direction_detailed_2026_07_01
+        page_setup: operator_page_setup_screenshot_classic_cards_fluid_visuals_magazine_ai_direction_detailed_2026_07_01
+        live_example_url: "https://the-economic-structural--1t485b6.gamma.site/"
+        local_run_pattern: leg4_udac_halt_live_control_gamma_prompt_shape
+      notes: "Captured as a second exemplar to test registry generality: Classic path, but card-by-card content, Generate/Concise UI setting, AI images, Magazine art style, auto-selected image model, detailed visual-led additional instructions, 18 cards total, and Default/Fluid Page setup with L card width, middle alignment, M font size, backdrops off, animations on, and no header/footer elements. No exact local API request receipt was found for the published URL, so request-shape values are compiled from screenshots and local Gamma/Gary mappings."
+  hil-2026-apc-studio-image-card:
+    status: seed_from_existing
+    version: 1
+    generation_method: template_generation
+    display_name: HIL 2026 APC Studio Image Card
+    intended_use: Full-bleed Studio template look where the image card itself carries title and key data.
+    theme: null
+    studio_template:
+      gamma_id: g_nv5q4da69qiiu8q
+      name: Studio B Gamma template
+      source: runs/studio-trial/studio-b-gamma-settings.yaml
+    studio_prompt_lock:
+      wrapper_id: gary_studio_lock_wrapper_v1
+      behavior: Lock design; keep one full-bleed image card; only swap subject to new slide topic.
+      guard:
+        type: aspect_ratio_min
+        min_ratio: 1.4
+        expected_ratio: 1.7778
+    prompt_configuration:
+      image_options:
+        source: aiGenerated
+        model: null
+        style_preset: null
+        custom_style: null
+        keywords: []
+      additional_instructions:
+      - Preserve the template's full-bleed image-card composition.
+    page_settings:
+      export:
+        export_as: png
+      manual_finish_checklist:
+        enforced: false
+        items:
+        - Confirm Studio card did not silently fall back to Classic typography.
+        - Confirm exported PNG is 16:9 via aspect-ratio guard.
+    brand_binding:
+      id: master-style-bible
+      path: resources/style-bible/master-style-bible.md
+      auto_translation: deferred
+    coherence_rules:
+      template_art_dimensions: Template is the style source of truth; Classic-only text/card settings are forbidden.
+    provenance:
+      source: studio_trial_artifact
+      established: '2026-06-25'
+      notes: Migrates template id out of runs/ artifact into future registry. Needs live template existence check before runtime promotion.
+  hil-2026-apc-data-clean-classic:
+    status: proposed_new
+    version: 0
+    generation_method: classic_generation
+    display_name: HIL 2026 APC Data Clean Classic
+    intended_use: Figure-heavy clinical-executive slides where charts, simple diagrams, and numeric fidelity matter more than decorative imagery.
+    theme:
+      id: njim9kuhfnljvaa
+      name: 2026 HIL APC Nejal
+    studio_template: null
+    prompt_configuration:
+      text_content:
+        mode: preserve
+        amount: brief
+        audience: Clinical and executive faculty reviewing health-system strategy content, American English
+        tone: Precise, calm, source-faithful, executive instructional
+        language: en
+      visuals:
+        image_source: aiGenerated
+        image_model: null
+        style_preset: illustration
+        custom_style: null
+        keywords:
+        - data visualization
+        - clean chart
+        - sparse labels
+        - clinical executive
+        - high contrast
+      format:
+        type: presentation
+        variant:
+          value: traditional
+          enforced: false
+        card_split: inputTextBreaks
+      generation:
+        num_cards:
+          value: input_slide_count
+      additional_instructions:
+      - Prioritize legible charts, numeric labels, and simple visual hierarchy over decorative illustration.
+      - Do not invent or alter numerals; preserve provided figures exactly.
+    page_settings:
+      card_options:
+        dimensions: 16x9
+        header_footer:
+          value: false
+          enforced: false
+      sharing_options:
+        access: null
+        enforced: false
+      folder_ids:
+        value: []
+        enforced: false
+      export:
+        export_as: png
+    brand_binding:
+      id: master-style-bible
+      path: resources/style-bible/master-style-bible.md
+      auto_translation: deferred
+    coherence_rules:
+      theme_art_keywords_dimensions: same HIL APC theme, but keywords and instructions bias toward figure-safe data displays.
+    provenance:
+      source: operator_requested_new_roster_candidate
+      established: '2026-07-01'
+      notes: Candidate fourth guide to satisfy roster size. Needs Dan/Gary review and a differential live Gamma proof before promotion.
+affinity_layer:
+  visual-led:
+    preferred:
+    - classic-freeform-x-cards
+    - classic-cards-fluid-visuals-magazine-ai-direction-detailed
+    - hil-2026-apc-data-clean-classic
+    compare_against:
+    - hil-2026-apc-blueprint-classic
+    - hil-2026-apc-studio-image-card
+  text-led:
+    preferred:
+    - hil-2026-apc-data-clean-classic
+    compare_against:
+    - classic-freeform-x-cards
+variant_binding_examples:
+  single_variant:
+    gamma_settings:
+    - variant_id: A
+      styleguide: classic-freeform-x-cards
+  a_b_comparison:
+    gamma_settings:
+    - variant_id: A
+      styleguide: classic-freeform-x-cards
+    - variant_id: B
+      styleguide: hil-2026-apc-blueprint-classic
+promotion_work_items:
+- Create state/config/gamma-style-guides.yaml from this draft after party-greenlit story start.
+- Create scripts/utilities/validate_gamma_style_guides.py.
+- Add styleguide to creative-directive gamma_settings schema and Gary GAMMA_SETTING_KEYS.
+- Resolve styleguide:<name> as base-layer seed inside _normalized_gamma_settings.
+- Fail loud on unknown styleguide with gamma.styleguide.unknown.
+- Fail loud on studio/classic surface violations with gamma.styleguide.surface-violation.
+- 'Write picker provenance: each rendered candidate and winning slide pick records style_guide.'
+- Live-prove two guides produce measurably different Gamma artifacts without relying only on operator taste.
+- After one green live A/B run, retire DEFAULT_VARIANT_PAIR smoke-fixture authority.
