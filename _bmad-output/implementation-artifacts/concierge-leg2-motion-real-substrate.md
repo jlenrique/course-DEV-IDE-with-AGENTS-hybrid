@@ -1,7 +1,7 @@
 # Leg-2 — MOTION on the real substrate (B2/B3 + live Kling)
 
 **Arc:** Concierge Production Substrate (branch `dev/concierge-production-substrate-2026-06-29`).
-**Class:** S. **Status:** ready-for-dev (party GREEN-LIGHT 5/5, 2026-06-30).
+**Class:** S. **Status:** **done** (party GREEN-LIGHT 5/5 2026-06-30 → CLOSE 4/4 2026-07-01 [Murat/Winston/John/Kira]; 3-lane bmad-code-review 0 MUST-FIX + 4 SHOULD-FIX applied; live-proven $0.56; committed `4e3b77a5`, pushed). Follow-ons: `leg2-07d5-live-motion-authoring-full-walk`, `leg2-global-kira-motion-dir-retirement` (deferred-inventory).
 **Gate mode:** single-gate structural (Murat) — this is runner payload-wiring + a pinning assertion + one live acceptance render; no authored content, so no content-fidelity gate. VO↔on-screen invariant untouched.
 
 ## Why (product value / guardrail)
