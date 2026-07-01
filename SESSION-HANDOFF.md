@@ -1,3 +1,27 @@
+# Session Handoff — 2026-07-01(d) (Gamma Styleguide Library arc — `gamma-instructions-channel-cleanup` DUAL-GATE CLOSED: operator-surfaced redundant-prose defect, AC#8 live wire-proven)
+
+**Final class:** S. **Branch:** `dev/gamma-styleguide-library-2026-07-01` (code `bb33852d` + this WRAPUP docs commit; push at close). Second story closed this session (after `styleguide-retire-default-variant-pair` §(c) below). Governance: full BMAD spine, dual-gate; fully-spawned party GREEN-LIGHT + Murat/Vera CLOSE; live real-Gamma (no mocks); SPOC-is-the-goal guardrail.
+
+**Trigger (operator, from live Gamma runs):** `_instructions_for_variant` dumped variant style settings as PROSE into `additionalInstructions` (`"Apply this variant's Gamma settings: image_style_preset=illustration; image_style=None; amount=brief; tone=…"`) even though `image_style_preset`/`amount`/`tone` already travel structurally via `imageOptions.stylePreset`/`textOptions`. Redundant + wrong-channel (model can echo the token onto a card) + literal `image_style=None` bug.
+
+**Operator design principle (binding, folded into the story):** `additionalInstructions` is a legitimate — even primary — style channel; certain styles may be defined largely there, and that's fine. It must never (a) MERELY ECHO a structured param (redundant) nor (b) CONTRADICT one. Channels are complementary.
+
+**Completed:**
+- **Party GREEN-LIGHT 6/6** RATIFY-WITH-AMENDMENTS (Winston/John/Murat/Amelia/Gary/Vera). Blocking pre-reqs discharged: no downstream prose-parser (grep clean); `template=` vestigial (dropped); source keywords ride the `keywords=` field (de-tokenize must preserve values). Gary's stronger insight (route style-medium keywords → structured `imageOptions.style`) filed as a follow-on, NOT this story (operator affirmed prose-as-style is fine). Record `instructions-channel-cleanup-greenlight-party-record-2026-07-01.md`.
+- **Dev RED-first** — removed the settings-dump + `image_style=None` + vestigial `template=`; de-tokenized keywords → `"Emphasize this imagery: X, Y."` (in-channel, empty-guarded, source-wins). Source `additional_instructions` + card-split + label preserved byte-for-byte. 6 failed pre-fix (AC#1/#2 RED). 201 tests green, ruff clean.
+- **AC#8 live real-Gamma A/B** — captured the outbound payload: SENT `additionalInstructions` = source design-note (labels/palette) verbatim+leading + card-split + `"Emphasize this imagery: vector, minimalist, single-accent color."` + `Variant A.` — NO dump, NO `None`; SENT `imageOptions.stylePreset=="illustration"` + `textOptions` carry amount/tone (structured travel confirmed on the wire); **source keywords WON over the styleguide base live**; high-detail maze card rendered 929KB. `evidence/instructions-cleanup-ac8-20260701T182809Z/`.
+- **DUAL-GATE CLOSE** — 🧪 Murat structural 8/8 + 🛡️ Vera fidelity 6/6, no blocking conditions. Story done. Committed `bb33852d`.
+
+**Follow-ons filed:** `gamma-keywords-to-imageoptions-style-channel` (Gary — structured routing, render-affecting, own A/B), `gamma-prose-vs-param-noncontradiction-validator` (operator's non-contradiction half; extends the Leg-A validator; pairs with Leg-B), `gamma-single-slide-deck-title-matcher-flake` (incidental).
+
+**What is next:** **Leg-B** (dependency enforcement — own party GREEN-LIGHT), then Leg-C/D/E, then Phase-2. Pre-existing baseline reds unchanged; KG/ONBOARDING stale.
+
+**Key lessons:** (a) The operator's mid-flight clarification (prose-as-style is fine; kill only redundancy+contradiction) reframed the story from "strip style prose" to a precise non-redundancy/non-contradiction contract — the party had independently converged there (Winston). (b) The live A/B's value was the WIRE capture — asserting the outbound `additionalInstructions`/`imageOptions`/`textOptions` deterministically (not an eyeball) proved the redundant prose was genuinely redundant and the settings still travel. (c) The single-slide title-matcher flake recurred — use ≥2-slide corpora for Classic live proofs.
+
+**Validation:** ruff clean; 201 gary/styleguide tests green; AC#8 live real-Gamma, no mocks, first-run-stands (one corpus-swap for the documented title-matcher flake — wire was captured either way). **Push: this WRAPUP.**
+
+---
+
 # Session Handoff — 2026-07-01(c) (Gamma Styleguide Library arc — RIPE `styleguide-retire-default-variant-pair` CLOSED: single-variant-binds-one, single-gate structural CLOSE, AC#8 live-proven)
 
 **Final class:** S (substrate — `_act.py` normalizer return-projection + fail-loud remediation + tests + live Gamma proof; opened S, stayed S). **Branch:** `dev/gamma-styleguide-library-2026-07-01` (code `7b42dede` + this WRAPUP docs commit; push at close). Governance held: session START protocol → full BMAD spine (single-gate, party-ratified) → fully-spawned party GREEN-LIGHT + Murat CLOSE → 3-lane bmad-code-review → AC#8 live (no mocks); SPOC-is-the-goal guardrail; Codex shadow-monitor standing-guidance consulted (this change serves its "no hidden defaults masking the CD-owned library" boundary).
