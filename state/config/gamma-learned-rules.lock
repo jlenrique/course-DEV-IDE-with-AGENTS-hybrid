@@ -1,0 +1,6 @@
+{
+  "schema_version": "1.0",
+  "registry_owner": "cd",
+  "comment": "Identity-manifest pin for PROMOTED learned Gamma-dependency rules. EMPTY BY DESIGN at Leg-B2 ship (zero active learned rules). Each future entry is {rule_id, provenance_run_ref, fixture_path, predicate_hash} and MUST resolve to a committed RED-proven birthing fixture. The validator asserts the live learned_dependencies active-id set == this manifest (append-only superset), per-entry predicate_hash match, and fixture existence. CD authors promoted rules THROUGH Marcus's envelope (deferred to styleguide-cd-envelope-authoring-ceremony); this file is the write-gate pin, not an author surface.",
+  "rules": []
+}

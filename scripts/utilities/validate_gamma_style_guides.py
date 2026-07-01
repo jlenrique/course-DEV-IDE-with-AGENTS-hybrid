@@ -39,6 +39,13 @@ from app.specialists.gary._act import (  # noqa: E402
     TEXT_LANGUAGE_VALUES,
     TEXT_MODE_VALUES,
 )
+from app.specialists.gary.learned_dependencies import (  # noqa: E402
+    GAMMA_LEARNED_RULES_LOCK_PATH,
+    active_learned_rules,
+    apply_learned_rules,
+    check_manifest_pin,
+    load_manifest,
+)
 from app.specialists.gary.styleguide_library import (  # noqa: E402
     GAMMA_STYLE_GUIDES_PATH,
     StyleguideError,
@@ -199,12 +206,19 @@ def validate_style_guides_full(
     data: dict[str, Any],
     *,
     check_existence: bool = False,
+    lock_path: Path | None = None,
 ) -> tuple[list[str], list[str]]:
     """Return ``(errors, warnings)`` for the styleguide library payload.
 
     Errors are hard-blocking (fail the exit code). Warnings surface loudly but only
     fail the exit code under ``--strict`` (see ``main``). This is the full/pinned
     output shape; ``validate_style_guides`` is the back-compatible errors-only view.
+
+    Leg-B2: the top-level ``learned_dependencies`` block (default empty / absent) is
+    pinned by the identity manifest (``check_manifest_pin``) and its ACTIVE rules are
+    applied per-record via the pure declarative interpreter (``apply_learned_rules``),
+    routing to the same (errors, warnings) channels. An absent block + empty manifest
+    is a clean no-op. This path is hermetic — a FILE store, never the Postgres ledger.
 
     ``check_existence`` is the ONLY network path (theme/template live existence). It
     is OFF by default so the CI/hermetic run never touches the network.
@@ -215,6 +229,14 @@ def validate_style_guides_full(
     if not isinstance(guides, dict) or not guides:
         return (["style_guides mapping is missing or empty"], warnings)
 
+    # --- Learned-dependencies pin (Leg-B2): active rule-id set is pinned by the
+    #     identity manifest (superset + predicate_hash + fixture existence). ----------
+    active_rules = active_learned_rules(data.get("learned_dependencies"))
+    manifest = load_manifest(
+        lock_path if lock_path is not None else GAMMA_LEARNED_RULES_LOCK_PATH
+    )
+    errors.extend(check_manifest_pin(active_rules, manifest))
+
     classic_count = 0
     studio_count = 0
     for name in sorted(guides):
@@ -222,6 +244,15 @@ def validate_style_guides_full(
         rec_errors, rec_warnings = _validate_one(name, record)
         errors.extend(rec_errors)
         warnings.extend(rec_warnings)
+        # --- Apply ACTIVE learned rules per-record (offline, gated by the pin) -------
+        if active_rules and isinstance(record, dict):
+            try:
+                resolved = expand_record(record, name=name)
+            except StyleguideError:
+                resolved = {}
+            le, lw = apply_learned_rules(record, resolved, active_rules, name=name)
+            errors.extend(le)
+            warnings.extend(lw)
         if isinstance(record, dict):
             mode = str(record.get("production_mode") or "").strip().lower()
             if mode == "api":
