@@ -1,0 +1,23 @@
+GOAL — Gamma Styleguide Library arc: close Leg-C LIVE, then Leg-D (branch dev/gamma-styleguide-leg-c-live-2026-07-01; ~6h autonomous)
+
+MISSION: advance the CD-owned Gamma Styleguide Library — creative control of Gamma output where the library is the SOLE determinant and source-derived detail composes on top and WINS (protected invariant) — from Leg-C-offline-built to Leg-C-CLOSED-live + Leg-D-CLOSED.
+
+TASK 1 — Leg-C LIVE PART-3 BASELINE (the D1 GO/NO-GO; do this first).
+Confirm the canonical Part-3 source (course-content/courses/tejal-c1m1-fresh-outline/source-outline.md). Convene the party to agree corpus/subsets + N BEFORE any live spend. Run ONE floor-off REAL Irene Pass-1 over Part-3 (≤10 slides) and inspect the actual output shape: does it expose splittable member sub-structure + figure/narration ROLE tags? GO → proceed to Task 2. NO-GO (role-less clusters: every floor unreachable via the P5 fail-safe) → design the operator-PRE-AUTHORIZED Pass-1 output-contract extension, party-ratify it, implement RED-first, live re-baseline, then proceed.
+
+TASK 2 — Leg-C LIVE PROOF + DUAL-GATE CLOSE.
+Execute AC#9–13 entirely live (no mocks; real gpt-5 Pass-1, real substrate): the party-picked differential / figure-bond / floor-too-high subsets. Judge from TRUE on-disk artifacts, never the driver's inline judge. Dual-gate party CLOSE: Murat structural + Irene content; the 07G VO↔on-screen perception gate is NON-WAIVABLE. Flip the story done; file follow-ons in deferred-inventory; commit + push.
+
+TASK 3 — Leg-D: HTML STYLE-PICKER at CD-entry (operator feature #2).
+Full spine: own party GREEN-LIGHT → story → spawned dev agent RED-first → 3-lane bmad-code-review → RED-first remediation → LIVE proof (picker rendered from the real styleguide SSOT; a real pick round-trips provenance into a real dispatch payload; last_used write-back by a non-CD writer; thumbnails harvested from real trial artifacts) → dual-gate party CLOSE → commit + push.
+
+TASK 4 (stretch, only if time remains) — Leg-E GREEN-LIGHT.
+Convene the party on the live-doc audit design (Texas gamma_docs RetrievalAdapter; 3 terminal states; provenance triple; documented-vs-learned two-tier; first REAL learned-store observations). Ratify scope; story to ready-for-dev. Build only if the clock allows a live-tested slice.
+
+GOVERNANCE (binding):
+- BMAD workflows ONLY (bmad-create-story / bmad-dev-story / bmad-quick-dev as fits); every major decision, review, green-light, and close runs through a FULLY-SPAWNED, purpose-tailored bmad-party-mode team (canonical core Winston/John/Murat/Amelia + ≤2 specialty seats, e.g. Irene/Dan/Gary/Vera); Dr. Quinn synthesis then John PM tiebreak on impasse; escalate to the operator ONLY if truly blocked.
+- LIVE testing of components is INDISPENSABLE: every component authored or edited is live-tested AS IT LANDS — real APIs, the intended production models, no mocks, no fixtures-as-proof. The final E2E is a confirmation, not first live contact. First-run-stands; no retry-to-green.
+- Consult the Codex shadow-monitor ledger (_bmad-output/implementation-artifacts/marcus-gamma-styleguide-shadow-monitor-2026-07-01-session-03.md) at every major decision/approval juncture.
+- Guardrails: SPOC-is-the-goal (no change earns its place by serving a proofing run); source-detail→Gamma conveyance and VO↔on-screen alignment are PROTECTED INVARIANTS; NO batch-epic work this session (deferred to arc close); push cadence ≤2h; no force-push; hooks honored.
+
+DONE-SIGNAL: this goal is COMPLETE only when a bmad-party-mode team, FULLY SPAWNED for that purpose, CONCURS that the final accomplished task (Task 3, or Task 4 if reached) is done AND validated — live-proven, gates honored, records written (story files, party records, SESSION-HANDOFF, next-session-start-here, deferred-inventory). Absent concurrence: continue remediating, or escalate per the impasse chain.
