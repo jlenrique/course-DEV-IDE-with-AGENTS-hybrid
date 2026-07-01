@@ -88,6 +88,14 @@ from app.specialists.dispatch_errors import SpecialistDispatchError
 
 REPO_ROOT = Path(__file__).resolve().parents[3]
 DEFAULT_MANIFEST_PATH = REPO_ROOT / "state" / "config" / "pipeline-manifest.yaml"
+# Leg-C: the CD-owned styleguide SSOT. The orchestrator reads this yaml DIRECTLY
+# (mirroring ``_gamma_settings_from_directive``) to resolve the scripted floor — it
+# does NOT import ``app/specialists/gary`` (specialist/orchestrator import boundary).
+GAMMA_STYLE_GUIDES_SSOT_PATH = REPO_ROOT / "state" / "config" / "gamma-style-guides.yaml"
+# The one scripted class the orchestrator threads. Mirrors the sealed registry
+# (``styleguide_library.SCRIPTED_ENUM_CLASSES``); kept as a local literal so the
+# orchestrator never imports the specialist. Adding a class is a party governance act.
+_SCRIPTED_MIN_CLUSTER_FLOOR_CLASS = "min_cluster_floor"
 DEFAULT_GRAPH_VERSION = "v42"
 LOGGER = logging.getLogger(__name__)
 
@@ -1471,6 +1479,17 @@ def _runner_payload_for_specialist(
     #      is set. Neither key collides with 07E's dependency (upstream_output).
     # Fail-loud precondition unchanged: a non-run caller (runs_root/trial_id None)
     # returns None and NEVER re-defaults to the global dir.
+    # Leg-C (gamma-styleguide): irene-pass1 receives the resolved scripted
+    # ``min_cluster_floor`` (RUNNER CONTEXT — a resolved run-config scalar, peer of
+    # Gary's ``gamma_settings``). The orchestrator reads the styleguide SSOT yaml
+    # DIRECTLY (no app/specialists/gary import). Absent styleguide / absent scripted ->
+    # no key (clean; no None-leak). ``min_cluster_floor`` collides with no projection
+    # or dependency, so the adapter collision-guard passes.
+    if specialist_id == "irene-pass1":
+        floor = _min_cluster_floor_from_directive(directive_path)
+        if floor is not None:
+            return {"min_cluster_floor": floor}
+        return None
     if specialist_id == "kira":
         if runs_root is None or trial_id is None:
             return None
@@ -1482,6 +1501,85 @@ def _runner_payload_for_specialist(
             kira_payload["motion_plan_path"] = plan_path
         return kira_payload
     return None
+
+
+def _scripted_min_cluster_floor_for_record(record: Any) -> int | None:
+    """Read ``scripted.min_cluster_floor`` off ONE styleguide record (SSOT-direct).
+
+    Tolerant of a single-dict or list-of-entries ``scripted`` block. A malformed value
+    is NOT threaded (returns None) — the offline write-gate RED-gates it; the runner
+    never threads a bad floor.
+    """
+    if not isinstance(record, dict):
+        return None
+    block = record.get("scripted")
+    if isinstance(block, dict):
+        entries = [block]
+    elif isinstance(block, list):
+        entries = [e for e in block if isinstance(e, dict)]
+    else:
+        return None
+    for entry in entries:
+        if str(entry.get("class") or "").strip() != _SCRIPTED_MIN_CLUSTER_FLOOR_CLASS:
+            continue
+        value = entry.get("value")
+        if isinstance(value, bool) or not isinstance(value, int) or value < 1:
+            # P7 (Leg-C review): a PRESENT-but-malformed floor is NOT silently dropped.
+            # WARN loudly (the offline write-gate RED-gates it; this is defense in depth
+            # so a bad SSOT edit that slipped the gate cannot vanish without a trace).
+            LOGGER.warning(
+                "scripted min_cluster_floor present but malformed (value=%r); "
+                "not threading it — the styleguide SSOT should have been RED-gated "
+                "by validate_gamma_style_guides.py",
+                value,
+            )
+            return None
+        return value
+    return None
+
+
+def _min_cluster_floor_from_directive(directive_path: Path | None) -> int | None:
+    """Resolve the scripted ``min_cluster_floor`` bound by the directive's styleguide(s).
+
+    Reads the per-variant ``gamma_settings[].styleguide`` name(s) from the directive, then
+    resolves each name's ``scripted.min_cluster_floor`` from the styleguide SSOT yaml
+    DIRECTLY (no app/specialists/gary import). When more than one bound styleguide
+    declares a floor, the STRICTEST (max) is threaded — Pass-1 clustering is shared
+    across A/B variants, and over-honoring is bounded by the split-only byte-identity
+    guard + the SOFT-floor source-content veto (under-honoring would silently drop a
+    multi-beat style's identity). Absent styleguide / absent scripted -> None.
+    """
+    if directive_path is None or not directive_path.is_file():
+        return None
+    loaded = yaml.safe_load(directive_path.read_text(encoding="utf-8")) or {}
+    if not isinstance(loaded, dict):
+        return None
+    raw = loaded.get("gamma_settings")
+    if not isinstance(raw, list):
+        return None
+    names = [
+        item["styleguide"].strip()
+        for item in raw
+        if isinstance(item, dict)
+        and isinstance(item.get("styleguide"), str)
+        and item["styleguide"].strip()
+    ]
+    if not names:
+        return None
+    if not GAMMA_STYLE_GUIDES_SSOT_PATH.is_file():
+        return None
+    ssot = yaml.safe_load(GAMMA_STYLE_GUIDES_SSOT_PATH.read_text(encoding="utf-8")) or {}
+    guides = ssot.get("style_guides") if isinstance(ssot, dict) else None
+    if not isinstance(guides, dict):
+        return None
+    floors = [
+        floor
+        for name in names
+        if (floor := _scripted_min_cluster_floor_for_record(guides.get(name))) is not None
+    ]
+    if not floors:
+        return None
+    return max(floors)
 
 
 def _gamma_settings_from_directive(directive_path: Path | None) -> list[dict[str, Any]] | None:

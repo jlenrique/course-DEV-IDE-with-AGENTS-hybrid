@@ -83,6 +83,16 @@ UNKNOWN_TAG = "gamma.styleguide.unknown"
 INCOMPLETE_TAG = "gamma.styleguide.incomplete"
 LOAD_ERROR_TAG = "gamma.styleguide.load-error"
 
+# --- Leg-C: the sealed, registry-bound `scripted` closed-vocab namespace ----------
+# `scripted` is NOT an engine/interpreter — it is "a switch with one case". v1 registry
+# is EXACTLY {min_cluster_floor}; adding a class is a party-mode GOVERNANCE act (a code
+# change to this constant), never a yaml edit. The `scripted_enum.classes` list in the
+# runtime yaml is the human-readable declaration; THIS constant is the enforced
+# authority so the yaml can never self-authorize a new class.
+SCRIPTED_ENUM_CLASSES = frozenset({"min_cluster_floor"})
+SCRIPTED_UNKNOWN_CLASS_TAG = "gamma.scripted.unknown-class"
+SCRIPTED_BAD_VALUE_TAG = "gamma.scripted.bad-value"
+
 
 class StyleguideError(Exception):
     """Raised for an unresolvable or surface-violating styleguide record.
@@ -261,6 +271,53 @@ def expand_record(record: dict[str, Any], *, name: str) -> dict[str, Any]:
     leaked = set(resolved) - RESOLVED_API_KEYS
     assert not leaked, f"styleguide resolver emitted non-API keys: {sorted(leaked)}"
     return resolved
+
+
+def scripted_entries(record: dict[str, Any]) -> list[dict[str, Any]]:
+    """Return the ``scripted`` entries a record carries (tolerant of a single dict
+    OR a list of entries). Reads ONLY the ``scripted`` block — NEVER the resolved
+    API surface.
+    """
+    if not isinstance(record, dict):
+        return []
+    block = record.get("scripted")
+    if block is None:
+        return []
+    if isinstance(block, dict):
+        return [block]
+    if isinstance(block, list):
+        return [e for e in block if isinstance(e, dict)]
+    return []
+
+
+def resolve_scripted(record: dict[str, Any], class_name: str) -> Any:
+    """Scripted-only accessor: return the typed scalar for ``class_name`` or ``None``.
+
+    LEAK GUARD (symmetric to Gary's metadata-quarantine): this function reads ONLY the
+    ``scripted`` block and returns a BARE scalar; it has structurally NO path to
+    ``RESOLVED_API_KEYS`` / ``gamma_settings[]``. An unregistered class is a hard error
+    (``gamma.scripted.unknown-class``) — never a silent ``None``. A malformed value on a
+    registered class is a hard error (``gamma.scripted.bad-value``).
+    """
+    if class_name not in SCRIPTED_ENUM_CLASSES:
+        raise StyleguideError(
+            f"unknown scripted class {class_name!r}; not in the sealed registry "
+            f"{sorted(SCRIPTED_ENUM_CLASSES)}",
+            tag=SCRIPTED_UNKNOWN_CLASS_TAG,
+        )
+    for entry in scripted_entries(record):
+        if str(entry.get("class") or "").strip() != class_name:
+            continue
+        value = entry.get("value")
+        if class_name == "min_cluster_floor" and (
+            isinstance(value, bool) or not isinstance(value, int) or value < 1
+        ):
+            raise StyleguideError(
+                f"scripted {class_name!r} value must be a positive int; got {value!r}",
+                tag=SCRIPTED_BAD_VALUE_TAG,
+            )
+        return value
+    return None
 
 
 def resolve_styleguide(

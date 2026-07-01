@@ -1,7 +1,7 @@
 # Leg-C — `min_cluster_floor` scripted class (Irene Pass-1 cluster floor, 07G-gated)
 
 **Arc:** Gamma Styleguide Library (branch `dev/gamma-styleguide-library-2026-07-01`).
-**Class:** S. **Status:** **ready-for-dev** (dev opens AFTER a full-repo `/harmonize`; Codex shadow-monitor consulted at the dev gate). **Phase:** 4-implementation. **Parent:** Leg-C (arc leg). **Depends on:** Leg-A (done) only — NOT Leg-E.
+**Class:** S. **Status:** **in-progress** (offline delta built + 3-lane `bmad-code-review` + P1–P8 remediated RED-first, 62 Leg-C tests green / ruff clean; D1/D2 folded to the live Part-3 baseline GO/NO-GO; live ACs #9–13 + dual-gate CLOSE pending). **Phase:** 4-implementation. **Parent:** Leg-C (arc leg). **Depends on:** Leg-A (done) only — NOT Leg-E.
 **Gate mode:** **DUAL-GATE + the 07G VO↔on-screen perception gate NON-WAIVABLE** — 🧪 Murat (structural: contract shape, differential-effect-fired proof, dead-config detector, determinism, hermetic units) + 🎙️ Irene (content: the soft-floor/legitimate-seams/figure-atomicity safety + 07G non-regression). 🎨 Dan advisory on the CD-intent contract.
 **GREEN-LIGHT:** `leg-c-min-cluster-floor-greenlight-party-record-2026-07-01.md` — **6/6 RATIFY-WITH-AMENDMENTS**; binding-time investigation DISCHARGED (EARLY-BOUND, HIGH confidence).
 
@@ -65,4 +65,31 @@ Give a styleguide a way to declare a **style-identity** property that is genuine
 
 ## Follow-ons to file (deferred-inventory)
 - 🟡 `gamma-scripted-general-dead-config-detector` — the broad dead/unreachable-styleguide-config detector (beyond Leg-C's narrow set-but-never-read + unknown-key guards); John's surface-doubling concern → its own slot.
-- 🟢 `gamma-scripted-2nd-class-admission` — the next `scripted` class re-earns its place via party governance; registry stays closed at one member until a genuinely-non-declarative 2nd instance appears with two concrete cases on the table.
+- 🟢 `gamma-scripted-2nd-class-admission` — the next `scripted` class re-earns its place via party governance; registry stays closed at one member until a genuinely-non-declarative 2nd instance appears with two concrete cases on the table. LEADING CANDIDATE = the operator's targeted visual-disaggregation rule ("point to specific slides for clustering treatment").
+
+## Review Findings (3-lane bmad-code-review, 2026-07-01 — offline delta)
+
+Lanes: Blind Hunter (diff-only) + Edge Case Hunter (diff+project) + Acceptance Auditor (diff+spec). 10 findings after dedup; 3 dismissed; 1 deferred. Offline AC#1/#2/#3/#8 CONFIRMED genuinely satisfied; no off-by-one in the subdivision math; tests non-tautological EXCEPT w.r.t. the unpinned Pass-1 output contract (see D1).
+
+**decision-needed:**
+- [ ] [Review][Decision] **D1 — Member-seam + figure/narration contract is GUESSED, unverified vs real Pass-1.** Honoring rests on `_MEMBER_KEYS` (cluster_floor.py:37) + `kind`/`type` role tags the Pass-1 prompt never requests (graph.py:1574-1587). Offline AC#4/#5/#6 pass tautologically w.r.t. the fabricated `source_points`/`kind` fixtures. If real Pass-1 lacks splittable sub-structure or role tags → every floor becomes an unreachable mismatch AND atomicity silently no-ops (figure severable → 07G regression). RESOLUTION = live Part-3 baseline pins the real contract; if absent → re-scope to EXTEND the Pass-1 output contract. GO/NO-GO for the honoring approach.
+- [ ] [Review][Decision] **D2 — Soft-veto over-blocks visual disaggregation.** figure↔narration adjacency is ALWAYS bonded (cluster_floor.py:529-568) → a graph(figure)+caption(narration) slide is declared un-splittable — the exact disaggregation the operator wants; a fused single-member slide has zero seams → refused. Decision: refine Leg-C atomicity (protect figure-to-ITS-narration, allow splitting distinct figure+narration UNITS apart) now, OR defer targeted visual disaggregation to the 2nd scripted class.
+
+**Decision resolution (operator, 2026-07-01):** BOTH D1 + D2 → **folded into the live Part-3 baseline as its GO/NO-GO first task.** Reframing: **there are no "fused slides" at Pass-1** — Pass-1 clusters SOURCE material BEFORE any slide/screen is generated (Gamma/Studio renders screens later), so nothing is pre-fused; "disaggregation" = choosing source-granularity. Design goal: **redesign/rewire so the desired disaggregations are POSSIBLE — drivable BOTH on-principles (semantic rules) AND directly-specified ("X source-unit must yield ≥Y clusters").** Operator PRE-AUTHORIZES the rewire (extend the Pass-1 output contract to expose the sub-structure + roles the split needs) if the baseline shows the current split-only-at-existing-seams approach can't achieve it. Atomicity still protects figure-to-its-own-narration; the targeted principled/direct disaggregation levers are the 2nd-class candidate. **P1's "strip floor from the LLM payload / deterministic post-hoc enforcement" stays correct** (07G-protection; the levers are deterministic, NOT LLM re-parameterization).
+
+**patch — MUST-FIX:**
+- [ ] [Review][Patch] **P1 — Strip `min_cluster_floor`/scripted from the LLM-visible `envelope_payload`** before the Pass-1 model call (re-parameterization of the clustering objective — VIOLATES the binding "never re-parameterize the LLM objective" amendment + contaminates the live differential's control-vs-treatment input) [graph.py:1578-1587]
+- [ ] [Review][Patch] **P2 — Fork-#2 false-positive halt:** non-list `structural_outline` handling must not diverge on floor-binding; reclassify from `DeadFloorConfigError` to a content-mismatch/upstream signal (a bound floor must not turn a tolerated outline shape into a run halt) [graph.py:1602-1611]
+- [ ] [Review][Patch] **P3 — Fail-loud must re-base `SpecialistDispatchError`:** `honor_min_cluster_floor` raises bare `ValueError`/`TypeError` that bypass the recoverable error-pause (reachable via the SPOC/direct-state path) [cluster_floor.py:612-614]
+- [ ] [Review][Patch] **P4 — Sub-clusters must get DISTINCT identities:** `_split_cluster` shallow-copy duplicates cluster-level ids (07G per-sub-slide join collision) + aliases nested metadata + duplicates non-chosen member-key lists [cluster_floor.py:594-599]
+- [ ] [Review][Patch] **P5 — Atomicity fail-safe:** if figure/narration roles can't be verified for a bound floor, do NOT split blind — fail-safe to the soft mismatch (protects the 07G VO↔on-screen invariant) [cluster_floor.py:529-541]
+
+**patch — SHOULD-FIX:**
+- [ ] [Review][Patch] **P6 — Validator flags duplicate `scripted` classes** (two `min_cluster_floor` entries silently first-win) [validate_gamma_style_guides.py `_validate_scripted`]
+- [ ] [Review][Patch] **P7 — Runtime must not silently drop a present-but-malformed floor** (WARN/fail-loud instead of returning `None`) [production_runner.py:62-64; styleguide_library.py `resolve_scripted`]
+- [ ] [Review][Patch] **P8 — Parity test** pinning the orchestrator local literal `_SCRIPTED_MIN_CLUSTER_FLOOR_CLASS` ∈ `SCRIPTED_ENUM_CLASSES` + value-rule parity [production_runner.py:16]
+
+**defer:**
+- [x] [Review][Defer] Non-contiguous `bond_group` honored only pairwise [cluster_floor.py:544-568] — deferred, edge-of-edge (contiguous groups correct; matters only for malformed non-contiguous groups)
+
+**dismissed (3):** missing-styleguide silent floor drop (relies on gamma_settings validation elsewhere); `envelope_payload` NameError (false-positive — 511 tests pass); nested-metadata aliasing (subsumed by P4).

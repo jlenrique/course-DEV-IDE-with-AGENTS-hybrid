@@ -48,9 +48,11 @@ from app.specialists.gary.learned_dependencies import (  # noqa: E402
 )
 from app.specialists.gary.styleguide_library import (  # noqa: E402
     GAMMA_STYLE_GUIDES_PATH,
+    SCRIPTED_ENUM_CLASSES,
     StyleguideError,
     expand_record,
     load_style_guides,
+    scripted_entries,
 )
 
 # Frozen-enum reuse: {resolved base key -> allowed value set}. Sourced from _act.py.
@@ -77,6 +79,77 @@ def _is_present(value: Any) -> bool:
 
 def _triad_rationale(record: dict[str, Any]) -> Any:
     return ((record.get("presentation") or {}).get("narrative") or {}).get("triad_rationale")
+
+
+def _validate_scripted(name: str, record: dict[str, Any]) -> list[str]:
+    """Validate the sealed ``scripted`` closed-vocab block (Leg-C).
+
+    A ``scripted`` entry is ``{class, value:int>0, rationale:<style-identity str>,
+    provenance{authoring_styleguide, envelope_write_stamp}}``. Enforces:
+    closed-enum membership (unregistered class -> RED ``gamma.scripted.unknown-class``),
+    positive-int value, a mandatory style-identity ``rationale`` (bars content/pedagogy
+    smuggling), and envelope-provenance presence. Absent block -> clean no-op.
+    """
+    errors: list[str] = []
+    block = record.get("scripted")
+    if block is None:
+        return errors
+    if not isinstance(block, (dict, list)):
+        return [
+            f"{name}: scripted must be a mapping or a list of entries "
+            f"[gamma.scripted.malformed]"
+        ]
+    entries = scripted_entries(record)
+    if not entries:
+        return [f"{name}: scripted block has no valid entries [gamma.scripted.malformed]"]
+    # P6 (Leg-C review): a scripted class may appear at most ONCE. Two entries of the
+    # same class would let the first silently win across the 3 readers (validator,
+    # gary accessor, orchestrator) — RED it instead of a silent first-wins.
+    seen_classes: set[str] = set()
+    for entry in entries:
+        class_name = str(entry.get("class") or "").strip()
+        if not class_name:
+            errors.append(
+                f"{name}: scripted entry missing a `class` [gamma.scripted.unknown-class]"
+            )
+            continue
+        if class_name in seen_classes:
+            errors.append(
+                f"{name}: duplicate scripted class {class_name!r} — a class may appear "
+                f"at most once (first-wins is silent) [gamma.scripted.duplicate-class]"
+            )
+            continue
+        seen_classes.add(class_name)
+        if class_name not in SCRIPTED_ENUM_CLASSES:
+            errors.append(
+                f"{name}: unregistered scripted class {class_name!r} (registry="
+                f"{sorted(SCRIPTED_ENUM_CLASSES)}) [gamma.scripted.unknown-class]"
+            )
+            continue
+        if class_name == "min_cluster_floor":
+            value = entry.get("value")
+            if isinstance(value, bool) or not isinstance(value, int) or value < 1:
+                errors.append(
+                    f"{name}: scripted {class_name} value must be a positive int; got "
+                    f"{value!r} [gamma.scripted.bad-value]"
+                )
+        if not _is_present(entry.get("rationale")):
+            errors.append(
+                f"{name}: scripted {class_name} requires a non-empty style-identity "
+                f"`rationale` [gamma.scripted.missing-rationale]"
+            )
+        prov = entry.get("provenance")
+        if (
+            not isinstance(prov, dict)
+            or not _is_present(prov.get("authoring_styleguide"))
+            or not _is_present(prov.get("envelope_write_stamp"))
+        ):
+            errors.append(
+                f"{name}: scripted {class_name} requires "
+                f"provenance{{authoring_styleguide, envelope_write_stamp}} "
+                f"[gamma.scripted.missing-provenance]"
+            )
+    return errors
 
 
 def _validate_one(name: str, record: dict[str, Any]) -> tuple[list[str], list[str]]:
@@ -199,6 +272,9 @@ def _validate_one(name: str, record: dict[str, Any]) -> tuple[list[str], list[st
                 f"{name}: coherence-triad art axis empty (needs keywords or a "
                 f"style_preset/custom_style to agree with theme + dimensions)"
             )
+
+    # --- Scripted block (Leg-C): sealed registry-bound closed-vocab namespace ------
+    errors.extend(_validate_scripted(name, record))
     return (errors, warnings)
 
 

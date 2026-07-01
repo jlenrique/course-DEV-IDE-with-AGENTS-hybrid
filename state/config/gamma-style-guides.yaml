@@ -207,15 +207,25 @@ style_guides:
         Migrates the Studio-B template id out of the runs/ artifact. A live
         template-existence check for g_nv5q4da69qiiu8q is required before the live render.
 
-# Optional `scripted` block — schema-DECLARED here, consumption wiring is Leg C.
-# A styleguide record MAY carry:
+# `scripted` block — the sealed, registry-bound closed-vocab namespace (Leg-C wired).
+# A styleguide record MAY carry a list of scripted entries, each declaring ONE
+# registered class as a DECLARATIVE VALUE (never a mechanism):
 #   scripted:
-#     trigger: <frozen-enum member>   # e.g. publication_target
-#     value: <str>
-#     consumed_by: <str>              # the future runtime policy that reads it
-#     rationale: <str>
-# No runtime reads it today; it is inert until Leg C.
+#   - class: min_cluster_floor          # must be in scripted_enum.classes below
+#     value: 5                          # positive int
+#     rationale: >-                     # MANDATORY style-identity prose (review smell
+#       This style reads as a multi-beat narrative walk; below N beats it collapses
+#       to a stub deck.                 # test: bars content/pedagogy smuggling)
+#     provenance:
+#       authoring_styleguide: <name>
+#       envelope_write_stamp: <iso8601>
+# `scripted_enum.classes` is the human-readable declaration; the ENFORCED authority
+# is app.specialists.gary.styleguide_library.SCRIPTED_ENUM_CLASSES (adding a class is a
+# party-mode governance act = a code change, not a yaml edit). `triggers` is retained
+# for the earlier publication-target reservation.
 scripted_enum:
+  classes:
+  - min_cluster_floor
   triggers:
   - publication_target
   - descript_bound
