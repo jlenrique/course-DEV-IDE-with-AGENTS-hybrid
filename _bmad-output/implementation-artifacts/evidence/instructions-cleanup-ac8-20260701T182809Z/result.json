@@ -1,0 +1,66 @@
+{
+  "ts": "20260701T182809Z",
+  "style": "classic-freeform-x-cards",
+  "resolved": {
+    "production_mode": "api",
+    "theme": "njim9kuhfnljvaa",
+    "text_mode": "condense",
+    "amount": "brief",
+    "audience": "Faculty and instructional designers familiar with Canvas and course design, American English",
+    "tone": "Clear, professional, engaging in American English",
+    "language": "en",
+    "image_source": "aiGenerated",
+    "image_style_preset": "illustration",
+    "keywords": [
+      "vector",
+      "minimalist",
+      "flat-color",
+      "linework",
+      "bold"
+    ],
+    "dimensions": "fluid"
+  },
+  "sent_additional_instructions": "SOURCE DESIGN NOTE: required on-card labels \u2014 'Legacy IT', 'Compliance', 'Hospital Politics', 'Operating Budgets'. Palette: neon-blue blueprint lines on dark background. Do not drop or rename any labelled element. Use each section's leading heading as that card's title verbatim; produce exactly one card per section; do not add a cover, agenda, divider, or summary card; do not merge or split sections. Emphasize this imagery: vector, minimalist, single-accent color. Variant A.",
+  "sent_image_options": {
+    "source": "aiGenerated",
+    "stylePreset": "illustration"
+  },
+  "sent_text_options": {
+    "amount": "brief",
+    "tone": "Clear, professional, engaging in American English",
+    "audience": "Faculty and instructional designers familiar with Canvas and course design, American English",
+    "language": "en"
+  },
+  "dump_leak": [],
+  "none_leak": false,
+  "per_slide_png": [
+    {
+      "file": "A_p3-low-summary.png",
+      "exists": true,
+      "bytes": 581477,
+      "sha256": "3abbec6ef533e0d0"
+    },
+    {
+      "file": "A_p3-med-physicianship.png",
+      "exists": true,
+      "bytes": 547690,
+      "sha256": "7611fa762edf7416"
+    },
+    {
+      "file": "A_p3-high-maze.png",
+      "exists": true,
+      "bytes": 929726,
+      "sha256": "ae7a6204d778442d"
+    }
+  ],
+  "checks": {
+    "redaction_no_settings_dump": true,
+    "redaction_no_None_literal": true,
+    "source_additional_instructions_verbatim": true,
+    "keywords_as_guidance_not_token": true,
+    "stylePreset_travels_structurally": true,
+    "textOptions_present_structurally": true,
+    "high_detail_card_rendered_real_bytes": true
+  },
+  "AC8_PASS": true
+}

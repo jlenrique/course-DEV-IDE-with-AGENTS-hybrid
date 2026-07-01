@@ -1,0 +1,15 @@
+[18:28:09] EVIDENCE DIR: C:\Users\juanl\Documents\GitHub\course-DEV-IDE-with-AGENTS-hybrid\_bmad-output\implementation-artifacts\evidence\instructions-cleanup-ac8-20260701T182809Z
+[18:28:09] resolved classic-freeform-x-cards: {"amount": "brief", "audience": "Faculty and instructional designers familiar with Canvas and course design, American English", "dimensions": "fluid", "image_source": "aiGenerated", "image_style_preset": "illustration", "keywords": ["vector", "minimalist", "flat-color", "linework", "bold"], "language": "en", "production_mode": "api", "text_mode": "condense", "theme": "njim9kuhfnljvaa", "tone": "Clear, professional, engaging in American English"}
+[18:28:09]   >>> REAL generate_deck; additional_instructions len=479
+[18:28:41] === AC#8 SUMMARY ===
+[18:28:41]   SENT additionalInstructions: "SOURCE DESIGN NOTE: required on-card labels — 'Legacy IT', 'Compliance', 'Hospital Politics', 'Operating Budgets'. Palette: neon-blue blueprint lines on dark background. Do not drop or rename any labelled element. Use each section's leading heading as that card's title verbatim; produce exactly one card per section; do not add a cover, agenda, divider, or summary card; do not merge or split sections. Emphasize this imagery: vector, minimalist, single-accent color. Variant A."
+[18:28:41]   SENT imageOptions: {"source": "aiGenerated", "stylePreset": "illustration"}
+[18:28:41]   SENT textOptions: {"amount": "brief", "audience": "Faculty and instructional designers familiar with Canvas and course design, American English", "language": "en", "tone": "Clear, professional, engaging in American English"}
+[18:28:41]   PASS  redaction_no_settings_dump
+[18:28:41]   PASS  redaction_no_None_literal
+[18:28:41]   PASS  source_additional_instructions_verbatim
+[18:28:41]   PASS  keywords_as_guidance_not_token
+[18:28:41]   PASS  stylePreset_travels_structurally
+[18:28:41]   PASS  textOptions_present_structurally
+[18:28:41]   PASS  high_detail_card_rendered_real_bytes
+[18:28:41]   AC#8 PASS: True

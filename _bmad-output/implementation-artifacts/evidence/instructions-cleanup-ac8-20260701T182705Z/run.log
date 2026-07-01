@@ -1,0 +1,4 @@
+[18:27:05] EVIDENCE DIR: C:\Users\juanl\Documents\GitHub\course-DEV-IDE-with-AGENTS-hybrid\_bmad-output\implementation-artifacts\evidence\instructions-cleanup-ac8-20260701T182705Z
+[18:27:06] resolved classic-freeform-x-cards: {"amount": "brief", "audience": "Faculty and instructional designers familiar with Canvas and course design, American English", "dimensions": "fluid", "image_source": "aiGenerated", "image_style_preset": "illustration", "keywords": ["vector", "minimalist", "flat-color", "linework", "bold"], "language": "en", "production_mode": "api", "text_mode": "condense", "theme": "njim9kuhfnljvaa", "tone": "Clear, professional, engaging in American English"}
+[18:27:06]   >>> REAL generate_deck; additional_instructions len=479
+[18:27:25] LIVE FAILED: GammaDispatchError: gamma export left briefed slide(s) unmatched for variant A: ['p3-high-maze']; unmatched pages: []

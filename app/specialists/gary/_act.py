@@ -637,22 +637,17 @@ def _instructions_for_variant(
         "divider, or summary card; do not merge or split sections.",
     ]
     if settings is not None:
+        # The structured style settings (image_style_preset/amount/tone/audience/
+        # language) travel STRUCTURALLY via imageOptions/textOptions only — echoing
+        # them here would be merely-redundant (and risk the model painting a stray
+        # `key=value` onto a card) and once rendered `image_style=None`. Keywords stay
+        # in this prose channel as natural imagery guidance so their source-derived
+        # VALUES reach Gamma and compose on top of the styleguide base.
         keywords = settings.get("keywords")
-        keyword_text = ""
         if isinstance(keywords, list) and keywords:
-            keyword_text = f" keywords={', '.join(str(item) for item in keywords)};"
-        # Omit the template clause when there is no template (code-review item #9): a
-        # styleguide-bound variant has no `template` key, so rendering a literal
-        # `template=None.` into the instructions is noise the model should not see.
-        template = str(settings.get("template") or "").strip()
-        template_text = f" template={template}." if template and template != "default" else ""
-        parts.append(
-            "Apply this variant's Gamma settings: "
-            f"image_style_preset={settings.get('image_style_preset')}; "
-            f"image_style={settings.get('image_style')}; "
-            f"amount={settings.get('amount') or settings.get('density')}; "
-            f"tone={settings.get('tone')};{keyword_text}{template_text}"
-        )
+            parts.append(
+                f"Emphasize this imagery: {', '.join(str(item) for item in keywords)}."
+            )
     parts.append(f"Variant {variant}.")
     return " ".join(part for part in parts if part).strip()
 

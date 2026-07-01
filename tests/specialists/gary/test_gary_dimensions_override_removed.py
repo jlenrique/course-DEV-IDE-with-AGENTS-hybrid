@@ -153,16 +153,24 @@ def test_styleguide_preserves_source_detail(tmp_path: Path, monkeypatch) -> None
     call = _call_for_variant(client, "A")
     instr = str(call.get("additional_instructions") or "")
 
-    # 1) Every source instruction line survives verbatim, unclobbered.
+    # 1) AC#4 — the source brief survives BYTE-IDENTICAL (one contiguous verbatim
+    #    substring, upgraded from line-by-line "present" to character-equal).
+    assert source_brief in instr, f"source brief not byte-identical; instr={instr!r}"
     for line in source_brief.split("\n"):
         assert line in instr, f"source instruction line lost: {line!r}"
-    # 2) Order preserved: the source brief LEADS, before the styleguide-settings summary.
-    assert instr.index(source_brief.split("\n")[0]) < instr.index(
-        "Apply this variant's Gamma settings"
-    )
-    # 3) Every source keyword survives, in order.
-    kw_field = f"keywords={', '.join(source_keywords)};"
-    assert kw_field in instr, f"source keywords lost/reordered; instr={instr!r}"
+    # 2) AC#1 — the merely-redundant settings-dump is GONE (channel cleanup): no
+    #    summary sentence, no key=value echoes of the structured params.
+    assert "Apply this variant's Gamma settings" not in instr
+    for token in ("image_style_preset=", "amount=", "tone=", "template=", "image_style="):
+        assert token not in instr, f"leaked settings token {token!r}; instr={instr!r}"
+    # 3) AC#3 — source keywords survive as natural imagery GUIDANCE (values verbatim,
+    #    NO `keywords=` machine-field), and the source brief LEADS (source wins).
+    assert "keywords=" not in instr
+    guidance = f"Emphasize this imagery: {', '.join(source_keywords)}."
+    assert guidance in instr, f"keyword guidance prose missing; instr={instr!r}"
+    for kw in source_keywords:
+        assert kw in instr, f"source keyword lost: {kw!r}; instr={instr!r}"
+    assert instr.index(source_brief) < instr.index(guidance)
     # 4) The styleguide's OWN keywords did NOT clobber or pollute the source set
     #    (classic-freeform's library keywords include 'minimalist'/'vector').
     assert "minimalist" not in instr
@@ -172,6 +180,105 @@ def test_styleguide_preserves_source_detail(tmp_path: Path, monkeypatch) -> None
     assert call["theme_id"] == "njim9kuhfnljvaa"
     assert (call.get("image_options") or {}).get("stylePreset") == "illustration"
     assert (call.get("card_options") or {}).get("dimensions") in (None, "fluid")
+
+
+# =========================================================================== #
+# gamma-instructions-channel-cleanup — de-redundant the additionalInstructions
+# channel. The structured style settings (image_style_preset/amount/tone) travel
+# via imageOptions/textOptions ONLY; keywords stay in prose as natural imagery
+# guidance. RED-first: AC#1/AC#2 are demonstrated RED on current code pre-fix.
+# =========================================================================== #
+
+# `image_style` is intentionally None here — the old code rendered the literal
+# `image_style=None` bug (AC#2). `template` is vestigial ("default").
+_SETTINGS_FULL: dict[str, object] = {
+    "variant_id": "A",
+    "image_style_preset": "illustration",
+    "image_style": None,
+    "amount": "brief",
+    "tone": "Clear, professional",
+    "template": "default",
+    "keywords": ["hero-diagram", "clinical-navy-gold"],
+}
+
+
+def _emit(payload_instr: str, settings: dict[str, object] | None) -> str:
+    return gary_act._instructions_for_variant(
+        {"additional_instructions": payload_instr}, variant="A", settings=settings
+    )
+
+
+def test_ac1_settings_dump_absent() -> None:
+    # AC#1 [RED on current code] — no summary sentence, no key=value echoes of
+    # params already forwarded structurally via imageOptions/textOptions.
+    instr = _emit("Source brief.", _SETTINGS_FULL)
+    assert "Apply this variant's Gamma settings" not in instr
+    for token in ("image_style_preset=", "amount=", "tone=", "template=", "image_style="):
+        assert token not in instr, f"leaked settings token {token!r}: {instr!r}"
+
+
+def test_ac2_no_literal_none() -> None:
+    # AC#2 [RED on current code] — the `image_style=None` literal bug is gone for
+    # every settings/keywords combination (kill by construction).
+    for settings in (
+        _SETTINGS_FULL,
+        {**_SETTINGS_FULL, "keywords": []},
+        {"variant_id": "A"},  # bare settings: every style key absent
+    ):
+        instr = _emit("Source brief.", settings)
+        assert "None" not in instr, f"literal None leaked: {instr!r}"
+        assert "image_style=None" not in instr
+
+
+def test_ac3_keywords_as_guidance_and_empty_guard() -> None:
+    # AC#3 — keywords de-tokenized to natural imagery guidance; empty-guard holds.
+    instr = _emit("Source brief.", _SETTINGS_FULL)
+    assert "keywords=" not in instr
+    assert "Emphasize this imagery: hero-diagram, clinical-navy-gold." in instr
+    empty = _emit("Source brief.", {**_SETTINGS_FULL, "keywords": []})
+    assert "Emphasize this imagery" not in empty
+    assert "  " not in empty, f"dangling separator on empty keywords: {empty!r}"
+
+
+def test_ac4_source_verbatim_precedes_guidance() -> None:
+    # AC#4 [protected invariant] — source brief byte-identical AND leading (wins).
+    brief = "Composition: centered hero.\nPalette: navy #0B1F3A."
+    instr = _emit(brief, _SETTINGS_FULL)
+    assert brief in instr, f"source brief not byte-identical: {instr!r}"
+    guidance = "Emphasize this imagery: hero-diagram, clinical-navy-gold."
+    assert instr.index(brief) < instr.index(guidance)
+
+
+def test_ac5_structured_options_still_carry_settings() -> None:
+    # AC#5 [co-regression tripwire] — the params removed from PROSE must still
+    # travel STRUCTURALLY via imageOptions.stylePreset + textOptions.amount/tone.
+    settings = {
+        "variant_id": "A",
+        "image_style_preset": "illustration",
+        "amount": "brief",
+        "tone": "Clear, professional",
+    }
+    image_opts = gary_act._image_options_for_variant(settings)
+    text_opts = gary_act._text_options_for_variant(settings)
+    assert image_opts.get("stylePreset") == "illustration"
+    assert text_opts.get("amount") == "brief"
+    assert text_opts.get("tone") == "Clear, professional"
+
+
+def test_ac7_wellformed_no_dangling_separators() -> None:
+    # AC#7 — no double-space / dangling separator across empty-settings,
+    # empty-keywords, empty-brief, and full cases; label always terminal.
+    for payload_instr, settings in (
+        ("Source brief.", None),
+        ("Source brief.", {"variant_id": "A"}),
+        ("Source brief.", _SETTINGS_FULL),
+        ("", _SETTINGS_FULL),
+    ):
+        instr = _emit(payload_instr, settings)
+        assert "  " not in instr, f"double-space: {instr!r}"
+        assert not instr.startswith(" "), f"leading space: {instr!r}"
+        assert instr.endswith("Variant A."), f"label not terminal: {instr!r}"
+        assert "None" not in instr, f"literal None: {instr!r}"
 
 
 # --- AC#5 live differential proof — SKELETON ONLY (gated on corpus + operator) ---
