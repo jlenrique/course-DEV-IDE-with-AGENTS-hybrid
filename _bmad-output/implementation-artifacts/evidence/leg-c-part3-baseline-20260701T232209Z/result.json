@@ -1,0 +1,172 @@
+{
+  "trial_id": "66ae45d5-3b6b-439b-bad9-2240a0ce0ace",
+  "corpus": "C:\\Users\\juanl\\Documents\\GitHub\\course-DEV-IDE-with-AGENTS-hybrid\\course-content\\courses\\tejal-c1m1-p3-opportunity",
+  "arm": "floor-off-control",
+  "directive_path": "C:\\Users\\juanl\\Documents\\GitHub\\course-DEV-IDE-with-AGENTS-hybrid\\_bmad-output\\implementation-artifacts\\evidence\\leg-c-part3-baseline-20260701T232209Z\\directive-p3-baseline-66ae45d5-3b6b-439b-bad9-2240a0ce0ace.yaml",
+  "walk_outcome": "paused-at-error",
+  "paused_error_tag": "gamma.export.brief-unmatched",
+  "gate_sequence": [
+    {
+      "gate": "G1",
+      "next_status": "paused-at-error",
+      "next_gate": null,
+      "seg_s": 408.0
+    }
+  ],
+  "irene_pass1_nodes": [
+    "04A",
+    "05",
+    "05B"
+  ],
+  "analysis": {
+    "04A": {
+      "n_plan_units": 17,
+      "n_distinct_cluster_ids": 10,
+      "n_heads": 10,
+      "unit_field_union": [
+        "cluster_id",
+        "cluster_interstitial_count",
+        "cluster_position",
+        "cluster_role",
+        "develop_type",
+        "learning_objective",
+        "master_behavioral_intent",
+        "narrative_arc",
+        "parent_slide_id",
+        "rationale",
+        "scope_decision",
+        "title",
+        "unit_id"
+      ],
+      "member_key_hits": [],
+      "role_tag_hits": [],
+      "interstitial_counts": [
+        0,
+        2,
+        0,
+        0,
+        0,
+        2,
+        0,
+        3,
+        0,
+        0
+      ],
+      "titles": [
+        "Physicianship = Innovation Leadership",
+        "The Bridge: Diagnosis = Design Thinking",
+        "History to Empathize; Diagnosis to Define",
+        "Treatment Planning as Ideate + Prototype/Test",
+        "Required Reading: Sandra Lam\u2019s Intrapreneurship Formula",
+        "Intrapreneurship vs. Entrepreneurship",
+        "The Intrapreneur\u2019s Maze: Innovating Inside Load-Bearing Systems",
+        "Idea vs. Opportunity",
+        "Why Ideas Have Zero Standalone Value",
+        "Opportunity = Feasible, Viable, Desirable, Executable",
+        "The Deconstruction: First Principles Thinking",
+        "Worked Example Discussion: Bad Idea vs. Good Opportunity Framing",
+        "The Bad Start: Buying iPads for Faster Discharge Teaching",
+        "Root-Cause Analysis: Technology Does Not Fix Human Workflow by Default",
+        "The Good Reframing: Standardized Mobile-Friendly Discharge Workflow",
+        "Part 3 Summary and Transition",
+        "Part 3 Knowledge Check"
+      ]
+    },
+    "05": {
+      "n_plan_units": 12,
+      "n_distinct_cluster_ids": 7,
+      "n_heads": 7,
+      "unit_field_union": [
+        "cluster_id",
+        "cluster_interstitial_count",
+        "cluster_position",
+        "cluster_role",
+        "develop_type",
+        "learning_objective",
+        "master_behavioral_intent",
+        "narrative_arc",
+        "parent_slide_id",
+        "rationale",
+        "scope_decision",
+        "title",
+        "unit_id"
+      ],
+      "member_key_hits": [],
+      "role_tag_hits": [],
+      "interstitial_counts": [
+        0,
+        0,
+        0,
+        2,
+        3,
+        0,
+        0
+      ],
+      "titles": [
+        "Physicianship = Innovation Leadership",
+        "The Bridge: Diagnosis = Design Thinking",
+        "Required Reading: Sandra Lam's Intrapreneurship Formula",
+        "Intrapreneurship vs. Entrepreneurship",
+        "The Intrapreneur's Maze: Blank Canvas vs. Load-Bearing Blueprint",
+        "Lam's Organizational Reality: Resources, Brand, Patients, Stakeholders",
+        "Idea vs. Opportunity",
+        "Worked Example: Bad Idea to Root-Cause Reframing",
+        "The Good Reframing: Chief Complaint, Root Cause, Opportunity",
+        "The Deconstruction: First Principles Thinking",
+        "Part 3 Summary and Transition",
+        "Part 3 Knowledge Check"
+      ]
+    },
+    "05B": {
+      "n_plan_units": 12,
+      "n_distinct_cluster_ids": 7,
+      "n_heads": 7,
+      "unit_field_union": [
+        "cluster_id",
+        "cluster_interstitial_count",
+        "cluster_position",
+        "cluster_role",
+        "develop_type",
+        "learning_objective",
+        "master_behavioral_intent",
+        "narrative_arc",
+        "parent_slide_id",
+        "rationale",
+        "scope_decision",
+        "title",
+        "unit_id"
+      ],
+      "member_key_hits": [],
+      "role_tag_hits": [],
+      "interstitial_counts": [
+        0,
+        0,
+        0,
+        2,
+        3,
+        0,
+        0
+      ],
+      "titles": [
+        "Physicianship = Innovation Leadership",
+        "The Bridge: Diagnosis = Design Thinking",
+        "Required Reading: Sandra Lam's Intrapreneurship Formula",
+        "Intrapreneurship vs. Entrepreneurship",
+        "The Intrapreneur's Maze: Blank Canvas vs. Load-Bearing Blueprint",
+        "Lam's Organizational Reality: Resources, Brand, Patients, Stakeholders",
+        "Idea vs. Opportunity",
+        "Worked Example: Bad Idea to Root-Cause Reframing",
+        "The Good Reframing: Chief Complaint, Root Cause, Opportunity",
+        "The Deconstruction: First Principles Thinking",
+        "Part 3 Summary and Transition",
+        "Part 3 Knowledge Check"
+      ]
+    }
+  },
+  "count_K": 7,
+  "floor_leak_hits": [],
+  "zero_floor_leak": true,
+  "VERDICT": "NOT-CONVERGED",
+  "run_dir": "C:\\Users\\juanl\\Documents\\GitHub\\course-DEV-IDE-with-AGENTS-hybrid\\state\\config\\runs\\66ae45d5-3b6b-439b-bad9-2240a0ce0ace",
+  "total_seconds": 426.5
+}
