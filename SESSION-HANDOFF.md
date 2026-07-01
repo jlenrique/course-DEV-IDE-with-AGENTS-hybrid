@@ -1,3 +1,24 @@
+# Session Handoff — 2026-07-01(e) (Gamma Styleguide Library arc — Leg-B GREEN-LIT (SPLIT B1/B2) + Leg-B1 documented dependency rules DUAL-GATE CLOSED)
+
+**Final class:** S. **Branch:** `dev/gamma-styleguide-library-2026-07-01` (code `d7ec3207` + this WRAPUP docs commit; push at close). Fourth close this session. Governance: full BMAD spine; fully-spawned Leg-B green-light (6/6) + B1 dual-gate CLOSE (Murat structural + Gary/Dan content); hermetic (no live fetch); SPOC-is-the-goal guardrail.
+
+**Leg-B GREEN-LIGHT 6/6 RATIFY-WITH-AMENDMENTS** — SPLIT the leg into **B1 (documented rules)** + **B2 (learned-store scaffold)**. Key ratifications: Gary corrected 2 rules from hard-block to WARN-on-real-conflict (would have false-blocked valid styleguides); the learned-store PROMOTION machinery + live CD envelope-authoring ceremony are DEFERRED (John/Murat: premature before Leg-E has observations to learn from; Dan: honesty-disclaim rather than over-claim like Leg-A AC#6); non-contradiction validator — narrow deterministic form folds into B1, general semantic stays filed. Record: `leg-b-dependency-enforcement-greenlight-party-record-2026-07-01.md`.
+
+**Leg-B1 CLOSED (the guardrail shrank the claim to truth, honestly):**
+- Landed: **warnings channel** (loud, non-fatal unless `--strict`; `validate_style_guides_full` = (errors,warnings) SSOT, back-compat errors-only default) + **Rule 2** (ERROR `gamma.dep.image-model-source` — image_model + non-aiGenerated silent no-op) + **Rule 3** (WARN `gamma.dep.preset-style-subordinated`, raw record — named preset + set custom_style; a lossy merge not invalid → WARN-not-block, wording points to the right fix, never dropping source custom_style).
+- Shrank: **rules 5/7 dropped** (T1-confirmed runtime-request surface, not styleguide-authorable); **from-template⊕theme_id + rule 6 deduped** (already hard-block via the Leg-A `surface-violation` — theme/dimensions in STYLEGUIDE_CLASSIC_ONLY_KEYS; a 2nd error = forbidden double-fire → membership-assertion tests only); **narrow non-contradiction skipped** (the only closed-enum pair, prose "16:9" vs dimensions=fluid, spuriously fires on shipped seed #1 which says "16:9" to frame it EXCLUDED → vindicates Dan's Decision-7 objection; stays the general follow-on).
+- Spine: dev RED-first (7 failed pre-fix) → Murat structural CLOSE 8/8 (no conditions) + Gary/Dan content CLOSE-WITH-CONDITIONS (discharged: Rule-3 wording tightened at close; 4 follow-ons filed per Dan C1 governance §3). 25/25 validator tests green, 3 seeds clean (0 err/0 warn), hermetic no-network guard, ruff clean. Committed `d7ec3207`.
+
+**Follow-ons filed (deferred-inventory §Leg-B1):** `gamma-runtime-request-dependency-rules` (dropped rules 5/7 + confirm export_as YAML inert), `gamma-styleguide-art-direction-no-op-under-imageless-source` (Gary Bar-6 — art fields no-op under noImages/placeholder/themeAccent, same class as Rule 2), `gamma-styleguide-text-mode-preserve-requires-text`, `gamma-surface-violation-message-clarity` (optional REPLACE).
+
+**What is next:** **Leg-B2** (learned-store scaffold — declarative schema + append-only ledger + identity-manifest pin, manifest empty-by-design; promotion machinery deferred). Then Leg-C/D/E, then Phase-2.
+
+**Key lessons:** (a) The Gamma specialist seat earned its keep AGAIN — Gary caught 2 rules that as literally worded would false-block valid styleguides (a wrong rule that fails-loud on valid config is worse than no rule). (b) The guardrail shrank B1 from "5 rules + non-contradiction" to "2 genuine new rules + honest dedups/drops/skip" — three of the nominal rules were already covered or wrong-surface. A validator leg's honest output is often "the union already covers this." (c) Shipped seed #1 was live proof the narrow non-contradiction form is intractable (16:9-as-excluded) — the seeds double as false-positive fixtures.
+
+**Validation:** 25/25 validator tests; 3 seeds copacetic (0 err/0 warn); hermetic no-network guard test; ruff clean. No live Gamma needed (hermetic leg; `--check-existence` stays Leg-E/operator-gated). **Push: this WRAPUP.**
+
+---
+
 # Session Handoff — 2026-07-01(d) (Gamma Styleguide Library arc — `gamma-instructions-channel-cleanup` DUAL-GATE CLOSED: operator-surfaced redundant-prose defect, AC#8 live wire-proven)
 
 **Final class:** S. **Branch:** `dev/gamma-styleguide-library-2026-07-01` (code `bb33852d` + this WRAPUP docs commit; push at close). Second story closed this session (after `styleguide-retire-default-variant-pair` §(c) below). Governance: full BMAD spine, dual-gate; fully-spawned party GREEN-LIGHT + Murat/Vera CLOSE; live real-Gamma (no mocks); SPOC-is-the-goal guardrail.
