@@ -180,6 +180,10 @@
               "B"
             ]
           },
+          "styleguide": {
+            "type": "string",
+            "description": "Optional name of a CD-owned record in state/config/gamma-style-guides.yaml. When present, its resolved base-layer API keys seed this variant before any explicit per-variant override."
+          },
           "theme": {
             "type": "string",
             "description": "Open Gamma theme id/name. Known smoke value: default."

@@ -1,0 +1,221 @@
+# CD-owned Gamma Styleguide Library — RUNTIME-ACTIVE SSOT.
+#
+# Promoted from _bmad-output/planning-artifacts/gamma-style-guides-v1-draft-2026-07-01.yaml
+# (Leg-A, arc dev/gamma-styleguide-library-2026-07-01). This file is the SOLE
+# determinant of the Gamma look/feel for a real SPOC-orchestrated deck; it replaces
+# the DEFAULT_VARIANT_PAIR "SMOKE FIXTURE" authority and the removed baked-in 16:9
+# override at app/specialists/gary/_act.py.
+#
+# CD (Dan) authors these records THROUGH Marcus's envelope; the validator
+# (scripts/utilities/validate_gamma_style_guides.py) is the write-gate. Never edit
+# state/config directly outside that path.
+#
+# Schema per §7 three categories:
+#   * prompt_configuration  (text + visuals surface; Classic/API only)
+#   * page_settings         (card_options / export)
+#   * foundational          theme (api) XOR studio_template (studio) via production_mode
+# plus an additive `presentation` metadata block (completeness-EXCLUDED, additive-safe)
+# and an optional `scripted` block (schema-declared here, wiring is Leg C).
+schema_version: "1.0"
+registry_owner: cd
+source_draft: _bmad-output/planning-artifacts/gamma-style-guides-v1-draft-2026-07-01.yaml
+
+style_guides:
+  # -- Proof seed #1 (Classic, PURE representation: dimensions fluid, NO forced 16:9) --
+  classic-freeform-x-cards:
+    production_mode: api
+    status: active
+    version: 1
+    theme:
+      id: njim9kuhfnljvaa
+      name: 2026 HIL APC Tejal
+    studio_template: null
+    prompt_configuration:
+      text_content:
+        mode: condense
+        amount: brief
+        audience: >-
+          Faculty and instructional designers familiar with Canvas and course design,
+          American English
+        tone: Clear, professional, engaging in American English
+        language: en
+      visuals:
+        image_source: aiGenerated
+        image_model: null
+        style_preset: illustration
+        custom_style: null
+        keywords:
+        - vector
+        - minimalist
+        - flat-color
+        - linework
+        - bold
+    page_settings:
+      card_options:
+        dimensions: fluid
+      export:
+        export_as: png
+    presentation:
+      display_name: Classic-Freeform_X-Cards
+      distinguishing: >-
+        The calm clinical default: freeform source prose condensed to spacious
+        illustrated cards where the screen carries gist and the voiceover carries detail.
+      narrative:
+        summary: >-
+          Clean clinical-education style that turns freeform prose into spacious
+          white-background cards with navy headings, teal body, and soft vector panels.
+        feels_like: Professional, calm, approachable, APC/clinical-leadership oriented.
+        use_when: Narrated lessons where the screen shows gist and VO holds the detail.
+        avoid_when: Data-heavy or editorial decks needing dense per-card structure.
+        triad_rationale: >-
+          The Tejal theme, AI-generated illustration/vector-minimalist keywords, and the
+          Default/Fluid page setup agree on one calm clinical register; Fluid is the
+          exemplar's true page shape (any Descript-bound 16:9 is a publication-time policy,
+          not part of this style).
+      example_url: "https://the-modern-clinicians-di-a6j7emh.gamma.site/"
+      thumbnail_ref: null
+      last_used: null
+    coherence:
+      theme_art_keywords_dimensions: >-
+        Professional clinical APC look; Tejal theme + AI-generated illustration/
+        vector-minimalist cues; Default/Fluid page setup.
+    provenance:
+      source: default_variant_pair
+      established: '2026-06-24'
+      notes: >-
+        Reflects the live Prompt editor / Page setup exemplar (Condense + Minimal,
+        Freeform, Classic, 10 cards, Tejal theme, AI illustration, Default/Fluid).
+        Publication-time 16:9 forcing is intentionally NOT encoded here.
+
+  # -- Contrast Classic (16x9 editorial line-art; second Classic for A/B + roster) --
+  hil-2026-apc-blueprint-classic:
+    production_mode: api
+    status: active
+    version: 1
+    theme:
+      id: e8tz1vxb9v1urqp
+      name: Blueprint Editorial
+    studio_template: null
+    prompt_configuration:
+      text_content:
+        mode: preserve
+        amount: brief
+        audience: >-
+          Faculty and instructional designers familiar with Canvas and course design,
+          American English
+        tone: Confident, precise, lightly editorial - American English
+        language: en
+      visuals:
+        image_source: aiGenerated
+        image_model: recraft-v3-svg
+        style_preset: lineArt
+        custom_style: null
+        keywords:
+        - blueprint
+        - technical line drawing
+        - dotted construction lines
+        - architectural
+        - single-accent color
+    page_settings:
+      card_options:
+        dimensions: 16x9
+      export:
+        export_as: png
+    presentation:
+      display_name: HIL 2026 APC Blueprint Classic
+      distinguishing: >-
+        The technical/editorial contrast: preserve-mode line-art with a single-accent
+        blueprint palette on a traditional 16:9 frame.
+      narrative:
+        summary: >-
+          Technical/editorial variant for A/B slide selection: blueprint theme, line-art
+          construction imagery, preserve-mode text that protects titles and figures.
+        feels_like: Confident, precise, lightly editorial.
+        use_when: A/B contrast against the calmer freeform Classic style.
+        avoid_when: Warm, illustrative, or photographic looks are wanted.
+        triad_rationale: >-
+          Blueprint theme + lineArt/construction keywords + 16:9 deck output stay locked
+          together; preserve mode keeps source titles and figures verbatim for fidelity.
+      example_url: null
+      thumbnail_ref: null
+      last_used: null
+    coherence:
+      theme_art_keywords_dimensions: >-
+        Blueprint theme + lineArt + construction keywords must remain together; 16:9
+        deck output.
+    provenance:
+      source: default_variant_pair
+      established: '2026-06-24'
+      notes: Promotes DEFAULT_VARIANT_PAIR B out of smoke-fixture status.
+
+  # -- Proof seed #2 (Studio; template is the style authority, Classic-only keys forbidden) --
+  hil-2026-apc-studio-image-card:
+    production_mode: studio
+    status: active
+    version: 1
+    theme: null
+    studio_template:
+      gamma_id: g_nv5q4da69qiiu8q
+      name: Studio B Gamma template
+      source: runs/studio-trial/studio-b-gamma-settings.yaml
+    studio_prompt_lock:
+      wrapper_id: gary_studio_lock_wrapper_v1
+      behavior: >-
+        Lock design; keep one full-bleed image card; only swap subject to the new
+        slide topic.
+      guard:
+        type: aspect_ratio_min
+        min_ratio: 1.4
+        expected_ratio: 1.7778
+    prompt_configuration:
+      # Studio records carry NO Classic visuals surface (image_source/model/preset/
+      # keywords): the create-from-template IS the sole style authority. Any such key
+      # here is a surface-violation (airtight discriminated union, Leg-A code-review
+      # item #3a). Only non-surface template-lock instructions remain.
+      additional_instructions:
+      - Preserve the template's full-bleed image-card composition.
+    page_settings:
+      export:
+        export_as: png
+    presentation:
+      display_name: HIL 2026 APC Studio Image Card
+      distinguishing: >-
+        Full-bleed Studio template look where the image card itself carries the title
+        and key data; the template is the sole style authority.
+      narrative:
+        summary: >-
+          Studio create-from-template full-bleed image cards; the template owns the
+          design and Gary only swaps the subject.
+        feels_like: Bold, immersive, single-image-per-slide.
+        use_when: A slide's meaning lives in one full-bleed illustration with embedded text.
+        avoid_when: Multi-block Classic typography or dense text is required.
+        triad_rationale: >-
+          The Studio template is the style source of truth; no Classic text/card surface
+          applies, and the aspect-ratio guard (min 1.4) proves the exported card kept the
+          template's 16:9 frame rather than falling back to Classic.
+      example_url: null
+      thumbnail_ref: null
+      last_used: null
+    coherence:
+      template_art_dimensions: >-
+        Template is the style source of truth; Classic-only text/card settings are
+        forbidden.
+    provenance:
+      source: studio_trial_artifact
+      established: '2026-06-25'
+      notes: >-
+        Migrates the Studio-B template id out of the runs/ artifact. A live
+        template-existence check for g_nv5q4da69qiiu8q is required before the live render.
+
+# Optional `scripted` block — schema-DECLARED here, consumption wiring is Leg C.
+# A styleguide record MAY carry:
+#   scripted:
+#     trigger: <frozen-enum member>   # e.g. publication_target
+#     value: <str>
+#     consumed_by: <str>              # the future runtime policy that reads it
+#     rationale: <str>
+# No runtime reads it today; it is inert until Leg C.
+scripted_enum:
+  triggers:
+  - publication_target
+  - descript_bound

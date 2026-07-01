@@ -1,0 +1,273 @@
+{
+  "ts": "20260701T164108Z",
+  "slides": [
+    {
+      "slide_id": "p3-low-summary",
+      "detail_level": "LOW",
+      "title": "From Ideas to Opportunities"
+    },
+    {
+      "slide_id": "p3-med-physicianship",
+      "detail_level": "MEDIUM",
+      "title": "Physicianship and Innovation Leadership"
+    },
+    {
+      "slide_id": "p3-high-maze",
+      "detail_level": "HIGH",
+      "title": "The Intrapreneur Maze"
+    }
+  ],
+  "arm_a": {
+    "styleguide": "classic-freeform-x-cards",
+    "mode": "A-classic",
+    "resolved_settings": {
+      "production_mode": "api",
+      "theme": "njim9kuhfnljvaa",
+      "text_mode": "condense",
+      "amount": "brief",
+      "audience": "Faculty and instructional designers familiar with Canvas and course design, American English",
+      "tone": "Clear, professional, engaging in American English",
+      "language": "en",
+      "image_source": "aiGenerated",
+      "image_style_preset": "illustration",
+      "keywords": [
+        "vector",
+        "minimalist",
+        "flat-color",
+        "linework",
+        "bold"
+      ],
+      "dimensions": "fluid"
+    },
+    "per_slide": [
+      {
+        "slide_id": "p3-low-summary",
+        "generation_id": "VqVWEhqjkRTdAt2x6B4qQ",
+        "png": {
+          "file": "A_p3-low-summary.png",
+          "exists": true,
+          "bytes": 689889,
+          "sha256": "c5e4a34c75ed3fbc",
+          "dims": "2400x1538",
+          "aspect": 1.5605
+        }
+      },
+      {
+        "slide_id": "p3-med-physicianship",
+        "generation_id": "VqVWEhqjkRTdAt2x6B4qQ",
+        "png": {
+          "file": "A_p3-med-physicianship.png",
+          "exists": true,
+          "bytes": 492093,
+          "sha256": "896f074c76b00711",
+          "dims": "2400x1754",
+          "aspect": 1.3683
+        }
+      },
+      {
+        "slide_id": "p3-high-maze",
+        "generation_id": "VqVWEhqjkRTdAt2x6B4qQ",
+        "png": {
+          "file": "A_p3-high-maze.png",
+          "exists": true,
+          "bytes": 920239,
+          "sha256": "147152a852f0a968",
+          "dims": "2400x1730",
+          "aspect": 1.3873
+        }
+      },
+      {
+        "slide_id": "p3-low-summary",
+        "generation_id": "eJd0ONK3yeYgKEL5tczAG",
+        "png": {
+          "file": "B_p3-low-summary.png",
+          "exists": true,
+          "bytes": 265373,
+          "sha256": "fc022ceeef608829",
+          "dims": "2400x1738",
+          "aspect": 1.3809
+        }
+      },
+      {
+        "slide_id": "p3-med-physicianship",
+        "generation_id": "eJd0ONK3yeYgKEL5tczAG",
+        "png": {
+          "file": "B_p3-med-physicianship.png",
+          "exists": true,
+          "bytes": 737897,
+          "sha256": "a3657fb08f97fe3f",
+          "dims": "2400x2744",
+          "aspect": 0.8746
+        }
+      },
+      {
+        "slide_id": "p3-high-maze",
+        "generation_id": "eJd0ONK3yeYgKEL5tczAG",
+        "png": {
+          "file": "B_p3-high-maze.png",
+          "exists": true,
+          "bytes": 363477,
+          "sha256": "8ed03c1da506a449",
+          "dims": "2400x2860",
+          "aspect": 0.8392
+        }
+      }
+    ]
+  },
+  "arm_b": {
+    "styleguide": "hil-2026-apc-studio-image-card",
+    "mode": "B-studio",
+    "resolved_settings": {
+      "production_mode": "studio",
+      "studio_template_id": "g_nv5q4da69qiiu8q"
+    },
+    "per_slide": [
+      {
+        "slide_id": "p3-low-summary",
+        "generation_id": "GyvYdNAV6SL0d3Q96YAzA",
+        "png": {
+          "file": "gary_A_studio_01_p3-low-summary.png",
+          "exists": true,
+          "bytes": 2279288,
+          "sha256": "e7dcec8f78cfd4e1",
+          "dims": "2400x1350",
+          "aspect": 1.7778
+        }
+      },
+      {
+        "slide_id": "p3-med-physicianship",
+        "generation_id": "TuPVrTvjvBhElA2Fh3214",
+        "png": {
+          "file": "gary_A_studio_02_p3-med-physicianship.png",
+          "exists": true,
+          "bytes": 1555023,
+          "sha256": "81a8847468073840",
+          "dims": "2400x1350",
+          "aspect": 1.7778
+        }
+      },
+      {
+        "slide_id": "p3-high-maze",
+        "generation_id": "f10gEzR8qQGPOZRxRFOCw",
+        "png": {
+          "file": "gary_A_studio_03_p3-high-maze.png",
+          "exists": true,
+          "bytes": 3688674,
+          "sha256": "e9210ac9d211eb36",
+          "dims": "2400x1350",
+          "aspect": 1.7778
+        }
+      },
+      {
+        "slide_id": "p3-low-summary",
+        "generation_id": "tpX835ytuFSRl2mjuT2Nj",
+        "png": {
+          "file": "B_p3-low-summary.png",
+          "exists": true,
+          "bytes": 282841,
+          "sha256": "4ab897fd5c2472c7",
+          "dims": "2400x1738",
+          "aspect": 1.3809
+        }
+      },
+      {
+        "slide_id": "p3-med-physicianship",
+        "generation_id": "tpX835ytuFSRl2mjuT2Nj",
+        "png": {
+          "file": "B_p3-med-physicianship.png",
+          "exists": true,
+          "bytes": 522221,
+          "sha256": "a083be1a11b3b0c5",
+          "dims": "2400x2678",
+          "aspect": 0.8962
+        }
+      },
+      {
+        "slide_id": "p3-high-maze",
+        "generation_id": "tpX835ytuFSRl2mjuT2Nj",
+        "png": {
+          "file": "B_p3-high-maze.png",
+          "exists": true,
+          "bytes": 361148,
+          "sha256": "7525e51c032e1af3",
+          "dims": "2400x2864",
+          "aspect": 0.838
+        }
+      }
+    ]
+  },
+  "studio_spanned": true,
+  "differential": [
+    {
+      "slide_id": "p3-low-summary",
+      "detail_level": "LOW",
+      "a_png": {
+        "file": "B_p3-low-summary.png",
+        "exists": true,
+        "bytes": 265373,
+        "sha256": "fc022ceeef608829",
+        "dims": "2400x1738",
+        "aspect": 1.3809
+      },
+      "b_png": {
+        "file": "B_p3-low-summary.png",
+        "exists": true,
+        "bytes": 282841,
+        "sha256": "4ab897fd5c2472c7",
+        "dims": "2400x1738",
+        "aspect": 1.3809
+      },
+      "distinct_sha": true,
+      "distinct_dims": false,
+      "measurably_different": true
+    },
+    {
+      "slide_id": "p3-med-physicianship",
+      "detail_level": "MEDIUM",
+      "a_png": {
+        "file": "B_p3-med-physicianship.png",
+        "exists": true,
+        "bytes": 737897,
+        "sha256": "a3657fb08f97fe3f",
+        "dims": "2400x2744",
+        "aspect": 0.8746
+      },
+      "b_png": {
+        "file": "B_p3-med-physicianship.png",
+        "exists": true,
+        "bytes": 522221,
+        "sha256": "a083be1a11b3b0c5",
+        "dims": "2400x2678",
+        "aspect": 0.8962
+      },
+      "distinct_sha": true,
+      "distinct_dims": true,
+      "measurably_different": true
+    },
+    {
+      "slide_id": "p3-high-maze",
+      "detail_level": "HIGH",
+      "a_png": {
+        "file": "B_p3-high-maze.png",
+        "exists": true,
+        "bytes": 363477,
+        "sha256": "8ed03c1da506a449",
+        "dims": "2400x2860",
+        "aspect": 0.8392
+      },
+      "b_png": {
+        "file": "B_p3-high-maze.png",
+        "exists": true,
+        "bytes": 361148,
+        "sha256": "7525e51c032e1af3",
+        "dims": "2400x2864",
+        "aspect": 0.838
+      },
+      "distinct_sha": true,
+      "distinct_dims": true,
+      "measurably_different": true
+    }
+  ],
+  "resolved_settings_differ": true,
+  "AC5_no_vacuous_green_PASS": true
+}

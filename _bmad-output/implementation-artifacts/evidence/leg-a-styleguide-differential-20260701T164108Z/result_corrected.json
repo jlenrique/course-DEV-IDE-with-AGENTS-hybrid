@@ -1,0 +1,66 @@
+{
+  "corrected_rejudge": [
+    {
+      "level": "LOW",
+      "slide": "p3-low-summary",
+      "classic": {
+        "file": "A_p3-low-summary.png",
+        "dims": "2400x1538",
+        "aspect": 1.56,
+        "bytes": 689889,
+        "sha": "c5e4a34c75ed"
+      },
+      "studio": {
+        "file": "gary_A_studio_01_p3-low-summary.png",
+        "dims": "2400x1350",
+        "aspect": 1.778,
+        "bytes": 2279288,
+        "sha": "e7dcec8f78cf"
+      },
+      "measurably_different": true,
+      "aspect_delta": 0.218
+    },
+    {
+      "level": "MEDIUM",
+      "slide": "p3-med-physicianship",
+      "classic": {
+        "file": "A_p3-med-physicianship.png",
+        "dims": "2400x1754",
+        "aspect": 1.368,
+        "bytes": 492093,
+        "sha": "896f074c76b0"
+      },
+      "studio": {
+        "file": "gary_A_studio_02_p3-med-physicianship.png",
+        "dims": "2400x1350",
+        "aspect": 1.778,
+        "bytes": 1555023,
+        "sha": "81a884746807"
+      },
+      "measurably_different": true,
+      "aspect_delta": 0.41
+    },
+    {
+      "level": "HIGH",
+      "slide": "p3-high-maze",
+      "classic": {
+        "file": "A_p3-high-maze.png",
+        "dims": "2400x1730",
+        "aspect": 1.387,
+        "bytes": 920239,
+        "sha": "147152a852f0"
+      },
+      "studio": {
+        "file": "gary_A_studio_03_p3-high-maze.png",
+        "dims": "2400x1350",
+        "aspect": 1.778,
+        "bytes": 3688674,
+        "sha": "e9210ac9d211"
+      },
+      "measurably_different": true,
+      "aspect_delta": 0.391
+    }
+  ],
+  "AC5_corrected_pass": true,
+  "note": "true style outputs; driver row-parse bug + filed unbound-B dispatch (Edge#8) worked around by direct file attribution"
+}

@@ -13,6 +13,13 @@ from app.models.state.model_resolution_entry import ModelResolutionEntry
 from app.models.state.run_state import RunState
 from app.specialists.dispatch_errors import SpecialistDispatchError
 from app.specialists.gary.gamma_dispatch import GammaDispatchError, dispatch_to_gamma
+from app.specialists.gary.styleguide_library import (
+    RESOLVED_API_KEYS,
+    STYLEGUIDE_CLASSIC_ONLY_KEYS,
+    SURFACE_VIOLATION_TAG,
+    StyleguideError,
+    resolve_styleguide,
+)
 from scripts.api_clients.gamma_client import GammaClient
 from skills.gamma_api_mastery.scripts.gamma_operations import (
     download_export,
@@ -104,9 +111,39 @@ GAMMA_SETTING_KEYS = frozenset(
         # generate path; "api" (default) is the unchanged Classic path.
         "production_mode",
         "studio_template_id",
+        # CD-owned styleguide library (Leg-A 2026-07-01). When present, names a
+        # record in state/config/gamma-style-guides.yaml whose resolved base-layer
+        # API keys seed this variant BEFORE per-variant overrides. It is the ONLY
+        # key added here; metadata/scripted keys are STRIPPED by the resolver and
+        # never reach a gamma_settings[] item (so the unknown-key gate below stays
+        # meaningful).
+        "styleguide",
     }
 )
+# Drift-guard (code-review item #4): the styleguide resolver may only emit keys Gary
+# recognizes, or a resolved base-layer key would trip the unknown-key gate below at
+# dispatch. Assert the subset at import time so the two frozensets can never diverge.
+assert not (RESOLVED_API_KEYS - GAMMA_SETTING_KEYS), (
+    "styleguide RESOLVED_API_KEYS drifted outside GAMMA_SETTING_KEYS: "
+    f"{sorted(RESOLVED_API_KEYS - GAMMA_SETTING_KEYS)}"
+)
 PRODUCTION_MODE_VALUES = frozenset({"api", "studio"})
+# Classic-only surface a per-variant override may NOT carry on a studio-bound variant
+# (code-review item #3b), expressed as gamma_settings item keys. ``custom_style`` maps
+# to the ``image_style`` item key; ``num_cards``/``card_split`` are not gamma_settings
+# keys (they trip the unknown-key gate first) but stay listed for parity.
+_STUDIO_FORBIDDEN_ITEM_KEYS = (STYLEGUIDE_CLASSIC_ONLY_KEYS - {"custom_style"}) | {"image_style"}
+
+
+def _setting_present(value: Any) -> bool:
+    """A per-variant override ``counts`` only when it is a non-empty value."""
+    if value is None:
+        return False
+    if isinstance(value, str):
+        return bool(value.strip())
+    if isinstance(value, (list, tuple, set, dict)):
+        return bool(value)
+    return True
 # Lock-and-replace prompt (n=2 live-verified 2026-06-25; see
 # _bmad-output/implementation-artifacts/studio-mode-evidence/). FROZEN: this string
 # is what makes Studio *be* Studio — a prose-heavy / restructuring prompt silently
@@ -161,7 +198,10 @@ DEFAULT_VARIANT_PAIR: tuple[dict[str, Any], dict[str, Any]] = (
         "tone": "Clear, professional, engaging in American English",
         "language": "en",
         "image_source": "aiGenerated",
-        "dimensions": "16x9",
+        # Pure representation (code-review item #5): the last baked-in 16:9 forcing on
+        # the unbound-variant path is removed — publication-time anti-crop (16:9 for
+        # Descript) is a runtime policy follow-on, not a fixture default.
+        "dimensions": "fluid",
     },
     {
         "variant_id": "B",
@@ -198,7 +238,8 @@ DEFAULT_VARIANT_PAIR: tuple[dict[str, Any], dict[str, Any]] = (
         ),
         "language": "en",
         "image_source": "aiGenerated",
-        "dimensions": "16x9",
+        # Pure representation (code-review item #5): 16:9 forcing removed here too.
+        "dimensions": "fluid",
     },
 )
 GARY_REFERENCES = (
@@ -378,8 +419,31 @@ def _normalized_gamma_settings(payload: dict[str, Any]) -> list[dict[str, Any]]:
                 f"gamma_settings contains unknown key(s): {unknown}",
                 tag="gamma.settings.invalid",
             )
-        merged = dict(by_variant[variant_id])
-        for key in GAMMA_SETTING_KEYS - {"variant_id"}:
+        # Styleguide base-layer seed (Leg-A). When this variant names a CD-owned
+        # styleguide, the library record is the AUTHORITATIVE base — it replaces the
+        # DEFAULT_VARIANT_PAIR smoke fixture as the seed — and per-variant explicit
+        # keys below still override it. The resolver emits ONLY recognized API keys
+        # (metadata/scripted stripped), so nothing here can trip the :375 gate.
+        styleguide_name = item.get("styleguide")
+        if styleguide_name is not None:
+            # A PRESENT styleguide key must name a real guide. A blank value fails
+            # loud (code-review item #10) — never silently reverts to the smoke
+            # fixture (asymmetric with the unknown-name fail-loud that follows).
+            name_str = str(styleguide_name).strip()
+            if not name_str:
+                raise GaryActError(
+                    "gamma_settings.styleguide is present but blank; a present "
+                    "styleguide key must name a real guide",
+                    tag="gamma.styleguide.unknown",
+                )
+            try:
+                resolved_base = resolve_styleguide(name_str)
+            except StyleguideError as exc:
+                raise GaryActError(str(exc), tag=exc.tag) from exc
+            merged = {"variant_id": variant_id, **resolved_base}
+        else:
+            merged = dict(by_variant[variant_id])
+        for key in GAMMA_SETTING_KEYS - {"variant_id", "styleguide"}:
             value = item.get(key)
             if value is None:
                 continue
@@ -389,7 +453,12 @@ def _normalized_gamma_settings(payload: dict[str, Any]) -> list[dict[str, Any]]:
                         "gamma_settings.keywords must be a list of strings",
                         tag="gamma.settings.invalid",
                     )
-                merged[key] = [str(part).strip() for part in value if str(part).strip()]
+                cleaned = [str(part).strip() for part in value if str(part).strip()]
+                # An empty/blank-only keyword LIST means "unset" (symmetry with the
+                # empty-string skip below) — do NOT clobber the styleguide's curated
+                # keywords to empty (code-review item #7).
+                if cleaned:
+                    merged[key] = cleaned
             elif str(value).strip():
                 merged[key] = str(value).strip()
         if "amount" not in merged and merged.get("density") not in (None, "balanced"):
@@ -432,6 +501,24 @@ def _normalized_gamma_settings(payload: dict[str, Any]) -> list[dict[str, Any]]:
                 "gamma_settings.production_mode='studio' requires studio_template_id",
                 tag="gamma.settings.invalid",
             )
+        # Studio discriminated-union airtight (code-review item #3b): a per-variant
+        # Classic override on a studio-bound variant must FAIL LOUD, not be silently
+        # dropped. We inspect the EXPLICIT per-variant keys (``item``), so the
+        # unbound direct-studio path — which inherits Classic keys from the smoke
+        # fixture but declares none itself — is unaffected.
+        if production_mode == "studio":
+            classic_overrides = sorted(
+                key
+                for key in _STUDIO_FORBIDDEN_ITEM_KEYS
+                if key in item and _setting_present(item.get(key))
+            )
+            if classic_overrides:
+                raise GaryActError(
+                    f"gamma_settings variant {variant_id} is production_mode='studio' "
+                    f"but carries Classic-only override(s) {classic_overrides}; the "
+                    f"template is the style authority (surface-violation)",
+                    tag=SURFACE_VIOLATION_TAG,
+                )
         by_variant[variant_id] = merged
     return [by_variant["A"], by_variant["B"]]
 
@@ -513,13 +600,17 @@ def _instructions_for_variant(
         keyword_text = ""
         if isinstance(keywords, list) and keywords:
             keyword_text = f" keywords={', '.join(str(item) for item in keywords)};"
+        # Omit the template clause when there is no template (code-review item #9): a
+        # styleguide-bound variant has no `template` key, so rendering a literal
+        # `template=None.` into the instructions is noise the model should not see.
+        template = str(settings.get("template") or "").strip()
+        template_text = f" template={template}." if template and template != "default" else ""
         parts.append(
             "Apply this variant's Gamma settings: "
             f"image_style_preset={settings.get('image_style_preset')}; "
             f"image_style={settings.get('image_style')}; "
             f"amount={settings.get('amount') or settings.get('density')}; "
-            f"tone={settings.get('tone')};{keyword_text} "
-            f"template={settings.get('template')}."
+            f"tone={settings.get('tone')};{keyword_text}{template_text}"
         )
     parts.append(f"Variant {variant}.")
     return " ".join(part for part in parts if part).strip()
@@ -775,18 +866,18 @@ def generate_gamma_variants(
                 generation_kwargs["text_options"] = text_options
             if image_options:
                 generation_kwargs["image_options"] = image_options
-        # 16:9 down-payment (party-ratified — Gamma Styleguide Library consensus,
-        # "lands NOW, independently"): EVERY Classic dispatch carries
-        # cardOptions.dimensions, defaulting to "16x9" when no per-variant override
-        # is present. Before this, a default orchestrator run (build_gary_briefs
-        # emits no gamma_settings key) sent NO cardOptions and Gamma fell back to
-        # its non-16:9 default, title-cropping slides in Descript. A per-variant
-        # `dimensions` setting still wins (it fills card_options below).
-        # superseded by the future CD-owned styleguide default-guide (gamma-style-guides.yaml)
+        # Styleguide library is now the SOLE determinant of card dimensions (Leg-A,
+        # 2026-07-01). The former unconditional `{"dimensions": "16x9", ...}` override
+        # here is REMOVED: the resolved style's `dimensions` alone drives cardOptions
+        # (fluid -> fluid, 16x9 -> 16:9, absent -> cardOptions omitted). The Descript
+        # anti-crop OUTCOME is preserved as a publication-time policy follow-on
+        # (`styleguide-16x9-publication-boundary-safety`), NOT a generation-time force;
+        # Phase-2 runs stop at Storyboard B (pre-Descript) so no in-arc regression.
         card_options = (
             _card_options_for_variant(variant_settings) if variant_settings is not None else {}
         )
-        generation_kwargs["card_options"] = {"dimensions": "16x9", **card_options}
+        if card_options:
+            generation_kwargs["card_options"] = card_options
         generation = client.generate_deck(
             _input_text(slides, payload),
             **generation_kwargs,

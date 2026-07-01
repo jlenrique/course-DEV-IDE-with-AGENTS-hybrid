@@ -225,9 +225,11 @@ def test_gary_no_gamma_settings_preserves_single_dispatch_shape(
     assert result["gary_slide_output"][0]["dispatch_variant"] == "A"
     assert result["gary_slide_output"][0]["gamma_settings"] is None
     assert "image_options" not in client.generate_calls[0]
-    # 16:9 down-payment: even a default Classic run (no gamma_settings) now carries
-    # cardOptions.dimensions="16x9" so Gamma stops falling back to its non-16:9
-    # default (the Descript title-crop bug).
+    # Styleguide library is now the SOLE determinant of dimensions (Leg-A 2026-07-01):
+    # the former unconditional cardOptions.dimensions="16x9" override is REMOVED. A
+    # default Classic run (no gamma_settings) carries NO card_options at all; the
+    # Descript anti-crop OUTCOME moves to a publication-time policy follow-on.
+    assert "card_options" not in client.generate_calls[0]
     assert client.generate_calls[0] == {
         "input_text": "# Only Topic Here",
         "num_cards": 1,
@@ -239,7 +241,6 @@ def test_gary_no_gamma_settings_preserves_single_dispatch_shape(
             "divider, or summary card; do not merge or split sections. Variant A."
         ),
         "export_as": "png",
-        "card_options": {"dimensions": "16x9"},
     }
 
 
@@ -519,12 +520,13 @@ def test_gary_single_slide_deck_title_matches(tmp_path: Path, monkeypatch) -> No
 # cardOptions.dimensions, defaulting to "16x9" unless a variant overrides it.
 
 
-def test_gary_default_classic_dispatch_carries_16x9_dimensions(
+def test_gary_default_classic_dispatch_omits_forced_16x9_dimensions(
     tmp_path: Path, monkeypatch
 ) -> None:
-    """Bug-closer: a DEFAULT Classic run (no gamma_settings in payload) must send
-    cardOptions={"dimensions": "16x9"}. Pre-fix the call carried NO card_options
-    (this assertion KeyErrors), letting Gamma fall back to its non-16:9 default."""
+    """Leg-A override removal (AC#4): a DEFAULT Classic run (no gamma_settings) must
+    NOT force cardOptions={"dimensions": "16x9"}. The styleguide library's resolved
+    dimensions is the sole determinant; with no styleguide/variant dimensions, no
+    card_options is sent (the unconditional 16:9 down-payment is gone)."""
     zpath = _titled_zip(tmp_path, ["1_Only-Topic-Here"])
     monkeypatch.setattr(
         gary_act, "download_export", lambda url, *, output_dir, filename: str(zpath)
@@ -536,14 +538,16 @@ def test_gary_default_classic_dispatch_carries_16x9_dimensions(
         client=client,
     )
 
-    assert client.generate_calls[0]["card_options"] == {"dimensions": "16x9"}
+    assert "card_options" not in client.generate_calls[0]
 
 
 def test_gary_per_variant_dimensions_override_wins_over_16x9_default(
     tmp_path: Path, monkeypatch
 ) -> None:
-    """An explicit per-variant `dimensions` still wins; the unconditional 16:9
-    default only fills the gap (it must not clobber an explicit setting)."""
+    """An explicit per-variant `dimensions` drives cardOptions directly (A -> 4x3),
+    and variant B's DEFAULT_VARIANT_PAIR seed (now `fluid`, code-review item #5)
+    drives its own — the library/seed value is authoritative now that the baked-in
+    16:9 override is gone."""
     zpath = _titled_zip(tmp_path, ["1_Alpha-Topic"])
     monkeypatch.setattr(
         gary_act, "download_export", lambda url, *, output_dir, filename: str(zpath)
@@ -561,8 +565,8 @@ def test_gary_per_variant_dimensions_override_wins_over_16x9_default(
 
     # Variant A's explicit 4x3 override survives the default-fill.
     assert client.generate_calls[0]["card_options"] == {"dimensions": "4x3"}
-    # Variant B (default pair) keeps its 16x9.
-    assert client.generate_calls[1]["card_options"] == {"dimensions": "16x9"}
+    # Variant B (default pair) now carries its `fluid` seed value (item #5).
+    assert client.generate_calls[1]["card_options"] == {"dimensions": "fluid"}
 
 
 def test_gary_studio_path_unchanged_no_card_options(tmp_path: Path, monkeypatch) -> None:

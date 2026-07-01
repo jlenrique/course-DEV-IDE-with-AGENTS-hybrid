@@ -1,0 +1,15 @@
+[16:41:08] EVIDENCE DIR: C:\Users\juanl\Documents\GitHub\course-DEV-IDE-with-AGENTS-hybrid\_bmad-output\implementation-artifacts\evidence\leg-a-styleguide-differential-20260701T164108Z
+[16:41:08] --- RENDER variant [A-classic] styleguide=classic-freeform-x-cards ---
+[16:41:08]   resolved settings: {"amount": "brief", "audience": "Faculty and instructional designers familiar with Canvas and course design, American English", "dimensions": "fluid", "image_source": "aiGenerated", "image_style_preset": "illustration", "keywords": ["vector", "minimalist", "flat-color", "linework", "bold"], "language": "en", "production_mode": "api", "text_mode": "condense", "theme": "njim9kuhfnljvaa", "tone": "Clear, professional, engaging in American English"}
+[16:42:28]   rendered 6 slides
+[16:42:28] --- RENDER variant [B-studio] styleguide=hil-2026-apc-studio-image-card ---
+[16:42:28]   resolved settings: {"production_mode": "studio", "studio_template_id": "g_nv5q4da69qiiu8q"}
+[16:47:23]   rendered 6 slides
+[16:47:23] === DIFFERENTIAL SUMMARY ===
+[16:47:23]   resolved_settings_differ: True
+[16:47:23]   LOW    p3-low-summary: different=True (sha=True dims=False) A=2400x1738 B=2400x1738
+[16:47:23]   MEDIUM p3-med-physicianship: different=True (sha=True dims=True) A=2400x2744 B=2400x2678
+[16:47:23]   HIGH   p3-high-maze: different=True (sha=True dims=True) A=2400x2860 B=2400x2864
+[16:47:23]   studio_spanned: True
+[16:47:23]   AC#5 no-vacuous-green PASS: True
+[16:47:23] RESULT JSON: C:\Users\juanl\Documents\GitHub\course-DEV-IDE-with-AGENTS-hybrid\_bmad-output\implementation-artifacts\evidence\leg-a-styleguide-differential-20260701T164108Z\result.json
