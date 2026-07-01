@@ -1457,19 +1457,30 @@ def _runner_payload_for_specialist(
                 }
             }
         return None
-    # Motion data-plane SEED (B2 composed-run drive, 2026-06-26): until the real
-    # in-graph motion-plan producer lands, kira's 07E is fed a seeded motion plan
-    # via the run/seed path. KIRA_MOTION_PLAN_PATH names a real motion_plan.yaml;
-    # bundle_path roots kira's motion/ receipts + downloaded .mp4 under the run
-    # dir. Neither key collides with 07E's dependency (upstream_output<-quinn_r).
+    # Motion data-plane isolation (Leg-2, concierge-production-substrate 2026-06-30):
+    # DECOUPLE two previously-fused concerns.
+    #  (1) bundle_path roots kira's motion/ receipts + downloaded .mp4 under the
+    #      PER-RUN dir. This is a per-run ISOLATION INVARIANT and is threaded
+    #      UNCONDITIONALLY whenever runs_root + trial_id are present — otherwise
+    #      kira's boundary (`payload.get("bundle_path") or DEFAULT_BUNDLE_PATH`)
+    #      silently falls back to the process-global REPO_ROOT/runs/kira-motion,
+    #      cross-contaminating concurrent real SPOC runs' receipts + mp4s.
+    #  (2) motion_plan_path is the vestigial seed/replay OVERRIDE — now that the
+    #      in-graph 07D.5 motion_planner has landed it is normally absent, but it
+    #      is PRESERVED for seed/replay: threaded ONLY when KIRA_MOTION_PLAN_PATH
+    #      is set. Neither key collides with 07E's dependency (upstream_output).
+    # Fail-loud precondition unchanged: a non-run caller (runs_root/trial_id None)
+    # returns None and NEVER re-defaults to the global dir.
     if specialist_id == "kira":
+        if runs_root is None or trial_id is None:
+            return None
+        kira_payload: dict[str, Any] = {
+            "bundle_path": (runs_root / str(trial_id)).as_posix(),
+        }
         plan_path = os.environ.get("KIRA_MOTION_PLAN_PATH")
-        if plan_path and runs_root is not None and trial_id is not None:
-            return {
-                "motion_plan_path": plan_path,
-                "bundle_path": (runs_root / str(trial_id)).as_posix(),
-            }
-        return None
+        if plan_path:
+            kira_payload["motion_plan_path"] = plan_path
+        return kira_payload
     return None
 
 
