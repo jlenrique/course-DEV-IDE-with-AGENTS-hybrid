@@ -1,0 +1,35 @@
+# Leg-4 — asset/fidelity ledgers (FINAL leg; done-signal)
+
+**Arc:** Concierge Production Substrate (branch `dev/concierge-production-substrate-2026-06-29`).
+**Class:** S. **Status:** ready-for-dev (party GREEN-LIGHT 5/6→6/6 GREEN-WITH-AMENDMENTS, 2026-07-01; Winston/John/Amelia/Murat + Vera/Irene).
+**Done-signal:** a fully-spawned party concurs Leg-4 is accomplished + validated, with *a deliberately broken asset HALTS a real run before spend, on trustworthy motion+clustering substrate.*
+
+## Reframe (confirm-spike + party)
+
+Much is already banked: Leg-1 coverage BLOCK arm (live, $0 ElevenLabs); UDAC anti-tautology MECHANISM (recompute-digest-from-disk → `AssetResolutionError(TAG_STALE)`, writer on both walks, reader at the shared dispatch site) but **flag-OFF, never run live**; enhanced-vo firewall; Leg-1b R7 teeth (callback surface). The 🔴 highest-value gap — **narration-figure-fidelity *positive-carry* enforcement** — is arc-sized + governance-gated (frozen `figure_tokens` neck). **John PM ruling: scope (A)** — activate + live-prove the UDAC halt (done-signal on a NEW axis); carry positive-carry OPEN, non-overclaiming close.
+
+## Scope (ratified)
+
+**IN — the done-signal (Murat's bar):**
+1. **UDAC anti-tautology LIVE halt** — activate `MARCUS_UDAC_ACTIVE=1`, rewind-recover the FULL golden `state/config/runs/8d819b8d-01dd-4ed5-a07d-12c31d764d9b/` (68-file bundle, `g0-enrichment.json` resident — Murat) through the REAL runner; ratify `g0-enrichment` into the RAI; corrupt `g0-enrichment.json` on disk → `udac.asset-stale` raised at `production_runner.py:1847` landing in the **runner-emitted `error-pause.json`** BEFORE the paid consumer (workbook/gary/irene). $0 spend (zero mp3/wav). **Mandatory un-corrupted DISCRIMINATING CONTROL** sails through. **DIGEST-based not presence-based** (F4 probe). First-run-stands.
+
+**IN — the honesty down-payment (Irene's root-cause gate; subsumes Vera's R7-teeth intent):**
+2. **Fail-loud `narration ⊆ source` conflict-gate in Pass-2** — root cause (Irene): Pass-2 grounds on the DECK as "SOLE visual authority" (`graph.py:1290-1326`); Gamma confabulates figures; the only in-graph gate enforces `narration ⊆ deck` (passes deck-invented figures); source-direction checks are non-gating. The golden substitution is **entirely DIGIT-FORM** → the existing `_FIGURE_RE` already extracts it → **no `figure_tokens` neck change needed.** Two edits in `app/specialists/irene/graph.py`: (a) reground `_assemble_pass_2_prompt` to inject per-slide authoritative source figures (source outranks deck on conflict); (b) flip the existing `source_fidelity_audit.audit_numeric_provenance` WARN into a **fail-loud `narration_figures ⊆ source_figures` gate** in `_act_pass_2` before audio spend. **🔒 BINDING (Irene, protects the non-waivable VO↔on-screen invariant):** on a source-vs-deck figure CONFLICT (source 67 vs deck 60) the gate FAILS LOUD as an upstream deck-confabulation defect — it does NOT silently narrate either figure (never desync VO from screen; route repair to Gamma). RED-first + a **live witness** (the gate HALTS on a synthetic changed-numeral/conflict narration). Declared-scope pinned: digit-form `$N/N%/Nx` reach; word-form + bare-integer OUT. `graph.py` is not a `block_mode_trigger_path`. (Vera's coverage_receipt R7 advisory→gating is the alternative surface for the same hole; Irene's Pass-2 placement is preferred as root-cause + VO-protecting. Clinical-term facet stays advisory — B-MF-2.)
+
+**Carried OPEN (explicit, non-overclaiming close — "trust-GATED, not trust-COMPLETE"):**
+- **narration positive-carry enforcement** (Irene generation fix — source figure carried, not hallucinated) — arc-sized.
+- **`figure_tokens` word-form extraction** (governance-gated: lockstep G5/pass2/quinn_r/coverage + party consensus + version bump).
+- **carrier bundle-wide coherence validator** (Winston — own arc; a shallow version = false confidence).
+- **full UDAC universality** (deck/motion/audio `GATE_ASSET_MAP` rows + consumer USED edges + F4 gate-position threading + `MARCUS_UDAC_ACTIVE` default-on decision). Deck/motion/audio may enter as ACCESS-index-only rows (audit), NOT enforcement.
+
+## Amendments (binding)
+- **A1 (Amelia):** enforcement scoped to `g0-enrichment` only (real USED consumer); deck/motion/audio ACCESS-index-only, no enforcement claim.
+- **A2 (Amelia/Murat):** use the FULL golden at `state/config/runs/8d819b8d`; driver may mint the RAI itself; **NO golden regeneration**.
+- **A3 (Amelia):** the UDAC proof pairs an un-corrupted GREEN control with the corrupted RED halt in one evidence set.
+- **F4 framing (Winston):** the close records that F4 (gate-crossed-but-unflushed fails OPEN) degrades to *exactly* UDAC-off — a strict superset, never a regression.
+- **TOCTOU (Winston):** document the single-process-linear-walk invariant that closes the verify-then-consume window; name payload-injection as its real structural close.
+- **Both-walks (Winston):** the rewind-recover halt proves the CONTINUATION writer + shared reader; note the start-walk writer is proven by shared-helper construction + unit coverage (a start-walk-writer live probe is a nice-to-have, not gating).
+- **Guardrail (all):** add no code merely to make the proof pass; if the live run surfaces a wiring gap, fix only as a genuine SPOC-runtime defect. Lockstep: flag-flip is a runtime toggle over an unchanged compiled graph — no bump (verified: `run_asset_index.py`/`udac_wiring.py`/`production_runner.py` not in `block_mode_trigger_paths`).
+
+## Done-definition (final party concurrence)
+Leg-4 DONE when a fully-spawned party concurs: (1) with `MARCUS_UDAC_ACTIVE=1`, a corrupted `g0-enrichment.json` caused `udac.asset-stale` to HALT a rewound-recovered golden run BEFORE the next paid specialist (runner-emitted `error-pause.json`, $0), + the un-corrupted control sailed — broken-asset-halt on a NEW axis beyond Leg-1; (2) R7 changed-numeral teeth GATES live on a synthetic changed-numeral (numeral facet, `$N/N%/Nx`); (3) the close truthfully scopes trustworthiness to asset-ledger-halt + changed-numeral-containment and names positive-carry / word-form-neck / carrier-validator / UDAC-universality OPEN; (4) guardrail attestation.
