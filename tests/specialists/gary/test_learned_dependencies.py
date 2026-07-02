@@ -182,7 +182,19 @@ def test_ac3_three_shipped_candidates_are_observations_only() -> None:
 
     obs = read_observations(GAMMA_LEARNED_OBSERVATIONS_PATH)
     candidates = [o for o in obs if o.get("status") == "candidate"]
-    assert len(candidates) == 3, obs
+    # Leg-E (2026-07-02) legitimately appended run-born observations to the real
+    # ledger, so the exact-3 seed count no longer holds. The AC#3 invariants that
+    # DO hold forever: the 3 shipped seeds are present, EVERY ledger row is a
+    # candidate observation (append-only; nothing self-promotes), and each row
+    # carries the provenance trio.
+    assert len(candidates) == len(obs), "every ledger row must be status:candidate"
+    seed_ids = {
+        "obs-gamma-model-ui-name-vs-api-string-2026-06-25",
+        "obs-gamma-burst-throttle-401-not-429-2026-06-25",
+        "obs-account-parallel-task-cap-2026-06-26",
+    }
+    present = {o.get("observation_id") for o in candidates}
+    assert seed_ids <= present, (seed_ids - present, present)
     for o in candidates:
         assert o.get("output_digest")
         assert o.get("birthing_run_ref")

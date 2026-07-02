@@ -104,4 +104,13 @@ Triage yield: **2 MUST-FIX + 9 SHOULD-FIX + NITs** (cheap NITs folded in as N1�
 
 ## Completion Notes
 
-*(populated at close)*
+**LIVE PROOF (AC#9–12) — 2026-07-02, first-run-stands, no mocks.** Evidence: `_bmad-output/implementation-artifacts/evidence/leg-e-gamma-docs-audit-20260702T043139Z/` (run 1) + `…20260702T043202Z/` (idempotency witness).
+
+- **AC#9 PASS.** Full-manifest live run against real developers.gamma.app: preflight `llms.txt` OK; **15/15 items reached exactly one terminal state — 11 confirmed / 4 drift-detected / 0 indeterminate**; per-item receipts (final URL, HTTP status, anchor digests, fetched_at) in run-report.json/.md. Exit tier **10** (real drift present — the audit working, per S-3). Ledger: 3 → 6 lines (`sha256:4d6a5efe…` → `sha256:b0e4f3e9…`); **3 organic candidate writes**, wording-triple gate rejected zero: `obs-gamma-enum-parity-image-model-2026-07-02-3b951096` (doc-drift: 3 enum values absent from live docs), `obs-gamma-enum-parity-image-model-coverage-gap-2026-07-02-1bc1d8d2` (~10 documented models absent from the enum), `obs-gamma-doc-fact-burst-throttle-429-standing-resolution-2026-07-02-452f7686` (docs STILL document 429 → the 401 standing candidate STANDS re-confirmed, cited per P11). John's liveness rider satisfied organically — nothing manufactured.
+- **AC#10 PASS (live TEETH).** The labeled probe (`probe-absent-anchor-teeth`) landed `drift-detected [doc-restructure]` — run-report only, ZERO ledger writes, excluded from tier aggregation per amendment P6.
+- **AC#11 PASS.** Immediate re-run: **0 new lines, byte-identical ledger sha256**; terminal states unchanged.
+- **AC#12 PASS.** `PROVIDER_INFO.status` flipped `stub`→`ready` in THIS change-set (pin test flipped with it, citing the evidence dir); D-9 surgical docstring update applied to `learned_dependencies.py` (write path live-exercised; ceremony/promotion REMAINS validated-by-fixture; promotion trigger noted FIRED, not acted on); `doc-sources.yaml::last_refreshed` stamped by the live run.
+- **Field-surface findings (report-only, feed the keywords-routing story):** NO discrete `imageOptions` keywords/tags field documented; NO `stylePreset`⊕`style` composition documented.
+- **T9 filed:** deferred-inventory §Leg-E follow-ons (`gamma-image-model-enum-refresh` 🔴 live-drift; `gamma-text-language-full-list-audit` 🟢; field-surface answers rider) + promotion-path trigger FIRED note + J-6 expertise-ingestion partial-fold rider.
+
+**Status: review → pending dual-gate CLOSE (Murat structural + Dan/Texas content).**

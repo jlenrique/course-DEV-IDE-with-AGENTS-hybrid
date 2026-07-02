@@ -55,14 +55,18 @@ def _intent(pages: list[str]) -> RetrievalIntent:
 # ---------------------------------------------------------------------------
 
 
-def test_gamma_docs_provider_info_identity_and_status_stub() -> None:
-    """id/shape/status/auth per AC#1 + T-4 (status flips to ready ONLY with live proof)."""
+def test_gamma_docs_provider_info_identity_and_status_ready() -> None:
+    """id/shape/status/auth per AC#1 + T-4 (status=ready flipped WITH the live proof).
+
+    AC#12: 'ready' landed in the same change-set as the AC#9-11 live proof
+    (evidence/leg-e-gamma-docs-audit-20260702T043139Z). Flipping this pin
+    without a live-proof evidence dir in the change-set violates T-4.
+    """
     info = GammaDocsProvider.PROVIDER_INFO
     assert info.id == "gamma_docs"
     assert info.shape == "retrieval"
-    assert info.status == "stub", (
-        "T-4 status discipline: landed-unproven = 'stub'; 'ready' flips only in "
-        "the change-set carrying the live fetch proof (AC#12)"
+    assert info.status == "ready", (
+        "T-4 status discipline: 'ready' rides the live-proof change-set (AC#12)"
     )
     assert info.auth_env_vars == [], (
         "T-5 auth seam: the adapter NEVER holds GAMMA_API_KEY"

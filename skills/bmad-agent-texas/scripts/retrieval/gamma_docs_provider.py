@@ -137,9 +137,10 @@ class GammaDocsProvider(RetrievalAdapter):
     PROVIDER_INFO: ClassVar[ProviderInfo] = ProviderInfo(
         id="gamma_docs",
         shape="retrieval",
-        # T-4 status discipline: landed-unproven = "stub". Flips to "ready"
-        # ONLY in the change-set carrying the AC#9-12 live proof.
-        status="stub",
+        # T-4 status discipline: "ready" flipped in the change-set carrying the
+        # AC#9-12 live proof (evidence/leg-e-gamma-docs-audit-20260702T043139Z:
+        # full-manifest live audit, 15/15 terminal states, idempotent re-run).
+        status="ready",
         capabilities=["doc-fetch", "raw-markdown", "doc-audit"],
         auth_env_vars=[],  # T-5: the adapter NEVER holds GAMMA_API_KEY.
         spec_ref="_bmad-output/implementation-artifacts/leg-e-gamma-docs-live-doc-audit.md",

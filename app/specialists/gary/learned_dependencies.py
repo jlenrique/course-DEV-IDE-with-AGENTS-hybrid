@@ -16,14 +16,18 @@ Two-store split (ratified Leg-B green-light §Decision 3/6):
   cited and validator-gated by the identity-manifest pin
   (``state/config/gamma-learned-rules.lock``).
 
-⚠️ HONESTY DISCLAIMER (Dan, BINDING): this scaffold proves the enforcement half by
-FIXTURE only. The live CD envelope-authoring **ceremony** and the automation-
-proposes / CD-ratifies promotion path are **validated-by-fixture, NOT exercised
-live** — they are DEFERRED to ``styleguide-cd-envelope-authoring-ceremony``
-(post-Leg-E). No over-claim: the CD-authoring path is validated-by-fixture, not
-run through the real envelope. This module ships ZERO active learned rules — the
-manifest starts EMPTY by design and the 3 seeded candidates are ``status:
-candidate`` OBSERVATIONS that do NOT enforce.
+⚠️ HONESTY DISCLAIMER (Dan, BINDING; surgically updated at Leg-E close per D-9):
+the **WRITE PATH is now exercised LIVE** — the Leg-E ``gamma_docs`` live-doc audit
+(``scripts/utilities/audit_gamma_docs.py``) produced the ledger's first real
+run-born observations via ``append_observation`` (evidence:
+``_bmad-output/implementation-artifacts/evidence/leg-e-gamma-docs-audit-20260702T043139Z/``;
+idempotent re-run witnessed byte-identical). The live CD envelope-authoring
+**ceremony** and the automation-proposes / CD-ratifies **promotion path** REMAIN
+validated-by-fixture, NOT exercised live — DEFERRED to
+``styleguide-cd-envelope-authoring-ceremony`` (its reactivation trigger, "Leg-E
+produces real observations", has now FIRED — noted, not acted on). This module
+still ships ZERO active learned rules — the manifest stays EMPTY by design and
+every ledger row remains a ``status: candidate`` OBSERVATION that does NOT enforce.
 """
 
 from __future__ import annotations
