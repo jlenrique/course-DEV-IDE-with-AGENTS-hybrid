@@ -29,3 +29,7 @@
 ## Honest notes
 - The paid Gamma walk is deferred by design (Murat: overkill for this surface); the live bar here is the John-specified one — real SSOT, real rendered+POSTed HTML, real pick event, real directive on disk, the real payload builder binding the picked guide, real sidecar timestamp.
 - `include_probes=True` was used deliberately so the pick could bind the Leg-C floor probe and prove a NON-trivial `min_cluster_floor` thread (8), not just a None passthrough. The probe rendered with its warning marker (S-1) as the default-hidden rule requires.
+
+## Addendum (2026-07-02, 3-lane remediation)
+- **M-3 caveat (R9, Auditor#2):** the two arbiter artifacts share ONE pick event's `picks` dict as their common ancestor — the "independently generated" claim is **code-path-level** (runner directive read vs picker sidecar emit), **not event-level**. The diff catches divergence between the two write/read paths; it cannot catch an error upstream of the shared picks dict.
+- **Superseded by re-run:** R1 (Blind#1 CORS) changed the primary flow to same-origin serve; this run's urllib POST bypassed the browser layer and could not have caught that defect. The post-remediation live leg is `leg-d-picker-ac8-20260702T020617Z/` (17/17 PASS). This dir stays as the pre-remediation record.

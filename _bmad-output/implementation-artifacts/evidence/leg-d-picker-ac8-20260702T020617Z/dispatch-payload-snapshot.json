@@ -1,0 +1,16 @@
+{
+  "directive_path": "C:/Users/juanl/Documents/GitHub/course-DEV-IDE-with-AGENTS-hybrid/_bmad-output/implementation-artifacts/evidence/leg-d-picker-ac8-20260702T020617Z/directive.yaml",
+  "gamma_settings_from_directive": [
+    {
+      "styleguide": "classic-freeform-x-cards",
+      "variant_id": "A"
+    },
+    {
+      "styleguide": "leg-c-part3-floor-probe",
+      "variant_id": "B"
+    }
+  ],
+  "runner_payload_irene_pass1": {
+    "min_cluster_floor": 8
+  }
+}

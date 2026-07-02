@@ -1,0 +1,66 @@
+{
+  "AC8_PASS": true,
+  "card_guides": [
+    "classic-freeform-x-cards",
+    "hil-2026-apc-blueprint-classic",
+    "hil-2026-apc-studio-image-card",
+    "leg-c-part3-floor-probe",
+    "leg-c-part3-floor-toohigh"
+  ],
+  "checks": {
+    "directive_written": true,
+    "floor_probe_threads_min_cluster_floor_8": true,
+    "form_action_is_relative_pick": true,
+    "form_fields_are_slot_A_slot_B": true,
+    "form_parsed_from_served_html": true,
+    "gamma_settings_bound": true,
+    "opener_received_server_root_url": true,
+    "page_receipt_matches_server_receipt": true,
+    "page_served_by_server_http_200": true,
+    "pick_events_emitted": true,
+    "picked_guides_present_as_cards": true,
+    "probe_card_marked_probe": true,
+    "served_page_matches_disk_evidence_copy": true,
+    "server_exited_after_one_post": true,
+    "thumbnail_served_same_origin_png": true,
+    "two_artifact_guide_identity_agrees": true,
+    "waiting_notice_printed": true
+  },
+  "form_action": "/pick",
+  "log_identity": [
+    [
+      "A",
+      "classic-freeform-x-cards"
+    ],
+    [
+      "B",
+      "leg-c-part3-floor-probe"
+    ]
+  ],
+  "m3_caveat": "R9: the two artifacts share one pick event's picks dict \u2014 independence is code-path-level (runner directive read vs picker sidecar emit), not event-level",
+  "opened_url": "http://127.0.0.1:50307/",
+  "page_receipt": {
+    "directive_path": "C:/Users/juanl/Documents/GitHub/course-DEV-IDE-with-AGENTS-hybrid/_bmad-output/implementation-artifacts/evidence/leg-d-picker-ac8-20260702T020617Z/directive.yaml",
+    "picked_at": "2026-07-02T02:07:10.032379+00:00",
+    "picks": {
+      "A": "classic-freeform-x-cards",
+      "B": "leg-c-part3-floor-probe"
+    }
+  },
+  "run_id": "leg-d-picker-ac8-20260702T020617Z",
+  "snapshot_identity": [
+    [
+      "A",
+      "classic-freeform-x-cards"
+    ],
+    [
+      "B",
+      "leg-c-part3-floor-probe"
+    ]
+  ],
+  "thumbnail_srcs": [
+    "/thumbnails/classic-freeform-x-cards.png",
+    "/thumbnails/hil-2026-apc-blueprint-classic.png",
+    "/thumbnails/hil-2026-apc-studio-image-card.png"
+  ]
+}

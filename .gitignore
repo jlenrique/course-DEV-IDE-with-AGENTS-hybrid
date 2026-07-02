@@ -145,3 +145,7 @@ next-session-start-here.md
 # removed it because it was smoke output, not operator-witnessed trial-2 evidence."
 # Operator-witnessed trial-2 evidence lives elsewhere (e.g., state/config/runs/<trial-id>/).
 _artifacts/
+
+# styleguide-picker advisory lock files (Leg-D R8) - runtime artifacts adjacent to stores, never tracked
+*.yaml.lock
+*.jsonl.lock

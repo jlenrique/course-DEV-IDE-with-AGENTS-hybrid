@@ -1,14 +1,29 @@
 """Pre-run HTML style-picker at CD-entry (Leg-D, Fork A — green-light 6/6 2026-07-02).
 
 The operator-facing face on the directive's EXISTING binding surface: a local
-card-grid page rendered from the CD-owned styleguide SSOT; the pick is captured
-by an ephemeral-port localhost ``http.server`` (one POST, server exits) and
-written into the run directive's ``gamma_settings[]`` (existing A/B semantics
-VERBATIM, J-3) plus a ``styleguide_picker_provenance`` audit block — the run's
-own input artifact carries the audit trail (Winston). Zero new runtime seams:
-the consumers are the REAL ``_gamma_settings_from_directive`` /
+card-grid page rendered from the CD-owned styleguide SSOT and SERVED BY the
+ephemeral-port localhost ``http.server`` itself (the browser opens
+``http://127.0.0.1:<port>/`` — same-origin end-to-end, so the receipt fetch is
+never CORS-blocked; a disk copy of the page is still written for
+evidence/debug). The pick is captured by that server (one valid POST to the
+relative ``/pick`` action, server exits) and written into the run directive's
+``gamma_settings[]`` (existing A/B semantics VERBATIM, J-3) plus a
+``styleguide_picker_provenance`` audit block — the run's own input artifact
+carries the audit trail (Winston). Zero new runtime seams: the consumers are
+the REAL ``_gamma_settings_from_directive`` /
 ``_min_cluster_floor_from_directive`` reads that gary + the Leg-C floor already
 exercise in production.
+
+Single-variant picks are legitimate (post ``retire-default-variant-pair``): an
+A-only OR B-only directive dispatches EXACTLY ONE deck downstream; both the web
+page and the CLI-numbered fallback support skipping either slot (at least one
+must be filled).
+
+Store mutations (the directive read-modify-write and the sidecar append) take
+an ADVISORY same-host file lock (``msvcrt.locking`` / ``fcntl.flock`` on a
+``<store>.lock`` file adjacent to the store). The guarantee is honest-but-
+bounded: cooperating writers on the SAME host serialize; it is not a
+cross-host or non-cooperating-process guarantee.
 
 Boundary guardrails (binding amendments):
 
@@ -32,17 +47,20 @@ Boundary guardrails (binding amendments):
 from __future__ import annotations
 
 import argparse
+import contextlib
 import hashlib
 import json
+import os
+import struct
 import tempfile
 import webbrowser
-from collections.abc import Callable
+from collections.abc import Callable, Iterator
 from datetime import UTC, datetime
 from html import escape
 from http.server import BaseHTTPRequestHandler, HTTPServer
 from pathlib import Path
 from typing import Any
-from urllib.parse import parse_qs, urlparse
+from urllib.parse import parse_qs, quote, urlparse
 
 import yaml
 
@@ -53,10 +71,77 @@ GAMMA_STYLEGUIDE_PICKS_PATH = REPO_ROOT / "state" / "config" / "gamma-styleguide
 
 _VARIANT_IDS = ("A", "B")
 _NARRATIVE_KEYS = ("summary", "feels_like", "use_when", "avoid_when")
+_PNG_MAGIC = b"\x89PNG\r\n\x1a\n"
+# R2: a guide promising 16:9 (aspect 1.777) whose curated render is squarer than
+# this floor gets the honesty chip — the render predates the guide's frame.
+_SIXTEEN_NINE_MIN_ASPECT = 1.4
+_THUMBNAIL_PROVENANCE_CHIP = (
+    "render predates this guide's 16:9 frame — representative of palette/line-art, "
+    "not layout"
+)
+# R4: cap the POST body read; a local pick form is tiny, anything bigger is bogus.
+MAX_POST_BODY_BYTES = 64 * 1024
 
 
 class PickerError(RuntimeError):
     """Fail-loud picker error (A-1): unknown guide, malformed store, bad input."""
+
+
+def _png_dimensions(path: Path) -> tuple[int, int]:
+    """Width/height straight from the PNG IHDR chunk (stdlib-only, R2/R10).
+
+    Validates the 8-byte PNG magic AND that the first chunk is IHDR; anything
+    else is a LOUD error — a mislabeled file must never render as a thumbnail.
+    """
+    with path.open("rb") as handle:
+        header = handle.read(24)
+    if len(header) < 24 or header[:8] != _PNG_MAGIC or header[12:16] != b"IHDR":
+        raise PickerError(
+            f"thumbnail {path} is not a real PNG (bad magic/IHDR header)"
+        )
+    width, height = struct.unpack(">II", header[16:24])
+    if not width or not height:
+        raise PickerError(f"thumbnail {path} has degenerate IHDR dimensions {width}x{height}")
+    return (width, height)
+
+
+@contextlib.contextmanager
+def _advisory_lock(store_path: Path) -> Iterator[None]:
+    """Advisory same-host lock around a store mutation (R8).
+
+    Locks ``<store>.lock`` adjacent to the store via ``msvcrt.locking``
+    (Windows) / ``fcntl.flock`` (POSIX). HONEST GUARANTEE: cooperating writers
+    on the SAME host serialize; this is not a cross-host or
+    non-cooperating-process guarantee. The lock file is left on disk (deleting
+    it would be racy).
+    """
+    lock_path = store_path.parent / (store_path.name + ".lock")
+    lock_path.parent.mkdir(parents=True, exist_ok=True)
+    handle = lock_path.open("a+b")
+    try:
+        if os.name == "nt":
+            import msvcrt
+
+            handle.seek(0)
+            msvcrt.locking(handle.fileno(), msvcrt.LK_LOCK, 1)
+        else:
+            import fcntl
+
+            fcntl.flock(handle.fileno(), fcntl.LOCK_EX)
+        yield
+    finally:
+        try:
+            if os.name == "nt":
+                import msvcrt
+
+                handle.seek(0)
+                msvcrt.locking(handle.fileno(), msvcrt.LK_UNLCK, 1)
+            else:
+                import fcntl
+
+                fcntl.flock(handle.fileno(), fcntl.LOCK_UN)
+        finally:
+            handle.close()
 
 
 # ------------------------------------------------------------------ roster (AC-1)
@@ -138,6 +223,10 @@ def load_picker_roster(
         if probe and not include_probes:
             continue
         narrative = presentation.get("narrative") or {}
+        page_settings = record.get("page_settings") or {}
+        card_options = (
+            page_settings.get("card_options") or {} if isinstance(page_settings, dict) else {}
+        )
         roster.append(
             {
                 "name": name,
@@ -148,6 +237,11 @@ def load_picker_roster(
                 },
                 "production_mode": str(record.get("production_mode") or "").strip().lower(),
                 "probe": probe,
+                "card_dimensions": (
+                    str(card_options.get("dimensions") or "").strip()
+                    if isinstance(card_options, dict)
+                    else ""
+                ),
                 "thumbnail_ref": presentation.get("thumbnail_ref"),
                 "example_url": presentation.get("example_url"),
                 "last_used": last_used.get(name),
@@ -193,6 +287,8 @@ main.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px
 .chip-last-used { position: absolute; top: 16px; right: 16px; background: rgba(28,39,51,0.65);
   color: #eef2f5; }
 .chip-probe { background: #b3541e; color: #fff; font-weight: 700; margin-bottom: 6px; }
+.chip-provenance { background: #8a6d1a; color: #fff; display: inline-block;
+  margin: 6px 0 0; }
 details { margin-top: 6px; font-size: 0.85rem; }
 details summary { cursor: pointer; color: #4a6076; }
 """
@@ -260,19 +356,51 @@ refresh();
 """
 
 
+def _thumbnail_url_path(guide_name: str) -> str:
+    """Same-origin server path for a guide's thumbnail (served by do_GET, R1)."""
+    return f"/thumbnails/{quote(str(guide_name), safe='')}.png"
+
+
+def thumbnail_routes(
+    roster: list[dict[str, Any]], *, repo_root: Path | None = None
+) -> dict[str, Path]:
+    """Map same-origin thumbnail URL paths -> on-disk PNGs for the pick server."""
+    root = repo_root if repo_root is not None else REPO_ROOT
+    return {
+        _thumbnail_url_path(entry["name"]): (root / str(entry["thumbnail_ref"])).resolve()
+        for entry in roster
+        if entry.get("thumbnail_ref")
+    }
+
+
 def _render_card(entry: dict[str, Any], *, repo_root: Path) -> list[str]:
     ref = entry.get("thumbnail_ref")
+    provenance_chip: str | None = None
     if ref:
+        if not str(ref).lower().endswith(".png"):
+            raise PickerError(
+                f"styleguide {entry['name']!r} thumbnail_ref {ref!r} must be a .png "
+                f"(D-2 curated-render contract; R10 extension check)"
+            )
         png = repo_root / str(ref)
         if not png.is_file():
             raise PickerError(
                 f"styleguide {entry['name']!r} has a dangling thumbnail_ref {ref!r} "
                 f"(AC-6: every rendered thumbnail must resolve to a real on-disk PNG)"
             )
+        width, height = _png_dimensions(png)  # R10 magic check; R2 aspect source
         thumb = (
-            f'<img class="thumb" src="{escape(png.resolve().as_uri())}" '
+            f'<img class="thumb" src="{escape(_thumbnail_url_path(entry["name"]))}" '
             f'alt="{escape(entry["display_name"])} thumbnail">'
         )
+        # R2 honesty chip (data-driven, Auditor#1): the guide promises 16:9 but
+        # the curated render is squarer — say so on the card, never imply layout.
+        promised = str(entry.get("card_dimensions") or "").strip().lower()
+        if promised == "16x9" and (width / height) < _SIXTEEN_NINE_MIN_ASPECT:
+            provenance_chip = (
+                f'<span class="chip chip-provenance">{escape(_THUMBNAIL_PROVENANCE_CHIP)}'
+                "</span>"
+            )
     else:
         # S-3: explicit placeholder, never a confidently wrong image.
         thumb = '<div class="thumb placeholder">no live render</div>'
@@ -286,6 +414,8 @@ def _render_card(entry: dict[str, Any], *, repo_root: Path) -> list[str]:
         f'<span class="chip chip-last-used">last used: {escape(str(last_used))}</span>',
         f"<h2>{escape(entry['display_name'])}</h2>",
     ]
+    if provenance_chip:
+        parts.append(provenance_chip)
     if probe:
         parts.append(
             '<span class="chip chip-probe">PROBE — scaffolding, not a production '
@@ -366,23 +496,48 @@ def render_picker_html(
 
 # ------------------------------------------------- pick capture (Amelia, localhost)
 class _PickHandler(BaseHTTPRequestHandler):
-    """One-shot pick endpoint. GET serves the page; a VALID POST ends the server."""
+    """One-shot pick endpoint. GET serves the page + same-origin thumbnails;
+    a VALID POST to the relative ``/pick`` action ends the server (R1)."""
 
     server: _PickServer  # type: ignore[assignment]
 
-    def do_GET(self) -> None:  # noqa: N802 - stdlib handler naming
-        body = self.server.picker_html.encode("utf-8")
+    def _send_bytes(self, body: bytes, content_type: str) -> None:
         self.send_response(200)
-        self.send_header("Content-Type", "text/html; charset=utf-8")
+        self.send_header("Content-Type", content_type)
         self.send_header("Content-Length", str(len(body)))
         self.end_headers()
         self.wfile.write(body)
+
+    def do_GET(self) -> None:  # noqa: N802 - stdlib handler naming
+        path = urlparse(self.path).path
+        if path in ("/", "/index.html"):
+            self._send_bytes(
+                self.server.picker_html.encode("utf-8"), "text/html; charset=utf-8"
+            )
+            return
+        png_path = self.server.thumbnails.get(path)
+        if png_path is not None and png_path.is_file():
+            self._send_bytes(png_path.read_bytes(), "image/png")
+            return
+        self._respond(404, {"error": f"unknown path {path!r}"})
 
     def do_POST(self) -> None:  # noqa: N802 - stdlib handler naming
         if urlparse(self.path).path != "/pick":
             self._respond(404, {"error": f"unknown endpoint {self.path!r}"})
             return
         length = int(self.headers.get("Content-Length") or 0)
+        if length > MAX_POST_BODY_BYTES:
+            # R4: never slurp an unbounded body; reject oversized + keep serving.
+            self._respond(
+                413,
+                {
+                    "error": (
+                        f"request body {length} bytes exceeds the "
+                        f"{MAX_POST_BODY_BYTES}-byte pick-form cap"
+                    )
+                },
+            )
+            return
         fields = parse_qs(self.rfile.read(length).decode("utf-8"))
         picks: dict[str, str] = {}
         for variant in _VARIANT_IDS:
@@ -430,6 +585,7 @@ class _PickServer(HTTPServer):
         self.valid_names = valid_names
         self.on_pick = on_pick
         self.picker_html = ""
+        self.thumbnails: dict[str, Path] = {}
         self.pick_result: tuple[dict[str, str], dict[str, Any]] | None = None
         self.pick_error: Exception | None = None
 
@@ -441,7 +597,13 @@ def _cli_fallback(
     input_fn: Callable[[str], str],
     print_fn: Callable[[str], None],
 ) -> tuple[dict[str, str], dict[str, Any]]:
-    """DEGRADED FALLBACK only (browser-won't-open path): numbered CLI pick."""
+    """DEGRADED FALLBACK only (browser-won't-open path): numbered CLI pick.
+
+    Slot symmetry mirrors the web page (R7): EITHER slot may be skipped (blank),
+    so an A-only or B-only single-variant pick is a first-class path — a
+    single-variant directive dispatches exactly one deck downstream. At least
+    one slot must be filled (mirrors the web 400 on an empty pick).
+    """
     print_fn("Browser could not be opened — CLI fallback (numbered pick).")
     for index, entry in enumerate(roster, start=1):
         probe = "  [PROBE — scaffolding]" if entry.get("probe") else ""
@@ -450,19 +612,20 @@ def _cli_fallback(
             f"     {entry['distinguishing']}"
         )
     picks: dict[str, str] = {}
-    for variant, required in (("A", True), ("B", False)):
-        prompt = (
-            f"Style {variant} number"
-            f"{' (required)' if required else ' (blank for none)'}: "
-        )
-        while True:
-            raw = input_fn(prompt).strip()
-            if not raw and not required:
-                break
-            if raw.isdigit() and 1 <= int(raw) <= len(roster):
-                picks[variant] = roster[int(raw) - 1]["name"]
-                break
-            print_fn(f"  invalid choice {raw!r}; enter 1-{len(roster)}")
+    while True:
+        for variant in _VARIANT_IDS:
+            prompt = f"Style {variant} number (blank for none): "
+            while True:
+                raw = input_fn(prompt).strip()
+                if not raw:
+                    break
+                if raw.isdigit() and 1 <= int(raw) <= len(roster):
+                    picks[variant] = roster[int(raw) - 1]["name"]
+                    break
+                print_fn(f"  invalid choice {raw!r}; enter 1-{len(roster)} or blank")
+        if picks:
+            break
+        print_fn("at least one of Style A / Style B must be picked — try again")
     receipt = on_pick(picks)
     print_fn(f"PICK RECORDED: {json.dumps(receipt, sort_keys=True)}")
     return (picks, receipt)
@@ -481,20 +644,29 @@ def capture_pick(
 ) -> tuple[dict[str, str], dict[str, Any]]:
     """Capture ONE pick: ephemeral-port stdlib http.server, one valid POST, exit.
 
-    The rendered page is written to disk and opened in the operator's browser
-    (``file://``); its form POSTs back to the localhost endpoint. ``on_pick``
-    receives ``{variant_id: guide_name}`` and returns the receipt echoed to the
-    page (green receipt panel) and to the caller. When the browser cannot open,
-    the CLI-numbered fallback runs instead (degraded path).
+    SAME-ORIGIN end-to-end (R1): the server itself serves the rendered page at
+    ``http://127.0.0.1:<port>/`` (and the curated thumbnails under
+    ``/thumbnails/``), and the browser is opened at that URL — never a
+    ``file://`` page fetch()ing localhost (null-origin CORS would block the
+    receipt panel). The form action is the RELATIVE ``/pick``. A copy of the
+    rendered page is still written to ``html_path`` for evidence/debug (its
+    relative thumbnail srcs resolve only when served). ``on_pick`` receives
+    ``{variant_id: guide_name}`` and returns the receipt echoed to the page
+    (green receipt panel) and to the caller. A single-variant pick (A-only or
+    B-only) is legitimate and dispatches exactly one deck downstream. When the
+    browser cannot open, the CLI-numbered fallback runs instead (degraded path).
     """
     if not roster:
-        raise PickerError("empty roster: nothing to pick from")
+        raise PickerError(
+            "empty roster: nothing to pick from (if only probe-marked guides "
+            "exist, re-run with --include-probes / include_probes=True)"
+        )
     valid_names = frozenset(entry["name"] for entry in roster)
     server = _PickServer(valid_names, on_pick)
     try:
-        post_url = f"http://127.0.0.1:{server.server_address[1]}/pick"
-        html = render_picker_html(roster, post_url=post_url, repo_root=repo_root)
+        html = render_picker_html(roster, post_url="/pick", repo_root=repo_root)
         server.picker_html = html
+        server.thumbnails = thumbnail_routes(roster, repo_root=repo_root)
         if html_path is None:
             html_path = (
                 Path(tempfile.mkdtemp(prefix="styleguide-picker-")) / "styleguide-picker.html"
@@ -502,8 +674,9 @@ def capture_pick(
         page = Path(html_path)
         page.parent.mkdir(parents=True, exist_ok=True)
         page.write_text(html, encoding="utf-8", newline="\n")
+        root_url = f"http://127.0.0.1:{server.server_address[1]}/"
         try:
-            opened = bool(opener(page.resolve().as_uri()))
+            opened = bool(opener(root_url))
         except Exception:
             opened = False
         if not opened:
@@ -512,6 +685,10 @@ def capture_pick(
             return _cli_fallback(
                 roster, on_pick=on_pick, input_fn=input_fn, print_fn=print_fn
             )
+        timeout_note = "no timeout" if timeout is None else f"timeout {timeout:g}s"
+        print_fn(
+            f"waiting for your pick at {root_url} ({timeout_note}; Ctrl-C to abort)"
+        )
         server.timeout = 0.5
         deadline = None if timeout is None else datetime.now(UTC).timestamp() + timeout
         while server.pick_result is None and server.pick_error is None:
@@ -542,7 +719,13 @@ def write_pick_to_directive(
     they still override the styleguide base layer downstream); an absent entry
     is appended as ``{variant_id, styleguide}``; unpicked variants are left
     untouched. A styleguide name absent from the SSOT is a LOUD error before
-    anything is written (A-1). Returns the provenance block.
+    anything is written (A-1); so are duplicate ``variant_id`` rows (R5 — never
+    first-match-patch) and a present-but-non-list / non-mapping-entry
+    ``gamma_settings`` (R6 — never silently discarded). The read-modify-write
+    runs under an advisory same-host file lock (R8). NOTE (R12): the directive
+    is re-serialized via a yaml round-trip (``yaml.safe_dump``); YAML comments
+    and anchors in the original file are NOT preserved. Returns the provenance
+    block.
     """
     ssot = Path(ssot_path) if ssot_path is not None else GAMMA_STYLE_GUIDES_SSOT_PATH
     if not ssot.is_file():
@@ -567,49 +750,75 @@ def write_pick_to_directive(
         normalized[variant_id] = guide_name
 
     directive = Path(directive_path)
-    if directive.is_file():
-        loaded = yaml.safe_load(directive.read_text(encoding="utf-8")) or {}
-        if not isinstance(loaded, dict):
-            raise PickerError(f"directive {directive} is not a YAML mapping")
-    else:
-        loaded = {}
-    raw = loaded.get("gamma_settings")
-    settings = (
-        [dict(item) for item in raw if isinstance(item, dict)]
-        if isinstance(raw, list)
-        else []
-    )
-    for variant_id in sorted(normalized):
-        entry = next(
-            (
-                item
-                for item in settings
-                if str(item.get("variant_id") or "").strip().upper() == variant_id
-            ),
-            None,
-        )
-        if entry is None:
-            settings.append({"variant_id": variant_id, "styleguide": normalized[variant_id]})
-        else:
-            entry["styleguide"] = normalized[variant_id]
-    loaded["gamma_settings"] = settings
-
-    stamp = picked_at if picked_at is not None else datetime.now(UTC).isoformat()
-    provenance = {
-        "picked_at": stamp,
-        "picker_version": PICKER_VERSION,
-        "ssot_sha256": hashlib.sha256(ssot_bytes).hexdigest(),
-        "picks": [
-            {"variant_id": variant_id, "styleguide": normalized[variant_id]}
-            for variant_id in sorted(normalized)
-        ],
-        "written_by": "styleguide_picker",
-    }
-    loaded["styleguide_picker_provenance"] = provenance
     directive.parent.mkdir(parents=True, exist_ok=True)
-    directive.write_text(
-        yaml.safe_dump(loaded, sort_keys=False), encoding="utf-8", newline="\n"
-    )
+    with _advisory_lock(directive):  # R8: serialize the read-modify-write
+        if directive.is_file():
+            loaded = yaml.safe_load(directive.read_text(encoding="utf-8")) or {}
+            if not isinstance(loaded, dict):
+                raise PickerError(f"directive {directive} is not a YAML mapping")
+        else:
+            loaded = {}
+        raw = loaded.get("gamma_settings")
+        if raw is None:
+            settings: list[dict[str, Any]] = []
+        elif not isinstance(raw, list):
+            raise PickerError(
+                f"directive {directive} gamma_settings must be a list of mappings, "
+                f"got {type(raw).__name__} (R6: never silently discarded)"
+            )
+        else:
+            settings = []
+            for index, item in enumerate(raw):
+                if not isinstance(item, dict):
+                    raise PickerError(
+                        f"directive {directive} gamma_settings[{index}] must be a "
+                        f"mapping, got {type(item).__name__} (R6: never silently "
+                        f"dropped)"
+                    )
+                settings.append(dict(item))
+            seen_variants: set[str] = set()
+            for item in settings:
+                existing_id = str(item.get("variant_id") or "").strip().upper()
+                if existing_id and existing_id in seen_variants:
+                    raise PickerError(
+                        f"directive {directive} carries duplicate variant_id "
+                        f"{existing_id!r} rows in gamma_settings (R5: fail-loud, "
+                        f"never first-match-patch)"
+                    )
+                if existing_id:
+                    seen_variants.add(existing_id)
+        for variant_id in sorted(normalized):
+            entry = next(
+                (
+                    item
+                    for item in settings
+                    if str(item.get("variant_id") or "").strip().upper() == variant_id
+                ),
+                None,
+            )
+            if entry is None:
+                settings.append(
+                    {"variant_id": variant_id, "styleguide": normalized[variant_id]}
+                )
+            else:
+                entry["styleguide"] = normalized[variant_id]
+        loaded["gamma_settings"] = settings
+
+        stamp = picked_at if picked_at is not None else datetime.now(UTC).isoformat()
+        provenance = {
+            "picked_at": stamp,
+            "picker_version": PICKER_VERSION,
+            "ssot_sha256": hashlib.sha256(ssot_bytes).hexdigest(),
+            "picks": [
+                {"variant_id": variant_id, "styleguide": normalized[variant_id]}
+                for variant_id in sorted(normalized)
+            ],
+            "written_by": "styleguide_picker",
+        }
+        loaded["styleguide_picker_provenance"] = provenance
+        directive.write_text(
+            yaml.safe_dump(loaded, sort_keys=False), encoding="utf-8", newline="\n"
+        )
     return provenance
 
 
@@ -628,38 +837,41 @@ def append_pick_event(
     ``gamma-learned-observations.jsonl`` discipline. The SSOT's
     ``presentation.last_used`` stays null FOREVER — the picker renders the
     sidecar-derived value instead. Replaying an identical event is a no-op
-    (the file is never rewritten or shrunk). Returns the events written.
+    (the file is never rewritten or shrunk). The read-digests-then-append runs
+    under an advisory same-host file lock (R8; same-host cooperating-writer
+    guarantee only). Returns the events written.
     """
     path = Path(events_path) if events_path is not None else GAMMA_STYLEGUIDE_PICKS_PATH
-    existing = {
-        event.get("event_digest")
-        for event in _read_pick_events(path)
-        if event.get("event_digest")
-    }
-    written: list[dict[str, Any]] = []
-    lines: list[str] = []
-    for variant in sorted(picks):
-        event: dict[str, Any] = {
-            "guide_name": str(picks[variant]).strip(),
-            "variant_id": str(variant).strip().upper(),
-            "directive_path": Path(directive_path).as_posix(),
-            "picked_at": picked_at,
+    path.parent.mkdir(parents=True, exist_ok=True)
+    with _advisory_lock(path):  # R8: serialize digest-read + append
+        existing = {
+            event.get("event_digest")
+            for event in _read_pick_events(path)
+            if event.get("event_digest")
         }
-        if run_id:
-            event["run_id"] = str(run_id)
-        digest = hashlib.sha256(
-            json.dumps(event, sort_keys=True, separators=(",", ":")).encode("utf-8")
-        ).hexdigest()
-        if digest in existing:
-            continue
-        event["event_digest"] = digest
-        existing.add(digest)
-        written.append(event)
-        lines.append(json.dumps(event, sort_keys=True, separators=(",", ":")))
-    if lines:
-        path.parent.mkdir(parents=True, exist_ok=True)
-        with path.open("a", encoding="utf-8", newline="\n") as handle:
-            handle.write("\n".join(lines) + "\n")
+        written: list[dict[str, Any]] = []
+        lines: list[str] = []
+        for variant in sorted(picks):
+            event: dict[str, Any] = {
+                "guide_name": str(picks[variant]).strip(),
+                "variant_id": str(variant).strip().upper(),
+                "directive_path": Path(directive_path).as_posix(),
+                "picked_at": picked_at,
+            }
+            if run_id:
+                event["run_id"] = str(run_id)
+            digest = hashlib.sha256(
+                json.dumps(event, sort_keys=True, separators=(",", ":")).encode("utf-8")
+            ).hexdigest()
+            if digest in existing:
+                continue
+            event["event_digest"] = digest
+            existing.add(digest)
+            written.append(event)
+            lines.append(json.dumps(event, sort_keys=True, separators=(",", ":")))
+        if lines:
+            with path.open("a", encoding="utf-8", newline="\n") as handle:
+                handle.write("\n".join(lines) + "\n")
     return written
 
 
@@ -722,6 +934,7 @@ __all__ = [
     "load_picker_roster",
     "main",
     "render_picker_html",
+    "thumbnail_routes",
     "write_pick_to_directive",
 ]
 

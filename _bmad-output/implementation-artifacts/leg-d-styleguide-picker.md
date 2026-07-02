@@ -30,6 +30,39 @@
 - **Capture:** `_PickServer` (ephemeral port) serves GET=page, POST `/pick`; unknown-guide POST → 400 and keeps serving; valid POST → receipt JSON, server exits; `on_pick` exception → 500 + re-raise to the caller (fail-loud). CLI-numbered fallback only when the browser opener fails (test-pinned, incl. single-select blank-B path).
 
 ### Evidence + verification
-- **AC-8 evidence dir:** `_bmad-output/implementation-artifacts/evidence/leg-d-picker-ac8-20260702T014409Z/` — harness + rendered `picker.html` + real `directive.yaml` + `dispatch-payload-snapshot.json` + `pick-event-log.json` + `result.json` (11/11, `AC8_PASS: true`) + `AC8-SUMMARY.md`. M-3 two-artifact diff: guide identity AGREES ((A, classic-freeform-x-cards), (B, leg-c-part3-floor-probe)); the floor probe threaded `{"min_cluster_floor": 8}` through the REAL `_runner_payload_for_specialist` irene_pass1 branch.
+- **AC-8 evidence dir:** `_bmad-output/implementation-artifacts/evidence/leg-d-picker-ac8-20260702T014409Z/` — harness + rendered `picker.html` + real `directive.yaml` + `dispatch-payload-snapshot.json` + `pick-event-log.json` + `result.json` (11/11, `AC8_PASS: true`) + `AC8-SUMMARY.md`. M-3 two-artifact diff: guide identity AGREES ((A, classic-freeform-x-cards), (B, leg-c-part3-floor-probe)); the floor probe threaded `{"min_cluster_floor": 8}` through the REAL `_runner_payload_for_specialist` irene_pass1 branch. **Superseded by the post-remediation re-run below (R1 changed the primary flow).**
 - **Tests:** 27 new (both picker files) + Leg-C battery 193 = **220 passed** post-AC-8. `validate_gamma_style_guides.py` green after every SSOT edit and after the live leg. Ruff clean on all touched files.
 - **Scope fence held:** zero edits to gary/manifest/production_runner/irene; SSOT edits limited to probe markers + 3 seed thumbnail_refs; no gh-pages.
+
+### 3-lane remediation R1-R14 (2026-07-02, Claude Fable 5 remediation dev agent; RED-first)
+
+**Findings remediated** (3-lane review: Blind Hunter / Edge Case Hunter / Acceptance Auditor) — one commit, all 14 items:
+
+- **R1 [MUST-FIX, Blind#1 CORS]:** the primary flow opened the page via `file://` while its JS `fetch()`ed `http://127.0.0.1:<port>/pick` — null-origin CORS blocks reading the response, so the operator never saw the receipt panel (the server-side write still landed; the original AC-8 harness POSTed via urllib and bypassed the browser layer, masking this). FIX: the pick server now serves the page itself — the browser opens `http://127.0.0.1:<port>/`, `do_GET` serves the rendered page bytes AND the curated thumbnails under `/thumbnails/<guide>.png` (a `file://` img on an http page is browser-blocked too), and the form action is the RELATIVE `/pick` — same-origin end-to-end. The disk HTML copy is still written for evidence/debug (its relative thumbnail srcs resolve only when served; documented).
+- **R2 [MUST-FIX, Auditor#1 J-2/D-2 honesty]:** **honest disclaimer** — the blueprint guide's thumbnail is a REAL Gamma render byte-matching the guide's prompt surface (theme e8tz1vxb9v1urqp + lineArt + recraft-v3-svg + blueprint keywords + preserve) BUT it is portrait/fluid **2400x2860** while the guide promises **16:9**: it is representative of palette/line-art, NOT of layout. The picker now renders a data-driven provenance chip on any such card ("render predates this guide's 16:9 frame — representative of palette/line-art, not layout"): SSOT `page_settings.card_options.dimensions == 16x9` + PNG aspect < 1.4, aspect read from the PNG IHDR chunk via a stdlib-only header parse (`_png_dimensions`). Follow-on filed (below + deferred-inventory): `gamma-styleguide-per-guide-thumbnail-renders`.
+- **R3 [Blind#2]:** "waiting for your pick at <url> (timeout Ns; Ctrl-C to abort)" notice printed before `handle_request` blocks.
+- **R4 [Blind#3]:** POST body reads capped at 64KB (`MAX_POST_BODY_BYTES`); oversized → 413 + server keeps serving.
+- **R5 [Edge#1]:** duplicate `variant_id` rows in an existing directive's `gamma_settings` → `PickerError` at load (fail-loud, never first-match-patch; normalization-aware, so `A`/`a` dupes trip it).
+- **R6 [Edge#2]:** `gamma_settings` present-but-non-list → `PickerError` (never silently discarded/overwritten); non-mapping list entries fail loud too (same silent-drop class).
+- **R7 [Edge#3] symmetry:** post-`retire-default-variant-pair`, single-variant is legitimate — the CLI fallback now allows skipping Style A and picking only B (at least one slot required, mirroring the web 400); BOTH paths pinned by tests; module + `capture_pick` + `_cli_fallback` docstrings state that a single-variant directive dispatches exactly one deck.
+- **R8 [Edge#5]:** advisory file locking (`msvcrt.locking` Windows / `fcntl.flock` POSIX; `<store>.lock` adjacent) around the sidecar digest-read+append AND the directive read-modify-write. HONEST guarantee documented: cooperating writers on the SAME host serialize; not a cross-host/non-cooperating guarantee.
+- **R9 [Auditor#2]:** M-3 caveat appended to BOTH AC-8 summaries: the two arbiter artifacts share one pick event's `picks` dict — independence is code-path-level (runner directive read vs picker sidecar emit), not event-level.
+- **R10 [NIT, Edge#4]:** thumbnail refs checked at render for `.png` extension + PNG magic/IHDR (reuses `_png_dimensions`).
+- **R11 [NIT, Edge#6]:** empty-roster error now coaches `--include-probes` / `include_probes=True`.
+- **R12 [NIT, Blind#4]:** `write_pick_to_directive` docstring states the yaml round-trip re-serialization (comments/anchors not preserved).
+- **R14 [NIT, Auditor#3]:** direct CLI-fallback probe-exclusion test (D-3 default-hidden honored in the numbered roster).
+
+**RED evidence (behavioral fixes, tests authored + run before the code change):**
+- R1: `FAILED test_server_serves_page_same_origin_with_relative_pick_action` — `AssertionError: browser must be pointed at the server root` (opener received the `file://` URI) / `server must exit after one accepted POST`.
+- R2: `AssertionError: the blueprint guide (16x9 promise, 2400x2860 portrait render) must qualify` (roster carried no `card_dimensions`; no chip rendered).
+- R5: `Failed: DID NOT RAISE <class '...PickerError'>` (`test_duplicate_variant_id_in_existing_directive_fails_loud` — first-match-patch proceeded silently).
+- R6: `Failed: DID NOT RAISE <class '...PickerError'>` ×2 (`test_gamma_settings_non_list_fails_loud`, `test_gamma_settings_non_mapping_entry_fails_loud` — non-list silently discarded).
+- R7: `StopIteration` at the Style B prompt (`test_cli_fallback_a_blank_b_only_single_select` — blank Style A was rejected as "required") + `AssertionError` (`test_cli_fallback_requires_at_least_one_pick`).
+- Also RED pre-fix: R8 (lock files absent), R10 (`DID NOT RAISE`), R11 (`Regex pattern did not match`). R14's pin passed pre-fix (roster loader already excluded probes) — recorded as a pin, not a fix.
+
+**AC-8 RE-RUN (mandatory — primary flow changed):** `_bmad-output/implementation-artifacts/evidence/leg-d-picker-ac8-20260702T020617Z/` — the harness GET the page FROM the server (200; served bytes == disk copy), parsed the SERVED form (relative `/pick`), GET a same-origin thumbnail (image/png), POSTed exactly as the page's Confirm would; **17/17 checks, `AC8_PASS: true`, first-run-stands**; `AC8-SUMMARY.md` carries the R9 caveat.
+
+**Post-remediation verification:** both picker test files **41 passed** (27 prior + 14 remediation); `tests/utilities/test_validate_gamma_style_guides.py` green; `validate_gamma_style_guides.py` script green (SSOT untouched by this remediation); ruff clean on touched files.
+
+### Follow-ons (filed in deferred-inventory §Named-But-Not-Filed Follow-Ons)
+- `gamma-styleguide-per-guide-thumbnail-renders` (Phase-2): systematic genuine per-guide renders replace the curated approximations — retires the R2 provenance-chip disclaimer case (each guide's thumbnail becomes a true render of that guide's full surface incl. its frame).

@@ -1,0 +1,18 @@
+[
+  {
+    "directive_path": "C:/Users/juanl/Documents/GitHub/course-DEV-IDE-with-AGENTS-hybrid/_bmad-output/implementation-artifacts/evidence/leg-d-picker-ac8-20260702T020617Z/directive.yaml",
+    "event_digest": "ae2e917d88fe7e034bb4e7f08493441acd4707a7371bbd7c69d004aa56174ee7",
+    "guide_name": "classic-freeform-x-cards",
+    "picked_at": "2026-07-02T02:07:10.032379+00:00",
+    "run_id": "leg-d-picker-ac8-20260702T020617Z",
+    "variant_id": "A"
+  },
+  {
+    "directive_path": "C:/Users/juanl/Documents/GitHub/course-DEV-IDE-with-AGENTS-hybrid/_bmad-output/implementation-artifacts/evidence/leg-d-picker-ac8-20260702T020617Z/directive.yaml",
+    "event_digest": "ead53b590ebd5c732332e85b455e1f62af40e5730e47c1e55696988427a41383",
+    "guide_name": "leg-c-part3-floor-probe",
+    "picked_at": "2026-07-02T02:07:10.032379+00:00",
+    "run_id": "leg-d-picker-ac8-20260702T020617Z",
+    "variant_id": "B"
+  }
+]

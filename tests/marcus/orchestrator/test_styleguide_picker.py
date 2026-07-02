@@ -26,6 +26,8 @@ styleguide_picker.py`` existed (ModuleNotFoundError RED recorded in Dev Notes).
 from __future__ import annotations
 
 import json
+import re
+import struct
 import threading
 import urllib.error
 import urllib.parse
@@ -118,7 +120,9 @@ def test_every_rendered_thumbnail_ref_resolves_to_real_png() -> None:
         png = REPO_ROOT / ref
         assert png.is_file(), f"{entry['name']}: dangling thumbnail_ref {ref}"
         assert png.read_bytes()[:8] == b"\x89PNG\r\n\x1a\n", f"{ref} is not a real PNG"
-        assert png.resolve().as_uri() in html
+        # R1: thumbnails render as SAME-ORIGIN server paths (a file:// img on an
+        # http page is blocked by the browser), served by do_GET.
+        assert f'src="/thumbnails/{entry["name"]}.png"' in html
     assert seen_thumb == 3, "the 3 seed guides must carry curated thumbnails (D-2)"
 
 
@@ -267,27 +271,31 @@ def test_capture_pick_serves_one_post_then_exits(tmp_path: Path) -> None:
     worker = threading.Thread(target=_run)
     worker.start()
     try:
-        # The rendered page on disk carries the real endpoint in the form action.
+        # R1: the browser is pointed at the SERVER root; the rendered page (on
+        # disk and served) carries the RELATIVE /pick action, resolved same-origin.
         for _ in range(100):
-            if html_path.exists():
+            if html_path.exists() and opened_urls:
                 break
             worker.join(0.05)
         html = html_path.read_text(encoding="utf-8")
         action = html.split('action="', 1)[1].split('"', 1)[0]
+        assert action == "/pick"
         receipt = _post_form(
-            action, {"slot_A": "classic-freeform-x-cards", "slot_B": ""}
+            urllib.parse.urljoin(opened_urls[0], action),
+            {"slot_A": "classic-freeform-x-cards", "slot_B": ""},
         )
     finally:
         worker.join(timeout=30)
     assert not worker.is_alive(), "server must exit after one accepted POST"
     assert result["picks"] == {"A": "classic-freeform-x-cards"}
     assert receipt["picks"] == {"A": "classic-freeform-x-cards"}
-    assert opened_urls and opened_urls[0].startswith("file://")
+    assert opened_urls and opened_urls[0].startswith("http://127.0.0.1:")
 
 
 def test_capture_pick_rejects_unknown_guide_then_accepts_valid(tmp_path: Path) -> None:
     roster = load_picker_roster()
     html_path = tmp_path / "picker.html"
+    opened_urls: list[str] = []
     result: dict = {}
 
     def _run() -> None:
@@ -295,7 +303,7 @@ def test_capture_pick_rejects_unknown_guide_then_accepts_valid(tmp_path: Path) -
             roster,
             on_pick=lambda picks: {"picks": picks},
             html_path=html_path,
-            opener=lambda url: True,
+            opener=lambda url: opened_urls.append(url) or True,
             timeout=30.0,
         )
         result["picks"] = picks
@@ -304,15 +312,16 @@ def test_capture_pick_rejects_unknown_guide_then_accepts_valid(tmp_path: Path) -
     worker.start()
     try:
         for _ in range(100):
-            if html_path.exists():
+            if html_path.exists() and opened_urls:
                 break
             worker.join(0.05)
         html = html_path.read_text(encoding="utf-8")
         action = html.split('action="', 1)[1].split('"', 1)[0]
+        pick_url = urllib.parse.urljoin(opened_urls[0], action)
         with pytest.raises(urllib.error.HTTPError) as excinfo:
-            _post_form(action, {"slot_A": "no-such-style"})
+            _post_form(pick_url, {"slot_A": "no-such-style"})
         assert excinfo.value.code == 400
-        _post_form(action, {"slot_A": "hil-2026-apc-studio-image-card"})
+        _post_form(pick_url, {"slot_A": "hil-2026-apc-studio-image-card"})
     finally:
         worker.join(timeout=30)
     assert result["picks"] == {"A": "hil-2026-apc-studio-image-card"}
@@ -367,3 +376,290 @@ def test_default_sidecar_path_is_the_ratified_store() -> None:
     assert GAMMA_STYLEGUIDE_PICKS_PATH == (
         REPO_ROOT / "state" / "config" / "gamma-styleguide-picks.jsonl"
     )
+
+
+# ---------------------------------------- 3-lane remediation R1-R14 (2026-07-02)
+class _LiveCapture:
+    """Run ``capture_pick`` on a worker thread and expose the opened URL/page."""
+
+    def __init__(self, roster: list[dict], tmp_path: Path) -> None:
+        self.html_path = tmp_path / "picker.html"
+        self.opened: list[str] = []
+        self.printed: list[str] = []
+        self.result: dict = {}
+
+        def _run() -> None:
+            try:
+                picks, receipt = capture_pick(
+                    roster,
+                    on_pick=lambda picks: {"picks": picks},
+                    html_path=self.html_path,
+                    opener=lambda url: self.opened.append(url) or True,
+                    print_fn=self.printed.append,
+                    timeout=30.0,
+                )
+                self.result["picks"] = picks
+                self.result["receipt"] = receipt
+            except Exception as exc:  # surfaced by the asserting test
+                self.result["error"] = exc
+
+        self.worker = threading.Thread(target=_run)
+        self.worker.start()
+        for _ in range(200):
+            if self.opened and self.html_path.exists():
+                break
+            self.worker.join(0.05)
+
+    @property
+    def base_url(self) -> str:
+        return self.opened[0]
+
+    @property
+    def pick_url(self) -> str:
+        return urllib.parse.urljoin(self.base_url, "/pick")
+
+    def finish(self) -> None:
+        self.worker.join(timeout=30)
+        assert not self.worker.is_alive(), "server must exit after one accepted POST"
+
+
+def test_server_serves_page_same_origin_with_relative_pick_action(tmp_path: Path) -> None:
+    """R1 (Blind#1 CORS): the browser opens the page FROM the pick server.
+
+    A ``file://`` page fetch()ing ``http://127.0.0.1`` is null-origin — the
+    browser blocks reading the response and the operator never sees the receipt
+    panel. Same-origin end-to-end: the opener gets the SERVER root URL, do_GET
+    serves the rendered page bytes, and the form action is the RELATIVE /pick.
+    """
+    roster = load_picker_roster()
+    live = _LiveCapture(roster, tmp_path)
+    try:
+        assert live.opened and re.match(r"^http://127\.0\.0\.1:\d+/$", live.base_url), (
+            f"browser must be pointed at the server root, got {live.opened}"
+        )
+        with urllib.request.urlopen(live.base_url, timeout=10) as response:
+            assert response.status == 200
+            served = response.read()
+        # do_GET serves the rendered page bytes; the disk copy is evidence/debug.
+        assert served == live.html_path.read_bytes()
+        html = served.decode("utf-8")
+        assert 'action="/pick"' in html, "form action must be same-origin-relative /pick"
+        # Thumbnails ride the same origin too (file:// img on an http page is blocked).
+        thumb_srcs = re.findall(r'src="(/thumbnails/[^"]+)"', html)
+        assert thumb_srcs, "seed thumbnails must be served from the pick server"
+        thumb_url = urllib.parse.urljoin(live.base_url, thumb_srcs[0])
+        with urllib.request.urlopen(thumb_url, timeout=10) as response:
+            assert response.status == 200
+            assert response.headers.get("Content-Type") == "image/png"
+            assert response.read()[:8] == b"\x89PNG\r\n\x1a\n"
+        receipt = _post_form(live.pick_url, {"slot_A": "classic-freeform-x-cards"})
+    finally:
+        live.finish()
+    assert live.result.get("picks") == {"A": "classic-freeform-x-cards"}
+    assert receipt["picks"] == {"A": "classic-freeform-x-cards"}
+
+
+def test_blueprint_16x9_thumbnail_carries_provenance_chip() -> None:
+    """R2 (Auditor#1 J-2/D-2 honesty): a guide promising 16:9 whose curated render
+    is not 16:9 gets an explicit provenance chip — data-driven (SSOT dimensions +
+    PNG IHDR aspect), never a hardcoded card name."""
+    roster = load_picker_roster(include_probes=True)
+    html = render_picker_html(roster, post_url="/pick")
+    chip = "render predates this guide"
+    qualifying: list[str] = []
+    for entry in roster:
+        ref = entry["thumbnail_ref"]
+        promised = str(entry.get("card_dimensions") or "").strip().lower()
+        if not ref or promised != "16x9":
+            continue
+        header = (REPO_ROOT / ref).read_bytes()[:24]
+        width, height = struct.unpack(">II", header[16:24])
+        if width / height < 1.4:
+            qualifying.append(entry["name"])
+    assert "hil-2026-apc-blueprint-classic" in qualifying, (
+        "the blueprint guide (16x9 promise, 2400x2860 portrait render) must qualify"
+    )
+    assert html.count(chip) == len(qualifying)
+    for card in html.split("<article")[1:]:
+        guide = card.split('data-guide="', 1)[1].split('"', 1)[0]
+        assert (chip in card) == (guide in qualifying), guide
+
+
+def test_capture_pick_prints_waiting_notice(tmp_path: Path) -> None:
+    """R3 (Blind#2): a visible 'waiting' notice before handle_request blocks."""
+    roster = load_picker_roster()
+    live = _LiveCapture(roster, tmp_path)
+    try:
+        _post_form(live.pick_url, {"slot_A": "classic-freeform-x-cards"})
+    finally:
+        live.finish()
+    assert any(
+        "waiting for your pick at http://127.0.0.1:" in line and "Ctrl-C" in line
+        for line in live.printed
+    ), f"waiting notice missing from {live.printed}"
+
+
+def test_oversized_post_rejected_413_then_keeps_serving(tmp_path: Path) -> None:
+    """R4 (Blind#3): Content-Length is capped; oversized -> 413 and keep serving."""
+    roster = load_picker_roster()
+    live = _LiveCapture(roster, tmp_path)
+    try:
+        with pytest.raises(urllib.error.HTTPError) as excinfo:
+            _post_form(live.pick_url, {"slot_A": "x" * (70 * 1024)})
+        assert excinfo.value.code == 413
+        _post_form(live.pick_url, {"slot_A": "classic-freeform-x-cards"})
+    finally:
+        live.finish()
+    assert live.result.get("picks") == {"A": "classic-freeform-x-cards"}
+
+
+def test_duplicate_variant_id_in_existing_directive_fails_loud(tmp_path: Path) -> None:
+    """R5 (Edge#1): duplicate variant_id rows -> PickerError, never first-match-patch."""
+    directive = tmp_path / "d.yaml"
+    original = {
+        "gamma_settings": [
+            {"variant_id": "A", "styleguide": "one"},
+            {"variant_id": "a", "styleguide": "two"},  # dup after normalization
+        ]
+    }
+    directive.write_text(yaml.safe_dump(original), encoding="utf-8")
+    with pytest.raises(PickerError, match="duplicate"):
+        write_pick_to_directive(directive, {"A": "classic-freeform-x-cards"})
+    assert yaml.safe_load(directive.read_text(encoding="utf-8")) == original
+
+
+def test_gamma_settings_non_list_fails_loud(tmp_path: Path) -> None:
+    """R6 (Edge#2): present-but-non-list gamma_settings -> PickerError, never
+    silently discarded/overwritten."""
+    directive = tmp_path / "d.yaml"
+    original = {"gamma_settings": {"variant_id": "A", "styleguide": "one"}}
+    directive.write_text(yaml.safe_dump(original), encoding="utf-8")
+    with pytest.raises(PickerError, match="gamma_settings"):
+        write_pick_to_directive(directive, {"A": "classic-freeform-x-cards"})
+    assert yaml.safe_load(directive.read_text(encoding="utf-8")) == original
+
+
+def test_gamma_settings_non_mapping_entry_fails_loud(tmp_path: Path) -> None:
+    """R6 rider: a non-mapping list entry is the same silent-drop class."""
+    directive = tmp_path / "d.yaml"
+    directive.write_text(yaml.safe_dump({"gamma_settings": ["A"]}), encoding="utf-8")
+    with pytest.raises(PickerError, match="gamma_settings"):
+        write_pick_to_directive(directive, {"A": "classic-freeform-x-cards"})
+
+
+def test_cli_fallback_a_blank_b_only_single_select(tmp_path: Path) -> None:
+    """R7 (Edge#3): post retire-default-variant-pair, B-only is legitimate — the
+    CLI fallback supports it symmetrically with the web path."""
+    roster = load_picker_roster()
+    answers = iter(["", "2"])  # skip Style A, pick only Style B
+    picks, receipt = capture_pick(
+        roster,
+        on_pick=lambda picks: {"picks": picks},
+        html_path=tmp_path / "picker.html",
+        opener=lambda url: False,
+        input_fn=lambda prompt: next(answers),
+        print_fn=lambda line: None,
+    )
+    ordered = [entry["name"] for entry in roster]
+    assert picks == {"B": ordered[1]}
+    assert receipt["picks"] == picks
+
+
+def test_cli_fallback_requires_at_least_one_pick(tmp_path: Path) -> None:
+    """R7 rider: both slots blank -> re-prompt (mirrors the web 400), never empty."""
+    roster = load_picker_roster()
+    answers = iter(["", "", "1", ""])  # blank round -> re-prompt -> A picked
+    printed: list[str] = []
+    picks, _ = capture_pick(
+        roster,
+        on_pick=lambda picks: {"picks": picks},
+        html_path=tmp_path / "picker.html",
+        opener=lambda url: False,
+        input_fn=lambda prompt: next(answers),
+        print_fn=printed.append,
+    )
+    ordered = [entry["name"] for entry in roster]
+    assert picks == {"A": ordered[0]}
+    assert any("at least one" in line for line in printed)
+
+
+def test_web_capture_b_only_pick(tmp_path: Path) -> None:
+    """R7 web-path pin: skipping A and picking only B is a valid single-variant
+    directive (dispatches exactly one deck downstream)."""
+    roster = load_picker_roster()
+    live = _LiveCapture(roster, tmp_path)
+    try:
+        receipt = _post_form(
+            live.pick_url, {"slot_A": "", "slot_B": "hil-2026-apc-studio-image-card"}
+        )
+    finally:
+        live.finish()
+    assert live.result.get("picks") == {"B": "hil-2026-apc-studio-image-card"}
+    assert receipt["picks"] == {"B": "hil-2026-apc-studio-image-card"}
+
+
+def test_advisory_lock_two_sequential_writers(tmp_path: Path) -> None:
+    """R8 (Edge#5): sidecar append + directive read-modify-write take an advisory
+    same-host lock (lock file adjacent); two sequential writers both land."""
+    directive = tmp_path / "d.yaml"
+    events = tmp_path / "picks.jsonl"
+    for stamp, guide in (
+        ("2026-07-02T03:00:00+00:00", "classic-freeform-x-cards"),
+        ("2026-07-02T03:01:00+00:00", "hil-2026-apc-blueprint-classic"),
+    ):
+        write_pick_to_directive(directive, {"A": guide})
+        append_pick_event(
+            {"A": guide}, directive_path=directive, picked_at=stamp, events_path=events
+        )
+    lines = [ln for ln in events.read_text(encoding="utf-8").splitlines() if ln.strip()]
+    assert len(lines) == 2
+    loaded = yaml.safe_load(directive.read_text(encoding="utf-8"))
+    entries_a = [e for e in loaded["gamma_settings"] if e["variant_id"] == "A"]
+    assert entries_a == [
+        {"variant_id": "A", "styleguide": "hil-2026-apc-blueprint-classic"}
+    ]
+    # The advisory guarantee is same-host + lock-file-adjacent (documented honest).
+    assert (tmp_path / "d.yaml.lock").exists()
+    assert (tmp_path / "picks.jsonl.lock").exists()
+
+
+def test_thumbnail_ref_wrong_extension_or_magic_fails_loud(tmp_path: Path) -> None:
+    """R10 (Edge#4): extension + PNG-magic check at render for thumbnail refs."""
+    roster = load_picker_roster()
+    jpg = tmp_path / "thumb.jpg"
+    jpg.write_bytes(b"\x89PNG\r\n\x1a\n" + b"\x00" * 25)
+    entry = dict(roster[0])
+    entry["thumbnail_ref"] = "thumb.jpg"
+    with pytest.raises(PickerError, match=r"(?i)\.png"):
+        render_picker_html([entry], post_url="/pick", repo_root=tmp_path)
+    fake_png = tmp_path / "thumb.png"
+    fake_png.write_bytes(b"definitely-not-a-png-header-bytes")
+    entry2 = dict(roster[0])
+    entry2["thumbnail_ref"] = "thumb.png"
+    with pytest.raises(PickerError, match="PNG"):
+        render_picker_html([entry2], post_url="/pick", repo_root=tmp_path)
+
+
+def test_empty_roster_error_mentions_include_probes() -> None:
+    """R11 (Edge#6): the empty-roster error coaches the probe-only case."""
+    with pytest.raises(PickerError, match="include-probes"):
+        capture_pick([], on_pick=lambda picks: {}, opener=lambda url: True)
+
+
+def test_cli_fallback_excludes_probe_guides_by_default(tmp_path: Path) -> None:
+    """R14 (Auditor#3): the CLI fallback's numbered roster honors D-3 default-hidden."""
+    roster = load_picker_roster()  # default view: probes hidden
+    answers = iter(["1", ""])
+    printed: list[str] = []
+    picks, _ = capture_pick(
+        roster,
+        on_pick=lambda picks: {"picks": picks},
+        html_path=tmp_path / "picker.html",
+        opener=lambda url: False,
+        input_fn=lambda prompt: next(answers),
+        print_fn=printed.append,
+    )
+    joined = "\n".join(printed)
+    for probe in PROBE_GUIDES:
+        assert probe not in joined, f"probe {probe} leaked into the CLI roster"
+    assert picks["A"] not in PROBE_GUIDES
