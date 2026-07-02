@@ -1,0 +1,27 @@
+# Leg-C Live-Proof Dossier — AC#9–13 (2026-07-01/02, first-run-stands, judged from on-disk artifacts)
+
+Corpus: `course-content/courses/tejal-c1m1-p3-opportunity` (party-ratified). Probe guides: `leg-c-part3-floor-probe` (N=8) / `leg-c-part3-floor-toohigh` (N=20), both validator-clean. All arms = REAL `run_production_trial` walks (real adapter, real gpt-5.4 Pass-1 via cascade, real texas extraction; weed-clearing approvals; no mocks).
+
+| AC | Verdict | Evidence (on-disk arbiter) |
+|---|---|---|
+| **AC#9 differential (anti-vacuous count_K < N ≤ count_T)** | ✅ **7 < 8 ≤ 8** | K: baseline trial `66ae45d5` + K′ `08972c36`, 05B = 7 clusters. T2: trial `4289ffb7` run.json 05B contribution = **8 clusters, minted `c-u04#f1` + `c-u04#f1#f1`, `floor_subdivision_index` on u04/u05/u06** — the DETERMINISTIC honoring produced the delta (not LLM variance). Independently re-judged from run.json, not the driver. |
+| **AC#10 determinism pin** | ✅ | count_K(baseline 66ae45d5)=7 == count_K′(08972c36)=7 at the 05B arbiter. Bonus live finding: adding `source_refs` emission did NOT perturb clustering (Winston's anchor-emission claim held). |
+| **AC#11 07G with teeth on the floored deck** | ⚠️ **BLOCKED by a PRE-EXISTING downstream flake — party adjudication required** | Every arm (floor-OFF and floor-ON alike) error-paused at node 07 on the gary export title matcher (`gamma.export.brief-unmatched` ×3 arms, `gamma.export.title-ambiguous` ×1) — a documented, corpus-independent fragility (filed: `gamma-single-slide-deck-title-matcher-flake`, concierge `gary-export-llm-brief-to-page-matcher`). The floored deck never reached 07G. Supporting facts: the floor lands strictly at Pass-1 INTO the exact cluster vocabulary (head/interstitial) whose per-sub-slide 07G invariant was live-proven in concierge Leg-3; the P1/D-0 strip keeps the model input byte-identical; the T2 gary pause shows NO duplicate titles at 05B (near-title ambiguity is Gamma-side). Options for the gates: (i) CLOSE-WITH-CONDITION — file `leg-c-floored-deck-07g-live-walk` as a non-waivable-before-Leg-C-claims-07G-coverage follow-on chained on the gary-matcher fix; (ii) HOLD Leg-C open pending a title-hygiene corpus variant walk to 07G now. |
+| **AC#12 figure-bond survives, live** | ⚠️ **LIVE-VACUOUS on this corpus — honest scoping required** | The live model emitted ZERO figure-role anchors (every anchor on every arm classifies `claim`; the corpus's images live in file-embed markup the model doesn't quote). The bond/atomicity machinery is proven on fixtures derived verbatim from the LIVE 05B capture (sha-pinned, M-2) incl. bond-never-severed + role-unverifiable-refuses (P5). No live split ever severed anything (splits occurred only at unit boundaries — intra-unit bonds intact BY CONSTRUCTION). Gates decide: accept offline-on-real-shape + by-construction argument with an honest disclaimer, or demand a figure-anchor-bearing corpus arm. |
+| **AC#13 floor-too-high honest refusal** | ✅ **LIVE** | Trial `e3f5b409`: N=20 → `irene_pass1.styleguide-content-mismatch` RECOVERABLE error-pause at node 04A ("9 clusters, 4 legitimate seams, max reachable 13; refusing to over-fragment" + duplicate-anchor veto disclosure). $0 downstream (no gary/Gamma). Also witnesses P3 (SpecialistDispatchError → error-pause, not crash). |
+| **AC#14 dispatch-path pin** | ✅ | test green post-port + extended with the canonicalized-id form after the F1 live diagnosis. |
+| **AC#15 / D-0 strip** | ✅ | Namespace-keyed strip; byte-identical model-visible payload (scoped honestly per Blind R3); zero-floor-leak asserted live on the control (baseline run grep = 0). |
+
+## Live-discovered defects — ALL FIXED RED-FIRST DURING THE PROOF (the live gate earned its keep)
+1. **F1 alias-form threading** (`ac239855`): the walk canonicalizes `irene-pass1`→`irene_pass1` before the floor branch, which tested only the hyphen form → floor never threaded in ANY real walk. Found by an instrumented diagnostic walk; the offline suite was green throughout — the same defect CLASS as D1, one seam further down. Fixed + pinned (branch accepts canonical form; alias-table parity test; AC#14 extension).
+2. **F2 anchor normalization** (`ac239855`): markdown asterisks/quote marks INSIDE source between anchor words zeroed all seams (live false-veto). Fixed with strip-based normalization; the two real failing pairs are now regression tests.
+3. **T1 arm invalidated honestly**: first treatment run count=10 with ZERO floor consumption = LLM variance; retained as defect evidence (`73f4a6c0`), never claimed as AC#9.
+
+## Follow-on candidates (for the gates to ratify filing)
+- `leg-c-floored-deck-07g-live-walk` — the AC#11 completion walk, chained on the gary export-matcher robustness fix.
+- `gary-export-matcher-near-title-ambiguity` — T2's `title-ambiguous` variant of the documented flake (near-identical unit titles; possibly more likely after floor splits).
+- `leg-c-figure-role-anchor-live-witness` — a corpus arm whose source carries model-quotable figure markers (AC#12's live form).
+- W-2 (already filed): delete the dead irene-branch plumbing post-close.
+
+## Spend (honest)
+LLM: ~$0.33/walk × 6 walks ≈ $2.00. Gamma: gary reached on 4 arms × up to 4 generation attempts (title-flake retries) — unplanned on 3 (folded-gate driver defect, fixed); diagnostic walk halted gary pre-Gamma ($0).

@@ -1,9 +1,9 @@
 {
-  "trial_id": "62e85b94-f47a-49e8-9903-adec5772c25e",
+  "trial_id": "e3f5b409-814f-40a5-b658-5a0c5745073c",
   "arm": "treatment",
-  "floor_n": 8,
-  "styleguide": "leg-c-part3-floor-probe",
-  "directive_path": "C:\\Users\\juanl\\Documents\\GitHub\\course-DEV-IDE-with-AGENTS-hybrid\\_bmad-output\\implementation-artifacts\\evidence\\leg-c-part3-baseline-20260701T232209Z\\directive-p3-treatment-62e85b94-f47a-49e8-9903-adec5772c25e.yaml",
+  "floor_n": 20,
+  "styleguide": "leg-c-part3-floor-toohigh",
+  "directive_path": "C:\\Users\\juanl\\Documents\\GitHub\\course-DEV-IDE-with-AGENTS-hybrid\\_bmad-output\\implementation-artifacts\\evidence\\leg-c-part3-baseline-20260701T232209Z\\directive-p3-treatment-e3f5b409-814f-40a5-b658-5a0c5745073c.yaml",
   "gate_sequence": [
     {
       "gate": "G1",
@@ -11,66 +11,11 @@
     }
   ],
   "final_status": "paused-at-error",
-  "final_error_tag": "gamma.export.brief-unmatched",
-  "analysis": {
-    "04A": {
-      "n_plan_units": 12,
-      "n_distinct_cluster_ids": 7,
-      "n_heads": 7,
-      "units_with_source_refs": 12,
-      "interstitial_counts": [
-        0,
-        0,
-        0,
-        2,
-        3,
-        0,
-        0
-      ],
-      "mismatch_signal": null
-    },
-    "05": {
-      "n_plan_units": 20,
-      "n_distinct_cluster_ids": 10,
-      "n_heads": 10,
-      "units_with_source_refs": 20,
-      "interstitial_counts": [
-        0,
-        2,
-        0,
-        0,
-        3,
-        2,
-        0,
-        3,
-        0,
-        0
-      ],
-      "mismatch_signal": null
-    },
-    "05B": {
-      "n_plan_units": 20,
-      "n_distinct_cluster_ids": 10,
-      "n_heads": 10,
-      "units_with_source_refs": 20,
-      "interstitial_counts": [
-        0,
-        2,
-        0,
-        0,
-        3,
-        2,
-        0,
-        3,
-        0,
-        0
-      ],
-      "mismatch_signal": null
-    }
-  },
-  "count": 10,
-  "anti_vacuous_pass": true,
-  "VERDICT": "CAPTURED",
-  "run_dir": "C:\\Users\\juanl\\Documents\\GitHub\\course-DEV-IDE-with-AGENTS-hybrid\\state\\config\\runs\\62e85b94-f47a-49e8-9903-adec5772c25e",
-  "total_seconds": 467.1
+  "final_error_tag": "irene_pass1.styleguide-content-mismatch",
+  "analysis": {},
+  "count": null,
+  "anti_vacuous_pass": false,
+  "VERDICT": "NOT-CONVERGED",
+  "run_dir": "C:\\Users\\juanl\\Documents\\GitHub\\course-DEV-IDE-with-AGENTS-hybrid\\state\\config\\runs\\e3f5b409-814f-40a5-b658-5a0c5745073c",
+  "total_seconds": 47.1
 }
