@@ -1,0 +1,51 @@
+{
+  "trial_id": "4289ffb7-030c-467c-9bcc-a4bae0adab3f",
+  "arm": "treatment-T2",
+  "floor_n": 8,
+  "final_status": "paused-at-error",
+  "final_error_tag": "gamma.export.title-ambiguous",
+  "analysis": {
+    "04A": {
+      "n_plan_units": 21,
+      "n_distinct_cluster_ids": 10,
+      "minted_ids": [],
+      "units_with_floor_subdivision_index": [],
+      "units_with_source_refs": 21,
+      "n_heads": 10
+    },
+    "05": {
+      "n_plan_units": 12,
+      "n_distinct_cluster_ids": 8,
+      "minted_ids": [
+        "c-u04#f1"
+      ],
+      "units_with_floor_subdivision_index": [
+        "u04",
+        "u05",
+        "u06"
+      ],
+      "units_with_source_refs": 12,
+      "n_heads": 8
+    },
+    "05B": {
+      "n_plan_units": 12,
+      "n_distinct_cluster_ids": 8,
+      "minted_ids": [
+        "c-u04#f1",
+        "c-u04#f1#f1"
+      ],
+      "units_with_floor_subdivision_index": [
+        "u04",
+        "u05",
+        "u06"
+      ],
+      "units_with_source_refs": 12,
+      "n_heads": 8
+    }
+  },
+  "count_T": 8,
+  "anti_vacuous_pass": true,
+  "floor_fired": true,
+  "VERDICT": "CAPTURED",
+  "total_seconds": 165.9
+}
