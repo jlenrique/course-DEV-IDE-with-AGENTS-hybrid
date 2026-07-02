@@ -76,10 +76,6 @@ from app.specialists.irene.authoring.warm_callback_authoring import (
     render_warm_callback,
     warm_callback_authoring_active,
 )
-from app.specialists.irene.cluster_floor import (
-    assert_floor_consulted,
-    consume_min_cluster_floor,
-)
 from app.specialists.irene.payload_contract import CONSUMED_PAYLOAD_KEYS
 from app.specialists.source_bundle import read_extracted_source
 from scripts.utilities.reading_path_classifier import (
@@ -1562,11 +1558,6 @@ def _decode_envelope_payload(state: RunState) -> dict[str, Any]:
     return decoded if isinstance(decoded, dict) else {}
 
 
-# P1 (Leg-C review): scripted-derived keys the deterministic post-hoc honoring reads
-# but the LLM must NEVER see (stripped from the model-visible Pass-1 payload).
-_LLM_HIDDEN_PAYLOAD_KEYS: frozenset[str] = frozenset({"min_cluster_floor"})
-
-
 def _act_pass_1(
     state: RunState,
     *,
@@ -1579,18 +1570,8 @@ def _act_pass_1(
         "You are Irene pass-1. Produce lesson design JSON with keys "
         "`learning_objectives`, `structural_outline`, and `cluster_intent`."
     )
-    # P1 (Leg-C review): the scripted floor is a DETERMINISTIC post-hoc constraint —
-    # it must NEVER reach the LLM-visible payload, or it re-parameterizes the clustering
-    # objective (VIOLATES the binding "never re-parameterize the LLM objective"
-    # amendment) AND contaminates the live differential's control-vs-treatment input.
-    # Strip it (and any scripted-derived key) from the copy the model sees; the FULL
-    # ``envelope_payload`` is still used post-hoc by ``consume_min_cluster_floor``. The
-    # model therefore receives BYTE-IDENTICAL input whether or not a floor is bound.
-    model_visible_payload = {
-        k: v for k, v in envelope_payload.items() if k not in _LLM_HIDDEN_PAYLOAD_KEYS
-    }
     payload_section = json.dumps(
-        model_visible_payload,
+        envelope_payload,
         sort_keys=True,
         ensure_ascii=True,
         separators=(",", ":"),
@@ -1604,29 +1585,6 @@ def _act_pass_1(
     raw_content = response.content if hasattr(response, "content") else str(response)
     raw_text = raw_content if isinstance(raw_content, str) else str(raw_content)
     lesson_design = _parse_pass_1_response(raw_text)
-
-    # Leg-C: honor the CD-owned scripted.min_cluster_floor (a style-identity property
-    # threaded by the orchestrator into ``envelope_payload``). Deterministic, split-only,
-    # monotone — subdivide the LLM-honest clustering ONLY at legitimate internal seams,
-    # never merge/reorder/reassign canonical text order, never sever a figure<->narration
-    # bond. A floor the content cannot honestly support raises a fail-loud
-    # styleguide-vs-content mismatch (SOFT floor, source-content veto), never a forced bad
-    # split. The dead-config guard fails loud if a floor is bound but never consulted.
-    outline = lesson_design.get("structural_outline")
-    if isinstance(outline, list):
-        honored, consumption = consume_min_cluster_floor(envelope_payload, outline)
-        # Dead-config guard (real purpose): the floor was bound but the consumption
-        # seam never ran — a threading/refactor bug. NOT triggered by LLM output-shape
-        # variance (see the non-list branch below).
-        assert_floor_consulted(envelope_payload, consumption)
-        if consumption.consulted:
-            lesson_design = {**lesson_design, "structural_outline": honored}
-    # P2 (Leg-C review): a NON-list ``structural_outline`` is LLM output-shape variance
-    # (or an upstream outline problem), NOT dead config. It is handled IDENTICALLY
-    # whether or not a floor is bound — the floor simply has nothing clusterable to
-    # honor, so we pass through (no ``DeadFloorConfigError`` run halt). Reclassifying
-    # here keeps the dead-config detector for its REAL purpose (bound-but-never-read),
-    # not for tolerated outline shapes.
 
     output_blob = json.dumps(
         {

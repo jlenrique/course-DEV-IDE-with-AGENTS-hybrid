@@ -35,7 +35,9 @@ def test_ac1_single_gap_backfilled_from_roster() -> None:
     src = out["segment_manifest_deltas"][9]["visual_references"][0]["perception_source"]
     assert src == "slide-10"
     # every delta now carries a perception_source
-    assert all(d["visual_references"][0]["perception_source"] for d in out["segment_manifest_deltas"])
+    assert all(
+        d["visual_references"][0]["perception_source"] for d in out["segment_manifest_deltas"]
+    )
 
 
 # AC-2: end-to-end — the join now covers all 13 (no dropped narration).

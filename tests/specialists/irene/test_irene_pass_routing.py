@@ -83,45 +83,6 @@ def test_irene_pass_1_dispatch_branch(monkeypatch: Any) -> None:
     assert output["irene_pass_2_envelope"] is None
 
 
-def test_irene_pass_1_honors_min_cluster_floor_from_envelope(monkeypatch: Any) -> None:
-    """AC#3 arrival + Task-2 integration: a min_cluster_floor threaded into the
-    envelope payload is consumed at Pass-1 and subdivides the emitted clustering."""
-    # Members carry role tags so the split is role-VERIFIABLE (P5 fail-safe: a
-    # role-less cluster refuses to split blind rather than risk severing a figure
-    # from its narration).
-    outline = [
-        {
-            "cluster_intent": "c0",
-            "source_points": [{"kind": "content", "text": "a"}, {"kind": "content", "text": "b"}],
-        },
-        {
-            "cluster_intent": "c1",
-            "source_points": [{"kind": "content", "text": "c"}, {"kind": "content", "text": "d"}],
-        },
-    ]
-
-    def _fake_model(*args: Any, **kwargs: Any) -> _FakeHandle:
-        del args, kwargs
-        return _FakeHandle(
-            response_text=json.dumps(
-                {
-                    "learning_objectives": ["obj-1"],
-                    "structural_outline": outline,
-                    "cluster_intent": "walk",
-                }
-            )
-        )
-
-    monkeypatch.setattr("app.specialists.irene.graph.make_chat_model", _fake_model)
-    update = _act(_state({"pass_phase": "pass-1", "min_cluster_floor": 3}))
-    output = json.loads(update["cache_state"]["cache_prefix"])
-    honored = output["irene_lesson_design"]["structural_outline"]
-    assert len(honored) >= 3
-    # split-only byte-identity: the flattened member text is unchanged
-    flat = [m["text"] for cluster in honored for m in cluster.get("source_points", [])]
-    assert flat == ["a", "b", "c", "d"]
-
-
 def test_irene_pass_1_without_floor_is_unchanged(monkeypatch: Any) -> None:
     """No floor bound -> the clustering is passed through verbatim (quiet)."""
     outline = [{"section": "intro"}, {"section": "body"}]
