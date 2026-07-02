@@ -207,6 +207,85 @@ style_guides:
         Migrates the Studio-B template id out of the runs/ artifact. A live
         template-existence check for g_nv5q4da69qiiu8q is required before the live render.
 
+  # -- Leg-C live-proof probe (Classic; multi-beat narrative walk; scripted floor) --
+  leg-c-part3-floor-probe:
+    production_mode: api
+    status: active
+    version: 1
+    theme:
+      id: njim9kuhfnljvaa
+      name: 2026 HIL APC Tejal
+    studio_template: null
+    prompt_configuration:
+      text_content:
+        mode: condense
+        amount: brief
+        audience: >-
+          Faculty and instructional designers familiar with Canvas and course design,
+          American English
+        tone: Clear, professional, engaging in American English
+        language: en
+      visuals:
+        image_source: aiGenerated
+        image_model: null
+        style_preset: illustration
+        custom_style: null
+        keywords:
+        - vector
+        - minimalist
+        - flat-color
+        - linework
+        - bold
+    page_settings:
+      card_options:
+        dimensions: fluid
+      export:
+        export_as: png
+    presentation:
+      display_name: Leg-C_Part3_Floor-Probe
+      distinguishing: >-
+        The classic-freeform register with a declared multi-beat narrative identity:
+        this style walks the audience through many small beats rather than a few
+        dense stops.
+      narrative:
+        summary: >-
+          Classic clinical-education style whose identity is the multi-beat walk —
+          spacious cards, one beat per screen, voiceover tracking each beat.
+        feels_like: Deliberate, paced, follow-along-friendly.
+        use_when: Narrated lessons whose style identity is a many-beat walk.
+        avoid_when: Synthesis/big-picture decks whose value is the simultaneous whole.
+        triad_rationale: >-
+          Same Tejal theme + vector-minimalist visuals + Default/Fluid pages as the
+          classic seed; the differentiator is the declared multi-beat cadence carried
+          by the scripted floor, not any API-surface change.
+      example_url: "https://the-modern-clinicians-di-a6j7emh.gamma.site/"
+      thumbnail_ref: null
+      last_used: null
+    coherence:
+      theme_art_keywords_dimensions: >-
+        Professional clinical APC look; Tejal theme + AI-generated illustration/
+        vector-minimalist cues; Default/Fluid page setup; multi-beat cadence via
+        the scripted floor.
+    scripted:
+    - class: min_cluster_floor
+      value: 8
+      rationale: >-
+        This style reads as a multi-beat narrative walk; below eight beats it
+        collapses to a stub deck that defeats the follow-along cadence the style
+        exists to deliver.
+      provenance:
+        authoring_styleguide: leg-c-part3-floor-probe
+        envelope_write_stamp: '2026-07-01T23:59:00Z'
+    provenance:
+      source: default_variant_pair
+      established: '2026-07-01'
+      notes: >-
+        Leg-C live-proof probe guide (D1 adjudication party record 2026-07-01):
+        clones the classic seed's API surface so the floor-on differential vs the
+        floor-off control isolates EXACTLY the scripted floor (N=8 chosen from the
+        live baseline count_K=7 on the Part-3 corpus). Authored via the live-proof
+        harness under the validator write-gate.
+
 # `scripted` block — the sealed, registry-bound closed-vocab namespace (Leg-C wired).
 # A styleguide record MAY carry a list of scripted entries, each declaring ONE
 # registered class as a DECLARATIVE VALUE (never a mechanism):
