@@ -36,6 +36,7 @@ import re
 from types import MappingProxyType
 
 from app.specialists._shared.figure_tokens import _figures
+from app.specialists.dispatch_errors import SpecialistDispatchError
 
 # Compiler contract version (mirrors voice_direction_map.MAP_VERSION idiom). Bump
 # on any change to tag placement, the allowlist, or the channel shape.
@@ -99,17 +100,19 @@ _ALLOWLISTED_TAG_RE = re.compile(_ALLOWLIST_ALT)
 _ALLOWLIST_STRIP_RE = re.compile(_ALLOWLIST_ALT + r"\s?")
 
 
-class VoiceProviderTextError(Exception):
+class VoiceProviderTextError(SpecialistDispatchError):
     """TAG-ONLY compiler / channel-firewall violation (typed, tagged).
 
     The pure leaf cannot import Enrique's ``EnriqueActError`` (M3 + cycle), so it
     raises this typed error carrying ``tag`` so the Enrique call site re-raises it
     as a tagged, recoverable ``EnriqueActError`` in one line.
-    """
 
-    def __init__(self, message: str, *, tag: str) -> None:
-        super().__init__(message)
-        self.tag = tag
+    Taxonomy re-base (contracts-triage row 20, 2026-07-02): dispatch-family per
+    PIN-AUD-3T so an uncaught escape error-pauses recoverably instead of killing
+    the walk (base is RuntimeError-derived; all existing by-name handlers
+    preserved; ``dispatch_errors`` is a zero-import stdlib leaf, so the M3 fence
+    and the no-app.marcus/no-irene leaf purity hold).
+    """
 
 
 def sha256_text(text: str) -> str:

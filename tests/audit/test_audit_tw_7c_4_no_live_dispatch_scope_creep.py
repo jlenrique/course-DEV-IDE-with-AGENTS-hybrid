@@ -629,6 +629,17 @@ PERMITTED_PYTHON_DIFFS = {
     # fixture-driven tests; NO live-dispatch surface.
     "tests/test_audit_gamma_docs_driver.py",
     "tests/test_gamma_image_model_enum_parity.py",
+    # Task-3 contracts-triage row-20 taxonomy re-base (party pick, Task-3
+    # sequencing round 3/3 in
+    # carried-findings-remediation-greenlight-party-record-2026-07-02.md;
+    # template = 37f8323 live-path tranche): VoiceProviderTextError +
+    # StyleguideError re-based onto SpecialistDispatchError per the
+    # PIN-AUD-3T shrink-only ratchet. Base-class + docstring edits only —
+    # all raise sites keep tag= kwargs, all by-name handlers preserved;
+    # NO new live-dispatch call site.
+    # (tests/contracts/test_specialist_error_taxonomy.py already rostered above.)
+    "app/specialists/_shared/voice_provider_text.py",
+    "app/specialists/gary/styleguide_library.py",
 }
 
 

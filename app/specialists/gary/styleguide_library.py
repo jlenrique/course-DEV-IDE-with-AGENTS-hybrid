@@ -22,6 +22,7 @@ from __future__ import annotations
 from pathlib import Path
 from typing import Any
 
+from app.specialists.dispatch_errors import SpecialistDispatchError
 from scripts.utilities.file_helpers import project_root as _project_root
 
 try:
@@ -94,16 +95,17 @@ SCRIPTED_UNKNOWN_CLASS_TAG = "gamma.scripted.unknown-class"
 SCRIPTED_BAD_VALUE_TAG = "gamma.scripted.bad-value"
 
 
-class StyleguideError(Exception):
+class StyleguideError(SpecialistDispatchError):
     """Raised for an unresolvable or surface-violating styleguide record.
 
     Carries a ``tag`` so the Gary seam can re-raise it as a ``GaryActError`` with
     the same taxonomy without importing Gary here (avoids a circular import).
-    """
 
-    def __init__(self, message: str, *, tag: str) -> None:
-        super().__init__(message)
-        self.tag = tag
+    Taxonomy re-base (contracts-triage row 20, 2026-07-02): dispatch-family per
+    PIN-AUD-3T so an uncaught escape error-pauses recoverably instead of killing
+    the walk (base is RuntimeError-derived; all existing by-name handlers
+    preserved).
+    """
 
 
 def _is_present(value: Any) -> bool:

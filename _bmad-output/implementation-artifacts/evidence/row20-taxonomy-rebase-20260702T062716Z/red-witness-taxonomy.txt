@@ -1,0 +1,31 @@
+F..                                                                      [100%]
+================================== FAILURES ===================================
+______________ test_every_tagged_error_class_is_dispatch_family _______________
+
+    def test_every_tagged_error_class_is_dispatch_family() -> None:
+        violations: list[str] = []
+        for module in _walk_specialist_modules():
+            for name, obj in vars(module).items():
+                if not (isinstance(obj, type) and issubclass(obj, Exception)):
+                    continue
+                if obj.__module__ != module.__name__:
+                    continue  # re-exports are checked at their defining module
+                if f"{module.__name__}.{name}" in EXCLUSIONS:
+                    continue
+                if _takes_tag(obj) and not issubclass(obj, SpecialistDispatchError):
+                    violations.append(f"{module.__name__}.{name}")
+>       assert violations == [], (
+            "Tagged error class(es) outside the SpecialistDispatchError family "
+            f"(the cycle-5 crash class): {sorted(set(violations))} — re-base them "
+            "so failures error-pause recoverably instead of killing the walk."
+        )
+E       AssertionError: Tagged error class(es) outside the SpecialistDispatchError family (the cycle-5 crash class): ['app.specialists._shared.voice_provider_text.VoiceProviderTextError', 'app.specialists.gary.styleguide_library.StyleguideError'] — re-base them so failures error-pause recoverably instead of killing the walk.
+E       assert ['app.special...leguideError'] == []
+E         
+E         Left contains 2 more items, first extra item: 'app.specialists._shared.voice_provider_text.VoiceProviderTextError'
+E         Use -v to get more diff
+
+tests\contracts\test_specialist_error_taxonomy.py:93: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/contracts/test_specialist_error_taxonomy.py::test_every_tagged_error_class_is_dispatch_family
+1 failed, 2 passed in 2.29s

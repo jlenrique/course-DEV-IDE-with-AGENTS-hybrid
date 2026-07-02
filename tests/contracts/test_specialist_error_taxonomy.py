@@ -119,18 +119,23 @@ def test_exclusions_rows_still_name_live_bare_classes() -> None:
 
 def test_known_rebased_classes() -> None:
     """Re-based classes pinned by name: the five the cycle-5 crash convicted,
-    the five of the live-path tranche (gary/texas/kira/vera, 2026-06-12), and
+    the five of the live-path tranche (gary/texas/kira/vera, 2026-06-12),
     BuilderInputError (WAVE-0 tranche 2, 2026-06-17 — the last live-walk
-    dispatch leg). Membership AND constructor semantics — issubclass alone
-    would pass with a broken (message, *, tag) ctor (blind-hunter review
-    patch); BuilderInputError now inherits the base ctor, so this pin proves
-    the INHERITED ctor still carries the tag."""
+    dispatch leg), and the contracts-triage row-20 pair (2026-07-02:
+    VoiceProviderTextError enhanced-VO v3 leaf + StyleguideError gamma
+    styleguide spine — both born non-compliant, re-based per the ratchet).
+    Membership AND constructor semantics — issubclass alone would pass with a
+    broken (message, *, tag) ctor (blind-hunter review patch);
+    BuilderInputError and the row-20 pair inherit the base ctor, so this pin
+    proves the INHERITED ctor still carries the tag."""
     assert issubclass(SpecialistDispatchError, RuntimeError)
     from app.marcus.orchestrator.package_builders import BuilderInputError
+    from app.specialists._shared.voice_provider_text import VoiceProviderTextError
     from app.specialists.compositor._act import CompositorActError
     from app.specialists.enrique._act import EnriqueActError
     from app.specialists.gary._act import GaryActError
     from app.specialists.gary.graph import ReceiptParseError
+    from app.specialists.gary.styleguide_library import StyleguideError
     from app.specialists.kira._act import KiraActError
     from app.specialists.quinn_r.graph import QRRParseError
     from app.specialists.quinn_r.quality_control_dispatch import (
@@ -152,6 +157,8 @@ def test_known_rebased_classes() -> None:
         KiraActError,
         FTRParseError,
         BuilderInputError,
+        VoiceProviderTextError,
+        StyleguideError,
     ):
         assert issubclass(cls, SpecialistDispatchError), cls.__name__
         # Base is RuntimeError-derived: existing handlers keep working.
