@@ -73,7 +73,11 @@ style_guides:
           exemplar's true page shape (any Descript-bound 16:9 is a publication-time policy,
           not part of this style).
       example_url: "https://the-modern-clinicians-di-a6j7emh.gamma.site/"
-      thumbnail_ref: null
+      # Leg-D curated thumbnail (D-2): real Leg-A differential Classic render
+      # (evidence/leg-a-styleguide-differential-20260701T164108Z/render-A-classic/
+      # A_p3-high-maze.png) copied into the stable CD-owned home. Deliberate curation
+      # write under the validator write-gate, never a runtime write-back.
+      thumbnail_ref: state/config/gamma-styleguide-thumbnails/classic-freeform-x-cards.png
       last_used: null
     coherence:
       theme_art_keywords_dimensions: >-
@@ -137,7 +141,11 @@ style_guides:
           Blueprint theme + lineArt/construction keywords + 16:9 deck output stay locked
           together; preserve mode keeps source titles and figures verbatim for fidelity.
       example_url: null
-      thumbnail_ref: null
+      # Leg-D curated thumbnail (D-2): real Leg-A differential render of the identical
+      # DEFAULT_VARIANT_PAIR-B surface this guide promotes (theme e8tz1vxb9v1urqp +
+      # lineArt + recraft-v3-svg + blueprint keywords; evidence/leg-a-styleguide-
+      # differential-20260701T164108Z/render-A-classic/B_p3-high-maze.png).
+      thumbnail_ref: state/config/gamma-styleguide-thumbnails/hil-2026-apc-blueprint-classic.png
       last_used: null
     coherence:
       theme_art_keywords_dimensions: >-
@@ -194,7 +202,11 @@ style_guides:
           applies, and the aspect-ratio guard (min 1.4) proves the exported card kept the
           template's 16:9 frame rather than falling back to Classic.
       example_url: null
-      thumbnail_ref: null
+      # Leg-D curated thumbnail (D-2): real Leg-A differential Studio 16:9 full-bleed
+      # render that passed _assert_studio_image_card (evidence/leg-a-styleguide-
+      # differential-20260701T164108Z/render-B-studio/
+      # gary_A_studio_02_p3-med-physicianship.png).
+      thumbnail_ref: state/config/gamma-styleguide-thumbnails/hil-2026-apc-studio-image-card.png
       last_used: null
     coherence:
       template_art_dimensions: >-
@@ -242,6 +254,10 @@ style_guides:
       export:
         export_as: png
     presentation:
+      # Leg-D D-3: additive probe marker — scaffolding must not masquerade as an
+      # intentional style. The picker's default view hides `visibility: probe` guides
+      # (--include-probes opts in). `status` keeps its existing meaning untouched.
+      visibility: probe
       display_name: Leg-C_Part3_Floor-Probe
       distinguishing: >-
         The classic-freeform register with a declared multi-beat narrative identity:
@@ -321,6 +337,8 @@ style_guides:
       export:
         export_as: png
     presentation:
+      # Leg-D D-3: additive probe marker (see leg-c-part3-floor-probe note).
+      visibility: probe
       display_name: Leg-C_Part3_Floor-TooHigh
       distinguishing: >-
         The classic-freeform register with a declared multi-beat narrative identity:
