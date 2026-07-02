@@ -45,3 +45,11 @@ Part-3 slice (`course-content/courses/tejal-c1m1-p3-opportunity/part3-opportunit
 3. **Floor-on differential + K′ determinism pin + AC#9-13 live proof** through the same driver, then dual-gate CLOSE (Murat structural + Irene content; 07G non-waivable).
 
 **Live-spend authorization:** ~3 Pass-1-bearing walks (K, K′, T) on the agreed corpus — party-authorized this record.
+
+---
+
+## CLOSE ADDENDUM (2026-07-02) — DUAL-GATE CLOSED
+
+**Murat (structural): CONCUR-CLOSE** (independent on-disk re-verification: 153-test battery; count_K=7 from both control trials; T3 `00db047c` single-walked, 04A=10 no-op / 05 fires honoring / 05B arbiter 8 distinct incl. `c-u04#f1`; AC#13 tag confirmed; all four conditions discharged/filed; F1/F2 ruled legitimate remediate-then-new-arm, not retry-to-green). **Irene (content): CONCUR-CLOSE** (split shape pedagogically legitimate — model-declared seam promoted to cluster boundary; keep-dense + assessment exemption re-witnessed; backstop sequence exactly as framed; AC#12 by-construction + disclaimer; conditions confirmed filed).
+
+**Live-proof headline:** the CD-declared `scripted.min_cluster_floor` was honored DETERMINISTICALLY on a real production walk — anti-vacuous differential 7 < 8 ≤ 8, minted cluster + provenance on-disk, honest refusal at N=20 live at $0 downstream, zero floor bytes in any LLM prompt. Three live-only defects (D1-class alias threading; anchor punctuation debris; the T2 double-walk race — now the pause-write-atomicity reproduction fixture) were found ONLY because the proof was live — the incremental-live-testing doctrine's strongest witness this arc.
