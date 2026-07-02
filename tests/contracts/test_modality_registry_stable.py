@@ -59,10 +59,15 @@ EXPECTED_MODALITY_REFS = {
     "leader-guide",
     "handout",
     "classroom-exercise",
+    # "workbook" — governed AC-C.4 widening at Braid S2 (2cac27b9,
+    # 2026-06-25): SCHEMA_CHANGELOG "Modality Registry v1.1" entry +
+    # spec-braid-s2-workbook-producer.md. Repin per
+    # contracts-triage-ledger-2026-07-02 rows 8-10.
+    "workbook",
 }
 
 
-EXPECTED_READY_MODALITIES = {"slides", "blueprint"}
+EXPECTED_READY_MODALITIES = {"slides", "blueprint", "workbook"}
 EXPECTED_PENDING_MODALITIES = {"leader-guide", "handout", "classroom-exercise"}
 
 
@@ -80,8 +85,10 @@ def test_module_all_matches_expected_public_names() -> None:
     )
 
 
-def test_schema_version_is_1_0() -> None:
-    assert SCHEMA_VERSION == "1.0"
+def test_schema_version_is_1_1() -> None:
+    # 1.0 -> 1.1 governed bump at Braid S2 (2cac27b9); SCHEMA_CHANGELOG
+    # "Modality Registry v1.1 - 2026-06-25 - Braid S2 Workbook Producer".
+    assert SCHEMA_VERSION == "1.1"
 
 
 def test_modality_ref_literal_closed_set() -> None:

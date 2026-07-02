@@ -14,6 +14,7 @@ from app.marcus.lesson_plan.schema import FitDiagnosis, FitReport
 
 SCHEMA_PATH = (
     Path(__file__).parents[2]
+    / "app"
     / "marcus"
     / "lesson_plan"
     / "schema"

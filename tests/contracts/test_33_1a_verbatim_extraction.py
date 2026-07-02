@@ -71,6 +71,17 @@ _VERBATIM_EXCLUDED_SECTIONS = {
         reason="net-new-prose",
         substitute_invariant=CHECK9_INVARIANT,
     ),
+    # 07W companion-workbook producer brick (b914bb9e, 2026-06-26;
+    # spec-07w-workbook-producer-brick.md): net-new `-gen` section authored
+    # at that story with no frozen v4.2 source-pack origin, exactly like
+    # 07G/07D.5. Enrollment per the party-ratified P2-2 T11 Option-A rule
+    # above; missed at story close, repinned per
+    # contracts-triage-ledger-2026-07-02 row 17.
+    "07W": SectionVerbatimExclusion(
+        section_id="07W",
+        reason="net-new-prose",
+        substitute_invariant=CHECK9_INVARIANT,
+    ),
 }
 
 
@@ -92,7 +103,7 @@ def test_verbatim_exclusions_are_closed_and_check9_governed() -> None:
     gm = load_generator_manifest(MANIFEST)
     determinism_sections = {step.id for step in gm.steps}
 
-    assert set(_VERBATIM_EXCLUDED_SECTIONS) == {"04.55", "02A", "07G", "07D.5"}
+    assert set(_VERBATIM_EXCLUDED_SECTIONS) == {"04.55", "02A", "07G", "07D.5", "07W"}
     for section_id, exclusion in _VERBATIM_EXCLUDED_SECTIONS.items():
         assert exclusion.section_id == section_id
         assert exclusion.reason in {"value-substituting", "net-new-prose"}

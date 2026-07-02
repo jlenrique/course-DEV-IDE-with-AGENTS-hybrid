@@ -28,13 +28,14 @@ REPO_ROOT = Path(__file__).resolve().parents[2]
 # Files inside these prefixes are allowed to import emit_fit_report.
 ALLOWED_PRODUCTION_IMPORT_PREFIXES: tuple[str, ...] = (
     # The defining module itself.
-    "marcus/lesson_plan/fit_report.py",
+    "app/marcus/lesson_plan/fit_report.py",
     # Package re-exports are plumbing, not a caller.
-    "marcus/lesson_plan/__init__.py",
-    # Future Marcus-Orchestrator module (30-1 duality split). Pre-seeded
-    # here so 29-2 authors see the invariant before the split lands:
-    # Marcus-Orchestrator modules are the sanctioned caller surface.
-    "marcus/orchestrator/",
+    "app/marcus/lesson_plan/__init__.py",
+    # Marcus-Orchestrator modules (30-1 duality split) are the sanctioned
+    # caller surface.
+    # Prefixes repinned marcus/ -> app/marcus/ per the s2-marcus-collapse
+    # (343220f6/accd226d/195be7c9); see contracts-triage-ledger-2026-07-02.
+    "app/marcus/orchestrator/",
 )
 
 # Test files are exempt (mocking / direct invocation via isolated log is

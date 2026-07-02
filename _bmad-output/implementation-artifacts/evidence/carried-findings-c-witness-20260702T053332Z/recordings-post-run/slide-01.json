@@ -1,0 +1,111 @@
+{
+  "_provenance": {
+    "captured_at": "2026-07-02T05:38:46.343822+00:00",
+    "harness": "tests/specialists/vision/test_vision_live_roundtrip.py",
+    "model_id": "gpt-5.5",
+    "prompt_sha256": "badb0f2e23ceeb83cd25766fab2bc3ba314b7ccf6377b2d12e5e4ae3b42d63be",
+    "slide_id": "slide-01",
+    "source_png": "runs/compositor/assembly-bundle/visuals/slide-01.png"
+  },
+  "response": {
+    "artifact_path": "",
+    "card_number": null,
+    "confidence": "HIGH",
+    "confidence_score": 0.98,
+    "coverage": "perceived",
+    "extracted_text": "The Economic & Structural Reality U.S. national health expenditures now exceed $4.5 trillion annually, yet the way physicians deliver care has shifted just as dramatically as the dollars involved. The dominant structural force: a sweeping migration from independent private practice into large, integrated health systems. Independent Practice Once the norm \u2014 physicians as autonomous small-business owners Consolidation Era Rapid acquisition by health systems, insurers, and private equity Employed Majority Over 70% of physicians are now employed rather than independent",
+    "layout_description": "The slide is split with a white text-heavy left panel and a full-height aerial hospital/city photo on the right. The left side contains a large title at top, a paragraph below it, and a pale green three-section callout box near the bottom.",
+    "provenance": "png-grounded",
+    "provider_model_id": "gpt-5.5",
+    "slide_id": "slide-01",
+    "slide_title": "The Economic & Structural Reality",
+    "source_png_path": "runs/compositor/assembly-bundle/visuals/slide-01.png",
+    "text_blocks": [
+      "The Economic & Structural Reality",
+      "U.S. national health expenditures now exceed $4.5 trillion annually, yet the way physicians deliver care has shifted just as dramatically as the dollars involved. The dominant structural force: a sweeping migration from independent private practice into large, integrated health systems.",
+      "Independent Practice Once the norm \u2014 physicians as autonomous small-business owners",
+      "Consolidation Era Rapid acquisition by health systems, insurers, and private equity",
+      "Employed Majority Over 70% of physicians are now employed rather than independent"
+    ],
+    "visual_elements": [
+      {
+        "bbox": [
+          0.06,
+          0.08,
+          0.55,
+          0.21
+        ],
+        "id": "title",
+        "kind": "title",
+        "role_tier": "4",
+        "role_tier_reason": "Large top-left heading labels the slide topic.",
+        "text": "The Economic & Structural Reality"
+      },
+      {
+        "bbox": [
+          0.06,
+          0.26,
+          0.55,
+          0.46
+        ],
+        "id": "body-paragraph",
+        "kind": "callout",
+        "role_tier": "2_5",
+        "role_tier_reason": "Main explanatory text includes emphasized expenditure figure and structural claim.",
+        "text": "U.S. national health expenditures now exceed $4.5 trillion annually, yet the way physicians deliver care has shifted just as dramatically as the dollars involved. The dominant structural force: a sweeping migration from independent private practice into large, integrated health systems."
+      },
+      {
+        "bbox": [
+          0.06,
+          0.5,
+          0.31,
+          0.73
+        ],
+        "id": "independent-practice",
+        "kind": "callout",
+        "role_tier": "2_5",
+        "role_tier_reason": "Top-left cell in comparison box provides evidence/supporting point.",
+        "text": "Independent Practice Once the norm \u2014 physicians as autonomous small-business owners"
+      },
+      {
+        "bbox": [
+          0.31,
+          0.5,
+          0.57,
+          0.73
+        ],
+        "id": "consolidation-era",
+        "kind": "callout",
+        "role_tier": "2_5",
+        "role_tier_reason": "Top-right cell in comparison box provides evidence/supporting point.",
+        "text": "Consolidation Era Rapid acquisition by health systems, insurers, and private equity"
+      },
+      {
+        "bbox": [
+          0.06,
+          0.73,
+          0.57,
+          0.92
+        ],
+        "id": "employed-majority",
+        "kind": "stat",
+        "role_tier": "2_5",
+        "role_tier_reason": "Bottom callout contains a numeric statistic supporting the slide argument.",
+        "text": "Employed Majority Over 70% of physicians are now employed rather than independent"
+      },
+      {
+        "bbox": [
+          0.63,
+          0.0,
+          1.0,
+          1.0
+        ],
+        "id": "hospital-photo",
+        "kind": "photo",
+        "role_tier": "1",
+        "role_tier_reason": "Full-height edge-bleed aerial hospital image provides evocative context without readable internal labels.",
+        "text": ""
+      }
+    ]
+  }
+}

@@ -1,0 +1,111 @@
+{
+  "_provenance": {
+    "captured_at": "2026-07-02T05:38:46.343822+00:00",
+    "harness": "tests/specialists/vision/test_vision_live_roundtrip.py",
+    "model_id": "gpt-5.5",
+    "prompt_sha256": "9c63a06e6c28b20f5d3630cfcf77c7154216250f99e4b27e6e0ca45d0c919a6c",
+    "slide_id": "slide-04",
+    "source_png": "runs/compositor/assembly-bundle/visuals/slide-04.png"
+  },
+  "response": {
+    "artifact_path": "",
+    "card_number": null,
+    "confidence": "HIGH",
+    "confidence_score": 0.98,
+    "coverage": "perceived",
+    "extracted_text": "The Human Cost: System Waste & Burnout Administrative waste does not merely consume dollars \u2014 it consumes physicians. Excessive documentation, prior authorizations, and bureaucratic overhead translate directly into emotional exhaustion, depersonalization, and reduced efficacy: the clinical triad of burnout. Emotional Exhaustion Depleted by relentless non-clinical demands Depersonalization Disconnection from patients as a protective response Reduced Efficacy Loss of meaning and confidence in clinical contribution",
+    "layout_description": "The slide is split vertically with a full-height photo of an exhausted physician on the left and a white content area on the right. The right side contains a large title, a paragraph, two side-by-side callout cards, and one wide callout card below them.",
+    "provenance": "png-grounded",
+    "provider_model_id": "gpt-5.5",
+    "slide_id": "slide-04",
+    "slide_title": "The Human Cost: System Waste & Burnout",
+    "source_png_path": "runs/compositor/assembly-bundle/visuals/slide-04.png",
+    "text_blocks": [
+      "The Human Cost: System Waste & Burnout",
+      "Administrative waste does not merely consume dollars \u2014 it consumes physicians. Excessive documentation, prior authorizations, and bureaucratic overhead translate directly into emotional exhaustion, depersonalization, and reduced efficacy: the clinical triad of burnout.",
+      "Emotional Exhaustion Depleted by relentless non-clinical demands",
+      "Depersonalization Disconnection from patients as a protective response",
+      "Reduced Efficacy Loss of meaning and confidence in clinical contribution"
+    ],
+    "visual_elements": [
+      {
+        "bbox": [
+          0,
+          0,
+          0.4,
+          1
+        ],
+        "id": "left-photo",
+        "kind": "photo",
+        "role_tier": "1",
+        "role_tier_reason": "Full-height edge-bleed evocative image with no internal labels.",
+        "text": ""
+      },
+      {
+        "bbox": [
+          0.46,
+          0.08,
+          0.96,
+          0.21
+        ],
+        "id": "title",
+        "kind": "title",
+        "role_tier": "4",
+        "role_tier_reason": "Large heading acts as the main slide label.",
+        "text": "The Human Cost: System Waste & Burnout"
+      },
+      {
+        "bbox": [
+          0.46,
+          0.27,
+          0.96,
+          0.47
+        ],
+        "id": "body-paragraph",
+        "kind": "callout",
+        "role_tier": "2",
+        "role_tier_reason": "Primary explanatory text below the title.",
+        "text": "Administrative waste does not merely consume dollars \u2014 it consumes physicians. Excessive documentation, prior authorizations, and bureaucratic overhead translate directly into emotional exhaustion, depersonalization, and reduced efficacy: the clinical triad of burnout."
+      },
+      {
+        "bbox": [
+          0.46,
+          0.51,
+          0.72,
+          0.75
+        ],
+        "id": "card-emotional-exhaustion",
+        "kind": "callout",
+        "role_tier": "2",
+        "role_tier_reason": "Supporting callout card summarizing one burnout dimension.",
+        "text": "Emotional Exhaustion Depleted by relentless non-clinical demands"
+      },
+      {
+        "bbox": [
+          0.74,
+          0.51,
+          1,
+          0.75
+        ],
+        "id": "card-depersonalization",
+        "kind": "callout",
+        "role_tier": "2",
+        "role_tier_reason": "Supporting callout card summarizing one burnout dimension.",
+        "text": "Depersonalization Disconnection from patients as a protective response"
+      },
+      {
+        "bbox": [
+          0.46,
+          0.77,
+          1,
+          0.93
+        ],
+        "id": "card-reduced-efficacy",
+        "kind": "callout",
+        "role_tier": "2",
+        "role_tier_reason": "Wide supporting callout card summarizing one burnout dimension.",
+        "text": "Reduced Efficacy Loss of meaning and confidence in clinical contribution"
+      }
+    ]
+  }
+}

@@ -17,7 +17,11 @@ def test_blueprint_registry_backfill_points_at_concrete_producer() -> None:
 
 
 def test_no_schema_bump_and_public_surface_stays_expected() -> None:
-    assert SCHEMA_VERSION == "1.0"
+    # Modality registry 1.0 -> 1.1 was a governed Braid-S2 bump (2cac27b9;
+    # SCHEMA_CHANGELOG "Modality Registry v1.1"); the 31-4-era "no bump yet"
+    # pin is repinned to the governed version. produced_asset stays 1.0.
+    # See contracts-triage-ledger-2026-07-02 row 19.
+    assert SCHEMA_VERSION == "1.1"
     assert PRODUCED_ASSET_SCHEMA_VERSION == "1.0"
     assert set(blueprint_producer_module.__all__) == {
         "BlueprintProducer",

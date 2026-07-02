@@ -21,7 +21,11 @@ from retrieval import get_provider, list_providers
         # lines 265-273 (registered-first, placeholder-second). Every future
         # retrieval-shape story will flip its row here the same way.
         ("scite", "retrieval", "ready"),
-        ("consensus", "retrieval", "ratified"),
+        # Story 27-2.5: ConsensusProvider adapter shipped (absorbed at
+        # severance, 835e6503) -> live PROVIDER_INFO supersedes the
+        # placeholder, ratified -> ready (same supersession contract as
+        # scite above). Repin per contracts-triage-ledger-2026-07-02 row 15.
+        ("consensus", "retrieval", "ready"),
         ("image", "retrieval", "ratified"),
         ("youtube", "retrieval", "ratified"),
         ("openai_chatgpt", "retrieval", "backlog"),

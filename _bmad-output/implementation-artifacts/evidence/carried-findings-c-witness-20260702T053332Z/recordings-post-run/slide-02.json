@@ -1,0 +1,112 @@
+{
+  "_provenance": {
+    "captured_at": "2026-07-02T05:38:46.343822+00:00",
+    "harness": "tests/specialists/vision/test_vision_live_roundtrip.py",
+    "model_id": "gpt-5.5",
+    "prompt_sha256": "4d5da68928cf613e26a9060370d4f0365c3029447e5515ff98788b7eb60d3bf5",
+    "slide_id": "slide-02",
+    "source_png": "runs/compositor/assembly-bundle/visuals/slide-02.png"
+  },
+  "response": {
+    "artifact_path": "",
+    "card_number": null,
+    "confidence": "HIGH",
+    "confidence_score": 0.98,
+    "coverage": "perceived",
+    "extracted_text": "Why the Environment Feels Different Now A Transformed Landscape U.S. healthcare now operates under large-scale economic and organizational pressures that were absent a generation ago. Physicians trained for clinical mastery now find themselves embedded in systems governed by financial targets, regulatory mandates, and enterprise-wide strategy. Market Consolidation Mergers compress local competition and centralize decision-making Payer Complexity Value-based contracts shift financial risk to care delivery teams Workforce Strain Staffing shortages amplify pressure on remaining clinicians",
+    "layout_description": "A large dark-blue title spans the top. The middle row has a large doctor-in-hospital photo on the left and a text explanation on the right, with three bordered callout cards arranged across the bottom.",
+    "provenance": "png-grounded",
+    "provider_model_id": "gpt-5.5",
+    "slide_id": "slide-02",
+    "slide_title": "Why the Environment Feels Different Now",
+    "source_png_path": "runs/compositor/assembly-bundle/visuals/slide-02.png",
+    "text_blocks": [
+      "Why the Environment Feels Different Now",
+      "A Transformed Landscape",
+      "U.S. healthcare now operates under large-scale economic and organizational pressures that were absent a generation ago. Physicians trained for clinical mastery now find themselves embedded in systems governed by financial targets, regulatory mandates, and enterprise-wide strategy.",
+      "Market Consolidation Mergers compress local competition and centralize decision-making",
+      "Payer Complexity Value-based contracts shift financial risk to care delivery teams",
+      "Workforce Strain Staffing shortages amplify pressure on remaining clinicians"
+    ],
+    "visual_elements": [
+      {
+        "bbox": [
+          0.06,
+          0.07,
+          0.86,
+          0.13
+        ],
+        "id": "title",
+        "kind": "title",
+        "role_tier": "4",
+        "role_tier_reason": "Large top heading labels the slide topic.",
+        "text": "Why the Environment Feels Different Now"
+      },
+      {
+        "bbox": [
+          0.06,
+          0.2,
+          0.62,
+          0.65
+        ],
+        "id": "photo-doctor",
+        "kind": "photo",
+        "role_tier": "2",
+        "role_tier_reason": "Large illustrative image of a physician in a hospital corridor supports the healthcare theme.",
+        "text": ""
+      },
+      {
+        "bbox": [
+          0.66,
+          0.2,
+          0.94,
+          0.65
+        ],
+        "id": "right-text",
+        "kind": "callout",
+        "role_tier": "2",
+        "role_tier_reason": "Prominent explanatory text block read as supporting narrative beside the photo.",
+        "text": "A Transformed Landscape U.S. healthcare now operates under large-scale economic and organizational pressures that were absent a generation ago. Physicians trained for clinical mastery now find themselves embedded in systems governed by financial targets, regulatory mandates, and enterprise-wide strategy."
+      },
+      {
+        "bbox": [
+          0.06,
+          0.71,
+          0.34,
+          0.93
+        ],
+        "id": "card-market-consolidation",
+        "kind": "callout",
+        "role_tier": "2",
+        "role_tier_reason": "Bottom boxed callout summarizes one supporting pressure point.",
+        "text": "Market Consolidation Mergers compress local competition and centralize decision-making"
+      },
+      {
+        "bbox": [
+          0.36,
+          0.71,
+          0.64,
+          0.93
+        ],
+        "id": "card-payer-complexity",
+        "kind": "callout",
+        "role_tier": "2",
+        "role_tier_reason": "Bottom boxed callout summarizes one supporting pressure point.",
+        "text": "Payer Complexity Value-based contracts shift financial risk to care delivery teams"
+      },
+      {
+        "bbox": [
+          0.66,
+          0.71,
+          0.94,
+          0.93
+        ],
+        "id": "card-workforce-strain",
+        "kind": "callout",
+        "role_tier": "2",
+        "role_tier_reason": "Bottom boxed callout summarizes one supporting pressure point.",
+        "text": "Workforce Strain Staffing shortages amplify pressure on remaining clinicians"
+      }
+    ]
+  }
+}

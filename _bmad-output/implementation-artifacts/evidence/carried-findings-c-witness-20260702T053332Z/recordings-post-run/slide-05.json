@@ -1,0 +1,85 @@
+{
+  "_provenance": {
+    "captured_at": "2026-07-02T05:38:46.343822+00:00",
+    "harness": "tests/specialists/vision/test_vision_live_roundtrip.py",
+    "model_id": "gpt-5.5",
+    "prompt_sha256": "d9f6577d5df46300eb68e6850a44b1f8d4f4b4e599fa34b3bb1d1e267ed4a6ff",
+    "slide_id": "slide-05",
+    "source_png": "runs/compositor/assembly-bundle/visuals/slide-05.png"
+  },
+  "response": {
+    "artifact_path": "",
+    "card_number": null,
+    "confidence": "HIGH",
+    "confidence_score": 0.98,
+    "coverage": "perceived",
+    "extracted_text": "The Scale of Waste Waste Category Administrative Complexity Pricing Failure Care Delivery Failure Overtreatment Fraud & Abuse Care Coordination Failure 265 230 165 105 85 80 0 50 100 150 200 250 Estimated Annual Waste ($B) Dollars That Never Reach Patients The National Academy of Medicine estimates that $760 billion to over $1 trillion in annual U.S. healthcare spending is wasted. Administrative complexity alone accounts for the single largest category \u2014 costs absorbed by documentation, billing, and compliance rather than care. This is not inefficiency at the margins. It is a structural feature of how the system is built \u2014 and a target for clinician-led redesign.",
+    "layout_description": "A large dark-blue title sits at the upper left. The lower-left half contains a horizontal bar chart, while the right half contains a bold heading and two large explanatory text paragraphs.",
+    "provenance": "png-grounded",
+    "provider_model_id": "gpt-5.5",
+    "slide_id": "slide-05",
+    "slide_title": "The Scale of Waste",
+    "source_png_path": "runs/compositor/assembly-bundle/visuals/slide-05.png",
+    "text_blocks": [
+      "The Scale of Waste",
+      "Waste Category Administrative Complexity Pricing Failure Care Delivery Failure Overtreatment Fraud & Abuse Care Coordination Failure 265 230 165 105 85 80 0 50 100 150 200 250 Estimated Annual Waste ($B)",
+      "Dollars That Never Reach Patients",
+      "The National Academy of Medicine estimates that $760 billion to over $1 trillion in annual U.S. healthcare spending is wasted. Administrative complexity alone accounts for the single largest category \u2014 costs absorbed by documentation, billing, and compliance rather than care.",
+      "This is not inefficiency at the margins. It is a structural feature of how the system is built \u2014 and a target for clinician-led redesign."
+    ],
+    "visual_elements": [
+      {
+        "bbox": [
+          0.06,
+          0.14,
+          0.43,
+          0.22
+        ],
+        "id": "title_main",
+        "kind": "title",
+        "role_tier": "4",
+        "role_tier_reason": "Large prominent slide title labels the page.",
+        "text": "The Scale of Waste"
+      },
+      {
+        "bbox": [
+          0.06,
+          0.3,
+          0.47,
+          0.78
+        ],
+        "id": "chart_waste_categories",
+        "kind": "chart",
+        "role_tier": "2_5",
+        "role_tier_reason": "Horizontal bar chart with labeled categories, axis ticks, and values used as evidence.",
+        "text": "Waste Category Administrative Complexity Pricing Failure Care Delivery Failure Overtreatment Fraud & Abuse Care Coordination Failure 265 230 165 105 85 80 0 50 100 150 200 250 Estimated Annual Waste ($B)"
+      },
+      {
+        "bbox": [
+          0.52,
+          0.3,
+          0.84,
+          0.34
+        ],
+        "id": "right_heading",
+        "kind": "callout",
+        "role_tier": "4",
+        "role_tier_reason": "Bold heading labels the explanatory text section.",
+        "text": "Dollars That Never Reach Patients"
+      },
+      {
+        "bbox": [
+          0.52,
+          0.37,
+          0.95,
+          0.82
+        ],
+        "id": "right_body",
+        "kind": "callout",
+        "role_tier": "2",
+        "role_tier_reason": "Large explanatory narrative block supporting the chart message.",
+        "text": "The National Academy of Medicine estimates that $760 billion to over $1 trillion in annual U.S. healthcare spending is wasted. Administrative complexity alone accounts for the single largest category \u2014 costs absorbed by documentation, billing, and compliance rather than care. This is not inefficiency at the margins. It is a structural feature of how the system is built \u2014 and a target for clinician-led redesign."
+      }
+    ]
+  }
+}

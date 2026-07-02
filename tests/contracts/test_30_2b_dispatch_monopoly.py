@@ -20,9 +20,12 @@ _ALLOWED_CALLERS: frozenset[str] = frozenset(
     {
         # dispatch.py holds both dispatch_intake_pre_packet (Intake flow)
         # and dispatch_orchestrator_event (Orchestrator flow, 30-3a).
-        "marcus/orchestrator/dispatch.py",
+        # Paths repinned marcus/ -> app/marcus/ per the s2-marcus-collapse
+        # (accd226d updated the walk root only); see
+        # contracts-triage-ledger-2026-07-02 row 12.
+        "app/marcus/orchestrator/dispatch.py",
         # write_api.py defines the callable.
-        "marcus/orchestrator/write_api.py",
+        "app/marcus/orchestrator/write_api.py",
     }
 )
 

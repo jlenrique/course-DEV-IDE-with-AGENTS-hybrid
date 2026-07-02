@@ -1,0 +1,105 @@
+{
+  "_provenance": {
+    "captured_at": "2026-07-02T05:38:46.343822+00:00",
+    "harness": "tests/specialists/vision/test_vision_live_roundtrip.py",
+    "model_id": "gpt-5.5",
+    "prompt_sha256": "8c5c94cfa718f9534191b2b471f613a2d0b07d78649fad913a7a959fdb37350b",
+    "slide_id": "slide-06",
+    "source_png": "runs/compositor/assembly-bundle/visuals/slide-06.png"
+  },
+  "response": {
+    "artifact_path": "",
+    "card_number": null,
+    "confidence": "HIGH",
+    "confidence_score": 0.96,
+    "coverage": "perceived",
+    "extracted_text": "Burnout Is a Design Problem, Not a Resilience Failure Reframing the Narrative For too long, the response to physician burnout has been yoga, mindfulness apps, and resilience workshops \u2014 interventions that implicitly locate the problem in the individual. The evidence points elsewhere. Burnout rates correlate strongly with EHR documentation burden, after-hours inbox volume, and the ratio of administrative tasks to clinical work \u2014 all system design variables, not character deficits. Individual Framing Insufficient resilience Personal coping failure Wellness program solution System Framing Administrative overload Poor workflow design Organizational redesign solution",
+    "layout_description": "Large dark-blue title spans the upper left and top center. The left half contains narrative text, while the right half contains a two-column comparison diagram separating Individual Framing from System Framing with labeled illustrations.",
+    "provenance": "png-grounded",
+    "provider_model_id": "gpt-5.5",
+    "slide_id": "slide-06",
+    "slide_title": "Burnout Is a Design Problem, Not a Resilience Failure",
+    "source_png_path": "runs/compositor/assembly-bundle/visuals/slide-06.png",
+    "text_blocks": [
+      "Burnout Is a Design Problem, Not a Resilience Failure",
+      "Reframing the Narrative",
+      "For too long, the response to physician burnout has been yoga, mindfulness apps, and resilience workshops \u2014 interventions that implicitly locate the problem in the individual. The evidence points elsewhere.",
+      "Burnout rates correlate strongly with EHR documentation burden, after-hours inbox volume, and the ratio of administrative tasks to clinical work \u2014 all system design variables, not character deficits.",
+      "Individual Framing",
+      "Insufficient resilience",
+      "Personal coping failure",
+      "Wellness program solution",
+      "System Framing",
+      "Administrative overload",
+      "Poor workflow design",
+      "Organizational redesign solution"
+    ],
+    "visual_elements": [
+      {
+        "bbox": [
+          0.06,
+          0.07,
+          0.88,
+          0.2
+        ],
+        "id": "title",
+        "kind": "title",
+        "role_tier": "4",
+        "role_tier_reason": "Large headline functions as the slide\u2019s main label.",
+        "text": "Burnout Is a Design Problem, Not a Resilience Failure"
+      },
+      {
+        "bbox": [
+          0.06,
+          0.34,
+          0.47,
+          0.81
+        ],
+        "id": "left-narrative",
+        "kind": "callout",
+        "role_tier": "2_5",
+        "role_tier_reason": "Primary explanatory text supports the slide claim with evidence statements.",
+        "text": "Reframing the Narrative For too long, the response to physician burnout has been yoga, mindfulness apps, and resilience workshops \u2014 interventions that implicitly locate the problem in the individual. The evidence points elsewhere. Burnout rates correlate strongly with EHR documentation burden, after-hours inbox volume, and the ratio of administrative tasks to clinical work \u2014 all system design variables, not character deficits."
+      },
+      {
+        "bbox": [
+          0.52,
+          0.3,
+          0.72,
+          0.85
+        ],
+        "id": "individual-framing-column",
+        "kind": "diagram",
+        "role_tier": "3",
+        "role_tier_reason": "Labeled internal sections form a conceptual diagram to trace down the column.",
+        "text": "Individual Framing Insufficient resilience Personal coping failure Wellness program solution"
+      },
+      {
+        "bbox": [
+          0.73,
+          0.3,
+          0.94,
+          0.85
+        ],
+        "id": "system-framing-column",
+        "kind": "diagram",
+        "role_tier": "3",
+        "role_tier_reason": "Labeled internal sections form a conceptual diagram to trace down the column.",
+        "text": "System Framing Administrative overload Poor workflow design Organizational redesign solution"
+      },
+      {
+        "bbox": [
+          0.72,
+          0.3,
+          0.73,
+          0.84
+        ],
+        "id": "center-divider",
+        "kind": "diagram",
+        "role_tier": "4",
+        "role_tier_reason": "Thin vertical line visually separates the two labeled columns.",
+        "text": ""
+      }
+    ]
+  }
+}

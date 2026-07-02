@@ -22,14 +22,42 @@ _ALLOWED_APPEND_EVENT_CALLERS: frozenset[str] = frozenset(
     {
         # The write_api.py module is the canonical Intake-originated-flow
         # caller of append_event (via emit_pre_packet_snapshot).
-        "marcus/orchestrator/write_api.py",
+        # Paths repinned marcus/ -> app/marcus/ per the s2-marcus-collapse
+        # (accd226d updated the scan roots only); see
+        # contracts-triage-ledger-2026-07-02 row 11.
+        "app/marcus/orchestrator/write_api.py",
         # The dispatch.py module is the Orchestrator-originated-flow caller
         # of append_event (via dispatch_orchestrator_event) — 30-3a.
         # Both modules are Orchestrator-side; Intake-side modules are still
         # forbidden from append_event by this test's scan scope.
-        "marcus/orchestrator/dispatch.py",
+        "app/marcus/orchestrator/dispatch.py",
     }
 )
+
+# The S2 merge (2026-05-07) placed a state-machine TEST HELPER named
+# ``append_event(state, event)`` in write_api.py that appends to a
+# ``state.events`` list and, by construction, never touches the Lesson Plan
+# log (write_api.py documents it as "NOT a production write surface for
+# Lesson Plan log events"). Bare-name calls that resolve to THAT import are
+# exempt; the invariant this contract protects — no intake/orchestrator
+# module appends to the 31-2 LessonPlanLog outside write_api/dispatch —
+# keeps full teeth because (a) real log writes are attribute calls on a
+# LessonPlanLog instance and remain flagged everywhere, and (b) bare
+# ``append_event`` imported from ANY other module remains flagged.
+# Follow-on filed (contracts-triage-ledger-2026-07-02 footer): rename the
+# helper so this exemption can retire.
+_STATE_HELPER_MODULE = "app.marcus.orchestrator.write_api"
+
+
+def _bare_append_event_import_sources(tree: ast.AST) -> set[str]:
+    """Modules from which this file imports a bare ``append_event`` name."""
+    sources: set[str] = set()
+    for node in ast.walk(tree):
+        if isinstance(node, ast.ImportFrom) and node.module:
+            for alias in node.names:
+                if alias.name == "append_event":
+                    sources.add(node.module)
+    return sources
 
 
 def _find_append_event_callsites(root: Path) -> list[tuple[Path, int]]:
@@ -40,6 +68,8 @@ def _find_append_event_callsites(root: Path) -> list[tuple[Path, int]]:
             tree = ast.parse(py.read_text(encoding="utf-8"), filename=str(py))
         except SyntaxError:
             continue
+        import_sources = _bare_append_event_import_sources(tree)
+        bare_is_state_helper = import_sources == {_STATE_HELPER_MODULE}
         for node in ast.walk(tree):
             if not isinstance(node, ast.Call):
                 continue
@@ -48,6 +78,9 @@ def _find_append_event_callsites(root: Path) -> list[tuple[Path, int]]:
                 isinstance(func, ast.Attribute) and func.attr == "append_event"
             )
             is_bare_call = isinstance(func, ast.Name) and func.id == "append_event"
+            if is_bare_call and bare_is_state_helper:
+                # Resolves to the write_api state-machine helper (non-log).
+                continue
             if is_attribute_call or is_bare_call:
                 findings.append((py, getattr(node, "lineno", 0)))
     return findings

@@ -1,0 +1,132 @@
+{
+  "_provenance": {
+    "captured_at": "2026-07-02T05:38:46.343822+00:00",
+    "harness": "tests/specialists/vision/test_vision_live_roundtrip.py",
+    "model_id": "gpt-5.5",
+    "prompt_sha256": "7559b0cccba4abf1a8e176af7e09d46a230c96c1682800422f848235dc6c4d4d",
+    "slide_id": "slide-03",
+    "source_png": "runs/compositor/assembly-bundle/visuals/slide-03.png"
+  },
+  "response": {
+    "artifact_path": "",
+    "card_number": null,
+    "confidence": "HIGH",
+    "confidence_score": 0.98,
+    "coverage": "perceived",
+    "extracted_text": "Why Enterprise Navigation Now Matters As consolidation concentrates authority in large health systems, individual clinical excellence alone no longer determines outcomes \u2014 organizational influence does. Physicians who cannot navigate enterprise structures are sidelined from the decisions that shape care delivery. REDUCED AUTONOMY INTERDEPARTMENTAL ALIGNMENT POLICY INFLUENCE ENTERPRISE NAVIGATION STRATEGIC PLANNING RESOURCE ALLOCATION QUALITY IMPROVEMENT From Clinician to Organizational Leader Consolidation does not simply change who signs the paycheck \u2014 it changes who sets the agenda. Protocols, staffing ratios, technology adoption, and care pathways are now determined at the system level. Physicians who understand how to influence these levers \u2014 budgets, governance committees, strategic initiatives \u2014 protect both their patients and their professional voice. Enterprise navigation is not optional for clinicians who want to lead change.",
+    "layout_description": "A large title and explanatory paragraph span the top. The lower half is split with a hub-and-spoke enterprise navigation diagram on the left and a section heading, body text, and shaded takeaway callout on the right.",
+    "provenance": "png-grounded",
+    "provider_model_id": "gpt-5.5",
+    "slide_id": "slide-03",
+    "slide_title": "Why Enterprise Navigation Now Matters",
+    "source_png_path": "runs/compositor/assembly-bundle/visuals/slide-03.png",
+    "text_blocks": [
+      "Why Enterprise Navigation Now Matters",
+      "As consolidation concentrates authority in large health systems, individual clinical excellence alone no longer determines outcomes \u2014 organizational influence does. Physicians who cannot navigate enterprise structures are sidelined from the decisions that shape care delivery.",
+      "REDUCED AUTONOMY",
+      "INTERDEPARTMENTAL ALIGNMENT",
+      "POLICY INFLUENCE",
+      "ENTERPRISE NAVIGATION",
+      "STRATEGIC PLANNING",
+      "RESOURCE ALLOCATION",
+      "QUALITY IMPROVEMENT",
+      "From Clinician to Organizational Leader",
+      "Consolidation does not simply change who signs the paycheck \u2014 it changes who sets the agenda. Protocols, staffing ratios, technology adoption, and care pathways are now determined at the system level.",
+      "Physicians who understand how to influence these levers \u2014 budgets, governance committees, strategic initiatives \u2014 protect both their patients and their professional voice.",
+      "Enterprise navigation is not optional for clinicians who want to lead change."
+    ],
+    "visual_elements": [
+      {
+        "bbox": [
+          0.06,
+          0.07,
+          0.78,
+          0.13
+        ],
+        "id": "title",
+        "kind": "title",
+        "role_tier": "4",
+        "role_tier_reason": "Large top heading labels the slide topic.",
+        "text": "Why Enterprise Navigation Now Matters"
+      },
+      {
+        "bbox": [
+          0.06,
+          0.18,
+          0.91,
+          0.28
+        ],
+        "id": "intro_text",
+        "kind": "callout",
+        "role_tier": "4",
+        "role_tier_reason": "Prominent explanatory text block under the title.",
+        "text": "As consolidation concentrates authority in large health systems, individual clinical excellence alone no longer determines outcomes \u2014 organizational influence does. Physicians who cannot navigate enterprise structures are sidelined from the decisions that shape care delivery."
+      },
+      {
+        "bbox": [
+          0.06,
+          0.36,
+          0.47,
+          0.88
+        ],
+        "id": "enterprise_diagram",
+        "kind": "diagram",
+        "role_tier": "3",
+        "role_tier_reason": "Hub-and-spoke diagram with visible internal labels and connecting lines to trace relationships.",
+        "text": "REDUCED AUTONOMY INTERDEPARTMENTAL ALIGNMENT POLICY INFLUENCE ENTERPRISE NAVIGATION STRATEGIC PLANNING RESOURCE ALLOCATION QUALITY IMPROVEMENT"
+      },
+      {
+        "bbox": [
+          0.51,
+          0.34,
+          0.86,
+          0.38
+        ],
+        "id": "section_heading",
+        "kind": "title",
+        "role_tier": "4",
+        "role_tier_reason": "Bold right-column heading labels the section.",
+        "text": "From Clinician to Organizational Leader"
+      },
+      {
+        "bbox": [
+          0.51,
+          0.4,
+          0.92,
+          0.75
+        ],
+        "id": "right_body_text",
+        "kind": "bullet",
+        "role_tier": "4",
+        "role_tier_reason": "Main right-column narrative text intended to be read directly.",
+        "text": "Consolidation does not simply change who signs the paycheck \u2014 it changes who sets the agenda. Protocols, staffing ratios, technology adoption, and care pathways are now determined at the system level. Physicians who understand how to influence these levers \u2014 budgets, governance committees, strategic initiatives \u2014 protect both their patients and their professional voice."
+      },
+      {
+        "bbox": [
+          0.51,
+          0.78,
+          0.92,
+          0.91
+        ],
+        "id": "takeaway_callout",
+        "kind": "callout",
+        "role_tier": "4",
+        "role_tier_reason": "Shaded takeaway box with explicit key message.",
+        "text": "Enterprise navigation is not optional for clinicians who want to lead change."
+      },
+      {
+        "bbox": [
+          0.53,
+          0.82,
+          0.55,
+          0.84
+        ],
+        "id": "takeaway_icon",
+        "kind": "icon",
+        "role_tier": "4",
+        "role_tier_reason": "Small checkbox-style icon inside the callout; area is under 0.05.",
+        "text": ""
+      }
+    ]
+  }
+}

@@ -1,0 +1,1 @@
+post-extraction capture vs pre-extraction-golden.yaml: byte-identical=True (649 bytes both). Mechanical lift of the post-join projection into enrich_segments_for_export was byte-neutral. 2026-07-02.
