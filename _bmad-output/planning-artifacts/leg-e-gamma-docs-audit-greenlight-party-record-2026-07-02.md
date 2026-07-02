@@ -125,3 +125,15 @@ All other amendments are orthogonal and STACK — John 1–7, Murat 1–11, Amel
 **Retro harvest (Murat):** duplicate status pins across test modules need a single-sweep grep at any lifecycle flip — the F-1 miss pattern was "re-ran the battery I remembered, not the battery that references the flipped symbol."
 
 **NITs filed:** ledger rows 4/5 share behavior prose (differentiation carried structurally by kind+diff); run_wrangler `--list-providers` table renders no notes column (W-2 fence verified present in PROVIDER_INFO.notes itself).
+
+---
+
+## FINAL GOAL CONCURRENCE (2026-07-02) — 3/3 CONCUR-GOAL-DONE
+
+Fully-spawned concurrence party per the goal's done-signal clause, each seat independently re-verifying at HEAD `be593322`:
+
+- **John (PM): CONCUR-GOAL-DONE.** All goal tasks verified task-by-task (W-2 + the full Leg-E spine + scope-only Task 7); gates ruled load-bearing ("the F-1 hand-back is my strongest evidence the gates were not ceremonial"); live testing incremental and indispensable as mandated; liveness rider resolved organically; SPOC guardrail clean.
+- **Murat (TEA): CONCUR-GOAL-DONE.** Fresh battery 144/144 at HEAD; ledger hash chain re-verified byte-exact; evidence dirs git-tracked; the HAND-BACK→remediation→re-verify cycle confirmed real; START-gate findings untouched and never claimed fixed (carried to WRAPUP as mandated). NIT swept at WRAPUP: stale "pending dual-gate" trailing prose in the story.
+- **Dan (CD): CONCUR-GOAL-DONE.** Two-tier discipline survived first real contact (candidates only; lock byte-identical; drift → follow-on stories, never in-leg edits; trigger FIRED-noted-not-acted); protected invariants zero-diff across the branch; "the honesty posture is the strongest I've gated in this arc."
+
+**Goal done-signal MET:** final task (Leg-E dual-gate CLOSE) accomplished and validated; concurrence recorded here + SESSION-HANDOFF.

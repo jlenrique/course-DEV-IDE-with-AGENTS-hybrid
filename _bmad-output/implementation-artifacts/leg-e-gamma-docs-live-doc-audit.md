@@ -113,4 +113,4 @@ Triage yield: **2 MUST-FIX + 9 SHOULD-FIX + NITs** (cheap NITs folded in as N1�
 - **Field-surface findings (report-only, feed the keywords-routing story):** NO discrete `imageOptions` keywords/tags field documented; NO `stylePreset`⊕`style` composition documented.
 - **T9 filed:** deferred-inventory §Leg-E follow-ons (`gamma-image-model-enum-refresh` 🔴 live-drift; `gamma-text-language-full-list-audit` 🟢; field-surface answers rider) + promotion-path trigger FIRED note + J-6 expertise-ingestion partial-fold rider.
 
-**Status: review → pending dual-gate CLOSE (Murat structural + Dan/Texas content).**
+**Status: done — dual-gate CLOSED (see the Status header line; Murat no-conditions at `ea0c3294` + Dan CD + Texas contract CLOSE). Final goal concurrence 3/3 recorded in the party record close addendum.**
