@@ -1,0 +1,196 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Gamma Styleguide Picker</title>
+<style>
+body { font-family: system-ui, sans-serif; margin: 0; background: #f5f6f8; color: #1c2733; }
+header { position: sticky; top: 0; background: #fff; border-bottom: 2px solid #d6dce3;
+  padding: 12px 20px; z-index: 5; }
+h1 { margin: 0 0 8px; font-size: 1.2rem; }
+.slots { display: flex; gap: 14px; align-items: center; flex-wrap: wrap; }
+.slot { border: 2px solid #b9c3cd; border-radius: 8px; padding: 6px 12px; background: #eef2f5;
+  display: flex; gap: 8px; align-items: center; min-width: 260px; }
+.slot.filled { border-color: #2b7a3d; background: #e8f5ec; }
+.slot.changed { animation: flash 0.9s ease-out; }
+@keyframes flash { 0% { background: #fff3bf; } 100% { background: inherit; } }
+.slot-label { font-weight: 700; }
+.slot-value { font-family: monospace; }
+.slot button { font-size: 0.75rem; cursor: pointer; }
+#confirm { font-size: 1rem; padding: 8px 22px; margin-left: 10px; cursor: pointer; }
+#confirm:disabled { cursor: not-allowed; opacity: 0.5; }
+.receipt { margin-top: 10px; border: 2px solid #2b7a3d; background: #e8f5ec; color: #1d5228;
+  border-radius: 8px; padding: 10px 14px; font-family: monospace; white-space: pre-wrap; }
+main.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 18px; padding: 20px; }
+.card { background: #fff; border: 1px solid #d6dce3; border-radius: 10px; padding: 12px;
+  cursor: pointer; position: relative; }
+.card:hover { border-color: #4a90d9; }
+.card.armed { outline: 3px solid #d9822b; }
+.card img.thumb { width: 100%; height: 190px; object-fit: cover; border-radius: 6px;
+  background: #eef2f5; display: block; }
+.thumb.placeholder { width: 100%; height: 190px; border-radius: 6px; background:
+  repeating-linear-gradient(45deg, #eef2f5, #eef2f5 12px, #e2e8ee 12px, #e2e8ee 24px);
+  display: flex; align-items: center; justify-content: center; color: #66727f;
+  font-weight: 600; }
+.card h2 { font-size: 1.02rem; margin: 10px 0 4px; }
+.distinguishing { font-weight: 600; font-size: 0.9rem; margin: 4px 0 8px; }
+.chip { font-size: 0.72rem; border-radius: 10px; padding: 2px 8px; display: inline-block; }
+.chip-last-used { position: absolute; top: 16px; right: 16px; background: rgba(28,39,51,0.65);
+  color: #eef2f5; }
+.chip-probe { background: #b3541e; color: #fff; font-weight: 700; margin-bottom: 6px; }
+details { margin-top: 6px; font-size: 0.85rem; }
+details summary { cursor: pointer; color: #4a6076; }
+</style>
+</head>
+<body>
+<header>
+<h1>Gamma Styleguide Picker — pre-run pick (Fork A)</h1>
+<div class="slots">
+<div class="slot" id="slot-A" data-variant="A">
+<span class="slot-label">Style A</span>
+<span class="slot-value">(empty)</span>
+<button type="button" class="slot-swap" data-variant="A">swap</button>
+<button type="button" class="slot-clear" data-variant="A">clear</button>
+</div>
+<div class="slot" id="slot-B" data-variant="B">
+<span class="slot-label">Style B</span>
+<span class="slot-value">(empty)</span>
+<button type="button" class="slot-swap" data-variant="B">swap</button>
+<button type="button" class="slot-clear" data-variant="B">clear</button>
+</div>
+<form id="pick-form" method="post" action="http://127.0.0.1:65003/pick">
+<input type="hidden" name="slot_A" id="field-slot-A" value="">
+<input type="hidden" name="slot_B" id="field-slot-B" value="">
+<button type="submit" id="confirm" disabled>Confirm</button>
+</form>
+</div>
+<div id="receipt" class="receipt" hidden></div>
+</header>
+<main class="grid">
+<article class="card" data-guide="classic-freeform-x-cards" data-probe="0">
+<img class="thumb" src="file:///C:/Users/juanl/Documents/GitHub/course-DEV-IDE-with-AGENTS-hybrid/state/config/gamma-styleguide-thumbnails/classic-freeform-x-cards.png" alt="Classic-Freeform_X-Cards thumbnail">
+<span class="chip chip-last-used">last used: never</span>
+<h2>Classic-Freeform_X-Cards</h2>
+<p class="distinguishing">The calm clinical default: freeform source prose condensed to spacious illustrated cards where the screen carries gist and the voiceover carries detail.</p>
+<details><summary>narrative</summary>
+<p><strong>summary:</strong> Clean clinical-education style that turns freeform prose into spacious white-background cards with navy headings, teal body, and soft vector panels.</p>
+<p><strong>feels like:</strong> Professional, calm, approachable, APC/clinical-leadership oriented.</p>
+<p><strong>use when:</strong> Narrated lessons where the screen shows gist and VO holds the detail.</p>
+<p><strong>avoid when:</strong> Data-heavy or editorial decks needing dense per-card structure.</p>
+</details>
+</article>
+<article class="card" data-guide="hil-2026-apc-blueprint-classic" data-probe="0">
+<img class="thumb" src="file:///C:/Users/juanl/Documents/GitHub/course-DEV-IDE-with-AGENTS-hybrid/state/config/gamma-styleguide-thumbnails/hil-2026-apc-blueprint-classic.png" alt="HIL 2026 APC Blueprint Classic thumbnail">
+<span class="chip chip-last-used">last used: never</span>
+<h2>HIL 2026 APC Blueprint Classic</h2>
+<p class="distinguishing">The technical/editorial contrast: preserve-mode line-art with a single-accent blueprint palette on a traditional 16:9 frame.</p>
+<details><summary>narrative</summary>
+<p><strong>summary:</strong> Technical/editorial variant for A/B slide selection: blueprint theme, line-art construction imagery, preserve-mode text that protects titles and figures.</p>
+<p><strong>feels like:</strong> Confident, precise, lightly editorial.</p>
+<p><strong>use when:</strong> A/B contrast against the calmer freeform Classic style.</p>
+<p><strong>avoid when:</strong> Warm, illustrative, or photographic looks are wanted.</p>
+</details>
+</article>
+<article class="card" data-guide="hil-2026-apc-studio-image-card" data-probe="0">
+<img class="thumb" src="file:///C:/Users/juanl/Documents/GitHub/course-DEV-IDE-with-AGENTS-hybrid/state/config/gamma-styleguide-thumbnails/hil-2026-apc-studio-image-card.png" alt="HIL 2026 APC Studio Image Card thumbnail">
+<span class="chip chip-last-used">last used: never</span>
+<h2>HIL 2026 APC Studio Image Card</h2>
+<p class="distinguishing">Full-bleed Studio template look where the image card itself carries the title and key data; the template is the sole style authority.</p>
+<details><summary>narrative</summary>
+<p><strong>summary:</strong> Studio create-from-template full-bleed image cards; the template owns the design and Gary only swaps the subject.</p>
+<p><strong>feels like:</strong> Bold, immersive, single-image-per-slide.</p>
+<p><strong>use when:</strong> A slide&#x27;s meaning lives in one full-bleed illustration with embedded text.</p>
+<p><strong>avoid when:</strong> Multi-block Classic typography or dense text is required.</p>
+</details>
+</article>
+<article class="card" data-guide="leg-c-part3-floor-probe" data-probe="1">
+<div class="thumb placeholder">no live render</div>
+<span class="chip chip-last-used">last used: never</span>
+<h2>Leg-C_Part3_Floor-Probe</h2>
+<span class="chip chip-probe">PROBE — scaffolding, not a production style (click twice to select)</span>
+<p class="distinguishing">The classic-freeform register with a declared multi-beat narrative identity: this style walks the audience through many small beats rather than a few dense stops.</p>
+<details><summary>narrative</summary>
+<p><strong>summary:</strong> Classic clinical-education style whose identity is the multi-beat walk — spacious cards, one beat per screen, voiceover tracking each beat.</p>
+<p><strong>feels like:</strong> Deliberate, paced, follow-along-friendly.</p>
+<p><strong>use when:</strong> Narrated lessons whose style identity is a many-beat walk.</p>
+<p><strong>avoid when:</strong> Synthesis/big-picture decks whose value is the simultaneous whole.</p>
+</details>
+</article>
+<article class="card" data-guide="leg-c-part3-floor-toohigh" data-probe="1">
+<div class="thumb placeholder">no live render</div>
+<span class="chip chip-last-used">last used: never</span>
+<h2>Leg-C_Part3_Floor-TooHigh</h2>
+<span class="chip chip-probe">PROBE — scaffolding, not a production style (click twice to select)</span>
+<p class="distinguishing">The classic-freeform register with a declared multi-beat narrative identity: this style walks the audience through many small beats rather than a few dense stops.</p>
+<details><summary>narrative</summary>
+<p><strong>summary:</strong> Classic clinical-education style whose identity is the multi-beat walk — spacious cards, one beat per screen, voiceover tracking each beat.</p>
+<p><strong>feels like:</strong> Deliberate, paced, follow-along-friendly.</p>
+<p><strong>use when:</strong> Narrated lessons whose style identity is a many-beat walk.</p>
+<p><strong>avoid when:</strong> Synthesis/big-picture decks whose value is the simultaneous whole.</p>
+</details>
+</article>
+</main>
+<script>
+const slots = { A: null, B: null };
+const slotEls = { A: document.getElementById('slot-A'), B: document.getElementById('slot-B') };
+const fields = { A: document.getElementById('field-slot-A'),
+                 B: document.getElementById('field-slot-B') };
+const confirmBtn = document.getElementById('confirm');
+function flash(v) {  /* S-2: highlight-on-change, never a silent reorder */
+  slotEls[v].classList.remove('changed'); void slotEls[v].offsetWidth;
+  slotEls[v].classList.add('changed');
+}
+function refresh() {
+  for (const v of ['A', 'B']) {
+    slotEls[v].querySelector('.slot-value').textContent = slots[v] || '(empty)';
+    slotEls[v].classList.toggle('filled', !!slots[v]);
+    fields[v].value = slots[v] || '';
+  }
+  confirmBtn.disabled = !(slots.A || slots.B);
+}
+for (const card of document.querySelectorAll('.card')) {
+  card.addEventListener('click', (ev) => {
+    if (ev.target.closest('details') || ev.target.closest('a')) return;
+    const guide = card.dataset.guide;
+    if (card.dataset.probe === '1' && !card.classList.contains('armed')) {
+      card.classList.add('armed');  /* S-1: probes need an explicit second click */
+      return;
+    }
+    if (!slots.A) { slots.A = guide; flash('A'); }
+    else if (!slots.B) { slots.B = guide; flash('B'); }
+    else { return; }  /* both slots full: clear or swap first */
+    refresh();
+  });
+}
+for (const btn of document.querySelectorAll('.slot-clear')) {
+  btn.addEventListener('click', () => {
+    slots[btn.dataset.variant] = null; flash(btn.dataset.variant); refresh();
+  });
+}
+for (const btn of document.querySelectorAll('.slot-swap')) {
+  btn.addEventListener('click', () => {
+    [slots.A, slots.B] = [slots.B, slots.A]; flash('A'); flash('B'); refresh();
+  });
+}
+document.getElementById('pick-form').addEventListener('submit', (ev) => {
+  ev.preventDefault();
+  const form = ev.target;
+  fetch(form.action, { method: 'POST', body: new URLSearchParams(new FormData(form)) })
+    .then((r) => { if (!r.ok) throw new Error('pick rejected: HTTP ' + r.status);
+                   return r.json(); })
+    .then((receipt) => {
+      const panel = document.getElementById('receipt');
+      panel.hidden = false;
+      panel.textContent = 'PICK RECORDED\n'
+        + 'directive: ' + receipt.directive_path + '\n'
+        + 'picks: ' + JSON.stringify(receipt.picks) + '\n'
+        + 'picked_at: ' + receipt.picked_at;
+      confirmBtn.replaceWith(panel);  /* the receipt panel replaces the button */
+    })
+    .catch((err) => { alert(err.message); });
+});
+refresh();
+</script>
+</body>
+</html>

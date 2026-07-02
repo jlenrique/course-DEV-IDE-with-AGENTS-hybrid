@@ -1,0 +1,53 @@
+{
+  "AC8_PASS": true,
+  "card_guides": [
+    "classic-freeform-x-cards",
+    "hil-2026-apc-blueprint-classic",
+    "hil-2026-apc-studio-image-card",
+    "leg-c-part3-floor-probe",
+    "leg-c-part3-floor-toohigh"
+  ],
+  "checks": {
+    "directive_written": true,
+    "floor_probe_threads_min_cluster_floor_8": true,
+    "form_fields_are_slot_A_slot_B": true,
+    "form_parsed_from_rendered_html": true,
+    "gamma_settings_bound": true,
+    "page_receipt_matches_server_receipt": true,
+    "pick_events_emitted": true,
+    "picked_guides_present_as_cards": true,
+    "probe_card_marked_probe": true,
+    "server_exited_after_one_post": true,
+    "two_artifact_guide_identity_agrees": true
+  },
+  "form_action": "http://127.0.0.1:65003/pick",
+  "log_identity": [
+    [
+      "A",
+      "classic-freeform-x-cards"
+    ],
+    [
+      "B",
+      "leg-c-part3-floor-probe"
+    ]
+  ],
+  "page_receipt": {
+    "directive_path": "C:/Users/juanl/Documents/GitHub/course-DEV-IDE-with-AGENTS-hybrid/_bmad-output/implementation-artifacts/evidence/leg-d-picker-ac8-20260702T014409Z/directive.yaml",
+    "picked_at": "2026-07-02T01:44:53.607002+00:00",
+    "picks": {
+      "A": "classic-freeform-x-cards",
+      "B": "leg-c-part3-floor-probe"
+    }
+  },
+  "run_id": "leg-d-picker-ac8-20260702T014409Z",
+  "snapshot_identity": [
+    [
+      "A",
+      "classic-freeform-x-cards"
+    ],
+    [
+      "B",
+      "leg-c-part3-floor-probe"
+    ]
+  ]
+}

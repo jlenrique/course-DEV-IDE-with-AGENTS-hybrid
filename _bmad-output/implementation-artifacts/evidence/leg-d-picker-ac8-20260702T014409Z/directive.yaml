@@ -1,0 +1,15 @@
+gamma_settings:
+- variant_id: A
+  styleguide: classic-freeform-x-cards
+- variant_id: B
+  styleguide: leg-c-part3-floor-probe
+styleguide_picker_provenance:
+  picked_at: '2026-07-02T01:44:53.607002+00:00'
+  picker_version: '1.0'
+  ssot_sha256: 9bca45ba0fe3843953af1e53f001dc27252382c5455c2bc4ff9b2441448a4cf3
+  picks:
+  - variant_id: A
+    styleguide: classic-freeform-x-cards
+  - variant_id: B
+    styleguide: leg-c-part3-floor-probe
+  written_by: styleguide_picker
