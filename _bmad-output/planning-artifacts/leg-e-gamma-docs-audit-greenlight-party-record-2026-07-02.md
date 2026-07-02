@@ -113,3 +113,15 @@ All other amendments are orthogonal and STACK — John 1–7, Murat 1–11, Amel
 5. **Dual-gate CLOSE:** Murat (structural) + Dan/Texas (content), independently re-verifying.
 
 **VERDICT: GREEN-LIGHT RATIFIED 6/6 (all RATIFY-WITH-AMENDMENTS; amendments + synthesis binding on the story spec). Dev may open.**
+
+---
+
+## CLOSE ADDENDUM (2026-07-02) — Leg-E DUAL-GATE CLOSED
+
+**Spine executed:** green-light 6/6 → story spec (`34fb2b84`) → spawned dev RED-first offline build (initial RED 6 failed/3 errors; 95-test battery) → 3-lane `bmad-code-review` (Blind Hunter + Edge Case Hunter converged on the post-classification write-phase gap: 2 MUST-FIX + 9 SHOULD-FIX + NITs; Acceptance Auditor APPROVE-FOR-LIVE-PROOF, 7 deviations ruled) → RED-first remediation P1–P11 + N-series (31 RED → 98 green; 2 ratified spec amendments: P6 tier aggregation excludes probe/findings-only; P10 digest re-key to anchor text + digest8 id suffix) → offline commit `06c39623` → **LIVE PROOF** `5730997f` (15/15 terminal states vs real developers.gamma.app; 3 organic candidate writes incl. the 429 standing-candidate STANDS resolution; probe teeth live; idempotent re-run byte-identical; status→ready + D-9 surgical disclaimer rode the change-set) → **dual-gate:** Murat structural HAND-BACK (F-1 stale duplicate status pin — caught by the pin's own teeth) → remediated `ea0c3294` → **Murat CLOSE no-conditions** + **Dan CD CLOSE** + **Texas contract CLOSE**.
+
+**DONE-bar audit:** all 5 ratified DONE-bar items PASS (hermetic battery; live proof with receipts + probe + idempotency; S-1 writes with wording-triple gate; fences held incl. conveyance no-touch + styleguide-SSOT immunity; dual-gate close). John's liveness rider satisfied ORGANICALLY (image-model drift both kinds + the 429 resolution — nothing manufactured).
+
+**Retro harvest (Murat):** duplicate status pins across test modules need a single-sweep grep at any lifecycle flip — the F-1 miss pattern was "re-ran the battery I remembered, not the battery that references the flipped symbol."
+
+**NITs filed:** ledger rows 4/5 share behavior prose (differentiation carried structurally by kind+diff); run_wrangler `--list-providers` table renders no notes column (W-2 fence verified present in PROVIDER_INFO.notes itself).

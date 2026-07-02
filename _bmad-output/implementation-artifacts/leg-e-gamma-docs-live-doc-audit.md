@@ -1,6 +1,6 @@
 # Story: Leg-E — `gamma_docs` live-doc audit (Texas RetrievalAdapter + audit driver + first real learned-store writes)
 
-**Status:** ready-for-dev
+**Status:** done — DUAL-GATE CLOSED 2026-07-02 (Murat structural CLOSE no-conditions at `ea0c3294` [initial HAND-BACK F-1 stale-duplicate-status-pin remediated + independently re-verified: 144/144 battery, contracts tree canonical 20/293/1 restored] + Dan CD CLOSE [S-1 write mapping held live; wording-triple promotion-grade; all governed SSOTs byte-untouched; 1 NIT: rows-4/5 shared prose] + Texas contract CLOSE [A1–A9 held; status lifecycle honored commit-by-commit; authority precedence survived the live 429/401 collision; 1 NIT: wrangler table lacks a notes column]).
 **Arc:** Gamma Styleguide Library, Phase-1 final leg (operator feature #1: styleguide AUDIT). **Branch:** `dev/gamma-styleguide-leg-e-2026-07-02`.
 **Gate mode:** dual-gate (Murat structural + Dan/Texas content).
 **Authority:** GREEN-LIGHT party record `_bmad-output/planning-artifacts/leg-e-gamma-docs-audit-greenlight-party-record-2026-07-02.md` — RATIFIED 6/6; ALL amendments + synthesis rules S-1..S-4 are BINDING on this spec. Read that record in full at T1 before any code.
