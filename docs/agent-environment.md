@@ -88,11 +88,12 @@ Secrets stay in `.env` or your password manager; never commit tokens.
 
 ## Test execution profiles
 
-- Default local verification excludes tests marked `live_api`:
+- Default local verification excludes tests marked `live_api` **and `llm_live`** (2026-07-02 session-05 flip: `llm_live` previously auto-skipped only when `OPENAI_API_KEY` was absent/placeholder — with a real key in `.env` every default run made REAL gpt-5.5 calls; now deselected in Pass 1 like `live_api`):
 	- `.venv\Scripts\python -m pytest tests -v`
 - Live integration checks require explicit opt-in:
 	- `.venv\Scripts\python -m pytest tests -v --run-live`
-- Live tests still skip when required credentials are missing.
+- `--run-live` now arms BOTH spend families (`live_api` third-party + `llm_live` OpenAI); a test double-marked `llm_live`+`live_api_e2e` is also armed by `--run-live-e2e` alone. `-m llm_live` does NOT bypass deselection — `--run-live` is the switch. Gate semantics pinned by `tests/test_conftest_llm_live_gating.py` (5 contract tests incl. a module-set rot guard).
+- Live tests still skip when required credentials are missing (Pass-2 key-skip retained).
 
 ## BMad alignment
 
