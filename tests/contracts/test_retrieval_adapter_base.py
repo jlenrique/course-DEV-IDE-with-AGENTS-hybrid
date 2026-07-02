@@ -25,6 +25,7 @@ from retrieval.contracts import (
     TexasRow,
 )
 from retrieval.fake_provider import FakeProvider, make_row
+from retrieval.gamma_docs_provider import GammaDocsProvider
 from retrieval.provider_directory import reset_adapter_registry
 from retrieval.scite_provider import SciteProvider
 
@@ -134,10 +135,55 @@ def _make_scite_harness() -> AdapterHarness:
     )
 
 
+def _make_gamma_docs_harness() -> AdapterHarness:
+    """GammaDocsProvider contract harness (Leg-E AC#2, Murat M-1 / Texas T-8).
+
+    Pure-contract tests only exercise deterministic paths (formulate_query /
+    apply_* passthroughs / identity_key / quality_delta); the network-bound
+    `execute` is covered in `tests/test_retrieval_gamma_docs_provider.py` with
+    per-test `responses` mocks over recorded real-page fixtures.
+    """
+    doc_url = "https://developers.gamma.app/reference/image-model-accepted-values.md"
+    adapter = GammaDocsProvider()
+    intent = RetrievalIntent(
+        intent="gamma live-doc audit fetch",
+        provider_hints=[
+            ProviderHint(provider="gamma_docs", params={"pages": [doc_url]})
+        ],
+        kind="direct_ref",
+        iteration_budget=1,
+    )
+    # execute()-shaped raw rows (per-page dicts); apply_* are declared passthroughs.
+    raw_sample: list[Any] = [
+        {"doc_url": doc_url, "http_status": 200, "text": "# Image models\n"},
+        {
+            "doc_url": "https://developers.gamma.app/changelog/readme.md",
+            "http_status": 200,
+            "text": "# Changelog\n",
+        },
+    ]
+    known_row = TexasRow(
+        source_id="fallback-src",
+        provider="gamma_docs",
+        provider_metadata={"gamma_docs": {"doc_url": doc_url}},
+    )
+    return AdapterHarness(
+        adapter=adapter,
+        intent=intent,
+        raw_sample=raw_sample,
+        known_identity_row=known_row,
+        known_identity_value=doc_url,
+        # Declared degenerate: the adapter honors no acceptance-criteria keys
+        # (audit-fact vocabulary is DRIVER knowledge per Texas T-2).
+        expected_honored_keys=set(),
+    )
+
+
 # Parametrization target — adapters land here as they ship.
 ADAPTER_FACTORIES: list[tuple[str, Any]] = [
     ("fake", _make_fake_harness),
     ("scite", _make_scite_harness),
+    ("gamma_docs", _make_gamma_docs_harness),
 ]
 
 

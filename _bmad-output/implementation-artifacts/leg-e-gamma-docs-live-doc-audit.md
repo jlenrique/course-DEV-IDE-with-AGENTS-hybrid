@@ -56,7 +56,51 @@ T1 read party record + this spec + scite_provider + learned_dependencies → T2 
 
 ## Review Findings
 
-*(populated at T6)*
+**T6 3-lane `bmad-code-review` (Blind Hunter / Edge Case Hunter / Acceptance Auditor), 2026-07-02 — remediated RED-first on the uncommitted build.**
+
+### Lane summary
+
+Triage yield: **2 MUST-FIX + 9 SHOULD-FIX + NITs** (cheap NITs folded in as N1–N9; two findings DISMISSED, below). All three lanes independently **converged on the write-phase gap**: the exit tier (and the probe-integrity verdict) was computed AFTER the ledger-write loop, so a VOID run — the run the spec says certifies nothing — still wrote candidate observations and stamped `doc-sources.yaml::last_refreshed`.
+
+### Remediation (every P-item RED-first: failing test recorded, then fixed)
+
+- **P1 (MUST) Integrity/VOID write-gate.** Exit tier + `integrity_failure` computed BEFORE the write loop; a VOID run (any cause: integrity failure, all/partial-uncertified, zero real items) skips ALL ledger writes AND `stamp_doc_sources`. Report still records would-have-written rows (`ledger.would_write`). RED: `test_void_run_never_writes_ledger_or_stamps` (broken-probe-confirms + real-drift manifest wrote 2 rows + stamped at exit 20).
+- **P2 (MUST) Manifest loader blank-expectation rejection.** `expected_documented` of None/empty/whitespace-only → fail-loud `ManifestError` at load. RED: `test_manifest_loader_rejects_blank_expected_documented[null|empty|whitespace]` (all three loaded clean; an empty literal is vacuously "present").
+- **P3 Stamp gate** (subsumed by P1): `stamp_doc_sources` only when `not dry_run and exit_tier != EXIT_VOID`. RED: extended `test_exit_void_when_all_indeterminate` (503 path previously stamped).
+- **P4 Write-phase totality.** New `_ledger_precheck_error` right after preflight (readable + every line parses as JSON; failure → report + exit 20, no traceback); write loop wrapped so an unexpected exception lands `ledger.write_phase_error` + report + 20. RED: `test_corrupt_ledger_precheck_voids_with_report` (bare `json.decoder.JSONDecodeError` traceback), `test_write_phase_exception_lands_report_and_void` (bare `RuntimeError` propagation).
+- **P5 Standing-candidate verification.** Citations verified against `read_observations(ledger_path)` (pre-run state) before filing a standing-candidate-resolution or drift-with-`standing_candidate_ref`; miss → existing reject-and-report channel. RED: `test_standing_candidate_missing_from_ledger_is_rejected_not_filed` (empty ledger + `obs-DOES-NOT-EXIST` wrote a dangling citation). Tests that expect the standing write now seed the cited observation (`_seed_standing`), mirroring the real SSOT's grandfathered seed.
+- **P6 Exit-tier aggregation — RATIFIED SPEC AMENDMENT to AC#4/S-3.** `probe` and `findings_only` items excluded from `compute_exit_tier`; the probe participates ONLY via the integrity check; findings-only items are report-only. Real items alone drive tiers (all real confirmed → 0; any real drift → 10; real uncertified without drift → 20; zero real items → 20; VOID causes unchanged). RED: `test_exit_zero_when_probe_and_findings_drift_but_real_confirmed` (healthy manifest exited 10), `test_exit_void_on_partial_outage_even_with_probe_drift` (probe drift masked an all-real-indeterminate outage as 10), `test_compute_exit_tier_excludes_probe_and_findings_only`.
+- **P7 not-enumerated positive witness.** Empty token collection no longer mints confirmed — requires the scoped section non-empty beyond the anchor AND, when `witness_pattern` is declared, a match; else indeterminate (T-7). Manifest style-preset item: narrowing `line_pattern` dropped (collect over the whole scoped section with field-name/cross-ref `exclude_tokens`) + free-text witness sentence added. RED: `test_real_manifest_style_item_catches_enumeration_any_phrasing` ("Choose from `vivid` or `natural`" confirmed under the old `line_pattern`), `test_not_enumerated_empty_collection_needs_positive_witness` (gutted witness still confirmed).
+- **P8 Content-shape honesty.** (a) Provider files a `content_type_not_markdown` known-loss when a 200's Content-Type is outside {text/markdown, text/plain, missing} — T-7 floor then forces indeterminate (live probe 2026-07-02: developers.gamma.app serves `text/markdown; charset=utf-8`, so honest pages pass). (b) Changelog canary strengthened to the line-anchored heading literal `"\n# "` (driver convention: a literal starting `"\n"` matches at start-of-line, including byte 0). RED: `test_changelog_canary_html_page_cannot_confirm` (200-HTML page confirmed), `test_gamma_docs_non_markdown_content_type_is_a_known_loss`, `test_changelog_canary_requires_line_anchored_heading`.
+- **P9 Decode honesty.** Strict UTF-8 decode first; `UnicodeDecodeError` → `errors="replace"` + `decode_replacement` known-loss (floor → indeterminate); `normalize_doc_text` strips a leading BOM. RED: `test_gamma_docs_strict_utf8_decode_fallback_is_flagged`, BOM case in `test_gamma_docs_normalize_doc_text_helper`.
+- **P10 Digest re-key — RATIFIED SPEC AMENDMENT to AC#5.** `output_digest` = sha256 over (item_id, per-item normalized ANCHOR-scope sha256 [`anchor_sha256`], terminal_state, sorted diff) — churn elsewhere on a shared page no longer re-files every item. `normalize_doc_text` also strips trailing whitespace per line. `observation_id` gains an 8-hex digest suffix (`obs-gamma-<slug>-<date>-<digest8>`) so same-day doc changes cannot mint duplicate ids. Pinned digest-recipe test updated citing this amendment. RED: `test_shared_page_churn_outside_anchor_is_ledger_noop` (footer churn re-filed the item), `test_output_digest_recipe_is_pinned`, `test_observation_field_discipline`.
+- **P11 Standing-candidate wording.** Docs-still-drifted direction now reads "the standing candidate … **STANDS** — re-confirmed against the live docs…"; never "resolved/retired". Docs-changed direction stays drift with `standing_candidate_ref`. RED: wording assertions in `test_confirmed_resolving_standing_candidate_writes_citing_it`.
+- **N1–N9 folded in:** N1 preflight requires non-empty llms.txt body; N2 `response.url` → receipt `final_url` + `redirected` known-loss; N3 covered by P9 BOM; N4 contracts guard — any tests/ call of `run_audit(` must pass `ledger_path=` (guard-of-absence, born green, disclosed); N5 `|` escaped in run-report md cells; N6 `stamp_doc_sources` preserves the file's CRLF/LF convention; N7 `canonical_doc_url` lowercases scheme+host, strips trailing slash, raises on empty/relative; N8 `main()` catches `ManifestError` → stderr + exit 20, manifest parsed once; N9 `_relative_evidence_ref` fails loud on out-of-repo evidence dirs.
+
+### Ratified spec amendments
+
+1. **P6 — exit-tier aggregation semantics** (AC#4/S-3): probe + findings-only excluded from tier aggregation; real items alone drive 0/10/20; probe contributes only through the integrity check.
+2. **P10 — output_digest re-key + observation_id digest suffix** (AC#5): digest keyed to the item's own anchor-scoped text (not whole-page `content_sha256`); ids carry `-<digest8>`.
+
+### Dismissals (with rationale)
+
+1. **Wording-triple second-leg vacuity** — the helper's OBSERVED-leg check is satisfiable by the composed template alone; harmless because the driver composes all three legs itself and the consequence gate is enforced separately. No behavior at risk; DISMISSED.
+2. **Test-count phrasing** — cosmetic wording in a test docstring/comment; no assertion or semantics affected. DISMISSED.
+
+### Acceptance Auditor — deviation rulings
+
+**7 deviations APPROVED; 2 approved WITH CONDITIONS**, both conditions now discharged:
+
+- Condition 1 → discharged by **P11** (standing-candidate "STANDS" wording; no auto-resolve/retire vocabulary in filed behavior text).
+- Condition 2 → discharged by a **T9 deferred-inventory entry** for the **text-language full-list follow-on** (the `enum-parity-text-language` item audits DEFAULT-language parity only by deliberate policy; the full accepted-language-list comparison against `reference/output-language-accepted-values.md` is filed at T9 in `deferred-inventory.md` §Named-But-Not-Filed Follow-Ons, per deferred-inventory governance).
+
+### Post-remediation validation
+
+- Leg-E battery (driver + provider + reachability contracts): **98 passed** (31 RED-first failures recorded pre-fix, all green post-fix).
+- Full `tests/contracts`: 293 passed, 1 skipped, **20 failed — the exact 20 KNOWN pre-existing failures proven at HEAD** (fit_report/modality_registry/marcus-routing et al.; untouched by this leg).
+- Conveyance sweep untouched: `tests/specialists/gary` 155 passed + styleguide validator/picker/scripted 74 passed, zero modifications to those files.
+- `ruff check` clean on all five touched Python files.
+- Schema doc (`extraction-report-schema.md §provider_metadata.gamma_docs`) updated additively for the new `final_url`/`content_type` keys + known-losses vocabulary (P8/P9/N2); still no SCHEMA_VERSION bump.
 
 ## Completion Notes
 

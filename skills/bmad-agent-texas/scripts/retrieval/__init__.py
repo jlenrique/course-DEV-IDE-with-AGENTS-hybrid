@@ -46,6 +46,11 @@ from .contracts import (
     TexasRow,
 )
 from .dispatcher import AdapterFactory, DispatchError, dispatch
+
+# Leg-E (gamma-doc audit): eager import so `list_providers()` surfaces the
+# registered gamma_docs adapter on first call, independent of import order
+# (scite precedent / Amelia A-6). Pure leaf — imports no app.* module.
+from .gamma_docs_provider import GammaDocsProvider, GammaDocsTransportError  # noqa: E402,F401
 from .mcp_client import (
     MCPAuthError,
     MCPClient,
@@ -78,6 +83,8 @@ __all__ = [
     "ConsensusProvider",
     "ConvergenceSignal",
     "DispatchError",
+    "GammaDocsProvider",
+    "GammaDocsTransportError",
     "MCPAuthError",
     "MCPClient",
     "MCPClientError",

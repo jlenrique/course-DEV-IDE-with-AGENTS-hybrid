@@ -65,6 +65,37 @@ def test_every_retrieval_adapter_subclass_is_directoried() -> None:
         )
 
 
+def test_gamma_docs_adapter_registers_non_vacuously() -> None:
+    """Leg-E AC#2 / Murat M-2: `gamma_docs` is observed NON-vacuously.
+
+    Three teeth, none satisfiable by a placeholder row:
+      1. a LIVE class is registered under the id (registry, not directory prose);
+      2. that class is GammaDocsProvider itself;
+      3. the directory surfaces the registered PROVIDER_INFO (status `stub`
+         pre-live-proof — NOT a `ratified`/`backlog` placeholder shape).
+    """
+    from retrieval.gamma_docs_provider import GammaDocsProvider
+    from retrieval.provider_directory import get_registered_adapter_class
+
+    cls = get_registered_adapter_class("gamma_docs")
+    assert cls is GammaDocsProvider, (
+        "gamma_docs must auto-register via __init_subclass__ at package import "
+        "(eager import in retrieval/__init__.py, scite precedent)"
+    )
+    entry = next(
+        (p for p in list_providers(shape="retrieval") if p.id == "gamma_docs"), None
+    )
+    assert entry is not None, "gamma_docs missing from list_providers()"
+    assert entry.status == "stub", (
+        "landed-unproven adapter surfaces as status='stub' (Texas T-4); "
+        "'ready' flips only in the live-proof change-set (AC#12)"
+    )
+    assert "doc-audit tooling" in entry.notes, (
+        "Winston W-2 registry fence: PROVIDER_INFO.notes must declare the "
+        "doc-audit purpose on the production list_providers() surface"
+    )
+
+
 def test_register_adapter_rejects_id_collision() -> None:
     """Same ID from a different class must raise — prevents silent override."""
     from retrieval.contracts import ProviderInfo

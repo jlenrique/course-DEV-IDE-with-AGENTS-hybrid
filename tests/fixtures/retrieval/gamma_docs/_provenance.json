@@ -1,0 +1,46 @@
+{
+  "async_patterns_and_polling.md": {
+    "content_length_chars": 16535,
+    "content_sha256": "sha256:dde0723a426ab60bf7d456b10ba2dcff675a8ab65b420f392d3604996230971c",
+    "etag": null,
+    "fetched_at": "2026-07-02T03:19:16Z",
+    "http_status": 200,
+    "last_modified": null,
+    "raw_sha256": "sha256:dde0723a426ab60bf7d456b10ba2dcff675a8ab65b420f392d3604996230971c",
+    "selector": "whole-page raw markdown (.md suffix endpoint); no sub-selector at capture time",
+    "source_url": "https://developers.gamma.app/guides/async-patterns-and-polling.md"
+  },
+  "generate_api_parameters_explained.md": {
+    "content_length_chars": 26805,
+    "content_sha256": "sha256:3b6721983e1bafc6308cbb3268af0c5aebd95315a679539633bbb8aa8bc4bb3a",
+    "etag": null,
+    "fetched_at": "2026-07-02T03:19:15Z",
+    "http_status": 200,
+    "last_modified": null,
+    "raw_sha256": "sha256:3b6721983e1bafc6308cbb3268af0c5aebd95315a679539633bbb8aa8bc4bb3a",
+    "selector": "whole-page raw markdown (.md suffix endpoint); no sub-selector at capture time",
+    "source_url": "https://developers.gamma.app/guides/generate-api-parameters-explained.md"
+  },
+  "image_model_accepted_values.md": {
+    "content_length_chars": 9652,
+    "content_sha256": "sha256:b30de00d2d3dc0a607273e79106ab64906dc4a0d55cc142d05992ad3f6a047b7",
+    "etag": null,
+    "fetched_at": "2026-07-02T03:19:14Z",
+    "http_status": 200,
+    "last_modified": null,
+    "raw_sha256": "sha256:b30de00d2d3dc0a607273e79106ab64906dc4a0d55cc142d05992ad3f6a047b7",
+    "selector": "whole-page raw markdown (.md suffix endpoint); no sub-selector at capture time",
+    "source_url": "https://developers.gamma.app/reference/image-model-accepted-values.md"
+  },
+  "list_themes.md": {
+    "content_length_chars": 5664,
+    "content_sha256": "sha256:ffe45653d496ca4ab10337bcc6301b028d3ab52e5c8618d09747646503f6a5fa",
+    "etag": null,
+    "fetched_at": "2026-07-02T03:19:18Z",
+    "http_status": 200,
+    "last_modified": null,
+    "raw_sha256": "sha256:ffe45653d496ca4ab10337bcc6301b028d3ab52e5c8618d09747646503f6a5fa",
+    "selector": "whole-page raw markdown (.md suffix endpoint); no sub-selector at capture time",
+    "source_url": "https://developers.gamma.app/workspace/list-themes.md"
+  }
+}

@@ -1,0 +1,306 @@
+# Gamma live-doc audit manifest — Leg-E (gamma-doc-audit), committed DATA (Murat M-9).
+#
+# Consumed by scripts/utilities/audit_gamma_docs.py. POINTER TABLE only (Winston W-3):
+# enum-parity items carry a dotted, importable code_ref resolved by the DRIVER at
+# audit time — this file NEVER holds enum value literals (no second SSOT).
+# doc-fact items (no code constant) may carry a literal `expected_documented`
+# (an audit EXPECTATION, not duplicated authority).
+#
+# URL set derived from (and citing) doc-sources.yaml (S-4 / Amelia A-7); the driver
+# stamps doc-sources.yaml::last_refreshed after each non-dry live run.
+#
+# Extraction rules are declared HERE, not in code (Winston W-6). Semantics:
+#   anchor:      literal substring that must occur EXACTLY ONCE in the normalized
+#                page text. 0 occurrences -> drift-detected kind: doc-restructure
+#                (LOUD, non-zero exit, run-report only — S-2); >1 -> indeterminate.
+#   until:       optional literal terminating the scoped section (first occurrence
+#                after the anchor; absent/not-found -> scope runs to end of page).
+#   line_pattern: optional regex — only scope lines matching it contribute tokens.
+#   collect: inline-code — tokens are `backtick-quoted` spans on contributing lines.
+#   after_colon: collect tokens only after the first ':' on the line.
+#   first_token_per_line: keep only the first token per line (table first-column).
+#   exclude_tokens: FIELD-NAME / prose CROSS-REFERENCE noise filtering only (e.g.
+#                the word `source` in a table header, or a backticked mention of a
+#                DIFFERENT field's value in prose). NEVER this item's own value
+#                vocabulary — that would be a shadow enum.
+#   value_pattern: numeric comparator — regex with ONE capture group.
+#   expectation: enumerated (default) | not-enumerated. `not-enumerated` states the
+#                documented expectation that the surface is FREE TEXT with no value
+#                vocabulary; tokens appearing = drift (docs began enumerating).
+#                P7 (review): an EMPTY collection is not a positive finding — the
+#                item confirms ONLY with a positive witness (scoped section has
+#                content beyond the anchor AND, when witness_pattern is declared,
+#                it matches); otherwise indeterminate (T-7).
+#   witness_pattern: not-enumerated only — regex that must match the scoped section
+#                for the free-text expectation to CONFIRM (the positive witness).
+#   Literal-presence line-anchor convention (P8): an `expected_documented` literal
+#                beginning with "\n" means "at start of a line" — the driver
+#                prepends "\n" to the haystack so a heading at byte 0 still counts.
+#
+# `consequence` is the OPERATIONAL half of Dan's wording-triple filing gate (D-2):
+# the driver rejects-and-reports any would-be observation whose item lacks it.
+
+schema_version: "1.0"
+derived_from: "skills/gamma-api-mastery/references/doc-sources.yaml"
+preflight_url: "https://developers.gamma.app/llms.txt"
+
+items:
+  # ---- enum-parity: every frozen enum _ENUM_CHECKS reuses from _act.py (AC#3) ----
+
+  - item_id: "enum-parity-image-model"
+    kind: "enum-parity"
+    code_ref: "app.specialists.gary._act:IMAGE_MODEL_VALUES"
+    doc_url: "https://developers.gamma.app/reference/image-model-accepted-values.md"
+    comparator: "enum-membership"
+    extraction:
+      anchor: "### Standard models"
+      until: "### Output dimensions"
+      collect: "inline-code"
+    consequence: >-
+      A styleguide or Gary dispatch carrying an enum-only model string may be
+      rejected by the live API (or silently mis-generate), and documented cheaper/
+      newer models stay unusable until the frozen enum is reconciled by a human.
+    notes: >-
+      Probe-grounded drift both directions at authoring time (2026-07-02):
+      imagen-4-fast / qwen-image / qwen-image-fast in the enum but absent from the
+      live page; flux-1-*, gpt-image-1-mini-*, gpt-image-2*, imagen-3-pro,
+      flux-kontext-max documented but absent from the enum. Drift FILES; humans
+      change code (John J-3 fence #2).
+
+  - item_id: "enum-parity-text-mode"
+    kind: "enum-parity"
+    code_ref: "app.specialists.gary._act:TEXT_MODE_VALUES"
+    doc_url: "https://developers.gamma.app/guides/generate-api-parameters-explained.md"
+    comparator: "enum-membership"
+    extraction:
+      anchor: "#### `textMode`"
+      until: "#### `format`"
+      line_pattern: "You can choose"
+      collect: "inline-code"
+    consequence: >-
+      textMode drift would make the styleguide validator accept values the live
+      API rejects (or reject newly documented ones), breaking Classic-path
+      generation at dispatch time.
+
+  - item_id: "enum-parity-text-amount"
+    kind: "enum-parity"
+    code_ref: "app.specialists.gary._act:TEXT_AMOUNT_VALUES"
+    doc_url: "https://developers.gamma.app/guides/generate-api-parameters-explained.md"
+    comparator: "enum-membership"
+    extraction:
+      anchor: "**`textOptions.amount`**"
+      until: "**`textOptions.tone`**"
+      line_pattern: "You can choose"
+      collect: "inline-code"
+    consequence: >-
+      textOptions.amount drift desynchronizes card text-density controls between
+      the offline write-gate and the live API.
+
+  - item_id: "enum-parity-text-language"
+    kind: "enum-parity"
+    code_ref: "app.specialists.gary._act:TEXT_LANGUAGE_VALUES"
+    doc_url: "https://developers.gamma.app/guides/generate-api-parameters-explained.md"
+    comparator: "enum-membership"
+    extraction:
+      anchor: "**`textOptions.language`**"
+      until: "#### imageOptions"
+      line_pattern: "defaults to"
+      collect: "inline-code"
+      exclude_tokens: ["textOptions.language"]
+    consequence: >-
+      TEXT_LANGUAGE_VALUES is a DELIBERATE policy restriction to `en` (the
+      pipeline produces English); this item audits that the documented DEFAULT
+      language remains `en`. If Gamma changes the default, English output would
+      silently depend on our explicit parameter rather than the platform default.
+    notes: >-
+      Default-language parity only. The full accepted-language list
+      (reference/output-language-accepted-values.md) is intentionally NOT
+      compared: the enum's narrowness is policy, not drift; a full-list
+      comparison is a candidate follow-on if the policy widens.
+
+  - item_id: "enum-parity-image-source"
+    kind: "enum-parity"
+    code_ref: "app.specialists.gary._act:IMAGE_SOURCE_VALUES"
+    doc_url: "https://developers.gamma.app/guides/generate-api-parameters-explained.md"
+    comparator: "enum-membership"
+    extraction:
+      anchor: "**`imageOptions.source`**"
+      until: "**`imageOptions.model`**"
+      line_pattern: "^\\|"
+      collect: "inline-code"
+      first_token_per_line: true
+      exclude_tokens: ["source"]
+    consequence: >-
+      imageOptions.source drift breaks the image_model/image_source dependency
+      rules the validator enforces (gamma.dep.image-model-source) and can strand
+      source-derived visual intent.
+
+  - item_id: "enum-parity-image-style-preset"
+    kind: "enum-parity"
+    code_ref: "app.specialists.gary._act:IMAGE_STYLE_PRESET_VALUES"
+    doc_url: "https://developers.gamma.app/guides/generate-api-parameters-explained.md"
+    comparator: "enum-membership"
+    extraction:
+      anchor: "**`imageOptions.style`**"
+      until: "**What about accent images?**"
+      collect: "inline-code"
+      exclude_tokens: ["imageOptions.style", "imageOptions.source", "aiGenerated"]
+      expectation: "not-enumerated"
+      witness_pattern: "one or multiple words to define the visual style"
+    consequence: >-
+      The docs treat imageOptions.style as FREE TEXT; IMAGE_STYLE_PRESET_VALUES is
+      Gary's preset layer over it. If Gamma introduces an enumerated style
+      vocabulary, the preset layer and the protected source-detail conveyance
+      (custom_style wins) must be reconciled before any styleguide relies on it.
+    notes: >-
+      expectation: not-enumerated — confirmed while the docs keep style free-text;
+      drift the moment a documented value vocabulary appears ANYWHERE in this
+      section (P7: no narrowing line_pattern — collection runs over the whole
+      scoped section). exclude_tokens are prose noise, not a shadow enum: the
+      field's own name plus the cross-referenced `imageOptions.source` /
+      `aiGenerated` mentions (values of a DIFFERENT field). witness_pattern is
+      the positive free-text witness sentence — if it vanishes, the item goes
+      indeterminate instead of vacuously confirming (P7).
+
+  - item_id: "enum-parity-card-dimensions"
+    kind: "enum-parity"
+    code_ref: "app.specialists.gary._act:CARD_DIMENSION_VALUES"
+    doc_url: "https://developers.gamma.app/guides/generate-api-parameters-explained.md"
+    comparator: "enum-membership"
+    extraction:
+      anchor: "**`cardOptions.dimensions`**"
+      until: "**`cardOptions.headerFooter`**"
+      line_pattern: "Options if"
+      collect: "inline-code"
+      after_colon: true
+    consequence: >-
+      Dimension drift re-opens the 16:9/format coupling that Leg-A already
+      hardened: an undocumented value ships a deck the API rewrites to a default
+      with only a response warning.
+
+  # ---- doc-facts: rate-limit + polling + workspace caps (AC#3) -------------------
+
+  - item_id: "doc-fact-burst-throttle-429"
+    kind: "doc-fact"
+    expected_documented: "429 Too Many Requests"
+    doc_url: "https://developers.gamma.app/guides/async-patterns-and-polling.md"
+    comparator: "literal-presence"
+    extraction:
+      anchor: "#### Handling a 429 response"
+    standing_candidate: "obs-gamma-burst-throttle-401-not-429-2026-06-25"
+    consequence: >-
+      Retry/backoff keyed to a documented 429 misses the EMPIRICALLY OBSERVED 401
+      burst-throttle ('Invalid API key') — a valid-key 401 mid-run is a throttle
+      signal, not an auth failure. Either resolution direction (docs corrected to
+      401, or docs still claiming 429 while the live candidate stands) is a
+      genuine ledger write citing the standing candidate (S-1 / John J-1).
+
+  - item_id: "doc-fact-ratelimit-burst-header"
+    kind: "doc-fact"
+    expected_documented: "x-ratelimit-remaining-burst"
+    doc_url: "https://developers.gamma.app/guides/async-patterns-and-polling.md"
+    comparator: "literal-presence"
+    extraction:
+      anchor: "### Rate limit headers and adaptive polling"
+    consequence: >-
+      Adaptive pacing reads this response header; a rename/removal silently
+      disables burst-aware throttling and re-exposes runs to the 401-throttle
+      failure mode.
+
+  - item_id: "doc-fact-polling-interval-5s"
+    kind: "doc-fact"
+    expected_documented: "Use 5-second polling intervals"
+    doc_url: "https://developers.gamma.app/guides/async-patterns-and-polling.md"
+    comparator: "literal-presence"
+    extraction:
+      anchor: "### Best practices"
+    consequence: >-
+      Poller cadence is grounded on this documented recommendation; a changed
+      recommendation shifts the rate-limit budget math for multi-deck runs.
+
+  - item_id: "doc-fact-list-themes-limit-50"
+    kind: "doc-fact"
+    expected_documented: 50
+    doc_url: "https://developers.gamma.app/workspace/list-themes.md"
+    comparator: "numeric"
+    extraction:
+      anchor: "### Pagination"
+      until: "## List themes"
+      value_pattern: "`limit` \\(1-(\\d+)"
+    consequence: >-
+      The styleguide validator's --check-existence caps list_themes at limit=50
+      (HTTP 400 above it; pagination beyond 50 is the filed
+      styleguide-validator-live-existence-hardening follow-on). A cap change
+      alters that hardening story's ground truth.
+
+  # ---- findings-only: imageOptions field-surface questions (John J-7) ------------
+  # Answers feed the sequenced keywords->imageOptions.style routing story as
+  # EVIDENCE ONLY (Dan D-7); these items NEVER write the ledger.
+
+  - item_id: "finding-imageoptions-discrete-tags-field"
+    kind: "doc-fact"
+    expected_documented: "imageOptions.tags"
+    doc_url: "https://developers.gamma.app/guides/generate-api-parameters-explained.md"
+    comparator: "literal-presence"
+    extraction:
+      anchor: "#### imageOptions"
+      until: "#### cardOptions"
+    findings_only: true
+    consequence: >-
+      Findings-only (J-7): does the generate surface document a discrete tags/
+      keywords field under imageOptions? Report-only evidence for the deferred
+      keywords-routing story.
+    notes: >-
+      At authoring time the section documents source/model/style only — the
+      expected literal is ABSENT, so this item reports 'not documented'
+      (drift-detected in the report, never filed).
+
+  - item_id: "finding-imageoptions-stylepreset-style-composition"
+    kind: "doc-fact"
+    expected_documented: "stylePreset"
+    doc_url: "https://developers.gamma.app/guides/generate-api-parameters-explained.md"
+    comparator: "literal-presence"
+    extraction:
+      anchor: "#### imageOptions"
+      until: "#### cardOptions"
+    findings_only: true
+    consequence: >-
+      Findings-only (J-7): is a stylePreset(+)style composition documented on the
+      generate surface? Report-only evidence for the preset-vs-custom_style
+      subordination rules (gamma.dep.preset-style-subordinated).
+
+  # ---- changelog canary (Amelia A-7) ----------------------------------------------
+
+  - item_id: "doc-fact-changelog-canary"
+    kind: "doc-fact"
+    expected_documented: "\n# "
+    doc_url: "https://developers.gamma.app/changelog/readme.md"
+    comparator: "literal-presence"
+    extraction: {}
+    consequence: >-
+      The changelog page is the woodshed-cycle early-warning surface
+      (doc-sources.yaml refresh_protocol). This canary asserts it still serves
+      markdown (a LINE-ANCHORED `# ` heading present); an empty/HTML/moved page
+      means the refresh protocol is reading a dead surface.
+    notes: >-
+      Serving-markdown canary: whole-page scope, line-anchored heading literal
+      "\n# " (P8 — the driver's line-anchor convention also matches a heading at
+      byte 0; loose '#' characters in an HTML page can no longer confirm it, and
+      the provider's content_type_not_markdown known_losses sentinel floors a
+      200-HTML page to indeterminate). Not fixtured for the live changelog body —
+      live-run only; a fetch failure classifies indeterminate.
+
+  # ---- the labeled probe: live TEETH witness (John J-2 / Murat M-7) ---------------
+
+  - item_id: "probe-absent-anchor-teeth"
+    kind: "probe"
+    expected_documented: "zz-leg-e-probe-literal-never-present"
+    doc_url: "https://developers.gamma.app/guides/async-patterns-and-polling.md"
+    comparator: "literal-presence"
+    extraction:
+      anchor: "#### zz-leg-e-probe-anchor-known-absent"
+    consequence: >-
+      Synthetic failure-state witness (Leg-D precedent): the anchor is KNOWN
+      ABSENT, so a healthy audit classifies this drift-detected/doc-restructure
+      with ZERO confirmed writes (S-2). A probe that CONFIRMS means the detection
+      teeth are broken — the driver exits VOID (integrity failure).

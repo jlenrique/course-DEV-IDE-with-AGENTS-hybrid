@@ -222,6 +222,74 @@ sources:
     structural_fidelity: null
 ```
 
+### `provider_metadata.gamma_docs` (Leg-E, gamma-doc audit)
+
+Populated by `GammaDocsProvider.normalize`. One sub-object per fetched documentation page. **Doc-audit tooling — not a course-content retrieval source** (the adapter exists for `scripts/utilities/audit_gamma_docs.py`; PROVIDER_INFO.notes carries the same fence). Additive under the `provider_metadata` escape hatch by design — NO `SCHEMA_VERSION` bump (Texas T-9).
+
+| Field | Type | Nullable | Description |
+|---|---|---|---|
+| `doc_url` | string | no | Canonical page URL (fragment/query stripped, scheme+host lowercased, trailing slash stripped) — also the row identity |
+| `final_url` | string | no | Post-redirect response URL (review N2); differs from `doc_url` only when the fetch was redirected (which also files a `redirected` known-loss) |
+| `content_type` | string | yes | Response `Content-Type` header verbatim; `null` when absent. On a 200 outside the text/markdown family (`text/markdown`, `text/plain`, missing) → `content_type_not_markdown` known-loss (review P8) |
+| `fetched_at` | string | no | UTC ISO-8601 stamp captured at fetch time |
+| `http_status` | integer | no | HTTP status of the single (no-retry) GET |
+| `content_sha256` | string | yes | `sha256:`-prefixed digest over the NORMALIZED extracted text (leading-BOM strip + CRLF→LF + per-line trailing-whitespace strip + unicode NFC); `null` on failed fetch. Never over raw bytes — CDN/build churn must not read as drift |
+| `raw_sha256` | string | yes | Optional digest over the raw response text pre-normalization |
+| `extraction_pattern` | string | no | `raw-markdown-passthrough` v1 (the `.md` endpoint body IS the content); `structural_fidelity` is assigned deterministically from it |
+| `etag` | string | yes | Response `ETag` when present |
+| `last_modified` | string | yes | Response `Last-Modified` when present |
+| `known_losses` | list[string] | no | Sentinel list. Vocabulary: `fetch_failed_http_<status>`, `content_type_not_markdown` (review P8), `decode_replacement` (strict-UTF-8 decode fell back to replace, review P9), `redirected` (review N2). Non-empty losses make the audit driver classify affected items `indeterminate` (they can never mint `confirmed`) |
+| `page_title` | string | no | First markdown H1 of the page (`""` on failed fetch) |
+| `content_length_chars` | integer | no | Length of the normalized text (0 on failed fetch) |
+
+**Identity key** (Texas T-3): `identity_key(row)` returns `provider_metadata.gamma_docs.doc_url` → `row.source_id`, raising `NotImplementedError` only if both are empty. Identity is the canonical URL alone; the content digest lives here (URL+digest identity was rejected — it would break the drift comparison across fetches).
+
+**Honesty conventions** (Texas T-9): `source_origin: operator-named`; on HTTP 200 `completeness_ratio = structural_fidelity = 1.0` (lossless raw-markdown passthrough); on any non-200, both are `null` with a `known_losses` sentinel, `body = ""`.
+
+**Declared degeneracies** (anti-pattern #3): pass-through `formulate_query` (`params: {pages: [...]}` only), `refine() → None`, cross-validation N/A. Do not "fix" these into ceremony.
+
+**Worked example** (retrieval-shape v1.1 source entry carrying a gamma_docs row):
+
+```yaml
+sources:
+  - ref_id: src-retrieval-3-row-1
+    role: primary
+    retrieval_intent: "gamma live-doc audit fetch: image-model-accepted-values"
+    provider_hints:
+      - {provider: "gamma_docs", params: {pages: ["https://developers.gamma.app/reference/image-model-accepted-values.md"]}}
+    cross_validate: false
+    convergence_signal: null
+    source_origin: operator-named
+    tracy_row_ref: null
+    acceptance_met: true
+    iterations_used: 1
+    fetched_at: "2026-07-02T03:19:14Z"
+    source_id: "https://developers.gamma.app/reference/image-model-accepted-values.md"
+    provider: gamma_docs
+    title: "Image models"
+    body: "# Image models\n..."
+    authors: []
+    date: null
+    authority_tier: null
+    provider_metadata:
+      gamma_docs:
+        doc_url: "https://developers.gamma.app/reference/image-model-accepted-values.md"
+        final_url: "https://developers.gamma.app/reference/image-model-accepted-values.md"
+        content_type: "text/markdown; charset=utf-8"
+        fetched_at: "2026-07-02T03:19:14Z"
+        http_status: 200
+        content_sha256: "sha256:b30de00d2d3dc0a607273e79106ab64906dc4a0d55cc142d05992ad3f6a047b7"
+        raw_sha256: "sha256:b30de00d2d3dc0a607273e79106ab64906dc4a0d55cc142d05992ad3f6a047b7"
+        extraction_pattern: "raw-markdown-passthrough"
+        etag: null
+        last_modified: null
+        known_losses: []
+        page_title: "Image models"
+        content_length_chars: 9652
+    completeness_ratio: 1.0
+    structural_fidelity: 1.0
+```
+
 When new retrieval-shape providers (YouTube in 27-4, image in 27-3, and follow-ons) ship, each adds one subsection here naming its `provider_metadata.<id>` shape. The `retrieval-contract.md` "For Tracy" section points at this H2; do not duplicate field tables there.
 
 ## Cross-Validation Entry
