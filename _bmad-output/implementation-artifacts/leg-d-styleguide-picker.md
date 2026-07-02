@@ -66,3 +66,6 @@
 
 ### Follow-ons (filed in deferred-inventory §Named-But-Not-Filed Follow-Ons)
 - `gamma-styleguide-per-guide-thumbnail-renders` (Phase-2): systematic genuine per-guide renders replace the curated approximations — retires the R2 provenance-chip disclaimer case (each guide's thumbnail becomes a true render of that guide's full surface incl. its frame).
+
+### Post-remediation disclosure (orchestrator, 2026-07-02)
+`test_oversized_post_rejected_413_then_keeps_serving` (new R4 test) flaked ONCE under a heavy parallel run (1/3 executions; green in isolation, green on parallel re-run, green -n0). Load-sensitive socket timing in the oversized-body scenario. Disclosed to the close gates; hardening suggestion: widen the client socket timeout margin in that test. Filed as a test-hygiene nit, not substrate risk (the 413 path itself is deterministic).
