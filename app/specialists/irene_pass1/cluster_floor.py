@@ -54,6 +54,7 @@ dispatched module.
 from __future__ import annotations
 
 import re
+import unicodedata
 from dataclasses import dataclass
 from typing import Any
 
@@ -61,11 +62,28 @@ from app.specialists._shared.figure_tokens import _figures  # frozen neck, read-
 from app.specialists.dispatch_errors import SpecialistDispatchError
 
 CLUSTER_FLOOR_MISMATCH_TAG = "irene_pass1.styleguide-content-mismatch"
+# R7 (Edge#4): the JSON-parse-failure fallback plan (one synthetic unit, no
+# source_refs) under a bound floor is the SAME recoverable error class but a
+# DISTINCT diagnostic — triage the LLM output format, not the
+# styleguide/content pairing. Raised by _act.py, defined here with its family.
+CLUSTER_FLOOR_LLM_FALLBACK_TAG = (
+    "irene_pass1.styleguide-content-mismatch.llm-format-fallback"
+)
 DEAD_FLOOR_CONFIG_TAG = "irene_pass1.min-cluster-floor-dead-config"
 INVALID_FLOOR_CONFIG_TAG = "irene_pass1.min-cluster-floor-invalid-config"
 
 # The grouping vocabulary the split is ALLOWED to reshape. Everything else on a
 # plan_unit is CONTENT and must survive byte-identical (flatten_plan_content).
+#
+# R3 (D-3 byte-identity, honestly scoped): ``floor_subdivision_index`` is the
+# ONE floor-ENGINE-OWNED annotation key (provenance of the honoring, not plan
+# state); _act.py scrubs it — and only it — from the MODEL-VISIBLE payload
+# copy so a refinement pass cannot fingerprint that a floor ran. Minted ``#f``
+# cluster ids are NOT scrubbed/renamed: the honored plan IS the real plan the
+# refinement must see; its extra clusters are legitimate downstream state.
+# Model-input byte-identity therefore holds for the CREATION pass and for any
+# pass given identical incoming plans — not across a pass whose incoming plan
+# was itself changed by honoring.
 GROUPING_KEYS: frozenset[str] = frozenset(
     {
         "cluster_id",
@@ -206,15 +224,69 @@ def _unit_roles(unit: Any) -> frozenset[str] | None:
     return frozenset(roles)
 
 
-def _normalize_ws(text: str) -> str:
-    return " ".join(text.split())
+# R2 (Edge#2): the live corpus carries curly apostrophes/quotes (U+2018/19,
+# U+201C/1D — e.g. "The Intrapreneur's Maze" with U+2019), en/em-dashes and
+# non-breaking spaces; an LLM emitting straight-quote anchors must still
+# resolve, else every seam zeroes and a live floor false-vetoes. NFKC + this
+# small canonical map is applied to BOTH anchor and source before containment.
+# MATCHING ONLY: plan/source text itself is never rewritten.
+_CANONICAL_CHARS = str.maketrans(
+    {
+        "‘": "'",  # left single curly quote
+        "’": "'",  # right single curly quote / curly apostrophe
+        "‚": "'",  # single low-9 quote
+        "‛": "'",  # single high-reversed-9 quote
+        "“": '"',  # left double curly quote
+        "”": '"',  # right double curly quote
+        "„": '"',  # double low-9 quote
+        "‟": '"',  # double high-reversed-9 quote
+        "–": "-",  # en-dash
+        "—": "-",  # em-dash
+        "−": "-",  # minus sign
+        "‑": "-",  # non-breaking hyphen
+        " ": " ",  # non-breaking space (NFKC also maps this; belt+braces)
+    }
+)
+
+
+def _normalize_match_text(text: str) -> str:
+    """Anchor<->source matching canonicalization: NFKC + quote/dash/space
+    canonical map + whitespace-run collapse (markdown line-wrap tolerance)."""
+    canonical = unicodedata.normalize("NFKC", text).translate(_CANONICAL_CHARS)
+    return " ".join(canonical.split())
 
 
 def _refs_resolve_in_source(refs: list[str], extracted_source: str) -> bool:
     """Anchors are citations: each must occur verbatim in the source (modulo
-    whitespace runs — markdown line-wrapping tolerance only)."""
-    haystack = _normalize_ws(extracted_source)
-    return all(_normalize_ws(ref) in haystack for ref in refs)
+    whitespace runs + the R2 quote/dash canonicalization above — a genuinely
+    absent anchor still fails containment and vetoes)."""
+    haystack = _normalize_match_text(extracted_source)
+    return all(_normalize_match_text(ref) in haystack for ref in refs)
+
+
+def _normalized_unit_refs(unit: Any) -> frozenset[str] | None:
+    """A unit's ``source_refs`` in canonical matching form, or ``None`` when
+    malformed/absent (same absence semantics as :func:`unit_source_refs`)."""
+    refs = unit_source_refs(unit)
+    if refs is None:
+        return None
+    return frozenset(_normalize_match_text(ref) for ref in refs)
+
+
+def duplicated_anchors(plan_units: list[Any]) -> frozenset[str]:
+    """R4 (Edge#3): normalized anchor strings carried by MORE THAN ONE unit.
+
+    An anchor is a citation of the passage ONE unit plans; the same anchor on
+    two units makes the seam evidence ambiguous, so it is treated as
+    UNRESOLVABLE for seam purposes on ALL units that carry it (veto
+    discipline: refuse rather than guess). Duplicates WITHIN a single unit's
+    own list are not cross-unit ambiguity and do not count.
+    """
+    carriers: dict[str, int] = {}
+    for unit in plan_units:
+        for anchor in _normalized_unit_refs(unit) or frozenset():
+            carriers[anchor] = carriers.get(anchor, 0) + 1
+    return frozenset(anchor for anchor, count in carriers.items() if count > 1)
 
 
 def _is_assessment_unit(unit: Any) -> bool:
@@ -301,12 +373,18 @@ def _seam_is_bonded(
     )
 
 
-def _run_seams(units: list[Any], extracted_source: str | None) -> list[int]:
+def _run_seams(
+    units: list[Any],
+    extracted_source: str | None,
+    duplicated: frozenset[str] = frozenset(),
+) -> list[int]:
     """Split-after member indices that are legitimate seams for one cluster run.
 
     Zero seams (the veto) when the run is a singleton, is assessment-shaped
-    (I-4), or ANY unit's anchors are absent/malformed/unresolvable/role-
-    unverifiable — the floor never guesses-and-splits.
+    (I-4), ANY unit's anchors are absent/malformed/unresolvable/role-
+    unverifiable, or ANY unit carries a cross-unit DUPLICATED anchor (R4:
+    ambiguous citation = unresolvable for seam purposes) — the floor never
+    guesses-and-splits.
     """
     if len(units) < 2:
         return []
@@ -317,6 +395,10 @@ def _run_seams(units: list[Any], extracted_source: str | None) -> list[int]:
         roles = _unit_roles(unit)
         if roles is None:
             return []
+        normalized_refs = _normalized_unit_refs(unit)
+        assert normalized_refs is not None  # _unit_roles above already validated
+        if duplicated and normalized_refs & duplicated:
+            return []  # R4 duplicate-anchor veto (diagnosed by the caller)
         if extracted_source is not None:
             refs = unit_source_refs(unit)
             assert refs is not None  # _unit_roles above already validated
@@ -422,9 +504,17 @@ def honor_min_cluster_floor(
     each is split at its EARLIEST legitimate seams until the deficit is met.
     Reaches EXACTLY ``floor`` clusters when the seams allow; raises
     ``ClusterFloorMismatchError`` (never an over-fragmenting forced split) when
-    they do not. When ``extracted_source`` is provided (plan creation), anchors
-    must additionally resolve verbatim into it; at refinement passes the
-    carried-forward anchors are schema+role checked only (A-4).
+    they do not. When ``extracted_source`` is provided, anchors must
+    additionally resolve verbatim into it — and it IS provided on EVERY
+    production dispatch: 04A creation obviously, and ALSO the 05/05B
+    refinement passes, whose manifest nodes project the same corpus as 04A
+    (``dependency_projections.bundle_reference: {from: texas}``,
+    ``state/config/pipeline-manifest.yaml:411-414`` and ``:429-435``), so
+    carried-forward anchors (A-4) resolve against the SAME extracted source.
+    ``extracted_source=None`` (schema+role-only checking) is a DEGRADED
+    defensive fallback for a corpus-delivery regression, not a production
+    shape. Anchors duplicated across units are unresolvable for seam purposes
+    (R4 veto; see :func:`duplicated_anchors`).
     """
     if not isinstance(plan_units, list):
         raise InvalidFloorConfigError(
@@ -441,19 +531,42 @@ def honor_min_cluster_floor(
         return list(plan_units)  # already honored — identity no-op
 
     deficit = floor - count
+    duplicated = duplicated_anchors(plan_units)
     seams_per_run: list[list[int]] = []
+    dup_vetoed_runs: list[str] = []
     total_available = 0
-    for _, units in runs:
-        seams = _run_seams(units, extracted_source)
+    for cid, units in runs:
+        seams = _run_seams(units, extracted_source, duplicated)
         seams_per_run.append(seams)
         total_available += len(seams)
+        # R4 distinct diagnostic: record multi-unit runs zeroed by the
+        # duplicate-anchor veto so triage is not misdirected to the generic
+        # styleguide-vs-content framing.
+        if (
+            not seams
+            and len(units) >= 2
+            and duplicated
+            and any(
+                (_normalized_unit_refs(unit) or frozenset()) & duplicated
+                for unit in units
+            )
+        ):
+            dup_vetoed_runs.append(cid)
 
     if total_available < deficit:
+        dup_note = (
+            "; duplicate-anchor veto: cluster(s) "
+            f"{sorted(dup_vetoed_runs)} carry a source_refs anchor reused "
+            "across multiple units — ambiguous citations are unresolvable for "
+            "seam purposes (refuse over guess)"
+            if dup_vetoed_runs
+            else ""
+        )
         raise ClusterFloorMismatchError(
             f"min_cluster_floor={floor} cannot be honored: content has {count} "
             f"cluster(s) with only {total_available} legitimate internal seam(s) "
             f"(max reachable {count + total_available}); refusing to over-fragment "
-            f"(styleguide-vs-content mismatch)"
+            f"(styleguide-vs-content mismatch){dup_note}"
         )
 
     used_cluster_ids = {cid for cid, _ in runs}
@@ -528,6 +641,7 @@ def assert_floor_consulted(envelope_payload: Any, consumption: FloorConsumption)
 
 __all__ = [
     "ANCHOR_ROLES",
+    "CLUSTER_FLOOR_LLM_FALLBACK_TAG",
     "CLUSTER_FLOOR_MISMATCH_TAG",
     "DEAD_FLOOR_CONFIG_TAG",
     "GROUPING_KEYS",
@@ -540,6 +654,7 @@ __all__ = [
     "classify_anchor_role",
     "consume_min_cluster_floor",
     "count_clusters",
+    "duplicated_anchors",
     "flatten_plan_content",
     "group_plan_clusters",
     "honor_min_cluster_floor",

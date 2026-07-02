@@ -267,21 +267,23 @@ def test_resolvable_anchors_split_when_source_is_present() -> None:
 # I-4: assessment / knowledge-check exemption                                  #
 # --------------------------------------------------------------------------- #
 def _two_unit_cluster(title_head: str, title_inter: str) -> list[dict]:
-    """SYNTHETIC minimal plan (labelled): one 2-unit cluster + one singleton."""
-    claim = ["a plain claim anchor with no markers"]
+    """SYNTHETIC minimal plan (labelled): one 2-unit cluster + one singleton.
+
+    Anchors are DISTINCT per unit (R4: a shared anchor is the duplicate-anchor
+    veto's own discriminating surface — these tests target OTHER vetoes)."""
     return [
         {"unit_id": "a1", "title": title_head, "learning_objective": "lo",
          "cluster_id": "c-a", "cluster_role": "head", "cluster_position": "establish",
          "cluster_interstitial_count": 1, "parent_slide_id": None,
-         "source_refs": list(claim)},
+         "source_refs": ["a plain first claim anchor with no markers"]},
         {"unit_id": "a2", "title": title_inter, "learning_objective": "lo",
          "cluster_id": "c-a", "cluster_role": "interstitial",
          "cluster_position": "develop", "parent_slide_id": "a1",
-         "source_refs": list(claim)},
+         "source_refs": ["a plain second claim anchor with no markers"]},
         {"unit_id": "b1", "title": "Plain singleton", "learning_objective": "lo",
          "cluster_id": "c-b", "cluster_role": "head", "cluster_position": "establish",
          "cluster_interstitial_count": 0, "parent_slide_id": None,
-         "source_refs": list(claim)},
+         "source_refs": ["a plain third claim anchor with no markers"]},
     ]
 
 
@@ -348,6 +350,115 @@ def test_no_floor_bound_is_quiet_and_untouched() -> None:
     assert honored is units
     assert not receipt.consulted
     cf.assert_floor_consulted({"mode": "pass-1"}, receipt)  # quiet
+
+
+# --------------------------------------------------------------------------- #
+# R2 (Edge#2): Unicode/quote canonicalization on verbatim anchor matching      #
+# --------------------------------------------------------------------------- #
+def _quote_cluster(anchor_a: str, anchor_b: str) -> list[dict]:
+    """SYNTHETIC minimal plan (labelled): one 2-unit cluster + one singleton."""
+    return [
+        {"unit_id": "q1", "title": "Quote head", "learning_objective": "lo",
+         "cluster_id": "c-q", "cluster_role": "head", "cluster_position": "establish",
+         "cluster_interstitial_count": 1, "parent_slide_id": None,
+         "source_refs": [anchor_a]},
+        {"unit_id": "q2", "title": "Quote beat", "learning_objective": "lo",
+         "cluster_id": "c-q", "cluster_role": "interstitial",
+         "cluster_position": "develop", "parent_slide_id": "q1",
+         "source_refs": [anchor_b]},
+        {"unit_id": "q3", "title": "Quote singleton", "learning_objective": "lo",
+         "cluster_id": "c-q3", "cluster_role": "head", "cluster_position": "establish",
+         "cluster_interstitial_count": 0, "parent_slide_id": None,
+         "source_refs": ["Part three opens"]},
+    ]
+
+
+# The Part-3 corpus reality: curly apostrophes/quotes (U+2019/U+201C/U+201D),
+# en/em-dashes, non-breaking spaces. An LLM emitting straight-quote anchors
+# must still resolve (else every seam zeroes and the live differential
+# false-vetoes).
+_CURLY_SOURCE = (
+    "Part three opens “The Intrapreneur’s Maze” — the "
+    "load–bearing walls of the institution."
+)
+_STRAIGHT_SOURCE = (
+    'Part three opens "The Intrapreneur\'s Maze" - the load-bearing walls of '
+    "the institution."
+)
+
+
+def test_straight_quote_anchor_resolves_against_curly_source() -> None:
+    units = _quote_cluster(
+        'opens "The Intrapreneur\'s Maze"', "the load-bearing walls of the institution"
+    )
+    honored = cf.honor_min_cluster_floor(units, 3, extracted_source=_CURLY_SOURCE)
+    assert cf.count_clusters(honored) == 3
+
+
+def test_curly_anchor_resolves_against_straight_source() -> None:
+    units = _quote_cluster(
+        "opens “The Intrapreneur’s Maze”",
+        "the load—bearing walls of the institution",
+    )
+    honored = cf.honor_min_cluster_floor(units, 3, extracted_source=_STRAIGHT_SOURCE)
+    assert cf.count_clusters(honored) == 3
+
+
+def test_genuinely_absent_anchor_still_vetoes_after_normalization() -> None:
+    units = _quote_cluster(
+        'opens "The Intrapreneur\'s Maze"', "an anchor that is nowhere in the source"
+    )
+    with pytest.raises(cf.ClusterFloorMismatchError):
+        cf.honor_min_cluster_floor(units, 3, extracted_source=_CURLY_SOURCE)
+
+
+# --------------------------------------------------------------------------- #
+# R4 (Edge#3): duplicate/cross-unit anchor reuse = unresolvable (veto)         #
+# --------------------------------------------------------------------------- #
+def _dup_anchor_plan() -> list[dict]:
+    """SYNTHETIC (labelled): cluster c-a shares ONE anchor across both units
+    (curly-vs-straight variants so the check is post-normalization); cluster
+    c-b carries distinct anchors."""
+    shared = "the intrapreneur’s shared anchor phrase"
+    shared_straight = "the intrapreneur's shared anchor phrase"
+    return [
+        {"unit_id": "d1", "title": "Dup head", "learning_objective": "lo",
+         "cluster_id": "c-a", "cluster_role": "head", "cluster_position": "establish",
+         "cluster_interstitial_count": 1, "parent_slide_id": None,
+         "source_refs": [shared]},
+        {"unit_id": "d2", "title": "Dup beat", "learning_objective": "lo",
+         "cluster_id": "c-a", "cluster_role": "interstitial",
+         "cluster_position": "develop", "parent_slide_id": "d1",
+         "source_refs": [shared_straight]},
+        {"unit_id": "d3", "title": "Distinct head", "learning_objective": "lo",
+         "cluster_id": "c-b", "cluster_role": "head", "cluster_position": "establish",
+         "cluster_interstitial_count": 1, "parent_slide_id": None,
+         "source_refs": ["a first distinct claim anchor"]},
+        {"unit_id": "d4", "title": "Distinct beat", "learning_objective": "lo",
+         "cluster_id": "c-b", "cluster_role": "interstitial",
+         "cluster_position": "develop", "parent_slide_id": "d3",
+         "source_refs": ["a second distinct claim anchor"]},
+    ]
+
+
+def test_duplicate_anchor_units_contribute_zero_seams() -> None:
+    units = _dup_anchor_plan()
+    # 2 clusters; c-a's only seam is duplicate-poisoned -> only c-b's seam
+    # remains. floor 4 needs 2 seams -> REFUSE (veto over guess).
+    with pytest.raises(cf.ClusterFloorMismatchError) as excinfo:
+        cf.honor_min_cluster_floor(units, 4)
+    # distinct diagnostic so triage sees the duplicate-anchor veto
+    assert "duplicate-anchor" in str(excinfo.value)
+
+
+def test_distinct_anchor_cluster_unaffected_by_duplicate_veto_elsewhere() -> None:
+    units = _dup_anchor_plan()
+    honored = cf.honor_min_cluster_floor(units, 3)  # deficit 1: c-b's seam serves
+    assert cf.count_clusters(honored) == 3
+    by_id = {u["unit_id"]: u for u in honored}
+    # c-a (duplicate-poisoned) stays whole; c-b split
+    assert by_id["d1"]["cluster_id"] == by_id["d2"]["cluster_id"] == "c-a"
+    assert by_id["d3"]["cluster_id"] != by_id["d4"]["cluster_id"]
 
 
 # --------------------------------------------------------------------------- #

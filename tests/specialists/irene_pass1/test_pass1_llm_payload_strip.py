@@ -139,6 +139,95 @@ def test_act_path_prompt_carries_zero_floor_bytes(tmp_path: Path) -> None:
         handle=handle,
         model_id="gpt-5.4",
     )
-    messages = handle.chat.calls[-1]
-    for message in messages:
-        assert "min_cluster_floor" not in message["content"]
+    # EVERY call, not just the last (R6)
+    assert handle.chat.calls
+    for call in handle.chat.calls:
+        for message in call:
+            assert "min_cluster_floor" not in message["content"]
+
+
+# --------------------------------------------------------------------------- #
+# R3 (Blind#1) — cross-pass structural-fingerprint scrub                        #
+# --------------------------------------------------------------------------- #
+# At 05/05B the payload embeds the PRIOR (possibly floored) plan via
+# upstream_output.lesson_plan; post-honoring plan_units carry the floor-engine-
+# owned ``floor_subdivision_index`` annotation (+ minted ``#f`` cluster ids).
+# The annotation key is scrubbed from the MODEL-VISIBLE payload copy (it is
+# engine provenance, not plan state); the minted cluster ids are NOT renamed —
+# the honored plan IS the real plan the refinement must see. Byte-identity is
+# scoped accordingly: it holds for the CREATION pass and for any pass given
+# identical incoming plans.
+def _floored_prior_plan_payload() -> dict:
+    return {
+        "mode": "pass-1",
+        "topic": "cells",
+        "upstream_output": {
+            "lesson_plan": {
+                "plan_units": [
+                    {
+                        "unit_id": "u1",
+                        "title": "T1",
+                        "cluster_id": "c-u1",
+                        "cluster_role": "head",
+                        "cluster_interstitial_count": 0,
+                        "floor_subdivision_index": 0,
+                        "source_refs": ["anchor one"],
+                    },
+                    {
+                        "unit_id": "u2",
+                        "title": "T2",
+                        "cluster_id": "c-u1#f1",
+                        "cluster_role": "head",
+                        "cluster_interstitial_count": 0,
+                        "floor_subdivision_index": 1,
+                        "source_refs": ["anchor two"],
+                    },
+                ]
+            }
+        },
+    }
+
+
+def test_visible_payload_scrubs_floor_subdivision_index() -> None:
+    payload = _floored_prior_plan_payload()
+    system_msg, user_msg = pass1_act.assemble_pass1_prompt(
+        payload, extracted_source=None
+    )
+    for text in (system_msg, user_msg):
+        assert "floor_subdivision_index" not in text
+    # the minted cluster ids are legitimate downstream state and stay visible
+    assert "c-u1#f1" in user_msg
+    # anchors (real plan state) stay visible too
+    assert "anchor two" in user_msg
+
+
+def test_scrub_does_not_mutate_the_full_payload() -> None:
+    payload = _floored_prior_plan_payload()
+    snapshot = json.dumps(payload, sort_keys=True)
+    pass1_act.assemble_pass1_prompt(payload, extracted_source=None)
+    # the FULL payload (annotation included) stays available post-hoc
+    assert json.dumps(payload, sort_keys=True) == snapshot
+    units = payload["upstream_output"]["lesson_plan"]["plan_units"]
+    assert [u["floor_subdivision_index"] for u in units] == [0, 1]
+
+
+def test_act_path_prompt_carries_zero_fingerprint_bytes(tmp_path: Path) -> None:
+    bundle = tmp_path / "bundle"
+    bundle.mkdir()
+    (bundle / "extracted.md").write_text(
+        "# Corpus\n\nanchor one\nanchor two", encoding="utf-8"
+    )
+    handle = _RecordingHandle(_minimal_response())
+    payload = _floored_prior_plan_payload()
+    payload.update(
+        {
+            "run_id": "run-fingerprint",
+            "runs_root": str(tmp_path),
+            "bundle_reference": str(bundle),
+        }
+    )
+    pass1_act.act(_state(payload), handle=handle, model_id="gpt-5.4")
+    assert handle.chat.calls
+    for call in handle.chat.calls:
+        for message in call:
+            assert "floor_subdivision_index" not in message["content"]

@@ -15,6 +15,8 @@ from app.models.state.run_state import RunState
 from app.specialists.dispatch_errors import SpecialistDispatchError
 from app.specialists.gary.styleguide_library import SCRIPTED_ENUM_CLASSES
 from app.specialists.irene_pass1.cluster_floor import (
+    CLUSTER_FLOOR_LLM_FALLBACK_TAG,
+    ClusterFloorMismatchError,
     assert_floor_consulted,
     consume_min_cluster_floor,
 )
@@ -63,10 +65,38 @@ PASS2_MODES = {"pass-2", "irene-pass2", "irene_pass2"}
 # Leg-C R3 AC#15 (D-0): scripted-derived payload keys the deterministic post-hoc
 # honoring reads but the LLM must NEVER see. Keyed off the scripted NAMESPACE
 # (the sealed registry in the CD-owned styleguide spine), never a hand-list —
-# a future 2nd scripted class is auto-hidden. Stripping keeps the model input
-# BYTE-IDENTICAL with and without a bound floor ("never re-parameterize the
-# LLM clustering objective"); the FULL payload stays available post-hoc.
+# a future 2nd scripted class is auto-hidden. The FULL payload stays available
+# post-hoc.
+#
+# D-3 byte-identity, honestly scoped (R3 remediation): with the strip + the
+# floor-annotation scrub below, the model input is BYTE-IDENTICAL with and
+# without a bound floor for the CREATION pass and for any pass given IDENTICAL
+# incoming plans ("never re-parameterize the LLM clustering objective"). A
+# refinement pass whose incoming plan was itself reshaped by honoring
+# legitimately sees the honored plan — the extra clusters (minted ``#f`` ids
+# included) are real downstream plan state, NOT a leak; only the floor-ENGINE-
+# OWNED provenance key (``floor_subdivision_index``) is scrubbed from the
+# model-visible copy so the model cannot fingerprint that a floor ran.
 _LLM_HIDDEN_PAYLOAD_KEYS: frozenset[str] = frozenset(SCRIPTED_ENUM_CLASSES)
+
+# R3 (Blind#1): floor-engine-owned plan_unit annotation keys scrubbed
+# (recursively, targeted key removal) from the model-visible payload copy.
+# Kept in the FULL payload + the persisted plan (provenance for the arbiter).
+_FLOOR_ENGINE_ANNOTATION_KEYS: frozenset[str] = frozenset({"floor_subdivision_index"})
+
+
+def _scrub_floor_annotations(value: Any) -> Any:
+    """Recursively remove ``_FLOOR_ENGINE_ANNOTATION_KEYS`` from a JSON-shaped
+    structure (pure: returns copies, never mutates the input)."""
+    if isinstance(value, dict):
+        return {
+            k: _scrub_floor_annotations(v)
+            for k, v in value.items()
+            if k not in _FLOOR_ENGINE_ANNOTATION_KEYS
+        }
+    if isinstance(value, list):
+        return [_scrub_floor_annotations(item) for item in value]
+    return value
 
 
 class ModeMismatchError(SpecialistDispatchError):
@@ -144,9 +174,16 @@ def assemble_pass1_prompt(
     # text — and Pass-1 confabulated a lesson plan from the reference docs'
     # domain. At plan CREATION (§04A) the extracted source leads the prompt
     # and is the only planning basis. At refinement passes (§05/§05B) the
-    # input contract is the prior corpus-grounded plan delivered in the
-    # payload; the corpus section is omitted (cycle-3 error-pause evidence:
-    # node 05's payload carries upstream_output.lesson_plan, no bundle).
+    # prior corpus-grounded plan arrives in the payload AND the corpus is
+    # STILL projected alongside it — manifest nodes 05/05B declare the same
+    # `dependency_projections.bundle_reference: {from: texas}` corpus
+    # projection as 04A (state/config/pipeline-manifest.yaml:411-414 and
+    # :429-435, dp-v1) — so `extracted_source` is non-None at refinement too
+    # (R1 remediation: the earlier "corpus omitted at refinement" framing
+    # from the cycle-3 error-pause predates dp-v1 and was wrong against the
+    # current manifest). The `extracted_source is None` branch below is a
+    # DEGRADED defensive fallback for a corpus-delivery regression, not the
+    # production 05/05B shape.
     corpus_section = (
         "## Source corpus (extracted) — the ONLY planning basis\n\n"
         "Plan ONLY from the source corpus below. Reference material further "
@@ -159,10 +196,14 @@ def assemble_pass1_prompt(
     )
     # Leg-C R3 AC#15 (D-0 strip): scripted-derived keys never reach the model's
     # view of the payload; the caller's payload dict is untouched (post-hoc
-    # consumers read the floor from the FULL payload).
-    model_visible_payload = {
-        k: v for k, v in payload.items() if k not in _LLM_HIDDEN_PAYLOAD_KEYS
-    }
+    # consumers read the floor from the FULL payload). R3 remediation: the
+    # floor-engine-owned annotation key is additionally scrubbed recursively
+    # (a prior floored plan riding upstream_output.lesson_plan.plan_units must
+    # not fingerprint the honoring to the model; the plan's minted clusters
+    # themselves stay visible — they ARE the plan).
+    model_visible_payload = _scrub_floor_annotations(
+        {k: v for k, v in payload.items() if k not in _LLM_HIDDEN_PAYLOAD_KEYS}
+    )
     return (
         PASS_1_SYSTEM_MESSAGE,
         f"{corpus_section}"
@@ -490,6 +531,15 @@ def normalize_collateral(plan: dict[str, Any]) -> dict[str, Any]:
     return {**plan, "collateral": spec.model_dump(mode="json")}
 
 
+# R7 (Edge#4): internal marker set by parse_pass1_response when the model's
+# output was NOT usable structured JSON and the single synthetic fallback unit
+# was substituted. act() POPS it (never persisted / never model-visible) and
+# uses it to give a bound-floor mismatch on the fallback plan a DISTINCT
+# llm-format-fallback diagnostic instead of the generic
+# styleguide-vs-content framing.
+_PARSE_FALLBACK_KEY = "_llm_format_fallback"
+
+
 def parse_pass1_response(raw_text: str) -> dict[str, Any]:
     stripped = raw_text.strip()
     if "```json" in stripped:
@@ -521,6 +571,7 @@ def parse_pass1_response(raw_text: str) -> dict[str, Any]:
         ]
         # The fallback unit is itself a degenerate size-1 cluster.
         parsed = normalize_clusters(parsed)
+        parsed[_PARSE_FALLBACK_KEY] = True  # R7: flag the format fallback
     # Braid S1: guarantee a well-formed collateral block on BOTH the LLM-output
     # path and the fallback-unit path (additive; degenerate-empty -> "none").
     parsed = normalize_collateral(parsed)
@@ -691,14 +742,32 @@ def act(state: RunState, *, handle: Any, model_id: str) -> dict[str, Any]:
     )
     raw = response.content if hasattr(response, "content") else str(response)
     plan = parse_pass1_response(raw if isinstance(raw, str) else str(raw))
+    llm_format_fallback = bool(plan.pop(_PARSE_FALLBACK_KEY, False))
     # Leg-C R3: deterministic post-hoc min_cluster_floor honoring on the FULL
     # payload (the LLM never saw the floor — D-0 strip above). Runs on EVERY
-    # Pass-1 dispatch (04A creation AND 05/05B refinement): refinement
-    # CONSOLIDATES clusters, so the LATEST pass must honor. The dead-config
-    # guard (D-1/D-3) fails loud if a bound floor ever bypasses this seam.
-    floored_units, floor_receipt = consume_min_cluster_floor(
-        payload, plan["plan_units"], extracted_source=extracted_source
-    )
+    # Pass-1 dispatch (04A creation AND 05/05B refinement — the manifest
+    # projects the corpus to 05/05B too, so extracted_source is normally
+    # non-None on all three nodes): refinement CONSOLIDATES clusters, so the
+    # LATEST pass must honor. The dead-config guard (D-1/D-3) fails loud if a
+    # bound floor ever bypasses this seam.
+    try:
+        floored_units, floor_receipt = consume_min_cluster_floor(
+            payload, plan["plan_units"], extracted_source=extracted_source
+        )
+    except ClusterFloorMismatchError as exc:
+        if llm_format_fallback:
+            # R7: same recoverable error class, DISTINCT diagnostic — the
+            # mismatch is an artifact of the LLM format failure (one synthetic
+            # unit, no source_refs), not a styleguide/content pairing problem.
+            raise ClusterFloorMismatchError(
+                "llm-format-fallback: the Pass-1 response was not usable "
+                "structured JSON, so the plan is the single synthetic fallback "
+                "unit (no source_refs); a bound min_cluster_floor cannot be "
+                "assessed against it — triage the LLM output format, not the "
+                f"styleguide/content pairing. Underlying mismatch: {exc}",
+                tag=CLUSTER_FLOOR_LLM_FALLBACK_TAG,
+            ) from exc
+        raise
     assert_floor_consulted(payload, floor_receipt)
     plan = {**plan, "plan_units": floored_units}
     run_id = str(payload.get("run_id") or state.run_id)

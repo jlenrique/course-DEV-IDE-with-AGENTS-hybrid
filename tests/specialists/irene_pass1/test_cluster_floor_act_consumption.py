@@ -3,9 +3,15 @@
 Pins (hermetic recording handle, no network):
 
 - a bound floor is honored on the act path at plan CREATION (04A shape:
-  corpus present, anchors must resolve) AND at REFINEMENT (05/05B shape:
-  prior-plan payload, carried-forward anchors trusted per A-4) — the LATEST
-  pass honors, because refinement consolidates (baseline: 04A 10 -> 05/05B 7);
+  corpus present, anchors must resolve) AND at REFINEMENT — the TRUE 05/05B
+  shape carries BOTH ``upstream_output.lesson_plan`` AND ``bundle_reference``
+  (nodes 05/05B declare the same ``dependency_projections.bundle_reference:
+  {from: texas}`` corpus projection as 04A —
+  ``state/config/pipeline-manifest.yaml:411-414`` and ``:429-435``), so
+  carried-forward anchors resolve against the SAME extracted source; the
+  LATEST pass honors, because refinement consolidates (baseline: 04A 10 ->
+  05/05B 7). A bundle-less refinement payload is a DEGRADED defensive
+  fallback (schema+role-only check), not the production shape;
 - an unhonorable floor error-pauses recoverably (SpecialistDispatchError);
 - the anchor EMISSION carries no scripted value/hint (D-3): the instruction
   block requests source_refs + refinement carry-forward and never mentions the
@@ -134,9 +140,12 @@ def test_creation_path_honors_bound_floor_and_strips_prompt(tmp_path: Path) -> N
     assert [u["unit_id"] for u in units] == [f"u{i:02d}" for i in range(1, 13)]
     # locked_scope carries the SAME honored units (the arbiter surface)
     assert cf.count_clusters(output["locked_scope"]["plan_units"]) == 8
-    # zero floor bytes reached the model (Murat-5 in unit form)
-    for message in handle.chat.calls[-1]:
-        assert "min_cluster_floor" not in message["content"]
+    # zero floor bytes reached the model (Murat-5 in unit form) — EVERY call,
+    # not just the last (R6)
+    assert handle.chat.calls
+    for call in handle.chat.calls:
+        for message in call:
+            assert "min_cluster_floor" not in message["content"]
 
 
 def test_creation_path_without_floor_is_unchanged_control(tmp_path: Path) -> None:
@@ -148,10 +157,54 @@ def test_creation_path_without_floor_is_unchanged_control(tmp_path: Path) -> Non
     assert cf.count_clusters(output["lesson_plan"]["plan_units"]) == 7  # count_K
 
 
-def test_refinement_path_honors_floor_via_carried_forward_refs(tmp_path: Path) -> None:
-    """05/05B shape: prior plan in upstream_output, NO bundle_reference —
-    extracted_source is None; carried-forward anchors are schema+role checked
-    only (A-4). The LATEST pass must honor (refinement consolidates)."""
+def test_refinement_true_shape_resolves_anchors_against_projected_corpus(
+    tmp_path: Path,
+) -> None:
+    """R1 — the TRUE 05/05B refinement shape: the payload carries BOTH
+    ``upstream_output.lesson_plan`` (prior plan) AND ``bundle_reference``
+    (nodes 05/05B project the corpus exactly like 04A —
+    ``state/config/pipeline-manifest.yaml:411-414``/``:429-435``). So
+    ``read_extracted_source`` resolves, ``extracted_source`` is NON-None, and
+    the carried-forward anchors must resolve verbatim against the SAME
+    extracted source; the floor honors on that basis (the LATEST pass honors —
+    refinement consolidates)."""
+    handle = _RecordingHandle(_response_with_refs())
+    payload = _creation_payload(tmp_path, floor=8)
+    payload["run_id"] = "run-floor-refine-true"
+    payload["upstream_output"] = {"lesson_plan": {"plan_units": []}}
+    update = pass1_act.act(_state(payload), handle=handle, model_id="gpt-5.4")
+    output = json.loads(update["cache_state"]["cache_prefix"])
+    assert cf.count_clusters(output["lesson_plan"]["plan_units"]) == 8
+
+
+def test_refinement_true_shape_unresolvable_anchors_veto(tmp_path: Path) -> None:
+    """R1 companion: because the corpus IS present at 05/05B, anchor
+    resolution stays ACTIVE at refinement — non-resolving carried-forward
+    anchors veto (never a schema-only free pass on the production shape)."""
+    bundle = tmp_path / "bundle"
+    bundle.mkdir()
+    (bundle / "extracted.md").write_text(
+        "A corpus that contains none of the synthetic anchors.", encoding="utf-8"
+    )
+    handle = _RecordingHandle(_response_with_refs())
+    payload = {
+        "mode": "pass-1",
+        "run_id": "run-floor-refine-veto",
+        "runs_root": str(tmp_path),
+        "bundle_reference": str(bundle),
+        "upstream_output": {"lesson_plan": {"plan_units": []}},
+        "min_cluster_floor": 8,
+    }
+    with pytest.raises(cf.ClusterFloorMismatchError):
+        pass1_act.act(_state(payload), handle=handle, model_id="gpt-5.4")
+
+
+def test_refinement_degraded_bundleless_fallback_still_honors(tmp_path: Path) -> None:
+    """DEGRADED defensive fallback (NOT the production 05/05B shape — see the
+    module docstring): a refinement payload with a prior plan but NO resolvable
+    bundle_reference. ``extracted_source`` is None and carried-forward anchors
+    are schema+role checked only (A-4). Kept as a fallback so a corpus-delivery
+    regression degrades to the weaker check instead of crashing."""
     handle = _RecordingHandle(_response_with_refs())
     payload = {
         "mode": "pass-1",
@@ -176,6 +229,24 @@ def test_unhonorable_floor_error_pauses_recoverably(tmp_path: Path) -> None:
             model_id="gpt-5.4",
         )
     assert isinstance(excinfo.value, SpecialistDispatchError)
+
+
+def test_parse_fallback_under_bound_floor_gets_distinct_diagnostic(
+    tmp_path: Path,
+) -> None:
+    """R7 — the JSON-parse-failure fallback (one synthetic unit, no
+    source_refs) under a bound floor must NOT masquerade as a generic
+    styleguide-vs-content mismatch: triage needs to see the LLM format
+    failure. Same recoverable error class, DISTINCT tag/message."""
+    handle = _RecordingHandle("this is not json at all")
+    with pytest.raises(cf.ClusterFloorMismatchError) as excinfo:
+        pass1_act.act(
+            _state(_creation_payload(tmp_path, floor=8)),
+            handle=handle,
+            model_id="gpt-5.4",
+        )
+    assert excinfo.value.tag == cf.CLUSTER_FLOOR_LLM_FALLBACK_TAG
+    assert "llm-format-fallback" in str(excinfo.value)
 
 
 def test_anchor_resolution_active_at_creation(tmp_path: Path) -> None:
