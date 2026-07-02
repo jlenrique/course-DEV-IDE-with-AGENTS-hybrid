@@ -1,0 +1,95 @@
+﻿============================= test session starts =============================
+platform win32 -- Python 3.12.13, pytest-8.4.2, pluggy-1.6.0 -- C:\Users\juanl\Documents\GitHub\course-DEV-IDE-with-AGENTS-hybrid\.venv\Scripts\python.exe
+cachedir: .pytest_cache
+rootdir: C:\Users\juanl\Documents\GitHub\course-DEV-IDE-with-AGENTS-hybrid
+configfile: pyproject.toml
+plugins: anyio-4.13.0, langsmith-0.7.33, asyncio-0.26.0, timeout-2.4.0, xdist-3.8.0
+asyncio: mode=Mode.AUTO, asyncio_default_fixture_loop_scope=None, asyncio_default_test_loop_scope=function
+collecting ... collected 2 items
+
+tests/test_gamma_image_model_enum_parity.py::test_enum_matches_documented_accepted_values FAILED [ 50%]
+tests/test_gamma_image_model_enum_parity.py::test_image_model_enum_three_way_lockstep PASSED [100%]
+
+================================== FAILURES ===================================
+________________ test_enum_matches_documented_accepted_values _________________
+
+    def test_enum_matches_documented_accepted_values() -> None:
+        """D-1 strict doc-parity: the frozen enum equals the documented set on the
+        recorded real page � exact sets, both directions."""
+        documented = _documented_tokens_from_fixture()
+        diffs = {
+            "phantom-in-enum-absent-from-docs": sorted(IMAGE_MODEL_VALUES - documented),
+            "documented-absent-from-enum": sorted(documented - IMAGE_MODEL_VALUES),
+        }
+>       assert diffs == {
+            "phantom-in-enum-absent-from-docs": [],
+            "documented-absent-from-enum": [],
+        }, "IMAGE_MODEL_VALUES diverged from the documented accepted values (D-1)"
+E       AssertionError: IMAGE_MODEL_VALUES diverged from the documented accepted values (D-1)
+E       assert {'phantom-in-enum-absent-from-docs': ['imagen-4-fast', 'qwen-image', 'qwen-image-fast'], 'documented-absent-from-enum': ['flux-1-pro', 'flux-1-quick', 'flux-1-ultra', 'flux-kontext-max', 'gpt-image-1-mini-high', 'gpt-image-1-mini-low', 'gpt-image-1-mini-medium', 'gpt-image-2', 'gpt-image-2-hd', 'gpt-image-2-mini', 'imagen-3-pro']} == {'phantom-in-enum-absent-from-docs': [], 'documented-absent-from-enum': []}
+E         
+E         Differing items:
+E         {'phantom-in-enum-absent-from-docs': ['imagen-4-fast', 'qwen-image', 'qwen-image-fast']} != {'phantom-in-enum-absent-from-docs': []}
+E         {'documented-absent-from-enum': ['flux-1-pro', 'flux-1-quick', 'flux-1-ultra', 'flux-kontext-max', 'gpt-image-1-mini-high', 'gpt-image-1-mini-low', ...]} != {'documented-absent-from-enum': []}
+E         
+E         Full diff:
+E           {
+E         -     'documented-absent-from-enum': [],
+E         ?                                     --
+E         +     'documented-absent-from-enum': [
+E         +         'flux-1-pro',
+E         +         'flux-1-quick',
+E         +         'flux-1-ultra',
+E         +         'flux-kontext-max',
+E         +         'gpt-image-1-mini-high',
+E         +         'gpt-image-1-mini-low',
+E         +         'gpt-image-1-mini-medium',
+E         +         'gpt-image-2',
+E         +         'gpt-image-2-hd',
+E         +         'gpt-image-2-mini',
+E         +         'imagen-3-pro',
+E         +     ],
+E         -     'phantom-in-enum-absent-from-docs': [],
+E         ?                                          --
+E         +     'phantom-in-enum-absent-from-docs': [
+E         +         'imagen-4-fast',
+E         +         'qwen-image',
+E         +         'qwen-image-fast',
+E         +     ],
+E           }
+
+tests\test_gamma_image_model_enum_parity.py:101: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_gamma_image_model_enum_parity.py::test_enum_matches_documented_accepted_values - AssertionError: IMAGE_MODEL_VALUES diverged from the documented accepted values (D-1)
+assert {'phantom-in-enum-absent-from-docs': ['imagen-4-fast', 'qwen-image', 'qwen-image-fast'], 'documented-absent-from-enum': ['flux-1-pro', 'flux-1-quick', 'flux-1-ultra', 'flux-kontext-max', 'gpt-image-1-mini-high', 'gpt-image-1-mini-low', 'gpt-image-1-mini-medium', 'gpt-image-2', 'gpt-image-2-hd', 'gpt-image-2-mini', 'imagen-3-pro']} == {'phantom-in-enum-absent-from-docs': [], 'documented-absent-from-enum': []}
+  
+  Differing items:
+  {'phantom-in-enum-absent-from-docs': ['imagen-4-fast', 'qwen-image', 'qwen-image-fast']} != {'phantom-in-enum-absent-from-docs': []}
+  {'documented-absent-from-enum': ['flux-1-pro', 'flux-1-quick', 'flux-1-ultra', 'flux-kontext-max', 'gpt-image-1-mini-high', 'gpt-image-1-mini-low', ...]} != {'documented-absent-from-enum': []}
+  
+  Full diff:
+    {
+  -     'documented-absent-from-enum': [],
+  ?                                     --
+  +     'documented-absent-from-enum': [
+  +         'flux-1-pro',
+  +         'flux-1-quick',
+  +         'flux-1-ultra',
+  +         'flux-kontext-max',
+  +         'gpt-image-1-mini-high',
+  +         'gpt-image-1-mini-low',
+  +         'gpt-image-1-mini-medium',
+  +         'gpt-image-2',
+  +         'gpt-image-2-hd',
+  +         'gpt-image-2-mini',
+  +         'imagen-3-pro',
+  +     ],
+  -     'phantom-in-enum-absent-from-docs': [],
+  ?                                          --
+  +     'phantom-in-enum-absent-from-docs': [
+  +         'imagen-4-fast',
+  +         'qwen-image',
+  +         'qwen-image-fast',
+  +     ],
+    }
+========================= 1 failed, 1 passed in 1.54s =========================

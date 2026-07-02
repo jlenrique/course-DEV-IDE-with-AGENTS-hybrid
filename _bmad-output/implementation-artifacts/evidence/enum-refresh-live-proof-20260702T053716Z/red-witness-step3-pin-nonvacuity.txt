@@ -1,0 +1,90 @@
+﻿============================= test session starts =============================
+platform win32 -- Python 3.12.13, pytest-8.4.2, pluggy-1.6.0 -- C:\Users\juanl\Documents\GitHub\course-DEV-IDE-with-AGENTS-hybrid\.venv\Scripts\python.exe
+cachedir: .pytest_cache
+rootdir: C:\Users\juanl\Documents\GitHub\course-DEV-IDE-with-AGENTS-hybrid
+configfile: pyproject.toml
+plugins: anyio-4.13.0, langsmith-0.7.33, asyncio-0.26.0, timeout-2.4.0, xdist-3.8.0
+asyncio: mode=Mode.AUTO, asyncio_default_fixture_loop_scope=None, asyncio_default_test_loop_scope=function
+collecting ... collected 4 items
+
+tests/test_gamma_image_model_enum_parity.py::test_enum_matches_documented_accepted_values PASSED [ 25%]
+tests/test_gamma_image_model_enum_parity.py::test_image_model_enum_three_way_lockstep FAILED [ 50%]
+tests/test_gamma_image_model_enum_parity.py::test_catalog_model_section_mentions_exactly_the_enum FAILED [ 75%]
+tests/test_gamma_image_model_enum_parity.py::test_catalog_never_rendered_models_carry_machine_readable_provenance FAILED [100%]
+
+================================== FAILURES ===================================
+__________________ test_image_model_enum_three_way_lockstep ___________________
+
+    def test_image_model_enum_three_way_lockstep() -> None:
+        """D-2 parity pin: schema yaml <-> schema json <-> IMAGE_MODEL_VALUES,
+        SET EQUALITY (not subset), each serialized copy duplicate-free."""
+        yaml_values = _yaml_allowed_values()
+        json_values = _json_enum_values()
+        assert len(yaml_values) == len(set(yaml_values)), "duplicate in schema yaml"
+        assert len(json_values) == len(set(json_values)), "duplicate in schema json"
+>       assert set(yaml_values) == IMAGE_MODEL_VALUES, (
+            "creative-directive.schema.yaml image_model.allowed_values diverged "
+            "from IMAGE_MODEL_VALUES � the three surfaces move in ONE change-set (D-2)"
+        )
+E       AssertionError: creative-directive.schema.yaml image_model.allowed_values diverged from IMAGE_MODEL_VALUES � the three surfaces move in ONE change-set (D-2)
+E       assert {'dall-e-3', ...xt-fast', ...} == frozenset({'d...-klein', ...})
+E         
+E         Extra items in the left set:
+E         'qwen-image-fast'
+E         'imagen-4-fast'
+E         'qwen-image'
+E         Extra items in the right set:
+E         'gpt-image-2'...
+E         
+E         ...Full output truncated (61 lines hidden), use '-vv' to show
+
+tests\test_gamma_image_model_enum_parity.py:130: AssertionError
+____________ test_catalog_model_section_mentions_exactly_the_enum _____________
+
+    def test_catalog_model_section_mentions_exactly_the_enum() -> None:
+        """Convention mention-pin (D-2): the catalog's imageOptions.model section
+        backticks exactly the enum's model strings � no stale removals linger, no
+        documented addition goes uncataloged."""
+        section = _catalog_model_section()
+        tokens = {
+            t
+            for t in re.findall(r"`([^`\n]+)`", section)
+            if _MODEL_TOKEN_RE.fullmatch(t)
+        }
+>       assert sorted(tokens - IMAGE_MODEL_VALUES) == [], (
+            "catalog mentions model strings that are not in IMAGE_MODEL_VALUES "
+            "(stale rows must be removed at reconciliation)"
+        )
+E       AssertionError: catalog mentions model strings that are not in IMAGE_MODEL_VALUES (stale rows must be removed at reconciliation)
+E       assert ['imagen-4-fa...n-image-fast'] == []
+E         
+E         Left contains 3 more items, first extra item: 'imagen-4-fast'
+E         
+E         Full diff:
+E         - []
+E         + [
+E         +     'imagen-4-fast',...
+E         
+E         ...Full output truncated (3 lines hidden), use '-vv' to show
+
+tests\test_gamma_image_model_enum_parity.py:159: AssertionError
+____ test_catalog_never_rendered_models_carry_machine_readable_provenance _____
+
+    def test_catalog_never_rendered_models_carry_machine_readable_provenance() -> None:
+        """Gary condition 1 / Dan condition 2: EVERY catalog entry for a
+        never-rendered model carries the exact machine-readable marking, in a
+        parseable per-model row (display-consumable by the Phase-2 authoring
+        surface)."""
+        section = _catalog_model_section()
+>       assert "Unclassified � never rendered, tier TBD" in section, (
+            "the explicit Unclassified row is required in the AC text (Amelia L-5)"
+        )
+E       AssertionError: the explicit Unclassified row is required in the AC text (Amelia L-5)
+E       assert 'Unclassified � never rendered, tier TBD' in ' (string, optional)\nAI image model when source is `aiGenerated`. Full current list (as of 2026-03-27 API refresh):\n\n| Tier | Models |\n|------|--------|\n| **Standard** | `flux-2-klein`, `flux-kontext-fast`, `imagen-3-flash`, `luma-photon-flash-1`, `qwen-image-fast`, `qwen-image`, `flux-2-pro`, `ideogram-v3-turbo`, `imagen-4-fast`, `luma-photon-1`, `recraft-v4`, `leonardo-phoenix` |\n| **Advanced** | `flux-2-flex`, `flux-2-max`, `flux-kontext-pro`, `ideogram-v3`, `imagen-4-pro`, `recraft-v3`, `gemini-3-pro-image`, `gemini-2.5-flash-image`, `gpt-image-1-medium`, `dall-e-3` |\n| **Premium** | `gemini-3.1-flash-image-mini`, `recraft-v3-svg`, `recraft-v4-svg`, `ideogram-v3-quality`, `gemini-3.1-flash-image`, `gemini-3-pro-image-hd`, `gemini-3.1-flash-image-hd` |\n| **Ultra** | `imagen-4-ultra`, `gpt-image-1-high`, `recraft-v4-pro` |\n\n**Medical ed guidance by use case:**\n- **Style-reference matching (Approach B)**: `flux-kontext-pro` � designed for style-reference controlled generation; best for "make it look like this exemplar"\n- **Text accuracy in images**: `ideogram-v3` / `ideogram-v3-quality` � specifically strong at rendering readable text; use for text-bearing concept slides\n- **Illustration/lineart**: `recraft-v3`, `recraft-v4`, `gemini-3.1-flash-image-mini` (Nano Banana 2 Mini) � proven for editorial medical illustration style\n- **Photorealistic**: `flux-2-pro`, `luma-photon-1`, `imagen-4-fast`\n- **High quality / production**: `gpt-image-1-high`, `recraft-v4-pro`, `imagen-4-ultra`\n- **Fast/cheap iteration**: `flux-2-klein`, `flux-kontext-fast`, `ideogram-v3-turbo`\n'
+
+tests\test_gamma_image_model_enum_parity.py:174: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_gamma_image_model_enum_parity.py::test_image_model_enum_three_way_lockstep
+FAILED tests/test_gamma_image_model_enum_parity.py::test_catalog_model_section_mentions_exactly_the_enum
+FAILED tests/test_gamma_image_model_enum_parity.py::test_catalog_never_rendered_models_carry_machine_readable_provenance
+========================= 3 failed, 1 passed in 1.53s =========================

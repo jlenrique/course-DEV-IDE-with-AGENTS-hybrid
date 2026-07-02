@@ -1,0 +1,45 @@
+﻿============================= test session starts =============================
+platform win32 -- Python 3.12.13, pytest-8.4.2, pluggy-1.6.0
+rootdir: C:\Users\juanl\Documents\GitHub\course-DEV-IDE-with-AGENTS-hybrid
+configfile: pyproject.toml
+plugins: anyio-4.13.0, langsmith-0.7.33, asyncio-0.26.0, timeout-2.4.0, xdist-3.8.0
+asyncio: mode=Mode.AUTO, asyncio_default_fixture_loop_scope=None, asyncio_default_test_loop_scope=function
+collected 302 items
+
+tests\test_audit_gamma_docs_driver.py .................................. [ 11%]
+................................                                         [ 21%]
+tests\test_gamma_image_model_enum_parity.py ....                         [ 23%]
+tests\test_creative_directive_schema.py ..........                       [ 26%]
+tests\utilities\test_validate_gamma_style_guides.py .................... [ 33%]
+.....                                                                    [ 34%]
+tests\specialists\gary\test_gamma_title_matching.py ...........          [ 38%]
+tests\specialists\gary\test_gary_act_node_dispatch.py .........          [ 41%]
+tests\specialists\gary\test_gary_dimensions_override_removed.py ........ [ 44%]
+...s                                                                     [ 45%]
+tests\specialists\gary\test_gary_dispatch_wrapper.py ....                [ 46%]
+tests\specialists\gary\test_gary_export_url_materialization.py .         [ 47%]
+tests\specialists\gary\test_gary_gamma_dispatch.py ..................... [ 53%]
+......                                                                   [ 55%]
+tests\specialists\gary\test_gary_gate_decision_binding.py ..             [ 56%]
+tests\specialists\gary\test_gary_generation_id_fail_loud.py ...          [ 57%]
+tests\specialists\gary\test_gary_generator_auto_emit_c3_row.py ...       [ 58%]
+tests\specialists\gary\test_gary_model_cascade.py ..                     [ 59%]
+tests\specialists\gary\test_gary_no_live_api_in_ci.py .                  [ 59%]
+tests\specialists\gary\test_gary_resolution_trail.py ..                  [ 60%]
+tests\specialists\gary\test_gary_sanctum_cold_read.py ...                [ 61%]
+tests\specialists\gary\test_gary_slides_starvation_pin.py ......         [ 63%]
+tests\specialists\gary\test_gary_state_shape.py .....                    [ 64%]
+tests\specialists\gary\test_gary_studio_mode.py ........                 [ 67%]
+tests\specialists\gary\test_gary_summary_landing.py .                    [ 67%]
+tests\specialists\gary\test_learned_dependencies.py .................... [ 74%]
+..                                                                       [ 75%]
+tests\specialists\gary\test_normalized_gamma_settings_variant_projection.py . [ 75%]
+..........                                                               [ 78%]
+tests\specialists\gary\test_scripted_min_cluster_floor.py ...........    [ 82%]
+tests\specialists\gary\test_styleguide_resolution_seam.py ............   [ 86%]
+tests\test_retrieval_gamma_docs_provider.py ............................ [ 95%]
+.                                                                        [ 96%]
+tests\test_run_gary_dispatch.py ...                                      [ 97%]
+tests\parity\test_gary_activation_contract.py .........                  [100%]
+
+======================= 301 passed, 1 skipped in 5.11s ========================

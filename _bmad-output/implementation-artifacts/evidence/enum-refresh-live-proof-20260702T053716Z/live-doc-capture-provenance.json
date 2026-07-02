@@ -1,0 +1,31 @@
+{
+  "source_url": "https://developers.gamma.app/reference/image-model-accepted-values.md",
+  "fetched_at": "2026-07-02T05:43:58Z",
+  "user_agent": "bmad-gamma-docs-audit/0.1",
+  "http_status": 200,
+  "raw_sha256": "sha256:b30de00d2d3dc0a607273e79106ab64906dc4a0d55cc142d05992ad3f6a047b7",
+  "content_sha256_normalized": "sha256:b30de00d2d3dc0a607273e79106ab64906dc4a0d55cc142d05992ad3f6a047b7",
+  "fixture_sha256_normalized": "sha256:b30de00d2d3dc0a607273e79106ab64906dc4a0d55cc142d05992ad3f6a047b7",
+  "live_matches_committed_fixture_tokens": true,
+  "live_documented_token_count": 40,
+  "enum_values_absent_from_live_docs": [
+    "imagen-4-fast",
+    "qwen-image",
+    "qwen-image-fast"
+  ],
+  "documented_values_absent_from_enum": [
+    "flux-1-pro",
+    "flux-1-quick",
+    "flux-1-ultra",
+    "flux-kontext-max",
+    "gpt-image-1-mini-high",
+    "gpt-image-1-mini-low",
+    "gpt-image-1-mini-medium",
+    "gpt-image-2",
+    "gpt-image-2-hd",
+    "gpt-image-2-mini",
+    "imagen-3-pro"
+  ],
+  "matches_ledger_remove_set": true,
+  "matches_ledger_add_set": true
+}

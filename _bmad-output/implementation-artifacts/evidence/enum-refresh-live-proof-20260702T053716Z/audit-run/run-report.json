@@ -1,0 +1,381 @@
+{
+  "driver": "scripts/utilities/audit_gamma_docs.py",
+  "dry_run": false,
+  "exit_tier": 0,
+  "finished_at": "2026-07-02T05:54:41Z",
+  "integrity_failure": false,
+  "items": [
+    {
+      "consequence": "A styleguide or Gary dispatch carrying an enum-only model string may be rejected by the live API (or silently mis-generate), and documented cheaper/ newer models stay unusable until the frozen enum is reconciled by a human.",
+      "diffs": {},
+      "documented_claim": "the scoped doc section enumerates the accepted values",
+      "drift_kinds": [],
+      "findings_only": false,
+      "item_id": "enum-parity-image-model",
+      "kind": "enum-parity",
+      "observed": "documented tokens exactly cover enum app.specialists.gary._act:IMAGE_MODEL_VALUES",
+      "probe": false,
+      "reason": "enum-membership parity",
+      "receipt": {
+        "anchor_sha256": "sha256:30f6a94eee013e3b03913b51e463b741bfd64b77966a53ca064d9ed3b936ab94",
+        "content_sha256": "sha256:b30de00d2d3dc0a607273e79106ab64906dc4a0d55cc142d05992ad3f6a047b7",
+        "doc_url": "https://developers.gamma.app/reference/image-model-accepted-values.md",
+        "fetched_at": "2026-07-02T05:54:36Z",
+        "final_url": "https://developers.gamma.app/reference/image-model-accepted-values.md",
+        "http_status": 200
+      },
+      "standing_candidate": null,
+      "terminal_state": "confirmed"
+    },
+    {
+      "consequence": "textMode drift would make the styleguide validator accept values the live API rejects (or reject newly documented ones), breaking Classic-path generation at dispatch time.",
+      "diffs": {},
+      "documented_claim": "the scoped doc section enumerates the accepted values",
+      "drift_kinds": [],
+      "findings_only": false,
+      "item_id": "enum-parity-text-mode",
+      "kind": "enum-parity",
+      "observed": "documented tokens exactly cover enum app.specialists.gary._act:TEXT_MODE_VALUES",
+      "probe": false,
+      "reason": "enum-membership parity",
+      "receipt": {
+        "anchor_sha256": "sha256:d25bd3a5e4d38ca6e1686d29f90f3d470bf90f32034cfe06cb2c813b24b5ebfc",
+        "content_sha256": "sha256:3b6721983e1bafc6308cbb3268af0c5aebd95315a679539633bbb8aa8bc4bb3a",
+        "doc_url": "https://developers.gamma.app/guides/generate-api-parameters-explained.md",
+        "fetched_at": "2026-07-02T05:54:37Z",
+        "final_url": "https://developers.gamma.app/guides/generate-api-parameters-explained.md",
+        "http_status": 200
+      },
+      "standing_candidate": null,
+      "terminal_state": "confirmed"
+    },
+    {
+      "consequence": "textOptions.amount drift desynchronizes card text-density controls between the offline write-gate and the live API.",
+      "diffs": {},
+      "documented_claim": "the scoped doc section enumerates the accepted values",
+      "drift_kinds": [],
+      "findings_only": false,
+      "item_id": "enum-parity-text-amount",
+      "kind": "enum-parity",
+      "observed": "documented tokens exactly cover enum app.specialists.gary._act:TEXT_AMOUNT_VALUES",
+      "probe": false,
+      "reason": "enum-membership parity",
+      "receipt": {
+        "anchor_sha256": "sha256:eb0836745361beade1dba26b39bfd3da5ea990c2ca7fe0a27027a41294cb2656",
+        "content_sha256": "sha256:3b6721983e1bafc6308cbb3268af0c5aebd95315a679539633bbb8aa8bc4bb3a",
+        "doc_url": "https://developers.gamma.app/guides/generate-api-parameters-explained.md",
+        "fetched_at": "2026-07-02T05:54:37Z",
+        "final_url": "https://developers.gamma.app/guides/generate-api-parameters-explained.md",
+        "http_status": 200
+      },
+      "standing_candidate": null,
+      "terminal_state": "confirmed"
+    },
+    {
+      "consequence": "TEXT_LANGUAGE_VALUES is a DELIBERATE policy restriction to `en` (the pipeline produces English); this item audits that the documented DEFAULT language remains `en`. If Gamma changes the default, English output would silently depend on our explicit parameter rather than the platform default.",
+      "diffs": {},
+      "documented_claim": "the scoped doc section enumerates the accepted values",
+      "drift_kinds": [],
+      "findings_only": false,
+      "item_id": "enum-parity-text-language",
+      "kind": "enum-parity",
+      "observed": "documented tokens exactly cover enum app.specialists.gary._act:TEXT_LANGUAGE_VALUES",
+      "probe": false,
+      "reason": "enum-membership parity",
+      "receipt": {
+        "anchor_sha256": "sha256:55d49cc942dd34286afbb0d93de78b914329a24b888462fa291094d897d876e1",
+        "content_sha256": "sha256:3b6721983e1bafc6308cbb3268af0c5aebd95315a679539633bbb8aa8bc4bb3a",
+        "doc_url": "https://developers.gamma.app/guides/generate-api-parameters-explained.md",
+        "fetched_at": "2026-07-02T05:54:37Z",
+        "final_url": "https://developers.gamma.app/guides/generate-api-parameters-explained.md",
+        "http_status": 200
+      },
+      "standing_candidate": null,
+      "terminal_state": "confirmed"
+    },
+    {
+      "consequence": "imageOptions.source drift breaks the image_model/image_source dependency rules the validator enforces (gamma.dep.image-model-source) and can strand source-derived visual intent.",
+      "diffs": {},
+      "documented_claim": "the scoped doc section enumerates the accepted values",
+      "drift_kinds": [],
+      "findings_only": false,
+      "item_id": "enum-parity-image-source",
+      "kind": "enum-parity",
+      "observed": "documented tokens exactly cover enum app.specialists.gary._act:IMAGE_SOURCE_VALUES",
+      "probe": false,
+      "reason": "enum-membership parity",
+      "receipt": {
+        "anchor_sha256": "sha256:5c9abc658a22a41d629b60103608745abfa8ccde43713a3ddf4f052d86826f60",
+        "content_sha256": "sha256:3b6721983e1bafc6308cbb3268af0c5aebd95315a679539633bbb8aa8bc4bb3a",
+        "doc_url": "https://developers.gamma.app/guides/generate-api-parameters-explained.md",
+        "fetched_at": "2026-07-02T05:54:37Z",
+        "final_url": "https://developers.gamma.app/guides/generate-api-parameters-explained.md",
+        "http_status": 200
+      },
+      "standing_candidate": null,
+      "terminal_state": "confirmed"
+    },
+    {
+      "consequence": "The docs treat imageOptions.style as FREE TEXT; IMAGE_STYLE_PRESET_VALUES is Gary's preset layer over it. If Gamma introduces an enumerated style vocabulary, the preset layer and the protected source-detail conveyance (custom_style wins) must be reconciled before any styleguide relies on it.",
+      "diffs": {},
+      "documented_claim": "the scoped doc section documents a FREE-TEXT surface (no value vocabulary)",
+      "drift_kinds": [],
+      "findings_only": false,
+      "item_id": "enum-parity-image-style-preset",
+      "kind": "enum-parity",
+      "observed": "no enumerated vocabulary documented; positive free-text witness present (as expected)",
+      "probe": false,
+      "reason": "free-text surface confirmed with positive witness",
+      "receipt": {
+        "anchor_sha256": "sha256:8e6445ef2a3b4b5b1dfc54858a1cdc410c9b7f2e0b67d8ca06ab74db8ff2e2f8",
+        "content_sha256": "sha256:3b6721983e1bafc6308cbb3268af0c5aebd95315a679539633bbb8aa8bc4bb3a",
+        "doc_url": "https://developers.gamma.app/guides/generate-api-parameters-explained.md",
+        "fetched_at": "2026-07-02T05:54:37Z",
+        "final_url": "https://developers.gamma.app/guides/generate-api-parameters-explained.md",
+        "http_status": 200
+      },
+      "standing_candidate": null,
+      "terminal_state": "confirmed"
+    },
+    {
+      "consequence": "Dimension drift re-opens the 16:9/format coupling that Leg-A already hardened: an undocumented value ships a deck the API rewrites to a default with only a response warning.",
+      "diffs": {},
+      "documented_claim": "the scoped doc section enumerates the accepted values",
+      "drift_kinds": [],
+      "findings_only": false,
+      "item_id": "enum-parity-card-dimensions",
+      "kind": "enum-parity",
+      "observed": "documented tokens exactly cover enum app.specialists.gary._act:CARD_DIMENSION_VALUES",
+      "probe": false,
+      "reason": "enum-membership parity",
+      "receipt": {
+        "anchor_sha256": "sha256:e854391e4d9e62cc8818559a1995a88168a95dc150840acf6ccf519d2540521a",
+        "content_sha256": "sha256:3b6721983e1bafc6308cbb3268af0c5aebd95315a679539633bbb8aa8bc4bb3a",
+        "doc_url": "https://developers.gamma.app/guides/generate-api-parameters-explained.md",
+        "fetched_at": "2026-07-02T05:54:37Z",
+        "final_url": "https://developers.gamma.app/guides/generate-api-parameters-explained.md",
+        "http_status": 200
+      },
+      "standing_candidate": null,
+      "terminal_state": "confirmed"
+    },
+    {
+      "consequence": "Retry/backoff keyed to a documented 429 misses the EMPIRICALLY OBSERVED 401 burst-throttle ('Invalid API key') \u2014 a valid-key 401 mid-run is a throttle signal, not an auth failure. Either resolution direction (docs corrected to 401, or docs still claiming 429 while the live candidate stands) is a genuine ledger write citing the standing candidate (S-1 / John J-1).",
+      "diffs": {},
+      "documented_claim": "the docs state '429 Too Many Requests'",
+      "drift_kinds": [],
+      "findings_only": false,
+      "item_id": "doc-fact-burst-throttle-429",
+      "kind": "doc-fact",
+      "observed": "literal '429 Too Many Requests' present in the scoped section",
+      "probe": false,
+      "reason": "documented literal present",
+      "receipt": {
+        "anchor_sha256": "sha256:8f436b014a03442253cb1abcd3f98693bea3ed9f45b3cfdc5f301210487a77f7",
+        "content_sha256": "sha256:788121d4b0917b28e42ac95fe4826355243911c4cf3eb09301aae0f14c85b74d",
+        "doc_url": "https://developers.gamma.app/guides/async-patterns-and-polling.md",
+        "fetched_at": "2026-07-02T05:54:38Z",
+        "final_url": "https://developers.gamma.app/guides/async-patterns-and-polling.md",
+        "http_status": 200
+      },
+      "standing_candidate": "obs-gamma-burst-throttle-401-not-429-2026-06-25",
+      "terminal_state": "confirmed"
+    },
+    {
+      "consequence": "Adaptive pacing reads this response header; a rename/removal silently disables burst-aware throttling and re-exposes runs to the 401-throttle failure mode.",
+      "diffs": {},
+      "documented_claim": "the docs state 'x-ratelimit-remaining-burst'",
+      "drift_kinds": [],
+      "findings_only": false,
+      "item_id": "doc-fact-ratelimit-burst-header",
+      "kind": "doc-fact",
+      "observed": "literal 'x-ratelimit-remaining-burst' present in the scoped section",
+      "probe": false,
+      "reason": "documented literal present",
+      "receipt": {
+        "anchor_sha256": "sha256:91faadba5b19cd46871d81b9bdc3fb5d1c9857b4530b6ccb134cf407859f69c7",
+        "content_sha256": "sha256:788121d4b0917b28e42ac95fe4826355243911c4cf3eb09301aae0f14c85b74d",
+        "doc_url": "https://developers.gamma.app/guides/async-patterns-and-polling.md",
+        "fetched_at": "2026-07-02T05:54:38Z",
+        "final_url": "https://developers.gamma.app/guides/async-patterns-and-polling.md",
+        "http_status": 200
+      },
+      "standing_candidate": null,
+      "terminal_state": "confirmed"
+    },
+    {
+      "consequence": "Poller cadence is grounded on this documented recommendation; a changed recommendation shifts the rate-limit budget math for multi-deck runs.",
+      "diffs": {},
+      "documented_claim": "the docs state 'Use 5-second polling intervals'",
+      "drift_kinds": [],
+      "findings_only": false,
+      "item_id": "doc-fact-polling-interval-5s",
+      "kind": "doc-fact",
+      "observed": "literal 'Use 5-second polling intervals' present in the scoped section",
+      "probe": false,
+      "reason": "documented literal present",
+      "receipt": {
+        "anchor_sha256": "sha256:8016381ffa0cdf27f4be51c122937c782df649ffefa1e502fa9edcaac28ad4d0",
+        "content_sha256": "sha256:788121d4b0917b28e42ac95fe4826355243911c4cf3eb09301aae0f14c85b74d",
+        "doc_url": "https://developers.gamma.app/guides/async-patterns-and-polling.md",
+        "fetched_at": "2026-07-02T05:54:38Z",
+        "final_url": "https://developers.gamma.app/guides/async-patterns-and-polling.md",
+        "http_status": 200
+      },
+      "standing_candidate": null,
+      "terminal_state": "confirmed"
+    },
+    {
+      "consequence": "The styleguide validator's --check-existence caps list_themes at limit=50 (HTTP 400 above it; pagination beyond 50 is the filed styleguide-validator-live-existence-hardening follow-on). A cap change alters that hardening story's ground truth.",
+      "diffs": {},
+      "documented_claim": "the docs state the value 50",
+      "drift_kinds": [],
+      "findings_only": false,
+      "item_id": "doc-fact-list-themes-limit-50",
+      "kind": "doc-fact",
+      "observed": "documented value 50 matches expectation",
+      "probe": false,
+      "reason": "numeric value matches",
+      "receipt": {
+        "anchor_sha256": "sha256:363a28354a2773b11b57914bd781df19ecf7ebb318720efa3301f0c13f6eb047",
+        "content_sha256": "sha256:ffe45653d496ca4ab10337bcc6301b028d3ab52e5c8618d09747646503f6a5fa",
+        "doc_url": "https://developers.gamma.app/workspace/list-themes.md",
+        "fetched_at": "2026-07-02T05:54:40Z",
+        "final_url": "https://developers.gamma.app/workspace/list-themes.md",
+        "http_status": 200
+      },
+      "standing_candidate": null,
+      "terminal_state": "confirmed"
+    },
+    {
+      "consequence": "Findings-only (J-7): does the generate surface document a discrete tags/ keywords field under imageOptions? Report-only evidence for the deferred keywords-routing story.",
+      "diffs": {
+        "doc-drift": [
+          "imageOptions.tags"
+        ]
+      },
+      "documented_claim": "the docs state 'imageOptions.tags'",
+      "drift_kinds": [
+        "doc-drift"
+      ],
+      "findings_only": true,
+      "item_id": "finding-imageoptions-discrete-tags-field",
+      "kind": "doc-fact",
+      "observed": "literal 'imageOptions.tags' ABSENT from the scoped section",
+      "probe": false,
+      "reason": "documented literal absent",
+      "receipt": {
+        "anchor_sha256": "sha256:ec1c178fc7cf82c15fb86c8f06af2ea661d945157078757817ad5b4c220d4b28",
+        "content_sha256": "sha256:3b6721983e1bafc6308cbb3268af0c5aebd95315a679539633bbb8aa8bc4bb3a",
+        "doc_url": "https://developers.gamma.app/guides/generate-api-parameters-explained.md",
+        "fetched_at": "2026-07-02T05:54:37Z",
+        "final_url": "https://developers.gamma.app/guides/generate-api-parameters-explained.md",
+        "http_status": 200
+      },
+      "standing_candidate": null,
+      "terminal_state": "drift-detected"
+    },
+    {
+      "consequence": "Findings-only (J-7): is a stylePreset(+)style composition documented on the generate surface? Report-only evidence for the preset-vs-custom_style subordination rules (gamma.dep.preset-style-subordinated).",
+      "diffs": {
+        "doc-drift": [
+          "stylePreset"
+        ]
+      },
+      "documented_claim": "the docs state 'stylePreset'",
+      "drift_kinds": [
+        "doc-drift"
+      ],
+      "findings_only": true,
+      "item_id": "finding-imageoptions-stylepreset-style-composition",
+      "kind": "doc-fact",
+      "observed": "literal 'stylePreset' ABSENT from the scoped section",
+      "probe": false,
+      "reason": "documented literal absent",
+      "receipt": {
+        "anchor_sha256": "sha256:ec1c178fc7cf82c15fb86c8f06af2ea661d945157078757817ad5b4c220d4b28",
+        "content_sha256": "sha256:3b6721983e1bafc6308cbb3268af0c5aebd95315a679539633bbb8aa8bc4bb3a",
+        "doc_url": "https://developers.gamma.app/guides/generate-api-parameters-explained.md",
+        "fetched_at": "2026-07-02T05:54:37Z",
+        "final_url": "https://developers.gamma.app/guides/generate-api-parameters-explained.md",
+        "http_status": 200
+      },
+      "standing_candidate": null,
+      "terminal_state": "drift-detected"
+    },
+    {
+      "consequence": "The changelog page is the woodshed-cycle early-warning surface (doc-sources.yaml refresh_protocol). This canary asserts it still serves markdown (a LINE-ANCHORED `# ` heading present); an empty/HTML/moved page means the refresh protocol is reading a dead surface.",
+      "diffs": {},
+      "documented_claim": "the docs state '\\n# '",
+      "drift_kinds": [],
+      "findings_only": false,
+      "item_id": "doc-fact-changelog-canary",
+      "kind": "doc-fact",
+      "observed": "literal '\\n# ' present in the scoped section",
+      "probe": false,
+      "reason": "documented literal present",
+      "receipt": {
+        "anchor_sha256": "sha256:cca2f2df9ce1ea4683be72d571ecb96e12d075bd2acf24c33a8a0253b88064d0",
+        "content_sha256": "sha256:cca2f2df9ce1ea4683be72d571ecb96e12d075bd2acf24c33a8a0253b88064d0",
+        "doc_url": "https://developers.gamma.app/changelog/readme.md",
+        "fetched_at": "2026-07-02T05:54:41Z",
+        "final_url": "https://developers.gamma.app/changelog/readme.md",
+        "http_status": 200
+      },
+      "standing_candidate": null,
+      "terminal_state": "confirmed"
+    },
+    {
+      "consequence": "Synthetic failure-state witness (Leg-D precedent): the anchor is KNOWN ABSENT, so a healthy audit classifies this drift-detected/doc-restructure with ZERO confirmed writes (S-2). A probe that CONFIRMS means the detection teeth are broken \u2014 the driver exits VOID (integrity failure).",
+      "diffs": {
+        "doc-restructure": [
+          "#### zz-leg-e-probe-anchor-known-absent"
+        ]
+      },
+      "documented_claim": "",
+      "drift_kinds": [
+        "doc-restructure"
+      ],
+      "findings_only": false,
+      "item_id": "probe-absent-anchor-teeth",
+      "kind": "probe",
+      "observed": "anchor '#### zz-leg-e-probe-anchor-known-absent' not found",
+      "probe": true,
+      "reason": "declared anchor '#### zz-leg-e-probe-anchor-known-absent' absent from the fetched page (doc-restructure: run-report only, no ledger write)",
+      "receipt": {
+        "anchor_sha256": null,
+        "content_sha256": "sha256:788121d4b0917b28e42ac95fe4826355243911c4cf3eb09301aae0f14c85b74d",
+        "doc_url": "https://developers.gamma.app/guides/async-patterns-and-polling.md",
+        "fetched_at": "2026-07-02T05:54:38Z",
+        "final_url": "https://developers.gamma.app/guides/async-patterns-and-polling.md",
+        "http_status": 200
+      },
+      "standing_candidate": null,
+      "terminal_state": "drift-detected"
+    }
+  ],
+  "ledger": {
+    "after_lines": 6,
+    "after_sha256": "sha256:e8f8331fd2e3758e79f6436bd0d071587ae37d76e9bf597ddc924c1dc7b2290c",
+    "before_lines": 6,
+    "before_sha256": "sha256:e8f8331fd2e3758e79f6436bd0d071587ae37d76e9bf597ddc924c1dc7b2290c",
+    "noop": 1,
+    "path": "C:\\Users\\juanl\\Documents\\GitHub\\course-DEV-IDE-with-AGENTS-hybrid\\state\\config\\gamma-learned-observations.jsonl",
+    "precheck_error": null,
+    "rejected": [],
+    "would_write": [],
+    "write_phase_error": null,
+    "written": 0
+  },
+  "manifest_path": "C:\\Users\\juanl\\Documents\\GitHub\\course-DEV-IDE-with-AGENTS-hybrid\\skills\\gamma-api-mastery\\references\\gamma-doc-audit-manifest.yaml",
+  "preflight": {
+    "error": null,
+    "ok": true,
+    "url": "https://developers.gamma.app/llms.txt"
+  },
+  "started_at": "2026-07-02T05:54:36Z",
+  "terminal_state_counts": {
+    "confirmed": 12,
+    "drift-detected": 3
+  }
+}

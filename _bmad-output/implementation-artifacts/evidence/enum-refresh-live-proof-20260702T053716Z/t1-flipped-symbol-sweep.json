@@ -1,0 +1,672 @@
+{
+  "sweep_a_flipped_symbols": [
+    {
+      "value": "qwen-image-fast",
+      "file": "app/specialists/gary/_act.py",
+      "line": 61,
+      "text": "\"qwen-image-fast\","
+    },
+    {
+      "value": "qwen-image",
+      "file": "app/specialists/gary/_act.py",
+      "line": 62,
+      "text": "\"qwen-image\","
+    },
+    {
+      "value": "imagen-4-fast",
+      "file": "app/specialists/gary/_act.py",
+      "line": 65,
+      "text": "\"imagen-4-fast\","
+    },
+    {
+      "value": "imagen-4-fast",
+      "file": "tests/test_audit_gamma_docs_driver.py",
+      "line": 413,
+      "text": "assert \"imagen-4-fast\" in result[\"diffs\"][\"doc-drift\"], ("
+    },
+    {
+      "value": "qwen-image",
+      "file": "tests/test_audit_gamma_docs_driver.py",
+      "line": 416,
+      "text": "assert \"qwen-image\" in result[\"diffs\"][\"doc-drift\"]"
+    },
+    {
+      "value": "flux-1-quick",
+      "file": "tests/test_audit_gamma_docs_driver.py",
+      "line": 417,
+      "text": "assert \"flux-1-quick\" in result[\"diffs\"][\"coverage-gap\"], ("
+    },
+    {
+      "value": "flux-1-pro",
+      "file": "tests/fixtures/retrieval/gamma_docs/generate_api_parameters_explained.md",
+      "line": 390,
+      "text": "\"model\": \"flux-1-pro\""
+    },
+    {
+      "value": "flux-1-quick",
+      "file": "tests/fixtures/retrieval/gamma_docs/image_model_accepted_values.md",
+      "line": 21,
+      "text": "| Flux 1 Quick          | `flux-1-quick`            | 2             |"
+    },
+    {
+      "value": "gpt-image-1-mini-low",
+      "file": "tests/fixtures/retrieval/gamma_docs/image_model_accepted_values.md",
+      "line": 25,
+      "text": "| GPT Image Mini Low    | `gpt-image-1-mini-low`    | 2             |"
+    },
+    {
+      "value": "gpt-image-2-mini",
+      "file": "tests/fixtures/retrieval/gamma_docs/image_model_accepted_values.md",
+      "line": 27,
+      "text": "| GPT Image 2 Mini      | `gpt-image-2-mini`        | 5             |"
+    },
+    {
+      "value": "flux-1-pro",
+      "file": "tests/fixtures/retrieval/gamma_docs/image_model_accepted_values.md",
+      "line": 28,
+      "text": "| Flux 1 Pro            | `flux-1-pro`              | 8             |"
+    },
+    {
+      "value": "imagen-3-pro",
+      "file": "tests/fixtures/retrieval/gamma_docs/image_model_accepted_values.md",
+      "line": 29,
+      "text": "| Imagen 3 Pro          | `imagen-3-pro`            | 8             |"
+    },
+    {
+      "value": "gpt-image-1-mini-medium",
+      "file": "tests/fixtures/retrieval/gamma_docs/image_model_accepted_values.md",
+      "line": 31,
+      "text": "| GPT Image Mini Medium | `gpt-image-1-mini-medium` | 8             |"
+    },
+    {
+      "value": "gpt-image-1-mini-high",
+      "file": "tests/fixtures/retrieval/gamma_docs/image_model_accepted_values.md",
+      "line": 48,
+      "text": "| GPT Image Mini High                  | `gpt-image-1-mini-high`  | 20            |"
+    },
+    {
+      "value": "gpt-image-2",
+      "file": "tests/fixtures/retrieval/gamma_docs/image_model_accepted_values.md",
+      "line": 50,
+      "text": "| GPT Image 2                          | `gpt-image-2`            | 20            |"
+    },
+    {
+      "value": "flux-1-ultra",
+      "file": "tests/fixtures/retrieval/gamma_docs/image_model_accepted_values.md",
+      "line": 51,
+      "text": "| Flux 1 Ultra                         | `flux-1-ultra`           | 30            |"
+    },
+    {
+      "value": "flux-kontext-max",
+      "file": "tests/fixtures/retrieval/gamma_docs/image_model_accepted_values.md",
+      "line": 60,
+      "text": "| Flux Kontext Max               | `flux-kontext-max`            | 40            |"
+    },
+    {
+      "value": "gpt-image-2-hd",
+      "file": "tests/fixtures/retrieval/gamma_docs/image_model_accepted_values.md",
+      "line": 72,
+      "text": "| GPT Image 2 HD                       | `gpt-image-2-hd`        | 115           |"
+    },
+    {
+      "value": "gpt-image-2",
+      "file": "tests/fixtures/retrieval/gamma_docs/image_model_accepted_values.md",
+      "line": 83,
+      "text": "| OpenAI   | `gpt-image-2-mini`, `gpt-image-2`, `gpt-image-2-hd`                                                    | 1024\u00d71024 | 1536\u00d71024 | 1024\u00d71536 | 1536 px  |"
+    },
+    {
+      "value": "gpt-image-2-hd",
+      "file": "tests/fixtures/retrieval/gamma_docs/image_model_accepted_values.md",
+      "line": 83,
+      "text": "| OpenAI   | `gpt-image-2-mini`, `gpt-image-2`, `gpt-image-2-hd`                                                    | 1024\u00d71024 | 1536\u00d71024 | 1024\u00d71536 | 1536 px  |"
+    },
+    {
+      "value": "gpt-image-2-mini",
+      "file": "tests/fixtures/retrieval/gamma_docs/image_model_accepted_values.md",
+      "line": 83,
+      "text": "| OpenAI   | `gpt-image-2-mini`, `gpt-image-2`, `gpt-image-2-hd`                                                    | 1024\u00d71024 | 1536\u00d71024 | 1024\u00d71536 | 1536 px  |"
+    },
+    {
+      "value": "gpt-image-1-mini-high",
+      "file": "tests/fixtures/retrieval/gamma_docs/image_model_accepted_values.md",
+      "line": 85,
+      "text": "| OpenAI   | `gpt-image-1-mini-low`, `gpt-image-1-mini-medium`, `gpt-image-1-mini-high`                             | 1024\u00d71024 | 1536\u00d71024 | 1024\u00d71536 | 1536 px  |"
+    },
+    {
+      "value": "gpt-image-1-mini-low",
+      "file": "tests/fixtures/retrieval/gamma_docs/image_model_accepted_values.md",
+      "line": 85,
+      "text": "| OpenAI   | `gpt-image-1-mini-low`, `gpt-image-1-mini-medium`, `gpt-image-1-mini-high`                             | 1024\u00d71024 | 1536\u00d71024 | 1024\u00d71536 | 1536 px  |"
+    },
+    {
+      "value": "gpt-image-1-mini-medium",
+      "file": "tests/fixtures/retrieval/gamma_docs/image_model_accepted_values.md",
+      "line": 85,
+      "text": "| OpenAI   | `gpt-image-1-mini-low`, `gpt-image-1-mini-medium`, `gpt-image-1-mini-high`                             | 1024\u00d71024 | 1536\u00d71024 | 1024\u00d71536 | 1536 px  |"
+    },
+    {
+      "value": "imagen-3-pro",
+      "file": "tests/fixtures/retrieval/gamma_docs/image_model_accepted_values.md",
+      "line": 86,
+      "text": "| Google   | `imagen-3-flash`, `imagen-3-pro`, `imagen-4-pro`, `imagen-4-ultra`                                     | 1024\u00d71024 | 1408\u00d7768  | 768\u00d71344  | 1408 px  |"
+    },
+    {
+      "value": "flux-1-pro",
+      "file": "tests/fixtures/retrieval/gamma_docs/image_model_accepted_values.md",
+      "line": 88,
+      "text": "| Flux     | `flux-1-quick`, `flux-1-pro`, `flux-1-ultra`                                                           | 1024\u00d71024 | 1376\u00d7768  | 768\u00d71376  | 1376 px  |"
+    },
+    {
+      "value": "flux-1-quick",
+      "file": "tests/fixtures/retrieval/gamma_docs/image_model_accepted_values.md",
+      "line": 88,
+      "text": "| Flux     | `flux-1-quick`, `flux-1-pro`, `flux-1-ultra`                                                           | 1024\u00d71024 | 1376\u00d7768  | 768\u00d71376  | 1376 px  |"
+    },
+    {
+      "value": "flux-1-ultra",
+      "file": "tests/fixtures/retrieval/gamma_docs/image_model_accepted_values.md",
+      "line": 88,
+      "text": "| Flux     | `flux-1-quick`, `flux-1-pro`, `flux-1-ultra`                                                           | 1024\u00d71024 | 1376\u00d7768  | 768\u00d71376  | 1376 px  |"
+    },
+    {
+      "value": "flux-kontext-max",
+      "file": "tests/fixtures/retrieval/gamma_docs/image_model_accepted_values.md",
+      "line": 89,
+      "text": "| Flux     | `flux-2-pro`, `flux-2-flex`, `flux-2-max`, `flux-kontext-fast`, `flux-kontext-pro`, `flux-kontext-max` | 1440\u00d71440 | 1920\u00d71088 | 1088\u00d71920 | 1920 px  |"
+    },
+    {
+      "value": "imagen-4-fast",
+      "file": "skills/gamma-api-mastery/references/gamma-doc-audit-manifest.yaml",
+      "line": 65,
+      "text": "imagen-4-fast / qwen-image / qwen-image-fast in the enum but absent from the"
+    },
+    {
+      "value": "qwen-image",
+      "file": "skills/gamma-api-mastery/references/gamma-doc-audit-manifest.yaml",
+      "line": 65,
+      "text": "imagen-4-fast / qwen-image / qwen-image-fast in the enum but absent from the"
+    },
+    {
+      "value": "qwen-image-fast",
+      "file": "skills/gamma-api-mastery/references/gamma-doc-audit-manifest.yaml",
+      "line": 65,
+      "text": "imagen-4-fast / qwen-image / qwen-image-fast in the enum but absent from the"
+    },
+    {
+      "value": "gpt-image-2",
+      "file": "skills/gamma-api-mastery/references/gamma-doc-audit-manifest.yaml",
+      "line": 66,
+      "text": "live page; flux-1-*, gpt-image-1-mini-*, gpt-image-2*, imagen-3-pro,"
+    },
+    {
+      "value": "imagen-3-pro",
+      "file": "skills/gamma-api-mastery/references/gamma-doc-audit-manifest.yaml",
+      "line": 66,
+      "text": "live page; flux-1-*, gpt-image-1-mini-*, gpt-image-2*, imagen-3-pro,"
+    },
+    {
+      "value": "flux-kontext-max",
+      "file": "skills/gamma-api-mastery/references/gamma-doc-audit-manifest.yaml",
+      "line": 67,
+      "text": "flux-kontext-max documented but absent from the enum. Drift FILES; humans"
+    },
+    {
+      "value": "imagen-4-fast",
+      "file": "skills/gamma-api-mastery/references/parameter-catalog.md",
+      "line": 101,
+      "text": "| **Standard** | `flux-2-klein`, `flux-kontext-fast`, `imagen-3-flash`, `luma-photon-flash-1`, `qwen-image-fast`, `qwen-image`, `flux-2-pro`, `ideogram-v3-turbo`, `imagen-4-fast`, `luma-photon-1`, `recraft-v4`, `leonardo-phoenix` |"
+    },
+    {
+      "value": "qwen-image",
+      "file": "skills/gamma-api-mastery/references/parameter-catalog.md",
+      "line": 101,
+      "text": "| **Standard** | `flux-2-klein`, `flux-kontext-fast`, `imagen-3-flash`, `luma-photon-flash-1`, `qwen-image-fast`, `qwen-image`, `flux-2-pro`, `ideogram-v3-turbo`, `imagen-4-fast`, `luma-photon-1`, `recraft-v4`, `leonardo-phoenix` |"
+    },
+    {
+      "value": "qwen-image-fast",
+      "file": "skills/gamma-api-mastery/references/parameter-catalog.md",
+      "line": 101,
+      "text": "| **Standard** | `flux-2-klein`, `flux-kontext-fast`, `imagen-3-flash`, `luma-photon-flash-1`, `qwen-image-fast`, `qwen-image`, `flux-2-pro`, `ideogram-v3-turbo`, `imagen-4-fast`, `luma-photon-1`, `recraft-v4`, `leonardo-phoenix` |"
+    },
+    {
+      "value": "imagen-4-fast",
+      "file": "skills/gamma-api-mastery/references/parameter-catalog.md",
+      "line": 110,
+      "text": "- **Photorealistic**: `flux-2-pro`, `luma-photon-1`, `imagen-4-fast`"
+    },
+    {
+      "value": "imagen-4-fast",
+      "file": "state/config/gamma-learned-observations.jsonl",
+      "line": 4,
+      "text": "{\"behavior\":\"DOCUMENTED: the scoped doc section enumerates the accepted values (https://developers.gamma.app/reference/image-model-accepted-values.md, fetched 2026-07-02T04:31:39Z). OBSERVED: enum app.specialists.gary._act:IMAGE_MODEL_VALUE"
+    },
+    {
+      "value": "qwen-image",
+      "file": "state/config/gamma-learned-observations.jsonl",
+      "line": 4,
+      "text": "{\"behavior\":\"DOCUMENTED: the scoped doc section enumerates the accepted values (https://developers.gamma.app/reference/image-model-accepted-values.md, fetched 2026-07-02T04:31:39Z). OBSERVED: enum app.specialists.gary._act:IMAGE_MODEL_VALUE"
+    },
+    {
+      "value": "qwen-image-fast",
+      "file": "state/config/gamma-learned-observations.jsonl",
+      "line": 4,
+      "text": "{\"behavior\":\"DOCUMENTED: the scoped doc section enumerates the accepted values (https://developers.gamma.app/reference/image-model-accepted-values.md, fetched 2026-07-02T04:31:39Z). OBSERVED: enum app.specialists.gary._act:IMAGE_MODEL_VALUE"
+    },
+    {
+      "value": "flux-1-pro",
+      "file": "state/config/gamma-learned-observations.jsonl",
+      "line": 4,
+      "text": "{\"behavior\":\"DOCUMENTED: the scoped doc section enumerates the accepted values (https://developers.gamma.app/reference/image-model-accepted-values.md, fetched 2026-07-02T04:31:39Z). OBSERVED: enum app.specialists.gary._act:IMAGE_MODEL_VALUE"
+    },
+    {
+      "value": "flux-1-quick",
+      "file": "state/config/gamma-learned-observations.jsonl",
+      "line": 4,
+      "text": "{\"behavior\":\"DOCUMENTED: the scoped doc section enumerates the accepted values (https://developers.gamma.app/reference/image-model-accepted-values.md, fetched 2026-07-02T04:31:39Z). OBSERVED: enum app.specialists.gary._act:IMAGE_MODEL_VALUE"
+    },
+    {
+      "value": "flux-1-ultra",
+      "file": "state/config/gamma-learned-observations.jsonl",
+      "line": 4,
+      "text": "{\"behavior\":\"DOCUMENTED: the scoped doc section enumerates the accepted values (https://developers.gamma.app/reference/image-model-accepted-values.md, fetched 2026-07-02T04:31:39Z). OBSERVED: enum app.specialists.gary._act:IMAGE_MODEL_VALUE"
+    },
+    {
+      "value": "flux-kontext-max",
+      "file": "state/config/gamma-learned-observations.jsonl",
+      "line": 4,
+      "text": "{\"behavior\":\"DOCUMENTED: the scoped doc section enumerates the accepted values (https://developers.gamma.app/reference/image-model-accepted-values.md, fetched 2026-07-02T04:31:39Z). OBSERVED: enum app.specialists.gary._act:IMAGE_MODEL_VALUE"
+    },
+    {
+      "value": "gpt-image-1-mini-high",
+      "file": "state/config/gamma-learned-observations.jsonl",
+      "line": 4,
+      "text": "{\"behavior\":\"DOCUMENTED: the scoped doc section enumerates the accepted values (https://developers.gamma.app/reference/image-model-accepted-values.md, fetched 2026-07-02T04:31:39Z). OBSERVED: enum app.specialists.gary._act:IMAGE_MODEL_VALUE"
+    },
+    {
+      "value": "gpt-image-1-mini-low",
+      "file": "state/config/gamma-learned-observations.jsonl",
+      "line": 4,
+      "text": "{\"behavior\":\"DOCUMENTED: the scoped doc section enumerates the accepted values (https://developers.gamma.app/reference/image-model-accepted-values.md, fetched 2026-07-02T04:31:39Z). OBSERVED: enum app.specialists.gary._act:IMAGE_MODEL_VALUE"
+    },
+    {
+      "value": "gpt-image-1-mini-medium",
+      "file": "state/config/gamma-learned-observations.jsonl",
+      "line": 4,
+      "text": "{\"behavior\":\"DOCUMENTED: the scoped doc section enumerates the accepted values (https://developers.gamma.app/reference/image-model-accepted-values.md, fetched 2026-07-02T04:31:39Z). OBSERVED: enum app.specialists.gary._act:IMAGE_MODEL_VALUE"
+    },
+    {
+      "value": "gpt-image-2",
+      "file": "state/config/gamma-learned-observations.jsonl",
+      "line": 4,
+      "text": "{\"behavior\":\"DOCUMENTED: the scoped doc section enumerates the accepted values (https://developers.gamma.app/reference/image-model-accepted-values.md, fetched 2026-07-02T04:31:39Z). OBSERVED: enum app.specialists.gary._act:IMAGE_MODEL_VALUE"
+    },
+    {
+      "value": "gpt-image-2-hd",
+      "file": "state/config/gamma-learned-observations.jsonl",
+      "line": 4,
+      "text": "{\"behavior\":\"DOCUMENTED: the scoped doc section enumerates the accepted values (https://developers.gamma.app/reference/image-model-accepted-values.md, fetched 2026-07-02T04:31:39Z). OBSERVED: enum app.specialists.gary._act:IMAGE_MODEL_VALUE"
+    },
+    {
+      "value": "gpt-image-2-mini",
+      "file": "state/config/gamma-learned-observations.jsonl",
+      "line": 4,
+      "text": "{\"behavior\":\"DOCUMENTED: the scoped doc section enumerates the accepted values (https://developers.gamma.app/reference/image-model-accepted-values.md, fetched 2026-07-02T04:31:39Z). OBSERVED: enum app.specialists.gary._act:IMAGE_MODEL_VALUE"
+    },
+    {
+      "value": "imagen-3-pro",
+      "file": "state/config/gamma-learned-observations.jsonl",
+      "line": 4,
+      "text": "{\"behavior\":\"DOCUMENTED: the scoped doc section enumerates the accepted values (https://developers.gamma.app/reference/image-model-accepted-values.md, fetched 2026-07-02T04:31:39Z). OBSERVED: enum app.specialists.gary._act:IMAGE_MODEL_VALUE"
+    },
+    {
+      "value": "imagen-4-fast",
+      "file": "state/config/gamma-learned-observations.jsonl",
+      "line": 5,
+      "text": "{\"behavior\":\"DOCUMENTED: the scoped doc section enumerates the accepted values (https://developers.gamma.app/reference/image-model-accepted-values.md, fetched 2026-07-02T04:31:39Z). OBSERVED: enum app.specialists.gary._act:IMAGE_MODEL_VALUE"
+    },
+    {
+      "value": "qwen-image",
+      "file": "state/config/gamma-learned-observations.jsonl",
+      "line": 5,
+      "text": "{\"behavior\":\"DOCUMENTED: the scoped doc section enumerates the accepted values (https://developers.gamma.app/reference/image-model-accepted-values.md, fetched 2026-07-02T04:31:39Z). OBSERVED: enum app.specialists.gary._act:IMAGE_MODEL_VALUE"
+    },
+    {
+      "value": "qwen-image-fast",
+      "file": "state/config/gamma-learned-observations.jsonl",
+      "line": 5,
+      "text": "{\"behavior\":\"DOCUMENTED: the scoped doc section enumerates the accepted values (https://developers.gamma.app/reference/image-model-accepted-values.md, fetched 2026-07-02T04:31:39Z). OBSERVED: enum app.specialists.gary._act:IMAGE_MODEL_VALUE"
+    },
+    {
+      "value": "flux-1-pro",
+      "file": "state/config/gamma-learned-observations.jsonl",
+      "line": 5,
+      "text": "{\"behavior\":\"DOCUMENTED: the scoped doc section enumerates the accepted values (https://developers.gamma.app/reference/image-model-accepted-values.md, fetched 2026-07-02T04:31:39Z). OBSERVED: enum app.specialists.gary._act:IMAGE_MODEL_VALUE"
+    },
+    {
+      "value": "flux-1-quick",
+      "file": "state/config/gamma-learned-observations.jsonl",
+      "line": 5,
+      "text": "{\"behavior\":\"DOCUMENTED: the scoped doc section enumerates the accepted values (https://developers.gamma.app/reference/image-model-accepted-values.md, fetched 2026-07-02T04:31:39Z). OBSERVED: enum app.specialists.gary._act:IMAGE_MODEL_VALUE"
+    },
+    {
+      "value": "flux-1-ultra",
+      "file": "state/config/gamma-learned-observations.jsonl",
+      "line": 5,
+      "text": "{\"behavior\":\"DOCUMENTED: the scoped doc section enumerates the accepted values (https://developers.gamma.app/reference/image-model-accepted-values.md, fetched 2026-07-02T04:31:39Z). OBSERVED: enum app.specialists.gary._act:IMAGE_MODEL_VALUE"
+    },
+    {
+      "value": "flux-kontext-max",
+      "file": "state/config/gamma-learned-observations.jsonl",
+      "line": 5,
+      "text": "{\"behavior\":\"DOCUMENTED: the scoped doc section enumerates the accepted values (https://developers.gamma.app/reference/image-model-accepted-values.md, fetched 2026-07-02T04:31:39Z). OBSERVED: enum app.specialists.gary._act:IMAGE_MODEL_VALUE"
+    },
+    {
+      "value": "gpt-image-1-mini-high",
+      "file": "state/config/gamma-learned-observations.jsonl",
+      "line": 5,
+      "text": "{\"behavior\":\"DOCUMENTED: the scoped doc section enumerates the accepted values (https://developers.gamma.app/reference/image-model-accepted-values.md, fetched 2026-07-02T04:31:39Z). OBSERVED: enum app.specialists.gary._act:IMAGE_MODEL_VALUE"
+    },
+    {
+      "value": "gpt-image-1-mini-low",
+      "file": "state/config/gamma-learned-observations.jsonl",
+      "line": 5,
+      "text": "{\"behavior\":\"DOCUMENTED: the scoped doc section enumerates the accepted values (https://developers.gamma.app/reference/image-model-accepted-values.md, fetched 2026-07-02T04:31:39Z). OBSERVED: enum app.specialists.gary._act:IMAGE_MODEL_VALUE"
+    },
+    {
+      "value": "gpt-image-1-mini-medium",
+      "file": "state/config/gamma-learned-observations.jsonl",
+      "line": 5,
+      "text": "{\"behavior\":\"DOCUMENTED: the scoped doc section enumerates the accepted values (https://developers.gamma.app/reference/image-model-accepted-values.md, fetched 2026-07-02T04:31:39Z). OBSERVED: enum app.specialists.gary._act:IMAGE_MODEL_VALUE"
+    },
+    {
+      "value": "gpt-image-2",
+      "file": "state/config/gamma-learned-observations.jsonl",
+      "line": 5,
+      "text": "{\"behavior\":\"DOCUMENTED: the scoped doc section enumerates the accepted values (https://developers.gamma.app/reference/image-model-accepted-values.md, fetched 2026-07-02T04:31:39Z). OBSERVED: enum app.specialists.gary._act:IMAGE_MODEL_VALUE"
+    },
+    {
+      "value": "gpt-image-2-hd",
+      "file": "state/config/gamma-learned-observations.jsonl",
+      "line": 5,
+      "text": "{\"behavior\":\"DOCUMENTED: the scoped doc section enumerates the accepted values (https://developers.gamma.app/reference/image-model-accepted-values.md, fetched 2026-07-02T04:31:39Z). OBSERVED: enum app.specialists.gary._act:IMAGE_MODEL_VALUE"
+    },
+    {
+      "value": "gpt-image-2-mini",
+      "file": "state/config/gamma-learned-observations.jsonl",
+      "line": 5,
+      "text": "{\"behavior\":\"DOCUMENTED: the scoped doc section enumerates the accepted values (https://developers.gamma.app/reference/image-model-accepted-values.md, fetched 2026-07-02T04:31:39Z). OBSERVED: enum app.specialists.gary._act:IMAGE_MODEL_VALUE"
+    },
+    {
+      "value": "imagen-3-pro",
+      "file": "state/config/gamma-learned-observations.jsonl",
+      "line": 5,
+      "text": "{\"behavior\":\"DOCUMENTED: the scoped doc section enumerates the accepted values (https://developers.gamma.app/reference/image-model-accepted-values.md, fetched 2026-07-02T04:31:39Z). OBSERVED: enum app.specialists.gary._act:IMAGE_MODEL_VALUE"
+    },
+    {
+      "value": "qwen-image-fast",
+      "file": "state/config/schemas/creative-directive.schema.json",
+      "line": 254,
+      "text": "\"qwen-image-fast\","
+    },
+    {
+      "value": "qwen-image",
+      "file": "state/config/schemas/creative-directive.schema.json",
+      "line": 255,
+      "text": "\"qwen-image\","
+    },
+    {
+      "value": "imagen-4-fast",
+      "file": "state/config/schemas/creative-directive.schema.json",
+      "line": 258,
+      "text": "\"imagen-4-fast\","
+    },
+    {
+      "value": "qwen-image-fast",
+      "file": "state/config/schemas/creative-directive.schema.yaml",
+      "line": 159,
+      "text": "- qwen-image-fast"
+    },
+    {
+      "value": "qwen-image",
+      "file": "state/config/schemas/creative-directive.schema.yaml",
+      "line": 160,
+      "text": "- qwen-image"
+    },
+    {
+      "value": "imagen-4-fast",
+      "file": "state/config/schemas/creative-directive.schema.yaml",
+      "line": 163,
+      "text": "- imagen-4-fast"
+    }
+  ],
+  "sweep_b_l4_persisted": [
+    {
+      "value": "imagen-4-fast",
+      "file": "_bmad-output/implementation-artifacts/leg-e-gamma-docs-live-doc-audit.md",
+      "line": 14,
+      "text": "`developers.gamma.app` serves raw markdown: append `.md` to page URLs; `llms.txt` (5.9KB index) + `llms-full.txt` (221KB) both HTTP 200 to plain httpx, no JS, no auth, Cloudflare unchallenged. `skills/gamma-api-mastery/references/doc-source"
+    },
+    {
+      "value": "qwen-image",
+      "file": "_bmad-output/implementation-artifacts/leg-e-gamma-docs-live-doc-audit.md",
+      "line": 14,
+      "text": "`developers.gamma.app` serves raw markdown: append `.md` to page URLs; `llms.txt` (5.9KB index) + `llms-full.txt` (221KB) both HTTP 200 to plain httpx, no JS, no auth, Cloudflare unchallenged. `skills/gamma-api-mastery/references/doc-source"
+    },
+    {
+      "value": "qwen-image-fast",
+      "file": "_bmad-output/implementation-artifacts/leg-e-gamma-docs-live-doc-audit.md",
+      "line": 14,
+      "text": "`developers.gamma.app` serves raw markdown: append `.md` to page URLs; `llms.txt` (5.9KB index) + `llms-full.txt` (221KB) both HTTP 200 to plain httpx, no JS, no auth, Cloudflare unchallenged. `skills/gamma-api-mastery/references/doc-source"
+    },
+    {
+      "value": "imagen-4-fast",
+      "file": "_bmad-output/planning-artifacts/deferred-inventory.md",
+      "line": 84,
+      "text": "- \ud83d\udd34 **`gamma-image-model-enum-refresh`** (live drift, D-5 routing) \u2014 `IMAGE_MODEL_VALUES` (`app/specialists/gary/_act.py`) is STALE vs live Gamma docs, both directions: 3 enum values no longer documented (`imagen-4-fast`, `qwen-image`, `qwe"
+    },
+    {
+      "value": "qwen-image",
+      "file": "_bmad-output/planning-artifacts/deferred-inventory.md",
+      "line": 84,
+      "text": "- \ud83d\udd34 **`gamma-image-model-enum-refresh`** (live drift, D-5 routing) \u2014 `IMAGE_MODEL_VALUES` (`app/specialists/gary/_act.py`) is STALE vs live Gamma docs, both directions: 3 enum values no longer documented (`imagen-4-fast`, `qwen-image`, `qwe"
+    },
+    {
+      "value": "qwen-image-fast",
+      "file": "_bmad-output/planning-artifacts/deferred-inventory.md",
+      "line": 84,
+      "text": "- \ud83d\udd34 **`gamma-image-model-enum-refresh`** (live drift, D-5 routing) \u2014 `IMAGE_MODEL_VALUES` (`app/specialists/gary/_act.py`) is STALE vs live Gamma docs, both directions: 3 enum values no longer documented (`imagen-4-fast`, `qwen-image`, `qwe"
+    },
+    {
+      "value": "imagen-4-fast",
+      "file": "_bmad-output/planning-artifacts/gamma-image-model-enum-refresh-greenlight-party-record-2026-07-02.md",
+      "line": 9,
+      "text": "Reconcile `app/specialists/gary/_act.py::IMAGE_MODEL_VALUES` with live docs: REMOVE `imagen-4-fast`, `qwen-image`, `qwen-image-fast`; ADD `flux-1-pro`, `flux-1-quick`, `flux-1-ultra`, `flux-kontext-max`, `gpt-image-1-mini-high`, `gpt-image-"
+    },
+    {
+      "value": "qwen-image",
+      "file": "_bmad-output/planning-artifacts/gamma-image-model-enum-refresh-greenlight-party-record-2026-07-02.md",
+      "line": 9,
+      "text": "Reconcile `app/specialists/gary/_act.py::IMAGE_MODEL_VALUES` with live docs: REMOVE `imagen-4-fast`, `qwen-image`, `qwen-image-fast`; ADD `flux-1-pro`, `flux-1-quick`, `flux-1-ultra`, `flux-kontext-max`, `gpt-image-1-mini-high`, `gpt-image-"
+    },
+    {
+      "value": "qwen-image-fast",
+      "file": "_bmad-output/planning-artifacts/gamma-image-model-enum-refresh-greenlight-party-record-2026-07-02.md",
+      "line": 9,
+      "text": "Reconcile `app/specialists/gary/_act.py::IMAGE_MODEL_VALUES` with live docs: REMOVE `imagen-4-fast`, `qwen-image`, `qwen-image-fast`; ADD `flux-1-pro`, `flux-1-quick`, `flux-1-ultra`, `flux-kontext-max`, `gpt-image-1-mini-high`, `gpt-image-"
+    },
+    {
+      "value": "qwen-image",
+      "file": "_bmad-output/planning-artifacts/gamma-image-model-enum-refresh-greenlight-party-record-2026-07-02.md",
+      "line": 19,
+      "text": "**D-4 SYNTHETIC-DRIFT FIXTURE (6/6); re-pin-to-confirmed REJECTED.** Re-pinning deletes the only RED-path witness of drift detection and re-couples tests to live-world state. Fabricated doc fixture, loudly named `synthetic_drift_*`, comment"
+    },
+    {
+      "value": "qwen-image-fast",
+      "file": "_bmad-output/planning-artifacts/gamma-image-model-enum-refresh-greenlight-party-record-2026-07-02.md",
+      "line": 19,
+      "text": "**D-4 SYNTHETIC-DRIFT FIXTURE (6/6); re-pin-to-confirmed REJECTED.** Re-pinning deletes the only RED-path witness of drift detection and re-couples tests to live-world state. Fabricated doc fixture, loudly named `synthetic_drift_*`, comment"
+    },
+    {
+      "value": "imagen-4-fast",
+      "file": "_bmad-output/planning-artifacts/leg-e-gamma-docs-audit-greenlight-party-record-2026-07-02.md",
+      "line": 46,
+      "text": "- **LIVE DRIFT ALREADY FOUND during the probe:** `IMAGE_MODEL_VALUES` (`_act.py:55`) vs the live image-models page \u2014 3 enum values absent from live docs (`imagen-4-fast`, `qwen-image`, `qwen-image-fast`) + ~10 documented models absent from "
+    },
+    {
+      "value": "qwen-image",
+      "file": "_bmad-output/planning-artifacts/leg-e-gamma-docs-audit-greenlight-party-record-2026-07-02.md",
+      "line": 46,
+      "text": "- **LIVE DRIFT ALREADY FOUND during the probe:** `IMAGE_MODEL_VALUES` (`_act.py:55`) vs the live image-models page \u2014 3 enum values absent from live docs (`imagen-4-fast`, `qwen-image`, `qwen-image-fast`) + ~10 documented models absent from "
+    },
+    {
+      "value": "qwen-image-fast",
+      "file": "_bmad-output/planning-artifacts/leg-e-gamma-docs-audit-greenlight-party-record-2026-07-02.md",
+      "line": 46,
+      "text": "- **LIVE DRIFT ALREADY FOUND during the probe:** `IMAGE_MODEL_VALUES` (`_act.py:55`) vs the live image-models page \u2014 3 enum values absent from live docs (`imagen-4-fast`, `qwen-image`, `qwen-image-fast`) + ~10 documented models absent from "
+    },
+    {
+      "value": "imagen-4-fast",
+      "file": "_bmad-output/implementation-artifacts/evidence/leg-e-gamma-docs-audit-20260702T043139Z/run-report.json",
+      "line": 25,
+      "text": "\"imagen-4-fast\","
+    },
+    {
+      "value": "qwen-image",
+      "file": "_bmad-output/implementation-artifacts/evidence/leg-e-gamma-docs-audit-20260702T043139Z/run-report.json",
+      "line": 26,
+      "text": "\"qwen-image\","
+    },
+    {
+      "value": "qwen-image-fast",
+      "file": "_bmad-output/implementation-artifacts/evidence/leg-e-gamma-docs-audit-20260702T043139Z/run-report.json",
+      "line": 27,
+      "text": "\"qwen-image-fast\""
+    },
+    {
+      "value": "imagen-4-fast",
+      "file": "_bmad-output/implementation-artifacts/evidence/leg-e-gamma-docs-audit-20260702T043139Z/run-report.json",
+      "line": 38,
+      "text": "\"observed\": \"enum app.specialists.gary._act:IMAGE_MODEL_VALUES vs documented tokens: enum-values-absent-from-docs=['imagen-4-fast', 'qwen-image', 'qwen-image-fast']; documented-values-absent-from-enum=['flux-1-pro', 'flux-1-quick', 'flux-1-"
+    },
+    {
+      "value": "qwen-image",
+      "file": "_bmad-output/implementation-artifacts/evidence/leg-e-gamma-docs-audit-20260702T043139Z/run-report.json",
+      "line": 38,
+      "text": "\"observed\": \"enum app.specialists.gary._act:IMAGE_MODEL_VALUES vs documented tokens: enum-values-absent-from-docs=['imagen-4-fast', 'qwen-image', 'qwen-image-fast']; documented-values-absent-from-enum=['flux-1-pro', 'flux-1-quick', 'flux-1-"
+    },
+    {
+      "value": "qwen-image-fast",
+      "file": "_bmad-output/implementation-artifacts/evidence/leg-e-gamma-docs-audit-20260702T043139Z/run-report.json",
+      "line": 38,
+      "text": "\"observed\": \"enum app.specialists.gary._act:IMAGE_MODEL_VALUES vs documented tokens: enum-values-absent-from-docs=['imagen-4-fast', 'qwen-image', 'qwen-image-fast']; documented-values-absent-from-enum=['flux-1-pro', 'flux-1-quick', 'flux-1-"
+    },
+    {
+      "value": "imagen-4-fast",
+      "file": "_bmad-output/implementation-artifacts/evidence/leg-e-gamma-docs-audit-20260702T043202Z/run-report.json",
+      "line": 25,
+      "text": "\"imagen-4-fast\","
+    },
+    {
+      "value": "qwen-image",
+      "file": "_bmad-output/implementation-artifacts/evidence/leg-e-gamma-docs-audit-20260702T043202Z/run-report.json",
+      "line": 26,
+      "text": "\"qwen-image\","
+    },
+    {
+      "value": "qwen-image-fast",
+      "file": "_bmad-output/implementation-artifacts/evidence/leg-e-gamma-docs-audit-20260702T043202Z/run-report.json",
+      "line": 27,
+      "text": "\"qwen-image-fast\""
+    },
+    {
+      "value": "imagen-4-fast",
+      "file": "_bmad-output/implementation-artifacts/evidence/leg-e-gamma-docs-audit-20260702T043202Z/run-report.json",
+      "line": 38,
+      "text": "\"observed\": \"enum app.specialists.gary._act:IMAGE_MODEL_VALUES vs documented tokens: enum-values-absent-from-docs=['imagen-4-fast', 'qwen-image', 'qwen-image-fast']; documented-values-absent-from-enum=['flux-1-pro', 'flux-1-quick', 'flux-1-"
+    },
+    {
+      "value": "qwen-image",
+      "file": "_bmad-output/implementation-artifacts/evidence/leg-e-gamma-docs-audit-20260702T043202Z/run-report.json",
+      "line": 38,
+      "text": "\"observed\": \"enum app.specialists.gary._act:IMAGE_MODEL_VALUES vs documented tokens: enum-values-absent-from-docs=['imagen-4-fast', 'qwen-image', 'qwen-image-fast']; documented-values-absent-from-enum=['flux-1-pro', 'flux-1-quick', 'flux-1-"
+    },
+    {
+      "value": "qwen-image-fast",
+      "file": "_bmad-output/implementation-artifacts/evidence/leg-e-gamma-docs-audit-20260702T043202Z/run-report.json",
+      "line": 38,
+      "text": "\"observed\": \"enum app.specialists.gary._act:IMAGE_MODEL_VALUES vs documented tokens: enum-values-absent-from-docs=['imagen-4-fast', 'qwen-image', 'qwen-image-fast']; documented-values-absent-from-enum=['flux-1-pro', 'flux-1-quick', 'flux-1-"
+    },
+    {
+      "value": "imagen-4-fast",
+      "file": "state/config/gamma-learned-observations.jsonl",
+      "line": 4,
+      "text": "{\"behavior\":\"DOCUMENTED: the scoped doc section enumerates the accepted values (https://developers.gamma.app/reference/image-model-accepted-values.md, fetched 2026-07-02T04:31:39Z). OBSERVED: enum app.specialists.gary._act:IMAGE_MODEL_VALUE"
+    },
+    {
+      "value": "qwen-image",
+      "file": "state/config/gamma-learned-observations.jsonl",
+      "line": 4,
+      "text": "{\"behavior\":\"DOCUMENTED: the scoped doc section enumerates the accepted values (https://developers.gamma.app/reference/image-model-accepted-values.md, fetched 2026-07-02T04:31:39Z). OBSERVED: enum app.specialists.gary._act:IMAGE_MODEL_VALUE"
+    },
+    {
+      "value": "qwen-image-fast",
+      "file": "state/config/gamma-learned-observations.jsonl",
+      "line": 4,
+      "text": "{\"behavior\":\"DOCUMENTED: the scoped doc section enumerates the accepted values (https://developers.gamma.app/reference/image-model-accepted-values.md, fetched 2026-07-02T04:31:39Z). OBSERVED: enum app.specialists.gary._act:IMAGE_MODEL_VALUE"
+    },
+    {
+      "value": "imagen-4-fast",
+      "file": "state/config/gamma-learned-observations.jsonl",
+      "line": 5,
+      "text": "{\"behavior\":\"DOCUMENTED: the scoped doc section enumerates the accepted values (https://developers.gamma.app/reference/image-model-accepted-values.md, fetched 2026-07-02T04:31:39Z). OBSERVED: enum app.specialists.gary._act:IMAGE_MODEL_VALUE"
+    },
+    {
+      "value": "qwen-image",
+      "file": "state/config/gamma-learned-observations.jsonl",
+      "line": 5,
+      "text": "{\"behavior\":\"DOCUMENTED: the scoped doc section enumerates the accepted values (https://developers.gamma.app/reference/image-model-accepted-values.md, fetched 2026-07-02T04:31:39Z). OBSERVED: enum app.specialists.gary._act:IMAGE_MODEL_VALUE"
+    },
+    {
+      "value": "qwen-image-fast",
+      "file": "state/config/gamma-learned-observations.jsonl",
+      "line": 5,
+      "text": "{\"behavior\":\"DOCUMENTED: the scoped doc section enumerates the accepted values (https://developers.gamma.app/reference/image-model-accepted-values.md, fetched 2026-07-02T04:31:39Z). OBSERVED: enum app.specialists.gary._act:IMAGE_MODEL_VALUE"
+    },
+    {
+      "value": "qwen-image-fast",
+      "file": "state/config/schemas/creative-directive.schema.json",
+      "line": 254,
+      "text": "\"qwen-image-fast\","
+    },
+    {
+      "value": "qwen-image",
+      "file": "state/config/schemas/creative-directive.schema.json",
+      "line": 255,
+      "text": "\"qwen-image\","
+    },
+    {
+      "value": "imagen-4-fast",
+      "file": "state/config/schemas/creative-directive.schema.json",
+      "line": 258,
+      "text": "\"imagen-4-fast\","
+    },
+    {
+      "value": "qwen-image-fast",
+      "file": "state/config/schemas/creative-directive.schema.yaml",
+      "line": 159,
+      "text": "- qwen-image-fast"
+    },
+    {
+      "value": "qwen-image",
+      "file": "state/config/schemas/creative-directive.schema.yaml",
+      "line": 160,
+      "text": "- qwen-image"
+    },
+    {
+      "value": "imagen-4-fast",
+      "file": "state/config/schemas/creative-directive.schema.yaml",
+      "line": 163,
+      "text": "- imagen-4-fast"
+    }
+  ]
+}

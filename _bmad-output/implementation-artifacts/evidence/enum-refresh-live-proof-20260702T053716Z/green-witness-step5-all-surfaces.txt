@@ -1,0 +1,15 @@
+﻿============================= test session starts =============================
+platform win32 -- Python 3.12.13, pytest-8.4.2, pluggy-1.6.0 -- C:\Users\juanl\Documents\GitHub\course-DEV-IDE-with-AGENTS-hybrid\.venv\Scripts\python.exe
+cachedir: .pytest_cache
+rootdir: C:\Users\juanl\Documents\GitHub\course-DEV-IDE-with-AGENTS-hybrid
+configfile: pyproject.toml
+plugins: anyio-4.13.0, langsmith-0.7.33, asyncio-0.26.0, timeout-2.4.0, xdist-3.8.0
+asyncio: mode=Mode.AUTO, asyncio_default_fixture_loop_scope=None, asyncio_default_test_loop_scope=function
+collecting ... collected 4 items
+
+tests/test_gamma_image_model_enum_parity.py::test_enum_matches_documented_accepted_values PASSED [ 25%]
+tests/test_gamma_image_model_enum_parity.py::test_image_model_enum_three_way_lockstep PASSED [ 50%]
+tests/test_gamma_image_model_enum_parity.py::test_catalog_model_section_mentions_exactly_the_enum PASSED [ 75%]
+tests/test_gamma_image_model_enum_parity.py::test_catalog_never_rendered_models_carry_machine_readable_provenance PASSED [100%]
+
+============================== 4 passed in 1.28s ==============================
