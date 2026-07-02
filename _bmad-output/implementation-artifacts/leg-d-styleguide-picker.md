@@ -1,6 +1,6 @@
 # Leg-D — HTML style-picker at CD-entry (pre-run operator surface, Fork A)
 
-**Arc:** Gamma Styleguide Library · **Branch:** `dev/gamma-styleguide-leg-c-live-2026-07-01` · **Class:** S · **Status:** in-progress (dev complete, review pending)
+**Arc:** Gamma Styleguide Library · **Branch:** `dev/gamma-styleguide-leg-c-live-2026-07-01` · **Class:** S · **Status:** **done** (DUAL-GATE CLOSED 2026-07-02 — Murat structural CLOSE [41/41 verified, AC-8 same-origin re-run 17/17, M-1 real-consumer imports spot-checked, R4 flake independently reproduced + ruled test-hygiene nit] + Dan CD CLOSE no-conditions [D-1/D-2/D-3 held live; blueprint pointer STAYS with the data-driven honesty chip — "disclosed-approximation curation"]). Evidence: `evidence/leg-d-picker-ac8-20260702T020617Z/`.
 **GREEN-LIGHT:** `leg-d-styleguide-picker-greenlight-party-record-2026-07-02.md` — **6/6 FORK A**; ALL amendments there are BINDING and are the spec authority (J-1..J-4, M-1..M-3 + AC regime, A-1, D-1..D-3, S-1..S-3, scope fence, honesty banner). This story file is the pointer + status carrier; do not restate-and-drift.
 **Gate mode:** DUAL-GATE — 🧪 Murat (structural: AC regime incl. the AC-8 live leg + cite-the-consumer discipline) + 🎨 Dan (CD contract: sidecar-only last_used, curated thumbnail discipline, probe visibility, write-gate integrity). Sally advisory on S-1..S-3.
 
