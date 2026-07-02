@@ -17,6 +17,12 @@
 
 **Validation at close:** picker 41/41 + consumers; Leg-C battery green; ruff clean; SSOT validator copacetic (5 guides); all pushed (`d64a705d`).
 
+**WRAPUP ADDENDUM (formal session-WRAPUP, operator-directed):**
+- **Step 0 (Cora):** `/harmonize` NOT invocable in this context (no skill registered) — THIRD consecutive substitution ⚠️ **Cora tripwire FIRED: next START Step 1a runs full-repo scope** (or the widest bounded substitute: repo-wide ruff on app/ + full marcus/specialists/utilities test tree + lint-imports, recorded). Substituted this WRAPUP: 245 focused tests green (picker + irene_pass1 + pins + validators + gary scripted) + ruff clean on all touched app modules + SSOT validator copacetic. **Step 0b pre-closure:** both stories flipping done (Leg-C, Leg-D) went through independently-verifying dual-gate ceremonies (gates re-ran tests/artifacts themselves) — recorded as the closure audit.
+- **Deferred-work sweep (operator-directed):** ALL open items enumerated in `next-session-start-here.md` §DEFERRED-WORK SWEEP, keyed to `deferred-inventory.md`. Highlights: **W-2 dead-branch deletion is reactivation-TRIGGERED NOW** (Leg-C closed); the 🔴 non-waivable `leg-c-floored-deck-07g-live-walk` chains on the gary export-matcher fix (a natural Leg-E-adjacent bundle); the Leg-E reactivations (learned-store promotion path, non-contradiction validator, keywords→imageOptions.style); the batch-LLM epic stays ⏸ at the ARC-CLOSE juncture.
+- **Next session:** consolidate to master (clean ff) → fresh `dev/gamma-styleguide-leg-e-<date>` branch → **Leg-E green-light party** (Texas `gamma_docs` adapter; first REAL learned-store writes) → Phase-2 (the Leg-D picker is its surface).
+- **Steps 3/4a:** bmm-workflow-status + sprint-status intentionally NOT touched (arc convention: party records + handoff are the ledger). **Step 4b:** no agent/skill changes (the picker is an orchestrator module, not a skill). **Step 6:** no staging moves (the new Part-3 corpus dir is committed source, not staging). **Step 9:** KG/ONBOARDING regen RECOMMENDED (carried; `/understand --full`). **Steps 10/11:** worktree single + clean of session-owned changes; ambient churn (runs/, marcus sidecars, shadow ledgers, coverage-manifest) explicitly NOT session-owned; class S declared→S actual (no drift). **Step 12:** push at close (below).
+
 ---
 
 # Session Handoff — 2026-07-01(g) (Gamma Styleguide Library arc — Leg-C `min_cluster_floor` OFFLINE built + 3-lane reviewed + P1–P8 remediated; live baseline + CLOSE pending)
