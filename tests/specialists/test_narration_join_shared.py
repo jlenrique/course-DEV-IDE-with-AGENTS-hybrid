@@ -95,9 +95,19 @@ def test_phantom_detection_single_homed() -> None:
 
 def test_publisher_segment_manifest_byte_stable_through_shared_join(tmp_path) -> None:
     """Amelia REQUIRE: the publisher's B segment-manifest output through the
-    shared helper carries the same rows the private join produced."""
+    shared helper carries the same rows the private join produced.
+
+    Carried-findings D-B oracle repair (2026-07-02): since 1.3-carry the
+    publisher applies a documented post-join EXPORT projection (cluster
+    labels; P5 voice_direction; enhanced-vo.1 slide_key). The oracle is the
+    same composition the writer performs — ``yaml(project(join(...)))`` via
+    the extracted ``enrich_segments_for_export`` — plus HAND-WRITTEN literal
+    anchors (Murat anti-tautology: byte-equality alone would move with a
+    projection regression; the anchors are the independent content oracle).
+    """
     from app.marcus.orchestrator.storyboard_publisher import (
         _write_segment_manifest_for_b,
+        enrich_segments_for_export,
     )
 
     path = _write_segment_manifest_for_b(
@@ -108,12 +118,15 @@ def test_publisher_segment_manifest_byte_stable_through_shared_join(tmp_path) ->
         },
     )
     # Winston R1 (dp-v1.2 rider): byte-equality against the canonical
-    # serialization of the shared-join output, not substring presence.
-    # The literal anchors stay as the independent content oracle (review
-    # patch: byte-equality alone moves with a join regression).
+    # serialization of the shared-join output THROUGH the export projection
+    # (same composition as the writer; safe_dump kwargs pinned identical).
     text = path.read_text(encoding="utf-8")
     expected = yaml.safe_dump(
-        {"segments": join_narration_segments(NARRATION, DELTAS)},
+        {
+            "segments": enrich_segments_for_export(
+                join_narration_segments(NARRATION, DELTAS), DELTAS, {}
+            )
+        },
         sort_keys=False,
         allow_unicode=True,
     )
@@ -121,3 +134,16 @@ def test_publisher_segment_manifest_byte_stable_through_shared_join(tmp_path) ->
     assert "Opening." in text and "Closing." in text
     assert "slide_id: s1" in text and "slide_id: s2" in text
     assert "seg-x" not in text
+    # Mandatory literal anchors — one per projected key family this fixture
+    # carries (D-B amendment 2). DELTAS holds no cluster fields, so the
+    # unconditional cluster keys project as explicit nulls:
+    assert "cluster_id: null" in text
+    assert "cluster_role: null" in text
+    assert "cluster_position: null" in text
+    assert "narrative_arc: null" in text
+    # voice_direction / slide_key are conditional-on-presence and this
+    # fixture carries neither -> the keys must be ABSENT (pre-era byte
+    # discipline; the present-branch literals live in the projection unit
+    # test tests/integration/marcus/test_storyboard_export_projection.py).
+    assert "voice_direction" not in text
+    assert "slide_key" not in text

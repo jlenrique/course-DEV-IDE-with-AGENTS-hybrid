@@ -583,6 +583,52 @@ PERMITTED_PYTHON_DIFFS = {
     # rostered above (line ~267) — not re-listed here to avoid a duplicate set item.
     "tests/marcus/lesson_plan/test_run_asset_index.py",
     "tests/marcus/orchestrator/test_udac_consumer_contract.py",
+    # Carried-findings remediation batch (party RATIFY-WITH-AMENDMENTS 4/4,
+    # carried-findings-remediation-greenlight-party-record-2026-07-02.md):
+    # (a) test_pr_rc assertion reverted to the fixture truth (125.0); (c1)
+    # GLOBAL llm_live gating flip in tests/conftest.py + gate-semantics
+    # contract test; (c2) capture-layer path portability helper + fixture-
+    # hygiene guard (runtime provider UNTOUCHED); (b) post-join export
+    # projection mechanically extracted to enrich_segments_for_export in
+    # storyboard_publisher.py (byte-neutral, witnessed) + projection unit
+    # pins. NO new live-dispatch call site anywhere in the batch;
+    # storyboard_publisher.py + test_vision_live_roundtrip.py already
+    # rostered above.
+    "tests/marcus_capabilities/test_pr_rc.py",
+    "tests/conftest.py",
+    "tests/test_conftest_llm_live_gating.py",
+    "tests/specialists/vision/test_capture_portability.py",
+    "tests/specialists/vision/vision_capture_support.py",
+    "tests/integration/marcus/test_storyboard_export_projection.py",
+    # Carried-findings D-D1 contracts-tree triage batch (party record
+    # carried-findings-remediation-greenlight-party-record-2026-07-02.md §D-D1;
+    # per-row adjudications + RED/GREEN evidence in
+    # contracts-triage-ledger-2026-07-02.md): 17 L/T rows applied — stale
+    # root-`marcus/` pins repinned to `app/marcus/...`, governed Braid-S2
+    # modality v1.1 widening lockstepped, narrow governed exemptions.
+    # Test-tree pin edits only; NO live-dispatch surface.
+    # (test_33_1a_verbatim_extraction.py already rostered above.)
+    "tests/contracts/test_30_2b_dispatch_monopoly.py",
+    "tests/contracts/test_33_2_state_config_disjoint_keys.py",
+    "tests/contracts/test_blueprint_producer_registry_contract.py",
+    "tests/contracts/test_fit_report_canonical_caller.py",
+    "tests/contracts/test_fit_report_v1_schema_stable.py",
+    "tests/contracts/test_marcus_single_writer_routing.py",
+    "tests/contracts/test_modality_registry_stable.py",
+    "tests/contracts/test_provider_directory_roster_placeholders.py",
+    "tests/contracts/test_quinn_r_gate_no_log_boundary.py",
+    # Carried-findings 195be7c9 sweep-victim reverts (D-A amendment 3;
+    # contracts-triage-ledger-2026-07-02.md §Appendix rows A1/A2): two
+    # mechanical numeric-pin corruptions from the s2-collapse 12->13 sweep
+    # reverted to their birth values (facade 138->128; parity count 13->12).
+    "tests/test_marcus_facade_roundtrip.py",
+    "tests/test_structural_walk.py",
+    # Task-2 Gamma image-model enum-refresh story (party record
+    # gamma-image-model-enum-refresh-greenlight-party-record-2026-07-02.md):
+    # audit-driver test updates + the new enum-parity contract test. Offline
+    # fixture-driven tests; NO live-dispatch surface.
+    "tests/test_audit_gamma_docs_driver.py",
+    "tests/test_gamma_image_model_enum_parity.py",
 }
 
 

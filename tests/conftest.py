@@ -110,9 +110,15 @@ def pytest_configure(config: pytest.Config) -> None:
     )
     config.addinivalue_line(
         "markers",
-        "llm_live: marks tests that invoke a live LLM (OpenAI) — auto-skipped "
-        "when OPENAI_API_KEY is unset or holds the Slab-1 placeholder sentinel. "
-        "See party-mode round 3 Amelia caveat (2026-04-24).",
+        "llm_live: marks tests that invoke a live LLM (OpenAI) — DESELECTED "
+        "unless --run-live is passed (global gating flip, carried-findings "
+        "D-C1 2026-07-02: a real key in .env must never cause live spend in "
+        "the default profile; --run-live is the switch, NOT '-m llm_live'). "
+        "Exception: a test ALSO marked live_api_e2e is armed by --run-live-e2e "
+        "alone (the e2e opt-in arms its own double-marked tests). "
+        "Under --run-live, still auto-skipped when OPENAI_API_KEY is unset or "
+        "holds the Slab-1 placeholder sentinel (party-mode round 3 Amelia "
+        "caveat, 2026-04-24). Contract: tests/test_conftest_llm_live_gating.py.",
     )
 
 
@@ -166,14 +172,23 @@ def pytest_collection_modifyitems(
     config: pytest.Config,
     items: list[pytest.Item],
 ) -> None:
-    """Two passes: (1) deselect live_api / live_api_e2e when flags absent;
-    (2) auto-skip llm_live when OPENAI_API_KEY is unset or placeholder.
+    """Two passes: (1) deselect live_api / live_api_e2e / llm_live when flags
+    absent; (2) auto-skip llm_live when OPENAI_API_KEY is unset or placeholder.
 
     Pass (2) was added 2026-04-24 per party-mode round 3 Amelia caveat SP4;
     see module-level `_openai_key_is_placeholder_or_unset` + `llm_live` marker
     registration above.
+
+    Pass (1) llm_live deselection added 2026-07-02 (carried-findings D-C1,
+    party-ratified GLOBAL flip): llm_live tests ALSO require --run-live. A
+    real OPENAI_API_KEY in .env previously caused real LLM spend in the
+    DEFAULT pytest profile; now the default profile deselects llm_live (loud:
+    counted in the standard 'deselected' summary) and pass (2) key-skip is
+    retained for --run-live runs without a real key. Gate-semantics contract:
+    tests/test_conftest_llm_live_gating.py.
     """
-    # Pass 1: deselect live_api / live_api_e2e unless explicitly requested
+    # Pass 1: deselect live_api / live_api_e2e / llm_live unless explicitly
+    # requested via their flag (--run-live gates both live_api and llm_live).
     selected: list[pytest.Item] = []
     deselected: list[pytest.Item] = []
 
@@ -183,7 +198,14 @@ def pytest_collection_modifyitems(
     for item in items:
         is_live = "live_api" in item.keywords and not run_live
         is_live_e2e = "live_api_e2e" in item.keywords and not run_live_e2e
-        if is_live or is_live_e2e:
+        # llm_live deselection is waived when the item is ALSO live_api_e2e and
+        # --run-live-e2e was passed: the e2e opt-in arms its own double-marked
+        # tests (matrix-cell fix 2026-07-02; pass-2 key-skip still applies).
+        llm_live_armed = run_live or (
+            run_live_e2e and "live_api_e2e" in item.keywords
+        )
+        is_llm_live = "llm_live" in item.keywords and not llm_live_armed
+        if is_live or is_live_e2e or is_llm_live:
             deselected.append(item)
         else:
             selected.append(item)

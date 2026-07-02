@@ -84,6 +84,73 @@ def _load_generator_module() -> Any:
     return module
 
 
+def enrich_segments_for_export(
+    segments: list[dict[str, Any]],
+    deltas: Any,
+    arc_map: dict[str, str] | None,
+) -> list[dict[str, Any]]:
+    """Post-join EXPORT projection for the storyboard-B segment manifest.
+
+    Re-attaches the fields the frozen ``join_narration_segments`` neck drops
+    (cluster labels per 1.3-carry; ``voice_direction`` per P5 Step 3;
+    ``slide_key`` per enhanced-vo.1) by copying values through from the
+    matching Pass-2 delta — never re-deriving them. This is the ONLY
+    post-join transformation ``_write_segment_manifest_for_b`` applies, and
+    the byte-stability oracle in
+    ``tests/specialists/test_narration_join_shared.py`` composes it the same
+    way: ``yaml(project(join(...)))``.
+
+    MUTATES ``segments`` IN PLACE and returns the same list (callers pass the
+    freshly-joined rows; extraction kept the original in-place semantics
+    verbatim — carried-findings D-B mechanical lift, 2026-07-02).
+    """
+    # Build a delta-by-id index, then enrich each joined row in place.
+    delta_by_id: dict[str, dict[str, Any]] = {}
+    delta_id_counts: dict[str, int] = {}
+    for delta in deltas if isinstance(deltas, list) else []:
+        if isinstance(delta, dict):
+            delta_key = str(delta.get("id") or "").strip()
+            delta_by_id[delta_key] = delta
+            delta_id_counts[delta_key] = delta_id_counts.get(delta_key, 0) + 1
+    arc_map = arc_map or {}
+    for segment in segments:
+        seg_id = str(segment.get("id") or segment.get("segment_id") or "").strip()
+        delta = delta_by_id.get(seg_id)
+        cluster_id = delta.get("cluster_id") if delta else None
+        segment["cluster_id"] = cluster_id
+        segment["cluster_role"] = delta.get("cluster_role") if delta else None
+        segment["cluster_position"] = delta.get("cluster_position") if delta else None
+        segment["narrative_arc"] = arc_map.get(cluster_id) if cluster_id else None
+        # P5 Step 3 (directed voice): the Step-2 annotation pass attaches a
+        # per-segment ``voice_direction`` onto the delta; the frozen join neck
+        # drops it the same way it drops the cluster labels. Re-attach it here so
+        # Storyboard B can show the intended delivery BEFORE audio spend (rubric
+        # §8). CONDITIONAL on presence: a delta with no voice_direction (flag
+        # MARCUS_NARRATION_VOICE_DIRECTION_ACTIVE OFF / non-directed run) gains NO
+        # key, so the manifest stays byte-identical to the pre-P5 output.
+        #
+        # Edge #4 guard: ``delta_by_id`` is last-write-wins, so an EMPTY or
+        # DUPLICATE delta id cannot be matched to a single delta unambiguously.
+        # Spend-critical ``voice_direction`` must NOT be mis-attributed to the
+        # wrong segment, so skip the re-attach for ambiguous ids (empty, or an
+        # id that appears on more than one delta). The cluster labels above keep
+        # their prior best-effort behavior (non-spend-critical, 1.3-carry).
+        if seg_id and delta is not None and delta_id_counts.get(seg_id, 0) == 1:
+            voice_direction = delta.get("voice_direction")
+            if voice_direction is not None:
+                segment["voice_direction"] = voice_direction
+            # Story enhanced-vo.1 (Slice 0): re-attach the directed-voice identity-
+            # join key the frozen neck drops, so it does not silently fall to None in
+            # what ships (AC-A5). CONDITIONAL on presence (mirrors voice_direction,
+            # NOT the unconditional cluster labels): a delta with no slide_key (flag
+            # OFF / non-enriched run) gains NO key, so the manifest stays
+            # byte-identical to the pre-enhanced-vo output.
+            slide_key = delta.get("slide_key")
+            if slide_key is not None:
+                segment["slide_key"] = slide_key
+    return segments
+
+
 def _write_segment_manifest_for_b(
     *,
     run_dir: Path,
@@ -127,51 +194,11 @@ def _write_segment_manifest_for_b(
             "narration overlay to publish",
             tag="storyboard.input.missing-irene",
         )
-    # Re-attach the cluster labels the frozen join neck omits (1.3-carry).
-    # Build a delta-by-id index, then enrich each joined row in place.
-    delta_by_id: dict[str, dict[str, Any]] = {}
-    delta_id_counts: dict[str, int] = {}
-    for delta in deltas if isinstance(deltas, list) else []:
-        if isinstance(delta, dict):
-            delta_key = str(delta.get("id") or "").strip()
-            delta_by_id[delta_key] = delta
-            delta_id_counts[delta_key] = delta_id_counts.get(delta_key, 0) + 1
-    arc_map = cluster_arc_by_id or {}
-    for segment in segments:
-        seg_id = str(segment.get("id") or segment.get("segment_id") or "").strip()
-        delta = delta_by_id.get(seg_id)
-        cluster_id = delta.get("cluster_id") if delta else None
-        segment["cluster_id"] = cluster_id
-        segment["cluster_role"] = delta.get("cluster_role") if delta else None
-        segment["cluster_position"] = delta.get("cluster_position") if delta else None
-        segment["narrative_arc"] = arc_map.get(cluster_id) if cluster_id else None
-        # P5 Step 3 (directed voice): the Step-2 annotation pass attaches a
-        # per-segment ``voice_direction`` onto the delta; the frozen join neck
-        # drops it the same way it drops the cluster labels. Re-attach it here so
-        # Storyboard B can show the intended delivery BEFORE audio spend (rubric
-        # §8). CONDITIONAL on presence: a delta with no voice_direction (flag
-        # MARCUS_NARRATION_VOICE_DIRECTION_ACTIVE OFF / non-directed run) gains NO
-        # key, so the manifest stays byte-identical to the pre-P5 output.
-        #
-        # Edge #4 guard: ``delta_by_id`` is last-write-wins, so an EMPTY or
-        # DUPLICATE delta id cannot be matched to a single delta unambiguously.
-        # Spend-critical ``voice_direction`` must NOT be mis-attributed to the
-        # wrong segment, so skip the re-attach for ambiguous ids (empty, or an
-        # id that appears on more than one delta). The cluster labels above keep
-        # their prior best-effort behavior (non-spend-critical, 1.3-carry).
-        if seg_id and delta is not None and delta_id_counts.get(seg_id, 0) == 1:
-            voice_direction = delta.get("voice_direction")
-            if voice_direction is not None:
-                segment["voice_direction"] = voice_direction
-            # Story enhanced-vo.1 (Slice 0): re-attach the directed-voice identity-
-            # join key the frozen neck drops, so it does not silently fall to None in
-            # what ships (AC-A5). CONDITIONAL on presence (mirrors voice_direction,
-            # NOT the unconditional cluster labels): a delta with no slide_key (flag
-            # OFF / non-enriched run) gains NO key, so the manifest stays
-            # byte-identical to the pre-enhanced-vo output.
-            slide_key = delta.get("slide_key")
-            if slide_key is not None:
-                segment["slide_key"] = slide_key
+    # Re-attach the fields the frozen join neck omits (1.3-carry cluster
+    # labels; P5 voice_direction; enhanced-vo.1 slide_key) — the ONLY
+    # post-join transformation, extracted to the module-level pure function
+    # so the byte-stability oracle can compose the identical projection.
+    segments = enrich_segments_for_export(segments, deltas, cluster_arc_by_id)
     manifest_path = run_dir / "exports" / "segment-manifest-storyboard-b.yaml"
     manifest_path.parent.mkdir(parents=True, exist_ok=True)
     manifest_path.write_text(

@@ -21,6 +21,7 @@ from datetime import UTC, datetime
 from pathlib import Path
 
 import pytest
+from vision_capture_support import normalize_capture_response_paths
 
 from app.models.perception.perception_artifact import PerceptionArtifact
 from app.specialists.vision.provider import (
@@ -80,7 +81,13 @@ def test_live_gpt55_perceives_six_real_pngs_and_captures_recordings() -> None:
                 "prompt_sha256": hashlib.sha256(prompt.encode("utf-8")).hexdigest(),
                 "harness": "tests/specialists/vision/test_vision_live_roundtrip.py",
             },
-            "response": response.model_dump(),
+            # Capture-layer portability (carried-findings D-C2): the runtime
+            # provider sets source_png_path absolute (correct at runtime);
+            # the RECORDED copy is normalized to repo-relative posix so the
+            # committed fixture stays portable. Out-of-repo png -> FAIL LOUD.
+            "response": normalize_capture_response_paths(
+                response.model_dump(), repo_root=REPO_ROOT
+            ),
         }
         (CAPTURE_DIR / f"{slide_id}.json").write_text(
             json.dumps(record, indent=2, sort_keys=True), encoding="utf-8"
