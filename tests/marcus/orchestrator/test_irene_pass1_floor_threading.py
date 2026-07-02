@@ -148,6 +148,57 @@ def test_absent_floor_is_clean_none_no_warn(caplog: pytest.LogCaptureFixture) ->
     assert not any("min_cluster_floor" in r.message for r in caplog.records), caplog.records
 
 
+# ----------------------------------------------------- F1 (live-diagnosed 2026-07-01)
+# An instrumented live walk proved ``_runner_payload_for_specialist`` is invoked with
+# the CANONICALIZED id ``"irene_pass1"`` (underscore), not the manifest spelling: the
+# manifest compiler stamps ``handler.__production_specialist_id__`` with
+# ``_canonical_specialist_id(node.specialist_id)`` (``app/manifest/compiler.py:163``,
+# via ``SPECIALIST_ALIASES`` ``"irene-pass1" -> "irene_pass1"``, ``compiler.py:42-45``),
+# and BOTH walks read that attribute as the ``specialist_id`` they thread to the
+# dispatch site (``production_runner.py:2550`` start walk / ``:3276`` continuation
+# walk -> ``_dispatch_specialist_at_node`` -> ``_runner_payload_for_specialist`` at
+# ``:1978``). A hyphen-only branch therefore returns None on EVERY real dispatch —
+# the floor never threads (the quinn_r branch learned the identical lesson on
+# 2026-06-11).
+def test_bound_floor_is_threaded_for_canonical_underscore_id(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """RED against the hyphen-only branch: the CANONICALIZED id must thread the floor."""
+    ssot = _write_ssot(tmp_path, {"multi-beat": _floor_guide(5)})
+    monkeypatch.setattr(production_runner, "GAMMA_STYLE_GUIDES_SSOT_PATH", ssot)
+    directive = _write_directive(tmp_path, [{"variant_id": "A", "styleguide": "multi-beat"}])
+
+    payload = _runner_payload_for_specialist(
+        specialist_id="irene_pass1", directive_path=directive, bundle_dir=None
+    )
+    assert payload == {"min_cluster_floor": 5}
+
+
+def test_walk_call_site_id_form_is_accepted_by_floor_branch(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """Parity pin: whichever id form the walk ACTUALLY passes must thread the floor.
+
+    The walk's id is ``_canonical_specialist_id(<manifest spelling>)`` (that is what
+    the compiler stamps on ``__production_specialist_id__`` and what
+    ``production_runner.py:2550``/``:3276`` pass down) — computed HERE from the same
+    alias table, so a future SPECIALIST_ALIASES change that re-spells the canonical
+    id re-fails this test loudly instead of silently un-threading the floor again.
+    """
+    from app.manifest.compiler import _canonical_specialist_id
+
+    walk_id = _canonical_specialist_id("irene-pass1")
+    assert walk_id is not None
+    ssot = _write_ssot(tmp_path, {"multi-beat": _floor_guide(5)})
+    monkeypatch.setattr(production_runner, "GAMMA_STYLE_GUIDES_SSOT_PATH", ssot)
+    directive = _write_directive(tmp_path, [{"variant_id": "A", "styleguide": "multi-beat"}])
+
+    payload = _runner_payload_for_specialist(
+        specialist_id=walk_id, directive_path=directive, bundle_dir=None
+    )
+    assert payload == {"min_cluster_floor": 5}
+
+
 # --------------------------------------------------------------------- P8 (review)
 def test_orchestrator_scripted_class_literal_parity() -> None:
     """P8: the orchestrator's LOCAL literal must stay in the sealed registry AND its

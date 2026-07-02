@@ -1485,7 +1485,15 @@ def _runner_payload_for_specialist(
     # DIRECTLY (no app/specialists/gary import). Absent styleguide / absent scripted ->
     # no key (clean; no None-leak). ``min_cluster_floor`` collides with no projection
     # or dependency, so the adapter collision-guard passes.
-    if specialist_id == "irene-pass1":
+    # F1 (live-diagnosed 2026-07-01): the walk canonicalizes BEFORE this call — the
+    # manifest compiler stamps handler.__production_specialist_id__ with
+    # _canonical_specialist_id(...) via SPECIALIST_ALIASES ("irene-pass1" ->
+    # "irene_pass1", app/manifest/compiler.py:42-45/:163), and both walkers pass
+    # that canonical id down to this seam. A hyphen-only match returned None on
+    # EVERY real dispatch (instrumented live proof), silently un-threading the
+    # floor. Match both forms — same lesson the quinn_r branch above learned
+    # on 2026-06-11.
+    if specialist_id in {"irene-pass1", "irene_pass1"}:
         floor = _min_cluster_floor_from_directive(directive_path)
         if floor is not None:
             return {"min_cluster_floor": floor}

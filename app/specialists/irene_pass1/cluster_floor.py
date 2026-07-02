@@ -249,10 +249,29 @@ _CANONICAL_CHARS = str.maketrans(
 )
 
 
+# F2 (live-diagnosed 2026-07-01): the live K' run surfaced markdown/punctuation
+# DEBRIS *inside* the source between anchor words — "within* an existing
+# organization" (emphasis asterisk mid-phrase) and '"Good vs. Bad" problem
+# formulation' (quote marks between anchor words; R2 MAPS quote glyphs but did
+# not REMOVE them) — false-vetoing genuinely-present anchors. Markdown emphasis
+# characters (* _ `) and ALL quotation characters (straight AND curly, single
+# AND double — the curly forms directly, belt+braces should _CANONICAL_CHARS
+# ever stop mapping them) are REMOVED from BOTH the anchor and the source, so
+# the containment check stays symmetric and deterministic: a genuinely absent /
+# paraphrased anchor still fails (veto discipline intact). MATCHING ONLY:
+# plan/source text itself is never rewritten.
+_MATCH_STRIP_CHARS = str.maketrans(dict.fromkeys("*_`'\"‘’‚‛“”„‟", None))
+
+
 def _normalize_match_text(text: str) -> str:
     """Anchor<->source matching canonicalization: NFKC + quote/dash/space
-    canonical map + whitespace-run collapse (markdown line-wrap tolerance)."""
-    canonical = unicodedata.normalize("NFKC", text).translate(_CANONICAL_CHARS)
+    canonical map + emphasis/quotation-char REMOVAL (F2) + whitespace-run
+    collapse (markdown line-wrap tolerance)."""
+    canonical = (
+        unicodedata.normalize("NFKC", text)
+        .translate(_CANONICAL_CHARS)
+        .translate(_MATCH_STRIP_CHARS)
+    )
     return " ".join(canonical.split())
 
 

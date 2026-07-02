@@ -27,6 +27,7 @@ import importlib
 import sys
 from pathlib import Path
 
+import pytest
 import yaml
 
 from app.manifest.compiler import SPECIALIST_ALIASES, _canonical_specialist_id
@@ -126,4 +127,64 @@ def test_floor_consumer_reachable_from_production_dispatch_module() -> None:
     assert (
         act_module.consume_min_cluster_floor
         is sys.modules["app.specialists.irene_pass1.cluster_floor"].consume_min_cluster_floor
+    )
+
+
+def test_floor_threading_branch_accepts_canonical_specialist_id(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """AC#14 gap closure (live-diagnosed F1, 2026-07-01).
+
+    The original pin proved module REACHABILITY along the dispatch chain but never
+    exercised the PAYLOAD BRANCH with the id form the walk actually passes: the
+    compiler stamps ``handler.__production_specialist_id__ =
+    _canonical_specialist_id(node.specialist_id)`` (``app/manifest/compiler.py:163``),
+    both walks read that attribute (``production_runner.py:2550``/``:3276``) and
+    thread it to ``_runner_payload_for_specialist`` (``:1978``) — so the branch sees
+    ``"irene_pass1"`` (underscore), never the manifest spelling. A live instrumented
+    walk proved the hyphen-only branch returned None on every real dispatch. This
+    test pins that the CANONICAL id (derived here from the same alias table, so an
+    alias-table change re-fails loudly) actually threads the floor.
+    """
+    from app.marcus.orchestrator import production_runner
+
+    canonical = _canonical_specialist_id(FLOOR_RECEIVING_SPECIALIST_ID)
+    assert canonical is not None
+    ssot = tmp_path / "gamma-style-guides.yaml"
+    ssot.write_text(
+        yaml.safe_dump(
+            {
+                "style_guides": {
+                    "pinned": {
+                        "production_mode": "api",
+                        "scripted": [
+                            {
+                                "class": "min_cluster_floor",
+                                "value": 4,
+                                "rationale": "AC#14 payload-branch pin",
+                                "provenance": {
+                                    "authoring_styleguide": "x",
+                                    "envelope_write_stamp": "z",
+                                },
+                            }
+                        ],
+                    }
+                }
+            }
+        ),
+        encoding="utf-8",
+    )
+    monkeypatch.setattr(production_runner, "GAMMA_STYLE_GUIDES_SSOT_PATH", ssot)
+    directive = tmp_path / "directive.yaml"
+    directive.write_text(
+        yaml.safe_dump({"gamma_settings": [{"variant_id": "A", "styleguide": "pinned"}]}),
+        encoding="utf-8",
+    )
+
+    payload = production_runner._runner_payload_for_specialist(
+        specialist_id=canonical, directive_path=directive, bundle_dir=None
+    )
+    assert payload == {"min_cluster_floor": 4}, (
+        "the floor-threading branch must accept the CANONICALIZED specialist id "
+        f"{canonical!r} — the id form the walk passes at the dispatch call site"
     )

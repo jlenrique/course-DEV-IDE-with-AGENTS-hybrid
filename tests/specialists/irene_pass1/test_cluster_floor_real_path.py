@@ -413,6 +413,77 @@ def test_genuinely_absent_anchor_still_vetoes_after_normalization() -> None:
 
 
 # --------------------------------------------------------------------------- #
+# F2 (live-diagnosed 2026-07-01): markdown/quotation DEBRIS *inside* the source #
+# between anchor words. Two REAL failing pairs from the live K' run: a markdown #
+# emphasis asterisk mid-phrase (``within* an existing organization``) and       #
+# quotation marks between anchor words (``"Good vs. Bad" problem formulation`` #
+# — R2 MAPS quote glyphs but did not REMOVE them). Emphasis chars (* _ `) and   #
+# all quotation chars (straight+curly, single+double) are now REMOVED from     #
+# BOTH sides; containment stays deterministic (absent anchors still veto).     #
+# --------------------------------------------------------------------------- #
+_ASTERISK_DEBRIS_SOURCE = (
+    "Part three opens the maze. Intrapreneurship grows within* an existing "
+    "organization, and the walls hold."
+)
+_QUOTE_DEBRIS_SOURCE = (
+    'Part three opens the maze. "Good vs. Bad" problem formulation separates '
+    "ideas worth pursuing, and the walls hold."
+)
+
+
+def test_anchor_resolves_across_markdown_emphasis_asterisk_in_source() -> None:
+    """Live K' failing pair #1 (verbatim): anchor 'within an existing
+    organization' vs source ``within* an existing organization``."""
+    units = _quote_cluster("within an existing organization", "and the walls hold")
+    honored = cf.honor_min_cluster_floor(
+        units, 3, extracted_source=_ASTERISK_DEBRIS_SOURCE
+    )
+    assert cf.count_clusters(honored) == 3
+
+
+def test_anchor_resolves_across_quotation_marks_in_source() -> None:
+    """Live K' failing pair #2 (verbatim): anchor 'Good vs. Bad problem
+    formulation' vs source ``"Good vs. Bad" problem formulation``."""
+    units = _quote_cluster("Good vs. Bad problem formulation", "and the walls hold")
+    honored = cf.honor_min_cluster_floor(
+        units, 3, extracted_source=_QUOTE_DEBRIS_SOURCE
+    )
+    assert cf.count_clusters(honored) == 3
+
+
+def test_markdown_underscore_and_backtick_debris_also_removed() -> None:
+    """The full emphasis set (* _ `) is removed symmetrically from both sides."""
+    units = _quote_cluster("the min_cluster_floor knob", "and the walls hold")
+    source = (
+        "Part three opens the maze. Turn the `min_cluster_floor` knob "
+        "carefully, and the walls hold."
+    )
+    honored = cf.honor_min_cluster_floor(units, 3, extracted_source=source)
+    assert cf.count_clusters(honored) == 3
+
+
+def test_genuinely_absent_anchor_still_vetoes_against_debris_source() -> None:
+    """Veto discipline intact post-removal: a paraphrased/absent anchor fails."""
+    units = _quote_cluster(
+        "within an existing organization", "a paraphrase that appears nowhere"
+    )
+    with pytest.raises(cf.ClusterFloorMismatchError):
+        cf.honor_min_cluster_floor(units, 3, extracted_source=_ASTERISK_DEBRIS_SOURCE)
+
+
+def test_legitimate_apostrophe_anchor_still_resolves_after_removal() -> None:
+    """Apostrophes are quotation chars and are removed from BOTH sides, so 'The
+    Intrapreneur's Maze' (curly OR straight) still resolves against the curly
+    corpus (the R2 pairs above stay green)."""
+    units = _quote_cluster(
+        "opens “The Intrapreneur’s Maze”",
+        "the load-bearing walls of the institution",
+    )
+    honored = cf.honor_min_cluster_floor(units, 3, extracted_source=_CURLY_SOURCE)
+    assert cf.count_clusters(honored) == 3
+
+
+# --------------------------------------------------------------------------- #
 # R4 (Edge#3): duplicate/cross-unit anchor reuse = unresolvable (veto)         #
 # --------------------------------------------------------------------------- #
 def _dup_anchor_plan() -> list[dict]:
