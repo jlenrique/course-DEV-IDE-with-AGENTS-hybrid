@@ -53,14 +53,33 @@ _FIXTURE_BY_URL = {
     THEMES_URL: "list_themes.md",
 }
 
+SYNTHETIC_DRIFT_FIXTURE = "synthetic_drift_image_model_accepted_values.md"
+"""D-4 (enum-refresh party record 2026-07-02): FABRICATED image-models page
+with planted deltas in BOTH directions vs IMAGE_MODEL_VALUES —
+`fake-model-alpha` documented-but-not-enum (coverage-gap) and the real enum
+value `recraft-v4-pro` omitted (doc-drift). Drift-path tests serve THIS at the
+real URL so the RED-path witness never re-couples to live-world doc state; a
+fixtures-from-live refresh must never overwrite it."""
+
+_SYNTHETIC_IMAGE_MODELS = {IMAGE_MODELS_URL: SYNTHETIC_DRIFT_FIXTURE}
+_SYNTHETIC_DOC_DRIFT = ["recraft-v4-pro"]
+_SYNTHETIC_COVERAGE_GAP = ["fake-model-alpha"]
+
 
 # ---------------------------------------------------------------------------
 # Helpers
 # ---------------------------------------------------------------------------
 
 
-def _serve(rsps: responses.RequestsMock, url: str, *, status: int = 200) -> None:
-    rsps.get(url, body=(FIXTURE_DIR / _FIXTURE_BY_URL[url]).read_bytes(), status=status)
+def _serve(
+    rsps: responses.RequestsMock,
+    url: str,
+    *,
+    status: int = 200,
+    fixture: str | None = None,
+) -> None:
+    body = (FIXTURE_DIR / (fixture or _FIXTURE_BY_URL[url])).read_bytes()
+    rsps.get(url, body=body, status=status)
 
 
 def _serve_preflight(rsps: responses.RequestsMock, *, ok: bool = True) -> None:
@@ -72,10 +91,10 @@ def _serve_preflight(rsps: responses.RequestsMock, *, ok: bool = True) -> None:
         rsps.get(PREFLIGHT_URL, body=_requests.exceptions.ConnectionError("site down"))
 
 
-def _page_for(url: str) -> dict[str, Any]:
+def _page_for(url: str, *, fixture: str | None = None) -> dict[str, Any]:
     """Fetch one fixture-served page through the driver's dispatch path."""
     with responses.RequestsMock() as rsps:
-        _serve(rsps, url)
+        _serve(rsps, url, fixture=fixture)
         return audit.fetch_page(url, fetch_interval_s=0.0)
 
 
@@ -211,6 +230,7 @@ def _run(
     status_by_url: dict[str, int] | None = None,
     preflight_ok: bool = True,
     dry_run: bool = False,
+    fixture_by_url: dict[str, str] | None = None,
 ) -> dict[str, Any]:
     """Run the driver end-to-end against fixture-served pages; return artifacts."""
     manifest = _write_manifest(tmp_path, items)
@@ -224,7 +244,12 @@ def _run(
     with responses.RequestsMock(assert_all_requests_are_fired=False) as rsps:
         _serve_preflight(rsps, ok=preflight_ok)
         for url in urls:
-            _serve(rsps, url, status=(status_by_url or {}).get(url, serve_status))
+            _serve(
+                rsps,
+                url,
+                status=(status_by_url or {}).get(url, serve_status),
+                fixture=(fixture_by_url or {}).get(url),
+            )
         exit_code = audit.run_audit(
             manifest_path=manifest,
             ledger_path=ledger,
@@ -405,20 +430,59 @@ def test_classify_anchor_absent_is_doc_restructure_drift() -> None:
 
 def test_classify_enum_drift_is_asymmetric_with_distinct_kinds() -> None:
     """A-2: enum-value-absent-from-docs -> doc-drift; documented-absent-from-enum
-    -> coverage-gap. The recorded image-model page carries REAL drift both ways."""
-    page = _page_for(IMAGE_MODELS_URL)
+    -> coverage-gap. D-4 (enum-refresh 2026-07-02): the drift witness rides the
+    FABRICATED synthetic fixture's planted deltas (exact both directions), so
+    detection keeps a RED path independent of live-world doc state."""
+    page = _page_for(IMAGE_MODELS_URL, fixture=SYNTHETIC_DRIFT_FIXTURE)
     result = audit.classify_item(_image_model_item(), page)
     assert result["terminal_state"] == "drift-detected"
     assert set(result["drift_kinds"]) == {"doc-drift", "coverage-gap"}
-    assert "imagen-4-fast" in result["diffs"]["doc-drift"], (
-        "enum values absent from the live docs page (probe-grounded)"
+    assert result["diffs"]["doc-drift"] == _SYNTHETIC_DOC_DRIFT, (
+        "exact planted delta: the real enum value omitted from the synthetic page"
     )
-    assert "qwen-image" in result["diffs"]["doc-drift"]
-    assert "flux-1-quick" in result["diffs"]["coverage-gap"], (
-        "documented models absent from IMAGE_MODEL_VALUES (probe-grounded)"
+    assert result["diffs"]["coverage-gap"] == _SYNTHETIC_COVERAGE_GAP, (
+        "exact planted delta: the fabricated model documented-but-not-enum"
     )
-    assert result["diffs"]["doc-drift"] == sorted(result["diffs"]["doc-drift"])
-    assert result["diffs"]["coverage-gap"] == sorted(result["diffs"]["coverage-gap"])
+
+
+def test_classify_enum_parity_confirms_on_recorded_real_page() -> None:
+    """Post-refresh doc-parity: against the RECORDED real page the image-model
+    item CONFIRMS (the strict-parity pin lives in
+    tests/test_gamma_image_model_enum_parity.py; this is the driver-path twin)."""
+    page = _page_for(IMAGE_MODELS_URL)
+    result = audit.classify_item(_image_model_item(), page)
+    assert result["terminal_state"] == "confirmed", result.get("reason")
+    assert result["drift_kinds"] == []
+
+
+def test_recorded_real_image_models_fixture_structure_parses() -> None:
+    """D-4 structure-only guard for the captured-real fixture: the manifest
+    item's declared anchor/until still scope EXACTLY ONCE and the extraction
+    yields a non-empty token collection. NO specific model names — the
+    captured page's content stays free to drift; parity is pinned elsewhere."""
+    item = _real_manifest_item("enum-parity-image-model")
+    text = (FIXTURE_DIR / _FIXTURE_BY_URL[IMAGE_MODELS_URL]).read_text(
+        encoding="utf-8"
+    )
+    status, scope = audit.extract_scope(text, item["extraction"])
+    assert status == "ok" and scope is not None
+    assert audit.collect_tokens(scope, item["extraction"]), (
+        "extraction must yield a non-empty documented-model collection"
+    )
+
+
+def test_synthetic_image_model_item_extraction_matches_real_manifest() -> None:
+    """Edge-lane pin (carried finding, 2026-07-02): the local synthetic builder
+    `_image_model_item` hardcodes extraction rules that mirror the REAL
+    manifest item. Pin them EQUAL — every field the driver consumes
+    (anchor/until/collect and anything else declared) — so the synthetic
+    RED-path can never silently diverge from the production config."""
+    real = _real_manifest_item("enum-parity-image-model")
+    assert _image_model_item()["extraction"] == real["extraction"], (
+        "the synthetic RED-path item's extraction config no longer represents "
+        "the production manifest config (enum-parity-image-model in "
+        "gamma-doc-audit-manifest.yaml) — the two must move together"
+    )
 
 
 def test_classify_matching_enum_is_confirmed() -> None:
@@ -682,7 +746,9 @@ def test_classifier_totality_on_degenerate_pages() -> None:
 
 
 def test_drift_always_writes_and_carries_wording_triple(tmp_path: Path) -> None:
-    art = _run(tmp_path, [_image_model_item()])
+    art = _run(
+        tmp_path, [_image_model_item()], fixture_by_url=_SYNTHETIC_IMAGE_MODELS
+    )
     rows = _ledger_rows(art["ledger"])
     assert rows, "drift-detected must ALWAYS write (S-1)"
     for obs in rows:
@@ -790,7 +856,7 @@ def test_probe_and_findings_only_never_write(tmp_path: Path) -> None:
 def test_wording_triple_gate_rejects_missing_consequence(tmp_path: Path) -> None:
     item = _image_model_item()
     del item["consequence"]
-    art = _run(tmp_path, [item])
+    art = _run(tmp_path, [item], fixture_by_url=_SYNTHETIC_IMAGE_MODELS)
     assert _ledger_rows(art["ledger"]) == [], (
         "D-2 filing gate: candidates failing the wording triple are rejected, "
         "not filed"
@@ -841,14 +907,18 @@ def test_unchanged_docs_rerun_is_ledger_noop(tmp_path: Path) -> None:
     """AC#5/A-5 + AC#11 hermetic twin: identical content -> 0 new lines,
     byte-identical ledger."""
     _seed_standing(tmp_path)
-    art1 = _run(tmp_path, [_image_model_item(), _burst_429_item()])
+    art1 = _run(
+        tmp_path,
+        [_image_model_item(), _burst_429_item()],
+        fixture_by_url=_SYNTHETIC_IMAGE_MODELS,
+    )
     bytes_after_first = art1["ledger"].read_bytes()
     assert bytes_after_first, "first run must have written"
 
     manifest = art1["manifest"]
     with responses.RequestsMock(assert_all_requests_are_fired=False) as rsps:
         _serve_preflight(rsps)
-        _serve(rsps, IMAGE_MODELS_URL)
+        _serve(rsps, IMAGE_MODELS_URL, fixture=SYNTHETIC_DRIFT_FIXTURE)
         _serve(rsps, ASYNC_URL)
         exit2 = audit.run_audit(
             manifest_path=manifest,
@@ -867,11 +937,13 @@ def test_unchanged_docs_rerun_is_ledger_noop(tmp_path: Path) -> None:
 def test_shared_page_churn_outside_anchor_is_ledger_noop(tmp_path: Path) -> None:
     """P10 RED probe: the digest is keyed to the item's ANCHOR-scoped text —
     churn elsewhere on a shared page must NOT re-file the item."""
-    art1 = _run(tmp_path, [_image_model_item()])
+    art1 = _run(
+        tmp_path, [_image_model_item()], fixture_by_url=_SYNTHETIC_IMAGE_MODELS
+    )
     bytes_after_first = art1["ledger"].read_bytes()
     assert bytes_after_first, "first run must have written"
 
-    churned = (FIXTURE_DIR / "image_model_accepted_values.md").read_bytes() + (
+    churned = (FIXTURE_DIR / SYNTHETIC_DRIFT_FIXTURE).read_bytes() + (
         b"\n\nUnrelated footer churn appended OUTSIDE the anchored section.\n"
     )
     with responses.RequestsMock(assert_all_requests_are_fired=False) as rsps:
@@ -895,7 +967,9 @@ def test_shared_page_churn_outside_anchor_is_ledger_noop(tmp_path: Path) -> None
 def test_observation_field_discipline(tmp_path: Path) -> None:
     """D-3: real timestamps, evidence-dir birthing_run_ref, id shape (P10:
     ids carry an 8-hex digest suffix so same-day doc changes mint distinct ids)."""
-    art = _run(tmp_path, [_image_model_item()])
+    art = _run(
+        tmp_path, [_image_model_item()], fixture_by_url=_SYNTHETIC_IMAGE_MODELS
+    )
     for obs in _ledger_rows(art["ledger"]):
         assert re.fullmatch(
             r"obs-gamma-[a-z0-9-]+-\d{4}-\d{2}-\d{2}-[0-9a-f]{8}",
@@ -925,7 +999,13 @@ def test_exit_zero_when_all_confirmed(tmp_path: Path) -> None:
 
 
 def test_exit_ten_on_drift(tmp_path: Path) -> None:
-    art = _run(tmp_path, [_text_mode_item(), _image_model_item()])
+    """The driver DETECTS drift post-refresh: the synthetic fixture's planted
+    deltas drive the end-to-end run to EXIT_DRIFT (D-4 non-vacuity)."""
+    art = _run(
+        tmp_path,
+        [_text_mode_item(), _image_model_item()],
+        fixture_by_url=_SYNTHETIC_IMAGE_MODELS,
+    )
     assert art["exit"] == audit.EXIT_DRIFT == 10
 
 
@@ -985,7 +1065,11 @@ def test_void_run_never_writes_ledger_or_stamps(tmp_path: Path) -> None:
         extraction={"anchor": "### Best practices"},
         expected_documented="Use 5-second polling intervals",
     )
-    art = _run(tmp_path, [broken_probe, _image_model_item()])
+    art = _run(
+        tmp_path,
+        [broken_probe, _image_model_item()],
+        fixture_by_url=_SYNTHETIC_IMAGE_MODELS,
+    )
     assert art["exit"] == audit.EXIT_VOID
     assert _ledger_rows(art["ledger"]) == [], (
         "a VOID run wrote ledger rows (P1: integrity/VOID write-gate)"
@@ -1093,7 +1177,9 @@ def test_write_phase_exception_lands_report_and_void(
         raise RuntimeError("disk gone mid-write")
 
     monkeypatch.setattr(audit, "append_observation", _boom)
-    art = _run(tmp_path, [_image_model_item()])
+    art = _run(
+        tmp_path, [_image_model_item()], fixture_by_url=_SYNTHETIC_IMAGE_MODELS
+    )
     assert art["exit"] == audit.EXIT_VOID
     assert art["report"] is not None
     assert "disk gone mid-write" in str(
@@ -1139,7 +1225,12 @@ def test_default_ledger_path_is_the_real_ssot() -> None:
 
 
 def test_dry_run_reports_without_writing(tmp_path: Path) -> None:
-    art = _run(tmp_path, [_image_model_item()], dry_run=True)
+    art = _run(
+        tmp_path,
+        [_image_model_item()],
+        dry_run=True,
+        fixture_by_url=_SYNTHETIC_IMAGE_MODELS,
+    )
     assert art["exit"] == audit.EXIT_DRIFT, "classification/report semantics unchanged"
     assert not art["ledger"].exists() or art["ledger"].read_bytes() == b""
     assert art["report"] is not None and art["report"]["dry_run"] is True
@@ -1260,7 +1351,11 @@ def test_relative_evidence_ref_fails_loud_outside_repo() -> None:
 
 def test_lock_immunity_candidate_only_and_rule_invisibility(tmp_path: Path) -> None:
     lock_before = LOCK_PATH.read_bytes()
-    art = _run(tmp_path, [_image_model_item(), _burst_429_item()])
+    art = _run(
+        tmp_path,
+        [_image_model_item(), _burst_429_item()],
+        fixture_by_url=_SYNTHETIC_IMAGE_MODELS,
+    )
     assert LOCK_PATH.read_bytes() == lock_before, (
         "gamma-learned-rules.lock stays byte-identical through Leg-E (D-4)"
     )

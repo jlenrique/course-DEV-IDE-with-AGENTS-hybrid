@@ -52,17 +52,23 @@ IMAGE_SOURCE_VALUES = frozenset(
         "webAllImages",
     }
 )
+# Doc-parity: https://developers.gamma.app/reference/image-model-accepted-values.md
+# Last reconciled: 2026-07-02 (strict doc-parity, D-1).
+# Refresh via: scripts/utilities/audit_gamma_docs.py (drift files to the learned store).
 IMAGE_MODEL_VALUES = frozenset(
     {
+        "flux-1-quick",
         "flux-2-klein",
         "flux-kontext-fast",
         "imagen-3-flash",
+        "gpt-image-1-mini-low",
         "luma-photon-flash-1",
-        "qwen-image-fast",
-        "qwen-image",
+        "gpt-image-2-mini",
+        "flux-1-pro",
+        "imagen-3-pro",
         "flux-2-pro",
+        "gpt-image-1-mini-medium",
         "ideogram-v3-turbo",
-        "imagen-4-fast",
         "luma-photon-1",
         "recraft-v4",
         "leonardo-phoenix",
@@ -72,19 +78,24 @@ IMAGE_MODEL_VALUES = frozenset(
         "ideogram-v3",
         "imagen-4-pro",
         "recraft-v3",
-        "gemini-3-pro-image",
         "gemini-2.5-flash-image",
+        "gpt-image-1-mini-high",
         "gpt-image-1-medium",
+        "gpt-image-2",
+        "flux-1-ultra",
+        "imagen-4-ultra",
         "dall-e-3",
         "gemini-3.1-flash-image-mini",
+        "flux-kontext-max",
         "recraft-v3-svg",
         "recraft-v4-svg",
         "ideogram-v3-quality",
         "gemini-3.1-flash-image",
-        "gemini-3-pro-image-hd",
+        "gemini-3-pro-image",
         "gemini-3.1-flash-image-hd",
-        "imagen-4-ultra",
+        "gpt-image-2-hd",
         "gpt-image-1-high",
+        "gemini-3-pro-image-hd",
         "recraft-v4-pro",
     }
 )

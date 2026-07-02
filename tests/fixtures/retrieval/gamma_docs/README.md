@@ -24,6 +24,12 @@ captures the two coincide because the pages were served LF/NFC-clean.
 | `async_patterns_and_polling.md` | https://developers.gamma.app/guides/async-patterns-and-polling.md | 2026-07-02T03:19:16Z | `sha256:dde0723a426ab60bf7d456b10ba2dcff675a8ab65b420f392d3604996230971c` | whole-page raw markdown (`.md` suffix endpoint) |
 | `list_themes.md` | https://developers.gamma.app/workspace/list-themes.md | 2026-07-02T03:19:18Z | `sha256:ffe45653d496ca4ab10337bcc6301b028d3ab52e5c8618d09747646503f6a5fa` | whole-page raw markdown (`.md` suffix endpoint) |
 
+## Synthetic fixtures (FABRICATED — never refresh from live)
+
+| File | provenance |
+|---|---|
+| `synthetic_drift_image_model_accepted_values.md` | **FABRICATED** (D-4, enum-refresh party record 2026-07-02). NOT a recorded real page — deliberately planted deltas vs `IMAGE_MODEL_VALUES` in BOTH directions (`fake-model-alpha` documented-but-not-enum -> coverage-gap; real `recraft-v4-pro` omitted -> doc-drift). Exempt from the recorded-page table + `_provenance.json` BY DESIGN; the `synthetic_drift_` filename prefix marks it out of any fixtures-from-live refresh scope. If the enum changes, regenerate to (enum − {recraft-v4-pro}) + {fake-model-alpha}. |
+
 ## Terminal-state reachability (AC#7)
 
 All three terminal states are reachable from these fixtures in the hermetic
@@ -33,9 +39,11 @@ battery (`tests/test_audit_gamma_docs_driver.py`):
   `generate_api_parameters_explained.md` (docs list exactly
   `generate`/`condense`/`preserve`).
 - **drift-detected** — `enum-parity-image-model` against
-  `image_model_accepted_values.md` (real bidirectional drift vs
-  `IMAGE_MODEL_VALUES`); plus the labeled `probe` item's known-absent anchor
-  (`kind: doc-restructure`).
+  `synthetic_drift_image_model_accepted_values.md` (FABRICATED planted deltas
+  both directions vs `IMAGE_MODEL_VALUES`; since the 2026-07-02 enum-refresh
+  reconciliation the RECORDED page confirms — D-4 keeps the RED path synthetic,
+  decoupled from live-world state); plus the labeled `probe` item's
+  known-absent anchor (`kind: doc-restructure`).
 - **indeterminate** — tests serve a fixture URL with a transport failure /
   non-200 status via `responses` (the fixture body is real; the failure is the
   simulated condition, per Winston W-5 transport-failure classification).

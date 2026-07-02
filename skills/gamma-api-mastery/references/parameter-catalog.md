@@ -94,20 +94,37 @@ Folder IDs for organizing output in Gamma workspace.
 - **Medical ed guidance**: Use `noImages` for text-focused faithful reproduction. Use `pexels` for professional imagery. Never use `giphy` for medical education.
 
 #### `imageOptions.model` (string, optional)
-AI image model when source is `aiGenerated`. Full current list (as of 2026-03-27 API refresh):
+AI image model when source is `aiGenerated`. Full current list (as of 2026-03-27 API refresh; reconciled to strict doc-parity 2026-07-02 — removed qwen-image-fast / qwen-image / imagen-4-fast, no longer documented; refresh via `scripts/utilities/audit_gamma_docs.py`):
 
 | Tier | Models |
 |------|--------|
-| **Standard** | `flux-2-klein`, `flux-kontext-fast`, `imagen-3-flash`, `luma-photon-flash-1`, `qwen-image-fast`, `qwen-image`, `flux-2-pro`, `ideogram-v3-turbo`, `imagen-4-fast`, `luma-photon-1`, `recraft-v4`, `leonardo-phoenix` |
+| **Standard** | `flux-2-klein`, `flux-kontext-fast`, `imagen-3-flash`, `luma-photon-flash-1`, `flux-2-pro`, `ideogram-v3-turbo`, `luma-photon-1`, `recraft-v4`, `leonardo-phoenix` |
 | **Advanced** | `flux-2-flex`, `flux-2-max`, `flux-kontext-pro`, `ideogram-v3`, `imagen-4-pro`, `recraft-v3`, `gemini-3-pro-image`, `gemini-2.5-flash-image`, `gpt-image-1-medium`, `dall-e-3` |
 | **Premium** | `gemini-3.1-flash-image-mini`, `recraft-v3-svg`, `recraft-v4-svg`, `ideogram-v3-quality`, `gemini-3.1-flash-image`, `gemini-3-pro-image-hd`, `gemini-3.1-flash-image-hd` |
 | **Ultra** | `imagen-4-ultra`, `gpt-image-1-high`, `recraft-v4-pro` |
+| **Unclassified — never rendered, tier TBD** | added at the 2026-07-02 doc-parity reconciliation; per-model provenance table below |
+
+**Unclassified — never rendered, tier TBD** (documented accepted values added 2026-07-02; NO production render has exercised any of these yet — tier placement above is deliberately deferred until a real render. The "Documented tier / Credits" columns cite Gamma's own docs verbatim from <https://developers.gamma.app/reference/image-model-accepted-values.md>, fetched 2026-07-02T05:43:58Z; they are Gamma's claims, not our vetting. The machine-readable provenance marking clears ONLY on a real production render — another doc read does not clear it. Phase-2's first styleguide binding one of these models is the designated live availability witness.):
+
+| Model | Documented tier (Gamma docs) | Documented Credits/Image | Provenance |
+|-------|------------------------------|--------------------------|------------|
+| `flux-1-quick` | Standard models | 2 | `provenance: documented-tier, unverified-in-production` |
+| `gpt-image-1-mini-low` | Standard models | 2 | `provenance: documented-tier, unverified-in-production` |
+| `gpt-image-2-mini` | Standard models | 5 | `provenance: documented-tier, unverified-in-production` |
+| `flux-1-pro` | Standard models | 8 | `provenance: documented-tier, unverified-in-production` |
+| `imagen-3-pro` | Standard models | 8 | `provenance: documented-tier, unverified-in-production` |
+| `gpt-image-1-mini-medium` | Standard models | 8 | `provenance: documented-tier, unverified-in-production` |
+| `gpt-image-1-mini-high` | Advanced models | 20 | `provenance: documented-tier, unverified-in-production` |
+| `gpt-image-2` | Advanced models | 20 | `provenance: documented-tier, unverified-in-production` |
+| `flux-1-ultra` | Advanced models | 30 | `provenance: documented-tier, unverified-in-production` |
+| `flux-kontext-max` | Premium models | 40 | `provenance: documented-tier, unverified-in-production` |
+| `gpt-image-2-hd` | Ultra models | 115 | `provenance: documented-tier, unverified-in-production` |
 
 **Medical ed guidance by use case:**
 - **Style-reference matching (Approach B)**: `flux-kontext-pro` — designed for style-reference controlled generation; best for "make it look like this exemplar"
 - **Text accuracy in images**: `ideogram-v3` / `ideogram-v3-quality` — specifically strong at rendering readable text; use for text-bearing concept slides
 - **Illustration/lineart**: `recraft-v3`, `recraft-v4`, `gemini-3.1-flash-image-mini` (Nano Banana 2 Mini) — proven for editorial medical illustration style
-- **Photorealistic**: `flux-2-pro`, `luma-photon-1`, `imagen-4-fast`
+- **Photorealistic**: `flux-2-pro`, `luma-photon-1`
 - **High quality / production**: `gpt-image-1-high`, `recraft-v4-pro`, `imagen-4-ultra`
 - **Fast/cheap iteration**: `flux-2-klein`, `flux-kontext-fast`, `ideogram-v3-turbo`
 
