@@ -1,0 +1,730 @@
+"""Pre-run HTML style-picker at CD-entry (Leg-D, Fork A — green-light 6/6 2026-07-02).
+
+The operator-facing face on the directive's EXISTING binding surface: a local
+card-grid page rendered from the CD-owned styleguide SSOT; the pick is captured
+by an ephemeral-port localhost ``http.server`` (one POST, server exits) and
+written into the run directive's ``gamma_settings[]`` (existing A/B semantics
+VERBATIM, J-3) plus a ``styleguide_picker_provenance`` audit block — the run's
+own input artifact carries the audit trail (Winston). Zero new runtime seams:
+the consumers are the REAL ``_gamma_settings_from_directive`` /
+``_min_cluster_floor_from_directive`` reads that gary + the Leg-C floor already
+exercise in production.
+
+Boundary guardrails (binding amendments):
+
+- Stdlib-only (+ pyyaml, a shipped dep). Reads the SSOT yaml DIRECTLY — display
+  + selection only; NO ``app.specialists.gary`` import (gary keeps resolution
+  semantics; mirrors the ``production_runner`` direct-read precedent).
+- D-1/J-1: ``last_used`` is derived from the append-only sidecar
+  ``state/config/gamma-styleguide-picks.jsonl`` joined at render time; the
+  SSOT's ``presentation.last_used`` stays null FOREVER, and no CD/gary module
+  ever imports this file (the Leg-B2 two-store contract).
+- D-2: thumbnails are curated provenance — real evidence PNGs copied into
+  ``state/config/gamma-styleguide-thumbnails/`` and referenced via
+  ``presentation.thumbnail_ref`` under the validator write-gate; a dangling ref
+  FAILS loud (AC-6) and a null ref renders "no live render" (S-3).
+- D-3: ``presentation.visibility: probe`` guides are hidden by default;
+  ``include_probes`` opts in and renders the S-1 warning chip.
+- A-1: unknown styleguide name / malformed sidecar line -> ``PickerError``,
+  never a silent skip.
+"""
+
+from __future__ import annotations
+
+import argparse
+import hashlib
+import json
+import tempfile
+import webbrowser
+from collections.abc import Callable
+from datetime import UTC, datetime
+from html import escape
+from http.server import BaseHTTPRequestHandler, HTTPServer
+from pathlib import Path
+from typing import Any
+from urllib.parse import parse_qs, urlparse
+
+import yaml
+
+PICKER_VERSION = "1.0"
+REPO_ROOT = Path(__file__).resolve().parents[3]
+GAMMA_STYLE_GUIDES_SSOT_PATH = REPO_ROOT / "state" / "config" / "gamma-style-guides.yaml"
+GAMMA_STYLEGUIDE_PICKS_PATH = REPO_ROOT / "state" / "config" / "gamma-styleguide-picks.jsonl"
+
+_VARIANT_IDS = ("A", "B")
+_NARRATIVE_KEYS = ("summary", "feels_like", "use_when", "avoid_when")
+
+
+class PickerError(RuntimeError):
+    """Fail-loud picker error (A-1): unknown guide, malformed store, bad input."""
+
+
+# ------------------------------------------------------------------ roster (AC-1)
+def _read_pick_events(events_path: Path) -> list[dict[str, Any]]:
+    """Read the append-only pick-event ledger. A malformed line is a LOUD error."""
+    if not events_path.exists():
+        return []
+    events: list[dict[str, Any]] = []
+    for lineno, line in enumerate(
+        events_path.read_text(encoding="utf-8").splitlines(), start=1
+    ):
+        stripped = line.strip()
+        if not stripped:
+            continue
+        try:
+            event = json.loads(stripped)
+        except json.JSONDecodeError as exc:
+            raise PickerError(
+                f"malformed pick-event sidecar line {lineno} in {events_path}: {exc}"
+            ) from exc
+        if not isinstance(event, dict):
+            raise PickerError(
+                f"malformed pick-event sidecar line {lineno} in {events_path}: "
+                f"expected an object, got {type(event).__name__}"
+            )
+        events.append(event)
+    return events
+
+
+def _last_used_by_guide(events_path: Path) -> dict[str, str]:
+    latest: dict[str, str] = {}
+    for event in _read_pick_events(events_path):
+        name = str(event.get("guide_name") or "").strip()
+        picked_at = str(event.get("picked_at") or "").strip()
+        if not name or not picked_at:
+            continue
+        if name not in latest or picked_at > latest[name]:
+            latest[name] = picked_at
+    return latest
+
+
+def _load_ssot_guides(ssot_path: Path) -> dict[str, Any]:
+    if not ssot_path.is_file():
+        raise PickerError(f"styleguide SSOT not found at {ssot_path}")
+    try:
+        payload = yaml.safe_load(ssot_path.read_text(encoding="utf-8"))
+    except yaml.YAMLError as exc:
+        raise PickerError(f"failed to parse styleguide SSOT {ssot_path}: {exc}") from exc
+    guides = payload.get("style_guides") if isinstance(payload, dict) else None
+    if not isinstance(guides, dict) or not guides:
+        raise PickerError(f"no style_guides mapping in {ssot_path}")
+    return guides
+
+
+def load_picker_roster(
+    *,
+    include_probes: bool = False,
+    ssot_path: str | Path | None = None,
+    events_path: str | Path | None = None,
+) -> list[dict[str, Any]]:
+    """Load the picker roster from the REAL SSOT + sidecar-joined ``last_used``.
+
+    Probe-marked guides (``presentation.visibility: probe``, D-3) are excluded
+    unless ``include_probes`` — scaffolding must not masquerade as an
+    intentional style. ``last_used`` is joined from the append-only sidecar at
+    render time (D-1); the SSOT field stays null forever.
+    """
+    ssot = Path(ssot_path) if ssot_path is not None else GAMMA_STYLE_GUIDES_SSOT_PATH
+    events = Path(events_path) if events_path is not None else GAMMA_STYLEGUIDE_PICKS_PATH
+    guides = _load_ssot_guides(ssot)
+    last_used = _last_used_by_guide(events)
+    roster: list[dict[str, Any]] = []
+    for name in sorted(guides):
+        record = guides[name]
+        if not isinstance(record, dict):
+            raise PickerError(f"styleguide record {name!r} must be a mapping")
+        presentation = record.get("presentation") or {}
+        probe = str(presentation.get("visibility") or "").strip().lower() == "probe"
+        if probe and not include_probes:
+            continue
+        narrative = presentation.get("narrative") or {}
+        roster.append(
+            {
+                "name": name,
+                "display_name": str(presentation.get("display_name") or name).strip(),
+                "distinguishing": str(presentation.get("distinguishing") or "").strip(),
+                "narrative": {
+                    key: str(narrative.get(key) or "").strip() for key in _NARRATIVE_KEYS
+                },
+                "production_mode": str(record.get("production_mode") or "").strip().lower(),
+                "probe": probe,
+                "thumbnail_ref": presentation.get("thumbnail_ref"),
+                "example_url": presentation.get("example_url"),
+                "last_used": last_used.get(name),
+            }
+        )
+    return roster
+
+
+# ------------------------------------------------------------- HTML render (Sally)
+_PAGE_CSS = """
+body { font-family: system-ui, sans-serif; margin: 0; background: #f5f6f8; color: #1c2733; }
+header { position: sticky; top: 0; background: #fff; border-bottom: 2px solid #d6dce3;
+  padding: 12px 20px; z-index: 5; }
+h1 { margin: 0 0 8px; font-size: 1.2rem; }
+.slots { display: flex; gap: 14px; align-items: center; flex-wrap: wrap; }
+.slot { border: 2px solid #b9c3cd; border-radius: 8px; padding: 6px 12px; background: #eef2f5;
+  display: flex; gap: 8px; align-items: center; min-width: 260px; }
+.slot.filled { border-color: #2b7a3d; background: #e8f5ec; }
+.slot.changed { animation: flash 0.9s ease-out; }
+@keyframes flash { 0% { background: #fff3bf; } 100% { background: inherit; } }
+.slot-label { font-weight: 700; }
+.slot-value { font-family: monospace; }
+.slot button { font-size: 0.75rem; cursor: pointer; }
+#confirm { font-size: 1rem; padding: 8px 22px; margin-left: 10px; cursor: pointer; }
+#confirm:disabled { cursor: not-allowed; opacity: 0.5; }
+.receipt { margin-top: 10px; border: 2px solid #2b7a3d; background: #e8f5ec; color: #1d5228;
+  border-radius: 8px; padding: 10px 14px; font-family: monospace; white-space: pre-wrap; }
+main.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 18px; padding: 20px; }
+.card { background: #fff; border: 1px solid #d6dce3; border-radius: 10px; padding: 12px;
+  cursor: pointer; position: relative; }
+.card:hover { border-color: #4a90d9; }
+.card.armed { outline: 3px solid #d9822b; }
+.card img.thumb { width: 100%; height: 190px; object-fit: cover; border-radius: 6px;
+  background: #eef2f5; display: block; }
+.thumb.placeholder { width: 100%; height: 190px; border-radius: 6px; background:
+  repeating-linear-gradient(45deg, #eef2f5, #eef2f5 12px, #e2e8ee 12px, #e2e8ee 24px);
+  display: flex; align-items: center; justify-content: center; color: #66727f;
+  font-weight: 600; }
+.card h2 { font-size: 1.02rem; margin: 10px 0 4px; }
+.distinguishing { font-weight: 600; font-size: 0.9rem; margin: 4px 0 8px; }
+.chip { font-size: 0.72rem; border-radius: 10px; padding: 2px 8px; display: inline-block; }
+.chip-last-used { position: absolute; top: 16px; right: 16px; background: rgba(28,39,51,0.65);
+  color: #eef2f5; }
+.chip-probe { background: #b3541e; color: #fff; font-weight: 700; margin-bottom: 6px; }
+details { margin-top: 6px; font-size: 0.85rem; }
+details summary { cursor: pointer; color: #4a6076; }
+"""
+
+_PAGE_JS = """
+const slots = { A: null, B: null };
+const slotEls = { A: document.getElementById('slot-A'), B: document.getElementById('slot-B') };
+const fields = { A: document.getElementById('field-slot-A'),
+                 B: document.getElementById('field-slot-B') };
+const confirmBtn = document.getElementById('confirm');
+function flash(v) {  /* S-2: highlight-on-change, never a silent reorder */
+  slotEls[v].classList.remove('changed'); void slotEls[v].offsetWidth;
+  slotEls[v].classList.add('changed');
+}
+function refresh() {
+  for (const v of ['A', 'B']) {
+    slotEls[v].querySelector('.slot-value').textContent = slots[v] || '(empty)';
+    slotEls[v].classList.toggle('filled', !!slots[v]);
+    fields[v].value = slots[v] || '';
+  }
+  confirmBtn.disabled = !(slots.A || slots.B);
+}
+for (const card of document.querySelectorAll('.card')) {
+  card.addEventListener('click', (ev) => {
+    if (ev.target.closest('details') || ev.target.closest('a')) return;
+    const guide = card.dataset.guide;
+    if (card.dataset.probe === '1' && !card.classList.contains('armed')) {
+      card.classList.add('armed');  /* S-1: probes need an explicit second click */
+      return;
+    }
+    if (!slots.A) { slots.A = guide; flash('A'); }
+    else if (!slots.B) { slots.B = guide; flash('B'); }
+    else { return; }  /* both slots full: clear or swap first */
+    refresh();
+  });
+}
+for (const btn of document.querySelectorAll('.slot-clear')) {
+  btn.addEventListener('click', () => {
+    slots[btn.dataset.variant] = null; flash(btn.dataset.variant); refresh();
+  });
+}
+for (const btn of document.querySelectorAll('.slot-swap')) {
+  btn.addEventListener('click', () => {
+    [slots.A, slots.B] = [slots.B, slots.A]; flash('A'); flash('B'); refresh();
+  });
+}
+document.getElementById('pick-form').addEventListener('submit', (ev) => {
+  ev.preventDefault();
+  const form = ev.target;
+  fetch(form.action, { method: 'POST', body: new URLSearchParams(new FormData(form)) })
+    .then((r) => { if (!r.ok) throw new Error('pick rejected: HTTP ' + r.status);
+                   return r.json(); })
+    .then((receipt) => {
+      const panel = document.getElementById('receipt');
+      panel.hidden = false;
+      panel.textContent = 'PICK RECORDED\\n'
+        + 'directive: ' + receipt.directive_path + '\\n'
+        + 'picks: ' + JSON.stringify(receipt.picks) + '\\n'
+        + 'picked_at: ' + receipt.picked_at;
+      confirmBtn.replaceWith(panel);  /* the receipt panel replaces the button */
+    })
+    .catch((err) => { alert(err.message); });
+});
+refresh();
+"""
+
+
+def _render_card(entry: dict[str, Any], *, repo_root: Path) -> list[str]:
+    ref = entry.get("thumbnail_ref")
+    if ref:
+        png = repo_root / str(ref)
+        if not png.is_file():
+            raise PickerError(
+                f"styleguide {entry['name']!r} has a dangling thumbnail_ref {ref!r} "
+                f"(AC-6: every rendered thumbnail must resolve to a real on-disk PNG)"
+            )
+        thumb = (
+            f'<img class="thumb" src="{escape(png.resolve().as_uri())}" '
+            f'alt="{escape(entry["display_name"])} thumbnail">'
+        )
+    else:
+        # S-3: explicit placeholder, never a confidently wrong image.
+        thumb = '<div class="thumb placeholder">no live render</div>'
+    probe = bool(entry.get("probe"))
+    last_used = entry.get("last_used") or "never"
+    narrative = entry.get("narrative") or {}
+    parts = [
+        f'<article class="card" data-guide="{escape(entry["name"])}" '
+        f'data-probe="{1 if probe else 0}">',
+        thumb,
+        f'<span class="chip chip-last-used">last used: {escape(str(last_used))}</span>',
+        f"<h2>{escape(entry['display_name'])}</h2>",
+    ]
+    if probe:
+        parts.append(
+            '<span class="chip chip-probe">PROBE — scaffolding, not a production '
+            "style (click twice to select)</span>"
+        )
+    parts.append(f'<p class="distinguishing">{escape(entry["distinguishing"])}</p>')
+    parts.append("<details><summary>narrative</summary>")
+    for key in _NARRATIVE_KEYS:
+        value = str(narrative.get(key) or "").strip()
+        if value:
+            label = key.replace("_", " ")
+            parts.append(f"<p><strong>{escape(label)}:</strong> {escape(value)}</p>")
+    parts.append("</details>")
+    parts.append("</article>")
+    return parts
+
+
+def render_picker_html(
+    roster: list[dict[str, Any]],
+    *,
+    post_url: str,
+    repo_root: Path | None = None,
+) -> str:
+    """Render the static single-page picker (Sally MVP: cards + slot bar + receipt)."""
+    root = repo_root if repo_root is not None else REPO_ROOT
+    parts = [
+        "<!doctype html>",
+        '<html lang="en">',
+        "<head>",
+        '<meta charset="utf-8">',
+        "<title>Gamma Styleguide Picker</title>",
+        f"<style>{_PAGE_CSS}</style>",
+        "</head>",
+        "<body>",
+        "<header>",
+        "<h1>Gamma Styleguide Picker — pre-run pick (Fork A)</h1>",
+        '<div class="slots">',
+    ]
+    for variant in _VARIANT_IDS:
+        parts.extend(
+            [
+                f'<div class="slot" id="slot-{variant}" data-variant="{variant}">',
+                f'<span class="slot-label">Style {variant}</span>',
+                '<span class="slot-value">(empty)</span>',
+                f'<button type="button" class="slot-swap" data-variant="{variant}">'
+                "swap</button>",
+                f'<button type="button" class="slot-clear" data-variant="{variant}">'
+                "clear</button>",
+                "</div>",
+            ]
+        )
+    parts.extend(
+        [
+            f'<form id="pick-form" method="post" action="{escape(post_url)}">',
+            '<input type="hidden" name="slot_A" id="field-slot-A" value="">',
+            '<input type="hidden" name="slot_B" id="field-slot-B" value="">',
+            '<button type="submit" id="confirm" disabled>Confirm</button>',
+            "</form>",
+            "</div>",
+            '<div id="receipt" class="receipt" hidden></div>',
+            "</header>",
+            '<main class="grid">',
+        ]
+    )
+    for entry in roster:
+        parts.extend(_render_card(entry, repo_root=root))
+    parts.extend(
+        [
+            "</main>",
+            f"<script>{_PAGE_JS}</script>",
+            "</body>",
+            "</html>",
+            "",
+        ]
+    )
+    return "\n".join(parts)
+
+
+# ------------------------------------------------- pick capture (Amelia, localhost)
+class _PickHandler(BaseHTTPRequestHandler):
+    """One-shot pick endpoint. GET serves the page; a VALID POST ends the server."""
+
+    server: _PickServer  # type: ignore[assignment]
+
+    def do_GET(self) -> None:  # noqa: N802 - stdlib handler naming
+        body = self.server.picker_html.encode("utf-8")
+        self.send_response(200)
+        self.send_header("Content-Type", "text/html; charset=utf-8")
+        self.send_header("Content-Length", str(len(body)))
+        self.end_headers()
+        self.wfile.write(body)
+
+    def do_POST(self) -> None:  # noqa: N802 - stdlib handler naming
+        if urlparse(self.path).path != "/pick":
+            self._respond(404, {"error": f"unknown endpoint {self.path!r}"})
+            return
+        length = int(self.headers.get("Content-Length") or 0)
+        fields = parse_qs(self.rfile.read(length).decode("utf-8"))
+        picks: dict[str, str] = {}
+        for variant in _VARIANT_IDS:
+            values = fields.get(f"slot_{variant}") or []
+            name = values[0].strip() if values else ""
+            if name:
+                picks[variant] = name
+        if not picks:
+            self._respond(400, {"error": "no slot filled; at least Style A or B required"})
+            return
+        unknown = sorted(n for n in picks.values() if n not in self.server.valid_names)
+        if unknown:
+            self._respond(400, {"error": f"unknown styleguide name(s): {unknown}"})
+            return
+        try:
+            receipt = self.server.on_pick(picks)
+        except Exception as exc:  # fail-loud: surface to page AND to capture_pick
+            self.server.pick_error = exc
+            self._respond(500, {"error": str(exc)})
+            return
+        self.server.pick_result = (picks, receipt)
+        self._respond(200, receipt)
+
+    def _respond(self, status: int, payload: dict[str, Any]) -> None:
+        body = json.dumps(payload).encode("utf-8")
+        self.send_response(status)
+        self.send_header("Content-Type", "application/json")
+        self.send_header("Content-Length", str(len(body)))
+        self.end_headers()
+        self.wfile.write(body)
+
+    def log_message(self, format: str, *args: Any) -> None:  # noqa: A002 - stdlib sig
+        pass  # quiet server; the terminal receipt is the operator surface
+
+
+class _PickServer(HTTPServer):
+    """Ephemeral-port server carrying the pick state for the one-shot handler."""
+
+    def __init__(
+        self,
+        valid_names: frozenset[str],
+        on_pick: Callable[[dict[str, str]], dict[str, Any]],
+    ) -> None:
+        super().__init__(("127.0.0.1", 0), _PickHandler)
+        self.valid_names = valid_names
+        self.on_pick = on_pick
+        self.picker_html = ""
+        self.pick_result: tuple[dict[str, str], dict[str, Any]] | None = None
+        self.pick_error: Exception | None = None
+
+
+def _cli_fallback(
+    roster: list[dict[str, Any]],
+    *,
+    on_pick: Callable[[dict[str, str]], dict[str, Any]],
+    input_fn: Callable[[str], str],
+    print_fn: Callable[[str], None],
+) -> tuple[dict[str, str], dict[str, Any]]:
+    """DEGRADED FALLBACK only (browser-won't-open path): numbered CLI pick."""
+    print_fn("Browser could not be opened — CLI fallback (numbered pick).")
+    for index, entry in enumerate(roster, start=1):
+        probe = "  [PROBE — scaffolding]" if entry.get("probe") else ""
+        print_fn(
+            f"  {index}. {entry['display_name']}  ({entry['name']}){probe}\n"
+            f"     {entry['distinguishing']}"
+        )
+    picks: dict[str, str] = {}
+    for variant, required in (("A", True), ("B", False)):
+        prompt = (
+            f"Style {variant} number"
+            f"{' (required)' if required else ' (blank for none)'}: "
+        )
+        while True:
+            raw = input_fn(prompt).strip()
+            if not raw and not required:
+                break
+            if raw.isdigit() and 1 <= int(raw) <= len(roster):
+                picks[variant] = roster[int(raw) - 1]["name"]
+                break
+            print_fn(f"  invalid choice {raw!r}; enter 1-{len(roster)}")
+    receipt = on_pick(picks)
+    print_fn(f"PICK RECORDED: {json.dumps(receipt, sort_keys=True)}")
+    return (picks, receipt)
+
+
+def capture_pick(
+    roster: list[dict[str, Any]],
+    *,
+    on_pick: Callable[[dict[str, str]], dict[str, Any]],
+    html_path: str | Path | None = None,
+    opener: Callable[[str], bool] = webbrowser.open,
+    input_fn: Callable[[str], str] = input,
+    print_fn: Callable[[str], None] = print,
+    timeout: float | None = 600.0,
+    repo_root: Path | None = None,
+) -> tuple[dict[str, str], dict[str, Any]]:
+    """Capture ONE pick: ephemeral-port stdlib http.server, one valid POST, exit.
+
+    The rendered page is written to disk and opened in the operator's browser
+    (``file://``); its form POSTs back to the localhost endpoint. ``on_pick``
+    receives ``{variant_id: guide_name}`` and returns the receipt echoed to the
+    page (green receipt panel) and to the caller. When the browser cannot open,
+    the CLI-numbered fallback runs instead (degraded path).
+    """
+    if not roster:
+        raise PickerError("empty roster: nothing to pick from")
+    valid_names = frozenset(entry["name"] for entry in roster)
+    server = _PickServer(valid_names, on_pick)
+    try:
+        post_url = f"http://127.0.0.1:{server.server_address[1]}/pick"
+        html = render_picker_html(roster, post_url=post_url, repo_root=repo_root)
+        server.picker_html = html
+        if html_path is None:
+            html_path = (
+                Path(tempfile.mkdtemp(prefix="styleguide-picker-")) / "styleguide-picker.html"
+            )
+        page = Path(html_path)
+        page.parent.mkdir(parents=True, exist_ok=True)
+        page.write_text(html, encoding="utf-8", newline="\n")
+        try:
+            opened = bool(opener(page.resolve().as_uri()))
+        except Exception:
+            opened = False
+        if not opened:
+            server.server_close()
+            server = None  # type: ignore[assignment]
+            return _cli_fallback(
+                roster, on_pick=on_pick, input_fn=input_fn, print_fn=print_fn
+            )
+        server.timeout = 0.5
+        deadline = None if timeout is None else datetime.now(UTC).timestamp() + timeout
+        while server.pick_result is None and server.pick_error is None:
+            if deadline is not None and datetime.now(UTC).timestamp() > deadline:
+                raise PickerError(f"no pick received within {timeout}s; giving up")
+            server.handle_request()
+        if server.pick_error is not None:
+            raise server.pick_error
+        assert server.pick_result is not None
+        return server.pick_result
+    finally:
+        if server is not None:
+            server.server_close()
+
+
+# --------------------------------------------- directive write (AC-2/AC-3/AC-7, J-3)
+def write_pick_to_directive(
+    directive_path: str | Path,
+    picks: dict[str, str],
+    *,
+    ssot_path: str | Path | None = None,
+    picked_at: str | None = None,
+) -> dict[str, Any]:
+    """Write/patch ``gamma_settings[]`` + the provenance block into the directive.
+
+    Existing ``gamma_settings`` semantics VERBATIM (J-3): a picked variant's
+    existing entry is patched in place (its other per-variant keys survive —
+    they still override the styleguide base layer downstream); an absent entry
+    is appended as ``{variant_id, styleguide}``; unpicked variants are left
+    untouched. A styleguide name absent from the SSOT is a LOUD error before
+    anything is written (A-1). Returns the provenance block.
+    """
+    ssot = Path(ssot_path) if ssot_path is not None else GAMMA_STYLE_GUIDES_SSOT_PATH
+    if not ssot.is_file():
+        raise PickerError(f"styleguide SSOT not found at {ssot}")
+    ssot_bytes = ssot.read_bytes()
+    guides = _load_ssot_guides(ssot)
+    if not picks:
+        raise PickerError("no picks supplied: at least one variant must name a styleguide")
+    normalized: dict[str, str] = {}
+    for variant, name in picks.items():
+        variant_id = str(variant).strip().upper()
+        if variant_id not in _VARIANT_IDS:
+            raise PickerError(
+                f"pick variant id must be one of {list(_VARIANT_IDS)}; got {variant!r}"
+            )
+        guide_name = str(name).strip()
+        if guide_name not in guides:
+            raise PickerError(
+                f"picked styleguide {guide_name!r} is not in the SSOT {ssot} "
+                f"(known: {sorted(guides)})"
+            )
+        normalized[variant_id] = guide_name
+
+    directive = Path(directive_path)
+    if directive.is_file():
+        loaded = yaml.safe_load(directive.read_text(encoding="utf-8")) or {}
+        if not isinstance(loaded, dict):
+            raise PickerError(f"directive {directive} is not a YAML mapping")
+    else:
+        loaded = {}
+    raw = loaded.get("gamma_settings")
+    settings = (
+        [dict(item) for item in raw if isinstance(item, dict)]
+        if isinstance(raw, list)
+        else []
+    )
+    for variant_id in sorted(normalized):
+        entry = next(
+            (
+                item
+                for item in settings
+                if str(item.get("variant_id") or "").strip().upper() == variant_id
+            ),
+            None,
+        )
+        if entry is None:
+            settings.append({"variant_id": variant_id, "styleguide": normalized[variant_id]})
+        else:
+            entry["styleguide"] = normalized[variant_id]
+    loaded["gamma_settings"] = settings
+
+    stamp = picked_at if picked_at is not None else datetime.now(UTC).isoformat()
+    provenance = {
+        "picked_at": stamp,
+        "picker_version": PICKER_VERSION,
+        "ssot_sha256": hashlib.sha256(ssot_bytes).hexdigest(),
+        "picks": [
+            {"variant_id": variant_id, "styleguide": normalized[variant_id]}
+            for variant_id in sorted(normalized)
+        ],
+        "written_by": "styleguide_picker",
+    }
+    loaded["styleguide_picker_provenance"] = provenance
+    directive.parent.mkdir(parents=True, exist_ok=True)
+    directive.write_text(
+        yaml.safe_dump(loaded, sort_keys=False), encoding="utf-8", newline="\n"
+    )
+    return provenance
+
+
+# ------------------------------------------------- sidecar append (D-1/J-1, AC-4)
+def append_pick_event(
+    picks: dict[str, str],
+    *,
+    directive_path: str | Path,
+    picked_at: str,
+    run_id: str | None = None,
+    events_path: str | Path | None = None,
+) -> list[dict[str, Any]]:
+    """Append one JSONL line per pick to the append-only sidecar (digest-idempotent).
+
+    STANDALONE utility (J-1/D-1): never imported by CD/gary code; mirrors the
+    ``gamma-learned-observations.jsonl`` discipline. The SSOT's
+    ``presentation.last_used`` stays null FOREVER — the picker renders the
+    sidecar-derived value instead. Replaying an identical event is a no-op
+    (the file is never rewritten or shrunk). Returns the events written.
+    """
+    path = Path(events_path) if events_path is not None else GAMMA_STYLEGUIDE_PICKS_PATH
+    existing = {
+        event.get("event_digest")
+        for event in _read_pick_events(path)
+        if event.get("event_digest")
+    }
+    written: list[dict[str, Any]] = []
+    lines: list[str] = []
+    for variant in sorted(picks):
+        event: dict[str, Any] = {
+            "guide_name": str(picks[variant]).strip(),
+            "variant_id": str(variant).strip().upper(),
+            "directive_path": Path(directive_path).as_posix(),
+            "picked_at": picked_at,
+        }
+        if run_id:
+            event["run_id"] = str(run_id)
+        digest = hashlib.sha256(
+            json.dumps(event, sort_keys=True, separators=(",", ":")).encode("utf-8")
+        ).hexdigest()
+        if digest in existing:
+            continue
+        event["event_digest"] = digest
+        existing.add(digest)
+        written.append(event)
+        lines.append(json.dumps(event, sort_keys=True, separators=(",", ":")))
+    if lines:
+        path.parent.mkdir(parents=True, exist_ok=True)
+        with path.open("a", encoding="utf-8", newline="\n") as handle:
+            handle.write("\n".join(lines) + "\n")
+    return written
+
+
+# ------------------------------------------------------------------------- CLI
+def main(argv: list[str] | None = None) -> int:
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--directive", type=Path, required=True, help="run directive yaml")
+    parser.add_argument("--ssot", type=Path, default=None, help="styleguide SSOT override")
+    parser.add_argument(
+        "--include-probes",
+        action="store_true",
+        help="also list probe-marked guides (D-3; warning-chipped, second-click select)",
+    )
+    parser.add_argument(
+        "--no-browser",
+        action="store_true",
+        help="skip the browser and use the CLI-numbered fallback directly",
+    )
+    parser.add_argument("--html-out", type=Path, default=None, help="rendered page path")
+    parser.add_argument("--run-id", default=None, help="run id recorded on pick events")
+    args = parser.parse_args(argv)
+
+    roster = load_picker_roster(include_probes=args.include_probes, ssot_path=args.ssot)
+
+    def _on_pick(picks: dict[str, str]) -> dict[str, Any]:
+        provenance = write_pick_to_directive(args.directive, picks, ssot_path=args.ssot)
+        append_pick_event(
+            picks,
+            directive_path=args.directive,
+            picked_at=provenance["picked_at"],
+            run_id=args.run_id,
+        )
+        return {
+            "directive_path": Path(args.directive).as_posix(),
+            "picks": picks,
+            "picked_at": provenance["picked_at"],
+        }
+
+    opener = (lambda url: False) if args.no_browser else webbrowser.open
+    picks, receipt = capture_pick(
+        roster, on_pick=_on_pick, html_path=args.html_out, opener=opener
+    )
+    # Sally: the launching terminal echoes the same receipt as the page panel.
+    print(
+        "PICK RECORDED\n"
+        f"  directive: {receipt['directive_path']}\n"
+        f"  picks: {json.dumps(picks, sort_keys=True)}\n"
+        f"  picked_at: {receipt['picked_at']}"
+    )
+    return 0
+
+
+__all__ = [
+    "GAMMA_STYLEGUIDE_PICKS_PATH",
+    "GAMMA_STYLE_GUIDES_SSOT_PATH",
+    "PICKER_VERSION",
+    "PickerError",
+    "append_pick_event",
+    "capture_pick",
+    "load_picker_roster",
+    "main",
+    "render_picker_html",
+    "write_pick_to_directive",
+]
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())
