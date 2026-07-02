@@ -27,7 +27,6 @@ import importlib
 import sys
 from pathlib import Path
 
-import pytest
 import yaml
 
 from app.manifest.compiler import SPECIALIST_ALIASES, _canonical_specialist_id
@@ -85,17 +84,6 @@ def test_dispatch_path_resolves_to_irene_pass1_module() -> None:
     assert callable(getattr(module, function_name))
 
 
-@pytest.mark.xfail(
-    strict=True,
-    reason=(
-        "pre-port: app.specialists.irene_pass1.cluster_floor does not exist yet "
-        "(AC#14 lands FIRST as RED; the R3 port commit flips this to a plain test). "
-        "RED evidence: AssertionError: scripted class 'min_cluster_floor': consumer "
-        "module 'app.specialists.irene_pass1.cluster_floor' is not reachable from "
-        "the production dispatch module 'app.specialists.irene_pass1.graph' "
-        "(D-2 dead-consumer)"
-    ),
-)
 def test_floor_consumer_reachable_from_production_dispatch_module() -> None:
     """AC#14 pin + D-2 import-reachability (RED pre-port; xfail flipped at port).
 

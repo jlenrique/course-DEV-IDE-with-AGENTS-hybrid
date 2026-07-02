@@ -10,6 +10,10 @@ lesson plan. Keys the act actually reads:
   at §04A plan creation; the latest irene-pass1 plan at §05/§05B refinement)
 - ``bundle_reference`` — S4 key projection from texas (corpus access for
   the fidelity passes; resolved by app.specialists.source_bundle)
+- ``min_cluster_floor`` — Leg-C R3 scripted floor (RUNNER CONTEXT, threaded by
+  ``_runner_payload_for_specialist``); consumed POST-HOC by
+  ``app.specialists.irene_pass1.cluster_floor`` and STRIPPED from the
+  LLM-visible prompt (D-0)
 """
 
 from __future__ import annotations
@@ -18,6 +22,7 @@ CONSUMED_PAYLOAD_KEYS: frozenset[str] = frozenset(
     {
         "bundle_reference",
         "irene_mode",
+        "min_cluster_floor",
         "mode",
         "pass_phase",
         "run_id",

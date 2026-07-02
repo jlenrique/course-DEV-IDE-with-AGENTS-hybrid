@@ -14,6 +14,10 @@ from app.models.state.operator_verdict import OperatorVerdict
 from app.models.state.run_state import RunState
 from app.specialists.dispatch_errors import SpecialistDispatchError
 from app.specialists.gary.styleguide_library import SCRIPTED_ENUM_CLASSES
+from app.specialists.irene_pass1.cluster_floor import (
+    assert_floor_consulted,
+    consume_min_cluster_floor,
+)
 from app.specialists.source_bundle import SourceBundleError, read_extracted_source
 
 logger = logging.getLogger(__name__)
@@ -196,8 +200,10 @@ def _cluster_emission_instructions() -> str:
         "  \"develop_type\":\"deepen|reframe|exemplify|null\", "
         "// develop-position interstitials only\n"
         "  \"parent_slide_id\":\"<head unit_id>\",   // interstitials only\n"
-        "  \"cluster_interstitial_count\":<int>      // on head (0 for a "
+        "  \"cluster_interstitial_count\":<int>,     // on head (0 for a "
         "singleton/keep-dense unit)\n"
+        "  \"source_refs\":[\"<short verbatim source quote>\", ...] "
+        "// 1-6 anchors per unit\n"
         "}],\"lesson_summary\":\"...\"}.\n\n"
         "## Cluster decision guidance (apply the CD framework)\n"
         "- Chunk by DEFAULT a dense unit (3+ explanatory beats / high "
@@ -212,7 +218,15 @@ def _cluster_emission_instructions() -> str:
         "Emit ONE plan_unit, cluster_role:head, cluster_position:establish, "
         "cluster_interstitial_count:0. keep-dense is an INPUT to the decision, "
         "never a veto applied after.\n"
-        "- Singletons still carry a cluster_id (degenerate size-1 cluster)."
+        "- Singletons still carry a cluster_id (degenerate size-1 cluster).\n"
+        "- SOURCE ANCHORS: every plan_unit carries \"source_refs\" — 1-6 SHORT "
+        "quotes (roughly 3-15 words each) copied VERBATIM, character-for-"
+        "character, from the source corpus, citing the exact passages this "
+        "unit plans. Anchors are citations of planning work already done; "
+        "they never introduce new structure. At a refinement pass (no source "
+        "corpus section above), CARRY each unit's source_refs FORWARD "
+        "UNCHANGED from the incoming plan's plan_units — do not re-derive, "
+        "edit, or drop them."
     )
 
 
@@ -677,6 +691,16 @@ def act(state: RunState, *, handle: Any, model_id: str) -> dict[str, Any]:
     )
     raw = response.content if hasattr(response, "content") else str(response)
     plan = parse_pass1_response(raw if isinstance(raw, str) else str(raw))
+    # Leg-C R3: deterministic post-hoc min_cluster_floor honoring on the FULL
+    # payload (the LLM never saw the floor — D-0 strip above). Runs on EVERY
+    # Pass-1 dispatch (04A creation AND 05/05B refinement): refinement
+    # CONSOLIDATES clusters, so the LATEST pass must honor. The dead-config
+    # guard (D-1/D-3) fails loud if a bound floor ever bypasses this seam.
+    floored_units, floor_receipt = consume_min_cluster_floor(
+        payload, plan["plan_units"], extracted_source=extracted_source
+    )
+    assert_floor_consulted(payload, floor_receipt)
+    plan = {**plan, "plan_units": floored_units}
     run_id = str(payload.get("run_id") or state.run_id)
     runs_root_value = payload.get("runs_root")
     runs_root = Path(str(runs_root_value)) if runs_root_value else None
@@ -714,8 +738,10 @@ __all__ = [
     "PlanUnitRatificationError",
     "act",
     "assemble_pass1_prompt",
+    "assert_floor_consulted",
     "build_learning_events",
     "confirm_plan_units",
+    "consume_min_cluster_floor",
     "decode_envelope_payload",
     "enforce_pass1_mode",
     "normalize_clusters",
