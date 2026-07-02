@@ -71,8 +71,10 @@ def test_gamma_docs_adapter_registers_non_vacuously() -> None:
     Three teeth, none satisfiable by a placeholder row:
       1. a LIVE class is registered under the id (registry, not directory prose);
       2. that class is GammaDocsProvider itself;
-      3. the directory surfaces the registered PROVIDER_INFO (status `stub`
-         pre-live-proof — NOT a `ratified`/`backlog` placeholder shape).
+      3. the directory surfaces the registered PROVIDER_INFO (status `ready`,
+         flipped WITH the AC#12 live proof — evidence
+         `leg-e-gamma-docs-audit-20260702T043139Z` — NOT a `ratified`/`backlog`
+         placeholder shape).
     """
     from retrieval.gamma_docs_provider import GammaDocsProvider
     from retrieval.provider_directory import get_registered_adapter_class
@@ -86,9 +88,10 @@ def test_gamma_docs_adapter_registers_non_vacuously() -> None:
         (p for p in list_providers(shape="retrieval") if p.id == "gamma_docs"), None
     )
     assert entry is not None, "gamma_docs missing from list_providers()"
-    assert entry.status == "stub", (
-        "landed-unproven adapter surfaces as status='stub' (Texas T-4); "
-        "'ready' flips only in the live-proof change-set (AC#12)"
+    assert entry.status == "ready", (
+        "T-4 lifecycle: 'ready' rode the AC#9-12 live-proof change-set "
+        "(evidence/leg-e-gamma-docs-audit-20260702T043139Z, AC#12); a status "
+        "regression here means the directory no longer surfaces the proven adapter"
     )
     assert "doc-audit tooling" in entry.notes, (
         "Winston W-2 registry fence: PROVIDER_INFO.notes must declare the "
