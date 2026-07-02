@@ -1,0 +1,15 @@
+run_id: c2053da5-3d48-4465-828a-b7a7cce86958
+corpus_dir: C:/Users/juanl/Documents/GitHub/course-DEV-IDE-with-AGENTS-hybrid/course-content/courses/tejal-c1m1-p3-opportunity
+gamma_settings:
+- variant_id: A
+  styleguide: leg-c-part3-floor-probe
+sources:
+- ref_id: src-001
+  locator: part3-opportunity-clinician-innovator.md
+  provider: local_file
+  role: primary
+  description: 'C1M1 Part 3 diagnostic threading run.'
+  expected_min_words: 300
+  excluded_reason: null
+composed_at: '2026-07-01T00:00:00Z'
+schema_version: 1

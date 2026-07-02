@@ -1,0 +1,70 @@
+{
+  "trial_id": "08972c36-45f1-4cd1-9b04-7a6f9aacef1e",
+  "arm": "kprime",
+  "floor_n": null,
+  "styleguide": null,
+  "directive_path": "C:\\Users\\juanl\\Documents\\GitHub\\course-DEV-IDE-with-AGENTS-hybrid\\_bmad-output\\implementation-artifacts\\evidence\\leg-c-part3-baseline-20260701T232209Z\\directive-p3-kprime-08972c36-45f1-4cd1-9b04-7a6f9aacef1e.yaml",
+  "gate_sequence": [
+    {
+      "gate": "G1",
+      "next": "paused-at-error"
+    }
+  ],
+  "final_status": "paused-at-error",
+  "final_error_tag": "gamma.export.brief-unmatched",
+  "analysis": {
+    "04A": {
+      "n_plan_units": 15,
+      "n_distinct_cluster_ids": 8,
+      "n_heads": 8,
+      "units_with_source_refs": 15,
+      "interstitial_counts": [
+        0,
+        2,
+        0,
+        2,
+        3,
+        0,
+        0,
+        0
+      ],
+      "mismatch_signal": null
+    },
+    "05": {
+      "n_plan_units": 11,
+      "n_distinct_cluster_ids": 7,
+      "n_heads": 7,
+      "units_with_source_refs": 11,
+      "interstitial_counts": [
+        0,
+        0,
+        0,
+        2,
+        2,
+        0,
+        0
+      ],
+      "mismatch_signal": null
+    },
+    "05B": {
+      "n_plan_units": 11,
+      "n_distinct_cluster_ids": 7,
+      "n_heads": 7,
+      "units_with_source_refs": 11,
+      "interstitial_counts": [
+        0,
+        0,
+        0,
+        2,
+        2,
+        0,
+        0
+      ],
+      "mismatch_signal": null
+    }
+  },
+  "count": 7,
+  "VERDICT": "CAPTURED",
+  "run_dir": "C:\\Users\\juanl\\Documents\\GitHub\\course-DEV-IDE-with-AGENTS-hybrid\\state\\config\\runs\\08972c36-45f1-4cd1-9b04-7a6f9aacef1e",
+  "total_seconds": 477.0
+}

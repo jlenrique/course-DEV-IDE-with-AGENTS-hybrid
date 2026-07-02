@@ -1,0 +1,1598 @@
+{
+  "artifact_path": "C:\\Users\\juanl\\Documents\\GitHub\\course-DEV-IDE-with-AGENTS-hybrid\\runs\\08972c36-45f1-4cd1-9b04-7a6f9aacef1e\\irene-pass1.md",
+  "learning_events": [
+    {
+      "event_type": "scope_decision.set",
+      "gate": "G1A",
+      "payload": {
+        "locked": false,
+        "plan_units": [
+          {
+            "cluster_id": "c-u01",
+            "cluster_interstitial_count": 0,
+            "cluster_position": "establish",
+            "cluster_role": "head",
+            "develop_type": null,
+            "learning_objective": "Recognize that core physician traits directly map to innovation leadership traits, reframing clinicians as already equipped to innovate.",
+            "master_behavioral_intent": "credible",
+            "narrative_arc": "From seeing innovation as foreign to recognizing it as an extension of clinicianship through trait overlap and identity reframing.",
+            "parent_slide_id": null,
+            "rationale": "This is the conceptual opener for Part 3 and establishes the learner's identity bridge into innovation work.",
+            "scope_decision": "in-scope",
+            "source_refs": [
+              "Physicianship = Innovation Leadership",
+              "apply your existing clinical traits",
+              "Empathy, Curiosity, Analytical Prowess",
+              "Comfort with Ambiguity",
+              "You do not need to learn",
+              "simply need to apply your existing clinical traits"
+            ],
+            "title": "Physicianship = Innovation Leadership",
+            "unit_id": "u01"
+          },
+          {
+            "cluster_id": "c-u02",
+            "cluster_interstitial_count": 2,
+            "cluster_position": "establish",
+            "cluster_role": "head",
+            "develop_type": null,
+            "learning_objective": "Understand how the clinical method maps directly onto design thinking so learners can see innovation as a familiar process.",
+            "master_behavioral_intent": "clear-guidance",
+            "narrative_arc": "From perceiving design thinking as business jargon to recognizing it as a familiar clinical workflow through direct step-by-step mapping.",
+            "parent_slide_id": null,
+            "rationale": "This is a core translation mechanism in the source and carries high pedagogical weight because it makes innovation operationally familiar.",
+            "scope_decision": "in-scope",
+            "source_refs": [
+              "The Bridge: Diagnosis = Design Thinking",
+              "The Clinical Method",
+              "Design Thinking",
+              "History \u2192 Physical/Labs \u2192 Diagnosis \u2192 Treatment Plan",
+              "Empathize \u2192 Define \u2192 Ideate \u2192 Prototype/Test",
+              "We are just changing the 'patient'"
+            ],
+            "title": "The Bridge: Diagnosis = Design Thinking",
+            "unit_id": "u02"
+          },
+          {
+            "cluster_id": "c-u02",
+            "cluster_interstitial_count": 0,
+            "cluster_position": "develop",
+            "cluster_role": "interstitial",
+            "develop_type": "deepen",
+            "learning_objective": "Explain the concrete correspondences between history-taking, diagnosis, treatment planning, and the design thinking sequence.",
+            "master_behavioral_intent": "clear-guidance",
+            "narrative_arc": "From perceiving design thinking as business jargon to recognizing it as a familiar clinical workflow through direct step-by-step mapping.",
+            "parent_slide_id": "u02",
+            "rationale": "The source explicitly breaks the workflow into several mapped steps; isolating the mapping reduces cognitive load and supports comprehension.",
+            "scope_decision": "in-scope",
+            "source_refs": [
+              "When you take a patient's history",
+              "performing the first step",
+              "Empathize",
+              "synthesize the physical exam and labs",
+              "Define the problem",
+              "Ideating and Prototyping a solution"
+            ],
+            "title": "Clinical-to-Design Step Mapping",
+            "unit_id": "u03"
+          },
+          {
+            "cluster_id": "c-u02",
+            "cluster_interstitial_count": 0,
+            "cluster_position": "resolve",
+            "cluster_role": "interstitial",
+            "develop_type": null,
+            "learning_objective": "Reframe innovation work as applying existing clinical reasoning to broken workflows and systems rather than only to individual patients.",
+            "master_behavioral_intent": "clear-guidance",
+            "narrative_arc": "From perceiving design thinking as business jargon to recognizing it as a familiar clinical workflow through direct step-by-step mapping.",
+            "parent_slide_id": "u02",
+            "rationale": "This is the payoff of the design-thinking bridge and completes the conceptual transfer from clinic to system innovation.",
+            "scope_decision": "in-scope",
+            "source_refs": [
+              "You run this innovation cycle twenty times a day",
+              "changing the 'patient' from a human being",
+              "to a broken workflow or system"
+            ],
+            "title": "Systems as the New Patient",
+            "unit_id": "u04"
+          },
+          {
+            "cluster_id": "c-u05",
+            "cluster_interstitial_count": 0,
+            "cluster_position": "establish",
+            "cluster_role": "head",
+            "develop_type": null,
+            "learning_objective": "Identify intrapreneurship as a structured, replicable formula centered on balancing vision with organizational realities.",
+            "master_behavioral_intent": "credible",
+            "narrative_arc": "From treating intrapreneurship as vague to understanding it as a structured internal-change formula through guided reading and organizational framing.",
+            "parent_slide_id": null,
+            "rationale": "The source requires this reading block before Slide 3 and uses it to frame stakeholder alignment and internal scaling.",
+            "scope_decision": "in-scope",
+            "source_refs": [
+              "Required Reading",
+              "The Intrapreneurship Formula",
+              "structured, replicable formula",
+              "not just a personality trait",
+              "calculated approach to driving change from within",
+              "internal stakeholder alignment"
+            ],
+            "title": "Required Reading: The Intrapreneurship Formula",
+            "unit_id": "u05"
+          },
+          {
+            "cluster_id": "c-u06",
+            "cluster_interstitial_count": 2,
+            "cluster_position": "establish",
+            "cluster_role": "head",
+            "develop_type": null,
+            "learning_objective": "Differentiate intrapreneurship from entrepreneurship and locate the clinician's primary arena for impact inside existing health systems.",
+            "master_behavioral_intent": "credible",
+            "narrative_arc": "From conflating entrepreneurship with innovation to recognizing intrapreneurship as the clinician's most immediate arena for scale through contrast of where change happens.",
+            "parent_slide_id": null,
+            "rationale": "This comparison is central to the section's opportunity framing and helps learners situate where innovation happens.",
+            "scope_decision": "in-scope",
+            "source_refs": [
+              "Intrapreneurship vs. Entrepreneurship",
+              "We often conflate innovation with Entrepreneurship",
+              "The most immediate impact you can make",
+              "through Intrapreneurship",
+              "within an existing organization",
+              "improve it from the inside out"
+            ],
+            "title": "Intrapreneurship vs. Entrepreneurship",
+            "unit_id": "u06"
+          },
+          {
+            "cluster_id": "c-u06",
+            "cluster_interstitial_count": 0,
+            "cluster_position": "develop",
+            "cluster_role": "interstitial",
+            "develop_type": "deepen",
+            "learning_objective": "Define intrapreneurship as creating and implementing solutions within an existing organization using entrepreneurial principles.",
+            "master_behavioral_intent": "credible",
+            "narrative_arc": "From conflating entrepreneurship with innovation to recognizing intrapreneurship as the clinician's most immediate arena for scale through contrast of where change happens.",
+            "parent_slide_id": "u06",
+            "rationale": "This interstitial isolates the formal definition before introducing the added difficulty of internal constraints.",
+            "scope_decision": "in-scope",
+            "source_refs": [
+              "utilizes entrepreneurial principles",
+              "create, develop, and implement innovative solutions",
+              "within an existing organization",
+              "different type of political savvy",
+              "immense potential for scale"
+            ],
+            "title": "Define the Intrapreneur's Arena",
+            "unit_id": "u07"
+          },
+          {
+            "cluster_id": "c-u06",
+            "cluster_interstitial_count": 0,
+            "cluster_position": "resolve",
+            "cluster_role": "interstitial",
+            "develop_type": null,
+            "learning_objective": "Understand why intrapreneurship is harder than entrepreneurship because change must occur within load-bearing institutional constraints.",
+            "master_behavioral_intent": "credible",
+            "narrative_arc": "From conflating entrepreneurship with innovation to recognizing intrapreneurship as the clinician's most immediate arena for scale through contrast of where change happens.",
+            "parent_slide_id": "u06",
+            "rationale": "The design brief presents a distinct explanatory beat about constraints, politics, and resources that benefits from explicit isolation.",
+            "scope_decision": "in-scope",
+            "source_refs": [
+              "Intrapreneurship is harder than entrepreneurship",
+              "without destroying the existing, load-bearing institutional structures",
+              "Building on a blank canvas",
+              "Legacy IT",
+              "Compliance",
+              "Hospital Politics"
+            ],
+            "title": "The Intrapreneur's Maze",
+            "unit_id": "u08"
+          },
+          {
+            "cluster_id": "c-u09",
+            "cluster_interstitial_count": 3,
+            "cluster_position": "establish",
+            "cluster_role": "head",
+            "develop_type": null,
+            "learning_objective": "Distinguish between an unvetted idea and an actionable opportunity vetted for feasibility, viability, and desirability within a specific organization.",
+            "master_behavioral_intent": "clear-guidance",
+            "narrative_arc": "From casual idea generation to disciplined opportunity engineering through explicit criteria for actionability inside an organization.",
+            "parent_slide_id": null,
+            "rationale": "The source marks this as important and it is a foundational concept for the program's practical orientation.",
+            "scope_decision": "in-scope",
+            "source_refs": [
+              "Idea vs. Opportunity",
+              "An idea is simply a thought",
+              "its value is zero",
+              "rigorously vetted for feasibility, viability, and desirability",
+              "clear path to execution",
+              "stop generating ideas, and start engineering actionable opportunities"
+            ],
+            "title": "Idea vs. Opportunity",
+            "unit_id": "u09"
+          },
+          {
+            "cluster_id": "c-u09",
+            "cluster_interstitial_count": 0,
+            "cluster_position": "tension",
+            "cluster_role": "interstitial",
+            "develop_type": null,
+            "learning_objective": "Explain why solution-first thinking is insufficient until a concept is vetted for execution in organizational context.",
+            "master_behavioral_intent": "clear-guidance",
+            "narrative_arc": "From casual idea generation to disciplined opportunity engineering through explicit criteria for actionability inside an organization.",
+            "parent_slide_id": "u09",
+            "rationale": "This isolates the first half of the distinction and prepares learners to understand opportunity criteria.",
+            "scope_decision": "in-scope",
+            "source_refs": [
+              "An idea is simply a thought or a suggestion",
+              "We should use AI to write notes",
+              "On its own, its value is zero"
+            ],
+            "title": "Why Ideas Have Zero Value on Their Own",
+            "unit_id": "u10"
+          },
+          {
+            "cluster_id": "c-u09",
+            "cluster_interstitial_count": 0,
+            "cluster_position": "develop",
+            "cluster_role": "interstitial",
+            "develop_type": "deepen",
+            "learning_objective": "Describe an opportunity as an idea tested for feasibility, viability, desirability, and path to execution within a specific health system.",
+            "master_behavioral_intent": "clear-guidance",
+            "narrative_arc": "From casual idea generation to disciplined opportunity engineering through explicit criteria for actionability inside an organization.",
+            "parent_slide_id": "u09",
+            "rationale": "This deepens the definition by separating the positive criteria that convert an idea into an opportunity.",
+            "scope_decision": "in-scope",
+            "source_refs": [
+              "Opportunity",
+              "rigorously vetted for feasibility, viability, and desirability",
+              "within your specific organization",
+              "It has a clear path to execution"
+            ],
+            "title": "Opportunity = Vetted for Action",
+            "unit_id": "u11"
+          },
+          {
+            "cluster_id": "c-u09",
+            "cluster_interstitial_count": 0,
+            "cluster_position": "resolve",
+            "cluster_role": "interstitial",
+            "develop_type": null,
+            "learning_objective": "Apply rigorous problem framing to transform a superficial solution idea into a root-cause-based operational opportunity.",
+            "master_behavioral_intent": "clear-guidance",
+            "narrative_arc": "From casual idea generation to disciplined opportunity engineering through explicit criteria for actionability inside an organization.",
+            "parent_slide_id": "u09",
+            "rationale": "The worked example is the clearest application asset in the source and provides the operational model learners will need for later discussion work.",
+            "scope_decision": "in-scope",
+            "source_refs": [
+              "Good vs. Bad problem formulation",
+              "buy iPads for all the nurses",
+              "jumps straight to a solution",
+              "run a root-cause analysis",
+              "Discharge times are delayed by an average of 3 hours",
+              "design a standardized, mobile-friendly discharge workflow"
+            ],
+            "title": "Worked Example: From iPads to a Real Opportunity",
+            "unit_id": "u12"
+          },
+          {
+            "cluster_id": "c-u13",
+            "cluster_interstitial_count": 0,
+            "cluster_position": "establish",
+            "cluster_role": "head",
+            "develop_type": null,
+            "learning_objective": "Understand first-principles thinking as breaking a broken workflow into fundamental truths before rebuilding a better system.",
+            "master_behavioral_intent": "provocative",
+            "narrative_arc": "From patching the status quo to rebuilding from fundamentals through deconstruction of workflows into first principles.",
+            "parent_slide_id": null,
+            "rationale": "This is a discrete innovation method in the source and supports the shift from superficial iteration to genuine redesign.",
+            "scope_decision": "in-scope",
+            "source_refs": [
+              "The Deconstruction (First Principles Thinking)",
+              "Do not just iterate on",
+              "Break the broken system down",
+              "Reasoning by Analogy",
+              "First Principles",
+              "Building a new system from the ground up"
+            ],
+            "title": "The Deconstruction: First Principles Thinking",
+            "unit_id": "u13"
+          },
+          {
+            "cluster_id": "c-u14",
+            "cluster_interstitial_count": 0,
+            "cluster_position": "establish",
+            "cluster_role": "head",
+            "develop_type": null,
+            "learning_objective": "Synthesize the section's three core takeaways: clinicians are already equipped, intrapreneurship is the arena, and opportunities are the goal.",
+            "master_behavioral_intent": "clear-guidance",
+            "narrative_arc": "From discrete concepts to an integrated innovation stance through concise recap of identity, arena, and goal.",
+            "parent_slide_id": null,
+            "rationale": "This is a gestalt recap slide whose value is the simultaneous whole, so it should remain a singleton.",
+            "scope_decision": "in-scope",
+            "source_refs": [
+              "Part 3 Summary Slide",
+              "You are already equipped",
+              "Your Arena",
+              "Your Goal",
+              "Move past generating \"Ideas\"",
+              "defining actionable \"Opportunities\""
+            ],
+            "title": "Part 3 Summary",
+            "unit_id": "u14"
+          },
+          {
+            "cluster_id": "c-u15",
+            "cluster_interstitial_count": 0,
+            "cluster_position": "establish",
+            "cluster_role": "head",
+            "develop_type": null,
+            "learning_objective": "Verify learner recall and understanding of key Part 3 concepts including idea vs opportunity, clinical method to design thinking, and intrapreneurship constraints.",
+            "master_behavioral_intent": "clear-guidance",
+            "narrative_arc": "From exposure to verification through formative questions that test the section's core distinctions and mappings.",
+            "parent_slide_id": null,
+            "rationale": "The source includes a complete knowledge check set that serves as end-of-part formative assessment aligned to the major concepts taught.",
+            "scope_decision": "in-scope",
+            "source_refs": [
+              "Part 3 Knowledge Check",
+              "idea rigorously vetted for feasibility, viability, and desirability",
+              "taking a patient's History",
+              "Balancing your clinical vision",
+              "fall in love with the problem",
+              "the true root cause"
+            ],
+            "title": "Knowledge Check",
+            "unit_id": "u15"
+          }
+        ]
+      },
+      "run_id": "08972c36-45f1-4cd1-9b04-7a6f9aacef1e",
+      "timestamp": "2026-07-02T00:27:08.524733+00:00"
+    },
+    {
+      "event_type": "plan.locked",
+      "gate": "G1A",
+      "payload": {
+        "locked_scope": {
+          "locked": false,
+          "plan_units": [
+            {
+              "cluster_id": "c-u01",
+              "cluster_interstitial_count": 0,
+              "cluster_position": "establish",
+              "cluster_role": "head",
+              "develop_type": null,
+              "learning_objective": "Recognize that core physician traits directly map to innovation leadership traits, reframing clinicians as already equipped to innovate.",
+              "master_behavioral_intent": "credible",
+              "narrative_arc": "From seeing innovation as foreign to recognizing it as an extension of clinicianship through trait overlap and identity reframing.",
+              "parent_slide_id": null,
+              "rationale": "This is the conceptual opener for Part 3 and establishes the learner's identity bridge into innovation work.",
+              "scope_decision": "in-scope",
+              "source_refs": [
+                "Physicianship = Innovation Leadership",
+                "apply your existing clinical traits",
+                "Empathy, Curiosity, Analytical Prowess",
+                "Comfort with Ambiguity",
+                "You do not need to learn",
+                "simply need to apply your existing clinical traits"
+              ],
+              "title": "Physicianship = Innovation Leadership",
+              "unit_id": "u01"
+            },
+            {
+              "cluster_id": "c-u02",
+              "cluster_interstitial_count": 2,
+              "cluster_position": "establish",
+              "cluster_role": "head",
+              "develop_type": null,
+              "learning_objective": "Understand how the clinical method maps directly onto design thinking so learners can see innovation as a familiar process.",
+              "master_behavioral_intent": "clear-guidance",
+              "narrative_arc": "From perceiving design thinking as business jargon to recognizing it as a familiar clinical workflow through direct step-by-step mapping.",
+              "parent_slide_id": null,
+              "rationale": "This is a core translation mechanism in the source and carries high pedagogical weight because it makes innovation operationally familiar.",
+              "scope_decision": "in-scope",
+              "source_refs": [
+                "The Bridge: Diagnosis = Design Thinking",
+                "The Clinical Method",
+                "Design Thinking",
+                "History \u2192 Physical/Labs \u2192 Diagnosis \u2192 Treatment Plan",
+                "Empathize \u2192 Define \u2192 Ideate \u2192 Prototype/Test",
+                "We are just changing the 'patient'"
+              ],
+              "title": "The Bridge: Diagnosis = Design Thinking",
+              "unit_id": "u02"
+            },
+            {
+              "cluster_id": "c-u02",
+              "cluster_interstitial_count": 0,
+              "cluster_position": "develop",
+              "cluster_role": "interstitial",
+              "develop_type": "deepen",
+              "learning_objective": "Explain the concrete correspondences between history-taking, diagnosis, treatment planning, and the design thinking sequence.",
+              "master_behavioral_intent": "clear-guidance",
+              "narrative_arc": "From perceiving design thinking as business jargon to recognizing it as a familiar clinical workflow through direct step-by-step mapping.",
+              "parent_slide_id": "u02",
+              "rationale": "The source explicitly breaks the workflow into several mapped steps; isolating the mapping reduces cognitive load and supports comprehension.",
+              "scope_decision": "in-scope",
+              "source_refs": [
+                "When you take a patient's history",
+                "performing the first step",
+                "Empathize",
+                "synthesize the physical exam and labs",
+                "Define the problem",
+                "Ideating and Prototyping a solution"
+              ],
+              "title": "Clinical-to-Design Step Mapping",
+              "unit_id": "u03"
+            },
+            {
+              "cluster_id": "c-u02",
+              "cluster_interstitial_count": 0,
+              "cluster_position": "resolve",
+              "cluster_role": "interstitial",
+              "develop_type": null,
+              "learning_objective": "Reframe innovation work as applying existing clinical reasoning to broken workflows and systems rather than only to individual patients.",
+              "master_behavioral_intent": "clear-guidance",
+              "narrative_arc": "From perceiving design thinking as business jargon to recognizing it as a familiar clinical workflow through direct step-by-step mapping.",
+              "parent_slide_id": "u02",
+              "rationale": "This is the payoff of the design-thinking bridge and completes the conceptual transfer from clinic to system innovation.",
+              "scope_decision": "in-scope",
+              "source_refs": [
+                "You run this innovation cycle twenty times a day",
+                "changing the 'patient' from a human being",
+                "to a broken workflow or system"
+              ],
+              "title": "Systems as the New Patient",
+              "unit_id": "u04"
+            },
+            {
+              "cluster_id": "c-u05",
+              "cluster_interstitial_count": 0,
+              "cluster_position": "establish",
+              "cluster_role": "head",
+              "develop_type": null,
+              "learning_objective": "Identify intrapreneurship as a structured, replicable formula centered on balancing vision with organizational realities.",
+              "master_behavioral_intent": "credible",
+              "narrative_arc": "From treating intrapreneurship as vague to understanding it as a structured internal-change formula through guided reading and organizational framing.",
+              "parent_slide_id": null,
+              "rationale": "The source requires this reading block before Slide 3 and uses it to frame stakeholder alignment and internal scaling.",
+              "scope_decision": "in-scope",
+              "source_refs": [
+                "Required Reading",
+                "The Intrapreneurship Formula",
+                "structured, replicable formula",
+                "not just a personality trait",
+                "calculated approach to driving change from within",
+                "internal stakeholder alignment"
+              ],
+              "title": "Required Reading: The Intrapreneurship Formula",
+              "unit_id": "u05"
+            },
+            {
+              "cluster_id": "c-u06",
+              "cluster_interstitial_count": 2,
+              "cluster_position": "establish",
+              "cluster_role": "head",
+              "develop_type": null,
+              "learning_objective": "Differentiate intrapreneurship from entrepreneurship and locate the clinician's primary arena for impact inside existing health systems.",
+              "master_behavioral_intent": "credible",
+              "narrative_arc": "From conflating entrepreneurship with innovation to recognizing intrapreneurship as the clinician's most immediate arena for scale through contrast of where change happens.",
+              "parent_slide_id": null,
+              "rationale": "This comparison is central to the section's opportunity framing and helps learners situate where innovation happens.",
+              "scope_decision": "in-scope",
+              "source_refs": [
+                "Intrapreneurship vs. Entrepreneurship",
+                "We often conflate innovation with Entrepreneurship",
+                "The most immediate impact you can make",
+                "through Intrapreneurship",
+                "within an existing organization",
+                "improve it from the inside out"
+              ],
+              "title": "Intrapreneurship vs. Entrepreneurship",
+              "unit_id": "u06"
+            },
+            {
+              "cluster_id": "c-u06",
+              "cluster_interstitial_count": 0,
+              "cluster_position": "develop",
+              "cluster_role": "interstitial",
+              "develop_type": "deepen",
+              "learning_objective": "Define intrapreneurship as creating and implementing solutions within an existing organization using entrepreneurial principles.",
+              "master_behavioral_intent": "credible",
+              "narrative_arc": "From conflating entrepreneurship with innovation to recognizing intrapreneurship as the clinician's most immediate arena for scale through contrast of where change happens.",
+              "parent_slide_id": "u06",
+              "rationale": "This interstitial isolates the formal definition before introducing the added difficulty of internal constraints.",
+              "scope_decision": "in-scope",
+              "source_refs": [
+                "utilizes entrepreneurial principles",
+                "create, develop, and implement innovative solutions",
+                "within an existing organization",
+                "different type of political savvy",
+                "immense potential for scale"
+              ],
+              "title": "Define the Intrapreneur's Arena",
+              "unit_id": "u07"
+            },
+            {
+              "cluster_id": "c-u06",
+              "cluster_interstitial_count": 0,
+              "cluster_position": "resolve",
+              "cluster_role": "interstitial",
+              "develop_type": null,
+              "learning_objective": "Understand why intrapreneurship is harder than entrepreneurship because change must occur within load-bearing institutional constraints.",
+              "master_behavioral_intent": "credible",
+              "narrative_arc": "From conflating entrepreneurship with innovation to recognizing intrapreneurship as the clinician's most immediate arena for scale through contrast of where change happens.",
+              "parent_slide_id": "u06",
+              "rationale": "The design brief presents a distinct explanatory beat about constraints, politics, and resources that benefits from explicit isolation.",
+              "scope_decision": "in-scope",
+              "source_refs": [
+                "Intrapreneurship is harder than entrepreneurship",
+                "without destroying the existing, load-bearing institutional structures",
+                "Building on a blank canvas",
+                "Legacy IT",
+                "Compliance",
+                "Hospital Politics"
+              ],
+              "title": "The Intrapreneur's Maze",
+              "unit_id": "u08"
+            },
+            {
+              "cluster_id": "c-u09",
+              "cluster_interstitial_count": 3,
+              "cluster_position": "establish",
+              "cluster_role": "head",
+              "develop_type": null,
+              "learning_objective": "Distinguish between an unvetted idea and an actionable opportunity vetted for feasibility, viability, and desirability within a specific organization.",
+              "master_behavioral_intent": "clear-guidance",
+              "narrative_arc": "From casual idea generation to disciplined opportunity engineering through explicit criteria for actionability inside an organization.",
+              "parent_slide_id": null,
+              "rationale": "The source marks this as important and it is a foundational concept for the program's practical orientation.",
+              "scope_decision": "in-scope",
+              "source_refs": [
+                "Idea vs. Opportunity",
+                "An idea is simply a thought",
+                "its value is zero",
+                "rigorously vetted for feasibility, viability, and desirability",
+                "clear path to execution",
+                "stop generating ideas, and start engineering actionable opportunities"
+              ],
+              "title": "Idea vs. Opportunity",
+              "unit_id": "u09"
+            },
+            {
+              "cluster_id": "c-u09",
+              "cluster_interstitial_count": 0,
+              "cluster_position": "tension",
+              "cluster_role": "interstitial",
+              "develop_type": null,
+              "learning_objective": "Explain why solution-first thinking is insufficient until a concept is vetted for execution in organizational context.",
+              "master_behavioral_intent": "clear-guidance",
+              "narrative_arc": "From casual idea generation to disciplined opportunity engineering through explicit criteria for actionability inside an organization.",
+              "parent_slide_id": "u09",
+              "rationale": "This isolates the first half of the distinction and prepares learners to understand opportunity criteria.",
+              "scope_decision": "in-scope",
+              "source_refs": [
+                "An idea is simply a thought or a suggestion",
+                "We should use AI to write notes",
+                "On its own, its value is zero"
+              ],
+              "title": "Why Ideas Have Zero Value on Their Own",
+              "unit_id": "u10"
+            },
+            {
+              "cluster_id": "c-u09",
+              "cluster_interstitial_count": 0,
+              "cluster_position": "develop",
+              "cluster_role": "interstitial",
+              "develop_type": "deepen",
+              "learning_objective": "Describe an opportunity as an idea tested for feasibility, viability, desirability, and path to execution within a specific health system.",
+              "master_behavioral_intent": "clear-guidance",
+              "narrative_arc": "From casual idea generation to disciplined opportunity engineering through explicit criteria for actionability inside an organization.",
+              "parent_slide_id": "u09",
+              "rationale": "This deepens the definition by separating the positive criteria that convert an idea into an opportunity.",
+              "scope_decision": "in-scope",
+              "source_refs": [
+                "Opportunity",
+                "rigorously vetted for feasibility, viability, and desirability",
+                "within your specific organization",
+                "It has a clear path to execution"
+              ],
+              "title": "Opportunity = Vetted for Action",
+              "unit_id": "u11"
+            },
+            {
+              "cluster_id": "c-u09",
+              "cluster_interstitial_count": 0,
+              "cluster_position": "resolve",
+              "cluster_role": "interstitial",
+              "develop_type": null,
+              "learning_objective": "Apply rigorous problem framing to transform a superficial solution idea into a root-cause-based operational opportunity.",
+              "master_behavioral_intent": "clear-guidance",
+              "narrative_arc": "From casual idea generation to disciplined opportunity engineering through explicit criteria for actionability inside an organization.",
+              "parent_slide_id": "u09",
+              "rationale": "The worked example is the clearest application asset in the source and provides the operational model learners will need for later discussion work.",
+              "scope_decision": "in-scope",
+              "source_refs": [
+                "Good vs. Bad problem formulation",
+                "buy iPads for all the nurses",
+                "jumps straight to a solution",
+                "run a root-cause analysis",
+                "Discharge times are delayed by an average of 3 hours",
+                "design a standardized, mobile-friendly discharge workflow"
+              ],
+              "title": "Worked Example: From iPads to a Real Opportunity",
+              "unit_id": "u12"
+            },
+            {
+              "cluster_id": "c-u13",
+              "cluster_interstitial_count": 0,
+              "cluster_position": "establish",
+              "cluster_role": "head",
+              "develop_type": null,
+              "learning_objective": "Understand first-principles thinking as breaking a broken workflow into fundamental truths before rebuilding a better system.",
+              "master_behavioral_intent": "provocative",
+              "narrative_arc": "From patching the status quo to rebuilding from fundamentals through deconstruction of workflows into first principles.",
+              "parent_slide_id": null,
+              "rationale": "This is a discrete innovation method in the source and supports the shift from superficial iteration to genuine redesign.",
+              "scope_decision": "in-scope",
+              "source_refs": [
+                "The Deconstruction (First Principles Thinking)",
+                "Do not just iterate on",
+                "Break the broken system down",
+                "Reasoning by Analogy",
+                "First Principles",
+                "Building a new system from the ground up"
+              ],
+              "title": "The Deconstruction: First Principles Thinking",
+              "unit_id": "u13"
+            },
+            {
+              "cluster_id": "c-u14",
+              "cluster_interstitial_count": 0,
+              "cluster_position": "establish",
+              "cluster_role": "head",
+              "develop_type": null,
+              "learning_objective": "Synthesize the section's three core takeaways: clinicians are already equipped, intrapreneurship is the arena, and opportunities are the goal.",
+              "master_behavioral_intent": "clear-guidance",
+              "narrative_arc": "From discrete concepts to an integrated innovation stance through concise recap of identity, arena, and goal.",
+              "parent_slide_id": null,
+              "rationale": "This is a gestalt recap slide whose value is the simultaneous whole, so it should remain a singleton.",
+              "scope_decision": "in-scope",
+              "source_refs": [
+                "Part 3 Summary Slide",
+                "You are already equipped",
+                "Your Arena",
+                "Your Goal",
+                "Move past generating \"Ideas\"",
+                "defining actionable \"Opportunities\""
+              ],
+              "title": "Part 3 Summary",
+              "unit_id": "u14"
+            },
+            {
+              "cluster_id": "c-u15",
+              "cluster_interstitial_count": 0,
+              "cluster_position": "establish",
+              "cluster_role": "head",
+              "develop_type": null,
+              "learning_objective": "Verify learner recall and understanding of key Part 3 concepts including idea vs opportunity, clinical method to design thinking, and intrapreneurship constraints.",
+              "master_behavioral_intent": "clear-guidance",
+              "narrative_arc": "From exposure to verification through formative questions that test the section's core distinctions and mappings.",
+              "parent_slide_id": null,
+              "rationale": "The source includes a complete knowledge check set that serves as end-of-part formative assessment aligned to the major concepts taught.",
+              "scope_decision": "in-scope",
+              "source_refs": [
+                "Part 3 Knowledge Check",
+                "idea rigorously vetted for feasibility, viability, and desirability",
+                "taking a patient's History",
+                "Balancing your clinical vision",
+                "fall in love with the problem",
+                "the true root cause"
+              ],
+              "title": "Knowledge Check",
+              "unit_id": "u15"
+            }
+          ]
+        }
+      },
+      "run_id": "08972c36-45f1-4cd1-9b04-7a6f9aacef1e",
+      "timestamp": "2026-07-02T00:27:08.524733+00:00"
+    }
+  ],
+  "lesson_plan": {
+    "collateral": {
+      "declaration": "present",
+      "research_goals": [
+        {
+          "binds_to_objective_id": "u05",
+          "goal_id": "rg-01",
+          "pedagogical_intent": "Learner needs the primary-source basis for Sandra Lam's structured framing of intrapreneurship so the reading block feels anchored rather than ornamental."
+        },
+        {
+          "binds_to_objective_id": "u02",
+          "goal_id": "rg-02",
+          "pedagogical_intent": "Learner would benefit from external validation examples showing clinical workflow redesign as a form of design thinking transfer."
+        },
+        {
+          "binds_to_objective_id": "u06",
+          "goal_id": "rg-03",
+          "pedagogical_intent": "Learner needs deeper real-world illustrations of organizational constraints that make intrapreneurship harder than entrepreneurship."
+        }
+      ],
+      "schema_version": "1.0",
+      "workbook": {
+        "sections": [
+          {
+            "depth_delta": {
+              "deferred_depth": "Expanded explanation of each shared trait\u2014empathy, curiosity, analytical prowess, resiliency, and comfort with ambiguity\u2014and how each functions in both patient care and innovation work.",
+              "deferred_from_slide": "u01",
+              "retained_on_slide": "The high-level overlap and identity reframe."
+            },
+            "exercises": [
+              {
+                "answer_key_source_ref": "apply your existing clinical traits",
+                "bloom_level": "understand",
+                "exercise_id": "ex-u01-1",
+                "prompt_intent": "Have learners explain in their own words how a familiar clinical trait transfers to innovation practice."
+              }
+            ],
+            "learning_objective_id": "u01",
+            "narrative_intent": "Give learners enough reflective depth to internalize that innovation does not require a new personality, only a new application domain for existing strengths.",
+            "section_id": "sec-u01",
+            "title": "Clinician Traits as Innovation Assets"
+          },
+          {
+            "depth_delta": {
+              "deferred_depth": "A fuller walk-through of each mapped step with brief explanation of why history-taking aligns to empathize, diagnosis to define, and treatment selection to ideate/prototype.",
+              "deferred_from_slide": "u02",
+              "retained_on_slide": "The side-by-side process comparison."
+            },
+            "exercises": [
+              {
+                "answer_key_source_ref": "History \u2192 Physical/Labs \u2192 Diagnosis \u2192 Treatment Plan",
+                "bloom_level": "understand",
+                "exercise_id": "ex-u02-1",
+                "prompt_intent": "Ask learners to match clinical actions to design-thinking stages."
+              },
+              {
+                "answer_key_source_ref": "changing the 'patient' from a human being",
+                "bloom_level": "apply",
+                "exercise_id": "ex-u02-2",
+                "prompt_intent": "Prompt learners to reframe one broken workflow in their environment as a 'patient' entering the innovation cycle."
+              }
+            ],
+            "learning_objective_id": "u02",
+            "narrative_intent": "Offload the detailed mapping logic to the workbook so the slide can remain a glanceable bridge rather than a text-heavy explanation.",
+            "section_id": "sec-u02",
+            "title": "Clinical Method to Design Thinking Crosswalk"
+          },
+          {
+            "depth_delta": {
+              "deferred_depth": "Guided reading prompts focused on formula structure, organizational reality, existing resources, and stakeholder alignment.",
+              "deferred_from_slide": "u05",
+              "retained_on_slide": "The requirement to read and the central framing claim."
+            },
+            "exercises": [
+              {
+                "answer_key_source_ref": "structured, replicable formula",
+                "bloom_level": "understand",
+                "exercise_id": "ex-u05-1",
+                "prompt_intent": "Direct learners to identify what makes intrapreneurship structured rather than personality-based."
+              }
+            ],
+            "learning_objective_id": "u05",
+            "narrative_intent": "Turn the required reading into an active processing aid that primes the learner for the intrapreneurship slides.",
+            "section_id": "sec-u05",
+            "title": "Reading Guide: The Intrapreneurship Formula"
+          },
+          {
+            "depth_delta": {
+              "deferred_depth": "A fuller compare/contrast of entrepreneurship and intrapreneurship, including internal constraints such as legacy systems, budgets, compliance, and politics.",
+              "deferred_from_slide": "u06",
+              "retained_on_slide": "The core distinction and visual contrast."
+            },
+            "exercises": [
+              {
+                "answer_key_source_ref": "within an existing organization",
+                "bloom_level": "analyze",
+                "exercise_id": "ex-u06-1",
+                "prompt_intent": "Have learners sort example innovation efforts into entrepreneurship or intrapreneurship based on organizational context."
+              },
+              {
+                "answer_key_source_ref": "immense potential for scale",
+                "bloom_level": "understand",
+                "exercise_id": "ex-u06-2",
+                "prompt_intent": "Ask learners to explain why scale may be easier once internal alignment is achieved."
+              }
+            ],
+            "learning_objective_id": "u06",
+            "narrative_intent": "Provide the nuance that the deck only signals visually: the intrapreneur's challenge is not less innovation, but more constrained innovation.",
+            "section_id": "sec-u06",
+            "title": "Where Innovation Happens: Inside vs Outside the System"
+          },
+          {
+            "depth_delta": {
+              "deferred_depth": "Expanded criteria unpacking feasibility, viability, desirability, and clear path to execution, plus a guided explanation of why unvetted ideas start at zero value.",
+              "deferred_from_slide": "u09",
+              "retained_on_slide": "The top-line distinction between idea and opportunity."
+            },
+            "exercises": [
+              {
+                "answer_key_source_ref": "its value is zero",
+                "bloom_level": "remember",
+                "exercise_id": "ex-u09-1",
+                "prompt_intent": "Check recall of the formal distinction between an idea and an opportunity."
+              },
+              {
+                "answer_key_source_ref": "clear path to execution",
+                "bloom_level": "apply",
+                "exercise_id": "ex-u09-2",
+                "prompt_intent": "Ask learners to revise a solution-first statement into an opportunity statement anchored in organizational context."
+              }
+            ],
+            "learning_objective_id": "u09",
+            "narrative_intent": "This section carries the definitional and evaluative depth that would overcrowd the slide but is essential for practical transfer.",
+            "section_id": "sec-u09",
+            "title": "From Idea to Opportunity"
+          },
+          {
+            "depth_delta": {
+              "deferred_depth": "Stepwise breakdown of how the iPads example fails, how root-cause analysis changes the framing, and why the reframed opportunity is superior.",
+              "deferred_from_slide": "u12",
+              "retained_on_slide": "The before/after contrast and final opportunity statement."
+            },
+            "exercises": [
+              {
+                "answer_key_source_ref": "jumps straight to a solution",
+                "bloom_level": "analyze",
+                "exercise_id": "ex-u12-1",
+                "prompt_intent": "Require learners to diagnose what is flawed in a solution-first proposal."
+              },
+              {
+                "answer_key_source_ref": "Chief Complaint: Discharge times are delayed by an average of 3 hours",
+                "bloom_level": "apply",
+                "exercise_id": "ex-u12-2",
+                "prompt_intent": "Have learners formulate a chief complaint, root cause, and opportunity for a workflow in their own setting."
+              }
+            ],
+            "learning_objective_id": "u12",
+            "narrative_intent": "Make the productive struggle explicit so learners can imitate the reasoning process, not just the finished answer.",
+            "section_id": "sec-u12",
+            "title": "Worked Example: Reframing a Bad Start"
+          },
+          {
+            "depth_delta": {
+              "deferred_depth": "Detailed explanation of reasoning by analogy versus first-principles deconstruction, using the old-system/raw-blocks/new-system sequence as a written analytic scaffold.",
+              "deferred_from_slide": "u13",
+              "retained_on_slide": "The three-phase visual metaphor."
+            },
+            "exercises": [
+              {
+                "answer_key_source_ref": "Breaking it down to fundamental truths",
+                "bloom_level": "analyze",
+                "exercise_id": "ex-u13-1",
+                "prompt_intent": "Ask learners to break a familiar workflow into raw component truths rather than inherited steps."
+              },
+              {
+                "answer_key_source_ref": "Building a new system from the ground up",
+                "bloom_level": "create",
+                "exercise_id": "ex-u13-2",
+                "prompt_intent": "Prompt learners to sketch a rebuilt workflow from the same raw materials."
+              }
+            ],
+            "learning_objective_id": "u13",
+            "narrative_intent": "Support true method transfer by giving learners structured space to practice deconstruction and reconstruction.",
+            "section_id": "sec-u13",
+            "title": "First Principles Workbook Walkthrough"
+          },
+          {
+            "depth_delta": {
+              "deferred_depth": "Answer rationales and brief remediation notes for each knowledge-check concept, especially idea vs opportunity, design-thinking mapping, stakeholder alignment, and root cause orientation.",
+              "deferred_from_slide": "u15",
+              "retained_on_slide": "The assessment prompts themselves."
+            },
+            "exercises": [],
+            "learning_objective_id": "u15",
+            "narrative_intent": "Use the workbook to convert the knowledge check from simple scoring into formative feedback and concept reinforcement.",
+            "section_id": "sec-u15",
+            "title": "Knowledge Check Review and Rationale"
+          }
+        ]
+      }
+    },
+    "lesson_summary": "Part 3 is planned as a progression from identity reframing, to process translation, to organizational arena, to disciplined opportunity framing, then closes with first-principles redesign, summary, and knowledge check. Dense concepts were clustered where the source contained multiple explanatory beats with high pedagogical weight: design thinking mapping, intrapreneurship contrast, and idea-versus-opportunity with worked example. Gestalt recap and comparison slides that derive value from simultaneous whole-view were kept dense as singletons. All units are sourced only from the provided corpus.",
+    "plan_units": [
+      {
+        "cluster_id": "c-u01",
+        "cluster_interstitial_count": 0,
+        "cluster_position": "establish",
+        "cluster_role": "head",
+        "develop_type": null,
+        "learning_objective": "Recognize that core physician traits directly map to innovation leadership traits, reframing clinicians as already equipped to innovate.",
+        "master_behavioral_intent": "credible",
+        "narrative_arc": "From seeing innovation as foreign to recognizing it as an extension of clinicianship through trait overlap and identity reframing.",
+        "parent_slide_id": null,
+        "rationale": "This is the conceptual opener for Part 3 and establishes the learner's identity bridge into innovation work.",
+        "scope_decision": "in-scope",
+        "source_refs": [
+          "Physicianship = Innovation Leadership",
+          "apply your existing clinical traits",
+          "Empathy, Curiosity, Analytical Prowess",
+          "Comfort with Ambiguity",
+          "You do not need to learn",
+          "simply need to apply your existing clinical traits"
+        ],
+        "title": "Physicianship = Innovation Leadership",
+        "unit_id": "u01"
+      },
+      {
+        "cluster_id": "c-u02",
+        "cluster_interstitial_count": 2,
+        "cluster_position": "establish",
+        "cluster_role": "head",
+        "develop_type": null,
+        "learning_objective": "Understand how the clinical method maps directly onto design thinking so learners can see innovation as a familiar process.",
+        "master_behavioral_intent": "clear-guidance",
+        "narrative_arc": "From perceiving design thinking as business jargon to recognizing it as a familiar clinical workflow through direct step-by-step mapping.",
+        "parent_slide_id": null,
+        "rationale": "This is a core translation mechanism in the source and carries high pedagogical weight because it makes innovation operationally familiar.",
+        "scope_decision": "in-scope",
+        "source_refs": [
+          "The Bridge: Diagnosis = Design Thinking",
+          "The Clinical Method",
+          "Design Thinking",
+          "History \u2192 Physical/Labs \u2192 Diagnosis \u2192 Treatment Plan",
+          "Empathize \u2192 Define \u2192 Ideate \u2192 Prototype/Test",
+          "We are just changing the 'patient'"
+        ],
+        "title": "The Bridge: Diagnosis = Design Thinking",
+        "unit_id": "u02"
+      },
+      {
+        "cluster_id": "c-u02",
+        "cluster_interstitial_count": 0,
+        "cluster_position": "develop",
+        "cluster_role": "interstitial",
+        "develop_type": "deepen",
+        "learning_objective": "Explain the concrete correspondences between history-taking, diagnosis, treatment planning, and the design thinking sequence.",
+        "master_behavioral_intent": "clear-guidance",
+        "narrative_arc": "From perceiving design thinking as business jargon to recognizing it as a familiar clinical workflow through direct step-by-step mapping.",
+        "parent_slide_id": "u02",
+        "rationale": "The source explicitly breaks the workflow into several mapped steps; isolating the mapping reduces cognitive load and supports comprehension.",
+        "scope_decision": "in-scope",
+        "source_refs": [
+          "When you take a patient's history",
+          "performing the first step",
+          "Empathize",
+          "synthesize the physical exam and labs",
+          "Define the problem",
+          "Ideating and Prototyping a solution"
+        ],
+        "title": "Clinical-to-Design Step Mapping",
+        "unit_id": "u03"
+      },
+      {
+        "cluster_id": "c-u02",
+        "cluster_interstitial_count": 0,
+        "cluster_position": "resolve",
+        "cluster_role": "interstitial",
+        "develop_type": null,
+        "learning_objective": "Reframe innovation work as applying existing clinical reasoning to broken workflows and systems rather than only to individual patients.",
+        "master_behavioral_intent": "clear-guidance",
+        "narrative_arc": "From perceiving design thinking as business jargon to recognizing it as a familiar clinical workflow through direct step-by-step mapping.",
+        "parent_slide_id": "u02",
+        "rationale": "This is the payoff of the design-thinking bridge and completes the conceptual transfer from clinic to system innovation.",
+        "scope_decision": "in-scope",
+        "source_refs": [
+          "You run this innovation cycle twenty times a day",
+          "changing the 'patient' from a human being",
+          "to a broken workflow or system"
+        ],
+        "title": "Systems as the New Patient",
+        "unit_id": "u04"
+      },
+      {
+        "cluster_id": "c-u05",
+        "cluster_interstitial_count": 0,
+        "cluster_position": "establish",
+        "cluster_role": "head",
+        "develop_type": null,
+        "learning_objective": "Identify intrapreneurship as a structured, replicable formula centered on balancing vision with organizational realities.",
+        "master_behavioral_intent": "credible",
+        "narrative_arc": "From treating intrapreneurship as vague to understanding it as a structured internal-change formula through guided reading and organizational framing.",
+        "parent_slide_id": null,
+        "rationale": "The source requires this reading block before Slide 3 and uses it to frame stakeholder alignment and internal scaling.",
+        "scope_decision": "in-scope",
+        "source_refs": [
+          "Required Reading",
+          "The Intrapreneurship Formula",
+          "structured, replicable formula",
+          "not just a personality trait",
+          "calculated approach to driving change from within",
+          "internal stakeholder alignment"
+        ],
+        "title": "Required Reading: The Intrapreneurship Formula",
+        "unit_id": "u05"
+      },
+      {
+        "cluster_id": "c-u06",
+        "cluster_interstitial_count": 2,
+        "cluster_position": "establish",
+        "cluster_role": "head",
+        "develop_type": null,
+        "learning_objective": "Differentiate intrapreneurship from entrepreneurship and locate the clinician's primary arena for impact inside existing health systems.",
+        "master_behavioral_intent": "credible",
+        "narrative_arc": "From conflating entrepreneurship with innovation to recognizing intrapreneurship as the clinician's most immediate arena for scale through contrast of where change happens.",
+        "parent_slide_id": null,
+        "rationale": "This comparison is central to the section's opportunity framing and helps learners situate where innovation happens.",
+        "scope_decision": "in-scope",
+        "source_refs": [
+          "Intrapreneurship vs. Entrepreneurship",
+          "We often conflate innovation with Entrepreneurship",
+          "The most immediate impact you can make",
+          "through Intrapreneurship",
+          "within an existing organization",
+          "improve it from the inside out"
+        ],
+        "title": "Intrapreneurship vs. Entrepreneurship",
+        "unit_id": "u06"
+      },
+      {
+        "cluster_id": "c-u06",
+        "cluster_interstitial_count": 0,
+        "cluster_position": "develop",
+        "cluster_role": "interstitial",
+        "develop_type": "deepen",
+        "learning_objective": "Define intrapreneurship as creating and implementing solutions within an existing organization using entrepreneurial principles.",
+        "master_behavioral_intent": "credible",
+        "narrative_arc": "From conflating entrepreneurship with innovation to recognizing intrapreneurship as the clinician's most immediate arena for scale through contrast of where change happens.",
+        "parent_slide_id": "u06",
+        "rationale": "This interstitial isolates the formal definition before introducing the added difficulty of internal constraints.",
+        "scope_decision": "in-scope",
+        "source_refs": [
+          "utilizes entrepreneurial principles",
+          "create, develop, and implement innovative solutions",
+          "within an existing organization",
+          "different type of political savvy",
+          "immense potential for scale"
+        ],
+        "title": "Define the Intrapreneur's Arena",
+        "unit_id": "u07"
+      },
+      {
+        "cluster_id": "c-u06",
+        "cluster_interstitial_count": 0,
+        "cluster_position": "resolve",
+        "cluster_role": "interstitial",
+        "develop_type": null,
+        "learning_objective": "Understand why intrapreneurship is harder than entrepreneurship because change must occur within load-bearing institutional constraints.",
+        "master_behavioral_intent": "credible",
+        "narrative_arc": "From conflating entrepreneurship with innovation to recognizing intrapreneurship as the clinician's most immediate arena for scale through contrast of where change happens.",
+        "parent_slide_id": "u06",
+        "rationale": "The design brief presents a distinct explanatory beat about constraints, politics, and resources that benefits from explicit isolation.",
+        "scope_decision": "in-scope",
+        "source_refs": [
+          "Intrapreneurship is harder than entrepreneurship",
+          "without destroying the existing, load-bearing institutional structures",
+          "Building on a blank canvas",
+          "Legacy IT",
+          "Compliance",
+          "Hospital Politics"
+        ],
+        "title": "The Intrapreneur's Maze",
+        "unit_id": "u08"
+      },
+      {
+        "cluster_id": "c-u09",
+        "cluster_interstitial_count": 3,
+        "cluster_position": "establish",
+        "cluster_role": "head",
+        "develop_type": null,
+        "learning_objective": "Distinguish between an unvetted idea and an actionable opportunity vetted for feasibility, viability, and desirability within a specific organization.",
+        "master_behavioral_intent": "clear-guidance",
+        "narrative_arc": "From casual idea generation to disciplined opportunity engineering through explicit criteria for actionability inside an organization.",
+        "parent_slide_id": null,
+        "rationale": "The source marks this as important and it is a foundational concept for the program's practical orientation.",
+        "scope_decision": "in-scope",
+        "source_refs": [
+          "Idea vs. Opportunity",
+          "An idea is simply a thought",
+          "its value is zero",
+          "rigorously vetted for feasibility, viability, and desirability",
+          "clear path to execution",
+          "stop generating ideas, and start engineering actionable opportunities"
+        ],
+        "title": "Idea vs. Opportunity",
+        "unit_id": "u09"
+      },
+      {
+        "cluster_id": "c-u09",
+        "cluster_interstitial_count": 0,
+        "cluster_position": "tension",
+        "cluster_role": "interstitial",
+        "develop_type": null,
+        "learning_objective": "Explain why solution-first thinking is insufficient until a concept is vetted for execution in organizational context.",
+        "master_behavioral_intent": "clear-guidance",
+        "narrative_arc": "From casual idea generation to disciplined opportunity engineering through explicit criteria for actionability inside an organization.",
+        "parent_slide_id": "u09",
+        "rationale": "This isolates the first half of the distinction and prepares learners to understand opportunity criteria.",
+        "scope_decision": "in-scope",
+        "source_refs": [
+          "An idea is simply a thought or a suggestion",
+          "We should use AI to write notes",
+          "On its own, its value is zero"
+        ],
+        "title": "Why Ideas Have Zero Value on Their Own",
+        "unit_id": "u10"
+      },
+      {
+        "cluster_id": "c-u09",
+        "cluster_interstitial_count": 0,
+        "cluster_position": "develop",
+        "cluster_role": "interstitial",
+        "develop_type": "deepen",
+        "learning_objective": "Describe an opportunity as an idea tested for feasibility, viability, desirability, and path to execution within a specific health system.",
+        "master_behavioral_intent": "clear-guidance",
+        "narrative_arc": "From casual idea generation to disciplined opportunity engineering through explicit criteria for actionability inside an organization.",
+        "parent_slide_id": "u09",
+        "rationale": "This deepens the definition by separating the positive criteria that convert an idea into an opportunity.",
+        "scope_decision": "in-scope",
+        "source_refs": [
+          "Opportunity",
+          "rigorously vetted for feasibility, viability, and desirability",
+          "within your specific organization",
+          "It has a clear path to execution"
+        ],
+        "title": "Opportunity = Vetted for Action",
+        "unit_id": "u11"
+      },
+      {
+        "cluster_id": "c-u09",
+        "cluster_interstitial_count": 0,
+        "cluster_position": "resolve",
+        "cluster_role": "interstitial",
+        "develop_type": null,
+        "learning_objective": "Apply rigorous problem framing to transform a superficial solution idea into a root-cause-based operational opportunity.",
+        "master_behavioral_intent": "clear-guidance",
+        "narrative_arc": "From casual idea generation to disciplined opportunity engineering through explicit criteria for actionability inside an organization.",
+        "parent_slide_id": "u09",
+        "rationale": "The worked example is the clearest application asset in the source and provides the operational model learners will need for later discussion work.",
+        "scope_decision": "in-scope",
+        "source_refs": [
+          "Good vs. Bad problem formulation",
+          "buy iPads for all the nurses",
+          "jumps straight to a solution",
+          "run a root-cause analysis",
+          "Discharge times are delayed by an average of 3 hours",
+          "design a standardized, mobile-friendly discharge workflow"
+        ],
+        "title": "Worked Example: From iPads to a Real Opportunity",
+        "unit_id": "u12"
+      },
+      {
+        "cluster_id": "c-u13",
+        "cluster_interstitial_count": 0,
+        "cluster_position": "establish",
+        "cluster_role": "head",
+        "develop_type": null,
+        "learning_objective": "Understand first-principles thinking as breaking a broken workflow into fundamental truths before rebuilding a better system.",
+        "master_behavioral_intent": "provocative",
+        "narrative_arc": "From patching the status quo to rebuilding from fundamentals through deconstruction of workflows into first principles.",
+        "parent_slide_id": null,
+        "rationale": "This is a discrete innovation method in the source and supports the shift from superficial iteration to genuine redesign.",
+        "scope_decision": "in-scope",
+        "source_refs": [
+          "The Deconstruction (First Principles Thinking)",
+          "Do not just iterate on",
+          "Break the broken system down",
+          "Reasoning by Analogy",
+          "First Principles",
+          "Building a new system from the ground up"
+        ],
+        "title": "The Deconstruction: First Principles Thinking",
+        "unit_id": "u13"
+      },
+      {
+        "cluster_id": "c-u14",
+        "cluster_interstitial_count": 0,
+        "cluster_position": "establish",
+        "cluster_role": "head",
+        "develop_type": null,
+        "learning_objective": "Synthesize the section's three core takeaways: clinicians are already equipped, intrapreneurship is the arena, and opportunities are the goal.",
+        "master_behavioral_intent": "clear-guidance",
+        "narrative_arc": "From discrete concepts to an integrated innovation stance through concise recap of identity, arena, and goal.",
+        "parent_slide_id": null,
+        "rationale": "This is a gestalt recap slide whose value is the simultaneous whole, so it should remain a singleton.",
+        "scope_decision": "in-scope",
+        "source_refs": [
+          "Part 3 Summary Slide",
+          "You are already equipped",
+          "Your Arena",
+          "Your Goal",
+          "Move past generating \"Ideas\"",
+          "defining actionable \"Opportunities\""
+        ],
+        "title": "Part 3 Summary",
+        "unit_id": "u14"
+      },
+      {
+        "cluster_id": "c-u15",
+        "cluster_interstitial_count": 0,
+        "cluster_position": "establish",
+        "cluster_role": "head",
+        "develop_type": null,
+        "learning_objective": "Verify learner recall and understanding of key Part 3 concepts including idea vs opportunity, clinical method to design thinking, and intrapreneurship constraints.",
+        "master_behavioral_intent": "clear-guidance",
+        "narrative_arc": "From exposure to verification through formative questions that test the section's core distinctions and mappings.",
+        "parent_slide_id": null,
+        "rationale": "The source includes a complete knowledge check set that serves as end-of-part formative assessment aligned to the major concepts taught.",
+        "scope_decision": "in-scope",
+        "source_refs": [
+          "Part 3 Knowledge Check",
+          "idea rigorously vetted for feasibility, viability, and desirability",
+          "taking a patient's History",
+          "Balancing your clinical vision",
+          "fall in love with the problem",
+          "the true root cause"
+        ],
+        "title": "Knowledge Check",
+        "unit_id": "u15"
+      }
+    ]
+  },
+  "locked_scope": {
+    "locked": false,
+    "plan_units": [
+      {
+        "cluster_id": "c-u01",
+        "cluster_interstitial_count": 0,
+        "cluster_position": "establish",
+        "cluster_role": "head",
+        "develop_type": null,
+        "learning_objective": "Recognize that core physician traits directly map to innovation leadership traits, reframing clinicians as already equipped to innovate.",
+        "master_behavioral_intent": "credible",
+        "narrative_arc": "From seeing innovation as foreign to recognizing it as an extension of clinicianship through trait overlap and identity reframing.",
+        "parent_slide_id": null,
+        "rationale": "This is the conceptual opener for Part 3 and establishes the learner's identity bridge into innovation work.",
+        "scope_decision": "in-scope",
+        "source_refs": [
+          "Physicianship = Innovation Leadership",
+          "apply your existing clinical traits",
+          "Empathy, Curiosity, Analytical Prowess",
+          "Comfort with Ambiguity",
+          "You do not need to learn",
+          "simply need to apply your existing clinical traits"
+        ],
+        "title": "Physicianship = Innovation Leadership",
+        "unit_id": "u01"
+      },
+      {
+        "cluster_id": "c-u02",
+        "cluster_interstitial_count": 2,
+        "cluster_position": "establish",
+        "cluster_role": "head",
+        "develop_type": null,
+        "learning_objective": "Understand how the clinical method maps directly onto design thinking so learners can see innovation as a familiar process.",
+        "master_behavioral_intent": "clear-guidance",
+        "narrative_arc": "From perceiving design thinking as business jargon to recognizing it as a familiar clinical workflow through direct step-by-step mapping.",
+        "parent_slide_id": null,
+        "rationale": "This is a core translation mechanism in the source and carries high pedagogical weight because it makes innovation operationally familiar.",
+        "scope_decision": "in-scope",
+        "source_refs": [
+          "The Bridge: Diagnosis = Design Thinking",
+          "The Clinical Method",
+          "Design Thinking",
+          "History \u2192 Physical/Labs \u2192 Diagnosis \u2192 Treatment Plan",
+          "Empathize \u2192 Define \u2192 Ideate \u2192 Prototype/Test",
+          "We are just changing the 'patient'"
+        ],
+        "title": "The Bridge: Diagnosis = Design Thinking",
+        "unit_id": "u02"
+      },
+      {
+        "cluster_id": "c-u02",
+        "cluster_interstitial_count": 0,
+        "cluster_position": "develop",
+        "cluster_role": "interstitial",
+        "develop_type": "deepen",
+        "learning_objective": "Explain the concrete correspondences between history-taking, diagnosis, treatment planning, and the design thinking sequence.",
+        "master_behavioral_intent": "clear-guidance",
+        "narrative_arc": "From perceiving design thinking as business jargon to recognizing it as a familiar clinical workflow through direct step-by-step mapping.",
+        "parent_slide_id": "u02",
+        "rationale": "The source explicitly breaks the workflow into several mapped steps; isolating the mapping reduces cognitive load and supports comprehension.",
+        "scope_decision": "in-scope",
+        "source_refs": [
+          "When you take a patient's history",
+          "performing the first step",
+          "Empathize",
+          "synthesize the physical exam and labs",
+          "Define the problem",
+          "Ideating and Prototyping a solution"
+        ],
+        "title": "Clinical-to-Design Step Mapping",
+        "unit_id": "u03"
+      },
+      {
+        "cluster_id": "c-u02",
+        "cluster_interstitial_count": 0,
+        "cluster_position": "resolve",
+        "cluster_role": "interstitial",
+        "develop_type": null,
+        "learning_objective": "Reframe innovation work as applying existing clinical reasoning to broken workflows and systems rather than only to individual patients.",
+        "master_behavioral_intent": "clear-guidance",
+        "narrative_arc": "From perceiving design thinking as business jargon to recognizing it as a familiar clinical workflow through direct step-by-step mapping.",
+        "parent_slide_id": "u02",
+        "rationale": "This is the payoff of the design-thinking bridge and completes the conceptual transfer from clinic to system innovation.",
+        "scope_decision": "in-scope",
+        "source_refs": [
+          "You run this innovation cycle twenty times a day",
+          "changing the 'patient' from a human being",
+          "to a broken workflow or system"
+        ],
+        "title": "Systems as the New Patient",
+        "unit_id": "u04"
+      },
+      {
+        "cluster_id": "c-u05",
+        "cluster_interstitial_count": 0,
+        "cluster_position": "establish",
+        "cluster_role": "head",
+        "develop_type": null,
+        "learning_objective": "Identify intrapreneurship as a structured, replicable formula centered on balancing vision with organizational realities.",
+        "master_behavioral_intent": "credible",
+        "narrative_arc": "From treating intrapreneurship as vague to understanding it as a structured internal-change formula through guided reading and organizational framing.",
+        "parent_slide_id": null,
+        "rationale": "The source requires this reading block before Slide 3 and uses it to frame stakeholder alignment and internal scaling.",
+        "scope_decision": "in-scope",
+        "source_refs": [
+          "Required Reading",
+          "The Intrapreneurship Formula",
+          "structured, replicable formula",
+          "not just a personality trait",
+          "calculated approach to driving change from within",
+          "internal stakeholder alignment"
+        ],
+        "title": "Required Reading: The Intrapreneurship Formula",
+        "unit_id": "u05"
+      },
+      {
+        "cluster_id": "c-u06",
+        "cluster_interstitial_count": 2,
+        "cluster_position": "establish",
+        "cluster_role": "head",
+        "develop_type": null,
+        "learning_objective": "Differentiate intrapreneurship from entrepreneurship and locate the clinician's primary arena for impact inside existing health systems.",
+        "master_behavioral_intent": "credible",
+        "narrative_arc": "From conflating entrepreneurship with innovation to recognizing intrapreneurship as the clinician's most immediate arena for scale through contrast of where change happens.",
+        "parent_slide_id": null,
+        "rationale": "This comparison is central to the section's opportunity framing and helps learners situate where innovation happens.",
+        "scope_decision": "in-scope",
+        "source_refs": [
+          "Intrapreneurship vs. Entrepreneurship",
+          "We often conflate innovation with Entrepreneurship",
+          "The most immediate impact you can make",
+          "through Intrapreneurship",
+          "within an existing organization",
+          "improve it from the inside out"
+        ],
+        "title": "Intrapreneurship vs. Entrepreneurship",
+        "unit_id": "u06"
+      },
+      {
+        "cluster_id": "c-u06",
+        "cluster_interstitial_count": 0,
+        "cluster_position": "develop",
+        "cluster_role": "interstitial",
+        "develop_type": "deepen",
+        "learning_objective": "Define intrapreneurship as creating and implementing solutions within an existing organization using entrepreneurial principles.",
+        "master_behavioral_intent": "credible",
+        "narrative_arc": "From conflating entrepreneurship with innovation to recognizing intrapreneurship as the clinician's most immediate arena for scale through contrast of where change happens.",
+        "parent_slide_id": "u06",
+        "rationale": "This interstitial isolates the formal definition before introducing the added difficulty of internal constraints.",
+        "scope_decision": "in-scope",
+        "source_refs": [
+          "utilizes entrepreneurial principles",
+          "create, develop, and implement innovative solutions",
+          "within an existing organization",
+          "different type of political savvy",
+          "immense potential for scale"
+        ],
+        "title": "Define the Intrapreneur's Arena",
+        "unit_id": "u07"
+      },
+      {
+        "cluster_id": "c-u06",
+        "cluster_interstitial_count": 0,
+        "cluster_position": "resolve",
+        "cluster_role": "interstitial",
+        "develop_type": null,
+        "learning_objective": "Understand why intrapreneurship is harder than entrepreneurship because change must occur within load-bearing institutional constraints.",
+        "master_behavioral_intent": "credible",
+        "narrative_arc": "From conflating entrepreneurship with innovation to recognizing intrapreneurship as the clinician's most immediate arena for scale through contrast of where change happens.",
+        "parent_slide_id": "u06",
+        "rationale": "The design brief presents a distinct explanatory beat about constraints, politics, and resources that benefits from explicit isolation.",
+        "scope_decision": "in-scope",
+        "source_refs": [
+          "Intrapreneurship is harder than entrepreneurship",
+          "without destroying the existing, load-bearing institutional structures",
+          "Building on a blank canvas",
+          "Legacy IT",
+          "Compliance",
+          "Hospital Politics"
+        ],
+        "title": "The Intrapreneur's Maze",
+        "unit_id": "u08"
+      },
+      {
+        "cluster_id": "c-u09",
+        "cluster_interstitial_count": 3,
+        "cluster_position": "establish",
+        "cluster_role": "head",
+        "develop_type": null,
+        "learning_objective": "Distinguish between an unvetted idea and an actionable opportunity vetted for feasibility, viability, and desirability within a specific organization.",
+        "master_behavioral_intent": "clear-guidance",
+        "narrative_arc": "From casual idea generation to disciplined opportunity engineering through explicit criteria for actionability inside an organization.",
+        "parent_slide_id": null,
+        "rationale": "The source marks this as important and it is a foundational concept for the program's practical orientation.",
+        "scope_decision": "in-scope",
+        "source_refs": [
+          "Idea vs. Opportunity",
+          "An idea is simply a thought",
+          "its value is zero",
+          "rigorously vetted for feasibility, viability, and desirability",
+          "clear path to execution",
+          "stop generating ideas, and start engineering actionable opportunities"
+        ],
+        "title": "Idea vs. Opportunity",
+        "unit_id": "u09"
+      },
+      {
+        "cluster_id": "c-u09",
+        "cluster_interstitial_count": 0,
+        "cluster_position": "tension",
+        "cluster_role": "interstitial",
+        "develop_type": null,
+        "learning_objective": "Explain why solution-first thinking is insufficient until a concept is vetted for execution in organizational context.",
+        "master_behavioral_intent": "clear-guidance",
+        "narrative_arc": "From casual idea generation to disciplined opportunity engineering through explicit criteria for actionability inside an organization.",
+        "parent_slide_id": "u09",
+        "rationale": "This isolates the first half of the distinction and prepares learners to understand opportunity criteria.",
+        "scope_decision": "in-scope",
+        "source_refs": [
+          "An idea is simply a thought or a suggestion",
+          "We should use AI to write notes",
+          "On its own, its value is zero"
+        ],
+        "title": "Why Ideas Have Zero Value on Their Own",
+        "unit_id": "u10"
+      },
+      {
+        "cluster_id": "c-u09",
+        "cluster_interstitial_count": 0,
+        "cluster_position": "develop",
+        "cluster_role": "interstitial",
+        "develop_type": "deepen",
+        "learning_objective": "Describe an opportunity as an idea tested for feasibility, viability, desirability, and path to execution within a specific health system.",
+        "master_behavioral_intent": "clear-guidance",
+        "narrative_arc": "From casual idea generation to disciplined opportunity engineering through explicit criteria for actionability inside an organization.",
+        "parent_slide_id": "u09",
+        "rationale": "This deepens the definition by separating the positive criteria that convert an idea into an opportunity.",
+        "scope_decision": "in-scope",
+        "source_refs": [
+          "Opportunity",
+          "rigorously vetted for feasibility, viability, and desirability",
+          "within your specific organization",
+          "It has a clear path to execution"
+        ],
+        "title": "Opportunity = Vetted for Action",
+        "unit_id": "u11"
+      },
+      {
+        "cluster_id": "c-u09",
+        "cluster_interstitial_count": 0,
+        "cluster_position": "resolve",
+        "cluster_role": "interstitial",
+        "develop_type": null,
+        "learning_objective": "Apply rigorous problem framing to transform a superficial solution idea into a root-cause-based operational opportunity.",
+        "master_behavioral_intent": "clear-guidance",
+        "narrative_arc": "From casual idea generation to disciplined opportunity engineering through explicit criteria for actionability inside an organization.",
+        "parent_slide_id": "u09",
+        "rationale": "The worked example is the clearest application asset in the source and provides the operational model learners will need for later discussion work.",
+        "scope_decision": "in-scope",
+        "source_refs": [
+          "Good vs. Bad problem formulation",
+          "buy iPads for all the nurses",
+          "jumps straight to a solution",
+          "run a root-cause analysis",
+          "Discharge times are delayed by an average of 3 hours",
+          "design a standardized, mobile-friendly discharge workflow"
+        ],
+        "title": "Worked Example: From iPads to a Real Opportunity",
+        "unit_id": "u12"
+      },
+      {
+        "cluster_id": "c-u13",
+        "cluster_interstitial_count": 0,
+        "cluster_position": "establish",
+        "cluster_role": "head",
+        "develop_type": null,
+        "learning_objective": "Understand first-principles thinking as breaking a broken workflow into fundamental truths before rebuilding a better system.",
+        "master_behavioral_intent": "provocative",
+        "narrative_arc": "From patching the status quo to rebuilding from fundamentals through deconstruction of workflows into first principles.",
+        "parent_slide_id": null,
+        "rationale": "This is a discrete innovation method in the source and supports the shift from superficial iteration to genuine redesign.",
+        "scope_decision": "in-scope",
+        "source_refs": [
+          "The Deconstruction (First Principles Thinking)",
+          "Do not just iterate on",
+          "Break the broken system down",
+          "Reasoning by Analogy",
+          "First Principles",
+          "Building a new system from the ground up"
+        ],
+        "title": "The Deconstruction: First Principles Thinking",
+        "unit_id": "u13"
+      },
+      {
+        "cluster_id": "c-u14",
+        "cluster_interstitial_count": 0,
+        "cluster_position": "establish",
+        "cluster_role": "head",
+        "develop_type": null,
+        "learning_objective": "Synthesize the section's three core takeaways: clinicians are already equipped, intrapreneurship is the arena, and opportunities are the goal.",
+        "master_behavioral_intent": "clear-guidance",
+        "narrative_arc": "From discrete concepts to an integrated innovation stance through concise recap of identity, arena, and goal.",
+        "parent_slide_id": null,
+        "rationale": "This is a gestalt recap slide whose value is the simultaneous whole, so it should remain a singleton.",
+        "scope_decision": "in-scope",
+        "source_refs": [
+          "Part 3 Summary Slide",
+          "You are already equipped",
+          "Your Arena",
+          "Your Goal",
+          "Move past generating \"Ideas\"",
+          "defining actionable \"Opportunities\""
+        ],
+        "title": "Part 3 Summary",
+        "unit_id": "u14"
+      },
+      {
+        "cluster_id": "c-u15",
+        "cluster_interstitial_count": 0,
+        "cluster_position": "establish",
+        "cluster_role": "head",
+        "develop_type": null,
+        "learning_objective": "Verify learner recall and understanding of key Part 3 concepts including idea vs opportunity, clinical method to design thinking, and intrapreneurship constraints.",
+        "master_behavioral_intent": "clear-guidance",
+        "narrative_arc": "From exposure to verification through formative questions that test the section's core distinctions and mappings.",
+        "parent_slide_id": null,
+        "rationale": "The source includes a complete knowledge check set that serves as end-of-part formative assessment aligned to the major concepts taught.",
+        "scope_decision": "in-scope",
+        "source_refs": [
+          "Part 3 Knowledge Check",
+          "idea rigorously vetted for feasibility, viability, and desirability",
+          "taking a patient's History",
+          "Balancing your clinical vision",
+          "fall in love with the problem",
+          "the true root cause"
+        ],
+        "title": "Knowledge Check",
+        "unit_id": "u15"
+      }
+    ]
+  },
+  "model_id": "gpt-5.4",
+  "specialist_id": "irene_pass1",
+  "usage": {
+    "input_token_details": {
+      "audio": 0,
+      "cache_read": 0
+    },
+    "input_tokens": 16857,
+    "output_token_details": {
+      "audio": 0,
+      "reasoning": 0
+    },
+    "output_tokens": 4625,
+    "total_tokens": 21482
+  }
+}

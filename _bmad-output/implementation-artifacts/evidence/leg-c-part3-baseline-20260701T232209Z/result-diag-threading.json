@@ -1,0 +1,60 @@
+{
+  "trial_id": "c2053da5-3d48-4465-828a-b7a7cce86958",
+  "arm": "diagnostic-threading",
+  "final_status": "paused-at-error",
+  "final_error_tag": "diagnostic.gary-halt",
+  "payload_log": [
+    {
+      "specialist_id": "texas",
+      "directive_path": "C:\\Users\\juanl\\Documents\\GitHub\\course-DEV-IDE-with-AGENTS-hybrid\\_bmad-output\\implementation-artifacts\\evidence\\leg-c-part3-baseline-20260701T232209Z\\directive-p3-diag-c2053da5-3d48-4465-828a-b7a7cce86958.yaml",
+      "result_keys": [
+        "bundle_dir",
+        "directive_path"
+      ],
+      "min_cluster_floor": null
+    },
+    {
+      "specialist_id": "texas",
+      "directive_path": "C:\\Users\\juanl\\Documents\\GitHub\\course-DEV-IDE-with-AGENTS-hybrid\\_bmad-output\\implementation-artifacts\\evidence\\leg-c-part3-baseline-20260701T232209Z\\directive-p3-diag-c2053da5-3d48-4465-828a-b7a7cce86958.yaml",
+      "result_keys": [
+        "bundle_dir",
+        "directive_path"
+      ],
+      "min_cluster_floor": null
+    },
+    {
+      "specialist_id": "irene_pass1",
+      "directive_path": "C:\\Users\\juanl\\Documents\\GitHub\\course-DEV-IDE-with-AGENTS-hybrid\\_bmad-output\\implementation-artifacts\\evidence\\leg-c-part3-baseline-20260701T232209Z\\directive-p3-diag-c2053da5-3d48-4465-828a-b7a7cce86958.yaml",
+      "result_keys": null,
+      "min_cluster_floor": null
+    },
+    {
+      "specialist_id": "cd",
+      "directive_path": "C:\\Users\\juanl\\Documents\\GitHub\\course-DEV-IDE-with-AGENTS-hybrid\\_bmad-output\\implementation-artifacts\\evidence\\leg-c-part3-baseline-20260701T232209Z\\directive-p3-diag-c2053da5-3d48-4465-828a-b7a7cce86958.yaml",
+      "result_keys": null,
+      "min_cluster_floor": null
+    },
+    {
+      "specialist_id": "irene_pass1",
+      "directive_path": "C:\\Users\\juanl\\Documents\\GitHub\\course-DEV-IDE-with-AGENTS-hybrid\\_bmad-output\\implementation-artifacts\\evidence\\leg-c-part3-baseline-20260701T232209Z\\directive-p3-diag-c2053da5-3d48-4465-828a-b7a7cce86958.yaml",
+      "result_keys": null,
+      "min_cluster_floor": null
+    },
+    {
+      "specialist_id": "irene_pass1",
+      "directive_path": "C:\\Users\\juanl\\Documents\\GitHub\\course-DEV-IDE-with-AGENTS-hybrid\\_bmad-output\\implementation-artifacts\\evidence\\leg-c-part3-baseline-20260701T232209Z\\directive-p3-diag-c2053da5-3d48-4465-828a-b7a7cce86958.yaml",
+      "result_keys": null,
+      "min_cluster_floor": null
+    },
+    {
+      "specialist_id": "gary",
+      "directive_path": "C:\\Users\\juanl\\Documents\\GitHub\\course-DEV-IDE-with-AGENTS-hybrid\\_bmad-output\\implementation-artifacts\\evidence\\leg-c-part3-baseline-20260701T232209Z\\directive-p3-diag-c2053da5-3d48-4465-828a-b7a7cce86958.yaml",
+      "result_keys": [
+        "export_dir",
+        "gamma_settings"
+      ],
+      "min_cluster_floor": null
+    }
+  ],
+  "run_dir": "C:\\Users\\juanl\\Documents\\GitHub\\course-DEV-IDE-with-AGENTS-hybrid\\state\\config\\runs\\c2053da5-3d48-4465-828a-b7a7cce86958"
+}
