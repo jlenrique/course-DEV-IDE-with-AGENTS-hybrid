@@ -20,12 +20,22 @@ Decisions are supplied as a ``{gate_id: {"verb": ..., "edit_payload": ...}}`` ma
 
 from __future__ import annotations
 
+import hashlib
 import json
+from collections.abc import Callable
 from pathlib import Path
 from typing import Any
 from uuid import UUID
 
+from app.marcus.orchestrator.picker_html_emitter import decode_picker_selection_code
+from app.marcus.orchestrator.picker_publisher import publish_picker
 from app.marcus.orchestrator.production_runner import resume_production_trial
+from app.marcus.orchestrator.styleguide_picker import (
+    PickerError,
+    append_pick_event,
+    load_picker_roster,
+    write_pick_to_directive,
+)
 from app.models.state.operator_verdict import OperatorVerdict
 from app.runtime.economics import RUNS_ROOT
 
@@ -33,6 +43,237 @@ _RULE = "─" * 64
 _M = "🧑‍💼 **Marcus-SPOC:**"
 
 DEFAULT_OPERATOR_ID = "operator_juan"
+
+
+# ----------------------------------------------- styleguide-picker PRE-FLIGHT (Seam 3)
+def narrate_picker_preflight(
+    publish_url: str, run_tag: str, *, style_count: int | None = None
+) -> str:
+    """Client-facing PRE-FLIGHT narration (runs BEFORE G1): surface the picker url.
+
+    Numbered-row HIL instruction + paste-back close. Deliberately client-facing:
+    no styleguide slug ids and no "directive" vocabulary leak into what a client
+    sees (A6/A7 keep the internal ids server-side).
+    """
+    count = f" ({style_count} styles to choose from)" if style_count else ""
+    lines = [
+        _RULE,
+        f"{_M} Before we start, let's pick the visual style for your deck{count}.",
+        "  1. Open your styleguide picker:",
+        f"     {publish_url}",
+        "     (it can take up to a minute to go live — if it shows a not-found page "
+        "at first, wait a moment and refresh.)",
+        "  2. Choose your style, and whether you want one version or two (A/B).",
+        "  3. Copy the SELECTION CODE the page shows you and paste it back to me here.",
+        f"{_M} I'll read it back to you to confirm before we lock it in.",
+    ]
+    return "\n".join(lines)
+
+
+def _roster_index(ssot_path: str | Path | None) -> dict[str, dict[str, Any]]:
+    roster = load_picker_roster(
+        include_probes=True, include_deprecated=True, ssot_path=ssot_path
+    )
+    return {entry["name"]: entry for entry in roster}
+
+
+def _roster_content_hash(ssot_path: str | Path | None) -> str:
+    """Stable content hash of the resolvable roster (A7 provenance handle)."""
+    index = _roster_index(ssot_path)
+    payload = [
+        {"name": name, "lifecycle": index[name].get("lifecycle")}
+        for name in sorted(index)
+    ]
+    blob = json.dumps(payload, sort_keys=True, separators=(",", ":")).encode("utf-8")
+    return hashlib.sha256(blob).hexdigest()
+
+
+def decode_and_echo_pick(
+    code: str,
+    *,
+    expected_run_tag: str,
+    ssot_path: str | Path | None = None,
+) -> tuple[dict[str, str], str]:
+    """Decode a pasted selection code and build a human-readable echo-and-confirm.
+
+    Returns ``({"A": slug, "B": slug?}, echo_text)``. The echo names the guide(s)
+    by DISPLAY NAME + lifecycle + version count (client-facing — no slug ids, no
+    "directive"). A stale/foreign or malformed code propagates the fail-loud
+    ``PickerError`` from the decoder.
+    """
+    picks = decode_picker_selection_code(
+        code, expected_run_tag=expected_run_tag, ssot_path=ssot_path
+    )
+    index = _roster_index(ssot_path)
+    version_count = 2 if "B" in picks else 1
+    named: list[str] = []
+    for label in ("A", "B"):
+        if label not in picks:
+            continue
+        entry = index.get(picks[label], {})
+        display = str(entry.get("display_name") or picks[label])
+        lifecycle = str(entry.get("lifecycle") or "candidate")
+        named.append(f"Version {label}: {display} ({lifecycle})")
+    words = "2 versions" if version_count == 2 else "1 version"
+    echo = (
+        f"{_M} Here's what I have — please confirm:\n  "
+        + "\n  ".join(named)
+        + f"\n  That's {words}. Reply 'confirm' to lock it in, or paste a new code."
+    )
+    return picks, echo
+
+
+def commit_picker_pick(
+    picks: dict[str, str] | None = None,
+    *,
+    directive_path: str | Path,
+    expected_run_tag: str,
+    publish_url: str,
+    picked_by: str,
+    code: str,
+    confirmed: bool = False,
+    ssot_path: str | Path | None = None,
+    events_path: str | Path | None = None,
+    run_id: str | None = None,
+) -> dict[str, Any]:
+    """On CONFIRM: write the directive + append the sidecar with A7 provenance.
+
+    Threads the full provenance chain (who / from-url / roster content-hash /
+    resolved ids + version count / the code itself) into the directive's
+    ``styleguide_picker_provenance`` block. An unattributable pick (empty
+    ``picked_by``) FAILS LOUD — never a silent anonymous bind.
+
+    ENFORCED confirm gate: ``confirmed`` must be truthy — a caller cannot
+    decode-then-commit directly, bypassing the echo-and-confirm beat. The picks
+    are RE-DERIVED from ``code`` (single source of truth) so the provenance
+    ``selection_code`` can never disagree with the bound picks; a ``picks`` arg,
+    when passed, is cross-checked against the decode and a mismatch FAILS LOUD.
+    An identical re-confirm is a TRUE no-op on the sidecar (stable
+    ``(run_tag, code)`` dedup key), and always leaves exactly one provenance block.
+    """
+    if not confirmed:
+        raise PickerError(
+            "commit refused: the pick was not affirmatively confirmed "
+            "(echo-and-confirm gate) — decode-then-commit may not bypass the echo"
+        )
+    attributed = str(picked_by or "").strip()
+    if not attributed:
+        raise PickerError(
+            "unattributable pick: picked_by (who chose — operator or named client) "
+            "is required for the A7 provenance chain"
+        )
+    # Single-source the picks FROM the code (Blind Hunter NIT): the provenance's
+    # selection_code can then never disagree with the bound picks.
+    derived = decode_picker_selection_code(
+        code, expected_run_tag=expected_run_tag, ssot_path=ssot_path
+    )
+    if picks is not None and dict(picks) != derived:
+        raise PickerError(
+            f"selection code decodes to {derived} but the supplied picks are "
+            f"{dict(picks)} — refusing to bind a code that disagrees with its picks"
+        )
+    version_count = 2 if "B" in derived else 1
+    provenance_extra = {
+        "picked_by": attributed,
+        "publish_url": publish_url,
+        "roster_sha256": _roster_content_hash(ssot_path),
+        "version_count": version_count,
+        "selection_code": code,
+        "run_tag": expected_run_tag,
+    }
+    provenance = write_pick_to_directive(
+        directive_path,
+        derived,
+        ssot_path=ssot_path,
+        provenance_extra=provenance_extra,
+    )
+    # Stable dedup identity: an identical re-confirm (fresh picked_at) is a no-op.
+    stable_dedup = f"{expected_run_tag}:{hashlib.sha256(code.encode('utf-8')).hexdigest()}"
+    append_pick_event(
+        derived,
+        directive_path=directive_path,
+        picked_at=provenance["picked_at"],
+        run_id=run_id,
+        events_path=events_path,
+        dedup_key=stable_dedup,
+    )
+    return {"picks": derived, "provenance": provenance}
+
+
+_AFFIRMATIVE = frozenset({"confirm", "confirmed", "yes", "y", "lock it in", "lock"})
+
+
+def run_picker_preflight(
+    *,
+    run_tag: str,
+    directive_path: str | Path,
+    out_dir: str | Path,
+    picked_by: str,
+    input_fn: Callable[[str], str] = input,
+    print_fn: Callable[[str], None] = print,
+    publish_fn: Callable[..., dict[str, Any]] = publish_picker,
+    ssot_path: str | Path | None = None,
+    events_path: str | Path | None = None,
+    run_id: str | None = None,
+    include_probes: bool = False,
+    site_repo: str | None = None,
+    token: str | None = None,
+    max_attempts: int = 3,
+) -> dict[str, Any] | None:
+    """The enforced pre-flight product path (runs BEFORE G1) — the ONE real caller.
+
+    Ties the seam end-to-end: publish the picker for THIS ``run_tag`` → surface the
+    url via :func:`narrate_picker_preflight` → read a pasted selection code → decode
+    + echo via :func:`decode_and_echo_pick` → REQUIRE an explicit affirmative
+    confirm → only then :func:`commit_picker_pick` (with ``confirmed=True``). A
+    stale/foreign or malformed code is rejected AT DECODE, before any commit. If no
+    valid code is confirmed within ``max_attempts``, raises :class:`PickerError`
+    without writing the directive. All I/O is via injectable ``input_fn`` /
+    ``print_fn`` / ``publish_fn`` so the path is fully testable offline.
+    """
+    record = publish_fn(
+        run_tag=run_tag,
+        out_dir=out_dir,
+        ssot_path=ssot_path,
+        include_probes=include_probes,
+        site_repo=site_repo,
+        token=token,
+    )
+    publish_url = str(record["publish_url"])
+    print_fn(
+        narrate_picker_preflight(
+            publish_url, run_tag, style_count=record.get("style_count")
+        )
+    )
+    for _attempt in range(max_attempts):
+        code = input_fn("Paste your selection code: ").strip()
+        try:
+            _picks, echo = decode_and_echo_pick(
+                code, expected_run_tag=run_tag, ssot_path=ssot_path
+            )
+        except PickerError as exc:
+            # Rejected AT DECODE — a stale/foreign/malformed code never reaches commit.
+            print_fn(f"{_M} That code didn't work: {exc}. Please paste it again.")
+            continue
+        print_fn(echo)
+        answer = input_fn("Reply 'confirm' to lock it in, or paste a new code: ").strip()
+        if answer.lower() in _AFFIRMATIVE:
+            return commit_picker_pick(
+                directive_path=directive_path,
+                expected_run_tag=run_tag,
+                publish_url=publish_url,
+                picked_by=picked_by,
+                code=code,
+                confirmed=True,
+                ssot_path=ssot_path,
+                events_path=events_path,
+                run_id=run_id,
+            )
+        # Not affirmative — treat the reply as a fresh code on the next loop.
+    raise PickerError(
+        f"no confirmed styleguide pick after {max_attempts} attempts; pre-flight "
+        f"aborted without writing the directive"
+    )
 
 
 def build_operator_verdict_kwargs(
@@ -309,9 +550,13 @@ def main(argv: list[str] | None = None) -> int:
 __all__ = [
     "DEFAULT_OPERATOR_ID",
     "build_operator_verdict_kwargs",
-    "narrate_gate",
-    "run_marcus_spoc",
+    "commit_picker_pick",
+    "decode_and_echo_pick",
     "main",
+    "narrate_gate",
+    "narrate_picker_preflight",
+    "run_marcus_spoc",
+    "run_picker_preflight",
 ]
 
 

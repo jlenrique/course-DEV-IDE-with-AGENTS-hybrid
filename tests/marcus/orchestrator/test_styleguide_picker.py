@@ -302,6 +302,23 @@ def test_empty_picks_fail_loud(tmp_path: Path) -> None:
         write_pick_to_directive(tmp_path / "d.yaml", {})
 
 
+# ------------------------------------------------ SHOULD-6 provenance_extra collision
+@pytest.mark.parametrize(
+    "canonical_key",
+    ["picked_at", "picker_version", "ssot_sha256", "picks", "written_by"],
+)
+def test_provenance_extra_cannot_clobber_canonical_keys(
+    tmp_path: Path, canonical_key: str
+) -> None:
+    directive = tmp_path / "d.yaml"
+    with pytest.raises(PickerError, match="(?i)provenance_extra|canonical|override"):
+        write_pick_to_directive(
+            directive,
+            {"A": "hil-2026-apc-crossroads-classic"},
+            provenance_extra={canonical_key: "evil"},
+        )
+
+
 # ------------------------------------------------------- localhost capture (Amelia)
 def _post_form(url: str, fields: dict[str, str]) -> dict:
     body = urllib.parse.urlencode(fields).encode("utf-8")

@@ -1,0 +1,37 @@
+# Static-HTML GitHub Actions Pages deploy for jlenrique/jlenrique.github.io
+# Purpose: bypass the failing/hung LEGACY Pages builder. Uploads the current tree
+# as a Pages artifact and deploys it — git-history size is irrelevant to this path,
+# real logs appear in the Actions tab, no PAT-to-build, no 10-builds/hr limit.
+#
+# INSTALL (one-time, needs operator):
+#   1. Repo Settings -> Pages -> Build and deployment -> Source -> "GitHub Actions".
+#      (This alone flips build_type legacy -> workflow. Needs repo admin / Pages:write.)
+#   2. Commit this file to the site repo at .github/workflows/pages.yml on main.
+# After that every push to main deploys via Actions. .nojekyll already present so
+# Jekyll stays off; upload-pages-artifact tars the whole site as-is.
+name: Deploy static site to Pages
+on:
+  push:
+    branches: [main]
+  workflow_dispatch: {}
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+concurrency:
+  group: pages
+  cancel-in-progress: false
+jobs:
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: .            # publish the repo root as-is (static site)
+      - id: deployment
+        uses: actions/deploy-pages@v4

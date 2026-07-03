@@ -208,6 +208,56 @@ def _last_used_by_guide(events_path: Path) -> dict[str, str]:
     return latest
 
 
+def _assert_pickable_guide(
+    guide_name: str, guides: dict[str, Any], ssot: Path
+) -> dict[str, Any]:
+    """A-M1 single-source guard: a guide must be in the SSOT AND production-pickable.
+
+    Membership + lifecycle/visibility invariant enforced in ONE place so the
+    directive writer AND the gh-pages selection-code decoder agree byte-for-byte:
+    a ``lifecycle: deprecated`` (retired) or ``visibility: probe`` (scaffolding)
+    guide can NEVER be bound into a production run. Returns the SSOT record.
+    """
+    if guide_name not in guides:
+        raise PickerError(
+            f"picked styleguide {guide_name!r} is not in the SSOT {ssot} "
+            f"(known: {sorted(guides)})"
+        )
+    record = guides[guide_name]
+    presentation = record.get("presentation") or {} if isinstance(record, dict) else {}
+    lifecycle = (
+        str(record.get("lifecycle") or "candidate").strip().lower()
+        if isinstance(record, dict)
+        else "candidate"
+    )
+    visibility = str(presentation.get("visibility") or "").strip().lower()
+    if lifecycle == "deprecated":
+        raise PickerError(
+            f"picked styleguide {guide_name!r} is deprecated (retired) and cannot "
+            f"be bound into a production directive (A-M1 lifecycle invariant)"
+        )
+    if visibility == "probe":
+        raise PickerError(
+            f"picked styleguide {guide_name!r} is a probe (scaffolding) and cannot "
+            f"be bound into a production directive (A-M1 visibility invariant)"
+        )
+    return record
+
+
+def assert_pickable_guide(
+    guide_name: str, *, ssot_path: str | Path | None = None
+) -> dict[str, Any]:
+    """Public single-source A-M1 guard used by the gh-pages decoder (Q1 anti-drift).
+
+    Loads the SSOT and applies the same membership + lifecycle/visibility rejection
+    that :func:`write_pick_to_directive` applies at the mutation point, so a slug
+    decoded from a pasted selection code is validated by the identical rule.
+    """
+    ssot = Path(ssot_path) if ssot_path is not None else GAMMA_STYLE_GUIDES_SSOT_PATH
+    guides = _load_ssot_guides(ssot)
+    return _assert_pickable_guide(str(guide_name).strip(), guides, ssot)
+
+
 def _load_ssot_guides(ssot_path: Path) -> dict[str, Any]:
     if not ssot_path.is_file():
         raise PickerError(f"styleguide SSOT not found at {ssot_path}")
@@ -927,6 +977,7 @@ def write_pick_to_directive(
     *,
     ssot_path: str | Path | None = None,
     picked_at: str | None = None,
+    provenance_extra: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
     """Write/patch ``gamma_settings[]`` + the provenance block into the directive.
 
@@ -958,36 +1009,13 @@ def write_pick_to_directive(
                 f"pick variant id must be one of {list(_VARIANT_IDS)}; got {variant!r}"
             )
         guide_name = str(name).strip()
-        if guide_name not in guides:
-            raise PickerError(
-                f"picked styleguide {guide_name!r} is not in the SSOT {ssot} "
-                f"(known: {sorted(guides)})"
-            )
-        # A-M1 (Winston): enforce the lifecycle/visibility invariant at the
-        # MUTATION point too (defense-in-depth; the roster-load filter already
-        # hides these on the served path). A `deprecated` (retired) or
-        # `visibility: probe` (scaffolding) guide must NEVER be bound into a
-        # production directive, even by a direct caller.
-        record = guides[guide_name]
-        presentation = (
-            record.get("presentation") or {} if isinstance(record, dict) else {}
-        )
-        lifecycle = (
-            str(record.get("lifecycle") or "candidate").strip().lower()
-            if isinstance(record, dict)
-            else "candidate"
-        )
-        visibility = str(presentation.get("visibility") or "").strip().lower()
-        if lifecycle == "deprecated":
-            raise PickerError(
-                f"picked styleguide {guide_name!r} is deprecated (retired) and cannot "
-                f"be bound into a production directive (A-M1 lifecycle invariant)"
-            )
-        if visibility == "probe":
-            raise PickerError(
-                f"picked styleguide {guide_name!r} is a probe (scaffolding) and cannot "
-                f"be bound into a production directive (A-M1 visibility invariant)"
-            )
+        # A-M1 (Winston): enforce the SSOT-membership + lifecycle/visibility
+        # invariant at the MUTATION point too (defense-in-depth; the roster-load
+        # filter already hides these on the served path). Single-sourced through
+        # `_assert_pickable_guide` so the gh-pages decoder applies the identical
+        # rule (Q1 anti-drift) — a `deprecated` (retired) or `visibility: probe`
+        # (scaffolding) guide must NEVER be bound into a production directive.
+        _assert_pickable_guide(guide_name, guides, ssot)
         normalized[variant_id] = guide_name
 
     directive = Path(directive_path)
@@ -1056,6 +1084,20 @@ def write_pick_to_directive(
             ],
             "written_by": "styleguide_picker",
         }
+        # A7 (Marcus): the gh-pages paste-back path threads extra provenance
+        # (who/from-url/roster-hash/version-count/the code) so an unattributable
+        # pick is auditable end-to-end. Additive: local-picker callers pass None.
+        if provenance_extra:
+            # Guard: extra keys must never clobber the canonical provenance fields
+            # (they are the audit anchors — picked_at/version/ssot hash/picks/writer).
+            canonical = {"picked_at", "picker_version", "ssot_sha256", "picks", "written_by"}
+            clashes = canonical & set(provenance_extra)
+            if clashes:
+                raise PickerError(
+                    f"provenance_extra may not override canonical provenance keys "
+                    f"{sorted(clashes)}"
+                )
+            provenance.update(provenance_extra)
         loaded["styleguide_picker_provenance"] = provenance
         # R-MAJOR-1: crash-atomic write — never truncate-then-write the live run
         # input in place. Temp sibling + fsync + os.replace, still inside the lock.
@@ -1071,6 +1113,7 @@ def append_pick_event(
     picked_at: str,
     run_id: str | None = None,
     events_path: str | Path | None = None,
+    dedup_key: str | None = None,
 ) -> list[dict[str, Any]]:
     """Append one JSONL line per pick to the append-only sidecar (digest-idempotent).
 
@@ -1081,33 +1124,57 @@ def append_pick_event(
     (the file is never rewritten or shrunk). The read-digests-then-append runs
     under an advisory same-host file lock (R8; same-host cooperating-writer
     guarantee only). Returns the events written.
+
+    Idempotency has TWO layers. By default an event is deduped on its full
+    ``event_digest`` (every field, including ``picked_at``) — replaying a byte-
+    identical event is a no-op. When ``dedup_key`` is supplied (the paste-back
+    commit path), each per-variant event ALSO carries a stable
+    ``dedup_key`` = ``f"{dedup_key}:{variant_id}"`` and is deduped on THAT: an
+    identical re-confirm mints a fresh ``picked_at`` yet is still a true no-op,
+    because the stable ``(run_tag, selection_code)`` identity — not the varying
+    timestamp — decides the append. A DIFFERENT code for the same run has a
+    different ``dedup_key`` and is a deliberate change (appends; last-write-wins).
     """
     path = Path(events_path) if events_path is not None else GAMMA_STYLEGUIDE_PICKS_PATH
     path.parent.mkdir(parents=True, exist_ok=True)
     with _advisory_lock(path):  # R8: serialize digest-read + append
+        prior = _read_pick_events(path)
         existing = {
             event.get("event_digest")
-            for event in _read_pick_events(path)
+            for event in prior
             if event.get("event_digest")
+        }
+        existing_dedup = {
+            event.get("dedup_key") for event in prior if event.get("dedup_key")
         }
         written: list[dict[str, Any]] = []
         lines: list[str] = []
         for variant in sorted(picks):
+            variant_id = str(variant).strip().upper()
             event: dict[str, Any] = {
                 "guide_name": str(picks[variant]).strip(),
-                "variant_id": str(variant).strip().upper(),
+                "variant_id": variant_id,
                 "directive_path": Path(directive_path).as_posix(),
                 "picked_at": picked_at,
             }
             if run_id:
                 event["run_id"] = str(run_id)
+            variant_dedup = f"{dedup_key}:{variant_id}" if dedup_key else None
+            if variant_dedup is not None:
+                event["dedup_key"] = variant_dedup
             digest = hashlib.sha256(
                 json.dumps(event, sort_keys=True, separators=(",", ":")).encode("utf-8")
             ).hexdigest()
-            if digest in existing:
+            # Skip on EITHER identity: the exact-event digest, or (when supplied)
+            # the stable (run_tag, code) dedup key that survives a fresh timestamp.
+            if digest in existing or (
+                variant_dedup is not None and variant_dedup in existing_dedup
+            ):
                 continue
             event["event_digest"] = digest
             existing.add(digest)
+            if variant_dedup is not None:
+                existing_dedup.add(variant_dedup)
             written.append(event)
             lines.append(json.dumps(event, sort_keys=True, separators=(",", ":")))
         if lines:
@@ -1180,6 +1247,7 @@ __all__ = [
     "PICKER_VERSION",
     "PickerError",
     "append_pick_event",
+    "assert_pickable_guide",
     "capture_pick",
     "load_picker_roster",
     "main",
