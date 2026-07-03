@@ -404,3 +404,24 @@ scripted_enum:
   triggers:
   - publication_target
   - descript_bound
+
+# `prompt_configuration.additional_instructions` — OPTIONAL style-level prose register
+# (party-ratified 2026-07-02). A style MAY carry a persistent, deck-level prose channel
+# delivered to Gamma's LLM. Shape (validated by the write-gate for BOTH modes):
+#   prompt_configuration:
+#     additional_instructions:          # optional; a NON-EMPTY list of NON-EMPTY strings
+#     - Keep a calm, spacious clinical register throughout.
+# Behavior:
+#   * api/Classic — the resolver emits it and Gary composes it as a SEPARATE, STYLE-FIRST
+#     part of the real Gamma `additionalInstructions` param. It COMPLEMENTS, never
+#     overwrites, the per-deck source-derived instructions (which come after and win on
+#     specificity) and Gary's hardcoded card rule (concatenation, not assignment).
+#   * studio — TEMPLATE-LOCK-ONLY BY DESIGN: the value is a documented template-lock
+#     annotation; the create-from-template call has no `additionalInstructions` channel,
+#     so the resolver deliberately does NOT emit it (intentional + tested, not a silent
+#     drop). The studio_prompt_lock wrapper remains the sole studio style-authority.
+# Non-contradiction (write-gate, AC-5): prose that CONTRADICTS a structured param (e.g.
+#   photographic prose under a non-photographic `style_preset`, or stock-photo prose under
+#   `image_source: aiGenerated`) is an ERROR; prose that merely ECHOES Gary's card rule is
+#   a WARN. Absent ⇒ behavior byte-identical to a record without the field.
+# NOTE: intentionally UNPOPULATED on the shipped records today — wired for FUTURE authoring.
