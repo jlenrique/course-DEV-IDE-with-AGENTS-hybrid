@@ -441,3 +441,106 @@ def test_default_validation_makes_no_network_call(monkeypatch) -> None:
 
     assert validate_style_guides(data) == []
     assert validate_style_guides_full(data) == ([], [])
+
+
+# --------------------------------------------------------------------------- #
+# studio-via-api-override-plumbing (step 1) — studio theme_id/image_model
+# overrides validated on a studio record; forbidden riding a Classic record.
+# --------------------------------------------------------------------------- #
+from app.specialists.gary._act import IMAGE_MODEL_VALUES  # noqa: E402
+from scripts.utilities.validate_gamma_style_guides import (  # noqa: E402
+    _STUDIO_IMAGE_MODEL_VALUES,
+    _STUDIO_OVERRIDE_ON_CLASSIC_TAG,
+    _validate_one,
+)
+
+
+def _studio_rec(**template_extra: object) -> dict:
+    return {
+        "production_mode": "studio",
+        "studio_template": {"gamma_id": "g_test", **template_extra},
+        "presentation": {"narrative": {"triad_rationale": "coherent studio"}},
+        "lifecycle": "permanent",
+    }
+
+
+def _api_rec(**overrides: object) -> dict:
+    rec = {
+        "production_mode": "api",
+        "theme": {"id": "njim9kuhfnljvaa"},
+        "prompt_configuration": {
+            "text_content": {"mode": "generate", "amount": "Detailed"},
+            "visuals": {"image_source": "aiGenerated", "keywords": ["k"]},
+        },
+        "page_settings": {"card_options": {"dimensions": "fluid"}},
+        "presentation": {"narrative": {"triad_rationale": "coherent api"}},
+        "lifecycle": "permanent",
+    }
+    rec.update(overrides)
+    return rec
+
+
+def test_validator_enum_validates_studio_image_model() -> None:
+    """(5) accepts recraft-v3; REJECTS a bogus value, error names field + value."""
+    errs_ok, _ = _validate_one("s", _studio_rec(image_model="recraft-v3"))
+    assert errs_ok == [], errs_ok
+    errs_bad, _ = _validate_one("s", _studio_rec(image_model="bogus-model-x"))
+    assert any("image_model" in e and "bogus-model-x" in e for e in errs_bad), errs_bad
+
+
+def test_validator_accepts_studio_theme_id() -> None:
+    """(6) theme_id is an opaque Gamma id — string-validate only, accepted on studio."""
+    errs, _ = _validate_one("s", _studio_rec(theme_id="theme-opaque-123"))
+    assert errs == [], errs
+
+
+def test_validator_rejects_empty_studio_theme_id() -> None:
+    """theme_id present-but-empty is rejected (non-empty when present)."""
+    errs, _ = _validate_one("s", _studio_rec(theme_id="   "))
+    assert any("theme_id" in e for e in errs), errs
+
+
+def test_validator_rejects_classic_only_key_on_studio_record() -> None:
+    """(7) a Classic-only surface key on a studio record is a surface-violation
+    naming the illegal key."""
+    rec = _studio_rec()
+    rec["theme"] = {"id": "njim9kuhfnljvaa"}
+    errs, _ = _validate_one("s", rec)
+    assert any("surface-violation" in e and "theme" in e for e in errs), errs
+
+
+def test_validator_rejects_studio_overrides_on_classic_record() -> None:
+    """(8) theme_id/image_model studio overrides may NOT ride a Classic (api) record."""
+    rec = _api_rec(
+        studio_template={"gamma_id": "g_x", "theme_id": "th", "image_model": "recraft-v3"}
+    )
+    errs, _ = _validate_one("api-rec", rec)
+    # (F4) assert the studio-override-on-classic TAG, not a bare "theme_id" substring —
+    # the _api_rec fixture carries theme.id, so the old substring could pass for the
+    # wrong reason.
+    assert any(
+        _STUDIO_OVERRIDE_ON_CLASSIC_TAG in e or "studio-only override" in e for e in errs
+    ), errs
+
+
+def test_validator_rejects_malformed_derived_from_on_classic_record() -> None:
+    """(F5) derived_from shape (non-empty string when present) is validated on ALL
+    records — a malformed derived_from on a Classic (api) record is also caught."""
+    rec = _api_rec(derived_from=123)
+    errs, _ = _validate_one("api-rec", rec)
+    assert any("derived_from" in e for e in errs), errs
+
+
+def test_studio_image_model_accepted_set_equals_catalog_enum() -> None:
+    """(A4 drift guard) the studio-accepted image_model set EQUALS the single catalog
+    enum — every member accepted, a non-member rejected. No hand-copied second list."""
+    # (F3) set-EQUALITY / same object — catches a future hand-copied superset that would
+    # accept a model the catalog does not.
+    assert _STUDIO_IMAGE_MODEL_VALUES == IMAGE_MODEL_VALUES
+    for model in sorted(IMAGE_MODEL_VALUES):
+        errs, _ = _validate_one("s", _studio_rec(image_model=model))
+        assert not any("image_model" in e for e in errs), (model, errs)
+    bogus = "definitely-not-a-real-model"
+    assert bogus not in IMAGE_MODEL_VALUES
+    errs_bad, _ = _validate_one("s", _studio_rec(image_model=bogus))
+    assert any("image_model" in e for e in errs_bad), errs_bad

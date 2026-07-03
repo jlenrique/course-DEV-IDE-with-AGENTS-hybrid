@@ -135,6 +135,14 @@ GAMMA_SETTING_KEYS = frozenset(
         # generate path; "api" (default) is the unchanged Classic path.
         "production_mode",
         "studio_template_id",
+        # Studio per-record overrides (studio-via-api-override-plumbing, step 1). The
+        # resolver emits these STUDIO-scoped keys (from studio_template.{theme_id,
+        # image_model}); the studio dispatch reads them and passes theme_id= /
+        # image_options={"model": ...} to create-from-template ONLY when present. They
+        # are distinct from the Classic ``theme`` / ``image_model`` keys (forbidden on a
+        # studio record) so they never collide with the Classic override loop / gate.
+        "studio_theme_id",
+        "studio_image_model",
         # CD-owned styleguide library (Leg-A 2026-07-01). When present, names a
         # record in state/config/gamma-style-guides.yaml whose resolved base-layer
         # API keys seed this variant BEFORE per-variant overrides. It is the ONLY
@@ -178,11 +186,21 @@ def _setting_present(value: Any) -> bool:
 # is what makes Studio *be* Studio — a prose-heavy / restructuring prompt silently
 # regenerates the card to Classic typography (the demonstrated fallback). Edit only
 # deliberately; the studio guard below is the runtime backstop.
+# English-only text steer (studio-via-api-override-plumbing, step 1 / A6). Composed
+# INSIDE the per-slide prompt that actually reaches the model so any text the image
+# model renders onto the full-bleed card stays English — guards against non-English
+# glyphs leaking into an image-embedded label. A constant (not record-threaded) for
+# step 1: the steer is style-invariant and belongs with the frozen lock wrapper.
+_STUDIO_ENGLISH_ONLY_STEER = (
+    "Render ALL text embedded in the image in English only; do not introduce any "
+    "non-English words or characters."
+)
 _STUDIO_LOCK_WRAPPER = (
     "LOCK THE DESIGN. Keep exactly ONE single full-bleed image card with the title "
     "and key data embedded in the illustration. DO NOT convert the full-bleed image "
     "card into Classic typography. DO NOT add, remove, or reorder cards, and DO NOT "
     "change the card type or layout.\n\n"
+    f"{_STUDIO_ENGLISH_ONLY_STEER}\n\n"
     "ONLY swap the image subject to this new topic, matching the template's existing "
     "visual style:\n{slide_content}"
 )
@@ -860,6 +878,31 @@ def _generate_studio_variant(
     fallback; the guard fails on the FIRST bad slide rather than after N paid cards.
     """
     template_id = str(variant_settings.get("studio_template_id") or "").strip()
+    # Optional per-record Studio overrides (studio-via-api-override-plumbing, step 1).
+    # Resolved by the styleguide library from studio_template.{theme_id, image_model}.
+    # Absent ⇒ the kwarg is NOT sent (never theme_id="" / image_options={"model": None},
+    # which would 400 or wrongly override the template's theme). The image model rides
+    # as a SINGLE-key {"model": <scalar>} dict — never an arbitrary options object, which
+    # from-template 400s on (source/stylePreset).
+    theme_override = str(variant_settings.get("studio_theme_id") or "").strip()
+    image_model_override = str(variant_settings.get("studio_image_model") or "").strip()
+    # ``studio_image_model`` is a valid GAMMA_SETTING_KEY, so it can arrive per-variant
+    # WITHOUT having passed the offline write-gate enum check. Guard it here — BEFORE the
+    # per-slide paid loop — so a bogus model fails loud with ZERO paid generations rather
+    # than sending image_options={"model": <garbage>} to N paid from-template calls. Reuse
+    # the single frozen catalog enum (IMAGE_MODEL_VALUES) — never a second list.
+    if image_model_override and image_model_override not in IMAGE_MODEL_VALUES:
+        raise GammaDispatchError(
+            f"studio variant {variant} image_model override {image_model_override!r} is "
+            f"not one of {sorted(IMAGE_MODEL_VALUES)} (frozen enum); refusing to spend a "
+            f"paid generation on an invalid model.",
+            tag="gamma.studio.image-model-invalid",
+        )
+    template_kwargs: dict[str, Any] = {"export_as": "png"}
+    if theme_override:
+        template_kwargs["theme_id"] = theme_override
+    if image_model_override:
+        template_kwargs["image_options"] = {"model": image_model_override}
     slide_paths: dict[str, str] = {}
     slide_gen_ids: dict[str, str] = {}
     for index, slide in enumerate(slides, start=1):
@@ -874,7 +917,7 @@ def _generate_studio_variant(
                 tag="gamma.slides.invalid",
             )
         prompt = _STUDIO_LOCK_WRAPPER.format(slide_content=_studio_slide_content(slide, index))
-        ack = client.generate_from_template(template_id, prompt, export_as="png")
+        ack = client.generate_from_template(template_id, prompt, **template_kwargs)
         raw_id = ack.get("generationId") or ack.get("id") or ack.get("generation_id")
         if not raw_id:
             raise GammaDispatchError(

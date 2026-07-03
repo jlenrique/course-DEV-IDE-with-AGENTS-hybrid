@@ -58,6 +58,14 @@ RESOLVED_API_KEYS = frozenset(
         "additional_instructions",
         "production_mode",
         "studio_template_id",
+        # Studio per-record overrides (studio-via-api-override-plumbing, step 1).
+        # OPTIONAL. They nest under ``studio_template`` in the record (alongside
+        # ``gamma_id``) and resolve to distinct STUDIO-scoped keys so they never
+        # collide with the Classic ``theme`` / ``image_model`` surface (which is
+        # forbidden on a studio record). Absent ⇒ key not emitted, so the dispatch
+        # kwarg is omitted (never ``theme_id=""`` / ``image_options={"model": None}``).
+        "studio_theme_id",
+        "studio_image_model",
     }
 )
 
@@ -92,6 +100,10 @@ LOAD_ERROR_TAG = "gamma.styleguide.load-error"
 # Mirrors the write-gate validator's tag (validate_gamma_style_guides.py
 # _ADDITIONAL_INSTRUCTIONS_TAG) so the resolver and validator agree byte-for-byte.
 ADDITIONAL_INSTRUCTIONS_TAG = "gamma.styleguide.additional-instructions-invalid"
+# studio-via-api-override-plumbing (step 1): a PRESENT-but-non-string studio override
+# fails loud rather than str()-coercing an int/bool/list into a garbage id (mirrors the
+# _expand_api additional_instructions non-string contract; never silent-drop/coerce).
+STUDIO_OVERRIDE_INVALID_TAG = "gamma.styleguide.studio-override-invalid"
 
 # --- Leg-C: the sealed, registry-bound `scripted` closed-vocab namespace ----------
 # `scripted` is NOT an engine/interpreter — it is "a switch with one case". v1 registry
@@ -302,7 +314,28 @@ def _expand_studio(record: dict[str, Any], name: str) -> dict[str, Any]:
     # no ``additionalInstructions`` channel, and the studio_prompt_lock wrapper is the
     # sole studio style-authority surface. The value is a documented template-lock
     # annotation; this non-emission is deliberate + tested, never an accidental drop.
-    return {"production_mode": "studio", "studio_template_id": gamma_id}
+    resolved: dict[str, Any] = {"production_mode": "studio", "studio_template_id": gamma_id}
+    # Optional per-record Studio overrides (studio-via-api-override-plumbing, step 1).
+    # Both nest under ``studio_template`` and are OPTIONAL. Emitted ONLY when present so
+    # an absent field leaves the dispatch kwarg unsent (never a "" / None coercion). The
+    # resolver NEVER reads ``derived_from`` (a documented lineage annotation, not a
+    # resolved surface) — that is a validator-only concern.
+    for field, resolved_key in (
+        ("theme_id", "studio_theme_id"),
+        ("image_model", "studio_image_model"),
+    ):
+        value = template.get(field)
+        if not _is_present(value):
+            continue
+        if not isinstance(value, str):
+            raise StyleguideError(
+                f"styleguide {name!r} studio_template.{field} must be a string when "
+                f"present; got {value!r} ({type(value).__name__}) "
+                f"(present-but-malformed — fail loud, never str()-coerce)",
+                tag=STUDIO_OVERRIDE_INVALID_TAG,
+            )
+        resolved[resolved_key] = value.strip()
+    return resolved
 
 
 def expand_record(record: dict[str, Any], *, name: str) -> dict[str, Any]:

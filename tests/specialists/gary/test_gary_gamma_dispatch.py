@@ -592,7 +592,7 @@ def test_gary_studio_path_unchanged_no_card_options(tmp_path: Path, monkeypatch)
             self.template_calls: list[dict[str, object]] = []
 
         def generate_from_template(
-            self, template_id: str, prompt: str, export_as: str = "png"
+            self, template_id: str, prompt: str, export_as: str = "png", **kwargs: object
         ) -> dict[str, object]:
             self.template_calls.append(
                 {"template_id": template_id, "prompt": prompt, "export_as": export_as}

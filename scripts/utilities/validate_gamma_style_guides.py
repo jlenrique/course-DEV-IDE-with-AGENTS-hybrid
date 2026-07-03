@@ -211,6 +211,80 @@ def _validate_prose_noncontradiction(
     return (errors, warnings)
 
 
+# studio-via-api-override-plumbing (step 1) tags.
+_STUDIO_THEME_ID_TAG = "gamma.studio.theme-id-invalid"
+_STUDIO_IMAGE_MODEL_TAG = "gamma.studio.image-model-invalid"
+_STUDIO_OVERRIDE_ON_CLASSIC_TAG = "gamma.studio.override-on-classic"
+_STUDIO_DERIVED_FROM_TAG = "gamma.studio.derived-from-invalid"
+# The single source-of-truth image-model enum (from _act.py). Reused, NEVER hand-copied,
+# so the studio-accepted set can never drift from the catalog (A4 drift guard).
+_STUDIO_IMAGE_MODEL_VALUES: frozenset[str] = IMAGE_MODEL_VALUES
+
+
+def _validate_studio_overrides(name: str, record: dict[str, Any]) -> list[str]:
+    """Studio-scoped ``studio_template.{theme_id, image_model}`` overrides (step 1).
+
+    - ``theme_id``: an opaque Gamma id — string-validate only (non-empty when present),
+      NO enum (it is not in any registry we own).
+    - ``image_model``: enum-validate against the SINGLE catalog enum (``IMAGE_MODEL_VALUES``
+      from _act.py) — a bogus value fails with field + value named.
+
+    ``derived_from`` shape is validated separately (``_validate_derived_from_shape``) so it
+    runs on ALL records (api + studio), not just the studio branch (F5).
+    """
+    errors: list[str] = []
+    template = record.get("studio_template") or {}
+    theme_id = template.get("theme_id")
+    if theme_id is not None and (not isinstance(theme_id, str) or not theme_id.strip()):
+        errors.append(
+            f"{name}: studio_template.theme_id must be a non-empty string when present; "
+            f"got {theme_id!r} [{_STUDIO_THEME_ID_TAG}]"
+        )
+    image_model = template.get("image_model")
+    if image_model is not None and (
+        not isinstance(image_model, str)
+        or str(image_model).strip() not in _STUDIO_IMAGE_MODEL_VALUES
+    ):
+        errors.append(
+            f"{name}: studio_template.image_model={image_model!r} is not one of "
+            f"{sorted(_STUDIO_IMAGE_MODEL_VALUES)} (frozen enum from _act.py) "
+            f"[{_STUDIO_IMAGE_MODEL_TAG}]"
+        )
+    return errors
+
+
+def _validate_derived_from_shape(name: str, record: dict[str, Any]) -> list[str]:
+    """``derived_from`` optional lineage annotation: a well-formed non-empty string when
+    present. Runs on ALL records (api + studio) — a malformed ``derived_from`` on a
+    Classic record is caught too (F5). The RESOLVER never reads it; validator-only (A5)."""
+    derived_from = record.get("derived_from")
+    if derived_from is not None and (
+        not isinstance(derived_from, str) or not derived_from.strip()
+    ):
+        return [
+            f"{name}: derived_from must be a non-empty string when present; "
+            f"got {derived_from!r} [{_STUDIO_DERIVED_FROM_TAG}]"
+        ]
+    return []
+
+
+def _validate_no_studio_overrides_on_classic(name: str, record: dict[str, Any]) -> list[str]:
+    """A Classic (``production_mode: api``) record may NOT carry the studio-only
+    ``studio_template.{theme_id, image_model}`` overrides — they ride a studio record
+    ONLY. Reject both directions (studio-via-api-override-plumbing, step 1 / A2)."""
+    template = record.get("studio_template") or {}
+    illegal = sorted(
+        key for key in ("theme_id", "image_model") if _is_present(template.get(key))
+    )
+    if not illegal:
+        return []
+    return [
+        f"{name}: production_mode='api' (Classic) record carries studio-only "
+        f"override(s) studio_template.{illegal}; these ride a studio record only "
+        f"[{_STUDIO_OVERRIDE_ON_CLASSIC_TAG}]"
+    ]
+
+
 def _triad_rationale(record: dict[str, Any]) -> Any:
     return ((record.get("presentation") or {}).get("narrative") or {}).get("triad_rationale")
 
@@ -339,6 +413,16 @@ def _validate_one(name: str, record: dict[str, Any]) -> tuple[list[str], list[st
                 f"{name}: required field {field} is null/default/empty "
                 f"(inverted-polarity completeness failure)"
             )
+
+    # --- Studio per-record overrides (studio-via-api-override-plumbing, step 1) -----
+    #     theme_id (string) + image_model (frozen enum) ride ONLY a studio record; a
+    #     Classic (api) record carrying them is a hard error (discriminated-union, A2).
+    if production_mode == "studio":
+        errors.extend(_validate_studio_overrides(name, record))
+    else:  # api / Classic
+        errors.extend(_validate_no_studio_overrides_on_classic(name, record))
+    # derived_from shape is mode-independent (F5): validate it on BOTH api + studio.
+    errors.extend(_validate_derived_from_shape(name, record))
 
     # --- amount: Gamma UI vocabulary, conditional on text mode (2026-07-03) ---------
     #     Authority: skills/gamma-api-mastery/references/gamma-style-control-map.md. The
