@@ -125,19 +125,15 @@ style_guides:
   # -- B counterpart of the standard-'A' crossroads style: SAME style, Blueprint theme --
   hil-2026-apc-crossroads-blueprint:
     production_mode: api
-    # Created 2026-07-03 (operator-directed): the crossroads standard-'A' style copied
-    # verbatim with ONLY the theme swapped to Blueprint Editorial (e8tz1vxb9v1urqp), so an
-    # A/B-paired deck offers the same crossroads style in two palettes at the Storyboard
-    # gate. CANDIDATE until a live A/B eye-render confirms Blueprint's palette is
-    # aesthetically compatible with the gpt-image-2-mini illustration imagery (Blueprint's
-    # theme was tuned for a technical/lineArt register). The operator will tune this toward
-    # a genuine-but-compatible difference.
-    lifecycle: candidate
-    authored_session: 2026-07-03 operator-directed B counterpart (theme swap)
-    promotion_criteria: >-
-      Live A/B eye-render (crossroads-A Tejal vs this Blueprint B) confirming the Blueprint
-      theme reads as aesthetically compatible with the illustration imagery, plus operator
-      sign-off on a genuine-but-compatible A/B difference.
+    # Created 2026-07-03 (operator-directed): the crossroads standard-'A' style with the theme
+    # swapped to Blueprint Editorial (e8tz1vxb9v1urqp) for an A/B palette pair.
+    # PROMOTED to permanent 2026-07-03 (session-09): image model swapped gpt-image-2-mini ->
+    # recraft-v3 (the two-arm trial crossroads-blueprint-twoarm-20260703T064100Z proved
+    # gpt-image-2-mini renders Japanese text on this style even with a hardened language lock,
+    # while recraft-v3 renders clean Western illustration; the operator's exemplar deck uses
+    # the recraft-v3 look). The Western/English no-iconography steer is baked into
+    # additional_instructions so production stays clean.
+    lifecycle: permanent
     version: 1
     theme:
       id: e8tz1vxb9v1urqp
@@ -152,11 +148,17 @@ style_guides:
         language: en
       visuals:
         image_source: aiGenerated
-        image_model: gpt-image-2-mini
+        image_model: recraft-v3
         style_preset: illustration
         custom_style: null
         keywords: []
-      # additional_instructions intentionally omitted (same as the A style).
+      additional_instructions:
+      - >-
+        Contemporary Western / North American clinical setting; no cultural, national, or
+        religious iconography or symbolism. All text, signage, or lettering visible in the
+        image must be English only - do NOT render Japanese, Chinese, Korean, or other
+        non-Latin characters or Asian-language signage; prefer no in-image text, and any
+        unavoidable text must be brief, legible American English. Generous white space.
     page_settings:
       card_options:
         dimensions: fluid
@@ -172,13 +174,13 @@ style_guides:
       display_name: HIL 2026 APC Crossroads Blueprint (B)
       distinguishing: >-
         The 'B' counterpart to the standard-'A' crossroads style: the SAME calm
-        clinician-crossroads style and GPT Image 2 Mini illustration, re-themed with
-        Blueprint Editorial for an A/B palette choice at the Storyboard gate.
+        clinician-crossroads illustration (recraft-v3), re-themed with Blueprint Editorial
+        for a cooler-palette A/B choice at the Storyboard gate.
       narrative:
         summary: >-
-          The crossroads style on the Blueprint Editorial theme: same condensed prose,
-          same GPT Image 2 Mini illustration register, Default/Fluid pages — only the
-          palette and typography change, so A/B selection is a same-style,
+          The crossroads style on the Blueprint Editorial theme: same condensed prose and
+          clinician-crossroads illustration register (recraft-v3), Default/Fluid pages -
+          only the palette and typography change, so A/B selection is a same-style,
           alternate-palette choice.
         feels_like: Calm crossroads illustration in a cooler, editorial Blueprint palette.
         use_when: >-
@@ -188,17 +190,17 @@ style_guides:
           When a genuinely different register is wanted for A/B — use a distinct style
           (e.g. the lineArt/technical hil-2026-apc-blueprint-classic) instead.
         triad_rationale: >-
-          Blueprint Editorial theme + illustration preset + GPT Image 2 Mini + Default/
-          Fluid pages. NOTE: coherence is UNVERIFIED — Blueprint's theme was tuned for a
-          technical/lineArt register; pairing its palette with soft illustration imagery
-          needs a live A/B eye-render before this candidate is trusted.
-      example_url: null
-      thumbnail_ref: null
+          Blueprint Editorial theme + illustration preset + recraft-v3 + Default/Fluid pages.
+          PROVEN 2026-07-03: recraft-v3 renders clean Western illustration on the Blueprint
+          palette (the gpt-image-2-mini Japanese-text problem drove the model swap); the
+          operator's exemplar deck confirms the palette reads well.
+      example_url: "https://foundations-of-the-innov-516svqx.gamma.site/"
+      thumbnail_ref: state/config/gamma-styleguide-thumbnails/hil-2026-apc-crossroads-blueprint.png
       last_used: null
     coherence:
       theme_art_keywords_dimensions: >-
-        Blueprint Editorial theme + AI-generated illustration + GPT Image 2 Mini +
-        Default/Fluid pages. Coherence to be confirmed by a live A/B eye-render.
+        Blueprint Editorial theme + AI-generated illustration + recraft-v3 + Default/Fluid
+        pages. PROVEN clean Western illustration (session-09 two-arm trial + operator exemplar).
     provenance:
       source: crossroads-classic-theme-swap
       established: '2026-07-03'
@@ -379,7 +381,9 @@ style_guides:
           on a polished editorial-spread register; condense/concise keeps the caption tight so
           the image leads.
       example_url: "https://diagnosis-innovation-0mswhpq.gamma.site/"
-      thumbnail_ref: null
+      # Curated thumbnail: a session-09 render of this exact config (Magazine art / Nano
+      # Banana 2 Mini / 16:9) reproducing the exemplar's photographic-editorial look.
+      thumbnail_ref: state/config/gamma-styleguide-thumbnails/hil-2026-apc-crossroads-magazine.png
       last_used: null
     coherence:
       theme_art_keywords_dimensions: >-
@@ -406,12 +410,8 @@ style_guides:
   #    workhorse illustration style. Left CANDIDATE (no promote instruction given). --
   hil-2026-apc-crossroads-bread-and-butter:
     production_mode: api
-    lifecycle: candidate
-    promotion_criteria: >-
-      Operator eye on a live render (exemplar https://diagnosis-innovation-zaliwyt.gamma.site/)
-      plus the standing gate (B-corpus stress + re-run reliability); flip to permanent on the
-      operator's word.
-    authored_session: 2026-07-03-session-09
+    # PROMOTED to permanent (active) 2026-07-03 session-09 on the operator's word.
+    lifecycle: permanent
     version: 1
     theme:
       id: njim9kuhfnljvaa
@@ -464,7 +464,9 @@ style_guides:
           on a dependable general-purpose register; preserve keeps source titles and figures
           verbatim for fidelity.
       example_url: "https://diagnosis-innovation-zaliwyt.gamma.site/"
-      thumbnail_ref: null
+      # Curated thumbnail: a session-09 render of this exact config (illustration / full GPT
+      # Image / 16:9 / preserve) reproducing the exemplar's clean editorial-illustration look.
+      thumbnail_ref: state/config/gamma-styleguide-thumbnails/hil-2026-apc-crossroads-bread-and-butter.png
       last_used: null
     coherence:
       theme_art_keywords_dimensions: >-
