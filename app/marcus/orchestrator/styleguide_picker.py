@@ -557,6 +557,17 @@ class _PickHandler(BaseHTTPRequestHandler):
         length = int(self.headers.get("Content-Length") or 0)
         if length > MAX_POST_BODY_BYTES:
             # R4: never slurp an unbounded body; reject oversized + keep serving.
+            # P3 (Windows): replying 413 with the client's body still in flight makes the
+            # OS abort the connection (ConnectionAbortedError) and can wedge the handler.
+            # Drain a BOUNDED window of the incoming body first so the socket closes
+            # cleanly — capped so a multi-MB attack body is still refused, never read whole.
+            drain_remaining = min(length, MAX_POST_BODY_BYTES + 128 * 1024)
+            while drain_remaining > 0:
+                chunk = self.rfile.read(min(drain_remaining, 65536))
+                if not chunk:
+                    break
+                drain_remaining -= len(chunk)
+            self.close_connection = True
             self._respond(
                 413,
                 {

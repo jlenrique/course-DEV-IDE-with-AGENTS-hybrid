@@ -393,8 +393,8 @@ def test_validator_applies_active_learned_rule_per_record(tmp_path) -> None:
 
     data = load_style_guides(GAMMA_STYLE_GUIDES_PATH)
     broken = copy.deepcopy(data)
-    # blueprint seed carries image_model=recraft-v3-svg; flip its source off aiGenerated
-    broken["style_guides"]["hil-2026-apc-blueprint-classic"]["prompt_configuration"][
+    # crossroads-classic carries image_model=gpt-image-2-mini; flip its source off aiGenerated
+    broken["style_guides"]["hil-2026-apc-crossroads-classic"]["prompt_configuration"][
         "visuals"
     ]["image_source"] = "pexels"
     broken["learned_dependencies"] = [rule]

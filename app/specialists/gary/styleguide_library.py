@@ -89,6 +89,9 @@ SURFACE_VIOLATION_TAG = "gamma.styleguide.surface-violation"
 UNKNOWN_TAG = "gamma.styleguide.unknown"
 INCOMPLETE_TAG = "gamma.styleguide.incomplete"
 LOAD_ERROR_TAG = "gamma.styleguide.load-error"
+# Mirrors the write-gate validator's tag (validate_gamma_style_guides.py
+# _ADDITIONAL_INSTRUCTIONS_TAG) so the resolver and validator agree byte-for-byte.
+ADDITIONAL_INSTRUCTIONS_TAG = "gamma.styleguide.additional-instructions-invalid"
 
 # --- Leg-C: the sealed, registry-bound `scripted` closed-vocab namespace ----------
 # `scripted` is NOT an engine/interpreter — it is "a switch with one case". v1 registry
@@ -238,13 +241,33 @@ def _expand_api(record: dict[str, Any], name: str) -> dict[str, Any]:
     if _is_present(keywords):
         resolved["keywords"] = [str(k).strip() for k in keywords if str(k).strip()]
 
-    # Style-level persistent prose register (party-ratified 2026-07-02). Emitted as a
-    # cleaned LIST of non-empty strings; an absent / empty / blank-only list resolves
-    # to key-ABSENT (identical to today ⇒ additive-safe). Malformed shapes (non-list)
-    # are the write-gate's job — the resolver stays tolerant and simply skips emission.
+    # Style-level persistent prose register (party-ratified 2026-07-02). Two safe outcomes:
+    #  * ABSENT (key None/missing) OR a list that cleans to empty (`[]` / all-blank) resolves
+    #    to key-ABSENT — the intentional "unset", additive-safe ergonomic (a contentless list
+    #    carries no prose to drop).
+    #  * A list with real string content emits the cleaned list.
+    # A genuinely MALFORMED present value — a NON-list, or a list with a NON-string entry —
+    # would silently drop or coerce authored style prose, so the resolver FAILS LOUD (review
+    # finding P2, 2026-07-03). Gary's production path calls this resolver directly, so such a
+    # shape must ERROR-PAUSE here rather than silently omit the prose (never silent-drop).
     extra_instructions = pc.get("additional_instructions")
-    if isinstance(extra_instructions, list):
-        cleaned = [str(item).strip() for item in extra_instructions if str(item).strip()]
+    if extra_instructions is not None:
+        if not isinstance(extra_instructions, list):
+            raise StyleguideError(
+                f"styleguide {name!r} prompt_configuration.additional_instructions must be a "
+                f"list of strings when present; got {type(extra_instructions).__name__} "
+                f"(present-but-malformed — fail loud, never silent-drop)",
+                tag=ADDITIONAL_INSTRUCTIONS_TAG,
+            )
+        for item in extra_instructions:
+            if not isinstance(item, str):
+                raise StyleguideError(
+                    f"styleguide {name!r} prompt_configuration.additional_instructions entries "
+                    f"must be strings; got {item!r} ({type(item).__name__}) "
+                    f"(present-but-malformed — fail loud, never silent-drop)",
+                    tag=ADDITIONAL_INSTRUCTIONS_TAG,
+                )
+        cleaned = [item.strip() for item in extra_instructions if item.strip()]
         if cleaned:
             resolved["additional_instructions"] = cleaned
 

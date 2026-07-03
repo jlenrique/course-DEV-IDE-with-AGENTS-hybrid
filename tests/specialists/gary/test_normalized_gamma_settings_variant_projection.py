@@ -125,7 +125,7 @@ def test_styleguide_bound_variant_emits_no_warning(
     # future refactor hoisting the honesty WARN above the styleguide-branch split.
     with caplog.at_level(logging.WARNING, logger="app.specialists.gary._act"):
         out = _normalized_gamma_settings(
-            _payload({"variant_id": "A", "styleguide": "classic-freeform-x-cards"})
+            _payload({"variant_id": "A", "styleguide": "hil-2026-apc-crossroads-classic"})
         )
     assert len(out) == 1
     assert out[0]["variant_id"] == "A"

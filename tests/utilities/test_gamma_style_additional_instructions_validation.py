@@ -25,7 +25,7 @@ from scripts.utilities.validate_gamma_style_guides import (
 
 pytestmark = pytest.mark.filterwarnings("ignore")
 
-_CLASSIC = "classic-freeform-x-cards"  # api: style_preset=illustration, source=aiGenerated
+_CLASSIC = "hil-2026-apc-crossroads-classic"  # api: style_preset=illustration, source=aiGenerated
 _STUDIO = "hil-2026-apc-studio-image-card"
 
 

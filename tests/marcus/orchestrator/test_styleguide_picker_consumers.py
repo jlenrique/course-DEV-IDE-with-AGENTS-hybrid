@@ -36,11 +36,11 @@ def test_picker_directive_resolved_by_real_gamma_settings_consumer(tmp_path: Pat
     directive = tmp_path / "directive.yaml"
     write_pick_to_directive(
         directive,
-        {"A": "classic-freeform-x-cards", "B": "hil-2026-apc-studio-image-card"},
+        {"A": "hil-2026-apc-crossroads-classic", "B": "hil-2026-apc-studio-image-card"},
     )
     settings = _gamma_settings_from_directive(directive)
     assert settings == [
-        {"variant_id": "A", "styleguide": "classic-freeform-x-cards"},
+        {"variant_id": "A", "styleguide": "hil-2026-apc-crossroads-classic"},
         {"variant_id": "B", "styleguide": "hil-2026-apc-studio-image-card"},
     ]
 
@@ -50,7 +50,7 @@ def test_picker_directive_resolves_through_gary_base_layer_seam(tmp_path: Path) 
     from app.specialists.gary._act import _normalized_gamma_settings
 
     directive = tmp_path / "directive.yaml"
-    write_pick_to_directive(directive, {"A": "classic-freeform-x-cards"})
+    write_pick_to_directive(directive, {"A": "hil-2026-apc-crossroads-classic"})
     settings = _gamma_settings_from_directive(directive)
     normalized = _normalized_gamma_settings({"gamma_settings": settings})
     assert len(normalized) == 1  # single bind -> exactly one variant (retire-variant)
@@ -68,20 +68,20 @@ def test_patch_preserves_existing_directive_keys_and_other_variant(tmp_path: Pat
                 "course": "c1m1",
                 "gamma_settings": [
                     {"variant_id": "A", "styleguide": "old-name", "tone": "warm"},
-                    {"variant_id": "B", "styleguide": "hil-2026-apc-blueprint-classic"},
+                    {"variant_id": "B", "styleguide": "hil-2026-apc-crossroads-blueprint"},
                 ],
             }
         ),
         encoding="utf-8",
     )
-    write_pick_to_directive(directive, {"A": "classic-freeform-x-cards"})
+    write_pick_to_directive(directive, {"A": "hil-2026-apc-crossroads-classic"})
     loaded = yaml.safe_load(directive.read_text(encoding="utf-8"))
     assert loaded["course"] == "c1m1"  # non-picker keys untouched
     entry_a = next(e for e in loaded["gamma_settings"] if e["variant_id"] == "A")
     entry_b = next(e for e in loaded["gamma_settings"] if e["variant_id"] == "B")
-    assert entry_a["styleguide"] == "classic-freeform-x-cards"
+    assert entry_a["styleguide"] == "hil-2026-apc-crossroads-classic"
     assert entry_a["tone"] == "warm"  # per-variant explicit keys survive the patch
-    assert entry_b["styleguide"] == "hil-2026-apc-blueprint-classic"  # unpicked variant kept
+    assert entry_b["styleguide"] == "hil-2026-apc-crossroads-blueprint"  # unpicked variant kept
 
 
 # --------------------------------------------------------------------------- AC-3
@@ -97,7 +97,7 @@ def test_floor_probe_pick_threads_min_cluster_floor_8(tmp_path: Path) -> None:
 
 def test_floorless_seed_pick_threads_no_floor(tmp_path: Path) -> None:
     directive = tmp_path / "directive.yaml"
-    write_pick_to_directive(directive, {"A": "classic-freeform-x-cards"})
+    write_pick_to_directive(directive, {"A": "hil-2026-apc-crossroads-classic"})
     payload = _runner_payload_for_specialist(
         specialist_id="irene_pass1", directive_path=directive, bundle_dir=None
     )
@@ -109,7 +109,7 @@ def test_provenance_block_survives_yaml_round_trip(tmp_path: Path) -> None:
     directive = tmp_path / "directive.yaml"
     provenance = write_pick_to_directive(
         directive,
-        {"A": "classic-freeform-x-cards", "B": "leg-c-part3-floor-probe"},
+        {"A": "hil-2026-apc-crossroads-classic", "B": "leg-c-part3-floor-probe"},
     )
     loaded = yaml.safe_load(directive.read_text(encoding="utf-8"))
     block = loaded["styleguide_picker_provenance"]
@@ -118,7 +118,7 @@ def test_provenance_block_survives_yaml_round_trip(tmp_path: Path) -> None:
     assert block["picker_version"] == PICKER_VERSION
     assert len(block["ssot_sha256"]) == 64
     assert block["picks"] == [
-        {"variant_id": "A", "styleguide": "classic-freeform-x-cards"},
+        {"variant_id": "A", "styleguide": "hil-2026-apc-crossroads-classic"},
         {"variant_id": "B", "styleguide": "leg-c-part3-floor-probe"},
     ]
     assert "T" in block["picked_at"]  # ISO-8601 timestamp
@@ -126,13 +126,13 @@ def test_provenance_block_survives_yaml_round_trip(tmp_path: Path) -> None:
 
 def test_repeat_pick_overwrites_provenance_not_duplicates(tmp_path: Path) -> None:
     directive = tmp_path / "directive.yaml"
-    write_pick_to_directive(directive, {"A": "classic-freeform-x-cards"})
-    write_pick_to_directive(directive, {"A": "hil-2026-apc-blueprint-classic"})
+    write_pick_to_directive(directive, {"A": "hil-2026-apc-crossroads-classic"})
+    write_pick_to_directive(directive, {"A": "hil-2026-apc-crossroads-blueprint"})
     loaded = yaml.safe_load(directive.read_text(encoding="utf-8"))
     entries_a = [e for e in loaded["gamma_settings"] if e["variant_id"] == "A"]
     assert len(entries_a) == 1  # never a duplicate variant row (Gary RED-gates those)
-    assert entries_a[0]["styleguide"] == "hil-2026-apc-blueprint-classic"
+    assert entries_a[0]["styleguide"] == "hil-2026-apc-crossroads-blueprint"
     assert (
         loaded["styleguide_picker_provenance"]["picks"][0]["styleguide"]
-        == "hil-2026-apc-blueprint-classic"
+        == "hil-2026-apc-crossroads-blueprint"
     )

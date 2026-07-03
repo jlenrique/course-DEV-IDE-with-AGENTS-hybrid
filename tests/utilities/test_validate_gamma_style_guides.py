@@ -35,10 +35,10 @@ def test_runtime_yaml_loads_and_passes_offline() -> None:
 def test_two_proof_seeds_present_and_clean() -> None:
     data = _runtime_data()
     guides = data["style_guides"]
-    assert "classic-freeform-x-cards" in guides
+    assert "hil-2026-apc-crossroads-classic" in guides
     assert "hil-2026-apc-studio-image-card" in guides
     # classic proof seed is PURE representation: dimensions fluid, NO forced 16:9.
-    classic = guides["classic-freeform-x-cards"]
+    classic = guides["hil-2026-apc-crossroads-classic"]
     assert classic["production_mode"] == "api"
     assert classic["page_settings"]["card_options"]["dimensions"] == "fluid"
     studio = guides["hil-2026-apc-studio-image-card"]
@@ -63,7 +63,7 @@ def test_inverted_polarity_null_required_field_fails() -> None:
     data = _runtime_data()
     broken = copy.deepcopy(data)
     # Null out a REQUIRED surface field on the classic proof seed.
-    broken["style_guides"]["classic-freeform-x-cards"]["theme"]["id"] = None
+    broken["style_guides"]["hil-2026-apc-crossroads-classic"]["theme"]["id"] = None
     errors = validate_style_guides(broken)
     assert any("theme" in e.lower() for e in errors), errors
 
@@ -72,7 +72,7 @@ def test_inverted_polarity_default_sentinel_fails() -> None:
     data = _runtime_data()
     broken = copy.deepcopy(data)
     # A "default" sentinel on a required field is as bad as null (inverted polarity).
-    broken["style_guides"]["classic-freeform-x-cards"]["page_settings"][
+    broken["style_guides"]["hil-2026-apc-crossroads-classic"]["page_settings"][
         "card_options"
     ]["dimensions"] = "default"
     errors = validate_style_guides(broken)
@@ -94,7 +94,7 @@ def test_studio_carrying_classic_key_is_surface_violation() -> None:
 def test_invalid_enum_value_fails_against_frozen_enum() -> None:
     data = _runtime_data()
     broken = copy.deepcopy(data)
-    broken["style_guides"]["classic-freeform-x-cards"]["page_settings"][
+    broken["style_guides"]["hil-2026-apc-crossroads-classic"]["page_settings"][
         "card_options"
     ]["dimensions"] = "cinemascope"  # not in CARD_DIMENSION_VALUES
     errors = validate_style_guides(broken)
@@ -104,7 +104,7 @@ def test_invalid_enum_value_fails_against_frozen_enum() -> None:
 def test_text_amount_uses_prompt_editor_values() -> None:
     data = _runtime_data()
     broken = copy.deepcopy(data)
-    broken["style_guides"]["classic-freeform-x-cards"]["prompt_configuration"][
+    broken["style_guides"]["hil-2026-apc-crossroads-classic"]["prompt_configuration"][
         "text_content"
     ]["amount"] = "brief"  # API value; registry must store UI value `minimal`.
     errors = validate_style_guides(broken)
@@ -114,7 +114,7 @@ def test_text_amount_uses_prompt_editor_values() -> None:
 def test_text_amount_for_preserve_mode_is_invalid() -> None:
     data = _runtime_data()
     broken = copy.deepcopy(data)
-    text_content = broken["style_guides"]["hil-2026-apc-blueprint-classic"][
+    text_content = broken["style_guides"]["hil-2026-apc-crossroads-classic"][
         "prompt_configuration"
     ]["text_content"]
     text_content["mode"] = "preserve"
@@ -126,7 +126,7 @@ def test_text_amount_for_preserve_mode_is_invalid() -> None:
 def test_text_amount_required_for_generate_or_condense() -> None:
     data = _runtime_data()
     broken = copy.deepcopy(data)
-    broken["style_guides"]["classic-freeform-x-cards"]["prompt_configuration"][
+    broken["style_guides"]["hil-2026-apc-crossroads-classic"]["prompt_configuration"][
         "text_content"
     ]["amount"] = None
     errors = validate_style_guides(broken)
@@ -136,7 +136,7 @@ def test_text_amount_required_for_generate_or_condense() -> None:
 def test_missing_triad_rationale_fails_coherence() -> None:
     data = _runtime_data()
     broken = copy.deepcopy(data)
-    broken["style_guides"]["classic-freeform-x-cards"]["presentation"]["narrative"][
+    broken["style_guides"]["hil-2026-apc-crossroads-classic"]["presentation"]["narrative"][
         "triad_rationale"
     ] = ""
     errors = validate_style_guides(broken)
@@ -145,8 +145,6 @@ def test_missing_triad_rationale_fails_coherence() -> None:
 
 # --------------------------------------------------- Lifecycle (session-07 A1)
 _PRE_SESSION_07_PERMANENTS = {
-    "classic-freeform-x-cards",
-    "hil-2026-apc-blueprint-classic",
     "hil-2026-apc-studio-image-card",
     "leg-c-part3-floor-probe",
     "leg-c-part3-floor-toohigh",
@@ -175,7 +173,7 @@ def test_runtime_records_carry_explicit_lifecycle() -> None:
 def test_lifecycle_unknown_value_fails() -> None:
     data = _runtime_data()
     broken = copy.deepcopy(data)
-    broken["style_guides"]["classic-freeform-x-cards"]["lifecycle"] = "shipped"
+    broken["style_guides"]["hil-2026-apc-crossroads-classic"]["lifecycle"] = "shipped"
     errors = validate_style_guides(broken)
     assert any("gamma.lifecycle.unknown-value" in e for e in errors), errors
 
@@ -183,7 +181,7 @@ def test_lifecycle_unknown_value_fails() -> None:
 def test_lifecycle_candidate_requires_promotion_contract_fields() -> None:
     data = _runtime_data()
     broken = copy.deepcopy(data)
-    record = broken["style_guides"]["classic-freeform-x-cards"]
+    record = broken["style_guides"]["hil-2026-apc-crossroads-classic"]
     record["lifecycle"] = "candidate"
     record.pop("promotion_criteria", None)
     record.pop("authored_session", None)
@@ -195,7 +193,7 @@ def test_lifecycle_candidate_requires_promotion_contract_fields() -> None:
 def test_lifecycle_candidate_with_contract_fields_is_clean() -> None:
     data = _runtime_data()
     patched = copy.deepcopy(data)
-    record = patched["style_guides"]["classic-freeform-x-cards"]
+    record = patched["style_guides"]["hil-2026-apc-crossroads-classic"]
     record["lifecycle"] = "candidate"
     record["promotion_criteria"] = (
         "B-corpus stress test + re-run reliability proof (operator-ratified 2026-07-02)"
@@ -210,7 +208,7 @@ def test_lifecycle_absent_warns_defaulted_candidate() -> None:
 
     data = _runtime_data()
     stripped = copy.deepcopy(data)
-    stripped["style_guides"]["classic-freeform-x-cards"].pop("lifecycle")
+    stripped["style_guides"]["hil-2026-apc-crossroads-classic"].pop("lifecycle")
     errors, warnings = validate_style_guides_full(stripped)
     assert errors == [], errors
     assert any("gamma.lifecycle.defaulted-candidate" in w for w in warnings), warnings
@@ -271,7 +269,7 @@ def test_custom_style_preset_without_custom_style_fails() -> None:
     # write-gate must reject it at write time, not defer the crash to render.
     data = _runtime_data()
     broken = copy.deepcopy(data)
-    visuals = broken["style_guides"]["classic-freeform-x-cards"]["prompt_configuration"][
+    visuals = broken["style_guides"]["hil-2026-apc-crossroads-classic"]["prompt_configuration"][
         "visuals"
     ]
     visuals["style_preset"] = "custom"
@@ -310,10 +308,10 @@ def test_rule2_image_model_without_aigenerated_errors() -> None:
     # (the model string is a silent no-op under non-aiGenerated sources).
     data = _runtime_data()
     broken = copy.deepcopy(data)
-    visuals = broken["style_guides"]["hil-2026-apc-blueprint-classic"][
+    visuals = broken["style_guides"]["hil-2026-apc-crossroads-classic"][
         "prompt_configuration"
     ]["visuals"]
-    # blueprint already carries image_model=recraft-v3-svg; flip source off aiGenerated.
+    # crossroads already carries image_model=gpt-image-2-mini; flip source off aiGenerated.
     visuals["image_source"] = "pexels"
     errors = validate_style_guides(broken)
     assert any("gamma.dep.image-model-source" in e for e in errors), errors
@@ -334,7 +332,7 @@ def test_rule3_named_preset_plus_image_style_warns_not_errors() -> None:
 
     data = _runtime_data()
     broken = copy.deepcopy(data)
-    visuals = broken["style_guides"]["classic-freeform-x-cards"][
+    visuals = broken["style_guides"]["hil-2026-apc-crossroads-classic"][
         "prompt_configuration"
     ]["visuals"]
     # style_preset is 'illustration' (a named preset); add a conflicting image_style.
@@ -372,7 +370,7 @@ def test_rule3_custom_preset_with_style_no_subordination_warning() -> None:
 
     data = _runtime_data()
     good = copy.deepcopy(data)
-    visuals = good["style_guides"]["classic-freeform-x-cards"]["prompt_configuration"][
+    visuals = good["style_guides"]["hil-2026-apc-crossroads-classic"]["prompt_configuration"][
         "visuals"
     ]
     visuals["style_preset"] = "custom"

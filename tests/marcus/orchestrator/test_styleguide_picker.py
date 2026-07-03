@@ -27,7 +27,6 @@ from __future__ import annotations
 
 import json
 import re
-import struct
 import threading
 import urllib.error
 import urllib.parse
@@ -50,8 +49,7 @@ from app.marcus.orchestrator.styleguide_picker import (
 
 REPO_ROOT = Path(__file__).resolve().parents[3]
 SEED_GUIDES = {
-    "classic-freeform-x-cards",
-    "hil-2026-apc-blueprint-classic",
+    "hil-2026-apc-crossroads-classic",
     "hil-2026-apc-studio-image-card",
 }
 PROBE_GUIDES = {"leg-c-part3-floor-probe", "leg-c-part3-floor-toohigh"}
@@ -103,7 +101,7 @@ def test_roster_carries_lifecycle_and_candidate_badge_renders() -> None:
         assert by_name[seed]["lifecycle"] == "permanent"
 
     # Badge machinery: a synthetic candidate renders exactly one badge.
-    synthetic = dict(by_name["classic-freeform-x-cards"])
+    synthetic = dict(by_name["hil-2026-apc-crossroads-classic"])
     synthetic["lifecycle"] = "candidate"
     html = render_picker_html([synthetic], post_url="http://127.0.0.1:1/pick")
     assert html.count(badge) == 1
@@ -139,15 +137,15 @@ def test_roster_joins_last_used_from_sidecar_not_ssot(tmp_path: Path) -> None:
     """D-1: last_used is sidecar-derived at render time; SSOT last_used stays null."""
     events = tmp_path / "picks.jsonl"
     append_pick_event(
-        {"A": "classic-freeform-x-cards"},
+        {"A": "hil-2026-apc-crossroads-classic"},
         directive_path=tmp_path / "d.yaml",
         picked_at="2026-07-02T01:00:00+00:00",
         events_path=events,
     )
     roster = load_picker_roster(events_path=events)
     by_name = {entry["name"]: entry for entry in roster}
-    assert by_name["classic-freeform-x-cards"]["last_used"] == "2026-07-02T01:00:00+00:00"
-    assert by_name["hil-2026-apc-blueprint-classic"]["last_used"] is None
+    assert by_name["hil-2026-apc-crossroads-classic"]["last_used"] == "2026-07-02T01:00:00+00:00"
+    assert by_name["hil-2026-apc-studio-image-card"]["last_used"] is None
     # The CD-owned SSOT field itself stays null FOREVER.
     ssot = yaml.safe_load(GAMMA_STYLE_GUIDES_SSOT_PATH.read_text(encoding="utf-8"))
     for record in ssot["style_guides"].values():
@@ -171,8 +169,10 @@ def test_every_rendered_thumbnail_ref_resolves_to_real_png() -> None:
         # http page is blocked by the browser), served by do_GET.
         assert f'src="/thumbnails/{entry["name"]}.png"' in html
     assert seen_thumb == 4, (
-        "the 4 production guides must carry curated thumbnails (D-2 seeds + "
-        "crossroads canonicalized as the standard 'A' style 2026-07-03)"
+        "the 4 guides that carry curated thumbnails after the session-09 work: "
+        "crossroads-classic (standard 'A'), crossroads-digital-collage (promoted permanent), "
+        "studio-image-card, and the videographic-glance candidate (recraft-v3 steered render). "
+        "crossroads-blueprint (B) remains unrendered → placeholder."
     )
 
 
@@ -211,13 +211,13 @@ def test_sidecar_append_is_idempotent(tmp_path: Path) -> None:
         picked_at="2026-07-02T01:00:00+00:00",
         events_path=events,
     )
-    first = append_pick_event({"A": "classic-freeform-x-cards"}, **kwargs)
-    second = append_pick_event({"A": "classic-freeform-x-cards"}, **kwargs)
+    first = append_pick_event({"A": "hil-2026-apc-crossroads-classic"}, **kwargs)
+    second = append_pick_event({"A": "hil-2026-apc-crossroads-classic"}, **kwargs)
     assert len(first) == 1 and second == []
     lines = [ln for ln in events.read_text(encoding="utf-8").splitlines() if ln.strip()]
     assert len(lines) == 1
     event = json.loads(lines[0])
-    assert event["guide_name"] == "classic-freeform-x-cards"
+    assert event["guide_name"] == "hil-2026-apc-crossroads-classic"
     assert event["variant_id"] == "A"
     assert event["picked_at"] == "2026-07-02T01:00:00+00:00"
     _assert_ssot_write_gate_green()
@@ -226,7 +226,7 @@ def test_sidecar_append_is_idempotent(tmp_path: Path) -> None:
 def test_sidecar_records_run_id_when_present(tmp_path: Path) -> None:
     events = tmp_path / "picks.jsonl"
     written = append_pick_event(
-        {"A": "classic-freeform-x-cards", "B": "hil-2026-apc-studio-image-card"},
+        {"A": "hil-2026-apc-crossroads-classic", "B": "hil-2026-apc-studio-image-card"},
         directive_path=tmp_path / "d.yaml",
         picked_at="2026-07-02T02:00:00+00:00",
         run_id="run-123",
@@ -248,7 +248,7 @@ def test_malformed_sidecar_line_fails_loud(tmp_path: Path) -> None:
         load_picker_roster(events_path=events)
     with pytest.raises(PickerError, match="line 2"):
         append_pick_event(
-            {"A": "classic-freeform-x-cards"},
+            {"A": "hil-2026-apc-crossroads-classic"},
             directive_path=tmp_path / "d.yaml",
             picked_at="2026-07-02T01:00:00+00:00",
             events_path=events,
@@ -262,9 +262,9 @@ def test_cd_owned_ssot_bytes_identical_pre_post_picker_ops(tmp_path: Path) -> No
     events = tmp_path / "picks.jsonl"
     roster = load_picker_roster(events_path=events)
     render_picker_html(roster, post_url="http://127.0.0.1:1/pick")
-    provenance = write_pick_to_directive(directive, {"A": "classic-freeform-x-cards"})
+    provenance = write_pick_to_directive(directive, {"A": "hil-2026-apc-crossroads-classic"})
     append_pick_event(
-        {"A": "classic-freeform-x-cards"},
+        {"A": "hil-2026-apc-crossroads-classic"},
         directive_path=directive,
         picked_at=provenance["picked_at"],
         events_path=events,
@@ -283,7 +283,7 @@ def test_unknown_styleguide_name_on_directive_patch_fails_loud(tmp_path: Path) -
 
 def test_bad_variant_id_fails_loud(tmp_path: Path) -> None:
     with pytest.raises(PickerError, match="variant"):
-        write_pick_to_directive(tmp_path / "d.yaml", {"C": "classic-freeform-x-cards"})
+        write_pick_to_directive(tmp_path / "d.yaml", {"C": "hil-2026-apc-crossroads-classic"})
 
 
 def test_empty_picks_fail_loud(tmp_path: Path) -> None:
@@ -332,13 +332,13 @@ def test_capture_pick_serves_one_post_then_exits(tmp_path: Path) -> None:
         assert action == "/pick"
         receipt = _post_form(
             urllib.parse.urljoin(opened_urls[0], action),
-            {"slot_A": "classic-freeform-x-cards", "slot_B": ""},
+            {"slot_A": "hil-2026-apc-crossroads-classic", "slot_B": ""},
         )
     finally:
         worker.join(timeout=30)
     assert not worker.is_alive(), "server must exit after one accepted POST"
-    assert result["picks"] == {"A": "classic-freeform-x-cards"}
-    assert receipt["picks"] == {"A": "classic-freeform-x-cards"}
+    assert result["picks"] == {"A": "hil-2026-apc-crossroads-classic"}
+    assert receipt["picks"] == {"A": "hil-2026-apc-crossroads-classic"}
     assert opened_urls and opened_urls[0].startswith("http://127.0.0.1:")
 
 
@@ -502,37 +502,42 @@ def test_server_serves_page_same_origin_with_relative_pick_action(tmp_path: Path
             assert response.status == 200
             assert response.headers.get("Content-Type") == "image/png"
             assert response.read()[:8] == b"\x89PNG\r\n\x1a\n"
-        receipt = _post_form(live.pick_url, {"slot_A": "classic-freeform-x-cards"})
+        receipt = _post_form(live.pick_url, {"slot_A": "hil-2026-apc-crossroads-classic"})
     finally:
         live.finish()
-    assert live.result.get("picks") == {"A": "classic-freeform-x-cards"}
-    assert receipt["picks"] == {"A": "classic-freeform-x-cards"}
+    assert live.result.get("picks") == {"A": "hil-2026-apc-crossroads-classic"}
+    assert receipt["picks"] == {"A": "hil-2026-apc-crossroads-classic"}
 
 
-def test_blueprint_16x9_thumbnail_carries_provenance_chip() -> None:
+def test_16x9_promise_with_portrait_render_carries_provenance_chip() -> None:
     """R2 (Auditor#1 J-2/D-2 honesty): a guide promising 16:9 whose curated render
     is not 16:9 gets an explicit provenance chip — data-driven (SSOT dimensions +
-    PNG IHDR aspect), never a hardcoded card name."""
+    PNG IHDR aspect), never a hardcoded card name.
+
+    Decoupled from any specific registry guide: the original blueprint-classic subject
+    was removed in the session-09 declutter, so the chip machinery is proven here with a
+    committed PORTRAIT fixture (aspect < 1.4) cloned onto a real 16x9 roster entry, plus a
+    real-16x9-landscape negative control. This keeps the coverage independent of roster churn."""
     roster = load_picker_roster(include_probes=True)
-    html = render_picker_html(roster, post_url="/pick")
-    chip = "render predates this guide"
-    qualifying: list[str] = []
-    for entry in roster:
-        ref = entry["thumbnail_ref"]
-        promised = str(entry.get("card_dimensions") or "").strip().lower()
-        if not ref or promised != "16x9":
-            continue
-        header = (REPO_ROOT / ref).read_bytes()[:24]
-        width, height = struct.unpack(">II", header[16:24])
-        if width / height < 1.4:
-            qualifying.append(entry["name"])
-    assert "hil-2026-apc-blueprint-classic" in qualifying, (
-        "the blueprint guide (16x9 promise, 2400x2860 portrait render) must qualify"
+    template = next(
+        e
+        for e in roster
+        if str(e.get("card_dimensions") or "").strip().lower() == "16x9" and e["thumbnail_ref"]
     )
-    assert html.count(chip) == len(qualifying)
+    chip = "render predates this guide"
+    # Positive: a 16x9 promise pointed at the portrait fixture (120x168, aspect 0.71 < 1.4).
+    mismatch = {
+        **template,
+        "name": "synthetic-16x9-portrait",
+        "thumbnail_ref": "tests/fixtures/thumbnails/portrait_16x9_mismatch.png",
+    }
+    # Negative control: the same 16x9 promise keeps its real 16:9 landscape render → NO chip.
+    match = {**template, "name": "synthetic-16x9-landscape"}
+    html = render_picker_html([mismatch, match], post_url="/pick")
+    assert html.count(chip) == 1, "exactly the portrait-render entry must carry the chip"
     for card in html.split("<article")[1:]:
         guide = card.split('data-guide="', 1)[1].split('"', 1)[0]
-        assert (chip in card) == (guide in qualifying), guide
+        assert (chip in card) == (guide == "synthetic-16x9-portrait"), guide
 
 
 def test_capture_pick_prints_waiting_notice(tmp_path: Path) -> None:
@@ -540,7 +545,7 @@ def test_capture_pick_prints_waiting_notice(tmp_path: Path) -> None:
     roster = load_picker_roster()
     live = _LiveCapture(roster, tmp_path)
     try:
-        _post_form(live.pick_url, {"slot_A": "classic-freeform-x-cards"})
+        _post_form(live.pick_url, {"slot_A": "hil-2026-apc-crossroads-classic"})
     finally:
         live.finish()
     assert any(
@@ -557,10 +562,10 @@ def test_oversized_post_rejected_413_then_keeps_serving(tmp_path: Path) -> None:
         with pytest.raises(urllib.error.HTTPError) as excinfo:
             _post_form(live.pick_url, {"slot_A": "x" * (70 * 1024)})
         assert excinfo.value.code == 413
-        _post_form(live.pick_url, {"slot_A": "classic-freeform-x-cards"})
+        _post_form(live.pick_url, {"slot_A": "hil-2026-apc-crossroads-classic"})
     finally:
         live.finish()
-    assert live.result.get("picks") == {"A": "classic-freeform-x-cards"}
+    assert live.result.get("picks") == {"A": "hil-2026-apc-crossroads-classic"}
 
 
 def test_duplicate_variant_id_in_existing_directive_fails_loud(tmp_path: Path) -> None:
@@ -574,7 +579,7 @@ def test_duplicate_variant_id_in_existing_directive_fails_loud(tmp_path: Path) -
     }
     directive.write_text(yaml.safe_dump(original), encoding="utf-8")
     with pytest.raises(PickerError, match="duplicate"):
-        write_pick_to_directive(directive, {"A": "classic-freeform-x-cards"})
+        write_pick_to_directive(directive, {"A": "hil-2026-apc-crossroads-classic"})
     assert yaml.safe_load(directive.read_text(encoding="utf-8")) == original
 
 
@@ -585,7 +590,7 @@ def test_gamma_settings_non_list_fails_loud(tmp_path: Path) -> None:
     original = {"gamma_settings": {"variant_id": "A", "styleguide": "one"}}
     directive.write_text(yaml.safe_dump(original), encoding="utf-8")
     with pytest.raises(PickerError, match="gamma_settings"):
-        write_pick_to_directive(directive, {"A": "classic-freeform-x-cards"})
+        write_pick_to_directive(directive, {"A": "hil-2026-apc-crossroads-classic"})
     assert yaml.safe_load(directive.read_text(encoding="utf-8")) == original
 
 
@@ -594,7 +599,7 @@ def test_gamma_settings_non_mapping_entry_fails_loud(tmp_path: Path) -> None:
     directive = tmp_path / "d.yaml"
     directive.write_text(yaml.safe_dump({"gamma_settings": ["A"]}), encoding="utf-8")
     with pytest.raises(PickerError, match="gamma_settings"):
-        write_pick_to_directive(directive, {"A": "classic-freeform-x-cards"})
+        write_pick_to_directive(directive, {"A": "hil-2026-apc-crossroads-classic"})
 
 
 def test_cli_fallback_a_blank_b_only_single_select(tmp_path: Path) -> None:
@@ -654,8 +659,8 @@ def test_advisory_lock_two_sequential_writers(tmp_path: Path) -> None:
     directive = tmp_path / "d.yaml"
     events = tmp_path / "picks.jsonl"
     for stamp, guide in (
-        ("2026-07-02T03:00:00+00:00", "classic-freeform-x-cards"),
-        ("2026-07-02T03:01:00+00:00", "hil-2026-apc-blueprint-classic"),
+        ("2026-07-02T03:00:00+00:00", "hil-2026-apc-crossroads-classic"),
+        ("2026-07-02T03:01:00+00:00", "hil-2026-apc-crossroads-blueprint"),
     ):
         write_pick_to_directive(directive, {"A": guide})
         append_pick_event(
@@ -666,7 +671,7 @@ def test_advisory_lock_two_sequential_writers(tmp_path: Path) -> None:
     loaded = yaml.safe_load(directive.read_text(encoding="utf-8"))
     entries_a = [e for e in loaded["gamma_settings"] if e["variant_id"] == "A"]
     assert entries_a == [
-        {"variant_id": "A", "styleguide": "hil-2026-apc-blueprint-classic"}
+        {"variant_id": "A", "styleguide": "hil-2026-apc-crossroads-blueprint"}
     ]
     # The advisory guarantee is same-host + lock-file-adjacent (documented honest).
     assert (tmp_path / "d.yaml.lock").exists()
