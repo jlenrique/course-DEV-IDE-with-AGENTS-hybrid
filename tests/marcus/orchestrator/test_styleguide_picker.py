@@ -941,8 +941,9 @@ def test_sally_a11y_and_usability_render_pins() -> None:
     assert "data-display=" in html
     # U-4: pros/cons surfaced on the face + relabelled details summary.
     assert "Use when:" in html and "Avoid when:" in html
-    assert "When to use / when to avoid" in html
+    assert "More about this style" in html  # details now holds summary/feels_like
     assert "<summary>narrative</summary>" not in html  # old opaque label gone
+    assert 'aria-pressed="false"' in html  # selected state exposed to AT (Sally nit)
     # U-5: instruction line + no silent dead-click hint target.
     assert "one slot is a valid pick" in html
     assert 'id="pick-hint"' in html

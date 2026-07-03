@@ -383,11 +383,15 @@ function refresh() {
   /* U-2: persistent selected-state on the grid (distinct from .armed). */
   for (const card of document.querySelectorAll('.card')) {
     card.classList.remove('slot-a', 'slot-b');
+    card.setAttribute('aria-pressed', 'false');
   }
   for (const v of ['A', 'B']) {
     if (!slots[v]) continue;
     const card = document.querySelector('.card[data-guide="' + CSS.escape(slots[v]) + '"]');
-    if (card) card.classList.add(v === 'A' ? 'slot-a' : 'slot-b');
+    if (card) {
+      card.classList.add(v === 'A' ? 'slot-a' : 'slot-b');
+      card.setAttribute('aria-pressed', 'true');
+    }
   }
   confirmBtn.disabled = !(slots.A || slots.B);
 }
@@ -539,7 +543,7 @@ def _render_card(entry: dict[str, Any], *, repo_root: Path) -> list[str]:
         # aria-labelled; a keydown (Enter/Space) mirrors the click (see _PAGE_JS).
         # data-display (U-3) carries the human name for the slot bar; the hidden
         # form field keeps the slug for the POST.
-        f'<article class="card" tabindex="0" role="button" '
+        f'<article class="card" tabindex="0" role="button" aria-pressed="false" '
         f'aria-label="{escape(display_name)}" data-guide="{escape(entry["name"])}" '
         f'data-display="{escape(display_name)}" '
         f'data-probe="{1 if probe else 0}">',
@@ -597,7 +601,7 @@ def _render_card(entry: dict[str, Any], *, repo_root: Path) -> list[str]:
         )
     # The fuller narrative (feels_like / summary) stays behind the toggle; the
     # summary is relabelled from the opaque "narrative" to say what's inside.
-    parts.append("<details><summary>When to use / when to avoid</summary>")
+    parts.append("<details><summary>More about this style</summary>")
     for key in ("summary", "feels_like"):
         value = str(narrative.get(key) or "").strip()
         if value:
