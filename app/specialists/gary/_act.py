@@ -33,6 +33,16 @@ REPO_ROOT = Path(__file__).resolve().parents[3]
 SANCTUM_DIR = REPO_ROOT / "_bmad" / "memory" / "bmad-agent-gary"
 REFERENCES_DIR = REPO_ROOT / "skills" / "bmad-agent-gamma" / "references"
 TEXT_AMOUNT_VALUES = frozenset({"brief", "medium", "detailed", "extensive"})
+# Gamma UI amount labels → API values. The registry stores UI vocabulary (what the
+# operator sees in the prompt editor); Gary translates to the API value at packet-build.
+# Single source; authority: skills/gamma-api-mastery/references/gamma-style-control-map.md.
+TEXT_AMOUNT_UI_TO_API: dict[str, str] = {
+    "minimal": "brief",
+    "concise": "medium",
+    "detailed": "detailed",
+    "extensive": "extensive",
+}
+TEXT_AMOUNT_UI_VALUES = frozenset(TEXT_AMOUNT_UI_TO_API)
 TEXT_LANGUAGE_VALUES = frozenset({"en"})
 TEXT_MODE_VALUES = frozenset({"generate", "condense", "preserve"})
 IMAGE_STYLE_PRESET_VALUES = frozenset(
@@ -132,6 +142,11 @@ GAMMA_SETTING_KEYS = frozenset(
         # never reach a gamma_settings[] item (so the unknown-key gate below stays
         # meaningful).
         "styleguide",
+        # Style-level persistent prose register (party-ratified 2026-07-02). Present
+        # here so the resolved base-layer key flows into ``settings`` and the import-
+        # time RESOLVED_API_KEYS-subset assert stays green; it is a STYLE-ONLY channel
+        # and is deliberately EXCLUDED from the per-variant override loop below.
+        "additional_instructions",
     }
 )
 # Drift-guard (code-review item #4): the styleguide resolver may only emit keys Gary
@@ -449,6 +464,17 @@ def _normalized_gamma_settings(payload: dict[str, Any]) -> list[dict[str, Any]]:
                 f"gamma_settings contains unknown key(s): {unknown}",
                 tag="gamma.settings.invalid",
             )
+        # additional_instructions is a STYLE-ONLY channel (party-ratified 2026-07-02):
+        # it is a member of GAMMA_SETTING_KEYS only so the resolved base can flow into
+        # settings, and it is excluded from the per-variant override loop below. A
+        # per-variant item that carries it would otherwise be SILENTLY dropped — fail
+        # loud instead (code-review B; symmetry with the fail-loud guards around it).
+        if _setting_present(item.get("additional_instructions")):
+            raise GaryActError(
+                "gamma_settings.additional_instructions is a style-only channel; author "
+                "it on the styleguide record's prompt_configuration, not per-variant",
+                tag="gamma.settings.invalid",
+            )
         # Styleguide base-layer seed (Leg-A). When this variant names a CD-owned
         # styleguide, the library record is the AUTHORITATIVE base — it replaces the
         # DEFAULT_VARIANT_PAIR smoke fixture as the seed — and per-variant explicit
@@ -482,7 +508,11 @@ def _normalized_gamma_settings(payload: dict[str, Any]) -> list[dict[str, Any]]:
                 variant_id,
             )
             merged = dict(by_variant[variant_id])
-        for key in GAMMA_SETTING_KEYS - {"variant_id", "styleguide"}:
+        # ``additional_instructions`` is a STYLE-ONLY channel (party-ratified
+        # 2026-07-02): the resolved base-layer value flows through untouched and there
+        # is intentionally NO per-variant override for it, so it is excluded from this
+        # loop (avoids the list→str() coercion the scalar branch would otherwise apply).
+        for key in GAMMA_SETTING_KEYS - {"variant_id", "styleguide", "additional_instructions"}:
             value = item.get(key)
             if value is None:
                 continue
@@ -502,6 +532,14 @@ def _normalized_gamma_settings(payload: dict[str, Any]) -> list[dict[str, Any]]:
                 merged[key] = str(value).strip()
         if "amount" not in merged and merged.get("density") not in (None, "balanced"):
             merged["amount"] = merged["density"]
+        # The registry stores Gamma UI vocabulary (Minimal/Concise/Detailed/Extensive);
+        # translate to the API value here so the normalized settings AND the packet carry
+        # API values. Unknown/API/sentinel values pass through to the enum gate below.
+        # Authority: skills/gamma-api-mastery/references/gamma-style-control-map.md.
+        if merged.get("amount"):
+            merged["amount"] = TEXT_AMOUNT_UI_TO_API.get(
+                str(merged["amount"]).strip().lower(), merged["amount"]
+            )
         _validate_enum_setting(
             merged,
             "amount",
@@ -588,6 +626,11 @@ def _theme_id_for_variant(
 
 def _text_options_for_variant(settings: dict[str, Any]) -> dict[str, str]:
     amount = str(settings.get("amount") or settings.get("density") or "").strip()
+    # Registry holds Gamma UI vocabulary (Minimal/Concise/Detailed/Extensive); translate
+    # to the API value here at packet-build (matrix authority). API/unknown values pass
+    # through so a directive override written in either vocabulary still works.
+    if amount:
+        amount = TEXT_AMOUNT_UI_TO_API.get(amount.lower(), amount)
     tone = str(settings.get("tone") or "").strip()
     audience = str(settings.get("audience") or "").strip()
     language = str(settings.get("language") or "").strip()
@@ -635,6 +678,20 @@ def _card_options_for_variant(settings: dict[str, Any]) -> dict[str, str]:
     return {"dimensions": dimensions}
 
 
+def _join_additional_instructions(value: Any) -> str:
+    """Collapse a style ``additional_instructions`` value (list | str | None) into a
+    single prose string for the ``additionalInstructions`` API param.
+
+    A list is joined with single spaces (blank items dropped); a bare string is
+    stripped; anything else / absent ⇒ ``""``. The list is the authoring shape, but
+    Gamma's ``additionalInstructions`` is a single string, so the collapse must happen
+    HERE — this is the ONLY list→str site for the style register.
+    """
+    if isinstance(value, list):
+        return " ".join(str(item).strip() for item in value if str(item).strip()).strip()
+    return str(value or "").strip()
+
+
 def _instructions_for_variant(
     payload: dict[str, Any],
     *,
@@ -642,6 +699,18 @@ def _instructions_for_variant(
     settings: dict[str, Any] | None,
 ) -> str:
     parts = [
+        # Style-level persistent register FIRST (party-ratified 2026-07-02). Read from
+        # the resolved STYLE ``settings`` — NEVER ``payload['additional_instructions']``
+        # (that key carries the PROTECTED per-deck source-derived instructions; reading
+        # the style block from a SEPARATE dict key is what makes a key-collision — the
+        # only overwrite vector — structurally impossible). Ordered before the per-deck
+        # block so the more-specific source-derived prose comes after and wins on
+        # specificity. Absent/empty ⇒ "" ⇒ dropped by the filter-join ⇒ byte-identical.
+        _join_additional_instructions(settings.get("additional_instructions"))
+        if settings is not None
+        else "",
+        # Per-deck source-derived instructions (PROTECTED source-detail conveyance),
+        # built UPSTREAM by the orchestrator — never degraded or dropped here.
         str(payload.get("additional_instructions") or "").strip(),
         "Use each section's leading heading as that card's title verbatim; "
         "produce exactly one card per section; do not add a cover, agenda, "

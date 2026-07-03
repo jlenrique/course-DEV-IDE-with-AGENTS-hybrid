@@ -50,6 +50,12 @@ RESOLVED_API_KEYS = frozenset(
         "image_style",
         "keywords",
         "dimensions",
+        # Style-level persistent prose register (party-ratified 2026-07-02). The
+        # api/Classic path emits this so Gary composes it as a SEPARATE, style-first
+        # part of the real Gamma ``additionalInstructions`` generation param — it
+        # COMPLEMENTS, never overwrites, the per-deck source-derived instructions.
+        # Studio deliberately does NOT emit it (see _expand_studio).
+        "additional_instructions",
         "production_mode",
         "studio_template_id",
     }
@@ -232,6 +238,16 @@ def _expand_api(record: dict[str, Any], name: str) -> dict[str, Any]:
     if _is_present(keywords):
         resolved["keywords"] = [str(k).strip() for k in keywords if str(k).strip()]
 
+    # Style-level persistent prose register (party-ratified 2026-07-02). Emitted as a
+    # cleaned LIST of non-empty strings; an absent / empty / blank-only list resolves
+    # to key-ABSENT (identical to today ⇒ additive-safe). Malformed shapes (non-list)
+    # are the write-gate's job — the resolver stays tolerant and simply skips emission.
+    extra_instructions = pc.get("additional_instructions")
+    if isinstance(extra_instructions, list):
+        cleaned = [str(item).strip() for item in extra_instructions if str(item).strip()]
+        if cleaned:
+            resolved["additional_instructions"] = cleaned
+
     card_options = (record.get("page_settings") or {}).get("card_options") or {}
     if _is_present(card_options.get("dimensions")):
         resolved["dimensions"] = str(card_options["dimensions"]).strip()
@@ -255,6 +271,14 @@ def _expand_studio(record: dict[str, Any], name: str) -> dict[str, Any]:
             f"studio_template.gamma_id",
             tag=SURFACE_VIOLATION_TAG,
         )
+    # Studio ``additional_instructions`` disposition — TEMPLATE-LOCK-ONLY BY DESIGN
+    # (party-ratified 2026-07-02, Gary + Dan unanimous). A studio record MAY carry
+    # ``prompt_configuration.additional_instructions`` (it is NOT a Classic-only key,
+    # so it is not a surface-violation and the write-gate validates its shape), but the
+    # resolver INTENTIONALLY does not emit it: the Gamma create-from-template call has
+    # no ``additionalInstructions`` channel, and the studio_prompt_lock wrapper is the
+    # sole studio style-authority surface. The value is a documented template-lock
+    # annotation; this non-emission is deliberate + tested, never an accidental drop.
     return {"production_mode": "studio", "studio_template_id": gamma_id}
 
 

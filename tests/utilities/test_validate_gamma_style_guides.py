@@ -101,6 +101,38 @@ def test_invalid_enum_value_fails_against_frozen_enum() -> None:
     assert any("dimension" in e.lower() for e in errors), errors
 
 
+def test_text_amount_uses_prompt_editor_values() -> None:
+    data = _runtime_data()
+    broken = copy.deepcopy(data)
+    broken["style_guides"]["classic-freeform-x-cards"]["prompt_configuration"][
+        "text_content"
+    ]["amount"] = "brief"  # API value; registry must store UI value `minimal`.
+    errors = validate_style_guides(broken)
+    assert any("gamma.text.amount-ui-values" in e for e in errors), errors
+
+
+def test_text_amount_for_preserve_mode_is_invalid() -> None:
+    data = _runtime_data()
+    broken = copy.deepcopy(data)
+    text_content = broken["style_guides"]["hil-2026-apc-blueprint-classic"][
+        "prompt_configuration"
+    ]["text_content"]
+    text_content["mode"] = "preserve"
+    text_content["amount"] = "minimal"
+    errors = validate_style_guides(broken)
+    assert any("gamma.text.amount-mode" in e for e in errors), errors
+
+
+def test_text_amount_required_for_generate_or_condense() -> None:
+    data = _runtime_data()
+    broken = copy.deepcopy(data)
+    broken["style_guides"]["classic-freeform-x-cards"]["prompt_configuration"][
+        "text_content"
+    ]["amount"] = None
+    errors = validate_style_guides(broken)
+    assert any("gamma.text.amount-required" in e for e in errors), errors
+
+
 def test_missing_triad_rationale_fails_coherence() -> None:
     data = _runtime_data()
     broken = copy.deepcopy(data)

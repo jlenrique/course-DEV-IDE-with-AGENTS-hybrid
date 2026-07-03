@@ -91,27 +91,48 @@ def test_roster_include_probes_flags_probe_entries() -> None:
 def test_roster_carries_lifecycle_and_candidate_badge_renders() -> None:
     """Session-07 A1: lifecycle rides the roster; candidates get a visible badge.
 
-    The real SSOT now carries both tiers: the 5 pre-session-07 permanents and
-    the session-07 `videographic-glance-track` candidate. Exactly the candidate
-    entries render the badge.
+    Registry membership is volatile (the session-07 `videographic-glance-track`
+    candidate was DEPRECATED 2026-07-03 in the "start over" reset), so the badge
+    machinery is exercised against a synthetic candidate entry rather than pinning
+    live SSOT content. Live permanents keep their tier.
     """
     badge = '<span class="chip chip-candidate">'
     roster = load_picker_roster(include_probes=True)
     by_name = {entry["name"]: entry for entry in roster}
-    assert by_name["videographic-glance-track"]["lifecycle"] == "candidate"
     for seed in SEED_GUIDES | PROBE_GUIDES:
         assert by_name[seed]["lifecycle"] == "permanent"
 
-    html = render_picker_html(roster, post_url="http://127.0.0.1:1/pick")
-    assert html.count(badge) == sum(
-        1 for entry in roster if entry["lifecycle"] == "candidate"
-    )
+    # Badge machinery: a synthetic candidate renders exactly one badge.
+    synthetic = dict(by_name["classic-freeform-x-cards"])
+    synthetic["lifecycle"] = "candidate"
+    html = render_picker_html([synthetic], post_url="http://127.0.0.1:1/pick")
+    assert html.count(badge) == 1
     assert "CANDIDATE — A-corpus only" in html
 
     # Permanent-only roster renders no badge (the CSS class alone is not a badge).
-    permanents = [e for e in roster if e["lifecycle"] == "permanent"]
+    permanents = [by_name[s] for s in SEED_GUIDES]
     html = render_picker_html(permanents, post_url="http://127.0.0.1:1/pick")
     assert badge not in html
+
+
+def test_roster_hides_deprecated_by_default_and_opts_in_for_audit() -> None:
+    """A `lifecycle: deprecated` guide is retired from the production roster and
+    only appears (badged) under include_deprecated. Regression guard for the
+    2026-07-03 videographic deprecation."""
+    default_names = {e["name"] for e in load_picker_roster(include_probes=True)}
+    assert "videographic-glance-track" not in default_names, (
+        "deprecated guide must be hidden from the default production roster"
+    )
+
+    audit = load_picker_roster(include_probes=True, include_deprecated=True)
+    audit_by = {e["name"]: e for e in audit}
+    assert audit_by["videographic-glance-track"]["lifecycle"] == "deprecated"
+
+    html = render_picker_html(
+        [audit_by["videographic-glance-track"]], post_url="http://127.0.0.1:1/pick"
+    )
+    assert '<span class="chip chip-deprecated">' in html
+    assert "DEPRECATED — retired style" in html
 
 
 def test_roster_joins_last_used_from_sidecar_not_ssot(tmp_path: Path) -> None:
@@ -149,7 +170,10 @@ def test_every_rendered_thumbnail_ref_resolves_to_real_png() -> None:
         # R1: thumbnails render as SAME-ORIGIN server paths (a file:// img on an
         # http page is blocked by the browser), served by do_GET.
         assert f'src="/thumbnails/{entry["name"]}.png"' in html
-    assert seen_thumb == 3, "the 3 seed guides must carry curated thumbnails (D-2)"
+    assert seen_thumb == 4, (
+        "the 4 production guides must carry curated thumbnails (D-2 seeds + "
+        "crossroads canonicalized as the standard 'A' style 2026-07-03)"
+    )
 
 
 def test_dangling_thumbnail_ref_fails_loud() -> None:

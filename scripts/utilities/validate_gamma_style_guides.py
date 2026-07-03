@@ -19,6 +19,7 @@ Enforces (spec §2):
 from __future__ import annotations
 
 import argparse
+import re
 import sys
 from pathlib import Path
 from typing import Any
@@ -35,7 +36,7 @@ from app.specialists.gary._act import (  # noqa: E402
     IMAGE_SOURCE_VALUES,
     IMAGE_STYLE_PRESET_VALUES,
     PRODUCTION_MODE_VALUES,
-    TEXT_AMOUNT_VALUES,
+    TEXT_AMOUNT_UI_VALUES,
     TEXT_LANGUAGE_VALUES,
     TEXT_MODE_VALUES,
 )
@@ -64,7 +65,6 @@ _LIFECYCLE_VALUES: frozenset[str] = frozenset({"candidate", "permanent", "deprec
 # Frozen-enum reuse: {resolved base key -> allowed value set}. Sourced from _act.py.
 _ENUM_CHECKS: dict[str, frozenset[str]] = {
     "text_mode": TEXT_MODE_VALUES,
-    "amount": TEXT_AMOUNT_VALUES,
     "language": TEXT_LANGUAGE_VALUES,
     "image_style_preset": IMAGE_STYLE_PRESET_VALUES,
     "image_model": IMAGE_MODEL_VALUES,
@@ -81,6 +81,134 @@ def _is_present(value: Any) -> bool:
     if isinstance(value, (list, tuple, set, dict)):
         return bool(value)
     return True
+
+
+# --- AC-5: prose-vs-param non-contradiction (advances the filed follow-on
+#     `gamma-prose-vs-param-noncontradiction-validator`). Conservative first cut:
+#     CONTRADICTION with a structured param is an ERROR; mere REDUNDANCY with Gary's
+#     hardcoded card rule is a WARN. Token matching is case-insensitive substring on the
+#     joined prose. Extending the rule-set stays under the filed follow-on. -------------
+_ADDITIONAL_INSTRUCTIONS_TAG = "gamma.styleguide.additional-instructions-invalid"
+_PROSE_CONTRADICTS_TAG = "gamma.prose.contradicts-param"
+_PROSE_ECHOES_TAG = "gamma.prose.echoes-param"
+# Non-photographic presets (everything real except `photorealistic`; `custom` is
+# author-defined free-text so it is intentionally excluded from the axis).
+_NONPHOTO_PRESETS = frozenset({"illustration", "abstract", "3D", "lineArt"})
+# High-precision tokens matched with a LEADING word boundary (``\btoken``) so plurals/
+# inflections are caught (photograph → photographs) but mid-word bleed is NOT (telephoto,
+# photosynthesis, photocopy). Ambiguous single words that collide with content vocabulary
+# (bare ``photo``, ``vector``, ``sketch``) are deliberately omitted — precision over
+# recall for a hard write-gate ERROR (code-review A). Extending stays under the filed
+# follow-on `gamma-prose-vs-param-noncontradiction-validator`.
+_PROSE_PHOTO_TOKENS = ("photorealistic", "photo-realistic", "photograph", "photographic")
+_PROSE_ILLUSTRATION_TOKENS = (
+    "illustration", "illustrated", "line art", "line-art", "lineart",
+    "vector illustration", "vector art", "vector graphic", "cartoon", "hand-drawn",
+)
+_PROSE_STOCK_PHOTO_TOKENS = (
+    "stock photo", "stock image", "stock imagery", "unsplash", "real photograph",
+)
+_PROSE_CARD_RULE_TOKENS = (
+    "one card per section", "one card per", "do not add a cover", "do not merge",
+    "do not split", "leading heading", "verbatim",
+)
+# Best-effort same-clause negation guard so prose that FORBIDS the wrong medium
+# ("never use photographs; keep everything illustrated") is not misread as asserting it.
+# NOT a general negation solver — deliberately conservative (per repo guidance that
+# bag-of-words negation must never be the sole live guard on generative text).
+_NEGATION_RE = re.compile(
+    r"\b(no|not|never|avoid|without|don't|dont|exclude|excluding|neither|nor|non)\b"
+)
+
+
+def _clause_prefix(prose: str, idx: int) -> str:
+    """The (up to 40 chars of) text in the same clause immediately before ``idx``."""
+    return re.split(r"[.;:!?]", prose[:idx])[-1][-40:]
+
+
+def _prose_positively_asserts(prose: str, tokens: tuple[str, ...]) -> bool:
+    """True iff ``prose`` (lowercased) POSITIVELY asserts any token — a leading-word-
+    boundary match that is NOT negated within the same clause."""
+    for token in tokens:
+        for match in re.finditer(r"\b" + re.escape(token), prose):
+            if not _NEGATION_RE.search(_clause_prefix(prose, match.start())):
+                return True
+    return False
+
+
+def _record_additional_instructions(record: dict[str, Any]) -> Any:
+    return (record.get("prompt_configuration") or {}).get("additional_instructions")
+
+
+def _validate_additional_instructions_shape(name: str, record: dict[str, Any]) -> list[str]:
+    """AC-1: the optional ``prompt_configuration.additional_instructions`` (BOTH modes)
+    must be a NON-EMPTY list of NON-EMPTY strings when present. Absent ⇒ clean no-op."""
+    ai = _record_additional_instructions(record)
+    if ai is None:
+        return []
+    if not isinstance(ai, list) or not ai:
+        return [
+            f"{name}: prompt_configuration.additional_instructions must be a non-empty "
+            f"list of strings when present [{_ADDITIONAL_INSTRUCTIONS_TAG}]"
+        ]
+    errors: list[str] = []
+    for item in ai:
+        if not isinstance(item, str) or not item.strip():
+            errors.append(
+                f"{name}: prompt_configuration.additional_instructions entries must be "
+                f"non-empty strings; got {item!r} [{_ADDITIONAL_INSTRUCTIONS_TAG}]"
+            )
+    return errors
+
+
+def _validate_prose_noncontradiction(
+    name: str, record: dict[str, Any], resolved: dict[str, Any]
+) -> tuple[list[str], list[str]]:
+    """AC-5: flag style ``additional_instructions`` prose that CONTRADICTS a structured
+    param (ERROR) or merely ECHOES Gary's hardcoded card rule (WARN). Reads the RESOLVED
+    surface for preset/source, so studio records (no resolved preset/source) skip the
+    contradiction axes by construction. Absent/blank prose ⇒ clean no-op."""
+    ai = _record_additional_instructions(record)
+    if isinstance(ai, list):
+        prose = " ".join(str(x) for x in ai if isinstance(x, str))
+    elif isinstance(ai, str):
+        prose = ai
+    else:
+        prose = ""
+    prose = prose.lower()
+    if not prose.strip():
+        return ([], [])
+    errors: list[str] = []
+    warnings: list[str] = []
+    preset = str(resolved.get("image_style_preset") or "").strip()
+    source = str(resolved.get("image_source") or "").strip()
+    if preset in _NONPHOTO_PRESETS and _prose_positively_asserts(prose, _PROSE_PHOTO_TOKENS):
+        errors.append(
+            f"{name}: additional_instructions prose implies photographic imagery but "
+            f"image_style_preset={preset!r} is non-photographic [{_PROSE_CONTRADICTS_TAG}]"
+        )
+    elif preset == "photorealistic" and _prose_positively_asserts(
+        prose, _PROSE_ILLUSTRATION_TOKENS
+    ):
+        errors.append(
+            f"{name}: additional_instructions prose implies illustration/vector imagery "
+            f"but image_style_preset='photorealistic' [{_PROSE_CONTRADICTS_TAG}]"
+        )
+    if source == "aiGenerated" and _prose_positively_asserts(prose, _PROSE_STOCK_PHOTO_TOKENS):
+        errors.append(
+            f"{name}: additional_instructions prose asks for stock photography but "
+            f"image_source='aiGenerated' [{_PROSE_CONTRADICTS_TAG}]"
+        )
+    # The card-rule echo WARN only applies where Gary's card rule actually ships — the
+    # api/Classic composition path. Studio prose is a never-emitted template-lock
+    # annotation, so echoing the card rule there is meaningless (code-review C).
+    production_mode = str(record.get("production_mode") or "api").strip().lower()
+    if production_mode == "api" and _prose_positively_asserts(prose, _PROSE_CARD_RULE_TOKENS):
+        warnings.append(
+            f"{name}: additional_instructions prose echoes Gary's hardcoded card-structure "
+            f"rule (merely-redundant; the rule ships structurally) [{_PROSE_ECHOES_TAG}]"
+        )
+    return (errors, warnings)
 
 
 def _triad_rationale(record: dict[str, Any]) -> Any:
@@ -212,6 +340,33 @@ def _validate_one(name: str, record: dict[str, Any]) -> tuple[list[str], list[st
                 f"(inverted-polarity completeness failure)"
             )
 
+    # --- amount: Gamma UI vocabulary, conditional on text mode (2026-07-03) ---------
+    #     Authority: skills/gamma-api-mastery/references/gamma-style-control-map.md. The
+    #     registry stores UI labels (Minimal/Concise/Detailed/Extensive); Gary translates
+    #     to the API value. amount is required for generate/condense, forbidden for
+    #     preserve (Gamma ignores it), and must be a UI value (never the API value).
+    if production_mode == "api":
+        tc = (record.get("prompt_configuration") or {}).get("text_content") or {}
+        mode = str(tc.get("mode") or "").strip().lower()
+        amount_raw = tc.get("amount")
+        amount_present = _is_present(amount_raw)
+        if mode in {"generate", "condense"} and not amount_present:
+            errors.append(
+                f"{name}: text_content.amount is required when mode is generate/condense "
+                f"[gamma.text.amount-required]"
+            )
+        if mode == "preserve" and amount_present:
+            errors.append(
+                f"{name}: text_content.amount must be absent when mode is preserve "
+                f"(Gamma ignores amount in preserve) [gamma.text.amount-mode]"
+            )
+        if amount_present and str(amount_raw).strip().lower() not in TEXT_AMOUNT_UI_VALUES:
+            errors.append(
+                f"{name}: text_content.amount={amount_raw!r} is not a Gamma UI amount "
+                f"value {sorted(TEXT_AMOUNT_UI_VALUES)}; the registry stores UI vocabulary "
+                f"(not the API value) [gamma.text.amount-ui-values]"
+            )
+
     # --- Frozen-enum validation on the RESOLVED surface ---------------------------
     for key, allowed in _ENUM_CHECKS.items():
         if key in resolved and str(resolved[key]).strip() not in allowed:
@@ -285,6 +440,12 @@ def _validate_one(name: str, record: dict[str, Any]) -> tuple[list[str], list[st
 
     # --- Scripted block (Leg-C): sealed registry-bound closed-vocab namespace ------
     errors.extend(_validate_scripted(name, record))
+
+    # --- Style-level additional_instructions (AC-1 shape + AC-5 non-contradiction) --
+    errors.extend(_validate_additional_instructions_shape(name, record))
+    prose_errors, prose_warnings = _validate_prose_noncontradiction(name, record, resolved)
+    errors.extend(prose_errors)
+    warnings.extend(prose_warnings)
     return (errors, warnings)
 
 

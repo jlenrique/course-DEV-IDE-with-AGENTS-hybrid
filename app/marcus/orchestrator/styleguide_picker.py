@@ -199,6 +199,7 @@ def _load_ssot_guides(ssot_path: Path) -> dict[str, Any]:
 def load_picker_roster(
     *,
     include_probes: bool = False,
+    include_deprecated: bool = False,
     ssot_path: str | Path | None = None,
     events_path: str | Path | None = None,
 ) -> list[dict[str, Any]]:
@@ -206,8 +207,11 @@ def load_picker_roster(
 
     Probe-marked guides (``presentation.visibility: probe``, D-3) are excluded
     unless ``include_probes`` — scaffolding must not masquerade as an
-    intentional style. ``last_used`` is joined from the append-only sidecar at
-    render time (D-1); the SSOT field stays null forever.
+    intentional style. ``lifecycle: deprecated`` guides are RETIRED and excluded
+    from the production roster unless ``include_deprecated`` (audit opt-in) — a
+    deprecated style must never be silently pickable for a production run.
+    ``last_used`` is joined from the append-only sidecar at render time (D-1);
+    the SSOT field stays null forever.
     """
     ssot = Path(ssot_path) if ssot_path is not None else GAMMA_STYLE_GUIDES_SSOT_PATH
     events = Path(events_path) if events_path is not None else GAMMA_STYLEGUIDE_PICKS_PATH
@@ -221,6 +225,13 @@ def load_picker_roster(
         presentation = record.get("presentation") or {}
         probe = str(presentation.get("visibility") or "").strip().lower() == "probe"
         if probe and not include_probes:
+            continue
+        # Session-07 A1: lifecycle is schema; absence defaults to candidate (safe
+        # state) so an unmarked record can never masquerade as permanent.
+        lifecycle = str(record.get("lifecycle") or "candidate").strip().lower()
+        # A retired (`deprecated`) style is hidden from the production roster;
+        # `include_deprecated` opts in for audit.
+        if lifecycle == "deprecated" and not include_deprecated:
             continue
         narrative = presentation.get("narrative") or {}
         page_settings = record.get("page_settings") or {}
@@ -237,9 +248,7 @@ def load_picker_roster(
                 },
                 "production_mode": str(record.get("production_mode") or "").strip().lower(),
                 "probe": probe,
-                # Session-07 A1: lifecycle is schema; absence defaults to candidate
-                # (safe state) so an unmarked record can never masquerade as permanent.
-                "lifecycle": str(record.get("lifecycle") or "candidate").strip().lower(),
+                "lifecycle": lifecycle,
                 "card_dimensions": (
                     str(card_options.get("dimensions") or "").strip()
                     if isinstance(card_options, dict)
@@ -291,6 +300,8 @@ main.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px
   color: #eef2f5; }
 .chip-probe { background: #b3541e; color: #fff; font-weight: 700; margin-bottom: 6px; }
 .chip-candidate { background: #6c4ba0; color: #fff; font-weight: 700; margin-bottom: 6px; }
+.chip-deprecated { background: #6b7280; color: #fff; font-weight: 700; margin-bottom: 6px;
+  text-decoration: line-through; }
 .chip-provenance { background: #8a6d1a; color: #fff; display: inline-block;
   margin: 6px 0 0; }
 details { margin-top: 6px; font-size: 0.85rem; }
@@ -431,6 +442,13 @@ def _render_card(entry: dict[str, Any], *, repo_root: Path) -> list[str]:
         parts.append(
             '<span class="chip chip-candidate">CANDIDATE — A-corpus only, '
             "not yet promoted (B-corpus stress test pending)</span>"
+        )
+    # A deprecated style only appears under include_deprecated (audit); badge it
+    # unmistakably so it can never be mistaken for a production-eligible style.
+    if str(entry.get("lifecycle") or "candidate") == "deprecated":
+        parts.append(
+            '<span class="chip chip-deprecated">DEPRECATED — retired style, '
+            "not for production</span>"
         )
     parts.append(f'<p class="distinguishing">{escape(entry["distinguishing"])}</p>')
     parts.append("<details><summary>narrative</summary>")
@@ -897,6 +915,11 @@ def main(argv: list[str] | None = None) -> int:
         help="also list probe-marked guides (D-3; warning-chipped, second-click select)",
     )
     parser.add_argument(
+        "--include-deprecated",
+        action="store_true",
+        help="also list deprecated (retired) guides for audit (badged, not for production)",
+    )
+    parser.add_argument(
         "--no-browser",
         action="store_true",
         help="skip the browser and use the CLI-numbered fallback directly",
@@ -905,7 +928,11 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--run-id", default=None, help="run id recorded on pick events")
     args = parser.parse_args(argv)
 
-    roster = load_picker_roster(include_probes=args.include_probes, ssot_path=args.ssot)
+    roster = load_picker_roster(
+        include_probes=args.include_probes,
+        include_deprecated=args.include_deprecated,
+        ssot_path=args.ssot,
+    )
 
     def _on_pick(picks: dict[str, str]) -> dict[str, Any]:
         provenance = write_pick_to_directive(args.directive, picks, ssot_path=args.ssot)

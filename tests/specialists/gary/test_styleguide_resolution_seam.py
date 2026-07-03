@@ -40,8 +40,15 @@ def test_classic_styleguide_expands_to_api_keys() -> None:
     assert a["theme"] == "njim9kuhfnljvaa"
     assert a["dimensions"] == "fluid"
     assert a["image_style_preset"] == "illustration"
+    assert a["amount"] == "brief"  # registry UI `minimal` -> Gamma API `brief`
     assert a["text_mode"] == "condense"
     assert a["production_mode"] == "api"
+
+
+def test_concise_styleguide_amount_expands_to_api_medium() -> None:
+    out = _normalized_gamma_settings(_settings(styleguide="videographic-glance-track"))
+    a = next(item for item in out if item["variant_id"] == "A")
+    assert a["amount"] == "medium"
 
 
 def test_resolved_item_carries_only_setting_keys_metadata_stripped() -> None:

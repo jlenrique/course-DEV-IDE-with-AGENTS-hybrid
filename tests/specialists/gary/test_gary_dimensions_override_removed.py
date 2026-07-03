@@ -265,6 +265,11 @@ def test_ac5_structured_options_still_carry_settings() -> None:
     assert text_opts.get("tone") == "Clear, professional"
 
 
+def test_prompt_editor_amount_aliases_translate_to_api_values() -> None:
+    assert gary_act._text_options_for_variant({"amount": "minimal"})["amount"] == "brief"
+    assert gary_act._text_options_for_variant({"amount": "concise"})["amount"] == "medium"
+
+
 def test_ac7_wellformed_no_dangling_separators() -> None:
     # AC#7 — no double-space / dangling separator across empty-settings,
     # empty-keywords, empty-brief, and full cases; label always terminal.
