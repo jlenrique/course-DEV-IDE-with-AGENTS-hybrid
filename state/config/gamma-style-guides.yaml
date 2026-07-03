@@ -210,6 +210,117 @@ style_guides:
         (e8tz1vxb9v1urqp), for A/B-paired deck selection in Storyboard. To be tuned toward
         a genuine-but-aesthetically-compatible difference and eyed live before promotion.
 
+  # -- Studio-mode companion of the crossroads-blueprint style (studio-via-API override
+  #    plumbing, session-10). Approach 1: a DISTINCT, self-contained studio record — NOT a
+  #    re-composition of the Classic sibling. The base full-bleed Studio-B template carries
+  #    per-record theme_id (Blueprint Editorial) + image_model (recraft-v3) OVERRIDES. Born
+  #    CANDIDATE; promotion is operator-eye-gated (deferred). RENDER-PROVEN at the API level
+  #    (trial crossroads-blueprint-studio-20260703T070021Z); production-seam live proof this
+  #    session. This record's field-by-field mapping is the spec for the deferred
+  #    Classic->Studio transformer skill.
+  hil-2026-apc-crossroads-blueprint-studio:
+    production_mode: studio
+    lifecycle: candidate
+    version: 1
+    derived_from: hil-2026-apc-crossroads-blueprint
+    authored_session:
+      session: session-10
+      date: '2026-07-03'
+      author: Dan/CD
+      source_sibling: hil-2026-apc-crossroads-blueprint
+      notes: >-
+        Reference Classic->Studio transformation: the crossroads-blueprint Classic style
+        (recraft-v3 illustration on the Blueprint Editorial theme) delivered instead as a
+        full-bleed 16:9 Studio image-card deck via the studio-via-API override plumbing.
+    promotion_criteria: >-
+      Candidate -> permanent ONLY after ALL of: (1) live Studio render captured with a
+      retrievable pointer (gamma id / export url / thumbnail); (2) operator-eye verdict
+      recorded; (3) micro-text legibility pass - zoom the baked data callouts and confirm
+      they are legible, spelled, and un-garbled at delivery size (recraft-v3's known
+      small-text weakness x Blueprint's micro-text density is the primary risk); (4)
+      English-only confirmed, zero CJK leakage; (5) genuine full-bleed 16:9 (not
+      letterboxed); (6) sibling-parity - the Classic crossroads-blueprint parent is
+      resolved/promoted first (a companion may not outrank its parent).
+    theme: null
+    studio_template:
+      gamma_id: g_nv5q4da69qiiu8q
+      name: Studio B Gamma template (base full-bleed)
+      source: runs/studio-trial/studio-b-gamma-settings.yaml
+      # Per-record Studio overrides (studio-via-API override plumbing, session-10):
+      theme_id: e8tz1vxb9v1urqp        # Blueprint Editorial theme override
+      image_model: recraft-v3          # clean-Western image-model override
+    studio_prompt_lock:
+      wrapper_id: gary_studio_lock_wrapper_v1
+      behavior: >-
+        Lock design; keep one full-bleed image card; only swap subject to the new slide
+        topic. The English-only text steer is enforced by the wrapper constant.
+      guard:
+        type: aspect_ratio_min
+        min_ratio: 1.4
+        expected_ratio: 1.7778
+    prompt_configuration:
+      # Studio records carry NO Classic visuals surface — the create-from-template plus the
+      # theme_id/image_model overrides ARE the sole style authority. Only non-surface
+      # template-lock instructions remain.
+      additional_instructions:
+      - Preserve the template's full-bleed image-card composition.
+    presentation:
+      display_name: HIL 2026 APC Crossroads — Blueprint (Studio)
+      distinguishing: >-
+        The Studio-mode companion of the crossroads-blueprint style: the SAME cooler
+        Blueprint Editorial palette and clean-Western recraft-v3 illustration, delivered as
+        a full-bleed 16:9 Studio image-card (title + key data embedded IN the illustration)
+        rather than Classic typography.
+      narrative:
+        summary: >-
+          A full-bleed Studio image-card deck on the base Studio-B template, re-themed to
+          Blueprint Editorial and rendered with recraft-v3 via per-record overrides. The
+          image carries the title and data; the template plus overrides are the style
+          authority.
+        feels_like: Immersive, single-image-per-slide crossroads in a cool editorial palette.
+        use_when: >-
+          A slide's meaning lives in one bold full-bleed illustration with embedded text and
+          the Blueprint palette is wanted.
+        avoid_when: >-
+          Dense Classic typography or multi-block text is required, or the Classic
+          crossroads-blueprint (per-slide illustration + real text) is the better fit.
+        triad_rationale: >-
+          Base Studio-B full-bleed template + Blueprint Editorial theme override
+          (e8tz1vxb9v1urqp) + recraft-v3 image-model override; the aspect-ratio guard
+          (min 1.4) proves the exported card kept the 16:9 frame. recraft-v3 renders clean
+          Western illustration (gpt-image-2-mini renders Japanese on this crossroads subject).
+      example_url: null
+      thumbnail_ref: null
+      last_used: null
+    coherence:
+      template_art_dimensions: >-
+        Base Studio-B template (style authority) + Blueprint Editorial theme override +
+        recraft-v3 image model + full-bleed 16:9. Classic text/card settings are forbidden
+        on a studio record.
+    provenance:
+      source: crossroads-blueprint-classic-to-studio-transform
+      established: '2026-07-03'
+      runner_up:
+        model: gpt-image-2-mini
+        rejected_because: >-
+          Renders Japanese text on this journey/crossroads subject even under a hardened
+          "no Japanese/Chinese/Korean characters" language lock (session-09 two-arm trial
+          crossroads-blueprint-twoarm-20260703T064100Z); recraft-v3 is the clean-Western fix.
+      known_limitation: >-
+        recraft-v3 garbles SMALL embedded/body text (observed session-10 production-seam
+        live render crossroads-blueprint-studio-prodseam-20260703T155101Z: hero titles
+        render clean and English, but small taglines/body garble - "Ciinical"/"Tansfornative"
+        on card 1, gibberish body on card 2). BLOCKS promotion criterion-3 (micro-text
+        legibility). Directed refinement (deferred-inventory): Arm-1 hero-title + large-
+        callouts only, minimize small illegible body text (play to recraft-v3's strength);
+        Arm-2 fallback = image_model swap. NOT accept-limitation - a promoted style with
+        garbled body text would degrade the source-detail->Gamma conveyance invariant.
+      notes: >-
+        Approach-1 distinct self-contained studio record; the Studio companion of
+        hil-2026-apc-crossroads-blueprint. RENDER-PROVEN at the API level (trial
+        crossroads-blueprint-studio-20260703T070021Z); production-seam live proof session-10.
+        PROMOTION-PENDING operator eye + micro-text legibility.
+
   # -- Art-style variant of the standard-'A' crossroads style: Digital Collage --
   hil-2026-apc-crossroads-digital-collage:
     production_mode: api
