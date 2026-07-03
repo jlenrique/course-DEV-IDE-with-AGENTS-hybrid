@@ -237,6 +237,9 @@ def load_picker_roster(
                 },
                 "production_mode": str(record.get("production_mode") or "").strip().lower(),
                 "probe": probe,
+                # Session-07 A1: lifecycle is schema; absence defaults to candidate
+                # (safe state) so an unmarked record can never masquerade as permanent.
+                "lifecycle": str(record.get("lifecycle") or "candidate").strip().lower(),
                 "card_dimensions": (
                     str(card_options.get("dimensions") or "").strip()
                     if isinstance(card_options, dict)
@@ -287,6 +290,7 @@ main.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px
 .chip-last-used { position: absolute; top: 16px; right: 16px; background: rgba(28,39,51,0.65);
   color: #eef2f5; }
 .chip-probe { background: #b3541e; color: #fff; font-weight: 700; margin-bottom: 6px; }
+.chip-candidate { background: #6c4ba0; color: #fff; font-weight: 700; margin-bottom: 6px; }
 .chip-provenance { background: #8a6d1a; color: #fff; display: inline-block;
   margin: 6px 0 0; }
 details { margin-top: 6px; font-size: 0.85rem; }
@@ -420,6 +424,13 @@ def _render_card(entry: dict[str, Any], *, repo_root: Path) -> list[str]:
         parts.append(
             '<span class="chip chip-probe">PROBE — scaffolding, not a production '
             "style (click twice to select)</span>"
+        )
+    # Session-07 A1 (Winston + Dan): candidates are visibly badged — a reviewer
+    # always knows which lifecycle tier they are looking at.
+    if str(entry.get("lifecycle") or "candidate") == "candidate":
+        parts.append(
+            '<span class="chip chip-candidate">CANDIDATE — A-corpus only, '
+            "not yet promoted (B-corpus stress test pending)</span>"
         )
     parts.append(f'<p class="distinguishing">{escape(entry["distinguishing"])}</p>')
     parts.append("<details><summary>narrative</summary>")

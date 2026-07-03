@@ -25,6 +25,8 @@ style_guides:
   classic-freeform-x-cards:
     production_mode: api
     status: active
+    # Session-07 A1 retro-mark: proven through production use (Leg-A dual-gate close).
+    lifecycle: permanent
     version: 1
     theme:
       id: njim9kuhfnljvaa
@@ -95,6 +97,8 @@ style_guides:
   hil-2026-apc-blueprint-classic:
     production_mode: api
     status: active
+    # Session-07 A1 retro-mark: proven through production use (Leg-A dual-gate close).
+    lifecycle: permanent
     version: 1
     theme:
       id: e8tz1vxb9v1urqp
@@ -160,6 +164,8 @@ style_guides:
   hil-2026-apc-studio-image-card:
     production_mode: studio
     status: active
+    # Session-07 A1 retro-mark: proven through production use (Leg-A dual-gate close).
+    lifecycle: permanent
     version: 1
     theme: null
     studio_template:
@@ -223,6 +229,9 @@ style_guides:
   leg-c-part3-floor-probe:
     production_mode: api
     status: active
+    # Session-07 A1 retro-mark: ratified Leg-C test fixture (dual-gate closed);
+    # probe visibility (not lifecycle) is what keeps it out of production picking.
+    lifecycle: permanent
     version: 1
     theme:
       id: njim9kuhfnljvaa
@@ -306,6 +315,9 @@ style_guides:
   leg-c-part3-floor-toohigh:
     production_mode: api
     status: active
+    # Session-07 A1 retro-mark: ratified Leg-C test fixture (dual-gate closed);
+    # probe visibility (not lifecycle) is what keeps it out of production picking.
+    lifecycle: permanent
     version: 1
     theme:
       id: njim9kuhfnljvaa
@@ -381,6 +393,160 @@ style_guides:
         clones the classic seed's API surface so the floor-on differential vs the
         floor-off control isolates EXACTLY the scripted floor (N=20 deliberately ABOVE the corpus's max-reachable 9 — the AC#13 honest-refusal arm). Authored via the live-proof
         harness under the validator write-gate.
+
+  # -- Session-07 CANDIDATE (videographic register; Flight-2 proof 2026-07-02) --
+  videographic-glance-track:
+    production_mode: api
+    status: active
+    # Session-07 lifecycle (A1): CANDIDATE — A-corpus (style-test-strip-v1) evidence
+    # only. Promotion to permanent requires the operator-ratified gate below.
+    lifecycle: candidate
+    promotion_criteria: >-
+      B-corpus stress test + re-run reliability proof in a later session
+      (operator-ratified 2026-07-02), PLUS a glance-rule evaluation with real VO
+      played over the cards (Sally A6: on-screen text must be a keyword SUBSET of
+      the concurrent narration — VO-echo, never paraphrase).
+    authored_session: 2026-07-02-session-07
+    version: 2
+    theme:
+      id: njim9kuhfnljvaa
+      name: 2026 HIL APC Tejal
+    studio_template: null
+    prompt_configuration:
+      text_content:
+        mode: condense
+        # v2 (flight-2e live evidence): brief -> medium. The style's conviction is
+        # one short narrative paragraph per card in LARGE display type, not captions.
+        amount: medium
+        audience: >-
+          Faculty and instructional designers familiar with Canvas and course design,
+          American English
+        tone: Declarative, momentum-forward, one spoken thought per screen - American English
+        language: en
+      visuals:
+        image_source: aiGenerated
+        # v2 model swap (operator finding, flights 2-2e): gpt-image-2-mini rendered
+        # anime-register imagery + JAPANESE in-image text (apparent training-origin
+        # default) - availability witness DISCHARGED (verified live 5x) but the
+        # aesthetic is unsuitable for this clinical register. recraft-v4 is the
+        # catalog's proven editorial-medical-illustration family (Standard tier).
+        image_model: recraft-v4
+        style_preset: illustration
+        custom_style: null
+        keywords:
+        - vector
+        - minimalist
+        - flat-color
+        - single-focal-icon
+        - bold
+      # v2 rendering directives (Dan-dictated consult ruling 2026-07-02): the old
+      # <=8-words cap is DELETED, not softened - the live-proven conviction is a
+      # short narrative paragraph in large display type. In-image text is avoided
+      # as a directive whose PROVENANCE is model-specific (gpt-image-2-mini
+      # Japanese-text defect); re-test rather than treat as doctrine if models
+      # improve. NOTE (Winston A2 boundary): today's conversation-space driver
+      # passes these verbatim; production wiring rides the at-scale follow-on.
+      additional_instructions:
+      - >-
+        Videographic narrative register: each card carries one short narrative
+        paragraph in LARGE display type - text prominent and readable at a glance,
+        never small body text. Exactly one idea and exactly one visual per card,
+        prompted by that card's own content, with text and image anchored in the
+        same layout position on every card. Dense bridge/landing cards may carry
+        up to 30 words; glance beats stay lean. Avoid rendering text inside
+        images; any unavoidable image text must be in American English. Do not
+        add content, steps, or diagrams beyond the provided text.
+    page_settings:
+      card_options:
+        dimensions: 16x9
+      export:
+        export_as: png
+    presentation:
+      display_name: Videographic Glance-Track
+      distinguishing: >-
+        The rapid-fire register: screens turn every 5-6 seconds under a normal
+        voiceover pace, so each card is one glanced beat carrying a short
+        narrative line in large display type.
+      narrative:
+        summary: >-
+          Believes meaning should arrive as a stream of single glances: the screen
+          is a metronome for the voice. Many small beats, one idea per card, one
+          anchored visual, and one short narrative paragraph set LARGE - read in a
+          glance, never studied. Each card's image belongs to that card alone.
+        feels_like: Kinetic, confident, documentary-paced, follow-along-effortless.
+        use_when: >-
+          Narrated lessons where momentum and retention matter more than reference
+          density; openers, case-for-change arcs, motivational spines. EARMARK
+          (operator, session-07): preferred as a 'B' COMPANION TRACK to an
+          expository source style - at the Storyboard gate the HIL interleaves
+          glance-runs with standard exposition per source unit; expect a
+          substantially higher card count than the A track (no one-to-one card
+          correspondence; anchoring is per source unit).
+        avoid_when: >-
+          Reference material learners must study or screenshot: dense data tables,
+          multi-figure evidence slides, lexicons, anything meant to be READ rather
+          than glanced. Never for slides that must stand alone without VO.
+          PROHIBITION (live-earned, flights 2b/2c): do NOT force cross-card visual
+          continuity - neither literal same-scene callbacks nor symbolic echo
+          systems; probabilistic per-card generation lands them in an uncanny
+          valley (partial matches read as errors). Per-card visual independence is
+          this style's grammar; true continuity awaits construction-route visual
+          disaggregation (one master visual decomposed deterministically).
+        triad_rationale: >-
+          Tejal theme + vector-minimalist single-focal icons + fixed 16:9 frames
+          agree on one kinetic register: 16:9 is the video-bound publication frame,
+          the single focal icon + one large narrative line is what a 5-second
+          glance can absorb, and the brand theme keeps the rapid stream coherent
+          rather than chaotic. The scripted input contract (below) is the cadence
+          carrier - the API surface stays brand-standard.
+      example_url: null
+      thumbnail_ref: null
+      last_used: null
+    coherence:
+      theme_art_keywords_dimensions: >-
+        Kinetic glance register on the TJU/Tejal brand carrier; one idea + one
+        anchored visual + one large narrative line per card; 16:9 video frame.
+        INPUT CONTRACT (Winston A2 + cluster-head grammar, operator-directed
+        session-07): this style expects pre-chunked beats - 6 to 8 beats per
+        source slide, roughly 15-30 words per beat, delimited by
+        newline-dash-dash-dash-newline breaks and dispatched with
+        cardSplit=inputTextBreaks (beats sanitized so no delimiter collision
+        mints phantom cards, Gary A11). CLUSTER-HEAD GRAMMAR: the narration
+        specialist identifies the cluster-HEAD beat, which alone carries any
+        high-value design-note image intent; child beats are self-prompted by
+        their own narrative and receive imagery only when the specialist deems
+        it warranted. CAUTION (flight-2e evidence): one generation = one shared
+        visual brief - in-beat image intent bleeds deck-wide; genuinely divergent
+        runs need per-run dispatch. Beat authoring belongs to Irene Pass-1 at
+        scale (filed follow-on); the contract is declared here so the at-scale
+        story inherits it.
+    provenance:
+      source: session-07-flight-2
+      established: '2026-07-02'
+      notes: >-
+        Authored live with the operator (session-07 party green-light record
+        2026-07-02, amendments A2/A6/A11/A12 encoded). v1 = A-corpus proof
+        (style-test-strip-v1 slide 3, 8 beats). v2 (same session, Dan-dictated
+        consult ruling): text conviction rewritten from caption-cap to
+        narrative-paragraph-in-display-type (flight-2e evidence); continuity
+        prohibition added (flights 2b/2c uncanny valley); cluster-head input
+        contract added; in-image-text directive added (model-scoped provenance:
+        gpt-image-2-mini anime-register/Japanese-text finding); image model
+        swapped gpt-image-2-mini -> recraft-v4 (witness discharged, aesthetic
+        unsuitable for the clinical register). B-COMPANION EARMARK originated as
+        operator direction session-07; schema formalization (field vs
+        modality-overlay) DEFERRED to the close-gate decision - prose only by
+        design. The at-scale version (whole presentations, hundreds of cards,
+        stitched multi-generation dispatch, Irene Pass-1 beat authoring, VO-echo
+        gate, per-unit A/B interleave = Storyboard-gate-v2 semantics) is the
+        filed videographic-at-scale follow-on; VO-to-on-screen alignment is its
+        non-waivable gate. OPERATOR REFRAME (2026-07-02 mid-session, binding on
+        promotion): if this register proves out, videographic likely becomes a
+        MODE - orthogonal to style identity, like Classic/Studio - applicable to
+        ANY style. This record is the A-corpus proof vehicle, not the end-state
+        shape; promotion generalizes the glance rules + input contract into an
+        any-style overlay (schema home decided at the dual-gate close, Winston
+        reviewing).
 
 # `scripted` block — the sealed, registry-bound closed-vocab namespace (Leg-C wired).
 # A styleguide record MAY carry a list of scripted entries, each declaring ONE

@@ -88,6 +88,32 @@ def test_roster_include_probes_flags_probe_entries() -> None:
         assert by_name[seed]["probe"] is False
 
 
+def test_roster_carries_lifecycle_and_candidate_badge_renders() -> None:
+    """Session-07 A1: lifecycle rides the roster; candidates get a visible badge.
+
+    The real SSOT now carries both tiers: the 5 pre-session-07 permanents and
+    the session-07 `videographic-glance-track` candidate. Exactly the candidate
+    entries render the badge.
+    """
+    badge = '<span class="chip chip-candidate">'
+    roster = load_picker_roster(include_probes=True)
+    by_name = {entry["name"]: entry for entry in roster}
+    assert by_name["videographic-glance-track"]["lifecycle"] == "candidate"
+    for seed in SEED_GUIDES | PROBE_GUIDES:
+        assert by_name[seed]["lifecycle"] == "permanent"
+
+    html = render_picker_html(roster, post_url="http://127.0.0.1:1/pick")
+    assert html.count(badge) == sum(
+        1 for entry in roster if entry["lifecycle"] == "candidate"
+    )
+    assert "CANDIDATE — A-corpus only" in html
+
+    # Permanent-only roster renders no badge (the CSS class alone is not a badge).
+    permanents = [e for e in roster if e["lifecycle"] == "permanent"]
+    html = render_picker_html(permanents, post_url="http://127.0.0.1:1/pick")
+    assert badge not in html
+
+
 def test_roster_joins_last_used_from_sidecar_not_ssot(tmp_path: Path) -> None:
     """D-1: last_used is sidecar-derived at render time; SSOT last_used stays null."""
     events = tmp_path / "picks.jsonl"

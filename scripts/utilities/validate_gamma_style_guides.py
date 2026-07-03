@@ -55,6 +55,12 @@ from app.specialists.gary.styleguide_library import (  # noqa: E402
     scripted_entries,
 )
 
+# Lifecycle marking (session-07 green-light A1, Winston + Dan converged, BLOCKING):
+# the candidate-vs-permanent lifecycle is SCHEMA, not convention. A record absent a
+# lifecycle is treated as `candidate` (the safe state is the lazy state) and WARNED
+# loudly; an explicit `candidate` must carry its promotion contract fields.
+_LIFECYCLE_VALUES: frozenset[str] = frozenset({"candidate", "permanent", "deprecated"})
+
 # Frozen-enum reuse: {resolved base key -> allowed value set}. Sourced from _act.py.
 _ENUM_CHECKS: dict[str, frozenset[str]] = {
     "text_mode": TEXT_MODE_VALUES,
@@ -273,9 +279,59 @@ def _validate_one(name: str, record: dict[str, Any]) -> tuple[list[str], list[st
                 f"style_preset/custom_style to agree with theme + dimensions)"
             )
 
+    # --- Lifecycle (session-07 A1): candidate | permanent | deprecated -------------
+    errors.extend(_validate_lifecycle_errors(name, record))
+    warnings.extend(_validate_lifecycle_warnings(name, record))
+
     # --- Scripted block (Leg-C): sealed registry-bound closed-vocab namespace ------
     errors.extend(_validate_scripted(name, record))
     return (errors, warnings)
+
+
+def _validate_lifecycle_errors(name: str, record: dict[str, Any]) -> list[str]:
+    """Hard-blocking lifecycle rules (session-07 green-light A1).
+
+    - An explicit lifecycle value must be in the closed enum.
+    - An explicit ``candidate`` must carry ``promotion_criteria`` (the B-corpus
+      stress-test + re-run reliability contract) and ``authored_session``
+      provenance, so a candidate can never masquerade as production nor lose the
+      record of what promotion requires.
+    """
+    errors: list[str] = []
+    raw = record.get("lifecycle")
+    if raw is None:
+        return errors  # absent -> WARN path (safe-default candidate)
+    value = str(raw).strip().lower()
+    if value not in _LIFECYCLE_VALUES:
+        errors.append(
+            f"{name}: lifecycle={raw!r} is not one of {sorted(_LIFECYCLE_VALUES)} "
+            f"[gamma.lifecycle.unknown-value]"
+        )
+        return errors
+    if value == "candidate":
+        if not _is_present(record.get("promotion_criteria")):
+            errors.append(
+                f"{name}: lifecycle=candidate requires a non-empty promotion_criteria "
+                f"(B-corpus stress-test + re-run reliability contract) "
+                f"[gamma.lifecycle.missing-promotion-criteria]"
+            )
+        if not _is_present(record.get("authored_session")):
+            errors.append(
+                f"{name}: lifecycle=candidate requires authored_session provenance "
+                f"[gamma.lifecycle.missing-authored-session]"
+            )
+    return errors
+
+
+def _validate_lifecycle_warnings(name: str, record: dict[str, Any]) -> list[str]:
+    """Loud non-fatal lifecycle surface: absence defaults to candidate."""
+    if record.get("lifecycle") is None:
+        return [
+            f"{name}: no lifecycle field — treated as CANDIDATE (safe default); "
+            f"mark permanent only through the promotion gate "
+            f"[gamma.lifecycle.defaulted-candidate]"
+        ]
+    return []
 
 
 def validate_style_guides_full(

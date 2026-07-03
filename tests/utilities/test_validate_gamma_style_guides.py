@@ -111,6 +111,79 @@ def test_missing_triad_rationale_fails_coherence() -> None:
     assert any("triad" in e.lower() or "coherence" in e.lower() for e in errors), errors
 
 
+# --------------------------------------------------- Lifecycle (session-07 A1)
+_PRE_SESSION_07_PERMANENTS = {
+    "classic-freeform-x-cards",
+    "hil-2026-apc-blueprint-classic",
+    "hil-2026-apc-studio-image-card",
+    "leg-c-part3-floor-probe",
+    "leg-c-part3-floor-toohigh",
+}
+
+
+def test_runtime_records_carry_explicit_lifecycle() -> None:
+    """Every runtime record has an explicit lifecycle; the 5 pre-session-07
+    records are retro-marked permanent (Dan's amendment); any candidate carries
+    its promotion contract."""
+    data = _runtime_data()
+    for name, record in data["style_guides"].items():
+        lifecycle = record.get("lifecycle")
+        assert lifecycle in {"candidate", "permanent", "deprecated"}, (
+            f"{name}: runtime record must carry an explicit lifecycle"
+        )
+        if name in _PRE_SESSION_07_PERMANENTS:
+            assert lifecycle == "permanent", (
+                f"{name}: pre-session-07 record must be retro-marked permanent"
+            )
+        if lifecycle == "candidate":
+            assert record.get("promotion_criteria"), name
+            assert record.get("authored_session"), name
+
+
+def test_lifecycle_unknown_value_fails() -> None:
+    data = _runtime_data()
+    broken = copy.deepcopy(data)
+    broken["style_guides"]["classic-freeform-x-cards"]["lifecycle"] = "shipped"
+    errors = validate_style_guides(broken)
+    assert any("gamma.lifecycle.unknown-value" in e for e in errors), errors
+
+
+def test_lifecycle_candidate_requires_promotion_contract_fields() -> None:
+    data = _runtime_data()
+    broken = copy.deepcopy(data)
+    record = broken["style_guides"]["classic-freeform-x-cards"]
+    record["lifecycle"] = "candidate"
+    record.pop("promotion_criteria", None)
+    record.pop("authored_session", None)
+    errors = validate_style_guides(broken)
+    assert any("gamma.lifecycle.missing-promotion-criteria" in e for e in errors), errors
+    assert any("gamma.lifecycle.missing-authored-session" in e for e in errors), errors
+
+
+def test_lifecycle_candidate_with_contract_fields_is_clean() -> None:
+    data = _runtime_data()
+    patched = copy.deepcopy(data)
+    record = patched["style_guides"]["classic-freeform-x-cards"]
+    record["lifecycle"] = "candidate"
+    record["promotion_criteria"] = (
+        "B-corpus stress test + re-run reliability proof (operator-ratified 2026-07-02)"
+    )
+    record["authored_session"] = "2026-07-02-session-07"
+    errors = validate_style_guides(patched)
+    assert errors == [], errors
+
+
+def test_lifecycle_absent_warns_defaulted_candidate() -> None:
+    from scripts.utilities.validate_gamma_style_guides import validate_style_guides_full
+
+    data = _runtime_data()
+    stripped = copy.deepcopy(data)
+    stripped["style_guides"]["classic-freeform-x-cards"].pop("lifecycle")
+    errors, warnings = validate_style_guides_full(stripped)
+    assert errors == [], errors
+    assert any("gamma.lifecycle.defaulted-candidate" in w for w in warnings), warnings
+
+
 def test_load_missing_file_raises_styleguide_error(tmp_path) -> None:
     # Item #2: a load/parse failure must be inside the StyleguideError family so
     # Gary's `except StyleguideError` recoverable path can catch it (never a bare
