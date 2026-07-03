@@ -176,11 +176,22 @@ def test_every_rendered_thumbnail_ref_resolves_to_real_png() -> None:
     )
 
 
-def test_dangling_thumbnail_ref_fails_loud() -> None:
+def test_dangling_thumbnail_ref_degrades_to_placeholder_and_rest_renders() -> None:
+    """A-M2 (Winston, converges w/ Sally #6): a dangling/broken thumbnail_ref must
+    NOT 500 the whole picker — it degrades to the honest placeholder plus a visible
+    'thumbnail unavailable' warning chip, and the rest of the roster still renders."""
     roster = load_picker_roster()
+    assert len(roster) >= 2, "need a sibling row to prove the rest still renders"
     roster[0]["thumbnail_ref"] = "state/config/gamma-styleguide-thumbnails/does-not-exist.png"
-    with pytest.raises(PickerError, match="thumbnail"):
-        render_picker_html(roster, post_url="http://127.0.0.1:1/pick")
+    # Never raises for a bad thumbnail row.
+    html = render_picker_html(roster, post_url="http://127.0.0.1:1/pick")
+    assert "no live render" in html  # the degraded placeholder
+    assert "thumbnail unavailable" in html  # the visible warning chip
+    # The broken card still renders (its heading is present) AND so do the others.
+    for entry in roster:
+        assert f'data-guide="{entry["name"]}"' in html
+    # A sibling with a real curated render still serves its same-origin thumbnail.
+    assert 'src="/thumbnails/' in html
 
 
 def test_null_thumbnail_renders_no_live_render_placeholder() -> None:
@@ -678,21 +689,33 @@ def test_advisory_lock_two_sequential_writers(tmp_path: Path) -> None:
     assert (tmp_path / "picks.jsonl.lock").exists()
 
 
-def test_thumbnail_ref_wrong_extension_or_magic_fails_loud(tmp_path: Path) -> None:
-    """R10 (Edge#4): extension + PNG-magic check at render for thumbnail refs."""
+def test_thumbnail_ref_wrong_extension_or_magic_degrades_to_placeholder(tmp_path: Path) -> None:
+    """R10 (Edge#4) helper stays fail-loud, but A-M2 catches at the _render_card
+    call site: a wrong extension OR a non-PNG file degrades to the placeholder +
+    warning chip instead of 500-ing the page. The ``_png_dimensions`` /
+    ``_resolve_thumbnail`` helpers themselves remain loud (see the unit tests)."""
+    from app.marcus.orchestrator.styleguide_picker import _resolve_thumbnail
+
     roster = load_picker_roster()
     jpg = tmp_path / "thumb.jpg"
     jpg.write_bytes(b"\x89PNG\r\n\x1a\n" + b"\x00" * 25)
     entry = dict(roster[0])
     entry["thumbnail_ref"] = "thumb.jpg"
+    # The helper is still loud (write-gate / direct callers rely on it)...
     with pytest.raises(PickerError, match=r"(?i)\.png"):
-        render_picker_html([entry], post_url="/pick", repo_root=tmp_path)
+        _resolve_thumbnail(entry, repo_root=tmp_path)
+    # ...but rendering degrades rather than raising.
+    html = render_picker_html([entry], post_url="/pick", repo_root=tmp_path)
+    assert "no live render" in html and "thumbnail unavailable" in html
+
     fake_png = tmp_path / "thumb.png"
     fake_png.write_bytes(b"definitely-not-a-png-header-bytes")
     entry2 = dict(roster[0])
     entry2["thumbnail_ref"] = "thumb.png"
     with pytest.raises(PickerError, match="PNG"):
-        render_picker_html([entry2], post_url="/pick", repo_root=tmp_path)
+        _resolve_thumbnail(entry2, repo_root=tmp_path)
+    html2 = render_picker_html([entry2], post_url="/pick", repo_root=tmp_path)
+    assert "no live render" in html2 and "thumbnail unavailable" in html2
 
 
 def test_empty_roster_error_mentions_include_probes() -> None:
@@ -718,3 +741,208 @@ def test_cli_fallback_excludes_probe_guides_by_default(tmp_path: Path) -> None:
     for probe in PROBE_GUIDES:
         assert probe not in joined, f"probe {probe} leaked into the CLI roster"
     assert picks["A"] not in PROBE_GUIDES
+
+
+# ================= 3-seat review remediation (2026-07-03) ====================
+# ------------------------------------------------------ R-MAJOR-1 (Murat, atomic)
+def test_directive_write_is_crash_atomic_and_byte_identical(tmp_path: Path) -> None:
+    """R-MAJOR-1: the directive write goes through a temp sibling + os.replace, and
+    the bytes are IDENTICAL to the prior in-place write_text(yaml.safe_dump(...)).
+
+    Byte-identity is the guard the consumer round-trip tests rely on: the atomic
+    path must never normalize the YAML output or trailing newline/encoding.
+    """
+    directive = tmp_path / "directive.yaml"
+    write_pick_to_directive(directive, {"A": "hil-2026-apc-crossroads-classic"})
+    produced = directive.read_bytes()
+    loaded = yaml.safe_load(produced.decode("utf-8"))
+    expected = yaml.safe_dump(loaded, sort_keys=False).encode("utf-8")
+    assert produced == expected, "atomic write must reproduce the exact safe_dump bytes"
+    # No stray temp files are left behind in the directory.
+    leftovers = [p.name for p in tmp_path.iterdir() if p.name.endswith(".tmp")]
+    assert leftovers == [], f"atomic write leaked temp files: {leftovers}"
+
+
+# ----------------------------------------------------- A-M1 (Winston, lifecycle)
+def test_write_pick_refuses_probe_and_deprecated_names(tmp_path: Path) -> None:
+    """A-M1: the lifecycle/visibility invariant is enforced at the MUTATION point —
+    a `visibility: probe` or `lifecycle: deprecated` guide can never be bound into
+    a production directive, even by a direct caller. Nothing is written on refusal."""
+    directive = tmp_path / "d.yaml"
+    with pytest.raises(PickerError, match="probe"):
+        write_pick_to_directive(directive, {"A": "leg-c-part3-floor-probe"})
+    assert not directive.exists(), "a refused probe pick must not write a directive"
+    with pytest.raises(PickerError, match="deprecated"):
+        write_pick_to_directive(directive, {"A": "videographic-glance-track"})
+    assert not directive.exists(), "a refused deprecated pick must not write a directive"
+
+
+# --------------------------------------------------------- R-4 fail-loud teeth
+def test_capture_pick_timeout_expiry_raises(tmp_path: Path) -> None:
+    """R-4(a): no pick before the deadline -> PickerError, never a silent hang."""
+    roster = load_picker_roster()
+    with pytest.raises(PickerError, match="no pick received"):
+        capture_pick(
+            roster,
+            on_pick=lambda picks: {"picks": picks},
+            html_path=tmp_path / "picker.html",
+            opener=lambda url: True,  # "browser opened"; no client ever POSTs
+            print_fn=lambda line: None,
+            timeout=0.5,
+        )
+
+
+def test_on_pick_raising_yields_500_and_capture_pick_reraises(tmp_path: Path) -> None:
+    """R-4(b): an on_pick exception surfaces as a 500 to the page AND re-raises out
+    of capture_pick (fail-loud both directions)."""
+    roster = load_picker_roster()
+    html_path = tmp_path / "picker.html"
+    opened: list[str] = []
+    result: dict = {}
+
+    def _boom(picks: dict) -> dict:
+        raise RuntimeError("on_pick exploded")
+
+    def _run() -> None:
+        try:
+            capture_pick(
+                roster,
+                on_pick=_boom,
+                html_path=html_path,
+                opener=lambda url: opened.append(url) or True,
+                print_fn=lambda line: None,
+                timeout=30.0,
+            )
+        except Exception as exc:  # captured for the assertion below
+            result["error"] = exc
+
+    worker = threading.Thread(target=_run)
+    worker.start()
+    try:
+        for _ in range(200):
+            if opened and html_path.exists():
+                break
+            worker.join(0.05)
+        pick_url = urllib.parse.urljoin(opened[0], "/pick")
+        with pytest.raises(urllib.error.HTTPError) as excinfo:
+            _post_form(pick_url, {"slot_A": "hil-2026-apc-crossroads-classic"})
+        assert excinfo.value.code == 500
+    finally:
+        worker.join(timeout=30)
+    assert isinstance(result.get("error"), RuntimeError)
+    assert "on_pick exploded" in str(result["error"])
+
+
+def test_unknown_get_path_and_wrong_post_endpoint_are_404(tmp_path: Path) -> None:
+    """R-4(c): do_GET 404 for an unknown path/thumbnail; do_POST 404 for the wrong
+    endpoint. The server keeps serving and a later valid pick still lands."""
+    roster = load_picker_roster()
+    live = _LiveCapture(roster, tmp_path)
+    try:
+        for bad in ("/thumbnails/does-not-exist.png", "/nonsense"):
+            with pytest.raises(urllib.error.HTTPError) as gexc:
+                urllib.request.urlopen(
+                    urllib.parse.urljoin(live.base_url, bad), timeout=10
+                )
+            assert gexc.value.code == 404, bad
+        with pytest.raises(urllib.error.HTTPError) as pexc:
+            _post_form(urllib.parse.urljoin(live.base_url, "/wrong"), {"slot_A": "x"})
+        assert pexc.value.code == 404
+        _post_form(live.pick_url, {"slot_A": "hil-2026-apc-crossroads-classic"})
+    finally:
+        live.finish()
+    assert live.result.get("picks") == {"A": "hil-2026-apc-crossroads-classic"}
+
+
+def test_png_dimensions_degenerate_ihdr_fails_loud(tmp_path: Path) -> None:
+    """R-4(d): _png_dimensions stays fail-loud — a 0x0 IHDR is a LOUD error even
+    though the file carries a valid PNG magic + IHDR chunk name."""
+    import struct
+
+    from app.marcus.orchestrator.styleguide_picker import _png_dimensions
+
+    degenerate = tmp_path / "zero.png"
+    degenerate.write_bytes(
+        b"\x89PNG\r\n\x1a\n" + b"\x00\x00\x00\x0d" + b"IHDR" + struct.pack(">II", 0, 0)
+    )
+    with pytest.raises(PickerError, match="degenerate"):
+        _png_dimensions(degenerate)
+
+
+# --------------------------------------------- R-3 (Content-Length guard, Murat)
+def test_negative_content_length_rejected_400_before_read(tmp_path: Path) -> None:
+    """R-3: a non-numeric/negative Content-Length is a clean 400 BEFORE any
+    rfile.read (a negative length reaches rfile.read(-N) which blocks to EOF)."""
+    roster = load_picker_roster()
+    live = _LiveCapture(roster, tmp_path)
+    try:
+        request = urllib.request.Request(
+            live.pick_url,
+            data=b"slot_A=x",
+            headers={
+                "Content-Type": "application/x-www-form-urlencoded",
+                "Content-Length": "-5",
+            },
+            method="POST",
+        )
+        with pytest.raises(urllib.error.HTTPError) as excinfo:
+            urllib.request.urlopen(request, timeout=10)
+        assert excinfo.value.code == 400
+        # Server keeps serving: a valid pick still lands.
+        _post_form(live.pick_url, {"slot_A": "hil-2026-apc-crossroads-classic"})
+    finally:
+        live.finish()
+    assert live.result.get("picks") == {"A": "hil-2026-apc-crossroads-classic"}
+
+
+# ---------------------------------------------- live-exemplar link (operator ask)
+def test_example_url_renders_new_tab_anchor_and_null_renders_none() -> None:
+    """A style with example_url renders a new-tab anchor (target=_blank +
+    rel=noopener) to that URL; a style with a null example_url renders no anchor
+    (no dead link). The anchor is NOT the whole thumbnail (slot-selection guarded)."""
+    roster = load_picker_roster()
+    by_name = {e["name"]: e for e in roster}
+    with_url = dict(by_name["hil-2026-apc-crossroads-classic"])
+    url = with_url["example_url"]
+    assert url, "seed guide must carry a live example deck"
+    html = render_picker_html([with_url], post_url="/pick")
+    assert f'href="{url}"' in html
+    assert 'class="example-link"' in html
+    assert 'target="_blank"' in html
+    assert 'rel="noopener"' in html
+    assert "View live example" in html
+    # The anchor is a distinct element, NOT wrapping the thumbnail image/placeholder.
+    assert "<a class=\"example-link\"" in html
+
+    without_url = dict(by_name["hil-2026-apc-studio-image-card"])
+    assert without_url["example_url"] is None
+    html2 = render_picker_html([without_url], post_url="/pick")
+    # The CSS rule for .example-link is always in the stylesheet; assert the
+    # ANCHOR element and its visible text are absent (no dead link).
+    assert '<a class="example-link"' not in html2
+    assert "View live example" not in html2
+
+
+def test_sally_a11y_and_usability_render_pins() -> None:
+    """Sally U-1/U-3/U-4/U-5: keyboard/a11y, display-name slot bar, surfaced
+    pros/cons, instructions + selected-state machinery are present in the page."""
+    roster = load_picker_roster()
+    html = render_picker_html(roster, post_url="/pick")
+    # U-1: every card is keyboard-operable and labelled.
+    assert 'tabindex="0"' in html
+    assert 'role="button"' in html
+    assert "aria-label=" in html
+    assert ":focus-visible" in html  # visible focus ring CSS
+    assert 'aria-live="polite"' in html  # slot bar + receipt announce
+    # U-2: grid selected-state classes exist (distinct from .card.armed).
+    assert ".card.slot-a" in html and ".card.slot-b" in html
+    assert "'slot-a'" in html or "slot-a" in html  # JS toggles the class
+    # U-3: the human display name rides the card for the slot bar text.
+    assert "data-display=" in html
+    # U-4: pros/cons surfaced on the face + relabelled details summary.
+    assert "Use when:" in html and "Avoid when:" in html
+    assert "When to use / when to avoid" in html
+    assert "<summary>narrative</summary>" not in html  # old opaque label gone
+    # U-5: instruction line + no silent dead-click hint target.
+    assert "one slot is a valid pick" in html
+    assert 'id="pick-hint"' in html

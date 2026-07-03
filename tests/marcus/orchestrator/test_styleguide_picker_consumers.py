@@ -86,9 +86,24 @@ def test_patch_preserves_existing_directive_keys_and_other_variant(tmp_path: Pat
 
 # --------------------------------------------------------------------------- AC-3
 def test_floor_probe_pick_threads_min_cluster_floor_8(tmp_path: Path) -> None:
-    """Shape parity with the Leg-C floor consumer, against the REAL repo SSOT."""
+    """Shape parity with the Leg-C floor consumer, against the REAL repo SSOT.
+
+    A-M1 (Winston): ``write_pick_to_directive`` now REFUSES to bind a probe guide
+    into a production directive (defense-in-depth), so the floor-probe directive
+    is authored directly here — this test exercises the REAL runner-side floor
+    consumer seam, not the picker write path (which has its own A-M1 test).
+    """
     directive = tmp_path / "directive.yaml"
-    write_pick_to_directive(directive, {"A": "leg-c-part3-floor-probe"})
+    directive.write_text(
+        yaml.safe_dump(
+            {
+                "gamma_settings": [
+                    {"variant_id": "A", "styleguide": "leg-c-part3-floor-probe"}
+                ]
+            }
+        ),
+        encoding="utf-8",
+    )
     payload = _runner_payload_for_specialist(
         specialist_id="irene_pass1", directive_path=directive, bundle_dir=None
     )
@@ -106,10 +121,12 @@ def test_floorless_seed_pick_threads_no_floor(tmp_path: Path) -> None:
 
 # --------------------------------------------------------------------------- AC-7
 def test_provenance_block_survives_yaml_round_trip(tmp_path: Path) -> None:
+    # Slot B uses a real production guide (studio-image-card) rather than the
+    # floor-probe: A-M1 now refuses to bind a probe into a production directive.
     directive = tmp_path / "directive.yaml"
     provenance = write_pick_to_directive(
         directive,
-        {"A": "hil-2026-apc-crossroads-classic", "B": "leg-c-part3-floor-probe"},
+        {"A": "hil-2026-apc-crossroads-classic", "B": "hil-2026-apc-studio-image-card"},
     )
     loaded = yaml.safe_load(directive.read_text(encoding="utf-8"))
     block = loaded["styleguide_picker_provenance"]
@@ -119,7 +136,7 @@ def test_provenance_block_survives_yaml_round_trip(tmp_path: Path) -> None:
     assert len(block["ssot_sha256"]) == 64
     assert block["picks"] == [
         {"variant_id": "A", "styleguide": "hil-2026-apc-crossroads-classic"},
-        {"variant_id": "B", "styleguide": "leg-c-part3-floor-probe"},
+        {"variant_id": "B", "styleguide": "hil-2026-apc-studio-image-card"},
     ]
     assert "T" in block["picked_at"]  # ISO-8601 timestamp
 

@@ -105,6 +105,31 @@ def _png_dimensions(path: Path) -> tuple[int, int]:
     return (width, height)
 
 
+def _atomic_write_text(path: Path, text: str) -> None:
+    """Crash-atomic text write (R-MAJOR-1): temp sibling + fsync + os.replace.
+
+    Writes to a temp file in the SAME directory as ``path`` (so ``os.replace``
+    is atomic on both NTFS and POSIX), flushes and ``os.fsync`` the descriptor,
+    then atomically renames the temp file over the destination. A crash mid-write
+    leaves either the previous file fully intact or the fully-written new file on
+    disk — never a truncated directive. The bytes are written verbatim (utf-8,
+    ``\\n`` preserved), matching the prior ``write_text(..., newline="\\n")``.
+    """
+    fd, tmp_name = tempfile.mkstemp(
+        dir=str(path.parent), prefix=path.name + ".", suffix=".tmp"
+    )
+    try:
+        with os.fdopen(fd, "wb") as handle:
+            handle.write(text.encode("utf-8"))
+            handle.flush()
+            os.fsync(handle.fileno())
+        os.replace(tmp_name, path)
+    except BaseException:
+        with contextlib.suppress(OSError):
+            os.unlink(tmp_name)
+        raise
+
+
 @contextlib.contextmanager
 def _advisory_lock(store_path: Path) -> Iterator[None]:
     """Advisory same-host lock around a store mutation (R8).
@@ -286,7 +311,19 @@ main.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px
 .card { background: #fff; border: 1px solid #d6dce3; border-radius: 10px; padding: 12px;
   cursor: pointer; position: relative; }
 .card:hover { border-color: #4a90d9; }
+/* U-1: a clear keyboard focus ring so tab-navigation is visible. */
+.card:focus-visible { outline: 3px solid #1a5fb4; outline-offset: 2px;
+  box-shadow: 0 0 0 4px rgba(26,95,180,0.25); }
 .card.armed { outline: 3px solid #d9822b; }
+/* U-2: persistent selected-state on the grid when a card fills slot A / B —
+   an outline plus a corner badge, distinct from .card.armed (probe arming). */
+.card.slot-a { outline: 3px solid #2b7a3d; outline-offset: 2px; }
+.card.slot-b { outline: 3px solid #2b5f9e; outline-offset: 2px; }
+.card.slot-a::after, .card.slot-b::after { position: absolute; top: 8px; left: 8px;
+  width: 26px; height: 26px; border-radius: 50%; color: #fff; font-weight: 800;
+  font-size: 0.9rem; display: flex; align-items: center; justify-content: center; }
+.card.slot-a::after { content: "A"; background: #2b7a3d; }
+.card.slot-b::after { content: "B"; background: #2b5f9e; }
 .card img.thumb { width: 100%; height: 190px; object-fit: cover; border-radius: 6px;
   background: #eef2f5; display: block; }
 .thumb.placeholder { width: 100%; height: 190px; border-radius: 6px; background:
@@ -296,14 +333,19 @@ main.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px
 .card h2 { font-size: 1.02rem; margin: 10px 0 4px; }
 .distinguishing { font-weight: 600; font-size: 0.9rem; margin: 4px 0 8px; }
 .chip { font-size: 0.72rem; border-radius: 10px; padding: 2px 8px; display: inline-block; }
-.chip-last-used { position: absolute; top: 16px; right: 16px; background: rgba(28,39,51,0.65);
+.chip-last-used { position: absolute; top: 16px; right: 16px; background: #1c2733;
   color: #eef2f5; }
 .chip-probe { background: #b3541e; color: #fff; font-weight: 700; margin-bottom: 6px; }
 .chip-candidate { background: #6c4ba0; color: #fff; font-weight: 700; margin-bottom: 6px; }
 .chip-deprecated { background: #6b7280; color: #fff; font-weight: 700; margin-bottom: 6px;
   text-decoration: line-through; }
-.chip-provenance { background: #8a6d1a; color: #fff; display: inline-block;
+.chip-provenance { background: #6f5614; color: #fff; display: inline-block;
   margin: 6px 0 0; }
+.use-when, .avoid-when { font-size: 0.82rem; margin: 3px 0; color: #33414f; }
+.example-link { display: inline-block; margin: 6px 0 2px; font-size: 0.82rem;
+  color: #1a5fb4; text-decoration: underline; font-weight: 600; }
+.instructions { margin: 0 0 8px; font-size: 0.85rem; color: #33414f; }
+.pick-hint { color: #b3541e; font-weight: 700; font-size: 0.85rem; margin-left: 8px; }
 details { margin-top: 6px; font-size: 0.85rem; }
 details summary { cursor: pointer; color: #4a6076; }
 """
@@ -314,31 +356,72 @@ const slotEls = { A: document.getElementById('slot-A'), B: document.getElementBy
 const fields = { A: document.getElementById('field-slot-A'),
                  B: document.getElementById('field-slot-B') };
 const confirmBtn = document.getElementById('confirm');
+const hintEl = document.getElementById('pick-hint');
+/* U-3: the slot bar shows the human display name; the hidden field keeps the slug. */
+const displayByGuide = {};
+for (const card of document.querySelectorAll('.card')) {
+  displayByGuide[card.dataset.guide] = card.dataset.display || card.dataset.guide;
+}
 function flash(v) {  /* S-2: highlight-on-change, never a silent reorder */
   slotEls[v].classList.remove('changed'); void slotEls[v].offsetWidth;
   slotEls[v].classList.add('changed');
 }
+function showHint(msg) {  /* U-5: no silent dead-click; announce + auto-clear. */
+  if (!hintEl) return;
+  hintEl.textContent = msg;
+  clearTimeout(hintEl._t);
+  hintEl._t = setTimeout(() => { hintEl.textContent = ''; }, 2600);
+}
 function refresh() {
   for (const v of ['A', 'B']) {
-    slotEls[v].querySelector('.slot-value').textContent = slots[v] || '(empty)';
-    slotEls[v].classList.toggle('filled', !!slots[v]);
-    fields[v].value = slots[v] || '';
+    const guide = slots[v];
+    slotEls[v].querySelector('.slot-value').textContent =
+      guide ? (displayByGuide[guide] || guide) : '(empty)';
+    slotEls[v].classList.toggle('filled', !!guide);
+    fields[v].value = guide || '';
+  }
+  /* U-2: persistent selected-state on the grid (distinct from .armed). */
+  for (const card of document.querySelectorAll('.card')) {
+    card.classList.remove('slot-a', 'slot-b');
+  }
+  for (const v of ['A', 'B']) {
+    if (!slots[v]) continue;
+    const card = document.querySelector('.card[data-guide="' + CSS.escape(slots[v]) + '"]');
+    if (card) card.classList.add(v === 'A' ? 'slot-a' : 'slot-b');
   }
   confirmBtn.disabled = !(slots.A || slots.B);
 }
+function selectCard(card, ev) {
+  if (ev && (ev.target.closest('details') || ev.target.closest('a'))) return;
+  const guide = card.dataset.guide;
+  if (card.dataset.probe === '1' && !card.classList.contains('armed')) {
+    card.classList.add('armed');  /* S-1: probes need an explicit second click */
+    return;
+  }
+  if (!slots.A) { slots.A = guide; flash('A'); }
+  else if (!slots.B) { slots.B = guide; flash('B'); }
+  else {  /* U-5: both slots full — no silent no-op; hint + flash. */
+    flash('A'); flash('B');
+    showHint('Both slots full — clear or swap a slot first');
+    return;
+  }
+  refresh();
+}
 for (const card of document.querySelectorAll('.card')) {
-  card.addEventListener('click', (ev) => {
-    if (ev.target.closest('details') || ev.target.closest('a')) return;
-    const guide = card.dataset.guide;
-    if (card.dataset.probe === '1' && !card.classList.contains('armed')) {
-      card.classList.add('armed');  /* S-1: probes need an explicit second click */
-      return;
+  card.addEventListener('click', (ev) => selectCard(card, ev));
+  /* U-1: keyboard operability — Enter/Space activate like a click. Only when the
+     card itself is focused: Enter on a nested link/summary must act natively. */
+  card.addEventListener('keydown', (ev) => {
+    if (ev.target !== card) return;
+    if (ev.key === 'Enter' || ev.key === ' ' || ev.key === 'Spacebar') {
+      ev.preventDefault();
+      selectCard(card, ev);
     }
-    if (!slots.A) { slots.A = guide; flash('A'); }
-    else if (!slots.B) { slots.B = guide; flash('B'); }
-    else { return; }  /* both slots full: clear or swap first */
-    refresh();
   });
+}
+/* The live-example anchor must open the deck WITHOUT filling a slot. */
+for (const link of document.querySelectorAll('a.example-link')) {
+  link.addEventListener('click', (ev) => ev.stopPropagation());
 }
 for (const btn of document.querySelectorAll('.slot-clear')) {
   btn.addEventListener('click', () => {
@@ -388,49 +471,86 @@ def thumbnail_routes(
     }
 
 
+_PLACEHOLDER_THUMB = '<div class="thumb placeholder">no live render</div>'
+_THUMB_UNAVAILABLE_CHIP = (
+    '<span class="chip chip-provenance">thumbnail unavailable</span>'
+)
+
+
+def _resolve_thumbnail(entry: dict[str, Any], *, repo_root: Path) -> tuple[str, str | None]:
+    """Resolve a curated thumbnail_ref to ``(<img html>, provenance_chip|None)``.
+
+    Fail-loud helper: a wrong extension, a dangling ref, or a non-PNG file raises
+    ``PickerError`` (kept loud so the write-gate / direct callers still catch a
+    bad SSOT row). ``_render_card`` catches at the call site (A-M2) so one broken
+    row degrades to the placeholder instead of 500-ing the whole picker.
+    """
+    ref = entry.get("thumbnail_ref")
+    if not str(ref).lower().endswith(".png"):
+        raise PickerError(
+            f"styleguide {entry['name']!r} thumbnail_ref {ref!r} must be a .png "
+            f"(D-2 curated-render contract; R10 extension check)"
+        )
+    png = repo_root / str(ref)
+    if not png.is_file():
+        raise PickerError(
+            f"styleguide {entry['name']!r} has a dangling thumbnail_ref {ref!r} "
+            f"(AC-6: every rendered thumbnail must resolve to a real on-disk PNG)"
+        )
+    width, height = _png_dimensions(png)  # R10 magic check; R2 aspect source
+    thumb = (
+        f'<img class="thumb" src="{escape(_thumbnail_url_path(entry["name"]))}" '
+        f'alt="{escape(entry["display_name"])} thumbnail">'
+    )
+    provenance_chip: str | None = None
+    # R2 honesty chip (data-driven, Auditor#1): the guide promises 16:9 but
+    # the curated render is squarer — say so on the card, never imply layout.
+    promised = str(entry.get("card_dimensions") or "").strip().lower()
+    if promised == "16x9" and (width / height) < _SIXTEEN_NINE_MIN_ASPECT:
+        provenance_chip = (
+            f'<span class="chip chip-provenance">{escape(_THUMBNAIL_PROVENANCE_CHIP)}'
+            "</span>"
+        )
+    return (thumb, provenance_chip)
+
+
 def _render_card(entry: dict[str, Any], *, repo_root: Path) -> list[str]:
     ref = entry.get("thumbnail_ref")
     provenance_chip: str | None = None
+    thumb_warning: str | None = None
     if ref:
-        if not str(ref).lower().endswith(".png"):
-            raise PickerError(
-                f"styleguide {entry['name']!r} thumbnail_ref {ref!r} must be a .png "
-                f"(D-2 curated-render contract; R10 extension check)"
-            )
-        png = repo_root / str(ref)
-        if not png.is_file():
-            raise PickerError(
-                f"styleguide {entry['name']!r} has a dangling thumbnail_ref {ref!r} "
-                f"(AC-6: every rendered thumbnail must resolve to a real on-disk PNG)"
-            )
-        width, height = _png_dimensions(png)  # R10 magic check; R2 aspect source
-        thumb = (
-            f'<img class="thumb" src="{escape(_thumbnail_url_path(entry["name"]))}" '
-            f'alt="{escape(entry["display_name"])} thumbnail">'
-        )
-        # R2 honesty chip (data-driven, Auditor#1): the guide promises 16:9 but
-        # the curated render is squarer — say so on the card, never imply layout.
-        promised = str(entry.get("card_dimensions") or "").strip().lower()
-        if promised == "16x9" and (width / height) < _SIXTEEN_NINE_MIN_ASPECT:
-            provenance_chip = (
-                f'<span class="chip chip-provenance">{escape(_THUMBNAIL_PROVENANCE_CHIP)}'
-                "</span>"
-            )
+        try:
+            thumb, provenance_chip = _resolve_thumbnail(entry, repo_root=repo_root)
+        except PickerError:
+            # A-M2 (Winston, converges w/ Sally #6): a broken thumbnail row must
+            # never 500 the whole page. Degrade to the honest placeholder PLUS a
+            # visible warning chip so one bad SSOT row can't take down the picker.
+            thumb = _PLACEHOLDER_THUMB
+            thumb_warning = _THUMB_UNAVAILABLE_CHIP
     else:
         # S-3: explicit placeholder, never a confidently wrong image.
-        thumb = '<div class="thumb placeholder">no live render</div>'
+        thumb = _PLACEHOLDER_THUMB
     probe = bool(entry.get("probe"))
     last_used = entry.get("last_used") or "never"
     narrative = entry.get("narrative") or {}
+    display_name = entry["display_name"]
     parts = [
-        f'<article class="card" data-guide="{escape(entry["name"])}" '
+        # U-1 (Sally a11y): keyboard-operable card — focusable, button-role,
+        # aria-labelled; a keydown (Enter/Space) mirrors the click (see _PAGE_JS).
+        # data-display (U-3) carries the human name for the slot bar; the hidden
+        # form field keeps the slug for the POST.
+        f'<article class="card" tabindex="0" role="button" '
+        f'aria-label="{escape(display_name)}" data-guide="{escape(entry["name"])}" '
+        f'data-display="{escape(display_name)}" '
         f'data-probe="{1 if probe else 0}">',
         thumb,
         f'<span class="chip chip-last-used">last used: {escape(str(last_used))}</span>',
-        f"<h2>{escape(entry['display_name'])}</h2>",
+        f"<h2>{escape(display_name)}</h2>",
     ]
     if provenance_chip:
         parts.append(provenance_chip)
+    if thumb_warning:
+        parts.append(thumb_warning)
     if probe:
         parts.append(
             '<span class="chip chip-probe">PROBE — scaffolding, not a production '
@@ -450,9 +570,35 @@ def _render_card(entry: dict[str, Any], *, repo_root: Path) -> list[str]:
             '<span class="chip chip-deprecated">DEPRECATED — retired style, '
             "not for production</span>"
         )
+    # Operator request: a live exemplar deck reachable from each card, opened in
+    # a NEW TAB. NOT the whole thumbnail (that collides with slot-selection): a
+    # small anchor under the title whose click stopPropagation's in the JS so it
+    # never fills a slot. A null/absent example_url renders NO link (no dead link).
+    example_url = entry.get("example_url")
+    if example_url:
+        parts.append(
+            f'<a class="example-link" href="{escape(str(example_url))}" '
+            f'target="_blank" rel="noopener" '
+            f'aria-label="Open the live example deck for {escape(display_name)} '
+            f'(opens in a new tab)">View live example ↗</a>'
+        )
     parts.append(f'<p class="distinguishing">{escape(entry["distinguishing"])}</p>')
-    parts.append("<details><summary>narrative</summary>")
-    for key in _NARRATIVE_KEYS:
+    # U-4 (Sally): surface the decision-useful pros/cons on the card FACE, below
+    # the distinguishing line, so they're visible without expanding.
+    use_when = str(narrative.get("use_when") or "").strip()
+    avoid_when = str(narrative.get("avoid_when") or "").strip()
+    if use_when:
+        parts.append(
+            f'<p class="use-when"><strong>Use when:</strong> {escape(use_when)}</p>'
+        )
+    if avoid_when:
+        parts.append(
+            f'<p class="avoid-when"><strong>Avoid when:</strong> {escape(avoid_when)}</p>'
+        )
+    # The fuller narrative (feels_like / summary) stays behind the toggle; the
+    # summary is relabelled from the opaque "narrative" to say what's inside.
+    parts.append("<details><summary>When to use / when to avoid</summary>")
+    for key in ("summary", "feels_like"):
         value = str(narrative.get(key) or "").strip()
         if value:
             label = key.replace("_", " ")
@@ -481,7 +627,11 @@ def render_picker_html(
         "<body>",
         "<header>",
         "<h1>Gamma Styleguide Picker — pre-run pick (Fork A)</h1>",
-        '<div class="slots">',
+        # U-5 (Sally): a one-line instruction so the pick flow is self-evident.
+        '<p class="instructions">Click a style to fill Style A, then another for '
+        "Style B — one slot is a valid pick.</p>",
+        # U-1 (Sally a11y): the slot bar announces fills to assistive tech.
+        '<div class="slots" role="status" aria-live="polite">',
     ]
     for variant in _VARIANT_IDS:
         parts.extend(
@@ -503,8 +653,13 @@ def render_picker_html(
             '<input type="hidden" name="slot_B" id="field-slot-B" value="">',
             '<button type="submit" id="confirm" disabled>Confirm</button>',
             "</form>",
+            # U-5: inline hint target for the both-slots-full dead-click.
+            '<span class="pick-hint" id="pick-hint" role="status" '
+            'aria-live="polite"></span>',
             "</div>",
-            '<div id="receipt" class="receipt" hidden></div>',
+            # U-1 (Sally a11y): the receipt announces "PICK RECORDED" to AT.
+            '<div id="receipt" class="receipt" role="status" aria-live="polite" '
+            "hidden></div>",
             "</header>",
             '<main class="grid">',
         ]
@@ -554,29 +709,46 @@ class _PickHandler(BaseHTTPRequestHandler):
         if urlparse(self.path).path != "/pick":
             self._respond(404, {"error": f"unknown endpoint {self.path!r}"})
             return
-        length = int(self.headers.get("Content-Length") or 0)
+        # R3: reject a non-numeric or negative Content-Length with a clean 400
+        # BEFORE any rfile.read — a negative length reaches rfile.read(-N) which
+        # blocks until EOF (the header string; a non-negative integer or nothing).
+        raw_length = (self.headers.get("Content-Length") or "").strip()
+        if raw_length == "":
+            length = 0
+        elif raw_length.isdigit():
+            length = int(raw_length)
+        else:
+            self._respond(
+                400,
+                {"error": f"invalid Content-Length header {raw_length!r}"},
+            )
+            return
         if length > MAX_POST_BODY_BYTES:
             # R4: never slurp an unbounded body; reject oversized + keep serving.
             # P3 (Windows): replying 413 with the client's body still in flight makes the
             # OS abort the connection (ConnectionAbortedError) and can wedge the handler.
             # Drain a BOUNDED window of the incoming body first so the socket closes
             # cleanly — capped so a multi-MB attack body is still refused, never read whole.
-            drain_remaining = min(length, MAX_POST_BODY_BYTES + 128 * 1024)
-            while drain_remaining > 0:
-                chunk = self.rfile.read(min(drain_remaining, 65536))
-                if not chunk:
-                    break
-                drain_remaining -= len(chunk)
+            # R2: the drain + the 413 reply are wrapped in suppress(OSError) so the
+            # Windows ConnectionAbortedError race can never prevent a clean close —
+            # the server must keep serving (it already does after this return).
             self.close_connection = True
-            self._respond(
-                413,
-                {
-                    "error": (
-                        f"request body {length} bytes exceeds the "
-                        f"{MAX_POST_BODY_BYTES}-byte pick-form cap"
-                    )
-                },
-            )
+            with contextlib.suppress(OSError):
+                drain_remaining = min(length, MAX_POST_BODY_BYTES + 128 * 1024)
+                while drain_remaining > 0:
+                    chunk = self.rfile.read(min(drain_remaining, 65536))
+                    if not chunk:
+                        break
+                    drain_remaining -= len(chunk)
+                self._respond(
+                    413,
+                    {
+                        "error": (
+                            f"request body {length} bytes exceeds the "
+                            f"{MAX_POST_BODY_BYTES}-byte pick-form cap"
+                        )
+                    },
+                )
             return
         fields = parse_qs(self.rfile.read(length).decode("utf-8"))
         picks: dict[str, str] = {}
@@ -787,6 +959,31 @@ def write_pick_to_directive(
                 f"picked styleguide {guide_name!r} is not in the SSOT {ssot} "
                 f"(known: {sorted(guides)})"
             )
+        # A-M1 (Winston): enforce the lifecycle/visibility invariant at the
+        # MUTATION point too (defense-in-depth; the roster-load filter already
+        # hides these on the served path). A `deprecated` (retired) or
+        # `visibility: probe` (scaffolding) guide must NEVER be bound into a
+        # production directive, even by a direct caller.
+        record = guides[guide_name]
+        presentation = (
+            record.get("presentation") or {} if isinstance(record, dict) else {}
+        )
+        lifecycle = (
+            str(record.get("lifecycle") or "candidate").strip().lower()
+            if isinstance(record, dict)
+            else "candidate"
+        )
+        visibility = str(presentation.get("visibility") or "").strip().lower()
+        if lifecycle == "deprecated":
+            raise PickerError(
+                f"picked styleguide {guide_name!r} is deprecated (retired) and cannot "
+                f"be bound into a production directive (A-M1 lifecycle invariant)"
+            )
+        if visibility == "probe":
+            raise PickerError(
+                f"picked styleguide {guide_name!r} is a probe (scaffolding) and cannot "
+                f"be bound into a production directive (A-M1 visibility invariant)"
+            )
         normalized[variant_id] = guide_name
 
     directive = Path(directive_path)
@@ -856,9 +1053,9 @@ def write_pick_to_directive(
             "written_by": "styleguide_picker",
         }
         loaded["styleguide_picker_provenance"] = provenance
-        directive.write_text(
-            yaml.safe_dump(loaded, sort_keys=False), encoding="utf-8", newline="\n"
-        )
+        # R-MAJOR-1: crash-atomic write — never truncate-then-write the live run
+        # input in place. Temp sibling + fsync + os.replace, still inside the lock.
+        _atomic_write_text(directive, yaml.safe_dump(loaded, sort_keys=False))
     return provenance
 
 

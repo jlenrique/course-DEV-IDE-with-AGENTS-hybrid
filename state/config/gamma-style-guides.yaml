@@ -171,7 +171,7 @@ style_guides:
         animations: true
         card_headers_footers: not_configured
     presentation:
-      display_name: HIL 2026 APC Crossroads Blueprint (B)
+      display_name: HIL 2026 APC Crossroads — Blueprint palette
       distinguishing: >-
         The 'B' counterpart to the standard-'A' crossroads style: the SAME calm
         clinician-crossroads illustration (recraft-v3), re-themed with Blueprint Editorial
@@ -399,9 +399,9 @@ style_guides:
         free-text imageOptions.style channel, custom_style, per matrix §6); image model
         gpt-image-2-mini -> Nano Banana 2 Mini (gemini-3.1-flash-image-mini); page frame fluid
         -> 16:9. Everything else carried from crossroads. Promoted to permanent (active) right
-        away on the operator's live example deck https://diagnosis-innovation-0mswhpq.gamma.site/ ;
-        no separate trial render requested (thumbnail_ref left null -> picker placeholder until
-        a curated render is captured - offered as a quick follow-up).
+        away on the operator's live example deck https://diagnosis-innovation-0mswhpq.gamma.site/ .
+        A curated thumbnail_ref (hil-2026-apc-crossroads-magazine.png) is now set, so the picker
+        renders the real magazine render rather than the "no live render" placeholder.
 
   # -- "Bread and butter" preserve-mode variant of the standard-'A' crossroads style
   #    (operator-directed + named 2026-07-03 session-09): crossroads carried over with THREE
