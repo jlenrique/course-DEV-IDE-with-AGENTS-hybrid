@@ -1,0 +1,35 @@
+{
+  "task": "Task 3 — stamp picker #4 against the live public URL (durable Actions path)",
+  "run_tag": "task3stamp20260704T163100Z",
+  "url": "https://jlenrique.github.io/assets/styleguide-picker/task3stamp20260704T163100Z/index.html",
+  "all_checks_pass": true,
+  "checks": {
+    "publisher_self_verify_failloud_on_dead_url": true,
+    "syncing_files_flake_transient_external": true,
+    "retry_recovered_url_live_200": true,
+    "public_url_200_live_roundtrip": true,
+    "roster_rendered_8_styles": true,
+    "studio_candidate_degrade_placeholder": true,
+    "page_slot_a_classic": true,
+    "page_slot_b_blueprint": true,
+    "sop204_2versions_1style_copy_blocked": true,
+    "captured_code_zero_transposition": true,
+    "python_twin_decode_zero_mis_mapping": true,
+    "decode_idempotent": true,
+    "stale_run_tag_hard_rejected": true,
+    "stamp_pack_cleaned_up": true
+  },
+  "captured_code": "SGP-task3stamp20260704T163100Z-A:hil-2026-apc-crossroads-classic B:hil-2026-apc-crossroads-blueprint",
+  "decoded_directive": {
+    "A": "hil-2026-apc-crossroads-classic",
+    "B": "hil-2026-apc-crossroads-blueprint"
+  },
+  "deploy_notes": {
+    "failed_deploy_sha": "74da7e6",
+    "failed_stage": "deploy-pages@v4 / syncing_files ('Deployment failed, try again later')",
+    "upload_pages_artifact": "success (448 MB)",
+    "retry_commit_that_recovered": "f33903a (empty commit via Git Data API)",
+    "cleanup_commit": "6dcc5dc9"
+  },
+  "follow_on": "durable Actions path still rides GitHub's intermittently-flaky syncing_files CDN stage on the ~448MB served tree; mitigations = retention prune (Task 4) shrinks the tree + candidate bounded deploy-retry on syncing_files before verify gives up. File to deferred-inventory."
+}
