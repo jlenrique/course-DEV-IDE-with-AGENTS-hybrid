@@ -123,6 +123,25 @@ def test_retention_never_deletes_current_run_pack(tmp_path: Path) -> None:
     assert (repo / "assets/styleguide-picker/currentrun").exists()
 
 
+def test_retention_protects_ancestor_of_nested_current_subdir(tmp_path: Path) -> None:
+    """FIX3: an immediate-child pack that is an ANCESTOR of a deeper ``current_subdir`` is
+    identity-protected. Publishing a nested sub-pack ``assets/gamma/mod/part1`` must NOT
+    prune the stale parent pack ``assets/gamma/mod`` (which would destroy sibling part2)."""
+    repo = tmp_path / "r"
+    _init_repo(repo)
+    now = 1_800_000_000
+    _commit_pack(repo, "assets/gamma/mod", epoch=now - 30 * DAY)
+    report = prune_retention(
+        repo,
+        config=RetentionConfig(managed_roots=("assets/gamma",), max_age_days=10),
+        now=now,
+        current_subdir="assets/gamma/mod/part1",
+    )
+    assert report.deleted == []
+    assert "assets/gamma/mod" in report.skipped_current
+    assert (repo / "assets/gamma/mod").exists()
+
+
 def test_retention_boundary_exactly_at_threshold_survives(tmp_path: Path) -> None:
     """RA7b: age == retention_days survives (> semantics); +1 second deletes."""
     repo = tmp_path / "r"

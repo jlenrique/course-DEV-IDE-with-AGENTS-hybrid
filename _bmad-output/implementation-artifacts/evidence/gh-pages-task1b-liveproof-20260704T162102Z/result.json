@@ -1,0 +1,32 @@
+{
+  "ts": "20260704T162102Z",
+  "repo": "https://github.com/jlenrique/jlenrique.github.io",
+  "teeth": {
+    "A_gamma_size_guard": {
+      "pass": true,
+      "tag": "gh-pages.publish.size-guard",
+      "msg": "projected published assets \u2248474 MB \u2014 over the 1 MB guard; prune or migrate before publishing (refusing to push a build that would breach the GitHub Pages 1 GB cap)",
+      "remote_scratch_status": 404
+    },
+    "B_verify_404": {
+      "pass": true,
+      "tag": "gamma.publish.not-live",
+      "msg": "published page is NOT live: https://jlenrique.github.io/assets/hardening-liveproof/task1b-verify404-20260704T162102Z/index.html returned HTTP 404 after ~15s of polling (push succee"
+    },
+    "C_gamma_happy_roundtrip": {
+      "pass": true,
+      "pushed": true,
+      "verified_live": true,
+      "url_map": {
+        "1": "https://jlenrique.github.io/assets/hardening-liveproof/task1b-happy-20260704T162102Z/card.png"
+      },
+      "independent_http": 200
+    },
+    "D_storyboard_size_guard": {
+      "pass": true,
+      "tag": "gh-pages.publish.size-guard",
+      "msg": "projected published assets \u2248475 MB \u2014 over the 1 MB guard; prune or migrate before publishing (refusing to push a build that would breach the GitHub Pages 1 GB cap)"
+    }
+  },
+  "all_pass": true
+}

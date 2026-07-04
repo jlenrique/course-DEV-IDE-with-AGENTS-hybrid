@@ -3419,6 +3419,11 @@ def cmd_publish(args: argparse.Namespace, *, verify: bool = True) -> int:
     size_guard: SizeGuardConfig
     verify_cfg: VerifyConfig
     retention, size_guard, verify_cfg = load_hygiene_config(publisher_cfg)
+    if retention is None:
+        logger.warning(
+            "gh-pages hygiene: retention pruning DISABLED (no managed_roots configured / "
+            "publisher config absent) — published-site growth is unbounded until configured"
+        )
 
     publish_result: dict[str, Any] = {
         "changed": False,
@@ -3462,11 +3467,16 @@ def cmd_publish(args: argparse.Namespace, *, verify: bool = True) -> int:
         if publish_result["changed"]:
             _run_git_command(["git", "add", target_subdir], cwd=temp_repo, env=git_env)
 
-        # Whole-repo change detection: retention `git rm` stages deletes outside
-        # target_subdir that a path-filtered status would miss, silently skipping the
-        # commit and never pushing the prune. Commit iff the whole tree has staged changes.
-        status = _run_git_command(["git", "status", "--porcelain"], cwd=temp_repo, env=git_env)
-        if status.strip():
+        # STAGED-ONLY change detection: a whole-repo `git status --porcelain` also reports
+        # unstaged/untracked worktree noise (e.g. Windows autocrlf line-ending
+        # normalization on a fresh clone), so a no-op re-publish with nothing staged would
+        # still enter the commit block and `git commit` would exit nonzero (abort). The
+        # staged set (`git diff --cached --name-only`) still catches retention `git rm`
+        # staged deletes AND the `git add`-ed new pack, while ignoring worktree noise.
+        staged = _run_git_command(
+            ["git", "diff", "--cached", "--name-only"], cwd=temp_repo, env=git_env
+        )
+        if staged.strip():
             # G2 — size guard on the projected published tree (fail-loud → no push).
             try:
                 project_published_size(temp_repo, config=size_guard, logger=logger.warning)

@@ -272,3 +272,73 @@ def test_size_guard_refuses_and_performs_no_push(tmp_path, monkeypatch) -> None:
     # Origin untouched — the new pack never landed.
     checkout = _reclone(tmp_path, bare)
     assert not (checkout / "assets/storyboards/RUN-STORY-1").exists()
+
+
+# ────────────────────────────────────────────── staged-only commit gate (FIX1/FIX2)
+def test_noop_republish_with_worktree_noise_does_not_raise(tmp_path, monkeypatch) -> None:
+    """FIX1/FIX2: a byte-identical re-publish (same manifest → deterministic snapshot) must
+    NOT raise even when the fresh clone carries untracked worktree noise with NOTHING staged.
+
+    Whole-repo ``git status --porcelain`` reports the untracked entry, so the old commit
+    gate would try to commit with an empty index and abort; the staged-only gate
+    (``git diff --cached --name-only``) sees nothing staged and cleanly skips the push.
+    Untracked noise is injected via the retention seam (which receives the internal clone
+    dir) — git itself is never mocked.
+    """
+    mod = _load_generate_module()
+    bare = _bare_origin(tmp_path)
+    _seed(tmp_path, bare)
+    monkeypatch.setenv("GITHUB_PAGES_TOKEN", "dummy-token")
+    monkeypatch.setattr(time, "time", lambda: float(NOW))
+
+    # Build the bundle ONCE so the manifest (and its embedded generated_at) is fixed —
+    # re-exporting the same manifest yields a deterministic, identical snapshot.
+    storyboard_json = _build_bundle(mod, tmp_path / "bundle", "RUN-NOOP-1")
+    args = _args(tmp_path, bare, storyboard_json)
+
+    # First publish lands the pack.
+    assert mod.cmd_publish(args, verify=False) == 0
+    checkout = _reclone(tmp_path, bare, name="after-first")
+    assert (checkout / "assets/storyboards/RUN-NOOP-1/index.html").is_file()
+
+    # Second publish is a no-op (snapshot == origin pack → publish_snapshot_tree
+    # changed=False → nothing staged). Inject untracked worktree noise via the retention seam.
+    called = {"pruned": False}
+    real_prune = ghp.prune_retention
+
+    def prune_and_litter(clone_dir, **kw):
+        rep = real_prune(clone_dir, **kw)
+        (Path(clone_dir) / "untracked_noise.txt").write_text("noise\n", encoding="utf-8")
+        called["pruned"] = True
+        return rep
+
+    monkeypatch.setattr(ghp, "prune_retention", prune_and_litter)
+    rc = mod.cmd_publish(args, verify=False)
+    assert called["pruned"], "retention seam must run to inject worktree noise"
+    assert rc == 0  # nothing staged → no commit, no push, no raise
+
+
+# ──────────────────────────────────────────── retention-disabled warning (FIX5)
+def test_retention_disabled_emits_warning(tmp_path, monkeypatch, caplog) -> None:
+    """FIX5: when ``load_hygiene_config`` yields retention=None the publisher WARNS loudly."""
+    import logging
+
+    mod = _load_generate_module()
+    bare = _bare_origin(tmp_path)
+    _seed(tmp_path, bare)
+
+    real = ghp.load_hygiene_config
+
+    def no_retention(cfg):
+        _r, size, verify = real(cfg)
+        return None, size, verify
+
+    monkeypatch.setattr(ghp, "load_hygiene_config", no_retention)
+    monkeypatch.setenv("GITHUB_PAGES_TOKEN", "dummy-token")
+    monkeypatch.setattr(time, "time", lambda: float(NOW))
+
+    storyboard_json = _build_bundle(mod, tmp_path / "bundle", "RUN-STORY-1")
+    with caplog.at_level(logging.WARNING, logger="generate_storyboard"):
+        rc = mod.cmd_publish(_args(tmp_path, bare, storyboard_json), verify=False)
+    assert rc == 0
+    assert "retention pruning DISABLED" in caplog.text

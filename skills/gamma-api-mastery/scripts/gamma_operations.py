@@ -153,15 +153,23 @@ def _run_git_command(
 def _github_pages_base_url(repo_url: str) -> str:
     """Derive the GitHub Pages base URL from a GitHub repository URL.
 
-    Non-github targets (e.g. a local bare repo used by offline hygiene tests) have no
+    Non-HTTP(S) targets (e.g. a local bare repo used by offline hygiene tests) have no
     ``owner/repo`` Pages shape — fall back to the repo URL itself so callers still get a
-    usable base rather than a raise. The github.com behavior is unchanged.
+    usable base rather than a raise.
+
+    For HTTP(S) URLs the fallback is HOST-CONDITIONED: on a real GitHub host
+    (``github.com`` / ``github.io``) a URL missing ``owner/repository`` is a production
+    misconfiguration and RAISES fail-loud; any other host keeps the lenient fallback so
+    non-github offline seams still work. The valid github.com behavior is unchanged.
     """
     parsed = urlparse(repo_url)
     if parsed.scheme not in {"http", "https"}:
         return repo_url.rstrip("/")
     parts = [part for part in parsed.path.strip("/").split("/") if part]
     if len(parts) < 2:
+        host = (parsed.hostname or "").lower()
+        if host.endswith("github.com") or host.endswith("github.io"):
+            raise ValueError("site_repo_url must include owner/repository")
         return repo_url.rstrip("/")
     owner, repo = parts[0], parts[1]
     if repo.endswith(".git"):
@@ -326,6 +334,11 @@ def publish_preintegration_literal_visuals(
     size_guard: SizeGuardConfig
     verify_cfg: VerifyConfig
     retention, size_guard, verify_cfg = load_hygiene_config(publisher_cfg)
+    if retention is None:
+        logger.warning(
+            "gh-pages hygiene: retention pruning DISABLED (no managed_roots configured / "
+            "publisher config absent) — published-site growth is unbounded until configured"
+        )
 
     with tempfile.TemporaryDirectory(prefix="gamma-site-publish-") as temp_dir:
         temp_path = Path(temp_dir)
@@ -389,23 +402,28 @@ def publish_preintegration_literal_visuals(
         result["copied_count"] = len(tracked_rel_paths)
         _run_git_command(["git", "add", "--", *tracked_rel_paths], cwd=repo_dir)
 
-        # G2 — size guard on the projected published tree (post-prune + new pack).
-        # Fail-loud: SizeGuardRefusal propagates so no commit/push occurs.
-        try:
-            project_published_size(repo_dir, config=size_guard, logger=logger.warning)
-        except SizeGuardRefusal:
-            logger.error(
-                "Size guard refused literal-visual publish for %s — no push",
-                result["target_subdir"],
-            )
-            raise
+        # STAGED-ONLY change detection: a whole-repo `git status --porcelain` also reports
+        # unstaged/untracked worktree noise (e.g. Windows autocrlf line-ending
+        # normalization on a fresh clone), so a no-op re-publish with nothing staged would
+        # still enter the commit block and `git commit` would exit nonzero (abort). The
+        # staged set (`git diff --cached --name-only`) still catches retention `git rm`
+        # staged deletes AND the `git add`-ed new pack, while ignoring worktree noise.
+        staged = _run_git_command(["git", "diff", "--cached", "--name-only"], cwd=repo_dir)
 
-        # Whole-repo change detection: a retention `git rm` stages deletes on OTHER
-        # paths that a path-filtered status would miss, silently skipping the commit and
-        # never pushing the prune. Commit iff the whole working tree has staged changes.
-        changed = _run_git_command(["git", "status", "--porcelain"], cwd=repo_dir)
+        if staged.strip():
+            # G2 — size guard on the projected published tree (post-prune + new pack).
+            # Runs ONLY when there ARE staged changes, so a no-op re-publish on an
+            # over-budget repo does not fail loud. Fail-loud otherwise: SizeGuardRefusal
+            # propagates so no commit/push occurs.
+            try:
+                project_published_size(repo_dir, config=size_guard, logger=logger.warning)
+            except SizeGuardRefusal:
+                logger.error(
+                    "Size guard refused literal-visual publish for %s — no push",
+                    result["target_subdir"],
+                )
+                raise
 
-        if changed:
             message = f"Publish preintegration literal visuals for {safe_module_part}"
             if result.get("retention", {}).get("deleted"):
                 message += " (+retention)"

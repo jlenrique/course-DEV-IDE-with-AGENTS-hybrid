@@ -284,3 +284,92 @@ def test_size_guard_refuses_and_performs_no_push(tmp_path, monkeypatch) -> None:
     # Origin must be untouched — the new pack never landed.
     checkout = _reclone(tmp_path, bare)
     assert not (checkout / "assets/gamma/c1m1/run1").exists()
+
+
+# ────────────────────────────────────────────── staged-only commit gate (FIX1/FIX2)
+def test_noop_republish_with_worktree_noise_does_not_raise(tmp_path, monkeypatch) -> None:
+    """FIX1/FIX2: a no-op re-publish (identical PNG already in origin) must NOT raise even
+    when the fresh clone carries untracked worktree noise with NOTHING staged.
+
+    Whole-repo ``git status --porcelain`` reports untracked/unstaged entries, so the old
+    commit gate would try to commit with an empty index and abort. The staged-only gate
+    (``git diff --cached --name-only``) sees nothing staged and cleanly skips the push.
+    Untracked noise is injected via the retention seam (which receives the internal clone
+    dir) — git itself is never mocked.
+    """
+    bare = _bare_origin(tmp_path)
+    module_part = "c1m1/run1"
+
+    def seed(seed_repo: Path) -> None:
+        # The CURRENT-run pack already holds the exact PNG we will re-publish → `git add`
+        # stages nothing (a true no-op re-publish).
+        pack = seed_repo / f"assets/gamma/{module_part}"
+        pack.mkdir(parents=True)
+        (pack / "img.png").write_bytes(_DUMMY_PNG_BYTES)
+        _git(["add", "."], cwd=seed_repo)
+        _git(["commit", "-m", "seed current pack"], cwd=seed_repo)
+
+    _seed(tmp_path, bare, seed)
+
+    called = {"pruned": False}
+    real_prune = gamma_operations.prune_retention
+
+    def prune_and_litter(clone_dir, **kw):
+        rep = real_prune(clone_dir, **kw)
+        (Path(clone_dir) / "untracked_noise.txt").write_text("noise\n", encoding="utf-8")
+        called["pruned"] = True
+        return rep
+
+    monkeypatch.setattr(gamma_operations, "prune_retention", prune_and_litter)
+
+    png = _make_png(tmp_path, "img.png")  # identical bytes to the seeded pack's img.png
+    result = _run_publish(tmp_path, bare, monkeypatch, module_part=module_part, cards={1: png})
+
+    assert called["pruned"], "retention seam must run to inject worktree noise"
+    assert result["pushed"] is False  # nothing staged → no commit, no push, no raise
+    assert 1 in result["url_map"]  # url_map still returned for card substitution
+
+
+# ─────────────────────────────────────── _github_pages_base_url host fallback (FIX4)
+def test_github_pages_base_url_host_conditioned_fallback() -> None:
+    """FIX4: a malformed *github* URL fails loud; other hosts keep the lenient fallback."""
+    from gamma_operations import _github_pages_base_url
+
+    with pytest.raises(ValueError):
+        _github_pages_base_url("https://github.com/owner")  # missing repo on github host
+    # Non-github host with <2 path parts keeps the offline/local lenient fallback.
+    assert _github_pages_base_url("https://example.com/foo") == "https://example.com/foo"
+    # A normal user.github.io repo still resolves to its Pages base.
+    assert (
+        _github_pages_base_url("https://github.com/jlenrique/jlenrique.github.io")
+        == "https://jlenrique.github.io"
+    )
+
+
+# ──────────────────────────────────────────── retention-disabled warning (FIX5)
+def test_retention_disabled_emits_warning(tmp_path, monkeypatch, caplog) -> None:
+    """FIX5: when ``load_hygiene_config`` yields retention=None the publisher WARNS loudly."""
+    import logging
+
+    bare = _bare_origin(tmp_path)
+    _seed(tmp_path, bare)
+
+    real = gamma_operations.load_hygiene_config
+
+    def no_retention(cfg):
+        _r, size, verify = real(cfg)
+        return None, size, verify
+
+    monkeypatch.setattr(gamma_operations, "load_hygiene_config", no_retention)
+    monkeypatch.setenv("GITHUB_PAGES_TOKEN", "dummy-token")
+    _freeze_now(monkeypatch)
+
+    png = _make_png(tmp_path, "a.png")
+    with caplog.at_level(logging.WARNING, logger="gamma_operations"):
+        publish_preintegration_literal_visuals(
+            {1: png},
+            "c1m1/run1",
+            site_repo_url=str(bare),
+            verify=False,
+        )
+    assert "retention pruning DISABLED" in caplog.text

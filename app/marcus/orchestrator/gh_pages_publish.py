@@ -251,8 +251,10 @@ def prune_retention(
     Operates purely on ``clone_dir`` (a checked-out clone) — auth-agnostic and
     copy-agnostic, so any transport can call it. For each managed root, each IMMEDIATE
     CHILD DIRECTORY is a "pack" (loose files and deeper nesting are ignored, RA7e). A
-    pack is skipped when: it is the pack being published this run (``current_subdir``,
-    by IDENTITY not date — highest-severity safety, RA7a); it matches the protected
+    pack is skipped when: it is the pack being published this run — OR an ANCESTOR of it
+    (``current_subdir``, by IDENTITY not date — highest-severity safety, RA7a; protecting
+    ancestors stops a nested publish like ``mod/part1`` from pruning the ``mod`` pack and
+    destroying sibling ``mod/part2``); it matches the protected
     allowlist (RA7d); or its age is UNKNOWN (no commit history). Age uses ``%ct`` epoch
     vs ``now`` (UTC ``time.time()``); deletion is STRICTLY ``> max_age_days`` so a pack
     exactly at the boundary survives (RA7b). A missing/empty managed root is a benign
@@ -275,7 +277,9 @@ def prune_retention(
                 continue  # loose non-pack file, or a symlink-to-dir (never a real pack; RA7e/S1)
             rel = f"{root}/{child.name}"
             rel_norm = rel.strip("/")
-            if current_norm is not None and rel_norm == current_norm:
+            if current_norm is not None and (
+                rel_norm == current_norm or current_norm.startswith(rel_norm + "/")
+            ):
                 report.skipped_current.append(rel)
                 continue
             if _is_protected(rel, config.protected_paths):
