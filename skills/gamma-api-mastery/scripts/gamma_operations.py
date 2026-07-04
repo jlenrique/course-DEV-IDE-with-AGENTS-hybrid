@@ -40,6 +40,18 @@ if str(_QC_SCRIPTS) not in sys.path:
     sys.path.insert(0, str(_QC_SCRIPTS))
 from visual_fill_validator import validate_visual_fill  # noqa: E402
 
+from app.marcus.orchestrator.gh_pages_publish import (  # noqa: E402
+    GhPagesPublishError,
+    RetentionConfig,
+    SizeGuardConfig,
+    SizeGuardRefusal,
+    VerifyConfig,
+    load_hygiene_config,
+    project_published_size,
+    prune_retention,
+    verify_build_after_push,
+)
+
 logger = logging.getLogger(__name__)
 
 
@@ -139,13 +151,18 @@ def _run_git_command(
 
 
 def _github_pages_base_url(repo_url: str) -> str:
-    """Derive the GitHub Pages base URL from a GitHub repository URL."""
+    """Derive the GitHub Pages base URL from a GitHub repository URL.
+
+    Non-github targets (e.g. a local bare repo used by offline hygiene tests) have no
+    ``owner/repo`` Pages shape — fall back to the repo URL itself so callers still get a
+    usable base rather than a raise. The github.com behavior is unchanged.
+    """
     parsed = urlparse(repo_url)
     if parsed.scheme not in {"http", "https"}:
-        raise ValueError("site_repo_url must be an HTTP(S) URL")
+        return repo_url.rstrip("/")
     parts = [part for part in parsed.path.strip("/").split("/") if part]
     if len(parts) < 2:
-        raise ValueError("site_repo_url must include owner/repository")
+        return repo_url.rstrip("/")
     owner, repo = parts[0], parts[1]
     if repo.endswith(".git"):
         repo = repo[:-4]
@@ -227,10 +244,17 @@ def publish_preintegration_literal_visuals(
     run_id: str | None = None,
     mode: str = "default",
     token_env_var: str = "GITHUB_PAGES_TOKEN",
+    verify: bool = True,
 ) -> dict[str, Any]:
     """Publish preintegration literal-visual PNGs into the Git-hosted site.
 
     Returns additive metadata plus a ``url_map`` used to substitute diagram card URLs.
+
+    Adopts the shared gh-pages hygiene primitives (Task 1b): a blobless clone, a
+    retention prune of stale managed packs, a fail-loud published-size guard before
+    push, and a verify-build-after-push poll. ``verify=False`` skips only the post-push
+    HTTP poll (offline tests point ``site_repo_url`` at a local bare repo with no live
+    endpoint); all other hygiene still runs.
     """
     safe_module_part = _sanitize_publish_segment(module_lesson_part)
     safe_target_subdir = _sanitize_publish_segment(target_subdir)
@@ -288,6 +312,21 @@ def publish_preintegration_literal_visuals(
     url_base = f"{pages_base}/{safe_target_subdir}/{safe_module_part}"
     result["url_base"] = url_base
 
+    def _prim_git(git_args: list[str], *, cwd: Path | None = None) -> str:
+        """Adapter matching the shared-primitive GitRunner contract (args exclude 'git')."""
+        return _run_git_command(["git", *git_args], cwd=cwd, env=git_auth_env)
+
+    publisher_cfg_path = PROJECT_ROOT / "state" / "config" / "storyboard-publisher.yaml"
+    publisher_cfg: dict[str, Any] = {}
+    if publisher_cfg_path.exists():
+        loaded_cfg = yaml.safe_load(publisher_cfg_path.read_text(encoding="utf-8"))
+        if isinstance(loaded_cfg, dict):
+            publisher_cfg = loaded_cfg
+    retention: RetentionConfig | None
+    size_guard: SizeGuardConfig
+    verify_cfg: VerifyConfig
+    retention, size_guard, verify_cfg = load_hygiene_config(publisher_cfg)
+
     with tempfile.TemporaryDirectory(prefix="gamma-site-publish-") as temp_dir:
         temp_path = Path(temp_dir)
         repo_dir = temp_path / "site-repo"
@@ -295,8 +334,7 @@ def publish_preintegration_literal_visuals(
             [
                 "git",
                 "clone",
-                "--depth",
-                "1",
+                "--filter=blob:none",
                 "--branch",
                 site_branch,
                 site_repo_url,
@@ -306,8 +344,7 @@ def publish_preintegration_literal_visuals(
             display_args=[
                 "git",
                 "clone",
-                "--depth",
-                "1",
+                "--filter=blob:none",
                 "--branch",
                 site_branch,
                 site_repo_url,
@@ -319,6 +356,22 @@ def publish_preintegration_literal_visuals(
             ["git", "config", "user.email", "app-gamma-bot@users.noreply.github.com"],
             cwd=repo_dir,
         )
+
+        # G1 — retention prune (staged; the pack published THIS run is protected by
+        # identity). Runs BEFORE copying the new PNGs so stale managed packs are pruned
+        # in the same publish commit.
+        if retention is not None:
+            rep = prune_retention(
+                repo_dir,
+                config=retention,
+                current_subdir=f"{safe_target_subdir}/{safe_module_part}",
+                git=_prim_git,
+                logger=logger.info,
+            )
+            result["retention"] = {
+                "deleted": len(rep.deleted),
+                "reclaim_mb": round(rep.reclaim_bytes / 1048576, 1),
+            }
 
         destination_dir = repo_dir / safe_target_subdir / safe_module_part
         destination_dir.mkdir(parents=True, exist_ok=True)
@@ -335,13 +388,27 @@ def publish_preintegration_literal_visuals(
 
         result["copied_count"] = len(tracked_rel_paths)
         _run_git_command(["git", "add", "--", *tracked_rel_paths], cwd=repo_dir)
-        changed = _run_git_command(
-            ["git", "status", "--porcelain", "--", *tracked_rel_paths],
-            cwd=repo_dir,
-        )
+
+        # G2 — size guard on the projected published tree (post-prune + new pack).
+        # Fail-loud: SizeGuardRefusal propagates so no commit/push occurs.
+        try:
+            project_published_size(repo_dir, config=size_guard, logger=logger.warning)
+        except SizeGuardRefusal:
+            logger.error(
+                "Size guard refused literal-visual publish for %s — no push",
+                result["target_subdir"],
+            )
+            raise
+
+        # Whole-repo change detection: a retention `git rm` stages deletes on OTHER
+        # paths that a path-filtered status would miss, silently skipping the commit and
+        # never pushing the prune. Commit iff the whole working tree has staged changes.
+        changed = _run_git_command(["git", "status", "--porcelain"], cwd=repo_dir)
 
         if changed:
             message = f"Publish preintegration literal visuals for {safe_module_part}"
+            if result.get("retention", {}).get("deleted"):
+                message += " (+retention)"
             _run_git_command(["git", "commit", "-m", message], cwd=repo_dir)
             _run_git_command(
                 ["git", "push", site_repo_url, f"HEAD:{site_branch}"],
@@ -350,6 +417,19 @@ def publish_preintegration_literal_visuals(
                 display_args=["git", "push", site_repo_url, f"HEAD:{site_branch}"],
             )
             result["pushed"] = True
+
+            # G3 — verify the pushed page is actually live (skipped offline via verify=False).
+            if verify and verify_cfg.enabled and result["url_map"]:
+                first_card = result["substituted_cards"][0]
+                verify_build_after_push(
+                    result["url_map"][first_card],
+                    site_repo=site_repo_url,
+                    token=token,
+                    timeout=verify_cfg.timeout_s,
+                    error_cls=GhPagesPublishError,
+                    tag_prefix="gamma.publish",
+                )
+                result["verified_live"] = True
 
     result["preintegration_ready"] = bool(result["url_map"])
     logger.info(

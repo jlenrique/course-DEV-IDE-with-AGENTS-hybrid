@@ -3356,7 +3356,7 @@ def cmd_export(args: argparse.Namespace) -> int:
     return 0
 
 
-def cmd_publish(args: argparse.Namespace) -> int:
+def cmd_publish(args: argparse.Namespace, *, verify: bool = True) -> int:
     manifest_path: Path = args.manifest.resolve()
     manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
     export_result = export_storyboard_snapshot(
@@ -3384,10 +3384,41 @@ def cmd_publish(args: argparse.Namespace) -> int:
         _run_git_command,
     )
 
+    if str(PROJECT_ROOT) not in sys.path:
+        sys.path.insert(0, str(PROJECT_ROOT))
+    from app.marcus.orchestrator.gh_pages_publish import (  # noqa: PLC0415
+        GhPagesPublishError,
+        RetentionConfig,
+        SizeGuardConfig,
+        SizeGuardRefusal,
+        VerifyConfig,
+        load_hygiene_config,
+        project_published_size,
+        prune_retention,
+        verify_build_after_push,
+    )
+
     target_subdir = f"{_sanitize_segment(args.publish_subdir)}/{safe_leaf}"
     pages_url_base = _github_pages_base_url(site_repo_url)
-    git_env = _git_auth_env(os.environ[args.token_env_var].strip())
+    publish_url = f"{pages_url_base.rstrip('/')}/{target_subdir}/index.html"
+    token = os.environ[args.token_env_var].strip()
+    git_env = _git_auth_env(token)
     temp_repo = Path(tempfile.mkdtemp(prefix=f"storyboard-publish-{safe_leaf}-"))
+
+    def _prim_git(git_args: list[str], *, cwd: Path | None = None) -> str:
+        """Adapter matching the shared-primitive GitRunner contract (args exclude 'git')."""
+        return _run_git_command(["git", *git_args], cwd=cwd, env=git_env)
+
+    publisher_cfg_path = PROJECT_ROOT / "state" / "config" / "storyboard-publisher.yaml"
+    publisher_cfg: dict[str, Any] = {}
+    if publisher_cfg_path.exists() and yaml is not None:
+        loaded_cfg = yaml.safe_load(publisher_cfg_path.read_text(encoding="utf-8"))
+        if isinstance(loaded_cfg, dict):
+            publisher_cfg = loaded_cfg
+    retention: RetentionConfig | None
+    size_guard: SizeGuardConfig
+    verify_cfg: VerifyConfig
+    retention, size_guard, verify_cfg = load_hygiene_config(publisher_cfg)
 
     publish_result: dict[str, Any] = {
         "changed": False,
@@ -3395,8 +3426,8 @@ def cmd_publish(args: argparse.Namespace) -> int:
     }
     try:
         _run_git_command(
-            ["git", "clone", "--depth", "1", "--branch", args.site_branch, site_repo_url, str(temp_repo)],
-            display_args=["git", "clone", "--depth", "1", "--branch", args.site_branch, site_repo_url, "<tempdir>"],
+            ["git", "clone", "--filter=blob:none", "--branch", args.site_branch, site_repo_url, str(temp_repo)],
+            display_args=["git", "clone", "--filter=blob:none", "--branch", args.site_branch, site_repo_url, "<tempdir>"],
             env=git_env,
         )
         _run_git_command(["git", "config", "user.name", "app-marcus-bot"], cwd=temp_repo)
@@ -3404,28 +3435,71 @@ def cmd_publish(args: argparse.Namespace) -> int:
             ["git", "config", "user.email", "app-marcus-bot@users.noreply.github.com"],
             cwd=temp_repo,
         )
+
+        # G1 — retention prune BEFORE copy (the pack published this run is protected by
+        # identity). Staged deletes ride the same publish commit.
+        retention_report = None
+        if retention is not None:
+            retention_report = prune_retention(
+                temp_repo,
+                config=retention,
+                current_subdir=target_subdir,
+                git=_prim_git,
+                logger=logger.info,
+            )
+
         publish_result = publish_snapshot_tree(
             export_result["snapshot_dir"],
             repo_root=temp_repo,
             target_subdir=target_subdir,
         )
+        if retention_report is not None:
+            publish_result["retention"] = {
+                "deleted": len(retention_report.deleted),
+                "reclaim_mb": round(retention_report.reclaim_bytes / 1048576, 1),
+            }
+
         if publish_result["changed"]:
             _run_git_command(["git", "add", target_subdir], cwd=temp_repo, env=git_env)
-            status = _run_git_command(["git", "status", "--short", target_subdir], cwd=temp_repo, env=git_env)
-            if status.strip():
-                commit_message = f"Publish storyboard snapshot for {run_id}"
-                _run_git_command(
-                    ["git", "commit", "-m", commit_message],
-                    cwd=temp_repo,
-                    env=git_env,
+
+        # Whole-repo change detection: retention `git rm` stages deletes outside
+        # target_subdir that a path-filtered status would miss, silently skipping the
+        # commit and never pushing the prune. Commit iff the whole tree has staged changes.
+        status = _run_git_command(["git", "status", "--porcelain"], cwd=temp_repo, env=git_env)
+        if status.strip():
+            # G2 — size guard on the projected published tree (fail-loud → no push).
+            try:
+                project_published_size(temp_repo, config=size_guard, logger=logger.warning)
+            except SizeGuardRefusal:
+                logger.error("Size guard refused storyboard publish for %s — no push", target_subdir)
+                raise
+
+            commit_message = f"Publish storyboard snapshot for {run_id}"
+            if retention_report is not None and retention_report.deleted:
+                commit_message += " (+retention)"
+            _run_git_command(
+                ["git", "commit", "-m", commit_message],
+                cwd=temp_repo,
+                env=git_env,
+            )
+            _run_git_command(
+                ["git", "push", site_repo_url, f"HEAD:{args.site_branch}"],
+                cwd=temp_repo,
+                env=git_env,
+                display_args=["git", "push", site_repo_url, f"HEAD:{args.site_branch}"],
+            )
+
+            # G3 — verify the pushed page is live (skipped offline via verify=False).
+            if verify and verify_cfg.enabled:
+                verify_build_after_push(
+                    publish_url,
+                    site_repo=site_repo_url,
+                    token=token,
+                    timeout=verify_cfg.timeout_s,
+                    error_cls=GhPagesPublishError,
+                    tag_prefix="storyboard.publish",
                 )
-                _run_git_command(
-                    ["git", "push", site_repo_url, f"HEAD:{args.site_branch}"],
-                    cwd=temp_repo,
-                    env=git_env,
-                    display_args=["git", "push", site_repo_url, f"HEAD:{args.site_branch}"],
-                )
-        publish_url = f"{pages_url_base.rstrip('/')}/{target_subdir}/index.html"
+                publish_result["verified_live"] = True
     finally:
         if temp_repo.exists():
             shutil.rmtree(temp_repo, ignore_errors=True)
