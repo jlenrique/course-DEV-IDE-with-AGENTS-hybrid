@@ -1,8 +1,8 @@
 # Task 4 — real Phase-2 publish through the FULL hardened path (done-signal candidate)
 
 **Arc:** gh-pages publish-hardening + durable-deploy. **Date:** 2026-07-04 (~17:31Z).
-**Class S. Sole Claude dev lane.** Codex shadow-monitor OFF (concurrence unavailable this session).
-**Operator-confirmed** the destructive retention prune before this run.
+**Class S. Sole Claude dev lane.** Codex shadow-monitor LIVE (an earlier "OFF" note was a stale-session
+error). **Operator-confirmed** the destructive retention prune before this run.
 
 ## What was proven — all three hygiene teeth fire in ONE real production publish
 `publish_picker(run_tag="task4prod20260704T173111Z", verify=True)` — the Phase-2 interactive
@@ -43,5 +43,6 @@ prune of the 15 packs is the durable, intended production change and STANDS** (o
 ## Outcome
 Task 4 accomplished: a real production publish through the full hardened path with retention +
 size-guard + verify all firing and the URL serving 200 real content. This is the goal done-signal
-candidate — pending the fully-spawned BMAD party concurrence (recorded separately). Codex
-shadow-monitor concurrence is UNAVAILABLE (OFF this session) — noted honestly, not asserted.
+candidate — MET: fully-spawned BMAD party unanimous concurrence (recorded separately) + live Codex
+shadow-monitor concurrence (Poll 38 FINAL, 2026-07-04T13:53: "CONCUR — arc completion criteria are
+satisfied from visible repo evidence"). ARC COMPLETE.

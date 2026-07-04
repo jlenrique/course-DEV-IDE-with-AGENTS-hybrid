@@ -24,17 +24,20 @@ SPOC-is-the-goal). Each read the goal + all four task PROOF.md evidences (+ code
    §gh-pages Publish-Hardening Arc Follow-Ons` (`gh-pages-publisher-bounded-deploy-retry-on-syncing-files`).
 2. **Push all task evidence/commits to `origin/<branch>`** (John) — ✅ DONE: origin at `b39615d9`
    (Task 3 + Task 4 evidence landed; the earlier stall cleared via a fail-fast low-speed-guarded push).
-3. **Shadow-monitor concurrence — EXPLICIT operator waiver** (Murat/Amelia/John/Marcus) — ⛔ OPERATOR-GATED.
-   The done-signal literally names the shadow-monitor's concurrence "on record"; the Codex monitor is
-   OFF this session (operator-disabled). The party unanimously holds this is satisfiable by
-   documented-absence + an explicit operator waiver (Class-S sole-dev-lane), NOT a self-grant. The
-   3-layer `bmad-code-review` + this 5-seat party partially substitute for the independent second eyes.
+3. **Shadow-monitor concurrence on record** (Murat/Amelia/John/Marcus) — ✅ SATISFIED.
+   **CORRECTION (operator, 2026-07-04):** the Codex shadow-monitor is **LIVE** — the earlier "OFF this
+   session" was a stale-session-note error carried by the orchestrator; NO waiver was needed. The
+   monitor's **Hardening Poll 38 (FINAL), 2026-07-04T13:53:36-04:00**, reviewed the current pushed
+   state (`f472600b`) — all 4 tasks complete, all three Task 4 teeth, the party concurrence, and the
+   filed follow-on — and returned: **"CONCUR — arc completion criteria are satisfied from visible repo
+   evidence."** Poll 38 explicitly supplies the concurrence that condition #3 had (wrongly, on stale
+   info) framed as needing an operator waiver.
 
 ## Disposition
-Task 4 is **accomplished and validated** by unanimous party concurrence, with conditions #1 and #2
-cleared on record. The goal is **DONE pending only the operator's explicit shadow-monitor waiver**
-(condition #3) — the single element the party cannot self-adjudicate because the operator turned the
-monitor off and the goal names its concurrence.
+Task 4 is **accomplished and validated** by unanimous party concurrence; conditions #1, #2, and #3 are
+all cleared on record. **The goal's done-signal is FULLY MET** — fully-spawned BMAD party unanimous
+concurrence + live evidence + the live Codex shadow-monitor's concurrence (Poll 38 FINAL) all on record.
+**ARC COMPLETE.**
 
 ## Honest caveats on record
 - The "durable deploy" is durable-**with-manual-intervention** today: GitHub's `syncing_files` CDN
