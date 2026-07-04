@@ -335,6 +335,39 @@ def test_static_html_shows_candidate_chip() -> None:
     assert "thumbnails/" in html or "no live render" in html
 
 
+# ------------------------------------------- compaction + clear affordances (2026-07-03)
+def test_static_html_uses_single_line_code_input() -> None:
+    """Compaction: the 44px textarea became a single-line readonly input (still the
+    manual-copy fallback surface — readonly, focusable, selectable)."""
+    html = render_picker_static_html(_roster(), run_tag=RUN_TAG)
+    assert '<input type="text" id="selection-code" readonly' in html
+    assert "<textarea" not in html.lower()
+
+
+def test_static_html_has_per_slot_clear_buttons() -> None:
+    """Discoverable clear (operator ask #2): each slot chip carries a native ✕."""
+    html = render_picker_static_html(_roster(), run_tag=RUN_TAG)
+    assert 'class="slot-clear" data-variant="A"' in html
+    assert 'class="slot-clear" data-variant="B"' in html
+    assert 'aria-label="Clear Version A"' in html
+    assert 'aria-label="Clear Version B"' in html
+
+
+def test_static_html_has_clear_all_button() -> None:
+    html = render_picker_static_html(_roster(), run_tag=RUN_TAG)
+    assert 'id="clear-all"' in html
+    assert "Clear selection" in html
+
+
+def test_static_html_slots_not_a_live_region_but_status_surfaces_intact() -> None:
+    """Murat a11y: interactive ✕ buttons must NOT live inside an aria-live region;
+    the announced surfaces stay #version-note + #copy-why + #copy-status."""
+    html = render_picker_static_html(_roster(), run_tag=RUN_TAG)
+    assert '<div class="slots">' in html  # slots container has no role/aria-live
+    assert 'id="version-note" role="status" aria-live="polite"' in html
+    assert 'id="copy-why" role="status" aria-live="polite"' in html
+
+
 # ---------------------------------------------------------- MUST-1 producer run_tag guard
 @pytest.mark.parametrize(
     "bad_tag",

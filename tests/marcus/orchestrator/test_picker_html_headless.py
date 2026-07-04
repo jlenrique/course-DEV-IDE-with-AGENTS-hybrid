@@ -122,3 +122,103 @@ def test_headless_two_versions_one_style_blocks_copy_then_unblocks(
         )
     finally:
         page.close()
+
+
+# ---------------------------------------- clear affordances (compaction arc, 2026-07-03)
+def _cleared_state(page) -> tuple[str, bool, int]:
+    return (
+        page.locator("#selection-code").input_value(),
+        page.locator("#copy-code").is_disabled(),
+        page.locator('.card[aria-pressed="true"]').count(),
+    )
+
+
+def test_headless_slot_b_hidden_until_two_versions(_browser, tmp_path: Path) -> None:
+    """Regression (code-review Finding 1): Slot B chip must be RENDER-hidden in
+    1-version mode. Asserts real rendered visibility (not just the .hidden property)
+    so a CSS rule that beats the UA [hidden] rule is caught."""
+    page = _browser.new_page()
+    try:
+        _load(page, tmp_path)
+        assert not page.locator("#slot-B-wrap").is_visible()  # default = 1 version
+        page.locator('input[name="version-count"][value="2"]').check()
+        assert page.locator("#slot-B-wrap").is_visible()
+        page.locator('input[name="version-count"][value="1"]').check()
+        assert not page.locator("#slot-B-wrap").is_visible()
+    finally:
+        page.close()
+
+
+def test_headless_slot_x_clears_and_disables(_browser, tmp_path: Path) -> None:
+    """Per-slot ✕ clears A → code empty, copy disabled, no card still 'pressed'."""
+    page = _browser.new_page()
+    try:
+        _load(page, tmp_path)
+        page.locator('.card[data-guide="alpha-style"]').click()
+        assert not page.locator("#copy-code").is_disabled()
+        page.locator('.slot-clear[data-variant="A"]').click()
+        assert _cleared_state(page) == ("", True, 0)
+    finally:
+        page.close()
+
+
+def test_headless_clear_all_empties_both_without_confirm(_browser, tmp_path: Path) -> None:
+    """Clear-all from an A/B state clears both with NO confirm() dialog (must not
+    route through setVersion(1))."""
+    page = _browser.new_page()
+    try:
+        _load(page, tmp_path)
+        dialogs: list[str] = []
+        page.on("dialog", lambda d: (dialogs.append(d.message), d.dismiss()))
+        page.locator('.card[data-guide="alpha-style"]').click()
+        page.locator('.card[data-guide="beta-style"]').click()
+        page.locator("#clear-all").click()
+        assert dialogs == [], "Clear selection must not trigger a confirm() dialog"
+        assert _cleared_state(page) == ("", True, 0)
+    finally:
+        page.close()
+
+
+def test_headless_three_clear_routes_converge(_browser, tmp_path: Path) -> None:
+    """Card re-click, slot ✕, and Clear-all all land on byte-identical cleared state."""
+    results = []
+    for route in ("reclick", "slotx", "clearall"):
+        page = _browser.new_page()
+        try:
+            _load(page, tmp_path)
+            page.locator('.card[data-guide="alpha-style"]').click()
+            if route == "reclick":
+                page.locator('.card[data-guide="alpha-style"]').click()
+            elif route == "slotx":
+                page.locator('.slot-clear[data-variant="A"]').click()
+            else:
+                page.locator("#clear-all").click()
+            results.append(_cleared_state(page))
+        finally:
+            page.close()
+    assert results[0] == results[1] == results[2] == ("", True, 0)
+
+
+def test_headless_clear_a_while_b_set_is_uncopyable_then_rebuilds(
+    _browser, tmp_path: Path
+) -> None:
+    """Ratified option (a): clearing A while B is set leaves B, blocks copy (never a
+    B-only code); re-picking A rebuilds the exact A/B code."""
+    page = _browser.new_page()
+    try:
+        _load(page, tmp_path)
+        page.locator('input[name="version-count"][value="2"]').check()
+        page.locator('.card[data-guide="alpha-style"]').click()  # A
+        page.locator('.card[data-guide="beta-style"]').click()  # B
+        assert not page.locator("#copy-code").is_disabled()
+        page.locator('.slot-clear[data-variant="A"]').click()  # clear A, keep B
+        assert page.locator("#copy-code").is_disabled()
+        assert page.locator("#selection-code").input_value() == ""
+        assert "filled" in (page.locator("#slot-B").get_attribute("class") or "")
+        # re-pick A → exact A/B code rebuilt (label-keyed, no B→A promotion)
+        page.locator('.card[data-guide="alpha-style"]').click()
+        assert page.locator("#selection-code").input_value() == build_selection_code(
+            RUN_TAG, {"A": "alpha-style", "B": "beta-style"}
+        )
+    finally:
+        page.close()

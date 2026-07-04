@@ -219,26 +219,81 @@ function buildSelectionCode(runTag, picks) {
 
 
 # ------------------------------------------------------------------- extra page CSS
+# COMPACTION (party spec 2026-07-03, Sally/Winston/Murat): this sheet loads AFTER
+# the shared ``_PICKER_PAGE_CSS`` and ONLY on the static gh-pages page, so every
+# rule here is a static-page-only cascade-override — the localhost picker (which
+# imports ``_PAGE_CSS`` alone) is untouched. Goal: collapse the tall stacked header
+# into a compact sticky 2-row control bar so the style cards get the viewport, and
+# add DISCOVERABLE clear affordances (per-slot ✕ + Clear selection).
 _EMITTER_EXTRA_CSS = """
-.version-control { display: flex; gap: 10px; align-items: center; flex-wrap: wrap;
-  margin: 6px 0; }
-.version-control fieldset { border: 2px solid #b9c3cd; border-radius: 8px;
-  padding: 4px 12px; display: flex; gap: 14px; margin: 0; }
-.version-control legend { font-weight: 700; padding: 0 6px; }
-.version-control label { cursor: pointer; font-weight: 600; }
-#version-note { font-weight: 700; color: #1d5228; }
-.codebox { display: flex; flex-direction: column; gap: 6px; margin-top: 8px; }
-#selection-code { width: 100%; min-height: 44px; font-family: monospace;
-  font-size: 0.95rem; padding: 8px; border: 2px solid #b9c3cd; border-radius: 8px;
-  resize: vertical; background: #fff; color: #1c2733; }
-#copy-code { font-size: 1rem; padding: 8px 22px; cursor: pointer; align-self: start; }
+/* --- sr-only utility (keep in the a11y tree, out of the visual flow) --- */
+.sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+  overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
+/* --- compact sticky control header --- */
+header { position: sticky; top: 0; z-index: 5; background: #fff;
+  border-bottom: 1px solid #d7dde3; box-shadow: 0 2px 6px rgba(0,0,0,0.06);
+  padding: 8px 16px 10px; margin: 0 0 6px; }
+header h1 { font-size: 1.15rem; margin: 0 12px 0 0; display: inline; }
+p.instructions { display: inline; font-size: 0.8rem; color: #4a5560; margin: 0;
+  line-height: 1.3; }
+/* keep keyboard focus + programmatic scroll clear of the sticky bar */
+main.grid, .card { scroll-margin-top: 132px; }
+
+/* one horizontal control row: versions toggle + slot chips */
+.control-row { display: flex; align-items: center; gap: 14px; flex-wrap: wrap;
+  margin-top: 6px; }
+.version-control { display: inline-flex; gap: 8px; align-items: center;
+  flex-wrap: wrap; margin: 0; }
+.version-control fieldset { border: 1px solid #b9c3cd; border-radius: 8px;
+  padding: 3px 10px; display: inline-flex; gap: 12px; margin: 0; align-items: center; }
+.version-control legend { font-weight: 700; padding: 0 4px; font-size: 0.78rem;
+  color: #4a5560; }
+.version-control label { cursor: pointer; font-weight: 600; font-size: 0.85rem; }
+/* fold the redundant note out of the visual row but keep it announced (A1) */
+#version-note { position: absolute; width: 1px; height: 1px; overflow: hidden;
+  clip: rect(0 0 0 0); white-space: nowrap; }
+
+/* inline slot chips, each with a discoverable clear ✕ */
+.slots { display: inline-flex; gap: 8px; align-items: center; flex-wrap: wrap;
+  margin: 0; }
+/* only give the wrap a display when it is SHOWN — a bare `display` here would beat
+   the UA `[hidden]{display:none}` rule and leave Slot B permanently visible even
+   in 1-version mode (the `hidden` attribute is JS-toggled via slotBWrap.hidden). */
+.slots #slot-B-wrap:not([hidden]) { display: inline-flex; }
+.slot { display: inline-flex; align-items: center; gap: 6px; padding: 3px 8px;
+  border: 1px solid #b9c3cd; border-radius: 8px; font-size: 0.85rem;
+  background: #f4f6f8; }
+.slot.filled { border-color: #1d5228; background: #eaf5ee; }
+.slot .slot-label { font-weight: 700; }
+.slot-clear { border: none; background: transparent; color: #b3541e;
+  font-weight: 700; cursor: pointer; font-size: 0.95rem; line-height: 1;
+  padding: 0 3px; border-radius: 4px; }
+.slot-clear:hover, .slot-clear:focus { color: #fff; background: #b3541e; outline: none; }
+
+/* code row: label + single-line code field + Copy + Clear selection, inline */
+.codebox { display: flex; flex-direction: row; align-items: center; gap: 8px;
+  margin-top: 8px; flex-wrap: wrap; }
+.codebox > label { font-size: 0.8rem; white-space: nowrap; margin: 0; }
+#selection-code { flex: 1 1 320px; min-width: 200px; height: 34px;
+  font-family: monospace; font-size: 0.9rem; padding: 6px 8px;
+  border: 2px solid #b9c3cd; border-radius: 8px; background: #fff; color: #1c2733; }
+#copy-code { font-size: 0.9rem; padding: 7px 18px; cursor: pointer; }
 #copy-code[aria-disabled="true"], #copy-code:disabled { cursor: not-allowed;
   opacity: 0.5; }
-#copy-why { color: #b3541e; font-weight: 600; font-size: 0.85rem; }
-#copy-status { color: #1d5228; font-weight: 700; font-size: 0.9rem; }
-@media (max-width: 520px) {
+#clear-all { font-size: 0.85rem; padding: 6px 12px; cursor: pointer;
+  background: transparent; border: 1px solid #b9c3cd; border-radius: 8px;
+  color: #33414d; }
+#clear-all:hover, #clear-all:focus { border-color: #b3541e; color: #b3541e; }
+#copy-why { color: #b3541e; font-weight: 600; font-size: 0.8rem; flex-basis: 100%;
+  margin: 0; }
+#copy-status { color: #1d5228; font-weight: 700; font-size: 0.8rem; }
+
+@media (max-width: 640px) {
+  header { position: static; }
+  main.grid, .card { scroll-margin-top: 0; }
   main.grid { grid-template-columns: 1fr; }
-  #selection-code { font-size: 0.85rem; }
+  .codebox { flex-direction: column; align-items: stretch; }
+  #selection-code { width: 100%; font-size: 0.85rem; }
 }
 """
 
@@ -338,6 +393,8 @@ def _page_js(run_tag: str) -> str:
   var noteEl = document.getElementById('version-note');
   var slotEls = { A: document.getElementById('slot-A'), B: document.getElementById('slot-B') };
   var slotBWrap = document.getElementById('slot-B-wrap');
+  var clearAllBtn = document.getElementById('clear-all');
+  var slotClearBtns = document.querySelectorAll('.slot-clear');
   var radios = document.querySelectorAll('input[name="version-count"]');
   var displayByGuide = {};
   var cards = document.querySelectorAll('.card');
@@ -369,7 +426,10 @@ def _page_js(run_tag: str) -> str:
       var valEl = slotEls[key].querySelector('.slot-value');
       valEl.textContent = guide ? (displayByGuide[guide] || guide) : '(empty)';
       slotEls[key].classList.toggle('filled', !!guide);
+      var clrBtn = slotEls[key].querySelector('.slot-clear');
+      if (clrBtn) { clrBtn.hidden = !guide; }
     }
+    clearAllBtn.hidden = !(slots.A || slots.B);
     for (var i = 0; i < cards.length; i++) {
       cards[i].classList.remove('slot-a', 'slot-b');
       cards[i].setAttribute('aria-pressed', 'false');
@@ -399,6 +459,24 @@ def _page_js(run_tag: str) -> str:
     }
   }
 
+  function clearSlot(key) {
+    // One clear code-path (Winston/Murat): mutate slots then re-enter the SAME
+    // render() — never recompute code/copy/why inline. Reached 3 ways: card
+    // re-click, per-slot ✕, Clear selection.
+    slots[key] = null;
+    statusEl.textContent = '';
+    render();
+  }
+
+  function clearAll() {
+    // Clear STYLES only — leave versionCount to the radiogroup, and null slots.B
+    // DIRECTLY (never via setVersion(1), which would fire a spurious confirm()).
+    slots.A = null;
+    slots.B = null;
+    statusEl.textContent = '';
+    render();
+  }
+
   function setVersion(n, fromCardPick) {
     if (n === 1 && slots.B) {
       if (!fromCardPick &&
@@ -415,8 +493,8 @@ def _page_js(run_tag: str) -> str:
   }
 
   function selectCard(guide) {
-    if (guide === slots.A) { slots.A = null; render(); return; }
-    if (guide === slots.B) { slots.B = null; render(); return; }
+    if (guide === slots.A) { clearSlot('A'); return; }
+    if (guide === slots.B) { clearSlot('B'); return; }
     if (!slots.A) { slots.A = guide; }
     else if (versionCount === 2 && !slots.B) { slots.B = guide; }
     else if (versionCount === 1) { versionCount = 2; slots.B = guide; syncRadios(); }
@@ -440,6 +518,12 @@ def _page_js(run_tag: str) -> str:
   for (var i = 0; i < radios.length; i++) {
     radios[i].addEventListener('change', function () { setVersion(Number(this.value), false); });
   }
+  for (var i = 0; i < slotClearBtns.length; i++) {
+    (function (btn) {
+      btn.addEventListener('click', function () { clearSlot(btn.getAttribute('data-variant')); });
+    })(slotClearBtns[i]);
+  }
+  clearAllBtn.addEventListener('click', function () { clearAll(); });
 
   copyBtn.addEventListener('click', function () {
     if (!slots.A) { return; }
@@ -493,6 +577,11 @@ def render_picker_static_html(
         "<h1>Gamma Styleguide Picker</h1>",
         '<p class="instructions">Choose a style below, then how many versions you '
         "want. Copy the selection code and paste it back to Marcus.</p>",
+        # Compact control row: versions toggle + inline slot chips (A/B) each with
+        # a discoverable clear ✕. The .slots container is NO LONGER an aria-live
+        # region (Murat): interactive ✕ buttons must not sit inside a live region;
+        # #version-note + #copy-why/#copy-status remain the announced status surfaces.
+        '<div class="control-row">',
         # A1: explicit versions control (radiogroup), count stated IN WORDS.
         '<div class="version-control">',
         '<fieldset role="radiogroup" aria-label="How many versions">',
@@ -504,23 +593,32 @@ def render_picker_static_html(
         '<span id="version-note" role="status" aria-live="polite">One version '
         "(a single deck)</span>",
         "</div>",
-        # slot bar (A/B). Slot B is hidden until 2 versions.
-        '<div class="slots" role="status" aria-live="polite">',
+        # slot chips (A/B). Slot B is hidden until 2 versions. Each filled chip
+        # exposes a native ✕ button (hidden until filled) → discoverable clear.
+        '<div class="slots">',
         '<div class="slot" id="slot-A" data-variant="A">'
         '<span class="slot-label">Version A</span> '
-        '<span class="slot-value">(empty)</span></div>',
+        '<span class="slot-value">(empty)</span>'
+        '<button type="button" class="slot-clear" data-variant="A" '
+        'aria-label="Clear Version A" hidden>✕</button></div>',
         '<span id="slot-B-wrap" hidden>'
         '<div class="slot" id="slot-B" data-variant="B">'
         '<span class="slot-label">Version B</span> '
-        '<span class="slot-value">(empty)</span></div></span>',
+        '<span class="slot-value">(empty)</span>'
+        '<button type="button" class="slot-clear" data-variant="B" '
+        'aria-label="Clear Version B" hidden>✕</button></div></span>',
         "</div>",
-        # A2: always-visible selectable code + copy button + why/status.
+        "</div>",
+        # A2: always-visible selectable code (single-line input) + copy + clear-all
+        # + why/status. Input keeps readonly + aria-live so the manual-copy fallback
+        # (focus+select) still works and the code stays announced.
         '<div class="codebox">',
-        '<label for="selection-code"><strong>Your selection code</strong></label>',
-        '<textarea id="selection-code" readonly aria-live="polite" '
-        'placeholder="Pick a style to build your code"></textarea>',
+        '<label for="selection-code"><strong>Selection code</strong></label>',
+        '<input type="text" id="selection-code" readonly aria-live="polite" '
+        'placeholder="Pick a style to build your code">',
         '<button type="button" id="copy-code" aria-disabled="true" disabled>'
         "Copy my selection code</button>",
+        '<button type="button" id="clear-all" hidden>Clear selection</button>',
         '<span id="copy-why" role="status" aria-live="polite">Pick at least one '
         "style to enable copying.</span>",
         '<span id="copy-status" role="status" aria-live="polite"></span>',
