@@ -71,5 +71,27 @@ The operator flipped Pages Source to **GitHub Actions** and shared the actual ru
 
 **What this means for our prior work:** the **prune (847→464 MB) was correct hygiene** (operator's 10-day policy + headroom) but was **not** the cause or the cure. The **maintenance routine** spec stands on its own merits (durable hygiene). The **Actions migration** is fine to keep but does NOT itself bypass `syncing_files`; its value here is that the *toggle* refreshes the broken config state.
 
+### UPDATE-3 (2026-07-03 ~21:42Z) — CONCLUSIVE: fresh deploy on healthy content STILL fails; a re-trigger does NOT clear it
+Pushed an empty commit **`68c0ee2`** on the pruned tree to force a brand-new deployment. Result (run `28684494754`, deployment `5305097936`):
+- **build job SUCCEEDED** — `upload-pages-artifact` archived + uploaded cleanly: **artifact `github-pages` = 475,325,348 bytes (~475 MB), Artifact ID 8075127392** — far under the 10 GB artifact cap.
+- **deploy job FAILED at `syncing_files`** again (`in_progress → failure` in ~30 s) — identical to deployment `5304216028`.
+
+**Therefore, DEFINITIVELY: this is not content, size, file count, or a stale trigger.** A fresh deployment on healthy, within-limits content fails identically, and **re-triggering does not clear it** (matches the community finding that retries don't help). The GitHub Pages **deploy/CDN backend is in a stuck rejecting state** for this site. The `/pages` config also read all-`null` mid-sequence (source/build_type), consistent with a corrupted/transitional Pages config state.
+
+**All code/content/push levers are now exhausted.** Remaining fixes are operator/GitHub-side ONLY:
+1. **Toggle the Pages Source** (Settings → Pages → Source: Deploy-from-a-branch ⇄ GitHub Actions, Save each way) to force a config-state refresh — the documented recovery (community #200823). Needs repo-admin / Pages:write (not our token).
+2. If the toggle doesn't recover it, **GitHub Support ticket** citing repo `jlenrique/jlenrique.github.io`, failed deployments `5304216028` + `5305097936`, runs `28680891254` + `28684494754` — backend investigation is theirs.
+3. Wait for the backend incident to clear, then re-deploy.
+
+Evidence artifacts: run logs fetched via `GET /actions/jobs/{id}/logs`; deployment statuses via `GET /deployments?environment=github-pages`.
+
+### UPDATE-4 (2026-07-03 ~23:45Z) — ✅ RESOLVED: picker is LIVE (clean unpublish → republish cleared the stuck backend)
+The Source *toggle* was infeasible, so via Claude-in-Chrome the operator + agent did a **full unpublish → republish** in Settings → Pages: **Branch → None → Save** (site unpublished, config wiped), then **Branch → main → `/ (root)` → Save** (republished from a clean slate). GitHub then ran a fresh `pages build and deployment` that **completed `success`**, and the deployment served. Verified live:
+- `https://jlenrique.github.io/` → **HTTP 200**
+- `https://jlenrique.github.io/assets/styleguide-picker/liveproof20260703185235/index.html` → **HTTP 200**, real picker content (`<title>Gamma Styleguide Picker — liveproof20260703185235</title>`, version radiogroup, selection-code box, 4 style cards) — visually confirmed rendering in-browser.
+- kept surface `concierge-part1-narrated-20260630` → 200; pruned `C1-M1-PRES-20260406` → 404 (correctly gone).
+
+**Definitive conclusion:** the failure was a **stuck GitHub Pages config/deploy backend state** (not content, size, file count, or history — proven on the healthy 467 MB tree). The **cure was a from-scratch unpublish→republish** (a superset of the toggle). Newest healthy deployment `5305928816` (sha `68c0ee2`). The earlier `error` on `5305925149` was a superseded early attempt. NOTE: the `GET /pages` REST endpoint kept returning `status/build_type: null` throughout even while the live site served 200 — that endpoint is unreliable here; **the live HTTP 200 is ground truth.** Picker goal ACCOMPLISHED.
+
 ### Follow-on: the fix is one-shot, not durable
 Manual pruning restores headroom but the publishers still never prune → the site will re-approach 1 GB. The **standing maintenance routine** (retention-prune on publish + pre-push size guard + verify-build-after-publish fail-loud + consolidate the duplicated publish helper) is fully specced at [`gh-pages-site-maintenance-routine-spec-2026-07-03.md`](../planning-artifacts/gh-pages-site-maintenance-routine-spec-2026-07-03.md), queued for a next-session `bmad-quick-dev`. This supersedes Track-1's ad-hoc verify-after-push item by consolidating it into one shared helper. Deferred-inventory entries filed for the Actions migration, image-downsize, and history-shrink follow-ons.
