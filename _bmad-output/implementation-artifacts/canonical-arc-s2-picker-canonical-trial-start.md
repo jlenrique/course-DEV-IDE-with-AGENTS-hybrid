@@ -1,7 +1,7 @@
 # Story S2 — Styleguide picker canonical at trial-start (WARN-preserving)
 
 **Arc:** Canonical Production Conversation (party record §1 S2 row + amendments; SOP-004 F-403/F-404 inherited constraints).
-**Status:** ready-for-dev · **Size:** S/M · **Gate mode:** single-gate structural (3-lane review at T11) · **Branch:** `dev/workbook-2026-07-06` (S1 landed @ `c24308f7`).
+**Status:** **DONE** (2026-07-06; full gate chain: SOP-005 → RED-first dev (18 RED) → SOP-006 + 3-lane T11 (18 patches) → RED-first remediation 18/18 (24 new witnesses) → orchestrator re-verify → **AC-L LIVE WITNESS PASS 8/8, happy-publish path** (real gh-pages publish 200 + real selection-code round-trip + walk paused-at-G1 + F-502 course field live; evidence `s2-acl-liveproof-20260706T211912Z`) → SOP-007 close) · **Size:** S/M · **Gate mode:** single-gate structural (3-lane review at T11) · **Branch:** `dev/workbook-2026-07-06` (S1 landed @ `c24308f7`).
 **Execution convention:** FRESH dev agent, RED-first, `PYTHONIOENCODING=utf-8`, xdist rule (`-n 0` confirm before triaging new parallel reds). Do not commit.
 
 ## Context (landed substrate — verified)
@@ -63,6 +63,32 @@ New test importing BOTH `styleguide_picker._VARIANT_IDS` and `cd.graph._PICK_VAR
 
 ## Out of scope
 Gary WARN-seed flip (S4) · parity comparator (S3) · G0 enrichment beats (S5) · picker HTML/emitter changes (the page is already hardened) · manifest edits (none needed) · variant vocabulary changes (F-403 forbids without lockstep ceremony).
+
+## Review Findings (T11 3-lane + SOP-006, 2026-07-06 — triaged: 0 decision-needed / 18 patch / 3 defer / 5 dismissed)
+
+**Patch batch (RED-first):**
+- [x] P1 (HIGH, edge+blind): recommendation/reuse arms must validate pickability — `_last_pick_for_course` (or narration point) filters via `_assert_pickable_guide`; deprecated/deleted last-pick ⇒ honest "no prior usable pick" degrade, NEVER a recommended dead-end that burns attempts. [marcus_spoc.py:102-154,507]
+- [x] P2 (HIGH, edge): trial-id reuse clobbers an existing run record — exists-guard at start: run.json already present for `--trial-id` ⇒ fail loud pre-compose with an error naming resume/recover as the correct verbs. (Ceremony-abort orphans have NO run.json, so the documented retry path survives.) [trial.py start path]
+- [x] P3 (MED, edge): `--selection-code` decode+pickability validated PRE-compose (decode needs only code+SSOT; the commit stays post-compose against the composed directive). [trial.py:296-326]
+- [x] P4 (MED, edge+blind+auditor): course key = `input_path.resolve()` + `os.path.normcase` posix form — same corpus across relative/absolute/drive-case spellings = one key; relative-name cross-corpus collisions eliminated. Legacy raw-key events simply won't match (honest miss). [trial.py:325,339]
+- [x] P5 (MED, edge): corrupt sidecar line must not block the ceremony — `_last_pick_for_course` catches read/parse errors ⇒ WARN + "no prior pick" (the lookup is optional). [marcus_spoc.py:695]
+- [x] P6 (MED-LOW, edge): EOFError/KeyboardInterrupt at any ceremony prompt ⇒ clean `PickerError("operator aborted the styleguide ceremony")` honoring the ERROR/exit-1 contract. [marcus_spoc.py prompts; trial.py:487-492]
+- [x] P7 (MED, edge+blind): bound `_inline_numbered_pick` with the shared attempt budget — no unbounded loops anywhere in the ceremony. [marcus_spoc.py:483-505]
+- [x] P8 (MED, blind): coherent attempt accounting — ONE budget across the ceremony; menu typos re-prompt without consuming; substantive failures consume; a successful publish retry does NOT grant a fresh full budget; option 3 not offered when unavailable; decode-reject messaging context-correct in menu arms (no "paste it again" where there is no paste). [marcus_spoc.py:544-615]
+- [x] P9 (MED, blind+auditor+F-606): versions-default narration must not promise behavior that doesn't exist — reword Beat-1 to state the recommendation verbatim (incl. its version count) and drop the false "I'll default to N versions" clause (or implement a real default; reword is the ratified-minimal choice). [marcus_spoc.py:64-99]
+- [x] P10 (LOW-MED, edge+F-604): re-digest AFTER the confirm/edit loop (covers edit-at-gate; closes the adjacent pre-existing gap); WARN loudly if an edit dropped the just-committed pick. [trial.py:342-352]
+- [x] P11 (LOW, edge): `--selection-code` with single-file `--input` ⇒ fail loud (silent drop of an explicit pick violates fail-loud). [trial.py:296]
+- [x] P12 (LOW, blind+F-603): `_last_pick_for_course` picks the latest EVENT by PARSED timestamp (`datetime.fromisoformat`), no lexicographic max, no cross-event merging. [marcus_spoc.py:125-131]
+- [x] P13 (LOW, blind): publish-failure narration scrubs/truncates the exception text (no raw URLs/tokens at the operator); keep the degrade UX. [marcus_spoc.py:~672,552-559]
+- [x] P14 (LOW, blind): unify non-URL `publish_url` sentinels into one documented `degraded:*`-family constant set (incl. the scripted literal in trial.py:319); document the field contract ("url or degraded:* sentinel"). 
+- [x] P15 (LOW, blind): fix the three weak/dead test assertions (scope the degrade-menu numbering assertion to the menu text; remove/replace the dead `len(input_calls)==2` second assert; `==` not `>=` for accept-recommended provenance shape). 
+- [x] P16 (LOW, blind): the confirm prompt says "or paste a new code" — honor it: a non-affirmative reply is treated as a fresh code attempt (fed to decode), matching the prompt. [marcus_spoc.py:411-414,471-473]
+- [x] P17 (LOW, SOP F-601): `_default_picker_preflight` requires `sys.stdin.isatty() AND sys.stdout.isatty()`; inject a no-op preflight in the three named legacy suites as belt-and-braces. 
+- [x] P18 (NIT, blind): promote `_read_pick_events` to a public reader name (keep alias). 
+
+**Defer:** interactive-abort-after-compose spend (blind#6 — F-501 reinterpretation accepted the ordering; one compose call is the bounded cost of a fail-closed ceremony; revisit only if aborts prove frequent) · F-605 → **binding S5-open precondition in the charter** (commit/re-point the g0 corpus fixture, refresh ACTIVE_TERMINAL_GATES pin, green the g0_enrichment battery BEFORE the S5 spec is authored) · AC-4's uncovered paths (default-tty arm covered by AC-L live; degrade/scripted/recover-walk/A-B-through-CD coverage accrues at S3/S8).
+
+**Dismissed:** cancelled-run picks seeding recommendations (by-design — a confirmed pick is a course-level decision; provenance shows date); F-602 (transitive zero-publish witness acceptable); pre-existing battery reds (recorded, baseline-verified); stray untracked artifacts (commit-hygiene, orchestrator handles); private-import NIT beyond P18's rename.
 
 ## T11 gates
 3-lane `bmad-code-review` on the diff; SOP-005 monitor poll pre-dispatch (must verify F-403/F-404 present in this spec — they are, above); SOP-006 at dev-complete; ruff 0-new; focused suites + full pre-existing trial/walk battery green; story flips done only after the live AC-L.

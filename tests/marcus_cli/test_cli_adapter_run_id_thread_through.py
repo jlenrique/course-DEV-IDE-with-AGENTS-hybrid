@@ -38,6 +38,9 @@ def test_start_trial_threads_effective_trial_id_to_section_02a_adapter(
             allow_offline_cost_report=True,
             runs_root=runs_root,
             confirm_fn=lambda **_kwargs: "saved-only",
+            # S2 P17 belt-and-braces: this legacy suite exercises the
+            # interactive start path — pin it pickless explicitly.
+            picker_preflight_fn=lambda **_kwargs: None,
         )
 
     assert result["status"] == "saved-only"
@@ -81,6 +84,9 @@ def test_start_trial_threads_gamma_settings_file_to_section_02a_adapter(
             allow_offline_cost_report=True,
             runs_root=runs_root,
             confirm_fn=lambda **_kwargs: "saved-only",
+            # S2 P17 belt-and-braces: this legacy suite exercises the
+            # interactive start path — pin it pickless explicitly.
+            picker_preflight_fn=lambda **_kwargs: None,
             gamma_settings_file=settings_path,
         )
 

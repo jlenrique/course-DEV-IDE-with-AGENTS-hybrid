@@ -356,3 +356,140 @@ def test_both_walks_resolution_block_lands_and_survives_reload(
 
     output = _reload_cd_contribution_from_disk(tmp_path)
     _assert_resolution_block(output, directive=directive)
+
+
+# --- S2 AC-4: walk started THROUGH the ceremony closes the F-404 loop ---------
+
+CEREMONY_PICKED_GUIDE = "hil-2026-apc-crossroads-blueprint"
+
+
+def test_walk_started_through_ceremony_binds_pick_to_cd_resolution(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """S2 AC-4 (spec `canonical-arc-s2-picker-canonical-trial-start.md`): a trial
+    started through the INTERACTIVE ceremony (`start_trial` -> injected
+    `picker_preflight_fn` -> the REAL `run_picker_preflight`) persists the pick
+    via `write_pick_to_directive`, and the walk's REAL CD graph (S1 D5 harness)
+    emits `styleguide_resolution.status == "resolved"` with `bound_guides`
+    naming exactly the picked guide. Resume makes ZERO input calls (D1)."""
+    import hashlib as _hashlib
+
+    from app.marcus.cli import trial as trial_module
+    from app.marcus.cli.marcus_spoc import run_picker_preflight
+    from app.marcus.cli.trial import start_trial
+    from app.marcus.orchestrator.picker_html_emitter import build_selection_code
+
+    monkeypatch.setenv("OPENAI_API_KEY", "sk-test")
+    monkeypatch.setenv("LANGSMITH_API_KEY", "lsv2-test")
+    monkeypatch.setenv("LANGSMITH_PROJECT", "test-project")
+    # Offline witness: the fake key must never reach the live LangSmith API
+    # (background multipart POSTs 403 loudly under an armed shell env).
+    monkeypatch.setenv("LANGSMITH_TRACING", "false")
+    monkeypatch.setenv("LANGCHAIN_TRACING_V2", "false")
+    monkeypatch.setattr(trial_module, "_load_env_if_available", lambda: None)
+    _fake_cd_llm(monkeypatch)
+
+    corpus = tmp_path / "corpus"
+    corpus.mkdir()
+    (corpus / "intro.md").write_text("body", encoding="utf-8")
+    run_dir = tmp_path / str(TRIAL_ID)
+    bundle = run_dir / "cd-source-bundle"
+    bundle.mkdir(parents=True)
+    (bundle / "extracted.md").write_text(
+        "# Corpus\n\nCeremony walk-pin corpus body.", encoding="utf-8"
+    )
+
+    def _stub_compose(*, corpus_dir, run_dir, run_id, llm=None, gamma_settings=None):
+        del llm, gamma_settings
+        run_dir.mkdir(parents=True, exist_ok=True)
+        path = run_dir / "directive.yaml"
+        path.write_text(
+            yaml.safe_dump(
+                {"run_id": str(run_id), "corpus_dir": corpus_dir.as_posix(), "sources": []},
+                sort_keys=False,
+            ),
+            encoding="utf-8",
+        )
+        return path, _hashlib.sha256(path.read_bytes()).hexdigest()
+
+    monkeypatch.setattr(trial_module, "compose_and_write", _stub_compose)
+    adapter = _HybridRealCdAdapter(bundle)
+    monkeypatch.setattr(production_runner, "ProductionDispatchAdapter", lambda: adapter)
+
+    input_calls: list[str] = []
+    code = build_selection_code(TRIAL_ID.hex, {"A": CEREMONY_PICKED_GUIDE})
+    replies = iter([code, "confirm"])
+
+    def _ceremony_input(prompt: str) -> str:
+        input_calls.append(prompt)
+        return next(replies)
+
+    def _fake_publish(**kwargs):
+        return {
+            "publish_url": "https://x.github.io/p/index.html",
+            "run_tag": kwargs["run_tag"],
+            "style_count": 8,
+        }
+
+    def _preflight(**kwargs):
+        return run_picker_preflight(
+            input_fn=_ceremony_input,
+            print_fn=lambda _m: None,
+            publish_fn=_fake_publish,
+            **kwargs,
+        )
+
+    start_trial(
+        preset="production",
+        input_path=corpus,
+        operator_id="operator_test",
+        trial_id=TRIAL_ID,
+        runs_root=tmp_path,
+        auto_confirm_directive=False,
+        confirm_fn=lambda **_k: "confirmed",
+        picker_preflight_fn=_preflight,
+        picker_events_path=tmp_path / "picks.jsonl",
+        max_specialist_calls=12,
+    )
+
+    directive = run_dir / "directive.yaml"
+    loaded = yaml.safe_load(directive.read_text(encoding="utf-8"))
+    settings = {row["variant_id"]: row["styleguide"] for row in loaded["gamma_settings"]}
+    assert settings == {"A": CEREMONY_PICKED_GUIDE}
+    pick_bytes = directive.read_bytes()
+    assert len(input_calls) == 2, "the ceremony is exactly paste + confirm"
+    assert not adapter.cd_dispatched, "start walk must pause at G1 before 4.75"
+
+    # D1: resume NEVER re-prompts — any input call below fails the test.
+    monkeypatch.setattr(
+        "builtins.input",
+        lambda *_a: pytest.fail("resume must never prompt (D1 witness)"),
+    )
+    card_payload = json.loads(
+        (run_dir / "decision-card-G1.json").read_text(encoding="utf-8")
+    )
+    verdict = OperatorVerdict(
+        trial_id=TRIAL_ID,
+        verb="approve",
+        gate_id="G1",
+        card_id=UUID(card_payload["card"]["card_id"]),
+        operator_id="operator_test",
+        decision_card_digest=card_payload["digest"],
+    )
+    production_runner.resume_production_trial(
+        trial_id=TRIAL_ID, verdict=verdict, runs_root=tmp_path
+    )
+    assert adapter.cd_dispatched, "continuation walk never dispatched cd at 4.75"
+    # P15: the former `len(input_calls) == 2` re-assert here was DEAD — the
+    # ceremony's input_fn is only wired into the START preflight and cannot be
+    # reached on resume; the monkeypatched builtins.input (pytest.fail above)
+    # is the real zero-prompt witness for the resume leg.
+    # AC-2: the pick survives resume byte-identically in the directive.
+    assert directive.read_bytes() == pick_bytes
+
+    output = _reload_cd_contribution_from_disk(tmp_path)
+    block = output.get("styleguide_resolution")
+    assert block is not None
+    assert block["status"] == "resolved"
+    assert [guide["name"] for guide in block["bound_guides"]] == [CEREMONY_PICKED_GUIDE]
+    assert block["directive_digest"] == _hashlib.sha256(pick_bytes).hexdigest()

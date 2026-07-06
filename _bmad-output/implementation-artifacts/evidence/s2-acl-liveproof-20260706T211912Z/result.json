@@ -1,0 +1,151 @@
+{
+  "trial_id": "bd869b00-49ad-47d8-907b-599cb674a45a",
+  "run_tag": "bd869b0049ad47d8907b599cb674a45a",
+  "selection_code": "SGP-bd869b0049ad47d8907b599cb674a45a-A:hil-2026-apc-crossroads-classic",
+  "course_key": "c:/users/juanl/documents/github/course-dev-ide-with-agents-hybrid/course-content/courses/tejal-apc-c1-m1-p2-trends",
+  "path_taken": "happy-publish",
+  "preflight_called": 1,
+  "prompts": [
+    {
+      "prompt": "Paste your selection code: ",
+      "reply": "SGP-bd869b0049ad47d8907b599cb674a45a-A:hil-2026-apc-crossroads-classic"
+    },
+    {
+      "prompt": "Reply 'confirm' to lock it in, or paste a new code: ",
+      "reply": "confirm"
+    }
+  ],
+  "preflight_kwargs": {
+    "run_tag": "bd869b0049ad47d8907b599cb674a45a",
+    "directive_path": "C:\\Users\\juanl\\Documents\\GitHub\\course-DEV-IDE-with-AGENTS-hybrid\\state\\config\\runs\\bd869b00-49ad-47d8-907b-599cb674a45a\\directive.yaml",
+    "out_dir": "C:\\Users\\juanl\\Documents\\GitHub\\course-DEV-IDE-with-AGENTS-hybrid\\state\\config\\runs\\bd869b00-49ad-47d8-907b-599cb674a45a",
+    "picked_by": "operator_juan",
+    "run_id": "bd869b00-49ad-47d8-907b-599cb674a45a",
+    "course": "c:/users/juanl/documents/github/course-dev-ide-with-agents-hybrid/course-content/courses/tejal-apc-c1-m1-p2-trends"
+  },
+  "pick_record": {
+    "picks": {
+      "A": "hil-2026-apc-crossroads-classic"
+    },
+    "provenance": {
+      "picked_at": "2026-07-06T21:23:01.481286+00:00",
+      "picker_version": "1.0",
+      "ssot_sha256": "6b94739ff29724cd2cf26ef25bd13d28824079d15729751d129b5488f6eb6ac5",
+      "picks": [
+        {
+          "variant_id": "A",
+          "styleguide": "hil-2026-apc-crossroads-classic"
+        }
+      ],
+      "written_by": "styleguide_picker",
+      "picked_by": "operator_juan",
+      "publish_url": "https://jlenrique.github.io/assets/styleguide-picker/bd869b0049ad47d8907b599cb674a45a/index.html",
+      "roster_sha256": "13ab058a5c894009e2197373126291c9e2d1753292ea538ba92cda697ebc316e",
+      "version_count": 1,
+      "selection_code": "SGP-bd869b0049ad47d8907b599cb674a45a-A:hil-2026-apc-crossroads-classic",
+      "run_tag": "bd869b0049ad47d8907b599cb674a45a"
+    }
+  },
+  "start_trial_result": {
+    "status": "paused-at-gate",
+    "trial_id": "bd869b00-49ad-47d8-907b-599cb674a45a",
+    "preset": "production",
+    "input": "C:/Users/juanl/Documents/GitHub/course-DEV-IDE-with-AGENTS-hybrid/course-content/courses/tejal-apc-c1-m1-p2-trends",
+    "operator_id": "operator_juan",
+    "run_registry_path": "C:/Users/juanl/Documents/GitHub/course-DEV-IDE-with-AGENTS-hybrid/state/config/runs/bd869b00-49ad-47d8-907b-599cb674a45a/run.json",
+    "cost_report_json": "C:/Users/juanl/Documents/GitHub/course-DEV-IDE-with-AGENTS-hybrid/state/config/runs/bd869b00-49ad-47d8-907b-599cb674a45a/cost-report.json",
+    "cost_report_markdown": "C:/Users/juanl/Documents/GitHub/course-DEV-IDE-with-AGENTS-hybrid/state/config/runs/bd869b00-49ad-47d8-907b-599cb674a45a/cost-report.md",
+    "langsmith_trace_status": "measured-from-langsmith",
+    "production_clone_launch_evidence": true,
+    "directive_path": "C:/Users/juanl/Documents/GitHub/course-DEV-IDE-with-AGENTS-hybrid/state/config/runs/bd869b00-49ad-47d8-907b-599cb674a45a/directive.yaml",
+    "directive_digest": "3dbe1a201d6a250d8bc2345f02f724b6c5d2f078ffa1748c17ba8e2cf26f0290",
+    "transport_kind": "cli"
+  },
+  "elapsed_s": 178.624519,
+  "publish_receipt": {
+    "http_status": 200,
+    "label": "styleguide-picker",
+    "publish_url": "https://jlenrique.github.io/assets/styleguide-picker/bd869b0049ad47d8907b599cb674a45a/index.html",
+    "run_tag": "bd869b0049ad47d8907b599cb674a45a",
+    "style_count": 8,
+    "thumbnail_count": 7,
+    "verified_live": true
+  },
+  "assertions": [
+    {
+      "assertion": "a1-publish-url-real-ghpages",
+      "pass": true,
+      "value": "https://jlenrique.github.io/assets/styleguide-picker/bd869b0049ad47d8907b599cb674a45a/index.html"
+    },
+    {
+      "assertion": "a2-publisher-verify-after-push-200",
+      "pass": true,
+      "value": {
+        "verified_live": true,
+        "http_status": 200
+      }
+    },
+    {
+      "assertion": "a3-independent-httpx-get-200",
+      "pass": true,
+      "value": {
+        "status": 200,
+        "bytes": 23454
+      }
+    },
+    {
+      "assertion": "b1-directive-gamma-settings-pick",
+      "pass": true,
+      "value": {
+        "variant_id": "A",
+        "styleguide": "hil-2026-apc-crossroads-classic"
+      }
+    },
+    {
+      "assertion": "b2-provenance-block-publish-url",
+      "pass": true,
+      "value": {
+        "publish_url": "https://jlenrique.github.io/assets/styleguide-picker/bd869b0049ad47d8907b599cb674a45a/index.html",
+        "run_tag": "bd869b0049ad47d8907b599cb674a45a",
+        "selection_code": "SGP-bd869b0049ad47d8907b599cb674a45a-A:hil-2026-apc-crossroads-classic",
+        "picked_by": "operator_juan",
+        "version_count": 1
+      }
+    },
+    {
+      "assertion": "c-sidecar-event-course-field",
+      "pass": true,
+      "value": [
+        {
+          "course": "c:/users/juanl/documents/github/course-dev-ide-with-agents-hybrid/course-content/courses/tejal-apc-c1-m1-p2-trends",
+          "dedup_key": "bd869b0049ad47d8907b599cb674a45a:d5658043fe01c9c35aa6276e4d48b04132e64af35e4ff0e0b76f83228b8e1304:A",
+          "directive_path": "C:/Users/juanl/Documents/GitHub/course-DEV-IDE-with-AGENTS-hybrid/state/config/runs/bd869b00-49ad-47d8-907b-599cb674a45a/directive.yaml",
+          "event_digest": "0e219868ecc36247977362549e0118fd3d14f84ca4066350836d94fa35ec9a7e",
+          "guide_name": "hil-2026-apc-crossroads-classic",
+          "picked_at": "2026-07-06T21:23:01.481286+00:00",
+          "run_id": "bd869b00-49ad-47d8-907b-599cb674a45a",
+          "variant_id": "A"
+        }
+      ]
+    },
+    {
+      "assertion": "d-paused-at-G1",
+      "pass": true,
+      "value": {
+        "status": "paused-at-gate",
+        "paused_gate": "G1",
+        "paused_error_tag": null,
+        "evidence": true
+      }
+    },
+    {
+      "assertion": "e-directive-digest-matches-final-bytes",
+      "pass": true,
+      "value": {
+        "trial_start_digest": "3dbe1a201d6a250d8bc2345f02f724b6c5d2f078ffa1748c17ba8e2cf26f0290",
+        "sha256_of_final_bytes": "3dbe1a201d6a250d8bc2345f02f724b6c5d2f078ffa1748c17ba8e2cf26f0290"
+      }
+    }
+  ],
+  "all_pass": true
+}

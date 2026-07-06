@@ -148,3 +148,11 @@ Full BMAD spine per story: spec → validator (where applicable) → fresh gener
 - Parity semantics note (Amelia, on the record): with a shared resolver, parity validates **input drift across time** (the F-104 instrument), not resolver logic — that is exactly what S2 exists to close and what the receipt proves is closed.
 
 W2 contract (`styleguide-binding-cd-contract-2026-07-06.md`) amended in lockstep with this addendum.
+
+---
+
+## 8. S2-CLOSE ADDENDUM — binding S5-open precondition (SOP-006 F-605, adopted 2026-07-06)
+
+**S5 (G0 enrichment canonical) may NOT open — its spec may not be authored — until the g0-enrichment substrate baseline is green:** the 13 `tests/marcus/**/test_g0_enrichment_brick*` baseline REDs trace to (a) a **never-committed corpus fixture** (`course-content/courses/studio-smoke-min` — absent on disk, never tracked; an untracked `tejal-c1m1-studio-min` exists instead), (b) substrate landed at `b59679ce` with "T11 owed", and (c) a stale `ACTIVE_TERMINAL_GATES` pin (`test_shim_parser_factory` — G0R added without updating the inventory). These reds include the **G0E gate-pause witnesses** — exactly what S5's ACs would pin against. **Precondition tasks (a small pre-S5 story or S5's T0): commit or re-point the corpus fixture; refresh the gate-inventory pin; green the g0_enrichment battery from a fresh clone.** Rationale: S5's default-flip witnesses are meaningless against a red, fixture-less baseline; SOP-001's lesson (specs authored on stale premises) applies prospectively.
+
+**S1+S2 both CLOSED with live witnesses** (S1: `c24308f7`, AC-L real dispatch PASS; S2: this close, AC-L real ceremony→publish→G1 PASS, evidence `s2-acl-liveproof-20260706T211912Z`). The picker fail-loud teeth (S4) remain gated on S3.

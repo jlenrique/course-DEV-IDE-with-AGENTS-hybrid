@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import os
 import shutil
@@ -19,11 +20,18 @@ import yaml
 
 from app.composers.section_02a.cli_adapter import compose_and_write
 from app.marcus.cli.front_door import FrontDoorError, front_door_select
+from app.marcus.cli.marcus_spoc import (
+    DEGRADED_PUBLISH_URL_SCRIPTED,
+    commit_picker_pick,
+    run_picker_preflight,
+)
+from app.marcus.orchestrator.picker_html_emitter import decode_picker_selection_code
 from app.marcus.orchestrator.production_runner import (
     recover_production_trial,
     resume_production_trial,
     run_production_trial,
 )
+from app.marcus.orchestrator.styleguide_picker import PickerError
 from app.models.state.component_selection import ComponentSelection
 from app.models.state.operator_verdict import OperatorVerdict
 from app.runtime.economics import RUNS_ROOT
@@ -31,6 +39,16 @@ from app.runtime.economics import RUNS_ROOT
 
 class DirectiveConfirmationRequiredError(RuntimeError):
     """Non-interactive trial-start without --auto-confirm-directive — refuse silent auto-accept."""
+
+
+class TrialAlreadyExistsError(RuntimeError):
+    """`trial start` with a --trial-id that already has a run record (S2 P2).
+
+    Starting again would clobber the existing walk's state; the correct verbs
+    are `trial resume` (gate pause) / `trial recover` (error pause). Ceremony
+    -abort orphans have no run.json, so the documented "re-run start" retry
+    path survives this guard.
+    """
 
 
 class EditorUnavailableError(RuntimeError):
@@ -202,6 +220,72 @@ def _write_cancellation_record(
     return target
 
 
+def _default_picker_preflight(**kwargs: Any) -> dict[str, Any] | None:
+    """Isatty-aware default for the S2 canonical picker ceremony (F-503).
+
+    Interactive means BOTH ``sys.stdin`` AND ``sys.stdout`` are ttys (P17 /
+    F-601): a tty stdin with a piped/captured stdout is a scripted shell, not
+    an operator conversation. Under a non-interactive stdio pair (pytest, CI,
+    scripted shells) the ceremony cannot run: return None — a pickless start
+    keeps today's WARN-seed staging byte-identically (AC-3), and the
+    non-interactive G0 confirm gate still fail-louds downstream with ZERO
+    publish invocations (AC-8). A real tty pair runs the full
+    :func:`run_picker_preflight` ceremony (exercised live at AC-L).
+    Injectable via ``picker_preflight_fn`` on :func:`start_trial`, mirroring
+    the ``confirm_fn`` precedent.
+    """
+
+    def _is_tty(stream: Any) -> bool:
+        return stream is not None and bool(
+            getattr(stream, "isatty", lambda: False)()
+        )
+
+    if not (_is_tty(sys.stdin) and _is_tty(sys.stdout)):
+        return None
+    return run_picker_preflight(**kwargs)
+
+
+def _course_key(input_path: Path) -> str:
+    """Canonical course/corpus identity for pick events (S2 P4).
+
+    ``resolve()`` + ``os.path.normcase`` + posix form: the same corpus reached
+    via relative/absolute/drive-case spellings yields ONE key, and relative-
+    name cross-corpus collisions are eliminated. Legacy raw-key events simply
+    won't match (honest miss)."""
+    return Path(os.path.normcase(str(input_path.resolve()))).as_posix()
+
+
+def _warn_if_pick_dropped_by_edit(directive_path: Path, picks: dict[str, str]) -> None:
+    """S2 P10: after the G0 confirm/edit loop, verify the just-committed pick
+    still stands in the directive; WARN loudly (stderr) if an edit dropped or
+    changed it. The edited directive still wins (operator authority) — this
+    is honesty, never a silent revert."""
+    try:
+        loaded = yaml.safe_load(directive_path.read_text(encoding="utf-8")) or {}
+    except (OSError, yaml.YAMLError):
+        loaded = {}
+    rows: dict[str, str] = {}
+    if isinstance(loaded, dict):
+        for item in loaded.get("gamma_settings") or []:
+            if isinstance(item, dict):
+                variant = str(item.get("variant_id") or "").strip().upper()
+                if variant:
+                    rows[variant] = str(item.get("styleguide") or "").strip()
+    dropped = {
+        variant: guide
+        for variant, guide in picks.items()
+        if rows.get(str(variant).strip().upper()) != str(guide).strip()
+    }
+    if dropped:
+        print(
+            f"WARNING: the directive edit at the G0 gate dropped or changed the "
+            f"just-committed styleguide pick {dropped}; the run will proceed "
+            f"with the EDITED directive — re-run start with a fresh pick if "
+            f"this was unintended.",
+            file=sys.stderr,
+        )
+
+
 def _load_gamma_settings_file(path: Path | None) -> list[dict[str, Any]] | None:
     if path is None:
         return None
@@ -226,11 +310,48 @@ def start_trial(
     max_specialist_calls: int | None = None,
     gamma_settings_file: Path | None = None,
     component_selection: ComponentSelection | None = None,
+    picker_preflight_fn: Callable[..., dict[str, Any] | None] | None = None,
+    selection_code: str | None = None,
+    picker_events_path: Path | None = None,
 ) -> dict[str, Any]:
     _ensure_utf8_io()
     _load_env_if_available()
     if not input_path.exists():
         raise FileNotFoundError(f"trial input path does not exist: {input_path}")
+    # S2 P2: an explicit --trial-id that already has a run record is a
+    # RESUME/RECOVER situation, not a start — starting again would clobber the
+    # walk's state. Fail loud PRE-compose. (Ceremony-abort orphans have no
+    # run.json, so the documented re-run-start retry path survives.)
+    if trial_id is not None and (runs_root / str(trial_id) / "run.json").exists():
+        raise TrialAlreadyExistsError(
+            f"trial {trial_id} already has a run record at "
+            f"{(runs_root / str(trial_id) / 'run.json').as_posix()}; starting "
+            f"again would clobber that run's state. Use 'trial resume' (gate "
+            f"pause) or 'trial recover' (error pause) to continue it, or mint "
+            f"a fresh --trial-id for a new start."
+        )
+    if selection_code is not None:
+        # S2 F-505 rider: --selection-code binds run_tag = trial_id.hex
+        # (F-504), so the trial id must be pre-minted before a code can exist.
+        # Fail loud BEFORE composition spends a live LLM call.
+        if trial_id is None:
+            raise PickerError(
+                "--selection-code requires --trial-id: the selection code binds "
+                "run_tag = trial_id.hex (F-504), so the trial id must be minted "
+                "before the code can be issued"
+            )
+        # S2 P11: a single-file --input composes no directive for the pick to
+        # land in — silently dropping an explicit pick violates fail-loud.
+        if not input_path.is_dir():
+            raise PickerError(
+                f"--selection-code requires a corpus-directory --input: the "
+                f"single-file input {input_path} composes no directive for the "
+                f"pick to land in, and an explicit pick is never silently dropped"
+            )
+        # S2 P3: decode + pickability validated PRE-compose (the decode needs
+        # only the code + the SSOT; the commit still runs post-compose against
+        # the composed directive). A stale/foreign/unpickable code aborts here.
+        decode_picker_selection_code(selection_code, expected_run_tag=trial_id.hex)
     if not allow_offline_cost_report and (
         not os.getenv("OPENAI_API_KEY") or not _has_langsmith_env()
     ):
@@ -269,6 +390,49 @@ def start_trial(
             gamma_settings=gamma_settings,
         )
 
+        # S2 canonical picker ceremony — F-501 insertion point: post-compose /
+        # pre-confirm-gate. The pick lands in THIS directive via
+        # write_pick_to_directive (F-404: the projection BOTH walks resolve),
+        # before the operator confirm gate, the run record, and any specialist
+        # dispatch. A PickerError abort leaves no run record and nothing to
+        # resume — the operator re-runs start (the hard halt is S4's).
+        pick_record: dict[str, Any] | None = None
+        if selection_code is not None:
+            # D2 scripted path (F-505): the SAME decode -> validate -> commit
+            # path as the interactive ceremony — no prompt, no publish; an
+            # invalid/stale code fails the start loudly. The CLI arg IS the
+            # operator's explicit, pre-confirmed pick.
+            pick_record = commit_picker_pick(
+                directive_path=directive_path,
+                expected_run_tag=effective_trial_id.hex,
+                publish_url=DEGRADED_PUBLISH_URL_SCRIPTED,  # P14 sentinel family
+                picked_by=operator_id,
+                code=selection_code,
+                confirmed=True,
+                events_path=picker_events_path,
+                run_id=str(effective_trial_id),
+                course=_course_key(input_path),  # P4 canonical course key
+            )
+        elif not auto_confirm_directive:
+            # D1 interactive ceremony, F-503 discriminator: gated on
+            # (not auto_confirm_directive) AND interactive — the injectable
+            # seam mirrors confirm_fn; the default is isatty-gated so a
+            # non-tty start stays pickless (WARN-seed staging preserved).
+            preflight = picker_preflight_fn or _default_picker_preflight
+            pick_record = preflight(
+                run_tag=effective_trial_id.hex,  # F-504: hyphen-free run_tag
+                directive_path=directive_path,
+                out_dir=run_dir,  # the publish receipt lands in the bundle
+                picked_by=operator_id,
+                run_id=str(effective_trial_id),
+                course=_course_key(input_path),  # F-502 identity, P4 canonical
+                events_path=picker_events_path,
+            )
+        if pick_record is not None:
+            # The pick patched the directive AFTER composition — re-digest so
+            # every downstream record attests the bytes the run actually uses.
+            directive_digest = hashlib.sha256(directive_path.read_bytes()).hexdigest()
+
         confirm = confirm_fn or _confirm_or_edit_directive
         try:
             verdict = confirm(
@@ -276,6 +440,9 @@ def start_trial(
                 auto_confirm_directive=auto_confirm_directive,
             )
         except DirectiveDeclinedError:
+            # P10/F-604: [e]dit rounds may have preceded the [x] — the
+            # cancellation record attests the post-edit bytes.
+            directive_digest = hashlib.sha256(directive_path.read_bytes()).hexdigest()
             cancel_path = _write_cancellation_record(
                 run_dir=run_dir,
                 trial_id=effective_trial_id,
@@ -295,6 +462,14 @@ def start_trial(
                 "cancellation_record": cancel_path.as_posix(),
                 "transport_kind": "cli",
             }
+        # S2 P10 / F-604: re-digest AFTER the confirm/edit loop — an [e]dit at
+        # the G0 gate changes the bytes the run actually uses, so every exit
+        # path attests the post-edit directive; WARN loudly if the edit
+        # dropped the just-committed pick (the edited directive still wins —
+        # operator authority — but never silently).
+        directive_digest = hashlib.sha256(directive_path.read_bytes()).hexdigest()
+        if pick_record is not None:
+            _warn_if_pick_dropped_by_edit(directive_path, pick_record["picks"])
         if verdict == "saved-only":
             return {
                 "status": "saved-only",
@@ -401,6 +576,7 @@ def start_trial_cli(args: argparse.Namespace) -> int:
                 else None
             ),
             component_selection=component_selection,
+            selection_code=getattr(args, "selection_code", None),
         )
     except FrontDoorError as exc:
         print(f"ERROR: {exc}", file=sys.stderr)
@@ -408,7 +584,16 @@ def start_trial_cli(args: argparse.Namespace) -> int:
     except DirectiveConfirmationRequiredError as exc:
         print(f"ERROR: {exc}", file=sys.stderr)
         return 1
+    except TrialAlreadyExistsError as exc:
+        # S2 P2: an existing run record means resume/recover, never re-start.
+        print(f"ERROR: {exc}", file=sys.stderr)
+        return 1
     except EditorUnavailableError as exc:
+        print(f"ERROR: {exc}", file=sys.stderr)
+        return 1
+    except PickerError as exc:
+        # S2: a failed/aborted styleguide pick leaves no run record and nothing
+        # to resume — surface it and let the operator re-run start.
         print(f"ERROR: {exc}", file=sys.stderr)
         return 1
     print(json.dumps(payload, sort_keys=True))
@@ -558,6 +743,17 @@ def build_trial_parser(parser: argparse.ArgumentParser) -> None:
         ),
     )
     start.add_argument(
+        "--selection-code",
+        required=False,
+        help=(
+            "Pre-minted styleguide-picker SELECTION CODE (SGP-...) to commit "
+            "non-interactively at start (S2 scripted path). Requires --trial-id "
+            "(the code binds run_tag = trial_id.hex); validated through the "
+            "same decode/commit path as the interactive ceremony and fails "
+            "loud when stale or invalid."
+        ),
+    )
+    start.add_argument(
         "--bundle",
         required=False,
         help=(
@@ -611,6 +807,7 @@ __all__ = [
     "DirectiveConfirmationRequiredError",
     "DirectiveDeclinedError",
     "EditorUnavailableError",
+    "TrialAlreadyExistsError",
     "build_trial_parser",
     "recover_trial",
     "recover_trial_cli",

@@ -1,0 +1,32 @@
+--- MARCUS ---
+────────────────────────────────────────────────────────────────
+🧑‍💼 **Marcus-SPOC:** Welcome to our kickoff meeting. Three sign-offs, then we produce:
+  1. the look — the visual style your deck will wear
+  2. the material — the source inventory we teach from
+  3. the contract — the learning objectives we sign up to
+  The known end: your finished, narrated lesson, assembled and handed off.
+🧑‍💼 **Marcus-SPOC:** First up: the look.
+  This is our first run on this material — my recommendation: two versions (A/B) so you can compare. Your pick decides; you can override to a single version.
+--- MARCUS ---
+────────────────────────────────────────────────────────────────
+🧑‍💼 **Marcus-SPOC:** Before we start, let's pick the visual style for your deck (8 styles to choose from).
+  1. Open your styleguide picker:
+     https://jlenrique.github.io/assets/styleguide-picker/bd869b0049ad47d8907b599cb674a45a/index.html
+     (it can take up to a minute to go live — if it shows a not-found page at first, wait a moment and refresh.)
+  2. Choose your style, and whether you want one version or two (A/B).
+  3. Copy the SELECTION CODE the page shows you and paste it back to me here.
+🧑‍💼 **Marcus-SPOC:** I'll read it back to you to confirm before we lock it in.
+--- PROMPT ---
+Paste your selection code: 
+--- REPLY ---
+SGP-bd869b0049ad47d8907b599cb674a45a-A:hil-2026-apc-crossroads-classic
+--- MARCUS ---
+🧑‍💼 **Marcus-SPOC:** Here's what I have — please confirm:
+  Version A: HIL 2026 APC Crossroads Classic (permanent)
+  That's 1 version. Reply 'confirm' to lock it in, or paste a new code.
+--- PROMPT ---
+Reply 'confirm' to lock it in, or paste a new code: 
+--- REPLY ---
+confirm
+--- G0-CONFIRM-GATE ---
+directive=C:\Users\juanl\Documents\GitHub\course-DEV-IDE-with-AGENTS-hybrid\state\config\runs\bd869b00-49ad-47d8-907b-599cb674a45a\directive.yaml auto=False -> scripted 'c' (confirmed)

@@ -1,0 +1,10 @@
+{
+  "trial_id": "bd869b00-49ad-47d8-907b-599cb674a45a",
+  "status": "paused-at-gate",
+  "paused_gate": "G1",
+  "paused_error_tag": null,
+  "corpus_path": "C:/Users/juanl/Documents/GitHub/course-DEV-IDE-with-AGENTS-hybrid/course-content/courses/tejal-apc-c1-m1-p2-trends",
+  "started_at": "2026-07-06T21:23:01.504133Z",
+  "production_clone_launch_evidence": true,
+  "production_clone_launch_evidence_reason": "live-specialist-call-recorded"
+}

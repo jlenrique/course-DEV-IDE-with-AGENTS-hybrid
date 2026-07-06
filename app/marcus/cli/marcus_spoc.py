@@ -22,18 +22,26 @@ from __future__ import annotations
 
 import hashlib
 import json
+import re
 from collections.abc import Callable
+from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
 from uuid import UUID
 
-from app.marcus.orchestrator.picker_html_emitter import decode_picker_selection_code
+from app.marcus.orchestrator.picker_html_emitter import (
+    build_selection_code,
+    decode_picker_selection_code,
+)
 from app.marcus.orchestrator.picker_publisher import publish_picker
 from app.marcus.orchestrator.production_runner import resume_production_trial
 from app.marcus.orchestrator.styleguide_picker import (
+    GAMMA_STYLEGUIDE_PICKS_PATH,
     PickerError,
     append_pick_event,
+    assert_pickable_guide,
     load_picker_roster,
+    read_pick_events,
     write_pick_to_directive,
 )
 from app.models.state.operator_verdict import OperatorVerdict
@@ -46,6 +54,249 @@ DEFAULT_OPERATOR_ID = "operator_juan"
 
 
 # ----------------------------------------------- styleguide-picker PRE-FLIGHT (Seam 3)
+# S2 Beat-1 (party record X1): ONE kickoff meeting, three beats — look ->
+# material -> contract — framed up front with the known end; never a surprise
+# gate N+1. Beat-1 (the look) is this ceremony; Beats 2/3 (G0E/G0R) are S5.
+_KICKOFF_SIGNOFFS = (
+    "the look — the visual style your deck will wear",
+    "the material — the source inventory we teach from",
+    "the contract — the learning objectives we sign up to",
+)
+
+
+def narrate_kickoff_beat1(
+    *,
+    course: str | None = None,
+    recommendation: dict[str, Any] | None = None,
+) -> str:
+    """Beat-1 framing for the kickoff meeting (S2 D3, party X1).
+
+    Names ALL THREE intake sign-offs and the known end up front, then states
+    the versions RECOMMENDATION verbatim (P9/F-606): A/B compare on a corpus's
+    first run; on a re-run, reuse of the last pick AT ITS OWN version count.
+    There is deliberately NO "I'll default to N versions" promise — no default
+    engine exists; the operator's actual selection decides, always.
+    """
+    del course  # named in the signature for the seam; the framing is generic
+    lines = [
+        _RULE,
+        f"{_M} Welcome to our kickoff meeting. Three sign-offs, then we produce:",
+    ]
+    lines.extend(
+        f"  {index}. {signoff}" for index, signoff in enumerate(_KICKOFF_SIGNOFFS, 1)
+    )
+    lines.append(
+        "  The known end: your finished, narrated lesson, assembled and handed off."
+    )
+    lines.append(f"{_M} First up: the look.")
+    if recommendation is None:
+        lines.append(
+            "  This is our first run on this material — my recommendation: two "
+            "versions (A/B) so you can compare. Your pick decides; you can "
+            "override to a single version."
+        )
+    else:
+        two_versions = "B" in {
+            str(label).strip().upper() for label in recommendation.get("picks", {})
+        }
+        if two_versions:
+            lines.append(
+                "  We've produced from this material before — my recommendation: "
+                "reuse your last pick, two versions (A/B) as before. Your pick "
+                "decides; you can override to a single version."
+            )
+        else:
+            lines.append(
+                "  We've produced from this material before — my recommendation: "
+                "reuse your last pick, a single version. Your pick decides; you "
+                "can override to two (A/B)."
+            )
+    return "\n".join(lines)
+
+
+def _parse_event_timestamp(value: Any) -> datetime | None:
+    """Parse a pick event's ``picked_at`` (P12/F-603): ``datetime.fromisoformat``
+    only, never lexicographic; a naive timestamp reads as UTC; unparseable → None."""
+    try:
+        parsed = datetime.fromisoformat(str(value))
+    except (TypeError, ValueError):
+        return None
+    if parsed.tzinfo is None:
+        parsed = parsed.replace(tzinfo=UTC)
+    return parsed
+
+
+def _last_pick_for_course(
+    course: str | None,
+    *,
+    events_path: str | Path | None = None,
+    ssot_path: str | Path | None = None,
+    warn_fn: Callable[[str], None] | None = None,
+) -> dict[str, Any] | None:
+    """Latest prior USABLE pick for THIS course, from the F-502 course field.
+
+    Derives EXCLUSIVELY from the additive ``course`` field on pick events —
+    NEVER by dereferencing ``directive_path`` (run-scoped and prunable, not a
+    course proxy). Legacy events without the field are honestly "no prior
+    pick". Returns ``{"picks": {variant: guide}, "picked_at": iso}`` or None.
+
+    Hardening (T11 remediation):
+
+    - P12: the latest EVENT is chosen by PARSED timestamp
+      (:func:`_parse_event_timestamp`), ties break to the LAST line in the
+      file, and ONLY that event's own commit group — the events sharing its
+      ``(picked_at, directive_path)`` — form the pick: no cross-event merging.
+    - P1: every guide in the candidate pick must still be PICKABLE
+      (SSOT-member, not deprecated, not probe — the A-M1 rule via
+      :func:`assert_pickable_guide`); an unpickable or slot-A-less last pick
+      degrades honestly to "no prior usable pick" (None) with a WARN — never
+      a recommended dead-end that burns ceremony attempts.
+    - P5: an unreadable/corrupt sidecar WARNs and degrades to None — the
+      lookup is optional and must never block the ceremony.
+    """
+    if not course:
+        return None
+    emit = warn_fn if warn_fn is not None else (lambda _msg: None)
+    path = Path(events_path) if events_path is not None else GAMMA_STYLEGUIDE_PICKS_PATH
+    try:
+        events = read_pick_events(path)
+    except (PickerError, OSError) as exc:
+        emit(
+            f"{_M} WARNING: I couldn't read the pick history ({exc}); "
+            "proceeding with no prior pick on record."
+        )
+        return None
+    matching: list[tuple[datetime, dict[str, Any]]] = []
+    for event in events:
+        if str(event.get("course") or "") != str(course):
+            continue
+        if not (event.get("variant_id") and event.get("guide_name")):
+            continue
+        stamp = _parse_event_timestamp(event.get("picked_at"))
+        if stamp is None:
+            continue
+        matching.append((stamp, event))
+    if not matching:
+        return None
+    latest_index = max(range(len(matching)), key=lambda i: (matching[i][0], i))
+    latest = matching[latest_index][1]
+    group_key = (str(latest.get("picked_at")), str(latest.get("directive_path") or ""))
+    picks = {
+        str(event["variant_id"]).strip().upper(): str(event["guide_name"]).strip()
+        for _stamp, event in matching
+        if (str(event.get("picked_at")), str(event.get("directive_path") or ""))
+        == group_key
+    }
+    if "A" not in picks:
+        # A slot-A-less pick cannot mint a selection code — honest degrade (P1).
+        return None
+    for guide in picks.values():
+        try:
+            assert_pickable_guide(guide, ssot_path=ssot_path)
+        except PickerError as exc:
+            emit(
+                f"{_M} WARNING: your last pick for this course is no longer "
+                f"usable ({exc}); proceeding with no prior usable pick."
+            )
+            return None
+    return {"picks": picks, "picked_at": str(latest.get("picked_at"))}
+
+
+def narrate_pick_recommendation(
+    recommendation: dict[str, Any], *, ssot_path: str | Path | None = None
+) -> str:
+    """Provenance-rich pre-selection (AC-7): recommend the last-used-per-course
+    pick BY NAME with when-it-was-picked provenance. Explicit confirm is still
+    required downstream — no auto-accept, no timeout, no bypass."""
+    index = _roster_index(ssot_path)
+    picks = recommendation["picks"]
+    named = [
+        str(index.get(picks[label], {}).get("display_name") or picks[label])
+        for label in sorted(picks)
+    ]
+    return (
+        f"{_M} My recommendation: reuse {' + '.join(named)} — your last pick for "
+        f"this course (picked {recommendation['picked_at']}). Reply 'recommended' "
+        f"to accept it (I'll still read it back for your confirm), or paste a "
+        f"fresh selection code from the page."
+    )
+
+
+# P13: the publish exception is narrated to the OPERATOR — scrub URL/token-shaped
+# substrings (a gh-pages push error can embed a remote URL with credentials) and
+# truncate, keeping the exception class name for diagnosis.
+_NARRATION_URL_RE = re.compile(r"https?://\S+")
+_NARRATION_TOKEN_RE = re.compile(
+    r"\b(?:gh[pousr]_[A-Za-z0-9]{6,}|github_pat_[A-Za-z0-9_]{6,}|sk-[A-Za-z0-9_\-]{8,})\b"
+)
+_MAX_NARRATED_ERROR_LEN = 160
+
+
+def _scrub_error_for_narration(error: BaseException) -> str:
+    """Operator-safe rendering of an exception (P13): no raw URLs, no
+    token-shaped substrings, bounded length, class name preserved."""
+    text = f"{type(error).__name__}: {error}".strip().rstrip(":").strip()
+    text = _NARRATION_URL_RE.sub("<url redacted>", text)
+    text = _NARRATION_TOKEN_RE.sub("<token redacted>", text)
+    if len(text) > _MAX_NARRATED_ERROR_LEN:
+        text = text[:_MAX_NARRATED_ERROR_LEN] + "… (truncated)"
+    return text
+
+
+def narrate_picker_publish_degrade(
+    error: BaseException, *, recommendation: dict[str, Any] | None = None
+) -> str:
+    """Publish-flake degrade narration (S2 D3): numbered ways forward, with an
+    honest recommendation — never a silent fallback. Option 3 (reuse last
+    pick) is OFFERED only when a usable prior pick exists (P8) — an
+    unavailable option is not a menu row. The exception text is scrubbed
+    before narration (P13)."""
+    ways = "Three ways forward:" if recommendation is not None else "Two ways forward:"
+    lines = [
+        _RULE,
+        f"{_M} I couldn't publish the visual picker page "
+        f"({_scrub_error_for_narration(error)}). {ways}",
+        "  1. Retry the publish.",
+        "  2. I'll list the styles right here as text — same styles, same "
+        "selection codes; you just won't see thumbnails.",
+    ]
+    if recommendation is not None:
+        picked = ", ".join(
+            f"{label}: {guide}" for label, guide in sorted(recommendation["picks"].items())
+        )
+        lines.append(
+            f"  3. Reuse your last pick for this course ({picked}, picked "
+            f"{recommendation['picked_at']})."
+        )
+        lines.append(
+            f"{_M} My recommendation: option 3 — your last pick still stands."
+        )
+    else:
+        lines.append(
+            f"{_M} My recommendation: option 2 — the text list gets us moving now."
+        )
+    return "\n".join(lines)
+
+
+def narrate_inline_style_list(roster: list[dict[str, Any]]) -> str:
+    """Inline TEXT roster for the degraded path (F-506(a)): the SAME guides as
+    the SSOT roster, same selection-code grammar downstream, honest about the
+    missing thumbnails."""
+    lines = [
+        f"{_M} Here are your styles as a text list (no thumbnails in this "
+        "mode — honest heads-up):",
+    ]
+    lines.extend(
+        f"  {index}. {entry['display_name']} ({entry['name']}) — "
+        f"{entry['distinguishing']}"
+        for index, entry in enumerate(roster, 1)
+    )
+    lines.append(
+        f"{_M} Give me a number for Version A (and optionally one for Version B)."
+    )
+    return "\n".join(lines)
+
+
 def narrate_picker_preflight(
     publish_url: str, run_tag: str, *, style_count: int | None = None
 ) -> str:
@@ -135,8 +386,13 @@ def commit_picker_pick(
     ssot_path: str | Path | None = None,
     events_path: str | Path | None = None,
     run_id: str | None = None,
+    course: str | None = None,
 ) -> dict[str, Any]:
     """On CONFIRM: write the directive + append the sidecar with A7 provenance.
+
+    ``course`` (S2 F-502, additive) stamps the corpus/course identity onto the
+    sidecar pick events so "last-used-per-course" recommendations derive from
+    the event itself, never from the run-scoped ``directive_path``.
 
     Threads the full provenance chain (who / from-url / roster content-hash /
     resolved ids + version count / the code itself) into the directive's
@@ -196,11 +452,384 @@ def commit_picker_pick(
         run_id=run_id,
         events_path=events_path,
         dedup_key=stable_dedup,
+        course=course,
     )
     return {"picks": derived, "provenance": provenance}
 
 
 _AFFIRMATIVE = frozenset({"confirm", "confirmed", "yes", "y", "lock it in", "lock"})
+# Accept-recommended vocabulary (F-506(b)): accepting the recommendation mints
+# the code via `build_selection_code` and flows through the SAME
+# decode -> echo -> confirm -> commit path as a pasted code.
+_ACCEPT_RECOMMENDED = frozenset({"recommended", "recommend", "rec", "reuse"})
+
+# ------------------------------------------------------------ publish_url contract
+# P14: the provenance's `publish_url` field is EITHER the real https URL of the
+# published picker page OR a member of this documented `degraded:*` sentinel
+# family — an arm that never published a page must say so honestly, and every
+# no-page sentinel shares the `degraded:` prefix so consumers can test for it.
+DEGRADED_PUBLISH_URL_PREFIX = "degraded:"
+DEGRADED_PUBLISH_URL_INLINE_LIST = "degraded:inline-text-list (no picker page published)"
+DEGRADED_PUBLISH_URL_REUSE_LAST_PICK = "degraded:reuse-last-pick (no picker page published)"
+DEGRADED_PUBLISH_URL_SCRIPTED = (
+    "degraded:scripted-selection-code (no picker page published)"
+)
+
+# P7/P8: menu typos re-prompt WITHOUT consuming the shared attempt budget, but
+# every typo loop is still bounded by this cap — no unbounded loops anywhere in
+# the ceremony.
+_MAX_FREE_REPROMPTS = 10
+
+
+class _CeremonyBudget:
+    """ONE shared attempt budget across the whole ceremony (P8).
+
+    Substantive failures consume an attempt: a decode-rejected code, a
+    non-affirmed echo, a failed publish retry, a failed code mint, an inline
+    pass without slot A. Menu typos re-prompt for free (bounded by
+    :data:`_MAX_FREE_REPROMPTS`, P7). A successful publish retry does NOT
+    refresh the budget — the surviving remainder carries into the paste loop.
+    """
+
+    def __init__(self, max_attempts: int) -> None:
+        self.total = max(1, int(max_attempts))
+        self.remaining = self.total
+
+    def consume(self) -> None:
+        self.remaining -= 1
+
+    @property
+    def exhausted(self) -> bool:
+        return self.remaining <= 0
+
+
+def _read_reply(input_fn: Callable[[str], str], prompt: str) -> str:
+    """Read one operator reply; EOF/Ctrl-C at ANY ceremony prompt becomes a
+    clean fail-loud :class:`PickerError` (P6 — honors the ERROR/exit-1 contract)."""
+    try:
+        return input_fn(prompt)
+    except (EOFError, KeyboardInterrupt) as exc:
+        raise PickerError("operator aborted the styleguide ceremony") from exc
+
+
+def _decode_reject_message(exc: PickerError, *, pasted: bool) -> str:
+    """Context-correct decode-reject messaging (P8): only a PASTED code earns
+    'paste it again'; a minted code (inline list / reuse / recommended) never
+    involved a paste."""
+    if pasted:
+        return f"{_M} That code didn't work: {exc}. Please paste it again."
+    return f"{_M} That pick can't be locked in: {exc}."
+
+
+def _confirm_codes(
+    *,
+    code: str,
+    pasted: bool,
+    budget: _CeremonyBudget,
+    run_tag: str,
+    directive_path: str | Path,
+    publish_url: str,
+    picked_by: str,
+    input_fn: Callable[[str], str],
+    print_fn: Callable[[str], None],
+    ssot_path: str | Path | None,
+    events_path: str | Path | None,
+    run_id: str | None,
+    course: str | None,
+) -> dict[str, Any] | None:
+    """Shared ceremony tail: decode + echo -> explicit affirmative -> commit.
+
+    EVERY commit arm (pasted code, accept-recommended, inline text list,
+    reuse-last-pick) funnels through this ONE tail, so the committed directive
+    shape is identical by construction (F-506(b)). A NON-affirmative reply at
+    the confirm prompt is fed back to decode as a fresh code (P16 — the prompt
+    says "or paste a new code" and we honor it). Every substantive failure
+    (decode reject, declined echo) consumes ONE shared attempt (P8). Returns
+    the commit record, or None once an attempt was consumed (the caller
+    re-surfaces its own prompt/menu if budget remains)."""
+    while True:
+        try:
+            _picks, echo = decode_and_echo_pick(
+                code, expected_run_tag=run_tag, ssot_path=ssot_path
+            )
+        except PickerError as exc:
+            # Rejected AT DECODE — a stale/foreign/malformed/unpickable code
+            # never reaches commit.
+            print_fn(_decode_reject_message(exc, pasted=pasted))
+            budget.consume()
+            return None
+        print_fn(echo)
+        answer = _read_reply(
+            input_fn, "Reply 'confirm' to lock it in, or paste a new code: "
+        ).strip()
+        if answer.lower() in _AFFIRMATIVE:
+            return commit_picker_pick(
+                directive_path=directive_path,
+                expected_run_tag=run_tag,
+                publish_url=publish_url,
+                picked_by=picked_by,
+                code=code,
+                confirmed=True,
+                ssot_path=ssot_path,
+                events_path=events_path,
+                run_id=run_id,
+                course=course,
+            )
+        budget.consume()
+        if budget.exhausted or not answer:
+            return None
+        # P16: the non-affirmative reply IS the fresh code for the next attempt.
+        code = answer
+        pasted = True
+
+
+def _paste_confirm_commit_loop(
+    *,
+    run_tag: str,
+    directive_path: str | Path,
+    publish_url: str,
+    picked_by: str,
+    input_fn: Callable[[str], str],
+    print_fn: Callable[[str], None],
+    ssot_path: str | Path | None,
+    events_path: str | Path | None,
+    run_id: str | None,
+    course: str | None,
+    budget: _CeremonyBudget,
+    recommendation: dict[str, Any] | None = None,
+) -> dict[str, Any]:
+    """The paste-back loop: read a code (or 'recommended'), echo, confirm, commit.
+
+    Runs on the ONE shared ceremony budget (P8): a decode-rejected code, a
+    declined echo, or a failed recommendation mint each consume an attempt."""
+    prompt = "Paste your selection code: "
+    if recommendation is not None:
+        prompt = (
+            "Paste your selection code (or reply 'recommended' to accept my "
+            "recommendation): "
+        )
+    while not budget.exhausted:
+        reply = _read_reply(input_fn, prompt).strip()
+        code, pasted = reply, True
+        if recommendation is not None and reply.lower() in _ACCEPT_RECOMMENDED:
+            try:
+                # F-506(b): pre-fill the paste — mint through the Python twin,
+                # then the identical decode -> echo -> confirm -> commit path.
+                code = build_selection_code(run_tag, recommendation["picks"])
+                pasted = False
+            except PickerError as exc:
+                print_fn(f"{_M} I couldn't mint your last pick into a code: {exc}")
+                budget.consume()
+                continue
+        record = _confirm_codes(
+            code=code,
+            pasted=pasted,
+            budget=budget,
+            run_tag=run_tag,
+            directive_path=directive_path,
+            publish_url=publish_url,
+            picked_by=picked_by,
+            input_fn=input_fn,
+            print_fn=print_fn,
+            ssot_path=ssot_path,
+            events_path=events_path,
+            run_id=run_id,
+            course=course,
+        )
+        if record is not None:
+            return record
+        # Attempt consumed inside _confirm_codes — loop while budget remains.
+    raise PickerError(
+        f"no confirmed styleguide pick after {budget.total} attempts; pre-flight "
+        f"aborted without writing the directive"
+    )
+
+
+def _inline_numbered_pick(
+    roster: list[dict[str, Any]],
+    *,
+    budget: _CeremonyBudget,
+    input_fn: Callable[[str], str],
+    print_fn: Callable[[str], None],
+) -> dict[str, str] | None:
+    """Numbered text pick over the SSOT roster (degraded path). Slot A is
+    required — the selection-code grammar the commit path mints needs it.
+
+    Bounded (P7): number typos re-prompt free up to :data:`_MAX_FREE_REPROMPTS`
+    (then fail loud); a completed pass WITHOUT slot A is a substantive failure
+    that consumes a shared attempt (P8). Returns None when the shared budget is
+    exhausted (the caller's loop then raises the final PickerError)."""
+    free = _MAX_FREE_REPROMPTS
+    while True:
+        picks: dict[str, str] = {}
+        for variant in ("A", "B"):
+            while True:
+                raw = _read_reply(
+                    input_fn, f"Style {variant} number (blank for none): "
+                ).strip()
+                if not raw:
+                    break
+                if raw.isdigit() and 1 <= int(raw) <= len(roster):
+                    picks[variant] = roster[int(raw) - 1]["name"]
+                    break
+                free -= 1
+                if free <= 0:
+                    raise PickerError(
+                        "too many invalid replies at the inline style menu; "
+                        "ceremony aborted"
+                    )
+                print_fn(f"{_M} invalid choice {raw!r}; enter 1-{len(roster)} or blank")
+        if picks.get("A"):
+            return picks
+        budget.consume()
+        if budget.exhausted:
+            return None
+        print_fn(f"{_M} Version A is required for a selection code — let's try again.")
+
+
+def _degraded_publish_pick(
+    *,
+    error: BaseException,
+    run_tag: str,
+    directive_path: str | Path,
+    out_dir: str | Path,
+    picked_by: str,
+    input_fn: Callable[[str], str],
+    print_fn: Callable[[str], None],
+    publish_fn: Callable[..., dict[str, Any]],
+    ssot_path: str | Path | None,
+    events_path: str | Path | None,
+    run_id: str | None,
+    course: str | None,
+    include_probes: bool,
+    site_repo: str | None,
+    token: str | None,
+    recommendation: dict[str, Any] | None,
+    budget: _CeremonyBudget,
+) -> dict[str, Any]:
+    """Publish-flake degrade (S2 D3): numbered options = retry publish / inline
+    TEXT list from the SSOT / reuse last pick with provenance (offered only
+    when a usable prior pick exists, P8). Every arm commits through the SAME
+    `commit_picker_pick` shape, on the ONE shared budget (P8): failed retries,
+    failed mints, rejected/declined codes and A-less inline passes consume;
+    menu typos re-prompt free (bounded, P7); a successful publish retry does
+    NOT refresh the budget."""
+    roster = load_picker_roster(
+        include_probes=include_probes, ssot_path=ssot_path, events_path=events_path
+    )
+    commit_kwargs: dict[str, Any] = {
+        "run_tag": run_tag,
+        "directive_path": directive_path,
+        "picked_by": picked_by,
+        "input_fn": input_fn,
+        "print_fn": print_fn,
+        "ssot_path": ssot_path,
+        "events_path": events_path,
+        "run_id": run_id,
+        "course": course,
+    }
+    menu_prompt = (
+        "Choose 1 (retry publish), 2 (inline text list), or 3 (reuse last pick): "
+        if recommendation is not None
+        else "Choose 1 (retry publish) or 2 (inline text list): "
+    )
+    free = _MAX_FREE_REPROMPTS
+    while not budget.exhausted:
+        print_fn(narrate_picker_publish_degrade(error, recommendation=recommendation))
+        choice = _read_reply(input_fn, menu_prompt).strip()
+        if choice == "1":
+            try:
+                record = publish_fn(
+                    run_tag=run_tag,
+                    out_dir=out_dir,
+                    ssot_path=ssot_path,
+                    include_probes=include_probes,
+                    site_repo=site_repo,
+                    token=token,
+                )
+            except Exception as exc:  # still down — re-narrate honestly
+                error = exc
+                budget.consume()  # a failed retry is substantive (P8)
+                continue
+            publish_url = str(record["publish_url"])
+            print_fn(
+                narrate_picker_preflight(
+                    publish_url, run_tag, style_count=record.get("style_count")
+                )
+            )
+            if recommendation is not None:
+                print_fn(
+                    narrate_pick_recommendation(recommendation, ssot_path=ssot_path)
+                )
+            # P8: the surviving budget carries over — a successful retry does
+            # NOT grant a fresh full budget.
+            return _paste_confirm_commit_loop(
+                publish_url=publish_url,
+                budget=budget,
+                recommendation=recommendation,
+                **commit_kwargs,
+            )
+        if choice == "2":
+            print_fn(narrate_inline_style_list(roster))
+            picks = _inline_numbered_pick(
+                roster, budget=budget, input_fn=input_fn, print_fn=print_fn
+            )
+            if picks is None:
+                continue  # shared budget exhausted — the while exits to the raise
+            try:
+                code = build_selection_code(run_tag, picks)
+            except PickerError as exc:
+                print_fn(f"{_M} That pick can't mint a selection code: {exc}")
+                budget.consume()
+                continue
+            record = _confirm_codes(
+                code=code,
+                pasted=False,
+                budget=budget,
+                publish_url=DEGRADED_PUBLISH_URL_INLINE_LIST,
+                **commit_kwargs,
+            )
+            if record is not None:
+                return record
+            continue
+        if choice == "3" and recommendation is not None:
+            try:
+                code = build_selection_code(run_tag, recommendation["picks"])
+            except PickerError as exc:
+                print_fn(f"{_M} I couldn't mint your last pick into a code: {exc}")
+                budget.consume()
+                continue
+            record = _confirm_codes(
+                code=code,
+                pasted=False,
+                budget=budget,
+                publish_url=DEGRADED_PUBLISH_URL_REUSE_LAST_PICK,
+                **commit_kwargs,
+            )
+            if record is not None:
+                return record
+            continue
+        # Menu typo (including '3' when no usable prior pick exists — option 3
+        # is not offered then, P8): re-prompt WITHOUT consuming, bounded by the
+        # free-reprompt cap (P7).
+        if choice == "3":
+            print_fn(
+                f"{_M} There's no prior usable pick on record for this course — "
+                "choose 1 or 2."
+            )
+        elif recommendation is not None:
+            print_fn(f"{_M} I need 1, 2, or 3.")
+        else:
+            print_fn(f"{_M} I need 1 or 2.")
+        free -= 1
+        if free <= 0:
+            raise PickerError(
+                "too many invalid replies at the picker degrade menu; ceremony aborted"
+            )
+    raise PickerError(
+        f"picker publish degraded and no pick was confirmed within {budget.total} "
+        f"attempts; pre-flight aborted without writing the directive"
+    )
 
 
 def run_picker_preflight(
@@ -219,60 +848,81 @@ def run_picker_preflight(
     site_repo: str | None = None,
     token: str | None = None,
     max_attempts: int = 3,
+    course: str | None = None,
 ) -> dict[str, Any] | None:
     """The enforced pre-flight product path (runs BEFORE G1) — the ONE real caller.
 
-    Ties the seam end-to-end: publish the picker for THIS ``run_tag`` → surface the
-    url via :func:`narrate_picker_preflight` → read a pasted selection code → decode
-    + echo via :func:`decode_and_echo_pick` → REQUIRE an explicit affirmative
-    confirm → only then :func:`commit_picker_pick` (with ``confirmed=True``). A
-    stale/foreign or malformed code is rejected AT DECODE, before any commit. If no
-    valid code is confirmed within ``max_attempts``, raises :class:`PickerError`
-    without writing the directive. All I/O is via injectable ``input_fn`` /
-    ``print_fn`` / ``publish_fn`` so the path is fully testable offline.
+    S2: the kickoff meeting's Beat-1. Frames the three intake sign-offs + the
+    known end (:func:`narrate_kickoff_beat1`), publishes the picker for THIS
+    ``run_tag`` → surfaces the url via :func:`narrate_picker_preflight` (plus a
+    provenance-rich last-used-per-course recommendation when ``course`` has a
+    prior pick event — F-502; explicit confirm still required) → reads a pasted
+    selection code (or 'recommended', minted via ``build_selection_code``,
+    F-506(b)) → decode + echo via :func:`decode_and_echo_pick` → REQUIRE an
+    explicit affirmative confirm → only then :func:`commit_picker_pick` (with
+    ``confirmed=True``). A stale/foreign or malformed code is rejected AT
+    DECODE, before any commit. A publish failure degrades to the numbered
+    retry / inline-text-list / reuse-last-pick options
+    (:func:`narrate_picker_publish_degrade`) — every arm commits through the
+    SAME path. ``max_attempts`` funds ONE shared budget across the whole
+    ceremony (P8): substantive failures consume it wherever they happen; menu
+    typos re-prompt free (bounded, P7). If no valid code is confirmed within
+    the budget, raises :class:`PickerError` without writing the directive.
+    EOF/Ctrl-C at any prompt aborts cleanly as a :class:`PickerError` (P6).
+    All I/O is via injectable ``input_fn`` / ``print_fn`` / ``publish_fn`` so
+    every path is fully testable offline.
     """
-    record = publish_fn(
-        run_tag=run_tag,
-        out_dir=out_dir,
-        ssot_path=ssot_path,
-        include_probes=include_probes,
-        site_repo=site_repo,
-        token=token,
+    recommendation = _last_pick_for_course(
+        course, events_path=events_path, ssot_path=ssot_path, warn_fn=print_fn
     )
+    print_fn(narrate_kickoff_beat1(course=course, recommendation=recommendation))
+    budget = _CeremonyBudget(max_attempts)
+    commit_kwargs: dict[str, Any] = {
+        "run_tag": run_tag,
+        "directive_path": directive_path,
+        "picked_by": picked_by,
+        "input_fn": input_fn,
+        "print_fn": print_fn,
+        "ssot_path": ssot_path,
+        "events_path": events_path,
+        "run_id": run_id,
+        "course": course,
+    }
+    try:
+        record = publish_fn(
+            run_tag=run_tag,
+            out_dir=out_dir,
+            ssot_path=ssot_path,
+            include_probes=include_probes,
+            site_repo=site_repo,
+            token=token,
+        )
+    except Exception as exc:
+        # gh-pages flake: honest numbered degrade (S2 D3) — never a silent skip.
+        return _degraded_publish_pick(
+            error=exc,
+            out_dir=out_dir,
+            publish_fn=publish_fn,
+            include_probes=include_probes,
+            site_repo=site_repo,
+            token=token,
+            recommendation=recommendation,
+            budget=budget,
+            **commit_kwargs,
+        )
     publish_url = str(record["publish_url"])
     print_fn(
         narrate_picker_preflight(
             publish_url, run_tag, style_count=record.get("style_count")
         )
     )
-    for _attempt in range(max_attempts):
-        code = input_fn("Paste your selection code: ").strip()
-        try:
-            _picks, echo = decode_and_echo_pick(
-                code, expected_run_tag=run_tag, ssot_path=ssot_path
-            )
-        except PickerError as exc:
-            # Rejected AT DECODE — a stale/foreign/malformed code never reaches commit.
-            print_fn(f"{_M} That code didn't work: {exc}. Please paste it again.")
-            continue
-        print_fn(echo)
-        answer = input_fn("Reply 'confirm' to lock it in, or paste a new code: ").strip()
-        if answer.lower() in _AFFIRMATIVE:
-            return commit_picker_pick(
-                directive_path=directive_path,
-                expected_run_tag=run_tag,
-                publish_url=publish_url,
-                picked_by=picked_by,
-                code=code,
-                confirmed=True,
-                ssot_path=ssot_path,
-                events_path=events_path,
-                run_id=run_id,
-            )
-        # Not affirmative — treat the reply as a fresh code on the next loop.
-    raise PickerError(
-        f"no confirmed styleguide pick after {max_attempts} attempts; pre-flight "
-        f"aborted without writing the directive"
+    if recommendation is not None:
+        print_fn(narrate_pick_recommendation(recommendation, ssot_path=ssot_path))
+    return _paste_confirm_commit_loop(
+        publish_url=publish_url,
+        budget=budget,
+        recommendation=recommendation,
+        **commit_kwargs,
     )
 
 
@@ -549,12 +1199,20 @@ def main(argv: list[str] | None = None) -> int:
 
 __all__ = [
     "DEFAULT_OPERATOR_ID",
+    "DEGRADED_PUBLISH_URL_INLINE_LIST",
+    "DEGRADED_PUBLISH_URL_PREFIX",
+    "DEGRADED_PUBLISH_URL_REUSE_LAST_PICK",
+    "DEGRADED_PUBLISH_URL_SCRIPTED",
     "build_operator_verdict_kwargs",
     "commit_picker_pick",
     "decode_and_echo_pick",
     "main",
     "narrate_gate",
+    "narrate_inline_style_list",
+    "narrate_kickoff_beat1",
+    "narrate_pick_recommendation",
     "narrate_picker_preflight",
+    "narrate_picker_publish_degrade",
     "run_marcus_spoc",
     "run_picker_preflight",
 ]

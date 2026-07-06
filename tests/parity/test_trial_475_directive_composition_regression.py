@@ -206,6 +206,8 @@ def test_trial_475_edit_path_re_pins_role_primary(
         allow_offline_cost_report=True,
         runs_root=runs_root,
         confirm_fn=_confirm,
+        # S2 P17 belt-and-braces: interactive-path legacy suite — pin pickless.
+        picker_preflight_fn=lambda **_kwargs: None,
     )
     directive_path = Path(payload["directive_path"])
     composed = yaml.safe_load(directive_path.read_text(encoding="utf-8"))
