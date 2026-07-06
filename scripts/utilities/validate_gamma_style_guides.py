@@ -19,6 +19,7 @@ Enforces (spec §2):
 from __future__ import annotations
 
 import argparse
+import re
 import sys
 from pathlib import Path
 from typing import Any
@@ -35,7 +36,7 @@ from app.specialists.gary._act import (  # noqa: E402
     IMAGE_SOURCE_VALUES,
     IMAGE_STYLE_PRESET_VALUES,
     PRODUCTION_MODE_VALUES,
-    TEXT_AMOUNT_VALUES,
+    TEXT_AMOUNT_UI_VALUES,
     TEXT_LANGUAGE_VALUES,
     TEXT_MODE_VALUES,
 )
@@ -55,10 +56,15 @@ from app.specialists.gary.styleguide_library import (  # noqa: E402
     scripted_entries,
 )
 
+# Lifecycle marking (session-07 green-light A1, Winston + Dan converged, BLOCKING):
+# the candidate-vs-permanent lifecycle is SCHEMA, not convention. A record absent a
+# lifecycle is treated as `candidate` (the safe state is the lazy state) and WARNED
+# loudly; an explicit `candidate` must carry its promotion contract fields.
+_LIFECYCLE_VALUES: frozenset[str] = frozenset({"candidate", "permanent", "deprecated"})
+
 # Frozen-enum reuse: {resolved base key -> allowed value set}. Sourced from _act.py.
 _ENUM_CHECKS: dict[str, frozenset[str]] = {
     "text_mode": TEXT_MODE_VALUES,
-    "amount": TEXT_AMOUNT_VALUES,
     "language": TEXT_LANGUAGE_VALUES,
     "image_style_preset": IMAGE_STYLE_PRESET_VALUES,
     "image_model": IMAGE_MODEL_VALUES,
@@ -75,6 +81,208 @@ def _is_present(value: Any) -> bool:
     if isinstance(value, (list, tuple, set, dict)):
         return bool(value)
     return True
+
+
+# --- AC-5: prose-vs-param non-contradiction (advances the filed follow-on
+#     `gamma-prose-vs-param-noncontradiction-validator`). Conservative first cut:
+#     CONTRADICTION with a structured param is an ERROR; mere REDUNDANCY with Gary's
+#     hardcoded card rule is a WARN. Token matching is case-insensitive substring on the
+#     joined prose. Extending the rule-set stays under the filed follow-on. -------------
+_ADDITIONAL_INSTRUCTIONS_TAG = "gamma.styleguide.additional-instructions-invalid"
+_PROSE_CONTRADICTS_TAG = "gamma.prose.contradicts-param"
+_PROSE_ECHOES_TAG = "gamma.prose.echoes-param"
+# Non-photographic presets (everything real except `photorealistic`; `custom` is
+# author-defined free-text so it is intentionally excluded from the axis).
+_NONPHOTO_PRESETS = frozenset({"illustration", "abstract", "3D", "lineArt"})
+# High-precision tokens matched with a LEADING word boundary (``\btoken``) so plurals/
+# inflections are caught (photograph → photographs) but mid-word bleed is NOT (telephoto,
+# photosynthesis, photocopy). Ambiguous single words that collide with content vocabulary
+# (bare ``photo``, ``vector``, ``sketch``) are deliberately omitted — precision over
+# recall for a hard write-gate ERROR (code-review A). Extending stays under the filed
+# follow-on `gamma-prose-vs-param-noncontradiction-validator`.
+_PROSE_PHOTO_TOKENS = ("photorealistic", "photo-realistic", "photograph", "photographic")
+_PROSE_ILLUSTRATION_TOKENS = (
+    "illustration", "illustrated", "line art", "line-art", "lineart",
+    "vector illustration", "vector art", "vector graphic", "cartoon", "hand-drawn",
+)
+_PROSE_STOCK_PHOTO_TOKENS = (
+    "stock photo", "stock image", "stock imagery", "unsplash", "real photograph",
+)
+_PROSE_CARD_RULE_TOKENS = (
+    "one card per section", "one card per", "do not add a cover", "do not merge",
+    "do not split", "leading heading", "verbatim",
+)
+# Best-effort same-clause negation guard so prose that FORBIDS the wrong medium
+# ("never use photographs; keep everything illustrated") is not misread as asserting it.
+# NOT a general negation solver — deliberately conservative (per repo guidance that
+# bag-of-words negation must never be the sole live guard on generative text).
+_NEGATION_RE = re.compile(
+    r"\b(no|not|never|avoid|without|don't|dont|exclude|excluding|neither|nor|non)\b"
+)
+
+
+def _clause_prefix(prose: str, idx: int) -> str:
+    """The (up to 40 chars of) text in the same clause immediately before ``idx``."""
+    return re.split(r"[.;:!?]", prose[:idx])[-1][-40:]
+
+
+def _prose_positively_asserts(prose: str, tokens: tuple[str, ...]) -> bool:
+    """True iff ``prose`` (lowercased) POSITIVELY asserts any token — a leading-word-
+    boundary match that is NOT negated within the same clause."""
+    for token in tokens:
+        for match in re.finditer(r"\b" + re.escape(token), prose):
+            if not _NEGATION_RE.search(_clause_prefix(prose, match.start())):
+                return True
+    return False
+
+
+def _record_additional_instructions(record: dict[str, Any]) -> Any:
+    return (record.get("prompt_configuration") or {}).get("additional_instructions")
+
+
+def _validate_additional_instructions_shape(name: str, record: dict[str, Any]) -> list[str]:
+    """AC-1: the optional ``prompt_configuration.additional_instructions`` (BOTH modes)
+    must be a NON-EMPTY list of NON-EMPTY strings when present. Absent ⇒ clean no-op."""
+    ai = _record_additional_instructions(record)
+    if ai is None:
+        return []
+    if not isinstance(ai, list) or not ai:
+        return [
+            f"{name}: prompt_configuration.additional_instructions must be a non-empty "
+            f"list of strings when present [{_ADDITIONAL_INSTRUCTIONS_TAG}]"
+        ]
+    errors: list[str] = []
+    for item in ai:
+        if not isinstance(item, str) or not item.strip():
+            errors.append(
+                f"{name}: prompt_configuration.additional_instructions entries must be "
+                f"non-empty strings; got {item!r} [{_ADDITIONAL_INSTRUCTIONS_TAG}]"
+            )
+    return errors
+
+
+def _validate_prose_noncontradiction(
+    name: str, record: dict[str, Any], resolved: dict[str, Any]
+) -> tuple[list[str], list[str]]:
+    """AC-5: flag style ``additional_instructions`` prose that CONTRADICTS a structured
+    param (ERROR) or merely ECHOES Gary's hardcoded card rule (WARN). Reads the RESOLVED
+    surface for preset/source, so studio records (no resolved preset/source) skip the
+    contradiction axes by construction. Absent/blank prose ⇒ clean no-op."""
+    ai = _record_additional_instructions(record)
+    if isinstance(ai, list):
+        prose = " ".join(str(x) for x in ai if isinstance(x, str))
+    elif isinstance(ai, str):
+        prose = ai
+    else:
+        prose = ""
+    prose = prose.lower()
+    if not prose.strip():
+        return ([], [])
+    errors: list[str] = []
+    warnings: list[str] = []
+    preset = str(resolved.get("image_style_preset") or "").strip()
+    source = str(resolved.get("image_source") or "").strip()
+    if preset in _NONPHOTO_PRESETS and _prose_positively_asserts(prose, _PROSE_PHOTO_TOKENS):
+        errors.append(
+            f"{name}: additional_instructions prose implies photographic imagery but "
+            f"image_style_preset={preset!r} is non-photographic [{_PROSE_CONTRADICTS_TAG}]"
+        )
+    elif preset == "photorealistic" and _prose_positively_asserts(
+        prose, _PROSE_ILLUSTRATION_TOKENS
+    ):
+        errors.append(
+            f"{name}: additional_instructions prose implies illustration/vector imagery "
+            f"but image_style_preset='photorealistic' [{_PROSE_CONTRADICTS_TAG}]"
+        )
+    if source == "aiGenerated" and _prose_positively_asserts(prose, _PROSE_STOCK_PHOTO_TOKENS):
+        errors.append(
+            f"{name}: additional_instructions prose asks for stock photography but "
+            f"image_source='aiGenerated' [{_PROSE_CONTRADICTS_TAG}]"
+        )
+    # The card-rule echo WARN only applies where Gary's card rule actually ships — the
+    # api/Classic composition path. Studio prose is a never-emitted template-lock
+    # annotation, so echoing the card rule there is meaningless (code-review C).
+    production_mode = str(record.get("production_mode") or "api").strip().lower()
+    if production_mode == "api" and _prose_positively_asserts(prose, _PROSE_CARD_RULE_TOKENS):
+        warnings.append(
+            f"{name}: additional_instructions prose echoes Gary's hardcoded card-structure "
+            f"rule (merely-redundant; the rule ships structurally) [{_PROSE_ECHOES_TAG}]"
+        )
+    return (errors, warnings)
+
+
+# studio-via-api-override-plumbing (step 1) tags.
+_STUDIO_THEME_ID_TAG = "gamma.studio.theme-id-invalid"
+_STUDIO_IMAGE_MODEL_TAG = "gamma.studio.image-model-invalid"
+_STUDIO_OVERRIDE_ON_CLASSIC_TAG = "gamma.studio.override-on-classic"
+_STUDIO_DERIVED_FROM_TAG = "gamma.studio.derived-from-invalid"
+# The single source-of-truth image-model enum (from _act.py). Reused, NEVER hand-copied,
+# so the studio-accepted set can never drift from the catalog (A4 drift guard).
+_STUDIO_IMAGE_MODEL_VALUES: frozenset[str] = IMAGE_MODEL_VALUES
+
+
+def _validate_studio_overrides(name: str, record: dict[str, Any]) -> list[str]:
+    """Studio-scoped ``studio_template.{theme_id, image_model}`` overrides (step 1).
+
+    - ``theme_id``: an opaque Gamma id — string-validate only (non-empty when present),
+      NO enum (it is not in any registry we own).
+    - ``image_model``: enum-validate against the SINGLE catalog enum (``IMAGE_MODEL_VALUES``
+      from _act.py) — a bogus value fails with field + value named.
+
+    ``derived_from`` shape is validated separately (``_validate_derived_from_shape``) so it
+    runs on ALL records (api + studio), not just the studio branch (F5).
+    """
+    errors: list[str] = []
+    template = record.get("studio_template") or {}
+    theme_id = template.get("theme_id")
+    if theme_id is not None and (not isinstance(theme_id, str) or not theme_id.strip()):
+        errors.append(
+            f"{name}: studio_template.theme_id must be a non-empty string when present; "
+            f"got {theme_id!r} [{_STUDIO_THEME_ID_TAG}]"
+        )
+    image_model = template.get("image_model")
+    if image_model is not None and (
+        not isinstance(image_model, str)
+        or str(image_model).strip() not in _STUDIO_IMAGE_MODEL_VALUES
+    ):
+        errors.append(
+            f"{name}: studio_template.image_model={image_model!r} is not one of "
+            f"{sorted(_STUDIO_IMAGE_MODEL_VALUES)} (frozen enum from _act.py) "
+            f"[{_STUDIO_IMAGE_MODEL_TAG}]"
+        )
+    return errors
+
+
+def _validate_derived_from_shape(name: str, record: dict[str, Any]) -> list[str]:
+    """``derived_from`` optional lineage annotation: a well-formed non-empty string when
+    present. Runs on ALL records (api + studio) — a malformed ``derived_from`` on a
+    Classic record is caught too (F5). The RESOLVER never reads it; validator-only (A5)."""
+    derived_from = record.get("derived_from")
+    if derived_from is not None and (
+        not isinstance(derived_from, str) or not derived_from.strip()
+    ):
+        return [
+            f"{name}: derived_from must be a non-empty string when present; "
+            f"got {derived_from!r} [{_STUDIO_DERIVED_FROM_TAG}]"
+        ]
+    return []
+
+
+def _validate_no_studio_overrides_on_classic(name: str, record: dict[str, Any]) -> list[str]:
+    """A Classic (``production_mode: api``) record may NOT carry the studio-only
+    ``studio_template.{theme_id, image_model}`` overrides — they ride a studio record
+    ONLY. Reject both directions (studio-via-api-override-plumbing, step 1 / A2)."""
+    template = record.get("studio_template") or {}
+    illegal = sorted(
+        key for key in ("theme_id", "image_model") if _is_present(template.get(key))
+    )
+    if not illegal:
+        return []
+    return [
+        f"{name}: production_mode='api' (Classic) record carries studio-only "
+        f"override(s) studio_template.{illegal}; these ride a studio record only "
+        f"[{_STUDIO_OVERRIDE_ON_CLASSIC_TAG}]"
+    ]
 
 
 def _triad_rationale(record: dict[str, Any]) -> Any:
@@ -206,6 +414,43 @@ def _validate_one(name: str, record: dict[str, Any]) -> tuple[list[str], list[st
                 f"(inverted-polarity completeness failure)"
             )
 
+    # --- Studio per-record overrides (studio-via-api-override-plumbing, step 1) -----
+    #     theme_id (string) + image_model (frozen enum) ride ONLY a studio record; a
+    #     Classic (api) record carrying them is a hard error (discriminated-union, A2).
+    if production_mode == "studio":
+        errors.extend(_validate_studio_overrides(name, record))
+    else:  # api / Classic
+        errors.extend(_validate_no_studio_overrides_on_classic(name, record))
+    # derived_from shape is mode-independent (F5): validate it on BOTH api + studio.
+    errors.extend(_validate_derived_from_shape(name, record))
+
+    # --- amount: Gamma UI vocabulary, conditional on text mode (2026-07-03) ---------
+    #     Authority: skills/gamma-api-mastery/references/gamma-style-control-map.md. The
+    #     registry stores UI labels (Minimal/Concise/Detailed/Extensive); Gary translates
+    #     to the API value. amount is required for generate/condense, forbidden for
+    #     preserve (Gamma ignores it), and must be a UI value (never the API value).
+    if production_mode == "api":
+        tc = (record.get("prompt_configuration") or {}).get("text_content") or {}
+        mode = str(tc.get("mode") or "").strip().lower()
+        amount_raw = tc.get("amount")
+        amount_present = _is_present(amount_raw)
+        if mode in {"generate", "condense"} and not amount_present:
+            errors.append(
+                f"{name}: text_content.amount is required when mode is generate/condense "
+                f"[gamma.text.amount-required]"
+            )
+        if mode == "preserve" and amount_present:
+            errors.append(
+                f"{name}: text_content.amount must be absent when mode is preserve "
+                f"(Gamma ignores amount in preserve) [gamma.text.amount-mode]"
+            )
+        if amount_present and str(amount_raw).strip().lower() not in TEXT_AMOUNT_UI_VALUES:
+            errors.append(
+                f"{name}: text_content.amount={amount_raw!r} is not a Gamma UI amount "
+                f"value {sorted(TEXT_AMOUNT_UI_VALUES)}; the registry stores UI vocabulary "
+                f"(not the API value) [gamma.text.amount-ui-values]"
+            )
+
     # --- Frozen-enum validation on the RESOLVED surface ---------------------------
     for key, allowed in _ENUM_CHECKS.items():
         if key in resolved and str(resolved[key]).strip() not in allowed:
@@ -273,9 +518,65 @@ def _validate_one(name: str, record: dict[str, Any]) -> tuple[list[str], list[st
                 f"style_preset/custom_style to agree with theme + dimensions)"
             )
 
+    # --- Lifecycle (session-07 A1): candidate | permanent | deprecated -------------
+    errors.extend(_validate_lifecycle_errors(name, record))
+    warnings.extend(_validate_lifecycle_warnings(name, record))
+
     # --- Scripted block (Leg-C): sealed registry-bound closed-vocab namespace ------
     errors.extend(_validate_scripted(name, record))
+
+    # --- Style-level additional_instructions (AC-1 shape + AC-5 non-contradiction) --
+    errors.extend(_validate_additional_instructions_shape(name, record))
+    prose_errors, prose_warnings = _validate_prose_noncontradiction(name, record, resolved)
+    errors.extend(prose_errors)
+    warnings.extend(prose_warnings)
     return (errors, warnings)
+
+
+def _validate_lifecycle_errors(name: str, record: dict[str, Any]) -> list[str]:
+    """Hard-blocking lifecycle rules (session-07 green-light A1).
+
+    - An explicit lifecycle value must be in the closed enum.
+    - An explicit ``candidate`` must carry ``promotion_criteria`` (the B-corpus
+      stress-test + re-run reliability contract) and ``authored_session``
+      provenance, so a candidate can never masquerade as production nor lose the
+      record of what promotion requires.
+    """
+    errors: list[str] = []
+    raw = record.get("lifecycle")
+    if raw is None:
+        return errors  # absent -> WARN path (safe-default candidate)
+    value = str(raw).strip().lower()
+    if value not in _LIFECYCLE_VALUES:
+        errors.append(
+            f"{name}: lifecycle={raw!r} is not one of {sorted(_LIFECYCLE_VALUES)} "
+            f"[gamma.lifecycle.unknown-value]"
+        )
+        return errors
+    if value == "candidate":
+        if not _is_present(record.get("promotion_criteria")):
+            errors.append(
+                f"{name}: lifecycle=candidate requires a non-empty promotion_criteria "
+                f"(B-corpus stress-test + re-run reliability contract) "
+                f"[gamma.lifecycle.missing-promotion-criteria]"
+            )
+        if not _is_present(record.get("authored_session")):
+            errors.append(
+                f"{name}: lifecycle=candidate requires authored_session provenance "
+                f"[gamma.lifecycle.missing-authored-session]"
+            )
+    return errors
+
+
+def _validate_lifecycle_warnings(name: str, record: dict[str, Any]) -> list[str]:
+    """Loud non-fatal lifecycle surface: absence defaults to candidate."""
+    if record.get("lifecycle") is None:
+        return [
+            f"{name}: no lifecycle field — treated as CANDIDATE (safe default); "
+            f"mark permanent only through the promotion gate "
+            f"[gamma.lifecycle.defaulted-candidate]"
+        ]
+    return []
 
 
 def validate_style_guides_full(

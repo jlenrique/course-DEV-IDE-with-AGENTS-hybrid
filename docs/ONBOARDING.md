@@ -3,99 +3,159 @@
 > **One-line elevator:** Collaborative intelligence infrastructure for course-content production — a deterministic, manifest-compiled orchestrator (operator surface: **Marcus-SPOC**) drives a roster of ~20 LangGraph specialist agents through gated, human-in-the-loop production of narrated lessons (with video/animation), with tamper-evident operator verdicts, a learning ledger, and frozen-graph reproducibility.
 
 **Languages:** Python (3.11+), Markdown, YAML, JSON, Jinja2, JavaScript, PowerShell, Shell, SQL
-**Core frameworks:** LangChain, LangGraph, Pydantic v2 (plus FastAPI/Uvicorn, httpx, Pytest in the runtime/tooling layers)
-**Branch (at analysis):** `dev/p5-downstream-consumption-2026-06-26` (severed from `upstream/master` since 2026-04-24)
-**Graph baseline:** commit `85f27787` · 1820 nodes / 3274 edges / 8 layers · 781 files analyzed (`app/`, `scripts/`, `skills/`)
+**Core frameworks:** LangChain, LangGraph, Pydantic v2 (plus httpx, FastAPI/Uvicorn, Pytest in the runtime/tooling layers)
+**Branch (at analysis):** `dev/gamma-styleguide-phase2-2026-07-02` (severed from `upstream/master` since 2026-04-24)
+**Graph baseline:** commit `b3ab2137` · **2031 nodes / 3710 edges / 8 layers · 834 files** analyzed (`app/`, `scripts/`, `skills/`)
+**Regenerated:** 2026-07-05 (incremental update from the `85f2778` / 1820-node baseline)
 
-**Status (2026-06-28):** Migration SHIPPED (`97842ac`, 2026-04-27); Slab 7 orchestrational arc CLOSED. **Braid arc COMPLETE** (Marcus-SPOC conversational REPL with a deterministic guard; live Scite→Texas research-citation leg; Markdown→DOCX learner workbook). **Pre-planning / G0-enrichment cycle COMPLETE** and the **P5 downstream-consumption loop is CLOSED + live-proven**: the workbook, deck (Gary), and narration (Enrique) now consume the enriched corpus. **Directed-voice arc COMPLETE (this session):** a per-segment `voice_direction.v1` contract flows CD/Irene emission → Storyboard B (pre-spend review) → Enrique directed ElevenLabs TTS with per-segment receipts → deterministic acoustic verification → a live Descript publish; plus the **UDAC** (Universal Downstream Asset Contract) Run-Asset-Index providing fail-loud ACCESS + anti-tautology USE guarantees. **Next increment (ruled):** harden the directed voice so its per-role read is audible and fires on real clustered decks (content-grounded role→slide linkage + widened pace/stability gesture + `seed` graduation).
-
----
-
-## Architecture Layers
-
-The codebase is organized into 8 architectural layers (knowledge-graph-derived). Work flows top-to-bottom: an operator talks to **Marcus**, who compiles a manifest and routes typed state through **specialists** and **gates**, persisted by the **runtime**.
-
-### 1. Marcus Orchestration (`app/marcus/`, 102 files)
-The orchestrator, lesson-plan compilation, and the operator CLI that route work across specialists and gates.
-- **Operator surface:** `cli/marcus_spoc.py` (scripted single-point-of-contact narrating each gate), `cli/marcus_interlocutor.py` (arc-finale **LLM stop-and-chat REPL** — the model proposes, a deterministic guard validates against gate-legal actions so the chatting model never drives the engine), `cli/front_door.py` (first turn presenting the bundle catalog), `cli/trial.py` (start/resume/recover trial runs), `facade.py` (the single Maya-facing facade).
-- **The engine:** `orchestrator/production_runner.py` (~3,200 lines — the core LangGraph engine with **two node walks**: a START walk that stops at G1, and a CONTINUATION/recover walk handling all later gates; gate side-effects must be wired into BOTH).
-- **Lesson-plan substrate:** `lesson_plan/g0_enrichment.py` (frozen, operator-confirmable source-manifest models), `lesson_plan/learning_objective.py` (provenance-anchored LO entity), `lesson_plan/irene_refinement.py` (signed LO-delta contract), `lesson_plan/pedagogy_annotation.py` (additive P3 pedagogy overlay), `lesson_plan/run_asset_index.py` (**UDAC** v1 — ACCESS+USE contract with a SHA256 digest chain), `lesson_plan/bundle_catalog.py`, `lesson_plan/workbook_enrichment.py`.
-- **Consumption wiring:** `orchestrator/enrichment_consumption.py` (derives per-slide voice direction + deck enrichment hints from the G0 corpus), `orchestrator/udac_wiring.py`, `orchestrator/package_builders.py`, `orchestrator/g0_enrichment_wiring.py`, `orchestrator/conversation_persistence.py` (tamper-evident SHA256-chained turns).
-
-### 2. Specialist Agents & Composers (`app/specialists/`, 182 files)
-LangGraph specialist agents plus Marcus-authored directive composers that produce the artifacts.
-- **Shared scaffold:** `_scaffold/graph.py` + `_scaffold/contract.py` — the **9-node lifecycle** (`receive → plan → act → verify → reflect → emit_spans → gate_decision → finalize → handoff`) every specialist is built from.
-- **Shared helpers:** `_shared/voice_direction_map.py` (the pure-leaf 5-tier voice-direction → TTS-settings mapper), `_shared/figure_tokens.py` (single-source figure-citation tokenizer), `_shared/source_fidelity_audit.py`, `narration_join.py`, `dispatch_errors.py`.
-- **Representative specialists:** **Irene** (`irene/graph.py` narration authoring + `irene/authoring/` pass-2 template & voice-direction annotation; `irene_pass1/` pedagogy), **Gary** (`gary/graph.py` + `gary/gamma_dispatch.py` deck via Gamma), **Enrique** (`enrique/graph.py` + `enrique/_act.py` + `enrique/elevenlabs_dispatch.py` directed-voice TTS), **Kira** (`kira/kling_dispatch.py` video), **motion_planner** (07D.5 deterministic motion), plus CD, Vision, Texas, Tracy, Desmond, Quinn-R, compositor, and more.
-
-### 3. Domain Models (`app/models/`, 167 files)
-Pydantic v2 domain/state models — the typed contracts every node passes through. `state/run_state.py` (the central RunState, highest fan-in), `state/component_selection.py`, the `decision_cards/` family, `operator_verdict*` sections, `perception/perception_artifact.py`, runtime envelopes.
-
-### 4. Gates & Workflow Substrate (`app/gates/`, `app/manifest/`, `app/cora/`, `app/parity/`, `app/audit/`, 71 files)
-Gate decision substrate (`gates/verdict.py`, `gates/resume_api.py`, per-section poll surfaces), the **manifest compiler** (`manifest/compiler.py` + `manifest/schema.py` — frozen-graph reproducibility), Cora block-mode dev-graph guards (`cora/graph.py`), transport-parity/lockstep contracts, and audit-chain integrity.
-
-### 5. Runtime & Transport (`app/runtime/`, `app/http/`, `app/mcp_server/`, `app/ledger/`, `app/replay/`, 44 files)
-Postgres checkpointer/retention/retry, the append-only **learning ledger** (`ledger/schema.sql`), trace-based economics (`runtime/economics.py`), the replay-regression harness (`replay/regression.py`, `replay/parity_comparison.py`), and the FastAPI/MCP transport bridges.
-
-### 6. Operator & Developer Tooling (`scripts/`, 123 files)
-Standalone scripts not part of the orchestrated graph: API clients (`api_clients/base_client.py` + concrete ElevenLabs/Gamma/Kling/Descript/Canvas/Notion/… clients), content generators, analysis/acoustics diagnostics (`analysis/directed_voice_acoustics.py`, `diagnostics/elevenlabs_api_sweep.py`), operator utilities, and governance validators.
-
-### 7. BMAD Agent Skills (`skills/`, 88 files)
-Operator-facing BMAD agent skill packages (`SKILL.md`, references, helper scripts) defining custom personas — Marcus, Texas, CD, Audra, the content/media specialists. Activation order for custom agents lives in each `skills/bmad-agent-<name>/SKILL.md` (+ sanctum under `_bmad/memory/`).
-
-### 8. Project Root & Configuration (4 files)
-Top-level config/metadata: `.env.example`, `.gitattributes`, `.understand-anything/.understandignore`.
+> This guide is generated from the `/understand` knowledge graph. It is a **map, not the territory** — file summaries are LLM-derived and occasionally reflect one representative symbol in a file. When a summary and the code disagree, the code wins. Re-run `/understand` after significant changes and `/understand-onboard` to refresh this file.
 
 ---
 
-## Key Concepts
+## 1. Project Overview
 
-- **Marcus-SPOC + deterministic guard.** Marcus is the single operator contact. The conversational REPL lets an LLM propose actions, but a deterministic guard validates every action against gate-legal options — the chatting model never drives the engine directly.
-- **The two-walk production runner.** `production_runner.py` runs a START walk (stops at G1) and a CONTINUATION/recover walk (all later gates). Any gate side-effect (e.g. storyboard/chooser publish) must be added to BOTH walks or it silently never fires for G2B+.
-- **The 9-node specialist scaffold.** Every specialist shares one LangGraph lifecycle (`receive→plan→act→verify→reflect→emit_spans→gate_decision→finalize→handoff`); the load-bearing logic lives in each specialist's `_act.py`/`*_dispatch.py`.
-- **Gates + HIL DecisionCards.** Production pauses at gates (G1/G2C/G3/G4…) for human-in-the-loop verdicts; `resume_api.py` rehydrates and continues. Operator verdicts are tamper-evident.
-- **Manifest compilation + frozen-graph reproducibility.** `manifest/compiler.py` compiles a deterministic pipeline manifest; the frozen graph + learning ledger make runs reproducible and auditable.
-- **G0-enrichment → P5 consumption loop (CLOSED).** The pre-planning pipeline produces a frozen, typed `g0-enrichment.json` (source components, resolved citations, pedagogy annotations, refined LOs). Downstream consumers — workbook, Gary deck, Enrique narration — now READ that corpus, so deliverables are shaped by enrichment (anti-tautology tests prove changing the corpus changes the output).
-- **Directed voice (`voice-direction.v1`).** A per-segment voice-direction contract (render_strategy, delivery_intent, emotional_tone, pace, energy, pauses, per-field ElevenLabs overrides) flows from CD/Irene emission → Storyboard B (pre-spend review) → Enrique via the shared 5-tier mapper → directed TTS with per-segment receipts (real request-ids), verified by a deterministic acoustic judge. **Grounding firewall:** direction strings never reach the figure-citation gate.
-- **UDAC (Universal Downstream Asset Contract).** The Run Asset Index (`run_asset_index.py` + `udac_wiring.py`) gives downstream specialists an ACCESS guarantee (locate ratified assets) + USE guarantee (anti-tautology: changing assets changes outputs), failing loud on stale/missing ratified assets; written as a gate side-effect on both walks.
-- **BMAD methodology.** Sprint governance, party-mode multi-agent green-lights, and `bmad-code-review` gate substrate changes (see `CLAUDE.md`).
+The system turns source course material into finished, narrated lessons through a **single deterministic pipeline that is compiled from a manifest, not hand-wired**. A human operator talks to one conversational surface — **Marcus-SPOC** — which drives the production runtime, pauses at each human-in-the-loop (HIL) gate to surface a **DecisionCard**, and resumes once the operator records a verdict. Under the hood, ~20 **specialist agents** (each a small LangGraph built from one canonical scaffold) do the real work: authoring narration, building slides, retrieving cited research, synthesizing voice, perceiving rendered slides, planning motion, and assembling the workbook.
 
----
+Three design commitments run through everything:
 
-## Guided Tour
+- **Determinism & reproducibility** — the pipeline topology is compiled from a YAML manifest into a frozen LangGraph; the same manifest yields the same graph, and a learning ledger records what happened.
+- **Human-in-the-loop by construction** — the runtime is built to pause. Gates are first-class, verdicts are tamper-evident, and DecisionCards are contract-pinned by versioned JSON Schema.
+- **State threaded on one carrier** — a single `RunState` Pydantic model flows through every node, and a `ProductionEnvelope` side-car accumulates every specialist contribution append-only, so downstream consumers never lose upstream detail.
 
-A knowledge-graph-derived path through the system (11 steps):
-
-1. **The Operator Surface: Marcus** — `skills/bmad-agent-marcus/SKILL.md`, `app/marcus/cli/__main__.py`, `app/marcus/cli/marcus_spoc.py`
-2. **Core Domain Models & State** — `app/models/state/run_state.py`, `app/models/decision_cards/base.py`
-3. **The Orchestration Engine** — `app/marcus/orchestrator/production_runner.py`, `orchestrator/supervisor.py` (the two-walk model)
-4. **Manifest Compiler & Frozen Graph** — `app/manifest/compiler.py`
-5. **The 9-Node Specialist Scaffold** — `app/specialists/_scaffold/graph.py`, `_scaffold/contract.py`
-6. **Irene: Pedagogy & Narration Authoring** — `app/specialists/irene_pass1/graph.py`, `app/specialists/irene/graph.py`
-7. **Gary: Slide Deck Generation** — `app/specialists/gary/graph.py`, `gary/gamma_dispatch.py`
-8. **Enrique: Directed-Voice Narration (TTS)** — `app/specialists/enrique/graph.py`, `enrique/elevenlabs_dispatch.py`
-9. **G0-Enrichment & Lesson-Plan Substrate** — `app/marcus/lesson_plan/g0_enrichment.py`, `lesson_plan/schema.py`, `orchestrator/enrichment_consumption.py`
-10. **Gates & Human-in-the-Loop Verdicts** — `app/gates/verdict.py`, `app/gates/resume_api.py`
-11. **API Clients, Ledger & Configuration** — `scripts/api_clients/base_client.py`, `app/ledger/schema.sql`, `.env.example`
+> ⚠️ **Design guardrail (read before touching production code):** the product goal is the **Marcus-SPOC runtime**. "Concierge"/proofing/trial runs of the BMAD-persona Marcus are **off-the-books discovery vehicles** — fix what they surface only when it genuinely improves the SPOC product, never to make a proofing run pass. See `CLAUDE.md` §"CRITICAL DESIGN GUARDRAIL" and `docs/STATE-OF-THE-APP.md`.
 
 ---
 
-## Complexity Hotspots (approach carefully)
+## 2. Architecture Layers
 
-The highest-complexity files — read these slowly, they carry the most load-bearing logic:
+The graph assigns all 822 file-level nodes to eight layers. Roughly top-to-bottom:
 
-- `app/marcus/orchestrator/production_runner.py` — the ~3,200-line two-walk orchestration engine (run/resume/recover).
-- `app/specialists/irene/graph.py` (~1,400 lines) & `app/specialists/gary/_act.py` (~900 lines) — the heaviest specialist logic.
-- `app/marcus/orchestrator/g0_enrichment_wiring.py` (~1,170 lines) — G0 source-enrichment with offline/live LLM pre-passes.
-- `app/marcus/cli/marcus_interlocutor.py` / `marcus_spoc.py` / `front_door.py` — the conversational SPOC surface + deterministic guard.
-- `app/marcus/lesson_plan/run_asset_index.py` — UDAC v1 (digest chain, fail-loud resolution).
-- `app/marcus/orchestrator/enrichment_consumption.py` — per-slide voice-direction + deck-enrichment projection (carries the EDGE-1 role-seed divergence guard).
-- `app/marcus/lesson_plan/g0_enrichment.py` / `learning_objective.py` / `irene_refinement.py` / `pedagogy_annotation.py` — the frozen enrichment + LO contract family.
-- `app/runtime/economics.py` — LangSmith trace-based trial cost measurement.
-- `scripts/api_clients/*` — the live external-API clients (ElevenLabs/Gamma/Kling/Descript) where real spend happens.
-
-> Gotchas worth internalizing early: the **two-walk** runner (side-effects on both walks); gpt-5 rejects `temperature=0` (bind at construction); the **grounding firewall** (narration figures ⊆ rendered-slide figures; voice-direction strings never reach the citation gate); the **EDGE-1** role-seed ordinal-join fragility on clustered decks; and `.venv/Scripts/python.exe` for all Python.
+| Layer | Nodes | What lives here |
+|---|---:|---|
+| **Marcus Orchestration** | 116 | `app/marcus/` — the Marcus-SPOC orchestrator, conversational CLI surface, lesson-plan compilation, UDAC / enrichment-consumption wiring. The layer that *drives* a production run. |
+| **Specialist Agents & Composers** | 188 | `app/specialists/` — per-specialist LangGraph agents (irene, gary, texas, enrique, vision, wanda, kira, motion_planner, quinn_r, …) + `_shared` audits and composer nodes that assemble decks, motion, and workbook artifacts. |
+| **Gates & Workflow Substrate** | 59 | `app/gates/`, `app/manifest/`, `app/cora/` — HIL gate decision modules, the pipeline-manifest compiler, and Cora block-mode dev-graph enforcement that gate and sequence the walk. |
+| **Domain Models** | 167 | `app/models/` — Pydantic v2 domain & runtime-state models + emitted JSON schemas: decision-cards, lesson-plan envelopes, contributions side-cars, the data contracts every specialist reads/writes. |
+| **Runtime & Transport** | 53 | `app/runtime/`, `app/replay/`, `app/http/`, `app/ledger/`, `app/mcp_server/`, `app/parity/`, `app/audit/` — Postgres checkpointer/retention, resume-and-recover replay, HTTP/MCP transport, parity checks, audit plumbing. |
+| **Operator & Developer Tooling** | 147 | `scripts/` — `BaseAPIClient` + concrete API clients, content generators, diagnostics, operator utilities, plus `scratchpad/` live-proofing drivers. |
+| **BMAD Agent Skills** | 88 | `skills/` — operator-facing BMAD agent skill packages (`SKILL.md` persona files, reference contracts, helper scripts) for the custom personas Marcus routes to. |
+| **Project Root & Configuration** | 4 | Top-level env templates, git/coverage attributes, tooling artifacts. |
 
 ---
 
-*Generated from the Understand-Anything knowledge graph at `.understand-anything/knowledge-graph.json` (commit `85f27787`). Regenerate with `/understand` then `/understand-anything:understand-onboard` after substantive substrate changes.*
+## 3. Key Concepts & Patterns
+
+**Manifest-compiled graph.** The runner does not hard-code the pipeline. `app/manifest/loader.py` + `compiler.py` + `schema.py` read a YAML manifest describing nodes/edges/gates, validate it, and compile a LangGraph `StateGraph`. "Manifest-as-graph-config" is what makes runs deterministic and reproducible.
+
+**The two-walk production runner.** `app/marcus/orchestrator/production_runner.py` executes a trial as **two LangGraph walks**: the *start walk* runs until the first human gate (G1) and pauses; the *continuation walk* resumes and handles every later gate. ⚠️ **Gate-pause side effects (storyboard/chooser/picker publish) must be wired into BOTH walks** or they silently never fire for G2B+ (a known, real gotcha).
+
+**The 9-node specialist scaffold.** Every specialist is built from one canonical shape defined in `app/specialists/_scaffold/contract.py` + `graph.py` (`receive → plan → act → verify → reflect → gate → finalize → handoff` + a `build_<name>_graph` factory). Understand it once and every agent reads the same way. The `dispatch_adapter.py` builds each specialist's input state and invokes its compiled sub-graph uniformly.
+
+**RunState + the return contract.** `app/models/state/run_state.py` is the single state aggregate threaded through every node — the most depended-upon module in the codebase. `specialist_return.py` defines the shape every specialist hands back, so the runner treats them all identically.
+
+**HIL gates & DecisionCards.** At each gate the pipeline pauses and surfaces a **DecisionCard** for an operator verdict; `app/gates/resume_api.py` rebuilds run state from the stored card + verdict and resumes the walk. `OperatorVerdict` records the decision with tamper-forbidding validators. Each gate (G1–G6+) is contract-pinned by a versioned JSON Schema under `app/models/decision_cards/schema/`.
+
+**ProductionEnvelope carrier.** `app/models/runtime/production_envelope.py` is the append-only side-car that collects every `SpecialistContribution` with content-addressed provenance digests. It is deliberately the **most robust structure in the system** — every future consumer (enrichment, workbook, multi-asset) reads from it, so it is schema-validated, versioned, fail-loud, and append-only. Treat it as a protected invariant.
+
+**Sanctum-lock.** Specialists that carry curated references (e.g. Texas) assert their references manifest is unchanged and raise a `SanctumLockViolation` on drift — reproducibility protection against silent reference tampering.
+
+**Model cascade as data.** Specialists don't choose LLMs in code. A per-specialist `model_config.yaml` declares the model tier; `app/runtime/cascade_config.py` validates that every referenced model has a pricing entry and **fails loud** otherwise. Model/cost policy stays auditable data, not buried logic.
+
+**Learning ledger.** `app/ledger/emitter.py` writes verdict/override events **idempotently** to the Postgres `ledger_events` table (`app/ledger/schema.sql`); `events.py` defines their shape. This is how the system remembers operator decisions across trials so patterns (per-gate reject rates, overrides) can be mined later.
+
+**Protected invariants (do not regress).** Two are emphasized in the codebase and enforced by `_shared` audits: **VO ↔ on-screen alignment** and **source-detail → Gamma conveyance**. `voice_provider_text.py` audits that voice/rhetorical annotations stay *contained within* the source narration and never introduce new content.
+
+---
+
+## 4. Guided Tour (recommended reading order)
+
+A 12-stop walk from the operator's-eye view inward to the substrate:
+
+1. **Marcus-SPOC operator surface** — `app/marcus/cli/marcus_spoc.py`. The single thing a course author talks to: a conversational CLI that narrates each gate, runs the styleguide picker, and drives the runtime.
+2. **The two-walk production runner** — `app/marcus/orchestrator/production_runner.py`, `dispatch_adapter.py`. The core engine Marcus drives; start-walk-to-G1 then continuation walk; dispatch adapter hands work to specialists.
+3. **The manifest-compiled graph** — `app/manifest/compiler.py`, `loader.py`, `schema.py`, `README.md`. How the pipeline is compiled from YAML, not hard-coded.
+4. **RunState & shared state models** — `app/models/state/run_state.py`, `_base.py`, `specialist_return.py`. The one model everything is threaded on, and the uniform return shape.
+5. **The 9-node specialist scaffold** — `app/specialists/_scaffold/contract.py`, `graph.py`. The canonical lifecycle that makes a dozen agents feel like one system.
+6. **The specialists at work** — `irene/graph.py` (narration, two-pass), `gary/graph.py` (Gamma slides), `texas/graph.py` (cited retrieval), `enrique/graph.py` (TTS), `vision/graph.py` (slide perception).
+7. **Model cascade & per-specialist config** — `app/runtime/cascade_config.py`, `app/specialists/gary/model_config.yaml`. Model tier and cost policy as auditable YAML.
+8. **Human-in-the-loop gates** — `app/gates/resume_api.py`, `errors.py`, `app/models/state/operator_verdict.py`, `decision_cards/_base.py`. Where the two-walk design earns its shape.
+9. **Gate DecisionCard schemas** — `app/models/decision_cards/schema/g1..g4.v1.schema.json`. The frozen, versioned contracts between emitter and rendering surface.
+10. **The ProductionEnvelope carrier** — `app/models/runtime/production_envelope.py`, `production_trial_envelope.py`. The append-only, provenance-stamped side-car.
+11. **The learning ledger** — `app/ledger/emitter.py`, `events.py`, `schema.sql:ledger_events`. Append-only Postgres event log for reproducibility.
+12. **Cost accounting & the operator picker** — `app/runtime/economics.py`, `trial_economics_report.py`, `styleguide_picker.py`. Per-agent trial cost from LangSmith traces, and the pre-spend styleguide choice.
+
+---
+
+## 5. File Map — key entry points by layer
+
+**Marcus Orchestration** (`app/marcus/`)
+- `cli/marcus_spoc.py` — operator conversational entry point (the SPOC surface)
+- `cli/marcus_interlocutor.py`, `cli/trial.py` — stop-and-chat REPL + trial driver
+- `orchestrator/production_runner.py` — two-walk trial engine (start / continue / resume / recover)
+- `orchestrator/dispatch_adapter.py` — builds specialist state, compiles & invokes specialist sub-graphs
+- `orchestrator/styleguide_picker.py`, `chooser_publisher.py`, `storyboard_publisher.py`, `picker_publisher.py`, `gh_pages_publish.py` — gate-artifact publishing surfaces
+- `lesson_plan/` — G0 enrichment, coverage annotation/gate/receipt, Irene refinement, blueprint co-author, workbook producer
+- `facade.py` — orchestration facade
+
+**Specialist Agents** (`app/specialists/`)
+- `_scaffold/contract.py`, `_scaffold/graph.py` — the canonical 9-node scaffold
+- `irene/graph.py` (2.3k-line two-pass narration engine) + `irene_pass1/` (clustering + min-cluster-floor)
+- `gary/_act.py` (~1.1k-line Gamma dispatch/normalization), `styleguide_library.py`, `learned_dependencies.py`
+- `texas/graph.py`, `texas/_act.py` — retrieval + sanctum-lock
+- `enrique/_act.py` — directed ElevenLabs TTS narration assembly
+- `vision/provider.py`, `quinn_r/` (quality-control/grounding), `motion_planner/_act.py`, `kira/_act.py`, `wanda/_act.py`
+- `_shared/voice_provider_text.py`, `voice_direction_map.py`, `source_fidelity_audit.py` — protected-invariant enforcers
+
+**Gates & Workflow Substrate**
+- `app/gates/resume_api.py`, `errors.py`, `app/gates/section_*/poll_surface.py` (per-section HIL poll surfaces)
+- `app/manifest/compiler.py`, `loader.py`, `schema.py` — manifest → StateGraph
+- `app/cora/graph.py` — Cora block-mode dev-graph enforcement
+
+**Domain Models** (`app/models/`)
+- `state/run_state.py`, `state/_base.py`, `state/operator_verdict.py`, `state/specialist_return.py`
+- `runtime/production_envelope.py`, `runtime/production_trial_envelope.py`, `runtime/trial_economics_report.py`
+- `decision_cards/` (G0–G6 Pydantic models) + `decision_cards/schema/*.v1.schema.json`
+
+**Runtime & Transport**
+- `runtime/cascade_config.py`, `economics.py`, `compiled_graph_digest.py`, `override_api.py`, `sanctum_watcher.py`
+- `ledger/emitter.py`, `events.py`, `schema.sql`; `replay/parity_comparison.py`, `regression.py`
+
+**Operator & Developer Tooling** (`scripts/`)
+- `api_clients/base_client.py` (`BaseAPIClient` retry/backoff/pagination) + concrete clients (Canvas, Descript, ElevenLabs, Kling, Notion, Panopto, Qualtrics, Wondercraft, Gamma)
+- `operator/build_descript_narrated_lesson.py`, `operator/m3_texas_ceremony*.py`, `operator/scite_oauth_login*.py`
+
+---
+
+## 6. Complexity Hotspots — approach carefully
+
+The graph flags 139 file-level nodes as `complex`. The ones a new developer is most likely to touch and should read slowly:
+
+| File | Why it's a hotspot |
+|---|---|
+| `app/marcus/orchestrator/production_runner.py` | ~3.2k lines, 67 functions; the two-walk engine + primary import hub. Central to almost everything. |
+| `app/marcus/orchestrator/dispatch_adapter.py` | The specialist-invocation seam (state build → compile → invoke → extract). |
+| `app/specialists/irene/graph.py` | 2.3k-line two-pass narration authoring engine with figure-fidelity / reading-path / warm-callback gates. |
+| `app/specialists/gary/_act.py` | ~1.1k-line Gamma variant dispatch + normalization; CD-owned styleguide resolution. |
+| `app/models/state/run_state.py` | The most depended-upon module; changes ripple through every node. |
+| `app/models/runtime/production_envelope.py` | Protected-invariant carrier; must stay schema-validated / versioned / append-only. |
+| `app/specialists/_shared/voice_provider_text.py` | Enforces the VO-containment protected invariant; subtle correctness constraints. |
+| `app/manifest/compiler.py` + `schema.py` | Pipeline topology compilation; errors here break determinism for the whole run. |
+| `app/marcus/cli/marcus_spoc.py` / `marcus_interlocutor.py` | Operator surface + deterministic guard so the chatting LLM never drives the engine. |
+| `scripts/api_clients/base_client.py` | Shared base for 10 concrete API clients (retry/backoff/error hierarchy). |
+| `app/runtime/economics.py` | LangSmith-trace cost accounting; external-dependency sensitive. |
+| `app/marcus/lesson_plan/*` (blueprint, coverage, g0_enrichment, irene_refinement) | Dense pre-planning/enrichment logic feeding the downstream consumption loop. |
+
+---
+
+## 7. Getting Started Checklist
+
+1. **Read the guardrail** in `CLAUDE.md` and `docs/STATE-OF-THE-APP.md` — the SPOC-is-the-goal framing governs every change.
+2. **Follow the guided tour** (§4) in order — it's designed to build the mental model from operator surface to substrate.
+3. **Trace one run** — start at `marcus_spoc.py`, follow `production_runner.py` → `dispatch_adapter.py` → one specialist's `build_<name>_graph`, and watch `RunState` thread through.
+4. **Understand a gate** — read `gates/resume_api.py` with a DecisionCard schema (`decision_cards/schema/g1.v1.schema.json`) open beside it.
+5. **BMAD methodology** — production/dev work runs through BMAD workflows + party-mode + a dev agent (see `CLAUDE.md` §"BMAD sprint governance"). Activate **Marcus first** for anything production-shaped (`skills/bmad-agent-marcus/SKILL.md`).
+6. **Explore interactively** — run `/understand-dashboard` to browse the graph, or `/understand-chat` to ask questions about specific components.
+
+---
+
+*Generated from `.understand-anything/knowledge-graph.json` (commit `b3ab2137`, 2026-07-05). Regenerate with `/understand` then `/understand-onboard`.*

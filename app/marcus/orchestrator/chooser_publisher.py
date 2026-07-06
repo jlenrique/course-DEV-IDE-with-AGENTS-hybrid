@@ -12,12 +12,15 @@ from __future__ import annotations
 import json
 import os
 import shutil
-import subprocess
-import tempfile
+from functools import lru_cache
 from pathlib import Path
 from typing import Any
 
+import yaml
+
 from app.gates.section_07c.chooser_html_emitter import render_chooser_html
+from app.marcus.orchestrator import gh_pages_publish as _ghp
+from app.marcus.orchestrator.gh_pages_publish import load_hygiene_config
 from app.marcus.orchestrator.slide_variant_selection import run_tag_for_trial
 from app.specialists.dispatch_errors import SpecialistDispatchError
 
@@ -25,10 +28,25 @@ CHOOSER_GATES: frozenset[str] = frozenset({"G2B"})
 SITE_REPO_URL_ENV = "STORYBOARD_SITE_REPO_URL"
 TOKEN_ENV_VAR = "GITHUB_PAGES_TOKEN"
 DEFAULT_SITE_REPO = "https://github.com/jlenrique/jlenrique.github.io"
+_PUBLISHER_CONFIG_PATH = (
+    Path(__file__).resolve().parents[3] / "state" / "config" / "storyboard-publisher.yaml"
+)
+_TAG_PREFIX = "chooser.publish"
 
 
 class ChooserPublishError(SpecialistDispatchError):
     """Recoverable failure publishing the per-slide chooser (mirrors storyboard publish family)."""
+
+
+@lru_cache(maxsize=1)
+def _hygiene_config() -> tuple[Any, Any, Any]:
+    """(RetentionConfig|None, SizeGuardConfig, VerifyConfig) from the publisher config."""
+    loaded: dict[str, Any] = {}
+    if _PUBLISHER_CONFIG_PATH.is_file():
+        parsed = yaml.safe_load(_PUBLISHER_CONFIG_PATH.read_text(encoding="utf-8"))
+        if isinstance(parsed, dict):
+            loaded = parsed
+    return load_hygiene_config(loaded)
 
 
 def _per_slide_options(rows: list[dict[str, Any]]) -> list[dict[str, Any]]:
@@ -105,6 +123,22 @@ def publish_chooser_for_gate(
     site_repo = os.getenv(SITE_REPO_URL_ENV) or DEFAULT_SITE_REPO
     subdir = f"assets/storyboards/{trial_id}-chooser"
     publish_url = _git_publish_dir(pack, site_repo=site_repo, subdir=subdir, token=token)
+
+    # A push that succeeded does NOT prove the page is live: at G2B this URL is handed
+    # back to the client as the A/B verdict source — a lagging/errored Pages build would
+    # deliver a dead URL (the 2026-07-03 incident). Verify-or-fail-loud (RA4). A not-live
+    # result raises ChooserPublishError (recoverable → the gate error-pauses for
+    # ``trial recover``). Skipped only when config sets verify_build=false.
+    _r, _s, verify_cfg = _hygiene_config()
+    if verify_cfg.enabled:
+        _ghp.verify_build_after_push(
+            publish_url,
+            site_repo=site_repo,
+            token=token,
+            timeout=verify_cfg.timeout_s,
+            error_cls=ChooserPublishError,
+            tag_prefix=_TAG_PREFIX,
+        )
     record = {
         "gate_id": gate_id,
         "label": "storyboard-A-chooser",
@@ -119,37 +153,25 @@ def publish_chooser_for_gate(
 
 
 def _git_publish_dir(local_dir: Path, *, site_repo: str, subdir: str, token: str) -> str:
-    user = site_repo.split("github.com/", 1)[1].split("/", 1)[0]
-    pages_base = f"https://{user}.github.io"
-    auth_repo = site_repo.replace("https://", f"https://x-access-token:{token}@", 1)
-    temp_repo = Path(tempfile.mkdtemp(prefix="chooser-publish-"))
-    try:
-        _git(["clone", "--depth", "1", "--branch", "main", auth_repo, str(temp_repo)])
-        _git(["config", "user.name", "app-marcus-bot"], cwd=temp_repo)
-        _git(["config", "user.email", "app-marcus-bot@users.noreply.github.com"], cwd=temp_repo)
-        target = temp_repo / subdir
-        if target.exists():
-            shutil.rmtree(target)
-        shutil.copytree(local_dir, target)
-        _git(["add", subdir], cwd=temp_repo)
-        status = _git(["status", "--short", subdir], cwd=temp_repo)
-        if status.strip():
-            _git(["commit", "-m", f"Publish per-slide chooser {subdir}"], cwd=temp_repo)
-            _git(["push", auth_repo, "HEAD:main"], cwd=temp_repo)
-        return f"{pages_base}/{subdir}/index.html"
-    except subprocess.CalledProcessError as exc:
-        raise ChooserPublishError(
-            f"chooser gh-pages publish failed: {exc}", tag="chooser.publish.failed"
-        ) from exc
-    finally:
-        shutil.rmtree(temp_repo, ignore_errors=True)
+    """Clone the site, prune + size-guard, drop the pack, commit + push.
 
-
-def _git(args: list[str], *, cwd: Path | None = None) -> str:
-    result = subprocess.run(
-        ["git", *args], cwd=cwd, check=True, capture_output=True, text=True, timeout=180
+    Thin wrapper over the shared :func:`gh_pages_publish.git_publish_dir` (Task 1
+    consolidation). Delegating fixes the prior TOKEN-LEAK-IN-ERROR (the shared helper
+    scrubs ``x-access-token:{token}`` from any raised message) and adds the site-wide
+    retention prune + size guard the chooser lacked. Public name preserved so callers
+    and tests import it unchanged.
+    """
+    retention, size_guard, _verify = _hygiene_config()
+    return _ghp.git_publish_dir(
+        local_dir,
+        site_repo=site_repo,
+        subdir=subdir,
+        token=token,
+        retention=retention,
+        size_guard=size_guard,
+        error_cls=ChooserPublishError,
+        tag_prefix=_TAG_PREFIX,
     )
-    return result.stdout
 
 
 __all__ = ["CHOOSER_GATES", "ChooserPublishError", "publish_chooser_for_gate"]

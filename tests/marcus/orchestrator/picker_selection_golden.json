@@ -1,0 +1,17 @@
+[
+  {
+    "run_tag": "abc12345",
+    "picks": {"A": "alpha-style"},
+    "code": "SGP-abc12345-A:alpha-style"
+  },
+  {
+    "run_tag": "abc12345",
+    "picks": {"A": "alpha-style", "B": "beta-style"},
+    "code": "SGP-abc12345-A:alpha-style B:beta-style"
+  },
+  {
+    "run_tag": "deadbeef",
+    "picks": {"A": "gamma-candidate", "B": "alpha-style"},
+    "code": "SGP-deadbeef-A:gamma-candidate B:alpha-style"
+  }
+]

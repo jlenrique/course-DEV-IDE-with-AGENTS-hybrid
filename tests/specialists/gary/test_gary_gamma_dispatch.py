@@ -592,7 +592,7 @@ def test_gary_studio_path_unchanged_no_card_options(tmp_path: Path, monkeypatch)
             self.template_calls: list[dict[str, object]] = []
 
         def generate_from_template(
-            self, template_id: str, prompt: str, export_as: str = "png"
+            self, template_id: str, prompt: str, export_as: str = "png", **kwargs: object
         ) -> dict[str, object]:
             self.template_calls.append(
                 {"template_id": template_id, "prompt": prompt, "export_as": export_as}
@@ -699,6 +699,56 @@ def test_double_dispatch_with_empty_gamma_settings_falls_to_ab_fallback(
 
     assert result["calls_made"] == 2
     assert {row["dispatch_variant"] for row in result["gary_slide_output"]} == {"A", "B"}
+
+
+def test_style_additional_instructions_reaches_generation_kwargs(
+    tmp_path: Path, monkeypatch
+) -> None:
+    """AC-7 (wire-level, NO live render): a style's ``additional_instructions``
+    reaches ``generation_kwargs['additional_instructions']`` as its own concatenated
+    part — style-FIRST, alongside the per-deck source-derived instructions, Gary's
+    card rule, the keywords imagery, and the variant tail. Uses a SYNTHETIC resolved
+    style (monkeypatched resolver) — no SSOT edit, no live call, no credit spend.
+    """
+    zpath = _titled_zip(tmp_path, ["1_Economic-Reality", "2_Leadership-Gap"])
+    monkeypatch.setattr(
+        gary_act, "download_export", lambda url, *, output_dir, filename: str(zpath)
+    )
+    synthetic = {
+        "production_mode": "api",
+        "theme": "njim9kuhfnljvaa",
+        "text_mode": "condense",
+        "image_source": "aiGenerated",
+        "image_style_preset": "illustration",
+        "dimensions": "fluid",
+        "keywords": ["vector", "minimalist"],
+        "additional_instructions": ["ZZ_STYLE_REGISTER_ZZ keep a calm clinical register."],
+    }
+    monkeypatch.setattr(gary_act, "resolve_styleguide", lambda name: dict(synthetic))
+    client = FakeGammaClient()
+    payload = {
+        "slides": [
+            {"slide_id": "s1", "title": "Economic Reality", "prompt": "Economic Reality — explain"},
+            {"slide_id": "s2", "title": "Leadership Gap", "prompt": "Leadership Gap — explain"},
+        ],
+        "additional_instructions": "ZZ_PAYLOAD_SOURCE_ZZ per-deck source detail.",
+        "gamma_settings": [{"variant_id": "A", "styleguide": "synthetic-guide"}],
+        "export_dir": str(tmp_path),
+    }
+
+    gary_act.generate_gamma_variants(payload, client=client)
+
+    ai = str(client.generate_calls[0]["additional_instructions"])
+    # The style register and the per-deck source-derived instructions BOTH survive.
+    assert "ZZ_STYLE_REGISTER_ZZ" in ai
+    assert "ZZ_PAYLOAD_SOURCE_ZZ" in ai
+    # Style-first: the persistent register precedes the per-deck source-derived block
+    # (which thus stays intact and wins on specificity by coming after).
+    assert ai.index("ZZ_STYLE_REGISTER_ZZ") < ai.index("ZZ_PAYLOAD_SOURCE_ZZ")
+    # Nothing else dropped.
+    assert "Emphasize this imagery: vector, minimalist." in ai
+    assert "verbatim" in ai
+    assert ai.rstrip().endswith("Variant A.")
 
 
 def test_variant_a_text_mode_preserve_l1_fidelity() -> None:

@@ -35,10 +35,10 @@ def test_runtime_yaml_loads_and_passes_offline() -> None:
 def test_two_proof_seeds_present_and_clean() -> None:
     data = _runtime_data()
     guides = data["style_guides"]
-    assert "classic-freeform-x-cards" in guides
+    assert "hil-2026-apc-crossroads-classic" in guides
     assert "hil-2026-apc-studio-image-card" in guides
     # classic proof seed is PURE representation: dimensions fluid, NO forced 16:9.
-    classic = guides["classic-freeform-x-cards"]
+    classic = guides["hil-2026-apc-crossroads-classic"]
     assert classic["production_mode"] == "api"
     assert classic["page_settings"]["card_options"]["dimensions"] == "fluid"
     studio = guides["hil-2026-apc-studio-image-card"]
@@ -63,7 +63,7 @@ def test_inverted_polarity_null_required_field_fails() -> None:
     data = _runtime_data()
     broken = copy.deepcopy(data)
     # Null out a REQUIRED surface field on the classic proof seed.
-    broken["style_guides"]["classic-freeform-x-cards"]["theme"]["id"] = None
+    broken["style_guides"]["hil-2026-apc-crossroads-classic"]["theme"]["id"] = None
     errors = validate_style_guides(broken)
     assert any("theme" in e.lower() for e in errors), errors
 
@@ -72,7 +72,7 @@ def test_inverted_polarity_default_sentinel_fails() -> None:
     data = _runtime_data()
     broken = copy.deepcopy(data)
     # A "default" sentinel on a required field is as bad as null (inverted polarity).
-    broken["style_guides"]["classic-freeform-x-cards"]["page_settings"][
+    broken["style_guides"]["hil-2026-apc-crossroads-classic"]["page_settings"][
         "card_options"
     ]["dimensions"] = "default"
     errors = validate_style_guides(broken)
@@ -94,21 +94,124 @@ def test_studio_carrying_classic_key_is_surface_violation() -> None:
 def test_invalid_enum_value_fails_against_frozen_enum() -> None:
     data = _runtime_data()
     broken = copy.deepcopy(data)
-    broken["style_guides"]["classic-freeform-x-cards"]["page_settings"][
+    broken["style_guides"]["hil-2026-apc-crossroads-classic"]["page_settings"][
         "card_options"
     ]["dimensions"] = "cinemascope"  # not in CARD_DIMENSION_VALUES
     errors = validate_style_guides(broken)
     assert any("dimension" in e.lower() for e in errors), errors
 
 
+def test_text_amount_uses_prompt_editor_values() -> None:
+    data = _runtime_data()
+    broken = copy.deepcopy(data)
+    broken["style_guides"]["hil-2026-apc-crossroads-classic"]["prompt_configuration"][
+        "text_content"
+    ]["amount"] = "brief"  # API value; registry must store UI value `minimal`.
+    errors = validate_style_guides(broken)
+    assert any("gamma.text.amount-ui-values" in e for e in errors), errors
+
+
+def test_text_amount_for_preserve_mode_is_invalid() -> None:
+    data = _runtime_data()
+    broken = copy.deepcopy(data)
+    text_content = broken["style_guides"]["hil-2026-apc-crossroads-classic"][
+        "prompt_configuration"
+    ]["text_content"]
+    text_content["mode"] = "preserve"
+    text_content["amount"] = "minimal"
+    errors = validate_style_guides(broken)
+    assert any("gamma.text.amount-mode" in e for e in errors), errors
+
+
+def test_text_amount_required_for_generate_or_condense() -> None:
+    data = _runtime_data()
+    broken = copy.deepcopy(data)
+    broken["style_guides"]["hil-2026-apc-crossroads-classic"]["prompt_configuration"][
+        "text_content"
+    ]["amount"] = None
+    errors = validate_style_guides(broken)
+    assert any("gamma.text.amount-required" in e for e in errors), errors
+
+
 def test_missing_triad_rationale_fails_coherence() -> None:
     data = _runtime_data()
     broken = copy.deepcopy(data)
-    broken["style_guides"]["classic-freeform-x-cards"]["presentation"]["narrative"][
+    broken["style_guides"]["hil-2026-apc-crossroads-classic"]["presentation"]["narrative"][
         "triad_rationale"
     ] = ""
     errors = validate_style_guides(broken)
     assert any("triad" in e.lower() or "coherence" in e.lower() for e in errors), errors
+
+
+# --------------------------------------------------- Lifecycle (session-07 A1)
+_PRE_SESSION_07_PERMANENTS = {
+    "hil-2026-apc-studio-image-card",
+    "leg-c-part3-floor-probe",
+    "leg-c-part3-floor-toohigh",
+}
+
+
+def test_runtime_records_carry_explicit_lifecycle() -> None:
+    """Every runtime record has an explicit lifecycle; the 5 pre-session-07
+    records are retro-marked permanent (Dan's amendment); any candidate carries
+    its promotion contract."""
+    data = _runtime_data()
+    for name, record in data["style_guides"].items():
+        lifecycle = record.get("lifecycle")
+        assert lifecycle in {"candidate", "permanent", "deprecated"}, (
+            f"{name}: runtime record must carry an explicit lifecycle"
+        )
+        if name in _PRE_SESSION_07_PERMANENTS:
+            assert lifecycle == "permanent", (
+                f"{name}: pre-session-07 record must be retro-marked permanent"
+            )
+        if lifecycle == "candidate":
+            assert record.get("promotion_criteria"), name
+            assert record.get("authored_session"), name
+
+
+def test_lifecycle_unknown_value_fails() -> None:
+    data = _runtime_data()
+    broken = copy.deepcopy(data)
+    broken["style_guides"]["hil-2026-apc-crossroads-classic"]["lifecycle"] = "shipped"
+    errors = validate_style_guides(broken)
+    assert any("gamma.lifecycle.unknown-value" in e for e in errors), errors
+
+
+def test_lifecycle_candidate_requires_promotion_contract_fields() -> None:
+    data = _runtime_data()
+    broken = copy.deepcopy(data)
+    record = broken["style_guides"]["hil-2026-apc-crossroads-classic"]
+    record["lifecycle"] = "candidate"
+    record.pop("promotion_criteria", None)
+    record.pop("authored_session", None)
+    errors = validate_style_guides(broken)
+    assert any("gamma.lifecycle.missing-promotion-criteria" in e for e in errors), errors
+    assert any("gamma.lifecycle.missing-authored-session" in e for e in errors), errors
+
+
+def test_lifecycle_candidate_with_contract_fields_is_clean() -> None:
+    data = _runtime_data()
+    patched = copy.deepcopy(data)
+    record = patched["style_guides"]["hil-2026-apc-crossroads-classic"]
+    record["lifecycle"] = "candidate"
+    record["promotion_criteria"] = (
+        "B-corpus stress test + re-run reliability proof (operator-ratified 2026-07-02)"
+    )
+    record["authored_session"] = "2026-07-02-session-07"
+    errors = validate_style_guides(patched)
+    assert errors == [], errors
+
+
+def test_lifecycle_absent_warns_defaulted_candidate() -> None:
+    from scripts.utilities.validate_gamma_style_guides import validate_style_guides_full
+
+    data = _runtime_data()
+    stripped = copy.deepcopy(data)
+    stripped["style_guides"]["hil-2026-apc-crossroads-classic"].pop("lifecycle")
+    errors, warnings = validate_style_guides_full(stripped)
+    assert errors == [], errors
+    assert any("gamma.lifecycle.defaulted-candidate" in w for w in warnings), warnings
 
 
 def test_load_missing_file_raises_styleguide_error(tmp_path) -> None:
@@ -166,7 +269,7 @@ def test_custom_style_preset_without_custom_style_fails() -> None:
     # write-gate must reject it at write time, not defer the crash to render.
     data = _runtime_data()
     broken = copy.deepcopy(data)
-    visuals = broken["style_guides"]["classic-freeform-x-cards"]["prompt_configuration"][
+    visuals = broken["style_guides"]["hil-2026-apc-crossroads-classic"]["prompt_configuration"][
         "visuals"
     ]
     visuals["style_preset"] = "custom"
@@ -205,10 +308,10 @@ def test_rule2_image_model_without_aigenerated_errors() -> None:
     # (the model string is a silent no-op under non-aiGenerated sources).
     data = _runtime_data()
     broken = copy.deepcopy(data)
-    visuals = broken["style_guides"]["hil-2026-apc-blueprint-classic"][
+    visuals = broken["style_guides"]["hil-2026-apc-crossroads-classic"][
         "prompt_configuration"
     ]["visuals"]
-    # blueprint already carries image_model=recraft-v3-svg; flip source off aiGenerated.
+    # crossroads already carries image_model=gpt-image-2-mini; flip source off aiGenerated.
     visuals["image_source"] = "pexels"
     errors = validate_style_guides(broken)
     assert any("gamma.dep.image-model-source" in e for e in errors), errors
@@ -229,7 +332,7 @@ def test_rule3_named_preset_plus_image_style_warns_not_errors() -> None:
 
     data = _runtime_data()
     broken = copy.deepcopy(data)
-    visuals = broken["style_guides"]["classic-freeform-x-cards"][
+    visuals = broken["style_guides"]["hil-2026-apc-crossroads-classic"][
         "prompt_configuration"
     ]["visuals"]
     # style_preset is 'illustration' (a named preset); add a conflicting image_style.
@@ -267,7 +370,7 @@ def test_rule3_custom_preset_with_style_no_subordination_warning() -> None:
 
     data = _runtime_data()
     good = copy.deepcopy(data)
-    visuals = good["style_guides"]["classic-freeform-x-cards"]["prompt_configuration"][
+    visuals = good["style_guides"]["hil-2026-apc-crossroads-classic"]["prompt_configuration"][
         "visuals"
     ]
     visuals["style_preset"] = "custom"
@@ -338,3 +441,106 @@ def test_default_validation_makes_no_network_call(monkeypatch) -> None:
 
     assert validate_style_guides(data) == []
     assert validate_style_guides_full(data) == ([], [])
+
+
+# --------------------------------------------------------------------------- #
+# studio-via-api-override-plumbing (step 1) — studio theme_id/image_model
+# overrides validated on a studio record; forbidden riding a Classic record.
+# --------------------------------------------------------------------------- #
+from app.specialists.gary._act import IMAGE_MODEL_VALUES  # noqa: E402
+from scripts.utilities.validate_gamma_style_guides import (  # noqa: E402
+    _STUDIO_IMAGE_MODEL_VALUES,
+    _STUDIO_OVERRIDE_ON_CLASSIC_TAG,
+    _validate_one,
+)
+
+
+def _studio_rec(**template_extra: object) -> dict:
+    return {
+        "production_mode": "studio",
+        "studio_template": {"gamma_id": "g_test", **template_extra},
+        "presentation": {"narrative": {"triad_rationale": "coherent studio"}},
+        "lifecycle": "permanent",
+    }
+
+
+def _api_rec(**overrides: object) -> dict:
+    rec = {
+        "production_mode": "api",
+        "theme": {"id": "njim9kuhfnljvaa"},
+        "prompt_configuration": {
+            "text_content": {"mode": "generate", "amount": "Detailed"},
+            "visuals": {"image_source": "aiGenerated", "keywords": ["k"]},
+        },
+        "page_settings": {"card_options": {"dimensions": "fluid"}},
+        "presentation": {"narrative": {"triad_rationale": "coherent api"}},
+        "lifecycle": "permanent",
+    }
+    rec.update(overrides)
+    return rec
+
+
+def test_validator_enum_validates_studio_image_model() -> None:
+    """(5) accepts recraft-v3; REJECTS a bogus value, error names field + value."""
+    errs_ok, _ = _validate_one("s", _studio_rec(image_model="recraft-v3"))
+    assert errs_ok == [], errs_ok
+    errs_bad, _ = _validate_one("s", _studio_rec(image_model="bogus-model-x"))
+    assert any("image_model" in e and "bogus-model-x" in e for e in errs_bad), errs_bad
+
+
+def test_validator_accepts_studio_theme_id() -> None:
+    """(6) theme_id is an opaque Gamma id — string-validate only, accepted on studio."""
+    errs, _ = _validate_one("s", _studio_rec(theme_id="theme-opaque-123"))
+    assert errs == [], errs
+
+
+def test_validator_rejects_empty_studio_theme_id() -> None:
+    """theme_id present-but-empty is rejected (non-empty when present)."""
+    errs, _ = _validate_one("s", _studio_rec(theme_id="   "))
+    assert any("theme_id" in e for e in errs), errs
+
+
+def test_validator_rejects_classic_only_key_on_studio_record() -> None:
+    """(7) a Classic-only surface key on a studio record is a surface-violation
+    naming the illegal key."""
+    rec = _studio_rec()
+    rec["theme"] = {"id": "njim9kuhfnljvaa"}
+    errs, _ = _validate_one("s", rec)
+    assert any("surface-violation" in e and "theme" in e for e in errs), errs
+
+
+def test_validator_rejects_studio_overrides_on_classic_record() -> None:
+    """(8) theme_id/image_model studio overrides may NOT ride a Classic (api) record."""
+    rec = _api_rec(
+        studio_template={"gamma_id": "g_x", "theme_id": "th", "image_model": "recraft-v3"}
+    )
+    errs, _ = _validate_one("api-rec", rec)
+    # (F4) assert the studio-override-on-classic TAG, not a bare "theme_id" substring —
+    # the _api_rec fixture carries theme.id, so the old substring could pass for the
+    # wrong reason.
+    assert any(
+        _STUDIO_OVERRIDE_ON_CLASSIC_TAG in e or "studio-only override" in e for e in errs
+    ), errs
+
+
+def test_validator_rejects_malformed_derived_from_on_classic_record() -> None:
+    """(F5) derived_from shape (non-empty string when present) is validated on ALL
+    records — a malformed derived_from on a Classic (api) record is also caught."""
+    rec = _api_rec(derived_from=123)
+    errs, _ = _validate_one("api-rec", rec)
+    assert any("derived_from" in e for e in errs), errs
+
+
+def test_studio_image_model_accepted_set_equals_catalog_enum() -> None:
+    """(A4 drift guard) the studio-accepted image_model set EQUALS the single catalog
+    enum — every member accepted, a non-member rejected. No hand-copied second list."""
+    # (F3) set-EQUALITY / same object — catches a future hand-copied superset that would
+    # accept a model the catalog does not.
+    assert _STUDIO_IMAGE_MODEL_VALUES == IMAGE_MODEL_VALUES
+    for model in sorted(IMAGE_MODEL_VALUES):
+        errs, _ = _validate_one("s", _studio_rec(image_model=model))
+        assert not any("image_model" in e for e in errs), (model, errs)
+    bogus = "definitely-not-a-real-model"
+    assert bogus not in IMAGE_MODEL_VALUES
+    errs_bad, _ = _validate_one("s", _studio_rec(image_model=bogus))
+    assert any("image_model" in e for e in errs_bad), errs_bad

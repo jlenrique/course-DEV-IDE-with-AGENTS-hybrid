@@ -71,7 +71,7 @@ def test_fluid_style_emits_no_forced_16x9(tmp_path: Path, monkeypatch) -> None:
     client = _run(
         tmp_path,
         monkeypatch,
-        [{"variant_id": "A", "styleguide": "classic-freeform-x-cards"}],
+        [{"variant_id": "A", "styleguide": "hil-2026-apc-crossroads-classic"}],
     )
     card_options = _call_for_variant(client, "A").get("card_options") or {}
     # The removed override would have forced 16x9 here. A fluid style must NOT.
@@ -109,7 +109,7 @@ def test_bound_styleguide_omits_template_none_clause(tmp_path: Path, monkeypatch
     client = _run(
         tmp_path,
         monkeypatch,
-        [{"variant_id": "A", "styleguide": "classic-freeform-x-cards"}],
+        [{"variant_id": "A", "styleguide": "hil-2026-apc-crossroads-classic"}],
     )
     instr = str(_call_for_variant(client, "A").get("additional_instructions") or "")
     assert "template=None" not in instr, f"leaked template=None clause; instr={instr!r}"
@@ -143,7 +143,7 @@ def test_styleguide_preserves_source_detail(tmp_path: Path, monkeypatch) -> None
         "gamma_settings": [
             {
                 "variant_id": "A",
-                "styleguide": "classic-freeform-x-cards",
+                "styleguide": "hil-2026-apc-crossroads-classic",
                 # Source-derived keywords on the item must WIN over the styleguide's own.
                 "keywords": source_keywords,
             }
@@ -172,7 +172,8 @@ def test_styleguide_preserves_source_detail(tmp_path: Path, monkeypatch) -> None
         assert kw in instr, f"source keyword lost: {kw!r}; instr={instr!r}"
     assert instr.index(source_brief) < instr.index(guidance)
     # 4) The styleguide's OWN keywords did NOT clobber or pollute the source set
-    #    (classic-freeform's library keywords include 'minimalist'/'vector').
+    #    (crossroads carries an EMPTY library keyword list, so the source set must
+    #    stand alone; 'minimalist'/'vector' would be classic-family pollution).
     assert "minimalist" not in instr
     assert "vector" not in instr
     # 5) The styleguide only FILLED unset defaults: theme + art-style + dimensions came
@@ -263,6 +264,11 @@ def test_ac5_structured_options_still_carry_settings() -> None:
     assert image_opts.get("stylePreset") == "illustration"
     assert text_opts.get("amount") == "brief"
     assert text_opts.get("tone") == "Clear, professional"
+
+
+def test_prompt_editor_amount_aliases_translate_to_api_values() -> None:
+    assert gary_act._text_options_for_variant({"amount": "minimal"})["amount"] == "brief"
+    assert gary_act._text_options_for_variant({"amount": "concise"})["amount"] == "medium"
 
 
 def test_ac7_wellformed_no_dangling_separators() -> None:

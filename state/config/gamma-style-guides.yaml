@@ -21,10 +21,18 @@ registry_owner: cd
 source_draft: _bmad-output/planning-artifacts/gamma-style-guides-v1-draft-2026-07-01.yaml
 
 style_guides:
-  # -- Proof seed #1 (Classic, PURE representation: dimensions fluid, NO forced 16:9) --
-  classic-freeform-x-cards:
+  # -- Candidate stub (LEON model-selection evidence; screenshot-derived fields) --
+  hil-2026-apc-crossroads-classic:
     production_mode: api
-    status: active
+    # Canonicalized 2026-07-03 as the new STANDARD 'A' style. Validated end-to-end through
+    # Gary's authentic seam: the gold-standard "A Clinician at the Crossroads" slide
+    # rendered clean, English-labeled, on-message (evidence
+    # crossroads-goldstandard-20260703T041136Z). LESSON (see gamma-style-control-map.md
+    # §Style-development lessons): image quality depends on the per-slide `Illustration:`
+    # brief carried in the slide CONTENT (source design-notes); the instruction-neutral
+    # strip exposed gpt-image-2-mini's raw CJK default precisely because it carries no
+    # such brief.
+    lifecycle: permanent
     version: 1
     theme:
       id: njim9kuhfnljvaa
@@ -33,68 +41,99 @@ style_guides:
     prompt_configuration:
       text_content:
         mode: condense
-        amount: brief
-        audience: >-
-          Faculty and instructional designers familiar with Canvas and course design,
-          American English
-        tone: Clear, professional, engaging in American English
+        amount: minimal
+        audience: null
+        tone: null
         language: en
       visuals:
         image_source: aiGenerated
-        image_model: null
+        image_model: gpt-image-2-mini
         style_preset: illustration
         custom_style: null
-        keywords:
-        - vector
-        - minimalist
-        - flat-color
-        - linework
-        - bold
+        keywords: []
+      # additional_instructions intentionally omitted: the text captured in the
+      # screenshot was Gary's OWN hardcoded card-structure rule (which Gary always
+      # appends at packet-build), NOT authored style-voice prose — echoing it here is
+      # redundant and trips gamma.prose.echoes-param. Candidate for the
+      # deliberately-unused sentinel once that QC convention lands (task #8).
     page_settings:
       card_options:
         dimensions: fluid
-      export:
-        export_as: png
+      # UI-only reference — page-setup controls the operator set in the Gamma editor that
+      # have NO Generate-API field (or that Gary does not wire), so they are NOT
+      # runtime-bound and Gary cannot send them (matrix §5.A/§5.B). Kept for fidelity to
+      # the authored look + future use; grouped here so they do not read as active
+      # settings. (`card_headers_footers` DOES have an API field — cardOptions.headerFooter
+      # — but Gary does not wire it yet.)
+      ui_only_reference:
+        card_width: L
+        content_alignment: middle
+        font_size: M
+        show_card_backdrops: false
+        animations: true
+        card_headers_footers: not_configured
     presentation:
-      display_name: Classic-Freeform_X-Cards
+      display_name: HIL 2026 APC Crossroads Classic
       distinguishing: >-
-        The calm clinical default: freeform source prose condensed to spacious
-        illustrated cards where the screen carries gist and the voiceover carries detail.
+        The new standard 'A' style: a calm clinician-crossroads register on the Tejal
+        theme with GPT Image 2 Mini illustration — condensed prose, spacious white
+        cards, and on-message metaphor imagery driven by the slide's Illustration brief.
       narrative:
         summary: >-
-          Clean clinical-education style that turns freeform prose into spacious
-          white-background cards with navy headings, teal body, and soft vector panels.
-        feels_like: Professional, calm, approachable, APC/clinical-leadership oriented.
-        use_when: Narrated lessons where the screen shows gist and VO holds the detail.
-        avoid_when: Data-heavy or editorial decks needing dense per-card structure.
+          A Classic presentation candidate captured from the LEON model-selection
+          evidence: Tejal theme, AI illustration, GPT Image 2 Mini, Default/Fluid
+          page setup, large cards, centered content, medium type, no backdrops,
+          animations on.
+        feels_like: Calm, hopeful, clinical-education illustration with a single clear metaphor.
+        use_when: >-
+          Opening or case-for-change slides where a clinician-facing crossroads
+          metaphor should feel accessible, clean, and emotionally hopeful.
+        avoid_when: >-
+          Dense reference slides, data tables, or styles that require verified
+          text-in-image accuracy.
         triad_rationale: >-
-          The Tejal theme, AI-generated illustration/vector-minimalist keywords, and the
-          Default/Fluid page setup agree on one calm clinical register; Fluid is the
-          exemplar's true page shape (any Descript-bound 16:9 is a publication-time policy,
-          not part of this style).
-      example_url: "https://the-modern-clinicians-di-a6j7emh.gamma.site/"
-      # Leg-D curated thumbnail (D-2): real Leg-A differential Classic render
-      # (evidence/leg-a-styleguide-differential-20260701T164108Z/render-A-classic/
-      # A_p3-high-maze.png) copied into the stable CD-owned home. Deliberate curation
-      # write under the validator write-gate, never a runtime write-back.
-      thumbnail_ref: state/config/gamma-styleguide-thumbnails/classic-freeform-x-cards.png
+          The Tejal theme, illustration preset with GPT Image 2 Mini, and
+          Default/Fluid page setup agree on a calm clinical metaphor style; the
+          screenshot-observed card options (L width, middle alignment, M font,
+          no backdrops, animations on) are preserved as style evidence even
+          though only dimensions is currently runtime-bound.
+      example_url: "https://a-clinician-at-the-cross-eyjrmid.gamma.site/"
+      thumbnail_ref: state/config/gamma-styleguide-thumbnails/hil-2026-apc-crossroads-classic.png
       last_used: null
     coherence:
       theme_art_keywords_dimensions: >-
-        Professional clinical APC look; Tejal theme + AI-generated illustration/
-        vector-minimalist cues; Default/Fluid page setup.
+        Tejal theme + AI-generated illustration + GPT Image 2 Mini + Default/Fluid
+        page setup; screenshot-observed Page setup: L card width, middle content
+        alignment, M font size, card backdrops off, animations on, card headers
+        and footers not configured.
     provenance:
-      source: default_variant_pair
-      established: '2026-06-24'
+      source: model-hunt-v3_LEON
+      established: '2026-07-03'
       notes: >-
-        Reflects the live Prompt editor / Page setup exemplar (Condense + Minimal,
-        Freeform, Classic, 10 cards, Tejal theme, AI illustration, Default/Fluid).
-        Publication-time 16:9 forcing is intentionally NOT encoded here.
+        Stub built from LEON evidence screenshots at
+        _bmad-output/implementation-artifacts/evidence/model-hunt-v3_LEON/GPT Image 2 Mini/.
+        Prompt editor evidence shows theme "2026 HIL APC (Tejal)", AI images,
+        Illustration art style, GPT Image 2 Mini, Presentation format, Classic
+        card design mode, Card-by-card content entry, and visible additional
+        instructions. Page setup evidence shows Presentation, Default/Fluid,
+        card width L, middle content alignment, font size M, show card backdrops
+        off, animations on, and empty Card headers & footers add-elements area.
+        The folder name was corrected from an out-of-date Nano Banana label to
+        GPT Image 2 Mini. Later Prompt editor evidence shows Text content set to
+        Condense with Amount of text set to Minimal.
 
-  # -- Contrast Classic (16x9 editorial line-art; second Classic for A/B + roster) --
-  hil-2026-apc-blueprint-classic:
+  # -- B counterpart of the standard-'A' crossroads style: SAME style, Blueprint theme --
+  hil-2026-apc-crossroads-blueprint:
     production_mode: api
-    status: active
+    # Created 2026-07-03 (operator-directed): the crossroads standard-'A' style with the theme
+    # swapped to Blueprint Editorial (e8tz1vxb9v1urqp) for an A/B palette pair.
+    # PROMOTED to permanent 2026-07-03 (session-09): image model swapped gpt-image-2-mini ->
+    # recraft-v3 (the two-arm trial crossroads-blueprint-twoarm-20260703T064100Z proved
+    # gpt-image-2-mini renders Japanese text on this style even with a hardened language lock,
+    # while recraft-v3 renders clean Western illustration; the operator's exemplar deck uses
+    # the recraft-v3 look). The Western/English no-iconography steer is baked into
+    # additional_instructions so production stays clean.
+    lifecycle: permanent
     version: 1
     theme:
       id: e8tz1vxb9v1urqp
@@ -102,64 +141,467 @@ style_guides:
     studio_template: null
     prompt_configuration:
       text_content:
-        mode: preserve
-        amount: brief
-        audience: >-
-          Faculty and instructional designers familiar with Canvas and course design,
-          American English
-        tone: Confident, precise, lightly editorial - American English
+        mode: condense
+        amount: minimal
+        audience: null
+        tone: null
         language: en
       visuals:
         image_source: aiGenerated
-        image_model: recraft-v3-svg
-        style_preset: lineArt
+        image_model: recraft-v3
+        style_preset: illustration
         custom_style: null
-        keywords:
-        - blueprint
-        - technical line drawing
-        - dotted construction lines
-        - architectural
-        - single-accent color
+        keywords: []
+      additional_instructions:
+      - >-
+        Contemporary Western / North American clinical setting; no cultural, national, or
+        religious iconography or symbolism. All text, signage, or lettering visible in the
+        image must be English only - do NOT render Japanese, Chinese, Korean, or other
+        non-Latin characters or Asian-language signage; prefer no in-image text, and any
+        unavoidable text must be brief, legible American English. Generous white space.
     page_settings:
       card_options:
-        dimensions: 16x9
-      export:
-        export_as: png
+        dimensions: fluid
+      # UI-only reference (see the A style) — not runtime-bound; kept for fidelity.
+      ui_only_reference:
+        card_width: L
+        content_alignment: middle
+        font_size: M
+        show_card_backdrops: false
+        animations: true
+        card_headers_footers: not_configured
     presentation:
-      display_name: HIL 2026 APC Blueprint Classic
+      display_name: HIL 2026 APC Crossroads — Blueprint palette
       distinguishing: >-
-        The technical/editorial contrast: preserve-mode line-art with a single-accent
-        blueprint palette on a traditional 16:9 frame.
+        The 'B' counterpart to the standard-'A' crossroads style: the SAME calm
+        clinician-crossroads illustration (recraft-v3), re-themed with Blueprint Editorial
+        for a cooler-palette A/B choice at the Storyboard gate.
       narrative:
         summary: >-
-          Technical/editorial variant for A/B slide selection: blueprint theme, line-art
-          construction imagery, preserve-mode text that protects titles and figures.
-        feels_like: Confident, precise, lightly editorial.
-        use_when: A/B contrast against the calmer freeform Classic style.
-        avoid_when: Warm, illustrative, or photographic looks are wanted.
+          The crossroads style on the Blueprint Editorial theme: same condensed prose and
+          clinician-crossroads illustration register (recraft-v3), Default/Fluid pages -
+          only the palette and typography change, so A/B selection is a same-style,
+          alternate-palette choice.
+        feels_like: Calm crossroads illustration in a cooler, editorial Blueprint palette.
+        use_when: >-
+          As the 'B' option paired with crossroads-A when the operator wants to choose
+          between two palette treatments of the same style.
+        avoid_when: >-
+          When a genuinely different register is wanted for A/B — use a distinct style
+          (e.g. the lineArt/technical hil-2026-apc-blueprint-classic) instead.
         triad_rationale: >-
-          Blueprint theme + lineArt/construction keywords + 16:9 deck output stay locked
-          together; preserve mode keeps source titles and figures verbatim for fidelity.
-      example_url: null
-      # Leg-D curated thumbnail (D-2): real Leg-A differential render of the identical
-      # DEFAULT_VARIANT_PAIR-B surface this guide promotes (theme e8tz1vxb9v1urqp +
-      # lineArt + recraft-v3-svg + blueprint keywords; evidence/leg-a-styleguide-
-      # differential-20260701T164108Z/render-A-classic/B_p3-high-maze.png).
-      thumbnail_ref: state/config/gamma-styleguide-thumbnails/hil-2026-apc-blueprint-classic.png
+          Blueprint Editorial theme + illustration preset + recraft-v3 + Default/Fluid pages.
+          PROVEN 2026-07-03: recraft-v3 renders clean Western illustration on the Blueprint
+          palette (the gpt-image-2-mini Japanese-text problem drove the model swap); the
+          operator's exemplar deck confirms the palette reads well.
+      example_url: "https://foundations-of-the-innov-516svqx.gamma.site/"
+      thumbnail_ref: state/config/gamma-styleguide-thumbnails/hil-2026-apc-crossroads-blueprint.png
       last_used: null
     coherence:
       theme_art_keywords_dimensions: >-
-        Blueprint theme + lineArt + construction keywords must remain together; 16:9
-        deck output.
+        Blueprint Editorial theme + AI-generated illustration + recraft-v3 + Default/Fluid
+        pages. PROVEN clean Western illustration (session-09 two-arm trial + operator exemplar).
     provenance:
-      source: default_variant_pair
-      established: '2026-06-24'
-      notes: Promotes DEFAULT_VARIANT_PAIR B out of smoke-fixture status.
+      source: crossroads-classic-theme-swap
+      established: '2026-07-03'
+      notes: >-
+        Operator-directed B counterpart of hil-2026-apc-crossroads-classic: an identical
+        record with the theme swapped Tejal (njim9kuhfnljvaa) -> Blueprint Editorial
+        (e8tz1vxb9v1urqp), for A/B-paired deck selection in Storyboard. To be tuned toward
+        a genuine-but-aesthetically-compatible difference and eyed live before promotion.
+
+  # -- Studio-mode companion of the crossroads-blueprint style (studio-via-API override
+  #    plumbing, session-10). Approach 1: a DISTINCT, self-contained studio record — NOT a
+  #    re-composition of the Classic sibling. The base full-bleed Studio-B template carries
+  #    per-record theme_id (Blueprint Editorial) + image_model (recraft-v3) OVERRIDES. Born
+  #    CANDIDATE; promotion is operator-eye-gated (deferred). RENDER-PROVEN at the API level
+  #    (trial crossroads-blueprint-studio-20260703T070021Z); production-seam live proof this
+  #    session. This record's field-by-field mapping is the spec for the deferred
+  #    Classic->Studio transformer skill.
+  hil-2026-apc-crossroads-blueprint-studio:
+    production_mode: studio
+    lifecycle: candidate
+    version: 1
+    derived_from: hil-2026-apc-crossroads-blueprint
+    authored_session:
+      session: session-10
+      date: '2026-07-03'
+      author: Dan/CD
+      source_sibling: hil-2026-apc-crossroads-blueprint
+      notes: >-
+        Reference Classic->Studio transformation: the crossroads-blueprint Classic style
+        (recraft-v3 illustration on the Blueprint Editorial theme) delivered instead as a
+        full-bleed 16:9 Studio image-card deck via the studio-via-API override plumbing.
+    promotion_criteria: >-
+      Candidate -> permanent ONLY after ALL of: (1) live Studio render captured with a
+      retrievable pointer (gamma id / export url / thumbnail); (2) operator-eye verdict
+      recorded; (3) micro-text legibility pass - zoom the baked data callouts and confirm
+      they are legible, spelled, and un-garbled at delivery size (recraft-v3's known
+      small-text weakness x Blueprint's micro-text density is the primary risk); (4)
+      English-only confirmed, zero CJK leakage; (5) genuine full-bleed 16:9 (not
+      letterboxed); (6) sibling-parity - the Classic crossroads-blueprint parent is
+      resolved/promoted first (a companion may not outrank its parent).
+    theme: null
+    studio_template:
+      gamma_id: g_nv5q4da69qiiu8q
+      name: Studio B Gamma template (base full-bleed)
+      source: runs/studio-trial/studio-b-gamma-settings.yaml
+      # Per-record Studio overrides (studio-via-API override plumbing, session-10):
+      theme_id: e8tz1vxb9v1urqp        # Blueprint Editorial theme override
+      image_model: recraft-v3          # clean-Western image-model override
+    studio_prompt_lock:
+      wrapper_id: gary_studio_lock_wrapper_v1
+      behavior: >-
+        Lock design; keep one full-bleed image card; only swap subject to the new slide
+        topic. The English-only text steer is enforced by the wrapper constant.
+      guard:
+        type: aspect_ratio_min
+        min_ratio: 1.4
+        expected_ratio: 1.7778
+    prompt_configuration:
+      # Studio records carry NO Classic visuals surface — the create-from-template plus the
+      # theme_id/image_model overrides ARE the sole style authority. Only non-surface
+      # template-lock instructions remain.
+      additional_instructions:
+      - Preserve the template's full-bleed image-card composition.
+    presentation:
+      display_name: HIL 2026 APC Crossroads — Blueprint (Studio)
+      distinguishing: >-
+        The Studio-mode companion of the crossroads-blueprint style: the SAME cooler
+        Blueprint Editorial palette and clean-Western recraft-v3 illustration, delivered as
+        a full-bleed 16:9 Studio image-card (title + key data embedded IN the illustration)
+        rather than Classic typography.
+      narrative:
+        summary: >-
+          A full-bleed Studio image-card deck on the base Studio-B template, re-themed to
+          Blueprint Editorial and rendered with recraft-v3 via per-record overrides. The
+          image carries the title and data; the template plus overrides are the style
+          authority.
+        feels_like: Immersive, single-image-per-slide crossroads in a cool editorial palette.
+        use_when: >-
+          A slide's meaning lives in one bold full-bleed illustration with embedded text and
+          the Blueprint palette is wanted.
+        avoid_when: >-
+          Dense Classic typography or multi-block text is required, or the Classic
+          crossroads-blueprint (per-slide illustration + real text) is the better fit.
+        triad_rationale: >-
+          Base Studio-B full-bleed template + Blueprint Editorial theme override
+          (e8tz1vxb9v1urqp) + recraft-v3 image-model override; the aspect-ratio guard
+          (min 1.4) proves the exported card kept the 16:9 frame. recraft-v3 renders clean
+          Western illustration (gpt-image-2-mini renders Japanese on this crossroads subject).
+      example_url: null
+      thumbnail_ref: null
+      last_used: null
+    coherence:
+      template_art_dimensions: >-
+        Base Studio-B template (style authority) + Blueprint Editorial theme override +
+        recraft-v3 image model + full-bleed 16:9. Classic text/card settings are forbidden
+        on a studio record.
+    provenance:
+      source: crossroads-blueprint-classic-to-studio-transform
+      established: '2026-07-03'
+      runner_up:
+        model: gpt-image-2-mini
+        rejected_because: >-
+          Renders Japanese text on this journey/crossroads subject even under a hardened
+          "no Japanese/Chinese/Korean characters" language lock (session-09 two-arm trial
+          crossroads-blueprint-twoarm-20260703T064100Z); recraft-v3 is the clean-Western fix.
+      known_limitation: >-
+        recraft-v3 garbles SMALL embedded/body text (observed session-10 production-seam
+        live render crossroads-blueprint-studio-prodseam-20260703T155101Z: hero titles
+        render clean and English, but small taglines/body garble - "Ciinical"/"Tansfornative"
+        on card 1, gibberish body on card 2). BLOCKS promotion criterion-3 (micro-text
+        legibility). Directed refinement (deferred-inventory): Arm-1 hero-title + large-
+        callouts only, minimize small illegible body text (play to recraft-v3's strength);
+        Arm-2 fallback = image_model swap. NOT accept-limitation - a promoted style with
+        garbled body text would degrade the source-detail->Gamma conveyance invariant.
+      notes: >-
+        Approach-1 distinct self-contained studio record; the Studio companion of
+        hil-2026-apc-crossroads-blueprint. RENDER-PROVEN at the API level (trial
+        crossroads-blueprint-studio-20260703T070021Z); production-seam live proof session-10.
+        PROMOTION-PENDING operator eye + micro-text legibility.
+
+  # -- Art-style variant of the standard-'A' crossroads style: Digital Collage --
+  hil-2026-apc-crossroads-digital-collage:
+    production_mode: api
+    # Created 2026-07-03 (operator-directed): the crossroads standard-'A' style copied
+    # verbatim with ONLY the ART STYLE changed to "Digital Collage" (a named Gamma
+    # Image-choices style, §2). "Digital Collage" is NOT one of the 6 legacy stylePreset
+    # values, so it is routed through the CANONICAL free-text channel (imageOptions.style,
+    # via custom_style) per matrix §6 — not the legacy stylePreset enum.
+    # PROMOTED to permanent 2026-07-03 (session-09, operator-directed): a briefed live
+    # re-render through Gary's authentic seam produced clean, on-brand, Western-neutral
+    # digital collages on both image-warranted slides (title + vignette) of the standard
+    # corpus style-test-strip-v1 (evidence digital-collage-briefed-20260703T062743Z). This
+    # PROVES matrix §6 — the free-text `style` channel carries a NAMED art style on the wire
+    # (imageOptions.style="Digital Collage", wire receipt captured) — and re-confirms the
+    # content-brief lesson (matrix §8): un-briefed slides photo-grid and garble signage;
+    # briefed slides render showcase collages. Model gpt-image-2-mini.
+    # Reference: https://a-clinician-at-the-cross-krkt5b4.gamma.site/
+    lifecycle: permanent
+    version: 1
+    theme:
+      id: njim9kuhfnljvaa
+      name: 2026 HIL APC Tejal
+    studio_template: null
+    prompt_configuration:
+      text_content:
+        mode: condense
+        amount: minimal
+        audience: null
+        tone: null
+        language: en
+      visuals:
+        image_source: aiGenerated
+        image_model: gpt-image-2-mini
+        # ART STYLE = "Digital Collage" via the canonical free-text channel (§6):
+        # style_preset: custom routes custom_style -> imageOptions.style. (Not the legacy
+        # stylePreset enum, which does not carry the named Image-choices styles.)
+        style_preset: custom
+        custom_style: "Digital Collage"
+        keywords: []
+      # additional_instructions intentionally omitted (same as the A style).
+    page_settings:
+      card_options:
+        dimensions: fluid
+      # UI-only reference (see the A style) — not runtime-bound; kept for fidelity.
+      ui_only_reference:
+        card_width: L
+        content_alignment: middle
+        font_size: M
+        show_card_backdrops: false
+        animations: true
+        card_headers_footers: not_configured
+    presentation:
+      display_name: HIL 2026 APC Crossroads Digital Collage
+      distinguishing: >-
+        The crossroads standard-'A' style with its art style changed to Digital Collage:
+        same Tejal theme, GPT Image 2 Mini, condensed prose and Fluid pages — only the
+        illustration register changes, for a distinct A/B or roster option.
+      narrative:
+        summary: >-
+          The crossroads style rendered in a Digital Collage art style: layered, textured,
+          collage-composed imagery on the Tejal theme; same condensed prose and
+          Default/Fluid pages as the standard-'A' style.
+        feels_like: Textured, editorial, hand-composed collage on a calm clinical base.
+        use_when: >-
+          When a richer, collage-textured illustration register is wanted while keeping the
+          crossroads style's calm clinical structure.
+        avoid_when: >-
+          When the clean, flat illustration register of the standard-'A' style is the goal.
+        triad_rationale: >-
+          Tejal theme + Digital Collage art style (free-text imageOptions.style) + GPT
+          Image 2 Mini + Default/Fluid pages. NOTE: routing named styles via free-text
+          `style` is the §6-canonical channel but UNPROVEN on the wire; the live render is
+          the resolution test.
+      example_url: "https://foundations-of-the-innov-63rmh43.gamma.site/"
+      # Leg-D curated thumbnail: the session-09 BRIEFED re-render vignette card (a clean
+      # Western-neutral crossroads digital collage; evidence
+      # digital-collage-briefed-20260703T062743Z/A_A_pages/3_The-Modern-Clinicians-Dilemma.png).
+      thumbnail_ref: state/config/gamma-styleguide-thumbnails/hil-2026-apc-crossroads-digital-collage.png
+      last_used: null
+    coherence:
+      theme_art_keywords_dimensions: >-
+        Tejal theme + "Digital Collage" art style (canonical free-text imageOptions.style) +
+        GPT Image 2 Mini + Default/Fluid pages. PROVEN coherent on a live briefed re-render
+        the operator signed off (session-09, 2026-07-03).
+    provenance:
+      source: crossroads-classic-artstyle-swap
+      established: '2026-07-03'
+      notes: >-
+        Operator-directed art-style variant of hil-2026-apc-crossroads-classic: identical
+        record with the art style changed illustration -> "Digital Collage", routed via the
+        free-text imageOptions.style channel (custom_style) per matrix §6. PROMOTED to
+        permanent (fully approved) 2026-07-03 session-09 after a briefed live re-render the
+        operator approved ("beautiful"). Original reference deck (target look):
+        https://a-clinician-at-the-cross-krkt5b4.gamma.site/ ; approved exemplar:
+        https://foundations-of-the-innov-63rmh43.gamma.site/ .
+        WINNING COMBO (for reliably reproducing this look): the style-field values in THIS
+        record — image_source=aiGenerated; image_model=gpt-image-2-mini; style_preset=custom
+        + custom_style="Digital Collage" (lands on the wire as imageOptions.style="Digital
+        Collage", the canonical free-text channel — matrix §6); keywords=[] (imagery is driven
+        by the per-slide brief, NOT keywords); text mode=condense/amount=minimal;
+        dimensions=fluid; theme Tejal njim9kuhfnljvaa — PLUS the NON-NEGOTIABLE briefing
+        requirement (matrix §8): every IMAGE-WARRANTED slide (title hero, human vignette) must
+        carry a per-slide "Illustration: ..." brief in the slide CONTENT that names the collage
+        composition (torn-paper / mixed-media fragments, layered clinical scenes, one clear
+        subject), fixes a contemporary WESTERN / North-American clinical setting with NO
+        cultural, national, or religious iconography, and forbids embedded/garbled text (any
+        unavoidable text = brief, legible American English). Structure-warranted slides (data
+        -> stat tiles, framework -> icon grid) stay content-only and render clean without a
+        brief. WITHOUT the brief the model photo-grids and garbles signage (content-brief gap,
+        matrix §8 — an authoring gap, NOT a style/model defect). Evidence: briefed
+        digital-collage-briefed-20260703T062743Z (clean, on-brand, operator-approved) vs
+        un-briefed digital-collage-trial-20260703T062339Z (photo-grid + garbled card-1).
+
+  # -- Magazine editorial variant of the standard-'A' crossroads style (operator-directed
+  #    2026-07-03 session-09): the crossroads record carried over with FOUR changes - text
+  #    amount concise, art style "Magazine" (free-text imageOptions.style, matrix §6), model
+  #    Nano Banana 2 Mini (gemini-3.1-flash-image-mini), and a 16:9 page frame. Promoted to
+  #    permanent right away on the operator's live example deck (no separate trial requested). --
+  hil-2026-apc-crossroads-magazine:
+    production_mode: api
+    lifecycle: permanent
+    version: 1
+    theme:
+      id: njim9kuhfnljvaa
+      name: 2026 HIL APC Tejal
+    studio_template: null
+    prompt_configuration:
+      text_content:
+        mode: condense
+        amount: concise
+        audience: null
+        tone: null
+        language: en
+      visuals:
+        image_source: aiGenerated
+        image_model: gemini-3.1-flash-image-mini
+        style_preset: custom
+        custom_style: Magazine
+        keywords: []
+    page_settings:
+      card_options:
+        dimensions: 16x9
+      # Carried from crossroads-classic (UI-only page-setup reference; not runtime-bound).
+      ui_only_reference:
+        card_width: L
+        content_alignment: middle
+        font_size: M
+        show_card_backdrops: false
+        animations: true
+        card_headers_footers: not_configured
+    presentation:
+      display_name: HIL 2026 APC Crossroads Magazine
+      distinguishing: >-
+        The magazine-editorial variant of the standard 'A' crossroads style: the same Tejal
+        clinician register rendered as AI "Magazine" art (Nano Banana 2 Mini) with condensed
+        prose on a widescreen 16:9 editorial frame.
+      narrative:
+        summary: >-
+          A magazine/editorial take on the crossroads register: condensed text, a polished
+          "Magazine" AI art style, and a 16:9 widescreen layout - clean editorial spreads
+          where a strong image leads and a concise caption supports it.
+        feels_like: Polished, editorial, magazine-spread; confident and contemporary.
+        use_when: >-
+          Slides that should read like a modern magazine feature - a strong image with a
+          concise editorial caption on a widescreen frame.
+        avoid_when: Dense reference tables or slides that must be read rather than glanced.
+        triad_rationale: >-
+          Tejal theme + "Magazine" AI art style (Nano Banana 2 Mini) + 16:9 page frame agree
+          on a polished editorial-spread register; condense/concise keeps the caption tight so
+          the image leads.
+      example_url: "https://diagnosis-innovation-0mswhpq.gamma.site/"
+      # Curated thumbnail: a session-09 render of this exact config (Magazine art / Nano
+      # Banana 2 Mini / 16:9) reproducing the exemplar's photographic-editorial look.
+      thumbnail_ref: state/config/gamma-styleguide-thumbnails/hil-2026-apc-crossroads-magazine.png
+      last_used: null
+    coherence:
+      theme_art_keywords_dimensions: >-
+        Tejal theme + "Magazine" art style (canonical free-text imageOptions.style) + Nano
+        Banana 2 Mini (gemini-3.1-flash-image-mini) + 16:9 page frame; condense/concise text.
+    provenance:
+      source: crossroads-classic-magazine-variant
+      established: '2026-07-03'
+      notes: >-
+        Operator-directed 2026-07-03 (session-09): a copy of the standard-'A'
+        hil-2026-apc-crossroads-classic record with FOUR changes - text amount minimal ->
+        concise (mode stays condense); art style illustration -> "Magazine" (routed via the
+        free-text imageOptions.style channel, custom_style, per matrix §6); image model
+        gpt-image-2-mini -> Nano Banana 2 Mini (gemini-3.1-flash-image-mini); page frame fluid
+        -> 16:9. Everything else carried from crossroads. Promoted to permanent (active) right
+        away on the operator's live example deck https://diagnosis-innovation-0mswhpq.gamma.site/ .
+        A curated thumbnail_ref (hil-2026-apc-crossroads-magazine.png) is now set, so the picker
+        renders the real magazine render rather than the "no live render" placeholder.
+
+  # -- "Bread and butter" preserve-mode variant of the standard-'A' crossroads style
+  #    (operator-directed + named 2026-07-03 session-09): crossroads carried over with THREE
+  #    changes - text mode condense -> preserve (verbatim source text), page frame fluid ->
+  #    16:9, and image model GPT Image 2 Mini -> full GPT Image (gpt-image-2). The everyday
+  #    workhorse illustration style. Left CANDIDATE (no promote instruction given). --
+  hil-2026-apc-crossroads-bread-and-butter:
+    production_mode: api
+    # PROMOTED to permanent (active) 2026-07-03 session-09 on the operator's word.
+    lifecycle: permanent
+    version: 1
+    theme:
+      id: njim9kuhfnljvaa
+      name: 2026 HIL APC Tejal
+    studio_template: null
+    prompt_configuration:
+      text_content:
+        mode: preserve
+        amount: null
+        audience: null
+        tone: null
+        language: en
+      visuals:
+        image_source: aiGenerated
+        image_model: gpt-image-2
+        style_preset: illustration
+        custom_style: null
+        keywords: []
+    page_settings:
+      card_options:
+        dimensions: 16x9
+      # Carried from crossroads-classic (UI-only page-setup reference; not runtime-bound).
+      ui_only_reference:
+        card_width: L
+        content_alignment: middle
+        font_size: M
+        show_card_backdrops: false
+        animations: true
+        card_headers_footers: not_configured
+    presentation:
+      display_name: HIL 2026 APC Crossroads Bread and Butter
+      distinguishing: >-
+        The everyday workhorse: the crossroads clinician register with source text PRESERVED
+        verbatim, full GPT Image illustration, on a 16:9 frame - a dependable general-purpose
+        style.
+      narrative:
+        summary: >-
+          A dependable general-purpose take on the crossroads register: preserve-mode text
+          keeps the source wording and figures verbatim on the slide, full GPT Image
+          illustration, widescreen 16:9.
+        feels_like: Dependable, clean, general-purpose - the default you reach for.
+        use_when: >-
+          Most narrated lessons where the source wording and any figures must stay verbatim on
+          the slide (preserve) and a full-strength illustration is wanted, on a 16:9 frame.
+        avoid_when: >-
+          Slides that should condense heavily to a glance (use the condense-based styles), or
+          that need a distinct art register (collage / magazine).
+        triad_rationale: >-
+          Tejal theme + full GPT Image illustration + 16:9 frame with preserve-mode text agree
+          on a dependable general-purpose register; preserve keeps source titles and figures
+          verbatim for fidelity.
+      example_url: "https://diagnosis-innovation-zaliwyt.gamma.site/"
+      # Curated thumbnail: a session-09 render of this exact config (illustration / full GPT
+      # Image / 16:9 / preserve) reproducing the exemplar's clean editorial-illustration look.
+      thumbnail_ref: state/config/gamma-styleguide-thumbnails/hil-2026-apc-crossroads-bread-and-butter.png
+      last_used: null
+    coherence:
+      theme_art_keywords_dimensions: >-
+        Tejal theme + illustration art style + full GPT Image (gpt-image-2) + 16:9 page frame;
+        preserve-mode text (verbatim source).
+    provenance:
+      source: crossroads-classic-bread-and-butter-variant
+      established: '2026-07-03'
+      notes: >-
+        Operator-directed + named "bread and butter" 2026-07-03 (session-09): a copy of the
+        standard-'A' hil-2026-apc-crossroads-classic record with THREE changes - text mode
+        condense -> preserve (verbatim source; amount omitted, preserve forbids it); page frame
+        fluid -> 16:9; image model gpt-image-2-mini -> full GPT Image (gpt-image-2). Art style
+        stays illustration, image source stays aiGenerated, theme carried. Exemplar
+        https://diagnosis-innovation-zaliwyt.gamma.site/. NOTE: "GPT Image" (plain) mapped to
+        gpt-image-2 (the full current-gen GPT Image, vs crossroads' gpt-image-2-mini) - confirm
+        if a different GPT Image variant was intended. Left CANDIDATE (no promote instruction);
+        flip to permanent on operator's word.
 
   # -- Proof seed #2 (Studio; template is the style authority, Classic-only keys forbidden) --
   hil-2026-apc-studio-image-card:
     production_mode: studio
-    status: active
+    # Session-07 A1 retro-mark: proven through production use (Leg-A dual-gate close).
+    lifecycle: permanent
     version: 1
     theme: null
     studio_template:
@@ -182,9 +624,6 @@ style_guides:
       # item #3a). Only non-surface template-lock instructions remain.
       additional_instructions:
       - Preserve the template's full-bleed image-card composition.
-    page_settings:
-      export:
-        export_as: png
     presentation:
       display_name: HIL 2026 APC Studio Image Card
       distinguishing: >-
@@ -222,7 +661,9 @@ style_guides:
   # -- Leg-C live-proof probe (Classic; multi-beat narrative walk; scripted floor) --
   leg-c-part3-floor-probe:
     production_mode: api
-    status: active
+    # Session-07 A1 retro-mark: ratified Leg-C test fixture (dual-gate closed);
+    # probe visibility (not lifecycle) is what keeps it out of production picking.
+    lifecycle: permanent
     version: 1
     theme:
       id: njim9kuhfnljvaa
@@ -231,7 +672,7 @@ style_guides:
     prompt_configuration:
       text_content:
         mode: condense
-        amount: brief
+        amount: minimal
         audience: >-
           Faculty and instructional designers familiar with Canvas and course design,
           American English
@@ -251,8 +692,6 @@ style_guides:
     page_settings:
       card_options:
         dimensions: fluid
-      export:
-        export_as: png
     presentation:
       # Leg-D D-3: additive probe marker — scaffolding must not masquerade as an
       # intentional style. The picker's default view hides `visibility: probe` guides
@@ -305,7 +744,9 @@ style_guides:
   # -- Leg-C live-proof probe (Classic; multi-beat narrative walk; scripted floor) --
   leg-c-part3-floor-toohigh:
     production_mode: api
-    status: active
+    # Session-07 A1 retro-mark: ratified Leg-C test fixture (dual-gate closed);
+    # probe visibility (not lifecycle) is what keeps it out of production picking.
+    lifecycle: permanent
     version: 1
     theme:
       id: njim9kuhfnljvaa
@@ -314,7 +755,7 @@ style_guides:
     prompt_configuration:
       text_content:
         mode: condense
-        amount: brief
+        amount: minimal
         audience: >-
           Faculty and instructional designers familiar with Canvas and course design,
           American English
@@ -334,8 +775,6 @@ style_guides:
     page_settings:
       card_options:
         dimensions: fluid
-      export:
-        export_as: png
     presentation:
       # Leg-D D-3: additive probe marker (see leg-c-part3-floor-probe note).
       visibility: probe
@@ -381,6 +820,277 @@ style_guides:
         clones the classic seed's API surface so the floor-on differential vs the
         floor-off control isolates EXACTLY the scripted floor (N=20 deliberately ABOVE the corpus's max-reachable 9 — the AC#13 honest-refusal arm). Authored via the live-proof
         harness under the validator write-gate.
+
+  # -- Videographic/glance register on the model-hunt v2 WINNER (recraft-v3) + Westernization
+  #    steer. Supersedes the deprecated videographic-glance-track (session-07 proof vehicle).
+  #    recraft-v3 operator-approved 2026-07-03 (session-09) after a 3-card double-pull
+  #    confirmation under production conditions; the no-iconography steer clears recraft-v3's
+  #    deterministic Japanese-motif drift (torii/rising-sun) seen in the confirmation renders. --
+  hil-2026-apc-videographic-glance:
+    production_mode: api
+    # PROMOTED to permanent (fully approved) 2026-07-03 session-09: the steered live render
+    # cleared recraft-v3's Japanese-motif drift on the image-warranted slides and the operator
+    # approved recraft-v3 + the steer as the winning combo.
+    lifecycle: permanent
+    version: 1
+    theme:
+      id: njim9kuhfnljvaa
+      name: 2026 HIL APC Tejal
+    studio_template: null
+    prompt_configuration:
+      text_content:
+        mode: condense
+        amount: concise
+        audience: >-
+          Faculty and instructional designers familiar with Canvas and course design,
+          American English
+        tone: Declarative, momentum-forward, one spoken thought per screen - American English
+        language: en
+      visuals:
+        image_source: aiGenerated
+        image_model: recraft-v3
+        style_preset: illustration
+        custom_style: null
+        keywords:
+        - vector
+        - minimalist
+        - flat-color
+        - single-focal-icon
+        - bold
+      additional_instructions:
+      - >-
+        Videographic narrative register: each card carries one short narrative paragraph in
+        LARGE display type - text prominent and readable at a glance, never small body text.
+        Exactly one idea and exactly one visual per card, prompted by that card's own content,
+        with text and image anchored in the same layout position on every card. Dense
+        bridge/landing cards may carry up to 30 words; glance beats stay lean. Avoid rendering
+        text inside images; any unavoidable image text must be in American English. Do not add
+        content, steps, or diagrams beyond the provided text.
+      - >-
+        Setting and iconography steer (recraft-v3, session-09): depict a contemporary Western /
+        North American clinical or professional setting. Do NOT include cultural, national, or
+        religious iconography or symbolism of any kind - no torii or shrine gates, rising-sun
+        discs, national flags, temples, or region-specific motifs. Keep environments, signage,
+        and decorative elements generic and neutral.
+    page_settings:
+      card_options:
+        dimensions: 16x9
+    presentation:
+      display_name: HIL 2026 APC Videographic Glance
+      distinguishing: >-
+        The rapid-fire glance register on the model-hunt-winning recraft-v3 illustration model:
+        one glanced beat per card, a short narrative line in large display type, and one
+        anchored Western-neutral visual - screens turning every few seconds under a normal
+        voiceover pace.
+      narrative:
+        summary: >-
+          Meaning arrives as a stream of single glances: many small beats, one idea per card,
+          one anchored visual, one short narrative paragraph set LARGE. recraft-v3's clean
+          editorial-vector hand carries the imagery, steered to a Western-neutral setting.
+        feels_like: Kinetic, confident, documentary-paced, follow-along-effortless.
+        use_when: >-
+          Narrated lessons where momentum and retention matter more than reference density;
+          openers, case-for-change arcs, motivational spines. EARMARK (operator, session-07):
+          preferred as a 'B' COMPANION TRACK to an expository source style.
+        avoid_when: >-
+          Reference material learners must study or screenshot: dense data tables, multi-figure
+          evidence slides, lexicons, anything meant to be READ rather than glanced. Never for
+          slides that must stand alone without VO. PROHIBITION (live-earned, session-07 flights
+          2b/2c): do NOT force cross-card visual continuity - per-card visual independence is
+          this style's grammar.
+        triad_rationale: >-
+          Tejal theme + vector-minimalist single-focal icons (recraft-v3) + fixed 16:9 frames
+          agree on one kinetic register; 16:9 is the video-bound publication frame, the single
+          focal icon plus one large narrative line is what a short glance absorbs, and the brand
+          theme keeps the rapid stream coherent. The no-iconography steer is load-bearing:
+          recraft-v3 deterministically injects Japanese motifs without it (session-09 evidence).
+      example_url: null
+      # Leg-D curated thumbnail: the session-09 STEERED proof render card 1 (recraft-v3 +
+      # no-iconography steer cleared the Japanese motifs; evidence
+      # videographic-steer-render-20260703T055511Z/A_vgr-steer-01-safety.png).
+      thumbnail_ref: state/config/gamma-styleguide-thumbnails/hil-2026-apc-videographic-glance.png
+      last_used: null
+    coherence:
+      theme_art_keywords_dimensions: >-
+        Kinetic glance register on the Tejal brand carrier; one idea + one anchored
+        Western-neutral visual + one large narrative line per card; 16:9 video frame. recraft-v3
+        is the model-hunt v2 winner (operator-approved 2026-07-03); the additional_instructions
+        no-iconography steer is required to clear its Japanese-motif drift.
+    provenance:
+      source: model-hunt-v2-winner
+      established: '2026-07-03'
+      notes: >-
+        Model recraft-v3 selected via the session-07 model hunt (v2 discrimination protocol,
+        homogenizer OFF, wire receipts) and CONFIRMED in session-09 under production conditions
+        (keywords ON) via a 3-card double-pull through Gary's authentic seam
+        (evidence/model-hunt-winner-confirm-20260703T052745Z). recraft-v3 proved reliable and
+        deterministic with a strong editorial-vector hand, but deterministically injected
+        Japanese cultural/religious iconography (torii gates, rising-sun disc, swirl clouds) on
+        journey themes - hence the operator-directed Westernization / no-iconography steer added
+        as a second additional_instructions entry. Recipe inherited from the deprecated
+        videographic-glance-track (session-07 Flight-2 proof), model swapped
+        gpt-image-2-mini -> recraft-v3. Steered proof render + thumbnail pending before
+        promotion to permanent.
+
+  # -- Session-07 CANDIDATE (videographic register; Flight-2 proof 2026-07-02) --
+  videographic-glance-track:
+    production_mode: api
+    # RESET 2026-07-03 (operator-directed "start over with style creation"): the
+    # session-07 videographic candidate is RETIRED to `deprecated`. The record is
+    # preserved for audit + supersession history — its prose carries load-bearing
+    # operator decisions (B-companion earmark, uncanny-valley prohibition,
+    # cluster-head input contract) worth keeping. Deprecated guides are hidden from
+    # the picker's production roster (parallel to probe visibility;
+    # `include_deprecated` opts in for audit). The videographic *concept* survives
+    # independently as the filed mode/overlay reframe. promotion_criteria +
+    # authored_session are retained as candidate-era history (the validator requires
+    # them only for lifecycle=candidate).
+    lifecycle: deprecated
+    deprecated_session: 2026-07-03-session-08
+    promotion_criteria: >-
+      B-corpus stress test + re-run reliability proof in a later session
+      (operator-ratified 2026-07-02), PLUS a glance-rule evaluation with real VO
+      played over the cards (Sally A6: on-screen text must be a keyword SUBSET of
+      the concurrent narration — VO-echo, never paraphrase).
+    authored_session: 2026-07-02-session-07
+    version: 2
+    theme:
+      id: njim9kuhfnljvaa
+      name: 2026 HIL APC Tejal
+    studio_template: null
+    prompt_configuration:
+      text_content:
+        mode: condense
+        # v2 (flight-2e live evidence): minimal -> concise. The style's conviction is
+        # one short narrative paragraph per card in LARGE display type, not captions.
+        amount: concise
+        audience: >-
+          Faculty and instructional designers familiar with Canvas and course design,
+          American English
+        tone: Declarative, momentum-forward, one spoken thought per screen - American English
+        language: en
+      visuals:
+        image_source: aiGenerated
+        # v2 model swap (operator finding, flights 2-2e): gpt-image-2-mini rendered
+        # anime-register imagery + JAPANESE in-image text (apparent training-origin
+        # default) - availability witness DISCHARGED (verified live 5x) but the
+        # aesthetic is unsuitable for this clinical register. recraft-v4 is the
+        # catalog's proven editorial-medical-illustration family (Standard tier).
+        image_model: recraft-v4
+        style_preset: illustration
+        custom_style: null
+        keywords:
+        - vector
+        - minimalist
+        - flat-color
+        - single-focal-icon
+        - bold
+      # v2 rendering directives (Dan-dictated consult ruling 2026-07-02): the old
+      # <=8-words cap is DELETED, not softened - the live-proven conviction is a
+      # short narrative paragraph in large display type. In-image text is avoided
+      # as a directive whose PROVENANCE is model-specific (gpt-image-2-mini
+      # Japanese-text defect); re-test rather than treat as doctrine if models
+      # improve. NOTE (Winston A2 boundary): today's conversation-space driver
+      # passes these verbatim; production wiring rides the at-scale follow-on.
+      additional_instructions:
+      - >-
+        Videographic narrative register: each card carries one short narrative
+        paragraph in LARGE display type - text prominent and readable at a glance,
+        never small body text. Exactly one idea and exactly one visual per card,
+        prompted by that card's own content, with text and image anchored in the
+        same layout position on every card. Dense bridge/landing cards may carry
+        up to 30 words; glance beats stay lean. Avoid rendering text inside
+        images; any unavoidable image text must be in American English. Do not
+        add content, steps, or diagrams beyond the provided text.
+    page_settings:
+      card_options:
+        dimensions: 16x9
+    presentation:
+      display_name: Videographic Glance-Track
+      distinguishing: >-
+        The rapid-fire register: screens turn every 5-6 seconds under a normal
+        voiceover pace, so each card is one glanced beat carrying a short
+        narrative line in large display type.
+      narrative:
+        summary: >-
+          Believes meaning should arrive as a stream of single glances: the screen
+          is a metronome for the voice. Many small beats, one idea per card, one
+          anchored visual, and one short narrative paragraph set LARGE - read in a
+          glance, never studied. Each card's image belongs to that card alone.
+        feels_like: Kinetic, confident, documentary-paced, follow-along-effortless.
+        use_when: >-
+          Narrated lessons where momentum and retention matter more than reference
+          density; openers, case-for-change arcs, motivational spines. EARMARK
+          (operator, session-07): preferred as a 'B' COMPANION TRACK to an
+          expository source style - at the Storyboard gate the HIL interleaves
+          glance-runs with standard exposition per source unit; expect a
+          substantially higher card count than the A track (no one-to-one card
+          correspondence; anchoring is per source unit).
+        avoid_when: >-
+          Reference material learners must study or screenshot: dense data tables,
+          multi-figure evidence slides, lexicons, anything meant to be READ rather
+          than glanced. Never for slides that must stand alone without VO.
+          PROHIBITION (live-earned, flights 2b/2c): do NOT force cross-card visual
+          continuity - neither literal same-scene callbacks nor symbolic echo
+          systems; probabilistic per-card generation lands them in an uncanny
+          valley (partial matches read as errors). Per-card visual independence is
+          this style's grammar; true continuity awaits construction-route visual
+          disaggregation (one master visual decomposed deterministically).
+        triad_rationale: >-
+          Tejal theme + vector-minimalist single-focal icons + fixed 16:9 frames
+          agree on one kinetic register: 16:9 is the video-bound publication frame,
+          the single focal icon + one large narrative line is what a 5-second
+          glance can absorb, and the brand theme keeps the rapid stream coherent
+          rather than chaotic. The scripted input contract (below) is the cadence
+          carrier - the API surface stays brand-standard.
+      example_url: null
+      thumbnail_ref: null
+      last_used: null
+    coherence:
+      theme_art_keywords_dimensions: >-
+        Kinetic glance register on the TJU/Tejal brand carrier; one idea + one
+        anchored visual + one large narrative line per card; 16:9 video frame.
+        INPUT CONTRACT (Winston A2 + cluster-head grammar, operator-directed
+        session-07): this style expects pre-chunked beats - 6 to 8 beats per
+        source slide, roughly 15-30 words per beat, delimited by
+        newline-dash-dash-dash-newline breaks and dispatched with
+        cardSplit=inputTextBreaks (beats sanitized so no delimiter collision
+        mints phantom cards, Gary A11). CLUSTER-HEAD GRAMMAR: the narration
+        specialist identifies the cluster-HEAD beat, which alone carries any
+        high-value design-note image intent; child beats are self-prompted by
+        their own narrative and receive imagery only when the specialist deems
+        it warranted. CAUTION (flight-2e evidence): one generation = one shared
+        visual brief - in-beat image intent bleeds deck-wide; genuinely divergent
+        runs need per-run dispatch. Beat authoring belongs to Irene Pass-1 at
+        scale (filed follow-on); the contract is declared here so the at-scale
+        story inherits it.
+    provenance:
+      source: session-07-flight-2
+      established: '2026-07-02'
+      notes: >-
+        Authored live with the operator (session-07 party green-light record
+        2026-07-02, amendments A2/A6/A11/A12 encoded). v1 = A-corpus proof
+        (style-test-strip-v1 slide 3, 8 beats). v2 (same session, Dan-dictated
+        consult ruling): text conviction rewritten from caption-cap to
+        narrative-paragraph-in-display-type (flight-2e evidence); continuity
+        prohibition added (flights 2b/2c uncanny valley); cluster-head input
+        contract added; in-image-text directive added (model-scoped provenance:
+        gpt-image-2-mini anime-register/Japanese-text finding); image model
+        swapped gpt-image-2-mini -> recraft-v4 (witness discharged, aesthetic
+        unsuitable for the clinical register). B-COMPANION EARMARK originated as
+        operator direction session-07; schema formalization (field vs
+        modality-overlay) DEFERRED to the close-gate decision - prose only by
+        design. The at-scale version (whole presentations, hundreds of cards,
+        stitched multi-generation dispatch, Irene Pass-1 beat authoring, VO-echo
+        gate, per-unit A/B interleave = Storyboard-gate-v2 semantics) is the
+        filed videographic-at-scale follow-on; VO-to-on-screen alignment is its
+        non-waivable gate. OPERATOR REFRAME (2026-07-02 mid-session, binding on
+        promotion): if this register proves out, videographic likely becomes a
+        MODE - orthogonal to style identity, like Classic/Studio - applicable to
+        ANY style. This record is the A-corpus proof vehicle, not the end-state
+        shape; promotion generalizes the glance rules + input contract into an
+        any-style overlay (schema home decided at the dual-gate close, Winston
+        reviewing).
 
 # `scripted` block — the sealed, registry-bound closed-vocab namespace (Leg-C wired).
 # A styleguide record MAY carry a list of scripted entries, each declaring ONE

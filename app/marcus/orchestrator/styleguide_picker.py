@@ -105,6 +105,31 @@ def _png_dimensions(path: Path) -> tuple[int, int]:
     return (width, height)
 
 
+def _atomic_write_text(path: Path, text: str) -> None:
+    """Crash-atomic text write (R-MAJOR-1): temp sibling + fsync + os.replace.
+
+    Writes to a temp file in the SAME directory as ``path`` (so ``os.replace``
+    is atomic on both NTFS and POSIX), flushes and ``os.fsync`` the descriptor,
+    then atomically renames the temp file over the destination. A crash mid-write
+    leaves either the previous file fully intact or the fully-written new file on
+    disk — never a truncated directive. The bytes are written verbatim (utf-8,
+    ``\\n`` preserved), matching the prior ``write_text(..., newline="\\n")``.
+    """
+    fd, tmp_name = tempfile.mkstemp(
+        dir=str(path.parent), prefix=path.name + ".", suffix=".tmp"
+    )
+    try:
+        with os.fdopen(fd, "wb") as handle:
+            handle.write(text.encode("utf-8"))
+            handle.flush()
+            os.fsync(handle.fileno())
+        os.replace(tmp_name, path)
+    except BaseException:
+        with contextlib.suppress(OSError):
+            os.unlink(tmp_name)
+        raise
+
+
 @contextlib.contextmanager
 def _advisory_lock(store_path: Path) -> Iterator[None]:
     """Advisory same-host lock around a store mutation (R8).
@@ -183,6 +208,56 @@ def _last_used_by_guide(events_path: Path) -> dict[str, str]:
     return latest
 
 
+def _assert_pickable_guide(
+    guide_name: str, guides: dict[str, Any], ssot: Path
+) -> dict[str, Any]:
+    """A-M1 single-source guard: a guide must be in the SSOT AND production-pickable.
+
+    Membership + lifecycle/visibility invariant enforced in ONE place so the
+    directive writer AND the gh-pages selection-code decoder agree byte-for-byte:
+    a ``lifecycle: deprecated`` (retired) or ``visibility: probe`` (scaffolding)
+    guide can NEVER be bound into a production run. Returns the SSOT record.
+    """
+    if guide_name not in guides:
+        raise PickerError(
+            f"picked styleguide {guide_name!r} is not in the SSOT {ssot} "
+            f"(known: {sorted(guides)})"
+        )
+    record = guides[guide_name]
+    presentation = record.get("presentation") or {} if isinstance(record, dict) else {}
+    lifecycle = (
+        str(record.get("lifecycle") or "candidate").strip().lower()
+        if isinstance(record, dict)
+        else "candidate"
+    )
+    visibility = str(presentation.get("visibility") or "").strip().lower()
+    if lifecycle == "deprecated":
+        raise PickerError(
+            f"picked styleguide {guide_name!r} is deprecated (retired) and cannot "
+            f"be bound into a production directive (A-M1 lifecycle invariant)"
+        )
+    if visibility == "probe":
+        raise PickerError(
+            f"picked styleguide {guide_name!r} is a probe (scaffolding) and cannot "
+            f"be bound into a production directive (A-M1 visibility invariant)"
+        )
+    return record
+
+
+def assert_pickable_guide(
+    guide_name: str, *, ssot_path: str | Path | None = None
+) -> dict[str, Any]:
+    """Public single-source A-M1 guard used by the gh-pages decoder (Q1 anti-drift).
+
+    Loads the SSOT and applies the same membership + lifecycle/visibility rejection
+    that :func:`write_pick_to_directive` applies at the mutation point, so a slug
+    decoded from a pasted selection code is validated by the identical rule.
+    """
+    ssot = Path(ssot_path) if ssot_path is not None else GAMMA_STYLE_GUIDES_SSOT_PATH
+    guides = _load_ssot_guides(ssot)
+    return _assert_pickable_guide(str(guide_name).strip(), guides, ssot)
+
+
 def _load_ssot_guides(ssot_path: Path) -> dict[str, Any]:
     if not ssot_path.is_file():
         raise PickerError(f"styleguide SSOT not found at {ssot_path}")
@@ -199,6 +274,7 @@ def _load_ssot_guides(ssot_path: Path) -> dict[str, Any]:
 def load_picker_roster(
     *,
     include_probes: bool = False,
+    include_deprecated: bool = False,
     ssot_path: str | Path | None = None,
     events_path: str | Path | None = None,
 ) -> list[dict[str, Any]]:
@@ -206,8 +282,11 @@ def load_picker_roster(
 
     Probe-marked guides (``presentation.visibility: probe``, D-3) are excluded
     unless ``include_probes`` — scaffolding must not masquerade as an
-    intentional style. ``last_used`` is joined from the append-only sidecar at
-    render time (D-1); the SSOT field stays null forever.
+    intentional style. ``lifecycle: deprecated`` guides are RETIRED and excluded
+    from the production roster unless ``include_deprecated`` (audit opt-in) — a
+    deprecated style must never be silently pickable for a production run.
+    ``last_used`` is joined from the append-only sidecar at render time (D-1);
+    the SSOT field stays null forever.
     """
     ssot = Path(ssot_path) if ssot_path is not None else GAMMA_STYLE_GUIDES_SSOT_PATH
     events = Path(events_path) if events_path is not None else GAMMA_STYLEGUIDE_PICKS_PATH
@@ -221,6 +300,13 @@ def load_picker_roster(
         presentation = record.get("presentation") or {}
         probe = str(presentation.get("visibility") or "").strip().lower() == "probe"
         if probe and not include_probes:
+            continue
+        # Session-07 A1: lifecycle is schema; absence defaults to candidate (safe
+        # state) so an unmarked record can never masquerade as permanent.
+        lifecycle = str(record.get("lifecycle") or "candidate").strip().lower()
+        # A retired (`deprecated`) style is hidden from the production roster;
+        # `include_deprecated` opts in for audit.
+        if lifecycle == "deprecated" and not include_deprecated:
             continue
         narrative = presentation.get("narrative") or {}
         page_settings = record.get("page_settings") or {}
@@ -237,6 +323,7 @@ def load_picker_roster(
                 },
                 "production_mode": str(record.get("production_mode") or "").strip().lower(),
                 "probe": probe,
+                "lifecycle": lifecycle,
                 "card_dimensions": (
                     str(card_options.get("dimensions") or "").strip()
                     if isinstance(card_options, dict)
@@ -274,7 +361,19 @@ main.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px
 .card { background: #fff; border: 1px solid #d6dce3; border-radius: 10px; padding: 12px;
   cursor: pointer; position: relative; }
 .card:hover { border-color: #4a90d9; }
+/* U-1: a clear keyboard focus ring so tab-navigation is visible. */
+.card:focus-visible { outline: 3px solid #1a5fb4; outline-offset: 2px;
+  box-shadow: 0 0 0 4px rgba(26,95,180,0.25); }
 .card.armed { outline: 3px solid #d9822b; }
+/* U-2: persistent selected-state on the grid when a card fills slot A / B —
+   an outline plus a corner badge, distinct from .card.armed (probe arming). */
+.card.slot-a { outline: 3px solid #2b7a3d; outline-offset: 2px; }
+.card.slot-b { outline: 3px solid #2b5f9e; outline-offset: 2px; }
+.card.slot-a::after, .card.slot-b::after { position: absolute; top: 8px; left: 8px;
+  width: 26px; height: 26px; border-radius: 50%; color: #fff; font-weight: 800;
+  font-size: 0.9rem; display: flex; align-items: center; justify-content: center; }
+.card.slot-a::after { content: "A"; background: #2b7a3d; }
+.card.slot-b::after { content: "B"; background: #2b5f9e; }
 .card img.thumb { width: 100%; height: 190px; object-fit: cover; border-radius: 6px;
   background: #eef2f5; display: block; }
 .thumb.placeholder { width: 100%; height: 190px; border-radius: 6px; background:
@@ -284,11 +383,19 @@ main.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px
 .card h2 { font-size: 1.02rem; margin: 10px 0 4px; }
 .distinguishing { font-weight: 600; font-size: 0.9rem; margin: 4px 0 8px; }
 .chip { font-size: 0.72rem; border-radius: 10px; padding: 2px 8px; display: inline-block; }
-.chip-last-used { position: absolute; top: 16px; right: 16px; background: rgba(28,39,51,0.65);
+.chip-last-used { position: absolute; top: 16px; right: 16px; background: #1c2733;
   color: #eef2f5; }
 .chip-probe { background: #b3541e; color: #fff; font-weight: 700; margin-bottom: 6px; }
-.chip-provenance { background: #8a6d1a; color: #fff; display: inline-block;
+.chip-candidate { background: #6c4ba0; color: #fff; font-weight: 700; margin-bottom: 6px; }
+.chip-deprecated { background: #6b7280; color: #fff; font-weight: 700; margin-bottom: 6px;
+  text-decoration: line-through; }
+.chip-provenance { background: #6f5614; color: #fff; display: inline-block;
   margin: 6px 0 0; }
+.use-when, .avoid-when { font-size: 0.82rem; margin: 3px 0; color: #33414f; }
+.example-link { display: inline-block; margin: 6px 0 2px; font-size: 0.82rem;
+  color: #1a5fb4; text-decoration: underline; font-weight: 600; }
+.instructions { margin: 0 0 8px; font-size: 0.85rem; color: #33414f; }
+.pick-hint { color: #b3541e; font-weight: 700; font-size: 0.85rem; margin-left: 8px; }
 details { margin-top: 6px; font-size: 0.85rem; }
 details summary { cursor: pointer; color: #4a6076; }
 """
@@ -299,31 +406,76 @@ const slotEls = { A: document.getElementById('slot-A'), B: document.getElementBy
 const fields = { A: document.getElementById('field-slot-A'),
                  B: document.getElementById('field-slot-B') };
 const confirmBtn = document.getElementById('confirm');
+const hintEl = document.getElementById('pick-hint');
+/* U-3: the slot bar shows the human display name; the hidden field keeps the slug. */
+const displayByGuide = {};
+for (const card of document.querySelectorAll('.card')) {
+  displayByGuide[card.dataset.guide] = card.dataset.display || card.dataset.guide;
+}
 function flash(v) {  /* S-2: highlight-on-change, never a silent reorder */
   slotEls[v].classList.remove('changed'); void slotEls[v].offsetWidth;
   slotEls[v].classList.add('changed');
 }
+function showHint(msg) {  /* U-5: no silent dead-click; announce + auto-clear. */
+  if (!hintEl) return;
+  hintEl.textContent = msg;
+  clearTimeout(hintEl._t);
+  hintEl._t = setTimeout(() => { hintEl.textContent = ''; }, 2600);
+}
 function refresh() {
   for (const v of ['A', 'B']) {
-    slotEls[v].querySelector('.slot-value').textContent = slots[v] || '(empty)';
-    slotEls[v].classList.toggle('filled', !!slots[v]);
-    fields[v].value = slots[v] || '';
+    const guide = slots[v];
+    slotEls[v].querySelector('.slot-value').textContent =
+      guide ? (displayByGuide[guide] || guide) : '(empty)';
+    slotEls[v].classList.toggle('filled', !!guide);
+    fields[v].value = guide || '';
+  }
+  /* U-2: persistent selected-state on the grid (distinct from .armed). */
+  for (const card of document.querySelectorAll('.card')) {
+    card.classList.remove('slot-a', 'slot-b');
+    card.setAttribute('aria-pressed', 'false');
+  }
+  for (const v of ['A', 'B']) {
+    if (!slots[v]) continue;
+    const card = document.querySelector('.card[data-guide="' + CSS.escape(slots[v]) + '"]');
+    if (card) {
+      card.classList.add(v === 'A' ? 'slot-a' : 'slot-b');
+      card.setAttribute('aria-pressed', 'true');
+    }
   }
   confirmBtn.disabled = !(slots.A || slots.B);
 }
+function selectCard(card, ev) {
+  if (ev && (ev.target.closest('details') || ev.target.closest('a'))) return;
+  const guide = card.dataset.guide;
+  if (card.dataset.probe === '1' && !card.classList.contains('armed')) {
+    card.classList.add('armed');  /* S-1: probes need an explicit second click */
+    return;
+  }
+  if (!slots.A) { slots.A = guide; flash('A'); }
+  else if (!slots.B) { slots.B = guide; flash('B'); }
+  else {  /* U-5: both slots full — no silent no-op; hint + flash. */
+    flash('A'); flash('B');
+    showHint('Both slots full — clear or swap a slot first');
+    return;
+  }
+  refresh();
+}
 for (const card of document.querySelectorAll('.card')) {
-  card.addEventListener('click', (ev) => {
-    if (ev.target.closest('details') || ev.target.closest('a')) return;
-    const guide = card.dataset.guide;
-    if (card.dataset.probe === '1' && !card.classList.contains('armed')) {
-      card.classList.add('armed');  /* S-1: probes need an explicit second click */
-      return;
+  card.addEventListener('click', (ev) => selectCard(card, ev));
+  /* U-1: keyboard operability — Enter/Space activate like a click. Only when the
+     card itself is focused: Enter on a nested link/summary must act natively. */
+  card.addEventListener('keydown', (ev) => {
+    if (ev.target !== card) return;
+    if (ev.key === 'Enter' || ev.key === ' ' || ev.key === 'Spacebar') {
+      ev.preventDefault();
+      selectCard(card, ev);
     }
-    if (!slots.A) { slots.A = guide; flash('A'); }
-    else if (!slots.B) { slots.B = guide; flash('B'); }
-    else { return; }  /* both slots full: clear or swap first */
-    refresh();
   });
+}
+/* The live-example anchor must open the deck WITHOUT filling a slot. */
+for (const link of document.querySelectorAll('a.example-link')) {
+  link.addEventListener('click', (ev) => ev.stopPropagation());
 }
 for (const btn of document.querySelectorAll('.slot-clear')) {
   btn.addEventListener('click', () => {
@@ -373,57 +525,134 @@ def thumbnail_routes(
     }
 
 
+_PLACEHOLDER_THUMB = '<div class="thumb placeholder">no live render</div>'
+_THUMB_UNAVAILABLE_CHIP = (
+    '<span class="chip chip-provenance">thumbnail unavailable</span>'
+)
+
+
+def _resolve_thumbnail(entry: dict[str, Any], *, repo_root: Path) -> tuple[str, str | None]:
+    """Resolve a curated thumbnail_ref to ``(<img html>, provenance_chip|None)``.
+
+    Fail-loud helper: a wrong extension, a dangling ref, or a non-PNG file raises
+    ``PickerError`` (kept loud so the write-gate / direct callers still catch a
+    bad SSOT row). ``_render_card`` catches at the call site (A-M2) so one broken
+    row degrades to the placeholder instead of 500-ing the whole picker.
+    """
+    ref = entry.get("thumbnail_ref")
+    if not str(ref).lower().endswith(".png"):
+        raise PickerError(
+            f"styleguide {entry['name']!r} thumbnail_ref {ref!r} must be a .png "
+            f"(D-2 curated-render contract; R10 extension check)"
+        )
+    png = repo_root / str(ref)
+    if not png.is_file():
+        raise PickerError(
+            f"styleguide {entry['name']!r} has a dangling thumbnail_ref {ref!r} "
+            f"(AC-6: every rendered thumbnail must resolve to a real on-disk PNG)"
+        )
+    width, height = _png_dimensions(png)  # R10 magic check; R2 aspect source
+    thumb = (
+        f'<img class="thumb" src="{escape(_thumbnail_url_path(entry["name"]))}" '
+        f'alt="{escape(entry["display_name"])} thumbnail">'
+    )
+    provenance_chip: str | None = None
+    # R2 honesty chip (data-driven, Auditor#1): the guide promises 16:9 but
+    # the curated render is squarer — say so on the card, never imply layout.
+    promised = str(entry.get("card_dimensions") or "").strip().lower()
+    if promised == "16x9" and (width / height) < _SIXTEEN_NINE_MIN_ASPECT:
+        provenance_chip = (
+            f'<span class="chip chip-provenance">{escape(_THUMBNAIL_PROVENANCE_CHIP)}'
+            "</span>"
+        )
+    return (thumb, provenance_chip)
+
+
 def _render_card(entry: dict[str, Any], *, repo_root: Path) -> list[str]:
     ref = entry.get("thumbnail_ref")
     provenance_chip: str | None = None
+    thumb_warning: str | None = None
     if ref:
-        if not str(ref).lower().endswith(".png"):
-            raise PickerError(
-                f"styleguide {entry['name']!r} thumbnail_ref {ref!r} must be a .png "
-                f"(D-2 curated-render contract; R10 extension check)"
-            )
-        png = repo_root / str(ref)
-        if not png.is_file():
-            raise PickerError(
-                f"styleguide {entry['name']!r} has a dangling thumbnail_ref {ref!r} "
-                f"(AC-6: every rendered thumbnail must resolve to a real on-disk PNG)"
-            )
-        width, height = _png_dimensions(png)  # R10 magic check; R2 aspect source
-        thumb = (
-            f'<img class="thumb" src="{escape(_thumbnail_url_path(entry["name"]))}" '
-            f'alt="{escape(entry["display_name"])} thumbnail">'
-        )
-        # R2 honesty chip (data-driven, Auditor#1): the guide promises 16:9 but
-        # the curated render is squarer — say so on the card, never imply layout.
-        promised = str(entry.get("card_dimensions") or "").strip().lower()
-        if promised == "16x9" and (width / height) < _SIXTEEN_NINE_MIN_ASPECT:
-            provenance_chip = (
-                f'<span class="chip chip-provenance">{escape(_THUMBNAIL_PROVENANCE_CHIP)}'
-                "</span>"
-            )
+        try:
+            thumb, provenance_chip = _resolve_thumbnail(entry, repo_root=repo_root)
+        except PickerError:
+            # A-M2 (Winston, converges w/ Sally #6): a broken thumbnail row must
+            # never 500 the whole page. Degrade to the honest placeholder PLUS a
+            # visible warning chip so one bad SSOT row can't take down the picker.
+            thumb = _PLACEHOLDER_THUMB
+            thumb_warning = _THUMB_UNAVAILABLE_CHIP
     else:
         # S-3: explicit placeholder, never a confidently wrong image.
-        thumb = '<div class="thumb placeholder">no live render</div>'
+        thumb = _PLACEHOLDER_THUMB
     probe = bool(entry.get("probe"))
     last_used = entry.get("last_used") or "never"
     narrative = entry.get("narrative") or {}
+    display_name = entry["display_name"]
     parts = [
-        f'<article class="card" data-guide="{escape(entry["name"])}" '
+        # U-1 (Sally a11y): keyboard-operable card — focusable, button-role,
+        # aria-labelled; a keydown (Enter/Space) mirrors the click (see _PAGE_JS).
+        # data-display (U-3) carries the human name for the slot bar; the hidden
+        # form field keeps the slug for the POST.
+        f'<article class="card" tabindex="0" role="button" aria-pressed="false" '
+        f'aria-label="{escape(display_name)}" data-guide="{escape(entry["name"])}" '
+        f'data-display="{escape(display_name)}" '
         f'data-probe="{1 if probe else 0}">',
         thumb,
         f'<span class="chip chip-last-used">last used: {escape(str(last_used))}</span>',
-        f"<h2>{escape(entry['display_name'])}</h2>",
+        f"<h2>{escape(display_name)}</h2>",
     ]
     if provenance_chip:
         parts.append(provenance_chip)
+    if thumb_warning:
+        parts.append(thumb_warning)
     if probe:
         parts.append(
             '<span class="chip chip-probe">PROBE — scaffolding, not a production '
             "style (click twice to select)</span>"
         )
+    # Session-07 A1 (Winston + Dan): candidates are visibly badged — a reviewer
+    # always knows which lifecycle tier they are looking at.
+    if str(entry.get("lifecycle") or "candidate") == "candidate":
+        parts.append(
+            '<span class="chip chip-candidate">CANDIDATE — A-corpus only, '
+            "not yet promoted (B-corpus stress test pending)</span>"
+        )
+    # A deprecated style only appears under include_deprecated (audit); badge it
+    # unmistakably so it can never be mistaken for a production-eligible style.
+    if str(entry.get("lifecycle") or "candidate") == "deprecated":
+        parts.append(
+            '<span class="chip chip-deprecated">DEPRECATED — retired style, '
+            "not for production</span>"
+        )
+    # Operator request: a live exemplar deck reachable from each card, opened in
+    # a NEW TAB. NOT the whole thumbnail (that collides with slot-selection): a
+    # small anchor under the title whose click stopPropagation's in the JS so it
+    # never fills a slot. A null/absent example_url renders NO link (no dead link).
+    example_url = entry.get("example_url")
+    if example_url:
+        parts.append(
+            f'<a class="example-link" href="{escape(str(example_url))}" '
+            f'target="_blank" rel="noopener" '
+            f'aria-label="Open the live example deck for {escape(display_name)} '
+            f'(opens in a new tab)">View live example ↗</a>'
+        )
     parts.append(f'<p class="distinguishing">{escape(entry["distinguishing"])}</p>')
-    parts.append("<details><summary>narrative</summary>")
-    for key in _NARRATIVE_KEYS:
+    # U-4 (Sally): surface the decision-useful pros/cons on the card FACE, below
+    # the distinguishing line, so they're visible without expanding.
+    use_when = str(narrative.get("use_when") or "").strip()
+    avoid_when = str(narrative.get("avoid_when") or "").strip()
+    if use_when:
+        parts.append(
+            f'<p class="use-when"><strong>Use when:</strong> {escape(use_when)}</p>'
+        )
+    if avoid_when:
+        parts.append(
+            f'<p class="avoid-when"><strong>Avoid when:</strong> {escape(avoid_when)}</p>'
+        )
+    # The fuller narrative (feels_like / summary) stays behind the toggle; the
+    # summary is relabelled from the opaque "narrative" to say what's inside.
+    parts.append("<details><summary>More about this style</summary>")
+    for key in ("summary", "feels_like"):
         value = str(narrative.get(key) or "").strip()
         if value:
             label = key.replace("_", " ")
@@ -452,7 +681,11 @@ def render_picker_html(
         "<body>",
         "<header>",
         "<h1>Gamma Styleguide Picker — pre-run pick (Fork A)</h1>",
-        '<div class="slots">',
+        # U-5 (Sally): a one-line instruction so the pick flow is self-evident.
+        '<p class="instructions">Click a style to fill Style A, then another for '
+        "Style B — one slot is a valid pick.</p>",
+        # U-1 (Sally a11y): the slot bar announces fills to assistive tech.
+        '<div class="slots" role="status" aria-live="polite">',
     ]
     for variant in _VARIANT_IDS:
         parts.extend(
@@ -474,8 +707,13 @@ def render_picker_html(
             '<input type="hidden" name="slot_B" id="field-slot-B" value="">',
             '<button type="submit" id="confirm" disabled>Confirm</button>',
             "</form>",
+            # U-5: inline hint target for the both-slots-full dead-click.
+            '<span class="pick-hint" id="pick-hint" role="status" '
+            'aria-live="polite"></span>',
             "</div>",
-            '<div id="receipt" class="receipt" hidden></div>',
+            # U-1 (Sally a11y): the receipt announces "PICK RECORDED" to AT.
+            '<div id="receipt" class="receipt" role="status" aria-live="polite" '
+            "hidden></div>",
             "</header>",
             '<main class="grid">',
         ]
@@ -525,18 +763,46 @@ class _PickHandler(BaseHTTPRequestHandler):
         if urlparse(self.path).path != "/pick":
             self._respond(404, {"error": f"unknown endpoint {self.path!r}"})
             return
-        length = int(self.headers.get("Content-Length") or 0)
+        # R3: reject a non-numeric or negative Content-Length with a clean 400
+        # BEFORE any rfile.read — a negative length reaches rfile.read(-N) which
+        # blocks until EOF (the header string; a non-negative integer or nothing).
+        raw_length = (self.headers.get("Content-Length") or "").strip()
+        if raw_length == "":
+            length = 0
+        elif raw_length.isdigit():
+            length = int(raw_length)
+        else:
+            self._respond(
+                400,
+                {"error": f"invalid Content-Length header {raw_length!r}"},
+            )
+            return
         if length > MAX_POST_BODY_BYTES:
             # R4: never slurp an unbounded body; reject oversized + keep serving.
-            self._respond(
-                413,
-                {
-                    "error": (
-                        f"request body {length} bytes exceeds the "
-                        f"{MAX_POST_BODY_BYTES}-byte pick-form cap"
-                    )
-                },
-            )
+            # P3 (Windows): replying 413 with the client's body still in flight makes the
+            # OS abort the connection (ConnectionAbortedError) and can wedge the handler.
+            # Drain a BOUNDED window of the incoming body first so the socket closes
+            # cleanly — capped so a multi-MB attack body is still refused, never read whole.
+            # R2: the drain + the 413 reply are wrapped in suppress(OSError) so the
+            # Windows ConnectionAbortedError race can never prevent a clean close —
+            # the server must keep serving (it already does after this return).
+            self.close_connection = True
+            with contextlib.suppress(OSError):
+                drain_remaining = min(length, MAX_POST_BODY_BYTES + 128 * 1024)
+                while drain_remaining > 0:
+                    chunk = self.rfile.read(min(drain_remaining, 65536))
+                    if not chunk:
+                        break
+                    drain_remaining -= len(chunk)
+                self._respond(
+                    413,
+                    {
+                        "error": (
+                            f"request body {length} bytes exceeds the "
+                            f"{MAX_POST_BODY_BYTES}-byte pick-form cap"
+                        )
+                    },
+                )
             return
         fields = parse_qs(self.rfile.read(length).decode("utf-8"))
         picks: dict[str, str] = {}
@@ -711,6 +977,7 @@ def write_pick_to_directive(
     *,
     ssot_path: str | Path | None = None,
     picked_at: str | None = None,
+    provenance_extra: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
     """Write/patch ``gamma_settings[]`` + the provenance block into the directive.
 
@@ -742,11 +1009,13 @@ def write_pick_to_directive(
                 f"pick variant id must be one of {list(_VARIANT_IDS)}; got {variant!r}"
             )
         guide_name = str(name).strip()
-        if guide_name not in guides:
-            raise PickerError(
-                f"picked styleguide {guide_name!r} is not in the SSOT {ssot} "
-                f"(known: {sorted(guides)})"
-            )
+        # A-M1 (Winston): enforce the SSOT-membership + lifecycle/visibility
+        # invariant at the MUTATION point too (defense-in-depth; the roster-load
+        # filter already hides these on the served path). Single-sourced through
+        # `_assert_pickable_guide` so the gh-pages decoder applies the identical
+        # rule (Q1 anti-drift) — a `deprecated` (retired) or `visibility: probe`
+        # (scaffolding) guide must NEVER be bound into a production directive.
+        _assert_pickable_guide(guide_name, guides, ssot)
         normalized[variant_id] = guide_name
 
     directive = Path(directive_path)
@@ -815,10 +1084,24 @@ def write_pick_to_directive(
             ],
             "written_by": "styleguide_picker",
         }
+        # A7 (Marcus): the gh-pages paste-back path threads extra provenance
+        # (who/from-url/roster-hash/version-count/the code) so an unattributable
+        # pick is auditable end-to-end. Additive: local-picker callers pass None.
+        if provenance_extra:
+            # Guard: extra keys must never clobber the canonical provenance fields
+            # (they are the audit anchors — picked_at/version/ssot hash/picks/writer).
+            canonical = {"picked_at", "picker_version", "ssot_sha256", "picks", "written_by"}
+            clashes = canonical & set(provenance_extra)
+            if clashes:
+                raise PickerError(
+                    f"provenance_extra may not override canonical provenance keys "
+                    f"{sorted(clashes)}"
+                )
+            provenance.update(provenance_extra)
         loaded["styleguide_picker_provenance"] = provenance
-        directive.write_text(
-            yaml.safe_dump(loaded, sort_keys=False), encoding="utf-8", newline="\n"
-        )
+        # R-MAJOR-1: crash-atomic write — never truncate-then-write the live run
+        # input in place. Temp sibling + fsync + os.replace, still inside the lock.
+        _atomic_write_text(directive, yaml.safe_dump(loaded, sort_keys=False))
     return provenance
 
 
@@ -830,6 +1113,7 @@ def append_pick_event(
     picked_at: str,
     run_id: str | None = None,
     events_path: str | Path | None = None,
+    dedup_key: str | None = None,
 ) -> list[dict[str, Any]]:
     """Append one JSONL line per pick to the append-only sidecar (digest-idempotent).
 
@@ -840,33 +1124,57 @@ def append_pick_event(
     (the file is never rewritten or shrunk). The read-digests-then-append runs
     under an advisory same-host file lock (R8; same-host cooperating-writer
     guarantee only). Returns the events written.
+
+    Idempotency has TWO layers. By default an event is deduped on its full
+    ``event_digest`` (every field, including ``picked_at``) — replaying a byte-
+    identical event is a no-op. When ``dedup_key`` is supplied (the paste-back
+    commit path), each per-variant event ALSO carries a stable
+    ``dedup_key`` = ``f"{dedup_key}:{variant_id}"`` and is deduped on THAT: an
+    identical re-confirm mints a fresh ``picked_at`` yet is still a true no-op,
+    because the stable ``(run_tag, selection_code)`` identity — not the varying
+    timestamp — decides the append. A DIFFERENT code for the same run has a
+    different ``dedup_key`` and is a deliberate change (appends; last-write-wins).
     """
     path = Path(events_path) if events_path is not None else GAMMA_STYLEGUIDE_PICKS_PATH
     path.parent.mkdir(parents=True, exist_ok=True)
     with _advisory_lock(path):  # R8: serialize digest-read + append
+        prior = _read_pick_events(path)
         existing = {
             event.get("event_digest")
-            for event in _read_pick_events(path)
+            for event in prior
             if event.get("event_digest")
+        }
+        existing_dedup = {
+            event.get("dedup_key") for event in prior if event.get("dedup_key")
         }
         written: list[dict[str, Any]] = []
         lines: list[str] = []
         for variant in sorted(picks):
+            variant_id = str(variant).strip().upper()
             event: dict[str, Any] = {
                 "guide_name": str(picks[variant]).strip(),
-                "variant_id": str(variant).strip().upper(),
+                "variant_id": variant_id,
                 "directive_path": Path(directive_path).as_posix(),
                 "picked_at": picked_at,
             }
             if run_id:
                 event["run_id"] = str(run_id)
+            variant_dedup = f"{dedup_key}:{variant_id}" if dedup_key else None
+            if variant_dedup is not None:
+                event["dedup_key"] = variant_dedup
             digest = hashlib.sha256(
                 json.dumps(event, sort_keys=True, separators=(",", ":")).encode("utf-8")
             ).hexdigest()
-            if digest in existing:
+            # Skip on EITHER identity: the exact-event digest, or (when supplied)
+            # the stable (run_tag, code) dedup key that survives a fresh timestamp.
+            if digest in existing or (
+                variant_dedup is not None and variant_dedup in existing_dedup
+            ):
                 continue
             event["event_digest"] = digest
             existing.add(digest)
+            if variant_dedup is not None:
+                existing_dedup.add(variant_dedup)
             written.append(event)
             lines.append(json.dumps(event, sort_keys=True, separators=(",", ":")))
         if lines:
@@ -886,6 +1194,11 @@ def main(argv: list[str] | None = None) -> int:
         help="also list probe-marked guides (D-3; warning-chipped, second-click select)",
     )
     parser.add_argument(
+        "--include-deprecated",
+        action="store_true",
+        help="also list deprecated (retired) guides for audit (badged, not for production)",
+    )
+    parser.add_argument(
         "--no-browser",
         action="store_true",
         help="skip the browser and use the CLI-numbered fallback directly",
@@ -894,7 +1207,11 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--run-id", default=None, help="run id recorded on pick events")
     args = parser.parse_args(argv)
 
-    roster = load_picker_roster(include_probes=args.include_probes, ssot_path=args.ssot)
+    roster = load_picker_roster(
+        include_probes=args.include_probes,
+        include_deprecated=args.include_deprecated,
+        ssot_path=args.ssot,
+    )
 
     def _on_pick(picks: dict[str, str]) -> dict[str, Any]:
         provenance = write_pick_to_directive(args.directive, picks, ssot_path=args.ssot)
@@ -930,6 +1247,7 @@ __all__ = [
     "PICKER_VERSION",
     "PickerError",
     "append_pick_event",
+    "assert_pickable_guide",
     "capture_pick",
     "load_picker_roster",
     "main",

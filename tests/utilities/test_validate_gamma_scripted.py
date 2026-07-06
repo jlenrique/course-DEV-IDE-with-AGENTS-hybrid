@@ -42,7 +42,7 @@ def _well_formed_floor() -> dict:
         "value": 4,
         "rationale": "This style reads as a multi-beat narrative walk.",
         "provenance": {
-            "authoring_styleguide": "classic-freeform-x-cards",
+            "authoring_styleguide": "hil-2026-apc-crossroads-classic",
             "envelope_write_stamp": "2026-07-01T00:00:00Z",
         },
     }
@@ -50,13 +50,13 @@ def _well_formed_floor() -> dict:
 
 def _with_scripted(entry: dict) -> dict:
     data = copy.deepcopy(_runtime_data())
-    data["style_guides"]["classic-freeform-x-cards"]["scripted"] = [entry]
+    data["style_guides"]["hil-2026-apc-crossroads-classic"]["scripted"] = [entry]
     return data
 
 
 def _with_scripted_entries(entries: list) -> dict:
     data = copy.deepcopy(_runtime_data())
-    data["style_guides"]["classic-freeform-x-cards"]["scripted"] = entries
+    data["style_guides"]["hil-2026-apc-crossroads-classic"]["scripted"] = entries
     return data
 
 
@@ -107,7 +107,7 @@ def test_missing_provenance_is_red() -> None:
 
 def test_partial_provenance_is_red() -> None:
     entry = _well_formed_floor()
-    entry["provenance"] = {"authoring_styleguide": "classic-freeform-x-cards"}
+    entry["provenance"] = {"authoring_styleguide": "hil-2026-apc-crossroads-classic"}
     errors = validate_style_guides(_with_scripted(entry))
     assert any("provenance" in e.lower() for e in errors), errors
 

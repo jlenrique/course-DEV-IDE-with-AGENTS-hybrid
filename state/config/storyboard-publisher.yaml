@@ -5,3 +5,25 @@ site_repo_url: "https://github.com/jlenrique/jlenrique.github.io"
 site_branch: "main"
 publish_subdir: "assets/storyboards"
 token_env_var: "GITHUB_PAGES_TOKEN"
+
+# gh-pages self-maintenance hygiene (Task 1 publish-hardening arc, party greenlight
+# 2026-07-03 §4.6). Consumed by app/marcus/orchestrator/gh_pages_publish.py on EVERY
+# consolidated publish so the public asset-host site can never silently re-approach
+# the GitHub Pages 1 GB published-site cap. retention_days: nothing older than this
+# (by git committer date) survives in a managed root unless allowlisted. size_*_mb:
+# WARN then fail-loud (refuse to push) on the projected published-tree size.
+retention_days: 10
+size_warn_mb: 750
+size_fail_mb: 900
+verify_build: true
+verify_timeout_s: 600
+managed_roots:
+  - assets/storyboards
+  - assets/styleguide-picker
+  - assets/gamma
+  - assets/kling-validation
+protected_paths:          # never auto-deleted regardless of age ("special exception")
+  - assets/gamma/shared
+  - assets/gamma/courses
+  - assets/video-style-picker/index.html
+  - assets/video-style-picker/catalog.json

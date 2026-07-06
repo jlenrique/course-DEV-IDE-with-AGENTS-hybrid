@@ -50,8 +50,22 @@ RESOLVED_API_KEYS = frozenset(
         "image_style",
         "keywords",
         "dimensions",
+        # Style-level persistent prose register (party-ratified 2026-07-02). The
+        # api/Classic path emits this so Gary composes it as a SEPARATE, style-first
+        # part of the real Gamma ``additionalInstructions`` generation param — it
+        # COMPLEMENTS, never overwrites, the per-deck source-derived instructions.
+        # Studio deliberately does NOT emit it (see _expand_studio).
+        "additional_instructions",
         "production_mode",
         "studio_template_id",
+        # Studio per-record overrides (studio-via-api-override-plumbing, step 1).
+        # OPTIONAL. They nest under ``studio_template`` in the record (alongside
+        # ``gamma_id``) and resolve to distinct STUDIO-scoped keys so they never
+        # collide with the Classic ``theme`` / ``image_model`` surface (which is
+        # forbidden on a studio record). Absent ⇒ key not emitted, so the dispatch
+        # kwarg is omitted (never ``theme_id=""`` / ``image_options={"model": None}``).
+        "studio_theme_id",
+        "studio_image_model",
     }
 )
 
@@ -83,6 +97,13 @@ SURFACE_VIOLATION_TAG = "gamma.styleguide.surface-violation"
 UNKNOWN_TAG = "gamma.styleguide.unknown"
 INCOMPLETE_TAG = "gamma.styleguide.incomplete"
 LOAD_ERROR_TAG = "gamma.styleguide.load-error"
+# Mirrors the write-gate validator's tag (validate_gamma_style_guides.py
+# _ADDITIONAL_INSTRUCTIONS_TAG) so the resolver and validator agree byte-for-byte.
+ADDITIONAL_INSTRUCTIONS_TAG = "gamma.styleguide.additional-instructions-invalid"
+# studio-via-api-override-plumbing (step 1): a PRESENT-but-non-string studio override
+# fails loud rather than str()-coercing an int/bool/list into a garbage id (mirrors the
+# _expand_api additional_instructions non-string contract; never silent-drop/coerce).
+STUDIO_OVERRIDE_INVALID_TAG = "gamma.styleguide.studio-override-invalid"
 
 # --- Leg-C: the sealed, registry-bound `scripted` closed-vocab namespace ----------
 # `scripted` is NOT an engine/interpreter — it is "a switch with one case". v1 registry
@@ -232,6 +253,36 @@ def _expand_api(record: dict[str, Any], name: str) -> dict[str, Any]:
     if _is_present(keywords):
         resolved["keywords"] = [str(k).strip() for k in keywords if str(k).strip()]
 
+    # Style-level persistent prose register (party-ratified 2026-07-02). Two safe outcomes:
+    #  * ABSENT (key None/missing) OR a list that cleans to empty (`[]` / all-blank) resolves
+    #    to key-ABSENT — the intentional "unset", additive-safe ergonomic (a contentless list
+    #    carries no prose to drop).
+    #  * A list with real string content emits the cleaned list.
+    # A genuinely MALFORMED present value — a NON-list, or a list with a NON-string entry —
+    # would silently drop or coerce authored style prose, so the resolver FAILS LOUD (review
+    # finding P2, 2026-07-03). Gary's production path calls this resolver directly, so such a
+    # shape must ERROR-PAUSE here rather than silently omit the prose (never silent-drop).
+    extra_instructions = pc.get("additional_instructions")
+    if extra_instructions is not None:
+        if not isinstance(extra_instructions, list):
+            raise StyleguideError(
+                f"styleguide {name!r} prompt_configuration.additional_instructions must be a "
+                f"list of strings when present; got {type(extra_instructions).__name__} "
+                f"(present-but-malformed — fail loud, never silent-drop)",
+                tag=ADDITIONAL_INSTRUCTIONS_TAG,
+            )
+        for item in extra_instructions:
+            if not isinstance(item, str):
+                raise StyleguideError(
+                    f"styleguide {name!r} prompt_configuration.additional_instructions entries "
+                    f"must be strings; got {item!r} ({type(item).__name__}) "
+                    f"(present-but-malformed — fail loud, never silent-drop)",
+                    tag=ADDITIONAL_INSTRUCTIONS_TAG,
+                )
+        cleaned = [item.strip() for item in extra_instructions if item.strip()]
+        if cleaned:
+            resolved["additional_instructions"] = cleaned
+
     card_options = (record.get("page_settings") or {}).get("card_options") or {}
     if _is_present(card_options.get("dimensions")):
         resolved["dimensions"] = str(card_options["dimensions"]).strip()
@@ -255,7 +306,36 @@ def _expand_studio(record: dict[str, Any], name: str) -> dict[str, Any]:
             f"studio_template.gamma_id",
             tag=SURFACE_VIOLATION_TAG,
         )
-    return {"production_mode": "studio", "studio_template_id": gamma_id}
+    # Studio ``additional_instructions`` disposition — TEMPLATE-LOCK-ONLY BY DESIGN
+    # (party-ratified 2026-07-02, Gary + Dan unanimous). A studio record MAY carry
+    # ``prompt_configuration.additional_instructions`` (it is NOT a Classic-only key,
+    # so it is not a surface-violation and the write-gate validates its shape), but the
+    # resolver INTENTIONALLY does not emit it: the Gamma create-from-template call has
+    # no ``additionalInstructions`` channel, and the studio_prompt_lock wrapper is the
+    # sole studio style-authority surface. The value is a documented template-lock
+    # annotation; this non-emission is deliberate + tested, never an accidental drop.
+    resolved: dict[str, Any] = {"production_mode": "studio", "studio_template_id": gamma_id}
+    # Optional per-record Studio overrides (studio-via-api-override-plumbing, step 1).
+    # Both nest under ``studio_template`` and are OPTIONAL. Emitted ONLY when present so
+    # an absent field leaves the dispatch kwarg unsent (never a "" / None coercion). The
+    # resolver NEVER reads ``derived_from`` (a documented lineage annotation, not a
+    # resolved surface) — that is a validator-only concern.
+    for field, resolved_key in (
+        ("theme_id", "studio_theme_id"),
+        ("image_model", "studio_image_model"),
+    ):
+        value = template.get(field)
+        if not _is_present(value):
+            continue
+        if not isinstance(value, str):
+            raise StyleguideError(
+                f"styleguide {name!r} studio_template.{field} must be a string when "
+                f"present; got {value!r} ({type(value).__name__}) "
+                f"(present-but-malformed — fail loud, never str()-coerce)",
+                tag=STUDIO_OVERRIDE_INVALID_TAG,
+            )
+        resolved[resolved_key] = value.strip()
+    return resolved
 
 
 def expand_record(record: dict[str, Any], *, name: str) -> dict[str, Any]:
