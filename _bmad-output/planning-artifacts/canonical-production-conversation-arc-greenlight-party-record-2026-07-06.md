@@ -105,3 +105,22 @@ Structurally non-tejal on the axes S7 generalized (chapter count/section shape) 
 ## 5. Governance
 
 Full BMAD spine per story: spec → validator (where applicable) → fresh general-purpose dev agent RED-first → 3-lane `bmad-code-review` → live proof → party/dual-gate close per story risk. Single Claude dev lane + Codex shadow-monitor (ledger-only). SPOC-is-the-goal guardrail affirmed by every seat. Protected invariants (VO↔on-screen; source-detail→Gamma conveyance) carry named checks on S1/S2/S8.
+
+---
+
+## 6. S0 ADDENDUM — charter deliverables executed (2026-07-06, same session)
+
+**(a) M-pre discharged — xdist suspect is NOT real.** `tests/marcus/lesson_plan/test_workbook_producer.py::test_ac12_dp6_fresh_required_blocks_reuse_stamp` PASSED in 1.72s at `-n 0`. The session-15 failure is confirmed an xdist concurrency artifact; workbook residual gap #6 CLOSED. Standing xdist rule (one `-n 0` confirmation before triaging any new parallel red) carries for the arc.
+
+**(b) W2 contract authored.** [`styleguide-binding-cd-contract-2026-07-06.md`](styleguide-binding-cd-contract-2026-07-06.md) — picker commits a *reference* (name+version) into the directive pre-run-dir; CD is the single resolution point writing one `ResolvedCreativeDirective` (or explicit skip-record) into the envelope; Gary composes from the envelope, never the SSOT yaml; source wins loudly via the layering manifest. S1 and S2 implement against that page.
+
+**(c) J3 T6b/c/d equivalence mapping (governs the Batch-LLM GO at arc close):**
+- **T6d** (Tracy on the trial path + review-only ack) → **COVERED by S6**, exceeded on substance: the braid-S3 runner hook already attaches Tracy at 04.55; S6 makes live dispatch canonical and threads *cited* entries to the workbook. S6 carries one added AC: the SPOC narrates the dispatched/cited research result post-04.55 (review-only, non-blocking — T6d's ack surface).
+- **T6b** (readable Marcus-facing ingestion report at G1) → **SPIRIT COVERED by S5's Beat-2** (the G0E typed source manifest is a richer intake-side report than T6b asked for); the G1 summary's S0.2 timing defect is NOT fixed by this arc → filed as `g1-ingestion-report-timing-residual` in deferred-inventory.
+- **T6c** (content-free lesson-plan-review pause AFTER Irene Pass-1) → **PARTIAL**: G0R ratifies the LO contract BEFORE Pass-1; post-Pass-1 plan-unit review remains folded (G1A/04A, fold_with G2C). Precedented cheap wake exists (07B-gate/11-gate membership pattern; manifest edit → lockstep regime applies). **Decision at S5 spec-time: in-arc rider vs deferral** (`t6c-post-pass1-plan-review-wake` filed). Per J3's conservative ruling, the arc-close Batch-LLM GO evaluation treats T6c per that outcome — a deferral means the GO carries T6c as a named open item for the party to weigh, not an automatic block on an otherwise-clean close.
+
+**(d) W3 Tier ruling (pre-dev, as demanded):** the G0 default flip lives in `app/marcus/orchestrator/g0_enrichment_wiring.py` (+ possibly `production_runner.py`) — **neither is a `block_mode_trigger_paths` member**, no `pipeline-manifest.yaml` edit is needed (nodes + edges already compiled), no pack prose changes. **Ruling: Tier-1; lockstep regime not triggered by the flip itself.** EXCEPTION: if S5 absorbs the T6c G1A wake, THAT piece edits the manifest (`fold_with` clear) → regime doc read at T1 + the woken-via-membership precedent applies (topology refinement within v4.2; pack stays v4.2; party consent already in this record's context but re-confirmed at S5 spec).
+
+**(e) Deferred-inventory filings landed** (§Named-But-Not-Filed → "Canonical Production Conversation arc — fenced-out items"): prose-uplift arc (J2), two flag retirements (A4, trigger S8-green), Consensus enablement (M2), the T6b timing residual, and the conditional T6c wake.
+
+**S0 status: COMPLETE.** S1 (CD activation contract) and S2 (picker wiring) are unblocked; S1 spec authoring is the next action.
