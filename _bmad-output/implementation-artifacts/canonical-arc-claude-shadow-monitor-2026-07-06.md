@@ -46,3 +46,25 @@ Baseline: HEAD `63eac137` (S0 complete, pushed, 0/0 with origin). Worktree clean
 **Verdict: CONCUR-WITH-FINDINGS** — author the S1 spec on corrected facts, with a re-scope round before dev opens; the round must weigh F-101/F-102/F-104 explicitly.
 
 **Orchestrator disposition (recorded at relay):** re-scope round convened (Winston/Dan/Amelia) with F-101..F-104 as premises. Orchestrator note passed to the round: the ratified S2 moves the pick to TRIAL-START (persisted pre-run-dir), which materially reduces F-104's ordering exposure for the arc's end-state — but mid-arc sequencing and the three-reader collapse remain the round's call.
+
+### SOP-002 — S1 spec pre-dispatch review (2026-07-06, fresh monitor agent)
+
+**Artifact:** `canonical-arc-s1-cd-styleguide-resolution-emission.md` @ `6ba62ce4`. **Method:** independent code verification of every load-bearing spec claim.
+
+**Fidelity:** spec faithful to §7 re-scope + amended W2, item-by-item verified; no smuggled scope (AC-L legitimate per arc governance §5). Spec correctly caught the SECOND stale registry block (`:211-216`) beyond §7's citation. All Context line-number claims independently verified accurate.
+
+**Feasibility (code-verified):** (a) `runner_supplied_payload` supports D2; CD's 4.75 dependency map = `{source_bundle: texas}`, no collision. (b) `_canonicalize_cd_directive` never sees the envelope payload — block must be a sibling pure function in `_act`'s path (spec's alternative reading is REQUIRED). (c) State pins permit an optional field; `SpecialistReturn` is `extra="forbid"`; exact-payload pins (`test_texas_to_cd_chain.py:70`, `_FakeAdapter` fixtures) will trip legitimately. (d) Resolver extraction REALISTIC — `styleguide_library.py` has zero gary-internal imports (only `dispatch_errors.SpecialistDispatchError` + `scripts.utilities.file_helpers`); import-linter contracts (pyproject.toml:107-330) pass for both proposed homes; `StyleguideError` re-export preserves isinstance/except semantics. Overlay/generator ARE lockstep trigger paths; runner + cd/graph are NOT — spec's Tier-1 handling exactly right. §06 reads only `cd.output["cd_directive"]` — sibling key structurally cannot break the fold.
+
+**Findings:**
+- **F-201 (minor):** D3's `resolved` field exceeds §7's literal list — justified completion (digest needs a referent; S3 comparator needs the data). Recorded as deliberate.
+- **F-202 (MATERIAL — highest risk):** no-picks default resolution had no pinned guide; gary's runtime seeds the gary-internal `DEFAULT_VARIANT_PAIR` which the resolver cannot reproduce; an invented default becomes S3's parity baseline. **Guard:** pin standard-A `hil-2026-apc-crossroads-classic` + explicit provenance string; S3 comparator keys on `status` for this case.
+- **F-203 (material):** D2's "wired in BOTH walk bodies" was architecturally stale — both walks share `_dispatch_specialist_at_node` (:1924, S4-part-2 refactor); correct wiring = one `cd` branch in `_runner_payload_for_specialist` (:1386), reusing `_gamma_settings_from_directive` (:1593) + sha256 pattern (:852-854); extend the seam docstring enumeration (:1405-1412).
+- **F-204 (minor):** `dispatch_adapter.py:65-71` docstring ("runner keys WIN") stale vs raising collision guard (:108-120); design against code; one-line docstring NIT permitted at T11.
+- **F-205 (minor):** exact-payload pins + `extra="forbid"` will trip on runner-path tests — extend pins, NEVER weaken equality assertions; T11 Acceptance Auditor rejects any weakened assertion.
+- Witness-gap notes: AC-5 must assert on the RE-LOADED envelope (persist→resume); RED-6 must obtain the projection through `_runner_payload_for_specialist`, never hand-fed.
+
+**SOP-001 carry-forward:** F-101 CLOSED-in-spec · F-102 ADDRESSED (AC-4 + separate deferred filing) · F-103 ADDRESSED (D5) · F-104 ADDRESSED (staged design + S4 re-gate + S-flip criteria). Nothing unaddressed.
+
+**Verdict: CONCUR-WITH-FINDINGS** — dispatch approved with F-202 + F-203 applied to the spec.
+
+**Orchestrator disposition:** ALL applied to the spec pre-dispatch (F-202 default-guide pin; F-203 wiring-altitude rewrite + docstring-enumeration instruction; F-204/F-205 dev+T11 notes; both witness-gap hardenings folded into AC-5 and RED-6). F-201 recorded as deliberate. Dev agent dispatched on the amended spec. Next poll: SOP-003 at dev-complete.
