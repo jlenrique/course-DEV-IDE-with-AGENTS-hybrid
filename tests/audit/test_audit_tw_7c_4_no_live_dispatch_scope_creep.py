@@ -640,6 +640,27 @@ PERMITTED_PYTHON_DIFFS = {
     # (tests/contracts/test_specialist_error_taxonomy.py already rostered above.)
     "app/specialists/_shared/voice_provider_text.py",
     "app/specialists/gary/styleguide_library.py",
+    # Canonical-arc S1 "CD styleguide-resolution emission" (party record
+    # canonical-production-conversation-arc-greenlight-party-record-2026-07-06.md
+    # §7 re-scope; spec canonical-arc-s1-cd-styleguide-resolution-emission.md).
+    # Bounded extension: shared resolver re-home (app/styleguide/ new neutral
+    # package; gary/styleguide_library.py already rostered above becomes a thin
+    # re-export), CD deterministic-neck sibling emission (cd/graph.py already
+    # rostered at the finding-#9 entry; cd/state.py optional CdReturn field),
+    # the ONE cd branch in _runner_payload_for_specialist
+    # (production_runner.py already rostered at the finding-#5 entry), and the
+    # S1 RED-first test surface. NO new live-dispatch call site — the emission
+    # is deterministic (resolver yaml read only); the AC-L live witness reuses
+    # the existing --run-live-gated cd dispatch surface.
+    "app/styleguide/__init__.py",
+    "app/styleguide/resolver.py",
+    "app/specialists/cd/state.py",
+    "tests/specialists/cd/test_styleguide_resolution_emission.py",
+    "tests/orchestrator/test_cd_dispatch_payload_projection.py",
+    "tests/marcus/orchestrator/test_styleguide_picker.py",
+    "tests/composition/test_real_cd_graph_walk_pin.py",
+    "tests/parity/test_capability_overlay_parity.py",
+    "tests/marcus/test_capability_overlay_over_promise_probe.py",
 }
 
 

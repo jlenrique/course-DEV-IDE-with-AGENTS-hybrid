@@ -68,3 +68,19 @@ Baseline: HEAD `63eac137` (S0 complete, pushed, 0/0 with origin). Worktree clean
 **Verdict: CONCUR-WITH-FINDINGS** — dispatch approved with F-202 + F-203 applied to the spec.
 
 **Orchestrator disposition:** ALL applied to the spec pre-dispatch (F-202 default-guide pin; F-203 wiring-altitude rewrite + docstring-enumeration instruction; F-204/F-205 dev+T11 notes; both witness-gap hardenings folded into AC-5 and RED-6). F-201 recorded as deliberate. Dev agent dispatched on the amended spec. Next poll: SOP-003 at dev-complete.
+
+### SOP-003 — S1 dev-complete independent verification (2026-07-06, fresh monitor agent) — RELAYED (full text in the agent transcript; condensed here)
+
+Audit of the uncommitted dev diff. **All dev claims verified:** F-203 wiring exactly one cd branch (`production_runner.py:1444-1459`, zero per-walk); F-202 pin byte-exact; §06 fence holds against the real builder; **all four guard-touching deviations judged honest at full assertion strength** (parity cd→wired grounded in SOP-001's own verification; partial-ordering witness relocated-not-weakened; over-promise corpus coverage conserved; picker-guard refinement matched the docstring contract); pre-existing-failure claims supported (Texas-internal frames, zero S1 files on the stack); overlay regen honest; dev's green claims reproduce (20 S1 + 77 guard + 27 gary, lint 16/0, ruff clean); AC-L properly gated and NOT executed. Stash cross-check: **nothing lost** — Poll-007 of the operator's Codex ledger ("S1 diff vanished") was a stale mid-stash-window read; the ledger's 16,233-byte pre-Poll-007 history recovered to a sibling file. Findings: **F-301** picker-guard dynamic-import evasion (hardening) · **F-302** probe-corpus partial-row reactivation note · **F-303** pyproject C3 row verified in-scope-by-necessity · **F-304** schema-contract note for S3 + duplicate-variant NIT · **F-305** AC-L closes on PASS, never SKIP. **Verdict: CONCUR-WITH-FINDINGS.**
+
+### T11 3-lane review + remediation + live witness (2026-07-06, orchestrator record)
+
+**3-lane `bmad-code-review`** (Blind Hunter / Edge Case Hunter / Acceptance Auditor, all fresh agents): Auditor = **ACCEPT-WITH-NOTES, every offline AC/deliverable MET** (F-202/F-203/AC-5/RED-6 implemented exactly as amended; all 8 dev deviations judged truthful; 2 ratifications recorded). Blind + Edge converged independently on a real defect cluster the claim-verification pass couldn't see; Edge Case Hunter's **HIGH was execution-confirmed** (malformed/non-UTF-8 directive at the cd seam crashed the walk un-persisted instead of error-pausing). Triage: **0 decision-needed / 11 patch / 3 defer / 4 dismissed** — full detail in the story file's Review Findings section; defers in `deferred-work.md`.
+
+**Remediation (fresh dev agent, RED-first):** all 11 patches landed — 20 new boundary tests captured RED then green (T1 crash→`SpecialistDispatchError` `cd.directive.unreadable|malformed` + read-ONCE digest discipline; T2-T4 honesty cluster → `unresolvable_pick` with evidence, default never binds over a present-but-bad pick, full verbatim echo; T5 digest attests the same bytes resolution parsed (additive `content` param on the shared resolver, gary re-export untouched); T6 lifecycle/visibility as data; T7 `errors` list in pick order; T8 AST-based picker guard incl. both evasion fixtures + import_module co-occurrence; T9 vacuous-skip removed from AC-L; T10 hygiene + path-scrub + F-302 note). One ratified judgment call: falsy `variant_id` ⇒ `unresolvable_pick`, never silent default-A. Battery: **345 passed serial AND xdist**; lint 16/0; overlay fresh.
+
+**Orchestrator independent re-verify:** 340 passed / 1 skipped focused battery, lint-imports 16 kept / 0 broken, overlay fresh.
+
+**AC-L LIVE WITNESS: PASSED (19.0s, real model dispatch, first-run-stands, armed run — the T9 fix guarantees this PASS is not a masked skip).** F-305 satisfied.
+
+Next poll: SOP-004 at the S1 close commit.

@@ -25,6 +25,7 @@ styleguide_picker.py`` existed (ModuleNotFoundError RED recorded in Dev Notes).
 
 from __future__ import annotations
 
+import ast
 import json
 import re
 import threading
@@ -439,14 +440,105 @@ def test_cli_fallback_blank_b_slot_single_select(tmp_path: Path) -> None:
 
 
 # ------------------------------------------------------------------ J-1/D-1 boundary
+def _picker_import_offenses(source: str) -> list[str]:
+    """Detect any import of the picker module in one source blob.
+
+    Remediation T8 (review, blind+SOP F-301): the former line-prefix scan was
+    evadable — a parenthesized multi-line ``from ... import (\\n picker,\\n)``
+    puts the module name on a line that starts with neither ``import`` nor
+    ``from``. Upgraded to an AST Import/ImportFrom scan, plus an
+    ``import_module`` + ``styleguide_picker`` co-occurrence flag for dynamic
+    imports (``importlib.import_module('...styleguide_picker')``). Data-plane
+    vocabulary alone (``styleguide_picker_provenance`` echoes in cd/graph.py)
+    trips neither detector.
+    """
+    offenses: list[str] = []
+    # Dynamic-import co-occurrence flag runs FIRST so an unparseable source
+    # cannot suppress it.
+    if "import_module" in source and "styleguide_picker" in source:
+        offenses.append("import_module + styleguide_picker co-occurrence")
+    try:
+        tree = ast.parse(source)
+    except SyntaxError:
+        offenses.append("unparseable source — guard cannot clear it")
+        return offenses
+    for node in ast.walk(tree):
+        if isinstance(node, ast.Import):
+            offenses.extend(
+                f"import {alias.name}"
+                for alias in node.names
+                if "styleguide_picker" in alias.name
+            )
+        elif isinstance(node, ast.ImportFrom):
+            module = node.module or ""
+            if "styleguide_picker" in module:
+                offenses.append(f"from {module} import ...")
+            else:
+                offenses.extend(
+                    f"from {module} import {alias.name}"
+                    for alias in node.names
+                    if "styleguide_picker" in alias.name
+                )
+    return offenses
+
+
+# T8 evasion fixtures (review finding, blind+SOP F-301): both shapes import the
+# picker for real, yet a naive line-prefix scan sees neither.
+_PARENTHESIZED_MULTILINE_IMPORT_EVASION = (
+    "from app.marcus.orchestrator import (\n"
+    "    styleguide_picker,\n"
+    ")\n"
+)
+_IMPORTLIB_EVASION = (
+    "import importlib\n"
+    "picker = importlib.import_module('app.marcus.orchestrator.styleguide_picker')\n"
+)
+
+
+def test_guard_catches_parenthesized_multiline_import() -> None:
+    """T8 RED: the parenthesized multi-line import is a REAL picker import the
+    line-based guard misses (no line both starts with import/from AND names
+    the picker)."""
+    assert _picker_import_offenses(_PARENTHESIZED_MULTILINE_IMPORT_EVASION), (
+        "guard missed a parenthesized multi-line picker import — evadable"
+    )
+
+
+def test_guard_flags_importlib_import_module_evasion() -> None:
+    """T8 RED: `importlib.import_module('...styleguide_picker')` is a dynamic
+    picker import with no import statement naming the picker."""
+    assert _picker_import_offenses(_IMPORTLIB_EVASION), (
+        "guard missed an importlib.import_module picker import — evadable"
+    )
+
+
+def test_guard_ignores_data_plane_vocabulary() -> None:
+    """The S1-mandated DATA key `styleguide_picker_provenance` (cd/graph.py
+    echo) must NOT trip the guard — it is vocabulary, not an import."""
+    sample = (
+        "provenance = projection.get('styleguide_picker_provenance')\n"
+        "block = {'styleguide_picker_provenance': provenance}\n"
+    )
+    assert _picker_import_offenses(sample) == []
+
+
 def test_picker_never_imported_by_cd_or_gary_code() -> None:
-    """J-1/D-1: the sidecar writer is standalone; no specialist module imports it."""
+    """J-1/D-1: the sidecar writer is standalone; no specialist module imports it.
+
+    Canonical-arc S1 (2026-07-06): cd/graph.py now names the DATA key
+    ``styleguide_picker_provenance`` when echoing the runner-supplied
+    ``directive_projection`` into its styleguide_resolution audit block —
+    data-plane vocabulary mandated by the S1 spec (D2/D3), not an import. The
+    guard scans IMPORTS (the contract this docstring always stated), so any
+    real ``import``/``from`` of the picker module from specialist code still
+    fails here at full strength.
+    """
     specialist_root = REPO_ROOT / "app" / "specialists"
-    offenders = [
-        path
-        for path in specialist_root.rglob("*.py")
-        if "styleguide_picker" in path.read_text(encoding="utf-8", errors="ignore")
-    ]
+    offenders: list[str] = []
+    for path in specialist_root.rglob("*.py"):
+        source = path.read_text(encoding="utf-8", errors="ignore")
+        for offense in _picker_import_offenses(source):
+            offenders.append(f"{path}: {offense}")
     assert offenders == [], f"specialist code must never import the picker: {offenders}"
 
 

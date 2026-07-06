@@ -18,6 +18,11 @@ from app.models.state.run_state import RunState
 from app.specialists._scaffold.contract import SCAFFOLD_NODE_IDS
 from app.specialists.source_bundle import read_extracted_source
 from app.specialists.texas.graph import SanctumLockViolation as _SanctumLockViolation
+from app.styleguide.resolver import (
+    GAMMA_STYLE_GUIDES_PATH,
+    load_style_guides,
+    resolve_styleguide,
+)
 from scripts.utilities.creative_directive_validator import (
     load_experience_profile_targets,
     validate_creative_directive,
@@ -302,6 +307,285 @@ def _canonicalize_cd_directive(
     }
 
 
+# --- Canonical-arc S1 (D3): styleguide_resolution deterministic emission -----
+# Spec: canonical-arc-s1-cd-styleguide-resolution-emission.md. CD is the
+# styleguide-resolution AUDIT point (data emission only); Gary keeps authority
+# until the deferred S-flip story.
+
+STYLEGUIDE_RESOLUTION_SCHEMA_VERSION = 1
+# F-202 (binding): the no-picks default binds the X5-ratified standard-A guide.
+DEFAULT_STYLEGUIDE_NAME = "hil-2026-apc-crossroads-classic"
+DEFAULT_STYLEGUIDE_PROVENANCE = (
+    "authoring-time default; gary runtime seeds DEFAULT_VARIANT_PAIR until S2/S4"
+)
+# Remediation T2 (review 2026-07-06): the picker vocabulary — the only variant
+# ids a pick may carry after normalization (strip + upper).
+_PICK_VARIANT_VOCABULARY = frozenset({"A", "B"})
+# 🔒 protected invariant (source-detail→Gamma conveyance), explicit on the record.
+_LAYERING_MANIFEST: dict[str, str] = {
+    "base_layer": "styleguide_defaults",
+    "composition_rule": "source_derived_wins",
+}
+
+
+def _canonical_json(payload: Any) -> str:
+    return json.dumps(payload, sort_keys=True, ensure_ascii=True, separators=(",", ":"))
+
+
+def _scrub_ssot_path(message: str, ssot_path: Path) -> str:
+    """T10 rider: no absolute paths in resolver-error payloads (basename)."""
+    return message.replace(str(ssot_path), ssot_path.name)
+
+
+def _resolver_error_record(
+    exc: Exception,
+    *,
+    variant_id: Any,
+    styleguide: Any,
+    ssot_path: Path,
+) -> dict[str, Any]:
+    return {
+        "variant_id": variant_id,
+        "styleguide": styleguide,
+        "tag": getattr(exc, "tag", "gamma.styleguide.unexpected-error"),
+        "message": _scrub_ssot_path(str(exc), ssot_path),
+    }
+
+
+def _pick_error_record(
+    *, variant_id: Any, styleguide: Any, tag: str, message: str
+) -> dict[str, Any]:
+    return {
+        "variant_id": variant_id,
+        "styleguide": styleguide,
+        "tag": tag,
+        "message": message,
+    }
+
+
+def _bound_guide_entry(
+    name: str, record: Any, ssot_digest: str | None
+) -> dict[str, Any]:
+    """One ``bound_guides`` entry.
+
+    Remediation T6: ``lifecycle`` (and ``visibility`` when the record declares
+    one) ride along as DATA so a deprecated/probe guide is VISIBLE at the
+    audit point — NO enforcement here (parity with Gary's resolver behavior
+    must hold; enforcement stays pick-time A-M1).
+    """
+    entry: dict[str, Any] = {"name": name, "ssot_digest": ssot_digest}
+    if isinstance(record, dict):
+        entry["lifecycle"] = record.get("lifecycle")
+        presentation = record.get("presentation")
+        visibility = (
+            presentation.get("visibility") if isinstance(presentation, dict) else None
+        )
+        if visibility is not None:
+            entry["visibility"] = visibility
+    else:  # pragma: no cover — resolve_styleguide raises before this can bind
+        entry["lifecycle"] = None
+    return entry
+
+
+def _styleguide_resolution_from_projection(
+    directive_projection: dict[str, Any] | None,
+    *,
+    ssot_path: Path | None = None,
+) -> dict[str, Any]:
+    """Pure deterministic sibling of ``_canonicalize_cd_directive`` (SOP-002 2(b)).
+
+    Emits the ``styleguide_resolution`` block for the ``_act`` output blob —
+    a SIBLING of ``cd_directive``, never inside it. The LLM never touches
+    resolution; fixed projection + fixed SSOT yaml ⇒ byte-stable output (AC-1).
+    UNCONDITIONALLY total — NEVER a raise (CD is load-bearing; §06 must keep
+    working mid-arc). ``ssot_path`` (optional) redirects the SSOT read for
+    tests/audit replays; default is the production SSOT.
+
+    Honesty-first status semantics (review remediation T2-T4/T7, 2026-07-06):
+
+    - genuinely no picks (projection absent, ``gamma_settings`` null, or no
+      entry carries a ``styleguide`` key) AND the F-202 default binds cleanly
+      ⇒ ``no_picks_at_authoring`` with the default resolution emitted and
+      ``default_provenance`` carrying the F-202 pin string;
+    - ANY failure — invalid/blank/non-string pick name, variant id outside
+      the picker vocabulary ``{A, B}`` after normalization, post-normalization
+      variant collision, unknown/deprecated-surface resolver error, SSOT
+      load/parse failure, or a default-bind failure on the no-picks path ⇒
+      ``unresolvable_pick`` with EVERY failure recorded in ``errors`` (in pick
+      order; T7) and ``default_provenance`` null when the default did not
+      bind (T4);
+    - ``input_picks`` echoes ALL ``gamma_settings`` entries verbatim
+      (including inline-settings entries; T3), or null when the projection
+      carries no ``gamma_settings`` list.
+
+    The SSOT is read ONCE (T5): the ``ssot_digest`` in ``bound_guides``
+    attests exactly the bytes the resolver parsed (via ``load_style_guides``'s
+    additive ``content`` parameter).
+    """
+    path = Path(ssot_path) if ssot_path is not None else GAMMA_STYLE_GUIDES_PATH
+    projection = directive_projection if isinstance(directive_projection, dict) else None
+    raw_settings = projection.get("gamma_settings") if projection else None
+    entries = list(raw_settings) if isinstance(raw_settings, list) else None
+    directive_digest = projection.get("directive_digest") if projection else None
+    provenance = (
+        projection.get("styleguide_picker_provenance") if projection else None
+    )
+
+    errors: list[dict[str, Any]] = []
+
+    # T5: ONE guarded read — digest and resolution from the same bytes.
+    ssot_bytes: bytes | None = None
+    ssot_digest: str | None = None
+    guides: dict[str, Any] | None = None
+    try:
+        ssot_bytes = path.read_bytes()
+    except OSError as exc:
+        errors.append(
+            _resolver_error_record(exc, variant_id=None, styleguide=None, ssot_path=path)
+        )
+    if ssot_bytes is not None:
+        ssot_digest = hashlib.sha256(ssot_bytes).hexdigest()
+        try:
+            guides = load_style_guides(path, content=ssot_bytes).get("style_guides", {})
+        except Exception as exc:  # noqa: BLE001 — total by contract, never raise
+            errors.append(
+                _resolver_error_record(
+                    exc, variant_id=None, styleguide=None, ssot_path=path
+                )
+            )
+
+    # T2/T3: normalize + validate picks; every invalid pick is RECORDED, never
+    # silently reclassified (a present-but-bad pick is not "no picks").
+    picks: list[tuple[str, str]] = []
+    pick_attempted = False
+    seen_variants: set[str] = set()
+    for entry in entries or []:
+        if not isinstance(entry, dict) or "styleguide" not in entry:
+            continue  # inline-settings entry: echoed via input_picks, not a pick
+        pick_attempted = True
+        raw_name = entry.get("styleguide")
+        raw_variant = entry.get("variant_id")
+        if not isinstance(raw_name, str) or not raw_name.strip():
+            errors.append(
+                _pick_error_record(
+                    variant_id=raw_variant,
+                    styleguide=raw_name,
+                    tag="cd.styleguide_resolution.invalid-pick-name",
+                    message=(
+                        "pick styleguide must be a non-empty string; got "
+                        f"{raw_name!r}"
+                    ),
+                )
+            )
+            continue
+        variant = str(raw_variant).strip().upper() if raw_variant is not None else ""
+        if variant not in _PICK_VARIANT_VOCABULARY:
+            errors.append(
+                _pick_error_record(
+                    variant_id=raw_variant,
+                    styleguide=raw_name,
+                    tag="cd.styleguide_resolution.invalid-variant-id",
+                    message=(
+                        f"pick variant_id {raw_variant!r} is outside the picker "
+                        f"vocabulary {sorted(_PICK_VARIANT_VOCABULARY)} after "
+                        "normalization"
+                    ),
+                )
+            )
+            continue
+        if variant in seen_variants:
+            errors.append(
+                _pick_error_record(
+                    variant_id=raw_variant,
+                    styleguide=raw_name,
+                    tag="cd.styleguide_resolution.variant-collision",
+                    message=(
+                        f"post-normalization variant_id collision on {variant!r} "
+                        "— a later pick would silently overwrite an earlier "
+                        "resolution (last-wins forbidden)"
+                    ),
+                )
+            )
+            continue
+        seen_variants.add(variant)
+        picks.append((variant, raw_name.strip()))
+
+    resolved: dict[str, Any] = {}
+    bound_guides: list[dict[str, Any]] = []
+    default_provenance: str | None = None
+
+    if guides is not None:
+        for variant, name in picks:
+            try:
+                resolved[variant] = resolve_styleguide(name, guides=guides)
+                bound_guides.append(
+                    _bound_guide_entry(name, guides.get(name), ssot_digest)
+                )
+            except Exception as exc:  # noqa: BLE001 — total by contract
+                errors.append(
+                    _resolver_error_record(
+                        exc, variant_id=variant, styleguide=name, ssot_path=path
+                    )
+                )
+
+    if pick_attempted:
+        input_picks: dict[str, Any] | None = {
+            "gamma_settings": entries,
+            "styleguide_picker_provenance": provenance,
+        }
+        status = "resolved" if not errors else "unresolvable_pick"
+    else:
+        # T3: entries (even pick-less inline-settings ones) are still echoed.
+        input_picks = (
+            {"gamma_settings": entries, "styleguide_picker_provenance": provenance}
+            if entries is not None
+            else None
+        )
+        if guides is not None:
+            try:
+                resolved["A"] = resolve_styleguide(DEFAULT_STYLEGUIDE_NAME, guides=guides)
+                bound_guides.append(
+                    _bound_guide_entry(
+                        DEFAULT_STYLEGUIDE_NAME,
+                        guides.get(DEFAULT_STYLEGUIDE_NAME),
+                        ssot_digest,
+                    )
+                )
+            except Exception as exc:  # noqa: BLE001 — total by contract
+                errors.append(
+                    _resolver_error_record(
+                        exc,
+                        variant_id="A",
+                        styleguide=DEFAULT_STYLEGUIDE_NAME,
+                        ssot_path=path,
+                    )
+                )
+        # T4: no_picks_at_authoring may only assert a binding that HAPPENED;
+        # any SSOT-load or default-resolve failure ⇒ unresolvable_pick with
+        # default_provenance null (the default did not bind).
+        if errors:
+            status = "unresolvable_pick"
+        else:
+            status = "no_picks_at_authoring"
+            default_provenance = DEFAULT_STYLEGUIDE_PROVENANCE
+
+    return {
+        "schema_version": STYLEGUIDE_RESOLUTION_SCHEMA_VERSION,
+        "status": status,
+        "input_picks": input_picks,
+        "bound_guides": bound_guides,
+        "resolved": resolved,
+        "layering_manifest": dict(_LAYERING_MANIFEST),
+        "resolution_digest": hashlib.sha256(
+            _canonical_json(resolved).encode("utf-8")
+        ).hexdigest(),
+        "directive_digest": directive_digest,
+        "default_provenance": default_provenance,
+        # T7: ALL failures recorded, in pick order (schema still v1 pre-commit).
+        "errors": errors,
+    }
+
+
 def _parse_cd_directive(raw_content: Any) -> dict[str, Any]:
     excerpt = _raw_excerpt(raw_content)
     parsed: Any
@@ -403,8 +687,17 @@ def _act(state: RunState) -> dict[str, Any]:
         raise
 
     extracted_source = read_extracted_source(envelope_payload)
+    # Canonical-arc S1: the directive_projection is DETERMINISTIC-NECK input
+    # only — stripped from the LLM prompt (irene_pass1 payload-strip precedent)
+    # so the creative surface stays byte-identical and the LLM structurally
+    # cannot touch resolution (AC-1).
+    prompt_payload = {
+        key: value
+        for key, value in envelope_payload.items()
+        if key != "directive_projection"
+    }
     system_message, user_message = _assemble_cd_prompt(
-        envelope_payload, extracted_source=extracted_source
+        prompt_payload, extracted_source=extracted_source
     )
     try:
         handle = make_chat_model(
@@ -440,6 +733,11 @@ def _act(state: RunState) -> dict[str, Any]:
     output_blob = json.dumps(
         {
             "cd_directive": parsed["cd_directive"],
+            # Canonical-arc S1 (D3): deterministic SIBLING block — never inside
+            # the load-bearing cd_directive (§06 flow FENCED, AC-3).
+            "styleguide_resolution": _styleguide_resolution_from_projection(
+                envelope_payload.get("directive_projection")
+            ),
             "model_id": last_entry.resolved,
             "usage": getattr(response, "usage_metadata", None),
         },
@@ -518,6 +816,9 @@ def build_cd_graph() -> StateGraph:
 __all__ = [
     "CD_REFERENCES",
     "CD_SANCTUM_LOCK_BASELINE",
+    "DEFAULT_STYLEGUIDE_NAME",
+    "DEFAULT_STYLEGUIDE_PROVENANCE",
+    "STYLEGUIDE_RESOLUTION_SCHEMA_VERSION",
     "CdDirectiveParseError",
     "SANCTUM_DIR",
     "TRANSITIONS",
@@ -527,6 +828,7 @@ __all__ = [
     "_plan",
     "_read_cd_references",
     "_read_sanctum_digest",
+    "_styleguide_resolution_from_projection",
     "assert_sanctum_lock",
     "build_cd_graph",
     "validate_creative_directive",

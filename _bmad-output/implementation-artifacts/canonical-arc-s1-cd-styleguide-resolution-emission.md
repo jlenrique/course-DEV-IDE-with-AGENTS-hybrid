@@ -74,6 +74,30 @@ A committed walk-level test where the `_FakeAdapter` canned-cd shim is replaced 
 
 Gary parity audit + §06 fold of the new block (S3) · WARN→FAIL flips (S4) · authority flip (`styleguide-authority-flip`, deferred) · picker trial-start wiring (S2) · the experience-profile §06 flow (FENCED, AC-3) · F-102 adapter fix (`specialist-interrupt-dead-ceremony`, deferred) · the orchestrator's Leg-C floor read (chartered exception).
 
+## Review Findings (T11 3-lane review + SOP-003, 2026-07-06 — triaged)
+
+**Patch (remediation batch, RED-first):**
+- [x] [Review][Patch] T1 (HIGH, edge+blind): malformed/non-UTF-8/unreadable `directive.yaml` at the cd payload seam crashes the walk un-persisted (ParserError/UnicodeDecodeError/PermissionError escape `_runner_payload_for_specialist`; walkers catch only SpecialistDispatchError). Fix: cd branch reads the directive **once** (bytes → digest → decode/parse from the same bytes for settings + provenance), all guarded; failure ⇒ raise into the SpecialistDispatchError family (tag e.g. `cd.directive.unreadable`) so the run error-pauses recoverably. Align the helper docstring with real behavior. [app/marcus/orchestrator/production_runner.py:1444-1459, 1619-1645]
+- [x] [Review][Patch] T2 (MED-HIGH, edge+blind+auditor): duplicate/falsy/case-colliding `variant_id` picks collapse `resolved` (last-wins) while `bound_guides` doubles → internally inconsistent audit record; non-{A,B} ids pass unvalidated. Fix: normalize then validate ids against the picker vocabulary {A,B}; post-normalization collisions or invalid ids ⇒ `status: unresolvable_pick` with error evidence. [app/specialists/cd/graph.py:367-372,412-415]
+- [x] [Review][Patch] T3 (MED, edge): blank/whitespace/non-string `styleguide` values silently reclassified as no-picks (default bound, evidence hidden) ⇒ must be `unresolvable_pick` w/ error; `input_picks` echo must carry ALL gamma_settings entries verbatim (incl. inline-settings entries), not picks-only. [graph.py:369-372]
+- [x] [Review][Patch] T4 (MED, edge+blind+auditor): no-picks + SSOT-load/default-resolve failure ships `status: no_picks_at_authoring` with `default_provenance` asserting a binding that failed ⇒ per the docstring contract must be `unresolvable_pick`; `default_provenance` null when the default did not bind. [graph.py:391-404]
+- [x] [Review][Patch] T5 (LOW-MED, edge+blind): ssot digest `read_bytes()` outside the guarded region can raise past the "never a raise" contract; digest attests different bytes than resolution read (TOCTOU). Fix: single guarded read; digest and resolve from the same bytes (additive optional text/bytes param on the resolver is permitted, documented). [graph.py:377-384]
+- [x] [Review][Patch] T6 (LOW-MED, edge): deprecated/probe guides resolve clean at the audit point — add `lifecycle` (and `visibility` if present) to each `bound_guides` entry as DATA (no enforcement — parity with Gary's resolver behavior must hold; enforcement stays pick-time A-M1). [app/styleguide/resolver.py + graph.py]
+- [x] [Review][Patch] T7 (LOW, edge+blind): only the first resolver error retained — `error` becomes `errors: []` (all failures recorded; schema still v1 pre-commit, no consumer yet). [graph.py:417-420]
+- [x] [Review][Patch] T8 (MED, blind+SOP F-301): picker-boundary guard evadable (parenthesized multi-line import; `importlib.import_module`). Fix: AST-based Import/ImportFrom scan + flag `import_module`+`styleguide_picker` co-occurrence. [tests/marcus/orchestrator/test_styleguide_picker.py]
+- [x] [Review][Patch] T9 (MED, blind+SOP F-305): AC-L live witness skips on exception-message substring — can vacuously skip on genuine dispatch defects. Fix: skip ONLY on explicit credential/arming absence; an invocation failure in an armed run FAILS. [tests/specialists/cd/test_styleguide_resolution_emission.py]
+- [x] [Review][Patch] T10 (LOW, blind): orphaned `tests/orchestrator/__pycache__/__init__.cpython-312.pyc` without source — delete byproduct; re-verify collection serial AND xdist. NIT riders: scrub absolute paths from `_resolver_error_record` payloads (basename or repo-relative); drop unused `tmp_path` fixture; F-302 one-line corpus-header note re partial-row reactivation.
+- [x] [Review][Patch] T11: RED-first boundary tests for T1-T4 shapes (malformed directive at seam; duplicate/falsy variant ids; blank/non-string names; SSOT-failure statuses incl. `ssot_path` param exercise) — these are the remediation's RED set.
+
+**Ratified at T11 (recorded, no action):** F-A3 orchestrator excluded from the new lint contract (chartered pre-existing `payload_contract` import — the §06 vocabulary lockstep); F-A4 pyproject C3 ignore row in-scope-by-necessity (pre-existing lint RED verified at HEAD in a clean worktree); F-A7/F-304 additive `default_provenance`+`errors` keys are part of the schema-v1 contract S3 inherits; F-A8 prompt-strip protective.
+
+**Defer (pre-existing / by-design):**
+- [x] [Review][Defer] irene-pass1 04A branch shares the directive parse hazard [production_runner.py:1619] — deferred, pre-existing (same fix family, own story)
+- [x] [Review][Defer] `test_texas_to_cd_chain[trial_id0]` + `test_slab_7a_opener_composition_smoke` — deferred, pre-existing REDs verified identical at HEAD in a clean worktree
+- [x] [Review][Defer] pick-time `ssot_sha256` vs resolution-time `ssot_digest` comparison — by design S3's parity-comparator job, not S1's
+
+**Dismissed as noise (4):** `__all__` private-export pattern (pre-existing convention), dead future-import in `__init__.py`, F-102 word-tripwire prose pin (deliberate), "single source of truth" docstring wording.
+
 ## T11 gates
 
 3-lane `bmad-code-review` (Blind Hunter / Edge Case Hunter / Acceptance Auditor) on the diff; ruff 0-new on touched files; focused suites green + `tests/specialists/cd` + gary styleguide suites + composition chain tests; shadow-monitor SOP poll at dev-complete and at story close (ledger: `canonical-arc-claude-shadow-monitor-2026-07-06.md`); story flips done only after live witness AC-L.

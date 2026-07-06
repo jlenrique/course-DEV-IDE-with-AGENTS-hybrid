@@ -37,6 +37,15 @@ class CdReturn(SpecialistReturn):
         default=None,
         description="Validated creative directive payload emitted by Dan.",
     )
+    styleguide_resolution: dict[str, Any] | None = Field(
+        default=None,
+        description=(
+            "Deterministic styleguide-resolution audit block (canonical-arc S1) "
+            "— SIBLING of cd_directive, emitted by the deterministic neck. "
+            "Optional: pre-S1 / legacy bundles discriminate via its absence "
+            "(pin EXTENDED, never weakened — spec F-205)."
+        ),
+    )
 
     @model_validator(mode="after")
     def _pin_specialist_id(self) -> CdReturn:

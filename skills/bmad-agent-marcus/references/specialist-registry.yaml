@@ -89,8 +89,11 @@ specialists:
     status: active
     notes: |
       Dan — resolves creative directives, experience profile mapping, narration shaping. Invoked at §4.75.
-      PARTIAL status — specialist exists; conditional-skip + artifact-write contract absent. Slab 7c did NOT activate CD.
-      Trial-3 dispatch routes around CD; activation pending future slab.
+      LIVE + LOAD-BEARING (monitor-verified SOP-001, 2026-07-06): dispatched generically at manifest
+      node 4.75 in BOTH runner walks; §06's package builder fails loud without the cd contribution and
+      folds experience_profile/rationale/proportions into Gary's briefs. Emits the sibling
+      `styleguide_resolution` audit block from the runner-supplied directive_projection
+      (canonical-arc S1); Gary retains styleguide authority until the deferred S-flip story.
 
 personas:
   # Post-Slab-7 enrichment (added 2026-05-07): canonical specialist persona resolution for Marcus delegation.
@@ -207,13 +210,18 @@ personas:
     activated_at: slab-7b-11 (2026-05-01)
     note: Class-D2 sanctum-path-equality EXEMPT per D20; FR99 sidecar canonical; deterministic (no API; no LLM)
 
-partial-status:
   cd:
-    class: D1-pending
+    class: D1
     sanctum: _bmad/memory/bmad-agent-cd/
     persona_skill: skills/bmad-agent-cd/SKILL.md
-    role: Creative Director (specialist exists; conditional-skip + artifact-write contract absent)
-    note: Slab 7c did NOT activate CD; Trial-3 dispatch routes around CD; activation pending future slab.
+    role: Creative Director production specialist; live at §4.75 in both walks; load-bearing at §06; styleguide-resolution audit emission (canonical-arc S1)
+    activated_at: canonical-arc-s1 (2026-07-06; staleness fix — CD was already live/load-bearing per monitor SOP-001)
+    note: LLM-only (no third-party API); Gary retains styleguide authority until the deferred S-flip story.
+
+# partial-status block emptied at canonical-arc S1 (2026-07-06): cd — its only
+# member — was reclassified to the personas block above after monitor SOP-001
+# verified the "routes around CD / activation pending" ground was stale doc
+# drift (CD is dispatched at 4.75 in both walks and load-bearing at §06).
 
 dissolved:
   audra:

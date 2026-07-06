@@ -88,8 +88,15 @@ def judge_intent(intent: dict, live_state: str | None) -> tuple[bool, str]:
 def test_probe_corpus_loads_and_is_nonvacuous() -> None:
     rows = _load_corpus()
     states = {row["expected_state"] for row in rows}
-    # Must exercise each non-wired class AND at least one wired control.
-    assert {"present-but-unrouted", "partial", "shelf", "wired"} <= states
+    # Must exercise each non-wired class present in the LIVE substrate AND at
+    # least one wired control. `partial` left the live substrate at
+    # canonical-arc S1 (2026-07-06): cd — its only member — was reclassified
+    # wired after its stale partial-status ground was corrected. The corpus
+    # honesty check below (expected_state == live-derived state) makes an
+    # honest `partial` row impossible until a specialist genuinely carries a
+    # partial-status flag again; judge coverage for the partial class is
+    # preserved in test_judge_catches_a_false_wired_over_a_partial_target.
+    assert {"present-but-unrouted", "shelf", "wired"} <= states
 
 
 def test_zero_false_wired_over_promise() -> None:
@@ -140,6 +147,19 @@ def test_judge_catches_an_injected_false_wired() -> None:
     forged = {"target": "midjourney", "claimed_state": "wired", "claimed_wired": True}
     ok, reason = judge_intent(forged, live_state="shelf")
     assert not ok and "FALSE-WIRED" in reason
+
+
+def test_judge_catches_a_false_wired_over_a_partial_target() -> None:
+    """Partial-class judge coverage, preserved after canonical-arc S1 removed
+    the last live `partial` specialist (cd -> wired): a wired claim over a
+    partial live state is FALSE-WIRED; a matching partial claim passes."""
+    forged = {"target": "any", "claimed_state": "wired", "claimed_wired": True}
+    ok, reason = judge_intent(forged, live_state="partial")
+    assert not ok and "FALSE-WIRED" in reason
+
+    honest = {"target": "any", "claimed_state": "partial", "claimed_wired": False}
+    ok, reason = judge_intent(honest, live_state="partial")
+    assert ok, reason
 
 
 def test_no_llm_client_imported_anywhere_in_gate() -> None:

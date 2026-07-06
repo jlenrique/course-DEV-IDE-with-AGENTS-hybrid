@@ -1407,9 +1407,19 @@ def _runner_payload_for_specialist(
     S3 bridge spread is retired (its tombstone test was updated
     deliberately, per Winston S3-A). This seam carries RUNNER CONTEXT only:
     Texas's directive/bundle paths, Quinn-R's gate_id, Gary's run-dir
-    ``export_dir``. Content delivery via the seam is forbidden — the
-    adapter collision guard refuses any seam key that a projection or
-    dependency also delivers.
+    ``export_dir``, CD's ``directive_projection``. Content delivery via the
+    seam is forbidden — the adapter collision guard refuses any seam key
+    that a projection or dependency also delivers.
+
+    Canonical-arc S1 (D2, 2026-07-06): CD receives ``directive_projection``
+    ``{gamma_settings (verbatim), styleguide_picker_provenance (verbatim,
+    if present), directive_digest (sha256 of the directive file bytes)}`` at
+    the §4.75 dispatch site. Directive-derived styleguide context is
+    CHARTERED runner context per the gary ``gamma_settings`` precedent
+    above — not content delivery (the corpus/content plane still travels
+    exclusively through dependencies/projections). CD never opens the
+    directive file; the deterministic neck emits the ``styleguide_resolution``
+    audit block from this projection alone.
 
     Other specialists receive None.
     """
@@ -1431,6 +1441,62 @@ def _runner_payload_for_specialist(
         if gamma_settings is not None:
             payload["gamma_settings"] = gamma_settings
         return payload
+    # Canonical-arc S1 (D2): CD's §4.75 directive_projection — the ONE branch
+    # both walks reach through the shared _dispatch_specialist_at_node (F-203
+    # wiring altitude: never per-walk wiring). gamma_settings verbatim per the
+    # gary precedent above; digest via the :852-854 sha256 pattern. No
+    # directive on disk ⇒ None ⇒ CD's neck emits no_picks_at_authoring.
+    # Remediation T1 (review 2026-07-06, HIGH): the directive is read ONCE —
+    # bytes → sha256 → decode/parse of the SAME bytes for settings AND
+    # provenance (no TOCTOU) — and EVERY failure (unreadable file, non-UTF-8
+    # bytes, malformed YAML) raises into the SpecialistDispatchError family
+    # (`cd.directive.*` tags) so BOTH walkers' `except SpecialistDispatchError`
+    # routes it through `_pause_at_error` recoverably (the
+    # AssetResolutionError / CoverageAssuranceError precedent) instead of
+    # crashing the walk un-persisted.
+    if specialist_id == "cd" and directive_path is not None and directive_path.is_file():
+        try:
+            directive_bytes = directive_path.read_bytes()
+        except OSError as exc:
+            raise SpecialistDispatchError(
+                f"cd directive_projection: directive at {directive_path} is "
+                f"unreadable: {exc}",
+                tag="cd.directive.unreadable",
+            ) from exc
+        try:
+            directive_text = directive_bytes.decode("utf-8")
+        except UnicodeDecodeError as exc:
+            raise SpecialistDispatchError(
+                f"cd directive_projection: directive at {directive_path} is "
+                f"not valid UTF-8: {exc}",
+                tag="cd.directive.unreadable",
+            ) from exc
+        try:
+            loaded = yaml.safe_load(directive_text) or {}
+        except yaml.YAMLError as exc:
+            raise SpecialistDispatchError(
+                f"cd directive_projection: directive at {directive_path} is "
+                f"not parseable YAML: {exc}",
+                tag="cd.directive.malformed",
+            ) from exc
+        if not isinstance(loaded, dict):
+            # Tolerant like _gamma_settings_from_directive: a parseable-but-
+            # non-mapping directive projects digest + null picks (the neck
+            # emits an honest no_picks_at_authoring), matching pre-T1 behavior.
+            loaded = {}
+        raw_settings = loaded.get("gamma_settings")
+        projection: dict[str, Any] = {
+            "gamma_settings": (
+                [dict(item) for item in raw_settings if isinstance(item, dict)]
+                if isinstance(raw_settings, list)
+                else None
+            ),
+            "directive_digest": hashlib.sha256(directive_bytes).hexdigest(),
+        }
+        provenance_block = loaded.get("styleguide_picker_provenance")
+        if isinstance(provenance_block, dict):
+            projection["styleguide_picker_provenance"] = dict(provenance_block)
+        return {"directive_projection": projection}
     # P5-S2 Consumer A (Step 6): the narration node ("irene" == Pass-2; Pass-1 is
     # the separate "irene-pass1" specialist) gets the orchestrator-projected
     # per-SLIDE role-derived voice seed table. ORCHESTRATOR-SIDE projection (Winston
@@ -1602,6 +1668,12 @@ def _gamma_settings_from_directive(directive_path: Path | None) -> list[dict[str
     if not isinstance(raw, list):
         return None
     return [dict(item) for item in raw if isinstance(item, dict)]
+
+
+# (Remediation T1: the former `_picker_provenance_from_directive` helper was
+# folded into the cd branch of `_runner_payload_for_specialist` — provenance
+# now comes from the SAME single guarded directive read as settings + digest,
+# so a separate tolerant re-read helper would misstate real seam behavior.)
 
 
 # BETA S0.4 flake budget (T5a-F2): dispatch tags that represent LLM-output

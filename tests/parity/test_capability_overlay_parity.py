@@ -94,18 +94,39 @@ def test_known_classification_pins() -> None:
     assert specialists["gary"].capability_state == "wired"
     assert specialists["texas"].capability_state == "wired"
     assert specialists["tracy"].capability_state == "present-but-unrouted"
-    assert specialists["cd"].capability_state == "partial"
+    # Canonical-arc S1 (2026-07-06): cd's `partial` ground was STALE doc drift
+    # (monitor SOP-001: CD is dispatched at 4.75 in both walks + load-bearing
+    # at §06). Registry staleness fixed -> the honest classification is wired.
+    assert specialists["cd"].capability_state == "wired"
     assert specialists["midjourney"].capability_state == "shelf"
 
 
-def test_partial_ordering_keeps_cd_off_wired() -> None:
-    """`partial` is evaluated BEFORE `wired` so `cd` never reads as wired."""
-    overlay = derive_overlay(REPO_ROOT)
-    cd = overlay.specialists["cd"]
-    assert cd.in_manifest is True
-    assert cd.in_dispatch is True
-    assert cd.real_module is True
-    assert cd.capability_state == "partial"  # NOT wired
+def test_partial_ordering_beats_wired(tmp_path: Path) -> None:
+    """`partial` is evaluated BEFORE `wired` (first-match-wins decision table).
+
+    Canonical-arc S1: cd — the former live example — was reclassified wired
+    when its stale partial-status ground was corrected, so the ordering rule
+    is now pinned via an injected partial-status flag in a substrate mirror
+    (assertion PRESERVED at full strength, witness relocated)."""
+    mirror = _copy_substrate(tmp_path)
+    registry_path = (
+        mirror / "skills" / "bmad-agent-marcus" / "references" / "specialist-registry.yaml"
+    )
+    raw = yaml.safe_load(registry_path.read_text(encoding="utf-8"))
+    raw["partial-status"] = {
+        "gary": {
+            "persona_skill": "skills/bmad-agent-gamma/SKILL.md",
+            "role": "injected ordering witness",
+        }
+    }
+    registry_path.write_text(yaml.safe_dump(raw, sort_keys=False), encoding="utf-8")
+
+    drifted = derive_overlay(mirror)
+    gary = drifted.specialists["gary"]
+    assert gary.in_manifest is True
+    assert gary.in_dispatch is True
+    assert gary.real_module is True
+    assert gary.capability_state == "partial"  # NOT wired — partial wins
 
 
 def test_canonicalization_aliases_not_misclassified() -> None:
