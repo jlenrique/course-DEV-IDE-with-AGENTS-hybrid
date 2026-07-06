@@ -89,6 +89,8 @@ def _coerce_outbound_envelope(
         return outbound_envelope
     if isinstance(outbound_envelope, Path):
         return load_outbound_envelope(outbound_envelope)
+    if isinstance(outbound_envelope, BaseModel):
+        return GaryOutboundEnvelope.model_validate(outbound_envelope.model_dump(mode="json"))
     return GaryOutboundEnvelope.model_validate(dict(outbound_envelope))
 
 
