@@ -1,7 +1,7 @@
 # Story S1 — CD styleguide-resolution emission
 
 **Arc:** Canonical Production Conversation (party record: `_bmad-output/planning-artifacts/canonical-production-conversation-arc-greenlight-party-record-2026-07-06.md`, esp. **§7 RE-SCOPE ADDENDUM**; W2 contract as amended: `styleguide-binding-cd-contract-2026-07-06.md`).
-**Status:** ready-for-dev · **Size:** M · **Gate mode:** single-gate structural (3-lane `bmad-code-review` at T11) · **Branch:** `dev/workbook-2026-07-06`.
+**Status:** **DONE** (2026-07-06; committed `c24308f7`, pushed; full gate chain: SOP-002 → RED-first dev → SOP-003 → 3-lane T11 review → 11 patches remediated RED-first → independent re-verify → **AC-L live witness PASSED** 19.0s real dispatch first-run-stands → SOP-004 CONCUR-W-F) · **Size:** M · **Gate mode:** single-gate structural (3-lane `bmad-code-review` at T11) · **Branch:** `dev/workbook-2026-07-06`.
 **Execution convention:** FRESH dev agent, RED-first, no mocks for live legs, `PYTHONIOENCODING=utf-8` on any subprocess that prints unicode, xdist rule: any new parallel-run red gets one `-n 0` confirmation before triage.
 
 ## Context (read before code — all monitor-verified, SOP-001)
@@ -23,6 +23,9 @@ The runner supplies CD's dispatch with `runner_supplied_payload={"directive_proj
 **Wiring altitude (SOP-002 F-203, binding):** do NOT add per-walk wiring. Both walk bodies call the single shared `_dispatch_specialist_at_node` (`production_runner.py:1924` — the S4-part-2 refactor exists precisely to forbid per-walk copies). The correct implementation is **one `cd` branch in `_runner_payload_for_specialist` (`production_runner.py:1386`)**, reusing the existing precedents: `_gamma_settings_from_directive` (`:1593` — gary already receives directive-derived `gamma_settings` through this exact seam) and the directive-sha256 pattern (`:852-854`). Continuation-walk `directive_path` availability is already solved (`_resolve_resume_directive_path`, resume `:2775` / recover `:2850`). While there, **extend the seam docstring's runner-context enumeration** (`:1405-1412`) to name `directive_projection` — do not silently ignore its "content delivery forbidden" clause; directive-derived styleguide context is chartered runner context per the gary precedent. Note (F-204): the adapter docstring at `dispatch_adapter.py:65-71` ("runner keys WIN") is STALE — the code RAISES on collision (`:108-120`); design against the code. CD never opens the directive file; the adapter is untouched (a one-line docstring fix is a permitted NIT if the T11 reviewer allows).
 
 ### D3 — CD emits the sibling `styleguide_resolution` block (deterministic neck only)
+
+> **⚠️ SCHEMA SKETCH BELOW IS STALE vs the committed emission (SOP-004 F-402).** The schema-v1 SSOT for S3's parity comparator is the COMMITTED `_styleguide_resolution_block` emission in `app/specialists/cd/graph.py` (@ `c24308f7`): the key set additionally includes `errors` (list, pick order), `default_provenance` (null unless the default actually bound), and `lifecycle`/`visibility` data on each `bound_guides` entry. S3's spec must cite the committed emission + the neck docstring, not this sketch.
+
 `_act` output (the cache_prefix JSON) gains a **sibling** key next to `cd_directive` — NEVER inside it:
 
 ```yaml

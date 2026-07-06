@@ -84,3 +84,11 @@ Audit of the uncommitted dev diff. **All dev claims verified:** F-203 wiring exa
 **AC-L LIVE WITNESS: PASSED (19.0s, real model dispatch, first-run-stands, armed run — the T9 fix guarantees this PASS is not a masked skip).** F-305 satisfied.
 
 Next poll: SOP-004 at the S1 close commit.
+
+### SOP-004 — S1 story-close audit (2026-07-06, fresh monitor agent) — RELAYED (condensed; full text in agent transcript)
+
+**Commit integrity CLEAN:** `c24308f7` = exactly the 20-file S1 set; all three strays excluded and still untracked; pyproject carries exactly the two ratified hunks. **Post-commit green REPRODUCED:** 144 passed focused battery, lint 16/0, overlay fresh. **Remediation spot-audit (T1, T2/T3/T4, T8) ALL VERIFIED in committed code** — read-once digest discipline, honesty trichotomy with typed error accumulation, `default_provenance` only on the clean branch, AST guard at full strength with both evasion fixtures. **Live witness LEGITIMATE:** committed AC-L test has no skip path in its body (gating exclusively upstream conftest, contract-pinned); the 19.0s PASS cannot have been a masked skip; content assertions real (status, bound_guides names, byte-identical neck reproduction). **Carried findings:** F-301/302/303/305 CLOSED; F-304 substantially satisfied.
+
+**New findings:** **F-401** (procedural) story Status line flip — EXECUTED at the flip. **F-402** (advisory) D3 schema sketch stale vs committed emission — stale-marker ADDED under D3; S3's spec must cite the committed `_styleguide_resolution_block` as schema-v1 SSOT. **F-403** (S2 MUST inherit) picker `_VARIANT_IDS` and CD `_PICK_VARIANT_VOCABULARY` are two independent {A,B} constants with import coupling structurally forbidden and NO lockstep pin — S2 carries the lockstep constraint + adds the test-level pin (a test may import both; production may not). **F-404** (S2 MUST inherit) CD's projection reads ONLY the directive both walks resolve — S2's persisted pick must land in the directive `gamma_settings[]` (reuse `write_pick_to_directive`, which already normalizes into exactly the shape CD's neck accepts), or CD audits blind and manufactures an S3 parity divergence.
+
+**Verdict: CONCUR-WITH-FINDINGS — S1 flipped DONE; S2 opens.** SOP-005 (S2 spec pre-dispatch) must verify F-403 + F-404 are present in the S2 spec text.
