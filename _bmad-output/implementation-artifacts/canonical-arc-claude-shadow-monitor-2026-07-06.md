@@ -160,3 +160,19 @@ Next poll: SOP-007 at the S2 close commit.
 **Mid-witness event (on the record):** leg-1 first crossing of §07 surfaced the pre-existing `normalize_title` apostrophe defect (deterministic `brief-unmatched`; 8 Gamma decks burned across attempt-1's auto-retry×3 + one documented pre-fix recover). Orchestrator stood the live lane down, convened the focused 3-seat round (party record §10, 3/3 CONCUR-W-RIDERS), landed the ratified fix RED-first (10 witnesses; the collide-loud pin exposed a pre-fix SILENT wrong-slot binding), committed FIRST at `59a9a48a` per ratified sequencing, then authorized ONE recover. The frozen judges never executed pre-fix — the recover is the legitimate error-pause→recover product path, not retry-to-green. Total spend: 10 Gamma generations + ~$0.30 OpenAI (LangSmith-measured).
 
 Next poll: SOP-010 at the S3 close commit.
+
+### SOP-010 — S3 story-close audit (2026-07-07, fresh monitor agent) — RELAYED (condensed; full text in agent transcript)
+
+**Commit integrity CLEAN, both commits:** `59a9a48a` = exactly the ratified 6-file matcher/governance set with all four §10 riders verified IN the diff (W1 live-pair, W2 per-char, W3 collide-loud, W4 mutant-killer; dual-pass at gamma_operations.py:1474-1495; live re-probe reproduces). `7630d091` = exactly the S3 set — **16 dev .py counted (F-902 honored)** + story + ledger + 27-file evidence pack + sidecar = 46 files. No stray in either commit; all protected untracked paths still `??`. **F-802 fence holds** (zero commits touching pipeline-manifest/package_builders). Sidecar = exactly ONE appended event, timestamp inside leg-1's start window, prior events byte-intact.
+
+**Post-commit green REPRODUCED:** 215/215 across the touched surface (serial); lint-imports 16/0; ruff 0-new byte-verified (the 18 findings in gamma_operations.py are identical at `d049453b`).
+
+**Live-evidence single-pass VERIFIED AGAINST THE CLOCK:** judges frozen 01:19Z (before any leg); fix committed 01:50:39Z; post-fix recover 01:51:53Z; judge-1 02:22Z; judge-2 02:25Z — **no judge output predates the fix; both pre-fix attempts failed un-judged** (error-pause→recover, not retry-to-green). Judge-facts ↔ receipts consistent: leg-1 three-way attestation non-null + identical + equal to on-disk trial-start.json, F-402 10-key set exact; leg-2 directive digests EQUAL (genuine same-bytes), gary's live digest == the prepare-time predicted post-mutation digest, WARN verbatim in the walk log, run not halted. **Mutation hygiene CLEAN** (SSOT byte-identical to `d049453b` in git and worktree). **Story flip ACCURATE** (every status-line claim checked). **Spot-audits P2+P7 at full strength in committed code.** **Baseline discipline HELD** (2 pre-existing contract reds reproduce; neither file touched).
+
+**Findings (both advisory):** F-1001 PROOF.md "~02:19" vs authoritative 02:22 stamps — narrative precision only. F-1002 the 18 pre-existing ruff errors in gamma_operations.py — recommend a ruff-clean pass ride that file's next touch.
+
+**Carried:** F-901 noted-in-record ✔ · F-902 honored ✔ · F-701 honored ✔ (distinct files per attempt; sidecar pure append).
+
+**Verdict: CONCUR-WITH-FINDINGS — S3 DONE STANDS; S4 UNBLOCKS.** Next poll: **SOP-011 at S4 spec pre-dispatch**, verifying (1) the E4 clock-attestation defer explicitly weighed by the S4 author; (2) scope matches the §7 re-scoped S4 row with the committed v1 receipt schema cited as input contract; (3) F-705 WARN-seed ownership formally transfers to S4 with a byte-diff witness planned; (4) the §10 deferred filings stay filed, not silently absorbed.
+
+**Orchestrator disposition (recorded at relay):** F-1001/F-1002 accepted as advisory (F-1002 noted for gamma_operations.py's next touch). SOP-011 obligations carried into next-session-start-here + SESSION-HANDOFF for the S4 spec author. Session-17 WRAPUP proceeds per the operator's directive (fresh session for S4).
