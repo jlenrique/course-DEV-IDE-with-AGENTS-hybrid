@@ -26,6 +26,20 @@ TRIAL_ID = UUID("12345678-1234-4234-8234-fedcba987654")
 CORPUS = Path("tests/fixtures/trial_corpus/README.md")
 
 
+@pytest.fixture(autouse=True)
+def _pin_g0_enrichment_off(monkeypatch: pytest.MonkeyPatch) -> None:
+    """Canonical-arc S5-3a — kill-switch / escape-hatch coverage (D-kill-switch).
+
+    This suite's subject IS the G0-dormant path: with the G0-enrichment brick
+    ASLEEP, the START walk first-pauses at G1 and dispatches no motion nodes. Pin
+    ``MARCUS_G0_ENRICHMENT_ACTIVE`` explicitly OFF so this remains the kill-switch
+    regression witness after 3b flips the default OFF->ON (the canonical G0E-first
+    walk gets its own witness in 3b). The no-motion teeth are unchanged; only the
+    env intent is now explicit. Explicit ``"0"`` survives the code-default flip.
+    """
+    monkeypatch.setenv("MARCUS_G0_ENRICHMENT_ACTIVE", "0")
+
+
 class _FakeAdapter:
     """Minimal dispatch adapter — records nothing itself; the spy below does."""
 

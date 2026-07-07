@@ -71,6 +71,22 @@ def _clear_registry():
     clear_resume_registry()
 
 
+@pytest.fixture(autouse=True)
+def _pin_g0_enrichment_off(monkeypatch: pytest.MonkeyPatch) -> None:
+    """Canonical-arc S5-3a — flip-robustness pin (D-migrate-canonical, pin OFF).
+
+    NOTE: this suite is ALREADY flip-immune — every walk drives a custom
+    ``_walk_manifest`` whose G1 gate is an explicit ``gate_code: "G1"`` node, so the
+    real pipeline's G0E node is never present to wake under the 3b default flip
+    (empirically: 0 forced-ON REDs at 3a). This explicit ``"0"`` pin is therefore
+    documentary/defensive — it makes the env intent explicit and guards against a
+    future swap to the real manifest. AC-5: it touches ONLY the first-pause env
+    expression; the S3/S4 styleguide_parity outcomes and the Flip-A/Flip-B fail-loud
+    teeth are byte-unchanged. Explicit ``"0"`` survives the code-default flip.
+    """
+    monkeypatch.setenv("MARCUS_G0_ENRICHMENT_ACTIVE", "0")
+
+
 class _OfflineGammaClient:
     def list_themes(self, limit: int = 20) -> list[dict[str, str]]:
         del limit

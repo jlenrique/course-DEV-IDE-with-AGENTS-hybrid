@@ -62,6 +62,20 @@ def _clear_registry():
     clear_resume_registry()
 
 
+@pytest.fixture(autouse=True)
+def _pin_g0_enrichment_off(monkeypatch: pytest.MonkeyPatch) -> None:
+    """Canonical-arc S5-3a — flip-robustness pin (D-migrate-canonical, pin OFF).
+
+    The default-manifest continuation walk (``_run_continuation_walk``) and the
+    ceremony-started walk first-pause at G1 before node 4.75 on the dormant path.
+    Pinning ``MARCUS_G0_ENRICHMENT_ACTIVE`` OFF explicitly keeps that true under the
+    3b default flip; the CD-resolution subject is orthogonal to G0-enrichment, and
+    the custom ``_walk_manifest`` start-walk tests are unaffected. Explicit ``"0"``
+    survives the code-default flip.
+    """
+    monkeypatch.setenv("MARCUS_G0_ENRICHMENT_ACTIVE", "0")
+
+
 class _HybridRealCdAdapter:
     """Canned for every specialist EXCEPT cd, which runs the REAL compiled
     9-node CD graph through the REAL ProductionDispatchAdapter."""

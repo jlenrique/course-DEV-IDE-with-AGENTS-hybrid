@@ -57,6 +57,20 @@ TRIAL_ID = UUID("12345678-1234-4234-8234-123456789abc")
 CORPUS = Path("tests/fixtures/trial_corpus/README.md")
 
 
+@pytest.fixture(autouse=True)
+def _pin_g0_enrichment_off(monkeypatch: pytest.MonkeyPatch) -> None:
+    """Canonical-arc S5-3a — flip-robustness pin (D-migrate-canonical, pin OFF).
+
+    Pins the G0-enrichment kill-switch explicitly OFF so every walk in this suite
+    first-pauses at G1 deterministically, regardless of the process default (3b
+    flips ``MARCUS_G0_ENRICHMENT_ACTIVE`` default OFF->ON). G0-enrichment is
+    irrelevant to these subjects (two-walk research-wiring parity, dispatch-toggle
+    threading, FAIL-mode citation gate) — they reach/cross G1 directly. Explicit
+    ``"0"`` (not ``delenv``) is what survives the 3b code-default flip.
+    """
+    monkeypatch.setenv("MARCUS_G0_ENRICHMENT_ACTIVE", "0")
+
+
 # --------------------------------------------------------------------------- #
 # Fixtures: a locked lesson plan with an in-scope research-enrichment gap.
 # --------------------------------------------------------------------------- #

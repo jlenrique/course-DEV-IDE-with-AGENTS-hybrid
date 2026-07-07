@@ -246,3 +246,23 @@ Next: fresh dev RED-first remediation R1-R6 → orchestrator re-verify → **AC-
 **F-1402 [MEDIUM, applied]:** 2 INDEPENDENT pre-existing drift reds remain after the fix, NOT corpus-absence, NOT this story's job: `test_front_door_selection_threading::test_run_summary_pack_hash_default_is_byte_identical_to_raw` (manifest pack_hash mismatch) + `test_run_summary_yaml_emit::test_clean_trial_run_summary_populated` (specialist_roster_count 17≠12). AC-4 now names them as expected residual + forbids touching manifest/roster (AC-5/lockstep guard). "~21" reconciled to 18-at-HEAD → 2 residual after fix. Filed as follow-ons.
 
 **Verdict: CONCUR-WITH-FINDINGS** — no BLOCK; both are spec-clarity fixes (applied pre-dispatch). The g0-enrichment substrate is green-ready; the missing fixture is the whole gap, exactly as §8 diagnosed. Next poll: SOP-015 at dev-complete (verify 18→2, no manifest/roster touch, corpus tracked+fresh-clone-green).
+
+### SOP-015 — pre-S5 g0-battery baseline STORY-CLOSE audit (2026-07-07, session 18, fresh monitor agent) — RELAYED (condensed)
+
+**Commit `a1158385`. All 7 checks PASS, no findings.** (1) commit = exactly 5 files {studio-smoke-min/lesson.md, the pin test, story spec, arc ledger, deferred-inventory}, no stray (all 7 strays still untracked). (2) `git show a1158385 -- app/ pipeline-manifest.yaml` EMPTY. (3) 18→2: `tests/integration/marcus/ tests/unit/marcus/cli/ -n 0` = 2 failed/466 passed — residual EXACTLY the 2 named drift reds (pack_hash + roster_count 17≠12). (4) fixture HONEST — genuine 1 H1 + 3 H2 outline; brick tests consume it structurally (≥4 components, anchored, verbatim excerpts); spot-run `-k "g0_enrichment_brick or irene_refinement_brick"` 75 passed incl. the 2 two-gate refine+ratify tests. (5) pin asserts the FULL exact tuple (G0R annotated, not weakened). (6) `git ls-files` tracks the lesson.md, `check-ignore` exit 1 — fresh clone greens. (7) §8 precondition MET.
+
+**Verdict: CONCUR. pre-S5 g0-battery DONE. S5 (G0 canonical) UNBLOCKS.** Next poll: SOP-016 at the S5 spec pre-dispatch.
+
+---
+
+## ✅ pre-S5 g0-battery CLOSED (session 18) — 18→2, S5-open precondition MET; commit `a1158385` pushed. Arc: S0·S1·S2·S3·S4 + S5-precondition CLOSED. Next: S5 (G0 canonical, M/L — likely 3a migration / 3b flip split) → S6.
+
+### SOP-016 — S5-3a first-pause-migration spec pre-dispatch review (2026-07-07, session 18, fresh monitor agent) — RELAYED (condensed)
+
+**Artifact:** `canonical-arc-s5-3a-first-pause-migration.md`. **Method:** code-first at `a1158385`; independently re-derived the blast radius across ALL of `tests/`.
+
+**F-1601 [HIGH, blocking — APPLIED]:** the spec's grep scope (`tests/integration/marcus/` + `tests/composition/`) was one dir too narrow — **`tests/marcus/orchestrator/test_start_walk_no_motion.py:90`** asserts `paused_gate=="G1"` on the REAL `run_production_trial`, offline (no live marker, runs in the default suite), traverses the same env-gated G0E branch (`production_runner.py:2414-2424`) → RED at the 3b flip. A missed suite = a broken 3b. Added to the 3a migration set (now 8 offline suites).
+**F-1602 [MEDIUM — APPLIED]:** `tests/live/test_production_trial_smoke_with_gate.py:40` (`@live`, `paused_gate=="G1"`) — doesn't break the offline suite but 3b's live witness leg must migrate it; named as a 3b handoff in Out-of-scope.
+**F-1603..F-1608 [INFO, confirmed]:** exclusions all correct (`marcus_duality_boundary` full-set; `run_summary_yaml_emit` = drift-red follow-on; ledger/seam synthetic fixtures; resume-suite synthetic single-gate manifests; unit input-constructions). No shared first-pause helper in any conftest (per-suite migration stands). Split SOUND (8 offline + 1 live >> A2 N>5, no helper to collapse). M1 rubric SOUND — AC-1 env-independence is genuinely the OPPOSITE of both-worlds-green vanity (each test pins ONE env, asserts the DISTINCT walk it drives). Scope-fence CLEAN — `g0_enrichment_active()` reads the env directly (test-settable via monkeypatch, no prod change); **bonus: G0R rides the SAME env var** (`irene_refinement_active()` delegates to `g0_enrichment_active()`) so one pin wakes both G0E+G0R. AC-5 parity-pin preservation adequate (first-pause assertion structurally separable from the S3/S4 teeth).
+
+**Verdict: CONCUR-WITH-FINDINGS** — F-1601 (blocking) + F-1602 applied pre-dispatch; the rest concur. Dev T1 must re-grep across ALL `tests/`. Next poll: SOP-017 at 3a dev-complete.

@@ -107,6 +107,19 @@ def _clear_registry():
     clear_resume_registry()
 
 
+@pytest.fixture(autouse=True)
+def _pin_g0_enrichment_off(monkeypatch: pytest.MonkeyPatch) -> None:
+    """Canonical-arc S5-3a — flip-robustness pin (D-migrate-canonical, pin OFF).
+
+    The error-pause + verdict-less recovery subjects need the walk to reach G1 (or
+    the failed pre-G1 node) on the dormant path. Pinning ``MARCUS_G0_ENRICHMENT_ACTIVE``
+    OFF explicitly keeps the first pause G1 under the 3b default flip; G0-enrichment
+    is irrelevant to error-pause/recover. Explicit ``"0"`` survives the code-default
+    flip.
+    """
+    monkeypatch.setenv("MARCUS_G0_ENRICHMENT_ACTIVE", "0")
+
+
 def _start(tmp_path: Path, monkeypatch) -> production_runner.ProductionTrialEnvelope:
     monkeypatch.setenv("OPENAI_API_KEY", "sk-test")
     return production_runner.run_production_trial(
