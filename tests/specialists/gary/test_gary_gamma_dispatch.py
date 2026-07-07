@@ -7,6 +7,29 @@ import pytest
 
 from app.specialists.gary import _act as gary_act
 
+from ._s4_seed import install_seed_resolver, seed_name
+
+
+@pytest.fixture(autouse=True)
+def _s4_seed(monkeypatch: pytest.MonkeyPatch) -> None:
+    # Canonical-arc S4: a NAMED variant must be styleguide-bound (styleguide-less
+    # now fails loud, Flip A). Tests below that name a variant bind it to the
+    # byte-identical seed (see ._s4_seed) so the merged dispatch packet is
+    # IDENTICAL to the pre-S4 styleguide-less seed path — the enum/theme/packet
+    # surface under test is preserved, not weakened. Tests with no gamma_settings
+    # (default-A path) are unaffected; a test with its OWN resolver monkeypatch
+    # overrides this one in its body.
+    #
+    # R6 (NIT) — WARNING TO FUTURE AUTHORS: this fixture is AUTOUSE and blankets
+    # ``resolve_styleguide`` module-wide via ``seed_name(vid)`` mappings. A NEW
+    # test added to THIS file that wants to exercise the Flip-A fail-loud path
+    # (a styleguide-less named variant) would be SILENTLY coerced onto the seed
+    # path and NEVER raise ``gamma.styleguide.unbound``. To assert Flip A, either
+    # give the variant a name NOT in the seed table (so ``resolve_styleguide``
+    # KeyErrors — not what you want) or, correctly, write that test in
+    # ``test_styleguide_fail_loud_flip.py`` (no autouse seed) instead of here.
+    install_seed_resolver(monkeypatch)
+
 # Re-blessed 2026-06-18 (storyboard-correctness fix): these tests previously
 # asserted POSITIONAL page->slide binding (file_path == paths[index]) — which
 # was the bug. They now exercise the title-matched contract: Gamma returns an
@@ -120,6 +143,7 @@ def test_gary_variant_arc_dispatches_per_variant_gamma_settings(
         "gamma_settings": [
             {
                 "variant_id": "A",
+                "styleguide": seed_name("A"),
                 "theme": "theme-photo",
                 "template": "template-smoke",
                 "image_style": "photographic",
@@ -128,6 +152,7 @@ def test_gary_variant_arc_dispatches_per_variant_gamma_settings(
             },
             {
                 "variant_id": "B",
+                "styleguide": seed_name("B"),
                 "theme": "theme-diagram",
                 "template": "template-smoke",
                 "image_style": "diagrammatic",
@@ -141,12 +166,18 @@ def test_gary_variant_arc_dispatches_per_variant_gamma_settings(
 
     assert result["generation_mode"] == "double-dispatch"
     assert result["calls_made"] == 2
-    assert result["variant_gamma_settings"][0] | payload["gamma_settings"][0] == result[
-        "variant_gamma_settings"
-    ][0]
-    assert result["variant_gamma_settings"][1] | payload["gamma_settings"][1] == result[
-        "variant_gamma_settings"
-    ][1]
+    # ``styleguide`` is a BINDING directive, not a dispatch setting — it is
+    # consumed by the resolver and never carried into the merged packet, so it
+    # is excluded from the per-variant subset witness (S4).
+    def _dispatch_keys(entry: dict) -> dict:
+        return {k: v for k, v in entry.items() if k != "styleguide"}
+
+    assert result["variant_gamma_settings"][0] | _dispatch_keys(
+        payload["gamma_settings"][0]
+    ) == result["variant_gamma_settings"][0]
+    assert result["variant_gamma_settings"][1] | _dispatch_keys(
+        payload["gamma_settings"][1]
+    ) == result["variant_gamma_settings"][1]
     assert client.generate_calls[0]["theme_id"] == "theme-photo"
     assert client.generate_calls[0]["image_options"] == {
         "source": "aiGenerated",
@@ -192,7 +223,9 @@ def test_gary_variant_arc_single_named_variant_dispatches_one(
         {
             "slides": [{"slide_id": "s1", "title": "Alpha Topic"}],
             "export_dir": str(tmp_path),
-            "gamma_settings": [{"variant_id": "A", "image_style": "photographic"}],
+            "gamma_settings": [
+                {"variant_id": "A", "styleguide": seed_name("A"), "image_style": "photographic"}
+            ],
         },
         client=client,
     )
@@ -257,7 +290,9 @@ def test_gary_theme_validation_resolves_name_before_generation(
         {
             "slides": [{"slide_id": "s1", "title": "Alpha Topic"}],
             "export_dir": str(tmp_path),
-            "gamma_settings": [{"variant_id": "A", "theme": "Photo"}],
+            "gamma_settings": [
+                {"variant_id": "A", "styleguide": seed_name("A"), "theme": "Photo"}
+            ],
         },
         client=client,
     )
@@ -273,7 +308,13 @@ def test_gary_theme_validation_blocks_bad_theme_before_generation(tmp_path: Path
             {
                 "slides": [{"slide_id": "s1", "title": "Alpha Topic"}],
                 "export_dir": str(tmp_path),
-                "gamma_settings": [{"variant_id": "A", "theme": "theme-real-looking-absent"}],
+                "gamma_settings": [
+                    {
+                        "variant_id": "A",
+                        "styleguide": seed_name("A"),
+                        "theme": "theme-real-looking-absent",
+                    }
+                ],
             },
             client=client,
         )
@@ -293,7 +334,9 @@ def test_gary_enum_validation_blocks_bad_amount_before_generation(tmp_path: Path
             {
                 "slides": [{"slide_id": "s1", "title": "Alpha Topic"}],
                 "export_dir": str(tmp_path),
-                "gamma_settings": [{"variant_id": "A", "amount": "minimalish"}],
+                "gamma_settings": [
+                    {"variant_id": "A", "styleguide": seed_name("A"), "amount": "minimalish"}
+                ],
             },
             client=client,
         )
@@ -327,7 +370,9 @@ def test_gary_enum_validation_blocks_bad_knobs_before_generation(
             {
                 "slides": [{"slide_id": "s1", "title": "Alpha Topic"}],
                 "export_dir": str(tmp_path),
-                "gamma_settings": [{"variant_id": "A", key: value}],
+                "gamma_settings": [
+                    {"variant_id": "A", "styleguide": seed_name("A"), key: value}
+                ],
             },
             client=client,
         )
@@ -348,7 +393,13 @@ def test_gary_custom_style_preset_requires_non_empty_style(tmp_path: Path, monke
             {
                 "slides": [{"slide_id": "s1", "title": "Alpha Topic"}],
                 "export_dir": str(tmp_path),
-                "gamma_settings": [{"variant_id": "A", "image_style_preset": "custom"}],
+                "gamma_settings": [
+                    {
+                        "variant_id": "A",
+                        "styleguide": seed_name("A"),
+                        "image_style_preset": "custom",
+                    }
+                ],
             },
             client=client,
         )
@@ -369,7 +420,9 @@ def test_gary_keywords_must_be_a_list_before_generation(tmp_path: Path, monkeypa
             {
                 "slides": [{"slide_id": "s1", "title": "Alpha Topic"}],
                 "export_dir": str(tmp_path),
-                "gamma_settings": [{"variant_id": "A", "keywords": "blueprint"}],
+                "gamma_settings": [
+                    {"variant_id": "A", "styleguide": seed_name("A"), "keywords": "blueprint"}
+                ],
             },
             client=client,
         )
@@ -394,6 +447,7 @@ def test_gary_control_layer_emits_named_style_preset_without_style(
             "gamma_settings": [
                 {
                     "variant_id": "A",
+                    "styleguide": seed_name("A"),
                     "image_style_preset": "illustration",
                     "image_style": "ignored named tile prompt",
                     "amount": "brief",
@@ -438,6 +492,7 @@ def test_gary_control_layer_emits_custom_style_without_style_preset(
             "gamma_settings": [
                 {
                     "variant_id": "A",
+                    "styleguide": seed_name("A"),
                     "image_style_preset": "custom",
                     "image_style": "Clean black ink blueprint lines.",
                 }
@@ -557,7 +612,9 @@ def test_gary_per_variant_dimensions_override_wins_over_16x9_default(
         {
             "slides": [{"slide_id": "s1", "title": "Alpha Topic"}],
             "export_dir": str(tmp_path),
-            "gamma_settings": [{"variant_id": "A", "dimensions": "4x3"}],
+            "gamma_settings": [
+                {"variant_id": "A", "styleguide": seed_name("A"), "dimensions": "4x3"}
+            ],
         },
         client=client,
     )
@@ -614,11 +671,13 @@ def test_gary_studio_path_unchanged_no_card_options(tmp_path: Path, monkeypatch)
             "gamma_settings": [
                 {
                     "variant_id": "A",
+                    "styleguide": seed_name("A"),
                     "production_mode": "studio",
                     "studio_template_id": "g_nv5q4da69qiiu8q",
                 },
                 {
                     "variant_id": "B",
+                    "styleguide": seed_name("B"),
                     "production_mode": "studio",
                     "studio_template_id": "g_nv5q4da69qiiu8q",
                 },
@@ -657,7 +716,9 @@ def test_double_dispatch_with_single_named_variant_warns_but_dispatches_one(
                 "slides": [{"slide_id": "s1", "title": "Alpha Topic"}],
                 "export_dir": str(tmp_path),
                 "double_dispatch": True,
-                "gamma_settings": [{"variant_id": "A", "image_style": "photographic"}],
+                "gamma_settings": [
+                    {"variant_id": "A", "styleguide": seed_name("A"), "image_style": "photographic"}
+                ],
             },
             client=client,
         )

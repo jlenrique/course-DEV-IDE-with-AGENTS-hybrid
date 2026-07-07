@@ -17,6 +17,8 @@ import pytest
 
 from app.specialists.gary import _act as gary_act
 
+from ._s4_seed import install_seed_resolver, seed_name
+
 
 def _titled_zip(tmp_path: Path, stems: list[str]) -> Path:
     zpath = tmp_path / "gamma-export.zip"
@@ -80,10 +82,13 @@ def test_fluid_style_emits_no_forced_16x9(tmp_path: Path, monkeypatch) -> None:
 
 
 def test_16x9_style_emits_16x9(tmp_path: Path, monkeypatch) -> None:
+    # S4: a NAMED variant must be styleguide-bound; the byte-identical seed
+    # supplies the base while the per-variant dimensions override is under test.
+    install_seed_resolver(monkeypatch)
     client = _run(
         tmp_path,
         monkeypatch,
-        [{"variant_id": "A", "dimensions": "16x9"}],
+        [{"variant_id": "A", "styleguide": seed_name("A"), "dimensions": "16x9"}],
     )
     card_options = _call_for_variant(client, "A").get("card_options") or {}
     assert card_options.get("dimensions") == "16x9"
@@ -92,10 +97,11 @@ def test_16x9_style_emits_16x9(tmp_path: Path, monkeypatch) -> None:
 def test_absent_dimensions_omits_card_options(tmp_path: Path, monkeypatch) -> None:
     # A variant whose resolved style names no dimensions must NOT smuggle a forced
     # 16:9 back in — cardOptions is OMITTED entirely (tightened per code-review #8).
+    install_seed_resolver(monkeypatch)
     client = _run(
         tmp_path,
         monkeypatch,
-        [{"variant_id": "A", "dimensions": "default"}],
+        [{"variant_id": "A", "styleguide": seed_name("A"), "dimensions": "default"}],
     )
     call = _call_for_variant(client, "A")
     assert "card_options" not in call, (

@@ -1,0 +1,9 @@
+{
+  "leg": 2,
+  "phase": "recover",
+  "trial2": "648c9b3e-220a-4033-8a26-7e704737e10a",
+  "recover_status": "paused-at-error",
+  "paused_gate": null,
+  "paused_error_tag": "gamma.styleguide.parity-divergence",
+  "elapsed_s": 1.270828
+}

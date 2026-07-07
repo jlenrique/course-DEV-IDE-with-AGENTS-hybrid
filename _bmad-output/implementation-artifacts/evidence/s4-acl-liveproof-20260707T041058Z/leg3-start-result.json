@@ -1,0 +1,24 @@
+{
+  "leg": 3,
+  "trial_id": "4fe6073f-c8e2-4836-bb94-759dc5b97bbf",
+  "run_tag": "4fe6073fc8e24836bb94759dc5b97bbf",
+  "selection_code": "SGP-4fe6073fc8e24836bb94759dc5b97bbf-A:hil-2026-apc-crossroads-classic",
+  "guide": "hil-2026-apc-crossroads-classic",
+  "minted_at": "2026-07-07T04:14:52.157351+00:00",
+  "start_result": {
+    "status": "paused-at-gate",
+    "trial_id": "4fe6073f-c8e2-4836-bb94-759dc5b97bbf",
+    "preset": "production",
+    "input": "C:/Users/juanl/Documents/GitHub/course-DEV-IDE-with-AGENTS-hybrid/course-content/courses/tejal-apc-c1-m1-p2-trends",
+    "operator_id": "operator_juan",
+    "run_registry_path": "C:/Users/juanl/Documents/GitHub/course-DEV-IDE-with-AGENTS-hybrid/state/config/runs/4fe6073f-c8e2-4836-bb94-759dc5b97bbf/run.json",
+    "cost_report_json": "C:/Users/juanl/Documents/GitHub/course-DEV-IDE-with-AGENTS-hybrid/state/config/runs/4fe6073f-c8e2-4836-bb94-759dc5b97bbf/cost-report.json",
+    "cost_report_markdown": "C:/Users/juanl/Documents/GitHub/course-DEV-IDE-with-AGENTS-hybrid/state/config/runs/4fe6073f-c8e2-4836-bb94-759dc5b97bbf/cost-report.md",
+    "langsmith_trace_status": "measured-from-langsmith",
+    "production_clone_launch_evidence": true,
+    "directive_path": "C:/Users/juanl/Documents/GitHub/course-DEV-IDE-with-AGENTS-hybrid/state/config/runs/4fe6073f-c8e2-4836-bb94-759dc5b97bbf/directive.yaml",
+    "directive_digest": "ff90c166d8d574e00403dcbb98079e340dfa2ab6904f0498269dfadfda283e27",
+    "transport_kind": "cli"
+  },
+  "start_elapsed_s": 149.137895
+}

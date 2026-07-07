@@ -1,0 +1,54 @@
+{
+  "trial_id": "cfe83980-d71d-49cb-8dff-fa403e5d422b",
+  "walk_log": "_bmad-output\\implementation-artifacts\\evidence\\s4-acl-liveproof-20260707T041058Z\\walk-log-leg1.txt",
+  "offending_variant": "A",
+  "r0-recover-status-paused-at-error": {
+    "pass": true,
+    "value": "paused-at-error"
+  },
+  "r1-recover-tag-unbound": {
+    "pass": true,
+    "value": "gamma.styleguide.unbound"
+  },
+  "e0-error-pause-tag": {
+    "pass": true,
+    "value": "gamma.styleguide.unbound"
+  },
+  "e1-error-pause-node-07": {
+    "pass": true,
+    "value": "07"
+  },
+  "e2-error-pause-specialist-gary": {
+    "pass": true,
+    "value": "gary"
+  },
+  "e3-message-names-offending-variant": {
+    "pass": true,
+    "value": "variant A is present with no bound styleguide; a present variant without a bound styleguide is a governance error (S4 fail-loud flip; the styleguide pick is canonical on every run)"
+  },
+  "e4-message-says-no-bound-styleguide": {
+    "pass": true,
+    "value": true
+  },
+  "w0-run-status-paused-at-error": {
+    "pass": true,
+    "value": {
+      "status": "paused-at-error",
+      "paused_gate": null
+    }
+  },
+  "s0-no-gary-contribution-halt-pre-contribution": {
+    "pass": true,
+    "value": "0 gary contribution(s) (expected 0 \u2014 halt is pre-contribution)"
+  },
+  "s1-no-generation-id-anywhere": {
+    "pass": true,
+    "value": false
+  },
+  "l0-walk-log-flip-a-fired": {
+    "pass": true,
+    "value": [
+      "2026-07-07 00:22:01,693 ERROR app.marcus.orchestrator.production_runner: dispatch error at manifest node 07 (specialist gary): [gamma.styleguide.unbound] variant A is present with no bound styleguide; a present variant without a bound styleguide is a governance error (S4 fail-loud flip; the styleguide pick is canonical on every run) \u2014 pausing trial cfe83980-d71d-49cb-8dff-fa403e5d422b for recovery"
+    ]
+  }
+}

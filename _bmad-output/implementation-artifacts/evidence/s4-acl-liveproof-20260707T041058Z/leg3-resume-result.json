@@ -1,0 +1,9 @@
+{
+  "leg": 3,
+  "phase": "resume",
+  "trial_id": "4fe6073f-c8e2-4836-bb94-759dc5b97bbf",
+  "resume_status": "paused-at-gate",
+  "paused_gate": "G2B",
+  "paused_error_tag": null,
+  "elapsed_s": 197.223404
+}

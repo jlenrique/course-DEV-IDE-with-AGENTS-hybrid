@@ -29,7 +29,6 @@ import yaml
 
 from app.specialists.cd.graph import _styleguide_resolution_from_projection
 from app.specialists.gary import _act as gary_act
-from app.styleguide.parity import canonical_resolution_digest
 from app.styleguide.resolver import (
     GAMMA_STYLE_GUIDES_PATH,
     load_style_guides,
@@ -204,9 +203,14 @@ def _write_ssot(path: Path, *, tone: str) -> Path:
     return path
 
 
-def test_ac1_divergence_must_warn(
+def test_ac1_divergence_receipt_logs_error_and_caller_halts(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch, caplog: pytest.LogCaptureFixture
 ) -> None:
+    # Canonical-arc S4 amendment (AC-9 extend, not weaken): S3 asserted the
+    # divergence WARN-and-PROCEED; S4 flips it. The HELPER still returns a
+    # receipt carrying BOTH envelopes and NEVER raises (comparator + helper
+    # unchanged); the divergence log is now an ERROR; the CALLER
+    # (generate_gamma_variants) halts pre-spend.
     # Same directive bytes (digests EQUAL) but the SSOT content differs
     # between CD's resolution and Gary's read (ssot_path injection on the CD
     # side; Gary's module-level SSOT path redirected to the mutated copy).
@@ -221,8 +225,40 @@ def test_ac1_divergence_must_warn(
     )
     assert block["status"] == "resolved"
     monkeypatch.setattr(gary_act, "GAMMA_STYLE_GUIDES_PATH", gary_ssot)
+    # Helper level: the receipt still classifies divergence and carries BOTH
+    # envelopes; the helper never raises.
+    resolve_view: dict[str, Any] = {}
+    gary_act._normalized_gamma_settings(
+        {
+            "gamma_settings": [
+                {"variant_id": "A", "styleguide": "parity-probe-guide"}
+            ],
+            "directive_digest": SAME_DIGEST,
+            "trial_start_directive_digest": SAME_DIGEST,
+        },
+        resolve_view=resolve_view,
+    )
     with caplog.at_level(logging.INFO, logger=GARY_LOGGER):
-        result, _client = _run(
+        receipt = gary_act._styleguide_parity_receipt(
+            {
+                "cd_styleguide_resolution": block,
+                "directive_digest": SAME_DIGEST,
+                "trial_start_directive_digest": SAME_DIGEST,
+            },
+            resolve_view,
+        )
+    assert receipt["outcome"] == "divergence"
+    assert receipt["reason"] == "resolution-mismatch"
+    # Both envelopes ride the receipt (§7 receipt contract).
+    assert receipt["detail"]["cd_block"] == block
+    assert receipt["detail"]["gary_view"]["picks"] == {"A": "parity-probe-guide"}
+    error_records = [r for r in _parity_records(caplog) if r.levelno == logging.ERROR]
+    assert error_records, "divergence MUST emit an ERROR log record (S4 flip)"
+    # Distinct message from the styleguide-less honesty seed.
+    assert all("DEFAULT_VARIANT_PAIR" not in r.getMessage() for r in error_records)
+    # Caller flip: generate_gamma_variants halts pre-spend on the divergence.
+    with pytest.raises(gary_act.GaryActError) as excinfo:
+        _run(
             tmp_path,
             monkeypatch,
             {
@@ -232,16 +268,7 @@ def test_ac1_divergence_must_warn(
             },
             gamma_settings=[{"variant_id": "A", "styleguide": "parity-probe-guide"}],
         )
-    receipt = result["styleguide_parity"]
-    assert receipt["outcome"] == "divergence"
-    assert receipt["reason"] == "resolution-mismatch"
-    # Both envelopes ride the receipt (§7 WARN-receipt contract).
-    assert receipt["detail"]["cd_block"] == block
-    assert receipt["detail"]["gary_view"]["picks"] == {"A": "parity-probe-guide"}
-    warn_records = [r for r in _parity_records(caplog) if r.levelno == logging.WARNING]
-    assert warn_records, "divergence MUST emit a WARN log record"
-    # Distinct message from the :523 WARN-seed.
-    assert all("DEFAULT_VARIANT_PAIR" not in r.getMessage() for r in warn_records)
+    assert excinfo.value.tag == "gamma.styleguide.parity-divergence"
 
 
 def test_ac1_match_is_silent(
@@ -295,38 +322,29 @@ def test_ac1_ordering_gap_is_info_not_warn(
 # --- AC-2: F-702 status-keying at the gary level ---------------------------------
 
 
-def test_ac2_both_pickless_is_status_keyed_and_seed_never_compared(
-    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, caplog: pytest.LogCaptureFixture
+def test_present_pickless_variant_now_raises_unbound(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
-    block = _real_ssot_cd_block(None)
-    with caplog.at_level(logging.DEBUG, logger=GARY_LOGGER):
-        result, _client = _run(
+    # Canonical-arc S4 amendment (AC-9 extend, not weaken): S3 exercised a
+    # PRESENT variant with no pick reaching the parity status-keying
+    # (ok/status-keyed-no-picks, proceed). S4 Flip A makes that same
+    # styleguide-less named variant a governance error — it now raises
+    # gamma.styleguide.unbound BEFORE the parity receipt is even computed. The
+    # parity status-keying itself is still witnessed at the comparator level
+    # (tests/styleguide/test_parity_comparator.py) and via the empty-settings
+    # default-A path (test_styleguide_parity_error_flip.py AC-5).
+    with pytest.raises(gary_act.GaryActError) as excinfo:
+        _run(
             tmp_path,
             monkeypatch,
             {
-                "cd_styleguide_resolution": block,
+                "cd_styleguide_resolution": _real_ssot_cd_block(None),
                 "directive_digest": SAME_DIGEST,
                 "trial_start_directive_digest": SAME_DIGEST,
             },
             gamma_settings=[{"variant_id": "A"}],  # present variant, no pick
         )
-    receipt = result["styleguide_parity"]
-    assert receipt["outcome"] == "ok"
-    assert receipt["reason"] == "status-keyed-no-picks"
-    assert receipt["clock_eligible"] is False
-    # F-804: Gary's DEFAULT_VARIANT_PAIR seed was NOT compared against CD's
-    # default-A resolution — the compared gary surface is EMPTY even though
-    # CD's block carries the F-202 default binding.
-    assert receipt["gary_resolution_digest"] == canonical_resolution_digest({})
-    assert receipt["gary_bound_guides"] == []
-    assert block["resolved"], "CD's default-A binding exists and was NOT compared"
-    # The honesty WARN-seed (:518-528) still fired — behavior untouched (AC-4).
-    seed_records = [
-        r for r in caplog.records if "DEFAULT_VARIANT_PAIR" in r.getMessage()
-    ]
-    assert seed_records and all(r.levelno == logging.WARNING for r in seed_records)
-    # No parity WARN/INFO — the ok case is silent.
-    assert _parity_records(caplog) == []
+    assert excinfo.value.tag == "gamma.styleguide.unbound"
 
 
 # --- AC-3 (gary-level drift leg) --------------------------------------------------
@@ -516,16 +534,15 @@ def test_resolve_with_guides_byte_identical_to_path_read() -> None:
         )
 
 
-def test_warn_seed_branch_text_byte_untouched() -> None:
-    # AC-4 fence: the styleguide-less honesty WARN-seed (:518-528) is
-    # byte-untouched — S4 owns the flip (F-705).
+def test_warn_seed_branch_flipped_to_raise() -> None:
+    # Canonical-arc S4 amendment (AC-9 extend, not weaken): S3 fenced the
+    # styleguide-less honesty WARN-seed as byte-untouched ("S4 owns the flip",
+    # F-705). S4 now OWNS it — the WARN-seed is retired and the branch raises
+    # the governance error.
     source = inspect.getsource(gary_act._normalized_gamma_settings)
-    assert (
-        '"variant %s present with no bound styleguide; seeding from "\n'
-        '                "DEFAULT_VARIANT_PAIR base — fail-loud deferred to cd-envelope-authoring"'
-        in source
-    )
-    assert "merged = dict(by_variant[variant_id])" in source
+    assert "fail-loud deferred to cd-envelope-authoring" not in source
+    assert "merged = dict(by_variant[variant_id])" not in source
+    assert 'tag="gamma.styleguide.unbound"' in source
 
 
 def test_p4_receipt_survives_post_run_mutation_of_sources_and_settings(
@@ -535,6 +552,9 @@ def test_p4_receipt_survives_post_run_mutation_of_sources_and_settings(
     # cd block and the returned merged settings AFTER the run leaves the
     # receipt byte-unchanged, and the receipt json.dumps cleanly (envelope
     # persistence survives ANY input).
+    # Canonical-arc S4 amendment (AC-9): the CALLER now halts on divergence, so
+    # the P4 receipt-decoupling witness runs at the HELPER level (which still
+    # returns the receipt and never raises).
     cd_ssot = _write_ssot(tmp_path / "ssot-cd.yaml", tone="calm")
     gary_ssot = _write_ssot(tmp_path / "ssot-gary.yaml", tone="urgent")
     block = _styleguide_resolution_from_projection(
@@ -545,39 +565,51 @@ def test_p4_receipt_survives_post_run_mutation_of_sources_and_settings(
         ssot_path=cd_ssot,
     )
     monkeypatch.setattr(gary_act, "GAMMA_STYLE_GUIDES_PATH", gary_ssot)
-    result, _client = _run(
-        tmp_path,
-        monkeypatch,
+    resolve_view: dict[str, Any] = {}
+    settings = gary_act._normalized_gamma_settings(
+        {
+            "gamma_settings": [
+                {"variant_id": "A", "styleguide": "parity-probe-guide"}
+            ],
+            "directive_digest": SAME_DIGEST,
+            "trial_start_directive_digest": SAME_DIGEST,
+        },
+        resolve_view=resolve_view,
+    )
+    receipt = gary_act._styleguide_parity_receipt(
         {
             "cd_styleguide_resolution": block,
             "directive_digest": SAME_DIGEST,
             "trial_start_directive_digest": SAME_DIGEST,
         },
-        gamma_settings=[{"variant_id": "A", "styleguide": "parity-probe-guide"}],
+        resolve_view,
     )
-    receipt = result["styleguide_parity"]
     assert receipt["outcome"] == "divergence"  # detail carries both envelopes
     snapshot = json.dumps(receipt, sort_keys=True)  # also: must not raise
     # Mutate every source object the receipt could have aliased.
     block["resolved"]["A"]["production_mode"] = "MUTATED-AFTER-RUN"
     block["bound_guides"][0]["ssot_digest"] = "MUTATED"
-    for entry in result["variant_gamma_settings"]:
+    for entry in settings:
         entry["additional_instructions"] = "MUTATED-AFTER-RUN"
     assert json.dumps(receipt, sort_keys=True) == snapshot, (
         "post-run mutation of source objects leaked into the parity receipt"
     )
 
 
-def test_comparator_failure_never_blocks_dispatch(
+def test_comparator_contract_violation_now_halts_dispatch(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
-    # A garbage CD block (non-dict) must never raise or alter dispatch.
-    result, client = _run(
-        tmp_path,
-        monkeypatch,
-        {"cd_styleguide_resolution": ["not", "a", "block"]},
-        gamma_settings=[{"variant_id": "A", "styleguide": REAL_GUIDE}],
-    )
-    assert result["styleguide_parity"]["outcome"] == "divergence"
-    assert result["styleguide_parity"]["reason"] == "contract-violation"
-    assert client.generate_calls
+    # Canonical-arc S4 amendment (AC-9 extend, not weaken + F-1102): S3 let a
+    # garbage CD block (divergence/contract-violation) PROCEED (observability-
+    # only). S4 Flip B halts pre-spend on ANY divergence — including the
+    # comparator's contract-violation fallback (a broken/garbage envelope
+    # SURFACES instead of shipping on unverified parity).
+    with pytest.raises(gary_act.GaryActError) as excinfo:
+        _run(
+            tmp_path,
+            monkeypatch,
+            {"cd_styleguide_resolution": ["not", "a", "block"]},
+            gamma_settings=[{"variant_id": "A", "styleguide": REAL_GUIDE}],
+        )
+    assert excinfo.value.tag == "gamma.styleguide.parity-divergence"
+    assert "contract-violation" in str(excinfo.value)

@@ -193,6 +193,45 @@ def _canned_cd_output(directive: Path, *, legacy: bool = False) -> dict[str, Any
     return output
 
 
+def _seed_run_dir_with_styleguideless_directive(runs_root: Path) -> Path:
+    """Canonical-arc S4 (AC-8 Flip A): a directive whose gamma_settings names a
+    PRESENT variant with NO ``styleguide`` key — the exact styleguide-less
+    surface Flip A now fails loud on (NOT empty gamma_settings, which is out of
+    scope and would fall back to default-A)."""
+    run_dir = runs_root / str(TRIAL_ID)
+    run_dir.mkdir(parents=True, exist_ok=True)
+    directive = run_dir / "directive.yaml"
+    directive.write_text(
+        yaml.safe_dump(
+            {
+                "run_id": str(TRIAL_ID),
+                "sources": [],
+                "gamma_settings": [{"variant_id": "A"}],
+            },
+            sort_keys=False,
+        ),
+        encoding="utf-8",
+    )
+    return directive
+
+
+def _canned_cd_output_divergent(directive: Path) -> dict[str, Any]:
+    """Canonical-arc S4 (AC-8 Flip B): a cd contribution whose
+    styleguide_resolution is a genuine divergence on MATCHING directive bytes —
+    status ``unresolvable_pick`` while Gary resolves the picked guide cleanly
+    (divergence/cd-unresolvable-but-gary-resolved). Flip B fires on ANY
+    divergence outcome."""
+    output = _canned_cd_output(directive)
+    output["styleguide_resolution"] = dict(
+        output["styleguide_resolution"], status="unresolvable_pick"
+    )
+    return output
+
+
+def _read_error_pause(run_dir: Path) -> dict[str, Any]:
+    return json.loads((run_dir / "error-pause.json").read_text(encoding="utf-8"))
+
+
 def _walk_manifest(
     tmp_path: Path, *, with_gate: bool, gate_after_07: bool = False
 ) -> Path:
@@ -489,3 +528,184 @@ def test_legacy_pre_s3_envelope_dispatches_gary_cleanly(
     assert receipt["outcome"] == "expected-ordering-gap"
     assert receipt["reason"] == "cd-envelope-absent-legacy"
     assert receipt["clock_eligible"] is False
+
+
+# --- Canonical-arc S4 AC-8: both-walks fail-loud flips ------------------------------
+
+
+def test_flip_a_start_walk_error_pauses_at_unbound(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    # Flip A, START walk: a styleguide-less named variant reaching §07 halts
+    # pre-spend at gamma.styleguide.unbound (not WARN-and-seed).
+    _fake_gary_offline(tmp_path, monkeypatch)
+    directive = _seed_run_dir_with_styleguideless_directive(tmp_path)
+    adapter = _HybridRealGaryAdapter(_canned_cd_output(directive))
+    monkeypatch.setattr(production_runner, "ProductionDispatchAdapter", lambda: adapter)
+
+    envelope = production_runner.run_production_trial(
+        CORPUS,
+        "production",
+        "operator_test",
+        trial_id=TRIAL_ID,
+        runs_root=tmp_path,
+        manifest_path=_walk_manifest(tmp_path, with_gate=False),
+        max_specialist_calls=8,
+        pause_at_gates=False,
+        directive_path=directive,
+    )
+    assert envelope.status == "paused-at-error"
+    assert adapter.gary_dispatch_count == 1, "§07 must be reached for the flip to fire"
+    pause = _read_error_pause(tmp_path / str(TRIAL_ID))
+    assert pause["tag"] == "gamma.styleguide.unbound"
+    assert pause["specialist_id"] == "gary"
+    assert pause["node_id"] == "07"
+
+
+def test_flip_a_continuation_walk_error_pauses_at_unbound(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    # Flip A, CONTINUATION walk: start walk pauses at G1 before §07; the resume
+    # walk hits §07 and halts at gamma.styleguide.unbound.
+    _fake_gary_offline(tmp_path, monkeypatch)
+    directive = _seed_run_dir_with_styleguideless_directive(tmp_path)
+    adapter = _HybridRealGaryAdapter(_canned_cd_output(directive))
+    monkeypatch.setattr(production_runner, "ProductionDispatchAdapter", lambda: adapter)
+    run_dir = tmp_path / str(TRIAL_ID)
+
+    paused = production_runner.run_production_trial(
+        CORPUS,
+        "production",
+        "operator_test",
+        trial_id=TRIAL_ID,
+        runs_root=tmp_path,
+        manifest_path=_walk_manifest(tmp_path, with_gate=True),
+        max_specialist_calls=8,
+        directive_path=directive,
+    )
+    assert paused.status == "paused-at-gate"
+    assert adapter.gary_dispatch_count == 0, "start walk must pause before §07"
+
+    card_payload = json.loads(
+        (run_dir / "decision-card-G1.json").read_text(encoding="utf-8")
+    )
+    verdict = OperatorVerdict(
+        trial_id=TRIAL_ID,
+        verb="approve",
+        gate_id="G1",
+        card_id=UUID(card_payload["card"]["card_id"]),
+        operator_id="operator_test",
+        decision_card_digest=card_payload["digest"],
+    )
+    resumed = production_runner.resume_production_trial(
+        trial_id=TRIAL_ID, verdict=verdict, runs_root=tmp_path
+    )
+    assert resumed.status == "paused-at-error"
+    assert adapter.gary_dispatch_count == 1, "continuation walk never dispatched gary"
+    pause = _read_error_pause(run_dir)
+    assert pause["tag"] == "gamma.styleguide.unbound"
+    assert pause["node_id"] == "07"
+
+
+def test_flip_b_start_walk_error_pauses_at_parity_divergence(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    # Flip B, START walk: a genuine parity divergence at §07 halts pre-spend at
+    # gamma.styleguide.parity-divergence (S3 WARN-proceeded; S4 halts).
+    _fake_gary_offline(tmp_path, monkeypatch)
+    directive = _seed_run_dir_with_picked_directive(tmp_path)
+    adapter = _HybridRealGaryAdapter(_canned_cd_output_divergent(directive))
+    monkeypatch.setattr(production_runner, "ProductionDispatchAdapter", lambda: adapter)
+
+    envelope = production_runner.run_production_trial(
+        CORPUS,
+        "production",
+        "operator_test",
+        trial_id=TRIAL_ID,
+        runs_root=tmp_path,
+        manifest_path=_walk_manifest(tmp_path, with_gate=False),
+        max_specialist_calls=8,
+        pause_at_gates=False,
+        directive_path=directive,
+    )
+    assert envelope.status == "paused-at-error"
+    assert adapter.gary_dispatch_count == 1
+    pause = _read_error_pause(tmp_path / str(TRIAL_ID))
+    assert pause["tag"] == "gamma.styleguide.parity-divergence"
+    assert pause["specialist_id"] == "gary"
+    assert pause["node_id"] == "07"
+    assert "cd-unresolvable-but-gary-resolved" in pause["message"]
+
+
+def test_flip_b_continuation_walk_error_pauses_at_parity_divergence(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    # Flip B, CONTINUATION walk: start pauses at G1; resume hits §07 divergence.
+    _fake_gary_offline(tmp_path, monkeypatch)
+    directive = _seed_run_dir_with_picked_directive(tmp_path)
+    adapter = _HybridRealGaryAdapter(_canned_cd_output_divergent(directive))
+    monkeypatch.setattr(production_runner, "ProductionDispatchAdapter", lambda: adapter)
+    run_dir = tmp_path / str(TRIAL_ID)
+
+    paused = production_runner.run_production_trial(
+        CORPUS,
+        "production",
+        "operator_test",
+        trial_id=TRIAL_ID,
+        runs_root=tmp_path,
+        manifest_path=_walk_manifest(tmp_path, with_gate=True),
+        max_specialist_calls=8,
+        directive_path=directive,
+    )
+    assert paused.status == "paused-at-gate"
+    assert adapter.gary_dispatch_count == 0
+
+    card_payload = json.loads(
+        (run_dir / "decision-card-G1.json").read_text(encoding="utf-8")
+    )
+    verdict = OperatorVerdict(
+        trial_id=TRIAL_ID,
+        verb="approve",
+        gate_id="G1",
+        card_id=UUID(card_payload["card"]["card_id"]),
+        operator_id="operator_test",
+        decision_card_digest=card_payload["digest"],
+    )
+    resumed = production_runner.resume_production_trial(
+        trial_id=TRIAL_ID, verdict=verdict, runs_root=tmp_path
+    )
+    assert resumed.status == "paused-at-error"
+    assert adapter.gary_dispatch_count == 1
+    pause = _read_error_pause(run_dir)
+    assert pause["tag"] == "gamma.styleguide.parity-divergence"
+    assert pause["node_id"] == "07"
+
+
+def test_happy_path_both_walks_still_dispatch_post_flip(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    # Anti-outage: with a valid pick whose CD and Gary resolutions MATCH, §07
+    # dispatches cleanly on the start walk (ok/match) — proves neither flip
+    # manufactured an outage on the canonical happy path. (The continuation-walk
+    # happy path is witnessed by test_continuation_walk_receipt_* above.)
+    _fake_gary_offline(tmp_path, monkeypatch)
+    directive = _seed_run_dir_with_picked_directive(tmp_path)
+    adapter = _HybridRealGaryAdapter(_canned_cd_output(directive))
+    monkeypatch.setattr(production_runner, "ProductionDispatchAdapter", lambda: adapter)
+
+    envelope = production_runner.run_production_trial(
+        CORPUS,
+        "production",
+        "operator_test",
+        trial_id=TRIAL_ID,
+        runs_root=tmp_path,
+        manifest_path=_walk_manifest(tmp_path, with_gate=False),
+        max_specialist_calls=8,
+        pause_at_gates=False,
+        directive_path=directive,
+    )
+    assert envelope.status != "error-paused"
+    assert adapter.gary_dispatch_count == 1
+    output = _reload_contribution_from_disk(tmp_path, "gary", "07")
+    assert output["styleguide_parity"]["outcome"] == "ok"
+    assert output["styleguide_parity"]["reason"] == "match"

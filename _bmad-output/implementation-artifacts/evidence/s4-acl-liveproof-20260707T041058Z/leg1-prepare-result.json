@@ -1,0 +1,37 @@
+{
+  "leg": 1,
+  "phase": "prepare",
+  "trial1": "4fe6073f-c8e2-4836-bb94-759dc5b97bbf",
+  "trial2": "cfe83980-d71d-49cb-8dff-fa403e5d422b",
+  "offending_variant": "A",
+  "dropped_contributions": [
+    "gary@07",
+    "vera@7.5",
+    "quinn_r@07B"
+  ],
+  "remaining_contributions": [
+    "texas@02",
+    "texas@03",
+    "irene_pass1@04A",
+    "research_wiring@04.55",
+    "cd@4.75",
+    "irene_pass1@05",
+    "irene_pass1@05B",
+    "package_builder@06"
+  ],
+  "gamma_settings_before": [
+    {
+      "variant_id": "A",
+      "styleguide": "hil-2026-apc-crossroads-classic"
+    }
+  ],
+  "gamma_settings_after": [
+    {
+      "variant_id": "A"
+    }
+  ],
+  "directive_edit_ok": true,
+  "variant_A_after": {
+    "variant_id": "A"
+  }
+}

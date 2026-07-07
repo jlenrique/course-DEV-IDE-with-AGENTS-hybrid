@@ -1,0 +1,17 @@
+{
+  "frozen_at_utc": "2026-07-07T04:13:57.364114+00:00",
+  "judges": {
+    "judge1.py": {
+      "sha256": "7a58d86858754c93ba5416a76b8d17501bd996e55cb3e900b5b8b1aa0db61347",
+      "bytes": 4078
+    },
+    "judge2.py": {
+      "sha256": "841292484a9b4babae69921e12fbdafd11902bbf16d272dc633313cba9d7072e",
+      "bytes": 5093
+    },
+    "judge3.py": {
+      "sha256": "411bee9bbbc89e08b83f5a6faf7c75574cd11ffb30fdec9b4b4002dfa7cf4675",
+      "bytes": 5356
+    }
+  }
+}

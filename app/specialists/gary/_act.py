@@ -585,16 +585,24 @@ def _normalized_gamma_settings(
             resolved_bases[variant_id] = copy.deepcopy(resolved_base)
             merged = {"variant_id": variant_id, **resolved_base}
         else:
-            # Honesty WARN (AC#7): a present variant with no bound styleguide seeds
-            # from the DEFAULT_VARIANT_PAIR smoke fixture — a hidden default that the
-            # CD-owned styleguide library is meant to supersede. Observability only
-            # (no output change); the fail-loud flip is deferred to cd-envelope-authoring.
-            _LOGGER.warning(
-                "variant %s present with no bound styleguide; seeding from "
-                "DEFAULT_VARIANT_PAIR base — fail-loud deferred to cd-envelope-authoring",
-                variant_id,
+            # Canonical-arc S4 Flip A (F-705 cash-out): a variant PRESENT in
+            # gamma_settings but carrying NO bound styleguide is a governance
+            # error — the styleguide pick is canonical on every run (S2), so a
+            # named variant without a binding must never silently seed from the
+            # DEFAULT_VARIANT_PAIR smoke fixture. Fail loud PRE-SPEND (this loop
+            # runs before any paid Gamma call). NB: this fires ONLY on a named
+            # variant present without a styleguide key — empty/absent
+            # gamma_settings falls back to default-A and is deliberately out of
+            # scope (closed by the deferred trial-start pre-check). The
+            # DEFAULT_VARIANT_PAIR constant stays defined (it still feeds the
+            # by_variant projection map); only its live-seed consumption is retired.
+            raise GaryActError(
+                f"variant {variant_id} is present with no bound styleguide; a "
+                "present variant without a bound styleguide is a governance "
+                "error (S4 fail-loud flip; the styleguide pick is canonical on "
+                "every run)",
+                tag="gamma.styleguide.unbound",
             )
-            merged = dict(by_variant[variant_id])
         # ``additional_instructions`` is a STYLE-ONLY channel (party-ratified
         # 2026-07-02): the resolved base-layer value flows through untouched and there
         # is intentionally NO per-variant override for it, so it is excluded from this
@@ -667,9 +675,12 @@ def _normalized_gamma_settings(
             )
         # Studio discriminated-union airtight (code-review item #3b): a per-variant
         # Classic override on a studio-bound variant must FAIL LOUD, not be silently
-        # dropped. We inspect the EXPLICIT per-variant keys (``item``), so the
-        # unbound direct-studio path — which inherits Classic keys from the smoke
-        # fixture but declares none itself — is unaffected.
+        # dropped. We inspect the EXPLICIT per-variant keys (``item``). R5 (NIT): the
+        # old "unbound direct-studio path inherits Classic keys from the smoke
+        # fixture" carve-out is now DEAD — post-S4 Flip A a styleguide-less variant
+        # raises `gamma.styleguide.unbound` above (the `else` branch) before ever
+        # reaching this studio guard, so every variant here arrived via a styleguide
+        # binding. Only EXPLICITLY-declared per-variant Classic keys can trip this.
         if production_mode == "studio":
             classic_overrides = sorted(
                 key
@@ -1024,15 +1035,16 @@ def _styleguide_parity_receipt(
     Compares CD's authoring-time ``styleguide_resolution`` (threaded as
     CHARTERED runner context, payload key ``cd_styleguide_resolution``)
     against Gary's dispatch-time base-layer view via the shared pure
-    comparator. Observability-ONLY: NEVER raises, NEVER alters dispatch; the
+    comparator. This helper NEVER raises and always returns a receipt (the
     receipt rides the contribution output as the sibling key
-    ``styleguide_parity`` (provenance in the carrier — no shadow store).
+    ``styleguide_parity`` — provenance in the carrier, no shadow store). The
+    control-flow action on a ``divergence`` outcome lives in the CALLER
+    (``generate_gamma_variants``, Canonical-arc S4 Flip B).
 
     Log discipline (ratified trichotomy): ``ok`` is SILENT (receipt data
     only); ``expected-ordering-gap`` is INFO (never cry-wolf WARN);
-    ``divergence`` is a WARN — a DISTINCT message from the styleguide-less
-    DEFAULT_VARIANT_PAIR honesty WARN-seed, and a log line only (X3: no new
-    ceremony, no pause; the WARN→ERROR flip is S4's).
+    ``divergence`` is an ERROR — a DISTINCT message from the styleguide-less
+    honesty seed, logged for observability while the caller halts pre-spend.
     """
     gary_view = {
         "picks": resolve_view.get("picks") or {},
@@ -1046,12 +1058,22 @@ def _styleguide_parity_receipt(
     )
     outcome = receipt.get("outcome")
     if outcome == "divergence":
-        _LOGGER.warning(
+        # Canonical-arc S4: the control-flow raise lives in the CALLER
+        # (`generate_gamma_variants`) — this helper keeps its return-a-receipt
+        # contract intact and never raises. It logs an ERROR for observability.
+        # R1 (SHOULD-FIX): do NOT claim the receipt rides the contribution here —
+        # on the divergence path the caller HALTS pre-spend, before Gary's
+        # contribution is built, so this receipt is never persisted. What
+        # survives is the tag + reason + a compact digest summary the caller
+        # interpolates into the raised error; CD's own styleguide_resolution
+        # stays recoverable from CD's persisted contribution.
+        _LOGGER.error(
             "styleguide parity DIVERGENCE (%s): CD's authoring-time resolution "
-            "disagrees with Gary's dispatch-time resolution on the same "
-            "directive bytes; both envelopes ride the styleguide_parity "
-            "receipt on this contribution (observability-only — dispatch "
-            "proceeds; WARN->ERROR flip is S4)",
+            "disagrees with Gary's dispatch-time resolution; the caller halts "
+            "pre-spend (S4 WARN->ERROR flip) carrying the reason + a compact "
+            "digest summary in the raised error — Gary's dispatch-time parity "
+            "receipt is NOT persisted on this halt path (dispatch halts "
+            "pre-contribution)",
             receipt.get("reason"),
         )
     elif outcome == "expected-ordering-gap":
@@ -1113,6 +1135,50 @@ def generate_gamma_variants(
     resolve_view: dict[str, Any] = {}
     gamma_settings = _normalized_gamma_settings(payload, resolve_view=resolve_view)
     styleguide_parity = _styleguide_parity_receipt(payload, resolve_view)
+    # Canonical-arc S4 Flip B (parity WARN -> ERROR): a `divergence` outcome is
+    # a genuine Gary-vs-CD resolver defect (the S3 trichotomy reserves
+    # `divergence` for real defects; the tolerated states are
+    # `expected-ordering-gap` and `ok`, which proceed). Halt PRE-SPEND — before
+    # the paid dispatch loop below — rather than shipping on unverified parity.
+    # Fires on all three divergence reasons INCLUDING the total-comparator
+    # crash fallback (`contract-violation`): a comparator self-crash SURFACES
+    # here instead of silently passing (F-1102, intended). The comparator
+    # (app/styleguide/parity.py) is frozen — S4 changes only this caller's
+    # action on its verdict; the helper still returns a receipt and never raises.
+    if styleguide_parity.get("outcome") == "divergence":
+        # R1 (SHOULD-FIX): the halt fires BEFORE Gary's contribution is built,
+        # so the styleguide_parity receipt is NEVER persisted on this path — the
+        # message must not claim it "rides the contribution" (that claim is only
+        # true on the non-halt paths). Instead interpolate a COMPACT DIGEST
+        # SUMMARY (read straight from the receipt dict in scope) so the reason +
+        # the three-plus digests are reachable from the error context alone
+        # (AC-4/D2 reachability). CD's own styleguide_resolution stays separately
+        # recoverable from CD's persisted contribution; Gary's dispatch-time
+        # receipt does not survive the pre-contribution halt.
+        digest_summary = (
+            "cd_resolution_digest="
+            f"{styleguide_parity.get('cd_resolution_digest')}; "
+            "gary_resolution_digest="
+            f"{styleguide_parity.get('gary_resolution_digest')}; "
+            "cd_directive_digest="
+            f"{styleguide_parity.get('cd_directive_digest')}; "
+            "gary_directive_digest="
+            f"{styleguide_parity.get('gary_directive_digest')}; "
+            "trial_start_directive_digest="
+            f"{styleguide_parity.get('trial_start_directive_digest')}"
+        )
+        raise GaryActError(
+            "styleguide parity DIVERGENCE "
+            f"({styleguide_parity.get('reason')}): CD's authoring-time "
+            "resolution disagrees with Gary's dispatch-time resolution "
+            "(directive attestations agree where both are present); halting "
+            "pre-spend (S4 WARN->ERROR flip). What survives this halt: the tag, "
+            f"the reason, and this digest summary [{digest_summary}]. CD's own "
+            "styleguide_resolution is separately recoverable from CD's persisted "
+            "contribution; Gary's dispatch-time parity receipt is NOT persisted "
+            "because dispatch halts pre-contribution.",
+            tag="gamma.styleguide.parity-divergence",
+        )
     variants = tuple(item["variant_id"] for item in gamma_settings) or (
         ("A", "B") if bool(payload.get("double_dispatch")) else ("A",)
     )

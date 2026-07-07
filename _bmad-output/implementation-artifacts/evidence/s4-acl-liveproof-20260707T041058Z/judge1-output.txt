@@ -1,0 +1,12 @@
+ASSERT r0-recover-status-paused-at-error: PASS -- 'paused-at-error'
+ASSERT r1-recover-tag-unbound: PASS -- 'gamma.styleguide.unbound'
+ASSERT e0-error-pause-tag: PASS -- 'gamma.styleguide.unbound'
+ASSERT e1-error-pause-node-07: PASS -- '07'
+ASSERT e2-error-pause-specialist-gary: PASS -- 'gary'
+ASSERT e3-message-names-offending-variant: PASS -- 'variant A is present with no bound styleguide; a present variant without a bound styleguide is a governance error (S4 fail-loud flip; the styleguide pick is canonical on every run)'
+ASSERT e4-message-says-no-bound-styleguide: PASS -- True
+ASSERT w0-run-status-paused-at-error: PASS -- {'status': 'paused-at-error', 'paused_gate': None}
+ASSERT s0-no-gary-contribution-halt-pre-contribution: PASS -- '0 gary contribution(s) (expected 0 — halt is pre-contribution)'
+ASSERT s1-no-generation-id-anywhere: PASS -- False
+ASSERT l0-walk-log-flip-a-fired: PASS -- ['2026-07-07 00:22:01,693 ERROR app.marcus.orchestrator.production_runner: dispatch error at manifest node 07 (specialist gary): [gamma.styleguide.unbound] variant A is present with no bound styleguide; a present variant without a bound styleguide is a governance error (S4 fail-loud flip; the styleguide pick is canonical on every run) — pausing trial cfe83980-d71d-49cb-8dff-fa403e5d422b for recovery']
+JUDGE-1 VERDICT: PASS (0 failing: [])

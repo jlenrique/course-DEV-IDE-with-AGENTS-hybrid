@@ -18,6 +18,23 @@ from app.specialists.gary._act import (
 )
 from app.specialists.gary.gamma_dispatch import GammaDispatchError
 
+from ._s4_seed import install_seed_resolver, seed_name
+
+
+@pytest.fixture(autouse=True)
+def _s4_seed(monkeypatch: pytest.MonkeyPatch) -> None:
+    # Canonical-arc S4: a NAMED variant must be styleguide-bound (styleguide-less
+    # now fails loud). The normalizer tests below bind each variant to the
+    # byte-identical seed so the studio/enum surface under test is preserved.
+    #
+    # R6 (NIT) — WARNING TO FUTURE AUTHORS: this fixture is AUTOUSE and blankets
+    # ``resolve_styleguide`` module-wide. A NEW test added to THIS file that
+    # wants to exercise the Flip-A fail-loud path (a styleguide-less named
+    # variant) would be SILENTLY coerced onto the seed path and NEVER raise
+    # ``gamma.styleguide.unbound``. Assert Flip A in
+    # ``test_styleguide_fail_loud_flip.py`` (no autouse seed), not here.
+    install_seed_resolver(monkeypatch)
+
 REPO = Path(__file__).resolve().parents[3]
 EVIDENCE = REPO / "_bmad-output" / "implementation-artifacts" / "studio-mode-evidence"
 CLASSIC = EVIDENCE / "CLASSIC-fallback-failure.png"
@@ -57,7 +74,7 @@ def test_guard_raises_recoverable_on_unreadable_export(tmp_path: Path) -> None:
 # --- Normalizer: studio requires a template id; default is api (Classic) --------
 
 def _settings(**b: object) -> dict[str, object]:
-    return {"gamma_settings": [{"variant_id": "B", **b}]}
+    return {"gamma_settings": [{"variant_id": "B", "styleguide": seed_name("B"), **b}]}
 
 
 def test_studio_without_template_id_hard_fails() -> None:
@@ -85,5 +102,12 @@ def test_invalid_production_mode_rejected() -> None:
 def test_default_production_mode_is_api_classic() -> None:
     # No production_mode set anywhere -> both variants default to "api" (the
     # unchanged Classic path); the studio fork is unreachable.
-    out = _normalized_gamma_settings({"gamma_settings": [{"variant_id": "A"}, {"variant_id": "B"}]})
+    out = _normalized_gamma_settings(
+        {
+            "gamma_settings": [
+                {"variant_id": "A", "styleguide": seed_name("A")},
+                {"variant_id": "B", "styleguide": seed_name("B")},
+            ]
+        }
+    )
     assert all(item["production_mode"] == "api" for item in out)
