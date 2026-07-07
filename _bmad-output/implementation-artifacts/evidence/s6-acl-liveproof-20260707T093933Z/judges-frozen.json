@@ -1,0 +1,6 @@
+{
+  "frozen_at": "2026-07-07T09:40:33.628484+00:00",
+  "judge_a.py": "10df7de0b0d3781bcbe7047a8cfd681def7803cc65ba4e08a39c440f3bc385b9",
+  "judge_b.py": "8772907080ea0375de03aac01b5e78038ab4fc68a1e9acc2384442caf01429ea",
+  "note": "Frozen BEFORE any lane ran. Executed verbatim once each; first-run-stands; no retry-to-green."
+}

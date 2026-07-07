@@ -683,6 +683,35 @@ PERMITTED_PYTHON_DIFFS = {
     "tests/composition/test_gary_parity_walk_pin.py",
     "tests/orchestrator/test_gary_parity_payload_seam.py",
     "tests/marcus/orchestrator/test_picker_cd_vocabulary_lockstep.py",
+    # Canonical-arc S6 "Tracy/research Scite-canonical" (party record §1 S6 row;
+    # spec canonical-arc-s6-tracy-scite-canonical.md). The live-research dispatch
+    # DEFAULT flips OFF->ON (D1) so the two live-dispatch-touching modules join
+    # the allowlist per the established convention: research_wiring.py (D2
+    # Scite-canonical provider selection + D4 creds-absent degrade + R1
+    # degrade-resume idempotency fix + R3 Bearer-only creds check) and the SPOC
+    # (D5 post-§04.55 research narration wiring + the reconciled G1 line).
+    # production_runner.py (D1 default-ON kill-switch flip + reconciled two-walk
+    # comments) already rostered above at the finding-#5 entry. The live Scite
+    # call rides the existing Texas retrieval dispatch surface — NO new call site;
+    # creds-absent degrades VISIBLY at node entry (D4), never firing a doomed call.
+    "app/marcus/orchestrator/research_wiring.py",
+    "app/marcus/cli/marcus_spoc.py",
+    # S6 D7 "research-intent -> dispatch bridge" (Fix A; party-ratified 2026-07-07
+    # from the AC-L honest-RED). The real Irene-Pass-1 producer emits research
+    # intent as collateral.research_goals[] and NEVER fills plan_units[].
+    # identified_gaps, so the §04.55 dispatch was UNREACHABLE on every real run.
+    # Fix A is a MECHANICAL consumer-side dual-read: the Tracy bridge ALSO reads
+    # research_goals[] (mapping {goal_id, pedagogical_intent, binds_to_objective_id}
+    # -> a RetrievalIntent) alongside identified_gaps (union, provenance-distinct).
+    # J1 fence: mechanical field-carry only — NO research KIND/relevance/posture
+    # decision (downstream posture-selection + Texas own quality unchanged). NO new
+    # live-dispatch call site — the goals ride the same Texas retrieval surface.
+    "skills/bmad_agent_tracy/scripts/irene_bridge.py",
+    # S6 RED-first test surface (the flag truth-table, the Scite-canonical
+    # selection teeth, resume idempotency incl. R1 degrade-resume, the D4
+    # creds-absent degrade + R3 Bearer-only creds check, the D5 narration incl.
+    # the R2 resumed-transcript witness, the D6 workbook-thread witness).
+    "tests/integration/marcus/test_braid_s3_research_wiring.py",
 }
 
 

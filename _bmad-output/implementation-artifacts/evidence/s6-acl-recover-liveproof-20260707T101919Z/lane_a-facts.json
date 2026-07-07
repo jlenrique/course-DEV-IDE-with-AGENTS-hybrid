@@ -1,0 +1,311 @@
+{
+  "lane": "a",
+  "trial_id": "181c6621-d706-4f1f-807c-f51a7998657d",
+  "run_dir": "C:\\Users\\juanl\\Documents\\GitHub\\course-DEV-IDE-with-AGENTS-hybrid\\state\\config\\runs\\181c6621-d706-4f1f-807c-f51a7998657d",
+  "corpus": "C:\\Users\\juanl\\Documents\\GitHub\\course-DEV-IDE-with-AGENTS-hybrid\\course-content\\courses\\tejal-apc-c1-m1-p2-trends",
+  "resumed_from": "G1",
+  "env_dispatch_live_present_by_name": false,
+  "research_dispatch_live_fn": true,
+  "scite_creds_present": true,
+  "ready_providers": [
+    "consensus",
+    "gamma_docs",
+    "scite"
+  ],
+  "minted_at": "2026-07-07T10:27:48.254721+00:00",
+  "pause_sequence": [
+    "G2B"
+  ],
+  "final_status": "paused-at-gate",
+  "final_paused_gate": "G2B",
+  "final_error_tag": null,
+  "locked_research_goals": [
+    {
+      "goal_id": "rg-01",
+      "pedagogical_intent": "Learner needs the primary-source basis for the national expenditure and practice-consolidation claims.",
+      "binds_to_objective_id": "u01"
+    },
+    {
+      "goal_id": "rg-02",
+      "pedagogical_intent": "Learner needs supporting source context for the claim that administrative burden, not patient volume, is the leading burnout driver.",
+      "binds_to_objective_id": "u02"
+    },
+    {
+      "goal_id": "rg-03",
+      "pedagogical_intent": "Learner needs the evidence basis behind the AI-use, remote-monitoring, and VR examples so they can separate trend from validated application.",
+      "binds_to_objective_id": "u03"
+    },
+    {
+      "goal_id": "rg-04",
+      "pedagogical_intent": "Learner needs source grounding for the leadership-interest versus training-gap statistics to strengthen the credibility of the course rationale.",
+      "binds_to_objective_id": "u05"
+    }
+  ],
+  "locked_research_goals_count": 4,
+  "in_scope_identified_gaps_count": 0,
+  "plan_units_total": 16,
+  "shaped_intent_provenance": [
+    {
+      "intent": "Find evidence for research-enrichment gap on u01: Learner needs the primary-source basis for the national expenditure and practice-consolidation claims.",
+      "provider_hints": [
+        {
+          "provider": "scite",
+          "research_goal_id": "rg-01"
+        }
+      ]
+    },
+    {
+      "intent": "Find evidence for research-enrichment gap on u02: Learner needs supporting source context for the claim that administrative burden, not patient volume, is the l",
+      "provider_hints": [
+        {
+          "provider": "scite",
+          "research_goal_id": "rg-02"
+        }
+      ]
+    },
+    {
+      "intent": "Find evidence for research-enrichment gap on u03: Learner needs the evidence basis behind the AI-use, remote-monitoring, and VR examples so they can separate tr",
+      "provider_hints": [
+        {
+          "provider": "scite",
+          "research_goal_id": "rg-03"
+        }
+      ]
+    },
+    {
+      "intent": "Find evidence for research-enrichment gap on u05: Learner needs source grounding for the leadership-interest versus training-gap statistics to strengthen the cr",
+      "provider_hints": [
+        {
+          "provider": "scite",
+          "research_goal_id": "rg-04"
+        }
+      ]
+    }
+  ],
+  "research_contribution_present": true,
+  "research_contribution_node_id": "04.55",
+  "research_entries": [
+    {
+      "citation_id": "cite-001",
+      "source_ref": "retrieval:scite:10.1038/ijo.2010.252",
+      "provider": "scite",
+      "source_id": "10.1038/ijo.2010.252",
+      "title": "Relative contribution of energy intake and energy expenditure to childhood obesity: a review of the literature and directions for future research",
+      "source_hash": "sha256:56c498a8f8e2e87a1a2c85fc8421966c74b1f13a52798f16b6de7803bb0d61fe"
+    },
+    {
+      "citation_id": "cite-002",
+      "source_ref": "retrieval:scite:10.1097/acm.0000000000005744",
+      "provider": "scite",
+      "source_id": "10.1097/acm.0000000000005744",
+      "title": "Signs, Sources, Coping Strategies, and Suggested Interventions for Burnout Among Preclerkship Students at a U.S. Medical School: A Qualitative Focus Group Study",
+      "source_hash": "sha256:db732ed71935b4612044d0e7ae8dab4575ba945ae08fbcdd4e8b52f7cf98d434"
+    },
+    {
+      "citation_id": "cite-003",
+      "source_ref": "retrieval:scite:10.2196/31977",
+      "provider": "scite",
+      "source_id": "10.2196/31977",
+      "title": "Digital Education for Health Professionals: An Evidence Map, Conceptual Framework, and Research Agenda",
+      "source_hash": "sha256:2f0f7dea0b38409c864da1ff6d7c5d7a3cf7bac689c590ad731489cf8a92a394"
+    },
+    {
+      "citation_id": "cite-004",
+      "source_ref": "retrieval:scite:10.1108/02640470910966862",
+      "provider": "scite",
+      "source_id": "10.1108/02640470910966862",
+      "title": "A user\u2010centered and evidence\u2010based approach for digital library projects",
+      "source_hash": "sha256:b3bb2e447c63908b72ee29afa5aa41e17b8090e9ede65a35b00c4933e1ca0b9d"
+    },
+    {
+      "citation_id": "cite-005",
+      "source_ref": "retrieval:scite:10.34197/ats-scholar.2024-0115ps",
+      "provider": "scite",
+      "source_id": "10.34197/ats-scholar.2024-0115ps",
+      "title": "Strengthening Continuing Professional Development through Active Collaboration",
+      "source_hash": "sha256:3f2935d911a73ce5879fd9a599c5c18cc1e13f109b0944185103bd4cc0c0942e"
+    }
+  ],
+  "entries_count": 5,
+  "l2_citation_report": {
+    "l2_numeric_report": {
+      "status": "FAIL",
+      "non_gating": true,
+      "experimental": true,
+      "reason": "zero-denominator: cannot audit numeric provenance with narration_token_count=0, source_token_count=0",
+      "narration_token_count": 0,
+      "source_token_count": 0,
+      "drift_rate": null,
+      "buckets": {
+        "source_derived": {
+          "count": 0,
+          "tokens": []
+        },
+        "research_supplement": {
+          "count": 0,
+          "tokens": []
+        },
+        "unsourced_numeric": {
+          "count": 0,
+          "pairs": []
+        }
+      },
+      "unsourced_framing": {
+        "count": 0,
+        "items": [],
+        "note": "STUB \u2014 numeric leg leaves this empty; the future semantic leg populates framing/structure elaboration here."
+      },
+      "classifications": [],
+      "semantic_tripwire": null
+    },
+    "l2_numeric_status": "FAIL",
+    "l2_numeric_auditable": false,
+    "citation_manifest": [
+      {
+        "citation_id": "cite-001",
+        "source_ref": "retrieval:scite:10.1038/ijo.2010.252",
+        "source_hash": "sha256:56c498a8f8e2e87a1a2c85fc8421966c74b1f13a52798f16b6de7803bb0d61fe"
+      },
+      {
+        "citation_id": "cite-002",
+        "source_ref": "retrieval:scite:10.1097/acm.0000000000005744",
+        "source_hash": "sha256:db732ed71935b4612044d0e7ae8dab4575ba945ae08fbcdd4e8b52f7cf98d434"
+      },
+      {
+        "citation_id": "cite-003",
+        "source_ref": "retrieval:scite:10.2196/31977",
+        "source_hash": "sha256:2f0f7dea0b38409c864da1ff6d7c5d7a3cf7bac689c590ad731489cf8a92a394"
+      },
+      {
+        "citation_id": "cite-004",
+        "source_ref": "retrieval:scite:10.1108/02640470910966862",
+        "source_hash": "sha256:b3bb2e447c63908b72ee29afa5aa41e17b8090e9ede65a35b00c4933e1ca0b9d"
+      },
+      {
+        "citation_id": "cite-005",
+        "source_ref": "retrieval:scite:10.34197/ats-scholar.2024-0115ps",
+        "source_hash": "sha256:3f2935d911a73ce5879fd9a599c5c18cc1e13f109b0944185103bd4cc0c0942e"
+      }
+    ],
+    "unsourced_citations": 0,
+    "scope_note": "resolvability gate: source_ref resolves to a real retrieved row. claim<->source SUPPORT faithfulness is the named operator spot-check (AC-O4), held OUT of L2."
+  },
+  "citation_manifest": [
+    {
+      "citation_id": "cite-001",
+      "source_ref": "retrieval:scite:10.1038/ijo.2010.252",
+      "source_hash": "sha256:56c498a8f8e2e87a1a2c85fc8421966c74b1f13a52798f16b6de7803bb0d61fe"
+    },
+    {
+      "citation_id": "cite-002",
+      "source_ref": "retrieval:scite:10.1097/acm.0000000000005744",
+      "source_hash": "sha256:db732ed71935b4612044d0e7ae8dab4575ba945ae08fbcdd4e8b52f7cf98d434"
+    },
+    {
+      "citation_id": "cite-003",
+      "source_ref": "retrieval:scite:10.2196/31977",
+      "source_hash": "sha256:2f0f7dea0b38409c864da1ff6d7c5d7a3cf7bac689c590ad731489cf8a92a394"
+    },
+    {
+      "citation_id": "cite-004",
+      "source_ref": "retrieval:scite:10.1108/02640470910966862",
+      "source_hash": "sha256:b3bb2e447c63908b72ee29afa5aa41e17b8090e9ede65a35b00c4933e1ca0b9d"
+    },
+    {
+      "citation_id": "cite-005",
+      "source_ref": "retrieval:scite:10.34197/ats-scholar.2024-0115ps",
+      "source_hash": "sha256:3f2935d911a73ce5879fd9a599c5c18cc1e13f109b0944185103bd4cc0c0942e"
+    }
+  ],
+  "g2_unsourced_citations": 0,
+  "dropped_dispatch_failures": {
+    "count": 0,
+    "failures": []
+  },
+  "primary_doi": "10.1038/ijo.2010.252",
+  "primary_source_ref": "retrieval:scite:10.1038/ijo.2010.252",
+  "primary_title": "Relative contribution of energy intake and energy expenditure to childhood obesity: a review of the literature and directions for future research",
+  "narration_line": "\ud83e\uddd1\u200d\ud83d\udcbc **Marcus-SPOC:** Research dispatch complete: 5 cited sources found and threaded into the workbook's citation (DOI) section \u2014 review-only, no action needed to proceed.",
+  "doi_resolution": {
+    "url": "https://doi.org/10.1038/ijo.2010.252",
+    "status_code": 200,
+    "final_url": "https://www.nature.com/articles/ijo2010252",
+    "resolved_title_snippet": "Relative contribution of energy intake and energy expenditure to childhood obesity: a review of the literature and directions for future research | International Journal of Obesity"
+  },
+  "cost_report": {
+    "trial_id": "181c6621-d706-4f1f-807c-f51a7998657d",
+    "measured_at": "2026-07-07T10:31:18.978486Z",
+    "total_cost_usd": 0.33139245,
+    "per_agent_breakdown": {
+      "cd": {
+        "agent_name": "cd",
+        "model_assigned": "gpt-5",
+        "call_count": 1,
+        "input_tokens": 5333,
+        "output_tokens": 993,
+        "cost_usd": 0.01659625
+      },
+      "gary": {
+        "agent_name": "gary",
+        "model_assigned": "gpt-5-nano",
+        "call_count": 1,
+        "input_tokens": 25,
+        "output_tokens": 10,
+        "cost_usd": 5.25e-06
+      },
+      "irene_pass1": {
+        "agent_name": "irene_pass1",
+        "model_assigned": "gpt-5.4",
+        "call_count": 3,
+        "input_tokens": 50057,
+        "output_tokens": 12625,
+        "cost_usd": 0.3145175
+      },
+      "marcus": {
+        "agent_name": "marcus",
+        "model_assigned": "gpt-5",
+        "call_count": 1,
+        "input_tokens": 1,
+        "output_tokens": 1,
+        "cost_usd": 4.5e-07
+      },
+      "quinn_r": {
+        "agent_name": "quinn_r",
+        "model_assigned": "gpt-5",
+        "call_count": 1,
+        "input_tokens": 25,
+        "output_tokens": 10,
+        "cost_usd": 0.00013125
+      },
+      "texas": {
+        "agent_name": "texas",
+        "model_assigned": "gpt-5-nano",
+        "call_count": 2,
+        "input_tokens": 50,
+        "output_tokens": 20,
+        "cost_usd": 1.05e-05
+      },
+      "vera": {
+        "agent_name": "vera",
+        "model_assigned": "gpt-5",
+        "call_count": 1,
+        "input_tokens": 25,
+        "output_tokens": 10,
+        "cost_usd": 0.00013125
+      }
+    },
+    "per_model_breakdown": {
+      "gpt-5": 0.01685875,
+      "gpt-5-nano": 1.62e-05,
+      "gpt-5.4": 0.3145175
+    },
+    "cascade_config_digest": "24d8a6c369cc432600d5b28e439a0fcdefc9421a772d796b63dc2d767630b74b",
+    "pricing_table_digest": "01ac90069cc844ac60b923093ae48c143046feacece6d3738928a3d515f03392",
+    "langsmith_trace_url": "https://smith.langchain.com/traces/181c6621-d706-4f1f-807c-f51a7998657d",
+    "drift_alerts": [],
+    "budget_status": {
+      "state": "no-cap",
+      "over_by_usd": 0.0
+    }
+  }
+}

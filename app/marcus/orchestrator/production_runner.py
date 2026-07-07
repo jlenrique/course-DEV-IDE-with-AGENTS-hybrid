@@ -100,25 +100,36 @@ _SCRIPTED_MIN_CLUSTER_FLOOR_CLASS = "min_cluster_floor"
 DEFAULT_GRAPH_VERSION = "v42"
 LOGGER = logging.getLogger(__name__)
 
-# Braid S3 (M1): operator-gated live-research toggle. Default OFF so no live
-# Texas/Scite/Consensus call fires without creds; flip ON to dispatch research
-# on a real trial (AC-O1). Read at BOTH walk sites (start + continuation) so the
-# two-walk discipline holds — §04.55 is only reached on the continuation walk.
+# Braid S3 (M1) → Canonical-arc S6 (D1): live-research toggle. DEFAULT ON —
+# every canonical (unset-env) production run dispatches live research at §04.55.
+# Read at BOTH walk sites (start + continuation) so the two-walk discipline holds
+# — §04.55 is only reached on the continuation walk. Creds-absent is handled by
+# the D4 degrade precondition inside run_research_wiring (visible recorded-empty),
+# NOT by keeping this flag off. Read at BOTH walk sites (start + continuation).
 RESEARCH_DISPATCH_LIVE_ENV = "MARCUS_RESEARCH_DISPATCH_LIVE"
+
+# The explicit falsy kill-switch set (stripped/lowered). Membership → OFF (the
+# dormant no-live-call escape hatch, for byte-identical / legacy / creds-absent
+# walks that want to skip dispatch entirely). EVERYTHING ELSE — unset, empty,
+# whitespace, truthy, unrecognized — defaults to live-ON. Enumerated as a real
+# code contract (mirrors S5's g0_enrichment F-1802 kill-switch model), NOT
+# ``value in TRUTHY`` (which would wrongly stay OFF on the canonical unset run).
+RESEARCH_DISPATCH_LIVE_KILL_SWITCH: frozenset[str] = frozenset(
+    {"0", "false", "no", "off"}
+)
 
 
 def _research_dispatch_live() -> bool:
-    """Return True iff the operator-gated live-research toggle is enabled.
+    """Return True iff live research dispatch is enabled (DEFAULT ON — S6 D1).
 
-    Accepts the usual truthy spellings (``1``/``true``/``yes``/``on``,
-    case-insensitive); anything else (incl. unset) is OFF.
+    Canonical (unset-env) runs dispatch live research at §04.55. Only an EXPLICIT
+    falsy kill-switch value (:data:`RESEARCH_DISPATCH_LIVE_KILL_SWITCH`) returns
+    the dormant no-live-call path. Mirrors S5's ``g0_enrichment_active``.
     """
-    return os.environ.get(RESEARCH_DISPATCH_LIVE_ENV, "").strip().lower() in {
-        "1",
-        "true",
-        "yes",
-        "on",
-    }
+    return (
+        os.environ.get(RESEARCH_DISPATCH_LIVE_ENV, "").strip().lower()
+        not in RESEARCH_DISPATCH_LIVE_KILL_SWITCH
+    )
 
 
 class MissingUpstreamContributionError(RuntimeError):
@@ -2580,9 +2591,11 @@ def run_production_trial(
                 # G1, so on the trial path this only ever fires via the
                 # CONTINUATION walk — but the side-effect is present in BOTH walk
                 # bodies (storyboard/chooser-publisher precedent). Bridge dispatch
-                # is local; the live Texas fetch is operator-gated via the
-                # MARCUS_RESEARCH_DISPATCH_LIVE toggle (default OFF — no live call
-                # without creds; flipped ON only for the operator-gated live run).
+                # is local; the live Texas fetch rides the MARCUS_RESEARCH_DISPATCH_LIVE
+                # toggle (S6 D1: DEFAULT ON — every canonical run dispatches live at
+                # §04.55; only an explicit falsy kill-switch value skips it). A
+                # creds-absent walk degrades VISIBLY at run_research_wiring entry
+                # (D4) rather than firing a doomed call.
                 try:
                     production_envelope = research_wiring.run_research_wiring(
                         node_id=node.id,
@@ -3310,9 +3323,10 @@ def _continue_production_walk(
                 # MUST fire here too — not only in the start walk. Mirrors the
                 # storyboard/chooser-publisher both-walks parity. AC-D2 executes a
                 # real continuation (resume) walk to prove this fires. The live
-                # Texas fetch is operator-gated via the MARCUS_RESEARCH_DISPATCH_LIVE
-                # toggle, read here too so the continuation walk honors it (two-walk
-                # parity — §04.55 is ONLY reached on this walk on the trial path).
+                # Texas fetch rides the MARCUS_RESEARCH_DISPATCH_LIVE toggle (S6 D1:
+                # DEFAULT ON), read here too so the continuation walk honors it
+                # (two-walk parity — §04.55 is ONLY reached on this walk on the
+                # trial path). Creds-absent degrades VISIBLY at node entry (D4).
                 try:
                     production_envelope = research_wiring.run_research_wiring(
                         node_id=node.id,

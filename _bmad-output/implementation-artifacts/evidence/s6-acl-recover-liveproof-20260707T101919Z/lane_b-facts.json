@@ -1,0 +1,39 @@
+{
+  "lane": "b",
+  "trial_id": "4579f59d-3a2f-4cb7-814e-b9027a848bbd",
+  "run_dir": "C:\\Users\\juanl\\Documents\\GitHub\\course-DEV-IDE-with-AGENTS-hybrid\\state\\config\\runs\\4579f59d-3a2f-4cb7-814e-b9027a848bbd",
+  "corpus": "C:\\Users\\juanl\\Documents\\GitHub\\course-DEV-IDE-with-AGENTS-hybrid\\course-content\\courses\\tejal-apc-c1-m1-p2-trends",
+  "research_dispatch_live_fn": true,
+  "scite_creds_present": false,
+  "forced_absent_token_path": "C:\\Users\\juanl\\Documents\\GitHub\\course-DEV-IDE-with-AGENTS-hybrid\\_bmad-output\\implementation-artifacts\\evidence\\s6-acl-recover-liveproof-20260707T101919Z\\no-such-scite-token-forced-absent.json",
+  "minted_at": "2026-07-07T10:33:38.678186+00:00",
+  "pause_sequence": [
+    "G0E",
+    "G0R",
+    "G1",
+    "G2B"
+  ],
+  "final_status": "paused-at-gate",
+  "final_paused_gate": "G2B",
+  "final_error_tag": null,
+  "research_entries_present": true,
+  "research_entries": [],
+  "research_degrade": {
+    "degraded": true,
+    "provider": "scite",
+    "reason": "research enrichment skipped \u2014 credentials unavailable",
+    "relogin_offer": "Scite credentials are unavailable. Re-authenticate with `python skills/bmad-agent-texas/scripts/scite_oauth_login_auto.py` (headed OAuth login), then resume the run to enrich with live research."
+  },
+  "dispatch_reached": false,
+  "scite_spend": 0,
+  "narration_line": "\ud83e\uddd1\u200d\ud83d\udcbc **Marcus-SPOC:** Heads-up (review-only, no action needed to proceed): research enrichment skipped \u2014 credentials unavailable. Scite credentials are unavailable. Re-authenticate with `python skills/bmad-agent-texas/scripts/scite_oauth_login_auto.py` (headed OAuth login), then resume the run to enrich with live research.",
+  "r1_redispatch": {
+    "attempted": true,
+    "creds_restored": true,
+    "redispatched": true,
+    "entries_count": 5,
+    "primary_doi": "10.3310/hsdr01140",
+    "primary_source_ref": "retrieval:scite:10.3310/hsdr01140",
+    "primary_title": "Towards equitable commissioning for our multiethnic society: a mixed-methods qualitative investigation of evidence utilisation by strategic commissioners and public health managers"
+  }
+}

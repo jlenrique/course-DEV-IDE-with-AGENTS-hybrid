@@ -1,0 +1,61 @@
+{
+  "story": "S6 — Tracy/research Scite-canonical (AC-L RECOVER witness, post-D7)",
+  "role": "independent live-witness (error-pause -> recover; FROZEN judges; first-run-stands; NO retry-to-green)",
+  "branch": "dev/workbook-2026-07-06",
+  "head": "6529f76a",
+  "working_tree": "uncommitted S6 diff (flip + Scite-selector + degrade + D7 bridge) — run against, left intact",
+  "judges_frozen_at": "2026-07-07T10:20:23Z",
+  "judge_a": {
+    "verdict": "PASS",
+    "score": "8/8",
+    "trial_id": "181c6621-d706-4f1f-807c-f51a7998657d",
+    "dispatch_reached_scite_via_d7": true,
+    "provenance": {
+      "in_scope_identified_gaps_count": 0,
+      "locked_research_goals_count": 4,
+      "shaped_intents_all_scite": true,
+      "shaped_intents_all_carry_research_goal_id": true,
+      "note": "0 identified_gaps + 4 collateral.research_goals => the ONLY reachable dispatch path was D7 (research_goals); each shaped intent carries research_goal_id on a scite-only hint"
+    },
+    "cited_entries_count": 5,
+    "primary_doi": "10.1038/ijo.2010.252",
+    "primary_source_ref": "retrieval:scite:10.1038/ijo.2010.252",
+    "primary_title": "Relative contribution of energy intake and energy expenditure to childhood obesity: a review of the literature and directions for future research",
+    "doi_resolution": {"status_code": 200, "final_url": "https://www.nature.com/articles/ijo2010252"},
+    "g2_unsourced_citations": 0,
+    "final_gate": "G2B",
+    "narration": "Research dispatch complete: 5 cited sources found and threaded into the workbook's citation (DOI) section"
+  },
+  "judge_b": {
+    "verdict": "PASS",
+    "score": "4/4 core + BONUS R1 PASS",
+    "trial_id": "4579f59d-3a2f-4cb7-814e-b9027a848bbd",
+    "creds_forced_absent_via": "SCITE_OAUTH_TOKEN_PATH -> nonexistent file (load_bearer_token()->None)",
+    "d4_degrade_at_node_entry": true,
+    "dispatch_reached": false,
+    "scite_spend_core": 0,
+    "degrade_marker": "research enrichment skipped — credentials unavailable",
+    "relogin_offer_surfaced": true,
+    "final_gate": "G2B",
+    "r1_redispatch": {
+      "restored_creds": true,
+      "redispatched": true,
+      "entries_count": 5,
+      "primary_doi": "10.3310/hsdr01140",
+      "doi_redirect": "doi.org -> https://www.journalslibrary.nihr.ac.uk/hsdr/hsdr01140/ (publisher 403 bot-block on landing page; DOI itself resolves)"
+    }
+  },
+  "concurrency_disclosure": {
+    "what": "Two lane-a walks ran on trial 181c6621: the original background process did NOT die (completed 10:28:21, 4 cited rows); the resume — launched on the coordinator's belief it had died — raced it and completed 10:31:19 (5 cited rows). Both independently fired a real Scite dispatch via the D7 path, same primary DOI, both reached G2B.",
+    "judged_facts": "the intact resume-walk facts (5 entries); internally consistent; judged ONCE",
+    "impact_on_verdict": "none — both walks independently corroborate D7 reachability; verdict robust either way",
+    "extra_spend": "one extra live Scite dispatch (cost not a constraint per operator directive)"
+  },
+  "spend": {
+    "lane_a_trial_llm_usd": 0.33139245,
+    "lane_b_trial_llm_usd": 0.31697745,
+    "total_llm_usd_approx": 0.6483699,
+    "scite_dollar_meter": "none (Scite uses credits, not $); real dispatches: lane-a x2 (concurrent walks) + lane-b R1 x1; lane-b core degrade = 0 dispatches",
+    "g0_dispatch_live": "UNSET (G0 deterministic — cost saved)"
+  }
+}

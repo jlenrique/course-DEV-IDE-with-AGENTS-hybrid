@@ -1,0 +1,33 @@
+{
+  "judge": "b",
+  "verdict": "PASS",
+  "n_pass": 4,
+  "n_total": 4,
+  "checks": [
+    {
+      "name": "1_d4_precondition_fired_no_dispatch",
+      "ok": true,
+      "detail": "creds_present=False degraded=True dispatch_reached=False"
+    },
+    {
+      "name": "2_present_empty_with_marker",
+      "ok": true,
+      "detail": "entries_present=True entries=[] reason='research enrichment skipped \u2014 credentials unavailable'"
+    },
+    {
+      "name": "3_relogin_and_narration",
+      "ok": true,
+      "detail": "relogin_offer_present=True narration='\ud83e\uddd1\\u200d\ud83d\udcbc **Marcus-SPOC:** Heads-up (review-only, no action needed to proceed): research enrichment skipped \u2014 credentials unavailable. Scite credentials are unavailable. Re-authenticate with `python skills/bmad-agent-texas/scripts/scite_oauth_login_auto.py` (headed OAuth login), then resume the run to enrich with live research.'"
+    },
+    {
+      "name": "4_zero_spend_walk_proceeded",
+      "ok": true,
+      "detail": "scite_spend=0 final_status=paused-at-gate final_gate=G2B"
+    }
+  ],
+  "bonus_r1": {
+    "attempted": true,
+    "ok": true,
+    "detail": "attempted=True redispatched=True entries_count=5 r1_primary_doi=10.3310/hsdr01140"
+  }
+}

@@ -1,0 +1,8 @@
+{
+  "frozen_at": "2026-07-07T10:20:23.261017+00:00",
+  "note": "S6 AC-L RECOVER \u2014 judges frozen BEFORE any lane ran; first-run-stands; no retry-to-green",
+  "judges": {
+    "judge_a.py": "30bbe88ec54009d1bee39943e6a0ba01f57d7c209c5aad30d66a33af497b0879",
+    "judge_b.py": "e902381c48465cf4e2f7897cbdbae924bb7432dca0d81ef4b15e84ef5dbeeeb8"
+  }
+}

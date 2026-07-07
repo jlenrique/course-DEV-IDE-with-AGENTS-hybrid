@@ -92,6 +92,23 @@ CITATION_MANIFEST_KEY = "citation_manifest"
 # run-record trace rather than vanishing.
 DROPPED_DISPATCH_KEY = "dropped_dispatch_failures"
 
+# --- Canonical-arc S6 ------------------------------------------------------- #
+# D2 — Scite-canonical literature research. The literature-shape research
+# dispatch is scoped to SCITE only: consensus is party-DEFERRED
+# (``consensus-provider-live-enablement``) and gamma_docs is a Gamma-doc-audit
+# provider with NO DOIs. Both are EXCLUDED so a live dispatch reaches
+# SciteProvider (real DOIs), never consensus/gamma_docs. The provider directory
+# sorts ready providers to ``['consensus','gamma_docs','scite']``, so the prior
+# ``ready[:2]`` selector silently excluded scite — the S6 MUST-FIX.
+LITERATURE_RESEARCH_PROVIDER = "scite"
+DEFERRED_LITERATURE_PROVIDERS: frozenset[str] = frozenset({"consensus", "gamma_docs"})
+
+# D4 — creds-absent degrade (X4/W-deg). When live dispatch is requested but Scite
+# creds are absent, the node records a VISIBLE, explicitly-empty degrade envelope
+# (never a silent drop, never a live call, never a halt) under this key + marker.
+RESEARCH_DEGRADE_KEY = "research_degrade"
+RESEARCH_DEGRADE_MARKER = "research enrichment skipped — credentials unavailable"
+
 _TEXAS_SCRIPTS_DIR = (
     Path(__file__).resolve().parents[3] / "skills" / "bmad-agent-texas" / "scripts"
 )
@@ -125,7 +142,22 @@ class DeterministicPostureSelector:
                 "no ready/stub retrieval providers registered; cannot shape "
                 "a RetrievalIntent for the research-enrichment gap"
             )
-        selected = ready[:2] if len(ready) > 1 else ready[:1]
+        # S6 D2 — Scite-canonical: scope the literature research dispatch to
+        # SCITE. Exclude consensus (party-deferred) + gamma_docs (no DOIs). A
+        # single literature provider ⇒ no cross-validation partner.
+        selected = [
+            p
+            for p in ready
+            if p == LITERATURE_RESEARCH_PROVIDER
+            and p not in DEFERRED_LITERATURE_PROVIDERS
+        ]
+        if not selected:
+            raise RetrievalProviderUnavailableError(
+                f"the canonical literature-research provider "
+                f"{LITERATURE_RESEARCH_PROVIDER!r} is not registered ready/stub; "
+                "cannot shape a Scite-canonical RetrievalIntent for the "
+                "research-enrichment gap"
+            )
         description = str(brief.get("gap_description") or brief.get("description") or "")
         target = str(brief.get("target_element") or "")
         intent_text = (
@@ -133,10 +165,19 @@ class DeterministicPostureSelector:
             if description or target
             else "Find evidence for the in-scope research-enrichment gap"
         )
+        # S6 D7 — MECHANICAL provenance carry: when the brief originates from a
+        # collateral.research_goal, stamp the goal_id onto each provider hint's
+        # (provider-opaque) params so the dispatched intent traces back to
+        # collateral.research_goals, NOT identified_gaps. Pure provenance label —
+        # NOT a research KIND / relevance / posture decision (J1 fence).
+        hint_params: dict[str, Any] = {"mode": "search"}
+        research_goal_id = str(brief.get("research_goal_id") or "")
+        if research_goal_id:
+            hint_params["research_goal_id"] = research_goal_id
         return retrieval_intent_cls(
             intent=intent_text,
             provider_hints=[
-                ProviderHint(provider=provider, params={"mode": "search"})
+                ProviderHint(provider=provider, params=dict(hint_params))
                 for provider in selected
             ],
             acceptance_criteria=AcceptanceCriteria(
@@ -226,7 +267,48 @@ def _plan_dict_for_bridge_from_raw(lesson_plan: dict[str, Any]) -> dict[str, Any
                 "identified_gaps": identified_gaps,
             }
         )
-    return {"units": units}
+    return {"units": units, "research_goals": _research_goals_from_raw(lesson_plan)}
+
+
+def _research_goals_from_raw(lesson_plan: dict[str, Any]) -> list[dict[str, Any]]:
+    """Mechanically carry ``collateral.research_goals[]`` into the bridge dict (D7).
+
+    Fix A (consumer-side dual-read). The real Irene-Pass-1 producer emits research
+    intent as ``lesson_plan["collateral"]["research_goals"]`` (a
+    ``ResearchEnrichmentGoal`` list of ``{goal_id, pedagogical_intent,
+    binds_to_objective_id}``) and NEVER fills ``plan_units[].identified_gaps`` — so
+    the identified_gaps-only read left the §04.55 dispatch UNREACHABLE on every real
+    run.
+
+    ⚠️ MECHANICAL FIELD-CARRY ONLY (binding J1 quality fence): carry the
+    ``pedagogical_intent`` SEED (never author a query/URL), the
+    ``binds_to_objective_id`` target, and ``goal_id`` provenance — then STOP. This
+    decides NO research KIND / relevance / gap_type / posture; the existing
+    downstream posture-selection + Texas fetch own research QUALITY unchanged.
+    Additive: the Irene producer, the Gagne ``IdentifiedGap`` model, and
+    ``plan_units[]`` are untouched.
+    """
+    collateral = lesson_plan.get("collateral")
+    if not isinstance(collateral, dict):
+        return []
+    goals: list[dict[str, Any]] = []
+    for goal in collateral.get("research_goals") or []:
+        if not isinstance(goal, dict):
+            continue
+        goal_id = str(goal.get("goal_id") or "")
+        pedagogical_intent = str(goal.get("pedagogical_intent") or "")
+        # A research goal with no carryable seed nor provenance is a no-op — skip
+        # it rather than dispatch an empty intent.
+        if not (goal_id or pedagogical_intent):
+            continue
+        goals.append(
+            {
+                "goal_id": goal_id,
+                "pedagogical_intent": pedagogical_intent,
+                "binds_to_objective_id": goal.get("binds_to_objective_id"),
+            }
+        )
+    return goals
 
 
 # Mirror of fanout._POSTURE_TO_GAP_TYPE (kept local to avoid a private import).
@@ -238,14 +320,80 @@ _POSTURE_TO_GAP_TYPE: dict[str, str] = {
 
 
 def has_research_goals(production_envelope: ProductionEnvelope) -> bool:
-    """Return True iff some in-scope unit carries a research-enrichment gap."""
+    """Return True iff the locked plan carries dispatchable research intent (D7).
+
+    DUAL-READ (Fix A): the intent may arrive as EITHER an in-scope unit's
+    ``identified_gaps`` (real G1A-curated / smoke-harness path) OR as
+    ``collateral.research_goals[]`` (the real Irene-Pass-1 producer path). Both are
+    honored (union); either one alone makes the §04.55 dispatch reachable.
+    """
     plan_dict = _locked_plan_dict(production_envelope)
     if plan_dict is None:
         return False
     for unit in plan_dict["units"]:
         if unit.get("scope_decision") == "in-scope" and unit.get("identified_gaps"):
             return True
-    return False
+    return bool(plan_dict.get("research_goals"))
+
+
+def _is_degraded_contribution(contribution: Any) -> bool:
+    """True iff a research_wiring contribution is a D4 creds-degrade marker (R1).
+
+    The degrade envelope carries ``research_degrade.degraded == True`` (built by
+    :func:`_creds_absent_degrade_output`). Such a contribution is a recorded
+    NON-result — the idempotency guard must NOT treat it as a completed research
+    dispatch, so a post-re-auth resume can re-dispatch instead of short-circuiting.
+    """
+    output = getattr(contribution, "output", None)
+    if not isinstance(output, dict):
+        return False
+    degrade = output.get(RESEARCH_DEGRADE_KEY)
+    return isinstance(degrade, dict) and bool(degrade.get("degraded"))
+
+
+def _scite_creds_present() -> bool:
+    """Return True iff an OAuth Bearer token is available for a live dispatch (S6).
+
+    **Bearer-only (S6 R3).** The canonical live-Scite MCP path requires an OAuth
+    Bearer token and REJECTS HTTP-Basic (repo memory "Scite MCP needs OAuth not
+    Basic"; ``scite_provider`` treats Basic as a legacy/local-server path). So
+    ``.env`` Basic creds are NOT real-endpoint credentials: gating on them would
+    let a bearer-expired machine pass this check and fire a doomed Basic call →
+    401 → either a silent-empty result (bypassing the D4 degrade marker) or a
+    non-``DispatchError`` httpx crash of the continuation walk. Gating on the
+    Bearer token alone means a bearer-absent machine degrades cleanly with the
+    visible D4 marker. Never raises — an absent/unrefreshable token yields
+    ``None`` → False.
+    """
+    if str(_TEXAS_SCRIPTS_DIR) not in sys.path:
+        sys.path.insert(0, str(_TEXAS_SCRIPTS_DIR))
+    from retrieval.scite_oauth_token import load_bearer_token  # noqa: PLC0415
+
+    return load_bearer_token() is not None
+
+
+def _creds_absent_degrade_output() -> dict[str, Any]:
+    """Build the VISIBLE, recorded-empty creds-degrade contribution output (D4).
+
+    The ``research_entries`` section is PRESENT + explicitly empty (not silently
+    dropped); a visible reason marker + a headed-relogin offer ride alongside so
+    the SPOC can narrate the honest-degrade lane. The walk PROCEEDS.
+    """
+    return {
+        RESEARCH_ENTRIES_KEY: [],
+        DROPPED_DISPATCH_KEY: {"count": 0, "failures": []},
+        RESEARCH_DEGRADE_KEY: {
+            "degraded": True,
+            "provider": LITERATURE_RESEARCH_PROVIDER,
+            "reason": RESEARCH_DEGRADE_MARKER,
+            "relogin_offer": (
+                "Scite credentials are unavailable. Re-authenticate with "
+                "`python skills/bmad-agent-texas/scripts/scite_oauth_login_auto.py` "
+                "(headed OAuth login), then resume the run to enrich with live "
+                "research."
+            ),
+        },
+    }
 
 
 def _dispatch_intents_to_texas(intents: list[Any]) -> list[Any]:
@@ -319,22 +467,61 @@ def run_research_wiring(
     if node_id not in RESEARCH_WIRING_NODE_IDS:
         # Defensive: keyed dispatch should never reach here with a foreign node.
         return production_envelope
-    if (
-        production_envelope.get_contribution(
-            RESEARCH_WIRING_SPECIALIST_ID, node_id=node_id
-        )
-        is not None
-    ):
+    # --- S6 R1 (D4 degrade-resume DEFEAT fix) — idempotency guard ---
+    # A GENUINELY-COMPLETED (non-degraded) contribution short-circuits (D3: no
+    # double-dispatch, no double paid Scite call). But a D4 DEGRADE-marker
+    # contribution (recorded when creds were absent) is NOT a completed research
+    # result — treating it as complete would permanently defeat resume: the
+    # operator re-authenticates, RESUMES, and the guard would short-circuit the
+    # degraded envelope, never re-dispatching. So a degraded contribution FALLS
+    # THROUGH and (when creds are now present) re-dispatches on resume.
+    existing = production_envelope.get_contribution(
+        RESEARCH_WIRING_SPECIALIST_ID, node_id=node_id
+    )
+    if existing is not None and not _is_degraded_contribution(existing):
         return production_envelope
 
     plan_dict = _locked_plan_dict(production_envelope)
+    # D7 DUAL-READ: dispatchable research intent is present when EITHER an in-scope
+    # unit carries identified_gaps OR the plan carries collateral.research_goals[]
+    # (the real Irene-Pass-1 path). Either alone makes §04.55 reach Scite.
     in_scope_with_gaps = bool(
         plan_dict
-        and any(
-            u.get("scope_decision") == "in-scope" and u.get("identified_gaps")
-            for u in plan_dict["units"]
+        and (
+            any(
+                u.get("scope_decision") == "in-scope" and u.get("identified_gaps")
+                for u in plan_dict["units"]
+            )
+            or plan_dict.get("research_goals")
         )
     )
+
+    # --- S6 D4: creds precondition at NODE ENTRY (before any live dispatch) ---
+    # When a live dispatch is genuinely requested for a real research gap but
+    # Scite creds are absent, short-circuit to a VISIBLE, recorded-empty degrade
+    # envelope INSTEAD of the old silent fail-soft drop (research_wiring §265).
+    # No live call is attempted; the walk PROCEEDS. The ``injected_cited_entries``
+    # test seam bypasses live dispatch entirely, so it is not creds-gated.
+    if (
+        dispatch_live
+        and injected_cited_entries is None
+        and in_scope_with_gaps
+        and not _scite_creds_present()
+    ):
+        logger.warning(
+            "research-wiring: live dispatch requested but Scite creds absent; "
+            "recording a visible degrade envelope (recorded-empty) and proceeding"
+        )
+        updated = production_envelope.model_copy(deep=True)
+        updated.add_contribution(
+            SpecialistContribution.from_output(
+                specialist_id=RESEARCH_WIRING_SPECIALIST_ID,
+                output=_creds_absent_degrade_output(),
+                model_used=RESEARCH_WIRING_MODEL_MARKER,
+                node_id=node_id,
+            )
+        )
+        return updated
 
     cited_entries: list[CitedResearchEntry] = []
     dropped_failures: list[dict[str, Any]] = []
@@ -457,8 +644,12 @@ def research_entries_from_envelope(
 
 __all__ = [
     "CITATION_MANIFEST_KEY",
+    "DEFERRED_LITERATURE_PROVIDERS",
     "DROPPED_DISPATCH_KEY",
     "L2_CITATION_REPORT_KEY",
+    "LITERATURE_RESEARCH_PROVIDER",
+    "RESEARCH_DEGRADE_KEY",
+    "RESEARCH_DEGRADE_MARKER",
     "RESEARCH_ENTRIES_KEY",
     "RESEARCH_WIRING_MODEL_MARKER",
     "RESEARCH_WIRING_NODE_ID",

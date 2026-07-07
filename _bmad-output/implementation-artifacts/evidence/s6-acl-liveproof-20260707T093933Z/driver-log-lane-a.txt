@@ -1,0 +1,13 @@
+[2026-07-07T09:43:11.843273+00:00] env: MARCUS_RESEARCH_DISPATCH_LIVE absent-by-name=True
+[2026-07-07T09:43:11.843273+00:00] fns: _research_dispatch_live()=True _scite_creds_present()=True ready=['consensus', 'gamma_docs', 'scite']
+[2026-07-07T09:43:12.001668+00:00] trial_id=796a287d-719d-4be6-818c-6bbf5f6846af; START on tejal-apc-c1-m1-p2-trends (expect first pause G0E)
+[2026-07-07T09:45:32.408510+00:00] START paused at G0E (status=paused-at-gate) after 140s
+[2026-07-07T09:45:32.416839+00:00] resume: approve G0E (cap=8)
+[2026-07-07T09:45:54.339994+00:00]   -> status=paused-at-gate paused_gate=G0R err=None
+[2026-07-07T09:45:54.356425+00:00] resume: approve G0R (cap=12)
+[2026-07-07T09:46:13.679707+00:00]   -> status=paused-at-gate paused_gate=G1 err=None
+[2026-07-07T09:46:13.694697+00:00] resume: approve G1 (cap=12)
+[2026-07-07T09:49:37.389803+00:00]   -> status=paused-at-gate paused_gate=G2B err=None
+[2026-07-07T09:49:37.389803+00:00] research_wiring contribution PRESENT after approving up to G1; now paused G2B
+[2026-07-07T09:49:37.401058+00:00] NARRATION: 🧑‍💼 **Marcus-SPOC:** Research dispatch: no cited sources for this lesson (review-only — nothing to fold in).
+[2026-07-07T09:49:37.408119+00:00] === LANE-a facts written: entries=0 primary_doi=None final_gate=G2B ===

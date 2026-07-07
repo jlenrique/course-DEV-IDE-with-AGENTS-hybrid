@@ -1,0 +1,29 @@
+{
+  "story": "S6 Tracy/research Scite-canonical",
+  "role": "independent live-witness (two-lane, frozen judges, first-run-stands)",
+  "head": "6529f76a + uncommitted S6 diff",
+  "corpus": "course-content/courses/tejal-apc-c1-m1-p2-trends",
+  "judges_frozen_at": "2026-07-07T09:40:33.628484+00:00",
+  "lane_a": {
+    "judge": "FAIL (1/7)",
+    "trial_id": "796a287d-719d-4be6-818c-6bbf5f6846af",
+    "flip_live": true,
+    "scite_creds_present": true,
+    "reached_04.55": true,
+    "paused_gate": "G2B",
+    "entries": 0,
+    "dispatch_fired": false,
+    "total_spend_usd": 0.30335995,
+    "scite_spend_usd": 0
+  },
+  "lane_b": {
+    "judge": "NOT RUN",
+    "reason": "D4 degrade gated behind the same unreachable in_scope_with_gaps; walk cannot exercise degrade on the real path"
+  },
+  "root_cause": "research_wiring dispatch reads plan_units[].gaps (IdentifiedGap); real irene_pass1 emits collateral.research_goals; never bridged -> live dispatch unreachable on real trial path",
+  "irene_research_goals_this_run": 5,
+  "plan_units_gaps_this_run": 0,
+  "verdict": "S6 NOT closable on this evidence \u2014 production defect blocks the M-wit",
+  "no_mutation": true,
+  "no_fake_gap_injected": true
+}

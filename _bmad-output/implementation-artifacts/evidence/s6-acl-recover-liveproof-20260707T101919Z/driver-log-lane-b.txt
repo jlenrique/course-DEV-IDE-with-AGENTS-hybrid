@@ -1,0 +1,14 @@
+[2026-07-07T10:33:38.512717+00:00] env: dispatch_live_fn=True creds_present(forced-absent)=False
+[2026-07-07T10:33:38.678186+00:00] trial_id=4579f59d-3a2f-4cb7-814e-b9027a848bbd; START on tejal (creds FORCED absent; expect first pause G0E)
+[2026-07-07T10:35:49.291947+00:00] START paused at G0E (status=paused-at-gate)
+[2026-07-07T10:35:49.303072+00:00] resume: approve G0E (cap=8)
+[2026-07-07T10:36:04.832802+00:00]   -> status=paused-at-gate paused_gate=G0R err=None
+[2026-07-07T10:36:04.853398+00:00] resume: approve G0R (cap=12)
+[2026-07-07T10:36:22.155046+00:00]   -> status=paused-at-gate paused_gate=G1 err=None
+[2026-07-07T10:36:22.172105+00:00] resume: approve G1 (cap=12)
+[2026-07-07T10:41:18.153997+00:00]   -> status=paused-at-gate paused_gate=G2B err=None
+[2026-07-07T10:41:18.155000+00:00] research_wiring contribution PRESENT after approving up to G1; now paused G2B
+[2026-07-07T10:41:18.165101+00:00] DEGRADE narration: 🧑‍💼 **Marcus-SPOC:** Heads-up (review-only, no action needed to proceed): research enrichment skipped — credentials unavailable. Scite credentials are unavailable. Re-authenticate with `python skills/bmad-agent-texas/scripts/scite_oauth_login_auto.py` (headed OAuth login), then resume the run to enrich with live research.
+[2026-07-07T10:41:18.401934+00:00] R1: creds restored -> _scite_creds_present()=True
+[2026-07-07T10:41:25.606363+00:00] R1: re-dispatch entries=5 primary_doi=10.3310/hsdr01140
+[2026-07-07T10:41:25.607362+00:00] === LANE-b facts written: degrade=True dispatch_reached=False final_gate=G2B r1=True ===

@@ -1,0 +1,112 @@
+{
+  "lane": "a",
+  "trial_id": "796a287d-719d-4be6-818c-6bbf5f6846af",
+  "run_dir": "C:\\Users\\juanl\\Documents\\GitHub\\course-DEV-IDE-with-AGENTS-hybrid\\state\\config\\runs\\796a287d-719d-4be6-818c-6bbf5f6846af",
+  "corpus": "C:\\Users\\juanl\\Documents\\GitHub\\course-DEV-IDE-with-AGENTS-hybrid\\course-content\\courses\\tejal-apc-c1-m1-p2-trends",
+  "env_dispatch_live_present_by_name": false,
+  "research_dispatch_live_fn": true,
+  "scite_creds_present": true,
+  "ready_providers": [
+    "consensus",
+    "gamma_docs",
+    "scite"
+  ],
+  "minted_at": "2026-07-07T09:43:12.001668+00:00",
+  "pause_sequence": [
+    "G0E",
+    "G0R",
+    "G1",
+    "G2B"
+  ],
+  "final_status": "paused-at-gate",
+  "final_paused_gate": "G2B",
+  "final_error_tag": null,
+  "research_contribution_present": true,
+  "research_contribution_node_id": "04.55",
+  "research_entries": [],
+  "entries_count": 0,
+  "l2_citation_report": null,
+  "citation_manifest": null,
+  "g2_unsourced_citations": null,
+  "dropped_dispatch_failures": {
+    "count": 0,
+    "failures": []
+  },
+  "narration_line": "\ud83e\uddd1\u200d\ud83d\udcbc **Marcus-SPOC:** Research dispatch: no cited sources for this lesson (review-only \u2014 nothing to fold in).",
+  "cost_report": {
+    "trial_id": "796a287d-719d-4be6-818c-6bbf5f6846af",
+    "measured_at": "2026-07-07T09:49:37.337054Z",
+    "total_cost_usd": 0.30335995,
+    "per_agent_breakdown": {
+      "cd": {
+        "agent_name": "cd",
+        "model_assigned": "gpt-5",
+        "call_count": 1,
+        "input_tokens": 5337,
+        "output_tokens": 1009,
+        "cost_usd": 0.01676125
+      },
+      "gary": {
+        "agent_name": "gary",
+        "model_assigned": "gpt-5-nano",
+        "call_count": 1,
+        "input_tokens": 25,
+        "output_tokens": 10,
+        "cost_usd": 5.25e-06
+      },
+      "irene_pass1": {
+        "agent_name": "irene_pass1",
+        "model_assigned": "gpt-5.4",
+        "call_count": 3,
+        "input_tokens": 47520,
+        "output_tokens": 11168,
+        "cost_usd": 0.28632
+      },
+      "marcus": {
+        "agent_name": "marcus",
+        "model_assigned": "gpt-5",
+        "call_count": 1,
+        "input_tokens": 1,
+        "output_tokens": 1,
+        "cost_usd": 4.5e-07
+      },
+      "quinn_r": {
+        "agent_name": "quinn_r",
+        "model_assigned": "gpt-5",
+        "call_count": 1,
+        "input_tokens": 25,
+        "output_tokens": 10,
+        "cost_usd": 0.00013125
+      },
+      "texas": {
+        "agent_name": "texas",
+        "model_assigned": "gpt-5-nano",
+        "call_count": 2,
+        "input_tokens": 50,
+        "output_tokens": 20,
+        "cost_usd": 1.05e-05
+      },
+      "vera": {
+        "agent_name": "vera",
+        "model_assigned": "gpt-5",
+        "call_count": 1,
+        "input_tokens": 25,
+        "output_tokens": 10,
+        "cost_usd": 0.00013125
+      }
+    },
+    "per_model_breakdown": {
+      "gpt-5": 0.01702375,
+      "gpt-5-nano": 1.62e-05,
+      "gpt-5.4": 0.28632
+    },
+    "cascade_config_digest": "24d8a6c369cc432600d5b28e439a0fcdefc9421a772d796b63dc2d767630b74b",
+    "pricing_table_digest": "01ac90069cc844ac60b923093ae48c143046feacece6d3738928a3d515f03392",
+    "langsmith_trace_url": "https://smith.langchain.com/traces/796a287d-719d-4be6-818c-6bbf5f6846af",
+    "drift_alerts": [],
+    "budget_status": {
+      "state": "no-cap",
+      "over_by_usd": 0.0
+    }
+  }
+}

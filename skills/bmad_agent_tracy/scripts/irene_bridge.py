@@ -12,8 +12,21 @@ class IreneTracyBridge:
 
     def process_plan_locked(self, lesson_plan: dict[str, Any]) -> list[dict[str, Any]]:
         """
-        Scan lesson plan units for IdentifiedGap on in-scope units
-        and automatically dispatch to Tracy.
+        Scan the lesson plan for research intent on in-scope units and dispatch
+        each to Tracy.
+
+        DUAL-READ (canonical-arc S6 D7, Fix A): research intent arrives via EITHER
+        source, and BOTH are honored (union, provenance-distinct):
+          - ``units[].identified_gaps`` — the Gagne ``IdentifiedGap`` path (real
+            G1A-curated / smoke-harness), OR
+          - ``research_goals[]`` — the real Irene-Pass-1 producer path
+            (``collateral.research_goals``, carried in mechanically upstream).
+
+        ⚠️ MECHANICAL FIELD-CARRY ONLY (binding J1 quality fence): a research goal
+        contributes its ``pedagogical_intent`` SEED, its ``binds_to_objective_id``
+        target, and its ``goal_id`` provenance — nothing else. It decides NO
+        research KIND / relevance / gap_type / posture; the posture selector +
+        Texas own research QUALITY unchanged.
         """
         results = []
         units = lesson_plan.get("units") or []
@@ -50,6 +63,33 @@ class IreneTracyBridge:
                 except Exception as e:
                     logger.exception("Failed to dispatch Tracy posture for gap")
                     results.append({"status": "failed", "reason": str(e), "gap": gap})
+
+        # S6 D7 — collateral.research_goals[] (the real Irene-Pass-1 path). Each
+        # goal is a MECHANICAL field-carry: pedagogical_intent SEED -> the shaping
+        # seed, binds_to_objective_id -> the target element, goal_id -> provenance.
+        research_goals = lesson_plan.get("research_goals") or []
+        for goal in research_goals:
+            if not isinstance(goal, dict):
+                continue
+            brief = {
+                # provenance: carried through so the dispatched intent traces back
+                # to collateral.research_goals (never a quality decision).
+                "research_goal_id": goal.get("goal_id", ""),
+                # the pedagogical_intent SEED drives the shaping (never a raw query).
+                "gap_description": goal.get("pedagogical_intent", ""),
+                # binds_to_objective_id is the target element (optional).
+                "target_element": goal.get("binds_to_objective_id") or "",
+            }
+            brief = {k: v for k, v in brief.items() if v is not None and v != ""}
+            # research_goals are lesson-scoped enrichment intent — always in-scope.
+            brief["scope_decision"] = "in-scope"
+
+            try:
+                res = self.dispatcher.select_posture(brief)
+                results.append(res)
+            except Exception as e:
+                logger.exception("Failed to dispatch Tracy posture for research goal")
+                results.append({"status": "failed", "reason": str(e), "goal": goal})
 
         return results
 

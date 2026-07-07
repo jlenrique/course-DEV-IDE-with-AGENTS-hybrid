@@ -40,6 +40,12 @@ from app.marcus.orchestrator.picker_html_emitter import (
 )
 from app.marcus.orchestrator.picker_publisher import publish_picker
 from app.marcus.orchestrator.production_runner import resume_production_trial
+from app.marcus.orchestrator.research_wiring import (
+    RESEARCH_DEGRADE_KEY,
+    RESEARCH_ENTRIES_KEY,
+    RESEARCH_WIRING_NODE_ID,
+    RESEARCH_WIRING_SPECIALIST_ID,
+)
 from app.marcus.orchestrator.styleguide_picker import (
     GAMMA_STYLEGUIDE_PICKS_PATH,
     PickerError,
@@ -224,6 +230,37 @@ def narrate_pick_recommendation(
         f"this course (picked {recommendation['picked_at']}). Reply 'recommended' "
         f"to accept it (I'll still read it back for your confirm), or paste a "
         f"fresh selection code from the page."
+    )
+
+
+def narrate_research_result(contribution_output: dict[str, Any]) -> str:
+    """S6 D5 (T6d) — review-only narration of the §04.55 research dispatch result.
+
+    Narrated to the operator AFTER node 04.55, NON-BLOCKING (no gate, no verdict
+    prompt): either "N cited sources found" (the real-cite lane) or the
+    credentials-degrade marker + relogin offer (the honest-degrade lane). Pure
+    display / HIL surface — it never collects a decision (mirrors S5 D3).
+    """
+    degrade = contribution_output.get(RESEARCH_DEGRADE_KEY)
+    if isinstance(degrade, dict) and degrade.get("degraded"):
+        reason = degrade.get("reason", "research enrichment skipped")
+        offer = degrade.get("relogin_offer", "")
+        return (
+            f"{_M} Heads-up (review-only, no action needed to proceed): {reason}. "
+            f"{offer}".rstrip()
+        )
+    entries = contribution_output.get(RESEARCH_ENTRIES_KEY) or []
+    count = len(entries)
+    if count == 0:
+        return (
+            f"{_M} Research dispatch: no cited sources for this lesson "
+            f"(review-only — nothing to fold in)."
+        )
+    plural = "s" if count != 1 else ""
+    return (
+        f"{_M} Research dispatch complete: {count} cited source{plural} found and "
+        f"threaded into the workbook's citation (DOI) section — review-only, no "
+        f"action needed to proceed."
     )
 
 
@@ -1198,8 +1235,11 @@ def narrate_gate(gate_id: str, card: dict[str, Any], run_dir: Path) -> str:
         _narrate_sources(run_dir, lines)
         _narrate_ingestion(run_dir, lines)
         _narrate_lesson_plan(run_dir, lines)
-        lines.append(f"{_M} No gap-fill research was needed (capability d); the lesson is "
-                     "corpus-grounded. Tell me if you'd like supporting research (Tracy).")
+        lines.append(f"{_M} Right after this gate I run gap-fill research (capability d) at "
+                     "the plan-lock step: Tracy shapes the research intents and Texas "
+                     "dispatches them live to Scite for cited sources. I'll surface what "
+                     "came back (or an honest note if Scite creds are unavailable) once "
+                     "it completes.")
     elif gate_id == "G2B":
         _narrate_treatment(card, lines)
         chooser = _load(run_dir / "chooser-publish-G2B.json") or {}
@@ -1242,6 +1282,7 @@ def run_marcus_spoc(
         f"{_M} I'm your single point of contact for this run (trial {trial_id}). I'll walk "
         "you through each decision and handle the specialists, tools, and state behind the scenes.",
     ]
+    research_narrated = False  # S6 D5: narrate the §04.55 research result once
     for _ in range(30):
         run = _load(run_dir / "run.json") or {}
         status, gate = run.get("status"), run.get("paused_gate")
@@ -1279,6 +1320,25 @@ def run_marcus_spoc(
         )
         nxt = f", next: {env.paused_gate}" if env.paused_gate else ""
         transcript.append(f"{_M} (done - {env.status}{nxt})")
+        # S6 D5 (T6d): the §04.55 research dispatch runs AFTER G1, so it lands on
+        # a continuation (resume) walk. Once its research_wiring contribution is
+        # newly present in the resumed envelope, narrate the review-only result to
+        # the operator (the "N cited sources found" real-cite lane OR the honest
+        # creds-degrade marker) — so the helper reaches the operator and can't
+        # regress to a dead helper. Non-blocking, no gate (mirrors the picker
+        # recommendation surface). Narrated exactly once per run.
+        if not research_narrated:
+            contribution = getattr(env, "production_envelope", None)
+            contribution = (
+                contribution.get_contribution(
+                    RESEARCH_WIRING_SPECIALIST_ID, node_id=RESEARCH_WIRING_NODE_ID
+                )
+                if contribution is not None
+                else None
+            )
+            if contribution is not None:
+                transcript.append(narrate_research_result(contribution.output))
+                research_narrated = True
     return transcript
 
 
