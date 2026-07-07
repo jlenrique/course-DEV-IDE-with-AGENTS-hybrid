@@ -466,13 +466,21 @@ def test_ac_s2_5_both_walk_sites_invoke_the_hook_and_gate_traverse() -> None:
     )
 
 
-def test_ac_s2_5_default_off_is_byte_identical_first_pause_stays_g1(
+def test_ac_s2_5_kill_switch_off_is_byte_identical_first_pause_stays_g1(
     tmp_path: Path, monkeypatch
 ) -> None:
+    """S5-3a.2 re-contract (legacy/kill-switch leg).
+
+    Re-homed behind an EXPLICIT ``setenv("0")`` (was a ``delenv`` premise that the 3b
+    default flip would invert). This is now the kill-switch contract: with the brick
+    explicitly OFF, the dormant path is byte-identical and the first real pause stays
+    off G0E — regardless of the code default. The DEFAULT-ON premise moves to the new
+    paired witness ``test_ac_s2_5_default_on_wakes_g0e_first_pause`` below.
+    """
     from app.gates.resume_api import clear_resume_registry
 
     clear_resume_registry()
-    monkeypatch.delenv(gw.G0_ENRICHMENT_ACTIVE_ENV, raising=False)
+    monkeypatch.setenv(gw.G0_ENRICHMENT_ACTIVE_ENV, "0")
     monkeypatch.setenv("OPENAI_API_KEY", "sk-test")
     trial_id = UUID("42345678-1234-4234-8234-123456789abc")
     started = production_runner.run_production_trial(
@@ -493,6 +501,39 @@ def test_ac_s2_5_default_off_is_byte_identical_first_pause_stays_g1(
         is None
     )
     assert not (tmp_path / str(trial_id) / "g0-enrichment.json").exists()
+
+
+def test_ac_s2_5_default_on_wakes_g0e_first_pause(tmp_path: Path, monkeypatch) -> None:
+    """S5-3a.2 re-contract (new default-ON witness; F-1905 explicit-``setenv("1")`` form).
+
+    The positive mirror of the kill-switch leg: with the flag ON (the 3b default),
+    the first real pause IS G0E and the g0 contribution materializes on the START
+    walk. Uses a DIRECTORY corpus (``CORPUS``) — a ``setenv("1")`` witness on the
+    README FILE would crash with ``DirectiveCompositionError`` instead of proving the
+    pause. Green NOW (no skip-debt); it is the paired positive of the inverted premise.
+    """
+    from app.gates.resume_api import clear_resume_registry
+
+    clear_resume_registry()
+    monkeypatch.setenv(gw.G0_ENRICHMENT_ACTIVE_ENV, "1")
+    monkeypatch.delenv("OPENAI_API_KEY", raising=False)  # offline pre-pass
+    trial_id = UUID("42345678-1234-4234-8234-123456789abd")
+    started = production_runner.run_production_trial(
+        CORPUS,
+        "production",
+        "operator_test",
+        trial_id=trial_id,
+        runs_root=tmp_path,
+        allow_offline_cost_report=True,
+        max_specialist_calls=12,
+    )
+    assert started.paused_gate == "G0E", "woken brick first-pauses at confirm-gate #1"
+    assert (
+        started.production_envelope.get_contribution(
+            gw.G0_ENRICHMENT_SPECIALIST_ID, node_id=gw.G0_ENRICHMENT_NODE_ID
+        )
+        is not None
+    )
 
 
 def test_ac_s2_5_woken_pauses_at_g0e_with_real_card(tmp_path: Path, monkeypatch) -> None:

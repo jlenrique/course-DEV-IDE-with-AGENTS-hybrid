@@ -437,11 +437,32 @@ def test_ac_s3_6_refinement_requires_gate1_result_on_disk(tmp_path: Path) -> Non
         )
 
 
-def test_ac_s3_6_feature_flag_parity_with_s2(monkeypatch) -> None:
-    monkeypatch.delenv(gw.G0_ENRICHMENT_ACTIVE_ENV, raising=False)
+def test_ac_s3_6_kill_switch_off_parity_with_s2(monkeypatch) -> None:
+    """S5-3a.2 re-contract (legacy/kill-switch leg).
+
+    Re-homed behind an EXPLICIT ``setenv("0")`` (was a ``delenv`` premise the 3b
+    default flip would invert). Explicit OFF ⇒ refinement OFF; explicit ON ⇒
+    refinement ON — both explicit, so the code-default flip cannot invert them. The
+    DEFAULT-ON parity premise moves to the skip-until-3b witness below.
+    """
+    monkeypatch.setenv(gw.G0_ENRICHMENT_ACTIVE_ENV, "0")
     assert iw.irene_refinement_active() is False
     monkeypatch.setenv(gw.G0_ENRICHMENT_ACTIVE_ENV, "1")
     assert iw.irene_refinement_active() is True  # rides the same toggle as the enrichment brick
+
+
+@pytest.mark.skip(reason="asserts the 3b default-ON parity; un-skips at the 3b flip")
+def test_ac_s3_6_default_on_parity_with_s2(monkeypatch) -> None:
+    """S5-3a.2 re-contract (new default-ON witness; F-1905 skip-until-3b form).
+
+    The MEANINGFUL "feature-flag parity" assertion is that the UNSET default returns
+    ``irene_refinement_active() is True`` (refinement rides the same default-ON toggle
+    as the enrichment brick post-3b). A ``setenv("1")`` witness would not prove the
+    *default* — so this is skip-until-3b; the un-skip obligation is carried into the
+    3b spec.
+    """
+    monkeypatch.delenv(gw.G0_ENRICHMENT_ACTIVE_ENV, raising=False)
+    assert iw.irene_refinement_active() is True
 
 
 # =========================================================================== #

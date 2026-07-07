@@ -29,6 +29,22 @@ MINI_CORPUS = (
 )
 
 
+@pytest.fixture(autouse=True)
+def _pin_g0_enrichment_off(monkeypatch: pytest.MonkeyPatch) -> None:
+    """Canonical-arc S5-3a.2 — file-corpus dormant-path migration (D-kill-switch pin).
+
+    Distinct mechanism from the file-corpus suites: this walk already uses a VALID
+    DIRECTORY corpus (``trial_475_mini_corpus/``), so it does NOT crash. Its subject
+    is directive->Texas threading — enrichment-orthogonal. The 3b default flip makes
+    the walk FIRST-PAUSE at G0E before Texas dispatches, so ``texas_payloads == []``
+    (relocation, not crash). Pinning ``MARCUS_G0_ENRICHMENT_ACTIVE`` OFF explicitly
+    keeps the run threading through Texas under the flip (explicit ``"0"`` survives
+    the code-default flip). It already has a directory corpus — do NOT add a fixture.
+    TEST-ONLY: no production/default change.
+    """
+    monkeypatch.setenv("MARCUS_G0_ENRICHMENT_ACTIVE", "0")
+
+
 def _write_trial_475_directive(
     *,
     corpus_dir: Path,

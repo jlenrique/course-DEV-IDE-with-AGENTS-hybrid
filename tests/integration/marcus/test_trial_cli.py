@@ -11,6 +11,20 @@ from app.marcus.cli.trial import start_trial
 TRIAL_ID = "12345678-1234-4234-8234-123456789abc"
 
 
+@pytest.fixture(autouse=True)
+def _pin_g0_enrichment_off(monkeypatch: pytest.MonkeyPatch) -> None:
+    """Canonical-arc S5-3a.2 — file-corpus dormant-path migration (D-kill-switch pin).
+
+    These CLI walks pass a README FILE as ``corpus_path`` and first-pause at G1 on the
+    dormant path. The 3b default flip wakes G0-enrichment's corpus-DIRECTORY
+    enumeration, which crashes pre-gate with ``DirectiveCompositionError`` on a file
+    corpus. Pinning ``MARCUS_G0_ENRICHMENT_ACTIVE`` OFF explicitly preserves the
+    enrichment-orthogonal downstream subject under the flip (explicit ``"0"`` survives
+    the code-default flip). TEST-ONLY: no production/default change.
+    """
+    monkeypatch.setenv("MARCUS_G0_ENRICHMENT_ACTIVE", "0")
+
+
 def test_start_trial_registers_run_and_cost_report(
     tmp_path: Path,
     monkeypatch,
