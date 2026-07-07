@@ -12,6 +12,8 @@ from __future__ import annotations
 
 import random
 
+import pytest
+
 from skills.gamma_api_mastery.scripts.gamma_operations import (
     match_pages_to_slots,
     normalize_title,
@@ -171,6 +173,75 @@ def test_only_first_leading_unmatched_page_drops_rest_fail_loud() -> None:
     assert r.matched["s1"].endswith("The-Economic-and-Structural-Reality.png")
     assert [d["page_index"] for d in r.dropped_pages] == [1]  # only the first
     assert [p["page_index"] for p in r.unmatched_pages] == [2]  # second is fatal
+
+
+# ---------------------------------------------------------------------------
+# Apostrophe-family deletion-joining amendment (party record §10, ratified
+# 2026-07-07). Live trial a18c2a86 paused-at-error: Gamma's export slugger
+# DELETES apostrophes ("Technology's" -> "Technologys-...") while the frozen
+# matcher SPLIT on them ({technology, s}) — no containment edge, deterministic
+# `gamma.export.brief-unmatched` for ANY apostrophe-bearing brief title.
+# ---------------------------------------------------------------------------
+
+
+def test_apostrophe_brief_matches_gamma_slug_live_pair_pin() -> None:
+    """W1 central pin — the real a18c2a86 live pair: an apostrophe-bearing
+    brief MUST bind the export page whose slug deleted the apostrophe."""
+    briefs = [("slide-07", "Technology's Promise Requires Clinical Innovators")]
+    pages = _pages(["7_Technologys-Promise-Requires-Clinical-Innovators"])
+    r = match_pages_to_slots(pages=pages, expected_slots=briefs)
+    assert r.matched["slide-07"].endswith(
+        "Technologys-Promise-Requires-Clinical-Innovators.png"
+    )
+    assert r.unmatched_keys == []
+    assert r.unmatched_pages == []
+    assert r.ambiguous == []
+
+
+@pytest.mark.parametrize(
+    "variant",
+    [
+        pytest.param("Technology's", id="U+0027-apostrophe"),
+        pytest.param("Technology‘s", id="U+2018-left-single-quote"),
+        pytest.param("Technology’s", id="U+2019-right-single-quote"),
+        pytest.param("Technologyʼs", id="U+02BC-modifier-apostrophe"),
+        pytest.param("Technology`s", id="U+0060-grave"),
+        pytest.param("Technology´s", id="U+00B4-acute"),
+        pytest.param("Technology＇s", id="U+FF07-fullwidth-via-NFKD"),
+    ],
+)
+def test_normalize_title_apostrophe_family_joins_intra_word(variant: str) -> None:
+    """W2 — every enumerated family char (plus the NFKD-folded fullwidth form)
+    deletion-JOINS intra-word: it must normalize identically to the
+    apostrophe-free spelling, never split into {technology, s}."""
+    assert normalize_title(variant) == normalize_title("Technologys")
+    assert normalize_title(variant) == "technologys"
+
+
+def test_apostrophe_collision_is_ambiguous_never_silently_bound() -> None:
+    """W3 collision ruling (ratified): two slots differing only by
+    apostrophe-s, briefed together against a matching page, MUST surface
+    ambiguity fail-loud — the slug channel destroys the distinction, so
+    binding either would be false precision."""
+    briefs = [
+        ("slot-a", "Member's Only"),
+        ("slot-b", "Members Only"),
+    ]
+    pages = _pages(["5_Members-Only"])
+    r = match_pages_to_slots(pages=pages, expected_slots=briefs)
+    assert "slot-a" not in r.matched
+    assert "slot-b" not in r.matched
+    assert r.matched == {}
+    assert r.ambiguous  # fail-loud surface non-empty, never a silent pick
+    assert any(a["kind"] == "page" for a in r.ambiguous)
+
+
+def test_normalize_title_apostrophe_deletes_not_spaces() -> None:
+    """W4 mutant-killer: deletion-JOINS. An add-apostrophes-to-the-space-class
+    mutant yields "innovator s" / tokens {innovator, s}; the contract is
+    "innovators"."""
+    assert normalize_title("Innovator's") == "innovators"
+    assert normalize_title("Innovator's") != "innovator s"
 
 
 def test_normalize_title_strips_objective_and_punctuation() -> None:

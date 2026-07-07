@@ -1461,18 +1461,38 @@ _TITLE_STOPWORDS: frozenset[str] = frozenset(
 # party-mode, never by the matcher.
 _MIN_DISTINCTIVE_TOKENS = 2
 
+# Apostrophe family DELETED (joined) by normalize_title — pinned enumerated
+# set, ratified amendment (party record §10, 2026-07-07). Gamma's export
+# slugger DELETES apostrophes ("Technology's" -> "Technologys-..."), so the
+# matcher must join too, never split ("Technology's" -> {technology, s} had
+# no containment edge to {technologys, ...} — deterministic brief-unmatched
+# on ANY apostrophe-bearing brief title; live trial a18c2a86). Members:
+# U+0027 APOSTROPHE ' / U+2018 LEFT ' / U+2019 RIGHT ' single quotes /
+# U+02BC MODIFIER LETTER APOSTROPHE / U+0060 GRAVE ACCENT ` /
+# U+00B4 ACUTE ACCENT. Fullwidth U+FF07 needs no row: NFKD folds it to
+# U+0027, caught by the post-fold deletion pass in normalize_title.
+_TITLE_APOSTROPHE_FAMILY = re.compile("[\u0027\u2018\u2019\u02BC\u0060\u00B4]")
+
 
 def normalize_title(text: str) -> str:
-    """Deterministic title normalization (frozen contract, party-ratified).
+    """Deterministic title normalization (frozen contract, party-ratified;
+    apostrophe-family amendment ratified party record §10, 2026-07-07).
 
-    NFKC + strip accents; lowercase; ``&`` -> ``and``; strip the trailing
-    objective after an em/en-dash-with-spaces delimiter (brief titles carry
-    ``"Title — objective"``; page slugs do not, so this is a no-op on them);
-    replace every non-alphanumeric run (incl. hyphens — Gamma slug separators)
-    with a single space; collapse whitespace; trim.
+    Delete the pinned apostrophe family (``_TITLE_APOSTROPHE_FAMILY``) so
+    possessives JOIN (``Technology's`` -> ``technologys``, matching Gamma's
+    export slugger) — applied DUAL-PASS: (1) on the raw input BEFORE NFKD
+    (U+00B4 would otherwise decompose to space + combining acute) and
+    (2) after the combining-strip (catches NFKD-folded forms, e.g. fullwidth
+    U+FF07 -> U+0027). Then NFKD + strip accents; lowercase; ``&`` -> ``and``;
+    strip the trailing objective after an em/en-dash-with-spaces delimiter
+    (brief titles carry ``"Title — objective"``; page slugs do not, so this
+    is a no-op on them); replace every non-alphanumeric run (incl. hyphens —
+    Gamma slug separators) with a single space; collapse whitespace; trim.
     """
-    s = unicodedata.normalize("NFKD", text or "")
+    s = _TITLE_APOSTROPHE_FAMILY.sub("", text or "")
+    s = unicodedata.normalize("NFKD", s)
     s = "".join(ch for ch in s if not unicodedata.combining(ch))
+    s = _TITLE_APOSTROPHE_FAMILY.sub("", s)
     # Strip objective: split on the FIRST em/en-dash (or ' -- ') with spaces.
     s = re.split(r"\s+(?:—|–|--)\s+", s, maxsplit=1)[0]
     s = s.lower().replace("&", " and ")

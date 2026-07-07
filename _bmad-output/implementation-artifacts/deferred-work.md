@@ -52,3 +52,7 @@
 - irene-pass1 04A runner branch shares the directive parse hazard (`_gamma_settings_from_directive` unguarded yaml/decode errors crash instead of error-pausing) — pre-existing; same fix family as S1's T1 patch; own small story.
 - `tests/composition/test_texas_to_cd_chain.py::…accumulates_envelope[trial_id0]` (BundleDispatchError: missing directive_path, Texas-internal) + `tests/composition/test_slab_7a_opener_composition_smoke.py` (ModuleNotFoundError: directive_composer) — pre-existing REDs verified identical at HEAD f00e3468 in a clean worktree; not S1-caused.
 - Pick-time `styleguide_picker_provenance.ssot_sha256` vs resolution-time `bound_guides.ssot_digest` cross-check — deliberately NOT S1 scope; it is the S3 parity comparator's designed job.
+
+## Deferred from: code review of canonical-arc-s3-gary-shadow-parity (2026-07-07)
+
+- **S4 spec-time design decision — parity-clock attestation strength (Edge lane E4):** `clock_eligible=True` currently accrues on two-way digest matches where `trial_start_directive_digest` is None (gateless/`pause_at_gates=False` starts; single-file trials where `start_trial` writes `directive_digest: null`). This is F-702-letter-compliant and the SPOC product path always writes the attestation (`start_trial` → trial-start.json before any §07 dispatch), but the S4 FAIL-LOUD spec author must decide whether the S-flip parity clock requires the full three-way attestation or the two-way match suffices. Route: S4 spec §clock semantics.
