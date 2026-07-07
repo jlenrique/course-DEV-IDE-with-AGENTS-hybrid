@@ -18,6 +18,7 @@ from app.models.state.run_state import RunState
 from app.specialists._scaffold.contract import SCAFFOLD_NODE_IDS
 from app.specialists.source_bundle import read_extracted_source
 from app.specialists.texas.graph import SanctumLockViolation as _SanctumLockViolation
+from app.styleguide.parity import canonical_resolution_digest
 from app.styleguide.resolver import (
     GAMMA_STYLE_GUIDES_PATH,
     load_style_guides,
@@ -328,10 +329,6 @@ _LAYERING_MANIFEST: dict[str, str] = {
 }
 
 
-def _canonical_json(payload: Any) -> str:
-    return json.dumps(payload, sort_keys=True, ensure_ascii=True, separators=(",", ":"))
-
-
 def _scrub_ssot_path(message: str, ssot_path: Path) -> str:
     """T10 rider: no absolute paths in resolver-error payloads (basename)."""
     return message.replace(str(ssot_path), ssot_path.name)
@@ -576,9 +573,11 @@ def _styleguide_resolution_from_projection(
         "bound_guides": bound_guides,
         "resolved": resolved,
         "layering_manifest": dict(_LAYERING_MANIFEST),
-        "resolution_digest": hashlib.sha256(
-            _canonical_json(resolved).encode("utf-8")
-        ).hexdigest(),
+        # Canonical-arc S3 D2a: the digest algorithm lives in the SHARED
+        # app.styleguide.parity.canonical_resolution_digest (byte-identical
+        # extraction of the former private _canonical_json + sha256) so CD's
+        # emission and Gary's shadow comparator can never digest differently.
+        "resolution_digest": canonical_resolution_digest(resolved),
         "directive_digest": directive_digest,
         "default_provenance": default_provenance,
         # T7: ALL failures recorded, in pick order (schema still v1 pre-commit).

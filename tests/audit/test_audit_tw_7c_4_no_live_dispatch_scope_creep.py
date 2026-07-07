@@ -661,6 +661,28 @@ PERMITTED_PYTHON_DIFFS = {
     "tests/composition/test_real_cd_graph_walk_pin.py",
     "tests/parity/test_capability_overlay_parity.py",
     "tests/marcus/test_capability_overlay_over_promise_probe.py",
+    # Canonical-arc S3 "Gary shadow-parity WARN + §06 fold + both-walks
+    # receipts" (party record §7 re-scoped S3 row; spec
+    # canonical-arc-s3-gary-shadow-parity.md; SOP-008 F-801/F-802 applied).
+    # Bounded extension: the NEUTRAL shared parity comparator
+    # (app/styleguide/parity.py — pure, imports nothing from cd/gary/marcus),
+    # Gary's observability-only audit at the resolve site (gary/_act.py
+    # already rostered above; receipt rides the contribution), the gary
+    # parity-context runner keys (production_runner.py + gary
+    # payload_contract.py already rostered above), and the S3 RED-first test
+    # surface. NO new live-dispatch call site — the audit is a pure
+    # comparison over already-threaded data; every S3 test drives an OFFLINE
+    # fake Gamma client; the AC-L live witness reuses the existing
+    # --run-live-gated dispatch surfaces.
+    "app/styleguide/parity.py",
+    "tests/styleguide/__init__.py",
+    "tests/styleguide/test_parity_comparator.py",
+    "tests/specialists/gary/test_styleguide_parity_receipt.py",
+    "tests/specialists/gary/test_style_additional_instructions_channel.py",
+    # (tests/specialists/gary/test_gary_gamma_dispatch.py already rostered above.)
+    "tests/composition/test_gary_parity_walk_pin.py",
+    "tests/orchestrator/test_gary_parity_payload_seam.py",
+    "tests/marcus/orchestrator/test_picker_cd_vocabulary_lockstep.py",
 }
 
 

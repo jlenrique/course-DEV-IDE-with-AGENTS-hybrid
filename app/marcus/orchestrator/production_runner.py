@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import copy
 import hashlib
 import json
 import logging
@@ -1421,6 +1422,20 @@ def _runner_payload_for_specialist(
     directive file; the deterministic neck emits the ``styleguide_resolution``
     audit block from this projection alone.
 
+    Canonical-arc S3 (D1/D4, F-802 option-(i) ruling): gary additionally
+    receives three parity-context keys as CHARTERED runner context —
+    ``cd_styleguide_resolution`` (the committed block verbatim from the
+    envelope's LATEST cd contribution, the same ``latest_for_specialist``
+    selector §06 uses; ``None`` when the cd contribution is absent at
+    dispatch time or predates S1 — legacy tolerance, never a raise),
+    ``directive_digest`` (sha256 of the SAME bytes the gamma-settings parse
+    read — read-once, no TOCTOU), and ``trial_start_directive_digest``
+    (from ``run_dir/"trial-start.json"``'s ``directive_digest`` key per
+    F-801 — NOT run.json, which is the ProductionTrialEnvelope and carries
+    no digest field; ``None`` when the file or key is absent). Same data
+    family as ``gamma_settings``/``directive_projection`` — observability
+    context for Gary's shadow-parity audit, not content delivery.
+
     Other specialists receive None.
     """
     if specialist_id == "texas" and directive_path is not None and bundle_dir is not None:
@@ -1434,12 +1449,38 @@ def _runner_payload_for_specialist(
     if specialist_id in {"quinn_r", "quinn-r"} and gate_code:
         return {"gate_id": gate_code}
     if specialist_id == "gary" and runs_root is not None and trial_id is not None:
+        run_dir = runs_root / str(trial_id)
         payload: dict[str, Any] = {
-            "export_dir": (runs_root / str(trial_id) / "exports" / "gary").as_posix()
+            "export_dir": (run_dir / "exports" / "gary").as_posix()
         }
-        gamma_settings = _gamma_settings_from_directive(directive_path)
+        # Canonical-arc S3 D4: read-once — settings AND digest come from the
+        # SAME directive bytes (the :852-854 sha256 pattern; no TOCTOU).
+        gamma_settings, directive_digest = _gamma_settings_and_digest_from_directive(
+            directive_path
+        )
         if gamma_settings is not None:
             payload["gamma_settings"] = gamma_settings
+        # Canonical-arc S3 D1 (F-802 option (i)): CD's committed
+        # styleguide_resolution block travels VERBATIM as chartered runner
+        # context, sourced from the envelope's latest cd contribution —
+        # None when absent-at-dispatch-time or pre-S1 (legacy; NEVER a
+        # raise, so rewind-recovered golden bundles never false-fail).
+        cd_block: Any = None
+        if production_envelope is not None:
+            cd_contribution = production_envelope.latest_for_specialist("cd")
+            if cd_contribution is not None and isinstance(cd_contribution.output, dict):
+                cd_block = cd_contribution.output.get("styleguide_resolution")
+        # T11 P4(b): deepcopy at capture — the payload value must never alias
+        # the live envelope contribution dict (the receipt seam is an
+        # attestation of dispatch-time state, not a live pointer).
+        payload["cd_styleguide_resolution"] = (
+            copy.deepcopy(cd_block) if cd_block is not None else None
+        )
+        payload["directive_digest"] = directive_digest
+        # F-801: the trial-start attestation lives ONLY in trial-start.json
+        # (trial.py:536); absent (legacy runs, start-walk harness contexts)
+        # => honest None (the comparator treats it as not-comparable).
+        payload["trial_start_directive_digest"] = _trial_start_directive_digest(run_dir)
         return payload
     # Canonical-arc S1 (D2): CD's §4.75 directive_projection — the ONE branch
     # both walks reach through the shared _dispatch_specialist_at_node (F-203
@@ -1656,18 +1697,84 @@ def _min_cluster_floor_from_directive(directive_path: Path | None) -> int | None
     return max(floors)
 
 
-def _gamma_settings_from_directive(directive_path: Path | None) -> list[dict[str, Any]] | None:
+def _gamma_settings_and_digest_from_directive(
+    directive_path: Path | None,
+) -> tuple[list[dict[str, Any]] | None, str | None]:
+    """Read the directive ONCE: settings and sha256 from the SAME bytes.
+
+    Canonical-arc S3 D4 refactor of ``_gamma_settings_from_directive`` (which
+    remains a behavior-identical thin wrapper): the parity comparator's
+    ``directive_digest`` must attest exactly the bytes the gamma-settings
+    parse read (no TOCTOU). Directive absent ⇒ ``(None, None)``; present but
+    settings-less/non-mapping ⇒ ``(None, digest)``.
+    """
     if directive_path is None or not directive_path.is_file():
-        return None
-    loaded = yaml.safe_load(directive_path.read_text(encoding="utf-8")) or {}
+        return None, None
+    directive_bytes = directive_path.read_bytes()
+    digest = hashlib.sha256(directive_bytes).hexdigest()
+    loaded = yaml.safe_load(directive_bytes.decode("utf-8")) or {}
     if not isinstance(loaded, dict):
-        return None
+        return None, digest
     raw = loaded.get("gamma_settings")
     if raw is None:
-        return None
+        return None, digest
     if not isinstance(raw, list):
+        return None, digest
+    return [dict(item) for item in raw if isinstance(item, dict)], digest
+
+
+def _gamma_settings_from_directive(directive_path: Path | None) -> list[dict[str, Any]] | None:
+    return _gamma_settings_and_digest_from_directive(directive_path)[0]
+
+
+def _trial_start_directive_digest(run_dir: Path) -> str | None:
+    """The trial-start directive attestation (F-703 third digest; F-801).
+
+    Sourced from ``run_dir/"trial-start.json"``'s ``directive_digest`` key —
+    the ONLY place `start_trial` persists it (trial.py:533/536; run.json is
+    the ProductionTrialEnvelope and has no digest field). Total: an absent
+    file/key (legacy runs, harness contexts) or an unreadable/malformed file
+    yields ``None`` (WARN-logged) — parity context must never block dispatch.
+    """
+    trial_start_path = run_dir / "trial-start.json"
+    if not trial_start_path.is_file():
         return None
-    return [dict(item) for item in raw if isinstance(item, dict)]
+    try:
+        payload = json.loads(trial_start_path.read_text(encoding="utf-8"))
+    except (OSError, UnicodeDecodeError, json.JSONDecodeError) as exc:
+        LOGGER.warning(
+            "trial-start.json at %s is unreadable/malformed (%s); parity "
+            "receipt will record the trial-start digest as not-comparable",
+            trial_start_path,
+            exc,
+        )
+        return None
+    if not isinstance(payload, dict):
+        # T11 P5: parseable-but-non-mapping content is malformed — WARN as the
+        # docstring promises (still None; parity context never blocks dispatch).
+        LOGGER.warning(
+            "trial-start.json at %s is not a JSON object (got %s); parity "
+            "receipt will record the trial-start digest as not-comparable",
+            trial_start_path,
+            type(payload).__name__,
+        )
+        return None
+    digest = payload.get("directive_digest")
+    if isinstance(digest, str) and digest:
+        return digest
+    # `directive_digest: null` is a LEGITIMATE produced shape (single-file
+    # trials write it; E4) and an ABSENT key is legacy — both stay silent.
+    # T11 P5: any OTHER present value (non-string / empty string) is a
+    # producer-side type regression and must be operator-visible.
+    if "directive_digest" in payload and digest is not None:
+        LOGGER.warning(
+            "trial-start.json at %s carries a non-string/empty "
+            "directive_digest (%r) — producer-side type regression; parity "
+            "receipt will record the trial-start digest as not-comparable",
+            trial_start_path,
+            digest,
+        )
+    return None
 
 
 # (Remediation T1: the former `_picker_provenance_from_directive` helper was

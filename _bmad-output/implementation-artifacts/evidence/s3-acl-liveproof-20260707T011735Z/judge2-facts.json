@@ -1,0 +1,64 @@
+{
+  "trial_id": "4d465677-188c-401c-ae37-1acb19658db0",
+  "walk_log": "_bmad-output\\implementation-artifacts\\evidence\\s3-acl-liveproof-20260707T011735Z\\walk-log-leg2.txt",
+  "g0-gary-contribution-present": {
+    "pass": true,
+    "value": "1 gary contribution(s)"
+  },
+  "g1-receipt-present": {
+    "pass": true,
+    "value": "dict"
+  },
+  "g2-outcome-divergence": {
+    "pass": true,
+    "value": "divergence"
+  },
+  "g3-reason-resolution-mismatch": {
+    "pass": true,
+    "value": "resolution-mismatch"
+  },
+  "g4-detail-carries-both-envelopes": {
+    "pass": true,
+    "value": [
+      "cd_block",
+      "gary_view"
+    ]
+  },
+  "g5-three-digests-nonnull-sha256": {
+    "pass": true,
+    "value": {
+      "trial_start": "75271c67b7b74fd8ade4d44c08aabe7791c2e2f87a395476cec4e0fe34ad2453",
+      "cd": "75271c67b7b74fd8ade4d44c08aabe7791c2e2f87a395476cec4e0fe34ad2453",
+      "gary": "75271c67b7b74fd8ade4d44c08aabe7791c2e2f87a395476cec4e0fe34ad2453"
+    }
+  },
+  "g6-three-digests-equal": {
+    "pass": true,
+    "value": {
+      "trial_start": "75271c67b7b74fd8ade4d44c08aabe7791c2e2f87a395476cec4e0fe34ad2453",
+      "cd": "75271c67b7b74fd8ade4d44c08aabe7791c2e2f87a395476cec4e0fe34ad2453",
+      "gary": "75271c67b7b74fd8ade4d44c08aabe7791c2e2f87a395476cec4e0fe34ad2453"
+    }
+  },
+  "g7-resolution-digests-differ": {
+    "pass": true,
+    "value": {
+      "cd": "5f87200054af8699f9bdbf19608559eace7e9007c715d2210cc8dd2922db9463",
+      "gary": "83981ed00dc73cacef72724ebb4cf82b1bde496771c45b0dc3fd28567d8a651f"
+    }
+  },
+  "w0-warn-line-emitted": {
+    "pass": true,
+    "value": [
+      "2026-07-06 22:23:00,069 WARNING app.specialists.gary._act: styleguide parity DIVERGENCE (resolution-mismatch): CD's authoring-time resolution disagrees with Gary's dispatch-time resolution on the same directive bytes; both envelopes ride the styleguide_parity receipt on this contribution (observability-only \u2014 dispatch proceeds; WARN->ERROR flip is S4)"
+    ]
+  },
+  "w1-run-did-not-halt": {
+    "pass": true,
+    "value": {
+      "status": "paused-at-gate",
+      "paused_gate": "G2B",
+      "paused_error_tag": null
+    }
+  }
+}

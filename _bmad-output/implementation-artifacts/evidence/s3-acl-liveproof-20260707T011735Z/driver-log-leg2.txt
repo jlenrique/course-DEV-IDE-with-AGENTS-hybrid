@@ -1,0 +1,10 @@
+[2026-07-07T02:22:44.337768+00:00] composed manifest: node 07 (gary) at index 23
+[2026-07-07T02:22:44.337768+00:00] copy C:\Users\juanl\Documents\GitHub\course-DEV-IDE-with-AGENTS-hybrid\state\config\runs\a18c2a86-bbdb-48a2-ba63-fb1a653bfaf9 -> C:\Users\juanl\Documents\GitHub\course-DEV-IDE-with-AGENTS-hybrid\state\config\runs\4d465677-188c-401c-ae37-1acb19658db0
+[2026-07-07T02:22:44.437467+00:00] run.json rewritten: dropped=['gary@07', 'vera@7.5', 'quinn_r@07B']; remaining=['texas@02', 'texas@03', 'irene_pass1@04A', 'research_wiring@04.55', 'cd@4.75', 'irene_pass1@05', 'irene_pass1@05B', 'package_builder@06']
+[2026-07-07T02:22:44.452559+00:00] error-pause.json fabricated: node_index=23 node_id=07 specialist=gary
+[2026-07-07T02:22:44.481549+00:00] offline checks: {'envelope_loads': True, 'status_paused_at_error': True, 'gary_dropped': True, 'cd_present_resolved': True, 'directive_bytes_match_trial_start_digest': True}
+[2026-07-07T02:22:45.653441+00:00] SSOT mutated: {'field': 'prompt_configuration.text_content.amount', 'from': 'minimal', 'to': 'concise', 'ssot_sha256_before': '6b94739ff29724cd2cf26ef25bd13d28824079d15729751d129b5488f6eb6ac5', 'ssot_sha256_after': '58a4fc054976d216ba0931151776e59a803f8f0c4f46cb6602070f804179e054', 'picked_guide_resolution_digest_before': '5f87200054af8699f9bdbf19608559eace7e9007c715d2210cc8dd2922db9463', 'picked_guide_resolution_digest_after': '83981ed00dc73cacef72724ebb4cf82b1bde496771c45b0dc3fd28567d8a651f', 'resolver_amount_before': 'minimal', 'resolver_amount_after': 'concise', 'guides_with_changed_resolution': ['hil-2026-apc-crossroads-classic']}
+[2026-07-07T02:22:45.654444+00:00] === LEG2 PREPARE OK — trial2=4d465677-188c-401c-ae37-1acb19658db0 ===
+[2026-07-07T02:22:58.748313+00:00] recover_production_trial(4d465677-188c-401c-ae37-1acb19658db0) with cap=40 — gary re-dispatch vs MUTATED SSOT
+[2026-07-07T02:25:01.872472+00:00] recover returned: status=paused-at-gate paused_gate=G2B paused_error_tag=None
+[2026-07-07T02:25:01.872472+00:00] === LEG2 PHASE2 OK after 123s ===

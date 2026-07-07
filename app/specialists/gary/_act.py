@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import copy
 import hashlib
 import json
 import logging
@@ -15,12 +16,16 @@ from app.models.state.run_state import RunState
 from app.specialists.dispatch_errors import SpecialistDispatchError
 from app.specialists.gary.gamma_dispatch import GammaDispatchError, dispatch_to_gamma
 from app.specialists.gary.styleguide_library import (
+    GAMMA_STYLE_GUIDES_PATH,
+    LOAD_ERROR_TAG,
     RESOLVED_API_KEYS,
     STYLEGUIDE_CLASSIC_ONLY_KEYS,
     SURFACE_VIOLATION_TAG,
     StyleguideError,
+    load_style_guides,
     resolve_styleguide,
 )
+from app.styleguide.parity import compare_styleguide_resolution
 from scripts.api_clients.gamma_client import GammaClient
 from skills.gamma_api_mastery.scripts.gamma_operations import (
     download_export,
@@ -165,6 +170,15 @@ assert not (RESOLVED_API_KEYS - GAMMA_SETTING_KEYS), (
     f"{sorted(RESOLVED_API_KEYS - GAMMA_SETTING_KEYS)}"
 )
 PRODUCTION_MODE_VALUES = frozenset({"api", "studio"})
+# Canonical-arc S3 D5 (F-704 rider): Gary's variant vocabulary, promoted from
+# the former inline `{"A", "B"}` literal to a NAMED constant so the F-403
+# three-way lockstep pin (`tests/marcus/orchestrator/
+# test_picker_cd_vocabulary_lockstep.py`) can pin it against the picker's
+# `_VARIANT_IDS` and CD's `_PICK_VARIANT_VOCABULARY` — three INDEPENDENT
+# constants, one pinned vocabulary, ZERO production imports across the
+# picker/cd/gary styleguide boundary (the lockstep TEST is the only legal
+# meeting point).
+GARY_VARIANT_VOCABULARY = frozenset({"A", "B"})
 # Classic-only surface a per-variant override may NOT carry on a studio-bound variant
 # (code-review item #3b), expressed as gamma_settings item keys. ``custom_style`` maps
 # to the ``image_style`` item key; ``num_cards``/``card_split`` are not gamma_settings
@@ -434,9 +448,55 @@ def _validate_enum_setting(
         )
 
 
-def _normalized_gamma_settings(payload: dict[str, Any]) -> list[dict[str, Any]]:
+def _load_style_guides_once() -> tuple[dict[str, Any], str]:
+    """Read the SSOT bytes ONCE (canonical-arc S3 D3 read-once alignment,
+    mirroring CD's T5 discipline): the sha256 fed to the parity receipt
+    attests exactly the bytes the resolver parsed (no TOCTOU), and every pick
+    in one payload resolves against the same single read. Resolved output is
+    byte-identical to the per-call path-reading resolve (AC-4 pins it)."""
+    try:
+        ssot_bytes = GAMMA_STYLE_GUIDES_PATH.read_bytes()
+    except OSError as exc:
+        # Mirror load_style_guides' load-error contract so the caller's
+        # existing `except StyleguideError` conversion is unchanged.
+        raise StyleguideError(
+            f"failed to load styleguide library at {GAMMA_STYLE_GUIDES_PATH}: {exc}",
+            tag=LOAD_ERROR_TAG,
+        ) from exc
+    guides = load_style_guides(GAMMA_STYLE_GUIDES_PATH, content=ssot_bytes).get(
+        "style_guides", {}
+    )
+    return guides, hashlib.sha256(ssot_bytes).hexdigest()
+
+
+def _normalized_gamma_settings(
+    payload: dict[str, Any], *, resolve_view: dict[str, Any] | None = None
+) -> list[dict[str, Any]]:
+    """Normalize + resolve the payload's ``gamma_settings``.
+
+    ``resolve_view`` (canonical-arc S3 D3, optional out-param): when a dict is
+    supplied, the resolve loop records its base-layer surface for the shadow
+    parity audit — ``picks`` ``{variant: guide_name}``, ``resolved_base``
+    ``{variant: resolver_output BEFORE per-variant overrides}`` (Amelia's
+    parity semantics: overrides are Gary-legitimate and never compared), and
+    ``ssot_digest`` of the once-read SSOT bytes (``None`` when no pick forced
+    a read). Observability-ONLY: the returned settings are byte-identical
+    whether or not a view is requested.
+    """
+    picks: dict[str, str] = {}
+    resolved_bases: dict[str, dict[str, Any]] = {}
+    guides: dict[str, Any] | None = None
+    ssot_digest: str | None = None
+
+    def _emit_view() -> None:
+        if resolve_view is not None:
+            resolve_view["picks"] = picks
+            resolve_view["resolved_base"] = resolved_bases
+            resolve_view["ssot_digest"] = ssot_digest
+
     raw = payload.get("gamma_settings")
     if raw is None:
+        _emit_view()
         return []
     if not isinstance(raw, list):
         raise GaryActError(
@@ -461,7 +521,7 @@ def _normalized_gamma_settings(payload: dict[str, Any]) -> list[dict[str, Any]]:
                 tag="gamma.settings.invalid",
             )
         variant_id = str(item.get("variant_id") or "").strip().upper()
-        if variant_id not in {"A", "B"}:
+        if variant_id not in GARY_VARIANT_VOCABULARY:
             raise GaryActError(
                 "gamma_settings variant_id must be A or B",
                 tag="gamma.settings.invalid",
@@ -511,9 +571,18 @@ def _normalized_gamma_settings(payload: dict[str, Any]) -> list[dict[str, Any]]:
                     tag="gamma.styleguide.unknown",
                 )
             try:
-                resolved_base = resolve_styleguide(name_str)
+                # S3 read-once alignment: ONE guarded SSOT read for the whole
+                # payload; `guides=` keeps the resolved output byte-identical
+                # to the per-call path read (AC-4).
+                if guides is None:
+                    guides, ssot_digest = _load_style_guides_once()
+                resolved_base = resolve_styleguide(name_str, guides=guides)
             except StyleguideError as exc:
                 raise GaryActError(str(exc), tag=exc.tag) from exc
+            picks[variant_id] = name_str
+            # T11 P4(b): DEEP copy — the audit view must not alias nested
+            # structures shared with the merge loop / dispatched settings.
+            resolved_bases[variant_id] = copy.deepcopy(resolved_base)
             merged = {"variant_id": variant_id, **resolved_base}
         else:
             # Honesty WARN (AC#7): a present variant with no bound styleguide seeds
@@ -628,6 +697,7 @@ def _normalized_gamma_settings(payload: dict[str, Any]) -> list[dict[str, Any]]:
         )
     # Project ONLY the payload-present variants, in payload order — retire the
     # hardcoded ``[A, B]`` padding that paid-dispatched an unbound fixture deck.
+    _emit_view()
     return [by_variant[variant_id] for variant_id in present_ids]
 
 
@@ -946,6 +1016,86 @@ def _generate_studio_variant(
     return slide_paths, slide_gen_ids
 
 
+def _styleguide_parity_receipt(
+    payload: dict[str, Any], resolve_view: dict[str, Any]
+) -> dict[str, Any]:
+    """Canonical-arc S3 D3 — the shadow-parity audit at the resolve site.
+
+    Compares CD's authoring-time ``styleguide_resolution`` (threaded as
+    CHARTERED runner context, payload key ``cd_styleguide_resolution``)
+    against Gary's dispatch-time base-layer view via the shared pure
+    comparator. Observability-ONLY: NEVER raises, NEVER alters dispatch; the
+    receipt rides the contribution output as the sibling key
+    ``styleguide_parity`` (provenance in the carrier — no shadow store).
+
+    Log discipline (ratified trichotomy): ``ok`` is SILENT (receipt data
+    only); ``expected-ordering-gap`` is INFO (never cry-wolf WARN);
+    ``divergence`` is a WARN — a DISTINCT message from the styleguide-less
+    DEFAULT_VARIANT_PAIR honesty WARN-seed, and a log line only (X3: no new
+    ceremony, no pause; the WARN→ERROR flip is S4's).
+    """
+    gary_view = {
+        "picks": resolve_view.get("picks") or {},
+        "resolved_base": resolve_view.get("resolved_base") or {},
+        "ssot_digest": resolve_view.get("ssot_digest"),
+        "directive_digest": payload.get("directive_digest"),
+        "trial_start_directive_digest": payload.get("trial_start_directive_digest"),
+    }
+    receipt = compare_styleguide_resolution(
+        payload.get("cd_styleguide_resolution"), gary_view
+    )
+    outcome = receipt.get("outcome")
+    if outcome == "divergence":
+        _LOGGER.warning(
+            "styleguide parity DIVERGENCE (%s): CD's authoring-time resolution "
+            "disagrees with Gary's dispatch-time resolution on the same "
+            "directive bytes; both envelopes ride the styleguide_parity "
+            "receipt on this contribution (observability-only — dispatch "
+            "proceeds; WARN->ERROR flip is S4)",
+            receipt.get("reason"),
+        )
+    elif outcome == "expected-ordering-gap":
+        # T11 P3: reason-keyed INFO — only the authoring-order/legacy reasons
+        # are "expected" states; directive-drift (a mid-walk directive
+        # mutation) and cd-schema-newer are triage-worthy facts and are never
+        # editorialized as legacy. All four stay INFO (never cry-wolf WARN).
+        reason = receipt.get("reason")
+        if reason == "directive-drift":
+            _LOGGER.info(
+                "styleguide parity ordering-gap (directive-drift): the "
+                "directive mutated mid-walk between CD's authoring read and "
+                "Gary's dispatch read, so resolution comparison is not "
+                "meaningful; all three digests ride the receipt for triage"
+            )
+        elif reason == "cd-schema-newer":
+            _LOGGER.info(
+                "styleguide parity ordering-gap (cd-schema-newer): CD emitted "
+                "a newer styleguide_resolution schema than this comparator "
+                "understands (forward-compat gap); receipt rides the "
+                "contribution"
+            )
+        elif reason == "cd-saw-no-picks":
+            _LOGGER.info(
+                "styleguide parity ordering-gap (cd-saw-no-picks): CD "
+                "authored before the pick landed (expected pre-S2/legacy "
+                "ordering), not a divergence; receipt rides the contribution"
+            )
+        elif reason == "cd-envelope-absent-legacy":
+            _LOGGER.info(
+                "styleguide parity ordering-gap (cd-envelope-absent-legacy): "
+                "no CD styleguide_resolution block in the envelope (pre-S1/"
+                "legacy bundle), not a divergence; receipt rides the "
+                "contribution"
+            )
+        else:  # pragma: no cover — future gap reasons stay neutral, never mislabeled
+            _LOGGER.info(
+                "styleguide parity ordering-gap (%s): receipt rides the "
+                "contribution",
+                reason,
+            )
+    return receipt
+
+
 def generate_gamma_variants(
     payload: dict[str, Any], *, client: GammaClient | None = None
 ) -> dict[str, Any]:
@@ -956,7 +1106,13 @@ def generate_gamma_variants(
     theme_limit = int(payload.get("theme_limit", 20))
     themes = client.list_themes(limit=theme_limit)
     theme_id = _theme_id(client, payload, themes=themes)
-    gamma_settings = _normalized_gamma_settings(payload)
+    # S3 D3: the audit runs immediately after the resolve loop completes —
+    # BEFORE any paid Gamma call — on this slides/`generate_gamma_variants`
+    # path only (F-805 fence: the legacy dispatch_to_gamma directive-path
+    # branch never resolves styleguides and carries no receipt by design).
+    resolve_view: dict[str, Any] = {}
+    gamma_settings = _normalized_gamma_settings(payload, resolve_view=resolve_view)
+    styleguide_parity = _styleguide_parity_receipt(payload, resolve_view)
     variants = tuple(item["variant_id"] for item in gamma_settings) or (
         ("A", "B") if bool(payload.get("double_dispatch")) else ("A",)
     )
@@ -1168,6 +1324,9 @@ def generate_gamma_variants(
         # Decision #1 provenance: engine cover pages dropped during title
         # matching are recorded here, never silently vanished.
         "dropped_pages": dropped_pages,
+        # Canonical-arc S3 D3: the shadow-parity receipt rides the
+        # contribution as a SIBLING key (provenance in the carrier).
+        "styleguide_parity": styleguide_parity,
         "vera_g3_invocation": build_vera_g3_invocation(output),
     }
 
@@ -1217,6 +1376,7 @@ __all__ = [
     "CONSUMED_PAYLOAD_KEYS",
     "DEFAULT_VARIANT_PAIR",
     "GARY_REFERENCES",
+    "GARY_VARIANT_VOCABULARY",
     "GaryActError",
     "SANCTUM_DIR",
     "act",

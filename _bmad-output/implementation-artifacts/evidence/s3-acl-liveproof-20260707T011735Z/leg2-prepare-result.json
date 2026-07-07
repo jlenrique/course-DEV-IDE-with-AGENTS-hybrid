@@ -1,0 +1,44 @@
+{
+  "leg": 2,
+  "phase": "prepare",
+  "trial1": "a18c2a86-bbdb-48a2-ba63-fb1a653bfaf9",
+  "trial2": "4d465677-188c-401c-ae37-1acb19658db0",
+  "dropped_contributions": [
+    "gary@07",
+    "vera@7.5",
+    "quinn_r@07B"
+  ],
+  "remaining_contributions": [
+    "texas@02",
+    "texas@03",
+    "irene_pass1@04A",
+    "research_wiring@04.55",
+    "cd@4.75",
+    "irene_pass1@05",
+    "irene_pass1@05B",
+    "package_builder@06"
+  ],
+  "trial_start_directive_digest": "75271c67b7b74fd8ade4d44c08aabe7791c2e2f87a395476cec4e0fe34ad2453",
+  "offline_checks": {
+    "envelope_loads": true,
+    "status_paused_at_error": true,
+    "gary_dropped": true,
+    "cd_present_resolved": true,
+    "directive_bytes_match_trial_start_digest": true
+  },
+  "ssot_mutation": {
+    "field": "prompt_configuration.text_content.amount",
+    "from": "minimal",
+    "to": "concise",
+    "ssot_sha256_before": "6b94739ff29724cd2cf26ef25bd13d28824079d15729751d129b5488f6eb6ac5",
+    "ssot_sha256_after": "58a4fc054976d216ba0931151776e59a803f8f0c4f46cb6602070f804179e054",
+    "picked_guide_resolution_digest_before": "5f87200054af8699f9bdbf19608559eace7e9007c715d2210cc8dd2922db9463",
+    "picked_guide_resolution_digest_after": "83981ed00dc73cacef72724ebb4cf82b1bde496771c45b0dc3fd28567d8a651f",
+    "resolver_amount_before": "minimal",
+    "resolver_amount_after": "concise",
+    "guides_with_changed_resolution": [
+      "hil-2026-apc-crossroads-classic"
+    ]
+  },
+  "mutation_ok_f806": true
+}

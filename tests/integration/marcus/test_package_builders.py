@@ -138,6 +138,9 @@ def test_run_builder_node_fails_loud_on_missing_upstream() -> None:
 def test_runner_payload_for_gary_is_runner_context_only(tmp_path: Path) -> None:
     # S4: content keys flow via manifest projections; the seam carries ONLY
     # runner context (export_dir under the run dir).
+    # Canonical-arc S3 (D1/D4, F-205 pin EXTENSION — never weakened): the
+    # three parity-context keys joined the exact-payload pin, honest None
+    # when directive/envelope/trial-start are all absent.
     payload = production_runner._runner_payload_for_specialist(
         specialist_id="gary",
         directive_path=None,
@@ -146,7 +149,10 @@ def test_runner_payload_for_gary_is_runner_context_only(tmp_path: Path) -> None:
         trial_id=TRIAL_ID,
     )
     assert payload == {
-        "export_dir": (tmp_path / str(TRIAL_ID) / "exports" / "gary").as_posix()
+        "export_dir": (tmp_path / str(TRIAL_ID) / "exports" / "gary").as_posix(),
+        "cd_styleguide_resolution": None,
+        "directive_digest": None,
+        "trial_start_directive_digest": None,
     }
     assert set(payload) <= GARY_KEYS
 
@@ -508,8 +514,21 @@ def test_walker_builds_package_at_06_and_threads_briefs_to_gary(
     assert package is not None, "§06 must emit a first-class contribution"
     gary_payload = adapter.runner_payloads.get("gary")
     assert gary_payload is not None
-    assert set(gary_payload) == {"export_dir"}, "seam carries runner context only"
+    # Canonical-arc S3 (D1/D4, F-205 pin EXTENSION — never weakened): the seam
+    # still carries runner context only; the three parity-context keys joined
+    # the exact-set pin. In this walk no directive_path is threaded and the
+    # canned cd output predates S1 (no styleguide_resolution), so all three
+    # are honest None (never a raise — F-802 legacy tolerance).
+    assert set(gary_payload) == {
+        "export_dir",
+        "cd_styleguide_resolution",
+        "directive_digest",
+        "trial_start_directive_digest",
+    }, "seam carries runner context only"
     assert gary_payload["export_dir"].endswith("exports/gary")
+    assert gary_payload["cd_styleguide_resolution"] is None
+    assert gary_payload["directive_digest"] is None
+    assert gary_payload["trial_start_directive_digest"] is None
     # Content keys travel via the manifest projection (S4).
     gary_projections = adapter.projection_maps.get("gary")
     assert gary_projections is not None

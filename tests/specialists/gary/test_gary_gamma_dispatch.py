@@ -724,7 +724,9 @@ def test_style_additional_instructions_reaches_generation_kwargs(
         "keywords": ["vector", "minimalist"],
         "additional_instructions": ["ZZ_STYLE_REGISTER_ZZ keep a calm clinical register."],
     }
-    monkeypatch.setattr(gary_act, "resolve_styleguide", lambda name: dict(synthetic))
+    # S3 read-once seam: the fake accepts the resolver's `guides=` kwarg
+    # (harness signature extension only — assertions untouched).
+    monkeypatch.setattr(gary_act, "resolve_styleguide", lambda name, **_kw: dict(synthetic))
     client = FakeGammaClient()
     payload = {
         "slides": [

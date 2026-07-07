@@ -1,0 +1,9 @@
+{
+  "leg": 2,
+  "phase": "recover",
+  "trial2": "4d465677-188c-401c-ae37-1acb19658db0",
+  "recover_status": "paused-at-gate",
+  "paused_gate": "G2B",
+  "paused_error_tag": null,
+  "elapsed_s": 123.124159
+}
