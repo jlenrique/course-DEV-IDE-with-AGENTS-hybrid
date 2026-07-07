@@ -4,14 +4,14 @@
       "additionalProperties": false,
       "description": "What depth is deferred OFF the glance-slide INTO the workbook.\n\nThe dual-coding anchor: the deck's tight voiceover stays tight precisely\nbecause the workbook carries the deferred depth named here. Frozen\nvalue-object \u2014 its identity is its content.",
       "properties": {
-        "deferred_from_slide": {
-          "description": "Open-id of the glance-slide / plan-unit whose depth is deferred into the workbook (the dual-coding anchor).",
-          "title": "Deferred From Slide",
-          "type": "string"
-        },
         "deferred_depth": {
           "description": "Free-text, verbatim: what depth moves off the glance-slide into the workbook. The legitimization of the tight slide voiceover.",
           "title": "Deferred Depth",
+          "type": "string"
+        },
+        "deferred_from_slide": {
+          "description": "Open-id of the glance-slide / plan-unit whose depth is deferred into the workbook (the dual-coding anchor).",
+          "title": "Deferred From Slide",
           "type": "string"
         },
         "retained_on_slide": {
@@ -39,9 +39,9 @@
       "additionalProperties": false,
       "description": "A workbook exercise carrying a Bloom level + a source-grounded\nanswer-key reference slot.\n\nHonesty-gate G3: ``answer_key_source_ref`` is a structurally-valid\nreference slot authored backward from sourced content \u2014 not a fabricated\ncitation, and not the worked solution (the producer composes prose under\nG1; S3 resolves the reference to a real source).",
       "properties": {
-        "exercise_id": {
-          "description": "Open-id stable identifier for this exercise.",
-          "title": "Exercise Id",
+        "answer_key_source_ref": {
+          "description": "Source-grounded answer-key reference slot (source_ref shape). A structurally-valid reference the research wiring resolves to a real source; never a fabricated citation.",
+          "title": "Answer Key Source Ref",
           "type": "string"
         },
         "bloom_level": {
@@ -57,14 +57,14 @@
           "title": "Bloom Level",
           "type": "string"
         },
+        "exercise_id": {
+          "description": "Open-id stable identifier for this exercise.",
+          "title": "Exercise Id",
+          "type": "string"
+        },
         "prompt_intent": {
           "description": "Free-text, verbatim: the exercise's pedagogical intent. The worked prompt prose is composed by the producer, not here.",
           "title": "Prompt Intent",
-          "type": "string"
-        },
-        "answer_key_source_ref": {
-          "description": "Source-grounded answer-key reference slot (source_ref shape). A structurally-valid reference the research wiring resolves to a real source; never a fabricated citation.",
-          "title": "Answer Key Source Ref",
           "type": "string"
         }
       },
@@ -81,16 +81,6 @@
       "additionalProperties": false,
       "description": "A research-enrichment goal expressed as pedagogical intent.\n\nThe boundary keeper: a conservative, false-positive-averse validator\nrejects obvious raw fetch-query shapes (URLs, boolean-operator soup) so S1\nemits *intent* and the research wiring (S3) owns intent -> fetch.",
       "properties": {
-        "goal_id": {
-          "description": "Open-id stable identifier for this research-enrichment goal.",
-          "title": "Goal Id",
-          "type": "string"
-        },
-        "pedagogical_intent": {
-          "description": "Free-text, verbatim: the pedagogical reason the learner needs enrichment (e.g. 'learner needs the primary-source basis for the 23% figure'). Must be intent, not a raw fetch query.",
-          "title": "Pedagogical Intent",
-          "type": "string"
-        },
         "binds_to_objective_id": {
           "anyOf": [
             {
@@ -103,6 +93,16 @@
           "default": null,
           "description": "Optional open-id linkage to a workbook section's learning objective; null when the goal is not section-scoped.",
           "title": "Binds To Objective Id"
+        },
+        "goal_id": {
+          "description": "Open-id stable identifier for this research-enrichment goal.",
+          "title": "Goal Id",
+          "type": "string"
+        },
+        "pedagogical_intent": {
+          "description": "Free-text, verbatim: the pedagogical reason the learner needs enrichment (e.g. 'learner needs the primary-source basis for the 23% figure'). Must be intent, not a raw fetch query.",
+          "title": "Pedagogical Intent",
+          "type": "string"
         }
       },
       "required": [
@@ -116,21 +116,6 @@
       "additionalProperties": false,
       "description": "One workbook section, bound to a learning objective.\n\nThe asset-lesson pairing invariant extended to collateral: every section\nbinds a ``learning_objective_id`` and carries a required ``depth_delta``.",
       "properties": {
-        "section_id": {
-          "description": "Open-id stable identifier for this workbook section.",
-          "title": "Section Id",
-          "type": "string"
-        },
-        "learning_objective_id": {
-          "description": "Open-id of the learning objective this section serves (the asset-lesson pairing invariant; required, never empty). Reuses the single-source open-id regex so the producer can bind asset -> objective without a regex fork.",
-          "title": "Learning Objective Id",
-          "type": "string"
-        },
-        "title": {
-          "description": "Free-text, verbatim: the section title.",
-          "title": "Title",
-          "type": "string"
-        },
         "depth_delta": {
           "$ref": "#/$defs/DepthDeltaContract",
           "description": "Required: the depth-delta contract naming what depth is deferred off the glance-slide into this section (the load-bearing field)."
@@ -143,10 +128,25 @@
           "title": "Exercises",
           "type": "array"
         },
+        "learning_objective_id": {
+          "description": "Open-id of the learning objective this section serves (the asset-lesson pairing invariant; required, never empty). Reuses the single-source open-id regex so the producer can bind asset -> objective without a regex fork.",
+          "title": "Learning Objective Id",
+          "type": "string"
+        },
         "narrative_intent": {
           "default": "",
           "description": "Free-text, verbatim: the fuller-narrative brief for this section. Prose is composed by the producer under G1, not here.",
           "title": "Narrative Intent",
+          "type": "string"
+        },
+        "section_id": {
+          "description": "Open-id stable identifier for this workbook section.",
+          "title": "Section Id",
+          "type": "string"
+        },
+        "title": {
+          "description": "Free-text, verbatim: the section title.",
+          "title": "Title",
           "type": "string"
         }
       },
@@ -163,6 +163,13 @@
       "additionalProperties": false,
       "description": "The workbook content model \u2014 a non-empty list of bound sections.",
       "properties": {
+        "kind": {
+          "const": "deck-companion-workbook",
+          "default": "deck-companion-workbook",
+          "description": "Artifact-type discriminant (S7 canonical-arc). Closed set: the narrated-deck companion workbook is the sole member today. Additive + back-compatible (absent -> default). The 'collateral' umbrella will carry additional typed artifacts in a later projector family; typing the ARTIFACT (not the umbrella) keeps that seam clean.",
+          "title": "Kind",
+          "type": "string"
+        },
         "sections": {
           "description": "Workbook sections; non-empty when collateral is present.",
           "items": {
@@ -182,12 +189,6 @@
   "additionalProperties": false,
   "description": "The DP4 collateral content model carried on ``lesson_plan[\"collateral\"]``.\n\n``declaration`` is the explicit empty-case discriminant: ``\"none\"`` is the\non-record decision that this lesson ships deck-only (degenerate-empty),\nNOT an absent key; ``\"present\"`` requires a workbook with >=1 section.",
   "properties": {
-    "schema_version": {
-      "default": "1.0",
-      "description": "Pinned to SCHEMA_VERSION; changes drive CHANGELOG entries.",
-      "title": "Schema Version",
-      "type": "string"
-    },
     "declaration": {
       "description": "Explicit empty-case discriminant. 'none' = on-record decision to ship deck-only; 'present' requires a workbook with >=1 section.",
       "enum": [
@@ -195,6 +196,20 @@
         "none"
       ],
       "title": "Declaration",
+      "type": "string"
+    },
+    "research_goals": {
+      "description": "Research-enrichment goals (pedagogical intent). May be empty even when declaration == 'present'; research is enrichment, not mandatory for a workbook section.",
+      "items": {
+        "$ref": "#/$defs/ResearchEnrichmentGoal"
+      },
+      "title": "Research Goals",
+      "type": "array"
+    },
+    "schema_version": {
+      "default": "1.1",
+      "description": "Pinned to SCHEMA_VERSION; changes drive CHANGELOG entries.",
+      "title": "Schema Version",
       "type": "string"
     },
     "workbook": {
@@ -208,14 +223,6 @@
       ],
       "default": null,
       "description": "The workbook content model; present iff declaration == 'present'."
-    },
-    "research_goals": {
-      "description": "Research-enrichment goals (pedagogical intent). May be empty even when declaration == 'present'; research is enrichment, not mandatory for a workbook section.",
-      "items": {
-        "$ref": "#/$defs/ResearchEnrichmentGoal"
-      },
-      "title": "Research Goals",
-      "type": "array"
     }
   },
   "required": [

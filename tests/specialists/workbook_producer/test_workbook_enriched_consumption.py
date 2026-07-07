@@ -40,6 +40,42 @@ from app.marcus.lesson_plan.workbook_enrichment import (
 from app.marcus.lesson_plan.workbook_producer import WorkbookProducer
 from app.specialists.workbook_producer import _act as wb_act
 
+from ._run_fixture import collateral_present, section, write_run_json
+
+# S7: the enrichment card is a RESOLUTION OVERLAY now (it no longer authors
+# sections). Irene's collateral blueprint (on run.json) is the section/objective
+# authority. This blueprint binds the objectives the overlay resolves against:
+# lo-g0-006 (the home objective of the fixture quiz component src-001-c021 -> its
+# overlay exercise attaches here) and lo-g0-001 (probed by the LO-provenance test).
+# Depth-delta prose is numeral-free (so the G1 symbol-gate is a non-event) and
+# distinct from the narration (so the AC-8 dual-coding superset holds).
+_ENRICHED_COLLATERAL = collateral_present(
+    [
+        section(
+            "sec-lo-g0-006",
+            "lo-g0-006",
+            title="Redesignable administrative surface",
+            deferred_depth=(
+                "The deferred systems-design derivation the glance deck gestures "
+                "at but cannot carry: quantify redesignable administrative waste "
+                "as a concrete intrapreneurial innovation target."
+            ),
+            narrative_intent="The fuller intrapreneurial reframe for objective six.",
+        ),
+        section(
+            "sec-lo-g0-001",
+            "lo-g0-001",
+            title="The innovation mindset",
+            deferred_depth=(
+                "The read-channel companion depth for the innovation-mindset "
+                "objective: falling in love with the problem rather than the "
+                "solution before any diagnosis begins."
+            ),
+            narrative_intent="The fuller narrative for the innovation-mindset objective.",
+        ),
+    ]
+)
+
 REPO_ROOT = Path(__file__).resolve().parents[3]
 FIXTURE = (
     REPO_ROOT
@@ -133,7 +169,10 @@ def output_root() -> Iterator[Path]:
         REPO_ROOT
         / "_bmad-output"
         / "artifacts"
-        / "workbooks-test"
+        # Distinct parent from the shared ``workbooks-test`` dir the pre-existing
+        # tejal producer tests write their fixed ``…@3.docx`` stem into (avoids
+        # aggravating that pre-existing shared-output-root race).
+        / "workbooks-test-s7"
         / f"_p5-{uuid.uuid4().hex}"
     )
     target.mkdir(parents=True, exist_ok=True)
@@ -153,6 +192,14 @@ def _make_run_dir(root: Path, card: dict[str, Any]) -> Path:
     (run_dir / "bundle" / "extracted.md").write_text(_CORPUS, encoding="utf-8")
     (run_dir / "g0-enrichment.json").write_text(
         json.dumps(card), encoding="utf-8"
+    )
+    # S7: the collateral blueprint (run.json) is the section authority; the
+    # enrichment card resolves exercises / further-reading / LO statements onto it.
+    write_run_json(
+        run_dir,
+        collateral=_ENRICHED_COLLATERAL,
+        plan_units=[{"unit_id": "u-innovation-mindset"}],
+        lesson_summary="clinician innovator opportunity mindset",
     )
     return run_dir
 

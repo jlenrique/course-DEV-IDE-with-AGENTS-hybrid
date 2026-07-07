@@ -1,0 +1,34 @@
+[2026-07-07T20:56:00.981632+00:00] env: OPENAI=sk-proj...oc0A (len 164); LANGSMITH+GAMMA present
+[2026-07-07T20:56:03.067283+00:00] trial_id=4c64db93-af02-41a2-9ef8-a7559b37e72f bundle=narrated-deck-with-workbook selection=deck=True motion=True workbook=True
+[2026-07-07T20:56:03.067283+00:00] selection_code (standard-A pick)=SGP-4c64db93af0241a29ef8a7559b37e72f-A:hil-2026-apc-crossroads-classic
+[2026-07-07T20:56:03.067283+00:00] === start_trial (REAL composed Part-3 walk; first pause expected G0E) ===
+[2026-07-07T20:58:20.375474+00:00] start_trial returned after 137s
+[2026-07-07T20:58:20.383476+00:00] [loop 0] status=paused-at-gate gate=G0E err=None
+[2026-07-07T20:58:20.392523+00:00] resume approve G0E (cap=40)
+[2026-07-07T20:58:34.351662+00:00]   -> status=paused-at-gate paused_gate=G0R err=None
+[2026-07-07T20:58:34.363057+00:00] [loop 1] status=paused-at-gate gate=G0R err=None
+[2026-07-07T20:58:34.371170+00:00] resume approve G0R (cap=40)
+[2026-07-07T20:59:00.006225+00:00]   -> status=paused-at-gate paused_gate=G1 err=None
+[2026-07-07T20:59:00.016357+00:00] [loop 2] status=paused-at-gate gate=G1 err=None
+[2026-07-07T20:59:00.024472+00:00] resume approve G1 (cap=40)
+[2026-07-07T21:04:43.681488+00:00]   -> status=paused-at-gate paused_gate=G2B err=None
+[2026-07-07T21:04:43.693013+00:00] [loop 3] status=paused-at-gate gate=G2B err=None
+[2026-07-07T21:04:43.701107+00:00] resume approve G2B (cap=40)
+[2026-07-07T21:05:44.467989+00:00]   -> status=paused-at-gate paused_gate=G2C err=None
+[2026-07-07T21:05:44.481799+00:00] [loop 4] status=paused-at-gate gate=G2C err=None
+[2026-07-07T21:05:44.488212+00:00] resume approve G2C (cap=40)
+[2026-07-07T21:22:41.545867+00:00]   -> status=paused-at-gate paused_gate=G3 err=None
+[2026-07-07T21:22:41.558929+00:00] [loop 5] status=paused-at-gate gate=G3 err=None
+[2026-07-07T21:22:41.565993+00:00] resume approve G3 (cap=40)
+[2026-07-07T21:23:04.883248+00:00]   -> status=paused-at-gate paused_gate=G4 err=None
+[2026-07-07T21:23:04.899089+00:00] [loop 6] status=paused-at-gate gate=G4 err=None
+[2026-07-07T21:23:04.907108+00:00] resume approve G4 (cap=40)
+[2026-07-07T21:23:17.348034+00:00]   -> status=paused-at-gate paused_gate=G4A err=None
+[2026-07-07T21:23:17.366216+00:00] [loop 7] status=paused-at-gate gate=G4A err=None
+[2026-07-07T21:23:17.375425+00:00] resume approve G4A (cap=40)
+[2026-07-07T21:24:30.967495+00:00]   -> status=completed paused_gate=None err=None
+[2026-07-07T21:24:30.986056+00:00] [loop 8] status=completed gate=None err=None
+[2026-07-07T21:24:30.986056+00:00] RUN COMPLETED — 07W ran as terminal sidecar
+[2026-07-07T21:24:31.003326+00:00] workbook md=_bmad-output/artifacts/workbooks/u01@1.md docx=_bmad-output/artifacts/workbooks/u01@1.docx
+[2026-07-07T21:24:31.224097+00:00] DOI 10.5465/ambpp.2019.19399abstract -> 403 https://journals.aom.org/doi/10.5465/AMBPP.2019.19399abstract
+[2026-07-07T21:24:31.233043+00:00] === S7 AC-L facts written: final_status=completed workbook_md=_bmad-output/artifacts/workbooks/u01@1.md no_tejal_leak=True sections=6 research_entries=3 doi=10.5465/ambpp.2019.19399abstract ===

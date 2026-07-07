@@ -39,6 +39,10 @@ def _make_mock_response(narration: list[dict[str, Any]], deltas: list[dict[str, 
 # dp-v1.1: every scenario's deltas carry visual_references joined to the
 # grounded roster (s1/s2) — unjoined narration now raises Pass2GroundingError
 # by design (the cycle-4 confabulation kill).
+# id-integrity gate (irene-pass2-slidejoin-id-integrity-gate.md): every
+# narration segment + delta carries a usable bijective ``id`` — the real
+# Pass-2 emission shape the shared join keys on. Without it the id-keyed join
+# collapses the deck (the 40f3a90a defect); the boundary gate now fails loud.
 _REFS_S1 = [{"perception_source": "s1"}]
 _REFS_S2 = [{"perception_source": "s2"}]
 
@@ -48,14 +52,15 @@ _REFS_S2 = [{"perception_source": "s2"}]
     [
         (
             "static-only",
-            [{"slide_id": "s1", "narration": "Welcome to the lesson."}],
-            [{"slide_id": "s1", "visual_references": _REFS_S1}],
+            [{"id": "seg-1", "slide_id": "s1", "narration": "Welcome to the lesson."}],
+            [{"id": "seg-1", "slide_id": "s1", "visual_references": _REFS_S1}],
         ),
         (
             "motion-enabled",
-            [{"slide_id": "s1", "narration": "Watch how the membrane reshapes."}],
+            [{"id": "seg-1", "slide_id": "s1", "narration": "Watch how the membrane reshapes."}],
             [
                 {
+                    "id": "seg-1",
                     "slide_id": "s1",
                     "motion_type": "kira_video",
                     "motion_duration_seconds": 8.0,
@@ -66,12 +71,14 @@ _REFS_S2 = [{"perception_source": "s2"}]
         (
             "cluster-aware",
             [
-                {"slide_id": "s1", "cluster_role": "head", "narration": "Three core ideas..."},
-                {"slide_id": "s2", "cluster_role": "interstitial", "narration": "First..."},
+                {"id": "seg-1", "slide_id": "s1", "cluster_role": "head",
+                 "narration": "Three core ideas..."},
+                {"id": "seg-2", "slide_id": "s2", "cluster_role": "interstitial",
+                 "narration": "First..."},
             ],
             [
-                {"slide_id": "s1", "visual_references": _REFS_S1},
-                {"slide_id": "s2", "visual_references": _REFS_S2},
+                {"id": "seg-1", "slide_id": "s1", "visual_references": _REFS_S1},
+                {"id": "seg-2", "slide_id": "s2", "visual_references": _REFS_S2},
             ],
         ),
     ],

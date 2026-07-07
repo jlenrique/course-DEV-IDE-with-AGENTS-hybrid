@@ -11,7 +11,7 @@ These are RED-first: written before collateral_spec.py exists.
 from __future__ import annotations
 
 import pytest
-from pydantic import ValidationError
+from pydantic import TypeAdapter, ValidationError
 
 from app.marcus.lesson_plan.collateral_spec import (
     SCHEMA_VERSION,
@@ -44,7 +44,9 @@ COLLATERAL_SPEC_EXPECTED_FIELDS = frozenset(
 )
 COLLATERAL_SPEC_REQUIRED_FIELDS = frozenset({"declaration"})
 
-WORKBOOK_SPEC_EXPECTED_FIELDS = frozenset({"sections"})
+# S7 canonical-arc: additive ``kind`` discriminant on the ARTIFACT (WorkbookSpec).
+# Defaulted -> back-compatible -> NOT required (required set stays {"sections"}).
+WORKBOOK_SPEC_EXPECTED_FIELDS = frozenset({"sections", "kind"})
 WORKBOOK_SPEC_REQUIRED_FIELDS = frozenset({"sections"})
 
 WORKBOOK_SECTION_EXPECTED_FIELDS = frozenset(
@@ -213,3 +215,82 @@ def test_exercise_prompt_intent_is_verbatim_freetext(text: str) -> None:
         answer_key_source_ref="src-objective-23pct",
     )
     assert exercise.prompt_intent == text
+
+
+# --------------------------------------------------------------------------- #
+# S7 D5 / AC-5 — WorkbookSpec.kind discriminant (default + closed-enum 3x)     #
+# --------------------------------------------------------------------------- #
+def _min_section() -> WorkbookSection:
+    return WorkbookSection(
+        section_id="sec-1",
+        learning_objective_id="obj-1",
+        title="T",
+        depth_delta=DepthDeltaContract(
+            deferred_from_slide="unit-1", deferred_depth="the deferred depth"
+        ),
+    )
+
+
+def test_kind_defaults_to_deck_companion_workbook() -> None:
+    spec = WorkbookSpec(sections=[_min_section()])
+    assert spec.kind == "deck-companion-workbook"
+
+
+def test_kind_absent_key_round_trips_to_default() -> None:
+    # Absent 'kind' (back-compat legacy payload) validates to the default.
+    spec = WorkbookSpec.model_validate({"sections": [_min_section().model_dump()]})
+    assert spec.kind == "deck-companion-workbook"
+    # Round-trip: the dumped shape re-validates identically.
+    restored = WorkbookSpec.model_validate_json(spec.model_dump_json())
+    assert restored.kind == "deck-companion-workbook"
+
+
+def test_kind_is_not_required() -> None:
+    assert "kind" not in _required_field_names(WorkbookSpec)
+
+
+def test_schema_version_bumped_to_1_1() -> None:
+    # D5: the family schema version is bumped on the additive shape drift.
+    assert SCHEMA_VERSION == "1.1"
+
+
+# Closed-enum triple red-rejection (mirror the BloomLevel discipline).
+def test_kind_rejects_red_value_on_construction() -> None:
+    with pytest.raises(ValidationError):
+        WorkbookSpec(sections=[_min_section()], kind="job-aid")  # type: ignore[arg-type]
+
+
+def test_kind_rejects_red_value_on_assignment() -> None:
+    spec = WorkbookSpec(sections=[_min_section()])
+    with pytest.raises(ValidationError):
+        spec.kind = "drill"  # type: ignore[assignment]
+
+
+def test_kind_closed_set_in_emitted_json_schema() -> None:
+    schema = WorkbookSpec.model_json_schema()
+    prop = schema["properties"]["kind"]
+    # Single-value Literal emits 'const' (pydantic v2) or a one-item 'enum'.
+    allowed = prop.get("enum") or ([prop["const"]] if "const" in prop else None)
+    assert allowed == ["deck-companion-workbook"]
+
+
+def test_kind_type_adapter_round_trip_rejects_red() -> None:
+    from typing import Literal
+
+    adapter = TypeAdapter(Literal["deck-companion-workbook"])
+    assert adapter.validate_python("deck-companion-workbook") == "deck-companion-workbook"
+    with pytest.raises(ValidationError):
+        adapter.validate_python("job-aid")
+
+
+def test_schema_changelog_has_s7_kind_entry() -> None:
+    from pathlib import Path
+
+    changelog = (
+        Path(__file__).resolve().parents[3]
+        / "_bmad-output"
+        / "implementation-artifacts"
+        / "SCHEMA_CHANGELOG.md"
+    ).read_text(encoding="utf-8")
+    assert "CollateralSpec" in changelog and "1.1" in changelog
+    assert "kind" in changelog and "deck-companion-workbook" in changelog

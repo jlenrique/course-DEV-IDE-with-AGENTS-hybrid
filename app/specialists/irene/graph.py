@@ -702,6 +702,93 @@ def _assert_narration_joins_roster(
         )
 
 
+def _assert_join_id_integrity(parsed: dict[str, Any]) -> None:
+    """Id-integrity gate at the Pass-2 output boundary (defect fix,
+    irene-pass2-slidejoin-id-integrity-gate.md).
+
+    The gap this closes: `_assert_narration_joins_roster` validates
+    perception_source→roster grounding but NEVER the id-join. The shared join
+    (`narration_join.join_narration_segments`) keys narration text by segment
+    ``id`` and rows by delta ``id``; an id-less or non-bijective emission (the
+    frozen `40f3a90a` shape) collapses every segment into a single join bucket
+    (last-write-wins) → distinct slide_id + IDENTICAL narration on every row, a
+    silent degenerate storyboard the roster gate passes clean.
+
+    Raise the already-retryable ``irene.pass2.slide-join-failed`` tag (in
+    `_RETRYABLE_DISPATCH_TAGS`) so the runner's auto-retry re-rolls Pass-2
+    (id-bearing) and self-heals. Enforcement stays HERE at the boundary — the
+    frozen import-identity-pinned shared join (`narration_join.py`) is untouched.
+
+    Two fail conditions, checked in order, each with a DISTINCT detail:
+      (a) *id-less after backfill* — any narration_script segment OR delta still
+          lacks a usable ``id`` (empty/None) after the boundary backfills; the
+          id-keyed join would collapse/drop it.
+      (b) *id-join non-bijective* — narration segment ids are not 1:1:
+          ``len({usable ids}) < len(narration_script)`` (positional id
+          cardinality — NEVER keyed on ``narration_text``; identical prose under
+          DISTINCT ids is legitimate and MUST pass). This is the ``text_by_id``
+          overwrite collapse vector.
+
+    Pure, no mutation. Mirrors `_assert_narration_joins_roster`: silent when
+    there is no narration_script (nothing to join).
+    """
+    narr = parsed.get("narration_script")
+    if not isinstance(narr, list) or not narr:
+        return
+
+    def _usable(value: object) -> str:
+        return str(value).strip() if value is not None else ""
+
+    # (a) id-absence — every narration segment AND every delta must key.
+    for seg in narr:
+        if not isinstance(seg, dict) or not _usable(seg.get("id")):
+            raise Pass2GroundingError(
+                "Pass-2 narration_script segment lacks a usable join id "
+                "(id-less after backfill) — the id-keyed shared join would "
+                "collapse every segment into one bucket, flooding the "
+                "storyboard with a single narration",
+                tag="irene.pass2.slide-join-failed",
+            )
+    deltas = parsed.get("segment_manifest_deltas")
+    for delta in deltas if isinstance(deltas, list) else []:
+        if not isinstance(delta, dict) or not _usable(delta.get("id")):
+            raise Pass2GroundingError(
+                "Pass-2 segment_manifest_delta lacks a usable join id "
+                "(id-less after backfill) — the id-keyed shared join would "
+                "drop its narration segment",
+                tag="irene.pass2.slide-join-failed",
+            )
+
+    # (b) non-bijective id-join — positional id cardinality; NEVER text-keyed.
+    usable_ids = {_usable(seg.get("id")) for seg in narr}
+    if len(usable_ids) < len(narr):
+        raise Pass2GroundingError(
+            "Pass-2 narration_script ids are not bijective "
+            "(id-join non-bijective) — distinct segments share a join key, so "
+            "the shared join's text_by_id overwrite collapses them into one "
+            "narration",
+            tag="irene.pass2.slide-join-failed",
+        )
+
+    # (c) delta ids must ALSO be bijective — the shared join builds one ROW per
+    #     delta and keys each row's narration_text by the DELTA id. Duplicate
+    #     non-empty delta ids (distinct perception_sources) flood every distinct
+    #     slide with a single narration — the 40f3a90a collapse reached via
+    #     duplicated delta ids, not empty ids. phantom_segment_ids misses it
+    #     (the flooded text is non-empty). Positional id cardinality; NEVER text-
+    #     keyed. (delta-ids ⊆ narration-ids is a DISTINCT concern deferred to
+    #     join-narration-segments-silent-collapse-hardening — not checked here.)
+    delta_list = deltas if isinstance(deltas, list) else []
+    delta_ids = [_usable(d.get("id")) for d in delta_list if isinstance(d, dict)]
+    if len(set(delta_ids)) < len(delta_ids):
+        raise Pass2GroundingError(
+            "Pass-2 segment_manifest_delta ids are not bijective "
+            "(delta id-join non-bijective) — distinct deltas share a join key, "
+            "so the shared join floods every slide with one narration",
+            tag="irene.pass2.slide-join-failed",
+        )
+
+
 def _assert_figure_citations_within_perceived(
     parsed: dict[str, Any], roster: list[dict[str, Any]]
 ) -> None:
@@ -2083,6 +2170,12 @@ def _act_pass_2(
         model_invoke=handle.chat.invoke,
     )
     _assert_narration_joins_roster(parsed, slide_roster)
+    # id-integrity gate (irene-pass2-slidejoin-id-integrity-gate.md): the roster
+    # gate above checks perception_source grounding but NEVER the id-join. An
+    # id-less / non-bijective emission (the frozen 40f3a90a shape) passes it yet
+    # collapses in the shared join into a degenerate one-narration storyboard.
+    # Fail loud on the retryable tag so auto-retry re-rolls an id-bearing Pass-2.
+    _assert_join_id_integrity(parsed)
     _assert_reading_path_conformance(parsed, slide_roster)
     _assert_figure_citations_within_perceived(parsed, slide_roster)
     # Leg-4 SOURCE-direction figure-fidelity gate (flag-gated; ADDITIVE to the

@@ -712,6 +712,33 @@ PERMITTED_PYTHON_DIFFS = {
     # creds-absent degrade + R3 Bearer-only creds check, the D5 narration incl.
     # the R2 resumed-transcript witness, the D6 workbook-thread witness).
     "tests/integration/marcus/test_braid_s3_research_wiring.py",
+    # Canonical-arc S7 — workbook producer generalization (deterministic/OFFLINE;
+    # NO live dispatch, NO network, NO model client). Party green-light 4/4
+    # GO-WITH-AMENDMENTS (Winston/John/Murat/Amelia) + Codex SOP-026
+    # CONCUR-WITH-FINDINGS; spec canonical-arc-s7-workbook-generalization.md.
+    # The 07W producer retires the tejal-hardcoded constants + generalizes the
+    # plan-unit header (D1); consumes Irene's lesson_plan["collateral"] as the
+    # authoritative blueprint with the G0 enrichment projection demoted to a
+    # resolution overlay (D2); honors the `declaration` discriminant (D3); brings
+    # the S6 research_entries DOI block under the G2 citation manifest (D4); and
+    # adds the additive WorkbookSpec.kind discriminant (D5). The producer disk-
+    # reads run.json via app.models.* model classes (M3-safe, no orchestrator
+    # import). Squarely NOT live-dispatch scope creep.
+    "app/marcus/lesson_plan/collateral_spec.py",
+    # (app/marcus/lesson_plan/workbook_enrichment.py already permitted above via
+    #  the G0-enrichment story; the S7 readers are additive to that same module.)
+    "app/marcus/lesson_plan/workbook_producer.py",
+    "app/specialists/workbook_producer/_act.py",
+    "tests/marcus/lesson_plan/test_collateral_spec_shape_stable.py",
+    "tests/marcus/lesson_plan/test_workbook_s0_s7.py",
+    "tests/specialists/workbook_producer/_run_fixture.py",
+    "tests/specialists/workbook_producer/test_workbook_enriched_consumption.py",
+    "tests/specialists/workbook_producer/test_workbook_producer_brick.py",
+    "tests/specialists/workbook_producer/test_workbook_s7_generalization.py",
+    # S7 3-lane review + Codex SOP-028 remediation (deterministic/OFFLINE): shared-
+    # LO dedup, recoverable produce()-gate wrap, DOI-honesty omission, malformed-
+    # declaration fail-loud (F-2801), degrade-provenance teeth, kind carry-through.
+    "tests/specialists/workbook_producer/test_workbook_s7_remediation.py",
 }
 
 

@@ -7,6 +7,35 @@ Per semver-for-schemas:
 - **Minor (1.X)** â€” additive only: new optional fields with v1.0-compatible defaults, new enum values that don't break old consumers.
 - **Patch (1.0.X)** â€” docs / clarifications / typo fixes; no machine-readable change.
 
+## CollateralSpec v1.1 - 2026-07-07 - Story S7 workbook-generalization `kind` discriminant
+
+**Type:** Minor (additive only). New optional field with a v1.0-compatible default;
+absent-key payloads round-trip to the default (zero regression).
+
+**Family:** CollateralSpec (`app/marcus/lesson_plan/collateral_spec.py`) — the
+`WorkbookSpec` member.
+
+**Reason for introduction:** the S7 canonical-arc operator-ratified design frames
+the artifact as a **"narrated-deck companion workbook"** — one member of a
+`collateral` family umbrella. A forward-compatible `kind` discriminant is added on
+the ARTIFACT (`WorkbookSpec`), NOT on the `CollateralSpec` umbrella (the umbrella
+will hold multiple typed artifacts in a later projector family; typing the artifact
+keeps that seam clean). NO family/projector machinery is built here.
+
+**Shapes and contracts pinned:**
+
+- `WorkbookSpec.kind: Literal["deck-companion-workbook"] = "deck-companion-workbook"`
+  — closed enum, triple red-rejection (Literal construction, JSON-Schema `const`,
+  `TypeAdapter`), back-compatible default.
+- `SCHEMA_VERSION` bumped `1.0` -> `1.1`.
+- `app/marcus/lesson_plan/schema/collateral_spec.v1.schema.json`: regenerated
+  emitted JSON-Schema witness (byte-current vs live; minor bump keeps the `.v1.`
+  filename per the family-major convention).
+
+**Behavior change:** none for existing consumers. The `declaration=="present"`
+producer (07W) now consumes `workbook` (including its `kind`) as the authoritative
+blueprint; a legacy payload with no `kind` validates to the default.
+
 ## LearningObjective v1.0 - 2026-06-26 - Story G0-S1 LO canonical schema
 
 **Type:** Initial shape (no predecessor family). Additive: REPLACES (via adapter

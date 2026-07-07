@@ -1,10 +1,9 @@
 """workbook_producer act — deterministic in-graph adapter over WorkbookProducer.
 
-The 07W producer is a thin, deterministic adapter (spec-07w §2). Its ``_act``
-REUSES the PROVEN assembly in ``scripts/utilities/produce_tejal_workbook.py``
-(``build_tejal_workbook_inputs`` + ``_load_segments`` + ``_exercises`` +
-further_reading/objectives/answer_keys assembly), **re-pointed to read the
-CURRENTLY-RUNNING run** instead of a hardcoded B1 run:
+The 07W producer is a thin, deterministic adapter (spec-07w §2). It reads the
+CURRENTLY-RUNNING run and CONSUMES Irene's authored ``lesson_plan["collateral"]``
+as the authoritative workbook blueprint (S7 canonical-arc generalization). The
+sequence:
 
 1. resolve the running run's directory (``RUNS_ROOT / run_id`` or an explicit
    ``run_dir`` replay override);
@@ -12,10 +11,15 @@ CURRENTLY-RUNNING run** instead of a hardcoded B1 run:
    each slide to its Gary deck export (figure embed, when present on disk);
 3. build the source set for the G1 numeric gate from the run's
    ``bundle/extracted.md`` + the delivered narration;
-4. assemble the WorkbookSpec + learning objectives + exercises + answer keys +
-   further-reading deterministically (v1 reuses the proven tejal/corpus-assessment
-   assembly — generalizing to an arbitrary corpus is a named follow-on);
-5. run ``WorkbookProducer.produce(...)`` → MD + DOCX + G1/G2/AC audits → sidecar.
+4. read ``lesson_plan["collateral"]`` (from ``<run_dir>/run.json``) as the
+   authoritative section / objective / depth-delta blueprint; the frozen G0
+   enrichment card is a RESOLUTION OVERLAY (exercises, further-reading, answer
+   keys, LO statements) layered on top — it may NOT author sections;
+5. read the S6 ``research_entries`` (from ``run.json``) and render them under the
+   G2 citation manifest;
+6. honor the ``declaration`` discriminant (present+blueprint => produce;
+   none/absent => explicit no-op skip);
+7. run ``WorkbookProducer.produce(...)`` => MD + DOCX + G1/G2/AC audits => sidecar.
 
 NO model client is touched here — pinned as a test invariant (mirrors the 07D.5
 motion brick). Terminal leaf: emits the DOCX + canonical MD as a sidecar and puts
@@ -23,8 +27,8 @@ the ProducedAsset / sidecar refs on RunState; it feeds nothing downstream.
 
 HONESTY BOUNDARY (do NOT over-claim): G1 numeric fidelity is symbol-only,
 FAIL-mode. Word-form numerals are NOT gated — named gap
-``braid-workbook-wordform-numeral-gap``. General arbitrary-corpus spec authoring
-is a named follow-on.
+``braid-workbook-wordform-numeral-gap``. Learner-ready re-voiced prose is the
+deferred S8 arc; this producer proves producer-generalization only.
 """
 
 from __future__ import annotations
@@ -32,30 +36,31 @@ from __future__ import annotations
 import hashlib
 import json
 import os
+import re
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
 import yaml
+from pydantic import ValidationError
 
-from app.marcus.lesson_plan.collateral_spec import (
-    DepthDeltaContract,
-    Exercise,
-    WorkbookSection,
-    WorkbookSpec,
-)
+from app.marcus.lesson_plan.collateral_spec import CollateralSpec, WorkbookSpec
 from app.marcus.lesson_plan.produced_asset import ProductionContext
 from app.marcus.lesson_plan.schema import PlanUnit
 from app.marcus.lesson_plan.workbook_enrichment import (
+    lesson_plan_from_run,
     load_enrichment_card,
     project_enrichment_to_workbook_inputs,
+    research_entries_from_run,
 )
 from app.marcus.lesson_plan.workbook_producer import (
     DEFAULT_WORKBOOK_OUTPUT_ROOT,
+    DuplicateCollateralIdError,
     FurtherReadingEntry,
     LearningObjectiveBrief,
     ResearchEntry,
     TranscriptSegment,
+    WorkbookFidelityError,
     WorkbookProducer,
     WorkbookSidecar,
 )
@@ -71,8 +76,30 @@ CONFIG_PATH = REPO_ROOT / "app" / "specialists" / "workbook_producer" / "config.
 
 _DEFAULT_SEGMENT_MANIFEST_RELPATH = "exports/segment-manifest-storyboard-b.yaml"
 _DEFAULT_CORPUS_RELPATH = "bundle/extracted.md"
-_DEFAULT_UNIT_ID = "tejal-apc-c1-m1-p2-trends"
 _DEFAULT_LESSON_PLAN_REVISION = 1
+
+# D1: NO tejal defaults. The plan-unit header derives from the run's real lesson
+# plan / collateral / corpus (never a baked-in ``tejal…`` / ``present-trends``
+# constant). Neutral fallbacks used only when the run carries no derivable label.
+_OPEN_ID_SANITIZE_RE = re.compile(r"[^a-z0-9._-]+")
+_FALLBACK_EVENT_TYPE = "deck-companion-workbook"
+_FALLBACK_UNIT_ID = "deck-companion-workbook-unit"
+_DEFAULT_LO_BLOOM = "understand"
+
+# D4: honest recorded-empty reason for a run whose research leg minted no cited
+# entries (retires the hardcoded "live-research leg deferred" note).
+_RESEARCH_EMPTY_REASON = (
+    "no cited research entries recorded on this run's research contribution "
+    "(recorded explicitly-empty; no DOI'd entries fabricated)"
+)
+
+# S7 remediation item-3 — DOI honesty. A rendered research DOI is emitted as
+# ``https://doi.org/{source_id}``; a well-formed DOI is required so a broken /
+# fabricated link is NEVER silently rendered. Entries whose ``source_id`` fails
+# this shape are EXCLUDED from the rendered DOI list and their omission is
+# recorded with visible provenance (degrade-with-record, not fail-loud — one
+# bad entry must not kill the workbook).
+_DOI_SHAPE_RE = re.compile(r"^10\.\d{4,9}/\S+$")
 
 
 class WorkbookProducerActError(SpecialistDispatchError):
@@ -150,7 +177,7 @@ def _resolve_run_dir(state: RunState, payload: dict[str, Any]) -> Path:
 
 
 # ---------------------------------------------------------------------------
-# Run-data readers (PORTED from produce_tejal_workbook, re-pointed to the run)
+# Run-data readers (segment manifest + corpus)
 # ---------------------------------------------------------------------------
 
 
@@ -242,9 +269,7 @@ def _build_source_text(
 
     = the corpus slides (``bundle/extracted.md``: the authoritative upstream
     numerals) + the delivered transcript of record (the run-delivered,
-    fidelity-passed narration). The numeric gate then meaningfully audits the
-    AUTHORED content against this set; the verbatim transcript-of-record is
-    in-source by definition.
+    fidelity-passed narration).
     """
     corpus_path = run_dir / corpus_relpath
     if not corpus_path.is_file():
@@ -257,212 +282,80 @@ def _build_source_text(
     return corpus + "\n\n" + delivered
 
 
-# ---------------------------------------------------------------------------
-# Knowledge-Check ingest -> Exercises + answer keys (PORTED tejal assembly)
-# ---------------------------------------------------------------------------
-
-# The corpus Chapter-2 / Chapter-3 Knowledge Checks, ingested backward from the
-# sourced assessments (each prompt + correct answer is corpus-grounded). Bloom
-# levels are the corpus tags. (exercise_id, bloom, prompt, correct_answer)
-_CH2_KC: tuple[tuple[str, str, str, str], ...] = (
-    (
-        "ex-ch2-q1",
-        "remember",
-        "Between 2012 and 2022, which major structural shift occurred regarding "
-        "physician practice models?",
-        "A drastic decrease in independent private practice and a surge in "
-        "physicians employed by large health systems.",
-    ),
-    (
-        "ex-ch2-q2",
-        "understand",
-        "Approximately what percentage of total U.S. healthcare spending is "
-        "attributed to administrative costs and waste?",
-        "25%",
-    ),
-    (
-        "ex-ch2-q3",
-        "analyze",
-        "While patient volume and acuity are high, the data shows that the "
-        "primary driver of the physician burnout epidemic is:",
-        "Bureaucratic tasks and administrative bloat (e.g., EHR charting).",
-    ),
-    (
-        "ex-ch2-q4",
-        "evaluate",
-        "Based on the 'Healthcare Supply and Demand' concepts, why does simply "
-        "hiring more physicians often fail to solve access issues in a poorly "
-        "designed system?",
-        "Because it adds expensive supply without addressing the underlying "
-        "systemic inefficiencies or administrative bottlenecks that limit "
-        "throughput.",
-    ),
-    (
-        "ex-ch2-q5",
-        "apply",
-        "You are an attending physician managing a complex workflow and notice a "
-        "recurring delay in patient transport. According to the 'Modern "
-        "Clinician's Dilemma,' what is the most likely barrier preventing you "
-        "from solving this?",
-        "The absence of a structured innovation process and the organizational "
-        "authority/safety to redesign the workflow.",
-    ),
-)
-
-_CH3_KC: tuple[tuple[str, str, str, str], ...] = (
-    (
-        "ex-ch3-q1",
-        "remember",
-        "In 1950, medical knowledge doubled every 50 years. What is the "
-        "currently projected doubling time?",
-        "73 days.",
-    ),
-    (
-        "ex-ch3-q2",
-        "understand",
-        "While 66% of physicians report using some form of AI in practice, what "
-        "is the critical gap identified in the macro trends?",
-        "Formal training on how to oversee, evaluate, and safely implement these "
-        "tools remains severely limited.",
-    ),
-    (
-        "ex-ch3-q3",
-        "apply",
-        "A hospital implements a 'Digital Front Door' strategy. Which initiative "
-        "best represents this concept?",
-        "An AI-driven, mobile-friendly triage system that allows patients to "
-        "seamlessly schedule appointments and communicate with their care team "
-        "before entering the physical clinic.",
-    ),
-    (
-        "ex-ch3-q4",
-        "analyze",
-        "The data shows 67% of physicians want to pursue leadership roles, yet "
-        "only 18% receive formal business training. What is the most significant "
-        "consequence of this gap for Academic Health Centers?",
-        "They possess deep clinical expertise but lack the interdisciplinary "
-        "management skills required to translate clinical ideas into scalable, "
-        "system-wide improvements.",
-    ),
-    (
-        "ex-ch3-q5",
-        "evaluate",
-        "Referring to Tyler Beauchamp's article, which category of care failure "
-        "requires the most urgent intrapreneurial intervention to reduce "
-        "macro-level waste?",
-        "Administrative complexity and failures of care coordination.",
-    ),
-)
-
-
-def _exercises(
-    kc: tuple[tuple[str, str, str, str], ...], answer_key_source_ref: str
-) -> tuple[list[Exercise], dict[str, str]]:
-    exercises: list[Exercise] = []
-    answers: dict[str, str] = {}
-    for ex_id, bloom, prompt, correct in kc:
-        exercises.append(
-            Exercise(
-                exercise_id=ex_id,
-                bloom_level=bloom,  # type: ignore[arg-type]
-                prompt_intent=prompt,
-                answer_key_source_ref=answer_key_source_ref,
-            )
-        )
-        answers[ex_id] = f"Correct answer: {correct}"
-    return exercises, answers
-
-
-_FURTHER_READING: tuple[FurtherReadingEntry, ...] = (
-    FurtherReadingEntry(
-        "cit-cms-nhe",
-        "CMS National Health Expenditure (NHE) Fact Sheet",
-        "src-slide-01",
-        "https://www.cms.gov/data-research/statistics-trends-and-reports/"
-        "national-health-expenditure-data/nhe-fact-sheet",
-        "seg-01",
-    ),
-    FurtherReadingEntry(
-        "cit-ama-ownership",
-        "American Medical Association — Physician Practice Ownership Report",
-        "src-slide-01",
-        None,
-        "seg-01",
-    ),
-    FurtherReadingEntry(
-        "cit-shrank-jama-2019",
-        "Shrank WH et al. Waste in the US Health Care System. JAMA (2019)",
-        "src-slide-02",
-        "https://doi.org/10.1001/jama.2019.13978",
-        "seg-03",
-    ),
-    FurtherReadingEntry(
-        "cit-medscape-burnout-2024",
-        "Medscape Physician Burnout & Depression Report (2024)",
-        "src-slide-02",
-        None,
-        "seg-02",
-    ),
-    FurtherReadingEntry(
-        "cit-densen-2011",
-        "Densen P. Challenges and Opportunities Facing Medical Education (2011)",
-        "src-slide-03",
-        "https://doi.org/10.1043/0027-9684-103.6.48",
-        "seg-05",
-    ),
-    FurtherReadingEntry(
-        "cit-isaranuwatchai-jmir-2018",
-        "Isaranuwatchai W et al. Remote monitoring, JMIR (2018)",
-        "src-slide-03",
-        None,
-        "seg-08",
-    ),
-    FurtherReadingEntry(
-        "cit-ama-ai-report",
-        "AMA Augmented Intelligence in Medicine Report",
-        "src-slide-03",
-        None,
-        "seg-07",
-    ),
-    FurtherReadingEntry(
-        "cit-jackson-2023",
-        "Jackson Physician Search — Physician Leadership survey (2023)",
-        "src-slide-05",
-        None,
-        "seg-11",
-    ),
-    FurtherReadingEntry(
-        "cit-rotenstein-acadmed-2021",
-        "Rotenstein LS et al. Academic Medicine (2021)",
-        "src-slide-05",
-        "https://doi.org/10.1097/ACM.0000000000003907",
-        "seg-12",
-    ),
-    FurtherReadingEntry(
-        "cit-beauchamp-trillion",
-        "Required reading — Beauchamp T. Healthcare's Trillion-Dollar Problem "
-        "(Medium)",
-        "src-required-reading",
-        "https://medium.com/@TylerBeauchamp/"
-        "healthcare-s-trillion-dollar-problem-90438f4164dc",
-        "seg-03",
-    ),
-    FurtherReadingEntry(
-        "cit-intro-video",
-        "Intro video — Healthcare supply & demand (YouTube)",
-        "src-intro-video",
-        "https://www.youtube.com/watch?v=GjRAHuHIOD0",
-        "seg-01",
-    ),
-)
-
-
 def _hash(text: str) -> str:
     return hashlib.sha256(text.encode("utf-8")).hexdigest()[:16]
 
 
 # ---------------------------------------------------------------------------
-# Author the full tejal WorkbookSpec + produce-time content (PORTED assembly)
+# Plan-unit derivation (D1 — generalize off the tejal config default)
+# ---------------------------------------------------------------------------
+
+
+def _sanitize_open_id(text: str | None, *, fallback: str) -> str:
+    """Coerce free text to an ``OPEN_ID_REGEX``-valid slug (``^[a-z0-9._-]+$``)."""
+    slug = _OPEN_ID_SANITIZE_RE.sub("-", (text or "").lower()).strip("-.")
+    slug = slug[:80].strip("-.")
+    return slug or fallback
+
+
+def _derive_plan_unit_fields(
+    lesson_plan: dict[str, Any] | None,
+    collateral: dict[str, Any] | None,
+    run_dir: Path,
+) -> tuple[str, str]:
+    """Derive ``unit_id`` / ``event_type`` from the run's REAL lesson plan / corpus.
+
+    D1: never the ``tejal-apc-c1-m1-p2-trends`` / ``present-trends`` config
+    default. Prefer a real plan-unit id + the lesson summary; degrade to the
+    collateral section binding / run name; sanitize to the open-id shape.
+    """
+    unit_id = ""
+    plan_units = lesson_plan.get("plan_units") if isinstance(lesson_plan, dict) else None
+    if isinstance(plan_units, list) and plan_units and isinstance(plan_units[0], dict):
+        unit_id = str(plan_units[0].get("unit_id") or "").strip()
+    if not unit_id and isinstance(collateral, dict):
+        sections = (collateral.get("workbook") or {}).get("sections") or []
+        if sections and isinstance(sections[0], dict):
+            unit_id = str(
+                sections[0].get("learning_objective_id")
+                or sections[0].get("section_id")
+                or ""
+            ).strip()
+    unit_id = _sanitize_open_id(unit_id or run_dir.name, fallback=_FALLBACK_UNIT_ID)
+
+    event_type = ""
+    if isinstance(lesson_plan, dict):
+        event_type = str(lesson_plan.get("lesson_summary") or "").strip()
+    event_type = _sanitize_open_id(event_type, fallback=_FALLBACK_EVENT_TYPE)
+    return unit_id, event_type
+
+
+def _plan_unit_and_context(
+    run_dir: Path,
+    run_id: str | None,
+    *,
+    unit_id: str,
+    event_type: str,
+    source_fitness_diagnosis: str,
+    revision: int,
+) -> tuple[PlanUnit, ProductionContext]:
+    digest_seed = str(run_id) if run_id else run_dir.name
+    plan_unit = PlanUnit(
+        unit_id=unit_id,
+        event_type=event_type,
+        source_fitness_diagnosis=source_fitness_diagnosis,
+        weather_band="green",
+        modality_ref="workbook",
+    )
+    context = ProductionContext(
+        lesson_plan_revision=revision,
+        lesson_plan_digest=digest_seed[:8],
+    )
+    return plan_unit, context
+
+
+# ---------------------------------------------------------------------------
+# Author the produce() inputs from Irene's collateral + the enrichment overlay
 # ---------------------------------------------------------------------------
 
 
@@ -482,64 +375,64 @@ class WorkbookInputs:
     citations: tuple[dict[str, str], ...]
     source_ref_manifest: dict[str, str]
     vo_script_text: str
+    research_empty_reason: str | None
+    research_omitted_note: str | None
 
 
-def _plan_unit_and_context(
-    run_dir: Path, run_id: str | None, unit_id: str, revision: int
-) -> tuple[PlanUnit, ProductionContext]:
-    """The shared (enriched + constant) plan_unit / context construction."""
-    digest_seed = str(run_id) if run_id else run_dir.name
-    plan_unit = PlanUnit(
-        unit_id=unit_id,
-        event_type="present-trends",
-        source_fitness_diagnosis=(
-            f"in-graph composed run {digest_seed} — macro-trends deck (read-only)"
-        ),
-        weather_band="green",
-        modality_ref="workbook",
-    )
-    context = ProductionContext(
-        lesson_plan_revision=revision,
-        lesson_plan_digest=digest_seed[:8],
-    )
-    return plan_unit, context
-
-
-def _build_enriched_inputs(
-    card: dict[str, Any],
-    *,
+def _research_inputs(
     run_dir: Path,
-    run_id: str | None,
-    unit_id: str,
-    revision: int,
-    segments: tuple[TranscriptSegment, ...],
-    source_text: str,
-    vo_script_text: str,
-) -> WorkbookInputs:
-    """Author the produce() inputs FROM the frozen G0 enriched card payload (P5-S1).
+) -> tuple[tuple[ResearchEntry, ...], dict[str, str], str | None, str | None]:
+    """Read the S6 cited research entries + build their G2 manifest slice (D4).
 
-    The enriched corpus SHAPES the deliverable: sections + Bloom-leveled
-    exercises, learning objectives + per-LO Bloom, and gated byte-exact
-    further-reading all come from the projection. The run-DATA (segments,
-    figures, source set) still rides from ``run_dir`` — the enriched corpus does
-    not displace the transcript backbone.
+    F-2601: every rendered research DOI's ``source_ref`` is added to the G2
+    citation manifest so a corrupt/absent research source_ref FAILS G2.
+    F-2604: ``supports_segment_id`` is rendered only when present on the entry
+    (never inferred). Zero rows -> an explicit recorded-empty reason.
+
+    Remediation item-3 (DOI honesty): an entry whose ``source_id`` is not a
+    well-formed DOI is EXCLUDED from the rendered list (its ``source_ref`` is NOT
+    added to the manifest — nothing renders for it) and its omission is recorded
+    with a visible provenance note. Degrade-with-record; never a broken/fabricated
+    ``https://doi.org/`` link, never fail-loud on one bad entry.
     """
-    projection = project_enrichment_to_workbook_inputs(card)
-    plan_unit, context = _plan_unit_and_context(run_dir, run_id, unit_id, revision)
-    return WorkbookInputs(
-        plan_unit=plan_unit,
-        context=context,
-        spec=projection.spec,
-        segments=segments,
-        source_text=source_text,
-        learning_objectives=projection.learning_objectives,
-        answer_keys=projection.answer_keys,
-        further_reading=projection.further_reading,
-        research_entries=(),
-        citations=projection.citations,
-        source_ref_manifest=projection.source_ref_manifest,
-        vo_script_text=vo_script_text,
+    raw = research_entries_from_run(run_dir)
+    entries: list[ResearchEntry] = []
+    manifest: dict[str, str] = {}
+    omitted = 0
+    for e in raw:
+        if not isinstance(e, dict):
+            continue
+        source_ref = str(e.get("source_ref") or "")
+        source_id = str(e.get("source_id") or "").strip()
+        if not _DOI_SHAPE_RE.match(source_id):
+            # Malformed / absent DOI -> exclude from the rendered DOI list.
+            omitted += 1
+            continue
+        entries.append(
+            ResearchEntry(
+                citation_id=str(e.get("citation_id") or ""),
+                title=str(e.get("title") or ""),
+                source_ref=source_ref,
+                provider=str(e.get("provider") or ""),
+                source_id=source_id,
+                source_hash=e.get("source_hash"),
+                # F-2604: only if already present on the entry.
+                supports_segment_id=e.get("supports_segment_id"),
+            )
+        )
+        if source_ref:
+            manifest[source_ref] = str(e.get("source_hash") or _hash(source_ref))
+    reason = None if entries else _RESEARCH_EMPTY_REASON
+    omitted_note = (
+        None
+        if omitted == 0
+        else (
+            f"{omitted} research entr{'y' if omitted == 1 else 'ies'} omitted — "
+            "malformed/absent DOI (source_id failed DOI-shape validation); no "
+            "broken link rendered"
+        )
     )
+    return tuple(entries), manifest, reason, omitted_note
 
 
 def build_workbook_inputs(
@@ -547,178 +440,144 @@ def build_workbook_inputs(
     *,
     config: dict[str, Any] | None = None,
     run_id: str | None = None,
-) -> WorkbookInputs:
-    """Author the WorkbookSpec + all produce-time content, re-pointed to the run.
+) -> WorkbookInputs | None:
+    """Author the produce() inputs from Irene's collateral blueprint + the run.
 
-    v1 reuses the proven tejal/corpus-assessment assembly (the WorkbookSpec,
-    objectives, exercises, and further-reading are corpus-grounded constants);
-    the run-DATA (segments, figures, source set) is read from ``run_dir``.
-    Generalizing the lesson-plan -> WorkbookSpec adapter to an arbitrary corpus
-    is a named follow-on (out of scope for v1).
+    Returns ``None`` when the run declares no workbook (``declaration == "none"``
+    or absent collateral) — the caller records an explicit no-op skip (D3). Raises
+    :class:`WorkbookProducerActError` when ``declaration == "present"`` but the
+    blueprint is absent/unresolvable (D3 fail-loud).
     """
     cfg = config or _load_config()
     manifest_relpath = str(
         cfg.get("segment_manifest_relpath", _DEFAULT_SEGMENT_MANIFEST_RELPATH)
     )
     corpus_relpath = str(cfg.get("corpus_relpath", _DEFAULT_CORPUS_RELPATH))
-    unit_id = str(cfg.get("unit_id", _DEFAULT_UNIT_ID))
     revision = int(cfg.get("lesson_plan_revision", _DEFAULT_LESSON_PLAN_REVISION))
 
+    # Run-DATA first (a run that reached 07W always has segments; absence = a
+    # malformed run => fail loud, preserving the recoverable-error seam).
     segments = _load_segments(run_dir, manifest_relpath)
     source_text = _build_source_text(run_dir, corpus_relpath, segments)
     vo_script_text = "\n".join(seg.narration_text for seg in segments)
 
-    # P5-S1 consumption: when the run carries the frozen G0 enriched card payload
-    # (``<run_dir>/g0-enrichment.json``), the enriched corpus DISPLACES the
-    # hardcoded constants for the slots it covers (sections + Bloom-leveled
-    # exercises, learning objectives + per-LO Bloom, gated byte-exact
-    # further-reading). Absent the artifact, fall back to the proven constant
-    # assembly (backward-compatible non-enrichment runs). READ-ONLY: no network,
-    # no model — the frozen verdict is the single source of truth.
-    enriched_card = load_enrichment_card(run_dir)
-    if enriched_card is not None:
-        return _build_enriched_inputs(
-            enriched_card,
-            run_dir=run_dir,
-            run_id=run_id,
-            unit_id=unit_id,
-            revision=revision,
-            segments=segments,
-            source_text=source_text,
-            vo_script_text=vo_script_text,
+    # D2: Irene's authored collateral is the section/objective/depth authority
+    # (read once off run.json; the collateral rides the irene_pass1 lesson_plan).
+    lesson_plan = lesson_plan_from_run(run_dir)
+    collateral = lesson_plan.get("collateral") if isinstance(lesson_plan, dict) else None
+    if not isinstance(collateral, dict):
+        collateral = None
+    declaration = collateral.get("declaration") if isinstance(collateral, dict) else None
+
+    # D3 + remediation item-4 (F-2801): the ONLY legal skips are absent
+    # collateral or an explicit ``declaration=="none"``. Any OTHER value
+    # (typo / garbage / malformed shape) must FAIL-LOUD — never a silent skip.
+    # CollateralSpec's closed ``Literal`` + ``extra="forbid"`` red-reject it.
+    if not isinstance(collateral, dict) or declaration == "none":
+        return None  # explicit no-op skip (deck-only / absent collateral)
+    try:
+        cspec = CollateralSpec.model_validate(collateral)
+    except ValidationError as exc:
+        raise WorkbookProducerActError(
+            "workbook collateral is malformed or the declaration is not a valid "
+            "member of the closed set ('present' | 'none'); the workbook blueprint "
+            "is absent or unresolvable",
+            tag="workbook-producer.blueprint.unresolvable",
+        ) from exc
+    blueprint = cspec.workbook
+    if blueprint is None or not blueprint.sections:  # defensive (model guards this)
+        raise WorkbookProducerActError(
+            "workbook collateral declaration is 'present' but carries no sections",
+            tag="workbook-producer.blueprint.unresolvable",
         )
 
-    ch2_exercises, ch2_answers = _exercises(_CH2_KC, "src-slide-02")
-    ch3_exercises, ch3_answers = _exercises(_CH3_KC, "src-slide-05")
-    answer_keys = {**ch2_answers, **ch3_answers}
-
-    spec = WorkbookSpec(
-        sections=[
-            WorkbookSection(
-                section_id="sec-ch2-macro-trends",
-                learning_objective_id="obj-lo2-analyze-trends",
-                title="Chapter 2 — The Macro Trends (economic & human cost)",
-                depth_delta=DepthDeltaContract(
-                    deferred_from_slide="slide-02",
-                    deferred_depth=(
-                        "The system-design reframe of burnout the glance-deck "
-                        "only gestures at: burnout is not a resilience failure "
-                        "but a system-design problem. Over half of physicians "
-                        "report a burnout symptom, and the top driver is "
-                        "administrative bloat — so the daily workarounds "
-                        "clinicians invent are the innovation surface. The deck "
-                        "shows the 25% administrative-waste figure; the workbook "
-                        "argues WHY that waste is a concrete, redesignable "
-                        "innovation target rather than an inevitability."
-                    ),
-                    retained_on_slide=(
-                        "The single perception-tuned statistic per card "
-                        "($5.2 trillion NHE; 25% waste)."
-                    ),
-                ),
-                narrative_intent=(
-                    "Walk the reader from the economic and structural reality "
-                    "(national health expenditure growth and the consolidation "
-                    "of physicians into large systems) to the human cost "
-                    "(burnout as a system-design problem) and finally to the "
-                    "reframe that administrative friction is a targetable "
-                    "innovation opportunity. The point a busy clinician should "
-                    "leave with: the workarounds you invent to survive a broken "
-                    "EHR or admission process are exactly where redesign, "
-                    "automation, and AI can recover time and reduce burnout at "
-                    "the same time."
-                ),
-                exercises=ch2_exercises,
-            ),
-            WorkbookSection(
-                section_id="sec-ch3-case-for-change",
-                learning_objective_id="obj-lo4-root-cause",
-                title="Chapter 3 — The Case for Change (root-cause of failure)",
-                depth_delta=DepthDeltaContract(
-                    deferred_from_slide="slide-05",
-                    deferred_depth=(
-                        "What safe AI oversight actually requires, and why the "
-                        "leadership gap is a root-cause of systemic failure "
-                        "rather than a motivation deficit: adoption of clinical "
-                        "AI is already ahead of governance training, and "
-                        "physicians want influence over strategy but lack formal "
-                        "business preparation. The deck glances the gap; the "
-                        "workbook traces it to a training-infrastructure cause "
-                        "the learner is positioned to close."
-                    ),
-                    retained_on_slide=(
-                        "The leadership-gap contrast (67% want leadership vs "
-                        "18% trained)."
-                    ),
-                ),
-                narrative_intent=(
-                    "Develop the case for change across the knowledge explosion "
-                    "(static training cannot keep pace), the rising adoption of "
-                    "clinical AI ahead of oversight, the consumer shift toward a "
-                    "digital front door, and the leadership gap. Frame each as a "
-                    "root-cause analysis: the failure is structural (training "
-                    "infrastructure, governance, service design), and the "
-                    "physician who can bridge practice, business, and technology "
-                    "is the scarce, needed figure who resolves it."
-                ),
-                exercises=ch3_exercises,
-            ),
-            WorkbookSection(
-                section_id="sec-ch3-idea-vs-opportunity",
-                learning_objective_id="obj-lo3-idea-opportunity",
-                title="Bridge — From idea to vetted opportunity (introduced)",
-                depth_delta=DepthDeltaContract(
-                    deferred_from_slide="slide-06",
-                    deferred_depth=(
-                        "The distinction between a superficial idea and a "
-                        "rigorously vetted opportunity — introduced here and "
-                        "carried forward into the Opportunity Diagnostic. The "
-                        "deck names the forward pull; the workbook seeds the "
-                        "vocabulary (scan, size, pressure-test) the learner will "
-                        "apply next."
-                    ),
-                ),
-                narrative_intent=(
-                    "Close Part 2 by introducing the idea-versus-opportunity "
-                    "discipline: awareness of the macro trends is the starting "
-                    "point, and choosing to act on them — to pressure-test a gap "
-                    "into a vetted opportunity — is the defining move from "
-                    "awareness to agency."
-                ),
-            ),
-        ]
-    )
-
-    learning_objectives = (
-        LearningObjectiveBrief(
-            "obj-lo2-analyze-trends",
-            "analyze",
-            "Analyze the macro-economic and structural trends — administrative "
-            "burnout, healthcare consumerism, and technological acceleration — "
-            "that necessitate intrapreneurial physician leadership.",
-        ),
-        LearningObjectiveBrief(
-            "obj-lo3-idea-opportunity",
-            "analyze",
-            "Differentiate between a superficial idea and a rigorously vetted "
-            "opportunity using the core tenets of the Intrapreneurship Formula.",
-        ),
-        LearningObjectiveBrief(
-            "obj-lo4-root-cause",
-            "evaluate",
-            "Evaluate systemic operational failures through root-cause analysis "
-            "and defend the findings against the structural evidence.",
-        ),
-    )
-
-    # G2 citation manifest: every rendered citation resolves to a real source_ref.
-    source_ref_manifest: dict[str, str] = {}
+    # G0 enrichment overlay (resolution only — it may NOT author sections):
+    # exercises (Bloom-leveled) by home objective, LO statements/Bloom, gated
+    # further-reading, and the G2 citation/manifest pair.
+    exercises_by_objective: dict[str, list[Any]] = {}
+    overlay_lo: dict[str, LearningObjectiveBrief] = {}
+    further_reading: tuple[FurtherReadingEntry, ...] = ()
     citations: list[dict[str, str]] = []
-    for entry in _FURTHER_READING:
-        source_ref_manifest[entry.source_ref] = _hash(entry.title)
-        citations.append({"source_ref": entry.source_ref})
+    source_ref_manifest: dict[str, str] = {}
+    answer_keys: dict[str, str] = {}
+    card = load_enrichment_card(run_dir)
+    if card is not None:
+        projection = project_enrichment_to_workbook_inputs(card)
+        for sec in projection.spec.sections:
+            exercises_by_objective.setdefault(
+                sec.learning_objective_id, []
+            ).extend(sec.exercises)
+        overlay_lo = {lo.objective_id: lo for lo in projection.learning_objectives}
+        further_reading = projection.further_reading
+        citations = list(projection.citations)
+        source_ref_manifest = dict(projection.source_ref_manifest)
+        answer_keys = dict(projection.answer_keys)
 
-    plan_unit, context = _plan_unit_and_context(run_dir, run_id, unit_id, revision)
+    # Sections: collateral is authoritative; overlay exercises (when present)
+    # resolve into their HOME section by learning_objective_id.
+    #
+    # Remediation item-1 (MUST-FIX): two collateral sections may legally bind the
+    # SAME learning_objective_id (the model does not forbid it). Attaching the
+    # same overlay exercise objects to BOTH would duplicate exercise_id and crash
+    # ``assert_unique_collateral_ids``. So overlay exercises attach to the FIRST
+    # section binding a given objective only; later sections sharing that
+    # objective keep their own collateral-authored exercises.
+    sections = []
+    bound_objectives: list[str] = []
+    overlay_attached: set[str] = set()
+    for sec in blueprint.sections:
+        oid = sec.learning_objective_id
+        bound_objectives.append(oid)
+        overlay_ex = exercises_by_objective.get(oid)
+        if overlay_ex and oid not in overlay_attached:
+            sec = sec.model_copy(update={"exercises": list(overlay_ex)})
+            overlay_attached.add(oid)
+        sections.append(sec)
+    # Remediation item-6: carry the blueprint's kind through the rebuild (single
+    # value today; explicit so a future closed-set growth cannot silently revert).
+    spec = WorkbookSpec(sections=sections, kind=blueprint.kind)
+
+    # LO briefs: exactly one per distinct bound objective (no orphan / no
+    # phantom). Statement/Bloom from the overlay; a bound objective with no
+    # overlay resolution degrades with recorded in-workbook provenance (D2).
+    distinct_objectives = list(dict.fromkeys(bound_objectives))
+    learning_objectives = tuple(
+        overlay_lo.get(oid)
+        or LearningObjectiveBrief(
+            objective_id=oid,
+            bloom_level=_DEFAULT_LO_BLOOM,
+            statement=(
+                f"(objective statement unresolved for `{oid}` — no enrichment "
+                "overlay resolved this objective on this run)"
+            ),
+        )
+        for oid in distinct_objectives
+    )
+
+    # D4: research entries + their G2 manifest slice (folded into the same
+    # manifest; produce() adds the research citations to the G2 audit).
+    (
+        research_entries,
+        research_manifest,
+        research_empty_reason,
+        research_omitted_note,
+    ) = _research_inputs(run_dir)
+    for source_ref, source_hash in research_manifest.items():
+        source_ref_manifest.setdefault(source_ref, source_hash)
+
+    # D1: generalize the plan-unit header off the run's real lesson plan / corpus.
+    unit_id, event_type = _derive_plan_unit_fields(lesson_plan, collateral, run_dir)
+    source_fitness_diagnosis = (
+        f"companion workbook for in-graph composed run {run_id or run_dir.name}"
+    )
+    plan_unit, context = _plan_unit_and_context(
+        run_dir,
+        run_id,
+        unit_id=unit_id,
+        event_type=event_type,
+        source_fitness_diagnosis=source_fitness_diagnosis,
+        revision=revision,
+    )
 
     return WorkbookInputs(
         plan_unit=plan_unit,
@@ -728,16 +587,38 @@ def build_workbook_inputs(
         source_text=source_text,
         learning_objectives=learning_objectives,
         answer_keys=answer_keys,
-        further_reading=_FURTHER_READING,
-        research_entries=(),  # v1: live-research leg deferred (rendered as a note)
+        further_reading=further_reading,
+        research_entries=research_entries,
         citations=tuple(citations),
         source_ref_manifest=source_ref_manifest,
         vo_script_text=vo_script_text,
+        research_empty_reason=research_empty_reason,
+        research_omitted_note=research_omitted_note,
     )
 
 
-def produce_workbook(state: RunState, payload: dict[str, Any]) -> WorkbookSidecar:
-    """Assemble inputs from the running run + run WorkbookProducer.produce()."""
+def _skip_output() -> dict[str, Any]:
+    """The explicit no-op-skip contribution (D3): recorded, valid, no artifact."""
+    marker = "workbook declared none; no artifact produced"
+    return {
+        "workbook": {
+            "skipped": True,
+            "reason": marker,
+            "modality_ref": "workbook",
+        },
+        "workbook_producer": {
+            "specialist_id": "workbook_producer",
+            "skipped": True,
+            "reason": marker,
+        },
+    }
+
+
+def produce_workbook(state: RunState, payload: dict[str, Any]) -> WorkbookSidecar | None:
+    """Assemble inputs from the running run + run WorkbookProducer.produce().
+
+    Returns ``None`` when the run declares no workbook (D3 no-op skip).
+    """
     config = _load_config()
     run_dir = _resolve_run_dir(state, payload)
     if not run_dir.exists():
@@ -749,30 +630,44 @@ def produce_workbook(state: RunState, payload: dict[str, Any]) -> WorkbookSideca
     inputs = build_workbook_inputs(
         run_dir, config=config, run_id=str(run_id) if run_id is not None else None
     )
+    if inputs is None:
+        return None
     output_root = (
         payload.get("output_root")
         or config.get("output_root")
         or DEFAULT_WORKBOOK_OUTPUT_ROOT
     )
     producer = WorkbookProducer(output_root=output_root)
-    return producer.produce(
-        inputs.plan_unit,
-        inputs.context,
-        spec=inputs.spec,
-        segments=inputs.segments,
-        source_text=inputs.source_text,
-        citations=inputs.citations,
-        source_ref_manifest=inputs.source_ref_manifest,
-        vo_script_text=inputs.vo_script_text,
-        learning_objectives=inputs.learning_objectives,
-        answer_keys=inputs.answer_keys,
-        further_reading=inputs.further_reading,
-        research_entries=inputs.research_entries,
-        # DP6 (spec landmine): workbook-only diff justifies reuse; do not force a
-        # spurious fresh-gamma. Stamp the in-graph run id.
-        diff_files=["app/marcus/lesson_plan/workbook_producer.py"],
-        reuse_sha=(str(run_id)[:8] if run_id is not None else "WORKING"),
-    )
+    try:
+        return producer.produce(
+            inputs.plan_unit,
+            inputs.context,
+            spec=inputs.spec,
+            segments=inputs.segments,
+            source_text=inputs.source_text,
+            citations=inputs.citations,
+            source_ref_manifest=inputs.source_ref_manifest,
+            vo_script_text=inputs.vo_script_text,
+            learning_objectives=inputs.learning_objectives,
+            answer_keys=inputs.answer_keys,
+            further_reading=inputs.further_reading,
+            research_entries=inputs.research_entries,
+            research_empty_reason=inputs.research_empty_reason,
+            research_omitted_note=inputs.research_omitted_note,
+            # DP6 (spec landmine): workbook-only diff justifies reuse; do not force
+            # a spurious fresh-gamma. Stamp the in-graph run id.
+            diff_files=["app/marcus/lesson_plan/workbook_producer.py"],
+            reuse_sha=(str(run_id)[:8] if run_id is not None else "WORKING"),
+        )
+    except (WorkbookFidelityError, DuplicateCollateralIdError) as exc:
+        # Remediation item-2: S7 feeds UNTRUSTED upstream collateral/research into
+        # G1/G2/AC-5/id-uniqueness. A produce()-gate ValueError must error-PAUSE
+        # recoverably (dispatch-family), not hard-kill the walk — re-raise as the
+        # recoverable dispatch error (mirrors the kira/texas/motion fail seams).
+        raise WorkbookProducerActError(
+            f"workbook produce() gate failed on untrusted upstream inputs: {exc}",
+            tag="workbook-producer.gate-failed",
+        ) from exc
 
 
 def _sidecar_refs(sidecar: WorkbookSidecar) -> dict[str, Any]:
@@ -805,6 +700,25 @@ def act(state: RunState) -> dict[str, Any]:
     except WorkbookProducerActError as exc:
         state.model_resolution_trail.append(_trail_entry(last_entry, tag=exc.tag))
         raise
+    entries_count = state.cache_state.entries_count if state.cache_state is not None else 0
+    if sidecar is None:
+        # D3: declaration=="none" / absent collateral => explicit no-op skip.
+        return {
+            "model_resolution_trail": [
+                *state.model_resolution_trail,
+                _trail_entry(last_entry, tag="workbook-producer.skipped.declaration-none"),
+            ],
+            "cache_state": CacheState(
+                cache_prefix=json.dumps(
+                    _skip_output(),
+                    sort_keys=True,
+                    ensure_ascii=True,
+                    separators=(",", ":"),
+                    default=str,
+                ),
+                entries_count=entries_count + 1,
+            ).model_dump(mode="json"),
+        }
     output = {
         "workbook": _sidecar_refs(sidecar),
         "workbook_producer": {
@@ -813,7 +727,6 @@ def act(state: RunState) -> dict[str, Any]:
             "markdown_path": sidecar.markdown_path,
         },
     }
-    entries_count = state.cache_state.entries_count if state.cache_state is not None else 0
     return {
         "model_resolution_trail": [
             *state.model_resolution_trail,

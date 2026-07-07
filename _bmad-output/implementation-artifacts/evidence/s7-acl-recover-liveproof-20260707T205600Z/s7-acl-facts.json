@@ -1,0 +1,216 @@
+{
+  "story": "S7-AC-L",
+  "trial_id": "4c64db93-af02-41a2-9ef8-a7559b37e72f",
+  "corpus": "C:\\Users\\juanl\\Documents\\GitHub\\course-DEV-IDE-with-AGENTS-hybrid\\course-content\\courses\\tejal-c1m1-p3-opportunity",
+  "run_dir": "C:\\Users\\juanl\\Documents\\GitHub\\course-DEV-IDE-with-AGENTS-hybrid\\state\\config\\runs\\4c64db93-af02-41a2-9ef8-a7559b37e72f",
+  "bundle": "narrated-deck-with-workbook",
+  "guide": "hil-2026-apc-crossroads-classic",
+  "minted_at": "2026-07-07T20:56:03.067283+00:00",
+  "pause_sequence": [
+    "G0E",
+    "G0R",
+    "G1",
+    "G2B",
+    "G2C",
+    "G3",
+    "G4",
+    "G4A"
+  ],
+  "final_status": "completed",
+  "final_paused_gate": null,
+  "final_error_tag": null,
+  "workbook_contribution": {
+    "workbook": {
+      "asset_path": "_bmad-output/artifacts/workbooks/u01@1.md",
+      "asset_ref": "workbook-u01@1",
+      "citation_unsourced": 0,
+      "docx_path": "_bmad-output/artifacts/workbooks/u01@1.docx",
+      "fulfills": "u01@1",
+      "gamma_reuse_justified_by": "empty-intersection@4c64db93",
+      "markdown_path": "_bmad-output/artifacts/workbooks/u01@1.md",
+      "modality_ref": "workbook",
+      "numeric_audit_status": "FAIL",
+      "segment_coverage": {
+        "seg-01": true,
+        "seg-02": true,
+        "seg-03": true,
+        "seg-04": true,
+        "seg-05": true,
+        "seg-06": true,
+        "seg-07": true,
+        "seg-08": true,
+        "seg-09": true,
+        "seg-10": true,
+        "seg-11": true,
+        "seg-12": true,
+        "seg-13": true,
+        "seg-14": true
+      }
+    },
+    "workbook_producer": {
+      "docx_path": "_bmad-output/artifacts/workbooks/u01@1.docx",
+      "markdown_path": "_bmad-output/artifacts/workbooks/u01@1.md",
+      "specialist_id": "workbook_producer"
+    }
+  },
+  "workbook_markdown_path": "_bmad-output/artifacts/workbooks/u01@1.md",
+  "workbook_docx_path": "_bmad-output/artifacts/workbooks/u01@1.docx",
+  "workbook_md_len": 22591,
+  "ac1_tejal_leak": {
+    "present-trends": false,
+    "tejal-apc-c1-m1-p2": false,
+    "macro-trends": false
+  },
+  "ac1_no_tejal_leak": true,
+  "has_doi_org_link": true,
+  "workbook_docx_bytes": 12159585,
+  "collateral_declaration": "present",
+  "collateral_section_count": 6,
+  "collateral_section_titles": [
+    "Trait Overlap: Why Physicians Already Fit Innovation Work",
+    "Clinical Workflow as Design Thinking",
+    "Choosing the Arena: Inside vs. Outside the Institution",
+    "From Zero-Value Idea to Actionable Opportunity",
+    "First Principles Workbook: Deconstruct Before You Rebuild",
+    "Module Recap and Forward Link"
+  ],
+  "collateral_kind": "deck-companion-workbook",
+  "collateral_research_goals": [
+    "rg-01",
+    "rg-02",
+    "rg-03"
+  ],
+  "research_entries_count": 3,
+  "primary_doi": "10.5465/ambpp.2019.19399abstract",
+  "primary_source_ref": "retrieval:scite:10.5465/ambpp.2019.19399abstract",
+  "primary_title": "Intrapreneurship and Trust",
+  "doi_resolution": {
+    "status": 403,
+    "final_url": "https://journals.aom.org/doi/10.5465/AMBPP.2019.19399abstract"
+  },
+  "cost_report": {
+    "trial_id": "4c64db93-af02-41a2-9ef8-a7559b37e72f",
+    "measured_at": "2026-07-07T21:24:30.907713Z",
+    "total_cost_usd": 0.54937035,
+    "per_agent_breakdown": {
+      "cd": {
+        "agent_name": "cd",
+        "model_assigned": "gpt-5",
+        "call_count": 1,
+        "input_tokens": 8345,
+        "output_tokens": 1280,
+        "cost_usd": 0.02323125
+      },
+      "desmond": {
+        "agent_name": "desmond",
+        "model_assigned": "gpt-5-nano",
+        "call_count": 1,
+        "input_tokens": 8908,
+        "output_tokens": 4918,
+        "cost_usd": 0.0024126
+      },
+      "enrique": {
+        "agent_name": "enrique",
+        "model_assigned": "gpt-5",
+        "call_count": 3,
+        "input_tokens": 75,
+        "output_tokens": 30,
+        "cost_usd": 0.00039375
+      },
+      "gary": {
+        "agent_name": "gary",
+        "model_assigned": "gpt-5-nano",
+        "call_count": 1,
+        "input_tokens": 25,
+        "output_tokens": 10,
+        "cost_usd": 5.25e-06
+      },
+      "irene": {
+        "agent_name": "irene",
+        "model_assigned": "gpt-5",
+        "call_count": 1,
+        "input_tokens": 76240,
+        "output_tokens": 10432,
+        "cost_usd": 0.19962
+      },
+      "irene_pass1": {
+        "agent_name": "irene_pass1",
+        "model_assigned": "gpt-5.4",
+        "call_count": 3,
+        "input_tokens": 58432,
+        "output_tokens": 11768,
+        "cost_usd": 0.3226
+      },
+      "kira": {
+        "agent_name": "kira",
+        "model_assigned": "gpt-5-nano",
+        "call_count": 1,
+        "input_tokens": 25,
+        "output_tokens": 10,
+        "cost_usd": 5.25e-06
+      },
+      "motion_planner": {
+        "agent_name": "motion_planner",
+        "model_assigned": "gpt-5-nano",
+        "call_count": 1,
+        "input_tokens": 25,
+        "output_tokens": 10,
+        "cost_usd": 5.25e-06
+      },
+      "quinn_r": {
+        "agent_name": "quinn_r",
+        "model_assigned": "gpt-5",
+        "call_count": 4,
+        "input_tokens": 100,
+        "output_tokens": 40,
+        "cost_usd": 0.000525
+      },
+      "texas": {
+        "agent_name": "texas",
+        "model_assigned": "gpt-5-nano",
+        "call_count": 2,
+        "input_tokens": 50,
+        "output_tokens": 20,
+        "cost_usd": 1.05e-05
+      },
+      "vera": {
+        "agent_name": "vera",
+        "model_assigned": "gpt-5",
+        "call_count": 1,
+        "input_tokens": 25,
+        "output_tokens": 10,
+        "cost_usd": 0.00013125
+      },
+      "vision": {
+        "agent_name": "vision",
+        "model_assigned": "gpt-5.5",
+        "call_count": 1,
+        "input_tokens": 25,
+        "output_tokens": 10,
+        "cost_usd": 0.000425
+      },
+      "workbook_producer": {
+        "agent_name": "workbook_producer",
+        "model_assigned": "gpt-5-nano",
+        "call_count": 1,
+        "input_tokens": 25,
+        "output_tokens": 10,
+        "cost_usd": 5.25e-06
+      }
+    },
+    "per_model_breakdown": {
+      "gpt-5": 0.22390125,
+      "gpt-5-nano": 0.0024441,
+      "gpt-5.4": 0.3226,
+      "gpt-5.5": 0.000425
+    },
+    "cascade_config_digest": "24d8a6c369cc432600d5b28e439a0fcdefc9421a772d796b63dc2d767630b74b",
+    "pricing_table_digest": "01ac90069cc844ac60b923093ae48c143046feacece6d3738928a3d515f03392",
+    "langsmith_trace_url": "https://smith.langchain.com/traces/4c64db93-af02-41a2-9ef8-a7559b37e72f",
+    "drift_alerts": [],
+    "budget_status": {
+      "state": "no-cap",
+      "over_by_usd": 0.0
+    }
+  }
+}

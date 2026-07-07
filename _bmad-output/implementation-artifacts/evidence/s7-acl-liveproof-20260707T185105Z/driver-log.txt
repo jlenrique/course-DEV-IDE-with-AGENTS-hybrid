@@ -1,0 +1,33 @@
+[2026-07-07T18:52:53.322410+00:00] env: OPENAI=sk-proj...oc0A (len 164); LANGSMITH+GAMMA present
+[2026-07-07T18:52:55.558377+00:00] trial_id=40f3a90a-60fc-4c0d-b4a7-db51b03bb24e bundle=narrated-deck-with-workbook selection=deck=True motion=True workbook=True
+[2026-07-07T18:52:55.558377+00:00] selection_code (standard-A pick)=SGP-40f3a90a60fc4c0db4a7db51b03bb24e-A:hil-2026-apc-crossroads-classic
+[2026-07-07T18:52:55.558377+00:00] === start_trial (REAL composed Part-3 walk; first pause expected G0E) ===
+[2026-07-07T18:54:39.235113+00:00] start_trial returned after 104s
+[2026-07-07T18:54:39.244559+00:00] [loop 0] status=paused-at-gate gate=G0E err=None
+[2026-07-07T18:54:39.254526+00:00] resume approve G0E (cap=40)
+[2026-07-07T18:54:55.775539+00:00]   -> status=paused-at-gate paused_gate=G0R err=None
+[2026-07-07T18:54:55.785766+00:00] [loop 1] status=paused-at-gate gate=G0R err=None
+[2026-07-07T18:54:55.793365+00:00] resume approve G0R (cap=40)
+[2026-07-07T18:55:20.478993+00:00]   -> status=paused-at-gate paused_gate=G1 err=None
+[2026-07-07T18:55:20.488747+00:00] [loop 2] status=paused-at-gate gate=G1 err=None
+[2026-07-07T18:55:20.495750+00:00] resume approve G1 (cap=40)
+[2026-07-07T18:58:17.199036+00:00]   -> status=paused-at-gate paused_gate=G2B err=None
+[2026-07-07T18:58:17.210226+00:00] [loop 3] status=paused-at-gate gate=G2B err=None
+[2026-07-07T18:58:17.218781+00:00] resume approve G2B (cap=40)
+[2026-07-07T18:59:06.207877+00:00]   -> status=paused-at-gate paused_gate=G2C err=None
+[2026-07-07T18:59:06.220997+00:00] [loop 4] status=paused-at-gate gate=G2C err=None
+[2026-07-07T18:59:06.230172+00:00] resume approve G2C (cap=40)
+[2026-07-07T19:18:14.739337+00:00]   -> status=paused-at-gate paused_gate=G3 err=None
+[2026-07-07T19:18:14.751914+00:00] [loop 5] status=paused-at-gate gate=G3 err=None
+[2026-07-07T19:18:14.758282+00:00] resume approve G3 (cap=40)
+[2026-07-07T19:18:37.718239+00:00]   -> status=paused-at-gate paused_gate=G4 err=None
+[2026-07-07T19:18:37.733304+00:00] [loop 6] status=paused-at-gate gate=G4 err=None
+[2026-07-07T19:18:37.741309+00:00] resume approve G4 (cap=40)
+[2026-07-07T19:18:58.065438+00:00]   -> status=paused-at-gate paused_gate=G4A err=None
+[2026-07-07T19:18:58.077768+00:00] [loop 7] status=paused-at-gate gate=G4A err=None
+[2026-07-07T19:18:58.085981+00:00] resume approve G4A (cap=40)
+[2026-07-07T19:20:18.517564+00:00]   -> status=paused-at-error paused_gate=None err=workbook-producer.segment-manifest.empty
+[2026-07-07T19:20:18.517564+00:00] ERROR-PAUSE after G4A: workbook-producer.segment-manifest.empty
+[2026-07-07T19:20:18.536788+00:00] workbook md=None docx=None
+[2026-07-07T19:20:20.055032+00:00] DOI 10.3991/ijac.v17i2.45555 -> 200 https://online-journals.org/index.php/i-jac/article/view/45555
+[2026-07-07T19:20:20.074192+00:00] === S7 AC-L facts written: final_status=paused-at-error workbook_md=None no_tejal_leak=None sections=5 research_entries=3 doi=10.3991/ijac.v17i2.45555 ===

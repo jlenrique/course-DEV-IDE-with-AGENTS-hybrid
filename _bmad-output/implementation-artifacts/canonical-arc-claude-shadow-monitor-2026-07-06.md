@@ -391,3 +391,310 @@ All 6 checks PASS. #1 commit integrity: exactly the S6 set (code + audit allowli
 - **SOP-025 (shadow-monitor close poll): CONCUR** — commit integrity clean, fix real in committed code, recover-witness single-pass sha-verified, AC-7 committed, post-commit green 64/1-skip, arc complete.
 
 **ARC COMPLETE: Canonical Production Conversation — S0·S1·S2·S3·S4·S5·S6 ALL CLOSED + LIVE-PROVEN.** Every built-but-dormant ceremony (styleguide pick, CD resolution, Gary parity + FAIL-LOUD, G0 enrichment, Tracy/research Scite-canonical) is now a STANDING property of a canonical Marcus-SPOC run. NEXT: S7 (workbook — ⛔ operator review/edit/approval checkpoint BEFORE dev dispatch) + S8 (composed proof). OWED: KG/ONBOARDING regen (~3 sessions).
+---
+
+## SOP-026 - S7 Phase-1 workbook-generalization spec pre-dispatch review (2026-07-07 12:19 -04:00, Codex shadow monitor) - RELAYED
+
+**Scope reviewed:** `_bmad-output/implementation-artifacts/canonical-arc-s7-workbook-generalization.md` plus the current workbook producer, collateral schema, research wiring, bundle catalog, and composition seams. Branch `dev/workbook-2026-07-06` is synced to origin; the S7 spec is currently untracked, with unrelated strays still excluded. Review was read-only except for this monitor ledger update.
+
+**Verdict: CONCUR-WITH-FINDINGS; do not dispatch dev until the P1 amendments below are applied.** The Phase-1 fence is directionally right: S7 is producer generalization, not the Phase-2 lesson-plan-as-rationale platform; it correctly keeps learner-ready prose, semantic audit, word-form numeric coverage, collateral-to-selection, course/SME registry, course purpose, and projector family out of scope. The material gaps are contract precision at the producer/citation/selection seams.
+
+**F-2601 [P1] DOI rendering can pass without G2 actually auditing the DOI entries.** The spec requires research_entries to render and "G2 passes" (`canonical-arc-s7-workbook-generalization.md:47`), but current `WorkbookProducer.produce()` runs G2 only over `citations` + `source_ref_manifest` (`app/marcus/lesson_plan/workbook_producer.py:891-895`). The live DOI block renders separately from `research_entries` (`workbook_producer.py:690-702`). A dev could satisfy visible DOI rendering while the DOI source_refs are outside citation fidelity. **Required amendment:** AC-4 must say every rendered research_entry `source_ref` is included in the citation audit manifest, and G2 fails if a rendered research DOI lacks its source_ref/hash. Add a RED test that deletes/corrupts one research source_ref from the manifest and proves G2 fails.
+
+**F-2602 [P1] `declaration=="none"` is underspecified when the workbook graph is already selected.** D3 says `declaration=="none"` ships deck-only (`canonical-arc-s7-workbook-generalization.md:32`), while S7 explicitly leaves `collateral -> ComponentSelection` derivation to Phase 2 (`:21`). Today the operator-picked `narrated-deck-with-workbook` bundle includes workbook (`app/marcus/lesson_plan/bundle_catalog.py:228-232`), and 07W is pruned only by component selection (`app/marcus/lesson_plan/composition.py:73-77, 128-135`). **Required amendment:** specify the exact 07W behavior for `declaration=="none"` under a selected workbook bundle: pre-dispatch prune, explicit skipped contribution/sidecar, or no-op return. Add a negative twin proving no stale workbook artifact and no invalid specialist return contract.
+
+**F-2603 [P2] CollateralSpec vs G0 enrichment precedence remains ambiguous.** The spec properly flags the SSOT fork (`canonical-arc-s7-workbook-generalization.md:18`), but D2/AC-2 still say "collateral + enrichment" without a conflict rule (`:29`, `:45`). Current enriched projection consumes the G0 card (`app/marcus/lesson_plan/workbook_enrichment.py:296-307`); current 07W does not consume `lesson_plan["collateral"]`. **Required amendment:** pin deterministic precedence before dispatch. Recommended: `CollateralSpec` owns intended artifact structure and LO/section bindings; G0 enrichment supplies deterministic resolved content slots, exercises, readings, and citations; mismatches/orphans either fail loud at zero-blueprint/structural mismatch or degrade with recorded provenance for per-section missing data. Add synthetic conflict witnesses: collateral section absent from enrichment, enrichment extra LO/section, and title/depth mismatch.
+
+**F-2604 [P2] "Each DOI bound to the claim/segment it supports" overreaches the current S6 payload.** D4 requires each DOI to be bound to the claim/segment it supports (`canonical-arc-s7-workbook-generalization.md:35`). Current S6 `CitedResearchEntry` carries citation_id/source_ref/provider/source_id/title/source_hash only (`app/marcus/orchestrator/research_citation.py:51-62`); workbook `ResearchEntry.supports_segment_id` is optional (`app/marcus/lesson_plan/workbook_producer.py:240-246`). **Required amendment:** either relax S7 Phase 1 to "render DOI with source_ref/provider/citation_id and optional support binding if present," or name a deterministic binding source from the envelope. Do not let 07W infer semantic claim support; that crosses into the deferred semantic-audit/quality arc.
+
+**Open questions for the S7 party before dev dispatch:**
+- Which exact non-tejal live corpus is the AC-L witness? The spec says "operator-named" (`canonical-arc-s7-workbook-generalization.md:51`); naming it before dispatch avoids a late invalid witness.
+- Should S7 update only the 07W adapter to read `research_entries_from_envelope()` (`app/marcus/orchestrator/research_wiring.py:632-642`), or also update the producer G2 contract? Monitor recommendation: both. Visible DOI rendering without G2 coverage is too weak for S7 close.
+
+**Recommendations:** amend the spec in-place before green-light; keep Tier-1/no-manifest-edit as written; keep Irene producer edits out of scope unless the party explicitly re-scopes; require the first dev task to be a RED-first test set for F-2601/F-2602/F-2603 before implementation. Once amended, proceed to fresh dev RED-first under the existing T11 rhythm.
+
+---
+
+## SOP-027 - S7 amended-spec re-poll (2026-07-07 12:42 -04:00, Codex shadow monitor) - RELAYED
+
+**Scope reviewed:** amended `_bmad-output/implementation-artifacts/canonical-arc-s7-workbook-generalization.md`, branch/status/log, canonical ledger tail, and the code lines behind the newly named tejal-metadata leak. No production/test/story artifact was edited by this monitor; this entry is the only write.
+
+**Verdict: CONCUR. S7 Phase-1 spec is now cleared for fresh-dev RED-first, with one operator input still needed before the AC-L live leg.** No new commits are present; HEAD remains `1c3df92d` / origin synced. The S7 spec remains untracked, but it is materially amended and marked ready for RED-first. No dev or evidence artifacts are visible yet.
+
+**F-2601 CLOSED AT SPEC LEVEL.** D4/AC-4 now explicitly requires every rendered `research_entry.source_ref` to enter the G2 citation audit manifest and requires a RED corruption/deletion test that forces G2 red. This closes the prior "visible DOI but unaudited DOI" hole.
+
+**F-2602 CLOSED AT SPEC LEVEL.** D3/AC-3 now specifies `declaration=="none"` under a selected workbook bundle as an explicit skipped/no-op contribution with valid empty specialist return contract, no stale artifact, and no fabricated scaffold. This is the right S7-local behavior while the `collateral -> ComponentSelection` prune remains Phase-2.
+
+**F-2603 CLOSED AT SPEC LEVEL.** D2/AC-2 now pins precedence: `CollateralSpec` owns intended artifact structure and LO/section bindings; G0 enrichment is a deterministic resolution overlay for exercises/readings/citations. The spec also requires conflict witnesses for collateral-vs-enrichment mismatch.
+
+**F-2604 CLOSED AT SPEC LEVEL.** D4/AC-4 now says DOI rows render `source_ref`/`provider`/`citation_id`, and `supports_segment_id` only if already present. The producer must not infer semantic claim/segment support; that remains in the deferred semantic-audit arc.
+
+**New positive catch folded by the S7 party:** the spec now names the reachable live-path tejal leak in `_plan_unit_and_context`: `_DEFAULT_UNIT_ID="tejal-apc-c1-m1-p2-trends"` plus hardcoded `event_type="present-trends"` / macro-trends diagnosis render into the workbook H1/overview (`_act.py:74, 487-505`; `workbook_producer.py:498, 507`). I independently verified those code lines. AC-1/AC-L now include header/title leak checks; this is material and correctly in-scope for S7.
+
+**Remaining open input:** the AC-L corpus is still operator-named. The amended spec correctly makes that a live-leg input, not a dev RED-first blocker. Before AC-L, name a non-tejal, literature-rich corpus likely to produce Irene collateral plus at least one research_goal.
+
+**Recommendation:** proceed to fresh dev RED-first. First monitor dev-poll should verify the promised RED set exists before implementation credit: tejal header leak, CollateralSpec provenance/precedence, `declaration=="none"` no-op return, research_entries under G2 with corrupted-source red, and full-tree token/baseline sweep.
+
+---
+
+## SOP-028 - S7 fresh-dev diff poll (2026-07-07 13:22 -04:00, Codex shadow monitor) - RELAYED
+
+**Scope reviewed:** current uncommitted S7 production/test diff, branch/status/log, recent artifacts, and course-content status. No tests were run by this monitor poll. No production/test/story files were edited by this monitor; this ledger entry is the only write.
+
+**State:** HEAD remains `1c3df92d` / origin synced; no commits yet. Fresh S7 dev work is now visible in `app/specialists/workbook_producer/_act.py`, `workbook_enrichment.py`, `workbook_producer.py`, `collateral_spec.py` + schema/changelog and producer tests. The diff also shows generated/stray artifacts and a course-content rename/untracked directory that need disposition before commit.
+
+**Positive verification:** The implementation is directionally aligned with SOP-027. It removes the tejal constant assembly from the reachable producer, generalizes plan-unit metadata, adds `WorkbookSpec.kind`, reads run.json through model-layer helpers in `workbook_enrichment.py`, treats enrichment as a resolution overlay, folds research DOI source_refs into G2, renders `citation_id`, records an explicit empty research reason, adds no-op skip behavior for `declaration=="none"`, and adds a new S7 RED-floor test module covering AC-1/2/3/4.
+
+**F-2801 [P1] Unknown/malformed collateral declarations silently skip instead of failing loud.** In `_act.py`, after reading a collateral dict, the code returns `None` for any `declaration != "present"` that is not exactly `"none"` (`return None  # unknown declaration => conservative skip`). That means a malformed persisted `collateral` object such as `{"declaration":"workbook"}` records a valid skip rather than surfacing a producer/contract error. The spec only grants skip to absent collateral or explicit `declaration=="none"`; a present-but-invalid collateral dict should be fail-loud, especially because `CollateralSpec` has `extra="forbid"` and a closed declaration enum. **Recommendation:** change the branch to validate the dict unless it is exactly absent or `"none"`; if validation fails, raise `WorkbookProducerActError` with the blueprint/unresolvable tag. Add a RED test for unknown declaration and malformed collateral shape.
+
+**F-2802 [P2] Course-content rename/untracked corpus material needs explicit disposition before commit.** `git status` shows `R course-content/courses/tejal-c1m1-p3-opportunity/... -> course-content/courses/tejal-c1m1-p3-opportunity-raw/...` plus an untracked `course-content/courses/tejal-c1m1-p3-opportunity/` directory. This is outside the narrow producer/test/schema diff and is also tejal-named, so it is not the pending non-tejal AC-L witness corpus. **Recommendation:** before staging, either document why this content move is in S7 scope or exclude/revert it from the commit. Do not let accidental course-content reshaping ride with the producer-generalization story.
+
+**Evidence gap to verify at next poll:** I see S7 RED-floor tests in the tree, but no committed or ledgered test-output evidence yet. The next monitor dev-poll should verify the RED-first record and focused green output for: tejal header leak, CollateralSpec authority/precedence, `declaration=="none"` no-op, malformed declaration fail-loud after F-2801 remediation, research_entries under G2 with corrupted-source red, and the token/baseline sweep.
+
+**Verdict: CONCUR-WITH-FINDINGS.** The core implementation shape is promising and addresses F-2601..F-2604 in code, but F-2801 should be remediated before story-close, and F-2802 must be explicitly dispositioned before commit hygiene can pass.
+
+---
+
+## SOP-029 - S7 remediation re-poll (2026-07-07 14:12 -04:00, Codex shadow monitor) - RELAYED
+
+**Scope reviewed:** current uncommitted S7 diff, `_act.py` declaration handling, new `test_workbook_s7_remediation.py`, course-content status, branch/log. No tests were run by this monitor poll. No production/test/story files were edited by this monitor; this ledger entry is the only write.
+
+**State:** HEAD remains `1c3df92d`; no S7 commit yet. The dev lane has added a remediation test module and updated `_act.py` beyond SOP-028, including 3-lane review remediation items.
+
+**F-2801 CLOSED IN CODE/TEST SHAPE.** `_act.py` no longer silently skips unknown declarations. The legal skip remains absent collateral or explicit `declaration=="none"`; any other malformed/unknown collateral dict now goes through `CollateralSpec.model_validate()` and raises `WorkbookProducerActError` tagged `workbook-producer.blueprint.unresolvable` on validation failure. `test_workbook_s7_remediation.py` includes the F-2801 remediation floor. Next close poll still needs test-output evidence, but the code shape addresses the finding.
+
+**F-2802 REMAINS OPEN.** `git status` still shows a tracked rename from `course-content/courses/tejal-c1m1-p3-opportunity/...` to `course-content/courses/tejal-c1m1-p3-opportunity-raw/...` plus an untracked replacement `course-content/courses/tejal-c1m1-p3-opportunity/` directory. This remains outside the narrow producer/test/schema surface and still needs explicit disposition before staging/commit.
+
+**Additional dev-lane signal:** the new remediation test file names several 3-lane fixes beyond Codex SOP-028: shared-LO duplicate exercise IDs, recoverable wrapping for `produce()` gate failures, malformed DOI omission with provenance, explicit degrade-provenance rendering, and carrying `WorkbookSpec.kind` through rebuild. These are plausible hardening items; the next monitor poll should verify they are either all in scope via the 3-lane review record or explicitly recorded in the story close notes.
+
+**Verdict: CONCUR-WITH-FINDINGS.** F-2801 is resolved at code/test-shape level; F-2802 remains the active commit-hygiene blocker. Still waiting on focused test evidence, RED-first record, AC-L corpus naming, live witness, commit, and close poll.
+
+---
+
+## SOP-030 - S7 AC-L live-witness start poll (2026-07-07 14:52 -04:00, Codex shadow monitor) - RELAYED
+
+**Scope reviewed:** repo status/log, evidence directory `_bmad-output/implementation-artifacts/evidence/s7-acl-liveproof-20260707T185105Z/`, live Python processes, and the AC-L driver. No tests were run by this monitor poll. No production/test/story files were edited by this monitor; this ledger entry is the only write.
+
+**State:** HEAD remains `1c3df92d`; no S7 commit yet. A new AC-L evidence directory exists with `.ts`, `s7_acl_driver.py`, `driver-log.txt`, and `walk-log.txt`. At this poll the logs are still empty and no `s7-acl-facts.json`, copied workbook, or `PROOF.md` exists yet. A Python process started at 14:52 local appears to be running the live-witness lane. **Do not score AC-L yet.**
+
+**Driver intent observed:** the driver starts a real production trial on `course-content/courses/tejal-c1m1-p3-opportunity` with `narrated-deck-with-workbook`, default-ON enrichment/research, standard-A styleguide pick, HIL auto-approval loop, and evidence capture for workbook MD/DOCX, collateral, research entries, DOI resolution, and no-tejal-leak checks. It explicitly keeps `MARCUS_G0_DISPATCH_LIVE` unset (deterministic G0 pre-pass), leaves `MARCUS_G0_ENRICHMENT_ACTIVE` and `MARCUS_RESEARCH_DISPATCH_LIVE` unset (default-ON), and uses a 3000s watchdog.
+
+**Open finding carried:** F-2802 remains open at this snapshot: the same course-content rename/untracked replacement directory is still visible in `git status`. If the driver uses that untracked replacement corpus intentionally as the AC-L witness, the final commit still needs explicit disposition for what is staged vs excluded and why.
+
+**Verdict: IN-PROGRESS / NO PASS YET.** Wait for the live driver to finish and produce facts/proof before claiming AC-L. Next poll should inspect `s7-acl-facts.json`, workbook artifacts, driver/walk logs, DOI resolution, no-tejal leak result, G1/G2/G3/AC-5/AC-8 status, and whether F-2802 was resolved.
+
+---
+
+## SOP-031 - S7 AC-L live-witness progress poll (2026-07-07 15:02 -04:00, Codex shadow monitor) - RELAYED
+
+**Scope reviewed:** repo status/log, evidence directory `_bmad-output/implementation-artifacts/evidence/s7-acl-liveproof-20260707T185105Z/`, driver/walk logs, live Python processes, and run state under `state/config/runs/40f3a90a-60fc-4c0d-b4a7-db51b03bb24e/`. No production/test/story files were edited by this monitor; this ledger entry is the only write.
+
+**State:** AC-L is still in progress and not scoreable. Driver log shows the real Part-3 composed run started, reached and approved G0E, G0R, G1, and G2B, then reached G2C and began `resume approve G2C`. The persisted run state currently reports `status=paused-at-gate`, `paused_gate=G2C`, `paused_error_tag=None`; no `s7-acl-facts.json`, copied workbook, or proof file exists yet. Python processes from the 14:52 local launch are still present.
+
+**Positive progress:** The live run has exercised default-ON G0E/G0R and research/Gamma/Kling surfaces far enough to produce real run artifacts under `state/config/runs/40f3a90a-60fc-4c0d-b4a7-db51b03bb24e/`, including `g0-enrichment.json`, `irene-refinement.json`, `ratified-los.json`, `cost-report.*`, `decision-card-G2C.json`, Gary export, and motion output. This is useful progress but not AC-L completion.
+
+**New hygiene note:** `state/config/gamma-styleguide-picks.jsonl` is now modified by the live witness, presumably from the scripted standard-A styleguide pick. This is expected runtime evidence, but it must be dispositioned at commit time like other live-run artifacts; do not stage it accidentally unless the story explicitly treats it as evidence.
+
+**Open finding carried:** F-2802 remains open; the course-content rename/untracked replacement directory is still visible. The live witness uses `course-content/courses/tejal-c1m1-p3-opportunity` as its corpus path, so the final close must explain whether this untracked replacement corpus is intended evidence/input and whether any tracked rename belongs in the S7 commit.
+
+**Verdict: IN-PROGRESS / NO PASS YET.** Continue waiting for the driver to finish. Next poll should score only after facts/proof/workbook artifacts exist and should verify no retry-to-green, DOI resolution, no tejal header leak, 07W contribution, and G1/G2/G3/AC-5/AC-8 results.
+
+---
+
+## SOP-032 - S7 AC-L live-witness honest RED (2026-07-07 15:22 -04:00, Codex shadow monitor) - RELAYED
+
+**Scope reviewed:** repo status/log, completed evidence directory `_bmad-output/implementation-artifacts/evidence/s7-acl-liveproof-20260707T185105Z/`, `driver-log.txt`, `s7-acl-facts.json`, `cost-report.json`, and current uncommitted status. No production/test/story files were edited by this monitor; this ledger entry is the only write.
+
+**State:** AC-L has produced a scoreable first-run result, and it is not a pass. Trial `40f3a90a-60fc-4c0d-b4a7-db51b03bb24e` reached the workbook leg but ended `paused-at-error` with final error tag `workbook-producer.segment-manifest.empty`. The evidence shows no workbook contribution, no workbook markdown path, and no workbook docx path. This is an honest live RED, not a close witness.
+
+**Positive proof retained:** the run still proves important S7 preconditions. The real composed path advanced through G0E, G0R, G1, G2B, G2C, G3, G4, and G4A before 07W failure. Irene emitted `collateral.declaration=present`, `kind=deck-companion-workbook`, five collateral sections, two research goals, and three research entries. Primary DOI `10.3991/ijac.v17i2.45555` resolved over HTTP 200 to the journal page. This supports the conclusion that the failure is at the 07W workbook-production integration boundary, not at collateral or research generation.
+
+**Live RED diagnosis:** `workbook-producer.segment-manifest.empty` means the current S7 producer path is still dependent on a segment manifest that is absent or empty for the composed Part-3 live run. Because no workbook artifact was produced, AC-L cannot yet score the no-tejal workbook leak check, DOI workbook rendering, G2 workbook citation coverage, or DOCX/MD output requirements. Do not claim AC-L pass on collateral/research success alone.
+
+**Open finding carried:** F-2802 remains open. The course-content rename/untracked replacement directory is still visible, and the live witness used `course-content/courses/tejal-c1m1-p3-opportunity`. `state/config/gamma-styleguide-picks.jsonl` also remains a live-runtime modification requiring explicit disposition. These are commit-hygiene blockers until staged/excluded intentionally.
+
+**Recommendations:** treat this as first-run-stands RED evidence. Remediate the 07W segment source contract: either make the producer consume the production envelope/transcript source available in the composed run, or make the expected segment manifest path/creation explicit before 07W dispatch. Then rerun AC-L as a recover witness, preserving the original error-pause evidence. Keep S7 open until a live run produces the workbook artifacts and passes the S7 assertions.
+
+**Verdict: AC-L HONEST RED / S7 NOT CLOSE-READY.** The team has useful live evidence and a narrowed integration defect, but S7 Phase 1 cannot close until the workbook leg recovers and passes.
+
+---
+
+## SOP-033 - S7 roadblock advisory: segment manifest contract mismatch (2026-07-07 15:36 -04:00, Codex shadow monitor) - RELAYED
+
+**Scope reviewed:** the AC-L error-pause facts, current `_act.py` segment loader, and live run artifact `state/config/runs/40f3a90a-60fc-4c0d-b4a7-db51b03bb24e/exports/segment-manifest-storyboard-b.yaml`. No production/test/story files were edited by this monitor; this ledger entry is the only write.
+
+**Roadblock refinement:** the live run's storyboard-B segment manifest is not missing and is not byte-empty. It exists at the expected `_act.py` default path (`exports/segment-manifest-storyboard-b.yaml`), is 7706 bytes, and contains 9 `segments` rows with `slide_id` values `slide-01` through `slide-09` and non-empty `narration_text`. The reason `_load_segments()` yields `workbook-producer.segment-manifest.empty` is that every row has blank `segment_id` and blank `id`; the loader computes `seg_id = segment_id or id`, then silently skips the row when `seg_id` is blank. In this production artifact shape, `slide_id` is the only stable segment key.
+
+**Recommendation to Claude agents:** treat this as a contract mismatch at the 07W adapter, not as a reason to synthesize proof-only data. The shortest product-aligned recovery is RED-first:
+
+1. Add a failing fixture/test for the actual production manifest shape: top-level `segments`, blank `segment_id`/`id`, present `slide_id`, present `narration_text`. Expected behavior: 07W loads the rows using `slide_id` as the deterministic segment id/source anchor, not `empty`.
+2. Patch `_load_segments()` to prefer `segment_id`, then `id`, then `slide_id` when `slide_id` is present and non-empty. If all three are absent, keep fail-loud/malformed behavior. Also keep fail-loud if narration text is absent; do not fabricate transcript prose.
+3. Keep the upstream question open but non-blocking for S7: the manifest producer probably should populate `segment_id`, but S7 can legitimately accept the production manifest's `slide_id` as the workbook transcript anchor because the figure mapping and source refs already key off `slide_id`.
+4. Do not repair this by changing the AC-L driver, copying VTTs into a synthetic manifest, or bypassing G1/AC-5. The recovery witness must prove the real production run artifact can feed 07W.
+
+**Second-order caution:** the same manifest currently has 9 rows but only 1 unique narration string. That may be a separate upstream Enrique/compositor/G5 issue, or it may be acceptable for this composed proof depending on the segment contract. Do not bundle a speculative fix into the segment-id remediation. First make 07W consume the real manifest shape; then let the existing workbook gates score transcript coverage/fidelity honestly. If repeated narration later fails a gate, route it to the producer of the narration/manifest artifact rather than masking it in 07W.
+
+**Open finding carried:** F-2802 remains open. The course-content rename/untracked replacement directory and the modified `state/config/gamma-styleguide-picks.jsonl` still need explicit commit disposition.
+
+**Verdict: ROADBLOCK ACTIONABLE.** The failure has a narrow RED-first recovery path: accept `slide_id` as the production segment identity fallback, preserve fail-loud for truly malformed rows, rerun AC-L as a recover witness, and keep the original honest RED evidence.
+
+---
+
+## SOP-034 - S7 roadblock re-poll: upstream Irene id-integrity story opened (2026-07-07 15:52 -04:00, Codex shadow monitor) - RELAYED
+
+**Scope reviewed:** repo status/log, new untracked story `_bmad-output/implementation-artifacts/irene-pass2-slidejoin-id-integrity-gate.md`, S7 spec tail, retry-tag wiring in `app/marcus/orchestrator/production_runner.py`, and existing Irene/narration-join references. No production/test/story files were edited by this monitor; this ledger entry is the only write.
+
+**State:** no new commit and no recover evidence yet. HEAD remains `1c3df92d`; the S7 AC-L evidence pack remains the latest live proof and is still honest RED. The new Irene id-integrity story is the only material new signal.
+
+**Concurrence on direction:** the new story is the stronger product fix and should supersede the 07W-local fallback as the primary remediation. SOP-033 correctly found that 07W dropped manifest rows because `segment_id`/`id` were blank while `slide_id` was present. The new story traces the real upstream cause: Irene Pass-2 emitted id-less narration/deltas; `join_narration_segments()` collapsed everything under the empty key; the publisher wrote a manifest with 9 `slide_id`s but blank ids and repeated narration; 07W merely exposed the corruption late. Fixing this at the Pass-2 boundary protects Enrique audio, G5 QA, storyboard publish, and 07W. A 07W-only `slide_id` fallback would risk accepting a corrupted lesson-wide narration artifact.
+
+**Verified claims:** `irene.pass2.slide-join-failed` is already in `_RETRYABLE_DISPATCH_TAGS`, with `_MAX_DISPATCH_RETRIES = 3`, so reusing that tag for the new id-integrity gate is mechanically plausible. The existing tests already assert that tag for the current roster-grounding path; the new story's requirement for distinct detail substrings is important so tests do not pass vacuously on the old gate.
+
+**F-3401 [P1] Close language still says "non-tejal" while the resolved AC-L corpus is Tejal Part 3.** The S7 spec still says "real non-tejal workbook" / "first non-tejal workbook" in multiple places, and the new Irene story repeats that wording. But the resolved AC-L corpus is `course-content/courses/tejal-c1m1-p3-opportunity/...`: Tejal Module-1 Part 3, same SME/course, different lesson from the baked-in Part 2 constants. This is not a blocker to proving producer generalization off the frozen Part-2 hardcoding, but it is a blocker to truthful close wording. **Required correction before close:** replace "first non-tejal workbook" with language such as "first non-baked-in / non-Part-2 Tejal workbook produced in-graph" or choose a genuinely non-Tejal corpus and rerun. Do not let the close record overclaim new-SME/non-Tejal proof.
+
+**Recommendation to Claude agents:** proceed with the Irene id-integrity story RED-first exactly as scoped: pure `_assert_join_id_integrity(parsed)` after backfills; AC-1 id-less fixture where roster grounding stays silent; AC-2 duplicate-id/non-bijective fixture; AC-3 valid repeated text with distinct ids passes; AC-4 proves the pre-fix join collapse; AC-5 retryable tag + `narration_join.py` byte-frozen + pipeline manifest diff empty. After green/review, recover by dropping node-08 Irene and node-08B publish contributions and re-dispatching only `08 -> 08B -> 07W`; do not forward-walk through audio again and do not hand-inject ids.
+
+**Open findings carried:** F-2802 remains open for course-content rename/untracked corpus disposition and `state/config/gamma-styleguide-picks.jsonl` runtime modification. S7 remains not close-ready until the upstream fix is green, the recover witness produces workbook MD/DOCX, the close wording is corrected, and commit hygiene is clean.
+
+**Verdict: GO-WITH-FINDING.** The roadblock is now better framed as an upstream Irene Pass-2 id-integrity defect that S7 live proof surfaced. Fix that first; keep S7 open; correct the Tejal/non-Tejal wording before any close claim.
+
+---
+
+## SOP-035 - S7 wording re-poll + no-code movement (2026-07-07 16:02 -04:00, Codex shadow monitor) - RELAYED
+
+**Scope reviewed:** repo status/log, S7 spec, Irene id-integrity story, evidence directory list, and timestamps for `app/specialists/irene/graph.py` plus the Irene grounding test file. No production/test/story files were edited by this monitor; this ledger entry is the only write.
+
+**State:** no implementation movement yet. `app/specialists/irene/graph.py` and `tests/specialists/irene/test_irene_pass2_grounding_fail_loud.py` are unchanged; no new evidence pack exists; no commit exists. The latest live proof remains S7 AC-L honest RED.
+
+**F-3401 PARTIALLY REMEDIATED.** The Irene id-integrity story now carries the correct close language: it says the recover witness is "first in-graph workbook off a different lesson" and explicitly forbids "first non-tejal workbook." The S7 close-language honesty guard now also states the correct claim: producer generalization off frozen `tejal-apc-c1-m1-p2-trends`, first workbook from a different Tejal Part 3 lesson, not cross-SME/non-Tejal generalization.
+
+**F-3401 STILL OPEN UNTIL STALE SPEC LINES ARE CLEANED.** The S7 spec still contains stale "non-tejal" language in at least the party-scope opening, AC-1 phrasing, and the T11 gate line ("AC-L LIVE (first non-tejal in-graph workbook...)"). These lines conflict with the corrected honesty guard and can still leak into close notes or party summaries. **Recommendation:** before any close poll, normalize all S7 status/scope/gate wording to "different lesson from the baked-in Tejal Part 2" or "non-baked-in lesson," and reserve "non-Tejal" for the Phase-2/cross-SME arc.
+
+**Roadblock status:** the upstream Irene id-integrity story remains the right recovery path. Next material monitor signal should be RED-first tests/code in `app/specialists/irene/graph.py` and `tests/specialists/irene/test_irene_pass2_grounding_fail_loud.py`, then focused green output, review, and recover witness.
+
+**Open findings carried:** F-2802 remains open for course-content rename/untracked corpus disposition and `state/config/gamma-styleguide-picks.jsonl`. S7 remains not close-ready until the upstream fix is implemented, recover witness produces workbook MD/DOCX, F-3401 stale wording is fully cleaned, and commit hygiene is clean.
+
+**Verdict: NO CLOSE / WAITING ON DEV.** The story docs are moving in the right direction, but there is not yet code, test, recover-witness, or commit evidence to score.
+
+---
+
+## SOP-036 - Irene id-integrity RED-first test poll (2026-07-07 16:12 -04:00, Codex shadow monitor) - RELAYED
+
+**Scope reviewed:** repo status/log, latest evidence directories, `tests/specialists/irene/test_irene_pass2_grounding_fail_loud.py` diff, Irene graph timestamp, S7 wording grep, and current story timestamps. No tests were run by this monitor poll. No production/test/story files were edited by this monitor; this ledger entry is the only write.
+
+**State:** RED-first test work has started, but implementation has not. `tests/specialists/irene/test_irene_pass2_grounding_fail_loud.py` is modified at 16:12 and now imports `_assert_join_id_integrity`; `app/specialists/irene/graph.py` remains unchanged from 2026-07-02, so the new test file should be red until the pure gate is implemented. No new evidence pack or commit exists.
+
+**Positive verification:** the added tests are aligned with the Irene id-integrity story and the live defect:
+- AC-1 id-less-after-backfill fixture with valid roster-matching `perception_source`s; explicitly asserts `_assert_narration_joins_roster(...)` stays silent and the new id gate fires with `id-less after backfill`.
+- AC-2 duplicate/non-bijective id fixture; expects `id-join non-bijective` and distinguishes it from the id-less branch.
+- AC-3 valid known-good `joined_pass2_response()` and identical narration text with distinct ids both pass; identical text with shared id fires.
+- AC-4 demonstrates the pre-fix `join_narration_segments()` collapse: distinct slide ids flood to the last narration text.
+- AC-5 asserts `irene.pass2.slide-join-failed` remains in `_RETRYABLE_DISPATCH_TAGS`.
+
+This is the right RED-floor shape: it tests the upstream corruption boundary, keeps `join_narration_segments` observational/byte-frozen, and avoids a 07W-only workaround.
+
+**F-3401 remains open.** The S7 honesty guard and Irene carry story are corrected, but stale "non-tejal" language remains in S7 party-scope, AC-1, DOI-leg note, and the T11 gate line. This is not blocking RED-first implementation, but it is still a close-record risk.
+
+**Open findings carried:** F-2802 remains open for course-content rename/untracked corpus disposition and `state/config/gamma-styleguide-picks.jsonl`. S7 remains not close-ready until the Irene gate implementation lands, focused tests go green, review passes, the recover witness produces workbook MD/DOCX, F-3401 stale wording is fully cleaned, and commit hygiene is clean.
+
+**Verdict: GOOD RED-FIRST START / NOT IMPLEMENTED YET.** Proceed to implement `_assert_join_id_integrity(parsed)` in `app/specialists/irene/graph.py`, call it after the existing backfills and before/alongside roster validation, preserve the retry tag, and keep the shared narration join frozen.
+
+---
+
+## SOP-037 - Irene id-integrity implementation-shape poll (2026-07-07 16:22 -04:00, Codex shadow monitor) - RELAYED
+
+**Scope reviewed:** repo status/log, evidence directories, `app/specialists/irene/graph.py` diff, Irene grounding/procedure/warm-callback test diffs, and S7 wording grep. No tests were run by this monitor poll. No production/test/story files were edited by this monitor; this ledger entry is the only write.
+
+**State:** the upstream Irene id-integrity implementation has landed in working tree shape. No commit and no recover evidence exist yet. The latest live proof remains the S7 AC-L honest RED.
+
+**Positive verification:** `graph.py` now defines pure `_assert_join_id_integrity(parsed)` and calls it in `_act_pass_2` after `backfill_delta_ids`, `backfill_delta_ids_from_roster`, and `_assert_narration_joins_roster(...)`. The gate:
+- returns silently when there is no `narration_script`;
+- raises `Pass2GroundingError(tag="irene.pass2.slide-join-failed")` for any narration segment or delta lacking a usable id, with the distinct `id-less after backfill` detail;
+- raises the same retryable tag for duplicate narration ids, with the distinct `id-join non-bijective` detail;
+- keys bijectivity on id cardinality, not `narration_text`, preserving the false-fire guard for repeated prose under distinct ids.
+
+**Test-shape verification:** the added RED-floor tests from SOP-036 remain present, and existing Irene procedure/warm-callback fixtures were updated to carry bijective ids where they are intended to represent valid Pass-2 output. This is consistent with the new fail-loud contract rather than weakening the gate.
+
+**Residual verification still required:** no test-output evidence is visible in the repo yet. Before the Irene story can close, the team still owes focused green output for the new gate tests, existing Pass-2/narration-join suites, retry-tag membership, and the Tier-1/protected-path checks (`narration_join.py` byte-frozen and `git diff -- state/config/pipeline-manifest.yaml` empty). Then the S7 recover witness must regenerate a valid storyboard-B manifest and produce workbook MD/DOCX through 07W.
+
+**F-3401 remains open.** Stale "non-tejal" wording still remains in the S7 party-scope opening, AC-1 text, DOI-leg note, and T11 line. The corrected honesty guard is good, but the stale lines should be cleaned before close.
+
+**Open findings carried:** F-2802 remains open for course-content rename/untracked corpus disposition and `state/config/gamma-styleguide-picks.jsonl`. S7 remains not close-ready until focused tests pass, review passes, the recover witness succeeds, stale wording is cleaned, and commit hygiene is clean.
+
+**Verdict: IMPLEMENTED IN SHAPE / WAITING ON EVIDENCE.** The upstream fix now matches the monitor recommendation and the Irene story. Next material signal should be test-output evidence, review findings/remediation, and the `08 -> 08B -> 07W` recover witness.
+
+---
+
+## SOP-038 - S7 AC-L post-fix witness start poll (2026-07-07 17:02 -04:00, Codex shadow monitor) - RELAYED
+
+**Scope reviewed:** repo status/log, new evidence directory `_bmad-output/implementation-artifacts/evidence/s7-acl-recover-liveproof-20260707T205600Z/`, `driver-log.txt`, `walk-log.txt`, the new driver script, live Python processes, and current run state under `state/config/runs/4c64db93-af02-41a2-9ef8-a7559b37e72f/`. No tests were run by this monitor poll. No production/test/story files were edited by this monitor; this ledger entry is the only write.
+
+**State:** a new post-fix live witness is in progress and not scoreable. Evidence directory `s7-acl-recover-liveproof-20260707T205600Z` contains `s7_acl_recover_driver.py`, `driver-log.txt`, and `walk-log.txt`; no facts JSON, proof file, workbook MD, or workbook DOCX exists yet. Trial `4c64db93-af02-41a2-9ef8-a7559b37e72f` is currently `paused-at-gate` at `G1` with no error tag, and Python processes from the 16:56 local launch are still running.
+
+**Positive progress:** the new walk has started on `course-content/courses/tejal-c1m1-p3-opportunity` with `narrated-deck-with-workbook`, default-ON enrichment/research, standard-A pick, and has already passed through G0E and G0R to G1. This is useful forward movement after the Irene id-integrity implementation.
+
+**F-3801 [P1] The "recover" witness appears to be a fresh full trial, not the scoped surgical recover.** The driver script name/evidence directory says recover, but the code creates `TRIAL_ID = uuid4()` and calls `start_trial(...)` on a new run, with comments saying "FULL composed Part-3 walk." That is not the Irene story's specified recovery path of dropping node-08/node-08B from the frozen failed trial `40f3a90a...` and re-dispatching only `08 -> 08B -> 07W`. If this new run passes, it may be valid as a fresh post-fix AC-L witness, but it does **not** by itself prove the stated recover mechanics or close the "single recover witness closes both stories" claim as written. **Recommendation:** before close, either (a) relabel the evidence honestly as a fresh post-fix AC-L run and adjust the two-story close language accordingly, or (b) perform the scoped surgical recovery from the original error-pause run and cite that as the recover witness. Do not call this evidence a surgical recover unless the persisted failed trial is actually rewound and re-dispatched.
+
+**F-3401 remains open.** The new driver still contains stale "non-tejal Part-3" wording even though the corpus is Tejal Part 3. This is another close-language leak; it does not affect execution, but it reinforces the need to normalize all close/evidence wording to "different Tejal lesson / non-baked-in Part 2" rather than "non-Tejal."
+
+**Open findings carried:** F-2802 remains open for course-content rename/untracked corpus disposition and `state/config/gamma-styleguide-picks.jsonl`. Focused test-output evidence for the Irene gate is still not visible in the repo. No commit exists.
+
+**Verdict: IN-PROGRESS / DO NOT SCORE YET.** Continue monitoring this live witness through completion, but treat its provenance carefully: fresh full trial vs scoped recovery is material to the story-close claim.
+
+---
+
+## SOP-039 - S7 post-fix witness progress poll (2026-07-07 17:12 -04:00, Codex shadow monitor) - RELAYED
+
+**Scope reviewed:** repo status, active evidence directory `_bmad-output/implementation-artifacts/evidence/s7-acl-recover-liveproof-20260707T205600Z/`, `driver-log.txt`, `walk-log.txt`, and run state for trial `4c64db93-af02-41a2-9ef8-a7559b37e72f`. No tests were run by this monitor poll. No production/test/story files were edited by this monitor; this ledger entry is the only write.
+
+**State:** the post-fix live witness is still in progress and not scoreable. The run advanced from G1 to G2B and then G2C with no error tag. At this poll, `run.json` reports `status=paused-at-gate`, `paused_gate=G2C`, `paused_error_tag=None`. The evidence directory still has only `s7_acl_recover_driver.py`, `driver-log.txt`, and `walk-log.txt`; no facts JSON, proof file, workbook MD, or workbook DOCX exists yet.
+
+**Positive progress:** the post-fix walk has now exercised G0E, G0R, G1, G2B, and G2C without the immediate Irene id-integrity fail-loud path firing. That is useful progress but not proof that 08B generated a valid storyboard-B manifest or that 07W can produce the workbook.
+
+**Caveat carried from SOP-038:** this still appears to be a fresh full trial despite the `recover` evidence label. If it ultimately passes, it can support a fresh post-fix AC-L claim, but it should not be called the scoped surgical recovery from the original `40f3a90a...` error-pause unless the failed run is actually rewound and re-dispatched.
+
+**Open findings carried:** F-3801 remains open on witness provenance, F-3401 remains open on stale "non-tejal" wording, and F-2802 remains open on course-content/runtime-artifact disposition. Focused test-output evidence for the Irene gate is still not visible in the repo, and no commit exists.
+
+**Verdict: IN-PROGRESS / NO PASS YET.** Continue waiting for terminal facts/proof/workbook artifacts before scoring S7 or the Irene carry story.
+
+---
+
+## SOP-040 - S7 post-fix witness completed with blockers (2026-07-07 17:32 -04:00, Codex shadow monitor) - RELAYED
+
+**Scope reviewed:** repo status, completed evidence directory `_bmad-output/implementation-artifacts/evidence/s7-acl-recover-liveproof-20260707T205600Z/`, `driver-log.txt`, `s7-acl-facts.json`, copied workbook MD/DOCX, run contribution for `workbook_producer`, and rendered DOI links. No production/test/story files were edited by this monitor; this ledger entry is the only write.
+
+**State:** the post-fix witness completed and 07W produced workbook artifacts. Trial `4c64db93-af02-41a2-9ef8-a7559b37e72f` completed after gates G0E, G0R, G1, G2B, G2C, G3, G4, and G4A. Evidence now includes `s7-acl-facts.json`, `cost-report.json`, `workbook.md`, and `workbook.docx`. The workbook contribution points to `_bmad-output/artifacts/workbooks/u01@1.md` and `.docx`, with `citation_unsourced=0`, all 14 segments covered, 6 collateral sections, 3 research entries, and no detected `present-trends` / `tejal-apc-c1-m1-p2` / `macro-trends` leak.
+
+**Positive verification:** this is real S7 progress. The workbook MD/DOCX exist, 07W ran as a real terminal sidecar, the prior segment-manifest-empty defect did not recur, the produced workbook contains Part-3 transcript segments and collateral-derived sections, and rendered research DOI rows are present. I independently checked the rendered DOI rows: `10.3389/fresc.2024.1336559` and `10.48550/arxiv.2604.06331` resolve with HTTP 200. The primary DOI recorded by the driver, `10.5465/ambpp.2019.19399abstract`, returns HTTP 403 from the publisher target.
+
+**F-4001 [P1] The witness is not a clean AC-L PASS because the workbook contribution reports `numeric_audit_status: "FAIL"`.** S7 AC-L requires the workbook gates to pass (`G1/G2/G3/AC-5/AC-8 pass` in the spec). The run completed, but the contribution itself records the numeric audit as FAIL. That must be triaged before close: either explain why this status is a known false/status-label artifact while the enforced gate truly passed, or remediate the workbook numeric audit and rerun/refresh the witness. Do not close S7 on a workbook contribution that self-reports a failed audit without party-reviewed disposition.
+
+**F-4002 [P2] DOI witness accounting is too primary-only.** The driver records the primary DOI as `10.5465/ambpp.2019.19399abstract` and records its resolution as HTTP 403, even though two other rendered DOI rows resolve HTTP 200. If the acceptance claim is "at least one rendered research DOI resolves," the facts should explicitly record `resolved_doi_count >= 1` and name the successful DOI(s), not leave the top-level DOI witness looking failed. If the claim is "primary DOI must resolve," then the current witness fails the DOI leg. Clarify before close.
+
+**F-3801 still open:** this evidence still appears to be a fresh full trial despite the `recover` label. The pass/fail score may support a fresh post-fix AC-L run, but it should not be claimed as the scoped surgical recovery from original trial `40f3a90a...` unless the team provides a separate rewind/re-dispatch record or updates the two-story close language honestly.
+
+**Other open findings carried:** F-3401 stale "non-tejal" wording remains in S7 spec lines; F-2802 remains open for course-content rename/untracked corpus disposition and `state/config/gamma-styleguide-picks.jsonl`. Focused test-output evidence for the Irene id-integrity gate is still not visible in the repo. No commit exists.
+
+**Verdict: MATERIAL PROGRESS / NOT CLOSE-READY.** The team has produced the first post-fix in-graph workbook artifact for Tejal Part 3, but S7/Irene should not close until `numeric_audit_status=FAIL`, DOI witness accounting, recovery-vs-fresh-run provenance, stale wording, test evidence, and commit hygiene are resolved.
+
+---
+
+## SOP-041 - S7 handoff/status re-poll after completed witness (2026-07-07 17:52 -04:00, Codex shadow monitor) - RELAYED
+
+**Scope reviewed:** repo status/log, latest evidence directories, `SESSION-HANDOFF.md` diff, S7 spec, Irene id-integrity story, and the current monitor findings from SOP-040. No tests were run by this monitor poll. No production/test/story files were edited by this monitor; this ledger entry is the only write.
+
+**State:** no new commit and no new evidence pack exists after SOP-040. `SESSION-HANDOFF.md` now records a session-19 handoff claiming S7 producer generalization live-proven and the first in-graph workbook from a different Tejal lesson produced, while explicitly saying formal S7 + Pass-2 close remains pending operator notes / party concurrence / Codex close poll.
+
+**Positive status alignment:** the handoff correctly preserves several monitor points: it avoids the "first non-tejal workbook" overclaim in the milestone paragraph; it acknowledges the recover path used a fresh trial rather than surgical `08 -> 08B -> 07W`; it flags `numeric_audit_status: FAIL` as an unresolved issue; and it notes the DOI 403 as a research-quality nuance rather than silently pretending it resolved.
+
+**F-4001 remains open, but now has a proposed disposition.** The handoff says the run completed because the hard symbol-G1 gate passed, and that `numeric_audit_status: FAIL` reflects the deferred word-form-numeral gap. This may be acceptable under S7's stated fence, but it is not yet enough for close: the close record should name the exact numeric/audit failure, cite the deferred follow-on (`braid-workbook-wordform-numeral-gap`), and have party concurrence that this status does not contradict the AC-L wording "G1/G2/G3/AC-5/AC-8 pass." Until then, the workbook contribution self-report still conflicts with a clean PASS claim.
+
+**F-4002 remains open / partially mitigated.** The handoff explains the primary DOI's 403 as a real AOM DOI/publisher bot-block. That may be fair, but the AC-L evidence should still record the actual successful DOI witness because two rendered DOI rows resolve HTTP 200 (`10.3389/fresc.2024.1336559`, `10.48550/arxiv.2604.06331`). Close should not rely on a top-level primary DOI that resolves 403 unless the party explicitly revises the DOI acceptance language.
+
+**F-3801 remains open but acknowledged.** The handoff correctly states the live witness used a fresh trial because `recover_production_trial` lacks an upstream re-entry affordance. That means the final close should call this a fresh post-fix AC-L witness, not the scoped surgical recover originally specified in the Irene story. The filed `recover-with-reenter-node-affordance` follow-on is the right place for the missing capability.
+
+**F-3401 remains open in the S7 spec.** The new handoff language is better, but the S7 story file still has stale "non-tejal" language in older scope/AC/T11 lines. If the story file is included in the commit, it should be normalized before formal close.
+
+**F-2802 hygiene status changed but still needs staging discipline.** The handoff now treats the Part-3 corpus curation and raw sibling relocation as intentional S7 work. That can close the "why is course-content moving?" question if staged deliberately, but final commit hygiene still must exclude unrelated run directories, operator/Codex external ledgers, workbook-test strays, and any runtime sidecars not intended as evidence. `state/config/gamma-styleguide-picks.jsonl` also needs explicit include/exclude disposition.
+
+**Verdict: MILESTONE ACHIEVED / FORMAL CLOSE STILL NEEDS DISPOSITION.** The team is back from the roadblock and has produced a real in-graph workbook from Tejal Part 3. Do not convert that into a close claim until the party/Codex close poll explicitly resolves numeric-audit semantics, DOI witness accounting, fresh-vs-recover provenance, stale wording, test evidence, and commit hygiene.

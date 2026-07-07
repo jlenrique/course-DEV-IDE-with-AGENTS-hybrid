@@ -373,10 +373,106 @@ def project_enrichment_to_workbook_inputs(card: Any) -> WorkbookEnrichmentProjec
     )
 
 
+# ---------------------------------------------------------------------------
+# S7 canonical-arc — pure run.json disk-readers (the ENVELOPE->PRODUCER seam)
+# ---------------------------------------------------------------------------
+#
+# The workbook producer (``app.specialists.workbook_producer``) must CONSUME
+# Irene's authored ``lesson_plan["collateral"]`` AND the S6 ``research_entries``,
+# both of which live only in the persisted ProductionEnvelope (``run.json``).
+# Contract M3 forbids ``app.specialists`` importing ``app.marcus.orchestrator``,
+# so the producer may NOT call ``research_entries_from_envelope``. These pure
+# disk-readers live here instead (an M3-allowed import for the producer, mirroring
+# ``load_enrichment_card``): they deserialize ``run.json`` via the ``app.models.*``
+# model classes (NOT the orchestrator) and use LOCAL literal seam constants.
+
+# LOCAL literal seam constants (deliberately NOT imported from
+# app.marcus.orchestrator.research_wiring — that is the M3-forbidden edge).
+_IRENE_PASS1_SPECIALIST_ID = "irene_pass1"
+_RESEARCH_WIRING_SPECIALIST_ID = "research_wiring"
+_RESEARCH_WIRING_NODE_ID = "04.55"
+_RESEARCH_ENTRIES_KEY = "research_entries"
+_RUN_ENVELOPE_BASENAME = "run.json"
+
+
+def load_run_envelope(run_dir: Path) -> Any | None:
+    """Disk-read ``<run_dir>/run.json`` -> ``ProductionEnvelope`` (or ``None``).
+
+    READ-ONLY. Deserializes the persisted trial envelope via the ``app.models.*``
+    model classes (M3-safe: the MODEL, never the orchestrator). Never raises on a
+    missing/corrupt/legacy artifact — absence returns ``None`` so the producer
+    degrades to its declaration handling.
+
+    DOCUMENTED TRADEOFF (S7 remediation item-7, harvest to postmortem): absent
+    vs. legacy vs. CORRUPT ``run.json`` all collapse into a single ``None`` here.
+    Consequently a *corrupt* run.json on a ``declaration=="present"`` run reads as
+    absent-collateral and silently no-op-skips rather than failing loud. Accepted
+    for S7 (fail-soft read seam); a corrupt-vs-absent distinction (fail-loud on
+    corrupt) is deferred.
+    """
+    artifact = run_dir / _RUN_ENVELOPE_BASENAME
+    if not artifact.is_file():
+        return None
+    # Function-local import keeps the module import-graph thin and the M3 edge
+    # unambiguous (the model, not app.marcus.orchestrator).
+    from pydantic import ValidationError  # noqa: PLC0415
+
+    from app.models.runtime.production_trial_envelope import (  # noqa: PLC0415
+        ProductionTrialEnvelope,
+    )
+
+    try:
+        trial = ProductionTrialEnvelope.model_validate_json(
+            artifact.read_text(encoding="utf-8")
+        )
+    except (OSError, ValidationError, ValueError):
+        return None
+    return trial.production_envelope
+
+
+def lesson_plan_from_run(run_dir: Path) -> dict[str, Any] | None:
+    """Read Irene's authored ``lesson_plan`` dict off ``run.json`` (or ``None``)."""
+    envelope = load_run_envelope(run_dir)
+    if envelope is None:
+        return None
+    contribution = envelope.latest_for_specialist(_IRENE_PASS1_SPECIALIST_ID)
+    if contribution is None:
+        return None
+    lesson_plan = contribution.output.get("lesson_plan")
+    return lesson_plan if isinstance(lesson_plan, dict) else None
+
+
+def collateral_from_run(run_dir: Path) -> dict[str, Any] | None:
+    """Read ``lesson_plan["collateral"]`` off ``run.json`` (the S7 blueprint)."""
+    lesson_plan = lesson_plan_from_run(run_dir)
+    if not isinstance(lesson_plan, dict):
+        return None
+    collateral = lesson_plan.get("collateral")
+    return collateral if isinstance(collateral, dict) else None
+
+
+def research_entries_from_run(run_dir: Path) -> list[dict[str, Any]]:
+    """Read the S6 cited ``research_entries`` off ``run.json`` (node ``04.55``)."""
+    envelope = load_run_envelope(run_dir)
+    if envelope is None:
+        return []
+    contribution = envelope.get_contribution(
+        _RESEARCH_WIRING_SPECIALIST_ID, node_id=_RESEARCH_WIRING_NODE_ID
+    )
+    if contribution is None:
+        return []
+    entries = contribution.output.get(_RESEARCH_ENTRIES_KEY)
+    return list(entries) if isinstance(entries, list) else []
+
+
 __all__ = [
     "ENRICHMENT_CARD_BASENAME",
     "WorkbookEnrichmentProjection",
     "citation_renders_authoritative",
+    "collateral_from_run",
+    "lesson_plan_from_run",
     "load_enrichment_card",
+    "load_run_envelope",
     "project_enrichment_to_workbook_inputs",
+    "research_entries_from_run",
 ]

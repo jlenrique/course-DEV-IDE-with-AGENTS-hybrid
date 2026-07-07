@@ -65,8 +65,11 @@ from pydantic import (
 # here so objective-id binding cannot fork the regex.
 from app.marcus.lesson_plan.event_type_registry import OPEN_ID_REGEX_PATTERN
 
-SCHEMA_VERSION: Final[str] = "1.0"
-"""CollateralSpec family schema version; bump on shape drift (per CHANGELOG)."""
+SCHEMA_VERSION: Final[str] = "1.1"
+"""CollateralSpec family schema version; bump on shape drift (per CHANGELOG).
+
+1.1 (S7 canonical-arc): additive ``WorkbookSpec.kind`` discriminant
+(``deck-companion-workbook``); back-compatible (absent -> default)."""
 
 
 _OPEN_ID_REGEX: Final[re.Pattern[str]] = re.compile(OPEN_ID_REGEX_PATTERN)
@@ -326,6 +329,16 @@ class WorkbookSpec(BaseModel):
 
     model_config = ConfigDict(extra="forbid", validate_assignment=True)
 
+    kind: Literal["deck-companion-workbook"] = Field(
+        default="deck-companion-workbook",
+        description=(
+            "Artifact-type discriminant (S7 canonical-arc). Closed set: the "
+            "narrated-deck companion workbook is the sole member today. Additive "
+            "+ back-compatible (absent -> default). The 'collateral' umbrella "
+            "will carry additional typed artifacts in a later projector family; "
+            "typing the ARTIFACT (not the umbrella) keeps that seam clean."
+        ),
+    )
     sections: list[WorkbookSection] = Field(
         ...,
         description="Workbook sections; non-empty when collateral is present.",
