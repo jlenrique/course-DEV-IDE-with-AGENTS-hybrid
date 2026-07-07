@@ -223,3 +223,26 @@ Next poll: SOP-010 at the S3 close commit.
 - **NOTES (no code):** F-1201 baseline reds carry; F-1200 mitigated by R6.
 
 Next: fresh dev RED-first remediation R1-R6 → orchestrator re-verify → **AC-L live 3-leg** → commit → SOP-013 close poll.
+
+### SOP-013 — S4 story-close audit (2026-07-07, session 18, fresh monitor agent) — RELAYED (condensed; full text in agent transcript)
+
+**Target:** close commit `63369c99` (base `13792617`). **All 8 checks PASS.**
+(1) Commit integrity — exactly the S4 set; NO stray committed (workbooks-test, 3 operator monitor ledgers, goal launcher, both `runs/` strays all still untracked; `git ls-files` shows no run dirs committed). (2) `git diff 13792617 63369c99 -- app/styleguide/parity.py` EMPTY + `production_runner.py` EMPTY — both byte-frozen. (3) `_RETRYABLE_DISPATCH_TAGS` unmodified; neither new tag present. (4) sidecar = exactly ONE appended line (leg-3 pick, run_id 4fe6073f), prior 4 intact. (5) live-evidence single-pass: judges frozen 04:13:57Z BEFORE earliest leg 04:14:50Z; each ran once; no retry-to-green; Leg-1 unbound 12/12, Leg-2 divergence→ERROR 16/16 (genuine same-bytes divergence — three directive digests EQUAL `ff90c166…`, resolution digests differ from the F-806 `amount minimal→concise` mutation), Leg-3 happy 15/15 (real deck `npkNxi1NwrKbfPj3NU61I`, `ok/match`, walk proceeded). (6) yaml git-clean (leg-2 mutation reverted). (7) DONE-line every claim evidence-supported; deferred-inventory closes the fail-loud-flip + files the precheck complement. (8) post-commit green: gary+composition 249 passed/1 skip, styleguide 54 passed; the ~21 F-605 g0-battery reds are the separately-tracked S5-open precondition S4 neither touches nor fixes.
+**Adversarial cross-checks resolved:** committed `_act.py` flip strings byte-identical to the walk-log ERROR messages the judges asserted (tested code IS committed code); run dirs live under gitignored `state/config/runs/`, none committed.
+
+**Verdict: CONCUR (clean — no findings). S4 DONE STANDS.** Arc may proceed to the pre-S5 g0-battery story (owns the F-605 corpus-fixture commit + ACTIVE_TERMINAL_GATES refresh — the binding S5-open precondition). Next poll: SOP-014 at the pre-S5 g0-battery story's pre-dispatch.
+
+---
+
+## ✅ S4 CLOSED (canonical-arc, session 18) — FAIL-LOUD flip live-proven both legs + happy anti-outage; commit `63369c99` pushed. Arc: S0·S1·S2·S3·S4 CLOSED. Next: pre-S5 g0-battery precondition → S5 → S6.
+
+### SOP-014 — pre-S5 g0-battery baseline spec pre-dispatch review (2026-07-07, session 18, fresh monitor agent) — RELAYED (condensed)
+
+**Artifact:** `canonical-arc-pre-s5-g0-battery-baseline.md`. **Method:** code-first at HEAD `63369c99`; ran the two governing dirs.
+
+**PASS findings:** F-1403 fixture shape fully determined by the offline pre-pass (`_split_components` one-component-per-heading; `_offline_pre_pass` one provisional-LO-per-file auto-grounded) → D1's constraint list ACCURATE, ONE-file corpus sufficient, "1 H1 + 3 H2" → exactly 4 components (H1 counts), LO provenance satisfied by construction. F-1404 pin refresh legitimate (`G0R` real addition at `b59679ce`; pin maintained at `e5e24ad3` but not `b59679ce` → code current/test stale; refresh test-to-code, keep full exact tuple). F-1405 no gitignore trap (`.gitignore` excludes `**/private/`, `staging/`, binary media — NOT `.md`; `git check-ignore` on the lesson.md → exit 1; confirms CREATE-`.md` over re-point-to-`.docx` was right). F-1406 scope sound (AC-5 holds; offline-only proportionate; T11 discharged by the green battery — subject to F-1401).
+
+**F-1401 [MEDIUM, applied]:** corpus-absence reds are **15 not 13** — +2 in `test_irene_refinement_brick.py` (`test_ac_s3_6_wiring_reads_gate1_provisional_los_and_refines`, `test_full_two_gate_offline_refines_and_ratifies`), same `studio-smoke-min` cause, fixture-resolved. These ARE the two-gate offline refine+ratify path the T11-discharge argument leans on → added to AC-1 + RED-first.
+**F-1402 [MEDIUM, applied]:** 2 INDEPENDENT pre-existing drift reds remain after the fix, NOT corpus-absence, NOT this story's job: `test_front_door_selection_threading::test_run_summary_pack_hash_default_is_byte_identical_to_raw` (manifest pack_hash mismatch) + `test_run_summary_yaml_emit::test_clean_trial_run_summary_populated` (specialist_roster_count 17≠12). AC-4 now names them as expected residual + forbids touching manifest/roster (AC-5/lockstep guard). "~21" reconciled to 18-at-HEAD → 2 residual after fix. Filed as follow-ons.
+
+**Verdict: CONCUR-WITH-FINDINGS** — no BLOCK; both are spec-clarity fixes (applied pre-dispatch). The g0-enrichment substrate is green-ready; the missing fixture is the whole gap, exactly as §8 diagnosed. Next poll: SOP-015 at dev-complete (verify 18→2, no manifest/roster touch, corpus tracked+fresh-clone-green).

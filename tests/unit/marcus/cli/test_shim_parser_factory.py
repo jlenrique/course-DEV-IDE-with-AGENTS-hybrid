@@ -17,7 +17,8 @@ def test_active_terminal_gates_canonical_inventory() -> None:
     # Arc 2 (2026-06-18): G2B (variant) + G4A (voice) woken HIL gates added —
     # the operator drives their verdict through the same single-decision shim.
     # G0-S2 (2026-06-26): +G0E source-enrichment confirm-gate #1.
-    assert ACTIVE_TERMINAL_GATES == ("G0E", "G1", "G2B", "G2C", "G3", "G4A", "G4")
+    # G0-S3 (2026-06-26, b59679ce): +G0R Irene LO ratify-gate #2 (follows G0E).
+    assert ACTIVE_TERMINAL_GATES == ("G0E", "G0R", "G1", "G2B", "G2C", "G3", "G4A", "G4")
 
 
 @pytest.mark.parametrize("gate_id", list(ACTIVE_TERMINAL_GATES))
