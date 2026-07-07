@@ -1,0 +1,15 @@
+{
+  "lane": "b",
+  "phase": "start",
+  "trial_id": "26d1dc94-61d4-4dac-8da9-224e6223a95d",
+  "run_dir": "C:\\Users\\juanl\\Documents\\GitHub\\course-DEV-IDE-with-AGENTS-hybrid\\state\\config\\runs\\26d1dc94-61d4-4dac-8da9-224e6223a95d",
+  "corpus": "C:\\Users\\juanl\\Documents\\GitHub\\course-DEV-IDE-with-AGENTS-hybrid\\course-content\\courses\\studio-smoke-min",
+  "env_g0_enrichment_active_present": false,
+  "env_g0_dispatch_live_present": true,
+  "g0_enrichment_active_fn": true,
+  "g0_dispatch_live_fn": true,
+  "has_live_openai": true,
+  "resolved_marcus_model": "gpt-5",
+  "requested_marcus_model": null,
+  "minted_at": "2026-07-07T08:12:59.857763+00:00"
+}

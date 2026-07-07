@@ -1,0 +1,51 @@
+{
+  "story": "S5-3b \u2014 G0-enrichment default flip + canonical G0E/G0R witness",
+  "witness_role": "INDEPENDENT live-witness (two-lane, frozen judges, first-run-stands)",
+  "assembled_at_utc": "2026-07-07T08:17:13.828310+00:00",
+  "judges_frozen_at_utc": "2026-07-07T08:05:33.522926+00:00",
+  "flip_under_test": "g0_enrichment_active() DEFAULT-ON (uncommitted working-tree flip); MARCUS_G0_DISPATCH_LIVE default-OFF; --g0-dispatch-live arms live",
+  "branch": "dev/workbook-2026-07-06",
+  "head": "6961eeac + uncommitted 3b flip",
+  "corpus": "course-content/courses/studio-smoke-min (real DIRECTORY, committed a1158385)",
+  "lane_a": {
+    "verdict": "PASS",
+    "trial_id": "7039838e-5477-4aba-9fcf-ab500f240588",
+    "pause_sequence": [
+      "G0E",
+      "G0R",
+      "G1"
+    ],
+    "enrichment_mode": "deterministic-recorded",
+    "n_typed_components": 4,
+    "n_provisional_los": 1,
+    "cost_usd": 1.095e-05,
+    "g0_prepass_cost_usd": 0.0,
+    "note": "no g0_enrichment agent line in cost breakdown => $0 live-LLM pre-pass"
+  },
+  "lane_b": {
+    "verdict": "PASS",
+    "trial_id": "26d1dc94-61d4-4dac-8da9-224e6223a95d",
+    "pause_sequence": [
+      "G0E",
+      "G0R",
+      "G1"
+    ],
+    "enrichment_mode": "live",
+    "receipt_model_id": "marcus",
+    "resolved_marcus_model": "gpt-5",
+    "n_typed_components": 4,
+    "n_provisional_los": 5,
+    "cost_usd": 0.00027345,
+    "g0_enrichment_live_cost_usd": 0.00013125,
+    "irene_refinement_live_cost_usd": 0.00013125,
+    "note": "MARCUS_G0_DISPATCH_LIVE arms BOTH g0_enrichment (start) AND irene_refinement (G0E->G0R resume) live gpt-5 per feature-flag parity (ir_dispatch_live reuses the same env)"
+  },
+  "divergence_guard": "lane_a seq == lane_b seq == [G0E,G0R,G1]; carrier keys identical; ONLY delta = content SOURCE (a=deterministic-g0-enrichment-offline, b=live marcus/gpt-5)",
+  "total_spend_usd": 0.00028440000000000003,
+  "anomalies": [
+    "CLI start_trial dict masks envelope.status to registered-offline when production_clone_launch_evidence is False (true at an EARLY gate like G0E, before any specialist emits a LangSmith child-run). NOT a defect: authoritative envelope.status (run.json) = paused-at-gate; paused_gate=G0E. Driver reports the authoritative status (fixed pre-judge).",
+    "One stray lane-a pre-run trial 24b66c17 exists from before the driver status-source fix; final lane-a is 7039838e (left on disk per cleanup-APPEND F-701)."
+  ],
+  "production_code_edited": false,
+  "commits_pushes_stashes": false
+}

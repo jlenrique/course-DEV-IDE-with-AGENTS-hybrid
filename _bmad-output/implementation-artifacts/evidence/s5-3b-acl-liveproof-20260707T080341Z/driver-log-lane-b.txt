@@ -1,0 +1,11 @@
+[2026-07-07T08:12:59.368976+00:00] fns: g0_enrichment_active()=True g0_dispatch_live()=True _has_live_openai()=True
+[2026-07-07T08:12:59.689080+00:00] marcus seam resolves: requested=None resolved='gpt-5'
+[2026-07-07T08:12:59.858769+00:00] trial_id=26d1dc94-61d4-4dac-8da9-224e6223a95d; starting ARMED live trial on studio-smoke-min DIR (expect first pause G0E, live receipt)
+[2026-07-07T08:14:10.484023+00:00] start_trial returned after 71s
+[2026-07-07T08:14:10.492351+00:00] === LANE-b START OK (paused G0E, live receipt) paused_gate=G0E mode=live ===
+[2026-07-07T08:14:22.654682+00:00] G0E verdict: approve; resuming with cap=8
+[2026-07-07T08:15:05.920088+00:00] resume returned: status=paused-at-gate paused_gate=G0R err=None
+[2026-07-07T08:15:05.920088+00:00] === LANE-b RESUME G0E OK paused_gate=G0R ===
+[2026-07-07T08:15:08.452816+00:00] G0R verdict: approve (ratify LOs); resuming with cap=12
+[2026-07-07T08:15:26.828465+00:00] resume returned: status=paused-at-gate paused_gate=G1 err=None
+[2026-07-07T08:15:26.828465+00:00] === LANE-b RESUME G0R OK paused_gate=G1 ===

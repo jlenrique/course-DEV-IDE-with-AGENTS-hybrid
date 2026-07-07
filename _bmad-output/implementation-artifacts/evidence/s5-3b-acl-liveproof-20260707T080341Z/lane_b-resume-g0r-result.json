@@ -1,0 +1,10 @@
+{
+  "lane": "b",
+  "phase": "resume-G0R",
+  "trial_id": "26d1dc94-61d4-4dac-8da9-224e6223a95d",
+  "verdict_gate": "G0R",
+  "resume_status": "paused-at-gate",
+  "paused_gate": "G1",
+  "paused_error_tag": null,
+  "elapsed_s": 18.386163
+}

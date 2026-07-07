@@ -451,15 +451,14 @@ def test_ac_s3_6_kill_switch_off_parity_with_s2(monkeypatch) -> None:
     assert iw.irene_refinement_active() is True  # rides the same toggle as the enrichment brick
 
 
-@pytest.mark.skip(reason="asserts the 3b default-ON parity; un-skips at the 3b flip")
 def test_ac_s3_6_default_on_parity_with_s2(monkeypatch) -> None:
-    """S5-3a.2 re-contract (new default-ON witness; F-1905 skip-until-3b form).
+    """S5-3a.2 re-contract (new default-ON witness; un-skipped at the S5-3b flip).
 
     The MEANINGFUL "feature-flag parity" assertion is that the UNSET default returns
     ``irene_refinement_active() is True`` (refinement rides the same default-ON toggle
     as the enrichment brick post-3b). A ``setenv("1")`` witness would not prove the
-    *default* — so this is skip-until-3b; the un-skip obligation is carried into the
-    3b spec.
+    *default* — so this stayed skip-until-3b; the 3b flip (this story) CASHES the
+    un-skip obligation.
     """
     monkeypatch.delenv(gw.G0_ENRICHMENT_ACTIVE_ENV, raising=False)
     assert iw.irene_refinement_active() is True

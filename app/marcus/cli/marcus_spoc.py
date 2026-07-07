@@ -29,6 +29,11 @@ from pathlib import Path
 from typing import Any
 from uuid import UUID
 
+from app.marcus.orchestrator.g0_enrichment_wiring import (
+    G0_DISPATCH_LIVE_ENV,
+    G0_ENRICHMENT_MODE_DETERMINISTIC,
+    resolve_enrichment_mode,
+)
 from app.marcus.orchestrator.picker_html_emitter import (
     build_selection_code,
     decode_picker_selection_code,
@@ -1088,11 +1093,107 @@ def _narrate_g0_enrichment(card: dict[str, Any], run_dir: Path, lines: list[str]
     lines.append("  Confirm the typing + LOs, or tell me to re-type a component / drop an LO.")
 
 
+# S5-3b (D3): the kickoff meeting's Beats 2-3 — the standing G0E/G0R gates that
+# the 3b default-flip makes CANONICAL on every run. Beat-1 (the look) is the S2
+# picker ceremony; Beat-2 (the material) is G0E source-enrichment confirm; Beat-3
+# (the contract) is G0R LO ratify. Named up front in ``_KICKOFF_SIGNOFFS`` so the
+# operator sees a coherent look->material->contract arc, never a surprise gate.
+_KICKOFF_BEATS: dict[str, tuple[str, str]] = {
+    "G0E": ("Beat 2 of 3", "the material — the source inventory we teach from"),
+    "G0R": ("Beat 3 of 3", "the contract — the learning objectives we sign up to"),
+}
+
+
+def _enrichment_mode_for_run(run_dir: Path) -> str | None:
+    """The resolved enrichment MODE for this run, off the g0-enrichment.json receipt.
+
+    Reads the D4 ``enrichment_mode`` stamp when present; else derives it FAIL-LOUD
+    from the receipt ``model_id`` (:func:`resolve_enrichment_mode`). Returns ``None``
+    only when no enrichment receipt exists yet (nothing to narrate).
+    """
+    enrichment = _load(run_dir / "g0-enrichment.json")
+    if not isinstance(enrichment, dict):
+        return None
+    stamped = enrichment.get("enrichment_mode")
+    if isinstance(stamped, str) and stamped:
+        return stamped
+    model_id = enrichment.get("model_id")
+    if isinstance(model_id, str) and model_id:
+        return resolve_enrichment_mode(model_id)
+    return None
+
+
+def narrate_live_available_affordance(mode: str | None, lines: list[str]) -> None:
+    """Dan's binding caveat (D3): when the resolved mode is ``deterministic-recorded``,
+    surface an explicit "richer live enrichment is available — arm it" affordance.
+
+    Without this the operator cannot distinguish a deliberately-shallow cost-conscious
+    default from the system's best effort, and may ratify thin LOs believing that is
+    the ceiling (a silent content-quality ceiling). The affordance rides the
+    mode-stamp (D4): the SAME receipt that records ``deterministic-recorded`` drives
+    this operator-facing note. A ``live`` run (or no receipt) shows nothing.
+    """
+    if mode != G0_ENRICHMENT_MODE_DETERMINISTIC:
+        return
+    lines.append(
+        f"{_M} NOTE: this enrichment is the DETERMINISTIC scaffold "
+        "(deterministic-recorded mode) — reproducible and $0, but not the ceiling. "
+        "Richer live semantic enrichment is available; re-run with the "
+        f"`--g0-dispatch-live` flag (sets {G0_DISPATCH_LIVE_ENV}=1) to have me dispatch "
+        "a real live-LLM G0 pre-pass. What you see below is the scaffold, not my best effort."
+    )
+
+
+def _narrate_g0_refinement(card: dict[str, Any], run_dir: Path, lines: list[str]) -> None:
+    """Ratify-gate #2 (G0R): Irene's refined LOs + the LO-delta reconcile (Beat-3)."""
+    inner = card.get("card", card)
+    refined = inner.get("refined_los") or []
+    reconcile = inner.get("reconcile") or {}
+    flagged = inner.get("flagged_for_operator") or []
+    lines.append(
+        f"{_M} G0 LO-ratify contract for your sign-off (gate #2): Irene refined the "
+        "provisional LOs into the teaching contract."
+    )
+    lines.append(f"  Refined learning objectives ({len(refined)}):")
+    for lo in refined[:8]:
+        adequacy = lo.get("adequacy") or {}
+        verdict = adequacy.get("verdict") if isinstance(adequacy, dict) else None
+        tag = f"  [{verdict}]" if verdict else ""
+        lines.append(f"    - {lo.get('objective_id')}: {lo.get('statement', '')[:80]}{tag}")
+    if reconcile:
+        lines.append(
+            f"  Reconcile: {reconcile.get('g0_count')} provisional -> "
+            f"{reconcile.get('irene_count')} refined "
+            f"({reconcile.get('changed')} changed, "
+            f"{reconcile.get('flagged_thin_or_gap')} flagged thin/gap)."
+        )
+    if flagged:
+        lines.append(f"  Needs your ruling ({len(flagged)}):")
+        for entry in flagged[:6]:
+            lo = entry.get("lo", {})
+            lines.append(
+                f"    - {entry.get('disposition')}: {lo.get('objective_id')} "
+                f"{str(lo.get('statement', ''))[:60]}"
+            )
+    lines.append("  Ratify the contract, or tell me to add / drop / re-word an objective.")
+
+
 def narrate_gate(gate_id: str, card: dict[str, Any], run_dir: Path) -> str:
     """Marcus-voiced narration of a gate, surfacing the relevant a-g capability."""
     lines: list[str] = [_RULE, f"  GATE {gate_id}"]
+    # S5-3b (D3): frame the canonical G0E/G0R gates as the kickoff meeting's
+    # Beats 2-3 (look -> material -> contract), so the woken standing gates read as
+    # a coherent ceremony, not a surprise. Content-neutral display layer.
+    beat = _KICKOFF_BEATS.get(gate_id)
+    if beat is not None:
+        beat_label, signoff = beat
+        lines.append(f"{_M} Kickoff {beat_label}: {signoff}.")
     if gate_id == "G0E":
         _narrate_g0_enrichment(card, run_dir, lines)
+        narrate_live_available_affordance(_enrichment_mode_for_run(run_dir), lines)
+    elif gate_id == "G0R":
+        _narrate_g0_refinement(card, run_dir, lines)
+        narrate_live_available_affordance(_enrichment_mode_for_run(run_dir), lines)
     elif gate_id == "G1":
         _narrate_sources(run_dir, lines)
         _narrate_ingestion(run_dir, lines)
@@ -1188,7 +1289,30 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--trial-id", required=True, type=UUID)
     parser.add_argument("--decisions-file", required=False)
     parser.add_argument("--runs-root", required=False)
+    # S5-3b (D4 / F-1801 Reading A): the first-class production ARM for live G0
+    # enrichment. Default OFF — the canonical run wakes the G0E/G0R HIL gates + the
+    # DETERMINISTIC recorded enrichment (byte-stable, $0). Passing this flag sets
+    # MARCUS_G0_DISPATCH_LIVE=1 for the run so the G0 pre-pass dispatches a real
+    # live-LLM extraction (mirrors the --research dispatch surface). The env var is
+    # retained as the underlying impl seam + a dev/evidence escape hatch; the CLI
+    # flag is the auditable operator-facing arm. This flag does NOT change the
+    # enrichment DEFAULT (that stays deterministic-recorded) — it arms it per run.
+    parser.add_argument(
+        "--g0-dispatch-live",
+        action="store_true",
+        help=(
+            "Arm a REAL live-LLM G0 source-enrichment pre-pass for this run (sets "
+            "MARCUS_G0_DISPATCH_LIVE=1). Default OFF: the canonical run uses the "
+            "deterministic-recorded scaffold and spends $0."
+        ),
+    )
     args = parser.parse_args(argv)
+    if args.g0_dispatch_live:
+        # Arm the underlying impl seam for the whole run (auditable in the run record
+        # via the enrichment_mode receipt stamp, which will resolve to 'live').
+        import os
+
+        os.environ[G0_DISPATCH_LIVE_ENV] = "1"
     decisions = None
     if args.decisions_file:
         decisions = json.loads(Path(args.decisions_file).read_text(encoding="utf-8"))
