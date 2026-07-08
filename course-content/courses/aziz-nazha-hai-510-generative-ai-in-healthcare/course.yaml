@@ -1,0 +1,26 @@
+schema_version: 0.1
+course_id: aziz-nazha-hai-510-generative-ai-in-healthcare
+sme:
+  name: Aziz Nazha
+course:
+  code: HAI 510
+  title: Generative AI in Healthcare
+  module_count_expected: 4
+source_references:
+  - url: https://www.jefferson.edu/academics/colleges-schools-institutes/population-health/leadership-workforce-development/generative-ai-in-healthcare.html
+    description: Jefferson Generative AI in Healthcare program page; agenda overview used for module names.
+modules:
+  - module_id: module-01-foundations-of-ai-in-healthcare
+    title: Foundations of AI in Healthcare
+  - module_id: module-02-how-llms-work-and-prompt-engineering
+    title: How LLMs Work & Prompt Engineering
+  - module_id: module-03-ethics-and-challenges
+    title: Ethics & Challenges
+  - module_id: module-04-agentic-ai
+    title: Agentic AI
+status: source-container-seeded
+runtime_contract:
+  runnable_input_scope: lesson_corpus_leaf
+  do_not_run_from:
+    - course_root
+    - module_root

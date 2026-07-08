@@ -1,0 +1,15 @@
+schema_version: 0.1
+course_id: juan-leon-phs-620-teaching-learning-seminar
+sme:
+  name: Juan Leon
+course:
+  code: PHS 620
+  title: Teaching Learning Seminar
+  module_count_expected: 15
+status: source-container-seeded
+runtime_contract:
+  runnable_input_scope: lesson_corpus_leaf
+  do_not_run_from:
+    - course_root
+    - module_root
+

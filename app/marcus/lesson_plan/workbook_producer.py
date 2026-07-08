@@ -104,7 +104,7 @@ class DuplicateCollateralIdError(ValueError):
 
 
 # ---------------------------------------------------------------------------
-# Transcript-segment backbone (frozen tejal deck input)
+# Transcript-segment backbone (the run's frozen deck segment-manifest input)
 # ---------------------------------------------------------------------------
 
 

@@ -1,0 +1,13 @@
+schema_version: 0.1
+module_id: module-02-how-llms-work-and-prompt-engineering
+title: How LLMs Work & Prompt Engineering
+source_reference:
+  url: https://www.jefferson.edu/academics/colleges-schools-institutes/population-health/leadership-workforce-development/generative-ai-in-healthcare.html
+  agenda_label: Week 2
+agenda_topics:
+  - Transformers
+  - RLHF
+  - Tokenization
+  - Embeddings
+status: source-container-seeded
+

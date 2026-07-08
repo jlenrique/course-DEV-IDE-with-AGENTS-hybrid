@@ -698,3 +698,139 @@ This is the right RED-floor shape: it tests the upstream corruption boundary, ke
 **F-2802 hygiene status changed but still needs staging discipline.** The handoff now treats the Part-3 corpus curation and raw sibling relocation as intentional S7 work. That can close the "why is course-content moving?" question if staged deliberately, but final commit hygiene still must exclude unrelated run directories, operator/Codex external ledgers, workbook-test strays, and any runtime sidecars not intended as evidence. `state/config/gamma-styleguide-picks.jsonl` also needs explicit include/exclude disposition.
 
 **Verdict: MILESTONE ACHIEVED / FORMAL CLOSE STILL NEEDS DISPOSITION.** The team is back from the roadblock and has produced a real in-graph workbook from Tejal Part 3. Do not convert that into a close claim until the party/Codex close poll explicitly resolves numeric-audit semantics, DOI witness accounting, fresh-vs-recover provenance, stale wording, test evidence, and commit hygiene.
+
+---
+
+## SOP-042 - S7 pushed checkpoint poll (2026-07-07 18:02 -04:00, Codex shadow monitor) - RELAYED
+
+**Scope reviewed:** repo status/log, pushed commit `9de608e3`, committed S7 evidence/workbook artifact set, S7 spec wording, `SESSION-HANDOFF.md`, and Tier-1/protected-path drift checks. No tests were run by this monitor poll. No production/test/story files were edited by this monitor; this ledger entry is the only write.
+
+**State:** branch `dev/workbook-2026-07-06` is synced with `origin/dev/workbook-2026-07-06` at `9de608e3` (`feat(S7): workbook generalization LIVE-PROVEN -- first in-graph workbook off a DIFFERENT lesson (Tejal Part 3) + Irene Pass-2 id-integrity fix`). The working tree has no tracked edits beyond this ledger write, but still carries untracked strays: external monitor ledgers, `workbooks-test/`, run directories, the goal launcher, and a duplicate untracked evidence copy of `s7-acl-recover-liveproof-20260707T205600Z/workbook.docx`.
+
+**Positive verification:** the pushed checkpoint deliberately includes the S7 producer generalization, Irene Pass-2 id-integrity hardening, curated Tejal Part-3 corpus, focused tests, S7 evidence logs/facts, top-level workbook MD/DOCX, handoff, and tracked live provenance sidecar. The Tier-1/protected-path check is clean for `state/config/pipeline-manifest.yaml`, `app/specialists/narration_join.py`, and `app/marcus/lesson_plan/figure_tokens.py`: they are neither in the commit diff nor dirty in the worktree. The top-level learner artifact `_bmad-output/artifacts/workbooks/u01@1.docx` is committed; only the duplicate evidence-dir DOCX copy is untracked.
+
+**F-4001 remains open after commit.** The committed facts still record `numeric_audit_status: "FAIL"`. The handoff gives a plausible disposition: hard unsourced-citation G1 passed and the residual FAIL is the deferred word-form-numeral gap. That is close-able only if the formal close names the exact failing numeral/audit, cites `braid-workbook-wordform-numeral-gap`, and records party concurrence that this does not contradict AC-L's "G1/G2/G3/AC-5/AC-8 pass" language.
+
+**F-4002 remains open / close-language sensitive.** The committed facts still top-line `primary_doi: 10.5465/ambpp.2019.19399abstract` with DOI resolution HTTP 403. I previously verified two rendered DOI rows resolve HTTP 200 (`10.3389/fresc.2024.1336559`, `10.48550/arxiv.2604.06331`), but the committed facts do not top-line `resolved_doi_count` or name those successes. The final close should either cite those successful DOI witnesses explicitly or narrow the DOI claim away from "primary DOI resolves."
+
+**F-3801 remains open but acknowledged.** The handoff now admits `recover_production_trial` lacks upstream re-entry and that the "recover" witness used a fresh trial. That is the honest disposition path. However, the commit subject/body and evidence directory still use "RECOVER witness" language, so formal close should call the proof a "fresh post-fix AC-L witness" unless a real surgical rewind/re-dispatch from `40f3a90a...` is performed.
+
+**F-3401 remains open in the committed S7 spec.** The honesty guard correctly says Tejal Part 3 is a different lesson, not a non-Tejal corpus, but stale "non-tejal" language remains in earlier scope/AC/T11 lines of `_bmad-output/implementation-artifacts/canonical-arc-s7-workbook-generalization.md`. This is lower risk now that the handoff and guard are clear, but the spec itself still contains conflicting close language.
+
+**F-4201 [P2] Evidence-pack hygiene mismatch: duplicate witness DOCX remains untracked.** The canonical workbook DOCX is committed at `_bmad-output/artifacts/workbooks/u01@1.docx`, but `_bmad-output/implementation-artifacts/evidence/s7-acl-recover-liveproof-20260707T205600Z/workbook.docx` is untracked while sibling evidence files are committed. If the evidence pack is intended to be self-contained, add the duplicate DOCX deliberately; otherwise delete/exclude it and keep the top-level workbook artifact as the DOCX witness. Do not leave it as an ambiguous stray.
+
+**Verdict: PUSHED MILESTONE CHECKPOINT / FORMAL CLOSE STILL PENDING.** The Claude team has recovered from the S7 roadblock and banked the first real in-graph workbook from a different Tejal lesson, plus the upstream Irene id-integrity fix. I would not delete this monitor automation yet: the session has not recorded the formal S7 + Pass-2 close poll, and open findings still need explicit close-record disposition rather than silent carry.
+
+---
+
+## SOP-043 - S7 post-checkpoint KG/ONBOARDING regen poll (2026-07-07 23:06 -04:00, Codex shadow monitor) - RELAYED
+
+**Scope reviewed:** repo status/log, pushed commit `9de608e3`, working-tree diffs for `.understand-anything/*` and `docs/ONBOARDING.md`, S7 spec wording grep, and the prior SOP-042 findings. No tests were run by this monitor poll. No production/test/story files were edited by this monitor; this ledger entry is the only write.
+
+**State:** no new commit after `9de608e3`; branch remains synced with origin at the S7 pushed checkpoint. The worktree now has tracked KG/ONBOARDING regeneration edits in `.understand-anything/fingerprints.json`, `.understand-anything/knowledge-graph.json`, `.understand-anything/meta.json`, and `docs/ONBOARDING.md`, plus this monitor-ledger edit. Untracked runtime/evidence strays from SOP-042 remain present.
+
+**Positive verification:** the owed KG/ONBOARDING refresh appears to have been performed against HEAD `9de608e3`. `docs/ONBOARDING.md` now reports branch `dev/workbook-2026-07-06`, graph baseline commit `9de608e3`, regeneration date `2026-07-07`, and explicitly adds learner workbooks / S7 workbook producer generalization / G0 + research wiring / styleguide substrate to the onboarding map. This is useful wrapup hygiene and aligns with the "KG/ONBOARDING regen owed" note carried into the S4-onward goal.
+
+**F-4301 [P2] Regen is not banked until committed or deliberately excluded.** The KG/ONBOARDING files are tracked and dirty. If the Claude team intends this as S7/session wrapup, stage/commit/push them intentionally with the wrapup record; otherwise revert/exclude them deliberately. Do not leave a huge generated diff as ambiguous local state alongside external monitor ledgers and run directories.
+
+**F-4302 [P2] ONBOARDING close-language should distinguish "live-proven checkpoint" from formal S7 close if committed before party close.** `docs/ONBOARDING.md` says "S7 workbook generalization (live-proven)" and "first in-graph composed walk to node 07W completed on Tejal Part 3." That is materially true as a milestone, but the monitor still has unresolved close-record findings: numeric-audit disposition, DOI witness accounting, fresh-vs-recover provenance, stale S7 spec wording, and party close concurrence. If ONBOARDING is committed before formal close, add a short qualifier such as "live-proven checkpoint; formal close concurrence pending in S7 ledger" or make sure the final close poll resolves the carried findings first.
+
+**Open findings carried:** F-4001 numeric-audit semantics, F-4002 DOI witness accounting, F-3801 fresh-vs-recover provenance, F-3401 stale `non-tejal` lines in the S7 spec, F-4201 duplicate witness DOCX hygiene, and F-2802 artifact disposition remain open until explicitly closed or superseded in a formal close poll.
+
+**Verdict: WRAPUP HYGIENE PROGRESS / STILL NOT CLOSE POLL.** The Claude team appears to be doing the right post-checkpoint documentation refresh, but S7 formal close is still not recorded. Keep the monitor automation active until a close poll and party concurrence resolve the carried findings.
+
+---
+
+## SOP-044 - S7 KG/ONBOARDING local commit poll (2026-07-07 23:16 -04:00, Codex shadow monitor) - RELAYED
+
+**Scope reviewed:** repo status/log, local commit `caf312d6`, diff/stat vs `origin/dev/workbook-2026-07-06`, `docs/ONBOARDING.md`, `next-session-start-here.md`, `SESSION-HANDOFF.md`, and S7 spec wording grep. No tests were run by this monitor poll. No production/test/story files were edited by this monitor; this ledger entry is the only write.
+
+**State:** `dev/workbook-2026-07-06` is now **ahead of origin by 1** at local commit `caf312d6` (`Regenerate knowledge graph and ONBOARDING at HEAD after S7 substrate changes.`). The commit is narrow: `.understand-anything/fingerprints.json`, `.understand-anything/knowledge-graph.json`, `.understand-anything/meta.json`, and `docs/ONBOARDING.md`. The only tracked dirty file after the commit is this monitor ledger; untracked external ledgers, run dirs, `workbooks-test/`, goal launcher, and the duplicate evidence DOCX remain.
+
+**Positive verification:** F-4301 is substantially addressed locally. The KG/ONBOARDING regen is no longer an ambiguous dirty generated diff; it is intentionally committed with a clear message and a `9de608e3` graph anchor. This closes the "bank or deliberately exclude" part locally, subject to push.
+
+**F-4401 [P2] The KG/ONBOARDING wrapup commit still needs push or explicit handoff.** Because the branch is `ahead 1`, teammates and CI do not yet have the regenerated onboarding. If this is the intended session wrapup state, push `caf312d6`; if not, record why the local commit should remain unpushed. Until pushed, this is not a remote-bank.
+
+**F-4302 remains open.** `docs/ONBOARDING.md` still says "S7 workbook generalization (live-proven)" without a nearby formal-close qualifier. That is acceptable if the formal S7 close follows immediately and resolves the carried findings, but if this ONBOARDING commit is the last pushed artifact of the session, it may read as stronger than the current ledger state. `next-session-start-here.md` and `SESSION-HANDOFF.md` correctly say formal S7 + Pass-2 close remains pending operator notes / party concurrence / Codex close poll, so the ambiguity is contained but not eliminated.
+
+**Open findings carried:** F-4001 numeric-audit semantics, F-4002 DOI witness accounting, F-3801 fresh-vs-recover provenance, F-3401 stale `non-tejal` lines in the S7 spec, F-4201 duplicate witness DOCX hygiene, F-2802 artifact disposition, F-4302 ONBOARDING close-language nuance, and new F-4401 push/handoff remain open until explicitly closed or superseded in a formal close poll.
+
+**Verdict: LOCAL WRAPUP COMMIT GOOD / NOT REMOTE-BANKED / STILL NOT CLOSE POLL.** The Claude team has banked the KG/ONBOARDING regen locally in a narrow commit, which is good hygiene. Do not delete the monitor automation yet: S7 formal close and a remote-bank/push decision are still pending.
+
+---
+
+## SOP-045 - S7 Phase 2 course-source planning input poll (2026-07-08 00:31 -04:00, Codex shadow monitor) - RELAYED
+
+**Scope reviewed:** repo status/log, latest planning artifacts, the new S7 Phase 2 course-source brief, seeded course containers under `course-content/courses/`, and the prior SOP-044 findings. No tests were run by this monitor poll. No production/test/story files were edited by this monitor; this ledger entry is the only write.
+
+**State:** no new commit after local `caf312d6`; branch remains **ahead of origin by 1**. A new planning artifact is present and untracked: `_bmad-output/planning-artifacts/s7-phase2-course-source-management-brief-2026-07-08.md`. Two new course-source containers are also untracked: `course-content/courses/juan-leon-phs-620-teaching-learning-seminar/` and `course-content/courses/aziz-nazha-hai-510-generative-ai-in-healthcare/`.
+
+**Positive planning signal:** the new brief is a useful Phase 2 input. It correctly frames course-source management as Marcus-SPOC product hardening, not a proofing-vehicle target; preserves the lesson-corpus-leaf runtime boundary; distinguishes scoped source pools from canonical downstream assets; names gap handling as a first-class planning function; and uses two real courses as generalizability fixtures. It also gives the BMAD party concrete spec material: course registry/manifest scan, syllabus-grounded module metadata, canonical asset record contract, lesson-planning input bundle, and acceptance criteria for preserving scope/provenance.
+
+**Course-source evidence now available:** PHS 620 has a 15-module syllabus-backed structure, and HAI 510 has a 4-module syllabus-backed professional-development structure. This is enough variety to test whether Phase 2 source management can handle both a long academic course and a compact APC-style course without hardcoding one SME/course shape.
+
+**F-4501 [P2] New Phase 2 planning/source inputs need deliberate bank-or-handoff disposition.** The planning brief and both course containers are untracked. If they are intended to feed the upcoming BMAD party/spec session, stage/commit/push them deliberately or record them in handoff as local operator/Codex planning inputs. Do not let them blend into the still-open S7 Phase 1 close artifacts or runtime strays.
+
+**Close-status guard:** this planning signal does not close S7 Phase 1. Open findings carried: F-4001 numeric-audit semantics, F-4002 DOI witness accounting, F-3801 fresh-vs-recover provenance, F-3401 stale `non-tejal` lines in the S7 spec, F-4201 duplicate witness DOCX hygiene, F-2802 artifact disposition, F-4302 ONBOARDING close-language nuance, F-4401 KG/ONBOARDING push/handoff, and new F-4501 Phase 2 planning/source input disposition.
+
+**Verdict: GOOD PHASE 2 INPUT / STILL NOT S7 CLOSE POLL.** Recommend the BMAD party read `_bmad-output/planning-artifacts/s7-phase2-course-source-management-brief-2026-07-08.md` before spec freeze and convert it into scoped ACs, while keeping formal S7 Phase 1 close disposition separate.
+
+---
+
+## SOP-046 - S7 KG/ONBOARDING remote-bank poll (2026-07-08 00:41 -04:00, Codex shadow monitor) - RELAYED
+
+**Scope reviewed:** repo status/log, latest planning/source artifacts, and SOP-045 carried findings. No tests were run by this monitor poll. No production/test/story files were edited by this monitor; this ledger entry is the only write.
+
+**State:** branch `dev/workbook-2026-07-06` is now synced with `origin/dev/workbook-2026-07-06` at `caf312d6` (`Regenerate knowledge graph and ONBOARDING at HEAD after S7 substrate changes.`). The only tracked dirty file is this monitor ledger. The Phase 2 course-source planning brief and the two course containers remain untracked, along with the previously carried external ledgers/runtime/evidence strays.
+
+**F-4401 closed.** The KG/ONBOARDING wrapup commit is now remote-banked at `caf312d6`; no further push/handoff action is needed for that finding.
+
+**F-4501 remains open.** The new S7 Phase 2 planning/source inputs are still untracked. If they are meant to feed the upcoming BMAD party/spec session, they need deliberate commit/push or explicit handoff treatment.
+
+**Open findings carried:** F-4001 numeric-audit semantics, F-4002 DOI witness accounting, F-3801 fresh-vs-recover provenance, F-3401 stale `non-tejal` lines in the S7 spec, F-4201 duplicate witness DOCX hygiene, F-2802 artifact disposition, F-4302 ONBOARDING close-language nuance, and F-4501 Phase 2 planning/source input disposition remain open until explicitly closed or superseded in a formal close poll.
+
+**Verdict: KG/ONBOARDING REMOTE-BANKED / STILL NOT S7 CLOSE POLL.** Good progress on wrapup hygiene. Keep the monitor active until formal S7 Phase 1 close disposition and Phase 2 planning/source input disposition are recorded.
+
+---
+
+## SOP-047 - S7 spec honesty correction + Phase 2 party record poll (2026-07-08 01:31 -04:00, Codex shadow monitor) - RELAYED
+
+**Scope reviewed:** repo status/log, working diff for `_bmad-output/implementation-artifacts/canonical-arc-s7-workbook-generalization.md`, new `_bmad-output/planning-artifacts/s7-phase2-party-record-2026-07-08.md`, and the prior SOP-046 carried findings. No tests were run by this monitor poll. No production/test/story files were edited by this monitor; this ledger entry is the only write.
+
+**State:** branch remains synced with `origin/dev/workbook-2026-07-06` at `caf312d6`. New/dirty S7-relevant planning/spec signal exists: the S7 Phase-1 spec is modified, and a new untracked S7 Phase-2 party record has appeared. The Phase-2 course-source brief and two seeded course containers remain untracked.
+
+**Positive verification:** the S7 Phase-1 spec now corrects the stale overclaim. The scope, D1, AC-1, AC-L label, DOI-leg note, and T11 line now frame the live proof as a workbook from a **different lesson than the frozen `tejal-apc-c1-m1-p2-trends` lesson**, same SME allowed, not a genuinely non-Tejal/cross-SME proof. Remaining `non-tejal` mentions are now part of the explicit honesty guard / "do not claim" language rather than stale acceptance wording.
+
+**F-3401 closed subject to bank.** The stale `non-tejal` spec-language issue is substantively remediated in the working tree. It still needs deliberate staging/commit/push with the rest of the close/planning disposition, but the content problem itself is resolved.
+
+**Phase-2 party record signal:** the new party record records a fully-spawned 4/4 GO-W-AMENDMENTS round for S7 Phase 2 course-source management. Strong points: it keeps formal S7 + Irene Pass-2 close as a gate for Phase-2 **dev dispatch**; keeps spec authoring allowed in parallel; pulls the broad-root refusal guard into Story A; separates source evidence records from downstream projector family work; fences Story D away from `collateral -> ComponentSelection`; and preserves operator gates for PHS 620 slug renames, reading-list acquisition, LO ratification, and gap-ledger disposition.
+
+**F-4501 remains open / partially mitigated.** The party record is exactly the kind of BMAD disposition the monitor requested, but it is still untracked, as are the brief and course containers. The next clean step is a deliberate commit/push or explicit handoff naming the Phase-2 brief, Phase-2 party record, and seed course containers as planning/source inputs. Do not blend these into runtime/evidence strays.
+
+**F-4701 [P2] Dirty S7 spec correction needs banked with close-hygiene intent.** The S7 spec correction is valuable and should be banked intentionally, but it is a tracked dirty implementation-artifact file. If the Claude team is preparing a close/handoff commit, include it deliberately with a message that it corrects close-language honesty; otherwise record why it remains local.
+
+**Open findings carried:** F-4001 numeric-audit semantics, F-4002 DOI witness accounting, F-3801 fresh-vs-recover provenance, F-4201 duplicate witness DOCX hygiene, F-2802 artifact disposition, F-4302 ONBOARDING close-language nuance, F-4501 Phase 2 planning/source input disposition, and new F-4701 S7 spec correction banking remain open until explicitly closed or superseded in a formal close poll.
+
+**Verdict: GOOD SPEC HYGIENE + STRONG PHASE-2 PARTY RECORD / STILL NOT S7 CLOSE POLL.** Recommend banking the S7 spec correction and Phase-2 planning inputs deliberately. Phase-2 dev dispatch should remain gated on formal S7 + Irene Pass-2 close, exactly as the new party record states.
+
+---
+
+## SOP-048 - S7 Phase-1 + Irene Pass-2 FORMAL CLOSE — party concurrence record (2026-07-08, session 20, Claude orchestrator lane) - RECORDED
+
+**Ceremony:** fresh 4-seat close-concurrence party (Winston / John / Murat / Amelia, each an independent fresh agent, read-only, code-and-evidence-verifying — not the same instances as the Phase-2 spec round). Question: formally close BOTH stories on the single cross-cited recover witness (trial `4c64db93`) per John A1.
+
+**VERDICTS: 4/4 CONCUR.** Winston CONCUR-W-FINDINGS (both stories); John CONCUR-W-FINDINGS (both); Murat CONCUR-W-FINDINGS (both); Amelia CONCUR-W-FINDINGS (S7) / CONCUR clean (Pass-2). No NONCONCUR. All findings were BOUND into the two stories' FORMAL CLOSE RECORD blocks (status lines flipped ✅ DONE this entry's commit).
+
+**Disposition of the carried open findings (F-4001..F-4701) — all CLOSED by this record:**
+- **F-4001 CLOSED:** independently re-verified by two seats — 0 symbol figure tokens in `u01@1.md` (frozen `_FIGURE_RE`), word-form figure scan also 0; recorded `numeric_audit_status: FAIL` = the zero-denominator un-auditable NON-EVENT; raise-path (`FAIL ∧ tokens>0`, `workbook_producer.py:326`) intact; **no unsourced numeral exists because no numeral exists** (session-19 "confirm the exact numeral" resolves to the strongest answer). Status-vocabulary rider filed on `braid-workbook-wordform-numeral-gap`.
+- **F-4002 CLOSED (PASS-with-recorded-nuance, Murat ruling):** anti-fabrication teeth affirmatively met (3 entries traced to `research_wiring`, rendered UNDER G2, `citation_unsourced: 0`); doi.org DEREFERENCES the primary `10.5465/ambpp.2019.19399abstract` to the correct AOM landing path (publisher 403s bots — access nuance, not a citation defect); two other rendered DOIs resolved HTTP 200 (`10.3389/fresc.2024.1336559`, `10.48550/arxiv.2604.06331`, per SOP-040); strong form (doi.org-200 content-inspected) = S6. **John close-Finding 1 remediated:** `research-quality-resolvable-doi-yield` was NAMED-only, never filed (session-19 checklist overstated) — NOW FILED in deferred-inventory with full history.
+- **F-3801 CLOSED:** close language states plainly — fresh post-fix AC-L witness (full re-walk ~$0.55), recover-LABELED; surgical 08→08B→07W re-entry NOT performed; `recover-with-reenter-node-affordance` confirmed filed. Murat additionally corrected an over-claim: the recover run witnessed the gate's **PASS path** (14 clean id-bearing segments first-roll, no fire); FIRE path proven by the 14-test suite + the `40f3a90a` honest-RED — "self-healed" phrasing retired.
+- **F-3401 CLOSED (banked this commit):** 5 spec wording fixes + Amelia close-F1 (stale "frozen tejal deck input" code comment, `workbook_producer.py:107`) — all in the close batch. Residual "non-tejal" strings live only inside the ⛔ do-not-claim guards.
+- **F-4201 CLOSED:** canonical DOCX witness = committed `_bmad-output/artifacts/workbooks/u01@1.docx`; 12MB evidence-dir duplicate DELIBERATELY untracked. **F-2802 CLOSED:** standing stray convention re-affirmed (workbooks-test/, runs/*, external ledgers, goal launcher — untracked by convention). **F-4302 CLOSED:** formal close recorded; ONBOARDING's "live-proven" line is now backed by party concurrence. **F-4501 + F-4701 CLOSED (this commit):** Phase-2 brief + party record + both seeded course containers + the corrected S7 spec banked deliberately in the close commit.
+- **New items filed at close:** `run-envelope-corrupt-vs-absent-fail-loud` (Winston rider — `load_run_envelope` collapses corrupt run.json to absent, silent no-op vs fail-loud invariant); the wordform-gap status-vocabulary rider (John).
+
+**Code verification highlights (Amelia + Winston seats, at HEAD):** tejal constants retired (only do-NOT comments remain); `_derive_plan_unit_fields`/`_plan_unit_and_context` generalized off the run's real lesson plan; collateral read via `app.models.*` (M3-safe, forbidden edge named); `WorkbookSpec.kind` @ `collateral_spec.py:327-332`, SCHEMA_VERSION 1.1, changelog entry; research DOIs under G2 (`workbook_producer.py:906-917`); Pass-2 gate conditions a/b/c @ `graph.py:705-789`, retryable tag pinned, called @ `:2178`; byte-frozen verified via git: `narration_join.py` (`ebe0c3f2`), `figure_tokens.py` (`20352cdc`), `pipeline-manifest.yaml` (`b59679ce`); suites collect 10+7+14.
+
+**Sequencing honored:** per the Phase-2 party record + SOP-047, this close GATES Phase-2 dev dispatch — the gate is now OPEN. Phase-2 story-ready spec: `canonical-arc-s7-phase2-course-source-stories.md` (banked this commit).
+
+**Verdict: S7 PHASE-1 + IRENE PASS-2 FORMALLY CLOSED — 4/4 party concurrence; all carried monitor findings resolved or filed; close batch committed + pushed with this entry.** The external Codex monitor is invited to corroborate with its own close poll against the close commit.
