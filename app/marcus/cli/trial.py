@@ -11,6 +11,7 @@ import subprocess
 import sys
 from collections.abc import Callable
 from contextlib import suppress
+from dataclasses import dataclass
 from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any, Literal
@@ -28,6 +29,11 @@ from app.marcus.cli.marcus_spoc import (
     DEGRADED_PUBLISH_URL_SCRIPTED,
     commit_picker_pick,
     run_picker_preflight,
+)
+from app.marcus.lesson_plan.bundle_catalog import get_bundle
+from app.marcus.lesson_plan.collateral_selection import (
+    CollateralSelectionError,
+    load_lesson_plan_collateral_selection,
 )
 from app.marcus.orchestrator.picker_html_emitter import decode_picker_selection_code
 from app.marcus.orchestrator.production_runner import (
@@ -314,6 +320,9 @@ def start_trial(
     max_specialist_calls: int | None = None,
     gamma_settings_file: Path | None = None,
     component_selection: ComponentSelection | None = None,
+    lesson_plan_collateral_intent_path: Path | None = None,
+    lesson_plan_collateral_receipt_path: Path | None = None,
+    lesson_plan_collateral_bundle_id: str | None = None,
     picker_preflight_fn: Callable[..., dict[str, Any] | None] | None = None,
     selection_code: str | None = None,
     picker_events_path: Path | None = None,
@@ -373,6 +382,25 @@ def start_trial(
     effective_trial_id = trial_id or uuid4()
     run_dir = runs_root / str(effective_trial_id)
     gamma_settings = _load_gamma_settings_file(gamma_settings_file)
+    lesson_plan_bundle_id = lesson_plan_collateral_bundle_id
+    if lesson_plan_collateral_intent_path is not None:
+        resolved_collateral_selection = load_lesson_plan_collateral_selection(
+            lesson_plan_collateral_intent_path
+        )
+        if resolved_collateral_selection.source == "ratified":
+            if (
+                component_selection is not None
+                and component_selection != resolved_collateral_selection.selection
+            ):
+                raise CollateralSelectionError(
+                    "lesson-plan collateral intent selection conflicts with the "
+                    "explicit component_selection argument"
+                )
+            component_selection = resolved_collateral_selection.selection
+            lesson_plan_bundle_id = resolved_collateral_selection.bundle_id
+    lesson_plan_receipt_path = (
+        lesson_plan_collateral_receipt_path or lesson_plan_collateral_intent_path
+    )
 
     # G0 directive composition (Story 7a.1, AC-7.1-A/B/C/J).
     # Composer activates for directory inputs (course-content corpora). File
@@ -540,6 +568,12 @@ def start_trial(
         "production_clone_launch_evidence": envelope.production_clone_launch_evidence,
         "directive_path": directive_path.as_posix() if directive_path else None,
         "directive_digest": directive_digest,
+        "lesson_plan_collateral_intent_path": (
+            lesson_plan_receipt_path.as_posix()
+            if lesson_plan_receipt_path
+            else None
+        ),
+        "lesson_plan_collateral_bundle_id": lesson_plan_bundle_id,
         "transport_kind": "cli",
     }
     (run_dir / "trial-start.json").write_text(
@@ -567,9 +601,50 @@ def _resolve_bundle_selection(args: argparse.Namespace) -> ComponentSelection | 
     return selection.selection
 
 
+@dataclass(frozen=True)
+class _StartSelection:
+    selection: ComponentSelection | None
+    lesson_plan_collateral_intent_path: Path | None = None
+    lesson_plan_collateral_bundle_id: str | None = None
+
+
+def _resolve_start_component_selection(args: argparse.Namespace) -> _StartSelection:
+    """Resolve runtime selection from ratified lesson-plan intent or front door.
+
+    Ratified lesson-plan collateral intent has precedence once present. Without
+    that file, the existing manual bundle/front-door path is unchanged.
+    """
+    intent_path = getattr(args, "lesson_plan_collateral_intent", None)
+    if not intent_path:
+        return _StartSelection(selection=_resolve_bundle_selection(args))
+    intent_file = Path(intent_path)
+    resolved = load_lesson_plan_collateral_selection(intent_file)
+    if resolved.source != "ratified":
+        return _StartSelection(
+            selection=_resolve_bundle_selection(args),
+            lesson_plan_collateral_intent_path=intent_file,
+        )
+    bundle = getattr(args, "bundle", None)
+    if bundle:
+        record = get_bundle(bundle)
+        if record is None:
+            raise CollateralSelectionError(
+                f"{bundle!r} is not a bundle in the closed catalog"
+            )
+        if record.selection != resolved.selection:
+            raise CollateralSelectionError(
+                "lesson-plan collateral intent selection conflicts with --bundle"
+            )
+    return _StartSelection(
+        selection=resolved.selection,
+        lesson_plan_collateral_intent_path=intent_file,
+        lesson_plan_collateral_bundle_id=resolved.bundle_id,
+    )
+
+
 def start_trial_cli(args: argparse.Namespace) -> int:
     try:
-        component_selection = _resolve_bundle_selection(args)
+        start_selection = _resolve_start_component_selection(args)
         payload = start_trial(
             preset=args.preset,
             input_path=Path(args.input),
@@ -584,10 +659,19 @@ def start_trial_cli(args: argparse.Namespace) -> int:
                 if getattr(args, "gamma_settings_file", None)
                 else None
             ),
-            component_selection=component_selection,
+            component_selection=start_selection.selection,
+            lesson_plan_collateral_receipt_path=(
+                start_selection.lesson_plan_collateral_intent_path
+            ),
+            lesson_plan_collateral_bundle_id=(
+                start_selection.lesson_plan_collateral_bundle_id
+            ),
             selection_code=getattr(args, "selection_code", None),
         )
     except FrontDoorError as exc:
+        print(f"ERROR: {exc}", file=sys.stderr)
+        return 1
+    except CollateralSelectionError as exc:
         print(f"ERROR: {exc}", file=sys.stderr)
         return 1
     except DirectiveConfirmationRequiredError as exc:
@@ -769,6 +853,15 @@ def build_trial_parser(parser: argparse.ArgumentParser) -> None:
             "Front-door bundle id to compose (e.g. 'narrated-deck'). Omit for "
             "today's default graph (deck+motion). Flagged (not-fully-proven) "
             "bundles are refused unless --allow-unproven-bundle is set."
+        ),
+    )
+    start.add_argument(
+        "--lesson-plan-collateral-intent",
+        required=False,
+        help=(
+            "Local YAML/JSON ratified lesson-plan collateral intent. When present, "
+            "it resolves through the curated bundle catalog and feeds the existing "
+            "ComponentSelection runtime seam."
         ),
     )
     start.add_argument(

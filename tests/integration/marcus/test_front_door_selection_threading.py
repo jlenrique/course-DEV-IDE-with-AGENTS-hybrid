@@ -4,9 +4,9 @@ Covers:
   * start_trial threads a chosen ``ComponentSelection`` into run_production_trial
     (and onto RunState), so the composer + both walks honor it.
   * a B1 (deck-only) run freezes a graph that EXCLUDES motion (07E).
-  * the default/no-selection path stays byte-identical to today (production_default).
-  * the run-summary helper binds the COMPOSED graph (no raw-manifest leak) for a
-    non-default selection, while the default selection keeps the raw-file binding.
+  * the default/no-selection path stays deck+motion (production_default).
+  * the run-summary helper records ComponentSelection and binds the COMPOSED graph
+    whenever the raw manifest contains unselected optional components.
 """
 
 from __future__ import annotations
@@ -195,7 +195,7 @@ def test_b1_deck_only_run_excludes_motion_and_persists_selection(
 
 
 # ---------------------------------------------------------------------------
-# 3. run-summary helper: composed binding for non-default; raw binding for default
+# 3. run-summary helper: composed graph binding + explicit selection receipt
 # ---------------------------------------------------------------------------
 
 
@@ -220,7 +220,7 @@ def test_run_summary_pack_hash_binds_composed_graph_for_b1(
     assert len(payload["pack_hash_binding"]) == 64
 
 
-def test_run_summary_pack_hash_default_is_byte_identical_to_raw(
+def test_run_summary_pack_hash_default_records_selection_and_composed_graph(
     tmp_path: Path, monkeypatch
 ) -> None:
     _setup(monkeypatch)
@@ -231,9 +231,15 @@ def test_run_summary_pack_hash_default_is_byte_identical_to_raw(
         trial_id=TRIAL_ID,
         runs_root=tmp_path,
         max_specialist_calls=12,
-        # default: no selection -> production_default (deck+motion) -> raw binding
+        # default: no selection -> production_default (deck+motion)
     )
     payload = yaml.safe_load(
         (tmp_path / str(TRIAL_ID) / "run_summary.yaml").read_text(encoding="utf-8")
     )
-    assert payload["pack_hash_binding"] == _raw_manifest_sha256()
+    assert payload["component_selection"] == {
+        "deck": True,
+        "motion": True,
+        "workbook": False,
+    }
+    assert payload["pack_hash_binding"] != _raw_manifest_sha256()
+    assert len(payload["pack_hash_binding"]) == 64

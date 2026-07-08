@@ -821,17 +821,15 @@ def _pack_hash_binding(
 ) -> str:
     """Bind the run-summary to the graph that ACTUALLY ran.
 
-    For the default selection (``production_default`` — today's full deck+motion
-    graph, a composition NO-OP) this returns the raw manifest-file sha256, exactly
-    as before S5 (byte-identical regression pin). For a NON-default selection
-    (e.g. a B1 deck-only run) it binds the COMPOSED graph's node set instead of the
-    raw manifest file, so the audit trail of a deck-only run does not silently
-    claim the full pack ran (the raw-manifest leak the S2 dev flagged).
+    When the selected graph is structurally identical to the raw manifest, this
+    returns the raw manifest-file sha256. When the raw manifest contains optional
+    nodes outside the selected components (for example 07W while the default is
+    deck+motion), it binds the COMPOSED graph's node set so the audit trail never
+    claims an unselected component ran.
 
     No-op detection is STRUCTURAL — the composed graph's node set is compared to
-    the raw manifest's node set — rather than ``selection == production_default()``,
-    so it does not depend on (and cannot be tripped by) the default classmethod
-    (the two-walk re-default poison guard monkeypatches that method)."""
+    the raw manifest's node set — rather than ``selection == production_default()``.
+    """
     raw = hashlib.sha256(manifest_path.read_bytes()).hexdigest()
     if selection is None:
         return raw
@@ -892,6 +890,7 @@ def _emit_run_summary_yaml(
             selection=selection,
             composed_manifest=composed_manifest,
         ),
+        "component_selection": selection.as_map() if selection is not None else None,
         "conversation_chain_digest": _conversation_chain_digest(
             trial_id=trial_id,
             runs_root=runs_root,
