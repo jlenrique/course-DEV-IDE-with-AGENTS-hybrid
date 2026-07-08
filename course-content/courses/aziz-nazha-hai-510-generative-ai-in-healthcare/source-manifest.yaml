@@ -1,0 +1,257 @@
+schema_version: '0.1'
+course_id: aziz-nazha-hai-510-generative-ai-in-healthcare
+declared:
+  schema_version: '0.1'
+  course_code: HAI 510
+  module_count_expected: 4
+  modules:
+  - module-01-foundations-of-ai-in-healthcare
+  - module-02-how-llms-work-and-prompt-engineering
+  - module-03-ethics-and-challenges
+  - module-04-agentic-ai
+  source_purpose: new_build
+  source_availability:
+  - source_kind: recorded_lecture_videos
+    status: pending
+    description: HAI 510 production source will include four modules of recorded lecture
+      video files captured from live online lectures.
+    access_note: Await video delivery before any source-grounded lesson content extraction.
+  - source_kind: lecture_slides
+    status: pending
+    description: HAI 510 production source will include corresponding slide files
+      for the recorded lecture modules.
+    access_note: Await slide delivery and pair slides to videos before source enrichment.
+  - source_kind: companion_reading_list
+    status: pending
+    description: Companion readings are not yet available in this container; syllabus/program
+      references do not substitute for them.
+    access_note: Confirm whether a reading list exists and record the acquisition
+      path before extraction.
+  source_references:
+  - url: https://www.jefferson.edu/academics/colleges-schools-institutes/population-health/leadership-workforce-development/generative-ai-in-healthcare.html
+    description: Jefferson Generative AI in Healthcare program page; agenda overview
+      used for module names.
+detected:
+  module_directories:
+  - module-01-foundations-of-ai-in-healthcare
+  - module-02-how-llms-work-and-prompt-engineering
+  - module-03-ethics-and-challenges
+  - module-04-agentic-ai
+  source_file_count: 0
+  reference_file_count: 0
+  scaffold_file_count: 20
+gap_summary:
+  empty_lesson_dir: 4
+  empty_source_dir: 5
+  source_availability: 4
+entries:
+- path: COURSE.md
+  scope: course
+  content_sha256: 581e7ee050213385b399e835a03e00f7942f0a7819c11abe8e2e5437852e3aa6
+  tracked: true
+  git_status: tracked
+  source_role: scaffold
+  course_id: aziz-nazha-hai-510-generative-ai-in-healthcare
+  module_id: null
+  lesson_id: null
+  declared: false
+- path: course.yaml
+  scope: course
+  content_sha256: a7a797556a3654061f865ed0a67bda8ad443ef7d7ed41bc99c2252ae4af82716
+  tracked: true
+  git_status: tracked
+  source_role: scaffold
+  course_id: aziz-nazha-hai-510-generative-ai-in-healthcare
+  module_id: null
+  lesson_id: null
+  declared: true
+- path: modules/module-01-foundations-of-ai-in-healthcare/lessons/README.md
+  scope: lesson
+  content_sha256: f77a6d95ec752985ef66546ff516a8ae7405e972b7755f649802e8669a745afc
+  tracked: true
+  git_status: tracked
+  source_role: scaffold
+  course_id: aziz-nazha-hai-510-generative-ai-in-healthcare
+  module_id: module-01-foundations-of-ai-in-healthcare
+  lesson_id: null
+  declared: false
+- path: modules/module-01-foundations-of-ai-in-healthcare/MODULE.md
+  scope: module
+  content_sha256: 8965cfb53782d8533004457fef3130b3a4b81c7899c72b277cd1ad3ec9876a0b
+  tracked: true
+  git_status: tracked
+  source_role: scaffold
+  course_id: aziz-nazha-hai-510-generative-ai-in-healthcare
+  module_id: module-01-foundations-of-ai-in-healthcare
+  lesson_id: null
+  declared: false
+- path: modules/module-01-foundations-of-ai-in-healthcare/module.yaml
+  scope: module
+  content_sha256: 59110496be59144889fb75ab76deba25fe1fe080a9e0714b2e3cae8541d23803
+  tracked: true
+  git_status: tracked
+  source_role: scaffold
+  course_id: aziz-nazha-hai-510-generative-ai-in-healthcare
+  module_id: module-01-foundations-of-ai-in-healthcare
+  lesson_id: null
+  declared: true
+- path: modules/module-01-foundations-of-ai-in-healthcare/sources/README.md
+  scope: module
+  content_sha256: 648b8cd0b24b1bd9272b821dc9020f66507405db0976ccc8e497ca9f16f2a662
+  tracked: true
+  git_status: tracked
+  source_role: scaffold
+  course_id: aziz-nazha-hai-510-generative-ai-in-healthcare
+  module_id: module-01-foundations-of-ai-in-healthcare
+  lesson_id: null
+  declared: false
+- path: modules/module-02-how-llms-work-and-prompt-engineering/lessons/README.md
+  scope: lesson
+  content_sha256: 35312c4779263e5a6a7990e4953b7d30829c5a463289dfe96aaa16764f1da813
+  tracked: true
+  git_status: tracked
+  source_role: scaffold
+  course_id: aziz-nazha-hai-510-generative-ai-in-healthcare
+  module_id: module-02-how-llms-work-and-prompt-engineering
+  lesson_id: null
+  declared: false
+- path: modules/module-02-how-llms-work-and-prompt-engineering/MODULE.md
+  scope: module
+  content_sha256: 0626a99e88e304ccee3d94abe973fa143b294f7a6b9ebf034ca7a3850b7864b6
+  tracked: true
+  git_status: tracked
+  source_role: scaffold
+  course_id: aziz-nazha-hai-510-generative-ai-in-healthcare
+  module_id: module-02-how-llms-work-and-prompt-engineering
+  lesson_id: null
+  declared: false
+- path: modules/module-02-how-llms-work-and-prompt-engineering/module.yaml
+  scope: module
+  content_sha256: 44a7f28768102040b70e14ce13e7452dc5b342f9324996b6932ea6690f68a40a
+  tracked: true
+  git_status: tracked
+  source_role: scaffold
+  course_id: aziz-nazha-hai-510-generative-ai-in-healthcare
+  module_id: module-02-how-llms-work-and-prompt-engineering
+  lesson_id: null
+  declared: true
+- path: modules/module-02-how-llms-work-and-prompt-engineering/sources/README.md
+  scope: module
+  content_sha256: 7da64fad21ea8701d2b4e5f6642319ab622e2b55db40a0970b0b4438421b21b3
+  tracked: true
+  git_status: tracked
+  source_role: scaffold
+  course_id: aziz-nazha-hai-510-generative-ai-in-healthcare
+  module_id: module-02-how-llms-work-and-prompt-engineering
+  lesson_id: null
+  declared: false
+- path: modules/module-03-ethics-and-challenges/lessons/README.md
+  scope: lesson
+  content_sha256: 67b1b07fdd0fd8731ace7a807c71df400a7ba024e7092ec843de2128c9ad8888
+  tracked: true
+  git_status: tracked
+  source_role: scaffold
+  course_id: aziz-nazha-hai-510-generative-ai-in-healthcare
+  module_id: module-03-ethics-and-challenges
+  lesson_id: null
+  declared: false
+- path: modules/module-03-ethics-and-challenges/MODULE.md
+  scope: module
+  content_sha256: dc53561a8bdd4ce4060a78fa45409eea891656844e781acbb0608083b423dc2f
+  tracked: true
+  git_status: tracked
+  source_role: scaffold
+  course_id: aziz-nazha-hai-510-generative-ai-in-healthcare
+  module_id: module-03-ethics-and-challenges
+  lesson_id: null
+  declared: false
+- path: modules/module-03-ethics-and-challenges/module.yaml
+  scope: module
+  content_sha256: ef09789202882a15ef83c30a4890292f18ac2ab247f0ae74906ac916f315e80d
+  tracked: true
+  git_status: tracked
+  source_role: scaffold
+  course_id: aziz-nazha-hai-510-generative-ai-in-healthcare
+  module_id: module-03-ethics-and-challenges
+  lesson_id: null
+  declared: true
+- path: modules/module-03-ethics-and-challenges/sources/README.md
+  scope: module
+  content_sha256: d0fc4b8811d98113b22970de89f5334acdb9e443617937dc72b4e1d1b1c178a9
+  tracked: true
+  git_status: tracked
+  source_role: scaffold
+  course_id: aziz-nazha-hai-510-generative-ai-in-healthcare
+  module_id: module-03-ethics-and-challenges
+  lesson_id: null
+  declared: false
+- path: modules/module-04-agentic-ai/lessons/README.md
+  scope: lesson
+  content_sha256: 93cb6bfe54e555537d710abcf09501d8ab6740c132f45048f2baf9a433b9aee0
+  tracked: true
+  git_status: tracked
+  source_role: scaffold
+  course_id: aziz-nazha-hai-510-generative-ai-in-healthcare
+  module_id: module-04-agentic-ai
+  lesson_id: null
+  declared: false
+- path: modules/module-04-agentic-ai/MODULE.md
+  scope: module
+  content_sha256: 325e5160779e7f40db3e62983e21cc7fdd98c83e55e2f5c6b17df69f8331bdd8
+  tracked: true
+  git_status: tracked
+  source_role: scaffold
+  course_id: aziz-nazha-hai-510-generative-ai-in-healthcare
+  module_id: module-04-agentic-ai
+  lesson_id: null
+  declared: false
+- path: modules/module-04-agentic-ai/module.yaml
+  scope: module
+  content_sha256: 8f325ab36ad26f208947b93188459a53ae89bfacb2fd5f40cd68f7e7d9655bc5
+  tracked: true
+  git_status: tracked
+  source_role: scaffold
+  course_id: aziz-nazha-hai-510-generative-ai-in-healthcare
+  module_id: module-04-agentic-ai
+  lesson_id: null
+  declared: true
+- path: modules/module-04-agentic-ai/sources/README.md
+  scope: module
+  content_sha256: d5fedba40183d178f83f71d8dc4a6676513eacf207dcc577997cbabafd030de7
+  tracked: true
+  git_status: tracked
+  source_role: scaffold
+  course_id: aziz-nazha-hai-510-generative-ai-in-healthcare
+  module_id: module-04-agentic-ai
+  lesson_id: null
+  declared: false
+- path: sources/course/README.md
+  scope: course
+  content_sha256: 49f0105ea04f0e27edb41b9fca85ea67a20c7afb0b15881631b53ad2a757b0eb
+  tracked: true
+  git_status: tracked
+  source_role: scaffold
+  course_id: aziz-nazha-hai-510-generative-ai-in-healthcare
+  module_id: null
+  lesson_id: null
+  declared: false
+- path: sources/course/Syllabus_Generative_AI_in_Healthcare.docx
+  scope: course
+  content_sha256: f4c1c8ce797ba10a13547dd93f34735cc57cce8072cd93e06a96273360e54fc4
+  tracked: false
+  git_status: ignored
+  source_role: reference
+  course_id: aziz-nazha-hai-510-generative-ai-in-healthcare
+  module_id: null
+  lesson_id: null
+  declared: false
+- path: sources/shared/README.md
+  scope: shared
+  content_sha256: 39c7dfb1cb2d27c68b925fa556d859be342ea16bf7df7e84b00e7fad1d6f1f1a
+  tracked: true
+  git_status: tracked
+  source_role: scaffold
+  course_id: aziz-nazha-hai-510-generative-ai-in-healthcare
+  module_id: null
+  lesson_id: null
+  declared: false

@@ -1,0 +1,5 @@
+module_asymmetry=pass hai=4 phs=15
+ledgers_non_empty=pass
+phs_syllabus_tracked_honest=pass tracked=True
+hai_ignored_docx_recorded=pass tracked_false_git_status_ignored
+source_availability_gaps=pass named_hai_and_phs

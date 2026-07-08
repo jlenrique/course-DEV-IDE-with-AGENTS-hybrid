@@ -1,0 +1,115 @@
+schema_version: '0.1'
+course_id: aziz-nazha-hai-510-generative-ai-in-healthcare
+gaps:
+- kind: empty_source_dir
+  severity: info
+  path: modules/module-01-foundations-of-ai-in-healthcare/sources
+  message: Source directory has no non-scaffold local source files.
+  access_note: ''
+  declared: null
+  detected: null
+- kind: empty_source_dir
+  severity: info
+  path: modules/module-02-how-llms-work-and-prompt-engineering/sources
+  message: Source directory has no non-scaffold local source files.
+  access_note: ''
+  declared: null
+  detected: null
+- kind: empty_source_dir
+  severity: info
+  path: modules/module-03-ethics-and-challenges/sources
+  message: Source directory has no non-scaffold local source files.
+  access_note: ''
+  declared: null
+  detected: null
+- kind: empty_source_dir
+  severity: info
+  path: modules/module-04-agentic-ai/sources
+  message: Source directory has no non-scaffold local source files.
+  access_note: ''
+  declared: null
+  detected: null
+- kind: empty_source_dir
+  severity: info
+  path: sources
+  message: Source directory has no non-scaffold local source files.
+  access_note: ''
+  declared: null
+  detected: null
+- kind: empty_lesson_dir
+  severity: info
+  path: modules/module-01-foundations-of-ai-in-healthcare/lessons
+  message: Lesson directory has no non-scaffold local lesson source files.
+  access_note: ''
+  declared: null
+  detected: null
+- kind: empty_lesson_dir
+  severity: info
+  path: modules/module-02-how-llms-work-and-prompt-engineering/lessons
+  message: Lesson directory has no non-scaffold local lesson source files.
+  access_note: ''
+  declared: null
+  detected: null
+- kind: empty_lesson_dir
+  severity: info
+  path: modules/module-03-ethics-and-challenges/lessons
+  message: Lesson directory has no non-scaffold local lesson source files.
+  access_note: ''
+  declared: null
+  detected: null
+- kind: empty_lesson_dir
+  severity: info
+  path: modules/module-04-agentic-ai/lessons
+  message: Lesson directory has no non-scaffold local lesson source files.
+  access_note: ''
+  declared: null
+  detected: null
+- kind: source_availability
+  severity: warning
+  path: sources
+  message: No non-scaffold local production source content detected; reference files
+    and syllabi do not mark the course source-complete.
+  access_note: ''
+  declared: null
+  detected: null
+- kind: source_availability
+  severity: warning
+  path: course.yaml
+  message: HAI 510 production source will include four modules of recorded lecture
+    video files captured from live online lectures.
+  access_note: Await video delivery before any source-grounded lesson content extraction.
+  declared:
+    source_kind: recorded_lecture_videos
+    status: pending
+    description: HAI 510 production source will include four modules of recorded lecture
+      video files captured from live online lectures.
+    access_note: Await video delivery before any source-grounded lesson content extraction.
+  detected: null
+- kind: source_availability
+  severity: warning
+  path: course.yaml
+  message: HAI 510 production source will include corresponding slide files for the
+    recorded lecture modules.
+  access_note: Await slide delivery and pair slides to videos before source enrichment.
+  declared:
+    source_kind: lecture_slides
+    status: pending
+    description: HAI 510 production source will include corresponding slide files
+      for the recorded lecture modules.
+    access_note: Await slide delivery and pair slides to videos before source enrichment.
+  detected: null
+- kind: source_availability
+  severity: warning
+  path: course.yaml
+  message: Companion readings are not yet available in this container; syllabus/program
+    references do not substitute for them.
+  access_note: Confirm whether a reading list exists and record the acquisition path
+    before extraction.
+  declared:
+    source_kind: companion_reading_list
+    status: pending
+    description: Companion readings are not yet available in this container; syllabus/program
+      references do not substitute for them.
+    access_note: Confirm whether a reading list exists and record the acquisition
+      path before extraction.
+  detected: null

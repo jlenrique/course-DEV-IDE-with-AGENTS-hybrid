@@ -19,6 +19,10 @@ from uuid import UUID, uuid4
 import yaml
 
 from app.composers.section_02a.cli_adapter import compose_and_write
+from app.composers.section_02a.composer import (
+    DirectiveCompositionError,
+    assert_lesson_corpus_leaf,
+)
 from app.marcus.cli.front_door import FrontDoorError, front_door_select
 from app.marcus.cli.marcus_spoc import (
     DEGRADED_PUBLISH_URL_SCRIPTED,
@@ -315,9 +319,14 @@ def start_trial(
     picker_events_path: Path | None = None,
 ) -> dict[str, Any]:
     _ensure_utf8_io()
-    _load_env_if_available()
     if not input_path.exists():
         raise FileNotFoundError(f"trial input path does not exist: {input_path}")
+    if input_path.is_dir():
+        try:
+            assert_lesson_corpus_leaf(input_path)
+        except DirectiveCompositionError as exc:
+            raise DirectiveConfirmationRequiredError(str(exc)) from exc
+    _load_env_if_available()
     # S2 P2: an explicit --trial-id that already has a run record is a
     # RESUME/RECOVER situation, not a start — starting again would clobber the
     # walk's state. Fail loud PRE-compose. (Ceremony-abort orphans have no

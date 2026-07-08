@@ -7,9 +7,18 @@ course:
   title: Teaching Learning Seminar
   module_count_expected: 15
 status: source-container-seeded
+source_purpose: enhancement
+source_availability:
+  - source_kind: confluence_current_course_content
+    status: pending
+    description: PHS 620 production source will come from the existing complete course content in Confluence.
+    access_note: Use only authorized Confluence access during the ingestion story; do not fetch remote content in Story A.
+  - source_kind: canvas_current_course_content
+    status: pending
+    description: PHS 620 production source will come from the existing complete course content in Canvas.
+    access_note: Use only authorized Canvas access during the ingestion story; do not fetch remote content in Story A.
 runtime_contract:
   runnable_input_scope: lesson_corpus_leaf
   do_not_run_from:
     - course_root
     - module_root
-

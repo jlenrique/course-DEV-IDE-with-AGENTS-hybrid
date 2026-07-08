@@ -25,10 +25,32 @@ from app.composers.section_02a.directive_model import (
 )
 
 URLS_FILE_BASENAMES = ("urls.txt", "URLS.txt", "Urls.txt")
+_NON_RUNNABLE_SENTINELS = ("course.yaml", "module.yaml")
 
 
 class DirectiveCompositionError(RuntimeError):
     """Raised when the Section 02A corpus cannot be composed."""
+
+
+class NonRunnableScopeError(DirectiveCompositionError):
+    """Raised when composition is pointed at a course/module container root."""
+
+
+def assert_lesson_corpus_leaf(corpus_dir: Path) -> None:
+    """Fail loudly when a broad course/module container is passed as corpus input."""
+
+    markers: list[str] = [
+        marker for marker in _NON_RUNNABLE_SENTINELS if (corpus_dir / marker).exists()
+    ]
+    if (corpus_dir / "modules").is_dir():
+        markers.append("modules/")
+    if not markers:
+        return
+    raise NonRunnableScopeError(
+        "non-runnable-scope: Section 02A directive composition requires a "
+        "lesson_corpus_leaf input; refused broad container "
+        f"{corpus_dir} carrying marker(s): {', '.join(markers)}"
+    )
 
 
 def _walk_corpus_files(corpus_dir: Path) -> list[Path]:
@@ -36,6 +58,7 @@ def _walk_corpus_files(corpus_dir: Path) -> list[Path]:
         raise DirectiveCompositionError(f"corpus path does not exist: {corpus_dir}")
     if not corpus_dir.is_dir():
         raise DirectiveCompositionError(f"corpus path is not a directory: {corpus_dir}")
+    assert_lesson_corpus_leaf(corpus_dir)
     return [
         path
         for path in sorted(corpus_dir.rglob("*"))
@@ -190,7 +213,9 @@ def write_directive_yaml(directive: Directive, directive_path: Path) -> Path:
 
 __all__ = [
     "DirectiveCompositionError",
+    "NonRunnableScopeError",
     "URLS_FILE_BASENAMES",
+    "assert_lesson_corpus_leaf",
     "compose",
     "write_directive_yaml",
 ]
