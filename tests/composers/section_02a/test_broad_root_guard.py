@@ -5,6 +5,7 @@ from uuid import uuid4
 
 import pytest
 
+from app.composers.section_02a.cli_adapter import compose_and_write
 from app.composers.section_02a.composer import (
     DirectiveCompositionError,
     _walk_corpus_files,
@@ -68,6 +69,39 @@ def test_compose_refuses_broad_root_before_llm_invoke(tmp_path: Path) -> None:
         compose(tmp_path, llm=llm, run_id=uuid4())
 
     assert llm.invoke_count == 0
+
+
+def test_compose_adapter_refuses_missing_path_before_default_llm(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    def fail_make_chat_model(_purpose: str) -> None:
+        pytest.fail("default chat model must not be constructed for invalid corpus path")
+
+    monkeypatch.setattr("app.models.adapter.make_chat_model", fail_make_chat_model)
+
+    with pytest.raises(DirectiveCompositionError, match="does not exist"):
+        compose_and_write(
+            corpus_dir=tmp_path / "missing",
+            run_dir=tmp_path / "run",
+            run_id=uuid4(),
+        )
+
+
+def test_compose_adapter_refuses_file_path_before_default_llm(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    corpus_file = tmp_path / "source.md"
+    corpus_file.write_text("source", encoding="utf-8")
+
+    def fail_make_chat_model(_purpose: str) -> None:
+        pytest.fail("default chat model must not be constructed for invalid corpus path")
+
+    monkeypatch.setattr("app.models.adapter.make_chat_model", fail_make_chat_model)
+
+    with pytest.raises(DirectiveCompositionError, match="not a directory"):
+        compose_and_write(corpus_dir=corpus_file, run_dir=tmp_path / "run", run_id=uuid4())
 
 
 def test_g0_enrichment_enumeration_inherits_broad_root_refusal(tmp_path: Path) -> None:

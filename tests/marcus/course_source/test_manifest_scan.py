@@ -5,10 +5,12 @@ from pathlib import Path
 import yaml
 
 from app.marcus.course_source.manifest_scan import (
+    _gaps,
     render_gap_ledger_yaml,
     render_manifest_yaml,
     scan_course,
 )
+from app.marcus.course_source.models import SourceManifestEntry
 
 REPO_ROOT = Path(__file__).resolve().parents[3]
 HAI_ROOT = (
@@ -47,6 +49,48 @@ def test_scaffold_reference_files_do_not_mark_source_complete() -> None:
     assert scan.manifest.gap_summary["source_availability"] >= 1
     assert {"canvas_current_course_content", "confluence_current_course_content"} <= set(gaps)
     assert all(gap.access_note for gap in gaps.values())
+
+
+def test_ignored_source_role_files_do_not_mark_source_complete(tmp_path: Path) -> None:
+    course_root = tmp_path / "course"
+    (course_root / "course.yaml").parent.mkdir(parents=True)
+    (course_root / "course.yaml").write_text(
+        yaml.safe_dump(
+            {
+                "schema_version": "0.1",
+                "course_id": "course-x",
+                "sme": {"name": "SME"},
+                "course": {
+                    "code": "X 100",
+                    "title": "Course X",
+                    "module_count_expected": 0,
+                },
+                "runtime_contract": {
+                    "runnable_input_scope": "lesson_corpus_leaf",
+                    "do_not_run_from": ["course_root", "module_root"],
+                },
+            },
+            sort_keys=False,
+        ),
+        encoding="utf-8",
+    )
+    entry = SourceManifestEntry(
+        path="sources/course/local-only.md",
+        scope="course",
+        content_sha256="0" * 64,
+        tracked=False,
+        git_status="ignored",
+        source_role="source",
+        course_id="course-x",
+    )
+
+    gaps = _gaps(course_root, [entry], ignored=frozenset({"sources/course/local-only.md"}))
+
+    assert any(
+        gap.kind == "source_availability"
+        and "No non-scaffold local production source content detected" in gap.message
+        for gap in gaps
+    )
 
 
 def test_empty_source_and_lesson_dirs_are_gaps_not_crashes(tmp_path: Path) -> None:

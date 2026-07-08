@@ -2437,3 +2437,35 @@ Monitor: `_bmad-output/implementation-artifacts/marcus-claude-shadow-monitor-202
 - **F-014 (close blocker):** prove the real runner chain G0E coverage_annotations → G3 receipt → RAI entry → gate → recoverable pause BEFORE Enrique/ElevenLabs; zero ElevenLabs on the block path; covered-only path to real audio.
 - **Vacuous-receipt guard:** the live proof must assert the receipt is NON-VACUOUS + derived from real `coverage_annotations` (absent g0-enrichment.json / empty annotations when note-bearing components exist = FALSE PASS).
 Opening order (operator-specified): read shadow-monitor → fix F-012 → finalize `_marshal_coverage_surfaces` vs real captured run-state → integrated `studio-smoke-min` re-prove (Murat bar) → confirm $0 ElevenLabs on block → covered-only to real audio → party-close → unblock Leg-1b.
+# Session Handoff - 2026-07-08 (session 21: S7 Phase-2 A-D course-source substrate COMPLETE + Story A gate-trail backfilled + selection-edge spine next)
+
+**Final class:** S. **Branch:** `dev/workbook-2026-07-06`; implementation HEAD before this wrapup package: `03c0db43` (pushed). **Next:** Class S - open the named spine `lesson-plan-directs-production-collateral-to-selection-edge`; interleave S8 prose work per operator priority. Do not start remote HAI/PHS source ingestion unless a later story explicitly authorizes it.
+
+**What was completed:**
+1. **Phase-2 Story A landed and late-backfilled.** Original commit `7174b366` added the course-source registry/manifests, broad-root refusal guard, source manifests, gap ledgers, drift checker, and source-purpose/source-availability declarations for HAI 510 and PHS 620. The active Claude monitor correctly found F-103: Story A lacked a visible on-time gate trail. This session filed `_bmad-output/implementation-artifacts/s7-phase2-story-a-close-backfill-2026-07-08.md`, ran a fresh 3-lane late review, and patched two Edge findings: direct `compose_and_write()` invalid inputs now fail before default model construction, and ignored source-role files no longer satisfy the "real source exists" gap check. Current Story A/course-source validation: 60 passed, ruff clean, manifest drift ok/ok.
+2. **Phase-2 Story C landed and closed** at `8210b90a`: canonical asset/gap records, JSON Schema mirror, boundary doc, shape-pin tests, and hard validation that `source_grounded` requires content-bearing refs.
+3. **Phase-2 Story B landed and closed** at `80cdd68d`: syllabus-derived module metadata proposals for HAI/PHS, extraction-only, frozen fixtures/evidence, no course-container mutation, and no syllabus-as-source-grounded overclaim.
+4. **Phase-2 Story D landed and closed** at `03c0db43`: `LessonPlanningInputBundle`, builder CLI, public `load_input_bundle`/write round trip, scoped manifests/gaps, requirement-gap asset records, source-purpose carry-through, production `ComponentSelection` contract, styleguide fallback, and reproducible HAI/PHS evidence. Story D review lanes and BMAD party close all concurred.
+5. **Selection-edge spine filed by name:** `lesson-plan-directs-production-collateral-to-selection-edge` is the immediate next arc. It is deliberately not implemented in A-D; D only carries the `ComponentSelection` boundary contract and negative fence.
+
+**What is next:**
+1. **Open `lesson-plan-directs-production-collateral-to-selection-edge`.** Build the missing production edge from ratified lesson-plan collateral intent to `ComponentSelection`, with full BMAD workflow, live tests as authored, and strict trigger-path governance. This is the next spine, not a hidden continuation of Story D.
+2. **Interleave S8 prose work** as operator-prioritized. The operator's deferred workbook/content notes belong there, not in the course-source substrate.
+3. **Keep B-2 operator-gated:** PHS 620 folder/module renames and any application of syllabus proposals to course containers require operator ratification.
+4. **Do not ingest real course content yet:** HAI lecture videos/slides and PHS Confluence/Canvas content remain honest source-availability gaps until a later authorized ingestion story.
+
+**Unresolved issues / risks:**
+- **F-103 historical process defect:** backfilled in-repo, but not erased. Story A advanced before the gate trail was visible. The backfill record is late remediation evidence.
+- **F-104:** non-blocking wording nit remains available for polish: `trial.py` surfaces the raw guard text; it names `lesson_corpus_leaf` and fails before spend but does not name the brief.
+- **F-102 / strays:** standing hygiene remains. Do not stage `_bmad-output/artifacts/workbooks-test/`, `runs/*`, external shadow-monitor ledgers, goal launcher files, or the duplicate evidence-dir workbook.
+- **Active shadow monitor ledger:** `_bmad-output/implementation-artifacts/claude-shadow-monitor-s7-phase2-2026-07-08.md` is active/untracked. Latest reviewed poll had no Story D product objection and carried F-103; it has not been edited by this wrapup.
+- **KG/ONBOARDING:** not regenerated in this close package; substrate changed materially under `app/marcus/course_source/`, so regen is recommended when the operator prioritizes orientation refresh.
+
+**Validation summary:**
+- Story A/course-source late validation: `pytest -n0 tests/marcus/course_source tests/composers/section_02a/test_broad_root_guard.py tests/integration/marcus/cli/test_trial_course_root_guard.py` -> 60 passed; ruff clean; drift ok/ok.
+- Story D close validation: focused input-bundle tests -> 11 passed; full `tests/marcus/course_source` -> 51 passed before the Story A edge patch and 60 passed after the backfill patch; refreshed evidence assertions all passed.
+- Staging discipline held across A-D commits; implementation branch pushed through `03c0db43`.
+
+**Artifact checklist:** Story A backfill record done; Story B/C/D close records done; A-D evidence dirs done; `SESSION-HANDOFF.md` done; `docs/project-context.md` done; `next-session-start-here.md` local/gitignored; `docs/STATE-OF-THE-APP.md` reconciliation note done; sprint-status intentionally untouched per recent-arc convention; active monitor ledger left untracked; final wrapup commit/push follows.
+
+---

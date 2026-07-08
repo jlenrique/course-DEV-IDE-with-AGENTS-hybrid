@@ -1,3 +1,11 @@
+# Current Context Addendum - 2026-07-08 Session 21
+
+Phase-2 A-D course-source substrate is complete on `dev/workbook-2026-07-06`; implementation commits are pushed through `03c0db43`. Story A (`7174b366`) added the course-source registry/manifests and broad-root guard, and is now late-backfilled by `_bmad-output/implementation-artifacts/s7-phase2-story-a-close-backfill-2026-07-08.md`; Story C (`8210b90a`) added canonical asset/gap records; Story B (`80cdd68d`) added syllabus-derived metadata proposals; Story D (`03c0db43`) added lesson-planning input bundles with loader/builder, scoped gaps, source-purpose carry-through, and the `ComponentSelection` boundary contract. Story A backfill patched two edge cases: invalid direct `compose_and_write()` inputs fail before default model construction, and ignored source-role files no longer suppress source-availability gaps. Current validation: Story A/course-source slice 60 passed, ruff clean, manifest drift ok/ok.
+
+The operator clarification remains binding: syllabi are reference/example sources, HAI 510 real content is pending lecture videos/slides/readings, and PHS 620 real content is pending authorized Confluence/Canvas access. Next spine: `lesson-plan-directs-production-collateral-to-selection-edge`, with S8 prose work interleaved per operator priority. Keep B-2 PHS renames and any real remote ingestion operator-gated. Historical caveat: F-103 was a real timing/process defect for Story A and is backfilled, not erased; F-104 remains a non-blocking wording polish; F-102 staging hygiene remains binding.
+
+---
+
 # Project Context: Multi-Agent Course Content Production System
 
 **Project Name:** course-DEV-IDE-with-AGENTS

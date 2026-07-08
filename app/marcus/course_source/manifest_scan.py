@@ -241,7 +241,11 @@ def _gaps(
                     message="Lesson directory has no non-scaffold local lesson source files.",
                 )
             )
-    real_sources = [entry for entry in entries if entry.source_role == "source"]
+    real_sources = [
+        entry
+        for entry in entries
+        if entry.source_role == "source" and entry.git_status != "ignored"
+    ]
     if not real_sources:
         gaps.append(
             GapEntry(

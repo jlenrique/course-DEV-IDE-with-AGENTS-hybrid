@@ -26,6 +26,7 @@ from langchain_core.language_models import BaseChatModel
 
 from app.composers.section_02a._cache import ComposerCache
 from app.composers.section_02a.composer import (
+    DirectiveCompositionError,
     assert_lesson_corpus_leaf,
     compose,
     write_directive_yaml,
@@ -46,6 +47,10 @@ def compose_and_write(
     sidecar (J-A1(b)).
     """
 
+    if not corpus_dir.exists():
+        raise DirectiveCompositionError(f"corpus path does not exist: {corpus_dir}")
+    if not corpus_dir.is_dir():
+        raise DirectiveCompositionError(f"corpus path is not a directory: {corpus_dir}")
     assert_lesson_corpus_leaf(corpus_dir)
 
     handle = None
