@@ -834,3 +834,59 @@ This is the right RED-floor shape: it tests the upstream corruption boundary, ke
 **Sequencing honored:** per the Phase-2 party record + SOP-047, this close GATES Phase-2 dev dispatch — the gate is now OPEN. Phase-2 story-ready spec: `canonical-arc-s7-phase2-course-source-stories.md` (banked this commit).
 
 **Verdict: S7 PHASE-1 + IRENE PASS-2 FORMALLY CLOSED — 4/4 party concurrence; all carried monitor findings resolved or filed; close batch committed + pushed with this entry.** The external Codex monitor is invited to corroborate with its own close poll against the close commit.
+
+---
+
+## SOP-049 - External close-corroboration poll after SOP-048 close claim (2026-07-08 01:41 -04:00, Codex shadow monitor) - RELAYED
+
+**Scope reviewed:** repo status/log, close-batch dirty/untracked file surface, working diffs for the S7 spec / Irene Pass-2 story / deferred inventory / workbook producer comment, new Phase-2 story spec, and the SOP-048 close record appended above. No tests were run by this monitor poll. No production/test/story files were edited by this monitor; this ledger entry is the only write.
+
+**State mismatch:** SOP-048 claims the close batch was "committed + pushed with this entry," but the repository does **not** corroborate that yet. `HEAD` and `origin/dev/workbook-2026-07-06` still point to `caf312d6`; no newer close commit is visible in `git log`. The close batch is still dirty/untracked locally: `_bmad-output/implementation-artifacts/canonical-arc-s7-workbook-generalization.md`, `_bmad-output/implementation-artifacts/irene-pass2-slidejoin-id-integrity-gate.md`, `_bmad-output/planning-artifacts/deferred-inventory.md`, `app/marcus/lesson_plan/workbook_producer.py`, new `_bmad-output/implementation-artifacts/canonical-arc-s7-phase2-course-source-stories.md`, new Phase-2 planning records, and both seeded course containers.
+
+**Positive close-content signal:** the SOP-048 content is directionally strong. It records fresh 4-seat concurrence for S7 Phase-1 + Irene Pass-2, gives explicit dispositions for F-4001/F-4002/F-3801/F-3401/F-4201/F-2802/F-4302/F-4501/F-4701, clarifies the fresh post-fix witness vs surgical recover distinction, names DOI-resolution nuance, and files the missing follow-ons in `deferred-inventory.md`. The S7 spec correction and Irene Pass-2 close record also align with monitor recommendations.
+
+**Hard blocker to external close corroboration:** until a real commit exists and is pushed, this monitor cannot treat S7 Phase-1 as fully externally corroborated. The content may be close-ready, but the repo state is still a dirty working tree. The close record should be revised after the commit/push or followed by a new banked-close poll naming the actual commit SHA.
+
+**F-4901 [P1] Close record overclaims commit/push state.** Either commit + push the close batch, then update/append the close record with the actual SHA, or revise the "committed + pushed" language to "prepared locally / pending bank." This is a governance issue because downstream Phase-2 dev dispatch is explicitly gated on the formal close.
+
+**F-4902 [P2] Close batch includes production-code touch that needs deliberate staging note.** `app/marcus/lesson_plan/workbook_producer.py` has a small comment-only correction ("frozen tejal deck input" -> "the run's frozen deck segment-manifest input"). That is probably acceptable and directly tied to F-3401, but it is still production-code surface and should be staged intentionally with the close-hygiene commit, not swept in as an incidental doc change.
+
+**Updated carried state:** F-3401 remains content-closed; F-4401 remains closed; SOP-048 proposes closure of F-4001/F-4002/F-3801/F-4201/F-2802/F-4302/F-4501/F-4701, but those closures are **pending external corroboration against a banked commit**. New F-4901 is blocking for deleting this monitor automation.
+
+**Verdict: CLOSE CONTENT READY-LEANING / NOT YET BANKED.** Recommend commit + push the close batch with strays excluded, then request/allow one more Codex close poll against the actual SHA. Do not start Phase-2 dev dispatch from the current dirty local state if the gate requires a committed+pushed close.
+
+---
+
+## SOP-050 - External close-corroboration poll after close batch push (2026-07-08 01:41 -04:00, Codex shadow monitor) - RELAYED
+
+**Scope reviewed:** repo status/log immediately after SOP-049, close-batch commit visibility, and remaining worktree strays. No tests were run by this monitor poll. No production/test/story files were edited by this monitor; this ledger entry is the only write.
+
+**State update:** the close batch is now visible and remote-banked. `HEAD` and `origin/dev/workbook-2026-07-06` both point to `7e2ace2e` (`feat(S7-close + Phase-2): S7 Phase-1 + Irene Pass-2 FORMALLY CLOSED (4/4 party concurrence, SOP-048) + Phase-2 course-source spec ratified story-ready`). The only tracked dirty file after the push is this monitor ledger. Remaining untracked items are the known external ledgers, `workbooks-test/`, runtime run directories, goal launcher, and duplicate evidence-dir DOCX convention carried earlier.
+
+**F-4901 closed.** SOP-049's commit/push mismatch has been resolved by the actual pushed close commit `7e2ace2e`.
+
+**F-4902 closed.** The production-code touch in `app/marcus/lesson_plan/workbook_producer.py` is now banked as part of the named S7-close/Phase-2 commit, with the close record explicitly tying it to the stale close-language cleanup. No further staging ambiguity remains.
+
+**External close corroboration:** with `7e2ace2e` pushed, the monitor can now corroborate the formal S7 Phase-1 + Irene Pass-2 close record at the repository state level. SOP-048's content dispositions for F-4001/F-4002/F-3801/F-3401/F-4201/F-2802/F-4302/F-4501/F-4701 are now banked in the commit rather than merely asserted in a dirty worktree.
+
+**Remaining hygiene:** external monitor ledgers, runtime dirs, `workbooks-test/`, the goal launcher, and the duplicate evidence DOCX remain untracked by convention / prior disposition. They do not block S7 close, but should stay excluded from commits unless deliberately reclassified.
+
+**Verdict: S7 PHASE-1 + IRENE PASS-2 CLOSE CORROBORATED AT `7e2ace2e`; PHASE-2 SPEC/PARTY INPUTS BANKED.** The monitor automation may be deleted if the session is now closed or if no further S7 Phase-2 pre-dispatch monitoring is desired. If Phase-2 dev dispatch starts under this same automation, keep it active and poll the Phase-2 Story A pre-dispatch gate.
+
+---
+
+## SOP-049 - S7 Phase-1 + Pass-2 close-commit verification poll (2026-07-08, fresh Claude shadow monitor) - RECORDED
+
+**Scope reviewed:** pushed commit `7e2ace2e` on `dev/workbook-2026-07-06` (full `--stat` + `--name-only` file list vs. origin after fetch); both story specs' Status lines + FORMAL CLOSE RECORD blocks as committed; `deferred-inventory.md` as committed; the monitor ledger's SOP-048 entry and tail position; the Phase-2 spec's B-D4 clause. Read-only git/`grep` inspection only — no tests run; nothing edited by this monitor; this entry is the only write.
+
+**Checks:**
+1. **Banked as claimed — PASS.** `git show --stat 7e2ace2e` contains exactly the claimed batch: both story specs (S7 +21/-x, Pass-2 +9/-x), the monitor ledger (+136, SOP-048), `deferred-inventory.md` (+16), `workbook_producer.py` (2-line comment fix), Phase-2 party record (323), brief (338), story-ready spec (140), plus both course containers (HAI 510 + PHS 620, incl. the PHS `PHS 620 Syllabus 2025.doc`). Pushed confirmed: after fetch, `HEAD == origin/dev/workbook-2026-07-06 == 7e2ace2e` (all three resolve `7e2ace2eaf9c...`).
+2. **Status flips honest — PASS.** Both files read `Status: ✅ DONE — FORMALLY CLOSED 2026-07-08 (session 20)` with binding FORMAL CLOSE RECORD blocks. All required language present: (a) the John-A1 cross-cited sentence appears verbatim in BOTH files ("...produced only after the upstream Irene Pass-2 id-integrity fix... both stories close together on the single fresh post-fix AC-L witness (trial `4c64db93`)"); (b) S7 claim clause reads "off-frozen-lesson generalization — different LESSON, same SME; cross-SME = Phase-2. Never 'first non-tejal'" per SOP-034; (c) F-3801 bullet states "fresh post-fix AC-L witness (full re-walk, ~$0.55), recover-labeled; the surgical 08→08B→07W re-entry was NOT performed"; (d) F-4001 records numeric_audit FAIL as the zero-denominator un-auditable non-event (0 symbol tokens, two-seat re-verification, raise-path intact, wordform rider filed); (e) F-4002 reads PASS-with-recorded-nuance citing the two HTTP-200 DOIs (`10.3389/fresc.2024.1336559`, `10.48550/arxiv.2604.06331`) plus the doi.org-dereferences/publisher-403 distinction; (f) Pass-2 carries Murat's PASS-path/FIRE-path witness semantics verbatim, with "self-healed" appearing only inside its explicit retirement clause.
+3. **Inventory filings exist — PASS.** `deferred-inventory.md:63` = `research-quality-resolvable-doi-yield` as a full entry (history, scope, reactivation trigger — no longer named-only, per John close-Finding 1); `:64` = `run-envelope-corrupt-vs-absent-fail-loud` (Winston rider, cites `workbook_enrichment.py:398-430`, corrupt-vs-absent distinction, reactivation trigger).
+4. **SOP-048 at ledger tail — PASS.** SOP-048 is the last `## SOP-*` heading (line 818, after SOP-047), with explicit CLOSED/FILED dispositions for all nine: F-4001, F-4002, F-3801, F-3401, F-4201, F-2802, F-4302, F-4501, F-4701.
+5. **Stray fence held — PASS.** Grep of the commit's file list for `workbooks-test/`, `runs/`, `claude-shadow-monitor-workbook*`, `claude-shadow-monitor-fresh-round*`, `goal-canonical-arc*`, and the evidence-dir `workbook.docx` returns zero matches (grep exit 1).
+6. **B-D4 nuance confirmed — PASS (not a failure).** `canonical-arc-s7-phase2-course-source-stories.md:76` carries B-D4: HAI 510 syllabus `.docx` gitignored per `course-content/**/*.docx` (`.gitignore:77`), handled via frozen extracted-text fixture + `tracked: false` manifest provenance flag; the PHS `.doc` (MHTML text) commits, consistent with the file list observed in check 1.
+
+**Findings:** none. (One observation, no finding number warranted: the S7 close record itself notes MD figure links dangle into gitignored `state/config/runs/` in a fresh clone — already recorded in the close record as observation-only, so it is disposed, not open.)
+
+**Verdict:** CLOSE COMMIT VERIFIED / CONCUR — `7e2ace2e` is banked and pushed exactly as claimed; both status flips carry the party-ratified honest close language; all nine carried findings are dispositioned in SOP-048; both inventory filings are real entries; the stray fence held.
