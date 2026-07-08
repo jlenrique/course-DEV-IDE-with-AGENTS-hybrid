@@ -15,6 +15,7 @@ GitStatus = Literal["tracked", "ignored", "untracked"]
 GapKind = Literal[
     "empty_source_dir",
     "empty_lesson_dir",
+    "format_unsupported",
     "module_count_mismatch",
     "source_availability",
     "declared_detected_drift",

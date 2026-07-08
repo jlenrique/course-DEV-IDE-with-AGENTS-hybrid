@@ -1,0 +1,574 @@
+source_path: course-content/courses/juan-leon-phs-620-teaching-learning-seminar/sources/course/PHS
+  620 Syllabus 2025.doc
+source_format: mhtml
+paragraphs:
+- Syllabus
+- '<!-- @page Section1 { size: 8.5in 11.0in; margin: 1.0in; mso-header-margin: .5in;
+  mso-footer-margin: .5in; mso-paper-source: 0; } table { border: solid 1px; border-collapse:
+  collapse; } table td, table th { border: solid 1px; padding: 5px; } td { page-break-inside:
+  avoid; } tr { page-break-after: avoid; } div.Section1 { page: Section1; } /* Confluence
+  print stylesheet. Common to all themes for print media */ /* Full of !important
+  until we improve batching for print CSS */ @media print { #main { padding-bottom:
+  1em !important; /* The default padding of 6em is too much for printouts */ } body
+  { font: var(--ds-font-body-small, Arial, Helvetica, FreeSans, sans-serif); } body,
+  #full-height-container, #main, #page, #content, .has-personal-sidebar #content {
+  background: var(--ds-surface, #fff) !important; color: var(--ds-text, #000) !important;
+  border: 0 !important; width: 100% !important; height: auto !important; min-height:
+  auto !important; margin: 0 !important; padding: 0 !important; display: block !important;
+  } a, a:link, a:visited, a:focus, a:hover, a:active { color: var(--ds-text, #000);
+  } #content h1, #content h2, #content h3, #content h4, #content h5, #content h6 {
+  page-break-after: avoid; } pre { font: var(--ds-font-code, Monaco, "Courier New",
+  monospace); } #header, .aui-header-inner, #navigation, #sidebar, .sidebar, #personal-info-sidebar,
+  .ia-fixed-sidebar, .page-actions, .navmenu, .ajs-menu-bar, .noprint, .inline-control-link,
+  .inline-control-link a, a.show-labels-editor, .global-comment-actions, .comment-actions,
+  .quick-comment-container, #addcomment { display: none !important; } /* CONF-28544
+  cannot print multiple pages in IE */ #splitter-content { position: relative !important;
+  } .comment .date::before { content: none !important; /* remove middot for print
+  view */ } h1.pagetitle img { height: auto; width: auto; } .print-only { display:
+  block; } #footer { position: relative !important; /* CONF-17506 Place the footer
+  at end of the content */ margin: 0; padding: 0; background: none; clear: both; }
+  #poweredby { border-top: none; background: none; } #poweredby li.print-only { display:
+  list-item; font-style: italic; } #poweredby li.noprint { display: none; } /* no
+  width controls in print */ .wiki-content .table-wrap, .wiki-content p, .panel .codeContent,
+  .panel .codeContent pre, .image-wrap { overflow: visible !important; } /* TODO -
+  should this work? */ #children-section, #comments-section .comment, #comments-section
+  .comment .comment-body, #comments-section .comment .comment-content, #comments-section
+  .comment p { page-break-inside: avoid; } #page-children a { text-decoration: none;
+  } /** hide twixies the specificity here is a hack because print styles are getting
+  loaded before the base styles. */ #comments-section.pageSection .section-header,
+  #comments-section.pageSection .section-title, #children-section.pageSection .section-header,
+  #children-section.pageSection .section-title, .children-show-hide { padding-left:
+  0; margin-left: 0; } .children-show-hide.icon { display: none; } /* personal sidebar
+  */ .has-personal-sidebar #content { margin-right: 0px; } .has-personal-sidebar #content
+  .pageSection { margin-right: 0px; } .no-print, .no-print * { display: none !important;
+  } } -->'
+- Syllabus
+- 'Course Learning Objectives:'
+- 'After successfully completing this course, participants will be able to:'
+- 'Course Calendar:'
+- 'Learning Activities:'
+- '[add Learning Activities here]'
+- 'Assignments Point Allocation Table:'
+- 'Special Course Provisions:'
+- Here is some default policy statement to test the fetching ability of v2 API endpoints
+  being experimented with.
+- '[data-colorid=uggjmbf1am]{color:#bf2600} html[data-color-mode=dark] [data-colorid=uggjmbf1am]{color:#ff6640}'
+- 'Course Requirements and Grading Policies:'
+- 'JCPH Canvas Onboarding Training (2025 updates):'
+- 'Complete the module on AI usage if you have not already done so: ‘'
+- What About AI in the Classroom?
+- ’
+- 'Attendance and Participation:'
+- A significant part of your grade for this course will be based on attendance and
+  participation. In our online learning environment, the attendance and participation
+  take the form of your contributions to the discussions on the class Discussion Board
+  and your contributions to the learning community.
+- You will earn the most participation points by making regular, high-quality postings
+  to the discussion forums, providing your feedback on the weekly '5-min. feedback'
+  surveys, and submitting the final course evaluation. Responses to both weekly feedback
+  and the final course evaluation are always kept confidential.
+- 'Minimum participation requirements:'
+- Each week or module, all participants must post to
+- each
+- discussion topic a minimum of
+- three
+- times. These postings must be made on at least two different days during the week/module.
+  (You should not make all three postings on the same day.)
+- 'First posting before midnight, Wednesday:'
+- make your first post to the current week’s/module's discussion topics early---before
+  midnight Wednesday. This posting is your original, individual response to each of
+  the discussion questions presented for the week/module.
+- 'Second posting before noon, Saturday:'
+- make your second set of posts toward the end of the week/module or early on the
+  weekend (before Saturday, noon). Respond to at least two of your classmates' postings
+  in each of the week's/module's discussion forums.
+- See the course points allocation table located on the last page/screen of the syllabus
+  for the number of discussion forums in your course and their point value.
+- 'Policy Regarding Late Work:'
+- a. Our course is structured around weekly lessons or modules. A week/module is considered
+  to
+- begin on a Monday and end the following Sunday.
+- Depending on your class schedule, some modules may span more than one week.
+- i. All postings to discussions should be
+- completed by midnight Sunday
+- for the week/module that is ending. No points will be given for discussion postings
+  not made by the close of the week/module (because your postings are meant to be
+  read by others, and their value diminishes significantly once the class has moved
+  on to the new week/module).
+- ii. All assignments other than discussions
+- are due by Sunday at midnight
+- of the current week/module unless otherwise specified in an assignment's instructions.
+  Always review each assignment's instructions for complete information about its
+  submission requirements.
+- 'The least flexible types of assignments, when it comes to completion dates, are:'
+- 'Discussions: you need to keep pace with the class or else the class discussion
+  fragments.'
+- 'Pair or group work: you must not negatively impact the progress of your classmates.'
+- 'Writing Standards (APA Guidelines):'
+- 'Papers and other documents submitted as course work are to conform to APA style
+  guidelines. These guidelines can be reviewed in the JCPH Canvas Onboarding training,
+  where a model paper in general APA style can also be found:'
+- APA Guidelines
+- . APA conventions for the use of title pages, page formatting, in-text citations,
+  the attribution of quotations, Reference lists, and all other elements of your documents
+  must be adhered to in order to receive full credit on written assignments. This
+  includes APA stylistics covering point of view, word choice, clarity and conciseness.
+  Electronic sources and other non-print materials must be referenced per APA guidelines
+  developed for that purpose.
+- 'The only exceptions to this College policy are:'
+- Instructors may substitute another style standard, such as that of the American
+  Medical Association, for the APA standard so long as the alternative standard is
+  equally comprehensive and equally a part of the evaluation of written work.
+- Documents of less than 2000 words (excluding Reference list and any appendices)
+  need not carry an Abstract or list of keywords.
+- 'Use of AI Tools for Coursework:'
+- The use of generative AI tools for coursework, including conducting analyses or
+  creating content, is permitted only if explicitly approved by the instructor.
+- In alignment with the College's commitment to academic integrity, students are expected
+  to submit coursework that is genuinely their own. Each student is accountable for
+  the academic integrity of their submitted work and for upholding privacy, confidentiality,
+  and intellectual property rights.
+- When granted permission by the instructor to use AI tools, students must adhere
+  strictly to the instructor’s guidelines. This includes citing all AI-derived sources
+  and producing all evidence of authenticity that may be called for by an assignment’s
+  instructions. Such evidence may include drafts of work, prompts, scripts, screenshots,
+  primary data, or other documentation.
+- 'The College’s policy is based upon Jefferson University’s standards for ''Restricted
+  Use'' of generative AI. For further details, see the policy statement:'
+- 'Graduate Policies: Artificial Intelligence'
+- .
+- 'TJU Academic Integrity Policy:'
+- Academic Integrity is the foundation of all Jefferson teaching, learning, and professional
+  endeavors and is vital to advancing a culture of fairness, trust and respect. All
+  members of the University community must maintain respect for the intellectual efforts
+  of others and be honest in their own work, words, and ideas.
+- 'Policy:'
+- Graduate Programs
+- 'Policy:'
+- Undergraduate Programs
+- 'Use of ''Turnitin'' (automated originality reporting tool):'
+- Turnitin is used to prevent plagiarism and to help students identify how to properly
+  attribute sources. It does so by comparing submitted assignments against a database
+  of academic papers and internet information to identify areas of overlap between
+  the submitted assignment and existing works, producing a "similarity report." The
+  similarity score is a percentage of an assignment’s content that matches the searched
+  databases. Students and faculty should analyze the results of the report to determine
+  if plagiarism has occurred.
+- 'GPA and Related Requirements:'
+- 'Please refer to the JCPH Student Handbook located under ''Handbooks and Forms''
+  on the Student Resources page:'
+- Handbooks & Forms
+- 'Evaluation and Grading:'
+- Students can earn up to 250 points in this course by the end of the term. All graded
+  activities in this course earn points as they are completed and graded. At the end
+  of the term, each student's point total will be converted to a percentage based
+  on the 250 point scale to determine the final course grade.
+- Students who have earned all 250 points in a course will have a cumulative score
+  of 100%. Students who have earned 225 points will have a 90% score, and so on. These
+  percentages will then be converted to letter grades in keeping the College's standard
+  grading scale.
+- Grading criteria for certain assignments may be formalized into "grading rubrics."
+  These rubrics can help students better understand how their work will be evaluated.
+- Additional Administrative Policies
+- Student Responsibility
+- This course abides by all college and University policies. Students are responsible
+  for knowing and adhering to policies in the College Handbook and University polices.
+- 'Policy:'
+- College and University Policies & Handbooks
+- 'Add/Drop/Withdrawal:'
+- Course add/drop dates are posted in the official University calendar. Refer to your
+  program's calendar for related deadlines (
+- JCPH Academic Calendars
+- ). Refer to the University Tuition Refund Policy (
+- TJU Tuition Refund Policy
+- ) for information regarding tuition reimbursement following dropped classes after
+  the withdrawal period.
+- 'Changes to Posted Syllabus:'
+- Provided adequate advance notice is given to the class, the instructor reserves
+  the right to modify the syllabus and class activities or requirements in order to
+  enhance learning during the delivery of the course. Such modifications can include
+  but are not limited to substitutions of certain journal articles or other periodical
+  resources for others, changes to the details of particular assignments, rearrangement
+  of group activities, or modification of class participation requirements. Any such
+  changes will be designed so as not to unduly impact student schedules or the overall
+  workload for the course.
+- Chosen Name
+- Some members of our community use a name, gender, and pronoun other than their legal
+  identifiers. Students are free to elect to have their chosen first name, gender
+  identity and chosen pronoun appear in Thomas Jefferson University’s system.
+- 'Policy:'
+- Graduate Policy
+- 'Policy:'
+- Undergraduate Policy
+- 'Collection of Student Work:'
+- Thomas Jefferson University has the right to retain representative examples or copies
+  of student work from all courses. Such materials might include papers, exams, creative
+  works, or portfolios developed and submitted in courses or to satisfy the requirements
+  for degree programs as well as surveys, focus group information, and reflective
+  exercises.
+- 'Diversity & Inclusion:'
+- Jefferson holds itself accountable, at every level of the organization, to nurture
+  an environment of inclusion and respect, by valuing the uniqueness of every individual,
+  celebrating and reflecting the rich diversity of its communities, and taking meaningful
+  action to cultivate an environment of fairness, belonging, and opportunity.
+- 'Policy:'
+- Community Impact and Belonging
+- 'Copyright Notice:'
+- All information presented in this course is copyrighted. This includes, but is not
+  limited to, lecture notes, recorded lectures, handouts, journal articles, technical
+  reports, videos, and web pages. Students are prohibited from sharing any course
+  information with anyone outside of this class. This includes posting information
+  on Facebook, FlashNotes, or other online service; emailing information; or any other
+  form of distribution.
+- Course Enrollment
+- Students must be officially enrolled in this course to attend and are continuously
+  enrolled until official drop/ withdraw from the course.
+- 'Disability Accommodations:'
+- Thomas Jefferson University is committed to providing equal education opportunities
+  to all students, including students with disabilities, in accordance with section
+  504 of the Rehabilitation Act of 1973 and the Americans with Disabilities Act. Thomas
+  Jefferson University will provide reasonable accommodations to all qualified individuals
+  with disabilities to allow equal access and full participation to all University
+  sponsored activities and programs.
+- 'Policy:'
+- Rights & Responsibilities
+- 'Registration Status:'
+- Students are responsible for the status of their registration at all times. The
+  instructor will advise that a change in status has occurred when so informed by
+  the College/University. Only students who are properly registered in this course
+  can earn credit and receive a grade.
+- Student Religious Observation Policy
+- Thomas Jefferson University understands that some students may seek to observe religious
+  holidays that fall on scheduled class days.
+- 'Policy:'
+- Graduate Programs
+- Policy
+- Undergraduate Programs
+- Retention of Student Work
+- Thomas Jefferson University has the right to retain representative examples or copies
+  of student work from all courses. Such materials might include papers, exams, creative
+  works, or portfolios developed and submitted in courses or to satisfy the requirements
+  for degree programs as well as surveys, focus group information, and reflective
+  exercises.
+- Title IX & Sexual Misconduct
+- The University’s Sex and Gender-Based Misconduct Policy sets forth Jefferson’s commitment
+  to foster an environment free of discrimination, including sexual harassment and
+  sexual violence.
+- 'Policy:'
+- Title IX & Sexual Misconduct
+- Add label
+- template version. 2024-07-10
+tables:
+- - - 'Course Alpha-Numeric:'
+    - PHS 620
+  - - 'Course Modality:'
+    - '[hybrid]'
+  - - 'Session:'
+    - Fall A, 2026
+  - - 'Course Name:'
+    - Teaching and Learning Seminar
+  - - 'Instructor:'
+    - Juan Leon, PhD
+  - - 'email:'
+    - juan.leon@jefferson.edu
+  - - 'phone:'
+    - 484-639-8242
+  - - 'other contact information:'
+    - 'text me at listed phone #'
+  - - 'office hours:'
+    - by appointment
+- - - 'Course Description:'
+  - - Explores adult education principles and course design for a variety of learning
+      environments. Evaluates strategies to boost learner satisfaction and retention,
+      including 'backward design.' Emphasizes key design techniques and online tools.
+      Identifies methods for assessing learning outcomes. Introduces the Quality Matters
+      Rubric 5 Pillars of Quality and support resources for robust course creation
+      and teaching effectiveness. Culminates in a Population Health lesson plan and
+      group work on a collaborative, ongoing class project in educational technology
+      for Population Health.
+- - - 'Required Texts or Other Resources: Rapid Instructional Design. 3rd Edition.
+      George M. Piskurich. Wiley. ISNB: 978-1118973974'
+  - - 'Notes on Texts or Materials: The Piskurich textbook is available online through
+      Scott Memorial Library: Rapid Instructional Design .'
+- - - PLO-01
+    - Develop an evidence-based lesson plan as part of an educational program for
+      adult learners.
+  - - PLO-02
+    - Identify and address the needs of critical third-party stakeholders--such as
+      accreditors, administrators, and other reviewers or clients--along with the
+      needs of learners.
+  - - PLO-03
+    - Apply the 'Backward' design approach to lesson and course development for both
+      online and classroom-based environments.
+  - - PLO-04
+    - Design and deliver an engaging presentation promoting learner satisfaction,
+      retention of knowledge, and application.
+  - - PLO-05
+    - Efficiently assess and evaluate the learner's experience and achievement.
+  - - PLO-06
+    - Formulate timely, well-considered feedback and coaching to learners.
+  - - PLO-07
+    - Design a project in educational technology addressing a recognized need in Population
+      Health.
+  - - PLO-08
+    - Develop a design through Alpha, Beta, and Final stages of completion.
+  - - PLO-09
+    - Validate a project's design, processes, and outputs.
+  - - PLO-10
+    - Implement an Ed Tech project in a specified environment.
+  - - PLO-11
+    - Evaluate user ineractions and learning experiences in terms of a project's interfaces,
+      inputs, and outputs.
+  - - PLO-12
+    - Continuously improve and innovate teaching through critical self-reflection
+      and evidence-based practice.
+- - - Week/ Module
+    - Discussion Topics
+    - Readings/ Resources
+    - Lecture/ Presentation
+    - Assignments
+    - Assessment/ Evaluation
+  - - 1 August 24 - August 30
+    - 'Page: Personal Introductions Page: Barriers to My (Adult) Learners'' Learning'
+    - 'Page: Textbook: Piskurich. Ch. 3 (92-99) Page: The Adult Learner (Knowles)
+      Page: The Science of Workplace Instruction Page: Effective online large-group
+      teaching Page: Applying adult learning practices'
+    - 'Page: Round Table [live]: Course Introduction'
+    - 'Page: Introductions and Beginning of Weekly Activities Page: Profiling the
+      Adult Learner'
+    - 'Page: 5-min Feedback (Mod 01) Page: Self-Check: Course Onboarding Essentials
+      Page: Self-Assessment: Confidence Questionnaire'
+  - - 2 August 31 - September 06
+    - 'Page: Accreditors and Other Stakeholders?'
+    - 'Page: Textbook: Piskurich. Ch. 4 (128 - 161) Page: The ADDIE model. Page: Stakeholder
+      Engagement in Competency Framework Development Page: Objective Builder Tool:'
+    - 'Page: Round Table [live]: Course Projects'
+    - 'Page: Training Project Proposal with Topic Outline'
+    - 'Page: 5-min Feedback (Mod 02)'
+  - - 3 September 07 - September 13
+    - 'Page: Strengths and Limitations of Online vs. Classroom-based Modalities'
+    - 'Page: Textbook: Piskurich. Chaps. 10-11 (446-457) Page: Textbook: Piskurich.
+      Ch. 4 (107-128; 173-178) Page: Gagne''s ''Events of Instruction'' Page: Universal
+      Design for Learning Guidelines Page: Universal Design for Learning'
+    - 'Page: Round Table [live]: Hybrid Lessons'
+    - 'Page: Design Lesson for Mixed-modality'
+    - 'Page: 5-min Feedback (Mod 03)'
+  - - 4 September 14 - September 20
+    - 'Page: Effective Presentation Skills'
+    - 'Page: Optimizing Presentation Skills Page: McKinsey''s Pyramid Principle Page:
+      Textbook: Piskurich. Ch. 10 (411-446)'
+    - 'Page: Round Table [live]: Rehearsals of Presentations'
+    - 'Page: Design and Rehearse Your Lesson''s Lecture'
+    - 'Page: 5-min Feedback (Mod 04)'
+  - - 5 September 21 - September 27
+    - 'Page: Know your (Virtual) Audience'
+    - 'Page: Textbook: Piskurich. Ch. 11 (457-473) Page: Textbook: Piskurich. Ch.
+      10 (432-433) Page: Social Media in Health Studies'
+    - 'Page: Round Table [live]: Delivery of Lesson Presentations'
+    - 'Page: Create an Online Instructional Activity Page: Deliver Your Lesson''s
+      Lecture 0nline'
+    - 'Page: 5-min Feedback (Mod 05)'
+  - - 6 September 28 - October 04
+    - 'Page: What is Effective Feedback?'
+    - 'Page: Textbook: Piskurich. Ch. 4 (178-196) Page: Ready, Willing, and Able Page:
+      What is Assessment for Learning? Page: Improving Student Performance with Feedback'
+    - 'Page: Round Table [live]: Grading and Final Lesson Designs'
+    - 'Page: Author an Assessment for your Lesson Page: Create Prerecording of your
+      Completed Lesson Design'
+    - 'Page: 5-min Feedback (Mod 06)'
+  - - 7 October 05 - October 11
+    - 'Page: Discuss Prerecorded Presentations'
+    - 'Page: Textbook: Piskurich. Chaps. 9 (373-408) Page: Textbook: Piskurich. Chaps.
+      6, 7 (296-298; 311-351)'
+    - 'Page: Round Table [live]: Intro to ITS Project Design'
+    - 'Page: Training Implementation Roadmap Page: Post Prerecorded Lesson Design
+      Presentation'
+    - 'Page: 5-min Feedback (Mod 07)'
+  - - 8 October 12 - October 18
+    - 'Page: Project Support Forum: Envisioning and Planning'
+    - 'Page: Educational applications of AI Page: Intelligent Tutoring Systems Page:
+      Recommended Resources for Data and Visualizations'
+    - 'Page: Round Table [live]: The ITS Framework and Project Design Tasks'
+    - 'Page: Develop three ''Candidates'' for your ITS Project Page: Map a Candidate
+      ITS Project to the ITS Framework'
+    - 'Page: 5-min Feedback (Mod 08)'
+  - - 9 October 19 - October 25
+    - 'Page: Project Support Forum: Specifying Requirements'
+    - 'Page: No New Readings (M09)'
+    - 'Page: Round Table [live]: Designing for Function'
+    - 'Page: Schedule Consult for Week 10 Page: Complete ITS Design Worksheet and
+      Objectives Page: Specify your Project''s LOs, Instructional Activities, and
+      Cruces'
+    - 'Page: 5-min Feedback (Mod 09)'
+  - - 10 October 26 - November 01
+    - 'Page: Project Support Forum: Design Critiques'
+    - 'Page: No New Readings (M10)'
+    - 'Page: Round Table [live]: Present Design(s)'
+    - 'Page: Provide Project Design Critiques Page: Present Project Designs and Cruces'
+    - 'Page: 5-min Feedback (Mod 10)'
+  - - 11 November 02 - November 08
+    - 'Page: Project Support Forum: Alphas'
+    - 'Page: No New Readings (M11)'
+    - 'Page: Round Table [live]: Deploying the Project ''Alpha'''
+    - 'Page: Schedule Consult for Week 12 Page: Build your ITS Project ''Alpha'''
+    - 'Page: 5-min Feedback (Mod 11)'
+  - - 12 November 09 - November 15
+    - 'Page: Project Support Forum: Completing Alphas'
+    - 'Page: No New Readings (M12)'
+    - 'Page: Round Table [live]: Deploying Project Betas'
+    - 'Page: Conduct Usability Testing (Alpha)'
+    - 'Page: 5-min Feedback (Mod 12)'
+  - - 13 November 16 - November 22
+    - 'Page: Project Support Forum: Deploying Betas'
+    - 'Page: No New Readings (M13)'
+    - 'Page: Round Table [live]: Project Performance and Validation'
+    - 'Page: Capture Project Performance Data (Beta)'
+    - 'Page: 5-min Feedback (Mod 13)'
+  - - 14 November 23 - November 29
+    - 'Page: Project Support Forum: Validation'
+    - 'Page: No New Readings (M14)'
+    - 'Page: Round Table [live]: Design, Outcomes, and the ''Real World'''
+    - 'Page: Capture Project Validation Data'
+    - 'Page: 5-min Feedback (Mod 14)'
+  - - 15 November 30 - December 06
+    - 'Page: Reflection on Learning'
+    - 'Page: No New Readings (M15)'
+    - 'Page: No New Presentations (M15)'
+    - 'Page: Schedule and Attend Concluding Consult'
+    - 'Page: 5-min Feedback (Mod 15)'
+- - - Assignments
+    - Qnty
+    - Pts Each
+    - Sub total
+    - Notes
+  - - Discussion Questions (1 each week + intro and reflection)
+    - '15'
+    - '5'
+    - '70'
+    - ''
+  - - Weekly 5-min. feedback
+    - '15'
+    - '1'
+    - '15'
+    - ''
+  - - 'WK 01: Profiling the Adult Learner'
+    - '1'
+    - '15'
+    - '15'
+    - ''
+  - - 'WK 02: Training Project Proposal with Topic Outline'
+    - '1'
+    - '20'
+    - '20'
+    - ''
+  - - 'WK 03: Design Lesson for Mixed-modality'
+    - '1'
+    - '20'
+    - '20'
+    - ''
+  - - 'WK 04: Design and Rehearse Your Lesson’s Lecture'
+    - '1'
+    - '25'
+    - '25'
+    - ''
+  - - 'WK 05: Create an Online Instructional Activity'
+    - '1'
+    - '35'
+    - '35'
+    - ''
+  - - 'WK 05: Deliver Your Lesson’s Lecture'
+    - '1'
+    - '20'
+    - '20'
+    - ''
+  - - 'WK 06: Create an Assessment for your Lesson'
+    - '1'
+    - '20'
+    - '20'
+    - ''
+  - - 'WK 06: Create Prerecording of your Lesson Design or your Lecture'
+    - '1'
+    - '20'
+    - '20'
+    - ''
+  - - 'WK 07: Post Final Lesson Design, with Presentation'
+    - '1'
+    - '20'
+    - '20'
+    - ''
+  - - 'WK 07: Implementation Roadmap'
+    - '1'
+    - '10'
+    - '10'
+    - ''
+  - - 'WK 08: Map your Work to Class ITS Framework'
+    - '1'
+    - '20'
+    - '20'
+    - ''
+  - - 'WK 09: Create ITS Design Worksheet and Objectives'
+    - '1'
+    - '20'
+    - '20'
+    - ''
+  - - 'WK 10: Present Project Designs'
+    - '1'
+    - '20'
+    - '20'
+    - ''
+  - - 'WK 11: Create Worksheet for Project ''Alpha'''
+    - '1'
+    - '20'
+    - '20'
+    - ''
+  - - 'WK 12: Conduct Usability Testing'
+    - '1'
+    - '25'
+    - '25'
+    - ''
+  - - 'WK 13: Capture Project Performance Data'
+    - '1'
+    - '35'
+    - '35'
+    - ''
+  - - 'WK 14: Capture Project Validation Data'
+    - '1'
+    - '35'
+    - '35'
+    - ''
+  - - 'WK 15: Transfer of Learning Plan'
+    - '1'
+    - '25'
+    - '25'
+    - ''
+  - - Final Course Evaluation
+    - '1'
+    - '10'
+    - '10'
+    - ''
+- - - A+
+    - 98-100%
+  - - A
+    - 93-97%
+  - - A-
+    - 90-92%
+  - - B+
+    - 87-89%
+  - - B
+    - 83-86%
+  - - B-
+    - 80-82%
+  - - C+
+    - 77-79%
+  - - C
+    - 73-76%
+  - - C-
+    - 70-72%
+  - - D+
+    - 67-69%
+  - - D
+    - 63-66%
+  - - D-
+    - 60-62%
+  - - F
+    - below 60%
