@@ -7,6 +7,25 @@ Per semver-for-schemas:
 - **Minor (1.X)** â€” additive only: new optional fields with v1.0-compatible defaults, new enum values that don't break old consumers.
 - **Patch (1.0.X)** â€” docs / clarifications / typo fixes; no machine-readable change.
 
+## CanonicalAssetRecord v0.1 - 2026-07-08 - Story S7 Phase-2 C asset evidence boundary
+
+**Type:** Initial shape (no predecessor family).
+
+**Family:** CanonicalAssetRecord (`app/marcus/course_source/asset_records.py`).
+
+**Reason for introduction:** Story S7 Phase-2 C defines the narrow source-evidence
+record used between raw course-source ingestion and downstream lesson planning.
+A syllabus row can establish that an asset is required, but cannot by itself
+prove source-grounded content exists.
+
+**Shapes and contracts pinned:**
+
+- Closed `AssetKind`, `AssetRecordStatus`, and `SourceRefRole` enums.
+- `status == "source_grounded"` requires at least one content-bearing source ref.
+- Syllabus-row helper emits only `missing`, `required_gap`, or `inferred` records.
+- `app/marcus/course_source/schema/canonical_asset_record.v0_1.schema.json`
+  is the emitted JSON-Schema witness for the model family.
+
 ## CollateralSpec v1.1 - 2026-07-07 - Story S7 workbook-generalization `kind` discriminant
 
 **Type:** Minor (additive only). New optional field with a v1.0-compatible default;

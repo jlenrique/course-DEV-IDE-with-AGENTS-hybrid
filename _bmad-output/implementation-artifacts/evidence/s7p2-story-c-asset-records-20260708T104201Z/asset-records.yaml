@@ -1,0 +1,111 @@
+source: course-content/courses/aziz-nazha-hai-510-generative-ai-in-healthcare/sources/course/Syllabus_Generative_AI_in_Healthcare.docx
+objective_count: 6
+records:
+- schema_version: '0.1'
+  asset_id: aziz-nazha-hai-510-generative-ai-in-healthcare-lecture-001
+  asset_kind: lecture
+  course_id: aziz-nazha-hai-510-generative-ai-in-healthcare
+  module_id: null
+  lesson_id: null
+  source_refs:
+  - ref_id: hai-syllabus-lo-001
+    path: course-content/courses/aziz-nazha-hai-510-generative-ai-in-healthcare/sources/course/Syllabus_Generative_AI_in_Healthcare.docx
+    locator: Learning Objectives row 1
+    role: requirement
+  learning_objective_refs: []
+  derivation: syllabus_requirement
+  status: required_gap
+  content: {}
+  gaps: []
+  review:
+    sme_required: false
+- schema_version: '0.1'
+  asset_id: aziz-nazha-hai-510-generative-ai-in-healthcare-lecture-002
+  asset_kind: lecture
+  course_id: aziz-nazha-hai-510-generative-ai-in-healthcare
+  module_id: null
+  lesson_id: null
+  source_refs:
+  - ref_id: hai-syllabus-lo-002
+    path: course-content/courses/aziz-nazha-hai-510-generative-ai-in-healthcare/sources/course/Syllabus_Generative_AI_in_Healthcare.docx
+    locator: Learning Objectives row 2
+    role: requirement
+  learning_objective_refs: []
+  derivation: syllabus_requirement
+  status: required_gap
+  content: {}
+  gaps: []
+  review:
+    sme_required: false
+- schema_version: '0.1'
+  asset_id: aziz-nazha-hai-510-generative-ai-in-healthcare-lecture-003
+  asset_kind: lecture
+  course_id: aziz-nazha-hai-510-generative-ai-in-healthcare
+  module_id: null
+  lesson_id: null
+  source_refs:
+  - ref_id: hai-syllabus-lo-003
+    path: course-content/courses/aziz-nazha-hai-510-generative-ai-in-healthcare/sources/course/Syllabus_Generative_AI_in_Healthcare.docx
+    locator: Learning Objectives row 3
+    role: requirement
+  learning_objective_refs: []
+  derivation: syllabus_requirement
+  status: required_gap
+  content: {}
+  gaps: []
+  review:
+    sme_required: false
+- schema_version: '0.1'
+  asset_id: aziz-nazha-hai-510-generative-ai-in-healthcare-lecture-004
+  asset_kind: lecture
+  course_id: aziz-nazha-hai-510-generative-ai-in-healthcare
+  module_id: null
+  lesson_id: null
+  source_refs:
+  - ref_id: hai-syllabus-lo-004
+    path: course-content/courses/aziz-nazha-hai-510-generative-ai-in-healthcare/sources/course/Syllabus_Generative_AI_in_Healthcare.docx
+    locator: Learning Objectives row 4
+    role: requirement
+  learning_objective_refs: []
+  derivation: syllabus_requirement
+  status: required_gap
+  content: {}
+  gaps: []
+  review:
+    sme_required: false
+- schema_version: '0.1'
+  asset_id: aziz-nazha-hai-510-generative-ai-in-healthcare-lecture-005
+  asset_kind: lecture
+  course_id: aziz-nazha-hai-510-generative-ai-in-healthcare
+  module_id: null
+  lesson_id: null
+  source_refs:
+  - ref_id: hai-syllabus-lo-005
+    path: course-content/courses/aziz-nazha-hai-510-generative-ai-in-healthcare/sources/course/Syllabus_Generative_AI_in_Healthcare.docx
+    locator: Learning Objectives row 5
+    role: requirement
+  learning_objective_refs: []
+  derivation: syllabus_requirement
+  status: required_gap
+  content: {}
+  gaps: []
+  review:
+    sme_required: false
+- schema_version: '0.1'
+  asset_id: aziz-nazha-hai-510-generative-ai-in-healthcare-lecture-006
+  asset_kind: lecture
+  course_id: aziz-nazha-hai-510-generative-ai-in-healthcare
+  module_id: null
+  lesson_id: null
+  source_refs:
+  - ref_id: hai-syllabus-lo-006
+    path: course-content/courses/aziz-nazha-hai-510-generative-ai-in-healthcare/sources/course/Syllabus_Generative_AI_in_Healthcare.docx
+    locator: Learning Objectives row 6
+    role: requirement
+  learning_objective_refs: []
+  derivation: syllabus_requirement
+  status: required_gap
+  content: {}
+  gaps: []
+  review:
+    sme_required: false
