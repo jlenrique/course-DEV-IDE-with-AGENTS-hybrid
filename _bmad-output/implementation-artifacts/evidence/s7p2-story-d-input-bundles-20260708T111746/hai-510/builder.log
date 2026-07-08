@@ -1,0 +1,7 @@
+wrote _bmad-output\implementation-artifacts\evidence\s7p2-story-d-input-bundles-20260708T111746\hai-510\input-bundle.yaml
+course_id=aziz-nazha-hai-510-generative-ai-in-healthcare
+module_id=module-01-foundations-of-ai-in-healthcare
+source_purpose=new_build
+gaps=7
+asset_records=1
+component_selection={'deck': True, 'motion': True, 'workbook': False}
