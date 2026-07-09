@@ -1,6 +1,6 @@
 # Session Handoff — 2026-07-09 (session 25: **🎯 S8 FULLY COMPLETE** — Part-4 terminal walk green on classic-preserve; Quinn R6 party concurrence; session WRAPUP)
 
-**Final class:** S (substrate: Gary matcher residue soft-bind; styleguide classic-preserve sibling; live AFK HIL terminal walk; docs/letter closeout). **Branch:** `dev/workbook-2026-07-06` @ `05be939b` (pushed). **Next:** Class S — green-light `irene-text-literal-supersedes-styleguide-truncation`.
+**Final class:** S (substrate: Gary matcher residue soft-bind; styleguide classic-preserve sibling; live AFK HIL terminal walk; docs/letter closeout). **Branch:** `dev/workbook-2026-07-06` @ `68438772` (pushed). **Next:** Class S — green-light `irene-text-literal-supersedes-styleguide-truncation`.
 
 **What was completed:**
 1. **Title-residue / cover-drop permanent fix** (`8f6e861c`) — 1:1 residual soft-bind after bijective; live-proved Gary bind on `62308889…` then full COMPLETE on `1bd08699…`.
