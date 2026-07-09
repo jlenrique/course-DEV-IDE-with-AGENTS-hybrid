@@ -89,3 +89,25 @@ No tracked production-code or test diff is visible yet (`git diff --stat` empty 
 **Watchpoint verdicts:** WP2-WP10 pass by committed shape. WP1 remains open for final close-party evidence, though green-light evidence is now claimed. WP11 remains open until test/ruff/live-seam evidence is externally visible. WP12 is mostly clean; remaining issue is local-only commit banking.
 
 **Verdict: IMPLEMENTED IN SHAPE / NOT EXTERNALLY CLOSE-CORROBORATED.** The code diff appears aligned with the product requirement and avoids the styleguide-registry workaround, but final done should wait for visible test/ruff output, close-party concurrence, and push/banking of `0fb2b2cf`.
+
+---
+
+### SOP-002 - pushed branch + CI-muting follow-up poll - 2026-07-09T14:19:37-04:00
+
+**Scope reviewed:** `git status --short --branch`, latest git log, commit metadata/stat/diffs for `1be59406`, workflow-trigger diffs, always-on instruction diffs, grep for verification/party/test evidence, and the current monitor ledger tail. No tests were run by this monitor poll. No production/test/runtime files were edited by this monitor; this ledger entry is the only write.
+
+**Current repo state:** branch `dev/lesson-planning-2026-07-09` is clean and synced with `origin/dev/lesson-planning-2026-07-09` at `1be59406` (`chore(ci): mute auto GitHub Actions for solo no-PR workflow`). The prior Irene implementation commit `0fb2b2cf` is now remote-banked under that pushed branch.
+
+**What changed since SOP-001:** a second commit landed and pushed. It documents solo-operator/no-formal-PR delivery in `AGENTS.md`, `CLAUDE.md`, and `.github/copilot-instructions.md`, converts the listed GitHub Actions workflows to manual `workflow_dispatch` only, removes the scheduled `trial-replay`, and banks the SOP-001 monitor entry.
+
+**F-0004 closed.** The Irene implementation commit is no longer local-only: `HEAD` and `origin/dev/lesson-planning-2026-07-09` now resolve to the same pushed commit chain (`1be59406` includes `0fb2b2cf`). No untracked/dirty file residue is visible at this poll.
+
+**F-0003 remains open.** I still see no externally visible focused pytest output, ruff output, RED-first transcript/evidence, or final fully spawned BMAD close-party concurrence. The spec remains `status: 'done'`, but this monitor still cannot corroborate the active goal's process DoD. Because the new CI commit mutes automatic GitHub Actions, local verification evidence becomes more important, not less.
+
+**F-0006 [P2] Broad CI/governance change is outside the Irene-literal product slice.** The workflow muting may match operator preference and is now documented in always-on instructions, but it is a repo-governance change unrelated to `build_gary_briefs` / `generate_gamma_variants`. It should be reviewed/accepted on its own merits and not treated as evidence for the Irene literal story. It also means future "pushed branch" does not imply automatic CI coverage.
+
+**F-0007 [P3] Manual substrate workflow may skip its core check under `workflow_dispatch`.** `substrate-frozen-paths-check.yml` now has only `workflow_dispatch`, but its base/head selection still relies on `github.event.before` in the non-PR path and then skips if base/head is empty. On a manual run, that can produce a no-op instead of a useful frozen-path check. This is not an Irene-literal blocker, but it is a follow-on if the manual workflow is expected to remain a usable tool.
+
+**Irene implementation scoreability:** code shape remains scoreable as "implemented in shape" from SOP-001, with no new Irene-code changes in this poll. External close is still not scoreable because WP1 final close-party evidence and WP11 test/ruff/live-seam evidence remain absent from the visible repo state.
+
+**Verdict: PUSH/BANKING RESOLVED; CLOSE EVIDENCE STILL MISSING.** Keep the monitor active. Next useful signal should be local pytest + ruff output and final fully spawned BMAD close-party concurrence, or an explicit status downgrade from `done` to pending-close-evidence.
