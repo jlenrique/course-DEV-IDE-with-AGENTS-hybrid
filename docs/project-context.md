@@ -1,14 +1,15 @@
 # Current Context Addendum - 2026-07-09 Session 28
 
-**Phase-2 evolutionary bridge COMPLETE-with-named-fenced-residuals** (party
-4/4 close). Story
-`phase2-evolutionary-planning-to-selection-bridge.md` (done): assessed source →
-purpose/audience → structured gap-fill → emit S8 ratified intent → frozen
-`collateral_selection` resolver. Evidence
-`phase2-evolutionary-bridge-20260709T204500/` W1–W4; W5 compose not claimed.
-Spine inventory PARTIAL-MET. Residuals: interactive SPOC planning REPL,
-auto Irene→selection, compose liveproof, SME/projector/LO UX, full lecture
-ingestion. S8 stays closed. Branch `dev/lesson-planning-2026-07-09`.
+**Step 1 DONE:** Phase-2 evolutionary bridge
+`phase2-evolutionary-planning-to-selection-bridge` =
+COMPLETE-with-named-fenced-residuals at `20246475` (pushed). W1–W4 banked;
+W5 compose not claimed; §4.1 evolution rule canonicalized.
+
+**Queued next (not started):** `planning-context-to-irene-pass1-handoff`
+(`backlog-next`) — wire purpose/audience/LOs/source assessment into Irene
+Pass-1. Do not start until operator opens that story.
+
+S8 stays closed. Branch `dev/lesson-planning-2026-07-09`.
 
 ---
 

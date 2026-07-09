@@ -259,3 +259,95 @@ Binding SSOT:
 **Scoreability:** unchanged from SOP-004. Scoreable locally as an uncommitted W1-W4 planning-to-selection bridge PARTIAL-MET, not as final Phase-2 completion or composed production. Not durable until committed/pushed.
 
 **Verdict: NO MATERIAL CHANGE / STILL LOCAL PARTIAL-MET ONLY.** The right next step remains banking the Phase-2 close set and either adding raw test/review evidence or explicitly declaring the compact Claude ledger as the accepted evidence source.
+
+---
+
+### SOP-006 - Phase-2 bridge banked and pushed; W1-W4 PARTIAL-MET is now durable - 2026-07-09T17:19:10-04:00
+
+**Scope reviewed:** `git status --short --branch --untracked-files=all`, latest git log, remote branch tip via `git ls-remote`, `git show --stat/--name-status/--format=fuller HEAD`, tracked-file visibility for the Phase-2 story/code/tests/evidence, raw `pytest-raw.txt`, raw `ruff-raw.txt`, `CLAIM-ASSESSMENT.md`, `WITNESS-SUMMARY.json`, and this ledger tail. No tests were run by this monitor poll; raw test/lint output was inspected from the banked evidence bundle. No production/test/runtime files were edited by this monitor; this SOP append is the only write.
+
+**Current repo state:** branch `dev/lesson-planning-2026-07-09` is now synced with `origin/dev/lesson-planning-2026-07-09` at `20246475` (`feat(lesson-plan): land Phase-2 planning-to-selection bridge`). The pushed commit is authored/committed 2026-07-09T17:14:46-04:00 and includes 27 files, 2170 insertions, and 3 deletions. Working tree residue before this append was limited to the old Irene-literal monitor ledger modification plus old Irene-literal untracked evidence/runtime files; no untracked Phase-2 bridge artifacts were visible.
+
+**Durability movement:** the Phase-2 bridge close set is now banked and pushed: claim envelope, story/spec, Claude shadow ledger, this Codex shadow ledger through SOP-005, W1-W4 evidence bundle, raw pytest/ruff evidence, source assessment and planning ratification libraries, focused tests, banking utility, and state/inventory/project-context updates. This resolves the prior unbanked-artifact concern for the Phase-2 bridge slice.
+
+**Evidence movement:** raw evidence is now present and green. `_bmad-output/implementation-artifacts/evidence/phase2-evolutionary-bridge-20260709T204500/pytest-raw.txt` records `16 passed in 10.14s`; `ruff-raw.txt` records `All checks passed!`. The committed evidence bundle carries `CLAIM-ASSESSMENT.md` with `MET (W1-W4)`, W5 explicitly `stretch / not claimed this close`, and the same-thin-fixture W3/W4 remediation. `WITNESS-SUMMARY.json` shows wait vs lighter-collateral gap-fill dispositions and the selection delta `narrated-deck` -> `narrated-deck-with-motion`.
+
+**Obsolete evidence caveat resolved for committed state:** the superseded pre-remediation `w3-thin-ratification/` path noted in SOP-005 was not part of the pushed commit. The durable evidence now contains the corrected `w3-thin-ratification-wait/` and `w3-thin-ratification-lighter/` pair, reducing ambiguity around W4.
+
+**F-P2-0002 status: resolved for W1-W4 / still open beyond the slice.** The committed artifacts prove the scoped planning-to-selection bridge through source assessment, purpose/audience-bearing ratification, structured gap-fill choices, canonical S8 intent, and selection delta. They still do not prove interactive SPOC REPL, trial-start consumption, or composed local production.
+
+**F-P2-0006 status: resolved only under PARTIAL-MET scope.** W5 compose remains explicitly fenced as stretch/not claimed. This is honest if the close is reported as W1-W4 planning-to-selection bridge PARTIAL-MET, not as final Phase-2 completion.
+
+**F-P2-0007 status: resolved for green evidence, RED-first not separately proven.** Raw focused pytest and ruff outputs are now banked and pushed. A failing-first transcript is still not visible, so RED-first discipline remains process-claimed rather than independently evidenced.
+
+**F-P2-0008 status: fenced/open.** No local Marcus-SPOC interactive planning transcript, pre-start SPOC REPL, trial-start consumption proof, or compose proof is visible. This remains an explicit residual, not a blocker for the narrowed W1-W4 bridge score.
+
+**F-P2-0010 status: resolved for claim hygiene.** The committed claim assessment and state docs consistently describe W1-W4/PARTIAL-MET rather than full composed-production completion.
+
+**F-P2-0011 status: resolved.** The implementation, tests, evidence, banking script, and monitor ledgers are now tracked in the pushed commit.
+
+**F-P2-0012 status: partly open.** No standalone `bmad-code-review` artifact was observed in the commit. The story close/Claude ledger carry review and remediation claims, but this remains weaker than a discrete review transcript. Treat as acceptable only if the team explicitly accepts those records as the review authority for this compact close.
+
+**F-P2-0013 status: resolved.** State/inventory/project-context updates are now backed by the same pushed commit that contains the implementation and evidence.
+
+**F-P2-0014 status: resolved for committed evidence.** The obsolete W3 path is not visible in the committed Phase-2 evidence set.
+
+**Scoreability:** scoreable and durable as a pushed W1-W4 planning-to-selection bridge PARTIAL-MET. Not scoreable as final Phase-2 completion, W5 composed production, or an interactive Marcus-SPOC conversation-to-compose path.
+
+**Verdict: PHASE-2 BRIDGE BANKED / SCOREABLE AS W1-W4 PARTIAL-MET ONLY.** The major monitor concern has shifted from durability to residual scope control: future reports should preserve the compose/SPOC-interaction fence unless new liveproof lands.
+
+---
+
+### SOP-007 - no new Phase-2 movement after banked bridge close - 2026-07-09T17:29:10-04:00
+
+**Scope reviewed:** `git status --short --branch --untracked-files=all`, latest git log, remote branch tip via `git ls-remote`, and this ledger tail through SOP-006. No tests were run by this monitor poll. No production/test/runtime files were edited by this monitor; this SOP append is the only write.
+
+**Current repo state:** branch `dev/lesson-planning-2026-07-09` remains synced with `origin/dev/lesson-planning-2026-07-09` at `20246475` (`feat(lesson-plan): land Phase-2 planning-to-selection bridge`). No newer local or remote commit is visible. The worktree currently shows this Codex monitor ledger modified from ongoing SOP appends, the old Irene-literal monitor ledger modified, and old Irene-literal untracked evidence/runtime residue. No new untracked Phase-2 bridge implementation, evidence, or liveproof artifacts are visible.
+
+**BMAD/story/test evidence visibility:** unchanged from SOP-006. The durable Phase-2 evidence remains the pushed W1-W4 bridge close set: claim envelope, story/spec, source assessment and ratification libraries, focused tests, W1-W4 evidence bundle, raw `pytest` output with `16 passed`, raw `ruff` output with `All checks passed!`, state/inventory/project-context updates, and companion Claude monitor ledger. No standalone `bmad-code-review` transcript has appeared beyond the story close/Claude-ledger review claims.
+
+**Liveproof/residual visibility:** unchanged. No W5 compose evidence, interactive Marcus-SPOC planning transcript, pre-start SPOC REPL, trial-start consumption proof, or composed local production proof is visible. Those items remain fenced/open residuals under the PARTIAL-MET close.
+
+**Finding status:** F-P2-0002 remains resolved only for W1-W4 and open beyond the slice; F-P2-0006 remains resolved only under PARTIAL-MET scope; F-P2-0007 remains resolved for green pytest/ruff but not independently RED-first; F-P2-0008 remains fenced/open; F-P2-0012 remains partly open because no standalone code-review artifact is visible. F-P2-0011, F-P2-0013, and F-P2-0014 remain resolved for the pushed bridge commit.
+
+**Scoreability:** unchanged. The implementation is scoreable as a durable W1-W4 planning-to-selection bridge PARTIAL-MET. It is not scoreable as final Phase-2 completion, W5 compose, or an interactive Marcus-SPOC conversation-to-compose path.
+
+**Verdict: NO MATERIAL CHANGE / BANKED W1-W4 PARTIAL-MET HOLDS.** Continue monitoring only for new evidence that changes the residual fence, especially W5 compose, interactive SPOC planning, trial-start consumption, or a discrete code-review artifact.
+
+---
+
+### SOP-008 - no new evidence; residual fence unchanged - 2026-07-09T17:39:10-04:00
+
+**Scope reviewed:** `git status --short --branch --untracked-files=all`, latest git log, remote branch tip via `git ls-remote`, and this ledger tail through SOP-007. No tests were run by this monitor poll. No production/test/runtime files were edited by this monitor; this SOP append is the only write.
+
+**Current repo state:** branch `dev/lesson-planning-2026-07-09` remains synced with `origin/dev/lesson-planning-2026-07-09` at `20246475` (`feat(lesson-plan): land Phase-2 planning-to-selection bridge`). No newer local or remote commit is visible. The worktree shows this Codex monitor ledger modified from SOP-006/SOP-007/SOP-008 appends, the old Irene-literal monitor ledger modified, and old Irene-literal untracked evidence/runtime residue. No new untracked Phase-2 implementation, story, test, evidence, or liveproof artifacts are visible.
+
+**BMAD/story/test evidence visibility:** unchanged from SOP-007. The pushed W1-W4 evidence remains the only scoreable Phase-2 implementation proof: claim envelope, story/spec, source assessment and planning ratification code, focused tests, W1-W4 evidence bundle, raw `pytest` evidence with `16 passed`, raw `ruff` evidence with `All checks passed!`, state/inventory/project-context updates, and companion Claude monitor ledger. No discrete `bmad-code-review` transcript has appeared beyond the compact story close/Claude-ledger review claims.
+
+**Liveproof/residual visibility:** unchanged. No W5 compose evidence, interactive Marcus-SPOC planning transcript, pre-start SPOC REPL, trial-start consumption proof, or composed local production proof is visible. The residual fence from SOP-006/SOP-007 remains binding.
+
+**Finding status:** no finding changes. F-P2-0002 remains resolved for W1-W4 only and open beyond the slice; F-P2-0006 remains resolved only under PARTIAL-MET scope; F-P2-0007 remains resolved for banked green pytest/ruff but not independently RED-first; F-P2-0008 remains fenced/open; F-P2-0012 remains partly open because no standalone code-review artifact is visible. F-P2-0011, F-P2-0013, and F-P2-0014 remain resolved for the pushed bridge commit.
+
+**Scoreability:** unchanged. The active implementation is scoreable as a durable W1-W4 planning-to-selection bridge PARTIAL-MET. It is not scoreable as final Phase-2 completion, W5 composed production, or an interactive Marcus-SPOC conversation-to-compose path.
+
+**Verdict: NO MATERIAL CHANGE / W1-W4 PARTIAL-MET STILL HOLDS.** Continue monitoring for a real change in evidence, especially W5 compose, interactive SPOC planning, trial-start consumption, or a standalone review artifact.
+
+---
+
+### SOP-009 - stable post-close state; no new Phase-2 proof - 2026-07-09T17:49:10-04:00
+
+**Scope reviewed:** `git status --short --branch --untracked-files=all`, latest git log, remote branch tip via `git ls-remote`, evidence-directory recency scan under `_bmad-output/implementation-artifacts/evidence/`, and this ledger tail through SOP-008. No tests were run by this monitor poll. No production/test/runtime files were edited by this monitor; this SOP append is the only write.
+
+**Current repo state:** branch `dev/lesson-planning-2026-07-09` remains synced with `origin/dev/lesson-planning-2026-07-09` at `20246475` (`feat(lesson-plan): land Phase-2 planning-to-selection bridge`). No newer local or remote commit is visible. The worktree shows this Codex monitor ledger modified from ongoing SOP appends, the old Irene-literal monitor ledger modified, and old Irene-literal untracked evidence/runtime residue. No new untracked Phase-2 implementation, story, test, evidence, or liveproof artifacts are visible.
+
+**Evidence recency:** the latest Phase-2 evidence directory remains `_bmad-output/implementation-artifacts/evidence/phase2-evolutionary-bridge-20260709T204500/`, last observed at 2026-07-09 17:13:54 local. No newer Phase-2 evidence bundle, W5 compose bundle, SPOC transcript, trial-start proof, or code-review artifact appeared in the implementation-artifacts evidence directory.
+
+**BMAD/story/test evidence visibility:** unchanged from SOP-008. The pushed W1-W4 close set remains the only scoreable Phase-2 proof: claim envelope, story/spec, source assessment and planning ratification code, focused tests, W1-W4 evidence bundle, raw `pytest` evidence with `16 passed`, raw `ruff` evidence with `All checks passed!`, state/inventory/project-context updates, and companion Claude monitor ledger. No discrete `bmad-code-review` transcript is visible beyond compact close/review claims in story and Claude ledger.
+
+**Liveproof/residual visibility:** unchanged. No W5 compose evidence, interactive Marcus-SPOC planning transcript, pre-start SPOC REPL, trial-start consumption proof, or composed local production proof is visible. These remain fenced/open residuals under the PARTIAL-MET bridge close.
+
+**Finding status:** no finding changes. F-P2-0002 remains resolved for W1-W4 only and open beyond the slice; F-P2-0006 remains resolved only under PARTIAL-MET scope; F-P2-0007 remains resolved for banked green pytest/ruff but not independently RED-first; F-P2-0008 remains fenced/open; F-P2-0012 remains partly open because no standalone code-review artifact is visible. F-P2-0011, F-P2-0013, and F-P2-0014 remain resolved for the pushed bridge commit.
+
+**Scoreability:** unchanged. The active implementation is scoreable as a durable W1-W4 planning-to-selection bridge PARTIAL-MET. It is not scoreable as final Phase-2 completion, W5 composed production, or an interactive Marcus-SPOC conversation-to-compose path.
+
+**Verdict: NO MATERIAL CHANGE / STABLE W1-W4 PARTIAL-MET.** Continue monitoring for an actual change in proof state; absent new W5/SPOC/compose/review evidence, the correct score remains the banked narrow bridge close.

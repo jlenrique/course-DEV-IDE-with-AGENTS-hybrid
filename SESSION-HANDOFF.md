@@ -1,3 +1,21 @@
+# Session Handoff — 2026-07-09 (session 28: **Phase-2 planning-to-selection bridge COMPLETE-with-named-fenced-residuals** — Class S)
+
+**Final class:** S. **Branch:** `dev/lesson-planning-2026-07-09` @ `20246475` (pushed). **Next (queued, not started):** `planning-context-to-irene-pass1-handoff` (`backlog-next`).
+
+**What was completed (step 1 — this session’s approved bridge):**
+1. Party claim envelope + dual-gate story `phase2-evolutionary-planning-to-selection-bridge` → **done**.
+2. Code: `source_assessment.py` + `planning_ratification.py`; emits canonical S8 intent; resolver frozen.
+3. Tests: 16 bridge + S8 collateral regression green; ruff clean; raw transcripts banked in evidence.
+4. Evidence W1–W4: `…/evidence/phase2-evolutionary-bridge-20260709T204500/`.
+5. Canonical evolution rule §4.1 in positioning SSOT (durable contract → bespoke conversational growth on top).
+6. Party close COMPLETE-with-named-fenced-residuals; spine inventory PARTIAL-MET.
+
+**What is next:** After this closeout is clean, open **`planning-context-to-irene-pass1-handoff`** (purpose/audience/LOs/source assessment → Irene Pass-1). Do not reopen S8. Do not pull Pass-2 HELR.
+
+**Unresolved / residuals (named, fenced):** interactive SPOC planning REPL; W5 compose; auto Irene→selection without recorder; SME/projector/LO UX; full lecture ingestion.
+
+---
+
 # Session Handoff — 2026-07-09 (session 27: **Irene-literal MET + S8 stay-closed + bigger-gains frontier** — Class S product closeout)
 
 **Final class:** S (Irene Pass-1 fidelity emit recovery + authentic classic-condense liveproof; Cursor dual-agent-family surfaces; S8 books stay closed; Pass-2 HELR parked). **Branch:** `dev/lesson-planning-2026-07-09` @ `6783b54b`+ (emit recovery pushed; docs/bookkeeping may still be dirty). **Next:** Class S — green-light Phase-2 spine `lesson-plan-directs-production-collateral-to-selection-edge` (or operator-picked ingestion / LO / SME).
