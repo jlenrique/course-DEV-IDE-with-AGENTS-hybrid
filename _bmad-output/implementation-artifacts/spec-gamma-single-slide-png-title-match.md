@@ -95,13 +95,13 @@ Golden shape for N=1 lone PNG: synthesize `pages=[{"page_index": 1, "title": tit
 **Tests**
 
 - Opaque `gary_A.png` N=1 bind (live S8 shape)
-  [`test_gamma_title_matching.py:261`](../tests/specialists/gary/test_gamma_title_matching.py#L261)
+  [`test_gamma_title_matching.py:261`](../../tests/specialists/gary/test_gamma_title_matching.py#L261)
 
 - Titled-stem mismatch must fail loud
-  [`test_gamma_title_matching.py:331`](../tests/specialists/gary/test_gamma_title_matching.py#L331)
+  [`test_gamma_title_matching.py:331`](../../tests/specialists/gary/test_gamma_title_matching.py#L331)
 
 - N>1 orphan page recorded
-  [`test_gamma_title_matching.py:348`](../tests/specialists/gary/test_gamma_title_matching.py#L348)
+  [`test_gamma_title_matching.py:348`](../../tests/specialists/gary/test_gamma_title_matching.py#L348)
 
 **Inventory**
 
