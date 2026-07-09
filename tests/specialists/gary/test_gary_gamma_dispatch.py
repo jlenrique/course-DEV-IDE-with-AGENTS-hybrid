@@ -848,3 +848,295 @@ def test_standard_a_crossroads_classic_text_mode_preserve_l1() -> None:
     assert classic["image_model"] == preserve["image_model"]
     assert classic["image_style_preset"] == preserve["image_style_preset"]
     assert classic["dimensions"] == preserve["dimensions"]
+
+
+# ---------------------------------------------------------------------------
+# Irene literal-text supersedes styleguide truncation (T3–T8)
+# Spec: _bmad-output/implementation-artifacts/spec-irene-literal-supersedes-styleguide-truncation.md
+# ---------------------------------------------------------------------------
+
+
+def _condense_minimal_gamma_settings(*variant_ids: str) -> list[dict[str, str]]:
+    """Classic condense + Minimal (UI) — the S8 figure-contradiction failure mode."""
+    return [
+        {
+            "variant_id": vid,
+            "styleguide": seed_name(vid),
+            "text_mode": "condense",
+            "amount": "minimal",
+        }
+        for vid in variant_ids
+    ]
+
+
+def _download_by_call_index(monkeypatch, client: FakeGammaClient, zips: list[Path]) -> None:
+    """Map the Nth generate_deck call to the Nth titled zip (cohort-split live seam)."""
+
+    def _download(url: str, *, output_dir: Path, filename: str) -> str:
+        idx = len(client.generate_calls) - 1
+        return str(zips[idx])
+
+    monkeypatch.setattr(gary_act, "download_export", _download)
+
+
+def test_all_creative_styleguide_text_mode_amount_unchanged(tmp_path: Path, monkeypatch) -> None:
+    """T3 — untagged/creative deck keeps styleguide condense + amount (no preserve bleed)."""
+    zpath = _titled_zip(tmp_path, ["1_Creative-One", "2_Creative-Two"])
+    monkeypatch.setattr(
+        gary_act, "download_export", lambda url, *, output_dir, filename: str(zpath)
+    )
+    client = FakeGammaClient()
+    payload = {
+        "slides": [
+            {"slide_id": "s1", "title": "Creative One", "fidelity": "creative"},
+            {"slide_id": "s2", "title": "Creative Two"},  # missing → creative
+        ],
+        "export_dir": str(tmp_path),
+        "gamma_settings": _condense_minimal_gamma_settings("A"),
+    }
+
+    gary_act.generate_gamma_variants(payload, client=client)
+
+    assert len(client.generate_calls) == 1
+    call = client.generate_calls[0]
+    assert call["text_mode"] == "condense"
+    text_options = call.get("text_options") or {}
+    assert "amount" in text_options
+    assert text_options["amount"] == "brief"  # Minimal UI → brief API
+    assert call["num_cards"] == 2
+
+
+def test_literal_cohort_force_preserve_amount_key_absent(tmp_path: Path, monkeypatch) -> None:
+    """T4 — S8 figure-contradiction pin: literal + condense+Minimal → preserve, amount absent."""
+    zpath = _titled_zip(tmp_path, ["1_Figure-Critical", "2_Literal-Visual-Card"])
+    monkeypatch.setattr(
+        gary_act, "download_export", lambda url, *, output_dir, filename: str(zpath)
+    )
+    client = FakeGammaClient()
+    payload = {
+        "slides": [
+            {
+                "slide_id": "s1",
+                "title": "Figure Critical",
+                "fidelity": "literal-text",
+                "prompt": "Teaching-critical: spend reached $5.2 trillion.",
+            },
+            {
+                "slide_id": "s2",
+                "title": "Literal Visual Card",
+                "fidelity": "literal-visual",
+                "prompt": "Keep this SME figure caption verbatim.",
+            },
+        ],
+        "export_dir": str(tmp_path),
+        "gamma_settings": _condense_minimal_gamma_settings("A"),
+    }
+
+    gary_act.generate_gamma_variants(payload, client=client)
+
+    assert len(client.generate_calls) == 1
+    call = client.generate_calls[0]
+    assert call["text_mode"] == "preserve"
+    text_options = call.get("text_options") or {}
+    assert "amount" not in text_options
+    assert call["num_cards"] == 2
+
+
+def test_mixed_deck_splits_and_rejoins_brief_order_by_slide_id(
+    tmp_path: Path, monkeypatch
+) -> None:
+    """T5 — mixed deck: cohort-scoped calls; rejoin by slide_id (titles collide on purpose)."""
+    (tmp_path / "creative").mkdir()
+    (tmp_path / "literal").mkdir()
+    creative_zip = _titled_zip(tmp_path / "creative", ["1_Shared-Title"])
+    literal_zip = _titled_zip(tmp_path / "literal", ["1_Shared-Title"])
+    client = FakeGammaClient()
+    _download_by_call_index(monkeypatch, client, [creative_zip, literal_zip])
+
+    payload = {
+        "slides": [
+            {
+                "slide_id": "s1",
+                "title": "Shared Title",
+                "fidelity": "creative",
+                "prompt": "Creative body one",
+            },
+            {
+                "slide_id": "s2",
+                "title": "Shared Title",
+                "fidelity": "literal-text",
+                "prompt": "Literal body $5.2T teaching-critical",
+            },
+        ],
+        "export_dir": str(tmp_path),
+        "gamma_settings": _condense_minimal_gamma_settings("A"),
+    }
+
+    result = gary_act.generate_gamma_variants(payload, client=client)
+
+    assert len(client.generate_calls) == 2
+    creative_call, literal_call = client.generate_calls
+    assert creative_call["num_cards"] == 1
+    assert literal_call["num_cards"] == 1
+    assert creative_call["text_mode"] == "condense"
+    assert "amount" in (creative_call.get("text_options") or {})
+    assert literal_call["text_mode"] == "preserve"
+    assert "amount" not in (literal_call.get("text_options") or {})
+    # Cohort-scoped input: each call's prompt contains only its cohort title chunk once.
+    assert str(creative_call["input_text"]).count("# Shared Title") == 1
+    assert str(literal_call["input_text"]).count("# Shared Title") == 1
+    assert "Creative body one" in str(creative_call["input_text"])
+    assert "$5.2T" in str(literal_call["input_text"])
+    assert "Creative body one" not in str(literal_call["input_text"])
+    assert "$5.2T" not in str(creative_call["input_text"])
+
+    rows = {row["slide_id"]: row for row in result["gary_slide_output"]}
+    assert list(row["slide_id"] for row in result["gary_slide_output"]) == ["s1", "s2"]
+    assert Path(rows["s1"]["file_path"]).read_bytes() == b"bytes::1_Shared-Title"
+    assert Path(rows["s2"]["file_path"]).read_bytes() == b"bytes::1_Shared-Title"
+    # Distinct export dirs prove each cohort bound its own page (not a single shared file).
+    assert Path(rows["s1"]["file_path"]).resolve() != Path(rows["s2"]["file_path"]).resolve()
+
+
+def test_literal_island_does_not_smear_neighbors(tmp_path: Path, monkeypatch) -> None:
+    """T6 — literal island amid creative: preserve does not smear to neighbors."""
+    (tmp_path / "c1").mkdir()
+    (tmp_path / "lit").mkdir()
+    (tmp_path / "c2").mkdir()
+    # Binary cohorts → two calls (all creative together, all literal together), not three.
+    creative_zip = _titled_zip(tmp_path / "c1", ["1_Alpha-Edge", "2_Gamma-Edge"])
+    literal_zip = _titled_zip(tmp_path / "lit", ["1_Beta-Literal"])
+    client = FakeGammaClient()
+    _download_by_call_index(monkeypatch, client, [creative_zip, literal_zip])
+
+    payload = {
+        "slides": [
+            {"slide_id": "s1", "title": "Alpha Edge", "fidelity": "creative", "prompt": "A"},
+            {
+                "slide_id": "s2",
+                "title": "Beta Literal",
+                "fidelity": "literal-text",
+                "prompt": "KEEP VERBATIM",
+            },
+            {"slide_id": "s3", "title": "Gamma Edge", "fidelity": "creative", "prompt": "C"},
+        ],
+        "export_dir": str(tmp_path),
+        "gamma_settings": _condense_minimal_gamma_settings("A"),
+    }
+
+    result = gary_act.generate_gamma_variants(payload, client=client)
+
+    assert len(client.generate_calls) == 2
+    creative_call = next(c for c in client.generate_calls if c["text_mode"] == "condense")
+    literal_call = next(c for c in client.generate_calls if c["text_mode"] == "preserve")
+    assert creative_call["num_cards"] == 2
+    assert literal_call["num_cards"] == 1
+    assert "KEEP VERBATIM" in str(literal_call["input_text"])
+    assert "KEEP VERBATIM" not in str(creative_call["input_text"])
+    assert "Alpha Edge" in str(creative_call["input_text"])
+    assert "Gamma Edge" in str(creative_call["input_text"])
+    assert "Alpha Edge" not in str(literal_call["input_text"])
+    assert list(row["slide_id"] for row in result["gary_slide_output"]) == ["s1", "s2", "s3"]
+
+
+def test_ab_double_dispatch_times_fidelity_cohorts(tmp_path: Path, monkeypatch) -> None:
+    """T7 — double_dispatch × mixed fidelity → len(generate_calls) == variants × cohorts."""
+    for name in ("a_c", "a_l", "b_c", "b_l"):
+        (tmp_path / name).mkdir()
+    zips = [
+        _titled_zip(tmp_path / "a_c", ["1_Creative-Slide"]),
+        _titled_zip(tmp_path / "a_l", ["1_Literal-Slide"]),
+        _titled_zip(tmp_path / "b_c", ["1_Creative-Slide"]),
+        _titled_zip(tmp_path / "b_l", ["1_Literal-Slide"]),
+    ]
+    client = FakeGammaClient()
+    _download_by_call_index(monkeypatch, client, zips)
+
+    payload = {
+        "slides": [
+            {"slide_id": "s1", "title": "Creative Slide", "fidelity": "creative"},
+            {"slide_id": "s2", "title": "Literal Slide", "fidelity": "literal-text"},
+        ],
+        "export_dir": str(tmp_path),
+        "double_dispatch": True,
+        "gamma_settings": _condense_minimal_gamma_settings("A", "B"),
+    }
+
+    result = gary_act.generate_gamma_variants(payload, client=client)
+
+    assert len(client.generate_calls) == 4  # 2 variants × 2 cohorts
+    assert result["calls_made"] == 4
+    preserve_calls = [c for c in client.generate_calls if c.get("text_mode") == "preserve"]
+    condense_calls = [c for c in client.generate_calls if c.get("text_mode") == "condense"]
+    assert len(preserve_calls) == 2
+    assert len(condense_calls) == 2
+    for call in preserve_calls:
+        assert "amount" not in (call.get("text_options") or {})
+    for call in condense_calls:
+        assert "amount" in (call.get("text_options") or {})
+
+
+def test_literal_honor_failure_raises_no_condense_fallback(
+    tmp_path: Path, monkeypatch
+) -> None:
+    """T8 — studio + literal cannot honor preserve → raise; no Classic condense fallback."""
+    repo = Path(__file__).resolve().parents[3]
+    studio_png = (
+        repo
+        / "_bmad-output"
+        / "implementation-artifacts"
+        / "studio-mode-evidence"
+        / "STUDIO-success-1-innovators-mindset.png"
+    )
+    assert studio_png.exists(), "real Studio fixture missing"
+    monkeypatch.setattr(
+        gary_act, "download_export", lambda url, *, output_dir, filename: str(studio_png)
+    )
+
+    class FakeStudioGammaClient(FakeGammaClient):
+        def __init__(self) -> None:
+            super().__init__()
+            self.template_calls: list[dict[str, object]] = []
+
+        def generate_from_template(
+            self, template_id: str, prompt: str, export_as: str = "png", **kwargs: object
+        ) -> dict[str, object]:
+            self.template_calls.append(
+                {"template_id": template_id, "prompt": prompt, "export_as": export_as}
+            )
+            return {"generationId": f"studio-{len(self.template_calls)}"}
+
+        def wait_for_generation(self, generation_id: str) -> dict[str, object]:
+            return {"exportUrl": "https://example.invalid/studio.png"}
+
+    client = FakeStudioGammaClient()
+
+    with pytest.raises(gary_act.GaryActError) as excinfo:
+        gary_act.generate_gamma_variants(
+            {
+                "slides": [
+                    {
+                        "slide_id": "s1",
+                        "title": "Literal Studio Conflict",
+                        "fidelity": "literal-text",
+                        "prompt": "Must preserve verbatim",
+                    }
+                ],
+                "export_dir": str(tmp_path),
+                "gamma_settings": [
+                    {
+                        "variant_id": "A",
+                        "styleguide": seed_name("A"),
+                        "production_mode": "studio",
+                        "studio_template_id": "g_nv5q4da69qiiu8q",
+                    }
+                ],
+            },
+            client=client,
+        )
+
+    assert "literal" in str(excinfo.value).lower() or "preserve" in str(excinfo.value).lower()
+    assert excinfo.value.tag == "gamma.fidelity.literal-honor-failure"
+    # No silent Classic condense fallback, and Studio must not proceed either.
+    assert client.generate_calls == []
+    assert client.template_calls == []

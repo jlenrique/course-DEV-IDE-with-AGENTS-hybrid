@@ -62,3 +62,12 @@
 - [edge] Empty `expected_slots` + lone PNG returns empty success (matched/unmatched empty); zip with orphan pages would surface unmatched_pages. Pre-existing empty-slots caller contract; fold if a caller ever materializes with zero briefs.
 - [edge] Empty/opaque 1-page ZIP still title-match-only (no cardinality override) while equivalent lone PNG binds — intentional "zip unchanged" asymmetry; revisit only if live Gamma starts returning 1-page zips for single-card decks.
 - [blind] No `generate_gamma_variants` integration test with opaque `gary_A.png` download; materializer unit tests cover the live shape. Optional follow-on at next Gary export touch.
+
+## Deferred from: code review of spec-irene-literal-supersedes-styleguide-truncation (2026-07-09)
+
+- [blind] Unknown/mistyped `fidelity` silently demotes to creative (spec Always: missing/unknown → creative). Fail-loud on typos is an Ask-First / follow-on if Irene emit hygiene needs it.
+- [blind] No shared PlanUnit Pydantic `fidelity` field — dict path only this slice (spec Ask First). Honor path stays dark until Irene emits the key.
+- [blind] Top-level receipt still exposes `generation_id: calls[0]` while mixed/A-B makes multiple Classic calls; per-row `generation_id` is correct. Receipt-shape follow-on if spend/recover tooling needs all ids.
+- [blind] Studio + any literal hard-fails the whole variant (spec Always). Creative-only Studio / per-slide Classic split is Ask First / out of scope.
+- [reject→defer note] Binary cohorting groups non-contiguous creatives into one Gamma call — intentional per binary-cohort design; adjacency restyle risk accepted; revisit only if live decks show island restyle defects.
+- [edge] Mixed-cohort slides lacking `slide_id` can still synthesize colliding `slide-01` ids across cohorts if both cohorts start index at 1 — patched generation_id mapping; unique-id refuse before partition remains optional hardening.
