@@ -32,16 +32,22 @@ style_guides:
     # brief carried in the slide CONTENT (source design-notes); the instruction-neutral
     # strip exposed gpt-image-2-mini's raw CJK default precisely because it carries no
     # such brief.
+    #
+    # Fidelity L1 alignment 2026-07-09 (party A): mode condense → preserve. Live trial
+    # 62308889 showed condense dropped source 10%/90% teaching numerals while the
+    # illustration invented decorative 92%, then Irene Pass-2 correctly raised
+    # irene.pass2.figure-contradiction. preserve matches DEFAULT_VARIANT_PAIR and stops
+    # Gamma from silently demoting lesson-critical figures under the standard-A path.
     lifecycle: permanent
-    version: 1
+    version: 2
     theme:
       id: njim9kuhfnljvaa
       name: 2026 HIL APC Tejal
     studio_template: null
     prompt_configuration:
       text_content:
-        mode: condense
-        amount: minimal
+        mode: preserve
+        amount: null
         audience: null
         tone: null
         language: en
@@ -76,8 +82,9 @@ style_guides:
       display_name: HIL 2026 APC Crossroads Classic
       distinguishing: >-
         The new standard 'A' style: a calm clinician-crossroads register on the Tejal
-        theme with GPT Image 2 Mini illustration — condensed prose, spacious white
-        cards, and on-message metaphor imagery driven by the slide's Illustration brief.
+        theme with GPT Image 2 Mini illustration — source text preserved verbatim,
+        spacious white cards, and on-message metaphor imagery driven by the slide's
+        Illustration brief.
       narrative:
         summary: >-
           A Classic presentation candidate captured from the LEON model-selection
@@ -119,8 +126,9 @@ style_guides:
         card width L, middle content alignment, font size M, show card backdrops
         off, animations on, and empty Card headers & footers add-elements area.
         The folder name was corrected from an out-of-date Nano Banana label to
-        GPT Image 2 Mini. Later Prompt editor evidence shows Text content set to
-        Condense with Amount of text set to Minimal.
+        GPT Image 2 Mini. Original Prompt editor evidence showed Text content
+        Condense / Minimal; 2026-07-09 Fidelity L1 alignment flipped mode to
+        preserve (amount null) after trial 62308889 figure-contradiction triage.
 
   # -- B counterpart of the standard-'A' crossroads style: SAME style, Blueprint theme --
   hil-2026-apc-crossroads-blueprint:

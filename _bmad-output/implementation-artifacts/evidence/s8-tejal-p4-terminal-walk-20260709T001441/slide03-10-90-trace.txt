@@ -1,0 +1,46 @@
+--- resume-command.json ---
+rration and can be planned as a dense but still gestalt takeaway slide because its value is the simultaneous whole: the 10% idea versus 90% leadership contrast.", "scope_decision": "in-scope", "source_refs": ["Having the right idea is only 10%
+--- resume-command.json ---
+", "the other 90%", "political savvy", "communication skills", "leadership identity", "get others to follow you"], "title": "The Real Wor
+--- resume-command.json ---
+rration and can be planned as a dense but still gestalt takeaway slide because its value is the simultaneous whole: the 10% idea versus 90% leadership contrast.", "scope_decision": "in-scope", "source_refs": ["Having the right idea is only 10%
+--- resume-command.json ---
+", "the other 90%", "political savvy", "communication skills", "leadership identity", "get others to follow you"], "title": "The Real Wor
+--- resume-command.json ---
+ies and why they matter for mobilizing support in health systems.", "deferred_from_slide": "u03", "retained_on_slide": "10% idea versus 90% execution contrast with capability labels."}, "exercises": [{"answer_key_source_ref": "political savvy"
+--- resume-command.json ---
+appreciating the interpersonal and political labor required to implement them.", "section_id": "sec-u03", "title": "The 90%: Capabilities Beyond the Idea"}, {"depth_delta": {"deferred_depth": "A brief preview paragraph unpacking the three Modu
+--- resume-command.json ---
+rration and can be planned as a dense but still gestalt takeaway slide because its value is the simultaneous whole: the 10% idea versus 90% leadership contrast.", "scope_decision": "in-scope", "source_refs": ["Having the right idea is only 10%
+--- resume-command.json ---
+", "the other 90%", "political savvy", "communication skills", "leadership identity", "get others to follow you"], "title": "The Real Wor
+--- resume-command.json ---
+rration and can be planned as a dense but still gestalt takeaway slide because its value is the simultaneous whole: the 10% idea versus 90% leadership contrast.", "scope_decision": "in-scope", "source_refs": ["Having the right idea is only 10%
+--- resume-command.json ---
+", "the other 90%", "political savvy", "communication skills", "leadership identity", "get others to follow you"], "title": "The Real Wor
+--- resume-command.json ---
+m", "You are no longer just reacting to the system", "you are preparing to redesign it", "Having the right idea is only 10% of the battle", "the other 90% is having the political savvy"], "title": "The Idea Is Not Enough in a Matrixed Health S
+--- resume-command.json ---
+m", "You are no longer just reacting to the system", "you are preparing to redesign it", "Having the right idea is only 10% of the battle", "the other 90% is having the political savvy"], "title": "The Idea Is Not Enough in a Matrixed Health S
+--- resume-command.json ---
+m", "You are no longer just reacting to the system", "you are preparing to redesign it", "Having the right idea is only 10% of the battle", "the other 90% is having the political savvy"], "title": "The Idea Is Not Enough in a Matrixed Health S
+--- resume-command.json ---
+m", "You are no longer just reacting to the system", "you are preparing to redesign it", "Having the right idea is only 10% of the battle", "the other 90% is having the political savvy"], "title": "The Idea Is Not Enough in a Matrixed Health S
+--- resume-command.json ---
+m", "You are no longer just reacting to the system", "you are preparing to redesign it", "Having the right idea is only 10% of the battle", "the other 90% is having the political savvy"], "title": "The Idea Is Not Enough in a Matrixed Health S
+--- resume-command.json ---
+m", "You are no longer just reacting to the system", "you are preparing to redesign it", "Having the right idea is only 10% of the battle", "the other 90% is having the political savvy"], "title": "The Idea Is Not Enough in a Matrixed Health S
+--- resume-command.json ---
+m", "You are no longer just reacting to the system", "you are preparing to redesign it", "Having the right idea is only 10% of the battle", "the other 90% is having the political savvy"], "title": "The Idea Is Not Enough in a Matrixed Health S
+--- resume-command.json ---
+m", "You are no longer just reacting to the system", "you are preparing to redesign it", "Having the right idea is only 10% of the battle", "the other 90% is having the political savvy"], "title": "The Idea Is Not Enough in a Matrixed Health S
+--- checkpoint.json ---
+rration and can be planned as a dense but still gestalt takeaway slide because its value is the simultaneous whole: the 10% idea versus 90% leadership contrast.", "scope_decision": "in-scope", "source_refs": ["Having the right idea is only 10%
+--- checkpoint.json ---
+", "the other 90%", "political savvy", "communication skills", "leadership identity", "get others to follow you"], "title": "The Real Wor
+--- checkpoint.json ---
+rration and can be planned as a dense but still gestalt takeaway slide because its value is the simultaneous whole: the 10% idea versus 90% leadership contrast.", "scope_decision": "in-scope", "source_refs": ["Having the right idea is only 10%
+--- run.json ---
+rration and can be planned as a dense but still gestalt takeaway slide because its value is the simultaneous whole: the 10% idea versus 90% leadership contrast.", "scope_decision": "in-scope", "source_refs": ["Having the right idea is only 10%
+CORPUS slides\slide-1-summary-bridge-to-module-2.md figures=['percent:10', 'percent:90']
+  y is only as viable as the leader championing it. Having the right idea is only 10% of the battle; the other 90% is having the political savvy, the communication s

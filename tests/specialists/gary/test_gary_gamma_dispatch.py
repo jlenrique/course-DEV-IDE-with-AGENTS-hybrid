@@ -827,3 +827,17 @@ def test_variant_a_text_mode_preserve_l1_fidelity() -> None:
     # A/B differentiation survives: different theme + image style.
     assert variant_a["theme"] != variant_b["theme"]
     assert variant_a["image_style_preset"] != variant_b["image_style_preset"]
+
+
+def test_standard_a_crossroads_classic_text_mode_preserve_l1() -> None:
+    """Fidelity L1 alignment 2026-07-09 (party A): standard-A styleguide must resolve
+    to text_mode=preserve. Live trial 62308889 showed condense dropped source 10%/90%
+    and Irene correctly raised irene.pass2.figure-contradiction.
+    """
+    from app.styleguide.resolver import resolve_styleguide
+
+    resolved = resolve_styleguide("hil-2026-apc-crossroads-classic")
+    assert resolved["text_mode"] == "preserve"
+    # preserve forbids amount (validator gamma.text.amount-mode); expand must not
+    # reintroduce a condensed amount under the standard-A name.
+    assert not resolved.get("amount") or resolved.get("amount") in {None, "", "default"}
