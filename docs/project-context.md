@@ -1,32 +1,33 @@
+# Current Context Addendum - 2026-07-08 Session 24
+
+**S8 CLOSED on claim envelope** (Quinn party synthesis; not end-to-end COMPLETE).
+Binding letter: `_bmad-output/implementation-artifacts/s8-close-letter-claim-envelope-2026-07-08.md`.
+
+AFK HIL composed-start proof (operator-authorized stand-in as `juanl`) on
+`course-content/courses/tejal-c1m1-p4-assessments-bridge` with ratified intent
+`narrated-deck-with-workbook`: trial `9b6dc48b-031a-4b02-870c-ab7f76047c8d`;
+evidence `_bmad-output/implementation-artifacts/evidence/s8-tejal-p4-hil-liveproof-20260708T213400/`.
+No `--auto-confirm-directive`; no offline-cost downgrade. HIL variety: G0
+edit→confirm, G0E/G0R approve, G1 edit. Walk paused-at-error at Gary node 07
+(`gamma.export.brief-unmatched`); recover1 same after 3 auto-retries (known
+single-slide matcher flake — out of S8; no production patch for the proof).
+
+**Next gate:** `s8-followon-terminal-composed-walk` (clean composed walk past
+Gary export). Secondary: `langsmith-start-receipt-offline-stamp`. Do not treat
+S8 as end-to-end pipeline green. Do not reopen S8 letter language.
+
+---
+
 # Current Context Addendum - 2026-07-08 Session 23
 
-S8 full-close corpus selection is now unblocked but S8 is still not complete.
-The operator named `course-content/courses/tejal-c1m1-p4-assessments-bridge`
-as the S8 full-close proof corpus with expected bundle
-`narrated-deck-with-workbook`, HIL operator `juanl`, and an explicit Tejal
-exception because Tejal C1M1 is the only real course-content family currently
-available. BMAD party ratified the exception in
+S8 full-close corpus selection was unblocked; Session 24 closed S8 on the claim
+envelope (see above). Historical note: the operator named
+`course-content/courses/tejal-c1m1-p4-assessments-bridge` as the proof corpus
+with expected bundle `narrated-deck-with-workbook`, HIL operator `juanl`, and an
+explicit Tejal exception. BMAD party ratified the exception in
 `_bmad-output/implementation-artifacts/s8-tejal-p4-proof-corpus-ratification-2026-07-08.md`.
-The corpus has been curated from
-`course-content/courses/tejal-c1m1-fresh-outline/source-outline.md` section
-`Part 4: Assessments & The Bridge to Module 2` into the Part 2 / Part 3 shape:
-`slides/`, `references/`, `assessments/`, `README.md`, and `urls.txt`, with a
-raw sibling snapshot outside the curated folder to avoid recursive double
-counting. The source is assessment/bridge-heavy and intentionally gap-bearing;
-missing lecture deck, PDF, image folder, DOI packet, and rendered motion source
-are documented in the corpus source-gap ledger rather than fabricated.
-
-The S8 preflight checker now supports explicit operator-ratified source gaps
-only when `--allow-source-gaps` is paired with a `references/*gap*.md` ledger and
-a freshness exception rationale. Focused validation: checker tests `7 passed`,
-ruff clean, and the named Part 4 corpus preflight returned `ready: true` with
-expected warnings for missing PDF/DOC-or-deck/image/DOI accepted by the source
-gap ledger. Next gate: author the ratified lesson-plan collateral/input wrapper
-selecting `narrated-deck-with-workbook` with present workbook collateral, then
-run the local Marcus-SPOC HIL composed proof without `--auto-confirm-directive`
-or offline-cost downgrade. A no-shortcut trial-start attempt reached only
-`model_resolution_trail.json` and timed out before trial-start/run-summary
-receipt creation, so it is recorded as an incomplete witness, not live proof.
+An earlier no-shortcut trial-start attempt timed out at compose (trail only);
+the Session 24 AFK HIL driver cleared that gate with a long wall-clock budget.
 
 ---
 
