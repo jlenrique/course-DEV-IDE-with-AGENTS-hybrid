@@ -1,0 +1,134 @@
+{
+  "allow_offline_cost_report": false,
+  "auto_confirm_directive": false,
+  "bundle_expected": "narrated-deck-with-workbook",
+  "cleared_gary_brief_unmatched": true,
+  "copied_artifacts": [
+    "model_resolution_trail.json",
+    "directive.yaml",
+    "trial-start.json",
+    "run.json",
+    "run_summary.yaml",
+    "ratified-los.json",
+    "decision-card-G0E.json",
+    "decision-card-G0R.json",
+    "decision-card-G1.json",
+    "decision-card-G2B.json",
+    "decision-card-G2C.json"
+  ],
+  "corpus": "C:\\Users\\juanl\\Documents\\GitHub\\course-DEV-IDE-with-AGENTS-hybrid\\course-content\\courses\\tejal-c1m1-p4-assessments-bridge",
+  "envelope_status": "paused-at-error",
+  "final_error_tag": "irene.pass2.figure-contradiction",
+  "final_paused_gate": null,
+  "final_status": "paused-at-error",
+  "finished_at": "2026-07-09T04:33:41.022499+00:00",
+  "g0_confirm_path": [
+    "e",
+    "c"
+  ],
+  "g0_edit_applied": true,
+  "g0_edit_directive_bytes": 4041,
+  "guide": "hil-2026-apc-crossroads-classic",
+  "hil_variety_exercised": [
+    "g0-confirm:edit",
+    "g0-confirm:confirm",
+    "G0E:approve",
+    "G0R:approve",
+    "g1:edit-inspect",
+    "G2B:select-all-A:5",
+    "G2C:approve"
+  ],
+  "hil_variety_unique": [
+    "g0-confirm:edit",
+    "g0-confirm:confirm",
+    "G0E:approve",
+    "G0R:approve",
+    "g1:edit-inspect",
+    "G2B:select-all-A:5",
+    "G2C:approve"
+  ],
+  "intent": "C:\\Users\\juanl\\Documents\\GitHub\\course-DEV-IDE-with-AGENTS-hybrid\\_bmad-output\\implementation-artifacts\\s8-tejal-p4-ratified-collateral-intent.yaml",
+  "lesson_plan_collateral_bundle_id": null,
+  "matcher_fix_head": "8f6e861c",
+  "minted_at": "2026-07-09T04:15:00.573074+00:00",
+  "note": "Driver claim_ok means compose+G0-HIL+bundle binding succeeded AND the walk did not die on gamma.export.brief-unmatched (matcher fix). Prefer final_status=completed; later non-matcher error-pauses are honest and party-triaged. Full S8-complete still requires BMAD party concurrence.",
+  "operator_id": "juanl",
+  "pause_sequence": [
+    "G0E",
+    "G0R",
+    "G1",
+    "G2B",
+    "G2C"
+  ],
+  "pause_sequence_unique": [
+    "G0E",
+    "G0R",
+    "G1",
+    "G2B",
+    "G2C"
+  ],
+  "run_dir": "C:\\Users\\juanl\\Documents\\GitHub\\course-DEV-IDE-with-AGENTS-hybrid\\state\\config\\runs\\62308889-3d83-4c54-a3ca-24e6b3e71c3c",
+  "runs_root": "C:\\Users\\juanl\\Documents\\GitHub\\course-DEV-IDE-with-AGENTS-hybrid\\state\\config\\runs",
+  "s8_complete_requires_party": true,
+  "s8_terminal_walk_driver_claim_ok": true,
+  "selection_code": "SGP-623088893d834c54a3ca24e6b3e71c3c-A:hil-2026-apc-crossroads-classic",
+  "start_elapsed_s": 174.5,
+  "start_trial_result": {
+    "cost_report_json": "C:/Users/juanl/Documents/GitHub/course-DEV-IDE-with-AGENTS-hybrid/state/config/runs/62308889-3d83-4c54-a3ca-24e6b3e71c3c/cost-report.json",
+    "cost_report_markdown": "C:/Users/juanl/Documents/GitHub/course-DEV-IDE-with-AGENTS-hybrid/state/config/runs/62308889-3d83-4c54-a3ca-24e6b3e71c3c/cost-report.md",
+    "directive_digest": "0c685166f003d48f86610bf5064c61aa3c0affdd1a92d0c99edc5e8b84adf64c",
+    "directive_path": "C:/Users/juanl/Documents/GitHub/course-DEV-IDE-with-AGENTS-hybrid/state/config/runs/62308889-3d83-4c54-a3ca-24e6b3e71c3c/directive.yaml",
+    "input": "C:/Users/juanl/Documents/GitHub/course-DEV-IDE-with-AGENTS-hybrid/course-content/courses/tejal-c1m1-p4-assessments-bridge",
+    "langsmith_trace_status": "skipped-no-langsmith-env",
+    "lesson_plan_collateral_bundle_id": "narrated-deck-with-workbook",
+    "lesson_plan_collateral_intent_path": "C:/Users/juanl/Documents/GitHub/course-DEV-IDE-with-AGENTS-hybrid/_bmad-output/implementation-artifacts/s8-tejal-p4-ratified-collateral-intent.yaml",
+    "operator_id": "juanl",
+    "preset": "production",
+    "production_clone_launch_evidence": false,
+    "run_registry_path": "C:/Users/juanl/Documents/GitHub/course-DEV-IDE-with-AGENTS-hybrid/state/config/runs/62308889-3d83-4c54-a3ca-24e6b3e71c3c/run.json",
+    "status": "registered-offline",
+    "transport_kind": "cli",
+    "trial_id": "62308889-3d83-4c54-a3ca-24e6b3e71c3c"
+  },
+  "story": "S8-tejal-p4-terminal-composed-walk",
+  "trial_id": "62308889-3d83-4c54-a3ca-24e6b3e71c3c",
+  "trial_start_bundle_id": "narrated-deck-with-workbook",
+  "trial_start_component_selection": null,
+  "verdict_sequence": [
+    {
+      "err": null,
+      "gate": "G0E",
+      "next_gate": "G0R",
+      "next_status": "paused-at-gate",
+      "verb": "approve"
+    },
+    {
+      "err": null,
+      "gate": "G0R",
+      "next_gate": "G1",
+      "next_status": "paused-at-gate",
+      "verb": "approve"
+    },
+    {
+      "err": null,
+      "gate": "G1",
+      "next_gate": "G2B",
+      "next_status": "paused-at-gate",
+      "verb": "edit"
+    },
+    {
+      "err": null,
+      "gate": "G2B",
+      "next_gate": "G2C",
+      "next_status": "paused-at-gate",
+      "verb": "select"
+    },
+    {
+      "err": "irene.pass2.figure-contradiction",
+      "gate": "G2C",
+      "next_gate": null,
+      "next_status": "paused-at-error",
+      "verb": "approve"
+    }
+  ]
+}

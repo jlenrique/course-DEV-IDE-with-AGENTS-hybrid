@@ -1,0 +1,97 @@
+run_id: 62308889-3d83-4c54-a3ca-24e6b3e71c3c
+corpus_dir: C:/Users/juanl/Documents/GitHub/course-DEV-IDE-with-AGENTS-hybrid/course-content/courses/tejal-c1m1-p4-assessments-bridge
+sources:
+- ref_id: src-001
+  locator: assessments/comprehensive-module-knowledge-check.md
+  provider: local_file
+  role: supporting
+  description: Comprehensive Module Knowledge Check assessment in Markdown, containing
+    quiz questions to evaluate understanding of the module.
+  expected_min_words: 600
+  excluded_reason: null
+- ref_id: src-002
+  locator: assessments/discussion-post-3-graded-peer-evaluation.md
+  provider: local_file
+  role: supporting
+  description: 'Assessment brief for Discussion Post 3: a graded peer evaluation assignment
+    with instructions and criteria related to innovation topics.'
+  expected_min_words: 200
+  excluded_reason: null
+- ref_id: src-003
+  locator: assessments/innovation-leader-playbook-entry-1.md
+  provider: local_file
+  role: supporting
+  description: 'Assignment brief for Innovation Leader Playbook Entry #1 outlining
+    purpose, prompts, format/deliverables, and grading expectations.'
+  expected_min_words: 300
+  excluded_reason: null
+- ref_id: src-004
+  locator: assessments/innovation-leader-playbook-master-grading-rubric.md
+  provider: local_file
+  role: supporting
+  description: Master grading rubric outlining evaluation criteria and performance
+    levels for the Innovation Leader Playbook assessments.
+  expected_min_words: 300
+  excluded_reason: null
+- ref_id: src-005
+  locator: README.md
+  provider: local_file
+  role: supporting
+  description: Repository README that outlines the corpus purpose, structure, and
+    context, serving as a navigational and framing document.
+  expected_min_words: 250
+  excluded_reason: null
+- ref_id: src-006
+  locator: references/module-1-core-conceptual-pillars.md
+  provider: local_file
+  role: primary
+  description: "Defines the core conceptual pillars of Module 1, outlining the primary\
+    \ themes, principles, and frameworks that constitute the module\u2019s foundational\
+    \ teaching content."
+  expected_min_words: 200
+  excluded_reason: null
+- ref_id: src-007
+  locator: references/source-gap-ledger.md
+  provider: local_file
+  role: supporting
+  description: A reference ledger documenting source gaps within the S8 proof corpus,
+    noting missing or incomplete sources and areas needing additional references or
+    coverage.
+  expected_min_words: 200
+  excluded_reason: null
+- ref_id: src-008
+  locator: references/source-provenance.md
+  provider: local_file
+  role: supporting
+  description: Markdown reference describing the provenance of sources used in the
+    corpus, indicating the curated corpus origin and related context/attribution details.
+  expected_min_words: 120
+  excluded_reason: null
+- ref_id: src-009
+  locator: slides/slide-1-summary-bridge-to-module-2.md
+  provider: local_file
+  role: primary
+  description: Markdown slide summarizing Module 1 and providing a bridge to Module
+    2, including key takeaways, transition guidance, and closing notes.
+  expected_min_words: 150
+  excluded_reason: null
+composed_at: '2026-07-09T04:17:01.671222Z'
+schema_version: 1
+gamma_settings:
+- variant_id: A
+  styleguide: hil-2026-apc-crossroads-classic
+styleguide_picker_provenance:
+  picked_at: '2026-07-09T04:17:01.820373+00:00'
+  picker_version: '1.0'
+  ssot_sha256: 6b94739ff29724cd2cf26ef25bd13d28824079d15729751d129b5488f6eb6ac5
+  picks:
+  - variant_id: A
+    styleguide: hil-2026-apc-crossroads-classic
+  written_by: styleguide_picker
+  picked_by: juanl
+  publish_url: degraded:scripted-selection-code (no picker page published)
+  roster_sha256: 13ab058a5c894009e2197373126291c9e2d1753292ea538ba92cda697ebc316e
+  version_count: 1
+  selection_code: SGP-623088893d834c54a3ca24e6b3e71c3c-A:hil-2026-apc-crossroads-classic
+  run_tag: 623088893d834c54a3ca24e6b3e71c3c
+# s8-hil-operator-edit: inspected directive; no semantic source change

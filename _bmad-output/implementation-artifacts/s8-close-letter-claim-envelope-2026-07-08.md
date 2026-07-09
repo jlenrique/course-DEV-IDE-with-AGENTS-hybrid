@@ -48,15 +48,28 @@ Impasse chain: A vs C → Quinn synthesis → no John tiebreak needed.
 
 ## Named post-S8 gate (immediate)
 
-1. **`s8-followon-terminal-composed-walk`** — first clean composed walk past
-   Gary export to a terminal status on a multi-slide (or otherwise
-   matcher-safe) corpus, OR an accepted product fix for
-   `gamma-single-slide-deck-title-matcher-flake` then re-prove Part-4.
-2. Triage **`langsmith-start-receipt-offline-stamp`** (keys present; receipt
+1. **`s8-followon-terminal-composed-walk`** — **Gary-clear half MET 2026-07-09**
+   (trial `62308889-3d83-4c54-a3ca-24e6b3e71c3c`; evidence
+   `_bmad-output/implementation-artifacts/evidence/s8-tejal-p4-terminal-walk-20260709T001441/`).
+   Product fix `spec-gamma-title-residue-cover-drop.md` @ `8f6e861c` live-bound
+   `A_slide-01.png`…`05` (no `brief-unmatched`). Walk then paused at
+   `irene.pass2.figure-contradiction` — **not** end-to-end COMPLETE.
+2. **`irene-pass2-figure-contradiction-s8-p4`** — next product gate (party
+   2026-07-09 consensus B: keep S8 CLOSED; residue CLOSED as product work).
+3. Triage **`langsmith-start-receipt-offline-stamp`** (keys present; receipt
    says skipped; cost report still has smith URL).
-3. Standing deferred: `workbook-learner-ready-prose-uplift`,
+4. Standing deferred: `workbook-learner-ready-prose-uplift`,
    `g0-enrichment-flag-retirement`, `research-dispatch-flag-retirement`,
    real HAI/PHS ingestion, LO ratification, course/SME routing, Batch LLM.
+
+## Amendment 2026-07-09 (residue fix + Gary-clear; S8 still CLOSED)
+
+Operator corrected that title-residue/cover-drop was immediate work (not
+deferred). Shipped + live-proved; party (Winston/Amelia/John) voted **B**:
+do **not** promote to S8 COMPLETE while Irene figure-contradiction remains.
+Matcher product claim in “Explicit non-claims” above is superseded for the
+residue/lone-PNG paths only — those are CLOSED product work outside the
+original S8 claim envelope.
 
 ## Operator authority notes
 
