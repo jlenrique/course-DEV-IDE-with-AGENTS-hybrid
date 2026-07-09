@@ -166,6 +166,54 @@ def read_references(references_dir: Path = REFERENCES_DIR) -> str:
     return "\n\n".join(parts)
 
 
+_PLANNING_CONTEXT_SECTION_MARKER = (
+    "## Operator planning context (FRAMING ONLY — not corpus)"
+)
+
+
+def _planning_context_section(payload: dict[str, Any]) -> str:
+    """Labeled advisory framing section; empty string when context absent."""
+    raw = payload.get("planning_context")
+    if not isinstance(raw, dict) or not raw:
+        return ""
+    purpose = str(raw.get("purpose") or "").strip()
+    audience = str(raw.get("audience") or "").strip()
+    los = raw.get("learning_objectives")
+    lo_lines: list[str] = []
+    if isinstance(los, list):
+        for item in los:
+            if not isinstance(item, dict):
+                continue
+            statement = str(item.get("statement") or "").strip()
+            if not statement:
+                continue
+            oid = str(item.get("objective_id") or "").strip()
+            prefix = f"- [{oid}] " if oid else "- "
+            lo_lines.append(f"{prefix}{statement}")
+    assessment = raw.get("source_assessment")
+    assessment_line = ""
+    if isinstance(assessment, dict):
+        richness = assessment.get("richness", "")
+        tags = assessment.get("tags") or []
+        assessment_line = (
+            f"- Source assessment richness: {richness}; tags: {tags}\n"
+        )
+    return (
+        f"{_PLANNING_CONTEXT_SECTION_MARKER}\n\n"
+        "This block is operator/elicited FRAMING (purpose, audience, LOs, "
+        "source assessment). It must NOT replace or invent topic content. "
+        "The source corpus above remains the ONLY topic/source-of-truth. "
+        "Use this framing to emphasize, sequence, and align learning "
+        "objectives — never as a substitute corpus.\n\n"
+        f"- Purpose: {purpose or '(none)'}\n"
+        f"- Audience: {audience or '(none)'}\n"
+        f"{assessment_line}"
+        "- Learning objectives:\n"
+        + ("\n".join(lo_lines) if lo_lines else "- (none)\n")
+        + "\n"
+    )
+
+
 def assemble_pass1_prompt(
     payload: dict[str, Any], *, extracted_source: str | None
 ) -> tuple[str, str]:
@@ -194,6 +242,7 @@ def assemble_pass1_prompt(
         "the envelope payload below is the planning basis; stay on ITS "
         "topic.\n\n"
     )
+    planning_section = _planning_context_section(payload)
     # Leg-C R3 AC#15 (D-0 strip): scripted-derived keys never reach the model's
     # view of the payload; the caller's payload dict is untouched (post-hoc
     # consumers read the floor from the FULL payload). R3 remediation: the
@@ -201,12 +250,21 @@ def assemble_pass1_prompt(
     # (a prior floored plan riding upstream_output.lesson_plan.plan_units must
     # not fingerprint the honoring to the model; the plan's minted clusters
     # themselves stay visible — they ARE the plan).
+    #
+    # Planning-context handoff (BH-4): scrub planning_context from the envelope
+    # JSON dump — the labeled section above is the ONLY model-facing framing
+    # surface. Full payload still carries the key for receipt/audit consumers.
     model_visible_payload = _scrub_floor_annotations(
-        {k: v for k, v in payload.items() if k not in _LLM_HIDDEN_PAYLOAD_KEYS}
+        {
+            k: v
+            for k, v in payload.items()
+            if k not in _LLM_HIDDEN_PAYLOAD_KEYS and k != "planning_context"
+        }
     )
     return (
         PASS_1_SYSTEM_MESSAGE,
         f"{corpus_section}"
+        f"{planning_section}"
         "## Sanctum digest\n\n"
         f"{read_sanctum_digest()}\n\n"
         "## Irene Pass-1 references\n\n"
@@ -864,6 +922,50 @@ def act(state: RunState, *, handle: Any, model_id: str) -> dict[str, Any]:
         raise
     assert_floor_consulted(payload, floor_receipt)
     plan = {**plan, "plan_units": floored_units}
+    # Planning-context handoff (2026-07-09): soft LO coverage receipt when
+    # context present; fail-loud on total LO ignore (party LO policy).
+    # ECH-06: skip lo_ignore heuristic when LLM format fallback substituted a
+    # synthetic unit — that mismatch is a format triage problem, not LO ignore.
+    planning_coverage_receipt: dict[str, Any] | None = None
+    raw_planning = payload.get("planning_context")
+    if isinstance(raw_planning, dict) and raw_planning:
+        from app.marcus.lesson_plan.planning_context import (
+            PlanningContext,
+            assess_lo_coverage,
+            assert_lo_coverage_or_fail,
+        )
+
+        context = PlanningContext.model_validate(raw_planning)
+        receipt = assess_lo_coverage(context, plan)
+        planning_coverage_receipt = receipt.model_dump(mode="json")
+        if llm_format_fallback:
+            planning_coverage_receipt = {
+                **planning_coverage_receipt,
+                "notes": (
+                    f"{receipt.notes}; skipped lo_ignore because "
+                    "llm_format_fallback=True"
+                ),
+            }
+        else:
+            try:
+                assert_lo_coverage_or_fail(context, receipt)
+            except SpecialistDispatchError:
+                # ECH-09: persist coverage receipt before fail-loud so the
+                # pause artifact always shows context was assessed.
+                run_id_early = str(payload.get("run_id") or state.run_id)
+                runs_root_early = payload.get("runs_root")
+                if runs_root_early:
+                    receipt_path = (
+                        Path(str(runs_root_early))
+                        / run_id_early
+                        / "planning-context-coverage.json"
+                    )
+                    receipt_path.parent.mkdir(parents=True, exist_ok=True)
+                    receipt_path.write_text(
+                        json.dumps(planning_coverage_receipt, indent=2),
+                        encoding="utf-8",
+                    )
+                raise
     run_id = str(payload.get("run_id") or state.run_id)
     runs_root_value = payload.get("runs_root")
     runs_root = Path(str(runs_root_value)) if runs_root_value else None
@@ -879,6 +981,8 @@ def act(state: RunState, *, handle: Any, model_id: str) -> dict[str, Any]:
         "learning_events": events,
         "usage": getattr(response, "usage_metadata", None),
     }
+    if planning_coverage_receipt is not None:
+        output["planning_context_coverage"] = planning_coverage_receipt
     entries_count = state.cache_state.entries_count if state.cache_state is not None else 0
     return {
         "cache_state": {

@@ -14,6 +14,10 @@ lesson plan. Keys the act actually reads:
   ``_runner_payload_for_specialist``); consumed POST-HOC by
   ``app.specialists.irene_pass1.cluster_floor`` and STRIPPED from the
   LLM-visible prompt (D-0)
+- ``planning_context`` — optional purpose/audience/LOs/source assessment
+  (RUNNER CONTEXT from run_dir artifacts); advisory framing only — corpus
+  remains the ONLY topic basis. Surfaced in a labeled prompt section; also
+  remains in the envelope JSON for receipt/audit.
 """
 
 from __future__ import annotations
@@ -25,6 +29,7 @@ CONSUMED_PAYLOAD_KEYS: frozenset[str] = frozenset(
         "min_cluster_floor",
         "mode",
         "pass_phase",
+        "planning_context",
         "run_id",
         "runs_root",
         "upstream_output",

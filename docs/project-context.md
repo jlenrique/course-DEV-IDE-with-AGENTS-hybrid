@@ -1,3 +1,18 @@
+# Current Context Addendum - 2026-07-09 Session 28 (continued)
+
+**Step 2→3 DONE:** `planning-context-to-irene-pass1-handoff` =
+COMPLETE-with-named-fenced-residuals (party 4/4 CLOSE). Evidence
+`irene-planning-context-handoff-20260709T180555/` with per-component live-tests.
+Named residuals: ECH-08 / ECH-10 / ECH-12. Claim fence holds.
+
+**Still fenced / next bigger gains:** interactive SPOC planning REPL; W5 compose;
+SME/projector/LO UX; full lecture ingestion. Secondary:
+`langsmith-start-receipt-offline-stamp`.
+
+S8 stays closed. Branch `dev/lesson-planning-2026-07-09`.
+
+---
+
 # Current Context Addendum - 2026-07-09 Session 28
 
 **Step 1 DONE:** Phase-2 evolutionary bridge
@@ -5,9 +20,7 @@
 COMPLETE-with-named-fenced-residuals at `20246475` (pushed). W1–W4 banked;
 W5 compose not claimed; §4.1 evolution rule canonicalized.
 
-**Queued next (not started):** `planning-context-to-irene-pass1-handoff`
-(`backlog-next`) — wire purpose/audience/LOs/source assessment into Irene
-Pass-1. Do not start until operator opens that story.
+**Step 2→3:** see addendum above (handoff CLOSED same session).
 
 S8 stays closed. Branch `dev/lesson-planning-2026-07-09`.
 

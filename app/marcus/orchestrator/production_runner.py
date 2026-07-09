@@ -1611,10 +1611,32 @@ def _runner_payload_for_specialist(
     # floor. Match both forms — same lesson the quinn_r branch above learned
     # on 2026-06-11.
     if specialist_id in {"irene-pass1", "irene_pass1"}:
+        # Merge runner-context keys (floor + optional planning_context). Never
+        # leak explicit None values; absent framing → omit the key entirely.
+        irene_payload: dict[str, Any] = {}
         floor = _min_cluster_floor_from_directive(directive_path)
         if floor is not None:
-            return {"min_cluster_floor": floor}
-        return None
+            irene_payload["min_cluster_floor"] = floor
+        if runs_root is not None and trial_id is not None:
+            # Lazy import: keep runner free of lesson_plan import cycles at module load.
+            from app.marcus.lesson_plan.planning_context import (
+                PlanningContextError,
+                load_planning_context,
+            )
+            from app.specialists.dispatch_errors import SpecialistDispatchError
+
+            try:
+                planning_ctx = load_planning_context(runs_root / str(trial_id))
+            except PlanningContextError as exc:
+                # BH-1 / ECH-03: wrap as SpecialistDispatchError so both walkers
+                # route through recoverable _pause_at_error (not un-persisted crash).
+                raise SpecialistDispatchError(
+                    f"irene_pass1 planning_context load failed: {exc}",
+                    tag="irene_pass1.planning_context.malformed",
+                ) from exc
+            if planning_ctx is not None:
+                irene_payload["planning_context"] = planning_ctx.to_payload_dict()
+        return irene_payload or None
     if specialist_id == "kira":
         if runs_root is None or trial_id is None:
             return None
