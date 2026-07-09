@@ -1439,10 +1439,14 @@ def _gamma_export_sort_key(path: Path) -> tuple[int, str]:
 # Title-based page->slide matching (storyboard-correctness fix, party-ratified
 # 2026-06-18). Gamma owns the page-set independently of the briefs — it injects
 # a cover, merges/drops topics, and REPHRASES titles — so POSITION is not a key
-# Gamma honors. We match exported pages to briefed slots by TITLE, using
-# deterministic bijective containment. NO fuzzy/threshold matching anywhere:
-# a match is a structural set-containment relation that is unique on both
-# sides, or it is a loud failure. Ambiguity is fatal (never a tie-break/pick).
+# Gamma honors. Primary match is deterministic bijective containment: a match
+# is a structural set-containment relation unique on both sides, or a loud
+# failure. Ambiguity is fatal (never a tie-break/pick).
+#
+# Residual soft bind (party 2026-07-09): AFTER the bijective commit only, when
+# exactly one unmatched brief slot and exactly one unmatched page remain,
+# allow a cardinality-gated morphological/overlap bind (Completion↔Complete).
+# Does NOT soften the bijective graph; multi-residue stays fail-loud.
 # ---------------------------------------------------------------------------
 
 # Frozen stopword list (party-ratified; enumerated + pinned, NOT a library
@@ -1460,6 +1464,13 @@ _TITLE_STOPWORDS: frozenset[str] = frozenset(
 # supersets an unrelated page" hole (Winston/Amelia). Tunable only by
 # party-mode, never by the matcher.
 _MIN_DISTINCTIVE_TOKENS = 2
+
+# Residual soft-bind gates (party 2026-07-09). Tunable only by party-mode.
+_MIN_RESIDUAL_STRONG_ALIGNMENTS = 2
+_RESIDUAL_JACCARD_FLOOR = 0.5
+_RESIDUAL_WEAK_TOKENS: frozenset[str] = frozenset(
+    {"set", "new", "one", "two", "all", "any", "end", "out"}
+)
 
 # Apostrophe family DELETED (joined) by normalize_title — pinned enumerated
 # set, ratified amendment (party record §10, 2026-07-07). Gamma's export
@@ -1512,6 +1523,67 @@ def _distinctive_tokens(normalized_title: str) -> frozenset[str]:
     )
 
 
+def _morphological_token_pair(a: str, b: str) -> bool:
+    """True when tokens are equal or share a morphological stem family.
+
+    Prefix / shared-prefix rules catch Completion↔Complete without a stemmer
+    library. Digits never morph-match (only exact equality elsewhere).
+    """
+    if a == b:
+        return True
+    if a.isdigit() or b.isdigit():
+        return False
+    if len(a) < 4 or len(b) < 4:
+        return False
+    shorter, longer = (a, b) if len(a) <= len(b) else (b, a)
+    if longer.startswith(shorter):
+        return True
+    shared = 0
+    for ca, cb in zip(a, b, strict=False):
+        if ca != cb:
+            break
+        shared += 1
+    return shared >= 5
+
+
+def _residual_soft_compatible(slot_toks: frozenset[str], page_toks: frozenset[str]) -> bool:
+    """Cardinality-gated soft gate for the 1:1 residual bind.
+
+    Counts strong alignments (exact or morphological) excluding weak/digit-only
+    tokens as strong carriers. Also admits Jaccard ≥ floor with ≥2 exact
+    intersection tokens. Rejects cover↔unrelated-summary false binds (F8 pin).
+    """
+    if not slot_toks or not page_toks:
+        return False
+
+    page_remaining = set(page_toks)
+    strong = 0
+    for st in sorted(slot_toks):
+        if st.isdigit() or st in _RESIDUAL_WEAK_TOKENS:
+            # Consume exact weak/digit matches so they do not block peers, but
+            # never count them toward the strong floor.
+            if st in page_remaining:
+                page_remaining.discard(st)
+            continue
+        matched: str | None = None
+        for pt in sorted(page_remaining):
+            if pt.isdigit() or pt in _RESIDUAL_WEAK_TOKENS:
+                continue
+            if _morphological_token_pair(st, pt):
+                matched = pt
+                break
+        if matched is not None:
+            page_remaining.discard(matched)
+            strong += 1
+
+    if strong >= _MIN_RESIDUAL_STRONG_ALIGNMENTS:
+        return True
+
+    inter = len(slot_toks & page_toks)
+    union = len(slot_toks | page_toks)
+    return bool(union) and inter >= 2 and (inter / union) >= _RESIDUAL_JACCARD_FLOOR
+
+
 class SlideMatchResult:
     """Outcome of matching exported pages to briefed slots.
 
@@ -1549,6 +1621,11 @@ def match_pages_to_slots(
     Commit only edges unique on BOTH sides; any multiplicity is ambiguity-fatal
     (surfaced, never resolved). Compute ALL edges before committing — never
     greedy/first-match.
+
+    After the bijective commit, a 1:1 residual soft bind may fire (party
+    2026-07-09) when exactly one unmatched slot and one unmatched page remain
+    and ``_residual_soft_compatible`` passes. Cover-drop runs only after that
+    attempt, so a sole content residue is never muted as a leading cover.
     """
     slot_tokens = {
         sid: _distinctive_tokens(normalize_title(title)) for sid, title in expected_slots
@@ -1619,6 +1696,19 @@ def match_pages_to_slots(
         if len(page_candidates[pid]) == 1
         and len(slot_candidates[page_candidates[pid][0]]) == 1
     }
+
+    # Residual soft bind: only when bijective left a strict 1:1 residue.
+    # Attempt BEFORE cover-drop so a sole unmatched content page is not muted
+    # as unmatched-leading-page (live trial bc0f81c4 Completion↔Complete).
+    unmatched_page_pids = [pid for pid in page_ids if len(page_candidates[pid]) == 0]
+    if len(result.unmatched_keys) == 1 and len(unmatched_page_pids) == 1:
+        sid = result.unmatched_keys[0]
+        pid = unmatched_page_pids[0]
+        if _residual_soft_compatible(slot_tokens[sid], page_tokens[pid]):
+            result.matched[sid] = str(pages[pid]["path"])
+            result.unmatched_keys = []
+            matched_pids.add(pid)
+
     min_matched_index = (
         min(pages[pid].get("page_index", 0) for pid in matched_pids) if matched_pids else None
     )

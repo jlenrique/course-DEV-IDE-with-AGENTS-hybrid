@@ -366,3 +366,91 @@ def test_lone_png_multi_slot_records_orphan_page(tmp_path: Path) -> None:
     assert len(result.unmatched_pages) == 1
     assert "lone-png-export" in str(result.unmatched_pages[0].get("reason", ""))
 
+
+# ---------------------------------------------------------------------------
+# Residual soft bind (party 2026-07-09) — Completion↔Complete live pin +
+# cover-drop must not mute a sole content residue; F8 cover must not soft-bind.
+# ---------------------------------------------------------------------------
+
+
+def test_bc0f81c4_completion_complete_residual_binds_not_cover_drop() -> None:
+    """Live trial bc0f81c4: brief Completion/Closure vs page Complete/Set fails
+    containment; residual soft bind must commit slide-01 and must NOT drop the
+    page as unmatched-leading-page (mute unmatched pages: [])."""
+    briefs = [
+        ("slide-01", "Module 1 Completion and Mindset Closure"),
+        ("slide-02", "Assessment Bridge Overview"),
+        ("slide-03", "Practice Checkpoint One"),
+        ("slide-04", "Practice Checkpoint Two"),
+        ("slide-05", "Next Steps and Resources"),
+    ]
+    stems = [
+        "1_Module-1-Complete-The-Mindset-is-Set",
+        "2_Assessment-Bridge-Overview",
+        "3_Practice-Checkpoint-One",
+        "4_Practice-Checkpoint-Two",
+        "5_Next-Steps-and-Resources",
+    ]
+    r = match_pages_to_slots(pages=_pages(stems), expected_slots=briefs)
+    assert r.matched["slide-01"].endswith("Module-1-Complete-The-Mindset-is-Set.png")
+    assert sorted(r.matched) == [
+        "slide-01",
+        "slide-02",
+        "slide-03",
+        "slide-04",
+        "slide-05",
+    ]
+    assert r.unmatched_keys == []
+    assert r.dropped_pages == []
+    assert r.unmatched_pages == []
+    assert r.ambiguous == []
+
+
+def test_residual_does_not_bind_f8_cover_to_unmatched_summary() -> None:
+    """Kill-the-mutant: residual must NOT soft-bind the F8 cover to slide-06.
+    Cover still drops; merged-away Summary stays unmatched."""
+    r = match_pages_to_slots(pages=_pages(F8_STEMS), expected_slots=F8_BRIEFS)
+    assert r.unmatched_keys == ["slide-06"]
+    assert [d["page_index"] for d in r.dropped_pages] == [1]
+    assert "slide-06" not in r.matched
+
+
+def test_multi_residue_does_not_soft_bind() -> None:
+    """Cardinality gate: two unmatched slots + two unmatched pages → no soft
+    bind; both slots stay unmatched and pages surface fail-loud."""
+    briefs = [
+        ("slide-01", "Module 1 Completion and Mindset Closure"),
+        ("slide-02", "Assessment Bridge Overview"),
+        ("slide-03", "Orphan Brief Alpha Topic"),
+        ("slide-04", "Orphan Brief Beta Topic"),
+    ]
+    stems = [
+        "1_Module-1-Complete-The-Mindset-is-Set",
+        "2_Assessment-Bridge-Overview",
+        "3_Completely-Unrelated-Gamma-Page-One",
+        "4_Completely-Unrelated-Gamma-Page-Two",
+    ]
+    r = match_pages_to_slots(pages=_pages(stems), expected_slots=briefs)
+    # After bijective: 01 fails containment, 02 matches, 03/04 fail; pages
+    # 1/3/4 unmatched → multi residue → residual must not fire.
+    assert "slide-01" not in r.matched
+    assert sorted(r.unmatched_keys) == ["slide-01", "slide-03", "slide-04"]
+    assert len(r.unmatched_pages) + len(r.dropped_pages) == 3
+
+
+def test_weak_overlap_leading_page_still_cover_drops() -> None:
+    """One unmatched slot + one leading unmatched page with weak overlap only
+    → soft gate fails → existing cover-drop proceeds."""
+    briefs = [("s1", "The Economic & Structural Reality")]
+    pages = _pages(
+        [
+            "1_Cover-Title-Slide",
+            "2_The-Economic-and-Structural-Reality",
+        ]
+    )
+    r = match_pages_to_slots(pages=pages, expected_slots=briefs)
+    assert r.matched["s1"].endswith("The-Economic-and-Structural-Reality.png")
+    assert [d["page_index"] for d in r.dropped_pages] == [1]
+    assert r.unmatched_keys == []
+    assert r.unmatched_pages == []
+
