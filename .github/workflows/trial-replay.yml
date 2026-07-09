@@ -1,9 +1,9 @@
 name: trial-replay
 
+# Solo operator (2026-07-09): daily schedule muted (failure emails).
+# See AGENTS.md section Solo operator - no formal PR framework.
 on:
   workflow_dispatch:
-  schedule:
-    - cron: "0 7 * * *"
 
 jobs:
   replay:

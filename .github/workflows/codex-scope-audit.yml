@@ -1,15 +1,8 @@
 name: codex-scope-audit
 
+# Solo operator (2026-07-09): auto PR/push triggers muted - manual only.
+# See AGENTS.md section Solo operator - no formal PR framework.
 on:
-  pull_request:
-    paths:
-      - ".github/workflows/**"
-      - ".github/codex-scope-allowlist.txt"
-      - ".github/workflows/codex-scope-audit.yml"
-  push:
-    branches:
-      - master
-      - "dev/**"
   workflow_dispatch:
 
 jobs:

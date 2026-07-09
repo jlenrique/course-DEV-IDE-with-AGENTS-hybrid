@@ -1,16 +1,8 @@
 name: activation-contract
 
+# Solo operator (2026-07-09): auto PR/push triggers muted - manual only.
+# See AGENTS.md section Solo operator - no formal PR framework.
 on:
-  pull_request:
-    paths:
-      - "app/specialists/**"
-      - "tests/parity/test_*_activation_contract.py"
-      - "tests/parity/test_eleven_specialists_addressable.py"
-      - ".github/workflows/activation-contract.yml"
-  push:
-    branches:
-      - master
-      - "dev/**"
   workflow_dispatch:
 
 jobs:

@@ -2,6 +2,8 @@
 
 This file is the **VS Code equivalent** of always-on AI rules: it mirrors [`.cursor/rules/bmad-sprint-governance.mdc`](../.cursor/rules/bmad-sprint-governance.mdc) (Cursor) so GitHub Copilot Chat in VS Code picks up the same charter. VS Code loads [`.github/copilot-instructions.md`](https://code.visualstudio.com/docs/copilot/customization/custom-instructions) automatically for every chat in the workspace. See also [`AGENTS.md`](../AGENTS.md) and [`CLAUDE.md`](../CLAUDE.md).
 
+**Solo operator — no formal PR framework:** one human committer; default closeout is branch → local verify → push (merge when asked). Do not open PRs or treat PR-gated CI as required unless the operator explicitly asks. Details: [`AGENTS.md`](../AGENTS.md) §Solo operator.
+
 ## ⛔ Critical design guardrail — the goal is the Marcus-SPOC PRODUCT, not the proofing vehicle (operator 2026-06-30)
 
 The only product goal is the **Marcus-SPOC runtime orchestrator** (the operator-facing surface that drives a real *instance of the APP and its production runtime*). The BMAD-persona Marcus's **"concierge"/exploratory/trial/proofing runs are off-the-books discovery vehicles, NOT a design target** — they may surface real production-codebase defects, but **do NOT design, shape, or add to the production codebase merely to make those runs work.** Fix what a proofing run finds only because it improves the SPOC product, never to "make the concierge run pass." Full statement: [`CLAUDE.md`](../CLAUDE.md) §CRITICAL DESIGN GUARDRAIL + [`docs/STATE-OF-THE-APP.md`](../docs/STATE-OF-THE-APP.md) FRAMING PRINCIPLE.

@@ -1,25 +1,8 @@
 name: specialist-parity
 
+# Solo operator (2026-07-09): auto PR/push triggers muted - manual only.
+# See AGENTS.md section Solo operator - no formal PR framework.
 on:
-  pull_request:
-    paths:
-      - "app/specialists/**"
-      - "_bmad/memory/**"
-      - "skills/bmad-agent-*/**"
-      - "skills/compositor/**"
-      - "tests/parity/**"
-      - "tests/marcus/test_capability_overlay_over_promise_probe.py"
-      - "tests/marcus/fixtures/over_promise_probe_corpus.yaml"
-      - "scripts/utilities/validate_parity_test_class_conformance.py"
-      - "scripts/utilities/generate_capability_overlay.py"
-      - "state/config/pipeline-manifest.yaml"
-      - "state/config/dispatch-registry.yaml"
-      - "state/config/capability-overlay.yaml"
-      - ".github/workflows/specialist-parity.yml"
-  push:
-    branches:
-      - master
-      - "dev/**"
   workflow_dispatch:
 
 jobs:
@@ -49,8 +32,8 @@ jobs:
       - name: Class-conformance validator (NFR-I12; 6 classes A/B/C+/C/D1/D2)
         run: uv run python scripts/utilities/validate_parity_test_class_conformance.py tests/parity/
 
-      - name: Capability-overlay parity (braid DP1 — generated honesty map)
+      - name: Capability-overlay parity (braid DP1 - generated honesty map)
         run: uv run pytest tests/parity/test_capability_overlay_parity.py --tb=short -q
 
-      - name: Capability-overlay over-promise probe (braid G5 — zero false-wired)
+      - name: Capability-overlay over-promise probe (braid G5 - zero false-wired)
         run: uv run pytest tests/marcus/test_capability_overlay_over_promise_probe.py --tb=short -q

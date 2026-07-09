@@ -1,7 +1,9 @@
 name: manifest-lockstep
 
+# Solo operator (2026-07-09): auto PR triggers muted - manual only.
+# See AGENTS.md section Solo operator - no formal PR framework.
 on:
-  pull_request:
+  workflow_dispatch:
 
 jobs:
   check:

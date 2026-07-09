@@ -55,3 +55,37 @@ No tracked production-code or test diff is visible yet (`git diff --stat` empty 
 **Recommendation to Grok/Cursor lane:** before production edits, resolve the spec approval state and party-record ambiguity, then proceed RED-first on T1-T8. The first implementation poll should show failing tests for the intended reasons and no styleguide registry mutation. Do not claim progress beyond "spec/green-light preparation" from the current repo state.
 
 **Verdict: MONITOR INITIALIZED / WAITING ON GATE EVIDENCE.** The story direction is product-valid and the draft spec has the right constraints, but the implementation is not yet visible or scoreable.
+
+---
+
+### SOP-001 - first implementation/commit poll - 2026-07-09T14:09:42-04:00
+
+**Scope reviewed:** `git status --short --branch`, latest commit metadata/stat/name-only for `0fb2b2cf`, committed diffs for `app/marcus/orchestrator/package_builders.py`, `app/specialists/gary/_act.py`, `tests/integration/marcus/test_package_builders.py`, `tests/specialists/gary/test_gary_gamma_dispatch.py`, the updated spec, deferred inventory, and deferred-work entry. No tests were run by this monitor poll. No production/test/runtime files were edited by this monitor; this ledger entry is the only write after the Grok/Cursor commit.
+
+**State note:** the repo changed while this poll was reading it. Initial status showed the implementation dirty in six tracked files plus the untracked spec/goal/monitor ledger. By the final status check, those changes had been committed as `0fb2b2cf` (`fix(gary): Irene literal fidelity supersedes styleguide condense`). Branch `dev/lesson-planning-2026-07-09` is now **ahead of origin by 1**; working tree was otherwise clean before this SOP entry.
+
+**Committed surface:** the commit includes the intended production seams (`package_builders.py`, `gary/_act.py`), T1-T8 tests, the spec, goal file, deferred inventory, deferred-work notes, and this monitor ledger. No `state/config/gamma-style-guides.yaml` or other styleguide registry file is in the commit, so WP2 is satisfied at the file-surface level.
+
+**Positive implementation-shape verification:**
+
+- `build_gary_briefs` now carries only recognized `fidelity` values (`creative`, `literal-text`, `literal-visual`) onto Gary slide rows; missing/unknown values are omitted, matching the spec's creative-default behavior.
+- `generate_gamma_variants` now partitions binary cohorts once per payload: creative vs literal (`literal-text` and `literal-visual` together).
+- Classic literal cohorts force `text_mode="preserve"` and remove only `text_options.amount`; non-amount text options are preserved if present.
+- Mixed decks issue separate cohort-scoped `generate_deck` calls with `num_cards=len(cohort)` and reassemble rows in original brief order by `slide_id`.
+- Studio+literal raises `GaryActError(tag="gamma.fidelity.literal-honor-failure")` before any Studio template call, matching the fail-loud honor-failure requirement.
+- T1-T8 tests exist and assert the main watchpoints: carry-through, unknown omission, creative no-bleed, literal preserve/amount-absent, mixed split/rejoin, island isolation, A/B x cohorts call count, and Studio+literal no-spend failure.
+- Deferred inventory language marks only `irene-text-literal-supersedes-styleguide-truncation` MET and explicitly leaves `fidelity-L1-per-slide-text-mode` yellow/open with residual scope.
+
+**F-0001 status:** partially resolved. The commit/spec now claim operator approval and a 4/4 skill-activated BMAD green-light, and the commit message says F-0001 was resolved. However, the only visible evidence in this commit is the spec's embedded HTML comment; no standalone party record or close/done-bar party concurrence is visible. Because the goal's definition of done requires a fully spawned BMAD party-mode team to concur at close, this monitor cannot externally corroborate final done-bar governance yet.
+
+**F-0003 [P1] Done claim is ahead of visible close-party and verification evidence.** The spec is now `status: 'done'`, all task checkboxes are marked `[x]`, and deferred inventory marks the item MET, but this commit does not include visible focused pytest output, ruff output, RED-first transcript/evidence, or final close-party concurrence. The implementation shape is strong, but the active goal's process bar is stricter than "code committed." **Required before deleting this monitor or treating the story externally closed:** publish/cite the focused pytest + ruff results and the final fully spawned BMAD close-party concurrence, or revise the status to "implemented/pending close evidence."
+
+**F-0004 [P2] Branch is committed but not remote-banked.** `HEAD` is `0fb2b2cf`, while `origin/dev/lesson-planning-2026-07-09` remains `c6871da0`. If this story is being handed across tools, push the branch or explicitly record that the commit is local-only.
+
+**F-0005 [P3] Mixed-cohort fallback IDs remain a known edge, filed but not fixed.** `deferred-work.md` notes that mixed-cohort slides lacking `slide_id` can synthesize colliding `slide-01` ids across cohorts. This is acceptable if the production contract guarantees Gary brief slides always carry unique `slide_id`, and the main builder does emit them. It should not be allowed to become a broad "arbitrary payload" claim.
+
+**Test/evidence visibility:** no terminal output or evidence artifact for the stated pytest/ruff commands is visible in the committed files. The tests themselves are present; their execution is asserted by checkboxes/commit prose, not externally witnessed by this poll.
+
+**Watchpoint verdicts:** WP2-WP10 pass by committed shape. WP1 remains open for final close-party evidence, though green-light evidence is now claimed. WP11 remains open until test/ruff/live-seam evidence is externally visible. WP12 is mostly clean; remaining issue is local-only commit banking.
+
+**Verdict: IMPLEMENTED IN SHAPE / NOT EXTERNALLY CLOSE-CORROBORATED.** The code diff appears aligned with the product requirement and avoids the styleguide-registry workaround, but final done should wait for visible test/ruff output, close-party concurrence, and push/banking of `0fb2b2cf`.

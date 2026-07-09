@@ -24,6 +24,8 @@ This preference does **not** override **migration sandbox-AC** rules later in th
 
 **Local commits alone are NOT durable storage.** A single-disk failure or accidental data loss between commits and a push wipes out unpushed work. The operator also needs to access this repo from remote locations and machines, which is impossible while commits live only on one disk. **Mitigation: push to `origin` at least once every 2 hours of active session work**, and ALWAYS push at session-WRAPUP Step 12 (no longer deferred by default).
 
+**Solo / no formal PR framework (2026-07-09):** the operator is the sole committer and does not use GitHub Pull Requests as the delivery path. Prefer branch push + local verification; do not open PRs or rely on PR-gated Actions unless explicitly asked. GitHub Actions auto-triggers were muted to stop failure-notification email noise — see [`AGENTS.md`](AGENTS.md) §Solo operator.
+
 Operating rules:
 
 - **Proactive push triggers:** push to `origin/<current-branch>` whenever any of the following holds:
