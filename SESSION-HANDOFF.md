@@ -1,6 +1,6 @@
 # Session Handoff — 2026-07-09 (session 26: **shadow-monitor close + WRAPUP Step 4a sprint-status hardening** — Class D protocol/docs; product next-gate unchanged from session 25)
 
-**Final class:** D (docs/tooling: session-protocol START/WRAPUP amendment for canonical `sprint-status.yaml` Kanban honesty; this chat's S7 Phase-2 shadow-monitor lane closed). **Branch:** `dev/workbook-2026-07-06` @ wrapup commit (pushed). **Next:** Class S — green-light `irene-text-literal-supersedes-styleguide-truncation` (unchanged from session 25; S8 remains FULLY COMPLETE).
+**Final class:** D (docs/tooling: session-protocol START/WRAPUP amendment for canonical `sprint-status.yaml` Kanban honesty; this chat's S7 Phase-2 shadow-monitor lane closed). **Branch:** `dev/workbook-2026-07-06` @ `c2a0c116` (pushed). **Next:** Class S — green-light `irene-text-literal-supersedes-styleguide-truncation` (unchanged from session 25; S8 remains FULLY COMPLETE).
 
 **What was completed:**
 1. **Claude shadow-monitor lane** for Codex-led S7 Phase-2 A-D (`claude-shadow-monitor-s7-phase2-2026-07-08.md`) — POLL-001..011; independent verification of Stories A–D; F-103 Story A gate-trail escalated then closed when backfill `5687c41a` landed; A-D close checkpoint `CONCUR`. Monitor heartbeat loop stopped at this WRAPUP.
