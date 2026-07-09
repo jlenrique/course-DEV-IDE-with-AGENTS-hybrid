@@ -1737,6 +1737,15 @@ def materialize_exported_slide_paths_by_title(
     recoverable ``GammaDispatchError`` family on ``unmatched_keys`` /
     ``unmatched_pages`` / ``ambiguous``.
 
+    Single-card Gamma exports often land as a lone PNG (not a zip). When
+    ``len(expected_slots) == 1``, that lone image binds to the sole slot by
+    cardinality bijection — even if the download stem is opaque (e.g.
+    ``gary_A``). Opaque-stem N=1 binding is intentional (party rider
+    2026-07-08); do not later require title containment for that arm without
+    a new party round. When ``len(expected_slots) > 1`` and the payload is
+    not a multi-page zip, every slot is unmatched (fail loud — never
+    positional broadcast).
+
     The positional ``_materialize_exported_slide_paths`` is deliberately left
     untouched for brief-less callers (standalone Gamma lane); this is a
     separate, additive function (party DECISION 3 + the byte-identical gate).
@@ -1745,12 +1754,65 @@ def materialize_exported_slide_paths_by_title(
     normalized_format = (requested_format or "").strip().lower() or None
     result = SlideMatchResult()
 
-    if normalized_format != "png" or not zipfile.is_zipfile(downloaded_path):
-        # Title matching requires per-page images from the multi-card zip. A
-        # non-png or single-image export cannot be title-matched; fail loud
-        # (every slot unmatched) rather than positionally broadcasting — the
-        # caller raises brief-unmatched. Single-card decks do not reach the
-        # double-dispatch storyboard path.
+    if normalized_format != "png":
+        # Non-PNG cannot be title-matched; fail loud (every slot unmatched).
+        result.unmatched_keys = [sid for sid, _ in expected_slots]
+        return result
+
+    if not zipfile.is_zipfile(downloaded_path):
+        # Lone image export (live single-card Gamma shape). N=1 → bind when
+        # title-match succeeds OR the stem is opaque (no ``{N}_{Title}``
+        # prefix — e.g. gary_A); a parseable titled stem that fails
+        # containment stays unmatched (fail loud — never silent wrong-bind).
+        # N>1 → fail loud with the orphan page recorded (no positional broadcast).
+        suffix = downloaded_path.suffix.lower()
+        if (
+            downloaded_path.is_file()
+            and suffix == ".png"
+            and len(expected_slots) == 1
+        ):
+            export_dir.mkdir(parents=True, exist_ok=True)
+            slide_id, _brief_title = expected_slots[0]
+            page_title = title_from_export_stem(downloaded_path.stem)
+            stem_is_opaque = page_title == downloaded_path.stem
+            pages = [
+                {
+                    "page_index": 1,
+                    "title": page_title,
+                    "path": str(downloaded_path),
+                }
+            ]
+            result = match_pages_to_slots(pages=pages, expected_slots=expected_slots)
+            if slide_id not in result.matched and stem_is_opaque:
+                # Opaque stem yields no title-containment edge; sole-slot
+                # cardinality is still a valid bijection (party rider 2026-07-08).
+                result.matched[slide_id] = str(downloaded_path)
+                result.unmatched_keys = [s for s in result.unmatched_keys if s != slide_id]
+                result.unmatched_pages = []
+                result.ambiguous = []
+            for sid, source in list(result.matched.items()):
+                target_path = export_dir / f"{module_lesson_part}_{sid}.png"
+                target_path.write_bytes(Path(source).read_bytes())
+                result.matched[sid] = str(target_path)
+            return result
+        if (
+            downloaded_path.is_file()
+            and suffix == ".png"
+            and len(expected_slots) > 1
+        ):
+            result.unmatched_keys = [sid for sid, _ in expected_slots]
+            result.unmatched_pages = [
+                {
+                    "page_index": 1,
+                    "title": title_from_export_stem(downloaded_path.stem),
+                    "path": str(downloaded_path),
+                    "reason": (
+                        f"lone-png-export with {len(expected_slots)} briefed slots "
+                        f"(expected multi-page zip for N>1)"
+                    ),
+                }
+            ]
+            return result
         result.unmatched_keys = [sid for sid, _ in expected_slots]
         return result
 

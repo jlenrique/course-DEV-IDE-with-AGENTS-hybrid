@@ -56,3 +56,9 @@
 ## Deferred from: code review of canonical-arc-s3-gary-shadow-parity (2026-07-07)
 
 - **S4 spec-time design decision — parity-clock attestation strength (Edge lane E4):** `clock_eligible=True` currently accrues on two-way digest matches where `trial_start_directive_digest` is None (gateless/`pause_at_gates=False` starts; single-file trials where `start_trial` writes `directive_digest: null`). This is F-702-letter-compliant and the SPOC product path always writes the attestation (`start_trial` → trial-start.json before any §07 dispatch), but the S4 FAIL-LOUD spec author must decide whether the S-flip parity clock requires the full three-way attestation or the two-way match suffices. Route: S4 spec §clock semantics.
+
+## Deferred from: code review of spec-gamma-single-slide-png-title-match (2026-07-08)
+
+- [edge] Empty `expected_slots` + lone PNG returns empty success (matched/unmatched empty); zip with orphan pages would surface unmatched_pages. Pre-existing empty-slots caller contract; fold if a caller ever materializes with zero briefs.
+- [edge] Empty/opaque 1-page ZIP still title-match-only (no cardinality override) while equivalent lone PNG binds — intentional "zip unchanged" asymmetry; revisit only if live Gamma starts returning 1-page zips for single-card decks.
+- [blind] No `generate_gamma_variants` integration test with opaque `gary_A.png` download; materializer unit tests cover the live shape. Optional follow-on at next Gary export touch.

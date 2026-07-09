@@ -11,14 +11,18 @@ to positional OR to naive exact-match must turn these red (kill-the-mutant).
 from __future__ import annotations
 
 import random
+from pathlib import Path
 
 import pytest
 
 from skills.gamma_api_mastery.scripts.gamma_operations import (
     match_pages_to_slots,
+    materialize_exported_slide_paths_by_title,
     normalize_title,
     title_from_export_stem,
 )
+
+_PNG_MAGIC = b"\x89PNG\r\n\x1a\n" + b"lone-png-bytes"
 
 # Real cycle-6 brief titles (carry the "— objective" tail the matcher strips).
 F8_BRIEFS: list[tuple[str, str]] = [
@@ -252,3 +256,113 @@ def test_normalize_title_strips_objective_and_punctuation() -> None:
     )
     assert normalize_title("The Leadership Gap — Analyze the mismatch") == "the leadership gap"
     assert normalize_title("The-Human-Cost-Waste-and-Burnout") == "the human cost waste and burnout"
+
+
+def test_lone_png_single_slot_binds_by_cardinality(tmp_path: Path) -> None:
+    """Live Gamma single-card export is a lone PNG (not a zip); N=1 must bind.
+
+    Opaque download stems (e.g. gary_A) bind by sole-slot cardinality — party
+    rider 2026-07-08: do not require title containment when N=1.
+    """
+    lone = tmp_path / "gary_A.png"
+    lone.write_bytes(_PNG_MAGIC)
+    export_dir = tmp_path / "out"
+    export_dir.mkdir()
+    result = materialize_exported_slide_paths_by_title(
+        lone,
+        requested_format="png",
+        expected_slots=[("slide-01", "Module 1 Bridge to Module 2")],
+        module_lesson_part="A",
+        export_dir=export_dir,
+        label="A",
+    )
+    assert result.unmatched_keys == []
+    assert result.unmatched_pages == []
+    assert result.ambiguous == []
+    assert "slide-01" in result.matched
+    bound = Path(result.matched["slide-01"])
+    assert bound.is_file()
+    assert bound.name.endswith("_slide-01.png")
+    assert bound.read_bytes() == _PNG_MAGIC
+
+
+def test_lone_png_multi_slot_fails_loud_no_positional_broadcast(tmp_path: Path) -> None:
+    """Lone PNG + N>1 must NOT positionally bind; all slots unmatched."""
+    lone = tmp_path / "gary_A.png"
+    lone.write_bytes(_PNG_MAGIC)
+    export_dir = tmp_path / "out"
+    export_dir.mkdir()
+    result = materialize_exported_slide_paths_by_title(
+        lone,
+        requested_format="png",
+        expected_slots=[
+            ("slide-01", "First Topic"),
+            ("slide-02", "Second Topic"),
+        ],
+        module_lesson_part="A",
+        export_dir=export_dir,
+        label="A",
+    )
+    assert result.matched == {}
+    assert sorted(result.unmatched_keys) == ["slide-01", "slide-02"]
+    assert list(export_dir.glob("*.png")) == []
+    assert len(result.unmatched_pages) == 1
+
+
+def test_lone_png_titled_stem_single_slot_still_binds(tmp_path: Path) -> None:
+    """N=1 lone PNG whose stem carries ``{N}_{Title}`` still binds."""
+    lone = tmp_path / "1_Only-Topic-Here.png"
+    lone.write_bytes(_PNG_MAGIC)
+    export_dir = tmp_path / "out"
+    export_dir.mkdir()
+    result = materialize_exported_slide_paths_by_title(
+        lone,
+        requested_format="png",
+        expected_slots=[("s1", "Only Topic Here")],
+        module_lesson_part="A",
+        export_dir=export_dir,
+        label="A",
+    )
+    assert result.unmatched_keys == []
+    assert "s1" in result.matched
+    assert Path(result.matched["s1"]).read_bytes() == _PNG_MAGIC
+
+
+def test_lone_png_titled_stem_mismatch_fails_loud(tmp_path: Path) -> None:
+    """Parseable ``{N}_{Title}`` stem that fails containment must NOT force-bind."""
+    lone = tmp_path / "1_Completely-Wrong-Title.png"
+    lone.write_bytes(_PNG_MAGIC)
+    export_dir = tmp_path / "out"
+    result = materialize_exported_slide_paths_by_title(
+        lone,
+        requested_format="png",
+        expected_slots=[("slide-01", "Only Topic Here")],
+        module_lesson_part="A",
+        export_dir=export_dir,
+        label="A",
+    )
+    assert result.matched == {}
+    assert result.unmatched_keys == ["slide-01"]
+
+
+def test_lone_png_multi_slot_records_orphan_page(tmp_path: Path) -> None:
+    """N>1 lone PNG should surface the orphan export page for diagnostics."""
+    lone = tmp_path / "gary_A.png"
+    lone.write_bytes(_PNG_MAGIC)
+    export_dir = tmp_path / "out"
+    result = materialize_exported_slide_paths_by_title(
+        lone,
+        requested_format="png",
+        expected_slots=[
+            ("slide-01", "First Topic"),
+            ("slide-02", "Second Topic"),
+        ],
+        module_lesson_part="A",
+        export_dir=export_dir,
+        label="A",
+    )
+    assert result.matched == {}
+    assert sorted(result.unmatched_keys) == ["slide-01", "slide-02"]
+    assert len(result.unmatched_pages) == 1
+    assert "lone-png-export" in str(result.unmatched_pages[0].get("reason", ""))
+
