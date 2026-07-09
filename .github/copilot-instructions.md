@@ -2,7 +2,7 @@
 
 This file is the **VS Code equivalent** of always-on AI rules: it mirrors [`.cursor/rules/bmad-sprint-governance.mdc`](../.cursor/rules/bmad-sprint-governance.mdc) (Cursor) so GitHub Copilot Chat in VS Code picks up the same charter. VS Code loads [`.github/copilot-instructions.md`](https://code.visualstudio.com/docs/copilot/customization/custom-instructions) automatically for every chat in the workspace. See also [`AGENTS.md`](../AGENTS.md) and [`CLAUDE.md`](../CLAUDE.md).
 
-**Solo operator — no formal PR framework:** one human committer; default closeout is branch → local verify → push (merge when asked). Do not open PRs or treat PR-gated CI as required unless the operator explicitly asks. Details: [`AGENTS.md`](../AGENTS.md) §Solo operator.
+**Solo operator — no formal PR framework:** one human committer; default closeout is branch → local verify → push (merge when asked). Do not open PRs or treat PR-gated CI as required unless the operator explicitly asks. **Party consensus = approval:** when fully-spawned BMAD party mode reaches consensus and the orchestrating agent agrees, proceed without a redundant human Checkpoint-1 hold on the same decision. Details: [`AGENTS.md`](../AGENTS.md) §Solo operator.
 
 ## ⛔ Critical design guardrail — the goal is the Marcus-SPOC PRODUCT, not the proofing vehicle (operator 2026-06-30)
 

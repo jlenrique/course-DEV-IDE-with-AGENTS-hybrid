@@ -214,6 +214,7 @@ def assemble_pass1_prompt(
         "## Envelope payload\n\n"
         f"```json\n{_json_dumps(model_visible_payload)}\n```\n\n"
         f"{_cluster_emission_instructions()}\n\n"
+        f"{_fidelity_emission_instructions()}\n\n"
         f"{_collateral_emission_instructions()}",
     )
 
@@ -268,6 +269,45 @@ def _cluster_emission_instructions() -> str:
         "corpus section above), CARRY each unit's source_refs FORWARD "
         "UNCHANGED from the incoming plan's plan_units — do not re-derive, "
         "edit, or drop them."
+    )
+
+
+RECOGNIZED_FIDELITY = frozenset({"creative", "literal-text", "literal-visual"})
+_FIDELITY_ALIASES: dict[str, str] = {
+    "literal_text": "literal-text",
+    "literal-text": "literal-text",
+    "literal_visual": "literal-visual",
+    "literal-visual": "literal-visual",
+    "literal-image": "literal-visual",
+    "literal_image": "literal-visual",
+    "creative": "creative",
+}
+
+
+def _fidelity_emission_instructions() -> str:
+    """Restore per-plan-unit fidelity classification (pre-migration Pass-1 contract).
+
+    Sibling of :func:`_cluster_emission_instructions`. Requests ``fidelity`` on
+    each plan_unit so Gary's literal-cohort preserve path can fire. Classification
+    covers both literal-text and literal-visual; production streamlining for
+    literal-visual images is a separate follow-on.
+    """
+    return (
+        "## Per-unit fidelity classification (additive on each plan_unit)\n"
+        "ALSO emit \"fidelity\" on EVERY plan_unit — exactly one of:\n"
+        "  creative | literal-text | literal-visual\n"
+        "Default is creative. Do not over-tag — most units should be creative.\n"
+        "- literal-text: exact text/data must appear as written (assessment topic "
+        "lists, tested statistics, accreditation terminology, dosage tables).\n"
+        "- literal-visual: a specific SME-provided image/diagram must be faithfully "
+        "placed (labeled charts, clinical flowcharts, framework diagrams). Tag "
+        "classification only; do not invent image URLs.\n"
+        "- creative: content may be enhanced by Gamma (default).\n"
+        "If the envelope payload carries \"fidelity_guidance\", HONOR it for the "
+        "named items (user guidance supplements your judgment; it does not replace "
+        "independent literal needs you identify). At a refinement pass, CARRY "
+        "recognized fidelity tags FORWARD from the incoming plan_units unless you "
+        "deliberately reclassify."
     )
 
 
@@ -531,6 +571,52 @@ def normalize_collateral(plan: dict[str, Any]) -> dict[str, Any]:
     return {**plan, "collateral": spec.model_dump(mode="json")}
 
 
+def _canonicalize_fidelity(raw: Any) -> str | None:
+    """Return a recognized fidelity mode, or None to omit the key."""
+    if raw is None:
+        return None
+    if not isinstance(raw, str):
+        return None
+    stripped = raw.strip()
+    if not stripped:
+        return None
+    lowered = stripped.lower()
+    aliased = _FIDELITY_ALIASES.get(lowered)
+    if aliased is not None:
+        return aliased
+    # Hyphen/underscore-normalized lookup already covered; reject unknowns.
+    if lowered in RECOGNIZED_FIDELITY:
+        return lowered
+    return None
+
+
+def normalize_fidelity(plan: dict[str, Any]) -> dict[str, Any]:
+    """Pure soft-coerce for per-unit ``fidelity`` (emit-recovery backstop).
+
+    Recognized values (and known aliases such as ``literal-image`` →
+    ``literal-visual``) are kept. Missing / empty / unknown values omit the
+    key — never invent a tag from prose. PURE: returns a new plan dict.
+    """
+    if not isinstance(plan, dict):
+        return plan
+    raw_units = plan.get("plan_units")
+    if not isinstance(raw_units, list):
+        return plan
+    units: list[Any] = []
+    for unit in raw_units:
+        if not isinstance(unit, dict):
+            units.append(unit)
+            continue
+        next_unit = dict(unit)
+        canonical = _canonicalize_fidelity(next_unit.get("fidelity"))
+        if canonical is None:
+            next_unit.pop("fidelity", None)
+        else:
+            next_unit["fidelity"] = canonical
+        units.append(next_unit)
+    return {**plan, "plan_units": units}
+
+
 # R7 (Edge#4): internal marker set by parse_pass1_response when the model's
 # output was NOT usable structured JSON and the single synthetic fallback unit
 # was substituted. act() POPS it (never persisted / never model-visible) and
@@ -575,6 +661,8 @@ def parse_pass1_response(raw_text: str) -> dict[str, Any]:
     # Braid S1: guarantee a well-formed collateral block on BOTH the LLM-output
     # path and the fallback-unit path (additive; degenerate-empty -> "none").
     parsed = normalize_collateral(parsed)
+    # Fidelity emit recovery: soft-coerce recognized modes; never invent tags.
+    parsed = normalize_fidelity(parsed)
     return parsed
 
 
@@ -583,6 +671,9 @@ def write_lesson_plan(plan: dict[str, Any], *, run_id: str, runs_root: Path | No
     run_dir = root / run_id
     run_dir.mkdir(parents=True, exist_ok=True)
     path = run_dir / "irene-pass1.md"
+    # Soft-canonicalize fidelity so alias callers (literal_text / literal-image)
+    # still surface a line even when they bypass parse_pass1_response.
+    plan = normalize_fidelity(plan)
     lines = ["# Irene Pass-1 Lesson Plan", ""]
     if plan.get("lesson_summary"):
         lines.extend([str(plan["lesson_summary"]), ""])
@@ -609,6 +700,9 @@ def write_lesson_plan(plan: dict[str, Any], *, run_id: str, runs_root: Path | No
             lines.append(
                 f"- Cluster interstitial count: {unit['cluster_interstitial_count']}"
             )
+        raw_fidelity = unit.get("fidelity")
+        if isinstance(raw_fidelity, str) and raw_fidelity in RECOGNIZED_FIDELITY:
+            lines.append(f"- Fidelity: {raw_fidelity}")
         lines.append("")
     # Braid S1: additive collateral content-model section. Appended AFTER all
     # plan-unit / cluster lines so the cluster-section lines stay byte-unchanged
@@ -815,6 +909,7 @@ __all__ = [
     "enforce_pass1_mode",
     "normalize_clusters",
     "normalize_collateral",
+    "normalize_fidelity",
     "parse_pass1_response",
     "read_sanctum_digest",
     "write_lesson_plan",

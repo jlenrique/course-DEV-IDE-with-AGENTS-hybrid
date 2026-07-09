@@ -8,6 +8,8 @@ This repo has **one human committer**. Delivery is **branch → local verify →
 
 GitHub Actions under `.github/workflows/` are retained as **manual** (`workflow_dispatch`) tools only — automatic `pull_request` / `push` / `schedule` triggers were muted so abandoned PR-era experiments stop generating failure-notification emails. Prefer local `pytest` / `ruff` / story verification commands over remote Actions unless the operator requests a manual workflow run.
 
+**BMAD party consensus = operator approval (2026-07-09):** When a fully-spawned BMAD party-mode round reaches consensus (GO / GO-WITH-AMENDMENTS with MUST amendments folded) **and** the orchestrating agent agrees with that recommendation, treat that as approval to proceed — do **not** halt production for a redundant human Checkpoint-1 Approve/Edit hold on the same decision. The operator may still review specs asynchronously and override; do not block the run waiting for that review when party+agent consensus already holds. Still escalate true impasses via the Quinn→John→human chain.
+
 **Sprint governance:** Multi-story BMAD work in this repo follows the same BMAD sprint run charter everywhere it applies:
 
 | Environment | Mechanism |
