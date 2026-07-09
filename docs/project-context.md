@@ -1,16 +1,29 @@
-# Current Context Addendum - 2026-07-09 Session 28 (solicitation surface)
+# Current Context Addendum - 2026-07-09 Session 28 (Claim B live bespoke)
 
-**Marcus plan-ratify + Claims A/B:** COMPLETE-with-named-fenced-residuals.
-Evidence `marcus-solicitation-success-20260709T230000/`. Success definition:
-`marcus-solicitation-lesson-plan-success-definition-2026-07-09.md`.
+**Marcus plan-ratify Claims A+B:** COMPLETE-with-named-fenced-residuals.
+**Claim B:** UNFENCED COMPLETE (**bespoke**) — live OpenAI Irene Pass-1.
 
-**Holds:** CLI assess→ratify→write; W5 local compose + selection delta + trial
-thread; Irene emit coverage + `planning_provenance`; plan≠control (mocked act).
+Evidence: `marcus-claim-b-live-20260709T234801Z/`  
+Runs: `bc8359aa-fdd9-4551-a9a1-e6483941c962` (treatment) vs
+`b5cd2bc8-50e5-4d0f-9c60-0dbc79664bde` (control).  
+Close: `marcus-claim-b-live-close-2026-07-09.md`.  
+Driver: `scripts/utilities/bank_marcus_claim_b_live_irene.py`.
 
-**Fenced:** live OpenAI Pass-1 on Tejal `runs/<uuid>/`; interactive SPOC REPL;
-Gamma; “bespoke” claim.
+**Holds:** plan-ratify → `runs/<uuid>/` → live Pass-1 → coverage+provenance+
+plan≠control; digests match companions; `lo_coverage=present` + LO touch.
+
+**Still fenced:** interactive SPOC REPL; Gamma; SME/projector; lecture ingest;
+happy-path coverage JSON write in `act()`; on-read digest verify.
 
 S8 stays closed. Branch `dev/lesson-planning-2026-07-09`.
+
+---
+
+# Current Context Addendum - 2026-07-09 Session 28 (solicitation surface)
+
+**Marcus plan-ratify + Claims A/B (substrate + mocked Claim B):** earlier bank
+`marcus-solicitation-success-20260709T230000/` at `318b6b0f`. Live Claim B
+supersedes the mock-act fence — see addendum above.
 
 ---
 

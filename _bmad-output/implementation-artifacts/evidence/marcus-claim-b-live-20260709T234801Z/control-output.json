@@ -1,0 +1,889 @@
+{
+  "artifact_path": "C:\\Users\\juanl\\Documents\\GitHub\\course-DEV-IDE-with-AGENTS-hybrid\\runs\\b5cd2bc8-50e5-4d0f-9c60-0dbc79664bde\\irene-pass1.md",
+  "learning_events": [
+    {
+      "event_type": "scope_decision.set",
+      "gate": "G1A",
+      "payload": {
+        "locked": false,
+        "plan_units": [
+          {
+            "cluster_id": "c-u01",
+            "cluster_interstitial_count": 0,
+            "cluster_position": "establish",
+            "cluster_role": "head",
+            "develop_type": null,
+            "fidelity": "literal-text",
+            "learning_objective": "Recognize Module 1 as complete and understand that the next step is a transition from innovator mindset to leadership identity, with emphasis on the leader needed to champion opportunities inside complex health systems.",
+            "master_behavioral_intent": "moving",
+            "narrative_arc": "From completion of innovator mindset foundations to readiness for leadership identity development through a closing synthesis and forward bridge into Module 2.",
+            "parent_slide_id": null,
+            "rationale": "This is the direct subject of the source slide and its narration. The unit should remain keep-dense because its value is as a closing synthesis and forward bridge rather than a decomposed teaching cluster.",
+            "scope_decision": "in-scope",
+            "source_refs": [
+              "Module 1 Complete: The Mindset is Set.",
+              "bridge connecting \"Module 1: Mindset\"",
+              "to \"Module 2: Leadership Identity.\"",
+              "Congratulations on completing Module 1.",
+              "In Module 2, we will move from Mindset to Identity.",
+              "See you in Module 2."
+            ],
+            "title": "Module 1 Completion and Bridge to Module 2",
+            "unit_id": "u01"
+          },
+          {
+            "cluster_id": "c-u02",
+            "cluster_interstitial_count": 0,
+            "cluster_position": "establish",
+            "cluster_role": "head",
+            "develop_type": null,
+            "fidelity": "creative",
+            "learning_objective": "Recall the specific Module 1 foundations named in the bridge: mapping macro forces changing medicine and populating an Opportunity Radar with important targets.",
+            "master_behavioral_intent": "reflective",
+            "narrative_arc": "From recap of system-level innovation foundations to recognition of their limits without leadership capacity through selective recall of Module 1 pillars named in the bridge.",
+            "parent_slide_id": null,
+            "rationale": "The bridge explicitly references prior learning as setup for the transition. This support content is in scope because it explains what the learner is carrying forward into Module 2.",
+            "scope_decision": "in-scope",
+            "source_refs": [
+              "mapped out the macro forces changing medicine",
+              "filled your Opportunity Radar with vital targets",
+              "The Opportunity Radar",
+              "past frustrations, present workarounds, and future trends"
+            ],
+            "title": "What Module 1 Equipped the Learner to See",
+            "unit_id": "u02"
+          },
+          {
+            "cluster_id": "c-u03",
+            "cluster_interstitial_count": 2,
+            "cluster_position": "establish",
+            "cluster_role": "head",
+            "develop_type": null,
+            "fidelity": "literal-text",
+            "learning_objective": "Understand that opportunities and ideas are insufficient on their own; success in healthcare intrapreneurship depends primarily on the leader's ability to champion adoption inside a matrixed system.",
+            "master_behavioral_intent": "clear-guidance",
+            "narrative_arc": "From confidence in the value of ideas alone to recognition that leadership identity drives adoption through a progressive reframing of innovation success inside matrixed health systems.",
+            "parent_slide_id": null,
+            "rationale": "This is the bridge's main conceptual turn and carries high pedagogical weight because it reframes innovation from idea generation to leadership execution. It benefits from clustering because the narration contains multiple explanatory beats: viability, matrixed context, and the 10%/90% contrast.",
+            "scope_decision": "in-scope",
+            "source_refs": [
+              "an idea is only as good as the leader",
+              "a complex matrixed health system",
+              "opportunity is only as viable as the leader championing it",
+              "Having the right idea is only 10%",
+              "the other 90% is having the political savvy",
+              "the communication skills, and the leadership identity"
+            ],
+            "title": "Leadership, Not Just Ideas, Determines Innovation Viability",
+            "unit_id": "u03"
+          },
+          {
+            "cluster_id": "c-u03",
+            "cluster_interstitial_count": 0,
+            "cluster_position": "develop",
+            "cluster_role": "interstitial",
+            "develop_type": "deepen",
+            "fidelity": "creative",
+            "learning_objective": "Explain why innovation value in this course context depends on championing and adoption rather than on the idea itself.",
+            "master_behavioral_intent": "clear-guidance",
+            "narrative_arc": "From confidence in the value of ideas alone to recognition that leadership identity drives adoption through a progressive reframing of innovation success inside matrixed health systems.",
+            "parent_slide_id": "u03",
+            "rationale": "This interstitial isolates the first explanatory beat of the cluster so the learner clearly understands the bridge's central contrast before moving to execution skills.",
+            "scope_decision": "in-scope",
+            "source_refs": [
+              "an idea is only as good as the leader",
+              "opportunity is only as viable as the leader championing it",
+              "creating new value that is successfully adopted by the market or system"
+            ],
+            "title": "Why an Idea Alone Is Not Enough",
+            "unit_id": "u03-i1"
+          },
+          {
+            "cluster_id": "c-u03",
+            "cluster_interstitial_count": 0,
+            "cluster_position": "resolve",
+            "cluster_role": "interstitial",
+            "develop_type": null,
+            "fidelity": "literal-text",
+            "learning_objective": "Identify the leadership capacities named in the bridge as necessary to move an idea through a health system: political savvy, communication skills, and leadership identity.",
+            "master_behavioral_intent": "clear-guidance",
+            "narrative_arc": "From confidence in the value of ideas alone to recognition that leadership identity drives adoption through a progressive reframing of innovation success inside matrixed health systems.",
+            "parent_slide_id": "u03",
+            "rationale": "This interstitial isolates the concrete capabilities that make up the bridge's leadership claim, improving clarity and assessment alignment.",
+            "scope_decision": "in-scope",
+            "source_refs": [
+              "the other 90% is having the political savvy",
+              "the communication skills, and the leadership identity",
+              "how you communicate your vision",
+              "inspire others to join your cause"
+            ],
+            "title": "The Capabilities Required to Lead Adoption",
+            "unit_id": "u03-i2"
+          },
+          {
+            "cluster_id": "c-u04",
+            "cluster_interstitial_count": 0,
+            "cluster_position": "establish",
+            "cluster_role": "head",
+            "develop_type": null,
+            "fidelity": "literal-text",
+            "learning_objective": "Understand the learner identity shift described in the bridge: moving from reacting to the healthcare system toward preparing to redesign it.",
+            "master_behavioral_intent": "provocative",
+            "narrative_arc": "From passive response to active redesign orientation through a concise identity-level reframing of the learner's role in healthcare innovation.",
+            "parent_slide_id": null,
+            "rationale": "This line is a strong conceptual synthesis and identity pivot. It is central to the emotional and pedagogical close, so it should remain as a dense singleton rather than be split apart.",
+            "scope_decision": "in-scope",
+            "source_refs": [
+              "You are no longer just reacting to the system;",
+              "you are preparing to redesign it."
+            ],
+            "title": "The Shift from Reacting to Redesigning the System",
+            "unit_id": "u04"
+          },
+          {
+            "cluster_id": "c-u05",
+            "cluster_interstitial_count": 0,
+            "cluster_position": "establish",
+            "cluster_role": "head",
+            "develop_type": null,
+            "fidelity": "literal-text",
+            "learning_objective": "Preview the stated Module 2 outcomes: defining leadership identity, communicating vision, and inspiring others to join the work.",
+            "master_behavioral_intent": "clear-guidance",
+            "narrative_arc": "From anticipation of the next step to clarity about Module 2's leadership-identity focus through a concise preview of upcoming capabilities.",
+            "parent_slide_id": null,
+            "rationale": "This is explicit bridge content and directly states the next module's scope. It is appropriate as a singleton because it is a concise preview list rather than a concept requiring decomposition.",
+            "scope_decision": "in-scope",
+            "source_refs": [
+              "You will begin to define who you are as a leader",
+              "how you communicate your vision",
+              "how you can inspire others to join your cause",
+              "The clinical problem is waiting; it is time to build the leader who will solve it."
+            ],
+            "title": "What Module 2 Will Develop",
+            "unit_id": "u05"
+          },
+          {
+            "cluster_id": "c-u06",
+            "cluster_interstitial_count": 0,
+            "cluster_position": "establish",
+            "cluster_role": "head",
+            "develop_type": null,
+            "fidelity": "literal-text",
+            "learning_objective": "Recognize which Module 1 concepts are valid recap supports for the bridge because they appear in the provided assessment corpus: innovation as adopted value, psychological safety, growth mindset, macro forces, AI training gap, economic pressure, diagnosis-to-design mapping, 5 Whys, ambiguity tolerance, and expected value/utility distinction.",
+            "master_behavioral_intent": "credible",
+            "narrative_arc": "From broad recap of Module 1 to a bounded ratification of which concepts are legitimately presupposed by the bridge through assessment-grounded scope confirmation.",
+            "parent_slide_id": null,
+            "rationale": "The assessment corpus is part of the provided planning basis and identifies core knowledge the bridge may validly presume or lightly echo. This should stay dense as a planning ratification surface rather than a learner-facing decomposed cluster.",
+            "scope_decision": "in-scope",
+            "source_refs": [
+              "creating new value that is successfully adopted",
+              "Psychological Safety",
+              "Growth Mindset",
+              "macroeconomic data presented",
+              "73 days",
+              "66% of physicians",
+              "$5.2 trillion",
+              "Design Thinking framework",
+              "5 Whys framework",
+              "Comfort with ambiguity"
+            ],
+            "title": "Assessed Module 1 Concepts Referenced by the Bridge",
+            "unit_id": "u06"
+          }
+        ]
+      },
+      "run_id": "b5cd2bc8-50e5-4d0f-9c60-0dbc79664bde",
+      "timestamp": "2026-07-09T23:48:47.094086+00:00"
+    },
+    {
+      "event_type": "plan.locked",
+      "gate": "G1A",
+      "payload": {
+        "locked_scope": {
+          "locked": false,
+          "plan_units": [
+            {
+              "cluster_id": "c-u01",
+              "cluster_interstitial_count": 0,
+              "cluster_position": "establish",
+              "cluster_role": "head",
+              "develop_type": null,
+              "fidelity": "literal-text",
+              "learning_objective": "Recognize Module 1 as complete and understand that the next step is a transition from innovator mindset to leadership identity, with emphasis on the leader needed to champion opportunities inside complex health systems.",
+              "master_behavioral_intent": "moving",
+              "narrative_arc": "From completion of innovator mindset foundations to readiness for leadership identity development through a closing synthesis and forward bridge into Module 2.",
+              "parent_slide_id": null,
+              "rationale": "This is the direct subject of the source slide and its narration. The unit should remain keep-dense because its value is as a closing synthesis and forward bridge rather than a decomposed teaching cluster.",
+              "scope_decision": "in-scope",
+              "source_refs": [
+                "Module 1 Complete: The Mindset is Set.",
+                "bridge connecting \"Module 1: Mindset\"",
+                "to \"Module 2: Leadership Identity.\"",
+                "Congratulations on completing Module 1.",
+                "In Module 2, we will move from Mindset to Identity.",
+                "See you in Module 2."
+              ],
+              "title": "Module 1 Completion and Bridge to Module 2",
+              "unit_id": "u01"
+            },
+            {
+              "cluster_id": "c-u02",
+              "cluster_interstitial_count": 0,
+              "cluster_position": "establish",
+              "cluster_role": "head",
+              "develop_type": null,
+              "fidelity": "creative",
+              "learning_objective": "Recall the specific Module 1 foundations named in the bridge: mapping macro forces changing medicine and populating an Opportunity Radar with important targets.",
+              "master_behavioral_intent": "reflective",
+              "narrative_arc": "From recap of system-level innovation foundations to recognition of their limits without leadership capacity through selective recall of Module 1 pillars named in the bridge.",
+              "parent_slide_id": null,
+              "rationale": "The bridge explicitly references prior learning as setup for the transition. This support content is in scope because it explains what the learner is carrying forward into Module 2.",
+              "scope_decision": "in-scope",
+              "source_refs": [
+                "mapped out the macro forces changing medicine",
+                "filled your Opportunity Radar with vital targets",
+                "The Opportunity Radar",
+                "past frustrations, present workarounds, and future trends"
+              ],
+              "title": "What Module 1 Equipped the Learner to See",
+              "unit_id": "u02"
+            },
+            {
+              "cluster_id": "c-u03",
+              "cluster_interstitial_count": 2,
+              "cluster_position": "establish",
+              "cluster_role": "head",
+              "develop_type": null,
+              "fidelity": "literal-text",
+              "learning_objective": "Understand that opportunities and ideas are insufficient on their own; success in healthcare intrapreneurship depends primarily on the leader's ability to champion adoption inside a matrixed system.",
+              "master_behavioral_intent": "clear-guidance",
+              "narrative_arc": "From confidence in the value of ideas alone to recognition that leadership identity drives adoption through a progressive reframing of innovation success inside matrixed health systems.",
+              "parent_slide_id": null,
+              "rationale": "This is the bridge's main conceptual turn and carries high pedagogical weight because it reframes innovation from idea generation to leadership execution. It benefits from clustering because the narration contains multiple explanatory beats: viability, matrixed context, and the 10%/90% contrast.",
+              "scope_decision": "in-scope",
+              "source_refs": [
+                "an idea is only as good as the leader",
+                "a complex matrixed health system",
+                "opportunity is only as viable as the leader championing it",
+                "Having the right idea is only 10%",
+                "the other 90% is having the political savvy",
+                "the communication skills, and the leadership identity"
+              ],
+              "title": "Leadership, Not Just Ideas, Determines Innovation Viability",
+              "unit_id": "u03"
+            },
+            {
+              "cluster_id": "c-u03",
+              "cluster_interstitial_count": 0,
+              "cluster_position": "develop",
+              "cluster_role": "interstitial",
+              "develop_type": "deepen",
+              "fidelity": "creative",
+              "learning_objective": "Explain why innovation value in this course context depends on championing and adoption rather than on the idea itself.",
+              "master_behavioral_intent": "clear-guidance",
+              "narrative_arc": "From confidence in the value of ideas alone to recognition that leadership identity drives adoption through a progressive reframing of innovation success inside matrixed health systems.",
+              "parent_slide_id": "u03",
+              "rationale": "This interstitial isolates the first explanatory beat of the cluster so the learner clearly understands the bridge's central contrast before moving to execution skills.",
+              "scope_decision": "in-scope",
+              "source_refs": [
+                "an idea is only as good as the leader",
+                "opportunity is only as viable as the leader championing it",
+                "creating new value that is successfully adopted by the market or system"
+              ],
+              "title": "Why an Idea Alone Is Not Enough",
+              "unit_id": "u03-i1"
+            },
+            {
+              "cluster_id": "c-u03",
+              "cluster_interstitial_count": 0,
+              "cluster_position": "resolve",
+              "cluster_role": "interstitial",
+              "develop_type": null,
+              "fidelity": "literal-text",
+              "learning_objective": "Identify the leadership capacities named in the bridge as necessary to move an idea through a health system: political savvy, communication skills, and leadership identity.",
+              "master_behavioral_intent": "clear-guidance",
+              "narrative_arc": "From confidence in the value of ideas alone to recognition that leadership identity drives adoption through a progressive reframing of innovation success inside matrixed health systems.",
+              "parent_slide_id": "u03",
+              "rationale": "This interstitial isolates the concrete capabilities that make up the bridge's leadership claim, improving clarity and assessment alignment.",
+              "scope_decision": "in-scope",
+              "source_refs": [
+                "the other 90% is having the political savvy",
+                "the communication skills, and the leadership identity",
+                "how you communicate your vision",
+                "inspire others to join your cause"
+              ],
+              "title": "The Capabilities Required to Lead Adoption",
+              "unit_id": "u03-i2"
+            },
+            {
+              "cluster_id": "c-u04",
+              "cluster_interstitial_count": 0,
+              "cluster_position": "establish",
+              "cluster_role": "head",
+              "develop_type": null,
+              "fidelity": "literal-text",
+              "learning_objective": "Understand the learner identity shift described in the bridge: moving from reacting to the healthcare system toward preparing to redesign it.",
+              "master_behavioral_intent": "provocative",
+              "narrative_arc": "From passive response to active redesign orientation through a concise identity-level reframing of the learner's role in healthcare innovation.",
+              "parent_slide_id": null,
+              "rationale": "This line is a strong conceptual synthesis and identity pivot. It is central to the emotional and pedagogical close, so it should remain as a dense singleton rather than be split apart.",
+              "scope_decision": "in-scope",
+              "source_refs": [
+                "You are no longer just reacting to the system;",
+                "you are preparing to redesign it."
+              ],
+              "title": "The Shift from Reacting to Redesigning the System",
+              "unit_id": "u04"
+            },
+            {
+              "cluster_id": "c-u05",
+              "cluster_interstitial_count": 0,
+              "cluster_position": "establish",
+              "cluster_role": "head",
+              "develop_type": null,
+              "fidelity": "literal-text",
+              "learning_objective": "Preview the stated Module 2 outcomes: defining leadership identity, communicating vision, and inspiring others to join the work.",
+              "master_behavioral_intent": "clear-guidance",
+              "narrative_arc": "From anticipation of the next step to clarity about Module 2's leadership-identity focus through a concise preview of upcoming capabilities.",
+              "parent_slide_id": null,
+              "rationale": "This is explicit bridge content and directly states the next module's scope. It is appropriate as a singleton because it is a concise preview list rather than a concept requiring decomposition.",
+              "scope_decision": "in-scope",
+              "source_refs": [
+                "You will begin to define who you are as a leader",
+                "how you communicate your vision",
+                "how you can inspire others to join your cause",
+                "The clinical problem is waiting; it is time to build the leader who will solve it."
+              ],
+              "title": "What Module 2 Will Develop",
+              "unit_id": "u05"
+            },
+            {
+              "cluster_id": "c-u06",
+              "cluster_interstitial_count": 0,
+              "cluster_position": "establish",
+              "cluster_role": "head",
+              "develop_type": null,
+              "fidelity": "literal-text",
+              "learning_objective": "Recognize which Module 1 concepts are valid recap supports for the bridge because they appear in the provided assessment corpus: innovation as adopted value, psychological safety, growth mindset, macro forces, AI training gap, economic pressure, diagnosis-to-design mapping, 5 Whys, ambiguity tolerance, and expected value/utility distinction.",
+              "master_behavioral_intent": "credible",
+              "narrative_arc": "From broad recap of Module 1 to a bounded ratification of which concepts are legitimately presupposed by the bridge through assessment-grounded scope confirmation.",
+              "parent_slide_id": null,
+              "rationale": "The assessment corpus is part of the provided planning basis and identifies core knowledge the bridge may validly presume or lightly echo. This should stay dense as a planning ratification surface rather than a learner-facing decomposed cluster.",
+              "scope_decision": "in-scope",
+              "source_refs": [
+                "creating new value that is successfully adopted",
+                "Psychological Safety",
+                "Growth Mindset",
+                "macroeconomic data presented",
+                "73 days",
+                "66% of physicians",
+                "$5.2 trillion",
+                "Design Thinking framework",
+                "5 Whys framework",
+                "Comfort with ambiguity"
+              ],
+              "title": "Assessed Module 1 Concepts Referenced by the Bridge",
+              "unit_id": "u06"
+            }
+          ]
+        }
+      },
+      "run_id": "b5cd2bc8-50e5-4d0f-9c60-0dbc79664bde",
+      "timestamp": "2026-07-09T23:48:47.094086+00:00"
+    }
+  ],
+  "lesson_plan": {
+    "collateral": {
+      "declaration": "present",
+      "research_goals": [
+        {
+          "binds_to_objective_id": "u03",
+          "goal_id": "rg-01",
+          "pedagogical_intent": "Learner may benefit from a concise evidence-backed workbook note explaining why innovation in this course means adopted value, not mere invention."
+        },
+        {
+          "binds_to_objective_id": "u03",
+          "goal_id": "rg-02",
+          "pedagogical_intent": "Learner may need a brief workbook rationale for why political savvy and communication matter specifically in a matrixed health system context."
+        }
+      ],
+      "schema_version": "1.1",
+      "workbook": {
+        "kind": "deck-companion-workbook",
+        "sections": [
+          {
+            "depth_delta": {
+              "deferred_depth": "A fuller recap of the named Module 1 foundations, including why macro forces and the Opportunity Radar matter as inputs to later leadership choices.",
+              "deferred_from_slide": "u02",
+              "retained_on_slide": "A brief reminder that the learner has already mapped macro forces and populated an Opportunity Radar."
+            },
+            "exercises": [
+              {
+                "answer_key_source_ref": "filled your Opportunity Radar with vital targets",
+                "bloom_level": "remember",
+                "exercise_id": "ex-u02-1",
+                "prompt_intent": "Recall the two specific Module 1 accomplishments named in the bridge."
+              }
+            ],
+            "learning_objective_id": "u02",
+            "narrative_intent": "Support transfer by helping learners reconnect prior system-analysis work to the upcoming identity work without overloading the closing slide.",
+            "section_id": "sec-u02",
+            "title": "Module 1 Foundations Carried Forward"
+          },
+          {
+            "depth_delta": {
+              "deferred_depth": "Expanded explanation of why ideas fail without championing, including adoption inside hospitals, matrixed constraints, and the distinction between idea quality and execution capacity.",
+              "deferred_from_slide": "u03",
+              "retained_on_slide": "The core contrast that an idea alone is insufficient and that leadership determines viability."
+            },
+            "exercises": [
+              {
+                "answer_key_source_ref": "Having the right idea is only 10%",
+                "bloom_level": "understand",
+                "exercise_id": "ex-u03-1",
+                "prompt_intent": "Explain the bridge's 10% idea versus 90% leadership contrast in the learner's own words."
+              },
+              {
+                "answer_key_source_ref": "the communication skills, and the leadership identity",
+                "bloom_level": "understand",
+                "exercise_id": "ex-u03-2",
+                "prompt_intent": "Identify which leadership capacities the bridge names as essential to getting others to follow."
+              }
+            ],
+            "learning_objective_id": "u03",
+            "narrative_intent": "Move the detailed explanatory burden off the slide and into the workbook so the deck can stay emotionally crisp while the workbook carries the adoption logic.",
+            "section_id": "sec-u03",
+            "title": "Why Leadership Drives Adoption"
+          },
+          {
+            "depth_delta": {
+              "deferred_depth": "A reflective narrative on what it means for a clinician to stop merely reacting to operational problems and begin seeing themselves as a system redesign agent.",
+              "deferred_from_slide": "u04",
+              "retained_on_slide": "The short identity pivot line from reaction to redesign."
+            },
+            "exercises": [
+              {
+                "answer_key_source_ref": "you are preparing to redesign it.",
+                "bloom_level": "understand",
+                "exercise_id": "ex-u04-1",
+                "prompt_intent": "Interpret the identity shift implied by the phrase about redesigning the system."
+              }
+            ],
+            "learning_objective_id": "u04",
+            "narrative_intent": "Provide space for reflective meaning-making that would be too verbose for a closing bridge slide.",
+            "section_id": "sec-u04",
+            "title": "From Reaction to Redesign"
+          },
+          {
+            "depth_delta": {
+              "deferred_depth": "A short prose preview elaborating how defining leadership identity, communicating vision, and inspiring others connect as a coherent next-stage development path.",
+              "deferred_from_slide": "u05",
+              "retained_on_slide": "The three named Module 2 capability areas."
+            },
+            "exercises": [
+              {
+                "answer_key_source_ref": "define who you are as a leader",
+                "bloom_level": "remember",
+                "exercise_id": "ex-u05-1",
+                "prompt_intent": "Recall the three focus areas named for Module 2."
+              }
+            ],
+            "learning_objective_id": "u05",
+            "narrative_intent": "Clarify expectations for the next module while keeping the bridge slide itself succinct and motivational.",
+            "section_id": "sec-u05",
+            "title": "Preview of Module 2 Leadership Identity Work"
+          }
+        ]
+      }
+    },
+    "lesson_summary": "A concise closing-and-bridge lesson that synthesizes Module 1, reframes innovation success around the leader rather than the idea, marks the learner's shift from reacting to redesigning, and previews Module 2's focus on leadership identity, communication, and inspiration. Cluster use is minimal and targeted: only the idea-versus-leadership claim is expanded because it contains multiple explanatory beats and high pedagogical weight. All other units remain keep-dense to preserve the integrity of the closing synthesis.",
+    "plan_units": [
+      {
+        "cluster_id": "c-u01",
+        "cluster_interstitial_count": 0,
+        "cluster_position": "establish",
+        "cluster_role": "head",
+        "develop_type": null,
+        "fidelity": "literal-text",
+        "learning_objective": "Recognize Module 1 as complete and understand that the next step is a transition from innovator mindset to leadership identity, with emphasis on the leader needed to champion opportunities inside complex health systems.",
+        "master_behavioral_intent": "moving",
+        "narrative_arc": "From completion of innovator mindset foundations to readiness for leadership identity development through a closing synthesis and forward bridge into Module 2.",
+        "parent_slide_id": null,
+        "rationale": "This is the direct subject of the source slide and its narration. The unit should remain keep-dense because its value is as a closing synthesis and forward bridge rather than a decomposed teaching cluster.",
+        "scope_decision": "in-scope",
+        "source_refs": [
+          "Module 1 Complete: The Mindset is Set.",
+          "bridge connecting \"Module 1: Mindset\"",
+          "to \"Module 2: Leadership Identity.\"",
+          "Congratulations on completing Module 1.",
+          "In Module 2, we will move from Mindset to Identity.",
+          "See you in Module 2."
+        ],
+        "title": "Module 1 Completion and Bridge to Module 2",
+        "unit_id": "u01"
+      },
+      {
+        "cluster_id": "c-u02",
+        "cluster_interstitial_count": 0,
+        "cluster_position": "establish",
+        "cluster_role": "head",
+        "develop_type": null,
+        "fidelity": "creative",
+        "learning_objective": "Recall the specific Module 1 foundations named in the bridge: mapping macro forces changing medicine and populating an Opportunity Radar with important targets.",
+        "master_behavioral_intent": "reflective",
+        "narrative_arc": "From recap of system-level innovation foundations to recognition of their limits without leadership capacity through selective recall of Module 1 pillars named in the bridge.",
+        "parent_slide_id": null,
+        "rationale": "The bridge explicitly references prior learning as setup for the transition. This support content is in scope because it explains what the learner is carrying forward into Module 2.",
+        "scope_decision": "in-scope",
+        "source_refs": [
+          "mapped out the macro forces changing medicine",
+          "filled your Opportunity Radar with vital targets",
+          "The Opportunity Radar",
+          "past frustrations, present workarounds, and future trends"
+        ],
+        "title": "What Module 1 Equipped the Learner to See",
+        "unit_id": "u02"
+      },
+      {
+        "cluster_id": "c-u03",
+        "cluster_interstitial_count": 2,
+        "cluster_position": "establish",
+        "cluster_role": "head",
+        "develop_type": null,
+        "fidelity": "literal-text",
+        "learning_objective": "Understand that opportunities and ideas are insufficient on their own; success in healthcare intrapreneurship depends primarily on the leader's ability to champion adoption inside a matrixed system.",
+        "master_behavioral_intent": "clear-guidance",
+        "narrative_arc": "From confidence in the value of ideas alone to recognition that leadership identity drives adoption through a progressive reframing of innovation success inside matrixed health systems.",
+        "parent_slide_id": null,
+        "rationale": "This is the bridge's main conceptual turn and carries high pedagogical weight because it reframes innovation from idea generation to leadership execution. It benefits from clustering because the narration contains multiple explanatory beats: viability, matrixed context, and the 10%/90% contrast.",
+        "scope_decision": "in-scope",
+        "source_refs": [
+          "an idea is only as good as the leader",
+          "a complex matrixed health system",
+          "opportunity is only as viable as the leader championing it",
+          "Having the right idea is only 10%",
+          "the other 90% is having the political savvy",
+          "the communication skills, and the leadership identity"
+        ],
+        "title": "Leadership, Not Just Ideas, Determines Innovation Viability",
+        "unit_id": "u03"
+      },
+      {
+        "cluster_id": "c-u03",
+        "cluster_interstitial_count": 0,
+        "cluster_position": "develop",
+        "cluster_role": "interstitial",
+        "develop_type": "deepen",
+        "fidelity": "creative",
+        "learning_objective": "Explain why innovation value in this course context depends on championing and adoption rather than on the idea itself.",
+        "master_behavioral_intent": "clear-guidance",
+        "narrative_arc": "From confidence in the value of ideas alone to recognition that leadership identity drives adoption through a progressive reframing of innovation success inside matrixed health systems.",
+        "parent_slide_id": "u03",
+        "rationale": "This interstitial isolates the first explanatory beat of the cluster so the learner clearly understands the bridge's central contrast before moving to execution skills.",
+        "scope_decision": "in-scope",
+        "source_refs": [
+          "an idea is only as good as the leader",
+          "opportunity is only as viable as the leader championing it",
+          "creating new value that is successfully adopted by the market or system"
+        ],
+        "title": "Why an Idea Alone Is Not Enough",
+        "unit_id": "u03-i1"
+      },
+      {
+        "cluster_id": "c-u03",
+        "cluster_interstitial_count": 0,
+        "cluster_position": "resolve",
+        "cluster_role": "interstitial",
+        "develop_type": null,
+        "fidelity": "literal-text",
+        "learning_objective": "Identify the leadership capacities named in the bridge as necessary to move an idea through a health system: political savvy, communication skills, and leadership identity.",
+        "master_behavioral_intent": "clear-guidance",
+        "narrative_arc": "From confidence in the value of ideas alone to recognition that leadership identity drives adoption through a progressive reframing of innovation success inside matrixed health systems.",
+        "parent_slide_id": "u03",
+        "rationale": "This interstitial isolates the concrete capabilities that make up the bridge's leadership claim, improving clarity and assessment alignment.",
+        "scope_decision": "in-scope",
+        "source_refs": [
+          "the other 90% is having the political savvy",
+          "the communication skills, and the leadership identity",
+          "how you communicate your vision",
+          "inspire others to join your cause"
+        ],
+        "title": "The Capabilities Required to Lead Adoption",
+        "unit_id": "u03-i2"
+      },
+      {
+        "cluster_id": "c-u04",
+        "cluster_interstitial_count": 0,
+        "cluster_position": "establish",
+        "cluster_role": "head",
+        "develop_type": null,
+        "fidelity": "literal-text",
+        "learning_objective": "Understand the learner identity shift described in the bridge: moving from reacting to the healthcare system toward preparing to redesign it.",
+        "master_behavioral_intent": "provocative",
+        "narrative_arc": "From passive response to active redesign orientation through a concise identity-level reframing of the learner's role in healthcare innovation.",
+        "parent_slide_id": null,
+        "rationale": "This line is a strong conceptual synthesis and identity pivot. It is central to the emotional and pedagogical close, so it should remain as a dense singleton rather than be split apart.",
+        "scope_decision": "in-scope",
+        "source_refs": [
+          "You are no longer just reacting to the system;",
+          "you are preparing to redesign it."
+        ],
+        "title": "The Shift from Reacting to Redesigning the System",
+        "unit_id": "u04"
+      },
+      {
+        "cluster_id": "c-u05",
+        "cluster_interstitial_count": 0,
+        "cluster_position": "establish",
+        "cluster_role": "head",
+        "develop_type": null,
+        "fidelity": "literal-text",
+        "learning_objective": "Preview the stated Module 2 outcomes: defining leadership identity, communicating vision, and inspiring others to join the work.",
+        "master_behavioral_intent": "clear-guidance",
+        "narrative_arc": "From anticipation of the next step to clarity about Module 2's leadership-identity focus through a concise preview of upcoming capabilities.",
+        "parent_slide_id": null,
+        "rationale": "This is explicit bridge content and directly states the next module's scope. It is appropriate as a singleton because it is a concise preview list rather than a concept requiring decomposition.",
+        "scope_decision": "in-scope",
+        "source_refs": [
+          "You will begin to define who you are as a leader",
+          "how you communicate your vision",
+          "how you can inspire others to join your cause",
+          "The clinical problem is waiting; it is time to build the leader who will solve it."
+        ],
+        "title": "What Module 2 Will Develop",
+        "unit_id": "u05"
+      },
+      {
+        "cluster_id": "c-u06",
+        "cluster_interstitial_count": 0,
+        "cluster_position": "establish",
+        "cluster_role": "head",
+        "develop_type": null,
+        "fidelity": "literal-text",
+        "learning_objective": "Recognize which Module 1 concepts are valid recap supports for the bridge because they appear in the provided assessment corpus: innovation as adopted value, psychological safety, growth mindset, macro forces, AI training gap, economic pressure, diagnosis-to-design mapping, 5 Whys, ambiguity tolerance, and expected value/utility distinction.",
+        "master_behavioral_intent": "credible",
+        "narrative_arc": "From broad recap of Module 1 to a bounded ratification of which concepts are legitimately presupposed by the bridge through assessment-grounded scope confirmation.",
+        "parent_slide_id": null,
+        "rationale": "The assessment corpus is part of the provided planning basis and identifies core knowledge the bridge may validly presume or lightly echo. This should stay dense as a planning ratification surface rather than a learner-facing decomposed cluster.",
+        "scope_decision": "in-scope",
+        "source_refs": [
+          "creating new value that is successfully adopted",
+          "Psychological Safety",
+          "Growth Mindset",
+          "macroeconomic data presented",
+          "73 days",
+          "66% of physicians",
+          "$5.2 trillion",
+          "Design Thinking framework",
+          "5 Whys framework",
+          "Comfort with ambiguity"
+        ],
+        "title": "Assessed Module 1 Concepts Referenced by the Bridge",
+        "unit_id": "u06"
+      }
+    ]
+  },
+  "locked_scope": {
+    "locked": false,
+    "plan_units": [
+      {
+        "cluster_id": "c-u01",
+        "cluster_interstitial_count": 0,
+        "cluster_position": "establish",
+        "cluster_role": "head",
+        "develop_type": null,
+        "fidelity": "literal-text",
+        "learning_objective": "Recognize Module 1 as complete and understand that the next step is a transition from innovator mindset to leadership identity, with emphasis on the leader needed to champion opportunities inside complex health systems.",
+        "master_behavioral_intent": "moving",
+        "narrative_arc": "From completion of innovator mindset foundations to readiness for leadership identity development through a closing synthesis and forward bridge into Module 2.",
+        "parent_slide_id": null,
+        "rationale": "This is the direct subject of the source slide and its narration. The unit should remain keep-dense because its value is as a closing synthesis and forward bridge rather than a decomposed teaching cluster.",
+        "scope_decision": "in-scope",
+        "source_refs": [
+          "Module 1 Complete: The Mindset is Set.",
+          "bridge connecting \"Module 1: Mindset\"",
+          "to \"Module 2: Leadership Identity.\"",
+          "Congratulations on completing Module 1.",
+          "In Module 2, we will move from Mindset to Identity.",
+          "See you in Module 2."
+        ],
+        "title": "Module 1 Completion and Bridge to Module 2",
+        "unit_id": "u01"
+      },
+      {
+        "cluster_id": "c-u02",
+        "cluster_interstitial_count": 0,
+        "cluster_position": "establish",
+        "cluster_role": "head",
+        "develop_type": null,
+        "fidelity": "creative",
+        "learning_objective": "Recall the specific Module 1 foundations named in the bridge: mapping macro forces changing medicine and populating an Opportunity Radar with important targets.",
+        "master_behavioral_intent": "reflective",
+        "narrative_arc": "From recap of system-level innovation foundations to recognition of their limits without leadership capacity through selective recall of Module 1 pillars named in the bridge.",
+        "parent_slide_id": null,
+        "rationale": "The bridge explicitly references prior learning as setup for the transition. This support content is in scope because it explains what the learner is carrying forward into Module 2.",
+        "scope_decision": "in-scope",
+        "source_refs": [
+          "mapped out the macro forces changing medicine",
+          "filled your Opportunity Radar with vital targets",
+          "The Opportunity Radar",
+          "past frustrations, present workarounds, and future trends"
+        ],
+        "title": "What Module 1 Equipped the Learner to See",
+        "unit_id": "u02"
+      },
+      {
+        "cluster_id": "c-u03",
+        "cluster_interstitial_count": 2,
+        "cluster_position": "establish",
+        "cluster_role": "head",
+        "develop_type": null,
+        "fidelity": "literal-text",
+        "learning_objective": "Understand that opportunities and ideas are insufficient on their own; success in healthcare intrapreneurship depends primarily on the leader's ability to champion adoption inside a matrixed system.",
+        "master_behavioral_intent": "clear-guidance",
+        "narrative_arc": "From confidence in the value of ideas alone to recognition that leadership identity drives adoption through a progressive reframing of innovation success inside matrixed health systems.",
+        "parent_slide_id": null,
+        "rationale": "This is the bridge's main conceptual turn and carries high pedagogical weight because it reframes innovation from idea generation to leadership execution. It benefits from clustering because the narration contains multiple explanatory beats: viability, matrixed context, and the 10%/90% contrast.",
+        "scope_decision": "in-scope",
+        "source_refs": [
+          "an idea is only as good as the leader",
+          "a complex matrixed health system",
+          "opportunity is only as viable as the leader championing it",
+          "Having the right idea is only 10%",
+          "the other 90% is having the political savvy",
+          "the communication skills, and the leadership identity"
+        ],
+        "title": "Leadership, Not Just Ideas, Determines Innovation Viability",
+        "unit_id": "u03"
+      },
+      {
+        "cluster_id": "c-u03",
+        "cluster_interstitial_count": 0,
+        "cluster_position": "develop",
+        "cluster_role": "interstitial",
+        "develop_type": "deepen",
+        "fidelity": "creative",
+        "learning_objective": "Explain why innovation value in this course context depends on championing and adoption rather than on the idea itself.",
+        "master_behavioral_intent": "clear-guidance",
+        "narrative_arc": "From confidence in the value of ideas alone to recognition that leadership identity drives adoption through a progressive reframing of innovation success inside matrixed health systems.",
+        "parent_slide_id": "u03",
+        "rationale": "This interstitial isolates the first explanatory beat of the cluster so the learner clearly understands the bridge's central contrast before moving to execution skills.",
+        "scope_decision": "in-scope",
+        "source_refs": [
+          "an idea is only as good as the leader",
+          "opportunity is only as viable as the leader championing it",
+          "creating new value that is successfully adopted by the market or system"
+        ],
+        "title": "Why an Idea Alone Is Not Enough",
+        "unit_id": "u03-i1"
+      },
+      {
+        "cluster_id": "c-u03",
+        "cluster_interstitial_count": 0,
+        "cluster_position": "resolve",
+        "cluster_role": "interstitial",
+        "develop_type": null,
+        "fidelity": "literal-text",
+        "learning_objective": "Identify the leadership capacities named in the bridge as necessary to move an idea through a health system: political savvy, communication skills, and leadership identity.",
+        "master_behavioral_intent": "clear-guidance",
+        "narrative_arc": "From confidence in the value of ideas alone to recognition that leadership identity drives adoption through a progressive reframing of innovation success inside matrixed health systems.",
+        "parent_slide_id": "u03",
+        "rationale": "This interstitial isolates the concrete capabilities that make up the bridge's leadership claim, improving clarity and assessment alignment.",
+        "scope_decision": "in-scope",
+        "source_refs": [
+          "the other 90% is having the political savvy",
+          "the communication skills, and the leadership identity",
+          "how you communicate your vision",
+          "inspire others to join your cause"
+        ],
+        "title": "The Capabilities Required to Lead Adoption",
+        "unit_id": "u03-i2"
+      },
+      {
+        "cluster_id": "c-u04",
+        "cluster_interstitial_count": 0,
+        "cluster_position": "establish",
+        "cluster_role": "head",
+        "develop_type": null,
+        "fidelity": "literal-text",
+        "learning_objective": "Understand the learner identity shift described in the bridge: moving from reacting to the healthcare system toward preparing to redesign it.",
+        "master_behavioral_intent": "provocative",
+        "narrative_arc": "From passive response to active redesign orientation through a concise identity-level reframing of the learner's role in healthcare innovation.",
+        "parent_slide_id": null,
+        "rationale": "This line is a strong conceptual synthesis and identity pivot. It is central to the emotional and pedagogical close, so it should remain as a dense singleton rather than be split apart.",
+        "scope_decision": "in-scope",
+        "source_refs": [
+          "You are no longer just reacting to the system;",
+          "you are preparing to redesign it."
+        ],
+        "title": "The Shift from Reacting to Redesigning the System",
+        "unit_id": "u04"
+      },
+      {
+        "cluster_id": "c-u05",
+        "cluster_interstitial_count": 0,
+        "cluster_position": "establish",
+        "cluster_role": "head",
+        "develop_type": null,
+        "fidelity": "literal-text",
+        "learning_objective": "Preview the stated Module 2 outcomes: defining leadership identity, communicating vision, and inspiring others to join the work.",
+        "master_behavioral_intent": "clear-guidance",
+        "narrative_arc": "From anticipation of the next step to clarity about Module 2's leadership-identity focus through a concise preview of upcoming capabilities.",
+        "parent_slide_id": null,
+        "rationale": "This is explicit bridge content and directly states the next module's scope. It is appropriate as a singleton because it is a concise preview list rather than a concept requiring decomposition.",
+        "scope_decision": "in-scope",
+        "source_refs": [
+          "You will begin to define who you are as a leader",
+          "how you communicate your vision",
+          "how you can inspire others to join your cause",
+          "The clinical problem is waiting; it is time to build the leader who will solve it."
+        ],
+        "title": "What Module 2 Will Develop",
+        "unit_id": "u05"
+      },
+      {
+        "cluster_id": "c-u06",
+        "cluster_interstitial_count": 0,
+        "cluster_position": "establish",
+        "cluster_role": "head",
+        "develop_type": null,
+        "fidelity": "literal-text",
+        "learning_objective": "Recognize which Module 1 concepts are valid recap supports for the bridge because they appear in the provided assessment corpus: innovation as adopted value, psychological safety, growth mindset, macro forces, AI training gap, economic pressure, diagnosis-to-design mapping, 5 Whys, ambiguity tolerance, and expected value/utility distinction.",
+        "master_behavioral_intent": "credible",
+        "narrative_arc": "From broad recap of Module 1 to a bounded ratification of which concepts are legitimately presupposed by the bridge through assessment-grounded scope confirmation.",
+        "parent_slide_id": null,
+        "rationale": "The assessment corpus is part of the provided planning basis and identifies core knowledge the bridge may validly presume or lightly echo. This should stay dense as a planning ratification surface rather than a learner-facing decomposed cluster.",
+        "scope_decision": "in-scope",
+        "source_refs": [
+          "creating new value that is successfully adopted",
+          "Psychological Safety",
+          "Growth Mindset",
+          "macroeconomic data presented",
+          "73 days",
+          "66% of physicians",
+          "$5.2 trillion",
+          "Design Thinking framework",
+          "5 Whys framework",
+          "Comfort with ambiguity"
+        ],
+        "title": "Assessed Module 1 Concepts Referenced by the Bridge",
+        "unit_id": "u06"
+      }
+    ]
+  },
+  "model_id": "gpt-5.4",
+  "specialist_id": "irene_pass1",
+  "usage": {
+    "input_token_details": {
+      "audio": 0,
+      "cache_read": 0
+    },
+    "input_tokens": 12773,
+    "output_token_details": {
+      "audio": 0,
+      "reasoning": 0
+    },
+    "output_tokens": 2791,
+    "total_tokens": 15564
+  }
+}

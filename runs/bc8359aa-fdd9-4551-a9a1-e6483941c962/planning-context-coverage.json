@@ -1,0 +1,12 @@
+{
+  "audience_acknowledged": true,
+  "context_present": true,
+  "lo_coverage": "present",
+  "notes": "lo_coverage=present; touched=1/1",
+  "purpose_acknowledged": true,
+  "schema_version": "0.1",
+  "supported_objective_ids": [
+    "lo-bridge-001"
+  ],
+  "weak_or_missing_objective_ids": []
+}

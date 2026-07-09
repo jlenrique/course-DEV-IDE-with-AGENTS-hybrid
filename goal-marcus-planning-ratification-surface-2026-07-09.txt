@@ -72,3 +72,15 @@ on changed selection + delta + trial `run_summary` (no Gamma spend).
 ## Done bar (~3h)
 
 Party CLOSE COMPLETE or COMPLETE-with-named-fenced-residuals; evidence stamped; commit pushed to `origin/dev/lesson-planning-2026-07-09`.
+
+---
+
+## SESSION CLOSE STATUS (2026-07-09)
+
+**MET:** COMPLETE-with-named-fenced-residuals
+- Claim A (plan-ratify + W5 local compose): @318b6b0f
+- Claim B LIVE bespoke: evidence `marcus-claim-b-live-20260709T234801Z/`;
+  close letter `marcus-claim-b-live-close-2026-07-09.md`; party 4/4
+
+**Still fenced (named):** interactive SPOC REPL; Gamma spend walk; SME/projector;
+lecture ingest; happy-path coverage JSON write in act(); on-read digest verify.

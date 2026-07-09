@@ -1,0 +1,32 @@
+{
+  "claim": "PASS-bespoke",
+  "failed_required": [],
+  "framing_ok": true,
+  "bespoke_ok": true,
+  "predicates": {
+    "consumer_root_is_runs_uuid": true,
+    "ratification_present": true,
+    "intent_present": true,
+    "los_present": true,
+    "irene_pass1_md_treatment": true,
+    "irene_pass1_md_control": true,
+    "plan_hash_differs": true,
+    "coverage_present": true,
+    "lo_coverage": "present",
+    "purpose_acknowledged": true,
+    "audience_acknowledged": true,
+    "provenance_present": true,
+    "provenance_digest": "sha256:887395185d177d17d81a5f528329db13be335a4b9ba825863b7b75802fa4c770",
+    "control_omits_coverage": true,
+    "control_omits_provenance": true,
+    "purpose_token_in_plan": true,
+    "lo_token_in_plan": true,
+    "treatment_run_id": "bc8359aa-fdd9-4551-a9a1-e6483941c962",
+    "control_run_id": "b5cd2bc8-50e5-4d0f-9c60-0dbc79664bde",
+    "treatment_plan_hash": "5bf4805125763f4532e5d1362ec1bacd153f384e6b0b81b6d66e324712f2084a",
+    "control_plan_hash": "c9044efa4dc6112161d78e7f8121080168c058b14cd96a56d2c6697692ff28ad"
+  },
+  "purpose": "Bridge Module-1 innovator-mindset into Module-2 leadership-identity with assessment-driven reflection checkpoints",
+  "audience": "APC Cohort-C1 clinician-innovators preparing for Module-2 leadership-identity work",
+  "lo_statement": "Map Module-1 Opportunity-Radar targets onto Module-2 leadership-identity competencies using assessment-bridge language"
+}
