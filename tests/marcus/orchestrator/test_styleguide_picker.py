@@ -169,11 +169,11 @@ def test_every_rendered_thumbnail_ref_resolves_to_real_png() -> None:
         # R1: thumbnails render as SAME-ORIGIN server paths (a file:// img on an
         # http page is blocked by the browser), served by do_GET.
         assert f'src="/thumbnails/{entry["name"]}.png"' in html
-    assert seen_thumb == 7, (
-        "all 7 active styles carry a curated thumbnail after the session-09 roster build: "
-        "crossroads-classic, crossroads-digital-collage, crossroads-magazine, "
-        "crossroads-blueprint, crossroads-bread-and-butter, videographic-glance, "
-        "studio-image-card."
+    assert seen_thumb == 8, (
+        "all 8 active styles with curated thumbnails after classic-preserve sibling: "
+        "crossroads-classic, crossroads-classic-preserve, crossroads-digital-collage, "
+        "crossroads-magazine, crossroads-blueprint, crossroads-bread-and-butter, "
+        "videographic-glance, studio-image-card."
     )
 
 
