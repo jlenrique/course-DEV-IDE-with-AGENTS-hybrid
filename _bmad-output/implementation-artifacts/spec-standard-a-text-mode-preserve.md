@@ -1,27 +1,28 @@
-# Spec: Standard-A styleguide text_mode preserve (Fidelity L1 alignment)
+# Spec: Crossroads Classic preserve sibling (no ad-hoc edit of approved guides)
 
 **Status:** done  
 **Workflow:** `bmad-quick-dev`  
-**Party green-light:** 2026-07-09 — Winston/Amelia/John consensus **A**  
-**Evidence:** trial `62308889` / `IRENE-FIGURE-CONTRADICTION-TRIAGE.md`
+**Operator correction:** 2026-07-09 — never mutate a completed/approved registry guide ad hoc  
+**Supersedes:** earlier party-A proposal to flip classic in place (reverted)
 
 ## Goal
 
-Align permanent standard-A guide `hil-2026-apc-crossroads-classic` with Fidelity L1:
-`text_mode=preserve` so Gamma cannot drop teaching numerals (10%/90%) that Pass-2
-must narrate, which currently fires `irene.pass2.figure-contradiction`.
+Meet Fidelity L1 / source-numeral retention by **copying** `hil-2026-apc-crossroads-classic`
+into a named sibling that differs **only** in `text_content.mode: preserve` (amount null).
+The approved classic `condense` record stays frozen.
 
 ## Acceptance Criteria
 
-1. **Given** the SSOT record for `hil-2026-apc-crossroads-classic`, **when** loaded,
-   **then** `prompt_configuration.text_content.mode == preserve` and `amount` is absent/null.
-2. **Given** `resolve_styleguide` / expand for that guide, **when** projected to Gary
-   settings, **then** `text_mode == "preserve"`.
+1. **Given** `hil-2026-apc-crossroads-classic`, **when** resolved, **then** `text_mode=condense`
+   and `amount` present (minimal) — unchanged from the approved record.
+2. **Given** `hil-2026-apc-crossroads-classic-preserve`, **when** resolved, **then**
+   `text_mode=preserve`, amount absent, and theme/image_model/style_preset/dimensions match classic.
 3. **Given** `validate_gamma_style_guides.py`, **when** run offline, **then** PASS.
-4. Existing `DEFAULT_VARIANT_PAIR` preserve pin remains green.
+4. Part-4 AFK HIL re-proof picks the **preserve sibling**, not classic.
 
 ## Tasks
 
-1. Patch `state/config/gamma-style-guides.yaml` classic record (+ prose/provenance).
-2. Add regression test pinning classic → preserve.
-3. Update deferred-inventory triage entry; leave S8 CLOSED pending re-proof.
+1. Restore classic to approved condense record.
+2. Add `hil-2026-apc-crossroads-classic-preserve` sibling.
+3. Pin regression tests (classic stays condense; sibling is preserve + visual parity).
+4. Point terminal-walk driver `GUIDE` at the sibling for Irene re-proof.

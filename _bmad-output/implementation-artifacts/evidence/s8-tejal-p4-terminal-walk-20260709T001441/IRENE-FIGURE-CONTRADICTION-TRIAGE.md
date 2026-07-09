@@ -39,7 +39,10 @@ Not a corpus typo, not a mute matcher flake, not a false-positive figure gate.
 | **C** | Add `irene.pass2.figure-contradiction` to retry net | Deferred inventory option (b); absorbs variance, does not fix condense→figure-loss |
 | **D** | One-off recover / re-render this trial with preserve override | Proof-only; not durable |
 
-**Recommended:** **A** as permanent product fix; **B** only as belt if preserve still loses figures under illustration; **C** remains deferred behind A.
+**Recommended:** pick named sibling **`hil-2026-apc-crossroads-classic-preserve`**
+(identical to classic except `text_mode=preserve`). **Do not** mutate the approved
+classic registry record ad hoc (operator 2026-07-09). B only as belt if preserve
+still loses figures; C remains deferred; D forbidden as sole path.
 
 ## Next gate
 

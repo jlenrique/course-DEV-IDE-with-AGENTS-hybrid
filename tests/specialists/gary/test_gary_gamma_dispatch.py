@@ -830,14 +830,21 @@ def test_variant_a_text_mode_preserve_l1_fidelity() -> None:
 
 
 def test_standard_a_crossroads_classic_text_mode_preserve_l1() -> None:
-    """Fidelity L1 alignment 2026-07-09 (party A): standard-A styleguide must resolve
-    to text_mode=preserve. Live trial 62308889 showed condense dropped source 10%/90%
-    and Irene correctly raised irene.pass2.figure-contradiction.
+    """Fidelity L1 (operator 2026-07-09): approved classic stays condense; the named
+    sibling hil-2026-apc-crossroads-classic-preserve carries preserve. Never mutate
+    an approved registry guide ad hoc (trial 62308889 figure-contradiction).
     """
     from app.styleguide.resolver import resolve_styleguide
 
-    resolved = resolve_styleguide("hil-2026-apc-crossroads-classic")
-    assert resolved["text_mode"] == "preserve"
-    # preserve forbids amount (validator gamma.text.amount-mode); expand must not
-    # reintroduce a condensed amount under the standard-A name.
-    assert not resolved.get("amount") or resolved.get("amount") in {None, "", "default"}
+    classic = resolve_styleguide("hil-2026-apc-crossroads-classic")
+    assert classic["text_mode"] == "condense"
+    assert classic.get("amount") in {"minimal", "brief"}  # UI→API may translate
+
+    preserve = resolve_styleguide("hil-2026-apc-crossroads-classic-preserve")
+    assert preserve["text_mode"] == "preserve"
+    assert not preserve.get("amount") or preserve.get("amount") in {None, "", "default"}
+    # Identical visual triad except text mode.
+    assert classic["theme"] == preserve["theme"]
+    assert classic["image_model"] == preserve["image_model"]
+    assert classic["image_style_preset"] == preserve["image_style_preset"]
+    assert classic["dimensions"] == preserve["dimensions"]

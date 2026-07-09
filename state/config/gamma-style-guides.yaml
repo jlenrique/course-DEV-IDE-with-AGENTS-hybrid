@@ -33,21 +33,20 @@ style_guides:
     # strip exposed gpt-image-2-mini's raw CJK default precisely because it carries no
     # such brief.
     #
-    # Fidelity L1 alignment 2026-07-09 (party A): mode condense → preserve. Live trial
-    # 62308889 showed condense dropped source 10%/90% teaching numerals while the
-    # illustration invented decorative 92%, then Irene Pass-2 correctly raised
-    # irene.pass2.figure-contradiction. preserve matches DEFAULT_VARIANT_PAIR and stops
-    # Gamma from silently demoting lesson-critical figures under the standard-A path.
+    # GOVERNANCE (operator 2026-07-09): completed/approved registry guides are NOT mutated
+    # ad hoc. Fidelity-L1 preserve need is met by the named sibling
+    # hil-2026-apc-crossroads-classic-preserve (identical except text mode), not by editing
+    # this record.
     lifecycle: permanent
-    version: 2
+    version: 1
     theme:
       id: njim9kuhfnljvaa
       name: 2026 HIL APC Tejal
     studio_template: null
     prompt_configuration:
       text_content:
-        mode: preserve
-        amount: null
+        mode: condense
+        amount: minimal
         audience: null
         tone: null
         language: en
@@ -82,9 +81,8 @@ style_guides:
       display_name: HIL 2026 APC Crossroads Classic
       distinguishing: >-
         The new standard 'A' style: a calm clinician-crossroads register on the Tejal
-        theme with GPT Image 2 Mini illustration — source text preserved verbatim,
-        spacious white cards, and on-message metaphor imagery driven by the slide's
-        Illustration brief.
+        theme with GPT Image 2 Mini illustration — condensed prose, spacious white
+        cards, and on-message metaphor imagery driven by the slide's Illustration brief.
       narrative:
         summary: >-
           A Classic presentation candidate captured from the LEON model-selection
@@ -126,9 +124,80 @@ style_guides:
         card width L, middle content alignment, font size M, show card backdrops
         off, animations on, and empty Card headers & footers add-elements area.
         The folder name was corrected from an out-of-date Nano Banana label to
-        GPT Image 2 Mini. Original Prompt editor evidence showed Text content
-        Condense / Minimal; 2026-07-09 Fidelity L1 alignment flipped mode to
-        preserve (amount null) after trial 62308889 figure-contradiction triage.
+        GPT Image 2 Mini. Later Prompt editor evidence shows Text content set to
+        Condense with Amount of text set to Minimal.
+
+  # -- Preserve-mode sibling of standard-'A' crossroads classic (operator 2026-07-09) --
+  #    Identical to hil-2026-apc-crossroads-classic EXCEPT text_content.mode condense→preserve
+  #    (amount null). Do NOT mutate the approved classic record; pick this named variant when
+  #    Fidelity L1 / source-numeral retention is required (trial 62308889 figure-contradiction).
+  #    Distinct from bread-and-butter (which also changes 16:9 + gpt-image-2).
+  hil-2026-apc-crossroads-classic-preserve:
+    production_mode: api
+    lifecycle: permanent
+    version: 1
+    theme:
+      id: njim9kuhfnljvaa
+      name: 2026 HIL APC Tejal
+    studio_template: null
+    prompt_configuration:
+      text_content:
+        mode: preserve
+        amount: null
+        audience: null
+        tone: null
+        language: en
+      visuals:
+        image_source: aiGenerated
+        image_model: gpt-image-2-mini
+        style_preset: illustration
+        custom_style: null
+        keywords: []
+    page_settings:
+      card_options:
+        dimensions: fluid
+      ui_only_reference:
+        card_width: L
+        content_alignment: middle
+        font_size: M
+        show_card_backdrops: false
+        animations: true
+        card_headers_footers: not_configured
+    presentation:
+      display_name: HIL 2026 APC Crossroads Classic (Preserve)
+      distinguishing: >-
+        Named fidelity sibling of Crossroads Classic: same Tejal + GPT Image 2 Mini
+        illustration + fluid frame, with source text PRESERVED verbatim instead of
+        condensed — use when teaching numerals must survive Gamma render for Pass-2.
+      narrative:
+        summary: >-
+          Byte-identical to hil-2026-apc-crossroads-classic except text mode preserve
+          (amount omitted). Created so the approved classic condense record stays frozen.
+        feels_like: Calm, hopeful, clinical-education illustration with verbatim source prose.
+        use_when: >-
+          Figure-bearing / teaching-numeral slides where Pass-2 must narrate source
+          percentages or money figures that condense would drop.
+        avoid_when: >-
+          Decks that intentionally want condensed editorial prose (use classic instead).
+        triad_rationale: >-
+          Same triad as Crossroads Classic (Tejal + illustration + GPT Image 2 Mini +
+          Default/Fluid); only the text-mode channel differs.
+      example_url: "https://a-clinician-at-the-cross-eyjrmid.gamma.site/"
+      thumbnail_ref: state/config/gamma-styleguide-thumbnails/hil-2026-apc-crossroads-classic.png
+      last_used: null
+    coherence:
+      theme_art_keywords_dimensions: >-
+        Tejal theme + AI-generated illustration + GPT Image 2 Mini + Default/Fluid
+        page setup; preserve-mode text (verbatim source). Same visual triad as classic.
+    provenance:
+      source: crossroads-classic-preserve-sibling
+      established: '2026-07-09'
+      notes: >-
+        Operator-directed 2026-07-09 after trial 62308889: classic condense dropped source
+        10%/90% while Gamma invented decorative 92%, then Irene correctly raised
+        irene.pass2.figure-contradiction. Policy: never ad-hoc-edit an approved registry
+        guide — copy classic and change only text_mode to preserve. Not the same as
+        bread-and-butter (extra 16:9 + gpt-image-2 deltas).
 
   # -- B counterpart of the standard-'A' crossroads style: SAME style, Blueprint theme --
   hil-2026-apc-crossroads-blueprint:

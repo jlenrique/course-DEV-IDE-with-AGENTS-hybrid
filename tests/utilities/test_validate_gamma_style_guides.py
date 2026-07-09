@@ -104,13 +104,9 @@ def test_invalid_enum_value_fails_against_frozen_enum() -> None:
 def test_text_amount_required_for_generate_or_condense() -> None:
     data = _runtime_data()
     broken = copy.deepcopy(data)
-    # Force condense so amount-required fires (standard-A is preserve as of
-    # 2026-07-09 Fidelity L1 alignment; amount=None is valid under preserve).
-    text_content = broken["style_guides"]["hil-2026-apc-crossroads-classic"][
-        "prompt_configuration"
-    ]["text_content"]
-    text_content["mode"] = "condense"
-    text_content["amount"] = None
+    broken["style_guides"]["hil-2026-apc-crossroads-classic"]["prompt_configuration"][
+        "text_content"
+    ]["amount"] = None
     errors = validate_style_guides(broken)
     assert any("gamma.text.amount-required" in e for e in errors), errors
 
@@ -130,12 +126,9 @@ def test_text_amount_for_preserve_mode_is_invalid() -> None:
 def test_text_amount_uses_prompt_editor_values() -> None:
     data = _runtime_data()
     broken = copy.deepcopy(data)
-    # Force condense so amount-ui-values applies (preserve forbids amount).
-    text_content = broken["style_guides"]["hil-2026-apc-crossroads-classic"][
-        "prompt_configuration"
-    ]["text_content"]
-    text_content["mode"] = "condense"
-    text_content["amount"] = "brief"  # API value; registry must store UI value `minimal`.
+    broken["style_guides"]["hil-2026-apc-crossroads-classic"]["prompt_configuration"][
+        "text_content"
+    ]["amount"] = "brief"  # API value; registry must store UI value `minimal`.
     errors = validate_style_guides(broken)
     assert any("gamma.text.amount-ui-values" in e for e in errors), errors
 
