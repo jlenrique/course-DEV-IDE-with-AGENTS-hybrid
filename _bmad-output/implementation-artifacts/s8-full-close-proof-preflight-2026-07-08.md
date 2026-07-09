@@ -2,7 +2,27 @@
 
 ## Status
 
-S8 full close is not complete.
+S8 full close is not complete, but the prior operator-corpus blocker is now
+unblocked.
+
+2026-07-08 operator declaration names:
+
+```yaml
+s8_operator_named_corpus:
+  lesson_slug: "tejal-c1m1-p4-assessments-bridge"
+  corpus_path: "course-content/courses/tejal-c1m1-p4-assessments-bridge"
+  proof_intent: "S8 full-close composed proof"
+  expected_bundle_id: "narrated-deck-with-workbook"
+  hil_operator: "juanl"
+  freshness_attestation: "exception_with_rationale"
+  allow_tejal_exception: true
+  no_corpus_specific_diffs_acknowledged: true
+```
+
+The Tejal exception has been ratified by a four-seat BMAD party round
+(John/Winston/Murat/Paige) for this proof only because Tejal C1M1 is the only
+real course-content family currently available. HAI 510 and PHS 620 remain
+syllabus/reference fixtures and deferred from this proof.
 
 Closed checkpoints:
 
@@ -21,14 +41,14 @@ Current branch state at preflight authoring:
 
 ## Decision
 
-Do not call S8 complete.
+Do not call S8 complete yet.
 
-Do not select a proof corpus autonomously.
+Do not select a different proof corpus.
 
 The 2026-07-06 ratified S8 criterion says the operator names the lesson at
-S8-open. The current repository contains no authoritative record naming a
-specific S8 proof corpus. A proof run against an inferred or convenient corpus
-would weaken the evidence chain and violate the Marcus-SPOC product guardrail.
+S8-open. That gate is now satisfied by the operator declaration above. The
+remaining S8 close bar is still: curated corpus + preflight green + local
+Marcus-SPOC HIL composed proof + evidence pack + final party concurrence.
 
 ## BMAD Party Ruling
 
@@ -124,6 +144,56 @@ not S8 close.
 If the operator deliberately chooses an existing Tejal-family or fixture corpus,
 the party must explicitly ratify the criteria exception before any S8-complete
 claim.
+
+## Operator-Named Corpus Prepared
+
+Prepared corpus:
+
+- `course-content/courses/tejal-c1m1-p4-assessments-bridge/README.md`
+- `course-content/courses/tejal-c1m1-p4-assessments-bridge/urls.txt`
+- `course-content/courses/tejal-c1m1-p4-assessments-bridge/slides/`
+- `course-content/courses/tejal-c1m1-p4-assessments-bridge/references/`
+- `course-content/courses/tejal-c1m1-p4-assessments-bridge/assessments/`
+
+Raw source snapshot is preserved outside the curated corpus directory at
+`course-content/courses/tejal-c1m1-p4-assessments-bridge-raw/part4-assessments-bridge.md`
+so recursive ingestion does not double-count the split source files.
+
+Prepared source is intentionally gap-bearing. Part 4 provides assessment,
+playbook, rubric, and bridge-storyboard material, not a full lecture-slide deck,
+source PDF, image folder, DOI-indexed article packet, or rendered motion asset.
+Those gaps are recorded in
+`course-content/courses/tejal-c1m1-p4-assessments-bridge/references/source-gap-ledger.md`.
+
+Preflight checker:
+
+- `scripts/utilities/check_s8_proof_corpus.py`
+- `tests/utilities/test_check_s8_proof_corpus.py`
+
+Validation:
+
+```powershell
+.\.venv\Scripts\python.exe -m pytest tests\utilities\test_check_s8_proof_corpus.py -q
+# 7 passed
+
+.\.venv\Scripts\python.exe -m ruff check scripts\utilities\check_s8_proof_corpus.py tests\utilities\test_check_s8_proof_corpus.py
+# All checks passed
+
+.\.venv\Scripts\python.exe -m scripts.utilities.check_s8_proof_corpus `
+  course-content\courses\tejal-c1m1-p4-assessments-bridge `
+  --operator-named-slug tejal-c1m1-p4-assessments-bridge `
+  --operator-knows-cold `
+  --freshness-exception-rationale "Only Tejal C1M1 real course content is available; Part 4 is the next unproduced section and HAI/PHS are deferred syllabus/reference fixtures." `
+  --adequacy-wrinkle "Part 4 is assessment/bridge-heavy; G0R must surface gaps rather than invent missing slide or motion source." `
+  --no-corpus-specific-diffs-acknowledged `
+  --allow-tejal-exception `
+  --allow-source-gaps
+# ready: true
+```
+
+The preflight warnings for missing PDF, DOC/deck, image, and DOI are expected
+and are accepted only because the operator exception and source-gap ledger are
+explicit.
 
 ## Runtime Proof Command Template
 

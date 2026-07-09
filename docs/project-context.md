@@ -1,3 +1,35 @@
+# Current Context Addendum - 2026-07-08 Session 23
+
+S8 full-close corpus selection is now unblocked but S8 is still not complete.
+The operator named `course-content/courses/tejal-c1m1-p4-assessments-bridge`
+as the S8 full-close proof corpus with expected bundle
+`narrated-deck-with-workbook`, HIL operator `juanl`, and an explicit Tejal
+exception because Tejal C1M1 is the only real course-content family currently
+available. BMAD party ratified the exception in
+`_bmad-output/implementation-artifacts/s8-tejal-p4-proof-corpus-ratification-2026-07-08.md`.
+The corpus has been curated from
+`course-content/courses/tejal-c1m1-fresh-outline/source-outline.md` section
+`Part 4: Assessments & The Bridge to Module 2` into the Part 2 / Part 3 shape:
+`slides/`, `references/`, `assessments/`, `README.md`, and `urls.txt`, with a
+raw sibling snapshot outside the curated folder to avoid recursive double
+counting. The source is assessment/bridge-heavy and intentionally gap-bearing;
+missing lecture deck, PDF, image folder, DOI packet, and rendered motion source
+are documented in the corpus source-gap ledger rather than fabricated.
+
+The S8 preflight checker now supports explicit operator-ratified source gaps
+only when `--allow-source-gaps` is paired with a `references/*gap*.md` ledger and
+a freshness exception rationale. Focused validation: checker tests `7 passed`,
+ruff clean, and the named Part 4 corpus preflight returned `ready: true` with
+expected warnings for missing PDF/DOC-or-deck/image/DOI accepted by the source
+gap ledger. Next gate: author the ratified lesson-plan collateral/input wrapper
+selecting `narrated-deck-with-workbook` with present workbook collateral, then
+run the local Marcus-SPOC HIL composed proof without `--auto-confirm-directive`
+or offline-cost downgrade. A no-shortcut trial-start attempt reached only
+`model_resolution_trail.json` and timed out before trial-start/run-summary
+receipt creation, so it is recorded as an incomplete witness, not live proof.
+
+---
+
 # Current Context Addendum - 2026-07-08 Session 22
 
 S8 has advanced beyond the first selection-edge slice. Commit `282ea82f` closed the local runtime edge `ratified lesson-plan collateral intent -> BUNDLE_CATALOG -> ComponentSelection -> production runner`; this session adds the ratified planning-input wrapper path in `app/marcus/lesson_plan/collateral_selection.py`, so a wrapper carrying `input_bundle: LessonPlanningInputBundle` resolves `input_bundle.component_selection` only through an exact closed `BUNDLE_CATALOG` match. It fails closed on no-match, duplicate catalog match, or conflicting explicit `bundle_id`, and still does not touch `app/marcus/lesson_plan/composition.py` or `app/models/state/component_selection.py`. Evidence/artifact: `_bmad-output/implementation-artifacts/s8-planning-input-selection-contract-2026-07-08.md`; final validation: focused S8 regression 32 passed, resolver suite 15 passed, ruff clean, and local CLI witnesses `12345678-1234-4234-8234-123456789ac1` / `8ace18c2-df69-49df-990a-e97404090102` resolved the HAI Story D input-bundle wrapper to `narrated-deck-with-motion`. The supplemental full-seat party done-bar discharged the planning-checkpoint F-302 concern, while still ruling that full S8 close requires the remaining prose/workflow lane and an operator-named corpus + HIL composed proof if the close claim is "S8 complete."
