@@ -23,6 +23,8 @@ Follow this charter for multi-story BMAD work in this repository.
 
 Related skills: `bmad-help`, `bmad-party-mode`, `bmad-code-review`, `bmad-quick-dev`, `bmad-sprint-run-charter`, `bmad-cis-agent-creative-problem-solver` (Quinn), `bmad-agent-pm` (John).
 
+**Cursor party independence:** For green-light / done-bar / review gates in Cursor, spawn **real independent subagents** per stock seat (Family A). Do not solo-roleplay party unless the operator allows. See sibling rule `bmad-dual-agent-families.mdc`. Custom production agents (Marcus et al., Family B) are skill+sanctum — not stock party seats.
+
 ## Lesson Planner governance enforcement
 
 For Lesson Planner MVP stories (Epics 28-32), run

@@ -53,6 +53,8 @@ Ratified 2026-05-05 post-session-close after observing that 40 commits sat unpus
 
 On a cold session, **read the relevant `skills/bmad-agent-<name>/SKILL.md` (and sanctum per that skill)** to embody the agent — do not require a manifest row.
 
+**Cursor dual-path (2026-07-09):** Family A (stock party seats) vs Family B (skill+sanctum) is also encoded for Cursor in [`.cursor/rules/bmad-dual-agent-families.mdc`](.cursor/rules/bmad-dual-agent-families.mdc) and optional stubs under [`.cursor/agents/`](.cursor/agents/). See [`AGENTS.md`](AGENTS.md) §Dual agent families.
+
 ## Marcus first (APP production cold start)
 
 For **course-content production**, orchestration, or anything that sounds like an APP run: **activate Marcus before other custom agents.** He is the operator-facing orchestrator; specialists (Irene, Gary, Vera, Texas, etc.) are normally **delegated through him**, not jumped to ad hoc unless the operator names one.

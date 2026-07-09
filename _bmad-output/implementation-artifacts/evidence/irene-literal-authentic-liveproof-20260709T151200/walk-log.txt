@@ -1,0 +1,52 @@
+2026-07-09 15:13:01,671 INFO httpx: HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-09 15:13:08,029 INFO httpx: HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-09 15:13:16,889 INFO httpx: HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-09 15:14:34,690 INFO httpx: HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-09 15:15:50,096 INFO httpx: HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-09 15:17:16,359 INFO httpx: HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-09 15:18:29,972 INFO httpx: HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-09 15:18:37,439 INFO httpx: HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-09 15:19:46,040 INFO httpx: HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-09 15:22:43,005 INFO httpx: HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-09 15:24:49,795 INFO httpx: HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-09 15:27:10,088 INFO httpx: HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-09 15:27:48,925 INFO httpx: HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-09 15:27:48,927 WARNING app.specialists.irene_pass1._act: irene-pass1 collateral degraded to declaration:'none' — a present/workbook block failed CollateralSpec validation and was dropped: 1 validation error for CollateralSpec
+workbook.sections.4.exercises.0.bloom_level
+  Input should be 'remember', 'understand', 'apply', 'analyze', 'evaluate' or 'create' [type=literal_error, input_value='reflective', input_type=str]
+    For further information visit https://errors.pydantic.dev/2.13/v/literal_error
+2026-07-09 15:29:01,063 INFO httpx: HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-09 15:29:21,900 INFO httpx: HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-09 15:29:34,868 INFO httpx: HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-09 15:30:29,905 INFO scripts.api_clients.gamma_client: Generation j3kuMip6KOXx16Zoo2viH completed after 18 polls
+2026-07-09 15:30:30,558 INFO skills.gamma_api_mastery._source_gamma_operations: Gamma export downloaded: bytes=5033738 path=C:\Users\juanl\Documents\GitHub\course-DEV-IDE-with-AGENTS-hybrid\state\config\runs\235f2b82-5989-4a6f-9e6b-22e9697f58d2\exports\gary\gary_A_creative.png
+2026-07-09 15:31:24,381 INFO scripts.api_clients.gamma_client: Generation 2xh2jtpTgAWzP2fB2KGsz completed after 18 polls
+2026-07-09 15:31:24,949 INFO skills.gamma_api_mastery._source_gamma_operations: Gamma export downloaded: bytes=4404833 path=C:\Users\juanl\Documents\GitHub\course-DEV-IDE-with-AGENTS-hybrid\state\config\runs\235f2b82-5989-4a6f-9e6b-22e9697f58d2\exports\gary\gary_A_literal.png
+2026-07-09 15:32:40,284 INFO httpx: HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-09 15:32:50,159 INFO generate_storyboard: retention: managed root 'assets/kling-validation' absent from clone — skipping (no-op)
+2026-07-09 15:32:54,618 INFO httpx: HTTP Request: GET https://api.github.com/repos/jlenrique/jlenrique.github.io/pages/builds/latest "HTTP/1.1 200 OK"
+2026-07-09 15:35:21,261 INFO httpx: HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-09 15:38:48,094 INFO scripts.api_clients.kling_client: Task 904280213017337902 completed after 35 polls
+2026-07-09 15:38:50,862 INFO scripts.api_clients.kling_client: Downloaded video to C:\Users\juanl\Documents\GitHub\course-DEV-IDE-with-AGENTS-hybrid\state\config\runs\235f2b82-5989-4a6f-9e6b-22e9697f58d2\motion\slide-01.mp4 (1546135 bytes)
+2026-07-09 15:39:07,714 INFO httpx: HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-09 15:39:15,425 INFO httpx: HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-09 15:39:32,847 INFO httpx: HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-09 15:39:44,909 INFO httpx: HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-09 15:40:08,709 INFO httpx: HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-09 15:40:18,101 INFO httpx: HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-09 15:40:38,832 INFO httpx: HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-09 15:40:44,522 INFO httpx: HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-09 15:41:02,261 INFO httpx: HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-09 15:41:15,057 INFO httpx: HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-09 15:41:33,020 INFO httpx: HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-09 15:41:45,003 INFO httpx: HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-09 15:42:04,154 INFO httpx: HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-09 15:42:15,957 INFO httpx: HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-09 15:42:48,294 INFO httpx: HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-09 15:42:58,638 INFO httpx: HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-09 15:43:39,589 INFO httpx: HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-09 15:43:58,904 INFO httpx: HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-09 15:50:55,331 INFO httpx: HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-09 15:50:55,377 WARNING app.marcus.orchestrator.production_runner: retryable dispatch variance [irene.pass2.slide-join-failed] at node 08 — auto-retry 1/3
+2026-07-09 16:00:01,267 INFO httpx: HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-09 16:00:01,273 ERROR app.marcus.orchestrator.production_runner: dispatch error at manifest node 08 (specialist irene): [irene.pass2.figure-contradiction] scope=narration; slide slide-04 narration figures not present in perceived authority: ['percent:10'] — pausing trial 235f2b82-5989-4a6f-9e6b-22e9697f58d2 for recovery

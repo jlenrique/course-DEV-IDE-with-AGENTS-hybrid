@@ -51,15 +51,34 @@ Impasse chain: A vs B → Quinn R6 → no John tiebreak needed.
   honesty (`langsmith-start-receipt-offline-stamp` remains secondary).
 - **Not** HAI/PHS ingestion, LO ratification UX, projector families, Batch LLM.
 
-## Named post-S8 gates (immediate)
+## Named post-S8 gates
 
-1. **`irene-text-literal-supersedes-styleguide-truncation`** — Irene/lesson-plan
-   text-literal must supersede styleguide condense (couples with
-   `fidelity-L1-per-slide-text-mode`).
-2. Triage **`langsmith-start-receipt-offline-stamp`**.
-3. Standing deferred: `workbook-learner-ready-prose-uplift`,
+1. ~~**`irene-text-literal-supersedes-styleguide-truncation`**~~ **MET 2026-07-09**
+   (Gary path + authentic emit recovery). Specs:
+   `spec-irene-literal-supersedes-styleguide-truncation.md` (done) +
+   `spec-irene-pass1-fidelity-emit-recovery.md` (done). Live witness:
+   trial `235f2b82…` under classic-condense — package fidelity mixed;
+   `gary.calls_made=2`; exports `gary_A_creative.png` / `gary_A_literal.png`;
+   no G1 stamp. Assessment:
+   `…/irene-literal-authentic-liveproof-20260709T151200/CLAIM-ASSESSMENT.md`.
+   **Does NOT** close `fidelity-L1-per-slide-text-mode` residual or
+   `literal-visual-production-streamline`.
+2. Triage **`langsmith-start-receipt-offline-stamp`** (secondary hygiene).
+3. **Parked HELR (operator 2026-07-09):** classic-condense
+   `irene.pass2.figure-contradiction` / numeral display↔narration — high effort,
+   low reward right now; do **not** block bigger-gain arcs.
+4. **Next bigger-gain frontier (operator-directed):** Phase-2 spine
+   `lesson-plan-directs-production-collateral-to-selection-edge` (and/or real
+   HAI/PHS ingestion, LO ratification, course/SME routing) — not Pass-2
+   numeral polish.
+5. Standing deferred: `workbook-learner-ready-prose-uplift`,
    `g0-enrichment-flag-retirement`, `research-dispatch-flag-retirement`,
-   real HAI/PHS ingestion, LO ratification, course/SME routing, Batch LLM.
+   Batch LLM.
+
+## Operator ratification addendum (2026-07-09 PM)
+
+Operator: **S8 stays truly done — do not reopen.** Move to bigger gains.
+Pass-2 figure/numeral work deferred as HELR.
 
 ## Operator authority notes
 

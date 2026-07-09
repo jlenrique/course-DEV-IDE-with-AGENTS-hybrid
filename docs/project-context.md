@@ -1,3 +1,19 @@
+# Current Context Addendum - 2026-07-09 Session 27
+
+**S8 stays FULLY COMPLETE — do not reopen** (operator). Post-S8 Irene-literal
+gate **MET**: Gary preserve-over-condense (`0fb2b2cf`) + Pass-1 fidelity emit
+recovery (`6783b54b`) + authentic classic-condense witness `235f2b82…` (no stamp;
+`calls_made=2`; creative/literal exports). Pass-2 figure/numeral under
+classic-condense = **parked HELR**. Cursor dual-agent-family surfaces landed
+(`.cursor/rules/bmad-dual-agent-families.mdc` + `.cursor/agents/` stubs).
+
+**Next frontier (bigger gains):** Phase-2 spine
+`lesson-plan-directs-production-collateral-to-selection-edge` (primary candidate),
+or operator-picked real HAI/PHS ingestion / LO ratification / course-SME routing.
+Secondary hygiene only: `langsmith-start-receipt-offline-stamp`.
+
+---
+
 # Current Context Addendum - 2026-07-09 Session 26
 
 **Class D wrapup** — shadow-monitor lane for S7 Phase-2 A-D closed; session

@@ -111,6 +111,7 @@ For new or modified agents/skills, confirm an Interaction test exists per the pr
 
 - `docs/project-context.md` — update if rules, phase, or architecture changed.
 - `docs/agent-environment.md` — update if MCP servers, API clients, shared skills, or tool tier classifications changed.
+- **Cursor dual-agent surfaces (when touched):** if `.cursor/rules/bmad-dual-agent-families.mdc`, `.cursor/agents/*.md`, or the Family A vs B note in `AGENTS.md` changed, record that in the handoff so the next Cursor session does not rediscover the dual-path cold-start. Custom agents remain `skills/bmad-agent-*` + sanctums (not installer `.cursor/skills/` mirrors).
 
 Both files are read at startup Step 1 — stale content means the next session starts with wrong assumptions.
 

@@ -1,13 +1,27 @@
+# Session Handoff — 2026-07-09 (session 27: **Irene-literal MET + S8 stay-closed + bigger-gains frontier** — Class S product closeout)
+
+**Final class:** S (Irene Pass-1 fidelity emit recovery + authentic classic-condense liveproof; Cursor dual-agent-family surfaces; S8 books stay closed; Pass-2 HELR parked). **Branch:** `dev/lesson-planning-2026-07-09` @ `6783b54b`+ (emit recovery pushed; docs/bookkeeping may still be dirty). **Next:** Class S — green-light Phase-2 spine `lesson-plan-directs-production-collateral-to-selection-edge` (or operator-picked ingestion / LO / SME).
+
+**What was completed:**
+1. **Irene-literal→Gary-preserve product claim MET** — Gary path (`0fb2b2cf`) + Pass-1 fidelity emit recovery (`6783b54b`) + authentic witness trial `235f2b82…` (classic-condense, no stamp; `calls_made=2`; creative/literal exports). Assessment: `…/irene-literal-authentic-liveproof-20260709T151200/CLAIM-ASSESSMENT.md`.
+2. **S8 stay-closed ratified** — letter + inventory + STATE/project-context: do not reopen; Pass-2 figure/numeral = parked HELR (`irene-pass2-figure-contradiction-classic-condense`).
+3. **Cursor dual-agent-family reliability** — `.cursor/rules/bmad-dual-agent-families.mdc` + `.cursor/agents/` stubs + START/WRAPUP/AGENTS/CLAUDE patches.
+4. **Spine trigger fired** — `lesson-plan-directs-production-collateral-to-selection-edge` selected as next bigger-gain frontier.
+
+**What is next:** Bigger gains — BMAD green-light/plan the Phase-2 spine (primary), or operator picks real HAI/PHS ingestion / LO ratification / course-SME routing. Secondary only: `langsmith-start-receipt-offline-stamp`. Do **not** pull Pass-2 numeral polish ahead. Do not reopen S8.
+
+---
+
 # Session Handoff — 2026-07-09 (session 26: **shadow-monitor close + WRAPUP Step 4a sprint-status hardening** — Class D protocol/docs; product next-gate unchanged from session 25)
 
-**Final class:** D (docs/tooling: session-protocol START/WRAPUP amendment for canonical `sprint-status.yaml` Kanban honesty; this chat's S7 Phase-2 shadow-monitor lane closed). **Branch:** `dev/workbook-2026-07-06` @ `c2a0c116` (pushed). **Next:** Class S — green-light `irene-text-literal-supersedes-styleguide-truncation` (unchanged from session 25; S8 remains FULLY COMPLETE).
+**Final class:** D (docs/tooling: session-protocol START/WRAPUP amendment for canonical `sprint-status.yaml` Kanban honesty; this chat's S7 Phase-2 shadow-monitor lane closed). **Branch:** `dev/workbook-2026-07-06` @ `c2a0c116` (pushed). **Next (historical):** Class S — green-light `irene-text-literal-supersedes-styleguide-truncation` (superseded by session 27 MET + bigger-gains frontier; S8 remains FULLY COMPLETE).
 
 **What was completed:**
 1. **Claude shadow-monitor lane** for Codex-led S7 Phase-2 A-D (`claude-shadow-monitor-s7-phase2-2026-07-08.md`) — POLL-001..011; independent verification of Stories A–D; F-103 Story A gate-trail escalated then closed when backfill `5687c41a` landed; A-D close checkpoint `CONCUR`. Monitor heartbeat loop stopped at this WRAPUP.
 2. **Session WRAPUP protocol hardened (Step 4a):** `_bmad-output/implementation-artifacts/sprint-status.yaml` named as the **canonical Kanban ledger**; skip only when no epic/story status actually changed (not merely because the file was untouched mid-session); prefer update before `next-session-start-here.md` on Class S story closes; Step 11 completeness check re-asserts the ledger. START Step 4 + WRAPUP transfer-contract table aligned.
-3. **Product posture unchanged:** S8 FULLY COMPLETE (session 25 / Quinn R6); next product gate remains Irene text-literal superseding styleguide truncation.
+3. **Product posture (at time):** S8 FULLY COMPLETE (session 25 / Quinn R6); next product gate was Irene text-literal (now MET in session 27).
 
-**What is next:** Same as session 25 — design/green-light `irene-text-literal-supersedes-styleguide-truncation`. Secondary Langsmith start-receipt. Do not reopen S8. Selection-edge spine remains filed post Phase-2 A-D. Master merge still optional (scoped branch).
+**What is next (historical):** Same as session 25 — design/green-light `irene-text-literal-supersedes-styleguide-truncation`. Secondary Langsmith start-receipt. Do not reopen S8. Selection-edge spine remains filed post Phase-2 A-D. Master merge still optional (scoped branch).
 
 **Unresolved / risks:** (1) text-literal product gap still real under classic-condense decks; (2) Langsmith offline stamp; (3) **sprint-status.yaml still not carrying arc story rows** for S7 Phase-2 A-D / S8 (standing arc convention — tracked via close letters, inventory, evidence, story close records); session-26 protocol change makes future BMAD story closes obligated to update the ledger when Kanban state changes — apply on the next formal story close; (4) Cora/`/harmonize` unregistered — Step-0 skipped (Class D); (5) shadow-monitor ledgers left untracked ambient (same stray fence as prior sessions).
 
