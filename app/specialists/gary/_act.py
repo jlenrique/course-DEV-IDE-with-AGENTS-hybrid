@@ -1118,6 +1118,82 @@ def _styleguide_parity_receipt(
     return receipt
 
 
+def _slide_fidelity(slide: dict[str, Any]) -> str:
+    """Normalize slide fidelity; missing/unknown → creative cohort."""
+    raw = str(slide.get("fidelity") or "").strip()
+    if raw in {"literal-text", "literal-visual", "creative"}:
+        return raw
+    return "creative"
+
+
+def _partition_binary_fidelity_cohorts(
+    slides: list[dict[str, Any]],
+) -> tuple[list[dict[str, Any]], list[dict[str, Any]]]:
+    """Split slides into creative vs literal cohorts (literal-text ∪ literal-visual)."""
+    creative: list[dict[str, Any]] = []
+    literal: list[dict[str, Any]] = []
+    for slide in slides:
+        if _slide_fidelity(slide) in {"literal-text", "literal-visual"}:
+            literal.append(slide)
+        else:
+            creative.append(slide)
+    return creative, literal
+
+
+def _classic_generation_kwargs(
+    *,
+    payload: dict[str, Any],
+    variant: str,
+    variant_settings: dict[str, Any] | None,
+    theme_id: str | None,
+    themes: list[dict[str, Any]],
+    cohort_slides: list[dict[str, Any]],
+    force_literal_preserve: bool,
+) -> dict[str, Any]:
+    """Build Classic generate_deck kwargs for one fidelity cohort."""
+    generation_kwargs: dict[str, Any] = {
+        "num_cards": len(cohort_slides),
+        "theme_id": (
+            _theme_id_for_variant(theme_id, variant_settings, themes)
+            if variant_settings is not None
+            else theme_id
+        ),
+        "card_split": "inputTextBreaks",
+        "additional_instructions": _instructions_for_variant(
+            payload,
+            variant=variant,
+            settings=variant_settings,
+        ),
+        "export_as": "png",
+    }
+    if variant_settings is not None:
+        text_options = _text_options_for_variant(variant_settings)
+        image_options = _image_options_for_variant(variant_settings)
+        text_mode = str(variant_settings.get("text_mode") or "").strip()
+        if text_mode and text_mode not in {"default", "generate"}:
+            generation_kwargs["text_mode"] = text_mode
+        if text_options:
+            generation_kwargs["text_options"] = text_options
+        if image_options:
+            generation_kwargs["image_options"] = image_options
+    if force_literal_preserve:
+        # Irene literal supersedes styleguide truncation: force preserve and omit
+        # condensing amount (key absent — not null). Leave tone/audience/language.
+        generation_kwargs["text_mode"] = "preserve"
+        text_options = dict(generation_kwargs.get("text_options") or {})
+        text_options.pop("amount", None)
+        if text_options:
+            generation_kwargs["text_options"] = text_options
+        else:
+            generation_kwargs.pop("text_options", None)
+    card_options = (
+        _card_options_for_variant(variant_settings) if variant_settings is not None else {}
+    )
+    if card_options:
+        generation_kwargs["card_options"] = card_options
+    return generation_kwargs
+
+
 def generate_gamma_variants(
     payload: dict[str, Any], *, client: GammaClient | None = None
 ) -> dict[str, Any]:
@@ -1195,6 +1271,7 @@ def generate_gamma_variants(
             ", ".join(variants),
         )
     settings_by_variant = {item["variant_id"]: item for item in gamma_settings}
+    creative_slides, literal_slides = _partition_binary_fidelity_cohorts(slides)
     output: list[dict[str, Any]] = []
     calls: list[str] = []
     dropped_pages: list[dict[str, Any]] = []
@@ -1202,10 +1279,19 @@ def generate_gamma_variants(
         variant_settings = settings_by_variant.get(variant)
         # Studio fork (party-ratified 2026-06-25). When this variant is configured
         # production_mode="studio", produce per-slide Gamma create-from-template
-        # image-cards instead of the Classic generate path, then build the SAME
-        # row contract and continue. The Classic path below is byte-unchanged and
-        # is the default whenever production_mode is absent/"api".
+        # image-cards instead of the Classic generate path. Classic path below now
+        # also binary-splits fidelity cohorts (Irene literal supersedes truncation).
         if variant_settings is not None and variant_settings.get("production_mode") == "studio":
+            # Irene literal cannot be honored on Studio (no Classic text_mode=preserve).
+            # Fail loud — never silent condense/studio fallback.
+            if literal_slides:
+                raise GaryActError(
+                    "literal fidelity slides require Classic text_mode=preserve; "
+                    f"variant {variant} is production_mode=studio and cannot honor "
+                    "preserve (Irene literal supersedes styleguide truncation). "
+                    "No silent condense/studio fallback.",
+                    tag="gamma.fidelity.literal-honor-failure",
+                )
             studio_paths, studio_gen_ids = _generate_studio_variant(
                 client, slides, variant_settings, export_dir, variant, calls
             )
@@ -1230,126 +1316,127 @@ def generate_gamma_variants(
                     }
                 )
             continue
-        generation_kwargs: dict[str, Any] = {
-            "num_cards": len(slides),
-            "theme_id": (
-                _theme_id_for_variant(theme_id, variant_settings, themes)
-                if variant_settings is not None
-                else theme_id
-            ),
-            # cardSplit=inputTextBreaks pins one card per `\n---\n` chunk, so
-            # Gamma can no longer merge/split briefed slides (the 6->5 collapse
-            # that orphaned slide-05/06). With the title-led chunks above, each
-            # card is titled with the briefed title and binds bijectively.
-            "card_split": "inputTextBreaks",
-            "additional_instructions": _instructions_for_variant(
-                payload,
+
+        # Binary fidelity cohorts (Irene literal supersedes styleguide truncation):
+        # creative keeps styleguide text_mode/amount; literal forces preserve and
+        # omits amount. Mixed decks → separate cohort-scoped Gamma calls; rejoin
+        # by brief order / slide_id (not title fuzzy across cohorts).
+        cohorts: list[tuple[str, list[dict[str, Any]]]] = []
+        if creative_slides:
+            cohorts.append(("creative", creative_slides))
+        if literal_slides:
+            cohorts.append(("literal", literal_slides))
+
+        slide_paths: dict[str, str] = {}
+        slide_generation_ids: dict[str, str] = {}
+        for cohort_name, cohort_slides in cohorts:
+            generation_kwargs = _classic_generation_kwargs(
+                payload=payload,
                 variant=variant,
-                settings=variant_settings,
-            ),
-            "export_as": "png",
-        }
-        if variant_settings is not None:
-            text_options = _text_options_for_variant(variant_settings)
-            image_options = _image_options_for_variant(variant_settings)
-            text_mode = str(variant_settings.get("text_mode") or "").strip()
-            if text_mode and text_mode not in {"default", "generate"}:
-                generation_kwargs["text_mode"] = text_mode
-            if text_options:
-                generation_kwargs["text_options"] = text_options
-            if image_options:
-                generation_kwargs["image_options"] = image_options
-        # Styleguide library is now the SOLE determinant of card dimensions (Leg-A,
-        # 2026-07-01). The former unconditional `{"dimensions": "16x9", ...}` override
-        # here is REMOVED: the resolved style's `dimensions` alone drives cardOptions
-        # (fluid -> fluid, 16x9 -> 16:9, absent -> cardOptions omitted). The Descript
-        # anti-crop OUTCOME is preserved as a publication-time policy follow-on
-        # (`styleguide-16x9-publication-boundary-safety`), NOT a generation-time force;
-        # Phase-2 runs stop at Storyboard B (pre-Descript) so no in-arc regression.
-        card_options = (
-            _card_options_for_variant(variant_settings) if variant_settings is not None else {}
-        )
-        if card_options:
-            generation_kwargs["card_options"] = card_options
-        generation = client.generate_deck(
-            _input_text(slides, payload),
-            **generation_kwargs,
-        )
-        raw_generation_id = (
-            generation.get("generation_id")
-            or generation.get("id")
-            or generation.get("generationId")
-        )
-        if not raw_generation_id:
-            # Trial-3 cycle-2 root-cause hardening (2026-06-12): the old
-            # fabricated per-variant fixture-id sentinel here was the EIGHTH
-            # silent seam — it masked generate_deck returning a bare POST ack
-            # and let untracked spend + empty slide rows flow to G2C.
-            # Recoverable family: error-pause + `trial recover` retries.
-            raise GammaDispatchError(
-                f"gamma generation returned no id for variant {variant}; "
-                f"keys={sorted(generation)}",
-                tag="gamma.generation.id-missing",
+                variant_settings=variant_settings,
+                theme_id=theme_id,
+                themes=themes,
+                cohort_slides=cohort_slides,
+                force_literal_preserve=(cohort_name == "literal"),
             )
-        generation_id = str(raw_generation_id)
-        calls.append(generation_id)
-        # Storyboard-correctness fix (party-ratified 2026-06-18): match the
-        # exported pages to briefed slide_ids by TITLE (deterministic bijective
-        # containment), NOT by position. Gamma injects a cover + merges/drops +
-        # rephrases titles, so the page order does not correspond to the brief
-        # order. The matcher surfaces the cover (dropped), a merged-away brief
-        # (brief-unmatched), a stray page (page-unmatched), and collisions
-        # (title-ambiguous) instead of silently shifting every slide.
-        expected_slots = [
-            (
-                str(slide.get("slide_id") or f"slide-{index:02d}"),
-                _slide_title(slide, index),
+            # Cohort-scoped input only (never full-deck prompt with split kwargs).
+            # Preserve payload.input_text only when this is the sole full-deck cohort
+            # (legacy single-call shape); mixed splits always derive from cohort slides.
+            input_payload = (
+                payload
+                if len(cohorts) == 1 and len(cohort_slides) == len(slides)
+                else {}
             )
-            for index, slide in enumerate(slides, start=1)
-        ]
-        export_url = generation.get("exportUrl") or generation.get("export_url")
-        if isinstance(export_url, str) and export_url.strip():
-            downloaded_export = download_export(
-                export_url, output_dir=export_dir, filename=f"gary_{variant}.png"
+            generation = client.generate_deck(
+                _input_text(cohort_slides, input_payload),
+                **generation_kwargs,
             )
-            match = materialize_exported_slide_paths_by_title(
-                Path(str(downloaded_export)),
-                requested_format="png",
-                expected_slots=expected_slots,
-                module_lesson_part=variant,
-                export_dir=export_dir,
-                label=variant,
+            raw_generation_id = (
+                generation.get("generation_id")
+                or generation.get("id")
+                or generation.get("generationId")
             )
-            if match.ambiguous:
+            if not raw_generation_id:
                 raise GammaDispatchError(
-                    f"gamma export title-ambiguous for variant {variant}: "
-                    f"{match.ambiguous}",
-                    tag="gamma.export.title-ambiguous",
+                    f"gamma generation returned no id for variant {variant} "
+                    f"cohort {cohort_name}; keys={sorted(generation)}",
+                    tag="gamma.generation.id-missing",
                 )
-            if match.unmatched_keys:
-                raise GammaDispatchError(
-                    f"gamma export left briefed slide(s) unmatched for variant "
-                    f"{variant}: {match.unmatched_keys}; unmatched pages: "
-                    f"{[p.get('title') for p in match.unmatched_pages]}",
-                    tag="gamma.export.brief-unmatched",
+            generation_id = str(raw_generation_id)
+            calls.append(generation_id)
+            expected_slots = [
+                (
+                    str(slide.get("slide_id") or f"slide-{index:02d}"),
+                    _slide_title(slide, index),
                 )
-            if match.unmatched_pages:
-                raise GammaDispatchError(
-                    f"gamma export produced non-leading unmatched page(s) for "
-                    f"variant {variant}: {[p.get('title') for p in match.unmatched_pages]}",
-                    tag="gamma.export.page-unmatched",
+                for index, slide in enumerate(cohort_slides, start=1)
+            ]
+            export_url = generation.get("exportUrl") or generation.get("export_url")
+            if isinstance(export_url, str) and export_url.strip():
+                # Single-cohort keeps legacy gary_{variant}.png; mixed needs cohort suffix.
+                export_name = (
+                    f"gary_{variant}.png"
+                    if len(cohorts) == 1
+                    else f"gary_{variant}_{cohort_name}.png"
                 )
-            slide_paths = dict(match.matched)
-            dropped_pages.extend({"variant": variant, **d} for d in match.dropped_pages)
-        else:
-            # Legacy fallback: generation already carries materialized rows
-            # keyed by slide_id (no export to title-match).
-            slide_paths = {}
-            rows = generation.get("gary_slide_output")
-            if isinstance(rows, list):
-                for row in rows:
-                    if isinstance(row, dict) and row.get("slide_id"):
-                        slide_paths[str(row["slide_id"])] = str(row.get("file_path", ""))
+                part_label = variant if len(cohorts) == 1 else f"{variant}-{cohort_name}"
+                downloaded_export = download_export(
+                    export_url,
+                    output_dir=export_dir,
+                    filename=export_name,
+                )
+                match = materialize_exported_slide_paths_by_title(
+                    Path(str(downloaded_export)),
+                    requested_format="png",
+                    expected_slots=expected_slots,
+                    module_lesson_part=part_label,
+                    export_dir=export_dir,
+                    label=part_label,
+                )
+                if match.ambiguous:
+                    raise GammaDispatchError(
+                        f"gamma export title-ambiguous for variant {variant} "
+                        f"cohort {cohort_name}: {match.ambiguous}",
+                        tag="gamma.export.title-ambiguous",
+                    )
+                if match.unmatched_keys:
+                    raise GammaDispatchError(
+                        f"gamma export left briefed slide(s) unmatched for variant "
+                        f"{variant} cohort {cohort_name}: {match.unmatched_keys}; "
+                        f"unmatched pages: "
+                        f"{[p.get('title') for p in match.unmatched_pages]}",
+                        tag="gamma.export.brief-unmatched",
+                    )
+                if match.unmatched_pages:
+                    raise GammaDispatchError(
+                        f"gamma export produced non-leading unmatched page(s) for "
+                        f"variant {variant} cohort {cohort_name}: "
+                        f"{[p.get('title') for p in match.unmatched_pages]}",
+                        tag="gamma.export.page-unmatched",
+                    )
+                slide_paths.update(dict(match.matched))
+                dropped_pages.extend(
+                    {"variant": variant, "cohort": cohort_name, **d}
+                    for d in match.dropped_pages
+                )
+            else:
+                rows = generation.get("gary_slide_output")
+                if isinstance(rows, list):
+                    for row in rows:
+                        if isinstance(row, dict) and row.get("slide_id"):
+                            slide_paths[str(row["slide_id"])] = str(
+                                row.get("file_path", "")
+                            )
+                else:
+                    raise GammaDispatchError(
+                        f"gamma generation for variant {variant} cohort {cohort_name} "
+                        "returned neither exportUrl nor gary_slide_output rows",
+                        tag="gamma.export.unmaterialized",
+                    )
+            for index, slide in enumerate(cohort_slides, start=1):
+                slide_id = str(slide.get("slide_id") or f"slide-{index:02d}")
+                slide_generation_ids[slide_id] = generation_id
+
         for index, slide in enumerate(slides, start=1):
             slide_id = str(slide.get("slide_id") or f"slide-{index:02d}")
             output.append(
@@ -1360,7 +1447,7 @@ def generate_gamma_variants(
                     "variant_id": variant,
                     "gamma_settings": variant_settings,
                     "file_path": slide_paths.get(slide_id, ""),
-                    "generation_id": generation_id,
+                    "generation_id": slide_generation_ids.get(slide_id, ""),
                     # Observation A (folded in): the real slide title (original
                     # casing, objective-free), so the storyboard surface can
                     # stop showing the bare slide_id.

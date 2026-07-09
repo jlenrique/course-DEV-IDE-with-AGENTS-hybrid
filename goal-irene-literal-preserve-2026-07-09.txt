@@ -1,0 +1,27 @@
+# Session GOAL — Cursor Grok 4.5 High Fast
+
+**Branch:** `dev/lesson-planning-2026-07-09`  
+**Binding artifacts:** deferred `irene-text-literal-supersedes-styleguide-truncation`; draft spec `_bmad-output/implementation-artifacts/spec-irene-literal-supersedes-styleguide-truncation.md`  
+**Product anchor:** Marcus-SPOC runtime only — not concierge/proofing convenience. Never ad-hoc-edit approved styleguide registry records (named variants only).
+
+## Immediate next task
+Resume **bmad-quick-dev** at Checkpoint 1 on the Irene-literal → Gary-preserve override: obtain operator **[A] Approve** / **[E] Edit** on the draft spec, then lock frozen intent to `ready-for-dev`. Before any further green-light or design concurrence, convene a **fully spawned BMAD party-mode** using **real BMAD personas as independent agents** (John / Winston / Amelia / Murat or TEA as appropriate — **never** `generalPurpose` stand-ins roleplaying those seats). Fold any MUST amendments, then proceed only on party GO / GO-WITH-AMENDMENTS.
+
+## Subsequent tasks (~6h envelope)
+1. **Implement under bmad-quick-dev Step 3** — carry Irene/plan-unit `fidelity` through `build_gary_briefs`; in `generate_gamma_variants`, force API `text_mode=preserve` and omit styleguide condensing `amount` for `literal-text` / `literal-visual` cohorts; split Gamma calls on mixed decks; reassemble in brief order. RED-first tests; live-exercise each seam as authored/edited (FakeGammaClient wire asserts + focused pytest/ruff — live validation is indispensable, not a late bolt-on).
+2. **Consult Codex shadow-monitor notes** when that ledger is in play for this arc; remediate or explicitly disposition findings before claiming done.
+3. **bmad-code-review** (or quick-dev Step 4 review path) on the landed diff; remediate MUST-FIX; keep claim envelope honest (this closes styleguide-condense-overrides-Irene-literal — do **not** claim `fidelity-L1-per-slide-text-mode` fully closed).
+4. **Inventory + closeout hygiene** — mark deferred entry MET; leave L1-per-slide residual explicit; Ask-First disposition of classic-preserve sibling; update sprint-status if Kanban state flips; push working branch per cadence.
+5. **Done-bar** — fully spawned BMAD party-mode team concurs the final task is accomplished and validated.
+
+## Process non-negotiables
+- Prefer BMAD workflows (`bmad-quick-dev`, `bmad-party-mode`, `bmad-code-review`; escalate to create-story/dev-story only if party scopes it larger). Do not invent a parallel process.
+- Party at green-light, design approval, review, and done-bar — real personas, independent agents.
+- Live testing of components as they are authored or edited.
+- Read and act on Codex shadow-monitor notes when applicable.
+
+## Definition of done
+A BMAD party-mode team, fully spawned for the close, concurs that Irene literal-text treatment overrides styleguide amount/condense on the Marcus-SPOC Gary path (`text_mode=preserve` for literal cohorts), with tests green, inventory honest, and no approved styleguide registry mutation.
+
+## Impasse chain (operator binding for this run)
+When party cannot reach consensus: invoke **Dr. Quinn** first for synthesis; if Quinn declares failure, invoke **John** as PM tiebreaker.

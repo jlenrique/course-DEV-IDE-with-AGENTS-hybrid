@@ -1,11 +1,10 @@
 name: Ambient Anti-Drift Monitor
 
-# This runs automatically every time you push to ANY branch.
-# Because it runs on "push" and not "pull_request", it will never block a merge.
+# Solo operator (2026-07-09): auto push trigger muted - was emailing failure
+# noise from abandoned PR-era CI experiments. Manual only.
+# See AGENTS.md section Solo operator - no formal PR framework.
 on:
-  push:
-    branches:
-      - '**'
+  workflow_dispatch:
 
 jobs:
   monitor-and-report:

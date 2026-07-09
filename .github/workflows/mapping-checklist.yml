@@ -1,15 +1,8 @@
 name: mapping-checklist
 
+# Solo operator (2026-07-09): auto PR/push triggers muted - manual only.
+# See AGENTS.md section Solo operator - no formal PR framework.
 on:
-  pull_request:
-    paths:
-      - "_bmad-output/planning-artifacts/slab-7-legacy-migrated-mapping-checklist.md"
-      - "tests/parity/test_mapping_checklist_status.py"
-      - ".github/workflows/mapping-checklist.yml"
-  push:
-    branches:
-      - master
-      - "dev/**"
   workflow_dispatch:
 
 jobs:

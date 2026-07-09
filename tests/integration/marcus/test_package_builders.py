@@ -218,6 +218,37 @@ def test_spread_key_roster_is_exactly_pinned() -> None:
     assert set(package) == {"slides", "prompt", "additional_instructions"}
 
 
+def test_build_gary_briefs_carries_unit_fidelity() -> None:
+    """T1 — Irene plan-unit fidelity must land on Gary brief slides."""
+    lesson_plan, cd_directive = _fixture_outputs()
+    plan = json.loads(json.dumps(lesson_plan))
+    in_scope = [u for u in plan["plan_units"] if _scope(u) != "out-of-scope"]
+    assert len(in_scope) >= 2
+    in_scope[0]["fidelity"] = "literal-text"
+    in_scope[1]["fidelity"] = "literal-visual"
+    package = build_gary_briefs(plan, cd_directive)
+    by_ref = {s["source_ref"]: s for s in package["slides"]}
+    assert by_ref[str(in_scope[0]["unit_id"])]["fidelity"] == "literal-text"
+    assert by_ref[str(in_scope[1]["unit_id"])]["fidelity"] == "literal-visual"
+
+
+def test_build_gary_briefs_unknown_fidelity_defaults_creative() -> None:
+    """T2 — missing/unknown fidelity → creative cohort (no literal bleed)."""
+    lesson_plan, cd_directive = _fixture_outputs()
+    plan = json.loads(json.dumps(lesson_plan))
+    in_scope = [u for u in plan["plan_units"] if _scope(u) != "out-of-scope"]
+    assert len(in_scope) >= 2
+    in_scope[0]["fidelity"] = "not-a-real-fidelity"
+    # second unit: fidelity key absent
+    in_scope[1].pop("fidelity", None)
+    package = build_gary_briefs(plan, cd_directive)
+    by_ref = {s["source_ref"]: s for s in package["slides"]}
+    for unit in (in_scope[0], in_scope[1]):
+        slide = by_ref[str(unit["unit_id"])]
+        # Unknown/missing must OMIT the key (not propagate garbage as creative label).
+        assert "fidelity" not in slide
+
+
 def test_seam_collision_with_dependency_keys_refuses() -> None:
     # Amelia b.1: runner-keys-win silent precedence is retired — a key
     # delivered by BOTH the dependency map and the runner seam refuses loud.

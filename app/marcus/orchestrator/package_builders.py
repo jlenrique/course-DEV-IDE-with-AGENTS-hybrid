@@ -134,18 +134,24 @@ def build_gary_briefs(
         )
 
     slides: list[dict[str, str]] = []
+    recognized_fidelity = frozenset({"creative", "literal-text", "literal-visual"})
     for index, unit in enumerate(units, start=1):
         title = str(unit.get("title") or f"Unit {index}")
         objective = str(unit.get("learning_objective") or "").strip()
         prompt = f"{title} — {objective}" if objective else title
-        slides.append(
-            {
-                "slide_id": f"slide-{index:02d}",
-                "title": title,
-                "prompt": prompt,
-                "source_ref": str(unit.get("unit_id") or f"unit-{index}"),
-            }
-        )
+        slide: dict[str, str] = {
+            "slide_id": f"slide-{index:02d}",
+            "title": title,
+            "prompt": prompt,
+            "source_ref": str(unit.get("unit_id") or f"unit-{index}"),
+        }
+        # Irene literal-text supersedes styleguide truncation: carry recognized
+        # fidelity onto Gary slides so generate_gamma_variants can force preserve
+        # on the literal cohort. Missing/unknown → omit (creative cohort).
+        raw_fidelity = str(unit.get("fidelity") or "").strip()
+        if raw_fidelity in recognized_fidelity:
+            slide["fidelity"] = raw_fidelity
+        slides.append(slide)
 
     proportions = cd_directive.get("slide_mode_proportions")
     rationale = str(cd_directive.get("creative_rationale") or "").strip()
