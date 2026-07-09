@@ -1,3 +1,31 @@
+# Session Handoff — 2026-07-09 (session 25: **🎯 S8 FULLY COMPLETE** — Part-4 terminal walk green on classic-preserve; Quinn R6 party concurrence; session WRAPUP)
+
+**Final class:** S (substrate: Gary matcher residue soft-bind; styleguide classic-preserve sibling; live AFK HIL terminal walk; docs/letter closeout). **Branch:** `dev/workbook-2026-07-06` @ wrapup HEAD (pushed). **Next:** Class S — green-light `irene-text-literal-supersedes-styleguide-truncation`.
+
+**What was completed:**
+1. **Title-residue / cover-drop permanent fix** (`8f6e861c`) — 1:1 residual soft-bind after bijective; live-proved Gary bind on `62308889…` then full COMPLETE on `1bd08699…`.
+2. **Irene figure-contradiction triage** — classic `condense` dropped source 10%/90%; gate correct. Operator policy: **do not mutate approved guides**.
+3. **Classic-preserve sibling** `hil-2026-apc-crossroads-classic-preserve` (`df0229e5`) — classic restored to approved condense; sibling identical except preserve.
+4. **Part-4 terminal AFK HIL walk COMPLETE** — trial `1bd08699-614d-4412-ad52-bbe6edb1d6c5`, guide preserve sibling, `final_status=completed`, workbook sidecar, evidence `…/s8-tejal-p4-terminal-walk-20260709T004657/`.
+5. **Deferred filed:** `irene-text-literal-supersedes-styleguide-truncation` (+ cross-link `fidelity-L1-per-slide-text-mode`).
+6. **Party COMPLETE concurrence** — John/Winston A, Amelia/Paige B → **Quinn R6 Two-clock COMPLETE** adopted; letter rewritten FULLY COMPLETE with non-claims.
+
+**What is next:** Design/green-light Irene text-literal superseding styleguide truncation (per-slide). Secondary Langsmith start-receipt. Do not reopen S8. Master merge still optional (scoped branch).
+
+**Unresolved / risks:** (1) text-literal product gap still real under classic-condense decks; (2) Langsmith offline stamp; (3) sprint-status/bmm-workflow-status intentionally untouched (arc convention — S8 tracked via letter + inventory + evidence); (4) Cora/`/harmonize` unregistered — Step-0 skipped with substitute = party R6 + live COMPLETE walk + focused matcher/validator tests earlier in session.
+
+**Key lessons:** (a) Operator styleguide governance beats “flip the approved record” — named variants only. (b) Figure-contradiction was a fidelity/render defect, not an Irene false positive. (c) Quinn R6 dissolves COMPLETE vs anti-overclaim by fencing the letter.
+
+**Validation summary:** Gary title-matching 30 passed; styleguide validator OK (12 guides); picker suite 53 passed after roster bump; live trial `1bd08699` completed exit 0. Step-0 Cora skip recorded. Quality: session closeout is docs + already-pushed code.
+
+**Content creation summary:** none new learner-facing; Part-4 proof reused Tejal assessments-bridge corpus.
+
+**Artifact update checklist:** S8 close letter ✅ FULLY COMPLETE; STATE-OF-THE-APP ✅; project-context Session 25 ✅; deferred-inventory ✅; next-session-start-here ✅ (gitignored); SESSION-HANDOFF (this) ✅; evidence packs committed ✅; sprint-status/bmm intentionally untouched; KG/ONBOARDING regen NOT owed this wrapup (no ≥10 app/scripts/skills churn beyond prior pushed commits); master merge SKIPPED (scoped branch); no `reports/dev-coherence/`.
+
+**Ambient worktree left untouched:** `workbooks-test/`, `runs/*`, monitor ledgers, goal-*.txt, styleguide-picks.jsonl, workbook u01@1 artifacts, aborted `…T004146` partial logs.
+
+---
+
 # Session Handoff — 2026-07-08 (session 20: **🎯 S7 Phase-1 + Irene Pass-2 FORMALLY CLOSED (4/4 fresh party concurrence, SOP-048/049) + Phase-2 course-source spec RATIFIED story-ready (party 4/4 GO-W-AMENDMENTS over the operator's brief)** — next session opens directly on Story A dev dispatch)
 
 **Final class:** S (upgraded from the P open at the close batch — one comment-only code edit `app/marcus/lesson_plan/workbook_producer.py:107` rode the close commit; no functional substrate change, no tests altered). **Branch:** `dev/workbook-2026-07-06` @ `8924bd78` (pushed 0/0; close batch `7e2ace2e` = 93 files). **Next:** Class S — dispatch a FRESH dev agent RED-first on **Phase-2 Story A** per `_bmad-output/implementation-artifacts/canonical-arc-s7-phase2-course-source-stories.md` (SOP pre-dispatch poll first).

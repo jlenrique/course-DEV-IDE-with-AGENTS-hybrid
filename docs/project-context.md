@@ -1,20 +1,28 @@
-# Current Context Addendum - 2026-07-08 Session 24
+# Current Context Addendum - 2026-07-09 Session 25
 
-**S8 CLOSED on claim envelope** (Quinn party synthesis; not end-to-end COMPLETE).
+**S8 FULLY COMPLETE** (Quinn R6 Two-clock synthesis; party A/A/B/B → R6).
 Binding letter: `_bmad-output/implementation-artifacts/s8-close-letter-claim-envelope-2026-07-08.md`.
 
-AFK HIL composed-start proof (operator-authorized stand-in as `juanl`) on
-`course-content/courses/tejal-c1m1-p4-assessments-bridge` with ratified intent
-`narrated-deck-with-workbook`: trial `9b6dc48b-031a-4b02-870c-ab7f76047c8d`;
-evidence `_bmad-output/implementation-artifacts/evidence/s8-tejal-p4-hil-liveproof-20260708T213400/`.
-No `--auto-confirm-directive`; no offline-cost downgrade. HIL variety: G0
-edit→confirm, G0E/G0R approve, G1 edit. Walk paused-at-error at Gary node 07
-(`gamma.export.brief-unmatched`); recover1 same after 3 auto-retries (known
-single-slide matcher flake — out of S8; no production patch for the proof).
+Terminal AFK HIL walk on Tejal Part-4 with guide
+`hil-2026-apc-crossroads-classic-preserve`: trial
+`1bd08699-614d-4412-ad52-bbe6edb1d6c5`; evidence
+`_bmad-output/implementation-artifacts/evidence/s8-tejal-p4-terminal-walk-20260709T004657/`;
+`final_status=completed`, workbook.md/.docx present. Product fixes that cleared
+the path: title-residue soft-bind (`8f6e861c`); classic-preserve sibling
+(`df0229e5`) — **approved classic `condense` left frozen** (operator policy).
+Prior classic-condense walk `62308889…` failed Irene figure-contradiction — do
+**not** claim that path green.
 
-**Next gate:** `s8-followon-terminal-composed-walk` (clean composed walk past
-Gary export). Secondary: `langsmith-start-receipt-offline-stamp`. Do not treat
-S8 as end-to-end pipeline green. Do not reopen S8 letter language.
+**Next gate:** `irene-text-literal-supersedes-styleguide-truncation` (filed).
+Secondary: `langsmith-start-receipt-offline-stamp`. Do not reopen S8.
+
+---
+
+# Current Context Addendum - 2026-07-08 Session 24
+
+**S8 was CLOSED on claim envelope** (later promoted FULLY COMPLETE 2026-07-09 —
+see Session 25). Historical: AFK HIL composed-start proof trial
+`9b6dc48b-031a-4b02-870c-ab7f76047c8d` stopped at `gamma.export.brief-unmatched`.
 
 ---
 
