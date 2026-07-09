@@ -1,3 +1,26 @@
+# Session Handoff — 2026-07-09 (session 26: **shadow-monitor close + WRAPUP Step 4a sprint-status hardening** — Class D protocol/docs; product next-gate unchanged from session 25)
+
+**Final class:** D (docs/tooling: session-protocol START/WRAPUP amendment for canonical `sprint-status.yaml` Kanban honesty; this chat's S7 Phase-2 shadow-monitor lane closed). **Branch:** `dev/workbook-2026-07-06` @ wrapup commit (pushed). **Next:** Class S — green-light `irene-text-literal-supersedes-styleguide-truncation` (unchanged from session 25; S8 remains FULLY COMPLETE).
+
+**What was completed:**
+1. **Claude shadow-monitor lane** for Codex-led S7 Phase-2 A-D (`claude-shadow-monitor-s7-phase2-2026-07-08.md`) — POLL-001..011; independent verification of Stories A–D; F-103 Story A gate-trail escalated then closed when backfill `5687c41a` landed; A-D close checkpoint `CONCUR`. Monitor heartbeat loop stopped at this WRAPUP.
+2. **Session WRAPUP protocol hardened (Step 4a):** `_bmad-output/implementation-artifacts/sprint-status.yaml` named as the **canonical Kanban ledger**; skip only when no epic/story status actually changed (not merely because the file was untouched mid-session); prefer update before `next-session-start-here.md` on Class S story closes; Step 11 completeness check re-asserts the ledger. START Step 4 + WRAPUP transfer-contract table aligned.
+3. **Product posture unchanged:** S8 FULLY COMPLETE (session 25 / Quinn R6); next product gate remains Irene text-literal superseding styleguide truncation.
+
+**What is next:** Same as session 25 — design/green-light `irene-text-literal-supersedes-styleguide-truncation`. Secondary Langsmith start-receipt. Do not reopen S8. Selection-edge spine remains filed post Phase-2 A-D. Master merge still optional (scoped branch).
+
+**Unresolved / risks:** (1) text-literal product gap still real under classic-condense decks; (2) Langsmith offline stamp; (3) **sprint-status.yaml still not carrying arc story rows** for S7 Phase-2 A-D / S8 (standing arc convention — tracked via close letters, inventory, evidence, story close records); session-26 protocol change makes future BMAD story closes obligated to update the ledger when Kanban state changes — apply on the next formal story close; (4) Cora/`/harmonize` unregistered — Step-0 skipped (Class D); (5) shadow-monitor ledgers left untracked ambient (same stray fence as prior sessions).
+
+**Key lessons:** (a) WRAPUP Step 4a's old "skip if file not edited" rule let Kanban honesty drift — fixed. (b) Shadow-monitor F-103 (missing Story A gate trail) was load-bearing process signal; backfill + remediation closed it without erasing the timing defect. (c) Class D wrapup is valid when the chat only owns protocol/monitor work while another lane already closed substrate (session 25).
+
+**Validation summary:** `git diff --check` clean on protocol files; no production code/tests in this chat's owned diff. Step-0 Cora skip (Class D). Quality gate = protocol markdown review only.
+
+**Content creation summary:** none.
+
+**Artifact update checklist:** START/WRAPUP protocols ✅; next-session-start-here ✅ (gitignored); SESSION-HANDOFF (this) ✅; project-context Session 26 ✅; sprint-status/bmm intentionally untouched this session (no epic/story Kanban flip owned here — protocol now binds future flips); KG/ONBOARDING regen NOT owed; master merge SKIPPED; no `reports/dev-coherence/`. Ambient left untouched: `workbooks-test/`, `runs/*`, monitor ledgers, goal-*.txt, styleguide-picks.jsonl, workbook u01@1, S8 evidence partials.
+
+---
+
 # Session Handoff — 2026-07-09 (session 25: **🎯 S8 FULLY COMPLETE** — Part-4 terminal walk green on classic-preserve; Quinn R6 party concurrence; session WRAPUP)
 
 **Final class:** S (substrate: Gary matcher residue soft-bind; styleguide classic-preserve sibling; live AFK HIL terminal walk; docs/letter closeout). **Branch:** `dev/workbook-2026-07-06` @ `68438772` (pushed). **Next:** Class S — green-light `irene-text-literal-supersedes-styleguide-truncation`.

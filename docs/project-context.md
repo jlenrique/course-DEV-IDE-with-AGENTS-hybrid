@@ -1,3 +1,15 @@
+# Current Context Addendum - 2026-07-09 Session 26
+
+**Class D wrapup** — shadow-monitor lane for S7 Phase-2 A-D closed; session
+protocol START/WRAPUP Step 4a hardened so
+`_bmad-output/implementation-artifacts/sprint-status.yaml` is the canonical
+Kanban ledger (update whenever epic/story status changed; do not skip merely
+because the file was untouched mid-session). Product next-gate unchanged from
+Session 25: `irene-text-literal-supersedes-styleguide-truncation`. S8 remains
+FULLY COMPLETE.
+
+---
+
 # Current Context Addendum - 2026-07-09 Session 25
 
 **S8 FULLY COMPLETE** (Quinn R6 Two-clock synthesis; party A/A/B/B → R6).
