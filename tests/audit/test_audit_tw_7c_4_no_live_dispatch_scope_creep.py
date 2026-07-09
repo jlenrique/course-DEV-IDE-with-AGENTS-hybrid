@@ -640,6 +640,105 @@ PERMITTED_PYTHON_DIFFS = {
     # (tests/contracts/test_specialist_error_taxonomy.py already rostered above.)
     "app/specialists/_shared/voice_provider_text.py",
     "app/specialists/gary/styleguide_library.py",
+    # Canonical-arc S1 "CD styleguide-resolution emission" (party record
+    # canonical-production-conversation-arc-greenlight-party-record-2026-07-06.md
+    # §7 re-scope; spec canonical-arc-s1-cd-styleguide-resolution-emission.md).
+    # Bounded extension: shared resolver re-home (app/styleguide/ new neutral
+    # package; gary/styleguide_library.py already rostered above becomes a thin
+    # re-export), CD deterministic-neck sibling emission (cd/graph.py already
+    # rostered at the finding-#9 entry; cd/state.py optional CdReturn field),
+    # the ONE cd branch in _runner_payload_for_specialist
+    # (production_runner.py already rostered at the finding-#5 entry), and the
+    # S1 RED-first test surface. NO new live-dispatch call site — the emission
+    # is deterministic (resolver yaml read only); the AC-L live witness reuses
+    # the existing --run-live-gated cd dispatch surface.
+    "app/styleguide/__init__.py",
+    "app/styleguide/resolver.py",
+    "app/specialists/cd/state.py",
+    "tests/specialists/cd/test_styleguide_resolution_emission.py",
+    "tests/orchestrator/test_cd_dispatch_payload_projection.py",
+    "tests/marcus/orchestrator/test_styleguide_picker.py",
+    "tests/composition/test_real_cd_graph_walk_pin.py",
+    "tests/parity/test_capability_overlay_parity.py",
+    "tests/marcus/test_capability_overlay_over_promise_probe.py",
+    # Canonical-arc S3 "Gary shadow-parity WARN + §06 fold + both-walks
+    # receipts" (party record §7 re-scoped S3 row; spec
+    # canonical-arc-s3-gary-shadow-parity.md; SOP-008 F-801/F-802 applied).
+    # Bounded extension: the NEUTRAL shared parity comparator
+    # (app/styleguide/parity.py — pure, imports nothing from cd/gary/marcus),
+    # Gary's observability-only audit at the resolve site (gary/_act.py
+    # already rostered above; receipt rides the contribution), the gary
+    # parity-context runner keys (production_runner.py + gary
+    # payload_contract.py already rostered above), and the S3 RED-first test
+    # surface. NO new live-dispatch call site — the audit is a pure
+    # comparison over already-threaded data; every S3 test drives an OFFLINE
+    # fake Gamma client; the AC-L live witness reuses the existing
+    # --run-live-gated dispatch surfaces.
+    "app/styleguide/parity.py",
+    "tests/styleguide/__init__.py",
+    "tests/styleguide/test_parity_comparator.py",
+    "tests/specialists/gary/test_styleguide_parity_receipt.py",
+    "tests/specialists/gary/test_style_additional_instructions_channel.py",
+    # (tests/specialists/gary/test_gary_gamma_dispatch.py already rostered above.)
+    "tests/composition/test_gary_parity_walk_pin.py",
+    "tests/orchestrator/test_gary_parity_payload_seam.py",
+    "tests/marcus/orchestrator/test_picker_cd_vocabulary_lockstep.py",
+    # Canonical-arc S6 "Tracy/research Scite-canonical" (party record §1 S6 row;
+    # spec canonical-arc-s6-tracy-scite-canonical.md). The live-research dispatch
+    # DEFAULT flips OFF->ON (D1) so the two live-dispatch-touching modules join
+    # the allowlist per the established convention: research_wiring.py (D2
+    # Scite-canonical provider selection + D4 creds-absent degrade + R1
+    # degrade-resume idempotency fix + R3 Bearer-only creds check) and the SPOC
+    # (D5 post-§04.55 research narration wiring + the reconciled G1 line).
+    # production_runner.py (D1 default-ON kill-switch flip + reconciled two-walk
+    # comments) already rostered above at the finding-#5 entry. The live Scite
+    # call rides the existing Texas retrieval dispatch surface — NO new call site;
+    # creds-absent degrades VISIBLY at node entry (D4), never firing a doomed call.
+    "app/marcus/orchestrator/research_wiring.py",
+    "app/marcus/cli/marcus_spoc.py",
+    # S6 D7 "research-intent -> dispatch bridge" (Fix A; party-ratified 2026-07-07
+    # from the AC-L honest-RED). The real Irene-Pass-1 producer emits research
+    # intent as collateral.research_goals[] and NEVER fills plan_units[].
+    # identified_gaps, so the §04.55 dispatch was UNREACHABLE on every real run.
+    # Fix A is a MECHANICAL consumer-side dual-read: the Tracy bridge ALSO reads
+    # research_goals[] (mapping {goal_id, pedagogical_intent, binds_to_objective_id}
+    # -> a RetrievalIntent) alongside identified_gaps (union, provenance-distinct).
+    # J1 fence: mechanical field-carry only — NO research KIND/relevance/posture
+    # decision (downstream posture-selection + Texas own quality unchanged). NO new
+    # live-dispatch call site — the goals ride the same Texas retrieval surface.
+    "skills/bmad_agent_tracy/scripts/irene_bridge.py",
+    # S6 RED-first test surface (the flag truth-table, the Scite-canonical
+    # selection teeth, resume idempotency incl. R1 degrade-resume, the D4
+    # creds-absent degrade + R3 Bearer-only creds check, the D5 narration incl.
+    # the R2 resumed-transcript witness, the D6 workbook-thread witness).
+    "tests/integration/marcus/test_braid_s3_research_wiring.py",
+    # Canonical-arc S7 — workbook producer generalization (deterministic/OFFLINE;
+    # NO live dispatch, NO network, NO model client). Party green-light 4/4
+    # GO-WITH-AMENDMENTS (Winston/John/Murat/Amelia) + Codex SOP-026
+    # CONCUR-WITH-FINDINGS; spec canonical-arc-s7-workbook-generalization.md.
+    # The 07W producer retires the tejal-hardcoded constants + generalizes the
+    # plan-unit header (D1); consumes Irene's lesson_plan["collateral"] as the
+    # authoritative blueprint with the G0 enrichment projection demoted to a
+    # resolution overlay (D2); honors the `declaration` discriminant (D3); brings
+    # the S6 research_entries DOI block under the G2 citation manifest (D4); and
+    # adds the additive WorkbookSpec.kind discriminant (D5). The producer disk-
+    # reads run.json via app.models.* model classes (M3-safe, no orchestrator
+    # import). Squarely NOT live-dispatch scope creep.
+    "app/marcus/lesson_plan/collateral_spec.py",
+    # (app/marcus/lesson_plan/workbook_enrichment.py already permitted above via
+    #  the G0-enrichment story; the S7 readers are additive to that same module.)
+    "app/marcus/lesson_plan/workbook_producer.py",
+    "app/specialists/workbook_producer/_act.py",
+    "tests/marcus/lesson_plan/test_collateral_spec_shape_stable.py",
+    "tests/marcus/lesson_plan/test_workbook_s0_s7.py",
+    "tests/specialists/workbook_producer/_run_fixture.py",
+    "tests/specialists/workbook_producer/test_workbook_enriched_consumption.py",
+    "tests/specialists/workbook_producer/test_workbook_producer_brick.py",
+    "tests/specialists/workbook_producer/test_workbook_s7_generalization.py",
+    # S7 3-lane review + Codex SOP-028 remediation (deterministic/OFFLINE): shared-
+    # LO dedup, recoverable produce()-gate wrap, DOI-honesty omission, malformed-
+    # declaration fail-loud (F-2801), degrade-provenance teeth, kind carry-through.
+    "tests/specialists/workbook_producer/test_workbook_s7_remediation.py",
 }
 
 

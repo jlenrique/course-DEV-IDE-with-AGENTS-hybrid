@@ -15,6 +15,20 @@ CORPUS = Path("tests/fixtures/trial_corpus/README.md")
 
 
 @pytest.fixture(autouse=True)
+def _pin_g0_enrichment_off(monkeypatch: pytest.MonkeyPatch) -> None:
+    """Canonical-arc S5-3a.2 — file-corpus dormant-path migration (D-kill-switch pin).
+
+    This walk passes a README FILE as ``corpus_path`` and first-pauses at G1 on the
+    dormant path. The 3b default flip wakes G0-enrichment's corpus-DIRECTORY
+    enumeration, which crashes pre-gate with ``DirectiveCompositionError`` on a file
+    corpus. Pinning ``MARCUS_G0_ENRICHMENT_ACTIVE`` OFF explicitly preserves the
+    enrichment-orthogonal downstream subject under the flip (explicit ``"0"`` survives
+    the code-default flip). TEST-ONLY: no production/default change.
+    """
+    monkeypatch.setenv("MARCUS_G0_ENRICHMENT_ACTIVE", "0")
+
+
+@pytest.fixture(autouse=True)
 def _clear_registry():
     clear_resume_registry()
     yield

@@ -1,0 +1,17 @@
+{
+  "cost_report_json": "C:/Users/juanl/Documents/GitHub/course-DEV-IDE-with-AGENTS-hybrid/state/config/runs/62308889-3d83-4c54-a3ca-24e6b3e71c3c/cost-report.json",
+  "cost_report_markdown": "C:/Users/juanl/Documents/GitHub/course-DEV-IDE-with-AGENTS-hybrid/state/config/runs/62308889-3d83-4c54-a3ca-24e6b3e71c3c/cost-report.md",
+  "directive_digest": "0c685166f003d48f86610bf5064c61aa3c0affdd1a92d0c99edc5e8b84adf64c",
+  "directive_path": "C:/Users/juanl/Documents/GitHub/course-DEV-IDE-with-AGENTS-hybrid/state/config/runs/62308889-3d83-4c54-a3ca-24e6b3e71c3c/directive.yaml",
+  "input": "C:/Users/juanl/Documents/GitHub/course-DEV-IDE-with-AGENTS-hybrid/course-content/courses/tejal-c1m1-p4-assessments-bridge",
+  "langsmith_trace_status": "skipped-no-langsmith-env",
+  "lesson_plan_collateral_bundle_id": "narrated-deck-with-workbook",
+  "lesson_plan_collateral_intent_path": "C:/Users/juanl/Documents/GitHub/course-DEV-IDE-with-AGENTS-hybrid/_bmad-output/implementation-artifacts/s8-tejal-p4-ratified-collateral-intent.yaml",
+  "operator_id": "juanl",
+  "preset": "production",
+  "production_clone_launch_evidence": false,
+  "run_registry_path": "C:/Users/juanl/Documents/GitHub/course-DEV-IDE-with-AGENTS-hybrid/state/config/runs/62308889-3d83-4c54-a3ca-24e6b3e71c3c/run.json",
+  "status": "registered-offline",
+  "transport_kind": "cli",
+  "trial_id": "62308889-3d83-4c54-a3ca-24e6b3e71c3c"
+}

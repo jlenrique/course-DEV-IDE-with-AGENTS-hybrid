@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import copy
 import hashlib
 import json
 import logging
@@ -99,25 +100,36 @@ _SCRIPTED_MIN_CLUSTER_FLOOR_CLASS = "min_cluster_floor"
 DEFAULT_GRAPH_VERSION = "v42"
 LOGGER = logging.getLogger(__name__)
 
-# Braid S3 (M1): operator-gated live-research toggle. Default OFF so no live
-# Texas/Scite/Consensus call fires without creds; flip ON to dispatch research
-# on a real trial (AC-O1). Read at BOTH walk sites (start + continuation) so the
-# two-walk discipline holds — §04.55 is only reached on the continuation walk.
+# Braid S3 (M1) → Canonical-arc S6 (D1): live-research toggle. DEFAULT ON —
+# every canonical (unset-env) production run dispatches live research at §04.55.
+# Read at BOTH walk sites (start + continuation) so the two-walk discipline holds
+# — §04.55 is only reached on the continuation walk. Creds-absent is handled by
+# the D4 degrade precondition inside run_research_wiring (visible recorded-empty),
+# NOT by keeping this flag off. Read at BOTH walk sites (start + continuation).
 RESEARCH_DISPATCH_LIVE_ENV = "MARCUS_RESEARCH_DISPATCH_LIVE"
+
+# The explicit falsy kill-switch set (stripped/lowered). Membership → OFF (the
+# dormant no-live-call escape hatch, for byte-identical / legacy / creds-absent
+# walks that want to skip dispatch entirely). EVERYTHING ELSE — unset, empty,
+# whitespace, truthy, unrecognized — defaults to live-ON. Enumerated as a real
+# code contract (mirrors S5's g0_enrichment F-1802 kill-switch model), NOT
+# ``value in TRUTHY`` (which would wrongly stay OFF on the canonical unset run).
+RESEARCH_DISPATCH_LIVE_KILL_SWITCH: frozenset[str] = frozenset(
+    {"0", "false", "no", "off"}
+)
 
 
 def _research_dispatch_live() -> bool:
-    """Return True iff the operator-gated live-research toggle is enabled.
+    """Return True iff live research dispatch is enabled (DEFAULT ON — S6 D1).
 
-    Accepts the usual truthy spellings (``1``/``true``/``yes``/``on``,
-    case-insensitive); anything else (incl. unset) is OFF.
+    Canonical (unset-env) runs dispatch live research at §04.55. Only an EXPLICIT
+    falsy kill-switch value (:data:`RESEARCH_DISPATCH_LIVE_KILL_SWITCH`) returns
+    the dormant no-live-call path. Mirrors S5's ``g0_enrichment_active``.
     """
-    return os.environ.get(RESEARCH_DISPATCH_LIVE_ENV, "").strip().lower() in {
-        "1",
-        "true",
-        "yes",
-        "on",
-    }
+    return (
+        os.environ.get(RESEARCH_DISPATCH_LIVE_ENV, "").strip().lower()
+        not in RESEARCH_DISPATCH_LIVE_KILL_SWITCH
+    )
 
 
 class MissingUpstreamContributionError(RuntimeError):
@@ -809,17 +821,15 @@ def _pack_hash_binding(
 ) -> str:
     """Bind the run-summary to the graph that ACTUALLY ran.
 
-    For the default selection (``production_default`` — today's full deck+motion
-    graph, a composition NO-OP) this returns the raw manifest-file sha256, exactly
-    as before S5 (byte-identical regression pin). For a NON-default selection
-    (e.g. a B1 deck-only run) it binds the COMPOSED graph's node set instead of the
-    raw manifest file, so the audit trail of a deck-only run does not silently
-    claim the full pack ran (the raw-manifest leak the S2 dev flagged).
+    When the selected graph is structurally identical to the raw manifest, this
+    returns the raw manifest-file sha256. When the raw manifest contains optional
+    nodes outside the selected components (for example 07W while the default is
+    deck+motion), it binds the COMPOSED graph's node set so the audit trail never
+    claims an unselected component ran.
 
     No-op detection is STRUCTURAL — the composed graph's node set is compared to
-    the raw manifest's node set — rather than ``selection == production_default()``,
-    so it does not depend on (and cannot be tripped by) the default classmethod
-    (the two-walk re-default poison guard monkeypatches that method)."""
+    the raw manifest's node set — rather than ``selection == production_default()``.
+    """
     raw = hashlib.sha256(manifest_path.read_bytes()).hexdigest()
     if selection is None:
         return raw
@@ -880,6 +890,7 @@ def _emit_run_summary_yaml(
             selection=selection,
             composed_manifest=composed_manifest,
         ),
+        "component_selection": selection.as_map() if selection is not None else None,
         "conversation_chain_digest": _conversation_chain_digest(
             trial_id=trial_id,
             runs_root=runs_root,
@@ -1407,9 +1418,33 @@ def _runner_payload_for_specialist(
     S3 bridge spread is retired (its tombstone test was updated
     deliberately, per Winston S3-A). This seam carries RUNNER CONTEXT only:
     Texas's directive/bundle paths, Quinn-R's gate_id, Gary's run-dir
-    ``export_dir``. Content delivery via the seam is forbidden — the
-    adapter collision guard refuses any seam key that a projection or
-    dependency also delivers.
+    ``export_dir``, CD's ``directive_projection``. Content delivery via the
+    seam is forbidden — the adapter collision guard refuses any seam key
+    that a projection or dependency also delivers.
+
+    Canonical-arc S1 (D2, 2026-07-06): CD receives ``directive_projection``
+    ``{gamma_settings (verbatim), styleguide_picker_provenance (verbatim,
+    if present), directive_digest (sha256 of the directive file bytes)}`` at
+    the §4.75 dispatch site. Directive-derived styleguide context is
+    CHARTERED runner context per the gary ``gamma_settings`` precedent
+    above — not content delivery (the corpus/content plane still travels
+    exclusively through dependencies/projections). CD never opens the
+    directive file; the deterministic neck emits the ``styleguide_resolution``
+    audit block from this projection alone.
+
+    Canonical-arc S3 (D1/D4, F-802 option-(i) ruling): gary additionally
+    receives three parity-context keys as CHARTERED runner context —
+    ``cd_styleguide_resolution`` (the committed block verbatim from the
+    envelope's LATEST cd contribution, the same ``latest_for_specialist``
+    selector §06 uses; ``None`` when the cd contribution is absent at
+    dispatch time or predates S1 — legacy tolerance, never a raise),
+    ``directive_digest`` (sha256 of the SAME bytes the gamma-settings parse
+    read — read-once, no TOCTOU), and ``trial_start_directive_digest``
+    (from ``run_dir/"trial-start.json"``'s ``directive_digest`` key per
+    F-801 — NOT run.json, which is the ProductionTrialEnvelope and carries
+    no digest field; ``None`` when the file or key is absent). Same data
+    family as ``gamma_settings``/``directive_projection`` — observability
+    context for Gary's shadow-parity audit, not content delivery.
 
     Other specialists receive None.
     """
@@ -1424,13 +1459,95 @@ def _runner_payload_for_specialist(
     if specialist_id in {"quinn_r", "quinn-r"} and gate_code:
         return {"gate_id": gate_code}
     if specialist_id == "gary" and runs_root is not None and trial_id is not None:
+        run_dir = runs_root / str(trial_id)
         payload: dict[str, Any] = {
-            "export_dir": (runs_root / str(trial_id) / "exports" / "gary").as_posix()
+            "export_dir": (run_dir / "exports" / "gary").as_posix()
         }
-        gamma_settings = _gamma_settings_from_directive(directive_path)
+        # Canonical-arc S3 D4: read-once — settings AND digest come from the
+        # SAME directive bytes (the :852-854 sha256 pattern; no TOCTOU).
+        gamma_settings, directive_digest = _gamma_settings_and_digest_from_directive(
+            directive_path
+        )
         if gamma_settings is not None:
             payload["gamma_settings"] = gamma_settings
+        # Canonical-arc S3 D1 (F-802 option (i)): CD's committed
+        # styleguide_resolution block travels VERBATIM as chartered runner
+        # context, sourced from the envelope's latest cd contribution —
+        # None when absent-at-dispatch-time or pre-S1 (legacy; NEVER a
+        # raise, so rewind-recovered golden bundles never false-fail).
+        cd_block: Any = None
+        if production_envelope is not None:
+            cd_contribution = production_envelope.latest_for_specialist("cd")
+            if cd_contribution is not None and isinstance(cd_contribution.output, dict):
+                cd_block = cd_contribution.output.get("styleguide_resolution")
+        # T11 P4(b): deepcopy at capture — the payload value must never alias
+        # the live envelope contribution dict (the receipt seam is an
+        # attestation of dispatch-time state, not a live pointer).
+        payload["cd_styleguide_resolution"] = (
+            copy.deepcopy(cd_block) if cd_block is not None else None
+        )
+        payload["directive_digest"] = directive_digest
+        # F-801: the trial-start attestation lives ONLY in trial-start.json
+        # (trial.py:536); absent (legacy runs, start-walk harness contexts)
+        # => honest None (the comparator treats it as not-comparable).
+        payload["trial_start_directive_digest"] = _trial_start_directive_digest(run_dir)
         return payload
+    # Canonical-arc S1 (D2): CD's §4.75 directive_projection — the ONE branch
+    # both walks reach through the shared _dispatch_specialist_at_node (F-203
+    # wiring altitude: never per-walk wiring). gamma_settings verbatim per the
+    # gary precedent above; digest via the :852-854 sha256 pattern. No
+    # directive on disk ⇒ None ⇒ CD's neck emits no_picks_at_authoring.
+    # Remediation T1 (review 2026-07-06, HIGH): the directive is read ONCE —
+    # bytes → sha256 → decode/parse of the SAME bytes for settings AND
+    # provenance (no TOCTOU) — and EVERY failure (unreadable file, non-UTF-8
+    # bytes, malformed YAML) raises into the SpecialistDispatchError family
+    # (`cd.directive.*` tags) so BOTH walkers' `except SpecialistDispatchError`
+    # routes it through `_pause_at_error` recoverably (the
+    # AssetResolutionError / CoverageAssuranceError precedent) instead of
+    # crashing the walk un-persisted.
+    if specialist_id == "cd" and directive_path is not None and directive_path.is_file():
+        try:
+            directive_bytes = directive_path.read_bytes()
+        except OSError as exc:
+            raise SpecialistDispatchError(
+                f"cd directive_projection: directive at {directive_path} is "
+                f"unreadable: {exc}",
+                tag="cd.directive.unreadable",
+            ) from exc
+        try:
+            directive_text = directive_bytes.decode("utf-8")
+        except UnicodeDecodeError as exc:
+            raise SpecialistDispatchError(
+                f"cd directive_projection: directive at {directive_path} is "
+                f"not valid UTF-8: {exc}",
+                tag="cd.directive.unreadable",
+            ) from exc
+        try:
+            loaded = yaml.safe_load(directive_text) or {}
+        except yaml.YAMLError as exc:
+            raise SpecialistDispatchError(
+                f"cd directive_projection: directive at {directive_path} is "
+                f"not parseable YAML: {exc}",
+                tag="cd.directive.malformed",
+            ) from exc
+        if not isinstance(loaded, dict):
+            # Tolerant like _gamma_settings_from_directive: a parseable-but-
+            # non-mapping directive projects digest + null picks (the neck
+            # emits an honest no_picks_at_authoring), matching pre-T1 behavior.
+            loaded = {}
+        raw_settings = loaded.get("gamma_settings")
+        projection: dict[str, Any] = {
+            "gamma_settings": (
+                [dict(item) for item in raw_settings if isinstance(item, dict)]
+                if isinstance(raw_settings, list)
+                else None
+            ),
+            "directive_digest": hashlib.sha256(directive_bytes).hexdigest(),
+        }
+        provenance_block = loaded.get("styleguide_picker_provenance")
+        if isinstance(provenance_block, dict):
+            projection["styleguide_picker_provenance"] = dict(provenance_block)
+        return {"directive_projection": projection}
     # P5-S2 Consumer A (Step 6): the narration node ("irene" == Pass-2; Pass-1 is
     # the separate "irene-pass1" specialist) gets the orchestrator-projected
     # per-SLIDE role-derived voice seed table. ORCHESTRATOR-SIDE projection (Winston
@@ -1590,18 +1707,90 @@ def _min_cluster_floor_from_directive(directive_path: Path | None) -> int | None
     return max(floors)
 
 
-def _gamma_settings_from_directive(directive_path: Path | None) -> list[dict[str, Any]] | None:
+def _gamma_settings_and_digest_from_directive(
+    directive_path: Path | None,
+) -> tuple[list[dict[str, Any]] | None, str | None]:
+    """Read the directive ONCE: settings and sha256 from the SAME bytes.
+
+    Canonical-arc S3 D4 refactor of ``_gamma_settings_from_directive`` (which
+    remains a behavior-identical thin wrapper): the parity comparator's
+    ``directive_digest`` must attest exactly the bytes the gamma-settings
+    parse read (no TOCTOU). Directive absent ⇒ ``(None, None)``; present but
+    settings-less/non-mapping ⇒ ``(None, digest)``.
+    """
     if directive_path is None or not directive_path.is_file():
-        return None
-    loaded = yaml.safe_load(directive_path.read_text(encoding="utf-8")) or {}
+        return None, None
+    directive_bytes = directive_path.read_bytes()
+    digest = hashlib.sha256(directive_bytes).hexdigest()
+    loaded = yaml.safe_load(directive_bytes.decode("utf-8")) or {}
     if not isinstance(loaded, dict):
-        return None
+        return None, digest
     raw = loaded.get("gamma_settings")
     if raw is None:
-        return None
+        return None, digest
     if not isinstance(raw, list):
+        return None, digest
+    return [dict(item) for item in raw if isinstance(item, dict)], digest
+
+
+def _gamma_settings_from_directive(directive_path: Path | None) -> list[dict[str, Any]] | None:
+    return _gamma_settings_and_digest_from_directive(directive_path)[0]
+
+
+def _trial_start_directive_digest(run_dir: Path) -> str | None:
+    """The trial-start directive attestation (F-703 third digest; F-801).
+
+    Sourced from ``run_dir/"trial-start.json"``'s ``directive_digest`` key —
+    the ONLY place `start_trial` persists it (trial.py:533/536; run.json is
+    the ProductionTrialEnvelope and has no digest field). Total: an absent
+    file/key (legacy runs, harness contexts) or an unreadable/malformed file
+    yields ``None`` (WARN-logged) — parity context must never block dispatch.
+    """
+    trial_start_path = run_dir / "trial-start.json"
+    if not trial_start_path.is_file():
         return None
-    return [dict(item) for item in raw if isinstance(item, dict)]
+    try:
+        payload = json.loads(trial_start_path.read_text(encoding="utf-8"))
+    except (OSError, UnicodeDecodeError, json.JSONDecodeError) as exc:
+        LOGGER.warning(
+            "trial-start.json at %s is unreadable/malformed (%s); parity "
+            "receipt will record the trial-start digest as not-comparable",
+            trial_start_path,
+            exc,
+        )
+        return None
+    if not isinstance(payload, dict):
+        # T11 P5: parseable-but-non-mapping content is malformed — WARN as the
+        # docstring promises (still None; parity context never blocks dispatch).
+        LOGGER.warning(
+            "trial-start.json at %s is not a JSON object (got %s); parity "
+            "receipt will record the trial-start digest as not-comparable",
+            trial_start_path,
+            type(payload).__name__,
+        )
+        return None
+    digest = payload.get("directive_digest")
+    if isinstance(digest, str) and digest:
+        return digest
+    # `directive_digest: null` is a LEGITIMATE produced shape (single-file
+    # trials write it; E4) and an ABSENT key is legacy — both stay silent.
+    # T11 P5: any OTHER present value (non-string / empty string) is a
+    # producer-side type regression and must be operator-visible.
+    if "directive_digest" in payload and digest is not None:
+        LOGGER.warning(
+            "trial-start.json at %s carries a non-string/empty "
+            "directive_digest (%r) — producer-side type regression; parity "
+            "receipt will record the trial-start digest as not-comparable",
+            trial_start_path,
+            digest,
+        )
+    return None
+
+
+# (Remediation T1: the former `_picker_provenance_from_directive` helper was
+# folded into the cd branch of `_runner_payload_for_specialist` — provenance
+# now comes from the SAME single guarded directive read as settings + digest,
+# so a separate tolerant re-read helper would misstate real seam behavior.)
 
 
 # BETA S0.4 flake budget (T5a-F2): dispatch tags that represent LLM-output
@@ -2401,9 +2590,11 @@ def run_production_trial(
                 # G1, so on the trial path this only ever fires via the
                 # CONTINUATION walk — but the side-effect is present in BOTH walk
                 # bodies (storyboard/chooser-publisher precedent). Bridge dispatch
-                # is local; the live Texas fetch is operator-gated via the
-                # MARCUS_RESEARCH_DISPATCH_LIVE toggle (default OFF — no live call
-                # without creds; flipped ON only for the operator-gated live run).
+                # is local; the live Texas fetch rides the MARCUS_RESEARCH_DISPATCH_LIVE
+                # toggle (S6 D1: DEFAULT ON — every canonical run dispatches live at
+                # §04.55; only an explicit falsy kill-switch value skips it). A
+                # creds-absent walk degrades VISIBLY at run_research_wiring entry
+                # (D4) rather than firing a doomed call.
                 try:
                     production_envelope = research_wiring.run_research_wiring(
                         node_id=node.id,
@@ -3131,9 +3322,10 @@ def _continue_production_walk(
                 # MUST fire here too — not only in the start walk. Mirrors the
                 # storyboard/chooser-publisher both-walks parity. AC-D2 executes a
                 # real continuation (resume) walk to prove this fires. The live
-                # Texas fetch is operator-gated via the MARCUS_RESEARCH_DISPATCH_LIVE
-                # toggle, read here too so the continuation walk honors it (two-walk
-                # parity — §04.55 is ONLY reached on this walk on the trial path).
+                # Texas fetch rides the MARCUS_RESEARCH_DISPATCH_LIVE toggle (S6 D1:
+                # DEFAULT ON), read here too so the continuation walk honors it
+                # (two-walk parity — §04.55 is ONLY reached on this walk on the
+                # trial path). Creds-absent degrades VISIBLY at node entry (D4).
                 try:
                     production_envelope = research_wiring.run_research_wiring(
                         node_id=node.id,

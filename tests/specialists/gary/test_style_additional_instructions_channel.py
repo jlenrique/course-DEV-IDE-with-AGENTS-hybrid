@@ -90,7 +90,11 @@ def _synthetic_api_base() -> dict:
 
 
 def test_normalized_settings_carries_style_block(monkeypatch) -> None:
-    monkeypatch.setattr(gary_act, "resolve_styleguide", lambda name: _synthetic_api_base())
+    # S3 read-once seam: the fake accepts the resolver's `guides=` kwarg
+    # (harness signature extension only — assertions untouched).
+    monkeypatch.setattr(
+        gary_act, "resolve_styleguide", lambda name, **_kw: _synthetic_api_base()
+    )
     out = _normalized_gamma_settings(
         {"gamma_settings": [{"variant_id": "A", "styleguide": "synthetic-guide"}]}
     )
@@ -105,7 +109,9 @@ def test_per_variant_additional_instructions_fails_loud(monkeypatch) -> None:
     # discipline), never be silently dropped (code-review B, both hunter lanes).
     from app.specialists.gary._act import GaryActError
 
-    monkeypatch.setattr(gary_act, "resolve_styleguide", lambda name: _synthetic_api_base())
+    monkeypatch.setattr(
+        gary_act, "resolve_styleguide", lambda name, **_kw: _synthetic_api_base()
+    )
     with pytest.raises(GaryActError) as exc:
         _normalized_gamma_settings(
             {

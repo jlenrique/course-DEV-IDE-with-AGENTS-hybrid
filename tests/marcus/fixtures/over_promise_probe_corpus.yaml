@@ -12,6 +12,10 @@
 #
 # DO NOT add a row whose expected_wired=true unless the target is genuinely wired
 # in the live dispatch graph — the judge re-derives and will fail the test.
+#
+# F-302 (S1 review rider): the cd row's flip to `wired` removed the corpus's only
+# `partial`-state probe — if any capability re-grounds as `partial`, reactivate a
+# partial-row here so that judge branch is exercised again.
 
 rows:
   - id: tracy-research-enrichment
@@ -26,11 +30,15 @@ rows:
   - id: cd-resolve-directive
     ask: "Have the CD resolve the creative directive and write the artifact."
     target: cd
-    expected_state: partial
-    expected_wired: false
+    expected_state: wired
+    expected_wired: true
     note: >-
-      cd is in-manifest + dispatchable + real module, but the registry flags a
-      conditional-skip/artifact-write contract gap (Trial-3 routes around CD).
+      Reclassified at canonical-arc S1 (2026-07-06): the former `partial`
+      ground ("routes around CD / artifact-write contract absent") was stale
+      doc drift — monitor SOP-001 verified CD is dispatched at manifest node
+      4.75 in BOTH walks and is load-bearing at §06, and S1 added the
+      styleguide_resolution audit emission. Honest state: wired (third wired
+      control row).
 
   - id: midjourney-key-art
     ask: "Generate Midjourney key art for the cover slide."

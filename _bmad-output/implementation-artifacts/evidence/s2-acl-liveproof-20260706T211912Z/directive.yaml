@@ -1,0 +1,112 @@
+run_id: bd869b00-49ad-47d8-907b-599cb674a45a
+corpus_dir: C:/Users/juanl/Documents/GitHub/course-DEV-IDE-with-AGENTS-hybrid/course-content/courses/tejal-apc-c1-m1-p2-trends
+sources:
+- ref_id: src-001
+  locator: assessments/chapter-2-knowledge-check.md
+  provider: local_file
+  role: supporting
+  description: 'Markdown quiz titled ''Chapter 2 Knowledge Check: The Macro Trends
+    (5 Questions)'' assessing understanding of Chapter 2 concepts.'
+  expected_min_words: 200
+  excluded_reason: null
+- ref_id: src-002
+  locator: assessments/chapter-3-knowledge-check.md
+  provider: local_file
+  role: supporting
+  description: Chapter 3 knowledge check in Markdown with five questions assessing
+    understanding of 'The Case for Change.'
+  expected_min_words: 120
+  excluded_reason: null
+- ref_id: src-003
+  locator: README.md
+  provider: local_file
+  role: supporting
+  description: Repository README providing an overview of the corpus, structure, source
+    links, and guidance for navigating slides, references, and assessments.
+  expected_min_words: 200
+  excluded_reason: null
+- ref_id: src-004
+  locator: references/intro-video-youtube.md
+  provider: local_file
+  role: supporting
+  description: Reference note linking/embedding an introductory YouTube video to complement
+    the course materials.
+  expected_min_words: 50
+  excluded_reason: null
+- ref_id: src-005
+  locator: references/required-reading-beauchamp.md
+  provider: local_file
+  role: supporting
+  description: Markdown reference page listing a required reading (Beauchamp article)
+    with an embedded hyperlink and brief context/instructions.
+  expected_min_words: 30
+  excluded_reason: null
+- ref_id: src-006
+  locator: slides/slide-1-the-economic-structural-reality.md
+  provider: local_file
+  role: primary
+  description: 'Slide 1 markdown: The Economic & Structural Reality, presenting key
+    economic pressures and structural challenges as part of the core slide deck content.'
+  expected_min_words: 120
+  excluded_reason: null
+- ref_id: src-007
+  locator: slides/slide-2-the-human-cost-system-waste-burnout.md
+  provider: local_file
+  role: primary
+  description: Slide 2 of the course deck focusing on the human cost of healthcare
+    system waste and clinician burnout, likely outlining impacts on patients, clinicians,
+    safety, and costs with key bullets and visuals.
+  expected_min_words: 80
+  excluded_reason: null
+- ref_id: src-008
+  locator: slides/slide-3-the-knowledge-explosion-new-technologies.md
+  provider: local_file
+  role: primary
+  description: 'Slide 3 of the course slide deck: ''The Knowledge Explosion & New
+    Technologies,'' presenting key points on rapid knowledge growth and emerging tech
+    impacts.'
+  expected_min_words: 80
+  excluded_reason: null
+- ref_id: src-009
+  locator: slides/slide-4-the-consumer-shift-the-digital-front-door.md
+  provider: local_file
+  role: primary
+  description: Slide 4 markdown covering the consumer shift and the digital front
+    door, part of the core slide deck for the lesson.
+  expected_min_words: 80
+  excluded_reason: null
+- ref_id: src-010
+  locator: slides/slide-5-the-leadership-gap.md
+  provider: local_file
+  role: primary
+  description: Slide 5 markdown content detailing 'The Leadership Gap' with key points
+    and visual cues for the lesson.
+  expected_min_words: 120
+  excluded_reason: null
+- ref_id: src-011
+  locator: slides/slide-6-part-2-summary.md
+  provider: local_file
+  role: primary
+  description: Slide 6 markdown containing the Part 2 summary and knowledge check
+    prompts for the course.
+  expected_min_words: 100
+  excluded_reason: null
+composed_at: '2026-07-06T21:22:06.952424Z'
+schema_version: 1
+gamma_settings:
+- variant_id: A
+  styleguide: hil-2026-apc-crossroads-classic
+styleguide_picker_provenance:
+  picked_at: '2026-07-06T21:23:01.481286+00:00'
+  picker_version: '1.0'
+  ssot_sha256: 6b94739ff29724cd2cf26ef25bd13d28824079d15729751d129b5488f6eb6ac5
+  picks:
+  - variant_id: A
+    styleguide: hil-2026-apc-crossroads-classic
+  written_by: styleguide_picker
+  picked_by: operator_juan
+  publish_url: https://jlenrique.github.io/assets/styleguide-picker/bd869b0049ad47d8907b599cb674a45a/index.html
+  roster_sha256: 13ab058a5c894009e2197373126291c9e2d1753292ea538ba92cda697ebc316e
+  version_count: 1
+  selection_code: SGP-bd869b0049ad47d8907b599cb674a45a-A:hil-2026-apc-crossroads-classic
+  run_tag: bd869b0049ad47d8907b599cb674a45a

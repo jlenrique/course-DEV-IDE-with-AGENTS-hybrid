@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import hashlib
 import json
 from pathlib import Path
 from uuid import UUID, uuid4
@@ -383,12 +384,19 @@ def test_resume_reconstructs_canonical_directive_path_for_texas_and_gary(
         for item in adapter.calls
         if item["specialist_id"] == "gary"
     )
+    # Canonical-arc S3 (D1/D4, F-205 pin EXTENSION — never weakened): the
+    # parity-context keys joined the exact-payload pin. No cd contribution /
+    # trial-start.json in this harness ⇒ honest None; the directive digest
+    # attests the SAME bytes the gamma_settings parse read.
     assert gary_payload == {
         "export_dir": (run_dir / "exports" / "gary").as_posix(),
         "gamma_settings": [
             {"variant_id": "A", "image_style": "photographic"},
             {"variant_id": "B", "image_style": "diagrammatic"},
         ],
+        "cd_styleguide_resolution": None,
+        "directive_digest": hashlib.sha256(directive.read_bytes()).hexdigest(),
+        "trial_start_directive_digest": None,
     }
 
 
@@ -430,6 +438,13 @@ def test_resume_without_gamma_settings_preserves_gary_legacy_payload(
         for item in adapter.calls
         if item["specialist_id"] == "gary"
     )
+    # Canonical-arc S3 (D1/D4, F-205 pin EXTENSION — never weakened): the
+    # legacy payload still carries NO gamma_settings key; the parity-context
+    # keys are present with honest None (cd/trial-start absent) plus the
+    # digest of the settings-less directive bytes.
     assert gary_payload == {
         "export_dir": (run_dir / "exports" / "gary").as_posix(),
+        "cd_styleguide_resolution": None,
+        "directive_digest": hashlib.sha256(directive.read_bytes()).hexdigest(),
+        "trial_start_directive_digest": None,
     }

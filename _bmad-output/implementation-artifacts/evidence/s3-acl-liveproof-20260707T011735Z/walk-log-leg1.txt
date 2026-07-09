@@ -1,0 +1,43 @@
+2026-07-06 21:20:46,535 INFO httpx: HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-06 21:20:58,378 INFO httpx: HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-06 21:21:09,853 INFO httpx: HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-06 21:21:20,459 INFO httpx: HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-06 21:21:30,323 INFO httpx: HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-06 21:21:41,424 INFO httpx: HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-06 21:21:52,178 INFO httpx: HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-06 21:21:59,620 INFO httpx: HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-06 21:22:10,159 INFO httpx: HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-06 21:22:17,985 INFO httpx: HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-06 21:22:26,692 INFO httpx: HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-06 21:22:55,157 INFO httpx: HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-06 21:23:33,855 INFO httpx: HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-06 21:23:48,209 INFO httpx: HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-06 21:24:12,934 INFO httpx: HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-06 21:24:27,637 INFO httpx: HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-06 21:25:39,830 INFO scripts.api_clients.gamma_client: Generation y7X7CRYtC2bK6kEapDjU8 completed after 24 polls
+2026-07-06 21:25:40,794 INFO skills.gamma_api_mastery._source_gamma_operations: Gamma export downloaded: bytes=9964527 path=C:\Users\juanl\Documents\GitHub\course-DEV-IDE-with-AGENTS-hybrid\state\config\runs\a18c2a86-bbdb-48a2-ba63-fb1a653bfaf9\exports\gary\gary_A.png
+2026-07-06 21:25:40,916 WARNING app.marcus.orchestrator.production_runner: retryable dispatch variance [gamma.export.brief-unmatched] at node 07 — auto-retry 1/3
+2026-07-06 21:26:59,020 INFO scripts.api_clients.gamma_client: Generation 11aXnpuHBe45nZXmIPzLs completed after 26 polls
+2026-07-06 21:26:59,943 INFO skills.gamma_api_mastery._source_gamma_operations: Gamma export downloaded: bytes=10811766 path=C:\Users\juanl\Documents\GitHub\course-DEV-IDE-with-AGENTS-hybrid\state\config\runs\a18c2a86-bbdb-48a2-ba63-fb1a653bfaf9\exports\gary\gary_A.png
+2026-07-06 21:27:00,073 WARNING app.marcus.orchestrator.production_runner: retryable dispatch variance [gamma.export.brief-unmatched] at node 07 — auto-retry 2/3
+2026-07-06 21:28:22,547 INFO scripts.api_clients.gamma_client: Generation vqpjNduv1mFP1xOHWRW1b completed after 27 polls
+2026-07-06 21:28:23,539 INFO skills.gamma_api_mastery._source_gamma_operations: Gamma export downloaded: bytes=9901781 path=C:\Users\juanl\Documents\GitHub\course-DEV-IDE-with-AGENTS-hybrid\state\config\runs\a18c2a86-bbdb-48a2-ba63-fb1a653bfaf9\exports\gary\gary_A.png
+2026-07-06 21:28:23,654 WARNING app.marcus.orchestrator.production_runner: retryable dispatch variance [gamma.export.brief-unmatched] at node 07 — auto-retry 3/3
+2026-07-06 21:29:39,511 INFO scripts.api_clients.gamma_client: Generation rn3pY2I4dxKg0xgknOyCz completed after 25 polls
+2026-07-06 21:29:40,525 INFO skills.gamma_api_mastery._source_gamma_operations: Gamma export downloaded: bytes=10962907 path=C:\Users\juanl\Documents\GitHub\course-DEV-IDE-with-AGENTS-hybrid\state\config\runs\a18c2a86-bbdb-48a2-ba63-fb1a653bfaf9\exports\gary\gary_A.png
+2026-07-06 21:29:40,644 ERROR app.marcus.orchestrator.production_runner: dispatch error at manifest node 07 (specialist gary): [gamma.export.brief-unmatched] gamma export left briefed slide(s) unmatched for variant A: ['slide-07']; unmatched pages: ['Technologys-Promise-Requires-Clinical-Innovators'] — pausing trial a18c2a86-bbdb-48a2-ba63-fb1a653bfaf9 for recovery
+2026-07-06 21:33:46,181 INFO scripts.api_clients.gamma_client: Generation XZCSjYkCe4S3G9h1wXlxb completed after 29 polls
+2026-07-06 21:33:47,136 INFO skills.gamma_api_mastery._source_gamma_operations: Gamma export downloaded: bytes=9494598 path=C:\Users\juanl\Documents\GitHub\course-DEV-IDE-with-AGENTS-hybrid\state\config\runs\a18c2a86-bbdb-48a2-ba63-fb1a653bfaf9\exports\gary\gary_A.png
+2026-07-06 21:33:47,258 WARNING app.marcus.orchestrator.production_runner: retryable dispatch variance [gamma.export.brief-unmatched] at node 07 — auto-retry 1/3
+2026-07-06 21:35:05,626 INFO scripts.api_clients.gamma_client: Generation PtNHyf21fnBPVeiM7ZLyD completed after 26 polls
+2026-07-06 21:35:06,536 INFO skills.gamma_api_mastery._source_gamma_operations: Gamma export downloaded: bytes=10371638 path=C:\Users\juanl\Documents\GitHub\course-DEV-IDE-with-AGENTS-hybrid\state\config\runs\a18c2a86-bbdb-48a2-ba63-fb1a653bfaf9\exports\gary\gary_A.png
+2026-07-06 21:35:06,657 WARNING app.marcus.orchestrator.production_runner: retryable dispatch variance [gamma.export.brief-unmatched] at node 07 — auto-retry 2/3
+2026-07-06 21:36:34,348 INFO scripts.api_clients.gamma_client: Generation 5tOKvwpGv8dwvbqj04cEo completed after 29 polls
+2026-07-06 21:36:35,277 INFO skills.gamma_api_mastery._source_gamma_operations: Gamma export downloaded: bytes=9700572 path=C:\Users\juanl\Documents\GitHub\course-DEV-IDE-with-AGENTS-hybrid\state\config\runs\a18c2a86-bbdb-48a2-ba63-fb1a653bfaf9\exports\gary\gary_A.png
+2026-07-06 21:36:35,397 WARNING app.marcus.orchestrator.production_runner: retryable dispatch variance [gamma.export.brief-unmatched] at node 07 — auto-retry 3/3
+2026-07-06 21:38:02,581 INFO scripts.api_clients.gamma_client: Generation uKXwUUDIkQ3NnhiPRdc5X completed after 29 polls
+2026-07-06 21:38:03,487 INFO skills.gamma_api_mastery._source_gamma_operations: Gamma export downloaded: bytes=9729241 path=C:\Users\juanl\Documents\GitHub\course-DEV-IDE-with-AGENTS-hybrid\state\config\runs\a18c2a86-bbdb-48a2-ba63-fb1a653bfaf9\exports\gary\gary_A.png
+2026-07-06 21:38:03,606 ERROR app.marcus.orchestrator.production_runner: dispatch error at manifest node 07 (specialist gary): [gamma.export.brief-unmatched] gamma export left briefed slide(s) unmatched for variant A: ['slide-07']; unmatched pages: ['Technologys-Promise-Requires-Clinical-Innovators'] — pausing trial a18c2a86-bbdb-48a2-ba63-fb1a653bfaf9 for recovery
+2026-07-06 21:53:13,650 INFO scripts.api_clients.gamma_client: Generation 1Z2aJ1lyk7P4QMUe4AZO0 completed after 26 polls
+2026-07-06 21:53:14,887 INFO skills.gamma_api_mastery._source_gamma_operations: Gamma export downloaded: bytes=11319719 path=C:\Users\juanl\Documents\GitHub\course-DEV-IDE-with-AGENTS-hybrid\state\config\runs\a18c2a86-bbdb-48a2-ba63-fb1a653bfaf9\exports\gary\gary_A.png
+2026-07-06 21:53:27,929 INFO httpx: HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"

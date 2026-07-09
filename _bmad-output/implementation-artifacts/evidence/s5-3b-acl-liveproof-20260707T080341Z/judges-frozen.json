@@ -1,0 +1,14 @@
+{
+  "freeze_ts_utc": "2026-07-07T08:05:33.522926+00:00",
+  "protocol": "first-run-stands; judges frozen BEFORE any lane run; executed verbatim ONCE each after its lane pauses",
+  "judges": {
+    "judge_a.py": {
+      "sha256": "f0cf3ebb164f2f056f14ef39f6648546596b37214fbd094625e04596eebf4fbe",
+      "bytes": 5054
+    },
+    "judge_b.py": {
+      "sha256": "4443bc1824c55838901902b2d9c07eac5ff53ba6760ca9379e2cfdc470494fbe",
+      "bytes": 5264
+    }
+  }
+}

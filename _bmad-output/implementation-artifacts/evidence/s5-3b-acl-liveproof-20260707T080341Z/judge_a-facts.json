@@ -1,0 +1,50 @@
+{
+  "judge": "a",
+  "lane": "canonical default-ENV walk (flip proof, deterministic)",
+  "verdict": "PASS",
+  "trial_id": "7039838e-5477-4aba-9fcf-ab500f240588",
+  "run_dir": "C:\\Users\\juanl\\Documents\\GitHub\\course-DEV-IDE-with-AGENTS-hybrid\\state\\config\\runs\\7039838e-5477-4aba-9fcf-ab500f240588",
+  "receipt_path": "C:\\Users\\juanl\\Documents\\GitHub\\course-DEV-IDE-with-AGENTS-hybrid\\state\\config\\runs\\7039838e-5477-4aba-9fcf-ab500f240588\\g0-enrichment.json",
+  "pause_sequence_observed": [
+    "G0E",
+    "G0R",
+    "G1"
+  ],
+  "enrichment_mode": "deterministic-recorded",
+  "n_typed_components": 4,
+  "n_provisional_los": 1,
+  "checks": {
+    "F1804_env_enrichment_absent": {
+      "pass": true,
+      "detail": "MARCUS_G0_ENRICHMENT_ACTIVE present-after-dotenv=False (must be False: os.environ.get(...) is None)"
+    },
+    "F1804_env_dispatch_live_unset": {
+      "pass": true,
+      "detail": "MARCUS_G0_DISPATCH_LIVE present=False (must be False)"
+    },
+    "1_first_pause_G0E": {
+      "pass": true,
+      "detail": "start paused_gate='G0E' status='paused-at-gate' (expect G0E / paused-at-gate)"
+    },
+    "2_G0E_resume_to_G0R": {
+      "pass": true,
+      "detail": "G0E verdict resume -> status='paused-at-gate' paused_gate='G0R' (expect G0R)"
+    },
+    "3_G0R_resume_to_G1": {
+      "pass": true,
+      "detail": "G0R verdict resume -> status='paused-at-gate' paused_gate='G1' (expect G1)"
+    },
+    "4_enrichment_real": {
+      "pass": true,
+      "detail": "typed_components=4 provisional_los=1 (expect >=1 each); first_component_type='slide'"
+    },
+    "5_receipt_mode_deterministic": {
+      "pass": true,
+      "detail": "receipt enrichment_mode='deterministic-recorded' (expect 'deterministic-recorded')"
+    },
+    "6_zero_prepass_spend": {
+      "pass": true,
+      "detail": "pre-pass model_id='deterministic-g0-enrichment-offline' mode='deterministic-recorded' (offline marker => $0 live-LLM pre-pass)"
+    }
+  }
+}

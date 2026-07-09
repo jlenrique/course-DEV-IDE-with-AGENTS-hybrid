@@ -1,0 +1,17 @@
+hai_extraction_status=verified
+hai_course_learning_objectives=6
+hai_module_records=4
+hai_sentinel_bound_verified=pass
+hai_existing_slugs_aligned=pass
+hai_fields_anchored=pass
+phs_extraction_status=verified
+phs_course_title=Teaching and Learning Seminar
+phs_course_learning_objectives=12
+phs_module_records=15
+phs_sentinel_bound_verified=pass
+phs_no_mojibake_sentinel=pass
+phs_slug_divergence_explained=pass
+phs_slug_noise_removed=pass
+phs_fields_anchored=pass
+proposal_only_course_content_status_unchanged=pass
+proposal_only_course_content_status_clean=pass

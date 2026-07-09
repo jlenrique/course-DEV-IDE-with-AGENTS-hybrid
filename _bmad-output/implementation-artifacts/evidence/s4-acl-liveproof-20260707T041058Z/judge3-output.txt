@@ -1,0 +1,16 @@
+ASSERT g0-gary-contribution-present: PASS -- '1 gary contribution(s)'
+ASSERT d0-real-generation-id: PASS -- 'npkNxi1NwrKbfPj3NU61I'
+ASSERT d1-calls-made-ge-1: PASS -- 1
+ASSERT d2-slide-output-nonempty: PASS -- '12 slide rows'
+ASSERT d3-png-exports-present: PASS -- {'png_count': 12, 'slide_count': 12, 'sample': ['C:\\Users\\juanl\\Documents\\GitHub\\course-DEV-IDE-with-AGENTS-hybrid\\state\\config\\runs\\4fe6073f-c8e2-4836-bb94-759dc5b97bbf\\exports\\gary\\A_slide-01.png']}
+ASSERT g1-receipt-present: PASS -- 'dict'
+ASSERT g2-outcome-ok: PASS -- 'ok'
+ASSERT g3-reason-match: PASS -- 'match'
+ASSERT g4-clock-eligible-true: PASS -- True
+ASSERT g5-cd-status-resolved: PASS -- 'resolved'
+ASSERT w0-paused-at-gate-post-07: PASS -- {'status': 'paused-at-gate', 'paused_gate': 'G2B', 'paused_error_tag': None}
+ASSERT n0-run-no-styleguide-error-tag: PASS -- None
+ASSERT n1-no-error-pause-styleguide-tag: PASS -- None
+ASSERT n2-walk-log-no-styleguide-fail-loud: PASS -- []
+ASSERT c0-cd-bound-guides-exactly-picked-guide: PASS -- ['hil-2026-apc-crossroads-classic']
+JUDGE-3 VERDICT: PASS (0 failing: [])

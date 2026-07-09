@@ -1,0 +1,26 @@
+[2026-07-07T10:21:39.403005+00:00] env: MARCUS_RESEARCH_DISPATCH_LIVE absent-by-name=True
+[2026-07-07T10:21:39.403005+00:00] fns: _research_dispatch_live()=True _scite_creds_present()=True ready=['consensus', 'gamma_docs', 'scite']
+[2026-07-07T10:21:39.513457+00:00] trial_id=181c6621-d706-4f1f-807c-f51a7998657d; START on tejal-apc-c1-m1-p2-trends (expect first pause G0E)
+[2026-07-07T10:24:17.789272+00:00] START paused at G0E (status=paused-at-gate) after 158s
+[2026-07-07T10:24:17.798727+00:00] resume: approve G0E (cap=8)
+[2026-07-07T10:24:36.441644+00:00]   -> status=paused-at-gate paused_gate=G0R err=None
+[2026-07-07T10:24:36.464720+00:00] resume: approve G0R (cap=12)
+[2026-07-07T10:24:58.172354+00:00]   -> status=paused-at-gate paused_gate=G1 err=None
+[2026-07-07T10:24:58.190454+00:00] resume: approve G1 (cap=12)
+[2026-07-07T10:27:48.136706+00:00] RESUME env: dispatch_live_fn=True creds=True ready=['consensus', 'gamma_docs', 'scite']
+[2026-07-07T10:27:48.255749+00:00] RESUME start: on-disk status=paused-at-gate paused_gate=G1
+[2026-07-07T10:27:48.256751+00:00] resume: approve G1 (cap=12)
+[2026-07-07T10:28:19.882208+00:00]   -> status=paused-at-gate paused_gate=G2B err=None
+[2026-07-07T10:28:19.882208+00:00] research_wiring contribution PRESENT after approving up to G1; now paused G2B
+[2026-07-07T10:28:19.893948+00:00] provenance: research_goals=5 in_scope_identified_gaps=0 shaped_intents=5
+[2026-07-07T10:28:19.893948+00:00] NARRATION: 🧑‍💼 **Marcus-SPOC:** Research dispatch complete: 4 cited sources found and threaded into the workbook's citation (DOI) section — review-only, no action needed to proceed.
+[2026-07-07T10:28:19.893948+00:00] resolving DOI: https://doi.org/10.1038/ijo.2010.252
+[2026-07-07T10:28:21.388500+00:00]   DOI resolved: 200 -> https://www.nature.com/articles/ijo2010252 :: Relative contribution of energy intake and energy expenditure to childhood obesity: a review of the literature and direc
+[2026-07-07T10:28:21.397557+00:00] === LANE-a facts written: entries=4 primary_doi=10.1038/ijo.2010.252 final_gate=G2B ===
+[2026-07-07T10:31:19.124266+00:00]   -> status=paused-at-gate paused_gate=G2B err=None
+[2026-07-07T10:31:19.124266+00:00] research_wiring contribution PRESENT after approving up to G1; now paused G2B
+[2026-07-07T10:31:19.137524+00:00] provenance: research_goals=4 in_scope_identified_gaps=0 shaped_intents=4
+[2026-07-07T10:31:19.137524+00:00] NARRATION: 🧑‍💼 **Marcus-SPOC:** Research dispatch complete: 5 cited sources found and threaded into the workbook's citation (DOI) section — review-only, no action needed to proceed.
+[2026-07-07T10:31:19.140039+00:00] resolving DOI: https://doi.org/10.1038/ijo.2010.252
+[2026-07-07T10:31:20.363434+00:00]   DOI resolved: 200 -> https://www.nature.com/articles/ijo2010252 :: Relative contribution of energy intake and energy expenditure to childhood obesity: a review of the literature and direc
+[2026-07-07T10:31:20.372798+00:00] === LANE-a facts written: entries=5 primary_doi=10.1038/ijo.2010.252 final_gate=G2B ===

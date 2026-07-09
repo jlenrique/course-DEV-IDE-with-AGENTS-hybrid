@@ -97,6 +97,33 @@ G0_ENRICHMENT_SPECIALIST_ID = "g0_enrichment"
 G0_ENRICHMENT_MODEL_MARKER = "deterministic-g0-enrichment-offline"
 G0_ENRICHMENT_LIVE_MODEL_ID = "marcus"
 
+# Resolved enrichment MODE (D4/F-1801) — the legibility stamp riding the run
+# bundle/ledger receipt so a run can NEVER silently serve deterministic content
+# while the operator believes it is live. Derived FAIL-LOUD from the result
+# model_id (an unrecognized id RAISES, never a silent mode).
+G0_ENRICHMENT_MODE_LIVE = "live"
+G0_ENRICHMENT_MODE_DETERMINISTIC = "deterministic-recorded"
+
+
+def resolve_enrichment_mode(model_id: str) -> str:
+    """Map a G0-enrichment result ``model_id`` → its resolved MODE (fail-loud).
+
+    ``G0_ENRICHMENT_LIVE_MODEL_ID`` → ``"live"``; ``G0_ENRICHMENT_MODEL_MARKER``
+    → ``"deterministic-recorded"``. Any OTHER id raises ``ValueError`` — the
+    F-1801 anti-ambiguity guard: an unrecognized model id must never be stamped
+    as a silent/ambiguous mode.
+    """
+    if model_id == G0_ENRICHMENT_LIVE_MODEL_ID:
+        return G0_ENRICHMENT_MODE_LIVE
+    if model_id == G0_ENRICHMENT_MODEL_MARKER:
+        return G0_ENRICHMENT_MODE_DETERMINISTIC
+    raise ValueError(
+        f"unrecognized G0-enrichment model_id {model_id!r}: cannot resolve the enrichment "
+        f"mode (expected {G0_ENRICHMENT_LIVE_MODEL_ID!r} for live or "
+        f"{G0_ENRICHMENT_MODEL_MARKER!r} for deterministic-recorded). Fail loud rather than "
+        "stamp an ambiguous/silent mode into the run receipt (F-1801)."
+    )
+
 # Live-extraction output budget + per-request hardening (root-cause fix for the
 # 2026-06-29 gpt-5 truncation crash at G0E: the keystone component-extraction
 # response was a well-formed JSON PREFIX truncated mid-structure because no
@@ -109,25 +136,36 @@ G0_EXTRACTION_REQUEST_TIMEOUT_S = 300.0
 # Thin contract key (the frozen enrichment result on the contribution output).
 ENRICHMENT_RESULT_KEY = "g0_enrichment_result"
 
-# Feature flag (default OFF) so deck-default / existing pipeline behavior stays
-# byte-identical (AC-S2-7): with the flag UNSET, the g0-enrichment node is a no-op
-# pass and the G0E gate is traversed (no pause) — every existing trial flow that
-# pauses first at G1 is unchanged. The G0-S2 live-segment proof (AC-S2-8) and the
-# brick's own integration tests flip it ON to wake the node + the confirm gate.
-# Mirrors the woken-via-membership precedent (07B-gate/11-gate) but as a runtime
-# toggle. Making G0E the standard front-door gate by default is a follow-on once
-# the existing integration suite is migrated to step through G0E first.
+# Feature flag (DEFAULT ON — S5-3b canonical flip). The G0-enrichment loop is now
+# CANONICAL: the unset-env Marcus-SPOC run wakes the g0-enrichment node + the G0E
+# confirm-gate (then G0R via delegation) as standing front-door gates before G1.
+# The kill-switch is an EXPLICIT falsy env value (``0``/``false``/``no``/``off``,
+# stripped/lowered) — the 3a ``setenv("0")`` pins ARE that escape hatch, keeping the
+# dormant G1-first path available for byte-identical / legacy walks. The prior
+# "follow-on once the existing integration suite is migrated to step through G0E
+# first" note is now CASHED: S5-3a + S5-3a.2 migrated the entire flip blast radius
+# to env-independence, so the default can flip with no residual reds. The predicate
+# is ``value not in KILL_SWITCH`` (NOT ``value not in TRUTHY`` — the latter would
+# wrongly wake on the ``"0"`` kill-switch and break every 3a pin; F-1802).
 G0_ENRICHMENT_ACTIVE_ENV = "MARCUS_G0_ENRICHMENT_ACTIVE"
+
+# The explicit falsy kill-switch set (stripped/lowered). Membership → dormant
+# (G1-first). EVERYTHING ELSE — unset, empty, whitespace, unrecognized — defaults
+# to woken (canonical ON). Enumerated as a real code contract (F-1802), not an
+# accident of truthy-set membership.
+G0_ENRICHMENT_KILL_SWITCH: frozenset[str] = frozenset({"0", "false", "no", "off"})
 
 
 def g0_enrichment_active() -> bool:
-    """Return True iff the G0-enrichment brick is woken (env toggle; default OFF)."""
-    return os.environ.get(G0_ENRICHMENT_ACTIVE_ENV, "").strip().lower() in {
-        "1",
-        "true",
-        "yes",
-        "on",
-    }
+    """Return True iff the G0-enrichment brick is woken (env toggle; DEFAULT ON — 3b).
+
+    Canonical (unset-env) runs wake G0E/G0R. Only an EXPLICIT falsy kill-switch
+    value (:data:`G0_ENRICHMENT_KILL_SWITCH`) returns the dormant G1-first path.
+    """
+    return (
+        os.environ.get(G0_ENRICHMENT_ACTIVE_ENV, "").strip().lower()
+        not in G0_ENRICHMENT_KILL_SWITCH
+    )
 
 
 # Operator-gated LIVE-LLM toggle (default OFF), distinct from g0_enrichment_active.
@@ -1503,8 +1541,15 @@ def run_g0_enrichment(
             encoding="utf-8",
         )
 
+    # D4/F-1801 legibility stamp: resolve the enrichment MODE (fail-loud on an
+    # unrecognized model id) and ride it on BOTH the on-disk receipt and the bundle
+    # contribution, so the operator can never mistake deterministic scaffold content
+    # for live best-effort. Additive top-level key (mirrors non_verbatim_spans).
+    enrichment_mode = resolve_enrichment_mode(result.model_id)
+
     artifact_path = run_dir / _DECISION_ARTIFACT_BASENAME
     card_payload = result.to_card_payload()
+    card_payload["enrichment_mode"] = enrichment_mode
     if non_verbatim_spans:
         # Additive top-level ledger key (R5-A8) — read by the G3 marshaller's
         # ``_load_non_verbatim_diagnostics``; absent when no live drop occurred so the
@@ -1525,6 +1570,8 @@ def run_g0_enrichment(
             output={
                 ENRICHMENT_RESULT_KEY: result.to_card_payload(),
                 "corpus_fingerprint": fingerprint,
+                # D4/F-1801: the resolved enrichment mode on the bundle receipt.
+                "enrichment_mode": enrichment_mode,
             },
             model_used=G0_ENRICHMENT_MODEL_MARKER
             if not dispatch_live
@@ -1559,8 +1606,11 @@ def load_enrichment_result(run_dir: Path) -> dict[str, Any] | None:
 __all__ = [
     "ENRICHMENT_RESULT_KEY",
     "G0_ENRICHMENT_GATE_CODE",
+    "G0_ENRICHMENT_KILL_SWITCH",
     "G0_ENRICHMENT_LIVE_MODEL_ID",
     "G0_ENRICHMENT_MODEL_MARKER",
+    "G0_ENRICHMENT_MODE_DETERMINISTIC",
+    "G0_ENRICHMENT_MODE_LIVE",
     "G0_ENRICHMENT_NODE_ID",
     "G0_ENRICHMENT_NODE_IDS",
     "G0_ENRICHMENT_SPECIALIST_ID",
@@ -1571,5 +1621,6 @@ __all__ = [
     "g0_dispatch_live",
     "g0_enrichment_active",
     "load_enrichment_result",
+    "resolve_enrichment_mode",
     "run_g0_enrichment",
 ]

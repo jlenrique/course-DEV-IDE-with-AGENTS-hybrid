@@ -1,0 +1,76 @@
+{
+  "trial_id": "4fe6073f-c8e2-4836-bb94-759dc5b97bbf",
+  "walk_log": "_bmad-output\\implementation-artifacts\\evidence\\s4-acl-liveproof-20260707T041058Z\\walk-log-leg3.txt",
+  "g0-gary-contribution-present": {
+    "pass": true,
+    "value": "1 gary contribution(s)"
+  },
+  "d0-real-generation-id": {
+    "pass": true,
+    "value": "npkNxi1NwrKbfPj3NU61I"
+  },
+  "d1-calls-made-ge-1": {
+    "pass": true,
+    "value": 1
+  },
+  "d2-slide-output-nonempty": {
+    "pass": true,
+    "value": "12 slide rows"
+  },
+  "d3-png-exports-present": {
+    "pass": true,
+    "value": {
+      "png_count": 12,
+      "slide_count": 12,
+      "sample": [
+        "C:\\Users\\juanl\\Documents\\GitHub\\course-DEV-IDE-with-AGENTS-hybrid\\state\\config\\runs\\4fe6073f-c8e2-4836-bb94-759dc5b97bbf\\exports\\gary\\A_slide-01.png"
+      ]
+    }
+  },
+  "g1-receipt-present": {
+    "pass": true,
+    "value": "dict"
+  },
+  "g2-outcome-ok": {
+    "pass": true,
+    "value": "ok"
+  },
+  "g3-reason-match": {
+    "pass": true,
+    "value": "match"
+  },
+  "g4-clock-eligible-true": {
+    "pass": true,
+    "value": true
+  },
+  "g5-cd-status-resolved": {
+    "pass": true,
+    "value": "resolved"
+  },
+  "w0-paused-at-gate-post-07": {
+    "pass": true,
+    "value": {
+      "status": "paused-at-gate",
+      "paused_gate": "G2B",
+      "paused_error_tag": null
+    }
+  },
+  "n0-run-no-styleguide-error-tag": {
+    "pass": true,
+    "value": null
+  },
+  "n1-no-error-pause-styleguide-tag": {
+    "pass": true,
+    "value": null
+  },
+  "n2-walk-log-no-styleguide-fail-loud": {
+    "pass": true,
+    "value": []
+  },
+  "c0-cd-bound-guides-exactly-picked-guide": {
+    "pass": true,
+    "value": [
+      "hil-2026-apc-crossroads-classic"
+    ]
+  }
+}

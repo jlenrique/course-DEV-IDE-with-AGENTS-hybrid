@@ -48,6 +48,19 @@ def _clear_registry():
     clear_resume_registry()
 
 
+@pytest.fixture(autouse=True)
+def _pin_g0_enrichment_off(monkeypatch: pytest.MonkeyPatch) -> None:
+    """Canonical-arc S5-3a — flip-robustness pin (D-migrate-canonical, pin OFF).
+
+    The gate-bypass-refusal subjects (silent-bypass raise at the first active gate;
+    folded-gate traversal before the parent pause) key off G1 being the first
+    active gate on the dormant walk. Pinning ``MARCUS_G0_ENRICHMENT_ACTIVE`` OFF
+    explicitly keeps that true under the 3b default flip (G0-enrichment is
+    irrelevant to bypass refusal). Explicit ``"0"`` survives the code-default flip.
+    """
+    monkeypatch.setenv("MARCUS_G0_ENRICHMENT_ACTIVE", "0")
+
+
 def test_active_gate_bypass_without_verdict_raises(tmp_path: Path, monkeypatch) -> None:
     monkeypatch.setenv("OPENAI_API_KEY", "sk-test")
     monkeypatch.setattr(production_runner, "ProductionDispatchAdapter", _FakeAdapter)

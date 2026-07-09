@@ -1,0 +1,113 @@
+source_path: course-content/courses/aziz-nazha-hai-510-generative-ai-in-healthcare/sources/course/Syllabus_Generative_AI_in_Healthcare.docx
+source_format: docx
+paragraphs:
+- COURSE SYLLABUS
+- Generative AI in Healthcare
+- Building the Skills to Lead AI Transformation in Education & Research
+- A professional development program for faculty, clinicians, and leaders. Offered
+  through the College of Population Health, Leadership & Workforce Development, this
+  synchronous virtual program equips Thomas Jefferson University personnel with practical,
+  hands-on expertise in generative AI tools, prompt engineering, AI agents, and ethical
+  deployment—empowering participants to teach, lead, and innovate with confidence
+  within an AI-driven health system.
+- Course Information
+- 'Format: Synchronous virtual (live online)'
+- 'Duration: 4 weeks · 2 hours per week (45-minute didactic lecture followed by a
+  hands-on lab; breaks included)'
+- 'Schedule: Fridays, 8:00–10:00 AM ET · Cohort begins June 12, 2026'
+- 'Audience: Health sciences & research faculty; clinical professionals & educators;
+  program directors & healthcare leaders; health informatics leaders'
+- 'Prerequisites: None. No prior programming or data-science experience required;
+  curiosity and a willingness to experiment with AI tools are expected.'
+- 'Credit: Advanced Practice Certificate (APC) / professional development. Registration
+  via the Jefferson Canvas catalog.'
+- Instructor
+- Aziz Nazha, MD — Adjunct Instructor; Executive Director of Jefferson Enterprise
+  AI Workforce Transformation and Education.
+- 'Contact: Aziz.Nazha@jefferson.edu'
+- Course Description
+- Artificial intelligence is reshaping every corner of healthcare—from clinical documentation
+  and patient communication to research synthesis and workflow automation. This course
+  moves participants from foundational concepts to applied practice. It begins by
+  situating generative AI within the broader landscape of artificial intelligence
+  and machine learning, distinguishing discriminative from generative models. It then
+  opens the “black box” of large language models (LLMs), explaining transformer architectures,
+  attention, tokenization, embeddings, and reinforcement learning from human feedback
+  (RLHF). The course surveys high-value applications across clinical practice, biology,
+  and drug discovery, and confronts the ethical, legal, and safety challenges—hallucination,
+  bias, privacy, regulatory compliance, and adversarial attacks—that govern responsible
+  deployment. The final module introduces agentic AI and autonomous clinical workflow
+  automation. Each session pairs a concise didactic lecture with a hands-on lab, and
+  the program culminates in a prototyped, real-world AI solution.
+- Learning Objectives
+- 'Upon successful completion of this course, participants will be able to:'
+- Differentiate the core paradigms of AI, machine learning, and deep learning, and
+  explain how generative models differ from discriminative models.
+- Describe how large language models work, including transformer architecture, self-attention,
+  positional encoding, tokenization, embeddings, and the role of RLHF and fine-tuning.
+- Apply structured prompt-engineering techniques to elicit accurate, reliable outputs
+  from generative AI tools in healthcare and education contexts.
+- Evaluate generative AI applications across clinical practice, biology, and drug
+  discovery, and judge their real-world feasibility and limitations.
+- Identify and mitigate ethical and safety risks—hallucination, bias and fairness,
+  data privacy, HIPAA and FDA considerations, and adversarial attacks such as jailbreaking
+  and data poisoning.
+- Design and prototype an agentic, multi-step AI system for a clinical, research,
+  or educational workflow.
+- Weekly Schedule & Topics
+- Each two-hour session includes a 45-minute didactic presentation followed by a hands-on
+  lab based on the week’s topic.
+- Final Project
+- 'Participants design and prototype a real-world AI solution for healthcare or education.
+  The project integrates the prompt-engineering, application, ethics, and agentic-design
+  skills developed across the four weeks. Representative project types include:'
+- An AI-powered clinical chat or patient-communication assistant
+- A multi-agent clinical or administrative workflow system
+- A medical-research summarizer for literature synthesis
+- A clinician AI decision-support assistant
+- An ethical-AI transparency or audit tool
+- An AI-driven education or training tool
+- Skills You Will Gain
+- Prompt-engineering proficiency
+- Building AI-powered chatbots
+- Designing multi-agent systems
+- Navigating AI ethics and challenges
+- Prototyping a deployable AI solution
+- Required & Recommended Readings
+- A companion Recommended Reading List accompanies this syllabus. It collects the
+  peer-reviewed sources cited in the course lectures together with additional foundational
+  and current papers in the field, organized by module. Readings are intended to deepen
+  the didactic material and to support the final project.
+- Attendance & Participation
+- Because each session combines a live lecture with an interactive lab, attendance
+  and active participation are essential to the hands-on learning model. Participants
+  are encouraged to bring questions and use cases from their own clinical, research,
+  or educational practice. Jefferson personnel registering through Canvas should log
+  in with their existing account credentials.
+- Questions about registration or content may be directed to Aziz Nazha, MD, at Aziz.Nazha@jefferson.edu.
+tables:
+- - - Week
+    - Theme
+    - Topics & Lab Focus
+  - - '1'
+    - Foundations of AI in Healthcare
+    - 'AI paradigms: supervised, unsupervised, reinforcement, and semi-supervised
+      learning Predictive vs. generative AI; discriminative vs. generative models
+      LLM basics and the current model landscape Lab: Exploring and comparing generative
+      AI tools.'
+  - - '2'
+    - How LLMs Work & Prompt Engineering
+    - 'Deep-learning foundations: CNNs and RNNs Transformer architecture, self-attention,
+      and positional encoding Tokenization, embeddings, RLHF, and fine-tuning Lab:
+      Structured prompt engineering for healthcare tasks.'
+  - - '3'
+    - Ethics & Challenges
+    - 'Hallucination and its consequences in clinical settings Bias and fairness;
+      data privacy and security HIPAA, FDA guidance, and regulatory compliance Adversarial
+      attacks: jailbreaking, data poisoning, model inversion Lab: Auditing AI outputs
+      for accuracy, bias, and safety.'
+  - - '4'
+    - Agentic AI
+    - 'Autonomous systems and AI agents Multi-agent design and orchestration Clinical
+      and educational workflow automation Lab: Building and testing a multi-agent
+      workflow.'

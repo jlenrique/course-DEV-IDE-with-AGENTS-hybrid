@@ -1,0 +1,50 @@
+{
+  "judge": "a",
+  "verdict": "PASS",
+  "n_pass": 8,
+  "n_total": 8,
+  "checks": [
+    {
+      "name": "1_precondition_research_goals_present",
+      "ok": true,
+      "detail": "research_goals_count=4 goal_ids=['rg-01', 'rg-02', 'rg-03', 'rg-04']"
+    },
+    {
+      "name": "2_real_scite_dispatch_provenance_d7",
+      "ok": true,
+      "detail": "entries=5 providers=['scite'] dispatch_live_fn=True creds=True in_scope_identified_gaps=0 research_goals=4 shaped_all_scite=True shaped_all_have_goal_id=True"
+    },
+    {
+      "name": "3_cited_entry_real_doi",
+      "ok": true,
+      "detail": "real_dois=['10.1038/ijo.2010.252', '10.1097/acm.0000000000005744', '10.2196/31977', '10.1108/02640470910966862', '10.34197/ats-scholar.2024-0115ps']"
+    },
+    {
+      "name": "4_doi_resolves_content_inspected",
+      "ok": true,
+      "detail": "status=200 final_url='https://www.nature.com/articles/ijo2010252' title_snippet='Relative contribution of energy intake and energy expenditure to childhood obesity: a review of the literature and directions for future res'"
+    },
+    {
+      "name": "5_source_ref_shape",
+      "ok": true,
+      "detail": "primary_source_ref='retrieval:scite:10.1038/ijo.2010.252' expected=retrieval:scite:10.1038/ijo.2010.252"
+    },
+    {
+      "name": "6_g2_gate_passed_not_bypassed",
+      "ok": true,
+      "detail": "g2_unsourced=0 l2_report_unsourced=0 manifest_len=5"
+    },
+    {
+      "name": "7_narration_surfaced",
+      "ok": true,
+      "detail": "narration_line=\"\ud83e\uddd1\\u200d\ud83d\udcbc **Marcus-SPOC:** Research dispatch complete: 5 cited sources found and threaded into the workbook's citation (DOI) section \u2014 review-only, no action needed to proceed.\""
+    },
+    {
+      "name": "8_walk_proceeded",
+      "ok": true,
+      "detail": "final_status=paused-at-gate final_gate=G2B contrib_node=04.55"
+    }
+  ],
+  "primary_doi": "10.1038/ijo.2010.252",
+  "primary_title": "Relative contribution of energy intake and energy expenditure to childhood obesity: a review of the literature and directions for future research"
+}

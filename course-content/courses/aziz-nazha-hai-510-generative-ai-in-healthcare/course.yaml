@@ -1,0 +1,40 @@
+schema_version: 0.1
+course_id: aziz-nazha-hai-510-generative-ai-in-healthcare
+sme:
+  name: Aziz Nazha
+course:
+  code: HAI 510
+  title: Generative AI in Healthcare
+  module_count_expected: 4
+source_references:
+  - url: https://www.jefferson.edu/academics/colleges-schools-institutes/population-health/leadership-workforce-development/generative-ai-in-healthcare.html
+    description: Jefferson Generative AI in Healthcare program page; agenda overview used for module names.
+modules:
+  - module_id: module-01-foundations-of-ai-in-healthcare
+    title: Foundations of AI in Healthcare
+  - module_id: module-02-how-llms-work-and-prompt-engineering
+    title: How LLMs Work & Prompt Engineering
+  - module_id: module-03-ethics-and-challenges
+    title: Ethics & Challenges
+  - module_id: module-04-agentic-ai
+    title: Agentic AI
+status: source-container-seeded
+source_purpose: new_build
+source_availability:
+  - source_kind: recorded_lecture_videos
+    status: pending
+    description: HAI 510 production source will include four modules of recorded lecture video files captured from live online lectures.
+    access_note: Await video delivery before any source-grounded lesson content extraction.
+  - source_kind: lecture_slides
+    status: pending
+    description: HAI 510 production source will include corresponding slide files for the recorded lecture modules.
+    access_note: Await slide delivery and pair slides to videos before source enrichment.
+  - source_kind: companion_reading_list
+    status: pending
+    description: Companion readings are not yet available in this container; syllabus/program references do not substitute for them.
+    access_note: Confirm whether a reading list exists and record the acquisition path before extraction.
+runtime_contract:
+  runnable_input_scope: lesson_corpus_leaf
+  do_not_run_from:
+    - course_root
+    - module_root

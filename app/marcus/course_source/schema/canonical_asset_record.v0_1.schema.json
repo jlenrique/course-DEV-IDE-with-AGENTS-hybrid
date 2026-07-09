@@ -1,0 +1,186 @@
+{
+  "$defs": {
+    "AssetKind": {
+      "enum": [
+        "reading",
+        "lecture",
+        "lab",
+        "assignment",
+        "assessment",
+        "discussion_prompt",
+        "syllabus",
+        "project_artifact"
+      ],
+      "title": "AssetKind",
+      "type": "string"
+    },
+    "AssetRecordStatus": {
+      "enum": [
+        "source_grounded",
+        "partial",
+        "inferred",
+        "missing",
+        "required_gap",
+        "draft_gap_fill",
+        "needs_sme_review"
+      ],
+      "title": "AssetRecordStatus",
+      "type": "string"
+    },
+    "AssetReview": {
+      "additionalProperties": false,
+      "properties": {
+        "sme_required": {
+          "default": false,
+          "description": "True when the record needs subject-matter review.",
+          "title": "Sme Required",
+          "type": "boolean"
+        }
+      },
+      "title": "AssetReview",
+      "type": "object"
+    },
+    "AssetSourceRef": {
+      "additionalProperties": false,
+      "properties": {
+        "locator": {
+          "description": "Section, row, page, or slide locator.",
+          "title": "Locator",
+          "type": "string"
+        },
+        "path": {
+          "description": "Source path carrying this evidence.",
+          "title": "Path",
+          "type": "string"
+        },
+        "ref_id": {
+          "pattern": "^[a-z0-9._-]+$",
+          "title": "Ref Id",
+          "type": "string"
+        },
+        "role": {
+          "$ref": "#/$defs/SourceRefRole",
+          "description": "Whether the ref names a requirement or content evidence."
+        }
+      },
+      "required": [
+        "ref_id",
+        "path",
+        "locator",
+        "role"
+      ],
+      "title": "AssetSourceRef",
+      "type": "object"
+    },
+    "JsonValue": {},
+    "SourceRefRole": {
+      "enum": [
+        "requirement",
+        "content"
+      ],
+      "title": "SourceRefRole",
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "asset_id": {
+      "pattern": "^[a-z0-9._-]+$",
+      "title": "Asset Id",
+      "type": "string"
+    },
+    "asset_kind": {
+      "$ref": "#/$defs/AssetKind"
+    },
+    "content": {
+      "additionalProperties": {
+        "$ref": "#/$defs/JsonValue"
+      },
+      "title": "Content",
+      "type": "object"
+    },
+    "course_id": {
+      "pattern": "^[a-z0-9._-]+$",
+      "title": "Course Id",
+      "type": "string"
+    },
+    "derivation": {
+      "default": "source_evidence",
+      "enum": [
+        "source_evidence",
+        "syllabus_requirement",
+        "lesson_lo"
+      ],
+      "title": "Derivation",
+      "type": "string"
+    },
+    "gaps": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Gaps",
+      "type": "array"
+    },
+    "learning_objective_refs": {
+      "items": {
+        "pattern": "^[a-z0-9._-]+$",
+        "type": "string"
+      },
+      "title": "Learning Objective Refs",
+      "type": "array"
+    },
+    "lesson_id": {
+      "anyOf": [
+        {
+          "pattern": "^[a-z0-9._-]+$",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Lesson Id"
+    },
+    "module_id": {
+      "anyOf": [
+        {
+          "pattern": "^[a-z0-9._-]+$",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Module Id"
+    },
+    "review": {
+      "$ref": "#/$defs/AssetReview"
+    },
+    "schema_version": {
+      "const": "0.1",
+      "default": "0.1",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "source_refs": {
+      "items": {
+        "$ref": "#/$defs/AssetSourceRef"
+      },
+      "title": "Source Refs",
+      "type": "array"
+    },
+    "status": {
+      "$ref": "#/$defs/AssetRecordStatus"
+    }
+  },
+  "required": [
+    "asset_id",
+    "asset_kind",
+    "course_id",
+    "status"
+  ],
+  "title": "CanonicalAssetRecord",
+  "type": "object"
+}

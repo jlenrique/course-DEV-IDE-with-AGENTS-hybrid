@@ -1,0 +1,251 @@
+schema_version: '0.1'
+course_id: juan-leon-phs-620-teaching-learning-seminar
+gaps:
+- kind: empty_source_dir
+  severity: info
+  path: modules/module-01/sources
+  message: Source directory has no non-scaffold local source files.
+  access_note: ''
+  declared: null
+  detected: null
+- kind: empty_source_dir
+  severity: info
+  path: modules/module-02/sources
+  message: Source directory has no non-scaffold local source files.
+  access_note: ''
+  declared: null
+  detected: null
+- kind: empty_source_dir
+  severity: info
+  path: modules/module-03/sources
+  message: Source directory has no non-scaffold local source files.
+  access_note: ''
+  declared: null
+  detected: null
+- kind: empty_source_dir
+  severity: info
+  path: modules/module-04/sources
+  message: Source directory has no non-scaffold local source files.
+  access_note: ''
+  declared: null
+  detected: null
+- kind: empty_source_dir
+  severity: info
+  path: modules/module-05/sources
+  message: Source directory has no non-scaffold local source files.
+  access_note: ''
+  declared: null
+  detected: null
+- kind: empty_source_dir
+  severity: info
+  path: modules/module-06/sources
+  message: Source directory has no non-scaffold local source files.
+  access_note: ''
+  declared: null
+  detected: null
+- kind: empty_source_dir
+  severity: info
+  path: modules/module-07/sources
+  message: Source directory has no non-scaffold local source files.
+  access_note: ''
+  declared: null
+  detected: null
+- kind: empty_source_dir
+  severity: info
+  path: modules/module-08/sources
+  message: Source directory has no non-scaffold local source files.
+  access_note: ''
+  declared: null
+  detected: null
+- kind: empty_source_dir
+  severity: info
+  path: modules/module-09/sources
+  message: Source directory has no non-scaffold local source files.
+  access_note: ''
+  declared: null
+  detected: null
+- kind: empty_source_dir
+  severity: info
+  path: modules/module-10/sources
+  message: Source directory has no non-scaffold local source files.
+  access_note: ''
+  declared: null
+  detected: null
+- kind: empty_source_dir
+  severity: info
+  path: modules/module-11/sources
+  message: Source directory has no non-scaffold local source files.
+  access_note: ''
+  declared: null
+  detected: null
+- kind: empty_source_dir
+  severity: info
+  path: modules/module-12/sources
+  message: Source directory has no non-scaffold local source files.
+  access_note: ''
+  declared: null
+  detected: null
+- kind: empty_source_dir
+  severity: info
+  path: modules/module-13/sources
+  message: Source directory has no non-scaffold local source files.
+  access_note: ''
+  declared: null
+  detected: null
+- kind: empty_source_dir
+  severity: info
+  path: modules/module-14/sources
+  message: Source directory has no non-scaffold local source files.
+  access_note: ''
+  declared: null
+  detected: null
+- kind: empty_source_dir
+  severity: info
+  path: modules/module-15/sources
+  message: Source directory has no non-scaffold local source files.
+  access_note: ''
+  declared: null
+  detected: null
+- kind: empty_lesson_dir
+  severity: info
+  path: modules/module-01/lessons
+  message: Lesson directory has no non-scaffold local lesson source files.
+  access_note: ''
+  declared: null
+  detected: null
+- kind: empty_lesson_dir
+  severity: info
+  path: modules/module-02/lessons
+  message: Lesson directory has no non-scaffold local lesson source files.
+  access_note: ''
+  declared: null
+  detected: null
+- kind: empty_lesson_dir
+  severity: info
+  path: modules/module-03/lessons
+  message: Lesson directory has no non-scaffold local lesson source files.
+  access_note: ''
+  declared: null
+  detected: null
+- kind: empty_lesson_dir
+  severity: info
+  path: modules/module-04/lessons
+  message: Lesson directory has no non-scaffold local lesson source files.
+  access_note: ''
+  declared: null
+  detected: null
+- kind: empty_lesson_dir
+  severity: info
+  path: modules/module-05/lessons
+  message: Lesson directory has no non-scaffold local lesson source files.
+  access_note: ''
+  declared: null
+  detected: null
+- kind: empty_lesson_dir
+  severity: info
+  path: modules/module-06/lessons
+  message: Lesson directory has no non-scaffold local lesson source files.
+  access_note: ''
+  declared: null
+  detected: null
+- kind: empty_lesson_dir
+  severity: info
+  path: modules/module-07/lessons
+  message: Lesson directory has no non-scaffold local lesson source files.
+  access_note: ''
+  declared: null
+  detected: null
+- kind: empty_lesson_dir
+  severity: info
+  path: modules/module-08/lessons
+  message: Lesson directory has no non-scaffold local lesson source files.
+  access_note: ''
+  declared: null
+  detected: null
+- kind: empty_lesson_dir
+  severity: info
+  path: modules/module-09/lessons
+  message: Lesson directory has no non-scaffold local lesson source files.
+  access_note: ''
+  declared: null
+  detected: null
+- kind: empty_lesson_dir
+  severity: info
+  path: modules/module-10/lessons
+  message: Lesson directory has no non-scaffold local lesson source files.
+  access_note: ''
+  declared: null
+  detected: null
+- kind: empty_lesson_dir
+  severity: info
+  path: modules/module-11/lessons
+  message: Lesson directory has no non-scaffold local lesson source files.
+  access_note: ''
+  declared: null
+  detected: null
+- kind: empty_lesson_dir
+  severity: info
+  path: modules/module-12/lessons
+  message: Lesson directory has no non-scaffold local lesson source files.
+  access_note: ''
+  declared: null
+  detected: null
+- kind: empty_lesson_dir
+  severity: info
+  path: modules/module-13/lessons
+  message: Lesson directory has no non-scaffold local lesson source files.
+  access_note: ''
+  declared: null
+  detected: null
+- kind: empty_lesson_dir
+  severity: info
+  path: modules/module-14/lessons
+  message: Lesson directory has no non-scaffold local lesson source files.
+  access_note: ''
+  declared: null
+  detected: null
+- kind: empty_lesson_dir
+  severity: info
+  path: modules/module-15/lessons
+  message: Lesson directory has no non-scaffold local lesson source files.
+  access_note: ''
+  declared: null
+  detected: null
+- kind: source_availability
+  severity: warning
+  path: sources
+  message: No non-scaffold local production source content detected; reference files
+    and syllabi do not mark the course source-complete.
+  access_note: ''
+  declared: null
+  detected: null
+- kind: source_availability
+  severity: warning
+  path: course.yaml
+  message: PHS 620 production source will come from the existing complete course content
+    in Confluence.
+  access_note: Use only authorized Confluence access during the ingestion story; do
+    not fetch remote content in Story A.
+  declared:
+    source_kind: confluence_current_course_content
+    status: pending
+    description: PHS 620 production source will come from the existing complete course
+      content in Confluence.
+    access_note: Use only authorized Confluence access during the ingestion story;
+      do not fetch remote content in Story A.
+  detected: null
+- kind: source_availability
+  severity: warning
+  path: course.yaml
+  message: PHS 620 production source will come from the existing complete course content
+    in Canvas.
+  access_note: Use only authorized Canvas access during the ingestion story; do not
+    fetch remote content in Story A.
+  declared:
+    source_kind: canvas_current_course_content
+    status: pending
+    description: PHS 620 production source will come from the existing complete course
+      content in Canvas.
+    access_note: Use only authorized Canvas access during the ingestion story; do
+      not fetch remote content in Story A.
+  detected: null

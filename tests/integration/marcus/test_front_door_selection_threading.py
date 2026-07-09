@@ -4,9 +4,9 @@ Covers:
   * start_trial threads a chosen ``ComponentSelection`` into run_production_trial
     (and onto RunState), so the composer + both walks honor it.
   * a B1 (deck-only) run freezes a graph that EXCLUDES motion (07E).
-  * the default/no-selection path stays byte-identical to today (production_default).
-  * the run-summary helper binds the COMPOSED graph (no raw-manifest leak) for a
-    non-default selection, while the default selection keeps the raw-file binding.
+  * the default/no-selection path stays deck+motion (production_default).
+  * the run-summary helper records ComponentSelection and binds the COMPOSED graph
+    whenever the raw manifest contains unselected optional components.
 """
 
 from __future__ import annotations
@@ -17,6 +17,7 @@ import json
 from pathlib import Path
 from uuid import UUID
 
+import pytest
 import yaml
 
 from app.gates.resume_api import clear_resume_registry
@@ -28,6 +29,22 @@ from app.models.state.component_selection import ComponentSelection
 
 TRIAL_ID = UUID("12345678-1234-4234-8234-123456789abc")
 CORPUS = Path("tests/fixtures/trial_corpus/README.md")
+
+
+@pytest.fixture(autouse=True)
+def _pin_g0_enrichment_off(monkeypatch: pytest.MonkeyPatch) -> None:
+    """Canonical-arc S5-3a.2 — file-corpus dormant-path migration (D-kill-switch pin).
+
+    The two flip-caused walks (``test_b1_deck_only_run…`` +
+    ``test_run_summary_pack_hash_binds…``) pass a README FILE as ``corpus_path`` and
+    first-pause at G1 on the dormant path. The 3b default flip wakes G0-enrichment's
+    corpus-DIRECTORY enumeration, which crashes pre-gate with
+    ``DirectiveCompositionError`` on a file corpus. Pinning
+    ``MARCUS_G0_ENRICHMENT_ACTIVE`` OFF explicitly preserves the enrichment-orthogonal
+    downstream subject under the flip (explicit ``"0"`` survives the code-default
+    flip). TEST-ONLY: no production/default change.
+    """
+    monkeypatch.setenv("MARCUS_G0_ENRICHMENT_ACTIVE", "0")
 
 _REAL_SHAPED_OUTPUTS: dict[str, dict] = {
     "irene_pass1": {
@@ -178,7 +195,7 @@ def test_b1_deck_only_run_excludes_motion_and_persists_selection(
 
 
 # ---------------------------------------------------------------------------
-# 3. run-summary helper: composed binding for non-default; raw binding for default
+# 3. run-summary helper: composed graph binding + explicit selection receipt
 # ---------------------------------------------------------------------------
 
 
@@ -203,7 +220,7 @@ def test_run_summary_pack_hash_binds_composed_graph_for_b1(
     assert len(payload["pack_hash_binding"]) == 64
 
 
-def test_run_summary_pack_hash_default_is_byte_identical_to_raw(
+def test_run_summary_pack_hash_default_records_selection_and_composed_graph(
     tmp_path: Path, monkeypatch
 ) -> None:
     _setup(monkeypatch)
@@ -214,9 +231,15 @@ def test_run_summary_pack_hash_default_is_byte_identical_to_raw(
         trial_id=TRIAL_ID,
         runs_root=tmp_path,
         max_specialist_calls=12,
-        # default: no selection -> production_default (deck+motion) -> raw binding
+        # default: no selection -> production_default (deck+motion)
     )
     payload = yaml.safe_load(
         (tmp_path / str(TRIAL_ID) / "run_summary.yaml").read_text(encoding="utf-8")
     )
-    assert payload["pack_hash_binding"] == _raw_manifest_sha256()
+    assert payload["component_selection"] == {
+        "deck": True,
+        "motion": True,
+        "workbook": False,
+    }
+    assert payload["pack_hash_binding"] != _raw_manifest_sha256()
+    assert len(payload["pack_hash_binding"]) == 64

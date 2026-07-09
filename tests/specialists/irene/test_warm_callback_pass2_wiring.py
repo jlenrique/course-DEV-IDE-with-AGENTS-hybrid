@@ -348,8 +348,10 @@ def test_flag_off_act_pass2_output_byte_identical(
     monkeypatch.delenv(WARM_CALLBACK_AUTHORING_ACTIVE_ENV, raising=False)
     from tests.specialists.irene.conftest import make_grounded_pass2_payload
 
-    narration = [{"slide_id": "s1", "narration": "Welcome.", "component_id": "c2"}]
-    deltas = [{"slide_id": "s1", "visual_references": [{"perception_source": "s1"}]}]
+    # id-integrity gate: narration + delta carry a usable bijective id (the real
+    # Pass-2 shape the shared join keys on); id-less would fail loud by design.
+    narration = [{"id": "seg-1", "slide_id": "s1", "narration": "Welcome.", "component_id": "c2"}]
+    deltas = [{"id": "seg-1", "slide_id": "s1", "visual_references": [{"perception_source": "s1"}]}]
     # Grounding present in the envelope, but the flag is OFF ⇒ no callback path.
     envelope = make_grounded_pass2_payload(
         tmp_path, lesson_slug="t", warm_callback_grounding={"components": _components()}
@@ -470,8 +472,9 @@ def test_act_pass2_flag_on_no_callbacks_carrier_has_no_audit_key(
     monkeypatch: pytest.MonkeyPatch, tmp_path: Any
 ) -> None:
     # Flag ON but the segments carry NO component_id ⇒ zero callbacks ⇒ no audit key.
-    narration = [{"slide_id": "s1", "narration_text": "Plain."}]
-    deltas = [{"slide_id": "s1", "visual_references": [{"perception_source": "s1"}]}]
+    # id-integrity gate: narration + delta carry a usable bijective id.
+    narration = [{"id": "seg-1", "slide_id": "s1", "narration_text": "Plain."}]
+    deltas = [{"id": "seg-1", "slide_id": "s1", "visual_references": [{"perception_source": "s1"}]}]
     out = _run_act_flag_on(
         monkeypatch, tmp_path,
         narration=narration, deltas=deltas,

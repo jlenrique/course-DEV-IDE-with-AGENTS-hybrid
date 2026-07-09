@@ -1,0 +1,59 @@
+{
+  "card": {
+    "card_id": "14a2bd18-13c3-44ba-b858-d3e0bf04fcf4",
+    "created_at": "2026-07-09T04:52:20.456711Z",
+    "decision_card_digest": "0000000000000000000000000000000000000000000000000000000000000000",
+    "drafted_proposal": {
+      "confidence": 0.68,
+      "confidence_signals": [
+        "corpus_fingerprint-consistent",
+        "9-files-covered-0-ignored",
+        "0-ungrounded",
+        "irene-LOs-refined-9",
+        "6-LOs-adequacy-thin",
+        "typed-component-dissent-src-005-c002",
+        "n_flagged_unconsumed-11",
+        "texas-complete_with_warnings"
+      ],
+      "decision": "revise",
+      "directive": "apply-edit",
+      "node_id": "04",
+      "operator_id": "juanl",
+      "rationale": "Ingestion is broadly complete and grounded with Irene refinements, but minor corrective edits are needed: resolve the src-005-c002 typing dissent (slide vs workbook), address 11 unconsumed flags, and carry forward thin LO adequacy notes that expect external content. Apply targeted edits, then proceed."
+    },
+    "evidence": [
+      {
+        "kind": "production-runner",
+        "node_id": "04"
+      },
+      {
+        "content": "# Texas - specialist-complete - 2026-07-09T04:51:44.435215Z\n## Received\ninput keys: cache_prefix\n## Decided\ntexas emitted cache payload because its act node completed successfully.\n## Emitted artifacts\n- `none`\n## Resolution trail (model_resolution_trail entries)\n- per_specialist -> gpt-5-nano: specialist 'texas' declared default_model='gpt-5-nano' in model_config.yaml\n- per_specialist -> gpt-5-nano: bundle.parsed.ok\n## Persistence\n- trial_id: 1bd08699-614d-4412-ad52-bbe6edb1d6c5\n- specialist_id: texas\n- gate_id: specialist-complete\n- schema: specialist-summary.v1\n- deferred: false\n",
+        "kind": "specialist-summary",
+        "path": "C:/Users/juanl/Documents/GitHub/course-DEV-IDE-with-AGENTS-hybrid/state/config/runs/1bd08699-614d-4412-ad52-bbe6edb1d6c5/specialist-summaries/texas-20260709T045144435215Z.md"
+      }
+    ],
+    "gate_focus": "trial_open",
+    "gate_id": "G1",
+    "meta": {
+      "affected_nodes": [
+        "04"
+      ],
+      "cache_state": "mixed",
+      "override_trail": []
+    },
+    "next_nodes": [
+      "04A",
+      "04.5",
+      "04.55"
+    ],
+    "opened_by": "production_runner",
+    "schema_version": "v1",
+    "trial_id": "1bd08699-614d-4412-ad52-bbe6edb1d6c5",
+    "trial_summary": "Production graph reached Gate 1.",
+    "verb": "approve"
+  },
+  "checkpoint_path": "C:/Users/juanl/Documents/GitHub/course-DEV-IDE-with-AGENTS-hybrid/state/config/runs/1bd08699-614d-4412-ad52-bbe6edb1d6c5/checkpoint.json",
+  "digest": "03d892a618f517c7c2cd1e45093e2c300a04d4a916879b9005c0e3f41cc1fd5d",
+  "issued_at": "2026-07-09T04:52:20.458933Z",
+  "server_nonce": "875c16e686ec4f6ea02a4f95f942ed2a"
+}

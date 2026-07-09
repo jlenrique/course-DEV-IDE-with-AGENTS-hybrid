@@ -20,7 +20,12 @@ class _IreneFakeChat:
         return SimpleNamespace(
             content=json.dumps(
                 {
-                    "narration_script": [{"segment_id": "seg-01", "text": "Pass 2 narration."}],
+                    # id-integrity gate: narration segments carry a usable ``id``
+                    # (the shared join keys narration text on ``id``); an id-less
+                    # segment fails loud by design (the 40f3a90a collapse).
+                    "narration_script": [
+                        {"id": "seg-01", "segment_id": "seg-01", "text": "Pass 2 narration."}
+                    ],
                     # dp-v1.1: deltas must join the grounded roster or the act
                     # raises Pass2GroundingError (cycle-4 confabulation kill).
                     "segment_manifest_deltas": [

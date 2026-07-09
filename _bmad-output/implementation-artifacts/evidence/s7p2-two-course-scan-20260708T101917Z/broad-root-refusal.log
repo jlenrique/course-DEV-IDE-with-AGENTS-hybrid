@@ -1,0 +1,2 @@
+ERROR: non-runnable-scope: Section 02A directive composition requires a lesson_corpus_leaf input; refused broad container course-content\courses\aziz-nazha-hai-510-generative-ai-in-healthcare carrying marker(s): course.yaml, modules/
+exit_code=1

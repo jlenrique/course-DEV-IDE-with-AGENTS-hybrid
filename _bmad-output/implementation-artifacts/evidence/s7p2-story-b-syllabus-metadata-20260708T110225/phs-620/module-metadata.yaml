@@ -1,0 +1,1401 @@
+schema_version: '0.1'
+course_id: juan-leon-phs-620-teaching-learning-seminar
+source_path: course-content/courses/juan-leon-phs-620-teaching-learning-seminar/sources/course/PHS
+  620 Syllabus 2025.doc
+extraction_status: verified
+course_title:
+  value: Teaching and Learning Seminar
+  source_ref:
+    path: course-content/courses/juan-leon-phs-620-teaching-learning-seminar/sources/course/PHS
+      620 Syllabus 2025.doc
+    locator: table 0 row 3
+learner_profile:
+  value: Explores adult education principles and course design for a variety of learning
+    environments. Evaluates strategies to boost learner satisfaction and retention,
+    including 'backward design.' Emphasizes key design techniques and online tools.
+    Identifies methods for assessing learning outcomes. Introduces the Quality Matters
+    Rubric 5 Pillars of Quality and support resources for robust course creation and
+    teaching effectiveness. Culminates in a Population Health lesson plan and group
+    work on a collaborative, ongoing class project in educational technology for Population
+    Health.
+  source_ref:
+    path: course-content/courses/juan-leon-phs-620-teaching-learning-seminar/sources/course/PHS
+      620 Syllabus 2025.doc
+    locator: table 1 row 1
+course_learning_objectives:
+- objective_id: plo-01
+  text: Develop an evidence-based lesson plan as part of an educational program for
+    adult learners.
+  source_ref:
+    path: course-content/courses/juan-leon-phs-620-teaching-learning-seminar/sources/course/PHS
+      620 Syllabus 2025.doc
+    locator: table 3 row 1
+- objective_id: plo-02
+  text: Identify and address the needs of critical third-party stakeholders--such
+    as accreditors, administrators, and other reviewers or clients--along with the
+    needs of learners.
+  source_ref:
+    path: course-content/courses/juan-leon-phs-620-teaching-learning-seminar/sources/course/PHS
+      620 Syllabus 2025.doc
+    locator: table 3 row 2
+- objective_id: plo-03
+  text: Apply the 'Backward' design approach to lesson and course development for
+    both online and classroom-based environments.
+  source_ref:
+    path: course-content/courses/juan-leon-phs-620-teaching-learning-seminar/sources/course/PHS
+      620 Syllabus 2025.doc
+    locator: table 3 row 3
+- objective_id: plo-04
+  text: Design and deliver an engaging presentation promoting learner satisfaction,
+    retention of knowledge, and application.
+  source_ref:
+    path: course-content/courses/juan-leon-phs-620-teaching-learning-seminar/sources/course/PHS
+      620 Syllabus 2025.doc
+    locator: table 3 row 4
+- objective_id: plo-05
+  text: Efficiently assess and evaluate the learner's experience and achievement.
+  source_ref:
+    path: course-content/courses/juan-leon-phs-620-teaching-learning-seminar/sources/course/PHS
+      620 Syllabus 2025.doc
+    locator: table 3 row 5
+- objective_id: plo-06
+  text: Formulate timely, well-considered feedback and coaching to learners.
+  source_ref:
+    path: course-content/courses/juan-leon-phs-620-teaching-learning-seminar/sources/course/PHS
+      620 Syllabus 2025.doc
+    locator: table 3 row 6
+- objective_id: plo-07
+  text: Design a project in educational technology addressing a recognized need in
+    Population Health.
+  source_ref:
+    path: course-content/courses/juan-leon-phs-620-teaching-learning-seminar/sources/course/PHS
+      620 Syllabus 2025.doc
+    locator: table 3 row 7
+- objective_id: plo-08
+  text: Develop a design through Alpha, Beta, and Final stages of completion.
+  source_ref:
+    path: course-content/courses/juan-leon-phs-620-teaching-learning-seminar/sources/course/PHS
+      620 Syllabus 2025.doc
+    locator: table 3 row 8
+- objective_id: plo-09
+  text: Validate a project's design, processes, and outputs.
+  source_ref:
+    path: course-content/courses/juan-leon-phs-620-teaching-learning-seminar/sources/course/PHS
+      620 Syllabus 2025.doc
+    locator: table 3 row 9
+- objective_id: plo-10
+  text: Implement an Ed Tech project in a specified environment.
+  source_ref:
+    path: course-content/courses/juan-leon-phs-620-teaching-learning-seminar/sources/course/PHS
+      620 Syllabus 2025.doc
+    locator: table 3 row 10
+- objective_id: plo-11
+  text: Evaluate user ineractions and learning experiences in terms of a project's
+    interfaces, inputs, and outputs.
+  source_ref:
+    path: course-content/courses/juan-leon-phs-620-teaching-learning-seminar/sources/course/PHS
+      620 Syllabus 2025.doc
+    locator: table 3 row 11
+- objective_id: plo-12
+  text: Continuously improve and innovate teaching through critical self-reflection
+    and evidence-based practice.
+  source_ref:
+    path: course-content/courses/juan-leon-phs-620-teaching-learning-seminar/sources/course/PHS
+      620 Syllabus 2025.doc
+    locator: table 3 row 12
+modules:
+- module_id: module-01
+  status: proposed
+  proposed_slug:
+    value: module-01-personal-introductions-barriers-to-my-adult-learners-learning
+    source_ref:
+      path: course-content/courses/juan-leon-phs-620-teaching-learning-seminar/sources/course/PHS
+        620 Syllabus 2025.doc
+      locator: table 4 row 1
+  slug_status: synthesized_requires_review
+  slug_review_note:
+    value: Deterministic slug synthesized from the syllabus row; operator review is
+      required before any B-2 rename.
+    source_ref:
+      path: course-content/courses/juan-leon-phs-620-teaching-learning-seminar/sources/course/PHS
+        620 Syllabus 2025.doc
+      locator: table 4 row 1
+  title:
+    value: Personal Introductions Barriers to My (Adult) Learners' Learning
+    source_ref:
+      path: course-content/courses/juan-leon-phs-620-teaching-learning-seminar/sources/course/PHS
+        620 Syllabus 2025.doc
+      locator: table 4 row 1 column 1
+  topics:
+  - value: Personal Introductions Barriers to My (Adult) Learners' Learning
+    source_ref:
+      path: course-content/courses/juan-leon-phs-620-teaching-learning-seminar/sources/course/PHS
+        620 Syllabus 2025.doc
+      locator: table 4 row 1 column 1
+  - value: 'Textbook: Piskurich.'
+    source_ref:
+      path: course-content/courses/juan-leon-phs-620-teaching-learning-seminar/sources/course/PHS
+        620 Syllabus 2025.doc
+      locator: table 4 row 1 column 2
+  - value: Ch.
+    source_ref:
+      path: course-content/courses/juan-leon-phs-620-teaching-learning-seminar/sources/course/PHS
+        620 Syllabus 2025.doc
+      locator: table 4 row 1 column 2
+  - value: 3 (92-99) The Adult Learner (Knowles) The Science of Workplace Instruction
+      Effective online large-group teaching Applying adult learning practices
+    source_ref:
+      path: course-content/courses/juan-leon-phs-620-teaching-learning-seminar/sources/course/PHS
+        620 Syllabus 2025.doc
+      locator: table 4 row 1 column 2
+  - value: 'Round Table [live]: Course Introduction'
+    source_ref:
+      path: course-content/courses/juan-leon-phs-620-teaching-learning-seminar/sources/course/PHS
+        620 Syllabus 2025.doc
+      locator: table 4 row 1 column 3
+  - value: Introductions and Beginning of Weekly Activities Profiling the Adult Learner
+    source_ref:
+      path: course-content/courses/juan-leon-phs-620-teaching-learning-seminar/sources/course/PHS
+        620 Syllabus 2025.doc
+      locator: table 4 row 1 column 4
+  - value: '5-min Feedback (Mod 01) Self-Check: Course Onboarding Essentials Self-Assessment:
+      Confidence Questionnaire'
+    source_ref:
+      path: course-content/courses/juan-leon-phs-620-teaching-learning-seminar/sources/course/PHS
+        620 Syllabus 2025.doc
+      locator: table 4 row 1 column 5
+  source_bucket_suggestions:
+  - value: discussion-prompts
+    source_ref:
+      path: course-content/courses/juan-leon-phs-620-teaching-learning-seminar/sources/course/PHS
+        620 Syllabus 2025.doc
+      locator: table 4 row 1 column 1
+  - value: readings
+    source_ref:
+      path: course-content/courses/juan-leon-phs-620-teaching-learning-seminar/sources/course/PHS
+        620 Syllabus 2025.doc
+      locator: table 4 row 1 column 2
+  - value: lecture
+    source_ref:
+      path: course-content/courses/juan-leon-phs-620-teaching-learning-seminar/sources/course/PHS
+        620 Syllabus 2025.doc
+      locator: table 4 row 1 column 3
+  - value: assignments
+    source_ref:
+      path: course-content/courses/juan-leon-phs-620-teaching-learning-seminar/sources/course/PHS
+        620 Syllabus 2025.doc
+      locator: table 4 row 1 column 4
+  - value: assessments
+    source_ref:
+      path: course-content/courses/juan-leon-phs-620-teaching-learning-seminar/sources/course/PHS
+        620 Syllabus 2025.doc
+      locator: table 4 row 1 column 5
+  source_refs:
+  - path: course-content/courses/juan-leon-phs-620-teaching-learning-seminar/sources/course/PHS
+      620 Syllabus 2025.doc
+    locator: table 4 row 1
+- module_id: module-02
+  status: proposed
+  proposed_slug:
+    value: module-02-accreditors-and-other-stakeholders-textbook-piskurich-ch-4
+    source_ref:
+      path: course-content/courses/juan-leon-phs-620-teaching-learning-seminar/sources/course/PHS
+        620 Syllabus 2025.doc
+      locator: table 4 row 2
+  slug_status: synthesized_requires_review
+  slug_review_note:
+    value: Deterministic slug synthesized from the syllabus row; operator review is
+      required before any B-2 rename.
+    source_ref:
+      path: course-content/courses/juan-leon-phs-620-teaching-learning-seminar/sources/course/PHS
+        620 Syllabus 2025.doc
+      locator: table 4 row 2
+  title:
+    value: Accreditors and Other Stakeholders?
+    source_ref:
+      path: course-content/courses/juan-leon-phs-620-teaching-learning-seminar/sources/course/PHS
+        620 Syllabus 2025.doc
+      locator: table 4 row 2 column 1
+  topics:
+  - value: Accreditors and Other Stakeholders?
+    source_ref:
+      path: course-content/courses/juan-leon-phs-620-teaching-learning-seminar/sources/course/PHS
+        620 Syllabus 2025.doc
+      locator: table 4 row 2 column 1
+  - value: 'Textbook: Piskurich.'
+    source_ref:
+      path: course-content/courses/juan-leon-phs-620-teaching-learning-seminar/sources/course/PHS
+        620 Syllabus 2025.doc
+      locator: table 4 row 2 column 2
+  - value: Ch.
+    source_ref:
+      path: course-content/courses/juan-leon-phs-620-teaching-learning-seminar/sources/course/PHS
+        620 Syllabus 2025.doc
+      locator: table 4 row 2 column 2
+  - value: 4 (128 - 161) The ADDIE model.
+    source_ref:
+      path: course-content/courses/juan-leon-phs-620-teaching-learning-seminar/sources/course/PHS
+        620 Syllabus 2025.doc
+      locator: table 4 row 2 column 2
+  - value: 'Stakeholder Engagement in Competency Framework Development Objective Builder
+      Tool:'
+    source_ref:
+      path: course-content/courses/juan-leon-phs-620-teaching-learning-seminar/sources/course/PHS
+        620 Syllabus 2025.doc
+      locator: table 4 row 2 column 2
+  - value: 'Round Table [live]: Course Projects'
+    source_ref:
+      path: course-content/courses/juan-leon-phs-620-teaching-learning-seminar/sources/course/PHS
+        620 Syllabus 2025.doc
+      locator: table 4 row 2 column 3
+  - value: Training Project Proposal with Topic Outline
+    source_ref:
+      path: course-content/courses/juan-leon-phs-620-teaching-learning-seminar/sources/course/PHS
+        620 Syllabus 2025.doc
+      locator: table 4 row 2 column 4
+  - value: 5-min Feedback (Mod 02)
+    source_ref:
+      path: course-content/courses/juan-leon-phs-620-teaching-learning-seminar/sources/course/PHS
+        620 Syllabus 2025.doc
+      locator: table 4 row 2 column 5
+  source_bucket_suggestions:
+  - value: discussion-prompts
+    source_ref:
+      path: course-content/courses/juan-leon-phs-620-teaching-learning-seminar/sources/course/PHS
+        620 Syllabus 2025.doc
+      locator: table 4 row 2 column 1
+  - value: readings
+    source_ref:
+      path: course-content/courses/juan-leon-phs-620-teaching-learning-seminar/sources/course/PHS
+        620 Syllabus 2025.doc
+      locator: table 4 row 2 column 2
+  - value: lecture
+    source_ref:
+      path: course-content/courses/juan-leon-phs-620-teaching-learning-seminar/sources/course/PHS
+        620 Syllabus 2025.doc
+      locator: table 4 row 2 column 3
+  - value: assignments
+    source_ref:
+      path: course-content/courses/juan-leon-phs-620-teaching-learning-seminar/sources/course/PHS
+        620 Syllabus 2025.doc
+      locator: table 4 row 2 column 4
+  - value: assessments
+    source_ref:
+      path: course-content/courses/juan-leon-phs-620-teaching-learning-seminar/sources/course/PHS
+        620 Syllabus 2025.doc
+      locator: table 4 row 2 column 5
+  source_refs:
+  - path: course-content/courses/juan-leon-phs-620-teaching-learning-seminar/sources/course/PHS
+      620 Syllabus 2025.doc
+    locator: table 4 row 2
+- module_id: module-03
+  status: proposed
+  proposed_slug:
+    value: module-03-strengths-and-limitations-of-online-vs-classroom-based
+    source_ref:
+      path: course-content/courses/juan-leon-phs-620-teaching-learning-seminar/sources/course/PHS
+        620 Syllabus 2025.doc
+      locator: table 4 row 3
+  slug_status: synthesized_requires_review
+  slug_review_note:
+    value: Deterministic slug synthesized from the syllabus row; operator review is
+      required before any B-2 rename.
+    source_ref:
+      path: course-content/courses/juan-leon-phs-620-teaching-learning-seminar/sources/course/PHS
+        620 Syllabus 2025.doc
+      locator: table 4 row 3
+  title:
+    value: Strengths and Limitations of Online vs.
+    source_ref:
+      path: course-content/courses/juan-leon-phs-620-teaching-learning-seminar/sources/course/PHS
+        620 Syllabus 2025.doc
+      locator: table 4 row 3 column 1
+  topics:
+  - value: Strengths and Limitations of Online vs.
+    source_ref:
+      path: course-content/courses/juan-leon-phs-620-teaching-learning-seminar/sources/course/PHS
+        620 Syllabus 2025.doc
+      locator: table 4 row 3 column 1
+  - value: Classroom-based Modalities
+    source_ref:
+      path: course-content/courses/juan-leon-phs-620-teaching-learning-seminar/sources/course/PHS
+        620 Syllabus 2025.doc
+      locator: table 4 row 3 column 1
+  - value: 'Textbook: Piskurich.'
+    source_ref:
+      path: course-content/courses/juan-leon-phs-620-teaching-learning-seminar/sources/course/PHS
+        620 Syllabus 2025.doc
+      locator: table 4 row 3 column 2
+  - value: Chaps.
+    source_ref:
+      path: course-content/courses/juan-leon-phs-620-teaching-learning-seminar/sources/course/PHS
+        620 Syllabus 2025.doc
+      locator: table 4 row 3 column 2
+  - value: '10-11 (446-457) Textbook: Piskurich.'
+    source_ref:
+      path: course-content/courses/juan-leon-phs-620-teaching-learning-seminar/sources/course/PHS
+        620 Syllabus 2025.doc
+      locator: table 4 row 3 column 2
+  - value: Ch.
+    source_ref:
+      path: course-content/courses/juan-leon-phs-620-teaching-learning-seminar/sources/course/PHS
+        620 Syllabus 2025.doc
+      locator: table 4 row 3 column 2
+  - value: 4 (107-128; 173-178) Gagne's 'Events of Instruction' Universal Design for
+      Learning Guidelines Universal Design for Learning
+    source_ref:
+      path: course-content/courses/juan-leon-phs-620-teaching-learning-seminar/sources/course/PHS
+        620 Syllabus 2025.doc
+      locator: table 4 row 3 column 2
+  - value: 'Round Table [live]: Hybrid Lessons'
+    source_ref:
+      path: course-content/courses/juan-leon-phs-620-teaching-learning-seminar/sources/course/PHS
+        620 Syllabus 2025.doc
+      locator: table 4 row 3 column 3
+  - value: Design Lesson for Mixed-modality
+    source_ref:
+      path: course-content/courses/juan-leon-phs-620-teaching-learning-seminar/sources/course/PHS
+        620 Syllabus 2025.doc
+      locator: table 4 row 3 column 4
+  - value: 5-min Feedback (Mod 03)
+    source_ref:
+      path: course-content/courses/juan-leon-phs-620-teaching-learning-seminar/sources/course/PHS
+        620 Syllabus 2025.doc
+      locator: table 4 row 3 column 5
+  source_bucket_suggestions:
+  - value: discussion-prompts
+    source_ref:
+      path: course-content/courses/juan-leon-phs-620-teaching-learning-seminar/sources/course/PHS
+        620 Syllabus 2025.doc
+      locator: table 4 row 3 column 1
+  - value: readings
+    source_ref:
+      path: course-content/courses/juan-leon-phs-620-teaching-learning-seminar/sources/course/PHS
+        620 Syllabus 2025.doc
+      locator: table 4 row 3 column 2
+  - value: lecture
+    source_ref:
+      path: course-content/courses/juan-leon-phs-620-teaching-learning-seminar/sources/course/PHS
+        620 Syllabus 2025.doc
+      locator: table 4 row 3 column 3
+  - value: assignments
+    source_ref:
+      path: course-content/courses/juan-leon-phs-620-teaching-learning-seminar/sources/course/PHS
+        620 Syllabus 2025.doc
+      locator: table 4 row 3 column 4
+  - value: assessments
+    source_ref:
+      path: course-content/courses/juan-leon-phs-620-teaching-learning-seminar/sources/course/PHS
+        620 Syllabus 2025.doc
+      locator: table 4 row 3 column 5
+  source_refs:
+  - path: course-content/courses/juan-leon-phs-620-teaching-learning-seminar/sources/course/PHS
+      620 Syllabus 2025.doc
+    locator: table 4 row 3
+- module_id: module-04
+  status: proposed
+  proposed_slug:
+    value: module-04-effective-presentation-skills-optimizing-presentation-skills-mckinsey-s
+    source_ref:
+      path: course-content/courses/juan-leon-phs-620-teaching-learning-seminar/sources/course/PHS
+        620 Syllabus 2025.doc
+      locator: table 4 row 4
+  slug_status: synthesized_requires_review
+  slug_review_note:
+    value: Deterministic slug synthesized from the syllabus row; operator review is
+      required before any B-2 rename.
+    source_ref:
+      path: course-content/courses/juan-leon-phs-620-teaching-learning-seminar/sources/course/PHS
+        620 Syllabus 2025.doc
+      locator: table 4 row 4
+  title:
+    value: Effective Presentation Skills
+    source_ref:
+      path: course-content/courses/juan-leon-phs-620-teaching-learning-seminar/sources/course/PHS
+        620 Syllabus 2025.doc
+      locator: table 4 row 4 column 1
+  topics:
+  - value: Effective Presentation Skills
+    source_ref:
+      path: course-content/courses/juan-leon-phs-620-teaching-learning-seminar/sources/course/PHS
+        620 Syllabus 2025.doc
+      locator: table 4 row 4 column 1
+  - value: 'Optimizing Presentation Skills McKinsey''s Pyramid Principle Textbook:
+      Piskurich.'
+    source_ref:
+      path: course-content/courses/juan-leon-phs-620-teaching-learning-seminar/sources/course/PHS
+        620 Syllabus 2025.doc
+      locator: table 4 row 4 column 2
+  - value: Ch.
+    source_ref:
+      path: course-content/courses/juan-leon-phs-620-teaching-learning-seminar/sources/course/PHS
+        620 Syllabus 2025.doc
+      locator: table 4 row 4 column 2
+  - value: 10 (411-446)
+    source_ref:
+      path: course-content/courses/juan-leon-phs-620-teaching-learning-seminar/sources/course/PHS
+        620 Syllabus 2025.doc
+      locator: table 4 row 4 column 2
+  - value: 'Round Table [live]: Rehearsals of Presentations'
+    source_ref:
+      path: course-content/courses/juan-leon-phs-620-teaching-learning-seminar/sources/course/PHS
+        620 Syllabus 2025.doc
+      locator: table 4 row 4 column 3
+  - value: Design and Rehearse Your Lesson's Lecture
+    source_ref:
+      path: course-content/courses/juan-leon-phs-620-teaching-learning-seminar/sources/course/PHS
+        620 Syllabus 2025.doc
+      locator: table 4 row 4 column 4
+  - value: 5-min Feedback (Mod 04)
+    source_ref:
+      path: course-content/courses/juan-leon-phs-620-teaching-learning-seminar/sources/course/PHS
+        620 Syllabus 2025.doc
+      locator: table 4 row 4 column 5
+  source_bucket_suggestions:
+  - value: discussion-prompts
+    source_ref:
+      path: course-content/courses/juan-leon-phs-620-teaching-learning-seminar/sources/course/PHS
+        620 Syllabus 2025.doc
+      locator: table 4 row 4 column 1
+  - value: readings
+    source_ref:
+      path: course-content/courses/juan-leon-phs-620-teaching-learning-seminar/sources/course/PHS
+        620 Syllabus 2025.doc
+      locator: table 4 row 4 column 2
+  - value: lecture
+    source_ref:
+      path: course-content/courses/juan-leon-phs-620-teaching-learning-seminar/sources/course/PHS
+        620 Syllabus 2025.doc
+      locator: table 4 row 4 column 3
+  - value: assignments
+    source_ref:
+      path: course-content/courses/juan-leon-phs-620-teaching-learning-seminar/sources/course/PHS
+        620 Syllabus 2025.doc
+      locator: table 4 row 4 column 4
+  - value: assessments
+    source_ref:
+      path: course-content/courses/juan-leon-phs-620-teaching-learning-seminar/sources/course/PHS
+        620 Syllabus 2025.doc
+      locator: table 4 row 4 column 5
+  source_refs:
+  - path: course-content/courses/juan-leon-phs-620-teaching-learning-seminar/sources/course/PHS
+      620 Syllabus 2025.doc
+    locator: table 4 row 4
+- module_id: module-05
+  status: proposed
+  proposed_slug:
+    value: module-05-know-your-virtual-audience-textbook-piskurich-ch-11
+    source_ref:
+      path: course-content/courses/juan-leon-phs-620-teaching-learning-seminar/sources/course/PHS
+        620 Syllabus 2025.doc
+      locator: table 4 row 5
+  slug_status: synthesized_requires_review
+  slug_review_note:
+    value: Deterministic slug synthesized from the syllabus row; operator review is
+      required before any B-2 rename.
+    source_ref:
+      path: course-content/courses/juan-leon-phs-620-teaching-learning-seminar/sources/course/PHS
+        620 Syllabus 2025.doc
+      locator: table 4 row 5
+  title:
+    value: Know your (Virtual) Audience
+    source_ref:
+      path: course-content/courses/juan-leon-phs-620-teaching-learning-seminar/sources/course/PHS
+        620 Syllabus 2025.doc
+      locator: table 4 row 5 column 1
+  topics:
+  - value: Know your (Virtual) Audience
+    source_ref:
+      path: course-content/courses/juan-leon-phs-620-teaching-learning-seminar/sources/course/PHS
+        620 Syllabus 2025.doc
+      locator: table 4 row 5 column 1
+  - value: 'Textbook: Piskurich.'
+    source_ref:
+      path: course-content/courses/juan-leon-phs-620-teaching-learning-seminar/sources/course/PHS
+        620 Syllabus 2025.doc
+      locator: table 4 row 5 column 2
+  - value: Ch.
+    source_ref:
+      path: course-content/courses/juan-leon-phs-620-teaching-learning-seminar/sources/course/PHS
+        620 Syllabus 2025.doc
+      locator: table 4 row 5 column 2
+  - value: '11 (457-473) Textbook: Piskurich.'
+    source_ref:
+      path: course-content/courses/juan-leon-phs-620-teaching-learning-seminar/sources/course/PHS
+        620 Syllabus 2025.doc
+      locator: table 4 row 5 column 2
+  - value: Ch.
+    source_ref:
+      path: course-content/courses/juan-leon-phs-620-teaching-learning-seminar/sources/course/PHS
+        620 Syllabus 2025.doc
+      locator: table 4 row 5 column 2
+  - value: 10 (432-433) Social Media in Health Studies
+    source_ref:
+      path: course-content/courses/juan-leon-phs-620-teaching-learning-seminar/sources/course/PHS
+        620 Syllabus 2025.doc
+      locator: table 4 row 5 column 2
+  - value: 'Round Table [live]: Delivery of Lesson Presentations'
+    source_ref:
+      path: course-content/courses/juan-leon-phs-620-teaching-learning-seminar/sources/course/PHS
+        620 Syllabus 2025.doc
+      locator: table 4 row 5 column 3
+  - value: Create an Online Instructional Activity Deliver Your Lesson's Lecture 0nline
+    source_ref:
+      path: course-content/courses/juan-leon-phs-620-teaching-learning-seminar/sources/course/PHS
+        620 Syllabus 2025.doc
+      locator: table 4 row 5 column 4
+  - value: 5-min Feedback (Mod 05)
+    source_ref:
+      path: course-content/courses/juan-leon-phs-620-teaching-learning-seminar/sources/course/PHS
+        620 Syllabus 2025.doc
+      locator: table 4 row 5 column 5
+  source_bucket_suggestions:
+  - value: discussion-prompts
+    source_ref:
+      path: course-content/courses/juan-leon-phs-620-teaching-learning-seminar/sources/course/PHS
+        620 Syllabus 2025.doc
+      locator: table 4 row 5 column 1
+  - value: readings
+    source_ref:
+      path: course-content/courses/juan-leon-phs-620-teaching-learning-seminar/sources/course/PHS
+        620 Syllabus 2025.doc
+      locator: table 4 row 5 column 2
+  - value: lecture
+    source_ref:
+      path: course-content/courses/juan-leon-phs-620-teaching-learning-seminar/sources/course/PHS
+        620 Syllabus 2025.doc
+      locator: table 4 row 5 column 3
+  - value: assignments
+    source_ref:
+      path: course-content/courses/juan-leon-phs-620-teaching-learning-seminar/sources/course/PHS
+        620 Syllabus 2025.doc
+      locator: table 4 row 5 column 4
+  - value: assessments
+    source_ref:
+      path: course-content/courses/juan-leon-phs-620-teaching-learning-seminar/sources/course/PHS
+        620 Syllabus 2025.doc
+      locator: table 4 row 5 column 5
+  source_refs:
+  - path: course-content/courses/juan-leon-phs-620-teaching-learning-seminar/sources/course/PHS
+      620 Syllabus 2025.doc
+    locator: table 4 row 5
+- module_id: module-06
+  status: proposed
+  proposed_slug:
+    value: module-06-what-is-effective-feedback-textbook-piskurich-ch-4
+    source_ref:
+      path: course-content/courses/juan-leon-phs-620-teaching-learning-seminar/sources/course/PHS
+        620 Syllabus 2025.doc
+      locator: table 4 row 6
+  slug_status: synthesized_requires_review
+  slug_review_note:
+    value: Deterministic slug synthesized from the syllabus row; operator review is
+      required before any B-2 rename.
+    source_ref:
+      path: course-content/courses/juan-leon-phs-620-teaching-learning-seminar/sources/course/PHS
+        620 Syllabus 2025.doc
+      locator: table 4 row 6
+  title:
+    value: What is Effective Feedback?
+    source_ref:
+      path: course-content/courses/juan-leon-phs-620-teaching-learning-seminar/sources/course/PHS
+        620 Syllabus 2025.doc
+      locator: table 4 row 6 column 1
+  topics:
+  - value: What is Effective Feedback?
+    source_ref:
+      path: course-content/courses/juan-leon-phs-620-teaching-learning-seminar/sources/course/PHS
+        620 Syllabus 2025.doc
+      locator: table 4 row 6 column 1
+  - value: 'Textbook: Piskurich.'
+    source_ref:
+      path: course-content/courses/juan-leon-phs-620-teaching-learning-seminar/sources/course/PHS
+        620 Syllabus 2025.doc
+      locator: table 4 row 6 column 2
+  - value: Ch.
+    source_ref:
+      path: course-content/courses/juan-leon-phs-620-teaching-learning-seminar/sources/course/PHS
+        620 Syllabus 2025.doc
+      locator: table 4 row 6 column 2
+  - value: 4 (178-196) Ready, Willing, and Able What is Assessment for Learning?
+    source_ref:
+      path: course-content/courses/juan-leon-phs-620-teaching-learning-seminar/sources/course/PHS
+        620 Syllabus 2025.doc
+      locator: table 4 row 6 column 2
+  - value: Improving Student Performance with Feedback
+    source_ref:
+      path: course-content/courses/juan-leon-phs-620-teaching-learning-seminar/sources/course/PHS
+        620 Syllabus 2025.doc
+      locator: table 4 row 6 column 2
+  - value: 'Round Table [live]: Grading and Final Lesson Designs'
+    source_ref:
+      path: course-content/courses/juan-leon-phs-620-teaching-learning-seminar/sources/course/PHS
+        620 Syllabus 2025.doc
+      locator: table 4 row 6 column 3
+  - value: Author an Assessment for your Lesson Create Prerecording of your Completed
+      Lesson Design
+    source_ref:
+      path: course-content/courses/juan-leon-phs-620-teaching-learning-seminar/sources/course/PHS
+        620 Syllabus 2025.doc
+      locator: table 4 row 6 column 4
+  - value: 5-min Feedback (Mod 06)
+    source_ref:
+      path: course-content/courses/juan-leon-phs-620-teaching-learning-seminar/sources/course/PHS
+        620 Syllabus 2025.doc
+      locator: table 4 row 6 column 5
+  source_bucket_suggestions:
+  - value: discussion-prompts
+    source_ref:
+      path: course-content/courses/juan-leon-phs-620-teaching-learning-seminar/sources/course/PHS
+        620 Syllabus 2025.doc
+      locator: table 4 row 6 column 1
+  - value: readings
+    source_ref:
+      path: course-content/courses/juan-leon-phs-620-teaching-learning-seminar/sources/course/PHS
+        620 Syllabus 2025.doc
+      locator: table 4 row 6 column 2
+  - value: lecture
+    source_ref:
+      path: course-content/courses/juan-leon-phs-620-teaching-learning-seminar/sources/course/PHS
+        620 Syllabus 2025.doc
+      locator: table 4 row 6 column 3
+  - value: assignments
+    source_ref:
+      path: course-content/courses/juan-leon-phs-620-teaching-learning-seminar/sources/course/PHS
+        620 Syllabus 2025.doc
+      locator: table 4 row 6 column 4
+  - value: assessments
+    source_ref:
+      path: course-content/courses/juan-leon-phs-620-teaching-learning-seminar/sources/course/PHS
+        620 Syllabus 2025.doc
+      locator: table 4 row 6 column 5
+  source_refs:
+  - path: course-content/courses/juan-leon-phs-620-teaching-learning-seminar/sources/course/PHS
+      620 Syllabus 2025.doc
+    locator: table 4 row 6
+- module_id: module-07
+  status: proposed
+  proposed_slug:
+    value: module-07-discuss-prerecorded-presentations-textbook-piskurich-chaps-9-373
+    source_ref:
+      path: course-content/courses/juan-leon-phs-620-teaching-learning-seminar/sources/course/PHS
+        620 Syllabus 2025.doc
+      locator: table 4 row 7
+  slug_status: synthesized_requires_review
+  slug_review_note:
+    value: Deterministic slug synthesized from the syllabus row; operator review is
+      required before any B-2 rename.
+    source_ref:
+      path: course-content/courses/juan-leon-phs-620-teaching-learning-seminar/sources/course/PHS
+        620 Syllabus 2025.doc
+      locator: table 4 row 7
+  title:
+    value: Discuss Prerecorded Presentations
+    source_ref:
+      path: course-content/courses/juan-leon-phs-620-teaching-learning-seminar/sources/course/PHS
+        620 Syllabus 2025.doc
+      locator: table 4 row 7 column 1
+  topics:
+  - value: Discuss Prerecorded Presentations
+    source_ref:
+      path: course-content/courses/juan-leon-phs-620-teaching-learning-seminar/sources/course/PHS
+        620 Syllabus 2025.doc
+      locator: table 4 row 7 column 1
+  - value: 'Textbook: Piskurich.'
+    source_ref:
+      path: course-content/courses/juan-leon-phs-620-teaching-learning-seminar/sources/course/PHS
+        620 Syllabus 2025.doc
+      locator: table 4 row 7 column 2
+  - value: Chaps.
+    source_ref:
+      path: course-content/courses/juan-leon-phs-620-teaching-learning-seminar/sources/course/PHS
+        620 Syllabus 2025.doc
+      locator: table 4 row 7 column 2
+  - value: '9 (373-408) Textbook: Piskurich.'
+    source_ref:
+      path: course-content/courses/juan-leon-phs-620-teaching-learning-seminar/sources/course/PHS
+        620 Syllabus 2025.doc
+      locator: table 4 row 7 column 2
+  - value: Chaps.
+    source_ref:
+      path: course-content/courses/juan-leon-phs-620-teaching-learning-seminar/sources/course/PHS
+        620 Syllabus 2025.doc
+      locator: table 4 row 7 column 2
+  - value: 6, 7 (296-298; 311-351)
+    source_ref:
+      path: course-content/courses/juan-leon-phs-620-teaching-learning-seminar/sources/course/PHS
+        620 Syllabus 2025.doc
+      locator: table 4 row 7 column 2
+  - value: 'Round Table [live]: Intro to ITS Project Design'
+    source_ref:
+      path: course-content/courses/juan-leon-phs-620-teaching-learning-seminar/sources/course/PHS
+        620 Syllabus 2025.doc
+      locator: table 4 row 7 column 3
+  - value: Training Implementation Roadmap Post Prerecorded Lesson Design Presentation
+    source_ref:
+      path: course-content/courses/juan-leon-phs-620-teaching-learning-seminar/sources/course/PHS
+        620 Syllabus 2025.doc
+      locator: table 4 row 7 column 4
+  - value: 5-min Feedback (Mod 07)
+    source_ref:
+      path: course-content/courses/juan-leon-phs-620-teaching-learning-seminar/sources/course/PHS
+        620 Syllabus 2025.doc
+      locator: table 4 row 7 column 5
+  source_bucket_suggestions:
+  - value: discussion-prompts
+    source_ref:
+      path: course-content/courses/juan-leon-phs-620-teaching-learning-seminar/sources/course/PHS
+        620 Syllabus 2025.doc
+      locator: table 4 row 7 column 1
+  - value: readings
+    source_ref:
+      path: course-content/courses/juan-leon-phs-620-teaching-learning-seminar/sources/course/PHS
+        620 Syllabus 2025.doc
+      locator: table 4 row 7 column 2
+  - value: lecture
+    source_ref:
+      path: course-content/courses/juan-leon-phs-620-teaching-learning-seminar/sources/course/PHS
+        620 Syllabus 2025.doc
+      locator: table 4 row 7 column 3
+  - value: assignments
+    source_ref:
+      path: course-content/courses/juan-leon-phs-620-teaching-learning-seminar/sources/course/PHS
+        620 Syllabus 2025.doc
+      locator: table 4 row 7 column 4
+  - value: assessments
+    source_ref:
+      path: course-content/courses/juan-leon-phs-620-teaching-learning-seminar/sources/course/PHS
+        620 Syllabus 2025.doc
+      locator: table 4 row 7 column 5
+  source_refs:
+  - path: course-content/courses/juan-leon-phs-620-teaching-learning-seminar/sources/course/PHS
+      620 Syllabus 2025.doc
+    locator: table 4 row 7
+- module_id: module-08
+  status: proposed
+  proposed_slug:
+    value: module-08-project-support-forum-envisioning-and-planning-educational-applications
+    source_ref:
+      path: course-content/courses/juan-leon-phs-620-teaching-learning-seminar/sources/course/PHS
+        620 Syllabus 2025.doc
+      locator: table 4 row 8
+  slug_status: synthesized_requires_review
+  slug_review_note:
+    value: Deterministic slug synthesized from the syllabus row; operator review is
+      required before any B-2 rename.
+    source_ref:
+      path: course-content/courses/juan-leon-phs-620-teaching-learning-seminar/sources/course/PHS
+        620 Syllabus 2025.doc
+      locator: table 4 row 8
+  title:
+    value: 'Project Support Forum: Envisioning and Planning'
+    source_ref:
+      path: course-content/courses/juan-leon-phs-620-teaching-learning-seminar/sources/course/PHS
+        620 Syllabus 2025.doc
+      locator: table 4 row 8 column 1
+  topics:
+  - value: 'Project Support Forum: Envisioning and Planning'
+    source_ref:
+      path: course-content/courses/juan-leon-phs-620-teaching-learning-seminar/sources/course/PHS
+        620 Syllabus 2025.doc
+      locator: table 4 row 8 column 1
+  - value: Educational applications of AI Intelligent Tutoring Systems Recommended
+      Resources for Data and Visualizations
+    source_ref:
+      path: course-content/courses/juan-leon-phs-620-teaching-learning-seminar/sources/course/PHS
+        620 Syllabus 2025.doc
+      locator: table 4 row 8 column 2
+  - value: 'Round Table [live]: The ITS Framework and Project Design Tasks'
+    source_ref:
+      path: course-content/courses/juan-leon-phs-620-teaching-learning-seminar/sources/course/PHS
+        620 Syllabus 2025.doc
+      locator: table 4 row 8 column 3
+  - value: Develop three 'Candidates' for your ITS Project Map a Candidate ITS Project
+      to the ITS Framework
+    source_ref:
+      path: course-content/courses/juan-leon-phs-620-teaching-learning-seminar/sources/course/PHS
+        620 Syllabus 2025.doc
+      locator: table 4 row 8 column 4
+  - value: 5-min Feedback (Mod 08)
+    source_ref:
+      path: course-content/courses/juan-leon-phs-620-teaching-learning-seminar/sources/course/PHS
+        620 Syllabus 2025.doc
+      locator: table 4 row 8 column 5
+  source_bucket_suggestions:
+  - value: discussion-prompts
+    source_ref:
+      path: course-content/courses/juan-leon-phs-620-teaching-learning-seminar/sources/course/PHS
+        620 Syllabus 2025.doc
+      locator: table 4 row 8 column 1
+  - value: readings
+    source_ref:
+      path: course-content/courses/juan-leon-phs-620-teaching-learning-seminar/sources/course/PHS
+        620 Syllabus 2025.doc
+      locator: table 4 row 8 column 2
+  - value: lecture
+    source_ref:
+      path: course-content/courses/juan-leon-phs-620-teaching-learning-seminar/sources/course/PHS
+        620 Syllabus 2025.doc
+      locator: table 4 row 8 column 3
+  - value: assignments
+    source_ref:
+      path: course-content/courses/juan-leon-phs-620-teaching-learning-seminar/sources/course/PHS
+        620 Syllabus 2025.doc
+      locator: table 4 row 8 column 4
+  - value: assessments
+    source_ref:
+      path: course-content/courses/juan-leon-phs-620-teaching-learning-seminar/sources/course/PHS
+        620 Syllabus 2025.doc
+      locator: table 4 row 8 column 5
+  source_refs:
+  - path: course-content/courses/juan-leon-phs-620-teaching-learning-seminar/sources/course/PHS
+      620 Syllabus 2025.doc
+    locator: table 4 row 8
+- module_id: module-09
+  status: proposed
+  proposed_slug:
+    value: module-09-project-support-forum-specifying-requirements-no-new-readings
+    source_ref:
+      path: course-content/courses/juan-leon-phs-620-teaching-learning-seminar/sources/course/PHS
+        620 Syllabus 2025.doc
+      locator: table 4 row 9
+  slug_status: synthesized_requires_review
+  slug_review_note:
+    value: Deterministic slug synthesized from the syllabus row; operator review is
+      required before any B-2 rename.
+    source_ref:
+      path: course-content/courses/juan-leon-phs-620-teaching-learning-seminar/sources/course/PHS
+        620 Syllabus 2025.doc
+      locator: table 4 row 9
+  title:
+    value: 'Project Support Forum: Specifying Requirements'
+    source_ref:
+      path: course-content/courses/juan-leon-phs-620-teaching-learning-seminar/sources/course/PHS
+        620 Syllabus 2025.doc
+      locator: table 4 row 9 column 1
+  topics:
+  - value: 'Project Support Forum: Specifying Requirements'
+    source_ref:
+      path: course-content/courses/juan-leon-phs-620-teaching-learning-seminar/sources/course/PHS
+        620 Syllabus 2025.doc
+      locator: table 4 row 9 column 1
+  - value: No New Readings (M09)
+    source_ref:
+      path: course-content/courses/juan-leon-phs-620-teaching-learning-seminar/sources/course/PHS
+        620 Syllabus 2025.doc
+      locator: table 4 row 9 column 2
+  - value: 'Round Table [live]: Designing for Function'
+    source_ref:
+      path: course-content/courses/juan-leon-phs-620-teaching-learning-seminar/sources/course/PHS
+        620 Syllabus 2025.doc
+      locator: table 4 row 9 column 3
+  - value: Schedule Consult for Week 10 Complete ITS Design Worksheet and Objectives
+      Specify your Project's LOs, Instructional Activities, and Cruces
+    source_ref:
+      path: course-content/courses/juan-leon-phs-620-teaching-learning-seminar/sources/course/PHS
+        620 Syllabus 2025.doc
+      locator: table 4 row 9 column 4
+  - value: 5-min Feedback (Mod 09)
+    source_ref:
+      path: course-content/courses/juan-leon-phs-620-teaching-learning-seminar/sources/course/PHS
+        620 Syllabus 2025.doc
+      locator: table 4 row 9 column 5
+  source_bucket_suggestions:
+  - value: discussion-prompts
+    source_ref:
+      path: course-content/courses/juan-leon-phs-620-teaching-learning-seminar/sources/course/PHS
+        620 Syllabus 2025.doc
+      locator: table 4 row 9 column 1
+  - value: readings
+    source_ref:
+      path: course-content/courses/juan-leon-phs-620-teaching-learning-seminar/sources/course/PHS
+        620 Syllabus 2025.doc
+      locator: table 4 row 9 column 2
+  - value: lecture
+    source_ref:
+      path: course-content/courses/juan-leon-phs-620-teaching-learning-seminar/sources/course/PHS
+        620 Syllabus 2025.doc
+      locator: table 4 row 9 column 3
+  - value: assignments
+    source_ref:
+      path: course-content/courses/juan-leon-phs-620-teaching-learning-seminar/sources/course/PHS
+        620 Syllabus 2025.doc
+      locator: table 4 row 9 column 4
+  - value: assessments
+    source_ref:
+      path: course-content/courses/juan-leon-phs-620-teaching-learning-seminar/sources/course/PHS
+        620 Syllabus 2025.doc
+      locator: table 4 row 9 column 5
+  source_refs:
+  - path: course-content/courses/juan-leon-phs-620-teaching-learning-seminar/sources/course/PHS
+      620 Syllabus 2025.doc
+    locator: table 4 row 9
+- module_id: module-10
+  status: proposed
+  proposed_slug:
+    value: module-10-project-support-forum-design-critiques-no-new-readings
+    source_ref:
+      path: course-content/courses/juan-leon-phs-620-teaching-learning-seminar/sources/course/PHS
+        620 Syllabus 2025.doc
+      locator: table 4 row 10
+  slug_status: synthesized_requires_review
+  slug_review_note:
+    value: Deterministic slug synthesized from the syllabus row; operator review is
+      required before any B-2 rename.
+    source_ref:
+      path: course-content/courses/juan-leon-phs-620-teaching-learning-seminar/sources/course/PHS
+        620 Syllabus 2025.doc
+      locator: table 4 row 10
+  title:
+    value: 'Project Support Forum: Design Critiques'
+    source_ref:
+      path: course-content/courses/juan-leon-phs-620-teaching-learning-seminar/sources/course/PHS
+        620 Syllabus 2025.doc
+      locator: table 4 row 10 column 1
+  topics:
+  - value: 'Project Support Forum: Design Critiques'
+    source_ref:
+      path: course-content/courses/juan-leon-phs-620-teaching-learning-seminar/sources/course/PHS
+        620 Syllabus 2025.doc
+      locator: table 4 row 10 column 1
+  - value: No New Readings (M10)
+    source_ref:
+      path: course-content/courses/juan-leon-phs-620-teaching-learning-seminar/sources/course/PHS
+        620 Syllabus 2025.doc
+      locator: table 4 row 10 column 2
+  - value: 'Round Table [live]: Present Design(s)'
+    source_ref:
+      path: course-content/courses/juan-leon-phs-620-teaching-learning-seminar/sources/course/PHS
+        620 Syllabus 2025.doc
+      locator: table 4 row 10 column 3
+  - value: Provide Project Design Critiques Present Project Designs and Cruces
+    source_ref:
+      path: course-content/courses/juan-leon-phs-620-teaching-learning-seminar/sources/course/PHS
+        620 Syllabus 2025.doc
+      locator: table 4 row 10 column 4
+  - value: 5-min Feedback (Mod 10)
+    source_ref:
+      path: course-content/courses/juan-leon-phs-620-teaching-learning-seminar/sources/course/PHS
+        620 Syllabus 2025.doc
+      locator: table 4 row 10 column 5
+  source_bucket_suggestions:
+  - value: discussion-prompts
+    source_ref:
+      path: course-content/courses/juan-leon-phs-620-teaching-learning-seminar/sources/course/PHS
+        620 Syllabus 2025.doc
+      locator: table 4 row 10 column 1
+  - value: readings
+    source_ref:
+      path: course-content/courses/juan-leon-phs-620-teaching-learning-seminar/sources/course/PHS
+        620 Syllabus 2025.doc
+      locator: table 4 row 10 column 2
+  - value: lecture
+    source_ref:
+      path: course-content/courses/juan-leon-phs-620-teaching-learning-seminar/sources/course/PHS
+        620 Syllabus 2025.doc
+      locator: table 4 row 10 column 3
+  - value: assignments
+    source_ref:
+      path: course-content/courses/juan-leon-phs-620-teaching-learning-seminar/sources/course/PHS
+        620 Syllabus 2025.doc
+      locator: table 4 row 10 column 4
+  - value: assessments
+    source_ref:
+      path: course-content/courses/juan-leon-phs-620-teaching-learning-seminar/sources/course/PHS
+        620 Syllabus 2025.doc
+      locator: table 4 row 10 column 5
+  source_refs:
+  - path: course-content/courses/juan-leon-phs-620-teaching-learning-seminar/sources/course/PHS
+      620 Syllabus 2025.doc
+    locator: table 4 row 10
+- module_id: module-11
+  status: proposed
+  proposed_slug:
+    value: module-11-project-support-forum-alphas-no-new-readings-m11
+    source_ref:
+      path: course-content/courses/juan-leon-phs-620-teaching-learning-seminar/sources/course/PHS
+        620 Syllabus 2025.doc
+      locator: table 4 row 11
+  slug_status: synthesized_requires_review
+  slug_review_note:
+    value: Deterministic slug synthesized from the syllabus row; operator review is
+      required before any B-2 rename.
+    source_ref:
+      path: course-content/courses/juan-leon-phs-620-teaching-learning-seminar/sources/course/PHS
+        620 Syllabus 2025.doc
+      locator: table 4 row 11
+  title:
+    value: 'Project Support Forum: Alphas'
+    source_ref:
+      path: course-content/courses/juan-leon-phs-620-teaching-learning-seminar/sources/course/PHS
+        620 Syllabus 2025.doc
+      locator: table 4 row 11 column 1
+  topics:
+  - value: 'Project Support Forum: Alphas'
+    source_ref:
+      path: course-content/courses/juan-leon-phs-620-teaching-learning-seminar/sources/course/PHS
+        620 Syllabus 2025.doc
+      locator: table 4 row 11 column 1
+  - value: No New Readings (M11)
+    source_ref:
+      path: course-content/courses/juan-leon-phs-620-teaching-learning-seminar/sources/course/PHS
+        620 Syllabus 2025.doc
+      locator: table 4 row 11 column 2
+  - value: 'Round Table [live]: Deploying the Project ''Alpha'''
+    source_ref:
+      path: course-content/courses/juan-leon-phs-620-teaching-learning-seminar/sources/course/PHS
+        620 Syllabus 2025.doc
+      locator: table 4 row 11 column 3
+  - value: Schedule Consult for Week 12 Build your ITS Project 'Alpha'
+    source_ref:
+      path: course-content/courses/juan-leon-phs-620-teaching-learning-seminar/sources/course/PHS
+        620 Syllabus 2025.doc
+      locator: table 4 row 11 column 4
+  - value: 5-min Feedback (Mod 11)
+    source_ref:
+      path: course-content/courses/juan-leon-phs-620-teaching-learning-seminar/sources/course/PHS
+        620 Syllabus 2025.doc
+      locator: table 4 row 11 column 5
+  source_bucket_suggestions:
+  - value: discussion-prompts
+    source_ref:
+      path: course-content/courses/juan-leon-phs-620-teaching-learning-seminar/sources/course/PHS
+        620 Syllabus 2025.doc
+      locator: table 4 row 11 column 1
+  - value: readings
+    source_ref:
+      path: course-content/courses/juan-leon-phs-620-teaching-learning-seminar/sources/course/PHS
+        620 Syllabus 2025.doc
+      locator: table 4 row 11 column 2
+  - value: lecture
+    source_ref:
+      path: course-content/courses/juan-leon-phs-620-teaching-learning-seminar/sources/course/PHS
+        620 Syllabus 2025.doc
+      locator: table 4 row 11 column 3
+  - value: assignments
+    source_ref:
+      path: course-content/courses/juan-leon-phs-620-teaching-learning-seminar/sources/course/PHS
+        620 Syllabus 2025.doc
+      locator: table 4 row 11 column 4
+  - value: assessments
+    source_ref:
+      path: course-content/courses/juan-leon-phs-620-teaching-learning-seminar/sources/course/PHS
+        620 Syllabus 2025.doc
+      locator: table 4 row 11 column 5
+  source_refs:
+  - path: course-content/courses/juan-leon-phs-620-teaching-learning-seminar/sources/course/PHS
+      620 Syllabus 2025.doc
+    locator: table 4 row 11
+- module_id: module-12
+  status: proposed
+  proposed_slug:
+    value: module-12-project-support-forum-completing-alphas-no-new-readings
+    source_ref:
+      path: course-content/courses/juan-leon-phs-620-teaching-learning-seminar/sources/course/PHS
+        620 Syllabus 2025.doc
+      locator: table 4 row 12
+  slug_status: synthesized_requires_review
+  slug_review_note:
+    value: Deterministic slug synthesized from the syllabus row; operator review is
+      required before any B-2 rename.
+    source_ref:
+      path: course-content/courses/juan-leon-phs-620-teaching-learning-seminar/sources/course/PHS
+        620 Syllabus 2025.doc
+      locator: table 4 row 12
+  title:
+    value: 'Project Support Forum: Completing Alphas'
+    source_ref:
+      path: course-content/courses/juan-leon-phs-620-teaching-learning-seminar/sources/course/PHS
+        620 Syllabus 2025.doc
+      locator: table 4 row 12 column 1
+  topics:
+  - value: 'Project Support Forum: Completing Alphas'
+    source_ref:
+      path: course-content/courses/juan-leon-phs-620-teaching-learning-seminar/sources/course/PHS
+        620 Syllabus 2025.doc
+      locator: table 4 row 12 column 1
+  - value: No New Readings (M12)
+    source_ref:
+      path: course-content/courses/juan-leon-phs-620-teaching-learning-seminar/sources/course/PHS
+        620 Syllabus 2025.doc
+      locator: table 4 row 12 column 2
+  - value: 'Round Table [live]: Deploying Project Betas'
+    source_ref:
+      path: course-content/courses/juan-leon-phs-620-teaching-learning-seminar/sources/course/PHS
+        620 Syllabus 2025.doc
+      locator: table 4 row 12 column 3
+  - value: Conduct Usability Testing (Alpha)
+    source_ref:
+      path: course-content/courses/juan-leon-phs-620-teaching-learning-seminar/sources/course/PHS
+        620 Syllabus 2025.doc
+      locator: table 4 row 12 column 4
+  - value: 5-min Feedback (Mod 12)
+    source_ref:
+      path: course-content/courses/juan-leon-phs-620-teaching-learning-seminar/sources/course/PHS
+        620 Syllabus 2025.doc
+      locator: table 4 row 12 column 5
+  source_bucket_suggestions:
+  - value: discussion-prompts
+    source_ref:
+      path: course-content/courses/juan-leon-phs-620-teaching-learning-seminar/sources/course/PHS
+        620 Syllabus 2025.doc
+      locator: table 4 row 12 column 1
+  - value: readings
+    source_ref:
+      path: course-content/courses/juan-leon-phs-620-teaching-learning-seminar/sources/course/PHS
+        620 Syllabus 2025.doc
+      locator: table 4 row 12 column 2
+  - value: lecture
+    source_ref:
+      path: course-content/courses/juan-leon-phs-620-teaching-learning-seminar/sources/course/PHS
+        620 Syllabus 2025.doc
+      locator: table 4 row 12 column 3
+  - value: assignments
+    source_ref:
+      path: course-content/courses/juan-leon-phs-620-teaching-learning-seminar/sources/course/PHS
+        620 Syllabus 2025.doc
+      locator: table 4 row 12 column 4
+  - value: assessments
+    source_ref:
+      path: course-content/courses/juan-leon-phs-620-teaching-learning-seminar/sources/course/PHS
+        620 Syllabus 2025.doc
+      locator: table 4 row 12 column 5
+  source_refs:
+  - path: course-content/courses/juan-leon-phs-620-teaching-learning-seminar/sources/course/PHS
+      620 Syllabus 2025.doc
+    locator: table 4 row 12
+- module_id: module-13
+  status: proposed
+  proposed_slug:
+    value: module-13-project-support-forum-deploying-betas-no-new-readings
+    source_ref:
+      path: course-content/courses/juan-leon-phs-620-teaching-learning-seminar/sources/course/PHS
+        620 Syllabus 2025.doc
+      locator: table 4 row 13
+  slug_status: synthesized_requires_review
+  slug_review_note:
+    value: Deterministic slug synthesized from the syllabus row; operator review is
+      required before any B-2 rename.
+    source_ref:
+      path: course-content/courses/juan-leon-phs-620-teaching-learning-seminar/sources/course/PHS
+        620 Syllabus 2025.doc
+      locator: table 4 row 13
+  title:
+    value: 'Project Support Forum: Deploying Betas'
+    source_ref:
+      path: course-content/courses/juan-leon-phs-620-teaching-learning-seminar/sources/course/PHS
+        620 Syllabus 2025.doc
+      locator: table 4 row 13 column 1
+  topics:
+  - value: 'Project Support Forum: Deploying Betas'
+    source_ref:
+      path: course-content/courses/juan-leon-phs-620-teaching-learning-seminar/sources/course/PHS
+        620 Syllabus 2025.doc
+      locator: table 4 row 13 column 1
+  - value: No New Readings (M13)
+    source_ref:
+      path: course-content/courses/juan-leon-phs-620-teaching-learning-seminar/sources/course/PHS
+        620 Syllabus 2025.doc
+      locator: table 4 row 13 column 2
+  - value: 'Round Table [live]: Project Performance and Validation'
+    source_ref:
+      path: course-content/courses/juan-leon-phs-620-teaching-learning-seminar/sources/course/PHS
+        620 Syllabus 2025.doc
+      locator: table 4 row 13 column 3
+  - value: Capture Project Performance Data (Beta)
+    source_ref:
+      path: course-content/courses/juan-leon-phs-620-teaching-learning-seminar/sources/course/PHS
+        620 Syllabus 2025.doc
+      locator: table 4 row 13 column 4
+  - value: 5-min Feedback (Mod 13)
+    source_ref:
+      path: course-content/courses/juan-leon-phs-620-teaching-learning-seminar/sources/course/PHS
+        620 Syllabus 2025.doc
+      locator: table 4 row 13 column 5
+  source_bucket_suggestions:
+  - value: discussion-prompts
+    source_ref:
+      path: course-content/courses/juan-leon-phs-620-teaching-learning-seminar/sources/course/PHS
+        620 Syllabus 2025.doc
+      locator: table 4 row 13 column 1
+  - value: readings
+    source_ref:
+      path: course-content/courses/juan-leon-phs-620-teaching-learning-seminar/sources/course/PHS
+        620 Syllabus 2025.doc
+      locator: table 4 row 13 column 2
+  - value: lecture
+    source_ref:
+      path: course-content/courses/juan-leon-phs-620-teaching-learning-seminar/sources/course/PHS
+        620 Syllabus 2025.doc
+      locator: table 4 row 13 column 3
+  - value: assignments
+    source_ref:
+      path: course-content/courses/juan-leon-phs-620-teaching-learning-seminar/sources/course/PHS
+        620 Syllabus 2025.doc
+      locator: table 4 row 13 column 4
+  - value: assessments
+    source_ref:
+      path: course-content/courses/juan-leon-phs-620-teaching-learning-seminar/sources/course/PHS
+        620 Syllabus 2025.doc
+      locator: table 4 row 13 column 5
+  source_refs:
+  - path: course-content/courses/juan-leon-phs-620-teaching-learning-seminar/sources/course/PHS
+      620 Syllabus 2025.doc
+    locator: table 4 row 13
+- module_id: module-14
+  status: proposed
+  proposed_slug:
+    value: module-14-project-support-forum-validation-no-new-readings-m14
+    source_ref:
+      path: course-content/courses/juan-leon-phs-620-teaching-learning-seminar/sources/course/PHS
+        620 Syllabus 2025.doc
+      locator: table 4 row 14
+  slug_status: synthesized_requires_review
+  slug_review_note:
+    value: Deterministic slug synthesized from the syllabus row; operator review is
+      required before any B-2 rename.
+    source_ref:
+      path: course-content/courses/juan-leon-phs-620-teaching-learning-seminar/sources/course/PHS
+        620 Syllabus 2025.doc
+      locator: table 4 row 14
+  title:
+    value: 'Project Support Forum: Validation'
+    source_ref:
+      path: course-content/courses/juan-leon-phs-620-teaching-learning-seminar/sources/course/PHS
+        620 Syllabus 2025.doc
+      locator: table 4 row 14 column 1
+  topics:
+  - value: 'Project Support Forum: Validation'
+    source_ref:
+      path: course-content/courses/juan-leon-phs-620-teaching-learning-seminar/sources/course/PHS
+        620 Syllabus 2025.doc
+      locator: table 4 row 14 column 1
+  - value: No New Readings (M14)
+    source_ref:
+      path: course-content/courses/juan-leon-phs-620-teaching-learning-seminar/sources/course/PHS
+        620 Syllabus 2025.doc
+      locator: table 4 row 14 column 2
+  - value: 'Round Table [live]: Design, Outcomes, and the ''Real World'''
+    source_ref:
+      path: course-content/courses/juan-leon-phs-620-teaching-learning-seminar/sources/course/PHS
+        620 Syllabus 2025.doc
+      locator: table 4 row 14 column 3
+  - value: Capture Project Validation Data
+    source_ref:
+      path: course-content/courses/juan-leon-phs-620-teaching-learning-seminar/sources/course/PHS
+        620 Syllabus 2025.doc
+      locator: table 4 row 14 column 4
+  - value: 5-min Feedback (Mod 14)
+    source_ref:
+      path: course-content/courses/juan-leon-phs-620-teaching-learning-seminar/sources/course/PHS
+        620 Syllabus 2025.doc
+      locator: table 4 row 14 column 5
+  source_bucket_suggestions:
+  - value: discussion-prompts
+    source_ref:
+      path: course-content/courses/juan-leon-phs-620-teaching-learning-seminar/sources/course/PHS
+        620 Syllabus 2025.doc
+      locator: table 4 row 14 column 1
+  - value: readings
+    source_ref:
+      path: course-content/courses/juan-leon-phs-620-teaching-learning-seminar/sources/course/PHS
+        620 Syllabus 2025.doc
+      locator: table 4 row 14 column 2
+  - value: lecture
+    source_ref:
+      path: course-content/courses/juan-leon-phs-620-teaching-learning-seminar/sources/course/PHS
+        620 Syllabus 2025.doc
+      locator: table 4 row 14 column 3
+  - value: assignments
+    source_ref:
+      path: course-content/courses/juan-leon-phs-620-teaching-learning-seminar/sources/course/PHS
+        620 Syllabus 2025.doc
+      locator: table 4 row 14 column 4
+  - value: assessments
+    source_ref:
+      path: course-content/courses/juan-leon-phs-620-teaching-learning-seminar/sources/course/PHS
+        620 Syllabus 2025.doc
+      locator: table 4 row 14 column 5
+  source_refs:
+  - path: course-content/courses/juan-leon-phs-620-teaching-learning-seminar/sources/course/PHS
+      620 Syllabus 2025.doc
+    locator: table 4 row 14
+- module_id: module-15
+  status: proposed
+  proposed_slug:
+    value: module-15-reflection-on-learning-no-new-readings-m15-no
+    source_ref:
+      path: course-content/courses/juan-leon-phs-620-teaching-learning-seminar/sources/course/PHS
+        620 Syllabus 2025.doc
+      locator: table 4 row 15
+  slug_status: synthesized_requires_review
+  slug_review_note:
+    value: Deterministic slug synthesized from the syllabus row; operator review is
+      required before any B-2 rename.
+    source_ref:
+      path: course-content/courses/juan-leon-phs-620-teaching-learning-seminar/sources/course/PHS
+        620 Syllabus 2025.doc
+      locator: table 4 row 15
+  title:
+    value: Reflection on Learning
+    source_ref:
+      path: course-content/courses/juan-leon-phs-620-teaching-learning-seminar/sources/course/PHS
+        620 Syllabus 2025.doc
+      locator: table 4 row 15 column 1
+  topics:
+  - value: Reflection on Learning
+    source_ref:
+      path: course-content/courses/juan-leon-phs-620-teaching-learning-seminar/sources/course/PHS
+        620 Syllabus 2025.doc
+      locator: table 4 row 15 column 1
+  - value: No New Readings (M15)
+    source_ref:
+      path: course-content/courses/juan-leon-phs-620-teaching-learning-seminar/sources/course/PHS
+        620 Syllabus 2025.doc
+      locator: table 4 row 15 column 2
+  - value: No New Presentations (M15)
+    source_ref:
+      path: course-content/courses/juan-leon-phs-620-teaching-learning-seminar/sources/course/PHS
+        620 Syllabus 2025.doc
+      locator: table 4 row 15 column 3
+  - value: Schedule and Attend Concluding Consult
+    source_ref:
+      path: course-content/courses/juan-leon-phs-620-teaching-learning-seminar/sources/course/PHS
+        620 Syllabus 2025.doc
+      locator: table 4 row 15 column 4
+  - value: 5-min Feedback (Mod 15)
+    source_ref:
+      path: course-content/courses/juan-leon-phs-620-teaching-learning-seminar/sources/course/PHS
+        620 Syllabus 2025.doc
+      locator: table 4 row 15 column 5
+  source_bucket_suggestions:
+  - value: discussion-prompts
+    source_ref:
+      path: course-content/courses/juan-leon-phs-620-teaching-learning-seminar/sources/course/PHS
+        620 Syllabus 2025.doc
+      locator: table 4 row 15 column 1
+  - value: readings
+    source_ref:
+      path: course-content/courses/juan-leon-phs-620-teaching-learning-seminar/sources/course/PHS
+        620 Syllabus 2025.doc
+      locator: table 4 row 15 column 2
+  - value: lecture
+    source_ref:
+      path: course-content/courses/juan-leon-phs-620-teaching-learning-seminar/sources/course/PHS
+        620 Syllabus 2025.doc
+      locator: table 4 row 15 column 3
+  - value: assignments
+    source_ref:
+      path: course-content/courses/juan-leon-phs-620-teaching-learning-seminar/sources/course/PHS
+        620 Syllabus 2025.doc
+      locator: table 4 row 15 column 4
+  - value: assessments
+    source_ref:
+      path: course-content/courses/juan-leon-phs-620-teaching-learning-seminar/sources/course/PHS
+        620 Syllabus 2025.doc
+      locator: table 4 row 15 column 5
+  source_refs:
+  - path: course-content/courses/juan-leon-phs-620-teaching-learning-seminar/sources/course/PHS
+      620 Syllabus 2025.doc
+    locator: table 4 row 15
+gaps: []

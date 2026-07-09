@@ -1,0 +1,39 @@
+{
+  "card": {
+    "active_node_id": "09",
+    "card_id": "9c57b131-8257-4c9d-84fd-b5ed81d9cf9d",
+    "created_at": "2026-07-09T05:15:59.924312Z",
+    "decision_card_digest": "0000000000000000000000000000000000000000000000000000000000000000",
+    "gate_focus": "motion_clip_approval",
+    "gate_id": "G3",
+    "meta": {
+      "affected_nodes": [
+        "09"
+      ],
+      "cache_state": "mixed",
+      "override_trail": []
+    },
+    "operator_prompt": "Approve, edit, or reject the in-flight package.",
+    "pending_nodes": [
+      "10",
+      "11",
+      "11-gate",
+      "11B",
+      "11B-gate",
+      "12",
+      "13",
+      "14",
+      "14.5",
+      "15",
+      "07W"
+    ],
+    "progress_percent": 50.0,
+    "schema_version": "v1",
+    "trial_id": "1bd08699-614d-4412-ad52-bbe6edb1d6c5",
+    "verb": "approve"
+  },
+  "checkpoint_path": "C:/Users/juanl/Documents/GitHub/course-DEV-IDE-with-AGENTS-hybrid/state/config/runs/1bd08699-614d-4412-ad52-bbe6edb1d6c5/checkpoint.json",
+  "digest": "6e0553cceb6f348b752708647fd26b08724edf2f9708991c8c39aecbc49e91ce",
+  "issued_at": "2026-07-09T05:15:59.924312Z",
+  "server_nonce": "ae9e3d66941f4a79949a5bc63e0eba7f"
+}

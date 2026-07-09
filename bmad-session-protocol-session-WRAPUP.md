@@ -14,7 +14,7 @@ The startup protocol **reads** certain files; the wrapup protocol **writes** the
 | `docs/project-context.md` | Step 1 | Step 5 | Current state, key decisions, architecture summary. |
 | `docs/agent-environment.md` | Step 1 | Step 5 | MCP / API / tool / skill inventory for agents. |
 | `bmm-workflow-status.yaml` | Step 4 | Step 3 | BMAD phase and workflow transitions. |
-| `sprint-status.yaml` | Step 4 | Step 4a | Epic / story Kanban state. |
+| `sprint-status.yaml` | Step 4 | Step 4a | **Canonical Kanban ledger** — epic/story progression through BMAD workflows. |
 | Guides (user/admin/dev) | Step 4 on-demand | Step 9 | Large stable docs — updated only when content changes. |
 | `reports/dev-coherence/<ts>/` | — | Step 0 (Class S only) | Audit trail for Cora-orchestrated sweeps. |
 
@@ -89,12 +89,15 @@ Update `_bmad-output/implementation-artifacts/bmm-workflow-status.yaml` only for
 
 ### 4a. Update sprint status
 
-**Skip if `sprint-status.yaml` was not edited this session.**
+**Canonical Kanban ledger:** `_bmad-output/implementation-artifacts/sprint-status.yaml` is the single most responsible doc for tracking progression through BMAD workflows (epic/story status). Wrapup must keep it honest.
 
-Otherwise: update Epic and story Kanban state, then run:
-- `.venv\Scripts\python.exe -m pytest -q tests/test_sprint_status_yaml.py`
+**Skip only if no epic/story Kanban state changed this session** (no story advanced, completed, blocked, deferred, or newly filed; no epic status change). Do **not** skip merely because the file was left untouched during the session — if BMAD work progressed and the ledger was not updated yet, update it now.
 
-Do not close the session with a modified sprint ledger unless that targeted test passes or the failure is explicitly recorded as an unresolved blocker.
+Otherwise (or when catching up a missed mid-session edit):
+1. Update Epic and story Kanban state in `sprint-status.yaml` to match what actually closed or advanced this session.
+2. Run: `.venv\Scripts\python.exe -m pytest -q tests/test_sprint_status_yaml.py`
+
+Do not close the session with a modified sprint ledger unless that targeted test passes or the failure is explicitly recorded as an unresolved blocker. For Class S sessions that closed stories, prefer updating `sprint-status.yaml` before `next-session-start-here.md` (Step 7) so the hot-start cache cannot outrun the Kanban ledger.
 
 ### 4b. Interaction testing
 
@@ -175,7 +178,7 @@ Rules: do not stage unrelated modifications; do not exclude same-session collabo
 
 ### 11. Verify artifact completeness + class-drift self-check
 
-Cross-check that every artifact in Step 8's checklist is current. Minimum verification: story artifact, sprint-status, workflow-status, project-context, next-session-start-here.
+Cross-check that every artifact in Step 8's checklist is current. Minimum verification: story artifact, **`sprint-status.yaml` (must reflect every epic/story status change from this session — re-run Step 4a if it does not)**, workflow-status, project-context, next-session-start-here.
 
 **Class-drift self-check:** does the declared session class still match the actual diff?
 - Declared Class D and `git diff` shows app/scripts/skills/ Python edits → upgrade to Class S; re-engage missed steps.

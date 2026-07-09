@@ -148,7 +148,7 @@ For the **APP agent team & skills catalog** and **BMAD glossary**, see [`docs/ag
 
 Always read (small, frequently changing):
 - `_bmad-output/implementation-artifacts/bmm-workflow-status.yaml`
-- `_bmad-output/implementation-artifacts/sprint-status.yaml`
+- `_bmad-output/implementation-artifacts/sprint-status.yaml` — **canonical Kanban ledger** for epic/story progression through BMAD workflows. Treat it as the authoritative "where are we?" signal for story status; if it disagrees with a story file or hot-start note, reconcile at WRAPUP Step 4a (do not let the hot-start cache outrun this ledger).
 
 Scan for relevance (read listing or headers, not full content):
 - `_bmad-output/planning-artifacts/`

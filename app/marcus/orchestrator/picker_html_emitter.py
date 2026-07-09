@@ -94,11 +94,18 @@ def _validate_run_tag(run_tag: str) -> str:
 
 
 def build_selection_code(run_tag: str, picks: dict[str, str]) -> str:
-    """Python TWIN of the JS ``buildSelectionCode`` (parity/anti-drift only).
+    """Python TWIN of the JS ``buildSelectionCode`` — parity anchor AND the
+    ceremony-side minting path (S2 F-506(b)).
 
     Emits the canonical ``SGP-{run_tag}-A:{slug}[ B:{slug}]`` code for a
-    ``{"A": slug, "B": slug?}`` map. Slot A is required. This twin exists so the
-    golden fixture and the embedded JS encoder can be asserted byte-identical.
+    ``{"A": slug, "B": slug?}`` map. Slot A is required. Originally
+    parity/anti-drift only (the golden fixture and the embedded JS encoder are
+    asserted byte-identical against it); since S2 it is ALSO the production
+    minting path for the accept-recommended / inline-text-list /
+    reuse-last-pick commit arms in ``marcus_spoc`` — those arms pre-fill the
+    paste with this twin's output and flow through the same
+    decode -> echo -> confirm -> commit path as a hand-pasted code. The
+    grammar itself stays FROZEN (:data:`SELECTION_CODE_GRAMMAR`).
     """
     _validate_run_tag(run_tag)
     slot_a = str(picks.get("A") or "").strip()

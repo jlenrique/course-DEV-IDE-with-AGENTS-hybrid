@@ -1,0 +1,9 @@
+{
+  "leg": 1,
+  "phase": "recover-after-brief-unmatched",
+  "trial_id": "a18c2a86-bbdb-48a2-ba63-fb1a653bfaf9",
+  "recover_status": "paused-at-error",
+  "paused_gate": null,
+  "paused_error_tag": "gamma.export.brief-unmatched",
+  "elapsed_s": 345.945656
+}

@@ -33,6 +33,8 @@ from app.models.state.model_resolution_entry import ModelResolutionEntry
 from app.models.state.run_state import RunState
 from app.specialists.workbook_producer import _act as wb_act
 
+from ._run_fixture import collateral_present, section, write_run_json
+
 REPO_ROOT = Path(__file__).resolve().parents[3]
 MANIFEST_PATH = REPO_ROOT / "state" / "config" / "pipeline-manifest.yaml"
 
@@ -79,7 +81,67 @@ _FIXTURE_SEGMENTS = [
 ]
 
 
-def _make_fixture_run_dir(root: Path) -> Path:
+# Irene's authored collateral blueprint for the fixture run (S7: the producer
+# consumes THIS as the section/objective/depth authority; no enrichment overlay
+# on this fixture, so exercises ride from the collateral sections). Depth-delta
+# prose is distinct from the (numeral-free) narration so the AC-8 superset holds;
+# it carries no symbol numerals so the G1 gate is a non-event.
+_FIXTURE_COLLATERAL = collateral_present(
+    [
+        section(
+            "sec-macro",
+            "obj-macro-trends",
+            title="Macro forces reshaping the operating reality",
+            deferred_depth=(
+                "The system-design reframe deferred off the glance slide: the "
+                "workarounds clinicians invent to survive administrative friction "
+                "are precisely the redesignable innovation surface."
+            ),
+            narrative_intent=(
+                "Walk the reader from structural reality to the reframe that "
+                "administrative friction is a targetable innovation opportunity."
+            ),
+            exercises=[
+                {
+                    "exercise_id": "ex-macro-1",
+                    "bloom_level": "analyze",
+                    "prompt_intent": "Analyze administrative friction as a systems signal.",
+                    "answer_key_source_ref": "src-slide-02",
+                },
+                {
+                    "exercise_id": "ex-macro-2",
+                    "bloom_level": "understand",
+                    "prompt_intent": "Explain why burnout is a system-design problem.",
+                    "answer_key_source_ref": "src-slide-02",
+                },
+            ],
+            deferred_from_slide="slide-02",
+        ),
+        section(
+            "sec-change",
+            "obj-root-cause",
+            title="The case for change (root-cause of failure)",
+            deferred_depth=(
+                "Why the leadership gap is a root-cause of systemic failure rather "
+                "than a motivation deficit: adoption of clinical tooling outruns the "
+                "governance training that would make it safe."
+            ),
+            narrative_intent="Frame each failure as a structural root-cause analysis.",
+            exercises=[
+                {
+                    "exercise_id": "ex-change-1",
+                    "bloom_level": "evaluate",
+                    "prompt_intent": "Evaluate a systemic failure via root-cause analysis.",
+                    "answer_key_source_ref": "src-slide-05",
+                }
+            ],
+            deferred_from_slide="slide-05",
+        ),
+    ]
+)
+
+
+def _make_fixture_run_dir(root: Path, *, with_collateral: bool = True) -> Path:
     run_dir = root / "run"
     (run_dir / "exports").mkdir(parents=True, exist_ok=True)
     (run_dir / "bundle").mkdir(parents=True, exist_ok=True)
@@ -88,13 +150,32 @@ def _make_fixture_run_dir(root: Path) -> Path:
         encoding="utf-8",
     )
     (run_dir / "bundle" / "extracted.md").write_text(_FIXTURE_CORPUS, encoding="utf-8")
+    if with_collateral:
+        # S7: seed the run.json the producer reads the collateral blueprint from.
+        write_run_json(
+            run_dir,
+            collateral=_FIXTURE_COLLATERAL,
+            plan_units=[{"unit_id": "u-intrapreneur-01"}],
+            lesson_summary="intrapreneur macro forces case for change",
+        )
     return run_dir
 
 
 @pytest.fixture
 def output_root() -> Iterator[Path]:
-    """Repo-contained output root (WorkbookProducer requires under-repo output)."""
-    target = REPO_ROOT / "_bmad-output" / "artifacts" / "workbooks-test" / f"_t-{uuid.uuid4().hex}"
+    """Repo-contained output root (WorkbookProducer requires under-repo output).
+
+    Distinct parent from the shared ``workbooks-test`` dir (which the pre-existing
+    tejal producer tests write their fixed ``…@3.docx`` stem into) so this file's
+    mkdir/rmtree churn cannot aggravate that pre-existing shared-output-root race.
+    """
+    target = (
+        REPO_ROOT
+        / "_bmad-output"
+        / "artifacts"
+        / "workbooks-test-s7"
+        / f"_t-{uuid.uuid4().hex}"
+    )
     target.mkdir(parents=True, exist_ok=True)
     try:
         yield target

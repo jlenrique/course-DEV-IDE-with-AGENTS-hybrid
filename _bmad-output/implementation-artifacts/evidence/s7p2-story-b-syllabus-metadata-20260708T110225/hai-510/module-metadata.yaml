@@ -1,0 +1,201 @@
+schema_version: '0.1'
+course_id: aziz-nazha-hai-510-generative-ai-in-healthcare
+source_path: course-content/courses/aziz-nazha-hai-510-generative-ai-in-healthcare/sources/course/Syllabus_Generative_AI_in_Healthcare.docx
+extraction_status: verified
+course_title:
+  value: Generative AI in Healthcare
+  source_ref:
+    path: course-content/courses/aziz-nazha-hai-510-generative-ai-in-healthcare/sources/course/Syllabus_Generative_AI_in_Healthcare.docx
+    locator: paragraph 2
+learner_profile:
+  value: Health sciences & research faculty; clinical professionals & educators; program
+    directors & healthcare leaders; health informatics leaders
+  source_ref:
+    path: course-content/courses/aziz-nazha-hai-510-generative-ai-in-healthcare/sources/course/Syllabus_Generative_AI_in_Healthcare.docx
+    locator: paragraph 9
+course_learning_objectives:
+- objective_id: lo-001
+  text: Differentiate the core paradigms of AI, machine learning, and deep learning,
+    and explain how generative models differ from discriminative models.
+  source_ref:
+    path: course-content/courses/aziz-nazha-hai-510-generative-ai-in-healthcare/sources/course/Syllabus_Generative_AI_in_Healthcare.docx
+    locator: paragraph 19
+- objective_id: lo-002
+  text: Describe how large language models work, including transformer architecture,
+    self-attention, positional encoding, tokenization, embeddings, and the role of
+    RLHF and fine-tuning.
+  source_ref:
+    path: course-content/courses/aziz-nazha-hai-510-generative-ai-in-healthcare/sources/course/Syllabus_Generative_AI_in_Healthcare.docx
+    locator: paragraph 20
+- objective_id: lo-003
+  text: Apply structured prompt-engineering techniques to elicit accurate, reliable
+    outputs from generative AI tools in healthcare and education contexts.
+  source_ref:
+    path: course-content/courses/aziz-nazha-hai-510-generative-ai-in-healthcare/sources/course/Syllabus_Generative_AI_in_Healthcare.docx
+    locator: paragraph 21
+- objective_id: lo-004
+  text: Evaluate generative AI applications across clinical practice, biology, and
+    drug discovery, and judge their real-world feasibility and limitations.
+  source_ref:
+    path: course-content/courses/aziz-nazha-hai-510-generative-ai-in-healthcare/sources/course/Syllabus_Generative_AI_in_Healthcare.docx
+    locator: paragraph 22
+- objective_id: lo-005
+  text: Identify and mitigate ethical and safety risks—hallucination, bias and fairness,
+    data privacy, HIPAA and FDA considerations, and adversarial attacks such as jailbreaking
+    and data poisoning.
+  source_ref:
+    path: course-content/courses/aziz-nazha-hai-510-generative-ai-in-healthcare/sources/course/Syllabus_Generative_AI_in_Healthcare.docx
+    locator: paragraph 23
+- objective_id: lo-006
+  text: Design and prototype an agentic, multi-step AI system for a clinical, research,
+    or educational workflow.
+  source_ref:
+    path: course-content/courses/aziz-nazha-hai-510-generative-ai-in-healthcare/sources/course/Syllabus_Generative_AI_in_Healthcare.docx
+    locator: paragraph 24
+modules:
+- module_id: module-01-foundations-of-ai-in-healthcare
+  status: proposed
+  proposed_slug:
+    value: module-01-foundations-of-ai-in-healthcare
+    source_ref:
+      path: course-content/courses/aziz-nazha-hai-510-generative-ai-in-healthcare/sources/course/Syllabus_Generative_AI_in_Healthcare.docx
+      locator: table 0 row 1
+  slug_status: existing_aligned
+  slug_review_note:
+    value: Existing module id retained; syllabus row provides aligned title/topic
+      evidence.
+    source_ref:
+      path: course-content/courses/aziz-nazha-hai-510-generative-ai-in-healthcare/sources/course/Syllabus_Generative_AI_in_Healthcare.docx
+      locator: table 0 row 1
+  title:
+    value: Foundations of AI in Healthcare
+    source_ref:
+      path: course-content/courses/aziz-nazha-hai-510-generative-ai-in-healthcare/sources/course/Syllabus_Generative_AI_in_Healthcare.docx
+      locator: table 0 row 1 theme
+  topics:
+  - value: 'AI paradigms: supervised, unsupervised, reinforcement, and semi-supervised
+      learning Predictive vs.'
+    source_ref:
+      path: course-content/courses/aziz-nazha-hai-510-generative-ai-in-healthcare/sources/course/Syllabus_Generative_AI_in_Healthcare.docx
+      locator: table 0 row 1 topics
+  - value: generative AI; discriminative vs.
+    source_ref:
+      path: course-content/courses/aziz-nazha-hai-510-generative-ai-in-healthcare/sources/course/Syllabus_Generative_AI_in_Healthcare.docx
+      locator: table 0 row 1 topics
+  - value: 'generative models LLM basics and the current model landscape Lab: Exploring
+      and comparing generative AI tools.'
+    source_ref:
+      path: course-content/courses/aziz-nazha-hai-510-generative-ai-in-healthcare/sources/course/Syllabus_Generative_AI_in_Healthcare.docx
+      locator: table 0 row 1 topics
+  source_bucket_suggestions:
+  - value: lab
+    source_ref:
+      path: course-content/courses/aziz-nazha-hai-510-generative-ai-in-healthcare/sources/course/Syllabus_Generative_AI_in_Healthcare.docx
+      locator: table 0 row 1 column 2
+  source_refs:
+  - path: course-content/courses/aziz-nazha-hai-510-generative-ai-in-healthcare/sources/course/Syllabus_Generative_AI_in_Healthcare.docx
+    locator: table 0 row 1
+- module_id: module-02-how-llms-work-and-prompt-engineering
+  status: proposed
+  proposed_slug:
+    value: module-02-how-llms-work-and-prompt-engineering
+    source_ref:
+      path: course-content/courses/aziz-nazha-hai-510-generative-ai-in-healthcare/sources/course/Syllabus_Generative_AI_in_Healthcare.docx
+      locator: table 0 row 2
+  slug_status: existing_aligned
+  slug_review_note:
+    value: Existing module id retained; syllabus row provides aligned title/topic
+      evidence.
+    source_ref:
+      path: course-content/courses/aziz-nazha-hai-510-generative-ai-in-healthcare/sources/course/Syllabus_Generative_AI_in_Healthcare.docx
+      locator: table 0 row 2
+  title:
+    value: How LLMs Work & Prompt Engineering
+    source_ref:
+      path: course-content/courses/aziz-nazha-hai-510-generative-ai-in-healthcare/sources/course/Syllabus_Generative_AI_in_Healthcare.docx
+      locator: table 0 row 2 theme
+  topics:
+  - value: 'Deep-learning foundations: CNNs and RNNs Transformer architecture, self-attention,
+      and positional encoding Tokenization, embeddings, RLHF, and fine-tuning Lab:
+      Structured prompt engineering for healthcare tasks.'
+    source_ref:
+      path: course-content/courses/aziz-nazha-hai-510-generative-ai-in-healthcare/sources/course/Syllabus_Generative_AI_in_Healthcare.docx
+      locator: table 0 row 2 topics
+  source_bucket_suggestions:
+  - value: lab
+    source_ref:
+      path: course-content/courses/aziz-nazha-hai-510-generative-ai-in-healthcare/sources/course/Syllabus_Generative_AI_in_Healthcare.docx
+      locator: table 0 row 2 column 2
+  source_refs:
+  - path: course-content/courses/aziz-nazha-hai-510-generative-ai-in-healthcare/sources/course/Syllabus_Generative_AI_in_Healthcare.docx
+    locator: table 0 row 2
+- module_id: module-03-ethics-and-challenges
+  status: proposed
+  proposed_slug:
+    value: module-03-ethics-and-challenges
+    source_ref:
+      path: course-content/courses/aziz-nazha-hai-510-generative-ai-in-healthcare/sources/course/Syllabus_Generative_AI_in_Healthcare.docx
+      locator: table 0 row 3
+  slug_status: existing_aligned
+  slug_review_note:
+    value: Existing module id retained; syllabus row provides aligned title/topic
+      evidence.
+    source_ref:
+      path: course-content/courses/aziz-nazha-hai-510-generative-ai-in-healthcare/sources/course/Syllabus_Generative_AI_in_Healthcare.docx
+      locator: table 0 row 3
+  title:
+    value: Ethics & Challenges
+    source_ref:
+      path: course-content/courses/aziz-nazha-hai-510-generative-ai-in-healthcare/sources/course/Syllabus_Generative_AI_in_Healthcare.docx
+      locator: table 0 row 3 theme
+  topics:
+  - value: 'Hallucination and its consequences in clinical settings Bias and fairness;
+      data privacy and security HIPAA, FDA guidance, and regulatory compliance Adversarial
+      attacks: jailbreaking, data poisoning, model inversion Lab: Auditing AI outputs
+      for accuracy, bias, and safety.'
+    source_ref:
+      path: course-content/courses/aziz-nazha-hai-510-generative-ai-in-healthcare/sources/course/Syllabus_Generative_AI_in_Healthcare.docx
+      locator: table 0 row 3 topics
+  source_bucket_suggestions:
+  - value: lab
+    source_ref:
+      path: course-content/courses/aziz-nazha-hai-510-generative-ai-in-healthcare/sources/course/Syllabus_Generative_AI_in_Healthcare.docx
+      locator: table 0 row 3 column 2
+  source_refs:
+  - path: course-content/courses/aziz-nazha-hai-510-generative-ai-in-healthcare/sources/course/Syllabus_Generative_AI_in_Healthcare.docx
+    locator: table 0 row 3
+- module_id: module-04-agentic-ai
+  status: proposed
+  proposed_slug:
+    value: module-04-agentic-ai
+    source_ref:
+      path: course-content/courses/aziz-nazha-hai-510-generative-ai-in-healthcare/sources/course/Syllabus_Generative_AI_in_Healthcare.docx
+      locator: table 0 row 4
+  slug_status: existing_aligned
+  slug_review_note:
+    value: Existing module id retained; syllabus row provides aligned title/topic
+      evidence.
+    source_ref:
+      path: course-content/courses/aziz-nazha-hai-510-generative-ai-in-healthcare/sources/course/Syllabus_Generative_AI_in_Healthcare.docx
+      locator: table 0 row 4
+  title:
+    value: Agentic AI
+    source_ref:
+      path: course-content/courses/aziz-nazha-hai-510-generative-ai-in-healthcare/sources/course/Syllabus_Generative_AI_in_Healthcare.docx
+      locator: table 0 row 4 theme
+  topics:
+  - value: 'Autonomous systems and AI agents Multi-agent design and orchestration
+      Clinical and educational workflow automation Lab: Building and testing a multi-agent
+      workflow.'
+    source_ref:
+      path: course-content/courses/aziz-nazha-hai-510-generative-ai-in-healthcare/sources/course/Syllabus_Generative_AI_in_Healthcare.docx
+      locator: table 0 row 4 topics
+  source_bucket_suggestions:
+  - value: lab
+    source_ref:
+      path: course-content/courses/aziz-nazha-hai-510-generative-ai-in-healthcare/sources/course/Syllabus_Generative_AI_in_Healthcare.docx
+      locator: table 0 row 4 column 2
+  source_refs:
+  - path: course-content/courses/aziz-nazha-hai-510-generative-ai-in-healthcare/sources/course/Syllabus_Generative_AI_in_Healthcare.docx
+    locator: table 0 row 4
+gaps: []

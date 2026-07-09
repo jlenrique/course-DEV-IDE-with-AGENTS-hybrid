@@ -157,3 +157,7 @@ Validation: 244 passed (gary + audit + marcus integration), 1 skipped; lockstep 
 2. The title-match helper + normalization (the fix's hinge; test against real `gary_A` filenames).
 3. The fail-loud raises (DECISION 2) — family membership + recoverability.
 4. The behavior pin (cover-shift export → correct title-keyed mapping) — the regression that proves the fix.
+
+## Amendment 2026-07-07
+
+- `normalize_title` apostrophe-family deletion-joining amendment (dual-pass pinned `_TITLE_APOSTROPHE_FAMILY`; live pair "Technology's Promise..." <-> "Technologys-Promise-..." from trial a18c2a86) ratified at party record §10, `_bmad-output/planning-artifacts/canonical-production-conversation-arc-greenlight-party-record-2026-07-06.md`.

@@ -1,0 +1,10 @@
+terminal_gate: G4A
+silent_bypass_events: 0
+specialist_roster_count: 17
+pack_hash_binding: e0e52b902cb6ed9cac41b6083c343cc7a8a879fcddab48bc42387cf8bbb468db
+component_selection:
+  deck: true
+  motion: true
+  workbook: true
+conversation_chain_digest: 90f35e7b0bc9142cedc52cea9e31edefc4ec3774fc0b0e1278880402363e9de6
+langsmith_trace_id: 1bd08699-614d-4412-ad52-bbe6edb1d6c5

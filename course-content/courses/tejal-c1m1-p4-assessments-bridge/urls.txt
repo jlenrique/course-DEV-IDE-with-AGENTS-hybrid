@@ -1,0 +1,6 @@
+# URL / provenance list for tejal-c1m1-p4-assessments-bridge
+
+# Parent outline source mentioned in course-content/courses/tejal-c1m1-fresh-outline/source-outline.md:
+https://tjuv-my.sharepoint.com/:w:/r/personal/tun001_jefferson_edu/Documents/Clinical%20Empowerment/HII/APC/Course%201/C1M1%20Innovation%20Mindset.docx
+
+# No additional external HTTP URL appears inside the Part 4 section itself.

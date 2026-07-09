@@ -1,0 +1,9 @@
+[2026-07-07T04:21:52.178905+00:00] composed manifest: node 07 (gary) at index 23
+[2026-07-07T04:21:52.178905+00:00] copy C:\Users\juanl\Documents\GitHub\course-DEV-IDE-with-AGENTS-hybrid\state\config\runs\4fe6073f-c8e2-4836-bb94-759dc5b97bbf -> C:\Users\juanl\Documents\GitHub\course-DEV-IDE-with-AGENTS-hybrid\state\config\runs\cfe83980-d71d-49cb-8dff-fa403e5d422b
+[2026-07-07T04:21:52.269490+00:00] run.json rewritten: dropped=['gary@07', 'vera@7.5', 'quinn_r@07B']; remaining=['texas@02', 'texas@03', 'irene_pass1@04A', 'research_wiring@04.55', 'cd@4.75', 'irene_pass1@05', 'irene_pass1@05B', 'package_builder@06']
+[2026-07-07T04:21:52.288254+00:00] error-pause.json fabricated: node_index=23 node_id=07 specialist=gary
+[2026-07-07T04:21:52.307086+00:00] directive edited: gamma_settings [{'variant_id': 'A', 'styleguide': 'hil-2026-apc-crossroads-classic'}] -> [{'variant_id': 'A'}]; edit_ok=True
+[2026-07-07T04:21:52.309227+00:00] === LEG1 PREPARE OK — trial2=cfe83980-d71d-49cb-8dff-fa403e5d422b ===
+[2026-07-07T04:22:00.477436+00:00] recover_production_trial(cfe83980-d71d-49cb-8dff-fa403e5d422b) with cap=40 — gary re-enters §07 with a named styleguide-less variant (S4: expect HALT at gamma.styleguide.unbound)
+[2026-07-07T04:22:01.713602+00:00] recover returned: status=paused-at-error paused_gate=None paused_error_tag=gamma.styleguide.unbound
+[2026-07-07T04:22:01.713602+00:00] === LEG1 PHASE2 OK (HALTED as expected) after 1s ===

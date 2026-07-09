@@ -1,0 +1,42 @@
+{
+  "judge": "b",
+  "lane": "armed live-LLM walk (content-armed)",
+  "verdict": "PASS",
+  "trial_id": "26d1dc94-61d4-4dac-8da9-224e6223a95d",
+  "run_dir": "C:\\Users\\juanl\\Documents\\GitHub\\course-DEV-IDE-with-AGENTS-hybrid\\state\\config\\runs\\26d1dc94-61d4-4dac-8da9-224e6223a95d",
+  "receipt_path": "C:\\Users\\juanl\\Documents\\GitHub\\course-DEV-IDE-with-AGENTS-hybrid\\state\\config\\runs\\26d1dc94-61d4-4dac-8da9-224e6223a95d\\g0-enrichment.json",
+  "response_artifact": "C:\\Users\\juanl\\Documents\\GitHub\\course-DEV-IDE-with-AGENTS-hybrid\\state\\config\\runs\\26d1dc94-61d4-4dac-8da9-224e6223a95d\\g0-enrichment-cache\\09312240ebbc1ba771262157bac071b92506fe42b4348b1fc53db8c2e8b9f5c7.json",
+  "resolved_marcus_model": "gpt-5",
+  "enrichment_mode": "live",
+  "receipt_model_id": "marcus",
+  "n_typed_components": 4,
+  "n_provisional_los": 5,
+  "lane_b_pause_sequence": [
+    "G0E",
+    "G0R",
+    "G1"
+  ],
+  "lane_a_pause_sequence": [
+    "G0E",
+    "G0R",
+    "G1"
+  ],
+  "checks": {
+    "1_live_call_dispatched": {
+      "pass": true,
+      "detail": "dispatch_live_fn=True has_live_openai=True resolved_marcus_model='gpt-5' receipt_model_id='marcus' response_artifact_on_disk=True (09312240ebbc1ba771262157bac071b92506fe42b4348b1fc53db8c2e8b9f5c7.json)"
+    },
+    "2_receipt_mode_live": {
+      "pass": true,
+      "detail": "receipt enrichment_mode='live' (expect 'live')"
+    },
+    "3_gate_consumed_live_content": {
+      "pass": true,
+      "detail": "live typed_components=4 provisional_los=5 mode='live' model_id='marcus'"
+    },
+    "4_divergence_guard": {
+      "pass": true,
+      "detail": "lane_b seq=['G0E', 'G0R', 'G1'] lane_a seq=['G0E', 'G0R', 'G1'] carrier_keys_identical=True content_source_delta(only)=True [b_model='marcus' a_model='deterministic-g0-enrichment-offline']"
+    }
+  }
+}

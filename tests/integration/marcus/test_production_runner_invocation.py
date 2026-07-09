@@ -4,6 +4,7 @@ import json
 from pathlib import Path
 from uuid import UUID
 
+import pytest
 import yaml
 
 from app.marcus.orchestrator import production_runner
@@ -11,6 +12,19 @@ from app.models.runtime import ProductionEnvelope, SpecialistContribution
 
 TRIAL_ID = UUID("12345678-1234-4234-8234-123456789abc")
 CORPUS = Path("tests/fixtures/trial_corpus/README.md")
+
+
+@pytest.fixture(autouse=True)
+def _pin_g0_enrichment_off(monkeypatch: pytest.MonkeyPatch) -> None:
+    """Canonical-arc S5-3a — flip-robustness pin (D-migrate-canonical, pin OFF).
+
+    The default-manifest walks here (registration->paused-at-gate transition, trace
+    write, G1 decision-card registration) first-pause at G1 on the dormant path.
+    Pinning ``MARCUS_G0_ENRICHMENT_ACTIVE`` OFF explicitly keeps that true under the
+    3b default flip; the custom-manifest tests are unaffected. Explicit ``"0"``
+    survives the code-default flip.
+    """
+    monkeypatch.setenv("MARCUS_G0_ENRICHMENT_ACTIVE", "0")
 
 
 class _FakeAdapter:

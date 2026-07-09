@@ -1,0 +1,2632 @@
+Date: Wed, 8 Jul 2026 04:02:35 +0000 (UTC)
+Message-ID: <1212431596.75.1783483355412@c0ff4a66ffe3>
+Subject: Exported From Confluence
+MIME-Version: 1.0
+Content-Type: multipart/related; 
+	boundary="----=_Part_74_349580687.1783483355412"
+
+------=_Part_74_349580687.1783483355412
+Content-Type: text/html; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+Content-Location: file:///C:/exported.html
+
+<html xmlns:o=3D'urn:schemas-microsoft-com:office:office'
+      xmlns:w=3D'urn:schemas-microsoft-com:office:word'
+      xmlns:v=3D'urn:schemas-microsoft-com:vml'
+      xmlns=3D'urn:w3-org-ns:HTML'>
+<head>
+    <meta http-equiv=3D"Content-Type" content=3D"text/html; charset=3Dutf-8=
+">
+    <title>Syllabus</title>
+    <!--[if gte mso 9]>
+    <xml>
+        <o:OfficeDocumentSettings>
+            <o:TargetScreenSize>1024x640</o:TargetScreenSize>
+            <o:PixelsPerInch>72</o:PixelsPerInch>
+            <o:AllowPNG/>
+        </o:OfficeDocumentSettings>
+        <w:WordDocument>
+            <w:View>Print</w:View>
+            <w:Zoom>90</w:Zoom>
+            <w:DoNotOptimizeForBrowser/>
+        </w:WordDocument>
+    </xml>
+    <![endif]-->
+    <style>
+                <!--
+        @page Section1 {
+            size: 8.5in 11.0in;
+            margin: 1.0in;
+            mso-header-margin: .5in;
+            mso-footer-margin: .5in;
+            mso-paper-source: 0;
+        }
+
+        table {
+            border: solid 1px;
+            border-collapse: collapse;
+        }
+
+        table td, table th {
+            border: solid 1px;
+            padding: 5px;
+        }
+
+        td {
+            page-break-inside: avoid;
+        }
+
+        tr {
+            page-break-after: avoid;
+        }
+
+        div.Section1 {
+            page: Section1;
+        }
+
+        /* Confluence print stylesheet. Common to all themes for print medi=
+a */
+/* Full of !important until we improve batching for print CSS */
+
+@media print {
+    #main {
+        padding-bottom: 1em !important; /* The default padding of 6em is to=
+o much for printouts */
+    }
+
+    body {
+        font: var(--ds-font-body-small, Arial, Helvetica, FreeSans, sans-se=
+rif);
+    }
+
+    body, #full-height-container, #main, #page, #content, .has-personal-sid=
+ebar #content {
+        background: var(--ds-surface, #fff) !important;
+        color: var(--ds-text, #000) !important;
+        border: 0 !important;
+        width: 100% !important;
+        height: auto !important;
+        min-height: auto !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        display: block !important;
+    }
+
+    a, a:link, a:visited, a:focus, a:hover, a:active {
+        color: var(--ds-text, #000);
+    }
+
+    #content h1,
+    #content h2,
+    #content h3,
+    #content h4,
+    #content h5,
+    #content h6 {
+        page-break-after: avoid;
+    }
+
+    pre {
+        font: var(--ds-font-code, Monaco, "Courier New", monospace);
+    }
+
+    #header,
+    .aui-header-inner,
+    #navigation,
+    #sidebar,
+    .sidebar,
+    #personal-info-sidebar,
+    .ia-fixed-sidebar,
+    .page-actions,
+    .navmenu,
+    .ajs-menu-bar,
+    .noprint,
+    .inline-control-link,
+    .inline-control-link a,
+    a.show-labels-editor,
+    .global-comment-actions,
+    .comment-actions,
+    .quick-comment-container,
+    #addcomment {
+        display: none !important;
+    }
+
+    /* CONF-28544 cannot print multiple pages in IE */
+    #splitter-content {
+        position: relative !important;
+    }
+
+    .comment .date::before {
+        content: none !important; /* remove middot for print view */
+    }
+
+    h1.pagetitle img {
+        height: auto;
+        width: auto;
+    }
+
+    .print-only {
+        display: block;
+    }
+
+    #footer {
+        position: relative !important; /* CONF-17506 Place the footer at en=
+d of the content */
+        margin: 0;
+        padding: 0;
+        background: none;
+        clear: both;
+    }
+
+    #poweredby {
+        border-top: none;
+        background: none;
+    }
+
+    #poweredby li.print-only {
+        display: list-item;
+        font-style: italic;
+    }
+
+    #poweredby li.noprint {
+        display: none;
+    }
+
+    /* no width controls in print */
+    .wiki-content .table-wrap,
+    .wiki-content p,
+    .panel .codeContent,
+    .panel .codeContent pre,
+    .image-wrap {
+        overflow: visible !important;
+    }
+
+    /* TODO - should this work? */
+    #children-section,
+    #comments-section .comment,
+    #comments-section .comment .comment-body,
+    #comments-section .comment .comment-content,
+    #comments-section .comment p {
+        page-break-inside: avoid;
+    }
+
+    #page-children a {
+        text-decoration: none;
+    }
+
+    /**
+     hide twixies
+
+     the specificity here is a hack because print styles
+     are getting loaded before the base styles. */
+    #comments-section.pageSection .section-header,
+    #comments-section.pageSection .section-title,
+    #children-section.pageSection .section-header,
+    #children-section.pageSection .section-title,
+    .children-show-hide {
+        padding-left: 0;
+        margin-left: 0;
+    }
+
+    .children-show-hide.icon {
+        display: none;
+    }
+
+    /* personal sidebar */
+    .has-personal-sidebar #content {
+        margin-right: 0px;
+    }
+
+    .has-personal-sidebar #content .pageSection {
+        margin-right: 0px;
+    }
+
+    .no-print, .no-print * {
+        display: none !important;
+    }
+}
+-->
+    </style>
+</head>
+<body>
+    <h1>Syllabus</h1>
+    <div class=3D"Section1">
+        <div class=3D"table-wrap">
+<table data-table-width=3D"731" data-layout=3D"default" data-local-id=3D"60=
+38c606-f5d8-497d-a939-adf2362c7d77" class=3D"confluenceTable">
+<colgroup>
+<col style=3D"width: 371.0px;">
+<col style=3D"width: 360.0px;">
+</colgroup>
+<tbody>
+<tr>
+<td class=3D"confluenceTd">
+<div class=3D"table-wrap">
+<table data-table-width=3D"960" data-layout=3D"wide" data-local-id=3D"38ea0=
+7a3-d232-44b6-83d1-e36bb97ae14c" class=3D"confluenceTable">
+<colgroup>
+<col style=3D"width: 216.0px;">
+<col style=3D"width: 742.0px;">
+</colgroup>
+<tbody>
+<tr data-local-id=3D"ae0f1fc053f1">
+<td data-local-id=3D"aa86d4a782a4" class=3D"confluenceTd">
+<p local-id=3D"d655f233d1cf"><strong>Course Alpha-Numeric:</strong></p></td=
+>
+<td data-local-id=3D"553de12e242f" class=3D"confluenceTd">
+<p local-id=3D"c16803029508">PHS 620</p></td>
+</tr>
+<tr data-local-id=3D"9b660007e128">
+<td data-local-id=3D"55777b03d8c5" class=3D"confluenceTd">
+<p local-id=3D"fde84da7ac0a"><strong>Course Modality:</strong></p></td>
+<td data-local-id=3D"01b757860426" class=3D"confluenceTd">
+<p local-id=3D"829e567924d2"><em>[hybrid]</em></p></td>
+</tr>
+<tr data-local-id=3D"652999181642">
+<td data-local-id=3D"ba89f5519a68" class=3D"confluenceTd">
+<p local-id=3D"95c8f4688630"><strong>Session:</strong></p></td>
+<td data-local-id=3D"56fe814cff65" class=3D"confluenceTd">
+<p local-id=3D"b569e522f207">Fall A, 2026</p></td>
+</tr>
+<tr data-local-id=3D"1501c1ffad39">
+<td data-local-id=3D"6aa990e2282d" class=3D"confluenceTd">
+<h3 local-id=3D"26f2ba7c57c7" id=3D"Syllabus-CourseName:"><strong>Course Na=
+me:</strong></h3></td>
+<td data-local-id=3D"4d50aa44424f" class=3D"confluenceTd">
+<h3 local-id=3D"00dab77c236b" id=3D"Syllabus-TeachingandLearningSeminar"><e=
+m>Teaching and Learning Seminar</em></h3></td>
+</tr>
+<tr data-local-id=3D"b5f668ab4b3f">
+<td data-local-id=3D"dc501d312104" class=3D"confluenceTd">
+<p local-id=3D"32919cf97718"><strong>Instructor:</strong></p></td>
+<td data-local-id=3D"a6fe9cf97717" class=3D"confluenceTd">
+<p local-id=3D"334dddc1b282"><em>Juan Leon, PhD</em></p></td>
+</tr>
+<tr data-local-id=3D"636ceb15cb42">
+<td data-local-id=3D"b1191a40654c" class=3D"confluenceTd">
+<p local-id=3D"ce625460d433"><strong>email:</strong></p></td>
+<td data-local-id=3D"684a409f47b3" class=3D"confluenceTd">
+<p local-id=3D"9ec7806a82d7"><em>juan.leon@jefferson.edu</em></p></td>
+</tr>
+<tr data-local-id=3D"6c16c1f4f13a">
+<td data-local-id=3D"16864b7abf37" class=3D"confluenceTd">
+<p local-id=3D"ba03a6e23d50"><strong>phone:</strong></p></td>
+<td data-local-id=3D"bb1d51c2b6cb" class=3D"confluenceTd">
+<p local-id=3D"aef5e39ebd96"><em>484-639-8242</em></p></td>
+</tr>
+<tr data-local-id=3D"a733bd30c074">
+<td data-local-id=3D"2109eb28e8c3" class=3D"confluenceTd">
+<p local-id=3D"eb2369fc290e"><strong>other contact information:</strong></p=
+></td>
+<td data-local-id=3D"b3d9879f34ce" class=3D"confluenceTd">
+<p local-id=3D"b9b5c506b875"><em>text me at listed phone #</em></p></td>
+</tr>
+<tr data-local-id=3D"fe3953d8a59d">
+<td data-local-id=3D"000ff51c5614" class=3D"confluenceTd">
+<p local-id=3D"f139d40b7121"><strong>office hours:</strong></p></td>
+<td data-local-id=3D"cef98ce5fa7c" class=3D"confluenceTd">
+<p local-id=3D"01b696325048"><em>by appointment</em></p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p local-id=3D"522ce39dca5a"></p></td>
+<td class=3D"confluenceTd">
+<p></p>
+<div class=3D"table-wrap conf-macro output-inline">
+<div class=3D"table-wrap">
+<table data-table-width=3D"760" data-layout=3D"default" class=3D"confluence=
+Table">
+<colgroup>
+<col style=3D"width: 680.0px;">
+</colgroup>
+<tbody>
+<tr>
+<td class=3D"confluenceTd">
+<p><strong>Course Description:</strong></p></td>
+</tr>
+<tr>
+<td class=3D"confluenceTd">
+<p>Explores adult education principles and course design for a variety of l=
+earning environments. Evaluates strategies to boost learner satisfaction an=
+d retention, including 'backward design.' Emphasizes key design techniques =
+and online tools. Identifies methods for assessing learning outcomes. Intro=
+duces the Quality Matters Rubric 5 Pillars of Quality and support resources=
+ for robust course creation and teaching effectiveness. Culminates in a Pop=
+ulation Health lesson plan and group work on a collaborative, ongoing class=
+ project in educational technology for Population Health.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p></p>
+<p></p>
+<p></p>
+<p></p>
+<p></p>
+<p></p>
+<div class=3D"table-wrap">
+<table data-table-width=3D"960" data-layout=3D"wide" data-local-id=3D"4e3bf=
+81a-1ef6-4f8e-bfe2-fff22f278132" class=3D"confluenceTable">
+<colgroup>
+<col style=3D"width: 960.0px;">
+</colgroup>
+<tbody>
+<tr>
+<td class=3D"confluenceTd">
+<p><strong>Required Texts or Other Resources:</strong></p>
+<ul>
+<li>
+<p><em>Rapid Instructional Design. 3rd Edition.</em> George M. Piskurich. <=
+br>
+Wiley. ISNB: 978-1118973974</p></li>
+</ul></td>
+</tr>
+<tr>
+<td class=3D"confluenceTd">
+<p><strong>Notes on Texts or Materials:</strong></p>
+<p>The Piskurich textbook is available online through Scott Memorial Librar=
+y: <a class=3D"external-link" href=3D"https://jefferson.primo.exlibrisgroup=
+.com/permalink/01TJU_INST/gbh139/cdi_safari_books_v2_9781118973974" rel=3D"=
+nofollow">Rapid Instructional Design</a>.</p>
+<p></p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p></p>
+<p></p></td>
+</tr>
+<tr>
+<td colspan=3D"2" class=3D"confluenceTd">
+<p><strong>Course Learning Objectives:</strong></p>
+<p><em>After successfully completing this course, participants will be able=
+ to:</em></p>
+<p></p>
+<div class=3D"table-wrap">
+<table class=3D"aui confluenceTable">
+<tbody>
+<tr>
+<td style=3D"font-size: 11.0pt;font-family: Times New Roman;" class=3D"conf=
+luenceTd">PLO-01</td>
+<td style=3D"font-size: 11.0pt;font-family: Times New Roman;" class=3D"conf=
+luenceTd">Develop an evidence-based lesson plan as part of an educational p=
+rogram for adult learners.</td>
+</tr>
+<tr>
+<td style=3D"font-size: 11.0pt;font-family: Times New Roman;" class=3D"conf=
+luenceTd">PLO-02</td>
+<td style=3D"font-size: 11.0pt;font-family: Times New Roman;" class=3D"conf=
+luenceTd">Identify and address the needs of critical third-party stakeholde=
+rs--such as accreditors, administrators, and other reviewers or clients--al=
+ong with the needs of learners.</td>
+</tr>
+<tr>
+<td style=3D"font-size: 11.0pt;font-family: Times New Roman;" class=3D"conf=
+luenceTd">PLO-03</td>
+<td style=3D"font-size: 11.0pt;font-family: Times New Roman;" class=3D"conf=
+luenceTd">Apply the 'Backward' design approach to lesson and course develop=
+ment for both online and classroom-based environments.</td>
+</tr>
+<tr>
+<td style=3D"font-size: 11.0pt;font-family: Times New Roman;" class=3D"conf=
+luenceTd">PLO-04</td>
+<td style=3D"font-size: 11.0pt;font-family: Times New Roman;" class=3D"conf=
+luenceTd">Design and deliver an engaging presentation promoting learner sat=
+isfaction, retention of knowledge, and application.</td>
+</tr>
+<tr>
+<td style=3D"font-size: 11.0pt;font-family: Times New Roman;" class=3D"conf=
+luenceTd">PLO-05</td>
+<td style=3D"font-size: 11.0pt;font-family: Times New Roman;" class=3D"conf=
+luenceTd">Efficiently assess and evaluate the learner's experience and achi=
+evement.</td>
+</tr>
+<tr>
+<td style=3D"font-size: 11.0pt;font-family: Times New Roman;" class=3D"conf=
+luenceTd">PLO-06</td>
+<td style=3D"font-size: 11.0pt;font-family: Times New Roman;" class=3D"conf=
+luenceTd">Formulate timely, well-considered feedback and coaching to learne=
+rs.</td>
+</tr>
+<tr>
+<td style=3D"font-size: 11.0pt;font-family: Times New Roman;" class=3D"conf=
+luenceTd">PLO-07</td>
+<td style=3D"font-size: 11.0pt;font-family: Times New Roman;" class=3D"conf=
+luenceTd">Design a project in educational technology addressing a recognize=
+d need in Population Health.</td>
+</tr>
+<tr>
+<td style=3D"font-size: 11.0pt;font-family: Times New Roman;" class=3D"conf=
+luenceTd">PLO-08</td>
+<td style=3D"font-size: 11.0pt;font-family: Times New Roman;" class=3D"conf=
+luenceTd">Develop a design through Alpha, Beta, and Final stages of complet=
+ion.</td>
+</tr>
+<tr>
+<td style=3D"font-size: 11.0pt;font-family: Times New Roman;" class=3D"conf=
+luenceTd">PLO-09</td>
+<td style=3D"font-size: 11.0pt;font-family: Times New Roman;" class=3D"conf=
+luenceTd">Validate a project's design, processes, and outputs.</td>
+</tr>
+<tr>
+<td style=3D"font-size: 11.0pt;font-family: Times New Roman;" class=3D"conf=
+luenceTd">PLO-10</td>
+<td style=3D"font-size: 11.0pt;font-family: Times New Roman;" class=3D"conf=
+luenceTd">Implement an Ed Tech project in a specified environment.</td>
+</tr>
+<tr>
+<td style=3D"font-size: 11.0pt;font-family: Times New Roman;" class=3D"conf=
+luenceTd">PLO-11</td>
+<td style=3D"font-size: 11.0pt;font-family: Times New Roman;" class=3D"conf=
+luenceTd">Evaluate user ineractions and learning experiences in terms of a =
+project's interfaces, inputs, and outputs.</td>
+</tr>
+<tr>
+<td style=3D"font-size: 11.0pt;font-family: Times New Roman;" class=3D"conf=
+luenceTd">PLO-12</td>
+<td style=3D"font-size: 11.0pt;font-family: Times New Roman;" class=3D"conf=
+luenceTd">Continuously improve and innovate teaching through critical self-=
+reflection and evidence-based practice.</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p></p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><strong>Course Calendar:</strong></p>
+<div class=3D"table-wrap">
+<table data-table-width=3D"1153" data-layout=3D"default" data-local-id=3D"3=
+6907d10-d071-4f5a-9e30-164249d5998b" class=3D"confluenceTable">
+<colgroup>
+<col style=3D"width: 129.0px;">
+<col style=3D"width: 173.0px;">
+<col style=3D"width: 124.0px;">
+<col style=3D"width: 199.0px;">
+<col style=3D"width: 260.0px;">
+<col style=3D"width: 268.0px;">
+</colgroup>
+<tbody>
+<tr>
+<th class=3D"confluenceTh">
+<p><strong>Week/</strong><br><strong>Module</strong></p></th>
+<th class=3D"confluenceTh">
+<p><strong>Discussion Topics</strong></p></th>
+<th class=3D"confluenceTh">
+<p><strong>Readings/</strong><br><strong>Resources</strong></p></th>
+<th class=3D"confluenceTh">
+<p><strong>Lecture/</strong><br><strong>Presentation</strong></p></th>
+<th class=3D"confluenceTh">
+<p><strong>Assignments</strong></p></th>
+<th class=3D"confluenceTh">
+<p><strong>Assessment/</strong><br><strong>Evaluation</strong></p></th>
+</tr>
+<tr>
+<td class=3D"confluenceTd">
+<p>1</p>August 24 - August 30</td>
+<td class=3D"confluenceTd">
+<ul class=3D"content-by-label">
+<li>
+<div>
+<span class=3D"icon aui-icon content-type-page" title=3D"Page">Page:</span>
+</div>
+<div class=3D"details">
+<a id=3D"1871053438" data-linked-resource-id=3D"1871053438" data-linked-res=
+ource-type=3D"page" data-linked-resource-version=3D"3" href=3D"https://jcph=
+-academic-affairs.atlassian.net/wiki/spaces/2024jcphPHS62015Wk/pages/187105=
+3438/Personal+Introductions">Personal Introductions</a>
+</div></li>
+<li>
+<div>
+<span class=3D"icon aui-icon content-type-page" title=3D"Page">Page:</span>
+</div>
+<div class=3D"details">
+<a id=3D"1878753299" data-linked-resource-id=3D"1878753299" data-linked-res=
+ource-type=3D"page" data-linked-resource-version=3D"3" href=3D"https://jcph=
+-academic-affairs.atlassian.net/wiki/spaces/2024jcphPHS62015Wk/pages/187875=
+3299/Barriers+to+My+Adult+Learners+Learning">Barriers to My (Adult) Learner=
+s' Learning</a>
+</div></li>
+</ul></td>
+<td class=3D"confluenceTd">
+<ul class=3D"content-by-label">
+<li>
+<div>
+<span class=3D"icon aui-icon content-type-page" title=3D"Page">Page:</span>
+</div>
+<div class=3D"details">
+<a id=3D"1879605292" data-linked-resource-id=3D"1879605292" data-linked-res=
+ource-type=3D"page" data-linked-resource-version=3D"5" href=3D"https://jcph=
+-academic-affairs.atlassian.net/wiki/spaces/2024jcphPHS62015Wk/pages/187960=
+5292/Textbook+Piskurich.+Ch.+3+92-99">Textbook: Piskurich. Ch. 3 (92-99)</a=
+>
+</div></li>
+<li>
+<div>
+<span class=3D"icon aui-icon content-type-page" title=3D"Page">Page:</span>
+</div>
+<div class=3D"details">
+<a id=3D"1879474209" data-linked-resource-id=3D"1879474209" data-linked-res=
+ource-type=3D"page" data-linked-resource-version=3D"2" href=3D"https://jcph=
+-academic-affairs.atlassian.net/wiki/spaces/2024jcphPHS62015Wk/pages/187947=
+4209/The+Adult+Learner+Knowles">The Adult Learner (Knowles)</a>
+</div></li>
+<li>
+<div>
+<span class=3D"icon aui-icon content-type-page" title=3D"Page">Page:</span>
+</div>
+<div class=3D"details">
+<a id=3D"1878949907" data-linked-resource-id=3D"1878949907" data-linked-res=
+ource-type=3D"page" data-linked-resource-version=3D"2" href=3D"https://jcph=
+-academic-affairs.atlassian.net/wiki/spaces/2024jcphPHS62015Wk/pages/187894=
+9907/The+Science+of+Workplace+Instruction">The Science of Workplace Instruc=
+tion</a>
+</div></li>
+<li>
+<div>
+<span class=3D"icon aui-icon content-type-page" title=3D"Page">Page:</span>
+</div>
+<div class=3D"details">
+<a id=3D"1879408660" data-linked-resource-id=3D"1879408660" data-linked-res=
+ource-type=3D"page" data-linked-resource-version=3D"3" href=3D"https://jcph=
+-academic-affairs.atlassian.net/wiki/spaces/2024jcphPHS62015Wk/pages/187940=
+8660/Effective+online+large-group+teaching">Effective online large-group te=
+aching</a>
+</div></li>
+<li>
+<div>
+<span class=3D"icon aui-icon content-type-page" title=3D"Page">Page:</span>
+</div>
+<div class=3D"details">
+<a id=3D"1879277614" data-linked-resource-id=3D"1879277614" data-linked-res=
+ource-type=3D"page" data-linked-resource-version=3D"4" href=3D"https://jcph=
+-academic-affairs.atlassian.net/wiki/spaces/2024jcphPHS62015Wk/pages/187927=
+7614/Applying+adult+learning+practices">Applying adult learning practices</=
+a>
+</div></li>
+</ul></td>
+<td class=3D"confluenceTd">
+<ul class=3D"content-by-label">
+<li>
+<div>
+<span class=3D"icon aui-icon content-type-page" title=3D"Page">Page:</span>
+</div>
+<div class=3D"details">
+<a id=3D"1879343121" data-linked-resource-id=3D"1879343121" data-linked-res=
+ource-type=3D"page" data-linked-resource-version=3D"4" href=3D"https://jcph=
+-academic-affairs.atlassian.net/wiki/spaces/2024jcphPHS62015Wk/pages/187934=
+3121/Round+Table+live+Course+Introduction">Round Table [live]: Course Intro=
+duction</a>
+</div></li>
+</ul></td>
+<td class=3D"confluenceTd">
+<ul class=3D"content-by-label">
+<li>
+<div>
+<span class=3D"icon aui-icon content-type-page" title=3D"Page">Page:</span>
+</div>
+<div class=3D"details">
+<a id=3D"1871053330" data-linked-resource-id=3D"1871053330" data-linked-res=
+ource-type=3D"page" data-linked-resource-version=3D"1" href=3D"https://jcph=
+-academic-affairs.atlassian.net/wiki/spaces/2024jcphPHS62015Wk/pages/187105=
+3330/Introductions+and+Beginning+of+Weekly+Activities">Introductions and Be=
+ginning of Weekly Activities</a>
+</div></li>
+<li>
+<div>
+<span class=3D"icon aui-icon content-type-page" title=3D"Page">Page:</span>
+</div>
+<div class=3D"details">
+<a id=3D"1878818876" data-linked-resource-id=3D"1878818876" data-linked-res=
+ource-type=3D"page" data-linked-resource-version=3D"3" href=3D"https://jcph=
+-academic-affairs.atlassian.net/wiki/spaces/2024jcphPHS62015Wk/pages/187881=
+8876/Profiling+the+Adult+Learner">Profiling the Adult Learner</a>
+</div></li>
+</ul></td>
+<td class=3D"confluenceTd">
+<ul class=3D"content-by-label">
+<li>
+<div>
+<span class=3D"icon aui-icon content-type-page" title=3D"Page">Page:</span>
+</div>
+<div class=3D"details">
+<a id=3D"1871053561" data-linked-resource-id=3D"1871053561" data-linked-res=
+ource-type=3D"page" data-linked-resource-version=3D"1" href=3D"https://jcph=
+-academic-affairs.atlassian.net/wiki/spaces/2024jcphPHS62015Wk/pages/187105=
+3561/5-min+Feedback+Mod+01">5-min Feedback (Mod 01)</a>
+</div></li>
+<li>
+<div>
+<span class=3D"icon aui-icon content-type-page" title=3D"Page">Page:</span>
+</div>
+<div class=3D"details">
+<a id=3D"1871053492" data-linked-resource-id=3D"1871053492" data-linked-res=
+ource-type=3D"page" data-linked-resource-version=3D"3" href=3D"https://jcph=
+-academic-affairs.atlassian.net/wiki/spaces/2024jcphPHS62015Wk/pages/187105=
+3492/Self-Check+Course+Onboarding+Essentials">Self-Check: Course Onboarding=
+ Essentials</a>
+</div></li>
+<li>
+<div>
+<span class=3D"icon aui-icon content-type-page" title=3D"Page">Page:</span>
+</div>
+<div class=3D"details">
+<a id=3D"1879310376" data-linked-resource-id=3D"1879310376" data-linked-res=
+ource-type=3D"page" data-linked-resource-version=3D"4" href=3D"https://jcph=
+-academic-affairs.atlassian.net/wiki/spaces/2024jcphPHS62015Wk/pages/187931=
+0376/Self-Assessment+Confidence+Questionnaire">Self-Assessment: Confidence =
+Questionnaire</a>
+</div></li>
+</ul></td>
+</tr>
+<tr>
+<td class=3D"confluenceTd">
+<p>2</p>
+<p></p>August 31 - September 06</td>
+<td class=3D"confluenceTd">
+<ul class=3D"content-by-label">
+<li>
+<div>
+<span class=3D"icon aui-icon content-type-page" title=3D"Page">Page:</span>
+</div>
+<div class=3D"details">
+<a id=3D"1879900395" data-linked-resource-id=3D"1879900395" data-linked-res=
+ource-type=3D"page" data-linked-resource-version=3D"2" href=3D"https://jcph=
+-academic-affairs.atlassian.net/wiki/spaces/2024jcphPHS62015Wk/pages/187990=
+0395/Accreditors+and+Other+Stakeholders">Accreditors and Other Stakeholders=
+?</a>
+</div></li>
+</ul></td>
+<td class=3D"confluenceTd">
+<ul class=3D"content-by-label">
+<li>
+<div>
+<span class=3D"icon aui-icon content-type-page" title=3D"Page">Page:</span>
+</div>
+<div class=3D"details">
+<a id=3D"1879933143" data-linked-resource-id=3D"1879933143" data-linked-res=
+ource-type=3D"page" data-linked-resource-version=3D"3" href=3D"https://jcph=
+-academic-affairs.atlassian.net/wiki/spaces/2024jcphPHS62015Wk/pages/187993=
+3143/Textbook+Piskurich.+Ch.+4+128+-+161">Textbook: Piskurich. Ch. 4 (128 -=
+ 161)</a>
+</div></li>
+<li>
+<div>
+<span class=3D"icon aui-icon content-type-page" title=3D"Page">Page:</span>
+</div>
+<div class=3D"details">
+<a id=3D"1879900426" data-linked-resource-id=3D"1879900426" data-linked-res=
+ource-type=3D"page" data-linked-resource-version=3D"2" href=3D"https://jcph=
+-academic-affairs.atlassian.net/wiki/spaces/2024jcphPHS62015Wk/pages/187990=
+0426/The+ADDIE+model.">The ADDIE model.</a>
+</div></li>
+<li>
+<div>
+<span class=3D"icon aui-icon content-type-page" title=3D"Page">Page:</span>
+</div>
+<div class=3D"details">
+<a id=3D"1879966371" data-linked-resource-id=3D"1879966371" data-linked-res=
+ource-type=3D"page" data-linked-resource-version=3D"2" href=3D"https://jcph=
+-academic-affairs.atlassian.net/wiki/spaces/2024jcphPHS62015Wk/pages/187996=
+6371/Stakeholder+Engagement+in+Competency+Framework+Development">Stakeholde=
+r Engagement in Competency Framework Development</a>
+</div></li>
+<li>
+<div>
+<span class=3D"icon aui-icon content-type-page" title=3D"Page">Page:</span>
+</div>
+<div class=3D"details">
+<a id=3D"1879965870" data-linked-resource-id=3D"1879965870" data-linked-res=
+ource-type=3D"page" data-linked-resource-version=3D"3" href=3D"https://jcph=
+-academic-affairs.atlassian.net/wiki/spaces/2024jcphPHS62015Wk/pages/187996=
+5870/Objective+Builder+Tool">Objective Builder Tool:</a>
+</div></li>
+</ul></td>
+<td class=3D"confluenceTd">
+<ul class=3D"content-by-label">
+<li>
+<div>
+<span class=3D"icon aui-icon content-type-page" title=3D"Page">Page:</span>
+</div>
+<div class=3D"details">
+<a id=3D"1879539757" data-linked-resource-id=3D"1879539757" data-linked-res=
+ource-type=3D"page" data-linked-resource-version=3D"3" href=3D"https://jcph=
+-academic-affairs.atlassian.net/wiki/spaces/2024jcphPHS62015Wk/pages/187953=
+9757/Round+Table+live+Course+Projects">Round Table [live]: Course Projects<=
+/a>
+</div></li>
+</ul></td>
+<td class=3D"confluenceTd">
+<ul class=3D"content-by-label">
+<li>
+<div>
+<span class=3D"icon aui-icon content-type-page" title=3D"Page">Page:</span>
+</div>
+<div class=3D"details">
+<a id=3D"1879867652" data-linked-resource-id=3D"1879867652" data-linked-res=
+ource-type=3D"page" data-linked-resource-version=3D"5" href=3D"https://jcph=
+-academic-affairs.atlassian.net/wiki/spaces/2024jcphPHS62015Wk/pages/187986=
+7652/Training+Project+Proposal+with+Topic+Outline">Training Project Proposa=
+l with Topic Outline</a>
+</div></li>
+</ul></td>
+<td class=3D"confluenceTd">
+<ul class=3D"content-by-label">
+<li>
+<div>
+<span class=3D"icon aui-icon content-type-page" title=3D"Page">Page:</span>
+</div>
+<div class=3D"details">
+<a id=3D"1871053898" data-linked-resource-id=3D"1871053898" data-linked-res=
+ource-type=3D"page" data-linked-resource-version=3D"1" href=3D"https://jcph=
+-academic-affairs.atlassian.net/wiki/spaces/2024jcphPHS62015Wk/pages/187105=
+3898/5-min+Feedback+Mod+02">5-min Feedback (Mod 02)</a>
+</div></li>
+</ul></td>
+</tr>
+<tr>
+<td class=3D"confluenceTd">
+<p>3</p>
+<p></p>September 07 - September 13</td>
+<td class=3D"confluenceTd">
+<ul class=3D"content-by-label">
+<li>
+<div>
+<span class=3D"icon aui-icon content-type-page" title=3D"Page">Page:</span>
+</div>
+<div class=3D"details">
+<a id=3D"1879966027" data-linked-resource-id=3D"1879966027" data-linked-res=
+ource-type=3D"page" data-linked-resource-version=3D"2" href=3D"https://jcph=
+-academic-affairs.atlassian.net/wiki/spaces/2024jcphPHS62015Wk/pages/187996=
+6027/Strengths+and+Limitations+of+Online+vs.+Classroom-based+Modalities">St=
+rengths and Limitations of Online vs. Classroom-based Modalities</a>
+</div></li>
+</ul></td>
+<td class=3D"confluenceTd">
+<ul class=3D"content-by-label">
+<li>
+<div>
+<span class=3D"icon aui-icon content-type-page" title=3D"Page">Page:</span>
+</div>
+<div class=3D"details">
+<a id=3D"1879965991" data-linked-resource-id=3D"1879965991" data-linked-res=
+ource-type=3D"page" data-linked-resource-version=3D"5" href=3D"https://jcph=
+-academic-affairs.atlassian.net/wiki/spaces/2024jcphPHS62015Wk/pages/187996=
+5991/Textbook+Piskurich.+Chaps.+10-11+446-457">Textbook: Piskurich. Chaps. =
+10-11 (446-457)</a>
+</div></li>
+<li>
+<div>
+<span class=3D"icon aui-icon content-type-page" title=3D"Page">Page:</span>
+</div>
+<div class=3D"details">
+<a id=3D"1879900460" data-linked-resource-id=3D"1879900460" data-linked-res=
+ource-type=3D"page" data-linked-resource-version=3D"3" href=3D"https://jcph=
+-academic-affairs.atlassian.net/wiki/spaces/2024jcphPHS62015Wk/pages/187990=
+0460/Textbook+Piskurich.+Ch.+4+107-128+173-178">Textbook: Piskurich. Ch. 4 =
+(107-128; 173-178)</a>
+</div></li>
+<li>
+<div>
+<span class=3D"icon aui-icon content-type-page" title=3D"Page">Page:</span>
+</div>
+<div class=3D"details">
+<a id=3D"1879965922" data-linked-resource-id=3D"1879965922" data-linked-res=
+ource-type=3D"page" data-linked-resource-version=3D"2" href=3D"https://jcph=
+-academic-affairs.atlassian.net/wiki/spaces/2024jcphPHS62015Wk/pages/187996=
+5922/Gagne+s+Events+of+Instruction">Gagne's 'Events of Instruction'</a>
+</div></li>
+<li>
+<div>
+<span class=3D"icon aui-icon content-type-page" title=3D"Page">Page:</span>
+</div>
+<div class=3D"details">
+<a id=3D"1879867735" data-linked-resource-id=3D"1879867735" data-linked-res=
+ource-type=3D"page" data-linked-resource-version=3D"4" href=3D"https://jcph=
+-academic-affairs.atlassian.net/wiki/spaces/2024jcphPHS62015Wk/pages/187986=
+7735/Universal+Design+for+Learning+Guidelines">Universal Design for Learnin=
+g Guidelines</a>
+</div></li>
+<li>
+<div>
+<span class=3D"icon aui-icon content-type-page" title=3D"Page">Page:</span>
+</div>
+<div class=3D"details">
+<a id=3D"1879965963" data-linked-resource-id=3D"1879965963" data-linked-res=
+ource-type=3D"page" data-linked-resource-version=3D"6" href=3D"https://jcph=
+-academic-affairs.atlassian.net/wiki/spaces/2024jcphPHS62015Wk/pages/187996=
+5963/Universal+Design+for+Learning">Universal Design for Learning</a>
+</div></li>
+</ul></td>
+<td class=3D"confluenceTd">
+<ul class=3D"content-by-label">
+<li>
+<div>
+<span class=3D"icon aui-icon content-type-page" title=3D"Page">Page:</span>
+</div>
+<div class=3D"details">
+<a id=3D"1879179324" data-linked-resource-id=3D"1879179324" data-linked-res=
+ource-type=3D"page" data-linked-resource-version=3D"3" href=3D"https://jcph=
+-academic-affairs.atlassian.net/wiki/spaces/2024jcphPHS62015Wk/pages/187917=
+9324/Round+Table+live+Hybrid+Lessons">Round Table [live]: Hybrid Lessons</a=
+>
+</div></li>
+</ul></td>
+<td class=3D"confluenceTd">
+<ul class=3D"content-by-label">
+<li>
+<div>
+<span class=3D"icon aui-icon content-type-page" title=3D"Page">Page:</span>
+</div>
+<div class=3D"details">
+<a id=3D"1879933216" data-linked-resource-id=3D"1879933216" data-linked-res=
+ource-type=3D"page" data-linked-resource-version=3D"6" href=3D"https://jcph=
+-academic-affairs.atlassian.net/wiki/spaces/2024jcphPHS62015Wk/pages/187993=
+3216/Design+Lesson+for+Mixed-modality">Design Lesson for Mixed-modality</a>
+</div></li>
+</ul></td>
+<td class=3D"confluenceTd">
+<ul class=3D"content-by-label">
+<li>
+<div>
+<span class=3D"icon aui-icon content-type-page" title=3D"Page">Page:</span>
+</div>
+<div class=3D"details">
+<a id=3D"1871054223" data-linked-resource-id=3D"1871054223" data-linked-res=
+ource-type=3D"page" data-linked-resource-version=3D"1" href=3D"https://jcph=
+-academic-affairs.atlassian.net/wiki/spaces/2024jcphPHS62015Wk/pages/187105=
+4223/5-min+Feedback+Mod+03">5-min Feedback (Mod 03)</a>
+</div></li>
+</ul></td>
+</tr>
+<tr>
+<td class=3D"confluenceTd">
+<p>4</p>
+<p></p>September 14 - September 20</td>
+<td class=3D"confluenceTd">
+<ul class=3D"content-by-label">
+<li>
+<div>
+<span class=3D"icon aui-icon content-type-page" title=3D"Page">Page:</span>
+</div>
+<div class=3D"details">
+<a id=3D"1879966101" data-linked-resource-id=3D"1879966101" data-linked-res=
+ource-type=3D"page" data-linked-resource-version=3D"2" href=3D"https://jcph=
+-academic-affairs.atlassian.net/wiki/spaces/2024jcphPHS62015Wk/pages/187996=
+6101/Effective+Presentation+Skills">Effective Presentation Skills</a>
+</div></li>
+</ul></td>
+<td class=3D"confluenceTd">
+<ul class=3D"content-by-label">
+<li>
+<div>
+<span class=3D"icon aui-icon content-type-page" title=3D"Page">Page:</span>
+</div>
+<div class=3D"details">
+<a id=3D"1879900517" data-linked-resource-id=3D"1879900517" data-linked-res=
+ource-type=3D"page" data-linked-resource-version=3D"2" href=3D"https://jcph=
+-academic-affairs.atlassian.net/wiki/spaces/2024jcphPHS62015Wk/pages/187990=
+0517/Optimizing+Presentation+Skills">Optimizing Presentation Skills</a>
+</div></li>
+<li>
+<div>
+<span class=3D"icon aui-icon content-type-page" title=3D"Page">Page:</span>
+</div>
+<div class=3D"details">
+<a id=3D"1879966069" data-linked-resource-id=3D"1879966069" data-linked-res=
+ource-type=3D"page" data-linked-resource-version=3D"2" href=3D"https://jcph=
+-academic-affairs.atlassian.net/wiki/spaces/2024jcphPHS62015Wk/pages/187996=
+6069/McKinsey+s+Pyramid+Principle">McKinsey's Pyramid Principle</a>
+</div></li>
+<li>
+<div>
+<span class=3D"icon aui-icon content-type-page" title=3D"Page">Page:</span>
+</div>
+<div class=3D"details">
+<a id=3D"1879900543" data-linked-resource-id=3D"1879900543" data-linked-res=
+ource-type=3D"page" data-linked-resource-version=3D"2" href=3D"https://jcph=
+-academic-affairs.atlassian.net/wiki/spaces/2024jcphPHS62015Wk/pages/187990=
+0543/Textbook+Piskurich.+Ch.+10+411-446">Textbook: Piskurich. Ch. 10 (411-4=
+46)</a>
+</div></li>
+</ul></td>
+<td class=3D"confluenceTd">
+<ul class=3D"content-by-label">
+<li>
+<div>
+<span class=3D"icon aui-icon content-type-page" title=3D"Page">Page:</span>
+</div>
+<div class=3D"details">
+<a id=3D"1878818850" data-linked-resource-id=3D"1878818850" data-linked-res=
+ource-type=3D"page" data-linked-resource-version=3D"3" href=3D"https://jcph=
+-academic-affairs.atlassian.net/wiki/spaces/2024jcphPHS62015Wk/pages/187881=
+8850/Round+Table+live+Rehearsals+of+Presentations">Round Table [live]: Rehe=
+arsals of Presentations</a>
+</div></li>
+</ul></td>
+<td class=3D"confluenceTd">
+<ul class=3D"content-by-label">
+<li>
+<div>
+<span class=3D"icon aui-icon content-type-page" title=3D"Page">Page:</span>
+</div>
+<div class=3D"details">
+<a id=3D"1879933266" data-linked-resource-id=3D"1879933266" data-linked-res=
+ource-type=3D"page" data-linked-resource-version=3D"8" href=3D"https://jcph=
+-academic-affairs.atlassian.net/wiki/spaces/2024jcphPHS62015Wk/pages/187993=
+3266/Design+and+Rehearse+Your+Lesson+s+Lecture">Design and Rehearse Your Le=
+sson's Lecture</a>
+</div></li>
+</ul></td>
+<td class=3D"confluenceTd">
+<ul class=3D"content-by-label">
+<li>
+<div>
+<span class=3D"icon aui-icon content-type-page" title=3D"Page">Page:</span>
+</div>
+<div class=3D"details">
+<a id=3D"1871054542" data-linked-resource-id=3D"1871054542" data-linked-res=
+ource-type=3D"page" data-linked-resource-version=3D"1" href=3D"https://jcph=
+-academic-affairs.atlassian.net/wiki/spaces/2024jcphPHS62015Wk/pages/187105=
+4542/5-min+Feedback+Mod+04">5-min Feedback (Mod 04)</a>
+</div></li>
+</ul></td>
+</tr>
+<tr>
+<td class=3D"confluenceTd">
+<p>5</p>
+<p></p>September 21 - September 27</td>
+<td class=3D"confluenceTd">
+<ul class=3D"content-by-label">
+<li>
+<div>
+<span class=3D"icon aui-icon content-type-page" title=3D"Page">Page:</span>
+</div>
+<div class=3D"details">
+<a id=3D"1879933325" data-linked-resource-id=3D"1879933325" data-linked-res=
+ource-type=3D"page" data-linked-resource-version=3D"3" href=3D"https://jcph=
+-academic-affairs.atlassian.net/wiki/spaces/2024jcphPHS62015Wk/pages/187993=
+3325/Know+your+Virtual+Audience">Know your (Virtual) Audience</a>
+</div></li>
+</ul></td>
+<td class=3D"confluenceTd">
+<ul class=3D"content-by-label">
+<li>
+<div>
+<span class=3D"icon aui-icon content-type-page" title=3D"Page">Page:</span>
+</div>
+<div class=3D"details">
+<a id=3D"1879900587" data-linked-resource-id=3D"1879900587" data-linked-res=
+ource-type=3D"page" data-linked-resource-version=3D"2" href=3D"https://jcph=
+-academic-affairs.atlassian.net/wiki/spaces/2024jcphPHS62015Wk/pages/187990=
+0587/Textbook+Piskurich.+Ch.+11+457-473">Textbook: Piskurich. Ch. 11 (457-4=
+73)</a>
+</div></li>
+<li>
+<div>
+<span class=3D"icon aui-icon content-type-page" title=3D"Page">Page:</span>
+</div>
+<div class=3D"details">
+<a id=3D"1879867783" data-linked-resource-id=3D"1879867783" data-linked-res=
+ource-type=3D"page" data-linked-resource-version=3D"2" href=3D"https://jcph=
+-academic-affairs.atlassian.net/wiki/spaces/2024jcphPHS62015Wk/pages/187986=
+7783/Textbook+Piskurich.+Ch.+10+432-433">Textbook: Piskurich. Ch. 10 (432-4=
+33)</a>
+</div></li>
+<li>
+<div>
+<span class=3D"icon aui-icon content-type-page" title=3D"Page">Page:</span>
+</div>
+<div class=3D"details">
+<a id=3D"1928102015" data-linked-resource-id=3D"1928102015" data-linked-res=
+ource-type=3D"page" data-linked-resource-version=3D"2" href=3D"https://jcph=
+-academic-affairs.atlassian.net/wiki/spaces/2024jcphPHS62015Wk/pages/192810=
+2015/Social+Media+in+Health+Studies">Social Media in Health Studies</a>
+</div></li>
+</ul></td>
+<td class=3D"confluenceTd">
+<ul class=3D"content-by-label">
+<li>
+<div>
+<span class=3D"icon aui-icon content-type-page" title=3D"Page">Page:</span>
+</div>
+<div class=3D"details">
+<a id=3D"1879506955" data-linked-resource-id=3D"1879506955" data-linked-res=
+ource-type=3D"page" data-linked-resource-version=3D"5" href=3D"https://jcph=
+-academic-affairs.atlassian.net/wiki/spaces/2024jcphPHS62015Wk/pages/187950=
+6955/Round+Table+live+Delivery+of+Lesson+Presentations">Round Table [live]:=
+ Delivery of Lesson Presentations</a>
+</div></li>
+</ul></td>
+<td class=3D"confluenceTd">
+<ul class=3D"content-by-label">
+<li>
+<div>
+<span class=3D"icon aui-icon content-type-page" title=3D"Page">Page:</span>
+</div>
+<div class=3D"details">
+<a id=3D"1879966138" data-linked-resource-id=3D"1879966138" data-linked-res=
+ource-type=3D"page" data-linked-resource-version=3D"3" href=3D"https://jcph=
+-academic-affairs.atlassian.net/wiki/spaces/2024jcphPHS62015Wk/pages/187996=
+6138/Create+an+Online+Instructional+Activity">Create an Online Instructiona=
+l Activity</a>
+</div></li>
+<li>
+<div>
+<span class=3D"icon aui-icon content-type-page" title=3D"Page">Page:</span>
+</div>
+<div class=3D"details">
+<a id=3D"1879933298" data-linked-resource-id=3D"1879933298" data-linked-res=
+ource-type=3D"page" data-linked-resource-version=3D"6" href=3D"https://jcph=
+-academic-affairs.atlassian.net/wiki/spaces/2024jcphPHS62015Wk/pages/187993=
+3298/Deliver+Your+Lesson+s+Lecture+0nline">Deliver Your Lesson's Lecture 0n=
+line</a>
+</div></li>
+</ul></td>
+<td class=3D"confluenceTd">
+<ul class=3D"content-by-label">
+<li>
+<div>
+<span class=3D"icon aui-icon content-type-page" title=3D"Page">Page:</span>
+</div>
+<div class=3D"details">
+<a id=3D"1871054864" data-linked-resource-id=3D"1871054864" data-linked-res=
+ource-type=3D"page" data-linked-resource-version=3D"1" href=3D"https://jcph=
+-academic-affairs.atlassian.net/wiki/spaces/2024jcphPHS62015Wk/pages/187105=
+4864/5-min+Feedback+Mod+05">5-min Feedback (Mod 05)</a>
+</div></li>
+</ul></td>
+</tr>
+<tr>
+<td class=3D"confluenceTd">
+<p>6</p>
+<p></p>September 28 - October 04</td>
+<td class=3D"confluenceTd">
+<p></p>
+<ul class=3D"content-by-label">
+<li>
+<div>
+<span class=3D"icon aui-icon content-type-page" title=3D"Page">Page:</span>
+</div>
+<div class=3D"details">
+<a id=3D"1879966260" data-linked-resource-id=3D"1879966260" data-linked-res=
+ource-type=3D"page" data-linked-resource-version=3D"2" href=3D"https://jcph=
+-academic-affairs.atlassian.net/wiki/spaces/2024jcphPHS62015Wk/pages/187996=
+6260/What+is+Effective+Feedback">What is Effective Feedback?</a>
+</div></li>
+</ul></td>
+<td class=3D"confluenceTd">
+<p></p>
+<ul class=3D"content-by-label">
+<li>
+<div>
+<span class=3D"icon aui-icon content-type-page" title=3D"Page">Page:</span>
+</div>
+<div class=3D"details">
+<a id=3D"1879933351" data-linked-resource-id=3D"1879933351" data-linked-res=
+ource-type=3D"page" data-linked-resource-version=3D"2" href=3D"https://jcph=
+-academic-affairs.atlassian.net/wiki/spaces/2024jcphPHS62015Wk/pages/187993=
+3351/Textbook+Piskurich.+Ch.+4+178-196">Textbook: Piskurich. Ch. 4 (178-196=
+)</a>
+</div></li>
+<li>
+<div>
+<span class=3D"icon aui-icon content-type-page" title=3D"Page">Page:</span>
+</div>
+<div class=3D"details">
+<a id=3D"1879966182" data-linked-resource-id=3D"1879966182" data-linked-res=
+ource-type=3D"page" data-linked-resource-version=3D"3" href=3D"https://jcph=
+-academic-affairs.atlassian.net/wiki/spaces/2024jcphPHS62015Wk/pages/187996=
+6182/Ready+Willing+and+Able">Ready, Willing, and Able</a>
+</div></li>
+<li>
+<div>
+<span class=3D"icon aui-icon content-type-page" title=3D"Page">Page:</span>
+</div>
+<div class=3D"details">
+<a id=3D"1879966208" data-linked-resource-id=3D"1879966208" data-linked-res=
+ource-type=3D"page" data-linked-resource-version=3D"3" href=3D"https://jcph=
+-academic-affairs.atlassian.net/wiki/spaces/2024jcphPHS62015Wk/pages/187996=
+6208/What+is+Assessment+for+Learning">What is Assessment for Learning?</a>
+</div></li>
+<li>
+<div>
+<span class=3D"icon aui-icon content-type-page" title=3D"Page">Page:</span>
+</div>
+<div class=3D"details">
+<a id=3D"1879966234" data-linked-resource-id=3D"1879966234" data-linked-res=
+ource-type=3D"page" data-linked-resource-version=3D"2" href=3D"https://jcph=
+-academic-affairs.atlassian.net/wiki/spaces/2024jcphPHS62015Wk/pages/187996=
+6234/Improving+Student+Performance+with+Feedback">Improving Student Perform=
+ance with Feedback</a>
+</div></li>
+</ul></td>
+<td class=3D"confluenceTd">
+<p></p>
+<ul class=3D"content-by-label">
+<li>
+<div>
+<span class=3D"icon aui-icon content-type-page" title=3D"Page">Page:</span>
+</div>
+<div class=3D"details">
+<a id=3D"1879605262" data-linked-resource-id=3D"1879605262" data-linked-res=
+ource-type=3D"page" data-linked-resource-version=3D"3" href=3D"https://jcph=
+-academic-affairs.atlassian.net/wiki/spaces/2024jcphPHS62015Wk/pages/187960=
+5262/Round+Table+live+Grading+and+Final+Lesson+Designs">Round Table [live]:=
+ Grading and Final Lesson Designs</a>
+</div></li>
+</ul></td>
+<td class=3D"confluenceTd">
+<p></p>
+<ul class=3D"content-by-label">
+<li>
+<div>
+<span class=3D"icon aui-icon content-type-page" title=3D"Page">Page:</span>
+</div>
+<div class=3D"details">
+<a id=3D"1879933378" data-linked-resource-id=3D"1879933378" data-linked-res=
+ource-type=3D"page" data-linked-resource-version=3D"4" href=3D"https://jcph=
+-academic-affairs.atlassian.net/wiki/spaces/2024jcphPHS62015Wk/pages/187993=
+3378/Author+an+Assessment+for+your+Lesson">Author an Assessment for your Le=
+sson</a>
+</div></li>
+<li>
+<div>
+<span class=3D"icon aui-icon content-type-page" title=3D"Page">Page:</span>
+</div>
+<div class=3D"details">
+<a id=3D"1879933405" data-linked-resource-id=3D"1879933405" data-linked-res=
+ource-type=3D"page" data-linked-resource-version=3D"9" href=3D"https://jcph=
+-academic-affairs.atlassian.net/wiki/spaces/2024jcphPHS62015Wk/pages/187993=
+3405/Create+Prerecording+of+your+Completed+Lesson+Design">Create Prerecordi=
+ng of your Completed Lesson Design</a>
+</div></li>
+</ul></td>
+<td class=3D"confluenceTd">
+<ul class=3D"content-by-label">
+<li>
+<div>
+<span class=3D"icon aui-icon content-type-page" title=3D"Page">Page:</span>
+</div>
+<div class=3D"details">
+<a id=3D"1871055186" data-linked-resource-id=3D"1871055186" data-linked-res=
+ource-type=3D"page" data-linked-resource-version=3D"1" href=3D"https://jcph=
+-academic-affairs.atlassian.net/wiki/spaces/2024jcphPHS62015Wk/pages/187105=
+5186/5-min+Feedback+Mod+06">5-min Feedback (Mod 06)</a>
+</div></li>
+</ul></td>
+</tr>
+<tr>
+<td class=3D"confluenceTd">
+<p>7</p>
+<p></p>October 05 - October 11</td>
+<td class=3D"confluenceTd">
+<ul class=3D"content-by-label">
+<li>
+<div>
+<span class=3D"icon aui-icon content-type-page" title=3D"Page">Page:</span>
+</div>
+<div class=3D"details">
+<a id=3D"1884553217" data-linked-resource-id=3D"1884553217" data-linked-res=
+ource-type=3D"page" data-linked-resource-version=3D"5" href=3D"https://jcph=
+-academic-affairs.atlassian.net/wiki/spaces/2024jcphPHS62015Wk/pages/188455=
+3217/Discuss+Prerecorded+Presentations">Discuss Prerecorded Presentations</=
+a>
+</div></li>
+</ul></td>
+<td class=3D"confluenceTd">
+<ul class=3D"content-by-label">
+<li>
+<div>
+<span class=3D"icon aui-icon content-type-page" title=3D"Page">Page:</span>
+</div>
+<div class=3D"details">
+<a id=3D"1959034882" data-linked-resource-id=3D"1959034882" data-linked-res=
+ource-type=3D"page" data-linked-resource-version=3D"2" href=3D"https://jcph=
+-academic-affairs.atlassian.net/wiki/spaces/2024jcphPHS62015Wk/pages/195903=
+4882/Textbook+Piskurich.+Chaps.+9+373-408">Textbook: Piskurich. Chaps. 9 (3=
+73-408)</a>
+</div></li>
+<li>
+<div>
+<span class=3D"icon aui-icon content-type-page" title=3D"Page">Page:</span>
+</div>
+<div class=3D"details">
+<a id=3D"1879867842" data-linked-resource-id=3D"1879867842" data-linked-res=
+ource-type=3D"page" data-linked-resource-version=3D"4" href=3D"https://jcph=
+-academic-affairs.atlassian.net/wiki/spaces/2024jcphPHS62015Wk/pages/187986=
+7842/Textbook+Piskurich.+Chaps.+6+7+296-298+311-351">Textbook: Piskurich. C=
+haps. 6, 7 (296-298; 311-351)</a>
+</div></li>
+</ul></td>
+<td class=3D"confluenceTd">
+<ul class=3D"content-by-label">
+<li>
+<div>
+<span class=3D"icon aui-icon content-type-page" title=3D"Page">Page:</span>
+</div>
+<div class=3D"details">
+<a id=3D"1879506981" data-linked-resource-id=3D"1879506981" data-linked-res=
+ource-type=3D"page" data-linked-resource-version=3D"3" href=3D"https://jcph=
+-academic-affairs.atlassian.net/wiki/spaces/2024jcphPHS62015Wk/pages/187950=
+6981/Round+Table+live+Intro+to+ITS+Project+Design">Round Table [live]: Intr=
+o to ITS Project Design</a>
+</div></li>
+</ul></td>
+<td class=3D"confluenceTd">
+<ul class=3D"content-by-label">
+<li>
+<div>
+<span class=3D"icon aui-icon content-type-page" title=3D"Page">Page:</span>
+</div>
+<div class=3D"details">
+<a id=3D"1879966301" data-linked-resource-id=3D"1879966301" data-linked-res=
+ource-type=3D"page" data-linked-resource-version=3D"7" href=3D"https://jcph=
+-academic-affairs.atlassian.net/wiki/spaces/2024jcphPHS62015Wk/pages/187996=
+6301/Training+Implementation+Roadmap">Training Implementation Roadmap</a>
+</div></li>
+<li>
+<div>
+<span class=3D"icon aui-icon content-type-page" title=3D"Page">Page:</span>
+</div>
+<div class=3D"details">
+<a id=3D"1879966328" data-linked-resource-id=3D"1879966328" data-linked-res=
+ource-type=3D"page" data-linked-resource-version=3D"11" href=3D"https://jcp=
+h-academic-affairs.atlassian.net/wiki/spaces/2024jcphPHS62015Wk/pages/18799=
+66328/Post+Prerecorded+Lesson+Design+Presentation">Post Prerecorded Lesson =
+Design Presentation</a>
+</div></li>
+</ul></td>
+<td class=3D"confluenceTd">
+<ul class=3D"content-by-label">
+<li>
+<div>
+<span class=3D"icon aui-icon content-type-page" title=3D"Page">Page:</span>
+</div>
+<div class=3D"details">
+<a id=3D"1871055505" data-linked-resource-id=3D"1871055505" data-linked-res=
+ource-type=3D"page" data-linked-resource-version=3D"1" href=3D"https://jcph=
+-academic-affairs.atlassian.net/wiki/spaces/2024jcphPHS62015Wk/pages/187105=
+5505/5-min+Feedback+Mod+07">5-min Feedback (Mod 07)</a>
+</div></li>
+</ul></td>
+</tr>
+<tr>
+<td class=3D"confluenceTd">
+<p>8</p>
+<p></p>October 12 - October 18</td>
+<td class=3D"confluenceTd">
+<ul class=3D"content-by-label">
+<li>
+<div>
+<span class=3D"icon aui-icon content-type-page" title=3D"Page">Page:</span>
+</div>
+<div class=3D"details">
+<a id=3D"1888583694" data-linked-resource-id=3D"1888583694" data-linked-res=
+ource-type=3D"page" data-linked-resource-version=3D"3" href=3D"https://jcph=
+-academic-affairs.atlassian.net/wiki/spaces/2024jcphPHS62015Wk/pages/188858=
+3694/Project+Support+Forum+Envisioning+and+Planning">Project Support Forum:=
+ Envisioning and Planning</a>
+</div></li>
+</ul></td>
+<td class=3D"confluenceTd">
+<ul class=3D"content-by-label">
+<li>
+<div>
+<span class=3D"icon aui-icon content-type-page" title=3D"Page">Page:</span>
+</div>
+<div class=3D"details">
+<a id=3D"1888747522" data-linked-resource-id=3D"1888747522" data-linked-res=
+ource-type=3D"page" data-linked-resource-version=3D"2" href=3D"https://jcph=
+-academic-affairs.atlassian.net/wiki/spaces/2024jcphPHS62015Wk/pages/188874=
+7522/Educational+applications+of+AI">Educational applications of AI</a>
+</div></li>
+<li>
+<div>
+<span class=3D"icon aui-icon content-type-page" title=3D"Page">Page:</span>
+</div>
+<div class=3D"details">
+<a id=3D"1888157749" data-linked-resource-id=3D"1888157749" data-linked-res=
+ource-type=3D"page" data-linked-resource-version=3D"4" href=3D"https://jcph=
+-academic-affairs.atlassian.net/wiki/spaces/2024jcphPHS62015Wk/pages/188815=
+7749/Intelligent+Tutoring+Systems">Intelligent Tutoring Systems</a>
+</div></li>
+<li>
+<div>
+<span class=3D"icon aui-icon content-type-page" title=3D"Page">Page:</span>
+</div>
+<div class=3D"details">
+<a id=3D"1972699217" data-linked-resource-id=3D"1972699217" data-linked-res=
+ource-type=3D"page" data-linked-resource-version=3D"2" href=3D"https://jcph=
+-academic-affairs.atlassian.net/wiki/spaces/2024jcphPHS62015Wk/pages/197269=
+9217/Recommended+Resources+for+Data+and+Visualizations">Recommended Resourc=
+es for Data and Visualizations</a>
+</div></li>
+</ul></td>
+<td class=3D"confluenceTd">
+<ul class=3D"content-by-label">
+<li>
+<div>
+<span class=3D"icon aui-icon content-type-page" title=3D"Page">Page:</span>
+</div>
+<div class=3D"details">
+<a id=3D"1884618771" data-linked-resource-id=3D"1884618771" data-linked-res=
+ource-type=3D"page" data-linked-resource-version=3D"1" href=3D"https://jcph=
+-academic-affairs.atlassian.net/wiki/spaces/2024jcphPHS62015Wk/pages/188461=
+8771/Round+Table+live+The+ITS+Framework+and+Project+Design+Tasks">Round Tab=
+le [live]: The ITS Framework and Project Design Tasks</a>
+</div></li>
+</ul></td>
+<td class=3D"confluenceTd">
+<ul class=3D"content-by-label">
+<li>
+<div>
+<span class=3D"icon aui-icon content-type-page" title=3D"Page">Page:</span>
+</div>
+<div class=3D"details">
+<a id=3D"1972535392" data-linked-resource-id=3D"1972535392" data-linked-res=
+ource-type=3D"page" data-linked-resource-version=3D"5" href=3D"https://jcph=
+-academic-affairs.atlassian.net/wiki/spaces/2024jcphPHS62015Wk/pages/197253=
+5392/Develop+three+Candidates+for+your+ITS+Project">Develop three 'Candidat=
+es' for your ITS Project</a>
+</div></li>
+<li>
+<div>
+<span class=3D"icon aui-icon content-type-page" title=3D"Page">Page:</span>
+</div>
+<div class=3D"details">
+<a id=3D"1871055675" data-linked-resource-id=3D"1871055675" data-linked-res=
+ource-type=3D"page" data-linked-resource-version=3D"7" href=3D"https://jcph=
+-academic-affairs.atlassian.net/wiki/spaces/2024jcphPHS62015Wk/pages/187105=
+5675/Map+a+Candidate+ITS+Project+to+the+ITS+Framework">Map a Candidate ITS =
+Project to the ITS Framework</a>
+</div></li>
+</ul></td>
+<td class=3D"confluenceTd">
+<ul class=3D"content-by-label">
+<li>
+<div>
+<span class=3D"icon aui-icon content-type-page" title=3D"Page">Page:</span>
+</div>
+<div class=3D"details">
+<a id=3D"1871055824" data-linked-resource-id=3D"1871055824" data-linked-res=
+ource-type=3D"page" data-linked-resource-version=3D"1" href=3D"https://jcph=
+-academic-affairs.atlassian.net/wiki/spaces/2024jcphPHS62015Wk/pages/187105=
+5824/5-min+Feedback+Mod+08">5-min Feedback (Mod 08)</a>
+</div></li>
+</ul></td>
+</tr>
+<tr>
+<td class=3D"confluenceTd">
+<p>9</p>
+<p></p>October 19 - October 25</td>
+<td class=3D"confluenceTd">
+<ul class=3D"content-by-label">
+<li>
+<div>
+<span class=3D"icon aui-icon content-type-page" title=3D"Page">Page:</span>
+</div>
+<div class=3D"details">
+<a id=3D"1888321580" data-linked-resource-id=3D"1888321580" data-linked-res=
+ource-type=3D"page" data-linked-resource-version=3D"3" href=3D"https://jcph=
+-academic-affairs.atlassian.net/wiki/spaces/2024jcphPHS62015Wk/pages/188832=
+1580/Project+Support+Forum+Specifying+Requirements">Project Support Forum: =
+Specifying Requirements</a>
+</div></li>
+</ul></td>
+<td class=3D"confluenceTd">
+<ul class=3D"content-by-label">
+<li>
+<div>
+<span class=3D"icon aui-icon content-type-page" title=3D"Page">Page:</span>
+</div>
+<div class=3D"details">
+<a id=3D"2003861516" data-linked-resource-id=3D"2003861516" data-linked-res=
+ource-type=3D"page" data-linked-resource-version=3D"1" href=3D"https://jcph=
+-academic-affairs.atlassian.net/wiki/spaces/2024jcphPHS62015Wk/pages/200386=
+1516/No+New+Readings+M09">No New Readings (M09)</a>
+</div></li>
+</ul></td>
+<td class=3D"confluenceTd">
+<ul class=3D"content-by-label">
+<li>
+<div>
+<span class=3D"icon aui-icon content-type-page" title=3D"Page">Page:</span>
+</div>
+<div class=3D"details">
+<a id=3D"1884782593" data-linked-resource-id=3D"1884782593" data-linked-res=
+ource-type=3D"page" data-linked-resource-version=3D"1" href=3D"https://jcph=
+-academic-affairs.atlassian.net/wiki/spaces/2024jcphPHS62015Wk/pages/188478=
+2593/Round+Table+live+Designing+for+Function">Round Table [live]: Designing=
+ for Function</a>
+</div></li>
+</ul></td>
+<td class=3D"confluenceTd">
+<ul class=3D"content-by-label">
+<li>
+<div>
+<span class=3D"icon aui-icon content-type-page" title=3D"Page">Page:</span>
+</div>
+<div class=3D"details">
+<a id=3D"1887993868" data-linked-resource-id=3D"1887993868" data-linked-res=
+ource-type=3D"page" data-linked-resource-version=3D"2" href=3D"https://jcph=
+-academic-affairs.atlassian.net/wiki/spaces/2024jcphPHS62015Wk/pages/188799=
+3868/Schedule+Consult+for+Week+10">Schedule Consult for Week 10</a>
+</div></li>
+<li>
+<div>
+<span class=3D"icon aui-icon content-type-page" title=3D"Page">Page:</span>
+</div>
+<div class=3D"details">
+<a id=3D"1871055994" data-linked-resource-id=3D"1871055994" data-linked-res=
+ource-type=3D"page" data-linked-resource-version=3D"8" href=3D"https://jcph=
+-academic-affairs.atlassian.net/wiki/spaces/2024jcphPHS62015Wk/pages/187105=
+5994/Complete+ITS+Design+Worksheet+and+Objectives">Complete ITS Design Work=
+sheet and Objectives</a>
+</div></li>
+<li>
+<div>
+<span class=3D"icon aui-icon content-type-page" title=3D"Page">Page:</span>
+</div>
+<div class=3D"details">
+<a id=3D"1983807513" data-linked-resource-id=3D"1983807513" data-linked-res=
+ource-type=3D"page" data-linked-resource-version=3D"2" href=3D"https://jcph=
+-academic-affairs.atlassian.net/wiki/spaces/2024jcphPHS62015Wk/pages/198380=
+7513/Specify+your+Project+s+LOs+Instructional+Activities+and+Cruces">Specif=
+y your Project's LOs, Instructional Activities, and Cruces</a>
+</div></li>
+</ul></td>
+<td class=3D"confluenceTd">
+<ul class=3D"content-by-label">
+<li>
+<div>
+<span class=3D"icon aui-icon content-type-page" title=3D"Page">Page:</span>
+</div>
+<div class=3D"details">
+<a id=3D"1871056143" data-linked-resource-id=3D"1871056143" data-linked-res=
+ource-type=3D"page" data-linked-resource-version=3D"1" href=3D"https://jcph=
+-academic-affairs.atlassian.net/wiki/spaces/2024jcphPHS62015Wk/pages/187105=
+6143/5-min+Feedback+Mod+09">5-min Feedback (Mod 09)</a>
+</div></li>
+</ul></td>
+</tr>
+<tr>
+<td class=3D"confluenceTd">
+<p>10</p>
+<p></p>October 26 - November 01</td>
+<td class=3D"confluenceTd">
+<ul class=3D"content-by-label">
+<li>
+<div>
+<span class=3D"icon aui-icon content-type-page" title=3D"Page">Page:</span>
+</div>
+<div class=3D"details">
+<a id=3D"1888813087" data-linked-resource-id=3D"1888813087" data-linked-res=
+ource-type=3D"page" data-linked-resource-version=3D"3" href=3D"https://jcph=
+-academic-affairs.atlassian.net/wiki/spaces/2024jcphPHS62015Wk/pages/188881=
+3087/Project+Support+Forum+Design+Critiques">Project Support Forum: Design =
+Critiques</a>
+</div></li>
+</ul></td>
+<td class=3D"confluenceTd">
+<ul class=3D"content-by-label">
+<li>
+<div>
+<span class=3D"icon aui-icon content-type-page" title=3D"Page">Page:</span>
+</div>
+<div class=3D"details">
+<a id=3D"2004484100" data-linked-resource-id=3D"2004484100" data-linked-res=
+ource-type=3D"page" data-linked-resource-version=3D"1" href=3D"https://jcph=
+-academic-affairs.atlassian.net/wiki/spaces/2024jcphPHS62015Wk/pages/200448=
+4100/No+New+Readings+M10">No New Readings (M10)</a>
+</div></li>
+</ul></td>
+<td class=3D"confluenceTd">
+<ul class=3D"content-by-label">
+<li>
+<div>
+<span class=3D"icon aui-icon content-type-page" title=3D"Page">Page:</span>
+</div>
+<div class=3D"details">
+<a id=3D"1884684296" data-linked-resource-id=3D"1884684296" data-linked-res=
+ource-type=3D"page" data-linked-resource-version=3D"2" href=3D"https://jcph=
+-academic-affairs.atlassian.net/wiki/spaces/2024jcphPHS62015Wk/pages/188468=
+4296/Round+Table+live+Present+Design+s">Round Table [live]: Present Design(=
+s)</a>
+</div></li>
+</ul></td>
+<td class=3D"confluenceTd">
+<ul class=3D"content-by-label">
+<li>
+<div>
+<span class=3D"icon aui-icon content-type-page" title=3D"Page">Page:</span>
+</div>
+<div class=3D"details">
+<a id=3D"2004942849" data-linked-resource-id=3D"2004942849" data-linked-res=
+ource-type=3D"page" data-linked-resource-version=3D"2" href=3D"https://jcph=
+-academic-affairs.atlassian.net/wiki/spaces/2024jcphPHS62015Wk/pages/200494=
+2849/Provide+Project+Design+Critiques">Provide Project Design Critiques</a>
+</div></li>
+<li>
+<div>
+<span class=3D"icon aui-icon content-type-page" title=3D"Page">Page:</span>
+</div>
+<div class=3D"details">
+<a id=3D"1871056313" data-linked-resource-id=3D"1871056313" data-linked-res=
+ource-type=3D"page" data-linked-resource-version=3D"6" href=3D"https://jcph=
+-academic-affairs.atlassian.net/wiki/spaces/2024jcphPHS62015Wk/pages/187105=
+6313/Present+Project+Designs+and+Cruces">Present Project Designs and Cruces=
+</a>
+</div></li>
+</ul></td>
+<td class=3D"confluenceTd">
+<ul class=3D"content-by-label">
+<li>
+<div>
+<span class=3D"icon aui-icon content-type-page" title=3D"Page">Page:</span>
+</div>
+<div class=3D"details">
+<a id=3D"1871056462" data-linked-resource-id=3D"1871056462" data-linked-res=
+ource-type=3D"page" data-linked-resource-version=3D"1" href=3D"https://jcph=
+-academic-affairs.atlassian.net/wiki/spaces/2024jcphPHS62015Wk/pages/187105=
+6462/5-min+Feedback+Mod+10">5-min Feedback (Mod 10)</a>
+</div></li>
+</ul></td>
+</tr>
+<tr>
+<td class=3D"confluenceTd">
+<p>11</p>
+<p></p>November 02 - November 08</td>
+<td class=3D"confluenceTd">
+<ul class=3D"content-by-label">
+<li>
+<div>
+<span class=3D"icon aui-icon content-type-page" title=3D"Page">Page:</span>
+</div>
+<div class=3D"details">
+<a id=3D"1888256019" data-linked-resource-id=3D"1888256019" data-linked-res=
+ource-type=3D"page" data-linked-resource-version=3D"3" href=3D"https://jcph=
+-academic-affairs.atlassian.net/wiki/spaces/2024jcphPHS62015Wk/pages/188825=
+6019/Project+Support+Forum+Alphas">Project Support Forum: Alphas</a>
+</div></li>
+</ul></td>
+<td class=3D"confluenceTd">
+<ul class=3D"content-by-label">
+<li>
+<div>
+<span class=3D"icon aui-icon content-type-page" title=3D"Page">Page:</span>
+</div>
+<div class=3D"details">
+<a id=3D"2004779009" data-linked-resource-id=3D"2004779009" data-linked-res=
+ource-type=3D"page" data-linked-resource-version=3D"1" href=3D"https://jcph=
+-academic-affairs.atlassian.net/wiki/spaces/2024jcphPHS62015Wk/pages/200477=
+9009/No+New+Readings+M11">No New Readings (M11)</a>
+</div></li>
+</ul></td>
+<td class=3D"confluenceTd">
+<ul class=3D"content-by-label">
+<li>
+<div>
+<span class=3D"icon aui-icon content-type-page" title=3D"Page">Page:</span>
+</div>
+<div class=3D"details">
+<a id=3D"1883799576" data-linked-resource-id=3D"1883799576" data-linked-res=
+ource-type=3D"page" data-linked-resource-version=3D"2" href=3D"https://jcph=
+-academic-affairs.atlassian.net/wiki/spaces/2024jcphPHS62015Wk/pages/188379=
+9576/Round+Table+live+Deploying+the+Project+Alpha">Round Table [live]: Depl=
+oying the Project 'Alpha'</a>
+</div></li>
+</ul></td>
+<td class=3D"confluenceTd">
+<ul class=3D"content-by-label">
+<li>
+<div>
+<span class=3D"icon aui-icon content-type-page" title=3D"Page">Page:</span>
+</div>
+<div class=3D"details">
+<a id=3D"1884684323" data-linked-resource-id=3D"1884684323" data-linked-res=
+ource-type=3D"page" data-linked-resource-version=3D"3" href=3D"https://jcph=
+-academic-affairs.atlassian.net/wiki/spaces/2024jcphPHS62015Wk/pages/188468=
+4323/Schedule+Consult+for+Week+12">Schedule Consult for Week 12</a>
+</div></li>
+<li>
+<div>
+<span class=3D"icon aui-icon content-type-page" title=3D"Page">Page:</span>
+</div>
+<div class=3D"details">
+<a id=3D"1888157697" data-linked-resource-id=3D"1888157697" data-linked-res=
+ource-type=3D"page" data-linked-resource-version=3D"6" href=3D"https://jcph=
+-academic-affairs.atlassian.net/wiki/spaces/2024jcphPHS62015Wk/pages/188815=
+7697/Build+your+ITS+Project+Alpha">Build your ITS Project 'Alpha'</a>
+</div></li>
+</ul></td>
+<td class=3D"confluenceTd">
+<ul class=3D"content-by-label">
+<li>
+<div>
+<span class=3D"icon aui-icon content-type-page" title=3D"Page">Page:</span>
+</div>
+<div class=3D"details">
+<a id=3D"1871056784" data-linked-resource-id=3D"1871056784" data-linked-res=
+ource-type=3D"page" data-linked-resource-version=3D"1" href=3D"https://jcph=
+-academic-affairs.atlassian.net/wiki/spaces/2024jcphPHS62015Wk/pages/187105=
+6784/5-min+Feedback+Mod+11">5-min Feedback (Mod 11)</a>
+</div></li>
+</ul></td>
+</tr>
+<tr>
+<td class=3D"confluenceTd">
+<p>12</p>
+<p></p>November 09 - November 15</td>
+<td class=3D"confluenceTd">
+<ul class=3D"content-by-label">
+<li>
+<div>
+<span class=3D"icon aui-icon content-type-page" title=3D"Page">Page:</span>
+</div>
+<div class=3D"details">
+<a id=3D"1887797268" data-linked-resource-id=3D"1887797268" data-linked-res=
+ource-type=3D"page" data-linked-resource-version=3D"4" href=3D"https://jcph=
+-academic-affairs.atlassian.net/wiki/spaces/2024jcphPHS62015Wk/pages/188779=
+7268/Project+Support+Forum+Completing+Alphas">Project Support Forum: Comple=
+ting Alphas</a>
+</div></li>
+</ul></td>
+<td class=3D"confluenceTd">
+<ul class=3D"content-by-label">
+<li>
+<div>
+<span class=3D"icon aui-icon content-type-page" title=3D"Page">Page:</span>
+</div>
+<div class=3D"details">
+<a id=3D"2004353026" data-linked-resource-id=3D"2004353026" data-linked-res=
+ource-type=3D"page" data-linked-resource-version=3D"1" href=3D"https://jcph=
+-academic-affairs.atlassian.net/wiki/spaces/2024jcphPHS62015Wk/pages/200435=
+3026/No+New+Readings+M12">No New Readings (M12)</a>
+</div></li>
+</ul></td>
+<td class=3D"confluenceTd">
+<ul class=3D"content-by-label">
+<li>
+<div>
+<span class=3D"icon aui-icon content-type-page" title=3D"Page">Page:</span>
+</div>
+<div class=3D"details">
+<a id=3D"1884225544" data-linked-resource-id=3D"1884225544" data-linked-res=
+ource-type=3D"page" data-linked-resource-version=3D"1" href=3D"https://jcph=
+-academic-affairs.atlassian.net/wiki/spaces/2024jcphPHS62015Wk/pages/188422=
+5544/Round+Table+live+Deploying+Project+Betas">Round Table [live]: Deployin=
+g Project Betas</a>
+</div></li>
+</ul></td>
+<td class=3D"confluenceTd">
+<ul class=3D"content-by-label">
+<li>
+<div>
+<span class=3D"icon aui-icon content-type-page" title=3D"Page">Page:</span>
+</div>
+<div class=3D"details">
+<a id=3D"1871056957" data-linked-resource-id=3D"1871056957" data-linked-res=
+ource-type=3D"page" data-linked-resource-version=3D"6" href=3D"https://jcph=
+-academic-affairs.atlassian.net/wiki/spaces/2024jcphPHS62015Wk/pages/187105=
+6957/Conduct+Usability+Testing+Alpha">Conduct Usability Testing (Alpha)</a>
+</div></li>
+</ul></td>
+<td class=3D"confluenceTd">
+<ul class=3D"content-by-label">
+<li>
+<div>
+<span class=3D"icon aui-icon content-type-page" title=3D"Page">Page:</span>
+</div>
+<div class=3D"details">
+<a id=3D"1871057106" data-linked-resource-id=3D"1871057106" data-linked-res=
+ource-type=3D"page" data-linked-resource-version=3D"1" href=3D"https://jcph=
+-academic-affairs.atlassian.net/wiki/spaces/2024jcphPHS62015Wk/pages/187105=
+7106/5-min+Feedback+Mod+12">5-min Feedback (Mod 12)</a>
+</div></li>
+</ul></td>
+</tr>
+<tr>
+<td class=3D"confluenceTd">
+<p>13</p>
+<p></p>November 16 - November 22</td>
+<td class=3D"confluenceTd">
+<ul class=3D"content-by-label">
+<li>
+<div>
+<span class=3D"icon aui-icon content-type-page" title=3D"Page">Page:</span>
+</div>
+<div class=3D"details">
+<a id=3D"1888649222" data-linked-resource-id=3D"1888649222" data-linked-res=
+ource-type=3D"page" data-linked-resource-version=3D"4" href=3D"https://jcph=
+-academic-affairs.atlassian.net/wiki/spaces/2024jcphPHS62015Wk/pages/188864=
+9222/Project+Support+Forum+Deploying+Betas">Project Support Forum: Deployin=
+g Betas</a>
+</div></li>
+</ul></td>
+<td class=3D"confluenceTd">
+<ul class=3D"content-by-label">
+<li>
+<div>
+<span class=3D"icon aui-icon content-type-page" title=3D"Page">Page:</span>
+</div>
+<div class=3D"details">
+<a id=3D"2004025362" data-linked-resource-id=3D"2004025362" data-linked-res=
+ource-type=3D"page" data-linked-resource-version=3D"1" href=3D"https://jcph=
+-academic-affairs.atlassian.net/wiki/spaces/2024jcphPHS62015Wk/pages/200402=
+5362/No+New+Readings+M13">No New Readings (M13)</a>
+</div></li>
+</ul></td>
+<td class=3D"confluenceTd">
+<ul class=3D"content-by-label">
+<li>
+<div>
+<span class=3D"icon aui-icon content-type-page" title=3D"Page">Page:</span>
+</div>
+<div class=3D"details">
+<a id=3D"1884815362" data-linked-resource-id=3D"1884815362" data-linked-res=
+ource-type=3D"page" data-linked-resource-version=3D"1" href=3D"https://jcph=
+-academic-affairs.atlassian.net/wiki/spaces/2024jcphPHS62015Wk/pages/188481=
+5362/Round+Table+live+Project+Performance+and+Validation">Round Table [live=
+]: Project Performance and Validation</a>
+</div></li>
+</ul></td>
+<td class=3D"confluenceTd">
+<ul class=3D"content-by-label">
+<li>
+<div>
+<span class=3D"icon aui-icon content-type-page" title=3D"Page">Page:</span>
+</div>
+<div class=3D"details">
+<a id=3D"1871057261" data-linked-resource-id=3D"1871057261" data-linked-res=
+ource-type=3D"page" data-linked-resource-version=3D"4" href=3D"https://jcph=
+-academic-affairs.atlassian.net/wiki/spaces/2024jcphPHS62015Wk/pages/187105=
+7261/Capture+Project+Performance+Data+Beta">Capture Project Performance Dat=
+a (Beta)</a>
+</div></li>
+</ul></td>
+<td class=3D"confluenceTd">
+<ul class=3D"content-by-label">
+<li>
+<div>
+<span class=3D"icon aui-icon content-type-page" title=3D"Page">Page:</span>
+</div>
+<div class=3D"details">
+<a id=3D"1871057409" data-linked-resource-id=3D"1871057409" data-linked-res=
+ource-type=3D"page" data-linked-resource-version=3D"1" href=3D"https://jcph=
+-academic-affairs.atlassian.net/wiki/spaces/2024jcphPHS62015Wk/pages/187105=
+7409/5-min+Feedback+Mod+13">5-min Feedback (Mod 13)</a>
+</div></li>
+</ul></td>
+</tr>
+<tr>
+<td class=3D"confluenceTd">
+<p>14</p>
+<p></p>November 23 - November 29</td>
+<td class=3D"confluenceTd">
+<ul class=3D"content-by-label">
+<li>
+<div>
+<span class=3D"icon aui-icon content-type-page" title=3D"Page">Page:</span>
+</div>
+<div class=3D"details">
+<a id=3D"1887928328" data-linked-resource-id=3D"1887928328" data-linked-res=
+ource-type=3D"page" data-linked-resource-version=3D"2" href=3D"https://jcph=
+-academic-affairs.atlassian.net/wiki/spaces/2024jcphPHS62015Wk/pages/188792=
+8328/Project+Support+Forum+Validation">Project Support Forum: Validation</a=
+>
+</div></li>
+</ul></td>
+<td class=3D"confluenceTd">
+<ul class=3D"content-by-label">
+<li>
+<div>
+<span class=3D"icon aui-icon content-type-page" title=3D"Page">Page:</span>
+</div>
+<div class=3D"details">
+<a id=3D"2004025389" data-linked-resource-id=3D"2004025389" data-linked-res=
+ource-type=3D"page" data-linked-resource-version=3D"1" href=3D"https://jcph=
+-academic-affairs.atlassian.net/wiki/spaces/2024jcphPHS62015Wk/pages/200402=
+5389/No+New+Readings+M14">No New Readings (M14)</a>
+</div></li>
+</ul></td>
+<td class=3D"confluenceTd">
+<ul class=3D"content-by-label">
+<li>
+<div>
+<span class=3D"icon aui-icon content-type-page" title=3D"Page">Page:</span>
+</div>
+<div class=3D"details">
+<a id=3D"1884880898" data-linked-resource-id=3D"1884880898" data-linked-res=
+ource-type=3D"page" data-linked-resource-version=3D"2" href=3D"https://jcph=
+-academic-affairs.atlassian.net/wiki/spaces/2024jcphPHS62015Wk/pages/188488=
+0898/Round+Table+live+Design+Outcomes+and+the+Real+World">Round Table [live=
+]: Design, Outcomes, and the 'Real World'</a>
+</div></li>
+</ul></td>
+<td class=3D"confluenceTd">
+<ul class=3D"content-by-label">
+<li>
+<div>
+<span class=3D"icon aui-icon content-type-page" title=3D"Page">Page:</span>
+</div>
+<div class=3D"details">
+<a id=3D"1871057554" data-linked-resource-id=3D"1871057554" data-linked-res=
+ource-type=3D"page" data-linked-resource-version=3D"2" href=3D"https://jcph=
+-academic-affairs.atlassian.net/wiki/spaces/2024jcphPHS62015Wk/pages/187105=
+7554/Capture+Project+Validation+Data">Capture Project Validation Data</a>
+</div></li>
+</ul></td>
+<td class=3D"confluenceTd">
+<ul class=3D"content-by-label">
+<li>
+<div>
+<span class=3D"icon aui-icon content-type-page" title=3D"Page">Page:</span>
+</div>
+<div class=3D"details">
+<a id=3D"1871057703" data-linked-resource-id=3D"1871057703" data-linked-res=
+ource-type=3D"page" data-linked-resource-version=3D"1" href=3D"https://jcph=
+-academic-affairs.atlassian.net/wiki/spaces/2024jcphPHS62015Wk/pages/187105=
+7703/5-min+Feedback+Mod+14">5-min Feedback (Mod 14)</a>
+</div></li>
+</ul></td>
+</tr>
+<tr>
+<td class=3D"confluenceTd">
+<p>15</p>
+<p></p>November 30 - December 06</td>
+<td class=3D"confluenceTd">
+<ul class=3D"content-by-label">
+<li>
+<div>
+<span class=3D"icon aui-icon content-type-page" title=3D"Page">Page:</span>
+</div>
+<div class=3D"details">
+<a id=3D"1888813057" data-linked-resource-id=3D"1888813057" data-linked-res=
+ource-type=3D"page" data-linked-resource-version=3D"2" href=3D"https://jcph=
+-academic-affairs.atlassian.net/wiki/spaces/2024jcphPHS62015Wk/pages/188881=
+3057/Reflection+on+Learning">Reflection on Learning</a>
+</div></li>
+</ul></td>
+<td class=3D"confluenceTd">
+<ul class=3D"content-by-label">
+<li>
+<div>
+<span class=3D"icon aui-icon content-type-page" title=3D"Page">Page:</span>
+</div>
+<div class=3D"details">
+<a id=3D"2003795972" data-linked-resource-id=3D"2003795972" data-linked-res=
+ource-type=3D"page" data-linked-resource-version=3D"1" href=3D"https://jcph=
+-academic-affairs.atlassian.net/wiki/spaces/2024jcphPHS62015Wk/pages/200379=
+5972/No+New+Readings+M15">No New Readings (M15)</a>
+</div></li>
+</ul></td>
+<td class=3D"confluenceTd">
+<ul class=3D"content-by-label">
+<li>
+<div>
+<span class=3D"icon aui-icon content-type-page" title=3D"Page">Page:</span>
+</div>
+<div class=3D"details">
+<a id=3D"2003992605" data-linked-resource-id=3D"2003992605" data-linked-res=
+ource-type=3D"page" data-linked-resource-version=3D"1" href=3D"https://jcph=
+-academic-affairs.atlassian.net/wiki/spaces/2024jcphPHS62015Wk/pages/200399=
+2605/No+New+Presentations+M15">No New Presentations (M15)</a>
+</div></li>
+</ul></td>
+<td class=3D"confluenceTd">
+<ul class=3D"content-by-label">
+<li>
+<div>
+<span class=3D"icon aui-icon content-type-page" title=3D"Page">Page:</span>
+</div>
+<div class=3D"details">
+<a id=3D"1871057849" data-linked-resource-id=3D"1871057849" data-linked-res=
+ource-type=3D"page" data-linked-resource-version=3D"4" href=3D"https://jcph=
+-academic-affairs.atlassian.net/wiki/spaces/2024jcphPHS62015Wk/pages/187105=
+7849/Schedule+and+Attend+Concluding+Consult">Schedule and Attend Concluding=
+ Consult</a>
+</div></li>
+</ul></td>
+<td class=3D"confluenceTd">
+<ul class=3D"content-by-label">
+<li>
+<div>
+<span class=3D"icon aui-icon content-type-page" title=3D"Page">Page:</span>
+</div>
+<div class=3D"details">
+<a id=3D"1871057998" data-linked-resource-id=3D"1871057998" data-linked-res=
+ource-type=3D"page" data-linked-resource-version=3D"1" href=3D"https://jcph=
+-academic-affairs.atlassian.net/wiki/spaces/2024jcphPHS62015Wk/pages/187105=
+7998/5-min+Feedback+Mod+15">5-min Feedback (Mod 15)</a>
+</div></li>
+</ul></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><strong>Learning Activities:</strong></p>
+<p>[add Learning Activities here]</p>
+<p></p>
+<p></p>
+<p><strong>Assignments Point Allocation Table:</strong></p>
+<div class=3D"table-wrap">
+<table data-table-width=3D"651" data-layout=3D"default" data-local-id=3D"a9=
+799972-fc36-463e-9309-6c6579414a17" class=3D"confluenceTable">
+<colgroup>
+<col style=3D"width: 651.0px;">
+</colgroup>
+<tbody>
+<tr>
+<td class=3D"confluenceTd">
+<div class=3D"table-wrap">
+<table data-table-width=3D"760" data-layout=3D"default" data-local-id=3D"d7=
+a575ef-8867-4092-b6b8-d05d2d8b9f1b" class=3D"confluenceTable">
+<colgroup>
+<col style=3D"width: 525.0px;">
+<col style=3D"width: 50.0px;">
+<col style=3D"width: 48.0px;">
+<col style=3D"width: 48.0px;">
+<col style=3D"width: 89.0px;">
+</colgroup>
+<tbody>
+<tr>
+<th class=3D"confluenceTh">
+<p><strong>Assignments</strong></p></th>
+<th class=3D"confluenceTh">
+<p><strong>Qnty</strong></p></th>
+<th class=3D"confluenceTh">
+<p><strong>Pts Each</strong></p></th>
+<th class=3D"confluenceTh">
+<p><strong>Sub</strong><br><strong>total</strong></p></th>
+<th class=3D"confluenceTh">
+<p><strong>Notes</strong></p></th>
+</tr>
+<tr>
+<td class=3D"confluenceTd">
+<p>Discussion Questions (1 each week + intro and reflection)</p></td>
+<td class=3D"confluenceTd">
+<p>15</p></td>
+<td class=3D"confluenceTd">
+<p>5</p></td>
+<td class=3D"confluenceTd">
+<p>70</p></td>
+<td class=3D"confluenceTd">
+<p></p></td>
+</tr>
+<tr>
+<td class=3D"confluenceTd">
+<p>Weekly 5-min. feedback</p></td>
+<td class=3D"confluenceTd">
+<p>15</p></td>
+<td class=3D"confluenceTd">
+<p>1</p></td>
+<td class=3D"confluenceTd">
+<p>15</p></td>
+<td class=3D"confluenceTd">
+<p></p></td>
+</tr>
+<tr>
+<td class=3D"confluenceTd">
+<p>WK 01: Profiling the Adult Learner</p></td>
+<td class=3D"confluenceTd">
+<p>1</p></td>
+<td class=3D"confluenceTd">
+<p>15</p></td>
+<td class=3D"confluenceTd">
+<p>15</p></td>
+<td class=3D"confluenceTd">
+<p></p></td>
+</tr>
+<tr>
+<td class=3D"confluenceTd">
+<p>WK 02: Training Project Proposal with Topic Outline</p></td>
+<td class=3D"confluenceTd">
+<p>1</p></td>
+<td class=3D"confluenceTd">
+<p>20</p></td>
+<td class=3D"confluenceTd">
+<p>20</p></td>
+<td class=3D"confluenceTd">
+<p></p></td>
+</tr>
+<tr>
+<td class=3D"confluenceTd">
+<p>WK 03: Design Lesson for Mixed-modality</p></td>
+<td class=3D"confluenceTd">
+<p>1</p></td>
+<td class=3D"confluenceTd">
+<p>20</p></td>
+<td class=3D"confluenceTd">
+<p>20</p></td>
+<td class=3D"confluenceTd">
+<p></p></td>
+</tr>
+<tr>
+<td class=3D"confluenceTd">
+<p>WK 04: Design and Rehearse Your Lesson=E2=80=99s Lecture</p></td>
+<td class=3D"confluenceTd">
+<p>1</p></td>
+<td class=3D"confluenceTd">
+<p>25</p></td>
+<td class=3D"confluenceTd">
+<p>25</p></td>
+<td class=3D"confluenceTd">
+<p></p></td>
+</tr>
+<tr>
+<td class=3D"confluenceTd">
+<p>WK 05: Create an Online Instructional Activity</p></td>
+<td class=3D"confluenceTd">
+<p>1</p></td>
+<td class=3D"confluenceTd">
+<p>35</p></td>
+<td class=3D"confluenceTd">
+<p>35</p></td>
+<td class=3D"confluenceTd">
+<p></p></td>
+</tr>
+<tr>
+<td class=3D"confluenceTd">
+<p>WK 05: Deliver Your Lesson=E2=80=99s Lecture</p></td>
+<td class=3D"confluenceTd">
+<p>1</p></td>
+<td class=3D"confluenceTd">
+<p>20</p></td>
+<td class=3D"confluenceTd">
+<p>20</p></td>
+<td class=3D"confluenceTd">
+<p></p></td>
+</tr>
+<tr>
+<td class=3D"confluenceTd">
+<p>WK 06: Create an Assessment for your Lesson</p></td>
+<td class=3D"confluenceTd">
+<p>1</p></td>
+<td class=3D"confluenceTd">
+<p>20</p></td>
+<td class=3D"confluenceTd">
+<p>20</p></td>
+<td class=3D"confluenceTd">
+<p></p></td>
+</tr>
+<tr>
+<td class=3D"confluenceTd">
+<p>WK 06: Create Prerecording of your Lesson Design or your Lecture</p></td=
+>
+<td class=3D"confluenceTd">
+<p>1</p></td>
+<td class=3D"confluenceTd">
+<p>20</p></td>
+<td class=3D"confluenceTd">
+<p>20</p></td>
+<td class=3D"confluenceTd">
+<p></p></td>
+</tr>
+<tr>
+<td class=3D"confluenceTd">
+<p>WK 07: Post Final Lesson Design, with Presentation</p></td>
+<td class=3D"confluenceTd">
+<p>1</p></td>
+<td class=3D"confluenceTd">
+<p>20</p></td>
+<td class=3D"confluenceTd">
+<p>20</p></td>
+<td class=3D"confluenceTd">
+<p></p></td>
+</tr>
+<tr>
+<td class=3D"confluenceTd">
+<p>WK 07: Implementation Roadmap</p></td>
+<td class=3D"confluenceTd">
+<p>1</p></td>
+<td class=3D"confluenceTd">
+<p>10</p></td>
+<td class=3D"confluenceTd">
+<p>10</p></td>
+<td class=3D"confluenceTd">
+<p></p></td>
+</tr>
+<tr>
+<td class=3D"confluenceTd">
+<p>WK 08: Map your Work to Class ITS Framework</p></td>
+<td class=3D"confluenceTd">
+<p>1</p></td>
+<td class=3D"confluenceTd">
+<p>20</p></td>
+<td class=3D"confluenceTd">
+<p>20</p></td>
+<td class=3D"confluenceTd">
+<p></p></td>
+</tr>
+<tr>
+<td class=3D"confluenceTd">
+<p>WK 09: Create ITS Design Worksheet and Objectives</p></td>
+<td class=3D"confluenceTd">
+<p>1</p></td>
+<td class=3D"confluenceTd">
+<p>20</p></td>
+<td class=3D"confluenceTd">
+<p>20</p></td>
+<td class=3D"confluenceTd">
+<p></p></td>
+</tr>
+<tr>
+<td class=3D"confluenceTd">
+<p>WK 10: Present Project Designs</p></td>
+<td class=3D"confluenceTd">
+<p>1</p></td>
+<td class=3D"confluenceTd">
+<p>20</p></td>
+<td class=3D"confluenceTd">
+<p>20</p></td>
+<td class=3D"confluenceTd">
+<p></p></td>
+</tr>
+<tr>
+<td class=3D"confluenceTd">
+<p>WK 11: Create Worksheet for Project 'Alpha'</p></td>
+<td class=3D"confluenceTd">
+<p>1</p></td>
+<td class=3D"confluenceTd">
+<p>20</p></td>
+<td class=3D"confluenceTd">
+<p>20</p></td>
+<td class=3D"confluenceTd">
+<p></p></td>
+</tr>
+<tr>
+<td class=3D"confluenceTd">
+<p>WK 12: Conduct Usability Testing</p></td>
+<td class=3D"confluenceTd">
+<p>1</p></td>
+<td class=3D"confluenceTd">
+<p>25</p></td>
+<td class=3D"confluenceTd">
+<p>25</p></td>
+<td class=3D"confluenceTd">
+<p></p></td>
+</tr>
+<tr>
+<td class=3D"confluenceTd">
+<p>WK 13: Capture Project Performance Data</p></td>
+<td class=3D"confluenceTd">
+<p>1</p></td>
+<td class=3D"confluenceTd">
+<p>35</p></td>
+<td class=3D"confluenceTd">
+<p>35</p></td>
+<td class=3D"confluenceTd">
+<p></p></td>
+</tr>
+<tr>
+<td class=3D"confluenceTd">
+<p>WK 14: Capture Project Validation Data</p></td>
+<td class=3D"confluenceTd">
+<p>1</p></td>
+<td class=3D"confluenceTd">
+<p>35</p></td>
+<td class=3D"confluenceTd">
+<p>35</p></td>
+<td class=3D"confluenceTd">
+<p></p></td>
+</tr>
+<tr>
+<td class=3D"confluenceTd">
+<p>WK 15: Transfer of Learning Plan</p></td>
+<td class=3D"confluenceTd">
+<p>1</p></td>
+<td class=3D"confluenceTd">
+<p>25</p></td>
+<td class=3D"confluenceTd">
+<p>25</p></td>
+<td class=3D"confluenceTd">
+<p></p></td>
+</tr>
+<tr>
+<td class=3D"confluenceTd">
+<p>Final Course Evaluation</p></td>
+<td class=3D"confluenceTd">
+<p>1</p></td>
+<td class=3D"confluenceTd">
+<p>10</p></td>
+<td class=3D"confluenceTd">
+<p>10</p></td>
+<td class=3D"confluenceTd">
+<p></p></td>
+</tr>
+</tbody>
+</table>
+</div></td>
+</tr>
+</tbody>
+</table>
+</div>
+<h3 id=3D"Syllabus-SpecialCourseProvisions:"><strong>Special Course Provisi=
+ons:</strong></h3>
+<p><em>Here is some default policy statement to test the fetching ability o=
+f v2 API endpoints being experimented with.</em></p>
+<p></p>
+<h2 local-id=3D"b7107e55922c" id=3D"Syllabus-CourseRequirementsandGradingPo=
+licies:">
+<style>[data-colorid=3Duggjmbf1am]{color:#bf2600} html[data-color-mode=3Dda=
+rk] [data-colorid=3Duggjmbf1am]{color:#ff6640}</style>Course Requirements a=
+nd Grading Policies:</h2>
+<p local-id=3D"f3831053bce4"><strong><span data-colorid=3D"uggjmbf1am">JCPH=
+ Canvas Onboarding Training (2025 updates):</span></strong></p>
+<p local-id=3D"2eb53ac54a0f">Complete the module on AI usage if you have no=
+t already done so: =E2=80=98<a class=3D"external-link" href=3D"https://jeff=
+erson.instructure.com/courses/7062/modules/449017" rel=3D"nofollow">What Ab=
+out AI in the Classroom?</a>=E2=80=99</p>
+<p local-id=3D"199d92121366"><strong>Attendance and Participation:</strong>=
+</p>
+<p local-id=3D"911478bde639">A significant part of your grade for this cour=
+se will be based on attendance and participation. In our online learning en=
+vironment, the attendance and participation take the form of your contribut=
+ions to the discussions on the class Discussion Board and your contribution=
+s to the learning community.</p>
+<p local-id=3D"dc99d181b1a1">You will earn the most participation points by=
+ making regular, high-quality postings to the discussion forums, providing =
+your feedback on the weekly '5-min. feedback' surveys, and submitting the f=
+inal course evaluation. Responses to both weekly feedback and the final cou=
+rse evaluation are always kept confidential.</p>
+<p local-id=3D"e38365faa6f6"><strong>Minimum participation requirements:</s=
+trong> Each week or module, all participants must post to <em>each</em> dis=
+cussion topic a minimum of <em>three</em> times. These postings must be mad=
+e on at least two different days during the week/module. (You should not ma=
+ke all three postings on the same day.)</p>
+<p local-id=3D"b0cbcc89b14d"><strong>First posting before midnight, Wednesd=
+ay:</strong> make your first post to the current week=E2=80=99s/module's di=
+scussion topics early---before midnight Wednesday. This posting is your ori=
+ginal, individual response to each of the discussion questions presented fo=
+r the week/module.</p>
+<p local-id=3D"7a18d19b1aa1"><strong>Second posting before noon, Saturday:<=
+/strong> make your second set of posts toward the end of the week/module or=
+ early on the weekend (before Saturday, noon). Respond to at least two of y=
+our classmates' postings in each of the week's/module's discussion forums.<=
+/p>
+<p local-id=3D"7fe319f82ee2"><em>See the course points allocation table loc=
+ated on the last page/screen of the syllabus for the number of discussion f=
+orums in your course and their point value.</em></p>
+<p local-id=3D"3f2c4ee774b8"><strong>Policy Regarding Late Work:</strong></=
+p>
+<p local-id=3D"0892658439d9">a. Our course is structured around weekly less=
+ons or modules. A week/module is considered to <strong>begin on a Monday an=
+d end the following Sunday.</strong> Depending on your class schedule, some=
+ modules may span more than one week.</p>
+<p local-id=3D"2ba03a50a381">i. All postings to discussions should be <em>c=
+ompleted by midnight Sunday</em> for the week/module that is ending. No poi=
+nts will be given for discussion postings not made by the close of the week=
+/module (because your postings are meant to be read by others, and their va=
+lue diminishes significantly once the class has moved on to the new week/mo=
+dule).</p>
+<p local-id=3D"57c006fe1c93">ii. All assignments other than discussions <st=
+rong>are due by Sunday at midnight&nbsp;</strong>of the current week/module=
+ unless otherwise specified in an assignment's instructions. Always review =
+each assignment's instructions for complete information about its submissio=
+n requirements.</p>
+<p local-id=3D"b8635d6a9036">The least flexible types of assignments, when =
+it comes to completion dates, are:</p>
+<ol start=3D"1" local-id=3D"46a522c355af">
+<li local-id=3D"3b79e38a43a9">
+<p local-id=3D"921198e19535">Discussions: you need to keep pace with the cl=
+ass or else the class discussion fragments.</p></li>
+</ol>
+<ol start=3D"1" local-id=3D"1ab7500ce688">
+<li local-id=3D"f1594720e757">
+<p local-id=3D"cde21a01ab1c">Pair or group work: you must not negatively im=
+pact the progress of your classmates.</p></li>
+</ol>
+<p local-id=3D"18ec6f5cb765"><strong>Writing Standards (APA Guidelines):</s=
+trong></p>
+<p local-id=3D"e6b11fa9ec97">Papers and other documents submitted as course=
+ work are to conform to APA style guidelines. These guidelines can be revie=
+wed in the JCPH Canvas Onboarding training, where a model paper in general =
+APA style can also be found: <a class=3D"external-link" href=3D"https://jef=
+ferson.instructure.com/courses/7062/pages/readings-and-resources?module_ite=
+m_id=3D1315666" rel=3D"nofollow">APA Guidelines</a>. APA conventions for th=
+e use of title pages, page formatting, in-text citations, the attribution o=
+f quotations, Reference lists, and all other elements of your documents mus=
+t be adhered to in order to receive full credit on written assignments. Thi=
+s includes APA stylistics covering point of view, word choice, clarity and =
+conciseness. Electronic sources and other non-print materials must be refer=
+enced per APA guidelines developed for that purpose.</p>
+<p local-id=3D"0825423d8562">The only exceptions to this College policy are=
+:</p>
+<ul local-id=3D"f18e874a83c6">
+<li local-id=3D"6274c89306ab">
+<p local-id=3D"3acf70a9c599">Instructors may substitute another style stand=
+ard, such as that of the American Medical Association, for the APA standard=
+ so long as the alternative standard is equally comprehensive and equally a=
+ part of the evaluation of written work.</p></li>
+<li local-id=3D"3cc6330c5e98">
+<p local-id=3D"3db3ae8f63de">Documents of less than 2000 words (excluding R=
+eference list and any appendices) need not carry an Abstract or list of key=
+words.</p></li>
+</ul>
+<p local-id=3D"db952d6947c0"><strong>Use of AI Tools for Coursework:</stron=
+g></p>
+<p local-id=3D"303b5c9415c3">The use of generative AI tools for coursework,=
+ including conducting analyses or creating content, is permitted only if ex=
+plicitly approved by the instructor.</p>
+<p local-id=3D"e14eac664844">In alignment with the College's commitment to =
+academic integrity, students are expected to submit coursework that is genu=
+inely their own. Each student is accountable for the academic integrity of =
+their submitted work and for upholding privacy, confidentiality, and intell=
+ectual property rights.</p>
+<p local-id=3D"e45b4714c270">When granted permission by the instructor to u=
+se AI tools, students must adhere strictly to the instructor=E2=80=99s guid=
+elines. This includes citing all AI-derived sources and producing all evide=
+nce of authenticity that may be called for by an assignment=E2=80=99s instr=
+uctions. Such evidence may include drafts of work, prompts, scripts, screen=
+shots, primary data, or other documentation.</p>
+<p local-id=3D"9f9dcf36577e">The College=E2=80=99s policy is based upon Jef=
+ferson University=E2=80=99s standards for 'Restricted Use' of generative AI=
+. For further details, see the policy statement: <a class=3D"external-link"=
+ href=3D"https://www.jefferson.edu/life-at-jefferson/handbooks/policies/gra=
+duate-policies/artificial-intelligence.html" rel=3D"nofollow">Graduate Poli=
+cies: Artificial Intelligence</a>.</p>
+<p local-id=3D"d0c4ac18b7f1"><strong>TJU Academic Integrity Policy:</strong=
+></p>
+<p local-id=3D"a6106cae5ff3">Academic Integrity is the foundation of all Je=
+fferson teaching, learning, and professional endeavors and is vital to adva=
+ncing a culture of fairness, trust and respect. All members of the Universi=
+ty community must maintain respect for the intellectual efforts of others a=
+nd be honest in their own work, words, and ideas.</p>
+<p local-id=3D"aa59e070607b">Policy:&nbsp; <a class=3D"external-link" href=
+=3D"https://www.jefferson.edu/life-at-jefferson/handbooks/policies/graduate=
+-policies/academic-integrity.html" rel=3D"nofollow"><strong>Graduate Progra=
+ms</strong></a><br>
+Policy:<strong> </strong><a class=3D"external-link" href=3D"https://www.jef=
+ferson.edu/life-at-jefferson/handbooks/policies/undergraduate-policies/acad=
+emic-integrity.html" rel=3D"nofollow"><strong>Undergraduate Programs</stron=
+g></a></p>
+<p local-id=3D"0f1934ee9c3f"><strong>Use of 'Turnitin' (automated originali=
+ty reporting tool):</strong></p>
+<p local-id=3D"485189000ce4">Turnitin is used to prevent plagiarism and to =
+help students identify how to properly attribute sources. It does so by com=
+paring submitted assignments against a database of academic papers and inte=
+rnet information to identify areas of overlap between the submitted assignm=
+ent and existing works, producing a "similarity report." The similarity sco=
+re is a percentage of an assignment=E2=80=99s content that matches the sear=
+ched databases. Students and faculty should analyze the results of the repo=
+rt to determine if plagiarism has occurred.</p>
+<p local-id=3D"09f8ca03db15"><strong>GPA and Related Requirements:&nbsp;</s=
+trong> Please refer to the JCPH Student Handbook located under 'Handbooks a=
+nd Forms' on the Student Resources page: <a class=3D"external-link" href=3D=
+"https://www.jefferson.edu/academics/colleges-schools-institutes/population=
+-health/student-resources/handbooks-forms.html" rel=3D"nofollow"><strong>Ha=
+ndbooks &amp; Forms</strong></a></p>
+<p local-id=3D"31dedecd6ccb"><strong>Evaluation and Grading:</strong></p>
+<p local-id=3D"7963b6b4f417">Students can earn up to 250 points in this cou=
+rse by the end of the term.&nbsp; All graded activities in this course earn=
+ points as they are completed and graded. At the end of the term, each stud=
+ent's point total will be converted to a percentage based on the 250 point =
+scale to determine the final course grade.</p>
+<p local-id=3D"9fbec81bfadd">Students who have earned all 250 points in a c=
+ourse will have a cumulative score of 100%. Students who have earned 225 po=
+ints will have a 90% score, and so on. These percentages will then be conve=
+rted to letter grades in keeping the College's standard grading scale.&nbsp=
+;</p>
+<div class=3D"table-wrap">
+<table data-table-width=3D"760" data-layout=3D"default" data-local-id=3D"70=
+8f84c0-2f75-47f5-aab7-b2cf3749b58a" class=3D"confluenceTable">
+<tbody>
+<tr data-local-id=3D"bcc7aa6eef7f">
+<td data-local-id=3D"917e848d502b" class=3D"confluenceTd">
+<p local-id=3D"750a473077c4">A+</p></td>
+<td data-local-id=3D"ab217a709a83" class=3D"confluenceTd">
+<p local-id=3D"fd65eb1a1bd0">98-100%</p></td>
+</tr>
+<tr data-local-id=3D"cab719f60d80">
+<td data-local-id=3D"a6d309038e33" class=3D"confluenceTd">
+<p local-id=3D"e706816a0bf8">A</p></td>
+<td data-local-id=3D"694472c34f0e" class=3D"confluenceTd">
+<p local-id=3D"4550e3b84d83">93-97%</p></td>
+</tr>
+<tr data-local-id=3D"acd3f8fdda48">
+<td data-local-id=3D"e3fd3beae21a" class=3D"confluenceTd">
+<p local-id=3D"d442351e65fd">A-</p></td>
+<td data-local-id=3D"15ffc3bf8ffa" class=3D"confluenceTd">
+<p local-id=3D"a8a5cb3abdf4">90-92%</p></td>
+</tr>
+<tr data-local-id=3D"9a3eae018d70">
+<td data-local-id=3D"ba152c074583" class=3D"confluenceTd">
+<p local-id=3D"b961eb2bc9d5">B+</p></td>
+<td data-local-id=3D"08f0ccccb9ae" class=3D"confluenceTd">
+<p local-id=3D"eadfca0ec225">87-89%</p></td>
+</tr>
+<tr data-local-id=3D"dbb0330423db">
+<td data-local-id=3D"8bd34ee5b876" class=3D"confluenceTd">
+<p local-id=3D"d07d678427f2">B</p></td>
+<td data-local-id=3D"9d3fc726b632" class=3D"confluenceTd">
+<p local-id=3D"84d18e83cfad">83-86%</p></td>
+</tr>
+<tr data-local-id=3D"eb510d03447d">
+<td data-local-id=3D"19172b4f820c" class=3D"confluenceTd">
+<p local-id=3D"91d664c96871">B-</p></td>
+<td data-local-id=3D"bd874081f420" class=3D"confluenceTd">
+<p local-id=3D"1da7826d7616">80-82%</p></td>
+</tr>
+<tr data-local-id=3D"00e45243da08">
+<td data-local-id=3D"0e43b8f1f8ed" class=3D"confluenceTd">
+<p local-id=3D"cdb25ac886cd">C+</p></td>
+<td data-local-id=3D"acc96c32e8e0" class=3D"confluenceTd">
+<p local-id=3D"bfc326a1553e">77-79%</p></td>
+</tr>
+<tr data-local-id=3D"9922fa5f6e0b">
+<td data-local-id=3D"7569ca02b6a3" class=3D"confluenceTd">
+<p local-id=3D"2ccb15125af2">C</p></td>
+<td data-local-id=3D"d684e12a2671" class=3D"confluenceTd">
+<p local-id=3D"f3ab8bfe142b">73-76%</p></td>
+</tr>
+<tr data-local-id=3D"5a6bb47963e9">
+<td data-local-id=3D"a700f999057d" class=3D"confluenceTd">
+<p local-id=3D"1fdaf0af2004">C-</p></td>
+<td data-local-id=3D"a04d059eaddf" class=3D"confluenceTd">
+<p local-id=3D"919fbe1e5b79">70-72%</p></td>
+</tr>
+<tr data-local-id=3D"3d16cb124e7f">
+<td data-local-id=3D"96122c31ec12" class=3D"confluenceTd">
+<p local-id=3D"5c2b8fb0c2de">D+</p></td>
+<td data-local-id=3D"53a1bbb6c49a" class=3D"confluenceTd">
+<p local-id=3D"f68255537eb0">67-69%</p></td>
+</tr>
+<tr data-local-id=3D"1a445eb7d662">
+<td data-local-id=3D"f3a5c93fd900" class=3D"confluenceTd">
+<p local-id=3D"a8101a7430b1">D</p></td>
+<td data-local-id=3D"d121e60809e4" class=3D"confluenceTd">
+<p local-id=3D"fcfce419c3cf">63-66%</p></td>
+</tr>
+<tr data-local-id=3D"3e74ca1d2d77">
+<td data-local-id=3D"a89bb7d80855" class=3D"confluenceTd">
+<p local-id=3D"bd86313209a7">D-</p></td>
+<td data-local-id=3D"34579dcb47c0" class=3D"confluenceTd">
+<p local-id=3D"6cb64b206ca2">60-62%</p></td>
+</tr>
+<tr data-local-id=3D"302d8c7e6e61">
+<td data-local-id=3D"bdb3ae81591b" class=3D"confluenceTd">
+<p local-id=3D"c2db9a3123f9">F</p></td>
+<td data-local-id=3D"7e0eb76fefee" class=3D"confluenceTd">
+<p local-id=3D"69c079b18dc5">below 60%</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p local-id=3D"fa4a111960c3">Grading criteria for certain assignments may b=
+e formalized into "grading rubrics." These rubrics can help students better=
+ understand how their work will be evaluated. &nbsp;</p>
+<h3 local-id=3D"e9afdde77339" id=3D"Syllabus-AdditionalAdministrativePolici=
+es">Additional Administrative Policies</h3>
+<p local-id=3D"f3d2489de4af"><strong>Student Responsibility</strong></p>
+<p local-id=3D"1c98b88dc9d9">This course abides by all college and Universi=
+ty policies. Students are responsible for knowing and adhering to policies =
+in the College Handbook and University polices.</p>
+<p local-id=3D"e42e236b7b14">Policy:<strong> </strong><a class=3D"external-=
+link" href=3D"https://www.jefferson.edu/life-at-jefferson/handbooks.html" r=
+el=3D"nofollow"><strong>College and University Policies &amp; Handbooks</st=
+rong></a></p>
+<p local-id=3D"8cbd1b0150ac"><strong>Add/Drop/Withdrawal:</strong></p>
+<p local-id=3D"950f20b37c71">Course add/drop dates are posted in the offici=
+al University calendar. Refer to your program's calendar for related deadli=
+nes (<a class=3D"external-link" href=3D"https://www.jefferson.edu/registrar=
+/academic-calendars.html" rel=3D"nofollow">JCPH Academic Calendars</a>). Re=
+fer to the University Tuition Refund Policy (<a class=3D"external-link" hre=
+f=3D"https://www.jefferson.edu/life-at-jefferson/handbooks/policies/undergr=
+aduate-policies/tuition-and-university-fees-refund.html" rel=3D"nofollow">T=
+JU Tuition Refund Policy</a>) for information regarding tuition reimburseme=
+nt following dropped classes after the withdrawal period.</p>
+<p local-id=3D"af24749e4dbe"><strong>Changes to Posted Syllabus:</strong></=
+p>
+<p local-id=3D"746451ee03f5">Provided adequate advance notice is given to t=
+he class, the instructor reserves the right to modify the syllabus and clas=
+s activities or requirements in order to enhance learning during the delive=
+ry of the course. Such modifications can include but are not limited to sub=
+stitutions of certain journal articles or other periodical resources for ot=
+hers, changes to the details of particular assignments, rearrangement of gr=
+oup activities, or modification of class participation requirements. Any su=
+ch changes will be designed so as not to unduly impact student schedules or=
+ the overall workload for the course.</p>
+<p local-id=3D"54e0ed7f6e5f"><strong>Chosen Name</strong></p>
+<p local-id=3D"588e68a18e66">Some members of our community use a name, gend=
+er, and pronoun other than their legal identifiers. Students are free to el=
+ect to have their chosen first name, gender identity and chosen pronoun app=
+ear in Thomas Jefferson University=E2=80=99s system.</p>
+<p local-id=3D"848fc584f03f">Policy: <a class=3D"external-link" href=3D"htt=
+ps://www.jefferson.edu/life-at-jefferson/handbooks/policies/graduate-polici=
+es.html" rel=3D"nofollow"><strong>Graduate Policy</strong></a><br>
+Policy: <a class=3D"external-link" href=3D"https://www.jefferson.edu/life-a=
+t-jefferson/handbooks/policies/undergraduate-policies/chosen-name.html" rel=
+=3D"nofollow"><strong>Undergraduate Policy</strong></a></p>
+<p local-id=3D"595090b436c7"><strong>Collection of Student Work:</strong></=
+p>
+<p local-id=3D"4f670028dc0b">Thomas Jefferson University has the right to r=
+etain representative examples or copies of student work from all courses. S=
+uch materials might include papers, exams, creative works, or portfolios de=
+veloped and submitted in courses or to satisfy the requirements for degree =
+programs as well as surveys, focus group information, and reflective exerci=
+ses.</p>
+<p local-id=3D"508fa762fded"><strong>Diversity &amp; Inclusion:</strong></p=
+>
+<p local-id=3D"f62767ca5ce2">Jefferson holds itself accountable, at every l=
+evel of the organization, to nurture an environment of inclusion and respec=
+t, by valuing the uniqueness of every individual, celebrating and reflectin=
+g the rich diversity of its communities, and taking meaningful action to cu=
+ltivate an environment of fairness, belonging, and opportunity.</p>
+<p local-id=3D"bdfab8b2f3f5">&nbsp;Policy:<a class=3D"external-link" href=
+=3D"https://www.jefferson.edu/academics/colleges-schools-institutes/skmc/di=
+versity.html" rel=3D"nofollow"></a><a class=3D"external-link" href=3D"https=
+://belonging.jefferson.edu/" rel=3D"nofollow"><strong>Community Impact and =
+Belonging</strong></a></p>
+<p local-id=3D"5391752f518c"><strong>Copyright Notice:</strong></p>
+<p local-id=3D"f675a1bed512">All information presented in this course is co=
+pyrighted.&nbsp; This includes, but is not limited to, lecture notes, recor=
+ded lectures, handouts, journal articles, technical reports, videos, and we=
+b pages.&nbsp; Students are prohibited from sharing any course information =
+with anyone outside of this class.&nbsp; This includes posting information =
+on Facebook, FlashNotes, or other online service; emailing information; or =
+any other form of distribution.</p>
+<p local-id=3D"f3ed29baefcc"><strong>Course Enrollment</strong></p>
+<p local-id=3D"3a38e3285789">Students must be officially enrolled in this c=
+ourse to attend and are continuously enrolled until official drop/ withdraw=
+ from the course.</p>
+<p local-id=3D"fca9c987c999"><strong>Disability Accommodations:</strong></p=
+>
+<p local-id=3D"b4d72425a55d">Thomas Jefferson University is committed to pr=
+oviding equal education opportunities to all students, including students w=
+ith disabilities, in accordance with section 504 of the Rehabilitation Act =
+of 1973 and the Americans with Disabilities Act. Thomas Jefferson Universit=
+y will provide reasonable accommodations to all qualified individuals with =
+disabilities to allow equal access and full participation to all University=
+ sponsored activities and programs.</p>
+<p local-id=3D"3bb7975b1c34">&nbsp;Policy: <a class=3D"external-link" href=
+=3D"https://www.jefferson.edu/life-at-jefferson/handbooks/rights-responsibi=
+lities/disability-accommodations.html" rel=3D"nofollow"><strong>Rights &amp=
+; Responsibilities</strong></a></p>
+<p local-id=3D"e35f05c6528f"><strong>Registration Status:</strong></p>
+<p local-id=3D"2a274065e126">Students are responsible for the status of the=
+ir registration at all times.&nbsp; The instructor will advise that a chang=
+e in status has occurred when so informed by the College/University.&nbsp; =
+Only students who are properly registered in this course can earn credit an=
+d receive a grade.</p>
+<p local-id=3D"b8ee82d0786b"><strong>Student Religious Observation Policy</=
+strong></p>
+<p local-id=3D"9e530b42912a">Thomas Jefferson University understands that s=
+ome students may seek to observe religious holidays that fall on scheduled =
+class days.</p>
+<p local-id=3D"81ca46aa0dbc">Policy: <a class=3D"external-link" href=3D"htt=
+ps://www.jefferson.edu/life-at-jefferson/handbooks/policies/graduate-polici=
+es/student-religious-observance-policy.html" rel=3D"nofollow"><strong>Gradu=
+ate Programs</strong></a><br>
+Policy <a class=3D"external-link" href=3D"https://www.jefferson.edu/life-at=
+-jefferson/handbooks/policies/undergraduate-policies/student-religious-obse=
+rvance-policy.html" rel=3D"nofollow"><strong>Undergraduate Programs</strong=
+></a></p>
+<p local-id=3D"3a9bc397a85b"><strong>Retention of Student Work</strong></p>
+<p local-id=3D"0e3485cb9eb1">Thomas Jefferson University has the right to r=
+etain representative examples or copies of student work from all courses. S=
+uch materials might include papers, exams, creative works, or portfolios de=
+veloped and submitted in courses or to satisfy the requirements for degree =
+programs as well as surveys, focus group information, and reflective exerci=
+ses.</p>
+<p local-id=3D"698776d37fa7"><strong>Title IX &amp; Sexual Misconduct</stro=
+ng></p>
+<p local-id=3D"18f21ef51045">The University=E2=80=99s Sex and Gender-Based =
+Misconduct Policy sets forth Jefferson=E2=80=99s commitment to foster an en=
+vironment free of discrimination, including sexual harassment and sexual vi=
+olence.</p>
+<p local-id=3D"89615354a073">Policy: <a class=3D"external-link" href=3D"htt=
+ps://www.jefferson.edu/life-at-jefferson/student-resources-services/academi=
+cs-career-success/title-ix-sexual-misconduct.html" rel=3D"nofollow"><strong=
+>Title IX &amp; Sexual Misconduct</strong></a></p>
+<p local-id=3D"4d6487d632a4"></p>
+<p local-id=3D"107e6a28f371">Add label</p>
+<p><em>template version. 2024-07-10</em></p>
+<p></p>
+    </div>
+</body>
+</html>
+------=_Part_74_349580687.1783483355412--

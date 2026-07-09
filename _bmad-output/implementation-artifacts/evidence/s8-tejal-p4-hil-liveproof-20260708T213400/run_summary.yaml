@@ -1,0 +1,10 @@
+terminal_gate: G1
+silent_bypass_events: 0
+specialist_roster_count: 17
+pack_hash_binding: e0e52b902cb6ed9cac41b6083c343cc7a8a879fcddab48bc42387cf8bbb468db
+component_selection:
+  deck: true
+  motion: true
+  workbook: true
+conversation_chain_digest: c969e796ed700720b279e0c32a832564836a4a8019791ba9ec9be84e850b9e19
+langsmith_trace_id: 9b6dc48b-031a-4b02-870c-ab7f76047c8d

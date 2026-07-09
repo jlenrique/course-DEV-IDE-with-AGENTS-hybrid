@@ -1,0 +1,16 @@
+[2026-07-07T01:20:31.390508+00:00] env loaded: OPENAI_API_KEY=sk-proj-...oc0A (len 164); GAMMA+LANGSMITH present
+[2026-07-07T01:20:33.318004+00:00] trial_id=a18c2a86-bbdb-48a2-ba63-fb1a653bfaf9 run_tag=a18c2a86bbdb48a2ba63fb1a653bfaf9
+[2026-07-07T01:20:33.318004+00:00] selection code (pre-minted): SGP-a18c2a86bbdb48a2ba63fb1a653bfaf9-A:hil-2026-apc-crossroads-classic
+[2026-07-07T01:20:33.318004+00:00] === start_trial (REAL: scripted --selection-code path, auto-confirm, walk to G1) ===
+[2026-07-07T01:22:55.259467+00:00] start_trial returned after 142s: {"status": "paused-at-gate", "trial_id": "a18c2a86-bbdb-48a2-ba63-fb1a653bfaf9", "preset": "production", "input": "C:/Users/juanl/Documents/GitHub/course-DEV-IDE-with-AGENTS-hybrid/course-content/courses/tejal-apc-c1-m1-p2-trends", "operator_id": "operator_juan", "run_registry_path": "C:/Users/juanl/Documents/GitHub/course-DEV-IDE-with-AGENTS-hybrid/state/config/runs/a18c2a86-bbdb-48a2-ba63-fb1a653bfaf9/run.json", "cost_report_json": "C:/Users/juanl/Documents/GitHub/course-DEV-IDE-with-AGENTS-hybrid/state/config/runs/a18c2a86-bbdb-48a2-ba63-fb1a653bfaf9/cost-report.json", "cost_report_markdown": "C:/Users/juanl/Documents/GitHub/course-DEV-IDE-with-AGENTS-hybrid/state/config/runs/a18c2a86-bbdb-48a2-ba63-fb1a653bfaf9/cost-report.md", "langsmith_trace_status": "measured-from-langsmith", "production_clone_launch_evidence": true, "directive_path": "C:/Users/juanl/Documents/GitHub/course-DEV-IDE-with-AGENTS-hybrid/state/config/runs/a18c2a86-bbdb-48a2-ba63-fb1a653bfaf9/directive.yaml", "directive_digest": "75271c67b7b74fd8ade4d44c08aabe7791c2e2f87a395476cec4e0fe34ad2453", "transport_kind": "cli"}
+[2026-07-07T01:22:55.260475+00:00] === LEG1 PHASE1 OK (paused at gate) ===
+[2026-07-07T01:23:05.751259+00:00] G1 verdict: approve (weed-clearing accept-recommended); resuming with cap=40
+[2026-07-07T01:29:40.664144+00:00] resume returned: status=paused-at-error paused_gate=None paused_error_tag=gamma.export.brief-unmatched
+[2026-07-07T01:29:40.664144+00:00] === LEG1 PHASE2 NOT-OK after 395s ===
+[2026-07-07T01:32:17.681058+00:00] recover_production_trial(a18c2a86-bbdb-48a2-ba63-fb1a653bfaf9) — SINGLE documented retry of the gamma.export.brief-unmatched live-variance pause (cap=40)
+[2026-07-07T01:38:03.626714+00:00] recover returned: status=paused-at-error paused_gate=None paused_error_tag=gamma.export.brief-unmatched
+[2026-07-07T01:38:03.626714+00:00] === LEG1 PHASE3 NOT-OK after 346s ===
+[2026-07-07T01:51:53.874100+00:00] recover_production_trial(a18c2a86-bbdb-48a2-ba63-fb1a653bfaf9) — ONE recover through FIXED matcher (59a9a48a), cap=40
+[2026-07-07T01:53:28.036131+00:00] recover returned: status=paused-at-gate paused_gate=G2B paused_error_tag=None
+[2026-07-07T01:53:28.037214+00:00] === LEG1 PHASE4 OK after 94s ===
+[2026-07-07T02:22:30.825498+00:00] JUDGE-1 VERDICT: PASS (13/13) — output at judge1-output.txt; receipt extract at leg1-parity-receipt.json

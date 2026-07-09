@@ -1,0 +1,68 @@
+{
+  "trial_id": "648c9b3e-220a-4033-8a26-7e704737e10a",
+  "walk_log": "_bmad-output\\implementation-artifacts\\evidence\\s4-acl-liveproof-20260707T041058Z\\walk-log-leg2.txt",
+  "r0-recover-status-paused-at-error": {
+    "pass": true,
+    "value": "paused-at-error"
+  },
+  "r1-recover-tag-parity-divergence": {
+    "pass": true,
+    "value": "gamma.styleguide.parity-divergence"
+  },
+  "e0-error-pause-tag": {
+    "pass": true,
+    "value": "gamma.styleguide.parity-divergence"
+  },
+  "e1-error-pause-node-07": {
+    "pass": true,
+    "value": "07"
+  },
+  "e2-error-pause-specialist-gary": {
+    "pass": true,
+    "value": "gary"
+  },
+  "e3-message-carries-reason": {
+    "pass": true,
+    "value": "styleguide parity DIVERGENCE (resolution-mismatch): CD's authoring-time resolution disagrees with Gary's dispatch-time resolution (directive attestations agree where both are present); halting pre-spe"
+  },
+  "e4-message-carries-digest-summary": {
+    "pass": true,
+    "value": [
+      "cd_resolution_digest=5f87200054af8699f9bdbf19608559eace7e9007c715d2210cc8dd2922db9463; gary_resolution_digest=83981ed00dc73cacef72724ebb4cf82b1bde496771c45b0dc3fd28567d8a651f; cd_directive_digest=ff90c166d8d574e00403dcbb98079e340dfa2ab6904f0498269dfadfda283e27; gary_directive_digest=ff90c166d8d574e00403dcbb98079e340dfa2ab6904f0498269dfadfda283e27; trial_start_directive_digest=ff90c166d8d574e00403dcbb98079e340dfa2ab6904f0498269dfadfda283e27]. CD's own styleguide_resolution is separately recoverable from CD's persisted contribution; Gary's dispatch-time parity receipt is NOT persisted because dispatch halts pre-contribution."
+    ]
+  },
+  "e5-message-says-pre-spend": {
+    "pass": true,
+    "value": true
+  },
+  "w0-run-status-paused-at-error": {
+    "pass": true,
+    "value": {
+      "status": "paused-at-error",
+      "paused_gate": null
+    }
+  },
+  "s0-no-gary-contribution-halt-pre-contribution": {
+    "pass": true,
+    "value": "0 gary contribution(s) (expected 0 \u2014 halt is pre-contribution)"
+  },
+  "s1-no-generation-id-anywhere": {
+    "pass": true,
+    "value": false
+  },
+  "w1-cd-contribution-retained": {
+    "pass": true,
+    "value": "1 cd contribution(s)"
+  },
+  "l0-walk-log-flip-b-fired": {
+    "pass": true,
+    "value": [
+      "2026-07-07 00:21:25,238 ERROR app.specialists.gary._act: styleguide parity DIVERGENCE (resolution-mismatch): CD's authoring-time resolution disagrees with Gary's dispatch-time resolution; the caller halts pre-spend (S4 WARN->ERROR flip) carrying the reason + a compact digest summary in the raised error \u2014 Gary's dispatch-time parity receipt is NOT persisted on this halt path (dispatch halts pre-contribution)",
+      "2026-07-07 00:21:25,242 ERROR app.marcus.orchestrator.production_runner: dispatch error at manifest node 07 (specialist gary): [gamma.styleguide.parity-divergence] styleguide parity DIVERGENCE (resolution-mismatch): CD's authoring-time resolution disagrees with Gary's dispatch-time resolution (directive attestations agree where both are present); halting pre-spend (S4 WARN->ERROR flip). What survives this halt: the tag, the reason, and this digest summary [cd_resolution_digest=5f87200054af8699f9bdbf19608559eace7e9007c715d2210cc8dd2922db9463; gary_resolution_digest=83981ed00dc73cacef72724ebb4cf82b1bde496771c45b0dc3fd28567d8a651f; cd_directive_digest=ff90c166d8d574e00403dcbb98079e340dfa2ab6904f0498269dfadfda283e27; gary_directive_digest=ff90c166d8d574e00403dcbb98079e340dfa2ab6904f0498269dfadfda283e27; trial_start_directive_digest=ff90c166d8d574e00403dcbb98079e340dfa2ab6904f0498269dfadfda283e27]. CD's own styleguide_resolution is separately recoverable from CD's persisted contribution; Gary's dispatch-time parity receipt is NOT persisted because dispatch halts pre-contribution. \u2014 pausing trial 648c9b3e-220a-4033-8a26-7e704737e10a for recovery"
+    ]
+  },
+  "x0-ssot-restored-amount-minimal": {
+    "pass": true,
+    "value": "minimal"
+  }
+}

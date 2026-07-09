@@ -43,6 +43,9 @@ def _start_args(stub_corpus: Path, runs_root: Path, **overrides: Any) -> dict:
         "trial_id": uuid4(),
         "allow_offline_cost_report": True,
         "runs_root": runs_root,
+        # S2 P17 belt-and-braces: this legacy suite exercises the interactive
+        # start path — pin it pickless explicitly.
+        "picker_preflight_fn": lambda **_kwargs: None,
     }
     base.update(overrides)
     return base

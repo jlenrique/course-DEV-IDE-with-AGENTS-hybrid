@@ -1,0 +1,7 @@
+wrote _bmad-output\implementation-artifacts\evidence\s7p2-story-d-input-bundles-20260708T111746\phs-620\input-bundle.yaml
+course_id=juan-leon-phs-620-teaching-learning-seminar
+module_id=module-01
+source_purpose=enhancement
+gaps=5
+asset_records=1
+component_selection={'deck': True, 'motion': True, 'workbook': False}

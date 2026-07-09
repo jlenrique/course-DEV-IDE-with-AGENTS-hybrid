@@ -104,7 +104,7 @@ class DuplicateCollateralIdError(ValueError):
 
 
 # ---------------------------------------------------------------------------
-# Transcript-segment backbone (frozen tejal deck input)
+# Transcript-segment backbone (the run's frozen deck segment-manifest input)
 # ---------------------------------------------------------------------------
 
 
@@ -485,6 +485,8 @@ def compose_workbook(
     answer_keys: Mapping[str, str] | None = None,
     further_reading: Sequence[FurtherReadingEntry] = (),
     research_entries: Sequence[ResearchEntry] = (),
+    research_empty_reason: str | None = None,
+    research_omitted_note: str | None = None,
 ) -> _ComposedDoc:
     """Compose the canonical workbook model from the spec + transcript backbone.
 
@@ -690,6 +692,8 @@ def compose_workbook(
     reference_lines.append("#### Live-research cited entries (DOI)")
     if research_entries:
         for entry in research_entries:
+            # F-2604: render supports_segment_id ONLY when present on the entry
+            # (never inferred — that is the deferred semantic-audit arc).
             supports = (
                 f" — supports `{entry.supports_segment_id}`"
                 if entry.supports_segment_id
@@ -697,15 +701,22 @@ def compose_workbook(
             )
             reference_lines.append(
                 f"- {entry.title}. https://doi.org/{entry.source_id} "
-                f"(provider: {entry.provider}, source_ref: `{entry.source_ref}`)"
-                f"{supports}"
+                f"(provider: {entry.provider}, source_ref: `{entry.source_ref}`, "
+                f"citation_id: `{entry.citation_id}`){supports}"
             )
     else:
-        reference_lines.append(
-            "- *(live-research leg deferred for this v1 artifact; no DOI'd "
-            "entries injected — corpus-native references above carry the "
-            "citations)*"
+        # D4 / F-2601: zero rows => recorded explicitly-empty WITH reason (mirror
+        # S6 D4). NEVER a fabricated DOI, and NOT the retired "deferred" note.
+        reason = research_empty_reason or (
+            "no cited research entries recorded for this run; recorded "
+            "explicitly-empty (corpus-native references above carry the citations)"
         )
+        reference_lines.append(f"- *({reason})*")
+    # Remediation item-3 (DOI honesty): entries whose DOI was malformed/absent are
+    # excluded from the rendered list above; record their omission with visible
+    # provenance (never a bare/broken ``https://doi.org/`` link).
+    if research_omitted_note:
+        reference_lines.append(f"- *({research_omitted_note})*")
     doc.blocks.append((2, "References", "\n".join(reference_lines).rstrip()))
 
     return doc
@@ -847,6 +858,8 @@ class WorkbookProducer(ModalityProducer):
         answer_keys: Mapping[str, str] | None = None,
         further_reading: Sequence[FurtherReadingEntry] = (),
         research_entries: Sequence[ResearchEntry] = (),
+        research_empty_reason: str | None = None,
+        research_omitted_note: str | None = None,
         research_supplements: set[str] | None = None,
         diff_files: Iterable[str] | None = None,
         reuse_sha: str = "WORKING",
@@ -875,6 +888,8 @@ class WorkbookProducer(ModalityProducer):
             answer_keys=answer_keys,
             further_reading=further_reading,
             research_entries=research_entries,
+            research_empty_reason=research_empty_reason,
+            research_omitted_note=research_omitted_note,
         )
         markdown = render_markdown(doc)
 
@@ -888,9 +903,16 @@ class WorkbookProducer(ModalityProducer):
             markdown, source_text, research_supplements=research_supplements
         )
 
-        # --- G2: citation-fidelity wiring (thin S2 set; path is the deliverable). ---
+        # --- G2: citation-fidelity wiring + rendered research DOIs (F-2601). ---
+        # Every rendered research_entry.source_ref MUST resolve in the G2 manifest
+        # (the DOI section is now UNDER the citation gate, not rendered outside
+        # it): a corrupt/absent research source_ref FAILS G2.
+        audited_citations = list(citations or [])
+        audited_citations.extend(
+            {"source_ref": entry.source_ref} for entry in research_entries
+        )
         citation_audit = audit_citation_fidelity(
-            citations or [],
+            audited_citations,
             source_ref_manifest or {},
         )
 

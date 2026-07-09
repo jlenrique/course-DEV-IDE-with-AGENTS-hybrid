@@ -170,8 +170,13 @@ def _advisory_lock(store_path: Path) -> Iterator[None]:
 
 
 # ------------------------------------------------------------------ roster (AC-1)
-def _read_pick_events(events_path: Path) -> list[dict[str, Any]]:
-    """Read the append-only pick-event ledger. A malformed line is a LOUD error."""
+def read_pick_events(events_path: Path) -> list[dict[str, Any]]:
+    """Read the append-only pick-event ledger. A malformed line is a LOUD error.
+
+    Public reader (S2 P18): external consumers (e.g. the marcus_spoc ceremony's
+    last-used-per-course lookup) read the sidecar through this name; the
+    ``_read_pick_events`` alias is kept for back-compat.
+    """
     if not events_path.exists():
         return []
     events: list[dict[str, Any]] = []
@@ -196,9 +201,13 @@ def _read_pick_events(events_path: Path) -> list[dict[str, Any]]:
     return events
 
 
+# Back-compat private alias (pre-P18 name); prefer `read_pick_events`.
+_read_pick_events = read_pick_events
+
+
 def _last_used_by_guide(events_path: Path) -> dict[str, str]:
     latest: dict[str, str] = {}
-    for event in _read_pick_events(events_path):
+    for event in read_pick_events(events_path):
         name = str(event.get("guide_name") or "").strip()
         picked_at = str(event.get("picked_at") or "").strip()
         if not name or not picked_at:
@@ -1114,8 +1123,16 @@ def append_pick_event(
     run_id: str | None = None,
     events_path: str | Path | None = None,
     dedup_key: str | None = None,
+    course: str | None = None,
 ) -> list[dict[str, Any]]:
     """Append one JSONL line per pick to the append-only sidecar (digest-idempotent).
+
+    ``course`` (S2 F-502, ADDITIVE + append-only-safe per the carrier
+    invariant): the corpus/course identity the pick was made for, threaded from
+    trial-start's ``input_path``. "Last-used-per-course" recommendations derive
+    EXCLUSIVELY from this field — never by dereferencing ``directive_path``
+    (run-scoped, prunable). Legacy events without the field read honestly as
+    "no prior pick for this course".
 
     STANDALONE utility (J-1/D-1): never imported by CD/gary code; mirrors the
     ``gamma-learned-observations.jsonl`` discipline. The SSOT's
@@ -1138,7 +1155,7 @@ def append_pick_event(
     path = Path(events_path) if events_path is not None else GAMMA_STYLEGUIDE_PICKS_PATH
     path.parent.mkdir(parents=True, exist_ok=True)
     with _advisory_lock(path):  # R8: serialize digest-read + append
-        prior = _read_pick_events(path)
+        prior = read_pick_events(path)
         existing = {
             event.get("event_digest")
             for event in prior
@@ -1159,6 +1176,8 @@ def append_pick_event(
             }
             if run_id:
                 event["run_id"] = str(run_id)
+            if course:
+                event["course"] = str(course)
             variant_dedup = f"{dedup_key}:{variant_id}" if dedup_key else None
             if variant_dedup is not None:
                 event["dedup_key"] = variant_dedup
@@ -1251,6 +1270,7 @@ __all__ = [
     "capture_pick",
     "load_picker_roster",
     "main",
+    "read_pick_events",
     "render_picker_html",
     "thumbnail_routes",
     "write_pick_to_directive",

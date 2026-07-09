@@ -1,0 +1,43 @@
+{
+  "finding": "Irene emits collateral.research_goals (real, corpus-grounded, Irene-emergent) but the 04.55 research dispatch keys on plan_units[].gaps (IdentifiedGap), which the real irene_pass1 producer never populates. The two fields are never bridged -> live research dispatch is UNREACHABLE on the real production trial path regardless of corpus/creds.",
+  "trial_id": "796a287d-719d-4be6-818c-6bbf5f6846af",
+  "irene_research_goals_count": 5,
+  "irene_research_goals": [
+    {
+      "binds_to_objective_id": "u01",
+      "goal_id": "rg-01",
+      "pedagogical_intent": "Learner needs the primary-source basis for the national expenditure and practice-ownership trend figures to trust the opening structural argument."
+    },
+    {
+      "binds_to_objective_id": "u02",
+      "goal_id": "rg-02",
+      "pedagogical_intent": "Learner needs stronger evidence grounding for the administrative waste and burnout claims so the burnout-as-design-problem reframing feels authoritative."
+    },
+    {
+      "binds_to_objective_id": "u03",
+      "goal_id": "rg-03",
+      "pedagogical_intent": "Learner needs the evidence basis behind AI adoption, remote monitoring outcomes, and VR training examples to distinguish hype from substantiated innovation."
+    },
+    {
+      "binds_to_objective_id": "u04",
+      "goal_id": "rg-04",
+      "pedagogical_intent": "Learner needs a concrete exemplar basis for digital front door design so the concept is understood as operational infrastructure, not marketing language."
+    },
+    {
+      "binds_to_objective_id": "u05",
+      "goal_id": "rg-05",
+      "pedagogical_intent": "Learner needs the evidence basis for the leadership-interest versus training gap to support the lesson's concluding leadership mandate."
+    }
+  ],
+  "plan_units_count": 11,
+  "plan_units_gaps_total": 0,
+  "has_research_goals_would_return": false,
+  "code_citations": {
+    "irene_emits": "app/specialists/irene_pass1/_act.py:274-325 (_collateral_emission_instructions) -> collateral.research_goals[]",
+    "dispatch_reads": "app/marcus/orchestrator/research_wiring.py:272-280 has_research_goals + :220-261 _plan_dict_for_bridge_from_raw -> unit.get(\"gaps\")",
+    "gaps_only_populated_by": "app/marcus/orchestrator/trial_smoke_harness.py:117 (smoke fixture) + tests + operator-edit field at app/gates/section_04a/poll_surface.py:34 (G1A editable)",
+    "no_bridge": "grep: research_goals consumed only by collateral_spec.py (schema) + irene_pass1/_act.py (emit+render); nothing maps research_goals -> gaps/IdentifiedGap/bridge/dispatch"
+  },
+  "lane_a_total_spend_usd": 0.30335995,
+  "scite_spend_usd": 0
+}

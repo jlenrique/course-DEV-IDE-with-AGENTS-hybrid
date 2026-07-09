@@ -1,0 +1,14 @@
+ASSERT g0-gary-contribution-present: PASS -- '1 gary contribution(s)'
+ASSERT g1-receipt-present: PASS -- 'dict'
+ASSERT g2-outcome-ok: PASS -- 'ok'
+ASSERT g3-reason-match: PASS -- 'match'
+ASSERT g4-clock-eligible-true: PASS -- True
+ASSERT g5-cd-status-resolved: PASS -- 'resolved'
+ASSERT g6-three-digests-nonnull-sha256: PASS -- {'trial_start': '75271c67b7b74fd8ade4d44c08aabe7791c2e2f87a395476cec4e0fe34ad2453', 'cd': '75271c67b7b74fd8ade4d44c08aabe7791c2e2f87a395476cec4e0fe34ad2453', 'gary': '75271c67b7b74fd8ade4d44c08aabe7791c2e2f87a395476cec4e0fe34ad2453'}
+ASSERT g7-three-digests-equal: PASS -- {'trial_start': '75271c67b7b74fd8ade4d44c08aabe7791c2e2f87a395476cec4e0fe34ad2453', 'cd': '75271c67b7b74fd8ade4d44c08aabe7791c2e2f87a395476cec4e0fe34ad2453', 'gary': '75271c67b7b74fd8ade4d44c08aabe7791c2e2f87a395476cec4e0fe34ad2453'}
+ASSERT g8-trial-start-digest-matches-on-disk: PASS -- {'on_disk': '75271c67b7b74fd8ade4d44c08aabe7791c2e2f87a395476cec4e0fe34ad2453', 'receipt': '75271c67b7b74fd8ade4d44c08aabe7791c2e2f87a395476cec4e0fe34ad2453'}
+ASSERT c0-cd-contribution-present: PASS -- '1 cd contribution(s)'
+ASSERT c1-cd-block-status-resolved: PASS -- 'resolved'
+ASSERT c2-cd-bound-guides-exactly-picked-guide: PASS -- ['hil-2026-apc-crossroads-classic']
+ASSERT w0-paused-at-gate-post-07: PASS -- {'status': 'paused-at-gate', 'paused_gate': 'G2B', 'paused_error_tag': None}
+JUDGE-1 VERDICT: PASS (0 failing: [])

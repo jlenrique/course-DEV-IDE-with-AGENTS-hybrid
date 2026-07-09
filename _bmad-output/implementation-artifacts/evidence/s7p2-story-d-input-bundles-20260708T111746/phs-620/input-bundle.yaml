@@ -1,0 +1,358 @@
+schema_version: '0.1'
+course:
+  course_id: juan-leon-phs-620-teaching-learning-seminar
+  code: PHS 620
+  title: Teaching Learning Seminar
+  sme_name: Juan Leon
+  source_purpose: enhancement
+  source_availability:
+  - source_kind: confluence_current_course_content
+    status: pending
+    description: PHS 620 production source will come from the existing complete course
+      content in Confluence.
+    access_note: Use only authorized Confluence access during the ingestion story;
+      do not fetch remote content in Story A.
+  - source_kind: canvas_current_course_content
+    status: pending
+    description: PHS 620 production source will come from the existing complete course
+      content in Canvas.
+    access_note: Use only authorized Canvas access during the ingestion story; do
+      not fetch remote content in Story A.
+module:
+  module_id: module-01
+  container_title: TBD
+  proposal_status: proposed
+  proposed_slug: module-01-personal-introductions-barriers-to-my-adult-learners-learning
+  proposed_title: Personal Introductions Barriers to My (Adult) Learners' Learning
+  topics:
+  - Personal Introductions Barriers to My (Adult) Learners' Learning
+  - 'Textbook: Piskurich.'
+  - Ch.
+  - 3 (92-99) The Adult Learner (Knowles) The Science of Workplace Instruction Effective
+    online large-group teaching Applying adult learning practices
+  - 'Round Table [live]: Course Introduction'
+  - Introductions and Beginning of Weekly Activities Profiling the Adult Learner
+  - '5-min Feedback (Mod 01) Self-Check: Course Onboarding Essentials Self-Assessment:
+    Confidence Questionnaire'
+  source_bucket_suggestions:
+  - discussion-prompts
+  - readings
+  - lecture
+  - assignments
+  - assessments
+learner_profile: Explores adult education principles and course design for a variety
+  of learning environments. Evaluates strategies to boost learner satisfaction and
+  retention, including 'backward design.' Emphasizes key design techniques and online
+  tools. Identifies methods for assessing learning outcomes. Introduces the Quality
+  Matters Rubric 5 Pillars of Quality and support resources for robust course creation
+  and teaching effectiveness. Culminates in a Population Health lesson plan and group
+  work on a collaborative, ongoing class project in educational technology for Population
+  Health.
+course_learning_objectives:
+- objective_id: plo-01
+  text: Develop an evidence-based lesson plan as part of an educational program for
+    adult learners.
+  source_ref:
+    path: course-content/courses/juan-leon-phs-620-teaching-learning-seminar/sources/course/PHS
+      620 Syllabus 2025.doc
+    locator: table 3 row 1
+- objective_id: plo-02
+  text: Identify and address the needs of critical third-party stakeholders--such
+    as accreditors, administrators, and other reviewers or clients--along with the
+    needs of learners.
+  source_ref:
+    path: course-content/courses/juan-leon-phs-620-teaching-learning-seminar/sources/course/PHS
+      620 Syllabus 2025.doc
+    locator: table 3 row 2
+- objective_id: plo-03
+  text: Apply the 'Backward' design approach to lesson and course development for
+    both online and classroom-based environments.
+  source_ref:
+    path: course-content/courses/juan-leon-phs-620-teaching-learning-seminar/sources/course/PHS
+      620 Syllabus 2025.doc
+    locator: table 3 row 3
+- objective_id: plo-04
+  text: Design and deliver an engaging presentation promoting learner satisfaction,
+    retention of knowledge, and application.
+  source_ref:
+    path: course-content/courses/juan-leon-phs-620-teaching-learning-seminar/sources/course/PHS
+      620 Syllabus 2025.doc
+    locator: table 3 row 4
+- objective_id: plo-05
+  text: Efficiently assess and evaluate the learner's experience and achievement.
+  source_ref:
+    path: course-content/courses/juan-leon-phs-620-teaching-learning-seminar/sources/course/PHS
+      620 Syllabus 2025.doc
+    locator: table 3 row 5
+- objective_id: plo-06
+  text: Formulate timely, well-considered feedback and coaching to learners.
+  source_ref:
+    path: course-content/courses/juan-leon-phs-620-teaching-learning-seminar/sources/course/PHS
+      620 Syllabus 2025.doc
+    locator: table 3 row 6
+- objective_id: plo-07
+  text: Design a project in educational technology addressing a recognized need in
+    Population Health.
+  source_ref:
+    path: course-content/courses/juan-leon-phs-620-teaching-learning-seminar/sources/course/PHS
+      620 Syllabus 2025.doc
+    locator: table 3 row 7
+- objective_id: plo-08
+  text: Develop a design through Alpha, Beta, and Final stages of completion.
+  source_ref:
+    path: course-content/courses/juan-leon-phs-620-teaching-learning-seminar/sources/course/PHS
+      620 Syllabus 2025.doc
+    locator: table 3 row 8
+- objective_id: plo-09
+  text: Validate a project's design, processes, and outputs.
+  source_ref:
+    path: course-content/courses/juan-leon-phs-620-teaching-learning-seminar/sources/course/PHS
+      620 Syllabus 2025.doc
+    locator: table 3 row 9
+- objective_id: plo-10
+  text: Implement an Ed Tech project in a specified environment.
+  source_ref:
+    path: course-content/courses/juan-leon-phs-620-teaching-learning-seminar/sources/course/PHS
+      620 Syllabus 2025.doc
+    locator: table 3 row 10
+- objective_id: plo-11
+  text: Evaluate user ineractions and learning experiences in terms of a project's
+    interfaces, inputs, and outputs.
+  source_ref:
+    path: course-content/courses/juan-leon-phs-620-teaching-learning-seminar/sources/course/PHS
+      620 Syllabus 2025.doc
+    locator: table 3 row 11
+- objective_id: plo-12
+  text: Continuously improve and innovate teaching through critical self-reflection
+    and evidence-based practice.
+  source_ref:
+    path: course-content/courses/juan-leon-phs-620-teaching-learning-seminar/sources/course/PHS
+      620 Syllabus 2025.doc
+    locator: table 3 row 12
+module_learning_objectives: []
+scoped_source_manifest:
+  schema_version: '0.1'
+  course_id: juan-leon-phs-620-teaching-learning-seminar
+  declared:
+    schema_version: '0.1'
+    course_code: PHS 620
+    module_count_expected: 15
+    modules: []
+    source_purpose: enhancement
+    source_availability:
+    - source_kind: confluence_current_course_content
+      status: pending
+      description: PHS 620 production source will come from the existing complete
+        course content in Confluence.
+      access_note: Use only authorized Confluence access during the ingestion story;
+        do not fetch remote content in Story A.
+    - source_kind: canvas_current_course_content
+      status: pending
+      description: PHS 620 production source will come from the existing complete
+        course content in Canvas.
+      access_note: Use only authorized Canvas access during the ingestion story; do
+        not fetch remote content in Story A.
+    source_references: []
+  detected:
+    module_directories:
+    - module-01
+    - module-02
+    - module-03
+    - module-04
+    - module-05
+    - module-06
+    - module-07
+    - module-08
+    - module-09
+    - module-10
+    - module-11
+    - module-12
+    - module-13
+    - module-14
+    - module-15
+    source_file_count: 0
+    reference_file_count: 1
+    scaffold_file_count: 8
+  gap_summary:
+    empty_lesson_dir: 1
+    empty_source_dir: 1
+    source_availability: 3
+  entries:
+  - path: COURSE.md
+    scope: course
+    content_sha256: e4a7275a2eb0508f61688f5bf03bb556e95f33a1e1f609899aabc0f6a3a2477e
+    tracked: true
+    git_status: tracked
+    source_role: scaffold
+    course_id: juan-leon-phs-620-teaching-learning-seminar
+    module_id: null
+    lesson_id: null
+    declared: false
+  - path: course.yaml
+    scope: course
+    content_sha256: f1500175f7dbb5a15de3b59eafbb3aa59c809b670960430a3f108db0100f8a50
+    tracked: true
+    git_status: tracked
+    source_role: scaffold
+    course_id: juan-leon-phs-620-teaching-learning-seminar
+    module_id: null
+    lesson_id: null
+    declared: true
+  - path: modules/module-01/lessons/README.md
+    scope: lesson
+    content_sha256: f77a6d95ec752985ef66546ff516a8ae7405e972b7755f649802e8669a745afc
+    tracked: true
+    git_status: tracked
+    source_role: scaffold
+    course_id: juan-leon-phs-620-teaching-learning-seminar
+    module_id: module-01
+    lesson_id: null
+    declared: false
+  - path: modules/module-01/MODULE.md
+    scope: module
+    content_sha256: 2320c2396803ee8837588ba6be46e9c044472f941aeabe68e7496ac43da1dc83
+    tracked: true
+    git_status: tracked
+    source_role: scaffold
+    course_id: juan-leon-phs-620-teaching-learning-seminar
+    module_id: module-01
+    lesson_id: null
+    declared: false
+  - path: modules/module-01/module.yaml
+    scope: module
+    content_sha256: aa8d65619a4333f4efc38ed854eba5f32e2a93a1dc583216b86e8bdace27d237
+    tracked: true
+    git_status: tracked
+    source_role: scaffold
+    course_id: juan-leon-phs-620-teaching-learning-seminar
+    module_id: module-01
+    lesson_id: null
+    declared: true
+  - path: modules/module-01/sources/README.md
+    scope: module
+    content_sha256: 648b8cd0b24b1bd9272b821dc9020f66507405db0976ccc8e497ca9f16f2a662
+    tracked: true
+    git_status: tracked
+    source_role: scaffold
+    course_id: juan-leon-phs-620-teaching-learning-seminar
+    module_id: module-01
+    lesson_id: null
+    declared: false
+  - path: sources/course/PHS 620 Syllabus 2025.doc
+    scope: course
+    content_sha256: f880c6a89e63180f933bb2d03f8a49fad086d1518c214d6728b50f58ecd6adf5
+    tracked: true
+    git_status: tracked
+    source_role: reference
+    course_id: juan-leon-phs-620-teaching-learning-seminar
+    module_id: null
+    lesson_id: null
+    declared: false
+  - path: sources/course/README.md
+    scope: course
+    content_sha256: 49f0105ea04f0e27edb41b9fca85ea67a20c7afb0b15881631b53ad2a757b0eb
+    tracked: true
+    git_status: tracked
+    source_role: scaffold
+    course_id: juan-leon-phs-620-teaching-learning-seminar
+    module_id: null
+    lesson_id: null
+    declared: false
+  - path: sources/shared/README.md
+    scope: shared
+    content_sha256: 39c7dfb1cb2d27c68b925fa556d859be342ea16bf7df7e84b00e7fad1d6f1f1a
+    tracked: true
+    git_status: tracked
+    source_role: scaffold
+    course_id: juan-leon-phs-620-teaching-learning-seminar
+    module_id: null
+    lesson_id: null
+    declared: false
+asset_records:
+- schema_version: '0.1'
+  asset_id: module-01-lecture-001
+  asset_kind: lecture
+  course_id: juan-leon-phs-620-teaching-learning-seminar
+  module_id: module-01
+  lesson_id: null
+  source_refs:
+  - ref_id: module-01-requirement-001
+    path: course-content/courses/juan-leon-phs-620-teaching-learning-seminar/sources/course/PHS
+      620 Syllabus 2025.doc
+    locator: table 4 row 1
+    role: requirement
+  learning_objective_refs: []
+  derivation: syllabus_requirement
+  status: required_gap
+  content: {}
+  gaps: []
+  review:
+    sme_required: false
+gap_ledger:
+- kind: empty_source_dir
+  severity: info
+  path: modules/module-01/sources
+  message: Source directory has no non-scaffold local source files.
+  access_note: ''
+  declared: null
+  detected: null
+- kind: empty_lesson_dir
+  severity: info
+  path: modules/module-01/lessons
+  message: Lesson directory has no non-scaffold local lesson source files.
+  access_note: ''
+  declared: null
+  detected: null
+- kind: source_availability
+  severity: warning
+  path: sources
+  message: No non-scaffold local production source content detected; reference files
+    and syllabi do not mark the course source-complete.
+  access_note: ''
+  declared: null
+  detected: null
+- kind: source_availability
+  severity: warning
+  path: course.yaml
+  message: PHS 620 production source will come from the existing complete course content
+    in Confluence.
+  access_note: Use only authorized Confluence access during the ingestion story; do
+    not fetch remote content in Story A.
+  declared:
+    source_kind: confluence_current_course_content
+    status: pending
+    description: PHS 620 production source will come from the existing complete course
+      content in Confluence.
+    access_note: Use only authorized Confluence access during the ingestion story;
+      do not fetch remote content in Story A.
+  detected: null
+- kind: source_availability
+  severity: warning
+  path: course.yaml
+  message: PHS 620 production source will come from the existing complete course content
+    in Canvas.
+  access_note: Use only authorized Canvas access during the ingestion story; do not
+    fetch remote content in Story A.
+  declared:
+    source_kind: canvas_current_course_content
+    status: pending
+    description: PHS 620 production source will come from the existing complete course
+      content in Canvas.
+    access_note: Use only authorized Canvas access during the ingestion story; do
+      not fetch remote content in Story A.
+  detected: null
+operator_focus: Enhance existing course content after Confluence and Canvas access.
+workflow_capabilities:
+- deck
+- motion
+- workbook
+component_selection:
+  deck: true
+  motion: true
+  workbook: false
+styleguide_resolution:
+  sme_name: Juan Leon
+  styleguide_id: null
+  fallback: true
+  reason: No SME-specific styleguide is available; downstream planning must treat
+    style as unresolved.

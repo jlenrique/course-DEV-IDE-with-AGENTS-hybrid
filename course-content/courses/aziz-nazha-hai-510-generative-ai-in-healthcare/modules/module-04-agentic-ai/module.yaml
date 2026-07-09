@@ -1,0 +1,11 @@
+schema_version: 0.1
+module_id: module-04-agentic-ai
+title: Agentic AI
+source_reference:
+  url: https://www.jefferson.edu/academics/colleges-schools-institutes/population-health/leadership-workforce-development/generative-ai-in-healthcare.html
+  agenda_label: Week 4
+agenda_topics:
+  - Autonomous systems
+  - Clinical workflow automation
+status: source-container-seeded
+

@@ -1439,10 +1439,14 @@ def _gamma_export_sort_key(path: Path) -> tuple[int, str]:
 # Title-based page->slide matching (storyboard-correctness fix, party-ratified
 # 2026-06-18). Gamma owns the page-set independently of the briefs — it injects
 # a cover, merges/drops topics, and REPHRASES titles — so POSITION is not a key
-# Gamma honors. We match exported pages to briefed slots by TITLE, using
-# deterministic bijective containment. NO fuzzy/threshold matching anywhere:
-# a match is a structural set-containment relation that is unique on both
-# sides, or it is a loud failure. Ambiguity is fatal (never a tie-break/pick).
+# Gamma honors. Primary match is deterministic bijective containment: a match
+# is a structural set-containment relation unique on both sides, or a loud
+# failure. Ambiguity is fatal (never a tie-break/pick).
+#
+# Residual soft bind (party 2026-07-09): AFTER the bijective commit only, when
+# exactly one unmatched brief slot and exactly one unmatched page remain,
+# allow a cardinality-gated morphological/overlap bind (Completion↔Complete).
+# Does NOT soften the bijective graph; multi-residue stays fail-loud.
 # ---------------------------------------------------------------------------
 
 # Frozen stopword list (party-ratified; enumerated + pinned, NOT a library
@@ -1461,18 +1465,45 @@ _TITLE_STOPWORDS: frozenset[str] = frozenset(
 # party-mode, never by the matcher.
 _MIN_DISTINCTIVE_TOKENS = 2
 
+# Residual soft-bind gates (party 2026-07-09). Tunable only by party-mode.
+_MIN_RESIDUAL_STRONG_ALIGNMENTS = 2
+_RESIDUAL_JACCARD_FLOOR = 0.5
+_RESIDUAL_WEAK_TOKENS: frozenset[str] = frozenset(
+    {"set", "new", "one", "two", "all", "any", "end", "out"}
+)
+
+# Apostrophe family DELETED (joined) by normalize_title — pinned enumerated
+# set, ratified amendment (party record §10, 2026-07-07). Gamma's export
+# slugger DELETES apostrophes ("Technology's" -> "Technologys-..."), so the
+# matcher must join too, never split ("Technology's" -> {technology, s} had
+# no containment edge to {technologys, ...} — deterministic brief-unmatched
+# on ANY apostrophe-bearing brief title; live trial a18c2a86). Members:
+# U+0027 APOSTROPHE ' / U+2018 LEFT ' / U+2019 RIGHT ' single quotes /
+# U+02BC MODIFIER LETTER APOSTROPHE / U+0060 GRAVE ACCENT ` /
+# U+00B4 ACUTE ACCENT. Fullwidth U+FF07 needs no row: NFKD folds it to
+# U+0027, caught by the post-fold deletion pass in normalize_title.
+_TITLE_APOSTROPHE_FAMILY = re.compile("[\u0027\u2018\u2019\u02BC\u0060\u00B4]")
+
 
 def normalize_title(text: str) -> str:
-    """Deterministic title normalization (frozen contract, party-ratified).
+    """Deterministic title normalization (frozen contract, party-ratified;
+    apostrophe-family amendment ratified party record §10, 2026-07-07).
 
-    NFKC + strip accents; lowercase; ``&`` -> ``and``; strip the trailing
-    objective after an em/en-dash-with-spaces delimiter (brief titles carry
-    ``"Title — objective"``; page slugs do not, so this is a no-op on them);
-    replace every non-alphanumeric run (incl. hyphens — Gamma slug separators)
-    with a single space; collapse whitespace; trim.
+    Delete the pinned apostrophe family (``_TITLE_APOSTROPHE_FAMILY``) so
+    possessives JOIN (``Technology's`` -> ``technologys``, matching Gamma's
+    export slugger) — applied DUAL-PASS: (1) on the raw input BEFORE NFKD
+    (U+00B4 would otherwise decompose to space + combining acute) and
+    (2) after the combining-strip (catches NFKD-folded forms, e.g. fullwidth
+    U+FF07 -> U+0027). Then NFKD + strip accents; lowercase; ``&`` -> ``and``;
+    strip the trailing objective after an em/en-dash-with-spaces delimiter
+    (brief titles carry ``"Title — objective"``; page slugs do not, so this
+    is a no-op on them); replace every non-alphanumeric run (incl. hyphens —
+    Gamma slug separators) with a single space; collapse whitespace; trim.
     """
-    s = unicodedata.normalize("NFKD", text or "")
+    s = _TITLE_APOSTROPHE_FAMILY.sub("", text or "")
+    s = unicodedata.normalize("NFKD", s)
     s = "".join(ch for ch in s if not unicodedata.combining(ch))
+    s = _TITLE_APOSTROPHE_FAMILY.sub("", s)
     # Strip objective: split on the FIRST em/en-dash (or ' -- ') with spaces.
     s = re.split(r"\s+(?:—|–|--)\s+", s, maxsplit=1)[0]
     s = s.lower().replace("&", " and ")
@@ -1490,6 +1521,67 @@ def _distinctive_tokens(normalized_title: str) -> frozenset[str]:
     return frozenset(
         t for t in normalized_title.split() if t and t not in _TITLE_STOPWORDS
     )
+
+
+def _morphological_token_pair(a: str, b: str) -> bool:
+    """True when tokens are equal or share a morphological stem family.
+
+    Prefix / shared-prefix rules catch Completion↔Complete without a stemmer
+    library. Digits never morph-match (only exact equality elsewhere).
+    """
+    if a == b:
+        return True
+    if a.isdigit() or b.isdigit():
+        return False
+    if len(a) < 4 or len(b) < 4:
+        return False
+    shorter, longer = (a, b) if len(a) <= len(b) else (b, a)
+    if longer.startswith(shorter):
+        return True
+    shared = 0
+    for ca, cb in zip(a, b, strict=False):
+        if ca != cb:
+            break
+        shared += 1
+    return shared >= 5
+
+
+def _residual_soft_compatible(slot_toks: frozenset[str], page_toks: frozenset[str]) -> bool:
+    """Cardinality-gated soft gate for the 1:1 residual bind.
+
+    Counts strong alignments (exact or morphological) excluding weak/digit-only
+    tokens as strong carriers. Also admits Jaccard ≥ floor with ≥2 exact
+    intersection tokens. Rejects cover↔unrelated-summary false binds (F8 pin).
+    """
+    if not slot_toks or not page_toks:
+        return False
+
+    page_remaining = set(page_toks)
+    strong = 0
+    for st in sorted(slot_toks):
+        if st.isdigit() or st in _RESIDUAL_WEAK_TOKENS:
+            # Consume exact weak/digit matches so they do not block peers, but
+            # never count them toward the strong floor.
+            if st in page_remaining:
+                page_remaining.discard(st)
+            continue
+        matched: str | None = None
+        for pt in sorted(page_remaining):
+            if pt.isdigit() or pt in _RESIDUAL_WEAK_TOKENS:
+                continue
+            if _morphological_token_pair(st, pt):
+                matched = pt
+                break
+        if matched is not None:
+            page_remaining.discard(matched)
+            strong += 1
+
+    if strong >= _MIN_RESIDUAL_STRONG_ALIGNMENTS:
+        return True
+
+    inter = len(slot_toks & page_toks)
+    union = len(slot_toks | page_toks)
+    return bool(union) and inter >= 2 and (inter / union) >= _RESIDUAL_JACCARD_FLOOR
 
 
 class SlideMatchResult:
@@ -1529,6 +1621,11 @@ def match_pages_to_slots(
     Commit only edges unique on BOTH sides; any multiplicity is ambiguity-fatal
     (surfaced, never resolved). Compute ALL edges before committing — never
     greedy/first-match.
+
+    After the bijective commit, a 1:1 residual soft bind may fire (party
+    2026-07-09) when exactly one unmatched slot and one unmatched page remain
+    and ``_residual_soft_compatible`` passes. Cover-drop runs only after that
+    attempt, so a sole content residue is never muted as a leading cover.
     """
     slot_tokens = {
         sid: _distinctive_tokens(normalize_title(title)) for sid, title in expected_slots
@@ -1599,6 +1696,19 @@ def match_pages_to_slots(
         if len(page_candidates[pid]) == 1
         and len(slot_candidates[page_candidates[pid][0]]) == 1
     }
+
+    # Residual soft bind: only when bijective left a strict 1:1 residue.
+    # Attempt BEFORE cover-drop so a sole unmatched content page is not muted
+    # as unmatched-leading-page (live trial bc0f81c4 Completion↔Complete).
+    unmatched_page_pids = [pid for pid in page_ids if len(page_candidates[pid]) == 0]
+    if len(result.unmatched_keys) == 1 and len(unmatched_page_pids) == 1:
+        sid = result.unmatched_keys[0]
+        pid = unmatched_page_pids[0]
+        if _residual_soft_compatible(slot_tokens[sid], page_tokens[pid]):
+            result.matched[sid] = str(pages[pid]["path"])
+            result.unmatched_keys = []
+            matched_pids.add(pid)
+
     min_matched_index = (
         min(pages[pid].get("page_index", 0) for pid in matched_pids) if matched_pids else None
     )
@@ -1717,6 +1827,15 @@ def materialize_exported_slide_paths_by_title(
     recoverable ``GammaDispatchError`` family on ``unmatched_keys`` /
     ``unmatched_pages`` / ``ambiguous``.
 
+    Single-card Gamma exports often land as a lone PNG (not a zip). When
+    ``len(expected_slots) == 1``, that lone image binds to the sole slot by
+    cardinality bijection — even if the download stem is opaque (e.g.
+    ``gary_A``). Opaque-stem N=1 binding is intentional (party rider
+    2026-07-08); do not later require title containment for that arm without
+    a new party round. When ``len(expected_slots) > 1`` and the payload is
+    not a multi-page zip, every slot is unmatched (fail loud — never
+    positional broadcast).
+
     The positional ``_materialize_exported_slide_paths`` is deliberately left
     untouched for brief-less callers (standalone Gamma lane); this is a
     separate, additive function (party DECISION 3 + the byte-identical gate).
@@ -1725,12 +1844,65 @@ def materialize_exported_slide_paths_by_title(
     normalized_format = (requested_format or "").strip().lower() or None
     result = SlideMatchResult()
 
-    if normalized_format != "png" or not zipfile.is_zipfile(downloaded_path):
-        # Title matching requires per-page images from the multi-card zip. A
-        # non-png or single-image export cannot be title-matched; fail loud
-        # (every slot unmatched) rather than positionally broadcasting — the
-        # caller raises brief-unmatched. Single-card decks do not reach the
-        # double-dispatch storyboard path.
+    if normalized_format != "png":
+        # Non-PNG cannot be title-matched; fail loud (every slot unmatched).
+        result.unmatched_keys = [sid for sid, _ in expected_slots]
+        return result
+
+    if not zipfile.is_zipfile(downloaded_path):
+        # Lone image export (live single-card Gamma shape). N=1 → bind when
+        # title-match succeeds OR the stem is opaque (no ``{N}_{Title}``
+        # prefix — e.g. gary_A); a parseable titled stem that fails
+        # containment stays unmatched (fail loud — never silent wrong-bind).
+        # N>1 → fail loud with the orphan page recorded (no positional broadcast).
+        suffix = downloaded_path.suffix.lower()
+        if (
+            downloaded_path.is_file()
+            and suffix == ".png"
+            and len(expected_slots) == 1
+        ):
+            export_dir.mkdir(parents=True, exist_ok=True)
+            slide_id, _brief_title = expected_slots[0]
+            page_title = title_from_export_stem(downloaded_path.stem)
+            stem_is_opaque = page_title == downloaded_path.stem
+            pages = [
+                {
+                    "page_index": 1,
+                    "title": page_title,
+                    "path": str(downloaded_path),
+                }
+            ]
+            result = match_pages_to_slots(pages=pages, expected_slots=expected_slots)
+            if slide_id not in result.matched and stem_is_opaque:
+                # Opaque stem yields no title-containment edge; sole-slot
+                # cardinality is still a valid bijection (party rider 2026-07-08).
+                result.matched[slide_id] = str(downloaded_path)
+                result.unmatched_keys = [s for s in result.unmatched_keys if s != slide_id]
+                result.unmatched_pages = []
+                result.ambiguous = []
+            for sid, source in list(result.matched.items()):
+                target_path = export_dir / f"{module_lesson_part}_{sid}.png"
+                target_path.write_bytes(Path(source).read_bytes())
+                result.matched[sid] = str(target_path)
+            return result
+        if (
+            downloaded_path.is_file()
+            and suffix == ".png"
+            and len(expected_slots) > 1
+        ):
+            result.unmatched_keys = [sid for sid, _ in expected_slots]
+            result.unmatched_pages = [
+                {
+                    "page_index": 1,
+                    "title": title_from_export_stem(downloaded_path.stem),
+                    "path": str(downloaded_path),
+                    "reason": (
+                        f"lone-png-export with {len(expected_slots)} briefed slots "
+                        f"(expected multi-page zip for N>1)"
+                    ),
+                }
+            ]
+            return result
         result.unmatched_keys = [sid for sid, _ in expected_slots]
         return result
 

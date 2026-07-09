@@ -1,0 +1,108 @@
+{
+  "allow_offline_cost_report": false,
+  "auto_confirm_directive": false,
+  "bundle_expected": "narrated-deck-with-workbook",
+  "copied_artifacts": [
+    "model_resolution_trail.json",
+    "directive.yaml",
+    "trial-start.json",
+    "run.json",
+    "run_summary.yaml",
+    "ratified-los.json",
+    "decision-card-G0E.json",
+    "decision-card-G0R.json",
+    "decision-card-G1.json"
+  ],
+  "corpus": "C:\\Users\\juanl\\Documents\\GitHub\\course-DEV-IDE-with-AGENTS-hybrid\\course-content\\courses\\tejal-c1m1-p4-assessments-bridge",
+  "envelope_status": "paused-at-error",
+  "final_error_tag": "gamma.export.brief-unmatched",
+  "final_paused_gate": null,
+  "final_status": "paused-at-error",
+  "finished_at": "2026-07-09T01:54:49.275533+00:00",
+  "g0_confirm_path": [
+    "e",
+    "c"
+  ],
+  "g0_edit_applied": true,
+  "g0_edit_directive_bytes": 3950,
+  "guide": "hil-2026-apc-crossroads-classic",
+  "hil_variety_exercised": [
+    "g0-confirm:edit",
+    "g0-confirm:confirm",
+    "G0E:approve",
+    "G0R:approve",
+    "g1:edit-inspect"
+  ],
+  "hil_variety_unique": [
+    "g0-confirm:edit",
+    "g0-confirm:confirm",
+    "G0E:approve",
+    "G0R:approve",
+    "g1:edit-inspect"
+  ],
+  "intent": "C:\\Users\\juanl\\Documents\\GitHub\\course-DEV-IDE-with-AGENTS-hybrid\\_bmad-output\\implementation-artifacts\\s8-tejal-p4-ratified-collateral-intent.yaml",
+  "lesson_plan_collateral_bundle_id": null,
+  "minted_at": "2026-07-09T01:35:11.439243+00:00",
+  "note": "Driver claim_ok means compose+G0-HIL+trial-start+bundle binding succeeded and the gate walk ran without driver exception. Full S8-complete still requires evidence review + BMAD party concurrence. Part-4 thinness may honestly surface as G0R inadequacy or later error-pause \u2014 that is not fabricated away.",
+  "operator_id": "juanl",
+  "pause_sequence": [
+    "G0E",
+    "G0R",
+    "G1"
+  ],
+  "pause_sequence_unique": [
+    "G0E",
+    "G0R",
+    "G1"
+  ],
+  "run_dir": "C:\\Users\\juanl\\Documents\\GitHub\\course-DEV-IDE-with-AGENTS-hybrid\\state\\config\\runs\\9b6dc48b-031a-4b02-870c-ab7f76047c8d",
+  "runs_root": "C:\\Users\\juanl\\Documents\\GitHub\\course-DEV-IDE-with-AGENTS-hybrid\\state\\config\\runs",
+  "s8_complete_requires_party": true,
+  "s8_hil_proof_driver_claim_ok": true,
+  "selection_code": "SGP-9b6dc48b031a4b02870cab7f76047c8d-A:hil-2026-apc-crossroads-classic",
+  "start_elapsed_s": 638.6,
+  "start_trial_result": {
+    "cost_report_json": "C:/Users/juanl/Documents/GitHub/course-DEV-IDE-with-AGENTS-hybrid/state/config/runs/9b6dc48b-031a-4b02-870c-ab7f76047c8d/cost-report.json",
+    "cost_report_markdown": "C:/Users/juanl/Documents/GitHub/course-DEV-IDE-with-AGENTS-hybrid/state/config/runs/9b6dc48b-031a-4b02-870c-ab7f76047c8d/cost-report.md",
+    "directive_digest": "fc423aadb9a862645b1c923cd7469576d40d25ebfe6e31426f4614b8a6991458",
+    "directive_path": "C:/Users/juanl/Documents/GitHub/course-DEV-IDE-with-AGENTS-hybrid/state/config/runs/9b6dc48b-031a-4b02-870c-ab7f76047c8d/directive.yaml",
+    "input": "C:/Users/juanl/Documents/GitHub/course-DEV-IDE-with-AGENTS-hybrid/course-content/courses/tejal-c1m1-p4-assessments-bridge",
+    "langsmith_trace_status": "skipped-no-langsmith-env",
+    "lesson_plan_collateral_bundle_id": "narrated-deck-with-workbook",
+    "lesson_plan_collateral_intent_path": "C:/Users/juanl/Documents/GitHub/course-DEV-IDE-with-AGENTS-hybrid/_bmad-output/implementation-artifacts/s8-tejal-p4-ratified-collateral-intent.yaml",
+    "operator_id": "juanl",
+    "preset": "production",
+    "production_clone_launch_evidence": false,
+    "run_registry_path": "C:/Users/juanl/Documents/GitHub/course-DEV-IDE-with-AGENTS-hybrid/state/config/runs/9b6dc48b-031a-4b02-870c-ab7f76047c8d/run.json",
+    "status": "registered-offline",
+    "transport_kind": "cli",
+    "trial_id": "9b6dc48b-031a-4b02-870c-ab7f76047c8d"
+  },
+  "story": "S8-tejal-p4-hil-composed-proof",
+  "trial_id": "9b6dc48b-031a-4b02-870c-ab7f76047c8d",
+  "trial_start_bundle_id": "narrated-deck-with-workbook",
+  "trial_start_component_selection": null,
+  "verdict_sequence": [
+    {
+      "err": null,
+      "gate": "G0E",
+      "next_gate": "G0R",
+      "next_status": "paused-at-gate",
+      "verb": "approve"
+    },
+    {
+      "err": null,
+      "gate": "G0R",
+      "next_gate": "G1",
+      "next_status": "paused-at-gate",
+      "verb": "approve"
+    },
+    {
+      "err": "gamma.export.brief-unmatched",
+      "gate": "G1",
+      "next_gate": null,
+      "next_status": "paused-at-error",
+      "verb": "edit"
+    }
+  ]
+}

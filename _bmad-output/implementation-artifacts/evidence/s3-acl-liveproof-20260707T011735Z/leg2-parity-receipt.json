@@ -1,0 +1,51 @@
+{
+  "run_status": {
+    "trial_id": "4d465677-188c-401c-ae37-1acb19658db0",
+    "status": "paused-at-gate",
+    "paused_gate": "G2B",
+    "paused_error_tag": null
+  },
+  "contribution_order": [
+    "texas@02",
+    "texas@03",
+    "irene_pass1@04A",
+    "research_wiring@04.55",
+    "cd@4.75",
+    "irene_pass1@05",
+    "irene_pass1@05B",
+    "package_builder@06",
+    "gary@07",
+    "vera@7.5",
+    "quinn_r@07B"
+  ],
+  "gary_styleguide_parity_toplevel": {
+    "cd_bound_guides": [
+      {
+        "name": "hil-2026-apc-crossroads-classic",
+        "ssot_digest": "6b94739ff29724cd2cf26ef25bd13d28824079d15729751d129b5488f6eb6ac5"
+      }
+    ],
+    "cd_directive_digest": "75271c67b7b74fd8ade4d44c08aabe7791c2e2f87a395476cec4e0fe34ad2453",
+    "cd_resolution_digest": "5f87200054af8699f9bdbf19608559eace7e9007c715d2210cc8dd2922db9463",
+    "cd_status": "resolved",
+    "clock_eligible": false,
+    "gary_bound_guides": [
+      {
+        "name": "hil-2026-apc-crossroads-classic",
+        "ssot_digest": "58a4fc054976d216ba0931151776e59a803f8f0c4f46cb6602070f804179e054"
+      }
+    ],
+    "gary_directive_digest": "75271c67b7b74fd8ade4d44c08aabe7791c2e2f87a395476cec4e0fe34ad2453",
+    "gary_resolution_digest": "83981ed00dc73cacef72724ebb4cf82b1bde496771c45b0dc3fd28567d8a651f",
+    "outcome": "divergence",
+    "reason": "resolution-mismatch",
+    "schema_version": 1,
+    "trial_start_directive_digest": "75271c67b7b74fd8ade4d44c08aabe7791c2e2f87a395476cec4e0fe34ad2453"
+  },
+  "detail_keys": [
+    "cd_block",
+    "gary_view"
+  ],
+  "detail_cd_block_status": "resolved",
+  "detail_gary_view_ssot_digest": "58a4fc054976d216ba0931151776e59a803f8f0c4f46cb6602070f804179e054"
+}

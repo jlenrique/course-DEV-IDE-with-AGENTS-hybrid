@@ -20,29 +20,42 @@ from app.specialists.gary._act import (
     _normalized_gamma_settings,
 )
 
+from ._s4_seed import install_seed_resolver, seed_name
+
 
 def _payload(*items: dict[str, object]) -> dict[str, object]:
     return {"gamma_settings": list(items)}
 
 
-def test_single_variant_binds_one() -> None:
+def _seeded(*variant_ids: str) -> dict[str, object]:
+    # Canonical-arc S4: a NAMED variant must carry a styleguide binding
+    # (styleguide-less now fails loud). Bind each to the byte-identical seed.
+    return _payload(
+        *({"variant_id": vid, "styleguide": seed_name(vid)} for vid in variant_ids)
+    )
+
+
+def test_single_variant_binds_one(monkeypatch: pytest.MonkeyPatch) -> None:
     # AC#1 [RED before fix] — a payload naming ONE variant returns exactly that one.
-    out = _normalized_gamma_settings(_payload({"variant_id": "A"}))
+    install_seed_resolver(monkeypatch)
+    out = _normalized_gamma_settings(_seeded("A"))
     assert len(out) == 1
     assert out[0]["variant_id"] == "A"
 
 
-def test_two_variant_path_preserved() -> None:
+def test_two_variant_path_preserved(monkeypatch: pytest.MonkeyPatch) -> None:
     # AC#2 [regression pin — must stay GREEN] — naming both A and B returns both,
     # A before B (payload order). Protects the legacy concierge A/B default flow.
-    out = _normalized_gamma_settings(_payload({"variant_id": "A"}, {"variant_id": "B"}))
+    install_seed_resolver(monkeypatch)
+    out = _normalized_gamma_settings(_seeded("A", "B"))
     assert len(out) == 2
     assert [item["variant_id"] for item in out] == ["A", "B"]
 
 
-def test_variant_order_is_payload_order() -> None:
+def test_variant_order_is_payload_order(monkeypatch: pytest.MonkeyPatch) -> None:
     # AC#3 — output order == payload list order (``dict.fromkeys``, not ``set``).
-    out = _normalized_gamma_settings(_payload({"variant_id": "B"}, {"variant_id": "A"}))
+    install_seed_resolver(monkeypatch)
+    out = _normalized_gamma_settings(_seeded("B", "A"))
     assert [item["variant_id"] for item in out] == ["B", "A"]
 
 
@@ -61,35 +74,42 @@ def test_unknown_variant_id_fails_loud() -> None:
     assert exc.value.tag == "gamma.settings.invalid"
 
 
-def test_base_seed_does_not_resurrect_padding() -> None:
-    # AC#6 — a present-but-styleguide-less single variant returns len 1; the
-    # DEFAULT_VARIANT_PAIR base seed fills fields for the requested variant only and
-    # must NOT re-add the sibling.
-    out = _normalized_gamma_settings(_payload({"variant_id": "B"}))
+def test_base_seed_does_not_resurrect_padding(monkeypatch: pytest.MonkeyPatch) -> None:
+    # AC#6 — a single named variant (now styleguide-bound) returns len 1; the
+    # base fills fields for the requested variant only and must NOT re-add the
+    # sibling.
+    install_seed_resolver(monkeypatch)
+    out = _normalized_gamma_settings(_seeded("B"))
     assert len(out) == 1
     assert out[0]["variant_id"] == "B"
 
 
-def test_styleguide_less_seed_emits_warn(caplog: pytest.LogCaptureFixture) -> None:
-    # AC#7 — seeding a present variant from DEFAULT_VARIANT_PAIR without a bound
-    # ``styleguide`` emits a WARNING (observability; no output change).
-    with caplog.at_level(logging.WARNING, logger="app.specialists.gary._act"):
+def test_styleguide_less_named_variant_now_raises_unbound() -> None:
+    # Canonical-arc S4 amendment (AC-9): S3/pre-S4 seeded a present variant from
+    # DEFAULT_VARIANT_PAIR with a WARNING. S4 Flip A retires the hidden default —
+    # a present variant with no bound styleguide is now a governance error.
+    with pytest.raises(GaryActError) as exc:
         _normalized_gamma_settings(_payload({"variant_id": "A"}))
-    warnings = [r for r in caplog.records if r.levelno == logging.WARNING]
-    assert warnings, "expected a WARNING when seeding a styleguide-less variant"
-    assert any("DEFAULT_VARIANT_PAIR" in r.getMessage() for r in warnings)
+    assert exc.value.tag == "gamma.styleguide.unbound"
+    assert "A" in str(exc.value)
 
 
 # --- RED-first remediation (3-lane review, styleguide-retire-default-variant-pair) --
 
 
-def test_duplicate_variant_id_fails_loud() -> None:
+def test_duplicate_variant_id_fails_loud(monkeypatch: pytest.MonkeyPatch) -> None:
     # R1 (Blind Hunter SHOULD-FIX) [RED before fix] — a payload naming the SAME
     # variant twice currently silently merge-accumulates (order-dependent, hidden).
     # It must FAIL LOUD instead of quietly collapsing to one projected entry.
+    # (S4: both entries are styleguide-bound so the duplicate guard — not Flip A —
+    # is the surface under test.)
+    install_seed_resolver(monkeypatch)
     with pytest.raises(GaryActError) as exc:
         _normalized_gamma_settings(
-            _payload({"variant_id": "A"}, {"variant_id": "A"})
+            _payload(
+                {"variant_id": "A", "styleguide": seed_name("A")},
+                {"variant_id": "A", "styleguide": seed_name("A")},
+            )
         )
     assert exc.value.tag == "gamma.settings.invalid"
     assert "more than once" in str(exc.value)

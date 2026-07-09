@@ -302,15 +302,37 @@ def test_s6_citations_and_further_reading_render(
     assert "https://doi.org/10.1234/example.doi" in body
 
 
-def test_s6_empty_research_renders_deferred_note_not_fabricated(
+def test_s6_empty_research_renders_recorded_empty_not_fabricated(
     plan_unit, context, two_obj_spec, segments
 ) -> None:
+    # S7 D4: zero research rows => recorded explicitly-empty WITH reason (mirror
+    # S6 D4). The retired "live-research leg deferred" note is GONE; no DOI is
+    # fabricated.
     doc = compose_workbook(
         plan_unit, context, two_obj_spec, segments, prose_revoicer=default_prose_revoicer
     )
     md = render_markdown(doc)
     body = _section_body(md, "References")
-    assert "deferred" in body.lower()
+    assert "recorded" in body.lower() and "explicitly-empty" in body.lower()
+    # No fabricated DOI on an empty research set.
+    assert "https://doi.org/" not in body
+
+
+def test_s6_empty_research_honors_explicit_reason(
+    plan_unit, context, two_obj_spec, segments
+) -> None:
+    # The producer threads an explicit recorded-empty reason (D4); it renders.
+    reason = "creds-present run recorded zero cited entries; honest-empty"
+    doc = compose_workbook(
+        plan_unit,
+        context,
+        two_obj_spec,
+        segments,
+        prose_revoicer=default_prose_revoicer,
+        research_empty_reason=reason,
+    )
+    body = _section_body(render_markdown(doc), "References")
+    assert reason in body
 
 
 # --------------------------------------------------------------------------- #

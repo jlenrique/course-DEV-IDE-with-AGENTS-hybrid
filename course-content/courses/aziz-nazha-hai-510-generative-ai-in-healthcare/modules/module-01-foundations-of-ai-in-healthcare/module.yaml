@@ -1,0 +1,12 @@
+schema_version: 0.1
+module_id: module-01-foundations-of-ai-in-healthcare
+title: Foundations of AI in Healthcare
+source_reference:
+  url: https://www.jefferson.edu/academics/colleges-schools-institutes/population-health/leadership-workforce-development/generative-ai-in-healthcare.html
+  agenda_label: Week 1
+agenda_topics:
+  - AI paradigms
+  - Predictive vs. generative AI
+  - LLM basics
+status: source-container-seeded
+

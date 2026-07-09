@@ -1,0 +1,14 @@
+schema_version: 0.1
+module_id: module-03-ethics-and-challenges
+title: Ethics & Challenges
+source_reference:
+  url: https://www.jefferson.edu/academics/colleges-schools-institutes/population-health/leadership-workforce-development/generative-ai-in-healthcare.html
+  agenda_label: Week 3
+agenda_topics:
+  - Hallucinations
+  - Bias
+  - HIPAA
+  - FDA guidance
+  - Jailbreaking
+status: source-container-seeded
+

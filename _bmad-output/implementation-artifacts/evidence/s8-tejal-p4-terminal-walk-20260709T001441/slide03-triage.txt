@@ -1,0 +1,44 @@
+=== slide-03 perception keys ===
+artifact_path: 
+callout_intent: null
+card_number: null
+confidence: HIGH
+confidence_score: 0.92
+coverage: perceived
+dominant_image_role: 1
+extracted_text: H HARMONY HEALTH 思いやりを、科学で支え、地域の未来をつくる。 STRATEGIC PRIORITIES 患者体験の向上 医療の質と安全 働きがいのある職場 持続可能な成長 QUALITY METRICS 92% PATIENT SATISFACTION OUR MISSION 最高の医療を、すべての人へ。 The Idea Is Not Enough in a Matrixed Health System Success depends more on the leader's ability to champion an idea than on the idea alone.
+image_role_flags: ["tier_2_5_candidate"]
+image_roles: ["1", "4", "4", "2", "2_5", "2_5", "1", "4", "2"]
+layout_description: The slide is split vertically, with a large illustrated hospital boardroom scene occupying the left portion and a clean white text area on the right. The right side contains a large navy title and a smaller quote-style subtitle marked by a thin vertical green line.
+macro_layout: split_image_text
+narration_cadence: moderate
+provider_model_id: gpt-5.5
+reading_path: split_image_text
+reading_path_degraded: false
+reading_path_flags: null
+reading_path_geometry: {"callout_intent": null, "image_role_flags": ["tier_2_5_candidate"], "image_roles": ["1", "4", "4", "2", "2_5", "2_5", "1", "4", "2"], "macro_layout": "split_image_text", "narration_cadence": "dense", "reading_path": "split_image_text", "reading_path_flags": null, "text_substructure": "dense_exposition"}
+reading_path_rationale: {"callout_intent": "No question, quiz, or action-demand CTA is present.", "image_role": "Left boardroom image sets healthcare leadership context but is not required for the message walkthrough.", "macro_layout": "Vertical split with large image scene on the left and title/quote text on the right.", "narration_cadence": "Low text density but still a split slide, suited to a concise moderate beat.", "text_substructure": "One dominant headline with a short supporting quote, not a list or dense body copy."}
+reading_path_source: llm_primary
+slide_id: slide-03
+slide_title: The Idea Is Not Enough in a Matrixed Health System
+source_png_path: C:\Users\juanl\Documents\GitHub\course-DEV-IDE-with-AGENTS-hybrid\state\config\runs\62308889-3d83-4c54-a3ca-24e6b3e71c3c\exports\gary\A_slide-03.png
+text_blocks: ["H HARMONY HEALTH", "思いやりを、科学で支え、地域の未来をつくる。", "STRATEGIC PRIORITIES 患者体験の向上 医療の質と安全 働きがいのある職場 持続可能な成長", "QUALITY METRICS 92% PATIENT SATISFACTION", "OUR MISSION 最高の医療を、すべての人へ。", "The Idea Is Not Enough in a Matrixed Health System", "Success depends more on the leader's ability to champion an idea than on the idea alone."]
+text_substructure: hero_message
+visual_elements: [{"bbox": [0.0, 0.0, 0.41, 1.0], "id": "left-illustration", "kind": "photo", "role_tier": "1", "role_tier_reason": "Large edge-bleed illustrative boardroom scene provides atmosphere behind embedded signage.", "text": ""}, {"bbox": [0.06, 0.08, 0.13, 0.18], "id": "wall-logo", "kind": "logo", "role_tier": "4", "role_tier_reason": "Small logo/tag on the wall identifies the fictional organization.", "text": "H HARMONY HEALTH"}, {"bbox": [0.15, 0.1, 0.3, 0.16], "id": "japanese-tagline", "kind": "callout", "role_tier": "4", "role_tier_reason": "Short wall slogan functions as a label/tag within the illustration.", "text": "思いやりを、科学で支え、地域の未来をつくる。"}, {"bbox": [0.05, 0.2, 0.29, 0.5], "id": "strategic-priorities-board", "kind": "diagram", "role_tier": "3", "role_tier_reason": "Board has visible inter...
+PERCEIVED FIGURES: ['percent:92']
+extracted_text figures: ['percent:92']
+=== gary slide-03 ===
+card_number: 3
+dispatch_variant: A
+display_title: The Idea Is Not Enough in a Matrixed Health System
+file_path: C:\Users\juanl\Documents\GitHub\course-DEV-IDE-with-AGENTS-hybrid\state\config\runs\62308889-3d83-4c54-a3ca-24e6b3e71c3c\exports\gary\A_slide-03.png
+gamma_settings: {"amount": "brief", "dimensions": "fluid", "image_model": "gpt-image-2-mini", "image_source": "aiGenerated", "image_style_preset": "illustration", "language": "en", "production_mode": "api", "text_mode": "condense", "theme": "njim9kuhfnljvaa", "variant_id": "A"}
+generation_id: gDUoVNjWsoJMm6yT1G8vO
+slide_id: slide-03
+variant_id: A
+visual_description: The Idea Is Not Enough in a Matrixed Health System — Explain that success in healthcare innovation depends more on the leader's ability to champion an idea than on the idea alone.
+figures in visual_description: []
+HIT in checkpoint.json
+HIT in error-pause.json
+HIT in resume-command.json
+HIT in run.json

@@ -1,0 +1,45 @@
+{
+  "judge": "a",
+  "verdict": "FAIL",
+  "n_pass": 1,
+  "n_total": 7,
+  "checks": [
+    {
+      "name": "1_real_scite_dispatch_provider_scite",
+      "ok": false,
+      "detail": "entries=0 providers=[] dispatch_live_fn=True creds=True ready_providers=['consensus', 'gamma_docs', 'scite']"
+    },
+    {
+      "name": "2_cited_entry_real_doi",
+      "ok": false,
+      "detail": "real_dois=[]"
+    },
+    {
+      "name": "3_doi_resolves_content_inspected",
+      "ok": false,
+      "detail": "status=None final_url=None title_snippet='None'"
+    },
+    {
+      "name": "4_source_ref_shape",
+      "ok": false,
+      "detail": "primary_source_ref=None expected=retrieval:scite:None"
+    },
+    {
+      "name": "5_g2_gate_passed_not_bypassed",
+      "ok": false,
+      "detail": "g2_unsourced=None l2_report_unsourced=None manifest_len=0"
+    },
+    {
+      "name": "6_narration_surfaced",
+      "ok": false,
+      "detail": "narration_line='\ud83e\uddd1\\u200d\ud83d\udcbc **Marcus-SPOC:** Research dispatch: no cited sources for this lesson (review-only \u2014 nothing to fold in).'"
+    },
+    {
+      "name": "7_walk_proceeded",
+      "ok": true,
+      "detail": "final_status=paused-at-gate final_gate=G2B contrib_node=04.55"
+    }
+  ],
+  "primary_doi": null,
+  "primary_title": null
+}

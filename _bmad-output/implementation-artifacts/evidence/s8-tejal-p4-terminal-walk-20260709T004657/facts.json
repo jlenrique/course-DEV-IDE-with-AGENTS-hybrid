@@ -1,0 +1,174 @@
+{
+  "allow_offline_cost_report": false,
+  "auto_confirm_directive": false,
+  "bundle_expected": "narrated-deck-with-workbook",
+  "cleared_gary_brief_unmatched": true,
+  "copied_artifacts": [
+    "model_resolution_trail.json",
+    "directive.yaml",
+    "trial-start.json",
+    "run.json",
+    "run_summary.yaml",
+    "ratified-los.json",
+    "decision-card-G0E.json",
+    "decision-card-G0R.json",
+    "decision-card-G1.json",
+    "decision-card-G2B.json",
+    "decision-card-G2C.json",
+    "decision-card-G3.json",
+    "decision-card-G4.json",
+    "decision-card-G4A.json",
+    "workbook.md",
+    "workbook.docx"
+  ],
+  "corpus": "C:\\Users\\juanl\\Documents\\GitHub\\course-DEV-IDE-with-AGENTS-hybrid\\course-content\\courses\\tejal-c1m1-p4-assessments-bridge",
+  "envelope_status": "completed",
+  "final_error_tag": null,
+  "final_paused_gate": null,
+  "final_status": "completed",
+  "finished_at": "2026-07-09T05:19:31.334454+00:00",
+  "g0_confirm_path": [
+    "e",
+    "c"
+  ],
+  "g0_edit_applied": true,
+  "g0_edit_directive_bytes": 3911,
+  "guide": "hil-2026-apc-crossroads-classic-preserve",
+  "hil_variety_exercised": [
+    "g0-confirm:edit",
+    "g0-confirm:confirm",
+    "G0E:approve",
+    "G0R:approve",
+    "g1:edit-inspect",
+    "G2B:select-all-A:5",
+    "G2C:approve",
+    "G3:approve",
+    "G4:approve",
+    "G4A:approve"
+  ],
+  "hil_variety_unique": [
+    "g0-confirm:edit",
+    "g0-confirm:confirm",
+    "G0E:approve",
+    "G0R:approve",
+    "g1:edit-inspect",
+    "G2B:select-all-A:5",
+    "G2C:approve",
+    "G3:approve",
+    "G4:approve",
+    "G4A:approve"
+  ],
+  "intent": "C:\\Users\\juanl\\Documents\\GitHub\\course-DEV-IDE-with-AGENTS-hybrid\\_bmad-output\\implementation-artifacts\\s8-tejal-p4-ratified-collateral-intent.yaml",
+  "lesson_plan_collateral_bundle_id": null,
+  "matcher_fix_head": "82be31b8",
+  "minted_at": "2026-07-09T04:47:06.493494+00:00",
+  "note": "Driver claim_ok means compose+G0-HIL+bundle binding succeeded AND the walk did not die on gamma.export.brief-unmatched (matcher fix). Prefer final_status=completed; later non-matcher error-pauses are honest and party-triaged. Full S8-complete still requires BMAD party concurrence.",
+  "operator_id": "juanl",
+  "pause_sequence": [
+    "G0E",
+    "G0R",
+    "G1",
+    "G2B",
+    "G2C",
+    "G3",
+    "G4",
+    "G4A"
+  ],
+  "pause_sequence_unique": [
+    "G0E",
+    "G0R",
+    "G1",
+    "G2B",
+    "G2C",
+    "G3",
+    "G4",
+    "G4A"
+  ],
+  "run_dir": "C:\\Users\\juanl\\Documents\\GitHub\\course-DEV-IDE-with-AGENTS-hybrid\\state\\config\\runs\\1bd08699-614d-4412-ad52-bbe6edb1d6c5",
+  "runs_root": "C:\\Users\\juanl\\Documents\\GitHub\\course-DEV-IDE-with-AGENTS-hybrid\\state\\config\\runs",
+  "s8_complete_requires_party": true,
+  "s8_terminal_walk_driver_claim_ok": true,
+  "selection_code": "SGP-1bd08699614d4412ad52bbe6edb1d6c5-A:hil-2026-apc-crossroads-classic-preserve",
+  "start_elapsed_s": 236.5,
+  "start_trial_result": {
+    "cost_report_json": "C:/Users/juanl/Documents/GitHub/course-DEV-IDE-with-AGENTS-hybrid/state/config/runs/1bd08699-614d-4412-ad52-bbe6edb1d6c5/cost-report.json",
+    "cost_report_markdown": "C:/Users/juanl/Documents/GitHub/course-DEV-IDE-with-AGENTS-hybrid/state/config/runs/1bd08699-614d-4412-ad52-bbe6edb1d6c5/cost-report.md",
+    "directive_digest": "c42e9159a33cde5f3bcbf60f6c723bd7a5f4c5e9c9a36515bea4f28fdb59a919",
+    "directive_path": "C:/Users/juanl/Documents/GitHub/course-DEV-IDE-with-AGENTS-hybrid/state/config/runs/1bd08699-614d-4412-ad52-bbe6edb1d6c5/directive.yaml",
+    "input": "C:/Users/juanl/Documents/GitHub/course-DEV-IDE-with-AGENTS-hybrid/course-content/courses/tejal-c1m1-p4-assessments-bridge",
+    "langsmith_trace_status": "skipped-no-langsmith-env",
+    "lesson_plan_collateral_bundle_id": "narrated-deck-with-workbook",
+    "lesson_plan_collateral_intent_path": "C:/Users/juanl/Documents/GitHub/course-DEV-IDE-with-AGENTS-hybrid/_bmad-output/implementation-artifacts/s8-tejal-p4-ratified-collateral-intent.yaml",
+    "operator_id": "juanl",
+    "preset": "production",
+    "production_clone_launch_evidence": false,
+    "run_registry_path": "C:/Users/juanl/Documents/GitHub/course-DEV-IDE-with-AGENTS-hybrid/state/config/runs/1bd08699-614d-4412-ad52-bbe6edb1d6c5/run.json",
+    "status": "registered-offline",
+    "transport_kind": "cli",
+    "trial_id": "1bd08699-614d-4412-ad52-bbe6edb1d6c5"
+  },
+  "story": "S8-tejal-p4-terminal-composed-walk",
+  "trial_id": "1bd08699-614d-4412-ad52-bbe6edb1d6c5",
+  "trial_start_bundle_id": "narrated-deck-with-workbook",
+  "trial_start_component_selection": null,
+  "verdict_sequence": [
+    {
+      "err": null,
+      "gate": "G0E",
+      "next_gate": "G0R",
+      "next_status": "paused-at-gate",
+      "verb": "approve"
+    },
+    {
+      "err": null,
+      "gate": "G0R",
+      "next_gate": "G1",
+      "next_status": "paused-at-gate",
+      "verb": "approve"
+    },
+    {
+      "err": null,
+      "gate": "G1",
+      "next_gate": "G2B",
+      "next_status": "paused-at-gate",
+      "verb": "edit"
+    },
+    {
+      "err": null,
+      "gate": "G2B",
+      "next_gate": "G2C",
+      "next_status": "paused-at-gate",
+      "verb": "select"
+    },
+    {
+      "err": null,
+      "gate": "G2C",
+      "next_gate": "G3",
+      "next_status": "paused-at-gate",
+      "verb": "approve"
+    },
+    {
+      "err": null,
+      "gate": "G3",
+      "next_gate": "G4",
+      "next_status": "paused-at-gate",
+      "verb": "approve"
+    },
+    {
+      "err": null,
+      "gate": "G4",
+      "next_gate": "G4A",
+      "next_status": "paused-at-gate",
+      "verb": "approve"
+    },
+    {
+      "err": null,
+      "gate": "G4A",
+      "next_gate": null,
+      "next_status": "completed",
+      "verb": "approve"
+    }
+  ],
+  "workbook_docx_path": "_bmad-output/artifacts/workbooks/u01@1.docx",
+  "workbook_markdown_path": "_bmad-output/artifacts/workbooks/u01@1.md"
+}

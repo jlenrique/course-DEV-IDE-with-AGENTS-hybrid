@@ -1,0 +1,10 @@
+{
+  "leg": 1,
+  "phase": "recover-post-matcher-fix",
+  "matcher_fix_commit": "59a9a48a",
+  "trial_id": "a18c2a86-bbdb-48a2-ba63-fb1a653bfaf9",
+  "recover_status": "paused-at-gate",
+  "paused_gate": "G2B",
+  "paused_error_tag": null,
+  "elapsed_s": 94.162031
+}

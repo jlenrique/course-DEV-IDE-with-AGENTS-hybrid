@@ -21,6 +21,19 @@ def _clear_registry():
     clear_resume_registry()
 
 
+@pytest.fixture(autouse=True)
+def _pin_g0_enrichment_off(monkeypatch: pytest.MonkeyPatch) -> None:
+    """Canonical-arc S5-3a — flip-robustness pin (D-migrate-canonical, pin OFF).
+
+    The subject is the pre-gate-marcus trace shape at the FIRST gate (one LLM
+    child-run named ``pre-gate-marcus G1``). Pinning ``MARCUS_G0_ENRICHMENT_ACTIVE``
+    OFF explicitly keeps the first gate G1 under the 3b default flip; the pre-gate
+    trace assertion is orthogonal to G0-enrichment. Explicit ``"0"`` survives the
+    code-default flip.
+    """
+    monkeypatch.setenv("MARCUS_G0_ENRICHMENT_ACTIVE", "0")
+
+
 def test_pre_gate_marcus_trace_records_single_invocation_per_gate(
     tmp_path: Path, monkeypatch
 ) -> None:
